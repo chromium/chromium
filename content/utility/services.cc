@@ -48,6 +48,12 @@
 #include "sandbox/policy/sandbox.h"
 #endif
 
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#include "sandbox/policy/features.h"
+#include "sandbox/policy/linux/sandbox_linux.h"
+#include "sandbox/policy/switches.h"
+#endif
+
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
 #include "media/cdm/cdm_adapter_factory.h"                   // nogncheck
 #include "media/mojo/mojom/cdm_service.mojom.h"              // nogncheck
@@ -349,6 +355,23 @@ auto RunVideoCapture(
 auto RunOnDeviceModel(
     mojo::PendingReceiver<on_device_model::mojom::OnDeviceModelService>
         receiver) {
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+  if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
+          sandbox::policy::switches::kNoSandbox)) {
+    CHECK(on_device_model::WasPreSandboxInitCalled());
+
+    // Sandbox must have been properly initialized (see crbug.com/499278708).
+    auto* sandbox_linux = sandbox::policy::SandboxLinux::GetInstance();
+    if (sandbox_linux->seccomp_bpf_supported() &&
+        base::FeatureList::IsEnabled(
+            sandbox::policy::features::
+                kOnDeviceModelExecutionMultiThreadedSandbox)) {
+      CHECK(sandbox_linux->seccomp_bpf_started());
+    }
+  }
+#else
+  CHECK(on_device_model::WasPreSandboxInitCalled());
+#endif
   return on_device_model::OnDeviceModelService::Create(std::move(receiver));
 }
 

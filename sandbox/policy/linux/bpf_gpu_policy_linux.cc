@@ -6,6 +6,7 @@
 
 #include <errno.h>
 #include <fcntl.h>
+#include <sched.h>
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <unistd.h>
@@ -23,6 +24,7 @@
 
 using sandbox::bpf_dsl::AllOf;
 using sandbox::bpf_dsl::Allow;
+using sandbox::bpf_dsl::AnyOf;
 using sandbox::bpf_dsl::Arg;
 using sandbox::bpf_dsl::BoolExpr;
 using sandbox::bpf_dsl::Error;
@@ -106,6 +108,17 @@ ResultExpr GpuProcessPolicy::EvaluateSyscall(int sysno) const {
       return Allow();
     case __NR_sched_setaffinity:
       return RestrictSchedTarget(GetPolicyPid(), sysno);
+    case __NR_sched_setscheduler: {
+      // Mesa drivers call pthread_setschedparam(SCHED_BATCH) on other threads
+      // (e.g. shader compiler threads created by util_queue during
+      // vkCreateComputePipelines()), which RestrictSchedTarget() rejects.
+      // Allow switching any thread to a non-realtime policy.
+      const Arg<int> policy(1);
+      return If(AnyOf(policy == SCHED_OTHER, policy == SCHED_BATCH,
+                      policy == SCHED_IDLE),
+                Allow())
+          .Else(RestrictSchedTarget(GetPolicyPid(), sysno));
+    }
     case __NR_prlimit64:
       return RestrictPrlimit64(GetPolicyPid());
     case __NR_memfd_create:

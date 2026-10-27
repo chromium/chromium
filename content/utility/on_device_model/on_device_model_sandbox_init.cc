@@ -19,10 +19,16 @@
 #endif
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#include <dlfcn.h>
 #include <errno.h>
+#include <sys/stat.h>
+#include <sys/sysmacros.h>
 
+#include "base/files/file_enumerator.h"
+#include "base/strings/stringprintf.h"
 #include "content/common/gpu_pre_sandbox_hook_linux.h"
 #include "gpu/config/gpu_info_collector.h"  // nogncheck
+#include "sandbox/policy/features.h"
 #include "sandbox/policy/linux/sandbox_linux.h"
 #endif
 
@@ -64,6 +70,33 @@ void UpdateSandboxOptionsForGpu(
       break;
   }
 }
+
+// Permissions needed by Vulkan drivers after the sandbox is engaged, not
+// granted by content::FilePermissionsForGpu() on non-ChromeOS Linux:
+// - DRM render nodes, opened read-write by vkCreateDevice() (e.g. Mesa ANV
+//   anv_CreateDevice()).
+// - The render nodes' sysfs directories, read by libdrm to identify devices.
+// - amdgpu.ids, read by libdrm_amdgpu to name AMD GPUs.
+void AddVulkanDriverPermissions(
+    std::vector<sandbox::syscall_broker::BrokerFilePermission>& permissions) {
+  base::FileEnumerator enumerator(base::FilePath("/dev/dri/"),
+                                  /*recursive=*/false,
+                                  base::FileEnumerator::FILES, "renderD*");
+  for (base::FilePath path = enumerator.Next(); !path.empty();
+       path = enumerator.Next()) {
+    permissions.push_back(
+        sandbox::syscall_broker::BrokerFilePermission::ReadWrite(path.value()));
+    struct stat st;
+    if (stat(path.value().c_str(), &st) == 0) {
+      permissions.push_back(
+          sandbox::syscall_broker::BrokerFilePermission::ReadOnlyRecursive(
+              base::StringPrintf("/sys/dev/char/%u:%u/", major(st.st_rdev),
+                                 minor(st.st_rdev))));
+    }
+  }
+  permissions.push_back(sandbox::syscall_broker::BrokerFilePermission::ReadOnly(
+      "/usr/share/libdrm/amdgpu.ids"));
+}
 #endif
 
 #if !BUILDFLAG(IS_FUCHSIA) && \
@@ -97,9 +130,13 @@ bool ShouldWarmDrivers() {
 #endif
 }
 
+bool g_pre_sandbox_init_called = false;
+
 }  // namespace
 
 bool PreSandboxInit() {
+  g_pre_sandbox_init_called = true;
+
 #if BUILDFLAG(ENABLE_ML_INTERNAL)
   // Ensure the library is loaded before the sandbox is initialized.
   if (!ml::ChromeML::Get()) {
@@ -149,9 +186,23 @@ bool PreSandboxInit() {
         }
       }
     }
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+    // Pin the Vulkan loader selected by Dawn. Must run while `instance` is in
+    // scope: it holds the loader via VulkanInstance::mVulkanLib, dlopen()ed
+    // with RTLD_NOW and dlclose()d on destruction
+    // (third_party/dawn/src/dawn/common/DynamicLib.cpp). RTLD_NOLOAD finds it
+    // by SONAME without loading anything; RTLD_NODELETE keeps it loaded after
+    // `instance` is destroyed, so later dlopen("libvulkan.so.1") calls (e.g.
+    // content::LoadLibrariesForGpu()) reuse it instead of loading another copy.
+    dlopen("libvulkan.so.1", RTLD_NOW | RTLD_NOLOAD | RTLD_NODELETE);
+#endif
 #endif
   }
   return true;
+}
+
+bool WasPreSandboxInitCalled() {
+  return g_pre_sandbox_init_called;
 }
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
@@ -163,6 +214,18 @@ void AddSandboxLinuxOptions(sandbox::policy::SandboxLinux::Options& options) {
   for (const auto& gpu : info.secondary_gpus) {
     UpdateSandboxOptionsForGpu(gpu, options);
   }
+
+  // PreSandboxInit() loads GPU drivers which can open directories and leave
+  // background worker threads running. Skip checking for open directories which
+  // is only needed for the chroot layer.
+  options.check_for_open_directories = false;
+
+  if (base::FeatureList::IsEnabled(
+          sandbox::policy::features::
+              kOnDeviceModelExecutionMultiThreadedSandbox)) {
+    // Allow threads during sandbox init. Seccomp-BPF will be applied via TSYNC.
+    options.allow_threads_during_sandbox_init = true;
+  }
 }
 
 bool PreSandboxHook(sandbox::policy::SandboxLinux::Options options) {
@@ -171,9 +234,23 @@ bool PreSandboxHook(sandbox::policy::SandboxLinux::Options options) {
   file_permissions.push_back(
       sandbox::syscall_broker::BrokerFilePermission::ReadOnly(
           "/sys/devices/system/cpu/online"));
+  AddVulkanDriverPermissions(file_permissions);
 
   sandbox::policy::SandboxLinux::GetInstance()->StartBrokerProcess(
       content::CommandSetForGPU(options), file_permissions, options);
+
+  // Now that the broker process has been forked from a single-threaded process,
+  // warm drivers and load internal libraries. Any threads spawned here will be
+  // synchronized and covered when StartSeccompBPF() applies the Seccomp-BPF
+  // filter via TSYNC immediately following this hook.
+  //
+  // Must run before content::LoadLibrariesForGpu(), whose
+  // dlopen("libvulkan.so.1") would otherwise load a loader other than Dawn's
+  // (e.g. the system one in non-component builds). Dawn would then load
+  // "<module_dir>/libvulkan.so.1" as a second copy.
+  if (!PreSandboxInit()) {
+    return false;
+  }
 
   if (!content::LoadLibrariesForGpu(options)) {
     return false;

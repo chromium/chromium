@@ -297,9 +297,15 @@ int UtilityMain(MainFunctionParams parameters) {
     }
   }
 
+  // On Linux and ChromeOS, `PreSandboxInit()` is deferred to `PreSandboxHook()`
+  // so the broker process can be safely forked before driver warming spawns
+  // threads. Any threads spawned by `PreSandboxInit()` are then covered by
+  // Seccomp-BPF via TSYNC.
+#if !BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS)
   if (utility_sub_type == on_device_model::mojom::OnDeviceModelService::Name_) {
     CHECK(on_device_model::PreSandboxInit());
   }
+#endif
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
@@ -324,6 +330,10 @@ int UtilityMain(MainFunctionParams parameters) {
   auto sandbox_type =
       sandbox::policy::SandboxTypeFromCommandLine(*parameters.command_line);
   sandbox::policy::SandboxLinux::Options sandbox_options;
+  // Set a default before the switch below, so that per-sandbox code (e.g.
+  // on_device_model::AddSandboxLinuxOptions) can refine it.
+  sandbox_options.use_amd_specific_policies =
+      ShouldUseAmdGpuPolicy(sandbox_type);
   sandbox::policy::SandboxLinux::PreSandboxHook pre_sandbox_hook;
   switch (sandbox_type) {
     case sandbox::mojom::Sandbox::kNetwork:
@@ -404,8 +414,6 @@ int UtilityMain(MainFunctionParams parameters) {
   }
   if (!sandbox::policy::IsUnsandboxedSandboxType(sandbox_type) &&
       (parameters.zygote_child || !pre_sandbox_hook.is_null())) {
-    sandbox_options.use_amd_specific_policies =
-        ShouldUseAmdGpuPolicy(sandbox_type);
     sandbox::policy::Sandbox::Initialize(
         sandbox_type, std::move(pre_sandbox_hook), sandbox_options);
   }
