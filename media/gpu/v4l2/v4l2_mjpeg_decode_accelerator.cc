@@ -179,14 +179,12 @@ class V4L2MjpegDecodeAccelerator::JobRecord {
 
   // Task ID passed from Decode() call.
   virtual int32_t task_id() const = 0;
-  // Input buffer size.
-  virtual size_t size() const = 0;
   // Input buffer offset.
   virtual uint64_t offset() const = 0;
   // Maps input buffer.
   virtual bool map() = 0;
-  // Pointer to the input content. Only valid if map() is already called.
-  virtual const void* memory() const = 0;
+  // Span of the input content. Only valid if `map()` is already called.
+  virtual base::span<const uint8_t> span() const = 0;
 
   // Output frame buffer.
   virtual const scoped_refptr<VideoFrame>& out_frame() = 0;
@@ -209,13 +207,15 @@ class JobRecordBitstreamBuffer : public V4L2MjpegDecodeAccelerator::JobRecord {
   JobRecordBitstreamBuffer& operator=(const JobRecordBitstreamBuffer&) = delete;
 
   int32_t task_id() const override { return task_id_; }
-  size_t size() const override { return shm_region_.GetSize(); }
   uint64_t offset() const override { return offset_; }
   bool map() override {
-    shm_mapping_ = shm_region_.MapAt(offset(), size());
+    shm_mapping_ = shm_region_.MapAt(offset(), shm_region_.GetSize());
     return shm_mapping_.IsValid();
   }
-  const void* memory() const override { return shm_mapping_.data(); }
+  base::span<const uint8_t> span() const override {
+    DCHECK(shm_mapping_.IsValid());
+    return base::span(shm_mapping_);
+  }
 
   const scoped_refptr<VideoFrame>& out_frame() override { return out_frame_; }
 
@@ -246,13 +246,12 @@ class JobRecordDmaBuf : public V4L2MjpegDecodeAccelerator::JobRecord {
 
   ~JobRecordDmaBuf() override {
     if (mapped_addr_) {
-      const int ret = munmap(mapped_addr_, size());
+      const int ret = munmap(mapped_addr_, size_);
       DPCHECK(ret == 0);
     }
   }
 
   int32_t task_id() const override { return task_id_; }
-  size_t size() const override { return size_; }
   uint64_t offset() const override { return offset_; }
 
   bool map() override {
@@ -262,8 +261,8 @@ class JobRecordDmaBuf : public V4L2MjpegDecodeAccelerator::JobRecord {
     // The DMA-buf FD should be mapped as read-only since it may only have read
     // permission, e.g. when it comes from camera driver.
     DCHECK(dmabuf_fd_.is_valid());
-    DCHECK_GT(size(), 0u);
-    void* addr = mmap(nullptr, size(), PROT_READ, MAP_SHARED, dmabuf_fd_.get(),
+    DCHECK_GT(size_, 0u);
+    void* addr = mmap(nullptr, size_, PROT_READ, MAP_SHARED, dmabuf_fd_.get(),
                       base::checked_cast<off_t>(offset()));
     if (addr == MAP_FAILED) {
       return false;
@@ -272,9 +271,11 @@ class JobRecordDmaBuf : public V4L2MjpegDecodeAccelerator::JobRecord {
     return true;
   }
 
-  const void* memory() const override {
+  base::span<const uint8_t> span() const override {
     DCHECK(mapped_addr_);
-    return mapped_addr_;
+    // SAFETY: `map()` mapped `size_` bytes at `mapped_addr_`.
+    return UNSAFE_BUFFERS(
+        base::span(static_cast<const uint8_t*>(mapped_addr_), size_));
   }
 
   const scoped_refptr<VideoFrame>& out_frame() override { return out_frame_; }
@@ -559,7 +560,7 @@ bool V4L2MjpegDecodeAccelerator::ShouldRecreateInputBuffers() {
   // Check input buffer size is enough
   // TODO(kamesan): use safe arithmetic to handle overflows.
   return (input_buffer_map_.empty() ||
-          (job_record->size() + sizeof(kDefaultDhtSeg)) >
+          (job_record->span().size() + sizeof(kDefaultDhtSeg)) >
               input_buffer_map_.front().length[0]);
 }
 
@@ -606,7 +607,8 @@ bool V4L2MjpegDecodeAccelerator::CreateInputBuffers() {
   // so we create more to avoid the situation of not enough memory.
   // Reserve twice size to avoid recreating input buffer frequently.
   // TODO(kamesan): use safe arithmetic to handle overflows.
-  size_t reserve_size = (job_record->size() + sizeof(kDefaultDhtSeg)) * 2;
+  size_t reserve_size =
+      (job_record->span().size() + sizeof(kDefaultDhtSeg)) * 2;
   struct v4l2_format format;
   ZeroFillVl42Struct(format);
   format.type = V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE;
@@ -1304,15 +1306,7 @@ bool V4L2MjpegDecodeAccelerator::EnqueueInputRecord() {
 
   // Check SOF0 dimensions and add default huffman segment if it's missing.
   if (!CheckSizeAndAddHuffmanTable(
-          // SAFETY: JobRecord's memory() points to at least size() many
-          // elements if map() was previously called.
-          //
-          // TODO(crbug.com/40284755): JobRecord should give a span, rather than
-          // a pointer.
-          UNSAFE_TODO(
-              base::span(static_cast<const uint8_t*>(job_record->memory()),
-                         job_record->size())),
-          job_record->out_frame()->visible_rect().size(),
+          job_record->span(), job_record->out_frame()->visible_rect().size(),
           // SAFETY: BufferRecord has an array of pointer + length pairs. The
           // length is the number of elements at the matching pointer.
           UNSAFE_BUFFERS(
