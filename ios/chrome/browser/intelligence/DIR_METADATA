@@ -1,0 +1,12 @@
+agentic_review {
+  capability_groups {
+    # No path_expression: loaded for every CL that touches this directory.
+    review_capability_skills: [
+      "ios/chrome/browser/intelligence/agents/skills/review-readiness/SKILL.md"
+    ]
+  }
+}
+
+# TODO(crbug.com/576358854): Import //ios/agents/knowledge_base/COMMON_METADATA instead
+# once the knowledge base has fully landed there.
+mixins: "//ios/chrome/browser/intelligence/kb/COMMON_METADATA"

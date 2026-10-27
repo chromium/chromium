@@ -1,5 +1,5 @@
 ---
-name: actor-review-readiness
+name: review-readiness
 description: >-
   Scores how ready a CL is for human review, from 0 to 10, and reports the
   score as a single finding on the commit message. Always use for every CL this
@@ -27,7 +27,7 @@ review; it never replaces individual findings.
 ## Scale
 
 - 10: No issues found. Small, single-purpose change; clear description; tests
-  cover the new behavior. A reviewer can approve after a quick read.
+  cover any new behavior. A reviewer can approve after a quick read.
 - 8–9: Only minor suggestions, or one or two small issues that are quick to
   address. Scope and description are clear.
 - 6–7: Several small issues, or one that needs a design decision; or the change
@@ -39,10 +39,10 @@ review; it never replaces individual findings.
   stated rationale, or the change cannot be evaluated without information that
   is not in the CL.
 - 0–1: The change is not reviewable as is: pervasive correctness or safety
-  problems, or it contradicts the stated purpose of the code it touches.
+  problems, or it contradicts the stated purpose of what it touches.
 
 Adjust within a band for description quality (does it say why, not only what),
-test coverage of the new behavior, and change size relative to its purpose.
+test coverage of any new behavior, and change size relative to its purpose.
 
 ## Output
 
