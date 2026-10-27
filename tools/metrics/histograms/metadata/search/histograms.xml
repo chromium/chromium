@@ -509,7 +509,7 @@ https://chromium.googlesource.com/chromium/src/tools/+/HEAD/metrics/histograms/R
 </histogram>
 
 <histogram name="Search.ChoicePrefsCheck.WipeOnMissingDse" enum="Boolean"
-    expires_after="2027-02-21">
+    expires_after="2027-04-25">
   <owner>dgn@chromium.org</owner>
   <owner>chrome-regionalcapabilities@google.com</owner>
   <summary>
