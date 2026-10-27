@@ -45,6 +45,7 @@ import java.lang.annotation.RetentionPolicy;
     UserCriticalFeature.TOUCH_TO_FILL_AUTOFILL,
     UserCriticalFeature.FEDERATED_ACCOUNT_SELECTION,
     UserCriticalFeature.ACCOUNT_PICKER,
+    UserCriticalFeature.PARENTAL_APPROVAL,
 })
 @Retention(RetentionPolicy.SOURCE)
 public @interface UserCriticalFeature {
@@ -67,4 +68,5 @@ public @interface UserCriticalFeature {
     int TOUCH_TO_FILL_AUTOFILL = 16;
     int FEDERATED_ACCOUNT_SELECTION = 17;
     int ACCOUNT_PICKER = 18;
+    int PARENTAL_APPROVAL = 19;
 }

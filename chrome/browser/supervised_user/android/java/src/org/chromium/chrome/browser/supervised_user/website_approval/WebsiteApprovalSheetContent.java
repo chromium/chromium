@@ -21,6 +21,8 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.supervised_user.R;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetType;
+import org.chromium.components.browser_ui.bottomsheet.UserCriticalFeature;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.ui.ElidedUrlTextView;
 import org.chromium.ui.widget.ButtonCompat;
@@ -29,6 +31,11 @@ import org.chromium.url.GURL;
 /** Bottom sheet content for the screen which allows a parent to approve or deny a website. */
 @NullMarked
 class WebsiteApprovalSheetContent implements BottomSheetContent {
+    private static final BottomSheetType BOTTOM_SHEET_TYPE =
+            new BottomSheetType.Builder()
+                    .setUserCritical(UserCriticalFeature.PARENTAL_APPROVAL)
+                    .build();
+
     private static final String ELLIPSIS = "...";
     static final int MAX_HOST_SIZE = 256;
     static final int SUBSTRING_LIMIT = 256;
@@ -82,6 +89,11 @@ class WebsiteApprovalSheetContent implements BottomSheetContent {
 
     @Override
     public void destroy() {}
+
+    @Override
+    public BottomSheetType getSheetType() {
+        return BOTTOM_SHEET_TYPE;
+    }
 
     @Override
     public @ContentPriority int getPriority() {
