@@ -199,3 +199,38 @@ TEST_P(SafeBrowsingBlockingPageTest_V4V5,
 
   EXPECT_FALSE(allow_list->IsUnsafeNavigationDecisionPending(url_));
 }
+
+// Tests that client side detection interstitials record decision metrics with
+// both the threat source suffix and the threat subtype suffix.
+TEST_F(SafeBrowsingBlockingPageTest, RecordsClientSideDetectionSubtypeMetrics) {
+  constexpr char kCsdDecisionMetric[] =
+      "interstitial.phishing.decision.from_client_side_detection";
+  constexpr char kCsdSubtypeDecisionMetric[] =
+      "interstitial.phishing.decision.from_client_side_detection."
+      "scam_experiment_verdict_1";
+
+  GURL csd_url("http://www.csd.test");
+  UnsafeResource csd_resource;
+  csd_resource.url = csd_url;
+  csd_resource.threat_type =
+      SBThreatType::SB_THREAT_TYPE_URL_CLIENT_SIDE_PHISHING;
+  csd_resource.threat_source =
+      safe_browsing::ThreatSource::CLIENT_SIDE_DETECTION;
+  csd_resource.threat_subtype =
+      safe_browsing::ThreatSubtype::SCAM_EXPERIMENT_VERDICT_1;
+  csd_resource.weak_web_state = web_state_.GetWeakPtr();
+  SafeBrowsingUrlAllowList::FromWebState(&web_state_)
+      ->AddPendingUnsafeNavigationDecision(csd_url, csd_resource.threat_type);
+  page_ = SafeBrowsingBlockingPage::Create(csd_resource);
+
+  SendCommand(security_interstitials::CMD_PROCEED);
+
+  histogram_tester_.ExpectBucketCount(kCsdDecisionMetric, MetricsHelper::SHOW,
+                                      1);
+  histogram_tester_.ExpectBucketCount(kCsdDecisionMetric,
+                                      MetricsHelper::PROCEED, 1);
+  histogram_tester_.ExpectBucketCount(kCsdSubtypeDecisionMetric,
+                                      MetricsHelper::SHOW, 1);
+  histogram_tester_.ExpectBucketCount(kCsdSubtypeDecisionMetric,
+                                      MetricsHelper::PROCEED, 1);
+}
