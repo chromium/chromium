@@ -40,6 +40,7 @@
 #include "chrome/browser/ui/tabs/test_tab_strip_model_delegate.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_bubble_controller.h"
+#include "chrome/browser/ui/views/toolbar/pinned_action_test_accessor.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -1131,9 +1132,12 @@ IN_PROC_BROWSER_TEST_F(TabMenuModelSendTabToSelfSigninPromosBrowserTest,
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   submenu->ActivatedAt(1);
-  EXPECT_TRUE(send_tab_to_self::SendTabToSelfBubbleController::
-                  GetOrCreateForWebContents(tab_strip->GetActiveWebContents())
-                      ->IsBubbleShown());
+  auto* controller = send_tab_to_self::SendTabToSelfBubbleController::
+      GetOrCreateForWebContents(tab_strip->GetActiveWebContents());
+  if (!controller->IsBubbleShown()) {
+    PinnedActionTestAccessor::WaitForAnimation(browser());
+  }
+  EXPECT_TRUE(controller->IsBubbleShown());
 #endif
 }
 
