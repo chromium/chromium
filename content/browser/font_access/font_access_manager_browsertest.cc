@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/i18n/language_tag.h"
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
@@ -63,12 +64,12 @@ class FontAccessManagerBrowserBase : public ContentBrowserTest {
   // to confusion if the old FontAccessManager is already in use, either due to
   // a font_access_manager() call, or due to JavaScript connecting to the Font
   // Access API.
-  void OverrideFontAccessLocale(std::string locale) {
+  void OverrideFontAccessLocale(const base::i18n::LanguageTag& locale) {
     base::SequenceBound<FontEnumerationCache> font_enumeration_cache =
         FontEnumerationCache::CreateForTesting(
             base::ThreadPool::CreateSequencedTaskRunner(
                 {base::MayBlock(), base::TaskPriority::BEST_EFFORT}),
-            FontEnumerationDataSource::Create(), std::move(locale));
+            FontEnumerationDataSource::Create(), locale);
 
     auto* storage_partition =
         static_cast<StoragePartitionImpl*>(main_rfh()->GetStoragePartition());
@@ -154,7 +155,7 @@ IN_PROC_BROWSER_TEST_F(FontAccessManagerBrowserTest,
 #if BUILDFLAG(IS_WIN)
 IN_PROC_BROWSER_TEST_F(FontAccessManagerBrowserTest, LocaleTest) {
   ASSERT_TRUE(NavigateToURL(shell(), GetTestUrl(nullptr, "simple_page.html")));
-  OverrideFontAccessLocale("zh-cn");
+  OverrideFontAccessLocale(base::i18n::GetKnownLanguageTag("zh-CN"));
   font_access_manager()->SkipPrivacyChecksForTesting(true);
 
   EvalJsResult result =
@@ -176,7 +177,7 @@ IN_PROC_BROWSER_TEST_F(FontAccessManagerBrowserTest, LocaleTest) {
 
 IN_PROC_BROWSER_TEST_F(FontAccessManagerBrowserTest, UnlocalizedFamilyTest) {
   ASSERT_TRUE(NavigateToURL(shell(), GetTestUrl(nullptr, "simple_page.html")));
-  OverrideFontAccessLocale("zh-cn");
+  OverrideFontAccessLocale(base::i18n::GetKnownLanguageTag("zh-CN"));
   font_access_manager()->SkipPrivacyChecksForTesting(true);
 
   EvalJsResult result =

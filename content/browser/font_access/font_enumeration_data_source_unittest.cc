@@ -2,10 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "content/browser/font_access/font_enumeration_data_source.h"
+
 #include <string>
 
+#include "base/i18n/icubridge/default_icu_locale.h"
+#include "base/i18n/language_tag.h"
 #include "base/i18n/rtl.h"
-#include "content/browser/font_access/font_enumeration_data_source.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/font_access/font_enumeration_table.pb.h"
 
@@ -38,8 +41,9 @@ TEST_F(FontEnumerationDataSourceTest, GetFonts_EnUsLocale) {
 }
 
 TEST_F(FontEnumerationDataSourceTest, GetFonts_DefaultLocale) {
-  std::string locale = base::i18n::GetConfiguredLocale();
-  blink::FontEnumerationTable font_table = data_source_->GetFonts(locale);
+  const base::i18n::LanguageTag locale = base::i18n::GetDefaultIcuLocale();
+  blink::FontEnumerationTable font_table =
+      data_source_->GetFonts(std::string(locale.tag_string()));
 
   if (FontEnumerationDataSource::IsOsSupported()) {
     EXPECT_GT(font_table.fonts_size(), 0);

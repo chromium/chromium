@@ -11,6 +11,7 @@
 
 #include <string>
 
+#include "base/i18n/icubridge/default_icu_locale.h"
 #include "base/i18n/rtl.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/trace_event.h"
@@ -35,7 +36,7 @@ base::ListValue GetFontList_SlowBlocking() {
 
   // Retrieve the localized font family name. If there is no localized name,
   // used the native name instead.
-  std::string locale = base::i18n::GetConfiguredLocale();
+  const std::string locale_str(base::i18n::GetDefaultIcuLocale().tag_string());
 
   const UINT32 family_count = collection->GetFontFamilyCount();
   for (UINT32 family_index = 0; family_index < family_count; ++family_index) {
@@ -57,7 +58,7 @@ base::ListValue GetFontList_SlowBlocking() {
     }
 
     std::optional<std::string> localized_name =
-        gfx::win::RetrieveLocalizedString(family_names.Get(), locale);
+        gfx::win::RetrieveLocalizedString(family_names.Get(), locale_str);
     if (!localized_name)
       localized_name = native_name;
 

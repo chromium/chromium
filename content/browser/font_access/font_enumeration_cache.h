@@ -9,6 +9,7 @@
 #include <optional>
 #include <string>
 
+#include "base/i18n/language_tag.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
@@ -50,12 +51,12 @@ class CONTENT_EXPORT FontEnumerationCache {
   static base::SequenceBound<FontEnumerationCache> CreateForTesting(
       scoped_refptr<base::SequencedTaskRunner> task_runner,
       std::unique_ptr<FontEnumerationDataSource> data_source,
-      std::optional<std::string> locale_override);
+      std::optional<base::i18n::LanguageTag> locale_override);
 
   // Exposed for base::SequenceBound. Instances must be obtained from one of
   // the Create*() factory methods.
   FontEnumerationCache(std::unique_ptr<FontEnumerationDataSource> data_source,
-                       std::optional<std::string> locale_override,
+                       std::optional<base::i18n::LanguageTag> locale_override,
                        base::PassKey<FontEnumerationCache>);
 
   FontEnumerationCache(const FontEnumerationCache&) = delete;
@@ -75,7 +76,7 @@ class CONTENT_EXPORT FontEnumerationCache {
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   // nullopt in production. Only set in testing.
-  const std::optional<std::string> locale_override_;
+  const std::optional<base::i18n::LanguageTag> locale_override_;
 
   bool initialized_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
 

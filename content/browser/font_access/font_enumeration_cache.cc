@@ -10,6 +10,8 @@
 #include <string>
 #include <utility>
 
+#include "base/i18n/icubridge/default_icu_locale.h"
+#include "base/i18n/language_tag.h"
 #include "base/i18n/rtl.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/scoped_refptr.h"
@@ -39,7 +41,7 @@ base::SequenceBound<FontEnumerationCache>
 FontEnumerationCache::CreateForTesting(
     scoped_refptr<base::SequencedTaskRunner> task_runner,
     std::unique_ptr<FontEnumerationDataSource> data_source,
-    std::optional<std::string> locale_override) {
+    std::optional<base::i18n::LanguageTag> locale_override) {
   CHECK(data_source, base::NotFatalUntil::M159);
   return base::SequenceBound<FontEnumerationCache>(
       std::move(task_runner), std::move(data_source),
@@ -48,7 +50,7 @@ FontEnumerationCache::CreateForTesting(
 
 FontEnumerationCache::FontEnumerationCache(
     std::unique_ptr<FontEnumerationDataSource> data_source,
-    std::optional<std::string> locale_override,
+    std::optional<base::i18n::LanguageTag> locale_override,
     base::PassKey<FontEnumerationCache>)
     : data_source_(std::move(data_source)),
       locale_override_(std::move(locale_override)) {
@@ -63,10 +65,11 @@ FontEnumerationData FontEnumerationCache::GetFontEnumerationData() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!initialized_) {
-    std::string locale =
-        locale_override_.value_or(base::i18n::GetConfiguredLocale());
+    const base::i18n::LanguageTag locale =
+        locale_override_.value_or(base::i18n::GetDefaultIcuLocale());
 
-    blink::FontEnumerationTable font_data = data_source_->GetFonts(locale);
+    blink::FontEnumerationTable font_data =
+        data_source_->GetFonts(std::string(locale.tag_string()));
     BuildEnumerationCache(font_data);
     initialized_ = true;
   }
