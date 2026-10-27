@@ -974,7 +974,9 @@ std::optional<base::TimeDelta> AppActivityRegistry::GetTimeLeftForApp(
     return kZeroMinutes;
   }
 
-  CHECK(state == AppState::kAvailable, base::NotFatalUntil::M160);
+  // TODO(crbug.com/577560115): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(state == AppState::kAvailable);
 
   base::TimeDelta time_limit = limit.daily_limit().value();
 
