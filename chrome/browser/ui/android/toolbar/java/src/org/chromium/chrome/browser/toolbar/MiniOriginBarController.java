@@ -339,7 +339,6 @@ public class MiniOriginBarController implements Observer {
                 mMiniOriginBarHeight
                         + mContext.getResources()
                                 .getDimensionPixelSize(R.dimen.toolbar_hairline_height);
-        mControlContainer.doSynchronousLayout(/* forceCaptureAfterLayout= */ false);
         var minifiedLayoutParams =
                 new CoordinatorLayout.LayoutParams(LayoutParams.WRAP_CONTENT, mMiniOriginBarHeight);
         minifiedLayoutParams.gravity = Gravity.CENTER_VERTICAL;
@@ -352,6 +351,7 @@ public class MiniOriginBarController implements Observer {
                 locationBarView.getPaddingTop(),
                 locationBarRightPadding,
                 locationBarView.getPaddingBottom());
+        mControlContainer.doSynchronousLayout(/* forceCaptureAfterLayout= */ false);
 
         recomputeLayouts();
     }

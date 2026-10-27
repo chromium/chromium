@@ -921,6 +921,28 @@ public class MiniOriginBarControllerTest {
     }
 
     @Test
+    public void testAnimateWithKeyboard_splitScreenZeroMaxHeightWithKeyboardShowing() {
+        doReturn(ControlsPosition.BOTTOM).when(mBrowserControlsSizer).getControlsPosition();
+        mMiniOriginBarController.onControlsPositionChanged(ControlsPosition.BOTTOM);
+        final MiniOriginWindowInsetsAnimationListener animationListener =
+                mMiniOriginBarController.getAnimationListenerForTesting();
+
+        mIsFormFieldFocused.onNodeAttributeUpdated(true, false);
+
+        clearInvocations(mControlContainer);
+        clearInvocations(mLocationBar);
+
+        animationListener.onPrepare(mImeAnimation);
+        mKeyboardVisibilityDelegate.setVisibilityForTests(true);
+
+        animationListener.onStart(mImeAnimation, new BoundsCompat(Insets.NONE, Insets.NONE));
+        assertEquals(MiniOriginState.SHOWING, mMiniOriginBarController.getCurrentStateForTesting());
+        InOrder inOrder = inOrder(mLocationBar, mControlContainer);
+        inOrder.verify(mLocationBar).getContainerView();
+        inOrder.verify(mControlContainer).doSynchronousLayout(false);
+    }
+
+    @Test
     public void testLayoutChangeListener() {
         // Make the location bar want to be larger than the space available so that its measured
         // size reflects the AT_MOST measure specs.
