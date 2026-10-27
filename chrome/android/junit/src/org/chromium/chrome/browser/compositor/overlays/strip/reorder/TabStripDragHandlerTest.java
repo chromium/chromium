@@ -34,7 +34,6 @@ import android.content.res.Resources;
 import android.graphics.Point;
 import android.graphics.PointF;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Build.VERSION_CODES;
 import android.text.format.DateUtils;
 import android.view.DragEvent;
@@ -55,8 +54,8 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
+import org.robolectric.shadows.ShadowBuild;
 import org.robolectric.shadows.ShadowToast;
-import org.robolectric.util.ReflectionHelpers;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.DeviceInfo;
@@ -555,7 +554,7 @@ public class TabStripDragHandlerTest {
         when(mTabModelSelector.getTotalTabCount()).thenReturn(2);
         MultiWindowUtils.setInstanceCountForTesting(5);
         MultiWindowUtils.setMaxInstancesForTesting(5);
-        ReflectionHelpers.setStaticField(Build.class, "MANUFACTURER", "samsung");
+        ShadowBuild.setManufacturer("samsung");
 
         callAndVerifyAllowDragToCreateInstance(true);
     }
@@ -568,7 +567,7 @@ public class TabStripDragHandlerTest {
         when(mTabModel.getMultiSelectedTabsCount()).thenReturn(2);
         MultiWindowUtils.setInstanceCountForTesting(5);
         MultiWindowUtils.setMaxInstancesForTesting(5);
-        ReflectionHelpers.setStaticField(Build.class, "MANUFACTURER", "samsung");
+        ShadowBuild.setManufacturer("samsung");
 
         callAndVerifyAllowMultiTabDragToCreateInstance(true);
     }

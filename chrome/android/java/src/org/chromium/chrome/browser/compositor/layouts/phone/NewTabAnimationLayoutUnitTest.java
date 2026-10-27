@@ -71,6 +71,8 @@ import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.layouts.scene_layer.SceneLayer;
 import org.chromium.chrome.browser.layouts.scene_layer.SceneLayerJni;
 import org.chromium.chrome.browser.ntp.NewTabPage;
+import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tab.TabLaunchType;
@@ -81,6 +83,7 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.chrome.browser.toolbar.ToolbarPositionController;
+import org.chromium.chrome.browser.toolbar.ToolbarPositionController.ToolbarPositionAndSource;
 import org.chromium.chrome.browser.ui.bottombar.BottomBarUtils;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.edge_to_edge.TopInsetProvider;
@@ -88,7 +91,6 @@ import org.chromium.chrome.browser.ui.edge_to_edge.TransitiveTopInsetProvider;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.url.GURL;
 
-import java.lang.reflect.Field;
 import java.util.List;
 import java.util.function.Supplier;
 
@@ -282,11 +284,10 @@ public class NewTabAnimationLayoutUnitTest {
     }
 
     @After
-    public void tearDown() throws Exception {
+    public void tearDown() {
         mNewTabAnimationLayout.destroy();
-        Field field = ToolbarPositionController.class.getDeclaredField("sToolbarShouldShowOnTop");
-        field.setAccessible(true);
-        field.set(null, null);
+        ChromeSharedPreferences.getInstance().removeKey(ChromePreferenceKeys.TOOLBAR_TOP_ANCHORED);
+        ToolbarPositionController.resetCachedToolbarConfigurationForTesting();
     }
 
     @Test
@@ -474,11 +475,9 @@ public class NewTabAnimationLayoutUnitTest {
 
     @Test
     @DisableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
-    public void testOnTabCreated_NtpToWebPage_bottomToolbarCoordination() throws Exception {
+    public void testOnTabCreated_NtpToWebPage_bottomToolbarCoordination() {
         // Configure bottom toolbar preference
-        Field field = ToolbarPositionController.class.getDeclaredField("sToolbarShouldShowOnTop");
-        field.setAccessible(true);
-        field.set(null, false); // Set static field to false (bottom toolbar)
+        setToolbarPosition(/* onTop= */ false);
 
         // Transition: NTP (no bottom controls) -> Web (has bottom toolbar)
         // Setup old tab as regular NTP (toolbar is top)
@@ -506,11 +505,7 @@ public class NewTabAnimationLayoutUnitTest {
                 findChildView(NewForegroundTabAnimationHostView.class);
         assertNotNull(hostView);
 
-        // Use reflection to access private mInitialRect
-        Field initialRectField =
-                NewForegroundTabAnimationHostView.class.getDeclaredField("mInitialRect");
-        initialRectField.setAccessible(true);
-        Rect initialRect = (Rect) initialRectField.get(hostView);
+        Rect initialRect = hostView.getInitialRectForTesting();
 
         // Corner-anchored checks (107 due to left=-1, width=216 in test config)
         assertEquals(107, initialRect.centerX());
@@ -520,11 +515,9 @@ public class NewTabAnimationLayoutUnitTest {
 
     @Test
     @DisableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
-    public void testOnTabCreated_WebPageToNtp_bottomToolbarCoordination() throws Exception {
+    public void testOnTabCreated_WebPageToNtp_bottomToolbarCoordination() {
         // Configure bottom toolbar preference
-        Field field = ToolbarPositionController.class.getDeclaredField("sToolbarShouldShowOnTop");
-        field.setAccessible(true);
-        field.set(null, false); // Set static field to false (bottom toolbar)
+        setToolbarPosition(/* onTop= */ false);
 
         // Transition: Web (has bottom toolbar) -> NTP (no bottom controls)
         // Setup old tab as regular web page (has bottom toolbar)
@@ -558,11 +551,7 @@ public class NewTabAnimationLayoutUnitTest {
                 findChildView(NewForegroundTabAnimationHostView.class);
         assertNotNull(hostView);
 
-        // Use reflection to access private mInitialRect
-        Field initialRectField =
-                NewForegroundTabAnimationHostView.class.getDeclaredField("mInitialRect");
-        initialRectField.setAccessible(true);
-        Rect initialRect = (Rect) initialRectField.get(hostView);
+        Rect initialRect = hostView.getInitialRectForTesting();
 
         // Corner-anchored checks (107 due to left=-1, width=216 in test config)
         assertEquals(107, initialRect.centerX());
@@ -613,11 +602,7 @@ public class NewTabAnimationLayoutUnitTest {
                 findChildView(NewForegroundTabAnimationHostView.class);
         assertNotNull(hostView);
 
-        // Use reflection to access private mInitialRect
-        Field initialRectField =
-                NewForegroundTabAnimationHostView.class.getDeclaredField("mInitialRect");
-        initialRectField.setAccessible(true);
-        Rect initialRect = (Rect) initialRectField.get(hostView);
+        Rect initialRect = hostView.getInitialRectForTesting();
 
         // Symmetrical centering checks (539 due to -1px LTR left adjustment)
         assertEquals(539, initialRect.centerX());
@@ -628,12 +613,9 @@ public class NewTabAnimationLayoutUnitTest {
 
     @Test
     @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
-    public void testOnTabCreated_WebPageToNtp_bottomBarAndBottomToolbar() throws Exception {
+    public void testOnTabCreated_WebPageToNtp_bottomBarAndBottomToolbar() {
         // Configure bottom toolbar preference
-        Field prefField =
-                ToolbarPositionController.class.getDeclaredField("sToolbarShouldShowOnTop");
-        prefField.setAccessible(true);
-        prefField.set(null, false); // Bottom toolbar
+        setToolbarPosition(/* onTop= */ false);
 
         // Transition: Web (has bottom bar with top padding removed + bottom toolbar) -> NTP (has
         // bottom bar with top padding restored, no bottom toolbar)
@@ -669,10 +651,7 @@ public class NewTabAnimationLayoutUnitTest {
                 findChildView(NewForegroundTabAnimationHostView.class);
         assertNotNull(hostView);
 
-        Field initialRectField =
-                NewForegroundTabAnimationHostView.class.getDeclaredField("mInitialRect");
-        initialRectField.setAccessible(true);
-        Rect initialRect = (Rect) initialRectField.get(hostView);
+        Rect initialRect = hostView.getInitialRectForTesting();
 
         assertEquals(1921 - totalBottomControlsHeight, initialRect.bottom);
     }
@@ -831,5 +810,15 @@ public class NewTabAnimationLayoutUnitTest {
     private void setNtp() {
         when(mCurrentTab.getUrl()).thenReturn(new GURL("chrome://newtab"));
         when(mCurrentTab.getNativePage()).thenReturn(mNtp);
+    }
+
+    private void setToolbarPosition(boolean onTop) {
+        ChromeSharedPreferences.getInstance()
+                .writeInt(
+                        ChromePreferenceKeys.TOOLBAR_TOP_ANCHORED,
+                        onTop
+                                ? ToolbarPositionAndSource.TOP_SETTINGS
+                                : ToolbarPositionAndSource.BOTTOM_SETTINGS);
+        ToolbarPositionController.resetCachedToolbarConfigurationForTesting();
     }
 }

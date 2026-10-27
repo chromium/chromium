@@ -2064,4 +2064,8 @@ public class StripLayoutHelperManager
     private boolean isActivityInXrFullSpaceModeNow() {
         return mXrSpaceModeObservableSupplier != null && mXrSpaceModeObservableSupplier.get();
     }
+
+    @Nullable TabModelSelectorTabObserver getTabModelSelectorTabObserverForTesting() {
+        return mTabModelSelectorTabObserver;
+    }
 }

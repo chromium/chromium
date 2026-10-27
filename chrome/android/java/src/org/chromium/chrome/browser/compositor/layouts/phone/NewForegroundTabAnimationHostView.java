@@ -254,4 +254,8 @@ public class NewForegroundTabAnimationHostView extends FrameLayout implements Ru
             mFadeAnimator.cancel();
         }
     }
+
+    Rect getInitialRectForTesting() {
+        return mInitialRect;
+    }
 }

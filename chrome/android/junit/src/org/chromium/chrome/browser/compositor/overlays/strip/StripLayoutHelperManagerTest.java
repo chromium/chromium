@@ -142,7 +142,6 @@ import org.chromium.ui.dragdrop.DragAndDropDelegate;
 import org.chromium.ui.resources.ResourceManager;
 
 import java.lang.ref.WeakReference;
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -1278,17 +1277,10 @@ public class StripLayoutHelperManagerTest {
                         false,
                         /* alertState= */ TabAlert.NONE);
 
-        // Inject the strip tab into the helper via reflection.
-        Field tabsField = StripLayoutHelper.class.getDeclaredField("mStripTabs");
-        tabsField.setAccessible(true);
-        tabsField.set(standardHelper, new StripLayoutTab[] {stripTab});
+        standardHelper.setStripLayoutTabsForTesting(new StripLayoutTab[] {stripTab});
 
-        // Get the internal observer via reflection.
-        Field observerField =
-                StripLayoutHelperManager.class.getDeclaredField("mTabModelSelectorTabObserver");
-        observerField.setAccessible(true);
         TabModelSelectorTabObserver observer =
-                (TabModelSelectorTabObserver) observerField.get(mStripLayoutHelperManager);
+                mStripLayoutHelperManager.getTabModelSelectorTabObserverForTesting();
 
         // Verify initial state.
         assertFalse("Tab should not be loading initially.", stripTab.isLoading());
@@ -1353,15 +1345,10 @@ public class StripLayoutHelperManagerTest {
                         false,
                         /* alertState= */ TabAlert.NONE);
 
-        Field tabsField = StripLayoutHelper.class.getDeclaredField("mStripTabs");
-        tabsField.setAccessible(true);
-        tabsField.set(standardHelper, new StripLayoutTab[] {stripTab});
+        standardHelper.setStripLayoutTabsForTesting(new StripLayoutTab[] {stripTab});
 
-        Field observerField =
-                StripLayoutHelperManager.class.getDeclaredField("mTabModelSelectorTabObserver");
-        observerField.setAccessible(true);
         TabModelSelectorTabObserver observer =
-                (TabModelSelectorTabObserver) observerField.get(mStripLayoutHelperManager);
+                mStripLayoutHelperManager.getTabModelSelectorTabObserverForTesting();
 
         // 1. Test onLoadProgressChanged at 1.0f stops loading.
         observer.onLoadStarted(tab, true);
