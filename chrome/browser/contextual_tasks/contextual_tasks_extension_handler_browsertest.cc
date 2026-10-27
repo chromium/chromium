@@ -902,6 +902,58 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksExtensionHandlerBrowserTest,
   flush_run_loop.Run();
 }
 
+IN_PROC_BROWSER_TEST_F(ContextualTasksExtensionHandlerBrowserTest,
+                       OnSessionChanged_SendsNewSessionTabsToExtensionPage) {
+  auto* helper = ContextualSearchWebContentsHelper::GetOrCreateForWebContents(
+      web_contents_);
+
+  auto new_session = std::make_unique<
+      NiceMock<contextual_search::MockContextualSearchSessionHandle>>();
+  auto* new_session_ptr = new_session.get();
+  ON_CALL(*new_session_ptr, GetController())
+      .WillByDefault(Return(mock_controller_.get()));
+
+  base::UnguessableToken token = base::UnguessableToken::Create();
+  new_session_ptr->GetUploadedContextTokensForTesting().push_back(token);
+  new_session_ptr->AttachTabPendingUpload(token, /*tab_id=*/42,
+                                          GURL("https://example.com/switched"),
+                                          "Switched Tab");
+
+  base::RunLoop set_session_loop;
+  EXPECT_CALL(mock_page_, OnTabContextUpdated(_, _))
+      .WillOnce([&](std::vector<searchbox::mojom::TabInfoPtr> tabs,
+                    std::vector<int32_t> submitted_tab_ids) {
+        ASSERT_EQ(tabs.size(), 1u);
+        EXPECT_EQ(tabs[0]->tab_id, 42);
+        EXPECT_EQ(tabs[0]->url, GURL("https://example.com/switched"));
+        EXPECT_EQ(tabs[0]->title, "Switched Tab");
+        EXPECT_TRUE(submitted_tab_ids.empty());
+        set_session_loop.Quit();
+      });
+
+  // Setting a new session on the helper should notify `handler_` via
+  // `OnSessionChanged()` and send the new session's tabs to the extension page.
+  mock_session_handle_ = nullptr;
+  helper->SetTaskSession(std::nullopt, std::move(new_session),
+                         /*input_state_model=*/nullptr);
+  set_session_loop.Run();
+
+  // Taking the session handle should notify `OnSessionChanged(nullptr)` and
+  // send an empty tab list to the extension page.
+  base::RunLoop take_session_loop;
+  EXPECT_CALL(mock_page_, OnTabContextUpdated(_, _))
+      .WillOnce([&](std::vector<searchbox::mojom::TabInfoPtr> tabs,
+                    std::vector<int32_t> submitted_tab_ids) {
+        EXPECT_TRUE(tabs.empty());
+        EXPECT_TRUE(submitted_tab_ids.empty());
+        take_session_loop.Quit();
+      });
+
+  auto taken_session = helper->TakeSessionHandle();
+  ASSERT_TRUE(taken_session);
+  take_session_loop.Run();
+}
+
 // Runs the submit-time QueryContextualizer against a mock page context for the
 // active tab and a mock ContextualTasksService. Uploads are forwarded to the
 // session handle, which updates its attached tabs, and succeed right away.

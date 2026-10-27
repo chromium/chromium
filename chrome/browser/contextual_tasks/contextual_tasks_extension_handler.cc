@@ -19,6 +19,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
+#include "chrome/browser/contextual_search/contextual_search_web_contents_helper.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_panel_controller.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_utils.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_web_contents_user_data.h"
@@ -87,6 +88,15 @@ ContextualTasksExtensionHandler::ContextualTasksExtensionHandler(
     : content::DocumentUserData<ContextualTasksExtensionHandler>(rfh) {
   if (auto* user_data = GetOrCreateWebContentsUserData()) {
     user_data->RegisterExtensionFrame(this);
+  }
+  if (auto* web_contents =
+          content::WebContents::FromRenderFrameHost(&render_frame_host())) {
+    session_changed_subscription_ =
+        ContextualSearchWebContentsHelper::GetOrCreateForWebContents(
+            web_contents)
+            ->RegisterSessionChangedCallback(base::BindRepeating(
+                &ContextualTasksExtensionHandler::OnSessionChanged,
+                base::Unretained(this)));
   }
 }
 
@@ -244,6 +254,7 @@ void ContextualTasksExtensionHandler::CreateExtensionPageHandler(
   // tabs added before it subscribed, since subscribing does not load initial
   // state.
   if (auto* session_handle = GetOrCreateContextualSessionHandle()) {
+    MaybeRefreshTabContextSubscription(session_handle);
     const auto& tab_context = session_handle->GetTabContextState();
     if (!tab_context.attached.empty() || !tab_context.restored.empty()) {
       SendTabContextToExtensionPage(tab_context);
@@ -256,6 +267,7 @@ void ContextualTasksExtensionHandler::SetTaskId(const base::Uuid& uuid) {
   if (auto* user_data = GetOrCreateWebContentsUserData()) {
     user_data->SetTaskId(uuid);
   }
+  OnSessionChanged(GetOrCreateContextualSessionHandle());
   GetOrCreateInputStateModel();
 }
 
@@ -734,12 +746,10 @@ bool ContextualTasksExtensionHandler::IsEmbeddedInSidePanel() const {
 
 contextual_search::ContextualSearchSessionHandle*
 ContextualTasksExtensionHandler::GetOrCreateContextualSessionHandle() {
-  contextual_search::ContextualSearchSessionHandle* session = nullptr;
   if (auto* user_data = GetOrCreateWebContentsUserData()) {
-    session = user_data->GetOrCreateContextualSessionHandle();
+    return user_data->GetOrCreateContextualSessionHandle();
   }
-  MaybeRefreshTabContextSubscription(session);
-  return session;
+  return nullptr;
 }
 
 std::optional<base::UnguessableToken>
@@ -804,9 +814,22 @@ ContextualTasksExtensionHandler::GetOrCreateInputStateModel() {
   return input_state_model_;
 }
 
+void ContextualTasksExtensionHandler::OnSessionChanged(
+    contextual_search::ContextualSearchSessionHandle* session_handle) {
+  if (subscribed_session_handle_.get() == session_handle &&
+      !subscribed_session_handle_.WasInvalidated()) {
+    return;
+  }
+  MaybeRefreshTabContextSubscription(session_handle);
+  SendTabContextToExtensionPage(session_handle
+                                    ? session_handle->GetTabContextState()
+                                    : contextual_search::TabContextState());
+}
+
 void ContextualTasksExtensionHandler::MaybeRefreshTabContextSubscription(
     contextual_search::ContextualSearchSessionHandle* session_handle) {
-  if (subscribed_session_handle_.get() == session_handle) {
+  if (subscribed_session_handle_.get() == session_handle &&
+      !subscribed_session_handle_.WasInvalidated()) {
     return;
   }
   if (!session_handle) {
