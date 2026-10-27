@@ -6,8 +6,11 @@
 
 #include "base/files/file_util.h"
 #include "base/path_service.h"
+#include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_constants.h"
@@ -19,8 +22,11 @@
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
+#include "content/public/test/test_devtools_protocol_client.h"
 #include "extensions/buildflags/buildflags.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
+#include "url/gurl.h"
 
 namespace {
 
@@ -289,4 +295,186 @@ INSTANTIATE_TEST_SUITE_P(All,
                          PrefsTabHelperDeferredFontListBrowserTest,
                          testing::Bool());
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
+#endif  // !BUILDFLAG(IS_ANDROID) ||
+        // BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
+
+// On Android, `FontSelector::FamilyNameFromSettings` in Blink ignores the font
+// family maps from `WebPreferences`.
+#if !BUILDFLAG(IS_ANDROID)
+
+namespace {
+
+// Returns the primary platform font family used by Blink to render `<body>` in
+// `web_contents`, queried via DevTools `CSS.getPlatformFontsForNode`.
+std::string GetFirstPlatformFontForBody(
+    content::TestDevToolsProtocolClient& devtools_client,
+    content::WebContents* web_contents) {
+  // Force a synchronous style and layout update so
+  // `CSS.getPlatformFontsForNode` reads up-to-date shaped text runs from
+  // `<body>`'s `LayoutObject`.
+  EXPECT_TRUE(content::ExecJs(web_contents, "document.body.offsetTop"));
+
+  // Retrieve the root document's DevTools `nodeId`.
+  base::DictValue doc_params;
+  doc_params.Set("depth", 0);
+  const base::DictValue* doc_result =
+      devtools_client.SendCommand("DOM.getDocument", std::move(doc_params));
+  CHECK(doc_result);
+  std::optional<int> root_node_id =
+      doc_result->FindIntByDottedPath("root.nodeId");
+  CHECK(root_node_id);
+
+  // Look up the `<body>` element's DevTools `nodeId` from the document root.
+  base::DictValue query_params;
+  query_params.Set("nodeId", *root_node_id);
+  query_params.Set("selector", "body");
+  const base::DictValue* query_result =
+      devtools_client.SendCommand("DOM.querySelector", std::move(query_params));
+  CHECK(query_result);
+  std::optional<int> body_node_id = query_result->FindInt("nodeId");
+  CHECK(body_node_id);
+
+  // Query the platform fonts used by Blink to shape text inside `<body>`.
+  base::DictValue font_params;
+  font_params.Set("nodeId", *body_node_id);
+  const base::DictValue* font_info = devtools_client.SendCommand(
+      "CSS.getPlatformFontsForNode", std::move(font_params));
+  CHECK(font_info);
+  const base::ListValue* font_list = font_info->FindList("fonts");
+  CHECK(font_list);
+  CHECK(!font_list->empty());
+  const std::string* first_font_name =
+      font_list->front().GetDict().FindString("familyName");
+  CHECK(first_font_name);
+  return *first_font_name;
+}
+
+}  // namespace
+
+// Verifies end-to-end that generic and per-script font family preferences in
+// `PrefService` flow through `FontFamilyCache` and `PrefsTabHelper` into Blink
+// and select the expected platform font during layout.
+IN_PROC_BROWSER_TEST_F(PrefsTabHelperBrowserTest,
+                       FontFamilyPreferencesEndToEndRendering) {
+  // `CSS.getPlatformFontsForNode` returns the matched system typeface name: OS
+  // fonts on Win/Mac vs hermetic `third_party/test_fonts` on Linux/ChromeOS.
+#if BUILDFLAG(IS_WIN)
+  const std::string kCustomFont = "Lucida Console";
+  const std::string kExpectedSansSerifFont = "Arial";
+#elif BUILDFLAG(IS_MAC)
+  const std::string kCustomFont = "Monaco";
+  const std::string kExpectedSansSerifFont = "Helvetica";
+#else
+  const std::string kCustomFont = "Ahem";
+  const std::string kExpectedSansSerifFont = "Arimo";
 #endif
+
+  PrefService* prefs = chrome_test_utils::GetProfile(this)->GetPrefs();
+  // Clear the user-store overrides loaded by `SetUpUserDataDirectory()` so all
+  // preferences start at their registered platform defaults.
+  prefs->ClearPref(prefs::kWebKitStandardFontFamily);
+  prefs->ClearPref(prefs::kWebKitSansSerifFontFamily);
+
+  content::WebContents* web_contents =
+      chrome_test_utils::GetActiveWebContents(this);
+  ASSERT_TRUE(content::NavigateToURL(
+      web_contents,
+      GURL("data:text/html;charset=utf-8,<body lang='en'>A</body>")));
+
+  content::TestDevToolsProtocolClient devtools_client;
+  devtools_client.AttachToWebContents(web_contents);
+  ASSERT_TRUE(devtools_client.SendCommandSync("DOM.enable"));
+  ASSERT_TRUE(devtools_client.SendCommandSync("CSS.enable"));
+
+  struct GenericFamilyTestCase {
+    const char* css_family;
+    const char* pref_name;
+    const char* expected_default_font;
+  };
+  constexpr GenericFamilyTestCase kTestCases[] = {
+#if BUILDFLAG(IS_WIN)
+      {"initial", prefs::kWebKitStandardFontFamily, "Times New Roman"},
+      {"serif", prefs::kWebKitSerifFontFamily, "Times New Roman"},
+      {"sans-serif", prefs::kWebKitSansSerifFontFamily, "Arial"},
+      {"cursive", prefs::kWebKitCursiveFontFamily, "Comic Sans MS"},
+      {"fantasy", prefs::kWebKitFantasyFontFamily, "Impact"},
+      // `PrefsTabHelper::RegisterProfilePrefs` replaces `IDS_FIXED_FONT_FAMILY`
+      // ("Courier New") with `IDS_FIXED_FONT_FAMILY_ALT_WIN` ("Consolas").
+      {"monospace", prefs::kWebKitFixedFontFamily, "Consolas"},
+      {"math", prefs::kWebKitMathFontFamily, "Cambria Math"},
+#elif BUILDFLAG(IS_MAC)
+      {"initial", prefs::kWebKitStandardFontFamily, "Times"},
+      {"serif", prefs::kWebKitSerifFontFamily, "Times"},
+      {"sans-serif", prefs::kWebKitSansSerifFontFamily, "Helvetica"},
+      {"cursive", prefs::kWebKitCursiveFontFamily, "Apple Chancery"},
+      {"fantasy", prefs::kWebKitFantasyFontFamily, "Papyrus"},
+      {"monospace", prefs::kWebKitFixedFontFamily, "Menlo"},
+      {"math", prefs::kWebKitMathFontFamily, "STIX Two Math"},
+#else
+      // On Linux/ChromeOS, `third_party/test_fonts` aliases standard/serif to
+      // "Tinos", sans-serif to "Arimo", and monospace to "Cousine"; cursive,
+      // fantasy, and math defaults are not in `test_fonts` and fall back to
+      // standard ("Tinos").
+      {"initial", prefs::kWebKitStandardFontFamily, "Tinos"},
+      {"serif", prefs::kWebKitSerifFontFamily, "Tinos"},
+      {"sans-serif", prefs::kWebKitSansSerifFontFamily, "Arimo"},
+      {"cursive", prefs::kWebKitCursiveFontFamily, "Tinos"},
+      {"fantasy", prefs::kWebKitFantasyFontFamily, "Tinos"},
+      {"monospace", prefs::kWebKitFixedFontFamily, "Cousine"},
+      {"math", prefs::kWebKitMathFontFamily, "Tinos"},
+#endif
+  };
+
+  for (const auto& test_case : kTestCases) {
+    SCOPED_TRACE(test_case.css_family);
+    ASSERT_TRUE(content::ExecJs(
+        web_contents, base::StrCat({"document.body.style.fontFamily = '",
+                                    test_case.css_family, "'"})));
+
+    EXPECT_TRUE(base::test::RunUntil([&]() {
+      return GetFirstPlatformFontForBody(devtools_client, web_contents) ==
+             test_case.expected_default_font;
+    }));
+
+    // Updating the preference in `PrefService` updates `FontFamilyCache` and
+    // triggers `PrefsTabHelper::OnWebPrefChanged` (via a posted task).
+    prefs->SetString(test_case.pref_name, kCustomFont);
+    EXPECT_TRUE(base::test::RunUntil([&]() {
+      return GetFirstPlatformFontForBody(devtools_client, web_contents) ==
+             kCustomFont;
+    }));
+
+    prefs->ClearPref(test_case.pref_name);
+    EXPECT_TRUE(base::test::RunUntil([&]() {
+      return GetFirstPlatformFontForBody(devtools_client, web_contents) ==
+             test_case.expected_default_font;
+    }));
+  }
+
+  // Because the page has `<body lang='en'>`, Blink resolves `sans-serif` by
+  // looking up the Latin script ("Latn") in `sans_serif_font_family_map` first,
+  // falling back to the script-independent Common entry ("Zyyy", i.e.
+  // `kWebKitSansSerifFontFamily`) only if "Latn" is unset.
+  ASSERT_TRUE(content::ExecJs(web_contents,
+                              "document.body.style.fontFamily = 'sans-serif'"));
+
+  // Setting the Latin ("Latn") sans-serif preference overrides the Common
+  // ("Zyyy") sans-serif font (`kExpectedSansSerifFont`) for `<body lang='en'>`.
+  prefs->SetString("webkit.webprefs.fonts.sansserif.Latn", kCustomFont);
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return GetFirstPlatformFontForBody(devtools_client, web_contents) ==
+           kCustomFont;
+  }));
+
+  // Setting the Latin ("Latn") preference to "" removes the "Latn" entry from
+  // `sans_serif_font_family_map`, so Blink falls back to the Common ("Zyyy")
+  // sans-serif font (`kExpectedSansSerifFont`) again.
+  prefs->SetString("webkit.webprefs.fonts.sansserif.Latn", std::string());
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return GetFirstPlatformFontForBody(devtools_client, web_contents) ==
+           kExpectedSansSerifFont;
+  }));
+
+  devtools_client.DetachProtocolClient();
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
