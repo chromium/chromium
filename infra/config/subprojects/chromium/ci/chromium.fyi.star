@@ -1703,6 +1703,7 @@ fyi_ios_builder(
             "mac_26_arm64",
             "mac_toolchain",
             "out_dir_arg",
+            "xcode_27_beta",
             "xctest",
         ],
     ),
@@ -1837,7 +1838,7 @@ fyi_ios_builder(
 
 fyi_ios_builder(
     name = "ios27-duo-simulator",
-    description_html = "Builds and runs iOS debug simulator tests using the iOS 27 SDK and Xcode n.",
+    description_html = "Builds and runs iOS debug Duo simulator tests using the iOS 27 SDK.",
     schedule = "0 2,6,10,14,18,22 * * *",
     triggered_by = [],
     builder_spec = builder_config.builder_spec(
@@ -1864,8 +1865,6 @@ fyi_ios_builder(
             "xctest",
         ],
     ),
-    # ios26-sdk-sim compiles with xcode version n, and runs
-    # testers with xcode n during an xcode roll.
     targets = targets.bundle(
         targets = [
             "ios27_duo_simulator_tests",

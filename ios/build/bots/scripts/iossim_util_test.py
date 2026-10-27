@@ -224,6 +224,44 @@ SIMULATORS_LIST = {
         },
       ],
     },
+    {
+      "buildversion": "24B114",
+      "bundlePath": "/path/Runtimes/iOS 27.2.simruntime",
+      "identifier": "com.apple.CoreSimulator.SimRuntime.iOS-27-2",
+      "isAvailable": True,
+      "name": "iOS 27.2",
+      "version": "27.2",
+      "supportedDeviceTypes": [
+        {
+          "bundlePath": (
+            "\/Library\/Developer\/CoreSimulator\/Profiles\/DeviceTypes\/"
+            "iPhone 11.simdevicetype"
+          ),
+          "name": "iPhone 11",
+          "identifier": "com.apple.CoreSimulator.SimDeviceType.iPhone-11",
+          "productFamily": "iPhone",
+        },
+      ],
+    },
+    {
+      "buildversion": "24B91016s",
+      "bundlePath": "/path/Runtimes/iOS 27.2.simruntime",
+      "identifier": "com.apple.CoreSimulator.SimRuntime.iOS-27-2-iPhone19-4",
+      "isAvailable": True,
+      "name": "iOS 27.2",
+      "version": "27.2",
+      "supportedDeviceTypes": [
+        {
+          "bundlePath": (
+            "\/Library\/Developer\/CoreSimulator\/Profiles\/DeviceTypes\/"
+            "iPhone Duo.simdevicetype"
+          ),
+          "name": "iPhone Duo",
+          "identifier": "com.apple.CoreSimulator.SimDeviceType.iPhone-Duo",
+          "productFamily": "iPhone",
+        },
+      ],
+    },
   ],
 }
 
@@ -388,6 +426,29 @@ class GetiOSSimUtil(test_runner_test.TestCase):
       'com.apple.CoreSimulator.SimRuntime.tvOS-18-2',
       iossim_util.get_simulator_runtime_by_platform_and_version(
         iossim_util.get_simulator_list(), 'Apple TV 4K (3rd generation)', '18.2'
+      ),
+    )
+
+  def test_get_simulator_runtime_by_platform_and_version_variant_suffix(
+    self, _, _2
+  ):
+    """Ensures a device-specific runtime variant is found with or without suffix."""
+    self.assertEqual(
+      'com.apple.CoreSimulator.SimRuntime.iOS-27-2-iPhone19-4',
+      iossim_util.get_simulator_runtime_by_platform_and_version(
+        iossim_util.get_simulator_list(), 'iPhone Duo', '27.2-iphone19-4'
+      ),
+    )
+    self.assertEqual(
+      'com.apple.CoreSimulator.SimRuntime.iOS-27-2-iPhone19-4',
+      iossim_util.get_simulator_runtime_by_platform_and_version(
+        iossim_util.get_simulator_list(), 'iPhone Duo', '27.2'
+      ),
+    )
+    self.assertEqual(
+      'com.apple.CoreSimulator.SimRuntime.iOS-27-2',
+      iossim_util.get_simulator_runtime_by_platform_and_version(
+        iossim_util.get_simulator_list(), 'iPhone 11', '27.2'
       ),
     )
 
@@ -758,7 +819,7 @@ class GetiOSSimUtil(test_runner_test.TestCase):
     self.assertEqual(runtime['version'], '13.1')
     self.assertEqual(runtime['identifier'], '111111')
 
-  def test_get_simulator_runtime_info(self, _, _2):
+  def test_get_simulator_runtime_info(self, mock_runtime_list, _2):
     runtime = iossim_util.get_simulator_runtime_info(
       constants.IOSPlatformType.IPHONEOS, '13.1'
     )
@@ -775,6 +836,60 @@ class GetiOSSimUtil(test_runner_test.TestCase):
     )
     self.assertIsNotNone(runtime)
     self.assertEqual(runtime['version'], '18.2')
+
+    runtimes_with_variants = deepcopy(RUNTIMES_LIST)
+    runtimes_with_variants['HHHHHH'] = {
+      'build': '24B91016s',
+      'deletable': True,
+      'identifier': 'HHHHHH',
+      'kind': 'Patchable Cryptex Disk Image',
+      'platformIdentifier': 'com.apple.platform.iphonesimulator',
+      'runtimeBundlePath': 'path/to/bundle/runtime/iOS 27.2.simruntime',
+      'runtimeIdentifier': (
+        'com.apple.CoreSimulator.SimRuntime.iOS-27-2-iPhone19-4'
+      ),
+      'signatureState': 'Verified',
+      'sizeBytes': 7800000000,
+      'state': 'Ready',
+      'version': '27.2',
+    }
+    runtimes_with_variants['IIIIII'] = {
+      'build': '24B114',
+      'deletable': True,
+      'identifier': 'IIIIII',
+      'kind': 'Patchable Cryptex Disk Image',
+      'platformIdentifier': 'com.apple.platform.iphonesimulator',
+      'runtimeBundlePath': 'path/to/bundle/runtime/iOS 27.2.simruntime',
+      'runtimeIdentifier': 'com.apple.CoreSimulator.SimRuntime.iOS-27-2',
+      'signatureState': 'Verified',
+      'sizeBytes': 7700000000,
+      'state': 'Ready',
+      'version': '27.2',
+    }
+    mock_runtime_list.return_value = runtimes_with_variants
+
+    # Ensure standard 27.2 query skips the iPhone19-4 variant even when listed
+    # first in RUNTIMES_LIST.
+    runtime = iossim_util.get_simulator_runtime_info(
+      constants.IOSPlatformType.IPHONEOS, '27.2'
+    )
+    self.assertIsNotNone(runtime)
+    self.assertEqual(runtime['identifier'], 'IIIIII')
+    self.assertEqual(
+      runtime['runtimeIdentifier'],
+      'com.apple.CoreSimulator.SimRuntime.iOS-27-2',
+    )
+
+    # Ensure variant-suffixed query returns only the iPhone19-4 variant.
+    runtime = iossim_util.get_simulator_runtime_info(
+      constants.IOSPlatformType.IPHONEOS, '27.2-iphone19-4'
+    )
+    self.assertIsNotNone(runtime)
+    self.assertEqual(runtime['identifier'], 'HHHHHH')
+    self.assertEqual(
+      runtime['runtimeIdentifier'],
+      'com.apple.CoreSimulator.SimRuntime.iOS-27-2-iPhone19-4',
+    )
 
   @mock.patch.object(iossim_util, 'get_simulator_runtime_match_list')
   def test_override_default_iphonesim_runtime(

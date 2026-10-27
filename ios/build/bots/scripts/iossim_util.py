@@ -175,20 +175,30 @@ def get_simulator_runtime_by_platform_and_version(
     test_runner.SimulatorNotFoundError when the version can't be found.
   """
   runtimes = simulators['runtimes']
+  version_parts = version.split('-', 1)
+  base_version = version_parts[0]
+  variant_suffix = version_parts[1].lower() if len(version_parts) > 1 else None
   max_retries = 2
   for attempt in range(0, max_retries):
     version_found = False
     for runtime in runtimes:
+      runtime_id = (
+        runtime.get('identifier') or runtime.get('runtimeIdentifier') or ''
+      )
+      if variant_suffix and not runtime_id.lower().endswith(
+        f'-{variant_suffix}'
+      ):
+        continue
       # The output might use version with a patch number (e.g. 17.0.1)
       # but the passed in version does not have a patch number (e.g. 17.0)
       # Therefore, we should use startswith for substring match.
-      if runtime['version'].startswith(version):
+      if runtime['version'].startswith(base_version):
         version_found = True
         if any(
           supported_device_type['name'] == platform
           for supported_device_type in runtime['supportedDeviceTypes']
         ):
-          return runtime.get('identifier') or runtime.get('runtimeIdentifier')
+          return runtime_id
     LOGGER.error(
       f'(attempt {attempt + 1} of {max_retries}) failed to find '
       f'simulator matching version: {version} and platform: '
@@ -757,6 +767,10 @@ def get_simulator_runtime_info(
   else:
     raise ValueError(f'Invalid platform_type value: {platform_type}')
 
+  version_parts = platform_version.split('-', 1)
+  base_version = version_parts[0]
+  variant_suffix = version_parts[1].lower() if len(version_parts) > 1 else None
+
   runtimes = get_simulator_runtime_list()
   for runtime in runtimes.values():
     # The output might use version with a patch number (e.g. 17.0.1)
@@ -764,11 +778,22 @@ def get_simulator_runtime_info(
     # Therefore, we should use startswith for substring match.
     version = runtime.get('version')
     if (
-      version
-      and version.startswith(platform_version)
-      and runtime.get('platformIdentifier') == platform_identifier
+      not version
+      or not version.startswith(base_version)
+      or runtime.get('platformIdentifier') != platform_identifier
     ):
-      return runtime
+      continue
+    runtime_id = runtime.get('runtimeIdentifier', '')
+    if variant_suffix:
+      if not runtime_id.lower().endswith(f'-{variant_suffix}'):
+        continue
+    elif runtime_id:
+      # Exclude device-specific runtime variants (e.g.
+      # com.apple.CoreSimulator.SimRuntime.iOS-27-2-iPhone19-4) when querying
+      # the standard OS version.
+      if not all(part.isdigit() for part in runtime_id.split('-')[1:]):
+        continue
+    return runtime
   return None
 
 

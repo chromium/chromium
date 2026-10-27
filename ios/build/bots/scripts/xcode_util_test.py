@@ -677,6 +677,12 @@ class HelperFunctionTests(XcodeUtilTest):
       ),
     )
     self.assertEqual(
+      "ios-27-2-iphone19-4",
+      xcode_util.convert_platform_version_to_cipd_ref(
+        constants.IOSPlatformType.IPHONEOS, "27.2-iphone19-4"
+      ),
+    )
+    self.assertEqual(
       "tvos-14-4",
       xcode_util.convert_platform_version_to_cipd_ref(
         constants.IOSPlatformType.TVOS, "14.4"
