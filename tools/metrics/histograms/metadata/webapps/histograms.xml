@@ -1752,7 +1752,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApp.Isolated.KeyDistributionComponent.UpdateError"
-    enum="IwaComponentUpdateError" expires_after="2026-12-01">
+    enum="IwaComponentUpdateError" expires_after="2027-10-23">
   <owner>greengrape@google.com</owner>
   <owner>iwa-team@google.com</owner>
   <summary>
