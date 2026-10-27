@@ -77,6 +77,7 @@
 #include "third_party/blink/public/platform/web_file_system_type.h"
 #include "third_party/blink/public/platform/web_media_player.h"
 #include "third_party/blink/public/platform/web_prescient_networking.h"
+#include "third_party/blink/public/platform/web_private_ptr.h"
 #include "third_party/blink/public/platform/web_set_sink_id_callbacks.h"
 #include "third_party/blink/public/platform/web_source_location.h"
 #include "third_party/blink/public/platform/web_url_error.h"
@@ -130,6 +131,7 @@ class WebDedicatedWorkerHostFactoryClient;
 class WebDocumentLoader;
 class WebEncryptedMediaClient;
 class WebLocalFrame;
+class WebLocalFrameImpl;
 class WebMediaPlayer;
 class WebMediaPlayerClient;
 class WebMediaPlayerEncryptedMediaClient;
@@ -902,6 +904,15 @@ class BLINK_EXPORT WebLocalFrameClient {
 
   // Returns true if this frame is for the initial WebUI.
   virtual bool IsForInitialWebUI() const { return false; }
+
+#if INSIDE_BLINK
+  void SetImplForOwnership(WebLocalFrameImpl* frame);
+#endif
+
+ private:
+  // Keeps the associated `WebLocalFrameImpl` alive in Oilpan while attached to
+  // this client. Only used for lifetime ownership, not for accessing the frame.
+  WebPrivatePtrForGC<WebLocalFrameImpl> impl_for_ownership_;
 };
 
 }  // namespace blink

@@ -817,8 +817,6 @@ void WebLocalFrameImpl::Close(DetachReason detach_reason) {
   if (dev_tools_agent_)
     dev_tools_agent_.Clear();
 
-  self_keep_alive_.Clear();
-
   if (print_context_)
     PrintEnd();
   print_client_.reset();
@@ -2409,6 +2407,7 @@ WebLocalFrameImpl::WebLocalFrameImpl(
           mojom::BackForwardCacheNotRestoredReasonsPtr(nullptr)) {
   CHECK(client_);
   g_frame_count++;
+  client_->SetImplForOwnership(this);
   client_->BindToFrame(this);
 }
 

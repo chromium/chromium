@@ -6,9 +6,14 @@
 
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
+#include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/url_loader.h"
 
 namespace blink {
+
+void WebLocalFrameClient::SetImplForOwnership(WebLocalFrameImpl* frame) {
+  impl_for_ownership_ = frame;
+}
 
 AssociatedInterfaceProvider*
 WebLocalFrameClient::GetRemoteNavigationAssociatedInterfaces() {

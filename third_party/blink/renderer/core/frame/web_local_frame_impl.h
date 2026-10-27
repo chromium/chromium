@@ -76,7 +76,6 @@
 #include "third_party/blink/renderer/core/exported/web_input_method_controller_impl.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/web_remote_frame_impl.h"
-#include "third_party/blink/renderer/platform/heap/self_keep_alive.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "ui/gfx/geometry/rect_f.h"
@@ -741,11 +740,6 @@ class CORE_EXPORT WebLocalFrameImpl final
       spell_check_panel_host_client_;
 
   mojom::BackForwardCacheNotRestoredReasonsPtr not_restored_reasons_;
-
-  // Oilpan: WebLocalFrameImpl must remain alive until close() is called.
-  // Accomplish that by keeping a self-referential Persistent<>. It is
-  // cleared upon close().
-  SelfKeepAlive<WebLocalFrameImpl> self_keep_alive_{{}, this};
 
 #if DCHECK_IS_ON()
   // True if DispatchBeforePrintEvent() was called, and

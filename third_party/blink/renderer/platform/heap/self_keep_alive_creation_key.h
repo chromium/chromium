@@ -41,7 +41,6 @@ class SelfKeepAliveCreationKey final {
   friend class SetMediaKeysHandler;
   friend class ThreadedMessagingProxyBase;
   friend class WebFormElementObserverImpl;
-  friend class WebLocalFrameImpl;
   friend class WebRemoteFrameImpl;
 };
 
