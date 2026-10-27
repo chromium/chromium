@@ -12,6 +12,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
+#include "content/public/test/hit_test_region_observer.h"
 #include "content/shell/browser/shell.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
@@ -322,8 +323,12 @@ IN_PROC_BROWSER_TEST_F(PrecisionTouchpadBrowserTest, PreventDefaultPinchZoom) {
       static_cast<WebContentsImpl*>(shell()->web_contents());
   RenderWidgetHostImpl* rwhi = web_contents->GetRenderWidgetHostWithPageFocus();
 
-  // Wait for a frame to be produced or else the test will sometimes try to
-  // zoom too early and be unable to, causing flakiness.
+  // Wait for a frame to be produced, hit-test data to be ready, and the input
+  // router to become active (paint-holding finished), or else the test will
+  // sometimes try to zoom too early and have its pinch events filtered
+  // synchronously during paint-holding, causing flakiness.
+  ReadyForInputObserver(web_contents).Wait();
+  WaitForHitTestData(web_contents->GetPrimaryMainFrame());
   MainThreadFrameObserver observer(
       web_contents->GetRenderViewHost()->GetWidget());
   observer.Wait();
@@ -400,8 +405,11 @@ IN_PROC_BROWSER_TEST_F(PrecisionTouchpadBrowserTest, PreventDefaultScroll) {
       static_cast<WebContentsImpl*>(shell()->web_contents());
   RenderWidgetHostImpl* rwhi = web_contents->GetRenderWidgetHostWithPageFocus();
 
-  // Wait for a frame to be produced or else the test will sometimes try to
-  // scroll too early and be unable to, causing flakiness.
+  // Wait for a frame to be produced, hit-test data to be ready, and the input
+  // router to become active (paint-holding finished), or else the test will
+  // sometimes try to scroll too early and be unable to, causing flakiness.
+  ReadyForInputObserver(web_contents).Wait();
+  WaitForHitTestData(web_contents->GetPrimaryMainFrame());
   MainThreadFrameObserver observer(
       web_contents->GetRenderViewHost()->GetWidget());
   observer.Wait();
