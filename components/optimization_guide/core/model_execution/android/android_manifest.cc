@@ -4,6 +4,10 @@
 
 #include "components/optimization_guide/core/model_execution/android/android_manifest.h"
 
+#include <utility>
+
+#include "base/check.h"
+#include "base/check_op.h"
 #include "base/strings/strcat.h"
 #include "components/optimization_guide/core/model_execution/configs/summarize_solution_config.h"
 #include "components/optimization_guide/core/model_execution/on_device_features.h"
@@ -28,16 +32,32 @@ proto::Any MakeFeatureRoutingConfig(mojom::OnDeviceFeature feature) {
 }  // namespace
 
 AndroidManifest::AndroidManifest() = default;
+AndroidManifest::AndroidManifest(const AndroidManifest&) = default;
+AndroidManifest& AndroidManifest::operator=(const AndroidManifest&) = default;
 AndroidManifest::AndroidManifest(AndroidManifest&&) = default;
 AndroidManifest& AndroidManifest::operator=(AndroidManifest&&) = default;
 AndroidManifest::~AndroidManifest() = default;
 
 AndroidManifest AndroidManifest::CreateFromBuiltin() {
   AndroidManifest manifest;
-  auto config = BuildAndroidSummarizeSolutionConfig();
-  manifest.configs_.emplace(mojom::OnDeviceFeature::kSummarize,
-                            base::MakeRefCounted<OnDeviceModelFeatureAdapter>(
-                                std::move(*config.mutable_feature())));
+  auto summarize_config = BuildAndroidSummarizeSolutionConfig();
+  manifest.configs_.emplace(
+      mojom::OnDeviceFeature::kSummarize,
+      base::MakeRefCounted<OnDeviceModelFeatureAdapter>(
+          std::move(*summarize_config.mutable_feature())));
+  return manifest;
+}
+
+AndroidManifest AndroidManifest::CreateFromComponent(
+    ConfigMap component_configs) {
+  // Keep built-in fallbacks for features omitted from the component snapshot.
+  auto manifest = CreateFromBuiltin();
+  for (auto& [feature, config] : component_configs) {
+    // Callers must supply validated adapters keyed by their matching feature.
+    CHECK(config);
+    CHECK_EQ(config->config().feature(), ToModelExecutionFeatureProto(feature));
+    manifest.configs_.insert_or_assign(feature, std::move(config));
+  }
   return manifest;
 }
 

@@ -5,12 +5,15 @@
 #include "components/optimization_guide/core/model_execution/android/model_broker_android.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/barrier_closure.h"
+#include "base/check.h"
 #include "base/containers/flat_set.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/token.h"
 #include "build/branding_buildflags.h"
 #include "components/optimization_guide/core/model_execution/android/android_manifest.h"
 #include "components/optimization_guide/core/model_execution/on_device_features.h"
@@ -145,7 +148,8 @@ class SolutionImpl : public ModelBrokerImpl::Solution {
   SolutionImpl(base::WeakPtr<ModelBrokerAndroid> parent,
                scoped_refptr<const OnDeviceModelFeatureAdapter> adapter,
                const OnDeviceBaseModelSpec& spec,
-               int64_t adaptation_version);
+               int64_t adaptation_version,
+               std::optional<base::Token> manifest_id);
   ~SolutionImpl() override;
 
  private:
@@ -163,23 +167,30 @@ class SolutionImpl : public ModelBrokerImpl::Solution {
   scoped_refptr<const OnDeviceModelFeatureAdapter> adapter_;
   const OnDeviceBaseModelSpec spec_;
   const int64_t adaptation_version_;
+  const std::optional<base::Token> manifest_id_;
 };
 
 SolutionImpl::SolutionImpl(
     base::WeakPtr<ModelBrokerAndroid> parent,
     scoped_refptr<const OnDeviceModelFeatureAdapter> adapter,
     const OnDeviceBaseModelSpec& spec,
-    int64_t adaptation_version)
+    int64_t adaptation_version,
+    std::optional<base::Token> manifest_id)
     : parent_(std::move(parent)),
       adapter_(std::move(adapter)),
       spec_(spec),
-      adaptation_version_(adaptation_version) {}
+      adaptation_version_(adaptation_version),
+      manifest_id_(manifest_id) {}
 SolutionImpl::~SolutionImpl() = default;
 
 bool SolutionImpl::IsValid() const {
+  // Adaptation-backed solutions (Scam Detection) have no manifest dependency,
+  // so manifest replacement does not invalidate them. Manifest-backed solutions
+  // become stale when the broker selects a different manifest.
   // TODO: crbug.com/441578339 - Implement.
   // Ensure parent_'s model is compatible with the adapter.
-  return !!parent_;
+  return !!parent_ &&
+         (!manifest_id_ || parent_->IsManifestActive(*manifest_id_));
 }
 
 mojom::ModelSolutionConfigPtr SolutionImpl::MakeConfig() const {
@@ -281,11 +292,6 @@ class ModelBrokerAndroid::SolutionFactory final
 
   // The current model adaptation assets.
   AdaptationMetadataMap adaptation_metadata_;
-
-  // Stores the solution configs available to Android model execution.
-  // Currently populated with the built-in fallback; allow configs delivered by
-  // the component updater to replace it.
-  AndroidManifest manifest_ = AndroidManifest::CreateFromBuiltin();
 
   // Holds the model spec for each available AICore feature, or an eligibility
   // reason if the spec is not available.
@@ -471,14 +477,26 @@ ModelBrokerAndroid::SolutionFactory::MakeSolution(
 
   const MaybeAdaptationMetadata& metadata = adaptation_metadata_.Get(feature);
   scoped_refptr<const OnDeviceModelFeatureAdapter> adapter;
+  std::optional<base::Token> manifest_id;
   // Manifest configs do not have a downloaded adaptation version. Use 0 to
   // preserve the existing ModelSolutionConfig version shape.
   int64_t adaptation_version = 0;
+  // EnsureSolutionFactory initializes the manifest before constructing the
+  // factory. Add a CHECK to ensure the manifest exists.
+  CHECK(parent_->manifest_);
+  // Each feature is expected to use one config source for both construction and
+  // updates, e.g., adaptations for Scam Detection and manifests for Summarizer.
+  // A feature should not mix the two delivery paths. A late adaptation does not
+  // replace an already-valid manifest solution: SolutionProvider::Update
+  // retains it until its snapshot is invalidated.
   if (metadata.has_value()) {
+    // A feature must not have both adaptation and manifest configs.
+    CHECK(!parent_->manifest_->SelectConfig(feature));
     adapter = metadata->adapter();
     adaptation_version = metadata->version();
-  } else if (auto config = manifest_.SelectConfig(feature)) {
+  } else if (auto config = parent_->manifest_->SelectConfig(feature)) {
     adapter = std::move(config);
+    manifest_id = parent_->manifest_->id();
   } else {
     return base::unexpected(
         metadata.error() == AdaptationUnavailability::kNotSupported
@@ -489,7 +507,7 @@ ModelBrokerAndroid::SolutionFactory::MakeSolution(
   // A base model spec is required for both adaptation and manifest solutions.
   return std::make_unique<SolutionImpl>(
       parent_->weak_ptr_factory_.GetWeakPtr(), std::move(adapter),
-      spec_it->second.value(), adaptation_version);
+      spec_it->second.value(), adaptation_version, manifest_id);
 }
 
 void ModelBrokerAndroid::SolutionFactory::CheckModelStatus(
@@ -592,6 +610,28 @@ ModelBrokerAndroid::ModelBrokerAndroid(
 }
 ModelBrokerAndroid::~ModelBrokerAndroid() = default;
 
+void ModelBrokerAndroid::OnManifestLoaded(
+    base::expected<AndroidManifest, AndroidManifest::ParseError> manifest) {
+  if (!manifest) {
+    // Ignore the manifest if it failed to parse.
+    // TODO(crbug.com/575550015): Handle manifest parse errors appropriately.
+    return;
+  }
+
+  // Activating a different snapshot invalidates solutions whose snapshot IDs
+  // no longer match. Store it even before first use, without initializing
+  // AICore.
+  manifest_ = std::move(*manifest);
+  if (solution_factory_) {
+    solution_factory_->UpdateSolutionProviders();
+  }
+}
+
+bool ModelBrokerAndroid::IsManifestActive(
+    const base::Token& manifest_id) const {
+  return manifest_ && manifest_->id() == manifest_id;
+}
+
 void ModelBrokerAndroid::BindModelBroker(
     mojo::PendingReceiver<mojom::ModelBroker> receiver) {
   if (features::IsOnDeviceExecutionEnabled()) {
@@ -665,6 +705,12 @@ void ModelBrokerAndroid::EnsureSolutionFactory(
   }
 
   pending_init_callbacks_.push_back(std::move(init_callback));
+
+  // Preserve a component snapshot received before first use. Initialize the
+  // fallback before the factory constructor can request solutions.
+  if (!manifest_) {
+    manifest_ = AndroidManifest::CreateFromBuiltin();
+  }
 
   if (!solution_factory_) {
     solution_factory_ = std::make_unique<SolutionFactory>(*this);

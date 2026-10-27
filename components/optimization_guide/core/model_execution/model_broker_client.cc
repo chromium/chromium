@@ -58,8 +58,11 @@ class ModelClient::OnDeviceOptionsClient final
   }
 
   void OnResponseCompleted() override {
-    client_->remote_->ReportHealthyCompletion();
-    return;
+    // An execution can finish after its solution has been replaced. Its
+    // ModelClient is then gone, so there is no current solution to notify.
+    if (client_) {
+      client_->remote_->ReportHealthyCompletion();
+    }
   }
 
  private:

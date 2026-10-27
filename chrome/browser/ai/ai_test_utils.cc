@@ -13,7 +13,6 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "components/optimization_guide/core/model_execution/on_device_features.h"
 #include "components/optimization_guide/core/model_execution/on_device_prefs.h"
-#include "components/optimization_guide/core/model_execution/test/fake_model_assets.h"
 #include "components/optimization_guide/core/model_execution/test/feature_config_builder.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_proto_util.h"
@@ -23,6 +22,12 @@
 #include "content/public/test/navigation_simulator.h"
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "components/optimization_guide/core/model_execution/test/fake_android_manifest_asset.h"
+#else
+#include "components/optimization_guide/core/model_execution/test/fake_model_assets.h"
+#endif
+
 namespace {
 
 using ::optimization_guide::proto::BaseModelRecipe;
@@ -31,9 +36,57 @@ using ::optimization_guide::proto::SolutionConfig;
 using ::optimization_guide::proto::SummarizerFeatureConfig;
 using ::optimization_guide::proto::WritingAssistanceApiFeatureConfig;
 
+std::string GetUseCaseForSolutionConfig(const SolutionConfig& solution_config) {
+  auto feature = optimization_guide::ToOnDeviceFeature(
+      solution_config.feature().feature());
+  CHECK(feature.has_value());
+  return optimization_guide::ToUseCaseName(*feature);
+}
+
+#if !BUILDFLAG(IS_ANDROID)
+void SetupScenario(
+    optimization_guide::TestManifestAssetManagerComponentState& component_state,
+    SolutionConfig solution_config) {
+  std::string use_case = GetUseCaseForSolutionConfig(solution_config);
+
+  // Explicit BaseModelRecipeArgs and empty FakeBaseModelAsset::Content are
+  // needed: ScenarioBuilder::AddBaseModel(name) defaults to 100 max_tokens and
+  // non-empty cache weights (1015, 1016, 1017), which causes FakeOnDeviceModel
+  // to emit dummy cache weight response chunks that break response assertions.
+  constexpr uint32_t kDefaultMaxTokens = 8096;
+  auto builder = optimization_guide::ScenarioBuilder(component_state);
+  builder
+      .AddBaseModel("base",
+                    optimization_guide::BaseModelRecipeArgs(
+                        BaseModelRecipe::BACKEND_TYPE_GPU,
+                        BaseModelRecipe::PERFORMANCE_HINT_HIGHEST_QUALITY, {},
+                        kDefaultMaxTokens),
+                    optimization_guide::FakeBaseModelAsset::Content{},
+                    "1.0.0.0")
+      .AddUnsafeSolution(use_case, "base", std::move(solution_config));
+
+  if (use_case == "prompt_api") {
+    PromptApiFeatureConfig prompt_api_cfg;
+    prompt_api_cfg.set_default_use_case("prompt_api");
+    builder.SetFeatureConfig("prompt_api",
+                             optimization_guide::AnyWrapProto(prompt_api_cfg));
+  } else if (use_case == "writing_assistance_api") {
+    WritingAssistanceApiFeatureConfig writer_cfg;
+    writer_cfg.set_default_use_case("writing_assistance_api");
+    builder.SetFeatureConfig("writing_assistance_api",
+                             optimization_guide::AnyWrapProto(writer_cfg));
+  } else if (use_case == "summarizer_api") {
+    SummarizerFeatureConfig summarizer_cfg;
+    summarizer_cfg.set_default_use_case("summarizer_api");
+    builder.SetFeatureConfig("summarizer_api",
+                             optimization_guide::AnyWrapProto(summarizer_cfg));
+  }
+
+  builder.Finish();
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 }  // namespace
-
-
 
 AITestUtils::TestStreamingResponder::TestStreamingResponder() = default;
 AITestUtils::TestStreamingResponder::~TestStreamingResponder() = default;
@@ -109,66 +162,12 @@ void AITestUtils::AITestBase::SetupBroker() {
 
 void AITestUtils::AITestBase::SetSolutionConfig(
     SolutionConfig solution_config) {
-  auto asset = std::make_unique<optimization_guide::FakeAdaptationAsset>(
-      optimization_guide::FakeAdaptationAsset::Content{
-          .config = std::move(*solution_config.mutable_feature()),
-      });
-  fake_broker_->UpdateModelAdaptation(*asset);
-  fake_assets_.push_back(std::move(asset));
+  const std::string use_case = GetUseCaseForSolutionConfig(solution_config);
+  auto asset = std::make_unique<optimization_guide::FakeAndroidManifestAsset>();
+  asset->AddSolutionConfig(use_case, std::move(solution_config));
+  fake_broker_->UpdateManifest(std::move(asset));
 }
 #else
-namespace {
-
-std::string GetUseCaseForSolutionConfig(const SolutionConfig& solution_config) {
-  auto feature = optimization_guide::ToOnDeviceFeature(
-      solution_config.feature().feature());
-  CHECK(feature.has_value());
-  return optimization_guide::ToUseCaseName(*feature);
-}
-
-void SetupScenario(
-    optimization_guide::TestManifestAssetManagerComponentState& component_state,
-    SolutionConfig solution_config) {
-  std::string use_case = GetUseCaseForSolutionConfig(solution_config);
-
-  // Explicit BaseModelRecipeArgs and empty FakeBaseModelAsset::Content are
-  // needed: ScenarioBuilder::AddBaseModel(name) defaults to 100 max_tokens and
-  // non-empty cache weights (1015, 1016, 1017), which causes FakeOnDeviceModel
-  // to emit dummy cache weight response chunks that break response assertions.
-  constexpr uint32_t kDefaultMaxTokens = 8096;
-  auto builder = optimization_guide::ScenarioBuilder(component_state);
-  builder
-      .AddBaseModel(
-          "base",
-          optimization_guide::BaseModelRecipeArgs(
-              BaseModelRecipe::BACKEND_TYPE_GPU,
-              BaseModelRecipe::PERFORMANCE_HINT_HIGHEST_QUALITY, {},
-              kDefaultMaxTokens),
-          optimization_guide::FakeBaseModelAsset::Content{}, "1.0.0.0")
-      .AddUnsafeSolution(use_case, "base", std::move(solution_config));
-
-  if (use_case == "prompt_api") {
-    PromptApiFeatureConfig prompt_api_cfg;
-    prompt_api_cfg.set_default_use_case("prompt_api");
-    builder.SetFeatureConfig("prompt_api",
-                             optimization_guide::AnyWrapProto(prompt_api_cfg));
-  } else if (use_case == "writing_assistance_api") {
-    WritingAssistanceApiFeatureConfig writer_cfg;
-    writer_cfg.set_default_use_case("writing_assistance_api");
-    builder.SetFeatureConfig("writing_assistance_api",
-                             optimization_guide::AnyWrapProto(writer_cfg));
-  } else if (use_case == "summarizer_api") {
-    SummarizerFeatureConfig summarizer_cfg;
-    summarizer_cfg.set_default_use_case("summarizer_api");
-    builder.SetFeatureConfig("summarizer_api",
-                             optimization_guide::AnyWrapProto(summarizer_cfg));
-  }
-
-  builder.Finish();
-}
-
-}  // namespace
-
 void AITestUtils::AITestBase::SetupBroker() {
   fake_broker_ = std::make_unique<optimization_guide::FakeManifestBroker>();
   SetupScenario(fake_broker_->component_state(), CreateSolution());
@@ -204,9 +203,6 @@ void AITestUtils::AITestBase::TearDown() {
   mock_optimization_guide_keyed_service_ = nullptr;
   ai_manager_.reset();
   fake_broker_.reset();
-#if BUILDFLAG(IS_ANDROID)
-  fake_assets_.clear();
-#endif
   ChromeRenderViewHostTestHarness::TearDown();
 }
 

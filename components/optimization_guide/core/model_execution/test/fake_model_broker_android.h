@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_OPTIMIZATION_GUIDE_CORE_MODEL_EXECUTION_TEST_FAKE_MODEL_BROKER_ANDROID_H_
 #define COMPONENTS_OPTIMIZATION_GUIDE_CORE_MODEL_EXECUTION_TEST_FAKE_MODEL_BROKER_ANDROID_H_
 
+#include <memory>
 #include <optional>
 
 #include "base/test/scoped_feature_list.h"
@@ -17,6 +18,7 @@
 #include "services/on_device_model/android/on_device_model_bridge_native_unittest_helper.h"
 
 namespace optimization_guide {
+class FakeAndroidManifestAsset;
 
 // A ScopedFeatureList initialized with defaults for testing
 // ModelBrokerAndroid related features.
@@ -48,12 +50,14 @@ class FakeModelBrokerAndroid {
   void UnInstallBaseModel();
 
   void UpdateModelAdaptation(const FakeAdaptationAsset& asset);
+  void UpdateManifest(std::unique_ptr<FakeAndroidManifestAsset> asset);
 
   PrefService& local_state() { return local_state_; }
   on_device_model::OnDeviceModelBridgeNativeUnitTestHelper& java_helper() {
     return java_helper_;
   }
   ModelProviderRegistry& model_provider() { return model_provider_; }
+  ModelBrokerAndroid& broker() { return EnsureBroker(); }
 
  private:
   ModelBrokerAndroid& EnsureBroker();

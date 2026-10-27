@@ -6,9 +6,13 @@
 #define COMPONENTS_OPTIMIZATION_GUIDE_CORE_MODEL_EXECUTION_ANDROID_MODEL_BROKER_ANDROID_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/feature_list.h"
+#include "base/token.h"
+#include "base/types/expected.h"
 #include "components/optimization_guide/core/delivery/optimization_guide_model_provider.h"
+#include "components/optimization_guide/core/model_execution/android/android_manifest.h"
 #include "components/optimization_guide/core/model_execution/model_broker_impl.h"
 #include "components/optimization_guide/core/model_execution/on_device_capability.h"
 #include "components/optimization_guide/core/model_execution/usage_tracker.h"
@@ -67,6 +71,17 @@ class ModelBrokerAndroid final : public OnDeviceCapability,
       mojo::PendingRemote<on_device_model::mojom::DownloadObserver> observer)
       override;
 
+  // Handles a manifest load result. On success, activates the loaded snapshot
+  // and updates solution providers. On failure, preserves the current manifest.
+  // Sessions backed by a replaced snapshot cannot start new executions, but
+  // in-flight executions can finish.
+  void OnManifestLoaded(
+      base::expected<AndroidManifest, AndroidManifest::ParseError> manifest);
+
+  // Returns whether manifest_id matches the active manifest's snapshot ID.
+  // Used by solutions to detect replacement.
+  bool IsManifestActive(const base::Token& manifest_id) const;
+
   mojo::Remote<on_device_model::mojom::OnDeviceModel>& GetOrCreateModelRemote(
       proto::ModelExecutionFeature feature);
 
@@ -106,6 +121,11 @@ class ModelBrokerAndroid final : public OnDeviceCapability,
 
   // Tracks and updates the broker subscribers.
   ModelBrokerImpl impl_;
+
+  // Stores the solution configs for Android model execution. Initialized lazily
+  // from built-ins unless component configs arrive first; replaced on component
+  // updates.
+  std::optional<AndroidManifest> manifest_;
 
   // The factory for building solutions.
   // Creating this object may be expensive, so it is lazy-initialized.

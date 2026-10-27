@@ -680,6 +680,8 @@ if (build_with_model_execution) {
     ]
     if (is_android) {
       sources += [
+        "model_execution/test/fake_android_manifest_asset.cc",
+        "model_execution/test/fake_android_manifest_asset.h",
         "model_execution/test/fake_model_broker_android.cc",
         "model_execution/test/fake_model_broker_android.h",
       ]
@@ -926,7 +928,10 @@ if (build_with_model_execution && !is_chrome_for_testing) {
       "//third_party/tflite:buildflags",
     ]
     if (is_android) {
-      sources += [ "model_execution/android/model_broker_android_unittest.cc" ]
+      sources += [
+        "model_execution/android/android_manifest_unittest.cc",
+        "model_execution/android/model_broker_android_unittest.cc",
+      ]
       deps += [
         "//services/on_device_model/android",
         "//services/on_device_model/android:test_support",

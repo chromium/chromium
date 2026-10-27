@@ -17,7 +17,6 @@
 #include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #if BUILDFLAG(IS_ANDROID)
-#include "components/optimization_guide/core/model_execution/test/fake_model_assets.h"
 #include "components/optimization_guide/core/model_execution/test/fake_model_broker_android.h"
 #else
 #include "components/optimization_guide/core/model_execution/manifest_broker/test/fake_manifest_broker.h"
@@ -139,8 +138,6 @@ class AITestUtils {
 #if BUILDFLAG(IS_ANDROID)
     base::test::ScopedFeatureList scoped_feature_list_;
     std::unique_ptr<optimization_guide::FakeModelBrokerAndroid> fake_broker_;
-    std::vector<std::unique_ptr<optimization_guide::FakeAdaptationAsset>>
-        fake_assets_;
 #else
     std::unique_ptr<optimization_guide::FakeManifestBroker> fake_broker_;
 #endif

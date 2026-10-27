@@ -342,9 +342,6 @@ TEST_F(AISummarizerTest, CreateSummarizerModelNotEligible) {
             blink::mojom::AIManagerCreateClientError::kUnableToCreateSession);
 }
 
-#if !BUILDFLAG(IS_ANDROID)
-// TODO(crbug.com/571742381): Enable these tests on Android once an adaptation
-// can replace the active built-in solution.
 TEST_F(AISummarizerTest, CreateSummarizerUnableToCalculateTokenSize) {
   // Incorrect `request_base_name` cause session to fail constructing input
   // string and checking token size.
@@ -369,7 +366,6 @@ TEST_F(AISummarizerTest, CreateSummarizerUnableToCalculateTokenSize) {
       result.error().error,
       blink::mojom::AIManagerCreateClientError::kUnableToCalculateTokenSize);
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 TEST_F(AISummarizerTest, CreateSummarizerContextLimitExceededError) {
   SetSizeInTokens(kDefaultInputContextLimit + 1);
@@ -449,9 +445,6 @@ TEST_F(AISummarizerTest, ContextWindowUsesContextLimit) {
   EXPECT_EQ(client.context_window(), kDefaultInputContextLimit);
 }
 
-#if !BUILDFLAG(IS_ANDROID)
-// TODO(crbug.com/571742381): Enable on Android once an adaptation can replace
-// the active built-in solution.
 TEST_F(AISummarizerTest, CustomInputContextLimit) {
   constexpr uint32_t kCustomMaxTokens = 5000;
   SetModelInputContextLimit(kCustomMaxTokens);
@@ -491,7 +484,6 @@ TEST_F(AISummarizerTest, CustomInputContextLimit) {
   ASSERT_EQ(responder.quota_error_info().requested, kCustomMaxTokens + 1);
   ASSERT_EQ(responder.quota_error_info().quota, kCustomMaxTokens);
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 TEST_F(AISummarizerTest, SummarizeMultipleResponse) {
   auto summarizer_remote = GetAISummarizerRemote();
@@ -516,10 +508,12 @@ TEST_F(AISummarizerTest, MultipleSummarize) {
               ElementsAreArray(result2));
 }
 
-#if !BUILDFLAG(IS_ANDROID)
-// TODO(crbug.com/571742381): Enable on Android once an adaptation can replace
-// the active built-in solution.
 TEST_F(AISummarizerTest, MeasureUsage) {
+#if BUILDFLAG(IS_ANDROID)
+  // Use the simple test template so the token count covers just the supplied
+  // strings, without the built-in production prompt's instructions.
+  SetSolutionConfig(CreateSolution());
+#endif
   auto options = GetDefaultOptions();
   options->shared_context = kSharedContextString;
   auto summarizer_remote = GetAISummarizerRemote(std::move(options));
@@ -532,7 +526,6 @@ TEST_F(AISummarizerTest, MeasureUsage) {
                                       std::string(kContextString).size() +
                                       std::string(kSharedContextString).size());
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 #if !BUILDFLAG(IS_ANDROID)
 TEST_F(AISummarizerTest, Priority) {
