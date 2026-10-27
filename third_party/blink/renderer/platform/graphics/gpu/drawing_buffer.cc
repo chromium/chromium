@@ -68,6 +68,7 @@
 #include "third_party/blink/public/web/blink.h"
 #include "third_party/blink/renderer/platform/graphics/accelerated_static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource.h"
+#include "third_party/blink/renderer/platform/graphics/exported_canvas_resource.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/canvas_utils.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/extensions_3d_util.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
@@ -842,7 +843,7 @@ DrawingBuffer::CreateOrRecycleColorBuffer() {
   return color_buffer;
 }
 
-scoped_refptr<ExternalCanvasResource>
+scoped_refptr<ExportedCanvasResource>
 DrawingBuffer::ExportLowLatencyCanvasResource() {
   gpu::SyncToken sync_token;
   if (contents_changed_) {
@@ -856,10 +857,12 @@ DrawingBuffer::ExportLowLatencyCanvasResource() {
     back_color_buffer_->BeginAccess(gpu::SyncToken(), /*readonly=*/false);
   }
 
-  return base::MakeRefCounted<ExternalCanvasResource>(
-      back_color_buffer_->shared_image, sync_token,
-      viz::TransferableResource::ResourceSource::kDrawingBuffer, hdr_metadata_,
-      viz::ReleaseCallback(), context_provider_->GetWeakPtr());
+  return base::MakeRefCounted<ExportedCanvasResource>(
+      base::MakeRefCounted<ExternalCanvasResource>(
+          back_color_buffer_->shared_image, sync_token,
+          viz::TransferableResource::ResourceSource::kDrawingBuffer,
+          hdr_metadata_, viz::ReleaseCallback(),
+          context_provider_->GetWeakPtr()));
 }
 
 scoped_refptr<StaticBitmapImage> DrawingBuffer::ExportLowLatencyBitmap() {
@@ -883,7 +886,7 @@ scoped_refptr<StaticBitmapImage> DrawingBuffer::ExportLowLatencyBitmap() {
       ->Bitmap();
 }
 
-scoped_refptr<CanvasResource> DrawingBuffer::ExportCanvasResource() {
+scoped_refptr<ExportedCanvasResource> DrawingBuffer::ExportCanvasResource() {
   ScopedStateRestorer scoped_state_restorer(this);
   TRACE_EVENT0("blink", "DrawingBuffer::ExportCanvasResource");
 
@@ -901,10 +904,12 @@ scoped_refptr<CanvasResource> DrawingBuffer::ExportCanvasResource() {
     return nullptr;
   }
 
-  return base::MakeRefCounted<ExternalCanvasResource>(
-      client_si, sync_token,
-      viz::TransferableResource::ResourceSource::kDrawingBuffer, hdr_metadata_,
-      std::move(out_release_callback), context_provider_->GetWeakPtr());
+  return base::MakeRefCounted<ExportedCanvasResource>(
+      base::MakeRefCounted<ExternalCanvasResource>(
+          client_si, sync_token,
+          viz::TransferableResource::ResourceSource::kDrawingBuffer,
+          hdr_metadata_, std::move(out_release_callback),
+          context_provider_->GetWeakPtr()));
 }
 
 DrawingBuffer::ColorBuffer::ColorBuffer(

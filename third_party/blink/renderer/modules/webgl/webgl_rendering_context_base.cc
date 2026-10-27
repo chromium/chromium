@@ -1778,8 +1778,7 @@ WebGLRenderingContextBase::GetResourceForPushFrame(
     if (auto canvas_resource = GetDrawingBuffer()->ExportCanvasResource()) {
       should_call_push_frame = true;
       MarkLayerComposited();
-      return base::MakeRefCounted<ExportedCanvasResource>(
-          std::move(canvas_resource));
+      return canvas_resource;
     }
   }
 
@@ -2194,10 +2193,7 @@ WebGLRenderingContextBase::PaintRenderingResultsToResource(
     // painted the canvas' contents by doing any necessary clearing in the above
     // call.
     must_paint_to_canvas_ = false;
-    auto resource = GetDrawingBuffer()->ExportLowLatencyCanvasResource();
-    return resource ? base::MakeRefCounted<ExportedCanvasResource>(
-                          std::move(resource))
-                    : nullptr;
+    return GetDrawingBuffer()->ExportLowLatencyCanvasResource();
   }
 
 

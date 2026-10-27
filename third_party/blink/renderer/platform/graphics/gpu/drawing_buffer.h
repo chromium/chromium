@@ -80,8 +80,7 @@ class GLES2Interface;
 }  // namespace gpu
 
 namespace blink {
-class CanvasResource;
-class ExternalCanvasResource;
+class ExportedCanvasResource;
 class Extensions3DUtil;
 class StaticBitmapImage;
 class WebGraphicsContext3DProvider;
@@ -320,9 +319,9 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
   // latency (e.g., to the display compositor).
   bool SupportsNoCopyExportForLowLatency();
 
-  scoped_refptr<CanvasResource> ExportCanvasResource();
+  scoped_refptr<ExportedCanvasResource> ExportCanvasResource();
 
-  scoped_refptr<ExternalCanvasResource> ExportLowLatencyCanvasResource();
+  scoped_refptr<ExportedCanvasResource> ExportLowLatencyCanvasResource();
   scoped_refptr<StaticBitmapImage> ExportLowLatencyBitmap();
 
   bool IsWebGL2() const {
