@@ -16,6 +16,7 @@ std::optional<GlicCuiOutcome> GlicFreImpressionCuiTracker::GetEventOutcome(
   switch (event) {
     case GlicInstanceEvent::kOptInImpression:
       return GlicCuiOutcome::kSuccess;
+    case GlicInstanceEvent::kInputFocused:
     case GlicInstanceEvent::kUserInputSubmitted:
       // The web client deferred the FRE and presented the prompt input box
       // first (e.g., Message-First FRE). Resolve as kUnknownCancel so user

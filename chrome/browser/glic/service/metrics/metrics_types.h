@@ -371,7 +371,8 @@ enum class GlicInstanceEvent {
   kResponseStoppedOther = 57,
   kResponseStoppedSuccess = 58,
   kWebUiStateGuestLoaded = 59,
-  kMaxValue = kWebUiStateGuestLoaded,
+  kInputFocused = 60,
+  kMaxValue = kInputFocused,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicInstanceEvent)
 

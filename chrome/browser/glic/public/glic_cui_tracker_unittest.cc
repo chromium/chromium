@@ -132,9 +132,13 @@ TEST_F(GlicCuiTrackerTest,
     GlicFreImpressionCuiTracker tracker;
     EXPECT_TRUE(tracker.OnEvent(GlicInstanceEvent::kUserInputSubmitted));
   }
+  {
+    GlicFreImpressionCuiTracker tracker;
+    EXPECT_TRUE(tracker.OnEvent(GlicInstanceEvent::kInputFocused));
+  }
 
   histogram_tester_.ExpectUniqueSample("Glic.CUI.FreImpression.Outcome",
-                                       GlicCuiOutcome::kUnknownCancel, 1);
+                                       GlicCuiOutcome::kUnknownCancel, 2);
   histogram_tester_.ExpectTotalCount("Glic.CUI.FreImpression.Latency", 0);
 }
 

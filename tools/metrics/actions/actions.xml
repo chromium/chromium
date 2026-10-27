@@ -13846,6 +13846,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Glic.Instance.InputFocused">
+  <owner>dewittj@chromium.org</owner>
+  <owner>glic-dev@google.com</owner>
+  <description>
+    Logged when the Glic web client reports that its main prompt input field
+    received focus.
+  </description>
+</action>
+
 <action name="Glic.Instance.InterruptActorTask">
   <owner>birnie@google.com</owner>
   <owner>perrier@google.com</owner>

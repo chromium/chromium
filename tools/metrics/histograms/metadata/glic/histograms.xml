@@ -69,6 +69,7 @@ chromium-metrics-reviews@google.com.
   <variant name="OnContextUploadCompleted"/>
   <variant name="OnContextUploadStarted"/>
   <variant name="OnExperimentalTriggeringUpdate"/>
+  <variant name="OnInputFocused"/>
   <variant name="OnMicrophoneStatusChange"/>
   <variant name="OnModeChange"/>
   <variant name="OnOptinImpression"/>
@@ -234,6 +235,13 @@ chromium-metrics-reviews@google.com.
   <variant name="ModeratePressure"
       summary="recorded upon moderate memory pressure"/>
   <variant name="Periodic" summary="recorded periodically (every 30 minutes)"/>
+</variants>
+
+<variants name="OnboardingState">
+  <variant name="" summary="all users"/>
+  <variant name=".NonOnboarded"
+      summary="non-onboarded users (e.g., Message-First FRE or Just-In-Time
+               consent)"/>
 </variants>
 
 <!-- LINT.IfChange(PDFExtractionMode) -->
@@ -2535,6 +2543,20 @@ ApiRequestType variants; see go/geic-metrics-split. -->
   <token key="GlicProvider" variants="GlicProvider"/>
 </histogram>
 
+<histogram
+    name="Glic{GlicProvider}.Instance.ClientReadyToInputFocus{OnboardingState}"
+    units="ms" expires_after="2027-06-15">
+  <owner>dewittj@chromium.org</owner>
+  <owner>glic-dev@google.com</owner>
+  <summary>
+    Records the time elapsed from when the Glic web client signals ready until
+    the main prompt input field receives focus for the first time in that cycle,
+    for {OnboardingState}. Scope: {GlicProvider}.
+  </summary>
+  <token key="OnboardingState" variants="OnboardingState"/>
+  <token key="GlicProvider" variants="GlicProvider"/>
+</histogram>
+
 <histogram name="Glic{GlicProvider}.Instance.EventCounts"
     enum="GlicInstanceEvent" expires_after="2027-04-11">
   <owner>birnie@google.com</owner>
@@ -3094,6 +3116,38 @@ ApiRequestType variants; see go/geic-metrics-split. -->
     dismissed while loading. Scope: {GlicProvider}.
   </summary>
   <token key="EmbedderType" variants="EmbedderType"/>
+  <token key="GlicProvider" variants="GlicProvider"/>
+</histogram>
+
+<histogram
+    name="Glic{GlicProvider}.Instance.TimeToInputFocus.{WarmState}{OnboardingState}"
+    units="ms" expires_after="2027-06-15">
+  <owner>dewittj@chromium.org</owner>
+  <owner>glic-dev@google.com</owner>
+  <summary>
+    Records the time elapsed from when a Glic panel open starts until the main
+    prompt input field receives focus for the first time in that open, sliced by
+    whether the web client was {WarmState} when the open began, for
+    {OnboardingState}. Scope: {GlicProvider}.
+  </summary>
+  <token key="WarmState">
+    <variant name="Cold" summary="not yet ready (cold start)"/>
+    <variant name="Warm" summary="already ready (warm reopen)"/>
+  </token>
+  <token key="OnboardingState" variants="OnboardingState"/>
+  <token key="GlicProvider" variants="GlicProvider"/>
+</histogram>
+
+<histogram name="Glic{GlicProvider}.Instance.TimeToInputFocus{OnboardingState}"
+    units="ms" expires_after="2027-06-15">
+  <owner>dewittj@chromium.org</owner>
+  <owner>glic-dev@google.com</owner>
+  <summary>
+    Records the time elapsed from when a Glic invocation or panel open starts
+    until the main prompt input field receives focus for the first time in that
+    open, for {OnboardingState}. Scope: {GlicProvider}.
+  </summary>
+  <token key="OnboardingState" variants="OnboardingState"/>
   <token key="GlicProvider" variants="GlicProvider"/>
 </histogram>
 

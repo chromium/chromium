@@ -1627,6 +1627,12 @@ export declare interface GlicBrowserHostMetrics {
   /** Called when the opt-in CTA is shown. */
   onOptinImpression?(): void;
 
+  /**
+   * Called when the web client's main prompt input field receives focus
+   * after opening or warm-reopening the panel.
+   */
+  onInputFocused?(): void;
+
   /** Called when the user has submitted input via the web client. */
   onUserInputSubmitted?(mode: WebClientMode, promptType?: PromptType): void;
 

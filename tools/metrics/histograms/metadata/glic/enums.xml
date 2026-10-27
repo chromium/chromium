@@ -524,6 +524,7 @@ chromium-metrics-reviews@google.com.
   <int value="106" label="SetClientStorageItem"/>
   <int value="107" label="ClearClientStorage"/>
   <int value="108" label="GetSendTabToSelfDevices"/>
+  <int value="109" label="OnInputFocused"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/glic/public/glic_api_metrics.h:GlicHostApiRequestId) -->
@@ -634,6 +635,7 @@ chromium-metrics-reviews@google.com.
   <int value="57" label="Response Stopped Other"/>
   <int value="58" label="Response Stopped Success"/>
   <int value="59" label="WebUI State Guest Loaded"/>
+  <int value="60" label="Input Focused"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/glic/service/metrics/metrics_types.h:GlicInstanceEvent) -->

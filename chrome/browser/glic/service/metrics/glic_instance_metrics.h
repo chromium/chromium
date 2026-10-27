@@ -80,6 +80,7 @@ class GlicInstanceMetrics : public GlicInstanceMetricsBackwardsCompatibility {
   void DidRequestContextFromTab();
   void OnTurnCompleted(mojom::WebClientModel model, base::TimeDelta duration);
   void OnReaction(mojom::MetricUserInputReactionType reaction_type);
+  void OnInputFocused();
   void OnGlicScrollAttempt();
   void OnGlicScrollComplete(bool success);
 
@@ -380,6 +381,12 @@ class GlicInstanceMetrics : public GlicInstanceMetricsBackwardsCompatibility {
   InvocationLoadState invocation_load_state_;
   InvocationLoadState actionable_invocation_state_;
   base::TimeTicks web_ui_load_start_time_;
+  base::TimeTicks client_ready_time_;
+  base::TimeTicks open_start_time_;
+  bool was_client_ready_on_open_ = false;
+  bool input_focused_for_current_open_ = false;
+  bool input_focused_for_current_invocation_ = false;
+  bool input_focused_after_client_ready_ = false;
 
   base::TimeTicks last_active_time_;
   bool is_active_ = false;

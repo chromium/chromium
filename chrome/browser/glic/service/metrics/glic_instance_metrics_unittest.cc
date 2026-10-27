@@ -2076,4 +2076,99 @@ TEST_F(GlicInstanceMetricsTest,
                                       GlicCuiOutcome::kFailed, 1);
 }
 
+TEST_F(GlicInstanceMetricsTest, OnInputFocused_RecordsLatencyOncePerCycle) {
+  profile_.GetPrefs()->SetInteger(
+      prefs::kGlicCompletedFre, static_cast<int>(prefs::FreStatus::kCompleted));
+
+  ShowOptions show_options{FloatingShowOptions{}};
+  metrics_.OnOpen(mojom::InvocationSource::kTopChromeButton, show_options);
+  task_environment_.FastForwardBy(base::Milliseconds(100));
+  metrics_.OnClientReady();
+  task_environment_.FastForwardBy(base::Milliseconds(50));
+
+  metrics_.OnInputFocused();
+  // Second focus in the same open should not re-record.
+  metrics_.OnInputFocused();
+  EXPECT_EQ(user_action_tester_.GetActionCount("Glic.Instance.InputFocused"),
+            2);
+
+  histogram_tester_.ExpectUniqueTimeSample("Glic.Instance.TimeToInputFocus",
+                                           base::Milliseconds(150), 1);
+  histogram_tester_.ExpectUniqueTimeSample(
+      "Glic.Instance.TimeToInputFocus.Cold", base::Milliseconds(150), 1);
+  histogram_tester_.ExpectTotalCount("Glic.Instance.TimeToInputFocus.Warm", 0);
+  histogram_tester_.ExpectUniqueTimeSample(
+      "Glic.Instance.ClientReadyToInputFocus", base::Milliseconds(50), 1);
+  histogram_tester_.ExpectTotalCount(
+      "Glic.Instance.TimeToInputFocus.NonOnboarded", 0);
+  histogram_tester_.ExpectTotalCount(
+      "Glic.Instance.TimeToInputFocus.Cold.NonOnboarded", 0);
+  histogram_tester_.ExpectTotalCount(
+      "Glic.Instance.ClientReadyToInputFocus.NonOnboarded", 0);
+
+  // Hide and warm-reopen: should record TimeToInputFocus.Warm.
+  metrics_.OnInstanceHidden();
+  metrics_.OnOpen(mojom::InvocationSource::kTopChromeButton, show_options);
+  task_environment_.FastForwardBy(base::Milliseconds(35));
+  metrics_.OnInputFocused();
+
+  histogram_tester_.ExpectTotalCount("Glic.Instance.TimeToInputFocus", 2);
+  histogram_tester_.ExpectUniqueTimeSample(
+      "Glic.Instance.TimeToInputFocus.Warm", base::Milliseconds(35), 1);
+  histogram_tester_.ExpectTotalCount(
+      "Glic.Instance.TimeToInputFocus.Warm.NonOnboarded", 0);
+}
+
+TEST_F(GlicInstanceMetricsTest,
+       OnInputFocused_NonOnboardedRecordsVariantUntilConsented) {
+  profile_.GetPrefs()->SetInteger(
+      prefs::kGlicCompletedFre,
+      static_cast<int>(prefs::FreStatus::kNotStarted));
+
+  ShowOptions show_options{FloatingShowOptions{}};
+  metrics_.OnOpen(mojom::InvocationSource::kTopChromeButton, show_options);
+  task_environment_.FastForwardBy(base::Milliseconds(100));
+  metrics_.OnClientReady();
+  task_environment_.FastForwardBy(base::Milliseconds(50));
+  metrics_.OnInputFocused();
+
+  histogram_tester_.ExpectUniqueTimeSample("Glic.Instance.TimeToInputFocus",
+                                           base::Milliseconds(150), 1);
+  histogram_tester_.ExpectUniqueTimeSample(
+      "Glic.Instance.TimeToInputFocus.NonOnboarded", base::Milliseconds(150),
+      1);
+  histogram_tester_.ExpectUniqueTimeSample(
+      "Glic.Instance.TimeToInputFocus.Cold.NonOnboarded",
+      base::Milliseconds(150), 1);
+  histogram_tester_.ExpectUniqueTimeSample(
+      "Glic.Instance.ClientReadyToInputFocus.NonOnboarded",
+      base::Milliseconds(50), 1);
+
+  // Warm reopen while still non-onboarded (e.g., Message-First FRE or
+  // Just-In-Time consent before acceptance).
+  metrics_.OnInstanceHidden();
+  metrics_.OnOpen(mojom::InvocationSource::kTopChromeButton, show_options);
+  task_environment_.FastForwardBy(base::Milliseconds(35));
+  metrics_.OnInputFocused();
+
+  histogram_tester_.ExpectTotalCount(
+      "Glic.Instance.TimeToInputFocus.NonOnboarded", 2);
+  histogram_tester_.ExpectUniqueTimeSample(
+      "Glic.Instance.TimeToInputFocus.Warm.NonOnboarded",
+      base::Milliseconds(35), 1);
+
+  // Once the profile completes onboarding, subsequent opens only record the
+  // base histograms.
+  profile_.GetPrefs()->SetInteger(
+      prefs::kGlicCompletedFre, static_cast<int>(prefs::FreStatus::kCompleted));
+  metrics_.OnInstanceHidden();
+  metrics_.OnOpen(mojom::InvocationSource::kTopChromeButton, show_options);
+  task_environment_.FastForwardBy(base::Milliseconds(25));
+  metrics_.OnInputFocused();
+
+  histogram_tester_.ExpectTotalCount("Glic.Instance.TimeToInputFocus", 3);
+  histogram_tester_.ExpectTotalCount(
+      "Glic.Instance.TimeToInputFocus.NonOnboarded", 2);
+}
+
 }  // namespace glic

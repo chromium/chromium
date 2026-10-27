@@ -1203,6 +1203,10 @@ class GlicBrowserHostMetricsImpl implements GlicBrowserHostMetrics {
     this.handler.onOptinImpression();
   }
 
+  onInputFocused(): void {
+    this.handler.onInputFocused();
+  }
+
   onUserInputSubmitted(mode: number, promptType?: PromptType): void {
     this.handler.onUserInputSubmitted(
         webClientModeToMojo(mode),

@@ -1527,6 +1527,11 @@ class GlicWebClientHandler
     host().instance_metrics().OnOptinImpression();
   }
 
+  void OnInputFocused() override {
+    LogApiRequest(GlicHostApiRequestId::kOnInputFocused);
+    host().instance_metrics().OnInputFocused();
+  }
+
   void OnUserInputSubmitted(mojom::WebClientMode mode,
                             mojom::PromptType prompt_type) override {
     LogApiRequest(GlicHostApiRequestId::kOnUserInputSubmitted);

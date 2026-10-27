@@ -1396,6 +1396,10 @@ interface WebClientHandler {
   // Called when the opt-in CTA is shown.
   OnOptinImpression();
 
+  // Called when the web client's main prompt input field receives focus
+  // after opening or warm-reopening the panel.
+  OnInputFocused();
+
   // Called when the user submits input.
   OnUserInputSubmitted(
       WebClientMode mode, [MinVersion=1] PromptType prompt_type);
