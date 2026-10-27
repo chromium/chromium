@@ -57,9 +57,8 @@ uint64_t ThreadSnapshotSanitized::ThreadSpecificDataAddress() const {
 
 std::vector<const MemorySnapshot*> ThreadSnapshotSanitized::ExtraMemory()
     const {
-  // TODO(jperaza): If/when ExtraMemory() is used, decide whether and how it
-  // should be sanitized.
-  DCHECK(snapshot_->ExtraMemory().empty());
+  // ExtraMemory() corresponds to memory pointed to by registers or the stack,
+  // which may contain sensitive data that has not been sanitized.
   return std::vector<const MemorySnapshot*>();
 }
 

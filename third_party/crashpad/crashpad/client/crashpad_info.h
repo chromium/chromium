@@ -70,7 +70,26 @@ struct CrashpadInfo {
   //! \brief Returns the global CrashpadInfo structure.
   static CrashpadInfo* GetCrashpadInfo();
 
-  CrashpadInfo();
+  constexpr CrashpadInfo()
+      : signature_(kSignature),
+        size_(sizeof(*this)),
+        version_(kCrashpadInfoVersion),
+        indirectly_referenced_memory_cap_(0),
+        padding_0_(0),
+        crashpad_handler_behavior_(TriState::kUnset),
+        system_crash_reporter_forwarding_(TriState::kUnset),
+        gather_indirectly_referenced_memory_(TriState::kUnset),
+        padding_1_(0),
+        extra_memory_ranges_(nullptr),
+        simple_annotations_(nullptr),
+        user_data_minidump_stream_head_(nullptr),
+        annotations_list_(nullptr)
+#if BUILDFLAG(IS_IOS)
+        ,
+        intermediate_dump_extra_memory_ranges_(nullptr)
+#endif
+  {
+  }
 
   CrashpadInfo(const CrashpadInfo&) = delete;
   CrashpadInfo& operator=(const CrashpadInfo&) = delete;
@@ -311,6 +330,13 @@ struct CrashpadInfo {
   uint32_t size() const { return size_; }
 
  private:
+  // Don’t change this when simply adding fields. Readers will size-check the
+  // structure and ignore fields they’re aware of when not present, as well as
+  // fields they’re not aware of. Only change this when introducing an
+  // incompatible layout, with the understanding that existing readers will not
+  // understand new versions.
+  static constexpr uint32_t kCrashpadInfoVersion = 1;
+
   // The compiler won’t necessarily see anyone using these fields, but it
   // shouldn’t warn about that. These fields aren’t intended for use by the
   // process they’re found in, they’re supposed to be read by the crash

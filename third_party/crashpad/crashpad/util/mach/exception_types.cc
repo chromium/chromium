@@ -135,15 +135,11 @@ exception_type_t ExcCrashRecoverOriginalException(
 bool ExcCrashCouldContainException(exception_type_t exception) {
   // EXC_CRASH should never be wrapped in another EXC_CRASH.
   //
-  // EXC_RESOURCE is a software exceptions that is never wrapped in EXC_CRASH.
-  // The same applies to EXC_GUARD below macOS 13. The only time EXC_CRASH is
-  // generated is for processes exiting due to an unhandled core-generating
-  // signal or being killed by SIGKILL for code-signing reasons. Neither of
-  // these apply to EXC_RESOURCE or EXC_GUARD. See 10.10
-  // xnu-2782.1.97/bsd/kern/kern_exit.c proc_prepareexit(). Receiving these
-  // exception types wrapped in EXC_CRASH would lose information because their
-  // code[0] uses all 64 bits (see ExceptionSnapshotMac::Initialize()) and the
-  // code[0] recovered from EXC_CRASH only contains 20 significant bits.
+  // EXC_GUARD is not wrapped in EXC_CRASH below macOS 13.
+  //
+  // EXC_RESOURCE may be wrapped in EXC_CRASH when a process is killed for
+  // exceeding a resource limit; the recovered code[0] retains only its low
+  // 20 bits. See bsd/kern/kern_exit.c proc_prepareexit().
   //
   // EXC_CORPSE_NOTIFY may be generated from EXC_CRASH, but the opposite should
   // never occur.
@@ -154,8 +150,8 @@ bool ExcCrashCouldContainException(exception_type_t exception) {
   if (MacOSVersionNumber() < 13'00'00 && exception == EXC_GUARD) {
     return false;
   }
-  return exception != EXC_CRASH && exception != EXC_RESOURCE &&
-         exception != EXC_CORPSE_NOTIFY && exception != kMachExceptionSimulated;
+  return exception != EXC_CRASH && exception != EXC_CORPSE_NOTIFY &&
+         exception != kMachExceptionSimulated;
 }
 
 int32_t ExceptionCodeForMetrics(exception_type_t exception,

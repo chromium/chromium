@@ -27,13 +27,6 @@
 
 namespace {
 
-// Don’t change this when simply adding fields. Readers will size-check the
-// structure and ignore fields they’re aware of when not present, as well as
-// fields they’re not aware of. Only change this when introducing an
-// incompatible layout, with the understanding that existing readers will not
-// understand new versions.
-constexpr uint32_t kCrashpadInfoVersion = 1;
-
 // Creates a `UserDataMinidumpStreamListEntry` with the given fields, and
 // returns a pointer to it. The caller takes ownership of the returned object.
 crashpad::internal::UserDataMinidumpStreamListEntry* CreateListEntry(
@@ -64,10 +57,6 @@ static_assert(std::is_standard_layout<CrashpadInfo>::value,
 // attempted, and the name of the symbol is the same in each translation unit,
 // it will result in a linker error, which is better than having multiple
 // structures show up.
-//
-// This may result in a static module initializer in debug-mode builds, but
-// because it’s POD, no code should need to run to initialize this under
-// release-mode optimization.
 
 #if BUILDFLAG(IS_POSIX)
 __attribute__((
@@ -105,7 +94,7 @@ __declspec(allocate("CPADinfo"))
 #error Port
 #endif  // !BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_WIN)
 
-CrashpadInfo g_crashpad_info;
+constinit CrashpadInfo g_crashpad_info;
 
 extern "C" int* CRASHPAD_NOTE_REFERENCE;
 
@@ -122,27 +111,6 @@ CrashpadInfo* CrashpadInfo::GetCrashpadInfo() {
   (void)pointer_to_note_section;
 #endif
   return &g_crashpad_info;
-}
-
-CrashpadInfo::CrashpadInfo()
-    : signature_(kSignature),
-      size_(sizeof(*this)),
-      version_(kCrashpadInfoVersion),
-      indirectly_referenced_memory_cap_(0),
-      padding_0_(0),
-      crashpad_handler_behavior_(TriState::kUnset),
-      system_crash_reporter_forwarding_(TriState::kUnset),
-      gather_indirectly_referenced_memory_(TriState::kUnset),
-      padding_1_(0),
-      extra_memory_ranges_(nullptr),
-      simple_annotations_(nullptr),
-      user_data_minidump_stream_head_(nullptr),
-      annotations_list_(nullptr)
-#if BUILDFLAG(IS_IOS)
-      ,
-      intermediate_dump_extra_memory_ranges_(nullptr)
-#endif
-{
 }
 
 UserDataMinidumpStreamHandle* CrashpadInfo::AddUserDataMinidumpStream(

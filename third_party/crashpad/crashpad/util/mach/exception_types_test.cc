@@ -55,6 +55,9 @@ TEST(ExceptionTypes, ExcCrashRecoverOriginalException) {
     {0xa000000, 0, 0, SIGBUS},
     {0xb000000, 0, 0, SIGSEGV},
     {0xc000000, 0, 0, SIGSYS},
+    // A process SIGKILLed for exceeding a resource limit: only the low 20 bits
+    // of the original code[0] survive.
+    {0x9b4aaaa, EXC_RESOURCE, 0x4aaaa, SIGKILL},
     {0, 0, 0, 0},
 #if defined(ARCH_CPU_X86_FAMILY)
     {0xa10000d, EXC_BAD_ACCESS, EXC_I386_GPFLT, SIGBUS},
@@ -123,7 +126,7 @@ TEST(ExceptionTypes, ExcCrashCouldContainException) {
   EXPECT_TRUE(ExcCrashCouldContainException(EXC_MACH_SYSCALL));
   EXPECT_TRUE(ExcCrashCouldContainException(EXC_RPC_ALERT));
   EXPECT_FALSE(ExcCrashCouldContainException(EXC_CRASH));
-  EXPECT_FALSE(ExcCrashCouldContainException(EXC_RESOURCE));
+  EXPECT_TRUE(ExcCrashCouldContainException(EXC_RESOURCE));
   EXPECT_FALSE(ExcCrashCouldContainException(EXC_CORPSE_NOTIFY));
   EXPECT_FALSE(ExcCrashCouldContainException(kMachExceptionSimulated));
 }

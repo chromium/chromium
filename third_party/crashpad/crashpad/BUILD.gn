@@ -107,7 +107,7 @@ if (crashpad_is_in_chromium || crashpad_is_in_fuchsia) {
 
       deps = [
         "//src/connectivity/network/dns:component",
-        "//src/connectivity/network/netstack:component",
+        "//src/connectivity/network/netstack3:component-for-tests",
       ]
 
       test_specs = {

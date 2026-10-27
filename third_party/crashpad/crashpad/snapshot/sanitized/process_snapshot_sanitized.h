@@ -33,6 +33,10 @@
 
 namespace crashpad {
 
+namespace internal {
+class ExceptionSnapshotSanitized;
+}  // namespace internal
+
 //! \brief A ProcessSnapshot which wraps and filters sensitive information from
 //!     another ProcessSnapshot.
 class ProcessSnapshotSanitized final : public ProcessSnapshot {
@@ -64,7 +68,8 @@ class ProcessSnapshotSanitized final : public ProcessSnapshot {
   //!     references to any particular module.
   //! \param[in] sanitize_stacks If `true`, the MemorySnapshots for each
   //!     thread's stack will be filtered using an
-  //!     internal::StackSnapshotSanitized.
+  //!     internal::MemorySnapshotSanitized and ExtraMemory() for each thread
+  //!     and the exception will be omitted.
   //! \return `false` if \a snapshot does not meet sanitization requirements and
   //!     should be filtered entirely. Otherwise `true`.
   bool Initialize(
@@ -101,6 +106,7 @@ class ProcessSnapshotSanitized final : public ProcessSnapshot {
   std::vector<std::unique_ptr<internal::ModuleSnapshotSanitized>> modules_;
 
   // Only used when sanitize_stacks_ == true.
+  std::unique_ptr<internal::ExceptionSnapshotSanitized> exception_;
   std::vector<std::unique_ptr<internal::ThreadSnapshotSanitized>> threads_;
 
   RangeSet address_ranges_;

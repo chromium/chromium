@@ -20,11 +20,15 @@
 
 #include "base/notreached.h"
 #include "build/build_config.h"
+#include "client/annotation.h"
+#include "client/crashpad_info.h"
 #include "gtest/gtest.h"
 #include "test/multiprocess_exec.h"
 #include "util/file/file_io.h"
 #include "util/misc/address_sanitizer.h"
 #include "util/numeric/safe_assignment.h"
+#include "util/synchronization/semaphore.h"
+#include "util/thread/thread.h"
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
 #include <sys/syscall.h>
@@ -38,6 +42,32 @@
 namespace crashpad {
 namespace test {
 namespace {
+
+class BackgroundThread : public Thread {
+ public:
+  BackgroundThread() : ready_(0), exit_(0) {}
+
+  BackgroundThread(const BackgroundThread&) = delete;
+  BackgroundThread& operator=(const BackgroundThread&) = delete;
+
+  ~BackgroundThread() override {
+    // Normally unreachable since ChildTestFunction() intentionally terminates
+    // abnormally via __builtin_trap() without unwinding the stack.
+    exit_.Signal();
+    Join();
+  }
+
+  void WaitUntilReady() { ready_.Wait(); }
+
+ private:
+  void ThreadMain() override {
+    ready_.Signal();
+    exit_.Wait();
+  }
+
+  Semaphore ready_;
+  Semaphore exit_;
+};
 
 class ExceptionGenerator {
  public:
@@ -98,6 +128,9 @@ void ChildTestFunction() {
   FileHandle in = StdioFileHandle(StdioStream::kStandardInput);
   FileHandle out = StdioFileHandle(StdioStream::kStandardOutput);
 
+  CrashpadInfo::GetCrashpadInfo()->set_gather_indirectly_referenced_memory(
+      TriState::kEnabled, 32 * 1024);
+
   static StringAnnotation<32> allowed_annotation(kAllowedAnnotationName);
   allowed_annotation.Set(kAllowedAnnotationValue);
 
@@ -123,6 +156,10 @@ void ChildTestFunction() {
 
   auto gen = ExceptionGenerator::Get();
   ASSERT_TRUE(gen->Initialize(in, out));
+
+  BackgroundThread background_thread;
+  background_thread.Start();
+  background_thread.WaitUntilReady();
 
   __builtin_trap();
 }
@@ -157,6 +194,25 @@ void ExpectAnnotations(ProcessSnapshot* snapshot, bool sanitized) {
     EXPECT_FALSE(found_non_allowed);
   } else {
     EXPECT_TRUE(found_non_allowed);
+  }
+}
+
+void ExpectExtraMemory(ProcessSnapshot* snapshot, bool sanitized) {
+  ASSERT_TRUE(snapshot->Exception());
+  bool found_thread_extra_memory = false;
+  for (const ThreadSnapshot* thread : snapshot->Threads()) {
+    if (!thread->ExtraMemory().empty()) {
+      found_thread_extra_memory = true;
+      break;
+    }
+  }
+
+  if (sanitized) {
+    EXPECT_TRUE(snapshot->Exception()->ExtraMemory().empty());
+    EXPECT_FALSE(found_thread_extra_memory);
+  } else {
+    EXPECT_FALSE(snapshot->Exception()->ExtraMemory().empty());
+    EXPECT_TRUE(found_thread_extra_memory);
   }
 }
 
@@ -285,6 +341,7 @@ class SanitizeTest : public MultiprocessExec {
 
     ExpectAnnotations(&snapshot, /* sanitized= */ false);
     ExpectStackData(&snapshot, addrs, /* sanitized= */ false);
+    ExpectExtraMemory(&snapshot, /* sanitized= */ false);
     ExpectProcessMemory(&snapshot,
                         addrs.string_address,
                         /* sanitized= */ false);
@@ -307,6 +364,7 @@ class SanitizeTest : public MultiprocessExec {
 
     ExpectAnnotations(&sanitized, /* sanitized= */ true);
     ExpectStackData(&sanitized, addrs, /* sanitized= */ true);
+    ExpectExtraMemory(&sanitized, /* sanitized= */ true);
     ExpectProcessMemory(&sanitized,
                         addrs.string_address,
                         /* sanitized= */ true);

@@ -62,9 +62,11 @@ bool ExceptionSnapshotMac::Initialize(ProcessReaderMac* process_reader,
   exception_ = exception;
   mach_exception_code_t exception_code_0 = code[0];
 
+  bool recovered_from_exc_crash = false;
   if (exception_ == EXC_CRASH) {
     exception_ = ExcCrashRecoverOriginalException(
         exception_code_0, &exception_code_0, nullptr);
+    recovered_from_exc_crash = true;
 
     if (!ExcCrashCouldContainException(exception_)) {
       LOG(WARNING) << base::StringPrintf(
@@ -83,7 +85,11 @@ bool ExceptionSnapshotMac::Initialize(ProcessReaderMac* process_reader,
   // ExceptionInfo() returns code[0] as a 32-bit value, but exception_code_0 is
   // a 64-bit value. The best treatment for this inconsistency depends on the
   // exception type.
-  if (exception_ == EXC_RESOURCE || exception_ == EXC_GUARD) {
+  //
+  // A code[0] recovered from EXC_CRASH retains only its low 20 bits, so the
+  // high-bit extraction below does not apply to it.
+  if (!recovered_from_exc_crash &&
+      (exception_ == EXC_RESOURCE || exception_ == EXC_GUARD)) {
     // All 64 bits of code[0] are significant for these exceptions. See
     // <mach/exc_resource.h> for EXC_RESOURCE and 10.10
     // xnu-2782.1.97/bsd/kern/kern_guarded.c fd_guard_ast() for EXC_GUARD.

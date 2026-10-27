@@ -16,6 +16,8 @@
 
 #include <stdint.h>
 
+#include <algorithm>
+
 #include "snapshot/cpu_context.h"
 #include "util/linux/pac_helper.h"
 #include "util/numeric/safe_assignment.h"
@@ -59,8 +61,8 @@ class StackReferencesAddressRange : public MemorySnapshot::Delegate {
     } else if (!AssignIfInRange(&sp_offset, stack_pointer_ - stack_->Address())) {
       return false;
     }
-    const size_t aligned_sp_offset =
-        (sp_offset + sizeof(Pointer) - 1) & ~(sizeof(Pointer) - 1);
+    const size_t aligned_sp_offset = std::min<size_t>(
+        size, (sp_offset + sizeof(Pointer) - 1) & ~(sizeof(Pointer) - 1));
 
     auto words = reinterpret_cast<Pointer*>(static_cast<char*>(data) +
                                             aligned_sp_offset);
@@ -83,6 +85,40 @@ class StackReferencesAddressRange : public MemorySnapshot::Delegate {
 };
 
 }  // namespace
+
+namespace internal {
+
+class ExceptionSnapshotSanitized final : public ExceptionSnapshot {
+ public:
+  explicit ExceptionSnapshotSanitized(const ExceptionSnapshot* snapshot)
+      : snapshot_(snapshot) {}
+
+  ExceptionSnapshotSanitized(const ExceptionSnapshotSanitized&) = delete;
+  ExceptionSnapshotSanitized& operator=(const ExceptionSnapshotSanitized&) =
+      delete;
+
+  ~ExceptionSnapshotSanitized() override = default;
+
+  // ExceptionSnapshot:
+  const CPUContext* Context() const override { return snapshot_->Context(); }
+  uint64_t ThreadID() const override { return snapshot_->ThreadID(); }
+  uint32_t Exception() const override { return snapshot_->Exception(); }
+  uint32_t ExceptionInfo() const override { return snapshot_->ExceptionInfo(); }
+  uint64_t ExceptionAddress() const override {
+    return snapshot_->ExceptionAddress();
+  }
+  const std::vector<uint64_t>& Codes() const override {
+    return snapshot_->Codes();
+  }
+  std::vector<const MemorySnapshot*> ExtraMemory() const override {
+    return std::vector<const MemorySnapshot*>();
+  }
+
+ private:
+  const ExceptionSnapshot* snapshot_;
+};
+
+}  // namespace internal
 
 ProcessSnapshotSanitized::ProcessSnapshotSanitized() = default;
 
@@ -153,6 +189,11 @@ bool ProcessSnapshotSanitized::Initialize(
   }
 
   if (sanitize_stacks_) {
+    if (snapshot_->Exception()) {
+      exception_ = std::make_unique<internal::ExceptionSnapshotSanitized>(
+          snapshot_->Exception());
+    }
+
     for (const auto module : snapshot_->Modules()) {
       address_ranges_.Insert(module->Address(), module->Size());
     }
@@ -252,7 +293,10 @@ std::vector<UnloadedModuleSnapshot> ProcessSnapshotSanitized::UnloadedModules()
 
 const ExceptionSnapshot* ProcessSnapshotSanitized::Exception() const {
   INITIALIZATION_STATE_DCHECK_VALID(initialized_);
-  return snapshot_->Exception();
+  if (!sanitize_stacks_) {
+    return snapshot_->Exception();
+  }
+  return exception_.get();
 }
 
 std::vector<const MemoryMapRegionSnapshot*>
@@ -269,7 +313,10 @@ std::vector<HandleSnapshot> ProcessSnapshotSanitized::Handles() const {
 std::vector<const MemorySnapshot*> ProcessSnapshotSanitized::ExtraMemory()
     const {
   INITIALIZATION_STATE_DCHECK_VALID(initialized_);
-  return snapshot_->ExtraMemory();
+  // TODO(jperaza): If/when ExtraMemory() is used, decide whether and how it
+  // should be sanitized.
+  DCHECK(snapshot_->ExtraMemory().empty());
+  return std::vector<const MemorySnapshot*>();
 }
 
 const ProcessMemory* ProcessSnapshotSanitized::Memory() const {

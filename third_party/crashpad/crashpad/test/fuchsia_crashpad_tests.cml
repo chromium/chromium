@@ -31,7 +31,7 @@
         },
         {
             name: "netstack",
-            url: "#meta/netstack.cm",
+            url: "#meta/netstack3.cm",
         },
         {
             name: "crashpad_test",
@@ -70,11 +70,6 @@
             protocol: "fuchsia.posix.socket.Provider",
             from: "#netstack",
             to: "#crashpad_test",
-        },
-        {
-            storage: "cache",
-            from: "parent",
-            to: [ "#netstack" ],
         },
         {
             storage: "tmp",
