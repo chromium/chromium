@@ -11,13 +11,13 @@
 #include <memory>
 #include <utility>
 
+#include "base/check.h"
 #include "base/files/scoped_file.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/notreached.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/test/bind.h"
 #include "ui/ozone/platform/wayland/test/test_gtk_primary_selection.h"
 #include "ui/ozone/platform/wayland/test/test_zwp_primary_selection.h"
 
@@ -59,34 +59,27 @@ TestWaylandServerThread::TestWaylandServerThread(const ServerConfig& config)
 }
 
 TestWaylandServerThread::~TestWaylandServerThread() {
-  // Stop watching the descriptor here to guarantee that no new events
-  // will come during or after the destruction of the display. This must be
-  // done on the correct thread to avoid data races.
-  auto stop_controller_on_server_thread =
-      [](wl::TestWaylandServerThread* server) {
-        server->controller_.StopWatchingFileDescriptor();
-      };
-  RunAndWait(
-      base::BindLambdaForTesting(std::move(stop_controller_on_server_thread)));
-
-  Stop();
-
-  if (protocol_logger_) {
-    auto* temp = protocol_logger_.get();
-    protocol_logger_ = nullptr;
-    wl_protocol_logger_destroy(temp);
-    temp = nullptr;
+  // Stop watching the descriptor and destroy the protocol logger and client on
+  // the server thread before stopping it. If the server's event loop has not
+  // yet processed the closed client socket, destroying `client_` after `Stop()`
+  // on the main thread would run resource-destruction WeakPtr callbacks bound
+  // to the server thread's sequence.
+  auto cleanup_on_server_thread = [](wl::TestWaylandServerThread* server) {
+    server->controller_.StopWatchingFileDescriptor();
+    if (server->protocol_logger_) {
+      wl_protocol_logger_destroy(server->protocol_logger_.ExtractAsDangling());
+    }
+    if (server->client_) {
+      wl_client_destroy(server->client_);
+      CHECK(!server->client_);
+    }
+  };
+  if (IsRunning()) {
+    RunAndWait(base::BindOnce(cleanup_on_server_thread));
+    Stop();
+  } else {
+    cleanup_on_server_thread(this);
   }
-  protocol_logger_ = nullptr;
-
-  // Check if the client has been destroyed after the thread is stopped. This
-  // most probably will happen if the real client has closed its fd resulting
-  // in a closed socket. The server's event loop will then see that and destroy
-  // the client automatically. This may or may not happen - depends on whether
-  // the events will be processed after the real client closes its end or not.
-  if (client_)
-    wl_client_destroy(client_);
-  client_ = nullptr;
 }
 
 bool TestWaylandServerThread::Start() {
