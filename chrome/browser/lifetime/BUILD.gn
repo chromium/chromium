@@ -83,6 +83,7 @@ source_set("impl") {
     "//chrome/browser:browser_process_platform_part",
     "//chrome/browser:buildflags",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/profiles:profile_manager",
     "//chrome/browser/profiles:profile_util",
     "//chrome/common:buildflags",
     "//chrome/common:chrome_features",
@@ -98,6 +99,7 @@ source_set("impl") {
     "//content/public/common",
     "//printing/buildflags",
     "//rlz/buildflags",
+    "//services/network/public/mojom",
   ]
 
   if (is_android) {
@@ -169,7 +171,6 @@ source_set("impl") {
       "//chrome/browser/metrics",
       "//chrome/browser/metrics/desktop_session_duration",
       "//chrome/browser/notifications",
-      "//chrome/browser/profiles:profile_manager",
       "//chrome/browser/sessions",
       "//chrome/browser/ui:browser_init_state",
       "//chrome/browser/ui:browser_manager_service",
@@ -223,6 +224,7 @@ if (!is_android) {
     testonly = true
 
     sources = [
+      "browser_shutdown_unittest.cc",
       "restartability_monitor_unittest.cc",
       "smart_restart_metrics_observer_unittest.cc",
       "smart_restart_policy_unittest.cc",
@@ -234,23 +236,20 @@ if (!is_android) {
       "//chrome/browser/upgrade_detector",
       "//chrome/test:test_support",
       "//chrome/test/base:testing_browser_process",
+      "//content/public/browser",
       "//content/test:test_support",
+      "//mojo/public/cpp/bindings",
+      "//services/network:test_support",
+      "//services/network/public/mojom",
       "//testing/gmock",
       "//testing/gtest",
+      "//third_party/abseil-cpp:absl",
       "//ui/base/idle:test_support",
     ]
 
     if (is_chromeos) {
       sources += [ "application_lifetime_chromeos_unittest.cc" ]
-      deps += [
-        ":lifetime",
-        "//base",
-        "//chrome/test:test_support",
-        "//components/crash/core/common:crash_key",
-        "//content/test:test_support",
-        "//testing/gtest",
-        "//third_party/abseil-cpp:absl",
-      ]
+      deps += [ "//components/crash/core/common:crash_key" ]
     }
 
     if (!is_android && !is_chromeos) {

@@ -15,6 +15,7 @@
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notimplemented.h"
 #include "base/notreached.h"
@@ -28,6 +29,8 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/buildflags.h"
 #include "chrome/browser/profiles/nuke_profile_directory_utils.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/pref_names.h"
 #include "components/crash/core/common/crash_key.h"
@@ -37,10 +40,12 @@
 #include "components/tracing/common/tracing_switches.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_process_host.h"
+#include "content/public/browser/storage_partition.h"
 #include "content/public/browser/tracing_controller.h"
 #include "content/public/common/content_switches.h"
 #include "printing/buildflags/buildflags.h"
 #include "rlz/buildflags/buildflags.h"
+#include "services/network/public/mojom/cookie_manager.mojom.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "chrome/browser/first_run/upgrade_util_win.h"
@@ -214,6 +219,21 @@ void OnShutdownStarting(ShutdownType type) {
   // delays to shutdown time.
   CHECK(!g_shutdown_started, base::NotFatalUntil::M161);
   g_shutdown_started = new base::Time(base::Time::Now());
+
+  // Start flushing cookies and storage partitions asynchronously so network
+  // and DOMStorage persistence runs in parallel with browser and profile
+  // teardown instead of blocking BrowserProcessIOThread::ProcessHostCleanUp().
+  if (g_browser_process && g_browser_process->profile_manager()) {
+    for (Profile* profile :
+         g_browser_process->profile_manager()->GetLoadedProfiles()) {
+      profile->ForEachLoadedStoragePartition(
+          [](content::StoragePartition* partition) {
+            partition->GetCookieManagerForBrowserProcess()->FlushCookieStore(
+                base::NullCallback());
+            partition->Flush();
+          });
+    }
+  }
 
   // TODO(crbug.com/469788783):  Coverage builds appear to work without this. Check
   // if this is still needed for PGO.
