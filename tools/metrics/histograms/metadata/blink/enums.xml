@@ -6868,6 +6868,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="6047" label="SameDocumentSameSiteCrossOriginInitiator"/>
   <int value="6048" label="SameDocumentCrossSiteInitiator"/>
   <int value="6049" label="StickyPopOutVideoAdDetected"/>
+  <int value="6050" label="DeviceBoundSessionRegistrationObserver"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->
@@ -8836,6 +8837,17 @@ Called by update_use_counter_css.py.-->
   <int value="0" label="LowerPriority"/>
   <int value="1" label="NormalPriority"/>
 </enum>
+
+<!-- LINT.IfChange(RegistrationObserverAbortedStatus) -->
+
+<enum name="RegistrationObserverAbortedStatus">
+  <int value="0" label="Completed">
+    Script called disconnect() on an observer that was observing.
+  </int>
+  <int value="1" label="Aborted">Observer was aborted via AbortSignal.</int>
+</enum>
+
+<!-- LINT.ThenChange(//third_party/blink/renderer/modules/deviceboundsessions/device_bound_session_registration_observer.cc:RegistrationObserverAbortedStatus) -->
 
 <enum name="RevalidationPolicy">
   <int value="0" label="Use"/>

@@ -1457,6 +1457,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Blink.DeviceBoundSession.AbortedStatus"
+    enum="RegistrationObserverAbortedStatus" expires_after="2027-04-20">
+  <owner>amraboelkher@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Recorded when disconnect() or an AbortSignal stops a
+    DeviceBoundSessionRegistrationObserver. Completed means script called
+    disconnect() while the observer was observing. Aborted means its AbortSignal
+    aborted, even if observe() was never called, including a signal that was
+    already aborted when the observer was created.
+  </summary>
+</histogram>
+
 <histogram name="Blink.DigitalCredentials.Create.HasTransientUserActivation"
     enum="Boolean" expires_after="2027-07-05">
   <owner>mamir@chromium.org</owner>

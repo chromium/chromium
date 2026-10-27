@@ -1861,6 +1861,11 @@ interface DelegatedInkTrailPresenter
     getter presentationArea
     method constructor
     method updateInkTrailStartPoint
+interface DeviceBoundSessionRegistrationObserver
+    attribute @@toStringTag
+    method constructor
+    method disconnect
+    method observe
 interface DeviceMotionEvent : Event
     static method requestPermission
     attribute @@toStringTag

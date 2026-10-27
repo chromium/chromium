@@ -1,0 +1,14 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/blink/renderer/modules/modules.gni")
+
+blink_modules_sources("deviceboundsessions") {
+  sources = [
+    "device_bound_session_manager_supplement.cc",
+    "device_bound_session_manager_supplement.h",
+    "device_bound_session_registration_observer.cc",
+    "device_bound_session_registration_observer.h",
+  ]
+}
