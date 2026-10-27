@@ -253,8 +253,13 @@ void WebrtcVideoEncoderVpx::Encode(std::unique_ptr<webrtc::DesktopFrame> frame,
       active_map_data_.Clear();
     }
 
-    // VPX codecs do not use an active map for keyframes so skip in that case.
-    if (!params.key_frame) {
+    // VPX codecs do not use an active map for keyframes, but we still populate
+    // |active_map_data_| with the full frame so subsequent top-off frames (with
+    // clear_active_map = false) can top off the keyframe.
+    if (params.key_frame) {
+      active_map_data_.Update(
+          webrtc::DesktopRegion(webrtc::DesktopRect::MakeSize(frame_size)));
+    } else {
       active_map_data_.Update(updated_region);
       if (vpx_codec_control(codec_.get(), VP8E_SET_ACTIVEMAP, &active_map_)) {
         LOG(ERROR) << "Unable to apply active map";

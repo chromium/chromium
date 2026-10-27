@@ -53,6 +53,7 @@ constexpr int kDefaultFrames = 100;
 constexpr double kDefaultFps = 30.0;
 constexpr int kDefaultBitrateKbps = 5000;
 constexpr int kMinDimension = 32;
+constexpr int kMinQuantizer = 10;
 
 constexpr int kAv1DefaultEncoderSpeed = 11;
 constexpr int kAv1MinEncoderSpeed = 7;
@@ -327,6 +328,7 @@ class EncoderBenchmark {
     preloaded_frames_ = preloaded_frames;
     next_frame_index_ = 0;
     frames_encoded_ = 0;
+    top_off_active_ = false;
     total_pixels_ = 0;
     updated_pixels_ = 0;
     frame_metrics_.clear();
@@ -411,7 +413,7 @@ class EncoderBenchmark {
     params.duration = base::Hertz(runtime_params_.fps);
     params.fps = static_cast<int>(std::round(runtime_params_.fps));
     params.key_frame = (frame_index == 0);
-    params.clear_active_map = true;
+    params.clear_active_map = !top_off_active_;
 
     // Stats are tracked on capture thread.
     // Use int64_t to prevent overflow for large dimensions.
@@ -460,6 +462,7 @@ class EncoderBenchmark {
       metric.quantizer = frame->quantizer;
       metric.key_frame = frame->key_frame;
       frame_metrics_.push_back(metric);
+      top_off_active_ = (frame->quantizer > kMinQuantizer);
     } else {
       LOG(ERROR) << "Encoder failed to encode frame.";
     }
@@ -707,6 +710,7 @@ class EncoderBenchmark {
   size_t next_frame_index_ = 0;
   int frames_to_encode_ = 0;
   int frames_encoded_ = 0;
+  bool top_off_active_ = false;
   int64_t total_pixels_ = 0;
   int64_t updated_pixels_ = 0;
   std::vector<FrameMetric> frame_metrics_;
