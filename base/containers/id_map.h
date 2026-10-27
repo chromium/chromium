@@ -257,7 +257,7 @@ class IDMap final {
     inner_iterator iter_;
 
     KeyIterator() = default;
-    KeyIterator(inner_iterator iter) : iter_(iter) {}
+    explicit KeyIterator(inner_iterator iter) : iter_(iter) {}
     KeyType operator*() const { return iter_->first; }
     KeyIterator& operator++() {
       ++iter_;
