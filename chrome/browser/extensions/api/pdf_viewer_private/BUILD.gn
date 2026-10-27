@@ -94,7 +94,5 @@ source_set("unit_tests") {
       "//chrome/common/extensions/api",
       "//extensions/browser:test_support",
     ]
-    allow_circular_includes_from =
-        [ "//chrome/browser/ui/views/save_to_drive:unit_tests" ]
   }
 }

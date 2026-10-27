@@ -124,7 +124,6 @@ allow_circular_includes_from_untriaged = [
   "//chrome/browser/chromeos/reporting:reporting",
   "//chrome/browser/content_settings:content_settings",
   "//chrome/browser/enterprise/data_controls:data_controls",
-  "//chrome/browser/extensions/api/pdf_viewer_private:unit_tests",
   "//chrome/browser/extensions:extensions",
   "//chrome/browser/interstitials:interstitials",
   "//chrome/browser/media/webrtc:webrtc",
