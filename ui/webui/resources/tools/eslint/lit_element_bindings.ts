@@ -11,9 +11,9 @@ import path from 'node:path';
 import {camelCaseToDashCase, dashCaseToCamelCase, extractClassImport, extractPropertiesFromClass, getLitPropertyType, isIdentifier, isLiteral, isType, LIT_IMPORT_REGEX} from './query_utils.js';
 
 type Options = [];
-type MessageIds =
-    'bindingTypeMismatch'|'camelCaseAttribute'|'incorrectAttributeBinding'|
-    'incorrectBooleanBinding'|'invalidBooleanAttributeExpression'|
+type MessageIds = 'bindingTypeMismatch'|'camelCaseAttribute'|
+    'incorrectAttributeBinding'|'incorrectBooleanBinding'|
+    'invalidBooleanAttributeExpression'|'invalidPropertyExpression'|
     'listenerNotCallable'|'noFalseBinding'|'noStaticTrueBooleanAttribute'|
     'noTrueBinding'|'propertyNotFound'|'propertyTypeMismatch';
 
@@ -33,9 +33,10 @@ const STATIC_QUESTION_MARK_REGEX = /\s\?(?<boolName>[a-zA-Z0-9-]+)/g;
 const STATIC_TRUE_REGEX = /\s(?<attrName>[a-zA-Z0-9-]+)="true"/g;
 const CAMEL_CASE_ATTR_REGEX =
     /\s(?<prefix>\??)(?<attrName>[a-z][a-zA-Z0-9-]*[A-Z][a-zA-Z0-9-]*)="/g;
+const STATIC_PROPERTY_REGEX = /\s\.(?<propName>[a-zA-Z0-9_-]+)="/g;
 const HTML_COMMENT_REGEX = /<!--[\s\S]*?-->/g;
 const BINDING_REGEX =
-    /(\s+(?<attrName>[a-zA-Z0-9\-]+)|\?(?<boolName>[a-zA-Z0-9-]+)|\.(?<propName>[a-zA-Z0-9-]+)|@(?<eventName>[a-zA-Z0-9-]+))="$/;
+    /(\s+(?<attrName>[a-zA-Z0-9\-]+)|\?(?<boolName>[a-zA-Z0-9-]+)|@(?<eventName>[a-zA-Z0-9-]+))="$|\.(?<propName>[a-zA-Z0-9_-]+)="(?<propPrefix>[^"]*)$/;
 
 interface TagInfo {
   tagName: string;
@@ -164,6 +165,8 @@ export const litElementExpressions = ESLintUtils.RuleCreator.withoutDocs<
           'Incorrect assignment to property \'{{propertyName}}\' using boolean attribute expression \'{{attributeExpression}}\'. Boolean attribute expressions should only be assigned to boolean properties. To bind to the truthiness of \'{{propertyName}}\', convert it to a boolean using \'!!\'.',
       invalidBooleanAttributeExpression:
           'Invalid boolean attribute expression: \'?{{attributeName}}=\' syntax only works with \'${...}\' rvalues. Use just \'{{dashCaseName}}\' if always `true` or \'?{{dashCaseName}}="${...}"\' for a dynamic binding.',
+      invalidPropertyExpression:
+          'Invalid property expression: \'.{{propertyName}}=\' only works with \'${...}\' rvalues. Use attribute expression \'{{dashCaseName}}="..."\' for a static value, or \'.{{propertyName}}="${...}"\' for a dynamic binding.',
       listenerNotCallable:
           'Event listener for \'@{{eventName}}\' must be callable.',
       noFalseBinding:
@@ -366,6 +369,32 @@ export const litElementExpressions = ESLintUtils.RuleCreator.withoutDocs<
           });
         }
       }
+
+      // Check 4: Static .prop="..." attributes not bound to a ${...}
+      // expression.
+      for (const match of rawWithoutComments.matchAll(STATIC_PROPERTY_REGEX)) {
+        assert.ok(match.groups);
+        const propName = match.groups['propName']!;
+        const afterMatch =
+            rawWithoutComments.slice(match.index + match[0].length);
+        if (!quasi.tail && !afterMatch.includes('"')) {
+          // Dynamic property binding .prop="...${...}...".
+          continue;
+        }
+        const tagInfo = getTagAtOffset(
+            rawWithoutComments, match.index, prevTagName, prevTagId);
+        if (!tagInfo) {
+          continue;
+        }
+        context.report({
+          node: quasi,
+          messageId: 'invalidPropertyExpression',
+          data: {
+            propertyName: propName,
+            dashCaseName: camelCaseToDashCase(propName),
+          },
+        });
+      }
     }
 
     // Ensure attribute bindings do not bind to objects/arrays.
@@ -520,9 +549,14 @@ export const litElementExpressions = ESLintUtils.RuleCreator.withoutDocs<
           assert.ok(match.groups);
           const propBinding = match.groups['propName'];
           if (propBinding && currentTagName !== '') {
+            const hasStaticPrefix = match.groups['propPrefix'] !== '';
+            const hasStaticSuffix =
+                !node.quasis[i + 1]?.value.raw.startsWith('"');
+            const isConcatenatedString = hasStaticPrefix || hasStaticSuffix;
             checkPropertyBinding(
                 currentTagName, currentTagId, propBinding, expression, tsNode,
-                expressionType, expressionTypeStr, checker);
+                isConcatenatedString ? checker.getStringType() : expressionType,
+                isConcatenatedString ? 'string' : expressionTypeStr, checker);
             continue;
           }
 

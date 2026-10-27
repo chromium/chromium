@@ -35,13 +35,17 @@ export function getHtml(this: BindingsViolationsElement) {
 <div .innerHTML="${this.trustedHtmlOrString}"></div>
 <div @click="${this.onClick}"></div>
 <div @click="${this.onClick_}"></div>
-<!-- ?disabled disabled="true" -->
+<!-- ?disabled disabled="true" .fooString="bar" -->
 <hello-world-child ?fooBoolean="${this.disabled}" ?is-collapsible
     ?foo-boolean="false" foo-boolean="true" foo-string="true"
-    fooNumber="3" fooString="${this.label}">
+    fooNumber="3" fooString="${this.label}"
+    .fooString="bar" .fooBoolean=" ${this.disabled}"
+    .fooNumber="${this.limits.min}px">
 </hello-world-child>
+<hello-world-child .fooString="prefix ${this.limits.min}"></hello-world-child>
 <button disabled="true"></button>
-<div aria-hidden="true" draggable="true"></div>
+<div aria-hidden="true" draggable="true" .style="height: ${this.limits.min}px">
+</div>
 <svg viewBox="0 0 24 24"></svg>
 `;
   // clang-format on

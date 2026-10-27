@@ -915,6 +915,8 @@ class EslintTsTest(unittest.TestCase):
 
     _NO_STATIC_TRUE_BOOLEAN_ERROR = "Boolean attribute '%(attributeName)s' does not need to be set to '=\"true\"'. Use either '%(dashCaseName)s' or '.%(propertyName)s=\"${true}\"' instead"
 
+    _INVALID_PROPERTY_EXPRESSION_ERROR = "Invalid property expression: '.%(propertyName)s=' only works with '${...}' rvalues. Use attribute expression '%(dashCaseName)s=\"...\"' for a static value, or '.%(propertyName)s=\"${...}\"' for a dynamic binding"
+
     _PROPERTY_TYPE_MISMATCH_ERROR = "Property type mismatch: '%(propertyName)s' is declared as '%(declaredType)s' reactive property but is typed as '%(tsType)s'"
 
     _BINDING_TYPE_MISMATCH_ERROR = "Type mismatch in property binding: Property '%(propertyName)s' on element '%(tagName)s' expects type '%(expectedType)s', but was provided '%(providedType)s'"
@@ -1077,6 +1079,18 @@ class EslintTsTest(unittest.TestCase):
         'dashCaseName': 'disabled',
         'propertyName': 'disabled',
       },
+      _INVALID_PROPERTY_EXPRESSION_ERROR
+      % {
+        'propertyName': 'fooString',
+        'dashCaseName': 'foo-string',
+      },
+      _BINDING_TYPE_MISMATCH_ERROR
+      % {
+        'propertyName': 'fooBoolean',
+        'tagName': 'hello-world-child',
+        'expectedType': 'boolean',
+        'providedType': 'string',
+      },
     ]
     for e in errors:
       self.assertTrue(
@@ -1157,6 +1171,13 @@ class EslintTsTest(unittest.TestCase):
         'attributeName': 'viewBox',
         'propertyName': 'viewBox',
         'dashCaseName': 'view-box',
+      },
+      _BINDING_TYPE_MISMATCH_ERROR
+      % {
+        'propertyName': 'fooString',
+        'tagName': 'hello-world-child',
+        'expectedType': 'string',
+        'providedType': 'string',
       },
     ]
     for e in non_errors:
