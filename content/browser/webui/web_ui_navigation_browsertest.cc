@@ -1293,11 +1293,10 @@ IN_PROC_BROWSER_TEST_F(WebUINavigationBrowserTest,
   EXPECT_TRUE(NavigateToURL(shell(), untrusted_url));
 
   GURL web_url(embedded_test_server()->GetURL("foo.com", "/title2.html"));
-  TestNavigationObserver nav_observer(shell()->web_contents());
-  EXPECT_TRUE(ExecJs(shell(), JsReplace("location.href = $1;", web_url)));
-  nav_observer.Wait();
-
-  EXPECT_TRUE(nav_observer.last_navigation_succeeded());
+  // Use `NavigateToURLFromRenderer()` rather than `ExecJs()`: this navigation
+  // swaps `RenderFrameHost`s, which can delete the initiator frame before
+  // `ExecJs()` gets its reply ("RenderFrame deleted.").
+  EXPECT_TRUE(NavigateToURLFromRenderer(shell(), web_url));
   EXPECT_EQ(web_url, shell()->web_contents()->GetLastCommittedURL());
 }
 
