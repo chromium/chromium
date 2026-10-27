@@ -95,7 +95,7 @@ void ServiceWorkerHost::BindReceiver(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   auto* render_process_host =
       content::RenderProcessHost::FromID(render_process_id);
-  if (!render_process_host) {
+  if (!render_process_host || !render_process_host->IsInitializedAndNotDead()) {
     return;
   }
   auto* service_worker_host_list = ServiceWorkerHostList::Get(
@@ -161,6 +161,9 @@ void ServiceWorkerHost::DidInitializeServiceWorkerContext(
     const blink::ServiceWorkerToken& service_worker_token,
     mojo::PendingAssociatedRemote<mojom::EventDispatcher> event_dispatcher) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  if (!render_process_host_->IsInitializedAndNotDead()) {
+    return;
+  }
   content::BrowserContext* browser_context = GetBrowserContext();
   if (!browser_context) {
     return;
@@ -432,6 +435,17 @@ void ServiceWorkerHost::RenderProcessExited(
   // RenderProcessHostImpl::Cleanup.
   Destroy();
   // This instance has now been deleted.
+}
+
+void ServiceWorkerHost::RenderProcessHostDestroyed(
+    content::RenderProcessHost* host) {
+  CHECK_EQ(host, render_process_host_);
+  render_process_host_observation_.Reset();
+  if (ServiceWorkerHostList::Get(render_process_host_,
+                                 /*create_if_not_exists=*/false)) {
+    Destroy();
+    // This instance has now been deleted.
+  }
 }
 
 }  // namespace extensions

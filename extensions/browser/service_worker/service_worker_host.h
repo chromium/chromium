@@ -146,6 +146,7 @@ class ServiceWorkerHost :
   void RenderProcessExited(
       content::RenderProcessHost* host,
       const content::ChildProcessTerminationInfo& info) override;
+  void RenderProcessHostDestroyed(content::RenderProcessHost* host) override;
 
  private:
   // Returns the browser context associated with the render process this

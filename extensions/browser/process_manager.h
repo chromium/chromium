@@ -300,6 +300,10 @@ class ProcessManager : public KeyedService,
   void RenderProcessExited(
       content::RenderProcessHost* host,
       const content::ChildProcessTerminationInfo& info) override;
+  void RenderProcessHostDestroyed(content::RenderProcessHost* host) override;
+
+  // Stops observing `host` and cleans up any service workers tracked for it.
+  void UntrackRenderProcessForWorkers(content::RenderProcessHost* host);
 
   // ExtensionHostObserver:
   void OnExtensionHostDestroyed(ExtensionHost* host) override;

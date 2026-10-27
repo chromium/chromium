@@ -1007,7 +1007,7 @@ void ProcessManager::StartTrackingServiceWorkerRunningInstance(
         content::RenderProcessHost::FromID(worker_id.render_process_id);
     DCHECK(render_process_host);
     if (!process_observations_.IsObservingSource(render_process_host)) {
-      // These will be cleaned up in RenderProcessExited().
+      // Cleaned up in RenderProcessExited() or RenderProcessHostDestroyed().
       process_observations_.AddObservation(render_process_host);
     }
     for (auto& observer : observer_list_)
@@ -1018,6 +1018,16 @@ void ProcessManager::StartTrackingServiceWorkerRunningInstance(
 void ProcessManager::RenderProcessExited(
     content::RenderProcessHost* host,
     const content::ChildProcessTerminationInfo& info) {
+  UntrackRenderProcessForWorkers(host);
+}
+
+void ProcessManager::RenderProcessHostDestroyed(
+    content::RenderProcessHost* host) {
+  UntrackRenderProcessForWorkers(host);
+}
+
+void ProcessManager::UntrackRenderProcessForWorkers(
+    content::RenderProcessHost* host) {
   DCHECK(process_observations_.IsObservingSource(host));
   process_observations_.RemoveObservation(host);
   const content::ChildProcessId render_process_id = host->GetID();
@@ -1041,8 +1051,9 @@ void ProcessManager::RenderProcessExited(
          all_running_extension_workers_.GetAllForExtension(extension_id,
                                                            render_process_id)) {
       StopTrackingServiceWorkerRunningInstance(worker_id);
-      ServiceWorkerTaskQueue::Get(browser_context_)
-          ->RenderProcessForWorkerExited(worker_id);
+      if (auto* task_queue = ServiceWorkerTaskQueue::Get(browser_context_)) {
+        task_queue->RenderProcessForWorkerExited(worker_id);
+      }
     }
   }
 #if DCHECK_IS_ON()

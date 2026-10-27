@@ -4,15 +4,21 @@
 
 #include "extensions/browser/process_manager.h"
 
+#include <memory>
+
+#include "base/process/kill.h"
 #include "build/android_buildflags.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/site_instance.h"
 #include "content/public/common/content_client.h"
+#include "content/public/test/mock_render_process_host.h"
 #include "content/public/test/test_browser_context.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extensions_test.h"
 #include "extensions/browser/process_manager_delegate.h"
+#include "extensions/browser/service_worker/worker_id.h"
 #include "extensions/browser/test_extensions_browser_client.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 
 using content::BrowserContext;
 using content::SiteInstance;
@@ -140,6 +146,33 @@ TEST_F(ProcessManagerTest, IsBackgroundHostAllowed) {
   extension_system()->SetReady();
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(manager.startup_background_hosts_created_for_test());
+}
+
+// Test that destroying a RenderProcessHost without a subsequent
+// RenderProcessExited notification (for example, when a worker registration
+// arrived after RenderProcessHostImpl::FastShutdown() marked the host dead)
+// still removes the host observation and tracked worker before ~ProcessManager.
+TEST_F(ProcessManagerTest,
+       CleansUpTrackedWorkerWhenRenderProcessHostDestroyed) {
+  ProcessManager manager(original_context(), extension_registry());
+  auto render_process_host =
+      std::make_unique<content::MockRenderProcessHost>(original_context());
+  render_process_host->Init();
+  render_process_host->SimulateRenderProcessExit(
+      base::TERMINATION_STATUS_NORMAL_TERMINATION, /*exit_code=*/0);
+  ASSERT_FALSE(render_process_host->IsInitializedAndNotDead());
+
+  const WorkerId worker_id{/*extension_id=*/"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                           render_process_host->GetID(),
+                           /*version_id=*/1,
+                           /*thread_id=*/1, blink::ServiceWorkerToken()};
+  manager.StartTrackingServiceWorkerRunningInstance(worker_id);
+  EXPECT_TRUE(manager.HasServiceWorker(worker_id));
+
+  // Destroying a dead RenderProcessHost fires RenderProcessHostDestroyed()
+  // without firing RenderProcessExited() again.
+  render_process_host.reset();
+  EXPECT_FALSE(manager.HasServiceWorker(worker_id));
 }
 
 }  // namespace extensions
