@@ -4,6 +4,7 @@
 
 #include "ui/webui/tracked_element/interaction_test_util_web_ui.h"
 
+#include "base/memory/weak_ptr.h"
 #include "base/types/pass_key.h"
 #include "build/build_config.h"
 #include "ui/base/interaction/element_tracker.h"
@@ -11,7 +12,9 @@
 #include "ui/webui/tracked_element/tracked_element_web_ui.h"
 
 #if !BUILDFLAG(IS_ANDROID)
+#include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/controls/webview/webview.h"
+#include "ui/views/widget/widget.h"
 #endif
 
 namespace ui {
@@ -43,9 +46,34 @@ ui::test::ActionResult InteractionTestUtilSimulatorWebUI::PressButton(
     ui::TrackedElement* element,
     InputType input_type) {
   if (auto* webui_el = element->AsA<TrackedElementWebUI>()) {
+#if !BUILDFLAG(IS_ANDROID)
+    // `ClickElement()` synthesizes DOM events in the renderer without
+    // transferring native widget activation to the WebView. If an active
+    // close-on-deactivate bubble is anchored to this element, close it with
+    // `kLostFocus` after dispatching the click to simulate the native focus
+    // loss that a real pointer press on the WebUI surface would cause while
+    // keeping the anchor highlighted during `pointerdown`.
+    base::WeakPtr<views::Widget> active_anchored_dialog_widget;
+    if (input_type != InputType::kKeyboard) {
+      if (auto* dialog = views::BubbleDialogDelegate::GetAnchoredDialog(
+              views::BubbleAnchor(webui_el));
+          dialog && dialog->ShouldCloseOnDeactivate() && dialog->GetWidget() &&
+          dialog->GetWidget()->IsActive()) {
+        active_anchored_dialog_widget = dialog->GetWidget()->GetWeakPtr();
+      }
+    }
+#endif
     if (webui_el->handler()->ClickElement(
             *webui_el, ToMojomInputType(input_type),
             base::PassKey<InteractionTestUtilSimulatorWebUI>())) {
+#if !BUILDFLAG(IS_ANDROID)
+      if (active_anchored_dialog_widget &&
+          !active_anchored_dialog_widget->IsClosed() &&
+          active_anchored_dialog_widget->IsActive()) {
+        active_anchored_dialog_widget->CloseWithReason(
+            views::Widget::ClosedReason::kLostFocus);
+      }
+#endif
       return ui::test::ActionResult::kSucceeded;
     }
     return ui::test::ActionResult::kFailed;

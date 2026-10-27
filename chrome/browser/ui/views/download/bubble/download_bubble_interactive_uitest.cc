@@ -34,7 +34,6 @@
 #include "components/user_education/views/help_bubble_view.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/download_test_observer.h"
-#include "ui/views/widget/any_widget_observer.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_MAC)
@@ -42,20 +41,6 @@
 #endif
 
 namespace {
-
-// This waits for the download bubble widget to be shown.
-views::NamedWidgetShownWaiter CreateDownloadBubbleDialogWaiter() {
-  return views::NamedWidgetShownWaiter{
-      views::test::AnyWidgetTestPasskey{},
-      DownloadToolbarUIController::kBubbleName};
-}
-
-// Wait for the bubble to show up. `waiter` should be created before this
-// call, and should be for the download bubble's widget name.
-auto WaitForDownloadBubbleShow(views::NamedWidgetShownWaiter& waiter) {
-  return base::BindLambdaForTesting(
-      [&waiter]() { waiter.WaitIfNeededAndGet(); });
-}
 
 bool IsExclusiveAccessBubbleVisible(ExclusiveAccessBubbleViews* bubble) {
   bool is_hiding = bubble->animation_for_test()->IsClosing();
@@ -438,9 +423,6 @@ IN_PROC_BROWSER_TEST_F(
       IDC_FULLSCREEN, &fullscreen_accelerator);
 #endif
 
-  views::NamedWidgetShownWaiter dialog_waiter =
-      CreateDownloadBubbleDialogWaiter();
-
   auto tab_fullscreen_waiter = std::make_unique<FullscreenWaiter>(
       browser(), FullscreenWaiter::Expectation{.tab_fullscreen = true});
 
@@ -482,7 +464,7 @@ IN_PROC_BROWSER_TEST_F(
                                                 fullscreen_accelerator)),
                  RunSubsequence(Do([&]() { tab_fullscreen_waiter->Wait(); }))),
       If([&]() { return IsPartialViewEnabled(); },
-         Then(Do(WaitForDownloadBubbleShow(dialog_waiter)),
+         Then(WaitForShow(kToolbarDownloadBubbleElementId),
               Check(DownloadBubbleIsShowingDetails(true),
                     "Download bubble is showing details after exiting "
                     "fullscreen"))),

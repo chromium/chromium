@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/run_loop.h"
+#include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_test_util.h"
@@ -31,6 +32,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "ui/base/window_open_disposition.h"
+#include "ui/views/controls/button/menu_button_controller.h"
 #include "ui/views/interaction/interaction_test_util_views.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/widget/widget.h"
@@ -223,6 +225,15 @@ IN_PROC_BROWSER_TEST_F(MediaRouterUIInteractiveUITest,
     waiter.Wait();
     // The reload should have closed the dialog.
     EXPECT_FALSE(dialog_controller->IsShowingMediaRouterDialog());
+
+    // Wait for `views::kMinimumTimeBetweenButtonClicks` after the bubble closes
+    // and unhighlights the toolbar button so the subsequent click is not
+    // suppressed.
+    base::RunLoop click_suppression_wait;
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE, click_suppression_wait.QuitClosure(),
+        views::kMinimumTimeBetweenButtonClicks);
+    click_suppression_wait.Run();
   }
 
   PressToolbarIcon();

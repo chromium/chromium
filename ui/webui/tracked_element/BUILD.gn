@@ -42,7 +42,10 @@ source_set("test_support") {
   ]
   deps = []
   if (!is_android) {
-    deps += [ "//ui/views/controls/webview" ]
+    deps += [
+      "//ui/views",
+      "//ui/views/controls/webview",
+    ]
   }
   public_deps = [
     ":tracked_element",

@@ -1916,8 +1916,7 @@ class ContextualTasksLensRegionChipInteractiveUiTest
   InteractiveTestApi::MultiStep OpenContextualTasksSidePanelViaToolbarButton(
       ui::ElementIdentifier side_panel_contents_id) {
     return Steps(
-        EnsurePresent(
-            kPinnedToolbarActionShowSidePanelContextualTasksElementId),
+        WaitForShow(kPinnedToolbarActionShowSidePanelContextualTasksElementId),
         PressButton(kPinnedToolbarActionShowSidePanelContextualTasksElementId),
         WaitForShow(kContextualTasksSidePanelWebViewElementId),
         NameViewRelative(
