@@ -56,6 +56,7 @@ import org.chromium.chrome.browser.multiwindow.TabbedStartupCoordinator;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
+import org.chromium.chrome.browser.settings.SettingsInTab;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.browser.settings.SettingsTestRule;
 import org.chromium.chrome.browser.tab.Tab;
@@ -70,6 +71,7 @@ import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.ui.listmenu.ListMenuButton;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
+import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modaldialog.ModalDialogProperties.ButtonType;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -366,7 +368,7 @@ public class OnStartupSettingsFragmentTest {
         assertNotNull(container);
         assertEquals(1, container.getChildCount());
 
-        // Act: Open the modal dialog via "Add a new page" and enter an unnormalized domain.
+        // Act: Open the tab-modal dialog via "Add a new page" and enter an unnormalized domain.
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     pref.getAddNewPageButtonForTesting().performClick();
@@ -374,6 +376,7 @@ public class OnStartupSettingsFragmentTest {
                             mSettingsTestRule.getActivity().getModalDialogManager();
                     PropertyModel dialogModel = modalDialogManager.getCurrentDialogForTest();
                     assertNotNull(dialogModel);
+                    assertEquals(ModalDialogType.TAB, modalDialogManager.getCurrentType());
                     assertTrue(dialogModel.get(ModalDialogProperties.POSITIVE_BUTTON_DISABLED));
 
                     EditText urlEditText =
@@ -471,7 +474,7 @@ public class OnStartupSettingsFragmentTest {
         assertNotNull(container);
 
         // Act & Verify: Invalid inputs keep positive button disabled and ignore the keyboard Done
-        // action; Cancel and Back/touch-outside dismissals leave stored URLs unchanged.
+        // action; Cancel and Back dismissals leave stored URLs unchanged.
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     ModalDialogManager modalDialogManager =
@@ -479,6 +482,7 @@ public class OnStartupSettingsFragmentTest {
                     pref.getAddNewPageButtonForTesting().performClick();
                     PropertyModel dialogModel = modalDialogManager.getCurrentDialogForTest();
                     assertNotNull(dialogModel);
+                    assertEquals(ModalDialogType.TAB, modalDialogManager.getCurrentType());
                     EditText urlEditText =
                             dialogModel
                                     .get(ModalDialogProperties.CUSTOM_VIEW)
@@ -508,7 +512,7 @@ public class OnStartupSettingsFragmentTest {
                                     .findViewById(R.id.url_edit_text);
                     secondEditText.setText(URL_WIKIPEDIA);
                     modalDialogManager.dismissDialog(
-                            secondDialogModel, DialogDismissalCause.NAVIGATE_BACK_OR_TOUCH_OUTSIDE);
+                            secondDialogModel, DialogDismissalCause.NAVIGATE_BACK);
                     assertNull(modalDialogManager.getCurrentDialogForTest());
                 });
 
@@ -542,6 +546,32 @@ public class OnStartupSettingsFragmentTest {
                                         .getActivity()
                                         .getModalDialogManager()
                                         .getCurrentDialogForTest()));
+    }
+
+    @Test
+    @SmallTest
+    public void testUrlDialog_inSettingsActivity_usesAppModalType() {
+        // Setup SettingsActivity hosting instead of SettingsInTab.
+        SettingsInTab.setShouldOpenSettingsInTabForTesting(false);
+        setRestoreOnStartupPref(SessionStartupPref.URLS);
+        RadioButtonGroupOnStartupPreference pref = launchAndGetRadioGroupPreference();
+
+        // Act.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> pref.getAddNewPageButtonForTesting().performClick());
+
+        // Verify opening the URL dialog in SettingsActivity uses ModalDialogType.APP.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    ModalDialogManager modalDialogManager =
+                            mSettingsTestRule.getActivity().getModalDialogManager();
+                    PropertyModel dialogModel = modalDialogManager.getCurrentDialogForTest();
+                    assertNotNull(dialogModel);
+                    assertEquals(ModalDialogType.APP, modalDialogManager.getCurrentType());
+                    modalDialogManager.dismissDialog(
+                            dialogModel, DialogDismissalCause.NAVIGATE_BACK_OR_TOUCH_OUTSIDE);
+                    assertNull(modalDialogManager.getCurrentDialogForTest());
+                });
     }
 
     @Test

@@ -33,13 +33,17 @@ import org.chromium.url.GURL;
 /* package */ class OnStartupUrlDialogCoordinator {
     private final Context mContext;
     private final ModalDialogManager mModalDialogManager;
+    private final @ModalDialogType int mDialogType;
     private @Nullable PropertyModel mDialogModel;
     private boolean mIsEditMode;
 
     /* package */ OnStartupUrlDialogCoordinator(
-            Context context, ModalDialogManager modalDialogManager) {
+            Context context,
+            ModalDialogManager modalDialogManager,
+            @ModalDialogType int dialogType) {
         mContext = context;
         mModalDialogManager = modalDialogManager;
+        mDialogType = dialogType;
     }
 
     /* package */ void show(@Nullable String initialUrl, Callback<String> onSaveCallback) {
@@ -118,7 +122,7 @@ import org.chromium.url.GURL;
         }
 
         mDialogModel = dialogModel;
-        mModalDialogManager.showDialog(dialogModel, ModalDialogType.APP);
+        mModalDialogManager.showDialog(dialogModel, mDialogType);
         urlEditText.requestFocus();
         KeyboardUtils.showKeyboard(urlEditText);
     }

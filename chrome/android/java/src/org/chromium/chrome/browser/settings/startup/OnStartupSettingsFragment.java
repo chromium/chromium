@@ -28,6 +28,7 @@ import org.chromium.chrome.browser.history.BrowsingHistoryBridge;
 import org.chromium.chrome.browser.multiwindow.TabbedStartupCoordinator;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
+import org.chromium.chrome.browser.settings.SettingsHostUtil;
 import org.chromium.chrome.browser.settings.search.ChromeBaseSearchIndexProvider;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -42,6 +43,7 @@ import org.chromium.components.prefs.PrefChangeRegistrar;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.modaldialog.ModalDialogManager;
+import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
 import org.chromium.ui.modaldialog.ModalDialogManagerHolder;
 import org.chromium.url.GURL;
 
@@ -195,8 +197,14 @@ public class OnStartupSettingsFragment extends ChromeBaseSettingsFragment {
             ModalDialogManager modalDialogManager =
                     assertNonNull(
                             ((ModalDialogManagerHolder) requireActivity()).getModalDialogManager());
+            // TODO(crbug.com/578155261): Use a framework-level modal dialog property to switch
+            // between TAB and APP modal types once supported.
+            @ModalDialogType
+            int dialogType =
+                    SettingsHostUtil.isShownInTab(this) ? ModalDialogType.TAB : ModalDialogType.APP;
             mUrlDialogCoordinator =
-                    new OnStartupUrlDialogCoordinator(requireContext(), modalDialogManager);
+                    new OnStartupUrlDialogCoordinator(
+                            requireContext(), modalDialogManager, dialogType);
         }
         mUrlDialogCoordinator.show(
                 initialUrl,
