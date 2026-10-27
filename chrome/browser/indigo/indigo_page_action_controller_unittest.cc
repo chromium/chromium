@@ -195,17 +195,16 @@ class IndigoPageActionControllerTestBase : public testing::Test {
         {features::kIndigo,
          {{"indigo_onboarding_url", "https://example.com/onboard"},
           {features::kIndigoAllowForEnterprise.name, "true"}}},
-        {features::kIndigoMetadataKeywordHeuristic, {}},
-        {contextual_cueing::kContextualCueingV2, {}}};
+        {features::kIndigoMetadataKeywordHeuristic, {}}};
     std::vector<base::test::FeatureRef> disabled_features;
     if (IsContextualCuesMode()) {
+      enabled_features.emplace_back(contextual_cueing::kContextualCueingV2,
+                                    base::FieldTrialParams());
       enabled_features.emplace_back(features::kIndigoContextualCueingV2,
                                     base::FieldTrialParams());
     } else {
+      disabled_features.emplace_back(contextual_cueing::kContextualCueingV2);
       disabled_features.emplace_back(features::kIndigoContextualCueingV2);
-      // TODO(b/572032182): Update legacy tests to run with kIndigoContextMenu
-      // enabled.
-      disabled_features.emplace_back(features::kIndigoContextMenu);
     }
     feature_list_.InitWithFeaturesAndParameters(enabled_features,
                                                 disabled_features);
@@ -506,15 +505,23 @@ class IndigoPageActionControllerTestBase : public testing::Test {
   }
 
   // Navigates to `url`, which the optimization guide allows Indigo on, and
-  // shows the proactive anchored message for it.
-  void NavigateAndShowProactiveAnchoredMessage(const GURL& url) {
+  // shows the anchored message for it (proactively in contextual cues mode, or
+  // reactively by clicking the suggestion chip in legacy mode).
+  void NavigateAndShowAnchoredMessage(const GURL& url) {
     ExpectOptimizationGuideDecision(url, OptimizationGuideDecision::kTrue);
     if (!IsContextualCuesMode()) {
-      EXPECT_CALL(*page_action_controller_, ShowAnchoredMessage(_, _));
+      EXPECT_CALL(*page_action_controller_,
+                  ShowSuggestionChip(kActionIndigo, _));
     }
     content::NavigationSimulator::NavigateAndCommitFromBrowser(
         tab_interface_->GetContents(), url);
-    ShowCueIfDelegatedToContextualCueing();
+    if (IsContextualCuesMode()) {
+      ShowCueIfDelegatedToContextualCueing();
+    } else {
+      EXPECT_CALL(*page_action_controller_,
+                  ShowAnchoredMessage(kActionIndigo, _));
+      controller_->InvokeAction(EntryPoint::kSuggestionChip);
+    }
   }
 
   // Simulates the user clicking the anchored message, which is forwarded to
@@ -854,74 +861,6 @@ TEST_P(IndigoPageActionControllerTest, UpdatesWhenAccountChanges) {
   EXPECT_TRUE(GetEligibilityForCueing());
 }
 
-TEST_F(IndigoPageActionControllerLegacyTest,
-       ShowsAnchoredMessageThenSuggestionChip) {
-  CreateController();
-
-  // First navigation: show an anchored message.
-  {
-    GURL url("https://example.com/1");
-    ExpectOptimizationGuideDecision(url, OptimizationGuideDecision::kTrue);
-
-    EXPECT_CALL(
-        *page_action_controller_,
-        SetAnchoredMessageText(
-            kActionIndigo, l10n_util::GetStringUTF16(
-                               IDS_INDIGO_ENTRYPOINT_ANCHORED_MESSAGE_TEXT)));
-    gfx::ImageSkia* expected_skia =
-        ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
-            IDR_GLIC_BUTTON_ALT_ICON);
-    EXPECT_CALL(
-        *page_action_controller_,
-        SetAnchoredMessageIcon(
-            kActionIndigo,
-            testing::Truly([expected_skia](const ui::ImageModel& model) {
-              return expected_skia
-                         ? (model.IsImage() &&
-                            model.GetImage().AsImageSkia().BackedBySameObjectAs(
-                                *expected_skia))
-                         : model.IsEmpty();
-            })));
-    EXPECT_CALL(
-        *page_action_controller_,
-        SetAnchoredMessageAction(
-            kActionIndigo, page_actions::AnchoredMessageActionIconType::kMenu,
-            testing::NotNull()));
-    EXPECT_CALL(
-        *page_action_controller_,
-        ShowAnchoredMessage(
-            kActionIndigo,
-            page_actions::AnchoredMessageConfig{
-                .priority =
-                    page_actions::PageActionPriorityCategory::kContextualCue}))
-        .WillOnce([&]() {
-          page_actions::PageActionState state;
-          state.action_id = kActionIndigo;
-          state.anchored_message_showing = true;
-          controller_->OnPageActionAnchoredMessageShown(state);
-        });
-    EXPECT_CALL(*page_action_controller_, ShowSuggestionChip(_, _)).Times(0);
-
-    auto navigation = content::NavigationSimulator::CreateBrowserInitiated(
-        url, tab_interface_->GetContents());
-    navigation->Commit();
-  }
-
-  // Second navigation (soon after): show a suggestion chip instead of an
-  // anchored message.
-  {
-    GURL url("https://example.com/2");
-    ExpectOptimizationGuideDecision(url, OptimizationGuideDecision::kTrue);
-
-    EXPECT_CALL(*page_action_controller_, ShowAnchoredMessage(_, _)).Times(0);
-    EXPECT_CALL(*page_action_controller_, ShowSuggestionChip(kActionIndigo, _));
-
-    auto navigation = content::NavigationSimulator::CreateBrowserInitiated(
-        url, tab_interface_->GetContents());
-    navigation->Commit();
-  }
-}
-
 TEST_P(IndigoPageActionControllerTest, InvokeActionTriggersEligibilityCheck) {
   CreateController();
 
@@ -1235,7 +1174,7 @@ TEST_P(IndigoPageActionControllerTest,
               InvokeWithAutoSubmit(_, HasGlicPrompt("test prompt")))
       .WillOnce(::testing::Return(mock_glic_instance_->GetWeakPtr()));
 
-  NavigateAndShowProactiveAnchoredMessage(GURL("https://example.com"));
+  NavigateAndShowAnchoredMessage(GURL("https://example.com"));
 
   base::HistogramTester histogram_tester;
   ClickAnchoredMessage();
@@ -1262,7 +1201,7 @@ TEST_P(IndigoPageActionControllerTest,
 
   EXPECT_CALL(*mock_glic_keyed_service_, InvokeWithAutoSubmit(_, _)).Times(0);
 
-  NavigateAndShowProactiveAnchoredMessage(GURL("https://example.com"));
+  NavigateAndShowAnchoredMessage(GURL("https://example.com"));
 
   base::UserActionTester user_action_tester;
   base::HistogramTester histogram_tester;
@@ -1287,7 +1226,7 @@ TEST_P(IndigoPageActionControllerTest, MaybeInvokeGlicRecordsFeatureDisabled) {
 
   EXPECT_CALL(*mock_glic_keyed_service_, InvokeWithAutoSubmit(_, _)).Times(0);
 
-  NavigateAndShowProactiveAnchoredMessage(GURL("https://example.com"));
+  NavigateAndShowAnchoredMessage(GURL("https://example.com"));
 
   base::HistogramTester histogram_tester;
   ClickAnchoredMessage();
@@ -1333,7 +1272,7 @@ TEST_P(IndigoPageActionControllerTest, MaybeInvokeGlicRecordsPromptEmpty) {
 
   EXPECT_CALL(*mock_glic_keyed_service_, InvokeWithAutoSubmit(_, _)).Times(0);
 
-  NavigateAndShowProactiveAnchoredMessage(GURL("https://example.com"));
+  NavigateAndShowAnchoredMessage(GURL("https://example.com"));
 
   base::HistogramTester histogram_tester;
   ClickAnchoredMessage();
@@ -1355,7 +1294,7 @@ TEST_P(IndigoPageActionControllerTest, MaybeInvokeGlicRecordsInvokeRejected) {
               InvokeWithAutoSubmit(_, HasGlicPrompt("test prompt")))
       .WillOnce(::testing::Return(base::WeakPtr<glic::GlicInstance>()));
 
-  NavigateAndShowProactiveAnchoredMessage(GURL("https://example.com"));
+  NavigateAndShowAnchoredMessage(GURL("https://example.com"));
 
   base::UserActionTester user_action_tester;
   base::HistogramTester histogram_tester;
@@ -1388,7 +1327,7 @@ TEST_P(IndigoPageActionControllerTest,
         return mock_glic_instance_->GetWeakPtr();
       });
 
-  NavigateAndShowProactiveAnchoredMessage(GURL("https://example.com"));
+  NavigateAndShowAnchoredMessage(GURL("https://example.com"));
 
   base::HistogramTester histogram_tester;
   ClickAnchoredMessage();
@@ -1415,29 +1354,12 @@ TEST_F(IndigoPageActionControllerLegacyTest,
               InvokeWithAutoSubmit(_, HasGlicPrompt("test prompt")))
       .WillOnce(::testing::Return(mock_glic_instance_->GetWeakPtr()));
 
-  {
-    GURL url1("https://example.com/1");
-    ExpectOptimizationGuideDecision(url1, OptimizationGuideDecision::kTrue);
-    EXPECT_CALL(*page_action_controller_, ShowAnchoredMessage(_, _))
-        .WillOnce([&]() {
-          page_actions::PageActionState state;
-          state.action_id = kActionIndigo;
-          state.anchored_message_showing = true;
-          controller_->OnPageActionAnchoredMessageShown(state);
-        });
-    auto navigation1 = content::NavigationSimulator::CreateBrowserInitiated(
-        url1, tab_interface_->GetContents());
-    navigation1->Commit();
-  }
-
-  {
-    GURL url2("https://example.com/2");
-    ExpectOptimizationGuideDecision(url2, OptimizationGuideDecision::kTrue);
-    EXPECT_CALL(*page_action_controller_, ShowSuggestionChip(kActionIndigo, _));
-    auto navigation2 = content::NavigationSimulator::CreateBrowserInitiated(
-        url2, tab_interface_->GetContents());
-    navigation2->Commit();
-  }
+  GURL url("https://example.com/1");
+  ExpectOptimizationGuideDecision(url, OptimizationGuideDecision::kTrue);
+  EXPECT_CALL(*page_action_controller_, ShowSuggestionChip(kActionIndigo, _));
+  auto navigation = content::NavigationSimulator::CreateBrowserInitiated(
+      url, tab_interface_->GetContents());
+  navigation->Commit();
 
   // The first click on the suggestion chip should show the anchored message.
   EXPECT_CALL(*page_action_controller_,
@@ -1506,7 +1428,7 @@ TEST_P(IndigoPageActionControllerTest, InvokeActionOpensGlicWithProtoPrompt) {
               InvokeWithAutoSubmit(_, HasGlicPrompt("proto test prompt")))
       .WillOnce(::testing::Return(mock_glic_instance_->GetWeakPtr()));
 
-  NavigateAndShowProactiveAnchoredMessage(GURL("https://example.com"));
+  NavigateAndShowAnchoredMessage(GURL("https://example.com"));
 
   ClickAnchoredMessage();
 }
@@ -1531,7 +1453,7 @@ TEST_P(IndigoPageActionControllerTest,
               InvokeWithAutoSubmit(_, HasGlicPrompt("override prompt")))
       .WillOnce(::testing::Return(mock_glic_instance_->GetWeakPtr()));
 
-  NavigateAndShowProactiveAnchoredMessage(GURL("https://example.com"));
+  NavigateAndShowAnchoredMessage(GURL("https://example.com"));
 
   ClickAnchoredMessage();
 }
@@ -1553,7 +1475,7 @@ TEST_P(IndigoPageActionControllerTest,
   // Expect NO call to InvokeWithAutoSubmit.
   EXPECT_CALL(*mock_glic_keyed_service_, InvokeWithAutoSubmit(_, _)).Times(0);
 
-  NavigateAndShowProactiveAnchoredMessage(GURL("https://example.com"));
+  NavigateAndShowAnchoredMessage(GURL("https://example.com"));
 
   ClickAnchoredMessage();
 }
@@ -1580,7 +1502,7 @@ TEST_P(IndigoPageActionControllerTest, InvokeActionOpensGlicWithSkill) {
               InvokeWithAutoSubmit(_, HasGlicPrompt("skill test prompt")))
       .WillOnce(::testing::Return(mock_glic_instance_->GetWeakPtr()));
 
-  NavigateAndShowProactiveAnchoredMessage(GURL("https://example.com"));
+  NavigateAndShowAnchoredMessage(GURL("https://example.com"));
 
   ClickAnchoredMessage();
 }
@@ -1627,80 +1549,8 @@ TEST_P(IndigoPageActionControllerTest, InvokeActionErrorToastRecordsMetrics) {
 }
 
 TEST_F(IndigoPageActionControllerLegacyTest,
-       ShowsSuggestionChipWhenSidePanelIsOpen) {
-  CreateController();
-
-  // Simulate that the side panel is open.
-  fake_glic_side_panel_coordinator_->SetShowing(true);
-
-  GURL url("https://example.com");
-  ExpectOptimizationGuideDecision(url, OptimizationGuideDecision::kTrue);
-
-  // Should only show the suggestion chip, and NOT the anchored message.
-  EXPECT_CALL(*page_action_controller_, ShowAnchoredMessage(_, _)).Times(0);
-  EXPECT_CALL(*page_action_controller_, ShowSuggestionChip(kActionIndigo, _));
-
-  auto navigation = content::NavigationSimulator::CreateBrowserInitiated(
-      url, tab_interface_->GetContents());
-  navigation->Commit();
-}
-
-TEST_F(IndigoPageActionControllerLegacyTest,
-       OnPageActionAnchoredMessageShownProactive) {
-  CreateController();
-
-  auto* service = IndigoServiceFactory::GetForProfile(profile_.get());
-  ASSERT_TRUE(service->CanShowContextualCue());
-
-  base::UserActionTester user_action_tester;
-  base::HistogramTester histogram_tester;
-  EXPECT_EQ(
-      user_action_tester.GetActionCount(kProactiveAnchoredMessageShowAction),
-      0);
-
-  IndigoPageActionController::TestApi(controller_.get())
-      .SetLastAnchoredMessagePriority(
-          page_actions::PageActionPriorityCategory::kContextualCue);
-  // Navigate to trigger UpdateEntryPointsState and attempt to show the anchored
-  // message.
-  GURL url("https://example.com");
-  ExpectOptimizationGuideDecision(url, OptimizationGuideDecision::kTrue);
-
-  auto navigation = content::NavigationSimulator::CreateBrowserInitiated(
-      url, tab_interface_->GetContents());
-  navigation->Commit();
-
-  // Simply attempting to show the anchored message (via UpdateEntryPointsState
-  // during navigation) should NOT be enough to record the user action or
-  // update the service's state.
-  EXPECT_TRUE(service->CanShowContextualCue());
-  EXPECT_EQ(
-      user_action_tester.GetActionCount(kProactiveAnchoredMessageShowAction),
-      0);
-
-  // Trigger the observer event, simulating the anchored message actually
-  // showing.
-  page_actions::PageActionState state;
-  state.action_id = kActionIndigo;
-  state.anchored_message_showing = true;
-  controller_->OnPageActionAnchoredMessageShown(state);
-
-  // Verify that the service was notified and the action was recorded.
-  EXPECT_FALSE(service->CanShowContextualCue());
-  EXPECT_EQ(
-      user_action_tester.GetActionCount(kProactiveAnchoredMessageShowAction),
-      1);
-  histogram_tester.ExpectUniqueSample(
-      kShownEntryPointHistogram,
-      IndigoPageActionEntryPoint::kProactiveAnchoredMessage, 1);
-}
-
-TEST_F(IndigoPageActionControllerLegacyTest,
        OnPageActionAnchoredMessageShownReactive) {
   CreateController();
-
-  auto* service = IndigoServiceFactory::GetForProfile(profile_.get());
-  ASSERT_TRUE(service->CanShowContextualCue());
 
   base::UserActionTester user_action_tester;
   base::HistogramTester histogram_tester;
@@ -1714,7 +1564,6 @@ TEST_F(IndigoPageActionControllerLegacyTest,
   state.anchored_message_showing = true;
   controller_->OnPageActionAnchoredMessageShown(state);
 
-  EXPECT_FALSE(service->CanShowContextualCue());
   EXPECT_EQ(
       user_action_tester.GetActionCount(kReactiveAnchoredMessageShowAction), 1);
   histogram_tester.ExpectUniqueSample(
@@ -1850,7 +1699,7 @@ TEST_P(IndigoPageActionControllerTest, DelayAgentInvokeUntilGlicPanelOpened) {
         return mock_glic_instance_->GetWeakPtr();
       });
 
-  NavigateAndShowProactiveAnchoredMessage(GURL("https://example.com"));
+  NavigateAndShowAnchoredMessage(GURL("https://example.com"));
 
   base::UserActionTester user_action_tester;
   base::HistogramTester histogram_tester;
@@ -1906,7 +1755,7 @@ TEST_P(IndigoPageActionControllerTest,
         return mock_glic_instance_->GetWeakPtr();
       });
 
-  NavigateAndShowProactiveAnchoredMessage(GURL("https://example.com"));
+  NavigateAndShowAnchoredMessage(GURL("https://example.com"));
 
   base::UserActionTester user_action_tester;
   base::HistogramTester histogram_tester;
@@ -2160,39 +2009,17 @@ TEST_P(IndigoPageActionControllerTest,
 }
 
 TEST_F(IndigoPageActionControllerLegacyTest,
-       EntryPointShownWhenkIndigoContextualCueingV2Disabled) {
-  // Disable the Indigo contextual cueing flag to ensure we fall back to the
-  // original entry point behavior (calling Show on the page action controller).
-  base::test::ScopedFeatureList local_feature_list;
-  local_feature_list.InitAndDisableFeature(features::kIndigoContextualCueingV2);
-
-  CreateController();
-  SetupEligibleAndOnboarded();
-
-  EXPECT_CALL(*page_action_controller_, Show(kActionIndigo));
-  EXPECT_CALL(*page_action_controller_, ShowAnchoredMessage(_, _));
-  EXPECT_CALL(*page_action_controller_, ShowSuggestionChip(kActionIndigo, _))
-      .Times(0);
-
-  GURL url("https://example.com");
-  ExpectOptimizationGuideDecision(url, OptimizationGuideDecision::kTrue);
-
-  auto navigation = content::NavigationSimulator::CreateBrowserInitiated(
-      url, tab_interface_->GetContents());
-  navigation->Commit();
-}
-
-TEST_F(IndigoPageActionControllerLegacyTest,
        EntryPointNotShownWhenIndigoContextMenuEnabledWithContextualCueingV2) {
-  // This fixture enables `kContextualCueingV2` and disables
-  // `kIndigoContextualCueingV2`. When `kIndigoContextMenu` is also enabled,
-  // delegating chip and anchored message cueing to Contextual Cues still leaves
-  // a functioning entry point (the context menu), even though CCV2 itself will
-  // not cue Indigo. Accordingly, the controller should not show its own page
-  // action, anchored message, or suggestion chip, while still reporting the
-  // page as eligible for the context menu.
+  // This fixture disables `kIndigoContextualCueingV2` while leaving
+  // `kIndigoContextMenu` enabled by default. When `kContextualCueingV2` is
+  // enabled, delegating chip and anchored message cueing to Contextual Cues
+  // still leaves a functioning entry point (the context menu), even though CCV2
+  // itself will not cue Indigo. Accordingly, the controller should not show its
+  // own page action, anchored message, or suggestion chip, while still
+  // reporting the page as eligible for the context menu.
   base::test::ScopedFeatureList local_feature_list;
-  local_feature_list.InitAndEnableFeature(features::kIndigoContextMenu);
+  local_feature_list.InitAndEnableFeature(
+      contextual_cueing::kContextualCueingV2);
 
   CreateController();
   SetupEligibleAndOnboarded();
@@ -2580,7 +2407,7 @@ TEST_P(IndigoPageActionControllerTest,
               InvokeWithAutoSubmit(_, HasGlicPrompt("test prompt")))
       .WillRepeatedly(::testing::Return(base::WeakPtr<glic::GlicInstance>()));
 
-  NavigateAndShowProactiveAnchoredMessage(GURL("https://example.com"));
+  NavigateAndShowAnchoredMessage(GURL("https://example.com"));
 
   // 1. Entry points disabled -> Opted out
   glic::SetAnyEntryPointEnabledForTesting(profile_.get(), false);

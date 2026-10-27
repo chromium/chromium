@@ -103,13 +103,8 @@ class IndigoInteractiveUiTest : public InteractiveBrowserTest,
       disabled_features.push_back(
           contextual_cueing::kContextualCueingV2EnforceAgeRestriction);
     } else {
-      // Indigo only shows its anchored message proactively when Contextual
-      // Cueing V2 is enabled, even though it doesn't delegate to it.
-      enabled_features.push_back({contextual_cueing::kContextualCueingV2, {}});
+      disabled_features.push_back(contextual_cueing::kContextualCueingV2);
       disabled_features.push_back(features::kIndigoContextualCueingV2);
-      // TODO(b/572032182): Update legacy tests to run with kIndigoContextMenu
-      // enabled.
-      disabled_features.push_back(features::kIndigoContextMenu);
     }
     scoped_feature_list_.InitWithFeaturesAndParameters(enabled_features,
                                                        disabled_features);
@@ -216,9 +211,12 @@ class IndigoInteractiveUiTest : public InteractiveBrowserTest,
   // showing them itself (legacy mode).
   bool IsContextualCuesMode() const { return GetParam(); }
 
-  // Waits for the anchored message shown proactively for an eligible page. In
-  // contextual cues mode, Indigo's own page action must not show.
-  auto WaitForProactiveAnchoredMessage() {
+  // Waits for the anchored message to be shown for an eligible page. In
+  // contextual cues mode, Contextual Cueing shows the anchored message
+  // proactively and Indigo's own page action must not show. In legacy mode,
+  // Indigo shows its suggestion chip, which shows the anchored message when
+  // clicked.
+  auto WaitForAnchoredMessage() {
     if (IsContextualCuesMode()) {
       return Steps(
           WaitForShow(
@@ -227,6 +225,7 @@ class IndigoInteractiveUiTest : public InteractiveBrowserTest,
     }
     return Steps(
         WaitForShow(kIndigoPageActionIconElementId),
+        PressButton(kIndigoPageActionIconElementId),
         WaitForShow(
             page_actions::AnchoredMessageBubbleView::kAnchoredMessageChipId));
   }
@@ -253,7 +252,7 @@ IN_PROC_BROWSER_TEST_P(IndigoInteractiveUiTest, ToolbarKeyboardFocus) {
 
   RunTestSequence(
       InstrumentTab(kWebContentsId), NavigateWebContents(kWebContentsId, url),
-      WaitForProactiveAnchoredMessage(),
+      WaitForAnchoredMessage(),
       PressButton(
           page_actions::AnchoredMessageBubbleView::kAnchoredMessageChipId),
       WaitForShow(IndigoToolbar::kToolbarElementId),

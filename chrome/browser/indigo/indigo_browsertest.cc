@@ -227,13 +227,8 @@ class IndigoBrowserTestMixin : public T {
       disabled_features.push_back(
           contextual_cueing::kContextualCueingV2EnforceAgeRestriction);
     } else {
-      // Indigo only shows its anchored message proactively when Contextual
-      // Cueing V2 is enabled, even though it doesn't delegate to it.
-      enabled_features.push_back({contextual_cueing::kContextualCueingV2, {}});
+      disabled_features.push_back(contextual_cueing::kContextualCueingV2);
       disabled_features.push_back(features::kIndigoContextualCueingV2);
-      // TODO(b/572032182): Update legacy tests to run with kIndigoContextMenu
-      // enabled.
-      disabled_features.push_back(features::kIndigoContextMenu);
     }
     scoped_feature_list_.InitWithFeaturesAndParameters(enabled_features,
                                                        disabled_features);
@@ -413,9 +408,12 @@ class IndigoBrowserTestMixin : public T {
     }
   }
 
-  // Waits for the anchored message shown proactively for an eligible page. In
-  // contextual cues mode, Indigo's own page action must not show.
-  auto WaitForProactiveAnchoredMessage() {
+  // Waits for the anchored message to be shown for an eligible page. In
+  // contextual cues mode, Contextual Cueing shows the anchored message
+  // proactively and Indigo's own page action must not show. In legacy mode,
+  // Indigo shows its suggestion chip, which shows the anchored message when
+  // clicked.
+  auto WaitForAnchoredMessage() {
     if (IsContextualCuesMode()) {
       return Steps(
           WaitForShow(
@@ -424,6 +422,7 @@ class IndigoBrowserTestMixin : public T {
     }
     return Steps(
         WaitForShow(kIndigoPageActionIconElementId),
+        PressButton(kIndigoPageActionIconElementId),
         WaitForShow(
             page_actions::AnchoredMessageBubbleView::kAnchoredMessageChipId));
   }
@@ -431,8 +430,7 @@ class IndigoBrowserTestMixin : public T {
   auto NavigateAndClickAnchoredMessage(const GURL& url) {
     return Steps(
         InstrumentTab(kWebContentsId), NavigateWebContents(kWebContentsId, url),
-        WaitForWebContentsReady(kWebContentsId, url),
-        WaitForProactiveAnchoredMessage(),
+        WaitForWebContentsReady(kWebContentsId, url), WaitForAnchoredMessage(),
         PressButton(
             page_actions::AnchoredMessageBubbleView::kAnchoredMessageChipId));
   }
@@ -912,11 +910,9 @@ IN_PROC_BROWSER_TEST_P(IndigoBrowserTest, HideToolbarOnReload) {
 IN_PROC_BROWSER_TEST_F(IndigoLegacyBrowserTest,
                        InvokeActionClickRecordsMetrics) {
   const GURL url = embedded_test_server()->GetURL("/image.html");
-  const GURL url2 = embedded_test_server()->GetURL("/transform.html");
   base::UserActionTester user_action_tester;
 
   RunTestSequence(
-      // Navigation to first page displays Anchored Message
       NavigateAndClickAnchoredMessage(url),
       WaitForShow(IndigoToolbar::kToolbarElementId),
 
@@ -926,48 +922,11 @@ IN_PROC_BROWSER_TEST_F(IndigoLegacyBrowserTest,
       }),
       Check([&]() {
         return user_action_tester.GetActionCount(
-                   "Indigo.PageAction.SuggestionChip.Click") == 0;
+                   "Indigo.PageAction.SuggestionChip.Click") == 1;
       }),
 
       PressButton(IndigoToolbar::kCloseButtonElementId),
-      WaitForHide(IndigoToolbar::kToolbarElementId),
-
-      // Open a second tab and switch to it. Since the anchored message reset
-      // duration has not expired, this tab will display a suggestion chip
-      // instead.
-      AddInstrumentedTab(kSecondTabId, url2),
-      WaitForWebContentsReady(kSecondTabId, url2),
-      // With the WebUI location bar, the icon shown for the previous tab may
-      // be hidden and replaced by a new element once the location bar updates
-      // for the new tab, so do not require this particular element to remain
-      // visible.
-      std::move(WaitForShow(kIndigoPageActionIconElementId)
-                    .SetMustRemainVisible(false)),
-      Check([&]() {
-        return user_action_tester.GetActionCount(
-                   "Indigo.PageAction.AnchoredMessage.Proactive.Show") == 1;
-      }),
-      // Ensure Anchored Message is NOT showing
-      EnsureNotPresent(
-          page_actions::AnchoredMessageBubbleView::kAnchoredMessageChipId),
-
-      PressButton(kIndigoPageActionIconElementId),
-      WaitForShow(
-          page_actions::AnchoredMessageBubbleView::kAnchoredMessageChipId),
-      PressButton(
-          page_actions::AnchoredMessageBubbleView::kAnchoredMessageChipId),
-      WaitForShow(IndigoToolbar::kToolbarElementId),
-
-      // Once for proactive anchored message on first tab, then second tab click
-      // suggestion chip and reactive anchored message.
-      Check([&]() {
-        return user_action_tester.GetActionCount(
-                   "Indigo.PageAction.AnchoredMessage.Click") == 2;
-      }),
-      Check([&]() {
-        return user_action_tester.GetActionCount(
-                   "Indigo.PageAction.SuggestionChip.Click") == 1;
-      }));
+      WaitForHide(IndigoToolbar::kToolbarElementId));
 }
 
 IN_PROC_BROWSER_TEST_P(IndigoBrowserTest, ToastRetryClickRecordsMetrics) {
