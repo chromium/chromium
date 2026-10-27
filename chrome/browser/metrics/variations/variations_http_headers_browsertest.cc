@@ -739,12 +739,12 @@ class VariationsHttpHeadersBrowserTestWithInactiveLimitedLayer
   }
 };
 
-class VariationsHttpHeadersBrowserTestWithSetLowEntropyRandomizationSource
+class VariationsHttpHeadersBrowserTestWithSetLimitedEntropyRandomizationSource
     : public VariationsHttpHeadersBrowserTest {
  public:
-  VariationsHttpHeadersBrowserTestWithSetLowEntropyRandomizationSource() =
+  VariationsHttpHeadersBrowserTestWithSetLimitedEntropyRandomizationSource() =
       default;
-  ~VariationsHttpHeadersBrowserTestWithSetLowEntropyRandomizationSource()
+  ~VariationsHttpHeadersBrowserTestWithSetLimitedEntropyRandomizationSource()
       override = default;
 
  protected:
@@ -1105,7 +1105,7 @@ IN_PROC_BROWSER_TEST_P(VariationsHttpHeadersBrowserTestWithActiveLimitedLayer,
 }
 
 IN_PROC_BROWSER_TEST_F(
-    VariationsHttpHeadersBrowserTestWithSetLowEntropyRandomizationSource,
+    VariationsHttpHeadersBrowserTestWithSetLimitedEntropyRandomizationSource,
     LimitedEntropyRandomization_ExperimentLogging) {
   // CreateEntropyProvidersForTesting() ensures a limited entropy provider is
   // created.
@@ -1136,7 +1136,7 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 IN_PROC_BROWSER_TEST_F(
-    VariationsHttpHeadersBrowserTestWithSetLowEntropyRandomizationSource,
+    VariationsHttpHeadersBrowserTestWithSetLimitedEntropyRandomizationSource,
     LimitedEntropyRandomization_ExperimentLoggingWithoutGoogleWebExperimentationId) {
   // CreateEntropyProvidersForTesting() ensures a limited entropy provider is
   // created.
