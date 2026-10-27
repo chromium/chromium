@@ -34,7 +34,6 @@
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/label.h"
-#include "ui/views/highlight_border.h"
 
 namespace ash {
 
@@ -150,22 +149,23 @@ CaptureLabelView::CaptureLabelView(
     CaptureModeSession* capture_mode_session,
     views::Button::PressedCallback on_capture_button_pressed,
     views::Button::PressedCallback on_drop_down_button_pressed)
-    : capture_mode_session_(capture_mode_session),
-      shadow_(SystemDecoration::CreateForView(
-          this,
-          SystemDecoration::ShadowType::kElevation12)) {
-  SetPaintToLayer();
+    : capture_mode_session_(capture_mode_session) {
+  SetPaintToLayer(ui::LAYER_SOLID_COLOR);
   layer()->SetRoundedCornerRadius(gfx::RoundedCornersF(kCaptureLabelRadius));
-  SetBackground(views::CreateSolidBackground(
+  SetBackground(views::CreateLayerBasedSolidBackground(
       chromeos::features::IsSystemBlurEnabled()
           ? static_cast<ui::ColorId>(kColorAshShieldAndBase80)
           : cros_tokens::kCrosSysSystemOnBaseOpaque));
 
   if (chromeos::features::IsSystemBlurEnabled()) {
-    layer()->SetFillsBoundsOpaquely(false);
     layer()->SetBackgroundBlur(StyleUtil::kBackgroundBlurSigma);
     layer()->SetBackdropFilterQuality(StyleUtil::kBackgroundBlurQuality);
   }
+
+  decoration_ = SystemDecoration::CreateForView(
+      this, SystemDecoration::ShadowType::kElevation12,
+      SystemDecoration::HighlightBorderMode::kHighlightBorder);
+  decoration_->SetRoundedCorners(gfx::RoundedCornersF(kCaptureLabelRadius));
 
   capture_button_container_ = AddChildView(std::make_unique<CaptureButtonView>(
       std::move(on_capture_button_pressed),
@@ -180,12 +180,6 @@ CaptureLabelView::CaptureLabelView(
   label_->layer()->SetFillsBoundsOpaquely(false);
   label_->SetEnabledColor(kColorAshTextColorPrimary);
   label_->SetBackgroundColor(SK_ColorTRANSPARENT);
-
-  capture_mode_util::SetHighlightBorder(
-      this, kCaptureLabelRadius,
-      views::HighlightBorder::Type::kHighlightBorderNoShadow);
-
-  shadow_->SetRoundedCorners(gfx::RoundedCornersF(kCaptureLabelRadius));
 }
 
 CaptureLabelView::~CaptureLabelView() = default;
