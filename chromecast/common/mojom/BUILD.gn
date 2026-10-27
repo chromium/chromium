@@ -8,7 +8,6 @@ mojom("mojom") {
   sources = [
     "activity_window.mojom",
     "application_media_capabilities.mojom",
-    "assistant_messenger.mojom",
     "audio_socket.mojom",
     "cast_demo.mojom",
     "constants.mojom",
