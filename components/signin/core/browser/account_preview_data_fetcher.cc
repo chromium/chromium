@@ -253,6 +253,7 @@ AccountPreviewDataFetcher::GetTrafficAnnotation() {
           data:
             "OAuth2 access token for the account."
           destination: GOOGLE_OWNED_SERVICE
+          api_service_name: "chromesyncpreview.pa.googleapis.com"
           internal {
             contacts {
               email: "chrome-signin-team@google.com"
