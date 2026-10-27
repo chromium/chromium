@@ -16,6 +16,7 @@
 #include "base/metrics/user_metrics_action.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
+#include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/global_features.h"
@@ -34,6 +35,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/l10n/time_format.h"
 #include "ui/base/models/dialog_model.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/bubble/bubble_border.h"
@@ -48,7 +50,6 @@ namespace scheduled_restart {
 
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kScheduledRestartDialogId);
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kScheduledRestartBodyId);
-DEFINE_ELEMENT_IDENTIFIER_VALUE(kScheduledRestartTabsReopenBodyId);
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kRestartNowButtonId);
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kRestartWhenIdleButtonId);
 
@@ -228,21 +229,9 @@ std::unique_ptr<views::Widget> ScheduledRestartBubbleView::ShowBubble(
               {ui::DialogModelLabel::CreateEmphasizedText(
                    l10n_util::GetStringUTF16(
                        IDS_RELAUNCH_RECOMMENDED_BODY_SCHEDULE_IMPORTANT_UPDATE)),
-               ui::DialogModelLabel::CreateEmphasizedText(
-                   l10n_util::GetStringUTF16(
-                       IDS_RELAUNCH_RECOMMENDED_BODY_SCHEDULE_IDLE_DURATION))}),
+               ui::DialogModelLabel::CreateEmphasizedText(FormatIdleDuration(
+                   ScheduledRestartManager::GetIdleThreshold()))}),
           /*header=*/std::u16string(), kScheduledRestartBodyId)
-      .AddCustomField(
-          std::make_unique<views::BubbleDialogModelHost::CustomView>(
-              views::Builder<views::Label>()
-                  .SetText(l10n_util::GetStringUTF16(
-                      IDS_RELAUNCH_RECOMMENDED_BODY_SCHEDULE_TABS_REOPEN))
-                  .SetTextContext(CONTEXT_DIALOG_BODY_TEXT_SMALL)
-                  .SetMultiLine(true)
-                  .SetHorizontalAlignment(gfx::ALIGN_LEFT)
-                  .Build(),
-              views::BubbleDialogModelHost::FieldType::kText),
-          kScheduledRestartTabsReopenBodyId)
       .AddExtraButton(
           base::BindRepeating(
               &ScheduledRestartDialogDelegate::OnRestartWhenIdleClicked,
@@ -320,6 +309,16 @@ void ScheduledRestartBubbleView::DestroyReplacedBubble(
   // only needs to be held for the duration of the reset.
   base::AutoReset<bool> replacing(&g_is_replacing_bubble, true);
   widget.reset();
+}
+
+// static
+std::u16string ScheduledRestartBubbleView::FormatIdleDuration(
+    base::TimeDelta idle_threshold) {
+  std::u16string duration =
+      ui::TimeFormat::Simple(ui::TimeFormat::FORMAT_DURATION,
+                             ui::TimeFormat::LENGTH_LONG, idle_threshold);
+  base::ReplaceSubstringsAfterOffset(&duration, 0, u" ", u"\u00A0");
+  return duration;
 }
 
 // static

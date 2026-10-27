@@ -2658,13 +2658,13 @@ Chromium is unable to recover your settings.
               other {Your administrator asks that you relaunch Chromium to apply this update. There are # Incognito and Isolated windows open across profiles. They won't reopen after you relaunch.}}
           </message>
           <message name="IDS_RELAUNCH_RECOMMENDED_SCHEDULED_IDLE_TOAST" desc="Toast notification message shown after scheduling an idle restart.">
-            Chromium will update when you're away
+            Chromium will update when your screen is unused
           </message>
           <message name="IDS_RELAUNCH_RECOMMENDED_SCHEDULED_TITLE" desc="The title of a bubble dialog that tells users that Chromium wants to update.">
-            Chromium wants to update
+            Update Chromium to stay secure
           </message>
           <message name="IDS_RELAUNCH_RECOMMENDED_BODY_SCHEDULE" desc="The first body paragraph for the scheduled restart reminder bubble dialog.">
-            An <ph name="IMPORTANT_UPDATE">$1<ex>important security update</ex></ph> is pending. To keep your browsing safe, Chromium will update the next time you're inactive for <ph name="IDLE_DURATION">$2<ex>5 minutes</ex></ph>.
+            An <ph name="IMPORTANT_UPDATE">$1<ex>important security update</ex></ph> is ready. You can relaunch now, or set Chromium to update the next time your screen remains on and unused for <ph name="IDLE_DURATION">$2<ex>5 minutes</ex></ph>.
           </message>
           <message name="IDS_RELAUNCH_REQUIRED_TITLE_DAYS" desc="The title of a dialog that tells users the browser must be relaunched within two or more days.">
             {0, plural,

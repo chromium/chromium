@@ -23,6 +23,7 @@
 #include "content/public/test/browser_test.h"
 #include "ui/accessibility/ax_role_properties.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/l10n/time_format.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -85,7 +86,7 @@ IN_PROC_BROWSER_TEST_F(ScheduledRestartBubbleViewBrowserTest,
             ChromeLayoutProvider::Get()->GetDistanceMetric(
                 views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH));
 
-  // Verify the two body paragraphs by element identifier.
+  // Verify the body paragraph by element identifier.
   const ui::ElementContext context =
       views::ElementTrackerViews::GetContextForWidget(widget.get());
   auto* first_paragraph = views::ElementTrackerViews::GetInstance()
@@ -98,16 +99,8 @@ IN_PROC_BROWSER_TEST_F(ScheduledRestartBubbleViewBrowserTest,
                 IDS_RELAUNCH_RECOMMENDED_BODY_SCHEDULE,
                 l10n_util::GetStringUTF16(
                     IDS_RELAUNCH_RECOMMENDED_BODY_SCHEDULE_IMPORTANT_UPDATE),
-                l10n_util::GetStringUTF16(
-                    IDS_RELAUNCH_RECOMMENDED_BODY_SCHEDULE_IDLE_DURATION)));
-  auto* second_paragraph = views::ElementTrackerViews::GetInstance()
-                               ->GetFirstMatchingViewAs<views::Label>(
-                                   kScheduledRestartTabsReopenBodyId, context);
-  ASSERT_TRUE(second_paragraph);
-  EXPECT_EQ(second_paragraph->GetTextContext(), CONTEXT_DIALOG_BODY_TEXT_SMALL);
-  EXPECT_EQ(second_paragraph->GetText(),
-            l10n_util::GetStringUTF16(
-                IDS_RELAUNCH_RECOMMENDED_BODY_SCHEDULE_TABS_REOPEN));
+                ScheduledRestartBubbleView::FormatIdleDuration(
+                    ScheduledRestartManager::GetIdleThreshold())));
 
   // Verify prominent OK button is "Relaunch now" and default.
   EXPECT_TRUE(
@@ -215,6 +208,41 @@ IN_PROC_BROWSER_TEST_F(ScheduledRestartBubbleViewBrowserTest,
   histogram_tester.ExpectUniqueSample(
       "Session.ScheduledRestart.DialogChoice",
       ScheduledRestartBubbleView::ScheduledRestartDialogChoice::kDismissed, 1);
+}
+
+// Verifies that configuring a non-default idle threshold through the feature
+// parameter updates the formatted duration displayed to the user.
+class ScheduledRestartBubbleViewCustomIdleThresholdBrowserTest
+    : public InProcessBrowserTest {
+ public:
+  ScheduledRestartBubbleViewCustomIdleThresholdBrowserTest() {
+    feature_list_.InitAndEnableFeatureWithParameters(
+        features::kScheduledRestart, {{"idle_threshold", "10m"}});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(ScheduledRestartBubbleViewCustomIdleThresholdBrowserTest,
+                       BubbleDisplaysConfiguredIdleThreshold) {
+  auto widget = ScheduledRestartBubbleView::ShowBubble(browser());
+  ASSERT_TRUE(widget);
+
+  const ui::ElementContext context =
+      views::ElementTrackerViews::GetContextForWidget(widget.get());
+  auto* first_paragraph = views::ElementTrackerViews::GetInstance()
+                              ->GetFirstMatchingViewAs<views::StyledLabel>(
+                                  kScheduledRestartBodyId, context);
+  ASSERT_TRUE(first_paragraph);
+  EXPECT_EQ(ScheduledRestartManager::GetIdleThreshold(), base::Minutes(10));
+  EXPECT_EQ(
+      first_paragraph->GetText(),
+      l10n_util::GetStringFUTF16(
+          IDS_RELAUNCH_RECOMMENDED_BODY_SCHEDULE,
+          l10n_util::GetStringUTF16(
+              IDS_RELAUNCH_RECOMMENDED_BODY_SCHEDULE_IMPORTANT_UPDATE),
+          ScheduledRestartBubbleView::FormatIdleDuration(base::Minutes(10))));
 }
 
 }  // namespace scheduled_restart
