@@ -4,6 +4,7 @@
 
 #include "components/gwp_asan/common/lightweight_detector_state.h"
 
+#include "base/test/gtest_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace gwp_asan::internal {
@@ -29,6 +30,9 @@ TEST_F(LightweightDetectorStateTest, Valid) {
 }
 
 TEST_F(LightweightDetectorStateTest, InvalidNumMetadata) {
+  InitializeState(0, 0x1234);
+  EXPECT_FALSE(state_.IsValid());
+
   InitializeState(kMaxMetadata + 1, 0x1234);
   EXPECT_FALSE(state_.IsValid());
 }
@@ -36,6 +40,26 @@ TEST_F(LightweightDetectorStateTest, InvalidNumMetadata) {
 TEST_F(LightweightDetectorStateTest, InvalidAddress) {
   InitializeState(kMaxMetadata, 0);
   EXPECT_FALSE(state_.IsValid());
+}
+
+TEST_F(LightweightDetectorStateTest, GetSlotMetadataById) {
+  LightweightDetectorState::SlotMetadata md[2];
+  md[0].id = 0;
+  md[1].id = 3;
+
+  InitializeState(2, reinterpret_cast<uintptr_t>(md));
+  ASSERT_TRUE(state_.IsValid());
+
+  EXPECT_TRUE(state_.HasMetadataForId(0, md));
+  EXPECT_EQ(&state_.GetSlotMetadataById(0, md), &md[0]);
+  EXPECT_FALSE(state_.HasMetadataForId(2, md));
+
+  EXPECT_FALSE(state_.HasMetadataForId(1, md));
+  EXPECT_TRUE(state_.HasMetadataForId(3, md));
+  EXPECT_EQ(&state_.GetSlotMetadataById(3, md), &md[1]);
+
+  InitializeState(0, reinterpret_cast<uintptr_t>(md));
+  EXPECT_CHECK_DEATH(state_.GetSlotMetadataById(0, md));
 }
 
 TEST_F(LightweightDetectorStateTest, EncodeMetadataId) {

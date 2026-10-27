@@ -4,6 +4,7 @@
 
 #include "components/gwp_asan/common/lightweight_detector_state.h"
 
+#include "base/check.h"
 #include "base/compiler_specific.h"
 
 namespace gwp_asan::internal {
@@ -13,7 +14,7 @@ bool LightweightDetectorState::IsValid() const {
     return false;
   }
 
-  if (num_metadata > kMaxMetadata) {
+  if (num_metadata == 0 || num_metadata > kMaxMetadata) {
     return false;
   }
 
@@ -26,6 +27,7 @@ LightweightDetectorState::SlotMetadata&
 LightweightDetectorState::GetSlotMetadataById(
     MetadataId id,
     LightweightDetectorState::SlotMetadata* metadata_arr) {
+  CHECK(IsValid());
   return UNSAFE_TODO(metadata_arr[id % num_metadata]);
 }
 
