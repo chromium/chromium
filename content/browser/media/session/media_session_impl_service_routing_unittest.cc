@@ -351,6 +351,9 @@ TEST_F(MediaSessionImplServiceRoutingTest,
   ASSERT_EQ(services_[sub_frame_].get(), ComputeServiceForRouting());
 }
 
+// Ensures that an embedded cross-origin subframe (e.g. an ad or third-party
+// widget) without active playback cannot hijack MediaSession control when the
+// main frame is playing media without registering its own MediaSessionService.
 TEST_F(MediaSessionImplServiceRoutingTest,
        MainFrameProducesAudio_CrossOriginSubFrameHasService_NotRouted) {
   auto* cross_origin_sub_frame = static_cast<TestRenderFrameHost*>(
@@ -370,6 +373,45 @@ TEST_F(MediaSessionImplServiceRoutingTest,
   CreateServiceForFrame(sub_frame_);
 
   EXPECT_EQ(services_[sub_frame_].get(), ComputeServiceForRouting());
+}
+
+// Preserves the use case where a top-level web app manages its own
+// `navigator.mediaSession` action handlers/metadata (e.g. for playlist/queue
+// management) while delegating actual audio playback to an embedded
+// cross-origin player SDK iframe that does not register its own
+// MediaSessionService.
+TEST_F(MediaSessionImplServiceRoutingTest,
+       CrossOriginSubFrameProducesAudio_MainFrameHasService_Routed) {
+  auto* cross_origin_sub_frame = static_cast<TestRenderFrameHost*>(
+      NavigationSimulator::NavigateAndCommitFromDocument(
+          GURL("http://www.cross-origin.com"),
+          main_frame_->AppendChild("cross_origin_sub_frame")));
+
+  StartPlayerForFrame(cross_origin_sub_frame);
+  CreateServiceForFrame(main_frame_);
+
+  EXPECT_EQ(services_[main_frame_].get(), ComputeServiceForRouting());
+}
+
+// Ensures that an unrelated cross-origin sibling iframe cannot hijack
+// MediaSession control when another subframe is playing media without
+// registering its own MediaSessionService.
+TEST_F(
+    MediaSessionImplServiceRoutingTest,
+    CrossOriginSubFrameProducesAudio_CrossOriginSiblingHasService_NotRouted) {
+  auto* cross_origin_sub_frame_1 = static_cast<TestRenderFrameHost*>(
+      NavigationSimulator::NavigateAndCommitFromDocument(
+          GURL("http://www.cross-origin-1.com"),
+          main_frame_->AppendChild("cross_origin_sub_frame_1")));
+  auto* cross_origin_sub_frame_2 = static_cast<TestRenderFrameHost*>(
+      NavigationSimulator::NavigateAndCommitFromDocument(
+          GURL("http://www.cross-origin-2.com"),
+          main_frame_->AppendChild("cross_origin_sub_frame_2")));
+
+  StartPlayerForFrame(cross_origin_sub_frame_1);
+  CreateServiceForFrame(cross_origin_sub_frame_2);
+
+  EXPECT_EQ(nullptr, ComputeServiceForRouting());
 }
 
 TEST_F(MediaSessionImplServiceRoutingTest,
