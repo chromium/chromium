@@ -17034,7 +17034,13 @@
             "experiments": [
                 {
                     "name": "Enabled",
+                    "params": {
+                        "SuspiciousSiteWarningSurveyHeedTriggerId": "BjcqKTVFY0ugnJ3q1cK0VD1dNzUU",
+                        "SuspiciousSiteWarningSurveyProceedTriggerId": "qKoRRzn180ugnJ3q1cK0WX7PXscX",
+                        "probability": "1.0"
+                    },
                     "enable_features": [
+                        "SuspiciousSiteWarningSurvey",
                         "SuspiciousSiteWarnings"
                     ]
                 }

@@ -4,6 +4,7 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/browser_process.h"
@@ -14,6 +15,8 @@
 #include "chrome/browser/safe_browsing/test_safe_browsing_service.h"
 #include "chrome/browser/ssl/chrome_security_state_util.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/hats/hats_service_factory.h"
+#include "chrome/browser/ui/hats/mock_hats_service.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/location_bar/location_icon_test_accessor.h"
 #include "chrome/browser/ui/views/page_info/page_info_bubble_view_base.h"
@@ -32,6 +35,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/test/button_test_api.h"
@@ -43,7 +47,8 @@ namespace safe_browsing {
 class SuspiciousSiteDesktopBrowserTest : public InProcessBrowserTest {
  public:
   SuspiciousSiteDesktopBrowserTest() {
-    feature_list_.InitAndEnableFeature(kSuspiciousSiteWarnings);
+    feature_list_.InitWithFeatures(
+        {kSuspiciousSiteWarnings, kSuspiciousSiteWarningSurvey}, {});
   }
 
   void CreatedBrowserMainParts(
@@ -293,7 +298,10 @@ IN_PROC_BROWSER_TEST_F(SuspiciousSiteDesktopBrowserTest,
   auto* bubble_view = static_cast<SuspiciousSiteBubbleView*>(
       GetPageInfoBubbleForTesting());
   ASSERT_TRUE(bubble_view);
-  bubble_view->GetWidget()->CloseNow();
+  views::test::WidgetDestroyedWaiter waiter(bubble_view->GetWidget());
+  bubble_view->GetWidget()->CloseWithReason(
+      views::Widget::ClosedReason::kCloseButtonClicked);
+  waiter.Wait();
   EXPECT_FALSE(GetPageInfoBubbleForTesting());
 
   // Suspicious security state and controller should still be active.
@@ -480,6 +488,42 @@ IN_PROC_BROWSER_TEST_F(SuspiciousSiteDesktopBrowserTest,
   ASSERT_TRUE(security_state);
   EXPECT_EQ(security_state->malicious_content_status,
             security_state::MALICIOUS_CONTENT_STATUS_WARNABLE_SUSPICIOUS_SITE);
+}
+
+IN_PROC_BROWSER_TEST_F(SuspiciousSiteDesktopBrowserTest,
+                       UnspecifiedCloseDoesNotTriggerDismissalOrSurvey) {
+  base::HistogramTester histogram_tester;
+  auto* mock_hats_service = static_cast<MockHatsService*>(
+      HatsServiceFactory::GetInstance()->SetTestingFactoryAndUse(
+          browser()->GetProfile(), base::BindRepeating(&BuildMockHatsService)));
+  EXPECT_CALL(*mock_hats_service, LaunchSurveyForWebContents).Times(0);
+
+  GURL malicious_url = embedded_test_server()->GetURL("/title1.html");
+  SetURLThreatType(malicious_url,
+                   SBThreatType::SB_THREAT_TYPE_WARNABLE_SUSPICIOUS_SITE);
+
+  base::test::TestFuture<void> shown_future;
+  SuspiciousSiteControllerDesktop::SetBubbleShownCallbackForTesting(
+      shown_future.GetCallback());
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), malicious_url));
+  EXPECT_TRUE(shown_future.Wait());
+
+  auto* bubble_view =
+      static_cast<SuspiciousSiteBubbleView*>(GetPageInfoBubbleForTesting());
+  ASSERT_TRUE(bubble_view);
+
+  // Close the bubble widget with kUnspecified (simulating tab/window close
+  // teardown).
+  views::test::WidgetDestroyedWaiter waiter(bubble_view->GetWidget());
+  bubble_view->GetWidget()->CloseWithReason(
+      views::Widget::ClosedReason::kUnspecified);
+  waiter.Wait();
+  EXPECT_FALSE(GetPageInfoBubbleForTesting());
+
+  histogram_tester.ExpectBucketCount(
+      "SafeBrowsing.SuspiciousSiteWarning.UserInteraction",
+      SuspiciousSiteWarningUserInteraction::kDismissed, 0);
 }
 
 }  // namespace safe_browsing

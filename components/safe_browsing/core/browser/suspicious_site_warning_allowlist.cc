@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/notreached.h"
 #include "base/values.h"
 #include "components/content_settings/core/common/content_settings_constraints.h"
 #include "url/gurl.h"
@@ -25,6 +26,21 @@ GURL GetHostNameWithHTTPScheme(const std::string& host) {
 }
 
 }  // namespace
+
+const char* SuspiciousSiteWarningUserChoiceToString(
+    SuspiciousSiteWarningUserChoice choice) {
+  switch (choice) {
+    case SuspiciousSiteWarningUserChoice::kMarkAsSafe:
+      return "mark_as_safe";
+    case SuspiciousSiteWarningUserChoice::kBackToSafety:
+      return "back_to_safety";
+    case SuspiciousSiteWarningUserChoice::kDismiss:
+      return "dismiss";
+    case SuspiciousSiteWarningUserChoice::kManualNavigation:
+      return "manual_navigation";
+  }
+  NOTREACHED();
+}
 
 SuspiciousSiteWarningAllowlist::SuspiciousSiteWarningAllowlist(
     scoped_refptr<HostContentSettingsMap> host_content_settings_map)

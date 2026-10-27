@@ -322,13 +322,13 @@ TEST_F(SuspiciousSiteControllerAndroidTest, CloseDialogNavigateDifferentUrl) {
       *mock_hats_service,
       LaunchSurveyForWebContents(
           kHatsSurveyTriggerSuspiciousSiteWarning, web_contents(),
-          testing::Contains(testing::Pair("did_proceed", false)),
+          testing::Contains(testing::Pair("Did proceed", false)),
           testing::AllOf(testing::Contains(
-                             testing::Pair("user_choice", "manual_navigation")),
+                             testing::Pair("User choice", "manual_navigation")),
                          testing::Contains(testing::Pair(
-                             "site_origin", "https://malicious.com")),
+                             "Site origin", "https://malicious.com")),
                          testing::Contains(testing::Pair(
-                             "referrer_origin", "https://referrer.com"))),
+                             "Referrer origin", "https://referrer.com"))),
           testing::_, testing::_,
           testing::Optional(std::string("LZD24fmuf0tK1KeaPYj0Z79hw2qC")),
           testing::_))
@@ -533,8 +533,8 @@ TEST_F(SuspiciousSiteControllerAndroidTest, HatsSurveyTriggeredOnGoBack) {
       *mock_hats_service,
       LaunchSurveyForWebContents(
           kHatsSurveyTriggerSuspiciousSiteWarning, web_contents(),
-          testing::Contains(testing::Pair("did_proceed", false)),
-          testing::Contains(testing::Pair("user_choice", "back_to_safety")),
+          testing::Contains(testing::Pair("Did proceed", false)),
+          testing::Contains(testing::Pair("User choice", "back_to_safety")),
           testing::_, testing::_,
           testing::Optional(std::string("LZD24fmuf0tK1KeaPYj0Z79hw2qC")),
           testing::_))
@@ -557,8 +557,8 @@ TEST_F(SuspiciousSiteControllerAndroidTest, HatsSurveyTriggeredOnContinue) {
       *mock_hats_service,
       LaunchSurveyForWebContents(
           kHatsSurveyTriggerSuspiciousSiteWarning, web_contents(),
-          testing::Contains(testing::Pair("did_proceed", true)),
-          testing::Contains(testing::Pair("user_choice", "mark_as_safe")),
+          testing::Contains(testing::Pair("Did proceed", true)),
+          testing::Contains(testing::Pair("User choice", "mark_as_safe")),
           testing::_, testing::_,
           testing::Optional(std::string("HguD8vrc50tK1KeaPYj0R37AzmWa")),
           testing::_))
@@ -580,8 +580,8 @@ TEST_F(SuspiciousSiteControllerAndroidTest, HatsSurveyTriggeredOnDismiss) {
       *mock_hats_service,
       LaunchSurveyForWebContents(
           kHatsSurveyTriggerSuspiciousSiteWarning, web_contents(),
-          testing::Contains(testing::Pair("did_proceed", true)),
-          testing::Contains(testing::Pair("user_choice", "dismiss")),
+          testing::Contains(testing::Pair("Did proceed", true)),
+          testing::Contains(testing::Pair("User choice", "dismiss")),
           testing::_, testing::_,
           testing::Optional(std::string("HguD8vrc50tK1KeaPYj0R37AzmWa")),
           testing::_))
@@ -658,7 +658,7 @@ TEST_F(SuspiciousSiteControllerAndroidTest,
   EXPECT_CALL(*mock_hats_service,
               LaunchSurveyForWebContents(
                   kHatsSurveyTriggerSuspiciousSiteWarning, web_contents(),
-                  testing::Contains(testing::Pair("repeat_visit", true)),
+                  testing::Contains(testing::Pair("Repeat visit", true)),
                   testing::_, testing::_, testing::_, testing::_, testing::_))
       .Times(1);
 
@@ -902,11 +902,11 @@ TEST_F(SuspiciousSiteControllerAndroidTest,
       *mock_hats_service,
       LaunchSurveyForWebContents(
           kHatsSurveyTriggerSuspiciousSiteWarning, web_contents(),
-          testing::Contains(testing::Pair("did_proceed", false)),
+          testing::Contains(testing::Pair("Did proceed", false)),
           testing::AllOf(testing::Contains(
-                             testing::Pair("user_choice", "manual_navigation")),
+                             testing::Pair("User choice", "manual_navigation")),
                          testing::Contains(testing::Pair(
-                             "site_origin", "https://malicious.com"))),
+                             "Site origin", "https://malicious.com"))),
           testing::_, testing::_,
           testing::Optional(std::string("LZD24fmuf0tK1KeaPYj0Z79hw2qC")),
           testing::_))
