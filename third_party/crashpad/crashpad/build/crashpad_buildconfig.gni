@@ -100,7 +100,7 @@ if (crashpad_is_in_chromium) {
   is_fuchsia = crashpad_is_fuchsia
 }
 
-crashpad_flock_always_supported = !(crashpad_is_android || crashpad_is_fuchsia)
+crashpad_flock_always_supported = !crashpad_is_fuchsia
 
 template("crashpad_executable") {
   executable(target_name) {
