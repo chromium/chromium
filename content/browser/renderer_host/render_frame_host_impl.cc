@@ -4812,7 +4812,7 @@ void RenderFrameHostImpl::RenderProcessGone(
   // `RenderFrameDeleted()` destroy descendant frames (and expire their
   // reporting sources in `~RenderFrameHostImpl()`).
   ForEachRenderFrameHostImpl([&](RenderFrameHostImpl* rfh) {
-    if (rfh->site_instance_->group() == site_instance_group) {
+    if (rfh->GetProcess() == GetProcess()) {
       rfh->MaybeGenerateCrashReport(info);
     }
   });

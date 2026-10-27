@@ -34,6 +34,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/no_renderer_crashes_assertion.h"
 #include "content/public/test/prerender_test_util.h"
+#include "content/public/test/test_utils.h"
 #include "net/base/features.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/reporting/reporting_policy.h"
@@ -2029,6 +2030,80 @@ IN_PROC_BROWSER_TEST_P(
       iframe_crash_report_api->FindString("frame");
   ASSERT_NE(iframe_frame_value, nullptr);
   EXPECT_EQ(*iframe_frame_value, "subframe");
+}
+
+IN_PROC_BROWSER_TEST_P(
+    CrashReportingBrowserTest,
+    DISABLED_ON_ASAN(
+        CrashReportInnerWebContentsSharingProcessUnderProcessLimit)) {
+  content::WebContents* contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  GURL main_url = server()->GetURL(
+      kReportingHost,
+      base::StrCat({"/set-header-with-file/chrome/test/data/iframe.html?",
+                    GetAppropriateReportingHeader(), "&outer"}));
+  EXPECT_TRUE(NavigateToURL(contents, main_url));
+
+  content::RenderProcessHost::SetMaxRendererProcessCount(1);
+
+  content::RenderFrameHost* main_rfh = contents->GetPrimaryMainFrame();
+  content::RenderFrameHost* subframe = ChildFrameAt(contents, 0);
+  ASSERT_TRUE(subframe);
+
+  GURL inner_url = server()->GetURL(
+      kReportingHost,
+      base::StrCat(
+          {"/set-header?", GetAppropriateReportingHeader(), "&inner"}));
+
+  content::WebContents::CreateParams create_params(
+      contents->GetBrowserContext(),
+      content::SiteInstance::CreateForURL(contents->GetBrowserContext(),
+                                          inner_url));
+  content::WebContents* inner_contents =
+      content::CreateAndAttachInnerContents(subframe, std::move(create_params));
+  ASSERT_TRUE(inner_contents);
+
+  EXPECT_TRUE(content::NavigateToURLFromRenderer(inner_contents, inner_url));
+
+  content::RenderFrameHost* inner_rfh = inner_contents->GetPrimaryMainFrame();
+  ASSERT_TRUE(inner_rfh);
+  ASSERT_EQ(inner_rfh->GetProcess(), main_rfh->GetProcess());
+  ASSERT_NE(inner_rfh->GetSiteInstance(), main_rfh->GetSiteInstance());
+  ASSERT_FALSE(inner_rfh->GetSiteInstance()->IsRelatedSiteInstance(
+      main_rfh->GetSiteInstance()));
+
+  content::ScopedAllowRendererCrashes allow_renderer_crashes(contents);
+  content::SimulateOOMPrimaryMainFrameAndWaitForExit(contents);
+
+  base::ListValue reports = WaitForReportUploads(/*expected_report_count=*/2);
+  ASSERT_EQ(reports.size(), 2u);
+
+  const base::DictValue& main_report = reports[0].GetDict();
+  const std::string* main_type = main_report.FindString("type");
+  ASSERT_NE(main_type, nullptr);
+  EXPECT_EQ(*main_type, "crash");
+  const std::string* main_report_url = main_report.FindString("url");
+  ASSERT_NE(main_report_url, nullptr);
+  EXPECT_EQ(*main_report_url, main_url.spec());
+  const base::DictValue* main_body = main_report.FindDict("body");
+  ASSERT_NE(main_body, nullptr);
+  const std::string* main_reason = main_body->FindString("reason");
+  ASSERT_NE(main_reason, nullptr);
+  EXPECT_EQ(*main_reason, "oom");
+
+  const base::DictValue& inner_report = reports[1].GetDict();
+  const std::string* inner_type = inner_report.FindString("type");
+  ASSERT_NE(inner_type, nullptr);
+  EXPECT_EQ(*inner_type, "crash");
+  const std::string* inner_report_url = inner_report.FindString("url");
+  ASSERT_NE(inner_report_url, nullptr);
+  EXPECT_EQ(*inner_report_url, inner_url.spec());
+  const base::DictValue* inner_body = inner_report.FindDict("body");
+  ASSERT_NE(inner_body, nullptr);
+  const std::string* inner_reason = inner_body->FindString("reason");
+  ASSERT_NE(inner_reason, nullptr);
+  EXPECT_EQ(*inner_reason, "oom");
 }
 
 IN_PROC_BROWSER_TEST_P(ReportingBrowserTestSpecifyCrashEndpoint,
