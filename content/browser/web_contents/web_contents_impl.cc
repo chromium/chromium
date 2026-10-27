@@ -7672,21 +7672,26 @@ bool WebContentsImpl::GotResponseToPointerLockRequest(
     blink::mojom::PointerLockResult result) {
   OPTIONAL_TRACE_EVENT0("content",
                         "WebContentsImpl::GotResponseToPointerLockRequest");
-  if (pointer_lock_widget_) {
-    auto* web_contents =
-        WebContentsImpl::FromRenderWidgetHostImpl(pointer_lock_widget_);
-    if (web_contents != this) {
-      return web_contents->GotResponseToPointerLockRequest(result);
-    }
+  // Ignore the response if this WebContents has no pointer lock request of its
+  // own. Clearing the parent chain here would drop a lock held by an outer
+  // WebContents.
+  if (!pointer_lock_widget_) {
+    return false;
+  }
 
-    if (pointer_lock_widget_->GotResponseToPointerLockRequest(result)) {
-      return true;
-    }
+  auto* web_contents =
+      WebContentsImpl::FromRenderWidgetHostImpl(pointer_lock_widget_);
+  if (web_contents != this) {
+    return web_contents->GotResponseToPointerLockRequest(result);
+  }
 
-    if (pointer_lock_widget_ && pointer_lock_widget_->GetView() &&
-        pointer_lock_widget_->GetView()->IsPointerLocked()) {
-      return true;
-    }
+  if (pointer_lock_widget_->GotResponseToPointerLockRequest(result)) {
+    return true;
+  }
+
+  if (pointer_lock_widget_ && pointer_lock_widget_->GetView() &&
+      pointer_lock_widget_->GetView()->IsPointerLocked()) {
+    return true;
   }
 
   SetPointerLockWidgetInParentChain(nullptr);
