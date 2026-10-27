@@ -196,10 +196,17 @@ template("rust_api_from_cpp") {
   # Bindings of the C++ standard library are an implicit dependency of all
   # other `rust_api_from_cpp` targets (similarly to how `cpp_api_from_rust`
   # injects `//build/rust/std:std_bindings`).
+  #
+  # `visibility` of the `cc_std` target is restricted (to make other Rust code
+  # use `cpp_std` instead), and therefore the generated Rust library depends
+  # on `cc_std` via `internal_cc_std_for_generated_bindings`.
   _cc_std_target = "//build/rust/crubit:cc_std"
+  _bindings_rs_deps = _bindings_deps
   if (get_label_info(":${_lib_target_name}", "label_no_toolchain") !=
       _cc_std_target) {
     _bindings_deps += [ _cc_std_target ]
+    _bindings_rs_deps +=
+        [ "//build/rust/crubit:internal_cc_std_for_generated_bindings" ]
   }
 
   # Optional parameters: extra_rust_sources and extra_rust_source_groups.
@@ -395,7 +402,7 @@ template("rust_api_from_cpp") {
       visibility = _visibility
     }
 
-    deps = _bindings_deps
+    deps = _bindings_rs_deps
     deps += [
       ":${_cc_impl_target_name}",
       ":${_gen_bindings_target_name}",

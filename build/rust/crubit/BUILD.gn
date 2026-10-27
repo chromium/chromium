@@ -104,6 +104,9 @@ if (enable_rust_api_from_cpp) {
     bindings_target = ":cc_std_empty_target"
     override_crate_name = "cc_std"
 
+    # Other Rust code should depend on `:cpp_std` instead (see below).
+    visibility = [ ":*" ]
+
     # Not a GN label in Chromium - this is the label that Crubit expects for
     # bindings of the C++ standard library.
     override_target_label = "//third_party/crubit/support/cc_std:cc_std"
@@ -163,6 +166,20 @@ if (enable_rust_api_from_cpp) {
     # Empty target to satisfy `rust_api_from_cpp` which requires
     # mandatory `bindings_target` (C++ standard library is special
     # in that it doesn't need an explicit target).
+  }
+
+  # Implicit dependency of all `rust_api_from_cpp` targets (see
+  # `//build/rust/rust_api_from_cpp.gni`).  Crubit-generated Rust code refers
+  # to C++ standard library types via the `cc_std` crate.
+  #
+  # This `group` has no `visibility` restrictions, because `rust_api_from_cpp`
+  # targets can be defined in any directory.  Instead, it has an icky,
+  # internal name to discourage depending on it, and to promote depending on
+  # the `:cpp_std` target.
+  group("internal_cc_std_for_generated_bindings") {
+    # `public_deps` (rather than `deps`) are needed to make `cc_std` an
+    # `--extern` crate of the generated bindings.
+    public_deps = [ ":cc_std" ]
   }
 
   # The `cpp_std` crate re-exports the items of `cc_std::std`.  Rust code that
