@@ -1503,6 +1503,22 @@ bool HTMLElement::IsPopoverReady(PopoverTriggerAction action,
                           "Not supported on elements that are not popovers.");
     return false;
   }
+  if (action == PopoverTriggerAction::kHide) {
+    if (GetPopoverData()->visibilityState() !=
+        PopoverVisibilityState::kShowing) {
+      // Important to check that visibility is not kShowing (rather than
+      // popoverOpen()), because a hide transition might have been started on
+      // this popover already, and we don't want to allow a double-hide.
+      return false;
+    }
+    if (expected_document && &GetDocument() != expected_document) {
+      maybe_throw_exception(DOMExceptionCode::kInvalidStateError,
+                            "Invalid when the document changes while showing "
+                            "or hiding a popover element.");
+      return false;
+    }
+    return true;
+  }
   if (!GetDocument().IsActive()) {
     maybe_throw_exception(
         DOMExceptionCode::kInvalidStateError,
@@ -1511,13 +1527,6 @@ bool HTMLElement::IsPopoverReady(PopoverTriggerAction action,
   }
   if (action == PopoverTriggerAction::kShow &&
       GetPopoverData()->visibilityState() != PopoverVisibilityState::kHidden) {
-    return false;
-  }
-  if (action == PopoverTriggerAction::kHide &&
-      GetPopoverData()->visibilityState() != PopoverVisibilityState::kShowing) {
-    // Important to check that visibility is not kShowing (rather than
-    // popoverOpen()), because a hide transition might have been started on this
-    // popover already, and we don't want to allow a double-hide.
     return false;
   }
   if (!isConnected()) {
@@ -2399,7 +2408,8 @@ PopoverHideResult HTMLElement::HideAllPopoversUntil(
         // stack.
         return PopoverHideResult::kHidden;
       }
-      while (last_to_hide && last_to_hide->popoverOpen()) {
+      while (last_to_hide && last_to_hide->popoverOpen() &&
+             stack.Contains(last_to_hide)) {
         CHECK(!stack.empty());
         auto stack_top = stack.back();
         if (stack_top->HidePopoverInternal(
@@ -2626,12 +2636,10 @@ PopoverHideResult HTMLElement::HidePopoverInternal(
     CHECK_EQ(event->newState(), keywords::kClosed);
     event->SetTarget(this);
     auto result = DispatchEvent(*event);
-    if (result != DispatchEventResult::kNotCanceled) {
-      // The event can be cancelled before dispatch, if the target or execution
-      // context no longer exists, etc. See crbug.com/1445329.
-      CHECK_EQ(result, DispatchEventResult::kCanceledBeforeDispatch);
-      return PopoverHideResult::kHidden;
-    }
+    // The event can be cancelled before dispatch, if the target or execution
+    // context no longer exists, etc. See crbug.com/40268117.
+    CHECK(result == DispatchEventResult::kNotCanceled ||
+          result == DispatchEventResult::kCanceledBeforeDispatch);
 
     // The 'beforetoggle' event handler could have changed this popover, e.g. by
     // changing its type, removing it from the document, or calling
@@ -2782,6 +2790,7 @@ PopoverHideResult HTMLElement::HidePopoverInternal(
 
   // Re-apply display:none, and stop matching `:popover-open`.
   GetPopoverData()->setVisibilityState(PopoverVisibilityState::kHidden);
+  GetPopoverData()->setHidingThisPopover(false);
 
   PseudoStateChanged(CSSSelector::kPseudoPopoverOpen);
   if (HTMLSelectElement::IsPopoverPickerElement(this)) {

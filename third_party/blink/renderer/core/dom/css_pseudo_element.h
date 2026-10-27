@@ -173,9 +173,10 @@ struct HashTraits<PseudoElementCacheKey>
   }
   static const bool kEmptyValueIsZero = false;
   static bool IsEmptyValue(const PseudoElementCacheKey& key) {
-    return key.pseudo_id == kPseudoIdNone;
+    return key.pseudo_id == kPseudoIdNone && key.pseudo_argument.IsNull();
   }
   static void ConstructDeletedValue(PseudoElementCacheKey& slot) {
+    slot.pseudo_id = kPseudoIdNone;
     HashTraits<AtomicString>::ConstructDeletedValue(slot.pseudo_argument);
   }
   static bool IsDeletedValue(const PseudoElementCacheKey& key) {
