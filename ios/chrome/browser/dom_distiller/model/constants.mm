@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/dom_distiller/model/constants.h"
 
-const char kReadabilityAllowedVideoRegex[] =
+const char kAllowedVideoRegex[] =
     "(www\\.)?((dailymotion|youtube|youtube-nocookie|player\\.vimeo|v\\.qq|"
     "bilibili|live\\.bilibili)\\.com|(archive|upload\\.wikimedia)\\.org|"
     "player\\.twitch\\.tv)";

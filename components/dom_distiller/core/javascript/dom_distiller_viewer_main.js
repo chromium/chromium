@@ -41,7 +41,7 @@ function postProcessElement(element) {
   // Wrap tables to make them scrollable.
   tryStep(wrapTables);
 
-  // Readability will leave iframes around, but they need the proper structure
+  // The distiller leaves iframes in place, and they need the proper structure
   // and classes to be styled correctly.
   tryStep(addClassesToYoutubeIFrames);
   // DomDistiller will leave placeholders, which need to be replaced with

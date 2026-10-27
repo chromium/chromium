@@ -21,11 +21,11 @@ COMPONENT_EXPORT(DOM_DISTILLER_FEATURES)
 bool ShouldStartDistillabilityService();
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-inline constexpr int kReadabilityHeuristicMinScore = 50;
-inline constexpr int kReadabilityHeuristicMinContentLength = 160;
+inline constexpr int kHeuristicMinScore = 50;
+inline constexpr int kHeuristicMinContentLength = 160;
 #else
-inline constexpr int kReadabilityHeuristicMinScore = 100;
-inline constexpr int kReadabilityHeuristicMinContentLength = 200;
+inline constexpr int kHeuristicMinScore = 100;
+inline constexpr int kHeuristicMinContentLength = 200;
 #endif
 
 COMPONENT_EXPORT(DOM_DISTILLER_FEATURES)

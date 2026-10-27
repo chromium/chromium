@@ -73,7 +73,6 @@ static_library("core") {
     "extraction_utils.h",
     "page_features.cc",
     "page_features.h",
-    "readability_options.h",
     "task_tracker.cc",
     "task_tracker.h",
     "url_constants.h",

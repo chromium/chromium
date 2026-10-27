@@ -871,39 +871,6 @@ TEST_P(ReaderModeTabHelperWithEligibilityTest, TriggerHeuristicOnPageLoad) {
   EXPECT_THAT(ukm_entries, testing::ElementsAre(static_cast<int>(eligibility)));
 }
 
-// Tests that metrics are recorded correctly when the Readability trigger
-// heuristic runs on page load and returns a result.
-TEST_P(ReaderModeTabHelperWithEligibilityTest,
-       TriggerReadabilityHeuristicOnPageLoad) {
-  ReaderModeHeuristicResult eligibility = GetEligibility();
-
-  histogram_tester_.ExpectTotalCount(kReaderModeHeuristicResultHistogram, 0);
-  ASSERT_EQ(0u, GetHeuristicResultEntries().size());
-
-  GURL test_url("https://test.url/");
-  SetReaderModeState(web_state(), test_url, eligibility, "");
-
-  LoadWebpage(web_state(), test_url);
-  WaitForPageLoadDelayAndRunUntilIdle();
-
-  ASSERT_EQ(eligibility == ReaderModeHeuristicResult::kReaderModeEligible,
-            reader_mode_tab_helper()->CurrentPageIsDistillable());
-
-  FlushMetrics();
-  EXPECT_THAT(histogram_tester_.GetAllSamples(kReaderModeStateHistogram),
-              BucketsAre(Bucket(ReaderModeState::kHeuristicCompleted, 1)));
-  EXPECT_THAT(
-      histogram_tester_.GetAllSamples(kReaderModeHeuristicResultHistogram),
-      BucketsAre(Bucket(eligibility, 1)));
-  EXPECT_THAT(
-      histogram_tester_.GetAllSamples(kReaderModeHeuristicLatencyHistogram),
-      BucketsAre(Bucket(0, 1)));
-  std::vector<int64_t> ukm_entries = test_ukm_recorder_.GetMetricsEntryValues(
-      IOS_ReaderMode_Heuristic_Result::kEntryName,
-      IOS_ReaderMode_Heuristic_Result::kResultName);
-  EXPECT_THAT(ukm_entries, testing::ElementsAre(static_cast<int>(eligibility)));
-}
-
 // Tests that histograms related to distillation results are recorded after the
 // JavaScript execution.
 TEST_P(ReaderModeTabHelperWithEligibilityTest, TriggerDistillationOnActive) {

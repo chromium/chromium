@@ -28,11 +28,9 @@ void DistillCurrentPage(content::WebContents* source_web_contents);
 void DistillAndView(content::WebContents* source_web_contents,
                     content::WebContents* destination_web_contents);
 
-// Runs the readability heuristic on the given `web_contents` to determine if
+// Runs the distillability heuristic on the given `web_contents` to determine if
 // it's suitable for reader mode. Returns the result through `callback`.
-void RunReadabilityHeuristicsOnWebContents(
-    content::WebContents* web_contents,
-    base::OnceCallback<void(bool)> callback);
-
+void RunHeuristicsOnWebContents(content::WebContents* web_contents,
+                                base::OnceCallback<void(bool)> callback);
 
 #endif  // CHROME_BROWSER_DOM_DISTILLER_TAB_UTILS_H_

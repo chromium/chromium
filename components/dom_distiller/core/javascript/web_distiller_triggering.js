@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Runs readability heuristic on the page and return the result.
+// Runs distillability heuristic on the page and returns the result.
 (function(minScore, minContentLength) {
 function initialize() {
   // This include will be processed at build time by grit.

@@ -63,8 +63,8 @@ if (is_ios) {
         "//third_party/node/node_modules/chai/index.js",
         "//third_party/node/node_modules/mocha/mocha.js",
         "dom_distiller/core/javascript/extract_features.js",
-        "dom_distiller/core/javascript/readability_distiller.js",
-        "dom_distiller/core/javascript/readability_triggering.js",
+        "dom_distiller/core/javascript/web_distiller.js",
+        "dom_distiller/core/javascript/web_distiller_triggering.js",
       ]
       outputs = [ "{{bundle_resources_dir}}/" +
                   "{{source_root_relative_dir}}/{{source_file_part}}" ]

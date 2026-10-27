@@ -76,7 +76,7 @@ function getPageTextContent(
 }
 
 /**
- * Calculates the readability score of the page based on the element text
+ * Calculates the content score of the page based on the element text
  * length list retrieved from getPageTextContent().
  * @param {!Array} textList List of element text lengths.
  * @param {!float} power Exponent applied to scoring.

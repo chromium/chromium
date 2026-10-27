@@ -6,6 +6,7 @@
 
 #import "base/containers/fixed_flat_set.h"
 #import "base/functional/bind.h"
+#import "base/functional/callback.h"
 #import "base/strings/utf_string_conversions.h"
 #import "components/dom_distiller/core/extraction_utils.h"
 #import "components/google/core/common/google_util.h"
@@ -20,7 +21,7 @@
 
 namespace {
 
-// Returns the Readability heuristic result if it is available otherwise returns
+// Returns the heuristic result if it is available otherwise returns
 // `kMalformedResponse`.
 ReaderModeHeuristicResult GetReaderModeHeuristicResult(
     const base::Value* result) {
@@ -174,15 +175,11 @@ void ReaderModeEligibilityDecider::TriggerReaderModeHeuristic(const GURL& url) {
   metrics_helper_->RecordReaderHeuristicTriggered();
   eligibility_heuristic_url_ = url;
   main_frame->ExecuteJavaScript(
-      base::UTF8ToUTF16(dom_distiller::GetReadabilityTriggeringScript()),
-      base::BindOnce(
-          &ReaderModeEligibilityDecider::HandleReadabilityHeuristicResult,
-          weak_ptr_factory_.GetWeakPtr()));
-}
-
-void ReaderModeEligibilityDecider::HandleReadabilityHeuristicResult(
-    const base::Value* result) {
-  HandleReaderModeHeuristicResult(GetReaderModeHeuristicResult(result));
+      base::UTF8ToUTF16(dom_distiller::GetDistillerTriggeringScript()),
+      base::BindOnce(&GetReaderModeHeuristicResult)
+          .Then(base::BindOnce(
+              &ReaderModeEligibilityDecider::HandleReaderModeHeuristicResult,
+              weak_ptr_factory_.GetWeakPtr())));
 }
 
 void ReaderModeEligibilityDecider::OnOptimizationGuideDecision(

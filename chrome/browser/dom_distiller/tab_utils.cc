@@ -204,8 +204,8 @@ void MaybeStartDistillation(
   view_request_delegate->TakeViewerHandle(std::move(viewer_handle));
 }
 
-void OnReadabilityHeuristicResult(base::OnceCallback<void(bool)> callback,
-                                  base::Value value) {
+void OnHeuristicResult(base::OnceCallback<void(bool)> callback,
+                       base::Value value) {
   std::move(callback).Run(value.GetIfBool().value_or(false));
 }
 
@@ -259,13 +259,12 @@ void DistillAndView(content::WebContents* source_web_contents,
                                    source_web_contents->GetLastCommittedURL());
 }
 
-void RunReadabilityHeuristicsOnWebContents(
-    content::WebContents* web_contents,
-    base::OnceCallback<void(bool)> callback) {
-  std::string script = dom_distiller::GetReadabilityTriggeringScript();
+void RunHeuristicsOnWebContents(content::WebContents* web_contents,
+                                base::OnceCallback<void(bool)> callback) {
+  std::string script = dom_distiller::GetDistillerTriggeringScript();
   web_contents->GetPrimaryMainFrame()->ExecuteJavaScriptInIsolatedWorld(
       base::UTF8ToUTF16(script),
-      base::BindOnce(OnReadabilityHeuristicResult,
+      base::BindOnce(OnHeuristicResult,
                      mojo::WrapCallbackWithDefaultInvokeIfNotRun(
                          std::move(callback), false)),
       ISOLATED_WORLD_ID_CHROME_INTERNAL);

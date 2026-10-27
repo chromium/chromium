@@ -389,16 +389,15 @@ IN_PROC_BROWSER_TEST_F(DomDistillerTabUtilsPrerenderTest,
   EXPECT_FALSE(HasTaskTracker());
 }
 
-IN_PROC_BROWSER_TEST_F(
-    DomDistillerTabUtilsBrowserTest,
-    RunReadabilityHeuristicsOnWebContents_WebContentsDestroyed) {
+IN_PROC_BROWSER_TEST_F(DomDistillerTabUtilsBrowserTest,
+                       RunHeuristicsOnWebContents_WebContentsDestroyed) {
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), article_url()));
 
   base::test::TestFuture<bool> future;
-  RunReadabilityHeuristicsOnWebContents(web_contents, future.GetCallback());
+  RunHeuristicsOnWebContents(web_contents, future.GetCallback());
 
   // Close tab / destroy WebContents while JS execution is in flight.
   browser()->tab_strip_model()->CloseWebContentsAt(

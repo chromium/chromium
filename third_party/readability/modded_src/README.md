@@ -64,7 +64,7 @@ autonomously test distillation fixes:
     tags may be treated as active content.
 *   **Post-processing:** This script *only* runs `Readability.js`. Downstream
     Chromium post-processing steps are not applied.
-*   **No Shadow DOM:** In production, `readability_distiller.js` runs
+*   **No Shadow DOM:** In production, `web_distiller.js` runs
     Readability over a *flattened-tree* clone so that content inside open
     shadow roots is visible. `jsdom` has no shadow DOM and this script clones
     nothing, so a page whose article body lives inside a web component will

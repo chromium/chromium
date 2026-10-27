@@ -7,8 +7,8 @@
 #import <memory>
 
 #import "base/strings/utf_string_conversions.h"
+#import "components/dom_distiller/core/distiller_options.h"
 #import "components/dom_distiller/core/extraction_utils.h"
-#import "components/dom_distiller/core/readability_options.h"
 #import "ios/web/public/test/fakes/fake_web_frame.h"
 #import "ios/web/public/test/fakes/fake_web_frames_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
@@ -21,8 +21,8 @@ class ReaderModeDistillerPageTest : public PlatformTest {
   ReaderModeDistillerPageTest() : valid_url_(GURL("https://test.url")) {
     distiller_page_ = std::make_unique<ReaderModeDistillerPage>(&web_state_);
 
-    dom_distiller_script_ = dom_distiller::GetReadabilityDistillerScript(
-        dom_distiller::ReadabilityOptions());
+    distiller_script_ =
+        dom_distiller::GetDistillerScript(dom_distiller::DistillerOptions());
 
     auto frames_manager = std::make_unique<web::FakeWebFramesManager>();
     web_frames_manager_ = frames_manager.get();
@@ -39,10 +39,10 @@ class ReaderModeDistillerPageTest : public PlatformTest {
 
   ReaderModeDistillerPage* distiller_page() { return distiller_page_.get(); }
 
-  const std::string& dom_distiller_script() { return dom_distiller_script_; }
+  const std::string& distiller_script() { return distiller_script_; }
 
-  const std::u16string dom_distiller_script_utf16() {
-    return base::UTF8ToUTF16(dom_distiller_script_);
+  const std::u16string distiller_script_utf16() {
+    return base::UTF8ToUTF16(distiller_script_);
   }
 
   web::FakeWebFrame* web_frame() { return web_frame_; }
@@ -54,13 +54,13 @@ class ReaderModeDistillerPageTest : public PlatformTest {
   raw_ptr<web::FakeWebFrame> web_frame_;
 
   GURL valid_url_;
-  std::string dom_distiller_script_;
+  std::string distiller_script_;
   std::unique_ptr<ReaderModeDistillerPage> distiller_page_;
 };
 
 TEST_F(ReaderModeDistillerPageTest, DistillPageInvalidUrl) {
   GURL invalid_url("invalid_url");
-  distiller_page()->DistillPageImpl(invalid_url, dom_distiller_script());
+  distiller_page()->DistillPageImpl(invalid_url, distiller_script());
   EXPECT_EQ(0u, web_frame()->GetJavaScriptCallHistory().size());
 }
 
@@ -70,31 +70,29 @@ TEST_F(ReaderModeDistillerPageTest, DistillPageInvalidScript) {
 }
 
 TEST_F(ReaderModeDistillerPageTest, DistillPageInvalidJavaScriptResult) {
-  web_frame()->AddResultForExecutedJs(nullptr, dom_distiller_script_utf16());
+  web_frame()->AddResultForExecutedJs(nullptr, distiller_script_utf16());
 
-  distiller_page()->DistillPageImpl(valid_url(), dom_distiller_script());
+  distiller_page()->DistillPageImpl(valid_url(), distiller_script());
   EXPECT_EQ(1u, web_frame()->GetJavaScriptCallHistory().size());
-  EXPECT_EQ(dom_distiller_script_utf16(), web_frame()->GetLastJavaScriptCall());
+  EXPECT_EQ(distiller_script_utf16(), web_frame()->GetLastJavaScriptCall());
 }
 
 TEST_F(ReaderModeDistillerPageTest, DistillPageValid) {
   base::Value empty_value;
-  web_frame()->AddResultForExecutedJs(&empty_value,
-                                      dom_distiller_script_utf16());
+  web_frame()->AddResultForExecutedJs(&empty_value, distiller_script_utf16());
 
-  distiller_page()->DistillPageImpl(valid_url(), dom_distiller_script());
+  distiller_page()->DistillPageImpl(valid_url(), distiller_script());
   EXPECT_EQ(1u, web_frame()->GetJavaScriptCallHistory().size());
-  EXPECT_EQ(dom_distiller_script_utf16(), web_frame()->GetLastJavaScriptCall());
+  EXPECT_EQ(distiller_script_utf16(), web_frame()->GetLastJavaScriptCall());
 }
 
 // Tests that a main frame with a different origin than the original URL is not
 // processed.
 TEST_F(ReaderModeDistillerPageTest, DifferentOriginIgnored) {
   base::Value empty_value;
-  web_frame()->AddResultForExecutedJs(&empty_value,
-                                      dom_distiller_script_utf16());
+  web_frame()->AddResultForExecutedJs(&empty_value, distiller_script_utf16());
 
   GURL different_origin("https://notthesame.url");
-  distiller_page()->DistillPageImpl(different_origin, dom_distiller_script());
+  distiller_page()->DistillPageImpl(different_origin, distiller_script());
   EXPECT_EQ(0u, web_frame()->GetJavaScriptCallHistory().size());
 }

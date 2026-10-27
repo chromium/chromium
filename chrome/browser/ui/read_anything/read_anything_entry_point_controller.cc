@@ -154,7 +154,7 @@ void OnReadabilityDecision(base::OnceCallback<void(bool)> result_callback,
 void RunReadabilityHeuristic(content::WebContents* contents,
                              base::OnceCallback<void(bool)> result_callback) {
   CHECK(contents);
-  RunReadabilityHeuristicsOnWebContents(
+  RunHeuristicsOnWebContents(
       contents,
       base::BindOnce(&OnReadabilityDecision, std::move(result_callback)));
 }

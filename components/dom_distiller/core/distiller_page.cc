@@ -58,7 +58,7 @@ void DistillerPage::DistillPage(const GURL& gurl,
   ready_ = false;
   distiller_page_callback_ = std::move(callback);
 
-  DistillPageImpl(gurl, GetReadabilityDistillerScript(options.readability));
+  DistillPageImpl(gurl, GetDistillerScript(options));
 }
 
 void DistillerPage::OnDistillationDone(const GURL& page_url,
@@ -71,8 +71,7 @@ void DistillerPage::OnDistillationDone(const GURL& page_url,
 
   if (!value || value->is_none()) {
     result = DistillationParseResult::kNoData;
-  } else if (ReadabilityDistillerResultToDistilledPageProto(
-                 *value, distilled_page.get())) {
+  } else if (ParseDistillationResult(*value, distilled_page.get())) {
     result = DistillationParseResult::kSuccess;
     if (distilled_page->has_word_count() &&
         distilled_page->word_count() <

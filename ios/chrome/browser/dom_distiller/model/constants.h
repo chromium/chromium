@@ -6,6 +6,6 @@
 #define IOS_CHROME_BROWSER_DOM_DISTILLER_MODEL_CONSTANTS_H_
 
 // Regular expression to match allowed video sources in Reader Mode.
-extern const char kReadabilityAllowedVideoRegex[];
+extern const char kAllowedVideoRegex[];
 
 #endif  // IOS_CHROME_BROWSER_DOM_DISTILLER_MODEL_CONSTANTS_H_

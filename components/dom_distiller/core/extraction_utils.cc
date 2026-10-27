@@ -13,9 +13,9 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
+#include "components/dom_distiller/core/distiller_options.h"
 #include "components/dom_distiller/core/dom_distiller_features.h"
 #include "components/dom_distiller/core/proto/distilled_page.pb.h"
-#include "components/dom_distiller/core/readability_options.h"
 #include "components/grit/components_resources.h"
 #include "ui/base/resource/resource_bundle.h"
 
@@ -35,10 +35,10 @@ void ReplaceScriptPlaceholder(std::string& script,
 }
 }  // namespace
 
-std::string GetReadabilityDistillerScript(const ReadabilityOptions& options) {
+std::string GetDistillerScript(const DistillerOptions& options) {
   std::string script =
       ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
-          IDR_READABILITY_DISTILLER_JS);
+          IDR_WEB_DISTILLER_JS);
   CHECK(!script.empty());
 
   std::string allowed_regex_json;
@@ -55,15 +55,15 @@ std::string GetReadabilityDistillerScript(const ReadabilityOptions& options) {
   return script;
 }
 
-std::string GetReadabilityTriggeringScript() {
+std::string GetDistillerTriggeringScript() {
   std::string script =
       ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
-          IDR_READABILITY_TRIGGERING_JS);
+          IDR_WEB_DISTILLER_TRIGGERING_JS);
   CHECK(!script.empty());
 
-  std::string min_score = base::NumberToString(kReadabilityHeuristicMinScore);
+  std::string min_score = base::NumberToString(kHeuristicMinScore);
   std::string min_content_length =
-      base::NumberToString(kReadabilityHeuristicMinContentLength);
+      base::NumberToString(kHeuristicMinContentLength);
   ReplaceScriptPlaceholder(script, kMinScorePlaceholder, min_score);
   ReplaceScriptPlaceholder(script, kMinContentLengthPlaceholder,
                            min_content_length);
@@ -85,9 +85,8 @@ int CountWords(const std::string& text_content) {
   return result + 1;
 }
 
-bool ReadabilityDistillerResultToDistilledPageProto(
-    const base::Value& value,
-    DistilledPageProto* result) {
+bool ParseDistillationResult(const base::Value& value,
+                             DistilledPageProto* result) {
   if (!value.is_dict()) {
     return false;
   }

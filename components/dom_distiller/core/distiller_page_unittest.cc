@@ -17,18 +17,12 @@
 #include "components/dom_distiller/core/dom_distiller_features.h"
 #include "components/dom_distiller/core/extraction_utils.h"
 #include "components/dom_distiller/core/proto/distilled_page.pb.h"
-#include "components/dom_distiller/core/readability_options.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
 namespace dom_distiller {
 
 namespace {
-
-constexpr char kReadabilityTitle[] = "title";
-constexpr char kReadabilityContent[] = "content";
-constexpr char kReadabilityDir[] = "dir";
-constexpr char kReadabilityTextContent[] = "textContent";
 
 // This is a minimal concrete class that inherits from DistillerPage. It
 // overrides the implementation of distillation to immediately call the
@@ -172,19 +166,19 @@ void AssertCorrectDistilledPageProto(const DistilledPageProto& result,
   ASSERT_EQ(word_count, result.word_count());
 }
 
-TEST_F(DistillerPageTest, ReadabilityObjectIsExtracted) {
-  base::DictValue readability_result;
+TEST_F(DistillerPageTest, DistillerObjectIsExtracted) {
+  base::DictValue distiller_result;
   const std::string title = "test_title";
-  readability_result.Set(kReadabilityTitle, title);
+  distiller_result.Set(kDistilledTitleKey, title);
   const std::string content = "test content";
-  readability_result.Set(kReadabilityContent, content);
+  distiller_result.Set(kDistilledContentKey, content);
   const std::string dir = "ltr";
-  readability_result.Set(kReadabilityDir, dir);
+  distiller_result.Set(kDistilledTextDirectionKey, dir);
   const std::string text_content =
       "one two; three. four!  fivefive six, seven, eight nine ten";
-  readability_result.Set(kReadabilityTextContent, text_content);
+  distiller_result.Set(kDistilledTextContentKey, text_content);
   TestDistillerPage distiller_page;
-  distiller_page.SetNextResultValue(base::Value(std::move(readability_result)));
+  distiller_page.SetNextResultValue(base::Value(std::move(distiller_result)));
 
   base::RunLoop run_loop;
   DistillerPage::DistillerPageCallback cb =
@@ -206,19 +200,18 @@ TEST_F(DistillerPageTest, ReadabilityObjectIsExtracted) {
                                        DistillationParseResult::kSuccess, 1);
 }
 
-TEST_F(DistillerPageTest,
-       ReadabilityObjectIsExtracted_AutoDirWhenNoneProvided) {
-  base::DictValue readability_result;
+TEST_F(DistillerPageTest, DistillerObjectIsExtracted_AutoDirWhenNoneProvided) {
+  base::DictValue distiller_result;
   const std::string title = "test_title";
-  readability_result.Set(kReadabilityTitle, title);
+  distiller_result.Set(kDistilledTitleKey, title);
   const std::string content = "test content";
-  readability_result.Set(kReadabilityContent, content);
+  distiller_result.Set(kDistilledContentKey, content);
   const std::string dir = "auto";
   const std::string text_content =
       "one two; three. four!  fivefive six, seven, eight nine ten";
-  readability_result.Set(kReadabilityTextContent, text_content);
+  distiller_result.Set(kDistilledTextContentKey, text_content);
   TestDistillerPage distiller_page;
-  distiller_page.SetNextResultValue(base::Value(std::move(readability_result)));
+  distiller_page.SetNextResultValue(base::Value(std::move(distiller_result)));
 
   base::RunLoop run_loop;
   DistillerPage::DistillerPageCallback cb =
@@ -240,10 +233,10 @@ TEST_F(DistillerPageTest,
                                        DistillationParseResult::kSuccess, 1);
 }
 
-TEST_F(DistillerPageTest, ReadabilityObjectIsExtracted_FailureWhenNotDict) {
-  base::Value readability_result("undefined");
+TEST_F(DistillerPageTest, DistillerObjectIsExtracted_FailureWhenNotDict) {
+  base::Value distiller_result("undefined");
   TestDistillerPage distiller_page;
-  distiller_page.SetNextResultValue(base::Value(std::move(readability_result)));
+  distiller_page.SetNextResultValue(base::Value(std::move(distiller_result)));
 
   base::RunLoop run_loop;
   DistillerPage::DistillerPageCallback cb =
@@ -262,19 +255,19 @@ TEST_F(DistillerPageTest, ReadabilityObjectIsExtracted_FailureWhenNotDict) {
 
 #if BUILDFLAG(IS_ANDROID)
 TEST_F(DistillerPageTest, DistillationFailsWhenMinContentLengthNotMet) {
-  base::DictValue readability_result;
+  base::DictValue distiller_result;
   const std::string title = "test_title";
-  readability_result.Set(kReadabilityTitle, title);
+  distiller_result.Set(kDistilledTitleKey, title);
   const std::string content = "test content";
-  readability_result.Set(kReadabilityContent, content);
+  distiller_result.Set(kDistilledContentKey, content);
   const std::string dir = "ltr";
-  readability_result.Set(kReadabilityDir, dir);
+  distiller_result.Set(kDistilledTextDirectionKey, dir);
   const std::string text_content =
       "one two; three. four!  fivefive six, seven, eight nine ten";
-  readability_result.Set(kReadabilityTextContent, text_content);
+  distiller_result.Set(kDistilledTextContentKey, text_content);
   TestDistillerPage distiller_page;
   distiller_page.SetMinimumAllowableDistilledContentLength(1000);
-  distiller_page.SetNextResultValue(base::Value(std::move(readability_result)));
+  distiller_page.SetNextResultValue(base::Value(std::move(distiller_result)));
 
   base::RunLoop run_loop;
   DistillerPage::DistillerPageCallback cb =
@@ -296,22 +289,22 @@ TEST_F(DistillerPageTest, DistillationFailsWhenMinContentLengthNotMet) {
 
 TEST_F(DistillerPageTest,
        DistillationSucceedsWhenCustomLowerMinContentLengthMet) {
-  base::DictValue readability_result;
+  base::DictValue distiller_result;
   const std::string title = "test_title";
-  readability_result.Set(kReadabilityTitle, title);
+  distiller_result.Set(kDistilledTitleKey, title);
   const std::string content = "test content";
-  readability_result.Set(kReadabilityContent, content);
+  distiller_result.Set(kDistilledContentKey, content);
   const std::string dir = "ltr";
-  readability_result.Set(kReadabilityDir, dir);
+  distiller_result.Set(kDistilledTextDirectionKey, dir);
   const std::string text_content =
       "one two; three. four!  fivefive six, seven, eight nine ten";
-  readability_result.Set(kReadabilityTextContent, text_content);
+  distiller_result.Set(kDistilledTextContentKey, text_content);
 
   // Use a threshold (10 words) lower than the 100-word Android default and
   // verify that a 10-word article succeeds.
   TestDistillerPage distiller_page;
   distiller_page.SetMinimumAllowableDistilledContentLength(10);
-  distiller_page.SetNextResultValue(base::Value(std::move(readability_result)));
+  distiller_page.SetNextResultValue(base::Value(std::move(distiller_result)));
 
   base::RunLoop run_loop;
   DistillerPage::DistillerPageCallback cb =
@@ -334,14 +327,14 @@ TEST_F(DistillerPageTest,
 }
 #endif
 
-// Test that the readability script options are injected correctly.
-TEST_F(DistillerPageTest, ReadabilityScriptOptionsHandling) {
-  ReadabilityOptions custom_options;
-  std::string default_script = GetReadabilityDistillerScript(custom_options);
+// Test that the distiller script options are injected correctly.
+TEST_F(DistillerPageTest, DistillerScriptOptionsHandling) {
+  DistillerOptions custom_options;
+  std::string default_script = GetDistillerScript(custom_options);
   EXPECT_NE(std::string::npos, default_script.find("})(undefined);"));
 
   custom_options.allowed_video_regex = "youtube|vimeo";
-  std::string custom_script = GetReadabilityDistillerScript(custom_options);
+  std::string custom_script = GetDistillerScript(custom_options);
   EXPECT_NE(std::string::npos, custom_script.find("})(\"youtube|vimeo\");"));
 }
 

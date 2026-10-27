@@ -41,7 +41,6 @@ class TestDistillerPage : public dom_distiller::DistillerPage {
 
 class DistillerServiceTest : public PlatformTest {
  public:
-  // For readability.
   using Article = std::unique_ptr<dom_distiller::DistilledArticleProto>;
 
   DistillerServiceTest() : profile_(TestProfileIOS::Builder().Build()) {

@@ -21,7 +21,7 @@ DistillerServiceFactory::DistillerServiceFactory(PassKey key)
 std::unique_ptr<KeyedService> DistillerServiceFactory::BuildServiceInstanceFor(
     ProfileIOS* profile) const {
   dom_distiller::DistillerOptions options;
-  options.readability.allowed_video_regex = kReadabilityAllowedVideoRegex;
+  options.allowed_video_regex = kAllowedVideoRegex;
   return std::make_unique<DistillerService>(
       std::make_unique<dom_distiller::DistillerFactoryImpl>(std::move(options)),
       profile->GetPrefs());

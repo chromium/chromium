@@ -66,10 +66,10 @@ class ReaderModeTest : public PlatformTest {
                               base::WeakPtr<web::WebFrame> weak_web_frame,
                               ReaderModeHeuristicResult result);
 
-  // Adds the given heuristic result to the Readability heuristic JavasScript
-  // callback for the specified frame.
-  void AddReadabilityHeuristicResultToFrame(ReaderModeHeuristicResult result,
-                                            web::FakeWebFrame* web_frame);
+  // Adds the given heuristic result to the heuristic JavaScript callback for
+  // the specified frame.
+  void AddHeuristicResultToFrame(ReaderModeHeuristicResult result,
+                                 web::FakeWebFrame* web_frame);
 
   web::WebTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
@@ -80,7 +80,7 @@ class ReaderModeTest : public PlatformTest {
   translate::LanguageDetectionModel language_detection_model_;
 
   std::vector<std::unique_ptr<base::Value>> distiller_result_values_;
-  std::unique_ptr<base::Value> readability_heuristic_value_;
+  std::unique_ptr<base::Value> heuristic_value_;
 
   base::WeakPtrFactory<ReaderModeTest> weak_ptr_factory_{this};
 };

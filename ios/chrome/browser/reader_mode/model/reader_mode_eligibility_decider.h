@@ -68,10 +68,6 @@ class ReaderModeEligibilityDecider {
   // Trigger the heuristic to determine reader mode eligibility.
   void TriggerReaderModeHeuristic(const GURL& url);
 
-  // Handles the result from the Readability JavaScript heuristic triggering
-  // logic.
-  void HandleReadabilityHeuristicResult(const base::Value* result);
-
   // Handles the result from the Optimization guide service.
   void OnOptimizationGuideDecision(
       optimization_guide::OptimizationGuideDecision decision,

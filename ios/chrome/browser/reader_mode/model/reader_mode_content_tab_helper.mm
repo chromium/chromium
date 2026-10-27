@@ -32,7 +32,7 @@ bool IsIframeHostAllowed(const GURL& url) {
   }
   // Wrap the shared regex in anchors for strict host matching.
   static const base::NoDestructor<std::string> anchored_regex(
-      std::string("^") + kReadabilityAllowedVideoRegex + "$");
+      std::string("^") + kAllowedVideoRegex + "$");
   static const base::NoDestructor<re2::RE2> allowed_iframe_pattern(
       *anchored_regex, re2::RE2::CannedOptions(re2::RE2::Quiet));
   return re2::RE2::FullMatch(url.host(), *allowed_iframe_pattern);

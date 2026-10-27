@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Runs readability heuristic on the page and return the result.
+// Distills the page content for Reader Mode and returns the extracted article.
 (function(allowedVideoRegex) {
 try {
   function initialize() {

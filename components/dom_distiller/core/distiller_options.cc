@@ -4,13 +4,14 @@
 
 #include "components/dom_distiller/core/distiller_options.h"
 
-#include <utility>
-
 namespace dom_distiller {
 
-DistillerOptions::DistillerOptions(ReadabilityOptions readability_options)
-    : readability(std::move(readability_options)) {}
-
+DistillerOptions::DistillerOptions() = default;
+DistillerOptions::DistillerOptions(const DistillerOptions&) = default;
+DistillerOptions& DistillerOptions::operator=(const DistillerOptions&) =
+    default;
+DistillerOptions::DistillerOptions(DistillerOptions&&) = default;
+DistillerOptions& DistillerOptions::operator=(DistillerOptions&&) = default;
 DistillerOptions::~DistillerOptions() = default;
 
 }  // namespace dom_distiller

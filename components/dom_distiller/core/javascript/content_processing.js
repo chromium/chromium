@@ -109,10 +109,9 @@ function fillYouTubePlaceholders(element) {
 }
 
 /**
- * Locates existing youtube iframes and applies viewer stylings to them. This
- * is only relevant to readability which leave iframes in the result.
- * DomDistiller leaves behind placeholders, which are handled by
- * #fillYouTubePlaceholders.
+ * Locates existing youtube iframes and applies viewer stylings to them when
+ * the distiller leaves iframes in the result (whereas placeholders are handled
+ * by #fillYouTubePlaceholders).
  * @param {HTMLElement} element The element to search for iframes in.
  */
 function addClassesToYoutubeIFrames(element) {

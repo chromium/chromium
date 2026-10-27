@@ -20,7 +20,6 @@
 #include "components/dom_distiller/core/distiller_options.h"
 #include "components/dom_distiller/core/distiller_page.h"
 #include "components/dom_distiller/core/proto/distilled_article.pb.h"
-#include "components/dom_distiller/core/readability_options.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "url/gurl.h"
