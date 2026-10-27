@@ -815,8 +815,8 @@
     },
     {
       "id": 122,
-      "description": "GPU rasterization should only be enabled on NVIDIA, Intel, AMD RX-R2 GPUs with DX11+, certain QC devices+drivers or any GPU using ANGLE's GL backend.",
-      "cr_bugs": [1047002, 1462800],
+      "description": "GPU rasterization should only be enabled on NVIDIA, Intel, AMD RX-R2 GPUs with DX11+, certain QC devices+drivers, LISUAN GPUs or any GPU using ANGLE's GL backend.",
+      "cr_bugs": [1047002, 1462800, 571984148],
       "os": {
         "type": "win"
       },
@@ -876,6 +876,10 @@
         },
         {
           "gl_renderer": ".*OpenGL.*"
+        },
+        {
+          "comment": "LISUAN GPUs handle GPU rasterization on Windows",
+          "vendor_id": "0x4c54"
         }
       ]
     },
