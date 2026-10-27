@@ -43,12 +43,10 @@ class ReadAloudAudioRenderer : public media::AudioRendererSink::RenderCallback {
  public:
   // Invoked on the owning sequence when a word becomes audible.
   // `start_character_offset` and `end_character_offset` are the word's
-  // document offsets from its `WordTiming`, and `audio_timestamp` is the media
-  // time at which the word starts.
+  // document offsets from its `WordTiming`.
   using WordBoundaryCallback =
       base::RepeatingCallback<void(uint32_t start_character_offset,
-                                   uint32_t end_character_offset,
-                                   base::TimeDelta audio_timestamp)>;
+                                   uint32_t end_character_offset)>;
 
   // Upper bound on the output delay fed to the audio clock. Used to clamp
   // the delay reported by the audio sink.

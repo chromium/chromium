@@ -165,8 +165,7 @@ void ReadAloudAudioRenderer::PumpWordBoundaries() {
     if (word) {
       if (word_boundary_callback_) {
         word_boundary_callback_.Run(word->start_character_offset,
-                                    word->end_character_offset,
-                                    /*audio_timestamp=*/word->start_time);
+                                    word->end_character_offset);
       }
       continue;
     }
