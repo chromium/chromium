@@ -11,6 +11,7 @@ group("test_rust_api_from_cpp") {
     ":rust_api_from_cpp_unittests",
     "round_trip:cpp_unittests",
     "round_trip:rust_unittests",
+    "std:rust_unittests",
   ]
 }
 
@@ -27,9 +28,7 @@ rust_static_library("rust_api_from_cpp_unittests") {
     ":target_depending_on_another_rs_api",
     ":test_browsing_instance_id_rs_api",
     ":test_extra_rust_source_groups_rs_api",
-    ":test_std_types_rs_api",
     ":test_time_delta_rs_api",
-    "//build/rust/crubit:cc_std",
     "//build/rust/crubit:cref",
     "//testing/rust_gtest_interop",
   ]
@@ -141,15 +140,6 @@ rust_api_from_cpp("test_extra_rust_source_groups_rs_api") {
 
 source_set("test_extra_rust_source_groups") {
   sources = [ "test_extra_rust_source_groups.h" ]
-}
-
-rust_api_from_cpp("test_std_types_rs_api") {
-  bindings_target = ":test_std_types"
-  public_headers = [ "test_std_types.h" ]
-}
-
-source_set("test_std_types") {
-  sources = [ "test_std_types.h" ]
 }
 
 rust_api_from_cpp("test_browsing_instance_id_rs_api") {

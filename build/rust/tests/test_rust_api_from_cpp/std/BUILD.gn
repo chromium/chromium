@@ -1,0 +1,32 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Tests for `rust_api_from_cpp` bindings of C++ standard library types (e.g.
+# `std::optional`, `std::unique_ptr`, `std::vector`).
+
+import("//build/rust/rust_api_from_cpp.gni")
+import("//build/rust/rust_static_library.gni")
+
+rust_static_library("rust_unittests") {
+  testonly = true
+  is_gtest_unittests = true
+  crate_root = "unittests.rs"
+  sources = [ crate_root ]
+  deps = [
+    ":std_types_rs_api",
+    "//build/rust/crubit:cc_std",
+    "//testing/rust_gtest_interop",
+  ]
+}
+
+rust_api_from_cpp("std_types_rs_api") {
+  testonly = true
+  bindings_target = ":std_types"
+  public_headers = [ "std_types.h" ]
+}
+
+source_set("std_types") {
+  testonly = true
+  sources = [ "std_types.h" ]
+}

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef BUILD_RUST_TESTS_TEST_RUST_API_FROM_CPP_TEST_STD_TYPES_H_
-#define BUILD_RUST_TESTS_TEST_RUST_API_FROM_CPP_TEST_STD_TYPES_H_
+#ifndef BUILD_RUST_TESTS_TEST_RUST_API_FROM_CPP_STD_STD_TYPES_H_
+#define BUILD_RUST_TESTS_TEST_RUST_API_FROM_CPP_STD_STD_TYPES_H_
 
 #include <memory>
 #include <optional>
@@ -44,4 +44,4 @@ inline int SumVector(std::vector<int> v) {
   return sum;
 }
 
-#endif  // BUILD_RUST_TESTS_TEST_RUST_API_FROM_CPP_TEST_STD_TYPES_H_
+#endif  // BUILD_RUST_TESTS_TEST_RUST_API_FROM_CPP_STD_STD_TYPES_H_
