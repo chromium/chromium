@@ -4,6 +4,7 @@
 
 #include "base/check_deref.h"
 #include "base/containers/to_vector.h"
+#include "base/i18n/language_tag.h"
 #include "base/scoped_observation.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
@@ -67,7 +68,7 @@ std::set<FieldType> GetExpectedFieldTypesToBuildAddressUiForCountryCode(
   expected_address_ui_field_types.insert(FieldType::EMAIL_ADDRESS);
 
   std::vector<std::vector<AutofillAddressUIComponent>> components;
-  GetAddressComponents(country_code, "en-US",
+  GetAddressComponents(country_code, base::i18n::GetKnownLanguageTag("en-US"),
                        /*include_literals=*/false, &components, nullptr);
   for (const std::vector<AutofillAddressUIComponent>& line : components) {
     for (const AutofillAddressUIComponent& component : line) {

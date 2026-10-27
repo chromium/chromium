@@ -16,6 +16,8 @@
 #include "base/containers/to_vector.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/i18n/language_tag.h"
+#include "base/i18n/tag_converters.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/strings/strcat.h"
@@ -474,7 +476,9 @@ AutofillPrivateGetAddressComponentsFunction::Run() {
 
   autofill::GetAddressComponents(
       parameters->country_code,
-      ExtensionsBrowserClient::Get()->GetApplicationLocale(),
+      base::i18n::GetLanguageTagFromString(
+          ExtensionsBrowserClient::Get()->GetApplicationLocale())
+          .value_or(base::i18n::GetKnownLanguageTag("und")),
       /*include_literals=*/false, &lines, &language_code);
   // Convert std::vector<std::vector<::i18n::addressinput::AddressUiComponent>>
   // to AddressComponents

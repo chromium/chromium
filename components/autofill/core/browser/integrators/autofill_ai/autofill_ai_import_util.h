@@ -43,7 +43,7 @@ std::vector<EntityInstance> GetPossibleEntitiesFromSubmittedForm(
 // Otherwise returns std::nullopt.
 //
 // The localization depends on the currently set ICU locale
-// (base::i18n::GetConfiguredLocale()).
+// (base::i18n::GetDefaultIcuLocale()).
 //
 // For example, if the attribute value is "2025-01-31" and the currently set ICU
 // locale is "en_US", the returned string is "Jan 31, 2025".

@@ -7,6 +7,7 @@
 #include <string>
 #include <utility>
 
+#include "base/i18n/language_tag.h"
 #include "base/strings/utf_string_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -17,27 +18,29 @@ namespace {
 
 class TestCountryNames : public CountryNames {
  public:
-  explicit TestCountryNames(const std::string& locale_name)
-      : CountryNames(locale_name) {}
+  explicit TestCountryNames(const base::i18n::LanguageTag& locale)
+      : CountryNames(locale) {}
 
   ~TestCountryNames() = default;
 };
 
 // Test mapping of localized country names to country codes.
 TEST(CountryNamesTest, GetCountryCode_BasicMapping) {
-  TestCountryNames en_us_names("en_US");
+  TestCountryNames en_us_names(base::i18n::GetKnownLanguageTag("en-US"));
   EXPECT_EQ(en_us_names.GetCountryCode(u"United States"), "US");
   EXPECT_EQ(en_us_names.GetCountryCode(u"Canada"), "CA");
   EXPECT_EQ(en_us_names.GetCountryCode(u"Czech Republic"), "CZ");
 }
 
 TEST(CountryNamesTest, GetCountryCode_CaseInsensitiveMapping) {
-  EXPECT_EQ(TestCountryNames("en_US").GetCountryCode(u"united states"), "US");
+  EXPECT_EQ(TestCountryNames(base::i18n::GetKnownLanguageTag("en-US"))
+                .GetCountryCode(u"united states"),
+            "US");
 }
 
 TEST(CountryNamesTest, GetCountryCode_CodesMapToThemselves) {
-  TestCountryNames en_us_names("en_US");
-  TestCountryNames fr_ca_names("fr_CA");
+  TestCountryNames en_us_names(base::i18n::GetKnownLanguageTag("en-US"));
+  TestCountryNames fr_ca_names(base::i18n::GetKnownLanguageTag("fr-CA"));
   EXPECT_EQ(en_us_names.GetCountryCode(u"US"), "US");
   EXPECT_EQ(en_us_names.GetCountryCode(u"hu"), "HU");
   EXPECT_EQ(fr_ca_names.GetCountryCode(u"CA"), "CA");
@@ -45,19 +48,25 @@ TEST(CountryNamesTest, GetCountryCode_CodesMapToThemselves) {
 }
 
 TEST(CountryNamesTest, GetCountryCode_BasicSynonyms) {
-  TestCountryNames en_us_names("en_US");
+  TestCountryNames en_us_names(base::i18n::GetKnownLanguageTag("en-US"));
   EXPECT_EQ(en_us_names.GetCountryCode(u"United States of America"), "US");
   EXPECT_EQ(en_us_names.GetCountryCode(u"USA"), "US");
 }
 
 TEST(CountryNamesTest, GetCountryCode_OtherLocales) {
-  EXPECT_EQ(TestCountryNames("es").GetCountryCode(u"Estados Unidos"), "US");
-  EXPECT_EQ(TestCountryNames("it").GetCountryCode(u"Italia"), "IT");
-  EXPECT_EQ(TestCountryNames("nl").GetCountryCode(u"duitsland"), "DE");
+  EXPECT_EQ(TestCountryNames(base::i18n::GetKnownLanguageTag("es"))
+                .GetCountryCode(u"Estados Unidos"),
+            "US");
+  EXPECT_EQ(TestCountryNames(base::i18n::GetKnownLanguageTag("it"))
+                .GetCountryCode(u"Italia"),
+            "IT");
+  EXPECT_EQ(TestCountryNames(base::i18n::GetKnownLanguageTag("nl"))
+                .GetCountryCode(u"duitsland"),
+            "DE");
 }
 
 TEST(CountryNamesTest, GetCountryCode_EnUsFallback) {
-  TestCountryNames es_names("es");
+  TestCountryNames es_names(base::i18n::GetKnownLanguageTag("es"));
   EXPECT_EQ(es_names.GetCountryCode(u"United States"), "US");
   EXPECT_EQ(es_names.GetCountryCode(u"united states"), "US");
   EXPECT_EQ(es_names.GetCountryCode(u"USA"), "US");
@@ -65,7 +74,7 @@ TEST(CountryNamesTest, GetCountryCode_EnUsFallback) {
 
 TEST(CountryNamesTest, GetCountryCodeForLocalizedCountryName) {
   // Initialize with the default locale.
-  TestCountryNames names("en_US");
+  TestCountryNames names(base::i18n::GetKnownLanguageTag("en-US"));
   EXPECT_EQ(names.GetCountryCodeForLocalizedCountryName(u"Armenien", "de"),
             "AM");
   // Check that there is no cache by requesting the same result twice.
@@ -77,7 +86,7 @@ TEST(CountryNamesTest, GetCountryCodeForLocalizedCountryName) {
 
 TEST(CountryNamesTest, GetCachedCountryCodeForLocalizedCountryName) {
   // Initialize with the default locale.
-  TestCountryNames names("en_US");
+  TestCountryNames names(base::i18n::GetKnownLanguageTag("en-US"));
 
   // Verify that the entry is not cached.
   EXPECT_FALSE(names.IsCountryNamesForLocaleCachedForTesting("de"));
@@ -90,8 +99,20 @@ TEST(CountryNamesTest, GetCachedCountryCodeForLocalizedCountryName) {
   EXPECT_TRUE(names.IsCountryNamesForLocaleCachedForTesting("de"));
 }
 
+// Test that a locale that cannot be parsed returns the result of the lookup in
+// the default and application locales, without populating the cache.
+TEST(CountryNamesTest, GetCountryCodeForLocalizedCountryName_InvalidLocale) {
+  TestCountryNames names(base::i18n::GetKnownLanguageTag("en-US"));
+  EXPECT_EQ(
+      names.GetCountryCodeForLocalizedCountryName(u"United States", "!x!"),
+      "US");
+  EXPECT_EQ(names.GetCountryCodeForLocalizedCountryName(u"Armenien", "!x!"),
+            "");
+  EXPECT_FALSE(names.IsCountryNamesForLocaleCachedForTesting("!x!"));
+}
+
 TEST(CountryNamesTest, GetCountryCode_EmptyString) {
-  TestCountryNames en_us_names("en_US");
+  TestCountryNames en_us_names(base::i18n::GetKnownLanguageTag("en-US"));
   EXPECT_EQ(en_us_names.GetCountryCode(u""), "");
 }
 
@@ -99,7 +120,7 @@ TEST(CountryNamesTest, GetCountryCode_EmptyString) {
 // even if the locale does not match (e.g. "Deutschland" is not the en_US
 // representation of "Germany").
 TEST(CountryNamesTest, GetCountryCode_NativeNames_Uppercase) {
-  TestCountryNames en_us_names("en_US");
+  TestCountryNames en_us_names(base::i18n::GetKnownLanguageTag("en-US"));
   // German, uppercase
   EXPECT_EQ(en_us_names.GetCountryCode(u"DEUTSCHLAND"), "DE");
   // Greek, uppercase
@@ -114,7 +135,7 @@ TEST(CountryNamesTest, GetCountryCode_NativeNames_Uppercase) {
 // The native names are stored in uppercase so this test ensures that the
 // international uppercasing works as expected.
 TEST(CountryNamesTest, GetCountryCode_NativeNames_Lowercase) {
-  TestCountryNames en_us_names("en_US");
+  TestCountryNames en_us_names(base::i18n::GetKnownLanguageTag("en-US"));
   EXPECT_EQ(en_us_names.GetCountryCode(u"Deutschland"), "DE");
   EXPECT_EQ(en_us_names.GetCountryCode(u"España"), "ES");
   EXPECT_EQ(en_us_names.GetCountryCode(u"France"), "FR");
@@ -127,7 +148,8 @@ TEST(CountryNamesTest, GetCountryCode_NativeNames_Lowercase) {
 // Test mapping of an empty country name to an country code.
 TEST(CountryNamesTest, EmptyCountryNameHasEmptyCountryCode) {
   std::string country_code =
-      TestCountryNames("en").GetCountryCode(std::u16string());
+      TestCountryNames(base::i18n::GetKnownLanguageTag("en"))
+          .GetCountryCode(std::u16string());
   EXPECT_TRUE(country_code.empty()) << country_code;
 }
 

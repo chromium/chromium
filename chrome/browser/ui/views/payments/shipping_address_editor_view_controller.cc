@@ -8,6 +8,8 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/i18n/language_tag.h"
+#include "base/i18n/tag_converters.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/browser_process.h"
@@ -479,7 +481,9 @@ void ShippingAddressEditorViewController::UpdateEditorFields() {
 
   std::vector<std::vector<autofill::AutofillAddressUIComponent>> components;
   autofill::GetAddressComponents(
-      chosen_country_code, state()->GetApplicationLocale(),
+      chosen_country_code,
+      base::i18n::GetLanguageTagFromString(state()->GetApplicationLocale())
+          .value_or(base::i18n::GetKnownLanguageTag("und")),
       /*include_literals=*/false, &components, &language_code_);
 
   // Insert the Country combobox at the top.

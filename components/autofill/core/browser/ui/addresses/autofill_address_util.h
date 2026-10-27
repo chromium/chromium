@@ -14,6 +14,10 @@
 #include "third_party/libaddressinput/src/cpp/include/libaddressinput/address_ui_component.h"
 #include "third_party/libaddressinput/src/cpp/include/libaddressinput/localization.h"
 
+namespace base::i18n {
+class LanguageTag;
+}  // namespace base::i18n
+
 namespace autofill {
 
 class AutofillProfile;
@@ -84,7 +88,7 @@ void ExtendAddressComponents(
 // ", " and "-" should be returned.
 void GetAddressComponents(
     const std::string& country_code,
-    const std::string& ui_language_code,
+    const base::i18n::LanguageTag& ui_language_code,
     bool include_literals,
     std::vector<std::vector<AutofillAddressUIComponent>>* address_components,
     std::string* components_language_code);
@@ -104,7 +108,7 @@ void GetAddressComponents(
 // ", " and "-" should be returned.
 std::vector<AutofillAddressUIComponent> GetAddressComponents(
     const std::string& country_code,
-    const std::string& ui_language_code,
+    const base::i18n::LanguageTag& ui_language_code,
     bool enable_field_labels_localization,
     bool include_literals,
     std::string& components_language_code);

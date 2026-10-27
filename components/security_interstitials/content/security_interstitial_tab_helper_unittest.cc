@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/functional/bind.h"
+#include "base/i18n/icubridge/default_icu_locale.h"
 #include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
@@ -52,7 +53,7 @@ class TestInterstitialPage : public SecurityInterstitialPage {
                 web_contents,
                 CreateTestMetricsHelper(web_contents),
                 nullptr,
-                base::i18n::GetConfiguredLocale(),
+                std::string(base::i18n::GetDefaultIcuLocale().tag_string()),
                 GURL(),
                 /* settings_page_helper*/ nullptr)),
         destroyed_tracker_(destroyed_tracker) {}

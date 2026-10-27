@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "base/i18n/icubridge/default_icu_locale.h"
 #include "base/i18n/rtl.h"
 #include "base/json/json_writer.h"
 #include "base/memory/scoped_refptr.h"
@@ -61,8 +62,9 @@ std::string BuildDocumentSuggestionRequest(const std::u16string& query) {
   // and can be shared among multiple clients in some instances, clientId
   // identifies a client uniquely.
   request_options.Set("clientId", base::Value(chromeOmniboxClientId));
-  request_options.Set("languageCode",
-                      base::Value(base::i18n::GetConfiguredLocale()));
+  request_options.Set(
+      "languageCode",
+      base::Value(base::i18n::GetDefaultIcuLocale().tag_string()));
   root.Set("requestOptions", std::move(request_options));
 
   return base::WriteJson(root).value_or("");

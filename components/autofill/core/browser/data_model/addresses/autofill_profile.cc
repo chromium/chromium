@@ -22,6 +22,7 @@
 #include "base/check_op.h"
 #include "base/containers/span.h"
 #include "base/feature_list.h"
+#include "base/i18n/language_tag.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -78,7 +79,8 @@ namespace autofill {
 
 namespace {
 
-constexpr char kAddressComponentsDefaultLocality[] = "en-US";
+constexpr base::i18n::LanguageTag kAddressComponentsDefaultLocality =
+    base::i18n::GetKnownLanguageTag("en-US");
 
 // Returns `NAME_FULL` for first, middle, and last name field types, and groups
 // phone number types similarly.

@@ -9,6 +9,7 @@
 #include <string_view>
 
 #include "base/functional/bind.h"
+#include "base/i18n/icubridge/default_icu_locale.h"
 #include "base/i18n/language_tag.h"
 #include "base/i18n/language_tag_matcher.h"
 #include "base/i18n/rtl.h"
@@ -50,9 +51,9 @@ bool AcceptLanguagesService::CanBeAcceptLanguage(std::string_view language) {
     return false;
   }
 
-  const std::string ui_locale = base::i18n::GetConfiguredLocale();
+  const LanguageTag ui_locale = base::i18n::GetDefaultIcuLocale();
 
-  return l10n_util::IsAcceptLanguageDisplayable(ui_locale,
+  return l10n_util::IsAcceptLanguageDisplayable(ui_locale.tag_string(),
                                                 parsed_tag->tag_string());
 }
 

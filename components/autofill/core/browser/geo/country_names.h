@@ -11,6 +11,7 @@
 #include <string_view>
 
 #include "base/containers/lru_cache.h"
+#include "base/i18n/language_tag.h"
 #include "base/no_destructor.h"
 #include "base/synchronization/lock.h"
 #include "components/autofill/core/browser/geo/country_names_for_locale.h"
@@ -50,8 +51,8 @@ class CountryNames {
 #endif
 
  protected:
-  // Create CountryNames for `locale_name`. Protected for testing.
-  explicit CountryNames(std::string locale_name);
+  // Create CountryNames for `locale`. Protected for testing.
+  explicit CountryNames(const base::i18n::LanguageTag& locale);
 
   // Protected for testing.
   ~CountryNames();
@@ -68,8 +69,8 @@ class CountryNames {
   using LocalizedCountryNamesCache =
       base::LRUCache<std::string, CountryNamesForLocale, std::less<>>;
 
-  // The locale object for the application locale string.
-  const std::string application_locale_name_;
+  // The application locale.
+  const base::i18n::LanguageTag application_locale_;
 
   // Maps country names localized for the default locale to country codes.
   const CountryNamesForLocale country_names_for_default_locale_;

@@ -10,6 +10,8 @@
 
 #include "base/i18n/case_conversion.h"
 #include "base/i18n/char_iterator.h"
+#include "base/i18n/icubridge/default_icu_locale.h"
+#include "base/i18n/language_tag.h"
 #include "base/i18n/rtl.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/strings/string_tokenizer.h"
@@ -234,14 +236,16 @@ void OmniboxPedalProvider::LoadPedalConcepts() {
   // The locale is a two-letter language code, possibly followed by a dash and
   // country code. English locales include "en", "en-US", and "en-GB" while
   // non-English locales never start with "en".
-  const std::string locale = base::i18n::GetConfiguredLocale();
-  const std::string language_code = locale.substr(0, 2);
+  const base::i18n::LanguageTag locale = base::i18n::GetDefaultIcuLocale();
+  const std::string_view language_code = locale.language_subtag();
 
   // According to the pedals localization data, only a few languages
   // were set to tokenize each character, so those are checked directly here.
   // Note, zh-CN was set to tokenize each character but zh-TW was not so the
   // full locale is checked for that exceptional case.
-  if (language_code == "ja" || (language_code == "zh" && locale != "zh-TW")) {
+  if (language_code == "ja" ||
+      (language_code == "zh" &&
+       locale != base::i18n::GetKnownLanguageTag("zh-TW"))) {
     tokenize_characters_ = u"";
   } else {
     tokenize_characters_ = u" -";

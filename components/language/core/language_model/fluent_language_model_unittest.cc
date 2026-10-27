@@ -6,9 +6,9 @@
 
 #include <cmath>
 
+#include "base/i18n/icubridge/default_icu_locale.h"
 #include "base/i18n/language_tag.h"
 #include "base/i18n/rtl.h"
-#include "base/i18n/tag_converters.h"
 #include "base/strings/string_split.h"
 #include "base/values.h"
 #include "components/language/core/browser/language_prefs.h"
@@ -26,7 +26,6 @@ namespace language {
 
 using ::base::i18n::GetKnownLanguageTag;
 using ::base::i18n::LanguageTag;
-using ::base::i18n::LanguageTagConverter;
 using ::testing::ElementsAre;
 
 using Ld = LanguageModel::LanguageDetails;
@@ -60,11 +59,7 @@ TEST_F(FluentLanguageModelTest, Defaults) {
   // By default, languages that are blocked from translation should match the
   // list of fluent languages. Note that when using default prefs, only the UI
   // language is returned as a blocked language.
-  std::string default_locale_code = base::i18n::GetConfiguredLocale();
-  LanguageTag default_locale_tag =
-      LanguageTagConverter::GetInstance()
-          .FromString(default_locale_code)
-          .value_or(base::i18n::GetKnownLanguageTag("und"));
+  const LanguageTag default_locale_tag = base::i18n::GetDefaultIcuLocale();
 
   FluentLanguageModel model(prefs_.get());
   std::vector<Ld> languages = model.GetLanguages();

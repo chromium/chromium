@@ -10,6 +10,8 @@
 #include "base/check_deref.h"
 #include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
+#include "base/i18n/language_tag.h"
+#include "base/i18n/tag_converters.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/devtools/protocol/autofill.h"
@@ -405,7 +407,8 @@ void AutofillHandler::OnFillOrPreviewForm(
   autofill::GetAddressComponents(
       base::UTF16ToUTF8(profile_used_to_fill_form->GetRawInfo(
           autofill::ADDRESS_HOME_COUNTRY)),
-      locale,
+      base::i18n::GetLanguageTagFromString(locale).value_or(
+          base::i18n::GetKnownLanguageTag("und")),
       /*include_literals=*/false, &components, nullptr);
 
   // `profile_address_fields` is used to represent a profile as seen in the

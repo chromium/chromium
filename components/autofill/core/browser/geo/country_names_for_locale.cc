@@ -17,6 +17,7 @@
 #include "base/check_op.h"
 #include "base/containers/heap_array.h"
 #include "base/containers/span.h"
+#include "base/i18n/language_tag.h"
 #include "base/strings/string_util.h"
 #include "base/strings/string_view_util.h"
 #include "components/autofill/core/browser/geo/country_data.h"
@@ -89,12 +90,23 @@ std::map<std::string, std::string> GetLocalizedNames(
   return localized_names;
 }
 
+// Returns the locale string used for ICU lookups. An undetermined language
+// ("und") maps to an empty string, for which no localized names exist.
+std::string GetLocaleString(const base::i18n::LanguageTag& locale) {
+  if (locale == base::i18n::GetKnownLanguageTag("und")) {
+    return std::string();
+  }
+  return std::string(locale.tag_string());
+}
+
 }  // namespace
 
-CountryNamesForLocale::CountryNamesForLocale(std::string locale_name)
-    : locale_name_(std::move(locale_name)),
-      collator_(CreateCollator(locale_name_.c_str())),
-      localized_names_(GetLocalizedNames(locale_name_, collator_.get())) {}
+CountryNamesForLocale::CountryNamesForLocale(
+    const base::i18n::LanguageTag& locale)
+    : locale_(locale),
+      collator_(CreateCollator(GetLocaleString(locale_).c_str())),
+      localized_names_(
+          GetLocalizedNames(GetLocaleString(locale_), collator_.get())) {}
 
 CountryNamesForLocale::CountryNamesForLocale(CountryNamesForLocale&&) = default;
 

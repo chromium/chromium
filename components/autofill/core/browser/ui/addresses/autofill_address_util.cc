@@ -14,6 +14,8 @@
 
 #include "base/check.h"
 #include "base/containers/to_vector.h"
+#include "base/i18n/language_tag.h"
+#include "base/i18n/tag_converters.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
@@ -118,7 +120,7 @@ void ExtendAddressComponents(
 
 void GetAddressComponents(
     const std::string& country_code,
-    const std::string& ui_language_code,
+    const base::i18n::LanguageTag& ui_language_code,
     bool include_literals,
     std::vector<std::vector<AutofillAddressUIComponent>>* address_components,
     std::string* components_language_code) {
@@ -162,7 +164,7 @@ void GetAddressComponents(
 
 std::vector<AutofillAddressUIComponent> GetAddressComponents(
     const std::string& country_code,
-    const std::string& ui_language_code,
+    const base::i18n::LanguageTag& ui_language_code,
     bool enable_field_labels_localization,
     bool include_literals,
     std::string& components_language_code) {
@@ -172,18 +174,19 @@ std::vector<AutofillAddressUIComponent> GetAddressComponents(
     localization.SetGetter(l10n_util::GetStringUTF8);
   }
   AutofillCountry country(country_code);
+  const std::string ui_language_string(ui_language_code.tag_string());
 
   std::vector<AutofillAddressUIComponent> components;
   if (include_literals) {
     components = ConvertAddressUiComponents(
         ::i18n::addressinput::BuildComponentsWithLiterals(
-            country_code, localization, ui_language_code,
+            country_code, localization, ui_language_string,
             &components_language_code),
         country);
   } else {
     components = ConvertAddressUiComponents(
         ::i18n::addressinput::BuildComponents(country_code, localization,
-                                              ui_language_code,
+                                              ui_language_string,
                                               &components_language_code),
         country);
   }
@@ -209,10 +212,12 @@ std::u16string GetEnvelopeStyleAddress(const AutofillProfile& profile,
   const std::u16string country_code = profile.GetRawInfo(ADDRESS_HOME_COUNTRY);
 
   std::string not_used;
-  std::vector<AutofillAddressUIComponent> components =
-      GetAddressComponents(base::UTF16ToUTF8(country_code), ui_language_code,
-                           /*enable_field_labels_localization=*/true,
-                           /*include_literals=*/true, not_used);
+  std::vector<AutofillAddressUIComponent> components = GetAddressComponents(
+      base::UTF16ToUTF8(country_code),
+      base::i18n::GetLanguageTagFromString(ui_language_code)
+          .value_or(base::i18n::GetKnownLanguageTag("und")),
+      /*enable_field_labels_localization=*/true,
+      /*include_literals=*/true, not_used);
 
   DCHECK(!components.empty());
   // Remove components that evaluate to an empty string.
