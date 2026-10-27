@@ -142,6 +142,57 @@ public class GroupWindowCheckerUnitTest {
     }
 
     @Test
+    public void testGetSortedGroupList_zeroSyncGroupsIncludesLocalGroups() {
+        Token localGroupId = Token.createRandom();
+        when(mSyncService.getAllGroupIds()).thenReturn(new String[0]);
+        when(mTabModel.getAllTabGroupIds()).thenReturn(Set.of(localGroupId));
+        when(mTabModel.containsTabGroup(localGroupId)).thenReturn(true);
+        when(mTabModel.getTabGroupTitle(localGroupId)).thenReturn("Local Group");
+        when(mTabModel.getTabsInGroup(localGroupId)).thenReturn(List.of());
+
+        when(mTab1.getTabGroupId()).thenReturn(localGroupId);
+        when(mTab1.isClosing()).thenReturn(false);
+        List<Tab> tabList = List.of(mTab1);
+        when(mTabList.iterator()).thenAnswer(invocation -> tabList.iterator());
+
+        List<GroupWindowInfo> sortedList =
+                mSyncUtils.getSortedGroupList(
+                        this::tabGroupSelectionPredicate,
+                        (g1, g2) -> g1.title.compareToIgnoreCase(g2.title));
+        assertEquals(1, sortedList.size());
+        assertEquals(localGroupId, sortedList.get(0).localId);
+        assertTrue(mSyncUtils.hasOtherGroups(/* currentGroupId= */ null));
+    }
+
+    @Test
+    public void testGetSortedGroupList_deduplicatesGroupInBothSyncAndLocal() {
+        Token groupId = Token.createRandom();
+        SavedTabGroup group = createSavedTabGroup(groupId, "Sync Title");
+        group.localId = new LocalTabGroupId(groupId);
+        group.savedTabs.add(new SavedTabGroupTab());
+
+        when(mSyncService.getAllGroupIds()).thenReturn(new String[] {"sync1"});
+        when(mSyncService.getGroup("sync1")).thenReturn(group);
+
+        when(mTabModel.getAllTabGroupIds()).thenReturn(Set.of(groupId));
+        when(mTabModel.containsTabGroup(groupId)).thenReturn(true);
+        when(mTabModel.getTabGroupTitle(groupId)).thenReturn("Local Title");
+        when(mTabModel.getTabsInGroup(groupId)).thenReturn(List.of());
+
+        when(mTab1.getTabGroupId()).thenReturn(groupId);
+        when(mTab1.isClosing()).thenReturn(false);
+        List<Tab> tabList = List.of(mTab1);
+        when(mTabList.iterator()).thenAnswer(invocation -> tabList.iterator());
+
+        List<GroupWindowInfo> sortedList =
+                mSyncUtils.getSortedGroupList(
+                        this::tabGroupSelectionPredicate,
+                        (g1, g2) -> g1.title.compareToIgnoreCase(g2.title));
+        assertEquals(1, sortedList.size());
+        assertEquals(groupId, sortedList.get(0).localId);
+    }
+
+    @Test
     public void testGetState_hidden() {
         SavedTabGroup group = new SavedTabGroup();
         group.localId = null;

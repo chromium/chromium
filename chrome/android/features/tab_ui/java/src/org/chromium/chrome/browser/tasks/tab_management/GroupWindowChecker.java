@@ -85,22 +85,27 @@ public class GroupWindowChecker {
             TabGroupSelectionPredicate tabGroupSelectionPredicate,
             Comparator<GroupWindowInfo> comparator) {
         List<GroupWindowInfo> groupList = new ArrayList<>();
+        Set<Token> seenGroups = new HashSet<>();
         if (mSyncService != null && !mCurrentTabModel.isIncognito()) {
-            addSyncedTabGroups(groupList, tabGroupSelectionPredicate);
-        } else {
-            addLocalTabGroups(groupList, tabGroupSelectionPredicate);
+            addSyncedTabGroups(groupList, tabGroupSelectionPredicate, seenGroups);
         }
+        addLocalTabGroups(groupList, tabGroupSelectionPredicate, seenGroups);
         groupList.sort(comparator);
         return groupList;
     }
 
     private void addSyncedTabGroups(
             List<GroupWindowInfo> groupList,
-            TabGroupSelectionPredicate tabGroupSelectionPredicate) {
+            TabGroupSelectionPredicate tabGroupSelectionPredicate,
+            Set<Token> seenGroups) {
         assert mSyncService != null;
         for (String syncGroupId : mSyncService.getAllGroupIds()) {
             SavedTabGroup savedTabGroup = mSyncService.getGroup(syncGroupId);
             assert savedTabGroup != null && !savedTabGroup.savedTabs.isEmpty();
+
+            if (savedTabGroup.localId != null) {
+                seenGroups.add(savedTabGroup.localId.tabGroupId);
+            }
 
             @GroupWindowState int groupWindowState = getState(savedTabGroup);
             if (tabGroupSelectionPredicate.shouldInclude(groupWindowState)) {
@@ -119,8 +124,8 @@ public class GroupWindowChecker {
 
     private void addLocalTabGroups(
             List<GroupWindowInfo> groupList,
-            TabGroupSelectionPredicate tabGroupSelectionPredicate) {
-        Set<Token> seenGroups = new HashSet<>();
+            TabGroupSelectionPredicate tabGroupSelectionPredicate,
+            Set<Token> seenGroups) {
         for (TabModel model : getAllTabModels()) {
             for (Token groupId : model.getAllTabGroupIds()) {
                 if (!seenGroups.add(groupId)) {
