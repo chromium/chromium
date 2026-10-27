@@ -138,6 +138,7 @@ class HttpRpcBasedEphemeralKeyFetcher::Operation {
               "An OAuth2 access token sent in the HTTP Authorization header to "
               "authenticate the request. The request body is empty."
             destination: GOOGLE_OWNED_SERVICE
+            api_service_name: "chromesyncephemeralkeys.pa.googleapis.com"
             internal {
               contacts {
                 email: "//components/sync_tab_context/OWNERS"
