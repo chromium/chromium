@@ -20021,6 +20021,21 @@
             ]
         }
     ],
+    "WebViewPropagateStrictEchMode": [
+        {
+            "platforms": [
+                "android_webview"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "PropagateStrictEchMode"
+                    ]
+                }
+            ]
+        }
+    ],
     "WebViewPurgeMemoryInBackground": [
         {
             "platforms": [

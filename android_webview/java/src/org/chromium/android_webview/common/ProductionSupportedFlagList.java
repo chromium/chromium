@@ -1511,6 +1511,9 @@ public final class ProductionSupportedFlagList {
                 "When enabled, MHTML responses with mixed-case MIME types (e.g."
                         + " \"Multipart/Related\") for URLs other than file: and content: are"
                         + " treated as downloads, matching lowercase MHTML MIME types."),
+        Flag.baseFeature(
+                "PropagateStrictEchMode",
+                "Enables propagating strict ECH (Encrypted Client Hello) mode on Android."),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };
