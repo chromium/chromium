@@ -2424,24 +2424,6 @@ Keep consistent with active providers. Doesn't need to include every provider in
   </summary>
 </histogram>
 
-<histogram name="Omnibox.InputType" enum="OmniboxInputType"
-    expires_after="2027-03-21">
-  <owner>jdonnelly@chromium.org</owner>
-  <owner>mpearson@chromium.org</owner>
-  <owner>chrome-desktop-search@google.com</owner>
-  <summary>
-    The kind of input the user provided when using the omnibox to go somewhere.
-    The type can be misleading. For example if the user typed 'http:/', it gets
-    marked as a query because it cannot be opened as a URL even though the user
-    probably wanted and selected a URL from the list of suggestions.
-
-    In M-74 and earlier, this was only recorded if the user had no incognito
-    windows open. In M-75 and later, it records all omnibox interactions
-    regardless, in order to be consistent with how user actions and histograms
-    are handled.
-  </summary>
-</histogram>
-
 <histogram name="Omnibox.IPv4AddressPartsCount" units="count"
     expires_after="2024-01-14">
   <owner>gjc@chromium.org</owner>
@@ -2451,40 +2433,6 @@ Keep consistent with active providers. Doesn't need to include every provider in
     verify whether shortened IPv4 addresses like 127.1 are still used. This
     histogram is recorded when the user fully types the URL in the omnibox and
     the URL uses an IPv4 address or IPv4 embedded IPv6 address as the host.
-  </summary>
-</histogram>
-
-<histogram name="Omnibox.IsPasteAndGo" enum="Boolean"
-    expires_after="2027-03-28">
-  <owner>jdonnelly@chromium.org</owner>
-  <owner>chrome-desktop-search@google.com</owner>
-  <summary>
-    Whether an omnibox interaction is a paste-and-search/paste-and-go action.
-    (This histogram records both of these in the &quot;True&quot; bucket for
-    this histogram because both of these are referred to as paste-and-go in the
-    code.) These typically involve right-clicking in the omnibox and selecting
-    that option from the dropdown.
-
-    In M-74 and earlier, this was only recorded if the user had no incognito
-    windows open. In M-75 and later, it records all omnibox interactions
-    regardless, in order to be consistent with how user actions and histograms
-    are handled.
-  </summary>
-</histogram>
-
-<histogram name="Omnibox.JustDeletedText" enum="Boolean"
-    expires_after="2027-02-07">
-  <owner>jdonnelly@chromium.org</owner>
-  <owner>mpearson@chromium.org</owner>
-  <owner>chrome-desktop-search@google.com</owner>
-  <summary>
-    Whether the user deleted text immediately before selecting an omnibox
-    suggestion. This is usually the result of pressing backspace or delete.
-
-    In M-74 and earlier, this was only recorded if the user had no incognito
-    windows open. In M-75 and later, it records all omnibox interactions
-    regardless, in order to be consistent with how user actions and histograms
-    are handled.
   </summary>
 </histogram>
 
@@ -3688,23 +3636,6 @@ Keep consistent with active providers. Doesn't need to include every provider in
   </summary>
 </histogram>
 
-<histogram name="Omnibox.NumTypedTerms" units="terms"
-    expires_after="2027-01-14">
-  <owner>jdonnelly@chromium.org</owner>
-  <owner>mpearson@chromium.org</owner>
-  <owner>chrome-desktop-search@google.com</owner>
-  <summary>
-    The number of terms in the text the user entered in the omnibox when they
-    used the omnibox to go somewhere. Terms are defined by splitting on
-    whitespace. All values larger than 6 are recorded in bucket 6.
-
-    In M-74 and earlier, this was only recorded if the user had no incognito
-    windows open. In M-75 and later, it records all omnibox interactions
-    regardless, in order to be consistent with how user actions and histograms
-    are handled.
-  </summary>
-</histogram>
-
 <histogram name="Omnibox.OnDeviceBrainModel.Latency" units="ms"
     expires_after="2026-11-12">
   <owner>cechen@google.com</owner>
@@ -4673,29 +4604,6 @@ Keep consistent with active providers. Doesn't need to include every provider in
   </summary>
 </histogram>
 
-<histogram name="Omnibox.SuggestionUsed.OfferedTabMatch" enum="BooleanOffered"
-    expires_after="2027-10-01">
-  <owner>mpearson@chromium.org</owner>
-  <owner>jdonnelly@chromium.org</owner>
-  <owner>ender@google.com</owner>
-  <summary>
-    Measures whether the suggestion that was selected by the user offered a tab
-    match. A tab match occurs when the URL specified by the suggestion matches
-    the URL navigated to by another tab in the browser, within the margin of our
-    URL stripping scheme.
-
-    This metric typically only makes sense with respect to
-    Omnibox.SuggestionUsed.OfferedTabMatch. Only recent versions of the browser
-    send the metric. Therefore, other metrics may include datapoints not covered
-    by this metric (unless one narrows the data by version.)
-
-    In M-74 and earlier, this was only recorded if the user had no incognito
-    windows open. In M-75 and later, it records all omnibox interactions
-    regardless, in order to be consistent with how user actions and histograms
-    are handled.
-  </summary>
-</histogram>
-
 <histogram name="Omnibox.SuggestionUsed.Pedal" enum="SuggestionPedalType"
     expires_after="never">
 <!-- expires-never: part of vital metric ChromeSearch.Actions -->
@@ -4905,35 +4813,6 @@ Keep consistent with active providers. Doesn't need to include every provider in
     omnibox. Note that this histogram is most useful for use with Chrometto in
     order to record a high LCP trace as soon as it happens (rather than only
     once the slow page loads gets discarded).
-  </summary>
-</histogram>
-
-<histogram name="Omnibox.SuggestionUsed.SelectedTabMatch"
-    enum="BooleanSelected" expires_after="2027-10-01">
-  <owner>mpearson@chromium.org</owner>
-  <owner>jdonnelly@chromium.org</owner>
-  <owner>ender@google.com</owner>
-  <summary>
-    Measures whether the suggestion that was selected by the user offered a tab
-    match and specifically that the user chose the tab match over normal
-    navigation. A tab match occurs when the URL specified by the suggestion
-    matches the URL navigated to by another tab in the browser, within the
-    margin of our URL stripping scheme. By selecting the tab match, the browser
-    simply switches focus to the matching tab.
-
-    This metric typically only makes sense with respect to
-    Omnibox.SuggestionUsed.OfferedTabMatch. Only recent versions of the browser
-    send the metric. Therefore, other metrics may include datapoints not covered
-    by this metric (unless one narrows the data by version.)
-
-    This metric should be stricly less than
-    Omnibox.SuggestionUsed.OfferedTabMatch, and is typically used to discover
-    the percentage of offered tab matches that the user accepts.
-
-    In M-74 and earlier, this was only recorded if the user had no incognito
-    windows open. In M-75 and later, it records all omnibox interactions
-    regardless, in order to be consistent with how user actions and histograms
-    are handled.
   </summary>
 </histogram>
 
