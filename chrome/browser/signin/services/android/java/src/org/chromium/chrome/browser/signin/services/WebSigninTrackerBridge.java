@@ -79,6 +79,7 @@ public class WebSigninTrackerBridge {
 
         assert mNativeWebSigninTrackerBridge != 0
                 : "Couldn't create native WebSigninTrackerBridge object!";
+        WebSigninTrackerBridgeJni.get().start(mNativeWebSigninTrackerBridge);
     }
 
     /**
@@ -98,6 +99,7 @@ public class WebSigninTrackerBridge {
                         .createWithEmail(profile, email, createDestroyCallback(callback));
         assert mNativeWebSigninTrackerBridge != 0
                 : "Couldn't create native WebSigninTrackerBridge object!";
+        WebSigninTrackerBridgeJni.get().start(mNativeWebSigninTrackerBridge);
     }
 
     /**
@@ -140,6 +142,8 @@ public class WebSigninTrackerBridge {
                 @JniType("Profile*") Profile profile,
                 @JniType("std::string") String email,
                 Callback<@WebSigninTrackerResult Integer> callback);
+
+        void start(long webSigninTrackerBridgePtr);
 
         void destroy(long webSigninTrackerBridgePtr);
     }
