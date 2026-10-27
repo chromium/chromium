@@ -22,6 +22,7 @@
 #include "third_party/blink/renderer/core/css/properties/longhands.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
+#include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/svg/graphics/filters/svg_filter_builder.h"
 #include "third_party/blink/renderer/core/svg/svg_animated_number.h"
@@ -102,12 +103,14 @@ void SVGFEDropShadowElement::SvgAttributeChanged(
 FilterEffect* SVGFEDropShadowElement::Build(SVGFilterBuilder* filter_builder,
                                             Filter* filter) {
   UseCounter::Count(GetDocument(), WebFeature::kSVGFEDropShadowElement);
-  const ComputedStyle* style = GetComputedStyle();
-  if (!style)
+  const LayoutObject* layout_object = GetLayoutObject();
+  if (!layout_object) {
     return nullptr;
+  }
 
-  Color color = style->VisitedDependentColor(GetCSSPropertyFloodColor());
-  float opacity = style->FloodOpacity();
+  const ComputedStyle& style = layout_object->Style();
+  Color color = style.VisitedDependentColor(GetCSSPropertyFloodColor());
+  float opacity = style.FloodOpacity();
 
   FilterEffect* input1 = filter_builder->GetEffectById(
       AtomicString(in1_->CurrentValue()->Value()));
@@ -124,11 +127,7 @@ FilterEffect* SVGFEDropShadowElement::Build(SVGFilterBuilder* filter_builder,
 }
 
 bool SVGFEDropShadowElement::TaintsOrigin() const {
-  const ComputedStyle* style = GetComputedStyle();
-  // TaintsOrigin() is only called after a successful call to Build()
-  // (see above), so we should have a ComputedStyle here.
-  DCHECK(style);
-  return style->FloodColor().DependsOnCurrentColor();
+  return StyleColorTaintsOrigin(GetCSSPropertyFloodColor());
 }
 
 SVGAnimatedPropertyBase* SVGFEDropShadowElement::PropertyFromAttribute(

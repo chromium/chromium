@@ -1486,9 +1486,11 @@ void BaseRenderingContext2D::DrawTextInternal(
       computed_style ? IsOverride(computed_style->GetUnicodeBidi()) : false;
 
   // Obtain `paint_canvas` and `state` after `AccessFont`,
-  // `EnsureComputedStyle`, and `ToTextDirection`, which can synchronously
-  // execute script and reset the canvas recorder or state stack.
-  // Abort if we don't have a paint canvas (e.g. the context was lost).
+  // `EnsureComputedStyle`, `ToTextDirection`, and `ResolveFilterIfNeeded`,
+  // which can synchronously execute script and reset the canvas recorder or
+  // state stack. Abort if we don't have a paint canvas (e.g. the context was
+  // lost).
+  ResolveFilterIfNeeded();
   cc::PaintCanvas* paint_canvas = GetOrCreatePaintCanvas();
   if (!paint_canvas) {
     return;
@@ -1597,7 +1599,7 @@ void BaseRenderingContext2D::DrawTextInternal(
                                          location, *flags, draw_type);
       },
       NoOverdraw, bounds, paint_type, CanvasRenderingContext2DState::kNoImage,
-      CanvasPerformanceMonitor::DrawType::kText);
+      CanvasPerformanceMonitor::DrawType::kText, /*resolve_filter=*/false);
 
   if (use_max_width) {
     // Make sure that `paint_canvas` is still valid and active. Calling `Draw`
@@ -1908,9 +1910,10 @@ void BaseRenderingContext2D::DrawElementInternal(
     return;
   }
 
-  // Resolving a filter can synchronously update style and layout, which may
-  // resize the canvas. Resolve it before reading `Host()->Size()` below.
-  StateGetFilter();
+  // Resolving or updating a filter can synchronously update style and layout,
+  // which may resize the canvas or flush recordings. Resolve it before reading
+  // `Host()->Size()` and pushing to `animated_image_frame_index_maps_` below.
+  ResolveFilterIfNeeded();
 
   // The ideal size is the source content size, represented in canvas grid
   // coordinates. This will cause the element to have the same proportions when
@@ -2020,7 +2023,7 @@ void BaseRenderingContext2D::DrawElementInternal(
       NoOverdraw, /*bounds=*/dst_rect,
       CanvasRenderingContext2DState::kImagePaintType,
       CanvasRenderingContext2DState::kNonOpaqueImage,
-      CanvasPerformanceMonitor::DrawType::kElement);
+      CanvasPerformanceMonitor::DrawType::kElement, /*resolve_filter=*/false);
 
   if (!options || !options->preserveElementGeometry()) {
     // Compute the transform, in canvas grid coordinates, that we just drew

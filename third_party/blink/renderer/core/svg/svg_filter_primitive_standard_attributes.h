@@ -36,6 +36,7 @@ namespace blink {
 
 class Filter;
 class FilterEffect;
+class Longhand;
 class SVGAnimatedLength;
 class SVGAnimatedString;
 class SVGFilterBuilder;
@@ -57,6 +58,9 @@ class SVGFilterPrimitiveStandardAttributes : public SVGElement {
 
   virtual bool TaintsOrigin() const { return true; }
 
+  bool StyleColorTaintsOrigin(const ComputedStyle&,
+                              const Longhand& color_property) const;
+
   // JS API
   SVGAnimatedLength* x() const { return x_.Get(); }
   SVGAnimatedLength* y() const { return y_.Get(); }
@@ -71,6 +75,8 @@ class SVGFilterPrimitiveStandardAttributes : public SVGElement {
 
  protected:
   SVGFilterPrimitiveStandardAttributes(const QualifiedName&, Document&);
+
+  bool StyleColorTaintsOrigin(const Longhand& color_property) const;
 
   void SvgAttributeChanged(const SvgAttributeChangedParams&) override;
   void ChildrenChanged(const ChildrenChange&) override;

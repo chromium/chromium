@@ -23,6 +23,7 @@
 #include "third_party/blink/renderer/core/css/properties/longhands.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
+#include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/svg_names.h"
 #include "third_party/blink/renderer/platform/graphics/filters/fe_flood.h"
@@ -55,24 +56,22 @@ bool SVGFEFloodElement::SetFilterEffectAttribute(
 
 FilterEffect* SVGFEFloodElement::Build(SVGFilterBuilder*, Filter* filter) {
   UseCounter::Count(GetDocument(), WebFeature::kSVGFEFloodElement);
-  const ComputedStyle* style = GetComputedStyle();
-  if (!style)
+  const LayoutObject* layout_object = GetLayoutObject();
+  if (!layout_object) {
     return nullptr;
+  }
 
+  const ComputedStyle& style = layout_object->Style();
   // TODO(crbug.com/1308932): ComputedStyle::VisitedDependentColor to SkColor4f
   SkColor4f color =
-      style->VisitedDependentColor(GetCSSPropertyFloodColor()).toSkColor4f();
-  float opacity = style->FloodOpacity();
+      style.VisitedDependentColor(GetCSSPropertyFloodColor()).toSkColor4f();
+  float opacity = style.FloodOpacity();
 
   return MakeGarbageCollected<FEFlood>(filter, color, opacity);
 }
 
 bool SVGFEFloodElement::TaintsOrigin() const {
-  const ComputedStyle* style = GetComputedStyle();
-  // TaintsOrigin() is only called after a successful call to Build()
-  // (see above), so we should have a ComputedStyle here.
-  DCHECK(style);
-  return style->FloodColor().DependsOnCurrentColor();
+  return StyleColorTaintsOrigin(GetCSSPropertyFloodColor());
 }
 
 }  // namespace blink

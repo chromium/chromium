@@ -169,6 +169,12 @@ class MODULES_EXPORT CanvasRenderingContext2DState final
   ALWAYS_INLINE bool IsFilterResolved() const {
     return filter_state_ == FilterState::kResolved;
   }
+  ALWAYS_INLINE sk_sp<PaintFilter> GetResolvedFilter() const {
+    return resolved_filter_;
+  }
+  ALWAYS_INLINE bool HasCSSFilterWithUrl() const {
+    return css_filter_value_ && css_filter_value_->MayContainUrl();
+  }
 
   void ClearResolvedFilter();
   void ValidateFilterState() const;

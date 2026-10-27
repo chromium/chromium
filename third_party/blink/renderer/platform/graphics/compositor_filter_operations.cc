@@ -102,6 +102,8 @@ void CompositorFilterOperations::AppendReferenceFilter(
 
 void CompositorFilterOperations::Clear() {
   filter_operations_.Clear();
+  origin_tainted_ = false;
+  contains_backdrop_ = false;
 }
 
 bool CompositorFilterOperations::IsEmpty() const {

@@ -458,6 +458,9 @@ void CanvasRenderingContext2D::ScrollPathIntoViewInternal(const Path& path) {
 
 sk_sp<PaintFilter> CanvasRenderingContext2D::StateGetFilter() {
   HTMLCanvasElement* const element = canvas();
+  if (GetState().HasCSSFilterWithUrl() && element->GetDocument().GetFrame()) {
+    element->GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kCanvas);
+  }
   return GetState().GetFilter(element, element->Size(), this);
 }
 

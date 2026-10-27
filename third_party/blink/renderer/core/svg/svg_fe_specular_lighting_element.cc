@@ -24,6 +24,7 @@
 #include "third_party/blink/renderer/core/css/properties/longhands.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
+#include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/svg/graphics/filters/svg_filter_builder.h"
 #include "third_party/blink/renderer/core/svg/svg_animated_number.h"
@@ -144,11 +145,13 @@ FilterEffect* SVGFESpecularLightingElement::Build(
       AtomicString(in1_->CurrentValue()->Value()));
   DCHECK(input1);
 
-  const ComputedStyle* style = GetComputedStyle();
-  if (!style)
+  const LayoutObject* layout_object = GetLayoutObject();
+  if (!layout_object) {
     return nullptr;
+  }
 
-  Color color = style->VisitedDependentColor(GetCSSPropertyLightingColor());
+  const ComputedStyle& style = layout_object->Style();
+  Color color = style.VisitedDependentColor(GetCSSPropertyLightingColor());
 
   const SVGFELightElement* light_node =
       SVGFELightElement::FindLightElement(*this);
@@ -164,11 +167,7 @@ FilterEffect* SVGFESpecularLightingElement::Build(
 }
 
 bool SVGFESpecularLightingElement::TaintsOrigin() const {
-  const ComputedStyle* style = GetComputedStyle();
-  // TaintsOrigin() is only called after a successful call to Build()
-  // (see above), so we should have a ComputedStyle here.
-  DCHECK(style);
-  return style->LightingColor().DependsOnCurrentColor();
+  return StyleColorTaintsOrigin(GetCSSPropertyLightingColor());
 }
 
 SVGAnimatedPropertyBase* SVGFESpecularLightingElement::PropertyFromAttribute(

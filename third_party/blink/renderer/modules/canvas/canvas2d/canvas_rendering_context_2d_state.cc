@@ -577,9 +577,10 @@ sk_sp<PaintFilter> CanvasRenderingContext2DState::GetFilter(
     // StyleResolver cannot be used in frame-less documents.
     if (!document.GetFrame())
       return nullptr;
-    // Update the filter value to the proper base URL if needed.
+    // Update the filter value to the proper base URL if needed. Style and
+    // layout have already been updated by
+    // `CanvasRenderingContext2D::StateGetFilter`.
     if (css_filter_value_->MayContainUrl()) {
-      document.UpdateStyleAndLayout(DocumentUpdateReason::kCanvas);
       css_filter_value_->ReResolveUrl(document);
     }
 
@@ -622,12 +623,11 @@ sk_sp<PaintFilter> CanvasRenderingContext2DState::GetFilter(
   if (last_effect) {
     resolved_filter_ =
         paint_filter_builder::Build(last_effect, kInterpolationSpaceSRGB);
-    if (resolved_filter_) {
-      context->UpdateFilterReferences(operations);
-      if (last_effect->OriginTainted())
-        context->SetOriginTainted();
+    if (resolved_filter_ && last_effect->OriginTainted()) {
+      context->SetOriginTainted();
     }
   }
+  context->UpdateFilterReferences(operations);
 
   filter_state_ =
       resolved_filter_ ? FilterState::kResolved : FilterState::kInvalid;

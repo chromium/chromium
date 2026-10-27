@@ -21,8 +21,10 @@
 
 #include "third_party/blink/renderer/core/svg/svg_filter_primitive_standard_attributes.h"
 
+#include "third_party/blink/renderer/core/css/properties/longhand.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_filter_primitive.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_resource_container.h"
+#include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/svg/graphics/filters/svg_filter_builder.h"
 #include "third_party/blink/renderer/core/svg/svg_animated_length.h"
 #include "third_party/blink/renderer/core/svg/svg_animated_string.h"
@@ -89,6 +91,44 @@ bool SVGFilterPrimitiveStandardAttributes::SetFilterEffectAttribute(
     return false;
   effect->SetOperatingInterpolationSpace(resolved_interpolation_space);
   return true;
+}
+
+bool SVGFilterPrimitiveStandardAttributes::StyleColorTaintsOrigin(
+    const ComputedStyle& style,
+    const Longhand& color_property) const {
+  StyleColor color;
+  StyleColor visited_color;
+  switch (color_property.PropertyID()) {
+    case CSSPropertyID::kFloodColor:
+      color = style.FloodColor();
+      visited_color = style.InternalVisitedFloodColor();
+      break;
+    case CSSPropertyID::kLightingColor:
+      color = style.LightingColor();
+      visited_color = style.InternalVisitedLightingColor();
+      break;
+    default:
+      NOTREACHED();
+  }
+  // Inside a <canvas> subtree, StyleResolverState::InsideLink() clamps
+  // kInsideVisitedLink to kInsideUnvisitedLink so :visited colors never apply,
+  // even though InternalVisited*Color() is still populated for links.
+  return color.DependsOnCurrentColor() ||
+         (!IsInCanvasSubtree() &&
+          style.InsideLink() != EInsideLink::kNotInsideLink &&
+          color != visited_color);
+}
+
+bool SVGFilterPrimitiveStandardAttributes::StyleColorTaintsOrigin(
+    const Longhand& color_property) const {
+  const LayoutObject* layout_object = GetLayoutObject();
+  // TaintsOrigin() is only called after a successful call to Build(), so we
+  // should have a LayoutObject here.
+  DCHECK(layout_object);
+  const ComputedStyle& style = layout_object->Style();
+  DCHECK(!IsInCanvasSubtree() ||
+         style.InsideLink() != EInsideLink::kInsideVisitedLink);
+  return StyleColorTaintsOrigin(style, color_property);
 }
 
 void SVGFilterPrimitiveStandardAttributes::SvgAttributeChanged(

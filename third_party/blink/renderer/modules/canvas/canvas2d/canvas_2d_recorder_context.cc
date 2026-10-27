@@ -487,12 +487,10 @@ void Canvas2DRecorderContext::beginLayerImpl(ScriptState* script_state,
     }
   }
 
-  if (GetState().IsFilterUnresolved()) [[unlikely]] {
-    // Resolving a filter can synchronously execute script (via style and
-    // layout updates), which may reset the canvas recorder or state stack.
-    // Resolve the filter before acquiring `layer_canvas` and `state`.
-    StateGetFilter();
-  }
+  // Resolving or updating a filter can synchronously execute script (via style
+  // and layout updates), which may reset the canvas recorder or state stack.
+  // Do this before acquiring `layer_canvas` and `state`.
+  ResolveFilterIfNeeded();
 
   // Create the `PaintCanvas` AFTER parsing the filter. It's possible for
   // filters to reset the canvas, using a custom object property getter for
@@ -601,8 +599,7 @@ Canvas2DRecorderContext::SaveLayerForState(
 
   const int initial_save_count = canvas.getSaveCount();
   bool needs_compositing = state.GlobalComposite() != SkBlendMode::kSrcOver;
-  sk_sp<PaintFilter> context_filter =
-      state.IsFilterResolved() ? StateGetFilter() : nullptr;
+  sk_sp<PaintFilter> context_filter = state.GetResolvedFilter();
 
   // The "copy" globalCompositeOperation replaces everything that was in the
   // canvas. We therefore have to clear the canvas before proceeding. Since the
@@ -1644,7 +1641,7 @@ void Canvas2DRecorderContext::DrawPathInternal(
         GetState().HasPattern(paint_type)
             ? CanvasRenderingContext2DState::kNonOpaqueImage
             : CanvasRenderingContext2DState::kNoImage,
-        CanvasPerformanceMonitor::DrawType::kPath);
+        CanvasPerformanceMonitor::DrawType::kPath, /*resolve_filter=*/true);
     return;
   }
 
@@ -1670,7 +1667,7 @@ void Canvas2DRecorderContext::DrawPathInternal(
         GetState().HasPattern(paint_type)
             ? CanvasRenderingContext2DState::kNonOpaqueImage
             : CanvasRenderingContext2DState::kNoImage,
-        CanvasPerformanceMonitor::DrawType::kPath);
+        CanvasPerformanceMonitor::DrawType::kPath, /*resolve_filter=*/true);
     return;
   }
 
@@ -1687,7 +1684,7 @@ void Canvas2DRecorderContext::DrawPathInternal(
       GetState().HasPattern(paint_type)
           ? CanvasRenderingContext2DState::kNonOpaqueImage
           : CanvasRenderingContext2DState::kNoImage,
-      CanvasPerformanceMonitor::DrawType::kPath);
+      CanvasPerformanceMonitor::DrawType::kPath, /*resolve_filter=*/true);
 }
 
 static SkPathFillType CanvasFillRuleToSkiaFillType(
@@ -1782,7 +1779,7 @@ void Canvas2DRecorderContext::fillRect(double x,
       CanvasRenderingContext2DState::kFillPaintType,
       has_pattern ? CanvasRenderingContext2DState::kNonOpaqueImage
                   : CanvasRenderingContext2DState::kNoImage,
-      CanvasPerformanceMonitor::DrawType::kRectangle);
+      CanvasPerformanceMonitor::DrawType::kRectangle, /*resolve_filter=*/true);
 }
 
 static void StrokeRectOnCanvas(const gfx::RectF& rect,
@@ -1839,7 +1836,7 @@ void Canvas2DRecorderContext::strokeRect(double x,
       GetState().HasPattern(CanvasRenderingContext2DState::kStrokePaintType)
           ? CanvasRenderingContext2DState::kNonOpaqueImage
           : CanvasRenderingContext2DState::kNoImage,
-      CanvasPerformanceMonitor::DrawType::kRectangle);
+      CanvasPerformanceMonitor::DrawType::kRectangle, /*resolve_filter=*/true);
 }
 
 void Canvas2DRecorderContext::ClipInternal(const Path& path,
@@ -2365,7 +2362,7 @@ void Canvas2DRecorderContext::drawImage(CanvasImageSource* image_source,
       /*bounds=*/dst_rect, CanvasRenderingContext2DState::kImagePaintType,
       image_source->IsOpaque() ? CanvasRenderingContext2DState::kOpaqueImage
                                : CanvasRenderingContext2DState::kNonOpaqueImage,
-      CanvasPerformanceMonitor::DrawType::kImage);
+      CanvasPerformanceMonitor::DrawType::kImage, /*resolve_filter=*/true);
 }
 
 bool Canvas2DRecorderContext::RectContainsTransformedRect(
@@ -2663,7 +2660,7 @@ void Canvas2DRecorderContext::drawMesh(
       CanvasRenderingContext2DState::PaintType::kFillPaintType,
       image_source->IsOpaque() ? CanvasRenderingContext2DState::kOpaqueImage
                                : CanvasRenderingContext2DState::kNonOpaqueImage,
-      CanvasPerformanceMonitor::DrawType::kOther);
+      CanvasPerformanceMonitor::DrawType::kOther, /*resolve_filter=*/true);
 }
 
 bool Canvas2DRecorderContext::ComputeDirtyRect(const gfx::RectF& local_rect,
