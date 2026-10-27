@@ -39,6 +39,11 @@
 #include "components/tabs/public/tab_interface.h"
 #include "components/variations/service/google_groups_manager.h"
 #include "components/version_info/version_info.h"
+#include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/web_contents.h"
+#include "services/metrics/public/cpp/metrics_utils.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
+#include "services/metrics/public/cpp/ukm_recorder.h"
 #include "skia/ext/image_operations.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "ui/gfx/codec/jpeg_codec.h"
@@ -209,7 +214,8 @@ void RecordLatencyHistogram(std::string_view stage, base::TimeDelta duration) {
       /*buckets=*/50);
 }
 
-void LogLatencyMetrics(base::TimeTicks request_start_time,
+void LogLatencyMetrics(content::WebContents* web_contents,
+                       base::TimeTicks request_start_time,
                        base::TimeTicks mes_request_start_time,
                        size_t num_image_bytes,
                        size_t num_apc_bytes,
@@ -312,7 +318,60 @@ void LogLatencyMetrics(base::TimeTicks request_start_time,
     }
   }
 
-  // TODO(crbug.com/571693803): Add UKM metrics.
+  if (web_contents && web_contents->GetPrimaryMainFrame()) {
+    const ukm::SourceId source_id =
+        web_contents->GetPrimaryMainFrame()->GetPageUkmSourceId();
+    if (source_id != ukm::kInvalidSourceId) {
+      auto as_bucket = [](base::TimeDelta duration) {
+        return ukm::GetExponentialBucketMinForFineUserTiming(
+            std::max(int64_t{0}, duration.InMilliseconds()));
+      };
+
+      ukm::builders::SmartSelection_Suggestions builder(source_id);
+      builder.SetLatency_EndToEndMs(as_bucket(durations.end_to_end))
+          .SetLatency_ClientPrepMs(as_bucket(durations.client_prep))
+          .SetLatency_ClientMesRpcMs(as_bucket(durations.client_mes_rpc))
+          .SetRequest_ImageSize(
+              ukm::GetExponentialBucketMinForBytes(num_image_bytes))
+          .SetRequest_ApcSize(
+              ukm::GetExponentialBucketMinForBytes(num_apc_bytes))
+          .SetResponse_SuggestionCount(
+              std::min(static_cast<int64_t>(num_suggestions), int64_t{10}));
+
+      if (metrics.has_mes_total_ms()) {
+        builder.SetLatency_MesTotalMs(as_bucket(durations.mes_total))
+            .SetLatency_TransmissionMs(as_bucket(durations.transmission));
+        if (metrics.has_model_execution_ms()) {
+          builder.SetLatency_ModelRunMs(as_bucket(durations.model_run))
+              .SetLatency_MesOverheadMs(as_bucket(durations.mes_overhead));
+          if (metrics.has_mes_image_preprocessing_ms()) {
+            builder
+                .SetLatency_MesImagePrepMs(as_bucket(durations.mes_image_prep))
+                .SetLatency_MesOtherOverheadMs(
+                    as_bucket(durations.mes_other_overhead));
+          }
+          if (metrics.has_model_content_processing_ms() &&
+              metrics.has_model_prefill_queue_wait_ms() &&
+              metrics.has_model_prefill_ms() && metrics.has_model_decode_ms() &&
+              metrics.has_model_decode_queue_wait_ms()) {
+            builder
+                .SetLatency_ModelContentProcMs(
+                    as_bucket(durations.model_content_proc))
+                .SetLatency_ModelPrefillQueueWaitMs(
+                    as_bucket(durations.model_prefill_queue_wait))
+                .SetLatency_ModelPrefillMs(as_bucket(durations.model_prefill))
+                .SetLatency_ModelDecodeMs(as_bucket(durations.model_decode))
+                .SetLatency_ModelOtherMs(as_bucket(durations.model_other))
+                .SetLatency_ModelDecodeQueueWaitMs(
+                    as_bucket(durations.model_decode_queue_wait));
+          }
+        }
+      }
+
+      builder.Record(ukm::UkmRecorder::Get());
+    }
+  }
+
   VLOG(1) << "Suggestion latency: end-to-end: " << durations.end_to_end
           << " (client prep: " << durations.client_prep
           << ", transmission: " << durations.transmission
@@ -492,9 +551,9 @@ void SuggestionService::OnServerSuggestions(
   }
   std::vector<std::unique_ptr<Suggestion>> suggestions =
       ExtractSuggestionsFromResponse(processed_area, *response, tools_);
-  LogLatencyMetrics(request_start_time, mes_request_start_time, num_image_bytes,
-                    num_apc_bytes, response->latency_metrics(),
-                    suggestions.size());
+  LogLatencyMetrics(tab_->GetContents(), request_start_time,
+                    mes_request_start_time, num_image_bytes, num_apc_bytes,
+                    response->latency_metrics(), suggestions.size());
   std::move(callback).Run(std::move(suggestions));
 }
 

@@ -23839,6 +23839,131 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="SmartSelection.Suggestions">
+  <owner>schwering@google.com</owner>
+  <owner>jkeitel@google.com</owner>
+  <summary>
+    Recorded when a Smart Selection Suggestions (Dokodemo) server request
+    completes successfully. Contains client-side, network, and backend server
+    latency breakdowns, as well as payload sizes, to diagnose performance
+    bottlenecks across different site archetypes.
+  </summary>
+  <metric name="Latency.ClientMesRpcMs">
+    <summary>
+      Client-observed round-trip time (in ms) for the MES ExecuteModel RPC.
+      Bucketed using ukm::GetExponentialBucketMinForFineUserTiming.
+    </summary>
+  </metric>
+  <metric name="Latency.ClientPrepMs">
+    <summary>
+      Client-side request preparation time (in ms), including screenshot
+      capture/compression and AnnotatedPageContent serialization. Bucketed using
+      ukm::GetExponentialBucketMinForFineUserTiming.
+    </summary>
+  </metric>
+  <metric name="Latency.EndToEndMs">
+    <summary>
+      Total duration (in ms) from RequestSuggestions invocation to response
+      callback dispatch. Bucketed using
+      ukm::GetExponentialBucketMinForFineUserTiming.
+    </summary>
+  </metric>
+  <metric name="Latency.MesImagePrepMs">
+    <summary>
+      MES server-side image preprocessing time (in ms), including cropping,
+      padding, dimming, and re-encoding. Bucketed using
+      ukm::GetExponentialBucketMinForFineUserTiming.
+    </summary>
+  </metric>
+  <metric name="Latency.MesOtherOverheadMs">
+    <summary>
+      MES server-side overhead (in ms) outside image preprocessing and model
+      execution. Bucketed using ukm::GetExponentialBucketMinForFineUserTiming.
+    </summary>
+  </metric>
+  <metric name="Latency.MesOverheadMs">
+    <summary>
+      Total MES server-side overhead (in ms) outside model execution. Bucketed
+      using ukm::GetExponentialBucketMinForFineUserTiming.
+    </summary>
+  </metric>
+  <metric name="Latency.MesTotalMs">
+    <summary>
+      Total MES server-side request handling time (in ms). Bucketed using
+      ukm::GetExponentialBucketMinForFineUserTiming.
+    </summary>
+  </metric>
+  <metric name="Latency.ModelContentProcMs">
+    <summary>
+      Multimodal content preprocessing and vision tokenization duration (in ms)
+      in the model backend. Bucketed using
+      ukm::GetExponentialBucketMinForFineUserTiming.
+    </summary>
+  </metric>
+  <metric name="Latency.ModelDecodeMs">
+    <summary>
+      Output token decoding time (in ms) on the model server. Bucketed using
+      ukm::GetExponentialBucketMinForFineUserTiming.
+    </summary>
+  </metric>
+  <metric name="Latency.ModelDecodeQueueWaitMs">
+    <summary>
+      Queue wait time (in ms) before token decoding starts on the model server
+      (including decode backlog and RDMA KV transfer). Bucketed using
+      ukm::GetExponentialBucketMinForFineUserTiming.
+    </summary>
+  </metric>
+  <metric name="Latency.ModelOtherMs">
+    <summary>
+      Model execution time (in ms) not accounted for by content processing,
+      prefill queue wait, prefill, decode queue wait, and decode. Bucketed using
+      ukm::GetExponentialBucketMinForFineUserTiming.
+    </summary>
+  </metric>
+  <metric name="Latency.ModelPrefillMs">
+    <summary>
+      Prompt prefill time (in ms) on the model server. Bucketed using
+      ukm::GetExponentialBucketMinForFineUserTiming.
+    </summary>
+  </metric>
+  <metric name="Latency.ModelPrefillQueueWaitMs">
+    <summary>
+      Queue wait time (in ms) before prompt prefill starts on the model server.
+      Bucketed using ukm::GetExponentialBucketMinForFineUserTiming.
+    </summary>
+  </metric>
+  <metric name="Latency.ModelRunMs">
+    <summary>
+      Wall time (in ms) of the backend GenerateContent RPC from MES to the model
+      service. Bucketed using ukm::GetExponentialBucketMinForFineUserTiming.
+    </summary>
+  </metric>
+  <metric name="Latency.TransmissionMs">
+    <summary>
+      Estimated network transmission and edge overhead (in ms), calculated as
+      ClientMesRpc minus MesTotal. Bucketed using
+      ukm::GetExponentialBucketMinForFineUserTiming.
+    </summary>
+  </metric>
+  <metric name="Request.ApcSize">
+    <summary>
+      Serialized byte size (in bytes) of the AnnotatedPageContent proto sent in
+      the request. Bucketed using ukm::GetExponentialBucketMinForBytes.
+    </summary>
+  </metric>
+  <metric name="Request.ImageSize">
+    <summary>
+      Encoded byte size (in bytes) of the screenshot sent in the request.
+      Bucketed using ukm::GetExponentialBucketMinForBytes.
+    </summary>
+  </metric>
+  <metric name="Response.SuggestionCount">
+    <summary>
+      The number of valid suggestions extracted from the response (range 0-10).
+    </summary>
+  </metric>
+</event>
+
 <event name="SMSReceiver">
   <owner>goto@chromium.org</owner>
   <owner>reillyg@chromium.org</owner>

@@ -15,12 +15,14 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/gtest_util.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "chrome/browser/selection/features.h"
 #include "chrome/browser/selection/mojom/action.mojom.h"
+#include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/optimization_guide/core/model_execution/optimization_guide_model_execution_error.h"
 #include "components/optimization_guide/core/model_execution/test/mock_remote_model_executor.h"
 #include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
@@ -30,9 +32,12 @@
 #include "components/prefs/testing_pref_service.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/tabs/public/mock_tab_interface.h"
+#include "components/ukm/test_ukm_recorder.h"
 #include "components/variations/pref_names.h"
 #include "components/variations/service/google_groups_manager.h"
 #include "components/variations/variations_seed_processor.h"
+#include "services/metrics/public/cpp/metrics_utils.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -47,11 +52,13 @@ using ::base::test::RunOnceCallback;
 using ::base::test::TestFuture;
 using ::testing::_;
 using ::testing::AllOf;
+using ::testing::DoAll;
 using ::testing::ElementsAre;
 using ::testing::Field;
 using ::testing::IsEmpty;
 using ::testing::Pointee;
 using ::testing::Property;
+using ::testing::Return;
 
 auto SuggestionWithLabel(std::u16string_view label) {
   return Pointee(Property(&Suggestion::GetLabel, label));
@@ -793,6 +800,236 @@ TEST_F(SuggestionServiceUnitTest, RequestSuggestionsServerError) {
   EXPECT_THAT(future.Take(), IsEmpty());
 
   service().UnregisterTool(&gemini_tool);
+}
+
+class SuggestionServiceMetricsTest : public ChromeRenderViewHostTestHarness {
+ public:
+  SuggestionServiceMetricsTest()
+      : ChromeRenderViewHostTestHarness(
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+
+  void SetUp() override {
+    ChromeRenderViewHostTestHarness::SetUp();
+    target_prefs_.registry()->RegisterDictionaryPref(
+        variations::prefs::kVariationsGoogleGroups);
+    GoogleGroupsManager::RegisterProfilePrefs(source_prefs_.registry());
+    google_groups_manager_.emplace(target_prefs_, "Default", source_prefs_);
+    service_.emplace(&mock_tab_, &mock_model_executor_,
+                     &google_groups_manager_.value());
+    service_->RegisterTool(&gemini_tool_);
+  }
+
+  void TearDown() override {
+    service_->UnregisterTool(&gemini_tool_);
+    service_.reset();
+    ChromeRenderViewHostTestHarness::TearDown();
+  }
+
+  optimization_guide::proto::SmartSelectionSuggestionsResponse
+  RequestSuggestion(
+      const optimization_guide::proto::SmartSelectionLatencyMetrics&
+          latency_metrics) {
+    optimization_guide::proto::SmartSelectionSuggestionsResponse response;
+    auto* s1 = response.add_suggestions();
+    s1->set_tool(
+        optimization_guide::proto::SMART_SELECTION_TOOL_GEMINI_IN_CHROME);
+    s1->set_label("Action");
+
+    *response.mutable_latency_metrics() = latency_metrics;
+
+    EXPECT_CALL(mock_model_executor_,
+                ExecuteModel(optimization_guide::ModelBasedCapabilityKey::
+                                 kSmartSelectionSuggestions,
+                             _, _, _))
+        .WillOnce(DoAll(
+            [this](auto&&...) {
+              task_environment()->AdvanceClock(base::Milliseconds(950));
+            },
+            RunOnceCallback<3>(
+                optimization_guide::OptimizationGuideModelExecutionResult(
+                    base::ok(optimization_guide::AnyWrapProto(response)),
+                    /*execution_info=*/nullptr),
+                /*log_entry=*/nullptr)));
+
+    AreaOfInterest aoi;
+    aoi.screenshot.allocN32Pixels(100, 100);
+    aoi.bounds = gfx::Rect(10, 10, 20, 20);
+
+    TestFuture<std::vector<std::unique_ptr<Suggestion>>> future;
+    service_->RequestSuggestions(aoi, future.GetCallback());
+    task_environment()->AdvanceClock(base::Milliseconds(300));
+    EXPECT_THAT(future.Take(), ElementsAre(SuggestionWithLabel(u"Action")));
+    return response;
+  }
+
+  void EmitMetrics() {
+    NavigateAndCommit(GURL("https://example.com/test"));
+
+    optimization_guide::proto::SmartSelectionLatencyMetrics latency_metrics;
+    latency_metrics.set_mes_total_ms(800);
+    latency_metrics.set_model_execution_ms(500);
+    latency_metrics.set_mes_image_preprocessing_ms(50);
+    latency_metrics.set_model_content_processing_ms(100);
+    latency_metrics.set_model_prefill_queue_wait_ms(30);
+    latency_metrics.set_model_prefill_ms(120);
+    latency_metrics.set_model_decode_queue_wait_ms(20);
+    latency_metrics.set_model_decode_ms(200);
+    RequestSuggestion(latency_metrics);
+  }
+
+  tabs::MockTabInterface& mock_tab() { return mock_tab_; }
+
+ private:
+  base::test::ScopedFeatureList feature_list_{kSmartSelectionServerSuggestions};
+  TestingPrefServiceSimple target_prefs_;
+  sync_preferences::TestingPrefServiceSyncable source_prefs_;
+  std::optional<GoogleGroupsManager> google_groups_manager_;
+  tabs::MockTabInterface mock_tab_;
+  optimization_guide::MockRemoteModelExecutor mock_model_executor_;
+  std::optional<SuggestionService> service_;
+  CustomTestTool gemini_tool_{
+      optimization_guide::proto::SMART_SELECTION_TOOL_GEMINI_IN_CHROME};
+};
+
+// Tests that when WebContents is null (e.g. detached tab), UMA is recorded but
+// no UKM is emitted and it does not crash.
+TEST_F(SuggestionServiceMetricsTest,
+       RequestSuggestionsWithoutWebContentsDoesNotRecordUkm) {
+  base::HistogramTester histogram_tester;
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+
+  RequestSuggestion({});
+
+  histogram_tester.ExpectTotalCount(
+      "SmartSelection.Suggestions.Latency.EndToEnd", 1);
+
+  EXPECT_THAT(ukm_recorder.GetEntriesByName(
+                  ukm::builders::SmartSelection_Suggestions::kEntryName),
+              IsEmpty());
+}
+
+// Tests that successful suggestion requests record UMA metrics with all
+// breakdown stages.
+TEST_F(SuggestionServiceMetricsTest, RecordsUmaMetricsOnSuccess) {
+  ON_CALL(mock_tab(), GetContents()).WillByDefault(Return(web_contents()));
+  base::HistogramTester histogram_tester;
+  EmitMetrics();
+  histogram_tester.ExpectTotalCount(
+      "SmartSelection.Suggestions.Latency.EndToEnd", 1);
+  histogram_tester.ExpectTotalCount(
+      "SmartSelection.Suggestions.Latency.ClientPrep", 1);
+  histogram_tester.ExpectTotalCount(
+      "SmartSelection.Suggestions.Latency.ClientMesRpc", 1);
+  histogram_tester.ExpectTotalCount(
+      "SmartSelection.Suggestions.Latency.MesTotal", 1);
+  histogram_tester.ExpectTotalCount(
+      "SmartSelection.Suggestions.Latency.Transmission", 1);
+  histogram_tester.ExpectTotalCount(
+      "SmartSelection.Suggestions.Latency.ModelRun", 1);
+  histogram_tester.ExpectTotalCount(
+      "SmartSelection.Suggestions.Latency.MesOverhead", 1);
+  histogram_tester.ExpectTotalCount(
+      "SmartSelection.Suggestions.Latency.MesImagePrep", 1);
+  histogram_tester.ExpectTotalCount(
+      "SmartSelection.Suggestions.Latency.MesOtherOverhead", 1);
+  histogram_tester.ExpectTotalCount(
+      "SmartSelection.Suggestions.Latency.ModelContentProc", 1);
+  histogram_tester.ExpectTotalCount(
+      "SmartSelection.Suggestions.Latency.ModelPrefillQueueWait", 1);
+  histogram_tester.ExpectTotalCount(
+      "SmartSelection.Suggestions.Latency.ModelPrefill", 1);
+  histogram_tester.ExpectTotalCount(
+      "SmartSelection.Suggestions.Latency.ModelDecodeQueueWait", 1);
+  histogram_tester.ExpectTotalCount(
+      "SmartSelection.Suggestions.Latency.ModelDecode", 1);
+  histogram_tester.ExpectTotalCount(
+      "SmartSelection.Suggestions.Latency.ModelOther", 1);
+  histogram_tester.ExpectUniqueSample(
+      "SmartSelection.Suggestions.Response.SuggestionCount", 1, 1);
+}
+
+// Tests that successful suggestion requests record UKM metrics with all
+// breakdown stages.
+TEST_F(SuggestionServiceMetricsTest, RecordsUkmMetricsOnSuccess) {
+  ON_CALL(mock_tab(), GetContents()).WillByDefault(Return(web_contents()));
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+  EmitMetrics();
+
+  auto entries = ukm_recorder.GetEntriesByName(
+      ukm::builders::SmartSelection_Suggestions::kEntryName);
+  ASSERT_EQ(entries.size(), 1u);
+  EXPECT_EQ(entries[0]->source_id,
+            web_contents()->GetPrimaryMainFrame()->GetPageUkmSourceId());
+
+  ukm_recorder.ExpectEntryMetric(
+      entries[0],
+      ukm::builders::SmartSelection_Suggestions::kLatency_EndToEndMsName,
+      ukm::GetExponentialBucketMinForFineUserTiming(300 + 950));
+  ukm_recorder.ExpectEntryMetric(
+      entries[0],
+      ukm::builders::SmartSelection_Suggestions::kLatency_ClientPrepMsName,
+      ukm::GetExponentialBucketMinForFineUserTiming(300));
+  ukm_recorder.ExpectEntryMetric(
+      entries[0],
+      ukm::builders::SmartSelection_Suggestions::kLatency_ClientMesRpcMsName,
+      ukm::GetExponentialBucketMinForFineUserTiming(950));
+  ukm_recorder.ExpectEntryMetric(
+      entries[0],
+      ukm::builders::SmartSelection_Suggestions::kLatency_MesTotalMsName,
+      ukm::GetExponentialBucketMinForFineUserTiming(800));
+  ukm_recorder.ExpectEntryMetric(
+      entries[0],
+      ukm::builders::SmartSelection_Suggestions::kLatency_TransmissionMsName,
+      ukm::GetExponentialBucketMinForFineUserTiming(950 - 800));
+  ukm_recorder.ExpectEntryMetric(
+      entries[0],
+      ukm::builders::SmartSelection_Suggestions::kLatency_ModelRunMsName,
+      ukm::GetExponentialBucketMinForFineUserTiming(500));
+  ukm_recorder.ExpectEntryMetric(
+      entries[0],
+      ukm::builders::SmartSelection_Suggestions::kLatency_MesOverheadMsName,
+      ukm::GetExponentialBucketMinForFineUserTiming(800 - 500));
+  ukm_recorder.ExpectEntryMetric(
+      entries[0],
+      ukm::builders::SmartSelection_Suggestions::kLatency_MesImagePrepMsName,
+      ukm::GetExponentialBucketMinForFineUserTiming(50));
+  ukm_recorder.ExpectEntryMetric(
+      entries[0],
+      ukm::builders::SmartSelection_Suggestions::
+          kLatency_MesOtherOverheadMsName,
+      ukm::GetExponentialBucketMinForFineUserTiming(300 - 50));
+  ukm_recorder.ExpectEntryMetric(
+      entries[0],
+      ukm::builders::SmartSelection_Suggestions::
+          kLatency_ModelContentProcMsName,
+      ukm::GetExponentialBucketMinForFineUserTiming(100));
+  ukm_recorder.ExpectEntryMetric(
+      entries[0],
+      ukm::builders::SmartSelection_Suggestions::
+          kLatency_ModelPrefillQueueWaitMsName,
+      ukm::GetExponentialBucketMinForFineUserTiming(30));
+  ukm_recorder.ExpectEntryMetric(
+      entries[0],
+      ukm::builders::SmartSelection_Suggestions::kLatency_ModelPrefillMsName,
+      ukm::GetExponentialBucketMinForFineUserTiming(120));
+  ukm_recorder.ExpectEntryMetric(
+      entries[0],
+      ukm::builders::SmartSelection_Suggestions::
+          kLatency_ModelDecodeQueueWaitMsName,
+      ukm::GetExponentialBucketMinForFineUserTiming(20));
+  ukm_recorder.ExpectEntryMetric(
+      entries[0],
+      ukm::builders::SmartSelection_Suggestions::kLatency_ModelDecodeMsName,
+      ukm::GetExponentialBucketMinForFineUserTiming(200));
+  ukm_recorder.ExpectEntryMetric(
+      entries[0],
+      ukm::builders::SmartSelection_Suggestions::kLatency_ModelOtherMsName,
+      ukm::GetExponentialBucketMinForFineUserTiming(500 - 100 - 30 - 120 - 20 -
+                                                    200));
+  ukm_recorder.ExpectEntryMetric(
+      entries[0],
+      ukm::builders::SmartSelection_Suggestions::kResponse_SuggestionCountName,
+      1);
 }
 
 }  // namespace
