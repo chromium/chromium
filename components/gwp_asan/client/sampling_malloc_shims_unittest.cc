@@ -202,13 +202,7 @@ MULTIPROCESS_TEST_MAIN_WITH_SETUP(
   return kFailure;
 }
 
-// Flaky on Mac: https://crbug.com/1087372
-#if BUILDFLAG(IS_APPLE)
-#define MAYBE_BasicFunctionality DISABLED_BasicFunctionality
-#else
-#define MAYBE_BasicFunctionality BasicFunctionality
-#endif
-TEST_F(SamplingMallocShimsTest, MAYBE_BasicFunctionality) {
+TEST_F(SamplingMallocShimsTest, BasicFunctionality) {
   runTest("BasicFunctionality");
 }
 
