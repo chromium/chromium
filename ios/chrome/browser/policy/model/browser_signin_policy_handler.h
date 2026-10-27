@@ -5,7 +5,10 @@
 #ifndef IOS_CHROME_BROWSER_POLICY_MODEL_BROWSER_SIGNIN_POLICY_HANDLER_H_
 #define IOS_CHROME_BROWSER_POLICY_MODEL_BROWSER_SIGNIN_POLICY_HANDLER_H_
 
+#include <optional>
+
 #include "components/policy/core/browser/configuration_policy_handler.h"
+#include "ios/chrome/browser/policy/model/policy_util.h"
 
 namespace policy {
 
@@ -23,6 +26,9 @@ class BrowserSigninPolicyHandler : public SchemaValidatingPolicyHandler {
                            policy::PolicyErrorMap* errors) override;
   void ApplyPolicySettings(const PolicyMap& policies,
                            PrefValueMap* prefs) override;
+
+ private:
+  std::optional<BrowserSigninMode> last_recorded_user_scope_value_;
 };
 
 }  // namespace policy

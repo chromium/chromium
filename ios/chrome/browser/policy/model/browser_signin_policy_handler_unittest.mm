@@ -7,10 +7,12 @@
 #import <Foundation/Foundation.h>
 
 #import "base/command_line.h"
+#import "base/test/metrics/histogram_tester.h"
 #import "components/policy/core/browser/policy_error_map.h"
 #import "components/policy/core/common/policy_loader_ios_constants.h"
 #import "components/policy/core/common/policy_map.h"
 #import "components/policy/core/common/schema.h"
+#import "components/policy/policy_constants.h"
 #import "components/prefs/pref_value_map.h"
 #import "components/signin/public/base/signin_pref_names.h"
 #import "ios/chrome/browser/flags/chrome_switches.h"
@@ -144,6 +146,72 @@ TEST_F(BrowserSigninPolicyHandlerTest, CheckPolicySettings) {
     EXPECT_FALSE(errors.HasError("BrowserSignin"))
         << "For mode: " << BrowserSigninModeToString(mode);
   }
+}
+
+TEST_F(BrowserSigninPolicyHandlerTest,
+       ApplyPolicySettings_LogsUserScopeMetric) {
+  const auto schema = Schema::Parse(kTestSchema);
+  ASSERT_TRUE(schema.has_value());
+
+  BrowserSigninPolicyHandler handler(*schema);
+  base::HistogramTester histogram_tester;
+
+  PolicyMap policies;
+  PolicyMap::Entry entry;
+  entry.scope = POLICY_SCOPE_USER;
+  entry.set_value(base::Value(static_cast<int>(BrowserSigninMode::kDisabled)));
+  policies.Set(key::kBrowserSignin, std::move(entry));
+
+  PrefValueMap prefs;
+  handler.ApplyPolicySettings(policies, &prefs);
+  histogram_tester.ExpectUniqueSample(
+      "Enterprise.BrowserSignin.UserScope.PolicyValue",
+      BrowserSigninMode::kDisabled, 1);
+}
+
+TEST_F(BrowserSigninPolicyHandlerTest,
+       ApplyPolicySettings_RepeatedApplyDoesNotOvercountMetric) {
+  const auto schema = Schema::Parse(kTestSchema);
+  ASSERT_TRUE(schema.has_value());
+
+  BrowserSigninPolicyHandler handler(*schema);
+  base::HistogramTester histogram_tester;
+
+  PolicyMap policies;
+  PolicyMap::Entry entry;
+  entry.scope = POLICY_SCOPE_USER;
+  entry.set_value(base::Value(static_cast<int>(BrowserSigninMode::kDisabled)));
+  policies.Set(key::kBrowserSignin, std::move(entry));
+
+  PrefValueMap prefs;
+  handler.ApplyPolicySettings(policies, &prefs);
+  histogram_tester.ExpectUniqueSample(
+      "Enterprise.BrowserSignin.UserScope.PolicyValue",
+      BrowserSigninMode::kDisabled, 1);
+
+  // Periodic policy refresh with same value should not record again.
+  handler.ApplyPolicySettings(policies, &prefs);
+  histogram_tester.ExpectTotalCount(
+      "Enterprise.BrowserSignin.UserScope.PolicyValue", 1);
+
+  // Changing the policy value should record the new value.
+  PolicyMap::Entry new_entry;
+  new_entry.scope = POLICY_SCOPE_USER;
+  new_entry.set_value(
+      base::Value(static_cast<int>(BrowserSigninMode::kEnabled)));
+  policies.Set(key::kBrowserSignin, std::move(new_entry));
+
+  handler.ApplyPolicySettings(policies, &prefs);
+  histogram_tester.ExpectTotalCount(
+      "Enterprise.BrowserSignin.UserScope.PolicyValue", 2);
+  histogram_tester.ExpectBucketCount(
+      "Enterprise.BrowserSignin.UserScope.PolicyValue",
+      BrowserSigninMode::kEnabled, 1);
+
+  // Refreshing again with kEnabled should not record again.
+  handler.ApplyPolicySettings(policies, &prefs);
+  histogram_tester.ExpectTotalCount(
+      "Enterprise.BrowserSignin.UserScope.PolicyValue", 2);
 }
 
 }  // namespace

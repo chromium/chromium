@@ -880,6 +880,7 @@ source_set("unit_tests") {
 
   if (!is_chromeos) {
     sources += [
+      "browser_signin_policy_handler_unittest.cc",
       "cloud/user_policy_signin_service_unittest.cc",
       "cloud/user_policy_signin_service_util_unittest.cc",
       "file_selection_dialogs_policy_handler_unittest.cc",

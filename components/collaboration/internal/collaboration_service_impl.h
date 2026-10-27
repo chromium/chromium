@@ -44,6 +44,7 @@ enum class BrowserSigninMode {
   kDisabled = 0,
   kEnabled = 1,
   kForced = 2,
+  kMaxValue = kForced,
 };
 // LINT.ThenChange(//ios/chrome/browser/policy/model/policy_util.h:BrowserSigninMode)
 #endif

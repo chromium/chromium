@@ -19,6 +19,15 @@ class Profile;
 class AccountsPolicyManager : public KeyedService,
                               public signin::IdentityManager::Observer {
  public:
+  // Public for testing and UMA logging.
+  // LINT.IfChange(BrowserSigninUserScopeSignoutAction)
+  enum class BrowserSigninUserScopeSignoutAction {
+    kSignedOut = 0,
+    kDeleteProfilePrompted = 1,
+    kMaxValue = kDeleteProfilePrompted,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/enterprise/enums.xml:BrowserSigninUserScopeSignoutAction)
+
   explicit AccountsPolicyManager(Profile* profile);
   ~AccountsPolicyManager() override;
 

@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/command_line.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/syslog_logging.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -37,12 +38,30 @@ void BrowserSigninPolicyHandler::ApplyPolicySettings(const PolicyMap& policies,
   // special user's logon_token. So the end user won't have access
   // to this session after user logs in via GCPW.
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          ::credential_provider::kGcpwSigninSwitch))
+          ::credential_provider::kGcpwSigninSwitch)) {
     return;
+  }
 #endif
 
   const base::Value* value =
       policies.GetValue(policy_name(), base::Value::Type::INTEGER);
+  if (!value) {
+    last_recorded_user_scope_value_.reset();
+    return;
+  }
+
+  const PolicyMap::Entry* entry = policies.Get(policy_name());
+  if (entry && entry->scope == POLICY_SCOPE_USER) {
+    auto mode = static_cast<BrowserSigninMode>(value->GetInt());
+    if (last_recorded_user_scope_value_ != mode) {
+      last_recorded_user_scope_value_ = mode;
+      base::UmaHistogramEnumeration(
+          "Enterprise.BrowserSignin.UserScope.PolicyValue", mode);
+    }
+  } else {
+    last_recorded_user_scope_value_.reset();
+  }
+
   switch (static_cast<BrowserSigninMode>(value->GetInt())) {
     case BrowserSigninMode::kForced:
 #if !BUILDFLAG(IS_CHROMEOS)

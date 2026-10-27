@@ -7,12 +7,15 @@
 #include <string>
 
 #include "base/auto_reset.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/policy/browser_signin_policy_handler.h"
+#include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/delete_profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
@@ -35,6 +38,10 @@
 #include "chrome/browser/ui/webui/signin/signin_utils_desktop.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/policy/core/common/features.h"
+#include "components/policy/core/common/policy_map.h"
+#include "components/policy/core/common/policy_namespace.h"
+#include "components/policy/core/common/policy_service.h"
+#include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
 #include "components/profile_metrics/browser_profile_type.h"
 #include "components/signin/public/base/consent_level.h"
@@ -278,8 +285,33 @@ void AccountsPolicyManager::EnsurePrimaryAccountAllowedForProfile(
     return;
   }
 
-  if (ChromeSigninClientFactory::GetForProfile(profile)
-          ->IsClearPrimaryAccountAllowed()) {
+  const bool is_clear_primary_account_allowed =
+      ChromeSigninClientFactory::GetForProfile(profile)
+          ->IsClearPrimaryAccountAllowed();
+
+  if (signin_ui_error.type() == SigninUIError::Type::kSigninDisallowed &&
+      profile->GetProfilePolicyConnector() &&
+      profile->GetProfilePolicyConnector()->policy_service()) {
+    const policy::PolicyMap& policies =
+        profile->GetProfilePolicyConnector()->policy_service()->GetPolicies(
+            policy::PolicyNamespace(policy::POLICY_DOMAIN_CHROME,
+                                    std::string()));
+    const policy::PolicyMap::Entry* entry =
+        policies.Get(policy::key::kBrowserSignin);
+    const base::Value* entry_value =
+        entry ? entry->value(base::Value::Type::INTEGER) : nullptr;
+    if (entry && entry->scope == policy::POLICY_SCOPE_USER && entry_value &&
+        entry_value->GetInt() ==
+            static_cast<int>(policy::BrowserSigninMode::kDisabled)) {
+      base::UmaHistogramEnumeration(
+          "Enterprise.BrowserSignin.UserScope.SignoutAction",
+          is_clear_primary_account_allowed
+              ? BrowserSigninUserScopeSignoutAction::kSignedOut
+              : BrowserSigninUserScopeSignoutAction::kDeleteProfilePrompted);
+    }
+  }
+
+  if (is_clear_primary_account_allowed) {
     // Force clear the primary account if it is no longer allowed and if sign
     // out is allowed.
     auto* primary_account_mutator =

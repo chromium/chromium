@@ -15,6 +15,7 @@ enum class BrowserSigninMode {
   kDisabled = 0,
   kEnabled = 1,
   kForced = 2,
+  kMaxValue = kForced,
 };
 // LINT.ThenChange(//components/collaboration/internal/collaboration_service_impl.h:BrowserSigninMode)
 

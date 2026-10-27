@@ -680,6 +680,10 @@ source_set("unit_tests") {
 
   if (is_linux || is_mac || is_win) {
     sources += [ "accounts_policy_manager_unittest.cc" ]
+    deps += [
+      "//chrome/browser/policy",
+      "//components/policy/core/common:test_support",
+    ]
   }
 
   if (enable_dice_support) {

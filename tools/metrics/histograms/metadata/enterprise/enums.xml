@@ -72,6 +72,25 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//components/policy/core/common/enterprise_management_status_util.h:BrowserManagementStatus) -->
 
+<!-- LINT.IfChange(BrowserSigninMode) -->
+
+<enum name="BrowserSigninMode">
+  <int value="0" label="Disabled"/>
+  <int value="1" label="Enabled"/>
+  <int value="2" label="Forced"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/policy/browser_signin_policy_handler.h:BrowserSigninMode) -->
+
+<!-- LINT.IfChange(BrowserSigninUserScopeSignoutAction) -->
+
+<enum name="BrowserSigninUserScopeSignoutAction">
+  <int value="0" label="Signed Out"/>
+  <int value="1" label="Delete Profile Prompted"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/signin/accounts_policy_manager.h:BrowserSigninUserScopeSignoutAction) -->
+
 <enum name="CertificatePrivateKeySource">
   <int value="0" label="Unexportable"/>
   <int value="1" label="Software"/>

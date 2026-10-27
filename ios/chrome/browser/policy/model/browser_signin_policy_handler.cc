@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/syslog_logging.h"
 #include "base/values.h"
@@ -49,6 +50,7 @@ void BrowserSigninPolicyHandler::ApplyPolicySettings(const PolicyMap& policies,
   const base::Value* value =
       policies.GetValue(policy_name(), base::Value::Type::INTEGER);
   if (!value) {
+    last_recorded_user_scope_value_.reset();
     return;
   }
 
@@ -56,6 +58,18 @@ void BrowserSigninPolicyHandler::ApplyPolicySettings(const PolicyMap& policies,
   if (static_cast<int>(BrowserSigninMode::kDisabled) > int_value ||
       static_cast<int>(BrowserSigninMode::kForced) < int_value) {
     NOTREACHED() << "Unexpected value for BrowserSigninMode: " << int_value;
+  }
+
+  const PolicyMap::Entry* entry = policies.Get(policy_name());
+  if (entry && entry->scope == POLICY_SCOPE_USER) {
+    auto mode = static_cast<BrowserSigninMode>(int_value);
+    if (last_recorded_user_scope_value_ != mode) {
+      last_recorded_user_scope_value_ = mode;
+      base::UmaHistogramEnumeration(
+          "Enterprise.BrowserSignin.UserScope.PolicyValue", mode);
+    }
+  } else {
+    last_recorded_user_scope_value_.reset();
   }
 
   prefs->SetInteger(prefs::kBrowserSigninPolicy, int_value);

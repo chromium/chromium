@@ -5,16 +5,21 @@
 #ifndef CHROME_BROWSER_POLICY_BROWSER_SIGNIN_POLICY_HANDLER_H_
 #define CHROME_BROWSER_POLICY_BROWSER_SIGNIN_POLICY_HANDLER_H_
 
+#include <optional>
+
 #include "components/policy/core/browser/configuration_policy_handler.h"
 
 namespace policy {
 // Values for the BrowserSignin policy.
 // VALUES MUST COINCIDE WITH THE BrowserSignin POLICY DEFINITION.
+// LINT.IfChange(BrowserSigninMode)
 enum class BrowserSigninMode {
   kDisabled = 0,
   kEnabled = 1,
   kForced = 2,
+  kMaxValue = kForced,
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/enterprise/enums.xml:BrowserSigninMode)
 
 // ConfigurationPolicyHandler for the BrowserSignin policy. This handles all
 // non-iOS platforms. The iOS equivalent handler is at
@@ -30,6 +35,9 @@ class BrowserSigninPolicyHandler : public IntRangePolicyHandler {
   // ConfigurationPolicyHandler methods:
   void ApplyPolicySettings(const PolicyMap& policies,
                            PrefValueMap* prefs) override;
+
+ private:
+  std::optional<BrowserSigninMode> last_recorded_user_scope_value_;
 };
 
 }  // namespace policy

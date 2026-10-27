@@ -6,7 +6,9 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "build/buildflag.h"
+#include "chrome/browser/policy/browser_signin_policy_handler.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/accounts_policy_manager_factory.h"
 #include "chrome/browser/signin/chrome_signin_client_factory.h"
@@ -16,6 +18,10 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/policy/core/common/features.h"
+#include "components/policy/core/common/mock_configuration_policy_provider.h"
+#include "components/policy/core/common/policy_map.h"
+#include "components/policy/core/common/policy_service_impl.h"
+#include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
@@ -44,6 +50,8 @@ class AccountsPolicyManagerTest : public testing::Test {
     if (profile_) {
       DestroyProfile();
     }
+    profile_manager_.DeleteAllTestingProfiles();
+    policy_provider_.Shutdown();
   }
 
   ~AccountsPolicyManagerTest() override = default;
@@ -62,6 +70,37 @@ class AccountsPolicyManagerTest : public testing::Test {
 
     AccountsPolicyManagerFactory::GetForProfile(GetProfile())
         ->SetHideUIForTesting(true);
+  }
+
+  void CreateTestingProfileWithPolicyService(
+      std::unique_ptr<policy::PolicyService> policy_service) {
+    if (profile_) {
+      DestroyProfile();
+    }
+
+    profile_ = profile_manager_
+                   .CreateTestingProfile(
+                       "accounts_policy_manager_test_profile_path", nullptr,
+                       std::u16string(), 0,
+                       IdentityTestEnvironmentProfileAdaptor::
+                           GetIdentityTestEnvironmentFactories(),
+                       false, std::nullopt, std::move(policy_service))
+                   ->GetWeakPtr();
+    identity_test_env_adaptor_ =
+        std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile_.get());
+
+    AccountsPolicyManagerFactory::GetForProfile(GetProfile())
+        ->SetHideUIForTesting(true);
+  }
+
+  void CreateTestingProfileWithPolicyProvider() {
+    policy_provider_.SetDefaultReturns(
+        /*is_initialization_complete_return=*/true,
+        /*is_first_policy_load_complete_return=*/true);
+    policy::PolicyServiceImpl::Providers providers = {&policy_provider_};
+    auto policy_service =
+        std::make_unique<policy::PolicyServiceImpl>(std::move(providers));
+    CreateTestingProfileWithPolicyService(std::move(policy_service));
   }
 
   void DestroyProfile() {
@@ -87,13 +126,16 @@ class AccountsPolicyManagerTest : public testing::Test {
     return identity_test_env_adaptor_->identity_test_env();
   }
 
-  SigninClient* GetSigninSlient(Profile* profile) {
+  SigninClient* GetSigninClient(Profile* profile) {
     return ChromeSigninClientFactory::GetForProfile(profile);
   }
 
   signin::IdentityManager* identity_manager() {
     return GetIdentityTestEnv()->identity_manager();
   }
+
+ protected:
+  testing::NiceMock<policy::MockConfigurationPolicyProvider> policy_provider_;
 
  private:
   content::BrowserTaskEnvironment task_environment_;
@@ -135,7 +177,7 @@ TEST_F(AccountsPolicyManagerTest, ClearProfileWhenSigninAndSignoutNotAllowed) {
 
   // Disable sign out and sign in. This should result in the initial profile
   // being deleted.
-  GetSigninSlient(GetProfile())
+  GetSigninClient(GetProfile())
       ->set_is_clear_primary_account_allowed_for_testing(
           SigninClient::SignoutDecision::CLEAR_PRIMARY_ACCOUNT_DISALLOWED);
   GetProfile()->GetPrefs()->SetBoolean(prefs::kSigninAllowed, false);
@@ -225,4 +267,89 @@ TEST_F(AccountsPolicyManagerTest, ClearProfileUnallowedAccountsDisabled) {
       identity_manager()->HasAccountWithRefreshToken(primary_account_id));
   EXPECT_TRUE(identity_manager()->HasAccountWithRefreshToken(account_id2));
   EXPECT_TRUE(identity_manager()->HasAccountWithRefreshToken(account_id3));
+}
+
+TEST_F(AccountsPolicyManagerTest,
+       UserScopeBrowserSigninDisabledLogsSignoutMetric) {
+  base::HistogramTester histogram_tester;
+  CreateTestingProfileWithPolicyProvider();
+
+  policy::PolicyMap policies;
+  policies.Set(
+      policy::key::kBrowserSignin, policy::POLICY_LEVEL_MANDATORY,
+      policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,
+      base::Value(static_cast<int>(policy::BrowserSigninMode::kDisabled)),
+      nullptr);
+  policy_provider_.UpdateChromePolicy(policies);
+
+  GetIdentityTestEnv()->MakePrimaryAccountAvailable(
+      "test@foo.com", signin::ConsentLevel::kSignin);
+  GetProfile()->GetPrefs()->SetBoolean(prefs::kSigninAllowed, false);
+
+  EXPECT_FALSE(GetIdentityTestEnv()->identity_manager()->HasPrimaryAccount(
+      signin::ConsentLevel::kSignin));
+  histogram_tester.ExpectUniqueSample(
+      "Enterprise.BrowserSignin.UserScope.SignoutAction",
+      AccountsPolicyManager::BrowserSigninUserScopeSignoutAction::kSignedOut,
+      1);
+}
+
+TEST_F(AccountsPolicyManagerTest,
+       UserScopeBrowserSigninDisabledLogsDeleteProfileMetric) {
+  base::HistogramTester histogram_tester;
+  CreateTestingProfileWithPolicyProvider();
+
+  // Create a second profile so profile deletion is permitted.
+  GetProfileManager()->CreateTestingProfile(
+      "accounts_policy_manager_test_profile_path_1",
+      IdentityTestEnvironmentProfileAdaptor::
+          GetIdentityTestEnvironmentFactories());
+  ASSERT_EQ(2u, GetProfileManager()->profile_manager()->GetNumberOfProfiles());
+
+  policy::PolicyMap policies;
+  policies.Set(
+      policy::key::kBrowserSignin, policy::POLICY_LEVEL_MANDATORY,
+      policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,
+      base::Value(static_cast<int>(policy::BrowserSigninMode::kDisabled)),
+      nullptr);
+  policy_provider_.UpdateChromePolicy(policies);
+
+  GetIdentityTestEnv()->MakePrimaryAccountAvailable(
+      "test@foo.com", signin::ConsentLevel::kSignin);
+
+  GetSigninClient(GetProfile())
+      ->set_is_clear_primary_account_allowed_for_testing(
+          SigninClient::SignoutDecision::CLEAR_PRIMARY_ACCOUNT_DISALLOWED);
+  GetProfile()->GetPrefs()->SetBoolean(prefs::kSigninAllowed, false);
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(1u, GetProfileManager()->profile_manager()->GetNumberOfProfiles());
+  histogram_tester.ExpectUniqueSample(
+      "Enterprise.BrowserSignin.UserScope.SignoutAction",
+      AccountsPolicyManager::BrowserSigninUserScopeSignoutAction::
+          kDeleteProfilePrompted,
+      1);
+}
+
+TEST_F(AccountsPolicyManagerTest,
+       MachineScopeBrowserSigninDisabledDoesNotLogSignoutMetric) {
+  base::HistogramTester histogram_tester;
+  CreateTestingProfileWithPolicyProvider();
+
+  policy::PolicyMap policies;
+  policies.Set(
+      policy::key::kBrowserSignin, policy::POLICY_LEVEL_MANDATORY,
+      policy::POLICY_SCOPE_MACHINE, policy::POLICY_SOURCE_PLATFORM,
+      base::Value(static_cast<int>(policy::BrowserSigninMode::kDisabled)),
+      nullptr);
+  policy_provider_.UpdateChromePolicy(policies);
+
+  GetIdentityTestEnv()->MakePrimaryAccountAvailable(
+      "test@foo.com", signin::ConsentLevel::kSignin);
+  GetProfile()->GetPrefs()->SetBoolean(prefs::kSigninAllowed, false);
+
+  EXPECT_FALSE(GetIdentityTestEnv()->identity_manager()->HasPrimaryAccount(
+      signin::ConsentLevel::kSignin));
+  histogram_tester.ExpectTotalCount(
+      "Enterprise.BrowserSignin.UserScope.SignoutAction", 0);
 }

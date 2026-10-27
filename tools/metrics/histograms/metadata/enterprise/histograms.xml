@@ -675,6 +675,28 @@ chromium-metrics-reviews@google.com.
   <token key="Scope" variants="ReportingScope"/>
 </histogram>
 
+<histogram name="Enterprise.BrowserSignin.UserScope.PolicyValue"
+    enum="BrowserSigninMode" expires_after="2027-10-14">
+  <owner>ydago@chromium.org</owner>
+  <owner>zmin@chromium.org</owner>
+  <summary>
+    Recorded when the BrowserSignin policy is configured with user scope and
+    applied to preferences. Records the policy value (0=Disabled, 1=Enabled,
+    2=Forced). Recorded at browser startup and when user policies are fetched.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.BrowserSignin.UserScope.SignoutAction"
+    enum="BrowserSigninUserScopeSignoutAction" expires_after="2027-10-14">
+  <owner>ydago@chromium.org</owner>
+  <owner>zmin@chromium.org</owner>
+  <summary>
+    Recorded when sign-in is disallowed on a profile because the BrowserSignin
+    policy is set to 0 (Disabled) at user scope. Records whether the user was
+    signed out directly or prompted to delete the profile.
+  </summary>
+</histogram>
+
 <histogram name="Enterprise.BrowserSigninIOS.SignedOutByPolicy"
     enum="BooleanHit" expires_after="2023-06-30">
   <owner>gujen@google.com</owner>
