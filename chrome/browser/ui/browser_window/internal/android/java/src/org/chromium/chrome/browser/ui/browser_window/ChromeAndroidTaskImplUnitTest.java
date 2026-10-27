@@ -3271,6 +3271,101 @@ public class ChromeAndroidTaskImplUnitTest {
     }
 
     @Test
+    @Config(sdk = Build.VERSION_CODES.CINNAMON_BUN)
+    public void completePendingCreate_initialShowStateMaximized_alreadyMaximized_doesNotMoveTask() {
+        // Arrange: Creating a pending task requires an existing task, which also sets up the mock
+        // MoveTaskDelegate.
+        var existingTaskWithMockDeps = createChromeAndroidTaskWithMockDeps(/* taskId= */ 1);
+        var apiDelegate = existingTaskWithMockDeps.mMockMoveTaskDelegate;
+        var mockParams =
+                ChromeAndroidTaskUnitTestSupport.createMockAndroidBrowserWindowCreateParams(
+                        BrowserWindowType.NORMAL, new Rect(), WindowShowState.MAXIMIZED);
+        var task =
+                new ChromeAndroidTaskImpl(
+                        ChromeAndroidTaskUnitTestSupport.createPendingTaskInfo(mockParams));
+
+        // Arrange: The OS launched the window with the maximized launch bounds.
+        var activityWindowAndroidMocks =
+                ChromeAndroidTaskUnitTestSupport.createActivityWindowAndroidMocks(/* taskId= */ 2);
+        ChromeAndroidTaskUnitTestSupport.mockDesktopWindowingMode(
+                activityWindowAndroidMocks,
+                DEFAULT_MAXIMIZED_WINDOW_BOUNDS_IN_PX,
+                ChromeAndroidTaskUnitTestSupport.DEFAULT_FULL_SCREEN_BOUNDS_IN_PX,
+                ChromeAndroidTaskUnitTestSupport.DEFAULT_MAX_TAPPABLE_INSETS_IN_PX);
+        var activity = activityWindowAndroidMocks.mFakeActivity;
+        ApplicationStatus.onStateChangeForTesting(activity, ActivityState.CREATED);
+        ApplicationStatus.onStateChangeForTesting(activity, ActivityState.RESUMED);
+        task.addActivityScopedObjects(
+                ChromeAndroidTaskUnitTestSupport.createMockActivityScopedObjects(
+                        activityWindowAndroidMocks.mMockActivityWindowAndroid,
+                        mockParams.getProfile()));
+
+        // Act.
+        task.onTopResumedActivityChangedWithNative(true);
+
+        // Assert: The window is already maximized, so no further OS call is made.
+        assertEquals(State.IDLE, task.getState());
+        assertTrue(task.isMaximized());
+        assertNoPendingActions(task);
+        verify(apiDelegate, never()).moveTaskToWithPromise(any(), anyInt(), any());
+    }
+
+    @Test
+    @Config(sdk = Build.VERSION_CODES.CINNAMON_BUN)
+    public void
+            completePendingCreate_initialShowStateMaximized_notMaximized_movesTaskToMaxBounds() {
+        // Arrange: Creating a pending task requires an existing task, which also sets up the mock
+        // MoveTaskDelegate.
+        var existingTaskWithMockDeps = createChromeAndroidTaskWithMockDeps(/* taskId= */ 1);
+        var apiDelegate = existingTaskWithMockDeps.mMockMoveTaskDelegate;
+        var mockParams =
+                ChromeAndroidTaskUnitTestSupport.createMockAndroidBrowserWindowCreateParams(
+                        BrowserWindowType.NORMAL, new Rect(), WindowShowState.MAXIMIZED);
+        var task =
+                new ChromeAndroidTaskImpl(
+                        ChromeAndroidTaskUnitTestSupport.createPendingTaskInfo(mockParams));
+
+        // Arrange: The window was not launched at its maximized bounds (default mocks use
+        // DEFAULT_CURRENT_WINDOW_BOUNDS_IN_PX).
+        task.addActivityScopedObjects(
+                createActivityScopedObjects(/* taskId= */ 2, mockParams.getProfile()));
+
+        // Act.
+        task.onTopResumedActivityChangedWithNative(true);
+
+        // Assert: The window is maximized after launch.
+        var boundsCaptor = ArgumentCaptor.forClass(Rect.class);
+        verify(apiDelegate).moveTaskToWithPromise(any(), anyInt(), boundsCaptor.capture());
+        assertEquals(DEFAULT_MAXIMIZED_WINDOW_BOUNDS_IN_PX, boundsCaptor.getValue());
+    }
+
+    @Test
+    @Config(sdk = Build.VERSION_CODES.CINNAMON_BUN)
+    public void completePendingCreate_popupInitialShowStateMaximized_movesTaskToMaxBounds() {
+        // Arrange: Creating a pending task requires an existing task, which also sets up the mock
+        // MoveTaskDelegate.
+        var existingTaskWithMockDeps = createChromeAndroidTaskWithMockDeps(/* taskId= */ 1);
+        var apiDelegate = existingTaskWithMockDeps.mMockMoveTaskDelegate;
+        var mockParams =
+                ChromeAndroidTaskUnitTestSupport.createMockAndroidBrowserWindowCreateParams(
+                        BrowserWindowType.POPUP, new Rect(), WindowShowState.MAXIMIZED);
+        var task =
+                new ChromeAndroidTaskImpl(
+                        ChromeAndroidTaskUnitTestSupport.createPendingTaskInfo(mockParams));
+        task.addActivityScopedObjects(
+                ChromeAndroidTaskUnitTestSupport.createMockActivityScopedObjects(
+                        /* taskId= */ 2, mockParams.getProfile(), BrowserWindowType.POPUP));
+
+        // Act.
+        task.onTopResumedActivityChangedWithNative(true);
+
+        // Assert: PopupCreator has no launch-bounds input, so the popup is maximized after launch.
+        var boundsCaptor = ArgumentCaptor.forClass(Rect.class);
+        verify(apiDelegate).moveTaskToWithPromise(any(), anyInt(), boundsCaptor.capture());
+        assertEquals(DEFAULT_MAXIMIZED_WINDOW_BOUNDS_IN_PX, boundsCaptor.getValue());
+    }
+
+    @Test
     public void
             addActivityScopedObjects_fromPendingState_activityAlreadyResumed_completesPendingCreate() {
         int existingTaskId = 2;

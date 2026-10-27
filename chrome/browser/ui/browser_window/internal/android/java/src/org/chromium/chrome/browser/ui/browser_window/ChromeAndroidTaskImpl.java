@@ -1609,7 +1609,13 @@ final class ChromeAndroidTaskImpl
                 }
                 break;
             case WindowShowState.MAXIMIZED:
-                if (VERSION.SDK_INT >= VERSION_CODES.R) {
+                // Normal windows are launched with the source display's maximized bounds (see
+                // ChromeAndroidTaskTrackerImpl#getStartActivityOptions), so they are usually
+                // already maximized here and no further OS call is needed. Otherwise (e.g. the OS
+                // placed the window on another display, or this is a popup, which has no
+                // launch-bounds input), maximize the window now.
+                if (VERSION.SDK_INT >= VERSION_CODES.R
+                        && mWindowStateManager.getWindowState() != WindowState.MAXIMIZED) {
                     maximizeInternal(topActivityScopedObjects);
                 }
                 break;
