@@ -4713,10 +4713,13 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.MagicStack.Module.Click.PriceTrackingPromo" units="index"
-    expires_after="2025-08-06">
+    expires_after="2027-10-26">
   <owner>davidjm@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
   <summary>
+    Warning: this histogram was expired from 2025-08-06 to 2026-10-26; data may
+    be missing.
+
     Records the rank index of the Price Tracking Promo module when a user taps
     on it.
   </summary>
