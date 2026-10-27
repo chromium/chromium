@@ -6,12 +6,6 @@ import os
 
 
 def isInAshFolder(path):
-  nested_lacros_folders = [
-    'chrome/browser/resources/chromeos/kerberos',
-  ]
-  if any(path.startswith(folder) for folder in nested_lacros_folders):
-    return False
-
   # TODO (https://crbug.com/1506296): Organize Ash WebUI code under fewer
   # directories.
   ash_folders = [
