@@ -7,9 +7,9 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include <algorithm>
+#include <array>
 #include <string_view>
-#include <vector>
+#include <utility>
 
 #include "base/containers/flat_map.h"
 #include "base/containers/span.h"
@@ -95,26 +95,33 @@ void LogLocalEntitiesDeduplicationMetrics(
 void LogStoredEntitiesCount(base::span<const EntityInstance> entities) {
   static constexpr std::string_view kHistogramPrefix =
       "Autofill.Ai.StoredEntitiesCount";
-  base::flat_map<EntityType, std::vector<const EntityInstance*>>
-      entities_by_type;
+  std::array<
+      std::array<size_t,
+                 std::to_underlying(EntityInstance::RecordType::kMaxValue) + 1>,
+      std::to_underlying(EntityTypeName::kMaxValue) + 1>
+      counts = {};
   for (const EntityInstance& entity : entities) {
-    entities_by_type[entity.type()].push_back(&entity);
+    ++counts[std::to_underlying(entity.type().name())]
+            [std::to_underlying(entity.record_type())];
   }
 
-  for (EntityType entity_type : DenseSet<EntityType>::all()) {
-    for (EntityInstance::RecordType record_type :
+  for (const EntityType entity_type : DenseSet<EntityType>::all()) {
+    size_t total_count = 0;
+    for (const EntityInstance::RecordType record_type :
          DenseSet<EntityInstance::RecordType>::all()) {
+      const size_t count = counts[std::to_underlying(entity_type.name())]
+                                 [std::to_underlying(record_type)];
+      total_count += count;
       base::UmaHistogramCounts1000(
           base::StrCat({kHistogramPrefix, ".",
                         EntityTypeToMetricsString(entity_type), ".",
                         EntityRecordTypeToMetricsString(record_type)}),
-          std::ranges::count(entities_by_type[entity_type], record_type,
-                             &EntityInstance::record_type));
+          count);
     }
     base::UmaHistogramCounts1000(
         base::StrCat(
             {kHistogramPrefix, ".", EntityTypeToMetricsString(entity_type)}),
-        entities_by_type[entity_type].size());
+        total_count);
   }
 }
 
