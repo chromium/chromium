@@ -79,7 +79,6 @@ def pdu_reboot() -> bool:
         proc = subprocess.run(
             [_REBOOT_PDU_OUTLET_PATH],
             capture_output=True,
-            timeout=60,
         )
         if proc.returncode == 0:
             logging.info('PDU reboot succeeded.')
@@ -93,6 +92,7 @@ def pdu_reboot() -> bool:
         monitors.count(
             'boot_device', 'pdu_reboot', PDU_HOST, PDU_OUTLET, 'failed'
         ).record()
+        _clear_pdu_attempt()
         return False
 
 

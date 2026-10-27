@@ -298,7 +298,6 @@ class SerialBootDeviceTest(unittest.TestCase):
         mock_run.assert_called_once_with(
             ['/usr/local/bin/reboot_pdu_outlet.py'],
             capture_output=True,
-            timeout=60,
         )
         self.assertTrue(os.path.exists(serial_boot_device.PDU_ATTEMPTED_FILE))
 
@@ -337,6 +336,7 @@ class SerialBootDeviceTest(unittest.TestCase):
     )
     def test_pdu_reboot_failure(self, *_) -> None:
         self.assertFalse(serial_boot_device.pdu_reboot())
+        self.assertFalse(os.path.exists(serial_boot_device.PDU_ATTEMPTED_FILE))
 
     @mock.patch('time.time', side_effect=itertools.count(0, 150))
     @mock.patch('serial_boot_device.pdu_reboot', return_value=True)
