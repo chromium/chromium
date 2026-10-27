@@ -468,10 +468,10 @@ are declared in tools/grit/grit_args.gni.
       </message>
       <if expr="is_android">
         <message name="IDS_INTRANET_REDIRECT_MESSAGE_TITLE" desc="Title for the message banner asking if the user meant to navigate to an intranet site rather than search.">
-          Redirect to <ph name="URL">$1<ex>http://intranetsite/</ex></ph> instead?
+          Navigate to <ph name="URL">$1<ex>http://intranetsite/</ex></ph> instead?
         </message>
-        <message name="IDS_INTRANET_REDIRECT_MESSAGE_PRIMARY_BUTTON" desc="Label on the action button in the message banner to redirect to the intranet site.">
-          Redirect
+        <message name="IDS_INTRANET_REDIRECT_MESSAGE_PRIMARY_BUTTON" desc="Label on the action button in the message banner to navigate to the intranet site.">
+          Navigate
         </message>
       </if>
 

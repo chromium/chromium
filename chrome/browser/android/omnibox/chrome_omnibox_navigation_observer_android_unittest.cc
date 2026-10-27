@@ -396,7 +396,7 @@ TEST_F(ChromeOmniboxNavigationObserverAndroidTest,
 
   ASSERT_TRUE(enqueued_message());
   EXPECT_EQ(l10n_util::GetStringFUTF16(IDS_INTRANET_REDIRECT_MESSAGE_TITLE,
-                                       u"intranet"),
+                                       u"http://intranet/"),
             enqueued_message()->GetTitle());
   EXPECT_EQ(
       l10n_util::GetStringUTF16(IDS_INTRANET_REDIRECT_MESSAGE_PRIMARY_BUTTON),

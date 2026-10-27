@@ -10,13 +10,13 @@
 
 #include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/android/android_theme_resources.h"
 #include "chrome/browser/android/resource_mapper.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/messages/android/message_dispatcher_bridge.h"
 #include "components/messages/android/message_enums.h"
 #include "components/messages/android/message_wrapper.h"
-#include "components/url_formatter/elide_url.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -71,9 +71,7 @@ void ChromeOmniboxNavigationObserverAndroid::ShowAlternativeNavMessage() {
       messages::MessageIdentifier::INTRANET_REDIRECT);
   message->SetTitle(l10n_util::GetStringFUTF16(
       IDS_INTRANET_REDIRECT_MESSAGE_TITLE,
-      url_formatter::FormatUrlForSecurityDisplay(
-          alternative_nav_match().destination_url,
-          url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS)));
+      base::UTF8ToUTF16(alternative_nav_match().destination_url.spec())));
   message->SetPrimaryButtonText(
       l10n_util::GetStringUTF16(IDS_INTRANET_REDIRECT_MESSAGE_PRIMARY_BUTTON));
   message->SetIconResourceId(
