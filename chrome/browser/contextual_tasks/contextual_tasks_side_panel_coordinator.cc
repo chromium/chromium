@@ -1136,6 +1136,14 @@ ContextualTasksSidePanelCoordinator::GetActiveEntrySource() const {
   return ContextualTasksPanelController::EntrySource::kOther;
 }
 
+bool ContextualTasksSidePanelCoordinator::IsOnboardingTooltipVisible() const {
+#if !BUILDFLAG(IS_ANDROID)
+  return onboarding_controller_->IsBubbleShowing();
+#else
+  return false;
+#endif
+}
+
 void ContextualTasksSidePanelCoordinator::TransferWebContentsFromTab(
     const base::Uuid& task_id,
     std::unique_ptr<content::WebContents> web_contents) {

@@ -145,6 +145,9 @@ class ContextualTasksPanelController {
   // Returns the entry source of the currently active panel.
   virtual EntrySource GetActiveEntrySource() const = 0;
 
+  // Returns true if the onboarding or Ask Google tooltip bubble is visible.
+  virtual bool IsOnboardingTooltipVisible() const;
+
   // Context management.
   // Returns the tab handle of the auto suggested tab if the auto suggested tab
   // chip is shown in the compose box.

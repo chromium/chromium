@@ -1215,7 +1215,8 @@ void ContextualTasksUI::MaybeTriggerPinningPromo() {
 #else
   // Side panel is open & pinning/ephemeral button eligibility is active.
   auto* panel_controller = GetPanelController();
-  if (!panel_controller || !panel_controller->IsPanelOpenForContextualTask()) {
+  if (!panel_controller || !panel_controller->IsPanelOpenForContextualTask() ||
+      panel_controller->IsOnboardingTooltipVisible()) {
     return;
   }
 

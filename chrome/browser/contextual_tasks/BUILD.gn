@@ -29,6 +29,7 @@ source_set("contextual_tasks") {
     "contextual_tasks_context_service.h",
     "contextual_tasks_context_service_factory.h",
     "contextual_tasks_eligibility_manager.h",
+    "contextual_tasks_panel_controller.cc",
     "contextual_tasks_panel_controller.h",
     "contextual_tasks_panel_host.h",
     "contextual_tasks_service_factory.h",
