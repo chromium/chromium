@@ -11,16 +11,11 @@ import org.chromium.build.annotations.Nullable;
  * An interface components providing media sinks and routes need to implement to hooks up into
  * {@link BrowserMediaRouter}.
  *
- * Note: Empty-string origins passed through this interface should be considered
- * "unique origins" from url::Origin for the purposes of comparison.
+ * <p>Note: Empty-string origins passed through this interface should be considered "unique origins"
+ * from url::Origin for the purposes of comparison.
  */
 @NullMarked
 public interface MediaRouteProvider {
-    /** Factory for {@link MediaRouteProvider}s. */
-    interface Factory {
-        void addProviders(MediaRouteManager manager);
-    }
-
     /**
      * @param sourceId The id of the source to check.
      * @return if the specified source is supported by this route provider.

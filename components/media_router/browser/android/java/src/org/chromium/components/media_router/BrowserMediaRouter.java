@@ -58,30 +58,6 @@ public class BrowserMediaRouter implements MediaRouteManager {
     private static @Nullable Boolean sNeedsLocalNetworkPermissionForTesting;
     private static @Nullable Boolean sLocalNetworkPermissionGranted;
 
-    private static MediaRouteProvider.Factory sRouteProviderFactory =
-            new MediaRouteProvider.Factory() {
-                @Override
-                public void addProviders(MediaRouteManager manager) {
-                    int googleApiAvailabilityResult =
-                            GoogleApiAvailability.getInstance()
-                                    .isGooglePlayServicesAvailable(
-                                            ContextUtils.getApplicationContext(),
-                                            MIN_GOOGLE_PLAY_SERVICES_APK_VERSION);
-                    if (googleApiAvailabilityResult != ConnectionResult.SUCCESS) {
-                        GoogleApiAvailability.getInstance()
-                                .showErrorNotification(
-                                        ContextUtils.getApplicationContext(),
-                                        googleApiAvailabilityResult);
-                        return;
-                    }
-                    MediaRouteProvider cafProvider = CafMediaRouteProvider.create(manager);
-                    manager.addMediaRouteProvider(cafProvider);
-                    MediaRouteProvider remotingProvider =
-                            CafRemotingMediaRouteProvider.create(manager);
-                    manager.addMediaRouteProvider(remotingProvider);
-                }
-            };
-
     // The pointer to the native object. Can be null during tests, or when the
     // native object has been destroyed.
     private long mNativeMediaRouterAndroidBridge;
@@ -90,12 +66,6 @@ public class BrowserMediaRouter implements MediaRouteManager {
     private final Map<String, Map<MediaRouteProvider, List<MediaSink>>> mSinksPerSourcePerProvider =
             new HashMap<>();
     private final Map<String, List<MediaSink>> mSinksPerSource = new HashMap<>();
-
-    public static void setRouteProviderFactoryForTest(MediaRouteProvider.Factory factory) {
-        var oldValue = sRouteProviderFactory;
-        sRouteProviderFactory = factory;
-        ResettersForTesting.register(() -> sRouteProviderFactory = oldValue);
-    }
 
     public static void setNeedsLocalNetworkPermissionForTesting(@Nullable Boolean needsPermission) {
         sNeedsLocalNetworkPermissionForTesting = needsPermission;
@@ -295,7 +265,19 @@ public class BrowserMediaRouter implements MediaRouteManager {
     @CalledByNative
     public static BrowserMediaRouter create(long nativeMediaRouterAndroidBridge) {
         BrowserMediaRouter router = new BrowserMediaRouter(nativeMediaRouterAndroidBridge);
-        sRouteProviderFactory.addProviders(router);
+        int googleApiAvailabilityResult =
+                GoogleApiAvailability.getInstance()
+                        .isGooglePlayServicesAvailable(
+                                ContextUtils.getApplicationContext(),
+                                MIN_GOOGLE_PLAY_SERVICES_APK_VERSION);
+        if (googleApiAvailabilityResult != ConnectionResult.SUCCESS) {
+            GoogleApiAvailability.getInstance()
+                    .showErrorNotification(
+                            ContextUtils.getApplicationContext(), googleApiAvailabilityResult);
+            return router;
+        }
+        router.addMediaRouteProvider(CafMediaRouteProvider.create(router));
+        router.addMediaRouteProvider(CafRemotingMediaRouteProvider.create(router));
         return router;
     }
 

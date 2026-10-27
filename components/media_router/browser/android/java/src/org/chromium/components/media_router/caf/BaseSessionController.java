@@ -62,10 +62,6 @@ public abstract class BaseSessionController {
         mCallbacks.add(callback);
     }
 
-    public void removeCallback(Callback callback) {
-        mCallbacks.remove(callback);
-    }
-
     public void requestSessionLaunch() {
         mRouteCreationInfo = mProvider.getPendingCreateRouteRequestInfo();
         assumeNonNull(mRouteCreationInfo);
@@ -97,8 +93,6 @@ public abstract class BaseSessionController {
     public @Nullable RemoteMediaClient getRemoteMediaClient() {
         return isConnected() ? mCastSession.getRemoteMediaClient() : null;
     }
-
-    public abstract BaseNotificationController getNotificationController();
 
     public void endSession() {
         CastUtils.getCastContext().getSessionManager().endCurrentSession(/* stopCasting= */ true);

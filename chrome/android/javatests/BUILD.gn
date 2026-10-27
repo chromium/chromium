@@ -313,7 +313,6 @@ android_library("chrome_test_java_helper") {
     "//components/language/android:java",
     "//components/location/android:location_java",
     "//components/media_router/browser/android:java",
-    "//components/media_router/browser/android:test_support_java",
     "//components/messages/android:java",
     "//components/messages/android/internal:java",
     "//components/messages/android/internal:java_resources",

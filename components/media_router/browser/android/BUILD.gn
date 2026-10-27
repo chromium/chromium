@@ -88,27 +88,18 @@ generate_jni("jni_headers") {
 }
 
 android_library("test_support_java") {
-  resources_package = "org.chromium.components.media_router"
   testonly = true
   sources = [
     "java/src/org/chromium/components/media_router/TestMediaRouterClient.java",
-    "javatests/src/org/chromium/components/media_router/MockMediaRouteProvider.java",
-    "javatests/src/org/chromium/components/media_router/RouterTestUtils.java",
   ]
 
   deps = [
     ":java",
-    ":java_resources",
     ":test_jni_headers",
-    "$google_play_services_package:google_play_services_cast_java",
     "//base:base_java",
-    "//base:base_java_test_support",
     "//components/browser_ui/media/android:java",
     "//content/public/android:content_java",
-    "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_fragment_fragment_java",
-    "//third_party/androidx:androidx_mediarouter_mediarouter_java",
-    "//third_party/hamcrest:hamcrest_java",
     "//third_party/jni_zero:jni_zero_java",
   ]
 }

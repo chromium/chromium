@@ -48,7 +48,7 @@ public class BrowserMediaRouterSinkObservationTest extends BrowserMediaRouterTes
         mBrowserMediaRouter.onSinksReceived(SOURCE_ID1, mRouteProvider, new ArrayList<>());
 
         List<MediaSink> sinkList = new ArrayList<>();
-        MediaSink sink = new MediaSink(SINK_ID1, SINK_NAME1, null);
+        MediaSink sink = new MediaSink(SINK_ID1, SINK_NAME1);
         sinkList.add(sink);
         mBrowserMediaRouter.onSinksReceived(SOURCE_ID1, mRouteProvider, sinkList);
 
@@ -81,7 +81,7 @@ public class BrowserMediaRouterSinkObservationTest extends BrowserMediaRouterTes
         mBrowserMediaRouter.onSinksReceived(SOURCE_ID1, mRouteProvider, new ArrayList<>());
 
         List<MediaSink> sinkList = new ArrayList<>();
-        MediaSink sink = new MediaSink(SINK_ID1, SINK_NAME1, null);
+        MediaSink sink = new MediaSink(SINK_ID1, SINK_NAME1);
         sinkList.add(sink);
         mBrowserMediaRouter.onSinksReceived(SOURCE_ID2, mRouteProvider, sinkList);
 
