@@ -35,16 +35,25 @@ constexpr PanelAnimationType GetPanelAnimationType() {
 #endif
 }
 
-// Common parameters for panels why fly out over the browser's content area
-// (vertical tab strip expand-on-hover, organizer panel, etc.)
-inline constexpr int kFlyoutShowMs = 250;
-inline constexpr int kFlyoutHideMs = 200;
-inline constexpr gfx::Tween::Type kFlyoutTween =
+// Common parameters for panels which do a short bump-out over the browser's
+// content area or an internal slide transition (vertical tab strip
+// expand-on-hover, organizer panel-in-vertical-tabs, etc.)
+inline constexpr int kShortExpandShowMs = 250;
+inline constexpr int kShortExpandHideMs = 200;
+inline constexpr gfx::Tween::Type kShortExpandTween =
     gfx::Tween::EASE_IN_OUT_EMPHASIZED;
-inline constexpr int kFlyoutFadeMs = 100;
-inline constexpr gfx::Tween::Type kFlyoutFadeInTween = gfx::Tween::EASE_OUT;
-inline constexpr gfx::Tween::Type kFlyoutFadeOutTween =
+inline constexpr int kShortExpandFadeMs = 100;
+inline constexpr gfx::Tween::Type kShortExpandFadeInTween =
+    gfx::Tween::EASE_OUT;
+inline constexpr gfx::Tween::Type kShortExpandFadeOutTween =
     gfx::Tween::FAST_OUT_LINEAR_IN;
+
+// Common parameters for panels which expand out from at or near the edge of the
+// window, such as organizer panel in horizontal tab strip mode and vertical tab
+// strip expand/collapse.
+int GetLongExpandShowMs();
+int GetLongExpandHideMs();
+gfx::Tween::Type GetLongExpandTweenType();
 
 }  // namespace browser_animations
 

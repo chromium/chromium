@@ -11,6 +11,7 @@
 #include "base/callback_list.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/ui/animation/browser_animation_types.h"
 #include "chrome/browser/ui/views/tabs/organizer/organizer_panel_host.h"
 #include "extensions/buildflags/buildflags.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
@@ -84,6 +85,9 @@ class OrganizerPanelController {
   // Update the Organizer Button's Action Item (kActionToggleOrganizerPanel)
   // based on the Organizer Panel's is_visible_ state.
   void UpdateOrganizerActionItem();
+
+  // Returns the motion required to get into the current target state.
+  BrowserAnimationMotion GetTargetMotion() const;
 
   // Controls whether the Organizer Panel is visible.
   bool is_visible_ = false;

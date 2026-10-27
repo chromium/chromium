@@ -76,10 +76,13 @@ std::vector<base::CallbackListSubscription> SubscribeToAnimations(
                   OrganizerPanelAnimations::kOrganizerPanel);
               auto* const browser_view =
                   BrowserView::GetBrowserViewForBrowser(browser);
-              if (motion == OrganizerPanelAnimations::kShow) {
+              if (motion == OrganizerPanelAnimations::kShowInTray ||
+                  motion == OrganizerPanelAnimations::kShowInVerticalTabs) {
                 views::ElementTrackerViews::GetInstance()->NotifyCustomEvent(
                     kShowAnimationComplete, browser_view);
-              } else if (motion == OrganizerPanelAnimations::kHide) {
+              } else if (motion == OrganizerPanelAnimations::kHideInTray ||
+                         motion ==
+                             OrganizerPanelAnimations::kHideInVerticalTabs) {
                 views::ElementTrackerViews::GetInstance()->NotifyCustomEvent(
                     kHideAnimationComplete, browser_view);
               }
@@ -629,7 +632,7 @@ IN_PROC_BROWSER_TEST_F(OrganizerPanelAnimationUiTest,
                   }),
       PressButton(kTabSearchButtonElementId), Do([this]() {
         animation_test_api_->IncrementTime(
-            base::Milliseconds(browser_animations::kFlyoutShowMs / 2));
+            base::Milliseconds(browser_animations::kShortExpandShowMs / 2));
       }),
       WaitForShow(kOrganizerPanelElementId),
       WithElement(kTabStripRegionElementId,
