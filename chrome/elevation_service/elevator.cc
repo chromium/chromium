@@ -305,95 +305,26 @@ HRESULT Elevator::RunIsolatedChrome(DWORD flags,
 
   base::CommandLine untrusted_command_line =
       base::CommandLine::FromString(command_line);
-  std::optional<base::CommandLine> trusted_command_line;
+  base::FilePath chrome_exe;
 
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kAllowUntrustedPathForTesting)) {
-    trusted_command_line.emplace(untrusted_command_line.GetProgram());
+    chrome_exe = untrusted_command_line.GetProgram();
   } else {
-    base::FilePath chrome_exe;
     if (!base::PathService::Get(base::DIR_EXE, &chrome_exe)) {
       return kErrorChromePathNotFound;
     }
+    // The elevation service binary resides in the versioned subdirectory, so
+    // navigate to the parent directory (`Application`) to locate `chrome.exe`.
     chrome_exe = chrome_exe.DirName().Append(installer::kChromeExe);
     if (!base::PathExists(chrome_exe)) {
       LOG(ERROR) << "Chrome path does not exist at " << chrome_exe;
       return kErrorChromePathNotFound;
     }
-
-    trusted_command_line.emplace(chrome_exe);
   }
 
-  const char* const kAllowedSwitches[] = {
-      // Allow selection of profile.
-      ::switches::kProfileDirectory,
-      // Restarting browser.
-      ::switches::kRestart,
-      // Guest and incognito.
-      ::switches::kGuest,
-      ::switches::kIncognito,
-      // Restore last session.
-      ::switches::kRestoreLastSession,
-      // Window control.
-      ::switches::kOpenInNewWindow,
-      // For rendez-vous metrics.
-      ::switches::kSourceShortcut,
-      ::switches::kSourceAppId,
-      // Switches for launching apps and PWAs.
-      ::switches::kAppId,
-      ::switches::kApp,
-      ::switches::kPwaLauncherVersion,
-      ::switches::kAppRunOnOsLoginMode,
-      // Jumplist action.
-      ::switches::kWinJumplistAction,
-      // Do not de-elevate.
-      ::switches::kDoNotDeElevateOnLaunch,
-      // For notifications from the action center.
-      ::switches::kNotificationLaunchId,
-      ::switches::kNotificationInlineReply,
-      // Launch methods.
-      ::switches::kFromBrowserSwitcher,
-      ::switches::kFromInstaller,
-      // Icon related.
-      ::switches::kShowIcons,
-      ::switches::kHideIcons,
-      // Startup related.
-      ::switches::kStartupForegroundLaunch,
-      // Uninstall related.
-      ::switches::kUninstall,
-      ::switches::kUninstallAppId,
-      // Logging.
-      ::switches::kEnableLogging,
-      ::switches::kLoggingLevel,
-      ::switches::kLogFile,
-  };
-
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kAllowUntrustedSwitchesForTesting)) {
-    for (const auto& untrusted_switch : untrusted_command_line.GetSwitches()) {
-      trusted_command_line->AppendSwitchNative(untrusted_switch.first,
-                                               untrusted_switch.second);
-    }
-  } else {
-    trusted_command_line->CopySwitchesFrom(untrusted_command_line,
-                                           kAllowedSwitches);
-  }
-
-  trusted_command_line->AppendSwitch(::switches::kIsolated);
-
-  if (!untrusted_command_line.GetArgs().empty()) {
-    // Additional arguments can come after a `--` to distinguish them from
-    // switches. The base::CommandLine argument parser already handles this
-    // internally, so ensure this behavior is matched when constructing the
-    // command line for the isolated process.
-    trusted_command_line->AppendArgNative(L"--");
-    for (const auto& arg : untrusted_command_line.GetArgs()) {
-      trusted_command_line->AppendArgNative(arg);
-    }
-  }
-
-  std::wstring writeable_command_line(
-      trusted_command_line->GetCommandLineString());
+  std::wstring writeable_command_line =
+      GenerateIsolatedCommandLine(chrome_exe, untrusted_command_line);
 
   DWORD creation_flags = CREATE_UNICODE_ENVIRONMENT | CREATE_SUSPENDED;
   if (startup_information.has_extended_startup_info()) {
@@ -413,14 +344,13 @@ HRESULT Elevator::RunIsolatedChrome(DWORD flags,
 
   PROCESS_INFORMATION temp_process_info = {};
   if (!::CreateProcessAsUserW(
-          primary_token->get(),
-          std::data(trusted_command_line->GetProgram().value()),
+          primary_token->get(), std::data(chrome_exe.value()),
           std::data(writeable_command_line),
           /*lpProcessAttributes=*/nullptr, /*lpThreadAttributes=*/nullptr,
           /*bInheritHandles=*/FALSE,
           /*dwCreationFlags=*/creation_flags,
-          /*lpEnvironment=*/env, /*lpCurrentDirectory=*/
-          std::data(trusted_command_line->GetProgram().DirName().value()),
+          /*lpEnvironment=*/env,
+          /*lpCurrentDirectory=*/std::data(chrome_exe.DirName().value()),
           startup_information.startup_info(), &temp_process_info)) {
     PLOG(ERROR) << "Cannot create browser process.";
     return kErrorCouldNotLaunchBrowser;
@@ -474,6 +404,85 @@ HRESULT Elevator::RunIsolatedChrome(DWORD flags,
 
 HRESULT Elevator::AcceptInvitation(const wchar_t* server_name) {
   return E_NOTIMPL;
+}
+
+// static
+std::wstring Elevator::GenerateIsolatedCommandLine(
+    const base::FilePath& program_path,
+    const base::CommandLine& untrusted_command_line) {
+  base::CommandLine trusted_command_line(program_path);
+
+  const char* const kAllowedSwitches[] = {
+      // Allow selection of profile.
+      ::switches::kProfileDirectory,
+      // Restarting browser.
+      ::switches::kRestart,
+      // Guest and incognito.
+      ::switches::kGuest,
+      ::switches::kIncognito,
+      // Restore last session.
+      ::switches::kRestoreLastSession,
+      // Window control.
+      ::switches::kNoStartupWindow,
+      ::switches::kOpenInNewWindow,
+      // For rendez-vous metrics.
+      ::switches::kSourceShortcut,
+      ::switches::kSourceShortcutLocation,
+      ::switches::kSourceAppId,
+      // Switches for launching apps and PWAs.
+      ::switches::kAppId,
+      ::switches::kApp,
+      ::switches::kPwaLauncherVersion,
+      ::switches::kAppRunOnOsLoginMode,
+      // Jumplist action.
+      ::switches::kWinJumplistAction,
+      // Do not de-elevate.
+      ::switches::kDoNotDeElevateOnLaunch,
+      // For notifications from the action center.
+      ::switches::kNotificationLaunchId,
+      ::switches::kNotificationInlineReply,
+      // Launch methods.
+      ::switches::kFromBrowserSwitcher,
+      ::switches::kFromInstaller,
+      // Icon related.
+      ::switches::kShowIcons,
+      ::switches::kHideIcons,
+      // Startup related.
+      ::switches::kStartupForegroundLaunch,
+      // Uninstall related.
+      ::switches::kUninstall,
+      ::switches::kUninstallAppId,
+      // Logging.
+      ::switches::kEnableLogging,
+      ::switches::kLoggingLevel,
+      ::switches::kLogFile,
+  };
+
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kAllowUntrustedSwitchesForTesting)) {
+    for (const auto& untrusted_switch : untrusted_command_line.GetSwitches()) {
+      trusted_command_line.AppendSwitchNative(untrusted_switch.first,
+                                              untrusted_switch.second);
+    }
+  } else {
+    trusted_command_line.CopySwitchesFrom(untrusted_command_line,
+                                          kAllowedSwitches);
+  }
+
+  trusted_command_line.AppendSwitch(::switches::kIsolated);
+
+  if (!untrusted_command_line.GetArgs().empty()) {
+    // Additional arguments can come after a `--` to distinguish them from
+    // switches. The base::CommandLine argument parser already handles this
+    // internally, so ensure this behavior is matched when constructing the
+    // command line for the isolated process.
+    trusted_command_line.AppendArgNative(L"--");
+    for (const auto& arg : untrusted_command_line.GetArgs()) {
+      trusted_command_line.AppendArgNative(arg);
+    }
+  }
+
+  return trusted_command_line.GetCommandLineString();
 }
 
 // static

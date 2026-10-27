@@ -15,6 +15,11 @@
 #include "base/gtest_prod_util.h"
 #include "chrome/elevation_service/elevation_service_idl.h"
 
+namespace base {
+class CommandLine;
+class FilePath;
+}  // namespace base
+
 namespace elevation_service {
 
 // These flags can modify the EncryptData operation. They are packed inside the
@@ -201,8 +206,17 @@ class Elevator
   IFACEMETHODIMP AcceptInvitation(const wchar_t* server_name) override;
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(ElevatorTest, GenerateIsolatedCommandLine);
   FRIEND_TEST_ALL_PREFIXES(ElevatorTest, StringHandlingTest);
   ~Elevator() override = default;
+
+  // Generates a sanitized command line string to launch the isolated browser
+  // process at `program_path` based on `untrusted_command_line`. Only allowed
+  // switches are copied, `--isolated` is appended, and positional arguments
+  // are placed after a `--` switch terminator.
+  static std::wstring GenerateIsolatedCommandLine(
+      const base::FilePath& program_path,
+      const base::CommandLine& untrusted_command_line);
 
   // Appends a string `to_append` to an existing string `base`, first the four
   // byte length then the string.
