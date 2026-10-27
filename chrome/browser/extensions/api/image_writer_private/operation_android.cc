@@ -8,6 +8,7 @@
 
 #include <algorithm>
 #include <array>
+#include <bit>
 #include <memory>
 #include <optional>
 #include <string>
@@ -18,11 +19,13 @@
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/containers/span.h"
+#include "base/containers/span_writer.h"
 #include "base/files/file.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_span.h"
+#include "base/numerics/byte_conversions.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/time/time.h"
 #include "chrome/browser/extensions/api/image_writer_private/error_constants.h"
@@ -38,6 +41,15 @@ namespace extensions::image_writer {
 namespace {
 
 constexpr size_t kTransferBufferSize = 64 * 1024;  // 64 KiB
+static_assert(
+    std::has_single_bit(kTransferBufferSize),
+    "kTransferBufferSize must be a power of two so it is a multiple of any "
+    "accepted power-of-two block size <= kTransferBufferSize.");
+// A standard GPT uses 1 block for the GPT header plus 32 blocks for 128
+// partition entries of 128 bytes each at 512 bytes/sector (33 blocks total; at
+// 4 KiB sectors this is a safe over-approximation).
+constexpr uint16_t kBackupGptBlocks = 33;
+constexpr uint32_t kDefaultBlockSize = 512;
 constexpr base::TimeDelta kUsbCommandTimeout = base::Seconds(10);
 // Flushing a multi-gigabyte image to slow USB flash media can take longer than
 // standard 10s block transfers.
@@ -61,6 +73,69 @@ struct DataOutPhase {
   base::raw_span<const uint8_t> data;
 };
 using DataPhase = std::variant<NoDataPhase, DataInPhase, DataOutPhase>;
+
+struct Capacity10Response {
+  uint32_t last_logical_block_address = 0;
+  uint32_t block_size = 0;
+};
+
+// Parses the 8-byte big-endian parameter data returned by the SCSI
+// `READ CAPACITY (10)` command (last logical block address + block size in
+// bytes). Returns `std::nullopt` if the response is truncated, reports
+// 0xFFFFFFFF (`READ CAPACITY (16)` required for >2 TiB media;
+// TODO(crbug.com/538632205)), or reports an invalid block size.
+std::optional<Capacity10Response> ParseReadCapacity10Response(
+    base::span<const uint8_t> data) {
+  if (data.size() < kScsiReadCapacity10ResponseLength) {
+    return std::nullopt;
+  }
+  const uint32_t parsed_last_block = base::U32FromBigEndian(data.first<4>());
+  const uint32_t parsed_block_size =
+      base::U32FromBigEndian(data.subspan<4, 4>());
+  if (parsed_last_block == 0xFFFFFFFF || parsed_last_block == 0 ||
+      parsed_block_size < kDefaultBlockSize ||
+      parsed_block_size > kTransferBufferSize ||
+      !std::has_single_bit(parsed_block_size)) {
+    return std::nullopt;
+  }
+  return Capacity10Response{.last_logical_block_address = parsed_last_block,
+                            .block_size = parsed_block_size};
+}
+
+// Builds a 10-byte SCSI `WRITE (10)` (opcode 0x2A) command descriptor block:
+// - Byte 0: Operation code
+// - Bytes 2..5: Big-endian 32-bit starting Logical Block Address (LBA)
+// - Bytes 7..8: Big-endian 16-bit transfer length in logical blocks
+std::vector<uint8_t> BuildScsiReadWrite10Command(uint8_t opcode,
+                                                 uint32_t logical_block_address,
+                                                 uint16_t num_blocks) {
+  std::vector<uint8_t> command(10, 0);
+  base::SpanWriter<uint8_t> writer(command);
+  writer.WriteU8LittleEndian(opcode);
+  writer.WriteU8LittleEndian(0);
+  writer.WriteU32BigEndian(logical_block_address);
+  writer.WriteU8LittleEndian(0);
+  writer.WriteU16BigEndian(num_blocks);
+  writer.WriteU8LittleEndian(0);
+  return command;
+}
+
+// Truncates `buffer` to `bytes_read` (discarding any unread trailing bytes
+// when `bytes_read < buffer->size()`) and, if `bytes_read` is not already a
+// multiple of `block_size`, pads `buffer` with trailing zeros up to the next
+// multiple of `block_size`, returning the block-aligned byte length.
+size_t AlignAndZeroPad(std::vector<uint8_t>* buffer,
+                       size_t bytes_read,
+                       uint32_t block_size) {
+  buffer->resize(bytes_read);
+  const size_t remainder = bytes_read % block_size;
+  if (remainder == 0) {
+    return bytes_read;
+  }
+  const size_t aligned_size = bytes_read + (block_size - remainder);
+  buffer->resize(aligned_size, 0);
+  return aligned_size;
+}
 
 // Sends raw USB Mass Storage Bulk-Only Transport (BOT) command transactions
 // (`CBW` -> optional data phase with `STALL` recovery -> `CSW`) over
@@ -332,16 +407,18 @@ class UsbScsiCommandRunner {
   CommandCallback callback_;
 };
 
-// Manages a USB Mass Storage Bulk-Only Transport session over
+// Streams an image file to a USB Mass Storage Bulk-Only Transport device over
 // `device::mojom::UsbDevice` on `Operation::task_runner_`.
 class MojoUsbBotSession : public Operation::UsbSession {
  public:
   MojoUsbBotSession(base::FilePath image_path,
+                    bool wipe_backup_gpt,
                     UsbMassStorageEndpoints endpoints,
                     mojo::PendingRemote<device::mojom::UsbDevice> device_remote,
                     base::RepeatingCallback<bool()> is_cancelled,
                     base::RepeatingCallback<void(int)> set_progress)
       : image_path_(std::move(image_path)),
+        wipe_backup_gpt_(wipe_backup_gpt),
         endpoints_(endpoints),
         device_(std::move(device_remote)),
         command_runner_(device_.get(), endpoints_),
@@ -394,7 +471,7 @@ class MojoUsbBotSession : public Operation::UsbSession {
     }
     claimed_ = true;
     // Send SCSI `TEST UNIT READY` (0x00) to clear any initial `UNIT ATTENTION`
-    // condition before issuing subsequent SCSI commands.
+    // condition before querying block size and writing blocks.
     SendCommandWithRetry({kScsiTestUnitReadyOpcode, 0, 0, 0, 0, 0},
                          NoDataPhase{}, /*attempts_left=*/3, kUsbCommandTimeout,
                          base::BindOnce(&MojoUsbBotSession::OnTestUnitReadyDone,
@@ -405,11 +482,118 @@ class MojoUsbBotSession : public Operation::UsbSession {
     if (!ok) {
       return Finish(base::unexpected(error::kDeviceOpenError));
     }
+    SendCommandWithRetry({kScsiReadCapacity10Opcode, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                         DataInPhase{kScsiReadCapacity10ResponseLength},
+                         /*attempts_left=*/3, kUsbCommandTimeout,
+                         base::BindOnce(&MojoUsbBotSession::OnReadCapacityDone,
+                                        base::Unretained(this)));
+  }
+
+  void OnReadCapacityDone(bool ok, std::vector<uint8_t> data) {
+    std::optional<Capacity10Response> capacity =
+        ok ? ParseReadCapacity10Response(data) : std::nullopt;
+    if (!capacity.has_value()) {
+      return Finish(base::unexpected(error::kDeviceOpenError));
+    }
+    last_block_index_ = capacity->last_logical_block_address;
+    block_size_ = capacity->block_size;
+    const uint64_t device_capacity_bytes =
+        (static_cast<uint64_t>(last_block_index_) + 1) *
+        static_cast<uint64_t>(block_size_);
+    // Return `kDeviceWriteError` when the image exceeds the target device's
+    // capacity to match the desktop ImageWriter implementation (and what the
+    // Chromebook Recovery Utility extension expects during the write stage).
+    if (static_cast<uint64_t>(total_size_) > device_capacity_bytes) {
+      return Finish(base::unexpected(error::kDeviceWriteError));
+    }
+    // `ParseReadCapacity10Response()` rejects `block_size >
+    // kTransferBufferSize`.
+    CHECK_LE(block_size_, kTransferBufferSize);
+    // Cap `chunk_size_` at `total_size_ / 2` so small test images still emit an
+    // intermediate progress event before 100%.
+    const size_t clamped_half = static_cast<size_t>(
+        std::clamp<int64_t>(total_size_ / 2, block_size_, kTransferBufferSize));
+    chunk_size_ = std::max<size_t>(block_size_,
+                                   (clamped_half / block_size_) * block_size_);
+    ProcessNextChunk();
+  }
+
+  void ProcessNextChunk() {
+    // Defensive check: `Operation::Cancel()` and `Abort()` run `CleanUp()` on
+    // `task_runner_` and destroy `usb_session_` synchronously.
+    if (is_cancelled_.Run()) {
+      return Finish(base::unexpected(error::kAborted));
+    }
+    if (bytes_processed_ >= total_size_) {
+      // Only wipe the backup GPT if requested by `DestroyPartitionsOperation`
+      // and the disk is large enough that the trailing `kBackupGptBlocks`
+      // blocks do not overlap the primary partition table written at the start
+      // of the disk.
+      const uint32_t primary_blocks_written = current_block_index_;
+      if (wipe_backup_gpt_ && !wrote_backup_gpt_ &&
+          last_block_index_ >= primary_blocks_written + kBackupGptBlocks) {
+        wrote_backup_gpt_ = true;
+        current_chunk_.assign(
+            static_cast<size_t>(kBackupGptBlocks) * block_size_, 0);
+        const uint32_t backup_gpt_start =
+            last_block_index_ - (kBackupGptBlocks - 1);
+        SendCommandWithRetry(
+            BuildScsiReadWrite10Command(kScsiWrite10Opcode, backup_gpt_start,
+                                        kBackupGptBlocks),
+            DataOutPhase{current_chunk_}, /*attempts_left=*/1,
+            kUsbCommandTimeout,
+            base::BindOnce(&MojoUsbBotSession::OnBackupGptWiped,
+                           base::Unretained(this)));
+        return;
+      }
+      SendCommandWithRetry(
+          {kScsiSynchronizeCache10Opcode, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+          NoDataPhase{}, /*attempts_left=*/3, kUsbSyncCacheTimeout,
+          base::BindOnce(&MojoUsbBotSession::OnSynchronizeCacheDone,
+                         base::Unretained(this)));
+      return;
+    }
+
+    const size_t bytes_to_read = std::min<size_t>(
+        chunk_size_, static_cast<size_t>(total_size_ - bytes_processed_));
+    current_chunk_.resize(bytes_to_read);
+    const std::optional<size_t> bytes_read =
+        image_file_.ReadAtCurrentPos(current_chunk_);
+    if (!bytes_read.has_value() || *bytes_read == 0) {
+      return Finish(base::unexpected(error::kImageReadError));
+    }
+
+    const size_t aligned_size =
+        AlignAndZeroPad(&current_chunk_, *bytes_read, block_size_);
+    const uint16_t num_blocks =
+        static_cast<uint16_t>(aligned_size / block_size_);
     SendCommandWithRetry(
-        {kScsiSynchronizeCache10Opcode, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-        NoDataPhase{}, /*attempts_left=*/3, kUsbSyncCacheTimeout,
-        base::BindOnce(&MojoUsbBotSession::OnSynchronizeCacheDone,
-                       base::Unretained(this)));
+        BuildScsiReadWrite10Command(kScsiWrite10Opcode, current_block_index_,
+                                    num_blocks),
+        DataOutPhase{current_chunk_}, /*attempts_left=*/3, kUsbCommandTimeout,
+        base::BindOnce(&MojoUsbBotSession::OnChunkDone, base::Unretained(this),
+                       num_blocks, *bytes_read));
+  }
+
+  void OnChunkDone(uint16_t num_blocks,
+                   size_t unaligned_bytes,
+                   bool ok,
+                   std::vector<uint8_t> /*device_data*/) {
+    if (!ok) {
+      return Finish(base::unexpected(error::kDeviceWriteError));
+    }
+    current_block_index_ += num_blocks;
+    bytes_processed_ += static_cast<int64_t>(unaligned_bytes);
+    set_progress_.Run(
+        static_cast<int>(kProgressComplete * bytes_processed_ / total_size_));
+    ProcessNextChunk();
+  }
+
+  void OnBackupGptWiped(bool ok, std::vector<uint8_t>) {
+    if (!ok) {
+      return Finish(base::unexpected(error::kDeviceWriteError));
+    }
+    ProcessNextChunk();
   }
 
   void OnSynchronizeCacheDone(bool ok, std::vector<uint8_t>) {
@@ -421,7 +605,6 @@ class MojoUsbBotSession : public Operation::UsbSession {
         command_runner_.last_sense_key() != kScsiSenseKeyIllegalRequest) {
       return Finish(base::unexpected(error::kDeviceWriteError));
     }
-    set_progress_.Run(kProgressComplete);
     Finish(base::ok());
   }
 
@@ -495,17 +678,27 @@ class MojoUsbBotSession : public Operation::UsbSession {
   }
 
   const base::FilePath image_path_;
+  const bool wipe_backup_gpt_;
   const UsbMassStorageEndpoints endpoints_;
   mojo::Remote<device::mojom::UsbDevice> device_;
+  std::vector<uint8_t> current_chunk_;
   UsbScsiCommandRunner command_runner_;
   base::RepeatingCallback<bool()> is_cancelled_;
   base::RepeatingCallback<void(int)> set_progress_;
   CompletionCallback callback_;
   base::File image_file_;
   int64_t total_size_ = 0;
+  int64_t bytes_processed_ = 0;
+  uint32_t block_size_ = kDefaultBlockSize;
+  // 0-based logical block indices (in units of `block_size_`-byte logical
+  // blocks, not bytes).
+  uint32_t last_block_index_ = 0;
+  uint32_t current_block_index_ = 0;
+  size_t chunk_size_ = kTransferBufferSize;
   bool opened_ = false;
   bool claimed_ = false;
   bool finished_ = false;
+  bool wrote_backup_gpt_ = false;
 };
 
 struct LocalFileTransferState {
@@ -740,7 +933,7 @@ void Operation::OnUsbDeviceConnected(
     return;
   }
   usb_session_ = std::make_unique<MojoUsbBotSession>(
-      image_path_, endpoints, std::move(device_remote),
+      image_path_, ShouldWipeBackupGpt(), endpoints, std::move(device_remote),
       base::BindRepeating(&Operation::IsCancelled, base::Unretained(this)),
       base::BindRepeating(&Operation::SetProgress, base::Unretained(this)));
   usb_session_->Start(base::BindOnce(&Operation::OnUsbBotSessionFinished,

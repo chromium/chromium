@@ -2,37 +2,30 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/extensions/api/image_writer_private/destroy_partitions_operation.h"
+
 #include <string.h>
 
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
-#include "chrome/browser/extensions/api/image_writer_private/destroy_partitions_operation.h"
 #include "chrome/browser/extensions/api/image_writer_private/error_constants.h"
 #include "content/public/browser/browser_thread.h"
 
 namespace extensions {
 namespace image_writer {
 
-namespace {
-
-// Number of bytes for the maximum partition table size.  GUID partition tables
-// reside in the second sector of the disk.  Disks can have up to 4k sectors.
-// See http://crbug.com/41079977 for more information.
-constexpr size_t kPartitionTableSize = 2 * 4096;
-
-}  // namespace
-
 DestroyPartitionsOperation::DestroyPartitionsOperation(
     base::WeakPtr<OperationManager> manager,
     const ExtensionId& extension_id,
     const std::string& storage_unit_id,
     const base::FilePath& download_folder)
-    : Operation(manager,
-                extension_id,
-                storage_unit_id,
-                download_folder) {}
+    : Operation(manager, extension_id, storage_unit_id, download_folder) {}
 
 DestroyPartitionsOperation::~DestroyPartitionsOperation() = default;
+
+bool DestroyPartitionsOperation::ShouldWipeBackupGpt() const {
+  return true;
+}
 
 void DestroyPartitionsOperation::StartImpl() {
   CHECK(IsRunningInCorrectSequence(), base::NotFatalUntil::M161);

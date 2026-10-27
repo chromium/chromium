@@ -132,6 +132,10 @@ class Operation : public base::RefCountedThreadSafe<Operation> {
   // operation.  It will be called from Start().
   virtual void StartImpl() = 0;
 
+  // Returns true if `Write()` over USB Mass Storage should also zero the backup
+  // GPT header and partition entries at the end of the disk.
+  virtual bool ShouldWipeBackupGpt() const;
+
   // Extracts the current file if it's an archive.  The current_file will be set
   // to the extracted file.
   void Extract(base::OnceClosure continuation);

@@ -142,6 +142,10 @@ void Operation::PostTask(base::OnceClosure task) {
   task_runner_->PostTask(FROM_HERE, std::move(task));
 }
 
+bool Operation::ShouldWipeBackupGpt() const {
+  return false;
+}
+
 void Operation::Start() {
   CHECK(IsRunningInCorrectSequence(), base::NotFatalUntil::M161);
 #if BUILDFLAG(IS_CHROMEOS)
