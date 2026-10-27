@@ -131,6 +131,10 @@ def _GenerateSmokeTestCase(benchmark_class, story_to_smoke_test):
   # failing, disable it by putting it into the _DISABLED_TESTS list above.
   @decorators.Disabled('chromeos')  # crbug.com/351114
   @decorators.Disabled('mac')  # crbug.com/1277277
+  # b/578069352: no clear_system_cache binary for android_x86_64 emulators.
+  @decorators.Disabled(
+    'android-sdk-gphone64-x86-64', 'android-sdk-gphone16k-x86-64'
+  )
   def RunTest(self):
     class SinglePageBenchmark(benchmark_class):
       def CreateStorySet(self, options):
