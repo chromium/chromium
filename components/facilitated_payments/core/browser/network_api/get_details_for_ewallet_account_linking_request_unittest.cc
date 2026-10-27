@@ -109,6 +109,22 @@ TEST_F(GetDetailsForEwalletAccountLinkingRequestTest,
       "linking_info\":{\"issuer_id\":\"shopeepay\"}}");
 }
 
+// Verify that the customer context is omitted when the user does not have a
+// billing customer number.
+TEST_F(GetDetailsForEwalletAccountLinkingRequestTest,
+       VerifyRequestContent_NoBillingCustomerNumber) {
+  auto request = std::make_unique<GetDetailsForEwalletAccountLinkingRequest>(
+      /*billing_customer_number=*/0, std::vector<uint8_t>{},
+      /*response_callback=*/base::DoNothing(),
+      /*app_locale=*/"US", /*full_sync_enabled=*/true,
+      /*account_linking_payload=*/CreateSampleAccountLinkingPayload());
+
+  EXPECT_EQ(request->GetRequestContent(),
+            "{\"chrome_user_context\":{\"full_sync_enabled\":true},\"context\":"
+            "{\"billable_service\":70073,\"language_code\":\"US\"},\"ewallet_"
+            "account_linking_info\":{\"issuer_id\":\"touchngo\"}}");
+}
+
 TEST_F(GetDetailsForEwalletAccountLinkingRequestTest,
        ParseResponse_Success_AccountLinkingEligibilitySetToTrue) {
   auto request = std::make_unique<GetDetailsForEwalletAccountLinkingRequest>(

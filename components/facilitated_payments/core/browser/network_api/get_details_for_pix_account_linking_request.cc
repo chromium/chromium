@@ -9,7 +9,6 @@
 
 #include "base/base64.h"
 #include "base/json/json_writer.h"
-#include "base/strings/string_number_conversions.h"
 #include "base/values.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/facilitated_payments/core/browser/network_api/facilitated_payments_initiate_payment_request.h"
@@ -54,19 +53,22 @@ std::string GetDetailsForPixAccountLinkingRequest::GetRequestContentType() {
 }
 
 std::string GetDetailsForPixAccountLinkingRequest::GetRequestContent() {
+  base::DictValue context =
+      base::DictValue()
+          .Set("language_code", app_locale_)
+          .Set("billable_service", kChromePaymentsBillableServiceNumber);
+  // A billing customer number of 0 means the user does not have a Google
+  // Payments customer profile yet, so the customer context is omitted.
+  if (billing_customer_number_ != 0) {
+    context.Set("customer_context",
+                BuildCustomerContextDictionary(billing_customer_number_));
+  }
+
   base::DictValue request_dict =
       base::DictValue()
           .Set("chrome_user_context",
                base::DictValue().Set("full_sync_enabled", full_sync_enabled_))
-          .Set(
-              "context",
-              base::DictValue()
-                  .Set("language_code", app_locale_)
-                  .Set("billable_service", kChromePaymentsBillableServiceNumber)
-                  .Set("customer_context",
-                       base::DictValue().Set(
-                           "external_customer_id",
-                           base::NumberToString(billing_customer_number_))))
+          .Set("context", std::move(context))
           // Set an empty dict for Pix account linking info to indicate that the
           // request is for Pix account linking. No additional data is required
           // within the dict.
