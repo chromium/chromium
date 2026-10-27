@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {loadTimeData} from '//resources/js/load_time_data.js';
-
 import {SearchApiProxyImpl} from './search_api_proxy.js';
 
 export interface Range {
@@ -244,9 +242,9 @@ function prioritizeMatchResult<T>(
  */
 function isWordStart(
     text: string, index: number, hasCjkQuery: boolean): boolean {
-  // If CJK word boundary detection feature is enabled and the search query
-  // contains CJK characters, use the locale-aware segmenter.
-  if (loadTimeData.getBoolean('cjkWordBoundaryEnabled') && hasCjkQuery) {
+  // If the search query contains CJK characters, use the locale-aware
+  // segmenter.
+  if (hasCjkQuery) {
     const currSegments = getSegmenter().segment(text);
     const currSegment = currSegments.containing(index);
     // segment.index represents the start index of the semantic word segment

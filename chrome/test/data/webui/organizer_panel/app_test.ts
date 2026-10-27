@@ -26,7 +26,6 @@ suite('OrganizerPanelAppTest', () => {
   setup(async () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     loadTimeData.resetForTesting({
-      cjkWordBoundaryEnabled: false,
       clearSearch: 'Clear search',
       closeTab: 'Close tab',
       collapse: 'Collapse',

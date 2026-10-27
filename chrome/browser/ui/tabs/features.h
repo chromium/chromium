@@ -28,9 +28,6 @@ BASE_DECLARE_FEATURE_PARAM(bool, kSplitViewHorizontalDirectAccess);
 // a submenu to select the split's orientation.
 BASE_DECLARE_FEATURE_PARAM(bool, kSplitViewHorizontalDirectTabAccess);
 
-// Enables CJK word boundary detection in Tab Search.
-BASE_DECLARE_FEATURE(kTabSearchCjkWordBoundary);
-
 // Enables performance optimizations for Tab Search when large numbers of tabs
 // are open, including asynchronous favicon loading and de-duplicated profile
 // data push on bubble show.

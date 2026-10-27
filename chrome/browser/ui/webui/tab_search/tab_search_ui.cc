@@ -115,9 +115,6 @@ TabSearchUI::TabSearchUI(content::WebUI* web_ui)
   source->AddBoolean("useTabGroupColorRefresh",
                      features::IsTabGroupColorRefreshEnabled());
   source->AddBoolean(
-      "cjkWordBoundaryEnabled",
-      base::FeatureList::IsEnabled(tabs::kTabSearchCjkWordBoundary));
-  source->AddBoolean(
       "tabSearchPerformanceImprovements",
       base::FeatureList::IsEnabled(tabs::kTabSearchPerformanceImprovements));
 

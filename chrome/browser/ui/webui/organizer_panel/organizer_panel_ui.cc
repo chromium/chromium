@@ -6,7 +6,6 @@
 
 #include "base/check.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/organizer/organizer_panel_utils.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/favicon_source.h"
@@ -71,9 +70,6 @@ OrganizerPanelUI::OrganizerPanelUI(content::WebUI* web_ui)
       {"title", IDS_ORGANIZER_PANEL},
   };
   source->AddLocalizedStrings(kStrings);
-  source->AddBoolean(
-      "cjkWordBoundaryEnabled",
-      base::FeatureList::IsEnabled(tabs::kTabSearchCjkWordBoundary));
   source->AddBoolean("foreignTabsEnabled",
                      organizer_panel::IsOrganizerPanelForeignTabsEnabled());
   source->AddBoolean("isIncognitoMode", profile->IsIncognitoProfile());
