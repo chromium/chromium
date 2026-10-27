@@ -1,7 +1,7 @@
 {
     "chromium.android": {
         "android-10-x86-nofieldtrial-rel": {
-            "webview_trichrome_cts_tests full_mode": {
+            "webview_trichrome_cts_tests": {
                 "shards": 3,
                 "try_builder": "android-x86-rel"
             }

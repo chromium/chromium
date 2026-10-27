@@ -10,7 +10,6 @@ class HostsideTestInstance(test_instance.TestInstance):
     def __init__(self, args, _):
         super().__init__()
         self.suite = args.test_suite
-        self.instant_mode = args.test_apk_as_instant
         self.tradefed_executable = args.tradefed_executable or 'cts-tradefed'
         self.aapt_path = args.tradefed_aapt_path or ''
         self.adb_path = args.tradefed_adb_path or ''

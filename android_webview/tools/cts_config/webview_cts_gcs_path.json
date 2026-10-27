@@ -168,8 +168,7 @@
         "additional_apks": [
           {
             "apk": "android-cts/testcases/CtsMockInputMethod.apk",
-            "forced_queryable": true,
-            "force_full_mode": true
+            "forced_queryable": true
           }
         ],
         "includes": [
@@ -183,8 +182,7 @@
         "additional_apks": [
           {
             "apk": "android-cts/testcases/CtsMockInputMethod.apk",
-            "forced_queryable": true,
-            "force_full_mode": true
+            "forced_queryable": true
           }
         ],
         "includes": [
@@ -298,7 +296,6 @@
         "additional_apks": [
           {
             "apk": "android-cts/testcases/CtsMockInputMethod.apk",
-            "force_full_mode": true,
             "forced_queryable": true
           }
         ],
@@ -362,8 +359,7 @@
         "additional_apks": [
           {
             "apk": "android-cts/testcases/CtsMockInputMethod.apk",
-            "forced_queryable": true,
-            "force_full_mode": true
+            "forced_queryable": true
           }
         ],
         "includes": [
@@ -471,8 +467,7 @@
         "additional_apks": [
           {
             "apk": "android-cts/testcases/CtsMockInputMethod.apk",
-            "forced_queryable": true,
-            "force_full_mode": true
+            "forced_queryable": true
           }
         ],
         "includes": [
@@ -630,8 +625,7 @@
         "additional_apks": [
           {
             "apk": "android-cts/testcases/CtsMockInputMethod.apk",
-            "forced_queryable": true,
-            "force_full_mode": true
+            "forced_queryable": true
           }
         ],
         "includes": [
@@ -801,8 +795,7 @@
         "additional_apks": [
           {
             "apk": "android-cts/testcases/CtsMockInputMethod.apk",
-            "forced_queryable": true,
-            "force_full_mode": true
+            "forced_queryable": true
           }
         ],
         "includes": [
@@ -972,8 +965,7 @@
         "additional_apks": [
           {
             "apk": "android-cts/testcases/CtsMockInputMethod.apk",
-            "forced_queryable": true,
-            "force_full_mode": true
+            "forced_queryable": true
           }
         ],
         "includes": [

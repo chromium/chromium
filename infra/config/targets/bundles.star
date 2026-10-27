@@ -26,13 +26,7 @@ targets.bundle(
         "chromium_gtests_for_devices_with_graphical_output",
         "linux_flavor_specific_chromium_gtests",
         "system_webview_shell_instrumentation_tests",  # Not an experimental test
-        targets.bundle(
-            targets = "webview_cts_tests_suite",
-            variants = [
-                "WEBVIEW_FULL_CTS_TESTS",
-                "WEBVIEW_INSTANT_CTS_TESTS",
-            ],
-        ),
+        "webview_cts_tests_suite",
         "webview_instrumentation_test_apk_single_process_mode_gtests",
         "webview_ui_instrumentation_tests",
     ],
@@ -76,13 +70,7 @@ targets.bundle(
         "chromium_gtests_for_devices_with_graphical_output",
         "linux_flavor_specific_chromium_gtests",
         "system_webview_shell_instrumentation_tests",  # Not an experimental test
-        targets.bundle(
-            targets = "webview_cts_tests_suite",
-            variants = [
-                "WEBVIEW_FULL_CTS_TESTS",
-                "WEBVIEW_INSTANT_CTS_TESTS",
-            ],
-        ),
+        "webview_cts_tests_suite",
         "webview_ui_instrumentation_tests",
     ],
 )
@@ -111,13 +99,7 @@ targets.bundle(
         "linux_flavor_specific_chromium_gtests",
         "minidump_uploader_test",
         "system_webview_shell_instrumentation_tests",  # Not an experimental test
-        targets.bundle(
-            targets = "webview_64_cts_tests_suite",
-            variants = [
-                "WEBVIEW_FULL_CTS_TESTS",
-                "WEBVIEW_INSTANT_CTS_TESTS",
-            ],
-        ),
+        "webview_64_cts_tests_suite",
         "webview_ui_instrumentation_tests",
     ],
 )
@@ -152,13 +134,7 @@ targets.bundle(
         "linux_flavor_specific_chromium_gtests",
         "minidump_uploader_test",
         "system_webview_shell_instrumentation_tests",  # Not an experimental test
-        targets.bundle(
-            targets = "webview_64_cts_tests_suite",
-            variants = [
-                "WEBVIEW_FULL_CTS_TESTS",
-                "WEBVIEW_INSTANT_CTS_TESTS",
-            ],
-        ),
+        "webview_64_cts_tests_suite",
         "webview_ui_instrumentation_tests",
     ],
 )
@@ -179,13 +155,7 @@ targets.bundle(
     name = "android_14_device_ci_only_gtests",
     targets = [
         "system_webview_shell_instrumentation_tests",
-        targets.bundle(
-            targets = "webview_64_cts_tests_suite",
-            variants = [
-                "WEBVIEW_FULL_CTS_TESTS",
-                "WEBVIEW_INSTANT_CTS_TESTS",
-            ],
-        ),
+        "webview_64_cts_tests_suite",
         "webview_ui_instrumentation_tests",
     ],
     mixins = [
@@ -215,13 +185,7 @@ targets.bundle(
         "chromium_gtests_for_devices_with_graphical_output",
         "linux_flavor_specific_chromium_gtests",
         "system_webview_shell_instrumentation_tests",  # Not an experimental test
-        targets.bundle(
-            targets = "webview_64_cts_tests_suite",
-            variants = [
-                "WEBVIEW_FULL_CTS_TESTS",
-                "WEBVIEW_INSTANT_CTS_TESTS",
-            ],
-        ),
+        "webview_64_cts_tests_suite",
         "webview_64_cts_tests_no_field_trial_suite",
         "webview_ui_instrumentation_tests",
     ],
@@ -238,13 +202,7 @@ targets.bundle(
         "chromium_gtests_for_devices_with_graphical_output",
         "linux_flavor_specific_chromium_gtests",
         "system_webview_shell_instrumentation_tests",  # Not an experimental test
-        targets.bundle(
-            targets = "webview_64_cts_tests_suite",
-            variants = [
-                "WEBVIEW_FULL_CTS_TESTS",
-                "WEBVIEW_INSTANT_CTS_TESTS",
-            ],
-        ),
+        "webview_64_cts_tests_suite",
         "webview_64_cts_tests_no_field_trial_suite",
         "webview_ui_instrumentation_tests",
     ],
@@ -266,13 +224,7 @@ targets.bundle(
         "minidump_uploader_test",
         "system_webview_shell_instrumentation_tests",  # Not an experimental test
         "webview_ui_instrumentation_tests",
-        targets.bundle(
-            targets = "webview_64_cts_tests_suite",
-            variants = [
-                "WEBVIEW_FULL_CTS_TESTS",
-                "WEBVIEW_INSTANT_CTS_TESTS",
-            ],
-        ),
+        "webview_64_cts_tests_suite",
         "android_ci_only_fieldtrial_webview_tests",
     ],
 )
@@ -280,13 +232,7 @@ targets.bundle(
 targets.bundle(
     name = "android_16_emulator_fyi_gtests",
     targets = [
-        targets.bundle(
-            targets = "webview_64_cts_tests_suite",
-            variants = [
-                "WEBVIEW_FULL_CTS_TESTS",
-                "WEBVIEW_INSTANT_CTS_TESTS",
-            ],
-        ),
+        "webview_64_cts_tests_suite",
         "webview_64_cts_tests_no_field_trial_suite",
     ],
 )
@@ -317,12 +263,7 @@ targets.bundle(
 targets.bundle(
     name = "android_16_webview_64_cts_tests",
     targets = [
-        targets.bundle(
-            targets = "webview_64_cts_tests_suite",
-            variants = [
-                "WEBVIEW_FULL_CTS_TESTS",
-            ],
-        ),
+        "webview_64_cts_tests_suite",
     ],
 )
 
@@ -6757,10 +6698,6 @@ targets.bundle(
     targets = [
         "webview_cts_tests_suite",
     ],
-    variants = [
-        "WEBVIEW_FULL_CTS_TESTS",
-        "WEBVIEW_INSTANT_CTS_TESTS",
-    ],
 )
 
 targets.bundle(
@@ -6809,10 +6746,13 @@ targets.bundle(
     targets = [
         "webview_64_cts_hostside_tests",
     ],
-    variants = [
-        "WEBVIEW_FULL_CTS_TESTS",
-        "WEBVIEW_INSTANT_CTS_TESTS",
-    ],
+    per_test_modifications = {
+        "webview_64_cts_hostside_tests": targets.mixin(
+            swarming = targets.swarming(
+                shards = 2,
+            ),
+        ),
+    },
 )
 
 targets.bundle(
@@ -6962,6 +6902,9 @@ targets.bundle(
             args = [
                 "--store-tombstones",
             ],
+            swarming = targets.swarming(
+                shards = 2,
+            ),
         ),
     },
 )

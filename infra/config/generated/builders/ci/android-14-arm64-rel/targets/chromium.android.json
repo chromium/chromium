@@ -423,13 +423,13 @@
             "--bucket",
             "chromium-result-details",
             "--test-name",
-            "webview_64_cts_tests full_mode"
+            "webview_64_cts_tests"
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "module_name": "//android_webview/test:webview_64_cts_tests",
         "module_scheme": "junit",
-        "name": "webview_64_cts_tests full_mode",
+        "name": "webview_64_cts_tests",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -452,56 +452,7 @@
           "shards": 2
         },
         "test": "webview_64_cts_tests",
-        "test_id_prefix": "ninja://android_webview/test:webview_64_cts_tests/",
-        "variant_id": "full_mode"
-      },
-      {
-        "args": [
-          "--store-tombstones",
-          "--exclude-annotation",
-          "AppModeFull",
-          "--test-apk-as-instant",
-          "--gs-results-bucket=chromium-result-details",
-          "--recover-devices"
-        ],
-        "ci_only": true,
-        "isolate_profile_data": true,
-        "merge": {
-          "args": [
-            "--bucket",
-            "chromium-result-details",
-            "--test-name",
-            "webview_64_cts_tests instant_mode"
-          ],
-          "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
-        },
-        "module_name": "//android_webview/test:webview_64_cts_tests",
-        "module_scheme": "junit",
-        "name": "webview_64_cts_tests instant_mode",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {
-          "cipd_packages": [
-            {
-              "cipd_package": "chromium/android_webview/tools/cts_archive",
-              "location": "android_webview/tools/cts_archive/cipd",
-              "revision": "oW6-jyOPGwPJeLlaldYwrxZoYqzXpjO1OZUdyF3Qq7sC"
-            }
-          ],
-          "dimensions": {
-            "device_os": "AP2A.240705.004",
-            "device_os_type": "userdebug",
-            "device_type": "panther",
-            "os": "Android"
-          },
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 2
-        },
-        "test": "webview_64_cts_tests",
-        "test_id_prefix": "ninja://android_webview/test:webview_64_cts_tests/",
-        "variant_id": "instant_mode"
+        "test_id_prefix": "ninja://android_webview/test:webview_64_cts_tests/"
       },
       {
         "args": [

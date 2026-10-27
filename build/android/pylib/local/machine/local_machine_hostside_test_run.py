@@ -103,17 +103,10 @@ class LocalMachineHostsideTestRun(test_run.TestRun):
         return tests[shard_index::total_shards]
 
     def _MakeModeArgs(self):
-        if self._test_instance.instant_mode:
-            mode_args = [
-                '--module-parameter',
-                'INSTANT_APP',
-            ]
-        else:
-            mode_args = [
-                '--exclude-filter',
-                f'{self.TestPackage()}[instant]',
-            ]
-        return mode_args
+        return [
+            '--exclude-filter',
+            f'{self.TestPackage()}[instant]',
+        ]
 
     def _MakeEnv(self):
         return dict(
@@ -153,7 +146,6 @@ class LocalMachineHostsideTestRun(test_run.TestRun):
                         [
                             '--exclude-filter',
                             self.TestPackage()
-                            + '[instant]' * self._test_instance.instant_mode
                             + ' '
                             + '#'.join(exclude_filter.rsplit('.', 1)),
                         ]
@@ -164,7 +156,6 @@ class LocalMachineHostsideTestRun(test_run.TestRun):
                         [
                             '--include-filter',
                             self.TestPackage()
-                            + '[instant]' * self._test_instance.instant_mode
                             + ' '
                             + '#'.join(include_filter.rsplit('.', 1)),
                         ]
@@ -212,10 +203,7 @@ class LocalMachineHostsideTestRun(test_run.TestRun):
             filter_args.extend(
                 [
                     '--include-filter',
-                    self.TestPackage()
-                    + '[instant]' * self._test_instance.instant_mode
-                    + ' '
-                    + test,
+                    self.TestPackage() + ' ' + test,
                 ]
             )
 

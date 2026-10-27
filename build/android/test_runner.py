@@ -714,14 +714,6 @@ def AddInstrumentationTestOptions(parser):
         'to be queryable by other APKs.',
     )
     parser.add_argument(
-        '--instant-additional-apk',
-        action='append',
-        dest='instant_additional_apks',
-        default=[],
-        type=_RealPath,
-        help='Configures an additional-apk to be an instant APK',
-    )
-    parser.add_argument(
         '-A',
         '--annotation',
         dest='annotation_str',
@@ -894,12 +886,6 @@ def AddInstrumentationTestOptions(parser):
         help='Path or name of the apk containing the tests.',
     )
     parser.add_argument(
-        '--test-apk-as-instant',
-        action='store_true',
-        help='Install the test apk as an instant app. '
-        'Instant apps run in a more restrictive execution environment.',
-    )
-    parser.add_argument(
         '--test-launcher-batch-limit',
         dest='test_launcher_batch_limit',
         type=int,
@@ -1035,12 +1021,6 @@ def AddHostsideTestOptions(parser):
 
     parser.add_argument(
         '-s', '--test-suite', required=True, help='Hostside test suite to run.'
-    )
-    parser.add_argument(
-        '--test-apk-as-instant',
-        action='store_true',
-        help='Install the test apk as an instant app. '
-        'Instant apps run in a more restrictive execution environment.',
     )
     parser.add_argument(
         '--additional-apk',

@@ -615,7 +615,6 @@ class InstrumentationTestInstance(test_instance.TestInstance):
         self._additional_apks = []
         self._additional_apexs = []
         self._forced_queryable_additional_apks = []
-        self._instant_additional_apks = []
         self._apk_under_test = None
         self._modules = None
         self._fake_modules = None
@@ -623,7 +622,6 @@ class InstrumentationTestInstance(test_instance.TestInstance):
         self._package_info = None
         self._suite = None
         self._test_apk = None
-        self._test_apk_as_instant = False
         self._test_package = None
         self._junit4_runner_class = None
         self._uses_base_instrumentation = None
@@ -750,8 +748,6 @@ class InstrumentationTestInstance(test_instance.TestInstance):
         self._test_apk = apk_helper.ToHelper(test_apk_path)
         self._suite = os.path.splitext(os.path.basename(args.test_apk))[0]
 
-        self._test_apk_as_instant = args.test_apk_as_instant
-
         self._modules = args.modules
         self._fake_modules = args.fake_modules
         self._additional_locales = args.additional_locales
@@ -806,7 +802,6 @@ class InstrumentationTestInstance(test_instance.TestInstance):
         for x in set(
             args.additional_apks
             + args.forced_queryable_additional_apks
-            + args.instant_additional_apks
         ):
             if not os.path.exists(x):
                 error_func('Unable to find additional APK: %s' % x)
@@ -816,9 +811,6 @@ class InstrumentationTestInstance(test_instance.TestInstance):
 
             if x in args.forced_queryable_additional_apks:
                 self._forced_queryable_additional_apks.append(apk)
-
-            if x in args.instant_additional_apks:
-                self._instant_additional_apks.append(apk)
 
         self._additional_apexs = args.additional_apexs
 
@@ -1114,10 +1106,6 @@ class InstrumentationTestInstance(test_instance.TestInstance):
         return self._test_apk
 
     @property
-    def test_apk_as_instant(self):
-        return self._test_apk_as_instant
-
-    @property
     def test_filters(self):
         return self._test_filters
 
@@ -1248,9 +1236,6 @@ class InstrumentationTestInstance(test_instance.TestInstance):
 
     def IsApkForceQueryable(self, apk):
         return apk in self._forced_queryable_additional_apks
-
-    def IsApkInstant(self, apk):
-        return apk in self._instant_additional_apks
 
     def _InflateTests(self, tests):
         inflated_tests = []

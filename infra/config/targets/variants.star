@@ -660,24 +660,6 @@ targets.variant(
 )
 
 targets.variant(
-    name = "WEBVIEW_FULL_CTS_TESTS",
-    identifier = "full_mode",
-    swarming = targets.swarming(
-        shards = 2,
-    ),
-)
-
-targets.variant(
-    name = "WEBVIEW_INSTANT_CTS_TESTS",
-    identifier = "instant_mode",
-    args = [
-        "--exclude-annotation",
-        "AppModeFull",
-        "--test-apk-as-instant",
-    ],
-)
-
-targets.variant(
     name = "WIN10_INTEL_UHD_630_STABLE",
     identifier = "8086:9bc5",
     mixins = [

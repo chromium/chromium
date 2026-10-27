@@ -460,7 +460,6 @@ class LocalDeviceInstrumentationTestRun(
                 fake_modules=None,
                 permissions=None,
                 additional_locales=None,
-                instant_app=False,
             ):
 
                 @instrumentation_tracing.no_tracing
@@ -474,7 +473,6 @@ class LocalDeviceInstrumentationTestRun(
                             fake_modules=fake_modules,
                             permissions=permissions,
                             additional_locales=additional_locales,
-                            instant_app=instant_app,
                             force_queryable=self._test_instance.IsApkForceQueryable(
                                 apk
                             ),
@@ -512,9 +510,7 @@ class LocalDeviceInstrumentationTestRun(
             )
 
             install_steps.extend(
-                install_helper(
-                    apk, instant_app=self._test_instance.IsApkInstant(apk)
-                )
+                install_helper(apk)
                 for apk in self._test_instance.additional_apks
             )
 
@@ -523,7 +519,6 @@ class LocalDeviceInstrumentationTestRun(
                 install_helper(
                     self._test_instance.test_apk,
                     permissions=permissions,
-                    instant_app=self._test_instance.test_apk_as_instant,
                 )
             )
 

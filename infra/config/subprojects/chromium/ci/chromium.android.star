@@ -4386,7 +4386,7 @@ ci.builder(
             "linux-jammy",
         ],
         per_test_modifications = {
-            "webview_64_cts_hostside_tests full_mode": targets.mixin(
+            "webview_64_cts_hostside_tests": targets.mixin(
                 swarming = targets.swarming(
                     shards = 1,
                 ),
