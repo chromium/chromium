@@ -58,7 +58,7 @@ class Rect;
 namespace ui {
 class Cursor;
 struct ImeTextSpan;
-}
+}  // namespace ui
 
 namespace blink {
 
@@ -300,6 +300,10 @@ class WebPlugin {
 
   // Returns the current plugin caret bounds in blink/viewport coordinates.
   virtual gfx::Rect GetPluginCaretBounds() { return gfx::Rect(); }
+
+  // Returns the current plugin selection bounding box in blink/viewport
+  // coordinates.
+  virtual gfx::Rect GetPluginSelectionBounds() { return gfx::Rect(); }
 
   // Set the composition in plugin.
   virtual void ImeSetCompositionForPlugin(

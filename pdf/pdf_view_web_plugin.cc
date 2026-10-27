@@ -1099,6 +1099,10 @@ gfx::Rect PdfViewWebPlugin::GetPluginCaretBounds() {
   return caret_rect_;
 }
 
+gfx::Rect PdfViewWebPlugin::GetPluginSelectionBounds() {
+  return selection_bounding_box_;
+}
+
 void PdfViewWebPlugin::ImeSetCompositionForPlugin(
     const blink::WebString& text,
     const std::vector<ui::ImeTextSpan>& /*ime_text_spans*/,
@@ -1639,7 +1643,8 @@ SkColor PdfViewWebPlugin::GetBackgroundColor() const {
 }
 
 void PdfViewWebPlugin::SelectionChanged(const gfx::Rect& left,
-                                        const gfx::Rect& right) {
+                                        const gfx::Rect& right,
+                                        const gfx::Rect& bounding_box) {
 #if BUILDFLAG(ENABLE_PDF_INK2)
   // Ignore the selected text if `ink_module_` is currently text highlighting.
   // This prevents `pdf_host_` from showing touch handles for touch text
@@ -1648,6 +1653,11 @@ void PdfViewWebPlugin::SelectionChanged(const gfx::Rect& left,
     return;
   }
 #endif  // BUILDFLAG(ENABLE_PDF_INK2)
+
+  selection_bounding_box_ =
+      bounding_box.IsEmpty()
+          ? gfx::Rect()
+          : bounding_box + available_area_.OffsetFromOrigin();
 
   gfx::PointF left_point(left.x() + available_area_.x(), left.y());
   gfx::PointF right_point(right.x() + available_area_.x(), right.y());
@@ -1662,6 +1672,9 @@ void PdfViewWebPlugin::SelectionChanged(const gfx::Rect& left,
   if (accessibility_state_ == AccessibilityState::kLoaded) {
     PrepareAndSetAccessibilityViewportInfo();
   }
+
+  client_->UpdateSelectionBounds();
+  // Warning: `this` may be destroyed at this point.
 }
 
 void PdfViewWebPlugin::EnteredEditMode() {

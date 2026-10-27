@@ -190,8 +190,9 @@ class PDFiumEngineClient {
   virtual SkColor GetBackgroundColor() const = 0;
 
   // Sets selection status.
-  virtual void SelectionChanged(const gfx::Rect& left, const gfx::Rect& right) {
-  }
+  virtual void SelectionChanged(const gfx::Rect& left,
+                                const gfx::Rect& right,
+                                const gfx::Rect& bounding_box) {}
 
   // The caret position in the editable form (if applicable) changed.
   virtual void CaretChanged(const gfx::Rect& caret_rect) {}

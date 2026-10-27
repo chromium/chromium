@@ -1726,8 +1726,11 @@ TEST_F(PdfViewWebPluginTest, SelectionChanged) {
                                           gfx::PointF(52.0f, 60.0f), 80));
   EXPECT_CALL(*accessibility_data_handler_ptr_, SetAccessibilityViewportInfo)
       .WillOnce(SaveArg<0>(&viewport_info));
-  plugin_->SelectionChanged({-10, -20, 30, 40}, {50, 60, 70, 80});
+  EXPECT_CALL(*client_ptr_, UpdateSelectionBounds);
+  plugin_->SelectionChanged({-10, -20, 30, 40}, {50, 60, 70, 80},
+                            {-10, -20, 130, 160});
 
+  EXPECT_EQ(gfx::Rect(-8, -20, 130, 160), plugin_->GetPluginSelectionBounds());
   EXPECT_EQ(gfx::Point(), viewport_info.scroll);
   pdf_receiver_.FlushForTesting();
 }
@@ -1743,8 +1746,11 @@ TEST_F(PdfViewWebPluginTest, SelectionChangedNegativeOrigin) {
                                           gfx::PointF(52.0f, 60.0f), 80));
   EXPECT_CALL(*accessibility_data_handler_ptr_, SetAccessibilityViewportInfo)
       .WillOnce(SaveArg<0>(&viewport_info));
-  plugin_->SelectionChanged({-10, -20, 30, 40}, {50, 60, 70, 80});
+  EXPECT_CALL(*client_ptr_, UpdateSelectionBounds);
+  plugin_->SelectionChanged({-10, -20, 30, 40}, {50, 60, 70, 80},
+                            {-10, -20, 130, 160});
 
+  EXPECT_EQ(gfx::Rect(-8, -20, 130, 160), plugin_->GetPluginSelectionBounds());
   EXPECT_EQ(gfx::Point(), viewport_info.scroll);
   pdf_receiver_.FlushForTesting();
 }
@@ -1760,8 +1766,11 @@ TEST_F(PdfViewWebPluginTest, SelectionChangedScaled) {
                                           gfx::PointF(52.0f, 60.0f), 80));
   EXPECT_CALL(*accessibility_data_handler_ptr_, SetAccessibilityViewportInfo)
       .WillOnce(SaveArg<0>(&viewport_info));
-  plugin_->SelectionChanged({-20, -40, 60, 80}, {100, 120, 140, 160});
+  EXPECT_CALL(*client_ptr_, UpdateSelectionBounds);
+  plugin_->SelectionChanged({-20, -40, 60, 80}, {100, 120, 140, 160},
+                            {-20, -40, 260, 320});
 
+  EXPECT_EQ(gfx::Rect(-16, -40, 260, 320), plugin_->GetPluginSelectionBounds());
   EXPECT_EQ(gfx::Point(), viewport_info.scroll);
   pdf_receiver_.FlushForTesting();
 }
@@ -1938,6 +1947,20 @@ TEST_F(PdfViewWebPluginTest, CaretChange) {
       /*device_scale=*/2.0f, /*window_rect=*/gfx::Rect(12, 24, 36, 48));
   plugin_->CaretChanged(gfx::Rect(10, 20, 30, 40));
   EXPECT_EQ(gfx::Rect(28, 20, 30, 40), plugin_->GetPluginCaretBounds());
+}
+
+TEST_F(PdfViewWebPluginTest, SelectionBounds) {
+  EXPECT_CALL(*engine_ptr_, ZoomUpdated(2.0f));
+  UpdatePluginGeometry(
+      /*device_scale=*/2.0f, /*window_rect=*/gfx::Rect(12, 24, 36, 48));
+  EXPECT_CALL(*client_ptr_, UpdateSelectionBounds);
+  plugin_->SelectionChanged(gfx::Rect(15, 20, 5, 10), gfx::Rect(25, 40, 5, 10),
+                            gfx::Rect(10, 20, 30, 40));
+  EXPECT_EQ(gfx::Rect(28, 20, 30, 40), plugin_->GetPluginSelectionBounds());
+
+  EXPECT_CALL(*client_ptr_, UpdateSelectionBounds);
+  plugin_->SelectionChanged(gfx::Rect(), gfx::Rect(), gfx::Rect());
+  EXPECT_EQ(gfx::Rect(), plugin_->GetPluginSelectionBounds());
 }
 
 TEST_F(PdfViewWebPluginTest, EnteredEditMode) {
@@ -4081,7 +4104,8 @@ TEST_P(PdfViewWebPluginInkTextHighlightTest, SelectionDoesNotChange) {
 
   EXPECT_CALL(pdf_host_, SelectionChanged(_, _, _, _)).Times(0);
 
-  plugin_->SelectionChanged({-10, -20, 30, 40}, {50, 60, 70, 80});
+  plugin_->SelectionChanged({-10, -20, 30, 40}, {50, 60, 70, 80},
+                            {-10, -20, 130, 160});
   pdf_receiver_.FlushForTesting();
 }
 

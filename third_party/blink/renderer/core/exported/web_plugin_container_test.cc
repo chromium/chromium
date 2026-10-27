@@ -289,8 +289,9 @@ class TestPluginWebFrameClient : public frame_test_helpers::TestWebFrameClient {
   WebPlugin* CreatePlugin(const WebPluginParams& params) override {
     if (params.mime_type == "application/x-webkit-test-webplugin" ||
         params.mime_type == "application/pdf") {
-      if (has_editable_text_)
+      if (has_editable_text_) {
         return new TestPluginWithEditableText(params);
+      }
 
       return new TestPlugin(params, this);
     }
@@ -1603,10 +1604,11 @@ TEST_F(WebPluginContainerTest, ClippedRectsForShiftedIframedElement) {
       // It seems that CalculateGeometry calculates x and y values for empty
       // rectangles slightly differently, but these values are not important in
       // the empty case.
-      if(std::get<2>(expected_values).IsEmpty())
+      if (std::get<2>(expected_values).IsEmpty()) {
         EXPECT_TRUE(unobscured_rect.IsEmpty());
-      else
+      } else {
         EXPECT_EQ(std::get<2>(expected_values), unobscured_rect);
+      }
     }
   }
 
@@ -1943,8 +1945,9 @@ class CompositedPlugin : public FakeWebPlugin {
   // WebPlugin
 
   bool Initialize(WebPluginContainer* container) override {
-    if (!FakeWebPlugin::Initialize(container))
+    if (!FakeWebPlugin::Initialize(container)) {
       return false;
+    }
     container->SetCcLayer(layer_.get());
     return true;
   }
@@ -2069,6 +2072,69 @@ TEST_F(WebPluginContainerTest, SetTextDirection) {
   EXPECT_FALSE(test_plugin->IsWritingDirectionLeftToRightCalled());
   EXPECT_FALSE(test_plugin->IsWritingDirectionRightToLeftCalled());
   EXPECT_TRUE(test_plugin->IsWritingDirectionNaturalCalled());
+}
+
+TEST_F(WebPluginContainerTest, GetSelectionBoundsInWindow) {
+  class TestPluginWithSelectionBounds : public FakeWebPlugin {
+   public:
+    explicit TestPluginWithSelectionBounds(const WebPluginParams& params)
+        : FakeWebPlugin(params) {}
+
+    bool ShouldDispatchImeEventsToPlugin() override { return true; }
+    gfx::Rect GetPluginCaretBounds() override {
+      return gfx::Rect(20, 30, 2, 12);
+    }
+    gfx::Rect GetPluginSelectionBounds() override { return selection_bounds_; }
+
+    void SetSelectionBounds(const gfx::Rect& bounds) {
+      selection_bounds_ = bounds;
+    }
+
+   private:
+    ~TestPluginWithSelectionBounds() override = default;
+
+    gfx::Rect selection_bounds_;
+  };
+
+  RegisterMockedURL("plugin_container.html");
+  CustomPluginWebFrameClient<TestPluginWithSelectionBounds>
+      plugin_web_frame_client;
+  frame_test_helpers::WebViewHelper web_view_helper;
+  WebViewImpl* web_view = web_view_helper.InitializeAndLoad(
+      base_url_ + "plugin_container.html", &plugin_web_frame_client);
+  EnablePlugins(web_view, gfx::Size(300, 300));
+
+  WebElement plugin_element =
+      web_view->MainFrameImpl()->GetDocument().GetElementById(
+          WebString("translated-plugin"));
+  web_view->MainFrameImpl()
+      ->GetFrame()
+      ->GetDocument()
+      ->QuerySelector(AtomicString("#translated-plugin"))
+      ->Focus();
+
+  auto* test_plugin = static_cast<TestPluginWithSelectionBounds*>(
+      To<WebPluginContainerImpl>(plugin_element.PluginContainer())->Plugin());
+  ASSERT_TRUE(test_plugin);
+
+  test_plugin->SetSelectionBounds(gfx::Rect(10, 20, 150, 80));
+
+  WebFrameWidgetImpl* widget = web_view->MainFrameViewWidget();
+  gfx::Rect focus;
+  gfx::Rect anchor;
+  gfx::Rect bounding_box;
+  base::i18n::TextDirection focus_dir =
+      base::i18n::TextDirection::UNKNOWN_DIRECTION;
+  base::i18n::TextDirection anchor_dir =
+      base::i18n::TextDirection::UNKNOWN_DIRECTION;
+  bool is_anchor_first = false;
+
+  EXPECT_TRUE(widget->GetSelectionBoundsInWindow(&focus, &anchor, &bounding_box,
+                                                 &focus_dir, &anchor_dir,
+                                                 &is_anchor_first));
+  EXPECT_EQ(gfx::Rect(20, 30, 2, 12), focus);
+  EXPECT_EQ(gfx::Rect(20, 30, 2, 12), anchor);
+  EXPECT_EQ(gfx::Rect(10, 20, 150, 80), bounding_box);
 }
 
 }  // namespace blink

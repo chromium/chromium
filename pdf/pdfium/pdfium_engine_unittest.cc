@@ -187,6 +187,10 @@ class MockTestClient : public TestClient {
   MOCK_METHOD(bool, IsPrintPreview, (), (const override));
   MOCK_METHOD(void, DocumentFocusChanged, (bool), (override));
   MOCK_METHOD(void, SetSelectedText, (const std::string&), (override));
+  MOCK_METHOD(void,
+              SelectionChanged,
+              (const gfx::Rect&, const gfx::Rect&, const gfx::Rect&),
+              (override));
   MOCK_METHOD(void, SetLinkUnderCursor, (const std::string&), (override));
   MOCK_METHOD(void, ScrollToX, (int, bool), (override));
   MOCK_METHOD(void, ScrollToY, (int, bool), (override));
@@ -1452,6 +1456,40 @@ TEST_P(PDFiumEngineSelectionTest, SelectTextBackwards) {
   constexpr char kExpectedText[] = "bye, world!\nHello, world!\nGoodby";
   EXPECT_EQ(GetPlatformTextExpectation(kExpectedText),
             engine->GetSelectedText());
+}
+
+TEST_P(PDFiumEngineSelectionTest, SelectionBoundingBoxIncludesAllLines) {
+  NiceMock<MockTestClient> mock_client(/*use_skia_renderer=*/GetParam());
+  std::unique_ptr<PDFiumEngine> engine =
+      InitializeEngine(&mock_client, FILE_PATH_LITERAL("hello_world2.pdf"));
+  ASSERT_TRUE(engine);
+  engine->PluginSizeUpdated({1024, 4096});
+
+  gfx::Rect last_left;
+  gfx::Rect last_right;
+  gfx::Rect last_bounding_box;
+  ON_CALL(mock_client, SelectionChanged)
+      .WillByDefault([&](const gfx::Rect& left, const gfx::Rect& right,
+                         const gfx::Rect& bounding_box) {
+        last_left = left;
+        last_right = right;
+        last_bounding_box = bounding_box;
+      });
+
+  // Select from the middle of the first line ("world!") to the start of the
+  // second line ("Good"), so `last_left.x()` is to the right of the second
+  // line's left edge and `last_right.x()` is to the left of the first line's
+  // right edge.
+  constexpr gfx::PointF kFirstLineMiddle(85, 120);
+  constexpr gfx::PointF kSecondLineStart(75, 420);
+  EXPECT_TRUE(engine->HandleInputEvent(
+      CreateLeftClickWebMouseEventAtPosition(kFirstLineMiddle)));
+  EXPECT_TRUE(engine->HandleInputEvent(
+      CreateMoveWebMouseEventToPosition(kSecondLineStart)));
+
+  EXPECT_FALSE(last_bounding_box.IsEmpty());
+  EXPECT_LT(last_bounding_box.x(), last_left.x());
+  EXPECT_GT(last_bounding_box.right(), last_right.x());
 }
 
 TEST_P(PDFiumEngineSelectionTest, SelectTextWithCopyRestriction) {

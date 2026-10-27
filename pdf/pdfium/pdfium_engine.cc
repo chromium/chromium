@@ -4808,6 +4808,7 @@ void PDFiumEngine::OnSelectionPositionChanged() {
   gfx::Rect left(std::numeric_limits<int32_t>::max(),
                  std::numeric_limits<int32_t>::max(), 0, 0);
   gfx::Rect right;
+  gfx::Rect bounding_box;
   for (const auto& sel : selection_) {
     const std::vector<gfx::Rect>& screen_rects = sel.GetScreenRects(
         GetVisibleRect().origin(), current_zoom_, GetCurrentOrientation());
@@ -4818,6 +4819,7 @@ void PDFiumEngine::OnSelectionPositionChanged() {
       if (IsAboveOrDirectlyLeftOf(right, rect)) {
         right = rect;
       }
+      bounding_box.Union(rect);
     }
   }
   right.set_x(right.x() + right.width());
@@ -4825,7 +4827,7 @@ void PDFiumEngine::OnSelectionPositionChanged() {
     left.set_x(0);
     left.set_y(0);
   }
-  client_->SelectionChanged(left, right);
+  client_->SelectionChanged(left, right, bounding_box);
 }
 
 gfx::Size PDFiumEngine::ApplyDocumentLayout(
