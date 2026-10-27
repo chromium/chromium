@@ -196,6 +196,31 @@ TEST_F(LocalHotkeyManagerTest, AcceleratorPressedCallsEventHandler) {
             LocalHotkeyManager::Command::kClose);
 }
 
+TEST_F(LocalHotkeyManagerTest,
+       AcceleratorPressedWithUnsupportedAcceleratorReturnsFalse) {
+  manager_->InitializeAccelerators();
+  ui::Accelerator unsupported_acc(ui::VKEY_C, ui::EF_CONTROL_DOWN);
+
+  EXPECT_FALSE(manager_->IsRegisteredAccelerator(unsupported_acc));
+  EXPECT_FALSE(manager_->GetCommand(unsupported_acc).has_value());
+  EXPECT_FALSE(manager_->AcceleratorPressed(unsupported_acc));
+  EXPECT_FALSE(fake_state_->last_pressed_command().has_value());
+}
+
+TEST_F(LocalHotkeyManagerTest, GetCommandReturnsCommandOrNullopt) {
+  manager_->InitializeAccelerators();
+  ui::Accelerator close_acc = LocalHotkeyManager::GetStaticAccelerators(
+      LocalHotkeyManager::Command::kClose)[0];
+  EXPECT_EQ(manager_->GetCommand(close_acc),
+            LocalHotkeyManager::Command::kClose);
+
+  ui::Accelerator unregistered_acc(ui::VKEY_V, ui::EF_CONTROL_DOWN);
+  EXPECT_EQ(manager_->GetCommand(unregistered_acc), std::nullopt);
+
+  EXPECT_EQ(manager_->GetCommand(ui::Accelerator()), std::nullopt);
+  EXPECT_FALSE(manager_->IsRegisteredAccelerator(ui::Accelerator()));
+}
+
 TEST_F(LocalHotkeyManagerTest, CanHandleAcceleratorsDependsOnEventHandler) {
   fake_state_->SetCanHandleAccelerators(false);
   EXPECT_FALSE(manager_->CanHandleAccelerators());

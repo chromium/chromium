@@ -5,6 +5,10 @@
 #ifndef CHROME_BROWSER_GLIC_COMMON_LOCAL_HOTKEY_MANAGER_H_
 #define CHROME_BROWSER_GLIC_COMMON_LOCAL_HOTKEY_MANAGER_H_
 
+#include <memory>
+#include <optional>
+#include <vector>
+
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -164,9 +168,9 @@ class LocalHotkeyManager : public ui::AcceleratorTarget {
   // command is not defined as configurable.
   static ui::Accelerator GetConfigurableAccelerator(Command command);
 
-  // Returns the Command enum value corresponding to the given accelerator.
-  // CHECKs if the accelerator is not supported by this manager.
-  Command GetCommand(ui::Accelerator accelerator);
+  // Returns the Command enum value corresponding to the given accelerator,
+  // or std::nullopt if the accelerator is not supported by this manager.
+  std::optional<Command> GetCommand(const ui::Accelerator& accelerator) const;
 
   void InitializeAccelerators();
 
