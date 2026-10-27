@@ -28,6 +28,15 @@
 #include "chromeos/ash/components/disks/disk_mount_manager.h"
 #endif
 
+#if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/extensions/api/image_writer_private/removable_storage_provider_android.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/remote.h"
+#include "services/device/public/mojom/usb_device.mojom-forward.h"
+#include "services/device/public/mojom/usb_manager.mojom-forward.h"
+#endif
+
 namespace image_writer_api = extensions::api::image_writer_private;
 
 namespace base {
@@ -93,6 +102,15 @@ class Operation : public base::RefCountedThreadSafe<Operation> {
 
   // Posts `task` to Operation's `task_runner_`.
   void PostTask(base::OnceClosure task);
+
+#if BUILDFLAG(IS_ANDROID)
+  using UsbDeviceManagerBinder = base::RepeatingCallback<void(
+      mojo::PendingReceiver<device::mojom::UsbDeviceManager>)>;
+
+  void SetUsbDeviceManagerBinderForTesting(UsbDeviceManagerBinder binder) {
+    usb_binder_ = std::move(binder);
+  }
+#endif
 
  protected:
   virtual ~Operation();
@@ -204,6 +222,19 @@ class Operation : public base::RefCountedThreadSafe<Operation> {
   void OnBurnError();
 #endif
 
+#if BUILDFLAG(IS_ANDROID)
+  void ConnectToUsbDevice(ParsedDeviceId device_id,
+                          base::OnceClosure continuation);
+  void OnUsbManagerDisconnected();
+  void OnUsbDeviceInfoRefreshed(ParsedDeviceId device_id,
+                                base::OnceClosure continuation,
+                                device::mojom::UsbDeviceInfoPtr info);
+  void OnUsbDeviceConnected(
+      base::OnceClosure continuation,
+      const UsbMassStorageEndpoints& endpoints,
+      mojo::PendingRemote<device::mojom::UsbDevice> device_remote);
+#endif
+
   // Incrementally calculates the MD5 sum of a file.
   void MD5Chunk(base::File file,
                 crypto::obsolete::Md5 md5,
@@ -258,6 +289,17 @@ class Operation : public base::RefCountedThreadSafe<Operation> {
   // Sequenced task runner where all I/O operation will be performed.
   // Most of the methods of this class run in this task runner.
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
+
+#if BUILDFLAG(IS_ANDROID)
+  UsbDeviceManagerBinder usb_binder_;
+  // Created, used, and reset exclusively on `task_runner_`. `CleanUp()` (called
+  // on `task_runner_` by `Error()`, `Cancel()`, and `Abort()`, including
+  // `OperationManager::Shutdown()`) resets `usb_manager_`, dropping any pending
+  // response callbacks before `this` can be destroyed, and `~Operation()` hands
+  // it to `task_runner_->DeleteSoon()`. Callbacks therefore safely bind
+  // `base::Unretained(this)`.
+  std::unique_ptr<mojo::Remote<device::mojom::UsbDeviceManager>> usb_manager_;
+#endif
 };
 
 }  // namespace extensions::image_writer

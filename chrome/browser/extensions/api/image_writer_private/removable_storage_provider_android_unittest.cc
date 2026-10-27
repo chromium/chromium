@@ -532,5 +532,39 @@ TEST_F(RemovableStorageProviderAndroidTest,
   EXPECT_FALSE(future.Get());
 }
 
+TEST_F(RemovableStorageProviderAndroidTest,
+       FormatAndParseUsbDeviceIdRoundTripAndValidation) {
+  const std::string formatted =
+      FormatUsbDeviceId("guid-1234", /*vendor_id=*/0x0781,
+                        /*product_id=*/0x5581);
+  EXPECT_EQ(formatted, "usb:guid-1234:0781:5581");
+
+  std::optional<ParsedDeviceId> parsed = ParseUsbDeviceId(formatted);
+  ASSERT_TRUE(parsed.has_value());
+  EXPECT_EQ(parsed->guid, "guid-1234");
+  EXPECT_EQ(parsed->vendor_id, 0x0781u);
+  EXPECT_EQ(parsed->product_id, 0x5581u);
+
+  // Uppercase hex digits are accepted.
+  parsed = ParseUsbDeviceId("usb:guid-abcd:0951:1666");
+  ASSERT_TRUE(parsed.has_value());
+  EXPECT_EQ(parsed->vendor_id, 0x0951u);
+  EXPECT_EQ(parsed->product_id, 0x1666u);
+  parsed = ParseUsbDeviceId("usb:guid-abcd:ABCD:EF01");
+  ASSERT_TRUE(parsed.has_value());
+  EXPECT_EQ(parsed->vendor_id, 0xABCDu);
+  EXPECT_EQ(parsed->product_id, 0xEF01u);
+
+  // Reject wrong prefix, wrong part count, empty guid, non-hex, and > 0xFFFF.
+  EXPECT_FALSE(ParseUsbDeviceId("/dev/block/sda").has_value());
+  EXPECT_FALSE(ParseUsbDeviceId("usb:guid-only:0781").has_value());
+  EXPECT_FALSE(ParseUsbDeviceId("usb:guid:0781:5581:extra").has_value());
+  EXPECT_FALSE(ParseUsbDeviceId("usb::0781:5581").has_value());
+  EXPECT_FALSE(ParseUsbDeviceId("usb:guid:ZZZZ:5581").has_value());
+  EXPECT_FALSE(ParseUsbDeviceId("usb:guid:0781:ZZZZ").has_value());
+  EXPECT_FALSE(ParseUsbDeviceId("usb:guid:10000:5581").has_value());
+  EXPECT_FALSE(ParseUsbDeviceId("usb:guid:0781:10000").has_value());
+}
+
 }  // namespace
 }  // namespace extensions::image_writer

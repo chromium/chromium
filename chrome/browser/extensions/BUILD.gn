@@ -2361,6 +2361,7 @@ source_set("unit_tests") {
 
   if (is_android) {
     sources += [
+      "api/image_writer_private/operation_android_unittest.cc",
       "api/image_writer_private/removable_storage_provider_android_unittest.cc",
       "system_display/display_info_provider_android_unittest.cc",
     ]

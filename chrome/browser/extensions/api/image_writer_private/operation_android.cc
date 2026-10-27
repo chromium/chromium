@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include <algorithm>
+#include <memory>
 #include <optional>
 #include <string>
 #include <utility>
@@ -18,6 +19,12 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "chrome/browser/extensions/api/image_writer_private/error_constants.h"
+#include "chrome/browser/extensions/api/image_writer_private/removable_storage_provider_android.h"
+#include "content/public/browser/browser_thread.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/remote.h"
+#include "services/device/public/mojom/usb_device.mojom.h"
+#include "services/device/public/mojom/usb_manager.mojom.h"
 
 namespace extensions::image_writer {
 
@@ -191,12 +198,94 @@ void OnLocalFileTransferComplete(
 
 }  // namespace
 
+void Operation::ConnectToUsbDevice(ParsedDeviceId device_id,
+                                   base::OnceClosure continuation) {
+  CHECK(IsRunningInCorrectSequence());
+  usb_manager_ =
+      std::make_unique<mojo::Remote<device::mojom::UsbDeviceManager>>();
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE,
+      base::BindOnce(usb_binder_, usb_manager_->BindNewPipeAndPassReceiver()));
+  usb_manager_->set_disconnect_handler(base::BindOnce(
+      &Operation::OnUsbManagerDisconnected, base::Unretained(this)));
+  std::string guid = device_id.guid;
+  (*usb_manager_)
+      ->RefreshDeviceInfo(guid,
+                          base::BindOnce(&Operation::OnUsbDeviceInfoRefreshed,
+                                         base::Unretained(this),
+                                         std::move(device_id),
+                                         std::move(continuation)));
+}
+
+void Operation::OnUsbManagerDisconnected() {
+  CHECK(IsRunningInCorrectSequence());
+  if (!IsCancelled()) {
+    Error(error::kDeviceOpenError);
+  }
+}
+
+void Operation::OnUsbDeviceInfoRefreshed(
+    ParsedDeviceId device_id,
+    base::OnceClosure continuation,
+    device::mojom::UsbDeviceInfoPtr info) {
+  CHECK(IsRunningInCorrectSequence());
+  if (IsCancelled()) {
+    usb_manager_.reset();
+    return;
+  }
+  if (!info || info->vendor_id != device_id.vendor_id ||
+      info->product_id != device_id.product_id) {
+    Error(error::kDeviceOpenError);
+    return;
+  }
+  std::optional<UsbMassStorageEndpoints> endpoints =
+      ExtractMassStorageEndpoints(*info);
+  if (!endpoints.has_value()) {
+    Error(error::kDeviceOpenError);
+    return;
+  }
+  mojo::PendingRemote<device::mojom::UsbDevice> device_remote;
+  (*usb_manager_)
+      ->GetUnrestrictedDevice(device_id.guid, {},
+                              device_remote.InitWithNewPipeAndPassReceiver(),
+                              mojo::NullRemote());
+  // Safe: Mojo allows destroying the Remote from within its response callback.
+  usb_manager_.reset();
+  OnUsbDeviceConnected(std::move(continuation), *endpoints,
+                       std::move(device_remote));
+}
+
+void Operation::OnUsbDeviceConnected(
+    base::OnceClosure continuation,
+    const UsbMassStorageEndpoints& endpoints,
+    mojo::PendingRemote<device::mojom::UsbDevice> device_remote) {
+  CHECK(IsRunningInCorrectSequence());
+  if (IsCancelled()) {
+    return;
+  }
+  if (!device_remote.is_valid()) {
+    Error(error::kDeviceOpenError);
+    return;
+  }
+  // TODO(crbug.com/538632205): Open `MojoUsbBotSession` and stream image blocks
+  // in (4b/6) and (4c/6). Fail closed until the BOT transport is wired up so a
+  // USB target never reports fake completion with zero bytes written.
+  Error(error::kDeviceWriteError);
+}
+
 void Operation::Write(base::OnceClosure continuation) {
   CHECK(IsRunningInCorrectSequence());
   if (IsCancelled()) {
     return;
   }
   SetStage(image_writer_api::Stage::kWrite);
+
+  if (std::optional<ParsedDeviceId> parsed_id =
+          ParseUsbDeviceId(device_path_.value())) {
+    ConnectToUsbDevice(std::move(*parsed_id), std::move(continuation));
+    return;
+  }
+
   StartLocalFileTransfer(image_path_, device_path_, TransferMode::kWrite,
                          base::BindRepeating(&Operation::IsCancelled, this),
                          base::BindRepeating(&Operation::SetProgress, this),
@@ -213,6 +302,15 @@ void Operation::VerifyWrite(base::OnceClosure continuation) {
     return;
   }
   SetStage(image_writer_api::Stage::kVerifyWrite);
+
+  if (std::optional<ParsedDeviceId> parsed_id =
+          ParseUsbDeviceId(device_path_.value())) {
+    // TODO(crbug.com/538632205): Verify written USB blocks via SCSI READ (10)
+    // in (5/6).
+    Error(error::kVerificationFailed);
+    return;
+  }
+
   StartLocalFileTransfer(image_path_, device_path_, TransferMode::kVerify,
                          base::BindRepeating(&Operation::IsCancelled, this),
                          base::BindRepeating(&Operation::SetProgress, this),

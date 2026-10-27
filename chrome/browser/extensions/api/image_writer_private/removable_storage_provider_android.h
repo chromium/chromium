@@ -8,6 +8,8 @@
 #include <stdint.h>
 
 #include <optional>
+#include <string>
+#include <string_view>
 
 #include "base/files/file_path.h"
 #include "chrome/browser/extensions/api/image_writer_private/removable_storage_provider.h"
@@ -22,6 +24,21 @@ struct UsbMassStorageEndpoints {
   uint8_t endpoint_in = 0;
   uint8_t endpoint_out = 0;
 };
+
+struct ParsedDeviceId {
+  std::string guid;
+  uint16_t vendor_id = 0;
+  uint16_t product_id = 0;
+};
+
+// Formats or parses the `storage_unit_id` string (`"usb:<guid>:<vid>:<pid>"`)
+// used to identify Android USB Mass Storage devices across enumeration and
+// write/verify operations.
+std::string FormatUsbDeviceId(std::string_view guid,
+                              uint16_t vendor_id,
+                              uint16_t product_id);
+std::optional<ParsedDeviceId> ParseUsbDeviceId(
+    std::string_view storage_unit_id);
 
 // Searches `info` for a USB Mass Storage Bulk-Only Transport (class 0x08,
 // subclass 0x06, protocol 0x50) interface with both bulk IN and bulk OUT

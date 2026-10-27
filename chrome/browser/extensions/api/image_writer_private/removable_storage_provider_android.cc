@@ -307,13 +307,13 @@ class SysfsBlockDeviceScanner {
           it != sysfs_usb_capacities.end()) {
         capacity = it->second;
       }
-      AppendStorageDevice(
-          *device_list,
-          base::StringPrintf("usb:%s:%04x:%04x", candidate.guid.c_str(),
-                             candidate.vendor_id, candidate.product_id),
-          capacity, candidate.vendor_name,
-          candidate.product_name.empty() ? "Flash Drive"
-                                         : candidate.product_name);
+      AppendStorageDevice(*device_list,
+                          FormatUsbDeviceId(candidate.guid, candidate.vendor_id,
+                                            candidate.product_id),
+                          capacity, candidate.vendor_name,
+                          candidate.product_name.empty()
+                              ? "Flash Drive"
+                              : candidate.product_name);
     }
 
     return device_list;
@@ -798,20 +798,15 @@ class AndroidUsbDeviceEnumerator
     std::vector<PendingCapacityQuery> queries;
     for (size_t i = 0; i < device_list->data.size(); ++i) {
       const auto& item = device_list->data[i];
-      if (item.capacity > 0 ||
-          !base::StartsWith(item.storage_unit_id, "usb:")) {
+      if (item.capacity > 0) {
         continue;
       }
-      // `storage_unit_id` for USB candidates is formatted as
-      // "usb:<guid>:<vid>:<pid>". Extract `<guid>` (`parts[1]`) to look up the
-      // matching `UsbMassStorageCandidate` and open its Mojo `UsbDevice`.
-      std::vector<std::string_view> parts =
-          base::SplitStringPiece(item.storage_unit_id, ":",
-                                 base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
-      if (parts.size() < 2) {
+      std::optional<ParsedDeviceId> parsed_id =
+          ParseUsbDeviceId(item.storage_unit_id);
+      if (!parsed_id.has_value()) {
         continue;
       }
-      auto it = std::ranges::find(refreshed_candidates_, parts[1],
+      auto it = std::ranges::find(refreshed_candidates_, parsed_id->guid,
                                   &UsbMassStorageCandidate::guid);
       if (it == refreshed_candidates_.end()) {
         continue;
@@ -882,6 +877,35 @@ class AndroidUsbDeviceEnumerator
 };
 
 }  // namespace
+
+std::string FormatUsbDeviceId(std::string_view guid,
+                              uint16_t vendor_id,
+                              uint16_t product_id) {
+  return base::StringPrintf("usb:%.*s:%04x:%04x", static_cast<int>(guid.size()),
+                            guid.data(), vendor_id, product_id);
+}
+
+std::optional<ParsedDeviceId> ParseUsbDeviceId(
+    std::string_view storage_unit_id) {
+  if (!base::StartsWith(storage_unit_id, "usb:")) {
+    return std::nullopt;
+  }
+  std::vector<std::string_view> parts = base::SplitStringPiece(
+      storage_unit_id, ":", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
+  uint32_t parsed_vendor_id = 0;
+  uint32_t parsed_product_id = 0;
+  if (parts.size() != 4 || parts[1].empty() ||
+      !base::HexStringToUInt(parts[2], &parsed_vendor_id) ||
+      !base::HexStringToUInt(parts[3], &parsed_product_id) ||
+      parsed_vendor_id > 0xFFFF || parsed_product_id > 0xFFFF) {
+    return std::nullopt;
+  }
+  return ParsedDeviceId{
+      .guid = std::string(parts[1]),
+      .vendor_id = static_cast<uint16_t>(parsed_vendor_id),
+      .product_id = static_cast<uint16_t>(parsed_product_id),
+  };
+}
 
 std::optional<UsbMassStorageEndpoints> ExtractMassStorageEndpoints(
     const device::mojom::UsbDeviceInfo& info) {
