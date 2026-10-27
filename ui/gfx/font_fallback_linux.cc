@@ -14,6 +14,7 @@
 #include "base/compiler_specific.h"
 #include "base/containers/lru_cache.h"
 #include "base/files/file_path.h"
+#include "base/i18n/language_tag.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
@@ -116,7 +117,7 @@ sk_sp<SkTypeface> GetSkTypefaceFromPathAndIndex(const base::FilePath& font_path,
 // to determine the best candidate.
 class FallbackFontKey {
  public:
-  FallbackFontKey(std::string locale, Font font)
+  FallbackFontKey(const base::i18n::LanguageTag& locale, Font font)
       : locale_(locale), font_(font) {}
 
   FallbackFontKey(const FallbackFontKey&) = default;
@@ -136,7 +137,7 @@ class FallbackFontKey {
   }
 
  private:
-  std::string locale_;
+  base::i18n::LanguageTag locale_;
   Font font_;
 };
 
@@ -223,7 +224,7 @@ void ClearAllFontFallbackCachesForTesting() {
 }
 
 bool GetFallbackFont(const Font& font,
-                     const std::string& locale,
+                     const base::i18n::LanguageTag& locale_tag,
                      std::u16string_view text,
                      Font* result) {
   TRACE_EVENT0("fonts", "gfx::GetFallbackFont");
@@ -233,7 +234,7 @@ bool GetFallbackFont(const Font& font,
     return false;
 
   FallbackFontEntriesCache* cache = GetFallbackFontEntriesCacheInstance();
-  FallbackFontKey key(locale, font);
+  FallbackFontKey key(locale_tag, font);
   FallbackFontEntriesCache::iterator cache_entry = cache->Get(key);
 
   // The cache entry for this font is missing, build it.
@@ -248,7 +249,8 @@ bool GetFallbackFont(const Font& font,
     // Prefer scalable font.
     FcPatternAddBool(pattern.get(), FC_SCALABLE, FcTrue);
 
-    // Add pattern for locale.
+    // Add pattern for locale. Fontconfig requires a null-terminated string.
+    const std::string locale(locale_tag.tag_string());
     FcPatternAddString(pattern.get(), FC_LANG,
                        reinterpret_cast<const FcChar8*>(locale.c_str()));
 

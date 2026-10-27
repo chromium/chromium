@@ -305,8 +305,6 @@ TEST_F(L10nUtilTest, GetAppLocaleBasicTest) {
 TEST_F(L10nUtilTest, GetAppLocale_NoPlatformHasDefaultLocale) {
   if (!kPlatformHasDefaultLocale) {
     SetUpLocales(kDefaultLocalesOnDisk);
-    // Keep a copy of ICU's default locale before we overwrite it.
-    const std::string original_locale = base::i18n::GetConfiguredLocale();
 
     // ChromeOS & embedded use only browser prefs in GetApplicationLocale(),
     // ignoring the environment, and default to en-US. Other platforms honor

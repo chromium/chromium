@@ -17,6 +17,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/i18n/language_tag.h"
 #include "third_party/icu/source/common/unicode/ubidi.h"
 #include "third_party/icu/source/common/unicode/uscript.h"
 #include "ui/gfx/render_text.h"
@@ -372,7 +373,7 @@ class COMPONENT_EXPORT(GFX) RenderTextHarfBuzz : public RenderText {
   SizeF total_size_;
 
   // The process application locale used to configure text rendering.
-  std::string locale_;
+  base::i18n::LanguageTag locale_;
 
   // The fallback result of the most recent call to ShapeRuns.
   std::optional<internal::ShapeRunFallback> last_shape_run_metric_;

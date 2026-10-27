@@ -4,6 +4,7 @@
 
 #include <string_view>
 
+#include "base/i18n/language_tag.h"
 #include "base/logging.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -21,7 +22,8 @@ const wchar_t* kFallbackFontTests[] = {
     L"\u5203\u5204",  // CJK Unified Ideograph
 };
 
-const char kDefaultApplicationLocale[] = "us-en";
+constexpr base::i18n::LanguageTag kDefaultApplicationLocale =
+    base::i18n::GetKnownLanguageTag("en-US");
 
 }  // namespace
 
@@ -62,12 +64,15 @@ TEST(FontFallbackSkiaTest, CJKLocaleFallback) {
   Font fallback_font_zh_cn;
   Font fallback_font_zh_tw;
   Font fallback_font_zh_hk;
-  EXPECT_TRUE(
-      GetFallbackFont(base_font, "zh-CN", kCJKTest, &fallback_font_zh_cn));
-  EXPECT_TRUE(
-      GetFallbackFont(base_font, "zh-TW", kCJKTest, &fallback_font_zh_tw));
-  EXPECT_TRUE(
-      GetFallbackFont(base_font, "zh-HK", kCJKTest, &fallback_font_zh_hk));
+  EXPECT_TRUE(GetFallbackFont(base_font,
+                              base::i18n::GetKnownLanguageTag("zh-CN"),
+                              kCJKTest, &fallback_font_zh_cn));
+  EXPECT_TRUE(GetFallbackFont(base_font,
+                              base::i18n::GetKnownLanguageTag("zh-TW"),
+                              kCJKTest, &fallback_font_zh_tw));
+  EXPECT_TRUE(GetFallbackFont(base_font,
+                              base::i18n::GetKnownLanguageTag("zh-HK"),
+                              kCJKTest, &fallback_font_zh_hk));
   EXPECT_EQ(fallback_font_zh_cn.GetFontName(),
             fallback_font_zh_tw.GetFontName());
   EXPECT_EQ(fallback_font_zh_cn.GetFontName(),
@@ -75,16 +80,20 @@ TEST(FontFallbackSkiaTest, CJKLocaleFallback) {
 
   Font fallback_font_ja;
   Font fallback_font_ja_jp;
-  EXPECT_TRUE(GetFallbackFont(base_font, "ja", kCJKTest, &fallback_font_ja));
-  EXPECT_TRUE(
-      GetFallbackFont(base_font, "ja-JP", kCJKTest, &fallback_font_ja_jp));
+  EXPECT_TRUE(GetFallbackFont(base_font, base::i18n::GetKnownLanguageTag("ja"),
+                              kCJKTest, &fallback_font_ja));
+  EXPECT_TRUE(GetFallbackFont(base_font,
+                              base::i18n::GetKnownLanguageTag("ja-JP"),
+                              kCJKTest, &fallback_font_ja_jp));
   EXPECT_EQ(fallback_font_ja.GetFontName(), fallback_font_ja_jp.GetFontName());
 
   Font fallback_font_ko;
   Font fallback_font_ko_kr;
-  EXPECT_TRUE(GetFallbackFont(base_font, "ko", kCJKTest, &fallback_font_ko));
-  EXPECT_TRUE(
-      GetFallbackFont(base_font, "ko-KR", kCJKTest, &fallback_font_ko_kr));
+  EXPECT_TRUE(GetFallbackFont(base_font, base::i18n::GetKnownLanguageTag("ko"),
+                              kCJKTest, &fallback_font_ko));
+  EXPECT_TRUE(GetFallbackFont(base_font,
+                              base::i18n::GetKnownLanguageTag("ko-KR"),
+                              kCJKTest, &fallback_font_ko_kr));
   EXPECT_EQ(fallback_font_ko.GetFontName(), fallback_font_ko_kr.GetFontName());
 
   // The three fonts must not be the same.

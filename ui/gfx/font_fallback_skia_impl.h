@@ -12,10 +12,14 @@
 #include "third_party/skia/include/core/SkTypeface.h"
 #include "ui/gfx/font.h"
 
+namespace base::i18n {
+class LanguageTag;
+}  // namespace base::i18n
+
 namespace gfx {
 
 sk_sp<SkTypeface> GetSkiaFallbackTypeface(const Font& template_font,
-                                          const std::string& locale,
+                                          const base::i18n::LanguageTag& locale,
                                           std::u16string_view text);
 }
 

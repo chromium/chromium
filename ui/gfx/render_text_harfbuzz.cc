@@ -18,6 +18,7 @@
 #include "base/i18n/base_i18n_switches.h"
 #include "base/i18n/break_iterator.h"
 #include "base/i18n/char_iterator.h"
+#include "base/i18n/icubridge/default_icu_locale.h"
 #include "base/i18n/rtl.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
@@ -1546,12 +1547,12 @@ void ShapeRunWithFont(const ShapeRunWithFontInput& in,
   hb_font_destroy(harfbuzz_font);
 }
 
-std::string GetApplicationLocale() {
+base::i18n::LanguageTag GetApplicationLocale() {
 #if BUILDFLAG(IS_ANDROID)
   // TODO(etienneb): Android locale should work the same way than base locale.
-  return std::string(base::i18n::GetAndroidDefaultLocale().tag_string());
+  return base::i18n::GetAndroidDefaultLocale();
 #else
-  return base::i18n::GetConfiguredLocale();
+  return base::i18n::GetDefaultIcuLocale();
 #endif
 }
 

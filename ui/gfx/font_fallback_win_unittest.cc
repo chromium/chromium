@@ -6,6 +6,7 @@
 
 #include <string_view>
 
+#include "base/i18n/language_tag.h"
 #include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -13,7 +14,8 @@ namespace gfx {
 
 namespace {
 
-const char kDefaultApplicationLocale[] = "us-en";
+constexpr base::i18n::LanguageTag kDefaultApplicationLocale =
+    base::i18n::GetKnownLanguageTag("en-US");
 
 class FontFallbackWinTest : public testing::Test {
  public:
@@ -115,25 +117,37 @@ TEST_F(FontFallbackWinTest, CJKLocaleFallback) {
   Font base_font;
   Font fallback_font;
 
-  EXPECT_TRUE(GetFallbackFont(base_font, "zh-CN", kCJKTest, &fallback_font));
+  EXPECT_TRUE(GetFallbackFont(base_font,
+                              base::i18n::GetKnownLanguageTag("zh-CN"),
+                              kCJKTest, &fallback_font));
   EXPECT_EQ(fallback_font.GetFontName(), "Microsoft YaHei UI");
 
-  EXPECT_TRUE(GetFallbackFont(base_font, "zh-TW", kCJKTest, &fallback_font));
+  EXPECT_TRUE(GetFallbackFont(base_font,
+                              base::i18n::GetKnownLanguageTag("zh-TW"),
+                              kCJKTest, &fallback_font));
   EXPECT_EQ(fallback_font.GetFontName(), "Microsoft JhengHei UI");
 
-  EXPECT_TRUE(GetFallbackFont(base_font, "zh-HK", kCJKTest, &fallback_font));
+  EXPECT_TRUE(GetFallbackFont(base_font,
+                              base::i18n::GetKnownLanguageTag("zh-HK"),
+                              kCJKTest, &fallback_font));
   EXPECT_EQ(fallback_font.GetFontName(), "Microsoft JhengHei UI");
 
-  EXPECT_TRUE(GetFallbackFont(base_font, "ja", kCJKTest, &fallback_font));
+  EXPECT_TRUE(GetFallbackFont(base_font, base::i18n::GetKnownLanguageTag("ja"),
+                              kCJKTest, &fallback_font));
   EXPECT_EQ(fallback_font.GetFontName(), "Yu Gothic UI");
 
-  EXPECT_TRUE(GetFallbackFont(base_font, "ja-JP", kCJKTest, &fallback_font));
+  EXPECT_TRUE(GetFallbackFont(base_font,
+                              base::i18n::GetKnownLanguageTag("ja-JP"),
+                              kCJKTest, &fallback_font));
   EXPECT_EQ(fallback_font.GetFontName(), "Yu Gothic UI");
 
-  EXPECT_TRUE(GetFallbackFont(base_font, "ko", kCJKTest, &fallback_font));
+  EXPECT_TRUE(GetFallbackFont(base_font, base::i18n::GetKnownLanguageTag("ko"),
+                              kCJKTest, &fallback_font));
   EXPECT_EQ(fallback_font.GetFontName(), "Malgun Gothic");
 
-  EXPECT_TRUE(GetFallbackFont(base_font, "ko-KR", kCJKTest, &fallback_font));
+  EXPECT_TRUE(GetFallbackFont(base_font,
+                              base::i18n::GetKnownLanguageTag("ko-KR"),
+                              kCJKTest, &fallback_font));
   EXPECT_EQ(fallback_font.GetFontName(), "Malgun Gothic");
 }
 

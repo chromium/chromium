@@ -10,6 +10,8 @@
 
 #include "base/compiler_specific.h"
 #include "base/i18n/char_iterator.h"
+#include "base/i18n/language_tag.h"
+#include "base/i18n/tag_converters.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/task_environment.h"
@@ -106,7 +108,11 @@ class GetFallbackFontTest
   bool GetFallbackFont(const Font& font,
                        std::string_view language_tag,
                        Font* result) {
-    return gfx::GetFallbackFont(font, std::string(language_tag), text_, result);
+    // Test cases without a language tag fall back to "und".
+    const base::i18n::LanguageTag tag =
+        base::i18n::GetLanguageTagFromString(language_tag)
+            .value_or(base::i18n::GetKnownLanguageTag("und"));
+    return gfx::GetFallbackFont(font, tag, text_, result);
   }
 
   bool EnsuresScriptSupportCodePoints(std::u16string_view text,

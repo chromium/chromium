@@ -13,6 +13,7 @@
 #include "base/apple/foundation_util.h"
 #include "base/apple/scoped_cftyperef.h"
 #include "base/i18n/char_iterator.h"
+#include "base/i18n/language_tag.h"
 #import "base/mac/mac_util.h"
 #import "base/strings/sys_string_conversions.h"
 #include "base/trace_event/trace_event.h"
@@ -70,7 +71,7 @@ std::vector<Font> GetFallbackFonts(const Font& font) {
 }
 
 bool GetFallbackFont(const Font& font,
-                     const std::string& locale,
+                     const base::i18n::LanguageTag& locale,
                      std::u16string_view text,
                      Font* result) {
   TRACE_EVENT0("fonts", "gfx::GetFallbackFont");

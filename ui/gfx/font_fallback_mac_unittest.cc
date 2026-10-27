@@ -4,6 +4,7 @@
 
 #include "ui/gfx/font_fallback.h"
 
+#include "base/i18n/language_tag.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -12,7 +13,8 @@
 namespace gfx {
 
 namespace {
-const char kDefaultApplicationLocale[] = "us-en";
+constexpr base::i18n::LanguageTag kDefaultApplicationLocale =
+    base::i18n::GetKnownLanguageTag("en-US");
 }  // namespace
 
 // A targeted test for GetFallbackFonts on Mac. It uses a system API that

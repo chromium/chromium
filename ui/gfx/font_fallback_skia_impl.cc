@@ -14,6 +14,7 @@
 #include "base/containers/span.h"
 #include "base/i18n/icubridge/icu_bridge.h"
 #include "base/i18n/icubridge/normalizer.h"
+#include "base/i18n/language_tag.h"
 #include "base/strings/utf_string_conversion_utils.h"
 #include "skia/ext/font_utils.h"
 #include "third_party/icu/source/common/unicode/uchar.h"
@@ -123,16 +124,22 @@ size_t ComputeMissingGlyphsForGivenTypeface(std::u16string_view text,
 }  // namespace
 
 sk_sp<SkTypeface> GetSkiaFallbackTypeface(const Font& template_font,
-                                          const std::string& locale,
+                                          const base::i18n::LanguageTag& locale,
                                           std::u16string_view text) {
   if (text.empty())
     return nullptr;
 
   sk_sp<SkFontMgr> font_mgr(skia::DefaultFontMgr());
 
-  const char* bcp47_locales[] = {locale.c_str()};
-  int num_locales = locale.empty() ? 0 : 1;
-  const char** locales = locale.empty() ? nullptr : bcp47_locales;
+  // `matchFamilyStyleCharacter()` takes the locales as C strings, so a
+  // null-terminated copy of the tag is needed. When the language is unknown
+  // ("und"), no locale is passed at all; this keeps the behavior from before
+  // `LanguageTag` was used, where an empty locale string meant "no locale".
+  const std::string locale_string(locale.tag_string());
+  const bool has_locale = locale != base::i18n::GetKnownLanguageTag("und");
+  const char* bcp47_locales[] = {locale_string.c_str()};
+  int num_locales = has_locale ? 1 : 0;
+  const char** locales = has_locale ? bcp47_locales : nullptr;
 
   const int font_weight = (template_font.GetWeight() == Font::Weight::INVALID)
                               ? static_cast<int>(Font::Weight::NORMAL)

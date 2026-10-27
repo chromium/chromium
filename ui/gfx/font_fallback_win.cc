@@ -8,6 +8,7 @@
 #include <map>
 #include <string_view>
 
+#include "base/i18n/language_tag.h"
 #include "base/memory/singleton.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -207,7 +208,7 @@ std::vector<Font> GetFallbackFonts(const Font& font) {
 }
 
 bool GetFallbackFont(const Font& font,
-                     const std::string& locale,
+                     const base::i18n::LanguageTag& locale,
                      std::u16string_view text,
                      Font* result) {
   TRACE_EVENT0("fonts", "gfx::GetFallbackFont");

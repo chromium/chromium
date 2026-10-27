@@ -143,9 +143,6 @@ class SliderTest : public views::ViewsTestBase,
  private:
   // Populated values for discrete slider.
   base::flat_set<float> values_;
-  // Stores the default locale at test setup so it can be restored
-  // during test teardown.
-  std::string default_locale_;
   // The maximum x value within the bounds of the slider.
   int max_x_ = 0;
   // The maximum y value within the bounds of the slider.
@@ -185,7 +182,6 @@ void SliderTest::SetUp() {
   slider->SetSize(size);
   max_x_ = size.width() - 1;
   max_y_ = size.height() - 1;
-  default_locale_ = base::i18n::GetConfiguredLocale();
 
   views::Widget::InitParams init_params(
       CreateParams(Widget::InitParams::CLIENT_OWNS_WIDGET,

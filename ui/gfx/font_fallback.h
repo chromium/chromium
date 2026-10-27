@@ -13,6 +13,10 @@
 #include "build/build_config.h"
 #include "ui/gfx/font.h"
 
+namespace base::i18n {
+class LanguageTag;
+}  // namespace base::i18n
+
 namespace gfx {
 
 class Font;
@@ -23,10 +27,11 @@ COMPONENT_EXPORT(GFX) std::vector<Font> GetFallbackFonts(const Font& font);
 // Finds a fallback font to render the specified |text| with respect to an
 // initial |font|. Returns the resulting font via out param |result|. Returns
 // |true| if a fallback font was found.
-bool COMPONENT_EXPORT(GFX) GetFallbackFont(const Font& font,
-                                           const std::string& locale,
-                                           std::u16string_view text,
-                                           Font* result);
+bool COMPONENT_EXPORT(GFX)
+    GetFallbackFont(const Font& font,
+                    const base::i18n::LanguageTag& locale,
+                    std::u16string_view text,
+                    Font* result);
 
 }  // namespace gfx
 
