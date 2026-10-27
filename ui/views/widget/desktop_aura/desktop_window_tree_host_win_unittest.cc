@@ -869,6 +869,56 @@ TEST_F(DesktopWindowTreeHostWinTest, ExcludeContextWindowsFromCapture) {
   parent_widget.CloseNow();
 }
 
+// Display affinity must not be propagated to hidden owned windows, since that
+// makes DWM draw them as blank rectangles. Chromium widgets pick it up when
+// they are shown.
+TEST_F(DesktopWindowTreeHostWinTest,
+       ExcludeFromCaptureSkipsHiddenOwnedWindows) {
+  Widget parent_widget;
+  HWND parent_hwnd =
+      InitTestWidget(parent_widget,
+                     CreateParams(Widget::InitParams::CLIENT_OWNS_WIDGET,
+                                  Widget::InitParams::TYPE_WINDOW),
+                     /*exclude_capture=*/false);
+
+  // Simulate a hidden non-Chromium window owned by `parent_hwnd` on the UI
+  // thread (e.g. a helper window of a third-party input method).
+  HWND hidden_hwnd =
+      ::CreateWindowExW(0, L"STATIC", L"", WS_POPUP, 0, 0, 100, 100,
+                        parent_hwnd, nullptr, nullptr, nullptr);
+  ASSERT_NE(nullptr, hidden_hwnd);
+
+  // Also create an owned Chromium widget that has not been shown yet.
+  Widget child_widget;
+  Widget::InitParams child_params = CreateParams(
+      Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_MENU);
+  child_params.parent = parent_widget.GetNativeWindow();
+  child_widget.Init(std::move(child_params));
+  HWND child_hwnd =
+      child_widget.GetNativeWindow()->GetHost()->GetAcceleratedWidget();
+
+  // Enabling exclusion on the parent must not apply affinity to hidden owned
+  // windows.
+  parent_widget.SetExcludeFromScreenCapture(true);
+  DWORD affinity = WDA_NONE;
+  EXPECT_TRUE(::GetWindowDisplayAffinity(hidden_hwnd, &affinity));
+  EXPECT_EQ(static_cast<DWORD>(WDA_NONE), affinity);
+  EXPECT_TRUE(::GetWindowDisplayAffinity(child_hwnd, &affinity));
+  EXPECT_EQ(static_cast<DWORD>(WDA_NONE), affinity);
+
+  // Once shown, the Chromium child widget inherits its owner's affinity, while
+  // the hidden non-Chromium window remains untouched.
+  child_widget.Show();
+  EXPECT_TRUE(::GetWindowDisplayAffinity(child_hwnd, &affinity));
+  EXPECT_EQ(GetExpectedExclusionAffinity(), affinity);
+  EXPECT_TRUE(::GetWindowDisplayAffinity(hidden_hwnd, &affinity));
+  EXPECT_EQ(static_cast<DWORD>(WDA_NONE), affinity);
+
+  ::DestroyWindow(hidden_hwnd);
+  child_widget.CloseNow();
+  parent_widget.CloseNow();
+}
+
 TEST_F(DesktopWindowTreeHostWinTest, ContextTooltipAccessibilityTree) {
   // HWND ownership: browser -> bubble -> tooltip. The context-created tooltip
   // has no Widget parent and must not also appear directly under browser.
