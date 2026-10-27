@@ -74,7 +74,7 @@ constexpr base::MemoryConsumerTraits kPrerenderHostRegistryTraits(
     base::MemoryConsumerTraits::ReleaseMemoryDataAccess::kNone,
     base::MemoryConsumerTraits::InformationRetention::kLossy,
     base::MemoryConsumerTraits::ExecutionType::kAsynchronous,
-    base::MemoryConsumerTraits::IsStateful::kNo);
+    base::MemoryConsumerTraits::IsStateful::kYes);
 
 bool IsBackground(Visibility visibility) {
   // PrerenderHostRegistry treats HIDDEN and OCCLUDED as background.
