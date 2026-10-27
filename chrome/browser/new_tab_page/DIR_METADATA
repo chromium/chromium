@@ -2,3 +2,4 @@ team_email: "ntp-dev@chromium.org"
 buganizer_public: {
   component_id: 1619002
 }
+agentic_review {}
