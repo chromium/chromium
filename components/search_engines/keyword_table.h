@@ -144,10 +144,13 @@ class KeywordTable : public WebDatabaseTable {
   // instead of one-per-transaction can be dramatically more efficient.
   bool PerformOperations(const Operations& operations);
 
-  // Loads the keywords into the specified vector. It's up to the caller to
-  // delete the returned objects.
+  // Loads valid keywords into the specified vector and removes invalid rows.
+  // Sets `had_prepopulated_decryption_failure` if hash decryption failed for
+  // any row with a positive prepopulate_id. Other rejections and skipped hash
+  // verification do not set this signal.
   // Returns true on success.
-  bool GetKeywords(Keywords* keywords);
+  bool GetKeywords(Keywords* keywords,
+                   bool& had_prepopulated_decryption_failure);
 
   // Version of the built-in keyword data. It gets set from the
   // `TemplateURLPrepopulateData::kCurrentDataVersion` when the data was
@@ -194,8 +197,12 @@ class KeywordTable : public WebDatabaseTable {
 
   // Returns a TemplateURLData with the data in `s`. Returns std::nullopt if we
   // couldn't fill for some reason, e.g. `s` tried to set one of the fields to
-  // an illegal value.
-  std::optional<TemplateURLData> GetKeywordDataFromStatement(sql::Statement& s);
+  // an illegal value. Sets `had_prepopulated_decryption_failure` to true only
+  // if hash decryption failed and prepopulate_id > 0; otherwise leaves it
+  // unchanged.
+  std::optional<TemplateURLData> GetKeywordDataFromStatement(
+      sql::Statement& s,
+      bool& had_prepopulated_decryption_failure);
 
   // Inserts the data from `data` into `s`. `s` is assumed to have slots for all
   // the columns in the keyword table. `id_column` is the slot number to bind

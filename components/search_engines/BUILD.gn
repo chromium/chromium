@@ -259,6 +259,7 @@ source_set("unit_tests") {
     "//components/lens:features",
     "//components/metrics",
     "//components/omnibox/common",
+    "//components/os_crypt/browser:key_provider_interface",
     "//components/policy/core/common",
     "//components/policy/core/common:test_support",
     "//components/pref_registry",

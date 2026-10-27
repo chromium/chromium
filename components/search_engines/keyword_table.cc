@@ -11,6 +11,7 @@
 #include <string_view>
 #include <tuple>
 
+#include "base/check.h"
 #include "base/check_op.h"
 #include "base/feature_list.h"
 #include "base/json/json_reader.h"
@@ -351,14 +352,17 @@ bool KeywordTable::PerformOperations(const Operations& operations) {
   return transaction.Commit();
 }
 
-bool KeywordTable::GetKeywords(Keywords* keywords) {
+bool KeywordTable::GetKeywords(Keywords* keywords,
+                               bool& had_prepopulated_decryption_failure) {
+  had_prepopulated_decryption_failure = false;
   const std::string query = base::StrCat(
       {"SELECT ", GetKeywordColumns(), " FROM keywords ORDER BY id ASC"});
   sql::Statement s(db()->GetUniqueStatement(query));
 
   std::set<TemplateURLID> bad_entries;
   while (s.Step()) {
-    const auto data = GetKeywordDataFromStatement(s);
+    const auto data =
+        GetKeywordDataFromStatement(s, had_prepopulated_decryption_failure);
     if (data) {
       keywords->emplace_back(*std::move(data));
     } else {
@@ -609,7 +613,8 @@ bool KeywordTable::MigrateToVersion152ExpandHashColumn() {
 }
 
 std::optional<TemplateURLData> KeywordTable::GetKeywordDataFromStatement(
-    sql::Statement& s) {
+    sql::Statement& s,
+    bool& had_prepopulated_decryption_failure) {
   TemplateURLData data;
 
   data.SetShortName(s.ColumnString16(1));
@@ -684,6 +689,12 @@ std::optional<TemplateURLData> KeywordTable::GetKeywordDataFromStatement(
     const auto hash = encryptor()->DecryptData(encrypted_hash, &flags);
     if (!hash) {
       status = HashValidationStatus::kDecryptFailed;
+      if (data.prepopulate_id > 0) {
+        // GetKeywords() will remove this unverifiable row. Request
+        // reconciliation of the built-in engine set from current regional
+        // prepopulation data.
+        had_prepopulated_decryption_failure = true;
+      }
       return std::nullopt;
     }
     if (base::FeatureList::IsEnabled(switches::kRejectWeakKeywordHashes) &&

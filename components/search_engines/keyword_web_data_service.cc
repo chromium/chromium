@@ -30,7 +30,9 @@ WebDatabase::State PerformKeywordOperationsImpl(
 std::unique_ptr<WDTypedResult> GetKeywordsImpl(WebDatabase* db) {
   KeywordTable* const keyword_table = KeywordTable::FromWebDatabase(db);
   WDKeywordsResult result;
-  if (!keyword_table || !keyword_table->GetKeywords(&result.keywords)) {
+  if (!keyword_table ||
+      !keyword_table->GetKeywords(&result.keywords,
+                                  result.had_prepopulated_decryption_failure)) {
     return nullptr;
   }
 
