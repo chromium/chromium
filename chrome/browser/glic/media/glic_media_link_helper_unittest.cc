@@ -92,9 +92,9 @@ TEST_F(GlicMediaLinkHelperTest, DifferentHostsReturnsFalse) {
   EXPECT_FALSE(media_link_helper()->MaybeReplaceNavigation(
       GURL("https://www.youtube.com/watch?v=video123")));
 
-  // Case 2: Different subdomains of YouTube are considered different hosts.
+  // Case 2: Unrelated host to YouTube is rejected.
   web_contents_tester->NavigateAndCommit(
-      GURL("https://m.youtube.com/watch?v=video123"));
+      GURL("https://www.google.com/search?q=video123"));
   EXPECT_FALSE(media_link_helper()->MaybeReplaceNavigation(
       GURL("https://www.youtube.com/watch?v=video123&t=30")));
 }
@@ -140,6 +140,36 @@ TEST_F(GlicMediaLinkHelperTest, YouTubeEmbedHelper_SuccessWithWatchTarget) {
   EXPECT_CALL(mock_media_session(), SeekTo(Eq(base::Seconds(30)))).Times(1);
 
   EXPECT_TRUE(media_link_helper()->MaybeReplaceNavigation(
+      GURL("https://www.youtube.com/watch?v=video123&t=30")));
+}
+
+TEST_F(GlicMediaLinkHelperTest,
+       YouTubeEmbedHelper_SuccessWithMobileWatchTarget) {
+  base::test::ScopedFeatureList feature_list(kMediaLinkEmbedHelper);
+
+  content::WebContentsTester::For(web_contents())
+      ->NavigateAndCommit(GURL("https://www.example.com/"));
+
+  CreateAndAttachRoutedSubframe(GURL("https://www.youtube.com/embed/video123"));
+
+  EXPECT_CALL(mock_media_session(), SeekTo(Eq(base::Seconds(30)))).Times(1);
+
+  EXPECT_TRUE(media_link_helper()->MaybeReplaceNavigation(
+      GURL("https://m.youtube.com/watch?v=video123&t=30")));
+}
+
+TEST_F(GlicMediaLinkHelperTest,
+       YouTubeEmbedHelper_NonYouTubeRoutedSubframeReturnsFalse) {
+  base::test::ScopedFeatureList feature_list(kMediaLinkEmbedHelper);
+
+  content::WebContentsTester::For(web_contents())
+      ->NavigateAndCommit(GURL("https://www.example.com/"));
+
+  CreateAndAttachRoutedSubframe(GURL("https://www.example.com/embed/video123"));
+
+  EXPECT_CALL(mock_media_session(), SeekTo(_)).Times(0);
+
+  EXPECT_FALSE(media_link_helper()->MaybeReplaceNavigation(
       GURL("https://www.youtube.com/watch?v=video123&t=30")));
 }
 
@@ -210,13 +240,33 @@ TEST_F(GlicMediaLinkHelperTest, YouTubeHelper_DifferentSchemeSucceeds) {
       GURL("https://www.youtube.com/watch?v=video123&t=30")));
 }
 
-TEST_F(GlicMediaLinkHelperTest, YouTubeHelper_MobileYouTubeIsNotHandled) {
+TEST_F(GlicMediaLinkHelperTest, YouTubeHelper_MobileYouTubeIsHandled) {
   auto* web_contents_tester = content::WebContentsTester::For(web_contents());
   web_contents_tester->NavigateAndCommit(
       GURL("https://m.youtube.com/watch?v=video123"));
 
-  EXPECT_FALSE(media_link_helper()->MaybeReplaceNavigation(
+  EXPECT_CALL(mock_media_session(), SeekTo(Eq(base::Seconds(30)))).Times(1);
+
+  EXPECT_TRUE(media_link_helper()->MaybeReplaceNavigation(
       GURL("https://m.youtube.com/watch?v=video123&t=30")));
+}
+
+TEST_F(GlicMediaLinkHelperTest, YouTubeHelper_MobileAndDesktopYouTubeMatch) {
+  auto* web_contents_tester = content::WebContentsTester::For(web_contents());
+
+  // Committed is m.youtube.com, target is www.youtube.com
+  web_contents_tester->NavigateAndCommit(
+      GURL("https://m.youtube.com/watch?v=video123"));
+  EXPECT_CALL(mock_media_session(), SeekTo(Eq(base::Seconds(30)))).Times(1);
+  EXPECT_TRUE(media_link_helper()->MaybeReplaceNavigation(
+      GURL("https://www.youtube.com/watch?v=video123&t=30")));
+
+  // Committed is www.youtube.com, target is m.youtube.com
+  web_contents_tester->NavigateAndCommit(
+      GURL("https://www.youtube.com/watch?v=video123"));
+  EXPECT_CALL(mock_media_session(), SeekTo(Eq(base::Seconds(45)))).Times(1);
+  EXPECT_TRUE(media_link_helper()->MaybeReplaceNavigation(
+      GURL("https://m.youtube.com/watch?v=video123&t=45")));
 }
 
 TEST_F(GlicMediaLinkHelperTest, YouTubeHelper_NoVideoIdInCommittedUrl) {

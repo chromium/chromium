@@ -16,18 +16,26 @@ namespace glic {
 // Allows embedded media to be controlled by a link helper.
 BASE_FEATURE(kMediaLinkEmbedHelper, base::FEATURE_ENABLED_BY_DEFAULT);
 
+namespace {
+
+// Returns true if `host` is a supported YouTube host (www.youtube.com or
+// m.youtube.com).
+bool IsSupportedYouTubeHost(std::string_view host) {
+  return host == "www.youtube.com" || host == "m.youtube.com";
+}
+
+}  // namespace
+
 GlicMediaLinkHelper::GlicMediaLinkHelper(content::WebContents* web_contents)
     : web_contents_(web_contents) {}
 
 GlicMediaLinkHelper::~GlicMediaLinkHelper() = default;
 
 bool GlicMediaLinkHelper::MaybeReplaceNavigation(const GURL& target) {
-  const std::string youtube_host("www.youtube.com");
-
   // Handle embedded YT first, since it's experimental.  For any YT target, let
   // the embed helper figure out if it applies to any frame.
   if (base::FeatureList::IsEnabled(kMediaLinkEmbedHelper)) {
-    if (target.GetHost() == youtube_host && YouTubeEmbedHelper(target)) {
+    if (IsSupportedYouTubeHost(target.host()) && YouTubeEmbedHelper(target)) {
       return true;
     }
   }
@@ -35,12 +43,17 @@ bool GlicMediaLinkHelper::MaybeReplaceNavigation(const GURL& target) {
   const GURL& committed_url =
       web_contents()->GetPrimaryMainFrame()->GetLastCommittedURL();
 
-  // Insist that the target and the focused contents have the same host.
-  if (target.GetHost() != committed_url.GetHost()) {
+  // Insist that the target and the focused contents have the same host, or both
+  // are supported YouTube hosts.
+  const bool same_host = (target.host() == committed_url.host());
+  const bool both_youtube = IsSupportedYouTubeHost(target.host()) &&
+                            IsSupportedYouTubeHost(committed_url.host());
+
+  if (!same_host && !both_youtube) {
     return false;
   }
 
-  if (target.GetHost() == youtube_host) {
+  if (IsSupportedYouTubeHost(target.host())) {
     return YouTubeHelper(target);
   }
 
@@ -111,7 +124,7 @@ bool GlicMediaLinkHelper::YouTubeEmbedHelper(const GURL& target) {
   // Unlike normal helpers, this hasn't been checked yet.  We just figured out
   // the frame now.
   const auto& last_committed_url = media_session_rfh->GetLastCommittedURL();
-  if (last_committed_url.GetHost() != target.GetHost()) {
+  if (!IsSupportedYouTubeHost(last_committed_url.host())) {
     // Mediasession is not controlling YT.
     return false;
   }
