@@ -265,6 +265,7 @@ public abstract class TabStripDragDropTestBase {
                             .onDrag(
                                     destActivity.findViewById(R.id.control_container),
                                     dragEndEvent);
+                    TabStripTestUtils.getActiveStripLayoutHelper(destActivity).finishAnimations();
                 });
     }
 
