@@ -13,6 +13,8 @@ extern const char kAlsoEmitSuccessLogs[];
 
 extern const char kDevtoolsCodeCoverage[];
 
+extern const char kDisableOmniboxPopupOnDemandCreation[];
+
 extern const char kPerfTestPrintUmaMeans[];
 
 }  // namespace switches

@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/auto_reset.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/callback_helpers.h"
@@ -23,6 +24,7 @@
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/omnibox/omnibox_popup_state_manager.h"
 #include "chrome/browser/ui/omnibox/omnibox_popup_view.h"
+#include "chrome/browser/ui/omnibox/omnibox_popup_webui_creation.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
@@ -58,6 +60,11 @@ class OmniboxPopupFileSelectorBrowserTest : public InProcessBrowserTest {
   }
 
  private:
+  // These tests read the AI Mode popup's page, which production creates ahead
+  // of time but browser tests otherwise create only when it is shown (see
+  // `InProcessBrowserTest`).
+  base::AutoReset<bool> create_popup_webui_on_demand_ =
+      omnibox::SetCreatePopupWebUIOnDemandForTesting(false);
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 

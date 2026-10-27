@@ -11,18 +11,24 @@
 
 #include <algorithm>
 #include <memory>
+#include <optional>
 #include <set>
 #include <string_view>
 #include <tuple>
 #include <vector>
 
+#include "base/auto_reset.h"
 #include "base/callback_list.h"
+#include "base/command_line.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/process/process.h"
 #include "base/process/process_handle.h"
+#include "base/run_loop.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
@@ -32,6 +38,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/omnibox/omnibox_popup_view.h"
+#include "chrome/browser/ui/omnibox/omnibox_popup_webui_creation.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_aim_presenter.h"
@@ -41,6 +48,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/test_switches.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/omnibox/browser/mock_aim_eligibility_service.h"
 #include "content/public/browser/render_frame_host.h"
@@ -52,6 +60,7 @@
 #include "services/resource_coordinator/public/cpp/memory_instrumentation/global_memory_dump.h"
 #include "services/resource_coordinator/public/cpp/memory_instrumentation/memory_instrumentation.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "ui/compositor/compositor.h"
 #include "ui/views/widget/widget.h"
 
 namespace {
@@ -190,8 +199,16 @@ class OmniboxPopupResourceBudgetBrowserTest
     : public InProcessBrowserTest,
       public testing::WithParamInterface<bool> {
  public:
-  explicit OmniboxPopupResourceBudgetBrowserTest(bool aim_eligible = true)
+  // With `measure_production`, measures the popups that production creates
+  // for each window, rather than the on-demand creation that
+  // `InProcessBrowserTest` sets up.
+  explicit OmniboxPopupResourceBudgetBrowserTest(bool aim_eligible = true,
+                                                 bool measure_production = true)
       : aim_eligible_(aim_eligible) {
+    if (measure_production) {
+      create_popup_webui_on_demand_.emplace(
+          omnibox::SetCreatePopupWebUIOnDemandForTesting(false));
+    }
     std::vector<base::test::FeatureRef> enabled = {
         omnibox::internal::kWebUIOmniboxPopup,
         omnibox::internal::kWebUIOmniboxAimPopup};
@@ -265,6 +282,7 @@ class OmniboxPopupResourceBudgetBrowserTest
   base::RepeatingClosureList eligibility_changed_callbacks_;
   base::test::ScopedFeatureList feature_list_;
   base::CallbackListSubscription create_services_subscription_;
+  std::optional<base::AutoReset<bool>> create_popup_webui_on_demand_;
 };
 
 INSTANTIATE_TEST_SUITE_P(All,
@@ -381,4 +399,80 @@ IN_PROC_BROWSER_TEST_P(OmniboxPopupResourceBudgetAimIneligibleBrowserTest,
   EXPECT_TRUE(location_bar->GetOmniboxPopupAimPresenter());
   CheckBudget("aim_eligible_later", browser()->GetProfile(), 1,
               kPopupWebContentsPerWindow);
+}
+
+// Browser tests create the hidden popups only when they are needed (see
+// `omnibox::ShouldCreatePopupWebUIOnDemand()`, which `InProcessBrowserTest`
+// turns on). Creating them for every window made browser tests much slower
+// and caused shard timeouts (crbug.com/542347163). Fails if a change makes the
+// popups load at startup in browser tests again.
+//
+// Only the classic popup: the full popup's presenter still creates its content
+// eagerly.
+class OmniboxPopupResourceBudgetInBrowserTestsTest
+    : public OmniboxPopupResourceBudgetBrowserTest {
+ public:
+  // Keeps the browser test default.
+  OmniboxPopupResourceBudgetInBrowserTestsTest()
+      : OmniboxPopupResourceBudgetBrowserTest(/*aim_eligible=*/true,
+                                              /*measure_production=*/false) {}
+
+ protected:
+  // Paints `browser`'s window and waits until it presents a frame, after which
+  // a deferred popup would create its content.
+  [[nodiscard]] bool PaintAndWaitForPresentation(
+      BrowserWindowInterface* browser) {
+    views::Widget* widget =
+        BrowserView::GetBrowserViewForBrowser(browser)->GetWidget();
+    base::test::TestFuture<void> presented;
+    widget->GetCompositor()->RequestSuccessfulPresentationTimeForNextFrame(
+        base::IgnoreArgs<const viz::FrameTimingDetails&>(
+            presented.GetCallback()));
+    widget->GetRootView()->SchedulePaint();
+    if (!presented.Wait()) {
+      return false;
+    }
+    // Run the tasks posted so far, such as a deferred popup's creation task.
+    base::RunLoop run_loop;
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, run_loop.QuitClosure());
+    run_loop.Run();
+    return true;
+  }
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         OmniboxPopupResourceBudgetInBrowserTestsTest,
+                         testing::Values(false),
+                         [](const testing::TestParamInfo<bool>& info) {
+                           return "Classic";
+                         });
+
+IN_PROC_BROWSER_TEST_P(OmniboxPopupResourceBudgetInBrowserTestsTest,
+                       NoPopupWebContentsAtStartup) {
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kDisableOmniboxPopupOnDemandCreation)) {
+    GTEST_SKIP() << "On-demand creation is turned off by --"
+                 << switches::kDisableOmniboxPopupOnDemandCreation;
+  }
+  Profile* profile = browser()->GetProfile();
+  ASSERT_TRUE(PaintAndWaitForPresentation(browser()));
+  for (size_t i = 0; i < kExtraWindows; ++i) {
+    ASSERT_TRUE(PaintAndWaitForPresentation(CreateBrowser(profile)));
+  }
+  PopupResources resources = CountPopupResources(profile);
+  LogPopupResources("browser_tests_startup", 1 + kExtraWindows, resources);
+  EXPECT_EQ(resources.web_contents.size(), 0u);
+  EXPECT_EQ(resources.widgets, 0u);
+
+  // The popups still create their content when it is needed.
+  LocationBarView* location_bar = GetLocationBarView(browser());
+  ASSERT_TRUE(location_bar);
+  OmniboxPopupPresenterBase* presenter =
+      location_bar->GetOmniboxPopupView()->presenter();
+  ASSERT_TRUE(presenter);
+  EXPECT_FALSE(presenter->GetWebUIContent());
+  EXPECT_TRUE(presenter->GetOrCreateWebUIContent(
+      OmniboxPopupPresenterBase::CreationReason::kShow));
+  EXPECT_EQ(CountPopupResources(profile).web_contents.size(), 1u);
 }

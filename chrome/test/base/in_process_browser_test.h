@@ -459,6 +459,10 @@ class InProcessBrowserTest : public content::BrowserTestBase {
   // Used to set up test factories for each browser context.
   base::CallbackListSubscription create_services_subscription_;
 
+  // Makes the omnibox popups create their WebUI content only when needed,
+  // unless `--disable-omnibox-popup-on-demand-creation` is passed.
+  std::optional<base::AutoReset<bool>> create_popup_webui_on_demand_;
+
 #if BUILDFLAG(IS_CHROMEOS)
   // ChromeOS does not create a browser by default when the full restore feature
   // is enabled. However almost all existing browser tests assume a browser is

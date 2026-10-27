@@ -15,6 +15,7 @@ source_set("omnibox") {
     "omnibox_next_features.h",
     "omnibox_pedal_implementations.h",
     "omnibox_popup_state_manager.h",
+    "omnibox_popup_webui_creation.h",
     "omnibox_view.h",
   ]
   sources = []
@@ -82,6 +83,7 @@ source_set("impl") {
     "omnibox_next_features.cc",
     "omnibox_pedal_implementations.cc",
     "omnibox_popup_state_manager.cc",
+    "omnibox_popup_webui_creation.cc",
     "omnibox_view.cc",
   ]
   deps = [

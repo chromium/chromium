@@ -20,15 +20,10 @@ OmniboxPopupPresenter::OmniboxPopupPresenter(
     OmniboxPopupPresenterDelegate& presenter_delegate,
     OmniboxController* controller)
     : OmniboxPopupPresenterBase(location_bar, presenter_delegate, controller) {
-  // With `omnibox::kOmniboxWebUIPopupDeferCreation`, the content is created by
-  // the first `EnsureWebUIContentCreated()` call instead. It comes from the
-  // task posted after the browser window presents a frame, or from `Show()`.
+  // If the content is not created here, `Show()` creates it on demand.
   // `OmniboxPopupViewWebUI` reads the content only while the popup is shown.
-  if (base::FeatureList::IsEnabled(omnibox::kOmniboxWebUIPopupDeferCreation)) {
-    CreateWebUIContentAfterBrowserWindowPresentation();
-  } else {
-    SetWebUIContent(CreateWebUIContent());
-  }
+  ApplyWebUIContentCreationStrategy(GetWebUIContentCreationStrategy(
+      omnibox::kOmniboxWebUIPopupDeferCreation));
 
   // By initializing `content_height_` to 1, we ensure the widget starts 1px
   // taller than the location bar on first show. This creates a tiny visible
