@@ -17,6 +17,15 @@ namespace remoting {
 // LINT.IfChange(SessionPolicies)
 // Policies to be applied to the CRD host.
 struct SessionPolicies {
+  // Specifies the allowed direction(s) for audio remoting in the session.
+  enum class AudioMode {
+    kUnspecified = 0,
+    kNone = 1,
+    kClientToHost = 2,
+    kHostToClient = 3,
+    kBoth = 4,
+  };
+
   SessionPolicies();
   ~SessionPolicies();
 
@@ -26,6 +35,13 @@ struct SessionPolicies {
   SessionPolicies& operator=(SessionPolicies&&);
 
   bool operator==(const SessionPolicies&) const;
+
+  // Returns true if host-to-client audio playback is allowed by `audio_mode`.
+  bool is_host_to_client_audio_allowed() const;
+
+  // Returns true if client-to-host microphone audio remoting is allowed by
+  // `audio_mode`.
+  bool is_client_to_host_audio_allowed() const;
 
   // The maximum size, in bytes, that can be transferred between client and host
   // via clipboard synchronization. A nullopt value means to use the default
@@ -102,9 +118,16 @@ struct SessionPolicies {
   // Allow the client to establish terminal sessions on supported platforms.
   // A nullopt value means to use the default value, which is true (allowed).
   std::optional<bool> allow_terminal_mode;
+
+  // Restrict the direction of audio remoted between the host and the client.
+  // A nullopt or kUnspecified value means to use the default value, which is
+  // kBoth (allowed in both directions).
+  std::optional<AudioMode> audio_mode;
 };
 // LINT.ThenChange(//remoting/host/mojom/common.mojom:SessionPolicies)
 
+std::ostream& operator<<(std::ostream& os,
+                         SessionPolicies::AudioMode audio_mode);
 std::ostream& operator<<(std::ostream& os,
                          const SessionPolicies& session_policies);
 

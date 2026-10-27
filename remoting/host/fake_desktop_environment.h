@@ -18,6 +18,8 @@
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "remoting/host/action_executor.h"
+#include "remoting/host/audio_capturer.h"
+#include "remoting/host/audio_injector.h"
 #include "remoting/host/base/desktop_environment_options.h"
 #include "remoting/host/base/screen_controls.h"
 #include "remoting/host/base/screen_resolution.h"
@@ -25,6 +27,7 @@
 #include "remoting/host/fake_active_display_monitor.h"
 #include "remoting/host/input_injector.h"
 #include "remoting/proto/control.pb.h"
+#include "remoting/protocol/audio_sample_info.h"
 #include "remoting/protocol/clipboard_stub.h"
 #include "remoting/protocol/desktop_capturer.h"
 #include "remoting/protocol/fake_desktop_capturer.h"
@@ -33,6 +36,47 @@
 
 namespace remoting {
 class IpcFifoBufferReader;
+
+class FakeAudioCapturer : public AudioCapturer {
+ public:
+  FakeAudioCapturer();
+  FakeAudioCapturer(const FakeAudioCapturer&) = delete;
+  FakeAudioCapturer& operator=(const FakeAudioCapturer&) = delete;
+  ~FakeAudioCapturer() override;
+
+  // AudioCapturer implementation.
+  bool Start(const PacketCapturedCallback& callback) override;
+};
+
+class FakeAudioInjector : public AudioInjector {
+ public:
+  explicit FakeAudioInjector(std::unique_ptr<IpcFifoBufferReader> reader);
+  FakeAudioInjector(const FakeAudioInjector&) = delete;
+  FakeAudioInjector& operator=(const FakeAudioInjector&) = delete;
+  ~FakeAudioInjector() override;
+
+  // AudioInjector implementation.
+  bool Start(base::WeakPtr<Delegate> delegate) override;
+  void SetSampleInfo(const protocol::AudioSampleInfo& info,
+                     OnInfoSet done) override;
+  base::WeakPtr<AudioInjector> GetWeakPtr() override;
+
+  bool start_called() const { return start_called_; }
+  const std::optional<protocol::AudioSampleInfo>& last_sample_info() const {
+    return last_sample_info_;
+  }
+
+  base::WeakPtr<FakeAudioInjector> GetWeakPtrForTest() {
+    return weak_factory_.GetWeakPtr();
+  }
+
+ private:
+  std::unique_ptr<IpcFifoBufferReader> reader_;
+  base::WeakPtr<Delegate> delegate_;
+  bool start_called_ = false;
+  std::optional<protocol::AudioSampleInfo> last_sample_info_;
+  base::WeakPtrFactory<FakeAudioInjector> weak_factory_{this};
+};
 
 class FakeInputInjector : public InputInjector {
   class FifoBufferWriter;
@@ -176,6 +220,10 @@ class FakeDesktopEnvironment : public DesktopEnvironment {
     return last_screen_controls_;
   }
 
+  base::WeakPtr<FakeAudioInjector> last_audio_injector() {
+    return last_audio_injector_;
+  }
+
  private:
   friend class FakeDesktopEnvironmentFactory;
 
@@ -185,6 +233,7 @@ class FakeDesktopEnvironment : public DesktopEnvironment {
   base::WeakPtr<FakeInputInjector> last_input_injector_;
   base::WeakPtr<FakeActiveDisplayMonitor> last_active_display_monitor_;
   base::WeakPtr<FakeScreenControls> last_screen_controls_;
+  base::WeakPtr<FakeAudioInjector> last_audio_injector_;
 
   const DesktopEnvironmentOptions options_;
 

@@ -184,6 +184,9 @@ void DesktopEnvironmentOptions::ApplySessionPolicies(
   if (enable_security_key() && policies.allow_gnubby_forwarding.has_value()) {
     set_enable_security_key(*policies.allow_gnubby_forwarding);
   }
+  if (!policies.is_host_to_client_audio_allowed()) {
+    set_audio_playback_mode(AudioPlaybackMode::kLocalOnly);
+  }
 }
 
 }  // namespace remoting

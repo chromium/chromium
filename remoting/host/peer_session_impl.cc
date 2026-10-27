@@ -25,6 +25,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/bind_post_task.h"
@@ -181,6 +182,7 @@ void PeerSessionImpl::Start(
   client_jid_ = std::string(client_jid);
   desktop_environment_options_ = desktop_environment_options;
   effective_policies_ = session_policies;
+  desktop_environment_options_.ApplySessionPolicies(effective_policies_);
 
   connection_->ApplySessionOptions(session_options);
   connection_->ApplyNetworkSettings(
@@ -338,12 +340,21 @@ void PeerSessionImpl::ControlAudio(
     const protocol::AudioControl& audio_control) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (audio_control.has_enable()) {
-    VLOG(1) << "Received AudioControl (enable=" << audio_control.enable()
-            << ")";
-    if (audio_stream_) {
-      audio_stream_->Pause(!audio_control.enable());
-    }
+  if (!audio_control.has_enable()) {
+    return;
+  }
+
+  VLOG(1) << "Received AudioControl (enable=" << audio_control.enable() << ")";
+  // Block attempts to enable audio if host-to-client audio is disallowed by
+  // policy, but allow the client to disable audio since it is a no-op.
+  if (audio_control.enable() &&
+      !effective_policies_.is_host_to_client_audio_allowed()) {
+    LOG(WARNING) << "Enabling audio disallowed by policy.";
+    return;
+  }
+
+  if (audio_stream_) {
+    audio_stream_->Pause(!audio_control.enable());
   }
 }
 
@@ -372,7 +383,8 @@ void PeerSessionImpl::SetCapabilities(
   capabilities_ =
       IntersectCapabilities(*client_capabilities_, host_capabilities_);
 
-  if (HasCapability(capabilities_, protocol::kMicrophoneRemotingCapability) &&
+  if (effective_policies_.is_client_to_host_audio_allowed() &&
+      HasCapability(capabilities_, protocol::kMicrophoneRemotingCapability) &&
       !audio_injector_) {
     CreateAudioInjectorAndBuffer();
   }
@@ -650,8 +662,9 @@ void PeerSessionImpl::CreateMediaStreams() {
 
   AudioPlaybackMode audio_playback_mode =
       desktop_environment_options_.audio_playback_mode();
-  if (audio_playback_mode == AudioPlaybackMode::kRemoteAndLocal ||
-      audio_playback_mode == AudioPlaybackMode::kRemoteOnly) {
+  if (effective_policies_.is_host_to_client_audio_allowed() &&
+      (audio_playback_mode == AudioPlaybackMode::kRemoteAndLocal ||
+       audio_playback_mode == AudioPlaybackMode::kRemoteOnly)) {
     // Create an AudioStream to pump audio from the capturer to the client.
     std::unique_ptr<AudioCapturer> audio_capturer =
         desktop_environment_->CreateAudioCapturer();
@@ -864,6 +877,13 @@ void PeerSessionImpl::OnIncomingAudioFormatChanged(
     const protocol::AudioSampleInfo& info,
     base::OnceCallback<void(bool)> done) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!effective_policies_.is_client_to_host_audio_allowed()) {
+    LOG(WARNING) << "Client-to-host audio is disallowed by policy.";
+    if (done) {
+      std::move(done).Run(false);
+    }
+    return;
+  }
   if (audio_injector_) {
     audio_injector_->SetSampleInfo(info, std::move(done));
   } else {
@@ -1032,6 +1052,13 @@ void PeerSessionImpl::OnAgentIntegrationSupportDetermined(
 
   // Collate the set of capabilities to offer the client, if it supports them.
   host_capabilities_ = desktop_environment_->GetCapabilities();
+  if (!effective_policies_.is_client_to_host_audio_allowed()) {
+    std::vector<std::string> caps =
+        base::SplitString(host_capabilities_, " ", base::KEEP_WHITESPACE,
+                          base::SPLIT_WANT_NONEMPTY);
+    std::erase(caps, protocol::kMicrophoneRemotingCapability);
+    host_capabilities_ = base::JoinString(caps, " ");
+  }
 
   if (!host_capabilities_.empty()) {
     host_capabilities_.append(" ");
@@ -1102,6 +1129,9 @@ void PeerSessionImpl::OnAgentIntegrationSupportDetermined(
 
 void PeerSessionImpl::CreateAudioInjectorAndBuffer() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!effective_policies_.is_client_to_host_audio_allowed()) {
+    return;
+  }
   std::unique_ptr<IpcFifoBufferWriter> writer;
   std::unique_ptr<IpcFifoBufferReader> reader;
 
@@ -1271,7 +1301,8 @@ void PeerSessionImpl::OnDesktopAttached() {
     remote_webauthn_message_handler_->NotifyWebAuthnStateChange();
   }
 
-  if (HasCapability(capabilities_, protocol::kMicrophoneRemotingCapability) &&
+  if (effective_policies_.is_client_to_host_audio_allowed() &&
+      HasCapability(capabilities_, protocol::kMicrophoneRemotingCapability) &&
       !audio_injector_) {
     CreateAudioInjectorAndBuffer();
   }

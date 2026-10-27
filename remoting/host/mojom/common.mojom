@@ -94,6 +94,16 @@ struct PortRange {
 // Policies to be applied to the CRD host.
 // This struct mirrors remoting::SessionPolicies.
 struct SessionPolicies {
+  // Specifies the allowed direction(s) for audio remoting in the session.
+  // This enum mirrors remoting::SessionPolicies::AudioMode.
+  enum AudioMode {
+    kUnspecified = 0,
+    kNone = 1,
+    kClientToHost = 2,
+    kHostToClient = 3,
+    kBoth = 4,
+  };
+
   // The maximum size, in bytes, that can be transferred between client and
   // host via clipboard synchronization. A null value means to use the default
   // value, which is no restrictions (unlimited size). Setting it to 0
@@ -155,6 +165,11 @@ struct SessionPolicies {
   // Allow the client to establish terminal sessions on supported platforms.
   // A null value means to use the default value, which is true (allowed).
   bool? allow_terminal_mode;
+
+  // Restrict the direction of audio remoted between the host and the client.
+  // A null or kUnspecified value means to use the default value, which is
+  // kBoth (allowed in both directions).
+  AudioMode? audio_mode;
 };
 // LINT.ThenChange(//remoting/base/session_policies.h:SessionPolicies)
 

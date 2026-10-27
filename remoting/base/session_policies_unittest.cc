@@ -37,6 +37,36 @@ TEST(SessionPolicies, Equality) {
   SessionPolicies test_policies_6 = test_policies_1;
   test_policies_6.allow_terminal_mode = false;
   EXPECT_NE(test_policies_1, test_policies_6);
+
+  SessionPolicies test_policies_7 = test_policies_1;
+  test_policies_7.audio_mode = SessionPolicies::AudioMode::kNone;
+  EXPECT_NE(test_policies_1, test_policies_7);
+}
+
+TEST(SessionPolicies, AudioModeHelpers) {
+  SessionPolicies policies;
+  EXPECT_TRUE(policies.is_host_to_client_audio_allowed());
+  EXPECT_TRUE(policies.is_client_to_host_audio_allowed());
+
+  policies.audio_mode = SessionPolicies::AudioMode::kUnspecified;
+  EXPECT_TRUE(policies.is_host_to_client_audio_allowed());
+  EXPECT_TRUE(policies.is_client_to_host_audio_allowed());
+
+  policies.audio_mode = SessionPolicies::AudioMode::kNone;
+  EXPECT_FALSE(policies.is_host_to_client_audio_allowed());
+  EXPECT_FALSE(policies.is_client_to_host_audio_allowed());
+
+  policies.audio_mode = SessionPolicies::AudioMode::kClientToHost;
+  EXPECT_FALSE(policies.is_host_to_client_audio_allowed());
+  EXPECT_TRUE(policies.is_client_to_host_audio_allowed());
+
+  policies.audio_mode = SessionPolicies::AudioMode::kHostToClient;
+  EXPECT_TRUE(policies.is_host_to_client_audio_allowed());
+  EXPECT_FALSE(policies.is_client_to_host_audio_allowed());
+
+  policies.audio_mode = SessionPolicies::AudioMode::kBoth;
+  EXPECT_TRUE(policies.is_host_to_client_audio_allowed());
+  EXPECT_TRUE(policies.is_client_to_host_audio_allowed());
 }
 
 }  // namespace remoting

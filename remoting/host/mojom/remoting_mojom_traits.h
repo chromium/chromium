@@ -1609,6 +1609,46 @@ class StructTraits<remoting::mojom::PortRangeDataView, ::remoting::PortRange> {
 };
 
 template <>
+struct EnumTraits<remoting::mojom::SessionPolicies_AudioMode,
+                  ::remoting::SessionPolicies::AudioMode> {
+  static remoting::mojom::SessionPolicies_AudioMode ToMojom(
+      ::remoting::SessionPolicies::AudioMode input) {
+    switch (input) {
+      case ::remoting::SessionPolicies::AudioMode::kUnspecified:
+        return remoting::mojom::SessionPolicies_AudioMode::kUnspecified;
+      case ::remoting::SessionPolicies::AudioMode::kNone:
+        return remoting::mojom::SessionPolicies_AudioMode::kNone;
+      case ::remoting::SessionPolicies::AudioMode::kClientToHost:
+        return remoting::mojom::SessionPolicies_AudioMode::kClientToHost;
+      case ::remoting::SessionPolicies::AudioMode::kHostToClient:
+        return remoting::mojom::SessionPolicies_AudioMode::kHostToClient;
+      case ::remoting::SessionPolicies::AudioMode::kBoth:
+        return remoting::mojom::SessionPolicies_AudioMode::kBoth;
+    }
+
+    NOTREACHED();
+  }
+
+  static ::remoting::SessionPolicies::AudioMode FromMojom(
+      remoting::mojom::SessionPolicies_AudioMode input) {
+    switch (input) {
+      case remoting::mojom::SessionPolicies_AudioMode::kUnspecified:
+        return ::remoting::SessionPolicies::AudioMode::kUnspecified;
+      case remoting::mojom::SessionPolicies_AudioMode::kNone:
+        return ::remoting::SessionPolicies::AudioMode::kNone;
+      case remoting::mojom::SessionPolicies_AudioMode::kClientToHost:
+        return ::remoting::SessionPolicies::AudioMode::kClientToHost;
+      case remoting::mojom::SessionPolicies_AudioMode::kHostToClient:
+        return ::remoting::SessionPolicies::AudioMode::kHostToClient;
+      case remoting::mojom::SessionPolicies_AudioMode::kBoth:
+        return ::remoting::SessionPolicies::AudioMode::kBoth;
+    }
+
+    NOTREACHED();
+  }
+};
+
+template <>
 class StructTraits<remoting::mojom::SessionPoliciesDataView,
                    ::remoting::SessionPolicies> {
  public:
@@ -1675,6 +1715,11 @@ class StructTraits<remoting::mojom::SessionPoliciesDataView,
   static std::optional<bool> allow_terminal_mode(
       const ::remoting::SessionPolicies& policies) {
     return policies.allow_terminal_mode;
+  }
+
+  static std::optional<::remoting::SessionPolicies::AudioMode> audio_mode(
+      const ::remoting::SessionPolicies& policies) {
+    return policies.audio_mode;
   }
 
   static bool Read(remoting::mojom::SessionPoliciesDataView data_view,

@@ -327,6 +327,7 @@ TEST_F(ClientSessionTest, AppliesSessionPoliciesToDesktopEnvironmentOptions) {
   remote_policies.curtain_required = true;
   remote_policies.allow_webauthn_forwarding = true;
   remote_policies.allow_gnubby_forwarding = false;
+  remote_policies.audio_mode = SessionPolicies::AudioMode::kClientToHost;
 
   desktop_environment_options_.set_enable_remote_webauthn(true);
   desktop_environment_options_.set_enable_security_key(true);
@@ -341,6 +342,7 @@ TEST_F(ClientSessionTest, AppliesSessionPoliciesToDesktopEnvironmentOptions) {
   EXPECT_TRUE(options.enable_curtaining());
   EXPECT_TRUE(options.enable_remote_webauthn());
   EXPECT_FALSE(options.enable_security_key());
+  EXPECT_EQ(options.audio_playback_mode(), AudioPlaybackMode::kLocalOnly);
 }
 
 TEST_F(

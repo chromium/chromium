@@ -16,6 +16,17 @@
 
 namespace remoting::protocol {
 
+FakeAudioStream::FakeAudioStream() = default;
+FakeAudioStream::~FakeAudioStream() = default;
+
+void FakeAudioStream::Pause(bool pause) {
+  is_paused_ = pause;
+}
+
+base::WeakPtr<FakeAudioStream> FakeAudioStream::GetWeakPtr() {
+  return weak_factory_.GetWeakPtr();
+}
+
 FakeVideoStream::FakeVideoStream() = default;
 FakeVideoStream::~FakeVideoStream() = default;
 
@@ -63,8 +74,11 @@ std::unique_ptr<VideoStream> FakeConnectionToClient::StartVideoStream(
 
 std::unique_ptr<AudioStream> FakeConnectionToClient::StartAudioStream(
     std::unique_ptr<AudioSource> audio_source) {
-  NOTIMPLEMENTED();
-  return nullptr;
+  audio_source_ = std::move(audio_source);
+
+  auto result = std::make_unique<FakeAudioStream>();
+  last_audio_stream_ = result->GetWeakPtr();
+  return result;
 }
 
 void FakeConnectionToClient::SetAudioWriter(

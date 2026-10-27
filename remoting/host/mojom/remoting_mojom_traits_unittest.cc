@@ -853,11 +853,29 @@ TEST(RemotingMojomTraitsTest, SessionPoliciesRoundTripAndValidation) {
   input.allow_webauthn_forwarding = false;
   input.allow_gnubby_forwarding = true;
   input.allow_terminal_mode = false;
+  input.audio_mode = SessionPolicies::AudioMode::kHostToClient;
 
   SessionPolicies output;
   ASSERT_TRUE(mojo::test::SerializeAndDeserialize<mojom::SessionPolicies>(
       input, output));
   EXPECT_EQ(input, output);
+
+  // Test all AudioMode values.
+  constexpr SessionPolicies::AudioMode kAudioModes[] = {
+      SessionPolicies::AudioMode::kUnspecified,
+      SessionPolicies::AudioMode::kNone,
+      SessionPolicies::AudioMode::kClientToHost,
+      SessionPolicies::AudioMode::kHostToClient,
+      SessionPolicies::AudioMode::kBoth,
+  };
+  for (SessionPolicies::AudioMode mode : kAudioModes) {
+    SessionPolicies mode_input;
+    mode_input.audio_mode = mode;
+    SessionPolicies mode_output;
+    ASSERT_TRUE(mojo::test::SerializeAndDeserialize<mojom::SessionPolicies>(
+        mode_input, mode_output));
+    EXPECT_EQ(mode_input, mode_output);
+  }
 
   // Test default/empty policies.
   SessionPolicies empty_input;

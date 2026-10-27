@@ -56,6 +56,10 @@ mojom("mojom") {
       cpp = "::remoting::SessionPolicies"
     },
     {
+      mojom = "remoting.mojom.SessionPolicies.AudioMode"
+      cpp = "::remoting::SessionPolicies::AudioMode"
+    },
+    {
       mojom = "remoting.mojom.SessionOptions"
       cpp = "::remoting::SessionOptions"
     },

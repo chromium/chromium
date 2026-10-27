@@ -941,6 +941,187 @@ TEST_F(PeerSessionImplTest,
   peer_session_.reset();
 }
 
+TEST_F(PeerSessionImplTest, AudioMode_DefaultAllowsBothDirections) {
+  desktop_environment_factory_->set_capabilities(
+      protocol::kMicrophoneRemotingCapability);
+  EXPECT_CALL(client_stub_, SetCapabilities(IncludesCapabilities(
+                                protocol::kMicrophoneRemotingCapability)));
+
+  ConnectPeerSession();
+
+  // Host-to-client audio stream should be created and controllable.
+  ASSERT_TRUE(connection_->last_audio_stream());
+  EXPECT_FALSE(connection_->last_audio_stream()->is_paused());
+
+  protocol::AudioControl audio_control;
+  audio_control.set_enable(false);
+  peer_session_->ControlAudio(audio_control);
+  EXPECT_TRUE(connection_->last_audio_stream()->is_paused());
+
+  audio_control.set_enable(true);
+  peer_session_->ControlAudio(audio_control);
+  EXPECT_FALSE(connection_->last_audio_stream()->is_paused());
+
+  // Client-to-host microphone remoting should be accepted.
+  protocol::Capabilities client_capabilities;
+  client_capabilities.set_capabilities(protocol::kMicrophoneRemotingCapability);
+  peer_session_->SetCapabilities(client_capabilities);
+
+  auto audio_injector = desktop_environment_factory_->last_desktop_environment()
+                            ->last_audio_injector();
+  ASSERT_TRUE(audio_injector);
+  EXPECT_TRUE(audio_injector->start_called());
+  EXPECT_NE(connection_->audio_writer(), nullptr);
+
+  base::test::TestFuture<bool> format_ack;
+  peer_session_->OnIncomingAudioFormatChanged({48000, 2},
+                                              format_ack.GetCallback());
+  EXPECT_TRUE(format_ack.Get());
+  ASSERT_TRUE(audio_injector->last_sample_info().has_value());
+  EXPECT_EQ(audio_injector->last_sample_info()->sampling_rate, 48000u);
+  EXPECT_EQ(audio_injector->last_sample_info()->channels, 2u);
+}
+
+TEST_F(PeerSessionImplTest, AudioMode_UnspecifiedAllowsBothDirections) {
+  SessionPolicies policies;
+  policies.audio_mode = SessionPolicies::AudioMode::kUnspecified;
+
+  desktop_environment_factory_->set_capabilities(
+      protocol::kMicrophoneRemotingCapability);
+  EXPECT_CALL(client_stub_, SetCapabilities(IncludesCapabilities(
+                                protocol::kMicrophoneRemotingCapability)));
+
+  ConnectPeerSession(policies);
+
+  EXPECT_TRUE(connection_->last_audio_stream());
+
+  protocol::Capabilities client_capabilities;
+  client_capabilities.set_capabilities(protocol::kMicrophoneRemotingCapability);
+  peer_session_->SetCapabilities(client_capabilities);
+
+  EXPECT_TRUE(desktop_environment_factory_->last_desktop_environment()
+                  ->last_audio_injector());
+  EXPECT_NE(connection_->audio_writer(), nullptr);
+}
+
+TEST_F(PeerSessionImplTest, AudioMode_BothAllowsBothDirections) {
+  SessionPolicies policies;
+  policies.audio_mode = SessionPolicies::AudioMode::kBoth;
+
+  desktop_environment_factory_->set_capabilities(
+      protocol::kMicrophoneRemotingCapability);
+  EXPECT_CALL(client_stub_, SetCapabilities(IncludesCapabilities(
+                                protocol::kMicrophoneRemotingCapability)));
+
+  ConnectPeerSession(policies);
+
+  EXPECT_TRUE(connection_->last_audio_stream());
+
+  protocol::Capabilities client_capabilities;
+  client_capabilities.set_capabilities(protocol::kMicrophoneRemotingCapability);
+  peer_session_->SetCapabilities(client_capabilities);
+
+  EXPECT_TRUE(desktop_environment_factory_->last_desktop_environment()
+                  ->last_audio_injector());
+  EXPECT_NE(connection_->audio_writer(), nullptr);
+}
+
+TEST_F(PeerSessionImplTest, AudioMode_NoneDisallowsBothDirections) {
+  SessionPolicies policies;
+  policies.audio_mode = SessionPolicies::AudioMode::kNone;
+
+  desktop_environment_factory_->set_capabilities(
+      protocol::kMicrophoneRemotingCapability);
+  EXPECT_CALL(client_stub_, SetCapabilities(Not(IncludesCapabilities(
+                                protocol::kMicrophoneRemotingCapability))));
+
+  ConnectPeerSession(policies);
+
+  // Host-to-client audio stream should not be created, and ControlAudio should
+  // be a no-op for both disabling and enabling audio.
+  EXPECT_FALSE(connection_->last_audio_stream());
+  protocol::AudioControl audio_control;
+  audio_control.set_enable(false);
+  peer_session_->ControlAudio(audio_control);
+  audio_control.set_enable(true);
+  peer_session_->ControlAudio(audio_control);
+  EXPECT_FALSE(connection_->last_audio_stream());
+
+  // Client-to-host microphone remoting should not create an AudioInjector or
+  // accept incoming audio format changes even if the client sends the
+  // capability.
+  protocol::Capabilities client_capabilities;
+  client_capabilities.set_capabilities(protocol::kMicrophoneRemotingCapability);
+  peer_session_->SetCapabilities(client_capabilities);
+
+  EXPECT_FALSE(desktop_environment_factory_->last_desktop_environment()
+                   ->last_audio_injector());
+  EXPECT_EQ(connection_->audio_writer(), nullptr);
+
+  base::test::TestFuture<bool> format_ack;
+  peer_session_->OnIncomingAudioFormatChanged({48000, 2},
+                                              format_ack.GetCallback());
+  EXPECT_FALSE(format_ack.Get());
+}
+
+TEST_F(PeerSessionImplTest, AudioMode_HostToClientOnly) {
+  SessionPolicies policies;
+  policies.audio_mode = SessionPolicies::AudioMode::kHostToClient;
+
+  desktop_environment_factory_->set_capabilities(
+      protocol::kMicrophoneRemotingCapability);
+  EXPECT_CALL(client_stub_, SetCapabilities(Not(IncludesCapabilities(
+                                protocol::kMicrophoneRemotingCapability))));
+
+  ConnectPeerSession(policies);
+
+  // Host-to-client audio stream should be created.
+  EXPECT_TRUE(connection_->last_audio_stream());
+
+  // Client-to-host microphone remoting should be disallowed.
+  protocol::Capabilities client_capabilities;
+  client_capabilities.set_capabilities(protocol::kMicrophoneRemotingCapability);
+  peer_session_->SetCapabilities(client_capabilities);
+
+  EXPECT_FALSE(desktop_environment_factory_->last_desktop_environment()
+                   ->last_audio_injector());
+  EXPECT_EQ(connection_->audio_writer(), nullptr);
+
+  base::test::TestFuture<bool> format_ack;
+  peer_session_->OnIncomingAudioFormatChanged({48000, 2},
+                                              format_ack.GetCallback());
+  EXPECT_FALSE(format_ack.Get());
+}
+
+TEST_F(PeerSessionImplTest, AudioMode_ClientToHostOnly) {
+  SessionPolicies policies;
+  policies.audio_mode = SessionPolicies::AudioMode::kClientToHost;
+
+  desktop_environment_factory_->set_capabilities(
+      protocol::kMicrophoneRemotingCapability);
+  EXPECT_CALL(client_stub_, SetCapabilities(IncludesCapabilities(
+                                protocol::kMicrophoneRemotingCapability)));
+
+  ConnectPeerSession(policies);
+
+  // Host-to-client audio stream should not be created.
+  EXPECT_FALSE(connection_->last_audio_stream());
+
+  // Client-to-host microphone remoting should be allowed.
+  protocol::Capabilities client_capabilities;
+  client_capabilities.set_capabilities(protocol::kMicrophoneRemotingCapability);
+  peer_session_->SetCapabilities(client_capabilities);
+
+  EXPECT_TRUE(desktop_environment_factory_->last_desktop_environment()
+                  ->last_audio_injector());
+  EXPECT_NE(connection_->audio_writer(), nullptr);
+
+  base::test::TestFuture<bool> format_ack;
+  peer_session_->OnIncomingAudioFormatChanged({48000, 2},
+                                              format_ack.GetCallback());
+  EXPECT_TRUE(format_ack.Get());
+}
+
 TEST_F(PeerSessionImplTest, RequestPairing) {
   ConnectPeerSession();
 

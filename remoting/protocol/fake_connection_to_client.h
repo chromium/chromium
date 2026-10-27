@@ -15,6 +15,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
+#include "remoting/protocol/audio_stream.h"
 #include "remoting/protocol/connection_to_client.h"
 #include "remoting/protocol/desktop_capturer.h"
 #include "remoting/protocol/fake_message_pipe.h"
@@ -23,6 +24,28 @@
 #include "remoting/protocol/video_stub.h"
 
 namespace remoting::protocol {
+
+class FakeAudioStream : public protocol::AudioStream {
+ public:
+  FakeAudioStream();
+
+  FakeAudioStream(const FakeAudioStream&) = delete;
+  FakeAudioStream& operator=(const FakeAudioStream&) = delete;
+
+  ~FakeAudioStream() override;
+
+  // protocol::AudioStream interface.
+  void Pause(bool pause) override;
+
+  bool is_paused() const { return is_paused_; }
+
+  base::WeakPtr<FakeAudioStream> GetWeakPtr();
+
+ private:
+  bool is_paused_ = false;
+
+  base::WeakPtrFactory<FakeAudioStream> weak_factory_{this};
+};
 
 class FakeVideoStream : public protocol::VideoStream {
  public:
@@ -90,6 +113,10 @@ class FakeConnectionToClient : public ConnectionToClient {
   base::WeakPtr<FakeVideoStream> last_video_stream() {
     return last_video_stream_;
   }
+  base::WeakPtr<FakeAudioStream> last_audio_stream() {
+    return last_audio_stream_;
+  }
+  FifoBufferWriter* audio_writer() { return audio_writer_.get(); }
 
   void set_client_stub(ClientStub* client_stub) { client_stub_ = client_stub; }
   void set_video_stub(VideoStub* video_stub) { video_stub_ = video_stub; }
@@ -113,9 +140,11 @@ class FakeConnectionToClient : public ConnectionToClient {
   // retains a pointer to the capturer if the relative pointer experiment is
   // a success.
   std::unique_ptr<DesktopCapturer> desktop_capturer_;
+  std::unique_ptr<AudioSource> audio_source_;
   raw_ptr<EventHandler> event_handler_ = nullptr;
 
   base::WeakPtr<FakeVideoStream> last_video_stream_;
+  base::WeakPtr<FakeAudioStream> last_audio_stream_;
 
   raw_ptr<ClientStub> client_stub_ = nullptr;
 
