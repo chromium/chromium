@@ -124,6 +124,7 @@ class ContextualTasksEphemeralButtonController
   contextual_tasks::ContextualTasksService* GetContextualTasksService();
   std::optional<SessionID> GetCurrentTabSessionId();
   bool IsActiveTabAssociatedToTask();
+  bool HasPanelResults() const;
   void OnActiveTabChange(BrowserWindowInterface* browser_window_interface);
   void OnSidePanelAlignmentChanged();
   void MaybeNotifyVisibilityShouldChange();
@@ -137,6 +138,7 @@ class ContextualTasksEphemeralButtonController
   void OnAutoDismissTimerFired(SessionID tab_id);
   void ClearTabEligibility(SessionID tab_id);
   bool IsTaskEligibleForEphemeralButton(const base::Uuid& task_id);
+  bool IsActiveTabEligible();
   void HideTaskSidePanel();
   void MaybeCleanUpUnusedSidePanelWebContents();
   void DismissEphemeralButtonForTab(SessionID tab_id);
