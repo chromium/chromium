@@ -35,6 +35,24 @@ class OutputDeviceMixerReferenceProvider;
 // created and playback has started.
 class OutputDeviceMixerManager : public ReferenceSignalProviderFactory {
  public:
+  // Outcome of detecting that the default or communications device changed
+  // without a notification. Recorded to
+  // Media.Audio.OutputDeviceMixerManager.MissedDeviceChange.
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  //
+  // LINT.IfChange(AudioOutputDeviceMixerManagerMissedDeviceChange)
+  enum class MissedDeviceChange {
+    kDefaultDevice = 0,
+    kCommunicationsDevice = 1,
+    kDefaultAndCommunicationsDevices = 2,
+    // AudioManager reported an empty ID while a physical ID was cached. This
+    // is treated as a failed query rather than as a device change.
+    kEmptyDeviceIdIgnored = 3,
+    kMaxValue = kEmptyDeviceIdIgnored,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/media/enums.xml:AudioOutputDeviceMixerManagerMissedDeviceChange)
+
   OutputDeviceMixerManager(
       media::AudioManager* audio_manager,
       OutputDeviceMixer::CreateCallback create_mixer_callback);
@@ -68,8 +86,22 @@ class OutputDeviceMixerManager : public ReferenceSignalProviderFactory {
       base::flat_map<raw_ptr<ReferenceOutput::Listener, DanglingUntriaged>,
                      std::string>;
 
-  // Forwards device change notifications to OutputDeviceMixers.
+  // Refreshes the cached default and communications device IDs and calls
+  // ProcessDeviceChange().
   void OnDeviceChange();
+
+  // Tears down existing OutputDeviceMixers and notifies them of a device
+  // change so their clients can recreate their streams.
+  void ProcessDeviceChange();
+
+  // Device change notifications reach this class only through mixer-owned
+  // output streams, so a change of the default or communications device while
+  // none of them is open goes unnoticed, and ToMixerDeviceId() would route
+  // physical IDs to the wrong mixer. Detects such a missed change by comparing
+  // the cached IDs with the ones reported by AudioManager, and processes it via
+  // ProcessDeviceChange(). An empty reported ID is not a change: it indicates a
+  // failed query. Must be called before routing decisions.
+  void MaybeProcessMissedDeviceChange();
 
   // Helper function which maps physical and reserved IDs to normalized mixer
   // device IDs. Physical IDs matching the current "default" or "communications"
@@ -117,6 +149,12 @@ class OutputDeviceMixerManager : public ReferenceSignalProviderFactory {
   OutputDeviceMixer::CreateCallback create_mixer_callback_;
   OutputDeviceMixers output_device_mixers_;
   ListenerToDeviceMap listener_registration_;
+
+  // True while ProcessDeviceChange() runs. Streams recreated synchronously
+  // during it skip MaybeProcessMissedDeviceChange(), so a newer device change
+  // can't start a nested rebuild that tears down the mixers being created.
+  bool processing_device_change_ = false;
+
   base::WeakPtrFactory<OutputDeviceMixerManager> device_change_weak_ptr_factory_
       GUARDED_BY_CONTEXT(owning_sequence_);
 };

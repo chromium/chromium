@@ -2193,6 +2193,30 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Media.Audio.OutputDeviceMixerManager.MissedDeviceChange"
+    enum="AudioOutputDeviceMixerManagerMissedDeviceChange"
+    expires_after="2027-04-30">
+  <owner>olka@chromium.org</owner>
+  <owner>tguilbert@chromium.org</owner>
+  <owner>webrtc-audio-uma@google.com</owner>
+  <summary>
+    Checked whenever a new low-latency output stream is created or an echo
+    cancellation reference listener starts listening to an output device
+    (excluding streams recreated while already handling a device change), and
+    logged only when the system default or communications output device ID
+    differs from the one cached by the output device mixer manager, including
+    when the system reports an empty ID.
+
+    A non-empty differing ID means that the default or communications device
+    changed while no mixer-owned output stream was open to receive device-change
+    notifications, or before a pending device-change notification was delivered.
+    Records which device(s) changed (which triggers a mixer rebuild), or
+    &quot;Empty device ID ignored&quot; if the differing device ID(s) reported
+    by the system were empty (treated as a failed query without rebuilding
+    mixers).
+  </summary>
+</histogram>
+
 <histogram name="Media.Audio.OutputDeviceMixerManager.StreamCreation"
     enum="AudioOutputDeviceMixerManagerStreamCreation"
     expires_after="2027-05-11">

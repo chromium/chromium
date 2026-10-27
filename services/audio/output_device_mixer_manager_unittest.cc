@@ -10,6 +10,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "media/audio/audio_device_description.h"
 #include "media/audio/audio_io.h"
@@ -39,6 +40,11 @@ using base::test::RunOnceClosure;
 
 namespace audio {
 namespace {
+
+using MissedDeviceChange = OutputDeviceMixerManager::MissedDeviceChange;
+
+constexpr char kMissedDeviceChangeHistogram[] =
+    "Media.Audio.OutputDeviceMixerManager.MissedDeviceChange";
 
 // The "default" and "communications" strings represent reserved device IDs.
 // They are used in different situations, but the OutputDeviceMixerManager
@@ -71,6 +77,7 @@ MATCHER_P(CompatibleParams, expected, "") {
 
 const std::string kFakeDeviceId = "0x1234";
 const std::string kOtherFakeDeviceId = "0x9876";
+const std::string kThirdFakeDeviceId = "0x5555";
 const std::string kFakeCommunicationsId = "0xabcd";
 const std::string kEmptyDeviceId = std::string();
 const std::string kNormalizedDefaultDeviceId = kEmptyDeviceId;
@@ -212,8 +219,9 @@ class OutputDeviceMixerManagerTest
     audio_manager_supports_default_physical_id_ = support;
 
     // Force |output_mixer_manager_| to pick up the latest default device ID.
-    if (needs_device_change)
+    if (needs_device_change) {
       output_mixer_manager_.OnDeviceChange();
+    }
   }
 
   void SetAudioManagerCommunicationsIdSupport(bool support) {
@@ -222,8 +230,9 @@ class OutputDeviceMixerManagerTest
     audio_manager_supports_communications_physical_id_ = support;
 
     // Force |output_mixer_manager_| to pick up the latest default device ID.
-    if (needs_device_change)
+    if (needs_device_change) {
       output_mixer_manager_.OnDeviceChange();
+    }
   }
 
   MockOutputDeviceMixer* SetUpMockMixerCreation(
@@ -271,6 +280,19 @@ class OutputDeviceMixerManagerTest
                                            GetNoopDeviceChangeCallback());
   }
 
+  void SetCurrentPhysicalDevices(
+      std::optional<std::string> new_default_physical_device,
+      std::optional<std::string> new_communications_physical_device) {
+    if (new_default_physical_device) {
+      current_default_physical_device_id_ = *new_default_physical_device;
+    }
+
+    if (new_communications_physical_device) {
+      current_communications_physical_device_id_ =
+          *new_communications_physical_device;
+    }
+  }
+
   void SimulateDeviceChange() {
     SimulateDeviceChange(std::nullopt, std::nullopt);
   }
@@ -278,14 +300,8 @@ class OutputDeviceMixerManagerTest
   void SimulateDeviceChange(
       std::optional<std::string> new_default_physical_device,
       std::optional<std::string> new_communications_physical_device) {
-    if (new_default_physical_device)
-      current_default_physical_device_id_ = *new_default_physical_device;
-
-    if (new_communications_physical_device) {
-      current_communications_physical_device_id_ =
-          *new_communications_physical_device;
-    }
-
+    SetCurrentPhysicalDevices(std::move(new_default_physical_device),
+                              std::move(new_communications_physical_device));
     output_mixer_manager_.OnDeviceChange();
   }
 
@@ -353,15 +369,31 @@ class OutputDeviceMixerManagerTest
     }
   }
 
-  void SimulateReservedDeviceChange(std::string new_reserved_physical_id) {
+  MissedDeviceChange expected_missed_reserved_device_change() {
     switch (reserved_id_test_type()) {
       case ReservedIdTestType::kDefault:
-        SimulateDeviceChange(new_reserved_physical_id, std::nullopt);
+        return MissedDeviceChange::kDefaultDevice;
+      case ReservedIdTestType::kCommunications:
+        return MissedDeviceChange::kCommunicationsDevice;
+    }
+  }
+
+  void SetCurrentReservedPhysicalDevice(std::string new_reserved_physical_id) {
+    switch (reserved_id_test_type()) {
+      case ReservedIdTestType::kDefault:
+        SetCurrentPhysicalDevices(std::move(new_reserved_physical_id),
+                                  std::nullopt);
         return;
       case ReservedIdTestType::kCommunications:
-        SimulateDeviceChange(std::nullopt, new_reserved_physical_id);
+        SetCurrentPhysicalDevices(std::nullopt,
+                                  std::move(new_reserved_physical_id));
         return;
     }
+  }
+
+  void SimulateReservedDeviceChange(std::string new_reserved_physical_id) {
+    SetCurrentReservedPhysicalDevice(std::move(new_reserved_physical_id));
+    SimulateDeviceChange();
   }
 
   bool audio_manager_supports_default_physical_id_ = true;
@@ -571,8 +603,16 @@ TEST_F(OutputDeviceMixerManagerTest,
 }
 
 // Makes sure we still get an unmixable stream when requesting bitstream
-// formats.
+// formats, and that unmixable stream creation does not check for missed device
+// changes or rebuild existing mixers.
 TEST_F(OutputDeviceMixerManagerTest, MakeOutputStream_WithBitstreamFormat) {
+  MockOutputDeviceMixer* default_mixer = SetUpMockMixer_NoStreams();
+  EXPECT_CALL(*default_mixer, ProcessDeviceChange()).Times(0);
+  ForceOutputMixerCreation(kReservedDefaultId);
+  testing::Mock::VerifyAndClearExpectations(this);
+
+  SetCurrentPhysicalDevices(kOtherFakeDeviceId, std::nullopt);
+  base::HistogramTester histogram_tester;
   ExpectNoMixerCreated();
 
   MockAudioOutputStream mock_stream;
@@ -588,6 +628,7 @@ TEST_F(OutputDeviceMixerManagerTest, MakeOutputStream_WithBitstreamFormat) {
       kOtherFakeDeviceId, bitstream_params, GetNoopDeviceChangeCallback());
 
   EXPECT_TRUE(out_stream);
+  histogram_tester.ExpectTotalCount(kMissedDeviceChangeHistogram, 0);
 
   // Test cleanup.
   out_stream->Close();
@@ -859,6 +900,304 @@ TEST_P(OutputDeviceMixerManagerTest,
       GetNoopDeviceChangeCallback());
 
   EXPECT_NE(out_stream_a, out_stream_b);
+}
+
+// Verifies that a reserved device change missed by OutputDeviceMixerManager is
+// detected on the next stream creation, so the stale reserved mixer is torn
+// down and the former reserved physical device gets its own mixer.
+TEST_P(OutputDeviceMixerManagerTest,
+       MissedDeviceChange_FormerReservedDeviceGetsOwnMixer) {
+  SetAudioManagerReservedIdSupport(true);
+
+  // Physical ID of the reserved device before the unnotified change.
+  const std::string former_reserved_physical_id =
+      current_reserved_physical_device();
+
+  // Create the reserved mixer through the reserved device's physical ID.
+  MockOutputDeviceMixer* initial_reserved_mixer =
+      SetUpReservedMixer_NoStreams();
+  ForceOutputMixerCreation(former_reserved_physical_id);
+  testing::Mock::VerifyAndClearExpectations(this);
+  testing::Mock::VerifyAndClearExpectations(initial_reserved_mixer);
+
+  // Change the mocked default/communications device without notification.
+  SetCurrentReservedPhysicalDevice(kOtherFakeDeviceId);
+
+  base::HistogramTester histogram_tester;
+
+  // The next stream for the former reserved physical device must tear down
+  // |initial_reserved_mixer| and get a mixer of its own.
+  EXPECT_CALL(*initial_reserved_mixer, ProcessDeviceChange()).Times(1);
+  SetUpMockMixer_NoStreams(former_reserved_physical_id);
+  ForceOutputMixerCreation(former_reserved_physical_id);
+
+  // The missed change is recorded once.
+  histogram_tester.ExpectUniqueSample(kMissedDeviceChangeHistogram,
+                                      expected_missed_reserved_device_change(),
+                                      1);
+}
+
+// Verifies that a missed reserved device change is also detected when a
+// listener starts, so a listener for the former reserved physical device is not
+// attached to the stale reserved mixer.
+TEST_P(OutputDeviceMixerManagerTest,
+       MissedDeviceChange_ListenerForFormerReservedDeviceSkipsReservedMixer) {
+  SetAudioManagerReservedIdSupport(true);
+
+  // Physical ID of the reserved device before the unnotified change.
+  const std::string former_reserved_physical_id =
+      current_reserved_physical_device();
+
+  // Create the reserved mixer through the reserved device's physical ID.
+  MockOutputDeviceMixer* initial_reserved_mixer =
+      SetUpReservedMixer_NoStreams();
+  ForceOutputMixerCreation(former_reserved_physical_id);
+
+  testing::Mock::VerifyAndClearExpectations(this);
+  testing::Mock::VerifyAndClearExpectations(initial_reserved_mixer);
+
+  // Change the mocked default/communications device without calling
+  // SimulateDeviceChange().
+  SetCurrentReservedPhysicalDevice(kOtherFakeDeviceId);
+
+  base::HistogramTester histogram_tester;
+
+  // Starting a listener for the former reserved physical device must tear down
+  // |initial_reserved_mixer| without attaching the listener to it.
+  auto listener = std::make_unique<NiceMock<MockListener>>();
+  EXPECT_CALL(*initial_reserved_mixer, ProcessDeviceChange()).Times(1);
+  EXPECT_CALL(*initial_reserved_mixer, StartListening(_)).Times(0);
+
+  reference_signal_provider_->StartListening(listener.get(),
+                                             former_reserved_physical_id);
+
+  // The missed change is recorded once, when |listener| started.
+  histogram_tester.ExpectUniqueSample(kMissedDeviceChangeHistogram,
+                                      expected_missed_reserved_device_change(),
+                                      1);
+}
+
+// Verifies that when both the default and communications devices change without
+// a notification, a single detection records that both devices changed.
+TEST_F(OutputDeviceMixerManagerTest,
+       MissedDeviceChange_DefaultAndCommunicationsDevicesChangeTogether) {
+  SetAudioManagerDefaultIdSupport(true);
+  SetAudioManagerCommunicationsIdSupport(true);
+
+  // Change both physical IDs without notification, then create a stream.
+  SetCurrentPhysicalDevices(kOtherFakeDeviceId, kThirdFakeDeviceId);
+  base::HistogramTester histogram_tester;
+  SetUpMockMixer_NoStreams(kNormalizedDefaultDeviceId);
+  ForceOutputMixerCreation(kReservedDefaultId);
+
+  // Both changes are recorded as a single sample.
+  histogram_tester.ExpectUniqueSample(
+      kMissedDeviceChangeHistogram,
+      MissedDeviceChange::kDefaultAndCommunicationsDevices, 1);
+}
+
+// Verifies that an empty ID reported by AudioManager is treated as a failed
+// query: it neither rebuilds the mixers nor overwrites the cached physical ID,
+// including when the other reserved device changes at the same time.
+TEST_P(OutputDeviceMixerManagerTest,
+       EmptyReservedDeviceId_CachedPhysicalIdIsPreserved) {
+  SetAudioManagerDefaultIdSupport(true);
+  SetAudioManagerCommunicationsIdSupport(true);
+
+  // Physical ID of the tested reserved device as cached by
+  // |output_mixer_manager_|, and the physical and mixer IDs of the other
+  // reserved device.
+  const std::string cached_reserved_physical_id =
+      current_reserved_physical_device();
+  const std::string other_reserved_physical_id =
+      reserved_id_test_type() == ReservedIdTestType::kDefault
+          ? current_communications_physical_device()
+          : current_default_physical_device();
+  const std::string other_reserved_mixer_id =
+      reserved_id_test_type() == ReservedIdTestType::kDefault
+          ? kReservedCommsId
+          : kNormalizedDefaultDeviceId;
+
+  // Part 1: The tested reserved device's query fails. The reserved mixer,
+  // created through the cached physical ID, must not be torn down.
+  MockOutputDeviceMixer* reserved_mixer = SetUpReservedMixer_NoStreams();
+  EXPECT_CALL(*reserved_mixer, ProcessDeviceChange()).Times(0);
+
+  ForceOutputMixerCreation(cached_reserved_physical_id);
+  testing::Mock::VerifyAndClearExpectations(this);
+
+  // Simulate AudioManager transiently returning an empty ID without a device
+  // change notification.
+  SetCurrentReservedPhysicalDevice(kEmptyDeviceId);
+
+  base::HistogramTester histogram_tester;
+  ExpectNoMixerCreated();
+
+  // A stream for the cached physical ID must continue routing to the existing
+  // reserved mixer without rebuilding.
+  ForceOutputMixerCreation(cached_reserved_physical_id);
+
+  // The ignored empty ID is recorded.
+  histogram_tester.ExpectUniqueSample(kMissedDeviceChangeHistogram,
+                                      MissedDeviceChange::kEmptyDeviceIdIgnored,
+                                      1);
+  testing::Mock::VerifyAndClearExpectations(this);
+  testing::Mock::VerifyAndClearExpectations(reserved_mixer);
+
+  // Part 2: The tested reserved device changes to |kOtherFakeDeviceId|, while
+  // the other reserved device transiently reports |kEmptyDeviceId|.
+  if (reserved_id_test_type() == ReservedIdTestType::kDefault) {
+    SetCurrentPhysicalDevices(kOtherFakeDeviceId, kEmptyDeviceId);
+  } else {
+    SetCurrentPhysicalDevices(kEmptyDeviceId, kOtherFakeDeviceId);
+  }
+
+  // The rebuild tears down |reserved_mixer|. Then the former reserved physical
+  // device gets its own mixer and the other reserved device gets its reserved
+  // mixer, and neither is torn down.
+  EXPECT_CALL(*reserved_mixer, ProcessDeviceChange()).Times(1);
+  MockOutputDeviceMixer* former_device_mixer =
+      SetUpMockMixer_NoStreams(cached_reserved_physical_id);
+  MockOutputDeviceMixer* other_reserved_mixer =
+      SetUpMockMixer_NoStreams(other_reserved_mixer_id);
+  EXPECT_CALL(*former_device_mixer, ProcessDeviceChange()).Times(0);
+  EXPECT_CALL(*other_reserved_mixer, ProcessDeviceChange()).Times(0);
+
+  // This triggers the rebuild for the tested reserved device.
+  ForceOutputMixerCreation(cached_reserved_physical_id);
+
+  // The other reserved device's cached physical ID was preserved, so its
+  // physical ID still maps to its reserved mixer even while its query is
+  // returning |kEmptyDeviceId|.
+  ForceOutputMixerCreation(other_reserved_physical_id);
+
+  // When the other reserved device's query recovers to
+  // |other_reserved_physical_id|, no second rebuild occurs.
+  if (reserved_id_test_type() == ReservedIdTestType::kDefault) {
+    SetCurrentPhysicalDevices(kOtherFakeDeviceId, other_reserved_physical_id);
+  } else {
+    SetCurrentPhysicalDevices(other_reserved_physical_id, kOtherFakeDeviceId);
+  }
+  ForceOutputMixerCreation(other_reserved_physical_id);
+
+  // |kEmptyDeviceIdIgnored| also counts the sample recorded in part 1.
+  EXPECT_EQ(
+      histogram_tester.GetBucketCount(kMissedDeviceChangeHistogram,
+                                      expected_missed_reserved_device_change()),
+      1);
+  EXPECT_EQ(histogram_tester.GetBucketCount(
+                kMissedDeviceChangeHistogram,
+                MissedDeviceChange::kEmptyDeviceIdIgnored),
+            2);
+  histogram_tester.ExpectTotalCount(kMissedDeviceChangeHistogram, 3);
+}
+
+// Verifies that a newer device change reported while a missed one is being
+// processed does not trigger a nested rebuild that tears down the mixers just
+// recreated for earlier streams, and is processed on the next routing decision.
+TEST_P(OutputDeviceMixerManagerTest,
+       MissedDeviceChange_NewerChangeIsProcessedAfterCurrentOne) {
+  SetAudioManagerReservedIdSupport(true);
+
+  // Physical ID of the reserved device before the unnotified changes.
+  const std::string former_reserved_physical_id =
+      current_reserved_physical_device();
+
+  // The reserved mixer creates two streams and keeps the callbacks that close
+  // them on a device change, so that the test can run them the way the mixer
+  // does in ProcessDeviceChange().
+  MockOutputDeviceMixer* initial_reserved_mixer = SetUpReservedMixerCreation();
+  NiceMock<MockAudioOutputStream> initial_reserved_stream;
+  NiceMock<MockAudioOutputStream> initial_former_stream;
+  base::OnceClosure stored_reserved_close_cb;
+  base::OnceClosure stored_former_close_cb;
+  EXPECT_CALL(*initial_reserved_mixer,
+              MakeMixableStream(ExactParams(default_params_),
+                                ValidDeviceChangeCallback()))
+      .WillOnce([&](const AudioParameters&, base::OnceClosure close_cb) {
+        stored_reserved_close_cb = std::move(close_cb);
+        return &initial_reserved_stream;
+      })
+      .WillOnce([&](const AudioParameters&, base::OnceClosure close_cb) {
+        stored_former_close_cb = std::move(close_cb);
+        return &initial_former_stream;
+      });
+
+  // Create a stream for the reserved ID and one for the reserved device's
+  // physical ID. Like OutputController, each one's callback closes the stream
+  // and synchronously recreates it through MakeOutputStream().
+  output_mixer_manager_.MakeOutputStream(
+      reserved_device_id(), default_params_, base::BindLambdaForTesting([&] {
+        initial_reserved_stream.Close();
+        ForceOutputMixerCreation(reserved_device_id());
+      }));
+  output_mixer_manager_.MakeOutputStream(
+      former_reserved_physical_id, default_params_,
+      base::BindLambdaForTesting([&] {
+        initial_former_stream.Close();
+        ForceOutputMixerCreation(former_reserved_physical_id);
+      }));
+
+  ASSERT_TRUE(stored_reserved_close_cb);
+  ASSERT_TRUE(stored_former_close_cb);
+  testing::Mock::VerifyAndClearExpectations(this);
+  testing::Mock::VerifyAndClearExpectations(initial_reserved_mixer);
+
+  // First unnotified change: reserved physical device becomes
+  // |kOtherFakeDeviceId|.
+  SetCurrentReservedPhysicalDevice(kOtherFakeDeviceId);
+
+  base::HistogramTester histogram_tester;
+
+  // Expect, in order: the rebuild tears down |initial_reserved_mixer|, which
+  // runs both callbacks. The reserved stream is recreated on a new reserved
+  // mixer, and the former physical device's stream on its own mixer, which then
+  // also serves the request that triggered the rebuild.
+  MockOutputDeviceMixer* reserved_mixer_first_pass = nullptr;
+  MockOutputDeviceMixer* former_mixer_first_pass = nullptr;
+  {
+    InSequence s;
+    EXPECT_CALL(*initial_reserved_mixer, ProcessDeviceChange()).WillOnce([&] {
+      std::move(stored_reserved_close_cb).Run();
+      // While the first rebuild is still in progress, AudioManager begins
+      // reporting an even newer device ID (|kThirdFakeDeviceId|). The remaining
+      // stream recreation in this pass must not trigger a nested rebuild.
+      SetCurrentReservedPhysicalDevice(kThirdFakeDeviceId);
+      std::move(stored_former_close_cb).Run();
+    });
+    reserved_mixer_first_pass = SetUpReservedMixer_NoStreams();
+    former_mixer_first_pass =
+        SetUpMockMixer_NoStreams(former_reserved_physical_id);
+  }
+
+  // Mixers created during the first pass must not be torn down mid-pass.
+  EXPECT_CALL(*reserved_mixer_first_pass, ProcessDeviceChange()).Times(0);
+  EXPECT_CALL(*former_mixer_first_pass, ProcessDeviceChange()).Times(0);
+
+  // This request detects the first change and triggers the rebuild.
+  ForceOutputMixerCreation(former_reserved_physical_id);
+
+  // Only the first change was recorded.
+  histogram_tester.ExpectUniqueSample(kMissedDeviceChangeHistogram,
+                                      expected_missed_reserved_device_change(),
+                                      1);
+  testing::Mock::VerifyAndClearExpectations(this);
+  testing::Mock::VerifyAndClearExpectations(reserved_mixer_first_pass);
+  testing::Mock::VerifyAndClearExpectations(former_mixer_first_pass);
+
+  // The next routing decision after the first rebuild finishes must detect and
+  // process the newer change to |kThirdFakeDeviceId|, giving
+  // |kOtherFakeDeviceId| its own physical mixer.
+  InSequence s;
+  EXPECT_CALL(*reserved_mixer_first_pass, ProcessDeviceChange()).Times(1);
+  EXPECT_CALL(*former_mixer_first_pass, ProcessDeviceChange()).Times(1);
+  SetUpMockMixer_NoStreams(kOtherFakeDeviceId);
+  ForceOutputMixerCreation(kOtherFakeDeviceId);
+
+  // Both changes are recorded.
+  histogram_tester.ExpectUniqueSample(kMissedDeviceChangeHistogram,
+                                      expected_missed_reserved_device_change(),
+                                      2);
 }
 
 // Makes sure OutputDeviceMixers are notified of device changes.

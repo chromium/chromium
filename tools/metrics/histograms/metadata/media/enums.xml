@@ -222,6 +222,17 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Audio glitches"/>
 </enum>
 
+<!-- LINT.IfChange(AudioOutputDeviceMixerManagerMissedDeviceChange) -->
+
+<enum name="AudioOutputDeviceMixerManagerMissedDeviceChange">
+  <int value="0" label="Default device"/>
+  <int value="1" label="Communications device"/>
+  <int value="2" label="Default and communications devices"/>
+  <int value="3" label="Empty device ID ignored"/>
+</enum>
+
+<!-- LINT.ThenChange(//services/audio/output_device_mixer_manager.h:AudioOutputDeviceMixerManagerMissedDeviceChange) -->
+
 <enum name="AudioOutputDeviceMixerManagerStreamCreation">
   <int value="0" label="Unmixable stream"/>
   <int value="1" label="Fallback to unmixable stream"/>
