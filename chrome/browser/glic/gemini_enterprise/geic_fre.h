@@ -13,10 +13,9 @@ class Profile;
 
 // Helpers for the Gemini Enterprise in Chrome (GEiC) first-run experience
 // (FRE). The FRE is hosted by the GE side-panel web app; Chrome stores its
-// completion per GE instance in `prefs::kGeicCompletedFre`.
-//
-// TODO(b/576047045): Mention the `X-Geic-Onboarding-Completed` request header
-// once it is added.
+// completion per Chrome profile for each GE instance (guest URL) in
+// `prefs::kGeicCompletedFre`, independent of the GE account signed in within
+// the side panel.
 //
 // Like geic_enabling.h, this is GLiC-internal; includes are restricted by DEPS.
 namespace geic {

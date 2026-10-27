@@ -1845,6 +1845,12 @@ TEST_F(GlicEnablingGeicFreTest, ResetSwitchClearsGeicFre) {
   base::test::ScopedCommandLine scoped_command_line;
   const GlicFreStore& store = GetGlicProviderSpec(profile()).GetFreStore();
   geic::CompleteFre(profile());
+  // An entry for another GE instance.
+  ScopedDictPrefUpdate(profile()->GetPrefs(), geic::prefs::kGeicCompletedFre)
+      ->Set("https://business.gemini.google/side-panel?configId=other",
+            base::DictValue().Set(
+                "status",
+                std::to_underlying(geic::prefs::GeicFreStatus::kCompleted)));
   ASSERT_TRUE(GlicEnabling::HasConsentedForProfile(profile()));
 
   // Without the switch, nothing changes.

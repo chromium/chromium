@@ -142,8 +142,8 @@ class GeminiEnterpriseGlicFreStore final : public GlicFreStore {
   }
 
   void OnPrimaryAccountCleared(Profile* profile) const override {
-    // The GEiC FRE is stored per GE instance, not per account, so it is kept.
-    // TODO(b/576047045): Confirm whether signing out should reset the GEiC FRE.
+    // Intentionally a no-op: this is only called on Android, where GEiC isn't
+    // supported.
   }
 
   bool HidesSettingsUntilCompleted() const override { return true; }
