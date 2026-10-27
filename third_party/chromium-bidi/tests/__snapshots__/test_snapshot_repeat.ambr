@@ -1,0 +1,10 @@
+# serializer version: 1
+# name: test_snapshot_ignores_repeat_step
+  'value'
+# ---
+# name: test_snapshot_ignores_repeat_step_with_parameters[first]
+  'first'
+# ---
+# name: test_snapshot_ignores_repeat_step_with_parameters[second]
+  'second'
+# ---

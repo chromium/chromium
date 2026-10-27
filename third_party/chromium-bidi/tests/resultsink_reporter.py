@@ -177,6 +177,30 @@ def pytest_generate_tests(metafunc):
             return
 
 
+def repeat_free_name(item: pytest.Item) -> str:
+    """Returns the name of `item` without its pytest-repeat step."""
+    nodeid = item.config.stash.get(_REPEAT_IDENTITIES, {}).get(item.nodeid)
+    if nodeid is None:
+        return item.name
+    # A parameter ID itself may contain "::"; it is not a node boundary.
+    return nodeid.removeprefix(f"{item.parent.nodeid}::")
+
+
+@pytest.fixture
+def snapshot(snapshot, request):
+    """Overrides syrupy's `snapshot` to ignore the pytest-repeat step.
+
+    syrupy names snapshots after the test, and pytest-repeat adds the repeat
+    step to the test name (e.g. `test_foo[1-20]`), so repeated tests would look
+    up snapshots that don't exist. `pytest_plugins` registers this module after
+    the syrupy plugin, so this fixture takes precedence.
+    """
+    name = repeat_free_name(request.node)
+    snapshot.test_location.nodename = name
+    snapshot.test_location.testname = name
+    return snapshot
+
+
 def format_test_id(nodeid: str):
     """Formats a pytest nodeid into a ResultDB canonical structured testId and dict.
 
@@ -466,10 +490,7 @@ def pytest_collection_modifyitems(session, config, items):
         structured_id, _ = format_test_id(clean_nodeid)
         raw_structured_id, _ = format_test_id(item.nodeid)
         file_path = clean_nodeid.split("::")[0]
-        func_name = item.name
-        if clean_nodeid != item.nodeid:
-            # A parameter ID itself may contain "::"; it is not a node boundary.
-            func_name = clean_nodeid.removeprefix(f"{item.parent.nodeid}::")
+        func_name = repeat_free_name(item)
 
         included = all(
             group.is_test_included(
