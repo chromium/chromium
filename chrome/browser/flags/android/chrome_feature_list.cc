@@ -688,7 +688,7 @@ BASE_FEATURE(kAndroidBricksNativePage, base::FEATURE_DISABLED_BY_DEFAULT);
 // When enabled, the "Close all tabs" action in the tab switcher (GTS/Hub) leaves
 // pinned tabs open, and the confirmation dialog offers an opt-in checkbox to close
 // them as well.
-BASE_FEATURE(kAndroidCloseAllTabsRetainsPinnedTabs, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kAndroidCloseAllTabsRetainsPinnedTabs, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kAndroidContextMenuDisabledMenuItems, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kAndroidDesktopBookmarkDialog, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kAndroidDesktopBookmarkLayout, base::FEATURE_DISABLED_BY_DEFAULT);
