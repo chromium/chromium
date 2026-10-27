@@ -17,6 +17,7 @@
 #include "chrome/browser/download/android/download_dialog_utils.h"
 #include "content/public/browser/download_item_utils.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/jni_zero/jni_zero.h"
 #include "ui/android/window_android.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -33,8 +34,8 @@ InsecureDownloadDialogBridge* InsecureDownloadDialogBridge::GetInstance() {
 
 InsecureDownloadDialogBridge::InsecureDownloadDialogBridge() {
   JNIEnv* env = base::android::AttachCurrentThread();
-  java_object_.Reset(Java_InsecureDownloadDialogBridge_create(
-      env, reinterpret_cast<intptr_t>(this)));
+  java_object_.Reset(
+      Java_InsecureDownloadDialogBridge_create(env, jni_zero::MakeRaw(this)));
 }
 
 InsecureDownloadDialogBridge::~InsecureDownloadDialogBridge() {

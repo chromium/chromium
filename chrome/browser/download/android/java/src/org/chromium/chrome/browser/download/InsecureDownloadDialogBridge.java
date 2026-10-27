@@ -7,10 +7,14 @@ package org.chromium.chrome.browser.download;
 import android.app.Activity;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniPtr;
+import org.jni_zero.JniRawPtr;
 import org.jni_zero.JniType;
+import org.jni_zero.JniTypeToken;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.download.dialogs.InsecureDownloadDialog;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManagerHolder;
@@ -21,18 +25,25 @@ import org.chromium.ui.modaldialog.ModalDialogManagerHolder;
  */
 @NullMarked
 public class InsecureDownloadDialogBridge {
-    private long mNativeInsecureDownloadDialogBridge;
+    @JniType("::InsecureDownloadDialogBridge")
+    interface NativeInsecureDownloadDialogBridge extends JniTypeToken {}
+
+    private @Nullable JniRawPtr<NativeInsecureDownloadDialogBridge>
+            mNativeInsecureDownloadDialogBridge;
 
     /**
      * Constructor, taking a pointer to the native instance.
+     *
      * @param nativeInsecureDownloadDialogBridge Pointer to the native object.
      */
-    public InsecureDownloadDialogBridge(long nativeInsecureDownloadDialogBridge) {
+    public InsecureDownloadDialogBridge(
+            JniRawPtr<NativeInsecureDownloadDialogBridge> nativeInsecureDownloadDialogBridge) {
         mNativeInsecureDownloadDialogBridge = nativeInsecureDownloadDialogBridge;
     }
 
     @CalledByNative
-    private static InsecureDownloadDialogBridge create(long nativeDialog) {
+    private static InsecureDownloadDialogBridge create(
+            JniRawPtr<NativeInsecureDownloadDialogBridge> nativeDialog) {
         return new InsecureDownloadDialogBridge(nativeDialog);
     }
 
@@ -69,17 +80,24 @@ public class InsecureDownloadDialogBridge {
 
     @CalledByNative
     private void destroy() {
-        mNativeInsecureDownloadDialogBridge = 0;
+        if (mNativeInsecureDownloadDialogBridge != null) {
+            mNativeInsecureDownloadDialogBridge.release();
+            mNativeInsecureDownloadDialogBridge = null;
+        }
     }
 
     private void onConfirmed(long callbackId, boolean accepted) {
-        InsecureDownloadDialogBridgeJni.get()
-                .onConfirmed(mNativeInsecureDownloadDialogBridge, callbackId, accepted);
+        if (mNativeInsecureDownloadDialogBridge != null) {
+            InsecureDownloadDialogBridgeJni.get()
+                    .onConfirmed(mNativeInsecureDownloadDialogBridge, callbackId, accepted);
+        }
     }
 
     @NativeMethods
     interface Natives {
         void onConfirmed(
-                long nativeInsecureDownloadDialogBridge, long callbackId, boolean accepted);
+                JniPtr<NativeInsecureDownloadDialogBridge> self,
+                long callbackId,
+                boolean accepted);
     }
 }
