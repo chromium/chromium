@@ -35,6 +35,7 @@ struct AXNodeData;
 namespace pdf {
 
 class PdfAccessibilityTreeBuilder;
+struct ListMarkerKind;
 
 // One nesting level of the list being built: the top-level list, or a sublist
 // inside an item of the level above. A level stays active, accepting new items,
@@ -201,12 +202,11 @@ class PdfAccessibilityTreeBuilderHeuristic {
       const HeuristicPageProperties& page_properties,
       const chrome_pdf::AccessibilityFormGraphicInfo* graphic);
 
-  // Creates a `kListItem` node for `run_context`, updating `list_levels_` to
-  // open a new list, nest inside the previous item, or pop outdented levels.
-  // `item_font_size` is the font size of the item's text, which may differ
-  // from the marker's.
+  // Creates a `kListItem` node for `run_context` with `marker_kind`, updating
+  // `list_levels_` to open a new list, nest inside the previous item, or pop
+  // outdented levels.
   ui::AXNodeData* CreateListItemNode(const TextRunContext& run_context,
-                                     float item_font_size,
+                                     const ListMarkerKind& marker_kind,
                                      std::vector<ListLevel> levels);
 
   ui::AXNodeData* CreateLineBreakingNode(ax::mojom::Role role,
