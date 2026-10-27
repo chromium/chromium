@@ -8,7 +8,6 @@
 #include <utility>
 #include <vector>
 
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/login_accelerators.h"
 #include "ash/public/cpp/login_screen.h"
 #include "ash/public/cpp/login_screen_model.h"
@@ -95,10 +94,8 @@ class OobeWebDialogView : public views::WebDialogView {
                              delegate,
                              std::move(handler),
                              web_contents) {
-    if (features::IsOobeJellyEnabled() || features::IsBootAnimationEnabled()) {
-      set_use_round_corners(/*round=*/true);
-      set_corner_radius(kOobeDialogCornerRadius);
-    }
+    set_use_round_corners(/*round=*/true);
+    set_corner_radius(kOobeDialogCornerRadius);
   }
 
   OobeWebDialogView(const OobeWebDialogView&) = delete;
@@ -173,12 +170,10 @@ class LayoutWidgetDelegateView : public views::WidgetDelegateView {
     SetFocusTraversesOut(true);
     AddChildViewRaw(oobe_view_.get());
 
-    if (features::IsOobeJellyEnabled() || features::IsBootAnimationEnabled()) {
-      // Create a shadow for the OOBE dialog.
-      view_shadow_ = std::make_unique<views::ViewDecoration>(oobe_view_.get());
-      view_shadow_->SetRoundedCornerRadius(kOobeDialogCornerRadius);
-      view_shadow_->SetShadow(kOobeDialogShadowElevation);
-    }
+    // Create a shadow for the OOBE dialog.
+    view_shadow_ = std::make_unique<views::ViewDecoration>(oobe_view_.get());
+    view_shadow_->SetRoundedCornerRadius(kOobeDialogCornerRadius);
+    view_shadow_->SetShadow(kOobeDialogShadowElevation);
   }
 
   LayoutWidgetDelegateView(const LayoutWidgetDelegateView&) = delete;
@@ -544,9 +539,7 @@ void OobeUIDialogDelegate::RemoveObserver(
 
 ui::WebDialogDelegate::FrameKind OobeUIDialogDelegate::GetWebDialogFrameKind()
     const {
-  return (features::IsOobeJellyEnabled() || features::IsBootAnimationEnabled())
-             ? ui::WebDialogDelegate::FrameKind::kDialog
-             : ui::WebDialogDelegate::FrameKind::kNonClient;
+  return ui::WebDialogDelegate::FrameKind::kDialog;
 }
 
 }  // namespace ash

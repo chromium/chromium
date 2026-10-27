@@ -314,8 +314,6 @@ void CreateAndAddOobeUIDataSource(const PrefService& local_state,
   source->AddBoolean("isOsInstallAllowed", switches::IsOsInstallAllowed());
   source->AddBoolean("isOobeFlow", is_oobe_flow);
   source->AddBoolean("isOobeAiIntroEnabled", features::IsOobeAiIntroEnabled());
-  source->AddBoolean("isJellyEnabled", features::IsOobeJellyEnabled());
-  source->AddBoolean("isOobeJellyEnabled", features::IsOobeJellyEnabled());
   source->AddBoolean("isBootAnimationEnabled",
                      features::IsBootAnimationEnabled());
   source->AddBoolean("isChoobeEnabled", features::IsOobeChoobeEnabled());
@@ -855,10 +853,6 @@ base::DictValue OobeUI::GetLocalizedStrings() {
 #endif
 
   std::string oobeClasses = "";
-  // TODO (b/268463435) Cleanup OobeJelly
-  if (features::IsOobeJellyEnabled()) {
-    oobeClasses += "jelly-enabled ";
-  }
   if (features::IsBootAnimationEnabled()) {
     oobeClasses += "boot-animation-enabled ";
   }
