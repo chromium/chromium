@@ -2305,6 +2305,65 @@ TEST_F(HostResolverCacheTest, SerializeAndDeserialize) {
                        std::nullopt, true)));
 }
 
+// An entry with a NetworkAnonymizationKey that can't be deserialized (e.g.,
+// because it uses a NetworkIsolationPartition value that's no longer
+// supported) should be skipped, without preventing other entries from being
+// restored.
+TEST_F(HostResolverCacheTest,
+       DeserializeSkipsEntryWithInvalidNetworkAnonymizationKey) {
+  const std::string kName1 = "foo1.test";
+  const std::string kName2 = "foo2.test";
+  const std::vector<IPEndPoint> kEndpoints = {
+      IPEndPoint(IPAddress::FromIPLiteral("::1").value(), /*port=*/0)};
+  const base::Time kExpiration = clock_.Now() + base::Hours(2);
+  const NetworkAnonymizationKey anonymization_key;
+
+  // Serialize each entry from a separate cache, so their order in the combined
+  // list is known.
+  base::ListValue serialized_entries;
+  for (const std::string& name : {kName1, kName2}) {
+    HostResolverCache cache(kMaxResults, clock_, tick_clock_);
+    cache.Set(
+        std::make_unique<HostResolverInternalDataResult>(
+            name, DnsQueryType::AAAA, tick_clock_.NowTicks() + base::Hours(2),
+            kExpiration, HostResolverInternalResult::Source::kDns, kEndpoints,
+            /*strings=*/std::vector<std::string>{},
+            /*hosts=*/std::vector<HostPortPair>{}),
+        anonymization_key, handles::kInvalidNetworkHandle,
+        HostResolverSource::DNS, /*secure=*/false);
+    base::Value value = cache.Serialize();
+    ASSERT_EQ(value.GetList().size(), 1u);
+    serialized_entries.Append(std::move(value.GetList()[0]));
+  }
+
+  // Replace the first entry's NetworkAnonymizationKey with a value that can't
+  // be deserialized.
+  base::DictValue* first_entry = serialized_entries[0].GetIfDict();
+  ASSERT_TRUE(first_entry);
+  ASSERT_TRUE(first_entry->Find("network_anonymization_key"));
+  first_entry->Set("network_anonymization_key",
+                   base::ListValue().Append("This entry is not valid"));
+
+  HostResolverCache restored_cache(kMaxResults, clock_, tick_clock_);
+  EXPECT_TRUE(restored_cache.RestoreFromValue(
+      base::Value(std::move(serialized_entries))));
+
+  // The entry with the invalid key should have been skipped, but the following
+  // entry should still have been restored.
+  EXPECT_EQ(restored_cache.size_for_testing(), 1u);
+  EXPECT_EQ(restored_cache.LookupStale(kName1, anonymization_key,
+                                       handles::kInvalidNetworkHandle),
+            std::nullopt);
+  EXPECT_THAT(
+      restored_cache.LookupStale(kName2, anonymization_key,
+                                 handles::kInvalidNetworkHandle),
+      Optional(IsStale(ExpectHostResolverInternalDataResult(
+                           kName2, DnsQueryType::AAAA,
+                           HostResolverInternalResult::Source::kDns,
+                           Eq(std::nullopt), Optional(kExpiration), kEndpoints),
+                       std::nullopt, true)));
+}
+
 TEST_F(HostResolverCacheTest, TransientAnonymizationKeyNotSerialized) {
   HostResolverCache cache(kMaxResults, clock_, tick_clock_);
   const std::string kName = "foo.test";

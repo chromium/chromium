@@ -133,7 +133,9 @@ class NET_EXPORT HostResolverCache final {
   // the cache are preferred, thus deserialized results are ignored if any
   // previous result entries would match the same criteria, and deserialization
   // stops on reaching max size, rather than evicting anything. Deserialized
-  // results are also always considered stale by generation.
+  // results are also always considered stale by generation. Entries whose
+  // NetworkAnonymizationKey can no longer be deserialized (e.g., because it was
+  // written by an older version of Chrome) are skipped.
   //
   // Returns false if `value` is malformed to be deserialized.
   //
@@ -148,6 +150,7 @@ class NET_EXPORT HostResolverCache final {
   base::Value SerializeForLogging() const;
 
   bool AtMaxSizeForTesting() const { return entries_.size() >= max_entries_; }
+  size_t size_for_testing() const { return entries_.size(); }
 
  private:
   struct Key {

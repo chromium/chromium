@@ -202,11 +202,17 @@ bool HostResolverCache::RestoreFromValue(const base::Value& value) {
     }
 
     const base::Value* anonymization_key_value = dict->Find(kNakKey);
-    NetworkAnonymizationKey anonymization_key;
-    if (!anonymization_key_value ||
-        !NetworkAnonymizationKey::FromValue(*anonymization_key_value,
-                                            &anonymization_key)) {
+    if (!anonymization_key_value) {
       return false;
+    }
+    NetworkAnonymizationKey anonymization_key;
+    if (!NetworkAnonymizationKey::FromValue(*anonymization_key_value,
+                                            &anonymization_key)) {
+      // The key may be from an older version of Chrome, and use a format or
+      // values that are no longer supported (e.g., a NetworkIsolationPartition
+      // that has since been removed). Skip just this entry, rather than
+      // failing to restore the whole cache.
+      continue;
     }
 
     const base::Value* source_value = dict->Find(kSourceKey);
