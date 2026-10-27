@@ -135,6 +135,8 @@ source_set("extensions") {
     "api/identity/web_auth_flow.h",
     "api/identity/web_auth_flow_info_bar_delegate.cc",
     "api/identity/web_auth_flow_info_bar_delegate.h",
+    "api/image_writer_private/removable_storage_provider.cc",
+    "api/image_writer_private/removable_storage_provider.h",
     "api/instance_id/instance_id_api.cc",
     "api/instance_id/instance_id_api.h",
     "api/management/chrome_management_api_delegate.cc",
@@ -645,6 +647,7 @@ source_set("extensions") {
     "//google_apis/common:request_util",
     "//net",
     "//net:extras",
+    "//services/device/public/mojom",
     "//services/metrics/public/cpp:ukm_builders",
     "//storage/browser",
     "//third_party/zlib/google:zip",
@@ -664,6 +667,7 @@ source_set("extensions") {
     "//components/safe_browsing/core/browser/db:util",
     "//components/signin/core/browser",
     "//extensions/buildflags",
+    "//mojo/public/cpp/bindings",
   ]
   defines = []
 
@@ -687,6 +691,8 @@ source_set("extensions") {
   if (is_android) {
     sources += [
       "api/chrome_extensions_api_client_android.cc",
+      "api/image_writer_private/removable_storage_provider_android.cc",
+      "api/image_writer_private/removable_storage_provider_android.h",
       "api/management/chrome_management_api_delegate_android.cc",
       "api/tabs/tabs_event_router_platform_delegate_android.cc",
       "api/tabs/tabs_event_router_platform_delegate_android.h",
@@ -819,8 +825,6 @@ source_set("extensions") {
       "api/image_writer_private/operation.h",
       "api/image_writer_private/operation_manager.cc",
       "api/image_writer_private/operation_manager.h",
-      "api/image_writer_private/removable_storage_provider.cc",
-      "api/image_writer_private/removable_storage_provider.h",
       "api/image_writer_private/tar_extractor.cc",
       "api/image_writer_private/tar_extractor.h",
       "api/image_writer_private/write_from_file_operation.cc",
@@ -942,7 +946,6 @@ source_set("extensions") {
       "//components/safe_browsing/core/common/proto:realtimeapi_proto",
       "//components/translate/content/browser",
       "//content/public/browser",
-      "//mojo/public/cpp/bindings",
       "//ui/base/unowned_user_data",
     ]
     deps += [
@@ -1120,7 +1123,6 @@ source_set("extensions") {
       "//rlz/buildflags",
       "//services/audio/public/cpp",
       "//services/data_decoder/public/cpp",
-      "//services/device/public/mojom",
       "//services/network/public/mojom",
       "//services/service_manager/public/cpp",
       "//services/service_manager/public/mojom",
@@ -2356,13 +2358,17 @@ source_set("unit_tests") {
   }
 
   if (is_android) {
-    sources += [ "system_display/display_info_provider_android_unittest.cc" ]
+    sources += [
+      "api/image_writer_private/removable_storage_provider_android_unittest.cc",
+      "system_display/display_info_provider_android_unittest.cc",
+    ]
 
     # developer_private_api_unittest.cc includes extension_util_bridge.h under
     # IS_ANDROID.
     deps += [
       "//chrome/browser/ui/android/extensions:public",
       "//chrome/browser/ui/android/tab_model:test_support",
+      "//services/device/public/mojom",
     ]
   }
 

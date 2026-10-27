@@ -3,11 +3,17 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/extensions/api/image_writer_private/removable_storage_provider.h"
+
 #include "base/functional/bind.h"
 #include "base/lazy_instance.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
+#include "build/build_config.h"
 #include "content/public/browser/browser_thread.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/extensions/api/image_writer_private/removable_storage_provider_android.h"
+#endif
 
 namespace extensions {
 
@@ -26,6 +32,9 @@ void RemovableStorageProvider::GetAllDevices(DeviceListReadyCallback callback) {
         base::BindOnce(std::move(callback), g_test_device_list.Get()));
     return;
   }
+#if BUILDFLAG(IS_ANDROID)
+  image_writer::GetAllDevicesOnAndroid(std::move(callback));
+#else
   // We need to do some file i/o to get the device block size
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE,
@@ -33,6 +42,7 @@ void RemovableStorageProvider::GetAllDevices(DeviceListReadyCallback callback) {
        base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
       base::BindOnce(&RemovableStorageProvider::PopulateDeviceList),
       std::move(callback));
+#endif
 }
 
 // static

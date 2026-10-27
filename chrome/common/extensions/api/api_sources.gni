@@ -147,6 +147,8 @@ if (enable_extensions) {
       "media_player_private.json",
     ]
   }
+} else {
+  types_only_schema_sources_ += [ "image_writer_private.webidl" ]
 }
 
 chrome_extensions_api_schema_sources = get_path_info(schema_sources_, "abspath")
