@@ -14,7 +14,6 @@
 #include "chrome/browser/ui/read_anything/read_anything_entry_point_controller.h"
 #include "chrome/browser/ui/read_anything/read_anything_enums.h"
 #include "chrome/browser/ui/read_anything/read_anything_prefs.h"
-#include "chrome/browser/ui/read_anything/read_anything_test_utils.h"
 #include "chrome/browser/ui/side_panel/side_panel_action_callback.h"
 #include "chrome/browser/ui/side_panel/side_panel_enums.h"
 #include "chrome/browser/ui/side_panel/side_panel_registry.h"
@@ -227,9 +226,10 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingSidePanelInteractiveTest, ToggleImages) {
 
       // Show Read Anything side panel.
       Do([this]() {
-        read_anything::test::PreferSidePanel(browser()->GetProfile());
         read_anything::ReadAnythingEntryPointController::ShowUI(
-            browser(), ReadAnythingOpenTrigger::kOmniboxChip);
+            browser(), ReadAnythingOpenTrigger::kOmniboxChip,
+            read_anything::ReadAnythingEntryPointController::Presentation::
+                kSidePanel);
       }),
       WaitForShow(kSidePanelElementId),
       // This is an element in the page.

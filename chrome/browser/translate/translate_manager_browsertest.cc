@@ -27,7 +27,7 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/read_anything/read_anything_controller.h"
-#include "chrome/browser/ui/read_anything/read_anything_test_utils.h"
+#include "chrome/browser/ui/read_anything/read_anything_entry_point_controller.h"
 #include "chrome/browser/ui/side_panel/side_panel_entry_id.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -1571,6 +1571,14 @@ class TranslateManagerReadingModeBrowserTest
   }
 
  protected:
+  // Opens Reading Mode in the side panel.
+  void ShowReadingModeInSidePanel() {
+    read_anything::ReadAnythingEntryPointController::ShowUI(
+        browser(), ReadAnythingOpenTrigger::kAppMenu,
+        read_anything::ReadAnythingEntryPointController::Presentation::
+            kSidePanel);
+  }
+
   // Opens Reading Mode, or closes it if it's open, the same way Reading Mode's
   // keyboard shortcut does.
   void ToggleReadingMode() {
@@ -1608,9 +1616,7 @@ IN_PROC_BROWSER_TEST_F(TranslateManagerReadingModeBrowserTest,
   ChromeTranslateClient* chrome_translate_client = GetChromeTranslateClient();
   EXPECT_FALSE(chrome_translate_client->IsReadingModeOpen());
 
-  read_anything::test::PreferSidePanel(browser()->GetProfile());
-
-  ToggleReadingMode();
+  ShowReadingModeInSidePanel();
   EXPECT_TRUE(base::test::RunUntil(
       [&]() { return chrome_translate_client->IsReadingModeOpen(); }));
 
@@ -1671,9 +1677,7 @@ IN_PROC_BROWSER_TEST_F(TranslateManagerReadingModeBrowserTest,
   EXPECT_FALSE(chrome_translate_client->IsReadingModeOpen());
 
   // Open Reading Mode side panel prior to triggering PDF translation.
-  SidePanelUI* side_panel_ui = SidePanelUI::From(browser());
-  ASSERT_TRUE(side_panel_ui);
-  side_panel_ui->Show(SidePanelEntryId::kReadAnything);
+  ShowReadingModeInSidePanel();
   EXPECT_TRUE(base::test::RunUntil(
       [&]() -> bool { return chrome_translate_client->IsReadingModeOpen(); }));
 
@@ -1686,6 +1690,8 @@ IN_PROC_BROWSER_TEST_F(TranslateManagerReadingModeBrowserTest,
   EXPECT_TRUE(chrome_translate_client->IsReadingModeOpen());
 
   // Clean up
+  SidePanelUI* side_panel_ui = SidePanelUI::From(browser());
+  ASSERT_TRUE(side_panel_ui);
   side_panel_ui->Close();
   EXPECT_TRUE(base::test::RunUntil(
       [&]() -> bool { return !chrome_translate_client->IsReadingModeOpen(); }));
@@ -1714,9 +1720,7 @@ IN_PROC_BROWSER_TEST_F(TranslateManagerReadingModeBrowserTest,
   EXPECT_FALSE(chrome_translate_client->IsReadingModeOpen());
 
   // Open Reading Mode side panel prior to triggering PDF translation.
-  SidePanelUI* side_panel_ui = SidePanelUI::From(browser());
-  ASSERT_TRUE(side_panel_ui);
-  side_panel_ui->Show(SidePanelEntryId::kReadAnything);
+  ShowReadingModeInSidePanel();
   EXPECT_TRUE(base::test::RunUntil(
       [&]() -> bool { return chrome_translate_client->IsReadingModeOpen(); }));
 
@@ -1729,6 +1733,8 @@ IN_PROC_BROWSER_TEST_F(TranslateManagerReadingModeBrowserTest,
   EXPECT_TRUE(chrome_translate_client->IsReadingModeOpen());
 
   // Clean up
+  SidePanelUI* side_panel_ui = SidePanelUI::From(browser());
+  ASSERT_TRUE(side_panel_ui);
   side_panel_ui->Close();
   EXPECT_TRUE(base::test::RunUntil(
       [&]() -> bool { return !chrome_translate_client->IsReadingModeOpen(); }));

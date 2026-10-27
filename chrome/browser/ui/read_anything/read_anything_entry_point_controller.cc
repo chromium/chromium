@@ -259,7 +259,8 @@ void ReadAnythingEntryPointController::InvokePageAction(
 // static
 void ReadAnythingEntryPointController::ShowUI(
     BrowserWindowInterface* bwi,
-    ReadAnythingOpenTrigger open_trigger) {
+    ReadAnythingOpenTrigger open_trigger,
+    Presentation presentation) {
   if (!bwi) {
     return;
   }
@@ -271,8 +272,16 @@ void ReadAnythingEntryPointController::ShowUI(
   if (tabs::TabInterface* tab = bwi->GetActiveTabInterface()) {
     auto* controller = ReadAnythingController::From(tab);
     CHECK(controller);
-    controller->ShowInPreferredUI(
-        base::PassKey<ReadAnythingEntryPointController>(), open_trigger);
+    switch (presentation) {
+      case Presentation::kPreferred:
+        controller->ShowInPreferredUI(
+            base::PassKey<ReadAnythingEntryPointController>(), open_trigger);
+        break;
+      case Presentation::kSidePanel:
+        controller->ShowInSidePanel(
+            base::PassKey<ReadAnythingEntryPointController>(), open_trigger);
+        break;
+    }
   }
 }
 

@@ -141,7 +141,6 @@ if (!is_android) {
       "//chrome/browser/ui:browser_commands",
       "//chrome/browser/ui:browser_window_header",
       "//chrome/browser/ui/read_anything",
-      "//chrome/browser/ui/read_anything:test_support",
       "//chrome/browser/ui/toasts",
       "//chrome/browser/ui/toasts/api:toasts",
       "//chrome/browser/ui/translate",

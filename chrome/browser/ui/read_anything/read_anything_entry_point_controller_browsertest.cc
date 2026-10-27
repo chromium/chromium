@@ -167,6 +167,63 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingEntryPointControllerBrowserTest,
       ReadAnythingOpenTrigger::kReadAnythingContextMenu, 1);
 }
 
+IN_PROC_BROWSER_TEST_F(ReadAnythingEntryPointControllerBrowserTest,
+                       ShowUIInSidePanel) {
+  base::HistogramTester histogram_tester;
+  auto* controller =
+      ReadAnythingController::From(browser()->GetActiveTabInterface());
+  ASSERT_TRUE(controller);
+
+  // Reading Mode opens in the immersive overlay by default, but kSidePanel
+  // opens it in the side panel.
+  ReadAnythingEntryPointController::ShowUI(
+      browser(), ReadAnythingOpenTrigger::kAppMenu,
+      ReadAnythingEntryPointController::Presentation::kSidePanel);
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return SidePanelUI::From(browser())->IsSidePanelEntryShowing(
+        SidePanelEntryKey(SidePanelEntryId::kReadAnything));
+  }));
+  EXPECT_EQ(controller->GetPresentationState(),
+            ReadAnythingController::PresentationState::kInSidePanel);
+  histogram_tester.ExpectUniqueSample(
+      "Accessibility.ReadAnything.ShowTriggered",
+      ReadAnythingOpenTrigger::kAppMenu, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(ReadAnythingEntryPointControllerBrowserTest,
+                       ShowUIInSidePanelFromImmersiveOverlay) {
+  base::HistogramTester histogram_tester;
+  auto* controller =
+      ReadAnythingController::From(browser()->GetActiveTabInterface());
+  ASSERT_TRUE(controller);
+  ReadAnythingEntryPointController::ShowUI(browser(),
+                                           ReadAnythingOpenTrigger::kAppMenu);
+  VerifyUIState();
+
+  // Reading Mode moves from the immersive overlay to the side panel. It was
+  // already open, so this isn't recorded as another open.
+  ReadAnythingEntryPointController::ShowUI(
+      browser(), ReadAnythingOpenTrigger::kReadAnythingContextMenu,
+      ReadAnythingEntryPointController::Presentation::kSidePanel);
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return SidePanelUI::From(browser())->IsSidePanelEntryShowing(
+        SidePanelEntryKey(SidePanelEntryId::kReadAnything));
+  }));
+  EXPECT_EQ(controller->GetPresentationState(),
+            ReadAnythingController::PresentationState::kInSidePanel);
+  histogram_tester.ExpectUniqueSample(
+      "Accessibility.ReadAnything.ShowTriggered",
+      ReadAnythingOpenTrigger::kAppMenu, 1);
+
+  // The immersive overlay was closed and handed its WebUI to the side panel,
+  // so Reading Mode can move back to the immersive overlay. This is checked
+  // right away because the page has no content, so Reading Mode moves itself
+  // to the side panel once it finishes distilling the page.
+  ReadAnythingEntryPointController::ShowUI(browser(),
+                                           ReadAnythingOpenTrigger::kAppMenu);
+  VerifyUIState();
+}
+
 class ReadAnythingEntryPointControllerOmniboxDisabledBrowserTest
     : public ReadAnythingEntryPointControllerTestBase {
  public:

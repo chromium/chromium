@@ -601,6 +601,12 @@ void ReadAnythingController::ShowInPreferredUI(
   }
 }
 
+void ReadAnythingController::ShowInSidePanel(
+    base::PassKey<read_anything::ReadAnythingEntryPointController>,
+    ReadAnythingOpenTrigger trigger) {
+  ShowSidePanelUI(read_anything::ReadAnythingToSidePanelOpenTrigger(trigger));
+}
+
 void ReadAnythingController::ToggleUI(
     base::PassKey<read_anything::ReadAnythingEntryPointController>,
     ReadAnythingOpenTrigger trigger) {
