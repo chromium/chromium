@@ -1767,6 +1767,7 @@ if (is_android) {
       "src/org/chromium/chrome/browser/content_capture/ContentCaptureHistoryDeletionObserverTest.java",
       "src/org/chromium/chrome/browser/cookies/CanonicalCookieTest.java",
       "src/org/chromium/chrome/browser/desktop_site/DesktopSiteSettingsIphControllerUnitTest.java",
+      "src/org/chromium/chrome/browser/device_lock/DeviceLockActivityLauncherImplTest.java",
       "src/org/chromium/chrome/browser/display_cutout/DisplayCutoutControllerTest.java",
       "src/org/chromium/chrome/browser/display_cutout/DisplayCutoutTabHelperTest.java",
       "src/org/chromium/chrome/browser/dom_distiller/ReaderModeActionRateLimiterTest.java",

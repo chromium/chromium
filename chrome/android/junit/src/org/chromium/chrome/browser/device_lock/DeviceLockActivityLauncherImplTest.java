@@ -14,8 +14,6 @@ import static org.mockito.Mockito.verify;
 import android.content.Context;
 import android.content.Intent;
 
-import androidx.test.filters.MediumTest;
-
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -23,14 +21,14 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
-import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncher;
 import org.chromium.google_apis.gaia.CoreAccountId;
 import org.chromium.google_apis.gaia.GaiaId;
 import org.chromium.ui.base.WindowAndroid;
 
 /** Tests for the {@link DeviceLockActivity}. */
-@RunWith(ChromeJUnit4ClassRunner.class)
+@RunWith(BaseRobolectricTestRunner.class)
 public class DeviceLockActivityLauncherImplTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -41,7 +39,6 @@ public class DeviceLockActivityLauncherImplTest {
     private final CoreAccountId mAccountId = new CoreAccountId(new GaiaId("accountId"));
 
     @Test
-    @MediumTest
     public void testLaunchDeviceLockActivity_launchesIntent() {
         DeviceLockActivityLauncherImpl.get()
                 .launchDeviceLockActivity(
@@ -56,7 +53,6 @@ public class DeviceLockActivityLauncherImplTest {
     }
 
     @Test
-    @MediumTest
     public void testLaunchDeviceLockActivity_launchesDeviceLockActivity() {
         doAnswer(
                         (invocation) -> {
