@@ -430,11 +430,17 @@ public class ChromeTabUtils {
 
     /**
      * Creates a new tab in the specified model then waits for it to load.
-     * <p>
-     * Returns when the tab has been created and finishes loading.
+     *
+     * <p>Returns when the tab has been created and finishes loading.
      *
      * @return Newly created Tab object.
+     * @deprecated From a page Station, use {@code openWebPageInNewTab(url)}, which like this method
+     *     appends the new tab at the end of the model. Use {@code openFakeLinkToWebPage(url)} to
+     *     open it next to the current tab instead, or {@code
+     *     Journeys.createRegularTabsWithWebPages()} / {@code
+     *     Journeys.createIncognitoTabsWithWebPages()} to open one or more tabs with web pages.
      */
+    @Deprecated
     public static Tab fullyLoadUrlInNewTab(
             Instrumentation instrumentation,
             final ChromeTabbedActivity activity,
@@ -456,6 +462,15 @@ public class ChromeTabUtils {
         return tab;
     }
 
+    /**
+     * Starts loading {@code url} in {@code tab} without waiting for the load.
+     *
+     * <p>Use this for loads that aren't expected to finish normally, e.g. error or interstitial
+     * pages, auth prompts, or slow pages in a background tab. For loads expected to finish, use
+     * {@code CtaPageStation#loadWebPageProgrammatically()} from a page Station, or without a
+     * Station hop on with {@code Triggers.runTo(trigger).hopOnTo(activity, WebPageStation...)}
+     * ({@code CctPageStation} for Custom Tabs), which also wait for the page.
+     */
     public static void loadUrlOnUiThread(final Tab tab, final String url) {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {

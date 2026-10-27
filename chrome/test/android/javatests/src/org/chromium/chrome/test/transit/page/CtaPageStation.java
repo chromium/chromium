@@ -399,6 +399,34 @@ public class CtaPageStation extends BasePageStation<ChromeTabbedActivity> {
         return openFakeLink(url, WebPageStation.newBuilder());
     }
 
+    /**
+     * Loads a |url| in a new tab as if opened from Chrome UI and waits to transition.
+     *
+     * <p>Unlike {@link #openFakeLink(String, Builder)}, which inserts the new tab next to the
+     * current one, this appends the new tab at the end of the tab model, like opening a new tab
+     * from the app menu does.
+     */
+    public <T extends CtaPageStation> T openUrlInNewTab(String url, Builder<T> builder) {
+        return runOnUiThreadTo(
+                        () ->
+                                getActivity()
+                                        .getTabCreator(mIsIncognito)
+                                        .launchUrl(url, TabLaunchType.FROM_CHROME_UI))
+                .arriveAt(
+                        builder.initOpeningNewTab()
+                                .withIncognito(mIsIncognito)
+                                .withExpectedUrlSubstring(url)
+                                .build());
+    }
+
+    /**
+     * Loads a |url| in a new tab leading to a webpage as if opened from Chrome UI and waits to
+     * transition. The new tab is appended at the end of the tab model.
+     */
+    public WebPageStation openWebPageInNewTab(String url) {
+        return openUrlInNewTab(url, WebPageStation.newBuilder());
+    }
+
     /** Click the URL bar or Search Box to enter the Omnibox. */
     public OmniboxFacility openOmnibox() {
         return openOmnibox(/* fakeSuggestions= */ null);
