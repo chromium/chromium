@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/platform/heap/collection_support/clear_collection_scope.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
@@ -315,6 +316,7 @@ void UpdateOffsetsFromRootFragmentationContext(
 }  // anonymous namespace
 
 LayoutUnit BoxInlineSize(const LayoutBox& box) {
+  DCHECK(!RuntimeEnabledFeatures::FragmentedOofInCbEnabled());
   DCHECK_GT(box.PhysicalFragmentCount(), 0u);
 
   // TODO(almaher): We can't assume all fragments will have the same inline
@@ -325,6 +327,7 @@ LayoutUnit BoxInlineSize(const LayoutBox& box) {
 }
 
 LayoutUnit BoxTotalBlockSize(const LayoutBox& box) {
+  DCHECK(!RuntimeEnabledFeatures::FragmentedOofInCbEnabled());
   wtf_size_t num_fragments = box.PhysicalFragmentCount();
   DCHECK_GT(num_fragments, 0u);
 
