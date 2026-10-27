@@ -34,15 +34,6 @@
 
 namespace {
 
-struct InterceptionBubbleParams {
-  CoreAccountId account_id;
-  signin_metrics::AccessPoint access_point =
-      signin_metrics::AccessPoint::kWebSignin;
-  bool is_new_account = false;
-  bool is_chrome_signin_tab = false;
-  signin::Tribool primary_is_connected = signin::Tribool::kUnknown;
-};
-
 // Helper function similar to DiceTabHelper::FromWebContents(), but also handles
 // the case where |contents| is nullptr.
 DiceTabHelper* GetDiceTabHelperFromWebContents(content::WebContents* contents) {
@@ -63,29 +54,6 @@ void RecordLegacyGaiaIntegrationStageMetrics(bool should_auto_sign_in,
   base::UmaHistogramEnumeration(
       "Signin.SigninManager.SetPrimaryAccountSigninInStage",
       PrimaryAccountSettingGaiaIntegrationState::kOnTokenExchangeSuccess);
-}
-
-void RetryInterceptionBubble(base::WeakPtr<content::WebContents> web_contents,
-                             InterceptionBubbleParams bubble_params) {
-  if (!web_contents) {
-    return;
-  }
-  auto* interceptor = DiceWebSigninInterceptorFactory::GetForProfile(
-      Profile::FromBrowserContext(web_contents->GetBrowserContext()));
-  // No need to trigger the bubble if we are not in a sync-signin tab, or if we
-  // are in a WebSignin case (as this is handled by the first interception
-  // attempt).
-  if (!interceptor || !bubble_params.is_chrome_signin_tab ||
-      bubble_params.access_point == signin_metrics::AccessPoint::kWebSignin) {
-    return;
-  }
-  // Try to show the interceptions bubble by treating this case as WebSignin
-  // on any regular tab.
-  // TODO(crbug.com/426555085): Remove the access_point argument.
-  interceptor->MaybeInterceptWebSignin(
-      web_contents.get(), bubble_params.account_id,
-      signin_metrics::AccessPoint::kWebSignin, bubble_params.is_new_account,
-      /*is_chrome_signin=*/false, bubble_params.primary_is_connected);
 }
 }  // namespace
 
@@ -281,12 +249,12 @@ void ProcessDiceHeaderDelegateImpl::HandleTokenExchangeSuccess(
   DiceTabHelper* tab_helper =
       GetDiceTabHelperFromWebContents(web_contents_.get());
   if (tab_helper) {
-    base::OnceClosure retry_interception_bubble_callback = base::BindOnce(
-        &RetryInterceptionBubble, web_contents_->GetWeakPtr(),
-        InterceptionBubbleParams{account_id, access_point_, is_new_account,
-                                 is_chrome_signin_tab_, primary_is_connected});
-    tab_helper->OnTokenExchangeSuccess(
-        std::move(retry_interception_bubble_callback));
+    // Starts a timer to retry the interception if the Sync header does not
+    // arrive in time.
+    tab_helper->OnTokenExchangeSuccess(DiceTabHelper::TokenExchangeInfo{
+        .account_id = account_id,
+        .is_new_account = is_new_account,
+        .primary_is_connected = primary_is_connected});
   }
 }
 

@@ -14,8 +14,10 @@
 #include "base/timer/elapsed_timer.h"
 #include "base/timer/timer.h"
 #include "components/signin/public/base/signin_metrics.h"
+#include "components/signin/public/identity_manager/tribool.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
+#include "google_apis/gaia/core_account_id.h"
 
 namespace content {
 class NavigationHandle;
@@ -55,6 +57,15 @@ class DiceTabHelper : public content::WebContentsUserData<DiceTabHelper>,
 
   // Callback in response to the receiving the signin header.
   using OnSigninHeaderReceived = base::RepeatingCallback<void()>;
+
+  // Information about a successful auth token exchange. In the tab helper, it
+  // is only used to retry the interception bubble if the Sync header does not
+  // arrive in time.
+  struct TokenExchangeInfo {
+    CoreAccountId account_id;
+    bool is_new_account = false;
+    signin::Tribool primary_is_connected = signin::Tribool::kUnknown;
+  };
 
   // Returns the default callback to turn on history sync in a browser window.
   // Does nothing if there is no browser associated with the web contents.
@@ -130,10 +141,12 @@ class DiceTabHelper : public content::WebContentsUserData<DiceTabHelper>,
 
   // Called to notify that the sign-in flow is complete.
   void OnSigninFlowComplete();
-  // Called to notify that the auth token exchange is complete.
-  // Starts a timer for the Sync header to arrive.
-  void OnTokenExchangeSuccess(
-      base::OnceClosure retry_interception_bubble_callback);
+  // Called to notify that the auth token exchange is complete. Starts a timer
+  // for the Sync header to arrive. If it does not arrive in time, the
+  // interception bubble is retried for `info.account_id`, as if the user
+  // completed a web sign-in. The other fields of `info` are forwarded to the
+  // interceptor.
+  void OnTokenExchangeSuccess(TokenExchangeInfo info);
 
   // Updates the callbacks used by the tab helper.
   void UpdateHistorySyncOptinCallback(
@@ -209,9 +222,12 @@ class DiceTabHelper : public content::WebContentsUserData<DiceTabHelper>,
 
   void SetIsChromeSigninPage(bool is_signin_page);
 
-  // Starts the timer before showing the interception bubble.
-  void StartInterceptionBubbleTimer(
-      base::OnceClosure retry_interception_bubble_callback);
+  // Starts the timer before retrying the interception bubble with `info`.
+  void StartInterceptionBubbleTimer(TokenExchangeInfo info);
+
+  // Called when `retry_interception_bubble_timer` fires. Retries showing the
+  // interception bubble with `info`.
+  void OnRetryInterceptionBubbleTimerFired(TokenExchangeInfo info);
 
   // Stops the timer and aborts the interception bubble.
   void StopInterceptionBubbleTimer();

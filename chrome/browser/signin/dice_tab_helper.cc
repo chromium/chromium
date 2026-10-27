@@ -13,6 +13,8 @@
 #include "base/time/time.h"
 #include "chrome/browser/metrics/profile_metrics_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/dice_web_signin_interceptor.h"
+#include "chrome/browser/signin/dice_web_signin_interceptor_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_promo.h"
 #include "chrome/browser/signin/signin_util.h"
@@ -212,9 +214,8 @@ void DiceTabHelper::OnSigninFlowComplete() {
   Reset();
 }
 
-void DiceTabHelper::OnTokenExchangeSuccess(
-    base::OnceClosure retry_interception_bubble_callback) {
-  StartInterceptionBubbleTimer(std::move(retry_interception_bubble_callback));
+void DiceTabHelper::OnTokenExchangeSuccess(TokenExchangeInfo info) {
+  StartInterceptionBubbleTimer(std::move(info));
 }
 
 void DiceTabHelper::UpdateHistorySyncOptinCallback(
@@ -267,16 +268,39 @@ DiceTabHelper::SetScopedInterceptionBubbleTimerForTesting(
 // `elapsed_time_since_lst_arrival_timer` keeps running. If the enable sync
 // header is later received, then `elapsed_time_since_lst_arrival_timer` is
 // stopped and recorded in the histogram `SyncHeaderArrivalTimeWindow`.
-void DiceTabHelper::StartInterceptionBubbleTimer(
-    base::OnceClosure retry_interception_bubble_callback) {
-  base::OnceClosure timer_callback =
-      std::move(base::BindOnce(&RecordDiceSyncHeaderTimeout, true))
-          .Then(std::move(retry_interception_bubble_callback));
+void DiceTabHelper::StartInterceptionBubbleTimer(TokenExchangeInfo info) {
   state_->elapsed_time_since_lst_arrival_timer =
       std::make_unique<base::ElapsedTimer>();
+  // Unretained is safe because the timer is owned by `this`.
   state_->retry_interception_bubble_timer.Start(
       FROM_HERE, g_delay_before_interception_bubble_retry,
-      std::move(timer_callback));
+      base::BindOnce(&DiceTabHelper::OnRetryInterceptionBubbleTimerFired,
+                     base::Unretained(this), std::move(info)));
+}
+
+void DiceTabHelper::OnRetryInterceptionBubbleTimerFired(
+    TokenExchangeInfo info) {
+  RecordDiceSyncHeaderTimeout(true);
+
+  // No need to trigger the bubble if we are not in a Chrome sign-in tab, or if
+  // we are in a WebSignin case (as this is handled by the first interception
+  // attempt).
+  if (!IsChromeSigninInProgress() ||
+      signin_access_point() == signin_metrics::AccessPoint::kWebSignin) {
+    return;
+  }
+  auto* interceptor = DiceWebSigninInterceptorFactory::GetForProfile(
+      Profile::FromBrowserContext(web_contents()->GetBrowserContext()));
+  if (!interceptor) {
+    return;
+  }
+  // Try to show the interception bubble by treating this case as WebSignin on
+  // any regular tab.
+  // TODO(crbug.com/426555085): Remove the access_point argument.
+  interceptor->MaybeInterceptWebSignin(
+      web_contents(), info.account_id, signin_metrics::AccessPoint::kWebSignin,
+      info.is_new_account,
+      /*is_chrome_signin=*/false, info.primary_is_connected);
 }
 
 void DiceTabHelper::StopInterceptionBubbleTimer() {
