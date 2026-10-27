@@ -1439,4 +1439,57 @@ TEST(CSSPropertyParserTest, PropertyAndKeywordLookup16Bit) {
   EXPECT_EQ(CssValueKeywordID(String(kBlockKelvin)), CSSValueID::kInvalid);
 }
 
+// Values that start with var()/env() take a shortcut past the regular
+// property grammar; they must still end up as (pending-substitution)
+// values with the right !important-ness and text.
+TEST(CSSPropertyParserTest, SubstitutionFunctionFirstShortcut) {
+  struct {
+    CSSPropertyID property;
+    const char* value;
+    bool valid;
+    const char* expected_text;
+    bool important;
+  } cases[] = {
+      {CSSPropertyID::kColor, "var(--x)", true, "var(--x)", false},
+      {CSSPropertyID::kColor, "VAR(--x)", true, "VAR(--x)", false},
+      {CSSPropertyID::kColor, "var(--x) !important", true, "var(--x)", true},
+      {CSSPropertyID::kColor, "var(--x, red) /* c */", true, "var(--x, red)",
+       false},
+      {CSSPropertyID::kColor, "env(safe-area-inset-top, 1px)", true,
+       "env(safe-area-inset-top, 1px)", false},
+      // Shorthands go through the pending-substitution path.
+      {CSSPropertyID::kMargin, "var(--m)", true, "var(--m)", false},
+      {CSSPropertyID::kBorder, "var(--b) solid", true, "var(--b) solid", false},
+      // Invalid: var() with a bad name, or a stray top-level {}.
+      {CSSPropertyID::kColor, "var(x)", false, "", false},
+      {CSSPropertyID::kColor, "var(--x) {}", false, "", false},
+      // Not var(): a string that merely contains the text.
+      {CSSPropertyID::kContent, "\"var(--x)\"", true, "\"var(--x)\"", false},
+  };
+  for (const auto& test : cases) {
+    SCOPED_TRACE(test.value);
+    CSSParserTokenStream stream(test.value);
+    HeapVector<CSSPropertyValue, 64> parsed_properties;
+    bool ok = CSSPropertyParser::ParseValue(
+        test.property, /*allow_important_annotation=*/true, stream,
+        StrictCSSParserContext(SecureContextMode::kSecureContext),
+        parsed_properties, StyleRule::RuleType::kStyle);
+    EXPECT_EQ(ok, test.valid);
+    if (!test.valid) {
+      EXPECT_TRUE(parsed_properties.empty());
+      continue;
+    }
+    ASSERT_FALSE(parsed_properties.empty());
+    for (const CSSPropertyValue& property : parsed_properties) {
+      EXPECT_EQ(property.IsImportant(), test.important);
+    }
+    if (test.property == CSSPropertyID::kColor ||
+        test.property == CSSPropertyID::kContent) {
+      ASSERT_EQ(parsed_properties.size(), 1u);
+      EXPECT_EQ(parsed_properties[0].Value().CssText(),
+                String(test.expected_text));
+    }
+  }
+}
+
 }  // namespace blink

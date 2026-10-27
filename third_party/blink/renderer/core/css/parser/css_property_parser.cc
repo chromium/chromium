@@ -138,8 +138,6 @@ bool CSSPropertyParser::ParseValueStart(CSSPropertyID unresolved_property,
     return true;
   }
 
-  CSSParserTokenStream::State savepoint = stream_.Save();
-
   CSSPropertyID property_id = ResolveCSSPropertyID(unresolved_property);
   const CSSProperty& property = CSSProperty::Get(property_id);
   // If a CSSPropertyID is only a known descriptor (@fontface, @property), not a
@@ -154,53 +152,76 @@ bool CSSPropertyParser::ParseValueStart(CSSPropertyID unresolved_property,
 
   bool is_shorthand = property.IsShorthand();
   DCHECK(context_);
-  CSSParserLocalContext local_context(CSSPropertyName(unresolved_property),
-                                      CSSPropertyID::kInvalid);
 
-  // NOTE: The first branch of the if here uses the tokenized form,
-  // and the second uses the streaming parser. This is only allowed
-  // since they start from the same place and we reset both below,
-  // so they cannot go out of sync.
-  if (is_shorthand) {
-    local_context.SetCurrentShorthand(property_id);
-    // Variable references will fail to parse here and will fall out to the
-    // variable ref parser below.
-    //
-    // NOTE: We call ParseShorthand() with important=false, since we don't know
-    // yet whether we have !important or not. We'll change the flag for all
-    // added properties below (ParseShorthand() makes its own calls to
-    // AddProperty(), since there may be more than one of them).
-    if (To<Shorthand>(property).ParseShorthand(
-            /*important=*/false, stream_, *context_, local_context,
-            *parsed_properties_)) {
-      bool important = css_parsing_utils::MaybeConsumeImportant(
-          stream_, allow_important_annotation);
-      if (stream_.AtEnd()) {
-        if (important) {
-          for (wtf_size_t property_idx = parsed_properties_size;
-               property_idx < parsed_properties_->size(); ++property_idx) {
-            (*parsed_properties_)[property_idx].SetImportant();
+  // A value that starts with var() or env() never parses as a regular
+  // property value (no property grammar accepts these functions); it can only
+  // be handled by the unparsed-declaration path below. That is a very common
+  // case ("color: var(--x)"), so skip the attempt that is certain to fail and
+  // the rewind (and re-tokenization) after it.
+  const CSSValueID first_function_id = stream_.Peek().FunctionId();
+  const bool starts_with_substitution_function =
+      first_function_id == CSSValueID::kVar ||
+      first_function_id == CSSValueID::kEnv;
+
+  if (!starts_with_substitution_function) {
+    CSSParserTokenStream::State savepoint = stream_.Save();
+    CSSParserLocalContext local_context(CSSPropertyName(unresolved_property),
+                                        CSSPropertyID::kInvalid);
+
+    // NOTE: The first branch of the if here uses the tokenized form,
+    // and the second uses the streaming parser. This is only allowed
+    // since they start from the same place and we reset both below,
+    // so they cannot go out of sync.
+    if (is_shorthand) {
+      local_context.SetCurrentShorthand(property_id);
+      // Variable references will fail to parse here and will fall out to the
+      // variable ref parser below.
+      //
+      // NOTE: We call ParseShorthand() with important=false, since we don't
+      // know yet whether we have !important or not. We'll change the flag for
+      // all added properties below (ParseShorthand() makes its own calls to
+      // AddProperty(), since there may be more than one of them).
+      if (To<Shorthand>(property).ParseShorthand(
+              /*important=*/false, stream_, *context_, local_context,
+              *parsed_properties_)) {
+        bool important = css_parsing_utils::MaybeConsumeImportant(
+            stream_, allow_important_annotation);
+        if (stream_.AtEnd()) {
+          if (important) {
+            for (wtf_size_t property_idx = parsed_properties_size;
+                 property_idx < parsed_properties_->size(); ++property_idx) {
+              (*parsed_properties_)[property_idx].SetImportant();
+            }
           }
+          return true;
         }
-        return true;
+      }
+
+      // Remove any properties that may have been added by ParseShorthand()
+      // during a failing parse earlier.
+      parsed_properties_->Shrink(parsed_properties_size);
+    } else {
+      if (const CSSValue* parsed_value = ParseLonghand(
+              unresolved_property, *context_, local_context, stream_)) {
+        bool important = css_parsing_utils::MaybeConsumeImportant(
+            stream_, allow_important_annotation);
+        if (stream_.AtEnd()) {
+          AddProperty(property_id, CSSPropertyID::kInvalid, *parsed_value,
+                      important, IsImplicitProperty::kNotImplicit,
+                      *parsed_properties_);
+          return true;
+        }
       }
     }
 
-    // Remove any properties that may have been added by ParseShorthand()
-    // during a failing parse earlier.
-    parsed_properties_->Shrink(parsed_properties_size);
-  } else {
-    if (const CSSValue* parsed_value = ParseLonghand(
-            unresolved_property, *context_, local_context, stream_)) {
-      bool important = css_parsing_utils::MaybeConsumeImportant(
-          stream_, allow_important_annotation);
-      if (stream_.AtEnd()) {
-        AddProperty(property_id, CSSPropertyID::kInvalid, *parsed_value,
-                    important, IsImplicitProperty::kNotImplicit,
-                    *parsed_properties_);
-        return true;
-      }
-    }
+    // We did not parse properly without variable substitution,
+    // so rewind the stream, and see if parsing it as something
+    // containing variables will help.
+    //
+    // Note that if so, this needs the original text, so we need to take
+    // note of the original offsets so that we can see what we tokenized.
+    stream_.EnsureLookAhead();
+    stream_.Restore(savepoint);
   }
 
   // From here we can end up parsing arbitrary CSS properties via
@@ -211,15 +232,6 @@ bool CSSPropertyParser::ParseValueStart(CSSPropertyID unresolved_property,
   // Some CSSParser APIS are invoked off main thread for canvas APIs, but should
   // never end up here.
   CHECK(IsMainThread());
-
-  // We did not parse properly without variable substitution,
-  // so rewind the stream, and see if parsing it as something
-  // containing variables will help.
-  //
-  // Note that if so, this needs the original text, so we need to take
-  // note of the original offsets so that we can see what we tokenized.
-  stream_.EnsureLookAhead();
-  stream_.Restore(savepoint);
 
   bool important = false;
   CSSVariableData* variable_data =
