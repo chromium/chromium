@@ -571,7 +571,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Stability.CommitLimitTerminatedTab.ReloadResult"
-    enum="CommitLimitTerminatedTabReloadResult" expires_after="2026-11-01">
+    enum="CommitLimitTerminatedTabReloadResult" expires_after="2027-11-01">
   <owner>aattar@google.com</owner>
   <owner>chrome-stability-core@google.com</owner>
   <summary>
@@ -600,7 +600,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Stability.CommitLimitTerminatedTab.Visibility"
-    enum="CommitLimitTerminatedTabVisibility" expires_after="2026-11-01">
+    enum="CommitLimitTerminatedTabVisibility" expires_after="2027-11-01">
   <owner>aattar@google.com</owner>
   <owner>chrome-stability-core@google.com</owner>
   <summary>
