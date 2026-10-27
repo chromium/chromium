@@ -106,7 +106,7 @@ base::DictValue PaymentsRequest::BuildChromeUserContext(
 
   // Set client type and major version metadata.
   chrome_user_context.Set("client_type",
-                          static_cast<int>(GetChromeUserContextClientType()));
+                          std::to_underlying(GetChromeUserContextClientType()));
   chrome_user_context.Set("chrome_major_version",
                           version_info::GetMajorVersionNumberAsInt());
 

@@ -66,8 +66,9 @@ class MandatoryReauthManager {
   static std::vector<NonInteractivePaymentMethodType>
   GetAllNonInteractivePaymentMethodTypesForTesting() {
     std::vector<NonInteractivePaymentMethodType> all_types;
-    for (int i = static_cast<int>(NonInteractivePaymentMethodType::kLocalCard);
-         i <= static_cast<int>(NonInteractivePaymentMethodType::kMaxValue);
+    for (auto i =
+             std::to_underlying(NonInteractivePaymentMethodType::kLocalCard);
+         i <= std::to_underlying(NonInteractivePaymentMethodType::kMaxValue);
          ++i) {
       all_types.push_back(static_cast<NonInteractivePaymentMethodType>(i));
     }

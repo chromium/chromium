@@ -5,6 +5,7 @@
 #include "components/autofill/core/browser/filling/filling_product.h"
 
 #include <string>
+#include <utility>
 
 #include "base/notreached.h"
 #include "build/buildflag.h"
@@ -194,7 +195,7 @@ static int32_t JNI_FillingProductBridge_GetFillingProductFromSuggestionType(
     JNIEnv* env,
     int32_t type) {
   SuggestionType suggestion_type = static_cast<SuggestionType>(type);
-  return static_cast<int32_t>(
+  return std::to_underlying(
       GetFillingProductFromSuggestionType(suggestion_type));
 }
 #endif  // BUILDFLAG(IS_ANDROID)

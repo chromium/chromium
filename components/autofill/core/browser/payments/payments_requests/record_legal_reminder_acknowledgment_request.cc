@@ -56,7 +56,7 @@ std::string RecordLegalReminderAcknowledgmentRequest::GetRequestContent() {
   request_dict.Set("chrome_user_context", BuildChromeUserContext());
   request_dict.Set("legal_message_token",
                    request_details_.legal_message_token);
-  request_dict.Set("flow_type", static_cast<int>(request_details_.flow_type));
+  request_dict.Set("flow_type", std::to_underlying(request_details_.flow_type));
 
   return base::WriteJson(request_dict).value();
 }

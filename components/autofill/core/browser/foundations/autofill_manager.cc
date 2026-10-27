@@ -1052,7 +1052,8 @@ void AutofillManager::UpdateFormCache(
          form_structure.fields()) {
       // This is set by running field classification heuristics and the ML
       // model.
-      for (int i = 0; i <= static_cast<int>(HeuristicSource::kMaxValue); ++i) {
+      for (int i = 0; i <= std::to_underlying(HeuristicSource::kMaxValue);
+           ++i) {
         HeuristicSource s = static_cast<HeuristicSource>(i);
         // Resetting all `HeuristicSource`s also resets the
         // `GetActiveHeuristicSource()`, which in turn resets

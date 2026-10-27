@@ -59,9 +59,10 @@ std::string UpdateBnplPaymentInstrumentRequest::GetRequestContent() {
 
   request_dict.Set("instrument_id", request_details_.instrument_id);
 
-  base::DictValue buy_now_pay_later_info;
-  buy_now_pay_later_info.Set("type", static_cast<int>(request_details_.type));
-  buy_now_pay_later_info.Set("issuer_id", request_details_.issuer_id);
+  auto buy_now_pay_later_info =
+      base::DictValue()
+          .Set("type", std::to_underlying(request_details_.type))
+          .Set("issuer_id", request_details_.issuer_id);
   request_dict.Set("buy_now_pay_later_info", std::move(buy_now_pay_later_info));
 
   request_dict.Set("context_token", request_details_.context_token);
