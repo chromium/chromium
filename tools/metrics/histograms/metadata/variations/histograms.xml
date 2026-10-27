@@ -1006,6 +1006,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Variations.SyntheticSeedFreshness" units="minutes"
+    expires_after="2027-04-20">
+  <owner>alexmitra@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    The time interval between when the fake seed file distributed via GMS was
+    last modified and when it was checked during WebView startup. Recorded on
+    startup if the seed file exists and is readable.
+  </summary>
+</histogram>
+
 <histogram name="Variations.TimeSinceLastFetchAttempt" units="minutes"
     expires_after="2027-03-07">
   <owner>asvitkine@chromium.org</owner>

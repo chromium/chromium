@@ -9048,6 +9048,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.WebView.RunningDuringVariationsUpdate" enum="Boolean"
+    expires_after="2027-04-20">
+  <owner>alexmitra@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Records true if a WebView is running while the synthetic variations file is
+    modified. This metric never records false. The value is recorded after the
+    variations file is successfully modified.
+  </summary>
+</histogram>
+
 <histogram name="Android.WebView.SafeMode.ActionName"
     enum="AndroidWebViewSafeModeActionName" expires_after="never">
 <!-- expires-never: Needed for tracking SafeMode during an incident. -->
