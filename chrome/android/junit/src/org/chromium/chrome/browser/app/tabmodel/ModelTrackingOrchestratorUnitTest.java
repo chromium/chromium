@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.app.tabmodel;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -865,18 +864,17 @@ public class ModelTrackingOrchestratorUnitTest {
         mOrchestrator.setLoadIncognitoTabsOnStart(true);
 
         mOrchestrator.onDataLoaded(mRegularData, /* incognito= */ false);
-        assertTrue(mOrchestrator.isSynchronizerPresent(/* incognito= */ false));
-        verify(mRegularSynchronizer).consumeRestoreOrchestratorFactory(any());
-        verify(mRegularSynchronizer, never()).fullSave(any());
+        assertFalse(mOrchestrator.isSynchronizerPresent(/* incognito= */ false));
 
         mOrchestrator.onRestoredForModel(/* incognito= */ false);
-        verify(mRegularSynchronizer).consumeCollectionObserverFactory(any());
-        verify(mRegularSynchronizer, never()).fullSave(any());
-
         mOrchestrator.onDataLoaded(mStorageLoadedData, /* incognito= */ true);
         mOrchestrator.onRestoredForModel(/* incognito= */ true);
 
+        assertTrue(mOrchestrator.isSynchronizerPresent(/* incognito= */ false));
         assertTrue(mOrchestrator.isSynchronizerPresent(/* incognito= */ true));
+        verify(mRegularSynchronizer, never()).consumeRestoreOrchestratorFactory(any());
+        verify(mRegularSynchronizer).fullSave(any());
+        verify(mRegularSynchronizer).consumeCollectionObserverFactory(any());
         verify(mIncognitoSynchronizer, never()).consumeRestoreOrchestratorFactory(any());
         verify(mIncognitoSynchronizer).fullSave(any());
         verify(mIncognitoSynchronizer).consumeCollectionObserverFactory(any());
@@ -888,13 +886,14 @@ public class ModelTrackingOrchestratorUnitTest {
         createOrchestrator(/* hasCipherFactory= */ true, /* isAuthoritative= */ true);
         mOrchestrator.setLoadIncognitoTabsOnStart(true);
 
-        assertThrows(
-                AssertionError.class,
-                () -> mOrchestrator.onRestoredForModel(/* incognito= */ false));
-
+        mOrchestrator.onRestoredForModel(/* incognito= */ false);
         mOrchestrator.onRestoredForModel(/* incognito= */ true);
 
+        assertTrue(mOrchestrator.isSynchronizerPresent(/* incognito= */ false));
         assertTrue(mOrchestrator.isSynchronizerPresent(/* incognito= */ true));
+        verify(mRegularSynchronizer, never()).consumeRestoreOrchestratorFactory(any());
+        verify(mRegularSynchronizer).fullSave(any());
+        verify(mRegularSynchronizer).consumeCollectionObserverFactory(any());
         verify(mIncognitoSynchronizer, never()).consumeRestoreOrchestratorFactory(any());
         verify(mIncognitoSynchronizer).fullSave(any());
         verify(mIncognitoSynchronizer).consumeCollectionObserverFactory(any());
@@ -909,8 +908,9 @@ public class ModelTrackingOrchestratorUnitTest {
         when(mRegularTabModel.getTabModelType()).thenReturn(TabModelType.STANDARD);
         mOrchestrator.onRestoredForModel(/* incognito= */ false);
 
-        assertFalse(mOrchestrator.isSynchronizerPresent(/* incognito= */ false));
-        verify(mRegularSynchronizer, never()).fullSave(any());
+        assertTrue(mOrchestrator.isSynchronizerPresent(/* incognito= */ false));
+        verify(mRegularSynchronizer).fullSave(any());
+        verify(mRegularSynchronizer).consumeCollectionObserverFactory(any());
     }
 
     @Test
@@ -924,7 +924,7 @@ public class ModelTrackingOrchestratorUnitTest {
         when(mRegularTabModel.getTabModelType()).thenReturn(TabModelType.STANDARD);
         mOrchestrator.onDataLoaded(mRegularData, /* incognito= */ false);
 
-        assertFalse(mOrchestrator.isSynchronizerPresent(/* incognito= */ false));
-        verify(mRegularSynchronizer, never()).consumeRestoreOrchestratorFactory(any());
+        assertTrue(mOrchestrator.isSynchronizerPresent(/* incognito= */ false));
+        verify(mRegularSynchronizer).consumeRestoreOrchestratorFactory(any());
     }
 }
