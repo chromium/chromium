@@ -403,6 +403,78 @@ TEST_F(RasterDecoderOOPTest, CopyTexSubImage2DSizeMismatch) {
     EXPECT_EQ(GL_INVALID_VALUE, GetGLError());
     EXPECT_EQ(representation->ClearedRect(), gfx::Rect(1, 1, 1, 1));
   }
+
+  {
+    // Empty source rect (zero width) with non-empty dest rect.
+    auto& cmd = *GetImmediateAs<cmds::CopySharedImageINTERNALImmediate>();
+    cmd.Init(0, 0, 0, 0, 0, 1, 2, 2, mailboxes);
+    EXPECT_EQ(error::kNoError, ExecuteImmediateCmd(cmd, sizeof(mailboxes)));
+    EXPECT_EQ(GL_INVALID_VALUE, GetGLError());
+    EXPECT_EQ(representation->ClearedRect(), gfx::Rect(1, 1, 1, 1));
+  }
+
+  {
+    // Empty dest rect (zero height) with non-empty source rect.
+    auto& cmd = *GetImmediateAs<cmds::CopySharedImageINTERNALImmediate>();
+    cmd.Init(0, 0, 0, 0, 1, 1, 2, 0, mailboxes);
+    EXPECT_EQ(error::kNoError, ExecuteImmediateCmd(cmd, sizeof(mailboxes)));
+    EXPECT_EQ(GL_INVALID_VALUE, GetGLError());
+    EXPECT_EQ(representation->ClearedRect(), gfx::Rect(1, 1, 1, 1));
+  }
+}
+
+TEST_F(RasterDecoderOOPTest, CopySharedImageEmptyRect) {
+  context_state_->set_need_context_state_reset(true);
+  gpu::Mailbox source_texture_mailbox =
+      CreateMailbox(viz::SinglePlaneFormat::kRGBA_8888,
+                    /*width=*/2, /*height=*/2,
+                    /*cleared=*/true);
+  GLbyte mailboxes[sizeof(gpu::Mailbox) * 2];
+  CopyMailboxes(mailboxes, source_texture_mailbox, client_texture_mailbox_);
+
+  SharedImageRepresentationFactory repr_factory(shared_image_manager(),
+                                                nullptr);
+  auto representation =
+      repr_factory.ProduceSkia(client_texture_mailbox_, context_state_.get());
+  ASSERT_TRUE(representation);
+  EXPECT_FALSE(representation->IsCleared());
+
+  auto& cmd = *GetImmediateAs<cmds::CopySharedImageINTERNALImmediate>();
+
+  // Empty source width with non-empty destination rect.
+  cmd.Init(0, 0, 0, 0, 0, 2, 2, 2, mailboxes);
+  EXPECT_EQ(error::kNoError, ExecuteImmediateCmd(cmd, sizeof(mailboxes)));
+  EXPECT_EQ(GL_INVALID_VALUE, GetGLError());
+  EXPECT_EQ(representation->ClearedRect(), gfx::Rect());
+  EXPECT_FALSE(representation->IsCleared());
+
+  // Empty source height with non-empty destination rect.
+  cmd.Init(0, 0, 0, 0, 2, 0, 2, 2, mailboxes);
+  EXPECT_EQ(error::kNoError, ExecuteImmediateCmd(cmd, sizeof(mailboxes)));
+  EXPECT_EQ(GL_INVALID_VALUE, GetGLError());
+  EXPECT_EQ(representation->ClearedRect(), gfx::Rect());
+  EXPECT_FALSE(representation->IsCleared());
+
+  // Empty destination width with non-empty source rect.
+  cmd.Init(0, 0, 0, 0, 2, 2, 0, 2, mailboxes);
+  EXPECT_EQ(error::kNoError, ExecuteImmediateCmd(cmd, sizeof(mailboxes)));
+  EXPECT_EQ(GL_INVALID_VALUE, GetGLError());
+  EXPECT_EQ(representation->ClearedRect(), gfx::Rect());
+  EXPECT_FALSE(representation->IsCleared());
+
+  // Empty destination height with non-empty source rect.
+  cmd.Init(0, 0, 0, 0, 2, 2, 2, 0, mailboxes);
+  EXPECT_EQ(error::kNoError, ExecuteImmediateCmd(cmd, sizeof(mailboxes)));
+  EXPECT_EQ(GL_INVALID_VALUE, GetGLError());
+  EXPECT_EQ(representation->ClearedRect(), gfx::Rect());
+  EXPECT_FALSE(representation->IsCleared());
+
+  // Both source and destination rects empty.
+  cmd.Init(1, 1, 0, 0, 0, 0, 0, 0, mailboxes);
+  EXPECT_EQ(error::kNoError, ExecuteImmediateCmd(cmd, sizeof(mailboxes)));
+  EXPECT_EQ(GL_INVALID_VALUE, GetGLError());
+  EXPECT_EQ(representation->ClearedRect(), gfx::Rect());
+  EXPECT_FALSE(representation->IsCleared());
 }
 
 TEST_F(RasterDecoderOOPTest, CopyTexSubImage2DTwiceClearsUnclearedTexture) {
