@@ -18,7 +18,6 @@
 #import "components/contextual_search/internal/ios/composebox_query_controller_ios.h"
 #import "components/lens/lens_features.h"
 #import "components/lens/lens_overlay_invocation_source.h"
-#import "components/ntp_tiles/features.h"
 #import "components/omnibox/browser/aim_eligibility_service.h"
 #import "components/omnibox/browser/location_bar_model_impl.h"
 #import "components/search_engines/template_url_service.h"
@@ -55,6 +54,7 @@
 #import "ios/chrome/browser/location_bar/model/web_location_bar_impl.h"
 #import "ios/chrome/browser/location_bar/ui_bundled/location_bar_model_delegate_ios.h"
 #import "ios/chrome/browser/location_bar/ui_bundled/location_bar_url_loader.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
 #import "ios/chrome/browser/omnibox/coordinator/omnibox_coordinator.h"
 #import "ios/chrome/browser/omnibox/public/omnibox_presentation_context.h"
 #import "ios/chrome/browser/omnibox/ui/omnibox_focus_delegate.h"
@@ -99,11 +99,9 @@ contextual_search::ContextualSearchSource ContextualSearchSourceFromEntrypoint(
     ComposeboxEntrypoint entrypoint) {
   switch (entrypoint) {
     case ComposeboxEntrypoint::kNTPAttachImageButton: {
-      ntp_tiles::AimButtonRefactorArm arm =
-          ntp_tiles::GetAimButtonRefactorArm();
-      CHECK(arm == ntp_tiles::AimButtonRefactorArm::kAttachImageQuickAction ||
-            arm ==
-                ntp_tiles::AimButtonRefactorArm::kImageGenerationQuickAction);
+      AimButtonRefactorArm arm = GetAimButtonRefactorArm();
+      CHECK(arm == AimButtonRefactorArm::kAttachImageQuickAction ||
+            arm == AimButtonRefactorArm::kImageGenerationQuickAction);
       return contextual_search::ContextualSearchSource::kNewTabPage;
     }
     case ComposeboxEntrypoint::kNTPAIMButton:

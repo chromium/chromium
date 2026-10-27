@@ -25,7 +25,6 @@
 #import "components/image_fetcher/core/image_fetcher.h"
 #import "components/image_fetcher/core/image_fetcher_service.h"
 #import "components/image_fetcher/core/request_metadata.h"
-#import "components/ntp_tiles/features.h"
 #import "components/ntp_tiles/pref_names.h"
 #import "components/omnibox/browser/aim_eligibility_service.h"
 #import "components/omnibox/browser/omnibox_pref_names.h"
@@ -298,8 +297,8 @@ void CleanupImageFetcherCacheIfNeeded(PrefService* pref_service,
 // Returns whether AIM image generation is allowed.
 BOOL IsAimImageGenerationAllowed(
     const AimEligibilityService* aim_eligibility_service) {
-  CHECK_EQ(ntp_tiles::GetAimButtonRefactorArm(),
-           ntp_tiles::AimButtonRefactorArm::kImageGenerationQuickAction);
+  CHECK_EQ(GetAimButtonRefactorArm(),
+           AimButtonRefactorArm::kImageGenerationQuickAction);
   if (!aim_eligibility_service || !aim_eligibility_service->IsAimEligible() ||
       !aim_eligibility_service->IsServerEligibilityEnabled()) {
     return NO;
@@ -893,8 +892,8 @@ BOOL IsAimImageGenerationAllowed(
   [self.consumer setAIMAllowed:aimAllowed];
   [self.headerConsumer setAIMAllowed:aimAllowed];
   [self.headerConsumer setFuseboxEligible:fuseboxEligible];
-  if (ntp_tiles::GetAimButtonRefactorArm() ==
-      ntp_tiles::AimButtonRefactorArm::kImageGenerationQuickAction) {
+  if (GetAimButtonRefactorArm() ==
+      AimButtonRefactorArm::kImageGenerationQuickAction) {
     [self.consumer setAIMImageGenerationAllowed:IsAimImageGenerationAllowed(
                                                     _aimEligibilityService)];
   }

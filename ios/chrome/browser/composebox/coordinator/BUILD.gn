@@ -90,7 +90,6 @@ source_set("input_plate") {
     "//components/contextual_tasks/public:query_contextualizer",
     "//components/favicon/ios",
     "//components/feature_engagement/public",
-    "//components/ntp_tiles",
     "//components/prefs",
     "//components/security_state/ios",
     "//components/strings",
@@ -225,6 +224,7 @@ group("ntp_deps") {
     "//ios/chrome/browser/ntp/model:util",
     "//ios/chrome/browser/ntp/shared/metrics:constants",
     "//ios/chrome/browser/ntp/shared/metrics:home_metrics",
+    "//ios/chrome/browser/ntp/ui_bundled:feature_flags",
   ]
 }
 

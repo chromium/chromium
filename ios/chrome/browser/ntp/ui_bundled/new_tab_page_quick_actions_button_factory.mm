@@ -5,7 +5,6 @@
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_quick_actions_button_factory.h"
 
 #import "base/check.h"
-#import "components/ntp_tiles/features.h"
 #import "ios/chrome/browser/content_suggestions/ui/content_suggestions_collection_utils.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_color_palette.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_constants.h"
@@ -18,9 +17,6 @@
 #import "ui/base/l10n/l10n_util.h"
 
 namespace {
-
-using ntp_tiles::AimButtonRefactorArm;
-using ntp_tiles::GetAimButtonRefactorArm;
 
 // The border radius for a quick action button.
 constexpr CGFloat kButtonCornerRadius = 24.0;

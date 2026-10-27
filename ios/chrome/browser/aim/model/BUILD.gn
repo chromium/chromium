@@ -19,7 +19,6 @@ source_set("aim_button_service") {
     "//components/image_fetcher/core",
     "//components/keyed_service/core",
     "//components/lens:lens_url_utils",
-    "//components/ntp_tiles",
     "//components/omnibox/browser",
     "//components/search",
     "//components/search_engines",

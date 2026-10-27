@@ -10,7 +10,6 @@
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "components/favicon_base/favicon_types.h"
-#import "components/ntp_tiles/features.h"
 #import "components/ntp_tiles/metrics.h"
 #import "components/ntp_tiles/ntp_tile_impression.h"
 #import "components/ntp_tiles/tile_visual_type.h"
@@ -26,6 +25,7 @@
 #import "ios/chrome/browser/favicon/ui_bundled/favicon_attributes_with_payload.h"
 #import "ios/chrome/browser/ntp/model/set_up_list_item_type.h"
 #import "ios/chrome/browser/ntp/model/set_up_list_metrics.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 
@@ -196,8 +196,7 @@ favicon_base::IconType GetIconTypeFromAttributes(
       index, item.source, item.titleSource,
       GetVisualTypeFromAttributes(item.attributes),
       GetIconTypeFromAttributes(item.attributes), item.URL));
-  if (ntp_tiles::GetAimButtonRefactorArm() ==
-      ntp_tiles::AimButtonRefactorArm::kAimAsMvt) {
+  if (GetAimButtonRefactorArm() == AimButtonRefactorArm::kAimAsMvt) {
     if (item.source == ntp_tiles::TileSource::AI_MODE) {
       RecordAimTileImpressionAtIndex(static_cast<int>(index));
     }

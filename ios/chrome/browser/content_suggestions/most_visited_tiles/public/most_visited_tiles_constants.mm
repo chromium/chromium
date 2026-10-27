@@ -4,7 +4,6 @@
 
 #import "ios/chrome/browser/content_suggestions/most_visited_tiles/public/most_visited_tiles_constants.h"
 
-#import "components/ntp_tiles/features.h"
 #import "ios/chrome/browser/content_suggestions/magic_stack/public/magic_stack_constants.h"
 #import "ios/chrome/browser/content_suggestions/ui/cells/content_suggestions_cells_constants.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
@@ -30,9 +29,7 @@ constexpr CGFloat kMostVisitedClearIconContainerSize = 24.0;
 // allows header space redistribution to compensate and maintain consistent feed
 // peeking.
 CGFloat MostVisitedHeightReductionForAimModule() {
-  if (!IsAimEnabledInNtp() ||
-      ntp_tiles::GetAimButtonRefactorArm() !=
-          ntp_tiles::AimButtonRefactorArm::kAimAsModule) {
+  if (GetAimButtonRefactorArm() != AimButtonRefactorArm::kAimAsModule) {
     return 0.0;
   }
   const CGFloat baseline_title_spacing =
@@ -49,8 +46,7 @@ CGFloat MostVisitedHeightReductionForAimModule() {
 }
 
 CGFloat MostVisitedIconTitleSpacing() {
-  if (ntp_tiles::GetAimButtonRefactorArm() ==
-      ntp_tiles::AimButtonRefactorArm::kAimAsModule) {
+  if (GetAimButtonRefactorArm() == AimButtonRefactorArm::kAimAsModule) {
     return kMostVisitedIconTitleSpacingWithoutBackground;
   }
   if (IsNewTabPageUICleanupEnabled()) {
@@ -60,8 +56,7 @@ CGFloat MostVisitedIconTitleSpacing() {
 }
 
 CGFloat MostVisitedIconContainerSize() {
-  if (ntp_tiles::GetAimButtonRefactorArm() ==
-      ntp_tiles::AimButtonRefactorArm::kAimAsModule) {
+  if (GetAimButtonRefactorArm() == AimButtonRefactorArm::kAimAsModule) {
     return kMostVisitedClearIconContainerSize;
   }
   return kMagicStackImageContainerWidth;
@@ -74,8 +69,7 @@ CGFloat MostVisitedIconContainerCornerRadius() {
 }
 
 NSUInteger MostVisitedMaximumVisibleItemsOnScreen(BOOL aim_available) {
-  if (ntp_tiles::GetAimButtonRefactorArm() ==
-      ntp_tiles::AimButtonRefactorArm::kAimAsModule) {
+  if (GetAimButtonRefactorArm() == AimButtonRefactorArm::kAimAsModule) {
     return aim_available ? kMostVisitedMaximumVisibleItemsOnScreenWithAIMModule
                          : kMostVisitedMaximumVisibleItemsOnScreen;
   }

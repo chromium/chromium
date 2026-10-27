@@ -5,7 +5,6 @@
 #import "ios/chrome/browser/content_suggestions/most_visited_tiles/ui/most_visited_tiles_plus_button_tile_view.h"
 
 #import "base/apple/foundation_util.h"
-#import "components/ntp_tiles/features.h"
 #import "ios/chrome/browser/content_suggestions/most_visited_tiles/public/most_visited_tiles_constants.h"
 #import "ios/chrome/browser/content_suggestions/most_visited_tiles/ui/most_visited_tiles_commands.h"
 #import "ios/chrome/browser/content_suggestions/most_visited_tiles/ui/most_visited_tiles_plus_button_item.h"
@@ -26,8 +25,7 @@
         MostVisitedIconContainerCornerRadius();
 
     if (IsNewTabPageUICleanupEnabled() ||
-        ntp_tiles::GetAimButtonRefactorArm() ==
-            ntp_tiles::AimButtonRefactorArm::kAimAsModule) {
+        GetAimButtonRefactorArm() == AimButtonRefactorArm::kAimAsModule) {
       self.titleLabel.numberOfLines = 1;
       [self setImageBackgroundSize:MostVisitedIconContainerSize()];
       [self setTitleSpacing:MostVisitedIconTitleSpacing()];
@@ -50,8 +48,8 @@
 
   NewTabPageColorPalette* colorPalette =
       [self.traitCollection objectForNewTabPageTrait];
-  BOOL hasBackground = ntp_tiles::GetAimButtonRefactorArm() !=
-                       ntp_tiles::AimButtonRefactorArm::kAimAsModule;
+  BOOL hasBackground =
+      GetAimButtonRefactorArm() != AimButtonRefactorArm::kAimAsModule;
 
   if (colorPalette) {
     self.imageBackgroundView.tintColor =

@@ -14,7 +14,6 @@
 #import "base/ios/block_types.h"
 #import "base/task/sequenced_task_runner.h"
 #import "components/feature_engagement/public/tracker.h"
-#import "components/ntp_tiles/features.h"
 #import "ios/chrome/browser/content_suggestions/magic_stack/public/magic_stack_constants.h"
 #import "ios/chrome/browser/content_suggestions/magic_stack/ui/magic_stack_collection_view.h"
 #import "ios/chrome/browser/content_suggestions/public/ntp_home_constants.h"
@@ -54,9 +53,6 @@
 #import "ui/base/device_form_factor.h"
 
 namespace {
-
-using ntp_tiles::AimButtonRefactorArm;
-using ntp_tiles::GetAimButtonRefactorArm;
 
 // Animation time for the shift up/down animations to focus/defocus omnibox.
 const CGFloat kShiftTilesUpAnimationDuration = 0.1;
@@ -262,8 +258,8 @@ const CGFloat kBackgroundImageAnimationDuration = 0.2;
   [_quickActionsViewController setAIMTitle:_aimTitle
                                       icon:_aimIcon
                         accessibilityLabel:_aimAccessibilityLabel];
-  if (ntp_tiles::GetAimButtonRefactorArm() ==
-      ntp_tiles::AimButtonRefactorArm::kImageGenerationQuickAction) {
+  if (GetAimButtonRefactorArm() ==
+      AimButtonRefactorArm::kImageGenerationQuickAction) {
     [_quickActionsViewController
         setAIMImageGenerationAllowed:_aimImageGenerationAllowed];
   }
@@ -945,8 +941,8 @@ const CGFloat kBackgroundImageAnimationDuration = 0.2;
 }
 
 - (void)setAIMImageGenerationAllowed:(BOOL)allowed {
-  CHECK_EQ(ntp_tiles::GetAimButtonRefactorArm(),
-           ntp_tiles::AimButtonRefactorArm::kImageGenerationQuickAction);
+  CHECK_EQ(GetAimButtonRefactorArm(),
+           AimButtonRefactorArm::kImageGenerationQuickAction);
   _aimImageGenerationAllowed = allowed;
   [_quickActionsViewController setAIMImageGenerationAllowed:allowed];
 }

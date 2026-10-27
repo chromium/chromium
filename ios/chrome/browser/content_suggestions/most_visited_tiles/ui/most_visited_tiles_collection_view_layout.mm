@@ -4,7 +4,6 @@
 
 #import "ios/chrome/browser/content_suggestions/most_visited_tiles/ui/most_visited_tiles_collection_view_layout.h"
 
-#import "components/ntp_tiles/features.h"
 #import "ios/chrome/browser/content_suggestions/magic_stack/public/magic_stack_constants.h"
 #import "ios/chrome/browser/content_suggestions/most_visited_tiles/public/most_visited_tiles_constants.h"
 #import "ios/chrome/browser/content_suggestions/ui/cells/content_suggestions_tile_layout_util.h"
@@ -34,9 +33,8 @@ NSCollectionLayoutSection* GetSectionForMostVisitedTilesCollectionView(
   CGFloat items_per_group = MIN(item_count, max_visible_items);
   NSCollectionLayoutDimension* estimated_height_dimension =
       [NSCollectionLayoutDimension
-          estimatedDimension:ntp_tiles::GetAimButtonRefactorArm() ==
-                                     ntp_tiles::AimButtonRefactorArm::
-                                         kAimAsModule
+          estimatedDimension:GetAimButtonRefactorArm() ==
+                                     AimButtonRefactorArm::kAimAsModule
                                  ? MostVisitedIconContainerSize()
                                  : kMostVisitedTileIconSize];
 
@@ -73,10 +71,10 @@ NSCollectionLayoutSection* GetSectionForMostVisitedTilesCollectionView(
   section.orthogonalScrollingBehavior =
       UICollectionLayoutSectionOrthogonalScrollingBehaviorContinuous;
   section.interGroupSpacing = spacing;
-  section.contentInsets = ntp_tiles::GetAimButtonRefactorArm() ==
-                                  ntp_tiles::AimButtonRefactorArm::kAimAsModule
-                              ? kMostVisitedContainerInsets
-                              : kMagicStackContainerInsets;
+  section.contentInsets =
+      GetAimButtonRefactorArm() == AimButtonRefactorArm::kAimAsModule
+          ? kMostVisitedContainerInsets
+          : kMagicStackContainerInsets;
   return section;
 }
 

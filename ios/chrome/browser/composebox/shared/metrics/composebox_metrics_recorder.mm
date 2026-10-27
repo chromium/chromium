@@ -11,9 +11,9 @@
 #import "base/metrics/user_metrics.h"
 #import "base/notreached.h"
 #import "components/contextual_search/contextual_search_metrics_recorder.h"
-#import "components/ntp_tiles/features.h"
 #import "components/omnibox/browser/searchbox_utils.h"
 #import "ios/chrome/browser/composebox/public/composebox_entrypoint.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
 
 namespace {
 
@@ -135,11 +135,9 @@ std::string GetStringForEntrypoint(ComposeboxEntrypoint entrypoint) {
     case ComposeboxEntrypoint::kNTPAIMButton:
       return ".NTPAIMButton";
     case ComposeboxEntrypoint::kNTPAttachImageButton: {
-      ntp_tiles::AimButtonRefactorArm arm =
-          ntp_tiles::GetAimButtonRefactorArm();
-      CHECK(arm == ntp_tiles::AimButtonRefactorArm::kAttachImageQuickAction ||
-            arm ==
-                ntp_tiles::AimButtonRefactorArm::kImageGenerationQuickAction);
+      AimButtonRefactorArm arm = GetAimButtonRefactorArm();
+      CHECK(arm == AimButtonRefactorArm::kAttachImageQuickAction ||
+            arm == AimButtonRefactorArm::kImageGenerationQuickAction);
       return ".NTPAttachImageButton";
     }
     case ComposeboxEntrypoint::kNTPImageGenerationButton:

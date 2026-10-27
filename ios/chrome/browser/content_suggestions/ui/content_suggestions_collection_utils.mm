@@ -8,7 +8,6 @@
 
 #import "base/check.h"
 #import "base/i18n/rtl.h"
-#import "components/ntp_tiles/features.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/content_suggestions/most_visited_tiles/public/most_visited_tiles_constants.h"
 #import "ios/chrome/browser/content_suggestions/public/ntp_home_constants.h"
@@ -35,8 +34,6 @@
 #import "ui/base/l10n/l10n_util.h"
 
 namespace {
-
-using ntp_tiles::AimButtonRefactorArm;
 
 // Width of search field.
 const CGFloat kSearchFieldLarge = 432;
@@ -464,10 +461,10 @@ CGFloat RedistributableHeaderSpace(UITraitCollection* trait_collection) {
 // Actions row or rearranges tiles such that header vertical space needs to be
 // redistributed.
 bool ShouldRedistributeHeaderSpace(bool aim_allowed) {
-  if (!aim_allowed || !IsAimEnabledInNtp()) {
+  if (!aim_allowed) {
     return false;
   }
-  const AimButtonRefactorArm arm = ntp_tiles::GetAimButtonRefactorArm();
+  const AimButtonRefactorArm arm = GetAimButtonRefactorArm();
   return arm == AimButtonRefactorArm::kAimAsModule ||
          arm == AimButtonRefactorArm::kAimAsMvt ||
          arm == AimButtonRefactorArm::kNoChips;

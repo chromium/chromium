@@ -5,7 +5,6 @@
 #import "ios/chrome/browser/content_suggestions/ui/content_suggestions_view_controller.h"
 
 #import "components/ntp_tiles/constants.h"
-#import "components/ntp_tiles/features.h"
 #import "ios/chrome/browser/content_suggestions/model/content_suggestions_metrics_recorder.h"
 #import "ios/chrome/browser/content_suggestions/most_visited_tiles/public/most_visited_tiles_constants.h"
 #import "ios/chrome/browser/content_suggestions/most_visited_tiles/ui/most_visited_item.h"
@@ -27,9 +26,6 @@
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 
 namespace {
-
-using ntp_tiles::AimButtonRefactorArm;
-using ntp_tiles::GetAimButtonRefactorArm;
 
 // Corner radius for the most visited tiles container.
 constexpr CGFloat kModuleContainerCornerRadius = 24.0;

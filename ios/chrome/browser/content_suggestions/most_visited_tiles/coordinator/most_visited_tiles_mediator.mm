@@ -20,7 +20,6 @@
 #import "components/feature_engagement/public/feature_constants.h"
 #import "components/feature_engagement/public/tracker.h"
 #import "components/history/core/browser/history_service.h"
-#import "components/ntp_tiles/features.h"
 #import "components/ntp_tiles/metrics.h"
 #import "components/ntp_tiles/most_visited_sites.h"
 #import "components/ntp_tiles/ntp_tile.h"
@@ -74,8 +73,6 @@
 namespace {
 
 using l10n_util::GetNSString;
-using ntp_tiles::AimButtonRefactorArm;
-using ntp_tiles::GetAimButtonRefactorArm;
 using ntp_tiles::TileSource;
 
 // Maximum number of most visited tiles fetched that are not pinned sites.
@@ -174,8 +171,7 @@ NSUInteger CountCustomLinksBefore(NSArray<MostVisitedItem*>* items,
     _prefService = prefService;
     _prefChangeRegistrar.Init(_prefService);
     _URLLoadingBrowserAgent = URLLoadingBrowserAgent;
-    if (GetAimButtonRefactorArm() ==
-        ntp_tiles::AimButtonRefactorArm::kAimAsMvt) {
+    if (GetAimButtonRefactorArm() == AimButtonRefactorArm::kAimAsMvt) {
       _aiModeButtonService = aiModeButtonService;
       if (_aiModeButtonService) {
         __weak __typeof(self) weakSelf = self;
@@ -429,8 +425,7 @@ NSUInteger CountCustomLinksBefore(NSArray<MostVisitedItem*>* items,
   }
 
   RecordReorderUserAction();
-  if (ntp_tiles::GetAimButtonRefactorArm() ==
-      ntp_tiles::AimButtonRefactorArm::kAimAsMvt) {
+  if (GetAimButtonRefactorArm() == AimButtonRefactorArm::kAimAsMvt) {
     if (item.source == TileSource::AI_MODE) {
       RecordAimTileMovedToIndex(static_cast<int>(index));
     }
@@ -841,8 +836,7 @@ NSUInteger CountCustomLinksBefore(NSArray<MostVisitedItem*>* items,
   [ContentSuggestionsMetricsRecorder
       recordMostVisitedTileOpened:item
                           atIndex:mostVisitedIndex];
-  if (ntp_tiles::GetAimButtonRefactorArm() ==
-      ntp_tiles::AimButtonRefactorArm::kAimAsMvt) {
+  if (GetAimButtonRefactorArm() == AimButtonRefactorArm::kAimAsMvt) {
     if (item.source == TileSource::AI_MODE) {
       RecordAimTileTappedAtIndex(static_cast<int>(mostVisitedIndex));
       [self.NTPActionsDelegate aimInMostVisitedOpened];

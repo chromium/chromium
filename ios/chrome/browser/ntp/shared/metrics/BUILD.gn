@@ -20,7 +20,6 @@ source_set("metrics") {
     "//components/feed/core/v2/public:common",
     "//components/feed/core/v2/public/ios:feed_ios_public",
     "//components/metrics",
-    "//components/ntp_tiles",
     "//components/prefs",
     "//ios/chrome/browser/discover_feed/model:constants",
     "//ios/chrome/browser/discover_feed/model:discover_feed_refresher",

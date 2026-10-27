@@ -49,7 +49,6 @@ source_set("ui_util") {
   deps = [
     "//base",
     "//base:i18n",
-    "//components/ntp_tiles",
     "//components/strings",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/content_suggestions/most_visited_tiles/public",

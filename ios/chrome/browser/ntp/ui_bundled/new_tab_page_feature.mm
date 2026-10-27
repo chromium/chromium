@@ -32,6 +32,8 @@ BASE_FEATURE(kNewTabPageUICleanup, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kNewTabPageEphemeralTheme, base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kAimButtonRefactor, base::FEATURE_DISABLED_BY_DEFAULT);
+
 #pragma mark - Feature parameters
 
 // Feature parameters for `kOverrideFeedSettings`.
@@ -61,6 +63,14 @@ BASE_FEATURE_PARAM(int,
                    &kNewTabPageUICleanup,
                    kNewTabPageUICleanupArmParam,
                    static_cast<int>(NTPUICleanupVariation::kTightPadding));
+
+const char kAimButtonRefactorArmParam[] = "aim-button-refactor-arm";
+
+BASE_FEATURE_PARAM(int,
+                   kAimButtonRefactorArmParamFeature,
+                   &kAimButtonRefactor,
+                   kAimButtonRefactorArmParam,
+                   static_cast<int>(AimButtonRefactorArm::kDisabled));
 
 BASE_FEATURE_PARAM(std::string,
                    kNewTabPageEphemeralThemeAnimationUrlParam,
@@ -129,6 +139,17 @@ bool IsAimEnabledInNtp() {
   }
 
   return YES;
+}
+
+AimButtonRefactorArm GetAimButtonRefactorArm() {
+  if (!IsAimEnabledInNtp()) {
+    return AimButtonRefactorArm::kDisabled;
+  }
+  if (base::FeatureList::IsEnabled(kAimButtonRefactor)) {
+    return static_cast<AimButtonRefactorArm>(
+        kAimButtonRefactorArmParamFeature.Get());
+  }
+  return AimButtonRefactorArm::kDisabled;
 }
 
 bool IsConsistentLogoDoodleHeightEnabled() {

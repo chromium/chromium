@@ -19,10 +19,10 @@ source_set("metrics") {
     "//base",
     "//base:i18n",
     "//components/contextual_search:public",
-    "//components/ntp_tiles",
     "//components/omnibox/browser",
     "//ios/chrome/browser/composebox/public:composebox_mode",
     "//ios/chrome/browser/composebox/public:entrypoint",
+    "//ios/chrome/browser/ntp/ui_bundled:feature_flags",
     "//skia",
   ]
 }

@@ -21,7 +21,6 @@
 #import "components/feed/core/v2/public/ios/pref_names.h"
 #import "components/feed/feed_feature_list.h"
 #import "components/image_fetcher/ios/ios_image_data_fetcher_wrapper.h"
-#import "components/ntp_tiles/features.h"
 #import "components/ntp_tiles/most_visited_sites.h"
 #import "components/ntp_tiles/pref_names.h"
 #import "components/omnibox/browser/aim_eligibility_service.h"
@@ -198,9 +197,6 @@
 #import "ios/web/public/web_state_observer_bridge.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
 #import "ui/base/l10n/l10n_util_mac.h"
-
-using ntp_tiles::AimButtonRefactorArm;
-using ntp_tiles::GetAimButtonRefactorArm;
 
 @interface NewTabPageCoordinator () <AccountMenuCoordinatorDelegate,
                                      AuthenticationServiceObserving,
@@ -475,7 +471,7 @@ using ntp_tiles::GetAimButtonRefactorArm;
   // Create instance of composeboxInputStateManager to get
   // remainingNumberOfImagesAllowed for compose box picker presenter if the
   // Attach Image button is activated
-  ntp_tiles::AimButtonRefactorArm arm = GetAimButtonRefactorArm();
+  AimButtonRefactorArm arm = GetAimButtonRefactorArm();
   if (arm == AimButtonRefactorArm::kAttachImageQuickAction ||
       arm == AimButtonRefactorArm::kImageGenerationQuickAction) {
     ProfileIOS* profile = self.profile;
@@ -615,7 +611,7 @@ using ntp_tiles::GetAimButtonRefactorArm;
 
   _identityManager = nullptr;
 
-  ntp_tiles::AimButtonRefactorArm arm = GetAimButtonRefactorArm();
+  AimButtonRefactorArm arm = GetAimButtonRefactorArm();
 
   if (arm == AimButtonRefactorArm::kAttachImageQuickAction ||
       arm == AimButtonRefactorArm::kImageGenerationQuickAction) {
@@ -809,7 +805,7 @@ using ntp_tiles::GetAimButtonRefactorArm;
   [self stopSigninCoordinator];
   [self dismissCustomizationMenu];
   [self dismissMultimodalActionsMenu];
-  ntp_tiles::AimButtonRefactorArm arm = GetAimButtonRefactorArm();
+  AimButtonRefactorArm arm = GetAimButtonRefactorArm();
   if (arm == AimButtonRefactorArm::kAttachImageQuickAction ||
       arm == AimButtonRefactorArm::kImageGenerationQuickAction) {
     [self dismissComposeboxPicker];
@@ -817,7 +813,7 @@ using ntp_tiles::GetAimButtonRefactorArm;
 }
 
 - (void)dismissComposeboxPicker {
-  ntp_tiles::AimButtonRefactorArm arm = GetAimButtonRefactorArm();
+  AimButtonRefactorArm arm = GetAimButtonRefactorArm();
   CHECK(arm == AimButtonRefactorArm::kAttachImageQuickAction ||
         arm == AimButtonRefactorArm::kImageGenerationQuickAction);
   [_composeboxPickerPresenter dismissPicker];
@@ -2549,7 +2545,7 @@ using ntp_tiles::GetAimButtonRefactorArm;
 // selecting from the gallery.
 - (void)openComposeboxWithImages:
     (NSArray<ComposeboxPickerImageResult*>*)images {
-  ntp_tiles::AimButtonRefactorArm arm = GetAimButtonRefactorArm();
+  AimButtonRefactorArm arm = GetAimButtonRefactorArm();
   CHECK(arm == AimButtonRefactorArm::kAttachImageQuickAction ||
         arm == AimButtonRefactorArm::kImageGenerationQuickAction);
   [self dismissComposeboxPicker];
@@ -2851,7 +2847,7 @@ using ntp_tiles::GetAimButtonRefactorArm;
 - (void)composeboxPickerPresenter:(ComposeboxPickerPresenter*)presenter
                     didPickImages:
                         (NSArray<ComposeboxPickerImageResult*>*)results {
-  ntp_tiles::AimButtonRefactorArm arm = GetAimButtonRefactorArm();
+  AimButtonRefactorArm arm = GetAimButtonRefactorArm();
   CHECK(arm == AimButtonRefactorArm::kAttachImageQuickAction ||
         arm == AimButtonRefactorArm::kImageGenerationQuickAction);
   CHECK_EQ(_composeboxPickerPresenter, presenter);

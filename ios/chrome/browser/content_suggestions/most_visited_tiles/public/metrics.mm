@@ -8,8 +8,8 @@
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "components/ntp_tiles/constants.h"
-#import "components/ntp_tiles/features.h"
 #import "ios/chrome/browser/content_suggestions/most_visited_tiles/public/pinned_site_action.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
 
 namespace {
 
@@ -82,38 +82,33 @@ void RecordPinnedSiteFormUserAction(PinnedSiteAction form,
 }
 
 void RecordAimTileUnpinnedUserAction() {
-  if (ntp_tiles::GetAimButtonRefactorArm() ==
-      ntp_tiles::AimButtonRefactorArm::kAimAsMvt) {
+  if (GetAimButtonRefactorArm() == AimButtonRefactorArm::kAimAsMvt) {
     base::RecordAction(UserMetricsAction(kAimTileUnpinnedUserActionName));
   }
 }
 
 void RecordAimTileUndoUnpinUserAction() {
-  if (ntp_tiles::GetAimButtonRefactorArm() ==
-      ntp_tiles::AimButtonRefactorArm::kAimAsMvt) {
+  if (GetAimButtonRefactorArm() == AimButtonRefactorArm::kAimAsMvt) {
     base::RecordAction(UserMetricsAction(kAimTileUndoUnpinUserActionName));
   }
 }
 
 void RecordAimTileMovedToIndex(int index) {
-  if (ntp_tiles::GetAimButtonRefactorArm() ==
-      ntp_tiles::AimButtonRefactorArm::kAimAsMvt) {
+  if (GetAimButtonRefactorArm() == AimButtonRefactorArm::kAimAsMvt) {
     base::UmaHistogramExactLinear(kAimTileMovedToIndexHistogram, index,
                                   ntp_tiles::kMaxNumTiles);
   }
 }
 
 void RecordAimTileTappedAtIndex(int index) {
-  if (ntp_tiles::GetAimButtonRefactorArm() ==
-      ntp_tiles::AimButtonRefactorArm::kAimAsMvt) {
+  if (GetAimButtonRefactorArm() == AimButtonRefactorArm::kAimAsMvt) {
     base::UmaHistogramExactLinear(kAimTileTappedAtIndexHistogram, index,
                                   ntp_tiles::kMaxNumTiles);
   }
 }
 
 void RecordAimTileImpressionAtIndex(int index) {
-  if (ntp_tiles::GetAimButtonRefactorArm() ==
-      ntp_tiles::AimButtonRefactorArm::kAimAsMvt) {
+  if (GetAimButtonRefactorArm() == AimButtonRefactorArm::kAimAsMvt) {
     base::UmaHistogramExactLinear(kAimTileImpressionAtIndexHistogram, index,
                                   ntp_tiles::kMaxNumTiles);
   }
