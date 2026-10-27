@@ -80,7 +80,6 @@ enum class NtpSharepointModuleDataType {
 };
 BASE_DECLARE_FEATURE(kNtpShortcuts);
 BASE_DECLARE_FEATURE(kNtpMostVisitedHighDpiFavicons);
-BASE_DECLARE_FEATURE(kNtpHandleMostVisitedNavigationExplicitly);
 BASE_DECLARE_FEATURE(kNtpMostRelevantTabResumptionModule);
 BASE_DECLARE_FEATURE(kNtpMostRelevantTabResumptionAllowFaviconServerFallback);
 BASE_DECLARE_FEATURE(kNtpMostRelevantTabResumptionModuleFallbackToHost);
