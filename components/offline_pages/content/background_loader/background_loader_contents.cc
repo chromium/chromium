@@ -10,6 +10,7 @@
 #include "content/public/browser/media_stream_request.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 
 namespace background_loader {
 
@@ -95,7 +96,7 @@ content::WebContents* BackgroundLoaderContents::AddNewContents(
     content::WebContents* source,
     std::unique_ptr<content::WebContents> new_contents,
     const GURL& target_url,
-    WindowOpenDisposition disposition,
+    ui::mojom::WindowOpenDisposition disposition,
     const blink::mojom::WindowFeatures& window_features,
     bool user_gesture,
     bool* was_blocked) {

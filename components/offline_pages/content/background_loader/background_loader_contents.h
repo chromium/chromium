@@ -10,6 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "content/public/browser/web_contents_delegate.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -73,7 +74,7 @@ class BackgroundLoaderContents : public content::WebContentsDelegate {
       content::WebContents* source,
       std::unique_ptr<content::WebContents> new_contents,
       const GURL& target_url,
-      WindowOpenDisposition disposition,
+      ui::mojom::WindowOpenDisposition disposition,
       const blink::mojom::WindowFeatures& window_features,
       bool user_gesture,
       bool* was_blocked) override;

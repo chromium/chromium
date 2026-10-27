@@ -13,6 +13,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
 #include "third_party/blink/public/mojom/window_features/window_features.mojom.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "url/gurl.h"
 
 namespace background_loader {
@@ -149,7 +150,7 @@ TEST_F(BackgroundLoaderContentsTest, ShouldNotAddNewContents) {
       nullptr /* source */,
       std::unique_ptr<content::WebContents>() /* new_contents */,
       GURL() /* target_url */,
-      WindowOpenDisposition::kCurrentTab /* disposition */,
+      ui::mojom::WindowOpenDisposition::kCurrentTab /* disposition */,
       blink::mojom::WindowFeatures() /* window_features */,
       false /* user_gesture */, &blocked /* was_blocked */);
   ASSERT_TRUE(blocked);
