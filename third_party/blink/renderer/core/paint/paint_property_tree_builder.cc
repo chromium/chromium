@@ -4669,8 +4669,10 @@ void PaintPropertyTreeBuilder::InitPaintProperties() {
                            PaintPropertyChangeType::kNodeAddedOrRemoved);
     }
     if (properties->HasNode<EffectPaintPropertyNodeOrAlias>()) {
-      if (properties->Effect() &&
-          properties->Effect()->HasCanvasDrawableState()) {
+      if ((properties->Effect() &&
+           properties->Effect()->HasCanvasDrawableState()) ||
+          (properties->Filter() && properties->Filter()->Filter() &&
+           properties->Filter()->Filter()->OriginTainted())) {
         context_.force_subtree_update_reasons |=
             PaintPropertyTreeBuilderContext::kSubtreeUpdateIsolationPiercing;
       }
