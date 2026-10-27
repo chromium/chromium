@@ -12,6 +12,7 @@ import android.view.View;
 
 import androidx.viewpager.widget.ViewPager;
 
+import org.chromium.base.DeviceInfo;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -49,9 +50,10 @@ class NoSwipeViewPager extends ViewPager {
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         if (MeasureSpec.EXACTLY == MeasureSpec.getMode(heightMeasureSpec)
-                || !ChromeFeatureList.isEnabled(
-                        ChromeFeatureList
-                                .AUTOFILL_ANDROID_KEYBOARD_ACCESSORY_DYNAMIC_POSITIONING)) {
+                || !(DeviceInfo.isDesktop()
+                        && ChromeFeatureList.isEnabled(
+                                ChromeFeatureList
+                                        .AUTOFILL_ANDROID_KEYBOARD_ACCESSORY_DYNAMIC_POSITIONING))) {
             super.onMeasure(widthMeasureSpec, heightMeasureSpec);
             return;
         }

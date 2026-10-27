@@ -43,6 +43,9 @@
 #include "base/timer/timer.h"
 #include "base/types/optional_ref.h"
 #include "build/build_config.h"
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/device_info.h"
+#endif
 #include "components/autofill/content/renderer/a11y_util.h"
 #include "components/autofill/content/renderer/form_autofill_issues.h"
 #include "components/autofill/content/renderer/form_autofill_util.h"
@@ -362,8 +365,17 @@ AutofillAgent::Config CreateConfig(bool uses_platform_autofill) {
         AutofillAgent::SecureContextRequired(true),
         AutofillAgent::UserGestureRequired(false),
         AutofillAgent::UsesKeyboardAccessoryForSuggestions(false),
+        AutofillAgent::KeyboardAccessoryUsesDynamicPositioning(false),
     };
   }
+  const bool keyboard_accessory_uses_dynamic_positioning =
+#if BUILDFLAG(IS_ANDROID)
+      base::android::device_info::is_desktop() &&
+      base::FeatureList::IsEnabled(
+          features::kAutofillAndroidKeyboardAccessoryDynamicPositioning);
+#else
+      false;
+#endif
   return {
       AutofillAgent::ExtractAllDatalists(false),
       AutofillAgent::FocusRequiresScroll(true),
@@ -371,6 +383,8 @@ AutofillAgent::Config CreateConfig(bool uses_platform_autofill) {
       AutofillAgent::SecureContextRequired(false),
       AutofillAgent::UserGestureRequired(true),
       AutofillAgent::UsesKeyboardAccessoryForSuggestions(BUILDFLAG(IS_ANDROID)),
+      AutofillAgent::KeyboardAccessoryUsesDynamicPositioning(
+          keyboard_accessory_uses_dynamic_positioning),
   };
 }
 }  // namespace
@@ -713,8 +727,7 @@ void AutofillAgent::FocusedElementChanged(
   auto handle_focus_change = [&](base::optional_ref<FormData> extracted_form =
                                      std::nullopt) {
     if (((config_.uses_keyboard_accessory_for_suggestions &&
-          !base::FeatureList::IsEnabled(
-              features::kAutofillAndroidKeyboardAccessoryDynamicPositioning)) ||
+          !config_.keyboard_accessory_uses_dynamic_positioning) ||
          !config_.focus_requires_scroll) &&
         new_focused_element && unsafe_render_frame() &&
         unsafe_render_frame()->GetWebFrame()->HasTransientUserActivation()) {
@@ -1731,8 +1744,7 @@ void AutofillAgent::ShowSuggestions(
         password_generation_agent_->ShowPasswordGenerationSuggestions(
             input_element, form_cache)) {
       is_popup_possibly_visible_ = true;
-      if (!base::FeatureList::IsEnabled(
-              features::kAutofillAndroidKeyboardAccessoryDynamicPositioning)) {
+      if (!config_.keyboard_accessory_uses_dynamic_positioning) {
         return;
       }
     }
@@ -2153,8 +2165,7 @@ void AutofillAgent::DidCompleteFocusChangeInFrame() {
   }
 
   if ((!config_.uses_keyboard_accessory_for_suggestions ||
-       base::FeatureList::IsEnabled(
-           features::kAutofillAndroidKeyboardAccessoryDynamicPositioning)) &&
+       config_.keyboard_accessory_uses_dynamic_positioning) &&
       config_.focus_requires_scroll) {
     HandleFocusChangeComplete(
         /*focused_node_was_last_clicked=*/
@@ -2173,8 +2184,7 @@ void AutofillAgent::DidReceiveLeftMouseDownOrGestureTapInNode(
       node.Focused() || ((contenteditable = node.RootEditableElement()) &&
                          contenteditable.Focused());
 #if BUILDFLAG(IS_ANDROID)
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillAndroidKeyboardAccessoryDynamicPositioning)) {
+  if (config_.keyboard_accessory_uses_dynamic_positioning) {
     last_left_mouse_down_or_gesture_tap_in_node_caused_focus_ = is_focused;
   } else {
     HandleFocusChangeComplete(/*focused_node_was_last_clicked=*/is_focused,

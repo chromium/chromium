@@ -1826,26 +1826,6 @@
             ]
         }
     ],
-    "AutofillAndroidKeyboardAccessoryDynamicPositioning": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "form_factors": [
-                "desktop"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AutofillAndroidDesktopKeyboardAccessoryRevamp",
-                        "AutofillAndroidDesktopSuppressAccessoryOnEmpty",
-                        "AutofillAndroidKeyboardAccessoryDynamicPositioning"
-                    ]
-                }
-            ]
-        }
-    ],
     "AutofillAndroidKeyboardAccessoryHoverPreview": [
         {
             "platforms": [

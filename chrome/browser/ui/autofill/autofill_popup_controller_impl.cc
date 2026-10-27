@@ -318,13 +318,6 @@ void AutofillPopupControllerImpl::Show(
   suggestions_filling_product_ = GetFillingProductFromSuggestionTypes(
       base::ToVector(suggestions, &Suggestion::type), trigger_source_);
 
-  if (suggestions.empty() && !IsAtMemoryTriggerSource(trigger_source_) &&
-      base::FeatureList::IsEnabled(
-          features::kAutofillAndroidKeyboardAccessoryDynamicPositioning)) {
-    Hide(SuggestionHidingReason::kNoSuggestions);
-    return;
-  }
-
   if (!suggestions.empty() &&
       suggestions[0].type == SuggestionType::kDatalistEntry) {
     AutofillMetrics::LogDataListSuggestionsShown();

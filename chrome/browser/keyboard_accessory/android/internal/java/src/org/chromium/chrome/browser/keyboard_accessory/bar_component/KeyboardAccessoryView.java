@@ -31,6 +31,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.base.Callback;
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.TraceEvent;
 import org.chromium.build.annotations.EnsuresNonNull;
 import org.chromium.build.annotations.NullMarked;
@@ -328,8 +329,10 @@ class KeyboardAccessoryView extends LinearLayout {
     private void applyUndockedStyle(
             CoordinatorLayout.LayoutParams params, KeyboardAccessoryStyle style) {
         boolean isDynamicPositioningEnabled =
-                ChromeFeatureList.isEnabled(
-                        ChromeFeatureList.AUTOFILL_ANDROID_KEYBOARD_ACCESSORY_DYNAMIC_POSITIONING);
+                DeviceInfo.isDesktop()
+                        && ChromeFeatureList.isEnabled(
+                                ChromeFeatureList
+                                        .AUTOFILL_ANDROID_KEYBOARD_ACCESSORY_DYNAMIC_POSITIONING);
         // To provide an experience similar to desktop popup, animations are disabled.
         mDisableAnimations = isDynamicPositioningEnabled;
         if (isDynamicPositioningEnabled) {
@@ -402,6 +405,7 @@ class KeyboardAccessoryView extends LinearLayout {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
 
         if (mIsUndocked
+                && DeviceInfo.isDesktop()
                 && ChromeFeatureList.isEnabled(
                         ChromeFeatureList
                                 .AUTOFILL_ANDROID_KEYBOARD_ACCESSORY_DYNAMIC_POSITIONING)) {
@@ -418,6 +422,7 @@ class KeyboardAccessoryView extends LinearLayout {
         }
 
         if (mIsUndocked
+                && DeviceInfo.isDesktop()
                 && ChromeFeatureList.isEnabled(
                         ChromeFeatureList
                                 .AUTOFILL_ANDROID_KEYBOARD_ACCESSORY_DYNAMIC_POSITIONING)) {
