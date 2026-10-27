@@ -29,7 +29,8 @@ import {ErrorType} from './error_page.js';
 import type {SkillsSidebarElement} from './sidebar.js';
 import {Page} from './sidebar.js';
 import {SkillsManagementAction, SkillsManagementPage} from './skill_metrics.mojom-webui.js';
-import {SkillsPageBrowserProxy} from './skills_page_browser_proxy.js';
+import {browserProxyFactory} from './skills.mojom-webui.js';
+import type {BrowserProxy} from './skills.mojom-webui.js';
 import type {UserSkillsPageElement} from './user_skills_page.js';
 
 export interface SkillsAppElement {
@@ -69,7 +70,7 @@ export class SkillsAppElement extends CrLitElement {
       loadTimeData.getBoolean('isSkillsEnabled');
 
   private eventTracker_: EventTracker = new EventTracker();
-  private proxy_: SkillsPageBrowserProxy = SkillsPageBrowserProxy.getInstance();
+  private proxy_: BrowserProxy = browserProxyFactory.getInstance();
   private listenerIds_: number[] = [];
 
   override connectedCallback() {

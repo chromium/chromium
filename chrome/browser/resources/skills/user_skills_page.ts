@@ -16,7 +16,8 @@ import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {Skill} from './skill.mojom-webui.js';
 import {SkillsDialogType} from './skill.mojom-webui.js';
 import {SkillsManagementAction, SkillsManagementPage} from './skill_metrics.mojom-webui.js';
-import {SkillsPageBrowserProxy} from './skills_page_browser_proxy.js';
+import {browserProxyFactory} from './skills.mojom-webui.js';
+import type {BrowserProxy} from './skills.mojom-webui.js';
 import {getCss} from './user_skills_page.css.js';
 import {getHtml} from './user_skills_page.html.js';
 
@@ -51,7 +52,7 @@ export class UserSkillsPageElement extends CrLitElement {
       loadTimeData.getBoolean('shouldDisableBrowseSkillsPage');
   protected accessor webuiRoundedIconsEnabled_: boolean =
       loadTimeData.getBoolean('webuiRoundedIconsEnabled');
-  private proxy_: SkillsPageBrowserProxy = SkillsPageBrowserProxy.getInstance();
+  private proxy_: BrowserProxy = browserProxyFactory.getInstance();
   private listenerIds_: number[] = [];
   private addSkillButtonDisabledTimer_: number|undefined = undefined;
 
@@ -140,7 +141,7 @@ export class UserSkillsPageElement extends CrLitElement {
         SkillsManagementPage.kYourSkills,
         SkillsManagementAction.kClickedAddSkill);
     this.addSkillButtonDisabled_ = true;
-    SkillsPageBrowserProxy.getInstance().handler.openSkillsDialog(
+    this.proxy_.handler.openSkillsDialog(
         SkillsDialogType.kAdd, /*skill=*/ null);
     // Disable the button temporarily to prevent double-clicking.
     // The button will open a dialog to block the page, so we can

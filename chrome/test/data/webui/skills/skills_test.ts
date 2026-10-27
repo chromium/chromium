@@ -10,16 +10,18 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import type {SkillsAppElement} from 'chrome://skills/app.js';
 import type {SkillsSidebarElement} from 'chrome://skills/sidebar.js';
 import {SkillsManagementAction, SkillsManagementPage} from 'chrome://skills/skill_metrics.mojom-webui.js';
-import {SkillsPageBrowserProxy} from 'chrome://skills/skills_page_browser_proxy.js';
+import type {PageHandlerRemote} from 'chrome://skills/skills.mojom-webui.js';
+import {browserProxyFactory} from 'chrome://skills/skills.mojom-webui.js';
 import type {UserSkillsPageElement} from 'chrome://skills/user_skills_page.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import type {TestMock} from 'chrome://webui-test/test_mock.js';
 import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
-import {TestSkillsBrowserProxy} from './test_skills_browser_proxy.js';
+import {createTestSkillsPageHandler} from './test_skills_browser_proxy.js';
 
 suite('SkillsAppPage', function() {
   let app: SkillsAppElement;
-  let browserProxy: TestSkillsBrowserProxy;
+  let handler: TestMock<PageHandlerRemote>&PageHandlerRemote;
 
   function getMenu(): SkillsSidebarElement {
     const menu = app.shadowRoot.querySelector<SkillsSidebarElement>('#menu');
@@ -29,8 +31,9 @@ suite('SkillsAppPage', function() {
 
   setup(function() {
     loadTimeData.overrideValues({isGlicEnabled: true, isSkillsEnabled: true});
-    browserProxy = new TestSkillsBrowserProxy();
-    SkillsPageBrowserProxy.setInstance(browserProxy);
+    handler = createTestSkillsPageHandler();
+    const {instance} = browserProxyFactory.createForTest(handler);
+    browserProxyFactory.setInstance(instance);
     window.history.replaceState({}, '', '/');
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     CrRouter.resetForTesting();
@@ -52,11 +55,10 @@ suite('SkillsAppPage', function() {
     assertTrue(!!tabs);
     assertEquals(2, tabs.length);
 
-    await browserProxy.handler.whenCalled('recordSkillsManagementAction')
-        .then((args) => {
-          assertEquals(SkillsManagementPage.kBrowseSkills, args[0]);
-          assertEquals(SkillsManagementAction.kPageOpened, args[1]);
-        });
+    await handler.whenCalled('recordSkillsManagementAction').then((args) => {
+      assertEquals(SkillsManagementPage.kBrowseSkills, args[0]);
+      assertEquals(SkillsManagementAction.kPageOpened, args[1]);
+    });
   });
 
   test('SkillMenuTabsNavigateCorrectly', async function() {
@@ -102,7 +104,7 @@ suite('SkillsAppPage', function() {
   });
 
   test('DiscoverSkillsPageLoadsCorrectly', async function() {
-    browserProxy.handler.resetResolver('recordSkillsManagementAction');
+    handler.resetResolver('recordSkillsManagementAction');
     navigateTo('/browse');
     assertEquals('chrome://skills/browse', window.location.href);
     await microtasksFinished();
@@ -112,11 +114,10 @@ suite('SkillsAppPage', function() {
     assertEquals(
         loadTimeData.getString('browseSkillsTitle'),
         selectedTab.querySelector('.name')?.textContent?.trim());
-    await browserProxy.handler.whenCalled('recordSkillsManagementAction')
-        .then((args) => {
-          assertEquals(SkillsManagementPage.kBrowseSkills, args[0]);
-          assertEquals(SkillsManagementAction.kPageOpened, args[1]);
-        });
+    await handler.whenCalled('recordSkillsManagementAction').then((args) => {
+      assertEquals(SkillsManagementPage.kBrowseSkills, args[0]);
+      assertEquals(SkillsManagementAction.kPageOpened, args[1]);
+    });
   });
 
   test('UserSkillsPageLoadsCorrectly', async function() {
@@ -242,12 +243,12 @@ suite('SkillsAppPage', function() {
 
   test('Request1PSkillsOnDiscoverSkillsNavigation', async function() {
     navigateTo('/browse');
-    await browserProxy.handler.whenCalled('request1PSkills');
+    await handler.whenCalled('request1PSkills');
   });
 
   test('LogsErrorMetricWhenGlicDisabled', async function() {
-    await browserProxy.handler.whenCalled('recordSkillsManagementAction');
-    browserProxy.handler.resetResolver('recordSkillsManagementAction');
+    await handler.whenCalled('recordSkillsManagementAction');
+    handler.resetResolver('recordSkillsManagementAction');
 
     loadTimeData.overrideValues({isGlicEnabled: false});
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
@@ -255,8 +256,7 @@ suite('SkillsAppPage', function() {
     document.body.appendChild(app);
     await microtasksFinished();
 
-    const args =
-        await browserProxy.handler.whenCalled('recordSkillsManagementAction');
+    const args = await handler.whenCalled('recordSkillsManagementAction');
     assertEquals(SkillsManagementPage.kErrorPage, args[0]);
     assertEquals(SkillsManagementAction.kPageOpened, args[1]);
   });

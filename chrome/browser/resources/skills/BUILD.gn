@@ -40,14 +40,13 @@ build_webui("build") {
     "skills_emoji_picker.ts",
     "skills_empty.html.ts",
     "skills_empty.ts",
-    "skills_page_browser_proxy.ts",
-    "v2/skills_webview_bridge.ts",
-    "v2/skills_webview_bridge_constants.ts",
-    "v2/skills_webview.ts",
     "user_skills_page.html.ts",
     "user_skills_page.ts",
     "v2/skills.ts",
     "v2/skills_dialog.ts",
+    "v2/skills_webview.ts",
+    "v2/skills_webview_bridge.ts",
+    "v2/skills_webview_bridge_constants.ts",
   ]
 
   css_files = [

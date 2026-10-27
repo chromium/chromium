@@ -17,14 +17,8 @@ import {ColorChangeUpdater} from '//resources/cr_components/color_change_listene
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {getRequiredElement} from 'chrome://resources/js/util.js';
 
-import {                          //
-  ErrorPanelType,                 //
-  GlicOverlayPageCallbackRouter,  //
-  GlicOverlayPageHandlerFactory,  //
-  GlicOverlayPageHandlerRemote,   //
-  LoadingStyle,                   //
-} from './glic_overlay.mojom-webui.js';
-import type {OverlayState} from './glic_overlay.mojom-webui.js';
+import {browserProxyFactory, ErrorPanelType, LoadingStyle} from './glic_overlay.mojom-webui.js';
+import type {BrowserProxy, OverlayState} from './glic_overlay.mojom-webui.js';
 
 interface PageElementTypes {
   panelContainer: HTMLElement;
@@ -52,51 +46,20 @@ const $: PageElementTypes = new Proxy({}, {
                               },
                             }) as unknown as PageElementTypes;
 
-export interface GlicOverlayBrowserProxy {
-  handler: GlicOverlayPageHandlerRemote;
-  router: GlicOverlayPageCallbackRouter;
-}
-
-export class GlicOverlayBrowserProxyImpl implements GlicOverlayBrowserProxy {
-  handler: GlicOverlayPageHandlerRemote = new GlicOverlayPageHandlerRemote();
-  router: GlicOverlayPageCallbackRouter = new GlicOverlayPageCallbackRouter();
-
-  constructor() {
-    const factory = GlicOverlayPageHandlerFactory.getRemote();
-    factory.createPageHandler(
-        this.router.$.bindNewPipeAndPassRemote(),
-        this.handler.$.bindNewPipeAndPassReceiver());
-  }
-
-  static getInstance(): GlicOverlayBrowserProxy {
-    return instance || (instance = new GlicOverlayBrowserProxyImpl());
-  }
-
-  static setInstance(newInstance: GlicOverlayBrowserProxy): void {
-    instance = newInstance;
-  }
-}
-
-let instance: GlicOverlayBrowserProxy|null = null;
-
 export class GlicOverlayElement extends HTMLElement {
   static get is() {
     return 'glic-overlay';
   }
 
-  private browserProxy: GlicOverlayBrowserProxy;
+  private browserProxy: BrowserProxy = browserProxyFactory.getInstance();
   private listenerId: number|null = null;
   private listenersSetUp: boolean = false;
 
-  constructor() {
-    super();
-    this.browserProxy = GlicOverlayBrowserProxyImpl.getInstance();
-  }
-
   connectedCallback() {
     if (this.listenerId === null) {
-      this.listenerId = this.browserProxy.router.setOverlayState.addListener(
-          this.setOverlayState.bind(this));
+      this.listenerId =
+          this.browserProxy.callbackRouter.setOverlayState.addListener(
+              this.setOverlayState.bind(this));
     }
     if (!this.listenersSetUp) {
       this.setupListeners();
@@ -106,7 +69,7 @@ export class GlicOverlayElement extends HTMLElement {
 
   disconnectedCallback() {
     if (this.listenerId !== null) {
-      this.browserProxy.router.removeListener(this.listenerId);
+      this.browserProxy.callbackRouter.removeListener(this.listenerId);
       this.listenerId = null;
     }
   }

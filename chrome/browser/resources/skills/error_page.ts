@@ -14,8 +14,8 @@ import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
 import {getCss} from './error_page.css.js';
 import {getHtml} from './error_page.html.js';
 import {SkillsManagementAction, SkillsManagementPage} from './skill_metrics.mojom-webui.js';
-import {SkillsPageHandler} from './skills.mojom-webui.js';
-import {SkillsPageBrowserProxy} from './skills_page_browser_proxy.js';
+import {browserProxyFactory, SkillsPageHandler} from './skills.mojom-webui.js';
+import type {BrowserProxy} from './skills.mojom-webui.js';
 
 export enum ErrorType {
   GLIC_NOT_ENABLED = 'glic-not-enabled',
@@ -46,12 +46,12 @@ export class ErrorPageElement extends CrLitElement {
   accessor errorType: ErrorType = ErrorType.GLIC_NOT_ENABLED;
   accessor dialog: boolean = false;
   // In the V2 path, we will not use the V1 BrowserProxy.
-  private proxy_?: SkillsPageBrowserProxy;
+  private proxy_?: BrowserProxy;
 
-  private getProxy_(): SkillsPageBrowserProxy {
+  private getProxy_(): BrowserProxy {
     assert(!loadTimeData.getBoolean('isSkillsWebViewV2Enabled'));
     if (!this.proxy_) {
-      this.proxy_ = SkillsPageBrowserProxy.getInstance();
+      this.proxy_ = browserProxyFactory.getInstance();
     }
     return this.proxy_;
   }

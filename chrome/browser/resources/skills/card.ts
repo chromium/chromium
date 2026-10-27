@@ -20,7 +20,8 @@ import {getHtml} from './card.html.js';
 import type {Skill} from './skill.mojom-webui.js';
 import {SkillsDialogType, SkillSource} from './skill.mojom-webui.js';
 import {SkillsManagementAction, SkillsManagementPage} from './skill_metrics.mojom-webui.js';
-import {SkillsPageBrowserProxy} from './skills_page_browser_proxy.js';
+import {browserProxyFactory} from './skills.mojom-webui.js';
+import type {BrowserProxy} from './skills.mojom-webui.js';
 
 const GSTATIC_HOSTS: string[] = ['www.gstatic.com', 'gstatic.com'];
 const ILLUSTRATION_WIDTH: number = 238;
@@ -84,7 +85,7 @@ export class SkillCardElement extends CrLitElement {
   protected accessor webuiRoundedIconsEnabled_: boolean =
       loadTimeData.getBoolean('webuiRoundedIconsEnabled');
 
-  private proxy_: SkillsPageBrowserProxy = SkillsPageBrowserProxy.getInstance();
+  private proxy_: BrowserProxy = browserProxyFactory.getInstance();
 
   protected ariaLabelForSkill_(prefix: string): string {
     return loadTimeData.getString(prefix) + ' ' + this.skill.name;

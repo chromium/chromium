@@ -10,21 +10,26 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import type {Skill} from 'chrome://skills/skill.mojom-webui.js';
 import {SkillsDialogType, SkillSource} from 'chrome://skills/skill.mojom-webui.js';
 import {SkillsManagementAction, SkillsManagementPage} from 'chrome://skills/skill_metrics.mojom-webui.js';
-import {SkillsPageBrowserProxy} from 'chrome://skills/skills_page_browser_proxy.js';
+import type {PageHandlerRemote, SkillsPageRemote} from 'chrome://skills/skills.mojom-webui.js';
+import {browserProxyFactory} from 'chrome://skills/skills.mojom-webui.js';
 import type {UserSkillsPageElement} from 'chrome://skills/user_skills_page.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {MockTimer} from 'chrome://webui-test/mock_timer.js';
+import type {TestMock} from 'chrome://webui-test/test_mock.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
-import {TestSkillsBrowserProxy} from './test_skills_browser_proxy.js';
+import {createTestSkillsPageHandler} from './test_skills_browser_proxy.js';
 
 suite('UserSkillsPage', function() {
   let page: UserSkillsPageElement;
-  let browserProxy: TestSkillsBrowserProxy;
+  let handler: TestMock<PageHandlerRemote>&PageHandlerRemote;
+  let callbackRouterRemote: SkillsPageRemote;
 
   setup(async function() {
-    browserProxy = new TestSkillsBrowserProxy();
-    SkillsPageBrowserProxy.setInstance(browserProxy);
+    handler = createTestSkillsPageHandler();
+    const {instance, remote} = browserProxyFactory.createForTest(handler);
+    browserProxyFactory.setInstance(instance);
+    callbackRouterRemote = remote;
     window.history.replaceState({}, '', '/');
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     CrRouter.resetForTesting();
@@ -54,8 +59,7 @@ suite('UserSkillsPage', function() {
   }
 
   async function setUserSkills(skills: Array<Partial<Skill>>) {
-    browserProxy.callbackRouterRemote.updateSkills(
-        skills.map(s => createSkill(s)));
+    callbackRouterRemote.updateSkills(skills.map(s => createSkill(s)));
     await microtasksFinished();
   }
 
@@ -79,16 +83,14 @@ suite('UserSkillsPage', function() {
         page.shadowRoot.querySelector<HTMLElement>('#addSkillButton');
     assertTrue(!!addButton);
     addButton.click();
-    const [dialogType, skill] =
-        await browserProxy.handler.whenCalled('openSkillsDialog');
+    const [dialogType, skill] = await handler.whenCalled('openSkillsDialog');
     assertEquals(SkillsDialogType.kAdd, dialogType);
     assertEquals(null, skill);
 
-    await browserProxy.handler.whenCalled('recordSkillsManagementAction')
-        .then((args) => {
-          assertEquals(SkillsManagementPage.kYourSkills, args[0]);
-          assertEquals(SkillsManagementAction.kClickedAddSkill, args[1]);
-        });
+    await handler.whenCalled('recordSkillsManagementAction').then((args) => {
+      assertEquals(SkillsManagementPage.kYourSkills, args[0]);
+      assertEquals(SkillsManagementAction.kClickedAddSkill, args[1]);
+    });
   });
 
   test('UpdateSkillUpdatesPage', async function() {
@@ -121,7 +123,7 @@ suite('UserSkillsPage', function() {
     assertTrue(!!skillItems[0]);
     assertEquals('Test Skill', skillItems[0].skill.name);
 
-    browserProxy.callbackRouterRemote.removeSkill('123');
+    callbackRouterRemote.removeSkill('123');
     await microtasksFinished();
 
     skillItems = page.shadowRoot.querySelectorAll('skill-card');
@@ -142,7 +144,7 @@ suite('UserSkillsPage', function() {
       },
     ]);
 
-    browserProxy.callbackRouterRemote.removeSkill('123');
+    callbackRouterRemote.removeSkill('123');
     await microtasksFinished();
 
     const skillItems = page.shadowRoot.querySelectorAll('skill-card');
@@ -163,8 +165,7 @@ suite('UserSkillsPage', function() {
     addButton.click();
     await page.updateComplete;
 
-    const [dialogType] =
-        await browserProxy.handler.whenCalled('openSkillsDialog');
+    const [dialogType] = await handler.whenCalled('openSkillsDialog');
     assertEquals(SkillsDialogType.kAdd, dialogType);
     assertTrue(addButton.disabled);
     mockTimer.tick(1000);
@@ -258,7 +259,7 @@ suite('UserSkillsPage', function() {
     assertEquals(3, skillItems.length);
 
     // Delete Skill B
-    browserProxy.callbackRouterRemote.removeSkill('2');
+    callbackRouterRemote.removeSkill('2');
     await microtasksFinished();
     await page.updateComplete;
 
@@ -291,12 +292,10 @@ suite('UserSkillsPage', function() {
 
     const clipboardContent = await navigator.clipboard.readText();
     assertEquals('Describe a good dog', clipboardContent);
-    await browserProxy.handler.whenCalled('recordSkillsManagementAction')
-        .then((args) => {
-          assertEquals(SkillsManagementPage.kYourSkills, args[0]);
-          assertEquals(
-              SkillsManagementAction.kClickedCopyInstructions, args[1]);
-        });
+    await handler.whenCalled('recordSkillsManagementAction').then((args) => {
+      assertEquals(SkillsManagementPage.kYourSkills, args[0]);
+      assertEquals(SkillsManagementAction.kClickedCopyInstructions, args[1]);
+    });
   });
 
   test('RecordsMetricOnEditSkill', async function() {
@@ -317,11 +316,10 @@ suite('UserSkillsPage', function() {
         skillCard.shadowRoot.querySelector<HTMLElement>('#editButton');
     assertTrue(!!editButton);
     editButton.click();
-    await browserProxy.handler.whenCalled('recordSkillsManagementAction')
-        .then((args) => {
-          assertEquals(SkillsManagementPage.kYourSkills, args[0]);
-          assertEquals(SkillsManagementAction.kClickedEditSkill, args[1]);
-        });
+    await handler.whenCalled('recordSkillsManagementAction').then((args) => {
+      assertEquals(SkillsManagementPage.kYourSkills, args[0]);
+      assertEquals(SkillsManagementAction.kClickedEditSkill, args[1]);
+    });
   });
 
   test('RecordsMetricOnDeleteSkill', async function() {
@@ -342,11 +340,10 @@ suite('UserSkillsPage', function() {
         skillCard.shadowRoot.querySelector<HTMLElement>('#deleteButton');
     assertTrue(!!deleteButton);
     deleteButton.click();
-    await browserProxy.handler.whenCalled('recordSkillsManagementAction')
-        .then((args) => {
-          assertEquals(SkillsManagementPage.kYourSkills, args[0]);
-          assertEquals(SkillsManagementAction.kClickedDeleteSkill, args[1]);
-        });
+    await handler.whenCalled('recordSkillsManagementAction').then((args) => {
+      assertEquals(SkillsManagementPage.kYourSkills, args[0]);
+      assertEquals(SkillsManagementAction.kClickedDeleteSkill, args[1]);
+    });
   });
 
   test('RecordsMetricOnExploreButtonClick', async function() {
@@ -356,11 +353,10 @@ suite('UserSkillsPage', function() {
         page.shadowRoot.querySelector<HTMLElement>('#browseSkillsButton');
     assertTrue(!!exploreButton);
     exploreButton.click();
-    await browserProxy.handler.whenCalled('recordSkillsManagementAction')
-        .then((args) => {
-          assertEquals(SkillsManagementPage.kYourSkills, args[0]);
-          assertEquals(SkillsManagementAction.kClickedBrowseSkills, args[1]);
-        });
+    await handler.whenCalled('recordSkillsManagementAction').then((args) => {
+      assertEquals(SkillsManagementPage.kYourSkills, args[0]);
+      assertEquals(SkillsManagementAction.kClickedBrowseSkills, args[1]);
+    });
   });
   test('RecordsMetricOnSearchPerformed', async function() {
     await setUserSkills([{
@@ -372,8 +368,7 @@ suite('UserSkillsPage', function() {
     page.onSearchChanged('Apple');
     await page.updateComplete;
 
-    const args =
-        await browserProxy.handler.whenCalled('recordSkillsManagementAction');
+    const args = await handler.whenCalled('recordSkillsManagementAction');
     assertEquals(SkillsManagementPage.kYourSkills, args[0]);
     assertEquals(SkillsManagementAction.kNonEmptySearch, args[1]);
   });
@@ -388,8 +383,7 @@ suite('UserSkillsPage', function() {
     page.onSearchChanged('Banana');
     await page.updateComplete;
 
-    const args =
-        await browserProxy.handler.whenCalled('recordSkillsManagementAction');
+    const args = await handler.whenCalled('recordSkillsManagementAction');
     assertEquals(SkillsManagementPage.kYourSkills, args[0]);
     assertEquals(SkillsManagementAction.kEmptySearch, args[1]);
   });
