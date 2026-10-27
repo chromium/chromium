@@ -19,7 +19,6 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/api/image_writer_private/error_constants.h"
 #include "chrome/browser/extensions/api/image_writer_private/extraction_properties.h"
-#include "chrome/browser/extensions/api/image_writer_private/image_writer_utility_client.h"
 #include "chrome/browser/extensions/api/image_writer_private/operation_manager.h"
 #include "chrome/browser/extensions/api/image_writer_private/tar_extractor.h"
 #include "chrome/browser/extensions/api/image_writer_private/xz_extractor.h"
@@ -27,6 +26,10 @@
 #include "chrome/browser/extensions/api/image_writer_private/zstd_extractor.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+
+#if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/extensions/api/image_writer_private/image_writer_utility_client.h"
+#endif
 
 namespace extensions::image_writer {
 
@@ -72,8 +75,6 @@ Operation::Operation(base::WeakPtr<OperationManager> manager,
       device_path_(device_path),
 #endif
       temp_dir_(std::make_unique<base::ScopedTempDir>()),
-      stage_(image_writer_api::Stage::kUnknown),
-      progress_(0),
       download_folder_(download_folder),
       task_runner_(
           base::ThreadPool::CreateSequencedTaskRunner(blocking_task_traits())) {
@@ -252,7 +253,7 @@ void Operation::CompleteAndContinue(base::OnceClosure continuation) {
   PostTask(std::move(continuation));
 }
 
-#if !BUILDFLAG(IS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
 void Operation::StartUtilityClient() {
   CHECK(IsRunningInCorrectSequence(), base::NotFatalUntil::M161);
   if (!image_writer_client_.get()) {

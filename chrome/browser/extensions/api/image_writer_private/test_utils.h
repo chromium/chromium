@@ -15,7 +15,6 @@
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/extensions/api/image_writer_private/image_writer_utility_client.h"
 #include "chrome/browser/extensions/api/image_writer_private/operation_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_utils.h"
@@ -27,9 +26,11 @@
 #include "chromeos/ash/components/disks/disk_mount_manager.h"
 #include "chromeos/ash/components/disks/mock_disk_mount_manager.h"
 #endif
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/extensions/api/image_writer_private/image_writer_utility_client.h"
+#endif
 
-namespace extensions {
-namespace image_writer {
+namespace extensions::image_writer {
 
 #if BUILDFLAG(IS_CHROMEOS)
 class ImageWriterFakeImageBurnerClient;
@@ -53,17 +54,19 @@ class MockOperationManager : public OperationManager {
   explicit MockOperationManager(content::BrowserContext* context);
   ~MockOperationManager() override;
 
-  MOCK_METHOD3(OnProgress, void(const ExtensionId& extension_id,
-                                image_writer_api::Stage stage,
-                                int progress));
+  MOCK_METHOD3(OnProgress,
+               void(const ExtensionId& extension_id,
+                    image_writer_api::Stage stage,
+                    int progress));
   // Callback for completion events.
   MOCK_METHOD1(OnComplete, void(const ExtensionId& extension_id));
 
   // Callback for error events.
-  MOCK_METHOD4(OnError, void(const ExtensionId& extension_id,
-                             image_writer_api::Stage stage,
-                             int progress,
-                             const std::string& error_message));
+  MOCK_METHOD4(OnError,
+               void(const ExtensionId& extension_id,
+                    image_writer_api::Stage stage,
+                    int progress,
+                    const std::string& error_message));
 };
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -92,6 +95,14 @@ struct SimulateProgressInfo {
   bool will_succeed;
 };
 
+#if !BUILDFLAG(IS_ANDROID)
+// Test fake for `ImageWriterUtilityClient`, which wraps the out-of-process
+// `chrome::mojom::RemovableStorageWriter` utility service used on Windows,
+// macOS, and Linux (`enable_removable_storage_writer`). ChromeOS uses the
+// D-Bus `ImageBurnerClient` daemon instead, and Android performs USB Bulk-Only
+// Transport via the browser's `UsbDeviceManager` Mojo pipe (or writes directly
+// to local test files) because an isolated Android utility process cannot open
+// raw USB devices or call `UsbDeviceManager::GetUnrestrictedDevice`.
 class FakeImageWriterClient : public ImageWriterUtilityClient {
  public:
   FakeImageWriterClient();
@@ -144,13 +155,14 @@ class FakeImageWriterClient : public ImageWriterUtilityClient {
   std::optional<SimulateProgressInfo> simulate_on_write_;
   std::optional<SimulateProgressInfo> simulate_on_verify_;
 };
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 class ImageWriterTestUtils {
  public:
   ImageWriterTestUtils();
   virtual ~ImageWriterTestUtils();
 
-#if !BUILDFLAG(IS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
   using UtilityClientCreationCallback =
       base::OnceCallback<void(FakeImageWriterClient*)>;
   void RunOnUtilityClientCreation(UtilityClientCreationCallback callback);
@@ -185,7 +197,7 @@ class ImageWriterTestUtils {
 #if BUILDFLAG(IS_CHROMEOS)
   std::unique_ptr<ImageWriterFakeImageBurnerClient> image_burner_client_;
   bool concierge_client_initialized_ = false;
-#else
+#elif !BUILDFLAG(IS_ANDROID)
   scoped_refptr<FakeImageWriterClient> client_;
   ImageWriterUtilityClient::ImageWriterUtilityClientFactory
       utility_client_factory_;
@@ -209,7 +221,6 @@ class ImageWriterUnitTestBase : public testing::Test {
 
 bool GetTestDataDirectory(base::FilePath* path);
 
-}  // namespace image_writer
-}  // namespace extensions
+}  // namespace extensions::image_writer
 
 #endif  // CHROME_BROWSER_EXTENSIONS_API_IMAGE_WRITER_PRIVATE_TEST_UTILS_H_

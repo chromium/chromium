@@ -9,8 +9,8 @@ import("//extensions/buildflags/buildflags.gni")
 # docs/chrome_browser_design_principles.md.
 
 declare_args() {
-  # Whether the file_util service supports .TAR.XZ and .TAR file extraction.
-  # Currently only used by imageWriterPrivate extension API, so only enabled
-  # when Extensions are enabled.
-  enable_extractors = enable_extensions
+  # Whether the file_util service supports .TAR.XZ, .TAR, and .ZST file
+  # extraction. Currently only used by imageWriterPrivate extension API, so
+  # only enabled when `enable_extensions_core` is true.
+  enable_extractors = enable_extensions_core
 }

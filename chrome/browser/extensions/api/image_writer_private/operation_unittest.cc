@@ -21,8 +21,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/zlib/google/zip.h"
 
-namespace extensions {
-namespace image_writer {
+namespace extensions::image_writer {
 
 namespace {
 
@@ -32,7 +31,7 @@ using testing::AtLeast;
 using testing::Gt;
 using testing::Lt;
 
-#if !BUILDFLAG(IS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
 
 void SetUpUtilityClientProgressOnVerifyWrite(
     const std::vector<int>& progress_list,
@@ -41,7 +40,7 @@ void SetUpUtilityClientProgressOnVerifyWrite(
   client->SimulateProgressOnVerifyWrite(progress_list, will_succeed);
 }
 
-#endif  // !BUILDFLAG(IS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
 
 }  // namespace
 
@@ -107,8 +106,7 @@ class ImageWriterOperationTest : public ImageWriterUnitTestBase {
 
     // Operation setup.
     operation_ =
-        new OperationForTest(manager_.AsWeakPtr(),
-                             kDummyExtensionId,
+        new OperationForTest(manager_.AsWeakPtr(), kDummyExtensionId,
                              test_utils_.GetDevicePath().AsUTF8Unsafe(),
                              base::FilePath(FILE_PATH_LITERAL("/var/tmp")));
     operation_->SetImagePath(test_utils_.GetImagePath());
@@ -169,9 +167,9 @@ TEST_F(ImageWriterOperationTest, ExtractZipFile) {
   EXPECT_TRUE(base::ContentsEqual(image_path_, operation_->GetImagePath()));
 }
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
 TEST_F(ImageWriterOperationTest, WriteImageToDevice) {
-#if !BUILDFLAG(IS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
   auto set_up_utility_client_progress =
       [](const std::vector<int>& progress_list, bool will_succeed,
          FakeImageWriterClient* client) {
@@ -197,20 +195,26 @@ TEST_F(ImageWriterOperationTest, WriteImageToDevice) {
   base::RunLoop run_loop;
   operation_->Write(run_loop.QuitClosure());
   run_loop.Run();
+#if BUILDFLAG(IS_ANDROID)
+  EXPECT_TRUE(test_utils_.ImageWrittenToDevice());
+#endif
 }
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) ||
+        // BUILDFLAG(IS_ANDROID)
 
 #if !BUILDFLAG(IS_CHROMEOS)
 // Chrome OS doesn't support verification in the ImageBurner, so these two tests
 // are skipped.
 
 TEST_F(ImageWriterOperationTest, VerifyFileSuccess) {
+#if !BUILDFLAG(IS_ANDROID)
   // Sets up client for simulating Operation::Progress() on
   // Operation::VerifyWrite.
   std::vector<int> progress_list{0, kTestFileSize / 2, kTestFileSize};
   test_utils_.RunOnUtilityClientCreation(
       base::BindOnce(&SetUpUtilityClientProgressOnVerifyWrite, progress_list,
                      true /* will_succeed */));
+#endif
   EXPECT_CALL(manager_, OnError(kDummyExtensionId, _, _, _)).Times(0);
   EXPECT_CALL(manager_, OnProgress(kDummyExtensionId,
                                    image_writer_api::Stage::kVerifyWrite, _))
@@ -222,8 +226,8 @@ TEST_F(ImageWriterOperationTest, VerifyFileSuccess) {
                                    image_writer_api::Stage::kVerifyWrite, 100))
       .Times(AtLeast(1));
 
-  test_utils_.FillFile(
-      test_utils_.GetDevicePath(), kImagePattern, kTestFileSize);
+  test_utils_.FillFile(test_utils_.GetDevicePath(), kImagePattern,
+                       kTestFileSize);
 
   operation_->Start();
   base::RunLoop run_loop;
@@ -232,12 +236,14 @@ TEST_F(ImageWriterOperationTest, VerifyFileSuccess) {
 }
 
 TEST_F(ImageWriterOperationTest, VerifyFileFailure) {
+#if !BUILDFLAG(IS_ANDROID)
   // Sets up client for simulating Operation::Progress() on
   // Operation::VerifyWrite. Also simulates failure.
   std::vector<int> progress_list{0, kTestFileSize / 2};
   test_utils_.RunOnUtilityClientCreation(
       base::BindOnce(&SetUpUtilityClientProgressOnVerifyWrite, progress_list,
                      false /* will_succeed */));
+#endif
   EXPECT_CALL(manager_, OnProgress(kDummyExtensionId,
                                    image_writer_api::Stage::kVerifyWrite, _))
       .Times(AnyNumber());
@@ -249,8 +255,8 @@ TEST_F(ImageWriterOperationTest, VerifyFileFailure) {
                                 image_writer_api::Stage::kVerifyWrite, _, _))
       .Times(1);
 
-  test_utils_.FillFile(
-      test_utils_.GetDevicePath(), kDevicePattern, kTestFileSize);
+  test_utils_.FillFile(test_utils_.GetDevicePath(), kDevicePattern,
+                       kTestFileSize);
 
   operation_->Start();
   operation_->VerifyWrite(base::DoNothing());
@@ -264,5 +270,4 @@ TEST_F(ImageWriterOperationTest, Creation) {
   EXPECT_EQ(image_writer_api::Stage::kUnknown, operation_->GetStage());
 }
 
-}  // namespace image_writer
-}  // namespace extensions
+}  // namespace extensions::image_writer

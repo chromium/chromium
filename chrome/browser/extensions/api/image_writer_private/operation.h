@@ -17,6 +17,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
+#include "base/types/expected.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/common/extensions/api/image_writer_private.h"
@@ -33,15 +34,14 @@ namespace base {
 class FilePath;
 }  // namespace base
 
-namespace extensions {
-namespace image_writer {
+namespace extensions::image_writer {
 
 inline constexpr int kProgressComplete = 100;
 
 class OperationManager;
 class ZstdExtractor;
 
-#if !BUILDFLAG(IS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
 class ImageWriterUtilityClient;
 #endif
 
@@ -168,7 +168,7 @@ class Operation : public base::RefCountedThreadSafe<Operation> {
   friend class ImageWriterUtilityClientTest;
   friend class WriteFromUrlOperationForTest;
 
-#if !BUILDFLAG(IS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
   // Ensures the client is started.  This may be called many times but will only
   // instantiate one client which should exist for the lifetime of the
   // Operation.
@@ -230,8 +230,8 @@ class Operation : public base::RefCountedThreadSafe<Operation> {
 
   // `stage_` and `progress_` are owned by the FILE thread, use `SetStage` and
   // `SetProgress` to update.  Progress should be in the interval [0,100]
-  image_writer_api::Stage stage_;
-  int progress_;
+  image_writer_api::Stage stage_ = image_writer_api::Stage::kUnknown;
+  int progress_ = 0;
 
   // Cleanup operations that must be run.  All these functions are run on
   // `task_runner_`.
@@ -260,7 +260,6 @@ class Operation : public base::RefCountedThreadSafe<Operation> {
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 };
 
-}  // namespace image_writer
-}  // namespace extensions
+}  // namespace extensions::image_writer
 
 #endif  // CHROME_BROWSER_EXTENSIONS_API_IMAGE_WRITER_PRIVATE_OPERATION_H_

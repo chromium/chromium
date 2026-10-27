@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/extensions/api/image_writer_private/destroy_partitions_operation.h"
+
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "build/build_config.h"
@@ -11,8 +12,7 @@
 #include "chrome/browser/extensions/api/image_writer_private/test_utils.h"
 #include "chrome/test/base/testing_profile.h"
 
-namespace extensions {
-namespace image_writer {
+namespace extensions::image_writer {
 namespace {
 
 using testing::_;
@@ -26,7 +26,7 @@ TEST_F(ImageWriterDestroyPartitionsOperationTest, EndToEnd) {
   TestingProfile profile;
   MockOperationManager manager(&profile);
 
-#if !BUILDFLAG(IS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
   auto set_up_utility_client_progress_simulation =
       [](FakeImageWriterClient* client) {
         std::vector<int> progress_list{0, 50, 100};
@@ -65,6 +65,5 @@ TEST_F(ImageWriterDestroyPartitionsOperationTest, EndToEnd) {
   content::RunAllTasksUntilIdle();
 }
 
-} // namespace
-} // namespace image_writer
-} // namespace extensions
+}  // namespace
+}  // namespace extensions::image_writer

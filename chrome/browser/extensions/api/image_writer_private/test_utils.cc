@@ -28,8 +28,7 @@
 #include "chromeos/ash/components/disks/disk.h"
 #endif
 
-namespace extensions {
-namespace image_writer {
+namespace extensions::image_writer {
 
 #if BUILDFLAG(IS_CHROMEOS)
 class ImageWriterFakeImageBurnerClient : public ash::FakeImageBurnerClient {
@@ -93,6 +92,7 @@ SimulateProgressInfo::~SimulateProgressInfo() = default;
 SimulateProgressInfo::SimulateProgressInfo(const SimulateProgressInfo&) =
     default;
 
+#if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
 FakeImageWriterClient::FakeImageWriterClient()
     : ImageWriterUtilityClient(base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
@@ -192,17 +192,16 @@ void FakeImageWriterClient::Cancel() {
   }
 }
 
-#if !BUILDFLAG(IS_CHROMEOS)
 scoped_refptr<ImageWriterUtilityClient> CreateFakeImageWriterUtilityClient(
     ImageWriterTestUtils* utils) {
   auto* client = new FakeImageWriterClient();
   utils->OnUtilityClientCreated(client);
   return base::WrapRefCounted(client);
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
 
 ImageWriterTestUtils::ImageWriterTestUtils()
-#if !BUILDFLAG(IS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
     : utility_client_factory_(
           base::BindRepeating(&CreateFakeImageWriterUtilityClient, this))
 #endif
@@ -211,7 +210,7 @@ ImageWriterTestUtils::ImageWriterTestUtils()
 
 ImageWriterTestUtils::~ImageWriterTestUtils() = default;
 
-#if !BUILDFLAG(IS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
 void ImageWriterTestUtils::OnUtilityClientCreated(
     FakeImageWriterClient* client) {
   DCHECK(!client_.get())
@@ -221,9 +220,7 @@ void ImageWriterTestUtils::OnUtilityClientCreated(
     std::move(client_creation_callback_).Run(client);
   }
 }
-#endif
 
-#if !BUILDFLAG(IS_CHROMEOS)
 void ImageWriterTestUtils::RunOnUtilityClientCreation(
     base::OnceCallback<void(FakeImageWriterClient*)> closure) {
   client_creation_callback_ = std::move(closure);
@@ -259,7 +256,7 @@ void ImageWriterTestUtils::SetUp() {
       "device_id", "device_label", "Vendor", "Product", ash::DeviceType::kUSB,
       kTestFileSize, true, true, true, false, kTestFileSystemType);
   disk_manager->SetupDefaultReplies();
-#else
+#elif !BUILDFLAG(IS_ANDROID)
   ImageWriterUtilityClient::SetFactoryForTesting(&utility_client_factory_);
 #endif
 }
@@ -274,7 +271,7 @@ void ImageWriterTestUtils::TearDown() {
     concierge_client_initialized_ = false;
   }
   ash::disks::DiskMountManager::Shutdown();
-#else
+#elif !BUILDFLAG(IS_ANDROID)
   ImageWriterUtilityClient::SetFactoryForTesting(nullptr);
 #endif
 }
@@ -343,5 +340,4 @@ bool GetTestDataDirectory(base::FilePath* path) {
   return true;
 }
 
-}  // namespace image_writer
-}  // namespace extensions
+}  // namespace extensions::image_writer
