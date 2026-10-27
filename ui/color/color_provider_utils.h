@@ -5,12 +5,10 @@
 #ifndef UI_COLOR_COLOR_PROVIDER_UTILS_H_
 #define UI_COLOR_COLOR_PROVIDER_UTILS_H_
 
-#include <array>
 #include <memory>
 #include <string>
 #include <string_view>
 
-#include "base/compiler_specific.h"
 #include "base/component_export.h"
 #include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
@@ -20,59 +18,6 @@
 #include "ui/color/color_provider_manager.h"
 
 namespace ui {
-
-namespace internal {
-
-// Compile-time string transformation that converts a ColorId enum string
-// literal (e.g. "kColorSysPrimary") into its kebab-case CSS variable name
-// representation (e.g. "--color-sys-primary").
-//
-// The output buffer is guaranteed to fit within `2 * N + 1` characters, as the
-// initial 'k' is replaced by a leading '-', each subsequent uppercase character
-// can expand to at most two characters ('-' followed by the lowercase ASCII
-// character), and one extra slot is reserved for null-termination.
-template <size_t N>
-struct ConstexprCssColorName {
-  std::array<char, 2 * N + 1> data{};
-  size_t length = 0;
-
-  constexpr explicit ConstexprCssColorName(const char (&str)[N]) {
-    if (N <= 1) {
-      return;
-    }
-    // SAFETY: The output buffer `data` has size 2 * N + 1, and each input char
-    // in `str` produces at most 2 output chars plus the leading '-' and '\0'.
-    UNSAFE_BUFFERS({
-      data[length++] = '-';
-      for (size_t i = 1; i < N - 1; ++i) {
-        char c = str[i];
-        if (c >= 'A' && c <= 'Z') {
-          data[length++] = '-';
-          data[length++] = static_cast<char>(c + ('a' - 'A'));
-        } else {
-          data[length++] = c;
-        }
-      }
-      data[length] = '\0';
-    });
-  }
-
-  constexpr std::string_view view() const {
-    return std::string_view(data.data(), length);
-  }
-};
-
-// Structural non-type template parameter (NTTP) holder for
-// `ConstexprCssColorName`. Instantiating this template for a given compile-time
-// name grants it static storage duration within the compilation unit, allowing
-// `view()` to return a persistent `std::string_view` with zero runtime memory
-// allocation or initialization cost.
-template <ConstexprCssColorName Name>
-struct CssNameHolder {
-  static constexpr auto kName = Name;
-};
-
-}  // namespace internal
 
 class ColorMixer;
 
@@ -97,11 +42,10 @@ std::string COMPONENT_EXPORT(COLOR) ColorIdName(ColorId color_id);
 // Converts a `ColorId` to its CSS variable name format (e.g.
 // "--color-primary-background") with zero runtime heap allocations.
 //
-// The mapping is backed by a compile-time `base::MakeFixedFlatMap` constructed
-// via macro expansion and NTTP string storage, providing an O(log N) binary
-// search that yields a persistent `std::string_view`. Falls back to embedder
-// callbacks (such as `ChromeColorProviderUtils`) if the ID is not found in the
-// core map.
+// The mapping is backed by a compile-time `internal::CssColorIdTable` in
+// `.rodata`, providing an O(1) offset lookup that yields a persistent
+// `std::string_view`. Falls back to embedder callbacks (such as
+// `ChromeColorProviderUtils`) if the ID is not found in the core table.
 std::string_view COMPONENT_EXPORT(COLOR) ColorIdToCSSColorId(ColorId color_id);
 
 // Converts string representation of ColorId to its enum value.

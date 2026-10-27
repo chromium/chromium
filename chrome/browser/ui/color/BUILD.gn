@@ -4,6 +4,7 @@
 
 import("//components/compose/features.gni")
 import("//ui/base/ui_features.gni")
+import("//ui/webui/webui_features.gni")
 
 assert(!is_ios, "Chromium/iOS shouldn't use anything in //chrome")
 
@@ -60,6 +61,7 @@ source_set("mixers") {
     "//components/search",
     "//ui/base:buildflags",
     "//ui/color",
+    "//ui/color:color_provider_utils_internal",
     "//ui/color:mixers",
   ]
 
@@ -87,7 +89,7 @@ source_set("mixers") {
   }
 }
 
-if (!is_android) {
+if (!is_android || enable_webui_ntp || enable_webui_tabstrip_ntb) {
   source_set("unit_tests") {
     testonly = true
 

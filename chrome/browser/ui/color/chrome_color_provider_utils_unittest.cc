@@ -8,10 +8,24 @@
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/color/color_id.h"
+#include "ui/color/color_provider_utils.h"
 
 using ChromeColorProviderUtilsTest = ::testing::Test;
 
 TEST_F(ChromeColorProviderUtilsTest, ChromeColorIdNameTest) {
   EXPECT_EQ("kColorToolbarBackgroundSubtleEmphasis",
             ChromeColorIdName(kColorToolbarBackgroundSubtleEmphasis));
+}
+
+TEST_F(ChromeColorProviderUtilsTest, ChromeColorIdToCSSColorIdTest) {
+  EXPECT_EQ("--color-toolbar-background-subtle-emphasis",
+            ChromeColorIdToCSSColorId(kColorToolbarBackgroundSubtleEmphasis));
+  EXPECT_EQ(ui::ConvertColorProviderColorIdToCSSColorId(
+                ChromeColorIdName(kChromeColorsStart)),
+            ChromeColorIdToCSSColorId(kChromeColorsStart));
+  EXPECT_EQ(ui::ConvertColorProviderColorIdToCSSColorId(
+                ChromeColorIdName(kChromeColorsEnd - 1)),
+            ChromeColorIdToCSSColorId(kChromeColorsEnd - 1));
+  EXPECT_TRUE(ChromeColorIdToCSSColorId(kChromeColorsStart - 1).empty());
+  EXPECT_TRUE(ChromeColorIdToCSSColorId(kChromeColorsEnd).empty());
 }

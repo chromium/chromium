@@ -30,6 +30,20 @@ source_set("color_headers") {
   ]
 }
 
+source_set("color_provider_utils_internal") {
+  visibility = [
+    ":color",
+    "//chrome/browser/ui/color:mixers",
+  ]
+
+  sources = [ "color_provider_utils_internal.h" ]
+
+  public_deps = [
+    ":color_headers",
+    "//base",
+  ]
+}
+
 # Keep the deps on this target to a minimum so that chromeos can depend on it.
 component("color_provider_key") {
   sources = [
@@ -77,7 +91,10 @@ component("color") {
     "//ui/gfx:color_utils",
   ]
 
-  deps = [ "//third_party/abseil-cpp:absl" ]
+  deps = [
+    ":color_provider_utils_internal",
+    "//third_party/abseil-cpp:absl",
+  ]
 
   if (is_mac) {
     sources += [

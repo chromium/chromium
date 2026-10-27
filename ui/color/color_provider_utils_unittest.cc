@@ -26,6 +26,14 @@ TEST_F(ColorProviderUtilsTest, ColorIdToCSSColorId) {
             ui::ColorIdToCSSColorId(ui::kColorPrimaryBackground));
   EXPECT_EQ("--color-badge-background",
             ui::ColorIdToCSSColorId(ui::kColorBadgeBackground));
+  EXPECT_EQ(ui::ConvertColorProviderColorIdToCSSColorId(
+                ui::ColorIdName(ui::kUiColorsStart)),
+            ui::ColorIdToCSSColorId(ui::kUiColorsStart));
+  EXPECT_EQ(ui::ConvertColorProviderColorIdToCSSColorId(
+                ui::ColorIdName(ui::kUiColorsEnd - 1)),
+            ui::ColorIdToCSSColorId(ui::kUiColorsEnd - 1));
+  EXPECT_TRUE(ui::ColorIdToCSSColorId(ui::kUiColorsStart - 1).empty());
+  EXPECT_TRUE(ui::ColorIdToCSSColorId(ui::kUiColorsEnd).empty());
 }
 
 TEST_F(ColorProviderUtilsTest, NameToColorId) {

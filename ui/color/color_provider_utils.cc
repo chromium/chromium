@@ -4,6 +4,7 @@
 
 #include "ui/color/color_provider_utils.h"
 
+#include <array>
 #include <memory>
 #include <string_view>
 
@@ -15,6 +16,7 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/color/color_id.mojom.h"
 #include "ui/color/color_provider.h"
+#include "ui/color/color_provider_utils_internal.h"
 #include "ui/color/color_recipe.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/color_utils.h"
@@ -204,25 +206,17 @@ std::string ColorIdName(ColorId color_id) {
 }
 
 std::string_view ColorIdToCSSColorId(ColorId color_id) {
-  // Populate the compile-time map using `color_id_map_macros.inc`. Each entry
-  // expands `COLOR_ID_MAP_ENTRY` to map the `ColorId` enum value to a static
-  // `std::string_view` stored in `internal::CssNameHolder`.
-#define COLOR_ID_MAP_ENTRY(enum_name, string_name)                      \
-  {                                                                     \
-    enum_name, internal::CssNameHolder<internal::ConstexprCssColorName( \
-                   string_name)>::kName.view()                          \
-  }
+  constexpr const auto& kColorIdToCssTable = internal::MakeCssColorIdTable<[] {
 #include "ui/color/color_id_map_macros.inc"  // NOLINT(build/include)
-  static constexpr auto kColorIdToCssMap =
-      base::MakeFixedFlatMap<ColorId, std::string_view>({COLOR_IDS});
+    return std::to_array<internal::ColorIdEntry>({COLOR_IDS});
 // Note that this second include is not redundant. The second inclusion of the
 // .inc file serves to undefine the macros the first inclusion defined.
 #include "ui/color/color_id_map_macros.inc"  // NOLINT(build/include)
+  }>();
 
-  // Perform an O(log N) lookup in the compile-time map.
-  auto it = kColorIdToCssMap.find(color_id);
-  if (it != kColorIdToCssMap.cend()) {
-    return it->second;
+  if (std::string_view css_name = kColorIdToCssTable.Lookup(color_id);
+      !css_name.empty()) {
+    return css_name;
   }
   // Fall back to embedder-registered callbacks (e.g. ChromeColorProviderUtils)
   // for embedder-specific color IDs.
