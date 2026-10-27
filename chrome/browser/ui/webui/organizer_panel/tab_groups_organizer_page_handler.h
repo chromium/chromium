@@ -39,6 +39,7 @@ class Rect;
 
 namespace tab_groups {
 class STGTabsMenuModel;
+struct TabGroupMenuAction;
 }  // namespace tab_groups
 
 namespace views {
@@ -70,6 +71,9 @@ class TabGroupsOrganizerPageHandler
   void CreateNewTabGroup() override;
 
   bool IsContextMenuRunningForTesting() const;
+  tab_groups::STGTabsMenuModel* menu_model_for_testing() const {
+    return menu_model_.get();
+  }
 
   // tab_groups::TabGroupSyncService::Observer:
   void OnTabGroupAdded(const tab_groups::SavedTabGroup& group,
@@ -92,6 +96,8 @@ class TabGroupsOrganizerPageHandler
   void OnTabGroupChanged(const TabGroupChange& change) override;
 
  private:
+  void OnContextMenuCommandExecuted(
+      const tab_groups::TabGroupMenuAction& action);
   void OnContextMenuClosed();
   int GetAndIncrementLatestCommandId();
   const TabGroup* GetUnsavedTabGroup(

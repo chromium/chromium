@@ -10,6 +10,7 @@
 #include "base/callback_list.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/user_action_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "base/uuid.h"
@@ -17,8 +18,13 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/tabs/organizer/organizer_panel_controller.h"
+#include "chrome/browser/ui/tabs/organizer/organizer_panel_utils.h"
+#include "chrome/browser/ui/tabs/tab_group_deletion_dialog_controller.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/bookmarks/saved_tab_groups/saved_tab_group_tabs_menu_model.h"
 #include "chrome/browser/ui/webui/organizer_panel/tab_groups.mojom.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -36,6 +42,8 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/interaction/element_identifier.h"
+#include "ui/base/page_transition_types.h"
 #include "ui/gfx/geometry/rect.h"
 #include "url/gurl.h"
 
@@ -857,6 +865,160 @@ IN_PROC_BROWSER_TEST_F(TabGroupsOrganizerPageHandlerBrowserTest,
   EXPECT_EQ(1, user_action_tester.GetActionCount(
                    "TabGroups_SavedTabGroups_"
                    "CreateNewGroupTriggeredFromOrganizerPanel"));
+}
+
+class TabGroupsOrganizerPageHandlerContextMenuBrowserTest
+    : public TabGroupsOrganizerPageHandlerBrowserTest {
+ public:
+  TabGroupsOrganizerPageHandlerContextMenuBrowserTest() {
+    scoped_feature_list_.InitWithFeatures(
+        {features::kTabGroupsFocusing, organizer_panel::kOrganizerPanel}, {});
+  }
+
+  std::optional<size_t> GetIndexOfElementId(tab_groups::STGTabsMenuModel* model,
+                                            ui::ElementIdentifier id) {
+    for (size_t i = 0; i < model->GetItemCount(); ++i) {
+      if (model->GetElementIdentifierAt(i) == id) {
+        return i;
+      }
+    }
+    return std::nullopt;
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(TabGroupsOrganizerPageHandlerContextMenuBrowserTest,
+                       ContextMenuActionsClosePanel) {
+  tab_groups::TabGroupSyncService* service = sync_service();
+  ASSERT_TRUE(service);
+
+  OrganizerPanelController* organizer_controller =
+      OrganizerPanelController::From(browser());
+  ASSERT_TRUE(organizer_controller);
+
+  // Add a second tab so moving/closing groups leaves at least one tab.
+  ASSERT_TRUE(AddTabAtIndex(0, GURL("about:blank"), ui::PAGE_TRANSITION_LINK));
+  // Host the handler in an ungrouped tab so that none of the group actions
+  // below (e.g. closing the group) destroy the WebContents it points to.
+  content::WebContents* host_contents =
+      browser()->GetTabStripModel()->GetWebContentsAt(0);
+
+  base::Uuid group_guid = base::Uuid::GenerateRandomV4();
+  tab_groups::SavedTabGroupTab tab(GURL("about:blank"), u"Blank", group_guid,
+                                   /*position=*/0);
+  tab_groups::SavedTabGroup group(u"Test Group",
+                                  tab_groups::TabGroupColorId::kGrey, {tab},
+                                  /*position=*/std::nullopt, group_guid);
+  service->AddGroup(group);
+
+  auto activate_item_and_expect_panel_closed =
+      [&](ui::ElementIdentifier element_id) {
+        // Host the handler in the active ungrouped tab so closing the group
+        // doesn't free it. Skip while focused, since that would exit focus.
+        TabStripModel* tab_strip_model = browser()->GetTabStripModel();
+        if (!tab_strip_model->GetFocusedGroup().has_value()) {
+          tab_strip_model->ActivateTabAt(
+              tab_strip_model->GetIndexOfWebContents(host_contents));
+        }
+        organizer_controller->SetOrganizerVisible(true, /*immediate=*/true);
+        ASSERT_TRUE(organizer_controller->IsOrganizerPanelVisible());
+
+        FakeTabGroupsOrganizerPage page;
+        mojo::Remote<organizer_panel::mojom::TabGroupsOrganizerPageHandler>
+            handler_remote;
+        TabGroupsOrganizerPageHandler handler(
+            handler_remote.BindNewPipeAndPassReceiver(),
+            page.BindAndPassRemote(), tab_strip_model->GetActiveWebContents());
+
+        handler_remote->ShowContextMenu(group_guid.AsLowercaseString(),
+                                        gfx::Rect(10, 20, 30, 40),
+                                        base::DoNothing());
+        handler_remote.FlushForTesting();
+
+        tab_groups::STGTabsMenuModel* model = handler.menu_model_for_testing();
+        ASSERT_TRUE(model);
+
+        std::optional<size_t> index = GetIndexOfElementId(model, element_id);
+        ASSERT_TRUE(index.has_value());
+        model->ActivatedAt(index.value());
+        EXPECT_FALSE(organizer_controller->IsOrganizerPanelVisible());
+      };
+
+  // Open URL in tab.
+  activate_item_and_expect_panel_closed(tab_groups::STGTabsMenuModel::kTab);
+
+  // Open group in browser (group starts closed).
+  activate_item_and_expect_panel_closed(
+      tab_groups::STGTabsMenuModel::kOpenGroup);
+
+  // Focus group.
+  activate_item_and_expect_panel_closed(
+      tab_groups::STGTabsMenuModel::kToggleGroupFocusStateMenuItem);
+  EXPECT_TRUE(browser()->GetTabStripModel()->GetFocusedGroup().has_value());
+
+  // Unfocus group.
+  activate_item_and_expect_panel_closed(
+      tab_groups::STGTabsMenuModel::kToggleGroupFocusStateMenuItem);
+  EXPECT_FALSE(browser()->GetTabStripModel()->GetFocusedGroup().has_value());
+
+  // Close group.
+  activate_item_and_expect_panel_closed(
+      tab_groups::STGTabsMenuModel::kCloseGroup);
+
+  // Open/Move group to new window.
+  activate_item_and_expect_panel_closed(
+      tab_groups::STGTabsMenuModel::kMoveGroupToNewWindowMenuItem);
+}
+
+IN_PROC_BROWSER_TEST_F(TabGroupsOrganizerPageHandlerContextMenuBrowserTest,
+                       ContextMenuDeleteGroupKeepsPanelOpen) {
+  if (tab_groups::DeletionDialogController::From(browser())) {
+    tab_groups::DeletionDialogController::From(browser())
+        ->SetPrefsPreventShowingDialogForTesting(
+            /*should_prevent_dialog=*/true);
+  }
+
+  tab_groups::TabGroupSyncService* service = sync_service();
+  ASSERT_TRUE(service);
+
+  OrganizerPanelController* organizer_controller =
+      OrganizerPanelController::From(browser());
+  ASSERT_TRUE(organizer_controller);
+
+  base::Uuid group_guid = base::Uuid::GenerateRandomV4();
+  tab_groups::SavedTabGroupTab tab(GURL("about:blank"), u"Blank", group_guid,
+                                   /*position=*/0);
+  tab_groups::SavedTabGroup group(u"Test Group",
+                                  tab_groups::TabGroupColorId::kGrey, {tab},
+                                  /*position=*/std::nullopt, group_guid);
+  service->AddGroup(group);
+
+  organizer_controller->SetOrganizerVisible(true, /*immediate=*/true);
+  ASSERT_TRUE(organizer_controller->IsOrganizerPanelVisible());
+
+  FakeTabGroupsOrganizerPage page;
+  mojo::Remote<organizer_panel::mojom::TabGroupsOrganizerPageHandler>
+      handler_remote;
+  TabGroupsOrganizerPageHandler handler(
+      handler_remote.BindNewPipeAndPassReceiver(), page.BindAndPassRemote(),
+      browser()->GetTabStripModel()->GetActiveWebContents());
+
+  handler_remote->ShowContextMenu(group_guid.AsLowercaseString(),
+                                  gfx::Rect(10, 20, 30, 40), base::DoNothing());
+  handler_remote.FlushForTesting();
+
+  tab_groups::STGTabsMenuModel* model = handler.menu_model_for_testing();
+  ASSERT_TRUE(model);
+
+  std::optional<size_t> delete_index = GetIndexOfElementId(
+      model, tab_groups::STGTabsMenuModel::kDeleteGroupMenuItem);
+  ASSERT_TRUE(delete_index.has_value());
+  model->ActivatedAt(delete_index.value());
+
+  EXPECT_TRUE(organizer_controller->IsOrganizerPanelVisible());
+  EXPECT_FALSE(service->GetGroup(group_guid).has_value());
 }
 
 }  // namespace

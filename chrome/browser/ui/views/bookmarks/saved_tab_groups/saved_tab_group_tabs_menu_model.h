@@ -9,6 +9,8 @@
 #include <optional>
 #include <variant>
 
+#include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/cancelable_task_tracker.h"
@@ -51,8 +53,13 @@ class STGTabsMenuModel : public ui::SimpleMenuModel,
 
   ~STGTabsMenuModel() override;
 
-  void Build(const SavedTabGroup& saved_group,
-             base::RepeatingCallback<int()> get_next_command_id);
+  using OnExecuteCommandCallback =
+      base::RepeatingCallback<void(const TabGroupMenuAction&)>;
+
+  void Build(
+      const SavedTabGroup& saved_group,
+      base::RepeatingCallback<int()> get_next_command_id,
+      OnExecuteCommandCallback on_execute_command_callback = base::DoNothing());
 
   bool HasCommandId(int command_id) const;
 
@@ -74,6 +81,7 @@ class STGTabsMenuModel : public ui::SimpleMenuModel,
   bool should_enable_move_menu_item_;
   std::optional<base::Uuid> sync_id_;
   TabGroupMenuContext context_;
+  OnExecuteCommandCallback on_execute_command_callback_;
 
   // The key is a submenu command id, i.e. one of the following:
   //        Open Group

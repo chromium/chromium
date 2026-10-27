@@ -22,6 +22,7 @@
 #include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/tabs/organizer/organizer_panel_controller.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_menu_utils.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
@@ -306,7 +307,10 @@ void TabGroupsOrganizerPageHandler::ShowContextMenu(
       saved_group.value(),
       base::BindRepeating(
           &TabGroupsOrganizerPageHandler::GetAndIncrementLatestCommandId,
-          base::Unretained(this)));
+          base::Unretained(this)),
+      base::BindRepeating(
+          &TabGroupsOrganizerPageHandler::OnContextMenuCommandExecuted,
+          weak_ptr_factory_.GetWeakPtr()));
 
   gfx::Rect screen_rect = anchor_rect + container_bounds.OffsetFromOrigin();
 
@@ -421,6 +425,20 @@ void TabGroupsOrganizerPageHandler::OnTabGroupChanged(
   }
   if (const TabGroup* tab_group = GetUnsavedTabGroup(change.group)) {
     page_->TabGroupUpdated(CreateMojoTabGroup(tab_group));
+  }
+}
+
+void TabGroupsOrganizerPageHandler::OnContextMenuCommandExecuted(
+    const tab_groups::TabGroupMenuAction& action) {
+  if (action.type == tab_groups::TabGroupMenuAction::Type::DELETE_GROUP ||
+      action.type == tab_groups::TabGroupMenuAction::Type::LEAVE_GROUP) {
+    return;
+  }
+  if (BrowserWindowInterface* browser =
+          webui::GetBrowserWindowInterface(web_contents_)) {
+    if (auto* organizer_controller = OrganizerPanelController::From(browser)) {
+      organizer_controller->SetOrganizerVisible(false);
+    }
   }
 }
 
