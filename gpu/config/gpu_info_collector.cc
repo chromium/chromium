@@ -999,19 +999,16 @@ void CollectDawnInfo(const gpu::GpuPreferences& gpu_preferences,
           dawn_info_list->push_back(dawn::native::GetFeatureInfo(f)->name);
         }
 
-        // Scope the lifetime of |device| to avoid accidental use after release.
         {
-          // If Dawn is available, create the device with Dawn toggles.
+          // Query the enabled device toggles without allocating an expensive
+          // backend device.
           wgpu::DeviceDescriptor device_descriptor = {};
           device_descriptor.nextInChain = &dawn_toggles;
-          wgpu::Device device = adapter.CreateDevice(&device_descriptor);
-          // CreateDevice can return null if the device has been removed or
-          // we've run out of memory. Ensure we don't crash in these instances.
-          if (device) {
-            // Get the list of enabled toggles on the device
+          std::vector<const char*> toggle_names =
+              dawn::native::GetDeviceTogglesUsed(wgpu::Adapter(adapter.Get()),
+                                                 &device_descriptor);
+          if (!toggle_names.empty()) {
             dawn_info_list->push_back("[Enabled Toggle Names]");
-            std::vector<const char*> toggle_names =
-                dawn::native::GetTogglesUsed(device.Get());
             AddTogglesToDawnInfoList(instance.get(), toggle_names,
                                      dawn_info_list);
           }
