@@ -341,7 +341,8 @@ class CORE_EXPORT InlineLayoutStateStack {
         : fragment_start(start),
           fragment_end(end),
           item(other.item),
-          rect(other.rect) {}
+          rect(other.rect),
+          relative_insets(other.relative_insets) {}
 
     void SetFragmentRange(unsigned start_index, unsigned end_index) {
       fragment_start = start_index;
@@ -361,6 +362,7 @@ class CORE_EXPORT InlineLayoutStateStack {
     bool has_line_right_edge = false;
     LineBoxStrut borders;
     LineBoxStrut padding;
+    PhysicalBoxStrut relative_insets;
     LayoutUnit margin_line_over;
     LayoutUnit margin_line_under;
     // |CreateBoxFragment()| needs margin, border+padding, and the sum of them.

@@ -62,19 +62,23 @@ void LineBoxFragmentBuilder::PropagateChildrenData(
 
 void LineBoxFragmentBuilder::PropagateChildrenDataFromLineItems(
     LogicalLineItems& children) {
+  const WritingDirectionMode writing_direction =
+      GetConstraintSpace().GetWritingDirection();
   for (unsigned index = 0; index < children.size(); ++index) {
     auto& child = children[index];
     if (child.layout_result) {
       // An accumulated relative offset is applied to an OOF once it reaches its
       // inline container. Subtract out the relative offset to avoid adding it
       // twice.
-      const ComputedStyle& child_style = child.GetPhysicalFragment()->Style();
+      const PhysicalBoxStrut& child_relative_insets =
+          To<PhysicalBoxFragment>(*child.GetPhysicalFragment())
+              .UsedPositionInsets();
       PropagateFromLayoutResultAndFragment(
           *child.layout_result,
-          child.Offset() -
-              ComputeRelativeOffsetForInline(GetConstraintSpace(), child_style),
-          ComputeRelativeOffsetForOOFInInline(GetConstraintSpace(),
-                                              child_style));
+          child.Offset() - ComputeRelativeOffsetForInline(child_relative_insets,
+                                                          writing_direction),
+          ComputeRelativeOffsetForOOFInInline(child_relative_insets,
+                                              writing_direction));
 
       // Skip over any children, the information should have already been
       // propagated into this layout result.

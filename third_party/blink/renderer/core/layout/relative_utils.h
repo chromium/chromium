@@ -14,8 +14,6 @@
 
 namespace blink {
 
-class ConstraintSpace;
-
 // Implements relative positioning:
 // https://www.w3.org/TR/css-position-3/#rel-pos
 // Returns the relative position insets as defined by `child_style`.
@@ -29,13 +27,13 @@ CORE_EXPORT PhysicalBoxStrut ComputeRelativeInsetsForBoxFragment(
     WritingDirectionMode container_writing_direction,
     const LogicalSize& available_size);
 
-CORE_EXPORT LogicalOffset
-ComputeRelativeOffsetForInline(const ConstraintSpace& space,
-                               const ComputedStyle& child_style);
+CORE_EXPORT LogicalOffset ComputeRelativeOffsetForInline(
+    const PhysicalBoxStrut& relative_insets,
+    WritingDirectionMode container_writing_direction);
 
-CORE_EXPORT LogicalOffset
-ComputeRelativeOffsetForOOFInInline(const ConstraintSpace& space,
-                                    const ComputedStyle& child_style);
+CORE_EXPORT LogicalOffset ComputeRelativeOffsetForOOFInInline(
+    const PhysicalBoxStrut& relative_insets,
+    WritingDirectionMode container_writing_direction);
 
 }  // namespace blink
 

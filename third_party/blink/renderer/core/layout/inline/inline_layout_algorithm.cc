@@ -224,13 +224,25 @@ class LineBreakStrategy {
 
 void PlaceRelativePositionedItems(const ConstraintSpace& constraint_space,
                                   LogicalLineItems* line_box) {
+  const WritingDirectionMode writing_direction =
+      constraint_space.GetWritingDirection();
   for (auto& child : *line_box) {
-    const auto* physical_fragment = child.GetPhysicalFragment();
+    const auto* physical_fragment =
+        DynamicTo<PhysicalBoxFragment>(child.GetPhysicalFragment());
     if (!physical_fragment) {
       continue;
     }
-    child.rect.offset += ComputeRelativeOffsetForInline(
-        constraint_space, physical_fragment->Style());
+    // Storing the relative insets for an inline-box is handled within:
+    // `InlineLayoutStateStack::BoxData::CreateBoxFragment`
+    if (physical_fragment->IsInlineBox()) {
+      continue;
+    }
+    const PhysicalBoxStrut insets =
+        ComputeRelativeInsets(physical_fragment->Style(), writing_direction,
+                              constraint_space.AvailableSize());
+    physical_fragment->GetMutableForPositioned().SetUsedPositionInsets(insets);
+    child.rect.offset +=
+        ComputeRelativeOffsetForInline(insets, writing_direction);
   }
 }
 

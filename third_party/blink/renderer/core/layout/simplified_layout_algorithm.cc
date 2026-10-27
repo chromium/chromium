@@ -327,8 +327,15 @@ void SimplifiedLayoutAlgorithm::AddChildFragment(
       WritingModeConverter(writing_direction_,
                            previous_physical_container_size_)
           .ToLogical(old_fragment.Offset(), new_fragment.Size());
-  // Any relative offset will have already been applied, avoid re-adding one.
-  std::optional<PhysicalBoxStrut> relative_insets = PhysicalBoxStrut();
+
+  // Unapply the relative offset as `AddChild` will reapply it.
+  PhysicalBoxStrut relative_insets;
+  if (const auto* box = DynamicTo<PhysicalBoxFragment>(old_fragment.get());
+      box && box->Style().GetPosition() == EPosition::kRelative) {
+    relative_insets = box->UsedPositionInsets();
+    child_offset -=
+        relative_insets.ConvertToLogical(writing_direction_).StartOffset();
+  }
 
   // Add the new fragment to the builder.
   container_builder_.AddChild(new_fragment, child_offset, margin_strut,

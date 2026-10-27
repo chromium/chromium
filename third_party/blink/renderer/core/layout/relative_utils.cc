@@ -79,52 +79,31 @@ PhysicalBoxStrut ComputeRelativeInsetsForBoxFragment(
                                available_size);
 }
 
-LogicalOffset ComputeRelativeOffsetForInline(const ConstraintSpace& space,
-                                             const ComputedStyle& child_style) {
-  if (child_style.GetPosition() != EPosition::kRelative)
-    return LogicalOffset();
-
-  // The confliction resolution rules work based off the block's writing-mode
-  // and direction, not the child's container. E.g.
-  // <span style="direction: rtl;">
-  //   <span style="position: relative; left: 100px; right: -50px;"></span>
-  // </span>
-  // In the above example "left" wins.
-  const WritingDirectionMode writing_direction = space.GetWritingDirection();
+LogicalOffset ComputeRelativeOffsetForInline(
+    const PhysicalBoxStrut& relative_insets,
+    WritingDirectionMode container_writing_direction) {
   LogicalOffset relative_offset =
-      ComputeRelativeInsets(child_style, writing_direction,
-                            space.AvailableSize())
-          .ConvertToLogical(writing_direction)
+      relative_insets.ConvertToLogical(container_writing_direction)
           .StartOffset();
 
   // Lines are built in a line-logical coordinate system:
   // https://drafts.csswg.org/css-writing-modes-3/#line-directions
   // Reverse the offset direction if we are in a RTL, or flipped writing-mode.
-  if (writing_direction.IsRtl())
+  if (container_writing_direction.IsRtl()) {
     relative_offset.inline_offset = -relative_offset.inline_offset;
-  if (writing_direction.IsFlippedLines())
+  }
+  if (container_writing_direction.IsFlippedLines()) {
     relative_offset.block_offset = -relative_offset.block_offset;
+  }
 
   return relative_offset;
 }
 
 LogicalOffset ComputeRelativeOffsetForOOFInInline(
-    const ConstraintSpace& space,
-    const ComputedStyle& child_style) {
-  if (child_style.GetPosition() != EPosition::kRelative)
-    return LogicalOffset();
-
-  // The confliction resolution rules work based off the block's writing-mode
-  // and direction, not the child's container. E.g.
-  // <span style="direction: rtl;">
-  //   <span style="position: relative; left: 100px; right: -50px;"></span>
-  // </span>
-  // In the above example "left" wins.
-  const WritingDirectionMode writing_direction = space.GetWritingDirection();
+    const PhysicalBoxStrut& relative_insets,
+    WritingDirectionMode container_writing_direction) {
   LogicalOffset relative_offset =
-      ComputeRelativeInsets(child_style, writing_direction,
-                            space.AvailableSize())
-          .ConvertToLogical(writing_direction)
+      relative_insets.ConvertToLogical(container_writing_direction)
           .StartOffset();
 
   // Lines are built in a line-logical coordinate system:
@@ -132,8 +111,9 @@ LogicalOffset ComputeRelativeOffsetForOOFInInline(
   // Reverse the offset direction if we are in a RTL. We skip adjusting for
   // flipped writing-mode when applying the relative position to an OOF
   // positioned element.
-  if (writing_direction.IsRtl())
+  if (container_writing_direction.IsRtl()) {
     relative_offset.inline_offset = -relative_offset.inline_offset;
+  }
 
   return relative_offset;
 }

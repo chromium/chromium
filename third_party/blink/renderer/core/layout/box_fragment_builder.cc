@@ -370,6 +370,11 @@ void BoxFragmentBuilder::AddChild(
   }
 
   DCHECK(relative_insets);
+  if (child.IsCSSBox() && child.Style().GetPosition() == EPosition::kRelative) {
+    To<PhysicalBoxFragment>(child)
+        .GetMutableForPositioned()
+        .SetUsedPositionInsets(*relative_insets);
+  }
   const LogicalOffset relative_offset =
       relative_insets->ConvertToLogical(GetWritingDirection()).StartOffset();
   PropagateFromFragment(child, child_offset, relative_offset, inline_container);
