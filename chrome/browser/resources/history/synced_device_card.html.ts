@@ -30,21 +30,34 @@ export function getHtml(this: HistorySyncedDeviceCardElement) {
   <cr-collapse id="collapse" ?opened="${this.opened}"
       @opened-changed="${this.onOpenedChanged_}">
     <div id="tab-item-list">
-      ${this.tabs.map((tab, index) => html`
-        <div class="item-container">
-          <a href="${tab.url}" class="website-link" title="${tab.title}"
-              data-session-id="${tab.sessionId}" @click="${this.onLinkClick_}"
-              @auxclick="${this.onLinkAuxclick_}"
-              @contextmenu="${this.onLinkContextmenu_}">
-            <div class="website-icon"></div>
-            <history-searched-label class="website-title" title="${tab.title}"
-                search-term="${this.searchTerm}">
-            </history-searched-label>
-          </a>
-        </div>
-        <div class="window-separator"
-            ?hidden="${!this.isWindowSeparatorIndex_(index)}">
-        </div>
+      ${this.windows.map((win, windowIndex) => html`
+        ${this.windows.length > 1 && !this.searchTerm ? html`
+          <div class="window-header">
+            <div class="window-title">
+              <cr-icon icon="history20:tab"></cr-icon>
+              <span>${this.getWindowTitle_(windowIndex)}</span>
+            </div>
+            <cr-icon-button class="open-window-button"
+                iron-icon="cr:open-in-new" data-window-id="${win.sessionId}"
+                title="${this.getOpenWindowTitle_(windowIndex)}"
+                aria-label="${this.getOpenWindowTitle_(windowIndex)}"
+                @click="${this.onOpenWindowClick_}">
+            </cr-icon-button>
+          </div>
+        ` : ''}
+        ${win.tabs.map(tab => html`
+          <div class="item-container">
+            <a href="${tab.url}" class="website-link" title="${tab.title}"
+                data-session-id="${tab.sessionId}" @click="${this.onLinkClick_}"
+                @auxclick="${this.onLinkAuxclick_}"
+                @contextmenu="${this.onLinkContextmenu_}">
+              <div class="website-icon"></div>
+              <history-searched-label class="website-title" title="${tab.title}"
+                  search-term="${this.searchTerm}">
+              </history-searched-label>
+            </a>
+          </div>
+        `)}
       `)}
     </div>
   </cr-collapse>

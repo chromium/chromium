@@ -9,7 +9,7 @@ import './synced_device_card.js';
 import '/strings.m.js';
 
 import {browserProxyFactory} from 'chrome://resources/cr_components/history/foreign_sessions.mojom-webui.js';
-import type {ForeignSession, ForeignSessionTab} from 'chrome://resources/cr_components/history/foreign_sessions.mojom-webui.js';
+import type {ForeignSession, ForeignSessionTab, ForeignSessionWindow} from 'chrome://resources/cr_components/history/foreign_sessions.mojom-webui.js';
 import {AccessPoint} from 'chrome://resources/cr_components/history/history.mojom-webui.js';
 // <if expr="not is_chromeos">
 import type {AccountInfo} from 'chrome://resources/cr_components/history/history.mojom-webui.js';
@@ -35,9 +35,8 @@ interface ForeignDeviceInternal {
   device: string;
   lastUpdateTime: string;
   opened: boolean;
-  separatorIndexes: number[];
   timestamp: number;
-  tabs: ForeignSessionTab[];
+  windows: ForeignSessionWindow[];
   tag: string;
 }
 
@@ -204,11 +203,11 @@ export class HistorySyncedDeviceManagerElement extends
 
   private createInternalDevice_(session: ForeignSession):
       ForeignDeviceInternal {
-    let tabs: ForeignSessionTab[] = [];
-    const separatorIndexes = [];
+    const windows: ForeignSessionWindow[] = [];
     for (let i = 0; i < session.windows.length; i++) {
-      const windowId = session.windows[i]!.sessionId;
-      const newTabs = session.windows[i]!.tabs;
+      const win = session.windows[i]!;
+      const windowId = win.sessionId;
+      const newTabs = win.tabs;
       if (newTabs.length === 0) {
         continue;
       }
@@ -217,32 +216,32 @@ export class HistorySyncedDeviceManagerElement extends
         tab.windowId = windowId;
       });
 
-      let windowAdded = false;
       if (!this.searchTerm) {
-        // Add all the tabs if there is no search term.
-        tabs = tabs.concat(newTabs);
-        windowAdded = true;
+        windows.push(win);
       } else {
         const searchText = this.searchTerm.toLowerCase();
+        const windowTabs: ForeignSessionTab[] = [];
         for (let j = 0; j < newTabs.length; j++) {
           const tab = newTabs[j]!;
           if (tab.title.toLowerCase().indexOf(searchText) !== -1) {
-            tabs.push(tab);
-            windowAdded = true;
+            windowTabs.push(tab);
           }
         }
-      }
-      if (windowAdded && i !== session.windows.length - 1) {
-        separatorIndexes.push(tabs.length - 1);
+        if (windowTabs.length > 0) {
+          windows.push({
+            timestamp: win.timestamp,
+            sessionId: windowId,
+            tabs: windowTabs,
+          });
+        }
       }
     }
     return {
       device: session.name,
       lastUpdateTime: '– ' + session.modifiedTime,
       opened: true,
-      separatorIndexes: separatorIndexes,
       timestamp: session.timestamp,
-      tabs: tabs,
+      windows: windows,
       tag: session.tag,
     };
   }
@@ -415,7 +414,7 @@ export class HistorySyncedDeviceManagerElement extends
     const devices: ForeignDeviceInternal[] = [];
     this.sessionList.forEach((session) => {
       const device = this.createInternalDevice_(session);
-      if (device.tabs.length !== 0) {
+      if (device.windows.length !== 0) {
         devices.push(device);
       }
     });

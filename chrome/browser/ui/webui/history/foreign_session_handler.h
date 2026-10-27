@@ -55,7 +55,8 @@ enum class SyncedTabsHistogram {
   HAS_FOREIGN_DATA = 9,
   HIDE_FOR_NOW = 10,
   OPENED_LINK_VIA_CONTEXT_MENU = 11,
-  LIMIT = 12  // Should always be the last one.
+  OPEN_WINDOW = 12,
+  LIMIT = 13  // Should always be the last one.
 };
 
 class ForeignSessionHandler : public history::mojom::ForeignSessionPageHandler {
@@ -87,6 +88,8 @@ class ForeignSessionHandler : public history::mojom::ForeignSessionPageHandler {
   // history::mojom::ForeignSessionPageHandler implementation.
   void GetForeignSessions(GetForeignSessionsCallback callback) override;
   void OpenForeignSessionAllTabs(const std::string& session_tag) override;
+  void OpenForeignSessionWindow(const std::string& session_tag,
+                                int32_t window_id) override;
   void OpenForeignSessionTab(const std::string& session_tag,
                              int32_t tab_id,
                              ui::mojom::ClickModifiersPtr modifiers) override;

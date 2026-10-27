@@ -14,6 +14,7 @@ export class FakeForeignSessionPageHandler extends TestBrowserProxy implements
     super([
       'getForeignSessions',
       'openForeignSessionAllTabs',
+      'openForeignSessionWindow',
       'openForeignSessionTab',
       'deleteForeignSession',
       'setForeignSessionCollapsed',
@@ -32,6 +33,10 @@ export class FakeForeignSessionPageHandler extends TestBrowserProxy implements
 
   openForeignSessionAllTabs(sessionTag: string) {
     this.methodCalled('openForeignSessionAllTabs', sessionTag);
+  }
+
+  openForeignSessionWindow(sessionTag: string, windowId: number) {
+    this.methodCalled('openForeignSessionWindow', [sessionTag, windowId]);
   }
 
   openForeignSessionTab(

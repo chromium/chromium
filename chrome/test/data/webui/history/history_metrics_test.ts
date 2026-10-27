@@ -239,6 +239,11 @@ suite('Metrics', function() {
                            '.website-link')[0]!.click();
     assertEquals(1, histogram[SyncedTabsHistogram.LINK_CLICKED]);
 
+    assertTrue(!!cards[1]);
+    cards[1].shadowRoot.querySelector<HTMLElement>(
+                           '.open-window-button')!.click();
+    assertEquals(1, histogram[SyncedTabsHistogram.OPEN_WINDOW]);
+
     const menuButton = cards[0].$.menuButton;
     menuButton.click();
     await microtasksFinished();

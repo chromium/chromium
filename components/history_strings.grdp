@@ -99,6 +99,18 @@
   <message name="IDS_HISTORY_OTHER_SESSIONS_OPEN_ALL" desc="In the 'Other Sessions' menu on the history page, the label for the command to open all tabs and windows from a session.">
     Open all
   </message>
+    <message name="IDS_HISTORY_OTHER_SESSIONS_OPEN_WINDOW_PLURAL" desc="In the 'Other Sessions' section of the history page, the tooltip and accessibility label for the button that opens all tabs from a single synced window when the window contains multiple tabs.">
+      Open Window <ph name="WINDOW_INDEX">$1<ex>1</ex></ph> (<ph name="NUM_TABS">$2<ex>22</ex></ph> tabs) in a new window
+    </message>
+    <message name="IDS_HISTORY_OTHER_SESSIONS_OPEN_WINDOW_SINGULAR" desc="In the 'Other Sessions' section of the history page, the tooltip and accessibility label for the button that opens all tabs from a single synced window when the window contains 1 tab.">
+      Open Window <ph name="WINDOW_INDEX">$1<ex>1</ex></ph> (1 tab) in a new window
+    </message>
+  <message name="IDS_HISTORY_OTHER_SESSIONS_WINDOW_HEADER_SINGULAR" desc="In the 'Other Sessions' section on the history page, the subheader title for a synced window containing 1 tab.">
+    Window <ph name="WINDOW_NUMBER">$1<ex>1</ex></ph> · 1 tab
+  </message>
+  <message name="IDS_HISTORY_OTHER_SESSIONS_WINDOW_HEADER_PLURAL" desc="In the 'Other Sessions' section on the history page, the subheader title for a synced window containing multiple tabs.">
+    Window <ph name="WINDOW_NUMBER">$1<ex>1</ex></ph> · <ph name="NUM_TABS">$2<ex>3</ex></ph> tabs
+  </message>
   <message name="IDS_HISTORY_REMOVE_BOOKMARK" desc="Tooltip shown when hovered over a history entry's bookmark star. When clicked, removes the bookmark.">
     Delete bookmark
   </message>

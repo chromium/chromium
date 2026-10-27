@@ -285,6 +285,7 @@ chromium-metrics-reviews@google.com.
   <int value="9" label="Has foreign data"/>
   <int value="10" label="Hide for now"/>
   <int value="11" label="Opened link via context menu"/>
+  <int value="12" label="Open window"/>
 </enum>
 
 <enum name="PageTransitionForVisitedLinks">

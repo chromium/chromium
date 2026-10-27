@@ -192,6 +192,29 @@ TEST_F(ForeignSessionHandlerTest, OpenForeignSessionAllTabs) {
   handler()->OpenForeignSessionAllTabs("my_session_tag");
 }
 
+TEST_F(ForeignSessionHandlerTest, OpenForeignSessionWindow) {
+  session_sync_service()->GetOpenTabsUIDelegate()->AddTabToForeignSession(
+      "my_session_tag");
+  session_sync_service()->GetOpenTabsUIDelegate()->AddTabToForeignSession(
+      "my_session_tag");
+
+  std::vector<const sessions::SessionWindow*> windows =
+      session_sync_service()->GetOpenTabsUIDelegate()->GetForeignSession(
+          "my_session_tag");
+  ASSERT_EQ(2u, windows.size());
+  const sessions::SessionWindow* target_window = windows[1];
+
+  EXPECT_CALL(restore_windows_callback_,
+              Run(profile(), ElementsAre(target_window)));
+
+  handler()->OpenForeignSessionWindow("my_session_tag",
+                                      target_window->window_id.id());
+  // Calling OpenForeignSessionWindow() with an unknown window ID should be a
+  // no-op.
+  handler()->OpenForeignSessionWindow("my_session_tag",
+                                      SessionID::NewUnique().id());
+}
+
 TEST_F(ForeignSessionHandlerTest, OpenForeignSessionTabLeftClick) {
   sessions::SessionTab* tab =
       session_sync_service()->GetOpenTabsUIDelegate()->AddTabToForeignSession(

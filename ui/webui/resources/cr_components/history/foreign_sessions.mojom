@@ -49,6 +49,9 @@ interface ForeignSessionPageHandler {
   // Opens all tabs of a foreign session.
   OpenForeignSessionAllTabs(string session_tag);
 
+  // Opens a single foreign session window.
+  OpenForeignSessionWindow(string session_tag, int32 window_id);
+
   // Opens a single foreign session tab.
   OpenForeignSessionTab(
       string session_tag, int32 tab_id, ui.mojom.ClickModifiers modifiers);

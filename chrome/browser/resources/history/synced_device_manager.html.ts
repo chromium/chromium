@@ -18,10 +18,8 @@ export function getHtml(this: HistorySyncedDeviceManagerElement) {
   ${this.syncedDevices_.map((syncedDevice, index) => html`
     <history-synced-device-card .device="${syncedDevice.device}"
         .lastUpdateTime="${syncedDevice.lastUpdateTime}"
-        .tabs="${syncedDevice.tabs}"
-        .separatorIndexes="${syncedDevice.separatorIndexes}"
-        .searchTerm="${this.searchTerm}" .sessionTag="${syncedDevice.tag}"
-        ?opened="${syncedDevice.opened}"
+        .windows="${syncedDevice.windows}" .searchTerm="${this.searchTerm}"
+        .sessionTag="${syncedDevice.tag}" ?opened="${syncedDevice.opened}"
         @opened-changed="${this.onCardOpenedChanged_}" data-index="${index}">
     </history-synced-device-card>
   `)}

@@ -3,13 +3,15 @@
 // found in the LICENSE file.
 
 import 'chrome://resources/cr_elements/cr_collapse/cr_collapse.js';
+import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/icons.html.js';
 import './searched_label.js';
+import './shared_icons.html.js';
 import '/strings.m.js';
 
 import {browserProxyFactory} from 'chrome://resources/cr_components/history/foreign_sessions.mojom-webui.js';
-import type {ForeignSessionTab} from 'chrome://resources/cr_components/history/foreign_sessions.mojom-webui.js';
+import type {ForeignSessionWindow} from 'chrome://resources/cr_components/history/foreign_sessions.mojom-webui.js';
 import type {CrCollapseElement} from 'chrome://resources/cr_elements/cr_collapse/cr_collapse.js';
 import {FocusRow} from 'chrome://resources/js/focus_row.js';
 import {getFaviconForPageURL} from 'chrome://resources/js/icon.js';
@@ -48,9 +50,9 @@ export class HistorySyncedDeviceCardElement extends CrLitElement {
   static override get properties() {
     return {
       /**
-       * The list of tabs open for this device.
+       * The list of windows open for this device.
        */
-      tabs: {type: Array},
+      windows: {type: Array},
 
       // Name of the synced device.
       device: {type: String},
@@ -66,13 +68,6 @@ export class HistorySyncedDeviceCardElement extends CrLitElement {
 
       searchTerm: {type: String},
 
-      /**
-       * The indexes where a window separator should be shown. The use of a
-       * separate array here is necessary for window separators to appear
-       * correctly in search. See http://crrev.com/2022003002 for more details.
-       */
-      separatorIndexes: {type: Array},
-
       // Internal identifier for the device.
       sessionTag: {type: String},
     };
@@ -80,23 +75,25 @@ export class HistorySyncedDeviceCardElement extends CrLitElement {
 
   accessor device: string = '';
   accessor lastUpdateTime: string = '';
-  accessor tabs: ForeignSessionTab[] = [];
+  accessor windows: ForeignSessionWindow[] = [];
   accessor opened: boolean = true;
   accessor searchTerm: string = '';
-  accessor separatorIndexes: number[] = [];
   accessor sessionTag: string = '';
 
   override updated(changedProperties: PropertyValues<this>) {
     super.updated(changedProperties);
-    if (changedProperties.has('tabs')) {
+    if (changedProperties.has('windows') ||
+        changedProperties.has('searchTerm')) {
       this.notifyFocusUpdate_();
+    }
+    if (changedProperties.has('windows')) {
       this.updateIcons_();
     }
   }
 
   /**
    * Create FocusRows for this card. One is always made for the card heading and
-   * one for each result if the card is open.
+   * one for each window header and result if the card is open.
    */
   createFocusRows(): FocusRow[] {
     const titleRow = new FocusRow(this.$.cardHeading, null);
@@ -104,10 +101,15 @@ export class HistorySyncedDeviceCardElement extends CrLitElement {
     titleRow.addItem('collapse', '#collapseButton');
     const rows = [titleRow];
     if (this.opened) {
-      this.shadowRoot.querySelectorAll<HTMLElement>('.item-container')
+      this.shadowRoot
+          .querySelectorAll<HTMLElement>('.window-header, .item-container')
           .forEach(function(el) {
             const row = new FocusRow(el, null);
-            row.addItem('link', '.website-link');
+            if (el.classList.contains('window-header')) {
+              row.addItem('open-window', '.open-window-button');
+            } else {
+              row.addItem('link', '.website-link');
+            }
             rows.push(row);
           });
     }
@@ -131,6 +133,15 @@ export class HistorySyncedDeviceCardElement extends CrLitElement {
         Number((e.currentTarget as HTMLElement).dataset['sessionId']),
         modifiers);
     e.preventDefault();
+  }
+
+  protected onOpenWindowClick_(e: Event) {
+    BrowserProxyImpl.getInstance().recordHistogram(
+        SYNCED_TABS_HISTOGRAM_NAME, SyncedTabsHistogram.OPEN_WINDOW,
+        SyncedTabsHistogram.LIMIT);
+    browserProxyFactory.getInstance().handler.openForeignSessionWindow(
+        this.sessionTag,
+        Number((e.currentTarget as HTMLElement).dataset['windowId']));
   }
 
   protected onLinkAuxclick_(e: MouseEvent) {
@@ -173,17 +184,33 @@ export class HistorySyncedDeviceCardElement extends CrLitElement {
       const icons =
           this.shadowRoot.querySelectorAll<HTMLElement>('.website-icon');
 
-      for (let i = 0; i < this.tabs.length; i++) {
-        // Entries on this UI are coming strictly from sync, so we can set
-        // |isSyncedUrlForHistoryUi| to true on the getFavicon call below.
-        icons[i]!.style.backgroundImage = getFaviconForPageURL(
-            this.tabs[i]!.url, true, this.tabs[i]!.remoteIconUrlForUma);
+      let i = 0;
+      for (const win of this.windows) {
+        for (const tab of win.tabs) {
+          // Entries on this UI are coming strictly from sync, so we can set
+          // |isSyncedUrlForHistoryUi| to true on the getFavicon call below.
+          icons[i]!.style.backgroundImage =
+              getFaviconForPageURL(tab.url, true, tab.remoteIconUrlForUma);
+          i++;
+        }
       }
     }, 0);
   }
 
-  protected isWindowSeparatorIndex_(index: number): boolean {
-    return this.separatorIndexes.indexOf(index) !== -1;
+  protected getWindowTitle_(windowIndex: number): string {
+    const numTabs = this.windows[windowIndex]!.tabs.length;
+    return numTabs === 1 ?
+        loadTimeData.getStringF(
+            'syncedTabsWindowHeaderSingular', windowIndex + 1) :
+        loadTimeData.getStringF(
+            'syncedTabsWindowHeaderPlural', windowIndex + 1, numTabs);
+  }
+
+  protected getOpenWindowTitle_(windowIndex: number): string {
+    const numTabs = this.windows[windowIndex]!.tabs.length;
+    return numTabs === 1 ?
+        loadTimeData.getStringF('openWindowSingular', windowIndex + 1) :
+        loadTimeData.getStringF('openWindowPlural', windowIndex + 1, numTabs);
   }
 
   protected getCollapseIcon_(): string {

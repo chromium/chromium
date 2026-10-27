@@ -251,6 +251,32 @@ void ForeignSessionHandler::OpenForeignSessionAllTabs(
   restore_windows_callback_.Run(profile_, windows);
 }
 
+void ForeignSessionHandler::OpenForeignSessionWindow(
+    const std::string& session_tag,
+    int32_t window_id) {
+  sync_sessions::OpenTabsUIDelegate* open_tabs =
+      GetOpenTabsUIDelegate(profile_);
+  if (!open_tabs) {
+    return;
+  }
+
+  // Note: we don't own the ForeignSessions themselves.
+  std::vector<const ::sessions::SessionWindow*> windows =
+      open_tabs->GetForeignSession(session_tag);
+  if (windows.empty()) {
+    DVLOG(1) << "ForeignSessionHandler failed to get session data from"
+                "OpenTabsUIDelegate.";
+    return;
+  }
+
+  for (const ::sessions::SessionWindow* window : windows) {
+    if (window && window->window_id.id() == window_id) {
+      restore_windows_callback_.Run(profile_, {window});
+      return;
+    }
+  }
+}
+
 void ForeignSessionHandler::OpenForeignSessionTab(
     const std::string& session_tag,
     int32_t tab_id_value,

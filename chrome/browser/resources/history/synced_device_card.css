@@ -61,9 +61,44 @@
   min-height: var(--item-height);
 }
 
-.window-separator {
-  background-color: var(--card-border-color);
-  height: 1px;
-  margin: 5px auto;
-  width: 80%;
+.window-header {
+  align-items: center;
+  border-top: 1px solid var(--card-border-color);
+  color: var(--cr-secondary-text-color);
+  display: flex;
+  justify-content: space-between;
+  margin: 4px 20px 0;
+  min-height: var(--item-height);
+  padding-top: 4px;
+}
+
+.window-header:first-child {
+  border-top: none;
+  margin-top: 0;
+  padding-top: 0;
+}
+
+.window-title {
+  align-items: center;
+  display: flex;
+  font-size: 12px;
+  font-weight: 500;
+  gap: 8px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.window-title cr-icon {
+  --iron-icon-height: 16px;
+  --iron-icon-width: 16px;
+  flex-shrink: 0;
+  margin: 0 4px;
+}
+
+.open-window-button {
+  --cr-icon-button-icon-size: 16px;
+  --cr-icon-button-margin-end: 4px;
+  --cr-icon-button-margin-start: 0;
+  --cr-icon-button-size: 28px;
 }
