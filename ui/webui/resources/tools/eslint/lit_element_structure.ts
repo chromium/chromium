@@ -7,7 +7,7 @@ import type {TSESLint, TSESTree} from '/third_party/node/node_modules/@typescrip
 import assert from 'node:assert';
 import path from 'node:path';
 
-import {dashCaseToCamelCase, isCrLitElementSubclass, isIdentifier, isLiteral, isMixinClass, isType, LIT_IMPORT_REGEX} from './query_utils.js';
+import {dashCaseToCamelCase, isCrLitElementSubclass, isCrLitElementType, isIdentifier, isLiteral, isMixinClass, isType, LIT_IMPORT_REGEX} from './query_utils.js';
 
 // The order in which boilerplate and lifecycle CrLitElement methods should
 // be defined.
@@ -35,7 +35,8 @@ type MessageIds = 'htmlImportInTsFile'|'inconsistentClassName'|
     'incorrectFilenameSuffix'|'incorrectMethodDefinitionOrder'|
     'invalidDollarSignProperty'|'missingCustomElementRegistration'|
     'missingCustomEventTypeParameter'|'missingStaticIsGetter'|
-    'missingSuperCalls'|'missingTagNameRegistration'|'noReExport';
+    'missingSuperCalls'|'missingTagNameRegistration'|'noConstructorParams'|
+    'noNewCrLitElement'|'noReExport';
 
 // Necessary info to track about each CrLitElement subclass definition
 // encountered in the current file.
@@ -117,6 +118,22 @@ class ClassInfo {
         isIdentifier(arg0.property) && arg0.property.name === 'is';
     const arg1Correct = isIdentifier(arg1) && arg1.name === this.name;
     this.hasCustomElementRegistration = arg0Correct && arg1Correct;
+  }
+
+  runConstructorParamsCheck(node: TSESTree.MethodDefinition) {
+    // Mixins are excluded because TypeScript requires any mixin class
+    // constructor to declare a single '...args: any[]' rest parameter (TS2545).
+    if (this.isMixin || node.value.params.length === 0) {
+      return;
+    }
+
+    this.context.report({
+      node,
+      messageId: 'noConstructorParams',
+      data: {
+        className: this.name,
+      },
+    });
   }
 
   runCustomEventTypeParameterCheck(node: TSESTree.TSTypeReference) {
@@ -459,6 +476,10 @@ export const litElementStructureRule = ESLintUtils.RuleCreator.withoutDocs<
           'Optional or nullable property \'{{propertyName}}\' is not allowed on the \'$\' interface of \'{{className}}\'. Elements accessed via \'$\' are expected to always exist in the DOM.',
       noReExport:
           'Re-exporting \'{{exportName}}\' from a file containing a CrLitElement subclass/mixin definition is not allowed. Import directly from the original source file instead.',
+      noConstructorParams:
+          'Constructor in CrLitElement subclass {{className}} must not accept parameters.',
+      noNewCrLitElement:
+          'Do not instantiate CrLitElement subclass \'{{className}}\' using \'new\'. Use document.createElement() or an HTML template instead.',
     },
     schema: [],
   },
@@ -539,6 +560,14 @@ export const litElementStructureRule = ESLintUtils.RuleCreator.withoutDocs<
         currentClassInfo.methodDefinitionOrder.push(
             {name: node.key.name, node});
       },
+      'ClassDeclaration > ClassBody > MethodDefinition[kind="constructor"]'(
+          node: TSESTree.MethodDefinition) {
+        if (!currentClassInfo) {
+          return;
+        }
+
+        currentClassInfo.runConstructorParamsCheck(node);
+      },
       [LIFECYCLE_METHOD_DEFINITION_SELECTOR](node: TSESTree.MethodDefinition) {
         if (!currentClassInfo) {
           return;
@@ -615,6 +644,23 @@ export const litElementStructureRule = ESLintUtils.RuleCreator.withoutDocs<
       'ExportNamedDeclaration > ExportSpecifier'(
           node: TSESTree.ExportSpecifier) {
         exportSpecifiers.push(node);
+      },
+      'NewExpression'(node: TSESTree.NewExpression) {
+        const services = ESLintUtils.getParserServices(context);
+        const checker = services.program.getTypeChecker();
+        const tsNode = services.esTreeNodeToTSNodeMap.get(node);
+        assert.ok(tsNode);
+        const type = checker.getTypeAtLocation(tsNode);
+        if (isCrLitElementType(type, checker)) {
+          assert.ok(isIdentifier(node.callee));
+          context.report({
+            node,
+            messageId: 'noNewCrLitElement',
+            data: {
+              className: node.callee.name,
+            },
+          });
+        }
       },
       'Program:exit'(_node: TSESTree.Program) {
         if (classInfos.size === 0) {

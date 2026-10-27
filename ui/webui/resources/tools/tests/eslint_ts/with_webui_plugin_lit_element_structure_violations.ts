@@ -280,6 +280,28 @@ export type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 export {css};
 export type {CSSResultGroup};
 
+// Case1.16: Class with constructor parameters.
+export class TestError16Element extends CrLitElement {
+  static get is() {
+    return 'test-error16';
+  }
+
+  constructor(_param: string) {
+    super();
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'test-error16': TestError16Element;
+  }
+}
+
+customElements.define(TestError16Element.is, TestError16Element);
+
+// Case1.17: Instantiating CrLitElement subclass with 'new'.
+const _error17 = new TestError16Element('foo');
+
 
 /* Cases with no violations below. */
 
@@ -373,3 +395,20 @@ const localConst = 1;
 interface LocalInterface {}
 export {localConst};
 export type {LocalInterface};
+
+// Case2.6: Mixin class with rest constructor parameters (required by
+// TypeScript TS2545 whenever a mixin class defines a constructor).
+export const TestNoError6Mixin =
+    <T extends Constructor<CrLitElement>>(superClass: T): T => {
+      class TestNoError6Mixin extends superClass {
+        constructor(...args: any[]) {
+          super(...args);
+        }
+      }
+      return TestNoError6Mixin;
+    };
+
+// Case2.7: Instantiating non-CrLitElement class with 'new' or CrLitElement
+// subclass with document.createElement() is allowed.
+const _noError7a = new TestNoError2Element();
+const _noError7b = document.createElement('test-no-error3');

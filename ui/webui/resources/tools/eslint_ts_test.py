@@ -326,6 +326,8 @@ class EslintTsTest(unittest.TestCase):
     _EXPECTED_MISSING_CUSTOM_EVENT_TYPE_PARAMETER_ERROR = "Missing CustomEvent type parameter for %(type)s '%(name)s' (use CustomEvent<void> or CustomEvent<SomeType>)"
     _EXPECTED_INVALID_DOLLAR_SIGN_PROPERTY_ERROR = "Optional or nullable property '%(propertyName)s' is not allowed on the '$' interface of '%(className)s'. Elements accessed via '$' are expected to always exist in the DOM"
     _EXPECTED_NO_RE_EXPORT_ERROR = "Re-exporting '%(exportName)s' from a file containing a CrLitElement subclass/mixin definition is not allowed. Import directly from the original source file instead"
+    _EXPECTED_NO_CONSTRUCTOR_PARAMS_ERROR = "Constructor in CrLitElement subclass %(className)s must not accept parameters"
+    _EXPECTED_NO_NEW_CR_LIT_ELEMENT_ERROR = "Do not instantiate CrLitElement subclass '%(className)s' using 'new'. Use document.createElement() or an HTML template instead"
 
     super_call_required_methods = [
       'connectedCallback',
@@ -454,6 +456,16 @@ class EslintTsTest(unittest.TestCase):
       _EXPECTED_NO_RE_EXPORT_ERROR % {'exportName': 'PropertyValues'},
       _EXPECTED_NO_RE_EXPORT_ERROR % {'exportName': 'css'},
       _EXPECTED_NO_RE_EXPORT_ERROR % {'exportName': 'CSSResultGroup'},
+      # Case 1.16
+      _EXPECTED_NO_CONSTRUCTOR_PARAMS_ERROR
+      % {
+        'className': 'TestError16Element',
+      },
+      # Case 1.17
+      _EXPECTED_NO_NEW_CR_LIT_ELEMENT_ERROR
+      % {
+        'className': 'TestError16Element',
+      },
     ]
     for e in errors:
       self.assertTrue(
@@ -535,6 +547,10 @@ class EslintTsTest(unittest.TestCase):
         'expectedOrder': '[is, styles, render, properties, constructor, connectedCallback, disconnectedCallback, willUpdate, firstUpdated, updated]',
         'actualOrder': '',
       },
+      _EXPECTED_NO_CONSTRUCTOR_PARAMS_ERROR
+      % {
+        'className': 'TestNoError3Element',
+      },
       _EXPECTED_INCORRECT_CLASS_NAME_SUFFIX_ERROR
       % {
         'className': 'TestNoError3Element',
@@ -562,6 +578,20 @@ class EslintTsTest(unittest.TestCase):
       # Case 2.5
       _EXPECTED_NO_RE_EXPORT_ERROR % {'exportName': 'localConst'},
       _EXPECTED_NO_RE_EXPORT_ERROR % {'exportName': 'LocalInterface'},
+      # Case 2.6
+      _EXPECTED_NO_CONSTRUCTOR_PARAMS_ERROR
+      % {
+        'className': 'TestNoError6Mixin',
+      },
+      # Case 2.7
+      _EXPECTED_NO_NEW_CR_LIT_ELEMENT_ERROR
+      % {
+        'className': 'TestNoError2Element',
+      },
+      _EXPECTED_NO_NEW_CR_LIT_ELEMENT_ERROR
+      % {
+        'className': 'TestNoError3Element',
+      },
     ]
     for e in non_errors:
       self.assertFalse(
