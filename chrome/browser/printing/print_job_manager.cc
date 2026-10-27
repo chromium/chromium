@@ -129,7 +129,9 @@ void PrintJobManager::OnJobDone(PrintJob* print_job) {
     return;
 
   size_t erased = current_jobs_.erase(print_job);
-  CHECK_EQ(1U, erased, base::NotFatalUntil::M162);
+  // TODO(crbug.com/577679273): CHECK-exclusion: Convert to a CHECK once we
+  // are confident it won't be triggered.
+  DCHECK_EQ(1U, erased);
 }
 
 void PrintJobManager::OnFailed(PrintJob* print_job) {
