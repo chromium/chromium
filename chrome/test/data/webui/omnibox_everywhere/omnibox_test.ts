@@ -2607,6 +2607,79 @@ suite('OmniboxEverywhereAppTest', () => {
   });
 
   test(
+      'clicking MVT close button calls onDismissMostVisited and hides ' +
+          'container',
+      async () => {
+        document.body.innerHTML = window.trustedTypes!.emptyHTML;
+        loadTimeData.overrideValues({
+          omniboxEverywhereMostVisitedEnabled: true,
+          initialFreStage: 0,
+        });
+        const mvHandler = TestMock.fromClass(MostVisitedPageHandlerRemote);
+        const {instance: mvInstance, remote: mvRemote} =
+            browserProxyFactory.createForTest(mvHandler);
+        browserProxyFactory.setInstance(mvInstance);
+        mvHandler.setResultFor(
+            'getMostVisitedExpandedState',
+            Promise.resolve({isExpanded: false}));
+
+        const appWithMv = document.createElement('omnibox-everywhere-app');
+        document.body.appendChild(appWithMv);
+        await microtasksFinished();
+
+        const mvContainer = appWithMv.shadowRoot.querySelector<HTMLElement>(
+            '#mostVisitedContainer');
+        const mostVisited =
+            appWithMv.shadowRoot.querySelector<HTMLElement>('#mostVisited');
+        const closeButton =
+            appWithMv.shadowRoot.querySelector<HTMLButtonElement>(
+                '#mostVisitedCloseButton');
+        assertTrue(!!mvContainer);
+        assertTrue(!!mostVisited);
+        assertTrue(!!closeButton);
+        // Close button is placed after <cr-most-visited> in DOM tab order.
+        assertEquals(closeButton, mostVisited.nextElementSibling);
+
+        const testTiles = [{
+          title: 'Google',
+          titleDirection: TextDirection.LEFT_TO_RIGHT,
+          url: 'https://www.google.com/',
+          source: 0,
+          titleSource: 0,
+          isQueryTile: false,
+          allowUserEdit: false,
+          allowUserDelete: false,
+        }];
+
+        mvRemote.setMostVisitedInfo({
+          customLinksEnabled: false,
+          enterpriseShortcutsEnabled: false,
+          tiles: testTiles,
+          visible: true,
+        });
+        await mvRemote.$.flushForTesting();
+        await microtasksFinished();
+
+        assertFalse(mvContainer.hidden);
+        // Steady state has opacity 0 and pointer-events none.
+        const closeButtonStyle = window.getComputedStyle(closeButton);
+        assertEquals('0', closeButtonStyle.opacity);
+        assertEquals('none', closeButtonStyle.pointerEvents);
+        assertEquals(
+            loadTimeData.getString('close'),
+            closeButton.getAttribute('aria-label'));
+
+        closeButton.click();
+        await testEverywhereProxy.handler.whenCalled('onDismissMostVisited');
+        await microtasksFinished();
+
+        assertEquals(
+            1,
+            testEverywhereProxy.handler.getCallCount('onDismissMostVisited'));
+        assertTrue(mvContainer.hidden);
+      });
+
+  test(
       'MVT remains mounted and hidden during FRE, unhiding when FRE dismissed',
       async () => {
         document.body.innerHTML = window.trustedTypes!.emptyHTML;

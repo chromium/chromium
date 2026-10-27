@@ -214,6 +214,58 @@ omnibox-everywhere-omnibox::part(dropdown-content) {
   max-width: calc(100% - 4px);
 }
 
+#mostVisitedCloseButton,
+#mostVisitedCloseButton * {
+  -webkit-app-region: no-drag;
+}
+
+#mostVisitedCloseButton {
+  align-items: center;
+  background-color: var(--color-searchbox-background, #fff);
+  border: 1px solid var(--color-sys-neutral-outline, rgba(0, 0, 0, 0.12));
+  border-radius: 50%;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.2), 0 1px 2px 0 rgba(0, 0, 0, 0.12);
+  box-sizing: border-box;
+  color: var(--color-sys-on-surface-subtle, #474747);
+  cursor: pointer;
+  display: flex;
+  height: 20px;
+  inset-inline-end: -8px;
+  justify-content: center;
+  opacity: 0;
+  outline: none;
+  padding: 0;
+  pointer-events: none;
+  position: absolute;
+  top: -8px;
+  transition: opacity 150ms ease, background-color 150ms ease;
+  width: 20px;
+  z-index: 101;
+}
+
+#mostVisitedCloseButton cr-icon {
+  --cr-icon-size: 14px;
+  height: 14px;
+  pointer-events: none;
+  width: 14px;
+}
+
+#mostVisitedContainer:hover #mostVisitedCloseButton,
+#mostVisitedCloseButton:focus-visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+#mostVisitedCloseButton:hover {
+  background-color: var(--color-sys-surface-container-highest, #dde3ea);
+  color: var(--color-sys-on-surface, #1f1f1f);
+}
+
+#mostVisitedCloseButton:focus-visible {
+  outline: 2px solid var(--color-sys-primary, #0b57d0);
+  outline-offset: 2px;
+}
+
 cr-most-visited {
   -webkit-app-region: drag;
   --add-shortcut-foreground-color: var(--color-sys-on-surface);
@@ -352,6 +404,9 @@ fre-chin.dismissing {
   }
   #mostVisitedContainer {
     animation: none;
+  }
+  #mostVisitedCloseButton {
+    transition: none;
   }
 }
 

@@ -202,6 +202,8 @@ class OmniboxEverywhereHandlerTest
   }
 
  protected:
+  variations::test::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
+      variations::VariationsIdsProvider::Mode::kUseSignedInState};
   base::test::ScopedFeatureList feature_list_;
   content::TestWebUI web_ui_;
   std::unique_ptr<MockOmniboxEverywhereService> mock_service_;
@@ -613,6 +615,43 @@ TEST_F(OmniboxEverywhereHandlerTest,
 
   page_handler.SetIsComposebox(true);
   page_handler.SetIsComposebox(false);
+}
+
+TEST_F(OmniboxEverywhereHandlerTest,
+       OnDismissMostVisitedDoesNotCrashWithNullController) {
+  mojo::Remote<omnibox_everywhere::mojom::PageHandler> page_handler_remote;
+  OmniboxEverywherePageHandler page_handler(
+      page_handler_remote.BindNewPipeAndPassReceiver(), mojo::NullRemote(),
+      /*web_ui_controller=*/nullptr);
+
+  page_handler.OnDismissMostVisited();
+}
+
+TEST_F(OmniboxEverywhereHandlerTest,
+       OnDismissMostVisitedUpdatesShowShortcutsPrefToDisabled) {
+  OmniboxEverywhereUI ui(&web_ui_);
+  mojo::Remote<omnibox_everywhere::mojom::PageHandler> page_handler_remote;
+  OmniboxEverywherePageHandler page_handler(
+      page_handler_remote.BindNewPipeAndPassReceiver(), mojo::NullRemote(),
+      &ui);
+
+  EXPECT_EQ(profile()->GetPrefs()->GetInteger(
+                omnibox_everywhere::prefs::kOmniboxEverywhereShowShortcuts),
+            static_cast<int>(
+                omnibox_everywhere::prefs::ShowShortcutsPrefValue::kUnset));
+  EXPECT_TRUE(
+      omnibox_everywhere::prefs::IsOmniboxEverywhereShortcutsVisible(
+          profile()));
+
+  page_handler.OnDismissMostVisited();
+
+  EXPECT_EQ(profile()->GetPrefs()->GetInteger(
+                omnibox_everywhere::prefs::kOmniboxEverywhereShowShortcuts),
+            static_cast<int>(
+                omnibox_everywhere::prefs::ShowShortcutsPrefValue::kDisabled));
+  EXPECT_FALSE(
+      omnibox_everywhere::prefs::IsOmniboxEverywhereShortcutsVisible(
+          profile()));
 }
 
 TEST_F(OmniboxEverywhereHandlerTest, CalculateContextMenuAnchorPoint_LTR) {

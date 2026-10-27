@@ -160,6 +160,7 @@ void AddMostVisitedSourceStrings(content::WebUIDataSource* source) {
 
   static constexpr webui::LocalizedString kMostVisitedStrings[] = {
       {"addLinkTitle", IDS_NTP_CUSTOM_LINKS_ADD_SHORTCUT_TITLE},
+      {"close", IDS_ACCNAME_CLOSE},
       {"editLinkTitle", IDS_NTP_CUSTOM_LINKS_EDIT_SHORTCUT},
       {"viewLinkTitle", IDS_NTP_CUSTOM_LINKS_SHORTCUT_DETAILS_TITLE},
       {"invalidUrl", IDS_NTP_CUSTOM_LINKS_INVALID_URL},
@@ -712,6 +713,15 @@ void OmniboxEverywhereUI::SetIsComposebox(bool is_composebox) {
     is_composebox_mode_ = true;
   } else {
     ClearContextualSessionHandle();
+  }
+}
+
+void OmniboxEverywhereUI::OnDismissMostVisited() {
+  if (profile_ && profile_->GetPrefs()) {
+    profile_->GetPrefs()->SetInteger(
+        omnibox_everywhere::prefs::kOmniboxEverywhereShowShortcuts,
+        static_cast<int>(
+            omnibox_everywhere::prefs::ShowShortcutsPrefValue::kDisabled));
   }
 }
 

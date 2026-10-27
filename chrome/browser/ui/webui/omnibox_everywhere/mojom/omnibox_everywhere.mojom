@@ -53,6 +53,10 @@ interface PageHandler {
   // Notifies the browser that the composebox presentation mode in WebUI has
   // changed (e.g. opened or closed/submitted).
   SetIsComposebox(bool is_composebox);
+
+  // Notifies the browser that the user dismissed the Most Visited tiles row in
+  // Omnibox Everywhere.
+  OnDismissMostVisited();
 };
 
 // The WebUI page for Omnibox Everywhere lifecycle events.
