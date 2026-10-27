@@ -2,17 +2,27 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ui/views/win/hwnd_message_handler.h"
+
+#include <windows.h>
+
 #include <algorithm>
+#include <iterator>
 #include <memory>
 
+#include "base/logging.h"
+#include "base/process/process_handle.h"
 #include "base/test/run_until.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/ime/mock_input_method.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
+#include "ui/base/win/foreground_helper.h"
 #include "ui/base/win/window_event_target.h"
 #include "ui/events/event_constants.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/win/hwnd_util.h"
 #include "ui/views/test/widget_test.h"
-#include "ui/views/win/hwnd_message_handler.h"
 #include "ui/views/win/hwnd_message_handler_delegate.h"
 
 namespace views {
@@ -140,6 +150,63 @@ class TestHWNDMessageHandlerDelegate : public HWNDMessageHandlerDelegate {
   int accelerator_handled_count_ = 0;
   ui::Accelerator last_accelerator_;
 };
+
+class ActivatableHWNDMessageHandlerDelegate
+    : public TestHWNDMessageHandlerDelegate {
+ public:
+  // TestHWNDMessageHandlerDelegate:
+  bool CanActivate() const override { return true; }
+};
+
+// Brings `hwnd` to the foreground. ::SetForegroundWindow() fails if a window of
+// another process is in the foreground and this process didn't receive the last
+// input event, so use ForegroundHelper to send input and close stray foreign
+// foreground windows (see ui_test_utils::ShowAndFocusNativeWindow()).
+void EnsureForeground(HWND hwnd) {
+  for (int attempt = 0; attempt < 5; ++attempt) {
+    if (::GetForegroundWindow() == hwnd) {
+      return;
+    }
+    ui::ForegroundHelper::SetForeground(hwnd);
+
+    HWND foreground = ::GetForegroundWindow();
+    if (foreground == hwnd) {
+      return;
+    }
+
+    // Describe the window that holds the foreground, to help diagnose failures.
+    wchar_t title[256] = {};
+    ::GetWindowText(foreground, title, std::size(title));
+    DWORD process_id = 0;
+    ::GetWindowThreadProcessId(foreground, &process_id);
+    LOG(ERROR)
+        << "Failed to bring window to the foreground. Foreground window: "
+        << foreground << ", class: " << gfx::GetClassName(foreground)
+        << ", title: " << title << ", process id: " << process_id;
+
+    if (!foreground || process_id == base::GetCurrentProcId()) {
+      break;
+    }
+
+    // Attempt to close a stray window left behind by a previous test/task.
+    ::PostMessage(foreground, WM_CLOSE, 0, 0);
+    if (!base::test::RunUntil(
+            [&]() { return ::GetForegroundWindow() != foreground; })) {
+      break;
+    }
+  }
+}
+
+// Returns true if `above` is higher than `below` in the z-order.
+bool IsWindowAbove(HWND above, HWND below) {
+  for (HWND w = ::GetWindow(below, GW_HWNDPREV); w;
+       w = ::GetWindow(w, GW_HWNDPREV)) {
+    if (w == above) {
+      return true;
+    }
+  }
+  return false;
+}
 
 }  // namespace
 
@@ -354,6 +421,50 @@ TEST_F(HWNDMessageHandlerTest, DeferredDestruction) {
   EXPECT_TRUE(base::test::RunUntil([&]() { return !weak_handler; }));
 
   EXPECT_FALSE(weak_handler);
+}
+
+// Verifies that Activate() on an active owned window raises its owner, when
+// another window is between them in the z-order.
+TEST_F(HWNDMessageHandlerTest, ActivateOwnedWindowRaisesOwner) {
+  ActivatableHWNDMessageHandlerDelegate owner_delegate;
+  std::unique_ptr<HWNDMessageHandler> owner(
+      HWNDMessageHandler::Create(&owner_delegate, "owner"));
+  owner->Init(nullptr, gfx::Rect(0, 0, 100, 100));
+  owner->Show(ui::mojom::WindowShowState::kNormal, gfx::Rect());
+
+  ActivatableHWNDMessageHandlerDelegate owned_delegate;
+  std::unique_ptr<HWNDMessageHandler> owned(
+      HWNDMessageHandler::Create(&owned_delegate, "owned"));
+  owned->set_window_style(WS_POPUP);
+  owned->Init(owner->hwnd(), gfx::Rect(0, 0, 50, 50));
+  owned->Show(ui::mojom::WindowShowState::kNormal, gfx::Rect());
+  EnsureForeground(owned->hwnd());
+  ASSERT_TRUE(owned->IsActive());
+  ASSERT_EQ(::GetForegroundWindow(), owned->hwnd());
+
+  // Insert an unrelated window between the owned window and its owner.
+  ActivatableHWNDMessageHandlerDelegate other_delegate;
+  std::unique_ptr<HWNDMessageHandler> other(
+      HWNDMessageHandler::Create(&other_delegate, "other"));
+  other->Init(nullptr, gfx::Rect(0, 0, 100, 100));
+  ::ShowWindow(other->hwnd(), SW_SHOWNOACTIVATE);
+  ::SetWindowPos(other->hwnd(), owned->hwnd(), 0, 0, 0, 0,
+                 SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE);
+  ASSERT_TRUE(owned->IsActive());
+  ASSERT_EQ(::GetForegroundWindow(), owned->hwnd());
+  ASSERT_TRUE(IsWindowAbove(owned->hwnd(), other->hwnd()));
+  ASSERT_TRUE(IsWindowAbove(other->hwnd(), owner->hwnd()));
+
+  // Activate the owned window. Expect it to stay active and its owner to be
+  // raised above the other window, while staying below the owned window.
+  owned->Activate();
+  EXPECT_TRUE(owned->IsActive());
+  EXPECT_TRUE(IsWindowAbove(owned->hwnd(), owner->hwnd()));
+  EXPECT_TRUE(IsWindowAbove(owner->hwnd(), other->hwnd()));
+
+  other->CloseNow();
+  owned->CloseNow();
+  owner->CloseNow();
 }
 
 }  // namespace views
