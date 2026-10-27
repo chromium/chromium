@@ -366,8 +366,6 @@ aom_av1_encoder_sources = [
   "//third_party/libaom/source/libaom/third_party/fastfeat/fast.h",
   "//third_party/libaom/source/libaom/third_party/fastfeat/fast_9.c",
   "//third_party/libaom/source/libaom/third_party/fastfeat/nonmax.c",
-  "//third_party/libaom/source/libaom/third_party/vector/vector.c",
-  "//third_party/libaom/source/libaom/third_party/vector/vector.h",
 ]
 
 aom_av1_rc_sources = [
