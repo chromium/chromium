@@ -247,3 +247,4 @@ crbug.com/575489890 AutofillProfileSettingsTestCase/testDoneButtonByRequirements
 
 # Gardening suppression 2026-10-26
 crbug.com/556601479 [ iPhone Simulator ] PolicyUIMojoEnabledTestCase/testPolicyPageManagedWithCBCM [ Pass Failure ]
+crbug.com/578110413 SaveCardInfobarEGTest/testSaveCardBottomSheetShowsLoadingAndConfirmationAfterAcceptPushed [ Pass Failure ]
