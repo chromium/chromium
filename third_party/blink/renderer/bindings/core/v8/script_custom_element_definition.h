@@ -84,6 +84,9 @@ class CORE_EXPORT ScriptCustomElementDefinition final
   // Calls the constructor. The script scope, etc. must already be set up.
   Element* CallConstructor();
 
+  // Requires a valid main-world context.
+  bool CanRunConstructor() const;
+
   Member<ScriptState> script_state_;
   Member<V8CustomElementConstructor> constructor_;
   Member<V8VoidFunction> connected_callback_;

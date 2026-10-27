@@ -36,8 +36,6 @@ ScriptCustomElementDefinitionBuilder::ScriptCustomElementDefinitionBuilder(
 }
 
 bool ScriptCustomElementDefinitionBuilder::CheckConstructorIntrinsics() {
-  DCHECK(GetScriptState()->World().IsMainWorld());
-
   if (!Constructor()->IsConstructor()) {
     exception_state_.ThrowTypeError(
         "constructor argument is not a constructor");

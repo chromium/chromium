@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Isolated-world custom element constructors are not entered by Blink</title>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+<body>
+<div id="mount"></div>
+<script>
+'use strict';
+
+// Scoped registries must not let parsing or upgrades enter an isolated-world
+// constructor, even through a cloned registry carrier.
+
+const ISOLATED_WORLD_ID = 1;
+
+// The isolated world keeps one global scope across calls, so each snippet runs
+// in its own function scope to avoid redeclaring bindings.
+function runInIsolatedWorld(script) {
+  testRunner.evaluateScriptInIsolatedWorld(
+      ISOLATED_WORLD_ID, `(() => {\n${script}\n})();`);
+}
+
+function cleanUp() {
+  const html = document.documentElement;
+  delete html.dataset.defined;
+  delete html.dataset.constructorEntered;
+  document.getElementById('mount').replaceChildren();
+}
+
+test(() => {
+  const registry = new CustomElementRegistry();
+  let constructed = 0;
+  registry.define('x-main-world-scoped', class extends HTMLElement {
+    constructor() {
+      super();
+      ++constructed;
+    }
+  });
+  const carrier = document.createElement('div', {
+    customElementRegistry: registry,
+  });
+  document.getElementById('mount').appendChild(carrier);
+  carrier.innerHTML = '<x-main-world-scoped></x-main-world-scoped>';
+  assert_equals(constructed, 1,
+                'A same-world scoped registry must still upgrade normally');
+  carrier.remove();
+}, 'Control: a main-world scoped registry still upgrades while parsing');
+
+test(t => {
+  assert_true(!!window.testRunner,
+              'Requires testRunner.evaluateScriptInIsolatedWorld');
+  t.add_cleanup(cleanUp);
+
+  runInIsolatedWorld(`
+    const registry = new CustomElementRegistry();
+    registry.define('x-isolated-scoped', class extends HTMLElement {});
+    document.documentElement.dataset.defined = 'yes';
+    const element = document.createElement('x-isolated-scoped', {
+      customElementRegistry: registry,
+    });
+    element.id = 'isolated-element';
+    document.getElementById('mount').appendChild(element);
+  `);
+
+  assert_equals(document.documentElement.dataset.defined, 'yes',
+                'define() succeeds in an isolated world');
+  const element = document.getElementById('isolated-element');
+  assert_not_equals(element, null,
+                    'The isolated world can insert its element into the page');
+  assert_equals(element.customElementRegistry, null,
+                'The main world cannot read the isolated-world registry');
+  assert_equals(customElements.get('x-isolated-scoped'), undefined,
+                'The main world cannot look up the private definition');
+}, 'An isolated world can define, insert, and keep its registry hidden');
+
+test(t => {
+  assert_true(!!window.testRunner,
+              'Requires testRunner.evaluateScriptInIsolatedWorld');
+  t.add_cleanup(cleanUp);
+
+  // The isolated world publishes a DOM-visible marker before calling super(),
+  // standing in for the extension-world side effects described in the report.
+  runInIsolatedWorld(`
+    const registry = new CustomElementRegistry();
+    registry.define('x-isolated-scoped', class extends HTMLElement {
+      constructor() {
+        document.documentElement.dataset.constructorEntered = 'yes';
+        super();
+      }
+    });
+    document.documentElement.dataset.defined = 'yes';
+    const carrier = document.createElement('div', {
+      customElementRegistry: registry,
+    });
+    carrier.id = 'isolated-carrier';
+    document.getElementById('mount').appendChild(carrier);
+  `);
+
+  assert_equals(document.documentElement.dataset.defined, 'yes',
+                'define() succeeds in an isolated world');
+  const original = document.getElementById('isolated-carrier');
+  assert_not_equals(original, null, 'The isolated world created the carrier');
+  assert_equals(original.customElementRegistry, null,
+                'The main world cannot read the isolated-world registry');
+  assert_equals(customElements.get('x-isolated-scoped'), undefined,
+                'The main world cannot look up the private definition');
+
+  // The page copies the opaque registry authority and drops the original, so
+  // the extension-created element is gone before the attack runs.
+  const clone = original.cloneNode(false);
+  document.getElementById('mount').appendChild(clone);
+  original.remove();
+  assert_equals(clone.customElementRegistry, null,
+                'The cloned registry is also hidden from the main world');
+
+  clone.innerHTML = '<x-isolated-scoped></x-isolated-scoped>';
+
+  assert_equals(document.documentElement.dataset.constructorEntered, undefined,
+                'Main-world parsing must not enter an isolated-world ' +
+                'custom element constructor');
+
+  const created = clone.firstElementChild;
+  assert_not_equals(created, null, 'The element is still created');
+  assert_equals(created.localName, 'x-isolated-scoped',
+                'The element keeps its tag name');
+}, 'Parsing into a cloned carrier cannot reach an isolated-world constructor');
+
+test(t => {
+  assert_true(!!window.testRunner,
+              'Requires testRunner.evaluateScriptInIsolatedWorld');
+  t.add_cleanup(cleanUp);
+
+  // Upgrading an element that already exists must be blocked the same way.
+  runInIsolatedWorld(`
+    const registry = new CustomElementRegistry();
+    const host = document.createElement('div', {
+      customElementRegistry: registry,
+    });
+    host.id = 'upgrade-carrier';
+    host.innerHTML = '<x-isolated-upgrade></x-isolated-upgrade>';
+    document.getElementById('mount').appendChild(host);
+    registry.define('x-isolated-upgrade', class extends HTMLElement {
+      constructor() {
+        document.documentElement.dataset.constructorEntered = 'yes';
+        super();
+      }
+    });
+    document.documentElement.dataset.defined = 'yes';
+  `);
+
+  assert_equals(document.documentElement.dataset.defined, 'yes',
+                'define() succeeds in an isolated world');
+  assert_not_equals(document.getElementById('upgrade-carrier'), null,
+                    'The isolated world created the upgrade carrier');
+  assert_equals(document.documentElement.dataset.constructorEntered, undefined,
+                'Upgrading must not enter an isolated-world constructor');
+}, 'Upgrade cannot reach an isolated-world constructor');
+</script>

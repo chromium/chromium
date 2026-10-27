@@ -70,13 +70,26 @@ void ScriptCustomElementDefinition::Trace(Visitor* visitor) const {
   CustomElementDefinition::Trace(visitor);
 }
 
+bool ScriptCustomElementDefinition::CanRunConstructor() const {
+  if (!script_state_->ContextIsValid()) {
+    return false;
+  }
+  // HTMLElement's constructor rejects non-main worlds only after user code
+  // runs, so never enter a non-main-world constructor (e.g. from page parsing).
+  if (!script_state_->World().IsMainWorld()) {
+    return false;
+  }
+  return true;
+}
+
 HTMLElement* ScriptCustomElementDefinition::CreateAutonomousCustomElementSync(
     Document& document,
     const QualifiedName& tag_name,
     CustomElementRegistry* registry) {
   DCHECK(CustomElement::ShouldCreateCustomElement(tag_name)) << tag_name;
-  if (!script_state_->ContextIsValid())
+  if (!CanRunConstructor()) {
     return CustomElement::CreateFailedElement(document, tag_name, registry);
+  }
   ScriptState::Scope scope(script_state_);
   v8::Isolate* isolate = script_state_->GetIsolate();
   v8::TryCatch try_catch(isolate);
@@ -120,8 +133,9 @@ HTMLElement* ScriptCustomElementDefinition::CreateAutonomousCustomElementSync(
 
 // https://html.spec.whatwg.org/C/#upgrades
 bool ScriptCustomElementDefinition::RunConstructor(Element& element) {
-  if (!script_state_->ContextIsValid())
+  if (!CanRunConstructor()) {
     return false;
+  }
   ScriptState::Scope scope(script_state_);
   v8::Isolate* isolate = script_state_->GetIsolate();
 
