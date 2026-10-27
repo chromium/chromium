@@ -199,5 +199,4 @@ Builds on | Variant | Description
 
 ## See Also
  * [//docs/android_build_instructions.md](android_build_instructions.md)
- * [//third_party/android_crazy_linker/README.chromium](../third_party/android_crazy_linker/README.chromium)
  * [//base/android/linker/BUILD.gn](../base/android/linker/BUILD.gn)
