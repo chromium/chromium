@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/android/jni_string.h"
+#include "third_party/jni_zero/jni_zero.h"
 
 // Must come after headers that provide symbols used by @JniType.
 #include "chrome/browser/touch_to_fill/password_manager/no_passkeys/internal/android/jni/NoPasskeysBottomSheetBridge_jni.h"
@@ -25,8 +26,8 @@ class JniDelegateImpl : public JniDelegate {
 
   void Create(ui::WindowAndroid& window_android) override {
     java_object_.Reset(Java_NoPasskeysBottomSheetBridge_Constructor(
-        jni_zero::AttachCurrentThread(),
-        reinterpret_cast<intptr_t>(bridge_.get()), &window_android));
+        jni_zero::AttachCurrentThread(), jni_zero::MakeRaw(bridge_.get()),
+        &window_android));
   }
 
   void Show(const std::string& origin) override {
