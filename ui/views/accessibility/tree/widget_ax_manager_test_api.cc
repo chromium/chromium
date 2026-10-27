@@ -25,6 +25,22 @@ void WidgetAXManagerTestApi::Enable() {
   manager_->Enable();
 }
 
+void WidgetAXManagerTestApi::Disable() {
+  manager_->Disable();
+}
+
+bool WidgetAXManagerTestApi::is_observing_focus() const {
+  return manager_->focus_manager_observation_.IsObserving();
+}
+
+bool WidgetAXManagerTestApi::has_tree_serializer() const {
+  return !!manager_->tree_serializer_;
+}
+
+bool WidgetAXManagerTestApi::enable_on_widget_created() const {
+  return manager_->is_waiting_for_widget_creation();
+}
+
 const std::vector<WidgetAXManager::Event>&
 WidgetAXManagerTestApi::pending_events() const {
   return manager_->pending_events_;
@@ -49,6 +65,11 @@ const ui::AXTreeID& WidgetAXManagerTestApi::parent_ax_tree_id() const {
 
 WidgetViewAXCache* WidgetAXManagerTestApi::cache() const {
   return manager_->cache_.get();
+}
+
+const ViewAccessibilityAXTreeSource* WidgetAXManagerTestApi::tree_source()
+    const {
+  return manager_->tree_source_.get();
 }
 
 ui::BrowserAccessibilityManager* WidgetAXManagerTestApi::ax_tree_manager()

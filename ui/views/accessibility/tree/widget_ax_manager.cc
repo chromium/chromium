@@ -135,7 +135,7 @@ void WidgetAXManager::Init() {
   CHECK(widget_->GetRootView());
   if (ui::AXPlatform::GetInstance().GetMode().has_mode(
           ui::AXMode::kNativeAPIs)) {
-    EnableWhenWidgetCreated();
+    Enable();
   } else {
     if (widget_->is_top_level()) {
       InitAXTreeManager();
@@ -145,7 +145,7 @@ void WidgetAXManager::Init() {
 
 void WidgetAXManager::OnEvent(ViewAccessibility& view_ax,
                               ax::mojom::Event event_type) {
-  if (!is_enabled_) {
+  if (!is_enabled()) {
     return;
   }
 
@@ -181,20 +181,24 @@ void WidgetAXManager::OnEvent(ViewAccessibility& view_ax,
 }
 
 void WidgetAXManager::OnTransientFocusRequested(ViewAccessibility& view_ax) {
-  if (!is_enabled_) {
+  if (!is_enabled()) {
     return;
   }
 
   CHECK(tree_source_);
   pending_data_updates_.insert(view_ax.GetUniqueId());
   tree_source_->SetTransientFocusIdForNextSerialization(view_ax.GetUniqueId());
-  auto clear_transient_focus = absl::MakeCleanup(
-      [this] { tree_source_->ClearTransientFocusIdForNextSerialization(); });
+  auto clear_transient_focus =
+      absl::MakeCleanup([tree = tree_weak_factory_.GetWeakPtr()] {
+        if (tree) {
+          tree->tree_source_->ClearTransientFocusIdForNextSerialization();
+        }
+      });
   SendPendingUpdate();
 }
 
 void WidgetAXManager::OnDataChanged(ViewAccessibility& view_ax) {
-  if (!is_enabled_) {
+  if (!is_enabled()) {
     return;
   }
 
@@ -205,7 +209,7 @@ void WidgetAXManager::OnDataChanged(ViewAccessibility& view_ax) {
 
 void WidgetAXManager::OnChildAdded(ViewAccessibility& child,
                                    ViewAccessibility& parent) {
-  if (!is_enabled_) {
+  if (!is_enabled()) {
     return;
   }
 
@@ -217,7 +221,7 @@ void WidgetAXManager::OnChildAdded(ViewAccessibility& child,
 
 void WidgetAXManager::OnChildRemoved(ViewAccessibility& child,
                                      ViewAccessibility& parent) {
-  if (!is_enabled_) {
+  if (!is_enabled()) {
     return;
   }
 
@@ -244,14 +248,31 @@ void WidgetAXManager::AppendChildWidgetTreeHosts(
 }
 
 void WidgetAXManager::UpdateParentTreeConnection() {
+  if (!is_enabled()) {
+    return;
+  }
+
   Widget* parent = widget_ ? widget_->parent() : nullptr;
   WidgetAXManager* parent_manager = parent ? parent->ax_manager() : nullptr;
 
   // A View that hosts this tree owns the connection, and that View can live in
   // a widget that is not the parent widget.
-  if (ax_tree_host_tracker_.view()) {
-    if (parent_manager) {
-      parent_manager->RemoveChildWidgetTreeHost(ax_tree_id_);
+  if (View* host_view = ax_tree_host_tracker_.view()) {
+    Widget* host_widget = host_view->GetWidget();
+    WidgetAXManager* host_manager =
+        host_widget ? host_widget->ax_manager() : nullptr;
+    if (host_manager && host_manager != this) {
+      if (parent_manager) {
+        parent_manager->RemoveChildWidgetTreeHost(ax_tree_id_);
+      }
+      SetParentAXTreeID(host_manager->ax_tree_id_);
+      return;
+    }
+    // A tracked View can survive removal from its Widget. Drop stale intent
+    // and fall back to the normal widget parent.
+    if (ClearAXTreeHost()) {
+      // Disconnect callbacks can reparent the widget.
+      UpdateParentTreeConnection();
     }
     return;
   }
@@ -328,26 +349,51 @@ AXVirtualView* WidgetAXManager::FindChildWidgetTreeHost(
 }
 
 void WidgetAXManager::HostAXTreeInView(ViewAccessibility& host_view_ax) {
+  CHECK(!is_enabling());
   View* host_view = host_view_ax.view();
   Widget* host_widget = host_view_ax.GetWidget();
   WidgetAXManager* host_manager =
       host_widget ? host_widget->ax_manager() : nullptr;
   if (!host_view || !host_manager || host_manager == this) {
-    ClearAXTreeHost();
-    UpdateParentTreeConnection();
+    if (ClearAXTreeHost()) {
+      // The manager is still alive and callbacks left the host cleared.
+      // Reconnect to the widget's parent.
+      UpdateParentTreeConnection();
+    }
     return;
   }
 
   if (View* current_host_view = ax_tree_host_tracker_.view();
       current_host_view && current_host_view != host_view) {
-    ClearAXTreeHost();
+    ViewTracker new_host_tracker(host_view);
+    if (!ClearAXTreeHost()) {
+      // A host attribute callback may have changed the host. Do not overwrite
+      // that choice. ClearAXTreeHost also checks lifetime defensively;
+      // synchronous destruction is unsupported.
+      return;
+    }
+    if (View* new_host = new_host_tracker.view()) {
+      HostAXTreeInView(new_host->GetViewAccessibility());
+    } else {
+      UpdateParentTreeConnection();
+    }
+    return;
   }
 
   ++ax_tree_host_generation_;
   ax_tree_host_tracker_.SetView(host_view);
+  if (!is_enabled()) {
+    return;
+  }
+
   // Only one node may claim this tree, so drop the host in the parent widget.
+  base::WeakPtr<WidgetAXManager> enable_epoch = tree_weak_factory_.GetWeakPtr();
+  const uint32_t host_generation = ax_tree_host_generation_;
   UpdateParentTreeConnection();
-  SetParentAXTreeID(host_manager->ax_tree_id_);
+  if (!enable_epoch || !is_enabled() ||
+      ax_tree_host_generation_ != host_generation) {
+    return;
+  }
   host_view_ax.SetChildTreeID(ax_tree_id_);
 }
 
@@ -373,15 +419,14 @@ void WidgetAXManager::RemoveObserver(WidgetAXManagerObserver* observer) {
 
 void WidgetAXManager::OnAXModeAdded(ui::AXMode mode) {
   if (mode.has_mode(ui::AXMode::kNativeAPIs)) {
-    EnableWhenWidgetCreated();
+    Enable();
   }
 }
 
 void WidgetAXManager::OnWidgetCreated(Widget* widget) {
   CHECK_EQ(widget_, widget);
   widget_created_ = true;
-  if (enable_on_widget_created_) {
-    enable_on_widget_created_ = false;
+  if (is_waiting_for_widget_creation()) {
     Enable();
   }
 }
@@ -580,7 +625,7 @@ void WidgetAXManager::OnDidChangeFocus(View* focused_before,
   // content behavior. The BAM gates on AccessibilityViewHasFocus() to
   // suppress events when the window isn't active.
   focused_node_id_ = GetFocusedViewNodeId();
-  if (is_enabled_) {
+  if (is_enabled()) {
     CHECK(tree_source_);
     tree_source_->SetFocusedNodeId(focused_node_id_);
     SchedulePendingUpdate();
@@ -624,14 +669,14 @@ ui::AXNodeID WidgetAXManager::GetFocusedViewNodeId() const {
 }
 
 void WidgetAXManager::SchedulePendingUpdate() {
-  if (processing_update_posted_ || !is_enabled_) {
+  if (processing_update_posted_ || !is_enabled()) {
     return;
   }
 
   processing_update_posted_ = true;
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&WidgetAXManager::SendPendingUpdate,
-                                weak_factory_.GetWeakPtr()));
+                                tree_weak_factory_.GetWeakPtr()));
 }
 
 void WidgetAXManager::InitAXTreeManager() {
@@ -654,7 +699,15 @@ void WidgetAXManager::InitAXTreeManager() {
       ui::BrowserAccessibilityManager::Create(update, *this, this));
 }
 
-void WidgetAXManager::EnableWhenWidgetCreated() {
+void WidgetAXManager::Enable() {
+  if (is_disabling()) {
+    state_ = State::kDisablingWithPendingEnable;
+    return;
+  }
+  if (is_enabled()) {
+    return;
+  }
+
   if (!widget_) {
     return;
   }
@@ -664,20 +717,18 @@ void WidgetAXManager::EnableWhenWidgetCreated() {
     widget_created_ = widget_->IsNativeWidgetInitialized();
   }
 
-  if (widget_created_) {
-    Enable();
+  if (!widget_created_) {
+    state_ = State::kWaitingForWidgetCreation;
     return;
   }
 
-  enable_on_widget_created_ = true;
-}
-
-void WidgetAXManager::Enable() {
-  if (is_enabled_) {
-    return;
-  }
+  base::WeakPtr<WidgetAXManager> weak_this = weak_factory_.GetWeakPtr();
+  // Parent reconnection requires this manager to be enabled.
+  state_ = State::kEnabling;
   UpdateParentTreeConnection();
-  is_enabled_ = true;
+  if (!weak_this) {
+    return;
+  }
   tree_source_ = std::make_unique<ViewAccessibilityAXTreeSource>(
       widget_->GetRootView()->GetViewAccessibility().GetUniqueId(), ax_tree_id_,
       cache_.get());
@@ -699,12 +750,77 @@ void WidgetAXManager::Enable() {
   pending_data_updates_.insert(
       widget_->GetRootView()->GetViewAccessibility().GetUniqueId());
   SendPendingUpdate();
+
+  if (!weak_this) {
+    return;
+  }
+  // Expose the explicit connection only once the rebuilt tree is available.
+  if (View* host_view = ax_tree_host_tracker_.view()) {
+    host_view->GetViewAccessibility().SetChildTreeID(ax_tree_id_);
+  }
+  if (!weak_this) {
+    return;
+  }
   NotifyEnabled();
+  if (weak_this) {
+    state_ = State::kEnabled;
+  }
+}
+
+void WidgetAXManager::Disable() {
+  CHECK(!is_enabling());
+  if (is_waiting_for_widget_creation()) {
+    state_ = State::kDisabled;
+  }
+  if (!is_enabled()) {
+    return;
+  }
+
+  state_ = State::kDisabling;
+  base::WeakPtr<WidgetAXManager> weak_this = weak_factory_.GetWeakPtr();
+  // Keep the tracked host as logical intent, but disconnect the active tree.
+  DisconnectAXTreeFromHostView(ax_tree_host_tracker_.view());
+  if (!weak_this) {
+    return;
+  }
+  DetachFromParentTree();
+  tree_weak_factory_.InvalidateWeakPtrs();
+  processing_update_posted_ = false;
+  pending_events_.clear();
+  pending_data_updates_.clear();
+  focus_manager_observation_.Reset();
+  focused_node_id_ = ui::kInvalidAXNodeID;
+
+  // Native accessible parents are weak references into ax_tree_manager_.
+  // Observers must clear them while those objects are still alive.
+  for (WidgetAXManagerObserver& observer : observers_) {
+    observer.OnWidgetAXManagerDisabled();
+    if (!weak_this) {
+      return;
+    }
+  }
+
+  ax_tree_manager_.reset();
+  if (!weak_this) {
+    return;
+  }
+  tree_serializer_.reset();
+  tree_source_.reset();
+  cache_ = std::make_unique<WidgetViewAXCache>();
+  const bool should_enable = is_disabling_with_pending_enable();
+  state_ = State::kDisabled;
+  if (should_enable) {
+    Enable();
+  }
 }
 
 void WidgetAXManager::NotifyEnabled() {
+  base::WeakPtr<WidgetAXManager> weak_this = weak_factory_.GetWeakPtr();
   for (WidgetAXManagerObserver& observer : observers_) {
     observer.OnWidgetAXManagerEnabled();
+    if (!weak_this) {
+      return;
+    }
   }
 }
 
@@ -719,7 +835,7 @@ void WidgetAXManager::SetParentAXTreeID(const ui::AXTreeID& parent_ax_tree_id) {
   }
 
   tree_source_->SetParentTreeId(parent_ax_tree_id_);
-  if (!is_enabled_) {
+  if (!is_enabled()) {
     return;
   }
 
@@ -733,17 +849,28 @@ void WidgetAXManager::SetParentAXTreeID(const ui::AXTreeID& parent_ax_tree_id) {
   SchedulePendingUpdate();
 }
 
-void WidgetAXManager::ClearAXTreeHost() {
+bool WidgetAXManager::ClearAXTreeHost() {
   ++ax_tree_host_generation_;
+  const uint32_t host_generation = ax_tree_host_generation_;
+  base::WeakPtr<WidgetAXManager> weak_this = weak_factory_.GetWeakPtr();
+  View* host_view = ax_tree_host_tracker_.view();
+  // A disconnect callback can rebuild the tree. Drop the old intent first so
+  // Enable() cannot republish the connection being removed.
+  ax_tree_host_tracker_.SetView(nullptr);
+  DisconnectAXTreeFromHostView(host_view);
+  if (!weak_this || ax_tree_host_generation_ != host_generation) {
+    return false;
+  }
+  return true;
+}
 
-  if (View* host_view = ax_tree_host_tracker_.view()) {
+void WidgetAXManager::DisconnectAXTreeFromHostView(View* host_view) {
+  if (host_view) {
     ViewAccessibility& host_view_ax = host_view->GetViewAccessibility();
     if (host_view_ax.GetChildTreeID() == ax_tree_id_) {
       host_view_ax.RemoveChildTreeID();
     }
   }
-
-  ax_tree_host_tracker_.SetView(nullptr);
 }
 
 void WidgetAXManager::UnhostAXTreeAfterFlush(
@@ -756,26 +883,31 @@ void WidgetAXManager::UnhostAXTreeAfterFlush(
 
   if (View* host_view = manager->ax_tree_host_tracker_.view()) {
     ViewAccessibility& host_view_ax = host_view->GetViewAccessibility();
-    if (host_view_ax.GetChildTreeID() != child_tree_id) {
+    if (manager->is_enabled() &&
+        host_view_ax.GetChildTreeID() != child_tree_id) {
       return;
     }
   }
 
-  manager->ClearAXTreeHost();
-  manager->UpdateParentTreeConnection();
+  if (manager->ClearAXTreeHost()) {
+    manager->UpdateParentTreeConnection();
+  }
 }
 
 void WidgetAXManager::SendPendingUpdate() {
   std::optional<ui::AXUpdatesAndEvents> maybe_updates_and_events;
-  // Always invoke the test callback on exit.
-  auto exit_cleanup = absl::MakeCleanup([this, &maybe_updates_and_events]() {
-    if (!updates_and_events_callback_for_testing_.is_null()) {
-      updates_and_events_callback_for_testing_.Run(maybe_updates_and_events);
-    }
-  });
+  // Copy the test callback before native dispatch can destroy the manager,
+  // avoiding member access through a dangling this during cleanup.
+  auto exit_cleanup =
+      absl::MakeCleanup([callback = updates_and_events_callback_for_testing_,
+                         &maybe_updates_and_events]() {
+        if (callback) {
+          callback.Run(maybe_updates_and_events);
+        }
+      });
 
   processing_update_posted_ = false;
-  if (!is_enabled_) {
+  if (!is_enabled()) {
     return;
   }
 

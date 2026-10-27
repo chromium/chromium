@@ -72,7 +72,11 @@ class VIEWS_EXPORT WidgetAXManager : public ui::AXModeObserver,
   // called once.
   void Init();
 
-  bool is_enabled() const { return is_enabled_; }
+  // Includes initial tree construction, which participates in parent wiring
+  // and serialization before enabled observers are notified.
+  bool is_enabled() const {
+    return state_ == State::kEnabling || state_ == State::kEnabled;
+  }
 
   void AddObserver(WidgetAXManagerObserver* observer);
   void RemoveObserver(WidgetAXManagerObserver* observer);
@@ -94,9 +98,15 @@ class VIEWS_EXPORT WidgetAXManager : public ui::AXModeObserver,
   void AppendChildWidgetTreeHosts(
       std::vector<raw_ptr<ViewAccessibility>>& out) const;
 
-  // Hosts this widget's AX tree in `host_view_ax` by wiring this tree's
-  // parent_tree_id to the host view's widget tree and setting the host view's
-  // child tree id to this tree.
+  // Records `host_view_ax` as this tree's host. While enabled, wires this
+  // tree's parent_tree_id to the host widget and the host's child tree id to
+  // this tree. While disabled, preserves intent while the tracked host remains
+  // attached to a widget and defers wiring until Enable(). If the host is
+  // destroyed or detached, Enable() falls back to this widget's parent.
+  // Hosting must remain unchanged during Enable(), including its observer
+  // callbacks. Calling this method during Enable() CHECKs.
+  // Synchronous hosting callbacks must not destroy this manager, its owning
+  // Widget, or the host view notifying them.
   void HostAXTreeInView(ViewAccessibility& host_view_ax);
 
   // Keeps the host view's child tree id alive until pending updates/events can
@@ -109,7 +119,8 @@ class VIEWS_EXPORT WidgetAXManager : public ui::AXModeObserver,
 
   // Sets a test callback that is invoked on every exit from
   // SendPendingUpdate(). If updates/events were actually sent, the optional
-  // contains the ui::AXUpdatesAndEvents; otherwise it is absl::nullopt.
+  // contains the ui::AXUpdatesAndEvents; otherwise it is std::nullopt.
+  // The callback must not change tree ownership or hosting.
   void SetUpdatesAndEventsCallbackForTesting(
       base::RepeatingCallback<
           void(const std::optional<ui::AXUpdatesAndEvents>&)> callback) {
@@ -168,9 +179,27 @@ class VIEWS_EXPORT WidgetAXManager : public ui::AXModeObserver,
  private:
   friend class WidgetAXManagerTestApi;
 
+  bool is_waiting_for_widget_creation() const {
+    return state_ == State::kWaitingForWidgetCreation;
+  }
+  bool is_enabling() const { return state_ == State::kEnabling; }
+  bool is_disabling() const {
+    return state_ == State::kDisabling || is_disabling_with_pending_enable();
+  }
+  bool is_disabling_with_pending_enable() const {
+    return state_ == State::kDisablingWithPendingEnable;
+  }
+
   void InitAXTreeManager();
-  void EnableWhenWidgetCreated();
+  // Synchronously builds the tree, or records a pending request if teardown is
+  // in progress.
   void Enable();
+  // Synchronously tears down the tree, preserving the tracked host for reuse.
+  // CHECKs if Enable() is still running, including enabled-observer callbacks.
+  // Enable requests during teardown coalesce into one rebuild after cleanup,
+  // before this returns. Nested Disable calls during teardown do not cancel it.
+  // A never-enabled manager retains its basic preinitialized tree.
+  void Disable();
   void NotifyEnabled();
   void SetParentAXTreeID(const ui::AXTreeID& parent_ax_tree_id);
 
@@ -183,7 +212,14 @@ class VIEWS_EXPORT WidgetAXManager : public ui::AXModeObserver,
 
   void DetachFromParentTree();
 
-  void ClearAXTreeHost();
+  // Clears the tracked host and disconnects its child-tree reference. Returns
+  // false if a disconnect callback changes the host or the lifetime weak
+  // pointer expires. Live hosting callers must return on false without further
+  // member access, even if the manager survived. A later independent operation
+  // is allowed on a manager known to be alive. The lifetime check is defensive;
+  // synchronous destruction during hosting callbacks is unsupported.
+  bool ClearAXTreeHost();
+  void DisconnectAXTreeFromHostView(View* host_view);
   static void UnhostAXTreeAfterFlush(base::WeakPtr<WidgetAXManager> manager,
                                      ui::AXTreeID child_tree_id,
                                      uint32_t host_generation);
@@ -200,7 +236,10 @@ class VIEWS_EXPORT WidgetAXManager : public ui::AXModeObserver,
   // The AXTreeID for this widget's accessibility tree. Must be unique.
   const ui::AXTreeID ax_tree_id_;
 
-  // The AXTreeID of the parent widget's accessibility tree, if any.
+  // Identifies the parent tree independently of whether its native manager is
+  // registered or a host currently exposes this tree. Retained while the parent
+  // rebuilds its native manager; reset when this manager detaches from its
+  // parent.
   ui::AXTreeID parent_ax_tree_id_;
 
   // The view currently hosting this widget's AX tree, if any.
@@ -227,8 +266,26 @@ class VIEWS_EXPORT WidgetAXManager : public ui::AXModeObserver,
   // Holds the generated AXTree of AXNodes for the views-based tree.
   std::unique_ptr<ui::BrowserAccessibilityManager> ax_tree_manager_;
 
-  // Indicates whether we're actively serializing widget accessibility data.
-  bool is_enabled_ = false;
+  // Native calls and observers can call back during Enable() or Disable().
+  // Enable() during teardown requests one rebuild after cleanup, before
+  // Disable() returns. Further Enable() or Disable() calls do not change that.
+  // During Enable(), another Enable() returns immediately. Calling Disable()
+  // or HostAXTreeInView() before Enable() returns fails a CHECK.
+  enum class State {
+    // Full-tree processing is off; a basic preinitialized tree may remain.
+    kDisabled,
+    // Enablement is requested, but the widget is not ready.
+    kWaitingForWidgetCreation,
+    // Enable() is wiring, building, or notifying observers.
+    kEnabling,
+    // Tree construction, the initial update attempt, and notification finished.
+    kEnabled,
+    // Synchronous teardown, including disabled notification, is underway.
+    kDisabling,
+    // Teardown must finish before a requested Enable() can rebuild the tree.
+    kDisablingWithPendingEnable,
+  };
+  State state_ = State::kDisabled;
 
   // Automatically unsubscribes from FocusManager on destruction.
   base::ScopedObservation<FocusManager, FocusChangeListener>
@@ -239,7 +296,6 @@ class VIEWS_EXPORT WidgetAXManager : public ui::AXModeObserver,
   // Tracks WidgetObserver::OnWidgetCreated(), which precedes
   // Widget::IsNativeWidgetInitialized().
   bool widget_created_ = false;
-  bool enable_on_widget_created_ = false;
 
   // The AXNodeID of the currently focused node in this widget's tree.
   ui::AXNodeID focused_node_id_ = ui::kInvalidAXNodeID;
@@ -270,7 +326,11 @@ class VIEWS_EXPORT WidgetAXManager : public ui::AXModeObserver,
   base::ScopedObservation<ui::AXPlatform, ui::AXModeObserver>
       ax_mode_observation_{this};
 
-  // Ensure posted tasks don’t run after we’re destroyed.
+  // Invalidated by Disable() to cancel work for the old tree.
+  // Separate from weak_factory_, whose pointers must survive Disable().
+  base::WeakPtrFactory<WidgetAXManager> tree_weak_factory_{this};
+
+  // Guards synchronous native calls and lets unhost tasks survive Disable().
   base::WeakPtrFactory<WidgetAXManager> weak_factory_{this};
 };
 

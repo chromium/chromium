@@ -15,12 +15,19 @@
 
 namespace views {
 
+class ViewAccessibilityAXTreeSource;
+
 class WidgetAXManagerTestApi {
  public:
   explicit WidgetAXManagerTestApi(WidgetAXManager* manager);
   ~WidgetAXManagerTestApi();
 
   void Enable();
+  void Disable();
+
+  bool is_observing_focus() const;
+  bool has_tree_serializer() const;
+  bool enable_on_widget_created() const;
 
   const std::vector<WidgetAXManager::Event>& pending_events() const;
   const absl::flat_hash_set<ui::AXNodeID>& pending_data_updates() const;
@@ -29,6 +36,7 @@ class WidgetAXManagerTestApi {
   const ui::AXTreeID& ax_tree_id() const;
   const ui::AXTreeID& parent_ax_tree_id() const;
   WidgetViewAXCache* cache() const;
+  const ViewAccessibilityAXTreeSource* tree_source() const;
   ui::BrowserAccessibilityManager* ax_tree_manager() const;
   const ui::AXUpdatesAndEvents& last_serialization() const;
   bool has_last_serialization() const;

@@ -14,13 +14,23 @@ class WidgetAXManager;
 // Lightweight observer interface for WidgetAXManager lifecycle events. Kept in
 // its own header to avoid dragging the full WidgetAXManager definition into
 // widely used headers.
+//
+// Observers must unregister before they or the owning Widget are destroyed.
 class WidgetAXManagerObserver : public base::CheckedObserver {
  public:
   ~WidgetAXManagerObserver() override = default;
 
+  // Called after the initial serialization attempt, before Enable() returns.
+  // is_enabled() is true. Disabling or rehosting the manager during this
+  // callback CHECKs. Observers may remove themselves.
   virtual void OnWidgetAXManagerEnabled() {}
-  // TODO(crbug.com/467102963): Add OnWidgetAXManagerDisabled() once we support
-  // turning off the accessibility engine.
+  // Called once per enabled-to-disabled transition, with is_enabled() false.
+  // The old native tree has not yet been destroyed: observers must clear their
+  // native accessible references before returning. Observers may remove
+  // themselves or request enablement, which runs after teardown finishes,
+  // before Disable() returns. Nested Disable() calls do not cancel pending
+  // enablement.
+  virtual void OnWidgetAXManagerDisabled() {}
 };
 
 }  // namespace views

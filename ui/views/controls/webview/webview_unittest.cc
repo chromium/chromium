@@ -13,6 +13,8 @@
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
+#include "base/memory/weak_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
@@ -22,6 +24,7 @@
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/mock_render_process_host.h"
+#include "content/public/test/scoped_accessibility_mode_override.h"
 #include "content/public/test/test_browser_context.h"
 #include "content/public/test/test_content_browser_client.h"
 #include "content/public/test/test_renderer_host.h"
@@ -34,6 +37,8 @@
 #include "ui/events/event_utils.h"
 #include "ui/gfx/native_ui_types.h"
 #include "ui/views/accessibility/tree/widget_ax_manager.h"
+#include "ui/views/accessibility/tree/widget_ax_manager_observer.h"
+#include "ui/views/accessibility/tree/widget_ax_manager_test_api.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/native/native_view_host.h"
 #include "ui/views/test/views_test_utils.h"
@@ -42,6 +47,10 @@
 #if defined(USE_AURA)
 #include "ui/aura/window.h"
 #endif
+
+namespace ui {
+class AXPlatformTreeManager;
+}  // namespace ui
 
 namespace views {
 
@@ -270,8 +279,8 @@ class WebViewUnitTest : public views::test::WidgetTest {
     return web_view()->IsObservingAXModeForTesting();
   }
 
-  bool IsObservingWidgetAXManager() const {
-    return web_view()->IsObservingWidgetAXManagerForTesting();
+  bool IsObservingWidgetAXManager(WebView* view = nullptr) const {
+    return (view ? view : web_view())->IsObservingWidgetAXManagerForTesting();
   }
 
   void AddChildTreeBridge(WebView* view) {
@@ -749,7 +758,7 @@ TEST_F(WebViewUnitTest, NativeViewAccessibleUsesWebContentsAccessible) {
 }
 #endif
 
-TEST_F(WebViewAXTreeEnabledTest, ObservesManagerUntilEnableCompletes) {
+TEST_F(WebViewAXTreeEnabledTest, KeepsObservingManagerAfterEnableCompletes) {
   if (!ViewAccessibility::IsViewsAccessibilityTreeEnabled()) {
     // Not all platforms support ViewsAX, e.g. ChromeOS.
     return;
@@ -768,10 +777,10 @@ TEST_F(WebViewAXTreeEnabledTest, ObservesManagerUntilEnableCompletes) {
   ui::AXPlatform::GetInstance().NotifyModeAdded(ui::AXMode::kNativeAPIs);
 
   EXPECT_TRUE(widget->ax_manager()->is_enabled());
-  EXPECT_FALSE(IsObservingWidgetAXManager());
+  EXPECT_TRUE(IsObservingWidgetAXManager());
 }
 
-TEST_F(WebViewAXTreeEnabledTest, AlreadyEnabledManagerSkipsObservation) {
+TEST_F(WebViewAXTreeEnabledTest, AlreadyEnabledManagerIsObservedForLifecycle) {
   if (!ViewAccessibility::IsViewsAccessibilityTreeEnabled()) {
     // Not all platforms support ViewsAX, e.g. ChromeOS.
     return;
@@ -787,7 +796,164 @@ TEST_F(WebViewAXTreeEnabledTest, AlreadyEnabledManagerSkipsObservation) {
 
   EXPECT_TRUE(widget->ax_manager()->is_enabled());
   EXPECT_TRUE(HasAXModeObservation());
-  EXPECT_FALSE(IsObservingWidgetAXManager());
+  EXPECT_TRUE(IsObservingWidgetAXManager());
+  auto* added_view = widget->GetContentsView()->AddChildView(
+      std::make_unique<WebView>(web_contents->GetBrowserContext()));
+  EXPECT_TRUE(IsObservingWidgetAXManager(added_view));
+}
+
+TEST_F(WebViewAXTreeEnabledTest, DisableClearsAndReenableRestoresNativeParent) {
+  if (!ViewAccessibility::IsViewsAccessibilityTreeEnabled()) {
+    GTEST_SKIP() << "ViewsAX is not supported on this platform";
+  }
+  // Linux requires native accessibility mode to create ATK objects.
+  content::ScopedAccessibilityModeOverride enable_accessibility(
+      ui::AXMode::kNativeAPIs);
+  WidgetAXManagerTestApi api(top_level_widget()->ax_manager());
+  // Lifecycle observation starts before WebContents is attached.
+  EXPECT_TRUE(IsObservingWidgetAXManager());
+  api.Enable();
+  api.Disable();
+  auto web_contents = CreateWebContents();
+  web_view()->SetWebContents(web_contents.get());
+  AddChildTreeBridge(web_view());
+  ASSERT_TRUE(holder()->native_view());
+  EXPECT_EQ(holder()->GetParentAccessible(), gfx::NativeViewAccessible());
+  api.Enable();
+  ASSERT_NE(web_view()->parent()->GetNativeViewAccessible(),
+            gfx::NativeViewAccessible());
+  EXPECT_EQ(web_view()->parent()->GetNativeViewAccessible(),
+            holder()->GetParentAccessible());
+
+  class NativeParentClearedObserver : public WidgetAXManagerObserver {
+   public:
+    NativeParentClearedObserver(
+        NativeViewHost& holder,
+        base::WeakPtr<ui::AXPlatformTreeManager> old_manager)
+        : holder_(holder), old_manager_(std::move(old_manager)) {}
+
+    void OnWidgetAXManagerDisabled() override {
+      called_ = true;
+      EXPECT_TRUE(old_manager_);
+      EXPECT_EQ(holder_->GetParentAccessible(), gfx::NativeViewAccessible());
+    }
+
+    bool called() const { return called_; }
+
+   private:
+    const raw_ref<NativeViewHost> holder_;
+    const base::WeakPtr<ui::AXPlatformTreeManager> old_manager_;
+    bool called_ = false;
+  };
+  auto old_manager =
+      top_level_widget()->ax_manager()->GetAXTreeManagerWeakPtrForTesting();
+  NativeParentClearedObserver observer(*holder(), old_manager);
+  top_level_widget()->ax_manager()->AddObserver(&observer);
+  api.Disable();
+  top_level_widget()->ax_manager()->RemoveObserver(&observer);
+  EXPECT_TRUE(observer.called());
+  EXPECT_FALSE(old_manager);
+  EXPECT_TRUE(IsObservingWidgetAXManager());
+  EXPECT_EQ(holder()->GetParentAccessible(), gfx::NativeViewAccessible());
+  EXPECT_NE(web_view()->GetViewAccessibility().GetChildTreeID(),
+            ui::AXTreeIDUnknown());
+
+  // Attaching contents while disabled must not restore the native parent.
+  web_view()->SetWebContents(nullptr);
+  web_view()->SetWebContents(web_contents.get());
+  AddChildTreeBridge(web_view());
+  EXPECT_EQ(holder()->GetParentAccessible(), gfx::NativeViewAccessible());
+
+  api.Enable();
+  EXPECT_TRUE(IsObservingWidgetAXManager());
+  EXPECT_EQ(web_view()->parent()->GetNativeViewAccessible(),
+            holder()->GetParentAccessible());
+}
+
+TEST_F(WebViewAXTreeEnabledTest,
+       DisabledManagerRejectsAvailableParentAccessible) {
+  if (!ViewAccessibility::IsViewsAccessibilityTreeEnabled()) {
+    GTEST_SKIP() << "ViewsAX is not supported on this platform";
+  }
+  WidgetAXManagerTestApi source_api(top_level_widget()->ax_manager());
+  source_api.Enable();
+  // Model a parent that can still return a native accessible independently of
+  // the disabled manager (for example, an underlying legacy accessible).
+  class AccessibleParentView : public View {
+   public:
+    explicit AccessibleParentView(View& accessible_view)
+        : accessible_view_(accessible_view) {}
+    gfx::NativeViewAccessible GetNativeViewAccessible() override {
+      return accessible_view_->GetNativeViewAccessible();
+    }
+
+   private:
+    const raw_ref<View> accessible_view_;
+  };
+  auto web_contents = CreateWebContents();
+  WidgetAutoclosePtr target_widget(CreateTopLevelPlatformWidget());
+  std::unique_ptr<View> accessible_parent =
+      std::make_unique<AccessibleParentView>(
+          *top_level_widget()->GetRootView());
+  auto* parent = target_widget->GetContentsView()->AddChildView(
+      std::move(accessible_parent));
+  auto* target_view = parent->AddChildView(
+      std::make_unique<WebView>(web_contents->GetBrowserContext()));
+  target_view->SetWebContents(web_contents.get());
+  ASSERT_FALSE(target_widget->ax_manager()->is_enabled());
+  ASSERT_NE(parent->GetNativeViewAccessible(), gfx::NativeViewAccessible());
+  AddChildTreeBridge(target_view);
+  EXPECT_EQ(target_view->holder()->GetParentAccessible(),
+            gfx::NativeViewAccessible());
+
+  WidgetAXManagerTestApi target_api(target_widget->ax_manager());
+  target_api.Enable();
+  EXPECT_EQ(target_view->holder()->GetParentAccessible(),
+            parent->GetNativeViewAccessible());
+  target_api.Disable();
+  ASSERT_NE(parent->GetNativeViewAccessible(), gfx::NativeViewAccessible());
+  AddChildTreeBridge(target_view);
+  EXPECT_EQ(target_view->holder()->GetParentAccessible(),
+            gfx::NativeViewAccessible());
+}
+
+TEST_F(WebViewAXTreeEnabledTest, ReparentingWhileDisabledObservesNewManager) {
+  if (!ViewAccessibility::IsViewsAccessibilityTreeEnabled()) {
+    GTEST_SKIP() << "ViewsAX is not supported on this platform";
+  }
+  auto web_contents = CreateWebContents();
+  web_view()->SetWebContents(web_contents.get());
+  WidgetAXManagerTestApi old_api(top_level_widget()->ax_manager());
+  old_api.Enable();
+  AddChildTreeBridge(web_view());
+  old_api.Disable();
+
+  WidgetAutoclosePtr new_widget(CreateTopLevelPlatformWidget());
+  WidgetAXManagerTestApi new_api(new_widget->ax_manager());
+  ASSERT_FALSE(new_widget->ax_manager()->is_enabled());
+  WebView* moved_view = web_view();
+  auto owned_view =
+      top_level_widget()->GetContentsView()->RemoveChildViewT(moved_view);
+  EXPECT_FALSE(IsObservingWidgetAXManager(moved_view));
+  EXPECT_EQ(moved_view->holder()->GetParentAccessible(),
+            gfx::NativeViewAccessible());
+  new_widget->GetContentsView()->AddChildView(std::move(owned_view));
+  EXPECT_TRUE(IsObservingWidgetAXManager(moved_view));
+  AddChildTreeBridge(moved_view);
+  EXPECT_EQ(moved_view->holder()->GetParentAccessible(),
+            gfx::NativeViewAccessible());
+
+  new_api.Enable();
+  EXPECT_EQ(moved_view->parent()->GetNativeViewAccessible(),
+            moved_view->holder()->GetParentAccessible());
+  // Notifications from the old manager must no longer clear the new parent.
+  old_api.Enable();
+  old_api.Disable();
+  EXPECT_EQ(moved_view->parent()->GetNativeViewAccessible(),
+            moved_view->holder()->GetParentAccessible());
+  new_api.Disable();
+  EXPECT_EQ(moved_view->holder()->GetParentAccessible(),
+            gfx::NativeViewAccessible());
 }
 
 // The holder of the native view needs the accessible of an ancestor that
@@ -825,6 +991,9 @@ TEST_F(WebViewAXTreeEnabledTest,
 }
 
 TEST_F(WebViewAXTreeEnabledTest, ReparentingUpdatesParentAccessible) {
+  if (ViewAccessibility::IsViewsAccessibilityTreeEnabled()) {
+    ui::AXPlatform::GetInstance().NotifyModeAdded(ui::AXMode::kNativeAPIs);
+  }
   const std::unique_ptr<content::WebContents> web_contents =
       CreateWebContents();
   auto web_view = std::make_unique<WebView>(web_contents->GetBrowserContext());

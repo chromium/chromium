@@ -289,6 +289,7 @@ class WEBVIEW_EXPORT WebView : public View,
 
   // WidgetAXManagerObserver:
   void OnWidgetAXManagerEnabled() override;
+  void OnWidgetAXManagerDisabled() override;
 
   bool IsWebContentsAlive() const;
 
@@ -309,7 +310,7 @@ class WEBVIEW_EXPORT WebView : public View,
   void SetNativeViewHostAccessibleParent(View* parent);
   void NotifyAccessibilityWebContentsChanged();
   void UpdateAccessibilityDisconnectState(bool disconnect);
-  void HandleWidgetAXManagerEnablement();
+  void UpdateWidgetAXManagerObservation();
 
   // Called when the main frame in the renderer becomes present.
   void SetUpNewMainFrame(content::RenderFrameHost* frame_host);
