@@ -4756,6 +4756,7 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
           .SetImage(ui::ImageModel::FromVectorIcon(
               features::IsRoundedIconsEnabled() ? kHelpCustomIcon
                                                 : kHelpMenuOldIcon))
+          .SetAccelerator(GetAcceleratorForCommandId(IDC_HELP_PAGE_VIA_MENU))
           .Build());
 
   root_action_item_->AddChild(
