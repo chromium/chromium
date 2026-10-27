@@ -6,12 +6,10 @@ package org.chromium.chrome.browser.customtabs;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -30,19 +28,27 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.ContextUtils;
+import org.chromium.base.UserDataHost;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.crypto.CipherFactory;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabAssociatedApp;
+import org.chromium.chrome.browser.tab.TabBuilder;
 import org.chromium.chrome.browser.tab.TabDelegateFactory;
 import org.chromium.chrome.browser.tab.TabState;
+import org.chromium.chrome.browser.tab.WebContentsState;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tabmodel.TabRemover;
+import org.chromium.chrome.browser.tabpersistence.TabStateFileManager;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.url.GURL;
 
 import java.io.File;
-import java.util.Map;
+import java.nio.ByteBuffer;
 
 /** Unit tests for {@link CustomTabResumeManager}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -57,7 +63,7 @@ public class CustomTabResumeManagerUnitTest {
     @Mock private WindowAndroid mWindowAndroid;
     @Mock private TabDelegateFactory mTabDelegateFactory;
     @Mock private Tab mTab;
-    @Mock private org.chromium.components.commerce.core.ShoppingService mShoppingService;
+    @Mock private Tab mRestoredTab;
 
     private Intent mIntent;
     private CustomTabResumeManager mResumeManager;
@@ -67,11 +73,9 @@ public class CustomTabResumeManagerUnitTest {
         mCipherFactory = new CipherFactory();
         setUpIntentMocks();
         setUpTabModelMocks();
-        setUpWindowAndroidMocks();
-        setUpShoppingServiceMocks();
-        setUpTabImplJniMocks();
 
-        when(mTabDelegateFactory.isCustomTab()).thenReturn(true);
+        when(mRestoredTab.getUserDataHost()).thenReturn(new UserDataHost());
+        TabBuilder.setTabForTesting(mRestoredTab);
 
         mResumeManager = new CustomTabResumeManager(mIntentDataProvider, mCipherFactory);
     }
@@ -79,15 +83,7 @@ public class CustomTabResumeManagerUnitTest {
     @After
     public void tearDown() {
         // Clear static cache between tests to avoid pollution.
-        try {
-            java.lang.reflect.Field cacheField =
-                    CustomTabResumeManager.class.getDeclaredField("sInMemoryStateCache");
-            cacheField.setAccessible(true);
-            Map<?, ?> cache = (Map<?, ?>) cacheField.get(null);
-            cache.clear();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        CustomTabResumeManager.getInMemoryStateCacheForTesting().clear();
     }
 
     // =========================================================================
@@ -203,7 +199,7 @@ public class CustomTabResumeManagerUnitTest {
                         mCipherFactory,
                         mProfile,
                         mTabModelSelector,
-                        false,
+                        /* isOffTheRecord= */ false,
                         mWindowAndroid,
                         mTabDelegateFactory,
                         "app-id"));
@@ -217,38 +213,24 @@ public class CustomTabResumeManagerUnitTest {
         // Seed the static cache.
         TabState state = new TabState();
         state.timestampMillis = 1000L;
-
-        java.nio.ByteBuffer buffer = java.nio.ByteBuffer.allocateDirect(10);
-        org.chromium.chrome.browser.tab.WebContentsState contentsState =
-                mock(org.chromium.chrome.browser.tab.WebContentsState.class);
-        when(contentsState.buffer()).thenReturn(buffer);
-        when(contentsState.version()).thenReturn(2);
-        state.contentsState = contentsState;
-
-        org.chromium.chrome.browser.tab.WebContentsState.Natives webContentsStateJni =
-                mock(org.chromium.chrome.browser.tab.WebContentsState.Natives.class);
-        org.chromium.chrome.browser.tab.WebContentsStateJni.setInstanceForTesting(
-                webContentsStateJni);
-
-        org.chromium.chrome.browser.tab.WebContentsState.WebContentsStateMetadata metadata =
-                new org.chromium.chrome.browser.tab.WebContentsState.WebContentsStateMetadata(
-                        "Title", "https://example.com", false);
-        when(webContentsStateJni.getMetadata(any(), anyInt())).thenReturn(metadata);
-
-        seedInMemoryStateCache("session-123", state);
+        state.contentsState =
+                new WebContentsState(
+                        ByteBuffer.allocateDirect(10),
+                        WebContentsState.CONTENTS_STATE_CURRENT_VERSION);
+        CustomTabResumeManager.getInMemoryStateCacheForTesting().put("session-123", state);
 
         Tab restoredTab =
                 mResumeManager.maybeRestoreTab(
                         mCipherFactory,
                         mProfile,
                         mTabModelSelector,
-                        false,
+                        /* isOffTheRecord= */ false,
                         mWindowAndroid,
                         mTabDelegateFactory,
                         "app-id");
 
-        assertNotNull(restoredTab);
-        assertEquals(state.timestampMillis, restoredTab.getTimestampMillis());
+        assertSame(mRestoredTab, restoredTab);
+        assertEquals("app-id", TabAssociatedApp.getAppId(restoredTab));
     }
 
     @Test
@@ -259,38 +241,20 @@ public class CustomTabResumeManagerUnitTest {
         // Create a TabState.
         TabState state = new TabState();
         state.timestampMillis = 2000L;
-        state.url = org.chromium.url.GURL.emptyGURL();
-
-        // Seed contentsState.
-        java.nio.ByteBuffer buffer = java.nio.ByteBuffer.allocateDirect(10);
-        org.chromium.chrome.browser.tab.WebContentsState contentsState =
-                mock(org.chromium.chrome.browser.tab.WebContentsState.class);
-        when(contentsState.buffer()).thenReturn(buffer);
-        when(contentsState.version()).thenReturn(2);
-        state.contentsState = contentsState;
-
-        // Mock WebContentsState JNI calls.
-        org.chromium.chrome.browser.tab.WebContentsState.Natives webContentsStateJni =
-                mock(org.chromium.chrome.browser.tab.WebContentsState.Natives.class);
-        org.chromium.chrome.browser.tab.WebContentsStateJni.setInstanceForTesting(
-                webContentsStateJni);
-
-        org.chromium.chrome.browser.tab.WebContentsState.WebContentsStateMetadata metadata =
-                new org.chromium.chrome.browser.tab.WebContentsState.WebContentsStateMetadata(
-                        "Title", "https://example.com", false);
-        when(webContentsStateJni.getMetadata(any(), anyInt())).thenReturn(metadata);
+        state.url = GURL.emptyGURL();
+        state.contentsState =
+                new WebContentsState(
+                        ByteBuffer.allocateDirect(10),
+                        WebContentsState.CONTENTS_STATE_CURRENT_VERSION);
 
         // Save it to disk.
         File storageDir =
-                new File(
-                        androidx.test.core.app.ApplicationProvider.getApplicationContext()
-                                .getFilesDir(),
-                        "cct_tab_data");
+                new File(ContextUtils.getApplicationContext().getFilesDir(), "cct_tab_data");
         if (!storageDir.exists()) {
             storageDir.mkdirs();
         }
         int tabId = Math.max(1, "session-456".hashCode() & 0x7fffffff);
-        org.chromium.chrome.browser.tabpersistence.TabStateFileManager.saveState(
+        TabStateFileManager.saveState(
                 storageDir, state, tabId, /* isEncrypted= */ true, mCipherFactory);
 
         // Try to restore it.
@@ -299,13 +263,18 @@ public class CustomTabResumeManagerUnitTest {
                         mCipherFactory,
                         mProfile,
                         mTabModelSelector,
-                        false,
+                        /* isOffTheRecord= */ false,
                         mWindowAndroid,
                         mTabDelegateFactory,
                         "app-id");
 
-        assertNotNull(restoredTab);
-        assertEquals(state.timestampMillis, restoredTab.getTimestampMillis());
+        assertSame(mRestoredTab, restoredTab);
+        assertEquals("app-id", TabAssociatedApp.getAppId(restoredTab));
+        assertEquals(
+                state.timestampMillis,
+                CustomTabResumeManager.getInMemoryStateCacheForTesting()
+                        .get("session-456")
+                        .timestampMillis);
     }
 
     // =========================================================================
@@ -342,73 +311,9 @@ public class CustomTabResumeManagerUnitTest {
 
     private void setUpTabModelMocks() {
         when(mTabModelSelector.getModel(any(Boolean.class))).thenReturn(mTabModel);
-        org.chromium.chrome.browser.tabmodel.TabRemover tabRemover =
-                mock(org.chromium.chrome.browser.tabmodel.TabRemover.class);
+        TabRemover tabRemover = mock(TabRemover.class);
         when(mTabModel.getTabRemover()).thenReturn(tabRemover);
         when(mTab.getId()).thenReturn(42);
-    }
-
-    private void setUpWindowAndroidMocks() {
-        when(mWindowAndroid.getOcclusionSupplier())
-                .thenReturn(org.chromium.base.supplier.ObservableSuppliers.alwaysFalse());
-
-        java.lang.ref.WeakReference<android.content.Context> contextRef =
-                new java.lang.ref.WeakReference<>(
-                        androidx.test.core.app.ApplicationProvider.getApplicationContext());
-        when(mWindowAndroid.getContext()).thenReturn(contextRef);
-        when(mWindowAndroid.getActivity()).thenReturn(new java.lang.ref.WeakReference<>(null));
-    }
-
-    private void setUpShoppingServiceMocks() {
-        org.chromium.chrome.browser.commerce.ShoppingServiceFactory.setShoppingServiceForTesting(
-                mShoppingService);
-
-        org.chromium.components.commerce.core.CommerceFeatureUtils.Natives commerceJni =
-                mock(org.chromium.components.commerce.core.CommerceFeatureUtils.Natives.class);
-        org.chromium.components.commerce.core.CommerceFeatureUtilsJni.setInstanceForTesting(
-                commerceJni);
-        when(commerceJni.isPriceAnnotationsEnabled(anyLong())).thenReturn(false);
-    }
-
-    private void setUpTabImplJniMocks() {
-        // TabImpl requires a mock JNI native implementation for tests using TabBuilder.
-        try {
-            Class<?> nativesClass =
-                    Class.forName("org.chromium.chrome.browser.tab.TabImpl$Natives");
-            Class<?> tabImplClass = Class.forName("org.chromium.chrome.browser.tab.TabImpl");
-            Object proxy =
-                    java.lang.reflect.Proxy.newProxyInstance(
-                            nativesClass.getClassLoader(),
-                            new Class<?>[] {nativesClass},
-                            new java.lang.reflect.InvocationHandler() {
-                                @Override
-                                public Object invoke(
-                                        Object proxy,
-                                        java.lang.reflect.Method method,
-                                        Object[] args)
-                                        throws Throwable {
-                                    if (method.getName().equals("init")) {
-                                        Object tabCaller = args[0];
-                                        java.lang.reflect.Field nativeField =
-                                                tabImplClass.getDeclaredField("mNativeTabAndroid");
-                                        nativeField.setAccessible(true);
-                                        nativeField.setLong(tabCaller, 12345L);
-                                        return null;
-                                    }
-                                    Class<?> returnType = method.getReturnType();
-                                    if (returnType.equals(boolean.class)) return false;
-                                    if (returnType.equals(int.class)) return 0;
-                                    if (returnType.equals(long.class)) return 0L;
-                                    return null;
-                                }
-                            });
-            Class<?> jniClass = Class.forName("org.chromium.chrome.browser.tab.TabImplJni");
-            java.lang.reflect.Method setInstanceMethod =
-                    jniClass.getMethod("setInstanceForTesting", nativesClass);
-            setInstanceMethod.invoke(null, proxy);
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to mock TabImpl JNI", e);
-        }
     }
 
     private Intent createResumptionIntent(String embedderTabId, boolean restoreTab) {
@@ -426,18 +331,5 @@ public class CustomTabResumeManagerUnitTest {
         BrowserServicesIntentDataProvider provider = mock(BrowserServicesIntentDataProvider.class);
         when(provider.getIntent()).thenReturn(intent);
         return provider;
-    }
-
-    private void seedInMemoryStateCache(String embedderTabId, TabState state) {
-        try {
-            java.lang.reflect.Field cacheField =
-                    CustomTabResumeManager.class.getDeclaredField("sInMemoryStateCache");
-            cacheField.setAccessible(true);
-            @SuppressWarnings("unchecked")
-            Map<String, TabState> cache = (Map<String, TabState>) cacheField.get(null);
-            cache.put(embedderTabId, state);
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to seed memory cache", e);
-        }
     }
 }
