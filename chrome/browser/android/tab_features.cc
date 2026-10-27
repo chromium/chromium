@@ -303,14 +303,6 @@ TabFeatures::TabFeatures(content::WebContents* web_contents, Profile* profile) {
   }
   InitializePageLoadMetricsForWebContents(web_contents);
 
-  sync_sessions_router_ =
-      std::make_unique<sync_sessions::SyncSessionsRouterTabHelper>(
-          web_contents,
-          sync_sessions::SyncSessionsWebContentsRouterFactory::GetForProfile(
-              profile),
-          ChromeTranslateClient::FromWebContents(web_contents),
-          favicon::ContentFaviconDriver::FromWebContents(web_contents));
-
   http_auth_cache_status_ = std::make_unique<HttpAuthCacheStatus>(web_contents);
 
   security_state_event_observer_ =
@@ -643,6 +635,14 @@ TabFeatures::TabFeatures(content::WebContents* web_contents, Profile* profile) {
         GetUserDataFactory().CreateInstance<SupervisedUserNavigationObserver>(
             *tab, *tab, web_contents);
   }
+
+  sync_sessions_router_ =
+      std::make_unique<sync_sessions::SyncSessionsRouterTabHelper>(
+          web_contents,
+          sync_sessions::SyncSessionsWebContentsRouterFactory::GetForProfile(
+              profile),
+          ChromeTranslateClient::FromWebContents(web_contents),
+          favicon::ContentFaviconDriver::FromWebContents(web_contents));
 
   offline_page_tab_helper_ =
       GetUserDataFactory().CreateInstance<offline_pages::OfflinePageTabHelper>(

@@ -13,7 +13,12 @@ namespace content {
 class WebContents;
 }
 
+class SupervisedUserNavigationObserver;
 class TabAndroidDataProvider;
+
+namespace tasks {
+class TaskTabHelper;
+}
 
 namespace browser_sync {
 // On Android a tab can exist even without web contents.
@@ -38,8 +43,11 @@ class SyncedTabDelegateAndroid : public TabContentsSyncedTabDelegate {
   std::unique_ptr<SyncedTabDelegate> ReadPlaceholderTabSnapshotIfItShouldSync(
       sync_sessions::SyncSessionsClient* sessions_client) override;
 
-  // Set the web contents for this tab.
-  void SetWebContents(content::WebContents* web_contents);
+  // Set the web contents and associated tab helpers for this tab.
+  void SetWebContents(
+      content::WebContents* web_contents,
+      tasks::TaskTabHelper* task_tab_helper,
+      SupervisedUserNavigationObserver* supervised_user_navigation_observer);
 
   // Set web contents to null.
   void ResetWebContents();

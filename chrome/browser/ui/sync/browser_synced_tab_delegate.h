@@ -13,12 +13,18 @@ namespace content {
 class WebContents;
 }
 
+class SupervisedUserNavigationObserver;
+
 namespace sync_sessions {
 class SyncedTabDelegate;
 }
 
 namespace tabs {
 class TabInterface;
+}
+
+namespace tasks {
+class TaskTabHelper;
 }
 
 // A BrowserSyncedTabDelegate is the desktop implementation for
@@ -31,8 +37,11 @@ class BrowserSyncedTabDelegate : public TabContentsSyncedTabDelegate {
   // `web_contents` is passed explicitly because during a discard the helper
   // is recreated for the incoming WebContents before `tab` swaps its
   // contents.
-  BrowserSyncedTabDelegate(tabs::TabInterface& tab,
-                           content::WebContents* web_contents);
+  BrowserSyncedTabDelegate(
+      tabs::TabInterface& tab,
+      content::WebContents* web_contents,
+      tasks::TaskTabHelper* task_tab_helper,
+      SupervisedUserNavigationObserver* supervised_user_navigation_observer);
 
   BrowserSyncedTabDelegate(const BrowserSyncedTabDelegate&) = delete;
   BrowserSyncedTabDelegate& operator=(const BrowserSyncedTabDelegate&) = delete;

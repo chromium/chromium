@@ -70,8 +70,9 @@ class SyncSessionsRouterTabHelperTest : public ChromeRenderViewHostTestHarness {
     tabs::TabLookupFromWebContents::CreateForWebContents(web_contents(), &tab_);
     ON_CALL(tab_, GetUnownedUserDataHost())
         .WillByDefault(::testing::ReturnRef(user_data_host_));
-    delegate_ =
-        std::make_unique<BrowserSyncedTabDelegate>(tab_, web_contents());
+    delegate_ = std::make_unique<BrowserSyncedTabDelegate>(
+        tab_, web_contents(), /*task_tab_helper=*/nullptr,
+        /*supervised_user_navigation_observer=*/nullptr);
     NavigateAndCommit(GURL("about:blank"));
   }
 

@@ -18,6 +18,8 @@ namespace content {
 class WebContents;
 }
 
+class SupervisedUserNavigationObserver;
+
 namespace tasks {
 class TaskTabHelper;
 }
@@ -60,12 +62,16 @@ class TabContentsSyncedTabDelegate : public sync_sessions::SyncedTabDelegate {
  protected:
   const content::WebContents* web_contents() const;
   content::WebContents* web_contents();
-  void SetWebContents(content::WebContents* web_contents);
+  void SetWebContents(
+      content::WebContents* web_contents,
+      tasks::TaskTabHelper* task_tab_helper,
+      SupervisedUserNavigationObserver* supervised_user_navigation_observer);
 
  private:
-  const tasks::TaskTabHelper* task_tab_helper() const;
-
   raw_ptr<content::WebContents, DanglingUntriaged> web_contents_ = nullptr;
+  raw_ptr<tasks::TaskTabHelper> task_tab_helper_ = nullptr;
+  raw_ptr<SupervisedUserNavigationObserver>
+      supervised_user_navigation_observer_ = nullptr;
 
   // Cached value of last_active_time_ticks and last_active_time, sometimes
   // returned instead of the last_active_time from the WebContents.

@@ -581,13 +581,6 @@ class TabFeatures {
   // form-submission UKM).
   std::unique_ptr<SecurityStateEventObserver> security_state_event_observer_;
 
-  // Forwards tab-related events to sync.
-  std::unique_ptr<sync_sessions::SyncSessionsRouterTabHelper>
-      sync_sessions_router_;
-
-  // Provides this tab's session identity to sync.
-  std::unique_ptr<BrowserSyncedTabDelegate> browser_synced_tab_delegate_;
-
   // Responsible for keeping a tab within a tab group in sync with its remote
   // tab counterpart from sync.
   std::unique_ptr<tab_groups::SavedTabGroupWebContentsListener>
@@ -1011,6 +1004,18 @@ class TabFeatures {
 
   std::unique_ptr<SupervisedUserNavigationObserver>
       supervised_user_navigation_observer_;
+
+  // Provides this tab's session identity to sync. Declared after
+  // `task_tab_helper_` and `supervised_user_navigation_observer_` so those
+  // dependencies outlive it.
+  std::unique_ptr<BrowserSyncedTabDelegate> browser_synced_tab_delegate_;
+
+  // Forwards tab-related events to sync. Declared after
+  // `browser_synced_tab_delegate_` and `sad_tab_helper_` so it is destroyed
+  // before teardown side effects (such as `~SadTabHelper` visibility changes)
+  // or `browser_synced_tab_delegate_` destruction.
+  std::unique_ptr<sync_sessions::SyncSessionsRouterTabHelper>
+      sync_sessions_router_;
 
 #if BUILDFLAG(ENABLE_OFFLINE_PAGES)
   std::unique_ptr<offline_pages::OfflinePageTabHelper> offline_page_tab_helper_;

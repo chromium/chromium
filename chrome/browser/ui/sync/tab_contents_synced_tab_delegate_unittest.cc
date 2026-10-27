@@ -27,7 +27,8 @@ constexpr base::TimeDelta kSyncActiveTimeThreshold = base::Minutes(10);
 class TestSyncedTabDelegate : public TabContentsSyncedTabDelegate {
  public:
   explicit TestSyncedTabDelegate(content::WebContents* web_contents) {
-    SetWebContents(web_contents);
+    SetWebContents(web_contents, /*task_tab_helper=*/nullptr,
+                   /*supervised_user_navigation_observer=*/nullptr);
   }
 
   ~TestSyncedTabDelegate() override = default;

@@ -217,6 +217,12 @@ class TabFeatures {
     return data_protection_tab_controller_.get();
   }
 
+  tasks::TaskTabHelper* task_tab_helper() { return task_tab_helper_.get(); }
+
+  SupervisedUserNavigationObserver* supervised_user_navigation_observer() {
+    return supervised_user_navigation_observer_.get();
+  }
+
 #if BUILDFLAG(ENABLE_WEBUI_NTP)
   customize_chrome::SidePanelController*
   customize_chrome_side_panel_controller() {
@@ -250,8 +256,6 @@ class TabFeatures {
   std::unique_ptr<actor::ActorTabData> actor_tab_data_;
   std::unique_ptr<actor::ActorSurfaceTabHelper> actor_surface_tab_helper_;
 
-  std::unique_ptr<sync_sessions::SyncSessionsRouterTabHelper>
-      sync_sessions_router_;
   std::unique_ptr<ConnectionHelpTabHelper> connection_help_tab_helper_;
   std::unique_ptr<HttpAuthCacheStatus> http_auth_cache_status_;
   std::unique_ptr<SecurityStateEventObserver> security_state_event_observer_;
@@ -336,6 +340,8 @@ class TabFeatures {
   std::unique_ptr<chrome_browser_net::NetErrorTabHelper> net_error_tab_helper_;
   std::unique_ptr<SupervisedUserNavigationObserver>
       supervised_user_navigation_observer_;
+  std::unique_ptr<sync_sessions::SyncSessionsRouterTabHelper>
+      sync_sessions_router_;
   std::unique_ptr<offline_pages::OfflinePageTabHelper> offline_page_tab_helper_;
   std::unique_ptr<offline_pages::RecentTabHelper> recent_tab_helper_;
   std::unique_ptr<AutoPictureInPictureTabHelper>

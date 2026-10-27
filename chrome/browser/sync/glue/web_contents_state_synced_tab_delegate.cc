@@ -24,7 +24,9 @@ WebContentsStateSyncedTabDelegate::WebContentsStateSyncedTabDelegate(
   if (web_contents_) {
     web_contents_->SetOwnerLocationForDebug(FROM_HERE);
   }
-  TabContentsSyncedTabDelegate::SetWebContents(web_contents_.get());
+  TabContentsSyncedTabDelegate::SetWebContents(
+      web_contents_.get(), /*task_tab_helper=*/nullptr,
+      /*supervised_user_navigation_observer=*/nullptr);
 }
 
 WebContentsStateSyncedTabDelegate::~WebContentsStateSyncedTabDelegate() =
