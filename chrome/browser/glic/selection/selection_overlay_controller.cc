@@ -519,6 +519,7 @@ void SelectionOverlayController::CaptureRegion(
       }
     }
   }
+  selection_overlay_controller->session_->owner = Session::Owner::kPanel;
   selection_overlay_controller->BindCaptureRegionObserver(std::move(observer));
   selection_overlay_controller->ShowImpl(std::move(options));
 }
@@ -973,9 +974,7 @@ void SelectionOverlayController::SubmitPrompt(const std::string& prompt) {
     // TODO(b/556786015): Fix issue when side panel is not open.
     service->InvokeWithAutoSubmit(
         InvokeWithAutoSubmitPasskeyProvider::GetPassKey(), std::move(options));
-    // The capture region observer is only bound if the overlay is invoked
-    // from the side panel web client.
-    if (!session_->capture_region_observer.is_bound()) {
+    if (session_->owner == Session::Owner::kDirect) {
       Close();
     }
   }
@@ -1219,9 +1218,7 @@ void SelectionOverlayController::ExecuteSuggestedAction(
         return;
       }
       matched_suggestion->Execute(mojo::GenericPendingAssociatedReceiver());
-      // The capture region observer is only bound if the overlay is invoked
-      // from the side panel web client.
-      if (!session_->capture_region_observer.is_bound()) {
+      if (session_->owner == Session::Owner::kDirect) {
         Close();
       }
       return;

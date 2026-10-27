@@ -2055,6 +2055,45 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTestWithPrompt,
           "}"));
 }
 
+// A session the side panel started stays up after a prompt is submitted: the
+// panel owns it. (A session started from the page closes instead; see
+// SubmitPromptWithSelectedRegion in selection_overlay_browsertest.cc.)
+IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTestWithPrompt,
+                       SubmitPromptKeepsPanelSession) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlayWebContentsId);
+  const DeepQuery kSelectionOverlay = {"selection-overlay-app",
+                                       "glic-selection-overlay"};
+
+  RunTestSequence(
+      OpenGlic(), ClickMockGlicElement({"#captureRegionBtn"}),
+      WaitForShow(OverlayBaseController::kOverlayId),
+      InstrumentNonTabWebView(kOverlayWebContentsId,
+                              OverlayBaseController::kOverlayId),
+      WaitForJsResultAt(
+          kOverlayWebContentsId, kSelectionOverlay,
+          "el => el.isScreenshotRendered && el.selectionOverlayRect.width > 0 "
+          "&& el.selectionOverlayRect.height > 0"),
+      MoveMouseTo(OverlayBaseController::kOverlayId,
+                  GetPointWithOffset(50, 50)),
+      DragMouseTo(OverlayBaseController::kOverlayId,
+                  GetPointWithOffset(150, 150)),
+      WaitForJsResultAt(
+          kOverlayWebContentsId, kSelectionOverlay,
+          "el => el.shadowRoot.querySelector('#promptInput') !== null"),
+      Do([this]() {
+        static_cast<selection::SelectionOverlayPageHandler*>(GetController())
+            ->SubmitPrompt("Explain this region");
+      }),
+      // The prompt reaches the web client, and the overlay is still up with
+      // its region.
+      WaitForJsResultAt(kGlicContentsElementId, {"#invocationLog"},
+                        "el => el.textContent.includes('Explain this region')"),
+      CheckResult([this]() { return GetController()->state(); },
+                  OverlayBaseController::State::kOverlay),
+      CheckResult(
+          [this]() { return GetController()->GetSelectedRegionCount(); }, 1u));
+}
+
 namespace {
 
 class SelectionOverlayInteractiveTestWithInlineFulfillment
