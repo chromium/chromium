@@ -25,6 +25,7 @@ import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.core.os.BuildCompat;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.SysUtils;
@@ -38,7 +39,6 @@ import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntent
 import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.util.ColorUtils;
 
 import java.util.Locale;
@@ -71,8 +71,10 @@ public class MediaViewerUtils {
             boolean allowExternalAppHandlers,
             boolean allowShareAction,
             Context context) {
+        // TODO(crbug.com/521890621): Update to LFF check
+        // (DeviceFormFactor.isNonMultiDisplayContextOnTablet(context)) once rollout is complete.
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.OPEN_DOWNLOAD_IN_NEW_TAB)
-                && DeviceFormFactor.isNonMultiDisplayContextOnTablet(context)) {
+                && DeviceInfo.isDesktop()) {
             Intent intent = createViewIntentForUri(contentUri, mimeType, null, null);
             intent.removeFlags(
                     Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);

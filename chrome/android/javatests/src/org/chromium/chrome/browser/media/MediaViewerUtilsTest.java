@@ -19,6 +19,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Features.DisableFeatures;
@@ -127,6 +128,7 @@ public class MediaViewerUtilsTest {
     @EnableFeatures(ChromeFeatureList.OPEN_DOWNLOAD_IN_NEW_TAB)
     @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
     public void testOpenDownloadInNewTab() {
+        DeviceInfo.setIsDesktopForTesting(true);
         Uri uri = Uri.parse(TestContentProvider.createContentUrl("google.png"));
         Intent intent =
                 MediaViewerUtils.getMediaViewerIntent(
@@ -152,6 +154,7 @@ public class MediaViewerUtilsTest {
     @EnableFeatures(ChromeFeatureList.OPEN_DOWNLOAD_IN_NEW_TAB)
     @Restriction(DeviceFormFactor.PHONE)
     public void testOpenDownloadInNewTab_Phone() {
+        DeviceInfo.setIsDesktopForTesting(false);
         Uri uri = Uri.parse(TestContentProvider.createContentUrl("google.png"));
         Intent intent =
                 MediaViewerUtils.getMediaViewerIntent(

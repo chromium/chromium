@@ -481,7 +481,10 @@ public class DownloadUtils {
         DownloadManagerService service = DownloadManagerService.getDownloadManagerService();
         boolean isIncognito = OtrProfileId.isOffTheRecord(req.mOtrProfileId);
 
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.OPEN_DOWNLOAD_IN_PREFERRED_APP)) {
+        // TODO(crbug.com/521890621): Remove isDesktop() check to enable on all form factors once
+        // the non-desktop rollout is complete.
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.OPEN_DOWNLOAD_IN_PREFERRED_APP)
+                && DeviceInfo.isDesktop()) {
             Intent targetIntent = createViewIntent(req);
             Context context = req.mContext;
             String chromePackage = context.getPackageName();
@@ -1027,8 +1030,11 @@ public class DownloadUtils {
     }
 
     private static boolean openDownloadInFilesAppIfNoHandlerFound() {
+        // TODO(crbug.com/521890621): Remove isDesktop() check to enable on all form factors once
+        // the non-desktop rollout is complete.
         return ChromeFeatureList.isEnabled(
-                ChromeFeatureList.OPEN_DOWNLOAD_IN_FILES_APP_IF_NO_HANDLER_FOUND);
+                        ChromeFeatureList.OPEN_DOWNLOAD_IN_FILES_APP_IF_NO_HANDLER_FOUND)
+                && DeviceInfo.isDesktop();
     }
 
     @NativeMethods

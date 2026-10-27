@@ -800,10 +800,16 @@ TEST_F(ChromeDownloadManagerDelegateTest, NoSafetyChecksNotBlockedByPolicy) {
 TEST_F(ChromeDownloadManagerDelegateTest, InterceptDownloadByOfflinePages) {
   const GURL kUrl("http://example.com/foo");
   std::string mime_type = "text/html";
-  bool should_intercept = delegate()->InterceptDownloadIfApplicable(
-      kUrl, "", "", mime_type, "", 10, false /*is_transient*/,
-      false /*is_content_initiated*/, nullptr);
-  EXPECT_TRUE(should_intercept);
+  bool should_intercept = false;
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndDisableFeature(
+        download::features::kEnableDownloadSaveAsContextMenu);
+    should_intercept = delegate()->InterceptDownloadIfApplicable(
+        kUrl, "", "", mime_type, "", 10, false /*is_transient*/,
+        false /*is_content_initiated*/, nullptr);
+    EXPECT_TRUE(should_intercept);
+  }
 
   {
     base::test::ScopedFeatureList feature_list;
@@ -3230,8 +3236,9 @@ TEST_F(ChromeDownloadManagerDelegateTest, RequestConfirmation_Android) {
   SetContents(CreateTestWebContents());
 
   base::test::ScopedFeatureList scoped_list;
-  scoped_list.InitAndDisableFeature(
-      download::features::kEnableDownloadSaveAsSystemFileDialog);
+  scoped_list.InitWithFeatures(
+      {}, {download::features::kEnableDownloadSaveAsContextMenu,
+           download::features::kEnableDownloadSaveAsSystemFileDialog});
   profile()->GetTestingPrefService()->SetInteger(
       prefs::kPromptForDownloadAndroid,
       static_cast<int>(DownloadPromptStatus::SHOW_PREFERENCE));

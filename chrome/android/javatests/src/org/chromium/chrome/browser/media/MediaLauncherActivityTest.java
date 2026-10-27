@@ -22,6 +22,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.test.ActivityFinisher;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -101,6 +102,7 @@ public class MediaLauncherActivityTest {
     @EnableFeatures(ChromeFeatureList.OPEN_DOWNLOAD_IN_NEW_TAB)
     @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
     public void testHandleAudioIntentOpenInNewTab() throws Exception {
+        DeviceInfo.setIsDesktopForTesting(true);
         String url = TestContentProvider.createContentUrl("media/audio.mp3");
         Context context = ContextUtils.getApplicationContext();
         Uri uri = Uri.parse(url);
