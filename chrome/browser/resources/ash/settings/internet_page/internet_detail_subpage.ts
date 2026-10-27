@@ -279,16 +279,6 @@ export class SettingsInternetDetailPageElement extends
         computed: 'computeDisabled_(deviceState_.*)',
       },
 
-      isApnRevampAndAllowApnModificationPolicyEnabled_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.valueExists(
-                     'isApnRevampAndAllowApnModificationPolicyEnabled') &&
-              loadTimeData.getBoolean(
-                  'isApnRevampAndAllowApnModificationPolicyEnabled');
-        },
-      },
-
       passpointSubscription_: {
         type: Object,
         notify: true,
@@ -365,7 +355,6 @@ export class SettingsInternetDetailPageElement extends
   declare private disabled_: boolean;
   declare private hiddenPref_: chrome.settingsPrivate.PrefObject<boolean>;
   declare private ipAddress_: string;
-  declare private isApnRevampAndAllowApnModificationPolicyEnabled_: boolean;
   declare private isSecondaryUser_: boolean;
   declare private isWifiSyncEnabled_: boolean;
   declare private managedProperties_: ManagedProperties|undefined;
@@ -1218,9 +1207,6 @@ export class SettingsInternetDetailPageElement extends
   }
 
   private isApnManaged_(globalPolicy: GlobalPolicy|undefined): boolean {
-    if (!this.isApnRevampAndAllowApnModificationPolicyEnabled_) {
-      return false;
-    }
     if (!globalPolicy) {
       return false;
     }

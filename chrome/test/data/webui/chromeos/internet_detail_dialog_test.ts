@@ -19,7 +19,6 @@ import type {NetworkProxyElement} from 'chrome://resources/ash/common/network/ne
 import type {NetworkSiminfoElement} from 'chrome://resources/ash/common/network/network_siminfo.js';
 import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
 import {assert} from 'chrome://resources/js/assert.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import type {ApnProperties, GlobalPolicy, SIMInfo} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {ApnAuthenticationType, ApnIpType, ApnSource, ApnState, ApnType, InhibitReason, MAX_NUM_CUSTOM_APNS} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {ConnectionStateType, DeviceStateType, NetworkType, OncSource, PortalState} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
@@ -451,69 +450,51 @@ suite('internet-detail-dialog', () => {
     assertFalse(isApnListShowing());
   });
 
-  [true, false].forEach(isApnRevampAndAllowApnModificationPolicyEnabled => {
-    test(
-        'Managed APN UI states when ' +
-            `isApnRevampAndAllowApnModificationPolicyEnabled is ${
-                isApnRevampAndAllowApnModificationPolicyEnabled}`,
-        async () => {
-          loadTimeData.overrideValues({
-            isApnRevampAndAllowApnModificationPolicyEnabled:
-                isApnRevampAndAllowApnModificationPolicyEnabled,
-          });
-          await setupCellularNetwork(
-              /* isPrimary= */ true, /* isInhibited= */ false);
+  test('Managed APN UI states', async () => {
+    await setupCellularNetwork(
+        /* isPrimary= */ true, /* isInhibited= */ false);
 
-          await init();
-          assertTrue(!!internetDetailDialog.shadowRoot!.querySelector(
-              'cr-expand-button'));
+    await init();
+    assertTrue(
+        !!internetDetailDialog.shadowRoot!.querySelector('cr-expand-button'));
 
-          // Check for APN policies managed icon.
-          const getApnManagedIcon = () =>
-              internetDetailDialog.shadowRoot!.querySelector('#apnManagedIcon');
-          assertFalse(!!getApnManagedIcon());
-          const apnList =
-              internetDetailDialog.shadowRoot!.querySelector<ApnListElement>(
-                  '#apnList');
-          assertTrue(!!apnList);
-          assertFalse(apnList.shouldDisallowApnModification);
-          const createCustomApnButton = () =>
-              getElement<CrButtonElement>('#createCustomApnButton');
-          const discoverMoreApnsButton = () =>
-              getElement<CrButtonElement>('#discoverMoreApnsButton');
-          assertTrue(!!createCustomApnButton());
-          assertFalse(createCustomApnButton().disabled);
-          assertTrue(!!discoverMoreApnsButton());
-          assertFalse(discoverMoreApnsButton().disabled);
+    // Check for APN policies managed icon.
+    const getApnManagedIcon = () =>
+        internetDetailDialog.shadowRoot!.querySelector('#apnManagedIcon');
+    assertFalse(!!getApnManagedIcon());
+    const apnList =
+        internetDetailDialog.shadowRoot!.querySelector<ApnListElement>(
+            '#apnList');
+    assertTrue(!!apnList);
+    assertFalse(apnList.shouldDisallowApnModification);
+    const createCustomApnButton = () =>
+        getElement<CrButtonElement>('#createCustomApnButton');
+    const discoverMoreApnsButton = () =>
+        getElement<CrButtonElement>('#discoverMoreApnsButton');
+    assertTrue(!!createCustomApnButton());
+    assertFalse(createCustomApnButton().disabled);
+    assertTrue(!!discoverMoreApnsButton());
+    assertFalse(discoverMoreApnsButton().disabled);
 
-          let globalPolicy = {
-            allowApnModification: true,
-          } as GlobalPolicy;
-          mojoApi.setGlobalPolicy(globalPolicy);
-          await flushAsync();
-          assertFalse(!!getApnManagedIcon());
-          assertFalse(apnList.shouldDisallowApnModification);
-          assertFalse(createCustomApnButton().disabled);
-          assertFalse(discoverMoreApnsButton().disabled);
+    let globalPolicy = {
+      allowApnModification: true,
+    } as GlobalPolicy;
+    mojoApi.setGlobalPolicy(globalPolicy);
+    await flushAsync();
+    assertFalse(!!getApnManagedIcon());
+    assertFalse(apnList.shouldDisallowApnModification);
+    assertFalse(createCustomApnButton().disabled);
+    assertFalse(discoverMoreApnsButton().disabled);
 
-          globalPolicy = {
-            allowApnModification: false,
-          } as GlobalPolicy;
-          mojoApi.setGlobalPolicy(globalPolicy);
-          await flushAsync();
-          assertEquals(
-              isApnRevampAndAllowApnModificationPolicyEnabled,
-              !!getApnManagedIcon());
-          assertEquals(
-              isApnRevampAndAllowApnModificationPolicyEnabled,
-              apnList.shouldDisallowApnModification);
-          assertEquals(
-              isApnRevampAndAllowApnModificationPolicyEnabled,
-              createCustomApnButton().disabled);
-          assertEquals(
-              isApnRevampAndAllowApnModificationPolicyEnabled,
-              discoverMoreApnsButton().disabled);
-        });
+    globalPolicy = {
+      allowApnModification: false,
+    } as GlobalPolicy;
+    mojoApi.setGlobalPolicy(globalPolicy);
+    await flushAsync();
+    assertTrue(!!getApnManagedIcon());
+    assertTrue(apnList.shouldDisallowApnModification);
+    assertTrue(createCustomApnButton().disabled);
+    assertTrue(discoverMoreApnsButton().disabled);
   });
 
   test(

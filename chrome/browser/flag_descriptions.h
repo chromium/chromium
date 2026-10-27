@@ -7437,13 +7437,6 @@ inline constexpr char kAcceleratedMjpegDecodeDescription[] =
     "Enable hardware-accelerated MJPEG decode for captured frame where "
     "available.";
 
-inline constexpr char kAllowApnModificationPolicyName[] =
-    "Allow APN Modification by Policy";
-inline constexpr char kAllowApnModificationPolicyDescription[] =
-    "Enables the ChromeOS APN Allow APN Modification policy, which gives "
-    "admins the ability to allow or prohibit managed users from modifying "
-    "APNs.";
-
 inline constexpr char kAllowCrossDeviceFeatureSuiteName[] =
     "Allow the use of Cross-Device features";
 inline constexpr char kAllowCrossDeviceFeatureSuiteDescription[] =

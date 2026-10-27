@@ -313,16 +313,6 @@ export class SettingsInternetPageElement extends
         value: '',
       },
 
-      isApnRevampAndAllowApnModificationPolicyEnabled_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.valueExists(
-                     'isApnRevampAndAllowApnModificationPolicyEnabled') &&
-              loadTimeData.getBoolean(
-                  'isApnRevampAndAllowApnModificationPolicyEnabled');
-        },
-      },
-
       /**
        * Whether the 'Add custom APN' button is disabled.
        */
@@ -372,7 +362,6 @@ export class SettingsInternetPageElement extends
   declare private hasActiveCellularNetwork_: boolean;
   declare private isConnectedToNonCellularNetwork_: boolean;
   declare private isNumCustomApnsLimitReached_: boolean;
-  declare private isApnRevampAndAllowApnModificationPolicyEnabled_: boolean;
   declare private isBuiltInVpnManagementBlocked_: boolean;
   declare private knownNetworksType_: NetworkType;
   private networkConfig_: CrosNetworkConfigInterface;
@@ -1059,9 +1048,6 @@ export class SettingsInternetPageElement extends
 
   private shouldDisallowApnModification_(globalPolicy: GlobalPolicy|
                                          undefined): boolean {
-    if (!this.isApnRevampAndAllowApnModificationPolicyEnabled_) {
-      return false;
-    }
     if (!globalPolicy) {
       return false;
     }

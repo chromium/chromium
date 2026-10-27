@@ -13,7 +13,6 @@ import type {ApnEventData} from 'chrome://resources/ash/common/network/cellular_
 import {ApnDetailDialogMode} from 'chrome://resources/ash/common/network/cellular_utils.js';
 import {MojoInterfaceProviderImpl} from 'chrome://resources/ash/common/network/mojo_interface_provider.js';
 import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import type {ApnProperties} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {ApnAuthenticationType, ApnIpType, ApnSource, ApnState, ApnType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {NetworkType, PortalState} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
@@ -288,81 +287,70 @@ suite('ApnListItemTest', function() {
     assertFalse(getThreeDotsMenu().open);
   });
 
-  [true, false].forEach(isApnRevampAndAllowApnModificationPolicyEnabled => {
-    test(
-        `Clicking APN details button triggers a show-apn-detail-dialog event
-        when isApnRevampAndAllowApnModificationPolicyEnabled is ${
-            isApnRevampAndAllowApnModificationPolicyEnabled}`,
-        async () => {
-          loadTimeData.overrideValues({
-            isApnRevampAndAllowApnModificationPolicyEnabled,
-          });
-          await init();
-          apnListItem.apn = TEST_APN_EVENT_DATA.apn;
-          apnListItem.guid = TEST_APN_EVENT_DATA_GUID;
+  test(
+      'Clicking APN details button triggers a show-apn-detail-dialog event',
+      async () => {
+        await init();
+        apnListItem.apn = TEST_APN_EVENT_DATA.apn;
+        apnListItem.guid = TEST_APN_EVENT_DATA_GUID;
 
-          const subLabel = apnListItem.shadowRoot!.querySelector<HTMLElement>(
-              '#autoDetected');
-          assertTrue(!!subLabel);
-          assertFalse(subLabel.hasAttribute('hidden'));
-          assertEquals(apnListItem.i18n('apnAutoDetected'), subLabel.innerText);
+        const subLabel =
+            apnListItem.shadowRoot!.querySelector<HTMLElement>('#autoDetected');
+        assertTrue(!!subLabel);
+        assertFalse(subLabel.hasAttribute('hidden'));
+        assertEquals(apnListItem.i18n('apnAutoDetected'), subLabel.innerText);
 
-          const getDetailsButton = () =>
-              apnListItem.shadowRoot!.querySelector<HTMLButtonElement>(
-                  '#detailsButton')!;
+        const getDetailsButton = () =>
+            apnListItem.shadowRoot!.querySelector<HTMLButtonElement>(
+                '#detailsButton')!;
 
-          let apnDetailsClickedEvent =
-              eventToPromise<CustomEvent<ApnEventData>>(
-                  'show-apn-detail-dialog', window);
-          assertTrue(!!getDetailsButton());
-          assertEquals(
-              apnListItem.i18n('apnMenuDetails'),
-              getDetailsButton().innerText.trim());
-          getDetailsButton().click();
-          let eventData = await apnDetailsClickedEvent;
+        let apnDetailsClickedEvent = eventToPromise<CustomEvent<ApnEventData>>(
+            'show-apn-detail-dialog', window);
+        assertTrue(!!getDetailsButton());
+        assertEquals(
+            apnListItem.i18n('apnMenuDetails'),
+            getDetailsButton().innerText.trim());
+        getDetailsButton().click();
+        let eventData = await apnDetailsClickedEvent;
 
-          assertEquals(TEST_APN_EVENT_DATA.apn.name, eventData.detail.apn.name);
-          assertEquals(TEST_APN_EVENT_DATA.mode, eventData.detail.mode);
-          assertFalse(getThreeDotsMenu().open);
+        assertEquals(TEST_APN_EVENT_DATA.apn.name, eventData.detail.apn.name);
+        assertEquals(TEST_APN_EVENT_DATA.mode, eventData.detail.mode);
+        assertFalse(getThreeDotsMenu().open);
 
-          // Case: the apn list item is not auto detected.
-          apnListItem.apn = createTestApnWithOverridenValues({
-            name: TEST_APN_EVENT_DATA.apn.name,
-            id: '1',
-          });
-          assertTrue(subLabel.hasAttribute('hidden'));
-          assertEquals(
-              apnListItem.i18n('apnMenuEdit'),
-              getDetailsButton().innerText.trim());
-
-          apnDetailsClickedEvent = eventToPromise<CustomEvent<ApnEventData>>(
-              'show-apn-detail-dialog', window);
-          getDetailsButton().click();
-          eventData = await apnDetailsClickedEvent;
-          assertEquals(TEST_APN_EVENT_DATA.apn.name, eventData.detail.apn.name);
-          assertEquals(ApnDetailDialogMode.EDIT, eventData.detail.mode);
-          assertFalse(getThreeDotsMenu().open);
-
-          if (isApnRevampAndAllowApnModificationPolicyEnabled) {
-            // Case: APN modification is disallowed.
-            apnListItem.shouldDisallowApnModification = true;
-            await flushTasks();
-
-            assertEquals(
-                apnListItem.i18n('apnMenuDetails'),
-                getDetailsButton().innerText.trim());
-
-            apnDetailsClickedEvent = eventToPromise<CustomEvent<ApnEventData>>(
-                'show-apn-detail-dialog', window);
-            getDetailsButton().click();
-            eventData = await apnDetailsClickedEvent;
-            assertEquals(
-                TEST_APN_EVENT_DATA.apn.name, eventData.detail.apn.name);
-            assertEquals(ApnDetailDialogMode.VIEW, eventData.detail.mode);
-            assertFalse(getThreeDotsMenu().open);
-          }
+        // Case: the apn list item is not auto detected.
+        apnListItem.apn = createTestApnWithOverridenValues({
+          name: TEST_APN_EVENT_DATA.apn.name,
+          id: '1',
         });
-  });
+        assertTrue(subLabel.hasAttribute('hidden'));
+        assertEquals(
+            apnListItem.i18n('apnMenuEdit'),
+            getDetailsButton().innerText.trim());
+
+        apnDetailsClickedEvent = eventToPromise<CustomEvent<ApnEventData>>(
+            'show-apn-detail-dialog', window);
+        getDetailsButton().click();
+        eventData = await apnDetailsClickedEvent;
+        assertEquals(TEST_APN_EVENT_DATA.apn.name, eventData.detail.apn.name);
+        assertEquals(ApnDetailDialogMode.EDIT, eventData.detail.mode);
+        assertFalse(getThreeDotsMenu().open);
+
+        // Case: APN modification is disallowed.
+        apnListItem.shouldDisallowApnModification = true;
+        await flushTasks();
+
+        assertEquals(
+            apnListItem.i18n('apnMenuDetails'),
+            getDetailsButton().innerText.trim());
+
+        apnDetailsClickedEvent = eventToPromise<CustomEvent<ApnEventData>>(
+            'show-apn-detail-dialog', window);
+        getDetailsButton().click();
+        eventData = await apnDetailsClickedEvent;
+        assertEquals(TEST_APN_EVENT_DATA.apn.name, eventData.detail.apn.name);
+        assertEquals(ApnDetailDialogMode.VIEW, eventData.detail.mode);
+        assertFalse(getThreeDotsMenu().open);
+      });
 
   test('Test if disable/remove warning event is fired.', async () => {
     await init();

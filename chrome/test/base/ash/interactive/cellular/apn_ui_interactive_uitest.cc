@@ -4,10 +4,8 @@
 
 #include <string>
 
-#include "ash/constants/ash_features.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/to_string.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/test/base/ash/interactive/cellular/cellular_util.h"
 #include "chrome/test/base/ash/interactive/cellular/esim_interactive_uitest_base.h"
 #include "chrome/test/base/ash/interactive/cellular/wait_for_service_connected_observer.h"
@@ -31,10 +29,7 @@ DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOSSettingsId);
 
 class ApnUiInteractiveUiTest : public EsimInteractiveUiTestBase {
  protected:
-  ApnUiInteractiveUiTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        ash::features::kAllowApnModificationPolicy);
-  }
+  ApnUiInteractiveUiTest() = default;
 
   // InteractiveAshTest:
   void SetUpOnMainThread() override {
@@ -398,8 +393,6 @@ class ApnUiInteractiveUiTest : public EsimInteractiveUiTestBase {
 
   std::unique_ptr<SimInfo> esim_info_;
   std::string default_modb_apn_name_;
-
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(ApnUiInteractiveUiTest,

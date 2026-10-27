@@ -221,9 +221,8 @@ class ApnMigratorTest : public testing::Test {
 };
 
 TEST_F(ApnMigratorTest, AlreadyMigratedNetworks) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      features::kAllowApnModificationPolicy);
+  EXPECT_CALL(*managed_network_configuration_handler(), AllowApnModification())
+      .WillRepeatedly(Return(true));
 
   const std::string cellular_service_path_1 =
       AddTestCellularDeviceAndService(kCellularName1, kTestCellularPath1,

@@ -173,13 +173,12 @@ void ApnMigrator::NetworkListChanged() {
       // was on, or this time. Send Shill the revamp APN list.
       if (const base::ListValue* custom_apn_list =
               GetNetworkMetadataStore()->GetCustomApnList(network->guid())) {
-        if (!ash::features::IsAllowApnModificationPolicyEnabled() ||
-            network_configuration_handler_->AllowApnModification()) {
+        if (network_configuration_handler_->AllowApnModification()) {
           NET_LOG(EVENT)
               << "Network has already been migrated, setting with the "
               << "populated custom APN list: " << network->iccid();
           SetShillCustomApnListForNetwork(*network, custom_apn_list);
-        } else if (!network_configuration_handler_->AllowApnModification()) {
+        } else {
           NET_LOG(EVENT)
               << "Not setting custom APN list as admin has restricted "
                  "use of custom APNs";

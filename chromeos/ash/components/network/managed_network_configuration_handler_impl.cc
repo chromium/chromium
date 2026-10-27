@@ -518,7 +518,9 @@ ManagedNetworkConfigurationHandlerImpl::GetNetworkMetadataStore() {
     return network_metadata_store_for_testing_;
   }
 
-  return NetworkHandler::Get()->network_metadata_store();
+  return NetworkHandler::IsInitialized()
+             ? NetworkHandler::Get()->network_metadata_store()
+             : nullptr;
 }
 
 void ManagedNetworkConfigurationHandlerImpl::ConfigurePolicyNetwork(
@@ -901,9 +903,7 @@ void ManagedNetworkConfigurationHandlerImpl::OnPoliciesApplied(
     network_device_handler_->SetAllowCellularSimLock(AllowCellularSimLock());
   }
 
-  if (features::IsAllowApnModificationPolicyEnabled()) {
-    ModifyCustomAPNs();
-  }
+  ModifyCustomAPNs();
 
   if (hotspot_controller_) {
     hotspot_controller_->SetPolicyAllowHotspot(AllowCellularHotspot());
@@ -920,6 +920,11 @@ void ManagedNetworkConfigurationHandlerImpl::OnPoliciesApplied(
 }
 
 void ManagedNetworkConfigurationHandlerImpl::ModifyCustomAPNs() {
+  NetworkMetadataStore* network_metadata_store = GetNetworkMetadataStore();
+  if (!network_metadata_store) {
+    return;
+  }
+
   NetworkStateHandler::NetworkStateList networks;
 
   network_state_handler_->GetNetworkListByType(NetworkTypePattern::Cellular(),
@@ -936,7 +941,7 @@ void ManagedNetworkConfigurationHandlerImpl::ModifyCustomAPNs() {
       continue;
     }
     const base::ListValue* existing_custom_apn_list =
-        GetNetworkMetadataStore()->GetCustomApnList(network->guid());
+        network_metadata_store->GetCustomApnList(network->guid());
     if (existing_custom_apn_list) {
       base::DictValue onc;
       onc.Set(::onc::network_config::kGUID, network->guid());

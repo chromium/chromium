@@ -8,7 +8,6 @@
 #include <string>
 #include <utility>
 
-#include "ash/constants/ash_features.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/json/json_reader.h"
@@ -16,7 +15,6 @@
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "chromeos/ash/components/network/client_cert_resolver.h"
 #include "chromeos/ash/components/network/device_state.h"
@@ -324,7 +322,6 @@ class AutoConnectHandlerTest : public testing::Test {
   NetworkStateTestHelper& helper() { return helper_; }
 
   base::test::TaskEnvironment task_environment_;
-  base::test::ScopedFeatureList scoped_feature_list_;
   NetworkStateTestHelper helper_{/*use_default_devices_and_services=*/false};
   std::unique_ptr<AutoConnectHandler> auto_connect_handler_;
   std::unique_ptr<ClientCertResolver> client_cert_resolver_;
@@ -744,8 +741,6 @@ TEST_F(AutoConnectHandlerTest, ManualConnectAbortsReconnectAfterLogin) {
 
 TEST_F(AutoConnectHandlerTest,
        DisableCellularAutoConnectOnAllowOnlyPolicyNetworksAutoconnect) {
-  scoped_feature_list_.InitAndDisableFeature(
-      ash::features::kAllowApnModificationPolicy);
   base::HistogramTester histogram_tester;
   std::string cellular1_service_path =
       ConfigureService(kConfigureCellular1UnmanagedConnected);
@@ -795,8 +790,6 @@ TEST_F(AutoConnectHandlerTest,
 
 TEST_F(AutoConnectHandlerTest,
        DisconnectCellularOnPolicyLoadingAllowOnlyPolicyCellularNetworks) {
-  scoped_feature_list_.InitAndDisableFeature(
-      ash::features::kAllowApnModificationPolicy);
   base::HistogramTester histogram_tester;
   std::string cellular1_service_path =
       ConfigureService(kConfigureCellular1UnmanagedConnected);

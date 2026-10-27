@@ -1961,80 +1961,68 @@ suite('<settings-internet-detail-subpage>', () => {
       assertTrue(getCrLink()!.hasAttribute('warning'));
     });
 
-    [true, false].forEach(isApnRevampAndAllowApnModificationPolicyEnabled => {
-      test(
-          'Managed APN icon visibility when ' +
-              `isApnRevampAndAllowApnModificationPolicyEnabled is ${
-                  isApnRevampAndAllowApnModificationPolicyEnabled}`,
-          async () => {
-            loadTimeData.overrideValues({
-              isApnRevampAndAllowApnModificationPolicyEnabled:
-                  isApnRevampAndAllowApnModificationPolicyEnabled,
-            });
-            init();
-            mojoApi.setNetworkTypeEnabledState(NetworkType.kCellular, true);
-            const apnName = 'test';
-            const testIccid = '11111';
-            const cellularNetwork =
-                getManagedProperties(NetworkType.kCellular, 'cellular');
-            cellularNetwork.typeProperties.cellular!.connectedApn = {
-              accessPointName: '',
-              id: '',
-              authentication: ApnAuthenticationType.kAutomatic,
-              language: null,
-              localizedName: null,
-              name: null,
-              password: null,
-              username: null,
-              attach: null,
-              state: ApnState.kEnabled,
-              ipType: ApnIpType.kAutomatic,
-              apnTypes: [],
-              source: ApnSource.kModb,
-            };
-            cellularNetwork.typeProperties.cellular!.connectedApn
-                .accessPointName = apnName;
-            cellularNetwork.typeProperties.cellular!.iccid = testIccid;
-            mojoApi.setManagedPropertiesForTest(cellularNetwork);
-            internetDetailPage.init('cellular_guid', 'Cellular', 'cellular');
+    test('Managed APN icon visibility', async () => {
+      init();
+      mojoApi.setNetworkTypeEnabledState(NetworkType.kCellular, true);
+      const apnName = 'test';
+      const testIccid = '11111';
+      const cellularNetwork =
+          getManagedProperties(NetworkType.kCellular, 'cellular');
+      cellularNetwork.typeProperties.cellular!.connectedApn = {
+        accessPointName: '',
+        id: '',
+        authentication: ApnAuthenticationType.kAutomatic,
+        language: null,
+        localizedName: null,
+        name: null,
+        password: null,
+        username: null,
+        attach: null,
+        state: ApnState.kEnabled,
+        ipType: ApnIpType.kAutomatic,
+        apnTypes: [],
+        source: ApnSource.kModb,
+      };
+      cellularNetwork.typeProperties.cellular!.connectedApn.accessPointName =
+          apnName;
+      cellularNetwork.typeProperties.cellular!.iccid = testIccid;
+      mojoApi.setManagedPropertiesForTest(cellularNetwork);
+      internetDetailPage.init('cellular_guid', 'Cellular', 'cellular');
 
-            // Set cellular network as active SIM so that APN row should show up
-            // if the flag is enabled.
-            mojoApi.setDeviceStateForTest({
-              ...getDefaultDeviceStateProps(),
-              deviceState: DeviceStateType.kEnabled,
-              simInfos: [{
-                iccid: testIccid,
-                isPrimary: true,
-                slotId: 0,
-                eid: '',
-              }],
-            });
-            await flushTasks();
-            assertTrue(!!internetDetailPage.shadowRoot!.querySelector(
-                '#apnSubpageButton'));
+      // Set cellular network as active SIM so that APN row should show up
+      // if the flag is enabled.
+      mojoApi.setDeviceStateForTest({
+        ...getDefaultDeviceStateProps(),
+        deviceState: DeviceStateType.kEnabled,
+        simInfos: [{
+          iccid: testIccid,
+          isPrimary: true,
+          slotId: 0,
+          eid: '',
+        }],
+      });
+      await flushTasks();
+      assertTrue(
+          !!internetDetailPage.shadowRoot!.querySelector('#apnSubpageButton'));
 
-            // Check for APN policies managed icon.
-            const getApnManagedIcon = () =>
-                internetDetailPage.shadowRoot!.querySelector('#apnManagedIcon');
-            assertFalse(!!getApnManagedIcon());
+      // Check for APN policies managed icon.
+      const getApnManagedIcon = () =>
+          internetDetailPage.shadowRoot!.querySelector('#apnManagedIcon');
+      assertFalse(!!getApnManagedIcon());
 
-            internetDetailPage.globalPolicy = {
-              ...getDefaultGlobalPolicy(),
-              allowApnModification: true,
-            };
-            await flushTasks();
-            assertFalse(!!getApnManagedIcon());
+      internetDetailPage.globalPolicy = {
+        ...getDefaultGlobalPolicy(),
+        allowApnModification: true,
+      };
+      await flushTasks();
+      assertFalse(!!getApnManagedIcon());
 
-            internetDetailPage.globalPolicy = {
-              ...getDefaultGlobalPolicy(),
-              allowApnModification: false,
-            };
-            await flushTasks();
-            assertEquals(
-                isApnRevampAndAllowApnModificationPolicyEnabled,
-                !!getApnManagedIcon());
-          });
+      internetDetailPage.globalPolicy = {
+        ...getDefaultGlobalPolicy(),
+        allowApnModification: false,
+      };
+      await flushTasks();
+      assertTrue(!!getApnManagedIcon());
     });
 
     test('Cellular network not found while in detail subpage', async () => {

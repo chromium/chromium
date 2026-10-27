@@ -5579,10 +5579,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kTopChromeTouchUiDescription, kOsDesktop,
      MULTI_VALUE_TYPE(kTopChromeTouchUiChoices)},
 #if BUILDFLAG(IS_CHROMEOS)
-    {"allow-apn-modification-policy",
-     flag_descriptions::kAllowApnModificationPolicyName,
-     flag_descriptions::kAllowApnModificationPolicyDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kAllowApnModificationPolicy)},
     {"apply-managed-proxy-bypass-list-verbatim",
      flag_descriptions::kApplyManagedProxyBypassListVerbatimName,
      flag_descriptions::kApplyManagedProxyBypassListVerbatimDescription,

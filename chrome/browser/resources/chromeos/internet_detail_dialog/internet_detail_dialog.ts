@@ -121,16 +121,6 @@ export class InternetDetailDialogElement extends
       globalPolicy_: Object,
       apnExpanded_: Boolean,
 
-      isApnRevampAndAllowApnModificationPolicyEnabled_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.valueExists(
-                     'isApnRevampAndAllowApnModificationPolicyEnabled') &&
-              loadTimeData.getBoolean(
-                  'isApnRevampAndAllowApnModificationPolicyEnabled');
-        },
-      },
-
       /**
        * Return true if custom APNs limit is reached.
        */
@@ -160,7 +150,6 @@ export class InternetDetailDialogElement extends
   declare private disabled_: boolean;
   declare private globalPolicy_: GlobalPolicy;
   declare private apnExpanded_: boolean;
-  declare private isApnRevampAndAllowApnModificationPolicyEnabled_: boolean;
   declare private isNumCustomApnsLimitReached_: boolean;
   declare private errorToastMessage_: string;
   private didSetFocus_: boolean = false;
@@ -444,9 +433,6 @@ export class InternetDetailDialogElement extends
   }
 
   private isApnManaged_(globalPolicy: GlobalPolicy|undefined): boolean {
-    if (!this.isApnRevampAndAllowApnModificationPolicyEnabled_) {
-      return false;
-    }
     if (!globalPolicy) {
       return false;
     }
@@ -757,10 +743,6 @@ export class InternetDetailDialogElement extends
   }
 
   private shouldDisableApnButtons_(): boolean {
-    if (!this.isApnRevampAndAllowApnModificationPolicyEnabled_) {
-      return this.isNumCustomApnsLimitReached_;
-    }
-
     return this.isNumCustomApnsLimitReached_ ||
         this.isApnManaged_(this.globalPolicy_);
   }

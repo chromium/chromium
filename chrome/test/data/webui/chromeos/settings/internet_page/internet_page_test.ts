@@ -1183,60 +1183,44 @@ suite('<settings-internet-page>', () => {
         });
   });
 
-  [true, false].forEach(isApnRevampAndAllowApnModificationPolicyEnabled => {
-    test(
-        'Managed APN UI states when ' +
-            `isApnRevampAndAllowApnModificationPolicyEnabled is ${
-                isApnRevampAndAllowApnModificationPolicyEnabled}`,
-        async () => {
-          loadTimeData.overrideValues({
-            isApnRevampAndAllowApnModificationPolicyEnabled:
-                isApnRevampAndAllowApnModificationPolicyEnabled,
-          });
-          await navigateToApnSubpage();
+  test('Managed APN UI states', async () => {
+    await navigateToApnSubpage();
 
-          mojoApi.setGlobalPolicy(undefined);
-          await flushTasks();
+    mojoApi.setGlobalPolicy(undefined);
+    await flushTasks();
 
-          // Check for APN policies managed icon.
-          const getApnManagedIcon = () =>
-              internetPage.shadowRoot!.querySelector('#apnManagedIcon');
-          const apnActionMenuButton =
-              internetPage.shadowRoot!.querySelector<HTMLButtonElement>(
-                  '#apnActionMenuButton');
-          const apnSubpage =
-              internetPage.shadowRoot!.querySelector<ApnSubpageElement>(
-                  'apn-subpage');
-          assertFalse(!!getApnManagedIcon());
-          assert(apnActionMenuButton);
-          assertFalse(apnActionMenuButton.disabled);
-          assert(apnSubpage);
-          assertFalse(apnSubpage.shouldDisallowApnModification);
+    // Check for APN policies managed icon.
+    const getApnManagedIcon = () =>
+        internetPage.shadowRoot!.querySelector('#apnManagedIcon');
+    const apnActionMenuButton =
+        internetPage.shadowRoot!.querySelector<HTMLButtonElement>(
+            '#apnActionMenuButton');
+    const apnSubpage =
+        internetPage.shadowRoot!.querySelector<ApnSubpageElement>(
+            'apn-subpage');
+    assertFalse(!!getApnManagedIcon());
+    assert(apnActionMenuButton);
+    assertFalse(apnActionMenuButton.disabled);
+    assert(apnSubpage);
+    assertFalse(apnSubpage.shouldDisallowApnModification);
 
-          let globalPolicy = {
-            allowApnModification: true,
-          } as GlobalPolicy;
-          mojoApi.setGlobalPolicy(globalPolicy);
-          await flushTasks();
-          assertFalse(!!getApnManagedIcon());
-          assertFalse(apnActionMenuButton.disabled);
-          assertFalse(apnSubpage.shouldDisallowApnModification);
+    let globalPolicy = {
+      allowApnModification: true,
+    } as GlobalPolicy;
+    mojoApi.setGlobalPolicy(globalPolicy);
+    await flushTasks();
+    assertFalse(!!getApnManagedIcon());
+    assertFalse(apnActionMenuButton.disabled);
+    assertFalse(apnSubpage.shouldDisallowApnModification);
 
-          globalPolicy = {
-            allowApnModification: false,
-          } as GlobalPolicy;
-          mojoApi.setGlobalPolicy(globalPolicy);
-          await flushTasks();
-          assertEquals(
-              isApnRevampAndAllowApnModificationPolicyEnabled,
-              !!getApnManagedIcon());
-          assertEquals(
-              isApnRevampAndAllowApnModificationPolicyEnabled,
-              apnActionMenuButton.disabled);
-          assertEquals(
-              isApnRevampAndAllowApnModificationPolicyEnabled,
-              apnSubpage.shouldDisallowApnModification);
-        });
+    globalPolicy = {
+      allowApnModification: false,
+    } as GlobalPolicy;
+    mojoApi.setGlobalPolicy(globalPolicy);
+    await flushTasks();
+    assertTrue(!!getApnManagedIcon());
+    assertTrue(apnActionMenuButton.disabled);
+    assertTrue(apnSubpage.shouldDisallowApnModification);
   });
 
   test('Navigate to Passpoint detail page', async () => {

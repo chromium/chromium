@@ -2604,20 +2604,18 @@ void CrosNetworkConfig::SetPropertiesInternal(const std::string& guid,
                                               SetPropertiesCallback callback) {
   NET_LOG(DEBUG) << "Configuring properties for " << guid << ": " << onc;
 
-  if (features::IsAllowApnModificationPolicyEnabled()) {
-    const base::DictValue* global_policy_dict =
-        network_configuration_handler_->GetGlobalConfigFromPolicy(
-            /*userhash=*/std::string());
-    bool allow_apn_modification = GetBoolean(
-        global_policy_dict, ::onc::global_network_config::kAllowAPNModification,
-        /*value_if_key_missing_from_dict=*/true);
-    const base::ListValue* existing_custom_apn_list =
-        NetworkHandler::Get()->network_metadata_store()->GetCustomApnList(guid);
-    if (allow_apn_modification && existing_custom_apn_list) {
-      chromeos::onc::FillInCellularCustomAPNListFieldsInOncObject(
-          chromeos::onc::kNetworkConfigurationSignature, onc,
-          existing_custom_apn_list);
-    }
+  const base::DictValue* global_policy_dict =
+      network_configuration_handler_->GetGlobalConfigFromPolicy(
+          /*userhash=*/std::string());
+  bool allow_apn_modification = GetBoolean(
+      global_policy_dict, ::onc::global_network_config::kAllowAPNModification,
+      /*value_if_key_missing_from_dict=*/true);
+  const base::ListValue* existing_custom_apn_list =
+      NetworkHandler::Get()->network_metadata_store()->GetCustomApnList(guid);
+  if (allow_apn_modification && existing_custom_apn_list) {
+    chromeos::onc::FillInCellularCustomAPNListFieldsInOncObject(
+        chromeos::onc::kNetworkConfigurationSignature, onc,
+        existing_custom_apn_list);
   }
 
   int callback_id = callback_id_++;
@@ -3015,11 +3013,9 @@ void CrosNetworkConfig::GetGlobalPolicy(GetGlobalPolicyCallback callback) {
   // If there is no key (in the case of non-managed devices), the default
   // mojom::GlobalPolicy() boolean value(s) specified explicitly in
   // cros_network_config.mojom is used instead.
-  if (features::IsAllowApnModificationPolicyEnabled()) {
-    result->allow_apn_modification = GetBoolean(
-        global_policy_dict, ::onc::global_network_config::kAllowAPNModification,
-        /*value_if_key_missing_from_dict=*/result->allow_apn_modification);
-  }
+  result->allow_apn_modification = GetBoolean(
+      global_policy_dict, ::onc::global_network_config::kAllowAPNModification,
+      /*value_if_key_missing_from_dict=*/result->allow_apn_modification);
   result->allow_cellular_sim_lock = GetBoolean(
       global_policy_dict, ::onc::global_network_config::kAllowCellularSimLock,
       /*value_if_key_missing_from_dict=*/result->allow_cellular_sim_lock);
@@ -3319,14 +3315,11 @@ void CrosNetworkConfig::OnGetSupportedVpnTypes(
 void CrosNetworkConfig::CreateCustomApn(const std::string& network_guid,
                                         mojom::ApnPropertiesPtr apn,
                                         CreateCustomApnCallback callback) {
-  if (features::IsAllowApnModificationPolicyEnabled()) {
-    base::UmaHistogramBoolean(
-        kCreateCustomApnPolicyHistogram,
-        network_configuration_handler_->AllowApnModification());
-  }
+  base::UmaHistogramBoolean(
+      kCreateCustomApnPolicyHistogram,
+      network_configuration_handler_->AllowApnModification());
 
-  if (features::IsAllowApnModificationPolicyEnabled() &&
-      !network_configuration_handler_->AllowApnModification()) {
+  if (!network_configuration_handler_->AllowApnModification()) {
     NET_LOG(ERROR)
         << "Cannot create custom APN if AllowAPNModification is false.";
     std::move(callback).Run(/*success=*/false);
@@ -3434,14 +3427,11 @@ void CrosNetworkConfig::CreateExclusivelyEnabledCustomApn(
 
 void CrosNetworkConfig::RemoveCustomApn(const std::string& network_guid,
                                         const std::string& apn_id) {
-  if (features::IsAllowApnModificationPolicyEnabled()) {
-    base::UmaHistogramBoolean(
-        kRemoveCustomApnPolicyHistogram,
-        network_configuration_handler_->AllowApnModification());
-  }
+  base::UmaHistogramBoolean(
+      kRemoveCustomApnPolicyHistogram,
+      network_configuration_handler_->AllowApnModification());
 
-  if (features::IsAllowApnModificationPolicyEnabled() &&
-      !network_configuration_handler_->AllowApnModification()) {
+  if (!network_configuration_handler_->AllowApnModification()) {
     NET_LOG(ERROR)
         << "Cannot remove custom APN if AllowAPNModification is false.";
     return;
@@ -3522,14 +3512,11 @@ void CrosNetworkConfig::RemoveCustomApn(const std::string& network_guid,
 
 void CrosNetworkConfig::ModifyCustomApn(const std::string& network_guid,
                                         mojom::ApnPropertiesPtr apn) {
-  if (features::IsAllowApnModificationPolicyEnabled()) {
-    base::UmaHistogramBoolean(
-        kModifyCustomApnPolicyHistogram,
-        network_configuration_handler_->AllowApnModification());
-  }
+  base::UmaHistogramBoolean(
+      kModifyCustomApnPolicyHistogram,
+      network_configuration_handler_->AllowApnModification());
 
-  if (features::IsAllowApnModificationPolicyEnabled() &&
-      !network_configuration_handler_->AllowApnModification()) {
+  if (!network_configuration_handler_->AllowApnModification()) {
     NET_LOG(ERROR)
         << "Cannot modify custom APN if AllowAPNModification is false.";
     return;

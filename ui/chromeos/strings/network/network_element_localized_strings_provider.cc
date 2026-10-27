@@ -548,9 +548,6 @@ void AddDetailsLocalizedStrings(content::WebUIDataSource* html_source) {
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
-  html_source->AddBoolean("isApnRevampAndAllowApnModificationPolicyEnabled",
-                          ash::features::IsAllowApnModificationPolicyEnabled());
-
   html_source->AddBoolean(
       "isESimEmptyActivationCodeSupportEnabled",
       ash::features::IsESimEmptyActivationCodeSupportEnabled());

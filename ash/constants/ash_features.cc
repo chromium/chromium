@@ -48,9 +48,6 @@ BASE_FEATURE(kAmbientModeDevUseProdFeature,
              "ChromeOSAmbientModeDevChannelUseProdServer",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Adds support for allowing or disabling APN modification by policy.
-BASE_FEATURE(kAllowApnModificationPolicy, base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Controls whether proxy settings from policy or extensions are applied
 // verbatim without appending implicit bypass rules for simple hostnames.
 BASE_FEATURE(kApplyManagedProxyBypassListVerbatim,
@@ -1890,10 +1887,6 @@ bool IsAmbientEQDefaultOff() {
 
 bool IsAmbientModeDevUseProdEnabled() {
   return base::FeatureList::IsEnabled(kAmbientModeDevUseProdFeature);
-}
-
-bool IsAllowApnModificationPolicyEnabled() {
-  return base::FeatureList::IsEnabled(kAllowApnModificationPolicy);
 }
 
 bool IsApplyManagedProxyBypassListVerbatimEnabled() {

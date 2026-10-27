@@ -79,16 +79,6 @@ export class ApnListItemElement extends ApnListItemBase {
         type: Boolean,
         computed: 'computeIsDisabled_(apn)',
       },
-
-      isApnRevampAndAllowApnModificationPolicyEnabled_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.valueExists(
-                     'isApnRevampAndAllowApnModificationPolicyEnabled') &&
-              loadTimeData.getBoolean(
-                  'isApnRevampAndAllowApnModificationPolicyEnabled');
-        },
-      },
     };
   }
 
@@ -102,7 +92,6 @@ export class ApnListItemElement extends ApnListItemBase {
   declare listSize: number;
   declare portalState: PortalState|null;
   declare private isDisabled_: boolean;
-  declare private isApnRevampAndAllowApnModificationPolicyEnabled_: boolean;
   private networkConfig_: CrosNetworkConfigInterface;
 
   constructor() {
@@ -170,10 +159,8 @@ export class ApnListItemElement extends ApnListItemBase {
     if (!this.apn.id) {
       return ApnDetailDialogMode.VIEW;
     }
-    if (this.isApnRevampAndAllowApnModificationPolicyEnabled_) {
-      if (this.shouldDisallowApnModification) {
-        return ApnDetailDialogMode.VIEW;
-      }
+    if (this.shouldDisallowApnModification) {
+      return ApnDetailDialogMode.VIEW;
     }
     return ApnDetailDialogMode.EDIT;
   }
