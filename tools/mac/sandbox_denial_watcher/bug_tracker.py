@@ -189,6 +189,11 @@ def _get_process_and_profile(denial: SandboxDenial) -> tuple[str, str]:
     return process_type, "none"
 
 
+def get_seatbelt_profile(denial: SandboxDenial) -> str:
+    """Returns the Seatbelt profile (`.sb`) name for a sandbox denial."""
+    return _get_process_and_profile(denial)[1]
+
+
 def _truncate_denial_logs(
     denial_logs: str,
     max_encoded_len: int = _MAX_DENIAL_LOGS_ENCODED_LENGTH,

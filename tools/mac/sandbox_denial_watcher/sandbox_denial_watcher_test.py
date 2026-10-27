@@ -38,6 +38,7 @@ from sandbox_denial_watcher import (
     DenialFilter,
     SandboxDenialWatcher,
     _get_process_command_line,
+    _matches_action,
     _validate_process_name,
     main,
     prompt_to_file_bug,
@@ -56,12 +57,17 @@ def _denial_line(
 
 
 def _denial(
-    pattern: str, process: str = "Chromium", pid: int = 100
+    pattern: str,
+    process: str = "Chromium",
+    pid: int = 100,
+    command_line: Optional[str] = None,
 ) -> SandboxDenial:
     denial = SandboxDenial.from_json(
         _denial_line(pattern, process=process, pid=pid)
     )
     assert denial is not None
+    if command_line is not None:
+        denial = replace(denial, command_line=command_line)
     return denial
 
 
@@ -132,6 +138,27 @@ class ValidationTest(unittest.TestCase):
                     _validate_process_name(name)
 
 
+class ActionMatchingTest(unittest.TestCase):
+    """Verifies action matching for exact actions and parent operations."""
+
+    def test_exact_match(self):
+        self.assertTrue(_matches_action("mach-lookup", "mach-lookup"))
+        self.assertTrue(_matches_action("file-read-data", "file-read-data"))
+        self.assertFalse(_matches_action("mach-lookup", "sysctl-read"))
+
+    def test_parent_operation_wildcard(self):
+        self.assertTrue(_matches_action("file-write-data", "file-write*"))
+        self.assertTrue(_matches_action("file-write-create", "file-write*"))
+        self.assertTrue(_matches_action("file-write", "file-write*"))
+        self.assertFalse(_matches_action("file-read-data", "file-write*"))
+        self.assertFalse(_matches_action("sysctl-read", "file-write*"))
+
+    def test_midstring_wildcards_and_question_marks_not_treated_as_globs(self):
+        self.assertFalse(_matches_action("file-read-data", "file-*-data"))
+        self.assertFalse(_matches_action("file-read-data", "file-????-data"))
+        self.assertTrue(_matches_action("file-*-data", "file-*-data"))
+
+
 class FilteringTest(WatcherTestCase):
     """Verifies whether incoming log lines are reported."""
 
@@ -175,17 +202,31 @@ class FilteringTest(WatcherTestCase):
 
     @patch.object(SandboxDenialWatcher, "_report_denial")
     def test_known_denials_target_and_subpath_matching(self, mock_report):
+        self.mock_get_cmdline.side_effect = lambda pid: (
+            "Chrome --type=utility --utility-sub-type=unzip.mojom.Unzipper "
+            "--service-sandbox-type=service"
+            if pid == 24235
+            else "Chrome --type=renderer"
+            if pid == 24236
+            else None
+        )
+        unpacker_path = (
+            "/private/var/folders/x7/24fct7055y710wkdytb4f8k000ml0d/T/"
+            "org.chromium.Chromium.chromecrx_chrome_Unpacker_BeginUnzipping"
+            ".12345/file.js"
+        )
         self.feed(
             _denial_line(
                 "mach-lookup com.apple.diagnosticd", process="Google Chrome"
-            )
-        )
-        self.feed(_denial_line("file-read-data /"))
-        self.feed(
+            ),
+            _denial_line(
+                "file-read-data /", process="Chromium Helper (Renderer)"
+            ),
             _denial_line(
                 "file-read-data "
                 "/Library/Managed Preferences/com.apple.foo.plist"
-            )
+            ),
+            _denial_line(f"file-write-times {unpacker_path}", pid=24235),
         )
         mock_report.assert_not_called()
 
@@ -198,7 +239,9 @@ class FilteringTest(WatcherTestCase):
                 "/Library/Managed PreferencesBackup/com.apple.foo.plist"
             )
         )
-        self.assertEqual(mock_report.call_count, 2)
+        # Denials with a non-matching profile command line are also reported.
+        self.feed(_denial_line(f"file-write-times {unpacker_path}", pid=24236))
+        self.assertEqual(mock_report.call_count, 3)
 
     @patch.object(SandboxDenialWatcher, "_report_denial")
     def test_home_dir_denials_are_filtered(self, mock_report):
@@ -341,18 +384,73 @@ class DenialFilterTest(WatcherTestCase):
                 _denial("mach-lookup com.apple.diagnosticd")
             )
         )
+        self.assertTrue(
+            self.denial_filter.should_ignore(
+                _denial(
+                    "file-issue-extension "
+                    "target:/ extension-class:com.apple.app-sandbox.read"
+                )
+            )
+        )
         self.assertFalse(
             self.denial_filter.should_ignore(
                 _denial("mach-lookup com.apple.other")
             )
         )
+        # Target rules scoped to specific profiles.
+        self.assertTrue(
+            self.denial_filter.should_ignore(
+                _denial(
+                    "sysctl-read kern.bootargs",
+                    process="Chromium Helper (GPU)",
+                )
+            )
+        )
+        self.assertFalse(
+            self.denial_filter.should_ignore(
+                _denial(
+                    "sysctl-read kern.bootargs",
+                    process="Chromium Helper (Renderer)",
+                )
+            )
+        )
+        audio_cmd = (
+            "Chrome --type=utility "
+            "--utility-sub-type=audio.mojom.AudioService "
+            "--service-sandbox-type=audio"
+        )
+        self.assertTrue(
+            self.denial_filter.should_ignore(
+                _denial(
+                    "mach-lookup com.apple.audioanalyticsd",
+                    command_line=audio_cmd,
+                )
+            )
+        )
+        self.assertFalse(
+            self.denial_filter.should_ignore(
+                _denial(
+                    "mach-lookup com.apple.audioanalyticsd",
+                    process="Chromium Helper (Renderer)",
+                )
+            )
+        )
 
     def test_target_match_root_path(self):
         self.assertTrue(
-            self.denial_filter.should_ignore(_denial("file-read-data /"))
+            self.denial_filter.should_ignore(
+                _denial(
+                    "file-read-data /", process="Chromium Helper (Renderer)"
+                )
+            )
         )
         self.assertFalse(
             self.denial_filter.should_ignore(_denial("file-read-data /tmp"))
+        )
+        self.assertFalse(
+            self.denial_filter.should_ignore(
+                _denial("file-read-data /", process="Chromium Helper (GPU)")
+            )
         )
 
     def test_target_match_directory_with_trailing_slash(self):
@@ -386,6 +484,47 @@ class DenialFilterTest(WatcherTestCase):
                 _denial(
                     "file-read-data "
                     "/Library/Managed PreferencesBackup/com.apple.foo.plist"
+                )
+            )
+        )
+        # Subpath rules scoped to specific profiles.
+        raw_camera = (
+            "/System/Library/CoreServices/RawCamera.bundle/Contents/Info.plist"
+        )
+        self.assertTrue(
+            self.denial_filter.should_ignore(
+                _denial(
+                    f"file-read-data {raw_camera}",
+                    process="Chromium Helper (Renderer)",
+                )
+            )
+        )
+        self.assertFalse(
+            self.denial_filter.should_ignore(
+                _denial(
+                    f"file-read-data {raw_camera}",
+                    process="Chromium Helper (GPU)",
+                )
+            )
+        )
+        odm_path = (
+            "/System/Library/ExtensionKit/ExtensionPointDefinitions.sysexpt"
+        )
+        odm_cmd = (
+            "Chrome --type=utility "
+            "--utility-sub-type=on_device_model.mojom.OnDeviceModelService "
+            "--service-sandbox-type=on_device_model_execution"
+        )
+        self.assertTrue(
+            self.denial_filter.should_ignore(
+                _denial(f"file-read-data {odm_path}", command_line=odm_cmd)
+            )
+        )
+        self.assertFalse(
+            self.denial_filter.should_ignore(
+                _denial(
+                    f"file-read-data {odm_path}",
+                    command_line="Chrome --type=renderer",
                 )
             )
         )
@@ -488,55 +627,134 @@ class DenialFilterTest(WatcherTestCase):
     def test_darwin_user_dir_target_wildcard_matching(self):
         user1_tmp = "/private/var/folders/tr/6v8rtgkn5399hj49myh4zh3m00czwq/T"
         user2_tmp = "/private/var/folders/lf/6xnpwtqx06xg8dcxbrdlpwqw005_lc/T"
+        renderer_proc = "Chromium Helper (Renderer)"
         self.assertTrue(
             self.denial_filter.should_ignore(
-                _denial(f"file-write-create {user1_tmp}/tmp.Tq7AOs")
+                _denial(
+                    f"file-write-create {user1_tmp}/tmp.Tq7AOs",
+                    process=renderer_proc,
+                )
             )
         )
         self.assertTrue(
             self.denial_filter.should_ignore(
-                _denial(f"file-write-create {user2_tmp}/tmp.12345")
+                _denial(
+                    f"file-write-create {user2_tmp}/tmp.12345",
+                    process=renderer_proc,
+                )
             )
         )
         self.assertFalse(
             self.denial_filter.should_ignore(
-                _denial(f"file-write-create {user1_tmp}/tmp.Tq7AOs/nested")
+                _denial(
+                    f"file-write-create {user1_tmp}/tmp.Tq7AOs/nested",
+                    process=renderer_proc,
+                )
             )
         )
         self.assertFalse(
             self.denial_filter.should_ignore(
-                _denial(f"file-write-create {user1_tmp}/other.Tq7AOs")
+                _denial(
+                    f"file-write-create {user1_tmp}/other.Tq7AOs",
+                    process=renderer_proc,
+                )
+            )
+        )
+        # Matches speech recognition utility process, but not GPU.
+        speech_cmd = (
+            "Google Chrome Helper --type=utility "
+            "--utility-sub-type=media.mojom.SpeechRecognitionService "
+            "--service-sandbox-type=speech_recognition"
+        )
+        self.assertTrue(
+            self.denial_filter.should_ignore(
+                _denial(
+                    f"file-write-create {user1_tmp}/tmp.1UQjEM",
+                    process="Google Chrome Helper (Aperitif)",
+                    command_line=speech_cmd,
+                )
+            )
+        )
+        self.assertFalse(
+            self.denial_filter.should_ignore(
+                _denial(
+                    f"file-write-create {user1_tmp}/tmp.Tq7AOs",
+                    process="Chromium Helper (GPU)",
+                )
             )
         )
 
     def test_darwin_user_dir_subpath_wildcard_matching(self):
         user_root = "/private/var/folders/lf/6xnpwtqx06xg8dcxbrdlpwqw005_lc"
         crx_dir = f"{user_root}/T/scoped_dirgy10KM/CRX_INSTALL"
+        unzip_dir = (
+            f"{user_root}/T/org.chromium.Chromium.chromecrx_chrome"
+            "_Unpacker_BeginUnzipping.12345"
+        )
+        utility_cmd = (
+            "Chrome --type=utility --utility-sub-type=unzip.mojom.Unzipper "
+            "--service-sandbox-type=service"
+        )
+        # CRX_INSTALL and unpacker subpaths match file-write* actions for
+        # utility processes.
+        for action in (
+            "file-write-mode",
+            "file-write-times",
+            "file-write-create",
+        ):
+            self.assertTrue(
+                self.denial_filter.should_ignore(
+                    _denial(f"{action} {crx_dir}", command_line=utility_cmd)
+                )
+            )
         self.assertTrue(
             self.denial_filter.should_ignore(
-                _denial(f"file-write-mode {crx_dir}")
+                _denial(
+                    f"file-write-times {unzip_dir}/file.js",
+                    command_line=utility_cmd,
+                )
             )
         )
-        self.assertTrue(
+        # File reads and non-matching directory patterns are not ignored.
+        self.assertFalse(
             self.denial_filter.should_ignore(
-                _denial(f"file-write-mode {crx_dir}/")
-            )
-        )
-        self.assertTrue(
-            self.denial_filter.should_ignore(
-                _denial(f"file-write-mode {crx_dir}/manifest.json")
+                _denial(
+                    f"file-read-data {crx_dir}/manifest.json",
+                    command_line=utility_cmd,
+                )
             )
         )
         self.assertFalse(
             self.denial_filter.should_ignore(
-                _denial(f"file-write-mode {crx_dir}_OTHER/manifest.json")
+                _denial(
+                    f"file-write-mode {crx_dir}_OTHER/manifest.json",
+                    command_line=utility_cmd,
+                )
             )
         )
         self.assertFalse(
             self.denial_filter.should_ignore(
                 _denial(
                     f"file-write-mode {user_root}/T/scoped_dirgy10KM/nested/"
-                    "CRX_INSTALL/manifest.json"
+                    "CRX_INSTALL/manifest.json",
+                    command_line=utility_cmd,
+                )
+            )
+        )
+        self.assertFalse(
+            self.denial_filter.should_ignore(
+                _denial(
+                    f"file-write-times {user_root}/T/other_dir/file.js",
+                    command_line=utility_cmd,
+                )
+            )
+        )
+        # Denials from non-utility processes are not ignored.
+        self.assertFalse(
+            self.denial_filter.should_ignore(
+                _denial(
+                    f"file-write-mode {crx_dir}",
+                    command_line="Chrome --type=renderer",
                 )
             )
         )

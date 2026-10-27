@@ -21,8 +21,10 @@ from bug_tracker import (
     _MAX_BUG_URL_LENGTH,
     _PRIVACY_REMINDER,
     _format_targets,
+    _get_process_and_profile,
     _redact_home_dir,
     get_bug_url,
+    get_seatbelt_profile,
 )
 from log_events import SandboxDenial
 
@@ -348,6 +350,44 @@ class GetBugUrlTest(unittest.TestCase):
                     f"Seatbelt profile: {expected_profile}",
                     params["description"],
                 )
+
+    def test_get_seatbelt_profile(self):
+        denial_renderer = _denial(
+            "com.apple.foo",
+            process="Chromium Helper (Renderer)",
+        )
+        self.assertEqual(get_seatbelt_profile(denial_renderer), "renderer.sb")
+        self.assertEqual(
+            _get_process_and_profile(denial_renderer),
+            ("renderer", "renderer.sb"),
+        )
+
+        denial_utility = _denial(
+            "com.apple.foo",
+            process="Google Chrome Helper (Aperitif)",
+            command_line=(
+                "Google Chrome Helper --type=utility "
+                "--utility-sub-type=unzip.mojom.Unzipper "
+                "--service-sandbox-type=service"
+            ),
+        )
+        self.assertEqual(get_seatbelt_profile(denial_utility), "utility.sb")
+        self.assertEqual(
+            _get_process_and_profile(denial_utility),
+            ("utility (unzip.mojom.Unzipper)", "utility.sb"),
+        )
+
+        denial_gpu = _denial(
+            "com.apple.foo",
+            process="MTLCompilerService",
+        )
+        self.assertEqual(get_seatbelt_profile(denial_gpu), "gpu.sb")
+
+        denial_unknown = _denial(
+            "com.apple.foo",
+            process="Google Chrome Helper (Aperitif)",
+        )
+        self.assertEqual(get_seatbelt_profile(denial_unknown), "unknown")
 
     def test_long_url_truncates_message_block_within_max_length(self):
         denials = [

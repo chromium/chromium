@@ -92,6 +92,17 @@ If a newly observed denial is determined to be expected:
      path segment (e.g., `tmp.*` or `scoped_dir*`), as well as placeholder
      constants such as `_DARWIN_USER_DIR`, `_CHROME_APP_SUPPORT_DIR`, and
      `_CHROME_BUNDLE_DIR`.
+   - Action keys can also use Seatbelt parent operations that end in `*`
+     (for example, `file-write*` covers all `file-write-*` operations, including
+     `file-write-create`, `file-write-times`, etc.). The watcher evaluates
+     denial actions against these Seatbelt parent operation rules.
+   - To restrict a rule to a specific Seatbelt profile, use a
+     `(pattern, profile)` tuple instead of a plain pattern string:
+     ```python
+     "file-write*": frozenset((
+         (f"{_DARWIN_USER_DIR}/T/scoped_dir*/CRX_INSTALL/", "utility.sb"),
+     )),
+     ```
 3. Keep entries sorted alphabetically within their respective category section.
    Entries built from placeholder constants or `_HOME_DIR` are grouped
    separately at the end of their section.
