@@ -20,6 +20,7 @@
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
+#import "ios/chrome/test/earl_grey/chrome_xcui_actions.h"
 #import "ios/testing/earl_grey/app_launch_manager.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ui/base/l10n/l10n_util.h"
@@ -30,6 +31,7 @@ using chrome_test_util::MatchInWindowWithNumber;
 using chrome_test_util::NavigationBarCancelButton;
 using chrome_test_util::SettingsMenuBackButton;
 using chrome_test_util::SettingsSignInRowMatcher;
+using chrome_test_util::TapAtOffsetOf;
 
 namespace {
 
@@ -72,8 +74,7 @@ NSString* const kPassphrase = @"hello";
 
 // Tests opening the sync passphrase view, then a new window and check that
 // enter passphrase message appears.
-// TODO(crbug.com/330758164): Test is failing.
-- (void)DISABLED_testShowSyncPassphraseInNewWindowAndDismiss {
+- (void)testShowSyncPassphraseInNewWindowAndDismiss {
   if (![ChromeEarlGrey areMultipleWindowsSupported]) {
     EARL_GREY_TEST_DISABLED(@"Multiple windows can't be opened.");
   }
@@ -87,15 +88,26 @@ NSString* const kPassphrase = @"hello";
   [ChromeEarlGrey waitUntilReadyWindowWithNumber:1];
   [ChromeEarlGrey waitForForegroundWindowCount:2];
 
-  [[EarlGrey selectElementWithMatcher:
-                 MatchInWindowWithNumber(
-                     1, ButtonWithAccessibilityLabelId(
-                            IDS_IOS_IDENTITY_ERROR_INFOBAR_ENTER_BUTTON_LABEL))]
-      performAction:grey_tap()];
-  [[EarlGrey selectElementWithMatcher:MatchInWindowWithNumber(
-                                          1, NavigationBarCancelButton())]
-      performAction:grey_tap()];
+  id<GREYMatcher> enterButton = MatchInWindowWithNumber(
+      1, ButtonWithAccessibilityLabelId(
+             IDS_IOS_IDENTITY_ERROR_INFOBAR_ENTER_BUTTON_LABEL));
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:enterButton];
+  // EarlGrey's `grey_tap()` fails on extra windows due to a false negative
+  // visibility check across `UIWindowScene`s, so use `TapAtOffsetOf` instead.
+  GREYAssertTrue(
+      TapAtOffsetOf(l10n_util::GetNSString(
+                        IDS_IOS_IDENTITY_ERROR_INFOBAR_ENTER_BUTTON_LABEL),
+                    1, CGVectorMake(0.5, 0.5)),
+      @"Failed to tap infobar enter button in window 1.");
+
+  id<GREYMatcher> cancelButton =
+      MatchInWindowWithNumber(1, NavigationBarCancelButton());
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:cancelButton];
+  GREYAssertTrue(TapAtOffsetOf(l10n_util::GetNSString(IDS_CANCEL), 1,
+                               CGVectorMake(0.5, 0.5)),
+                 @"Failed to tap navigation bar cancel button in window 1.");
   // Wait until the settings is fully removed.
+  [ChromeEarlGrey waitForUIElementToDisappearWithMatcher:cancelButton];
   [ChromeEarlGreyUI waitForAppToIdle];
 
   [ChromeEarlGrey closeWindowWithNumber:1];
