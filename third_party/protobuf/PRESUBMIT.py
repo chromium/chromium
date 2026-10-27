@@ -30,6 +30,8 @@ This presubmit module enforces fast, offline invariants on every change touching
   - CheckPresubmitUnitTests: runs unit tests in //third_party/protobuf.
 """
 
+import re
+
 PRESUBMIT_VERSION = '2.0.0'
 
 _README_FILENAME = 'README.chromium'
@@ -155,11 +157,10 @@ def _ListTopLevelFilesInPatchesDirectory(input_api):
     }
 
 
-def _ParseDocumentedPatchEntries(input_api, readme_lines):
+def _ParseDocumentedPatchEntries(readme_lines):
     """Extracts '- NNNN-name.patch' entries from README.chromium.
 
     Args:
-      input_api: The depot_tools presubmit InputApi instance.
       readme_lines: Sequence of lines from README.chromium.
 
     Returns:
@@ -178,7 +179,7 @@ def _ParseDocumentedPatchEntries(input_api, readme_lines):
 
     # Patch entries sit at column 0 ('- 0004-fix-shared-library-exports.patch'),
     # whereas prose inside a patch description is indented by at least 2 spaces.
-    top_level_bullet_pattern = input_api.re.compile(r'^-\s+(\S+)\s*$')
+    top_level_bullet_pattern = re.compile(r'^-\s+(\S+)\s*$')
     documented_entries = []
     for line in readme_lines[section_header_index + 1:]:
         match = top_level_bullet_pattern.match(line)
@@ -188,18 +189,17 @@ def _ParseDocumentedPatchEntries(input_api, readme_lines):
     return documented_entries
 
 
-def _ParseReferencedCompanionMarkdownFiles(input_api, readme_lines):
+def _ParseReferencedCompanionMarkdownFiles(readme_lines):
     """Extracts 'NNNN-name.md' filenames referenced as 'patches/NNNN-name.md'.
 
     Args:
-      input_api: The depot_tools presubmit InputApi instance.
       readme_lines: Sequence of lines from README.chromium.
 
     Returns:
       A set of markdown filenames (without the 'patches/' prefix) referenced in
       README.chromium, excluding the instructional 'NNNN-name.md' placeholder.
     """
-    companion_markdown_pattern = input_api.re.compile(
+    companion_markdown_pattern = re.compile(
         r'\bpatches/([A-Za-z0-9_.-]+\.md)\b')
     referenced_markdown_files = set()
     for line in readme_lines:
@@ -241,6 +241,41 @@ def _FormatPatchInventorySyncItems(
     return error_items
 
 
+# Named Find*, not Check*: PRESUBMIT_VERSION 2.0.0 runs Check* functions.
+def FindPatchInventorySyncErrors(readme_lines, top_level_files):
+    """Returns error strings when patches/*.patch and README.chromium disagree."""
+    documented_patch_entries = _ParseDocumentedPatchEntries(readme_lines)
+    if documented_patch_entries is None:
+        return [
+            f'{_README_FILENAME} is missing the '
+            f'"{_PATCHES_SECTION_HEADER}" section.'
+        ]
+    patch_files_on_disk = {f for f in top_level_files if f.endswith('.patch')}
+    documented_patch_set = set(documented_patch_entries)
+    return _FormatPatchInventorySyncItems(
+        sorted(patch_files_on_disk - documented_patch_set),
+        sorted(documented_patch_set - patch_files_on_disk),
+        _FindDuplicateEntries(documented_patch_entries),
+    )
+
+
+def FindCompanionMarkdownErrors(readme_lines, top_level_files):
+    """Returns error strings for missing or orphaned companion patches/*.md."""
+    referenced = _ParseReferencedCompanionMarkdownFiles(readme_lines)
+    patches = {f for f in top_level_files if f.endswith('.patch')}
+    markdowns = {f for f in top_level_files if f.endswith('.md')}
+    errors = [
+        f'patches/{md}: referenced in {_README_FILENAME} but does not exist'
+        for md in sorted(referenced - markdowns)
+    ]
+    errors += [
+        f'patches/{md}: has no matching patches/{md.removesuffix(".md")}.patch'
+        ' file' for md in sorted(markdowns)
+        if f'{md.removesuffix(".md")}.patch' not in patches
+    ]
+    return errors
+
+
 def CheckPatchInventoryInSync(input_api, output_api):
     """Verifies top-level patches/*.patch files match README.chromium 1-to-1.
 
@@ -267,29 +302,15 @@ def CheckPatchInventoryInSync(input_api, output_api):
                 f'{_README_FILENAME} is missing from //third_party/protobuf.')
         ]
 
-    documented_patch_entries = _ParseDocumentedPatchEntries(
-        input_api, readme_lines)
-    if documented_patch_entries is None:
+    if _ParseDocumentedPatchEntries(readme_lines) is None:
         return [
             output_api.PresubmitError(
                 f'{_README_FILENAME} is missing the '
                 f'"{_PATCHES_SECTION_HEADER}" section.')
         ]
 
-    top_level_files = _ListTopLevelFilesInPatchesDirectory(input_api)
-    patch_files_on_disk = {
-        filename for filename in top_level_files if filename.endswith('.patch')
-    }
-    documented_patch_set = set(documented_patch_entries)
-
-    undocumented_patch_files = sorted(
-        patch_files_on_disk - documented_patch_set)
-    missing_patch_files = sorted(
-        documented_patch_set - patch_files_on_disk)
-    duplicate_patch_entries = _FindDuplicateEntries(documented_patch_entries)
-
-    error_items = _FormatPatchInventorySyncItems(
-        undocumented_patch_files, missing_patch_files, duplicate_patch_entries)
+    error_items = FindPatchInventorySyncErrors(
+        readme_lines, _ListTopLevelFilesInPatchesDirectory(input_api))
     if not error_items:
         return []
 
@@ -326,34 +347,8 @@ def CheckCompanionMarkdownFiles(input_api, output_api):
     if readme_lines is None:
         return []
 
-    referenced_markdown_files = _ParseReferencedCompanionMarkdownFiles(
-        input_api, readme_lines)
-    top_level_files = _ListTopLevelFilesInPatchesDirectory(input_api)
-    patch_files_on_disk = {
-        filename for filename in top_level_files if filename.endswith('.patch')
-    }
-    markdown_files_on_disk = {
-        filename for filename in top_level_files if filename.endswith('.md')
-    }
-
-    missing_markdown_files = sorted(
-        referenced_markdown_files - markdown_files_on_disk)
-    orphan_markdown_files = sorted(
-        markdown_filename for markdown_filename in markdown_files_on_disk
-        if (markdown_filename.removesuffix('.md') + '.patch')
-        not in patch_files_on_disk)
-
-    error_items = []
-    for markdown_filename in missing_markdown_files:
-        error_items.append(
-            f'patches/{markdown_filename}: referenced in {_README_FILENAME} '
-            'but does not exist')
-    for markdown_filename in orphan_markdown_files:
-        matching_patch_name = markdown_filename.removesuffix('.md') + '.patch'
-        error_items.append(
-            f'patches/{markdown_filename}: has no matching '
-            f'patches/{matching_patch_name} file')
-
+    error_items = FindCompanionMarkdownErrors(
+        readme_lines, _ListTopLevelFilesInPatchesDirectory(input_api))
     if not error_items:
         return []
 

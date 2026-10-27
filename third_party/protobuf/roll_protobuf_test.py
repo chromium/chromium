@@ -3478,6 +3478,350 @@ class RollProtobufStartTest(unittest.TestCase):
                 self.repository_root,
                 ['status', '--porcelain', '--', 'third_party/protobuf']))
 
+    def testFindPatchInventoryErrorsSharesPresubmitChecks(self):
+        patch_names = sorted(name for name in os.listdir(
+            os.path.join(self.fixture.protobuf_directory, 'patches'))
+                             if name.endswith('.patch'))
+        readme_path = pathlib.Path(self.fixture.protobuf_directory,
+                                   'README.chromium')
+        base_readme = readme_path.read_text(encoding='utf-8')
+        bullets = '\n'.join(f'- {name}' for name in patch_names)
+        readme_path.write_text(
+            f'{base_readme}\nDescription of the patches:\n{bullets}\n',
+            encoding='utf-8',
+            newline='\n')
+        self.assertEqual((),
+                         roll_protobuf._FindPatchInventoryErrors(
+                             self.fixture.protobuf_directory))
+
+        _WriteFilesToDirectory(
+            self.fixture.protobuf_directory, {
+                'patches/0099-extra.patch': 'diff\n',
+                'patches/0098-orphan.md': 'note\n',
+            })
+        errors = roll_protobuf._FindPatchInventoryErrors(
+            self.fixture.protobuf_directory)
+        self.assertTrue(any('0099-extra.patch' in e for e in errors))
+        self.assertTrue(any('0098-orphan.md' in e for e in errors))
+
+    def testFindLocalHygieneErrorsDetectsRejectsMarkersAndUnmergedEntries(
+            self):
+        checkout = roll_protobuf._ResolveCheckoutPaths(
+            self.fixture.protobuf_directory)
+        self.assertEqual((), roll_protobuf._FindLocalHygieneErrors(checkout))
+
+        marker = '<' * 7 + ' HEAD\n'
+        _WriteFilesToDirectory(self.fixture.protobuf_directory, {
+            'src/leftover.rej': 'reject\n',
+            _PLAN_CLEAN_PATH: marker + 'body\n',
+        })
+        blob_sha = _RunGitCommand(
+            self.repository_root,
+            ['rev-parse', 'HEAD:third_party/protobuf/README.chromium'])
+        roll_protobuf._RunScratchGit(
+            self.repository_root,
+            'update-index',
+            '--index-info',
+            input_bytes=(
+                f'100644 {blob_sha} 1\tthird_party/protobuf/src/bin.dat\n'.
+                encode('utf-8')))
+
+        self.assertEqual(
+            (
+                'src/leftover.rej: leftover patch .rej/.orig file',
+                f'{_PLAN_CLEAN_PATH}: unresolved conflict markers',
+                'src/bin.dat: unresolved unmerged index entry',
+            ),
+            roll_protobuf._FindLocalHygieneErrors(checkout),
+        )
+
+    def testFindStaleBootstrapTriggersDetectsRollCompilerEditsAndHashDrift(
+            self):
+        _WriteFilesToDirectory(self.fixture.upstream_directory,
+                               {'.gitignore': '*.Swp\n*_pb2.py\n'})
+        _RunGitCommand(self.fixture.upstream_directory,
+                       ['add', '-f', '--', '.gitignore'])
+        _RunGitCommand(self.fixture.upstream_directory,
+                       ['commit', '--quiet', '--amend', '--no-edit'])
+        _RunGitCommand(self.fixture.upstream_directory,
+                       ['tag', '-f', 'v37.0', 'HEAD'])
+        for patch_name in (_PLAN_CONFLICT_PATCH, _PLAN_MISSING_FILE_PATCH):
+            os.remove(
+                os.path.join(self.fixture.protobuf_directory, 'patches',
+                             patch_name))
+        _WriteFilesToDirectory(self.fixture.protobuf_directory,
+                               {'.gitignore': '*.Swp\n*_pb2.py\n'})
+        _WriteFakeBootstrapGeneratorScript(self.fixture.protobuf_directory)
+        _RunGitCommand(self.repository_root,
+                       ['add', '-f', '-A', '--', 'third_party/protobuf'])
+        _RunGitCommand(self.repository_root,
+                       ['commit', '--quiet', '-m', 'Add fake generator'])
+        out_directory = os.path.join(self.temporary_directory, 'out_release')
+        roll_protobuf.GenerateBootstrapFiles(out_directory,
+                                             self.fixture.protobuf_directory)
+        _RunGitCommand(self.repository_root,
+                       ['update-ref', 'refs/remotes/origin/main', 'HEAD'])
+        checkout = roll_protobuf._ResolveCheckoutPaths(
+            self.fixture.protobuf_directory)
+        self.assertEqual((),
+                         roll_protobuf._FindStaleBootstrapTriggers(checkout))
+
+        # Manual C++ compiler patch that also updates README.chromium's patch
+        # inventory and regenerates C++ descriptor.pb.h is recognized as clean.
+        compiler_path = 'src/google/protobuf/compiler/cpp/enum.cc'
+        _WriteFilesToDirectory(
+            self.fixture.protobuf_directory, {
+                compiler_path:
+                '// pre-roll fix\n',
+                'src/google/protobuf/descriptor.pb.h':
+                '// manual regen\n',
+                'README.chromium':
+                pathlib.Path(self.fixture.protobuf_directory,
+                             'README.chromium').read_text(encoding='utf-8') +
+                '\n- 0099-fix.patch\n',
+            })
+        _RunGitCommand(self.repository_root,
+                       ['add', '-A', '--', 'third_party/protobuf'])
+        _RunGitCommand(
+            self.repository_root,
+            ['commit', '--quiet', '-m', 'Manual C++ compiler patch'])
+        self.assertEqual((),
+                         roll_protobuf._FindStaleBootstrapTriggers(checkout))
+        _RunGitCommand(self.repository_root,
+                       ['reset', '--quiet', '--hard', 'origin/main'])
+
+        roll_protobuf.StartRoll(
+            to_revision='v37.0',
+            protobuf_directory=self.fixture.protobuf_directory,
+            upstream_repository_path=self.fixture.upstream_directory,
+        )
+        self.assertEqual(('upstream revision changed', ),
+                         roll_protobuf._FindStaleBootstrapTriggers(checkout))
+
+        # Running gen_extra_chromium_files.py manually without `git add -f` on
+        # untracked gitignored *_pb2.py files still flags the missing outputs.
+        _RunGitCommand(self.repository_root, [
+            'rm',
+            '--quiet',
+            '--',
+            'third_party/protobuf/python/google/protobuf/descriptor_pb2.py',
+            'third_party/protobuf/python/google/protobuf/compiler/'
+            'plugin_pb2.py',
+        ])
+        out_manual = os.path.join(self.temporary_directory, 'out_manual')
+        subprocess.run([
+            sys.executable,
+            os.path.join(self.fixture.protobuf_directory,
+                         'gen_extra_chromium_files.py'), '-C', out_manual
+        ],
+                       check=True)
+        _RunGitCommand(self.repository_root,
+                       ['add', '--', 'third_party/protobuf'])
+        _RunGitCommand(self.repository_root,
+                       ['commit', '--quiet', '-m', 'Manual incomplete regen'])
+        self.assertEqual((
+            'missing bootstrap output: '
+            'python/google/protobuf/compiler/plugin_pb2.py',
+            'missing bootstrap output: '
+            'python/google/protobuf/descriptor_pb2.py',
+        ), roll_protobuf._FindStaleBootstrapTriggers(checkout))
+        _RunGitCommand(self.repository_root,
+                       ['reset', '--quiet', '--hard', 'HEAD~1'])
+        roll_protobuf._CleanUntrackedAndBackupFiles(
+            self.fixture.protobuf_directory)
+
+        # Squashing before `generate` (without Bootstrap-Inputs-Hash or
+        # python/ bootstrap outputs) still flags the revision change.
+        pre_gen_tip = _RunGitCommand(self.repository_root,
+                                     ['rev-parse', 'HEAD'])
+        _RunGitCommand(self.repository_root,
+                       ['reset', '--quiet', '--soft', 'origin/main'])
+        _RunGitCommand(
+            self.repository_root,
+            ['commit', '--quiet', '-m', '[protobuf] Roll protobuf to v37.0'])
+        self.assertEqual(('upstream revision changed', ),
+                         roll_protobuf._FindStaleBootstrapTriggers(checkout))
+        _RunGitCommand(self.repository_root,
+                       ['reset', '--quiet', '--hard', pre_gen_tip])
+
+        out_roll = os.path.join(self.temporary_directory, 'out_roll')
+        gen = roll_protobuf.GenerateBootstrapFiles(
+            out_roll, self.fixture.protobuf_directory)
+        self.assertEqual((),
+                         roll_protobuf._FindStaleBootstrapTriggers(checkout))
+
+        _WriteFilesToDirectory(self.fixture.protobuf_directory,
+                               {'BUILD.gn': '# non-compiler edit\n'})
+        _RunGitCommand(self.repository_root,
+                       ['add', '--', 'third_party/protobuf'])
+        _RunGitCommand(self.repository_root,
+                       ['commit', '--quiet', '-m', 'Update BUILD.gn'])
+        self.assertEqual((),
+                         roll_protobuf._FindStaleBootstrapTriggers(checkout))
+
+        # Squashing the roll after post-`generate` commits stays clean both
+        # with an interior Bootstrap-Inputs-Hash trailer and with a clean
+        # human CL description (`git cl patch`) that omits tool trailers.
+        roll_tip = _RunGitCommand(self.repository_root, ['rev-parse', 'HEAD'])
+        _RunGitCommand(self.repository_root,
+                       ['reset', '--quiet', '--soft', 'origin/main'])
+        _RunGitCommand(self.repository_root, [
+            'commit', '--quiet', '-m', 'Roll protobuf to v37.0\n\n'
+            '    Regenerate bootstrap files\n\n'
+            f'    Bootstrap-Inputs-Hash: {gen.inputs_digest}\n\n'
+            'Update BUILD.gn\n\n'
+            'Bug: 568074591\n'
+            'NOAUTOREVERT=true'
+        ])
+        self.assertEqual((),
+                         roll_protobuf._FindStaleBootstrapTriggers(checkout))
+        _RunGitCommand(self.repository_root, [
+            'commit', '--quiet', '--amend', '-m',
+            '[protobuf] Roll protobuf to v37.0\n\nBug: 568074591'
+        ])
+        self.assertEqual((),
+                         roll_protobuf._FindStaleBootstrapTriggers(checkout))
+        _WriteFilesToDirectory(self.fixture.protobuf_directory,
+                               {compiler_path: '// edited after squash\n'})
+        self.assertEqual((compiler_path, ),
+                         roll_protobuf._FindStaleBootstrapTriggers(checkout))
+
+        # Manual README.chromium steps 0-5: unpacking upstream C++ bootstrap
+        # files in steps 1-3 (including descriptor.pb.h) must NOT satisfy step
+        # 4 if Revision: is bumped before gen_extra_chromium_files.py runs;
+        # once step 4 commits python/ bootstrap outputs, step 5 updates
+        # Revision: once (uncommitted and committed) without re-triggering.
+        _RunGitCommand(self.repository_root,
+                       ['config', 'log.showSignature', 'true'])
+        _RunGitCommand(self.repository_root,
+                       ['reset', '--quiet', '--hard', pre_gen_tip])
+        roll_protobuf.AbortRoll(self.fixture.protobuf_directory)
+        _RunGitCommand(
+            self.repository_root,
+            ['checkout', 'origin/main', '--', 'third_party/protobuf'])
+        base_readme = pathlib.Path(
+            self.fixture.protobuf_directory,
+            'README.chromium').read_text(encoding='utf-8')
+        step5_readme = re.sub(r'^Revision:\s*\S+',
+                              f'Revision: {self.fixture.new_commit}',
+                              base_readme,
+                              flags=re.MULTILINE)
+        _WriteFilesToDirectory(
+            self.fixture.protobuf_directory, {
+                _PLAN_ADDED_PATH: '// manual import\n',
+                'src/google/protobuf/descriptor.pb.h': '// upstream archive\n',
+            })
+        _RunGitCommand(self.repository_root,
+                       ['add', '-f', '--', 'third_party/protobuf'])
+        _RunGitCommand(self.repository_root,
+                       ['commit', '--quiet', '-m', 'Manual steps 1-3'])
+        _WriteFilesToDirectory(self.fixture.protobuf_directory,
+                               {'README.chromium': step5_readme})
+        self.assertIn('upstream revision changed',
+                      roll_protobuf._FindStaleBootstrapTriggers(checkout))
+        _RunGitCommand(
+            self.repository_root,
+            ['checkout', '--', 'third_party/protobuf/README.chromium'])
+        subprocess.run([
+            sys.executable,
+            os.path.join(self.fixture.protobuf_directory,
+                         'gen_extra_chromium_files.py'), '-C', out_manual
+        ],
+                       check=True)
+        _RunGitCommand(self.repository_root,
+                       ['add', '-f', '-A', '--', 'third_party/protobuf'])
+        _RunGitCommand(self.repository_root,
+                       ['commit', '--quiet', '-m', 'Manual step 4 regen'])
+        _WriteFilesToDirectory(self.fixture.protobuf_directory,
+                               {'README.chromium': step5_readme})
+        self.assertEqual((),
+                         roll_protobuf._FindStaleBootstrapTriggers(checkout))
+        _RunGitCommand(self.repository_root,
+                       ['add', '--', 'third_party/protobuf/README.chromium'])
+        _RunGitCommand(self.repository_root,
+                       ['commit', '--quiet', '-m', 'Manual step 5 README'])
+        self.assertEqual((),
+                         roll_protobuf._FindStaleBootstrapTriggers(checkout))
+        second_bump = re.sub(r'^Revision:\s*\S+',
+                             'Revision: ' + ('a' * 40),
+                             step5_readme,
+                             flags=re.MULTILINE)
+        _WriteFilesToDirectory(self.fixture.protobuf_directory,
+                               {'README.chromium': second_bump})
+        self.assertIn('upstream revision changed',
+                      roll_protobuf._FindStaleBootstrapTriggers(checkout))
+        _RunGitCommand(
+            self.repository_root,
+            ['checkout', '--', 'third_party/protobuf/README.chromium'])
+        _WriteFilesToDirectory(self.fixture.protobuf_directory,
+                               {compiler_path: '// edited after step 5\n'})
+        self.assertEqual((compiler_path, ),
+                         roll_protobuf._FindStaleBootstrapTriggers(checkout))
+        _RunGitCommand(self.repository_root,
+                       ['reset', '--quiet', '--hard', roll_tip])
+
+        _WriteFilesToDirectory(self.fixture.protobuf_directory,
+                               {compiler_path: '// edited\n'})
+        self.assertEqual((compiler_path, ),
+                         roll_protobuf._FindStaleBootstrapTriggers(checkout))
+        _RunGitCommand(self.repository_root,
+                       ['add', '--', 'third_party/protobuf'])
+        _RunGitCommand(self.repository_root,
+                       ['commit', '--quiet', '-m', 'Edit compiler'])
+        self.assertEqual((compiler_path, ),
+                         roll_protobuf._FindStaleBootstrapTriggers(checkout))
+
+        roll_protobuf.GenerateBootstrapFiles(out_directory,
+                                             self.fixture.protobuf_directory)
+        self.assertEqual((),
+                         roll_protobuf._FindStaleBootstrapTriggers(checkout))
+        clean_gen_tip = _RunGitCommand(self.repository_root,
+                                       ['rev-parse', 'HEAD'])
+
+        # Renaming a generator input outside IsBootstrapGeneratorInput still
+        # reports the old path via `--no-renames` (staged, committed, and when
+        # reference_commit is None).
+        _RunGitCommand(self.repository_root, [
+            'mv', f'third_party/protobuf/{compiler_path}',
+            'third_party/protobuf/src/google/protobuf/moved_enum.cc'
+        ])
+        self.assertEqual((compiler_path, ),
+                         roll_protobuf._FindStaleBootstrapTriggers(checkout))
+        _RunGitCommand(self.repository_root,
+                       ['commit', '--quiet', '-m', 'Move compiler file'])
+        self.assertEqual((compiler_path, ),
+                         roll_protobuf._FindStaleBootstrapTriggers(checkout))
+        _RunGitCommand(self.repository_root,
+                       ['reset', '--quiet', '--hard', pre_gen_tip])
+        _WriteFilesToDirectory(self.fixture.protobuf_directory,
+                               {compiler_path: '// pre-gen compiler\n'})
+        _RunGitCommand(self.repository_root,
+                       ['add', '--', 'third_party/protobuf'])
+        _RunGitCommand(self.repository_root,
+                       ['commit', '--quiet', '-m', 'Add compiler file'])
+        _RunGitCommand(self.repository_root, [
+            'mv', f'third_party/protobuf/{compiler_path}',
+            'third_party/protobuf/src/google/protobuf/moved_enum.cc'
+        ])
+        with unittest.mock.patch.object(roll_protobuf,
+                                        '_ResolveRollBaseCommit',
+                                        return_value=None):
+            self.assertIn(compiler_path,
+                          roll_protobuf._FindStaleBootstrapTriggers(checkout))
+        _RunGitCommand(self.repository_root,
+                       ['reset', '--quiet', '--hard', clean_gen_tip])
+
+        # Simulate an autosquash rebase that folded an input change before the
+        # regeneration commit without re-running `generate`.
+        stale_hash = '0' * 64
+        _RunGitCommand(self.repository_root, [
+            'commit', '--quiet', '--amend', '--allow-empty', '-m',
+            f'Regenerate bootstrap files\n\nBootstrap-Inputs-Hash: {stale_hash}'
+        ])
+        self.assertEqual(
+            ('generator inputs changed since last `roll_protobuf.py generate`',
+             ), roll_protobuf._FindStaleBootstrapTriggers(checkout))
+
 
 if __name__ == '__main__':
     unittest.main()

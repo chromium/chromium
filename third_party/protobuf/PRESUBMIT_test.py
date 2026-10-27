@@ -462,6 +462,24 @@ class ProtobufPresubmitTest(unittest.TestCase):
             msg='Expected files outside //third_party/protobuf to be ignored.',
         )
 
+    def testSharedPatchInventoryAndMarkdownHelpersWorkWithoutInputApi(self):
+        self.assertEqual([],
+                         PRESUBMIT.FindPatchInventorySyncErrors(
+                             _BASELINE_README_LINES,
+                             _BASELINE_TOP_LEVEL_PATCH_FILES))
+        self.assertEqual([
+            'README.chromium is missing the "Description of the patches:" '
+            'section.'
+        ], PRESUBMIT.FindPatchInventorySyncErrors(['Version: 36.0'], ()))
+        self.assertEqual(
+            [
+                'patches/0099-orphan.md: has no matching '
+                'patches/0099-orphan.patch file'
+            ],
+            PRESUBMIT.FindCompanionMarkdownErrors(
+                _BASELINE_README_LINES,
+                (*_BASELINE_TOP_LEVEL_PATCH_FILES, '0099-orphan.md')))
+
 
 if __name__ == '__main__':
     unittest.main()
