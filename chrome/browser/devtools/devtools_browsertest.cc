@@ -3882,7 +3882,15 @@ IN_PROC_BROWSER_TEST_F(DevToolsWorkerOpenInNewTabAttributionTest, CrossSite) {
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-IN_PROC_BROWSER_TEST_F(DevToolsTest, TestOpenSearchResultsInNewTab) {
+// TODO(crbug.com/578174226): Consistently failing on Android with DCHECK
+// failed: !web_contents_ in WebContentsAddedObserver::WebContentsCreated.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_TestOpenSearchResultsInNewTab \
+  DISABLED_TestOpenSearchResultsInNewTab
+#else
+#define MAYBE_TestOpenSearchResultsInNewTab TestOpenSearchResultsInNewTab
+#endif
+IN_PROC_BROWSER_TEST_F(DevToolsTest, MAYBE_TestOpenSearchResultsInNewTab) {
   OpenDevToolsWindow(kDebuggerTestPage, false);
   DevToolsUIBindings::Delegate* bindings_delegate_ =
       static_cast<DevToolsUIBindings::Delegate*>(window_);
