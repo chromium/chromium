@@ -1212,7 +1212,7 @@ ApiRequestType variants; see go/geic-metrics-split. -->
 </histogram>
 
 <histogram name="Glic.Instance.UninterruptedVisibleDuration" units="ms"
-    expires_after="2026-12-06">
+    expires_after="2027-12-06">
   <owner>birnie@google.com</owner>
   <owner>perrier@google.com</owner>
   <summary>
