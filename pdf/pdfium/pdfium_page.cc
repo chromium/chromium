@@ -54,6 +54,7 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/size_f.h"
+#include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 #include "ui/gfx/range/range.h"
@@ -146,6 +147,44 @@ gfx::PointF FloatPagePointToPixelPoint(FPDF_PAGE page,
   }
   return gfx::PointF(ConvertUnitFloat(x, kPointsPerInch, kPixelsPerInch),
                      ConvertUnitFloat(y, kPointsPerInch, kPixelsPerInch));
+}
+
+// Returns the transform from page coordinates to the pixel coordinates of
+// FloatPagePointToPixelPoint(), without rounding to whole points. Lets callers
+// convert many points without calling into PDFium for each one.
+std::optional<gfx::Transform> GetPageToPixelTransform(FPDF_PAGE page) {
+  const int width = FPDF_GetPageWidthF(page);
+  const int height = FPDF_GetPageHeightF(page);
+  if (width <= 0 || height <= 0) {
+    return std::nullopt;
+  }
+
+  // FPDF_PageToDevice() rounds to whole points, so map the device corners back
+  // to the page instead, and invert.
+  double origin_x;
+  double origin_y;
+  double right_x;
+  double right_y;
+  double bottom_x;
+  double bottom_y;
+  if (!FPDF_DeviceToPage(page, 0, 0, width, height, /*rotate=*/0, 0, 0,
+                         &origin_x, &origin_y) ||
+      !FPDF_DeviceToPage(page, 0, 0, width, height, /*rotate=*/0, width, 0,
+                         &right_x, &right_y) ||
+      !FPDF_DeviceToPage(page, 0, 0, width, height, /*rotate=*/0, 0, height,
+                         &bottom_x, &bottom_y)) {
+    return std::nullopt;
+  }
+  const gfx::Transform device_to_page = gfx::Transform::Affine(
+      (right_x - origin_x) / width, (right_y - origin_y) / width,
+      (bottom_x - origin_x) / height, (bottom_y - origin_y) / height, origin_x,
+      origin_y);
+  gfx::Transform page_to_pixel;
+  if (!device_to_page.GetInverse(&page_to_pixel)) {
+    return std::nullopt;
+  }
+  page_to_pixel.PostScale(kPointsToPixels);
+  return page_to_pixel;
 }
 
 gfx::RectF GetFloatCharRectInPixels(FPDF_PAGE page,
@@ -530,10 +569,10 @@ void CheckFormObjectContentsForGraphics(
   }
 }
 
-// Appends the straight segments of `path` to `line_segments`, in the same pixel
-// coordinates as text runs. Skips curves and zero-length segments.
+// Appends the straight segments of `path` to `line_segments`, converted to
+// pixels by `page_to_pixel`. Skips curves and zero-length segments.
 void AppendLineSegmentsFromPath(
-    FPDF_PAGE page,
+    const gfx::Transform& page_to_pixel,
     FPDF_PAGEOBJECT path,
     int segment_count,
     std::vector<AccessibilityLineSegment>& line_segments) {
@@ -563,7 +602,7 @@ void AppendLineSegmentsFromPath(
     // Transform by the object's matrix into page space, then into pixels.
     const gfx::PointF page_point(matrix.a * x + matrix.c * y + matrix.e,
                                  matrix.b * x + matrix.d * y + matrix.f);
-    const gfx::PointF point = FloatPagePointToPixelPoint(page, page_point);
+    const gfx::PointF point = page_to_pixel.MapPoint(page_point);
     switch (FPDFPathSegment_GetType(segment)) {
       case FPDF_SEGMENT_MOVETO:
         subpath_start = point;
@@ -1981,6 +2020,11 @@ std::vector<AccessibilityLineSegment> PDFiumPage::CalculateLineSegments() {
   CHECK(::features::IsPdfAccessibilityHeuristicEnhancementsEnabled());
   std::vector<AccessibilityLineSegment> line_segments;
   FPDF_PAGE page = GetPage();
+  const std::optional<gfx::Transform> page_to_pixel =
+      GetPageToPixelTransform(page);
+  if (!page_to_pixel) {
+    return line_segments;
+  }
   const int page_object_count = FPDFPage_CountObjects(page);
   int total_segments = 0;
   for (int i = 0; i < page_object_count; ++i) {
@@ -2015,7 +2059,8 @@ std::vector<AccessibilityLineSegment> PDFiumPage::CalculateLineSegments() {
       break;
     }
 
-    AppendLineSegmentsFromPath(page, page_object, segment_count, line_segments);
+    AppendLineSegmentsFromPath(*page_to_pixel, page_object, segment_count,
+                               line_segments);
   }
   return line_segments;
 }
