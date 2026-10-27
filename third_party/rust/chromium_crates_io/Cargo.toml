@@ -219,3 +219,6 @@ features = ["std"]
 [dependencies.zune-jpeg]
 version = "=0.5.16-rc2"
 features = ["arith"]
+
+[patch.crates-io]
+harfrust = { path = "vendor/harfrust-v0_14" }
