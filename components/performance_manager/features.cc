@@ -15,7 +15,25 @@
 namespace performance_manager::features {
 
 #if !BUILDFLAG(IS_ANDROID)
+BASE_FEATURE(kPerformanceControlsPerformanceSurvey,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kPerformanceControlsBatteryPerformanceSurvey,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kPerformanceControlsMemorySaverOptOutSurvey,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kPerformanceControlsBatterySaverOptOutSurvey,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kPerformanceControlsPPMSurvey, base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE_PARAM(base::TimeDelta,
+                   kPerformanceControlsBatterySurveyLookback,
+                   &kPerformanceControlsBatteryPerformanceSurvey,
+                   "battery_lookback",
+                   base::Days(8));
 
 BASE_FEATURE_PARAM(base::TimeDelta,
                    kPerformanceControlsPPMSurveyMinDelay,

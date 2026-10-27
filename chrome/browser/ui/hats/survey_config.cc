@@ -581,6 +581,13 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
 
   // Performance Controls surveys.
   survey_configs.emplace_back(
+      &performance_manager::features::kPerformanceControlsPerformanceSurvey,
+      kHatsSurveyTriggerPerformanceControlsPerformance,
+      /*presupplied_trigger_id=*/std::nullopt,
+      std::vector<std::string>{"Memory Saver Mode Enabled",
+                               "Battery Saver Mode Enabled"},
+      std::vector<std::string>{});
+  survey_configs.emplace_back(
       &performance_manager::features::kPerformanceControlsPPMSurvey,
       kHatsSurveyTriggerPerformanceControlsPPM,
       /*presupplied_trigger_id=*/std::nullopt,
@@ -593,6 +600,22 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
           "Performance Characteristics (OS and Total Memory)"},
       /*log_responses_to_uma=*/true,
       /*log_responses_to_ukm=*/true);
+  survey_configs.emplace_back(
+      &performance_manager::features::
+          kPerformanceControlsBatteryPerformanceSurvey,
+      kHatsSurveyTriggerPerformanceControlsBatteryPerformance,
+      /*presupplied_trigger_id=*/std::nullopt,
+      std::vector<std::string>{"Memory Saver Mode Enabled",
+                               "Battery Saver Mode Enabled"},
+      std::vector<std::string>{});
+  survey_configs.emplace_back(
+      &performance_manager::features::
+          kPerformanceControlsMemorySaverOptOutSurvey,
+      kHatsSurveyTriggerPerformanceControlsMemorySaverOptOut);
+  survey_configs.emplace_back(
+      &performance_manager::features::
+          kPerformanceControlsBatterySaverOptOutSurvey,
+      kHatsSurveyTriggerPerformanceControlsBatterySaverOptOut);
 
   // Red Warning surveys.
   survey_configs.emplace_back(

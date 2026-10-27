@@ -11,10 +11,17 @@
 #include "base/byte_size.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
+#include "chrome/browser/performance_manager/public/user_tuning/battery_saver_mode_manager.h"
+#include "chrome/browser/performance_manager/public/user_tuning/user_performance_tuning_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/keyed_service/core/keyed_service.h"
 
-class PerformanceControlsHatsService : public KeyedService {
+class PerformanceControlsHatsService
+    : public KeyedService,
+      public performance_manager::user_tuning::UserPerformanceTuningManager::
+          Observer,
+      public performance_manager::user_tuning::BatterySaverModeManager::
+          Observer {
  public:
   // Names of Product Specific Data bit entries.
   static constexpr char kBatterySaverPSDName[] = "Battery Saver Mode Enabled";
@@ -27,10 +34,21 @@ class PerformanceControlsHatsService : public KeyedService {
       "Performance Characteristics (OS and Total Memory)";
 
   explicit PerformanceControlsHatsService(Profile* profile);
+  ~PerformanceControlsHatsService() override;
 
   // Called when the user opens an NTP. This allows the service to check if one
   // of the performance controls surveys should be shown.
   void OpenedNewTabPage();
+
+  // BatterySaverModeManager::Observer:
+  // Called in response to a change in the battery saver mode pref to check
+  // whether a HaTS survey should be shown.
+  void OnBatterySaverModeChanged(bool is_active) override;
+
+  // performance_manager::user_tuning::UserPerformanceTuningManager::Observer:
+  // Called in response to a change in the memory saver mode pref to check
+  // whether a HaTS survey should be shown.
+  void OnMemorySaverModeChanged() override;
 
   // Returns the delay that must pass after the session starts before showing
   // the PPM survey.
