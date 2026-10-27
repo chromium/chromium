@@ -80,6 +80,28 @@
   -webkit-tap-highlight-color: transparent;
 }
 
+/* --- SPLIT BUTTON ---
+ * Flattens the inner side of the chip so it visually joins an adjacent
+ * companion chip. Logical longhands are used so RTL mirrors automatically.
+ * The ::before/::after highlights, the help-bubble anchor and both focus ring
+ * variants inherit or follow these radii, matching Views'
+ * ToolbarButtonHighlightPathGenerator. */
+:host([flat-edge]) #button {
+  /* Matches Views kSplitFlatEdgetRadius / kSplitLeftEdgeRadius
+   * (glic_button.h, glic_actor_task_icon.h). */
+  --flat-edge-radius: 2px;
+}
+
+:host([flat-edge='start']) #button {
+  border-end-start-radius: var(--flat-edge-radius);
+  border-start-start-radius: var(--flat-edge-radius);
+}
+
+:host([flat-edge='end']) #button {
+  border-end-end-radius: var(--flat-edge-radius);
+  border-start-end-radius: var(--flat-edge-radius);
+}
+
 /* Pressed color painted in the IPH pulse; see help_bubble_anchor.css.
  * Like [is-menu-open] below, suppressed when [disable-hover-highlight] is set
  * for chips that are not currently interactive (native InkDropMode::OFF). */

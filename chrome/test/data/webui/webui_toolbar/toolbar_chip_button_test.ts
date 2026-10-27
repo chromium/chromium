@@ -151,4 +151,90 @@ suite('ToolbarChipButtonTest', function() {
     assertEquals('8px', window.getComputedStyle(element.$.button).gap);
     assertEquals('none', window.getComputedStyle(content).maxWidth);
   });
+
+  function getCornerRadii(el: Element, pseudo?: string) {
+    const style = window.getComputedStyle(el, pseudo);
+    return {
+      topLeft: style.borderTopLeftRadius,
+      topRight: style.borderTopRightRadius,
+      bottomLeft: style.borderBottomLeftRadius,
+      bottomRight: style.borderBottomRightRadius,
+    };
+  }
+
+  test('DefaultsToFullyRoundedCorners', async function() {
+    element.style.setProperty('--toolbar-chip-height', '28px');
+    await microtasksFinished();
+
+    assertFalse(element.hasAttribute('flat-edge'));
+    const radii = getCornerRadii(element.$.button);
+    assertEquals('14px', radii.topLeft);
+    assertEquals('14px', radii.topRight);
+    assertEquals('14px', radii.bottomLeft);
+    assertEquals('14px', radii.bottomRight);
+  });
+
+  // The flattened side uses a 2px radius to match Views kSplitFlatEdgetRadius.
+  test('FlatEdgeEndFlattensTrailingCorners', async function() {
+    element.style.setProperty('--toolbar-chip-height', '28px');
+    element.flatEdge = 'end';
+    await microtasksFinished();
+
+    let radii = getCornerRadii(element.$.button);
+    assertEquals('14px', radii.topLeft);
+    assertEquals('14px', radii.bottomLeft);
+    assertEquals('2px', radii.topRight);
+    assertEquals('2px', radii.bottomRight);
+
+    element.flatEdge = null;
+    await microtasksFinished();
+
+    radii = getCornerRadii(element.$.button);
+    assertEquals('14px', radii.topLeft);
+    assertEquals('14px', radii.bottomLeft);
+    assertEquals('14px', radii.topRight);
+    assertEquals('14px', radii.bottomRight);
+  });
+
+  test('FlatEdgeStartFlattensLeadingCorners', async function() {
+    element.style.setProperty('--toolbar-chip-height', '28px');
+    element.flatEdge = 'start';
+    await microtasksFinished();
+
+    const radii = getCornerRadii(element.$.button);
+    assertEquals('2px', radii.topLeft);
+    assertEquals('2px', radii.bottomLeft);
+    assertEquals('14px', radii.topRight);
+    assertEquals('14px', radii.bottomRight);
+  });
+
+  test('FlatEdgeMirrorsInRtl', async function() {
+    element.style.setProperty('--toolbar-chip-height', '28px');
+    element.dir = 'rtl';
+    element.flatEdge = 'end';
+    await microtasksFinished();
+
+    const radii = getCornerRadii(element.$.button);
+    assertEquals('2px', radii.topLeft);
+    assertEquals('2px', radii.bottomLeft);
+    assertEquals('14px', radii.topRight);
+    assertEquals('14px', radii.bottomRight);
+  });
+
+  // The hover and pressed highlight layers must follow the split shape, like
+  // Views' ToolbarButtonHighlightPathGenerator.
+  test('FlatEdgeAppliesToHighlightLayers', async function() {
+    element.style.setProperty('--toolbar-chip-height', '28px');
+    element.flatEdge = 'end';
+    await microtasksFinished();
+
+    const buttonRadii = getCornerRadii(element.$.button);
+    for (const pseudo of ['::before', '::after']) {
+      const radii = getCornerRadii(element.$.button, pseudo);
+      assertEquals(buttonRadii.topLeft, radii.topLeft, pseudo);
+      assertEquals(buttonRadii.topRight, radii.topRight, pseudo);
+      assertEquals(buttonRadii.bottomLeft, radii.bottomLeft, pseudo);
+      assertEquals(buttonRadii.bottomRight, radii.bottomRight, pseudo);
+    }
+  });
 });
