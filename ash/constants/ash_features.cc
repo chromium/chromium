@@ -1112,6 +1112,20 @@ BASE_FEATURE(kJapaneseInputModeSwitchInVK, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kJupiterScreensaver, base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Reboots the device when a Kiosk app does not create its window within a
+// specified timeout. The app is assumed to be hung in this scenario.
+// Intended only for legacy Rooms Devices (CfMs).
+BASE_FEATURE(kKioskAppLaunchWatchdog, base::FEATURE_DISABLED_BY_DEFAULT);
+
+// How long to wait for the Kiosk app window after the app was launched.
+const base::FeatureParam<base::TimeDelta> kKioskAppLaunchWatchdogTimeout{
+    &kKioskAppLaunchWatchdog, "Timeout", base::Seconds(60)};
+
+// Number of consecutive OS reboots before the watchdog gives up and leaves
+// the device in the broken state without further reboots.
+const base::FeatureParam<int> kKioskAppLaunchWatchdogMaxOsReboots{
+    &kKioskAppLaunchWatchdog, "MaxOsReboots", 3};
+
 // Enables automatic downloading and installing fonts via language packs, based
 // on the user's preferences.
 BASE_FEATURE(kLanguagePacksFonts, base::FEATURE_ENABLED_BY_DEFAULT);
@@ -2794,6 +2808,10 @@ bool IsInternalServerSideSpeechRecognitionEnabledByFinch() {
 bool IsJupiterScreensaverEnabled() {
   return base::FeatureList::IsEnabled(kJupiterScreensaver) &&
          IsTimeOfDayScreenSaverEnabled();
+}
+
+bool IsKioskAppLaunchWatchdogEnabled() {
+  return base::FeatureList::IsEnabled(kKioskAppLaunchWatchdog);
 }
 
 bool IsLauncherContinueSectionWithRecentsEnabled() {

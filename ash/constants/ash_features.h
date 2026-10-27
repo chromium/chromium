@@ -516,6 +516,11 @@ BASE_DECLARE_FEATURE(kIppFirstSetupForUsbPrinters);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kJapaneseInputModeSwitchInVK);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kJupiterScreensaver);
+COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kKioskAppLaunchWatchdog);
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const base::FeatureParam<base::TimeDelta> kKioskAppLaunchWatchdogTimeout;
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const base::FeatureParam<int> kKioskAppLaunchWatchdogMaxOsReboots;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kLanguagePacksFonts);
 COMPONENT_EXPORT(ASH_CONSTANTS)
@@ -1166,6 +1171,7 @@ bool IsInternalServerSideSpeechRecognitionEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsInternalServerSideSpeechRecognitionEnabledByFinch();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsJupiterScreensaverEnabled();
+COMPONENT_EXPORT(ASH_CONSTANTS) bool IsKioskAppLaunchWatchdogEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsLauncherContinueSectionWithRecentsEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsLinkCrossDeviceInternalsEnabled();
