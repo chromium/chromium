@@ -15,7 +15,6 @@
 #include "base/task/task_traits.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
-#include "build/build_config.h"
 #include "components/feedback/features.h"
 #include "components/feedback/feedback_report.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -131,9 +130,10 @@ class FeedbackUploaderTest : public testing::Test {
   FeedbackUploaderTest(const FeedbackUploaderTest&) = delete;
   FeedbackUploaderTest& operator=(const FeedbackUploaderTest&) = delete;
 
-  ~FeedbackUploaderTest() override = default;
+  ~FeedbackUploaderTest() override { ResetUploader(); }
 
   void RecreateUploader() {
+    ResetUploader();
     uploader_ = std::make_unique<MockFeedbackUploader>(
         /*is_off_the_record=*/false, scoped_temp_dir_.GetPath(),
         test_shared_loader_factory_);
@@ -154,6 +154,18 @@ class FeedbackUploaderTest : public testing::Test {
   }
 
  private:
+  void ResetUploader() {
+    if (!uploader_) {
+      return;
+    }
+    scoped_refptr<base::SingleThreadTaskRunner> task_runner =
+        uploader_->task_runner();
+    uploader_.reset();
+    base::RunLoop run_loop;
+    task_runner->PostTask(FROM_HERE, run_loop.QuitClosure());
+    run_loop.Run();
+  }
+
   network::TestURLLoaderFactory test_url_loader_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory_;
   base::test::TaskEnvironment task_environment_;
@@ -206,13 +218,7 @@ TEST_F(FeedbackUploaderTest, QueueMultipleWithFailures) {
   EXPECT_EQ(uploader()->dispatched_reports().at(kReportFive), 1u);
 }
 
-#if BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64)
-// https://crbug.com/1222877
-#define MAYBE_SimulateOfflineReports DISABLED_SimulateOfflineReports
-#else
-#define MAYBE_SimulateOfflineReports SimulateOfflineReports
-#endif
-TEST_F(FeedbackUploaderTest, MAYBE_SimulateOfflineReports) {
+TEST_F(FeedbackUploaderTest, SimulateOfflineReports) {
   // Simulate offline reports by failing to upload three reports.
   uploader()->set_simulate_failure(true);
   QueueReport(kReportOne);
