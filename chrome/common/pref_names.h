@@ -2445,6 +2445,16 @@ inline constexpr char kHardwareAccelerationModePrevious[] =
 inline constexpr char kDynamicPatchingEnabled[] =
     "child_module.dynamic_patching_enabled";
 
+// A dictionary tracking blocklisted dynamic child module versions that caused
+// crash loops, scoped to the current base browser version.
+// Schema:
+// {
+//   "base_version": string (e.g. "147.0.7727.51"),
+//   "versions": list of strings (e.g. ["147.0.7727.52", ...])
+// }
+inline constexpr char kDynamicPatchingBlocklist[] =
+    "child_module.dynamic_patching_blocklist";
+
 // A boolean where true means that the browser has previously attempted to
 // enable autoupdate and failed, so the next out-of-date browser start should
 // not prompt the user to enable autoupdate, it should offer to reinstall Chrome

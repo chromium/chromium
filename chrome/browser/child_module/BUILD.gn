@@ -22,13 +22,13 @@ source_set("child_module") {
   public_deps = [
     "//base",
     "//chrome/common/child_module",
+    "//content/public/browser",
     "//content/public/common",
   ]
 
   deps = [
     "//chrome/common:constants",
     "//components/prefs",
-    "//content/public/browser",
   ]
 
   if (is_win) {

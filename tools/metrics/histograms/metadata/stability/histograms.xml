@@ -144,6 +144,34 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="ChildProcess.ModuleCircuitBreaker.BlockedModulePatchVersion"
+    units="patch number" expires_after="2027-10-01">
+  <owner>grt@chromium.org</owner>
+  <owner>toyoshim@chromium.org</owner>
+  <summary>
+    Records the 4th component (the patch version number, e.g. 51 in
+    147.0.7727.51) of a dynamically patched child module when it is added to the
+    Local State blocklist after tripping the circuit breaker in
+    ChildModuleManager.
+
+    Note: This metric reports only the patch component without the browser
+    milestone or build number; analysis should filter or slice by browser
+    version/milestone to interpret patch values in context.
+  </summary>
+</histogram>
+
+<histogram name="ChildProcess.ModuleCircuitBreaker.TriggerTerminationStatus"
+    enum="TerminationStatus" expires_after="2027-10-01">
+  <owner>grt@chromium.org</owner>
+  <owner>toyoshim@chromium.org</owner>
+  <summary>
+    Records the termination status of the final renderer exit that caused the
+    consecutive crash count to reach the threshold and trip the circuit breaker
+    in ChildModuleManager. Note that this only captures the cause of the final
+    triggering crash in the consecutive crash sequence.
+  </summary>
+</histogram>
+
 <histogram name="ChildProcess.ProcessLifetime.Utility" units="ms"
     expires_after="2025-05-11">
   <owner>olivierli@chromium.org</owner>
