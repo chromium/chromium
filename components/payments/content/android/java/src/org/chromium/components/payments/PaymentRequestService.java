@@ -1992,13 +1992,13 @@ public class PaymentRequestService
         if (mBrowserPaymentRequest == null) return;
         if (mBrowserPaymentRequest.hasSkippedAppSelector()) {
             assert !TextUtils.isEmpty(errorMessage);
-            mJourneyLogger.setAborted(AbortReason.ABORTED_BY_USER);
             int reason = PaymentErrorReason.USER_CANCEL;
             // LINT.IfChange(PaymentEventResponseTypeToErrorReason)
             switch (error) {
                 // User cancel
                 case PaymentEventResponseType.PAYMENT_EVENT_REJECT:
                 case PaymentEventResponseType.PAYMENT_HANDLER_WINDOW_CLOSING:
+                    mJourneyLogger.setAborted(AbortReason.ABORTED_BY_USER);
                     reason = PaymentErrorReason.USER_CANCEL;
                     break;
                 // App failures
@@ -2020,13 +2020,16 @@ public class PaymentRequestService
                 case PaymentEventResponseType.PAYMENT_DETAILS_NOT_OBJECT:
                 case PaymentEventResponseType.PAYMENT_DETAILS_STRINGIFY_ERROR:
                 case PaymentEventResponseType.PAYMENT_METHOD_NAME_EMPTY:
+                    mJourneyLogger.setAborted(AbortReason.INSTRUMENT_DETAILS_ERROR);
                     reason = PaymentErrorReason.PAYMENT_APP_ERROR;
                     break;
                 // Violations
                 case PaymentEventResponseType.PAYMENT_HANDLER_INSECURE_NAVIGATION:
+                    mJourneyLogger.setAborted(AbortReason.INSTRUMENT_DETAILS_ERROR);
                     reason = PaymentErrorReason.NOT_ALLOWED_ERROR;
                     break;
                 default:
+                    mJourneyLogger.setAborted(AbortReason.INSTRUMENT_DETAILS_ERROR);
                     reason = PaymentErrorReason.UNKNOWN;
                     break;
             }

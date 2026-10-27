@@ -1131,6 +1131,7 @@ public class PaymentRequestServiceTest implements PaymentRequestClient {
     @Feature({"Payments"})
     public void testOnInstrumentDetailsError_appError() {
         int[] appErrorResponses = {
+            org.chromium.payments.mojom.PaymentEventResponseType.PAYMENT_EVENT_INTERNAL_ERROR,
             org.chromium.payments.mojom.PaymentEventResponseType.PAYMENT_EVENT_BROWSER_ERROR,
             org.chromium.payments.mojom.PaymentEventResponseType.PAYMENT_EVENT_NO_RESPONSE,
             org.chromium.payments.mojom.PaymentEventResponseType.PAYMENT_EVENT_SERVICE_WORKER_ERROR,
@@ -1155,7 +1156,7 @@ public class PaymentRequestServiceTest implements PaymentRequestClient {
             service.onInstrumentDetailsError(error, "App error");
             assertErrorAndReason("App error", PaymentErrorReason.PAYMENT_APP_ERROR);
             Mockito.verify(mJourneyLogger, Mockito.times(1))
-                    .setAborted(AbortReason.ABORTED_BY_USER);
+                    .setAborted(AbortReason.INSTRUMENT_DETAILS_ERROR);
             resetErrorMessageAndCloseState();
         }
     }
@@ -1171,7 +1172,8 @@ public class PaymentRequestServiceTest implements PaymentRequestClient {
                         .PAYMENT_HANDLER_INSECURE_NAVIGATION,
                 "Insecure");
         assertErrorAndReason("Insecure", PaymentErrorReason.NOT_ALLOWED_ERROR);
-        Mockito.verify(mJourneyLogger, Mockito.times(1)).setAborted(AbortReason.ABORTED_BY_USER);
+        Mockito.verify(mJourneyLogger, Mockito.times(1))
+                .setAborted(AbortReason.INSTRUMENT_DETAILS_ERROR);
     }
 
     @Test
