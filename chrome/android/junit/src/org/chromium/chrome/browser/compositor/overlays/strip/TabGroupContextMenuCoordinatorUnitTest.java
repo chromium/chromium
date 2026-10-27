@@ -772,6 +772,46 @@ public class TabGroupContextMenuCoordinatorUnitTest {
     }
 
     @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_VERTICAL_TABS)
+    @Config(qualifiers = "sw600dp")
+    @Feature("Vertical Tabs Tab Group Context Menu")
+    public void testShowMenu_VerticalTabs_FocusesScrollViewInsteadOfListView() {
+        initializeCoordinatorForTesting(TabStripLayoutType.VERTICAL);
+        mTabGroupContextMenuCoordinator.setGroupDataForTesting(TAB_GROUP_ID);
+
+        mTabGroupContextMenuCoordinator.showMenu(new RectProvider(), TAB_GROUP_ID);
+
+        ViewGroup contentView =
+                (ViewGroup) mTabGroupContextMenuCoordinator.getContentViewForTesting();
+        assertNotNull(contentView);
+        assertTrue(contentView.isFocusable());
+        assertTrue(contentView.isFocusableInTouchMode());
+        assertEquals(ViewGroup.FOCUS_BEFORE_DESCENDANTS, contentView.getDescendantFocusability());
+        assertTrue(
+                "ScrollView container itself should hold initial focus in vertical tabs",
+                contentView.isFocused());
+        assertFalse(
+                "Title EditText should not be auto-focused on menu open",
+                contentView.findViewById(R.id.tab_group_title).isFocused());
+        assertFalse(
+                "Action menu ListView should not be focused on menu open to prevent auto-scrolling",
+                contentView.findViewById(R.id.tab_group_action_menu_list).isFocused());
+    }
+
+    @Test
+    @Config(qualifiers = "sw600dp")
+    @Feature("Tab Strip Group Context Menu")
+    public void testShowMenu_HorizontalStrip_FocusesListView() {
+        mTabGroupContextMenuCoordinator.showMenu(new RectProvider(), TAB_GROUP_ID);
+
+        ViewGroup contentView =
+                (ViewGroup) mTabGroupContextMenuCoordinator.getContentViewForTesting();
+        assertNotNull(contentView);
+        assertFalse(contentView.isFocusableInTouchMode());
+        assertTrue(contentView.findViewById(R.id.tab_group_action_menu_list).isFocused());
+    }
+
+    @Test
     @Config(qualifiers = "sw600dp")
     @Feature("Tab Strip Group Context Menu")
     public void testKeyboardShowing_HorizontalStrip_ForcesMenuLayoutUpdate() {

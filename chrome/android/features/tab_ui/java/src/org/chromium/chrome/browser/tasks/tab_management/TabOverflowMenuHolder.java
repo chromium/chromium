@@ -231,7 +231,12 @@ public class TabOverflowMenuHolder<T> {
 
     void show() {
         mMenuWindow.show();
-        mContentView.findViewById(R.id.tab_group_action_menu_list).requestFocus();
+        // By default, mContentView.isFocusableInTouchMode() is false, so we focus the ListView.
+        // In Vertical Tabs, TabGroupContextMenuCoordinator sets mContentView (its root ScrollView)
+        // to focusableInTouchMode = true so the ScrollView takes initial focus instead of
+        // auto-scrolling down to the ListView.
+        View viewToFocus = mContentView.isFocusableInTouchMode() ? mContentView : mListView;
+        viewToFocus.requestFocus();
     }
 
     void resize() {

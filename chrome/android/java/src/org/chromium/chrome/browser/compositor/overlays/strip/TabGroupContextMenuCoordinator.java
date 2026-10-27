@@ -563,6 +563,15 @@ public class TabGroupContextMenuCoordinator extends TabStripReorderingHelper<Tok
 
         if (mTabStripLayout == TabStripLayoutType.HORIZONTAL) {
             setMenuSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING);
+        } else if (mTabStripLayout == TabStripLayoutType.VERTICAL) {
+            // Allow the root ScrollView to take initial focus before its descendants so that
+            // TabOverflowMenuHolder#show() focuses the ScrollView at the top instead of focusing
+            // the bottom ListView (which would auto-scroll past the group title and color picker)
+            // or the group title EditText.
+            mContentView.setFocusable(/* focusable= */ true);
+            mContentView.setFocusableInTouchMode(/* focusableInTouchMode= */ true);
+            ((ViewGroup) mContentView)
+                    .setDescendantFocusability(ViewGroup.FOCUS_BEFORE_DESCENDANTS);
         }
 
         ListView listView = mContentView.findViewById(R.id.tab_group_action_menu_list);
