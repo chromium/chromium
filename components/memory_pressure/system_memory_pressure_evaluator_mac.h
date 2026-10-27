@@ -64,7 +64,7 @@ class SystemMemoryPressureEvaluator
 
   base::MemoryPressureLevel last_os_pressure_level_ =
       base::MEMORY_PRESSURE_LEVEL_NONE;
-  std::unique_ptr<MemoryPressureLevelReporter> os_transition_reporter_;
+  std::unique_ptr<MemoryPressureLevelReporter> os_reporter_;
 
   base::WeakPtrFactory<SystemMemoryPressureEvaluator> weak_ptr_factory_;
 };

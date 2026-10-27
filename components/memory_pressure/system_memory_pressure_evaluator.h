@@ -39,6 +39,9 @@ class SystemMemoryPressureEvaluator {
   base::MemoryPressureLevel current_vote() const { return current_vote_; }
 
  protected:
+  // |voter| may be null, in which case this evaluator acts as a shadow
+  // evaluator. It observes and reports its pressure level but never
+  // contributes to the aggregated vote.
   explicit SystemMemoryPressureEvaluator(
       std::unique_ptr<MemoryPressureVoter> voter);
 
@@ -62,7 +65,8 @@ class SystemMemoryPressureEvaluator {
   base::MemoryPressureLevel current_vote_;
 
   // In charge of forwarding votes from here to the
-  // MemoryPressureVoteAggregator.
+  // MemoryPressureVoteAggregator. Null for shadow evaluators, which do not
+  // vote.
   std::unique_ptr<MemoryPressureVoter> voter_;
 
   SEQUENCE_CHECKER(sequence_checker_);

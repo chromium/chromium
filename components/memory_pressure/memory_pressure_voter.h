@@ -68,12 +68,14 @@ class MemoryPressureVoteAggregator {
       delete;
 
   // Creates a MemoryPressureVoter attached to this Aggregator. The returned
-  // Voter must not out-live the Aggregator.
-  std::unique_ptr<MemoryPressureVoter> CreateVoter();
+  // Voter must not out-live the Aggregator. |is_disk_voter| identifies voters
+  // whose critical votes represent low disk space rather than RAM pressure.
+  std::unique_ptr<MemoryPressureVoter> CreateVoter(bool is_disk_voter = false);
 
   void OnVoteForTesting(
       std::optional<base::MemoryPressureLevel> old_pressure_level,
-      std::optional<base::MemoryPressureLevel> new_pressure_level);
+      std::optional<base::MemoryPressureLevel> new_pressure_level,
+      bool is_disk_voter = false);
 
   void NotifyListenersForTesting();
 
@@ -100,7 +102,13 @@ class MemoryPressureVoteAggregator {
   // being destroyed). |old_vote| and |new_vote| should never both be null.
   // Returns true if the aggregate pressure level changed as a result of this
   // vote.
-  bool OnVote(std::optional<Vote> old_vote, std::optional<Vote> new_vote);
+  bool OnVote(std::optional<Vote> old_vote,
+              std::optional<Vote> new_vote,
+              bool is_disk_voter = false);
+
+  // Returns true if the disk voter is at CRITICAL and no other voter is at
+  // CRITICAL.
+  bool IsDiskOnlyCritical() const;
 
   // Starts or stops |renotify_timer_| according to |current_pressure_level_|
   // and the votes cast at that level. The timer runs only while at least one
@@ -139,6 +147,10 @@ class MemoryPressureVoteAggregator {
   std::array<size_t, base::MEMORY_PRESSURE_LEVEL_CRITICAL + 1>
       periodic_renotify_votes_ = {};
 
+  // At most one disk voter may exist at a time.
+  enum class DiskVoterState { kNoDiskVoter, kNotCritical, kCritical };
+  DiskVoterState disk_voter_state_ = DiskVoterState::kNoDiskVoter;
+
   // Timer that re-notifies listeners of the current pressure level at regular
   // intervals while pressure is MODERATE or CRITICAL and at least one vote at
   // that level requested periodic re-notification.
@@ -154,9 +166,14 @@ class MemoryPressureVoteAggregator::Delegate {
   Delegate() = default;
   virtual ~Delegate() = default;
 
-  // Invoked when the aggregate vote has changed.
-  virtual void OnMemoryPressureLevelChanged(
-      base::MemoryPressureLevel level) = 0;
+  // Invoked when the aggregate vote has changed. |is_disk_only_critical| is
+  // true if |level| is CRITICAL solely because of the disk voter.
+  virtual void OnMemoryPressureLevelChanged(base::MemoryPressureLevel level,
+                                            bool is_disk_only_critical) = 0;
+
+  // Invoked when the aggregate level stays CRITICAL, but switches between
+  // being caused solely by the disk voter and not.
+  virtual void OnDiskOnlyCriticalChanged(bool is_disk_only_critical) {}
 
   // Invoked when listeners should be notified of the current pressure level.
   virtual void OnNotifyListenersRequested() = 0;

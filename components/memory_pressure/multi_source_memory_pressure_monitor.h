@@ -49,12 +49,7 @@ class MultiSourceMemoryPressureMonitor
 
   // Creates a MemoryPressureVoter to be owned/used by a source that wishes to
   // have input on the overall memory pressure level.
-  std::unique_ptr<MemoryPressureVoter> CreateVoter();
-
-  // Updates disk and OS pressure state. Time is only attributed to the disk
-  // bucket when disk pressure is active and the OS level is not critical.
-  void SetDiskPressureState(bool new_is_disk_pressure);
-  void SetOsPressureLevel(base::MemoryPressureLevel new_os_pressure_level);
+  std::unique_ptr<MemoryPressureVoter> CreateVoter(bool is_disk_voter = false);
 
   // Sets the system evaluator on platforms where no default implementation
   // exists, because of layering concerns (ChromeOS & Chromecast).
@@ -81,7 +76,9 @@ class MultiSourceMemoryPressureMonitor
 
  private:
   // Delegate implementation.
-  void OnMemoryPressureLevelChanged(base::MemoryPressureLevel level) override;
+  void OnMemoryPressureLevelChanged(base::MemoryPressureLevel level,
+                                    bool is_disk_only_critical) override;
+  void OnDiskOnlyCriticalChanged(bool is_disk_only_critical) override;
   void OnNotifyListenersRequested() override;
 
   base::MemoryPressureLevel current_pressure_level_;

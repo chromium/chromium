@@ -236,4 +236,80 @@ TEST_F(ThresholdMemoryPressureEvaluatorTest, PotentialUnderflow) {
 }
 #endif  // BUILDFLAG(IS_WIN)
 
+#if BUILDFLAG(IS_MAC)
+TEST_F(ThresholdMemoryPressureEvaluatorTest,
+       CreateWithMacFeatureParamsDefault) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kMacAvailableMemoryPressureEvaluator);
+
+  auto evaluator =
+      ThresholdMemoryPressureEvaluator::CreateWithMacFeatureParams(nullptr);
+  ASSERT_TRUE(evaluator);
+  EXPECT_EQ(base::MiB(1200), evaluator->moderate_threshold());
+  EXPECT_EQ(base::MiB(800), evaluator->critical_threshold());
+}
+
+TEST_F(ThresholdMemoryPressureEvaluatorTest, CreateWithMacFeatureParamsCustom) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      features::kMacAvailableMemoryPressureEvaluator,
+      {{"MacModerateThresholdMB", "1500"}, {"MacCriticalThresholdMB", "1000"}});
+
+  auto evaluator =
+      ThresholdMemoryPressureEvaluator::CreateWithMacFeatureParams(nullptr);
+  ASSERT_TRUE(evaluator);
+  EXPECT_EQ(base::MiB(1500), evaluator->moderate_threshold());
+  EXPECT_EQ(base::MiB(1000), evaluator->critical_threshold());
+}
+
+TEST_F(ThresholdMemoryPressureEvaluatorTest,
+       CreateWithMacFeatureParamsInvalid) {
+  // Test inverted thresholds (moderate < critical) to verify defensive
+  // fallback.
+  {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitAndEnableFeatureWithParameters(
+        features::kMacAvailableMemoryPressureEvaluator,
+        {{"MacModerateThresholdMB", "400"}, {"MacCriticalThresholdMB", "800"}});
+
+    auto evaluator =
+        ThresholdMemoryPressureEvaluator::CreateWithMacFeatureParams(nullptr);
+    ASSERT_TRUE(evaluator);
+    EXPECT_EQ(base::MiB(1200), evaluator->moderate_threshold());
+    EXPECT_EQ(base::MiB(800), evaluator->critical_threshold());
+  }
+
+  // Test non-positive critical threshold.
+  {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitAndEnableFeatureWithParameters(
+        features::kMacAvailableMemoryPressureEvaluator,
+        {{"MacModerateThresholdMB", "1200"},
+         {"MacCriticalThresholdMB", "-100"}});
+
+    auto evaluator =
+        ThresholdMemoryPressureEvaluator::CreateWithMacFeatureParams(nullptr);
+    ASSERT_TRUE(evaluator);
+    EXPECT_EQ(base::MiB(1200), evaluator->moderate_threshold());
+    EXPECT_EQ(base::MiB(800), evaluator->critical_threshold());
+  }
+
+  // Test non-positive moderate threshold.
+  {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitAndEnableFeatureWithParameters(
+        features::kMacAvailableMemoryPressureEvaluator,
+        {{"MacModerateThresholdMB", "-100"},
+         {"MacCriticalThresholdMB", "800"}});
+
+    auto evaluator =
+        ThresholdMemoryPressureEvaluator::CreateWithMacFeatureParams(nullptr);
+    ASSERT_TRUE(evaluator);
+    EXPECT_EQ(base::MiB(1200), evaluator->moderate_threshold());
+    EXPECT_EQ(base::MiB(800), evaluator->critical_threshold());
+  }
+}
+#endif  // BUILDFLAG(IS_MAC)
+
 }  // namespace memory_pressure

@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/system/sys_info.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "components/memory_pressure/disk_space_memory_pressure_evaluator_mac.h"
@@ -22,8 +23,11 @@ class TestSystemMemoryPressureEvaluator : public SystemMemoryPressureEvaluator {
  public:
   using SystemMemoryPressureEvaluator::
       MemoryPressureLevelForMacMemoryPressureLevel;
+  using SystemMemoryPressureEvaluator::OnMemoryPressureChanged;
+  using SystemMemoryPressureEvaluator::UpdatePressureLevel;
 
-  TestSystemMemoryPressureEvaluator(std::unique_ptr<MemoryPressureVoter> voter)
+  explicit TestSystemMemoryPressureEvaluator(
+      std::unique_ptr<MemoryPressureVoter> voter)
       : SystemMemoryPressureEvaluator(std::move(voter)) {}
 
   TestSystemMemoryPressureEvaluator(const TestSystemMemoryPressureEvaluator&) =
@@ -37,11 +41,6 @@ class TestSystemMemoryPressureEvaluator : public SystemMemoryPressureEvaluator {
   // Sets the raw macOS memory pressure level read by the memory pressure
   // evaluator.
   int macos_pressure_level_for_testing_ = DISPATCH_MEMORYPRESSURE_NORMAL;
-
-  // Exposes the UpdatePressureLevel() method for testing.
-  void UpdatePressureLevel() {
-    SystemMemoryPressureEvaluator::UpdatePressureLevel();
-  }
 
  private:
   int GetMacMemoryPressureLevel() override {
@@ -126,7 +125,8 @@ TEST(MacSystemMemoryPressureEvaluatorTest, OSTransitionsOnly) {
   base::HistogramTester histogram_tester;
 
   TestSystemMemoryPressureEvaluator evaluator(monitor.CreateVoter());
-  TestMacAuxiliaryDiskEvaluator disk_evaluator(monitor.CreateVoter());
+  TestMacAuxiliaryDiskEvaluator disk_evaluator(
+      monitor.CreateVoter(/*is_disk_voter=*/true));
 
   // 1. Simulate OS transition: NONE -> MODERATE.
   evaluator.macos_pressure_level_for_testing_ = DISPATCH_MEMORYPRESSURE_WARN;
@@ -179,6 +179,112 @@ TEST(MacSystemMemoryPressureEvaluatorTest, OSTransitionsOnly) {
   // Should report CriticalToNone (20s from step 3-4 + 10s from step 4-5 = 30s).
   histogram_tester.ExpectTimeBucketCount(
       "Memory.PressureWindowDuration2.CriticalToNone", base::Seconds(30), 1);
+
+  // The same reporter also accumulates time spent at each OS level.
+  histogram_tester.ExpectBucketCount(
+      "Memory.PressureLevel2.OS",
+      static_cast<int>(MemoryPressureHistogramBuckets::kModerate), 15);
+  histogram_tester.ExpectBucketCount(
+      "Memory.PressureLevel2.OS",
+      static_cast<int>(MemoryPressureHistogramBuckets::kCritical), 30);
+}
+
+TEST(MacSystemMemoryPressureEvaluatorTest, ShadowModeEvaluator) {
+  base::test::TaskEnvironment task_environment(
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME);
+  MultiSourceMemoryPressureMonitor monitor;
+  base::HistogramTester histogram_tester;
+
+  bool dispatch_called = false;
+  monitor.SetDispatchCallbackForTesting(base::BindLambdaForTesting(
+      [&](base::MemoryPressureLevel) { dispatch_called = true; }));
+
+  TestSystemMemoryPressureEvaluator shadow_evaluator(/*voter=*/nullptr);
+
+  // Initial OS pressure is NORMAL -> NONE.
+  EXPECT_FALSE(dispatch_called);
+
+  // OS moves to WARN -> MODERATE.
+  shadow_evaluator.macos_pressure_level_for_testing_ =
+      DISPATCH_MEMORYPRESSURE_WARN;
+  shadow_evaluator.OnMemoryPressureChanged();
+
+  // A shadow evaluator must not influence the aggregated pressure level.
+  EXPECT_FALSE(dispatch_called);
+
+  task_environment.FastForwardBy(base::Seconds(12));
+
+  // OS moves to CRITICAL.
+  shadow_evaluator.macos_pressure_level_for_testing_ =
+      DISPATCH_MEMORYPRESSURE_CRITICAL;
+  shadow_evaluator.OnMemoryPressureChanged();
+
+  EXPECT_FALSE(dispatch_called);
+
+  // But it still reports the OS signal.
+  histogram_tester.ExpectBucketCount(
+      "Memory.PressureLevel2.OS",
+      static_cast<int>(MemoryPressureHistogramBuckets::kModerate), 12);
+
+  task_environment.FastForwardBy(base::Seconds(18));
+
+  // OS moves back to NORMAL.
+  shadow_evaluator.macos_pressure_level_for_testing_ =
+      DISPATCH_MEMORYPRESSURE_NORMAL;
+  shadow_evaluator.OnMemoryPressureChanged();
+
+  EXPECT_FALSE(dispatch_called);
+
+  histogram_tester.ExpectBucketCount(
+      "Memory.PressureLevel2.OS",
+      static_cast<int>(MemoryPressureHistogramBuckets::kCritical), 18);
+}
+
+TEST(MacSystemMemoryPressureEvaluatorTest,
+     ShadowModeDoesNotAffectDiskOrCriticalBuckets) {
+  base::test::TaskEnvironment task_environment(
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME);
+  MultiSourceMemoryPressureMonitor monitor;
+  base::HistogramTester histogram_tester;
+
+  TestSystemMemoryPressureEvaluator shadow_evaluator(/*voter=*/nullptr);
+  TestMacAuxiliaryDiskEvaluator disk_evaluator(
+      monitor.CreateVoter(/*is_disk_voter=*/true));
+  auto memory_voter = monitor.CreateVoter();
+
+  // Case 1: Both disk and the active memory voter are CRITICAL while the
+  // shadow OS evaluator is NORMAL. Should be reported as kCritical (not kDisk).
+  base::SysInfo::DiskSpaceInfo low_disk;
+  low_disk.available = base::MiB(100);
+  disk_evaluator.TriggerDiskSpaceCheckComplete(low_disk);
+  memory_voter->SetVote(base::MEMORY_PRESSURE_LEVEL_CRITICAL,
+                        /*notify_listeners=*/false);
+  task_environment.FastForwardBy(base::Seconds(10));
+
+  // Case 2: Active memory voter drops to NONE while disk stays CRITICAL, and
+  // the shadow OS evaluator transitions to CRITICAL. Since the shadow OS
+  // evaluator does not vote, the next 15s should be reported as kDisk (not
+  // kCritical).
+  memory_voter->SetVote(base::MEMORY_PRESSURE_LEVEL_NONE,
+                        /*notify_listeners=*/false);
+  shadow_evaluator.macos_pressure_level_for_testing_ =
+      DISPATCH_MEMORYPRESSURE_CRITICAL;
+  shadow_evaluator.OnMemoryPressureChanged();
+  task_environment.FastForwardBy(base::Seconds(15));
+
+  // Recover disk space to flush the second interval.
+  base::SysInfo::DiskSpaceInfo ample_disk;
+  ample_disk.available = base::MiB(500);
+  disk_evaluator.TriggerDiskSpaceCheckComplete(ample_disk);
+
+  histogram_tester.ExpectBucketCount(
+      "Memory.PressureLevel2",
+      static_cast<int>(MemoryPressureHistogramBuckets::kCritical), 10);
+  histogram_tester.ExpectBucketCount(
+      "Memory.PressureLevel2",
+      static_cast<int>(MemoryPressureHistogramBuckets::kDisk), 15);
+
+  memory_voter.reset();
 }
 
 }  // namespace mac

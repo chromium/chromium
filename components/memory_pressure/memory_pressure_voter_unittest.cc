@@ -20,7 +20,11 @@ class TestDelegate
  public:
   MOCK_METHOD(void,
               OnMemoryPressureLevelChanged,
-              (base::MemoryPressureLevel level),
+              (base::MemoryPressureLevel level, bool is_disk_only_critical),
+              (override));
+  MOCK_METHOD(void,
+              OnDiskOnlyCriticalChanged,
+              (bool is_disk_only_critical),
               (override));
   MOCK_METHOD(void, OnNotifyListenersRequested, (), (override));
 };
@@ -133,7 +137,7 @@ TEST(MemoryPressureVoterTest, NotificationsAndCooldownTimer) {
 
   // Transition to MODERATE notifies immediately and starts the 10s timer.
   EXPECT_CALL(delegate, OnMemoryPressureLevelChanged(
-                            base::MEMORY_PRESSURE_LEVEL_MODERATE));
+                            base::MEMORY_PRESSURE_LEVEL_MODERATE, false));
   EXPECT_CALL(delegate, OnNotifyListenersRequested());
   voter->SetVote(base::MEMORY_PRESSURE_LEVEL_MODERATE);
   testing::Mock::VerifyAndClearExpectations(&delegate);
@@ -155,7 +159,7 @@ TEST(MemoryPressureVoterTest, NotificationsAndCooldownTimer) {
 
   // Transition to CRITICAL notifies immediately and switches to the 5s timer.
   EXPECT_CALL(delegate, OnMemoryPressureLevelChanged(
-                            base::MEMORY_PRESSURE_LEVEL_CRITICAL));
+                            base::MEMORY_PRESSURE_LEVEL_CRITICAL, false));
   EXPECT_CALL(delegate, OnNotifyListenersRequested());
   voter->SetVote(base::MEMORY_PRESSURE_LEVEL_CRITICAL);
   testing::Mock::VerifyAndClearExpectations(&delegate);
@@ -166,8 +170,8 @@ TEST(MemoryPressureVoterTest, NotificationsAndCooldownTimer) {
   testing::Mock::VerifyAndClearExpectations(&delegate);
 
   // Transition to NONE notifies immediately and stops the timer.
-  EXPECT_CALL(delegate,
-              OnMemoryPressureLevelChanged(base::MEMORY_PRESSURE_LEVEL_NONE));
+  EXPECT_CALL(delegate, OnMemoryPressureLevelChanged(
+                            base::MEMORY_PRESSURE_LEVEL_NONE, false));
   EXPECT_CALL(delegate, OnNotifyListenersRequested());
   voter->SetVote(base::MEMORY_PRESSURE_LEVEL_NONE);
   testing::Mock::VerifyAndClearExpectations(&delegate);
@@ -187,7 +191,7 @@ TEST(MemoryPressureVoterTest, MultipleVotersDoNotMultiplyNotifications) {
 
   // Voter 1 enters CRITICAL: notifies once and starts 5s timer.
   EXPECT_CALL(delegate, OnMemoryPressureLevelChanged(
-                            base::MEMORY_PRESSURE_LEVEL_CRITICAL));
+                            base::MEMORY_PRESSURE_LEVEL_CRITICAL, false));
   EXPECT_CALL(delegate, OnNotifyListenersRequested());
   voter1->SetVote(base::MEMORY_PRESSURE_LEVEL_CRITICAL);
   testing::Mock::VerifyAndClearExpectations(&delegate);
@@ -212,10 +216,10 @@ TEST(MemoryPressureVoterTest, MultipleVotersDoNotMultiplyNotifications) {
 
   // Cleanup votes before delegate goes out of scope.
   EXPECT_CALL(delegate, OnMemoryPressureLevelChanged(
-                            base::MEMORY_PRESSURE_LEVEL_MODERATE));
+                            base::MEMORY_PRESSURE_LEVEL_MODERATE, false));
   voter1.reset();
-  EXPECT_CALL(delegate,
-              OnMemoryPressureLevelChanged(base::MEMORY_PRESSURE_LEVEL_NONE));
+  EXPECT_CALL(delegate, OnMemoryPressureLevelChanged(
+                            base::MEMORY_PRESSURE_LEVEL_NONE, false));
   voter2.reset();
 }
 
@@ -229,7 +233,7 @@ TEST(MemoryPressureVoterTest, CallerManagedNotificationsDoNotStartTimer) {
   // 2-arg SetVote with notify_listeners=false updates the aggregate level
   // without notifying listeners or starting the cooldown timer.
   EXPECT_CALL(delegate, OnMemoryPressureLevelChanged(
-                            base::MEMORY_PRESSURE_LEVEL_CRITICAL));
+                            base::MEMORY_PRESSURE_LEVEL_CRITICAL, false));
   voter->SetVote(base::MEMORY_PRESSURE_LEVEL_CRITICAL,
                  /*notify_listeners=*/false);
   testing::Mock::VerifyAndClearExpectations(&delegate);
@@ -249,8 +253,8 @@ TEST(MemoryPressureVoterTest, CallerManagedNotificationsDoNotStartTimer) {
       MemoryPressureVoteAggregator::kCriticalPressureCooldown);
   testing::Mock::VerifyAndClearExpectations(&delegate);
 
-  EXPECT_CALL(delegate,
-              OnMemoryPressureLevelChanged(base::MEMORY_PRESSURE_LEVEL_NONE));
+  EXPECT_CALL(delegate, OnMemoryPressureLevelChanged(
+                            base::MEMORY_PRESSURE_LEVEL_NONE, false));
   voter.reset();
 }
 
@@ -265,7 +269,7 @@ TEST(MemoryPressureVoterTest, ExplicitNotifyListenersResetsTimer) {
   // 1-arg SetVote transitions to CRITICAL, notifying immediately and starting
   // the 5s timer.
   EXPECT_CALL(delegate, OnMemoryPressureLevelChanged(
-                            base::MEMORY_PRESSURE_LEVEL_CRITICAL));
+                            base::MEMORY_PRESSURE_LEVEL_CRITICAL, false));
   EXPECT_CALL(delegate, OnNotifyListenersRequested());
   periodic_voter->SetVote(base::MEMORY_PRESSURE_LEVEL_CRITICAL);
   testing::Mock::VerifyAndClearExpectations(&delegate);
@@ -291,8 +295,8 @@ TEST(MemoryPressureVoterTest, ExplicitNotifyListenersResetsTimer) {
 
   // Cleanup votes before delegate goes out of scope.
   periodic_voter.reset();
-  EXPECT_CALL(delegate,
-              OnMemoryPressureLevelChanged(base::MEMORY_PRESSURE_LEVEL_NONE));
+  EXPECT_CALL(delegate, OnMemoryPressureLevelChanged(
+                            base::MEMORY_PRESSURE_LEVEL_NONE, false));
   caller_managed_voter.reset();
 }
 
@@ -307,7 +311,7 @@ TEST(MemoryPressureVoterTest, CallerManagedCriticalOverridesPeriodicModerate) {
   // The periodic voter enters MODERATE: notifies once and starts the moderate
   // timer.
   EXPECT_CALL(delegate, OnMemoryPressureLevelChanged(
-                            base::MEMORY_PRESSURE_LEVEL_MODERATE));
+                            base::MEMORY_PRESSURE_LEVEL_MODERATE, false));
   EXPECT_CALL(delegate, OnNotifyListenersRequested());
   periodic_voter->SetVote(base::MEMORY_PRESSURE_LEVEL_MODERATE);
   testing::Mock::VerifyAndClearExpectations(&delegate);
@@ -321,7 +325,7 @@ TEST(MemoryPressureVoterTest, CallerManagedCriticalOverridesPeriodicModerate) {
   // only vote at CRITICAL does not request periodic re-notification, the timer
   // stops and only the explicit notification is delivered.
   EXPECT_CALL(delegate, OnMemoryPressureLevelChanged(
-                            base::MEMORY_PRESSURE_LEVEL_CRITICAL));
+                            base::MEMORY_PRESSURE_LEVEL_CRITICAL, false));
   EXPECT_CALL(delegate, OnNotifyListenersRequested());
   caller_managed_voter->SetVote(base::MEMORY_PRESSURE_LEVEL_CRITICAL,
                                 /*notify_listeners=*/true);
@@ -334,7 +338,7 @@ TEST(MemoryPressureVoterTest, CallerManagedCriticalOverridesPeriodicModerate) {
   // The caller-managed voter drops back to NONE: the aggregate level returns
   // to MODERATE, held by the periodic voter, so the moderate timer resumes.
   EXPECT_CALL(delegate, OnMemoryPressureLevelChanged(
-                            base::MEMORY_PRESSURE_LEVEL_MODERATE));
+                            base::MEMORY_PRESSURE_LEVEL_MODERATE, false));
   EXPECT_CALL(delegate, OnNotifyListenersRequested());
   caller_managed_voter->SetVote(base::MEMORY_PRESSURE_LEVEL_NONE,
                                 /*notify_listeners=*/true);
@@ -346,8 +350,8 @@ TEST(MemoryPressureVoterTest, CallerManagedCriticalOverridesPeriodicModerate) {
   testing::Mock::VerifyAndClearExpectations(&delegate);
 
   // Cleanup votes before delegate goes out of scope.
-  EXPECT_CALL(delegate,
-              OnMemoryPressureLevelChanged(base::MEMORY_PRESSURE_LEVEL_NONE));
+  EXPECT_CALL(delegate, OnMemoryPressureLevelChanged(
+                            base::MEMORY_PRESSURE_LEVEL_NONE, false));
   EXPECT_CALL(delegate, OnNotifyListenersRequested());
   periodic_voter->SetVote(base::MEMORY_PRESSURE_LEVEL_NONE);
   testing::Mock::VerifyAndClearExpectations(&delegate);
@@ -365,7 +369,7 @@ TEST(MemoryPressureVoterTest, PeriodicVoteJoiningCallerManagedLevel) {
 
   // The caller-managed voter enters CRITICAL first: no timer.
   EXPECT_CALL(delegate, OnMemoryPressureLevelChanged(
-                            base::MEMORY_PRESSURE_LEVEL_CRITICAL));
+                            base::MEMORY_PRESSURE_LEVEL_CRITICAL, false));
   EXPECT_CALL(delegate, OnNotifyListenersRequested());
   caller_managed_voter->SetVote(base::MEMORY_PRESSURE_LEVEL_CRITICAL,
                                 /*notify_listeners=*/true);
@@ -394,11 +398,60 @@ TEST(MemoryPressureVoterTest, PeriodicVoteJoiningCallerManagedLevel) {
 
   // Cleanup votes before delegate goes out of scope.
   EXPECT_CALL(delegate, OnMemoryPressureLevelChanged(
-                            base::MEMORY_PRESSURE_LEVEL_MODERATE));
+                            base::MEMORY_PRESSURE_LEVEL_MODERATE, false));
   caller_managed_voter.reset();
-  EXPECT_CALL(delegate,
-              OnMemoryPressureLevelChanged(base::MEMORY_PRESSURE_LEVEL_NONE));
+  EXPECT_CALL(delegate, OnMemoryPressureLevelChanged(
+                            base::MEMORY_PRESSURE_LEVEL_NONE, false));
   periodic_voter.reset();
+}
+
+TEST(MemoryPressureVoterTest, DiskOnlyCriticalTracking) {
+  base::test::SingleThreadTaskEnvironment task_environment{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  testing::StrictMock<TestDelegate> delegate;
+  MemoryPressureVoteAggregator aggregator(&delegate);
+  auto disk_voter = aggregator.CreateVoter(/*is_disk_voter=*/true);
+  auto memory_voter = aggregator.CreateVoter();
+
+  // Disk voter enters CRITICAL alone: the level change carries the disk-only
+  // state, with no separate OnDiskOnlyCriticalChanged() call.
+  EXPECT_CALL(delegate, OnMemoryPressureLevelChanged(
+                            base::MEMORY_PRESSURE_LEVEL_CRITICAL, true));
+  disk_voter->SetVote(base::MEMORY_PRESSURE_LEVEL_CRITICAL,
+                      /*notify_listeners=*/false);
+  testing::Mock::VerifyAndClearExpectations(&delegate);
+
+  // Memory voter enters MODERATE: critical is still caused solely by disk.
+  memory_voter->SetVote(base::MEMORY_PRESSURE_LEVEL_MODERATE,
+                        /*notify_listeners=*/false);
+  testing::Mock::VerifyAndClearExpectations(&delegate);
+
+  // Memory voter enters CRITICAL: critical is no longer disk-only, while the
+  // aggregate level stays CRITICAL.
+  EXPECT_CALL(delegate, OnDiskOnlyCriticalChanged(false));
+  memory_voter->SetVote(base::MEMORY_PRESSURE_LEVEL_CRITICAL,
+                        /*notify_listeners=*/false);
+  testing::Mock::VerifyAndClearExpectations(&delegate);
+
+  // Memory voter drops back to MODERATE while disk stays CRITICAL: critical
+  // becomes disk-only again.
+  EXPECT_CALL(delegate, OnDiskOnlyCriticalChanged(true));
+  memory_voter->SetVote(base::MEMORY_PRESSURE_LEVEL_MODERATE,
+                        /*notify_listeners=*/false);
+  testing::Mock::VerifyAndClearExpectations(&delegate);
+
+  // Disk voter drops to NONE: the level change to MODERATE implies that
+  // critical is no longer disk-only.
+  EXPECT_CALL(delegate, OnMemoryPressureLevelChanged(
+                            base::MEMORY_PRESSURE_LEVEL_MODERATE, false));
+  disk_voter->SetVote(base::MEMORY_PRESSURE_LEVEL_NONE,
+                      /*notify_listeners=*/false);
+  testing::Mock::VerifyAndClearExpectations(&delegate);
+
+  EXPECT_CALL(delegate, OnMemoryPressureLevelChanged(
+                            base::MEMORY_PRESSURE_LEVEL_NONE, false));
+  memory_voter.reset();
+  disk_voter.reset();
 }
 
 }  // namespace memory_pressure

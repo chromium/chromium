@@ -2877,6 +2877,27 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Memory.PressureLevel2.OS" enum="MemoryPressureLevel"
+    expires_after="2027-09-01">
+  <owner>andresrperez@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    The time spent in each memory pressure state according to the native Apple
+    kernel dispatch source, in seconds. Recorded on all Apple platforms when the
+    OS memory pressure state changes, at shutdown, or when it hasn't been
+    recorded in the last 5 minutes. Because this tracks the kernel memory
+    pressure signal in isolation, the Disk bucket is never recorded.
+
+    On macOS, this is recorded in all experiment arms, including those where a
+    Chrome-computed threshold evaluator has replaced the OS signal as the voting
+    evaluator.
+
+    As with Memory.PressureLevel2, the values from this histogram shouldn't be
+    used directly; users should look at the percentage of samples in each
+    bucket.
+  </summary>
+</histogram>
+
 <histogram name="Memory.PressureWindowDuration2.{Type}" units="ms"
     expires_after="2027-04-18">
   <owner>fdoray@chromium.org</owner>

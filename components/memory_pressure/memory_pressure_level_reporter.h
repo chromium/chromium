@@ -37,16 +37,21 @@ class MemoryPressureLevelReporter {
   ~MemoryPressureLevelReporter();
 
   // Should be called whenever the current memory pressure level changes.
-  void OnMemoryPressureLevelChanged(base::MemoryPressureLevel new_level);
+  // |new_disk_only_critical| is true if |new_level| is CRITICAL solely because
+  // of low disk space. Both are updated together so the elapsed interval is
+  // attributed to the previous state exactly once.
+  void OnMemoryPressureLevelChanged(base::MemoryPressureLevel new_level,
+                                    bool new_disk_only_critical = false);
 
-  // Updates disk and OS pressure state. Time is only attributed to the disk
-  // bucket when disk pressure is active and the OS level is not critical.
-  void SetDiskPressureState(bool new_is_disk_pressure);
-  void SetOsPressureLevel(base::MemoryPressureLevel new_os_pressure_level);
+  // Updates whether critical pressure is caused solely by low disk space, in
+  // which case critical duration is attributed to the disk bucket. Used when
+  // the level stays CRITICAL.
+  void SetDiskOnlyCritical(bool new_disk_only_critical);
 
  private:
   void ReportHistogram(base::TimeTicks now);
   void StartPeriodicTimer();
+  void OnPeriodicReportingTimer();
 
   const std::optional<std::string> histogram_name_;
   const std::optional<std::string> transition_prefix_;
@@ -63,13 +68,9 @@ class MemoryPressureLevelReporter {
   // episode start marker.
   base::TimeTicks last_report_time_ = base::TimeTicks::Now();
 
-  // Tracks whether the current critical pressure is due to low disk space.
-  // When true, |os_pressure_level_| indicates the OS-reported level so that
-  // time is only attributed to the disk bucket when the OS is not also
-  // critical.
-  bool is_disk_pressure_ = false;
-  base::MemoryPressureLevel os_pressure_level_ =
-      base::MEMORY_PRESSURE_LEVEL_NONE;
+  // Tracks whether the current critical pressure is caused solely by low disk
+  // space.
+  bool is_disk_only_critical_ = false;
 
   // The reporting of the pressure level histogram is done in seconds, the
   // duration in a given pressure state will be floored. This means that some

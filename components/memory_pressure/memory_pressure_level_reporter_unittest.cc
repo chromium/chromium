@@ -262,8 +262,8 @@ TEST(MemoryPressureLevelReporterTest, MemoryPressureHistogramDiskSpace) {
   const char* kHistogram = "Memory.PressureLevel2";
 
   // NONE -> CRITICAL (simulated via disk pressure).
-  reporter->SetDiskPressureState(true);
-  reporter->OnMemoryPressureLevelChanged(base::MEMORY_PRESSURE_LEVEL_CRITICAL);
+  reporter->OnMemoryPressureLevelChanged(base::MEMORY_PRESSURE_LEVEL_CRITICAL,
+                                         /*new_disk_only_critical=*/true);
 
   task_environment.AdvanceClock(kDelay);
   reporter->OnMemoryPressureLevelChanged(base::MEMORY_PRESSURE_LEVEL_NONE);
@@ -275,46 +275,6 @@ TEST(MemoryPressureLevelReporterTest, MemoryPressureHistogramDiskSpace) {
       kHistogram, static_cast<int>(base::MEMORY_PRESSURE_LEVEL_CRITICAL), 0);
 }
 
-TEST(MemoryPressureLevelReporterTest, PressureWindowDurationDiskSpace) {
-  base::test::SingleThreadTaskEnvironment task_environment(
-      base::test::TaskEnvironment::MainThreadType::IO,
-      base::test::TaskEnvironment::TimeSource::MOCK_TIME);
-
-  MemoryPressureLevelReporter reporter(base::MEMORY_PRESSURE_LEVEL_MODERATE);
-  base::HistogramTester histogram_tester;
-
-  // Moderate -> Critical (simulated).
-  reporter.SetDiskPressureState(true);
-  task_environment.AdvanceClock(base::Seconds(12));
-  reporter.OnMemoryPressureLevelChanged(base::MEMORY_PRESSURE_LEVEL_CRITICAL);
-
-  // This transition should NOT be reported because is_disk_pressure_ is true.
-  histogram_tester.ExpectTotalCount(
-      "Memory.PressureWindowDuration2.ModerateToCritical", 0);
-
-  // Critical (simulated) -> None.
-  task_environment.AdvanceClock(base::Seconds(20));
-  reporter.OnMemoryPressureLevelChanged(base::MEMORY_PRESSURE_LEVEL_NONE);
-
-  // This transition should NOT be reported because is_disk_pressure_ was true
-  // during it.
-  histogram_tester.ExpectTotalCount(
-      "Memory.PressureWindowDuration2.CriticalToNone", 0);
-
-  // Now set disk pressure inactive.
-  reporter.SetDiskPressureState(false);
-
-  // Now do a normal transition: Moderate -> Critical (OS).
-  reporter.OnMemoryPressureLevelChanged(base::MEMORY_PRESSURE_LEVEL_MODERATE);
-  task_environment.AdvanceClock(base::Seconds(15));
-  reporter.OnMemoryPressureLevelChanged(base::MEMORY_PRESSURE_LEVEL_CRITICAL);
-
-  // This transition SHOULD be reported!
-  histogram_tester.ExpectTimeBucketCount(
-      "Memory.PressureWindowDuration2.ModerateToCritical", base::Seconds(15),
-      1);
-}
-
 TEST(MemoryPressureLevelReporterTest, DiskSpacePressureBucket) {
   base::test::SingleThreadTaskEnvironment task_environment(
       base::test::TaskEnvironment::MainThreadType::IO,
@@ -322,11 +282,10 @@ TEST(MemoryPressureLevelReporterTest, DiskSpacePressureBucket) {
   MemoryPressureLevelReporter reporter(base::MEMORY_PRESSURE_LEVEL_CRITICAL);
   base::HistogramTester histogram_tester;
 
-  // Disk pressure turns on while OS is at NONE.
-  reporter.SetOsPressureLevel(base::MEMORY_PRESSURE_LEVEL_NONE);
-  reporter.SetDiskPressureState(true);
+  // Critical pressure is caused solely by disk pressure.
+  reporter.SetDiskOnlyCritical(true);
   task_environment.AdvanceClock(base::Seconds(10));
-  reporter.SetDiskPressureState(false);
+  reporter.SetDiskOnlyCritical(false);
 
   // Time should be attributed to the disk bucket (3), not critical (2).
   histogram_tester.ExpectBucketCount(
@@ -346,21 +305,16 @@ TEST(MemoryPressureLevelReporterTest,
   MemoryPressureLevelReporter reporter(base::MEMORY_PRESSURE_LEVEL_CRITICAL);
   base::HistogramTester histogram_tester;
 
-  // Disk pressure turns on while OS is at NONE — should go to disk bucket.
-  reporter.SetOsPressureLevel(base::MEMORY_PRESSURE_LEVEL_NONE);
-  reporter.SetDiskPressureState(true);
+  // Disk-only critical pressure for 10s — should go to disk bucket.
+  reporter.SetDiskOnlyCritical(true);
   task_environment.AdvanceClock(base::Seconds(10));
 
-  // OS transitions to CRITICAL while disk pressure is still active.
-  // The reporter should flush the 10s of disk-only time to bucket 3.
-  reporter.SetOsPressureLevel(base::MEMORY_PRESSURE_LEVEL_CRITICAL);
-  task_environment.AdvanceClock(base::Seconds(20));
+  // A memory voter also becomes CRITICAL, so critical pressure is no longer
+  // disk-only. The reporter should flush the 10s of disk-only time to bucket 3.
+  reporter.SetDiskOnlyCritical(false);
+  task_environment.AdvanceClock(base::Seconds(25));
 
-  // Disk pressure turns off, OS is still CRITICAL.
-  reporter.SetDiskPressureState(false);
-  task_environment.AdvanceClock(base::Seconds(5));
-
-  // Flush the remaining 5s by transitioning to NONE.
+  // Flush the remaining 25s by transitioning to NONE.
   reporter.OnMemoryPressureLevelChanged(base::MEMORY_PRESSURE_LEVEL_NONE);
 
   // 10s should be in disk bucket (3), 25s should be in critical bucket (2).

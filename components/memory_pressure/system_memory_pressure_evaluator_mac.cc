@@ -13,7 +13,6 @@
 #include "base/functional/bind.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
-#include "components/memory_pressure/multi_source_memory_pressure_monitor.h"
 
 namespace memory_pressure::mac {
 
@@ -76,10 +75,6 @@ SystemMemoryPressureEvaluator::SystemMemoryPressureEvaluator(
   // Only update initialization vote, without triggering notifications, to
   // prevent unexpected results from event listeners during initialization
   UpdatePressureLevel();
-
-  if (auto* monitor = MultiSourceMemoryPressureMonitor::Get()) {
-    monitor->SetOsPressureLevel(os_pressure_level_);
-  }
 }
 
 SystemMemoryPressureEvaluator::~SystemMemoryPressureEvaluator() {
@@ -107,14 +102,15 @@ void SystemMemoryPressureEvaluator::UpdatePressureLevel() {
   os_pressure_level_ =
       MemoryPressureLevelForMacMemoryPressureLevel(GetMacMemoryPressureLevel());
 
-  // Lazy initialization of the OS-only transition reporter.
-  if (!os_transition_reporter_) {
-    os_transition_reporter_ = std::make_unique<MemoryPressureLevelReporter>(
-        os_pressure_level_, std::nullopt, "Memory.PressureWindowDuration2.");
+  // Recorded in every arm, including when the OS signal is not voting.
+  if (!os_reporter_) {
+    os_reporter_ = std::make_unique<MemoryPressureLevelReporter>(
+        os_pressure_level_, "Memory.PressureLevel2.OS",
+        "Memory.PressureWindowDuration2.");
     last_os_pressure_level_ = os_pressure_level_;
   } else if (os_pressure_level_ != last_os_pressure_level_) {
     last_os_pressure_level_ = os_pressure_level_;
-    os_transition_reporter_->OnMemoryPressureLevelChanged(os_pressure_level_);
+    os_reporter_->OnMemoryPressureLevelChanged(os_pressure_level_);
   }
 
   SetCurrentVote(os_pressure_level_);
@@ -133,12 +129,7 @@ void SystemMemoryPressureEvaluator::UpdatePressureAndManageNotifications() {
   // |current_vote_| and UMA get updated to the current value.
   UpdatePressureLevel();
 
-  // Notify the monitor of the OS pressure level so the reporter can properly
-  // attribute metrics between OS memory pressure and auxiliary disk pressure.
-  if (auto* monitor = MultiSourceMemoryPressureMonitor::Get()) {
-    monitor->SetOsPressureLevel(os_pressure_level_);
-  }
-
+  // Run the callback that's waiting on memory pressure change notifications.
   if (current_vote() != old_vote) {
     SendCurrentVote();
   }

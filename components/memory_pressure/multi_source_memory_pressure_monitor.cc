@@ -66,29 +66,24 @@ void MultiSourceMemoryPressureMonitor::MaybeStartPlatformVoter() {
 }
 
 std::unique_ptr<MemoryPressureVoter>
-MultiSourceMemoryPressureMonitor::CreateVoter() {
+MultiSourceMemoryPressureMonitor::CreateVoter(bool is_disk_voter) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return aggregator_.CreateVoter();
+  return aggregator_.CreateVoter(is_disk_voter);
 }
 
-void MultiSourceMemoryPressureMonitor::SetDiskPressureState(
-    bool new_is_disk_pressure) {
+void MultiSourceMemoryPressureMonitor::OnDiskOnlyCriticalChanged(
+    bool is_disk_only_critical) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  level_reporter_.SetDiskPressureState(new_is_disk_pressure);
-}
-
-void MultiSourceMemoryPressureMonitor::SetOsPressureLevel(
-    base::MemoryPressureLevel new_os_pressure_level) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  level_reporter_.SetOsPressureLevel(new_os_pressure_level);
+  level_reporter_.SetDiskOnlyCritical(is_disk_only_critical);
 }
 
 void MultiSourceMemoryPressureMonitor::OnMemoryPressureLevelChanged(
-    base::MemoryPressureLevel level) {
+    base::MemoryPressureLevel level,
+    bool is_disk_only_critical) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_NE(current_pressure_level_, level);
 
-  level_reporter_.OnMemoryPressureLevelChanged(level);
+  level_reporter_.OnMemoryPressureLevelChanged(level, is_disk_only_critical);
 
   TRACE_EVENT_INSTANT(
       "base", "MultiSourceMemoryPressureMonitor::OnMemoryPressureLevelChanged",

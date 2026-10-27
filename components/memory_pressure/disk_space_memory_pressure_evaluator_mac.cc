@@ -12,7 +12,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
-#include "components/memory_pressure/multi_source_memory_pressure_monitor.h"
 
 namespace memory_pressure::mac {
 
@@ -86,12 +85,6 @@ void DiskSpaceMemoryPressureEvaluator::UpdatePressureAndManageNotifications(
     return;
   }
   SetCurrentVote(new_disk_vote);
-
-  if (auto* monitor = MultiSourceMemoryPressureMonitor::Get()) {
-    monitor->SetDiskPressureState(new_disk_vote ==
-                                  base::MEMORY_PRESSURE_LEVEL_CRITICAL);
-  }
-
   SendCurrentVote();
 }
 
