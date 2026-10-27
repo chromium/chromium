@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_FLEX_FLEX_LINE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_FLEX_FLEX_LINE_H_
 
+#include "base/check_op.h"
 #include "third_party/blink/renderer/core/layout/block_node.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
@@ -65,18 +66,28 @@ struct FlexLine {
   DISALLOW_NEW();
 
  public:
-  FlexLine(Vector<wtf_size_t> item_indices,
+  FlexLine(wtf_size_t first_item_index,
+           wtf_size_t item_count,
            LayoutUnit main_axis_free_space,
            LayoutUnit line_cross_size,
            LayoutUnit major_baseline,
            LayoutUnit minor_baseline,
            unsigned main_axis_auto_margin_count)
-      : item_indices(std::move(item_indices)),
+      : first_item_index(first_item_index),
+        item_count(item_count),
         main_axis_free_space(main_axis_free_space),
         line_cross_size(line_cross_size),
         major_baseline(major_baseline),
         minor_baseline(minor_baseline),
-        main_axis_auto_margin_count(main_axis_auto_margin_count) {}
+        main_axis_auto_margin_count(main_axis_auto_margin_count) {
+    CHECK_GT(item_count, 0u);
+  }
+
+  wtf_size_t ItemIndexAt(wtf_size_t index_in_line, bool reversed) const {
+    CHECK_LT(index_in_line, item_count);
+    return first_item_index +
+           (reversed ? item_count - index_in_line - 1 : index_in_line);
+  }
 
   LayoutUnit LineCrossEnd() const {
     return line_cross_size + cross_axis_offset + item_offset_adjustment;
@@ -84,7 +95,10 @@ struct FlexLine {
 
   void Trace(Visitor* visitor) const { visitor->Trace(line_items_data); }
 
-  Vector<wtf_size_t> item_indices;
+  // Flex items are indexed in order before line breaking, so each line is a
+  // contiguous range even when order-modified or fragmented.
+  wtf_size_t first_item_index;
+  wtf_size_t item_count;
   LayoutUnit main_axis_free_space;
   LayoutUnit line_cross_size;
   LayoutUnit major_baseline;
@@ -102,7 +116,7 @@ struct FlexLine {
   // for gap decoration purposes.
   LayoutUnit effective_gap_between_items;
 
-  // These fields are only used/populated during fragmentation.
+  // Fragmentation state.
   LayoutUnit item_offset_adjustment;
   bool has_seen_all_children = false;
   // Set at the end of each fragmentainer. True if an item in this line has

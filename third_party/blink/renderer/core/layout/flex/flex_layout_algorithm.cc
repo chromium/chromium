@@ -8,6 +8,7 @@
 #include <optional>
 #include <ranges>
 
+#include "base/check_op.h"
 #include "base/types/optional_util.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/layout/baseline_utils.h"
@@ -631,15 +632,10 @@ void FlexLayoutAlgorithm::SetReadingFlowNodes(
   // Given CSS reading-flow, flex-flow, flex-direction; read values
   // in correct order.
   auto add_flex_items = [&](const FlexLine& line) {
-    if (reading_flow == EReadingFlow::kFlexFlow && is_reverse_direction_) {
-      for (const wtf_size_t item_index :
-           std::views::reverse(line.item_indices)) {
-        add_item_if_needed(item_index);
-      }
-    } else {
-      for (const wtf_size_t item_index : line.item_indices) {
-        add_item_if_needed(item_index);
-      }
+    const bool reverse =
+        reading_flow == EReadingFlow::kFlexVisual && is_reverse_direction_;
+    for (wtf_size_t i = 0; i < line.item_count; ++i) {
+      add_item_if_needed(line.ItemIndexAt(i, reverse));
     }
   };
   if (reading_flow == EReadingFlow::kFlexFlow && is_wrap_reverse_) {
@@ -1516,9 +1512,6 @@ void FlexLayoutAlgorithm::PlaceFlexItems(
                line.sum_hypothetical_main_size, gap_between_items_)
         .Run();
 
-    Vector<wtf_size_t> item_indices;
-    item_indices.ReserveInitialCapacity(line.count);
-
     LayoutUnit main_axis_free_space =
         main_axis_inner_size - (line.count - 1u) * gap_between_items_;
     LayoutUnit line_cross_size;
@@ -1529,7 +1522,8 @@ void FlexLayoutAlgorithm::PlaceFlexItems(
     unsigned main_axis_auto_margin_count = 0;
 
     for (const FlexItem& flex_item : line_items) {
-      item_indices.push_back(flex_item.item_index);
+      CHECK_EQ(flex_item.item_index, line_items.front().item_index +
+                                         (&flex_item - line_items.data()));
       main_axis_free_space -= flex_item.FlexedMarginBoxSize();
       main_axis_auto_margin_count += flex_item.main_axis_auto_margin_count;
 
@@ -1618,9 +1612,10 @@ void FlexLayoutAlgorithm::PlaceFlexItems(
     // Ensure that we use the definite line cross-line if available.
     line_cross_size = definite_line_cross_size.value_or(line_cross_size);
 
-    flex_lines->emplace_back(std::move(item_indices), main_axis_free_space,
-                             line_cross_size, max_major_ascent,
-                             max_minor_ascent, main_axis_auto_margin_count);
+    flex_lines->emplace_back(line_items.front().item_index, line.count,
+                             main_axis_free_space, line_cross_size,
+                             max_major_ascent, max_minor_ascent,
+                             main_axis_auto_margin_count);
 
     sum_line_cross_size += line_cross_size;
   }
@@ -1653,12 +1648,6 @@ void FlexLayoutAlgorithm::PlaceFlexItems(
 void FlexLayoutAlgorithm::ApplyReversals(FlexLineVector* flex_lines) {
   if (is_wrap_reverse_) {
     flex_lines->Reverse();
-  }
-
-  if (is_reverse_direction_) {
-    for (auto& flex_line : *flex_lines) {
-      flex_line.item_indices.Reverse();
-    }
   }
 }
 
@@ -1884,7 +1873,7 @@ LayoutResult::EStatus FlexLayoutAlgorithm::GiveItemsFinalPositionAndSize(
                                  flex_line.main_axis_auto_margin_count)
             : LayoutUnitDiffuser();
 
-    const wtf_size_t line_items_size = flex_line.item_indices.size();
+    const wtf_size_t line_items_size = flex_line.item_count;
     LayoutUnitDiffuser space_between_items = ContentDistributionSpace(
         justify_content, main_axis_free_space, line_items_size);
 
@@ -1896,7 +1885,6 @@ LayoutResult::EStatus FlexLayoutAlgorithm::GiveItemsFinalPositionAndSize(
         InitialContentPositionOffset(justify_content, main_axis_free_space,
                                      line_items_size, is_reverse_direction_);
 
-    wtf_size_t item_index_in_line = 0;
     LayoutUnit border_scrollbar_padding =
         is_column_ ? container_builder_.BorderScrollbarPadding().block_end
                    : container_builder_.BorderScrollbarPadding().inline_end;
@@ -1905,7 +1893,10 @@ LayoutResult::EStatus FlexLayoutAlgorithm::GiveItemsFinalPositionAndSize(
                          border_scrollbar_padding
                    : container_builder_.InlineSize() - border_scrollbar_padding;
 
-    for (wtf_size_t item_index : flex_line.item_indices) {
+    for (wtf_size_t item_index_in_line = 0;
+         item_index_in_line < line_items_size; ++item_index_in_line) {
+      const wtf_size_t item_index =
+          flex_line.ItemIndexAt(item_index_in_line, is_reverse_direction_);
       const FlexItem& item = flex_items_[item_index];
 
       const ConstraintSpace child_space = BuildSpaceForLayout(
@@ -1942,11 +1933,11 @@ LayoutResult::EStatus FlexLayoutAlgorithm::GiveItemsFinalPositionAndSize(
           // Treat all columns as a "row" of columns, and accumulate the initial
           // and final break values for all columns, which will be propagated to
           // the container.
-          if (item_index == flex_line.item_indices.front()) {
+          if (item_index_in_line == 0) {
             (*row_break_between_outputs)[0] = JoinFragmentainerBreakValues(
                 (*row_break_between_outputs)[0], item_break_before);
           }
-          if (item_index == flex_line.item_indices.back()) {
+          if (item_index_in_line == line_items_size - 1) {
             (*row_break_between_outputs)[1] = JoinFragmentainerBreakValues(
                 (*row_break_between_outputs)[1], item_break_after);
           }
@@ -2084,8 +2075,7 @@ LayoutResult::EStatus FlexLayoutAlgorithm::GiveItemsFinalPositionAndSize(
           !InvolvedInBlockFragmentation(container_builder_)) {
         // These are relative to the current flex line.
         const bool is_first_item = item_index_in_line == 0;
-        const bool is_last_item =
-            item_index_in_line == flex_line.item_indices.size() - 1;
+        const bool is_last_item = item_index_in_line == line_items_size - 1;
 
         gap_accumulator->BuildGapsForCurrentItem(
             *flex_lines, flex_line_idx, item_index_in_line, offset,
@@ -2093,8 +2083,6 @@ LayoutResult::EStatus FlexLayoutAlgorithm::GiveItemsFinalPositionAndSize(
             flex_line.cross_axis_offset, flex_line.LineCrossEnd(),
             container_main_end);
       }
-
-      item_index_in_line++;
     }
 
     line_cross_axis_offset += flex_line.line_cross_size +

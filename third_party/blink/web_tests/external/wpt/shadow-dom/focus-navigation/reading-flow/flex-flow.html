@@ -26,6 +26,20 @@
     flex-wrap: wrap;
     reading-flow: flex-flow;
 }
+
+.reversed {
+    display: flex;
+    flex-flow: row-reverse wrap-reverse;
+    reading-flow: flex-flow;
+    width: 100px;
+}
+
+.reversed > button {
+    box-sizing: border-box;
+    flex: none;
+    width: 50px;
+    height: 20px;
+}
 </style>
 
 <div class="test-case" data-expect="E1,C1,A1,B1,D1"
@@ -58,6 +72,16 @@
     <button id="C3">Item C</button>
     <button id="D3">Item D</button>
     <button id="E3">Item E</button>
+  </div>
+</div>
+
+<div class="test-case" data-expect="D4,A4,B4,C4"
+      data-description="Flex-flow follows order-modified items with row-reverse and wrap-reverse">
+  <div class="reversed">
+    <button id="A4">A</button>
+    <button id="B4">B</button>
+    <button id="C4">C</button>
+    <button id="D4" style="order: -1">D</button>
   </div>
 </div>
 

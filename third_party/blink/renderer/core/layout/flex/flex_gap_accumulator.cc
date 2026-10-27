@@ -252,7 +252,7 @@ void FlexGapAccumulator::RecordFragmentedFlexCrossGapDecorationIndex(
     wtf_size_t line_start = 0;
     for (const FlexLine& line : flex_lines) {
       const wtf_size_t line_gap_count =
-          line.item_indices.empty() ? 0u : line.item_indices.size() - 1;
+          line.item_count == 0 ? 0u : line.item_count - 1;
       fragmented_flex_line_gap_ranges_.emplace_back(
           GapGeometry::GapIndexRange{line_start, line_gap_count});
       line_start += line_gap_count;
@@ -399,7 +399,7 @@ void FlexGapAccumulator::CalculateColumnFlexLineRowGapStart(
   // `previous_gap_count` using the number of items in the previous flex line.
   if (!previous_gap_data) {
     const wtf_size_t num_items_in_previous_line =
-        flex_lines[global_line_index - 1].item_indices.size();
+        flex_lines[global_line_index - 1].item_count;
     previous_start =
         row_gap_break_token_data_[global_line_index - 1].first_row_gap_index;
     if (num_items_in_previous_line > 1) {
