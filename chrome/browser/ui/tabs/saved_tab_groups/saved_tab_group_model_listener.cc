@@ -7,6 +7,7 @@
 #include <algorithm>
 
 #include "base/check.h"
+#include "base/containers/map_util.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/browser_window/public/browser_collection.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -96,15 +97,16 @@ void SavedTabGroupModelListener::OnTabGroupWillBeRemoved(
 
 void SavedTabGroupModelListener::OnTabGroupChanged(
     const TabGroupChange& change) {
-  if (!local_tab_group_listeners_.contains(change.group)) {
+  LocalTabGroupListener* listener =
+      base::FindOrNull(local_tab_group_listeners_, change.group);
+  if (!listener) {
     return;
   }
 
   switch (change.type) {
     // Called when a group's title or color changes.
     case TabGroupChange::kVisualsChanged: {
-      local_tab_group_listeners_.at(change.group)
-          .UpdateVisualDataFromLocal(change.GetVisualsChange());
+      listener->UpdateVisualDataFromLocal(change.GetVisualsChange());
       return;
     }
 
@@ -125,7 +127,7 @@ void SavedTabGroupModelListener::OnTabGroupChanged(
       // the saved group will get emptied out during the move.
       if (change.GetCreateChange()->reason() ==
           TabGroupChange::TabGroupCreationReason::kNewGroupCreated) {
-        CHECK(local_tab_group_listeners_.at(change.group).IsTrackingPaused());
+        CHECK(listener->IsTrackingPaused());
       }
       return;
     }
@@ -161,15 +163,15 @@ void SavedTabGroupModelListener::TabGroupedStateChanged(
   }
 
   // Add it to its new group.
-  if (new_local_group_id.has_value() &&
-      local_tab_group_listeners_.contains(new_local_group_id.value())) {
-    LocalTabGroupListener& listener =
-        local_tab_group_listeners_.at(new_local_group_id.value());
-    const BrowserWindowInterface* const browser =
-        SavedTabGroupUtils::GetBrowserWithTabGroupId(
-            new_local_group_id.value());
-    CHECK(browser);
-    listener.AddTabFromLocal(tab, browser->GetTabStripModel(), index);
+  if (new_local_group_id.has_value()) {
+    if (LocalTabGroupListener* listener = base::FindOrNull(
+            local_tab_group_listeners_, new_local_group_id.value())) {
+      const BrowserWindowInterface* const browser =
+          SavedTabGroupUtils::GetBrowserWithTabGroupId(
+              new_local_group_id.value());
+      CHECK(browser);
+      listener->AddTabFromLocal(tab, browser->GetTabStripModel(), index);
+    }
   }
 }
 
@@ -188,14 +190,13 @@ void SavedTabGroupModelListener::OnTabStripModelChanged(
       }
 
       // Do nothing if the tab is not part of a saved group.
-      if (!local_tab_group_listeners_.contains(local_id.value())) {
+      LocalTabGroupListener* local_tab_group_listener =
+          base::FindOrNull(local_tab_group_listeners_, local_id.value());
+      if (!local_tab_group_listener) {
         return;
       }
 
-      LocalTabGroupListener& local_tab_group_listener =
-          local_tab_group_listeners_.at(local_id.value());
-
-      local_tab_group_listener.MoveWebContentsFromLocal(
+      local_tab_group_listener->MoveWebContentsFromLocal(
           tab_strip_model, change.GetMove()->contents,
           change.GetMove()->to_index);
 
@@ -250,9 +251,9 @@ void SavedTabGroupModelListener::ConnectToLocalTabGroup(
   // group to have connect called on it multiple times. in order to prevent this
   // from causing check failures verify that the group is listened to correctly,
   // and early return
-  if (local_tab_group_listeners_.contains(local_group_id)) {
-    CHECK(local_tab_group_listeners_.at(local_group_id).saved_guid() ==
-          saved_tab_group.saved_guid());
+  if (LocalTabGroupListener* listener =
+          base::FindOrNull(local_tab_group_listeners_, local_group_id)) {
+    CHECK_EQ(listener->saved_guid(), saved_tab_group.saved_guid());
     return;
   }
 
@@ -271,18 +272,18 @@ void SavedTabGroupModelListener::ConnectToLocalTabGroup(
 
 void SavedTabGroupModelListener::PauseTrackingLocalTabGroup(
     const tab_groups::TabGroupId& group_id) {
-  if (!local_tab_group_listeners_.contains(group_id)) {
-    return;
+  if (LocalTabGroupListener* listener =
+          base::FindOrNull(local_tab_group_listeners_, group_id)) {
+    listener->PauseTracking();
   }
-  local_tab_group_listeners_.at(group_id).PauseTracking();
 }
 
 void SavedTabGroupModelListener::ResumeTrackingLocalTabGroup(
     const tab_groups::TabGroupId& group_id) {
-  if (!local_tab_group_listeners_.contains(group_id)) {
-    return;
+  if (LocalTabGroupListener* listener =
+          base::FindOrNull(local_tab_group_listeners_, group_id)) {
+    listener->ResumeTracking();
   }
-  local_tab_group_listeners_.at(group_id).ResumeTracking();
 }
 
 void SavedTabGroupModelListener::PauseLocalObservation() {
@@ -320,11 +321,13 @@ void SavedTabGroupModelListener::RemoveLocalGroupFromSync(
 
 void SavedTabGroupModelListener::UpdateLocalGroupFromSync(
     tab_groups::TabGroupId local_group_id) {
-  if (!local_tab_group_listeners_.contains(local_group_id)) {
+  LocalTabGroupListener* listener =
+      base::FindOrNull(local_tab_group_listeners_, local_group_id);
+  if (!listener) {
     return;
   }
 
-  if (local_tab_group_listeners_.at(local_group_id).UpdateFromSync() ==
+  if (listener->UpdateFromSync() ==
       LocalTabGroupListener::Liveness::kGroupDeleted) {
     DisconnectLocalTabGroup(local_group_id, ClosingSource::kDeletedFromSync);
   }
