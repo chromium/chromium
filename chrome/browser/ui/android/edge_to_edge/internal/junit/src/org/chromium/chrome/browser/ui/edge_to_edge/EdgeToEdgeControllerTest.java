@@ -2617,9 +2617,10 @@ public class EdgeToEdgeControllerTest {
                                 mandatoryGestures)
                         .build();
 
-        // 1. Neither top nor bottom consumed: returns original windowInsets instance.
+        // 1. Neither top, top display cutout, nor bottom consumed: returns original windowInsets
+        // instance.
         WindowInsetsCompat noneConsumed =
-                EdgeToEdgeControllerImpl.consumeWindowInsets(inputInsets, false, false);
+                EdgeToEdgeControllerImpl.consumeWindowInsets(inputInsets, false, false, false);
         assertEquals(inputInsets, noneConsumed);
         assertEquals(statusBars, noneConsumed.getInsets(WindowInsetsCompat.Type.statusBars()));
         assertEquals(captionBar, noneConsumed.getInsets(WindowInsetsCompat.Type.captionBar()));
@@ -2632,9 +2633,10 @@ public class EdgeToEdgeControllerTest {
                 mandatoryGestures,
                 noneConsumed.getInsets(WindowInsetsCompat.Type.mandatorySystemGestures()));
 
-        // 2. Only top consumed: statusBars, captionBar, and top displayCutout are cleared.
+        // 2. Top and top display cutout consumed: statusBars, captionBar, and top displayCutout
+        // are cleared.
         WindowInsetsCompat topConsumed =
-                EdgeToEdgeControllerImpl.consumeWindowInsets(inputInsets, true, false);
+                EdgeToEdgeControllerImpl.consumeWindowInsets(inputInsets, true, true, false);
         assertEquals(Insets.NONE, topConsumed.getInsets(WindowInsetsCompat.Type.statusBars()));
         assertEquals(Insets.NONE, topConsumed.getInsets(WindowInsetsCompat.Type.captionBar()));
         assertEquals(
@@ -2647,10 +2649,35 @@ public class EdgeToEdgeControllerTest {
                 mandatoryGestures,
                 topConsumed.getInsets(WindowInsetsCompat.Type.mandatorySystemGestures()));
 
-        // 3. Only bottom consumed: navigationBars, tappableElement, ime, and bottom mandatory
+        // 3. Top consumed but top display cutout preserved (e.g. persistent fullscreen):
+        // statusBars and captionBar are cleared, while displayCutout is untouched.
+        WindowInsetsCompat topWithoutCutoutConsumed =
+                EdgeToEdgeControllerImpl.consumeWindowInsets(inputInsets, true, false, false);
+        assertEquals(
+                Insets.NONE,
+                topWithoutCutoutConsumed.getInsets(WindowInsetsCompat.Type.statusBars()));
+        assertEquals(
+                Insets.NONE,
+                topWithoutCutoutConsumed.getInsets(WindowInsetsCompat.Type.captionBar()));
+        assertEquals(
+                displayCutout,
+                topWithoutCutoutConsumed.getInsets(WindowInsetsCompat.Type.displayCutout()));
+        assertEquals(
+                navBars,
+                topWithoutCutoutConsumed.getInsets(WindowInsetsCompat.Type.navigationBars()));
+        assertEquals(
+                tappable,
+                topWithoutCutoutConsumed.getInsets(WindowInsetsCompat.Type.tappableElement()));
+        assertEquals(ime, topWithoutCutoutConsumed.getInsets(WindowInsetsCompat.Type.ime()));
+        assertEquals(
+                mandatoryGestures,
+                topWithoutCutoutConsumed.getInsets(
+                        WindowInsetsCompat.Type.mandatorySystemGestures()));
+
+        // 4. Only bottom consumed: navigationBars, tappableElement, ime, and bottom mandatory
         // system gestures are cleared.
         WindowInsetsCompat bottomConsumed =
-                EdgeToEdgeControllerImpl.consumeWindowInsets(inputInsets, false, true);
+                EdgeToEdgeControllerImpl.consumeWindowInsets(inputInsets, false, false, true);
         assertEquals(statusBars, bottomConsumed.getInsets(WindowInsetsCompat.Type.statusBars()));
         assertEquals(captionBar, bottomConsumed.getInsets(WindowInsetsCompat.Type.captionBar()));
         assertEquals(
@@ -2664,9 +2691,9 @@ public class EdgeToEdgeControllerTest {
                 Insets.of(5, TOP_INSET, 15, 0),
                 bottomConsumed.getInsets(WindowInsetsCompat.Type.mandatorySystemGestures()));
 
-        // 4. Both top and bottom consumed.
+        // 5. Both top (including top display cutout) and bottom consumed.
         WindowInsetsCompat bothConsumed =
-                EdgeToEdgeControllerImpl.consumeWindowInsets(inputInsets, true, true);
+                EdgeToEdgeControllerImpl.consumeWindowInsets(inputInsets, true, true, true);
         assertEquals(Insets.NONE, bothConsumed.getInsets(WindowInsetsCompat.Type.statusBars()));
         assertEquals(Insets.NONE, bothConsumed.getInsets(WindowInsetsCompat.Type.captionBar()));
         assertEquals(
@@ -2679,6 +2706,62 @@ public class EdgeToEdgeControllerTest {
         assertEquals(
                 Insets.of(5, TOP_INSET, 15, 0),
                 bothConsumed.getInsets(WindowInsetsCompat.Type.mandatorySystemGestures()));
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.EDGE_TO_EDGE_TOP_INSET)
+    public void testFullscreen_TopInsetDisabled_PreservesDisplayCutout() {
+        Insets displayCutout = Insets.of(0, TOP_INSET, 0, 0);
+        WindowInsetsCompat insetsWithCutout =
+                new WindowInsetsCompat.Builder(SYSTEM_BARS_WINDOW_INSETS)
+                        .setInsets(WindowInsetsCompat.Type.displayCutout(), displayCutout)
+                        .build();
+
+        doReturn(true).when(mFullscreenManager).getPersistentFullscreenMode();
+        mEdgeToEdgeControllerImpl.onEnterFullscreen(
+                mTab, new FullscreenOptions(false, false, INVALID_DISPLAY));
+
+        WindowInsetsCompat result =
+                mEdgeToEdgeControllerImpl.handleWindowInsets(mView, insetsWithCutout);
+        assertEquals(Insets.NONE, result.getInsets(WindowInsetsCompat.Type.statusBars()));
+        assertEquals(Insets.NONE, result.getInsets(WindowInsetsCompat.Type.captionBar()));
+        assertEquals(Insets.NONE, result.getInsets(WindowInsetsCompat.Type.navigationBars()));
+        assertEquals(displayCutout, result.getInsets(WindowInsetsCompat.Type.displayCutout()));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.EDGE_TO_EDGE_TOP_INSET)
+    public void testFullscreen_TopInsetEnabled_PreservesDisplayCutoutInFullscreen() {
+        ChromeFeatureList.sEdgeToEdgeTopInsetEnableTopEdgeToEdge.setForTesting(true);
+        Insets displayCutout = Insets.of(0, TOP_INSET, 0, 0);
+        WindowInsetsCompat insetsWithCutout =
+                new WindowInsetsCompat.Builder(SYSTEM_BARS_WINDOW_INSETS)
+                        .setInsets(WindowInsetsCompat.Type.displayCutout(), displayCutout)
+                        .build();
+
+        doReturn(true).when(mFullscreenManager).getPersistentFullscreenMode();
+        mEdgeToEdgeControllerImpl.onEnterFullscreen(
+                mTab, new FullscreenOptions(false, false, INVALID_DISPLAY));
+
+        WindowInsetsCompat fullscreenResult =
+                mEdgeToEdgeControllerImpl.handleWindowInsets(mView, insetsWithCutout);
+        assertEquals(Insets.NONE, fullscreenResult.getInsets(WindowInsetsCompat.Type.statusBars()));
+        assertEquals(Insets.NONE, fullscreenResult.getInsets(WindowInsetsCompat.Type.captionBar()));
+        assertEquals(
+                displayCutout, fullscreenResult.getInsets(WindowInsetsCompat.Type.displayCutout()));
+
+        doReturn(false).when(mFullscreenManager).getPersistentFullscreenMode();
+        mEdgeToEdgeControllerImpl.onExitFullscreen(mTab);
+
+        WindowInsetsCompat nonFullscreenResult =
+                mEdgeToEdgeControllerImpl.handleWindowInsets(mView, insetsWithCutout);
+        assertEquals(
+                Insets.NONE, nonFullscreenResult.getInsets(WindowInsetsCompat.Type.statusBars()));
+        assertEquals(
+                Insets.NONE, nonFullscreenResult.getInsets(WindowInsetsCompat.Type.captionBar()));
+        assertEquals(
+                Insets.NONE,
+                nonFullscreenResult.getInsets(WindowInsetsCompat.Type.displayCutout()));
     }
 
     @Test

@@ -795,8 +795,10 @@ public class EdgeToEdgeControllerImpl
                 mIsEdgeToEdgeRefactorEnabled
                         ? shouldConsumeTopInsets()
                         : (mAppliedContentViewPadding.top == 0);
+        boolean consumeTopDisplayCutout = shouldConsumeTopDisplayCutout();
         boolean consumeBottomInsets = mAppliedContentViewPadding.bottom == 0;
-        return consumeWindowInsets(windowInsets, consumeTopInsets, consumeBottomInsets);
+        return consumeWindowInsets(
+                windowInsets, consumeTopInsets, consumeTopDisplayCutout, consumeBottomInsets);
     }
 
     // Consume top insets when in persistent fullscreen, when top edge-to-edge is enabled
@@ -811,6 +813,16 @@ public class EdgeToEdgeControllerImpl
             return true;
         }
         return isDrawingToTopEdge();
+    }
+
+    private boolean shouldConsumeTopDisplayCutout() {
+        if (!mIsEdgeToEdgeRefactorEnabled) {
+            return false;
+        }
+        if (mFullscreenManager != null && mFullscreenManager.getPersistentFullscreenMode()) {
+            return false;
+        }
+        return shouldConsumeTopInsets();
     }
 
     private boolean updateVisibilityRects(View rootView) {
@@ -1039,8 +1051,9 @@ public class EdgeToEdgeControllerImpl
     static WindowInsetsCompat consumeWindowInsets(
             WindowInsetsCompat windowInsets,
             boolean consumeTopInsets,
+            boolean consumeTopDisplayCutout,
             boolean consumeBottomInsets) {
-        if (!consumeTopInsets && !consumeBottomInsets) {
+        if (!consumeTopInsets && !consumeTopDisplayCutout && !consumeBottomInsets) {
             return windowInsets;
         }
         var builder = new WindowInsetsCompat.Builder(windowInsets);
@@ -1065,7 +1078,7 @@ public class EdgeToEdgeControllerImpl
                     WindowInsetsCompat.Type.displayCutout(),
                     Insets.of(
                             displayCutout.left,
-                            consumeTopInsets ? 0 : displayCutout.top,
+                            consumeTopDisplayCutout ? 0 : displayCutout.top,
                             displayCutout.right,
                             displayCutout.bottom));
         }
