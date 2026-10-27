@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.tasks.tab_management;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyFloat;
@@ -21,9 +23,7 @@ import android.graphics.Canvas;
 import android.graphics.Point;
 import android.graphics.PointF;
 import android.graphics.drawable.Drawable;
-import android.os.Binder;
 import android.view.DragEvent;
-import android.view.Surface;
 import android.view.View;
 import android.widget.FrameLayout;
 
@@ -36,7 +36,11 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
-import org.robolectric.util.ReflectionHelpers;
+import org.robolectric.annotation.Config;
+import org.robolectric.annotation.Implementation;
+import org.robolectric.annotation.Implements;
+import org.robolectric.annotation.Resetter;
+import org.robolectric.shadows.ShadowView;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Token;
@@ -45,6 +49,7 @@ import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.RobolectricUtil;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.dragdrop.ChromeDropDataAndroid;
 import org.chromium.chrome.browser.dragdrop.ChromeTabDropDataAndroid;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
@@ -66,6 +71,28 @@ import java.util.Collections;
 /** Unit tests for {@link TabSwitcherDragHandler} and {@link AnimatedDragShadowBuilder}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class TabSwitcherDragHandlerUnitTest {
+    @Implements(View.class)
+    public static class ShadowDragView extends ShadowView {
+        private static @Nullable View sLastCancelledDragView;
+        private static @Nullable View sLastUpdatedDragShadowView;
+
+        @Resetter
+        public static void reset() {
+            sLastCancelledDragView = null;
+            sLastUpdatedDragShadowView = null;
+        }
+
+        @Implementation
+        protected void cancelDragAndDrop() {
+            sLastCancelledDragView = realView;
+        }
+
+        @Implementation
+        protected void updateDragShadow(View.DragShadowBuilder shadowBuilder) {
+            sLastUpdatedDragShadowView = realView;
+        }
+    }
+
     private static class TestDelegate implements DragHandlerDelegate {
         boolean mDragStartCalled;
         boolean mDragEndCalled;
@@ -105,7 +132,6 @@ public class TabSwitcherDragHandlerUnitTest {
     @Mock private TabSwitcherBackPressHandlerManager mDragHandlerManager;
     @Mock private DragHandlerDelegate mDragHandlerDelegate;
     @Mock private Canvas mCanvas;
-    @Mock private Surface mDragSurface;
     @Mock private TabModelSelector mTabModelSelector;
     @Mock private TabModel mTabModel;
 
@@ -233,9 +259,8 @@ public class TabSwitcherDragHandlerUnitTest {
     }
 
     @Test
+    @Config(shadows = TabSwitcherDragHandlerUnitTest.ShadowDragView.class)
     public void testAnimatedDragShadowBuilder_ViewResolutionChain() {
-        stubActiveOsDrag();
-
         Activity otherActivity = Robolectric.buildActivity(Activity.class).setup().get();
         View otherWindowView = new View(otherActivity);
         otherActivity.setContentView(otherWindowView);
@@ -255,33 +280,32 @@ public class TabSwitcherDragHandlerUnitTest {
         // 1. Original view is preferred over an attached view, which may be in another window.
         mRootView.addView(originalView);
         builder.update(otherWindowView, /* show= */ false);
-        verify(mDragSurface).unlockCanvasAndPost(mCanvas);
+        assertSame(originalView, ShadowDragView.sLastUpdatedDragShadowView);
 
         // 2. Fallback to attached shadow view
-        clearInvocations(mDragSurface);
+        ShadowDragView.reset();
         mRootView.removeView(originalView);
         mRootView.addView(shadowView);
         builder.update(otherWindowView, /* show= */ true);
-        verify(mDragSurface).unlockCanvasAndPost(mCanvas);
+        assertSame(shadowView, ShadowDragView.sLastUpdatedDragShadowView);
 
         // 3. Last resort: the explicitly provided attached view
-        clearInvocations(mDragSurface);
+        ShadowDragView.reset();
         mRootView.removeView(shadowView);
         mRootView.addView(attachedView);
         builder.update(attachedView, /* show= */ false);
-        verify(mDragSurface).unlockCanvasAndPost(mCanvas);
+        assertSame(attachedView, ShadowDragView.sLastUpdatedDragShadowView);
 
         // 4. No-op when no view is attached
-        clearInvocations(mDragSurface);
+        ShadowDragView.reset();
         mRootView.removeView(attachedView);
         builder.update(attachedView, /* show= */ true);
-        verify(mDragSurface, never()).unlockCanvasAndPost(any());
+        assertNull(ShadowDragView.sLastUpdatedDragShadowView);
     }
 
     @Test
+    @Config(shadows = TabSwitcherDragHandlerUnitTest.ShadowDragView.class)
     public void testShowDragShadow_ViaGlobalState() {
-        stubActiveOsDrag();
-
         View originalView = new View(mActivity);
         mRootView.addView(originalView);
         View shadowView = new View(mActivity);
@@ -297,7 +321,7 @@ public class TabSwitcherDragHandlerUnitTest {
         Token token = DragDropGlobalState.store(1, dropData, builder);
 
         mDragHandler.showDragShadow(/* show= */ false);
-        verify(mDragSurface).unlockCanvasAndPost(mCanvas);
+        assertSame(originalView, ShadowDragView.sLastUpdatedDragShadowView);
 
         DragDropGlobalState.clear(token);
     }
@@ -670,19 +694,18 @@ public class TabSwitcherDragHandlerUnitTest {
     }
 
     @Test
+    @Config(shadows = TabSwitcherDragHandlerUnitTest.ShadowDragView.class)
     public void testHandleEscPress_ExternalDragInProgress_CancelsDragAndDrop() {
         Token token = new Token(1L, 2L);
         TabDragHandlerBase.setDragTokenForTesting(token);
-        stubActiveOsDrag();
 
         View dragSourceView = new View(mActivity);
         mRootView.addView(dragSourceView);
         mDragHandler.mDragSourceView = dragSourceView;
         when(mDragHandlerDelegate.isDragInProcess()).thenReturn(true);
-        assertTrue(hasActiveOsDrag(dragSourceView));
 
         assertTrue(mDragHandler.handleEscPress());
-        assertFalse(hasActiveOsDrag(dragSourceView));
+        assertSame(dragSourceView, ShadowDragView.sLastCancelledDragView);
         verify(mDragHandlerDelegate, never()).handleInternalDragEnd();
     }
 
@@ -729,23 +752,5 @@ public class TabSwitcherDragHandlerUnitTest {
         assertFalse(mDragHandler.handleEscPress());
         verify(mDragHandlerDelegate, never()).handleDragStart(any(), anyFloat(), anyFloat());
         verify(mDragHandlerDelegate, never()).isDragInProcess();
-    }
-
-    /**
-     * Mimics an active OS drag on the window's AttachInfo. {@link View#cancelDragAndDrop()} and
-     * {@link View#updateDragShadow(View.DragShadowBuilder)} are final and not shadowed by
-     * Robolectric, so tests inspect their effects on {@code mDragToken} and {@code mDragSurface}.
-     */
-    private void stubActiveOsDrag() {
-        when(mDragSurface.lockCanvas(any())).thenReturn(mCanvas);
-        when(mDragSurface.lockHardwareCanvas()).thenReturn(mCanvas);
-        Object attachInfo = ReflectionHelpers.getField(mRootView, "mAttachInfo");
-        ReflectionHelpers.setField(attachInfo, "mDragToken", new Binder());
-        ReflectionHelpers.setField(attachInfo, "mDragSurface", mDragSurface);
-    }
-
-    private static boolean hasActiveOsDrag(View view) {
-        Object attachInfo = ReflectionHelpers.getField(view, "mAttachInfo");
-        return attachInfo != null && ReflectionHelpers.getField(attachInfo, "mDragToken") != null;
     }
 }

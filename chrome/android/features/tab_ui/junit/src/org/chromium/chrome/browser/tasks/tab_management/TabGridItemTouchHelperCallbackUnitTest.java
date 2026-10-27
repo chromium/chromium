@@ -53,7 +53,6 @@ import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
-import org.robolectric.util.ReflectionHelpers;
 
 import org.chromium.base.CallbackUtils;
 import org.chromium.base.ContextUtils;
@@ -63,6 +62,7 @@ import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.UserActionTester;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
@@ -91,6 +91,7 @@ public class TabGridItemTouchHelperCallbackUnitTest {
 
     private static class TestGridLayoutManager extends GridLayoutManager {
         private final SparseArray<Rect> mItemBounds = new SparseArray<>();
+        private @Nullable Runnable mOnScrollCallback;
 
         TestGridLayoutManager(Context context) {
             super(context, /* spanCount= */ 2);
@@ -110,6 +111,15 @@ public class TabGridItemTouchHelperCallbackUnitTest {
         @Override
         public boolean supportsPredictiveItemAnimations() {
             return false;
+        }
+
+        @Override
+        public int scrollVerticallyBy(
+                int dy, RecyclerView.Recycler recycler, RecyclerView.State state) {
+            if (mOnScrollCallback != null) {
+                mOnScrollCallback.run();
+            }
+            return 0;
         }
 
         @Override
@@ -232,6 +242,19 @@ public class TabGridItemTouchHelperCallbackUnitTest {
                 View.MeasureSpec.makeMeasureSpec(9, View.MeasureSpec.EXACTLY),
                 View.MeasureSpec.makeMeasureSpec(14, View.MeasureSpec.EXACTLY));
         mRecyclerView.layout(/* left= */ 0, /* top= */ 0, /* right= */ 9, /* bottom= */ 14);
+    }
+
+    private void runDuringScroll(Runnable action) {
+        boolean[] executed = {false};
+        mGridLayoutManager.mOnScrollCallback =
+                () -> {
+                    assertTrue(mRecyclerView.isComputingLayout());
+                    action.run();
+                    executed[0] = true;
+                };
+        mRecyclerView.scrollBy(/* x= */ 0, /* y= */ 1);
+        mGridLayoutManager.mOnScrollCallback = null;
+        assertTrue(executed[0]);
     }
 
     private void setupItemTouchHelperCallback(boolean isDialog) {
@@ -525,9 +548,10 @@ public class TabGridItemTouchHelperCallbackUnitTest {
         mItemTouchHelperCallback.setHoveredTabIndexForTesting(POSITION1);
 
         // Simulate that the recyclerView is scrolling when the drop-to-merge happens.
-        ReflectionHelpers.callInstanceMethod(mRecyclerView, "onEnterLayoutOrScroll");
-
-        mItemTouchHelperCallback.onSelectedChanged(mViewHolder2, ItemTouchHelper.ACTION_STATE_IDLE);
+        runDuringScroll(
+                () ->
+                        mItemTouchHelperCallback.onSelectedChanged(
+                                mViewHolder2, ItemTouchHelper.ACTION_STATE_IDLE));
 
         verify(mGridLayoutManager, never()).removeView(mItemView2);
         verify(mTabModel, never()).mergeTabsToGroup(TAB2_ID, TAB1_ID);
@@ -567,9 +591,10 @@ public class TabGridItemTouchHelperCallbackUnitTest {
         mItemTouchHelperCallback.setUnGroupTabIndexForTesting(POSITION1);
 
         // Simulate that the recyclerView is scrolling when the drop-to-ungroup happens.
-        ReflectionHelpers.callInstanceMethod(mRecyclerView, "onEnterLayoutOrScroll");
-
-        mItemTouchHelperCallback.onSelectedChanged(mViewHolder1, ItemTouchHelper.ACTION_STATE_IDLE);
+        runDuringScroll(
+                () ->
+                        mItemTouchHelperCallback.onSelectedChanged(
+                                mViewHolder1, ItemTouchHelper.ACTION_STATE_IDLE));
 
         verify(mTabUngrouper, never())
                 .ungroupTabs(
