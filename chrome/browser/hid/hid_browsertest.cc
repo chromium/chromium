@@ -289,6 +289,15 @@ class WebHidExtensionBrowserTest : public InProcessBrowserTestMixinHostSupport<
     run_loop.Run();
   }
 
+  void TearDownOnMainThread() override {
+    // Restore the default TickClock because ServiceWorkerVersion outlives
+    // tick_clock_ and would otherwise hold a dangling pointer.
+    content::ResetTickClockToDefaultForAllLiveServiceWorkerVersions(
+        profile()->GetDefaultStoragePartition()->GetServiceWorkerContext());
+    InProcessBrowserTestMixinHostSupport<
+        extensions::ExtensionBrowserTest>::TearDownOnMainThread();
+  }
+
   void SetUpPolicy(const Extension* extension) {
     g_browser_process->local_state()->Set(
         prefs::kManagedWebHidAllowDevicesForUrls,
@@ -388,6 +397,9 @@ class WebHidExtensionBrowserTest : public InProcessBrowserTestMixinHostSupport<
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+ protected:
+  base::SimpleTestTickClock tick_clock_;
+
  private:
 #if BUILDFLAG(IS_CHROMEOS)
   ash::RegularLoggedInBrowserTestMixin logged_in_mixin_{&mixin_host_,
@@ -440,17 +452,8 @@ IN_PROC_BROWSER_TEST_F(WebHidExtensionBrowserTest, RequestDevice) {
 
 // Test the scenario of waking up the service worker upon device events and
 // the service worker being kept alive with active device session.
-// TODO(crbug.com/575141611): Flaky on Linux and ChromeOS.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_DeviceConnectAndOpenDeviceWhenServiceWorkerStopped \
-  DISABLED_DeviceConnectAndOpenDeviceWhenServiceWorkerStopped
-#else
-#define MAYBE_DeviceConnectAndOpenDeviceWhenServiceWorkerStopped \
-  DeviceConnectAndOpenDeviceWhenServiceWorkerStopped
-#endif
-IN_PROC_BROWSER_TEST_F(
-    WebHidExtensionBrowserTest,
-    MAYBE_DeviceConnectAndOpenDeviceWhenServiceWorkerStopped) {
+IN_PROC_BROWSER_TEST_F(WebHidExtensionBrowserTest,
+                       DeviceConnectAndOpenDeviceWhenServiceWorkerStopped) {
   content::ServiceWorkerContext* context =
       profile()->GetDefaultStoragePartition()->GetServiceWorkerContext();
   // Set up an observer for service worker events.
@@ -503,7 +506,6 @@ IN_PROC_BROWSER_TEST_F(
 
   // The device event is handled right after the service worker is activated.
   int64_t service_worker_version_id = sw_observer.GetServiceWorkerVersionId();
-  base::SimpleTestTickClock tick_clock;
   auto device = CreateTestDeviceWithInputAndOutputReports();
   hid_manager()->AddDevice(device.Clone());
   EXPECT_TRUE(connect_listener.WaitUntilSatisfied());
@@ -512,7 +514,7 @@ IN_PROC_BROWSER_TEST_F(
   // Advance clock and the service worker is still alive due to active device
   // session.
   content::AdvanceClockAfterRequestTimeout(context, service_worker_version_id,
-                                           &tick_clock);
+                                           &tick_clock_);
   EXPECT_TRUE(content::TriggerTimeoutAndCheckRunningState(
       context, service_worker_version_id));
   // Since we have active HID device session at this point, click the HID system
@@ -531,7 +533,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(result_catcher.GetNextResult()) << result_catcher.message();
   // Advance clock and check that the receiver service worker stopped.
   content::AdvanceClockAfterRequestTimeout(context, service_worker_version_id,
-                                           &tick_clock);
+                                           &tick_clock_);
   EXPECT_FALSE(content::TriggerTimeoutAndCheckRunningState(
       context, service_worker_version_id));
   sw_observer.WaitForWorkerStop();
@@ -545,7 +547,7 @@ IN_PROC_BROWSER_TEST_F(
   // Advance clock and the service worker is still alive due to active device
   // session.
   content::AdvanceClockAfterRequestTimeout(context, service_worker_version_id,
-                                           &tick_clock);
+                                           &tick_clock_);
   EXPECT_TRUE(content::TriggerTimeoutAndCheckRunningState(
       context, service_worker_version_id));
   // Since we have active HID device session at this point, click the HID system
