@@ -193,12 +193,6 @@ enum AIPageContentClickabilityReason {
   // The node has mouse event handlers like mouseup and mousedown.
   kMouseClick,
 
-  // DEPRECATED: Replaced by kMouseEnter and kMouseOver. Maintained only for
-  // backward compatibility with older serialized page content.
-  // TODO(crbug.com/576774954): Remove once older serialized page content is no
-  // longer supported.
-  kMouseHover,
-
   // The node has a non-bubbling mouseenter event handler.
   kMouseEnter,
 

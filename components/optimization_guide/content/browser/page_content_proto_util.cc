@@ -245,8 +245,6 @@ optimization_guide::proto::ClickabilityReason ConvertClickabilityReason(
       return optimization_guide::proto::CLICKABILITY_REASON_AUTOCOMPLETE;
     case blink::mojom::AIPageContentClickabilityReason::kMouseClick:
       return optimization_guide::proto::CLICKABILITY_REASON_MOUSE_CLICK;
-    case blink::mojom::AIPageContentClickabilityReason::kMouseHover:
-      return optimization_guide::proto::CLICKABILITY_REASON_MOUSE_HOVER;
     case blink::mojom::AIPageContentClickabilityReason::kMouseEnter:
       return optimization_guide::proto::CLICKABILITY_REASON_MOUSE_ENTER;
     case blink::mojom::AIPageContentClickabilityReason::kMouseOver:

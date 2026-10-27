@@ -8059,8 +8059,6 @@ TEST_F(AIPageContentAgentTest, ClickabilityReasonMouseOver) {
           testing::Contains(
               mojom::blink::AIPageContentClickabilityReason::kMouseOver),
           testing::Not(testing::Contains(
-              mojom::blink::AIPageContentClickabilityReason::kMouseHover)),
-          testing::Not(testing::Contains(
               mojom::blink::AIPageContentClickabilityReason::kMouseEnter))));
 }
 
@@ -8085,8 +8083,6 @@ TEST_F(AIPageContentAgentTest, ClickabilityReasonMouseEnter) {
       testing::AllOf(
           testing::Contains(
               mojom::blink::AIPageContentClickabilityReason::kMouseEnter),
-          testing::Not(testing::Contains(
-              mojom::blink::AIPageContentClickabilityReason::kMouseHover)),
           testing::Not(testing::Contains(
               mojom::blink::AIPageContentClickabilityReason::kMouseOver))));
 }
@@ -8114,9 +8110,7 @@ TEST_F(AIPageContentAgentTest, ClickabilityReasonMouseOverAndEnter) {
           testing::Contains(
               mojom::blink::AIPageContentClickabilityReason::kMouseEnter),
           testing::Contains(
-              mojom::blink::AIPageContentClickabilityReason::kMouseOver),
-          testing::Not(testing::Contains(
-              mojom::blink::AIPageContentClickabilityReason::kMouseHover))));
+              mojom::blink::AIPageContentClickabilityReason::kMouseOver)));
 }
 
 TEST_F(AIPageContentAgentTest, ClickabilityReasonMouseClick) {

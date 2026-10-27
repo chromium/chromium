@@ -1622,8 +1622,7 @@ TEST_F(PageContentProtoUtilTest, ConvertInteractionDisabledReasons) {
               INTERACTION_DISABLED_REASON_ARIA_ROLE_PRESENTATIONAL));
 }
 
-TEST_F(PageContentProtoUtilTest,
-       ConvertClickabilityReasonsMouseEnterHoverAndOver) {
+TEST_F(PageContentProtoUtilTest, ConvertClickabilityReasonsMouseEnterAndOver) {
   auto root_content = CreatePageContent();
   auto container_node =
       CreateContentNode(blink::mojom::AIPageContentAttributeType::kContainer);
@@ -1632,8 +1631,6 @@ TEST_F(PageContentProtoUtilTest,
   auto& clickability_reasons =
       container_node->content_attributes->node_interaction_info
           ->clickability_reasons;
-  clickability_reasons.push_back(
-      blink::mojom::AIPageContentClickabilityReason::kMouseHover);
   clickability_reasons.push_back(
       blink::mojom::AIPageContentClickabilityReason::kMouseEnter);
   clickability_reasons.push_back(
@@ -1652,7 +1649,6 @@ TEST_F(PageContentProtoUtilTest,
                                      .interaction_info();
   EXPECT_THAT(interaction_info.clickability_reasons(),
               testing::UnorderedElementsAre(
-                  optimization_guide::proto::CLICKABILITY_REASON_MOUSE_HOVER,
                   optimization_guide::proto::CLICKABILITY_REASON_MOUSE_ENTER,
                   optimization_guide::proto::CLICKABILITY_REASON_MOUSE_OVER));
 }
