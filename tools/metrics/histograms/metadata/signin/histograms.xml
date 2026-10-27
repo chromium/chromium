@@ -2687,9 +2687,9 @@ prefs when the profile is loaded.  -->
 </histogram>
 
 <histogram name="Signin.Intercept.ChromeSignin.DismissesBefore{Action}"
-    units="attempts" expires_after="2026-11-09">
+    units="attempts" expires_after="2027-05-09">
   <owner>rsult@google.com</owner>
-  <owner>chrome-signin-team@google.com</owner>
+  <owner>chrome-signin-desktop-team@google.com</owner>
   <summary>
     Records the number of times the user dismisses the Chrome Signin Intercept
     Bubble before {Action} it. The value is recorded when the user is {Action}
@@ -2727,9 +2727,9 @@ prefs when the profile is loaded.  -->
 </histogram>
 
 <histogram name="Signin.Intercept.ChromeSignin.ResponseTime{Result}" units="ms"
-    expires_after="2026-11-09">
+    expires_after="2027-05-09">
   <owner>rsult@google.com</owner>
-  <owner>chrome-signin-team@google.com</owner>
+  <owner>chrome-signin-desktop-team@google.com</owner>
   <summary>
     Records the time between the display of the Chrome Signin intercept bubble
     and the user {Result} response by interacting with the bubble UI.
