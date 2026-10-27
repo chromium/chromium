@@ -99,6 +99,7 @@ if (!is_android) {
       # Mojo scripts pages, loading the MojoJS bindings of the fuzzed
       # interfaces. Fuzzilli profiles tell the fuzzer which page to load.
       data_deps = [
+        "//services/webnn/public/mojom:mojom_fuzzilli",
         "//third_party/blink/public/mojom:authenticator_mojo_bindings_fuzzilli",
         "//third_party/blink/public/mojom:credentialmanagement_mojo_bindings_fuzzilli",
         "//third_party/blink/public/mojom:mojom_platform_fuzzilli",
