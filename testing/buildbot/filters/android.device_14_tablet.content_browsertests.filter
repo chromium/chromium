@@ -14,3 +14,7 @@
 
 # crbug.com/376867441
 -BackForwardTransitionAnimationManagerBrowserTestSubframeTransitions.BeforeUnload_RequestCancelledBeforeStart
+
+# crbug.com/575528236: thread_restrictions DCHECK.
+-GpuHostImplPersistentCacheTest.ClearCacheOnCrash
+-GpuHostImplPersistentCacheTest.SetChannelPersistentCacheFileCalled
