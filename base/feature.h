@@ -259,11 +259,7 @@ struct BASE_EXPORT LOGICALLY_CONST Feature {
   // Returns the default state (i.e. enabled or disabled) for this feature.
   // NOTE: The actual runtime state may be different, due to a field trial or a
   // command line switch.
-  FeatureState GetDefaultState() const { return default_state; }
-
-  // TODO(crbug.com/564547797): Make private once internal callers migrate to
-  // GetDefaultState().
-  const FeatureState default_state;
+  FeatureState GetDefaultState() const { return default_state_; }
 
  protected:
   // Base constructor that performs initialization and checks, with an option to
@@ -274,7 +270,7 @@ struct BASE_EXPORT LOGICALLY_CONST Feature {
                     internal::FeatureMacroHandshake handshake,
                     bool is_country_specific)
       : name(name),
-        default_state(default_state),
+        default_state_(default_state),
         cached_value(is_runtime_mutable ? kRuntimeMutabilityMask : 0) {
     if (is_country_specific != IsCountrySpecificFeatureState(default_state)) {
       LOG(FATAL) << "Pass a country-specific default state if and only if you "
@@ -295,6 +291,8 @@ struct BASE_EXPORT LOGICALLY_CONST Feature {
 
   // Keep this in sync with base/feature_list_internal.h:kRuntimeMutabilityMask
   enum { kRuntimeMutabilityMask = 1 << 18 };
+
+  const FeatureState default_state_;
 
   // A packed value where bits 24 and 25 hold the resolved enabled state and
   // whether the feature was explicitly overridden, bits 16 through 23 hold

@@ -186,7 +186,7 @@ class FeatureListTest : public testing::Test {
   static_assert(sizeof(Feature) == (sizeof(void*) == 8 ? 16 : 12));
   static_assert(alignof(Feature) == alignof(void*));
   static_assert(offsetof(Feature, name) == 0);
-  static_assert(offsetof(Feature, default_state) == sizeof(void*));
+  static_assert(offsetof(Feature, default_state_) == sizeof(void*));
   static_assert(offsetof(Feature, cached_value) == sizeof(void*) + 4);
   // LINT.ThenChange(feature.rs:FeatureStruct)
 
