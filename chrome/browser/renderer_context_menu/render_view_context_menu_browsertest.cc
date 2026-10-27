@@ -84,6 +84,7 @@
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
+#include "chrome/browser/ui/read_anything/read_anything_entry_point_controller.h"
 #include "chrome/browser/ui/side_panel/side_panel_entry_id.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/startup/startup_types.h"
@@ -1827,9 +1828,12 @@ class DataControlsContextMenuBrowserTest : public ContextMenuBrowserTest {
     data_controls::SetDataControls(browser()->GetProfile()->GetPrefs(),
                                    {data_controls_rule});
 
+    read_anything::ReadAnythingEntryPointController::ShowUI(
+        browser(), ReadAnythingOpenTrigger::kAppMenu,
+        read_anything::ReadAnythingEntryPointController::Presentation::
+            kSidePanel);
     auto* const side_panel_ui = SidePanelUI::From(browser());
     EXPECT_TRUE(side_panel_ui);
-    side_panel_ui->Show(SidePanelEntryId::kReadAnything);
     auto* const web_contents =
         side_panel_ui->GetWebContentsForTest(SidePanelEntryId::kReadAnything);
     EXPECT_TRUE(web_contents);
@@ -2099,9 +2103,12 @@ IN_PROC_BROWSER_TEST_F(DataControlsContextMenuBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest,
                        ShowToastOnSidePanelContextMenus) {
+  read_anything::ReadAnythingEntryPointController::ShowUI(
+      browser(), ReadAnythingOpenTrigger::kAppMenu,
+      read_anything::ReadAnythingEntryPointController::Presentation::
+          kSidePanel);
   auto* const side_panel_ui = SidePanelUI::From(browser());
   ASSERT_TRUE(side_panel_ui);
-  side_panel_ui->Show(SidePanelEntryId::kReadAnything);
   auto* const web_contents =
       side_panel_ui->GetWebContentsForTest(SidePanelEntryId::kReadAnything);
   ASSERT_TRUE(web_contents);
