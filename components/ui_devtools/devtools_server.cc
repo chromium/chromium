@@ -26,11 +26,13 @@
 #include "base/values.h"
 #include "components/ui_devtools/switches.h"
 #include "net/base/net_errors.h"
+#include "net/base/url_util.h"
 #include "net/log/net_log.h"
 #include "net/server/http_server.h"
 #include "net/server/http_server_request_info.h"
 #include "net/socket/tcp_server_socket.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
+#include "url/gurl.h"
 
 namespace ui_devtools {
 
@@ -334,6 +336,28 @@ void UiDevToolsServer::SetOnSessionEnded(base::OnceClosure callback) const {
 void UiDevToolsServer::OnWebSocketRequest(int connection_id,
                                           net::HttpServerRequestInfo info) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_);
+
+  // Validate Host header
+  std::string host = info.GetHeaderValue("host");
+  if (host.empty()) {
+    return;
+  }
+  GURL url = GURL("https://" + host);
+  if (!url.is_valid() || !net::IsLocalhost(url)) {
+    return;
+  }
+
+  // Validate Origin header if present
+  std::string origin = info.GetHeaderValue("origin");
+  if (!origin.empty()) {
+    GURL origin_url(origin);
+    if (!origin_url.is_valid() ||
+        (!origin_url.SchemeIs("chrome-devtools") &&
+         !origin_url.SchemeIs("devtools") && !net::IsLocalhost(origin_url))) {
+      return;
+    }
+  }
+
   size_t target_id = 0;
   if (info.path.empty() ||
       !base::StringToSizeT(info.path.substr(1), &target_id) ||

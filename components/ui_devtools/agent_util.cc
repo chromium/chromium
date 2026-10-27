@@ -24,6 +24,23 @@ void OnSourceFile(base::OnceClosure quit_closure,
   std::move(quit_closure).Run();
 }
 
+bool ReadSourceFile(const base::FilePath& root_dir,
+                    const base::FilePath& src_dir,
+                    std::string* source_code) {
+  // Ensure that the parsed path is strictly contained within the intended
+  // source directory.
+  base::FilePath absolute_root_dir = base::MakeAbsoluteFilePath(root_dir);
+  base::FilePath absolute_src_dir = base::MakeAbsoluteFilePath(src_dir);
+  if (absolute_root_dir.empty() || absolute_src_dir.empty()) {
+    return false;
+  }
+  if (absolute_root_dir != absolute_src_dir &&
+      !absolute_root_dir.IsParent(absolute_src_dir)) {
+    return false;
+  }
+  return base::ReadFileToString(absolute_src_dir, source_code);
+}
+
 }  // namespace
 
 const char kChromiumCodeSearchURL[] = "https://cs.chromium.org/";
@@ -37,9 +54,11 @@ bool GetSourceCode(std::string path, std::string* source_code) {
     return false;
   }
 
-  base::FilePath src_dir;
-  base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &src_dir);
-  src_dir = src_dir.AppendASCII(path);
+  base::FilePath root_dir;
+  if (!base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &root_dir)) {
+    return false;
+  }
+  base::FilePath src_dir = root_dir.AppendASCII(path);
 
   base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
 
@@ -48,7 +67,7 @@ bool GetSourceCode(std::string path, std::string* source_code) {
       FROM_HERE,
       {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
        base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
-      base::BindOnce(&base::ReadFileToString, src_dir, source_code),
+      base::BindOnce(&ReadSourceFile, root_dir, src_dir, source_code),
       base::BindOnce(&OnSourceFile, run_loop.QuitClosure(), &return_value));
 
   run_loop.Run();
