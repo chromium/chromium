@@ -10819,6 +10819,7 @@ from previous Chrome versions.
   <int value="-1256747007"
       label="OminboxUIExperimentUseGenericSearchEngineIcon:disabled"/>
   <int value="-1256187739" label="ClientStorageAccessContextAuditing:disabled"/>
+  <int value="-1255696110" label="OmniboxVoicePlateIntent:disabled"/>
   <int value="-1255571408"
       label="UsernameFirstFlowWithIntermediateValues:enabled"/>
   <int value="-1255427595" label="HomePageButtonForceEnabled:enabled"/>
@@ -13088,6 +13089,7 @@ from previous Chrome versions.
   <int value="-575081438"
       label="OmniboxMostVisitedTilesFadingOnTablet:disabled"/>
   <int value="-574965003" label="LauncherLacrosIntegration:disabled"/>
+  <int value="-574847253" label="OmniboxVoicePlateIntent:enabled"/>
   <int value="-574564494" label="AndroidHubSearchTabGroups:disabled"/>
   <int value="-574447752" label="LongScreenshotsNoMemoryCheck:enabled"/>
   <int value="-574354898" label="PostQuantumCECPQ2:enabled"/>

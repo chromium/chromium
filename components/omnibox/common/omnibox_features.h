@@ -289,6 +289,9 @@ BASE_DECLARE_FEATURE(kResetSuggestionsScroll);
 BASE_DECLARE_FEATURE(kOmniboxSessionlessVoiceSearch);
 BASE_DECLARE_FEATURE(kSuppressStatusIconDuringHttpNavigation);
 BASE_DECLARE_FEATURE(kOmniboxAndroidIntranetRedirect);
+// If enabled, the Omnibox, New Tab Page and toolbar mic buttons delegate voice
+// capture and transcription to the Android Google App Voice Plate.
+BASE_DECLARE_FEATURE(kOmniboxVoicePlateIntent);
 #endif  // BUILDFLAG(IS_ANDROID)
 
 // If enabled, X-Geo headers are sent for all search navigations on all

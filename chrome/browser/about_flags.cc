@@ -7170,6 +7170,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAndroidTabSearchCloseTabButtonDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(omnibox::kAndroidTabSearchCloseTabButton)},
 
+    {"omnibox-voice-plate-intent",
+     flag_descriptions::kOmniboxVoicePlateIntentName,
+     flag_descriptions::kOmniboxVoicePlateIntentDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(omnibox::kOmniboxVoicePlateIntent)},
+
     {"omnibox-diagnostics", flag_descriptions::kOmniboxDiagnosticsName,
      flag_descriptions::kOmniboxDiagnosticsDescription, kOsAndroid,
      FEATURE_WITH_PARAMS_VALUE_TYPE(omnibox::kDiagnostics,

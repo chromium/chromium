@@ -689,6 +689,12 @@ BASE_FEATURE(kSuppressStatusIconDuringHttpNavigation, ENABLED);
 // redirects on Android.
 BASE_FEATURE(kOmniboxAndroidIntranetRedirect, DISABLED);
 
+// If enabled, the Omnibox, New Tab Page and toolbar mic buttons delegate voice
+// capture and transcription to the Android Google App Voice Plate (via an
+// explicit activity intent), and navigate directly upon receiving the
+// transcription.
+BASE_FEATURE(kOmniboxVoicePlateIntent, DISABLED);
+
 namespace android {
 static int64_t JNI_OmniboxFeatureMap_GetNativeMap(JNIEnv* env) {
   static const base::Feature* const kFeaturesExposedToJava[] = {
@@ -726,7 +732,8 @@ static int64_t JNI_OmniboxFeatureMap_GetNativeMap(JNIEnv* env) {
       &kOmniboxSessionlessVoiceSearch,
       &kSuppressStatusIconDuringHttpNavigation,
       &kZeroSuggestPrefetchOnPageLoadAndTabSwitch,
-      &kAndroidTabSearchCloseTabButton};
+      &kAndroidTabSearchCloseTabButton,
+      &kOmniboxVoicePlateIntent};
   static base::NoDestructor<base::android::FeatureMap> kFeatureMap(
       kFeaturesExposedToJava);
   return reinterpret_cast<int64_t>(kFeatureMap.get());

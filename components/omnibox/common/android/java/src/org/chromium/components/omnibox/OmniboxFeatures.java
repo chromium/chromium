@@ -283,6 +283,13 @@ public class OmniboxFeatures {
                     OmniboxFeatureList.ANDROID_TAB_SEARCH_CLOSE_TAB_BUTTON,
                     FeatureState.DISABLED_IN_PROD);
 
+    /**
+     * Delegates Omnibox, New Tab Page and toolbar mic voice capture and transcription to the Google
+     * app Voice Plate.
+     */
+    public static final CachedFlag sOmniboxVoicePlateIntent =
+            newFlag(OmniboxFeatureList.OMNIBOX_VOICE_PLATE_INTENT, FeatureState.DISABLED_IN_PROD);
+
     public static final IntCachedFeatureParam sTouchDownTriggerMaxPrefetchesPerSession =
             newIntParam(
                     sTouchDownTriggerForPrefetch,

@@ -7875,6 +7875,11 @@
     "expiry_milestone": 150
   },
   {
+    "name": "omnibox-voice-plate-intent",
+    "owners": [ "ender@google.com", "chrome-mobile-search@google.com" ],
+    "expiry_milestone": 166
+  },
+  {
     "name": "omnibox-zero-suggest-prefetch-debouncing",
     "owners": [ "khalidpeer@chromium.org", "mahmadi@chromium.org", "chrome-omnibox-team@google.com" ],
     "expiry_milestone": 160

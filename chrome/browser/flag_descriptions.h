@@ -3874,6 +3874,13 @@ inline constexpr char kOmniboxSiteSearchName[] = "Omnibox Site Search";
 inline constexpr char kOmniboxSiteSearchDescription[] =
     "Enables keyword-based site search functionality on Android devices";
 
+inline constexpr char kOmniboxVoicePlateIntentName[] =
+    "Omnibox Voice Plate Intent";
+inline constexpr char kOmniboxVoicePlateIntentDescription[] =
+    "Delegates voice search from the Omnibox, New Tab Page and toolbar mic to "
+    "the Google app Voice Plate for voice capture and transcription, then "
+    "navigates directly to the results";
+
 inline constexpr char kContextualSearchBoxUsesContextualSearchProviderName[] =
     "Contextual search box uses contextual search provider";
 inline constexpr char
