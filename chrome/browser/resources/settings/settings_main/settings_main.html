@@ -17,7 +17,12 @@ ${this.showResetProfileBanner_ ? html`
 <cr-view-manager id="switcher" ?show-all="${this.shouldShowAll_()}">
   ${cache(this.showPage_(this.pageVisibility_?.people) ? html`
     <div slot="view" id="people">
-      ${cache(this.renderPlugin_(this.routes_.PEOPLE) ? html`
+      ${cache(this.settingsRefresh2026Enabled_ &&
+          this.renderPlugin_(this.routes_.PEOPLE) ? html`
+        <div>Home page placeholder</div>
+      ` : '')}
+      ${cache(!this.settingsRefresh2026Enabled_ &&
+          this.renderPlugin_(this.routes_.PEOPLE) ? html`
         <settings-people-page-index ?in-search-mode="${this.inSearchMode_}">
         </settings-people-page-index>
       ` : '')}
@@ -77,7 +82,8 @@ ${this.showResetProfileBanner_ ? html`
   </div>
 
 <if expr="not is_chromeos">
-  ${cache(this.showPage_(this.pageVisibility_?.defaultBrowser) ? html`
+  ${cache(!this.settingsRefresh2026Enabled_ &&
+      this.showPage_(this.pageVisibility_?.defaultBrowser) ? html`
     <div slot="view" id="defaultBrowser">
       ${cache(this.renderPlugin_(this.routes_.DEFAULT_BROWSER) ? html`
         <settings-default-browser-page></settings-default-browser-page>
@@ -86,7 +92,8 @@ ${this.showResetProfileBanner_ ? html`
   ` : '')}
 </if>
 
-  ${cache(this.showPage_(this.pageVisibility_?.onStartup) ? html`
+  ${cache(!this.settingsRefresh2026Enabled_ &&
+      this.showPage_(this.pageVisibility_?.onStartup) ? html`
     <div slot="view" id="onStartup">
       ${cache(this.renderPlugin_(this.routes_.ON_STARTUP) ? html`
         <settings-on-startup-page></settings-on-startup-page>
@@ -110,7 +117,8 @@ ${this.showResetProfileBanner_ ? html`
     </div>
   ` : '')}
 
-  ${cache(this.showPage_(this.pageVisibility_?.downloads) ? html`
+  ${cache(!this.settingsRefresh2026Enabled_ &&
+      this.showPage_(this.pageVisibility_?.downloads) ? html`
     <div slot="view" id="downloads">
       ${cache(this.renderPlugin_(this.routes_.DOWNLOADS) ? html`
         <settings-downloads-page></settings-downloads-page>
@@ -127,8 +135,14 @@ ${this.showResetProfileBanner_ ? html`
     </div>
   ` : '')}
 
+  ${cache(this.settingsRefresh2026Enabled_ &&
+      this.showPage_(this.pageVisibility_?.general) ? html`
+    <div slot="view" id="general">General page placeholder</div>
+  ` : '')}
+
 <if expr="not is_chromeos">
-  ${cache(this.showPage_(this.pageVisibility_?.system) ? html`
+  ${cache(!this.settingsRefresh2026Enabled_ &&
+      this.showPage_(this.pageVisibility_?.system) ? html`
     <div slot="view" id="system">
       ${cache(this.renderPlugin_(this.routes_.SYSTEM) ? html`
         <settings-system-page></settings-system-page>
@@ -137,7 +151,8 @@ ${this.showResetProfileBanner_ ? html`
   ` : '')}
 </if>
 
-  ${cache(this.showPage_(this.pageVisibility_?.reset) ? html`
+  ${cache(!this.settingsRefresh2026Enabled_ &&
+      this.showPage_(this.pageVisibility_?.reset) ? html`
     <div slot="view" id="reset">
       ${cache(this.renderPlugin_(this.routes_.RESET) ? html`
         <settings-reset-page></settings-reset-page>

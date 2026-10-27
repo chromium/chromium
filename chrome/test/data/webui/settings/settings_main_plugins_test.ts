@@ -12,6 +12,8 @@ import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 import {TestSearchManager} from './test_search_manager.js';
 
 suite('SettingsMain', function() {
+  const initialSettingsRefresh2026 =
+      loadTimeData.getString('settingsRefresh2026');
   let searchManager: TestSearchManager;
   let settingsMain: SettingsMainElement;
 
@@ -21,6 +23,7 @@ suite('SettingsMain', function() {
     loadTimeData.overrideValues(Object.assign(
         {
           isGuest: false,
+          settingsRefresh2026: initialSettingsRefresh2026,
           showAiPage: false,
           showResetProfileBanner: false,
         },
@@ -148,14 +151,68 @@ suite('SettingsMain', function() {
             visibiilty[id] !== false, !!queryView(id),
             `Visibility check failed for view with id: '${id}'`);
       }
+
+      assertFalse(!!queryView('general'));
     }
 
     // Case1: Default (non-guest mode)
+    createSettingsMain({isGuest: false, settingsRefresh2026: ''});
     assertEquals(undefined, pageVisibility);
     assertVisibilityRespected();
 
     // Case2: Guest mode
-    createSettingsMain({isGuest: true});
+    createSettingsMain({isGuest: true, settingsRefresh2026: ''});
+    assertVisibilityRespected();
+  });
+
+  test('RespectsVisibilityRefresh2026', function() {
+    function assertVisibilityRespected() {
+      const viewIds: string[] = [
+        'a11y',
+        'about',
+        'appearance',
+        'general',
+        'languages',
+        'people',
+        'performance',
+        'search',
+      ];
+
+      for (const id of viewIds) {
+        if (id === 'about' || id === 'search') {
+          assertTrue(!!queryView(id));
+          continue;
+        }
+
+        const visibiilty: Record<string, unknown> =
+            (pageVisibility as Record<string, unknown>) || {};
+        assertEquals(
+            visibiilty[id] !== false, !!queryView(id),
+            `Visibility check failed for view with id: '${id}'`);
+      }
+
+      assertFalse(!!queryView('downloads'));
+      assertFalse(!!queryView('onStartup'));
+      assertFalse(!!queryView('reset'));
+      // <if expr="not is_chromeos">
+      assertFalse(!!queryView('defaultBrowser'));
+      assertFalse(!!queryView('system'));
+      // </if>
+    }
+
+    // Case1: Default (non-guest mode)
+    createSettingsMain({
+      isGuest: false,
+      settingsRefresh2026: 'settings-refresh-2026',
+    });
+    assertEquals(undefined, pageVisibility);
+    assertVisibilityRespected();
+
+    // Case2: Guest mode
+    createSettingsMain({
+      isGuest: true,
+      settingsRefresh2026: 'settings-refresh-2026',
+    });
     assertVisibilityRespected();
   });
 
@@ -189,6 +246,44 @@ suite('SettingsMain', function() {
     // <if expr="is_chromeos">
     assertEquals('privacy', active.id);
     // </if>
+  });
+
+  test('SettingsRefresh2026Views', async function() {
+    createSettingsMain({
+      isGuest: false,
+      settingsRefresh2026: 'settings-refresh-2026',
+    });
+    await settingsMain.whenViewSwitchingDone();
+
+    let active = settingsMain.$.switcher.querySelector<HTMLElement>(
+        '.active[slot=view]');
+    assertTrue(!!active);
+    assertEquals('people', active.id);
+    assertFalse(!!active.querySelector('settings-people-page-index'));
+
+    Router.getInstance().navigateTo(routes.GENERAL);
+    await settingsMain.whenViewSwitchingDone();
+    active = settingsMain.$.switcher.querySelector<HTMLElement>(
+        '.active[slot=view]');
+    assertTrue(!!active);
+    assertEquals('general', active.id);
+
+    Router.getInstance().navigateTo(routes.PEOPLE);
+    await settingsMain.whenViewSwitchingDone();
+    active = settingsMain.$.switcher.querySelector<HTMLElement>(
+        '.active[slot=view]');
+    assertTrue(!!active);
+    assertEquals('people', active.id);
+  });
+
+  test('SettingsRefresh2026GuestViews', async function() {
+    createSettingsMain({
+      isGuest: true,
+      settingsRefresh2026: 'settings-refresh-2026',
+    });
+    await settingsMain.whenViewSwitchingDone();
+    assertFalse(!!queryView('people'));
+    assertFalse(!!queryView('general'));
   });
 
   test('ResetProfileBannerShown', function() {

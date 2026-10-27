@@ -4,7 +4,7 @@
 
 // clang-format off
 import type {SettingsRoutes} from 'chrome://settings/settings.js';
-import {resetRouterForTesting, buildRouter, loadTimeData, Route, Router, routes, resetPageVisibilityForTesting} from 'chrome://settings/settings.js';
+import {resetRouterForTesting, buildRouter, getTopLevelRoute, loadTimeData, Route, Router, routes, resetPageVisibilityForTesting} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
@@ -25,6 +25,12 @@ suite('Basic', function() {
     causeEvent();
     return promise;
   }
+
+  setup(function() {
+    loadTimeData.overrideValues({settingsRefresh2026: ''});
+    resetPageVisibilityForTesting();
+    resetRouterForTesting();
+  });
 
   teardown(function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
@@ -375,6 +381,46 @@ suite('Basic', function() {
     loadTimeData.overrideValues({searchSettingsUpdate: true});
     resetRouterForTesting();
     assertFalse(!!routes.SEARCH_ENGINES);
+  });
+
+  test('SettingsRefresh2026 routes', function() {
+    loadTimeData.overrideValues({
+      isGuest: false,
+      settingsRefresh2026: 'settings-refresh-2026',
+    });
+    resetPageVisibilityForTesting();
+    resetRouterForTesting();
+
+    assertTrue(!!routes.PEOPLE);
+    assertEquals('/people', routes.PEOPLE.path);
+    assertEquals('people', routes.PEOPLE.section);
+    assertEquals(routes.PEOPLE, getTopLevelRoute());
+    assertEquals(routes.BASIC, Router.getInstance().getRouteForPath('/'));
+    assertEquals(
+        routes.PEOPLE, Router.getInstance().getRouteForPath('/people'));
+
+    assertTrue(!!routes.GENERAL);
+    assertEquals('/general', routes.GENERAL.path);
+    assertEquals('general', routes.GENERAL.section);
+
+    assertTrue(!!routes.RESET_DIALOG);
+    assertEquals('/resetProfileSettings', routes.RESET_DIALOG.path);
+    assertTrue(routes.RESET_DIALOG.isNavigableDialog);
+    assertEquals(routes.GENERAL, routes.RESET_DIALOG.parent);
+
+    assertTrue(!!routes.TRIGGERED_RESET_DIALOG);
+    assertEquals(
+        '/triggeredResetProfileSettings', routes.TRIGGERED_RESET_DIALOG.path);
+    assertTrue(routes.TRIGGERED_RESET_DIALOG.isNavigableDialog);
+    assertEquals(routes.GENERAL, routes.TRIGGERED_RESET_DIALOG.parent);
+
+    // <if expr="not is_chromeos">
+    assertFalse(!!routes.DEFAULT_BROWSER);
+    assertFalse(!!routes.SYSTEM);
+    // </if>
+    assertFalse(!!routes.ON_STARTUP);
+    assertFalse(!!routes.DOWNLOADS);
+    assertFalse(!!routes.RESET);
   });
 });
 

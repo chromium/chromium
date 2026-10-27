@@ -154,6 +154,8 @@ function createRoutes(): SettingsRoutes {
   }
 
   const visibility = pageVisibility || {};
+  const isSettingsRefresh2026Enabled =
+      loadTimeData.getString('settingsRefresh2026') !== '';
 
   if (visibility.people !== false) {
     r.PEOPLE = r.BASIC.createSection(
@@ -246,14 +248,14 @@ function createRoutes(): SettingsRoutes {
   }
 
   // <if expr="not is_chromeos">
-  if (visibility.defaultBrowser !== false) {
+  if (!isSettingsRefresh2026Enabled && visibility.defaultBrowser !== false) {
     r.DEFAULT_BROWSER = r.BASIC.createSection(
         '/defaultBrowser', 'defaultBrowser',
         loadTimeData.getString('defaultBrowser'));
   }
   // </if>
 
-  if (visibility.onStartup !== false) {
+  if (!isSettingsRefresh2026Enabled && visibility.onStartup !== false) {
     r.ON_STARTUP = r.BASIC.createSection(
         '/onStartup', 'onStartup', loadTimeData.getString('onStartup'));
   }
@@ -270,7 +272,7 @@ function createRoutes(): SettingsRoutes {
     // </if>
   }
 
-  if (visibility.downloads !== false) {
+  if (!isSettingsRefresh2026Enabled && visibility.downloads !== false) {
     r.DOWNLOADS = r.ADVANCED.createSection(
         '/downloads', 'downloads',
         loadTimeData.getString('downloadsPageTitle'));
@@ -285,14 +287,26 @@ function createRoutes(): SettingsRoutes {
     // </if>
   }
 
+  if (isSettingsRefresh2026Enabled && visibility.general !== false) {
+    // TODO(b/574664004): Update "General" string.
+    r.GENERAL = r.ADVANCED.createSection('/general', 'general', 'General');
+    if (visibility.reset !== false) {
+      r.RESET_DIALOG = r.GENERAL.createChild('/resetProfileSettings');
+      r.RESET_DIALOG.isNavigableDialog = true;
+      r.TRIGGERED_RESET_DIALOG =
+          r.GENERAL.createChild('/triggeredResetProfileSettings');
+      r.TRIGGERED_RESET_DIALOG.isNavigableDialog = true;
+    }
+  }
+
   // <if expr="not is_chromeos">
-  if (visibility.system !== false) {
+  if (!isSettingsRefresh2026Enabled && visibility.system !== false) {
     r.SYSTEM = r.ADVANCED.createSection(
         '/system', 'system', loadTimeData.getString('systemPageTitle'));
   }
   // </if>
 
-  if (visibility.reset !== false) {
+  if (!isSettingsRefresh2026Enabled && visibility.reset !== false) {
     r.RESET = r.ADVANCED.createSection(
         '/reset', 'reset', loadTimeData.getString('resetPageTitle'));
     r.RESET_DIALOG = r.RESET.createChild('/resetProfileSettings');
