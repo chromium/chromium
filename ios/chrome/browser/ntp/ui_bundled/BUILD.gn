@@ -135,6 +135,7 @@ source_set("coordinator") {
     ":constants",
     ":feature_flags",
     ":ntp_internal",
+    ":shortcuts_handler",
     ":theme",
     ":ui_bundled",
     "//base",
@@ -258,6 +259,11 @@ source_set("coordinator") {
   ]
 }
 
+source_set("shortcuts_handler") {
+  sources = [ "new_tab_page_shortcuts_handler.h" ]
+  frameworks = [ "UIKit.framework" ]
+}
+
 source_set("ntp_internal") {
   sources = [
     "fake_location_bar_view.h",
@@ -283,7 +289,6 @@ source_set("ntp_internal") {
     "new_tab_page_quick_actions_view_controller.mm",
     "new_tab_page_redesign_view_controller.h",
     "new_tab_page_redesign_view_controller.mm",
-    "new_tab_page_shortcuts_handler.h",
     "new_tab_page_view_controller.h",
     "new_tab_page_view_controller.mm",
     "ntp_identity_disc_button.h",
@@ -296,6 +301,7 @@ source_set("ntp_internal") {
   deps = [
     ":constants",
     ":feature_flags",
+    ":shortcuts_handler",
     ":theme",
     ":ui_bundled",
     ":utils",
@@ -432,6 +438,7 @@ source_set("unit_tests") {
     ":coordinator",
     ":feature_flags",
     ":ntp_internal",
+    ":shortcuts_handler",
     ":theme",
     ":ui_bundled",
     ":utils",

@@ -19,6 +19,7 @@
 #import "ios/chrome/browser/drag_and_drop/model/url_drag_drop_handler.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_constants.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_shortcuts_handler.h"
 #import "ios/chrome/browser/ntp/ui_bundled/ntp_card_background_view.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
@@ -289,10 +290,9 @@ constexpr CGFloat kStackViewSpacing = 12.0;
 
 - (void)aimModuleTapped {
   CHECK_EQ(GetAimButtonRefactorArm(), AimButtonRefactorArm::kAimAsModule);
+  CHECK(_isAIMAllowed);
   [self.audience didTapAIMModule];
-  const GURL aimURL = GURL(ntp_tiles::kAiModeTileUrl);
-  const UrlLoadParams params = UrlLoadParams::InCurrentTab(aimURL);
-  self.urlLoadingBrowserAgent->Load(params);
+  [self.NTPShortcutsHandler openAIM];
 }
 
 @end

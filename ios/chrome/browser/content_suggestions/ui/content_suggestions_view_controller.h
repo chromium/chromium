@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/content_suggestions/ui/content_suggestions_consumer.h"
 
 @protocol ContentSuggestionsViewControllerAudience;
+@protocol NewTabPageShortcutsHandler;
 class UrlLoadingBrowserAgent;
 
 // CollectionViewController to display the suggestions items.
@@ -18,6 +19,9 @@ class UrlLoadingBrowserAgent;
 
 @property(nonatomic, weak) id<ContentSuggestionsViewControllerAudience>
     audience;
+
+// Handler for NTP shortcuts commands.
+@property(nonatomic, weak) id<NewTabPageShortcutsHandler> NTPShortcutsHandler;
 
 // Provider of menu configurations for the contentSuggestions component.
 @property(nonatomic, assign) UrlLoadingBrowserAgent* urlLoadingBrowserAgent;
