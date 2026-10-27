@@ -190,7 +190,7 @@ class CC_EXPORT TileBasedLayerImpl : public LayerImpl {
   // into this method to allow implementations to operate on the original state
   // (e.g., to locate tiles in layer space). However, it will be properly
   // adjusted before AppendQuads() returns to the caller.
-  bool AppendQuadForTile(TilingSetCoverageIterator<Tiling> iter,
+  bool AppendQuadForTile(const TilingSetCoverageIterator<Tiling>& iter,
                          const AppendQuadsContext& context,
                          viz::CompositorRenderPass* render_pass,
                          AppendQuadsData* append_quads_data,
@@ -566,7 +566,7 @@ void TileBasedLayerImpl<Tiling>::GetContentsResourceId(
 
 template <typename Tiling>
 bool TileBasedLayerImpl<Tiling>::AppendQuadForTile(
-    TilingSetCoverageIterator<Tiling> iter,
+    const TilingSetCoverageIterator<Tiling>& iter,
     const AppendQuadsContext& context,
     viz::CompositorRenderPass* render_pass,
     AppendQuadsData* append_quads_data,
