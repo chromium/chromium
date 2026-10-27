@@ -165,13 +165,16 @@ using chrome_test_util::SettingsSignInRowMatcher;
       performAction:grey_tap()];
 
   // Tap on fakeIdentity1 confirm remove button.
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:
+                      chrome_test_util::ActionSheetItemWithAccessibilityLabelId(
+                          IDS_IOS_REMOVE_ACCOUNT_LABEL)];
   [[EarlGrey selectElementWithMatcher:
                  chrome_test_util::ActionSheetItemWithAccessibilityLabelId(
                      IDS_IOS_REMOVE_ACCOUNT_LABEL)] performAction:grey_tap()];
 
   // Check that the user is signed out and the Main Settings screen is shown.
-  [[EarlGrey selectElementWithMatcher:SettingsSignInRowMatcher()]
-      assertWithMatcher:grey_sufficientlyVisible()];
+  [ChromeEarlGrey
+      waitForSufficientlyVisibleElementWithMatcher:SettingsSignInRowMatcher()];
   [SigninEarlGrey verifySignedOut];
 
   [[EarlGrey selectElementWithMatcher:SettingsDoneButton()]
@@ -204,42 +207,64 @@ using chrome_test_util::SettingsSignInRowMatcher;
       performAction:grey_tap()];
 
   // Cancel it.
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:
+                      chrome_test_util::ActionSheetItemWithAccessibilityLabelId(
+                          IDS_IOS_REMOVE_ACCOUNT_LABEL)];
   if ([ChromeEarlGrey isIPadIdiom] || iOS26_OR_ABOVE()) {
     // There is no Cancel button on ipad and on newer iOS versions.
-    // Tap on Remove fakeIdentity1 button to dismiss the alert.
     [[EarlGrey
-        selectElementWithMatcher:
-            grey_accessibilityID(
-                [kSettingsAccountsRemoveAccountButtonAccessibilityIdentifier
-                    stringByAppendingString:fakeIdentity1.userEmail])]
-        performAction:grey_tap()];
+        selectElementWithMatcher:grey_allOf(grey_accessibilityID(
+                                                @"PopoverDismissRegion"),
+                                            grey_kindOfClassName(
+                                                @"_UIPopoverDimmingView"),
+                                            nil)]
+        performAction:grey_tapAtPoint(CGPointMake(0, 0))];
   } else {
     [[EarlGrey
         selectElementWithMatcher:chrome_test_util::ActionSheetCancelButton()]
         performAction:grey_tap()];
   }
+  [ChromeEarlGrey waitForUIElementToDisappearWithMatcher:
+                      chrome_test_util::ActionSheetItemWithAccessibilityLabelId(
+                          IDS_IOS_REMOVE_ACCOUNT_LABEL)];
 
-  // Open it a second time for `fakeIdentity2`, confirmal removal.
+  // Open it a second time for `fakeIdentity2`, confirm removal.
   [[EarlGrey
       selectElementWithMatcher:
           grey_accessibilityID(
               [kSettingsAccountsRemoveAccountButtonAccessibilityIdentifier
                   stringByAppendingString:fakeIdentity2.userEmail])]
       performAction:grey_tap()];
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:
+                      chrome_test_util::ActionSheetItemWithAccessibilityLabelId(
+                          IDS_IOS_REMOVE_ACCOUNT_LABEL)];
   [[EarlGrey selectElementWithMatcher:
                  chrome_test_util::ActionSheetItemWithAccessibilityLabelId(
                      IDS_IOS_REMOVE_ACCOUNT_LABEL)] performAction:grey_tap()];
+  [ChromeEarlGrey
+      waitForUIElementToDisappearWithMatcher:
+          grey_accessibilityID(
+              [kSettingsAccountsRemoveAccountButtonAccessibilityIdentifier
+                  stringByAppendingString:fakeIdentity2.userEmail])];
 
-  // Open it a third time for `fakeIdentity3`, confirmal removal.
+  // Open it a third time for `fakeIdentity3`, confirm removal.
   [[EarlGrey
       selectElementWithMatcher:
           grey_accessibilityID(
               [kSettingsAccountsRemoveAccountButtonAccessibilityIdentifier
                   stringByAppendingString:fakeIdentity3.userEmail])]
       performAction:grey_tap()];
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:
+                      chrome_test_util::ActionSheetItemWithAccessibilityLabelId(
+                          IDS_IOS_REMOVE_ACCOUNT_LABEL)];
   [[EarlGrey selectElementWithMatcher:
                  chrome_test_util::ActionSheetItemWithAccessibilityLabelId(
                      IDS_IOS_REMOVE_ACCOUNT_LABEL)] performAction:grey_tap()];
+  [ChromeEarlGrey
+      waitForUIElementToDisappearWithMatcher:
+          grey_accessibilityID(
+              [kSettingsAccountsRemoveAccountButtonAccessibilityIdentifier
+                  stringByAppendingString:fakeIdentity3.userEmail])];
 }
 
 // Tests add account flow.
@@ -259,14 +284,15 @@ using chrome_test_util::SettingsSignInRowMatcher;
         selectElementWithMatcher:
             grey_accessibilityID(kSettingsAccountsTableViewAddAccountCellId)]
         performAction:grey_tap()];
-    // Checks the Fake authentication view is shown
-    [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                            kFakeAuthActivityViewIdentifier)]
-        assertWithMatcher:grey_sufficientlyVisible()];
+    // Checks the Fake authentication view is shown.
+    [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:
+                        grey_accessibilityID(kFakeAuthActivityViewIdentifier)];
     // Close the SSO view controller.
     id<GREYMatcher> matcher = grey_allOf(grey_accessibilityID(cancelButtonId),
                                          grey_sufficientlyVisible(), nil);
     [[EarlGrey selectElementWithMatcher:matcher] performAction:grey_tap()];
+    [ChromeEarlGrey waitForUIElementToDisappearWithMatcher:
+                        grey_accessibilityID(kFakeAuthActivityViewIdentifier)];
   }
 
   [ChromeEarlGreyUI waitForAppToIdle];

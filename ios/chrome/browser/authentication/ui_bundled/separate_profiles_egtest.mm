@@ -65,6 +65,7 @@ id<GREYMatcher> ManagedProfileCreationDataMigrationDisabledSubtitleMatcher() {
 @implementation SeparateProfilesTestCase
 
 + (void)setUpForTestCase {
+  [super setUpForTestCase];
   [SigninEarlGrey setUseFakeResponsesForProfileSeparationPolicyRequests];
 }
 
@@ -804,8 +805,7 @@ id<GREYMatcher> ManagedProfileCreationDataMigrationDisabledSubtitleMatcher() {
       @"Profile should be personal");
 }
 
-// TODO(crbug.com/411035267): Re-enable this test.
-- (void)DISABLED_testProfileDeletedOnRemoveManagedAccount {
+- (void)testProfileDeletedOnRemoveManagedAccount {
   // Setup: There's 1 personal and 1 managed account. The personal account is
   // signed in.
   FakeSystemIdentity* const personalIdentity =
@@ -834,20 +834,19 @@ id<GREYMatcher> ManagedProfileCreationDataMigrationDisabledSubtitleMatcher() {
 
   // Note: The profile switch happens here.
 
-  // History sync screen: Decline the promo (irrelevant here).
+  // History sync screen: Decline the promo (irrelevant here) and dismiss the
+  // signed-in snackbar.
   [ChromeEarlGrey waitForMatcher:HistoryScreenMatcher()];
   [[EarlGrey
       selectElementWithMatcher:chrome_test_util::ButtonStackSecondaryButton()]
       performAction:grey_tap()];
-
-  // Dismiss signed in snackbar.
   [SigninEarlGreyUI dismissSigninConfirmationSnackbarForIdentity:managedIdentity
                                                    assertVisible:YES];
 
   // Confirm profile switched.
-  GREYAssert([[ChromeEarlGrey currentProfileName]
-                 isEqualToString:[ChromeEarlGrey currentProfileName]],
-             @"Profile should be personal");
+  GREYAssert(![[ChromeEarlGrey currentProfileName]
+                 isEqualToString:personalProfileName],
+             @"Profile should NOT be personal");
 
   // Remove `managedIdentity` from device.
   OpenManageAccountsView();
