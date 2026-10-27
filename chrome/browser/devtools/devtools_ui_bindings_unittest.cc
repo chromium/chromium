@@ -4,6 +4,9 @@
 
 #include "chrome/browser/devtools/devtools_ui_bindings.h"
 
+#include <optional>
+#include <string>
+
 #include "base/base64.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
@@ -119,7 +122,8 @@ class MockDevToolsUIBindingsDelegate : public DevToolsUIBindings::Delegate {
   void SetInspectedPageBounds(const gfx::Rect& rect) override {}
   void InspectElementCompleted() override {}
   void SetIsDocked(bool is_docked) override {}
-  void OpenInNewTab(const std::string& url) override {}
+  void OpenInNewTab(const std::string& url,
+                    const std::optional<std::string>& initiator_id) override {}
   void OpenSearchResultsInNewTab(const std::string& query) override {}
   void SetWhitelistedShortcuts(const std::string& message) override {}
   void SetEyeDropperActive(bool active) override {}

@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_DEVTOOLS_DEVTOOLS_WINDOW_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/callback_list.h"
@@ -477,7 +478,8 @@ class DevToolsWindow : public DevToolsUIBindings::Delegate,
   void SetInspectedPageBounds(const gfx::Rect& rect) override;
   void InspectElementCompleted() override;
   void SetIsDocked(bool is_docked) override;
-  void OpenInNewTab(const std::string& url) override;
+  void OpenInNewTab(const std::string& url,
+                    const std::optional<std::string>& initiator_id) override;
   void OpenSearchResultsInNewTab(const std::string& url) override;
   void SetWhitelistedShortcuts(const std::string& message) override;
   void SetEyeDropperActive(bool active) override;
@@ -495,7 +497,11 @@ class DevToolsWindow : public DevToolsUIBindings::Delegate,
   int GetOpenedByForLogging() override;
   int GetClosedByForLogging() override;
 
-  void OpenInNewTab(const GURL& url);
+  // Opens `url` in a new tab. The navigation is attributed to the frame of
+  // the inspected page or to the worker that `initiator_id` identifies (by
+  // DevTools target id or frame id), or to an opaque origin otherwise.
+  void OpenInNewTab(const GURL& url,
+                    const std::optional<std::string>& initiator_id);
   void ColorPickedInEyeDropper(int r, int g, int b, int a);
 
   // content::WebContentsObserver

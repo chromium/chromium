@@ -24,6 +24,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
+#include "base/unguessable_token.h"
 #include "base/values.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/certificate_viewer.h"
@@ -78,6 +79,7 @@
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "components/zoom/page_zoom.h"
 #include "components/zoom/zoom_controller.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/child_process_security_policy.h"
 #include "content/public/browser/color_chooser.h"
@@ -1875,15 +1877,98 @@ int DevToolsWindow::GetClosedByForLogging() {
   return static_cast<int>(closed_by_);
 }
 
-void DevToolsWindow::OpenInNewTab(const GURL& url) {
+namespace {
+
+// Returns the frame of `web_contents`' primary page (including any inner
+// frame trees) whose DevTools frame token is `token`, if any. The token is
+// what the DevTools frontend knows a frame by: it is the frame's id in the
+// DevTools protocol, and also the id of the frame's DevTools target if the
+// frame has one of its own (main frames and out-of-process iframes do).
+content::RenderFrameHost* FindFrameByDevToolsFrameToken(
+    WebContents* web_contents,
+    const std::string& token) {
+  std::optional<base::UnguessableToken> parsed_token =
+      base::UnguessableToken::DeserializeFromString(token);
+  if (!parsed_token) {
+    return nullptr;
+  }
+  content::RenderFrameHost* result = nullptr;
+  web_contents->GetPrimaryMainFrame()->ForEachRenderFrameHostWithAction(
+      [&](content::RenderFrameHost* frame) {
+        if (frame->GetDevToolsFrameToken() != *parsed_token) {
+          return content::RenderFrameHost::FrameIterationAction::kContinue;
+        }
+        result = frame;
+        return content::RenderFrameHost::FrameIterationAction::kStop;
+      });
+  return result;
+}
+
+// Returns the worker (or worklet) with the DevTools target id `target_id`
+// that lives in `browser_context`, if any.
+scoped_refptr<DevToolsAgentHost> FindWorkerByDevToolsTargetId(
+    const std::string& target_id,
+    content::BrowserContext* browser_context) {
+  scoped_refptr<DevToolsAgentHost> agent_host =
+      DevToolsAgentHost::GetForId(target_id);
+  if (!agent_host || agent_host->GetBrowserContext() != browser_context) {
+    return nullptr;
+  }
+  const std::string type = agent_host->GetType();
+  if (type != DevToolsAgentHost::kTypeDedicatedWorker &&
+      type != DevToolsAgentHost::kTypeSharedWorker &&
+      type != DevToolsAgentHost::kTypeServiceWorker &&
+      type != DevToolsAgentHost::kTypeWorklet) {
+    return nullptr;
+  }
+  return agent_host;
+}
+
+}  // namespace
+
+void DevToolsWindow::OpenInNewTab(
+    const GURL& url,
+    const std::optional<std::string>& initiator_id) {
   GURL fixed_url = url;
   WebContents* inspected_web_contents = GetInspectedWebContents();
-  content::RenderFrameHost* inspected_frame =
-      inspected_web_contents ? inspected_web_contents->GetPrimaryMainFrame()
-                             : nullptr;
+
+  // The URL typically originates from content that is controlled by the
+  // inspected target (e.g. a linkified URL in the Console, or a request in the
+  // Network panel), so attribute the navigation to the frame or worker that
+  // produced it, like the context menu does for "Open link in new tab" (see
+  // RenderViewContextMenuBase::GetOpenURLParamsWithExtraHeaders()). Without an
+  // initiator, the navigation would be indistinguishable from one typed into
+  // the omnibox: the request would carry SameSite=Strict cookies and
+  // `Sec-Fetch-Site: none`, which would allow the inspected target to bypass
+  // the CSRF defenses of the destination. Attributing it to the inspected
+  // page's main frame regardless of where the URL came from would be wrong as
+  // well: an embedded cross-site frame could then have the user issue a
+  // same-site request to its embedder.
+  //
+  // `initiator_id` is the DevTools target id or frame id of the frame or
+  // worker that the frontend got the URL from. The frame must belong to the
+  // inspected page (not to some other tab) and the worker to this profile.
+  // Whatever cannot be resolved that way -- the frontend did not say, e.g.
+  // because DevTools itself chose the URL; the frame or worker is gone; the id
+  // belongs to something else -- is attributed to an opaque origin, which is
+  // never same-site with the destination, so the navigation is treated as
+  // cross-site. See https://crbug.com/554558674 and
+  // https://crbug.com/576204004.
+  content::RenderFrameHost* initiator_frame = nullptr;
+  scoped_refptr<DevToolsAgentHost> initiator_worker;
+  if (initiator_id && !initiator_id->empty()) {
+    if (inspected_web_contents) {
+      initiator_frame =
+          FindFrameByDevToolsFrameToken(inspected_web_contents, *initiator_id);
+    }
+    if (!initiator_frame) {
+      initiator_worker = FindWorkerByDevToolsTargetId(*initiator_id, profile_);
+    }
+  }
+
   int child_id = content::ChildProcessHost::kInvalidUniqueID;
-  if (inspected_frame) {
-    child_id = inspected_frame->GetProcess()->GetDeprecatedID();
+  if (initiator_frame) {
+    child_id = initiator_frame->GetProcess()->GetDeprecatedID();
   }
   // Use about:blank instead of an empty GURL. The browser treats an empty GURL
   // as navigating to the home page, which may be privileged (chrome://newtab/).
@@ -1895,24 +1980,16 @@ void DevToolsWindow::OpenInNewTab(const GURL& url) {
       content::OpenURLParams::CreateBrowserInitiated(
           fixed_url, WindowOpenDisposition::kNewForegroundTab,
           ui::PAGE_TRANSITION_LINK);
-  // The URL typically originates from content that is controlled by the
-  // inspected target (e.g. a linkified URL in the Console, or a request in the
-  // Network panel), so attribute the navigation to it, like the context menu
-  // does for "Open link in new tab" (see
-  // RenderViewContextMenuBase::GetOpenURLParamsWithExtraHeaders()). Without an
-  // initiator, the navigation would be indistinguishable from one typed into
-  // the omnibox: the request would carry SameSite=Strict cookies and
-  // `Sec-Fetch-Site: none`, which would allow the inspected target to bypass
-  // the CSRF defenses of the destination.
-  if (inspected_frame) {
-    params.initiator_origin = inspected_frame->GetLastCommittedOrigin();
-    params.initiator_frame_token = inspected_frame->GetFrameToken();
+  if (initiator_frame) {
+    params.initiator_origin = initiator_frame->GetLastCommittedOrigin();
+    params.initiator_frame_token = initiator_frame->GetFrameToken();
     params.initiator_process_id = child_id;
-    params.source_site_instance = inspected_frame->GetSiteInstance();
+    params.source_site_instance = initiator_frame->GetSiteInstance();
+  } else if (initiator_worker) {
+    // A worker has an origin but no frame, like a service worker that calls
+    // `clients.openWindow()` (see service_worker_client_utils.cc).
+    params.initiator_origin = url::Origin::Create(initiator_worker->GetURL());
   } else {
-    // There is no inspected frame to attribute the navigation to (e.g. when
-    // inspecting a worker). An opaque origin is never same-site with the
-    // destination, so the navigation is treated as cross-site.
     params.initiator_origin = url::Origin();
   }
   if (!inspected_web_contents ||
@@ -1937,8 +2014,10 @@ void DevToolsWindow::OpenInNewTab(const GURL& url) {
   }
 }
 
-void DevToolsWindow::OpenInNewTab(const std::string& url) {
-  OpenInNewTab(GURL(url));
+void DevToolsWindow::OpenInNewTab(
+    const std::string& url,
+    const std::optional<std::string>& initiator_id) {
+  OpenInNewTab(GURL(url), initiator_id);
 }
 
 void DevToolsWindow::OpenSearchResultsInNewTab(const std::string& query) {
@@ -1947,7 +2026,8 @@ void DevToolsWindow::OpenSearchResultsInNewTab(const std::string& query) {
   CHECK(url_service, base::NotFatalUntil::M161);
   GURL url =
       GetDefaultSearchURLForSearchTerms(url_service, base::UTF8ToUTF16(query));
-  OpenInNewTab(url);
+  // DevTools chose the URL, so there is nothing to attribute the navigation to.
+  OpenInNewTab(url, /*initiator_id=*/std::nullopt);
 }
 
 void DevToolsWindow::SetWhitelistedShortcuts(const std::string& message) {

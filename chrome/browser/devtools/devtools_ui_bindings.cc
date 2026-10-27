@@ -226,7 +226,8 @@ class DefaultBindingsDelegate : public DevToolsUIBindings::Delegate {
   void SetInspectedPageBounds(const gfx::Rect& rect) override {}
   void InspectElementCompleted() override {}
   void SetIsDocked(bool is_docked) override {}
-  void OpenInNewTab(const std::string& url) override;
+  void OpenInNewTab(const std::string& url,
+                    const std::optional<std::string>& initiator_id) override;
   void OpenSearchResultsInNewTab(const std::string& query) override;
   void SetWhitelistedShortcuts(const std::string& message) override {}
   void SetEyeDropperActive(bool active) override {}
@@ -254,16 +255,19 @@ void DefaultBindingsDelegate::ActivateWindow() {
   web_contents_->Focus();
 }
 
-void DefaultBindingsDelegate::OpenInNewTab(const std::string& url) {
+void DefaultBindingsDelegate::OpenInNewTab(
+    const std::string& url,
+    const std::optional<std::string>& initiator_id) {
   content::OpenURLParams params =
       content::OpenURLParams::CreateBrowserInitiated(
           GURL(url), WindowOpenDisposition::kNewForegroundTab,
           ui::PAGE_TRANSITION_LINK);
   // The URL typically originates from content that is controlled by the
   // inspected target, which is not a local WebContents here (e.g. a remote
-  // page or a Node.js process). There is nothing to attribute the navigation
-  // to, but it must not look like a navigation typed into the omnibox either,
-  // or the request would carry SameSite=Strict cookies and `Sec-Fetch-Site:
+  // page or a Node.js process), so `initiator_id` cannot be resolved to a
+  // local frame or worker. There is nothing to attribute the navigation to,
+  // but it must not look like a navigation typed into the omnibox either, or
+  // the request would carry SameSite=Strict cookies and `Sec-Fetch-Site:
   // none`. An opaque initiator origin is never same-site with the destination,
   // so the navigation is treated as cross-site. See
   // DevToolsWindow::OpenInNewTab() and https://crbug.com/554558674.
@@ -1427,7 +1431,9 @@ void DevToolsUIBindings::LoadNetworkResource(DispatchCallback callback,
       std::move(url_loader_factory), std::move(callback));
 }
 
-void DevToolsUIBindings::OpenInNewTab(const std::string& url) {
+void DevToolsUIBindings::OpenInNewTab(
+    const std::string& url,
+    const std::optional<std::string>& initiator_id) {
   GURL gurl(url);
   // Hardening: Verify that the frontend renderer is allowed to request this URL.
   content::ChildProcessSecurityPolicy* policy =
@@ -1449,7 +1455,7 @@ void DevToolsUIBindings::OpenInNewTab(const std::string& url) {
     gurl = GURL(url::kAboutBlankURL);
   }
 
-  delegate_->OpenInNewTab(gurl.spec());
+  delegate_->OpenInNewTab(gurl.spec(), initiator_id);
 }
 
 void DevToolsUIBindings::OpenSearchResultsInNewTab(const std::string& query) {

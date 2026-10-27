@@ -236,9 +236,43 @@ struct StorageTraits<const T&> {
   using StorageType = T;
 };
 
+template <typename T>
+constexpr bool kIsOptionalParam = false;
+
+template <typename T>
+constexpr bool kIsOptionalParam<std::optional<T>> = true;
+
+// A parameter of type std::optional<T> may be sent as null by the frontend
+// (which is what JSON.stringify() turns an undefined argument into), or be
+// omitted altogether if no later parameter is sent.
+template <typename T>
+bool GetValue(const base::Value& value, std::optional<T>& result) {
+  if (value.is_none()) {
+    result.reset();
+    return true;
+  }
+  T parsed;
+  if (!GetValue(value, parsed)) {
+    return false;
+  }
+  result = std::move(parsed);
+  return true;
+}
+
+// The parameters of a handler, of types `Ts...`, as parsed from the arguments
+// of an embedder message: Parse() parses the arguments in [`it`, `end`) into
+// `Ts...` one by one, the N-th argument into the N-th parameter, and succeeds
+// if and only if every argument was parsed into a parameter of the matching
+// type. There may be fewer arguments than parameters, as long as all the
+// parameters that are left without an argument are std::optional<T>s; those
+// stay empty.
 template <typename... Ts>
 struct ParamTuple {
-  bool Parse(base::ListValue::const_iterator it) { return true; }
+  // No parameters are left, so every argument must have been consumed.
+  bool Parse(base::ListValue::const_iterator it,
+             base::ListValue::const_iterator end) {
+    return it == end;
+  }
 
   template <typename H, typename... As>
   void Apply(const H& handler, As... args) {
@@ -248,8 +282,17 @@ struct ParamTuple {
 
 template <typename T, typename... Ts>
 struct ParamTuple<T, Ts...> {
-  bool Parse(base::ListValue::const_iterator it) {
-    return GetValue(*it, head) && tail.Parse(it + 1);
+  bool Parse(base::ListValue::const_iterator it,
+             base::ListValue::const_iterator end) {
+    if (it == end) {
+      // The arguments ran out before the parameters did, so `head` gets no
+      // value. That is fine if and only if `head` is a std::optional<T>, which
+      // then stays empty, and (checked by the recursion) so is every parameter
+      // after it.
+      return kIsOptionalParam<typename StorageTraits<T>::StorageType> &&
+             tail.Parse(it, end);
+    }
+    return GetValue(*it, head) && tail.Parse(it + 1, end);
   }
 
   template <typename H, typename... As>
@@ -267,7 +310,7 @@ bool ParseAndHandle(const base::RepeatingCallback<void(As...)>& handler,
                     DispatchCallback callback,
                     const base::ListValue& list) {
   ParamTuple<As...> tuple;
-  if (list.size() != sizeof...(As) || !tuple.Parse(list.begin())) {
+  if (list.size() > sizeof...(As) || !tuple.Parse(list.begin(), list.end())) {
     LOG(ERROR) << "Failed to parse arguments for " << method
                << " call: " << list.DebugString();
     return false;
@@ -284,7 +327,7 @@ bool ParseAndHandleWithCallback(
     DispatchCallback callback,
     const base::ListValue& list) {
   ParamTuple<As...> tuple;
-  if (list.size() != sizeof...(As) || !tuple.Parse(list.begin())) {
+  if (list.size() > sizeof...(As) || !tuple.Parse(list.begin(), list.end())) {
     LOG(ERROR) << "Failed to parse arguments for " << method
                << " call: " << list.DebugString();
     return false;

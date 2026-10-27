@@ -19,6 +19,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
+#include "base/functional/function_ref.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
@@ -39,6 +40,7 @@
 #include "base/test/test_future.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/thread_restrictions.h"
+#include "base/unguessable_token.h"
 #include "base/values.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
@@ -3701,7 +3703,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsTest, MAYBE_TestOpenInNewTabFilter) {
 
   for (const auto& pair : tests) {
     content::WebContentsAddedObserver observer;
-    bindings_delegate_->OpenInNewTab(pair.first);
+    bindings_delegate_->OpenInNewTab(pair.first, /*initiator_id=*/std::nullopt);
     content::WebContents* new_wc = observer.GetWebContents();
     std::string opened_url = new_wc->GetVisibleURL().spec();
     EXPECT_EQ(opened_url, pair.second) << " while testing URL: " << pair.first;
@@ -3737,7 +3739,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsTest, TestOpenInNewTabFilterHardening) {
 
   for (const auto& pair : tests) {
     content::WebContentsAddedObserver observer;
-    embedder_delegate->OpenInNewTab(pair.first);
+    embedder_delegate->OpenInNewTab(pair.first, /*initiator_id=*/std::nullopt);
     content::WebContents* new_wc = observer.GetWebContents();
     std::string opened_url = new_wc->GetVisibleURL().spec();
     EXPECT_EQ(opened_url, pair.second) << " while testing URL: " << pair.first;
@@ -3748,26 +3750,12 @@ IN_PROC_BROWSER_TEST_F(DevToolsTest, TestOpenInNewTabFilterHardening) {
 
 namespace {
 
-// Returns the value of the `name` header in `headers`, or nullopt if there is
-// no such header. Unlike `headers[name]`, this distinguishes a missing header
-// from one with an empty value.
-std::optional<std::string> GetHeader(
-    const net::test_server::HttpRequest::HeaderMap& headers,
-    std::string_view name) {
-  auto it = headers.find(name);
-  if (it == headers.end()) {
-    return std::nullopt;
-  }
-  return it->second;
-}
-
-// Opens a page served from a dedicated server on 127.0.0.1 via `window`'s
-// OpenInNewTab and returns the headers of the resulting request. The
-// destination site has a SameSite=Strict and a SameSite=Lax cookie set
-// beforehand.
+// Has `open_in_new_tab` open a page served from a dedicated server on
+// 127.0.0.1 and returns the headers of the resulting request. The destination
+// site has a SameSite=Strict and a SameSite=Lax cookie set beforehand.
 net::test_server::HttpRequest::HeaderMap OpenInNewTabAndGetRequestHeaders(
     Profile* profile,
-    DevToolsWindow* window) {
+    base::FunctionRef<void(const GURL& url)> open_in_new_tab) {
   // Serve the destination from a separate server so that the request can be
   // inspected. 127.0.0.1 is potentially trustworthy, so `Sec-Fetch-*` headers
   // are attached to requests to it.
@@ -3782,8 +3770,7 @@ net::test_server::HttpRequest::HeaderMap OpenInNewTabAndGetRequestHeaders(
   EXPECT_TRUE(content::SetCookie(profile, target_url, "lax=1; SameSite=Lax"));
 
   content::WebContentsAddedObserver observer;
-  static_cast<DevToolsUIBindings::Delegate*>(window)->OpenInNewTab(
-      target_url.spec());
+  open_in_new_tab(target_url);
   content::WebContents* new_wc = observer.GetWebContents();
 
   response.WaitForRequest();
@@ -3795,64 +3782,196 @@ net::test_server::HttpRequest::HeaderMap OpenInNewTabAndGetRequestHeaders(
   return headers;
 }
 
+// Same, via `window`'s OpenInNewTab attributed to `initiator_id`.
+net::test_server::HttpRequest::HeaderMap OpenInNewTabAndGetRequestHeaders(
+    Profile* profile,
+    DevToolsWindow* window,
+    const std::optional<std::string>& initiator_id) {
+  return OpenInNewTabAndGetRequestHeaders(profile, [&](const GURL& url) {
+    static_cast<DevToolsUIBindings::Delegate*>(window)->OpenInNewTab(
+        url.spec(), initiator_id);
+  });
+}
+
+// The DevTools frame id of `frame`, which is what the frontend passes as the
+// initiator of a navigation.
+std::string DevToolsFrameId(content::RenderFrameHost* frame) {
+  return frame->GetDevToolsFrameToken().ToString();
+}
+
+// Matchers for the request headers that reveal how a navigation to 127.0.0.1
+// was attributed: a same-site initiator makes the request carry the
+// SameSite=Strict cookie, anything else (including an opaque origin) does not.
+auto AttributedToSameSiteInitiator() {
+  return testing::AllOf(testing::Contains(testing::Pair(
+                            testing::StrCaseEq("Sec-Fetch-Site"), "same-site")),
+                        testing::Contains(testing::Pair(
+                            testing::StrCaseEq("Cookie"), "strict=1; lax=1")));
+}
+
+auto AttributedToCrossSiteInitiator() {
+  return testing::AllOf(
+      testing::Contains(
+          testing::Pair(testing::StrCaseEq("Sec-Fetch-Site"), "cross-site")),
+      testing::Contains(testing::Pair(testing::StrCaseEq("Cookie"), "lax=1")));
+}
+
 }  // namespace
 
-// Tests that navigations started via OpenInNewTab are attributed to the
-// inspected page, i.e. that `Sec-Fetch-Site` and the SameSite cookie context
-// of the request are computed relative to the inspected page's origin, as if
-// the link had been opened from the inspected page itself. Without an
-// initiator, the request would be indistinguishable from a navigation typed
-// into the omnibox (`Sec-Fetch-Site: none` and SameSite=Strict cookies
-// attached), which would allow the inspected page to bypass the CSRF defenses
-// of the destination. See https://crbug.com/554558674.
+// Tests that navigations started via OpenInNewTab are attributed to the frame
+// or worker that the frontend names as the initiator, i.e. that
+// `Sec-Fetch-Site` and the SameSite cookie context of the request are computed
+// relative to that frame's origin, as if the link had been opened from there.
+// Without an initiator, the request would be indistinguishable from a
+// navigation typed into the omnibox (`Sec-Fetch-Site: none` and
+// SameSite=Strict cookies attached), which would allow the inspected target to
+// bypass the CSRF defenses of the destination; attributed to the main frame
+// regardless of where the URL came from, an embedded cross-site frame could
+// have the user issue a same-site request to its embedder. See
+// https://crbug.com/554558674 and https://crbug.com/576204004.
+//
+// The destination is served from 127.0.0.1 (on a different port, so it is
+// same-site but cross-origin with pages on 127.0.0.1) and the inspected page
+// embeds a cross-site frame, either `127.0.0.1(a.test)` or `a.test(127.0.0.1)`.
 class DevToolsOpenInNewTabAttributionTest : public DevToolsTest {
  protected:
-  // Opens DevTools on `kArbitraryPage` served from `inspected_host`, then
-  // opens a cross-origin destination via OpenInNewTab and returns the headers
-  // of the resulting request.
-  net::test_server::HttpRequest::HeaderMap GetRequestHeadersWhenInspecting(
-      const std::string& inspected_host) {
+  void OpenDevToolsOnPageWithFrame(const std::string& main_frame_host,
+                                   const std::string& child_frame_host) {
     OpenDevToolsWindow(
-        embedded_test_server()->GetURL(inspected_host, kArbitraryPage).spec(),
+        embedded_test_server()
+            ->GetURL(
+                main_frame_host,
+                base::StrCat({"/cross_site_iframe_factory.html?",
+                              main_frame_host, "(", child_frame_host, ")"}))
+            .spec(),
         false);
-    net::test_server::HttpRequest::HeaderMap headers =
-        OpenInNewTabAndGetRequestHeaders(chrome_test_utils::GetProfile(this),
-                                         window_);
-    CloseDevToolsWindow();
-    return headers;
+  }
+
+  content::RenderFrameHost* InspectedMainFrame() {
+    return GetInspectedTab()->GetPrimaryMainFrame();
+  }
+
+  content::RenderFrameHost* InspectedChildFrame() {
+    return content::ChildFrameAt(InspectedMainFrame(), 0);
+  }
+
+  net::test_server::HttpRequest::HeaderMap GetRequestHeaders(
+      const std::optional<std::string>& initiator_id) {
+    return OpenInNewTabAndGetRequestHeaders(chrome_test_utils::GetProfile(this),
+                                            window_, initiator_id);
   }
 };
 
-IN_PROC_BROWSER_TEST_F(DevToolsOpenInNewTabAttributionTest, CrossSite) {
-  // The inspected page on a.test is cross-site to the destination on
-  // 127.0.0.1, so the request must not look like a user-initiated navigation
-  // and must not carry the SameSite=Strict cookie.
-  net::test_server::HttpRequest::HeaderMap headers =
-      GetRequestHeadersWhenInspecting("a.test");
-  EXPECT_THAT(GetHeader(headers, "Sec-Fetch-Site"),
-              testing::Optional(std::string("cross-site")));
-  EXPECT_THAT(GetHeader(headers, "Cookie"),
-              testing::Optional(std::string("lax=1")));
+IN_PROC_BROWSER_TEST_F(DevToolsOpenInNewTabAttributionTest, MainFrame) {
+  OpenDevToolsOnPageWithFrame("127.0.0.1", "a.test");
+  EXPECT_THAT(GetRequestHeaders(DevToolsFrameId(InspectedMainFrame())),
+              AttributedToSameSiteInitiator());
 }
 
-IN_PROC_BROWSER_TEST_F(DevToolsOpenInNewTabAttributionTest, SameSite) {
-  // The inspected page is same-site (but cross-origin, due to the different
-  // port) with the destination, so the request is attributed accordingly and
-  // carries both cookies.
-  net::test_server::HttpRequest::HeaderMap headers =
-      GetRequestHeadersWhenInspecting("127.0.0.1");
-  EXPECT_THAT(GetHeader(headers, "Sec-Fetch-Site"),
-              testing::Optional(std::string("same-site")));
-  EXPECT_THAT(GetHeader(headers, "Cookie"),
-              testing::Optional(std::string("strict=1; lax=1")));
+IN_PROC_BROWSER_TEST_F(DevToolsOpenInNewTabAttributionTest, CrossSiteFrame) {
+  // The destination is same-site with the inspected page, but the URL came
+  // from the cross-site frame, so the request must not look same-site.
+  OpenDevToolsOnPageWithFrame("127.0.0.1", "a.test");
+  EXPECT_THAT(GetRequestHeaders(DevToolsFrameId(InspectedChildFrame())),
+              AttributedToCrossSiteInitiator());
+}
+
+IN_PROC_BROWSER_TEST_F(DevToolsOpenInNewTabAttributionTest, SameSiteFrame) {
+  // The destination is cross-site with the inspected page, but the URL came
+  // from a frame that is same-site with it, so it is a same-site request.
+  OpenDevToolsOnPageWithFrame("a.test", "127.0.0.1");
+  EXPECT_THAT(GetRequestHeaders(DevToolsFrameId(InspectedChildFrame())),
+              AttributedToSameSiteInitiator());
+}
+
+IN_PROC_BROWSER_TEST_F(DevToolsOpenInNewTabAttributionTest, NoInitiator) {
+  // Without an initiator (e.g. for a URL that DevTools itself chose, or from
+  // a frontend that does not pass one), the navigation gets an opaque
+  // initiator origin: it is neither same-site with the inspected page nor
+  // user-initiated.
+  OpenDevToolsOnPageWithFrame("127.0.0.1", "a.test");
+  EXPECT_THAT(GetRequestHeaders(std::nullopt),
+              AttributedToCrossSiteInitiator());
+  EXPECT_THAT(GetRequestHeaders(""), AttributedToCrossSiteInitiator());
+}
+
+IN_PROC_BROWSER_TEST_F(DevToolsOpenInNewTabAttributionTest, UnknownInitiator) {
+  // An initiator that cannot be resolved (e.g. a frame that has been
+  // navigated away since the URL was logged) is treated like no initiator.
+  OpenDevToolsOnPageWithFrame("127.0.0.1", "a.test");
+  EXPECT_THAT(GetRequestHeaders(base::UnguessableToken::Create().ToString()),
+              AttributedToCrossSiteInitiator());
+}
+
+IN_PROC_BROWSER_TEST_F(DevToolsOpenInNewTabAttributionTest, FrameOfAnotherTab) {
+  // Only frames of the inspected page can be named as the initiator; a frame
+  // of another tab, even one that is same-site with the destination, is
+  // treated like an unknown initiator.
+  OpenDevToolsOnPageWithFrame("a.test", "a.test");
+  content::WebContents* other_tab = nullptr;
+  {
+    content::WebContentsAddedObserver observer;
+    static_cast<DevToolsUIBindings::Delegate*>(window_)->OpenInNewTab(
+        embedded_test_server()->GetURL("127.0.0.1", kArbitraryPage).spec(),
+        /*initiator_id=*/std::nullopt);
+    other_tab = observer.GetWebContents();
+    ASSERT_TRUE(content::WaitForLoadStop(other_tab));
+  }
+  EXPECT_THAT(
+      GetRequestHeaders(DevToolsFrameId(other_tab->GetPrimaryMainFrame())),
+      AttributedToCrossSiteInitiator());
+}
+
+// Tests the `openInNewTab` embedder message itself, i.e. that the initiator
+// arrives when the frontend sends it as the second argument, and that the
+// message still works when the frontend omits the argument or sends null (as
+// frontends from before the argument existed do, and as JSON.stringify() turns
+// an undefined argument into, respectively).
+IN_PROC_BROWSER_TEST_F(DevToolsOpenInNewTabAttributionTest, EmbedderMessage) {
+  OpenDevToolsOnPageWithFrame("127.0.0.1", "a.test");
+  const std::string main_frame_id = DevToolsFrameId(InspectedMainFrame());
+  const std::string child_frame_id = DevToolsFrameId(InspectedChildFrame());
+  int next_message_id = 1;
+  auto open_via_embedder_message = [&](const GURL& url,
+                                       std::string_view params_js) {
+    EXPECT_TRUE(content::ExecJs(
+        main_web_contents(),
+        content::JsReplace(
+            base::StrCat({"DevToolsHost.sendMessageToEmbedder(JSON.stringify({"
+                          "id: $1, method: 'openInNewTab', params: ",
+                          params_js, "}));"}),
+            next_message_id++, url.spec(), main_frame_id, child_frame_id)));
+  };
+  Profile* profile = chrome_test_utils::GetProfile(this);
+
+  EXPECT_THAT(
+      OpenInNewTabAndGetRequestHeaders(
+          profile,
+          [&](const GURL& url) { open_via_embedder_message(url, "[$2, $3]"); }),
+      AttributedToSameSiteInitiator());
+  EXPECT_THAT(
+      OpenInNewTabAndGetRequestHeaders(
+          profile,
+          [&](const GURL& url) { open_via_embedder_message(url, "[$2, $4]"); }),
+      AttributedToCrossSiteInitiator());
+  EXPECT_THAT(
+      OpenInNewTabAndGetRequestHeaders(
+          profile,
+          [&](const GURL& url) { open_via_embedder_message(url, "[$2]"); }),
+      AttributedToCrossSiteInitiator());
+  EXPECT_THAT(OpenInNewTabAndGetRequestHeaders(profile,
+                                               [&](const GURL& url) {
+                                                 open_via_embedder_message(
+                                                     url, "[$2, null]");
+                                               }),
+              AttributedToCrossSiteInitiator());
 }
 
 // Same as above, for a DevTools window that inspects a worker. Such windows
 // have no inspected WebContents, so there is no frame to attribute the
-// navigation to, and the navigation also has to be started without the help
-// of the inspected WebContents' delegate. A worker controls what is logged to
-// its console just like a page does, so the navigation must still not look
-// like one typed into the omnibox.
+// navigation to -- the worker, which controls what is logged to its console
+// just like a page does, has an origin but no frame -- and the navigation also
+// has to be started without the help of the inspected WebContents' delegate.
 //
 // Not on Android, where DevToolsWindow::OpenInNewTab() cannot open a tab
 // without an inspected WebContents (see the NOTIMPLEMENTED() there).
@@ -3863,21 +3982,38 @@ class DevToolsWorkerOpenInNewTabAttributionTest : public WorkerDevToolsTest {
     WorkerDevToolsTest::SetUpOnMainThread();
     host_resolver()->AddRule("*", "127.0.0.1");
   }
+
+ protected:
+  // Opens DevTools on a shared worker of a page on 127.0.0.1, i.e. a worker
+  // that is same-site with the destination.
+  scoped_refptr<DevToolsAgentHost> OpenDevToolsOnSharedWorker() {
+    EXPECT_TRUE(chrome_test_utils::NavigateToURL(
+        chrome_test_utils::GetActiveWebContents(this),
+        embedded_test_server()->GetURL("127.0.0.1", kSharedWorkerTestPage)));
+    scoped_refptr<DevToolsAgentHost> worker =
+        WaitForFirstSharedWorker(kSharedWorkerTestWorker);
+    OpenDevToolsWindow(worker);
+    return worker;
+  }
+
+  net::test_server::HttpRequest::HeaderMap GetRequestHeaders(
+      const std::optional<std::string>& initiator_id) {
+    return OpenInNewTabAndGetRequestHeaders(chrome_test_utils::GetProfile(this),
+                                            window_, initiator_id);
+  }
 };
 
-IN_PROC_BROWSER_TEST_F(DevToolsWorkerOpenInNewTabAttributionTest, CrossSite) {
-  ASSERT_TRUE(chrome_test_utils::NavigateToURL(
-      chrome_test_utils::GetActiveWebContents(this),
-      embedded_test_server()->GetURL("a.test", kSharedWorkerTestPage)));
-  OpenDevToolsWindow(WaitForFirstSharedWorker(kSharedWorkerTestWorker));
+IN_PROC_BROWSER_TEST_F(DevToolsWorkerOpenInNewTabAttributionTest, Worker) {
+  scoped_refptr<DevToolsAgentHost> worker = OpenDevToolsOnSharedWorker();
+  EXPECT_THAT(GetRequestHeaders(worker->GetId()),
+              AttributedToSameSiteInitiator());
+  CloseDevToolsWindow();
+}
 
-  net::test_server::HttpRequest::HeaderMap headers =
-      OpenInNewTabAndGetRequestHeaders(chrome_test_utils::GetProfile(this),
-                                       window_);
-  EXPECT_THAT(GetHeader(headers, "Sec-Fetch-Site"),
-              testing::Optional(std::string("cross-site")));
-  EXPECT_THAT(GetHeader(headers, "Cookie"),
-              testing::Optional(std::string("lax=1")));
+IN_PROC_BROWSER_TEST_F(DevToolsWorkerOpenInNewTabAttributionTest, NoInitiator) {
+  OpenDevToolsOnSharedWorker();
+  EXPECT_THAT(GetRequestHeaders(std::nullopt),
+              AttributedToCrossSiteInitiator());
   CloseDevToolsWindow();
 }
 #endif  // !BUILDFLAG(IS_ANDROID)

@@ -599,6 +599,7 @@ source_set("unit_tests") {
     "//chrome/test/base:chrome_render_view_host_test_harness",
     "//chrome/test/base:testing_browser_process",
     "//content/test:test_support",
+    "//testing/gmock",
     "//testing/gtest",
   ]
 
@@ -607,6 +608,7 @@ source_set("unit_tests") {
       "aida_client_unittest.cc",
       "devtools_availability_checker_unittest.cc",
       "devtools_contents_resizing_strategy_unittest.cc",
+      "devtools_embedder_message_dispatcher_unittest.cc",
       "devtools_file_helper_unittest.cc",
       "devtools_file_system_indexer_unittest.cc",
       "devtools_file_watcher_unittest.cc",
