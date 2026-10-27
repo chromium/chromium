@@ -78,6 +78,7 @@
 #include "components/autofill/core/common/autofill_util.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "components/autofill/core/common/password_generation_util.h"
+#include "components/autofill/core/common/unique_ids.h"
 #include "components/browsing_data/content/browsing_data_helper.h"
 #include "components/critical_actions/core/browser/critical_action_service.h"
 #include "components/critical_actions/core/browser/critical_action_types.h"
@@ -491,7 +492,11 @@ void ChromePasswordManagerClient::FocusedInputChanged(
     return;
   }
   ManualFillingController::GetOrCreate(web_contents())
-      ->NotifyFocusedInputChanged(focused_field_id, focused_field_type);
+      ->NotifyFocusedInputChanged(
+          {autofill::LocalFrameToken(
+               content_driver->render_frame_host()->GetFrameToken().value()),
+           focused_field_id},
+          focused_field_type);
   GetOrCreatePasswordAccessory()->UpdateCredManReentryUi(focused_field_type);
 
   if (!content_driver->CanShowAutofillUi()) {

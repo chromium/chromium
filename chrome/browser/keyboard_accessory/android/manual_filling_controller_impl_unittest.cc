@@ -13,6 +13,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/unguessable_token.h"
 #include "chrome/browser/autofill/manual_filling_view_interface.h"
 #include "chrome/browser/autofill/mock_manual_filling_view.h"
 #include "chrome/browser/keyboard_accessory/android/accessory_controller.h"
@@ -24,6 +25,7 @@
 #include "chrome/browser/keyboard_accessory/test_utils/android/mock_payment_method_accessory_controller.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/autofill/core/common/unique_ids.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/web_contents.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -70,7 +72,9 @@ std::vector<uint8_t> test_passkey_id() {
   return {23, 24, 25, 26, 27};
 }
 
-constexpr autofill::FieldRendererId kFocusedFieldId(123);
+const autofill::FieldGlobalId kFocusedFieldId{
+    autofill::LocalFrameToken(base::UnguessableToken::CreateForTesting(1, 2)),
+    autofill::FieldRendererId(123)};
 
 // Fixture that tests the manual filling experience with the most recent version
 // of the keyboard accessory and all its fallback sheets.
@@ -401,8 +405,7 @@ TEST_F(ManualFillingControllerTest, ForwardsFillingTriggeredToController) {
           .Build();
   EXPECT_CALL(*view(), SwapSheetWithKeyboard());
   EXPECT_CALL(mock_payment_method_controller_,
-              OnFillingTriggered(controller()->GetLastFocusedFieldId(),
-                                 selected_field));
+              OnFillingTriggered(kFocusedFieldId, selected_field));
 
   controller()->OnFillingTriggered(AccessoryTabType::CREDIT_CARDS,
                                    selected_field);
@@ -584,7 +587,7 @@ TEST_P(ManualFillingControllerAtMemoryFieldTypeTest,
   testing::Mock::VerifyAndClearExpectations(view());
 
   EXPECT_CALL(*view(), Hide());
-  controller()->NotifyFocusedInputChanged(autofill::FieldRendererId(),
+  controller()->NotifyFocusedInputChanged(autofill::FieldGlobalId(),
                                           FocusedFieldType::kUnknown);
 }
 

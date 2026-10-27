@@ -2050,6 +2050,12 @@ TEST_F(ChromePasswordManagerClientAndroidTest, FocusedInputChangedGoodFrame) {
   client->FocusedInputChanged(driver.get(), FieldRendererId(123),
                               FocusedFieldType::kFillablePasswordField);
 
+  EXPECT_EQ(ManualFillingControllerImpl::FromWebContents(web_contents())
+                ->GetLastFocusedFieldId(),
+            autofill::FieldGlobalId(
+                autofill::LocalFrameToken(main_rfh()->GetFrameToken().value()),
+                FieldRendererId(123)));
+
   PasswordGenerationController* pwd_generation_controller =
       PasswordGenerationController::GetIfExisting(web_contents());
   EXPECT_TRUE(pwd_generation_controller);

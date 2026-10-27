@@ -133,15 +133,11 @@ void ManualFillingControllerImpl::OnAccessoryActionAvailabilityChanged(
 }
 
 void ManualFillingControllerImpl::NotifyFocusedInputChanged(
-    autofill::FieldRendererId focused_field_id,
+    autofill::FieldGlobalId focused_field_id,
     autofill::mojom::FocusedFieldType focused_field_type) {
   TRACE_EVENT0("passwords",
                "ManualFillingControllerImpl::NotifyFocusedInputChanged");
-  autofill::LocalFrameToken frame_token;
-  if (content::RenderFrameHost* rfh = GetWebContents().GetFocusedFrame()) {
-    frame_token = autofill::LocalFrameToken(rfh->GetFrameToken().value());
-  }
-  last_focused_field_id_ = {frame_token, focused_field_id};
+  last_focused_field_id_ = focused_field_id;
   last_focused_field_type_ = focused_field_type;
 
   if (GetWebContents().GetVisibility() != content::Visibility::VISIBLE) {

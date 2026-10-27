@@ -25,10 +25,12 @@
 #include "components/affiliations/core/browser/match_type.h"
 #include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/core/browser/at_memory/at_memory_enablement_util.h"
+#include "components/autofill/core/common/unique_ids.h"
 #include "components/password_manager/core/browser/credential_cache.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_form_manager.h"
 #include "components/password_manager/core/browser/password_string.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/android/view_android.h"
 #include "ui/android/window_android.h"
@@ -358,9 +360,14 @@ static void JNI_ManualFillingComponentBridge_NotifyFocusedFieldTypeForTesting(
     content::WebContents* web_contents,
     int64_t j_focused_field_id,
     autofill::mojom::FocusedFieldType focused_field_type) {
+  autofill::LocalFrameToken frame_token;
+  if (content::RenderFrameHost* rfh = web_contents->GetFocusedFrame()) {
+    frame_token = autofill::LocalFrameToken(rfh->GetFrameToken().value());
+  }
   ManualFillingController::GetOrCreate(web_contents)
-      ->NotifyFocusedInputChanged(autofill::FieldRendererId(j_focused_field_id),
-                                  focused_field_type);
+      ->NotifyFocusedInputChanged(
+          {frame_token, autofill::FieldRendererId(j_focused_field_id)},
+          focused_field_type);
 }
 
 // static

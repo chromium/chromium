@@ -77,7 +77,7 @@ class ManualFillingController {
   // Notifies that the focused field changed which allows the controller to
   // update the UI visibility.
   virtual void NotifyFocusedInputChanged(
-      autofill::FieldRendererId focused_field_id,
+      autofill::FieldGlobalId focused_field_id,
       autofill::mojom::FocusedFieldType focused_field_type) = 0;
 
   // Returns the last field id passed to `NotifyFocusedInputChanged()`.

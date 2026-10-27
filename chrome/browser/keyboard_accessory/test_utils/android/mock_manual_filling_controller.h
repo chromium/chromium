@@ -23,7 +23,7 @@ class MockManualFillingController : public ManualFillingController {
 
   MOCK_METHOD((void),
               NotifyFocusedInputChanged,
-              (autofill::FieldRendererId, autofill::mojom::FocusedFieldType),
+              (autofill::FieldGlobalId, autofill::mojom::FocusedFieldType),
               (override));
   MOCK_METHOD((autofill::FieldGlobalId),
               GetLastFocusedFieldId,
