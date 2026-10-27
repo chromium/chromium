@@ -4,10 +4,14 @@
 
 #include "chrome/browser/ash/extensions/speech/speech_recognition_private_recognizer.h"
 
+#include <optional>
+#include <string>
+
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/extensions/speech/speech_recognition_private_base_test.h"
 #include "chrome/browser/ash/extensions/speech/speech_recognition_private_delegate.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/speech/speech_recognizer_delegate.h"
 #include "chromeos/ash/experiences/extensions/browser/speech/speech_recognition_constants.h"
 #include "content/public/test/fake_speech_recognition_manager.h"
 
@@ -376,6 +380,40 @@ IN_PROC_BROWSER_TEST_P(SpeechRecognitionPrivateRecognizerTest,
   // and `on_stop_callback` should be run.
   ASSERT_TRUE(ran_on_start_callback());
   ASSERT_TRUE(ran_on_stop_once_callback());
+}
+
+IN_PROC_BROWSER_TEST_P(SpeechRecognitionPrivateRecognizerTest,
+                       StoppedBeforeRecognizingRunsStartCallback) {
+  HandleStart(std::optional<std::string>(), std::optional<bool>());
+  ASSERT_FALSE(ran_on_start_callback());
+
+  // Transition to `SPEECH_RECOGNIZER_READY` and then back to
+  // `SPEECH_RECOGNIZER_READY` before `SPEECH_RECOGNIZER_RECOGNIZING` is
+  // reached.
+  FakeSpeechRecognitionStateChanged(SPEECH_RECOGNIZER_READY);
+  ASSERT_EQ(SPEECH_RECOGNIZER_READY, recognizer()->current_state());
+  FakeSpeechRecognitionStateChanged(SPEECH_RECOGNIZER_READY);
+
+  ASSERT_TRUE(ran_on_start_callback());
+  ASSERT_EQ("Speech recognition never started", on_start_callback_error());
+  ASSERT_TRUE(delegate_handled_stop());
+  ASSERT_EQ(SPEECH_RECOGNIZER_OFF, recognizer()->current_state());
+}
+
+IN_PROC_BROWSER_TEST_P(SpeechRecognitionPrivateRecognizerTest,
+                       ErrorBeforeRecognizingRunsStartCallback) {
+  HandleStart(std::optional<std::string>(), std::optional<bool>());
+  ASSERT_FALSE(ran_on_start_callback());
+
+  // Transition to `SPEECH_RECOGNIZER_ERROR` before
+  // `SPEECH_RECOGNIZER_RECOGNIZING` is reached.
+  FakeSpeechRecognitionStateChanged(SPEECH_RECOGNIZER_ERROR);
+
+  ASSERT_TRUE(ran_on_start_callback());
+  ASSERT_EQ("Speech recognition never started", on_start_callback_error());
+  ASSERT_TRUE(delegate_handled_stop());
+  ASSERT_EQ("A speech recognition error occurred", last_error());
+  ASSERT_EQ(SPEECH_RECOGNIZER_OFF, recognizer()->current_state());
 }
 
 }  // namespace extensions

@@ -32,6 +32,10 @@
 #include "extensions/common/mojom/view_type.mojom.h"
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "ash/accessibility/accessibility_controller.h"
+#endif
+
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/services/speech/buildflags/buildflags.h"
 #if BUILDFLAG(ENABLE_SPEECH_SERVICE)
@@ -101,9 +105,13 @@ void ChromeSpeechRecognitionManagerDelegate::CheckRecognitionIsAllowed(
   const content::SpeechRecognitionSessionContext& context =
       SpeechRecognitionManager::GetInstance()->GetSessionContext(session_id);
 
+#if !BUILDFLAG(IS_CHROMEOS)
   // Make sure that initiators (extensions/web pages) properly set the
   // |render_process_id| field, which is needed later to retrieve the profile.
+  // On ChromeOS, `CheckRenderFrameType` verifies on the UI thread that a
+  // missing `child_id` is only allowed when ChromeOS Dictation is active.
   CHECK(context.global_id.child_id, base::NotFatalUntil::M162);
+#endif
 
   content::GlobalRenderFrameHostId global_id = context.global_id;
   if (context.embedder_global_id.child_id) {
@@ -192,8 +200,12 @@ void ChromeSpeechRecognitionManagerDelegate::CheckRenderFrameType(
 
   if (!render_frame_host) {
     if (!global_id.child_id) {
-      // This happens for browser-initiated requests (e.g. Chrome OS Dictation).
-      allowed = true;
+#if BUILDFLAG(IS_CHROMEOS)
+      // Browser-initiated requests without a render process or frame are only
+      // allowed when ChromeOS Dictation is active.
+      allowed = ash::AccessibilityController::Get() &&
+                ash::AccessibilityController::Get()->dictation_active();
+#endif
     } else {
       bool is_extension = false;
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)

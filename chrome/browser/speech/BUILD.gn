@@ -197,7 +197,10 @@ source_set("impl") {
   }
 
   if (is_chromeos) {
-    deps += [ "//ash/constants" ]
+    deps += [
+      "//ash",
+      "//ash/constants",
+    ]
   }
 }
 
@@ -372,6 +375,7 @@ if (!is_android) {
         "speech_recognition_recognizer_client_impl_browsertest.cc",
       ]
       deps += [
+        "//ash",
         "//components/soda:constants",
         "//components/soda:utils",
       ]
