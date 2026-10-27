@@ -2713,6 +2713,8 @@ void FragmentPaintPropertyTreeBuilder::UpdateFilter() {
   DCHECK(properties_);
   bool was_tainted = properties_->Filter() && properties_->Filter()->Filter() &&
                      properties_->Filter()->Filter()->OriginTainted();
+  bool had_reference_filter =
+      properties_->Filter() && properties_->Filter()->HasReferenceFilter();
   if (NeedsPaintPropertyUpdate()) {
     if (NeedsFilter(object_, full_context_)) {
       EffectPaintPropertyNode::State state;
@@ -2791,8 +2793,10 @@ void FragmentPaintPropertyTreeBuilder::UpdateFilter() {
   }
 
   bool is_tainted = false;
+  bool has_reference_filter = false;
   if (properties_->Filter()) {
     context_.current_effect = properties_->Filter();
+    has_reference_filter = properties_->Filter()->HasReferenceFilter();
     if (const auto* input_clip = properties_->PixelMovingFilterClipExpander()) {
       context_.current.clip = input_clip;
     }
@@ -2805,7 +2809,8 @@ void FragmentPaintPropertyTreeBuilder::UpdateFilter() {
   } else {
     DCHECK(!properties_->PixelMovingFilterClipExpander());
   }
-  if (was_tainted != is_tainted) {
+  if (was_tainted != is_tainted ||
+      had_reference_filter != has_reference_filter) {
     full_context_.force_subtree_update_reasons |=
         PaintPropertyTreeBuilderContext::kSubtreeUpdateIsolationPiercing;
   }
