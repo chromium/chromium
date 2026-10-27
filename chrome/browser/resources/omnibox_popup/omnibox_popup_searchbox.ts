@@ -2253,13 +2253,9 @@ export class OmniboxPopupSearchboxElement extends
       return;
     }
 
-    // Stage 4 (`kBlur`): Blurs Omnibox and closes UI, returning focus to Web
-    // Contents.
-    if (this.fullUrlShown_) {
-      // Revert the native omnibox view in case it was unelided (e.g. via drag)
-      // so closing the popup restores the elided URL.
-      this.popupPageHandler_.revert(this.currentSequenceNum_);
-    }
+    // Stage 4 (`kBlur`): Reverts selection, blurs omnibox and closes UI,
+    // returning focus to Web Contents.
+    this.popupPageHandler_.revert(this.currentSequenceNum_);
     inputEl.blur();
     this.popupPageHandler_.closeUI();
     this.popupPageHandler_.logEscapeAction(OmniboxEscapeAction.kBlur);
