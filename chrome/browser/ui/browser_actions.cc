@@ -4652,6 +4652,7 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
           .SetText(GetCleanTitleText(l10n_util::GetStringUTF16(IDS_FEEDBACK)))
           .SetTooltipText(
               GetCleanTooltipText(l10n_util::GetStringUTF16(IDS_FEEDBACK)))
+          .SetAccelerator(GetAcceleratorForCommandId(IDC_FEEDBACK))
           .SetImage(ui::ImageModel::FromVectorIcon(
               features::IsRoundedIconsEnabled() ? kFeedbackIcon
                                                 : kReportOldIcon))
