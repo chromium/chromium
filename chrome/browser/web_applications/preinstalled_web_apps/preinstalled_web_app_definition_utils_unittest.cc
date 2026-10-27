@@ -4,29 +4,22 @@
 
 #include "chrome/browser/web_applications/preinstalled_web_apps/preinstalled_web_app_definition_utils.h"
 
-#include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace web_app {
 
-class PreinstalledWebAppUtilsTest : public testing::Test {
+class PreinstalledWebAppDefinitionUtilsTest : public testing::Test {
  public:
-  PreinstalledWebAppUtilsTest() = default;
-  PreinstalledWebAppUtilsTest(const PreinstalledWebAppUtilsTest&) = delete;
-  PreinstalledWebAppUtilsTest& operator=(const PreinstalledWebAppUtilsTest&) =
-      delete;
-  ~PreinstalledWebAppUtilsTest() override = default;
+  PreinstalledWebAppDefinitionUtilsTest() = default;
+  PreinstalledWebAppDefinitionUtilsTest(
+      const PreinstalledWebAppDefinitionUtilsTest&) = delete;
+  PreinstalledWebAppDefinitionUtilsTest& operator=(
+      const PreinstalledWebAppDefinitionUtilsTest&) = delete;
+  ~PreinstalledWebAppDefinitionUtilsTest() override = default;
 };
 
-// https://crbug.com/40177501 tracks test failures due to memory smashing on
-// Linux, ChromeOS, and the Mac.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
-#define MAYBE_GetTranslatedName DISABLED_GetTranslatedName
-#else
-#define MAYBE_GetTranslatedName GetTranslatedName
-#endif
-TEST_F(PreinstalledWebAppUtilsTest, MAYBE_GetTranslatedName) {
+TEST_F(PreinstalledWebAppDefinitionUtilsTest, GetTranslatedName) {
   std::string test_locale;
   constexpr Translation kTranslations[] = {
       {"en", "en"},
