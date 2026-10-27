@@ -99,7 +99,6 @@
 #include "components/send_tab_to_self/features.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/skills/features.h"
-#include "components/sync/base/features.h"
 #include "components/user_education/common/tutorial/tutorial_description.h"
 #include "components/user_education/common/tutorial/tutorial_registry.h"
 #include "components/user_education/common/tutorial/tutorial_service.h"
@@ -368,8 +367,12 @@ class AppMenuBuilder {
       has_alerted_child_ = true;
     }
 
-    item->SetPopulateChildrenCallback(std::move(populate_callback));
-    item->PopulateChildItems();
+    // Skip populating children for hidden submenu actions (e.g. actions
+    // hidden behind a disabled feature flag).
+    if (item->GetActionItem()->GetVisible()) {
+      item->SetPopulateChildrenCallback(std::move(populate_callback));
+      item->PopulateChildItems();
+    }
     parent_->AddChild(std::move(item));
     return *this;
   }
@@ -765,8 +768,12 @@ void ActionAppMenuManager::AddYourChromeActions(actions::ActionItem* root) {
               /*build_submenu=*/std::nullopt,
               {.element_id = AppMenuModel::kHistoryMenuItem});
 
-          section.AddSubmenu(
-              kActionOtherDeviceTabsSubmenu, [](AppMenuBuilder& sub) {},
+          section.AddDynamicSubmenu(
+              kActionOtherDeviceTabsSubmenu,
+              base::BindRepeating(
+                  &RecentTabsDynamicMenu::BuildOtherDeviceTabsActions,
+                  recent_tabs_menu_->GetWeakPtr()),
+              /*build_submenu=*/std::nullopt,
               {.element_id = AppMenuModel::kOtherDeviceTabsMenuItem,
                .is_submenu = true});
         }

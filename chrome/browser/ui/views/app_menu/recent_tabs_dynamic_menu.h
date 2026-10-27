@@ -30,6 +30,7 @@ class RecentTabsDynamicMenu {
   }
 
   void BuildRecentTabsActions(actions::BaseAction* parent_item);
+  void BuildOtherDeviceTabsActions(actions::BaseAction* parent_item);
 
   void CreateRecentTabsActionForTesting(
       actions::BaseAction* parent_item,

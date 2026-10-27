@@ -43,6 +43,7 @@ AppMenuSearchItem::Type GetSubmenuType(
     case kActionBookmarksSubmenu:
       return AppMenuSearchItem::Type::kBookmark;
     case kActionRecentTabsSubmenu:
+    case kActionOtherDeviceTabsSubmenu:
       return AppMenuSearchItem::Type::kRecentTabs;
     case kActionSavedTabGroupsSubmenu:
       return AppMenuSearchItem::Type::kTabGroup;

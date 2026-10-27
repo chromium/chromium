@@ -1716,6 +1716,13 @@ void AppMenu::PopulateMenu(MenuItemView* parent, MenuModel* model) {
             std::make_unique<RecentTabsMenuModelDelegate>(
                 this, model->GetSubmenuModelAt(i), item);
         break;
+      case AppMenuModel::kOtherDeviceTabsMenuPlaceholder:
+        // Forwards async favicon updates and dynamic menu rebuilds to the view.
+        CHECK(!other_device_tabs_menu_model_delegate_);
+        other_device_tabs_menu_model_delegate_ =
+            std::make_unique<RecentTabsMenuModelDelegate>(
+                this, model->GetSubmenuModelAt(i), item);
+        break;
       case IDC_SHOW_MANAGEMENT_PAGE:
         parent->SetTooltip(model->GetAccessibleNameAt(i),
                            IDC_SHOW_MANAGEMENT_PAGE);

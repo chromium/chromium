@@ -4491,6 +4491,36 @@ TEST_F(ActionAppMenuTest, RecentTabsByDateHistoryInSidePanel) {
       "WrenchMenu.TimeToAction.ShowHistoryClustersSidePanel", 1);
 }
 
+TEST_F(ActionAppMenuTest, CreateOtherDeviceTabsActionsWithDevices) {
+  RecentTabsDynamicMenu dynamic_menu(&mock_window_interface_);
+  auto other_device_tabs_submenu =
+      actions::ActionItem::Builder()
+          .SetActionId(kActionOtherDeviceTabsSubmenu)
+          .Build();
+
+  // Without synced devices, nothing is built.
+  dynamic_menu.BuildOtherDeviceTabsActions(other_device_tabs_submenu.get());
+  EXPECT_TRUE(other_device_tabs_submenu->GetChildren().children().empty());
+
+  RecentTabItem header_item(RecentTabItem::Type::kHeader, u"Pixel 9");
+  RecentTabItem tab_item(RecentTabItem::Type::kTab, u"Remote Tab");
+  tab_item.set_session_tag("session_tag_1");
+  tab_item.set_session_id(SessionID::FromSerializedValue(10));
+  tab_item.set_url(GURL("https://example.com"));
+  tab_item.set_is_local(false);
+
+  dynamic_menu.CreateRecentTabsActionForTesting(
+      other_device_tabs_submenu.get(),
+      {std::move(header_item), std::move(tab_item)});
+
+  const auto& children = other_device_tabs_submenu->GetChildren().children();
+  ASSERT_EQ(children.size(), 2u);
+  EXPECT_EQ(children[0]->GetProperty(AppMenuActionItem::kDisplayTypeKey),
+            AppMenuActionItem::DisplayType::kHeader);
+  EXPECT_EQ(children[0]->GetActionItem()->GetText(), u"Pixel 9");
+  EXPECT_EQ(children[1]->GetActionItem()->GetText(), u"Remote Tab");
+}
+
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING) && !BUILDFLAG(IS_CHROMEOS)
 TEST_F(ActionAppMenuTest, PopulatesHelpSubmenuWithEnterpriseReleaseNotes) {
   actions::ActionItem* release_notes_action =

@@ -1134,6 +1134,7 @@ TEST_F(ActionAppMenuManagerTest, OtherDeviceTabsSubmenuPlacement) {
             AppMenuModel::kOtherDeviceTabsMenuItem);
   EXPECT_TRUE(
       other_device_tabs_action->GetProperty(AppMenuActionItem::kIsSubmenuKey));
+  EXPECT_TRUE(other_device_tabs_action->HasPopulateChildActionsCallback());
 }
 
 TEST_F(ActionAppMenuManagerTest, OtherDeviceTabsSubmenuFlagOff) {
@@ -1159,6 +1160,8 @@ TEST_F(ActionAppMenuManagerTest, OtherDeviceTabsSubmenuFlagOff) {
       FindBaseAction(your_chrome_section, kActionOtherDeviceTabsSubmenu);
   ASSERT_NE(other_device_tabs, nullptr);
   EXPECT_FALSE(other_device_tabs->GetActionItem()->GetVisible());
+  EXPECT_FALSE(other_device_tabs->HasPopulateChildActionsCallback());
+  EXPECT_TRUE(other_device_tabs->GetChildren().children().empty());
 
   const auto& children = your_chrome_section->GetChildren().children();
   auto recent_tabs_it =

@@ -2241,7 +2241,8 @@ void AppMenuModel::Build() {
         kHistoryMenuItem);
 
     if (base::FeatureList::IsEnabled(syncer::kCrossDeviceTabsInAppMenu)) {
-      sub_menus_.push_back(std::make_unique<OtherDeviceTabsSubMenuModel>());
+      sub_menus_.push_back(
+          std::make_unique<OtherDeviceTabsSubMenuModel>(browser_));
       AddSubMenuWithStringIdAndVectorIcon(
           this, kOtherDeviceTabsMenuPlaceholder, IDS_OTHER_DEVICE_TABS_MENU,
           sub_menus_.back().get(),

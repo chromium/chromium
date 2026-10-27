@@ -894,6 +894,8 @@ if (!is_android) {
       "mock_vertical_tab_strip_state_controller.h",
       "pinned_tab_test_utils.cc",
       "pinned_tab_test_utils.h",
+      "recent_tabs_builder_test_helper.cc",
+      "recent_tabs_builder_test_helper.h",
       "tab_activity_simulator.cc",
       "tab_activity_simulator.h",
       "tab_strip_model_test_utils.cc",
@@ -908,6 +910,7 @@ if (!is_android) {
 
     public_deps = [
       "//chrome/browser/ui/startup:startup_tab",
+      "//components/sessions:session_id",
       "//components/ukm:test_support",
       "//ui/base",
     ]
@@ -920,6 +923,8 @@ if (!is_android) {
       "//chrome/browser/glic",
       "//chrome/browser/profiles:profile",
       "//chrome/browser/ui/tab_contents",
+      "//components/sync:test_support",
+      "//components/sync_sessions",
       "//content/public/browser",
       "//content/test:test_support",
       "//services/metrics/public/cpp:metrics_cpp",
@@ -939,8 +944,6 @@ if (!is_android) {
       "other_device_tabs_sub_menu_model_browsertest.cc",
       "pinned_tab_codec_browsertest.cc",
       "pinned_tab_service_browsertest.cc",
-      "recent_tabs_builder_test_helper.cc",
-      "recent_tabs_builder_test_helper.h",
       "recent_tabs_sub_menu_model_browsertest.cc",
       "tab_attachment_tracker_browsertest.cc",
       "tab_creation_metrics_controller_browsertest.cc",

@@ -227,6 +227,10 @@ class AppMenu final : public views::MenuDelegate,
   // Used for managing "Recent tabs" menu items.
   std::unique_ptr<RecentTabsMenuModelDelegate> recent_tabs_menu_model_delegate_;
 
+  // Used for managing "Other device tabs" menu items.
+  std::unique_ptr<RecentTabsMenuModelDelegate>
+      other_device_tabs_menu_model_delegate_;
+
   base::ScopedObservation<GlobalErrorService, GlobalErrorObserver>
       global_error_observation_{this};
 

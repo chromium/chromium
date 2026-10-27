@@ -76,6 +76,15 @@ void RecentTabsDynamicMenu::BuildRecentTabsActions(
           browser_window_interface_->GetProfile(), browser_window_interface_));
 }
 
+void RecentTabsDynamicMenu::BuildOtherDeviceTabsActions(
+    actions::BaseAction* parent_item) {
+  parent_item->ResetActionList();
+  // Populate device headers, open tabs, and dividers ordered by recency.
+  CreateRecentTabsAction(parent_item,
+                         RecentTabsBuilder::BuildOtherDeviceTabs(
+                             browser_window_interface_->GetProfile()));
+}
+
 void RecentTabsDynamicMenu::ExecuteRecentTab(
     const RecentTabItem& recent_item,
     actions::ActionItem* item,

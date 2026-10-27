@@ -14,6 +14,7 @@
 #include <vector>
 
 #include "base/feature_list.h"
+#include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -43,7 +44,6 @@
 #include "components/split_tabs/split_tab_visual_data.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/sync/base/features.h"
-#include "components/sync/base/user_selectable_type.h"
 #include "components/sync_device_info/device_info.h"
 #include "components/sync_sessions/open_tabs_ui_delegate.h"
 #include "components/sync_sessions/session_sync_service.h"
@@ -557,5 +557,47 @@ std::vector<RecentTabItem> RecentTabsBuilder::BuildRemoteEntries(
     ++num_sessions_added;
   }
 
+  return items;
+}
+
+// static
+std::vector<RecentTabItem> RecentTabsBuilder::BuildOtherDeviceTabs(
+    Profile* profile) {
+  std::vector<RecentTabItem> items;
+  if (!profile || profile->IsOffTheRecord() ||
+      profile->GetPrefs()->GetBoolean(prefs::kSavingBrowserHistoryDisabled) ||
+      !remote_tabs_menu_util::ShouldShowTabsFromOtherDevices(profile)) {
+    return items;
+  }
+
+  sync_sessions::SessionSyncService* session_sync_service =
+      SessionSyncServiceFactory::GetForProfile(profile);
+  sync_sessions::OpenTabsUIDelegate* open_tabs =
+      session_sync_service ? session_sync_service->GetOpenTabsUIDelegate()
+                           : nullptr;
+  // TODO(crbug.com/498232959): Replace with the new API returning all devices
+  // the user has.
+  std::vector<raw_ptr<const sync_sessions::SyncedSession, VectorExperimental>>
+      sessions;
+  if (!open_tabs || !open_tabs->GetAllForeignSessions(&sessions)) {
+    return items;
+  }
+
+  // `sessions` is already ordered by recency.
+  for (const sync_sessions::SyncedSession* session : sessions) {
+    const std::string& session_tag = session->GetSessionTag();
+    std::vector<const sessions::SessionTab*> tabs;
+    if (!open_tabs->GetForeignSessionTabs(session_tag, &tabs) || tabs.empty()) {
+      continue;
+    }
+    if (!items.empty()) {
+      items.emplace_back(RecentTabItem::Type::kDivider, u"");
+    }
+    items.emplace_back(RecentTabItem::Type::kHeader,
+                       base::UTF8ToUTF16(session->GetSessionName()));
+    for (const sessions::SessionTab* tab : tabs) {
+      items.push_back(BuildForeignTabItem(session_tag, *tab));
+    }
+  }
   return items;
 }

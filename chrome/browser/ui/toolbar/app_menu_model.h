@@ -291,8 +291,8 @@ class AppMenuModel : public ui::SimpleMenuModel,
   // varies depending upon the underlying model. The command IDs for items in
   // these menus will be staggered and each increment by this value, so they
   // don't have conflicts. Currently, this accounts for the bookmarks, recent
-  // tabs menus, the profile submenu, tab groups submenu, and the comparison
-  // tables submenu.
+  // tabs menus, the profile submenu, tab groups submenu, and the other device
+  // tabs submenu.
   static constexpr int kNumUnboundedMenuTypes = 5;
 
   // First command ID to use for each unbounded menu. These should be staggered,
@@ -301,7 +301,8 @@ class AppMenuModel : public ui::SimpleMenuModel,
   static constexpr int kMinRecentTabsCommandId = kMinBookmarksCommandId + 1;
   static constexpr int kMinOtherProfileCommandId = kMinRecentTabsCommandId + 1;
   static constexpr int kMinTabGroupsCommandId = kMinOtherProfileCommandId + 1;
-  static constexpr int kMinCompareCommandId = kMinTabGroupsCommandId + 1;
+  static constexpr int kMinOtherDeviceTabsCommandId =
+      kMinTabGroupsCommandId + 1;
 
   // TODO(mickeyburks): Highlight menu items dynamically through
   // TutorialDescription instead of hardcoding specific tutorials here.

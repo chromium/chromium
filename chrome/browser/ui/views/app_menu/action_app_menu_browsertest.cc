@@ -4,22 +4,32 @@
 
 #include "chrome/browser/ui/views/app_menu/action_app_menu.h"
 
+#include <memory>
 #include <optional>
 #include <set>
 #include <string>
 #include <utility>
+#include <vector>
 
+#include "base/functional/callback_helpers.h"
+#include "base/run_loop.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/time/time.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/sync/session_sync_service_factory.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/tabs/recent_tabs_builder_test_helper.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/app_menu/app_menu_search_bar_view.h"
+#include "chrome/browser/ui/views/app_menu/recent_tabs_dynamic_menu.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/toolbar/app_menu_control.h"
@@ -31,7 +41,14 @@
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/test/bookmark_test_helpers.h"
 #include "components/sync/base/features.h"
+#include "components/sync/engine/data_type_activation_response.h"
+#include "components/sync/model/data_type_activation_request.h"
+#include "components/sync/model/data_type_controller_delegate.h"
+#include "components/sync/test/mock_commit_queue.h"
+#include "components/sync_sessions/session_sync_service.h"
 #include "content/public/test/browser_test.h"
+#include "testing/gmock/include/gmock/gmock.h"
+#include "ui/actions/actions.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/dragdrop/drop_target_event.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
@@ -91,6 +108,22 @@ void SimulateBookmarkDragAndDrop(
   std::move(drop_cb).Run(target_event, output_drag_op,
                          /*drag_image_layer_owner=*/nullptr);
   EXPECT_EQ(output_drag_op, ui::mojom::DragOperation::kMove);
+}
+
+std::u16string GetSessionName(RecentTabsBuilderTestHelper& helper,
+                              size_t session_index) {
+  return u"session_name" +
+         base::NumberToString16(helper.GetSessionID(session_index).id());
+}
+
+std::vector<std::u16string> GetItemsDepthFirst(actions::BaseAction* item) {
+  std::vector<std::u16string> items;
+  for (const auto& child : item->GetChildren().children()) {
+    items.emplace_back(child->GetActionItem()->GetText());
+    auto grandchildren = GetItemsDepthFirst(child.get());
+    items.insert(items.end(), grandchildren.begin(), grandchildren.end());
+  }
+  return items;
 }
 
 }  // namespace
@@ -382,8 +415,13 @@ IN_PROC_BROWSER_TEST_F(ActionAppMenuWithSearchQueryBrowserTest,
 
 class ActionAppMenuWithOtherDeviceTabsBrowserTest
     : public ActionAppMenuBrowserTest {
-  base::test::ScopedFeatureList feature_list_{
-      syncer::kCrossDeviceTabsInAppMenu};
+ public:
+  ActionAppMenuWithOtherDeviceTabsBrowserTest() {
+    feature_list_.InitAndEnableFeature(syncer::kCrossDeviceTabsInAppMenu);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
 class ActionAppMenuWithoutOtherDeviceTabsBrowserTest
@@ -396,6 +434,53 @@ class ActionAppMenuWithoutOtherDeviceTabsBrowserTest
  private:
   base::test::ScopedFeatureList feature_list_;
 };
+
+IN_PROC_BROWSER_TEST_F(ActionAppMenuWithOtherDeviceTabsBrowserTest,
+                       BuildOtherDeviceTabsActions) {
+  sync_sessions::SessionSyncService* session_sync_service =
+      SessionSyncServiceFactory::GetForProfile(browser()->GetProfile());
+  syncer::DataTypeActivationRequest activation_request;
+  activation_request.cache_guid = "test_cache_guid";
+  activation_request.error_handler = base::DoNothing();
+
+  std::unique_ptr<syncer::DataTypeActivationResponse> activation_response;
+  base::RunLoop loop;
+  session_sync_service->GetControllerDelegate()->OnSyncStarting(
+      activation_request,
+      base::BindLambdaForTesting(
+          [&](std::unique_ptr<syncer::DataTypeActivationResponse> response) {
+            activation_response = std::move(response);
+            loop.Quit();
+          }));
+  loop.Run();
+  ASSERT_NE(nullptr, activation_response);
+  ASSERT_NE(nullptr, activation_response->type_processor);
+  std::unique_ptr<syncer::DataTypeProcessor> sync_processor =
+      std::move(activation_response->type_processor);
+  sync_processor->ConnectSync(
+      std::make_unique<testing::NiceMock<syncer::MockCommitQueue>>());
+
+  const base::Time now = base::Time::Now();
+  RecentTabsBuilderTestHelper helper;
+  helper.AddSession();
+  helper.AddWindow(0);
+  helper.AddTabWithInfo(0, 0, now - base::Minutes(10), u"Older");
+  helper.AddTabWithInfo(0, 0, now - base::Minutes(5), u"Newest");
+  helper.AddSession();
+  helper.AddWindow(1);
+  helper.AddTabWithInfo(1, 0, now - base::Minutes(20), u"Oldest");
+  helper.ExportToSessionSync(sync_processor.get());
+
+  RecentTabsDynamicMenu dynamic_menu(browser());
+  std::unique_ptr<actions::ActionItem> root =
+      actions::ActionItem::Builder().Build();
+  dynamic_menu.BuildOtherDeviceTabsActions(root.get());
+
+  EXPECT_THAT(
+      GetItemsDepthFirst(root.get()),
+      testing::ElementsAre(GetSessionName(helper, 0), u"Newest", u"Older", u"",
+                           GetSessionName(helper, 1), u"Oldest"));
+}
 
 IN_PROC_BROWSER_TEST_F(ActionAppMenuWithOtherDeviceTabsBrowserTest,
                        OtherDeviceTabsSubmenu) {
@@ -421,6 +506,10 @@ IN_PROC_BROWSER_TEST_F(ActionAppMenuWithOtherDeviceTabsBrowserTest,
   EXPECT_TRUE(other_device_tabs_item->HasSubmenu());
   EXPECT_EQ(AppMenuModel::kOtherDeviceTabsMenuItem,
             other_device_tabs_item->GetProperty(views::kElementIdentifierKey));
+
+  // Exercise dynamic submenu population via WillShowMenu.
+  action_menu->WillShowMenu(other_device_tabs_item);
+  EXPECT_TRUE(other_device_tabs_item->HasSubmenu());
 
   views::MenuItemView* recent_tabs_item =
       root->GetMenuItemByID(kActionRecentTabsSubmenu);
