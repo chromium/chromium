@@ -141,9 +141,7 @@ TEST_F(UrlKeyedDataCollectionConsentHelperTest,
        PersonalizedBookmarksDataCollection) {
   std::unique_ptr<UrlKeyedDataCollectionConsentHelper> helper =
       UrlKeyedDataCollectionConsentHelper::
-          NewPersonalizedBookmarksDataCollectionConsentHelper(
-              &sync_service_,
-              /*require_sync_feature_enabled=*/false);
+          NewPersonalizedBookmarksDataCollectionConsentHelper(&sync_service_);
   helper->AddObserver(this);
   EXPECT_FALSE(helper->IsEnabled());
   EXPECT_TRUE(state_changed_notifications_.empty());
@@ -158,43 +156,12 @@ TEST_F(UrlKeyedDataCollectionConsentHelperTest,
   helper->RemoveObserver(this);
 }
 
-// TODO(crbug.com/40066949): Remove once kSync becomes unreachable or is
-// deleted from the codebase. See ConsentLevel::kSync documentation for
-// details.
-TEST_F(UrlKeyedDataCollectionConsentHelperTest,
-       PersonalizedBookmarksDataCollection_IsSyncFeatureEnabled) {
-  std::unique_ptr<UrlKeyedDataCollectionConsentHelper> helper =
-      UrlKeyedDataCollectionConsentHelper::
-          NewPersonalizedBookmarksDataCollectionConsentHelper(
-              &sync_service_,
-              /*require_sync_feature_enabled=*/true);
-  sync_service_.SetSignedIn(signin::ConsentLevel::kSync);
-  sync_service_.GetUserSettings()->SetSelectedTypes(
-      /*sync_everything=*/false,
-      /*types=*/{syncer::UserSelectableType::kBookmarks});
-  sync_service_.FireStateChanged();
-  EXPECT_TRUE(sync_service_.IsSyncFeatureEnabled());
-  EXPECT_TRUE(helper->IsEnabled());
-
-  helper->AddObserver(this);
-  sync_service_.SetSignedIn(signin::ConsentLevel::kSignin);
-  EXPECT_FALSE(sync_service_.IsSyncFeatureEnabled());
-  EXPECT_TRUE(helper->IsEnabled());
-  EXPECT_EQ(0U, state_changed_notifications_.size());
-
-  sync_service_.FireStateChanged();
-  EXPECT_FALSE(helper->IsEnabled());
-  EXPECT_EQ(1U, state_changed_notifications_.size());
-  helper->RemoveObserver(this);
-}
-
 TEST_F(UrlKeyedDataCollectionConsentHelperTest,
        PersonalizedBookmarksDataCollection_NullSyncService) {
   std::unique_ptr<UrlKeyedDataCollectionConsentHelper> helper =
       UrlKeyedDataCollectionConsentHelper::
           NewPersonalizedBookmarksDataCollectionConsentHelper(
-              /*sync_service=*/nullptr,
-              /*require_sync_feature_enabled=*/false);
+              /*sync_service=*/nullptr);
   EXPECT_FALSE(helper->IsEnabled());
 }
 

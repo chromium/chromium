@@ -25,7 +25,6 @@
 #include "components/power_bookmarks/core/proto/shopping_specifics.pb.h"
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
-#include "components/sync/base/features.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace commerce {
@@ -528,9 +527,7 @@ const bookmarks::BookmarkNode* GetShoppingCollectionBookmarkFolder(
       base::Uuid::ParseLowercase(bookmarks::kShoppingCollectionUuid);
 
   // Only try to use account nodes if the user is not syncing.
-  bool use_account_nodes =
-      syncer::IsReplaceSyncPromosWithSignInPromosEnabled() &&
-      model->IsLocalOnlyNode(*model->other_node());
+  bool use_account_nodes = model->IsLocalOnlyNode(*model->other_node());
 
   const auto node_type_for_lookup =
       use_account_nodes

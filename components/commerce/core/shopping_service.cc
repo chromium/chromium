@@ -58,7 +58,6 @@
 #include "components/session_proto_db/session_proto_storage.h"
 #include "components/sessions/core/tab_restore_service.h"
 #include "components/signin/public/base/signin_pref_names.h"
-#include "components/sync/base/features.h"
 #include "components/sync/service/sync_service.h"
 #include "components/unified_consent/url_keyed_data_collection_consent_helper.h"
 #include "net/base/url_util.h"
@@ -74,15 +73,6 @@ const size_t kRecentTabsMaxSize = 10;
 
 using UrlProductInfoTuple =
     std::tuple<const GURL, const std::optional<ProductInfo>>;
-
-// Returns the consent level to use for endpoint fetchers.
-// This function can be deleted once the Sync feature is removed.
-signin::ConsentLevel GetConsentLevelForEndpointFetchers(
-    PrefService* pref_service) {
-  return syncer::IsReplaceSyncPromosWithSignInPromosEnabled()
-             ? signin::ConsentLevel::kSignin
-             : signin::ConsentLevel::kSync;
-}
 
 }  // namespace
 
@@ -126,9 +116,7 @@ ShoppingService::ShoppingService(
       bookmark_consent_throttle_(
           unified_consent::UrlKeyedDataCollectionConsentHelper::
               NewPersonalizedBookmarksDataCollectionConsentHelper(
-                  sync_service,
-                  /*require_sync_feature_enabled=*/!syncer::
-                      IsReplaceSyncPromosWithSignInPromosEnabled())),
+                  sync_service)),
       web_extractor_(std::move(web_extractor)),
       tab_restore_service_(tab_restore_service),
       weak_ptr_factory_(this) {
@@ -171,7 +159,7 @@ ShoppingService::ShoppingService(
     if (subscription_proto_db) {
       subscriptions_manager_ = std::make_unique<SubscriptionsManager>(
           identity_manager, url_loader_factory, subscription_proto_db,
-          account_checker_.get(), GetConsentLevelForEndpointFetchers(pref_service_));
+          account_checker_.get(), signin::ConsentLevel::kSignin);
     }
   }
 
