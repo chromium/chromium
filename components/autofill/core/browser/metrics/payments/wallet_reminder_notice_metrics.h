@@ -41,7 +41,8 @@ enum class WalletReminderNoticeShowResult {
   // Not shown because the user already acknowledged the notice according to the
   // pref, meaning a server call was not made.
   kNotShownAlreadyAcknowledgedAccordingToPref = 2,
-  // Not shown due to network or server error.
+  // Not shown because the user is ineligible according to the server (or a
+  // network/server error).
   kNotShownNetworkOrServerError = 3,
   // Not shown due to Mandatory Reauth.
   kNotShownDueToMandatoryReauth = 4,
