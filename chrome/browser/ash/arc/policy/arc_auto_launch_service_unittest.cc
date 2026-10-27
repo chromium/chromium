@@ -345,6 +345,63 @@ TEST_F(ArcAutoLaunchServiceTest, Shutdown_StopsPendingLaunch) {
   EXPECT_THAT(GetLaunchedPackages(), IsEmpty());
 }
 
+TEST_F(ArcAutoLaunchServiceTest, DynamicPolicyArrival_LaunchesApp) {
+  SetInstalledApps({{kTestPackageName, kTestActivity}});
+
+  // The service starts before the policy is set.
+  CreateService();
+  EXPECT_THAT(GetLaunchedPackages(), IsEmpty());
+
+  SetAutoLaunchApps({kTestPackageName});
+  EXPECT_THAT(GetLaunchedPackages(), ElementsAre(kTestPackageName));
+}
+
+TEST_F(ArcAutoLaunchServiceTest, DynamicPolicyUpdate_PendingAppReplaced) {
+  constexpr char kPackage1[] = "com.example.app1";
+  constexpr char kPackage2[] = "com.example.app2";
+  SetAutoLaunchApps({kPackage1});
+
+  CreateService();
+
+  // The policy changes before app 1 is installed.
+  SetAutoLaunchApps({kPackage2});
+
+  // App 1 is not configured anymore, so it is not launched.
+  SetInstalledApps({{kPackage1, "com.example.app1.MainActivity"}});
+  EXPECT_THAT(GetLaunchedPackages(), IsEmpty());
+
+  SetInstalledApps({{kPackage1, "com.example.app1.MainActivity"},
+                    {kPackage2, "com.example.app2.MainActivity"}});
+  EXPECT_THAT(GetLaunchedPackages(), ElementsAre(kPackage2));
+}
+
+TEST_F(ArcAutoLaunchServiceTest, DynamicPolicyUpdate_AfterLaunch_Ignored) {
+  constexpr char kPackage1[] = "com.example.app1";
+  constexpr char kPackage2[] = "com.example.app2";
+  SetInstalledApps({{kPackage1, "com.example.app1.MainActivity"},
+                    {kPackage2, "com.example.app2.MainActivity"}});
+  SetAutoLaunchApps({kPackage1});
+
+  CreateService();
+  EXPECT_THAT(GetLaunchedPackages(), ElementsAre(kPackage1));
+
+  // At most one app is launched per session, also after the timeout.
+  task_environment_.FastForwardBy(ArcAutoLaunchService::kLaunchTimeout);
+  SetAutoLaunchApps({kPackage2});
+  EXPECT_THAT(GetLaunchedPackages(), ElementsAre(kPackage1));
+}
+
+TEST_F(ArcAutoLaunchServiceTest, DynamicPolicyUpdate_PolicyCleared) {
+  SetAutoLaunchApps({kTestPackageName});
+
+  CreateService();
+
+  // The policy is cleared before the app is installed.
+  SetAutoLaunchApps({});
+  SetInstalledApps({{kTestPackageName, kTestActivity}});
+  EXPECT_THAT(GetLaunchedPackages(), IsEmpty());
+}
+
 }  // namespace
 
 }  // namespace arc

@@ -121,12 +121,19 @@ void ArcAutoLaunchService::EnsureFactoryBuilt() {
 ArcAutoLaunchService::ArcAutoLaunchService(content::BrowserContext* context,
                                            ArcBridgeService* bridge_service)
     : profile_(Profile::FromBrowserContext(context)) {
+  pref_change_registrar_.Init(profile_->GetPrefs());
+  pref_change_registrar_.Add(
+      prefs::kArcAutoLaunchApps,
+      base::BindRepeating(&ArcAutoLaunchService::OnPolicyChanged,
+                          base::Unretained(this)));
+
   StartLaunch(GetConfiguredPackage(*profile_->GetPrefs()));
 }
 
 ArcAutoLaunchService::~ArcAutoLaunchService() = default;
 
 void ArcAutoLaunchService::Shutdown() {
+  pref_change_registrar_.Reset();
   StopLaunch();
 }
 
@@ -226,6 +233,19 @@ void ArcAutoLaunchService::OnTimeout() {
   LOG(WARNING) << "Timed out auto-launching " << package_name_ << ": "
                << reason;
   StopLaunch();
+}
+
+void ArcAutoLaunchService::OnPolicyChanged() {
+  // At most one app is auto-launched per session.
+  if (HasLaunchedApp()) {
+    return;
+  }
+  const std::string package_name = GetConfiguredPackage(*profile_->GetPrefs());
+  if (package_name == package_name_) {
+    return;
+  }
+  StopLaunch();
+  StartLaunch(package_name);
 }
 
 }  // namespace arc

@@ -15,6 +15,7 @@
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/prefs/pref_change_registrar.h"
 
 class ArcAppLauncher;
 class Profile;
@@ -78,8 +79,11 @@ class ArcAutoLaunchService : public KeyedService,
   bool HasLaunchedApp() const;
   // Gives up launching the app if it has not been launched yet.
   void OnTimeout();
+  // Applies changes to the AutoLaunchAndroidApps policy.
+  void OnPolicyChanged();
 
   const raw_ptr<Profile> profile_;
+  PrefChangeRegistrar pref_change_registrar_;
 
   // The package to launch. Empty if there is none.
   std::string package_name_;
