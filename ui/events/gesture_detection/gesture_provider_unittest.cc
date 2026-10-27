@@ -17,7 +17,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
-#include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/events/event_constants.h"
@@ -3338,23 +3337,15 @@ TEST_F(GestureProviderTest, NoMinOrMaxGestureBoundsLengthWithStylusOrMouse) {
             GetMostRecentGestureEvent().details.bounding_box_f().height());
 }
 
-#if BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64)
-// https://crbug.com/1222659
-#define MAYBE_BoundingBoxForShowPressAndTapGesture \
-  DISABLED_BoundingBoxForShowPressAndTapGesture
-#else
-#define MAYBE_BoundingBoxForShowPressAndTapGesture \
-  BoundingBoxForShowPressAndTapGesture
-#endif
 // Test the bounding box for show press and tap gestures.
-TEST_F(GestureProviderTest, MAYBE_BoundingBoxForShowPressAndTapGesture) {
+TEST_F(GestureProviderTest, BoundingBoxForShowPressAndTapGesture) {
   base::TimeTicks event_time = base::TimeTicks::Now();
-  gesture_provider_->SetDoubleTapSupportForPlatformEnabled(false);
   base::TimeDelta showpress_timeout = kOneMicrosecond;
   base::TimeDelta shortpress_timeout = kOneSecond;
   base::TimeDelta longpress_timeout = kOneSecond * 2;
   SetShowPressAndLongPressTimeout(showpress_timeout, shortpress_timeout,
                                   longpress_timeout);
+  gesture_provider_->SetDoubleTapSupportForPlatformEnabled(false);
 
   MockMotionEvent event =
       ObtainMotionEvent(event_time, MotionEvent::Action::DOWN, 10, 10);
