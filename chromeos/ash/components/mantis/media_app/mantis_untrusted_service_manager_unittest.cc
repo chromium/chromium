@@ -58,7 +58,7 @@ enum class GenAIPhotoEditingSettings {
 class MockFeatureAccessChecker
     : public specialized_features::FeatureAccessChecker {
  public:
-  MOCK_METHOD(FeatureAccessFailureSet, Check, (), (const override));
+  MOCK_METHOD(FeatureAccessFailureSet, Check, (), (const, override));
 };
 
 class MockMojoMantisService

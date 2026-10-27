@@ -72,7 +72,10 @@ TEST_F(HistoryTrackerTest, CollectHistoryTest) {
 TEST_F(HistoryTrackerTest, ObserversTest) {
   class MockObserver : public HistoryTracker::Observer {
    public:
-    MOCK_METHOD(void, OnNewData, (const ERPHealthData& data), (const override));
+    MOCK_METHOD(void,
+                OnNewData,
+                (const ERPHealthData& data),
+                (const, override));
   };
 
   ::testing::StrictMock<MockObserver> observer1;

@@ -105,7 +105,7 @@ class MockInstanceIDDriver : public instance_id::InstanceIDDriver {
   MOCK_METHOD(bool,
               ExistsInstanceID,
               (const std::string& app_id),
-              (const override));
+              (const, override));
 };
 
 class InvalidationServiceImplTest : public testing::Test {
