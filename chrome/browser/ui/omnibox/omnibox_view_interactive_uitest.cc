@@ -14,7 +14,6 @@
 
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
-#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
@@ -195,9 +194,6 @@ class OmniboxViewTest : public InProcessBrowserTest {
   OmniboxViewTest& operator=(const OmniboxViewTest&) = delete;
 
  protected:
-  raw_ptr<contextual_tasks::MockContextualTasksService>
-      mock_contextual_tasks_service_ = nullptr;
-
   void SetUpOnMainThread() override {
     ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser()));
     ASSERT_NO_FATAL_FAILURE(SetupComponents());
@@ -234,7 +230,6 @@ class OmniboxViewTest : public InProcessBrowserTest {
 
   void TearDownOnMainThread() override {
     test_location_bar_model_.reset();
-    mock_contextual_tasks_service_ = nullptr;
     webui_toolbar_wc_util_.reset();
     InProcessBrowserTest::TearDownOnMainThread();
   }
@@ -567,14 +562,10 @@ class OmniboxViewTest : public InProcessBrowserTest {
         ->SetTestingFactory(
             context,
             base::BindRepeating(
-                [](OmniboxViewTest* self,
-                   content::BrowserContext*) -> std::unique_ptr<KeyedService> {
-                  auto mock = std::make_unique<testing::NiceMock<
+                [](content::BrowserContext*) -> std::unique_ptr<KeyedService> {
+                  return std::make_unique<testing::NiceMock<
                       contextual_tasks::MockContextualTasksService>>();
-                  self->mock_contextual_tasks_service_ = mock.get();
-                  return mock;
-                },
-                base::Unretained(this)));
+                }));
   }
 
   policy::MockConfigurationPolicyProvider* policy_provider() {
