@@ -153,6 +153,11 @@ struct Capabilities {
 
   bool android_keep_app_data_dir = false;
 
+  // Runtime permissions to grant to |android_package| before launch. When
+  // unset, ChromeDriver grants a default set (POST_NOTIFICATIONS) and ignores
+  // failures; when set, it replaces the default and any failure is an error.
+  std::optional<std::vector<std::string>> android_grant_permissions;
+
   int android_devtools_port = 0;
 
   bool enable_extension_targets = false;

@@ -30,6 +30,13 @@ class Adb {
                                    const std::string& package) = 0;
   virtual Status ClearAppData(const std::string& device_serial,
                               const std::string& package) = 0;
+  // Grants the runtime |permission| (e.g.
+  // "android.permission.POST_NOTIFICATIONS") to |package|. Returns an error if
+  // the grant fails, e.g. because the permission is unknown on this OS version
+  // or is not requested by the package.
+  virtual Status GrantPermission(const std::string& device_serial,
+                                 const std::string& package,
+                                 const std::string& permission) = 0;
   virtual Status SetDebugApp(const std::string& device_serial,
                              const std::string& package) = 0;
   virtual Status Launch(const std::string& device_serial,

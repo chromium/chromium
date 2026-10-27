@@ -860,7 +860,8 @@ Status LaunchAndroidChrome(network::mojom::URLLoaderFactory* factory,
       capabilities.android_process, capabilities.android_device_socket,
       capabilities.android_exec_name, switches.ToString(),
       capabilities.android_use_running_app,
-      capabilities.android_keep_app_data_dir, &devtools_port, preferences_path,
+      capabilities.android_keep_app_data_dir,
+      capabilities.android_grant_permissions, &devtools_port, preferences_path,
       capabilities.prefs.get(), local_state_path,
       capabilities.local_state.get());
   if (status.IsError()) {

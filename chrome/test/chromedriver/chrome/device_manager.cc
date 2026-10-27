@@ -11,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
+#include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -18,6 +19,17 @@
 #include "chrome/test/chromedriver/chrome/status.h"
 
 const char kChromeCmdLineFile[] = "/data/local/tmp/chrome-command-line";
+
+namespace {
+
+// Runtime permissions granted before launch unless the user overrides them via
+// the androidGrantPermissions capability. `pm clear` resets runtime grants, so
+// without this Chrome would prompt for notification permission on startup.
+constexpr const char* kDefaultGrantPermissions[] = {
+    "android.permission.POST_NOTIFICATIONS",
+};
+
+}  // namespace
 
 Device::Device(const std::string& device_serial,
                Adb* adb,
@@ -35,19 +47,21 @@ bool IsValidExecName(const std::string& exec_name) {
   return std::ranges::all_of(exec_name, &base::IsAsciiAlpha<char>);
 }
 
-Status Device::SetUp(const std::string& package,
-                     const std::string& activity,
-                     const std::string& process,
-                     const std::string& device_socket,
-                     const std::string& exec_name,
-                     const std::string& args,
-                     bool use_running_app,
-                     bool keep_app_data_dir,
-                     int* devtools_port,
-                     const std::string& prefs_file,
-                     const base::DictValue* custom_prefs,
-                     const std::string& local_state_file,
-                     const base::DictValue* custom_local_state) {
+Status Device::SetUp(
+    const std::string& package,
+    const std::string& activity,
+    const std::string& process,
+    const std::string& device_socket,
+    const std::string& exec_name,
+    const std::string& args,
+    bool use_running_app,
+    bool keep_app_data_dir,
+    const std::optional<std::vector<std::string>>& grant_permissions,
+    int* devtools_port,
+    const std::string& prefs_file,
+    const base::DictValue* custom_prefs,
+    const std::string& local_state_file,
+    const base::DictValue* custom_local_state) {
   if (!active_package_.empty())
     return Status(kUnknownError,
         active_package_ + " was launched and has not been quit");
@@ -154,6 +168,11 @@ Status Device::SetUp(const std::string& package,
                       status);
     }
 
+    status = GrantPermissions(package, grant_permissions);
+    if (status.IsError()) {
+      return status;
+    }
+
     status = adb_->Launch(serial_, package,
                           known_activity.empty() ? activity : known_activity);
     if (status.IsError())
@@ -163,6 +182,31 @@ Status Device::SetUp(const std::string& package,
   }
   return this->ForwardDevtoolsPort(package, process, &known_device_socket,
                                    devtools_port);
+}
+
+Status Device::GrantPermissions(
+    const std::string& package,
+    const std::optional<std::vector<std::string>>& grant_permissions) {
+  if (grant_permissions.has_value()) {
+    // Permissions explicitly requested by the user must be granted.
+    for (const std::string& permission : *grant_permissions) {
+      Status status = adb_->GrantPermission(serial_, package, permission);
+      if (status.IsError()) {
+        return status;
+      }
+    }
+    return Status(kOk);
+  }
+  // The default grants are best effort: they fail on OS versions that predate
+  // the permission, or for packages that don't request it.
+  for (const char* permission : kDefaultGrantPermissions) {
+    Status status = adb_->GrantPermission(serial_, package, permission);
+    if (status.IsError()) {
+      VLOG(0) << "Ignoring failure to grant default permission: "
+              << status.message();
+    }
+  }
+  return Status(kOk);
 }
 
 Status Device::ForwardDevtoolsPort(const std::string& package,

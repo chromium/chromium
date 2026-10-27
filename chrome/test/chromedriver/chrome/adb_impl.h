@@ -39,6 +39,9 @@ class AdbImpl : public Adb {
                            const std::string& package) override;
   Status ClearAppData(const std::string& device_serial,
                       const std::string& package) override;
+  Status GrantPermission(const std::string& device_serial,
+                         const std::string& package,
+                         const std::string& permission) override;
   Status SetDebugApp(const std::string& device_serial,
                      const std::string& package) override;
   Status Launch(const std::string& device_serial,

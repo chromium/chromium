@@ -5,6 +5,7 @@
 #include "chrome/test/chromedriver/chrome/device_manager.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -51,6 +52,12 @@ class FakeAdb : public Adb {
 
   Status ClearAppData(const std::string& device_serial,
                       const std::string& package) override {
+    return Status(kOk);
+  }
+
+  Status GrantPermission(const std::string& device_serial,
+                         const std::string& package,
+                         const std::string& permission) override {
     return Status(kOk);
   }
 
@@ -109,6 +116,36 @@ class ClearAppDataCalledFakeAdb : public FakeAdb {
 
  private:
   bool clear_app_data_called = false;
+};
+
+// Records the order of the app setup calls made on the device.
+class RecordingFakeAdb : public FakeAdb {
+ public:
+  Status ClearAppData(const std::string& device_serial,
+                      const std::string& package) override {
+    calls.push_back("clear");
+    return FakeAdb::ClearAppData(device_serial, package);
+  }
+
+  Status GrantPermission(const std::string& device_serial,
+                         const std::string& package,
+                         const std::string& permission) override {
+    calls.push_back("grant " + permission);
+    if (fail_grants) {
+      return Status(kUnknownError, "cannot grant " + permission);
+    }
+    return FakeAdb::GrantPermission(device_serial, package, permission);
+  }
+
+  Status Launch(const std::string& device_serial,
+                const std::string& package,
+                const std::string& activity) override {
+    calls.push_back("launch");
+    return FakeAdb::Launch(device_serial, package, activity);
+  }
+
+  std::vector<std::string> calls;
+  bool fail_grants = false;
 };
 
 class SucceedsForwardPortFakeAdb : public FakeAdb {
@@ -190,41 +227,41 @@ TEST(Device, StartStopApp) {
   ASSERT_TRUE(device1->TearDown().IsOk());
   ASSERT_TRUE(device1
                   ->SetUp("a.chrome.package", "", "", "", "", "", false, false,
-                          &devtools_port)
+                          std::nullopt, &devtools_port)
                   .IsOk());
   ASSERT_FALSE(device1
                    ->SetUp("a.chrome.package", "", "", "", "", "", false, false,
-                           &devtools_port)
+                           std::nullopt, &devtools_port)
                    .IsOk());
   ASSERT_TRUE(device1->TearDown().IsOk());
   ASSERT_FALSE(device1
                    ->SetUp("a.chrome.package", "an.activity", "", "", "", "",
-                           false, false, &devtools_port)
+                           false, false, std::nullopt, &devtools_port)
                    .IsOk());
-  ASSERT_FALSE(
-      device1
-          ->SetUp("a.package", "", "", "", "", "", false, false, &devtools_port)
-          .IsOk());
+  ASSERT_FALSE(device1
+                   ->SetUp("a.package", "", "", "", "", "", false, false,
+                           std::nullopt, &devtools_port)
+                   .IsOk());
   ASSERT_TRUE(device1
                   ->SetUp("a.package", "an.activity", "", "", "", "", false,
-                          false, &devtools_port)
+                          false, std::nullopt, &devtools_port)
                   .IsOk());
   ASSERT_TRUE(device1->TearDown().IsOk());
   ASSERT_TRUE(device1
                   ->SetUp("a.package", "an.activity", "a.process", "", "", "",
-                          false, false, &devtools_port)
+                          false, false, std::nullopt, &devtools_port)
                   .IsOk());
   ASSERT_TRUE(device1->TearDown().IsOk());
   ASSERT_TRUE(device1
                   ->SetUp("a.package", "an.activity", "a.process",
-                          "a.deviceSocket", "", "", false, false,
+                          "a.deviceSocket", "", "", false, false, std::nullopt,
                           &devtools_port)
                   .IsOk());
   ASSERT_TRUE(device1->TearDown().IsOk());
   ASSERT_TRUE(device1
                   ->SetUp("a.package", "an.activity", "a.process",
                           "a.deviceSocket", "an.execName", "", false, false,
-                          &devtools_port)
+                          std::nullopt, &devtools_port)
                   .IsOk());
   ASSERT_TRUE(device1->TearDown().IsOk());
 }
@@ -237,7 +274,7 @@ TEST(Device, ClearAppDataCalled) {
   ASSERT_TRUE(device_manager.AcquireDevice(&device1).IsOk());
   ASSERT_TRUE(device1
                   ->SetUp("a.chrome.package", "", "", "", "", "", false, false,
-                          &devtools_port)
+                          std::nullopt, &devtools_port)
                   .IsOk());
   ASSERT_TRUE(adb.ClearAppDataCalledIsCalled());
 }
@@ -250,7 +287,7 @@ TEST(Device, ClearAppDataNotCalled) {
   ASSERT_TRUE(device_manager.AcquireDevice(&device1).IsOk());
   ASSERT_TRUE(device1
                   ->SetUp("a.chrome.package", "", "", "", "", "", false, true,
-                          &devtools_port)
+                          std::nullopt, &devtools_port)
                   .IsOk());
   ASSERT_FALSE(adb.ClearAppDataCalledIsCalled());
 }
@@ -262,7 +299,7 @@ TEST(ForwardPort, Success) {
   std::unique_ptr<Device> device1;
   device_manager.AcquireDevice(&device1);
   device1->SetUp("a.chrome.package", "", "", "", "", "", false, false,
-                 &devtools_port);
+                 std::nullopt, &devtools_port);
   device1->TearDown();
   ASSERT_TRUE(adb.KillForwardPortIsCalled());
 }
@@ -274,7 +311,119 @@ TEST(ForwardPort, Failure) {
   std::unique_ptr<Device> device1;
   device_manager.AcquireDevice(&device1);
   device1->SetUp("a.package", "an.activity", "", "", "", "", false, false,
-                 &devtools_port);
+                 std::nullopt, &devtools_port);
   device1->TearDown();
   ASSERT_FALSE(adb.KillForwardPortIsCalled());
+}
+
+TEST(Device, GrantsDefaultPermissionsBetweenClearAndLaunch) {
+  int devtools_port;
+  RecordingFakeAdb adb;
+  DeviceManager device_manager(&adb);
+  std::unique_ptr<Device> device;
+  ASSERT_TRUE(device_manager.AcquireDevice(&device).IsOk());
+  ASSERT_TRUE(device
+                  ->SetUp("a.chrome.package", "", "", "", "", "", false, false,
+                          std::nullopt, &devtools_port)
+                  .IsOk());
+  EXPECT_EQ(
+      (std::vector<std::string>{
+          "clear", "grant android.permission.POST_NOTIFICATIONS", "launch"}),
+      adb.calls);
+}
+
+TEST(Device, GrantsExplicitPermissionsInsteadOfDefault) {
+  int devtools_port;
+  RecordingFakeAdb adb;
+  DeviceManager device_manager(&adb);
+  std::unique_ptr<Device> device;
+  ASSERT_TRUE(device_manager.AcquireDevice(&device).IsOk());
+  std::vector<std::string> permissions = {
+      "android.permission.ACCESS_LOCAL_NETWORK", "com.example.permission.FOO"};
+  ASSERT_TRUE(device
+                  ->SetUp("a.chrome.package", "", "", "", "", "", false, false,
+                          permissions, &devtools_port)
+                  .IsOk());
+  EXPECT_EQ((std::vector<std::string>{
+                "clear", "grant android.permission.ACCESS_LOCAL_NETWORK",
+                "grant com.example.permission.FOO", "launch"}),
+            adb.calls);
+}
+
+TEST(Device, GrantsNothingForEmptyPermissionList) {
+  int devtools_port;
+  RecordingFakeAdb adb;
+  DeviceManager device_manager(&adb);
+  std::unique_ptr<Device> device;
+  ASSERT_TRUE(device_manager.AcquireDevice(&device).IsOk());
+  ASSERT_TRUE(device
+                  ->SetUp("a.chrome.package", "", "", "", "", "", false, false,
+                          std::vector<std::string>(), &devtools_port)
+                  .IsOk());
+  EXPECT_EQ((std::vector<std::string>{"clear", "launch"}), adb.calls);
+}
+
+TEST(Device, ExplicitPermissionGrantFailureFailsSetUp) {
+  int devtools_port;
+  RecordingFakeAdb adb;
+  adb.fail_grants = true;
+  DeviceManager device_manager(&adb);
+  std::unique_ptr<Device> device;
+  ASSERT_TRUE(device_manager.AcquireDevice(&device).IsOk());
+  std::vector<std::string> permissions = {
+      "android.permission.ACCESS_LOCAL_NETWORK"};
+  ASSERT_TRUE(device
+                  ->SetUp("a.chrome.package", "", "", "", "", "", false, false,
+                          permissions, &devtools_port)
+                  .IsError());
+  EXPECT_EQ((std::vector<std::string>{
+                "clear", "grant android.permission.ACCESS_LOCAL_NETWORK"}),
+            adb.calls);
+}
+
+TEST(Device, DefaultPermissionGrantFailureIsIgnored) {
+  int devtools_port;
+  RecordingFakeAdb adb;
+  adb.fail_grants = true;
+  DeviceManager device_manager(&adb);
+  std::unique_ptr<Device> device;
+  ASSERT_TRUE(device_manager.AcquireDevice(&device).IsOk());
+  ASSERT_TRUE(device
+                  ->SetUp("a.chrome.package", "", "", "", "", "", false, false,
+                          std::nullopt, &devtools_port)
+                  .IsOk());
+  ASSERT_FALSE(adb.calls.empty());
+  EXPECT_EQ("launch", adb.calls.back());
+}
+
+TEST(Device, GrantsPermissionsWhenKeepingAppData) {
+  int devtools_port;
+  RecordingFakeAdb adb;
+  DeviceManager device_manager(&adb);
+  std::unique_ptr<Device> device;
+  ASSERT_TRUE(device_manager.AcquireDevice(&device).IsOk());
+  std::vector<std::string> permissions = {
+      "android.permission.ACCESS_LOCAL_NETWORK"};
+  ASSERT_TRUE(device
+                  ->SetUp("a.chrome.package", "", "", "", "", "", false, true,
+                          permissions, &devtools_port)
+                  .IsOk());
+  EXPECT_EQ((std::vector<std::string>{
+                "grant android.permission.ACCESS_LOCAL_NETWORK", "launch"}),
+            adb.calls);
+}
+
+TEST(Device, NoPermissionGrantsWhenUsingRunningApp) {
+  int devtools_port;
+  RecordingFakeAdb adb;
+  DeviceManager device_manager(&adb);
+  std::unique_ptr<Device> device;
+  ASSERT_TRUE(device_manager.AcquireDevice(&device).IsOk());
+  std::vector<std::string> permissions = {
+      "android.permission.ACCESS_LOCAL_NETWORK"};
+  ASSERT_TRUE(device
+                  ->SetUp("a.chrome.package", "", "", "", "", "", true, false,
+                          permissions, &devtools_port)
+                  .IsOk());
+  EXPECT_TRUE(adb.calls.empty());
 }

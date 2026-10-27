@@ -280,6 +280,26 @@ Status AdbImpl::ClearAppData(
   return Status(kOk);
 }
 
+Status AdbImpl::GrantPermission(const std::string& device_serial,
+                                const std::string& package,
+                                const std::string& permission) {
+  std::string response;
+  Status status = ExecuteHostShellCommand(
+      device_serial, "pm grant " + package + " " + permission, &response);
+  if (status.IsError()) {
+    return status;
+  }
+  // `pm grant` prints nothing on success, and the adb shell service doesn't
+  // report the exit code, so treat any output as an error message.
+  std::string_view output = base::TrimWhitespaceASCII(response, base::TRIM_ALL);
+  if (!output.empty()) {
+    return Status(kUnknownError, "cannot grant " + permission + " to " +
+                                     package + " on device " + device_serial +
+                                     ": " + std::string(output));
+  }
+  return Status(kOk);
+}
+
 Status AdbImpl::SetDebugApp(
     const std::string& device_serial, const std::string& package) {
   std::string response;
@@ -291,15 +311,6 @@ Status AdbImpl::Launch(
     const std::string& device_serial, const std::string& package,
     const std::string& activity) {
   std::string response;
-  ExecuteHostShellCommand(device_serial, "getprop ro.build.version.release",
-                          &response);
-  int android_version = stoi(response);
-  if (android_version >= 13) {
-    ExecuteHostShellCommand(
-        device_serial,
-        "pm grant " + package + " android.permission.POST_NOTIFICATIONS",
-        &response);
-  }
   Status status = ExecuteHostShellCommand(
       device_serial, "am start -W -n " + package + "/" + activity, &response);
   if (!status.IsOk())

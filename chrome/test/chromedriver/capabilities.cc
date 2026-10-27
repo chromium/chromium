@@ -178,6 +178,17 @@ bool IsValidAndroidExecName(const std::string& name) {
   return true;
 }
 
+bool IsValidAndroidPermissionName(const std::string& name) {
+  // Permission names are interpolated into an `adb shell pm grant` command, so
+  // only allow characters that are valid in Java-style permission names.
+  if (name.empty() || name.length() > 255) {
+    return false;
+  }
+  return std::ranges::all_of(name, [](char c) {
+    return base::IsAsciiAlphaNumeric(c) || c == '_' || c == '.';
+  });
+}
+
 Status ParseAndroidPackage(std::string* to_set,
                            const base::Value& option,
                            Capabilities* capabilities) {
@@ -890,6 +901,34 @@ Status ParseExcludeSwitches(const base::Value& option,
   return Status(kOk);
 }
 
+Status ParseAndroidGrantPermissions(const base::Value& option,
+                                    Capabilities* capabilities) {
+  const base::ListValue* list = option.GetIfList();
+  if (!list) {
+    return Status(kInvalidArgument, "must be a list of strings");
+  }
+  std::vector<std::string> permissions;
+  permissions.reserve(list->size());
+  for (const base::Value& item : *list) {
+    const std::string* name = item.GetIfString();
+    if (!name) {
+      return Status(kInvalidArgument, "each permission must be a string");
+    }
+    if (!IsValidAndroidPermissionName(*name)) {
+      return Status(kInvalidArgument, "invalid permission name: " + *name);
+    }
+    // Short names such as "POST_NOTIFICATIONS" are expanded to the platform
+    // permission namespace. Fully-qualified names are passed through as is.
+    if (name->find('.') == std::string::npos) {
+      permissions.push_back("android.permission." + *name);
+    } else {
+      permissions.push_back(*name);
+    }
+  }
+  capabilities->android_grant_permissions = std::move(permissions);
+  return Status(kOk);
+}
+
 Status ParsePortNumber(int* to_set,
                      const base::Value& option,
                      Capabilities* capabilities) {
@@ -1080,6 +1119,8 @@ Status ParseChromeOptions(
         &ParseBoolean, &capabilities->android_use_running_app);
     parser_map["androidKeepAppDataDir"] = base::BindRepeating(
         &ParseBoolean, &capabilities->android_keep_app_data_dir);
+    parser_map["androidGrantPermissions"] =
+        base::BindRepeating(&ParseAndroidGrantPermissions);
     parser_map["androidDevToolsPort"] = base::BindRepeating(
         &ParsePortNumber, &capabilities->android_devtools_port);
     parser_map["args"] = base::BindRepeating(&ParseSwitches);

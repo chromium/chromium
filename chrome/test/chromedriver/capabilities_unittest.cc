@@ -4,7 +4,9 @@
 
 #include "chrome/test/chromedriver/capabilities.h"
 
+#include <string>
 #include <utility>
+#include <vector>
 
 #include "base/json/json_reader.h"
 #include "base/logging.h"
@@ -310,6 +312,78 @@ TEST(ParseCapabilities, InvalidAndroidPackageName) {
   caps.SetByDottedPath("goog:chromeOptions.androidPackage",
                        "com.example space");
   ASSERT_FALSE(capabilities.Parse(caps).IsOk());
+}
+
+TEST(ParseCapabilities, AndroidGrantPermissionsDefault) {
+  Capabilities capabilities;
+  base::DictValue caps;
+  caps.SetByDottedPath("goog:chromeOptions.androidPackage", "com.example.app");
+  ASSERT_TRUE(capabilities.Parse(caps).IsOk());
+  ASSERT_FALSE(capabilities.android_grant_permissions.has_value());
+}
+
+TEST(ParseCapabilities, AndroidGrantPermissions) {
+  Capabilities capabilities;
+  base::DictValue caps;
+  caps.SetByDottedPath("goog:chromeOptions.androidPackage", "com.example.app");
+  base::ListValue permissions;
+  permissions.Append("ACCESS_LOCAL_NETWORK");
+  permissions.Append("android.permission.CAMERA");
+  permissions.Append("com.example.permission.FOO_BAR");
+  caps.SetByDottedPath("goog:chromeOptions.androidGrantPermissions",
+                       std::move(permissions));
+  Status status = capabilities.Parse(caps);
+  ASSERT_TRUE(status.IsOk()) << status.message();
+  ASSERT_TRUE(capabilities.android_grant_permissions.has_value());
+  EXPECT_EQ((std::vector<std::string>{"android.permission.ACCESS_LOCAL_NETWORK",
+                                      "android.permission.CAMERA",
+                                      "com.example.permission.FOO_BAR"}),
+            *capabilities.android_grant_permissions);
+}
+
+TEST(ParseCapabilities, AndroidGrantPermissionsEmpty) {
+  Capabilities capabilities;
+  base::DictValue caps;
+  caps.SetByDottedPath("goog:chromeOptions.androidPackage", "com.example.app");
+  caps.SetByDottedPath("goog:chromeOptions.androidGrantPermissions",
+                       base::ListValue());
+  ASSERT_TRUE(capabilities.Parse(caps).IsOk());
+  ASSERT_TRUE(capabilities.android_grant_permissions.has_value());
+  EXPECT_TRUE(capabilities.android_grant_permissions->empty());
+}
+
+TEST(ParseCapabilities, InvalidAndroidGrantPermissions) {
+  base::DictValue caps;
+  caps.SetByDottedPath("goog:chromeOptions.androidPackage", "com.example.app");
+
+  // Not a list.
+  {
+    Capabilities capabilities;
+    caps.SetByDottedPath("goog:chromeOptions.androidGrantPermissions",
+                         "ACCESS_LOCAL_NETWORK");
+    EXPECT_EQ(kInvalidArgument, capabilities.Parse(caps).code());
+  }
+
+  // Not a list of strings.
+  {
+    Capabilities capabilities;
+    base::ListValue permissions;
+    permissions.Append(123);
+    caps.SetByDottedPath("goog:chromeOptions.androidGrantPermissions",
+                         std::move(permissions));
+    EXPECT_EQ(kInvalidArgument, capabilities.Parse(caps).code());
+  }
+
+  // Invalid characters (command injection attempts) and empty names.
+  for (const char* name : {"FOO;rm -rf /", "FOO|sh", "FOO BAR", "$(reboot)",
+                           "FOO&&reboot", "android.permission.FOO`id`", ""}) {
+    Capabilities capabilities;
+    base::ListValue permissions;
+    permissions.Append(name);
+    caps.SetByDottedPath("goog:chromeOptions.androidGrantPermissions",
+                         std::move(permissions));
+    EXPECT_EQ(kInvalidArgument, capabilities.Parse(caps).code()) << name;
+  }
 }
 
 TEST(ParseCapabilities, AndroidActivity) {

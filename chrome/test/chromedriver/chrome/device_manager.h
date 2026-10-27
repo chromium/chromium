@@ -7,7 +7,9 @@
 
 #include <list>
 #include <memory>
+#include <optional>
 #include <string>
+#include <vector>
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
@@ -33,6 +35,7 @@ class Device {
                const std::string& args,
                bool use_running_app,
                bool keep_app_data_dir,
+               const std::optional<std::vector<std::string>>& grant_permissions,
                int* devtools_port,
                const std::string& prefs_file = std::string(),
                const base::DictValue* custom_prefs = nullptr,
@@ -47,6 +50,10 @@ class Device {
   Device(const std::string& device_serial,
          Adb* adb,
          base::OnceCallback<void()> release_callback);
+
+  Status GrantPermissions(
+      const std::string& package,
+      const std::optional<std::vector<std::string>>& grant_permissions);
 
   Status ForwardDevtoolsPort(const std::string& package,
                              const std::string& process,
