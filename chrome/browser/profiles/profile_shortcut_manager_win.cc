@@ -31,7 +31,6 @@
 #include "base/win/shortcut.h"
 #include "base/win/windows_version.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/policy/policy_path_parser.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
@@ -881,14 +880,7 @@ bool ProfileShortcutManager::IsFeatureEnabled() {
   if (command_line->HasSwitch(switches::kEnableProfileShortcutManager))
     return true;
 
-  base::FilePath policy_user_data_dir;
-  policy::path_parser::CheckUserDataDirPolicy(&policy_user_data_dir);
-
-  base::FilePath user_data_dir;
-  bool success = base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir);
-  CHECK(success, base::NotFatalUntil::M162);
-  return user_data_dir == policy_user_data_dir ||
-         chrome::IsUsingDefaultDataDirectory().value_or(false);
+  return chrome::IsUsingDefaultOrEnforcedDataDirectory().value_or(false);
 }
 
 // static

@@ -22,12 +22,13 @@ namespace {
 
 std::wstring* g_user_data_dir;
 std::wstring* g_invalid_user_data_dir;
+bool g_user_data_dir_set_by_policy = false;
 bool g_temp_user_data_dir_created_for_headless = false;
 
 // Retrieves a registry policy for the user data directory from the registry, if
 // one is set. If there's none set in either HKLM or HKCU, |user_data_dir| will
-// be unmodified.
-void GetUserDataDirFromRegistryPolicyIfSet(const InstallConstants& mode,
+// be unmodified. Returns true if a policy value was set.
+bool GetUserDataDirFromRegistryPolicyIfSet(const InstallConstants& mode,
                                            std::wstring* user_data_dir) {
   assert(user_data_dir);
   std::wstring policies_path = L"SOFTWARE\\Policies\\";
@@ -42,15 +43,16 @@ void GetUserDataDirFromRegistryPolicyIfSet(const InstallConstants& mode,
   if (nt::QueryRegValueSZ(nt::HKLM, nt::NONE, policies_path.c_str(),
                           kUserDataDirRegistryKeyName, &value)) {
     *user_data_dir = ExpandPathVariables(value);
-    return;
+    return true;
   }
 
   // Second, try HKCU.
   if (nt::QueryRegValueSZ(nt::HKCU, nt::NONE, policies_path.c_str(),
                           kUserDataDirRegistryKeyName, &value)) {
     *user_data_dir = ExpandPathVariables(value);
-    return;
+    return true;
   }
+  return false;
 }
 
 std::wstring MakeAbsoluteFilePath(const std::wstring& input) {
@@ -66,9 +68,10 @@ std::wstring MakeAbsoluteFilePath(const std::wstring& input) {
 bool GetUserDataDirectoryUsingProcessCommandLine(
     const InstallConstants& mode,
     std::wstring* result,
-    std::wstring* invalid_supplied_directory) {
+    std::wstring* invalid_supplied_directory,
+    bool* policy_set) {
   return GetUserDataDirectoryImpl(::GetCommandLine(), mode, result,
-                                  invalid_supplied_directory);
+                                  invalid_supplied_directory, policy_set);
 }
 
 // Populates |result| with the default User Data directory for the current
@@ -113,11 +116,13 @@ bool IsHeadlessMode(const std::wstring& command_line) {
 bool GetUserDataDirectoryImpl(const std::wstring& command_line,
                               const InstallConstants& mode,
                               std::wstring* result,
-                              std::wstring* invalid_supplied_directory) {
+                              std::wstring* invalid_supplied_directory,
+                              bool* policy_set) {
   std::wstring user_data_dir =
       GetCommandLineSwitchValue(command_line, kUserDataDirSwitch);
 
-  GetUserDataDirFromRegistryPolicyIfSet(mode, &user_data_dir);
+  bool set_by_policy =
+      GetUserDataDirFromRegistryPolicyIfSet(mode, &user_data_dir);
 
   // Headless Chrome instances are expected to run in parallel with the headful
   // Chrome and other headless Chrome instances. In order to do so, headless
@@ -144,6 +149,7 @@ bool GetUserDataDirectoryImpl(const std::wstring& command_line,
   bool got_valid_directory =
       !user_data_dir.empty() && RecursiveDirectoryCreate(user_data_dir);
   if (!got_valid_directory) {
+    set_by_policy = false;
     *invalid_supplied_directory = user_data_dir;
     got_valid_directory = GetDefaultUserDataDirectory(mode, &user_data_dir);
   }
@@ -156,17 +162,21 @@ bool GetUserDataDirectoryImpl(const std::wstring& command_line,
     return false;
 
   *result = MakeAbsoluteFilePath(user_data_dir);
+  if (policy_set) {
+    *policy_set = set_by_policy;
+  }
   return true;
 }
 
 bool GetUserDataDirectory(std::wstring* user_data_dir,
-                          std::wstring* invalid_user_data_dir) {
+                          std::wstring* invalid_user_data_dir,
+                          bool* policy_set) {
   if (!g_user_data_dir) {
     g_user_data_dir = new std::wstring();
     g_invalid_user_data_dir = new std::wstring();
     if (!GetUserDataDirectoryUsingProcessCommandLine(
             InstallDetails::Get().mode(), g_user_data_dir,
-            g_invalid_user_data_dir)) {
+            g_invalid_user_data_dir, &g_user_data_dir_set_by_policy)) {
       return false;
     }
     assert(!g_user_data_dir->empty());
@@ -174,6 +184,9 @@ bool GetUserDataDirectory(std::wstring* user_data_dir,
   *user_data_dir = *g_user_data_dir;
   if (invalid_user_data_dir)
     *invalid_user_data_dir = *g_invalid_user_data_dir;
+  if (policy_set) {
+    *policy_set = g_user_data_dir_set_by_policy;
+  }
   return true;
 }
 

@@ -126,10 +126,10 @@ class HeadlessModeHandleImpl : public HeadlessModeHandle {
     // if so, associate it with our code for cleanup on exit.
     if (IsTemporaryUserDataDirectoryCreatedForHeadless()) {
       wchar_t user_data_dir_buf[MAX_PATH], invalid_user_data_dir_buf[MAX_PATH];
-      if (GetUserDataDirectoryThunk(user_data_dir_buf,
-                                    std::size(user_data_dir_buf),
-                                    invalid_user_data_dir_buf,
-                                    std::size(invalid_user_data_dir_buf))) {
+      if (GetUserDataDirectoryThunk(
+              user_data_dir_buf, std::size(user_data_dir_buf),
+              invalid_user_data_dir_buf, std::size(invalid_user_data_dir_buf),
+              /*policy_set=*/nullptr)) {
         base::FilePath user_data_dir(user_data_dir_buf);
         if (!user_data_dir.empty()) {
           if (!user_data_dir_.Set(user_data_dir)) {

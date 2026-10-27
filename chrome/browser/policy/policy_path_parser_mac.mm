@@ -94,7 +94,7 @@ base::FilePath::StringType ExpandPathVariables(
   return result;
 }
 
-void CheckUserDataDirPolicy(base::FilePath* user_data_dir) {
+bool CheckUserDataDirPolicy(base::FilePath* user_data_dir) {
   // Since the configuration management infrastructure is not initialized when
   // this code runs, read the policy preference directly.
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -114,16 +114,17 @@ void CheckUserDataDirPolicy(base::FilePath* user_data_dir) {
       CFPreferencesCopyAppValue(key.get(), bundle_id));
 
   if (!value || !CFPreferencesAppValueIsForced(key.get(), bundle_id)) {
-    return;
+    return false;
   }
   CFStringRef value_string = base::apple::CFCast<CFStringRef>(value.get());
   if (!value_string)
-    return;
+    return false;
 
   // Now replace any vars the user might have used.
   std::string string_value = base::SysCFStringRefToUTF8(value_string);
   string_value = policy::path_parser::ExpandPathVariables(string_value);
   *user_data_dir = base::FilePath(string_value);
+  return true;
 }
 
 }  // namespace policy::path_parser

@@ -20,6 +20,7 @@
 #include "chrome/browser/update_client/chrome_update_query_params_delegate.h"
 #include "chrome/common/chrome_content_client.h"
 #include "chrome/common/chrome_paths.h"
+#include "chrome/common/chrome_paths_internal.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "components/component_updater/component_updater_paths.h"
 #include "components/startup_metric_utils/common/startup_metric_utils.h"
@@ -135,6 +136,7 @@ class ChromeUnitTestSuiteInitializer : public testing::EmptyTestEventListener {
     web_app::SetTrustedWebBundleIdsForTesting({});
 #endif  // !BUILDFLAG(IS_ANDROID)
     browser_shutdown::ResetShutdownGlobalsForTesting();
+    chrome::ClearUserDataDirSetByPolicyForTesting();
 #if !BUILDFLAG(IS_ANDROID)
     publisher_host_factory_resetter_.reset();
 #endif

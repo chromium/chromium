@@ -569,7 +569,9 @@ std::wstring GetCrashDumpLocation() {
   // we cannot rely on chrome's PathService entries (for DIR_CRASH_DUMPS) being
   // available on Windows. See https://crbug.com/40447216.
   std::wstring user_data_dir;
-  bool ret = GetUserDataDirectory(&user_data_dir, nullptr);
+  bool ret = GetUserDataDirectory(&user_data_dir,
+                                  /*invalid_user_data_directory=*/nullptr,
+                                  /*policy_set=*/nullptr);
   assert(ret);
   IgnoreUnused(ret);
   return user_data_dir.append(L"\\Crashpad");

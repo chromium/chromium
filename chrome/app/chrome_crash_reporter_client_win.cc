@@ -54,7 +54,9 @@ void ChromeCrashReporterClient::InitializeCrashReportingForProcess() {
 
     std::wstring user_data_dir;
     if (process_type.empty()) {
-      install_static::GetUserDataDirectory(&user_data_dir, nullptr);
+      install_static::GetUserDataDirectory(
+          &user_data_dir, /*invalid_user_data_directory=*/nullptr,
+          /*policy_set=*/nullptr);
 
       // Initialize the shared memory that contains the `SystemProfile` only in
       // the browser process. This must happen before Crashpad initialization
@@ -142,7 +144,9 @@ bool ChromeCrashReporterClient::GetCrashMetricsLocation(
   if (!GetCollectStatsConsent()) {
     return false;
   }
-  install_static::GetUserDataDirectory(metrics_dir, nullptr);
+  install_static::GetUserDataDirectory(metrics_dir,
+                                       /*invalid_user_data_directory=*/nullptr,
+                                       /*policy_set=*/nullptr);
   return !metrics_dir->empty();
 }
 

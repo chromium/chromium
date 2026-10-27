@@ -15,10 +15,13 @@ void DumpProcessWithoutCrash();
 
 // Returns true if |user_data_dir| or |invalid_data_dir| contain data.
 // This should always be the case in non-test builds.
+// Sets |policy_set| (if non-null) to true if a valid directory was set by
+// policy.
 bool GetUserDataDirectoryThunk(wchar_t* user_data_dir,
                                size_t user_data_dir_length,
                                wchar_t* invalid_user_data_dir,
-                               size_t invalid_user_data_dir_length);
+                               size_t invalid_user_data_dir_length,
+                               bool* policy_set);
 
 // Returns true if GetUserDataDirectoryThunk() returns a temporary user
 // data directory created when running in headless mode with no explicit user

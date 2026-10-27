@@ -60,7 +60,9 @@ extern "C" int WINAPI wWinMain(HINSTANCE instance,
 
   // The histogram storage folder should be under folder "User Data".
   std::wstring user_data_dir;
-  install_static::GetUserDataDirectory(&user_data_dir, nullptr);
+  install_static::GetUserDataDirectory(&user_data_dir,
+                                       /*invalid_user_data_directory=*/nullptr,
+                                       /*policy_set=*/nullptr);
 
   persistent_histogram_storage.set_storage_base_dir(
       base::FilePath(std::move(user_data_dir)));

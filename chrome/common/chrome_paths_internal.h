@@ -26,13 +26,25 @@ namespace chrome {
 // DIR_USER_DATA has been overridden by a command-line option.
 bool GetDefaultUserDataDirectory(base::FilePath* result);
 
+// Records that the user data directory was set by enterprise policy.
+void SetUserDataDirSetByPolicy();
+
+// Clears the state set by `SetUserDataDirSetByPolicy` for testing.
+void ClearUserDataDirSetByPolicyForTesting();
+
 // Returns true if the current user data directory is the default user data
 // directory. Returns `std::nullopt` if this could not be determined e.g. API
 // calls failed.
 std::optional<bool> IsUsingDefaultDataDirectory();
 
-// Overrides whether or not the `IsUsingDefaultDataDirectory` API returns a fake
-// value for testing. Set to `std::nullopt` to restore the default behavior.
+// Returns true if the current user data directory is the default user data
+// directory or was enforced by enterprise policy. Returns `std::nullopt` if
+// this could not be determined e.g. API calls failed.
+std::optional<bool> IsUsingDefaultOrEnforcedDataDirectory();
+
+// Overrides whether or not the `IsUsingDefaultDataDirectory` and
+// `IsUsingDefaultOrEnforcedDataDirectory` APIs return a fake value for
+// testing. Set to `std::nullopt` to restore the default behavior.
 void SetUsingDefaultUserDataDirectoryForTesting(std::optional<bool> is_default);
 
 #if BUILDFLAG(IS_WIN)

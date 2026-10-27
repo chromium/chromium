@@ -40,7 +40,9 @@ void NotificationHelperCrashReporterClient::
   crash_reporter::SetCrashReporterClient(instance);
 
   std::wstring user_data_dir;
-  install_static::GetUserDataDirectory(&user_data_dir, nullptr);
+  install_static::GetUserDataDirectory(&user_data_dir,
+                                       /*invalid_user_data_directory=*/nullptr,
+                                       /*policy_set=*/nullptr);
 
   crash_reporter::InitializeCrashpadWithEmbeddedHandler(
       true, "notification-helper", install_static::WideToUTF8(user_data_dir),
@@ -89,7 +91,8 @@ bool NotificationHelperCrashReporterClient::GetCrashDumpLocation(
 
 bool NotificationHelperCrashReporterClient::GetCrashMetricsLocation(
     std::wstring* metrics_dir) {
-  install_static::GetUserDataDirectory(metrics_dir, nullptr);
+  install_static::GetUserDataDirectory(metrics_dir, nullptr,
+                                       /*policy_set=*/nullptr);
   return !metrics_dir->empty();
 }
 

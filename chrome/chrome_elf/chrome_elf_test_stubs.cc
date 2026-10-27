@@ -22,7 +22,8 @@ void SignalChromeElf() {}
 bool GetUserDataDirectoryThunk(wchar_t* user_data_dir,
                                size_t user_data_dir_length,
                                wchar_t* invalid_user_data_dir,
-                               size_t invalid_user_data_dir_length) {
+                               size_t invalid_user_data_dir_length,
+                               bool* policy_set) {
   // In tests, just respect the user-data-dir switch if given.
   base::FilePath user_data_dir_path =
       base::CommandLine::ForCurrentProcess()->GetSwitchValuePath(
@@ -34,6 +35,9 @@ bool GetUserDataDirectoryThunk(wchar_t* user_data_dir,
                         user_data_dir_path.value().c_str(), _TRUNCATE));
   UNSAFE_TODO(wcsncpy_s(invalid_user_data_dir, invalid_user_data_dir_length,
                         L"", _TRUNCATE));
+  if (policy_set) {
+    *policy_set = false;
+  }
 
   return !user_data_dir_path.empty();
 }

@@ -11,12 +11,14 @@
 #include "base/files/file_path.h"
 #include "base/path_service.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/scoped_path_override.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths_internal.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 
 namespace chrome {
 
@@ -223,6 +225,36 @@ TEST(ChromePaths, DefaultUserDataDirectory) {
 
   SetUsingDefaultUserDataDirectoryForTesting(std::nullopt);
   EXPECT_TRUE(IsUsingDefaultDataDirectory().value());
+}
+
+TEST(ChromePaths, DefaultOrEnforcedDataDirectory) {
+  EXPECT_EQ(IsUsingDefaultOrEnforcedDataDirectory(), true);
+
+  SetUsingDefaultUserDataDirectoryForTesting(false);
+  EXPECT_EQ(IsUsingDefaultOrEnforcedDataDirectory(), false);
+
+  SetUsingDefaultUserDataDirectoryForTesting(std::nullopt);
+  EXPECT_EQ(IsUsingDefaultOrEnforcedDataDirectory(), true);
+
+  base::ScopedPathOverride user_data_dir_override(chrome::DIR_USER_DATA);
+  EXPECT_EQ(IsUsingDefaultOrEnforcedDataDirectory(), false);
+
+  {
+    SetUserDataDirSetByPolicy();
+    absl::Cleanup clear_policy = [] {
+      ClearUserDataDirSetByPolicyForTesting();
+    };
+    EXPECT_EQ(IsUsingDefaultDataDirectory(), false);
+    EXPECT_EQ(IsUsingDefaultOrEnforcedDataDirectory(), true);
+
+    SetUsingDefaultUserDataDirectoryForTesting(false);
+    EXPECT_EQ(IsUsingDefaultOrEnforcedDataDirectory(), false);
+
+    SetUsingDefaultUserDataDirectoryForTesting(std::nullopt);
+    EXPECT_EQ(IsUsingDefaultOrEnforcedDataDirectory(), true);
+  }
+
+  EXPECT_EQ(IsUsingDefaultOrEnforcedDataDirectory(), false);
 }
 
 }  // namespace chrome

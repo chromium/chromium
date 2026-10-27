@@ -657,16 +657,20 @@ void InitializeUserDataDir(base::CommandLine* command_line) {
   // Reach out to chrome_elf for the truth on the user data directory.
   // Note that in tests, this links to chrome_elf_test_stubs.
   wchar_t user_data_dir_buf[MAX_PATH], invalid_user_data_dir_buf[MAX_PATH];
+  bool policy_set = false;
 
   // In tests this may return false, implying the user data dir should be unset.
   if (GetUserDataDirectoryThunk(user_data_dir_buf, std::size(user_data_dir_buf),
                                 invalid_user_data_dir_buf,
-                                std::size(invalid_user_data_dir_buf))) {
+                                std::size(invalid_user_data_dir_buf),
+                                &policy_set)) {
     base::FilePath user_data_dir(user_data_dir_buf);
     if (invalid_user_data_dir_buf[0] != 0) {
       chrome::SetInvalidSpecifiedUserDataDir(
           base::FilePath(invalid_user_data_dir_buf));
       command_line->AppendSwitchPath(switches::kUserDataDir, user_data_dir);
+    } else if (policy_set) {
+      chrome::SetUserDataDirSetByPolicy();
     }
     CHECK(base::PathService::OverrideAndCreateIfNeeded(
         chrome::DIR_USER_DATA, user_data_dir, false, true));
@@ -693,7 +697,8 @@ void InitializeUserDataDir(base::CommandLine* command_line) {
   }
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #if BUILDFLAG(IS_MAC)
-  policy::path_parser::CheckUserDataDirPolicy(&user_data_dir);
+  const bool policy_set =
+      policy::path_parser::CheckUserDataDirPolicy(&user_data_dir);
 #endif  // BUILDFLAG(IS_MAC)
 
   const bool specified_directory_was_invalid =
@@ -704,6 +709,11 @@ void InitializeUserDataDir(base::CommandLine* command_line) {
   if (specified_directory_was_invalid) {
     chrome::SetInvalidSpecifiedUserDataDir(user_data_dir);
   }
+#if BUILDFLAG(IS_MAC)
+  if (policy_set && !specified_directory_was_invalid) {
+    chrome::SetUserDataDirSetByPolicy();
+  }
+#endif  // BUILDFLAG(IS_MAC)
 
   // Warn and fail early if the process fails to get a user data directory.
   if (!base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir)) {

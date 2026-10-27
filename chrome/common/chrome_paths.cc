@@ -47,6 +47,7 @@
 
 namespace {
 
+bool g_user_data_dir_set_by_policy = false;
 std::optional<bool> g_override_using_default_data_directory_for_testing;
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
@@ -521,6 +522,14 @@ bool PathProvider(int key, base::FilePath* result) {
   return true;
 }
 
+void SetUserDataDirSetByPolicy() {
+  g_user_data_dir_set_by_policy = true;
+}
+
+void ClearUserDataDirSetByPolicyForTesting() {
+  g_user_data_dir_set_by_policy = false;
+}
+
 std::optional<bool> IsUsingDefaultDataDirectory() {
   if (g_override_using_default_data_directory_for_testing.has_value()) {
     return g_override_using_default_data_directory_for_testing.value();
@@ -537,6 +546,19 @@ std::optional<bool> IsUsingDefaultDataDirectory() {
   }
 
   return user_data_dir == default_user_data_dir;
+}
+
+std::optional<bool> IsUsingDefaultOrEnforcedDataDirectory() {
+  if (g_override_using_default_data_directory_for_testing.has_value()) {
+    return g_override_using_default_data_directory_for_testing.value();
+  }
+
+  if (g_user_data_dir_set_by_policy) {
+    // The policy-provided value is the admin-enforced directory.
+    return true;
+  }
+
+  return IsUsingDefaultDataDirectory();
 }
 
 void SetUsingDefaultUserDataDirectoryForTesting(
