@@ -4684,12 +4684,17 @@ const FeatureEntry::FeatureParam kContextualTasksUnifyPinButtonLogosSpark[] = {
     {"ContextualTasksUnifyPinButtonLogo", "spark"}};
 const FeatureEntry::FeatureParam kContextualTasksUnifyPinButtonLogosSuperG[] = {
     {"ContextualTasksUnifyPinButtonLogo", "super-g"}};
+const FeatureEntry::FeatureParam
+    kContextualTasksUnifyPinButtonLogosGraySuperG[] = {
+        {"ContextualTasksUnifyPinButtonLogo", "gray-super-g"}};
 
 const FeatureEntry::FeatureVariation
     kContextualTasksUnifyPinButtonLogosVariations[] = {
         {"with Spark logo", kContextualTasksUnifyPinButtonLogosSpark, nullptr},
         {"with Super G logo", kContextualTasksUnifyPinButtonLogosSuperG,
-         nullptr}};
+         nullptr},
+        {"with Gray Super G logo",
+         kContextualTasksUnifyPinButtonLogosGraySuperG, nullptr}};
 
 const FeatureEntry::FeatureParam
     kContextualTasksUpdatedEntryPointsSidePanelRouting[] = {
