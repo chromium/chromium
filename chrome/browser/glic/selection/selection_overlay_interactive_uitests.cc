@@ -2080,9 +2080,23 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTestWithPrompt,
                   GetPointWithOffset(50, 50)),
       DragMouseTo(OverlayBaseController::kOverlayId,
                   GetPointWithOffset(150, 150)),
+      WaitForJsResultAt(kOverlayWebContentsId,
+                        {"selection-overlay-app", "glic-selection-overlay",
+                         "post-selection-renderer"},
+                        "el => el.selectedRegions.length === 1"),
       WaitForJsResultAt(
           kOverlayWebContentsId, kSelectionOverlay,
           "el => el.shadowRoot.querySelector('#promptInput') !== null"),
+      WaitForJsResultAt(kOverlayWebContentsId, kSelectionOverlay,
+                        "el => document.hasFocus() && "
+                        "el.shadowRoot.activeElement === "
+                        "el.shadowRoot.querySelector('#promptInput')"),
+      CheckResult(
+          [this]() {
+            auto* instance = GetGlicInstanceImpl();
+            return instance && instance->HasFocus();
+          },
+          false),
       ExecuteJsAt(
           kOverlayWebContentsId, kSelectionOverlay,
           "el => {"
@@ -2130,6 +2144,69 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTestWithPrompt,
                   OverlayBaseController::State::kOverlay),
       CheckResult(
           [this]() { return GetController()->GetSelectedRegionCount(); }, 1u));
+}
+
+IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTestWithPrompt,
+                       PromptInputFocusedOnShowWithSelection) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlayWebContentsId);
+  const DeepQuery kSelectionOverlay = {"selection-overlay-app",
+                                       "glic-selection-overlay"};
+
+  RunTestSequence(
+      LoadPageAndWaitForPaint(kActiveTab), Do([this]() {
+        ShowWithSelection(selection::InteractionOptions::New(
+            /*hide_handles=*/true, /*disable_multi_select=*/true,
+            /*skip_intro_animation=*/true));
+      }),
+      WaitForShow(OverlayBaseController::kOverlayId),
+      InstrumentNonTabWebView(kOverlayWebContentsId,
+                              OverlayBaseController::kOverlayId),
+      WaitForJsResultAt(kOverlayWebContentsId, kSelectionOverlay,
+                        "el => document.hasFocus() && "
+                        "el.shadowRoot.activeElement === "
+                        "el.shadowRoot.querySelector('#promptInput')"));
+}
+
+IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTestWithPrompt,
+                       CornerSliderRetainsFocusOnSliderChange) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlayWebContentsId);
+  const DeepQuery kSelectionOverlay = {"selection-overlay-app",
+                                       "glic-selection-overlay"};
+
+  RunTestSequence(
+      LoadPageAndWaitForPaint(kActiveTab), Do([this]() {
+        ShowWithSelection(selection::InteractionOptions::New(
+            /*hide_handles=*/false, /*disable_multi_select=*/true,
+            /*skip_intro_animation=*/true));
+      }),
+      WaitForShow(OverlayBaseController::kOverlayId),
+      InstrumentNonTabWebView(kOverlayWebContentsId,
+                              OverlayBaseController::kOverlayId),
+      WaitForJsResultAt(kOverlayWebContentsId, kSelectionOverlay,
+                        "el => el.shadowRoot.activeElement === "
+                        "el.shadowRoot.querySelector('#promptInput')"),
+      ExecuteJsAt(kOverlayWebContentsId, kSelectionOverlay,
+                  "el => {"
+                  "  const renderer = "
+                  "      el.shadowRoot.querySelector('#postSelectionRenderer');"
+                  "  const slider = "
+                  "renderer.shadowRoot.querySelector('#topLeftSlider');"
+                  "  slider.focus();"
+                  "  slider.value = String(Number(slider.value) + 1);"
+                  "  slider.dispatchEvent(new Event('change'));"
+                  "}"),
+      WaitForJsResultAt(
+          kOverlayWebContentsId, kSelectionOverlay,
+          "async el => {"
+          "  await el.updateComplete;"
+          "  const renderer = "
+          "      el.shadowRoot.querySelector('#postSelectionRenderer');"
+          "  const slider = "
+          "renderer.shadowRoot.querySelector('#topLeftSlider');"
+          "  return renderer.shadowRoot.activeElement === slider;"
+          "}"));
 }
 
 namespace {

@@ -1382,11 +1382,13 @@ void SelectionOverlayController::SendRegionsToPanel(
       CreateAdditionalContext(std::move(captured_regions)));
   // If the event that triggered this was initiated via keyboard, do not
   // focus the panel to avoid stealing focus away from the selection pane.
-  // Also, if line selection is enabled, keep focus
-  // on the selection pane to allow subsequent keyboard interactions.
+  // Also, if line selection or the selection prompt box is enabled, keep
+  // focus on the selection pane to allow subsequent keyboard interactions.
   bool line_selection_enabled =
       base::FeatureList::IsEnabled(features::kGlicRegionSelectionLine);
-  if (should_focus_panel && !line_selection_enabled) {
+  bool prompt_box_enabled =
+      base::FeatureList::IsEnabled(features::kGlicSelectionOverlayPromptBox);
+  if (should_focus_panel && !line_selection_enabled && !prompt_box_enabled) {
     instance->FocusIfActive();
   }
 }

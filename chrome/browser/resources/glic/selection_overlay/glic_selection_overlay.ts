@@ -213,6 +213,9 @@ export class GlicSelectionOverlayElement extends
       this.selectionElements.regionSelectionLayer
           .handlePostSelectionDragGestureEnd();
     }
+    if (changedProperties.has('showFloatingPrompt')) {
+      this.focusPromptInput_();
+    }
   }
 
   override get selectionElements() {
@@ -588,6 +591,10 @@ export class GlicSelectionOverlayElement extends
 
   protected onSubmitPromptClick() {
     this.submitPromptInput_();
+  }
+
+  private focusPromptInput_() {
+    this.shadowRoot.querySelector<HTMLInputElement>('#promptInput')?.focus();
   }
 
   private submitPromptInput_() {
