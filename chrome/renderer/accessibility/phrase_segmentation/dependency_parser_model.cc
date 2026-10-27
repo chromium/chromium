@@ -4,13 +4,22 @@
 
 #include "chrome/renderer/accessibility/phrase_segmentation/dependency_parser_model.h"
 
+#include <algorithm>
+#include <iterator>
+#include <string_view>
+
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/histogram_macros_local.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/timer/elapsed_timer.h"
 #include "build/build_config.h"
 #include "chrome/renderer/accessibility/phrase_segmentation/dependency_parser_op_resolver.h"
+#include "chrome/renderer/accessibility/phrase_segmentation/dependency_tree.h"
+#include "chrome/renderer/accessibility/phrase_segmentation/phrase_segmenter.h"
+#include "chrome/renderer/accessibility/phrase_segmentation/token_boundaries.h"
+#include "chrome/renderer/accessibility/phrase_segmentation/tokenized_sentence.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "third_party/tensorflow-text/src/tensorflow_text/core/kernels/mst_solver.h"
 #include "third_party/tensorflow_models/src/research/seq_flow_lite/tflite_ops/quantization_util.h"
@@ -18,6 +27,14 @@
 #include "third_party/tflite_support/src/tensorflow_lite_support/cc/task/core/tflite_engine.h"
 
 namespace {
+
+// Phrases are split by word count rather than character count.
+constexpr Strategy kPhraseStrategy = Strategy::kWords;
+
+// The target maximum number of words per phrase. The segmenter keeps splitting
+// phrases longer than this, unless they have no clear break point, so some
+// phrases can be longer.
+constexpr int kPhraseStrategyParameter = 5;
 
 // Util class for recording the result of loading the dependency parser model.
 // The result is recorded when it goes out of scope and its destructor is
@@ -178,6 +195,43 @@ std::vector<size_t> DependencyParserModel::GetDependencyHeads(
   }
 
   return SolveDependencies(dependency_graph);
+}
+
+std::vector<int> DependencyParserModel::GetPhraseBoundaries(
+    const std::u16string& input) {
+  if (!IsAvailable() || input.empty()) {
+    return {};
+  }
+
+  const TokenizedSentence tokenized_sentence(input);
+  if (tokenized_sentence.tokens().empty()) {
+    return {};
+  }
+
+  // Need to convert because model inference only takes std::string array.
+  std::vector<std::string> phrase_tokens;
+  phrase_tokens.reserve(tokenized_sentence.tokens().size());
+  std::ranges::transform(
+      tokenized_sentence.tokens(), std::back_inserter(phrase_tokens),
+      static_cast<std::string (*)(std::u16string_view)>(&base::UTF16ToUTF8));
+
+  std::vector<size_t> heads = GetDependencyHeads(phrase_tokens);
+  if (heads.empty()) {
+    return {};
+  }
+
+  // Determine the token boundaries.
+  std::vector<int> dependency_heads(
+      heads.begin(), heads.end());  // Needed to cast from unsigned to int
+
+  const DependencyTree dependency_tree(tokenized_sentence, dependency_heads);
+  const TokenBoundaries token_boundaries(dependency_tree);
+
+  // Segment the sentence and return phrase boundaries.
+  PhraseSegmenter smart_highlight;
+  return CalculatePhraseBoundaries(smart_highlight, tokenized_sentence,
+                                   token_boundaries, kPhraseStrategy,
+                                   kPhraseStrategyParameter);
 }
 
 std::vector<size_t> DependencyParserModel::SolveDependencies(

@@ -95,10 +95,6 @@ struct ReadAloudCurrentGranularity {
   // highlighting.
   std::u16string text;
 
-  // Tokens for phrase breaking. Usually a word, but can also be punctuations or
-  // numbers.
-  std::vector<std::u16string_view> tokens;
-
   // Boundary indices for phrases. Starts at 0.
   std::vector<int> phrase_boundaries;
 

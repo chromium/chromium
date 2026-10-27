@@ -319,10 +319,8 @@ class ReadAloudAppModel {
   // Once the phrase segmentation has completed for a given sentence, update the
   // granularity with the phrase boundaries, and calculate phrases for the next
   // sentence.
-  // TODO(crbug.com/384820795): Investigate if a UID or hash
-  // can be used to avoid passing around the tokens.
-  void UpdatePhraseBoundaries(std::vector<std::string> tokens,
-                              std::vector<size_t> heads);
+  void UpdatePhraseBoundaries(std::u16string text,
+                              std::vector<int> phrase_boundaries);
 
   // Initiate phrase calculation from the first sentence.
   void StartPhraseCalculation();

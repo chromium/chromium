@@ -63,6 +63,8 @@ class DependencyParserModelTest : public testing::Test {
 TEST_F(DependencyParserModelTest, ModelUnavailable) {
   DependencyParserModel dependency_parser_model;
   EXPECT_FALSE(dependency_parser_model.IsAvailable());
+  EXPECT_THAT(dependency_parser_model.GetPhraseBoundaries(u"Hello world."),
+              ::testing::IsEmpty());
 }
 
 TEST_F(DependencyParserModelTest, EmptyFileProvided) {
@@ -141,6 +143,15 @@ TEST_F(DependencyParserModelValidTest, GetDependencyHeads) {
       "Accessibility.DependencyParserModel.Inference.Duration", 1);
   histogram_tester_.ExpectUniqueSample(
       "Accessibility.DependencyParserModel.Inference.Succeed", true, 1);
+}
+
+TEST_F(DependencyParserModelValidTest, GetPhraseBoundaries) {
+  EXPECT_THAT(dependency_parser_model_->GetPhraseBoundaries(
+                  u"Never feel heavy or earthbound, no worries or doubts "
+                  u"interfere."),
+              ::testing::ElementsAre(0, 32));
+  EXPECT_THAT(dependency_parser_model_->GetPhraseBoundaries(u""),
+              ::testing::IsEmpty());
 }
 
 }  // namespace

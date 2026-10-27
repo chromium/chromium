@@ -11,16 +11,11 @@
 #include <vector>
 
 #include "base/metrics/histogram_functions.h"
-#include "base/strings/utf_string_conversions.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/renderer/accessibility/phrase_segmentation/dependency_parser_model.h"
-#include "chrome/renderer/accessibility/phrase_segmentation/dependency_tree.h"
-#include "chrome/renderer/accessibility/phrase_segmentation/phrase_segmenter.h"
-#include "chrome/renderer/accessibility/phrase_segmentation/token_boundaries.h"
-#include "chrome/renderer/accessibility/phrase_segmentation/tokenized_sentence.h"
 #include "chrome/renderer/accessibility/read_anything/read_anything_node_utils.h"
 #include "ui/accessibility/accessibility_features.h"
 
@@ -199,27 +194,13 @@ void ReadAloudAppModel::CalculatePhrases(
 
   is_calculating_phrases = true;
 
-  const TokenizedSentence tokenized_sentence =
-      TokenizedSentence(granularity.text);
-  granularity.tokens = tokenized_sentence.tokens();
-
-  // Need to convert because model inference only takes std::string array.
-  std::vector<std::string> phrase_tokens;
-  phrase_tokens.reserve(tokenized_sentence.tokens().size());
-  std::ranges::transform(
-      tokenized_sentence.tokens(), std::back_inserter(phrase_tokens),
-      static_cast<std::string (*)(std::u16string_view)>(&base::UTF16ToUTF8));
-
-  // Perform computation of dependency heads asynchronously.
+  // Perform computation of phrase boundaries asynchronously.
   GetDependencyParserModel_()
-      .AsyncCall(&DependencyParserModel::GetDependencyHeads)
-      .WithArgs(phrase_tokens)
+      .AsyncCall(&DependencyParserModel::GetPhraseBoundaries)
+      .WithArgs(granularity.text)
       .Then(base::BindOnce(&ReadAloudAppModel::UpdatePhraseBoundaries,
-                           weak_ptr_factory_.GetWeakPtr(), phrase_tokens));
+                           weak_ptr_factory_.GetWeakPtr(), granularity.text));
 }
-
-static const Strategy kPhraseStrategy = Strategy::kWords;
-static const int kPhraseStrategyParameter = 5;
 
 void ReadAloudAppModel::StartPhraseCalculation() {
   if (processed_granularities_on_current_page_.size() > 0) {
@@ -228,13 +209,14 @@ void ReadAloudAppModel::StartPhraseCalculation() {
   }
 }
 
-void ReadAloudAppModel::UpdatePhraseBoundaries(std::vector<std::string> tokens,
-                                               std::vector<size_t> heads) {
+void ReadAloudAppModel::UpdatePhraseBoundaries(
+    std::u16string text,
+    std::vector<int> phrase_boundaries) {
   // Reset the phrase calculation flag, so that the next phrase calculation can
   // be scheduled, if needed.
   is_calculating_phrases = false;
 
-  if (heads.empty()) {
+  if (phrase_boundaries.empty()) {
     // Empty output.
     return;
   }
@@ -252,34 +234,14 @@ void ReadAloudAppModel::UpdatePhraseBoundaries(std::vector<std::string> tokens,
       processed_granularities_on_current_page_
           [current_phrase_calculation_index_];
 
-  if (granularity.tokens.size() != tokens.size()) {
+  if (granularity.text != text) {
     // Likely that the granularities were overwritten after phrase calculation
     // was initiated (e.g. for dynamic page content). Reset the calculation.
     StartPhraseCalculation();
     return;
   }
 
-  // Reconstruct the tokenized sentence using the tokens.
-  std::vector<std::u16string> u16string_tokens;
-  for (const auto& token : tokens) {
-    u16string_tokens.emplace_back(base::UTF8ToUTF16(token));
-  }
-
-  const TokenizedSentence tokenized_sentence(granularity.text,
-                                             u16string_tokens);
-
-  // Determine the token boundaries.
-  std::vector<int> dependency_heads(
-      heads.begin(), heads.end());  // Needed to cast from unsigned to int
-
-  const DependencyTree dependency_tree(tokenized_sentence, dependency_heads);
-  const TokenBoundaries token_boundaries(dependency_tree);
-
-  // Segment the sentence and update phrase boundaries.
-  PhraseSegmenter smart_highlight;
-  granularity.phrase_boundaries = CalculatePhraseBoundaries(
-      smart_highlight, tokenized_sentence, token_boundaries, kPhraseStrategy,
-      kPhraseStrategyParameter);
+  granularity.phrase_boundaries = std::move(phrase_boundaries);
   granularity.are_phrases_calculated = true;
 
   // Kick off the next sentence, if available.
