@@ -345,7 +345,8 @@ NSString* PasswordSuggestionDisplayText(NSString* suggestion_value) {
 // Returns the string to set as the view's accessibility label.
 NSString* AccessibilityLabel(NSString* suggestion_text,
                              NSString* suggestion_description,
-                             SuggestionType suggestion_type) {
+                             SuggestionType suggestion_type,
+                             BOOL is_personal_context_suggestion) {
   if (suggestion_type == SuggestionType::kUndo) {
     // On Mobile, "Undo Autofill" is hidden from the KeyboardAccessory to save
     // horizontal space and instead only the icon is shown. That's why the
@@ -365,6 +366,14 @@ NSString* AccessibilityLabel(NSString* suggestion_text,
         IDS_IOS_AUTOFILL_ACCNAME_SUGGESTION, accessibility_label,
         l10n_util::GetStringUTF16(
             IDS_IOS_KEYBOARD_ACCESSORY_RECOVERY_PASSWORD_ACCESSIBILITY_LABEL));
+  } else if (is_personal_context_suggestion) {
+    // Append an additional mention when the suggestion is sourced from Gemini.
+    accessibility_label = l10n_util::GetStringFUTF16(
+        IDS_IOS_AUTOFILL_ACCNAME_SUGGESTION,
+        [suggestion_description length] == 0
+            ? base::SysNSStringToUTF16(suggestion_text)
+            : accessibility_label,
+        l10n_util::GetStringUTF16(IDS_AUTOFILL_AI_SUGGESTED_BY_GEMINI));
   }
 
   return base::SysUTF16ToNSString(accessibility_label);
@@ -674,9 +683,13 @@ void ConfigureFetchingAmbientDataSuggestion(UIStackView* stackView,
   NSString* displayDescription =
       [_delegate displayDescriptionForSuggestion:_suggestion];
 
+  BOOL isPersonalContextSuggestion =
+      _suggestion.type == SuggestionType::kFillAutofillAi &&
+      [_delegate isPersonalContextSuggestion:_suggestion];
   [self setAccessibilityLabel:AccessibilityLabel(suggestionText,
                                                  displayDescription,
-                                                 _suggestion.type)];
+                                                 _suggestion.type,
+                                                 isPersonalContextSuggestion)];
   [self
       setAccessibilityValue:l10n_util::GetNSStringF(
                                 IDS_IOS_AUTOFILL_SUGGESTION_INDEX_VALUE,

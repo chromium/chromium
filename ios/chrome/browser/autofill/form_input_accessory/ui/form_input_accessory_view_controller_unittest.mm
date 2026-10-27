@@ -13,6 +13,7 @@
 #import "base/time/time.h"
 #import "components/autofill/core/common/autofill_features.h"
 #import "components/autofill/ios/browser/form_suggestion.h"
+#import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/autofill/branding/ui/branding_view_controller.h"
 #import "ios/chrome/browser/autofill/form_input_accessory/public/autofill_suggestion_context_menu_handler.h"
 #import "ios/chrome/browser/autofill/form_input_accessory/ui/form_input_accessory_view_controller+testing.h"
@@ -22,10 +23,12 @@
 #import "ios/chrome/browser/autofill/model/features.h"
 #import "ios/chrome/common/ui/elements/form_input_accessory_view.h"
 #import "ios/chrome/common/ui/elements/form_input_accessory_view_text_data.h"
+#import "ios/chrome/grit/ios_strings.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
+#import "ui/base/l10n/l10n_util.h"
 
 namespace {
 
@@ -118,6 +121,22 @@ FormSuggestion* PasskeyFormSuggestion(NSString* username,
       fieldByFieldFillingTypeUsed:autofill::FieldType::EMPTY_TYPE
                    requiresReauth:YES
        acceptanceA11yAnnouncement:nil];
+}
+
+// Finds the first `FormSuggestionLabel` inside `suggestion_view`.
+FormSuggestionLabel* FindFirstFormSuggestionLabel(
+    FormSuggestionView* suggestion_view) {
+  for (UIView* subview in suggestion_view.subviews) {
+    if (UIStackView* stack_view = base::apple::ObjCCast<UIStackView>(subview)) {
+      for (UIView* arranged_subview in stack_view.arrangedSubviews) {
+        if (FormSuggestionLabel* label =
+                base::apple::ObjCCast<FormSuggestionLabel>(arranged_subview)) {
+          return label;
+        }
+      }
+    }
+  }
+  return nil;
 }
 
 }  // namespace
@@ -555,4 +574,54 @@ TEST_F(FormInputAccessoryViewControllerTest,
       suppressPersonalContextSuggestion:suggestion];
 
   EXPECT_OCMOCK_VERIFY(context_menu_handler);
+}
+
+// Tests that FormInputAccessoryViewController forwards
+// isPersonalContextSuggestion: to the context menu handler.
+TEST_F(FormInputAccessoryViewControllerTest, IsPersonalContextSuggestion) {
+  id context_menu_handler =
+      OCMProtocolMock(@protocol(AutofillSuggestionContextMenuHandler));
+  view_controller_.contextMenuHandler = context_menu_handler;
+
+  FormSuggestion* suggestion = SimpleFormSuggestion(
+      u"Test Suggestion", autofill::SuggestionType::kFillAutofillAi);
+
+  OCMStub([context_menu_handler isPersonalContextSuggestion:suggestion])
+      .andReturn(YES);
+
+  EXPECT_TRUE([(id<FormSuggestionViewDelegate>)view_controller_
+      isPersonalContextSuggestion:suggestion]);
+}
+
+// Tests that showing a personal context Autofill AI suggestion populates the
+// suggestion label's accessibility label with "Suggested by Gemini".
+TEST_F(FormInputAccessoryViewControllerTest,
+       PersonalContextSuggestionAccessibilityLabel) {
+  id context_menu_handler =
+      OCMProtocolMock(@protocol(AutofillSuggestionContextMenuHandler));
+  view_controller_.contextMenuHandler = context_menu_handler;
+
+  FormSuggestion* suggestion = [FormSuggestion
+      suggestionWithValue:@"BMW"
+       displayDescription:@"Vehicle · Series 2"
+                     icon:nil
+                     type:autofill::SuggestionType::kFillAutofillAi
+                  payload:autofill::Suggestion::Payload()
+           requiresReauth:NO];
+
+  OCMStub([context_menu_handler isPersonalContextSuggestion:suggestion])
+      .andReturn(YES);
+
+  [view_controller_ showAccessorySuggestions:@[ suggestion ]];
+
+  FormSuggestionLabel* label =
+      FindFirstFormSuggestionLabel(view_controller_.formSuggestionView);
+  ASSERT_NE(label, nil);
+
+  std::u16string base_label = l10n_util::GetStringFUTF16(
+      IDS_IOS_AUTOFILL_ACCNAME_SUGGESTION, u"BMW", u"Vehicle · Series 2");
+  NSString* expected_label = l10n_util::GetNSStringF(
+      IDS_IOS_AUTOFILL_ACCNAME_SUGGESTION, base_label,
+      l10n_util::GetStringUTF16(IDS_AUTOFILL_AI_SUGGESTED_BY_GEMINI));
+  EXPECT_NSEQ(expected_label, label.accessibilityLabel);
 }
