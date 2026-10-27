@@ -7,7 +7,6 @@
 #include <optional>
 #include <string>
 
-#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/metrics/app_platform_metrics_service_test_base.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "testing/gmock/include/gmock/gmock.h"
