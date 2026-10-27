@@ -259,8 +259,8 @@ void SvgTextLayoutAttributesBuilder::Build(const String& ifc_text_content,
   LayoutAttributesStack attr_stack;
   HeapVector<SVGTextLengthContext> text_length_stack;
   unsigned addressable_index = 0;
-  // dx and dy values of code points that extend the previous typographic
-  // character, waiting for the next typographic character.
+  // dx and dy values of code points detected as the "middle" of a
+  // typographic character, waiting for the next typographic character.
   float pending_dx = SvgCharacterData::EmptyValue();
   float pending_dy = SvgCharacterData::EmptyValue();
   bool is_first_char = true;
@@ -326,10 +326,20 @@ void SvgTextLayoutAttributesBuilder::Build(const String& ifc_text_content,
     for (unsigned i = 0; i < item.Length();) {
       SvgCharacterData data;
 
-      // A code point that extends the previous typographic character, such
-      // as a combining mark, is the "middle" of that character: it still
-      // consumes a value of every positioning list, but x and y are dropped
-      // and dx and dy are accumulated into the next typographic character.
+      // Per the SVG text layout algorithm the x/y/dx/dy/rotate arrays are
+      // indexed by addressable characters, but repositioning is applied to
+      // typographic characters. For the second or later character of a
+      // typographic character (the spec's "middle" flag) x and y are
+      // dropped and dx and dy are accumulated into the next typographic
+      // character. The SVG spec cites "e.g. a ligature" as an example of a
+      // typographic character spanning more than one character.
+      //
+      // CSS Text 3 defines the typographic character as based on the
+      // extended grapheme cluster, tailored per typographic operation.
+      // The Grapheme_Extend check below only catches the Grapheme_Extend
+      // subset of EGC continuations (notably combining marks); it does
+      // not detect ligatures or other tailorings, so those still take a
+      // positioning value of their own.
       // SAFETY: The loop condition keeps `i` within `item_string`, and `i`
       // always moves to the next code point boundary.
       const UChar32 code_point = UNSAFE_BUFFERS(item_string.CodePointAt(i));
