@@ -10,22 +10,12 @@
 @class FullscreenSigninCoordinator;
 
 // Delegate for the full screen signin coordinator.
-// Conforming classes must implement either
-// `-fullscreenSigninCoordinatorDone:result:` or the legacy
-// `-fullscreenSigninCoordinatorWantsToBeStopped:result:` during migration.
 @protocol FullscreenSigninCoordinatorDelegate <NSObject>
 
-@optional
 // Lets the delegate know the result and requests to be stopped.
 - (void)
     fullscreenSigninCoordinatorDone:(FullscreenSigninCoordinator*)coordinator
                              result:(SigninCoordinatorResultOrIdentity)result;
-
-// Lets the delegate know the result and requests to be stopped.
-- (void)fullscreenSigninCoordinatorWantsToBeStopped:
-            (FullscreenSigninCoordinator*)coordinator
-                                             result:(SigninCoordinatorResult)
-                                                        result;
 
 @end
 

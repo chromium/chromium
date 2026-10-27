@@ -194,17 +194,7 @@
   [self stopChildCoordinator];
   self.navigationController = nil;
   self.screenProvider = nil;
-  if ([self.delegate
-          respondsToSelector:@selector(
-                                 fullscreenSigninCoordinatorDone:result:)]) {
-    [self.delegate fullscreenSigninCoordinatorDone:self
-                                            result:std::move(result)];
-  } else {
-    SigninCoordinatorResult legacyResult =
-        result.has_value() ? SigninCoordinatorResultSuccess : result.error();
-    [self.delegate fullscreenSigninCoordinatorWantsToBeStopped:self
-                                                        result:legacyResult];
-  }
+  [self.delegate fullscreenSigninCoordinatorDone:self result:std::move(result)];
 }
 
 #pragma mark - FirstRunScreenDelegate
