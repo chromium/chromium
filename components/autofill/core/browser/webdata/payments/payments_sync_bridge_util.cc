@@ -10,6 +10,7 @@
 #include <optional>
 #include <string>
 #include <string_view>
+#include <utility>
 #include <variant>
 #include <vector>
 
@@ -496,7 +497,7 @@ std::string GetStorageKeyForWalletMetadataTypeAndSpecificsId(
     sync_pb::WalletMetadataSpecifics::Type type,
     const std::string& specifics_id) {
   base::Pickle pickle;
-  pickle.WriteInt(static_cast<int>(type));
+  pickle.WriteInt(std::to_underlying(type));
   // We use the (base64-encoded) |specifics_id| here.
   pickle.WriteString(specifics_id);
   return std::string(pickle.AsStringView());

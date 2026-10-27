@@ -15,6 +15,7 @@
 #include <string>
 #include <string_view>
 #include <type_traits>
+#include <utility>
 #include <vector>
 
 #include "base/compiler_specific.h"
@@ -42,7 +43,7 @@ constexpr MatchingType ToSafeMatchingType(
     std::underlying_type_t<MatchingType> matching_type) {
   const bool is_valid =
       matching_type >= 0 &&
-      matching_type <= static_cast<int>(MatchingType::kMaxValue);
+      matching_type <= std::to_underlying(MatchingType::kMaxValue);
   return is_valid ? static_cast<MatchingType>(matching_type)
                   : MatchingType::kUnknown;
 }

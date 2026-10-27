@@ -710,7 +710,7 @@ ChromeValuablesMetadata SerializeChromeValuablesMetadata(
           entry.set_field_type(field_type);
           entry.set_value(base::UTF16ToUTF8(attribute.GetRawInfo(field_type)));
           entry.set_verification_status(
-              static_cast<int>(attribute.GetVerificationStatus(field_type)));
+              std::to_underlying(attribute.GetVerificationStatus(field_type)));
         }
         break;
       }

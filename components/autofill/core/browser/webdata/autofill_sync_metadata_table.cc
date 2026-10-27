@@ -44,7 +44,7 @@ constexpr std::string_view kAutofillDataTypeStateTable =
 // `syncer::DataTypeToStableIdentifier()`, which is not usable here anymore
 // since the data type no longer exists.
 constexpr int kDeprecatedAutofillWalletOfferModelType =
-    static_cast<int>(
+    std::to_underlying(
         syncer::DataTypeForHistograms::kDeprecatedAutofillWalletOffer) +
     1;
 

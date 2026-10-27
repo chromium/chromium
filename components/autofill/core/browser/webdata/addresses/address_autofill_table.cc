@@ -385,7 +385,7 @@ bool AddProfileMetadataToTable(sql::Database* db,
        kLabel, kInitialCreatorId});
   int index = 0;
   s.BindString(index++, profile.guid());
-  s.BindInt(index++, static_cast<int>(profile.record_type()));
+  s.BindInt(index++, std::to_underlying(profile.record_type()));
   s.BindInt64(index++, profile.usage_history().use_count());
   s.BindInt64(index++, profile.usage_history().use_date().ToTimeT());
   s.BindInt64(index++, profile.usage_history().modification_date().ToTimeT());
@@ -427,7 +427,7 @@ bool AddProfileTypeTokensToTable(sql::Database* db,
     s.BindString(0, profile.guid());
     s.BindInt(1, type);
     s.BindString16(2, Truncate(value));
-    s.BindInt(3, static_cast<int>(profile.GetVerificationStatus(type)));
+    s.BindInt(3, std::to_underlying(profile.GetVerificationStatus(type)));
     s.BindBlob(
         4, profile.token_quality().SerializeObservationsForStoredType(type));
     if (!s.Run()) {
@@ -476,7 +476,7 @@ bool AddAutofillProfileToTableVersion113(sql::Database* db,
     s.BindString(0, profile.guid());
     s.BindInt(1, type);
     s.BindString16(2, Truncate(profile.GetRawInfo(type)));
-    s.BindInt(3, static_cast<int>(profile.GetVerificationStatus(type)));
+    s.BindInt(3, std::to_underlying(profile.GetVerificationStatus(type)));
     if (!s.Run()) {
       return false;
     }
@@ -550,7 +550,7 @@ std::optional<AutofillProfile> GetProfileFromMetadataTable(
   int raw_record_type = s.ColumnInt(index++);
   if (raw_record_type < 0 ||
       raw_record_type >
-          static_cast<int>(AutofillProfile::RecordType::kMaxValue)) {
+          std::to_underlying(AutofillProfile::RecordType::kMaxValue)) {
     // Corrupt data read from the disk.
     return std::nullopt;
   }
@@ -762,7 +762,7 @@ bool AddressAutofillTable::GetAutofillProfiles(
       base::StrCat({"WHERE ", kRecordType, " IN (", placeholders, ")"}));
   size_t index = 0;
   for (AutofillProfile::RecordType record_type : record_types) {
-    s.BindInt(index++, static_cast<int>(record_type));
+    s.BindInt(index++, std::to_underlying(record_type));
   }
 
   while (s.Step()) {
@@ -1113,7 +1113,7 @@ bool AddressAutofillTable::
     }
     sql::Statement update_stmt;
     sql::UpdateBuilder(*db(), update_stmt, table, {kRecordType});
-    update_stmt.BindInt(0, static_cast<int>(record_type));
+    update_stmt.BindInt(0, std::to_underlying(record_type));
     return update_stmt.Run();
   };
   // Bulk inserts the data from `from` into `to` and drops `from`.
