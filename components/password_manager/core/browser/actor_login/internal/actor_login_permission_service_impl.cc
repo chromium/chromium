@@ -72,6 +72,7 @@ constexpr net::NetworkTrafficAnnotationTag
           type: USERNAME
         }
         destination: GOOGLE_OWNED_SERVICE
+        api_service_name: "agenticpermission.pa.googleapis.com"
         internal {
           contacts {
             email: "mainpass-team@google.com"
