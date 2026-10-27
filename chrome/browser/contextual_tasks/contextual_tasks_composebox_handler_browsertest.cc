@@ -189,7 +189,7 @@ class MockContextualTasksUI : public ContextualTasksUI {
               TakeInputStateModel,
               (),
               (override));
-  MOCK_METHOD(std::vector<int32_t>, GetRestoredTabIds, (), (override));
+  MOCK_METHOD(const std::vector<int32_t>&, GetRestoredTabIds, (), (override));
   MOCK_METHOD(bool, IsActiveTabContextSuggestionShowing, (), (const, override));
   MOCK_METHOD(bool, IsContextualTasksEligibleOnInit, (), (const, override));
   MOCK_METHOD(contextual_tasks::ContextualTasksAutoSuggestionManager*,
@@ -415,6 +415,8 @@ class ContextualTasksComposeboxHandlerTest
     ON_CALL(*mock_ui_, GetBrowser()).WillByDefault(testing::Return(browser()));
     ON_CALL(*mock_ui_, GetInnerFrameUrl())
         .WillByDefault(testing::ReturnRefOfCopy(GURL()));
+    ON_CALL(*mock_ui_, GetRestoredTabIds())
+        .WillByDefault(testing::ReturnRefOfCopy(std::vector<int32_t>()));
     ON_CALL(*mock_ui_, GetAutoSuggestionManager())
         .WillByDefault(testing::Return(&auto_suggestion_manager_));
     ON_CALL(*mock_ui_, IsActiveTabContextSuggestionShowing())
@@ -1814,7 +1816,7 @@ IN_PROC_BROWSER_TEST_F(
     RestoreTabIds) {
   std::vector<int32_t> restored_tab_ids = {1, 2};
   EXPECT_CALL(*mock_ui_, GetRestoredTabIds())
-      .WillOnce(testing::Return(restored_tab_ids));
+      .WillOnce(testing::ReturnRef(restored_tab_ids));
   EXPECT_CALL(mock_searchbox_page_, SetRestoredTabIds(restored_tab_ids))
       .Times(1);
 
@@ -4097,7 +4099,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // Mock UI indicates tab_id 42 is already restored in the task.
   EXPECT_CALL(*mock_ui_, GetRestoredTabIds())
-      .WillRepeatedly(testing::Return(std::vector<int32_t>{42}));
+      .WillRepeatedly(testing::ReturnRefOfCopy(std::vector<int32_t>{42}));
 
   // Expect that auto-suggestion is suppressed (sent as nullptr) because the tab
   // is already restored.

@@ -732,7 +732,7 @@ void ContextualTasksComposeboxHandler::InitializeInputStateModel() {
   }
 
   if (base::FeatureList::IsEnabled(omnibox::kContextManagementInComposebox)) {
-    std::vector<int32_t> restored_tab_ids =
+    const std::vector<int32_t>& restored_tab_ids =
         web_ui_interface_->GetRestoredTabIds();
     SearchboxHandler::page_->SetRestoredTabIds(restored_tab_ids);
     // Set cached submitted tabs so they show up before thread loading is
@@ -1445,7 +1445,8 @@ void ContextualTasksComposeboxHandler::UpdateSuggestedTabContext(
   // in the contextual task, do not suggest it again as an uncommitted chip.
   if (base::FeatureList::IsEnabled(omnibox::kContextManagementInComposebox) &&
       suggested_tab) {
-    std::vector<int32_t> restored_ids = web_ui_interface_->GetRestoredTabIds();
+    const std::vector<int32_t>& restored_ids =
+        web_ui_interface_->GetRestoredTabIds();
     if (std::find(restored_ids.begin(), restored_ids.end(),
                   suggested_tab->tab_id) != restored_ids.end()) {
       SearchboxHandler::page_->UpdateAutoSuggestedTabContext(nullptr,

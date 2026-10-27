@@ -1164,7 +1164,7 @@ ContextualTasksUI::TakeInputStateModel() {
   return helper->TakeInputStateModel();
 }
 
-std::vector<int32_t> ContextualTasksUI::GetRestoredTabIds() {
+const std::vector<int32_t>& ContextualTasksUI::GetRestoredTabIds() {
   content::WebContents* web_contents = web_ui()->GetWebContents();
   auto* helper = ContextualSearchWebContentsHelper::GetOrCreateForWebContents(
       web_contents);

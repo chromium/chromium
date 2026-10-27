@@ -149,7 +149,7 @@ class ContextualTasksUIInterface : public TaskInfoDelegate,
 
   // Fetches the restored tab IDs attached to the WebContents for the
   // current task.
-  virtual std::vector<int32_t> GetRestoredTabIds() = 0;
+  virtual const std::vector<int32_t>& GetRestoredTabIds() = 0;
 
   // Notifies the UI that restored tabs have been successfully fetched from the
   // database.

@@ -230,7 +230,9 @@ class FakeContextualTasksUIInterface
       override {
     return nullptr;
   }
-  std::vector<int32_t> GetRestoredTabIds() override { return {}; }
+  const std::vector<int32_t>& GetRestoredTabIds() override {
+    return restored_tab_ids_;
+  }
   void OnRestoredTabsFetched(
       std::vector<searchbox::mojom::TabInfoPtr> tabs) override {}
   void SetComposeboxHandler(
@@ -247,6 +249,7 @@ class FakeContextualTasksUIInterface
   void set_is_history_thread_loading(bool loading) override {}
 
  private:
+  std::vector<int32_t> restored_tab_ids_;
   mojo::Remote<contextual_tasks::mojom::Page> page_remote_;
   mojo::PendingReceiver<contextual_tasks::mojom::Page> page_receiver_;
 };
