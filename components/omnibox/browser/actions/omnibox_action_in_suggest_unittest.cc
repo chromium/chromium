@@ -17,7 +17,7 @@
 #include "third_party/omnibox_proto/suggest_template_info.pb.h"
 #include "ui/base/device_form_factor.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "url/gurl.h"
 
 using TemplateAction = omnibox::SuggestTemplateInfo::TemplateAction;
@@ -70,7 +70,7 @@ OmniboxActionInSuggestTest::OmniboxActionInSuggestTest()
     : context_(client_,
                OmniboxAction::ExecutionContext::OpenUrlCallback(),
                base::TimeTicks(),
-               WindowOpenDisposition::kIgnoreAction) {}
+               ui::mojom::WindowOpenDisposition::kIgnoreAction) {}
 
 TEST_F(OmniboxActionInSuggestTest, CheckLabelsArePresentForKnownTypes) {
   struct {

@@ -11,6 +11,7 @@
 #include "components/omnibox/browser/omnibox_client.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/ui_base_features.h"
 
 #if defined(SUPPORT_PEDALS_VECTOR_ICONS)
@@ -67,7 +68,7 @@ OmniboxAction::ExecutionContext::ExecutionContext(
     Client& client,
     OpenUrlCallback callback,
     base::TimeTicks match_selection_timestamp,
-    WindowOpenDisposition disposition)
+    ui::mojom::WindowOpenDisposition disposition)
     : client_(client),
       open_url_callback_(std::move(callback)),
       match_selection_timestamp_(match_selection_timestamp),

@@ -20,7 +20,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_unittest_util.h"
 
@@ -72,7 +72,7 @@ TEST(OmniboxExtensionActionTest, ActionRunnerIsInvoked) {
   OmniboxAction::ExecutionContext context(
       autocomplete_provider_client,
       OmniboxAction::ExecutionContext::OpenUrlCallback(), {},
-      WindowOpenDisposition::kCurrentTab);
+      ui::mojom::WindowOpenDisposition::kCurrentTab);
   action->Execute(context);
 }
 

@@ -23,8 +23,8 @@
 #include "components/security_state/core/security_state.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/gfx/image/image.h"
 
 class AutocompleteResult;
@@ -248,10 +248,11 @@ class OmniboxClient {
   // was created by `CreateOmniboxNavigationObserver()` for `match`; in some
   // embedding contexts, processing an extension keyword involves invoking
   // action on this observer.
-  virtual void ProcessExtensionMatch(const std::u16string& text,
-                                     const TemplateURL* template_url,
-                                     const AutocompleteMatch& match,
-                                     WindowOpenDisposition disposition);
+  virtual void ProcessExtensionMatch(
+      const std::u16string& text,
+      const TemplateURL* template_url,
+      const AutocompleteMatch& match,
+      ui::mojom::WindowOpenDisposition disposition);
 
   // Called to notify clients that the omnibox input state has changed.
   virtual void OnInputStateChanged() {}
@@ -357,7 +358,7 @@ class OmniboxClient {
   virtual void OnAutocompleteAccept(
       const GURL& destination_url,
       TemplateURLRef::PostContent* post_content,
-      WindowOpenDisposition disposition,
+      ui::mojom::WindowOpenDisposition disposition,
       ui::PageTransition transition,
       omnibox::AutocompleteMatchType match_type,
       base::TimeTicks match_selection_timestamp,
@@ -369,7 +370,7 @@ class OmniboxClient {
 
   // Executes the given `action`.
   void ExecuteAction(OmniboxAction* action,
-                     WindowOpenDisposition disposition,
+                     ui::mojom::WindowOpenDisposition disposition,
                      base::TimeTicks match_selection_timestamp,
                      OmniboxAction::Client& action_client);
 
@@ -389,9 +390,9 @@ class OmniboxClient {
 
   // Navigates to `gurl` with the specified `disposition`. Used for handling
   // activations of the AI Mode page action icon.
-  virtual void OpenUrl(
-      GURL gurl,
-      WindowOpenDisposition disposition = WindowOpenDisposition::kCurrentTab) {}
+  virtual void OpenUrl(GURL gurl,
+                       ui::mojom::WindowOpenDisposition disposition =
+                           ui::mojom::WindowOpenDisposition::kCurrentTab) {}
 
   // Even though IPH suggestions aren't selectable like normal matches, they can
   // have a 'learn more' or next-steps link. `OpenIphLink()` allows opening

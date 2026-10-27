@@ -13,15 +13,16 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/branding_buildflags.h"
-#include "components/omnibox/common/omnibox_features.h"
 #include "components/omnibox/browser/actions/omnibox_action.h"
 #include "components/omnibox/browser/actions/omnibox_action_concepts.h"
 #include "components/omnibox/browser/mock_autocomplete_provider_client.h"
 #include "components/omnibox/browser/vector_icons.h"
 #include "components/omnibox/common/omnibox_feature_configs.h"
+#include "components/omnibox/common/omnibox_features.h"
 #include "components/vector_icons/vector_icons.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/ui_base_features.h"
 
 class ContextualSearchActionTest : public testing::Test {
@@ -59,7 +60,7 @@ TEST_F(ContextualSearchActionTest, Execute_RoutesToCoBrowse) {
   MockAutocompleteProviderClient client;
   OmniboxAction::ExecutionContext context(
       client, OmniboxAction::ExecutionContext::OpenUrlCallback(),
-      base::TimeTicks(), WindowOpenDisposition::kIgnoreAction);
+      base::TimeTicks(), ui::mojom::WindowOpenDisposition::kIgnoreAction);
 
   auto action = base::MakeRefCounted<ContextualSearchOpenLensAction>();
 
@@ -90,7 +91,7 @@ TEST_F(ContextualSearchActionTest, Execute_RoutesToComposeBoxForAskG) {
   MockAutocompleteProviderClient client;
   OmniboxAction::ExecutionContext context(
       client, OmniboxAction::ExecutionContext::OpenUrlCallback(),
-      base::TimeTicks(), WindowOpenDisposition::kIgnoreAction);
+      base::TimeTicks(), ui::mojom::WindowOpenDisposition::kIgnoreAction);
 
   auto action = base::MakeRefCounted<ContextualSearchOpenLensAction>();
 

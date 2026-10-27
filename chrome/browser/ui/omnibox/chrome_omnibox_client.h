@@ -17,6 +17,7 @@
 #include "components/omnibox/browser/favicon_cache.h"
 #include "components/omnibox/browser/omnibox.mojom-shared.h"
 #include "components/omnibox/browser/omnibox_client.h"
+#include "ui/base/mojom/window_open_disposition.mojom-forward.h"
 #include "ui/gfx/image/image.h"
 
 class AiModeButtonService;
@@ -91,10 +92,11 @@ class ChromeOmniboxClient final : public OmniboxClient {
   security_state::SecurityLevel GetSecurityLevel() const override;
   net::CertStatus GetCertStatus() const override;
   const gfx::VectorIcon& GetVectorIcon() const override;
-  void ProcessExtensionMatch(const std::u16string& text,
-                             const TemplateURL* template_url,
-                             const AutocompleteMatch& match,
-                             WindowOpenDisposition disposition) override;
+  void ProcessExtensionMatch(
+      const std::u16string& text,
+      const TemplateURL* template_url,
+      const AutocompleteMatch& match,
+      ui::mojom::WindowOpenDisposition disposition) override;
   void OnInputStateChanged() override;
   void OnFocusChanged(OmniboxFocusState state,
                       OmniboxFocusChangeReason reason) override;
@@ -134,7 +136,7 @@ class ChromeOmniboxClient final : public OmniboxClient {
   void OnAutocompleteAccept(
       const GURL& destination_url,
       TemplateURLRef::PostContent* post_content,
-      WindowOpenDisposition disposition,
+      ui::mojom::WindowOpenDisposition disposition,
       ui::PageTransition transition,
       omnibox::AutocompleteMatchType match_type,
       base::TimeTicks match_selection_timestamp,
@@ -145,10 +147,11 @@ class ChromeOmniboxClient final : public OmniboxClient {
       const AutocompleteMatch& alternative_nav_match) override;
   void OnInputInProgress(bool in_progress) override;
   void OnPopupVisibilityChanged(bool popup_is_open) override;
-  void OpenUrl(GURL gurl, WindowOpenDisposition disposition) override;
+  void OpenUrl(GURL gurl,
+               ui::mojom::WindowOpenDisposition disposition) override;
   void OpenUrlWithCallback(
       GURL gurl,
-      WindowOpenDisposition disposition,
+      ui::mojom::WindowOpenDisposition disposition,
       base::OnceCallback<void(base::WeakPtr<content::NavigationHandle>)>
           callback);
   void OpenIphLink(GURL gurl) override;
