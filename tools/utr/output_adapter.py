@@ -89,7 +89,6 @@ class LegacyOutputAdapter:
     # stdout
     self._step_to_processors = {
       'compile': self._ProcessCompileLine,
-      'reclient compile': self._ProcessCompileLine,
       'test_pre_run.[trigger] ': self._ProcessTriggerLine,
       'collect tasks.wait for tasks': self._ProcessCollectLine,
       'download compilation outputs': self._PrintOnlyStepName,
@@ -102,11 +101,8 @@ class LegacyOutputAdapter:
       'git rev-parse': logging.DEBUG,
       'git diff to instrument': logging.DEBUG,
       'save paths of affected files': logging.DEBUG,
-      'preprocess for reclient.start reproxy via bootstrap': logging.INFO,
-      'preprocess for reclient': logging.DEBUG,
       'process clang crashes': logging.DEBUG,
       'compile confirm no-op': logging.DEBUG,
-      'postprocess for reclient': logging.DEBUG,
       'setup_build': logging.DEBUG,
       'get compile targets for scripts': logging.DEBUG,
       'lookup GN args': logging.DEBUG,

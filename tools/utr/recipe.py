@@ -28,9 +28,6 @@ _SRC_DIR = _THIS_DIR.parents[1]
 sys.path.append(str(_SRC_DIR.joinpath('third_party', 'depot_tools')))
 import gclient_utils
 
-_RECLIENT_CLI = _SRC_DIR.joinpath(
-  'buildtools', 'reclient_cfgs', 'configure_reclient_cfgs.py'
-)
 _SISO_CLI = _SRC_DIR.joinpath('build', 'config', 'siso', 'configure_siso.py')
 _DEFAULT_RBE_PROJECT = 'rbe-chrome-untrusted'
 
@@ -289,10 +286,7 @@ class LegacyRunner:
     input_props['buildnumber'] = 0
     # TODO(crbug.com/41492688): Ensure the chrome version for internal builders
     # when they are added.
-    # Set reclient and siso to use untrusted even for imitating ci builders
-    if '$build/reclient' not in input_props:
-      input_props['$build/reclient'] = {}
-    input_props['$build/reclient']['instance'] = self._get_reclient_instance()
+    # Set siso to use untrusted even for imitating ci builders
     if '$build/siso' not in input_props:
       input_props['$build/siso'] = {}
     # Builders often have a lower build parallelization than what most devs
@@ -338,14 +332,6 @@ class LegacyRunner:
     if p.returncode == 0:
       return p.stdout.strip()
     return ''
-
-  def _get_reclient_instance(self):
-    cmd = [
-      'python3',
-      str(_RECLIENT_CLI),
-      '--get-rbe-instance',
-    ]
-    return self._get_cmd_output(cmd) or _DEFAULT_RBE_PROJECT
 
   def _get_siso_project(self):
     cmd = [
