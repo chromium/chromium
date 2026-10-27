@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "base/location.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -16,7 +17,9 @@
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/views/bubble/bubble_anchor.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
+#include "ui/views/view.h"
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(SaveToMemoryBankBubbleController);
 
