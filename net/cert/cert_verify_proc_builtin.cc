@@ -327,14 +327,16 @@ bool IsSelfSignedCertOnLocalNetwork(const X509Certificate* cert,
   return X509Certificate::IsSelfSigned(cert->cert_buffer());
 }
 
-// Appends the SubjectPublicKeyInfo hashes for all certificates in
-// |path| to |*hashes|.
-void AppendPublicKeyHashes(const bssl::CertPathBuilderResultPath& path,
-                           std::vector<SHA256HashValue>* hashes) {
+// Returns the SubjectPublicKeyInfo hashes for all certificates in |path|.
+std::vector<SHA256HashValue> CalculatePublicKeyHashes(
+    const bssl::CertPathBuilderResultPath& path) {
+  std::vector<SHA256HashValue> hashes;
+  hashes.reserve(path.certs.size());
   for (const std::shared_ptr<const bssl::ParsedCertificate>& cert :
        path.certs) {
-    hashes->emplace_back(crypto::hash::Sha256(cert->tbs().spki_tlv));
+    hashes.emplace_back(crypto::hash::Sha256(cert->tbs().spki_tlv));
   }
+  return hashes;
 }
 
 // CertVerifyProcTrustStore wraps a SystemTrustStore with additional trust
@@ -372,6 +374,19 @@ class CertVerifyProcTrustStore {
 
   bool IsKnownMtcAnchor(const bssl::MTCAnchor* anchor) const {
     return system_trust_store_->IsKnownMtcAnchor(anchor);
+  }
+
+  bool IsPathIssuedByKnownRoot(
+      const bssl::CertPathBuilderResultPath& path) const {
+    const bssl::ParsedCertificate* trusted_cert = path.GetTrustedCert();
+    if (!trusted_cert) {
+      return false;
+    }
+    if (path.trust_anchor.MTCAnchor()) {
+      return IsKnownMtcAnchor(path.trust_anchor.MTCAnchor().get());
+    } else {
+      return IsKnownRoot(trusted_cert);
+    }
   }
 
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
@@ -436,17 +451,28 @@ enum class VerificationType {
 
 class PathBuilderDelegateDataImpl : public bssl::CertPathBuilderDelegateData {
  public:
+  PathBuilderDelegateDataImpl(bssl::CertPathBuilderResultPath* path,
+                              const CertVerifyProcTrustStore* trust_store)
+      : public_key_hashes(CalculatePublicKeyHashes(*path)),
+        is_issued_by_known_root(trust_store->IsPathIssuedByKnownRoot(*path)) {}
   ~PathBuilderDelegateDataImpl() override = default;
 
-  static const PathBuilderDelegateDataImpl* Get(
+  static PathBuilderDelegateDataImpl* Get(
       const bssl::CertPathBuilderResultPath& path) {
-    return static_cast<PathBuilderDelegateDataImpl*>(path.delegate_data.get());
+    PathBuilderDelegateDataImpl* data =
+        static_cast<PathBuilderDelegateDataImpl*>(path.delegate_data.get());
+    if (data) {
+      CHECK(!data->delegate_data_is_invalidated);
+    }
+    return data;
   }
 
-  static PathBuilderDelegateDataImpl* GetOrCreate(
-      bssl::CertPathBuilderResultPath* path) {
-    if (!path->delegate_data)
-      path->delegate_data = std::make_unique<PathBuilderDelegateDataImpl>();
+  static PathBuilderDelegateDataImpl* Create(
+      bssl::CertPathBuilderResultPath* path,
+      const CertVerifyProcTrustStore* trust_store) {
+    CHECK(!path->delegate_data);
+    path->delegate_data =
+        std::make_unique<PathBuilderDelegateDataImpl>(path, trust_store);
     return static_cast<PathBuilderDelegateDataImpl*>(path->delegate_data.get());
   }
 
@@ -456,6 +482,15 @@ class PathBuilderDelegateDataImpl : public bssl::CertPathBuilderDelegateData {
       ct::CTPolicyCompliance::CT_POLICY_COMPLIANCE_DETAILS_NOT_AVAILABLE;
   ct::CTRequirementsStatus ct_requirement_status =
       ct::CTRequirementsStatus::CT_NOT_REQUIRED;
+  std::vector<SHA256HashValue> public_key_hashes;
+  bool is_issued_by_known_root;
+
+  // When verification is complete, members may be moved out of the
+  // PathBuilderDelegateDataImpl into the CertVerifyResult.
+  // `delegate_data_is_invalidated` should then be set to true so that further
+  // attempts to Get() the same PathBuilderDelegateImpl will cause a CHECK
+  // failure rather than silently operating on invalid data.
+  bool delegate_data_is_invalidated = false;
 };
 
 // TODO(eroman): The path building code in this file enforces its idea of weak
@@ -526,6 +561,9 @@ class PathBuilderDelegateImpl : public bssl::SimplePathBuilderDelegate {
       const bssl::MTCAnchor* mtc_anchor,
       std::vector<std::vector<uint8_t>> valid_additional_cosigners) override {
     CHECK(mtc_anchor);
+    // This method is called before CheckPathAfterVerificationImpl, so the
+    // PathBuilderDelegateDataImpl isn't initialized yet. Check
+    // IsKnownMtcAnchor directly.
     if (!trust_store_->IsKnownMtcAnchor(mtc_anchor)) {
       // Cosigner policy only applies to publicly trusted MTCs, only a valid CA
       // signature is required for private PKIs.
@@ -561,7 +599,7 @@ class PathBuilderDelegateImpl : public bssl::SimplePathBuilderDelegate {
   void CheckPathAfterVerificationImpl(const bssl::CertPathBuilder& path_builder,
                                       bssl::CertPathBuilderResultPath* path) {
     PathBuilderDelegateDataImpl* delegate_data =
-        PathBuilderDelegateDataImpl::GetOrCreate(path);
+        PathBuilderDelegateDataImpl::Create(path, trust_store_);
 
     scoped_refptr<X509Certificate> cert_for_ct_verify;
     // Only check CT if the path ends in a traditional (non-MTC) anchor.
@@ -611,9 +649,13 @@ class PathBuilderDelegateImpl : public bssl::SimplePathBuilderDelegate {
 
     // Select an appropriate revocation policy for this chain based on the
     // verifier flags and root.
-    RevocationPolicy policy = ChooseRevocationPolicy(path->certs);
+    RevocationPolicy policy =
+        ChooseRevocationPolicy(path->certs, delegate_data);
 
     // Check for revocations using the CRLSet.
+    // TODO(crbug.com/41392053): CheckChainRevocationUsingCRLSet internally
+    // recalculates the SPKI hashes. Consider refactoring to pass in the
+    // already calculated delegate_data->public_key_hashes.
     switch (
         CheckChainRevocationUsingCRLSet(crl_set_, path->certs, &path->errors)) {
       case CRLSet::Result::REVOKED:
@@ -629,7 +671,7 @@ class PathBuilderDelegateImpl : public bssl::SimplePathBuilderDelegate {
       // Check MTC revocation and policies from SignerSet configuration.
       // (Note that cosigner policy is checked separately by
       // IsCosignatureVerificationResultAcceptable when necessary.)
-      CheckMTCRevocationAndPolicy(path);
+      CheckMTCRevocationAndPolicy(path, delegate_data);
 
       // MTCs don't use traditional revocation checks or certificate
       // transparency. Return now, any checks past this point are for
@@ -653,7 +695,9 @@ class PathBuilderDelegateImpl : public bssl::SimplePathBuilderDelegate {
     CheckCertificateTransparency(path, cert_for_ct_verify.get(), delegate_data);
   }
 
-  void CheckMTCRevocationAndPolicy(bssl::CertPathBuilderResultPath* path) {
+  void CheckMTCRevocationAndPolicy(
+      bssl::CertPathBuilderResultPath* path,
+      const PathBuilderDelegateDataImpl* delegate_data) {
     // Revocation information for MTCs is distributed in the PKI Metadata
     // Fastpush component, which is part of the Chrome Root Store. This method
     // should never be reached in the non-CRS case since we also would not have
@@ -706,7 +750,7 @@ class PathBuilderDelegateImpl : public bssl::SimplePathBuilderDelegate {
     // IsKnownMtcAnchor check is probably redundant here since only a known
     // anchor would have a result in GetMTCAnchorData, but it is more
     // future-proof to check.
-    if (trust_store_->IsKnownMtcAnchor(mtc_anchor) &&
+    if (delegate_data->is_issued_by_known_root &&
         log_number > kCqrpMaxMtcLogNumber) {
       path->errors.GetErrorsForCert(0)->AddError(
           bssl::cert_errors::kCertificateRevoked);
@@ -739,22 +783,11 @@ class PathBuilderDelegateImpl : public bssl::SimplePathBuilderDelegate {
     delegate_data->ct_policy_compliance = ct_policy_enforcer_->CheckCompliance(
         cert_for_ct_verify, verified_scts, current_time_, *net_log_);
 
-    // TODO(crbug.com/41392053): The SPKI hashes are calculated here, during
-    // CRLSet checks, and in AssignVerifyResult. Calculate once and cache in
-    // delegate_data so that it can be reused.
-    std::vector<SHA256HashValue> public_key_hashes;
-    AppendPublicKeyHashes(*path, &public_key_hashes);
-
-    bool is_issued_by_known_root = false;
-    const bssl::ParsedCertificate* trusted_cert = path->GetTrustedCert();
-    if (trusted_cert) {
-      is_issued_by_known_root = trust_store_->IsKnownRoot(trusted_cert);
-    }
-
     delegate_data->ct_requirement_status =
         RequireCTDelegate::CheckCTRequirements(
-            require_ct_delegate_.get(), hostname_, is_issued_by_known_root,
-            public_key_hashes, cert_for_ct_verify,
+            require_ct_delegate_.get(), hostname_,
+            delegate_data->is_issued_by_known_root,
+            delegate_data->public_key_hashes, cert_for_ct_verify,
             delegate_data->ct_policy_compliance);
 
     switch (delegate_data->ct_requirement_status) {
@@ -770,7 +803,7 @@ class PathBuilderDelegateImpl : public bssl::SimplePathBuilderDelegate {
         if (flags_ & CertVerifyProc::VERIFY_SXG_CT_REQUIREMENTS) {
           // CT is not required if the certificate does not chain to a publicly
           // trusted root certificate.
-          if (!is_issued_by_known_root) {
+          if (!delegate_data->is_issued_by_known_root) {
             break;
           }
           // Require CT compliance, by overriding CT_NOT_REQUIRED and treat it
@@ -805,7 +838,8 @@ class PathBuilderDelegateImpl : public bssl::SimplePathBuilderDelegate {
       bssl::CertPathBuilderResultPath* path,
       const ChromeRootCertConstraints& constraint) {
     PathBuilderDelegateDataImpl* delegate_data =
-        PathBuilderDelegateDataImpl::GetOrCreate(path);
+        PathBuilderDelegateDataImpl::Get(*path);
+    CHECK(delegate_data);
 
     // TODO(https://crbug.com/40941039): add more specific netlog or CertError
     // logs about which constraint failed exactly? (Note that it could be
@@ -1009,7 +1043,8 @@ class PathBuilderDelegateImpl : public bssl::SimplePathBuilderDelegate {
   // Selects a revocation policy based on the CertVerifier flags and the given
   // certificate chain.
   RevocationPolicy ChooseRevocationPolicy(
-      const bssl::ParsedCertificateList& certs) {
+      const bssl::ParsedCertificateList& certs,
+      const PathBuilderDelegateDataImpl* delegate_data) {
     if (flags_ & CertVerifyProc::VERIFY_DISABLE_NETWORK_FETCHES) {
       // In theory when network fetches are disabled but revocation is enabled
       // we could continue with networking_allowed=false (and
@@ -1025,7 +1060,7 @@ class PathBuilderDelegateImpl : public bssl::SimplePathBuilderDelegate {
     // Use hard-fail revocation checking for local trust anchors, if requested
     // by the load flag and the chain uses a non-public root.
     if ((flags_ & CertVerifyProc::VERIFY_REV_CHECKING_REQUIRED_LOCAL_ANCHORS) &&
-        !certs.empty() && !trust_store_->IsKnownRoot(certs.back().get())) {
+        !certs.empty() && !delegate_data->is_issued_by_known_root) {
       RevocationPolicy policy;
       policy.check_revocation = true;
       policy.networking_allowed = true;
@@ -1038,18 +1073,17 @@ class PathBuilderDelegateImpl : public bssl::SimplePathBuilderDelegate {
 
     // Use soft-fail revocation checking for VERIFY_REV_CHECKING_ENABLED.
     if (flags_ & CertVerifyProc::VERIFY_REV_CHECKING_ENABLED) {
-      const bool is_known_root =
-          !certs.empty() && trust_store_->IsKnownRoot(certs.back().get());
       RevocationPolicy policy;
       policy.check_revocation = true;
       policy.networking_allowed = true;
       // Publicly trusted certs are required to have OCSP by the Baseline
       // Requirements and CRLs can be quite large, so disable the fallback to
       // CRLs for chains to known roots.
-      policy.crl_allowed = !is_known_root;
+      policy.crl_allowed = !delegate_data->is_issued_by_known_root;
       policy.allow_missing_info = true;
       policy.allow_unable_to_check = true;
-      policy.enforce_baseline_requirements = is_known_root;
+      policy.enforce_baseline_requirements =
+          delegate_data->is_issued_by_known_root;
       return policy;
     }
 
@@ -1606,20 +1640,30 @@ int AssignVerifyResult(
   const bssl::CertPathBuilderResultPath& partial_path =
       *best_path_possibly_invalid;
 
-  AppendPublicKeyHashes(partial_path, &verify_result->public_key_hashes);
+  if (PathBuilderDelegateDataImpl* delegate_data =
+          PathBuilderDelegateDataImpl::Get(partial_path)) {
+    verify_result->ocsp_result = delegate_data->stapled_ocsp_verify_result;
+    verify_result->scts = std::move(delegate_data->scts);
+    verify_result->policy_compliance = delegate_data->ct_policy_compliance;
+    verify_result->ct_requirement_status = delegate_data->ct_requirement_status;
+    verify_result->public_key_hashes =
+        std::move(delegate_data->public_key_hashes);
+    verify_result->is_issued_by_known_root =
+        delegate_data->is_issued_by_known_root;
+    delegate_data->delegate_data_is_invalidated = true;
+    base::UmaHistogramEnumeration("Net.CertVerifier.CTRequirementStatus",
+                                  verify_result->ct_requirement_status);
+  } else {
+    verify_result->public_key_hashes = CalculatePublicKeyHashes(partial_path);
+    verify_result->is_issued_by_known_root =
+        trust_store->IsPathIssuedByKnownRoot(partial_path);
+  }
 
   bool path_is_valid = partial_path.IsValid();
 
+#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
   const bssl::ParsedCertificate* trusted_cert = partial_path.GetTrustedCert();
   if (trusted_cert) {
-    if (partial_path.trust_anchor.MTCAnchor()) {
-      verify_result->is_issued_by_known_root = trust_store->IsKnownMtcAnchor(
-          partial_path.trust_anchor.MTCAnchor().get());
-    } else {
-      verify_result->is_issued_by_known_root =
-          trust_store->IsKnownRoot(trusted_cert);
-    }
-#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
     // crs_root_id should only be set when the Chrome Root Store is being used,
     // which is true when chrome_root_store_version is non-zero.
     if (trust_store->chrome_root_store_version()) {
@@ -1637,8 +1681,8 @@ int AssignVerifyResult(
                 : CertVerifyResult::kCrsRootIdPrivatelyTrustedRoot;
       }
     }
-#endif
   }
+#endif
 
   if (path_is_valid && (verification_type == VerificationType::kEV)) {
     verify_result->cert_status |= CERT_STATUS_IS_EV;
@@ -1665,17 +1709,6 @@ int AssignVerifyResult(
   if (!path_is_valid) {
     VLOG(1) << "CertVerifyProcBuiltin for " << hostname << " failed:\n"
             << partial_path.errors.ToDebugString(partial_path.certs);
-  }
-
-  const PathBuilderDelegateDataImpl* delegate_data =
-      PathBuilderDelegateDataImpl::Get(partial_path);
-  if (delegate_data) {
-    verify_result->ocsp_result = delegate_data->stapled_ocsp_verify_result;
-    verify_result->scts = std::move(delegate_data->scts);
-    verify_result->policy_compliance = delegate_data->ct_policy_compliance;
-    verify_result->ct_requirement_status = delegate_data->ct_requirement_status;
-    base::UmaHistogramEnumeration("Net.CertVerifier.CTRequirementStatus",
-                                  verify_result->ct_requirement_status);
   }
 
   if (IsCertStatusError(verify_result->cert_status)) {
@@ -2117,8 +2150,8 @@ int CertVerifyProcBuiltin::Verify2QwacInternal(
     }
     verify_result->verified_cert =
         CreateVerifiedCertChain(input_cert, *best_path_possibly_invalid);
-    AppendPublicKeyHashes(*best_path_possibly_invalid,
-                          &verify_result->public_key_hashes);
+    verify_result->public_key_hashes =
+        CalculatePublicKeyHashes(*best_path_possibly_invalid);
     MapPathBuilderErrorsToCertStatus(best_path_possibly_invalid->errors,
                                      &verify_result->cert_status);
   }
