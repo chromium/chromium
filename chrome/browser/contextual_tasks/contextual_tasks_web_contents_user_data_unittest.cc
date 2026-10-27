@@ -41,6 +41,16 @@ std::unique_ptr<KeyedService> BuildTestSigninClient(
   return std::make_unique<TestSigninClient>(profile->GetPrefs());
 }
 
+lens::ClientToSearchMessage CreateInjectChromeInputMessage(
+    lens::ClientToSearchMessage::InjectChromeInput::InputType input_type,
+    bool is_active) {
+  lens::ClientToSearchMessage message;
+  auto* inject_input = message.mutable_inject_chrome_input();
+  inject_input->set_input_type(input_type);
+  inject_input->set_is_active(is_active);
+  return message;
+}
+
 class ContextualTasksWebContentsUserDataTest : public testing::Test {
  protected:
   void SetUp() override {
@@ -408,9 +418,9 @@ TEST_F(ContextualTasksWebContentsUserDataTest,
 
   // Before any handshake completes, outbound messages fall back to frame1
   // (the first bound frame).
-  user_data->SendInjectChromeInput(
-      ContextualTasksWebContentsUserData::InjectedInputType::kContextLibrary,
-      /*is_active=*/true);
+  user_data->PostSearchMessage(CreateInjectChromeInputMessage(
+      lens::ClientToSearchMessage::InjectChromeInput::CONTEXT_LIBRARY,
+      /*is_active=*/true));
   EXPECT_EQ(frame1_messages.size(), 1u);
   EXPECT_EQ(frame2_messages.size(), 0u);
 
@@ -436,9 +446,9 @@ TEST_F(ContextualTasksWebContentsUserDataTest,
 
   frame1_messages.clear();
   frame2_messages.clear();
-  user_data->SendInjectChromeInput(
-      ContextualTasksWebContentsUserData::InjectedInputType::kLensChip,
-      /*is_active=*/true);
+  user_data->PostSearchMessage(CreateInjectChromeInputMessage(
+      lens::ClientToSearchMessage::InjectChromeInput::LENS_CHIP,
+      /*is_active=*/true));
   EXPECT_EQ(frame1_messages.size(), 0u);
   EXPECT_EQ(frame2_messages.size(), 1u);
 
@@ -455,9 +465,9 @@ TEST_F(ContextualTasksWebContentsUserDataTest,
   EXPECT_EQ(frame2_messages.size(), 0u);
 
   frame1_messages.clear();
-  user_data->SendInjectChromeInput(
-      ContextualTasksWebContentsUserData::InjectedInputType::kLensChip,
-      /*is_active=*/false);
+  user_data->PostSearchMessage(CreateInjectChromeInputMessage(
+      lens::ClientToSearchMessage::InjectChromeInput::LENS_CHIP,
+      /*is_active=*/false));
   EXPECT_EQ(frame1_messages.size(), 1u);
   EXPECT_EQ(frame2_messages.size(), 0u);
 }
@@ -540,10 +550,6 @@ TEST_F(ContextualTasksWebContentsUserDataTest,
   // Attach Tab 1 and start uploading: no OnSuggestInputsChanged while in
   // flight.
   base::UnguessableToken token1 = base::UnguessableToken::Create();
-  mock_handle->GetUploadedContextTokensForTesting().push_back(token1);
-  mock_handle->AttachTabPendingUpload(token1, 10, GURL("https://example.com/1"),
-                                      "Tab 1");
-
   contextual_search::FileInfo file1;
   file1.file_token = token1;
   lens::LensOverlayRequestId req1;
@@ -558,8 +564,12 @@ TEST_F(ContextualTasksWebContentsUserDataTest,
   ON_CALL(*mock_handle, GetUploadedContextFileInfos())
       .WillByDefault(testing::ReturnPointee(&uploaded_files));
 
+  // Attaching the tab notifies `user_data` of the tab context change, which
+  // updates its context library input state and suggest inputs.
   user_data->OnTabContextUploadStarted(token1);
-  user_data->UpdateContextLibraryInputState();
+  mock_handle->GetUploadedContextTokensForTesting().push_back(token1);
+  mock_handle->AttachTabPendingUpload(token1, 10, GURL("https://example.com/1"),
+                                      "Tab 1");
   EXPECT_TRUE(suggest_messages.empty());
 
   // Tab 1 finishes uploading -> emits OnSuggestInputsChanged with Tab 1.
@@ -580,9 +590,6 @@ TEST_F(ContextualTasksWebContentsUserDataTest,
   // Attach Tab 2 and start uploading: no redundant OnSuggestInputsChanged while
   // Tab 2 is still uploading.
   base::UnguessableToken token2 = base::UnguessableToken::Create();
-  mock_handle->GetUploadedContextTokensForTesting().push_back(token2);
-  mock_handle->AttachTabPendingUpload(token2, 20, GURL("https://example.com/2"),
-                                      "Tab 2");
   contextual_search::FileInfo file2;
   file2.file_token = token2;
   lens::LensOverlayRequestId req2;
@@ -591,7 +598,9 @@ TEST_F(ContextualTasksWebContentsUserDataTest,
   uploaded_files.push_back(file2);
 
   user_data->OnTabContextUploadStarted(token2);
-  user_data->UpdateContextLibraryInputState();
+  mock_handle->GetUploadedContextTokensForTesting().push_back(token2);
+  mock_handle->AttachTabPendingUpload(token2, 20, GURL("https://example.com/2"),
+                                      "Tab 2");
   EXPECT_EQ(suggest_messages.size(), 1u);
 
   // Tab 2 finishes uploading -> emits OnSuggestInputsChanged with both tabs.
@@ -621,7 +630,7 @@ TEST_F(ContextualTasksWebContentsUserDataTest,
       0);
 
   // Subsequent no-op updates do not emit duplicate empty messages.
-  user_data->UpdateContextLibraryInputState();
+  user_data->ClearFiles();
   EXPECT_EQ(suggest_messages.size(), 4u);
 }
 
@@ -677,9 +686,9 @@ TEST_F(ContextualTasksWebContentsUserDataTest,
   EXPECT_TRUE(suggest_messages.empty());
 
   // 2. Delayed tab (`AddPendingDelayedTab`) must not emit suggest inputs.
+  // Adding it notifies `user_data` of the tab context change.
   mock_handle->AddPendingDelayedTab(20, GURL("https://example.com/delayed"),
                                     "Delayed Tab");
-  user_data->UpdateContextLibraryInputState();
   EXPECT_TRUE(suggest_messages.empty());
 }
 
@@ -794,7 +803,6 @@ TEST_F(ContextualTasksWebContentsUserDataTest,
   mock_handle->GetUploadedContextTokensForTesting().push_back(token);
   mock_handle->AttachTabPendingUpload(token, tab_id.id(),
                                       GURL("https://example.com/1"), "Tab 1");
-  user_data->UpdateContextLibraryInputState();
   ASSERT_EQ(inject_messages.size(), 1u);
   EXPECT_TRUE(inject_messages.back().inject_chrome_input().is_active());
   EXPECT_EQ(user_data->GetSelectedTabs().size(), 1u);
@@ -918,6 +926,100 @@ TEST_F(ContextualTasksWebContentsUserDataTest,
       "ContextualTasks.TabCoins.AttachedCountAtSubmission.Explicit", 2, 1);
   histogram_tester.ExpectUniqueSample(
       "ContextualTasks.TabCoins.AttachedCountAtSubmission.Implicit", 1, 1);
+}
+
+TEST_F(ContextualTasksWebContentsUserDataTest,
+       TabContextSubscriptionUpdatesContextLibraryInputState) {
+  ContextualTasksWebContentsUserData::CreateForWebContents(web_contents_);
+  auto* user_data =
+      ContextualTasksWebContentsUserData::FromWebContents(web_contents_);
+
+  auto mock_handle =
+      std::make_unique<contextual_search::MockContextualSearchSessionHandle>();
+  auto* session_handle = mock_handle.get();
+  auto* helper = ContextualSearchWebContentsHelper::GetOrCreateForWebContents(
+      web_contents_);
+  helper->SetTaskSession(std::nullopt, std::move(mock_handle),
+                         /*input_state_model=*/nullptr);
+
+  std::vector<lens::ClientToSearchMessage> dispatched_messages;
+  user_data->SetSearchMessageDispatcherForTesting(base::BindRepeating(
+      [](std::vector<lens::ClientToSearchMessage>* messages,
+         const lens::ClientToSearchMessage& msg) { messages->push_back(msg); },
+      &dispatched_messages));
+  user_data->OnHandshakeComplete();
+  dispatched_messages.clear();
+
+  // Adding tab context directly to the session handle should notify user_data
+  // and dispatch InjectChromeInput(CONTEXT_LIBRARY, true).
+  base::UnguessableToken token = base::UnguessableToken::Create();
+  session_handle->GetUploadedContextTokensForTesting().push_back(token);
+  session_handle->AttachTabPendingUpload(
+      token, /*tab_id=*/1, GURL("https://example.com"), "Example");
+
+  ASSERT_EQ(dispatched_messages.size(), 2u);
+  ASSERT_TRUE(dispatched_messages[0].has_inject_chrome_input());
+  EXPECT_EQ(dispatched_messages[0].inject_chrome_input().input_type(),
+            lens::ClientToSearchMessage::InjectChromeInput::CONTEXT_LIBRARY);
+  EXPECT_TRUE(dispatched_messages[0].inject_chrome_input().is_active());
+  ASSERT_TRUE(dispatched_messages[1].has_on_context_state_changed());
+  EXPECT_EQ(
+      dispatched_messages[1].on_context_state_changed().context_state(),
+      lens::ClientToSearchMessage::OnContextStateChanged::CONTEXT_STATE_READY);
+
+  // Removing tab context from the session handle should dispatch
+  // InjectChromeInput(CONTEXT_LIBRARY, false).
+  dispatched_messages.clear();
+  session_handle->RemoveUploadedContextToken(token);
+
+  ASSERT_EQ(dispatched_messages.size(), 2u);
+  ASSERT_TRUE(dispatched_messages[0].has_inject_chrome_input());
+  EXPECT_EQ(dispatched_messages[0].inject_chrome_input().input_type(),
+            lens::ClientToSearchMessage::InjectChromeInput::CONTEXT_LIBRARY);
+  EXPECT_FALSE(dispatched_messages[0].inject_chrome_input().is_active());
+  ASSERT_TRUE(dispatched_messages[1].has_on_context_state_changed());
+  EXPECT_EQ(
+      dispatched_messages[1].on_context_state_changed().context_state(),
+      lens::ClientToSearchMessage::OnContextStateChanged::CONTEXT_STATE_NONE);
+
+  // Replacing the session with a new session that already has attached tab
+  // context should immediately update the context library input state via
+  // OnSessionChanged().
+  dispatched_messages.clear();
+  auto mock_handle2 =
+      std::make_unique<contextual_search::MockContextualSearchSessionHandle>();
+  base::UnguessableToken token2 = base::UnguessableToken::Create();
+  mock_handle2->GetUploadedContextTokensForTesting().push_back(token2);
+  mock_handle2->AttachTabPendingUpload(
+      token2, /*tab_id=*/2, GURL("https://example.com/2"), "Example 2");
+  helper->SetTaskSession(std::nullopt, std::move(mock_handle2),
+                         /*input_state_model=*/nullptr);
+
+  ASSERT_EQ(dispatched_messages.size(), 2u);
+  ASSERT_TRUE(dispatched_messages[0].has_inject_chrome_input());
+  EXPECT_EQ(dispatched_messages[0].inject_chrome_input().input_type(),
+            lens::ClientToSearchMessage::InjectChromeInput::CONTEXT_LIBRARY);
+  EXPECT_TRUE(dispatched_messages[0].inject_chrome_input().is_active());
+  ASSERT_TRUE(dispatched_messages[1].has_on_context_state_changed());
+  EXPECT_EQ(
+      dispatched_messages[1].on_context_state_changed().context_state(),
+      lens::ClientToSearchMessage::OnContextStateChanged::CONTEXT_STATE_READY);
+
+  // Taking the session handle should notify OnSessionChanged(nullptr) and
+  // clear the context library input state.
+  dispatched_messages.clear();
+  auto taken_handle = helper->TakeSessionHandle();
+  ASSERT_TRUE(taken_handle);
+
+  ASSERT_EQ(dispatched_messages.size(), 2u);
+  ASSERT_TRUE(dispatched_messages[0].has_inject_chrome_input());
+  EXPECT_EQ(dispatched_messages[0].inject_chrome_input().input_type(),
+            lens::ClientToSearchMessage::InjectChromeInput::CONTEXT_LIBRARY);
+  EXPECT_FALSE(dispatched_messages[0].inject_chrome_input().is_active());
+  ASSERT_TRUE(dispatched_messages[1].has_on_context_state_changed());
+  EXPECT_EQ(
+      dispatched_messages[1].on_context_state_changed().context_state(),
+      lens::ClientToSearchMessage::OnContextStateChanged::CONTEXT_STATE_NONE);
 }
 
 }  // namespace contextual_tasks

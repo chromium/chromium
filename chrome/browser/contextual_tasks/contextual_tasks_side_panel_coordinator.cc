@@ -2439,6 +2439,11 @@ void ContextualTasksSidePanelCoordinator::AttachTabsToTask(
           ? it->second->web_contents.get()
           : GetActiveWebContents();
 
+  auto* user_data =
+      panel_contents
+          ? ContextualTasksWebContentsUserData::GetOrCreateForWebContents(
+                panel_contents)
+          : nullptr;
   contextual_search::ContextualSearchSessionHandle* session_handle = nullptr;
   if (panel_contents) {
     if (auto* helper = ContextualSearchWebContentsHelper::FromWebContents(
@@ -2471,10 +2476,8 @@ void ContextualTasksSidePanelCoordinator::AttachTabsToTask(
 
     const int32_t tab_handle_id = tab_handle.raw_value();
     if (session_handle) {
-      if (panel_contents) {
-        ContextualTasksWebContentsUserData::GetOrCreateForWebContents(
-            panel_contents)
-            ->OnManualTabContextAdded(url, session_id);
+      if (user_data) {
+        user_data->OnManualTabContextAdded(url, session_id);
       }
       // If this tab is already staged/selected in the composebox (either
       // pending delayed upload or uploaded) but not yet committed in a query,
@@ -2486,12 +2489,8 @@ void ContextualTasksSidePanelCoordinator::AttachTabsToTask(
             (attached_tab.pending_delayed_upload ||
              std::ranges::contains(uploaded_tokens,
                                    attached_tab.context_token))) {
-          if (panel_contents) {
-            if (auto* user_data =
-                    ContextualTasksWebContentsUserData::FromWebContents(
-                        panel_contents)) {
-              user_data->OnTabContextRemoved(attached_tab.context_token);
-            }
+          if (user_data) {
+            user_data->OnTabContextRemoved(attached_tab.context_token);
           }
           if (!session_handle->DeleteFile(attached_tab.context_token)) {
             session_handle->RemoveUploadedContextToken(
@@ -2510,7 +2509,6 @@ void ContextualTasksSidePanelCoordinator::AttachTabsToTask(
                 if (auto model = user_data->GetOrCreateInputStateModel()) {
                   model->OnContextChanged();
                 }
-                user_data->UpdateContextLibraryInputState();
               }
             }
             if (weak_this) {
@@ -2528,10 +2526,7 @@ void ContextualTasksSidePanelCoordinator::AttachTabsToTask(
       if (!result.has_value() && active_task_context_provider_) {
         active_task_context_provider_->AddLocalTabUnderline(tab_handle);
       }
-      if (panel_contents) {
-        auto* user_data =
-            ContextualTasksWebContentsUserData::GetOrCreateForWebContents(
-                panel_contents);
+      if (user_data) {
         user_data->RecordTabIdMapping(tab_handle_id, session_id.id());
         if (result.has_value()) {
           user_data->AssociateTabWithTask(session_id);
@@ -2551,14 +2546,9 @@ void ContextualTasksSidePanelCoordinator::AttachTabsToTask(
     }
   }
 
-  if (panel_contents) {
-    if (auto* user_data =
-            ContextualTasksWebContentsUserData::GetOrCreateForWebContents(
-                panel_contents)) {
-      if (auto model = user_data->GetOrCreateInputStateModel()) {
-        model->OnContextChanged();
-      }
-      user_data->UpdateContextLibraryInputState();
+  if (user_data) {
+    if (auto model = user_data->GetOrCreateInputStateModel()) {
+      model->OnContextChanged();
     }
   }
 

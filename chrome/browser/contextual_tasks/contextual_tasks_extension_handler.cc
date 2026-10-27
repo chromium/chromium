@@ -570,7 +570,8 @@ void ContextualTasksExtensionHandler::AddTabContext(
     // Auto-suggested chip tabs are captured and uploaded by the user data's
     // `QueryContextualizer` on submit, so that their context is as recent as
     // possible. Until then, the session handle attaches them with a token for
-    // the chip, so that they can be deleted.
+    // the chip, so that they can be deleted. `user_data` is notified of the tab
+    // context change and updates its context library input state.
     const base::UnguessableToken token = session_handle->AddPendingDelayedTab(
         session_id.id(), tab_contents->GetLastCommittedURL(),
         base::UTF16ToUTF8(tab_contents->GetTitle()));
@@ -578,7 +579,6 @@ void ContextualTasksExtensionHandler::AddTabContext(
         tab, session_handle->GetMetricsRecorder(),
         /*is_tab_suggestion_chip=*/true, GetBrowserWindowInterface());
     user_data->AssociateTabWithTask(session_id);
-    user_data->UpdateContextLibraryInputState();
     std::move(callback).Run(base::ok(token));
     return;
   }
@@ -600,6 +600,9 @@ void ContextualTasksExtensionHandler::AddTabContext(
       /*browser_window_interface=*/GetBrowserWindowInterface());
   if (result.has_value() && tab_contents && session_id.is_valid()) {
     user_data->RecordTabIdMapping(tab_id, session_id.id());
+    // Mark the upload as started before `AttachTabPendingUpload()`, which
+    // synchronously notifies `user_data` to recompute its context state.
+    user_data->OnTabContextUploadStarted(*result);
     // Attach the tab right away, while its page context is captured, so that
     // it is selected (and can be deleted) from now on. Its upload updates the
     // attached tab in place.
@@ -609,8 +612,6 @@ void ContextualTasksExtensionHandler::AddTabContext(
     // Associate the tab with the task as soon as it is attached as context so
     // the task knows which tabs are part of it.
     user_data->AssociateTabWithTask(session_id);
-    user_data->OnTabContextUploadStarted(*result);
-    user_data->UpdateContextLibraryInputState();
     user_data->RefreshActiveTaskContext();
   }
 

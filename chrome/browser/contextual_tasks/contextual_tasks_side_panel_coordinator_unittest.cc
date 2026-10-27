@@ -2846,6 +2846,7 @@ TEST_F(
 
   base::Uuid existing_task_id = base::Uuid::GenerateRandomV4();
   ContextualTask existing_task(existing_task_id);
+  CreateCachedWebContentsForTesting(existing_task_id, /*is_open=*/true);
   ON_CALL(*tab_list_, GetActiveTab()).WillByDefault(Return(active_tab));
   ON_CALL(*mock_panel_host_, IsPanelOpenForContextualTask())
       .WillByDefault(Return(true));
