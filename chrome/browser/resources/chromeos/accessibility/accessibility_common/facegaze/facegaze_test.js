@@ -1319,9 +1319,8 @@ AX_TEST_F('FaceGazeTest', 'KeyEvents', async function() {
   assertEquals(KeyCode.MEDIA_PLAY_PAUSE, keyEvents[13].keyCode);
 });
 
-// TODO(crbug.com/348603598): Test is flaky.
 AX_TEST_F(
-    'FaceGazeTest', 'DISABLED_ToggleFaceGazeGesturesShort', async function() {
+    'FaceGazeTest', 'ToggleFaceGazeGesturesShort', async function() {
       const gestureToMacroName =
           new Map()
               .set(FacialGesture.JAW_OPEN, MacroName.TOGGLE_FACEGAZE)
@@ -1332,11 +1331,11 @@ AX_TEST_F(
       const config = new Config()
                          .withMouseLocation({x: 600, y: 400})
                          .withBindings(gestureToMacroName, gestureToConfidence)
-                         .withRepeatDelayMs(1);
+                         .withRepeatDelayMs(-1);
       await this.configureFaceGaze(config);
 
       // Toggle (pause) FaceGaze.
-      result = new MockFaceLandmarkerResult().addGestureWithConfidence(
+      let result = new MockFaceLandmarkerResult().addGestureWithConfidence(
           MediapipeFacialGesture.JAW_OPEN, 0.9);
       this.processFaceLandmarkerResult(
           result, /*triggerMouseControllerInterval=*/ false);
