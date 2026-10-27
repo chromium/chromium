@@ -32,7 +32,8 @@ class TextureVirtualDeviceMojoAdapterTest : public ::testing::Test {
   void ProducerSharesBufferHandle(int32_t buffer_id) {
     auto shared_image = gpu::ClientSharedImage::CreateForTesting();
     auto dummy_buffer_handle = media::mojom::SharedImageBufferHandleSet::New(
-        shared_image->Export(), gpu::SyncToken());
+        shared_image->Export(), gpu::SyncToken(),
+        /*is_rewritten_in_place=*/false);
     adapter_->OnNewSharedImageBufferHandle(buffer_id,
                                            std::move(dummy_buffer_handle));
   }

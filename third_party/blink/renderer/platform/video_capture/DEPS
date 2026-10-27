@@ -22,10 +22,13 @@ include_rules = [
 
 specific_include_rules = {
     "video_capture_impl_test.cc": [
-        "+gpu/command_buffer/common/capabilities.h",
+        "+base/win/scoped_handle.h",
+        "+components/viz/common/resources/shared_image_format.h",
         "+gpu/command_buffer/client/test_shared_image_interface.h",
-        "+third_party/blink/renderer/platform/testing/histogram_tester.h",
+        "+gpu/command_buffer/common/capabilities.h",
+        "+gpu/ipc/common/surface_handle.h",
         "+media/video/mock_gpu_video_accelerator_factories.h",
+        "+third_party/blink/renderer/platform/testing/histogram_tester.h",
         "+third_party/blink/renderer/platform/testing/io_task_runner_testing_platform_support.h",
     ],
 }

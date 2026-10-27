@@ -48,10 +48,17 @@ struct ReadyBuffer {
 };
 
 // Represents an ExportedSharedImage when used with GpuMemoryBufferHandle as
-// part of VideoBufferHandle.
+// part of VideoBufferHandle. Producers that premap their buffers deliver the
+// premapped region through the exported image's buffer handle (the DXGI
+// handle's shared memory region on Windows); see VideoFrameInfo.is_premapped.
 struct SharedImageBufferHandleSet {
   gpu.mojom.ExportedSharedImage shared_image;
   gpu.mojom.SyncToken sync_token;
+  // Set when the producer rewrites the shared image in place between frames.
+  // consumers must then flag the backing as externally updated before each
+  // read. Producers that deliver a fresh, never-rewritten shared image per
+  // buffer leave it false.
+  bool is_rewritten_in_place = false;
 };
 
 union VideoBufferHandle {

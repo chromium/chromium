@@ -276,7 +276,11 @@ D3D11SharedImageBufferTracker::GetVideoBufferHandle() {
   auto exported_shared_image =
       shared_image_->Export(/*with_buffer_handle=*/true);
   auto handle_set = media::mojom::SharedImageBufferHandleSet::New(
-      std::move(exported_shared_image), shared_image_->creation_sync_token());
+      std::move(exported_shared_image), shared_image_->creation_sync_token(),
+      // Capture slots are reused and rewritten in place between frames, so
+      // consumers must flag the backing as externally updated before each
+      // read.
+      /*is_rewritten_in_place=*/true);
   return media::mojom::VideoBufferHandle::NewSharedImageHandle(
       std::move(handle_set));
 }

@@ -13,6 +13,7 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/read_only_shared_memory_region.h"
+#include "base/memory/ref_counted.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -20,9 +21,18 @@
 #include "base/test/task_environment.h"
 #include "base/token.h"
 #include "build/build_config.h"
+#if BUILDFLAG(IS_WIN)
+#include <windows.h>
+
+#include "base/win/scoped_handle.h"
+#endif
+#include "components/viz/common/resources/shared_image_format.h"
+#include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/client/test_shared_image_interface.h"
 #include "gpu/command_buffer/common/capabilities.h"
 #include "gpu/command_buffer/common/shared_image_capabilities.h"
+#include "gpu/ipc/common/surface_handle.h"
+#include "media/base/video_util.h"
 #include "media/capture/mojom/video_capture.mojom-blink.h"
 #include "media/capture/mojom/video_capture_buffer.mojom-blink.h"
 #include "media/capture/mojom/video_capture_types.mojom-blink.h"
@@ -35,6 +45,7 @@
 #include "third_party/blink/renderer/platform/testing/io_task_runner_testing_platform_support.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "ui/gfx/gpu_memory_buffer_handle.h"
 
 using ::testing::_;
 using ::testing::DoAll;
@@ -48,6 +59,33 @@ namespace blink {
 
 namespace {
 
+// Counts UpdateSharedImage() calls so tests can assert that reusable capture
+// slots are flagged as externally updated once per delivered frame.
+class CountingSharedImageInterface : public gpu::TestSharedImageInterface {
+ public:
+  void UpdateSharedImage(const gpu::SyncToken& sync_token,
+                         const gpu::Mailbox& mailbox) override {
+    ++update_shared_image_count_;
+    gpu::TestSharedImageInterface::UpdateSharedImage(sync_token, mailbox);
+  }
+
+  scoped_refptr<gpu::ClientSharedImage> ImportSharedImage(
+      gpu::ExportedSharedImage exported_shared_image) override {
+    ++import_shared_image_count_;
+    return gpu::TestSharedImageInterface::ImportSharedImage(
+        std::move(exported_shared_image));
+  }
+
+  int update_shared_image_count() const { return update_shared_image_count_; }
+  int import_shared_image_count() const { return import_shared_image_count_; }
+
+ private:
+  ~CountingSharedImageInterface() override = default;
+
+  int update_shared_image_count_ = 0;
+  int import_shared_image_count_ = 0;
+};
+
 class TestingPlatformSupportWithGpuFactories
     : public IOTaskRunnerTestingPlatformSupport {
  public:
@@ -59,25 +97,54 @@ class TestingPlatformSupportWithGpuFactories
   void SetSharedImageCapabilities(
       const gpu::SharedImageCapabilities& capabilities);
 
+  // The interface GetGpuFactories() hands out. Tests that feed shared images
+  // into the capture path must create them here, so that their mailboxes are
+  // known to the interface the code under test will use.
+  CountingSharedImageInterface* shared_image_interface() { return sii_.get(); }
+
+  // Hands out a different GpuVideoAcceleratorFactories from here on, which is
+  // how VideoCaptureImpl detects that the GPU context was lost and
+  // re-established. The SharedImageInterface is deliberately kept, so that
+  // mailboxes created before the swap stay valid and the counters above span
+  // both sides of it. Supports a single swap: the superseded instance is kept
+  // alive because VideoCaptureImpl holds a raw_ptr to it until it is told
+  // about the new one.
+  void ReplaceGpuFactories();
+
  private:
-  scoped_refptr<gpu::TestSharedImageInterface> sii_;
+  void ConfigureGpuFactories();
+
+  scoped_refptr<CountingSharedImageInterface> sii_;
+  std::unique_ptr<media::MockGpuVideoAcceleratorFactories>
+      retired_gpu_factories_;
   std::unique_ptr<media::MockGpuVideoAcceleratorFactories> gpu_factories_;
   base::Thread media_thread_;
   raw_ptr<gpu::Capabilities> capabilities_ = nullptr;
 };
 
 TestingPlatformSupportWithGpuFactories::TestingPlatformSupportWithGpuFactories()
-    : sii_(base::MakeRefCounted<gpu::TestSharedImageInterface>()),
+    : sii_(base::MakeRefCounted<CountingSharedImageInterface>()),
       gpu_factories_(new media::MockGpuVideoAcceleratorFactories(sii_.get())),
       media_thread_("TestingMediaThread") {
+  media_thread_.Start();
+  ConfigureGpuFactories();
+}
+
+void TestingPlatformSupportWithGpuFactories::ConfigureGpuFactories() {
   gpu_factories_->SetVideoFrameOutputFormat(
       media::GpuVideoAcceleratorFactories::OutputFormat::NV12);
-  media_thread_.Start();
   ON_CALL(*gpu_factories_, GetTaskRunner())
       .WillByDefault(testing::Return(media_thread_.task_runner()));
   ON_CALL(*gpu_factories_, ContextCapabilities()).WillByDefault([&]() {
     return capabilities_;
   });
+}
+
+void TestingPlatformSupportWithGpuFactories::ReplaceGpuFactories() {
+  retired_gpu_factories_ = std::move(gpu_factories_);
+  gpu_factories_ =
+      std::make_unique<media::MockGpuVideoAcceleratorFactories>(sii_.get());
+  ConfigureGpuFactories();
 }
 
 TestingPlatformSupportWithGpuFactories::
@@ -211,12 +278,14 @@ class VideoCaptureImplTest : public ::testing::Test {
       info->natural_size = size;
       info->color_space = gfx::ColorSpace();
       info->metadata = metadata;
+      info->is_premapped = is_premapped;
       return media::mojom::blink::ReadyBuffer::New(buffer_id, std::move(info));
     }
 
     int buffer_id;
     gfx::Size size;
     media::VideoPixelFormat pixel_format;
+    bool is_premapped = false;
   };
 
   VideoCaptureImplTest()
@@ -304,6 +373,14 @@ class VideoCaptureImplTest : public ::testing::Test {
             std::move(gmb_handle)));
   }
 
+  void SimulateSharedImageBufferCreated(
+      int buffer_id,
+      media::mojom::blink::SharedImageBufferHandleSetPtr handle_set) {
+    video_capture_impl_->OnNewBuffer(
+        buffer_id, media::mojom::blink::VideoBufferHandle::NewSharedImageHandle(
+                       std::move(handle_set)));
+  }
+
   void SimulateBufferReceived(BufferDescription buffer_description) {
     video_capture_impl_->OnBufferReady(
         buffer_description.ToReadyBuffer(base::TimeTicks::Now()));
@@ -328,6 +405,24 @@ class VideoCaptureImplTest : public ::testing::Test {
     gpu::SharedImageCapabilities shared_image_caps;
     shared_image_caps.shared_image_d3d = shared_image_d3d;
     platform_->SetSharedImageCapabilities(shared_image_caps);
+  }
+
+  CountingSharedImageInterface* shared_image_interface() {
+    return platform_->shared_image_interface();
+  }
+
+  // Hands VideoCaptureImpl the platform's current factories, which is what it
+  // does for itself on GPU context loss. Lives here because the fixture, not
+  // the TEST_F-derived class, is VideoCaptureImpl's friend.
+  void SimulateGpuFactoriesChangeOnIOThread() {
+    video_capture_impl_->SetGpuFactoriesHandleOnIOTaskRunner(
+        platform_->GetGpuFactories());
+  }
+
+  // Drops VideoCaptureImpl's GPU factories, which is the state a renderer is
+  // in while the GPU process is gone.
+  void SimulateNoGpuFactoriesOnIOThread() {
+    video_capture_impl_->SetGpuFactoriesHandleOnIOTaskRunner(nullptr);
   }
 
   const base::UnguessableToken session_id_ = base::UnguessableToken::Create();
@@ -960,7 +1055,566 @@ TEST_F(VideoCaptureImplTest, FallbacksToPremappedGmbsWhenNotSupported) {
 
   EXPECT_EQ(mock_video_capture_host_.released_buffer_count(), 0);
 }
+
+// Windows-only scenario. Shared-image camera buffers carry a premapped region
+// inside the exported image's buffer handle (see D3D11SharedImageBufferTracker
+// in media/capture). When mappable shared images are not supported, premapped
+// frames must be wrapped from that region instead of being dropped.
+TEST_F(VideoCaptureImplTest, FallbacksToPremappedSharedImagesWhenNotSupported) {
+  const int kGmbBufferId = 11;
+  const int kSharedImageBufferId = 12;
+  const gfx::Size kFrameSize = params_small_.requested_format.frame_size;
+  constexpr uint8_t kFrameDataMarker = 0x5a;
+
+  base::Thread testing_io_thread("TestingIOThread");
+  base::WaitableEvent frame_ready_event;
+  media::VideoCaptureFeedback feedback;
+
+  // Fill a region with a marker byte and attach it to a fake DXGI handle,
+  // mirroring how the capture pool exports the slot's premapped region inside
+  // the shared image's buffer handle.
+  auto premapped_region = base::UnsafeSharedMemoryRegion::Create(
+      kFrameSize.width() * kFrameSize.height() * 3 / 2);
+  auto premapped_mapping = premapped_region.Map();
+  for (auto& byte : premapped_mapping.GetMemoryAsSpan<uint8_t>()) {
+    byte = kFrameDataMarker;
+  }
+
+  gfx::DXGIHandle dxgi_handle(base::win::ScopedHandle(::CreateEvent(
+      nullptr, /*bManualReset=*/TRUE, /*bInitialState=*/FALSE, nullptr)));
+  ASSERT_TRUE(dxgi_handle.IsValid());
+  dxgi_handle = dxgi_handle.CloneWithRegion(premapped_region.Duplicate());
+
+  scoped_refptr<gpu::ClientSharedImage> client_shared_image;
+  {
+    auto sii = base::MakeRefCounted<gpu::TestSharedImageInterface>();
+    client_shared_image = sii->CreateSharedImage(
+        {viz::MultiPlaneFormat::kNV12, kFrameSize, gfx::ColorSpace(),
+         gpu::SharedImageUsageSet(gpu::SHARED_IMAGE_USAGE_DISPLAY_READ),
+         "VideoCaptureTestSharedImage"},
+        gpu::kNullSurfaceHandle, gfx::BufferUsage::SCANOUT_VEA_CPU_READ,
+        gfx::GpuMemoryBufferHandle(std::move(dxgi_handle)));
+    ASSERT_TRUE(client_shared_image);
+  }
+
+  auto handle_set = media::mojom::blink::SharedImageBufferHandleSet::New(
+      client_shared_image->Export(/*with_buffer_handle=*/true),
+      client_shared_image->creation_sync_token(),
+      /*is_rewritten_in_place=*/true);
+
+  SetSharedImageCapabilities(/*shared_image_d3d=*/false);
+  EXPECT_CALL(*this, OnStateUpdate(blink::VIDEO_CAPTURE_STATE_STARTED));
+  EXPECT_CALL(*this, OnStateUpdate(blink::VIDEO_CAPTURE_STATE_STOPPED));
+  EXPECT_CALL(mock_video_capture_host_, DoStart(_, session_id_, params_small_));
+  EXPECT_CALL(mock_video_capture_host_, Stop(_));
+  // The GMB delivery fails while the GPU process reports no D3D shared image
+  // support, which flips VideoCaptureImpl into the premapped-frames mode.
+  // When the dropped GMB frame is released back, the mode is active, so the
+  // shared-image buffer is delivered then.
+  EXPECT_CALL(mock_video_capture_host_, ReleaseBuffer(_, kGmbBufferId, _))
+      .WillOnce([&, handle_set = std::move(handle_set)](
+                    const base::UnguessableToken& device_id, int32_t buffer_id,
+                    const media::VideoCaptureFeedback& fb) mutable {
+        SimulateSharedImageBufferCreated(kSharedImageBufferId,
+                                         std::move(handle_set));
+        BufferDescription buffer_description(kSharedImageBufferId, kFrameSize,
+                                             media::PIXEL_FORMAT_NV12);
+        buffer_description.is_premapped = true;
+        SimulateBufferReceived(std::move(buffer_description));
+      });
+  // The frame is released back once all consumers are done with it; the
+  // feedback then carries the premapped-frames requirement.
+  EXPECT_CALL(mock_video_capture_host_,
+              ReleaseBuffer(_, kSharedImageBufferId, _))
+      .WillOnce([&](const base::UnguessableToken& device_id, int32_t buffer_id,
+                    const media::VideoCaptureFeedback& fb) {
+        feedback = fb;
+        frame_ready_event.Signal();
+      });
+
+  // The delivered frame must wrap the premapped region's data.
+  EXPECT_CALL(*this, OnFrameReady(_, _))
+      .WillOnce([&](scoped_refptr<media::VideoFrame> frame,
+                    base::TimeTicks frame_ready_time) {
+        EXPECT_EQ(frame->visible_data(0)[0], kFrameDataMarker);
+      });
+
+  auto create_and_queue_buffer = [&]() {
+    StartCapture(0, params_small_);
+    // Deliver a GMB frame first; with D3D shared images reported as
+    // unsupported its bind fails on the media thread and the premapped-frames
+    // mode is activated (see FallbacksToPremappedGmbsWhenNotSupported). The
+    // shared-image buffer is then delivered from the ReleaseBuffer callback
+    // above, once the mode is active.
+    gfx::GpuMemoryBufferHandle gmb_handle;
+    gmb_handle.type = gfx::SHARED_MEMORY_BUFFER;
+    SimulateGpuMemoryBufferCreated(kGmbBufferId, std::move(gmb_handle));
+    SimulateBufferReceived(
+        BufferDescription(kGmbBufferId, kFrameSize, media::PIXEL_FORMAT_NV12));
+  };
+
+  auto stop_capture_and_destroy_buffer = [&]() {
+    StopCapture(0);
+    SimulateBufferDestroyed(kGmbBufferId);
+    SimulateBufferDestroyed(kSharedImageBufferId);
+    // Explicitly destroy |video_capture_impl_| to make sure it's destroyed on
+    // the right thread.
+    video_capture_impl_.reset();
+  };
+
+  testing_io_thread.Start();
+  testing_io_thread.task_runner()->PostTask(
+      FROM_HERE, base::BindLambdaForTesting(create_and_queue_buffer));
+
+  // Wait until OnFrameReady is called on |testing_io_thread|.
+  EXPECT_TRUE(frame_ready_event.TimedWait(base::Seconds(3)));
+
+  testing_io_thread.task_runner()->PostTask(
+      FROM_HERE, base::BindLambdaForTesting(stop_capture_and_destroy_buffer));
+  testing_io_thread.Stop();
+
+  EXPECT_TRUE(feedback.require_mapped_frame);
+}
+
+// Same no-GPU path as above, but for a shared image exported without a buffer
+// handle: there is no premapped region to wrap, and
+// CloneGpuMemoryBufferHandle() CHECKs on such images, so the frame has to be
+// dropped rather than wrapped.
+TEST_F(VideoCaptureImplTest, DropsPremappedFrameWithoutBufferHandle) {
+  const int kArbitraryBufferId = 11;
+  const gfx::Size kFrameSize = params_small_.requested_format.frame_size;
+
+  auto client_shared_image = shared_image_interface()->CreateSharedImage(
+      {viz::MultiPlaneFormat::kNV12, kFrameSize, gfx::ColorSpace(),
+       gpu::SharedImageUsageSet(gpu::SHARED_IMAGE_USAGE_DISPLAY_READ),
+       "VideoCaptureTestSharedImage"},
+      gpu::kNullSurfaceHandle);
+  ASSERT_TRUE(client_shared_image);
+  ASSERT_EQ(client_shared_image->GetGpuMemoryBufferType(), gfx::EMPTY_BUFFER);
+
+  auto handle_set = media::mojom::blink::SharedImageBufferHandleSet::New(
+      client_shared_image->Export(), client_shared_image->creation_sync_token(),
+      /*is_rewritten_in_place=*/true);
+
+  EXPECT_CALL(*this, OnStateUpdate(blink::VIDEO_CAPTURE_STATE_STARTED));
+  EXPECT_CALL(*this, OnStateUpdate(blink::VIDEO_CAPTURE_STATE_STOPPED));
+  EXPECT_CALL(mock_video_capture_host_, DoStart(_, session_id_, params_small_));
+  EXPECT_CALL(mock_video_capture_host_, Stop(_));
+  // The frame is dropped, not delivered - and the process stays alive.
+  EXPECT_CALL(*this, OnFrameReady(_, _)).Times(0);
+
+  StartCapture(0, params_small_);
+  // No GPU factories, so delivery takes the Windows software fallback branch.
+  SimulateNoGpuFactoriesOnIOThread();
+  SimulateSharedImageBufferCreated(kArbitraryBufferId, std::move(handle_set));
+  BufferDescription buffer_description(kArbitraryBufferId, kFrameSize,
+                                       media::PIXEL_FORMAT_NV12);
+  buffer_description.is_premapped = true;
+  SimulateBufferReceived(std::move(buffer_description));
+
+  StopCapture(0);
+  SimulateBufferDestroyed(kArbitraryBufferId);
+}
+
+// Software consumers (e.g. WebRTC's software encoder) read a GPU frame through
+// ConvertToMemoryMappedFrame() only if it is a mappable shared image, which is
+// then served from the premapped region without a GPU readback. An opaque
+// shared image frame would instead be read back through the raster interface
+// for every frame, leaving the premapped region unused.
+TEST_F(VideoCaptureImplTest, WrapsPremappedSharedImageAsMappableFrame) {
+  const int kArbitraryBufferId = 11;
+  const gfx::Size kFrameSize = params_small_.requested_format.frame_size;
+  constexpr uint8_t kFrameDataMarker = 0x5a;
+
+  // Like the capture pool, export the slot's premapped region inside the
+  // shared image's buffer handle.
+  auto premapped_region = base::UnsafeSharedMemoryRegion::Create(
+      kFrameSize.width() * kFrameSize.height() * 2);
+  auto premapped_mapping = premapped_region.Map();
+  for (auto& byte : premapped_mapping.GetMemoryAsSpan<uint8_t>()) {
+    byte = kFrameDataMarker;
+  }
+  gfx::DXGIHandle dxgi_handle(base::win::ScopedHandle(::CreateEvent(
+      nullptr, /*bManualReset=*/TRUE, /*bInitialState=*/FALSE, nullptr)));
+  ASSERT_TRUE(dxgi_handle.IsValid());
+  dxgi_handle = dxgi_handle.CloneWithRegion(premapped_region.Duplicate());
+
+  auto client_shared_image = shared_image_interface()->CreateSharedImage(
+      {viz::MultiPlaneFormat::kNV12, kFrameSize, gfx::ColorSpace(),
+       gpu::SharedImageUsageSet(gpu::SHARED_IMAGE_USAGE_DISPLAY_READ),
+       "VideoCaptureTestSharedImage"},
+      gpu::kNullSurfaceHandle, gfx::BufferUsage::SCANOUT_VEA_CPU_READ,
+      gfx::GpuMemoryBufferHandle(std::move(dxgi_handle)));
+  ASSERT_TRUE(client_shared_image);
+
+  auto handle_set = media::mojom::blink::SharedImageBufferHandleSet::New(
+      client_shared_image->Export(/*with_buffer_handle=*/true),
+      client_shared_image->creation_sync_token(),
+      /*is_rewritten_in_place=*/true);
+
+  base::Thread testing_io_thread("TestingIOThread");
+  base::WaitableEvent frame_ready_event;
+  scoped_refptr<media::VideoFrame> frame;
+
+  EXPECT_CALL(*this, OnStateUpdate(blink::VIDEO_CAPTURE_STATE_STARTED));
+  EXPECT_CALL(*this, OnStateUpdate(blink::VIDEO_CAPTURE_STATE_STOPPED));
+  EXPECT_CALL(*this, OnFrameReady(_, _))
+      .WillOnce([&](scoped_refptr<media::VideoFrame> f, base::TimeTicks t) {
+        frame = f;
+        frame_ready_event.Signal();
+      });
+  EXPECT_CALL(mock_video_capture_host_, DoStart(_, session_id_, params_small_));
+  EXPECT_CALL(mock_video_capture_host_, Stop(_));
+  EXPECT_CALL(mock_video_capture_host_, ReleaseBuffer(_, kArbitraryBufferId, _))
+      .Times(0);
+
+  auto create_and_queue_buffer = [&]() {
+    StartCapture(0, params_small_);
+    SimulateSharedImageBufferCreated(kArbitraryBufferId, std::move(handle_set));
+    BufferDescription buffer_description(kArbitraryBufferId, kFrameSize,
+                                         media::PIXEL_FORMAT_NV12);
+    buffer_description.is_premapped = true;
+    SimulateBufferReceived(std::move(buffer_description));
+  };
+  auto stop_capture_and_destroy_buffer = [&]() {
+    StopCapture(0);
+    SimulateBufferDestroyed(kArbitraryBufferId);
+    video_capture_impl_.reset();
+  };
+
+  testing_io_thread.Start();
+  testing_io_thread.task_runner()->PostTask(
+      FROM_HERE, base::BindLambdaForTesting(create_and_queue_buffer));
+
+  EXPECT_TRUE(frame_ready_event.TimedWait(base::Seconds(3)));
+  ASSERT_TRUE(frame);
+
+  // Mapping is served from the premapped region, not by a GPU readback. The
+  // results are checked after the teardown so that a failure does not skip it.
+  const bool is_mappable = frame->HasMappableSharedImage();
+  scoped_refptr<media::VideoFrame> mapped_frame;
+  uint8_t first_byte = 0;
+  if (is_mappable) {
+    mapped_frame = media::ConvertToMemoryMappedFrame(frame);
+    if (mapped_frame) {
+      first_byte = mapped_frame->visible_data(0)[0];
+    }
+  }
+
+  testing_io_thread.task_runner()->PostTask(
+      FROM_HERE, base::BindLambdaForTesting(stop_capture_and_destroy_buffer));
+  testing_io_thread.Stop();
+
+  EXPECT_TRUE(is_mappable);
+  EXPECT_TRUE(mapped_frame);
+  EXPECT_EQ(first_byte, kFrameDataMarker);
+}
 #endif
+
+// Shared images exported without a buffer handle (e.g. by the texture virtual
+// device) have no mappable buffer; the GPU path must still wrap them without
+// touching the premapped-memory machinery.
+TEST_F(VideoCaptureImplTest, WrapsSharedImageWithoutBufferHandle) {
+  const int kArbitraryBufferId = 11;
+  const gfx::Size kFrameSize(64, 64);
+
+  // Like the GpuMemoryBuffer path, slots are wrapped on the media thread and
+  // the frame is handed back to the IO thread, so wait for the round trip.
+  base::Thread testing_io_thread("TestingIOThread");
+  base::WaitableEvent frame_ready_event;
+  scoped_refptr<media::VideoFrame> frame;
+
+  EXPECT_CALL(*this, OnStateUpdate(blink::VIDEO_CAPTURE_STATE_STARTED));
+  EXPECT_CALL(*this, OnStateUpdate(blink::VIDEO_CAPTURE_STATE_STOPPED));
+  EXPECT_CALL(*this, OnFrameReady(_, _))
+      .WillOnce([&](scoped_refptr<media::VideoFrame> f, base::TimeTicks t) {
+        frame = f;
+        frame_ready_event.Signal();
+      });
+  EXPECT_CALL(mock_video_capture_host_, DoStart(_, session_id_, params_small_));
+  EXPECT_CALL(mock_video_capture_host_, Stop(_));
+  EXPECT_CALL(mock_video_capture_host_, ReleaseBuffer(_, kArbitraryBufferId, _))
+      .Times(0);
+
+  // Created through the interface the capture path will use, so that flagging
+  // the slot as externally updated finds the mailbox. Exported without a
+  // buffer handle, so the image has no mappable buffer.
+  auto client_shared_image = shared_image_interface()->CreateSharedImage(
+      {viz::MultiPlaneFormat::kNV12, kFrameSize, gfx::ColorSpace(),
+       gpu::SharedImageUsageSet(gpu::SHARED_IMAGE_USAGE_DISPLAY_READ),
+       "VideoCaptureTestSharedImage"},
+      gpu::kNullSurfaceHandle);
+  ASSERT_TRUE(client_shared_image);
+  ASSERT_EQ(client_shared_image->GetGpuMemoryBufferType(), gfx::EMPTY_BUFFER);
+
+  auto handle_set = media::mojom::blink::SharedImageBufferHandleSet::New(
+      client_shared_image->Export(), client_shared_image->creation_sync_token(),
+      /*is_rewritten_in_place=*/true);
+
+  auto create_and_queue_buffer = [&]() {
+    StartCapture(0, params_small_);
+    SimulateSharedImageBufferCreated(kArbitraryBufferId, std::move(handle_set));
+    SimulateBufferReceived(BufferDescription(kArbitraryBufferId, kFrameSize));
+  };
+  auto stop_capture_and_destroy_buffer = [&]() {
+    StopCapture(0);
+    SimulateBufferDestroyed(kArbitraryBufferId);
+    video_capture_impl_.reset();
+  };
+
+  testing_io_thread.Start();
+  testing_io_thread.task_runner()->PostTask(
+      FROM_HERE, base::BindLambdaForTesting(create_and_queue_buffer));
+
+  EXPECT_TRUE(frame_ready_event.TimedWait(base::Seconds(3)));
+
+  // A capture slot is written by the capture process outside this process's
+  // command buffer, so each delivered frame must flag the backing as updated.
+  EXPECT_EQ(shared_image_interface()->update_shared_image_count(), 1);
+  // Frames must be backed by an owning import, so that the backing survives
+  // the capturer destroying its own reference when the pool evicts the slot.
+  EXPECT_EQ(shared_image_interface()->import_shared_image_count(), 1);
+
+  testing_io_thread.task_runner()->PostTask(
+      FROM_HERE, base::BindLambdaForTesting(stop_capture_and_destroy_buffer));
+  testing_io_thread.Stop();
+
+  EXPECT_EQ(mock_video_capture_host_.released_buffer_count(), 0);
+}
+
+TEST_F(VideoCaptureImplTest, WrapsSharedImageDirectlyWithoutExternalUpdate) {
+  const int kArbitraryBufferId = 11;
+  const gfx::Size kFrameSize(64, 64);
+
+  base::Thread testing_io_thread("TestingIOThread");
+  base::WaitableEvent frame_ready_event;
+  scoped_refptr<media::VideoFrame> frame;
+
+  EXPECT_CALL(*this, OnStateUpdate(blink::VIDEO_CAPTURE_STATE_STARTED));
+  EXPECT_CALL(*this, OnStateUpdate(blink::VIDEO_CAPTURE_STATE_STOPPED));
+  EXPECT_CALL(*this, OnFrameReady(_, _))
+      .WillOnce([&](scoped_refptr<media::VideoFrame> f, base::TimeTicks t) {
+        frame = f;
+        frame_ready_event.Signal();
+      });
+  EXPECT_CALL(mock_video_capture_host_, DoStart(_, session_id_, params_small_));
+  EXPECT_CALL(mock_video_capture_host_, Stop(_));
+  EXPECT_CALL(mock_video_capture_host_, ReleaseBuffer(_, kArbitraryBufferId, _))
+      .Times(0);
+
+  auto client_shared_image = shared_image_interface()->CreateSharedImage(
+      {viz::MultiPlaneFormat::kNV12, kFrameSize, gfx::ColorSpace(),
+       gpu::SharedImageUsageSet(gpu::SHARED_IMAGE_USAGE_DISPLAY_READ),
+       "VideoCaptureTestSharedImage"},
+      gpu::kNullSurfaceHandle);
+  ASSERT_TRUE(client_shared_image);
+  // The texture virtual device leaves is_rewritten_in_place false.
+  auto handle_set = media::mojom::blink::SharedImageBufferHandleSet::New(
+      client_shared_image->Export(), client_shared_image->creation_sync_token(),
+      /*is_rewritten_in_place=*/false);
+
+  testing_io_thread.Start();
+  testing_io_thread.task_runner()->PostTask(
+      FROM_HERE, base::BindLambdaForTesting([&]() {
+        StartCapture(0, params_small_);
+        SimulateSharedImageBufferCreated(kArbitraryBufferId,
+                                         std::move(handle_set));
+        SimulateBufferReceived(
+            BufferDescription(kArbitraryBufferId, kFrameSize));
+      }));
+
+  EXPECT_TRUE(frame_ready_event.TimedWait(base::Seconds(3)));
+
+  // The frame wraps the handle set's shared image and sync token directly.
+  ASSERT_TRUE(frame);
+  EXPECT_EQ(frame->shared_image()->mailbox(), client_shared_image->mailbox());
+  EXPECT_EQ(frame->acquire_sync_token(),
+            client_shared_image->creation_sync_token());
+  // Neither an externally-updated notification nor an owning import was
+  // requested.
+  EXPECT_EQ(shared_image_interface()->update_shared_image_count(), 0);
+  EXPECT_EQ(shared_image_interface()->import_shared_image_count(), 0);
+
+  testing_io_thread.task_runner()->PostTask(
+      FROM_HERE, base::BindLambdaForTesting([&]() {
+        StopCapture(0);
+        SimulateBufferDestroyed(kArbitraryBufferId);
+        video_capture_impl_.reset();
+      }));
+  testing_io_thread.Stop();
+
+  EXPECT_EQ(mock_video_capture_host_.released_buffer_count(), 0);
+}
+
+// BufferContexts outlive a GPU context loss (|client_buffers_| is only cleared
+// on stop), so the owning import cached for a slot belongs to the old, dead
+// SharedImageInterface and must be retaken once the context is back. Mirrors
+// the recreate-on-change behaviour of the GpuMemoryBuffer path.
+TEST_F(VideoCaptureImplTest, ReimportsSharedImageAfterGpuContextChange) {
+  const int kArbitraryBufferId = 11;
+  const gfx::Size kFrameSize(64, 64);
+
+  base::Thread testing_io_thread("TestingIOThread");
+  base::WaitableEvent first_frame_ready;
+  base::WaitableEvent second_frame_ready;
+  scoped_refptr<media::VideoFrame> frame;
+
+  EXPECT_CALL(*this, OnStateUpdate(blink::VIDEO_CAPTURE_STATE_STARTED));
+  EXPECT_CALL(*this, OnStateUpdate(blink::VIDEO_CAPTURE_STATE_STOPPED));
+  EXPECT_CALL(*this, OnFrameReady(_, _))
+      .WillOnce([&](scoped_refptr<media::VideoFrame> f, base::TimeTicks t) {
+        frame = f;
+        first_frame_ready.Signal();
+      })
+      .WillOnce([&](scoped_refptr<media::VideoFrame> f, base::TimeTicks t) {
+        frame = f;
+        second_frame_ready.Signal();
+      });
+  EXPECT_CALL(mock_video_capture_host_, DoStart(_, session_id_, params_small_));
+  EXPECT_CALL(mock_video_capture_host_, Stop(_));
+
+  auto client_shared_image = shared_image_interface()->CreateSharedImage(
+      {viz::MultiPlaneFormat::kNV12, kFrameSize, gfx::ColorSpace(),
+       gpu::SharedImageUsageSet(gpu::SHARED_IMAGE_USAGE_DISPLAY_READ),
+       "VideoCaptureTestSharedImage"},
+      gpu::kNullSurfaceHandle);
+  ASSERT_TRUE(client_shared_image);
+
+  auto handle_set = media::mojom::blink::SharedImageBufferHandleSet::New(
+      client_shared_image->Export(), client_shared_image->creation_sync_token(),
+      /*is_rewritten_in_place=*/true);
+
+  testing_io_thread.Start();
+  testing_io_thread.task_runner()->PostTask(
+      FROM_HERE, base::BindLambdaForTesting([&]() {
+        StartCapture(0, params_small_);
+        SimulateSharedImageBufferCreated(kArbitraryBufferId,
+                                         std::move(handle_set));
+        SimulateBufferReceived(
+            BufferDescription(kArbitraryBufferId, kFrameSize));
+      }));
+  EXPECT_TRUE(first_frame_ready.TimedWait(base::Seconds(3)));
+  EXPECT_EQ(shared_image_interface()->import_shared_image_count(), 1);
+
+  // Lose and re-establish the GPU context: a different factories instance is
+  // exactly what VideoCaptureImpl keys the recovery off.
+  platform_->ReplaceGpuFactories();
+  testing_io_thread.task_runner()->PostTask(
+      FROM_HERE, base::BindLambdaForTesting([&]() {
+        SimulateGpuFactoriesChangeOnIOThread();
+        // Same buffer id, so the BufferContext - and its cached import - is
+        // reused rather than rebuilt.
+        SimulateBufferReceived(
+            BufferDescription(kArbitraryBufferId, kFrameSize));
+      }));
+  EXPECT_TRUE(second_frame_ready.TimedWait(base::Seconds(3)));
+
+  // The second frame must not reuse the import taken against the dead
+  // interface.
+  EXPECT_EQ(shared_image_interface()->import_shared_image_count(), 2);
+
+  testing_io_thread.task_runner()->PostTask(
+      FROM_HERE, base::BindLambdaForTesting([&]() {
+        frame.reset();
+        StopCapture(0);
+        SimulateBufferDestroyed(kArbitraryBufferId);
+        video_capture_impl_.reset();
+      }));
+  testing_io_thread.Stop();
+}
+
+// Dropping a shared-image frame must return the buffer to the capturer. The
+// release callback holds a reference to the BufferContext until it runs, which
+// the reference-count DCHECKs in OnAllClientsFinishedConsumingFrame() and
+// OnBufferDestroyed() have to tolerate for this buffer type.
+TEST_F(VideoCaptureImplTest, SharedImageFrameReleaseReturnsBuffer) {
+  const int kArbitraryBufferId = 11;
+  const gfx::Size kFrameSize(64, 64);
+
+  base::Thread testing_io_thread("TestingIOThread");
+  base::WaitableEvent frame_ready_event;
+  base::WaitableEvent buffer_released_event;
+  scoped_refptr<media::VideoFrame> frame;
+
+  EXPECT_CALL(*this, OnStateUpdate(blink::VIDEO_CAPTURE_STATE_STARTED));
+  EXPECT_CALL(*this, OnStateUpdate(blink::VIDEO_CAPTURE_STATE_STOPPED));
+  EXPECT_CALL(*this, OnFrameReady(_, _))
+      .WillOnce([&](scoped_refptr<media::VideoFrame> f, base::TimeTicks t) {
+        frame = std::move(f);
+        frame_ready_event.Signal();
+      });
+  EXPECT_CALL(mock_video_capture_host_, DoStart(_, session_id_, params_small_));
+  EXPECT_CALL(mock_video_capture_host_, Stop(_));
+  EXPECT_CALL(mock_video_capture_host_, ReleaseBuffer(_, kArbitraryBufferId, _))
+      .WillOnce(InvokeWithoutArgs([&]() { buffer_released_event.Signal(); }));
+
+  auto client_shared_image = shared_image_interface()->CreateSharedImage(
+      {viz::MultiPlaneFormat::kNV12, kFrameSize, gfx::ColorSpace(),
+       gpu::SharedImageUsageSet(gpu::SHARED_IMAGE_USAGE_DISPLAY_READ),
+       "VideoCaptureTestSharedImage"},
+      gpu::kNullSurfaceHandle);
+  ASSERT_TRUE(client_shared_image);
+
+  auto handle_set = media::mojom::blink::SharedImageBufferHandleSet::New(
+      client_shared_image->Export(), client_shared_image->creation_sync_token(),
+      /*is_rewritten_in_place=*/true);
+
+  testing_io_thread.Start();
+  testing_io_thread.task_runner()->PostTask(
+      FROM_HERE, base::BindLambdaForTesting([&]() {
+        StartCapture(0, params_small_);
+        SimulateSharedImageBufferCreated(kArbitraryBufferId,
+                                         std::move(handle_set));
+        SimulateBufferReceived(
+            BufferDescription(kArbitraryBufferId, kFrameSize));
+      }));
+  EXPECT_TRUE(frame_ready_event.TimedWait(base::Seconds(3)));
+
+  // Occupy the media thread so that the release callback's hop to it is still
+  // queued - and so still holding its BufferContext reference - while the IO
+  // thread runs OnAllClientsFinishedConsumingFrame(). Without this the two
+  // race and the extra reference is usually already gone.
+  //
+  // Blocking the media thread here is only safe because nothing between
+  // frame.reset() and the ReleaseBuffer() below needs it: that path runs
+  // entirely on the IO thread. If a future change adds a media thread hop in
+  // that window, this deadlocks and surfaces as the TimedWait() below expiring
+  // after 3 seconds rather than as an obvious hang.
+  //
+  // The events are ref-counted rather than stack-allocated: the media thread
+  // belongs to |platform_| and is only joined during fixture teardown, after
+  // this function returns. Under load the parked task may not be picked up
+  // until then, which would make stack events a use-after-free.
+  using RefCountedEvent = base::RefCountedData<base::WaitableEvent>;
+  auto media_thread_parked = base::MakeRefCounted<RefCountedEvent>();
+  auto unblock_media_thread = base::MakeRefCounted<RefCountedEvent>();
+  platform_->GetGpuFactories()->GetTaskRunner()->PostTask(
+      FROM_HERE, base::BindOnce(
+                     [](scoped_refptr<RefCountedEvent> parked,
+                        scoped_refptr<RefCountedEvent> unblock) {
+                       parked->data.Signal();
+                       unblock->data.Wait();
+                     },
+                     media_thread_parked, unblock_media_thread));
+  // The parked task must have actually started, otherwise the interleaving
+  // this test depends on is not guaranteed and it would assert nothing.
+  EXPECT_TRUE(media_thread_parked->data.TimedWait(base::Seconds(3)));
+
+  testing_io_thread.task_runner()->PostTask(
+      FROM_HERE, base::BindLambdaForTesting([&]() { frame.reset(); }));
+  EXPECT_TRUE(buffer_released_event.TimedWait(base::Seconds(3)));
+  // Released unconditionally, including when a wait above failed, so that the
+  // parked task can never block fixture teardown.
+  unblock_media_thread->data.Signal();
+
+  testing_io_thread.task_runner()->PostTask(
+      FROM_HERE, base::BindLambdaForTesting([&]() {
+        StopCapture(0);
+        SimulateBufferDestroyed(kArbitraryBufferId);
+        video_capture_impl_.reset();
+      }));
+  testing_io_thread.Stop();
+}
 
 TEST_F(VideoCaptureImplTest, WinCameraBusyErrorUpdatesCorrectState) {
   EXPECT_CALL(*this,

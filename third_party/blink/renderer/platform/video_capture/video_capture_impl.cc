@@ -125,6 +125,8 @@ struct VideoCaptureImpl::BufferContext
   const gpu::SyncToken& shared_image_sync_token() const {
     return shared_image_sync_token_;
   }
+
+  bool is_rewritten_in_place() const { return is_rewritten_in_place_; }
   media::GpuVideoAcceleratorFactories* gpu_factories() const {
     return gpu_factories_;
   }
@@ -181,12 +183,77 @@ struct VideoCaptureImpl::BufferContext
     data_ = backup_mapping_.GetMemoryAsSpan<uint8_t>();
   }
 
+  // Maps the region delivered inside the shared image's buffer handle;
+  void InitializeFromPremappedRegion(
+      base::UnsafeSharedMemoryRegion premapped_region) {
+    InitializeFromUnsafeShmemRegion(std::move(premapped_region));
+  }
+
+  // Only restores the unowned |shared_image_|, which is the IO thread's. The
+  // owning import is media-thread confined and is retaken there instead.
+  void ReimportSharedImage() {
+    DCHECK(!shared_image_);
+    auto shared_image_handle = shared_image_handle_.Clone();
+    shared_image_ = gpu::ClientSharedImage::ImportUnowned(
+        std::move(shared_image_handle->shared_image));
+  }
+
   void ResetPreMapping() {
     // If it's already mapped previously, then reset the mapping.
     if (backup_mapping_.IsValid() || data_.data()) {
       backup_mapping_ = base::WritableSharedMemoryMapping();
       data_ = {};
     }
+  }
+
+  // The sync token the previous consumer of this slot released it with. Used
+  // to order the next frame's update against that release; see
+  // VideoCaptureImpl::BindSharedImageOnMediaTaskRunner().
+  const gpu::SyncToken& shared_image_release_sync_token() const {
+    return shared_image_release_sync_token_;
+  }
+
+  // Returns the reference used to back VideoFrames, importing it on first use.
+  //
+  // This is an *owning* import, unlike |shared_image_|: the capture process
+  // destroys a slot's shared image as soon as the buffer pool evicts it, which
+  // it may do before this process is told to retire the buffer. An owning
+  // import takes a service-side reference, so the backing outlives the
+  // capturer's copy and this process's pending GPU work on it. Confined to
+  // |media_task_runner_|, which is where a SharedImageInterface may be used.
+  scoped_refptr<gpu::ClientSharedImage> GetOrImportOwnedSharedImage(
+      gpu::SharedImageInterface* sii) {
+    CHECK(media_task_runner_->RunsTasksInCurrentSequence());
+    if (!owned_shared_image_) {
+      auto shared_image_handle = shared_image_handle_.Clone();
+      owned_shared_image_ =
+          sii->ImportSharedImage(std::move(shared_image_handle->shared_image));
+    }
+    return owned_shared_image_;
+  }
+
+  // Drops the owning import so the next GetOrImportOwnedSharedImage() re-takes
+  // one. Called when the GPU context changed: the old import belongs to a
+  // SharedImageInterface that is gone, so there is no destruction sync token
+  // worth preserving.
+  void ResetOwnedSharedImage() {
+    CHECK(media_task_runner_->RunsTasksInCurrentSequence());
+    owned_shared_image_.reset();
+  }
+
+  static void SharedImageSlotReleased(
+      scoped_refptr<BufferContext> buffer_context,
+      const gpu::SyncToken& release_sync_token) {
+    if (!buffer_context->media_task_runner_) {
+      return;
+    }
+    if (!buffer_context->media_task_runner_->RunsTasksInCurrentSequence()) {
+      buffer_context->media_task_runner_->PostTask(
+          FROM_HERE, base::BindOnce(&BufferContext::SharedImageSlotReleased,
+                                    buffer_context, release_sync_token));
+      return;
+    }
+    buffer_context->shared_image_release_sync_token_ = release_sync_token;
   }
 
  private:
@@ -201,6 +268,11 @@ struct VideoCaptureImpl::BufferContext
 
   void InitializeFromSharedImage(
       media::mojom::blink::SharedImageBufferHandleSetPtr shared_image_handle) {
+    is_rewritten_in_place_ = shared_image_handle->is_rewritten_in_place;
+    // Retain the handle set so the shared image can be re-imported after the
+    // software fallback reset it (see ReimportSharedImage()). The clone is
+    // kept before the shared image field is moved out below.
+    shared_image_handle_ = shared_image_handle.Clone();
     shared_image_ = gpu::ClientSharedImage::ImportUnowned(
         std::move(shared_image_handle->shared_image));
     shared_image_sync_token_ = shared_image_handle->sync_token;
@@ -214,6 +286,15 @@ struct VideoCaptureImpl::BufferContext
 
   friend class ThreadSafeRefCounted<BufferContext>;
   virtual ~BufferContext() {
+    // Release the owning import, ordered after this process finished reading
+    // the slot, so the service keeps the backing alive until then.
+    if (owned_shared_image_) {
+      media_task_runner_->PostTask(
+          FROM_HERE,
+          base::BindOnce(&BufferContext::DestroyTextureOnMediaThread,
+                         gpu_factories_, std::move(owned_shared_image_),
+                         shared_image_release_sync_token_));
+    }
     if (!gmb_resources_)
       return;
     if (!gmb_resources_->shared_image) {
@@ -240,13 +321,36 @@ struct VideoCaptureImpl::BufferContext
   // GMB comes premapped from the capturer.
   base::WritableSharedMemoryMapping backup_mapping_;
 
+  // Only valid for |buffer_type_ == SHARED_IMAGE_HANDLE|: retained so the
+  // shared image can be re-imported after the software fallback reset it when
+  // the GPU connection is re-established. The premapped region (Windows) rides
+  // inside the retained shared image's buffer handle.
+  media::mojom::blink::SharedImageBufferHandleSetPtr shared_image_handle_;
+
+  // Only valid for |buffer_type_ == SHARED_IMAGE_HANDLE|. Set when the
+  // producer reuses this buffer's shared image across frames and overwrites
+  // its pixels, so the backing has to be flagged as updated before each read.
+  bool is_rewritten_in_place_ = false;
+
   // This points into one of the above mappings, which hold the mapping open for
   // the lifetime of this object.
   base::raw_span<const uint8_t> data_;
 
-  // Only valid for |buffer_type_ == SHARED_IMAGE_HANDLE|.
+  // Only valid for |buffer_type_ == SHARED_IMAGE_HANDLE|. Unowned, and only
+  // touched on the IO thread: it serves the slot's metadata and, when there is
+  // no GPU connection, the premapped region. VideoFrames are backed by
+  // |owned_shared_image_| instead.
   scoped_refptr<gpu::ClientSharedImage> shared_image_;
   gpu::SyncToken shared_image_sync_token_;
+  // Only valid for |buffer_type_ == SHARED_IMAGE_HANDLE|, and only touched on
+  // |media_task_runner_|. See GetOrImportOwnedSharedImage().
+  scoped_refptr<gpu::ClientSharedImage> owned_shared_image_;
+  // Release token of the slot's previous consumer. Only written on
+  // |media_task_runner_|. The destructor reads it from whichever sequence
+  // drops the last reference, which is safe because a pending
+  // SharedImageSlotReleased() holds a reference of its own, so the destructor
+  // cannot run while a write is still outstanding.
+  gpu::SyncToken shared_image_release_sync_token_;
 
   // The following is for |buffer_type == GPU_MEMORY_BUFFER_HANDLE|.
 
@@ -371,21 +475,100 @@ bool VideoCaptureImpl::ProcessBuffer(
       break;
     }
     case VideoFrameBufferHandleType::kSharedImageHandle: {
+#if BUILDFLAG(IS_WIN)
+      if (!gpu_factories_ || !media_task_runner_ ||
+          mappable_buffers_not_supported_) {
+        if (video_frame_init_data.ready_buffer->info->is_premapped &&
+            !buffer_context->data().data()) {
+          if (buffer_context->shared_image()->GetGpuMemoryBufferType() ==
+              gfx::EMPTY_BUFFER) {
+            DLOG(ERROR) << "Premapped frame on a shared image with no buffer "
+                           "handle; cannot wrap it.";
+            return false;
+          }
+          auto gmb_handle =
+              buffer_context->shared_image()->CloneGpuMemoryBufferHandle();
+          buffer_context->InitializeFromPremappedRegion(
+              std::move(gmb_handle).dxgi_handle().TakeRegion());
+          DCHECK(buffer_context->data().data());
+        }
+        RequirePremappedFrames();
+        if (!video_frame_init_data.ready_buffer->info->is_premapped ||
+            !buffer_context->data().data()) {
+          return false;
+        }
+
+        scoped_refptr<media::VideoFrame> frame =
+            media::VideoFrame::WrapExternalData(
+                video_frame_init_data.ready_buffer->info->pixel_format,
+                gfx::Size(video_frame_init_data.ready_buffer->info->coded_size),
+                gfx::Rect(
+                    video_frame_init_data.ready_buffer->info->visible_rect),
+                video_frame_init_data.ready_buffer->info->visible_rect.size(),
+                buffer_context->data(),
+                video_frame_init_data.ready_buffer->info->timestamp);
+        if (!frame) {
+          return false;
+        }
+        video_frame_init_data.frame = frame;
+        break;
+      }
+      // The software fallback above resets the shared image; re-import it now
+      // that the GPU connection is back.
+      if (!buffer_context->shared_image()) {
+        buffer_context->ReimportSharedImage();
+      }
+#endif
       CHECK(buffer_context->shared_image());
       if (buffer_context->shared_image()->size() !=
           gfx::Size(video_frame_init_data.ready_buffer->info->coded_size)) {
         DLOG(ERROR) << "SharedImage size does not match coded_size";
         return false;
       }
-      video_frame_init_data.frame = media::VideoFrame::WrapSharedImage(
-          video_frame_init_data.ready_buffer->info->pixel_format,
-          buffer_context->shared_image(),
-          buffer_context->shared_image_sync_token(),
-          media::VideoFrame::ReleaseMailboxCB(),
-          gfx::Rect(video_frame_init_data.ready_buffer->info->visible_rect),
-          video_frame_init_data.ready_buffer->info->natural_size,
-          video_frame_init_data.ready_buffer->info->timestamp);
-      break;
+      // Only the D3D11 shared image capture path sets `is_rewritten_in_place`
+      // to true for now.
+      if (!buffer_context->is_rewritten_in_place()) {
+        video_frame_init_data.frame = media::VideoFrame::WrapSharedImage(
+            video_frame_init_data.ready_buffer->info->pixel_format,
+            buffer_context->shared_image(),
+            buffer_context->shared_image_sync_token(),
+            media::VideoFrame::ReleaseMailboxCB(),
+            gfx::Rect(video_frame_init_data.ready_buffer->info->visible_rect),
+            video_frame_init_data.ready_buffer->info->natural_size,
+            video_frame_init_data.ready_buffer->info->timestamp);
+        break;
+      }
+      // Reset premapping in |buffer_context| to prevent concurrent mappings
+      // that can occur when the GPU connection is lost and re-established.
+      buffer_context->ResetPreMapping();
+      CHECK(gpu_factories_);
+      CHECK(media_task_runner_);
+      media_task_runner_->PostTask(
+          FROM_HERE,
+          base::BindOnce(
+              [](media::GpuVideoAcceleratorFactories* gpu_factories,
+                 VideoFrameInitData video_frame_init_data,
+                 base::OnceCallback<void(VideoFrameInitData)>
+                     on_frame_ready_callback,
+                 base::OnceCallback<void()> on_gpu_context_lost) {
+                if (!VideoCaptureImpl::BindSharedImageOnMediaTaskRunner(
+                        gpu_factories, video_frame_init_data)) {
+                  // Bind failed.
+                  std::move(on_gpu_context_lost).Run();
+                  video_frame_init_data.frame = nullptr;
+                }
+                std::move(on_frame_ready_callback)
+                    .Run(std::move(video_frame_init_data));
+              },
+              gpu_factories_, std::move(video_frame_init_data),
+              base::BindPostTaskToCurrentDefault(
+                  base::BindOnce(&VideoCaptureImpl::OnVideoFrameReady,
+                                 weak_factory_.GetWeakPtr(), reference_time)),
+              base::BindPostTask(
+                  main_task_runner_,
+                  base::BindOnce(&VideoCaptureImpl::OnGpuContextLost,
+                                 weak_factory_.GetWeakPtr()))));
+      return true;
     }
     case VideoFrameBufferHandleType::kGpuMemoryBufferHandle: {
 #if BUILDFLAG(IS_APPLE)
@@ -510,6 +693,80 @@ bool VideoCaptureImpl::ProcessBuffer(
   video_frame_init_data.frame->set_metadata(
       video_frame_init_data.ready_buffer->info->metadata);
   OnVideoFrameReady(reference_time, std::move(video_frame_init_data));
+  return true;
+}
+
+// Wraps a capture slot's shared image in a VideoFrame. Capture slots may be
+// reused across frames, so the service has to be told that the backing changed
+// before each frame is read.
+bool VideoCaptureImpl::BindSharedImageOnMediaTaskRunner(
+    media::GpuVideoAcceleratorFactories* gpu_factories,
+    VideoFrameInitData& video_frame_init_data) {
+  DCHECK(gpu_factories);
+  auto* sii = gpu_factories->SharedImageInterface();
+  if (!sii) {
+    DVLOG(1) << "GPU context lost";
+    return false;
+  }
+
+  BufferContext* const buffer_context =
+      video_frame_init_data.buffer_context.get();
+
+  // A different GpuVideoAcceleratorFactories means the GPU context was lost
+  // and re-established. Buffer contexts outlive that (|client_buffers_| is
+  // only cleared on stop), so the cached import still refers to the dead
+  // SharedImageInterface and has to be retaken. Mirrors the same check at the
+  // top of BindVideoFrameOnMediaTaskRunner().
+  if (gpu_factories != buffer_context->gpu_factories()) {
+    buffer_context->SetGpuFactories(gpu_factories);
+    buffer_context->ResetOwnedSharedImage();
+  }
+
+  scoped_refptr<gpu::ClientSharedImage> shared_image =
+      buffer_context->GetOrImportOwnedSharedImage(sii);
+  CHECK(shared_image);
+
+  // An image that carries a buffer handle (on Windows, the DXGI handle with the
+  // premapped region) is wrapped as a mappable shared image, as on the
+  // GpuMemoryBuffer path. Software consumers then map it - from the premapped
+  // region when there is one - instead of reading every frame back through the
+  // raster interface, which is what an opaque shared image frame leads to.
+  bool is_mappable = false;
+#if BUILDFLAG(IS_WIN)
+  is_mappable = shared_image->GetGpuMemoryBufferType() != gfx::EMPTY_BUFFER;
+  if (is_mappable) {
+    shared_image->SetUsePreMappedMemory(
+        video_frame_init_data.ready_buffer->info->is_premapped);
+  }
+#endif
+
+  gpu::SyncToken sync_token = shared_image->BackingWasExternallyUpdated(
+      buffer_context->shared_image_release_sync_token());
+  sii->VerifySyncToken(sync_token);
+
+  auto release_cb = base::BindOnce(&BufferContext::SharedImageSlotReleased,
+                                   video_frame_init_data.buffer_context);
+  const gfx::Rect visible_rect(
+      video_frame_init_data.ready_buffer->info->visible_rect);
+  scoped_refptr<media::VideoFrame> frame =
+      is_mappable
+          ? media::VideoFrame::WrapMappableSharedImage(
+                shared_image, sync_token, std::move(release_cb), visible_rect,
+                video_frame_init_data.ready_buffer->info->natural_size,
+                video_frame_init_data.ready_buffer->info->timestamp)
+          : media::VideoFrame::WrapSharedImage(
+                video_frame_init_data.ready_buffer->info->pixel_format,
+                shared_image, sync_token, std::move(release_cb), visible_rect,
+                video_frame_init_data.ready_buffer->info->natural_size,
+                video_frame_init_data.ready_buffer->info->timestamp);
+  if (!frame) {
+    LOG(ERROR) << "Can't wrap SharedImage as VideoFrame";
+    return false;
+  }
+
+  frame->set_metadata(video_frame_init_data.ready_buffer->info->metadata);
+  frame->metadata().read_lock_fences_enabled = true;
+  video_frame_init_data.frame = std::move(frame);
   return true;
 }
 
@@ -1032,12 +1289,15 @@ void VideoCaptureImpl::OnBufferDestroyed(int32_t buffer_id) {
 
   const auto& cb_iter = client_buffers_.find(buffer_id);
   if (cb_iter != client_buffers_.end()) {
-    // If the BufferContext is non-null, the GpuMemoryBufferHandle-backed frames
-    // can have more than one reference (held by SharedImageReleased).
+    // If the BufferContext is non-null, GpuMemoryBufferHandle- and
+    // SharedImage-backed frames can have more than one reference (held by
+    // SharedImageReleased and SharedImageSlotReleased respectively).
     // Otherwise, only one reference should be held.
     DCHECK(!cb_iter->second.get() ||
            cb_iter->second->buffer_type() ==
                VideoFrameBufferHandleType::kGpuMemoryBufferHandle ||
+           cb_iter->second->buffer_type() ==
+               VideoFrameBufferHandleType::kSharedImageHandle ||
            cb_iter->second->HasOneRef())
         << "Instructed to delete buffer we are still using.";
     client_buffers_.erase(cb_iter);
@@ -1081,12 +1341,15 @@ void VideoCaptureImpl::OnAllClientsFinishedConsumingFrame(
   DCHECK(!buffer_context->HasOneRef());
   BufferContext* const buffer_raw_ptr = buffer_context.get();
   buffer_context = nullptr;
-  // For non-GMB case, there should be only one reference, from
-  // |client_buffers_|. This DCHECK is invalid for GpuMemoryBufferHandle-backed
-  // frames, because SharedImageReleased may hold on to a reference to
-  // |buffer_context|.
+  // Otherwise there should be only one reference, from |client_buffers_|. This
+  // DCHECK is invalid for GpuMemoryBufferHandle- and SharedImage-backed frames,
+  // because their release callbacks (SharedImageReleased and
+  // SharedImageSlotReleased) may hold on to a reference to |buffer_context|
+  // until they run.
   if (buffer_raw_ptr->buffer_type() !=
-      VideoFrameBufferHandleType::kGpuMemoryBufferHandle) {
+          VideoFrameBufferHandleType::kGpuMemoryBufferHandle &&
+      buffer_raw_ptr->buffer_type() !=
+          VideoFrameBufferHandleType::kSharedImageHandle) {
     DCHECK(buffer_raw_ptr->HasOneRef());
   }
 #else

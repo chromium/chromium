@@ -149,6 +149,9 @@ class PLATFORM_EXPORT VideoCaptureImpl
   using BufferFinishedCallback = base::OnceClosure;
 
   bool ProcessBuffer(media::mojom::blink::ReadyBufferPtr ready_buffer);
+  static bool BindSharedImageOnMediaTaskRunner(
+      media::GpuVideoAcceleratorFactories* gpu_factories,
+      VideoFrameInitData& video_frame_init_data);
   static bool BindVideoFrameOnMediaTaskRunner(
       media::GpuVideoAcceleratorFactories* gpu_factories,
       gfx::GpuMemoryBufferHandle gmb_handle,

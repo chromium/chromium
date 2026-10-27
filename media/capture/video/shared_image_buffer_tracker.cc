@@ -69,7 +69,8 @@ SharedImageBufferTracker::GetVideoBufferHandle() {
   auto exported_shared_image = client_shared_image_->Export();
   auto handle_set = media::mojom::SharedImageBufferHandleSet::New(
       std::move(exported_shared_image),
-      client_shared_image_->creation_sync_token());
+      client_shared_image_->creation_sync_token(),
+      /*is_rewritten_in_place=*/false);
   return media::mojom::VideoBufferHandle::NewSharedImageHandle(
       std::move(handle_set));
 }
