@@ -23,8 +23,8 @@
 #include "content/public/browser/site_instance.h"
 #include "content/public/common/buildflags.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
+#include "ui/base/mojom/window_open_disposition.mojom-forward.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/menus/simple_menu_model.h"
 
 namespace content {
@@ -172,7 +172,7 @@ class RenderViewContextMenuBase : public ui::SimpleMenuModel::Delegate,
   void OpenURL(const GURL& url,
                const GURL& referrer,
                const url::Origin& initiator,
-               WindowOpenDisposition disposition,
+               ui::mojom::WindowOpenDisposition disposition,
                ui::PageTransition transition);
 
   // Opens the specified URL with extra headers.
@@ -180,7 +180,7 @@ class RenderViewContextMenuBase : public ui::SimpleMenuModel::Delegate,
       const GURL& url,
       const GURL& referrer,
       const url::Origin& initiator,
-      WindowOpenDisposition disposition,
+      ui::mojom::WindowOpenDisposition disposition,
       ui::PageTransition transition,
       const std::string& extra_headers,
       bool started_from_context_menu,
@@ -196,7 +196,7 @@ class RenderViewContextMenuBase : public ui::SimpleMenuModel::Delegate,
       const GURL& url,
       const GURL& referring_url,
       const url::Origin& initiator,
-      WindowOpenDisposition disposition,
+      ui::mojom::WindowOpenDisposition disposition,
       ui::PageTransition transition,
       const std::string& extra_headers,
       bool started_from_context_menu);

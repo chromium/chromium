@@ -15,6 +15,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "device/base/public/cpp/string_util.h"
 #include "ui/android/window_android.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -190,7 +191,7 @@ BluetoothChooserAndroid::CreateForTesting(
 void BluetoothChooserAndroid::OpenURL(const char* url) {
   web_contents_->OpenURL(
       content::OpenURLParams::CreateBrowserInitiated(
-          GURL(url), WindowOpenDisposition::kNewForegroundTab,
+          GURL(url), ui::mojom::WindowOpenDisposition::kNewForegroundTab,
           ui::PAGE_TRANSITION_AUTO_TOPLEVEL),
       /*navigation_handle_callback=*/{});
 }

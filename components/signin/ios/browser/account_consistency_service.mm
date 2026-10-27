@@ -36,6 +36,7 @@
 #import "net/base/apple/url_conversions.h"
 #import "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #import "net/cookies/canonical_cookie.h"
+#import "ui/base/mojom/window_open_disposition.mojom.h"
 #import "url/gurl.h"
 
 namespace {
@@ -338,7 +339,7 @@ void AccountConsistencyService::AccountConsistencyHandler::
     return;
   }
   web_state_->OpenURL(web::WebState::OpenURLParams(
-      url, web::Referrer(), WindowOpenDisposition::kCurrentTab,
+      url, web::Referrer(), ui::mojom::WindowOpenDisposition::kCurrentTab,
       ui::PAGE_TRANSITION_AUTO_TOPLEVEL, false));
   if (delegate_) {
     delegate_->OnRestoreGaiaCookies();

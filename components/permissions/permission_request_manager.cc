@@ -60,6 +60,7 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/mojom/devtools/inspector_issue.mojom.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/window_open_disposition_utils.h"
 #include "ui/display/screen.h"
 #include "ui/display/types/display_constants.h"
@@ -911,7 +912,8 @@ void PermissionRequestManager::OpenHelpCenterLink(const ui::Event& event) {
           content::OpenURLParams::CreateBrowserInitiated(
               GURL(permissions::kEmbeddedContentHelpCenterURL),
               ui::DispositionFromEventFlags(
-                  event.flags(), WindowOpenDisposition::kNewForegroundTab),
+                  event.flags(),
+                  ui::mojom::WindowOpenDisposition::kNewForegroundTab),
               ui::PAGE_TRANSITION_LINK),
           /*navigation_handle_callback=*/{});
       break;

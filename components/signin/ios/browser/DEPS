@@ -4,6 +4,7 @@ include_rules = [
   "+ios/web/common",
   "+ios/web/public",
   "+third_party/ocmock",
+  "+ui/base/mojom/window_open_disposition.mojom.h",
 ]
 
 specific_include_rules = {
