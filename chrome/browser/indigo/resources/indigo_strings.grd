@@ -109,6 +109,15 @@
       <message name="IDS_INDIGO_CONTEXT_MENU_TEXT" desc="The text of the context menu item which triggers Indigo." translateable="false">
         Indigo
       </message>
+      <message name="IDS_INDIGO_CONTEXT_MENU_TOAST_IPH_TITLE" desc="Title of an in-product help toast bubble shown after an image transformation completes, educating the user on how to try on clothes again." translateable="false">
+        How to try on clothes again
+      </message>
+      <message name="IDS_INDIGO_CONTEXT_MENU_TOAST_IPH_BODY" desc="Body text of an in-product help toast bubble shown after an image transformation completes, educating the user that they can right-click to trigger Indigo. The string in quotation marks should match the translation for IDS_INDIGO_CONTEXT_MENU_TEXT." translateable="false">
+        Next time you want to try something on, right-click and select "Indigo"
+      </message>
+      <message name="IDS_INDIGO_CONTEXT_MENU_TOAST_IPH_SCREENREADER" desc="Screen reader announcement for the in-product help toast bubble with body text IDS_INDIGO_CONTEXT_MENU_TOAST_IPH_BODY, shown after an image transformation completes to educate the user that they can right-click to trigger Indigo. Should match IDS_INDIGO_CONTEXT_MENU_TOAST_IPH_BODY except formatted for spoken announcement (without quotation marks), with 'Indigo' matching IDS_INDIGO_CONTEXT_MENU_TEXT." translateable="false">
+        Next time you want to try something on, right-click and select Indigo.
+      </message>
 
       <!-- Overlay UI -->
       <message name="IDS_INDIGO_TITLE" desc="Title for the Indigo page." translateable="false">

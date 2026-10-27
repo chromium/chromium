@@ -562,6 +562,8 @@ should be able to be added at any place in this file.
   <variant name="_IncognitoIndicatorCloseAllWindows"
       summary="For the Incognito indicator close all windows IPH."/>
   <variant name="_IncognitoWindow" summary="For IncognitoWindow feature."/>
+  <variant name="_IndigoContextMenuToast"
+      summary="For Indigo context menu discovery toast after transformation."/>
   <variant name="_InstanceSwitcher" summary="For Instance switcher feature."/>
   <variant name="_IntentChip"
       summary="In product help for opening a webpage in an app using the

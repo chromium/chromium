@@ -26,6 +26,7 @@
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
+#include "chrome/browser/indigo/resources/grit/indigo_strings.h"
 #include "chrome/browser/performance_manager/public/user_tuning/user_performance_tuning_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/search.h"
@@ -1074,6 +1075,20 @@ void MaybeRegisterChromeFeaturePromos(
           .SetBubbleArrow(HelpBubbleArrow::kTopRight)
           .SetMetadata(153, "vpasupathy@chromium.org",
                        "Triggered when Save Video Frame IPH timer fires.")));
+
+  // kIPHIndigoContextMenuToastFeature:
+  registry.RegisterFeature(std::move(
+      FeaturePromoSpecification::CreateForToastPromo(
+          feature_engagement::kIPHIndigoContextMenuToastFeature,
+          kBrowserDialogAnchorElementId, IDS_INDIGO_CONTEXT_MENU_TOAST_IPH_BODY,
+          IDS_INDIGO_CONTEXT_MENU_TOAST_IPH_SCREENREADER,
+          FeaturePromoSpecification::AcceleratorInfo())
+          .SetBubbleTitleText(IDS_INDIGO_CONTEXT_MENU_TOAST_IPH_TITLE)
+          .SetBubbleArrow(HelpBubbleArrow::kNone)
+          .SetMetadata(
+              158, "jbroman@chromium.org",
+              "Triggered after a Try on You image transformation to educate "
+              "users about the right-click context menu entry point.")));
 
   // kIPHPasswordsSavePrimingPromo:
   registry.RegisterFeature(std::move(

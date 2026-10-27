@@ -54,10 +54,13 @@
 #include "chrome/browser/ui/page_action/test_support/fake_tab_interface.h"
 #include "chrome/browser/ui/page_action/test_support/mock_page_action_controller.h"
 #include "chrome/browser/ui/side_panel/mock_side_panel_ui.h"
+#include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "chrome/test/user_education/mock_browser_user_education_interface.h"
+#include "components/feature_engagement/public/feature_constants.h"
 #include "components/optimization_guide/core/hints/optimization_guide_decision.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/signin/public/base/signin_buildflags.h"
@@ -309,6 +312,9 @@ class IndigoPageActionControllerTestBase : public testing::Test {
         .WillByDefault(testing::Return(&mock_browser_window_interface_));
     ON_CALL(testing::Const(*tab_interface_), GetBrowserWindowInterface())
         .WillByDefault(testing::Return(&mock_browser_window_interface_));
+    ON_CALL(*tab_interface_, IsVisible()).WillByDefault(testing::Return(true));
+    ON_CALL(testing::Const(*tab_interface_), IsVisible())
+        .WillByDefault(testing::Return(true));
 
     ON_CALL(testing::Const(mock_browser_window_interface_),
             GetUnownedUserDataHost())
@@ -531,6 +537,7 @@ class IndigoPageActionControllerTestBase : public testing::Test {
 
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  ChromeLayoutProvider layout_provider_;
 #if BUILDFLAG(IS_CHROMEOS)
   // Needed because TestWebContents ends up creating BTM classes which depend
   // on this on ChromeOS.
@@ -2692,6 +2699,127 @@ TEST_P(IndigoPageActionControllerTest,
   histogram_tester.ExpectUniqueSample(
       kTransformationTriggerSourceHistogram,
       IndigoTransformationTriggerSource::kContextMenu, 1);
+}
+
+auto IsFeaturePromo(const base::Feature& feature) {
+  return testing::Truly(
+      [&feature](const user_education::FeaturePromoParams& p) {
+        return &p.feature.get() == &feature;
+      });
+}
+
+TEST_P(IndigoPageActionControllerTest,
+       ContextMenuToastPromoShownForPageActionAndRetry) {
+  base::test::ScopedFeatureList local_feature_list{
+      features::kIndigoContextMenu};
+
+  CreateController();
+  SetupEligibleAndOnboarded();
+
+  testing::NiceMock<MockBrowserUserEducationInterface> mock_user_education(
+      &mock_browser_window_interface_);
+
+  GURL url("https://example.com");
+  ExpectOptimizationGuideDecision(url, OptimizationGuideDecision::kTrue);
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(
+      tab_interface_->GetContents(), url);
+  ClickAnchoredMessage();
+
+  EXPECT_CALL(mock_user_education,
+              MaybeShowFeaturePromo(IsFeaturePromo(
+                  feature_engagement::kIPHIndigoContextMenuToastFeature)))
+      .Times(1);
+  controller_->ShowToolbar();
+  testing::Mock::VerifyAndClearExpectations(&mock_user_education);
+
+  // Retrying a page-action transformation via the error toast also shows the
+  // promo when `ShowToolbar()` is called.
+  controller_->OnClose(nullptr);
+  controller_->InvokeAction(EntryPoint::kErrorToast);
+
+  EXPECT_CALL(mock_user_education,
+              MaybeShowFeaturePromo(IsFeaturePromo(
+                  feature_engagement::kIPHIndigoContextMenuToastFeature)))
+      .Times(1);
+  controller_->ShowToolbar();
+  testing::Mock::VerifyAndClearExpectations(&mock_user_education);
+
+  // Regenerating from the toolbar (or retrying that regeneration) does not
+  // re-trigger the promo.
+  EXPECT_CALL(mock_user_education, MaybeShowFeaturePromo(_)).Times(0);
+  controller_->OnRegenerate(nullptr);
+  controller_->ShowToolbar();
+  controller_->OnClose(nullptr);
+  controller_->InvokeAction(EntryPoint::kErrorToast);
+  controller_->ShowToolbar();
+}
+
+TEST_P(IndigoPageActionControllerTest,
+       ContextMenuToastPromoSuppressionAndNavigationEdgeCases) {
+  CreateController();
+  SetupEligibleAndOnboarded();
+
+  testing::NiceMock<MockBrowserUserEducationInterface> mock_user_education(
+      &mock_browser_window_interface_);
+
+  // Not shown when `kIndigoContextMenu` is disabled.
+  {
+    base::test::ScopedFeatureList disabled_list;
+    disabled_list.InitAndDisableFeature(features::kIndigoContextMenu);
+    GURL url0("https://example.com/page0");
+    ExpectOptimizationGuideDecision(url0, OptimizationGuideDecision::kTrue);
+    content::NavigationSimulator::NavigateAndCommitFromBrowser(
+        tab_interface_->GetContents(), url0);
+    ClickAnchoredMessage();
+
+    EXPECT_CALL(mock_user_education, MaybeShowFeaturePromo(_)).Times(0);
+    controller_->ShowToolbar();
+    testing::Mock::VerifyAndClearExpectations(&mock_user_education);
+  }
+
+  base::test::ScopedFeatureList enabled_list{features::kIndigoContextMenu};
+
+  // Not shown for a context-menu transformation or its error-toast retry.
+  GURL url1("https://example.com/page1");
+  ExpectOptimizationGuideDecision(url1, OptimizationGuideDecision::kTrue);
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(
+      tab_interface_->GetContents(), url1);
+  EXPECT_CALL(mock_user_education, MaybeShowFeaturePromo(_)).Times(0);
+  controller_->InvokeAction(EntryPoint::kContextMenu);
+  controller_->ShowToolbar();
+
+  controller_->OnClose(nullptr);
+  controller_->InvokeAction(EntryPoint::kErrorToast);
+  controller_->ShowToolbar();
+  testing::Mock::VerifyAndClearExpectations(&mock_user_education);
+
+  // Not shown when the tab is hidden in the background.
+  ON_CALL(*tab_interface_, IsVisible()).WillByDefault(testing::Return(false));
+  ON_CALL(testing::Const(*tab_interface_), IsVisible())
+      .WillByDefault(testing::Return(false));
+  GURL url2("https://example.com/page2");
+  ExpectOptimizationGuideDecision(url2, OptimizationGuideDecision::kTrue);
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(
+      tab_interface_->GetContents(), url2);
+  ClickAnchoredMessage();
+  EXPECT_CALL(mock_user_education, MaybeShowFeaturePromo(_)).Times(0);
+  controller_->ShowToolbar();
+  testing::Mock::VerifyAndClearExpectations(&mock_user_education);
+
+  ON_CALL(*tab_interface_, IsVisible()).WillByDefault(testing::Return(true));
+  ON_CALL(testing::Const(*tab_interface_), IsVisible())
+      .WillByDefault(testing::Return(true));
+
+  // Navigating to a new page resets `last_non_retry_trigger_source_` so
+  // `ShowToolbar()` on the new page does not fire without a new page-action
+  // invocation.
+  GURL url3("https://example.com/page3");
+  ExpectOptimizationGuideDecision(url3, OptimizationGuideDecision::kTrue);
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(
+      tab_interface_->GetContents(), url3);
+
+  EXPECT_CALL(mock_user_education, MaybeShowFeaturePromo(_)).Times(0);
+  controller_->ShowToolbar();
 }
 }  // namespace
 }  // namespace indigo

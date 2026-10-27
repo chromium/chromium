@@ -329,6 +329,11 @@ class IndigoPageActionController : public tabs::ContentsObservingTabFeature,
   std::optional<page_actions::PageActionPriorityCategory>
       last_anchored_message_priority_;
 
+  // The most recent non-retry transformation trigger source on the current
+  // page, preserved across error-toast retries.
+  std::optional<IndigoTransformationTriggerSource>
+      last_non_retry_trigger_source_;
+
   // The latest tracked bounds of the primary image, in DIPs.
   std::optional<gfx::Rect> tracked_bounds_;
 

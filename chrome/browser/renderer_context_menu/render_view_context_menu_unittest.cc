@@ -66,6 +66,7 @@
 #include "chrome/test/base/search_test_utils.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chrome/test/user_education/mock_browser_user_education_interface.h"
 #include "components/autofill/content/browser/test_autofill_client_injector.h"
 #include "components/autofill/content/browser/test_autofill_driver_injector.h"
 #include "components/autofill/content/browser/test_autofill_manager_injector.h"
@@ -80,6 +81,7 @@
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/contextual_tasks/public/features.h"
 #include "components/custom_handlers/protocol_handler_registry.h"
+#include "components/feature_engagement/public/feature_constants.h"
 #include "components/lens/buildflags.h"
 #include "components/lens/lens_features.h"
 #include "components/password_manager/core/browser/features/password_features.h"
@@ -1685,6 +1687,15 @@ TEST_F(RenderViewContextMenuPrefsTest,
     histogram_tester.ExpectUniqueSample(
         "Indigo.PageAction.ShownEntryPoint",
         indigo::IndigoPageActionEntryPoint::kContextMenu, 1);
+
+    testing::NiceMock<MockBrowserUserEducationInterface> mock_user_education(
+        GetBrowser());
+    EXPECT_CALL(
+        mock_user_education,
+        NotifyFeaturePromoFeatureUsed(
+            testing::Ref(feature_engagement::kIPHIndigoContextMenuToastFeature),
+            FeaturePromoFeatureUsedAction::kClosePromoIfPresent))
+        .Times(2);
 
     image_menu.ExecuteCommand(IDC_CONTENT_CONTEXT_INDIGO, 0);
     histogram_tester.ExpectUniqueSample(

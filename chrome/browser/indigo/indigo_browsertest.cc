@@ -13,6 +13,7 @@
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_service.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_service_factory.h"
 #include "chrome/browser/contextual_cueing/cue_target.h"
@@ -28,6 +29,7 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/renderer_context_menu/render_view_context_menu_test_util.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/sync/sync_service_factory.h"
@@ -45,6 +47,8 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "chrome/test/interaction/tracked_element_webcontents.h"
+#include "chrome/test/user_education/interactive_feature_promo_test.h"
+#include "components/feature_engagement/public/feature_constants.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -193,10 +197,11 @@ MATCHER_P(IsCloseToTopRightOf, image_bounds_ref, "") {
 // shows its entry points itself, through its page action ("legacy mode"), or
 // delegates them to Contextual Cueing ("contextual cues mode", see
 // `features::kIndigoContextualCueingV2`).
-class IndigoBrowserTestBase : public InteractiveBrowserTest {
+template <typename T>
+class IndigoBrowserTestMixin : public T {
  public:
-  IndigoBrowserTestBase() = default;
-  ~IndigoBrowserTestBase() override = default;
+  using T::T;
+  ~IndigoBrowserTestMixin() override = default;
 
   void SetUp() override {
     ASSERT_TRUE(fake_api_.InitializeAndListen());
@@ -232,11 +237,16 @@ class IndigoBrowserTestBase : public InteractiveBrowserTest {
     }
     scoped_feature_list_.InitWithFeaturesAndParameters(enabled_features,
                                                        disabled_features);
-    InteractiveBrowserTest::SetUp();
+    T::SetUp();
+  }
+
+  void TearDown() override {
+    T::TearDown();
+    scoped_feature_list_.Reset();
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    InteractiveBrowserTest::SetUpCommandLine(command_line);
+    T::SetUpCommandLine(command_line);
     CHECK(temp_dir_.CreateUniqueTempDir());
     base::FilePath script_path =
         temp_dir_.GetPath().AppendASCII("stub_script.js");
@@ -247,7 +257,7 @@ class IndigoBrowserTestBase : public InteractiveBrowserTest {
 
   void SetUpOnMainThread() override {
     host_resolver()->AddRule("*", "127.0.0.1");
-    InteractiveBrowserTest::SetUpOnMainThread();
+    T::SetUpOnMainThread();
 
     IndigoService* service =
         IndigoServiceFactory::GetForProfile(browser()->GetProfile());
@@ -391,7 +401,7 @@ class IndigoBrowserTestBase : public InteractiveBrowserTest {
 
   void SetUpBrowserContextKeyedServices(
       content::BrowserContext* context) override {
-    InteractiveBrowserTest::SetUpBrowserContextKeyedServices(context);
+    T::SetUpBrowserContextKeyedServices(context);
     IdentityTestEnvironmentProfileAdaptor::
         SetIdentityTestEnvironmentFactoriesOnBrowserContext(context);
     if (IsContextualCuesMode()) {
@@ -428,6 +438,17 @@ class IndigoBrowserTestBase : public InteractiveBrowserTest {
   }
 
  protected:
+  using T::browser;
+  using T::embedded_test_server;
+  using T::EnsureNotPresent;
+  using T::host_resolver;
+  using T::InstrumentTab;
+  using T::NavigateWebContents;
+  using T::PressButton;
+  using T::Steps;
+  using T::WaitForShow;
+  using T::WaitForWebContentsReady;
+
   // Whether Indigo delegates its entry points to Contextual Cueing instead of
   // showing them itself (legacy mode).
   virtual bool IsContextualCuesMode() const = 0;
@@ -440,6 +461,8 @@ class IndigoBrowserTestBase : public InteractiveBrowserTest {
       identity_test_env_adaptor_;
   base::ScopedTempDir temp_dir_;
 };
+
+using IndigoBrowserTestBase = IndigoBrowserTestMixin<InteractiveBrowserTest>;
 
 std::string DescribeIndigoMode(const testing::TestParamInfo<bool>& info) {
   return info.param ? "ContextualCues" : "Legacy";
@@ -1092,6 +1115,37 @@ IN_PROC_BROWSER_TEST_F(IndigoContextualCueingV2BrowserTest,
       CheckResult(
           [&]() { return observer.GetCurrentPageActionState().showing; },
           true));
+}
+
+class IndigoContextMenuToastPromoBrowserTest
+    : public IndigoBrowserTestMixin<InteractiveFeaturePromoTest> {
+ public:
+  IndigoContextMenuToastPromoBrowserTest()
+      : IndigoBrowserTestMixin(UseDefaultTrackerAllowingPromos(
+            {feature_engagement::kIPHIndigoContextMenuToastFeature})) {}
+
+ protected:
+  bool IsContextualCuesMode() const override { return true; }
+
+ private:
+  base::test::ScopedFeatureList context_menu_feature_list_{
+      features::kIndigoContextMenu};
+};
+
+IN_PROC_BROWSER_TEST_F(IndigoContextMenuToastPromoBrowserTest,
+                       ContextMenuToastPromoShownAfterPageActionTransform) {
+  const GURL main_tab_url = embedded_test_server()->GetURL("/image.html");
+  RunTestSequence(
+      NavigateAndClickAnchoredMessage(main_tab_url),
+      WaitForShow(IndigoToolbar::kToolbarElementId),
+      WaitForPromo(feature_engagement::kIPHIndigoContextMenuToastFeature),
+      Do([&]() {
+        auto menu = TestRenderViewContextMenu::Create(
+            browser()->tab_strip_model()->GetActiveWebContents(), main_tab_url);
+        menu->ExecuteCommand(IDC_CONTENT_CONTEXT_INDIGO, 0);
+      }),
+      CheckPromoActive(feature_engagement::kIPHIndigoContextMenuToastFeature,
+                       false));
 }
 
 }  // namespace

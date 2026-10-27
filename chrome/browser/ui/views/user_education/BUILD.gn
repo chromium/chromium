@@ -84,6 +84,7 @@ source_set("impl") {
     "//chrome/browser/desktop_to_mobile_promos:utils",
     "//chrome/browser/devtools",
     "//chrome/browser/dictation",
+    "//chrome/browser/indigo/resources:indigo_strings",
     "//chrome/browser/profiles",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/search/background",

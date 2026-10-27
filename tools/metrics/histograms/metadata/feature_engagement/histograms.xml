@@ -372,6 +372,9 @@ chromium-metrics-reviews@google.com.
       summary="educate users that they can close all Incognito windows by
                tapping the Incognito indicator"/>
   <variant name="IPH_IncognitoWindow" summary="incognito window"/>
+  <variant name="IPH_IndigoContextMenuToast"
+      summary="toast educating users after a transformation that Try it on is
+               available in the right-click context menu"/>
   <variant name="IPH_InstanceSwitcher" summary="instance switcher"/>
   <variant name="IPH_IntentChip" summary="opening a webpage in an app"/>
   <variant name="IPH_InterruptiveIphCooldownGroup"

@@ -48,9 +48,11 @@
 #include "chrome/browser/ui/page_action/page_action_controller.h"
 #include "chrome/browser/ui/toasts/api/toast_id.h"
 #include "chrome/browser/ui/toasts/toast_controller.h"
+#include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/webui_url_constants.h"
+#include "components/feature_engagement/public/feature_constants.h"
 #include "components/optimization_guide/core/hints/optimization_guide_decider.h"
 #include "components/optimization_guide/core/hints/optimization_guide_decision.h"
 #include "components/page_content_annotations/core/tracked_element_feature.h"
@@ -290,6 +292,10 @@ void IndigoPageActionController::ContinueInvoke(
     return;
   }
 
+  if (trigger_source != IndigoTransformationTriggerSource::kErrorToastRetry) {
+    last_non_retry_trigger_source_ = trigger_source;
+  }
+
   // Only the primary page action chip opens the Glic side panel; retries and
   // secondary entry points execute the agent inline.
   const bool should_invoke_glic =
@@ -508,6 +514,16 @@ void IndigoPageActionController::ShowToolbar() {
   if (tracked_bounds_) {
     toolbar_->UpdateTrackedPosition(*tracked_bounds_);
   }
+  if (tab().IsVisible() &&
+      last_non_retry_trigger_source_ ==
+          IndigoTransformationTriggerSource::kPageAction &&
+      base::FeatureList::IsEnabled(features::kIndigoContextMenu)) {
+    if (auto* user_ed = BrowserUserEducationInterface::From(
+            tab().GetBrowserWindowInterface())) {
+      user_ed->MaybeShowFeaturePromo(
+          feature_engagement::kIPHIndigoContextMenuToastFeature);
+    }
+  }
 }
 
 void IndigoPageActionController::ShowInvocationErrorToast(
@@ -570,6 +586,7 @@ void IndigoPageActionController::DidFinishNavigation(
       tab().GetContents(), navigation_handle->IsSameDocument());
   last_anchored_message_priority_ = std::nullopt;
   last_trigger_source_ = std::nullopt;
+  last_non_retry_trigger_source_ = std::nullopt;
   context_menu_shown_on_current_page_ = false;
   UpdateEntryPointsState();
 
@@ -613,6 +630,10 @@ void IndigoPageActionController::OnRegenerate(IndigoToolbar* toolbar) {
 
 void IndigoPageActionController::TriggerRegeneration(
     IndigoTransformationTriggerSource source) {
+  if (source != IndigoTransformationTriggerSource::kErrorToastRetry) {
+    last_non_retry_trigger_source_ = source;
+  }
+
   content::WebContents* web_contents = tab().GetContents();
   if (!web_contents) {
     return;
@@ -720,6 +741,7 @@ void IndigoPageActionController::ResetTriggeringState() {
   metadata_classifier_.Reset();
   last_anchored_message_priority_ = std::nullopt;
   last_trigger_source_ = std::nullopt;
+  last_non_retry_trigger_source_ = std::nullopt;
   context_menu_shown_on_current_page_ = false;
   UpdateEntryPointsState();
 }
@@ -894,7 +916,9 @@ views::View* IndigoPageActionController::GetIndigoOverlayView() const {
 
   auto* browser_view =
       BrowserView::GetBrowserViewForBrowser(tab().GetBrowserWindowInterface());
-  CHECK(browser_view);
+  if (!browser_view) {
+    return nullptr;
+  }
 
   auto* contents_container =
       browser_view->GetContentsContainerViewFor(tab().GetContents());
