@@ -39,7 +39,7 @@
 #include "base/containers/span.h"
 #include "base/numerics/byte_conversions.h"
 #include "base/numerics/safe_conversions.h"
-#include "build/build_config.h"
+#include "base/strings/stringprintf.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/platform/fonts/font_cache.h"
 #include "third_party/blink/renderer/platform/fonts/ift/ift_patcher.h"
@@ -49,6 +49,7 @@
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/text/format.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_view.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/ots/src/include/ots-memory-stream.h"
 #include "third_party/skia/include/core/SkStream.h"
@@ -79,7 +80,7 @@ class BlinkOTSContext final : public ots::OTSContext {
   String GetErrorString() { return accumulated_error_string_.ToString(); }
 
  private:
-  void AppendErrorMessage(const String& new_error_string);
+  void AppendErrorMessage(const StringView& new_error_string);
 
   StringBuilder accumulated_error_string_;
 };
@@ -87,32 +88,20 @@ class BlinkOTSContext final : public ots::OTSContext {
 void BlinkOTSContext::Message(int level, const char* format, ...) {
   va_list args;
   va_start(args, format);
-
-#if defined(COMPILER_MSVC)
-  int result = _vscprintf(format, args);
-#else
-  char ch;
-  int result = UNSAFE_TODO(vsnprintf(&ch, 1, format, args));
-#endif
+  // SAFETY: Because this overrides `ots::OTSContext::Message()`, the validity
+  // of the passed arguments cannot be guaranteed within this function, and the
+  // possibility of unsafe calls cannot be eliminated.
+  std::string result = UNSAFE_BUFFERS(base::StringPrintV(format, args));
   va_end(args);
 
-  if (result <= 0) {
-    AppendErrorMessage(String("Unspecified OTS Error"));
+  if (result.empty()) {
+    AppendErrorMessage("Unspecified OTS Error");
   } else {
-    Vector<char, 256> buffer;
-    wtf_size_t len = result;
-    buffer.Grow(len + 1);
-
-    va_start(args, format);
-    UNSAFE_TODO(vsnprintf(buffer.data(), buffer.size(), format, args));
-    va_end(args);
-
-    AppendErrorMessage(
-        String(StringImpl::Create(base::span(buffer).first(len))));
+    AppendErrorMessage(StringView(base::as_byte_span(result)));
   }
 }
 
-void BlinkOTSContext::AppendErrorMessage(const String& new_error_string) {
+void BlinkOTSContext::AppendErrorMessage(const StringView& new_error_string) {
   // OTS can emit a large number of warnings for malformed fonts. Keep enough
   // text for diagnostics, but avoid unbounded string growth. Once the
   // accumulated string reaches the budget, stop accepting further messages
