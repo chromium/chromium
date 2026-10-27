@@ -265,6 +265,11 @@ BASE_DECLARE_FEATURE(kExperimentalOmniboxLabs);
 // out of the allowlist.
 BASE_DECLARE_FEATURE(kSafeBrowsingCrxAllowlistAutoDisable);
 
+// When enabled, `WebRequestProxyingURLLoaderFactory` binds
+// `TrustedHeaderClient` and cloned `URLLoaderFactory` receivers to
+// `navigation_response_task_runner_`.
+BASE_DECLARE_FEATURE(kWebRequestProxyNavigationResponseTaskRunner);
+
 // Controls whether the component webstore hosted app is loaded.
 BASE_DECLARE_FEATURE(kWebstoreHostedApp);
 

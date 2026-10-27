@@ -14,14 +14,19 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
+#include "base/test/test_simple_task_runner.h"
 #include "base/test/values_test_util.h"
 #include "base/time/time.h"
 #include "components/user_prefs/user_prefs.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/test/mock_render_process_host.h"
+#include "extensions/browser/api/declarative_net_request/rules_monitor_service.h"
 #include "extensions/browser/api/extensions_api_client.h"
 #include "extensions/browser/api/web_request/web_request_api_constants.h"
 #include "extensions/browser/api/web_request/web_request_info.h"
+#include "extensions/browser/api/web_request/web_request_proxying_url_loader_factory.h"
+#include "extensions/browser/extension_navigation_ui_data.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extensions_test.h"
@@ -39,6 +44,13 @@
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "net/base/net_errors.h"
 #include "net/http/http_request_headers.h"
+#include "net/http/http_util.h"
+#include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
+#include "services/network/public/cpp/url_loader_factory_builder.h"
+#include "services/network/public/mojom/cache_storage_side_data_writer.mojom.h"
+#include "services/network/test/test_url_loader_client.h"
+#include "services/network/test/test_url_loader_factory.h"
+#include "services/network/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_database.mojom.h"
 #include "url/gurl.h"
@@ -369,15 +381,16 @@ class WebRequestEventRouterContextDispatchTest
 
   bool AddListener(const std::string& url_pattern,
                    int extra_info_spec = 0,
-                   bool is_lazy = false) {
+                   bool is_lazy = false,
+                   const std::string& event_name = kEventName) {
     int render_process_id = is_lazy ? -1 : process_id();
     int worker_thread_id = is_lazy ? kMainThreadId : kWorkerThreadId;
     int64_t service_worker_version_id =
         is_lazy ? blink::mojom::kInvalidServiceWorkerVersionId
                 : kServiceWorkerVersionId;
     return router()->AddEventListener(
-        browser_context(), extension_id(), kExtensionName, kEventName,
-        /*sub_event_name=*/kEventName, MakeFilter(url_pattern), extra_info_spec,
+        browser_context(), extension_id(), kExtensionName, event_name,
+        /*sub_event_name=*/event_name, MakeFilter(url_pattern), extra_info_spec,
         render_process_id, /*web_view_instance_id=*/0, worker_thread_id,
         service_worker_version_id, is_lazy);
   }
@@ -487,6 +500,70 @@ class WebRequestEventRouterContextDispatchTest
   std::unique_ptr<content::MockRenderProcessHost> render_process_host_;
   scoped_refptr<const Extension> extension_;
 };
+
+// Must be listed as a base struct before `ExtensionsTest` so
+// `ScopedFeatureList` is initialized before `BrowserTaskEnvironment` starts
+// `ThreadPool` worker threads and reset after `~ExtensionsTest()` joins them.
+struct WithNavigationResponseTaskRunnerFeature {
+  explicit WithNavigationResponseTaskRunnerFeature(bool enabled) {
+    feature_list_.InitWithFeatureState(
+        extensions_features::kWebRequestProxyNavigationResponseTaskRunner,
+        enabled);
+  }
+  base::test::ScopedFeatureList feature_list_;
+};
+
+class WebRequestEventRouterNavigationTaskRunnerTest
+    : private WithNavigationResponseTaskRunnerFeature,
+      public WebRequestEventRouterContextDispatchTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  WebRequestEventRouterNavigationTaskRunnerTest()
+      : WithNavigationResponseTaskRunnerFeature(GetParam()) {}
+};
+
+// Runs pending tasks on `runner` without overriding
+// `SequencedTaskRunner::GetCurrentDefault()`, matching production UI thread
+// `SequenceManager` behavior where non-default task queues (such as
+// `BrowserTaskType::kNavigationNetworkResponse`) leave `GetCurrentDefault()`
+// pointing to the default UI task queue.
+void RunPendingTasksKeepingDefaultRunner(base::TestSimpleTaskRunner& runner) {
+  while (runner.HasPendingTask()) {
+    for (auto& pending_task : runner.TakePendingTasks()) {
+      std::move(pending_task.task).Run();
+    }
+  }
+}
+
+// Returns true if `events` contains an `onResponseStarted` event whose
+// `responseHeaders` list includes `(header_name, header_value)`.
+bool HasResponseStartedHeader(const std::vector<std::unique_ptr<Event>>& events,
+                              std::string_view header_name,
+                              std::string_view header_value) {
+  for (const auto& event : events) {
+    if (event->event_name !=
+            extension_web_request_api_constants::kOnResponseStartedEvent ||
+        event->args().empty() || !event->args()[0].is_dict()) {
+      continue;
+    }
+    const base::ListValue* headers =
+        event->args()[0].GetDict().FindList("responseHeaders");
+    if (!headers) {
+      continue;
+    }
+    for (const base::Value& entry : *headers) {
+      if (!entry.is_dict()) {
+        continue;
+      }
+      const std::string* name = entry.GetDict().FindString("name");
+      const std::string* value = entry.GetDict().FindString("value");
+      if (name && value && *name == header_name && *value == header_value) {
+        return true;
+      }
+    }
+  }
+  return false;
+}
 
 }  // namespace
 
@@ -1159,5 +1236,118 @@ TEST_F(WebRequestEventRouterContextDispatchSplitIncognitoTest,
   router()->OnRequestWillBeDestroyed(incognito_context(),
                                      incognito_request.get());
 }
+
+// Verifies that under `kWebRequestProxyNavigationResponseTaskRunner`, cloned
+// `URLLoaderFactory` and `TrustedHeaderClient` receivers bind to
+// `navigation_response_task_runner_` rather than falling back to
+// `SequencedTaskRunner::GetCurrentDefault()`.
+TEST_P(WebRequestEventRouterNavigationTaskRunnerTest,
+       ProxyingURLLoaderFactoryNavigationTaskRunner) {
+  declarative_net_request::RulesMonitorService::GetFactoryInstance()
+      ->SetTestingFactoryAndUse(
+          browser_context(),
+          base::BindRepeating([](content::BrowserContext* context)
+                                  -> std::unique_ptr<KeyedService> {
+            return declarative_net_request::RulesMonitorService::
+                CreateInstanceForTesting(context);
+          }));
+  ASSERT_TRUE(
+      AddListener("http://example.com/*", ExtraInfoSpec::EXTRA_HEADERS));
+  ASSERT_TRUE(AddListener(
+      "http://example.com/*",
+      ExtraInfoSpec::RESPONSE_HEADERS | ExtraInfoSpec::EXTRA_HEADERS,
+      /*is_lazy=*/false,
+      extension_web_request_api_constants::kOnResponseStartedEvent));
+
+  auto nav_task_runner = base::MakeRefCounted<base::TestSimpleTaskRunner>();
+  WebRequestAPI::RequestIDGenerator request_id_generator;
+  WebRequestAPI::ProxySet proxies;
+  network::URLLoaderFactoryBuilder factory_builder;
+  mojo::Remote<network::mojom::TrustedURLLoaderHeaderClient>
+      header_client_factory;
+
+  WebRequestProxyingURLLoaderFactory::StartProxying(
+      browser_context(), /*render_process_id=*/-1, /*frame_routing_id=*/0,
+      /*view_routing_id=*/0, &request_id_generator,
+      std::make_unique<ExtensionNavigationUIData>(),
+      /*navigation_id=*/42, ukm::kInvalidSourceIdObj, factory_builder,
+      header_client_factory.BindNewPipeAndPassReceiver(), &proxies,
+      content::ContentBrowserClient::URLLoaderFactoryType::kNavigation,
+      nav_task_runner);
+
+  network::TestURLLoaderFactory terminal_factory;
+  mojo::PendingRemote<network::mojom::URLLoaderFactory> terminal_remote;
+  terminal_factory.Clone(terminal_remote.InitWithNewPipeAndPassReceiver());
+  mojo::Remote<network::mojom::URLLoaderFactory> proxy_factory;
+  std::move(factory_builder)
+      .Finish(proxy_factory.BindNewPipeAndPassReceiver(),
+              std::move(terminal_remote));
+
+  mojo::Remote<network::mojom::URLLoaderFactory> cloned_factory;
+  proxy_factory->Clone(cloned_factory.BindNewPipeAndPassReceiver());
+  RunPendingTasksKeepingDefaultRunner(*nav_task_runner);
+
+  network::ResourceRequest request;
+  request.url = GURL("http://example.com/index.html");
+  request.destination = network::mojom::RequestDestination::kDocument;
+  request.is_outermost_main_frame = true;
+  mojo::Remote<network::mojom::URLLoader> loader;
+  network::TestURLLoaderClient client;
+  constexpr int32_t kRequestId = 7;
+  cloned_factory->CreateLoaderAndStart(
+      loader.BindNewPipeAndPassReceiver(), kRequestId,
+      network::mojom::kURLLoadOptionNone, request, client.CreateRemote(),
+      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS));
+  EXPECT_EQ(GetParam(), nav_task_runner->HasPendingTask());
+  RunPendingTasksKeepingDefaultRunner(*nav_task_runner);
+  terminal_factory.WaitForRequest(request.url);
+
+  mojo::Remote<network::mojom::TrustedHeaderClient> header_client;
+  header_client_factory->OnLoaderCreated(
+      kRequestId, header_client.BindNewPipeAndPassReceiver());
+  RunPendingTasksKeepingDefaultRunner(*nav_task_runner);
+
+  base::test::TestFuture<int32_t, const std::optional<std::string>&,
+                         const std::optional<GURL>&>
+      headers_future;
+  header_client->OnHeadersReceived(
+      net::HttpUtil::AssembleRawHeaders(
+          "HTTP/1.1 200 OK\r\nSet-Cookie: foo=bar\r\n\r\n"),
+      net::IPEndPoint(), std::nullopt, headers_future.GetCallback());
+  EXPECT_EQ(GetParam(), nav_task_runner->HasPendingTask());
+  RunPendingTasksKeepingDefaultRunner(*nav_task_runner);
+  EXPECT_EQ(net::OK, headers_future.Get<0>());
+
+  auto response_head = network::CreateURLResponseHead(net::HTTP_OK);
+  response_head->content_length = 1234;
+  response_head->headers->AddHeader("X-Test-Header", "baz");
+  mojo::PendingReceiver<network::mojom::CacheStorageSideDataWriter>
+      side_data_writer_receiver = response_head->cache_storage_side_data_writer
+                                      .InitWithNewPipeAndPassReceiver();
+  EXPECT_TRUE(terminal_factory.SimulateResponseForPendingRequest(
+      request.url, network::URLLoaderCompletionStatus(net::OK),
+      std::move(response_head), ""));
+  RunPendingTasksKeepingDefaultRunner(*nav_task_runner);
+  client.RunUntilComplete();
+  // `HttpResponseHeaders::SerializeForMojoIpc()` (`PERSIST_SANS_COOKIES`)
+  // strips `Set-Cookie` when `target_client_->OnReceiveResponse()` serializes
+  // `URLResponseHead` over Mojo to `client`, so verify the merged `Set-Cookie`
+  // header on the `onResponseStarted` event dispatched from
+  // `ContinueToResponseStarted()`, and verify non-cookie headers and
+  // `cache_storage_side_data_writer` on `client.response_head()`.
+  EXPECT_TRUE(
+      HasResponseStartedHeader(dispatched_events(), "Set-Cookie", "foo=bar"));
+  ASSERT_TRUE(client.response_head());
+  EXPECT_EQ(1234, client.response_head()->content_length);
+  ASSERT_TRUE(client.response_head()->headers);
+  EXPECT_TRUE(
+      client.response_head()->headers->HasHeaderValue("X-Test-Header", "baz"));
+  EXPECT_TRUE(
+      client.response_head()->cache_storage_side_data_writer.is_valid());
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         WebRequestEventRouterNavigationTaskRunnerTest,
+                         testing::Bool());
 
 }  // namespace extensions
