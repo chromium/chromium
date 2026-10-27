@@ -31,6 +31,7 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/rect_f.h"
 
 #if BUILDFLAG(ENABLE_PDF_INK2)
 #include "ui/gfx/geometry/size.h"
@@ -38,7 +39,6 @@
 
 namespace gfx {
 class Point;
-class RectF;
 }  // namespace gfx
 
 namespace chrome_pdf {
@@ -191,6 +191,11 @@ class PDFiumPage {
   // Returns the straight line segments stroked by the page's top-level path
   // objects, such as table borders.
   std::vector<AccessibilityLineSegment> GetLineSegmentInfo();
+
+  // Returns the bounds of the axis-aligned rectangles filled by the page's
+  // top-level fill-only path objects, such as table borders drawn as thin
+  // filled rectangles, in the same pixel coordinates as text runs.
+  std::vector<gfx::RectF> GetFilledRectInfo();
 
   // Traverses the entire struct tree of the page recursively and extracts the
   // text run type or the alt text from struct tree elements corresponding to
@@ -426,6 +431,8 @@ class PDFiumPage {
   void CalculateGraphics();
   // Returns the straight line segments on the page.
   std::vector<AccessibilityLineSegment> CalculateLineSegments();
+  // Returns the filled axis-aligned rectangles on the page.
+  std::vector<gfx::RectF> CalculateFilledRects();
   // Populate annotations like highlight and text field on the page.
   void PopulateAnnotations();
   // Populate `highlights_` with `annot`.
@@ -500,6 +507,8 @@ class PDFiumPage {
   std::vector<Graphic> graphics_;
   // Null until calculated, since a page may have no line segments.
   std::optional<std::vector<AccessibilityLineSegment>> line_segments_;
+  // Null until calculated, since a page may have no filled rectangles.
+  std::optional<std::vector<gfx::RectF>> filled_rects_;
   bool calculated_annotations_ = false;
   std::vector<Highlight> highlights_;
   bool calculated_page_object_text_run_breaks_ = false;

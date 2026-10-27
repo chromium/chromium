@@ -727,6 +727,84 @@ void AppendLineSegmentsFromPath(
   }
 }
 
+// Returns whether `point` lies strictly between `prev` and `next` on a
+// horizontal or vertical line, so dropping it does not change the path shape.
+bool IsBetweenOnAxisAlignedLine(const gfx::PointF& prev,
+                                const gfx::PointF& point,
+                                const gfx::PointF& next) {
+  if (prev.y() == point.y() && point.y() == next.y()) {
+    return (prev.x() < point.x() && point.x() < next.x()) ||
+           (prev.x() > point.x() && point.x() > next.x());
+  }
+  if (prev.x() == point.x() && point.x() == next.x()) {
+    return (prev.y() < point.y() && point.y() < next.y()) ||
+           (prev.y() > point.y() && point.y() > next.y());
+  }
+  return false;
+}
+
+// Appends the bounds of the subpaths of `path` that form non-empty axis-aligned
+// rectangles to `filled_rects`, converted to pixels by `page_to_pixel`. Skips
+// subpaths with curves.
+void AppendFilledRectsFromPath(const gfx::Transform& page_to_pixel,
+                               FPDF_PAGEOBJECT path,
+                               std::vector<gfx::RectF>& filled_rects) {
+  CHECK(::features::IsPdfAccessibilityHeuristicEnhancementsEnabled());
+  for (const Subpath& subpath : GetSubpaths(path)) {
+    const std::vector<PathEdge>& edges = subpath.straight_edges;
+    if (edges.empty() || subpath.has_curve) {
+      continue;
+    }
+
+    // Drop repeated and collinear points along edges, including a final point
+    // back at the start.
+    std::vector<gfx::PointF> corners = {edges.front().start};
+    for (const PathEdge& edge : edges) {
+      if (corners.back() == edge.end) {
+        continue;
+      }
+      if (corners.size() >= 2 &&
+          IsBetweenOnAxisAlignedLine(corners[corners.size() - 2],
+                                     corners.back(), edge.end)) {
+        corners.back() = edge.end;
+      } else {
+        corners.push_back(edge.end);
+      }
+    }
+    if (corners.size() > 1 && corners.back() == corners.front()) {
+      corners.pop_back();
+    }
+    // Fills implicitly close the subpath, so also drop a final point along the
+    // closing edge.
+    if (corners.size() >= 3 &&
+        IsBetweenOnAxisAlignedLine(corners[corners.size() - 2], corners.back(),
+                                   corners.front())) {
+      corners.pop_back();
+    }
+    if (corners.size() != 4 || corners[0] == corners[2] ||
+        corners[1] == corners[3]) {
+      continue;
+    }
+    bool has_rect_corners = true;
+    for (size_t i = 0; i < corners.size(); ++i) {
+      const gfx::PointF& next = corners[(i + 1) % corners.size()];
+      if (corners[i].x() != next.x() && corners[i].y() != next.y()) {
+        has_rect_corners = false;
+        break;
+      }
+    }
+    if (!has_rect_corners) {
+      continue;
+    }
+
+    const gfx::RectF rect =
+        page_to_pixel.MapRect(gfx::BoundingRect(corners[0], corners[2]));
+    if (!rect.IsEmpty()) {
+      filled_rects.push_back(rect);
+    }
+  }
+}
+
 }  // namespace
 
 PDFiumPage::LinkTarget::LinkTarget() : page(-1) {}
@@ -1363,6 +1441,17 @@ std::vector<AccessibilityLineSegment> PDFiumPage::GetLineSegmentInfo() {
     line_segments_ = CalculateLineSegments();
   }
   return *line_segments_;
+}
+
+std::vector<gfx::RectF> PDFiumPage::GetFilledRectInfo() {
+  if (!::features::IsPdfAccessibilityHeuristicEnhancementsEnabled() ||
+      !available_) {
+    return {};
+  }
+  if (!filled_rects_) {
+    filled_rects_ = CalculateFilledRects();
+  }
+  return *filled_rects_;
 }
 
 PDFiumPage::Area PDFiumPage::GetLinkTargetAtIndex(int link_index,
@@ -2127,6 +2216,26 @@ std::vector<AccessibilityLineSegment> PDFiumPage::CalculateLineSegments() {
                                                  line_segments);
                     });
   return line_segments;
+}
+
+// Extracts the bounds of axis-aligned rectangles filled by the top-level
+// fill-only path objects on the page.
+std::vector<gfx::RectF> PDFiumPage::CalculateFilledRects() {
+  CHECK(::features::IsPdfAccessibilityHeuristicEnhancementsEnabled());
+  std::vector<gfx::RectF> filled_rects;
+  FPDF_PAGE page = GetPage();
+  const std::optional<gfx::Transform> page_to_pixel =
+      GetPageToPixelTransform(page);
+  if (!page_to_pixel) {
+    return filled_rects;
+  }
+  // A rectangle needs at least 4 corners.
+  ForEachPathObject(page, PathPaint::kFillOnly, /*min_segment_count=*/4,
+                    [&](FPDF_PAGEOBJECT path) {
+                      AppendFilledRectsFromPath(*page_to_pixel, path,
+                                                filled_rects);
+                    });
+  return filled_rects;
 }
 
 void PDFiumPage::PopulateTextRunTypeAndImageAltText() {

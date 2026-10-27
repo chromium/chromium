@@ -21,11 +21,13 @@
 #include "build/build_config.h"
 #include "pdf/accessibility_structs.h"
 #include "pdf/buildflags.h"
+#include "pdf/pdf_rect.h"
 #include "pdf/pdfium/pdfium_engine.h"
 #include "pdf/pdfium/pdfium_test_base.h"
 #include "pdf/test/test_client.h"
 #include "pdf/test/test_helpers.h"
 #include "pdf/ui/thumbnail.h"
+#include "printing/units.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/pdfium/public/fpdf_formfill.h"
@@ -767,6 +769,70 @@ TEST_P(PDFiumPageHeuristicEnhancementsTest, GetLineSegmentInfoNoPaths) {
 
   PDFiumPage& page = GetPDFiumPage(*engine, 0);
   EXPECT_TRUE(page.GetLineSegmentInfo().empty());
+}
+
+TEST_P(PDFiumPageHeuristicEnhancementsTest, GetFilledRectInfo) {
+  TestClient client(/*use_skia_renderer=*/false);
+  std::unique_ptr<PDFiumEngine> engine =
+      InitializeEngine(&client, FILE_PATH_LITERAL("thin_filled_rules.pdf"));
+  ASSERT_TRUE(engine);
+
+  PDFiumPage& page = GetPDFiumPage(*engine, 0);
+  std::vector<gfx::RectF> filled_rects = page.GetFilledRectInfo();
+  if (!HeuristicEnhancementsEnabled()) {
+    EXPECT_TRUE(filled_rects.empty());
+    return;
+  }
+
+  // Converts a rectangle on the 400x400 pt page to pixels.
+  auto to_pixel = [](const PdfRect& rect) {
+    return gfx::ScaleRect(gfx::RectF(rect.left(), 400.0f - rect.top(),
+                                     rect.width(), rect.height()),
+                          1.0f / printing::kUnitConversionFactorPixelsToPoints);
+  };
+
+  // Rectangles appear in path order. The curved subpath and the ignored shapes
+  // are skipped.
+  const auto kExpectedRects = std::to_array<gfx::RectF>({
+      // Simple horizontal rules.
+      to_pixel({50, 300, 350, 300.8f}),
+      to_pixel({50, 280, 350, 280.5f}),
+      to_pixel({50, 240, 350, 240.8f}),
+      // Two rules in one path.
+      to_pixel({50, 200, 350, 200.5f}),
+      to_pixel({50, 180, 350, 180.5f}),
+      // Skia-style closed and unclosed rectangles.
+      to_pixel({50, 169.25f, 350, 170}),
+      to_pixel({50, 154.25f, 350, 155}),
+      // Unclosed rectangle with its last point on the closing edge.
+      to_pixel({50, 100, 140, 100.8f}),
+      // Vertical rule.
+      to_pixel({149.6f, 125, 150.4f, 150}),
+      // Rectangles of other sizes.
+      to_pixel({300, 60, 340, 80}),
+      to_pixel({50, 60, 55, 60.5f}),
+      to_pixel({50, 80, 150, 83.6f}),
+      // Rectangle in a path with a curved subpath.
+      to_pixel({50, 10, 350, 10.5f}),
+  });
+
+  // Thin heights lose float precision when subtracting large coordinates.
+  constexpr float kTolerancePx = 0.001f;
+  ASSERT_EQ(kExpectedRects.size(), filled_rects.size());
+  for (size_t i = 0; i < kExpectedRects.size(); ++i) {
+    SCOPED_TRACE(testing::Message() << "at index " << i);
+    EXPECT_RECTF_NEAR(kExpectedRects[i], filled_rects[i], kTolerancePx);
+  }
+}
+
+TEST_P(PDFiumPageHeuristicEnhancementsTest, GetFilledRectInfoNoPaths) {
+  TestClient client(/*use_skia_renderer=*/false);
+  std::unique_ptr<PDFiumEngine> engine =
+      InitializeEngine(&client, FILE_PATH_LITERAL("hello_world2.pdf"));
+  ASSERT_TRUE(engine);
+
+  PDFiumPage& page = GetPDFiumPage(*engine, 0);
+  EXPECT_TRUE(page.GetFilledRectInfo().empty());
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

@@ -1,0 +1,141 @@
+{{header}}
+% Exercises extraction of filled, axis-aligned rectangles, such as table borders
+% drawn by Skia/PDF.
+%
+% The page contains:
+% 1. Simple horizontal rules (three fill-only rectangles)
+% 2. Two rules in one path
+% 3. Skia-style closed rectangle under a flipped matrix (M L L L L(close))
+% 4. Skia-style unclosed rectangle under a flipped matrix (M L L L)
+% 5. Unclosed rectangle whose last point lies on its implicit closing edge
+% 6. Vertical rule
+% 7. Rectangles of other sizes:
+%    - A thick filled rectangle
+%    - A thin but short filled rectangle
+%    - A filled rectangle over 4 px thick
+% 8. Rectangle in a path with a curved subpath
+% 9. Shapes that must be ignored:
+%    - A thin filled rectangle rotated 30 degrees
+%    - A stroked rectangle
+%    - A thin filled rectangle with a transparent fill (/ca 0)
+%    - A thin L-shape
+%    - A rectangle with a curved edge
+{{object 1 0}} <<
+  /Type /Catalog
+  /Pages 2 0 R
+>>
+endobj
+{{object 2 0}} <<
+  /Type /Pages
+  /MediaBox [0 0 400 400]
+  /Count 1
+  /Kids [3 0 R]
+>>
+endobj
+{{object 3 0}} <<
+  /Type /Page
+  /Parent 2 0 R
+  /Resources <<
+    /ExtGState <<
+      /GS1 5 0 R
+    >>
+  >>
+  /Contents 4 0 R
+>>
+endobj
+{{object 4 0}} <<
+  {{streamlen}}
+>>
+stream
+% 1. Simple horizontal rules
+50 300 300 0.8 re f
+50 280 300 0.5 re f
+50 240 300 0.8 re f
+% 2. Two rules in one path
+50 200 300 0.5 re
+50 180 300 0.5 re
+f
+% 3. Skia-style closed rectangle under a flipped matrix
+q
+0.75 0 0 -0.75 50 170 cm
+0 0 m
+400 0 l
+400 1 l
+0 1 l
+0 0 l
+h
+f
+Q
+% 4. Skia-style unclosed rectangle under a flipped matrix
+q
+0.75 0 0 -0.75 50 155 cm
+0 0 m
+400 0 l
+400 1 l
+0 1 l
+f
+Q
+% 5. Unclosed rectangle whose last point lies on its implicit closing edge
+q
+45 0 0 0.8 50 100 cm
+0 0 m
+2 0 l
+2 1 l
+0 1 l
+0 0.1 l
+f
+Q
+% 6. Vertical rule
+149.6 125 0.8 25 re f
+% 7. Rectangles of other sizes
+300 60 40 20 re f
+50 60 5 0.5 re f
+50 80 100 3.6 re f
+% 8. Rectangle in a path with a curved subpath
+50 10 300 0.5 re
+370 10 m
+370 15 380 15 380 10 c
+380 5 370 5 370 10 c
+h
+f
+% 9. Shapes that must be ignored
+% Thin rectangle rotated 30 degrees
+q
+0.866025 0.5 -0.5 0.866025 200 80 cm
+0 0 100 0.5 re
+f
+Q
+% Stroked rectangle
+50 20 300 10 re S
+% Thin rectangle with a transparent fill
+q
+/GS1 gs
+50 40 300 0.8 re f
+Q
+% Thin L-shape
+360 300 m
+390 300 l
+390 301 l
+361 301 l
+361 330 l
+360 330 l
+h
+f
+% Rectangle with a curved edge
+360 200 m
+390 200 l
+390 210 l
+360 210 l
+355 207 355 203 360 200 c
+f
+endstream
+endobj
+{{object 5 0}} <<
+  /Type /ExtGState
+  /ca 0
+>>
+endobj
+{{xref}}
+{{trailer}}
+{{startxref}}
+%%EOF
