@@ -13,6 +13,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/clipboard/clipboard_format_type.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
@@ -97,6 +98,45 @@ TEST_F(ClipboardAndroidTest, GetAvailableFormats) {
   EXPECT_FALSE(formats.contains(ClipboardFormatType::UrlType()));
   EXPECT_FALSE(formats.contains(ClipboardFormatType::HtmlType()));
   EXPECT_FALSE(formats.contains(ClipboardFormatType::FilenamesType()));
+}
+
+TEST_F(ClipboardAndroidTest, StaleImageFormatsClearedOnPrimaryClipChanged) {
+  clipboard_->Clear(ClipboardBuffer::kCopyPaste);
+  {
+    ScopedClipboardWriter writer(ClipboardBuffer::kCopyPaste);
+    SkBitmap bitmap;
+    bitmap.allocN32Pixels(1, 1);
+    writer.WriteImage(bitmap);
+  }
+
+  auto get_all_formats = [&]() {
+    base::flat_set<ClipboardFormatType> formats;
+    clipboard_->GetAllAvailableFormats(
+        ClipboardBuffer::kCopyPaste, /*data_dst=*/std::nullopt,
+        base::BindOnce(
+            [](base::flat_set<ClipboardFormatType>* out,
+               base::flat_set<ClipboardFormatType> f) { *out = std::move(f); },
+            &formats));
+    return formats;
+  };
+
+  base::flat_set<ClipboardFormatType> formats = get_all_formats();
+  EXPECT_TRUE(formats.contains(ClipboardFormatType::PngType()));
+  EXPECT_TRUE(formats.contains(ClipboardFormatType::BitmapType()));
+
+  static_cast<ClipboardAndroid*>(clipboard_)->OnPrimaryClipChanged(nullptr);
+
+  // Stale PngType/BitmapType must not be reported while map_ is out of date.
+  formats = get_all_formats();
+  EXPECT_FALSE(formats.contains(ClipboardFormatType::PngType()));
+  EXPECT_FALSE(formats.contains(ClipboardFormatType::BitmapType()));
+
+  // Trigger UpdateFromAndroidClipboard() and verify PngType was erased.
+  clipboard_->ReadText(ClipboardBuffer::kCopyPaste, /*data_dst=*/std::nullopt,
+                       base::DoNothing());
+  formats = get_all_formats();
+  EXPECT_FALSE(formats.contains(ClipboardFormatType::PngType()));
+  EXPECT_FALSE(formats.contains(ClipboardFormatType::BitmapType()));
 }
 
 }  // namespace ui
