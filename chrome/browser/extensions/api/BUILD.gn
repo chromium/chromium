@@ -43,6 +43,7 @@ group("api_implementations") {
     "//chrome/browser/extensions/api/gcm",
     "//chrome/browser/extensions/api/glic_private",
     "//chrome/browser/extensions/api/history",
+    "//chrome/browser/extensions/api/image_writer_private",
     "//chrome/browser/extensions/api/module",
     "//chrome/browser/extensions/api/notifications",
     "//chrome/browser/extensions/api/omnibox",

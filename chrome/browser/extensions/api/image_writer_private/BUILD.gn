@@ -1,0 +1,269 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/features.gni")
+import("//extensions/buildflags/buildflags.gni")
+
+assert(enable_extensions_core,
+       "Cannot depend on extensions because enable_extensions_core=false.")
+
+source_set("features") {
+  sources = [
+    "features.cc",
+    "features.h",
+  ]
+
+  public_deps = [ "//base" ]
+}
+
+source_set("image_writer_private") {
+  sources = [
+    "destroy_partitions_operation.cc",
+    "destroy_partitions_operation.h",
+    "error_constants.cc",
+    "error_constants.h",
+    "extraction_properties.cc",
+    "extraction_properties.h",
+    "image_writer_private_api.cc",
+    "image_writer_private_api.h",
+    "operation.cc",
+    "operation.h",
+    "operation_manager.cc",
+    "operation_manager.h",
+    "removable_storage_provider.cc",
+    "removable_storage_provider.h",
+    "tar_extractor.cc",
+    "tar_extractor.h",
+    "write_from_file_operation.cc",
+    "write_from_file_operation.h",
+    "write_from_url_operation.cc",
+    "write_from_url_operation.h",
+    "xz_extractor.cc",
+    "xz_extractor.h",
+    "zip_extractor.cc",
+    "zip_extractor.h",
+    "zstd_extractor.cc",
+    "zstd_extractor.h",
+  ]
+
+  deps = [
+    ":features",
+    "//base",
+    "//build:chromeos_buildflags",
+    "//chrome/app:generated_resources",
+    "//chrome/browser:browser_process",
+    "//chrome/browser:file_util_service",
+    "//chrome/browser/extensions",
+    "//chrome/browser/profiles:profile",
+    "//chrome/common",
+    "//chrome/common:constants",
+    "//chrome/common/extensions/api",
+    "//chrome/services/file_util/public/mojom",
+    "//components/prefs",
+    "//content/public/browser",
+    "//crypto",
+    "//extensions/browser",
+    "//extensions/browser/api/file_handlers",
+    "//extensions/common",
+    "//mojo/public/cpp/bindings",
+    "//net/traffic_annotation",
+    "//services/network/public/cpp",
+    "//services/network/public/mojom",
+    "//third_party/zlib/google:zip",
+    "//ui/base",
+    "//url",
+  ]
+
+  if (is_android) {
+    sources += [
+      "operation_android.cc",
+      "removable_storage_provider_android.cc",
+      "removable_storage_provider_android.h",
+    ]
+    deps += [ "//services/device/public/mojom" ]
+  }
+
+  if (is_chromeos) {
+    sources += [
+      "operation_chromeos.cc",
+      "removable_storage_provider_chromeos.cc",
+    ]
+    deps += [
+      "//chrome/browser/ash/file_manager",
+      "//chromeos/ash/components/dbus/image_burner",
+      "//chromeos/ash/components/disks",
+      "//chromeos/ash/components/policy/external_storage",
+    ]
+  }
+
+  if (!is_chromeos && !is_android) {
+    sources += [
+      "image_writer_utility_client.cc",
+      "image_writer_utility_client.h",
+      "operation_nonchromeos.cc",
+    ]
+    deps += [ "//chrome/services/removable_storage_writer/public/mojom" ]
+  }
+
+  if (is_mac) {
+    sources += [ "removable_storage_provider_mac.cc" ]
+    frameworks = [
+      "CoreFoundation.framework",
+      "IOKit.framework",
+    ]
+  }
+
+  if (is_linux) {
+    sources += [ "removable_storage_provider_linux.cc" ]
+    if (use_udev) {
+      deps += [ "//device/udev_linux" ]
+    }
+  }
+
+  if (is_win) {
+    sources += [ "removable_storage_provider_win.cc" ]
+    libs = [ "setupapi.lib" ]
+  }
+}
+
+source_set("test_support") {
+  testonly = true
+
+  sources = [
+    "test_utils.cc",
+    "test_utils.h",
+  ]
+
+  deps = [
+    ":image_writer_private",
+    "//base",
+    "//base/test:test_support",
+    "//build:chromeos_buildflags",
+    "//chrome/common:constants",
+    "//chrome/common/extensions/api",
+    "//content/test:test_support",
+    "//extensions/common",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+
+  if (is_chromeos) {
+    deps += [
+      "//chromeos/ash/components/dbus",
+      "//chromeos/ash/components/dbus/concierge",
+      "//chromeos/ash/components/dbus/image_burner",
+      "//chromeos/ash/components/disks",
+      "//chromeos/ash/components/disks:test_support",
+    ]
+  }
+
+  if (!is_chromeos && !is_android) {
+    deps += [ "//chrome/services/removable_storage_writer/public/mojom" ]
+  }
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "destroy_partitions_operation_unittest.cc",
+    "extractor_unittest.cc",
+    "operation_manager_unittest.cc",
+    "operation_unittest.cc",
+    "tar_extractor_unittest.cc",
+    "write_from_file_operation_unittest.cc",
+    "write_from_url_operation_unittest.cc",
+    "xz_extractor_unittest.cc",
+    "zstd_extractor_unittest.cc",
+  ]
+
+  deps = [
+    ":features",
+    ":image_writer_private",
+    ":test_support",
+    "//base",
+    "//base/test:test_support",
+    "//build:chromeos_buildflags",
+    "//chrome/browser/extensions",
+    "//chrome/common:constants",
+    "//chrome/common/extensions/api",
+    "//chrome/services/file_util/public/mojom",
+    "//chrome/test:test_support",
+    "//content/public/browser",
+    "//content/test:test_support",
+    "//crypto",
+    "//extensions/browser",
+    "//extensions/browser:test_support",
+    "//extensions/common",
+    "//mojo/public/cpp/bindings",
+    "//mojo/public/cpp/test_support:test_utils",
+    "//services/network/public/mojom",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//third_party/zlib/google:zip",
+    "//url",
+  ]
+
+  if (is_chromeos) {
+    sources += [
+      "image_writer_private_api_chromeos_unittest.cc",
+      "removable_storage_provider_chromeos_unittest.cc",
+    ]
+    deps += [
+      "//chrome/browser/extensions:test_support",
+      "//chromeos/ash/components/disks",
+      "//chromeos/ash/components/disks:test_support",
+      "//chromeos/ash/components/policy/external_storage",
+      "//chromeos/ash/components/policy/external_storage:test_support",
+      "//extensions/browser/api/file_handlers",
+    ]
+  }
+
+  if (is_android) {
+    sources += [
+      "operation_android_unittest.cc",
+      "removable_storage_provider_android_unittest.cc",
+    ]
+    deps += [ "//services/device/public/mojom" ]
+  }
+}
+
+source_set("browser_tests") {
+  testonly = true
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [ "image_writer_private_apitest.cc" ]
+
+  deps = [
+    ":features",
+    ":image_writer_private",
+    ":test_support",
+    "//base",
+    "//base/test:test_support",
+    "//build:chromeos_buildflags",
+    "//chrome/browser/extensions",
+    "//chrome/common:constants",
+    "//chrome/common/extensions/api",
+    "//chrome/test:test_support",
+    "//components/prefs",
+    "//content/public/browser",
+    "//content/test:test_support",
+    "//extensions/browser:test_support",
+    "//extensions/common",
+    "//extensions/common:mojom",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//third_party/zlib/google:zip",
+  ]
+
+  if (!is_android) {
+    sources += [ "extractor_browsertest.cc" ]
+    deps += [ "//extensions/browser/api/file_system" ]
+  }
+
+  if (is_win || is_mac || is_linux) {
+    sources += [ "image_writer_utility_client_browsertest.cc" ]
+    deps += [ "//chrome/services/removable_storage_writer/public/mojom" ]
+  }
+}

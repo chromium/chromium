@@ -22,7 +22,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
-#include "chromeos/ash/components/dbus/dbus_thread_manager.h"  // nogncheck
+#include "chromeos/ash/components/dbus/dbus_thread_manager.h"
 #include "chromeos/ash/components/dbus/image_burner/fake_image_burner_client.h"
 #include "chromeos/ash/components/dbus/image_burner/image_burner_client.h"
 #include "chromeos/ash/components/disks/disk.h"
