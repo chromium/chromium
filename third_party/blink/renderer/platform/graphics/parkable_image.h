@@ -6,7 +6,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_PARKABLE_IMAGE_H_
 
 #include "base/containers/span.h"
-#include "base/feature_list.h"
 #include "base/synchronization/lock.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_checker.h"
@@ -23,8 +22,6 @@ class SegmentReader;
 class ParkableImageManager;
 class ParkableImage;
 class ParkableImageSegmentReader;
-
-PLATFORM_EXPORT BASE_DECLARE_FEATURE(kDelayParkingImages);
 
 // Implementation of ParkableImage. See ParkableImage below.
 // We split ParkableImage like this because we want to avoid destroying the
@@ -54,7 +51,7 @@ class PLATFORM_EXPORT ParkableImageImpl final
   friend scoped_refptr<T> base::MakeRefCounted(Args&&... args);
   friend class ParkableImageManager;
   friend class ParkableImage;
-  friend class ParkableImageBaseTest;
+  friend class ParkableImageTest;
   friend class ParkableImageSegmentReader;
 
   // |initial_capacity| reserves space in the internal buffer, if you know how
@@ -188,7 +185,7 @@ class PLATFORM_EXPORT ParkableImage final
   template <typename T, typename... Args>
   friend scoped_refptr<T> base::MakeRefCounted(Args&&... args);
   friend class ParkableImageManager;
-  friend class ParkableImageBaseTest;
+  friend class ParkableImageTest;
   friend class ParkableImageSegmentReader;
   friend class ThreadSafeRefCounted<ParkableImageImpl>;
 

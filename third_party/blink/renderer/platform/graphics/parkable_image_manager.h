@@ -44,7 +44,7 @@ class PLATFORM_EXPORT ParkableImageManager
   friend class ParkableImage;
   friend class ParkableImageImpl;
   friend class base::NoDestructor<ParkableImageManager>;
-  friend class ParkableImageBaseTest;
+  friend class ParkableImageTest;
 
   ParkableImageManager();
 

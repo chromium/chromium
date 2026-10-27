@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/platform/graphics/parkable_image.h"
 
-#include "base/feature_list.h"
 #include "base/memory/asan_interface.h"
 #include "base/memory/ref_counted.h"
 #include "base/metrics/histogram_functions.h"
@@ -26,8 +25,6 @@
 #include "third_party/skia/include/core/SkRefCnt.h"
 
 namespace blink {
-
-BASE_FEATURE(kDelayParkingImages, base::FEATURE_ENABLED_BY_DEFAULT);
 
 namespace {
 
@@ -385,16 +382,12 @@ void ParkableImageImpl::DiscardData() {
 }
 
 bool ParkableImageImpl::TransientlyUnableToPark() const {
-  if (base::FeatureList::IsEnabled(kDelayParkingImages)) {
-    // Most images are used only once, for the initial decode at render time.
-    // Since rendering can happen multiple seconds after the image load (e.g.
-    // if paint by a synchronous <script> earlier in the document), we instead
-    // wait up to kParkingDelay before parking an unused image.
-    return !is_frozen() ||
-           (base::TimeTicks::Now() - frozen_time_ <= kParkingDelay && !used_);
-  } else {
-    return !is_frozen();
-  }
+  // Most images are used only once, for the initial decode at render time.
+  // Since rendering can happen multiple seconds after the image load (e.g.
+  // if paint by a synchronous <script> earlier in the document), we instead
+  // wait up to kParkingDelay before parking an unused image.
+  return !is_frozen() ||
+         (base::TimeTicks::Now() - frozen_time_ <= kParkingDelay && !used_);
 }
 
 bool ParkableImageImpl::MaybePark(
