@@ -21,6 +21,16 @@ export enum EnumInUnion {
   kThat = 1,
 }
 
+export const ExtensibleEnumInUnionSpec: { $: mojo.internal.MojomType } = { $: mojo.internal.Enum() };
+
+export enum ExtensibleEnumInUnion {
+
+  MIN_VALUE = 0,
+  MAX_VALUE = 1,
+  kThis = 0,
+  kThat = 1,
+}
+
 
 export const StructInUnionSpec: { $: mojo.internal.MojomType } =
     { $: {} as unknown as mojo.internal.MojomType };
@@ -78,8 +88,12 @@ mojo.internal.Union(
         'ordinal': 1,
         'type': EnumInUnionSpec.$,
       },
-      'structValue': {
+      'extensibleEnumValue': {
         'ordinal': 2,
+        'type': ExtensibleEnumInUnionSpec.$,
+      },
+      'structValue': {
+        'ordinal': 3,
         'type': StructInUnionSpec.$,
       },
     });
@@ -87,12 +101,14 @@ mojo.internal.Union(
 export declare interface BasicUnion {
   numericValue?: number,
   enumValue?: EnumInUnion,
+  extensibleEnumValue?: ExtensibleEnumInUnion,
   structValue?: StructInUnion,
 }
 
 export enum BasicUnionFieldTags {
   NUMERIC_VALUE,
   ENUM_VALUE,
+  EXTENSIBLE_ENUM_VALUE,
   STRUCT_VALUE,
 }
 
@@ -102,6 +118,9 @@ export function whichBasicUnion(u: BasicUnion): BasicUnionFieldTags {
   }
   if (u.enumValue !== null && u.enumValue !== undefined) {
     return BasicUnionFieldTags.ENUM_VALUE;
+  }
+  if (u.extensibleEnumValue !== null && u.extensibleEnumValue !== undefined) {
+    return BasicUnionFieldTags.EXTENSIBLE_ENUM_VALUE;
   }
   if (u.structValue !== null && u.structValue !== undefined) {
     return BasicUnionFieldTags.STRUCT_VALUE;

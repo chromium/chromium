@@ -10,6 +10,7 @@ import org.chromium.mojo.system.Handle;
 import org.chromium.mojo.system.MessagePipeHandle;
 
 import java.nio.ByteBuffer;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -37,6 +38,15 @@ public class Message {
     public Message(ByteBuffer buffer, @Nullable List<? extends Handle> handles) {
         mBuffer = buffer;
         mHandles = handles;
+    }
+
+    /**
+     * Constructor for a message without handles.
+     *
+     * @param buffer The buffer containing the message bytes.
+     */
+    public Message(ByteBuffer buffer) {
+        this(buffer, Collections.emptyList());
     }
 
     /** The data of the message. */

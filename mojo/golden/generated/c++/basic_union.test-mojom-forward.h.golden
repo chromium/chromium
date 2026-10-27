@@ -27,6 +27,8 @@ class StructInUnionDataView;
 class BasicUnionDataView;
 
 enum class EnumInUnion : int32_t;
+
+enum class ExtensibleEnumInUnion : int32_t;
 class StructInUnion;
 using StructInUnionPtr = mojo::InlinedStructPtr<StructInUnion>;
 

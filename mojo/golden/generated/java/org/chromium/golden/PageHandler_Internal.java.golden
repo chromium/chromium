@@ -60,7 +60,7 @@ class PageHandler_Internal {
         public void doSomething(
 ) {
 
-            PageHandlerDoSomethingParams _message = new PageHandlerDoSomethingParams();
+            org.chromium.mojo.bindings.EmptyStruct _message = org.chromium.mojo.bindings.EmptyStruct.INSTANCE;
 
 
             sendMessage(_message, DO_SOMETHING_ORDINAL);
@@ -85,7 +85,7 @@ class PageHandler_Internal {
 
                 case DO_SOMETHING_ORDINAL: {
 
-                    PageHandlerDoSomethingParams.deserialize(payload);
+                    org.chromium.mojo.bindings.EmptyStruct.validate(payload);
 
                     getImpl().doSomething();
                     return true;
@@ -97,52 +97,6 @@ class PageHandler_Internal {
         }
     }
 
-
-    
-    static final class PageHandlerDoSomethingParams extends org.chromium.mojo.bindings.Struct {
-
-        private static final int STRUCT_SIZE = 8;
-        private static final int STRUCT_VERSION = 0;
-
-        private PageHandlerDoSomethingParams(int version) {
-            super(STRUCT_SIZE, version);
-        }
-
-        public PageHandlerDoSomethingParams() {
-            this(STRUCT_VERSION);
-        }
-
-        public static PageHandlerDoSomethingParams deserialize(org.chromium.mojo.bindings.Message message) {
-            return decode(new org.chromium.mojo.bindings.Decoder(message));
-        }
-
-        /**
-         * Similar to the method above, but deserializes from a |ByteBuffer| instance.
-         *
-         * @throws org.chromium.mojo.bindings.DeserializationException on deserialization failure.
-         */
-        public static PageHandlerDoSomethingParams deserialize(java.nio.ByteBuffer data) {
-            return deserialize(new org.chromium.mojo.bindings.Message(
-                    data, new java.util.ArrayList<org.chromium.mojo.system.Handle>()));
-        }
-
-        @SuppressWarnings("unchecked")
-        public static PageHandlerDoSomethingParams decode(org.chromium.mojo.bindings.@Nullable Decoder decoder0) {
-            if (decoder0 == null) {
-                return null;
-            }
-            final int elementsOrVersion = decoder0.readAndValidateStructHeader(STRUCT_SIZE);
-            PageHandlerDoSomethingParams result = new PageHandlerDoSomethingParams(elementsOrVersion);
-            decoder0.decreaseStackDepth();
-            return result;
-        }
-
-        @SuppressWarnings("unchecked")
-        @Override
-        protected final void encode(org.chromium.mojo.bindings.Encoder encoder) {
-            encoder.getEncoderAtDataOffset(STRUCT_SIZE, STRUCT_VERSION);
-        }
-    }
 
 
 

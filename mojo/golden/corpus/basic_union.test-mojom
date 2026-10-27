@@ -14,8 +14,15 @@ enum EnumInUnion {
   kThat,
 };
 
+[Extensible]
+enum ExtensibleEnumInUnion {
+  [Default] kThis,
+  kThat,
+};
+
 union BasicUnion {
   int32 numeric_value;
   EnumInUnion enum_value;
+  ExtensibleEnumInUnion extensible_enum_value;
   StructInUnion struct_value;
 };

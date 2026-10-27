@@ -215,6 +215,9 @@ class  BasicUnion {
   // Construct an instance holding |enum_value|.
   static BasicUnionPtr NewEnumValue(
       EnumInUnion value);
+  // Construct an instance holding |extensible_enum_value|.
+  static BasicUnionPtr NewExtensibleEnumValue(
+      ExtensibleEnumInUnion value);
   // Construct an instance holding |struct_value|.
   static BasicUnionPtr NewStructValue(
       StructInUnionPtr value);
@@ -273,6 +276,13 @@ class  BasicUnion {
   }
   void set_enum_value(EnumInUnion enum_value);
 
+  bool is_extensible_enum_value() const { return tag_ == Tag::kExtensibleEnumValue; }
+  ExtensibleEnumInUnion get_extensible_enum_value() const {
+    CHECK(tag_ == Tag::kExtensibleEnumValue);
+    return data_.extensible_enum_value;
+  }
+  void set_extensible_enum_value(ExtensibleEnumInUnion extensible_enum_value);
+
   bool is_struct_value() const { return tag_ == Tag::kStructValue; }
   const StructInUnionPtr& get_struct_value() const {
     CHECK(tag_ == Tag::kStructValue);
@@ -311,6 +321,9 @@ class  BasicUnion {
         std::in_place_index_t<static_cast<size_t>(Tag::kEnumValue)>,
         EnumInUnion value);
     Union_(
+        std::in_place_index_t<static_cast<size_t>(Tag::kExtensibleEnumValue)>,
+        ExtensibleEnumInUnion value);
+    Union_(
         std::in_place_index_t<static_cast<size_t>(Tag::kStructValue)>,
         StructInUnionPtr value);
     // The contents of the union are explicitly destroyed by `DestroyActive()`.
@@ -318,6 +331,7 @@ class  BasicUnion {
 
     int32_t numeric_value;
     EnumInUnion enum_value;
+    ExtensibleEnumInUnion extensible_enum_value;
     StructInUnionPtr struct_value;
   };
 
@@ -327,6 +341,9 @@ class  BasicUnion {
   BasicUnion(
       std::in_place_index_t<static_cast<size_t>(Tag::kEnumValue)>,
       EnumInUnion value);
+  BasicUnion(
+      std::in_place_index_t<static_cast<size_t>(Tag::kExtensibleEnumValue)>,
+      ExtensibleEnumInUnion value);
   BasicUnion(
       std::in_place_index_t<static_cast<size_t>(Tag::kStructValue)>,
       StructInUnionPtr value);
@@ -349,6 +366,9 @@ BasicUnionPtr BasicUnion::Clone() const {
     case Tag::kEnumValue:
       return NewEnumValue(
           mojo::Clone(data_.enum_value));
+    case Tag::kExtensibleEnumValue:
+      return NewExtensibleEnumValue(
+          mojo::Clone(data_.extensible_enum_value));
     case Tag::kStructValue:
       return NewStructValue(
           mojo::Clone(data_.struct_value));
@@ -368,6 +388,8 @@ bool BasicUnion::Equals(const T& other) const {
       return mojo::Equals(data_.numeric_value, other.data_.numeric_value);
     case Tag::kEnumValue:
       return mojo::Equals(data_.enum_value, other.data_.enum_value);
+    case Tag::kExtensibleEnumValue:
+      return mojo::Equals(data_.extensible_enum_value, other.data_.extensible_enum_value);
     case Tag::kStructValue:
       return mojo::Equals(data_.struct_value, other.data_.struct_value);
   }
@@ -446,6 +468,10 @@ struct  UnionTraits<::golden::BasicUnion::DataView,
 
   static  ::golden::EnumInUnion enum_value(const ::golden::BasicUnionPtr& input) {
     return input->get_enum_value();
+  }
+
+  static  ::golden::ExtensibleEnumInUnion extensible_enum_value(const ::golden::BasicUnionPtr& input) {
+    return input->get_extensible_enum_value();
   }
 
   static const ::golden::StructInUnionPtr& struct_value(const ::golden::BasicUnionPtr& input) {

@@ -35,13 +35,13 @@ public final class OptionalPrimitives extends org.chromium.mojo.bindings.Struct 
 
     private OptionalPrimitives(int version) {
         super(STRUCT_SIZE, version);
-        this.intWithDefault = (Integer) 1;
-        this.longWithDefault = (Long) 2L;
-        this.boolWithDefault = (Boolean) true;
     }
 
     public OptionalPrimitives() {
         this(STRUCT_VERSION);
+        this.intWithDefault = (Integer) 1;
+        this.longWithDefault = (Long) 2L;
+        this.boolWithDefault = (Boolean) true;
     }
 
     public static OptionalPrimitives deserialize(org.chromium.mojo.bindings.Message message) {
@@ -54,8 +54,7 @@ public final class OptionalPrimitives extends org.chromium.mojo.bindings.Struct 
      * @throws org.chromium.mojo.bindings.DeserializationException on deserialization failure.
      */
     public static OptionalPrimitives deserialize(java.nio.ByteBuffer data) {
-        return deserialize(new org.chromium.mojo.bindings.Message(
-                data, new java.util.ArrayList<org.chromium.mojo.system.Handle>()));
+        return deserialize(new org.chromium.mojo.bindings.Message(data));
     }
 
     @SuppressWarnings("unchecked")

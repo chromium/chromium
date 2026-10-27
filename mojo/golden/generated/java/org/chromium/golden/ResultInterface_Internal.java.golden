@@ -190,8 +190,7 @@ SyncMethod_Response callback) {
          * @throws org.chromium.mojo.bindings.DeserializationException on deserialization failure.
          */
         public static ResultInterfaceMethodParams deserialize(java.nio.ByteBuffer data) {
-            return deserialize(new org.chromium.mojo.bindings.Message(
-                    data, new java.util.ArrayList<org.chromium.mojo.system.Handle>()));
+            return deserialize(new org.chromium.mojo.bindings.Message(data));
         }
 
         @SuppressWarnings("unchecked")
@@ -245,8 +244,7 @@ SyncMethod_Response callback) {
          * @throws org.chromium.mojo.bindings.DeserializationException on deserialization failure.
          */
         public static ResultInterfaceMethodResponseParams deserialize(java.nio.ByteBuffer data) {
-            return deserialize(new org.chromium.mojo.bindings.Message(
-                    data, new java.util.ArrayList<org.chromium.mojo.system.Handle>()));
+            return deserialize(new org.chromium.mojo.bindings.Message(data));
         }
 
         @SuppressWarnings("unchecked")
@@ -352,8 +350,7 @@ SyncMethod_Response callback) {
          * @throws org.chromium.mojo.bindings.DeserializationException on deserialization failure.
          */
         public static ResultInterfaceSyncMethodParams deserialize(java.nio.ByteBuffer data) {
-            return deserialize(new org.chromium.mojo.bindings.Message(
-                    data, new java.util.ArrayList<org.chromium.mojo.system.Handle>()));
+            return deserialize(new org.chromium.mojo.bindings.Message(data));
         }
 
         @SuppressWarnings("unchecked")
@@ -407,8 +404,7 @@ SyncMethod_Response callback) {
          * @throws org.chromium.mojo.bindings.DeserializationException on deserialization failure.
          */
         public static ResultInterfaceSyncMethodResponseParams deserialize(java.nio.ByteBuffer data) {
-            return deserialize(new org.chromium.mojo.bindings.Message(
-                    data, new java.util.ArrayList<org.chromium.mojo.system.Handle>()));
+            return deserialize(new org.chromium.mojo.bindings.Message(data));
         }
 
         @SuppressWarnings("unchecked")

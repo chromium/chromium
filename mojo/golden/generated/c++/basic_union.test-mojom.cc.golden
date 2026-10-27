@@ -92,6 +92,15 @@ BasicUnion::NewEnumValue(
 }
 
 BasicUnionPtr
+BasicUnion::NewExtensibleEnumValue(
+    ExtensibleEnumInUnion value) {
+  return BasicUnionPtr(
+      std::in_place,
+      std::in_place_index<static_cast<size_t>(Tag::kExtensibleEnumValue)>,
+      std::move(value));
+}
+
+BasicUnionPtr
 BasicUnion::NewStructValue(
     StructInUnionPtr value) {
   return BasicUnionPtr(
@@ -112,6 +121,13 @@ BasicUnion::BasicUnion(
     EnumInUnion value)
     : tag_(Tag::kEnumValue),
       data_(std::in_place_index<static_cast<size_t>(Tag::kEnumValue)>,
+            std::move(value)) {}
+
+BasicUnion::BasicUnion(
+    std::in_place_index_t<static_cast<size_t>(Tag::kExtensibleEnumValue)>,
+    ExtensibleEnumInUnion value)
+    : tag_(Tag::kExtensibleEnumValue),
+      data_(std::in_place_index<static_cast<size_t>(Tag::kExtensibleEnumValue)>,
             std::move(value)) {}
 
 BasicUnion::BasicUnion(
@@ -140,6 +156,14 @@ void BasicUnion::set_enum_value(EnumInUnion enum_value) {
   data_.enum_value = enum_value;
 }
 
+void BasicUnion::set_extensible_enum_value(ExtensibleEnumInUnion extensible_enum_value) {
+  if (tag_ != Tag::kExtensibleEnumValue) {
+    DestroyActive();
+    tag_ = Tag::kExtensibleEnumValue;
+  }
+  data_.extensible_enum_value = extensible_enum_value;
+}
+
 void BasicUnion::set_struct_value(StructInUnionPtr struct_value) {
   if (tag_ == Tag::kStructValue) {
     data_.struct_value = std::move(struct_value);
@@ -163,6 +187,11 @@ BasicUnion::Union_::Union_(
     : enum_value(std::move(value)) {}
 
 BasicUnion::Union_::Union_(
+    std::in_place_index_t<static_cast<size_t>(Tag::kExtensibleEnumValue)>,
+    ExtensibleEnumInUnion value)
+    : extensible_enum_value(std::move(value)) {}
+
+BasicUnion::Union_::Union_(
     std::in_place_index_t<static_cast<size_t>(Tag::kStructValue)>,
     StructInUnionPtr value)
     : struct_value(std::move(value)) {}
@@ -175,6 +204,9 @@ void BasicUnion::DestroyActive() {
       break;
     case Tag::kEnumValue:
       std::destroy_at(&data_.enum_value);
+      break;
+    case Tag::kExtensibleEnumValue:
+      std::destroy_at(&data_.extensible_enum_value);
       break;
     case Tag::kStructValue:
       std::destroy_at(&data_.struct_value);
@@ -189,6 +221,8 @@ size_t BasicUnion::Hash(size_t seed) const {
       return mojo::internal::Hash(seed, data_.numeric_value);
     case Tag::kEnumValue:
       return mojo::internal::Hash(seed, data_.enum_value);
+    case Tag::kExtensibleEnumValue:
+      return mojo::internal::Hash(seed, data_.extensible_enum_value);
     case Tag::kStructValue:
       return mojo::internal::Hash(seed, data_.struct_value);
     default:
@@ -242,6 +276,14 @@ bool UnionTraits<::golden::BasicUnion::DataView, ::golden::BasicUnionPtr>::Read(
         return false;
 
       *output = UnionType::NewEnumValue(result_enum_value);
+      break;
+    }
+    case Tag::kExtensibleEnumValue: {
+      ::golden::ExtensibleEnumInUnion result_extensible_enum_value;
+      if (!input.ReadExtensibleEnumValue(&result_extensible_enum_value))
+        return false;
+
+      *output = UnionType::NewExtensibleEnumValue(result_extensible_enum_value);
       break;
     }
     case Tag::kStructValue: {

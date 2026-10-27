@@ -60,7 +60,7 @@ class Page_Internal {
         public void onSomethingHappened(
 ) {
 
-            PageOnSomethingHappenedParams _message = new PageOnSomethingHappenedParams();
+            org.chromium.mojo.bindings.EmptyStruct _message = org.chromium.mojo.bindings.EmptyStruct.INSTANCE;
 
 
             sendMessage(_message, ON_SOMETHING_HAPPENED_ORDINAL);
@@ -85,7 +85,7 @@ class Page_Internal {
 
                 case ON_SOMETHING_HAPPENED_ORDINAL: {
 
-                    PageOnSomethingHappenedParams.deserialize(payload);
+                    org.chromium.mojo.bindings.EmptyStruct.validate(payload);
 
                     getImpl().onSomethingHappened();
                     return true;
@@ -97,52 +97,6 @@ class Page_Internal {
         }
     }
 
-
-    
-    static final class PageOnSomethingHappenedParams extends org.chromium.mojo.bindings.Struct {
-
-        private static final int STRUCT_SIZE = 8;
-        private static final int STRUCT_VERSION = 0;
-
-        private PageOnSomethingHappenedParams(int version) {
-            super(STRUCT_SIZE, version);
-        }
-
-        public PageOnSomethingHappenedParams() {
-            this(STRUCT_VERSION);
-        }
-
-        public static PageOnSomethingHappenedParams deserialize(org.chromium.mojo.bindings.Message message) {
-            return decode(new org.chromium.mojo.bindings.Decoder(message));
-        }
-
-        /**
-         * Similar to the method above, but deserializes from a |ByteBuffer| instance.
-         *
-         * @throws org.chromium.mojo.bindings.DeserializationException on deserialization failure.
-         */
-        public static PageOnSomethingHappenedParams deserialize(java.nio.ByteBuffer data) {
-            return deserialize(new org.chromium.mojo.bindings.Message(
-                    data, new java.util.ArrayList<org.chromium.mojo.system.Handle>()));
-        }
-
-        @SuppressWarnings("unchecked")
-        public static PageOnSomethingHappenedParams decode(org.chromium.mojo.bindings.@Nullable Decoder decoder0) {
-            if (decoder0 == null) {
-                return null;
-            }
-            final int elementsOrVersion = decoder0.readAndValidateStructHeader(STRUCT_SIZE);
-            PageOnSomethingHappenedParams result = new PageOnSomethingHappenedParams(elementsOrVersion);
-            decoder0.decreaseStackDepth();
-            return result;
-        }
-
-        @SuppressWarnings("unchecked")
-        @Override
-        protected final void encode(org.chromium.mojo.bindings.Encoder encoder) {
-            encoder.getEncoderAtDataOffset(STRUCT_SIZE, STRUCT_VERSION);
-        }
-    }
 
 
 

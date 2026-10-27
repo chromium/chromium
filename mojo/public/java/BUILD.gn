@@ -36,6 +36,7 @@ android_library("bindings_java") {
     "bindings/src/org/chromium/mojo/bindings/Decoder.java",
     "bindings/src/org/chromium/mojo/bindings/DelegatingConnectionErrorHandler.java",
     "bindings/src/org/chromium/mojo/bindings/DeserializationException.java",
+    "bindings/src/org/chromium/mojo/bindings/EmptyStruct.java",
     "bindings/src/org/chromium/mojo/bindings/Encoder.java",
     "bindings/src/org/chromium/mojo/bindings/ExceptionHandler.java",
     "bindings/src/org/chromium/mojo/bindings/ExecutorFactory.java",

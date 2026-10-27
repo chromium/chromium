@@ -102,6 +102,11 @@ if (decoder{{level+1}} == null) {
 {{variable}} = {{kind|java_type}}.decode(decoder{{level}}, {{offset}});
 {%- else %}
 {{variable}} = decoder{{level}}.{{kind|decode_method(offset, bit)}};
+{#- validate() is a no-op for extensible enums, and toKnownValue() is the
+    identity function for non-extensible enums. So only one of them is needed:
+    validate() for non-extensible enums, and toKnownValue() for extensible ones.
+    Extensible enums should have a [Default], but translate.py allows some
+    exceptions, for which toKnownValue() is also the identity function. #}
 {%-   if kind|is_array_kind and kind.kind|is_enum_kind %}
 {%-     if kind|is_nullable_kind %}
 if ({{variable}} != null) {
@@ -113,15 +118,31 @@ if ({{variable}} != null) {
         if ({{variable}}[i{{level+1}}] == null)
           continue;
 {%-     endif %}
+{%-     if not kind.kind.extensible %}
         {{kind.kind|java_class_for_enum}}.validate({{variable}}[i{{level+1}}]);
+{%-     else %}
         {{variable}}[i{{level+1}}] = {{kind.kind|java_class_for_enum}}.toKnownValue({{variable}}[i{{level+1}}]);
+{%-     endif %}
     }
 }
 {%-   elif kind|is_enum_kind %}
-    {{kind|java_class_for_enum}}.validate({{variable}});
-    {{variable}} = {{kind|java_class_for_enum}}.toKnownValue({{variable}});
+{%-     if not kind.extensible %}
+{{kind|java_class_for_enum}}.validate({{variable}});
+{%-     else %}
+{{variable}} = {{kind|java_class_for_enum}}.toKnownValue({{variable}});
+{%-     endif %}
 {%-   endif %}
 {%- endif %}
+{%- endmacro %}
+
+{%- macro init_field_defaults(fields) %}
+{%-   for field in fields %}
+{%-     if field.default %}
+        this.{{field|name}} = {{field|default_value}};
+{%-     elif field.kind|is_any_handle_kind %}
+        this.{{field|name}} = org.chromium.mojo.system.InvalidHandle.INSTANCE;
+{%-     endif %}
+{%-   endfor %}
 {%- endmacro %}
 
 {%- macro struct_def(struct, inner_class=False) %}
@@ -158,17 +179,14 @@ if ({{variable}} != null) {
 
     private {{struct|name}}(int version) {
         super(STRUCT_SIZE, version);
-{%- for field in struct.fields %}
-{%-   if field.default %}
-        this.{{field|name}} = {{field|default_value}};
-{%-   elif field.kind|is_any_handle_kind %}
-        this.{{field|name}} = org.chromium.mojo.system.InvalidHandle.INSTANCE;
-{%-   endif %}
-{%- endfor %}
+{#- This constructor is used by decode(), which assigns all fields that exist in
+    the received version, so defaults are needed only for newer fields. #}
+        {{- init_field_defaults(struct.fields|selectattr('min_version')) }}
     }
 
     public {{struct|name}}() {
         this(STRUCT_VERSION);
+        {{- init_field_defaults(struct.fields|rejectattr('min_version')) }}
     }
 
     public static {{struct|name}} deserialize(org.chromium.mojo.bindings.Message message) {
@@ -181,8 +199,7 @@ if ({{variable}} != null) {
      * @throws org.chromium.mojo.bindings.DeserializationException on deserialization failure.
      */
     public static {{struct|name}} deserialize(java.nio.ByteBuffer data) {
-        return deserialize(new org.chromium.mojo.bindings.Message(
-                data, new java.util.ArrayList<org.chromium.mojo.system.Handle>()));
+        return deserialize(new org.chromium.mojo.bindings.Message(data));
     }
 
     @SuppressWarnings("unchecked")

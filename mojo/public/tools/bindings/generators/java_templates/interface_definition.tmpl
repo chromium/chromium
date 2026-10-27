@@ -107,7 +107,7 @@ switch (methodId) {
         {{request_struct|name}} data =
                 {{request_struct|name}}.deserialize(payload);
 {%       else %}
-        {{request_struct|name}}.deserialize(payload);
+        org.chromium.mojo.bindings.EmptyStruct.validate(payload);
 {%       endif %}
         getImpl().{{method|name}}({{run_callback('data', method.parameters)}}{% if with_response %}{% if method.parameters %}, {% endif %}new {{response_struct|name}}ProxyToResponder(getCore(), receiver, requestId){% endif %});
         return true;
@@ -162,7 +162,11 @@ class {{interface|name}}_Internal {
         @Override
         public void {{method|name}}({{declare_request_params(method)}}) {
 {%   set request_struct = method.param_struct %}
+{%-  if method.parameters %}
             {{request_struct|name}} _message = new {{request_struct|name}}();
+{%-  else %}
+            org.chromium.mojo.bindings.EmptyStruct _message = org.chromium.mojo.bindings.EmptyStruct.INSTANCE;
+{%-  endif %}
 {%   for param in method.parameters %}
             _message.{{param|name}} = {{param|name}};
 {%   endfor %}
@@ -233,11 +237,16 @@ class {{interface|name}}_Internal {
     }
 {%-   endif %}
 
+{%-  if method.parameters %}
+
     {{ struct_def(method.param_struct, True)|indent(4) }}
+{%-  endif %}
 {%   if method.response_parameters != None %}
 {%   set response_struct = method.response_param_struct %}
+{%-  if method.response_parameters %}
 
     {{ struct_def(response_struct, True)|indent(4) }}
+{%-  endif %}
 
     static class {{response_struct|name}}ForwardToCallback extends org.chromium.mojo.bindings.ForwardToCallback {
         private final {{interface|name}}.{{method|interface_response_name}} mCallback;
@@ -280,7 +289,11 @@ class {{interface|name}}_Internal {
 {%-  else %}
         public void call({{declare_params(method.response_parameters)}}) {
 {%-  endif %}
+{%-  if method.response_parameters %}
             {{response_struct|name}} _response = new {{response_struct|name}}();
+{%-  else %}
+            org.chromium.mojo.bindings.EmptyStruct _response = org.chromium.mojo.bindings.EmptyStruct.INSTANCE;
+{%-  endif %}
 
 
 {%-  if method.result_response -%}

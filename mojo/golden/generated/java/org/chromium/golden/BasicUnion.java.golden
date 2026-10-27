@@ -25,10 +25,12 @@ public final class BasicUnion extends org.chromium.mojo.bindings.Union {
     public static final class Tag {
         public static final int NumericValue = 0;
         public static final int EnumValue = 1;
-        public static final int StructValue = 2;
+        public static final int ExtensibleEnumValue = 2;
+        public static final int StructValue = 3;
     };
     private int mNumericValue;
     private int mEnumValue;
+    private int mExtensibleEnumValue;
     private StructInUnion mStructValue;
 
     public void setNumericValue(int numericValue) {
@@ -49,6 +51,16 @@ public final class BasicUnion extends org.chromium.mojo.bindings.Union {
     public int getEnumValue() {
         assert this.mTag == Tag.EnumValue;
         return this.mEnumValue;
+    }
+
+    public void setExtensibleEnumValue(int extensibleEnumValue) {
+        this.mTag = Tag.ExtensibleEnumValue;
+        this.mExtensibleEnumValue = extensibleEnumValue;
+    }
+
+    public int getExtensibleEnumValue() {
+        assert this.mTag == Tag.ExtensibleEnumValue;
+        return this.mExtensibleEnumValue;
     }
 
     public void setStructValue(StructInUnion structValue) {
@@ -75,6 +87,11 @@ public final class BasicUnion extends org.chromium.mojo.bindings.Union {
             case Tag.EnumValue: {
                 
                 encoder0.encode(this.mEnumValue, offset + 8);
+                break;
+            }
+            case Tag.ExtensibleEnumValue: {
+                
+                encoder0.encode(this.mExtensibleEnumValue, offset + 8);
                 break;
             }
             case Tag.StructValue: {
@@ -108,9 +125,15 @@ public final class BasicUnion extends org.chromium.mojo.bindings.Union {
             case Tag.EnumValue: {
                 
                 result.mEnumValue = decoder0.readInt(offset + org.chromium.mojo.bindings.DataHeader.HEADER_SIZE);
-                    EnumInUnion.validate(result.mEnumValue);
-                    result.mEnumValue = EnumInUnion.toKnownValue(result.mEnumValue);
+                EnumInUnion.validate(result.mEnumValue);
                 result.mTag = Tag.EnumValue;
+                break;
+            }
+            case Tag.ExtensibleEnumValue: {
+                
+                result.mExtensibleEnumValue = decoder0.readInt(offset + org.chromium.mojo.bindings.DataHeader.HEADER_SIZE);
+                result.mExtensibleEnumValue = ExtensibleEnumInUnion.toKnownValue(result.mExtensibleEnumValue);
+                result.mTag = Tag.ExtensibleEnumValue;
                 break;
             }
             case Tag.StructValue: {
