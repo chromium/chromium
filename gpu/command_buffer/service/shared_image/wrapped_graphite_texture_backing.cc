@@ -384,6 +384,9 @@ bool WrappedGraphiteTextureBacking::CheckSupportForAccessStream(
     if (stream == SharedImageAccessStream::kDawn) {
       return false;
     }
+    if (stream == SharedImageAccessStream::kVaapi) {
+      return false;
+    }
   }
   return true;
 }

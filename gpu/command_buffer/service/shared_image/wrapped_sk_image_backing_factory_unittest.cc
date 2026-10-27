@@ -4,7 +4,12 @@
 
 #include "gpu/command_buffer/service/shared_image/wrapped_sk_image_backing_factory.h"
 
+#include <array>
+
+#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/functional/callback_helpers.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "cc/test/pixel_comparator.h"
 #include "cc/test/pixel_test_utils.h"
@@ -20,9 +25,11 @@
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_test_base.h"
 #include "gpu/config/gpu_feature_info.h"
+#include "gpu/config/gpu_finch_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkAlphaType.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkColorType.h"
 #include "third_party/skia/include/core/SkImage.h"
@@ -393,6 +400,185 @@ INSTANTIATE_TEST_SUITE_P(
                      testing::Values(GrContextType::kGL,
                                      GrContextType::kGraphiteDawn)),
     TestParamToString);
+
+#if BUILDFLAG(IS_WIN)
+// ProduceVideo() with a D3D11 device is only supported on Windows. These tests
+// verify the interaction between D3D video textures and
+// WrappedGraphiteTextureBacking inside CompoundImageBacking.
+class CompoundImageBackingWithWrappedSkImageTest
+    : public WrappedSkImageBackingFactoryTest {
+ public:
+  void SetUp() override {
+    WrappedSkImageBackingFactoryTest::SetUp();
+    if (IsSkipped()) {
+      return;
+    }
+    if (!context_state_->graphite_shared_context()) {
+      // TODO(crbug.com/577947820): WrappedSkImageBacking does not implement
+      // SupportsAccess() for kUseDynamicBackingAllocations.
+      GTEST_SKIP()
+          << "Requires WrappedSkImageBacking::SupportsAccess() on Ganesh";
+    }
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kUseDynamicBackingAllocations);
+    factory_ = std::make_unique<SharedImageFactory>(
+        gpu_preferences_, gpu_workarounds_, GpuFeatureInfo(),
+        context_state_.get(), &shared_image_manager_, nullptr,
+        /*is_for_display_compositor=*/false);
+  }
+
+  void TearDown() override {
+    if (factory_) {
+      factory_->DestroyAllSharedImages(true);
+      factory_.reset();
+    }
+    WrappedSkImageBackingFactoryTest::TearDown();
+  }
+
+ protected:
+  void VerifyD3D11VideoPixel(ID3D11Device* d3d11_device,
+                             VideoImageRepresentation* representation,
+                             base::span<const uint8_t, 4> expected_pixel) {
+    auto read_access = representation->BeginScopedReadAccess();
+    ASSERT_NE(read_access, nullptr);
+    D3D11TextureAndArrayIndex video_texture = read_access->GetD3D11Texture();
+    ASSERT_NE(video_texture.texture, nullptr);
+
+    D3D11_TEXTURE2D_DESC desc = {};
+    video_texture.texture->GetDesc(&desc);
+    desc.Usage = D3D11_USAGE_STAGING;
+    desc.BindFlags = 0;
+    desc.CPUAccessFlags = D3D11_CPU_ACCESS_READ;
+    desc.MiscFlags = 0;
+
+    Microsoft::WRL::ComPtr<ID3D11Texture2D> staging_texture;
+    ASSERT_HRESULT_SUCCEEDED(
+        d3d11_device->CreateTexture2D(&desc, nullptr, &staging_texture));
+
+    Microsoft::WRL::ComPtr<ID3D11DeviceContext> device_context;
+    d3d11_device->GetImmediateContext(&device_context);
+    device_context->CopySubresourceRegion(staging_texture.Get(), 0, 0, 0, 0,
+                                          video_texture.texture.Get(),
+                                          video_texture.array_index, nullptr);
+
+    D3D11_MAPPED_SUBRESOURCE mapped = {};
+    ASSERT_HRESULT_SUCCEEDED(device_context->Map(staging_texture.Get(), 0,
+                                                 D3D11_MAP_READ, 0, &mapped));
+    // SAFETY: `staging_texture` is a 64x64 RGBA8 texture, so `mapped.pData` has
+    // at least 4 bytes for the first pixel.
+    auto first_pixel = UNSAFE_BUFFERS(
+        base::span(static_cast<const uint8_t*>(mapped.pData), 4u));
+    EXPECT_EQ(first_pixel, expected_pixel);
+    device_context->Unmap(staging_texture.Get(), 0);
+  }
+
+  base::test::ScopedFeatureList scoped_feature_list_;
+  std::unique_ptr<SharedImageFactory> factory_;
+};
+
+// Verifies that calling ProduceVideo() on a SharedImage with dynamic backing
+// allocation enabled reads the initialized pixels from the initial backing
+// rather than uninitialized memory from the dynamically allocated backing.
+TEST_P(CompoundImageBackingWithWrappedSkImageTest,
+       ProduceVideoDynamicBackingAllocationReadsInitializedPixels) {
+  constexpr gfx::Size size(64, 64);
+  const auto format = GetFormat();
+  constexpr gpu::SharedImageUsageSet usage =
+      gpu::SHARED_IMAGE_USAGE_RASTER_READ |
+      gpu::SHARED_IMAGE_USAGE_RASTER_WRITE |
+      gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
+  const gpu::Mailbox mailbox = gpu::Mailbox::Generate();
+
+  constexpr std::array<uint8_t, 4> kGreen = {0, 255, 0, 255};
+  std::vector<uint8_t> pixel_data(size.width() * size.height() * 4);
+  for (size_t i = 0; i < pixel_data.size(); i += 4) {
+    pixel_data[i + 0] = kGreen[0];
+    pixel_data[i + 1] = kGreen[1];
+    pixel_data[i + 2] = kGreen[2];
+    pixel_data[i + 3] = kGreen[3];
+  }
+
+  SharedImageInfo si_info(format, size, kColorSpace, kSurfaceOrigin,
+                          kPremul_SkAlphaType, usage,
+                          "ProduceVideoDynamicTest");
+  ASSERT_TRUE(factory_->CreateSharedImage(mailbox, si_info, pixel_data));
+
+  auto d3d11_device = context_state_->GetD3D11Device();
+  ASSERT_TRUE(d3d11_device);
+
+  auto representation = shared_image_manager_.ProduceVideo(
+      d3d11_device, mailbox, &memory_type_tracker_);
+  ASSERT_NE(representation, nullptr);
+
+  VerifyD3D11VideoPixel(d3d11_device.Get(), representation.get(), kGreen);
+
+  representation.reset();
+  EXPECT_TRUE(factory_->DestroySharedImage(mailbox));
+}
+
+// Verifies that calling ProduceVideo() on an initially uncleared SharedImage
+// and then clearing it before BeginScopedReadAccess() reads the cleared pixels
+// rather than uninitialized memory snapshotted during ProduceVideo().
+TEST_P(CompoundImageBackingWithWrappedSkImageTest,
+       ProduceVideoOnUnclearedSharedImageReadsLaterClearedPixels) {
+  constexpr gfx::Size size(64, 64);
+  const auto format = GetFormat();
+  constexpr gpu::SharedImageUsageSet usage =
+      gpu::SHARED_IMAGE_USAGE_RASTER_READ |
+      gpu::SHARED_IMAGE_USAGE_RASTER_WRITE |
+      gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
+  const gpu::Mailbox mailbox = gpu::Mailbox::Generate();
+
+  SharedImageInfo si_info(format, size, kColorSpace, kSurfaceOrigin,
+                          kPremul_SkAlphaType, usage,
+                          "ProduceVideoUnclearedDynamicTest");
+  ASSERT_TRUE(
+      factory_->CreateSharedImage(mailbox, si_info, kNullSurfaceHandle));
+
+  auto d3d11_device = context_state_->GetD3D11Device();
+  ASSERT_TRUE(d3d11_device);
+
+  // Call ProduceVideo() while the SharedImage is still uncleared.
+  auto representation = shared_image_manager_.ProduceVideo(
+      d3d11_device, mailbox, &memory_type_tracker_);
+  ASSERT_NE(representation, nullptr);
+  EXPECT_FALSE(representation->IsCleared());
+
+  // Clear the SharedImage to solid green via Skia before reading video.
+  auto skia_rep = shared_image_representation_factory_.ProduceSkia(
+      mailbox, context_state_.get());
+  ASSERT_NE(skia_rep, nullptr);
+  {
+    std::vector<GrBackendSemaphore> begin_semaphores;
+    std::vector<GrBackendSemaphore> end_semaphores;
+    auto skia_write = skia_rep->BeginScopedWriteAccess(
+        &begin_semaphores, &end_semaphores,
+        SharedImageRepresentation::AllowUnclearedAccess::kYes);
+    ASSERT_NE(skia_write, nullptr);
+    skia_write->surface()->getCanvas()->clear(SkColors::kGreen);
+    context_state_->FlushWriteAccess(skia_write.get());
+    context_state_->SubmitIfNecessary(std::move(end_semaphores),
+                                      skia_write->NeedGraphiteContextSubmit());
+    skia_rep->SetCleared();
+  }
+  skia_rep.reset();
+  EXPECT_TRUE(representation->IsCleared());
+
+  constexpr std::array<uint8_t, 4> kGreen = {0, 255, 0, 255};
+  VerifyD3D11VideoPixel(d3d11_device.Get(), representation.get(), kGreen);
+
+  representation.reset();
+  EXPECT_TRUE(factory_->DestroySharedImage(mailbox));
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    CompoundImageBackingWithWrappedSkImageTest,
+    testing::Combine(testing::Values(viz::SinglePlaneFormat::kRGBA_8888),
+                     testing::Values(GrContextType::kGL,
+                                     GrContextType::kGraphiteDawn)),
+    TestParamToString);
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace
 }  // namespace gpu

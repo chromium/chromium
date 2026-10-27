@@ -20,6 +20,7 @@
 #include "gpu/command_buffer/service/gl_utils.h"
 #include "gpu/command_buffer/service/gles2_cmd_decoder.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
+#include "gpu/command_buffer/service/shared_image/compound_image_backing.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_factory.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_format_service_utils.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
@@ -44,10 +45,6 @@
 #if BUILDFLAG(SKIA_USE_DAWN)
 #include "gpu/command_buffer/service/dawn_context_provider.h"
 #include "gpu/command_buffer/service/shared_image/skia_graphite_dawn_image_representation.h"
-#endif
-
-#if BUILDFLAG(IS_WIN)
-#include "gpu/command_buffer/service/shared_image/d3d_image_representation.h"
 #endif
 
 namespace gpu {
@@ -284,6 +281,10 @@ GLTextureImageBacking::~GLTextureImageBacking() {
 bool GLTextureImageBacking::CheckSupportForAccessStream(
     SharedImageAccessStream stream,
     const AccessParams& params) {
+  if (stream == SharedImageAccessStream::kVaapi) {
+    return false;
+  }
+
   // `params.context_state` is not always available for all access streams. In
   // such cases, we default to allowing access, assuming the context is
   // compatible. When a context is provided, we explicitly check if it's a GL
@@ -472,26 +473,6 @@ GLTextureImageBacking::ProduceSkiaGraphite(
       context_state->gpu_main_graphite_recorder(), manager, this, tracker);
 #else
   NOTREACHED();
-#endif
-}
-
-std::unique_ptr<VideoImageRepresentation> GLTextureImageBacking::ProduceVideo(
-    SharedImageManager* manager,
-    MemoryTypeTracker* tracker,
-    VideoDevice device) {
-#if BUILDFLAG(IS_WIN)
-  DCHECK_EQ(textures_.size(), 1u);
-  // The GL copy path requires a D3D11 device; a D3D12 command queue cannot use
-  // it.
-  const auto* d3d11_device =
-      std::get_if<Microsoft::WRL::ComPtr<ID3D11Device>>(&device);
-  CHECK(d3d11_device);
-
-  return D3D11VideoImageCopyRepresentation::CreateFromGL(
-      textures_[0]->GetServiceId(), debug_label(), d3d11_device->Get(), manager,
-      this, tracker);
-#else
-  return nullptr;
 #endif
 }
 

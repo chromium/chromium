@@ -152,15 +152,6 @@ class D3DVideoImageRepresentation : public VideoImageRepresentation {
 
 class D3D11VideoImageCopyRepresentation : public VideoImageRepresentation {
  public:
-  // Creates a copy of a (D3D-backed) GL texture for use in video encode.
-  // This avoids expensive readback.
-  static std::unique_ptr<D3D11VideoImageCopyRepresentation> CreateFromGL(
-      GLuint gl_texture_id,
-      std::string_view debug_label,
-      ID3D11Device* d3d_device,
-      SharedImageManager* manager,
-      SharedImageBacking* backing,
-      MemoryTypeTracker* tracker);
   static std::unique_ptr<D3D11VideoImageCopyRepresentation> CreateFromD3D(
       SharedImageManager* manager,
       SharedImageBacking* backing,
