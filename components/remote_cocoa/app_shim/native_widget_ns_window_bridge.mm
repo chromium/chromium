@@ -664,32 +664,17 @@ void NativeWidgetNSWindowBridge::InitWindow(
   CheckAndNotifyAllWorkspacesStateChanged();
 }
 
-void NativeWidgetNSWindowBridge::SetInitialBounds(
-    const gfx::Rect& new_bounds,
-    const gfx::Size& minimum_content_size) {
-  gfx::Rect adjusted_bounds = new_bounds;
-  if (new_bounds.IsEmpty()) {
-    // If a position is set, but no size, complain. Otherwise, a 1x1 window
-    // would appear there, which might be unexpected.
-    DCHECK(new_bounds.origin().IsOrigin())
-        << "Zero-sized windows not supported on Mac.";
-
-    // Otherwise, bounds is all zeroes. Cocoa will currently have the window at
-    // the bottom left of the screen. To support a client calling SetSize() only
-    // (and for consistency across platforms) put it at the top-left instead.
-    // Read back the current frame: it will be a 1x1 context rect but the frame
-    // size also depends on the window style.
-    NSRect frame_rect = [window_ frame];
-    adjusted_bounds = gfx::Rect(
-        gfx::Point(), gfx::Size(NSWidth(frame_rect), NSHeight(frame_rect)));
-  }
-  SetBounds(adjusted_bounds, minimum_content_size, std::nullopt);
-}
-
 void NativeWidgetNSWindowBridge::SetBounds(
-    const gfx::Rect& new_bounds,
+    const std::optional<gfx::Point>& origin,
+    const gfx::Size& size,
     const gfx::Size& minimum_content_size,
     const std::optional<gfx::Size>& maximum_content_size) {
+  // If no origin is specified, keep the top-left corner in place (rather than
+  // the bottom-left, which -[NSWindow setContentSize:] would do).
+  gfx::Rect new_bounds(
+      origin.value_or(gfx::ScreenRectFromNSRect([window_ frame]).origin()),
+      size);
+
   // Discard any pending live resizes.
   live_resize_.pending_window_frame = std::nullopt;
   live_resize_.queued_pending_window_frame = std::nullopt;
@@ -741,60 +726,6 @@ void NativeWidgetNSWindowBridge::SetBounds(
   if ([window_ isKeyWindow] && ![window_ isOnActiveSpace] &&
       [window_ screen] != previous_screen) {
     SetVisibilityState(WindowVisibilityState::kShowAndActivateWindow);
-  }
-}
-
-void NativeWidgetNSWindowBridge::SetSize(
-    const gfx::Size& new_size,
-    const gfx::Size& minimum_content_size) {
-  // Ensure the top-left corner stays in-place (rather than the bottom-left,
-  // which -[NSWindow setContentSize:] would do).
-  gfx::Rect new_window_bounds = gfx::ScreenRectFromNSRect([window_ frame]);
-  new_window_bounds.set_size(new_size);
-  SetBounds(new_window_bounds, minimum_content_size, std::nullopt);
-}
-
-void NativeWidgetNSWindowBridge::SetSizeAndCenter(
-    const gfx::Size& content_size,
-    const gfx::Size& minimum_content_size) {
-  gfx::Rect new_window_bounds = gfx::ScreenRectFromNSRect([window_ frame]);
-  new_window_bounds.set_size(GetWindowSizeForClientSize(window_, content_size));
-  SetBounds(new_window_bounds, minimum_content_size, std::nullopt);
-
-  if (!parent_) {
-    // Note that this is not the precise center of screen, but it is the
-    // standard location for windows like dialogs to appear on screen for Mac.
-    [window_ center];
-  } else {
-    NSWindow* parent_window = parent_->ns_view().window;
-    NSRect parent_rect = [parent_window frame];
-    NSRect window_rect = [window_ frame];
-
-    // Clamp to the visible area of the screen where the parent window resides.
-    // This ensures the window stays within viewable bounds and respects
-    // the menu bar and dock.
-    NSScreen* screen = [parent_window screen];
-    if (screen) {
-      NSRect visible_frame = [screen visibleFrame];
-      parent_rect = NSIntersectionRect(parent_rect, visible_frame);
-
-      // Calculate the centered position relative to the parent's visible area.
-      CGFloat x = NSMidX(parent_rect) - window_rect.size.width / 2;
-      CGFloat y = NSMidY(parent_rect) - window_rect.size.height / 2;
-
-      // Ensure the child window stays completely within the visible frame,
-      // even if the parent's visible area is smaller than the child window.
-      x = std::max(x, NSMinX(visible_frame));
-      x = std::min(x, NSMaxX(visible_frame) - window_rect.size.width);
-
-      y = std::max(y, NSMinY(visible_frame));
-      y = std::min(y, NSMaxY(visible_frame) - window_rect.size.height);
-
-      [window_ setFrameOrigin:NSMakePoint(x, y)];
-    } else {
-      // Fallback if no screen is available.
-      [window_ center];
-    }
   }
 }
 

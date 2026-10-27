@@ -47,6 +47,7 @@
 #include "ui/base/ui_base_features.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/recyclable_compositor_mac.h"
+#include "ui/display/screen.h"
 #import "ui/events/test/cocoa_test_event_utils.h"
 #include "ui/events/test/event_generator.h"
 #import "ui/gfx/mac/coordinate_conversion.h"
@@ -3662,6 +3663,25 @@ TEST_F(NativeWidgetMacTest, CenterWindowClampsToScreen) {
       << " should be within screen bounds " << screen_bounds.ToString();
 
   parent->CloseNow();
+}
+
+// Tests that CenterWindow centers a window without a parent in the work area of
+// its display, and sizes its content area to the requested size.
+TEST_F(NativeWidgetMacTest, CenterWindowWithoutParent) {
+  Widget* widget = CreateTopLevelPlatformWidget();
+  const gfx::Size content_size(300, 200);
+  widget->CenterWindow(content_size);
+  EXPECT_EQ(content_size, widget->GetClientAreaBoundsInScreen().size());
+
+  const gfx::Rect bounds = widget->GetWindowBoundsInScreen();
+  EXPECT_EQ(gfx::ScreenRectFromNSRect(
+                widget->GetNativeWindow().GetNativeNSWindow().frame),
+            bounds);
+  const gfx::Rect work_area =
+      display::Screen::Get()->GetDisplayMatching(bounds).work_area();
+  EXPECT_EQ(work_area.CenterPoint(), bounds.CenterPoint());
+
+  widget->CloseNow();
 }
 
 namespace {

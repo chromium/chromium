@@ -184,6 +184,11 @@ class VIEWS_EXPORT NativeWidgetMacNSWindowHost
   // location.
   void SetSize(const gfx::Size& size);
 
+  // Changes the content size of the window to `content_size`, and centers the
+  // window over its parent, or, if it has no parent, in the work area of its
+  // display.
+  void CenterWindow(const gfx::Size& content_size);
+
   // Tell the window to transition to being fullscreen or not-fullscreen.
   // If `fullscreen` is true, then `target_display_id` specifies the display to
   // which window should move (or an invalid display, to use the default).
@@ -335,6 +340,14 @@ class VIEWS_EXPORT NativeWidgetMacNSWindowHost
   // Get the geometry of the window, in DIPs, clamped to specified
   // minimum/maximum window size constraints.
   gfx::Rect GetAdjustedContentBoundsInScreen();
+
+  // Returns the size of the window frame for a content area of `content_size`,
+  // which depends on the style mask that the window was created with.
+  gfx::Size GetWindowSizeForContentSize(const gfx::Size& content_size) const;
+
+  // Returns the origin at which a window of `window_size` is centered, as
+  // described in CenterWindow().
+  gfx::Point GetCenteredWindowOrigin(const gfx::Size& window_size) const;
 
   // NativeWidgetNSWindowHostHelper:
   id GetNativeViewAccessible() override;
@@ -556,6 +569,12 @@ class VIEWS_EXPORT NativeWidgetMacNSWindowHost
   // Window that is guaranteed to exist in this process (see
   // GetInProcessNSWindow).
   NativeWidgetMacNSWindow* __strong in_process_ns_window_;
+
+  // The style mask that the NSWindow was created with, used to convert between
+  // content and frame sizes the same way whether the NSWindow is in this
+  // process or not (the placeholder `in_process_ns_window_` of a remote window
+  // is borderless).
+  uint64_t ns_window_style_mask_ = 0;
 
   // Id mapping for |in_process_ns_window_|'s content NSView.
   std::unique_ptr<remote_cocoa::ScopedNSViewIdMapping>

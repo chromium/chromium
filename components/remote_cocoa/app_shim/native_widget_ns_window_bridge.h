@@ -291,15 +291,10 @@ class REMOTE_COCOA_APP_SHIM_EXPORT NativeWidgetNSWindowBridge
   void DestroyContentView() override;
   void CloseWindow() override;
   void CloseWindowNow() override;
-  void SetInitialBounds(const gfx::Rect& new_bounds,
-                        const gfx::Size& minimum_content_size) override;
-  void SetBounds(const gfx::Rect& new_bounds,
+  void SetBounds(const std::optional<gfx::Point>& origin,
+                 const gfx::Size& size,
                  const gfx::Size& minimum_content_size,
                  const std::optional<gfx::Size>& maximum_content_size) override;
-  void SetSize(const gfx::Size& new_size,
-               const gfx::Size& minimum_content_size) override;
-  void SetSizeAndCenter(const gfx::Size& content_size,
-                        const gfx::Size& minimum_content_size) override;
   void SetVisibilityState(
       remote_cocoa::mojom::WindowVisibilityState new_state) override;
   void SetAnimationEnabled(bool animation_enabled) override;

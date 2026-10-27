@@ -32,6 +32,7 @@
 #include "ui/base/cocoa/nswindow_test_util.h"
 #include "ui/base/cocoa/remote_accessibility_api.h"
 #include "ui/base/cocoa/remote_layer_api.h"
+#include "ui/base/cocoa/window_size_constants.h"
 #include "ui/base/hit_test.h"
 #include "ui/base/ime/input_method.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
@@ -42,6 +43,7 @@
 #include "ui/display/screen.h"
 #include "ui/events/cocoa/cocoa_event_utils.h"
 #include "ui/gfx/geometry/dip_util.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size_conversions.h"
 #include "ui/gfx/mac/coordinate_conversion.h"
 #include "ui/gfx/native_ui_types.h"
@@ -411,6 +413,7 @@ NativeWidgetMacNSWindowHost::GetNSWindowMojo() const {
 void NativeWidgetMacNSWindowHost::CreateInProcessNSWindowBridge(
     NativeWidgetMacNSWindow* window) {
   in_process_ns_window_ = window;
+  ns_window_style_mask_ = window.styleMask;
   in_process_ns_window_bridge_ =
       std::make_unique<remote_cocoa::NativeWidgetNSWindowBridge>(
           widget_id_, this, this, text_input_host_.get());
@@ -423,6 +426,7 @@ void NativeWidgetMacNSWindowHost::CreateRemoteNSWindow(
   accessibility_focus_overrider_.SetAppIsRemote(true);
   application_host_ = application_host;
   application_host_->AddObserver(this);
+  ns_window_style_mask_ = window_create_params->style_mask;
 
   // Create a local invisible window that will be used as the gfx::NativeWindow
   // handle to track this window in this process.
@@ -533,9 +537,17 @@ void NativeWidgetMacNSWindowHost::InitWindow(
   // set at all, the creator of the Widget is expected to call SetBounds()
   // before calling Widget::Show() to avoid a kWindowSizeDeterminedLater-sized
   // (i.e. 1x1) window appearing.
-  UpdateLocalWindowFrame(initial_bounds_in_screen);
-  GetNSWindowMojo()->SetInitialBounds(initial_bounds_in_screen,
-                                      widget->GetMinimumSize());
+  gfx::Rect initial_bounds = initial_bounds_in_screen;
+  if (initial_bounds.IsEmpty()) {
+    CHECK(initial_bounds.origin().IsOrigin())
+        << "Mac only supports zero-sized windows at 0x0.";
+    initial_bounds.set_size(GetWindowSizeForContentSize(
+        gfx::Size(NSWidth(ui::kWindowSizeDeterminedLater),
+                  NSHeight(ui::kWindowSizeDeterminedLater))));
+  }
+  UpdateLocalWindowFrame(initial_bounds);
+  GetNSWindowMojo()->SetBounds(initial_bounds.origin(), initial_bounds.size(),
+                               widget->GetMinimumSize(), std::nullopt);
 
   // Widgets for UI controls (usually layered above web contents) start visible.
   if (widget_type_ == Widget::InitParams::TYPE_CONTROL) {
@@ -580,7 +592,8 @@ void NativeWidgetMacNSWindowHost::SetBoundsInScreen(const gfx::Rect& bounds) {
     maximum_size = std::nullopt;
   }
 
-  GetNSWindowMojo()->SetBounds(bounds, widget->GetMinimumSize(), maximum_size);
+  GetNSWindowMojo()->SetBounds(bounds.origin(), bounds.size(),
+                               widget->GetMinimumSize(), maximum_size);
 
   if (remote_ns_window_remote_) {
     gfx::Rect window_in_screen =
@@ -598,7 +611,8 @@ void NativeWidgetMacNSWindowHost::SetSize(const gfx::Size& size) {
   }
   DCHECK(!size.IsEmpty() || !widget->GetMinimumSize().IsEmpty())
       << "Zero-sized windows are not supported on Mac";
-  GetNSWindowMojo()->SetSize(size, widget->GetMinimumSize());
+  GetNSWindowMojo()->SetBounds(std::nullopt, size, widget->GetMinimumSize(),
+                               std::nullopt);
 
   if (remote_ns_window_remote_) {
     // Reflecting the logic above in SetBoundsInScreen, update our local
@@ -616,6 +630,25 @@ void NativeWidgetMacNSWindowHost::SetSize(const gfx::Size& size) {
 
     OnWindowGeometryChanged(window_in_screen, content_in_screen);
   }
+}
+
+void NativeWidgetMacNSWindowHost::CenterWindow(const gfx::Size& content_size) {
+  Widget* widget = GetWidget();
+  if (!widget) {
+    return;
+  }
+  // Apply the size constraints before centering, rather than leaving that to
+  // the NSWindow, so that the window is centered at its final size.
+  gfx::Size clamped_content_size = content_size;
+  clamped_content_size.SetToMax(widget->GetMinimumSize());
+  if (const gfx::Size maximum_size = widget->GetMaximumSize();
+      !maximum_size.IsEmpty()) {
+    clamped_content_size.SetToMin(maximum_size);
+  }
+  const gfx::Size window_size =
+      GetWindowSizeForContentSize(clamped_content_size);
+  SetBoundsInScreen(
+      gfx::Rect(GetCenteredWindowOrigin(window_size), window_size));
 }
 
 void NativeWidgetMacNSWindowHost::SetFullscreen(bool fullscreen,
@@ -959,6 +992,41 @@ gfx::Rect NativeWidgetMacNSWindowHost::GetAdjustedContentBoundsInScreen() {
 
   content_in_screen.set_size(content_in_screen_size);
   return content_in_screen;
+}
+
+gfx::Size NativeWidgetMacNSWindowHost::GetWindowSizeForContentSize(
+    const gfx::Size& content_size) const {
+  NSRect frame_rect =
+      [NSWindow frameRectForContentRect:NSMakeRect(0, 0, content_size.width(),
+                                                   content_size.height())
+                              styleMask:ns_window_style_mask_];
+  return gfx::Size(NSWidth(frame_rect), NSHeight(frame_rect));
+}
+
+gfx::Point NativeWidgetMacNSWindowHost::GetCenteredWindowOrigin(
+    const gfx::Size& window_size) const {
+  // Like on other platforms, center the window over its parent, or, if it has
+  // no parent, on the display that it is on. Only consider the work area of
+  // the display (i.e. not under the menu bar or the Dock).
+  const gfx::Rect reference_bounds =
+      parent_ ? parent_->GetWindowBoundsInScreen()
+              : gfx::ScreenRectFromNSRect([in_process_ns_window_ frame]);
+  const gfx::Rect work_area =
+      display::Screen::Get()->GetDisplayMatching(reference_bounds).work_area();
+  const gfx::Rect center_bounds =
+      parent_ ? gfx::IntersectRects(reference_bounds, work_area) : work_area;
+  gfx::Point origin =
+      center_bounds.CenterPoint() -
+      gfx::Vector2d(window_size.width() / 2, window_size.height() / 2);
+
+  // Keep the window within the work area. If the window does not fit, keep
+  // its right and top edges in the work area.
+  origin.set_x(std::min(std::max(origin.x(), work_area.x()),
+                        work_area.right() - window_size.width()));
+  origin.set_y(
+      std::max(std::min(origin.y(), work_area.bottom() - window_size.height()),
+               work_area.y()));
+  return origin;
 }
 
 std::unique_ptr<NativeWidgetMacEventMonitor>

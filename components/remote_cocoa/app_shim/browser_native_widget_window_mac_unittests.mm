@@ -599,7 +599,8 @@ TEST(NativeWidgetMacNSWindowTest, SetBoundsUpdatesMoveLoopBaseFrame) {
     bridge->SetWindowMoveLoopForTesting(std::move(move_loop));
 
     gfx::Rect new_bounds(500, 300, 600, 400);
-    bridge->SetBounds(new_bounds, gfx::Size(100, 100), std::nullopt);
+    bridge->SetBounds(new_bounds.origin(), new_bounds.size(),
+                      gfx::Size(100, 100), std::nullopt);
 
     EXPECT_EQ(gfx::ScreenRectFromNSRect([window frame]), new_bounds);
     EXPECT_TRUE(NSEqualRects(

@@ -555,8 +555,8 @@ ui::InputMethod* NativeWidgetMac::GetInputMethod() {
 }
 
 void NativeWidgetMac::CenterWindow(const gfx::Size& size) {
-  if (GetNSWindowMojo() && GetWidget()) {
-    GetNSWindowMojo()->SetSizeAndCenter(size, GetWidget()->GetMinimumSize());
+  if (ns_window_host_ && GetNSWindowMojo()) {
+    ns_window_host_->CenterWindow(size);
   }
 }
 
