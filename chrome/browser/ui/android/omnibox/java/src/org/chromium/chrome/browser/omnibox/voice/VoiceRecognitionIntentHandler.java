@@ -33,11 +33,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Handles the platform-specific speech recognition intent. Encapsulates permission checks, intent
- * launching, result parsing, and metrics.
+ * Handles the speech recognition intent, either the platform-specific one or the Google app Voice
+ * Plate. Encapsulates permission checks, intent launching, result parsing, and metrics.
  */
 @NullMarked
 public class VoiceRecognitionIntentHandler {
+    /** The maximum confidence value reported for a voice recognition result. */
+    private static final float MAX_CONFIDENCE = 1.0f;
 
     /**
      * VoiceInteractionEventSource defined in tools/metrics/histograms/enums.xml.
@@ -149,13 +151,31 @@ public class VoiceRecognitionIntentHandler {
     }
 
     /**
-     * Starts the speech recognition flow.
+     * Starts the speech recognition flow using the system speech recognizer.
      *
      * @param source The source of the voice search initiation, such as NTP or omnibox.
      * @param callback The callback to receive completion or cancellation events.
      */
     public void startVoiceRecognition(
             @VoiceInteractionSource int source, RecognitionCallback callback) {
+        startVoiceRecognition(source, callback, /* voicePlateIntent= */ null);
+    }
+
+    /**
+     * Starts the speech recognition flow.
+     *
+     * <p>Enterprise policy and audio permission checks apply regardless of the recognizer used.
+     *
+     * @param source The source of the voice search initiation, such as NTP or omnibox.
+     * @param callback The callback to receive completion or cancellation events.
+     * @param voicePlateIntent Optional intent delegating recognition to the Google app Voice Plate.
+     *     Results returned by the Voice Plate are treated as high confidence. When null, or when
+     *     the intent cannot be launched, the system speech recognizer is used instead.
+     */
+    public void startVoiceRecognition(
+            @VoiceInteractionSource int source,
+            RecognitionCallback callback,
+            @Nullable Intent voicePlateIntent) {
         ThreadUtils.assertOnUiThread();
         startTrackingQueryDuration();
 
@@ -176,22 +196,36 @@ public class VoiceRecognitionIntentHandler {
         }
 
         ensureAudioPermissionGranted(
-                callback, () -> launchRecognitionIntent(activity, source, callback));
+                callback,
+                () -> launchRecognitionIntent(activity, source, callback, voicePlateIntent));
     }
 
     /**
-     * Launches the system speech recognizer.
+     * Launches the Voice Plate intent if supplied, falling back to the system speech recognizer.
      *
      * @param activity The activity used to identify the calling package.
      * @param source The source of the voice search initiation, such as NTP or omnibox.
      * @param callback The callback to receive completion or cancellation events.
+     * @param voicePlateIntent Optional intent delegating recognition to the Google app Voice Plate.
      */
     private void launchRecognitionIntent(
-            Activity activity, @VoiceInteractionSource int source, RecognitionCallback callback) {
+            Activity activity,
+            @VoiceInteractionSource int source,
+            RecognitionCallback callback,
+            @Nullable Intent voicePlateIntent) {
         recordVoiceSearchStartEvent(source);
 
+        if (voicePlateIntent != null
+                && showSpeechRecognitionIntent(
+                        voicePlateIntent, source, callback, /* forceHighConfidence= */ true)) {
+            return;
+        }
+
         if (!showSpeechRecognitionIntent(
-                createSystemSpeechRecognitionIntent(activity), source, callback)) {
+                createSystemSpeechRecognitionIntent(activity),
+                source,
+                callback,
+                /* forceHighConfidence= */ false)) {
             VoiceRecognitionUtil.isRecognitionIntentPresent(/* useCachedValue= */ false);
             recordVoiceSearchFailureEvent(source);
             callback.onAvailabilityImpacted();
@@ -252,16 +286,21 @@ public class VoiceRecognitionIntentHandler {
     }
 
     /**
-     * Triggers the system-provided voice recognition intent.
+     * Triggers the voice recognition intent.
      *
      * @param intent The speech recognition {@link Intent}.
      * @param source Where the request to launch this {@link Intent} originated, such as NTP or
      *     omnibox.
      * @param callback The callback to receive the results.
+     * @param forceHighConfidence Whether to treat all returned results as high confidence,
+     *     regardless of the confidence scores reported by the recognizer.
      * @return True if showing the {@link Intent} was successful.
      */
     private boolean showSpeechRecognitionIntent(
-            Intent intent, @VoiceInteractionSource int source, RecognitionCallback callback) {
+            Intent intent,
+            @VoiceInteractionSource int source,
+            RecognitionCallback callback,
+            boolean forceHighConfidence) {
         IntentCallback intentCallback =
                 (resultCode, data) -> {
                     if (resultCode == Activity.RESULT_CANCELED) {
@@ -275,7 +314,8 @@ public class VoiceRecognitionIntentHandler {
                         return;
                     }
 
-                    List<VoiceResult> results = convertBundleToVoiceResults(data.getExtras());
+                    List<VoiceResult> results =
+                            convertBundleToVoiceResults(data.getExtras(), forceHighConfidence);
                     if (results == null || results.isEmpty()) {
                         recordVoiceSearchResult(/* result= */ false);
                         callback.onCanceled();
@@ -290,7 +330,10 @@ public class VoiceRecognitionIntentHandler {
                     }
 
                     recordVoiceSearchResult(/* result= */ true);
-                    recordVoiceSearchConfidenceValue(topResult.getConfidence());
+                    // Forced confidence is synthetic; only record what the recognizer reported.
+                    if (!forceHighConfidence) {
+                        recordVoiceSearchConfidenceValue(topResult.getConfidence());
+                    }
 
                     recordSuccessMetrics(source);
                     callback.onCompleted(results);
@@ -304,18 +347,32 @@ public class VoiceRecognitionIntentHandler {
         return shown;
     }
 
-    /** Convert the android voice intent bundle to a list of result objects. */
+    /**
+     * Converts the speech recognition result bundle to a list of results.
+     *
+     * @param extras The result extras returned by the recognizer.
+     * @param forceHighConfidence Whether to assign the maximum confidence to every result. When
+     *     true, {@link RecognizerIntent#EXTRA_CONFIDENCE_SCORES} is optional and ignored.
+     * @return The results, or null if the bundle is missing or malformed.
+     */
     @VisibleForTesting
-    static @Nullable List<VoiceResult> convertBundleToVoiceResults(@Nullable Bundle extras) {
+    static @Nullable List<VoiceResult> convertBundleToVoiceResults(
+            @Nullable Bundle extras, boolean forceHighConfidence) {
         if (extras == null) return null;
 
         ArrayList<String> strings = extras.getStringArrayList(RecognizerIntent.EXTRA_RESULTS);
+        if (strings == null) return null;
+
+        List<VoiceResult> results = new ArrayList<>(strings.size());
+        if (forceHighConfidence) {
+            for (String match : strings) {
+                results.add(new VoiceResult(match, MAX_CONFIDENCE));
+            }
+            return results;
+        }
+
         float[] confidences = extras.getFloatArray(RecognizerIntent.EXTRA_CONFIDENCE_SCORES);
-
-        if (strings == null || confidences == null) return null;
-        if (strings.size() != confidences.length) return null;
-
-        List<VoiceResult> results = new ArrayList<>();
+        if (confidences == null || strings.size() != confidences.length) return null;
         for (int i = 0; i < strings.size(); ++i) {
             results.add(new VoiceResult(strings.get(i), confidences[i]));
         }

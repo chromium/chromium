@@ -4,6 +4,9 @@
 
 package org.chromium.chrome.browser.omnibox.voice;
 
+import android.content.Context;
+import android.content.Intent;
+
 import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
@@ -59,7 +62,9 @@ public class VoiceRecognitionHandler {
     private @Nullable PrefChangeRegistrar mPrefChangeRegistrar;
     private CallbackController mCallbackController = new CallbackController();
     private final MonotonicObservableSupplier<Profile> mProfileSupplier;
+    private final WindowAndroid mWindowAndroid;
     private final VoiceRecognitionIntentHandler mIntentHandler;
+    private final VoicePlateIntentFactory mVoicePlateIntentFactory;
 
     /**
      * AssistantActionPerformed defined in tools/metrics/histograms/enums.xml.
@@ -103,7 +108,8 @@ public class VoiceRecognitionHandler {
                 autocompleteCoordinator,
                 windowAndroid,
                 profileSupplier,
-                new VoiceRecognitionIntentHandler(windowAndroid));
+                new VoiceRecognitionIntentHandler(windowAndroid),
+                new VoicePlateIntentFactory());
     }
 
     VoiceRecognitionHandler(
@@ -112,12 +118,15 @@ public class VoiceRecognitionHandler {
             AutocompleteCoordinator autocompleteCoordinator,
             WindowAndroid windowAndroid,
             MonotonicObservableSupplier<Profile> profileSupplier,
-            VoiceRecognitionIntentHandler intentHandler) {
+            VoiceRecognitionIntentHandler intentHandler,
+            VoicePlateIntentFactory voicePlateIntentFactory) {
         mOmniboxStub = omniboxStub;
         mLocationBarDataProvider = locationBarDataProvider;
         mAutocompleteCoordinator = autocompleteCoordinator;
+        mWindowAndroid = windowAndroid;
         mProfileSupplier = profileSupplier;
         mIntentHandler = intentHandler;
+        mVoicePlateIntentFactory = voicePlateIntentFactory;
         mProfileSupplier.addSyncObserverAndPostIfNonNull(
                 mCallbackController.makeCancelable(this::onProfileUpdated));
     }
@@ -278,6 +287,10 @@ public class VoiceRecognitionHandler {
     /**
      * Triggers a voice recognition intent to allow the user to specify a search query.
      *
+     * <p>Eligible requests are delegated to the Google app Voice Plate; see {@link
+     * VoicePlateIntentFactory}. Voice Plate transcriptions are treated as high confidence and
+     * navigate directly.
+     *
      * @param source The source of the voice recognition initiation, such as NTP or omnibox.
      * @param onCanceled The callback function to run when the voice recognition is canceled.
      */
@@ -305,7 +318,20 @@ public class VoiceRecognitionHandler {
                             onCanceled.run();
                         }
                     }
-                });
+                },
+                createVoicePlateIntent(source));
+    }
+
+    /**
+     * Returns the intent delegating voice recognition to the Google app Voice Plate, or null if the
+     * system speech recognizer should be used.
+     *
+     * @param source The source of the voice recognition initiation, such as NTP or omnibox.
+     */
+    private @Nullable Intent createVoicePlateIntent(@VoiceInteractionSource int source) {
+        Context context = mWindowAndroid.getContext().get();
+        if (context == null) return null;
+        return mVoicePlateIntentFactory.createIntent(context, mProfileSupplier.get(), source);
     }
 
     /** Returns whether voice search is enabled on the current tab. */
