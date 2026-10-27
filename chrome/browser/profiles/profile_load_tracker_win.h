@@ -10,7 +10,6 @@
 #include "base/feature.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
-#include "base/memory/raw_ref.h"
 
 class Profile;
 
@@ -40,14 +39,19 @@ BASE_DECLARE_FEATURE(kProfileLoadTracker);
 //
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+// LINT.IfChange(ProfileLockStatus)
 enum class ProfileLockStatus {
-  kAcquired = 0,  // The file was acquired successfully.
-  kAcquiredSystemCrash =
-      1,             // The previous instance of Chrome died in a system crash.
-  kFailedInUse = 2,  // There is another writeable handle to the file open.
-  kFailedUnknown = 3,  // Filesystem error.
+  // The file was acquired successfully.
+  kAcquired = 0,
+  // The previous instance of Chrome died in a system crash.
+  kAcquiredSystemCrash = 1,
+  // There is another writeable handle to the file open.
+  kFailedInUse = 2,
+  // Filesystem error.
+  kFailedUnknown = 3,
   kMaxValue = kFailedUnknown,
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/profile/enums.xml:ProfileLockStatus)
 
 // When loading a profile, the previous exit status of that profile can be
 // determined:
@@ -70,13 +74,20 @@ enum class ProfileLockStatus {
 //
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+// LINT.IfChange(ProfilePreviousExitStatus)
 enum class ProfilePreviousExitStatus {
-  kNoCrash = 0,  // Clean exit, and no previously un-acked crash bubble.
-  kNoCrashDidNotAck = 1,  // Clean exit, but user did not ack a crash bubble.
-  kDirty = 2,             // Previous session dirty.
-  kDirtyDidNotAck = 3,    // Dirty, and there was an un-acked bubble.
+  // Clean exit, and no previously un-acked crash bubble.
+  kNoCrash = 0,
+  // Clean exit, but user did not ack a crash bubble.
+  kNoCrashDidNotAck = 1,
+  // Previous session dirty.
+  kDirty = 2,
+  // Dirty, and there was an un-acked bubble.
+  kDirtyDidNotAck = 3,
   kMaxValue = kDirtyDidNotAck,
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/profile/enums.xml:ProfilePreviousExitStatus)
+
 // The emission of `ProfilePreviousExitStatus` depends on the acquisition of
 // Profile.lock, and so, if `ProfileLockStatus` is either `kFailedLocked` or
 // `kFailedUnknown`, `ProfilePreviousExitStatus` will not be recorded.
@@ -86,6 +97,7 @@ class ProfileLoadTracker {
   explicit ProfileLoadTracker(Profile& profile);
   ~ProfileLoadTracker();
 
+  // Created on profile load to ensure exclusive access. Automatically deleted
   // by the OS on close/crash due to FLAG_DELETE_ON_CLOSE.
   static constexpr base::FilePath::CharType kLockFileName[] =
       FILE_PATH_LITERAL("Profile.lock");
@@ -103,8 +115,8 @@ class ProfileLoadTracker {
   void AckCrashForTracking();
 
  private:
-  std::string_view histogram_suffix_;
-  base::FilePath profile_dir_;
+  const std::string_view histogram_suffix_;
+  const base::FilePath profile_dir_;
 
   // Held exclusively for the lifetime of the profile loading session. Closing
   // the handle will automatically delete the `lock_file_` due to

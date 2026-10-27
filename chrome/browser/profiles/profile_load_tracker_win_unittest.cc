@@ -35,14 +35,14 @@ class ProfileLoadTrackerWinTest : public testing::Test {
  protected:
   void SetUp() override {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
-    feature_list.InitAndEnableFeature(features::kProfileLoadTracker);
+    feature_list_.InitAndEnableFeature(features::kProfileLoadTracker);
   }
 
   base::FilePath GetProfilePath() { return temp_dir_.GetPath(); }
 
   base::ScopedTempDir temp_dir_;
   content::BrowserTaskEnvironment task_environment_;
-  base::test::ScopedFeatureList feature_list;
+  base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_F(ProfileLoadTrackerWinTest, NoCrash) {
