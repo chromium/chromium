@@ -1,0 +1,18 @@
+[package]
+name = "icu4x_datagen"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+anyhow = "1"
+clap = { version = "4", features = ["derive"] }
+env_logger = { version = "0.11", default-features = false, features = ["color"] }
+# Keep ICU4X crate versions in sync with //third_party/rust/chromium_crates_io/Cargo.toml.
+icu = { version = "=2.4.0", features = ["datagen", "unstable"] }
+icu_experimental = { version = "=0.7.0", features = ["datagen"] }
+icu_locale_fallback = "=2.4.0"
+icu_provider = { version = "=2.4.0", features = ["export", "sync"] }
+icu_provider_export = { version = "=2.4.0", features = ["baked_exporter", "rayon"] }
+icu_provider_registry = "=2.4.0"
+icu_provider_source = { version = "=2.4.0", features = ["networking", "use_wasm", "unstable"] }
+log = { version = "0.4", features = ["std"] }
