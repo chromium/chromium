@@ -64,11 +64,19 @@ class CheckNullabilityAnnotationsTest(unittest.TestCase):
         bad_lines = [
             '- (nullable NSString*)foo;',
             '- (nonnull NSString*)bar;',
+            '@property(nonatomic, strong, _Nullable) UIView* view;',
+            'void Foo(NSString* _Nonnull arg);',
         ]
         mock_input = PRESUBMIT_test_mocks.MockInputApi()
         mock_input.files = [
             PRESUBMIT_test_mocks.MockFile(
                 'ios/path/foo_controller.h', bad_lines
+            ),
+            PRESUBMIT_test_mocks.MockFile(
+                'ios/web_view/public/cwv_foo.h', bad_lines
+            ),
+            PRESUBMIT_test_mocks.MockFile(
+                'ios/third_party/bar/bar.h', bad_lines
             ),
             PRESUBMIT_test_mocks.MockFile('ios/path/README.md', bad_lines),
             PRESUBMIT_test_mocks.MockFile('ios/PRESUBMIT_test.py', bad_lines),
@@ -79,14 +87,41 @@ class CheckNullabilityAnnotationsTest(unittest.TestCase):
         )
         self.assertEqual(len(results), 1)
         self.assertEqual('warning', results[0].type)
-        self.assertTrue('ios/path/foo_controller.h:1' in results[0].items)
-        self.assertTrue('ios/path/foo_controller.h:2' in results[0].items)
-        self.assertFalse(
-            any('ios/path/README.md' in item for item in results[0].items)
+        self.assertIn(
+            'Found Nullability annotations. '
+            'These should only be used when needed for Swift interop.',
+            results[0].message,
         )
-        self.assertFalse(
-            any('ios/PRESUBMIT_test.py' in item for item in results[0].items)
+        self.assertEqual(
+            [
+                f'ios/path/foo_controller.h:{i}'
+                for i in range(1, len(bad_lines) + 1)
+            ],
+            results[0].items,
         )
+
+
+class CheckNoTearDownEGTest(unittest.TestCase):
+    """Test the _CheckNoTearDownEGTest presubmit check."""
+
+    def testTearDownInEGTest(self):
+        lines = [
+            '- (void)setUp {',
+            '- (void)tearDown {',
+        ]
+        mock_input = PRESUBMIT_test_mocks.MockInputApi()
+        mock_input.files = [
+            PRESUBMIT_test_mocks.MockFile('ios/path/foo_egtest.mm', lines),
+            PRESUBMIT_test_mocks.MockFile('ios/path/foo_unittest.mm', lines),
+        ]
+        mock_output = PRESUBMIT_test_mocks.MockOutputApi()
+        errors = PRESUBMIT._CheckNoTearDownEGTest(mock_input, mock_output)
+        self.assertEqual(len(errors), 1)
+        self.assertEqual('error', errors[0].type)
+        self.assertIn('addTeardownBlock:', errors[0].message)
+        self.assertIn('setTearDownHandler:', errors[0].message)
+        self.assertIn('ios/path/foo_egtest.mm:2', errors[0].message)
+        self.assertNotIn('foo_unittest.mm', errors[0].message)
 
 
 class CheckHasNoBoxedBOOLTest(unittest.TestCase):
@@ -579,6 +614,12 @@ class CheckSystemColorUsageTest(unittest.TestCase):
 
         self.assertEqual(len(errors), 1)
         self.assertEqual('warning', errors[0].type)
+        self.assertIn(
+            'Found forbidden usage of system colors. '
+            'Only white, black and clear colors are accepted. '
+            'Prefer semantic colors in ios code instead of the system ones:',
+            errors[0].message,
+        )
 
         for i in range(1, len(bad_lines)):
             self.assertTrue(f'ios/path/foo.mm:{i}' in errors[0].items)

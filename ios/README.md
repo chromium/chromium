@@ -16,4 +16,8 @@ web layer (`//ios/web/`), and shared iOS components (`//ios/components/`).
 - **Additional iOS documentation in [`//docs/ios/`](/docs/ios/):** Other iOS
   build, testing, and workflow documents live in `//docs/ios/`, though some are
   outdated and in the process of being revised. Where there are contradictions,
-  the documentation here in `//ios/` takes precedence.
+  the documentation here in `//ios/` takes precedence. Key documents include:
+  - **[Checking Out and Building Chromium for iOS](/docs/ios/build_instructions.md):**
+    System requirements, checkout setup and build instructions for iOS targets.
+  - **[Automated Testing for Chrome on iOS](/docs/ios/testing.md):** How to
+    build and run unit tests and EarlGrey integration tests on iOS.

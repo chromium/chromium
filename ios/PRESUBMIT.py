@@ -75,7 +75,7 @@ def _CheckNullabilityAnnotations(input_api, output_api):
     plural_suffix = '' if len(errors) == 1 else 's'
     warning_message = (
         'Found Nullability annotation%(plural)s. '
-        'Prefer DCHECKs in ios code to check for nullness:'
+        'These should only be used when needed for Swift interop.'
         % {'plural': plural_suffix}
     )
 
@@ -324,9 +324,10 @@ def _CheckNoTearDownEGTest(input_api, output_api):
     warning_message = (
         '\n'.join(
             [
-                'To support hermetic EarlGrey test cases, tearDown has been renamed '
-                'to tearDownHelper, and will soon be removed. If tearDown is really '
-                'necessary for this test, please use addTeardownBlock'
+                'Do not override `- (void)tearDown` in EarlGrey tests. '
+                'Host app state is wiped automatically between tests; for '
+                'non-sandbox cleanup, register a block with '
+                '`addTeardownBlock:` or `setTearDownHandler:` instead:'
             ]
             + errors
         )
@@ -685,9 +686,11 @@ def _CheckUsageOfSystemColors(input_api, output_api):
     if not errors:
         return []
 
-    warning_message = 'Found forbidden usage of system colors. '
-    'Only white, black and clear colors are accepted.'
-    'Prefer semantic colors in ios code instead of the system ones:'
+    warning_message = (
+        'Found forbidden usage of system colors. '
+        'Only white, black and clear colors are accepted. '
+        'Prefer semantic colors in ios code instead of the system ones:'
+    )
 
     return [output_api.PresubmitPromptWarning(warning_message, items=errors)]
 
