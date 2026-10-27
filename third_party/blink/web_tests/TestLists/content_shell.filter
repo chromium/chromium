@@ -289,9 +289,6 @@ external/wpt/pointerevents/pointerevent_sequence_at_implicit_release_on_drag.htm
 external/wpt/pointerevents/pointerevent_touch-action-modified_touch.html
 external/wpt/preload/link-header-preload-non-html.html
 external/wpt/preload/preconnect-onerror-event.html
-external/wpt/resize-observer/callback-cross-realm-report-exception.html
-external/wpt/resize-observer/scrollbars.html
-external/wpt/resize-observer/svg.html
 external/wpt/screen-wake-lock/wakelock-enabled-by-permissions-policy-attribute.https.html
 external/wpt/screen-wake-lock/wakelock-enabled-by-permissions-policy.https.html
 external/wpt/scroll-animations/css/animation-range-visual-test.html
