@@ -234,6 +234,7 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
   // Used to prevent accidental triggers of other submenus after a submenu
   // has recently been opened.
   private lastMenuOpenTime_: number = 0;
+  private lastPointerPosition_: {x: number, y: number} = {x: -1, y: -1};
   private pointerEventCallback_: (e: Event) => void = () => {};
   private keyDownCallback_: (e: KeyboardEvent) => void = () => {};
   private logger_: ReadAnythingLogger = ReadAnythingLogger.getInstance();
@@ -510,9 +511,16 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
   }
 
   protected onPointerenter_(e: PointerEvent) {
+    this.lastPointerPosition_ = {x: e.clientX, y: e.clientY};
+    if (this.$.lazyMenu.get().classList.contains(KEYBOARD_NAV_CLASS)) {
+      return;
+    }
+    this.handlePointerEnter_(e.currentTarget as HTMLElement);
+  }
+
+  private handlePointerEnter_(currentTarget: HTMLElement|null) {
     this.clearTimers_();
 
-    const currentTarget = e.currentTarget as HTMLElement;
     if (!currentTarget) {
       return;
     }
@@ -561,6 +569,10 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
   }
 
   protected onPointerleave_(event: PointerEvent) {
+    if (this.$.lazyMenu.get().classList.contains(KEYBOARD_NAV_CLASS)) {
+      return;
+    }
+
     // Clear the open timer so that submenus aren't opened after the cursor
     // stops hovering.
     this.clearOpenTimer_();
@@ -633,7 +645,13 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
             this.showLineFocusNewBadge = shouldShow;
           });
     }
-    openMenu(this.$.lazyMenu.get(), anchor);
+    const menu = this.$.lazyMenu.get();
+    // Start in keyboard-nav mode so a stationary cursor resting where the menu
+    // opens does not trigger hover behavior. This does not impact mouse users
+    // because moving the mouse into the menu immediately exits keyboard-nav
+    // mode, and clicking menu items works regardless.
+    menu.classList.add(KEYBOARD_NAV_CLASS);
+    openMenu(menu, anchor);
     window.addEventListener('keydown', this.keyDownCallback_, {capture: true});
     this.interceptedEvents_.forEach(eventType => {
       window.addEventListener(
@@ -659,20 +677,41 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
     this.fire(ToolbarEvent.SETTINGS_CLOSED);
   }
 
+  private handlePointerMove_(e: PointerEvent) {
+    const hasPointerMoved = e.clientX !== this.lastPointerPosition_.x ||
+        e.clientY !== this.lastPointerPosition_.y;
+    this.lastPointerPosition_ = {x: e.clientX, y: e.clientY};
+    if (!hasPointerMoved) {
+      return;
+    }
+
+    this.isOnPreviewPlayButton = false;
+    const menu = this.$.lazyMenu.get();
+    if (!menu.classList.contains(KEYBOARD_NAV_CLASS)) {
+      return;
+    }
+
+    menu.classList.remove(KEYBOARD_NAV_CLASS);
+    const hoveredRow = e.composedPath().find(
+        (el): el is HTMLElement =>
+            el instanceof HTMLElement && el.classList.contains('menu-row'));
+    if (hoveredRow) {
+      this.handlePointerEnter_(hoveredRow);
+    }
+  }
+
   // Immersive design uses non-modal menus to support submenus. Since non-modal
   // menus don't automatically block background interactions, this handler
   // manually intercepts events to:
   // 1. Prevent interactions with elements outside the menu.
   // 2. Close the menu when clicking outside (simulating modal behavior).
   private onPointerEvent_(e: Event) {
-    // Whenever the user moves or clicks the mouse, reset state for
-    // isOnPreviewPlayButton.
-    this.isOnPreviewPlayButton = false;
-    if (e.type === 'pointermove') {
-      const menu = this.$.lazyMenu.get();
-      if (menu.classList.contains(KEYBOARD_NAV_CLASS)) {
-        menu.classList.remove(KEYBOARD_NAV_CLASS);
-      }
+    if (e.type === 'pointermove' && e instanceof PointerEvent) {
+      this.handlePointerMove_(e);
+    } else {
+      // Whenever the user clicks the mouse, reset state for
+      // isOnPreviewPlayButton.
+      this.isOnPreviewPlayButton = false;
     }
 
     let isInsideSubmenu = false;
@@ -695,7 +734,8 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
     // closes any opened submenu. If the user moves from an item into a submenu
     // we should cancel the close timer, as the user intentionally moved into
     // the submenu.
-    if (e.type === 'pointermove' && isInsideSubmenu) {
+    if (e.type === 'pointermove' && isInsideSubmenu &&
+        !this.$.lazyMenu.get().classList.contains(KEYBOARD_NAV_CLASS)) {
       if (this.currentOpenId_) {
         const activeItem = this.shadowRoot?.querySelector<HTMLElement>(
             `#${this.currentOpenId_}`);
@@ -734,8 +774,9 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
     }
 
     const key = e.key;
-    if (isVerticalArrow(key) || isForwardArrow(key) || isActivationKey(key)) {
-      this.clearOpenTimer_();
+    if (isVerticalArrow(key) || isForwardArrow(key) || isBackwardArrow(key) ||
+        isActivationKey(key) || key === 'Escape') {
+      this.clearTimers_();
 
       const menu = this.$.lazyMenu.get();
       if (!menu.classList.contains(KEYBOARD_NAV_CLASS)) {

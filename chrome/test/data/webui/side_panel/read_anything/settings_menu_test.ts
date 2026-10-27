@@ -108,6 +108,7 @@ suite('SettingsMenuElement', () => {
       'open settings submenu event is fired when menu items are hovered',
       () => {
         const actionMenu = settingsMenu.$.lazyMenu.get();
+        actionMenu.classList.remove(KEYBOARD_NAV_CLASS);
         const menuItems =
             actionMenu.querySelectorAll<HTMLButtonElement>('.menu-row');
 
@@ -126,6 +127,27 @@ suite('SettingsMenuElement', () => {
 
         assertEquals(8, submenuEvents);
       });
+
+  test('pointerenter is ignored while in keyboard-nav mode', () => {
+    const actionMenu = settingsMenu.$.lazyMenu.get();
+    assertTrue(actionMenu.classList.contains(KEYBOARD_NAV_CLASS));
+    const menuItems =
+        actionMenu.querySelectorAll<HTMLButtonElement>('.menu-row');
+    const targetItem = menuItems[0]!;
+
+    let submenuEvents = 0;
+    settingsMenu.addEventListener(
+        ToolbarEvent.OPEN_SETTINGS_SUBMENU, () => submenuEvents++);
+
+    const timer = new MockTimer();
+    timer.install();
+    targetItem.dispatchEvent(new PointerEvent(
+        'pointerenter', {bubbles: true, cancelable: true, view: window}));
+    timer.tick(SUBMENU_SHOW_DELAY_MS + 10);
+    timer.uninstall();
+
+    assertEquals(0, submenuEvents);
+  });
 
   test('with improved ui flag enabled', async () => {
     visualBrowserProxy.readAnythingImprovedUiEnabled = true;
@@ -231,13 +253,14 @@ suite('SettingsMenuElement', () => {
     actionMenu.classList.add(KEYBOARD_NAV_CLASS);
     assertTrue(actionMenu.classList.contains(KEYBOARD_NAV_CLASS));
 
-    actionMenu.dispatchEvent(new PointerEvent(
-        'pointerenter', {bubbles: true, cancelable: true, view: window}));
-    actionMenu.classList.remove(KEYBOARD_NAV_CLASS);
+    window.dispatchEvent(new PointerEvent(
+        'pointermove', {clientX: 10, clientY: 10, bubbles: true}));
+    assertFalse(actionMenu.classList.contains(KEYBOARD_NAV_CLASS));
   });
 
   test('mouse leave clears open timer', () => {
     const actionMenu = settingsMenu.$.lazyMenu.get();
+    actionMenu.classList.remove(KEYBOARD_NAV_CLASS);
     const menuItems =
         actionMenu.querySelectorAll<HTMLButtonElement>('.menu-row');
     const targetItem = menuItems[0];
@@ -293,35 +316,70 @@ suite('SettingsMenuElement', () => {
       });
 
   test(
-      'escape or back arrow inside cr-dialog does not close submenu',
+      'pressing escape with mouse over main menu does not reopen submenu',
       async () => {
         const actionMenu = settingsMenu.$.lazyMenu.get();
+        actionMenu.classList.remove(KEYBOARD_NAV_CLASS);
         const menuItems =
             Array.from(actionMenu.querySelectorAll<HTMLElement>('.menu-row'));
-        const targetItem =
+        const fontItem =
             menuItems.find(item => item.id === SettingsOption.FONT);
-        assertTrue(!!targetItem);
-        targetItem.click();
-        await microtasksFinished();
+        const colorItem =
+            menuItems.find(item => item.id === SettingsOption.COLOR);
+        assertTrue(!!fontItem);
+        assertTrue(!!colorItem);
 
-        let closeSubmenuFired = false;
+        // Open the font submenu.
+        fontItem.click();
+
+        const timer = new MockTimer();
+        timer.install();
+
+        // Simulate the mouse hovering over a main menu item before Escape is
+        // pressed.
+        colorItem.dispatchEvent(new PointerEvent('pointerenter', {
+          clientX: 15,
+          clientY: 15,
+          bubbles: true,
+          cancelable: true,
+          view: window,
+        }));
+
+        let submenuOpenedAfterEscape = false;
         settingsMenu.addEventListener(
-            ToolbarEvent.CLOSE_SUBMENU_REQUESTED,
-            () => closeSubmenuFired = true);
+            ToolbarEvent.OPEN_SETTINGS_SUBMENU, () => {
+              submenuOpenedAfterEscape = true;
+            });
 
-        const crDialog = document.createElement('cr-dialog');
-        document.body.appendChild(crDialog);
+        const whenClosed =
+            eventToPromise(ToolbarEvent.CLOSE_SUBMENU_REQUESTED, settingsMenu);
+        keyDownOn(settingsMenu, 0, undefined, 'Escape');
+        await whenClosed;
 
-        keyDownOn(crDialog, 0, undefined, 'Escape');
-        keyDownOn(crDialog, 0, undefined, 'ArrowLeft');
-        await microtasksFinished();
+        // Simulate synthetic pointer events on the stationary cursor after the
+        // submenu closes.
+        colorItem.dispatchEvent(new PointerEvent('pointerenter', {
+          clientX: 15,
+          clientY: 15,
+          bubbles: true,
+          cancelable: true,
+          view: window,
+        }));
+        colorItem.dispatchEvent(new PointerEvent('pointermove', {
+          clientX: 15,
+          clientY: 15,
+          bubbles: true,
+        }));
 
-        assertFalse(closeSubmenuFired);
-        crDialog.remove();
+        timer.tick(SUBMENU_SHOW_DELAY_MS + 10);
+        timer.uninstall();
+
+        assertFalse(submenuOpenedAfterEscape);
       });
 
   test('closing the menu prevents open timer to be fired', () => {
     const actionMenu = settingsMenu.$.lazyMenu.get();
+    actionMenu.classList.remove(KEYBOARD_NAV_CLASS);
     const menuItems =
         Array.from(actionMenu.querySelectorAll<HTMLElement>('.menu-row'));
     const targetItem =
