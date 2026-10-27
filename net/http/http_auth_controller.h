@@ -130,6 +130,11 @@ class NET_EXPORT_PRIVATE HttpAuthController
 
   bool HaveAuth() const;
 
+  // Returns true if HandleAuthChallenge() has ever been called. Unlike
+  // HaveAuthHandler(), this is false when only preemptive auth from the cache
+  // has been used.
+  bool has_handled_challenge() const { return has_handled_challenge_; }
+
   // Returns true if the target scheme, host, and port that this controller was
   // constructed to authenticate against matches `scheme_host_port`.
   bool MatchesSchemeHostPort(
@@ -268,6 +273,9 @@ class NET_EXPORT_PRIVATE HttpAuthController
   // True if default credentials have already been tried for this transaction
   // in response to an HTTP authentication challenge.
   bool default_credentials_used_ = false;
+
+  // True if HandleAuthChallenge() has been called.
+  bool has_handled_challenge_ = false;
 
   // These two are owned by the HttpNetworkSession/IOThread, which own the
   // objects which reference |this|. Therefore, these raw pointers are valid

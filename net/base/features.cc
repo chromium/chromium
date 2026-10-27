@@ -34,6 +34,9 @@ BASE_FEATURE(kAlpsForHttp2, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kAsyncRetryOnTooManyConnectionErrors,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kClearAuthControllersOnProxyChange,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 BASE_FEATURE(kDeriveConnectionTypeFromCapabilities,
              base::FEATURE_ENABLED_BY_DEFAULT);
 

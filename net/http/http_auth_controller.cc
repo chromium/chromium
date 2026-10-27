@@ -233,6 +233,7 @@ int HttpAuthController::HandleAuthChallenge(
   DCHECK(auth_scheme_host_port_.IsValid());
   DCHECK(!auth_info_);
 
+  has_handled_challenge_ = true;
   BindToCallingNetLog(caller_net_log);
   net_log_.BeginEventReferencingSource(NetLogEventType::AUTH_HANDLE_CHALLENGE,
                                        caller_net_log.source());

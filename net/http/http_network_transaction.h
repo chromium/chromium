@@ -374,6 +374,13 @@ class NET_EXPORT_PRIVATE HttpNetworkTransaction
   // Returns true if we should try to add an Authorization header.
   bool ShouldApplyServerAuth() const;
 
+  // Updates `proxy_info_`. If kClearAuthControllersOnProxyChange is enabled
+  // and the proxy chain changed, discards auth state that may no longer be
+  // valid. Returns ERR_TOO_MANY_RETRIES if that has happened more than
+  // kMaxAuthControllerResetsOnProxyChange times, and OK otherwise.
+  // `proxy_info_` is updated in either case.
+  [[nodiscard]] int SetProxyInfo(const ProxyInfo& used_proxy_info);
+
   // Handles HTTP status code 401 or 407.
   // HandleAuthChallenge() returns a network error code, or OK on success.
   // May update |pending_auth_target_| or |response_.auth_challenge|.
@@ -447,8 +454,18 @@ class NET_EXPORT_PRIVATE HttpNetworkTransaction
   // read.
   NetworkAnonymizationKey network_anonymization_key_;
 
-  // |proxy_info_| is the ProxyInfo used by the HttpStreamRequest.
+  // |proxy_info_| is the ProxyInfo used by the HttpStreamRequest. This must
+  // only be modified via calls to SetProxyInfo(), which updates
+  // `auth_controllers_` as well.
   ProxyInfo proxy_info_;
+
+  // Number of times auth controllers that have received auth challenges (and
+  // thus likely been used as part of an auth-related retry) have been discarded
+  // by SetProxyInfo() because of a proxy chain change. Used to prevent infinite
+  // auth loops, where we keep on seeing auth challenges, we then try to provide
+  // auth credentials, and then the proxy changes, forcing us to throw away auth
+  // state, and then restart the request.
+  size_t auth_controller_resets_on_proxy_change_ = 0;
 
   std::unique_ptr<HttpStreamRequest> stream_request_;
   std::optional<HttpStreamRequest::CompletionDetails>

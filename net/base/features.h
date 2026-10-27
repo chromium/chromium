@@ -32,6 +32,13 @@ NET_EXPORT BASE_DECLARE_FEATURE(kAlpsForHttp2);
 // asynchronous (yielding to the message loop) after many attempts.
 NET_EXPORT BASE_DECLARE_FEATURE(kAsyncRetryOnTooManyConnectionErrors);
 
+// If enabled, when an HttpNetworkTransaction retries a request and the new
+// attempt uses a different proxy chain, the proxy auth controller is discarded,
+// as is server auth state for non-cryptographic schemes. Requests fail if this
+// discards auth state too many times. Also, 407 responses are rejected when not
+// talking to a proxy using GET.
+NET_EXPORT BASE_DECLARE_FEATURE(kClearAuthControllersOnProxyChange);
+
 // Derives Android connection type from NetworkCapabilities inside
 // NetworkCallbacks instead of calling synchronous ConnectivityManager methods.
 NET_EXPORT BASE_DECLARE_FEATURE(kDeriveConnectionTypeFromCapabilities);
