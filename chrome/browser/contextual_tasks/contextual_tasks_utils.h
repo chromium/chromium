@@ -29,6 +29,7 @@ class Uuid;
 }  // namespace base
 
 namespace content {
+class NavigationHandle;
 class WebContents;
 }  // namespace content
 
@@ -78,6 +79,12 @@ void RecordErrorPageShown(contextual_search::ContextualSearchSource source);
 // Records the HTTP response code of the inner frame contents.
 void RecordInnerFrameContentsHttpResponseCode(int http_status_code,
                                               bool is_zero_state);
+
+// Records navigation HTTP response code and net error code metrics for
+// Contextual Tasks side panel navigations.
+void RecordContextualTasksNavigationMetrics(
+    content::NavigationHandle* navigation_handle,
+    bool is_zero_state);
 
 // Returns true if tab sharing and tab input capabilities are supported
 // for the given profile (checking AIM and Fusebox eligibility).

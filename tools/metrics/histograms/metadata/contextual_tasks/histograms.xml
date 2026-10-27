@@ -488,6 +488,40 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="ContextualTasks.Navigation.HttpResponseCode"
+    enum="HttpResponseCode" expires_after="2027-03-21">
+  <owner>hujasonx@google.com</owner>
+  <owner>chrome-contextual-tasks-eng@google.com</owner>
+  <summary>
+    Recorded every time a primary main-frame navigation in the Contextual Tasks
+    side panel finishes with HTTP response headers available. Records the HTTP
+    status code of the response.
+  </summary>
+</histogram>
+
+<histogram
+    name="ContextualTasks.Navigation.HttpResponseCode.ExcludeZeroStateLoads"
+    enum="HttpResponseCode" expires_after="2027-03-21">
+  <owner>hujasonx@google.com</owner>
+  <owner>chrome-contextual-tasks-eng@google.com</owner>
+  <summary>
+    Recorded every time a primary main-frame navigation in the Contextual Tasks
+    side panel finishes with HTTP response headers available, excluding zero
+    state loads. Records the HTTP status code of the response.
+  </summary>
+</histogram>
+
+<histogram name="ContextualTasks.Navigation.NetErrorCode" enum="NetErrorCodes"
+    expires_after="2027-03-21">
+  <owner>hujasonx@google.com</owner>
+  <owner>chrome-contextual-tasks-eng@google.com</owner>
+  <summary>
+    Recorded when a primary main-frame navigation in the Contextual Tasks side
+    panel commits or fails with a non-aborted network error. Records the
+    net::Error code as a positive integer (where 0 is net::OK).
+  </summary>
+</histogram>
+
 <histogram name="ContextualTasks.OAuth.Latency.{OAuthTrigger}" units="ms"
     expires_after="2027-03-07">
   <owner>mercerd@chromium.org</owner>
