@@ -204,6 +204,8 @@ class PLATFORM_EXPORT CanvasNon2DResourceProvider
   }
 
  private:
+  friend class VideoFrameAcceleratedSnapshotPool;
+
   CanvasNon2DResourceProvider(
       gfx::Size,
       viz::SharedImageFormat,

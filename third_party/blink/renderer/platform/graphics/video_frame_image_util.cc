@@ -23,6 +23,7 @@
 #include "third_party/blink/renderer/platform/graphics/accelerated_static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_non_2d_resource_provider.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
+#include "third_party/blink/renderer/platform/graphics/memory_managed_paint_recorder.h"
 #include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
 #include "third_party/blink/renderer/platform/graphics/static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/graphics/unaccelerated_static_bitmap_image.h"
@@ -203,7 +204,18 @@ scoped_refptr<StaticBitmapImage>
 VideoFrameAcceleratedSnapshotPool::DoExternalOverdrawAndSnapshot(
     base::FunctionRef<void(cc::PaintCanvas&)> draw_callback,
     ImageOrientation orientation) {
-  return provider_->DoExternalOverdrawAndSnapshot(draw_callback, orientation);
+  provider_->cached_snapshot_.reset();
+
+  if (!IsValid()) {
+    return nullptr;
+  }
+
+  draw_callback(provider_->recorder_for_external_draws_->getRecordingCanvas());
+  if (provider_->recorder_for_external_draws_->HasReleasableDrawOps()) {
+    provider_->FlushRecording(
+        provider_->recorder_for_external_draws_->ReleaseMainRecording());
+  }
+  return provider_->Snapshot(orientation);
 }
 
 scoped_refptr<StaticBitmapImage> DrawAndSnapshotToImage(
