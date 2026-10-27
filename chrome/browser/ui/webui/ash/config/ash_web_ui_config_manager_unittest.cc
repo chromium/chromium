@@ -56,12 +56,15 @@ class AshWebUIConfigManagerTest : public testing::Test {
   ~AshWebUIConfigManagerTest() override = default;
 
  protected:
-  void AddWebUIConfig(std::unique_ptr<content::WebUIConfig> config) {
-    ash_webui_config_manager_.AddWebUIConfig(std::move(config));
+  void AddWebUIConfig(std::unique_ptr<content::WebUIConfig> config,
+                      bool is_stateful) {
+    ash_webui_config_manager_.AddWebUIConfig(std::move(config), is_stateful);
   }
 
-  void AddUntrustedWebUIConfig(std::unique_ptr<content::WebUIConfig> config) {
-    ash_webui_config_manager_.AddUntrustedWebUIConfig(std::move(config));
+  void AddUntrustedWebUIConfig(std::unique_ptr<content::WebUIConfig> config,
+                               bool is_stateful) {
+    ash_webui_config_manager_.AddUntrustedWebUIConfig(std::move(config),
+                                                      is_stateful);
   }
 
   void Unregister() { ash_webui_config_manager_.Unregister(); }
@@ -91,11 +94,15 @@ TEST_F(AshWebUIConfigManagerTest, AddAndUnregisterConfigsInReverseOrder) {
   std::vector<std::string> destruction_order;
 
   AddWebUIConfig(std::make_unique<DestructionTrackingWebUIConfig>(
-      "chrome", "test-first", &destruction_order));
+                     "chrome", "test-first", &destruction_order),
+                 /*is_stateful=*/true);
   AddWebUIConfig(std::make_unique<DestructionTrackingWebUIConfig>(
-      "chrome", "test-second", &destruction_order));
-  AddUntrustedWebUIConfig(std::make_unique<DestructionTrackingWebUIConfig>(
-      "chrome-untrusted", "test-third", &destruction_order));
+                     "chrome", "test-second", &destruction_order),
+                 /*is_stateful=*/true);
+  AddUntrustedWebUIConfig(
+      std::make_unique<DestructionTrackingWebUIConfig>(
+          "chrome-untrusted", "test-third", &destruction_order),
+      /*is_stateful=*/true);
 
   EXPECT_TRUE(map.GetConfig(nullptr, url1));
   EXPECT_TRUE(map.GetConfig(nullptr, url2));
@@ -111,6 +118,39 @@ TEST_F(AshWebUIConfigManagerTest, AddAndUnregisterConfigsInReverseOrder) {
 
   EXPECT_EQ(destruction_order, (std::vector<std::string>{
                                    "test-third", "test-second", "test-first"}));
+}
+
+TEST_F(AshWebUIConfigManagerTest,
+       StatelessConfigsRemainRegisteredAfterUnregister) {
+  auto& map = content::WebUIConfigMap::GetInstance();
+
+  const GURL trusted_stateless_url("chrome://test-trusted-stateless");
+  const GURL untrusted_stateless_url(
+      "chrome-untrusted://test-untrusted-stateless");
+  const GURL stateful_url("chrome://test-stateful");
+
+  std::vector<std::string> destruction_order;
+
+  AddWebUIConfig(std::make_unique<DestructionTrackingWebUIConfig>(
+                     "chrome", "test-trusted-stateless", &destruction_order),
+                 /*is_stateful=*/false);
+  AddUntrustedWebUIConfig(
+      std::make_unique<DestructionTrackingWebUIConfig>(
+          "chrome-untrusted", "test-untrusted-stateless", &destruction_order),
+      /*is_stateful=*/false);
+  AddWebUIConfig(std::make_unique<DestructionTrackingWebUIConfig>(
+                     "chrome", "test-stateful", &destruction_order),
+                 /*is_stateful=*/true);
+
+  Unregister();
+
+  EXPECT_TRUE(map.GetConfig(nullptr, trusted_stateless_url));
+  EXPECT_TRUE(map.GetConfig(nullptr, untrusted_stateless_url));
+  EXPECT_FALSE(map.GetConfig(nullptr, stateful_url));
+  EXPECT_EQ(destruction_order, std::vector<std::string>{"test-stateful"});
+
+  EXPECT_TRUE(map.RemoveConfig(trusted_stateless_url));
+  EXPECT_TRUE(map.RemoveConfig(untrusted_stateless_url));
 }
 
 }  // namespace ash

@@ -63,11 +63,17 @@ class AshWebUIConfigManager {
  private:
   friend class AshWebUIConfigManagerTest;
 
-  // Tracks and registers a trusted WebUIConfig with content::WebUIConfigMap.
-  void AddWebUIConfig(std::unique_ptr<content::WebUIConfig> config);
+  // Registers a trusted WebUIConfig with content::WebUIConfigMap. When
+  // `is_stateful` is true, also tracks the config so it is unregistered on
+  // shutdown before injected dependencies are torn down.
+  void AddWebUIConfig(std::unique_ptr<content::WebUIConfig> config,
+                      bool is_stateful);
 
-  // Tracks and registers an untrusted WebUIConfig with content::WebUIConfigMap.
-  void AddUntrustedWebUIConfig(std::unique_ptr<content::WebUIConfig> config);
+  // Registers an untrusted WebUIConfig with content::WebUIConfigMap. When
+  // `is_stateful` is true, also tracks the config so it is unregistered on
+  // shutdown before injected dependencies are torn down.
+  void AddUntrustedWebUIConfig(std::unique_ptr<content::WebUIConfig> config,
+                               bool is_stateful);
 
   // Unregisters all tracked WebUI configs from content::WebUIConfigMap in
   // reverse order.
