@@ -61,7 +61,6 @@ import org.chromium.chrome.browser.ui.bottombar.R;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
 import org.chromium.ui.base.TestActivity;
-import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Unit tests for {@link BottomBarContainerCoordinator}. */
@@ -79,7 +78,6 @@ public class BottomBarContainerCoordinatorUnitTest {
     @Mock private ThemeColorProvider mThemeColorProvider;
     @Mock private ActionRegistry mActionRegistry;
     @Mock private Profile mProfile;
-    @Mock private ModalDialogManager mModalDialogManager;
     @Mock private UpdateMenuItemHelper mUpdateMenuItemHelper;
     @Mock private GlicKeyedService mGlicKeyedService;
     @Mock private LayoutStateProvider mLayoutStateProvider;
@@ -101,7 +99,6 @@ public class BottomBarContainerCoordinatorUnitTest {
     private FrameLayout mBottomBarContainer;
     private SettableNonNullObservableSupplier<Boolean> mHomepageEnabledSupplier;
     private SettableNonNullObservableSupplier<Boolean> mOmniboxFocusStateSupplier;
-    private SettableNonNullObservableSupplier<ModalDialogManager> mModalDialogManagerSupplier;
     private SettableNonNullObservableSupplier<@ControlsPosition Integer> mToolbarPositionSupplier;
     private BottomBarContainerCoordinator mCoordinator;
 
@@ -126,8 +123,6 @@ public class BottomBarContainerCoordinatorUnitTest {
                             mBottomBarContainer.setId(R.id.bottom_container_slot);
                             mHomepageEnabledSupplier = ObservableSuppliers.createNonNull(true);
                             mOmniboxFocusStateSupplier = ObservableSuppliers.createNonNull(false);
-                            mModalDialogManagerSupplier =
-                                    ObservableSuppliers.createNonNull(mModalDialogManager);
                             mToolbarPositionSupplier =
                                     ObservableSuppliers.createNonNull(ControlsPosition.TOP);
                             mProfileSupplier.set(mProfile);
@@ -146,7 +141,6 @@ public class BottomBarContainerCoordinatorUnitTest {
                 mHomepageEnabledSupplier,
                 mProfileSupplier,
                 mOmniboxFocusStateSupplier,
-                mModalDialogManagerSupplier,
                 new OneshotSupplierImpl<AppMenuCoordinator>(),
                 mLayoutStateProvider,
                 mToolbarPositionSupplier,
@@ -161,7 +155,7 @@ public class BottomBarContainerCoordinatorUnitTest {
         verify(mVisibilityController).setBottomControlsHeight(56);
         verify(mVisibilityController).setBottomControlsVisible(true);
         verify(mOnModelTokenChange).onResult(any());
-        verify(mActionRegistry, times(2)).get(ActionId.NEW_TAB);
+        verify(mActionRegistry, times(1)).get(ActionId.NEW_TAB);
     }
 
     @Test

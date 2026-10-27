@@ -29,8 +29,14 @@ public interface BottomBar {
      */
     void setParent(@Host int host);
 
-    /** Evaluates whether to show the introductory promo dialog and shows it if eligible. */
-    boolean maybeShowPromoDialog(Profile profile);
+    /**
+     * Claims the startup promo slot for the bottom bar education if it would show. The education
+     * shows once the startup promo flow finishes.
+     *
+     * @param profile The profile to check the education's eligibility against.
+     * @return Whether the startup promo slot was claimed.
+     */
+    boolean maybeShowBottomBarPromo(Profile profile);
 
     /**
      * Notifies the bottom bar that the startup promo flow has finished.

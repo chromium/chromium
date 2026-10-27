@@ -40,7 +40,6 @@ import org.chromium.chrome.browser.ui.bottombar.BottomBarCoordinator;
 import org.chromium.chrome.browser.ui.bottombar.BottomBarMediator;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
-import org.chromium.ui.modaldialog.ModalDialogManager;
 
 /**
  * Container for the bottom bar.
@@ -104,7 +103,6 @@ public class BottomBarContainerCoordinator
      * @param homepageEnabledSupplier Supplier of whether the homepage is enabled.
      * @param profileSupplier Supplier of the current profile.
      * @param omniboxFocusStateSupplier Supplier of the omnibox focus state.
-     * @param modalDialogManagerSupplier Supplier of the {@link ModalDialogManager}.
      * @param appMenuCoordinatorSupplier Supplier of the {@link AppMenuCoordinator}.
      * @param layoutStateProvider The {@link LayoutStateProvider} to observe layout state changes.
      * @param toolbarPositionSupplier Supplier of the current toolbar position.
@@ -121,7 +119,6 @@ public class BottomBarContainerCoordinator
             NonNullObservableSupplier<Boolean> homepageEnabledSupplier,
             NullableObservableSupplier<Profile> profileSupplier,
             NonNullObservableSupplier<Boolean> omniboxFocusStateSupplier,
-            NonNullObservableSupplier<ModalDialogManager> modalDialogManagerSupplier,
             OneshotSupplier<AppMenuCoordinator> appMenuCoordinatorSupplier,
             LayoutStateProvider layoutStateProvider,
             NonNullObservableSupplier<@ControlsPosition Integer> toolbarPositionSupplier,
@@ -152,7 +149,6 @@ public class BottomBarContainerCoordinator
                         this,
                         profileSupplier,
                         omniboxFocusStateSupplier,
-                        modalDialogManagerSupplier,
                         layoutStateProvider,
                         toolbarPositionSupplier,
                         browserControlsVisibilityManager,

@@ -19,19 +19,6 @@ import java.lang.annotation.RetentionPolicy;
 /** Utility class for recording Android Bottom Bar metrics. */
 @NullMarked
 public class BottomBarMetrics {
-    // LINT.IfChange(AndroidBottomBarPromoEvent)
-    /** Events associated with the display of the bottom bar promo dialog. */
-    @IntDef({PromoEvent.SHOWN, PromoEvent.ACCEPTED, PromoEvent.DISMISSED})
-    @Retention(RetentionPolicy.SOURCE)
-    public @interface PromoEvent {
-        int SHOWN = 0;
-        int ACCEPTED = 1;
-        int DISMISSED = 2;
-        int COUNT = 3;
-    }
-
-    // LINT.ThenChange(//tools/metrics/histograms/metadata/android/enums.xml:AndroidBottomBarPromoEvent)
-
     // LINT.IfChange(AndroidBottomBarEducationOnboardingEvent)
     /** Events associated with the bottom bar education bubble and opt-in dialog. */
     @IntDef({
@@ -221,16 +208,6 @@ public class BottomBarMetrics {
         int convoResult = isPanelOpen ? GlicConvoResult.CLOSED_SHEET : GlicConvoResult.OPENED_SHEET;
         RecordHistogram.recordEnumeratedHistogram(
                 "Android.BottomBar.Glic.ConvoResult", convoResult, GlicConvoResult.COUNT);
-    }
-
-    /**
-     * Records introductory promo dialog events.
-     *
-     * @param event The promo event (Shown, Accepted, or Dismissed).
-     */
-    public static void recordPromoEvent(@PromoEvent int event) {
-        RecordHistogram.recordEnumeratedHistogram(
-                "Android.BottomBar.Promo.Event", event, PromoEvent.COUNT);
     }
 
     /**

@@ -10,8 +10,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyBoolean;
-import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -42,7 +40,6 @@ import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsVisibilityManager;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
@@ -60,13 +57,11 @@ import org.chromium.chrome.browser.ui.actions.ActionProperties;
 import org.chromium.chrome.browser.ui.actions.ActionRegistry;
 import org.chromium.chrome.browser.ui.actions.glic.GlicActionProperties;
 import org.chromium.chrome.browser.ui.bottombar.BottomBarHostManager.Host;
-import org.chromium.chrome.browser.ui.bottombar.BottomBarMetrics.GlicIneligibilityReason;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.ui.base.TestActivity;
-import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.JUnitTestGURLs;
 
@@ -86,7 +81,6 @@ public class BottomBarCoordinatorUnitTest {
     @Mock private ThemeColorProvider mThemeColorProvider;
     @Mock private BottomBarMediator.VisibilityDelegate mVisibilityDelegate;
     @Mock private Profile mProfile;
-    @Mock private ModalDialogManager mModalDialogManager;
     @Mock private Tracker mTracker;
     @Mock private Tab mTab;
     @Mock private LayoutStateProvider mLayoutStateProvider;
@@ -113,7 +107,6 @@ public class BottomBarCoordinatorUnitTest {
     private FrameLayout mParent;
     private SettableNonNullObservableSupplier<Boolean> mHomepageEnabledSupplier;
     private SettableNonNullObservableSupplier<Boolean> mOmniboxFocusStateSupplier;
-    private SettableNonNullObservableSupplier<ModalDialogManager> mModalDialogManagerSupplier;
     private SettableNonNullObservableSupplier<@ControlsPosition Integer> mToolbarPositionSupplier;
     private BottomBarCoordinator mCoordinator;
 
@@ -135,7 +128,6 @@ public class BottomBarCoordinatorUnitTest {
         mParent = new FrameLayout(mActivity);
         mHomepageEnabledSupplier = ObservableSuppliers.createNonNull(true);
         mOmniboxFocusStateSupplier = ObservableSuppliers.createNonNull(false);
-        mModalDialogManagerSupplier = ObservableSuppliers.createNonNull(mModalDialogManager);
         mToolbarPositionSupplier = ObservableSuppliers.createNonNull(ControlsPosition.TOP);
         mCoordinator = createCoordinator();
         RobolectricUtil.runAllBackgroundAndUi();
@@ -151,7 +143,6 @@ public class BottomBarCoordinatorUnitTest {
                 mVisibilityDelegate,
                 mProfileSupplier,
                 mOmniboxFocusStateSupplier,
-                mModalDialogManagerSupplier,
                 mLayoutStateProvider,
                 mToolbarPositionSupplier,
                 mBrowserControlsVisibilityManager,
@@ -168,7 +159,7 @@ public class BottomBarCoordinatorUnitTest {
     @Test
     public void testInitialization_bindsAction() {
         assertNotNull(mCoordinator);
-        verify(mActionRegistry, times(2)).get(ActionId.NEW_TAB);
+        verify(mActionRegistry, times(1)).get(ActionId.NEW_TAB);
         verify(mActionRegistry, times(1)).get(ActionId.TAB_SWITCHER);
     }
 
@@ -346,40 +337,6 @@ public class BottomBarCoordinatorUnitTest {
         // Unfocus omnibox, should show again.
         mOmniboxFocusStateSupplier.set(false);
         verify(mVisibilityDelegate, times(2)).onVisibilityChanged(true);
-    }
-
-    @Test
-    public void testMaybeShowPromoDialog_Visible() {
-        when(mTab.getUrl()).thenReturn(JUnitTestGURLs.EXAMPLE_URL);
-        when(mTab.isOffTheRecord()).thenReturn(false);
-        mTabSupplier.set(mTab);
-
-        when(mTracker.shouldTriggerHelpUi(FeatureConstants.ANDROID_BOTTOM_BAR_PROMO_DIALOG))
-                .thenReturn(true);
-        GlicEnabling.Natives glicEnablingMock = mock(GlicEnabling.Natives.class);
-        GlicEnablingJni.setInstanceForTesting(glicEnablingMock);
-        when(glicEnablingMock.isEnabledForProfile(any())).thenReturn(true);
-        when(mProfile.getOriginalProfile()).thenReturn(mProfile);
-
-        assertTrue(mCoordinator.maybeShowPromoDialog(mProfile));
-        verify(mModalDialogManager).showDialog(any(), anyInt(), anyBoolean());
-    }
-
-    @Test
-    public void testMaybeShowPromoDialog_Incognito() {
-        when(mTab.getUrl()).thenReturn(JUnitTestGURLs.EXAMPLE_URL);
-        when(mTab.isOffTheRecord()).thenReturn(true);
-        mTabSupplier.set(mTab);
-
-        when(mTracker.shouldTriggerHelpUi(FeatureConstants.ANDROID_BOTTOM_BAR_PROMO_DIALOG))
-                .thenReturn(true);
-        GlicEnabling.Natives glicEnablingMock = mock(GlicEnabling.Natives.class);
-        GlicEnablingJni.setInstanceForTesting(glicEnablingMock);
-        when(glicEnablingMock.isEnabledForProfile(any())).thenReturn(true);
-        when(mProfile.getOriginalProfile()).thenReturn(mProfile);
-
-        assertFalse(mCoordinator.maybeShowPromoDialog(mProfile));
-        verify(mModalDialogManager, never()).showDialog(any(), anyInt(), anyBoolean());
     }
 
     @Test
@@ -570,31 +527,11 @@ public class BottomBarCoordinatorUnitTest {
     }
 
     @Test
-    public void testMaybeShowPromoDialog_DoesNotDoubleRecordIneligibilityReason() {
-        when(mTab.getUrl()).thenReturn(JUnitTestGURLs.EXAMPLE_URL);
-        when(mTab.isOffTheRecord()).thenReturn(false);
-        mTabSupplier.set(mTab);
-
-        GlicEnabling.setEnabledForTesting(false);
-        when(mProfile.getOriginalProfile()).thenReturn(mProfile);
-
-        HistogramWatcher watcher =
-                HistogramWatcher.newSingleRecordWatcher(
-                        "Android.BottomBar.Glic.IneligibilityReason",
-                        GlicIneligibilityReason.PROFILE_INELIGIBLE);
-
-        mProfileSupplier.set(mProfile);
-        assertFalse(mCoordinator.maybeShowPromoDialog(mProfile));
-
-        watcher.assertExpected();
-    }
-
-    @Test
     @EnableFeatures({
         ChromeFeatureList.ANDROID_BOTTOM_BAR,
         ChromeFeatureList.ANDROID_BOTTOM_BAR + ":education_enabled/true"
     })
-    public void testMaybeShowPromoDialog_EducationEnabled_ClaimsSlot() {
+    public void testMaybeShowBottomBarPromo_EducationEnabled_ClaimsSlot() {
         when(mTab.getUrl()).thenReturn(JUnitTestGURLs.EXAMPLE_URL);
         when(mTab.isOffTheRecord()).thenReturn(false);
         mTabSupplier.set(mTab);
@@ -604,10 +541,7 @@ public class BottomBarCoordinatorUnitTest {
         when(mTracker.wouldTriggerHelpUi(FeatureConstants.ANDROID_BOTTOM_BAR_EDUCATION))
                 .thenReturn(true);
 
-        assertTrue(mCoordinator.maybeShowPromoDialog(mProfile));
-        verify(mTracker, never())
-                .shouldTriggerHelpUi(FeatureConstants.ANDROID_BOTTOM_BAR_PROMO_DIALOG);
-        verify(mModalDialogManager, never()).showDialog(any(), anyInt(), anyBoolean());
+        assertTrue(mCoordinator.maybeShowBottomBarPromo(mProfile));
     }
 
     @Test
@@ -615,7 +549,7 @@ public class BottomBarCoordinatorUnitTest {
         ChromeFeatureList.ANDROID_BOTTOM_BAR,
         ChromeFeatureList.ANDROID_BOTTOM_BAR + ":education_enabled/true"
     })
-    public void testMaybeShowPromoDialog_EducationEnabled_DoesNotClaimSlot() {
+    public void testMaybeShowBottomBarPromo_EducationEnabled_DoesNotClaimSlot() {
         when(mTab.getUrl()).thenReturn(JUnitTestGURLs.EXAMPLE_URL);
         when(mTab.isOffTheRecord()).thenReturn(false);
         mTabSupplier.set(mTab);
@@ -625,10 +559,7 @@ public class BottomBarCoordinatorUnitTest {
         when(mTracker.wouldTriggerHelpUi(FeatureConstants.ANDROID_BOTTOM_BAR_EDUCATION))
                 .thenReturn(false);
 
-        assertFalse(mCoordinator.maybeShowPromoDialog(mProfile));
-        verify(mTracker, never())
-                .shouldTriggerHelpUi(FeatureConstants.ANDROID_BOTTOM_BAR_PROMO_DIALOG);
-        verify(mModalDialogManager, never()).showDialog(any(), anyInt(), anyBoolean());
+        assertFalse(mCoordinator.maybeShowBottomBarPromo(mProfile));
     }
 
     @Test
@@ -636,7 +567,7 @@ public class BottomBarCoordinatorUnitTest {
         ChromeFeatureList.ANDROID_BOTTOM_BAR,
         ChromeFeatureList.ANDROID_BOTTOM_BAR + ":education_enabled/true"
     })
-    public void testMaybeShowPromoDialog_EducationEnabled_IncognitoReturnsFalse() {
+    public void testMaybeShowBottomBarPromo_EducationEnabled_IncognitoReturnsFalse() {
         when(mTab.getUrl()).thenReturn(JUnitTestGURLs.EXAMPLE_URL);
         when(mTab.isOffTheRecord()).thenReturn(true);
         mTabSupplier.set(mTab);
@@ -646,9 +577,18 @@ public class BottomBarCoordinatorUnitTest {
         when(mTracker.wouldTriggerHelpUi(FeatureConstants.ANDROID_BOTTOM_BAR_EDUCATION))
                 .thenReturn(true);
 
-        assertFalse(mCoordinator.maybeShowPromoDialog(mProfile));
-        verify(mTracker, never())
-                .shouldTriggerHelpUi(FeatureConstants.ANDROID_BOTTOM_BAR_PROMO_DIALOG);
-        verify(mModalDialogManager, never()).showDialog(any(), anyInt(), anyBoolean());
+        assertFalse(mCoordinator.maybeShowBottomBarPromo(mProfile));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
+    public void testMaybeShowBottomBarPromo_EducationDisabled_ReturnsFalse() {
+        when(mTab.getUrl()).thenReturn(JUnitTestGURLs.EXAMPLE_URL);
+        when(mTab.isOffTheRecord()).thenReturn(false);
+        mTabSupplier.set(mTab);
+
+        when(mProfile.getOriginalProfile()).thenReturn(mProfile);
+
+        assertFalse(mCoordinator.maybeShowBottomBarPromo(mProfile));
     }
 }

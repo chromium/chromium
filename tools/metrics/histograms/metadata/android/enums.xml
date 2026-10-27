@@ -159,16 +159,6 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/ui/android/bottombar/java/src/org/chromium/chrome/browser/ui/bottombar/BottomBarMetrics.java:AndroidBottomBarIphEvent) -->
 
-<!-- LINT.IfChange(AndroidBottomBarPromoEvent) -->
-
-<enum name="AndroidBottomBarPromoEvent">
-  <int value="0" label="Shown"/>
-  <int value="1" label="Accepted"/>
-  <int value="2" label="Dismissed"/>
-</enum>
-
-<!-- LINT.ThenChange(//chrome/browser/ui/android/bottombar/java/src/org/chromium/chrome/browser/ui/bottombar/BottomBarMetrics.java:PromoEvent) -->
-
 <enum name="AndroidChildProcessConnectionEvents">
   <int value="0" label="SCHEDULE_TIMEOUT_SANDBOXED"/>
   <int value="1" label="SCHEDULE_TIMEOUT_UNSANDBOXED"/>

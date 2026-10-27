@@ -22,7 +22,6 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.actor.ActorTask;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsVisibilityManager;
-import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.glic.GlicKeyedService.GlicInvocationSource;
 import org.chromium.chrome.browser.glic.GlicUiHelper;
 import org.chromium.chrome.browser.glic.toolbar_button.GlicButtonDelegate;
@@ -42,7 +41,6 @@ import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
-import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.ui.drawable.DirtyDotDrawableWrapper;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -200,10 +198,6 @@ public class GlicActionCoordinator {
     private void onGlicActionPressed(View view) {
         mStateController.setPersistDoneState(false);
         Tab currentTab = mTabSupplier.get();
-        if (currentTab != null) {
-            TrackerFactory.getTrackerForProfile(currentTab.getProfile())
-                    .notifyEvent(EventConstants.ANDROID_BOTTOM_BAR_GLIC_USED);
-        }
 
         BottomBarMetrics.recordGlicButtonState(
                 mStateController.getButtonState(), mStateController.isPanelOpen());

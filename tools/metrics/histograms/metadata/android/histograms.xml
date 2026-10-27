@@ -1297,11 +1297,11 @@ chromium-metrics-reviews@google.com.
   <owner>polardz@google.com</owner>
   <summary>
     Recorded when the {IPHType} In-Product Help (IPH) in the Android Bottom Bar
-    triggers. The education tour tooltips (Glic, NewTab, TabSwitcher) record
-    only Shown and Dismissed. MovedToBottom applies to the AddressBar IPH only.
-    A user sees either the standalone IPHs or the tour, never both (standalone
-    IPHs are skipped while education is enabled), so the sources can be
-    separated by the education experiment arm.
+    triggers. Glic, NewTab and TabSwitcher come from the education tour
+    tooltips, which record only Shown and Dismissed. MovedToBottom applies to
+    the AddressBar IPH only. Until the standalone Glic and New Tab IPHs were
+    removed (crbug.com/574563293), they also recorded Glic and NewTab, but only
+    while education was off.
   </summary>
 <!-- LINT.IfChange(AndroidBottomBarIphFeature) -->
 
@@ -1313,17 +1313,6 @@ chromium-metrics-reviews@google.com.
   </token>
 <!-- LINT.ThenChange(//chrome/browser/ui/android/bottombar/java/src/org/chromium/chrome/browser/ui/bottombar/BottomBarMetrics.java:AndroidBottomBarIphFeature) -->
 
-</histogram>
-
-<histogram name="Android.BottomBar.Promo.Event"
-    enum="AndroidBottomBarPromoEvent" expires_after="2027-05-26">
-  <owner>madhavpruthi@google.com</owner>
-  <owner>ckitagawa@chromium.org</owner>
-  <owner>polardz@google.com</owner>
-  <summary>
-    Recorded when the introductory promo dialog for the Android Bottom Bar is
-    shown, accepted, or dismissed.
-  </summary>
 </histogram>
 
 <histogram name="Android.BottomControlsStacker.NumberOfVisibleLayers"
