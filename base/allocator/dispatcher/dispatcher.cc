@@ -8,6 +8,8 @@
 #include "base/check.h"
 #include "base/dcheck_is_on.h"
 #include "base/no_destructor.h"
+#include "base/synchronization/lock.h"
+#include "base/thread_annotations.h"
 #include "partition_alloc/buildflags.h"
 #include "partition_alloc/shim/allocator_shim.h"
 
@@ -23,13 +25,30 @@ namespace base::allocator::dispatcher {
 
 // The private implementation of Dispatcher.
 struct Dispatcher::Impl {
-  void Initialize(const internal::DispatchData& dispatch_data) {
+  void Initialize(const internal::DispatchData& dispatch_data,
+                  bool (*should_defer_connection)()) {
 #if DCHECK_IS_ON()
     DCHECK(!is_initialized_check_flag_.test_and_set());
 #endif
 
+    base::AutoLock lock(lock_);
     dispatch_data_ = dispatch_data;
-    ConnectToEmitters(dispatch_data_);
+    // Observers update the state checked by `should_defer_connection` before
+    // calling EnsureConnected(). Checking it under `lock_` guarantees that an
+    // observer activated concurrently is either seen as active here, or
+    // connects the hooks in EnsureConnected() once `lock_` is released.
+    connection_deferred_ = should_defer_connection();
+    if (!connection_deferred_) {
+      ConnectToEmitters(dispatch_data_);
+    }
+  }
+
+  void EnsureConnected() {
+    base::AutoLock lock(lock_);
+    if (connection_deferred_) {
+      ConnectToEmitters(dispatch_data_);
+      connection_deferred_ = false;
+    }
   }
 
   void Reset() {
@@ -41,7 +60,11 @@ struct Dispatcher::Impl {
     }());
 #endif
 
-    DisconnectFromEmitters(dispatch_data_);
+    base::AutoLock lock(lock_);
+    if (!connection_deferred_) {
+      DisconnectFromEmitters(dispatch_data_);
+    }
+    connection_deferred_ = false;
     dispatch_data_ = {};
   }
 
@@ -82,8 +105,11 @@ struct Dispatcher::Impl {
 #endif
   }
 
+  base::Lock lock_;
   // Information on the hooks.
-  internal::DispatchData dispatch_data_;
+  internal::DispatchData dispatch_data_ GUARDED_BY(lock_);
+  // Whether Initialize() deferred connecting the hooks to EnsureConnected().
+  bool connection_deferred_ GUARDED_BY(lock_) = false;
 #if DCHECK_IS_ON()
   // Indicator if the dispatcher has been initialized before.
 #if !defined(__cpp_lib_atomic_value_initialization) || \
@@ -104,8 +130,13 @@ Dispatcher& Dispatcher::GetInstance() {
   return *instance;
 }
 
-void Dispatcher::Initialize(const internal::DispatchData& dispatch_data) {
-  impl_->Initialize(dispatch_data);
+void Dispatcher::Initialize(const internal::DispatchData& dispatch_data,
+                            bool (*should_defer_connection)()) {
+  impl_->Initialize(dispatch_data, should_defer_connection);
+}
+
+void Dispatcher::EnsureConnected() {
+  impl_->EnsureConnected();
 }
 
 void Dispatcher::ResetForTesting() {

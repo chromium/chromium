@@ -6,6 +6,7 @@
 #define BASE_ALLOCATOR_DISPATCHER_DISPATCHER_H_
 
 #include <memory>
+#include <type_traits>
 
 #include "base/allocator/dispatcher/internal/dispatcher_internal.h"
 #include "base/base_export.h"
@@ -14,7 +15,18 @@ namespace base::allocator::dispatcher {
 
 namespace internal {
 struct DispatchData;
+
+// Returns ObserverType::ShouldDeferDispatcherConnection() if the observer
+// provides it, false otherwise.
+template <typename ObserverType>
+bool ShouldDeferConnection() {
+  if constexpr (requires { ObserverType::ShouldDeferDispatcherConnection(); }) {
+    return ObserverType::ShouldDeferDispatcherConnection();
+  } else {
+    return false;
+  }
 }
+}  // namespace internal
 
 // Dispatcher serves as the top level instance for managing the dispatch
 // mechanism. The class instance manages connections to the various memory
@@ -40,6 +52,12 @@ class BASE_EXPORT Dispatcher {
   //                   const char* type_name);
   // void OnFree(void* address);
   //
+  // Observers can opt into deferring the connection of the hooks to the memory
+  // subsystems by providing `static bool ShouldDeferDispatcherConnection()`. If
+  // it returns true for all observers, the hooks aren't connected until
+  // EnsureConnected() is called, which avoids their overhead while the
+  // observers are inactive.
+  //
   // Note: The dispatcher mechanism does NOT bring systematic protection against
   // recursive invocations. That is, observers which allocate memory on the
   // heap, i.e. through dynamically allocated containers or by using the
@@ -48,8 +66,16 @@ class BASE_EXPORT Dispatcher {
   void Initialize(const std::tuple<ObserverTypes...>& observers) {
     // Get the hooks for running these observers and pass them to further
     // initialization
-    Initialize(internal::GetNotificationHooks(observers));
+    Initialize(internal::GetNotificationHooks(observers), [] {
+      return (internal::ShouldDeferConnection<
+                  std::remove_pointer_t<ObserverTypes>>() &&
+              ...);
+    });
   }
+
+  // Connects the hooks if Initialize() deferred connecting them. Can be called
+  // from any thread, also before Initialize().
+  void EnsureConnected();
 
   // The following functions provide an interface to setup and tear down the
   // dispatcher when testing. This must NOT be used from production code since
@@ -68,7 +94,8 @@ class BASE_EXPORT Dispatcher {
 
   ~Dispatcher();
 
-  void Initialize(const internal::DispatchData& dispatch_data);
+  void Initialize(const internal::DispatchData& dispatch_data,
+                  bool (*should_defer_connection)());
 };
 }  // namespace base::allocator::dispatcher
 

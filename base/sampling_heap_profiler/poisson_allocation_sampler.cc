@@ -11,6 +11,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/allocator/dispatcher/dispatcher.h"
 #include "base/allocator/dispatcher/reentry_guard.h"
 #include "base/allocator/dispatcher/tls.h"
 #include "base/check.h"
@@ -464,6 +465,11 @@ void PoissonAllocationSampler::AddSamplesObserver(SamplesObserver* observer) {
   // while holding `mutex_`.
   if (profiler_was_stopped) {
     SetProfilingStateFlag(ProfilingStateFlag::kIsRunning);
+    // Connect the allocation hooks in case the Dispatcher deferred it (see
+    // ShouldDeferDispatcherConnection()). This must happen after kWasStarted
+    // is set. The Dispatcher never acquires `mutex_`, so calling it while
+    // holding `mutex_` can't deadlock.
+    allocator::dispatcher::Dispatcher::GetInstance().EnsureConnected();
   }
   DCHECK(profiling_state_.load(std::memory_order_relaxed) &
          ProfilingStateFlag::kIsRunning);

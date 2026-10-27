@@ -55,6 +55,10 @@ struct ObserverMock {
   size_t on_free_calls_ = 0;
 };
 
+struct DeferredObserverMock : public ObserverMock {
+  static bool ShouldDeferDispatcherConnection() { return true; }
+};
+
 struct DispatcherInitializerGuard {
   template <typename... Observers>
   explicit DispatcherInitializerGuard(std::tuple<Observers*...> observers) {
@@ -88,9 +92,60 @@ void DoBasicTest(A& allocator) {
   }
 }
 
+template <typename A>
+void DoDeferredTest(A& allocator) {
+  constexpr size_t size_to_allocate = 1024;
+
+  // When all observers opt into deferral, hooks must not be installed until
+  // EnsureConnected() is called.
+  {
+    DeferredObserverMock deferred_observer;
+    DispatcherInitializerGuard const g(std::make_tuple(&deferred_observer));
+
+    void* const ptr1 = allocator.Alloc(size_to_allocate);
+    allocator.Free(ptr1);
+    EXPECT_EQ(deferred_observer.GetNumberOnAllocationCalls(), 0u);
+    EXPECT_EQ(deferred_observer.GetNumberOnFreeCalls(), 0u);
+
+    Dispatcher::GetInstance().EnsureConnected();
+
+    void* const ptr2 = allocator.Alloc(size_to_allocate);
+    allocator.Free(ptr2);
+    EXPECT_GE(deferred_observer.GetNumberOnAllocationCalls(), 1u);
+    EXPECT_GE(deferred_observer.GetNumberOnFreeCalls(), 1u);
+  }
+
+  // When an eager observer is also present, hooks must connect immediately.
+  {
+    DeferredObserverMock deferred_observer;
+    ObserverMock eager_observer;
+    DispatcherInitializerGuard const g(
+        std::make_tuple(&deferred_observer, &eager_observer));
+
+    void* const ptr = allocator.Alloc(size_to_allocate);
+    allocator.Free(ptr);
+    EXPECT_GE(deferred_observer.GetNumberOnAllocationCalls(), 1u);
+    EXPECT_GE(deferred_observer.GetNumberOnFreeCalls(), 1u);
+    EXPECT_GE(eager_observer.GetNumberOnAllocationCalls(), 1u);
+    EXPECT_GE(eager_observer.GetNumberOnFreeCalls(), 1u);
+  }
+}
+
 TEST_F(BaseAllocatorDispatcherTest, VerifyInitialization) {
   std::array<ObserverMock, kMaximumNumberOfObservers> observers;
 
+  DispatcherInitializerGuard g(testing::CreateTupleOfPointers(observers));
+}
+
+TEST_F(BaseAllocatorDispatcherTest, VerifyDeferredResetWithoutConnecting) {
+  {
+    DeferredObserverMock deferred_observer;
+    DispatcherInitializerGuard g(std::make_tuple(&deferred_observer));
+  }
+
+  // Subsequent initialization after resetting an unconnected deferred
+  // dispatcher must still work cleanly.
+  std::array<ObserverMock, kMaximumNumberOfObservers> observers;
   DispatcherInitializerGuard g(testing::CreateTupleOfPointers(observers));
 }
 
@@ -116,6 +171,12 @@ TEST_F(BaseAllocatorDispatcherTest, VerifyNotificationUsingPartitionAllocator) {
   PartitionAllocator allocator;
   DoBasicTest(allocator);
 }
+
+TEST_F(BaseAllocatorDispatcherTest,
+       VerifyDeferredNotificationUsingPartitionAllocator) {
+  PartitionAllocator allocator;
+  DoDeferredTest(allocator);
+}
 #endif
 
 #if PA_BUILDFLAG(USE_ALLOCATOR_SHIM)
@@ -130,15 +191,25 @@ struct AllocatorShimAllocator {
 // MallocImpl, which then causes the test to terminate unexpectedly.
 #define MAYBE_VerifyNotificationUsingAllocatorShim \
   DISABLED_VerifyNotificationUsingAllocatorShim
+#define MAYBE_VerifyDeferredNotificationUsingAllocatorShim \
+  DISABLED_VerifyDeferredNotificationUsingAllocatorShim
 #else
 #define MAYBE_VerifyNotificationUsingAllocatorShim \
   VerifyNotificationUsingAllocatorShim
+#define MAYBE_VerifyDeferredNotificationUsingAllocatorShim \
+  VerifyDeferredNotificationUsingAllocatorShim
 #endif
 
 TEST_F(BaseAllocatorDispatcherTest,
        MAYBE_VerifyNotificationUsingAllocatorShim) {
   AllocatorShimAllocator allocator;
   DoBasicTest(allocator);
+}
+
+TEST_F(BaseAllocatorDispatcherTest,
+       MAYBE_VerifyDeferredNotificationUsingAllocatorShim) {
+  AllocatorShimAllocator allocator;
+  DoDeferredTest(allocator);
 }
 #endif
 

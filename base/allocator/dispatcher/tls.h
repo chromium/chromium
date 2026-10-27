@@ -75,7 +75,12 @@ struct BASE_EXPORT MMapAllocator {
 // is usually the page size of the system.
 // For various OS-CPU combinations, partition_alloc::PartitionPageSize() is not
 // constexpr. Hence, we can not use this value but define it locally.
-#if defined(PAGE_ALLOCATOR_CONSTANTS_ARE_CONSTEXPR) && \
+// partition_alloc::PartitionPageSize() is only available when PartitionAlloc is
+// in use (e.g. it is not in Cronet builds). Check that explicitly, since
+// PAGE_ALLOCATOR_CONSTANTS_ARE_CONSTEXPR may be defined by headers included
+// before this one (e.g. via the allocator shim) even without PartitionAlloc.
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC) &&               \
+    defined(PAGE_ALLOCATOR_CONSTANTS_ARE_CONSTEXPR) && \
     PAGE_ALLOCATOR_CONSTANTS_ARE_CONSTEXPR
   constexpr static size_t AllocationChunkSize =
       partition_alloc::PartitionPageSize();

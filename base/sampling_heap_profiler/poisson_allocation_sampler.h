@@ -169,6 +169,14 @@ class BASE_EXPORT PoissonAllocationSampler {
            ProfilingStateFlag::kIsRunning;
   }
 
+  // Returns true if profiling has never been started. Lets
+  // allocator::dispatcher::Dispatcher defer connecting the allocation hooks
+  // until AddSamplesObserver() starts profiling for the first time.
+  static bool ShouldDeferDispatcherConnection() {
+    return !(profiling_state_.load(std::memory_order_relaxed) &
+             ProfilingStateFlag::kWasStarted);
+  }
+
   // Returns true if a ScopedMuteHookedSamplesForTesting exists. This can be
   // read from any thread.
   static bool AreHookedSamplesMuted() {
