@@ -196,6 +196,12 @@ favicon_base::IconType GetIconTypeFromAttributes(
       index, item.source, item.titleSource,
       GetVisualTypeFromAttributes(item.attributes),
       GetIconTypeFromAttributes(item.attributes), item.URL));
+  if (ntp_tiles::GetAimButtonRefactorArm() ==
+      ntp_tiles::AimButtonRefactorArm::kAimAsMvt) {
+    if (item.source == ntp_tiles::TileSource::AI_MODE) {
+      RecordAimTileImpressionAtIndex(static_cast<int>(index));
+    }
+  }
 }
 
 + (void)recordMostVisitedTileOpened:(MostVisitedItem*)item

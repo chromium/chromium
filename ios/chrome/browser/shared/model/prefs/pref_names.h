@@ -276,6 +276,12 @@ inline constexpr char kIosDockingPromoEligibilityMet[] =
 // A list of the latest fetched Most Visited Sites.
 inline constexpr char kIosLatestMostVisitedSites[] = "ios.most_visited_sites";
 
+// Integer storing the position of the AI Mode tile in Most Visited Tiles.
+// A non-negative value indicates the position (default 0), and -1 indicates
+// that the tile was unpinned/removed by the user.
+inline constexpr char kIosMostVisitedAiModeTileIndex[] =
+    "ios.most_visited_tiles.ai_mode_tile_index";
+
 // The last saved index of an NTP WebState. Only updated on app background, so
 // it does not always reflect the current WebStateList.
 inline constexpr char kIOSLastKnownNTPWebStateIndex[] =

@@ -191,11 +191,15 @@ const int kPlusButtonIdentifier = -1;
   [snapshot appendSectionsWithIdentifiers:@[ kSectionIdentifier ]];
   NSMutableArray* indices = [NSMutableArray array];
   NSUInteger count = _items.count;
+  NSUInteger regularCount = 0;
   for (NSUInteger i = 0; i < count; i++) {
     [indices addObject:@(i)];
+    if (_items[i].source != ntp_tiles::TileSource::AI_MODE) {
+      regularCount++;
+    }
   }
   /// Add the "+" button.
-  if (!_items.lastObject.isPinned || count < kMaximumItems) {
+  if (!_items.lastObject.isPinned || regularCount < kMaximumItems) {
     [indices addObject:@(kPlusButtonIdentifier)];
   }
   [snapshot appendItemsWithIdentifiers:indices
@@ -239,6 +243,9 @@ const int kPlusButtonIdentifier = -1;
 /// Loads the favicon for item with `identifier`.
 - (void)loadFaviconIfNeeded:(NSNumber*)identifier {
   MostVisitedItem* item = _items[identifier.unsignedIntValue];
+  if (item.source == ntp_tiles::TileSource::AI_MODE) {
+    return;
+  }
   if (!item.attributes) {
     __weak MostVisitedTilesCollectionView* weakSelf = self;
     void (^completion)(FaviconAttributes*) = ^(FaviconAttributes* attributes) {

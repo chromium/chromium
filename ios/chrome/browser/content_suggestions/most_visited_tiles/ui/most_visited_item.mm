@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/content_suggestions/most_visited_tiles/ui/most_visited_item.h"
 
+#import "components/ntp_tiles/features.h"
 #import "components/ntp_tiles/tile_source.h"
 #import "ios/chrome/browser/content_suggestions/most_visited_tiles/ui/most_visited_tile_view.h"
 #import "url/gurl.h"
@@ -11,6 +12,11 @@
 @implementation MostVisitedItem
 
 - (BOOL)isPinned {
+  if (ntp_tiles::GetAimButtonRefactorArm() ==
+      ntp_tiles::AimButtonRefactorArm::kAimAsMvt) {
+    return self.source == ntp_tiles::TileSource::CUSTOM_LINKS ||
+           self.source == ntp_tiles::TileSource::AI_MODE;
+  }
   return self.source == ntp_tiles::TileSource::CUSTOM_LINKS;
 }
 
@@ -27,7 +33,7 @@
 
 #pragma mark - NSCopying
 
-- (id)copyWithZone:(NSZone*)zone {
+- (instancetype)copyWithZone:(NSZone*)zone {
   MostVisitedItem* newCopy = [[MostVisitedItem alloc] init];
   newCopy.title = self.title;
   newCopy.URL = self.URL;

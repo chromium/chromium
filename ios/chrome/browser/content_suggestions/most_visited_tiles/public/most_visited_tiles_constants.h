@@ -31,4 +31,7 @@ extern const CGFloat kMostVisitedTileIconSize;
 // `AimButtonRefactorArm::kAimAsModule` is enabled.
 CGFloat MostVisitedHeightReductionForAimModule();
 
+// The size of the AIM symbol and its container.
+extern const CGFloat kMostVisitedAimIconSize;
+
 #endif  // IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_MOST_VISITED_TILES_PUBLIC_MOST_VISITED_TILES_CONSTANTS_H_
