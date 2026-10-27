@@ -933,10 +933,92 @@ if (is_android) {
       "//components/test/data/actor/",
       "//components/test/data/ads_observer/",
       "//components/test/data/payments/",
+
+      # NOTE: Do not add "//chrome/test/data/" (or "data/") as a whole here or
+      # in any dependencies. List only the specific files or subdirectories
+      # needed, to avoid unnecessarily triggering Android bots via `gn analyze`
+      # when unrelated files under chrome/test/data/webui/ are modified.
       "//chrome/test/data/android/customtabs/",
+      "//chrome/test/data/android/google.html",
+      "//chrome/test/data/android/google.png",
+      "//chrome/test/data/autofill/",
+      "//chrome/test/data/back_forward_cache/",
+      "//chrome/test/data/background_fetch/",
       "//chrome/test/data/banners/",
+      "//chrome/test/data/cors-ok.txt",
+      "//chrome/test/data/cors-ok.txt.mock-http-headers",
+      "//chrome/test/data/csp-sandbox.html",
+      "//chrome/test/data/csp-sandbox.html.mock-http-headers",
+      "//chrome/test/data/csp-script-src.html",
+      "//chrome/test/data/csp-script-src.html.mock-http-headers",
+      "//chrome/test/data/devtools/",
+      "//chrome/test/data/download-test1.lib",
+      "//chrome/test/data/download-test1.lib.mock-http-headers",
+      "//chrome/test/data/download.pdf",
+      "//chrome/test/data/download.pdf.mock-http-headers",
+      "//chrome/test/data/downloads/",
+      "//chrome/test/data/drag_and_drop/",
+      "//chrome/test/data/empty.html",
+      "//chrome/test/data/empty_script.html",
+      "//chrome/test/data/english_page.html",
+      "//chrome/test/data/extensions/api_test/side_panel/",
+      "//chrome/test/data/extensions/no_best_effort_tasks_test_extension/",
+      "//chrome/test/data/favicon/",
+      "//chrome/test/data/fetch_docs_offline_extension_resource.html",
+      "//chrome/test/data/flash_embeds.html",
+      "//chrome/test/data/format_error.js",
+      "//chrome/test/data/glic/",
+      "//chrome/test/data/iframe.html",
+      "//chrome/test/data/iframe_about_blank.html",
+      "//chrome/test/data/iframe_blank.html",
+      "//chrome/test/data/iframe_blob.html",
+      "//chrome/test/data/iframe_blob_url.html",
+      "//chrome/test/data/iframe_cross_site.html",
+      "//chrome/test/data/iframe_data_url.html",
+      "//chrome/test/data/iframe_sandboxed_srcdoc.html",
+      "//chrome/test/data/iframe_srcdoc.html",
+      "//chrome/test/data/import_docs_offline_extension_resource.html",
+      "//chrome/test/data/import_none_docs_offline_extension_resource.html",
+      "//chrome/test/data/links.html",
+      "//chrome/test/data/load_image/",
+      "//chrome/test/data/login/",
+      "//chrome/test/data/maps.html",
+      "//chrome/test/data/media/",
+      "//chrome/test/data/native_messaging/",
+      "//chrome/test/data/optimization_guide/",
+      "//chrome/test/data/page204.html",
+      "//chrome/test/data/page204.html.mock-http-headers",
+      "//chrome/test/data/page_content_annotations/",
+      "//chrome/test/data/page_with_embedded_pdf.html",
+      "//chrome/test/data/page_with_iframe.html",
+      "//chrome/test/data/password/",
+      "//chrome/test/data/pdf/",
       "//chrome/test/data/policy/",
+      "//chrome/test/data/popup_iframe.html",
+      "//chrome/test/data/predictor/",
+      "//chrome/test/data/prerender/",
+      "//chrome/test/data/prerender_with_opt_in_header.html",
+      "//chrome/test/data/prerender_with_opt_in_header.html.mock-http-headers",
+      "//chrome/test/data/profiles/",
+      "//chrome/test/data/result_queue.js",
+      "//chrome/test/data/safe_browsing/client_model.pb",
+      "//chrome/test/data/safe_browsing/image_embedding.tflite",
+      "//chrome/test/data/safe_browsing/visual_model_android.tflite",
+      "//chrome/test/data/safe_browsing/visual_model_desktop.tflite",
+      "//chrome/test/data/service_worker/",
+      "//chrome/test/data/simple.html",
+      "//chrome/test/data/simple_script.js",
+      "//chrome/test/data/simple_with_script.html",
       "//chrome/test/data/ssl/",
+      "//chrome/test/data/supervised_user/",
+      "//chrome/test/data/sync/",
+      "//chrome/test/data/title1.html",
+      "//chrome/test/data/title2.html",
+      "//chrome/test/data/title3.html",
+      "//chrome/test/data/translate/",
+      "//chrome/test/data/web_apps/",
+      "//chrome/test/data/with_delayed_css.html",
+      "//chrome/test/data/workers/",
       "//content/test/data/",
     ]
 
@@ -2416,7 +2498,6 @@ test("unit_tests") {
     "../browser/flag-metadata.json",
     "../browser/flag-never-expire-list.json",
     "//base/test/data/",
-    "//chrome/test/data/",
     "//components/test/data/",
     "//extensions/test/data/",
     "//google_apis/test/data/",
@@ -2427,15 +2508,20 @@ test("unit_tests") {
   ]
 
   if (is_android) {
-    # Trim data specifically to what is used by unit tests on Android.
+    # NOTE: Trim data specifically to what is used by unit tests on Android. Do
+    # not add "//chrome/test/data/" (or "data/") as a whole, to avoid
+    # unnecessarily triggering Android bots via `gn analyze` when unrelated
+    # files under chrome/test/data/webui/ are modified.
     data += [
       "$root_gen_dir/chrome/android/chrome_apk_paks/locales/en-US.pak",
       "data/android/google.png",
+      "data/devtools/indexer/",
       "data/file_select_helper/",
       "data/offline_pages/",
       "data/optimization_guide/",
       "data/osdd/",
       "data/public_offline_pages/",
+      "data/safe_browsing/download_protection/encrypted.zip",
 
       # webapk_installer_unittest
       "data/banners/image-512px-corp.png",
@@ -2931,6 +3017,8 @@ test("unit_tests") {
         "//chrome/browser/ui/android/extensions/windowing/internal:unit_tests",
         "//chrome/browser/ui/android/extensions/windowing/test:native_unit_test_support_java",
       ]
+
+      data += [ "data/extensions/" ]
     }
 
     if (enable_webui_history) {

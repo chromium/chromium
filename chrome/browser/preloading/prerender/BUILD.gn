@@ -125,7 +125,16 @@ source_set("browser_tests") {
     "//third_party/blink/public/common:preloading_headers",
   ]
 
-  data = [ "//chrome/test/data/" ]
+  data = [
+    "//chrome/test/data/empty.html",
+    "//chrome/test/data/prerender/",
+    "//chrome/test/data/prerender_with_opt_in_header.html",
+    "//chrome/test/data/prerender_with_opt_in_header.html.mock-http-headers",
+    "//chrome/test/data/simple.html",
+    "//chrome/test/data/title1.html",
+    "//chrome/test/data/title2.html",
+    "//chrome/test/data/with_delayed_css.html",
+  ]
 }
 
 source_set("unit_tests") {

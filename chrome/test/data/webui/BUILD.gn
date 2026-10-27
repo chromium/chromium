@@ -455,7 +455,10 @@ source_set("browser_tests") {
     sources += [ "guest_view_shared/slim_webview_browsertest.cc" ]
     deps += [ "//chrome/browser/permissions" ]
 
-    data += [ "//chrome/test/data/" ]
+    data += [
+      "//chrome/test/data/simple.html",
+      "//chrome/test/data/webui/guest_view_shared/eval_post_message.html",
+    ]
   }
   if (!is_android) {
     deps += [ "//chrome/browser/ui/webui/feedback" ]
@@ -522,8 +525,6 @@ source_set("interactive_ui_tests") {
       "chromeos/settings/os_settings_focus_interactive_uitest.cc",
     ]
   }
-
-  data = [ "//chrome/test/data/" ]
 
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 

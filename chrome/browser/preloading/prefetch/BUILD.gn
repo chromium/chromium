@@ -92,7 +92,12 @@ source_set("platform_browser_tests") {
     deps += [ "//third_party/blink/public/common:preloading_headers" ]
   }
 
-  data = [ "//chrome/test/data/" ]
+  data = [
+    "//chrome/test/data/client_hints/",
+    "//chrome/test/data/empty.html",
+    "//chrome/test/data/simple.html",
+    "//chrome/test/data/title1.html",
+  ]
   if (!is_android) {
     deps += [ "//chrome/browser/ui:browser_window_header" ]
   }

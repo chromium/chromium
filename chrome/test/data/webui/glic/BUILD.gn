@@ -10,6 +10,11 @@ import("../build_webui_tests.gni")
 out_dir = "$target_gen_dir/glic"
 
 group("generate_test_files") {
+  data = [
+    "browser_tests/",
+    "test_client/",
+    "test_data/",
+  ]
   data_deps = [
     ":build_extra_ts",
     ":move_html",
