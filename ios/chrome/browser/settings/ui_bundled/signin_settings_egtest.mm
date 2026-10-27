@@ -198,6 +198,8 @@ using chrome_test_util::SettingsSignInRowMatcher;
   // Close settings.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::SettingsDoneButton()]
       performAction:grey_tap()];
+  [ChromeEarlGrey waitForUIElementToDisappearWithMatcher:
+                      chrome_test_util::SettingsDoneButton()];
   [SigninEarlGreyUI signOut];
   [ChromeEarlGreyUI openSettingsMenu];
   // Tap on sign-in cell.
@@ -239,10 +241,6 @@ using chrome_test_util::SettingsSignInRowMatcher;
 // + Sign-in
 // => Expect history sync opt-in dialog.
 - (void)testSigninSecondTimeAfterAddingAccountAgain {
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    // TODO(crbug.com/477810761): Test is flaky on iPad.
-    EARL_GREY_TEST_SKIPPED(@"Test disabled on iPad.");
-  }
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
   [ChromeEarlGreyUI openSettingsMenu];
@@ -269,6 +267,8 @@ using chrome_test_util::SettingsSignInRowMatcher;
   // Close settings.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::SettingsDoneButton()]
       performAction:grey_tap()];
+  [ChromeEarlGrey waitForUIElementToDisappearWithMatcher:
+                      chrome_test_util::SettingsDoneButton()];
   [SigninEarlGreyUI signOut];
   [ChromeEarlGreyUI openSettingsMenu];
   // Tap on sign-in cell.
@@ -572,8 +572,7 @@ using chrome_test_util::SettingsSignInRowMatcher;
 
 // Tests that if a user signs in and declines History Sync, then sign-out, then
 // History Sync screen is skipped if they sign-in again from the settings.
-// TODO(crbug.com/453019053): Test is failing on the waterfall.
-- (void)DISABLED_testHistorySyncSkippedIfDeclinedJustBefore {
+- (void)testHistorySyncSkippedIfDeclinedJustBefore {
   FakeSystemIdentity* fakeIdentity1 = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity1];
   [ChromeEarlGreyUI openSettingsMenu];
@@ -604,11 +603,15 @@ using chrome_test_util::SettingsSignInRowMatcher;
   // Sign-out then forget fakeIdentity1.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::SettingsDoneButton()]
       performAction:grey_tap()];
-  [SigninEarlGreyUI signOut];
+  [ChromeEarlGrey waitForUIElementToDisappearWithMatcher:
+                      chrome_test_util::SettingsDoneButton()];
+  [SigninEarlGrey signOut];
   [SigninEarlGrey forgetFakeIdentity:fakeIdentity1];
+  FakeSystemIdentity* fakeIdentity2 = [FakeSystemIdentity fakeIdentity2];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity2];
+  [ChromeEarlGreyUI waitForAppToIdle];
 
   // Tap on sign-in cell in settings for fakeIdentity2.
-  [SigninEarlGrey addFakeIdentity:[FakeSystemIdentity fakeIdentity2]];
   [ChromeEarlGreyUI openSettingsMenu];
   [[EarlGrey selectElementWithMatcher:SettingsSignInRowMatcher()]
       performAction:grey_tap()];
