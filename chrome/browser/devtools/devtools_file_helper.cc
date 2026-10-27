@@ -167,15 +167,18 @@ void DevToolsFileHelper::Save(const std::string& url,
   }
 
   if (initial_path.empty()) {
-    // SECURITY: |url| is page-controlled. Derive the suggested filename via
-    // net::GenerateFileName(), which strips path separators, "..", BiDi
-    // control characters and shell-integrated extensions - the same
-    // sanitization the download stack applies. This prevents %2F / %5C
-    // traversal out of the default Save-As folder and U+202E filename
-    // spoofing.
+    // SECURITY: |url| is page-controlled and may be either a valid URL or a
+    // raw filename (e.g. "Trace-20261019T154233.json.gz"). Derive the
+    // suggested filename via net::GenerateFileName(), which strips path
+    // separators, "..", BiDi control characters and shell-integrated
+    // extensions - the same sanitization the download stack applies. This
+    // prevents %2F / %5C traversal out of the default Save-As folder and
+    // U+202E filename spoofing.
+    GURL gurl(url);
     base::FilePath suggested_file_name = net::GenerateFileName(
-        GURL(url), /*content_disposition=*/std::string(),
-        /*referrer_charset=*/std::string(), /*suggested_name=*/std::string(),
+        gurl, /*content_disposition=*/std::string(),
+        /*referrer_charset=*/std::string(),
+        /*suggested_name=*/gurl.is_valid() ? std::string() : url,
         /*mime_type=*/std::string(), /*default_name=*/"download");
 
     if (!GetLastSavePath().empty()) {

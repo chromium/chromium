@@ -70,9 +70,11 @@ void DevToolsSelectFileDialog::Show(content::WebContents* web_contents,
                                     const base::FilePath& default_path) {
   base::FilePath::StringType ext;
   ui::SelectFileDialog::FileTypeInfo file_type_info;
+  // Platform file pickers, notably on Mac and Windows, tend to break with
+  // double extensions like .json.gz, so only pass in the final extension.
   if (type == ui::SelectFileDialog::SELECT_SAVEAS_FILE &&
-      default_path.Extension().length() > 0) {
-    ext = default_path.Extension().substr(1);
+      default_path.FinalExtension().length() > 0) {
+    ext = default_path.FinalExtension().substr(1);
     file_type_info.extensions.resize(1);
     file_type_info.extensions[0].push_back(ext);
   }
