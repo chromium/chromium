@@ -951,11 +951,11 @@ ios_builder(
 )
 
 ios_builder(
-    name = "ios26-sdk-simulator",
+    name = "ios27-duo-simulator",
     mirrors = [
-        "ci/ios26-sdk-simulator",
+        "ci/ios27-duo-simulator",
     ],
-    gn_args = "ci/ios26-sdk-simulator",
+    gn_args = "ci/ios27-duo-simulator",
     cpu = cpu.ARM64,
     xcode = xcode.xcode_beta,
 )

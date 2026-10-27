@@ -34,8 +34,8 @@ ci/ios-simulator-code-coverage
 ci/ios-simulator-full-configs
 ci/ios-simulator-noncq
 ci/ios26-beta-simulator
-ci/ios26-sdk-simulator
 ci/ios27-beta-simulator
+ci/ios27-duo-simulator
 ci/ios27-sdk-simulator
 ci/linux-blink-heap-verification
 ci/linux-blink-web-tests-force-accessibility-rel
@@ -92,8 +92,8 @@ try/ios-simulator-code-coverage
 try/ios-simulator-full-configs
 try/ios-simulator-noncq
 try/ios26-beta-simulator
-try/ios26-sdk-simulator
 try/ios27-beta-simulator
+try/ios27-duo-simulator
 try/ios27-sdk-simulator
 try/leak_detection_linux
 try/linux-asan-media-rel

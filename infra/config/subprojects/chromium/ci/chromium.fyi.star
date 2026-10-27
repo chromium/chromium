@@ -1836,8 +1836,8 @@ fyi_ios_builder(
 )
 
 fyi_ios_builder(
-    name = "ios26-sdk-simulator",
-    description_html = "Builds and runs iOS debug simulator tests using the iOS 26 SDK and Xcode n.",
+    name = "ios27-duo-simulator",
+    description_html = "Builds and runs iOS debug simulator tests using the iOS 27 SDK and Xcode n.",
     schedule = "0 2,6,10,14,18,22 * * *",
     triggered_by = [],
     builder_spec = builder_config.builder_spec(
@@ -1868,7 +1868,7 @@ fyi_ios_builder(
     # testers with xcode n during an xcode roll.
     targets = targets.bundle(
         targets = [
-            "ios26_sdk_simulator_tests",
+            "ios27_duo_simulator_tests",
         ],
         additional_compile_targets = [
             "all",
@@ -1887,8 +1887,8 @@ fyi_ios_builder(
     os = os.MAC_BETA,
     cpu = cpu.ARM64,
     console_view_entry = consoles.console_view_entry(
-        category = "iOS|iOS26",
-        short_name = "sdk26",
+        category = "iOS|iOS27",
+        short_name = "duo",
     ),
     xcode = xcode.xcode_beta,
 )
