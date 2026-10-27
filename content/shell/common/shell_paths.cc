@@ -69,6 +69,17 @@ bool ShellPathProvider(int key, base::FilePath* result) {
       if (cmd_line->HasSwitch(switches::kContentShellUserDataDir)) {
         base::FilePath path =
             cmd_line->GetSwitchValuePath(switches::kContentShellUserDataDir);
+#if BUILDFLAG(IS_IOS)
+        // On iOS the app sandbox makes the working directory unusable, so a
+        // relative path (as passed by e.g. ChromeDriver, which cannot know the
+        // app container's location) is resolved inside the container instead.
+        if (!path.IsAbsolute()) {
+          base::FilePath default_dir;
+          if (GetDefaultUserDataDirectory(&default_dir)) {
+            path = default_dir.Append(path);
+          }
+        }
+#endif
         if (base::DirectoryExists(path) || base::CreateDirectory(path)) {
           if (!path.IsAbsolute()) {
             path = base::MakeAbsoluteFilePath(path);
