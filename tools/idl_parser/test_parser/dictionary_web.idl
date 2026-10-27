@@ -39,6 +39,18 @@ dictionary MyDictInherit : Foo {};
  */
 partial dictionary MyDictPartial { };
 
+/** TREE
+ *Dictionary(MyDictAsyncSequence)
+ *  Key(chunks)
+ *    Type()
+ *      AsyncSequence()
+ *        Type()
+ *          StringType(DOMString)
+ */
+dictionary MyDictAsyncSequence {
+  async_sequence<DOMString> chunks;
+};
+
 /** ERROR Unexpected ":" after identifier "MyDictInherit". */
 partial dictionary MyDictInherit : Foo {};
 

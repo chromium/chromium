@@ -22,6 +22,7 @@ from .reference import RefByIdFactory
 # + TypedefType
 # + _ArrayLikeType
 # | + SequenceType
+# | + AsyncSequenceType
 # | + FrozenArrayType
 # | + ObservableArrayType
 # | + VariadicType
@@ -104,6 +105,9 @@ class IdlTypeFactory(object):
 
     def sequence_type(self, *args, **kwargs):
         return self._create(SequenceType, args, kwargs)
+
+    def async_sequence_type(self, *args, **kwargs):
+        return self._create(AsyncSequenceType, args, kwargs)
 
     def frozen_array_type(self, *args, **kwargs):
         return self._create(FrozenArrayType, args, kwargs)
@@ -465,6 +469,11 @@ class IdlType(WithExtendedAttributes, WithDebugInfo):
         return False
 
     @property
+    def is_async_sequence(self):
+        """Returns True if this is an async sequence type."""
+        return False
+
+    @property
     def is_frozen_array(self):
         """Returns True if this is a froen array type."""
         return False
@@ -551,8 +560,8 @@ class IdlType(WithExtendedAttributes, WithDebugInfo):
     @property
     def element_type(self):
         """
-        Returns the element type if |is_sequence|, |is_frozen_array|, or
-        |is_variadic|.
+        Returns the element type if |is_sequence|, |is_async_sequence|,
+        |is_frozen_array|, or |is_variadic|.
         """
         return None
 
@@ -1091,6 +1100,41 @@ class SequenceType(_ArrayLikeType):
 
     @property
     def is_sequence(self):
+        return True
+
+
+class AsyncSequenceType(_ArrayLikeType):
+    """https://webidl.spec.whatwg.org/#idl-async-iterable-type"""
+
+    def __init__(
+        self,
+        element_type,
+        is_optional=False,
+        extended_attributes=None,
+        debug_info=None,
+        pass_key=None,
+    ):
+        _ArrayLikeType.__init__(
+            self,
+            element_type,
+            is_optional=is_optional,
+            extended_attributes=extended_attributes,
+            debug_info=debug_info,
+            pass_key=pass_key,
+        )
+
+    @property
+    def syntactic_form(self):
+        return self._format_syntactic_form(
+            'async_sequence<{}>'.format(self.element_type.syntactic_form)
+        )
+
+    @property
+    def type_name_without_extended_attributes(self):
+        return '{}AsyncSequence'.format(self.element_type.type_name)
+
+    @property
+    def is_async_sequence(self):
         return True
 
 

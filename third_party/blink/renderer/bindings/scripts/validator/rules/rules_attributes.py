@@ -20,6 +20,14 @@ class ForbiddenSequenceTypeForAttributes(RuleBase):
         )
 
 
+class ForbiddenAsyncSequenceTypeForAttributes(RuleBase):
+    def validate(self, assert_, attribute):
+        assert_(
+            not attribute.idl_type.unwrap().is_async_sequence,
+            "Async sequences must not be used as the type of an attribute.",
+        )
+
+
 class ForbiddenRecordTypeForAttributes(RuleBase):
     def validate(self, assert_, attribute):
         assert_(
@@ -38,6 +46,9 @@ class ForbiddenDictionaryTypeForAttributes(RuleBase):
 
 def register_rules(rule_store):
     rule_store.register(target.ATTRIBUTES, ForbiddenSequenceTypeForAttributes())
+    rule_store.register(
+        target.ATTRIBUTES, ForbiddenAsyncSequenceTypeForAttributes()
+    )
     rule_store.register(target.ATTRIBUTES, ForbiddenRecordTypeForAttributes())
     rule_store.register(
         target.ATTRIBUTES, ForbiddenDictionaryTypeForAttributes()

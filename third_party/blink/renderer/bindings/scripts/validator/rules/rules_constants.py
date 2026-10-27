@@ -43,6 +43,14 @@ class ForbiddenSequenceTypeForConstants(RuleBase):
         )
 
 
+class ForbiddenAsyncSequenceTypeForConstants(RuleBase):
+    def validate(self, assert_, constant):
+        assert_(
+            not constant.idl_type.unwrap().is_async_sequence,
+            "Async sequences must not be used as the type of a constant.",
+        )
+
+
 class ForbiddenRecordTypeForConstants(RuleBase):
     def validate(self, assert_, constant):
         assert_(
@@ -74,6 +82,9 @@ def register_rules(rule_store):
         target.DICTIONARY_MEMBERS, IncompatibleTypeWithDefaultValue()
     )
     rule_store.register(target.CONSTANTS, ForbiddenSequenceTypeForConstants())
+    rule_store.register(
+        target.CONSTANTS, ForbiddenAsyncSequenceTypeForConstants()
+    )
     rule_store.register(target.CONSTANTS, ForbiddenRecordTypeForConstants())
     rule_store.register(target.CONSTANTS, ForbiddenDictionaryTypeForConstants())
     rule_store.register(

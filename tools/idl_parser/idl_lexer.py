@@ -54,6 +54,7 @@ class IDLLexer(object):
     'any': 'ANY',
     'async': 'ASYNC',
     'async_iterable': 'ASYNC_ITERABLE',
+    'async_sequence': 'ASYNC_SEQUENCE',
     'attribute': 'ATTRIBUTE',
     'bigint': 'BIGINT',
     'boolean': 'BOOLEAN',

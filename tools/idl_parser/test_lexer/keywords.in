@@ -1,4 +1,5 @@
 ANY any
+ASYNC_SEQUENCE async_sequence
 ATTRIBUTE attribute
 BOOLEAN boolean
 BYTESTRING ByteString

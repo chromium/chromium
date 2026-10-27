@@ -640,6 +640,54 @@ interface MyIfaceObservableArray {
 };
 
 /** TREE
+ *Interface(MyIfaceAsyncSequence)
+ *  Operation(foo)
+ *    Arguments()
+ *      Argument(arg)
+ *        Type()
+ *          AsyncSequence()
+ *            Type()
+ *              StringType(DOMString)
+ *    Type()
+ *      Undefined()
+ *  Operation(bar)
+ *    Arguments()
+ *      Argument(arg)
+ *        Type()
+ *          NULLABLE: True
+ *          AsyncSequence()
+ *            Type()
+ *              PrimitiveType(long)
+ *    Type()
+ *      Undefined()
+ *  Operation(baz)
+ *    Arguments()
+ *      Argument(arg)
+ *        Type()
+ *          UnionType()
+ *            Type()
+ *              StringType(DOMString)
+ *            Type()
+ *              AsyncSequence()
+ *                Type()
+ *                  StringType(DOMString)
+ *    Type()
+ *      Undefined()
+ *  Operation(qux)
+ *    Arguments()
+ *    Type()
+ *      AsyncSequence()
+ *        Type()
+ *          PrimitiveType(long)
+ */
+interface MyIfaceAsyncSequence {
+  undefined foo(async_sequence<DOMString> arg);
+  undefined bar(async_sequence<long>? arg);
+  undefined baz((DOMString or async_sequence<DOMString>) arg);
+  async_sequence<long> qux();
+};
+
+/** TREE
  *Interface(MyIfaceUnion)
  *  Attribute(foo)
  *    Type()

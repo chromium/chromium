@@ -312,6 +312,7 @@ class OverloadGroup(WithIdentifier):
             or is_interface_like(type2)
             or type2.is_callback_function
             or is_dictionary_like(type2)
+            or type2.is_async_sequence
             or is_sequence_like(type2)
         ):
             return False  # Out of the table
@@ -383,6 +384,10 @@ class OverloadGroup(WithIdentifier):
                 "LegacyTreatNonObjectAsNull"
                 not in type2.type_definition_object.extended_attributes
             )
-        if is_sequence_like(type1):
-            return not (type2.is_object or is_sequence_like(type2))
+        if type1.is_async_sequence or is_sequence_like(type1):
+            return not (
+                type2.is_object
+                or type2.is_async_sequence
+                or is_sequence_like(type2)
+            )
         return False  # Out of the table

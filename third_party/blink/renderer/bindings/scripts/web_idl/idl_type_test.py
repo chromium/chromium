@@ -48,10 +48,20 @@ class IdlTypesTest(unittest.TestCase):
         self.assertTrue(factory.promise_type(short_type).is_promise)
         self.assertTrue(factory.record_type(short_type, string_type).is_record)
         self.assertTrue(factory.sequence_type(short_type).is_sequence)
+        self.assertTrue(
+            factory.async_sequence_type(short_type).is_async_sequence
+        )
         self.assertTrue(factory.frozen_array_type(short_type).is_frozen_array)
         self.assertTrue(factory.union_type([short_type, string_type]).is_union)
         self.assertTrue(factory.nullable_type(short_type).is_nullable)
         self.assertTrue(factory.variadic_type(short_type).is_variadic)
+
+        self.assertFalse(factory.sequence_type(short_type).is_async_sequence)
+        self.assertFalse(factory.async_sequence_type(short_type).is_sequence)
+        self.assertNotEqual(
+            factory.sequence_type(short_type),
+            factory.async_sequence_type(short_type),
+        )
 
         self.assertFalse(factory.simple_type('long').is_string)
         self.assertFalse(factory.simple_type('DOMString').is_object)
@@ -121,6 +131,10 @@ class IdlTypesTest(unittest.TestCase):
         )
         self.assertEqual(
             'ShortSequence', factory.sequence_type(short_type).type_name
+        )
+        self.assertEqual(
+            'ShortAsyncSequence',
+            factory.async_sequence_type(short_type).type_name,
         )
         self.assertEqual(
             'ShortArray', factory.frozen_array_type(short_type).type_name

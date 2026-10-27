@@ -942,6 +942,7 @@ class IDLParser(object):
     """DistinguishableType : PrimitiveType Null
     | identifier Null
     | SEQUENCE '<' TypeWithExtendedAttributes '>' Null
+    | ASYNC_SEQUENCE '<' TypeWithExtendedAttributes '>' Null
     | FROZENARRAY '<' TypeWithExtendedAttributes '>' Null
     | OBSERVABLEARRAY '<' TypeWithExtendedAttributes '>' Null
     | RecordType Null
@@ -958,6 +959,8 @@ class IDLParser(object):
     if len(p) == 6:
       if p[1] == 'sequence':
         cls = 'Sequence'
+      elif p[1] == 'async_sequence':
+        cls = 'AsyncSequence'
       elif p[1] == 'FrozenArray':
         cls = 'FrozenArray'
       elif p[1] == 'ObservableArray':

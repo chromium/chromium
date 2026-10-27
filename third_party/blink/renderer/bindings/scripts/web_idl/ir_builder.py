@@ -996,6 +996,14 @@ class _IRBuilder(object):
                 debug_info=self._build_debug_info(node),
             )
 
+        def build_async_sequence_type(node, extended_attributes):
+            return self._idl_type_factory.async_sequence_type(
+                element_type=self._build_type(node.GetChildren()[0]),
+                is_optional=is_optional,
+                extended_attributes=extended_attributes,
+                debug_info=self._build_debug_info(node),
+            )
+
         def build_simple_type(node, extended_attributes):
             name = node.GetName()
             if name is None:
@@ -1048,6 +1056,7 @@ class _IRBuilder(object):
 
         build_functions = {
             'Any': build_simple_type,
+            'AsyncSequence': build_async_sequence_type,
             'FrozenArray': build_frozen_array_type,
             'ObservableArray': build_observable_array_type,
             'PrimitiveType': build_simple_type,
