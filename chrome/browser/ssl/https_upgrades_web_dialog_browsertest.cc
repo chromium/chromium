@@ -33,6 +33,10 @@
 #include "components/captive_portal/content/captive_portal_tab_helper.h"
 #include "components/captive_portal/core/captive_portal_types.h"
 #include "components/prefs/pref_service.h"
+#include "components/security_interstitials/content/security_interstitial_page.h"
+#include "components/security_interstitials/content/security_interstitial_tab_helper.h"
+#include "components/security_interstitials/content/ssl_blocking_page.h"
+#include "components/security_interstitials/content/ssl_error_handler.h"
 #include "components/security_interstitials/core/features.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/render_frame_host.h"
@@ -90,6 +94,13 @@ class TestDialogDelegate : public ui::test::TestWebDialogDelegate {
 std::string DocumentHtml(content::WebContents* contents) {
   return content::EvalJs(contents, "document.documentElement.outerHTML")
       .ExtractString();
+}
+
+bool IsDisplayingInterstitial(content::WebContents* contents) {
+  auto* helper =
+      security_interstitials::SecurityInterstitialTabHelper::FromWebContents(
+          contents);
+  return helper && helper->IsDisplayingInterstitial();
 }
 
 }  // namespace
@@ -172,6 +183,8 @@ class HttpsUpgradesCaptivePortalDialogBrowserTest
     }
     HttpsUpgradesInterceptor::SetHttpsPortForTesting(0);
     HttpsUpgradesInterceptor::SetHttpPortForTesting(0);
+    // Clears SetOSReportsCaptivePortalForTesting(), which is global state.
+    SSLErrorHandler::ResetConfigForTesting();
     InProcessBrowserTest::TearDownOnMainThread();
   }
 
@@ -218,6 +231,7 @@ class HttpsUpgradesCaptivePortalDialogBrowserTest
   }
 
   net::EmbeddedTestServer& http_server() { return http_server_; }
+  net::EmbeddedTestServer& https_server() { return https_server_; }
 
   // The fixture owns the delegate; TearDownOnMainThread() closes the dialog
   // first so that the Widget never outlives it.
@@ -427,4 +441,58 @@ IN_PROC_BROWSER_TEST_F(HttpsUpgradesCaptivePortalDialogBrowserTest,
   // The dialog is a window, not a login tab. The two are distinct, and only
   // the window bit drives the exemption.
   EXPECT_FALSE(helper->is_captive_portal_tab());
+}
+
+// Many captive portals serve their login page over HTTPS with a certificate
+// that does not validate. Without the captive portal window check in
+// SSLErrorHandler, that lands the dialog on a CaptivePortalBlockingPage, which
+// deliberately has no "proceed anyway" affordance: its only way out is an
+// "open the login page" button. For this dialog that button leads nowhere,
+// because OpenLoginPageForBrowser() needs a tabbed browser and the ChromeOS
+// sign-in and lock screens have none, so the dialog becomes a dead end. The
+// overridable SSL interstitial keeps the user able to inspect the certificate
+// problem and continue to the portal.
+IN_PROC_BROWSER_TEST_F(HttpsUpgradesCaptivePortalDialogBrowserTest,
+                       CaptivePortalDialogShowsOverridableSslInterstitial) {
+  // Stand in for the platform reporting a captive portal, which is what
+  // ChromeOS does when the user is behind one.
+  SSLErrorHandler::SetOSReportsCaptivePortalForTesting(true);
+
+  const GURL portal_url = https_server().GetURL(kBadHttpsHost, "/simple.html");
+
+  int net_error = net::ERR_FAILED;
+  content::WebContents* dialog_contents = ShowDialogAndWaitForNavigation(
+      portal_url, captive_portal::CaptivePortalWindowType::kPopup, &net_error);
+  ASSERT_NE(nullptr, dialog_contents);
+  ASSERT_EQ(nullptr, tabs::TabInterface::MaybeGetFromContents(dialog_contents));
+  // The navigation must have failed on the certificate, which is the whole
+  // premise of the test; an interstitial for any other reason would not prove
+  // anything about captive portal handling.
+  EXPECT_TRUE(net::IsCertificateError(net_error))
+      << net::ErrorToString(net_error);
+
+  auto* helper =
+      security_interstitials::SecurityInterstitialTabHelper::FromWebContents(
+          dialog_contents);
+  ASSERT_NE(nullptr, helper);
+  ASSERT_TRUE(helper->IsDisplayingInterstitial());
+
+  security_interstitials::SecurityInterstitialPage* blocking_page =
+      helper->GetBlockingPageForCurrentlyCommittedNavigationForTesting();
+  ASSERT_NE(nullptr, blocking_page);
+  ASSERT_EQ(SSLBlockingPage::kTypeForTesting,
+            blocking_page->GetTypeForTesting());
+
+  // The point of the interstitial type is the way out of it. Take it, and
+  // confirm the portal page actually loads. CaptivePortalBlockingPage has no
+  // proceed command at all, so this step cannot succeed without the fix.
+  content::TestNavigationObserver proceed_observer(dialog_contents);
+  ASSERT_TRUE(content::ExecJs(
+      dialog_contents, "window.certificateErrorPageController.proceed();"));
+  proceed_observer.WaitForNavigationFinished();
+  std::ignore = content::WaitForLoadStop(dialog_contents);
+
+  EXPECT_FALSE(IsDisplayingInterstitial(dialog_contents));
+  EXPECT_EQ(portal_url, dialog_contents->GetLastCommittedURL())
+      << DocumentHtml(dialog_contents);
 }

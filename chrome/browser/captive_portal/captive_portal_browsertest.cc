@@ -2537,6 +2537,83 @@ IN_PROC_BROWSER_TEST_F(CaptivePortalBrowserTest,
             GetInterstitialType(login_tab_contents));
 }
 
+// Same scenario as above, but for a dedicated captive portal sign-in *window*
+// whose login-tab bit has since been cleared by a probe. Without the window
+// type check the window would fall back to the non-overridable
+// CaptivePortalBlockingPage, whose only action is to open a login page -- which
+// is what this window already is.
+// Not observed flaky itself, but disabled on Windows alongside every other
+// test here that opens a second browser window (expect_new_login_browser).
+// TODO(crbug.com/339524384): Re-enable together with those tests.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_CertErrorInPortalWindowAfterLoginTabBitCleared \
+  DISABLED_CertErrorInPortalWindowAfterLoginTabBitCleared
+#else
+#define MAYBE_CertErrorInPortalWindowAfterLoginTabBitCleared \
+  CertErrorInPortalWindowAfterLoginTabBitCleared
+#endif
+IN_PROC_BROWSER_TEST_F(CaptivePortalBrowserTest,
+                       MAYBE_CertErrorInPortalWindowAfterLoginTabBitCleared) {
+  // Secure DNS in SECURE mode is what makes the login page open in a dedicated
+  // popup window rather than a tab.
+  PrefService* pref_service = g_browser_process->local_state();
+#if BUILDFLAG(IS_CHROMEOS)
+  // On ChromeOS the user-set secure DNS prefs live in the profile's pref
+  // service rather than in local_state (see SecureDnsManager).
+  pref_service = browser()->GetProfile()->GetPrefs();
+#endif  // BUILDFLAG(IS_CHROMEOS)
+  pref_service->SetString(prefs::kDnsOverHttpsTemplates,
+                          "https://bar.test/dns-query{?dns}");
+  pref_service->SetString(prefs::kDnsOverHttpsMode,
+                          SecureDnsConfig::kModeSecure);
+
+  net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
+  https_server.SetSSLConfig(net::EmbeddedTestServer::CERT_MISMATCHED_NAME);
+  https_server.ServeFilesFromSourceDirectory(GetChromeTestDataDir());
+  ASSERT_TRUE(https_server.Start());
+  // Stand in for the platform reporting a captive portal. Without this the
+  // interstitial choice would depend on Chrome's own probe and its delay timer.
+  SSLErrorHandler::SetOSReportsCaptivePortalForTesting(true);
+
+  // The path does not matter.
+  const GURL cert_error_url = https_server.GetURL(kTestServerLoginPath);
+
+  BrowserWindowInterface* login_browser = nullptr;
+  FastErrorBehindCaptivePortal(browser(), /*expect_open_login_tab=*/true,
+                               /*expect_new_login_browser=*/true,
+                               GURL(kMockHttpConnectionSecureDnsErr),
+                               &login_browser);
+  ASSERT_TRUE(login_browser);
+  WebContents* portal_window_contents =
+      login_browser->GetTabStripModel()->GetWebContentsAt(0);
+  ASSERT_TRUE(IsLoginTab(portal_window_contents));
+
+  // A single probe result that is not "behind a captive portal" clears the
+  // login-tab bit. The result is broadcast per profile, so it reaches the
+  // sign-in window without having to be targeted at it.
+  SetBehindCaptivePortal(false);
+  CaptivePortalObserver portal_observer(login_browser->GetProfile());
+  CaptivePortalServiceFactory::GetForProfile(login_browser->GetProfile())
+      ->DetectCaptivePortal();
+  portal_observer.WaitForResults(1);
+  ASSERT_NE(captive_portal::RESULT_BEHIND_CAPTIVE_PORTAL,
+            portal_observer.captive_portal_result());
+  ASSERT_FALSE(IsLoginTab(portal_window_contents));
+  // The bit this fix actually keys on is untouched by the probe.
+  ASSERT_TRUE(captive_portal::CaptivePortalTabHelper::FromWebContents(
+                  portal_window_contents)
+                  ->is_captive_portal_window());
+
+  // The portal serves its login page over HTTPS with a bad certificate.
+  ui_test_utils::NavigateToURLWithDisposition(
+      login_browser, cert_error_url, WindowOpenDisposition::kCurrentTab,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+
+  ASSERT_TRUE(IsShowingInterstitial(portal_window_contents));
+  EXPECT_EQ(SSLBlockingPage::kTypeForTesting,
+            GetInterstitialType(portal_window_contents));
+}
+
 // Tests this scenario:
 // - Portal probe requests are ignored, so that no captive portal result can
 //   arrive.

@@ -341,6 +341,7 @@ if (!is_android) {
       "//components/safe_browsing/content/browser/password_protection",
       "//components/safe_browsing/content/browser/password_protection:test_support",
       "//components/security_interstitials/content:proto_gen",
+      "//components/security_interstitials/content:security_interstitial_page",
       "//components/tabs:public",
       "//content/test:browsertest_support",
       "//content/test:test_support",
