@@ -25,7 +25,10 @@
 
 #include "third_party/blink/renderer/core/editing/caret_display_item_client.h"
 
+#include <cmath>
+
 #include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
+#include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
 #include "third_party/blink/renderer/core/editing/local_caret_rect.h"
 #include "third_party/blink/renderer/core/editing/position_with_affinity.h"
@@ -44,6 +47,8 @@
 #include "third_party/blink/renderer/platform/graphics/dark_mode_filter.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_recorder.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "ui/gfx/geometry/transform.h"
 
 namespace blink {
 
@@ -102,6 +107,64 @@ PhysicalRect MapCaretRectToCaretPainter(const LayoutBlock* caret_block,
   return result_rect;
 }
 
+// The bar caret width is chosen in local CSS px (see
+// LocalFrameView::BarCaretWidth) but painted through the element transform
+// chain, so a transform scale makes the caret fade away when scaled down and
+// fatten when scaled up. Rescale the caret rect by the inverse of the
+// accumulated transform scale so its size in the frame's viewport space is
+// transform-independent. Returns whether the rect was adjusted.
+bool AdjustBarCaretRectForTransform(const LayoutBlock& painter_block,
+                                    PhysicalRect& caret_rect) {
+  if (caret_rect.IsEmpty()) {
+    return false;
+  }
+
+  const LayoutView* view = painter_block.GetDocument().GetLayoutView();
+  if (!view || view == &painter_block) {
+    return false;
+  }
+
+  // SVG text scales its contents with a factor of its own, on top of the
+  // transform chain, and the caret is laid out in those scaled units already.
+  if (painter_block.IsSVG() || painter_block.IsSVGChild()) {
+    return false;
+  }
+
+  // The LayoutView's own transform (effective zoom) is excluded, matching the
+  // space LocalFrameView::BarCaretWidth() is expressed in.
+  gfx::Transform transform = painter_block.LocalToAncestorTransform(view);
+  if (!std::isfinite(transform.rc(0, 0)) ||
+      !std::isfinite(transform.rc(1, 1)) || transform.rc(0, 1) != 0 ||
+      transform.rc(1, 0) != 0) {
+    return false;
+  }
+
+  const bool horizontal = painter_block.Style().IsHorizontalWritingMode();
+  const float scale =
+      std::abs(horizontal ? transform.rc(0, 0) : transform.rc(1, 1));
+  if (!std::isfinite(scale) || scale <= 0.f || scale == 1.f) {
+    return false;
+  }
+
+  const LayoutUnit old_extent =
+      horizontal ? caret_rect.Width() : caret_rect.Height();
+  const LayoutUnit new_extent(old_extent.ToFloat() / scale);
+  if (new_extent <= 0) {
+    return false;
+  }
+
+  // Keep the caret centered on the same position.
+  const LayoutUnit center_shift = (old_extent - new_extent) / 2;
+  if (horizontal) {
+    caret_rect.SetX(caret_rect.X() + center_shift);
+    caret_rect.SetWidth(new_extent);
+  } else {
+    caret_rect.SetY(caret_rect.Y() + center_shift);
+    caret_rect.SetHeight(new_extent);
+  }
+  return true;
+}
+
 }  // namespace
 
 CaretDisplayItemClient::CaretRectAndPainterBlock
@@ -141,8 +204,18 @@ CaretDisplayItemClient::ComputeCaretRectAndPainterBlock(
     caret_block =
         CaretLayoutBlock(caret_position.AnchorNode(), caret_rect.layout_object);
   }
-  return {MapCaretRectToCaretPainter(caret_block, caret_rect), caret_block,
-          caret_rect.root_box_fragment};
+
+  CaretRectAndPainterBlock result;
+  result.caret_rect = MapCaretRectToCaretPainter(caret_block, caret_rect);
+  result.painter_block = caret_block;
+  result.box_fragment = caret_rect.root_box_fragment;
+  if (caret_shape == CaretShape::kBar &&
+      RuntimeEnabledFeatures::CaretWidthIgnoresTransformEnabled(
+          caret_position.AnchorNode()->GetExecutionContext())) {
+    result.transform_compensated =
+        AdjustBarCaretRectForTransform(*caret_block, result.caret_rect);
+  }
+  return result;
 }
 
 void CaretDisplayItemClient::LayoutBlockWillBeDestroyed(
@@ -260,6 +333,7 @@ void CaretDisplayItemClient::UpdateStyleAndLayoutIfNeeded(
 
   const PhysicalRect old_local_rect = local_rect_;
   auto new_local_rect = rect_and_block.caret_rect;
+  local_rect_transform_compensated_ = rect_and_block.transform_compensated;
   // TODO(crbug.com/1123630): Avoid paint invalidation on caret movement.
   if (new_local_rect != local_rect_) {
     needs_paint_invalidation_ = true;
@@ -379,6 +453,11 @@ void CaretDisplayItemClient::PaintCaret(
   PhysicalRect drawing_rect = local_rect_;
   drawing_rect.Move(paint_offset);
 
+  // A transform-compensated rect is sub-pixel in local space on purpose; the
+  // element transform scales it back to a whole device pixel at raster time,
+  // so it must not be snapped to integer local pixels here.
+  const bool compensated = local_rect_transform_compensated_;
+
   // When caret is in text-combine box with scaling, |context| is already
   // associated to drawing record to apply affine transform.
   std::optional<DrawingRecorder> recorder;
@@ -387,10 +466,13 @@ void CaretDisplayItemClient::PaintCaret(
                                                     display_item_type))
       return;
     recorder.emplace(context, *this, display_item_type,
-                     ToPixelSnappedRect(drawing_rect));
+                     compensated ? ToEnclosingRect(drawing_rect)
+                                 : ToPixelSnappedRect(drawing_rect));
   }
 
-  gfx::Rect paint_rect = ToPixelSnappedRect(drawing_rect);
+  const gfx::RectF paint_rect =
+      compensated ? gfx::RectF(drawing_rect)
+                  : gfx::RectF(ToPixelSnappedRect(drawing_rect));
   context.FillRect(paint_rect, color_,
                    PaintAutoDarkMode(layout_block_->Style(),
                                      DarkModeFilter::ElementRole::kForeground));
@@ -401,7 +483,9 @@ void CaretDisplayItemClient::RecordSelection(GraphicsContext& context,
                                              gfx::SelectionBound::Type type) {
   PhysicalRect drawing_rect = local_rect_;
   drawing_rect.Move(paint_offset);
-  gfx::Rect paint_rect = ToPixelSnappedRect(drawing_rect);
+  gfx::Rect paint_rect = local_rect_transform_compensated_
+                             ? ToEnclosingRect(drawing_rect)
+                             : ToPixelSnappedRect(drawing_rect);
 
   // For the caret, the start and end selection bounds are recorded as
   // the same edges, with the type marked as CENTER or HIDDEN.

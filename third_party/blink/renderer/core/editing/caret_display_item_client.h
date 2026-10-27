@@ -106,6 +106,7 @@ class CORE_EXPORT CaretDisplayItemClient final
     PhysicalRect caret_rect;  // local to |painter_block|
     LayoutBlock* painter_block = nullptr;
     const PhysicalBoxFragment* box_fragment = nullptr;
+    bool transform_compensated = false;
   };
   // Creating VisiblePosition causes synchronous layout so we should use the
   // PositionWithAffinity version if possible.
@@ -120,6 +121,10 @@ class CORE_EXPORT CaretDisplayItemClient final
   // These are updated by UpdateStyleAndLayoutIfNeeded().
   Color color_;
   PhysicalRect local_rect_;
+  // True when the bar caret's local size was rescaled to cancel the element
+  // transform scale (see AdjustBarCaretRectForTransform), which can make
+  // |local_rect_| sub-pixel in local space.
+  bool local_rect_transform_compensated_ = false;
   Member<LayoutBlock> layout_block_;
 
   // This is set to the previous value of layout_block_ during

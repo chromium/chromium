@@ -1217,6 +1217,14 @@
       status: "stable",
     },
     {
+      // Keeps the bar caret width independent of the element transform scale,
+      // so scaling an editable down does not fade the caret away and scaling it
+      // up does not make it fat.
+      // https://crbug.com/353556446
+      name: "CaretWidthIgnoresTransform",
+      status: "stable",
+    },
+    {
       // Kill switch for changes to RenderFrameMetadataObserverImpl in connection with Engagement
       // Signals. See https://crrev.com/c/4544201 and https://crbug.com/1458640.
       name: "CCTNewRFMPushBehavior",
