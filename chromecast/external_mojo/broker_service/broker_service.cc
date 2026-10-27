@@ -60,7 +60,9 @@ service_manager::Manifest MakePackagedServices(
 
 }  // namespace
 
-BrokerService::BrokerService(service_manager::Connector* connector) {
+BrokerService::BrokerService(
+    service_manager::Connector* connector,
+    std::vector<std::string> in_process_only_services) {
   DCHECK(!g_instance);
   g_instance = this;
   io_thread_ = std::make_unique<base::Thread>("external_mojo");
@@ -74,8 +76,9 @@ BrokerService::BrokerService(service_manager::Connector* connector) {
   }
   bundle_.AddBinder(base::BindRepeating(&BrokerService::BindConnector,
                                         base::Unretained(this)));
-  broker_ = base::SequenceBound<ExternalMojoBroker>(io_thread_->task_runner(),
-                                                    GetBrokerPath());
+  broker_ = base::SequenceBound<ExternalMojoBroker>(
+      io_thread_->task_runner(), GetBrokerPath(),
+      std::move(in_process_only_services));
   broker_.AsyncCall(&ExternalMojoBroker::InitializeChromium)
       .WithArgs(connector->Clone(), external_services_to_proxy);
 }

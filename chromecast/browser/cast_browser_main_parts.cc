@@ -132,7 +132,6 @@
 #include "chromecast/graphics/cast_window_manager_default.h"  // nogncheck
 #endif
 
-
 #if !BUILDFLAG(IS_FUCHSIA)
 #include "chromecast/base/cast_sys_info_util.h"
 #include "chromecast/public/cast_sys_info.h"
@@ -525,7 +524,8 @@ int CastBrowserMainParts::PostCreateThreads() {
     auto* service_manager_connector =
         ServiceManagerConnection::GetForProcess()->GetConnector();
     broker_service_ = std::make_unique<external_mojo::BrokerService>(
-        service_manager_connector);
+        service_manager_connector,
+        std::vector<std::string>{chromecast::mojom::kCastBrowserServiceName});
     connector_ = external_service_support::ExternalConnector::Create(
         broker_service_->CreateConnector());
   } else {

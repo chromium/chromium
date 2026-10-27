@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "base/memory/scoped_refptr.h"
 #include "base/threading/sequence_bound.h"
@@ -54,7 +55,12 @@ class BrokerService : public ::service_manager::Service {
   // Returns the manifest for this service.
   static const service_manager::Manifest& GetManifest();
 
-  explicit BrokerService(service_manager::Connector* connector);
+  // |in_process_only_services| names services that may only be registered or
+  // bound by connectors created via CreateConnector(); clients connecting via
+  // the broker socket cannot register or bind to them.
+  explicit BrokerService(
+      service_manager::Connector* connector,
+      std::vector<std::string> in_process_only_services = {});
 
   BrokerService(const BrokerService&) = delete;
   BrokerService& operator=(const BrokerService&) = delete;

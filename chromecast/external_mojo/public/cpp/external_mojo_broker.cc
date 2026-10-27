@@ -80,7 +80,11 @@ void OnInternalBindResult(
 
 class ExternalMojoBroker::ConnectorImpl : public mojom::ExternalConnector {
  public:
-  ConnectorImpl() : connector_facade_(this) {}
+  explicit ConnectorImpl(std::vector<std::string> in_process_only_services)
+      : connector_facade_(this),
+        in_process_only_services_(
+            std::make_move_iterator(in_process_only_services.begin()),
+            std::make_move_iterator(in_process_only_services.end())) {}
 
   ConnectorImpl(const ConnectorImpl&) = delete;
   ConnectorImpl& operator=(const ConnectorImpl&) = delete;
@@ -93,8 +97,9 @@ class ExternalMojoBroker::ConnectorImpl : public mojom::ExternalConnector {
     RegisterExternalServices(external_services_to_proxy);
   }
 
-  void AddReceiver(mojo::PendingReceiver<mojom::ExternalConnector> receiver) {
-    receivers_.Add(this, std::move(receiver));
+  void AddReceiver(mojo::PendingReceiver<mojom::ExternalConnector> receiver,
+                   bool is_in_process) {
+    receivers_.Add(this, std::move(receiver), is_in_process);
   }
 
  private:
@@ -137,8 +142,9 @@ class ExternalMojoBroker::ConnectorImpl : public mojom::ExternalConnector {
     }
 
     void AddReceiver(
-        mojo::PendingReceiver<service_manager::mojom::Connector> receiver) {
-      receivers_.Add(this, std::move(receiver));
+        mojo::PendingReceiver<service_manager::mojom::Connector> receiver,
+        bool is_in_process) {
+      receivers_.Add(this, std::move(receiver), is_in_process);
     }
 
    private:
@@ -147,8 +153,9 @@ class ExternalMojoBroker::ConnectorImpl : public mojom::ExternalConnector {
                        mojo::ScopedMessagePipeHandle interface_pipe,
                        service_manager::mojom::BindInterfacePriority priority,
                        BindInterfaceCallback callback) override {
-      connector_->BindInterface(filter.service_name(), interface_name,
-                                std::move(interface_pipe));
+      connector_->BindInterfaceForReceiver(
+          filter.service_name(), interface_name, std::move(interface_pipe),
+          receivers_.current_context());
       std::move(callback).Run(service_manager::mojom::ConnectResult::SUCCEEDED,
                               std::nullopt);
     }
@@ -177,22 +184,25 @@ class ExternalMojoBroker::ConnectorImpl : public mojom::ExternalConnector {
 
     void Clone(mojo::PendingReceiver<service_manager::mojom::Connector>
                    receiver) override {
-      AddReceiver(std::move(receiver));
+      AddReceiver(std::move(receiver), receivers_.current_context());
     }
 
     ExternalMojoBroker::ConnectorImpl* const connector_;
 
-    mojo::ReceiverSet<service_manager::mojom::Connector> receivers_;
+    mojo::ReceiverSet<service_manager::mojom::Connector, bool> receivers_;
   };
 
   struct PendingBindRequest {
     PendingBindRequest(const std::string& interface_name,
-                       mojo::ScopedMessagePipeHandle interface_pipe)
+                       mojo::ScopedMessagePipeHandle interface_pipe,
+                       bool is_in_process)
         : interface_name(interface_name),
-          interface_pipe(std::move(interface_pipe)) {}
+          interface_pipe(std::move(interface_pipe)),
+          is_in_process(is_in_process) {}
 
     const std::string interface_name;
     mojo::ScopedMessagePipeHandle interface_pipe;
+    bool is_in_process;
   };
 
   void RegisterExternalServices(
@@ -234,12 +244,19 @@ class ExternalMojoBroker::ConnectorImpl : public mojom::ExternalConnector {
       return;
     }
 
-    ServiceNotFound(service_name, interface_name, std::move(interface_pipe));
+    ServiceNotFound(service_name, interface_name, std::move(interface_pipe),
+                    /*is_in_process=*/true);
   }
 
   void RegisterServiceInstance(
       const std::string& service_name,
-      mojo::PendingRemote<mojom::ExternalService> service_remote) {
+      mojo::PendingRemote<mojom::ExternalService> service_remote,
+      bool is_in_process) {
+    if (!IsServiceAccessible(service_name, is_in_process)) {
+      LOG(ERROR) << "Refusing to register " << service_name
+                 << " from an external client";
+      return;
+    }
     if (services_.contains(service_name)) {
       LOG(ERROR) << "Duplicate service " << service_name;
       return;
@@ -254,6 +271,9 @@ class ExternalMojoBroker::ConnectorImpl : public mojom::ExternalConnector {
     auto p = pending_bind_requests_.find(service_name);
     if (p != pending_bind_requests_.end()) {
       for (auto& request : p->second) {
+        if (!IsServiceAccessible(service_name, request.is_in_process)) {
+          continue;
+        }
         it->second->OnBindInterface(request.interface_name,
                                     std::move(request.interface_pipe));
       }
@@ -270,17 +290,33 @@ class ExternalMojoBroker::ConnectorImpl : public mojom::ExternalConnector {
   void RegisterServiceInstances(
       std::vector<chromecast::external_mojo::mojom::ServiceInstanceInfoPtr>
           service_instances_info) override {
+    const bool is_in_process = receivers_.current_context();
     for (auto& instance_info_ptr : service_instances_info) {
       RegisterServiceInstance(instance_info_ptr->service_name,
-                              std::move(instance_info_ptr->service_remote));
+                              std::move(instance_info_ptr->service_remote),
+                              is_in_process);
     }
   }
 
   void BindInterface(const std::string& service_name,
                      const std::string& interface_name,
                      mojo::ScopedMessagePipeHandle interface_pipe) override {
+    BindInterfaceForReceiver(service_name, interface_name,
+                             std::move(interface_pipe),
+                             receivers_.current_context());
+  }
+
+  void BindInterfaceForReceiver(const std::string& service_name,
+                                const std::string& interface_name,
+                                mojo::ScopedMessagePipeHandle interface_pipe,
+                                bool is_in_process) {
     LOG(INFO) << "Request for " << service_name << ":" << interface_name;
     TRACE_EVENT_INSTANT("mojom", "BindToService", "service", service_name);
+    if (!IsServiceAccessible(service_name, is_in_process)) {
+      LOG(ERROR) << "Refusing to bind " << service_name << ":" << interface_name
+                 << " for an external client";
+      return;
+    }
     auto it = services_.find(service_name);
     if (it != services_.end()) {
       LOG(INFO) << "Found externally-registered " << service_name;
@@ -291,28 +327,31 @@ class ExternalMojoBroker::ConnectorImpl : public mojom::ExternalConnector {
     auto service_proxy_it = external_services_to_proxy_.find(service_name);
 
     if (!connector_ || service_proxy_it != external_services_to_proxy_.end()) {
-      ServiceNotFound(service_name, interface_name, std::move(interface_pipe));
+      ServiceNotFound(service_name, interface_name, std::move(interface_pipe),
+                      is_in_process);
       return;
     }
 
     connector_->QueryService(
         service_name,
         base::BindOnce(&ConnectorImpl::OnQueryResult, base::Unretained(this),
-                       service_name, interface_name,
-                       std::move(interface_pipe)));
+                       service_name, interface_name, std::move(interface_pipe),
+                       is_in_process));
   }
 
   void Clone(
       mojo::PendingReceiver<mojom::ExternalConnector> receiver) override {
-    AddReceiver(std::move(receiver));
+    AddReceiver(std::move(receiver), receivers_.current_context());
   }
 
   void BindChromiumConnector(
       mojo::ScopedMessagePipeHandle interface_pipe) override {
-    if (!connector_) {
+    const bool is_in_process = receivers_.current_context();
+    if (!connector_ || !is_in_process) {
       connector_facade_.AddReceiver(
           mojo::PendingReceiver<service_manager::mojom::Connector>(
-              std::move(interface_pipe)));
+              std::move(interface_pipe)),
+          is_in_process);
       return;
     }
 
@@ -332,9 +371,11 @@ class ExternalMojoBroker::ConnectorImpl : public mojom::ExternalConnector {
   void OnQueryResult(const std::string& service_name,
                      const std::string& interface_name,
                      mojo::ScopedMessagePipeHandle interface_pipe,
+                     bool is_in_process,
                      service_manager::mojom::ServiceInfoPtr info) {
     if (!info) {
-      ServiceNotFound(service_name, interface_name, std::move(interface_pipe));
+      ServiceNotFound(service_name, interface_name, std::move(interface_pipe),
+                      is_in_process);
       return;
     }
 
@@ -348,11 +389,17 @@ class ExternalMojoBroker::ConnectorImpl : public mojom::ExternalConnector {
 
   void ServiceNotFound(const std::string& service_name,
                        const std::string& interface_name,
-                       mojo::ScopedMessagePipeHandle interface_pipe) {
+                       mojo::ScopedMessagePipeHandle interface_pipe,
+                       bool is_in_process) {
     LOG(INFO) << service_name << " not found";
     // Assume the service will be registered later, and wait until then.
     pending_bind_requests_[service_name].emplace_back(
-        interface_name, std::move(interface_pipe));
+        interface_name, std::move(interface_pipe), is_in_process);
+  }
+
+  bool IsServiceAccessible(const std::string& service_name,
+                           bool is_in_process) const {
+    return is_in_process || !in_process_only_services_.contains(service_name);
   }
 
   void OnServiceLost(const std::string& service_name) {
@@ -366,7 +413,8 @@ class ExternalMojoBroker::ConnectorImpl : public mojom::ExternalConnector {
   ServiceManagerConnectorFacade connector_facade_;
   std::unique_ptr<service_manager::Connector> connector_;
 
-  mojo::ReceiverSet<mojom::ExternalConnector> receivers_;
+  const std::set<std::string> in_process_only_services_;
+  mojo::ReceiverSet<mojom::ExternalConnector, bool> receivers_;
   std::set<std::string> external_services_to_proxy_;
   std::map<std::string, std::unique_ptr<ExternalServiceProxy>>
       registered_external_services_;
@@ -405,7 +453,8 @@ class ExternalMojoBroker::ReadWatcher
           mojo::PlatformChannelEndpoint(
               mojo::PlatformHandle(std::move(accepted_fd))));
       connector_->AddReceiver(
-          mojo::PendingReceiver<mojom::ExternalConnector>(std::move(pipe)));
+          mojo::PendingReceiver<mojom::ExternalConnector>(std::move(pipe)),
+          /*is_in_process=*/false);
     }
   }
 
@@ -417,8 +466,11 @@ class ExternalMojoBroker::ReadWatcher
   base::MessagePumpForIO::FdWatchController watch_controller_;
 };
 
-ExternalMojoBroker::ExternalMojoBroker(const std::string& broker_path) {
-  connector_ = std::make_unique<ConnectorImpl>();
+ExternalMojoBroker::ExternalMojoBroker(
+    const std::string& broker_path,
+    std::vector<std::string> in_process_only_services) {
+  connector_ =
+      std::make_unique<ConnectorImpl>(std::move(in_process_only_services));
 
   // For external service support, we expose a channel endpoint on the
   // |broker_path|. Otherwise, only services in the same process network can
@@ -470,13 +522,18 @@ void ExternalMojoBroker::InitializeChromium(
 mojo::PendingRemote<mojom::ExternalConnector>
 ExternalMojoBroker::CreateConnector() {
   mojo::PendingRemote<mojom::ExternalConnector> remote;
-  connector_->AddReceiver(remote.InitWithNewPipeAndPassReceiver());
+  BindConnector(remote.InitWithNewPipeAndPassReceiver());
   return remote;
 }
 
 void ExternalMojoBroker::BindConnector(
     mojo::PendingReceiver<mojom::ExternalConnector> receiver) {
-  connector_->AddReceiver(std::move(receiver));
+  connector_->AddReceiver(std::move(receiver), /*is_in_process=*/true);
+}
+
+void ExternalMojoBroker::BindExternalConnector(
+    mojo::PendingReceiver<mojom::ExternalConnector> receiver) {
+  connector_->AddReceiver(std::move(receiver), /*is_in_process=*/false);
 }
 
 ExternalMojoBroker::~ExternalMojoBroker() = default;

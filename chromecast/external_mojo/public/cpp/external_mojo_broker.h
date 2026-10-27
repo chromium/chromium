@@ -24,7 +24,12 @@ namespace external_mojo {
 // either in a standalone broker process, or embedded into a Chromium process.
 class ExternalMojoBroker {
  public:
-  explicit ExternalMojoBroker(const std::string& broker_path);
+  // |in_process_only_services| names services which may only be registered or
+  // bound by connectors created via CreateConnector()/BindConnector(); clients
+  // connecting via the broker socket cannot register or bind to them.
+  explicit ExternalMojoBroker(
+      const std::string& broker_path,
+      std::vector<std::string> in_process_only_services = {});
 
   ExternalMojoBroker(const ExternalMojoBroker&) = delete;
   ExternalMojoBroker& operator=(const ExternalMojoBroker&) = delete;
@@ -39,9 +44,15 @@ class ExternalMojoBroker {
       std::unique_ptr<service_manager::Connector> connector,
       const std::vector<std::string>& external_services_to_proxy);
 
+  // Creates/binds a connector for use by code hosted in the same process as
+  // the broker.
   mojo::PendingRemote<mojom::ExternalConnector> CreateConnector();
-
   void BindConnector(mojo::PendingReceiver<mojom::ExternalConnector> receiver);
+
+  // Binds a connector for a client connecting from outside the broker process.
+  // Such clients cannot register or bind to |in_process_only_services|.
+  void BindExternalConnector(
+      mojo::PendingReceiver<mojom::ExternalConnector> receiver);
 
  private:
   class ConnectorImpl;
