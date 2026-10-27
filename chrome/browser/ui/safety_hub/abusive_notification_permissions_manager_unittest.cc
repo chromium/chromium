@@ -934,11 +934,13 @@ TEST_F(AbusiveNotificationPermissionsManagerTest, OnPermissionChanged) {
       ContentSettingsPattern::Wildcard());
 
   // Verify that entries are deleted from revoked abusive notification content
-  // setting.
+  // setting, except for those that were granted ALLOW (which are ignored).
   ASSERT_EQ(
       safety_hub_util::GetRevokedAbusiveNotificationPermissions(hcsm()).size(),
       0u);
-  ASSERT_FALSE(safety_hub_util::IsAbusiveNotificationRevocationIgnored(
+  ASSERT_TRUE(safety_hub_util::IsAbusiveNotificationRevocationIgnored(
+      hcsm(), GURL(url3)));
+  ASSERT_TRUE(safety_hub_util::IsAbusiveNotificationRevocationIgnored(
       hcsm(), GURL(url4)));
   // Verify that appropriate metrics are logged.
   histogram_tester.ExpectUniqueSample(
@@ -993,6 +995,33 @@ TEST_F(AbusiveNotificationPermissionsManagerTest,
       "Revoked.PermissionChanged",
       /*sample=*/ContentSetting::CONTENT_SETTING_ALLOW,
       /*expected_bucket_count=*/1);
+}
+
+TEST_F(AbusiveNotificationPermissionsManagerTest, InconsistentStateLogged) {
+  // Set up an inconsistent state: NOTIFICATIONS permission is ALLOW, but the
+  // REVOKED_ABUSIVE_NOTIFICATION_PERMISSIONS setting is NOT marked as ignored.
+  AddRevokedAbusiveNotification(
+      url1, ContentSetting::CONTENT_SETTING_ALLOW,
+      /*is_ignored=*/false,
+      safe_browsing::NotificationRevocationSource::kSocialEngineeringBlocklist);
+
+  auto manager = AbusiveNotificationPermissionsManager(
+      mock_database_manager(), /*v5_get_hash_protocol_manager=*/nullptr, hcsm(),
+      profile()->GetTestingPrefService());
+  base::HistogramTester histogram_tester;
+
+  // Running periodic checks should encounter the inconsistent state.
+  RunUntilSafeBrowsingChecksComplete(&manager);
+
+  histogram_tester.ExpectUniqueSample(
+      "Settings.SafetyHub.AbusiveNotificationPermissionRevocation."
+      "InconsistentStateEncountered",
+      /*sample=*/true,
+      /*expected_bucket_count=*/1);
+
+  // And it should not have auto-revoked again.
+  EXPECT_EQ(GetNotificationSettingValue(url1),
+            ContentSetting::CONTENT_SETTING_ALLOW);
 }
 
 TEST_F(AbusiveNotificationPermissionsManagerTest, GetV5GetHashProtocolManager) {
