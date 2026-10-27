@@ -1585,7 +1585,8 @@ void RenderViewContextMenu::InitMenu() {
       features::GetReadAnythingMenuShuffleExperimentGroup() ==
           features::ReadAnythingMenuShuffleExperimentGroup::kPlaceAtBottom &&
       content_type_->SupportsGroup(ContextMenuContentType::ITEM_GROUP_PAGE)) {
-    if (!use_simplified_menu_for_text_selection) {
+    if (!use_simplified_menu_for_text_selection &&
+        !took_simplified_page_items_path) {
       AppendReadAnythingItem();
     }
   }
@@ -2848,6 +2849,11 @@ void RenderViewContextMenu::AppendMediaRouterItem() {
 }
 
 void RenderViewContextMenu::AppendReadAnythingItem() {
+  if (menu_model_.GetIndexOfCommandId(IDC_CONTENT_CONTEXT_OPEN_IN_READING_MODE)
+          .has_value()) {
+    return;
+  }
+
   const bool is_menu_simplification_enabled =
       features::IsMenuSimplificationEnabled();
   if (is_menu_simplification_enabled && params_.is_editable) {
