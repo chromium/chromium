@@ -21,6 +21,10 @@
 #include "ui/gfx/image/image.h"
 #include "url/origin.h"
 
+namespace chrome::aix::autobrowse::proto {
+class ObservationConfig;
+}  // namespace chrome::aix::autobrowse::proto
+
 namespace actor {
 
 class ActorKeyedService;
@@ -82,6 +86,15 @@ class ActorKeyedServiceAdapter : public ActuationDelegate,
       GmailOtpConfirmationCallback callback) override;
 
  private:
+  friend class ActorKeyedServiceAdapterTest;
+
+  static optimization_guide::proto::Actions BuildActionsProto(
+      TaskId task_id,
+      const proto::PerformActionsRequest& request);
+  static proto::PerformActionsResponse BuildPerformActionsResponse(
+      optimization_guide::proto::ActionsResult result,
+      const proto::ObservationConfig* observation_config);
+
   // ActorKeyedService and EnterprisePolicyChecker outlive this adapter.
   raw_ptr<ActorKeyedService> actor_service_;
   raw_ptr<const EnterprisePolicyChecker> enterprise_policy_checker_;
