@@ -36,22 +36,6 @@
 
 namespace {
 
-password_manager::mojom::ExportProgressStatus ToExportProgressMojomStatus(
-    password_manager::ExportProgressStatus status) {
-  switch (status) {
-    case password_manager::ExportProgressStatus::kNotStarted:
-      return password_manager::mojom::ExportProgressStatus::kNotStarted;
-    case password_manager::ExportProgressStatus::kInProgress:
-      return password_manager::mojom::ExportProgressStatus::kInProgress;
-    case password_manager::ExportProgressStatus::kSucceeded:
-      return password_manager::mojom::ExportProgressStatus::kSucceeded;
-    case password_manager::ExportProgressStatus::kFailedCancelled:
-      return password_manager::mojom::ExportProgressStatus::kFailed;
-    case password_manager::ExportProgressStatus::kFailedWrite:
-      return password_manager::mojom::ExportProgressStatus::kFailedWrite;
-  }
-}
-
 password_manager::mojom::ExportPasswordsResult ToExportPasswordsMojomResult(
     extensions::PasswordsPrivateDelegate::ExportPasswordsResult result) {
   switch (result) {
@@ -63,53 +47,6 @@ password_manager::mojom::ExportPasswordsResult ToExportPasswordsMojomResult(
     case extensions::PasswordsPrivateDelegate::ExportPasswordsResult::
         kReauthFailed:
       return password_manager::mojom::ExportPasswordsResult::kReauthFailed;
-  }
-}
-
-password_manager::mojom::PasswordManagerActionableError ToActionableMojomError(
-    password_manager::ActionableError error) {
-  using password_manager::mojom::PasswordManagerActionableError;
-  switch (error) {
-    case password_manager::ActionableError::kNoError:
-      return PasswordManagerActionableError::kNoError;
-    case password_manager::ActionableError::kInactionable:
-      return PasswordManagerActionableError::kInactionable;
-    case password_manager::ActionableError::kInactionableTemporaryError:
-      return PasswordManagerActionableError::kInactionableTemporaryError;
-    case password_manager::ActionableError::kSignInNeeded:
-      return PasswordManagerActionableError::kSignInNeeded;
-    case password_manager::ActionableError::kKeychainError:
-      return PasswordManagerActionableError::kKeychainError;
-    case password_manager::ActionableError::kTrustedVaultKeyNeeded:
-      return PasswordManagerActionableError::kTrustedVaultKeyNeeded;
-    case password_manager::ActionableError::kNeedsPassphrase:
-      return PasswordManagerActionableError::kNeedsPassphrase;
-  }
-}
-
-password_manager::mojom::PasswordAutomaticChangeState
-ToPasswordAutomaticChangeMojomState(
-    PasswordChangeFromCheckupDelegate::PasswordAutomaticChangeState state) {
-  using password_manager::mojom::PasswordAutomaticChangeState;
-  switch (state) {
-    case PasswordChangeFromCheckupDelegate::PasswordAutomaticChangeState::
-        kInactive:
-      return PasswordAutomaticChangeState::kInactive;
-    case PasswordChangeFromCheckupDelegate::PasswordAutomaticChangeState::
-        kAttemptingSignIn:
-      return PasswordAutomaticChangeState::kAttemptingSignIn;
-    case PasswordChangeFromCheckupDelegate::PasswordAutomaticChangeState::
-        kChangingPassword:
-      return PasswordAutomaticChangeState::kChangingPassword;
-    case PasswordChangeFromCheckupDelegate::PasswordAutomaticChangeState::
-        kConfirmingChangedPassword:
-      return PasswordAutomaticChangeState::kConfirmingChangedPassword;
-    case PasswordChangeFromCheckupDelegate::PasswordAutomaticChangeState::
-        kPasswordChangedSuccessfully:
-      return PasswordAutomaticChangeState::kPasswordChangedSuccessfully;
-    case PasswordChangeFromCheckupDelegate::PasswordAutomaticChangeState::
-        kError:
-      return PasswordAutomaticChangeState::kError;
   }
 }
 
@@ -281,24 +218,17 @@ void PasswordManagerUIHandler::ResetImporter(bool delete_file,
 
 void PasswordManagerUIHandler::GetActorLoginPermissions(
     GetActorLoginPermissionsCallback callback) {
-  std::vector<password_manager::mojom::ActorLoginPermissionPtr> result;
   syncer::SyncService* sync_service = SyncServiceFactory::GetForProfile(
       Profile::FromBrowserContext(web_contents_->GetBrowserContext()));
-  for (const auto& site :
-       GetSavedPasswordsPresenter()->GetActorLoginPermissions(sync_service)) {
-    auto url = password_manager::mojom::DomainInfo::New(
-        site.domain_info.name, site.domain_info.url,
-        site.domain_info.signon_realm);
-    result.push_back(password_manager::mojom::ActorLoginPermission::New(
-        std::move(url), site.favicon_url, base::UTF16ToUTF8(site.username)));
-  }
-  std::move(callback).Run(std::move(result));
+  std::move(callback).Run(GetSavedPasswordsPresenter()
+                              ->GetActorLoginPermissions(sync_service)
+                              .extract());
 }
 
 void PasswordManagerUIHandler::RevokeActorLoginPermission(
-    password_manager::mojom::ActorLoginPermissionPtr site) {
+    const password_manager::ActorLoginPermission& site) {
   GetSavedPasswordsPresenter()->RevokeActorLoginPermission(
-      site->domain_info->signon_realm, site->username);
+      site.domain_info.signon_realm, base::UTF16ToUTF8(site.username));
 }
 
 void PasswordManagerUIHandler::ChangePasswordManagerPin(
@@ -391,14 +321,12 @@ void PasswordManagerUIHandler::OpenPasswordChangeTab(int credential_id) {
 void PasswordManagerUIHandler::OnPasswordAutomaticChangeStateUpdated(
     int credential_id,
     PasswordChangeFromCheckupDelegate::PasswordAutomaticChangeState state) {
-  page_->OnPasswordAutomaticChangeStateUpdated(
-      credential_id, ToPasswordAutomaticChangeMojomState(state));
+  page_->OnPasswordAutomaticChangeStateUpdated(credential_id, state);
 }
 
 void PasswordManagerUIHandler::GetPasswordManagerActionableError(
     GetPasswordManagerActionableErrorCallback callback) {
-  std::move(callback).Run(ToActionableMojomError(
-      passwords_private_delegate_->GetActionableError()));
+  std::move(callback).Run(passwords_private_delegate_->GetActionableError());
 }
 
 void PasswordManagerUIHandler::ShowLastExportedFileInShell() {
@@ -436,15 +364,15 @@ void PasswordManagerUIHandler::RequestPasswordsExport(
 
 void PasswordManagerUIHandler::GetPasswordsExportProgress(
     GetPasswordsExportProgressCallback callback) {
-  std::move(callback).Run(ToExportProgressMojomStatus(
-      passwords_private_delegate_->GetExportProgressStatus()));
+  std::move(callback).Run(
+      passwords_private_delegate_->GetExportProgressStatus());
 }
 
 void PasswordManagerUIHandler::OnPasswordsExportProgress(
     password_manager::ExportProgressStatus status,
     const std::string& folder_name) {
   page_->OnPasswordsExportProgress(
-      ToExportProgressMojomStatus(status),
+      status,
       folder_name.empty() ? std::nullopt : std::make_optional(folder_name));
 }
 

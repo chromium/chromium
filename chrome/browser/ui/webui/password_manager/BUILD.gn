@@ -12,12 +12,65 @@ mojom("mojo_bindings") {
     "//mojo/public/mojom/base",
     "//url/mojom:url_mojom_gurl",
   ]
+  cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "password_manager.mojom.DomainInfo"
+          cpp = "::password_manager::CredentialUIEntry::DomainInfo"
+        },
+        {
+          mojom = "password_manager.mojom.ActorLoginPermission"
+          cpp = "::password_manager::ActorLoginPermission"
+        },
+        {
+          mojom = "password_manager.mojom.ExportProgressStatus"
+          cpp = "::password_manager::ExportProgressStatus"
+        },
+        {
+          mojom = "password_manager.mojom.PasswordAutomaticChangeState"
+          cpp = "::PasswordChangeFromCheckupDelegate::PasswordAutomaticChangeState"
+        },
+        {
+          mojom = "password_manager.mojom.PasswordManagerActionableError"
+          cpp = "::password_manager::ActionableError"
+        },
+      ]
+      traits_headers = [ "password_manager_mojom_traits.h" ]
+      traits_public_deps = [ ":mojom_traits" ]
+    },
+  ]
+}
+
+source_set("mojom_traits") {
+  sources = [
+    "password_manager_mojom_traits.cc",
+    "password_manager_mojom_traits.h",
+  ]
+  public_deps = [
+    ":mojo_bindings_shared_cpp_sources",
+    "//base",
+    "//chrome/browser/password_manager",
+    "//components/password_manager/core/browser/export",
+    "//components/password_manager/core/browser/password_store:password_store_interface",
+    "//components/password_manager/core/browser/ui",
+    "//components/password_manager/core/browser/ui:credential_ui_entry",
+    "//mojo/public/cpp/bindings",
+    "//url",
+  ]
+  deps = [
+    "//mojo/public/cpp/base:typemap_traits",
+    "//url/mojom:url_mojom_gurl",
+  ]
 }
 
 source_set("password_manager_ui_handler") {
   sources = [ "password_manager_ui_handler.cc" ]
   public = [ "password_manager_ui_handler.h" ]
-  public_deps = [ "//chrome/browser/extensions/api/passwords_private" ]
+  public_deps = [
+    "//chrome/browser/extensions/api/passwords_private",
+    "//components/password_manager/core/browser/ui",
+  ]
   deps = [
     ":mojo_bindings",
     "//chrome/browser/password_manager",
@@ -134,9 +187,12 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "notification_cards_handler_unittest.cc",
+    "password_manager_mojom_traits_unittest.cc",
     "sync_handler_unittest.cc",
   ]
   deps = [
+    ":mojo_bindings",
+    ":mojom_traits",
     ":notification_card",
     ":notification_cards_handler",
     ":password_manager_ui",
@@ -153,12 +209,18 @@ source_set("unit_tests") {
     "//chrome/test/base:testing_browser_process",
     "//components/affiliations/core/browser:test_support",
     "//components/password_manager/core/browser",
+    "//components/password_manager/core/browser/export",
     "//components/password_manager/core/browser/features:password_features",
+    "//components/password_manager/core/browser/password_store:password_store_interface",
     "//components/password_manager/core/browser/password_store:test_support",
+    "//components/password_manager/core/browser/ui",
+    "//components/password_manager/core/browser/ui:credential_ui_entry",
     "//components/signin/public/base",
     "//content/test:test_support",
+    "//mojo/public/cpp/test_support:test_utils",
     "//testing/gmock",
     "//testing/gtest",
+    "//url",
   ]
 
   # password_manager_ui_handler_unittest historically ran on desktop excluding
