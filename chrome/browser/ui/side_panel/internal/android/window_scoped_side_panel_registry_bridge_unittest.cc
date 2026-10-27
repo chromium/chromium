@@ -36,8 +36,7 @@ class WindowScopedSidePanelRegistryBridgeUnitTest : public testing::Test {
   WindowScopedSidePanelRegistryBridge* InvokeJavaCreateNativePtr() const {
     return reinterpret_cast<WindowScopedSidePanelRegistryBridge*>(
         Java_WindowScopedSidePanelRegistryBridgeNativeUnitTestSupport_invokeCreateNativePtr(
-            AttachCurrentThread(), java_test_support_,
-            reinterpret_cast<int64_t>(mock_browser_.get())));
+            AttachCurrentThread(), java_test_support_, mock_browser_.get()));
   }
 
   WindowScopedSidePanelRegistryBridge* InvokeJavaGetNativePtrForTesting()

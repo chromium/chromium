@@ -22,10 +22,9 @@ using base::android::ScopedJavaLocalRef;
 static int64_t JNI_WindowScopedSidePanelRegistryBridge_Create(
     JNIEnv* env,
     const JavaRef<jobject>& caller,
-    int64_t nativeBrowserWindowPtr) {
-  return reinterpret_cast<intptr_t>(new WindowScopedSidePanelRegistryBridge(
-      env, caller,
-      reinterpret_cast<BrowserWindowInterface*>(nativeBrowserWindowPtr)));
+    BrowserWindowInterface* browser_window) {
+  return reinterpret_cast<intptr_t>(
+      new WindowScopedSidePanelRegistryBridge(env, caller, browser_window));
 }
 
 WindowScopedSidePanelRegistryBridge ::WindowScopedSidePanelRegistryBridge(

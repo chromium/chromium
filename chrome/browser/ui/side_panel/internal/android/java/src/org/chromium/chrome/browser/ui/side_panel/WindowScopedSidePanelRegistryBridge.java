@@ -9,9 +9,12 @@ import static org.chromium.chrome.browser.ui.side_panel.SidePanelUtils.log;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniPtr;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask.NativeBrowserWindowInterface;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTaskFeature;
 
 /** JNI bridge for a window-scoped {@code SidePanelRegistry}. */
@@ -27,9 +30,8 @@ final class WindowScopedSidePanelRegistryBridge implements ChromeAndroidTaskFeat
 
     @Override
     public void onAddedToTask(InitInfo initInfo) {
-        long nativeBrowserWindowPtr = initInfo.nativeBrowserWindowPtr;
-        log(TAG, "onAddedToTask", nativeBrowserWindowPtr);
-        createNativePtr(nativeBrowserWindowPtr);
+        log(TAG, "onAddedToTask");
+        createNativePtr(initInfo.nativeBrowserWindow);
     }
 
     @Override
@@ -39,16 +41,16 @@ final class WindowScopedSidePanelRegistryBridge implements ChromeAndroidTaskFeat
     }
 
     @VisibleForTesting
-    long createNativePtr(long nativeBrowserWindowPtr) {
-        log(TAG, "createNativePtr", nativeBrowserWindowPtr);
-        assert nativeBrowserWindowPtr != 0
+    long createNativePtr(@Nullable JniPtr<NativeBrowserWindowInterface> browserWindow) {
+        log(TAG, "createNativePtr");
+        assert browserWindow != null
                 : "Native BrowserWindowInterface pointer shouldn't be null. Is the"
                         + " ChromeAndroidTaskFeatureKey correct?";
         assert mNativeWindowScopedSidePanelRegistryBridge == 0
                 : "Native WindowScopedSidePanelRegistryBridge already exists";
 
         mNativeWindowScopedSidePanelRegistryBridge =
-                WindowScopedSidePanelRegistryBridgeJni.get().create(this, nativeBrowserWindowPtr);
+                WindowScopedSidePanelRegistryBridgeJni.get().create(this, browserWindow);
         return mNativeWindowScopedSidePanelRegistryBridge;
     }
 
@@ -77,10 +79,12 @@ final class WindowScopedSidePanelRegistryBridge implements ChromeAndroidTaskFeat
          * Creates a native {@code SidePanelRegistry} that's BrowserWindowInterface-scoped.
          *
          * @param caller The Java object calling this method.
-         * @param nativeBrowserWindowPtr The pointer to the native {@code BrowserWindowInterface}.
+         * @param browserWindow The native {@code BrowserWindowInterface}.
          * @return The address of the native {@code SidePanelRegistry}.
          */
-        long create(WindowScopedSidePanelRegistryBridge caller, long nativeBrowserWindowPtr);
+        long create(
+                WindowScopedSidePanelRegistryBridge caller,
+                JniPtr<NativeBrowserWindowInterface> browserWindow);
 
         /**
          * Destroys the native {@code SidePanelRegistry}.
