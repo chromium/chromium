@@ -73,7 +73,7 @@
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/focus/focus_manager.h"
-#include "ui/views/test/widget_test_api.h"
+#include "ui/views/test/mock_activation_controller.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
 
@@ -88,6 +88,33 @@ constexpr int kClippedScrollViewHeight = 400;
 class VerticalTabStripRegionViewTest
     : public VerticalTabsBrowserTestMixin<InProcessBrowserTest> {
  public:
+  void SetUp() override {
+#if defined(USE_MOCK_ACTIVATION_CONTROLLER)
+    activation_controller_ =
+        std::make_unique<views::test::MockActivationController>();
+#endif
+    VerticalTabsBrowserTestMixin<InProcessBrowserTest>::SetUp();
+  }
+
+  void SetUpOnMainThread() override {
+    VerticalTabsBrowserTestMixin<InProcessBrowserTest>::SetUpOnMainThread();
+#if BUILDFLAG(IS_MAC)
+    // MockActivationController bypasses NativeWidgetMacNSWindowHost, preventing
+    // InProcessBrowserTest's ScopedFakeFullKeyboardAccess from propagating to
+    // FocusManager.
+    BrowserView::GetBrowserViewForBrowser(browser())
+        ->GetFocusManager()
+        ->SetKeyboardAccessible(true);
+#endif
+  }
+
+  void TearDownOnMainThread() override {
+#if defined(USE_MOCK_ACTIVATION_CONTROLLER)
+    activation_controller_.reset();
+#endif
+    VerticalTabsBrowserTestMixin<InProcessBrowserTest>::TearDownOnMainThread();
+  }
+
   VerticalTabStripRegionView* region_view() {
     return BrowserView::GetBrowserViewForBrowser(browser())
         ->vertical_tab_strip_region_view_for_testing();
@@ -186,6 +213,13 @@ class VerticalTabStripRegionViewTest
     return BrowserAnimationController::From(browser())->IsAnimating(
         TabStripAnimations::kVerticalTabStrip);
   }
+
+ private:
+#if defined(USE_MOCK_ACTIVATION_CONTROLLER)
+  // Emulates widget activation in-process via RAII so parallel browser_tests
+  // shards cannot steal OS window activation and clobber FocusManager focus.
+  std::unique_ptr<views::test::MockActivationController> activation_controller_;
+#endif
 };
 
 class VerticalTabStripRegionViewGlassFrameTest
@@ -1456,10 +1490,6 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest,
       gfx::Animation::RichAnimationRenderMode::FORCE_ENABLED);
   gfx::ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode(
       gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
-  views::DisableActivationChangeHandlingForTests();
-  auto paint_as_active_lock = BrowserView::GetBrowserViewForBrowser(browser())
-                                  ->GetWidget()
-                                  ->LockPaintAsActive();
 
   // Fully collapse the tabstrip.
   state_controller()->RequestCollapse(true);
