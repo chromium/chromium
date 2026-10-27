@@ -57,6 +57,17 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/contextual_tasks/contextual_tasks_panel_controller.h:ContextualTasksPermanentToolbarButtonThreadAction) -->
 
+<!-- LINT.IfChange(ContextualTasksRemovedContextReason) -->
+
+<enum name="ContextualTasksRemovedContextReason">
+  <int value="0" label="User deselected"/>
+  <int value="1" label="Browser tab closed"/>
+  <int value="2" label="Browser tab navigated"/>
+  <int value="3" label="Smart Tab Sharing disabled"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/contextual_search/contextual_search_types.h:ContextualTasksRemovedContextReason) -->
+
 <!-- LINT.IfChange(ContextualTasksTabCloseState) -->
 
 <enum name="ContextualTasksTabCloseState">

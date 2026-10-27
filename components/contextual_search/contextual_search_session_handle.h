@@ -143,6 +143,10 @@ class ContextualSearchSessionHandle {
    public:
     virtual ~TabValidator() = default;
 
+    // Checks if the tab with `tab_session_id` is still open in the user's
+    // browser.
+    virtual bool IsTabOpen(SessionID tab_session_id) const = 0;
+
     // Checks if the tab described by `file_info` is still valid.
     //
     // A tab is considered valid if:
