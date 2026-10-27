@@ -52,6 +52,7 @@ import dataclasses
 import enum
 import filecmp
 import functools
+import hashlib
 import json
 import os
 import pathlib
@@ -109,6 +110,22 @@ BOOTSTRAP_GENERATED_FILES = frozenset({
     'python/google/protobuf/internal/python_edition_defaults.py',
 })
 
+# Non-compiler files that gen_extra_chromium_files.py reads or bakes into
+# BOOTSTRAP_GENERATED_FILES alongside src/google/protobuf/compiler/.
+BOOTSTRAP_GENERATOR_EXACT_INPUTS = frozenset({
+    'gen_extra_chromium_files.py',
+    'python/build_targets.bzl',
+    'python/google/protobuf/internal/python_edition_defaults.py.template',
+    'src/google/protobuf/descriptor.proto',
+    'src/google/protobuf/feature_resolver.cc',
+    'src/google/protobuf/feature_resolver.h',
+    'src/google/protobuf/generated_message_tctable_gen.cc',
+    'src/google/protobuf/generated_message_tctable_gen.h',
+    'src/google/protobuf/port_def.inc',
+    'src/google/protobuf/runtime_version.h',
+})
+_BOOTSTRAP_INPUTS_TRAILER_KEY = 'Bootstrap-Inputs-Hash'
+
 # Upstream ships pre-generated C++ for the Well-Known Types. Chromium deletes
 # them in gen_extra_chromium_files.py and builds them from the .proto files
 # (//third_party/protobuf:well_known_type_protos) instead.
@@ -143,6 +160,13 @@ def IsChromiumOwnedFile(relative_path: str) -> bool:
 def IsIntentionallyDeletedUpstreamFile(relative_path: str) -> bool:
     return (relative_path.startswith(DELETED_UPSTREAM_DIRECTORY_PREFIXES)
             or relative_path in DELETED_WELL_KNOWN_TYPE_GENERATED_FILES)
+
+
+def IsBootstrapGeneratorInput(relative_path: str) -> bool:
+    """Returns True if editing relative_path requires `generate` to re-run."""
+    return (relative_path not in BOOTSTRAP_GENERATED_FILES
+            and (relative_path in BOOTSTRAP_GENERATOR_EXACT_INPUTS
+                 or relative_path.startswith('src/google/protobuf/compiler/')))
 
 
 def ReadReadmeRevision(protobuf_directory: str) -> str:
@@ -1795,6 +1819,187 @@ def StartRoll(to_revision: str,
     state = dataclasses.replace(state, expected_head=import_commit)
     _SaveRollState(checkout, state)
     return _ReplayRemainingPatches(checkout, state)
+
+
+def _IsAncestorOfHead(repository_root: str,
+                      commit: str,
+                      ref: str = 'HEAD') -> bool:
+    return _RunScratchGit(repository_root,
+                          'merge-base',
+                          '--is-ancestor',
+                          commit,
+                          ref,
+                          accepted_return_codes=(0, 1, 128)).returncode == 0
+
+
+def _IsRollBranchHead(checkout: _CheckoutPaths,
+                      state: RollState,
+                      ref: str = 'HEAD') -> bool:
+    """Returns True if ref is on the roll branch recorded by state."""
+    root = checkout.repository_root
+    if (_ResolveCommitHash(root, ref) in (None, state.start_commit)
+            or not _IsAncestorOfHead(root, state.start_commit, ref)):
+        return False
+    if (state.expected_head != state.start_commit
+            and _IsAncestorOfHead(root, state.expected_head, ref)):
+        return True
+    subjects = _RunScratchGit(root, 'log', '--no-show-signature',
+                              '--format=%s', '-n', '200',
+                              f'{state.start_commit}..{ref}').stdout.decode(
+                                  'utf-8', errors='replace').splitlines()
+    return (f'Import upstream protobuf {state.new_revision} (unmodified)'
+            in subjects)
+
+
+def _ComputeBootstrapInputsDigest(protobuf_directory: str) -> str:
+    """Hashes README.chromium's Revision and all bootstrap generator inputs."""
+    digest = hashlib.sha256(
+        f'Revision:{ReadReadmeRevision(protobuf_directory)}\0'.encode('utf-8'))
+    for relative_path in sorted(
+            path for path in _ListChromiumProtobufFiles(protobuf_directory)
+            if IsBootstrapGeneratorInput(path)):
+        raw_bytes = pathlib.Path(protobuf_directory,
+                                 *relative_path.split('/')).read_bytes()
+        digest.update(
+            relative_path.encode('utf-8') + b'\0' +
+            raw_bytes.replace(b'\r\n', b'\n') + b'\0')
+    return digest.hexdigest()
+
+
+def _RestoreProtobufWorktreeAfterFailedGenerate(
+        checkout: _CheckoutPaths) -> None:
+    for path in BOOTSTRAP_GENERATED_FILES:
+        full_path = os.path.join(checkout.protobuf_directory, *path.split('/'))
+        if os.path.lexists(full_path):
+            os.remove(full_path)
+    if _ResolveCommitHash(checkout.repository_root, 'HEAD') is not None:
+        _RunScratchGit(checkout.repository_root, 'restore', '--quiet',
+                       '--source=HEAD', '--worktree', '--',
+                       checkout.protobuf_directory)
+    _CleanUntrackedAndBackupFiles(checkout.protobuf_directory)
+
+
+@dataclasses.dataclass(frozen=True)
+class GenerateResult:
+    """Outcome of regenerating and committing bootstrap files."""
+
+    commit: str
+    inputs_digest: str
+    changed_files: tuple[str, ...]
+
+    def ToDictionary(self) -> dict[str, object]:
+        return {
+            'commit': self.commit,
+            'inputs_digest': self.inputs_digest,
+            'changed_files': list(self.changed_files),
+        }
+
+
+def GenerateBootstrapFiles(
+        build_directory: str,
+        protobuf_directory: str = _PROTOBUF_DIRECTORY) -> GenerateResult:
+    """Runs gen_extra_chromium_files.py and commits bootstrap outputs."""
+    if not build_directory or not build_directory.strip():
+        raise RollProtobufError(
+            'Provide -C <out_dir> so gen_extra_chromium_files.py can build '
+            'protoc.')
+    checkout = _ResolveCheckoutPaths(protobuf_directory)
+    state = LoadRollState(checkout.protobuf_directory)
+    current_head = _ResolveCommitHash(checkout.repository_root, 'HEAD')
+    if (state is not None and state.phase in ('prepared', 'conflict')
+            and (current_head == state.expected_head
+                 or _IsRollBranchHead(checkout, state))):
+        raise RollProtobufError(
+            f'Cannot regenerate bootstrap files while roll phase is '
+            f'{state.phase!r}; finish replaying patches first.')
+    if _RunScratchGit(checkout.repository_root, 'diff', '--cached',
+                      '--name-only', '-z').stdout.strip():
+        raise RollProtobufError(
+            'Repository has staged changes; commit or unstage them before '
+            'running `roll_protobuf.py generate`.')
+    protobuf_pathspec = checkout.protobuf_prefix or '.'
+    dirty_protobuf = _RunScratchGit(checkout.repository_root, 'status',
+                                    '--porcelain', '--ignore-submodules=all',
+                                    '--', protobuf_pathspec).stdout.strip()
+    leftover_rejects = any(
+        p.endswith(('.rej', '.orig'))
+        for p in _ListRegularFilesInDirectory(checkout.protobuf_directory))
+    if dirty_protobuf or leftover_rejects:
+        raise RollProtobufError(
+            '//third_party/protobuf has uncommitted changes or .rej/.orig '
+            'files; commit or clean them before running '
+            '`roll_protobuf.py generate`.')
+    generator_script = os.path.join(checkout.protobuf_directory,
+                                    'gen_extra_chromium_files.py')
+    if not os.path.isfile(generator_script):
+        raise RollProtobufError(
+            f'Missing gen_extra_chromium_files.py at {generator_script}.')
+    ReadReadmeRevision(checkout.protobuf_directory)
+    _ListChromiumProtobufFiles(checkout.protobuf_directory)
+    process = subprocess.run([
+        sys.executable, generator_script, '-C',
+        os.path.abspath(build_directory)
+    ],
+                             env=_IsolatedGitEnvironment(),
+                             stdin=subprocess.DEVNULL,
+                             capture_output=True,
+                             cwd=checkout.repository_root,
+                             check=False)
+    if process.returncode != 0:
+        _RestoreProtobufWorktreeAfterFailedGenerate(checkout)
+        diagnostics = '\n'.join(
+            s.decode('utf-8', errors='replace').strip()
+            for s in (process.stderr, process.stdout) if s.strip())
+        raise RollProtobufError(
+            f'gen_extra_chromium_files.py failed (exit {process.returncode}): '
+            f'{diagnostics}')
+    missing_outputs = sorted(
+        path for path in BOOTSTRAP_GENERATED_FILES if not _IsRegularFile(
+            os.path.join(checkout.protobuf_directory, *path.split('/'))))
+    if missing_outputs:
+        _RestoreProtobufWorktreeAfterFailedGenerate(checkout)
+        raise RollProtobufError(
+            'gen_extra_chromium_files.py did not produce expected bootstrap '
+            'files: ' + ', '.join(missing_outputs))
+    _RunScratchGit(checkout.repository_root, 'add', '--update', '--',
+                   protobuf_pathspec)
+    _RunScratchGit(
+        checkout.repository_root, 'add', '--force', '--',
+        *(os.path.join(checkout.protobuf_directory, *p.split('/'))
+          for p in sorted(BOOTSTRAP_GENERATED_FILES)))
+    prefix_with_slash = (f'{checkout.protobuf_prefix}/'
+                         if checkout.protobuf_prefix else '')
+    changed_files = tuple(
+        sorted(
+            path.removeprefix(prefix_with_slash)
+            for path in _SplitNulSeparatedPaths(
+                _RunScratchGit(checkout.repository_root, 'diff', '--cached',
+                               '--name-only', '-z', '--',
+                               protobuf_pathspec).stdout)))
+    inputs_digest = _ComputeBootstrapInputsDigest(checkout.protobuf_directory)
+    commit_message = (f'Regenerate bootstrap files\n\n'
+                      f'{_BOOTSTRAP_INPUTS_TRAILER_KEY}: {inputs_digest}')
+    _RunScratchGit(checkout.repository_root, 'commit', '--quiet',
+                   '--no-verify', '--allow-empty', '-m', commit_message)
+    new_head = _RunScratchGit(checkout.repository_root, 'rev-parse',
+                              'HEAD').stdout.decode().strip()
+    if (state is not None and state.phase == 'replayed'
+            and _IsRollBranchHead(checkout, state)):
+        _SaveRollState(checkout,
+                       dataclasses.replace(state, expected_head=new_head))
+    return GenerateResult(new_head, inputs_digest, changed_files)
+
+
+def FormatGenerateReport(result: GenerateResult) -> str:
+    if not result.changed_files:
+        return (f'Regenerated bootstrap files at {result.commit} '
+                '(already up to date).')
+    lines = [
+        f'Regenerated {len(result.changed_files)} bootstrap file(s) at '
+        f'{result.commit}:'
+    ]
+    lines += [f'  {path}' for path in result.changed_files]
+    return '\n'.join(lines)
 
 
 @dataclasses.dataclass(frozen=True)

@@ -2244,6 +2244,33 @@ class RollProtobufPlanTest(unittest.TestCase):
         self.assertIn('Revision v999.0 not found', stderr)
 
 
+def _WriteFakeBootstrapGeneratorScript(protobuf_directory: str,
+                                       *,
+                                       omit_path: str | None = None,
+                                       exit_code: int = 0) -> None:
+    """Writes a hermetic gen_extra_chromium_files.py into protobuf_directory."""
+    outputs = sorted(p for p in roll_protobuf.BOOTSTRAP_GENERATED_FILES
+                     if p != omit_path)
+    script = (
+        'import argparse, os, pathlib, shutil, sys\n'
+        'parser = argparse.ArgumentParser()\n'
+        'parser.add_argument("-C", "--output-directory", required=True)\n'
+        'args = parser.parse_args()\n'
+        'root = os.path.dirname(os.path.abspath(__file__))\n'
+        'shutil.rmtree(os.path.join(root, "compatibility"), ignore_errors=True)\n'
+        f'if {exit_code}:\n'
+        '    print("protoc build boom", file=sys.stderr)\n'
+        f'    sys.exit({exit_code})\n'
+        f'for rel in {outputs!r}:\n'
+        '    target = pathlib.Path(root, *rel.split("/"))\n'
+        '    target.parent.mkdir(parents=True, exist_ok=True)\n'
+        '    target.write_text(\n'
+        '        f"# generated via {os.path.basename(args.output_directory)}\\n",\n'
+        '        encoding="utf-8", newline="\\n")\n')
+    _WriteFilesToDirectory(protobuf_directory,
+                           {'gen_extra_chromium_files.py': script})
+
+
 class RollProtobufStartTest(unittest.TestCase):
     """Proves checkout-modifying roll commands (prepare, start, status, abort)."""
 
@@ -3189,6 +3216,267 @@ class RollProtobufStartTest(unittest.TestCase):
         self.assertIn(f'Stopped at [4/5] patches/{_PLAN_MISSING_FILE_PATCH}.',
                       resume_outcomes[0][1])
         self.assertIn('Replayed all 5 patch(es).', resume_outcomes[1][1])
+
+    def testIsBootstrapGeneratorInputClassifiesCompilerAndExactInputs(self):
+        self.assertTrue(
+            roll_protobuf.IsBootstrapGeneratorInput(
+                'src/google/protobuf/compiler/cpp/enum.cc'))
+        self.assertTrue(
+            roll_protobuf.IsBootstrapGeneratorInput(
+                'src/google/protobuf/descriptor.proto'))
+        self.assertTrue(
+            roll_protobuf.IsBootstrapGeneratorInput(
+                'src/google/protobuf/feature_resolver.cc'))
+        self.assertTrue(
+            roll_protobuf.IsBootstrapGeneratorInput(
+                'src/google/protobuf/generated_message_tctable_gen.cc'))
+        self.assertTrue(
+            roll_protobuf.IsBootstrapGeneratorInput(
+                'gen_extra_chromium_files.py'))
+        self.assertFalse(
+            roll_protobuf.IsBootstrapGeneratorInput(
+                'src/google/protobuf/compiler/plugin.pb.h'))
+        self.assertFalse(
+            roll_protobuf.IsBootstrapGeneratorInput(
+                'src/google/protobuf/arena.h'))
+
+    def testGenerateBootstrapFilesForceStagesGitignoredFilesAndUpdatesState(
+            self):
+        _WriteFilesToDirectory(self.fixture.upstream_directory,
+                               {'.gitignore': '*.Swp\n*_pb2.py\n'})
+        _RunGitCommand(self.fixture.upstream_directory,
+                       ['add', '-f', '--', '.gitignore'])
+        _RunGitCommand(self.fixture.upstream_directory,
+                       ['commit', '--quiet', '--amend', '--no-edit'])
+        _RunGitCommand(self.fixture.upstream_directory,
+                       ['tag', '-f', 'v37.0', 'HEAD'])
+        for patch_name in (_PLAN_CONFLICT_PATCH, _PLAN_MISSING_FILE_PATCH):
+            os.remove(
+                os.path.join(self.fixture.protobuf_directory, 'patches',
+                             patch_name))
+        _WriteFakeBootstrapGeneratorScript(self.fixture.protobuf_directory)
+        _WriteFilesToDirectory(
+            self.fixture.protobuf_directory,
+            {
+                '.gitignore': '*.Swp\n*_pb2.py\n',
+                'compatibility/legacy.bin': 'stale\n',
+            },
+        )
+        _RunGitCommand(self.repository_root,
+                       ['add', '-f', '-A', '--', 'third_party/protobuf'])
+        _RunGitCommand(self.repository_root,
+                       ['commit', '--quiet', '-m', 'Add fake generator'])
+        out_directory = os.path.join(self.temporary_directory, 'out_release')
+
+        standalone = roll_protobuf.GenerateBootstrapFiles(
+            out_directory, self.fixture.protobuf_directory)
+        self.assertEqual(
+            tuple(
+                sorted(roll_protobuf.BOOTSTRAP_GENERATED_FILES
+                       | {'compatibility/legacy.bin'})),
+            standalone.changed_files)
+        self.assertIsNone(
+            roll_protobuf.LoadRollState(self.fixture.protobuf_directory))
+
+        roll_protobuf.StartRoll(
+            to_revision='v37.0',
+            protobuf_directory=self.fixture.protobuf_directory,
+            upstream_repository_path=self.fixture.upstream_directory,
+        )
+        _WriteFilesToDirectory(self.repository_root,
+                               {'OTHER_CHROMIUM_FILE': 'local wip\n'})
+        out_roll_dir = os.path.join(self.temporary_directory, 'out_roll')
+
+        first = roll_protobuf.GenerateBootstrapFiles(
+            out_roll_dir, self.fixture.protobuf_directory)
+        _WriteFilesToDirectory(
+            self.fixture.protobuf_directory,
+            {'src/google/protobuf/compiler/editor.Swp': 'ignored\n'})
+        second = roll_protobuf.GenerateBootstrapFiles(
+            out_roll_dir, self.fixture.protobuf_directory)
+
+        self.assertEqual(
+            tuple(sorted(roll_protobuf.BOOTSTRAP_GENERATED_FILES)),
+            first.changed_files)
+        self.assertEqual((), second.changed_files)
+        self.assertEqual(first.inputs_digest, second.inputs_digest)
+        self.assertEqual(
+            'Regenerate bootstrap files',
+            _RunGitCommand(self.repository_root, ['log', '-1', '--format=%s']))
+        self.assertIn(
+            f'Bootstrap-Inputs-Hash: {second.inputs_digest}',
+            _RunGitCommand(self.repository_root, ['log', '-1', '--format=%B']))
+        self.assertEqual(
+            second.commit,
+            roll_protobuf.LoadRollState(
+                self.fixture.protobuf_directory).expected_head)
+        self.assertIn('Regenerated ',
+                      roll_protobuf.FormatGenerateReport(first))
+        self.assertIn('already up to date',
+                      roll_protobuf.FormatGenerateReport(second))
+        self.assertIn(
+            'OTHER_CHROMIUM_FILE',
+            _RunGitCommand(self.repository_root, ['diff', '--name-only']))
+
+        # A stale replayed state whose expected_head was garbage-collected
+        # does not crash standalone GenerateBootstrapFiles on another branch,
+        # and a prepared state (expected_head == start_commit) is not mistaken
+        # for an ancestor on unrelated child branches.
+        checkout = roll_protobuf._ResolveCheckoutPaths(
+            self.fixture.protobuf_directory)
+        roll_branch = _RunGitCommand(self.repository_root,
+                                     ['rev-parse', '--abbrev-ref', 'HEAD'])
+        _RunGitCommand(self.repository_root,
+                       ['config', 'log.showSignature', 'true'])
+        state = roll_protobuf.LoadRollState(self.fixture.protobuf_directory)
+        pruned_head = 'f' * 40
+        stale_state = dataclasses.replace(state, expected_head=pruned_head)
+        roll_protobuf._SaveRollState(checkout, stale_state)
+        _RunGitCommand(self.repository_root, [
+            'checkout', '--quiet', '-b', 'standalone_branch',
+            state.start_commit
+        ])
+        _RunGitCommand(self.repository_root,
+                       ['checkout', '--', 'OTHER_CHROMIUM_FILE'])
+        roll_protobuf.GenerateBootstrapFiles(out_roll_dir,
+                                             self.fixture.protobuf_directory)
+        self.assertEqual(
+            pruned_head,
+            roll_protobuf.LoadRollState(
+                self.fixture.protobuf_directory).expected_head)
+        self.assertTrue(
+            roll_protobuf._IsRollBranchHead(checkout, stale_state,
+                                            roll_branch))
+        prepared_state = dataclasses.replace(state,
+                                             phase='prepared',
+                                             expected_head=state.start_commit)
+        self.assertFalse(
+            roll_protobuf._IsRollBranchHead(checkout, prepared_state))
+        for off_branch_state in (dataclasses.replace(state, phase='conflict'),
+                                 prepared_state):
+            roll_protobuf._SaveRollState(checkout, off_branch_state)
+            roll_protobuf.GenerateBootstrapFiles(
+                out_roll_dir, self.fixture.protobuf_directory)
+
+    def testGenerateBootstrapFilesRejectsInvalidPreconditionsAndFailures(self):
+        out_directory = os.path.join(self.temporary_directory, 'out_release')
+        with self.assertRaisesRegex(roll_protobuf.RollProtobufError,
+                                    r'Provide -C <out_dir>'):
+            roll_protobuf.GenerateBootstrapFiles(
+                '  ', self.fixture.protobuf_directory)
+
+        roll_protobuf.PrepareRoll(
+            to_revision='v37.0',
+            protobuf_directory=self.fixture.protobuf_directory,
+            upstream_repository_path=self.fixture.upstream_directory,
+        )
+        with self.assertRaisesRegex(roll_protobuf.RollProtobufError,
+                                    r"while roll phase is 'prepared'"):
+            roll_protobuf.GenerateBootstrapFiles(
+                out_directory, self.fixture.protobuf_directory)
+        roll_protobuf.StartRoll(
+            to_revision='v37.0',
+            protobuf_directory=self.fixture.protobuf_directory,
+            upstream_repository_path=self.fixture.upstream_directory,
+        )
+        with self.assertRaisesRegex(roll_protobuf.RollProtobufError,
+                                    r"while roll phase is 'conflict'"):
+            roll_protobuf.GenerateBootstrapFiles(
+                out_directory, self.fixture.protobuf_directory)
+        roll_protobuf.AbortRoll(self.fixture.protobuf_directory)
+
+        _WriteFilesToDirectory(self.repository_root,
+                               {'OTHER_CHROMIUM_FILE': 'staged\n'})
+        _RunGitCommand(self.repository_root, ['add', 'OTHER_CHROMIUM_FILE'])
+        with self.assertRaisesRegex(roll_protobuf.RollProtobufError,
+                                    r'Repository has staged changes'):
+            roll_protobuf.GenerateBootstrapFiles(
+                out_directory, self.fixture.protobuf_directory)
+        _RunGitCommand(self.repository_root,
+                       ['checkout', '--', 'OTHER_CHROMIUM_FILE'])
+        _RunGitCommand(self.repository_root,
+                       ['reset', '--quiet', 'HEAD', 'OTHER_CHROMIUM_FILE'])
+
+        _WriteFilesToDirectory(self.fixture.protobuf_directory,
+                               {'src/leftover.orig': 'backup\n'})
+        with self.assertRaisesRegex(roll_protobuf.RollProtobufError,
+                                    r'uncommitted changes or \.rej/\.orig'):
+            roll_protobuf.GenerateBootstrapFiles(
+                out_directory, self.fixture.protobuf_directory)
+        os.remove(
+            os.path.join(self.fixture.protobuf_directory, 'src',
+                         'leftover.orig'))
+
+        _WriteFilesToDirectory(
+            self.fixture.protobuf_directory, {
+                '.gitignore': '*_pb2.py\n',
+                'compatibility/legacy.bin': 'keep on failure\n',
+            })
+        _WriteFakeBootstrapGeneratorScript(self.fixture.protobuf_directory,
+                                           exit_code=1)
+        _RunGitCommand(self.repository_root,
+                       ['add', '-f', '--', 'third_party/protobuf'])
+        _RunGitCommand(self.repository_root,
+                       ['commit', '--quiet', '-m', 'Add failing generator'])
+        with self.assertRaisesRegex(roll_protobuf.RollProtobufError,
+                                    r'protoc build boom'):
+            roll_protobuf.GenerateBootstrapFiles(
+                out_directory, self.fixture.protobuf_directory)
+        self.assertEqual(
+            '',
+            _RunGitCommand(
+                self.repository_root,
+                ['status', '--porcelain', '--', 'third_party/protobuf']))
+        self.assertEqual(
+            'OTHER_CHROMIUM_FILE',
+            _RunGitCommand(self.repository_root, ['diff', '--name-only']))
+
+        _WriteFakeBootstrapGeneratorScript(
+            self.fixture.protobuf_directory,
+            omit_path='python/google/protobuf/descriptor_pb2.py')
+        _RunGitCommand(self.repository_root,
+                       ['add', '--', 'third_party/protobuf'])
+        _RunGitCommand(self.repository_root,
+                       ['commit', '--quiet', '-m', 'Add incomplete generator'])
+        with self.assertRaisesRegex(
+                roll_protobuf.RollProtobufError,
+                r'did not produce expected bootstrap files.*descriptor_pb2\.py'
+        ):
+            roll_protobuf.GenerateBootstrapFiles(
+                out_directory, self.fixture.protobuf_directory)
+        self.assertEqual(
+            '',
+            _RunGitCommand(
+                self.repository_root,
+                ['status', '--porcelain', '--', 'third_party/protobuf']))
+        self.assertFalse(
+            os.path.exists(
+                os.path.join(self.fixture.protobuf_directory, 'python',
+                             'google', 'protobuf', 'compiler',
+                             'plugin_pb2.py')))
+
+        # Missing Revision: in README.chromium fails before running the
+        # generator or staging changes into the index.
+        _WriteFakeBootstrapGeneratorScript(self.fixture.protobuf_directory)
+        _WriteFilesToDirectory(self.fixture.protobuf_directory,
+                               {'README.chromium': 'Name: Protocol Buffers\n'})
+        _RunGitCommand(self.repository_root,
+                       ['add', '--', 'third_party/protobuf'])
+        _RunGitCommand(self.repository_root,
+                       ['commit', '--quiet', '-m', 'Drop Revision line'])
+        with self.assertRaisesRegex(roll_protobuf.RollProtobufError,
+                                    r'Revision'):
+            roll_protobuf.GenerateBootstrapFiles(
+                out_directory, self.fixture.protobuf_directory)
+        self.assertTrue(
+            os.path.isfile(
+                os.path.join(self.fixture.protobuf_directory, 'compatibility',
+                             'legacy.bin')))
+        self.assertEqual(
+            '',
+            _RunGitCommand(
+                self.repository_root,
+                ['status', '--porcelain', '--', 'third_party/protobuf']))
 
 
 if __name__ == '__main__':
