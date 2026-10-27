@@ -88,6 +88,11 @@ FIXED_TEST_TIMEOUT_OVERHEAD = 60
 _ESTIMATED_RUNTIME_PER_CLASS_UNIT_TESTS = 1.0
 _ESTIMATED_RUNTIME_PER_TEST_UNIT_TESTS = 0.05
 
+# Additional tests in a non-unit batch reuse the first test's activity launch
+# (~8 s); on android-x64-rel chrome_public_test_apk leave-one-out replay picks
+# ~3 s per additional test.
+_ESTIMATED_RUNTIME_PER_BATCHED_TEST = 3.0
+
 # 30 minute max timeout for an instrumentation invocation to avoid shard
 # timeouts when tests never finish. The shard timeout is currently 60 minutes,
 # so this needs to be less than that.
@@ -2492,29 +2497,27 @@ class LocalDeviceInstrumentationTestRun(
         tests_in_group = test if isinstance(test, (list, tuple)) else [test]
         assert tests_in_group, 'Empty test group'
 
-        is_unit_test = self._IsUnitTestBatch(test)
+        # TimeoutScale is reused here only as a relative multiplier for the
+        # estimate, not as a timeout setting.
+        scaled_test_count = sum(
+            self.GetTimeoutScaleFromAnnotations(t['annotations'])
+            for t in tests_in_group
+        )
+
         # Unit test batches (Batch.UNIT_TESTS) have much smaller overhead
         # (~1.0s base, ~0.05s per test, although they often launch
         # BlankUiTestActivity).
-        # Non-unit-test batches assume each class launches an activity
-        # (~8.0s overhead) and each test method runs in ~1.0s.
-        launch_overhead = (
-            _ESTIMATED_RUNTIME_PER_CLASS_UNIT_TESTS
-            if is_unit_test
-            else local_device_test_run.ESTIMATED_RUNTIME_PER_CLASS_DEFAULT
-        )
-        per_test_overhead = (
-            _ESTIMATED_RUNTIME_PER_TEST_UNIT_TESTS
-            if is_unit_test
-            else local_device_test_run.ESTIMATED_RUNTIME_PER_TEST_DEFAULT
-        )
+        if self._IsUnitTestBatch(test):
+            return (
+                _ESTIMATED_RUNTIME_PER_CLASS_UNIT_TESTS
+                + _ESTIMATED_RUNTIME_PER_TEST_UNIT_TESTS * scaled_test_count
+            )
 
-        # TimeoutScale is reused here only as a relative multiplier for the
-        # estimate, not as a timeout setting.
-        return launch_overhead + sum(
-            per_test_overhead
-            * self.GetTimeoutScaleFromAnnotations(t['annotations'])
-            for t in tests_in_group
+        # The first test pays the activity launch (~8 s); each further test in a
+        # batch reuses it (~3 s).
+        return (
+            local_device_test_run.ESTIMATED_RUNTIME_PER_CLASS_DEFAULT
+            + _ESTIMATED_RUNTIME_PER_BATCHED_TEST * (scaled_test_count - 1)
         )
 
     @classmethod

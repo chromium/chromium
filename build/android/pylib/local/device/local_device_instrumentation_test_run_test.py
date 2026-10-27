@@ -330,26 +330,33 @@ class LocalDeviceInstrumentationTestRunTest(unittest.TestCase):
             self.assertFalse(is_safe(path), path)
 
     def testEstimateTestGroupRuntime(self):
-        # single test dict with no special annotations
-        # (weight = 8.0 + 1.0 = 9.0)
+        # single (non-batched) test dict with no special annotations
+        # (weight = 8.0 launch)
         self.assertEqual(
-            self._obj._EstimateTestGroupRuntime({'annotations': {}}), 9.0
+            self._obj._EstimateTestGroupRuntime({'annotations': {}}), 8.0
         )
 
-        # test dict with TimeoutScale: {'value': 4} (weight = 8.0 + 4.0 = 12.0)
+        # test dict with TimeoutScale: {'value': 4}
+        # (weight = 8.0 + 3.0 * (4 - 1) = 17.0)
         self.assertEqual(
             self._obj._EstimateTestGroupRuntime(
                 {'annotations': {'TimeoutScale': {'value': 4}}}
             ),
-            12.0,
+            17.0,
         )
 
         # multi-test batch of non-unit tests
+        # (weight = 8.0 + 3.0 * (2 - 1) = 11.0)
         self.assertEqual(
             self._obj._EstimateTestGroupRuntime(
                 [{'annotations': {}}, {'annotations': {}}]
             ),
-            10.0,
+            11.0,
+        )
+
+        # one-test batch of non-unit tests (weight = 8.0, same as non-batched)
+        self.assertEqual(
+            self._obj._EstimateTestGroupRuntime([{'annotations': {}}]), 8.0
         )
 
         # unit test batch with Batch: {'value': 'UnitTests'}
