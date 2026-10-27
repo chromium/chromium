@@ -144,12 +144,12 @@ class TestInputHandlerProxy : public InputHandlerProxy {
     RecordScrollBegin(device, {}, repaint_reasons);
   }
 
-  EventDisposition HitTestTouchEventForTest(
+  using InputHandlerProxy::HitTestTouchEventResult;
+
+  HitTestTouchEventResult HitTestTouchEventForTest(
       const WebTouchEvent& touch_event,
-      bool* is_touching_scrolling_layer,
-      cc::TouchAction* allowed_touch_action) {
-    return HitTestTouchEvent(touch_event, is_touching_scrolling_layer,
-                             allowed_touch_action);
+      bool* is_touching_scrolling_layer) {
+    return HitTestTouchEvent(touch_event, is_touching_scrolling_layer);
   }
 
   EventDisposition HandleMouseWheelForTest(
@@ -1334,12 +1334,12 @@ TEST_P(InputHandlerProxyTest, HitTestTouchEventNonNullTouchAction) {
       CreateWebTouchPoint(WebTouchPoint::State::kStatePressed, -10, 10);
 
   bool is_touching_scrolling_layer;
-  cc::TouchAction allowed_touch_action = cc::TouchAction::kAuto;
-  EXPECT_EQ(expected_disposition_,
-            input_handler_->HitTestTouchEventForTest(
-                touch, &is_touching_scrolling_layer, &allowed_touch_action));
+  TestInputHandlerProxy::HitTestTouchEventResult result =
+      input_handler_->HitTestTouchEventForTest(touch,
+                                               &is_touching_scrolling_layer);
+  EXPECT_EQ(expected_disposition_, result.disposition);
   EXPECT_TRUE(is_touching_scrolling_layer);
-  EXPECT_EQ(allowed_touch_action, cc::TouchAction::kPanUp);
+  EXPECT_EQ(result.allowed_touch_action, cc::TouchAction::kPanUp);
   VERIFY_AND_RESET_MOCKS();
 }
 
@@ -1845,12 +1845,12 @@ TEST_P(InputHandlerProxyTest, HitTestTouchEventNullTouchAction) {
       CreateWebTouchPoint(WebTouchPoint::State::kStatePressed, -10, 10);
 
   bool is_touching_scrolling_layer;
-  cc::TouchAction* allowed_touch_action = nullptr;
-  EXPECT_EQ(expected_disposition_,
-            input_handler_->HitTestTouchEventForTest(
-                touch, &is_touching_scrolling_layer, allowed_touch_action));
+  TestInputHandlerProxy::HitTestTouchEventResult result =
+      input_handler_->HitTestTouchEventForTest(touch,
+                                               &is_touching_scrolling_layer);
+  EXPECT_EQ(expected_disposition_, result.disposition);
   EXPECT_TRUE(is_touching_scrolling_layer);
-  EXPECT_TRUE(!allowed_touch_action);
+  EXPECT_FALSE(result.allowed_touch_action.has_value());
   VERIFY_AND_RESET_MOCKS();
 }
 

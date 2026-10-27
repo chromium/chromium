@@ -343,12 +343,18 @@ class PLATFORM_EXPORT InputHandlerProxy : public cc::InputHandlerClient,
   // InputHandlerProxy instance.
   void SetTickClockForTesting(const base::TickClock* tick_clock);
 
+  struct HitTestTouchEventResult {
+    EventDisposition disposition = DROP_EVENT;
+    // The touch_action we are sure will be allowed for the given touch event.
+    // Only populated for `touch_start_or_first_touch_move` events.
+    std::optional<cc::TouchAction> allowed_touch_action = std::nullopt;
+  };
+
   // |is_touching_scrolling_layer| indicates if one of the points that has
-  // been touched hits a currently scrolling layer. |allowed_touch_action| is
-  // the touch_action we are sure will be allowed for the given touch event.
-  EventDisposition HitTestTouchEvent(const blink::WebTouchEvent& touch_event,
-                                     bool* is_touching_scrolling_layer,
-                                     cc::TouchAction* allowed_touch_action);
+  // been touched hits a currently scrolling layer.
+  HitTestTouchEventResult HitTestTouchEvent(
+      const blink::WebTouchEvent& touch_event,
+      bool* is_touching_scrolling_layer);
 
   EventDisposition RouteToTypeSpecificHandler(
       EventWithCallback* event_with_callback);
