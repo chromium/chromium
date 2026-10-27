@@ -349,8 +349,8 @@ class ContextualTasksContextManagementInteractiveTestBase
   auto OpenShareTabsFlyout(const ui::ElementIdentifier& contents_id) {
     StateChange menu_open;
     menu_open.type = StateChange::Type::kExistsAndConditionTrue;
-    menu_open.where = kContextMenu;
-    menu_open.test_function = "el => !!el.open";
+    menu_open.where = kShareTabsTrigger;
+    menu_open.test_function = "el => !!el.getRootNode().host?.open";
     menu_open.event = kMenuOpenEvent;
 
     StateChange flyout_visible;
@@ -369,7 +369,6 @@ class ContextualTasksContextManagementInteractiveTestBase
                       }
                     })"),
                  WaitForStateChange(contents_id, menu_open),
-                 WaitForElementExists(contents_id, kShareTabsTrigger),
                  ExecuteJsAt(contents_id, kShareTabsTrigger,
                              R"(el => {
               el.dispatchEvent(
@@ -662,6 +661,14 @@ class ContextualTasksContextManagementInteractiveTestBase
       const ui::ElementIdentifier& contents_id,
       const std::string& query,
       const std::string& thread_id) {
+    StateChange initial_load_done;
+    initial_load_done.type = StateChange::Type::kExistsAndConditionTrue;
+    initial_load_done.where = {"contextual-tasks-app"};
+    initial_load_done.test_function =
+        "el => el.hasFinishedTopLevelNavigationForTesting_ === true && "
+        "!el.pendingUrl_";
+    initial_load_done.event = kElementExistsEvent;
+
     StateChange non_zero_state;
     non_zero_state.type = StateChange::Type::kExistsAndConditionTrue;
     non_zero_state.where = {"contextual-tasks-app"};
@@ -672,13 +679,13 @@ class ContextualTasksContextManagementInteractiveTestBase
         base::StringPrintf("https://www.google.com/search?udm=50&q=%s&mtid=%s",
                            query.c_str(), thread_id.c_str());
 
-    return Steps(WaitForElementExists(contents_id, kThreadFrame),
-                 ExecuteJsAt(contents_id, kThreadFrame,
-                             base::StringPrintf(
-                                 "el => { el.src = %s; }",
-                                 base::GetQuotedJSONString(thread_url).c_str()),
-                             ExecuteJsMode::kFireAndForget),
-                 WaitForStateChange(contents_id, non_zero_state));
+    return Steps(
+        WaitForStateChange(contents_id, initial_load_done),
+        ExecuteJsAt(
+            contents_id, kThreadFrame,
+            base::StringPrintf("el => { el.src = %s; }",
+                               base::GetQuotedJSONString(thread_url).c_str())),
+        WaitForStateChange(contents_id, non_zero_state));
   }
 
   // Clicks the New Thread button in the side panel toolbar and waits for the
@@ -691,8 +698,7 @@ class ContextualTasksContextManagementInteractiveTestBase
     zero_state.event = kZeroStateChangedEvent;
 
     return Steps(WaitForElementExists(contents_id, kNewThreadButton),
-                 ExecuteJsAt(contents_id, kNewThreadButton, "el => el.click()",
-                             ExecuteJsMode::kFireAndForget),
+                 ExecuteJsAt(contents_id, kNewThreadButton, "el => el.click()"),
                  WaitForStateChange(contents_id, zero_state));
   }
 
@@ -1058,18 +1064,16 @@ IN_PROC_BROWSER_TEST_P(ContextualTasksContextManagementInteractiveUiTest,
   const GURL kUrl3 = embedded_test_server()->GetURL("/title3.html");
 
   RunTestSequence(
-      InstrumentTab(kPrimaryTab, 0), AddInstrumentedTab(kBackgroundTab1, kUrl1),
+      InstrumentTab(kPrimaryTab, 0), NavigateWebContents(kPrimaryTab, kUrl3),
+      AddInstrumentedTab(kBackgroundTab1, kUrl1),
       AddInstrumentedTab(kBackgroundTab2, kUrl2),
       SelectTab(kTabStripElementId, 0), OpenSidePanelWithWebContents(),
-      NavigateWebContents(kPrimaryTab, kUrl3),
       WaitForFileUploadsComplete(kSidePanelWebContentsId, 1),
 
       // Previous thread: Attach both background tabs in addition to the
       // auto-suggested active tab (title3) and submit a query.
-      OpenShareTabsFlyout(kSidePanelWebContentsId),
       ToggleFlyoutTab(kSidePanelWebContentsId, "title1"),
       WaitForFileUploadsComplete(kSidePanelWebContentsId, 2),
-      OpenShareTabsFlyout(kSidePanelWebContentsId),
       ToggleFlyoutTab(kSidePanelWebContentsId, "title2"),
       WaitForFileUploadsComplete(kSidePanelWebContentsId, 3),
       SubmitSidePanelQuery(kSidePanelWebContentsId, "First turn query"),
@@ -1078,7 +1082,6 @@ IN_PROC_BROWSER_TEST_P(ContextualTasksContextManagementInteractiveUiTest,
 
       // Verify all 3 tabs remain active in the previous thread after
       // submission.
-      VerifyPlusButtonCoins(kSidePanelWebContentsId, 3),
       VerifyPlusButtonCoinTabs(kSidePanelWebContentsId,
                                {"title1", "title2", "title3"}),
       VerifyUnderlinedTabs({0, 1, 2}),
@@ -1094,7 +1097,6 @@ IN_PROC_BROWSER_TEST_P(ContextualTasksContextManagementInteractiveUiTest,
       // Verify previous-thread tabs (title1 and title2) are cleared and only
       // the auto-suggested active tab (title3) is shown on the new thread.
       WaitForFileUploadsComplete(kSidePanelWebContentsId, 1),
-      VerifyPlusButtonCoins(kSidePanelWebContentsId, 1),
       VerifyPlusButtonCoinTabs(kSidePanelWebContentsId, {"title3"}),
       VerifyUnderlinedTabs({0}), OpenShareTabsFlyout(kSidePanelWebContentsId),
       VerifyMenuTriggerState(kSidePanelWebContentsId, 1),
