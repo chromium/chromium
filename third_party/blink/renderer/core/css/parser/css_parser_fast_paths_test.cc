@@ -467,6 +467,12 @@ TEST(CSSParserFastPathsTest, ParseHSLInvalid) {
   EXPECT_EQ(
       ParseColorResult::kFailure,
       CSSParserFastPaths::ParseColor("hsl(9,0.6", kHTMLStandardMode, color));
+  EXPECT_EQ(ParseColorResult::kFailure,
+            CSSParserFastPaths::ParseColor("rgb(255 255 255 / 1)b(7)",
+                                           kHTMLStandardMode, color));
+  EXPECT_EQ(ParseColorResult::kFailure,
+            CSSParserFastPaths::ParseColor("rgba(255, 255, 255, 2)b(7)",
+                                           kHTMLStandardMode, color));
 }
 
 TEST(CSSParserFastPathsTest, IsValidKeywordPropertyAndValueOverflowClip) {

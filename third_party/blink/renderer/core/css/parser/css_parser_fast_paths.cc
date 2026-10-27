@@ -381,22 +381,6 @@ static unsigned FindLengthOfValidDouble(base::span<const LChar> chars) {
   return valid_length;
 }
 
-// If also_accept_whitespace is true: Checks whether `chars[pos]` is the given
-// character, _or_ an HTML space.
-// Otherwise: Checks whether `chars[pos]` is the given character.
-// Returns false if `pos` is out of bounds of the `chars`.
-static bool ContainsCharAtPos(base::span<const LChar> chars,
-                              int pos,
-                              char ch,
-                              bool also_accept_whitespace) {
-  DCHECK_GE(pos, 0);
-  if (pos >= base::checked_cast<int>(chars.size())) {
-    return false;
-  }
-  return chars[pos] == ch ||
-         (also_accept_whitespace && IsHTMLSpace(chars[pos]));
-}
-
 // Like ParsePositiveDouble(), but also accepts initial whitespace and negative
 // values. This is similar to CharactersToDouble(), but does not support
 // trailing periods (e.g. “100.”), cf.
@@ -799,8 +783,7 @@ ALWAYS_INLINE static bool ParseAlphaValue(base::span<const LChar>& chars,
   if (chars[0] != '0' && chars[0] != '1' && chars[0] != '.') {
     int double_length = FindLengthOfValidDouble(chars);
     if (double_length > 0 &&
-        ContainsCharAtPos(chars, double_length, terminator,
-                          /*also_accept_whitespace=*/false)) {
+        static_cast<wtf_size_t>(double_length) + 1 == length) {
       value = negative ? 0 : 255;
       chars = {};
       return true;
@@ -826,8 +809,7 @@ ALWAYS_INLINE static bool ParseAlphaValue(base::span<const LChar>& chars,
 
   double alpha = 0;
   int dbl_length = ParsePositiveDouble(chars, alpha);
-  if (dbl_length == 0 || !ContainsCharAtPos(chars, dbl_length, terminator,
-                                            /*also_accept_whitespace=*/false)) {
+  if (dbl_length == 0 || static_cast<wtf_size_t>(dbl_length) + 1 != length) {
     return false;
   }
   value = negative ? 0 : static_cast<int>(lround(std::min(alpha, 1.0) * 255.0));
