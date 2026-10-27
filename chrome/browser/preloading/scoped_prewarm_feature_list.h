@@ -20,6 +20,7 @@ class ScopedPrewarmFeatureList {
     kEnabledWithNoTrigger,
     kEnabledWithDefaultTrigger,
     kEnabledWithInterationTrigger,
+    kEnabledWithPageLoadAndTabSwitchAfterPaintTrigger,
   };
   explicit ScopedPrewarmFeatureList(PrewarmState state);
   ScopedPrewarmFeatureList(const ScopedPrewarmFeatureList&) = delete;

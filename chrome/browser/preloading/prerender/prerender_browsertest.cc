@@ -7,6 +7,7 @@
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/path_service.h"
+#include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -31,7 +32,11 @@
 #include "components/page_load_metrics/browser/navigation_initiator.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/devtools_agent_host.h"
+#include "content/public/browser/navigation_controller.h"
+#include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "content/public/common/content_features.h"
+#include "content/public/common/referrer.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/preloading_test_util.h"
@@ -1010,7 +1015,14 @@ class PrerenderPrewarmDefaultSearchEngineTest
     : public PrerenderBrowserTest,
       public testing::WithParamInterface<content::PreloadingPredictor> {
  public:
-  PrerenderPrewarmDefaultSearchEngineTest() {
+  PrerenderPrewarmDefaultSearchEngineTest()
+      : PrerenderPrewarmDefaultSearchEngineTest(
+            test::ScopedPrewarmFeatureList::PrewarmState::
+                kEnabledWithNoTrigger) {}
+
+  explicit PrerenderPrewarmDefaultSearchEngineTest(
+      test::ScopedPrewarmFeatureList::PrewarmState prewarm_state)
+      : scoped_prewarm_feature_list_(prewarm_state) {
     reuse_prerender_host_feature_.InitAndEnableFeature(
         features::kPrerender2ReuseHost);
   }
@@ -1059,8 +1071,7 @@ class PrerenderPrewarmDefaultSearchEngineTest
 
  protected:
   GURL prewarm_url_;
-  test::ScopedPrewarmFeatureList scoped_prewarm_feature_list_{
-      test::ScopedPrewarmFeatureList::PrewarmState::kEnabledWithNoTrigger};
+  test::ScopedPrewarmFeatureList scoped_prewarm_feature_list_;
   base::test::ScopedFeatureList reuse_prerender_host_feature_;
 };
 
@@ -1505,6 +1516,124 @@ IN_PROC_BROWSER_TEST_F(PrerenderPrewarmDefaultSearchEngineTest,
   content::test::PrerenderTestHelper::WaitForPrerenderLoadCompletion(
       *GetActiveWebContents(), prerender_url_3);
 }
+
+// In this CL, `PrewarmTabHelper` is only wired up in desktop `TabFeatures`
+// (Android uses a separate `TabFeatures` implementation in
+// `chrome/browser/android/tab_features.cc` and a native Java view for NTP,
+// which are wired up in a follow-up CL).
+#if !BUILDFLAG(IS_ANDROID)
+class FirstVisuallyNonEmptyPaintObserver : public content::WebContentsObserver {
+ public:
+  explicit FirstVisuallyNonEmptyPaintObserver(
+      content::WebContents* web_contents)
+      : content::WebContentsObserver(web_contents) {}
+
+  void Wait() {
+    if (web_contents()->CompletedFirstVisuallyNonEmptyPaint()) {
+      return;
+    }
+    run_loop_.Run();
+  }
+
+  void DidFirstVisuallyNonEmptyPaint() override { run_loop_.Quit(); }
+
+ private:
+  base::RunLoop run_loop_;
+};
+
+class PrerenderPrewarmPageLoadAndTabSwitchAfterPaintBrowserTest
+    : public PrerenderPrewarmDefaultSearchEngineTest {
+ public:
+  PrerenderPrewarmPageLoadAndTabSwitchAfterPaintBrowserTest()
+      : PrerenderPrewarmDefaultSearchEngineTest(
+            test::ScopedPrewarmFeatureList::PrewarmState::
+                kEnabledWithPageLoadAndTabSwitchAfterPaintTrigger) {}
+};
+
+IN_PROC_BROWSER_TEST_F(
+    PrerenderPrewarmPageLoadAndTabSwitchAfterPaintBrowserTest,
+    PageLoadAndTabSwitchTriggersPrewarm) {
+  content::test::PrerenderHostRegistryObserver registry_observer(
+      *GetActiveWebContents());
+
+  // Navigating the foreground tab to a real page triggers prewarm automatically
+  // once both load and first paint complete.
+  GURL url = embedded_test_server()->GetURL("/title1.html");
+  ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(), url));
+  FirstVisuallyNonEmptyPaintObserver(GetActiveWebContents()).Wait();
+  registry_observer.WaitForTrigger(prewarm_url_);
+
+  auto* prerender_manager =
+      PrerenderManager::FromWebContents(GetActiveWebContents());
+  ASSERT_TRUE(prerender_manager);
+  EXPECT_TRUE(prerender_manager->HasSearchPrewarmTaskForTesting());
+
+  // Stop the prewarm.
+  prerender_manager->StopPrewarmSearchResultForTesting();
+  EXPECT_FALSE(prerender_manager->HasSearchPrewarmTaskForTesting());
+
+  // Hiding/switching away and switching back triggers prewarm again on the
+  // non-loading painted tab.
+  content::test::PrerenderHostRegistryObserver registry_observer2(
+      *GetActiveWebContents());
+  GetActiveWebContents()->WasHidden();
+  EXPECT_FALSE(prerender_manager->HasSearchPrewarmTaskForTesting());
+
+  GetActiveWebContents()->WasShown();
+  registry_observer2.WaitForTrigger(prewarm_url_);
+  EXPECT_TRUE(prerender_manager->HasSearchPrewarmTaskForTesting());
+
+  // Stop the prewarm before testing the loading state.
+  prerender_manager->StopPrewarmSearchResultForTesting();
+  EXPECT_FALSE(prerender_manager->HasSearchPrewarmTaskForTesting());
+
+  // Navigate to a page with a render-blocking stylesheet that never finishes
+  // loading, so the committed page stays in the loading state without painting.
+  GURL loading_url = embedded_test_server()->GetURL("/with_delayed_css.html");
+  content::TestNavigationManager navigation_manager(GetActiveWebContents(),
+                                                    loading_url);
+  GetActiveWebContents()->GetController().LoadURL(
+      loading_url, content::Referrer(), ui::PAGE_TRANSITION_TYPED,
+      std::string());
+  ASSERT_TRUE(navigation_manager.WaitForNavigationFinished());
+  ASSERT_TRUE(navigation_manager.was_committed());
+  EXPECT_TRUE(GetActiveWebContents()->IsLoading());
+  EXPECT_FALSE(GetActiveWebContents()->CompletedFirstVisuallyNonEmptyPaint());
+
+  // Prewarm should not be triggered while the page is loading before first
+  // paint, even if the tab is switched away from and back to.
+  EXPECT_FALSE(prerender_manager->HasSearchPrewarmTaskForTesting());
+  GetActiveWebContents()->WasHidden();
+  GetActiveWebContents()->WasShown();
+  EXPECT_FALSE(prerender_manager->HasSearchPrewarmTaskForTesting());
+
+  // Change the stylesheet media to 'print' so it is no longer render-blocking;
+  // the page completes first paint while the stylesheet is still loading.
+  ASSERT_TRUE(
+      content::ExecJs(GetActiveWebContents(),
+                      "document.querySelector('link').media = 'print';"));
+  FirstVisuallyNonEmptyPaintObserver(GetActiveWebContents()).Wait();
+  EXPECT_TRUE(GetActiveWebContents()->CompletedFirstVisuallyNonEmptyPaint());
+  EXPECT_TRUE(GetActiveWebContents()->IsLoading());
+
+  // Prewarm should still not be triggered while the page is loading even after
+  // first paint (and across tab visibility changes).
+  EXPECT_FALSE(prerender_manager->HasSearchPrewarmTaskForTesting());
+  GetActiveWebContents()->WasHidden();
+  GetActiveWebContents()->WasShown();
+  EXPECT_FALSE(prerender_manager->HasSearchPrewarmTaskForTesting());
+
+  // Removing the delayed stylesheet allows the page to finish loading, which
+  // triggers prewarm automatically.
+  content::test::PrerenderHostRegistryObserver registry_observer3(
+      *GetActiveWebContents());
+  ASSERT_TRUE(content::ExecJs(GetActiveWebContents(),
+                              "document.querySelector('link').remove();"));
+  EXPECT_TRUE(content::WaitForLoadStop(GetActiveWebContents()));
+  registry_observer3.WaitForTrigger(prewarm_url_);
+  EXPECT_TRUE(prerender_manager->HasSearchPrewarmTaskForTesting());
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
                        PrerenderFormSubmissionUseCounter) {

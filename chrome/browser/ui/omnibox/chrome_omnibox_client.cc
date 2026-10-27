@@ -1092,6 +1092,8 @@ void ChromeOmniboxClient::MaybePrewarmForDefaultSearchEngine(
     case PrewarmTrigger::kUserInteraction:
       CHECK(
           !base::FeatureList::IsEnabled(features::kPrewarmZeroSuggestTrigger));
+      CHECK(!base::FeatureList::IsEnabled(
+          features::kPrewarmPageLoadAndTabSwitchAfterPaintTrigger));
       if (!location_bar_->GetWebContents()) {
         // There seems to be a subtle timing where the active tab does not have
         // a valid WebContents instance on an user interaction trigger.

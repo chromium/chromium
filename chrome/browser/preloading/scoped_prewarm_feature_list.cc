@@ -13,8 +13,9 @@ ScopedPrewarmFeatureList::ScopedPrewarmFeatureList(PrewarmState state) {
     case PrewarmState::kDisabled:
       scoped_feature_list_.InitWithFeatures(
           /*enabled_features=*/{},
-          /*disabled_features=*/{features::kPrewarm,
-                                 features::kPrewarmZeroSuggestTrigger});
+          /*disabled_features=*/{
+              features::kPrewarm, features::kPrewarmZeroSuggestTrigger,
+              features::kPrewarmPageLoadAndTabSwitchAfterPaintTrigger});
       break;
     case PrewarmState::kEnabledWithNoTrigger:
       scoped_feature_list_.InitWithFeaturesAndParameters(
@@ -26,7 +27,9 @@ ScopedPrewarmFeatureList::ScopedPrewarmFeatureList(PrewarmState state) {
                 {"revalidate", "true"},
                 {"throttle_user_navigation", "true"},
             }}},
-          /*disabled_features=*/{features::kPrewarmZeroSuggestTrigger});
+          /*disabled_features=*/{
+              features::kPrewarmZeroSuggestTrigger,
+              features::kPrewarmPageLoadAndTabSwitchAfterPaintTrigger});
       break;
     case PrewarmState::kEnabledWithDefaultTrigger:
       scoped_feature_list_.InitWithFeaturesAndParameters(
@@ -39,7 +42,8 @@ ScopedPrewarmFeatureList::ScopedPrewarmFeatureList(PrewarmState state) {
                 {"throttle_user_navigation", "true"},
             }},
            {features::kPrewarmZeroSuggestTrigger, {}}},
-          /*disabled_features=*/{});
+          /*disabled_features=*/{
+              features::kPrewarmPageLoadAndTabSwitchAfterPaintTrigger});
       break;
     case PrewarmState::kEnabledWithInterationTrigger:
       scoped_feature_list_.InitWithFeaturesAndParameters(
@@ -51,6 +55,21 @@ ScopedPrewarmFeatureList::ScopedPrewarmFeatureList(PrewarmState state) {
                 {"revalidate", "true"},
                 {"throttle_user_navigation", "true"},
             }}},
+          /*disabled_features=*/{
+              features::kPrewarmZeroSuggestTrigger,
+              features::kPrewarmPageLoadAndTabSwitchAfterPaintTrigger});
+      break;
+    case PrewarmState::kEnabledWithPageLoadAndTabSwitchAfterPaintTrigger:
+      scoped_feature_list_.InitWithFeaturesAndParameters(
+          /*enabled_features=*/
+          {{features::kPrewarm,
+            {
+                {"url", "https://search.example.com/prewarm.html"},
+                {"throttle_prefetch", "true"},
+                {"revalidate", "true"},
+                {"throttle_user_navigation", "true"},
+            }},
+           {features::kPrewarmPageLoadAndTabSwitchAfterPaintTrigger, {}}},
           /*disabled_features=*/{features::kPrewarmZeroSuggestTrigger});
       break;
   }

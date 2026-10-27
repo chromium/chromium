@@ -4,6 +4,7 @@
 
 #include "chrome/browser/preloading/prerender/prerender_manager.h"
 
+#include <memory>
 #include <string>
 
 #include "base/test/metrics/histogram_tester.h"
@@ -14,6 +15,7 @@
 #include "chrome/browser/preloading/chrome_preloading.h"
 #include "chrome/browser/preloading/preloading_features.h"
 #include "chrome/browser/preloading/prerender/prerender_utils.h"
+#include "chrome/browser/preloading/prerender/prewarm_tab_helper.h"
 #include "chrome/browser/preloading/prerender/search_preload_progress_service.h"
 #include "chrome/browser/preloading/prerender/search_preload_progress_service_factory.h"
 #include "chrome/browser/preloading/scoped_prewarm_feature_list.h"
@@ -25,8 +27,10 @@
 #include "components/search_engines/template_url_service.h"
 #include "content/public/browser/prerender_handle.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/visibility.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
+#include "content/public/test/navigation_simulator.h"
 #include "content/public/test/preloading_test_util.h"
 #include "content/public/test/prerender_test_util.h"
 #include "content/public/test/web_contents_tester.h"
@@ -784,6 +788,150 @@ TEST_F(PrerenderManagerTest, PrewarmDisableOnStartup) {
   } else {
     AfterStartupTaskUtils::UnsafeResetForTesting();
   }
+}
+
+class PrerenderManagerPageLoadAndTabSwitchAfterPaintTest
+    : public PrerenderManagerTest {
+ public:
+  PrerenderManagerPageLoadAndTabSwitchAfterPaintTest() = default;
+  ~PrerenderManagerPageLoadAndTabSwitchAfterPaintTest() override = default;
+
+  void SetUp() override {
+    PrerenderManagerTest::SetUp();
+    // WebContentsImpl::UpdateWebContentsVisibility() ignores transitions to
+    // HIDDEN/OCCLUDED until it has been set to VISIBLE at least once.
+    web_contents()->UpdateWebContentsVisibility(content::Visibility::VISIBLE);
+    prewarm_tab_helper_ = PrewarmTabHelper::MaybeCreate(GetActiveWebContents());
+    ASSERT_TRUE(prewarm_tab_helper_);
+  }
+
+  void TearDown() override {
+    prewarm_tab_helper_.reset();
+    PrerenderManagerTest::TearDown();
+  }
+
+ private:
+  test::ScopedPrewarmFeatureList scoped_prewarm_feature_list_{
+      test::ScopedPrewarmFeatureList::PrewarmState::
+          kEnabledWithPageLoadAndTabSwitchAfterPaintTrigger};
+  std::unique_ptr<PrewarmTabHelper> prewarm_tab_helper_;
+};
+
+TEST_F(PrerenderManagerPageLoadAndTabSwitchAfterPaintTest,
+       ForegroundTabTriggersOnFirstPaint) {
+  const GURL prewarm_url("https://search.example.com/prewarm.html");
+  prerender_manager()->SetPrewarmUrlForTesting(prewarm_url);
+
+  // Tab is visible.
+  web_contents()->UpdateWebContentsVisibility(content::Visibility::VISIBLE);
+  prerender_manager()->StopPrewarmSearchResultForTesting();
+  EXPECT_FALSE(prerender_manager()->HasSearchPrewarmTaskForTesting());
+
+  // Start navigation and commit while keeping the tab in the loading state.
+  auto simulator = content::NavigationSimulator::CreateRendererInitiated(
+      GetUrl("/test.html"), web_contents()->GetPrimaryMainFrame());
+  simulator->SetKeepLoading(true);
+  simulator->Commit();
+  EXPECT_TRUE(web_contents()->IsLoading());
+  EXPECT_FALSE(prerender_manager()->HasSearchPrewarmTaskForTesting());
+
+  // DidFirstVisuallyNonEmptyPaint while still loading should not trigger
+  // prewarm yet.
+  web_contents_tester()->TestDidFirstVisuallyNonEmptyPaint();
+  EXPECT_TRUE(web_contents()->CompletedFirstVisuallyNonEmptyPaint());
+  EXPECT_FALSE(prerender_manager()->HasSearchPrewarmTaskForTesting());
+
+  // Finishing loading after first paint triggers prewarm via DidStopLoading().
+  content::test::PrerenderHostRegistryObserver registry_observer(
+      *GetActiveWebContents());
+  simulator->StopLoading();
+  EXPECT_FALSE(web_contents()->IsLoading());
+  registry_observer.WaitForTrigger(prewarm_url);
+  EXPECT_TRUE(prerender_manager()->HasSearchPrewarmTaskForTesting());
+}
+
+TEST_F(PrerenderManagerPageLoadAndTabSwitchAfterPaintTest,
+       HiddenTabTriggersOnVisibilityChangedAfterLoadAndFirstPaint) {
+  const GURL prewarm_url("https://search.example.com/prewarm.html");
+  prerender_manager()->SetPrewarmUrlForTesting(prewarm_url);
+
+  // If the tab is hidden, finishing load and DidFirstVisuallyNonEmptyPaint
+  // should not trigger prewarm.
+  web_contents()->UpdateWebContentsVisibility(content::Visibility::HIDDEN);
+  auto simulator = content::NavigationSimulator::CreateRendererInitiated(
+      GetUrl("/test.html"), web_contents()->GetPrimaryMainFrame());
+  simulator->Commit();
+  EXPECT_FALSE(web_contents()->IsLoading());
+  web_contents_tester()->TestDidFirstVisuallyNonEmptyPaint();
+  EXPECT_TRUE(web_contents()->CompletedFirstVisuallyNonEmptyPaint());
+  EXPECT_FALSE(prerender_manager()->HasSearchPrewarmTaskForTesting());
+
+  // Switching to the tab (making it visible) triggers prewarm via
+  // OnVisibilityChanged(VISIBLE).
+  content::test::PrerenderHostRegistryObserver registry_observer(
+      *GetActiveWebContents());
+  web_contents()->UpdateWebContentsVisibility(content::Visibility::VISIBLE);
+  registry_observer.WaitForTrigger(prewarm_url);
+  EXPECT_TRUE(prerender_manager()->HasSearchPrewarmTaskForTesting());
+}
+
+TEST_F(PrerenderManagerPageLoadAndTabSwitchAfterPaintTest,
+       SwitchToUnpaintedNonLoadingTabDefersUntilPaint) {
+  const GURL prewarm_url("https://search.example.com/prewarm.html");
+  prerender_manager()->SetPrewarmUrlForTesting(prewarm_url);
+
+  // Start with a hidden tab that is not loading and has not painted yet.
+  web_contents()->UpdateWebContentsVisibility(content::Visibility::HIDDEN);
+  EXPECT_FALSE(web_contents()->IsLoading());
+  EXPECT_FALSE(web_contents()->CompletedFirstVisuallyNonEmptyPaint());
+  EXPECT_FALSE(prerender_manager()->HasSearchPrewarmTaskForTesting());
+
+  // Switching to the tab (making it visible) should not trigger prewarm before
+  // it has completed its first visually non-empty paint.
+  web_contents()->UpdateWebContentsVisibility(content::Visibility::VISIBLE);
+  EXPECT_FALSE(prerender_manager()->HasSearchPrewarmTaskForTesting());
+
+  // Once first paint occurs, prewarm is triggered.
+  content::test::PrerenderHostRegistryObserver registry_observer(
+      *GetActiveWebContents());
+  web_contents_tester()->TestDidFirstVisuallyNonEmptyPaint();
+  registry_observer.WaitForTrigger(prewarm_url);
+  EXPECT_TRUE(prerender_manager()->HasSearchPrewarmTaskForTesting());
+}
+
+TEST_F(PrerenderManagerPageLoadAndTabSwitchAfterPaintTest,
+       SwitchToLoadingTabWithoutPaintDefersUntilPaint) {
+  const GURL prewarm_url("https://search.example.com/prewarm.html");
+  prerender_manager()->SetPrewarmUrlForTesting(prewarm_url);
+
+  // Start hidden.
+  web_contents()->UpdateWebContentsVisibility(content::Visibility::HIDDEN);
+
+  // Start a navigation so the tab is loading and has not painted yet.
+  auto simulator = content::NavigationSimulator::CreateRendererInitiated(
+      GetUrl("/test.html"), web_contents()->GetPrimaryMainFrame());
+  simulator->Start();
+  EXPECT_TRUE(web_contents()->IsLoading());
+  EXPECT_FALSE(web_contents()->CompletedFirstVisuallyNonEmptyPaint());
+  EXPECT_FALSE(prerender_manager()->HasSearchPrewarmTaskForTesting());
+
+  // Switch to the tab while it is still loading and hasn't painted.
+  web_contents()->UpdateWebContentsVisibility(content::Visibility::VISIBLE);
+  // Prewarm should NOT be triggered yet because it is still loading and has not
+  // completed first paint.
+  EXPECT_FALSE(prerender_manager()->HasSearchPrewarmTaskForTesting());
+
+  // Finishing load before first paint should still not trigger prewarm.
+  simulator->Commit();
+  EXPECT_FALSE(web_contents()->IsLoading());
+  EXPECT_FALSE(prerender_manager()->HasSearchPrewarmTaskForTesting());
+
+  // When first paint occurs, prewarm is triggered.
+  content::test::PrerenderHostRegistryObserver registry_observer(
+      *GetActiveWebContents());
+  web_contents_tester()->TestDidFirstVisuallyNonEmptyPaint();
+  registry_observer.WaitForTrigger(prewarm_url);
+  EXPECT_TRUE(prerender_manager()->HasSearchPrewarmTaskForTesting());
 }
 
 }  // namespace

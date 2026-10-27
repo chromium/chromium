@@ -84,6 +84,7 @@ class NavigationPredictorPreconnectClient;
 class NewTabPagePreloadPipelineManager;
 class OneTimePermissionsTrackerHelper;
 class PinnedTranslateActionListener;
+class PrewarmTabHelper;
 class Profile;
 class PwaInstallPageActionController;
 class QwacWebContentsObserver;
@@ -925,6 +926,11 @@ class TabFeatures {
   // Prefetches zero-prefix suggestions on opening or switching to an NTP.
   std::unique_ptr<ZeroSuggestPrefetchTabHelper>
       zero_suggest_prefetch_tab_helper_;
+
+  // Observes page load completion, first paint, and visibility changes to
+  // trigger Default Search Engine prewarm when
+  // `kPrewarmPageLoadAndTabSwitchAfterPaintTrigger` is enabled.
+  std::unique_ptr<PrewarmTabHelper> prewarm_tab_helper_;
 
   // Controls the visibility of the intent picker page action.
   std::unique_ptr<IntentPickerTabHelper> intent_picker_tab_helper_;

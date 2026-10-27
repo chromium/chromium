@@ -279,7 +279,12 @@ void TestWebContents::TestDidFailLoadWithError(const GURL& url,
 }
 
 void TestWebContents::TestDidFirstVisuallyNonEmptyPaint() {
-  OnFirstVisuallyNonEmptyPaint(GetPrimaryPage());
+  // Call through PageImpl::OnFirstVisuallyNonEmptyPaint() (matching
+  // RenderFrameHostImpl::DidFirstVisuallyNonEmptyPaint() in production) so
+  // `PageImpl::did_first_visually_non_empty_paint_` is set to true (updating
+  // `WebContents::CompletedFirstVisuallyNonEmptyPaint()`) before delegating
+  // to `WebContentsImpl::OnFirstVisuallyNonEmptyPaint()` to notify observers.
+  GetPrimaryPage().OnFirstVisuallyNonEmptyPaint();
 }
 
 bool TestWebContents::CrossProcessNavigationPending() {

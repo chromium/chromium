@@ -10,6 +10,7 @@ source_set("prerender") {
     "prerender_manager.h",
     "prerender_utils.h",
     "prerender_web_contents_delegate.h",
+    "prewarm_tab_helper.h",
     "search_preload_progress_service.h",
     "search_preload_progress_service_factory.h",
   ]
@@ -30,6 +31,7 @@ source_set("impl") {
     "prerender_manager.cc",
     "prerender_utils.cc",
     "prerender_web_contents_delegate.cc",
+    "prewarm_tab_helper.cc",
     "search_preload_progress_service.cc",
     "search_preload_progress_service_factory.cc",
   ]

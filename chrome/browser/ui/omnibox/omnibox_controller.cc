@@ -122,7 +122,9 @@ void OmniboxController::OnResultChanged(AutocompleteController* controller,
   // OnResultChanged will be also called upon the first user interaction
   // with the omnibox to show a new result.
   if (base::FeatureList::IsEnabled(features::kPrewarm) &&
-      !base::FeatureList::IsEnabled(features::kPrewarmZeroSuggestTrigger)) {
+      !base::FeatureList::IsEnabled(features::kPrewarmZeroSuggestTrigger) &&
+      !base::FeatureList::IsEnabled(
+          features::kPrewarmPageLoadAndTabSwitchAfterPaintTrigger)) {
     client_->MaybePrewarmForDefaultSearchEngine(
         PrewarmTrigger::kUserInteraction);
   }

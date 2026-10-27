@@ -89,6 +89,7 @@
 #include "chrome/browser/preloading/prefetch/no_state_prefetch/no_state_prefetch_manager_factory.h"
 #include "chrome/browser/preloading/prefetch/no_state_prefetch/no_state_prefetch_tab_helper.h"
 #include "chrome/browser/preloading/prefetch/zero_suggest_prefetch/zero_suggest_prefetch_tab_helper.h"
+#include "chrome/browser/preloading/prerender/prewarm_tab_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_key.h"
 #include "chrome/browser/resource_coordinator/tab_helper.h"
@@ -851,6 +852,8 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
 
   zero_suggest_prefetch_tab_helper_ =
       std::make_unique<ZeroSuggestPrefetchTabHelper>(tab.GetContents());
+
+  prewarm_tab_helper_ = PrewarmTabHelper::MaybeCreate(tab.GetContents());
 
   if (SearchEngineChoiceTabHelper::IsHelperNeeded()) {
     search_engine_choice_tab_helper_ =
@@ -1631,6 +1634,8 @@ void TabFeatures::WillDiscardContents(tabs::TabInterface* tab,
 
   zero_suggest_prefetch_tab_helper_ =
       std::make_unique<ZeroSuggestPrefetchTabHelper>(new_contents);
+
+  prewarm_tab_helper_ = PrewarmTabHelper::MaybeCreate(new_contents);
 
   security_state_event_observer_ =
       std::make_unique<SecurityStateEventObserver>(new_contents);
