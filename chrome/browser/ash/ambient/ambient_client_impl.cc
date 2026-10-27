@@ -11,6 +11,7 @@
 #include "ash/public/cpp/ambient/ambient_prefs.h"
 #include "ash/public/cpp/image_downloader.h"
 #include "base/check.h"
+#include "base/check_deref.h"
 #include "base/functional/callback.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
@@ -82,6 +83,11 @@ bool IsPrimaryUser() {
 }
 
 bool HasPrimaryAccount(const AccountId& account_id) {
+  if (!CHECK_DEREF(user_manager::UserManager::Get()->FindUser(account_id))
+           .is_profile_created()) {
+    return false;
+  }
+
   auto* identity_manager = ash::IdentityManagerProvider::Get().Find(account_id);
   if (!identity_manager)
     return false;
@@ -116,17 +122,20 @@ bool AmbientClientImpl::IsAmbientModeAllowed() {
   }
 
   const user_manager::User* const active_user = GetActiveUser();
-  if (!active_user || !active_user->HasGaiaAccount())
+  if (!active_user || !active_user->HasGaiaAccount()) {
     return false;
+  }
 
-  if (!IsPrimaryUser())
+  if (!IsPrimaryUser()) {
     return false;
+  }
 
   // When this check is removed to start supporting enterprise users,
   // please update kAmbientClientNetworkTag and network annotation tags
   // in ash/ambient package to reflect that this is an enterprise feature.
-  if (!IsEmailDomainSupported(active_user))
+  if (!IsEmailDomainSupported(active_user)) {
     return false;
+  }
 
   // Primary account might be missing during unittests.
   if (!HasPrimaryAccount(active_user->GetAccountId())) {
