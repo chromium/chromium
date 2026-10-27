@@ -464,25 +464,30 @@ class HeapDumper {
 
   static uintptr_t FindRootAddress(RemoteProcessMemoryReader& reader)
       NO_THREAD_SAFETY_ANALYSIS {
-    uintptr_t tcache_registry_address = IndexThreadCacheNeedleArray(reader, 1);
+    uintptr_t tls_registry_address = IndexThreadCacheNeedleArray(reader, 1);
     auto registry =
-        RawBuffer<internal::ThreadCacheRegistry>::ReadFromProcessMemory(
-            reader, tcache_registry_address);
+        RawBuffer<internal::PartitionTlsRegistry>::ReadFromProcessMemory(
+            reader, tls_registry_address);
     if (!registry)
       return 0;
 
-    auto tcache_address =
-        reinterpret_cast<uintptr_t>(registry->get()->list_head_);
-    if (!tcache_address)
-      return 0;
+    auto tls_address =
+        reinterpret_cast<uintptr_t>(registry->get()->list_head());
+    while (tls_address) {
+      auto tls = RawBuffer<internal::PartitionTls>::ReadFromProcessMemory(
+          reader, tls_address);
+      if (!tls) {
+        return 0;
+      }
 
-    auto tcache = RawBuffer<internal::ThreadCache>::ReadFromProcessMemory(
-        reader, tcache_address);
-    if (!tcache)
-      return 0;
-
-    auto root_address = reinterpret_cast<uintptr_t>(tcache->get()->root_);
-    return root_address;
+      auto* tcache =
+          tls->get()->GetThreadCache(internal::kDefaultRootThreadCacheIndex);
+      if (internal::ThreadCache::IsValid(tcache)) {
+        return reinterpret_cast<uintptr_t>(tcache->root_);
+      }
+      tls_address = reinterpret_cast<uintptr_t>(tls->get()->next_);
+    }
+    return 0;
   }
 
   const int pagemap_fd_;

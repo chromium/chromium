@@ -68,86 +68,6 @@ constexpr inline size_t kThreadCacheTombstoneIndex = 0;
 // storing the thread cache for SchedulerLoopQuarantine.
 constexpr inline size_t kThreadCacheQuarantineIndex = 0;
 
-// Global registry of all ThreadCache instances.
-//
-// This class cannot allocate in the (Un)registerThreadCache() functions, as
-// they are called from ThreadCache constructor, which is from within the
-// allocator. However the other members can allocate.
-class PA_COMPONENT_EXPORT(PARTITION_ALLOC) ThreadCacheRegistry {
- public:
-  static ThreadCacheRegistry& Instance();
-  // Do not instantiate.
-  //
-  // Several things are surprising here:
-  // - The constructor is public even though this is intended to be a singleton:
-  //   we cannot use a "static local" variable in |Instance()| as this is
-  //   reached too early during CRT initialization on Windows, meaning that
-  //   static local variables don't work (as they call into the uninitialized
-  //   runtime). To sidestep that, we use a regular global variable in the .cc,
-  //   which is fine as this object's constructor is constexpr.
-  // - Marked inline so that the chromium style plugin doesn't complain that a
-  //   "complex constructor" has an inline body. This warning is disabled when
-  //   the constructor is explicitly marked "inline". Note that this is a false
-  //   positive of the plugin, since constexpr implies inline.
-  inline constexpr ThreadCacheRegistry();
-
-  void RegisterThreadCache(ThreadCache* cache);
-  void UnregisterThreadCache(ThreadCache* cache);
-  // Prints statistics for all thread caches, or this thread's only.
-  void DumpStats(bool my_thread_only, ThreadCacheStats* stats, size_t index);
-  // Purge() this thread's cache, and asks the other ones to trigger Purge() at
-  // a later point (during a deallocation).
-  void PurgeAll();
-
-  // Runs `PurgeAll` and updates the next interval which
-  // `GetPeriodicPurgeNextIntervalInMicroseconds` returns.
-  //
-  // Note that it's a caller's responsibility to invoke this member function
-  // periodically with an appropriate interval. This function does not schedule
-  // any task nor timer.
-  void RunPeriodicPurge();
-  // Returns the appropriate interval to invoke `RunPeriodicPurge` next time.
-  int64_t GetPeriodicPurgeNextIntervalInMicroseconds() const;
-
-  // Controls the thread cache size, by setting the multiplier to a value above
-  // or below |ThreadCache::kDefaultMultiplier|.
-  void SetThreadCacheMultiplier(float multiplier);
-  void SetActiveBucketCount(uint16_t active_bucket_count);
-
-  static internal::Lock& GetLock() { return Instance().lock_; }
-  // Purges all thread caches *now*. This is completely thread-unsafe, and
-  // should only be called in a post-fork() handler.
-  void ForcePurgeAllThreadAfterForkUnsafe();
-
-  void ResetForTesting();
-
-  static constexpr internal::base::TimeDelta kMinPurgeInterval =
-      internal::base::Seconds(1);
-  static constexpr internal::base::TimeDelta kMaxPurgeInterval =
-      internal::base::Minutes(1);
-  static constexpr internal::base::TimeDelta kDefaultPurgeInterval =
-      2 * kMinPurgeInterval;
-  static constexpr size_t kMinCachedMemoryForPurgingBytes = 500 * 1024;
-
- private:
-  friend class ThreadCache;
-  friend class PartitionAllocThreadCacheTest;
-  friend class tools::ThreadCacheInspector;
-  friend class tools::HeapDumper;
-
-  // Not using base::Lock as the object's constructor must be constexpr.
-  internal::Lock lock_;
-  ThreadCache* list_head_ PA_GUARDED_BY(GetLock()) = nullptr;
-  bool periodic_purge_is_initialized_ = false;
-  internal::base::TimeDelta periodic_purge_next_interval_;
-
-  uint16_t active_bucket_count_ = BucketIndexLookup::GetIndexForNeutralBuckets(
-                                      kThreadCacheDefaultSizeThreshold) +
-                                  1;
-};
-
-constexpr ThreadCacheRegistry::ThreadCacheRegistry() = default;
-
 #if PA_CONFIG(THREAD_CACHE_ENABLE_STATISTICS)
 #define PA_INCREMENT_COUNTER(counter) ++counter
 #else
@@ -244,22 +164,23 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) ThreadCache {
   static ThreadCache* EnsureAndGetForQuarantine();
 
   // Returns true if the given pointer is not nullptr or kTombstone.
-  static bool IsValidPtr(ThreadCache* tcache) {
+  static bool IsValidPtr(const ThreadCache* tcache) {
     // Do not MTE-untag, as it'd mess up the sentinel value.
     return reinterpret_cast<uintptr_t>(tcache) & kTombstoneMask;
   }
 
   // Returns true if the ThreadCache* from ThreadCache::Get() is valid
   // and initialized.
-  static bool IsValid(ThreadCache* tcache) {
+  static bool IsValid(const ThreadCache* tcache) {
     // Even if the array of ThreadCache is allocated, the ThreadCache object
     // may not be initialized, and thus check `root_` to know if initialized.
     // We use pointer arithmetic to directly inspect the memory for `root_`, as
     // accessing `tcache->root_` is UB before the ThreadCache object's lifetime
     // begins (i.e., between memset(0) and placement new).
-    return IsValidPtr(tcache) && PA_UNSAFE_TODO(*reinterpret_cast<uintptr_t*>(
-                                     (reinterpret_cast<uint8_t*>(tcache) +
-                                      offsetof(ThreadCache, root_))));
+    return IsValidPtr(tcache) &&
+           PA_UNSAFE_TODO(*reinterpret_cast<const uintptr_t*>(
+               (reinterpret_cast<const uint8_t*>(tcache) +
+                offsetof(ThreadCache, root_))));
   }
 
   static bool IsTombstone() {
@@ -320,6 +241,31 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) ThreadCache {
 
   internal::base::PlatformThreadId thread_id() const { return thread_id_; }
 
+  // Prints statistics for all thread caches, or this thread's only.
+  static void DumpStats(bool my_thread_only,
+                        ThreadCacheStats* stats,
+                        size_t index);
+  // Purge() this thread's cache, and asks the other ones to trigger Purge() at
+  // a later point (during a deallocation).
+  static void PurgeAll();
+
+  // Runs `PurgeAll` and updates the next interval which
+  // `GetPeriodicPurgeNextIntervalInMicroseconds` returns.
+  //
+  // Note that it's a caller's responsibility to invoke this member function
+  // periodically with an appropriate interval. This function does not schedule
+  // any task nor timer.
+  static void RunPeriodicPurge();
+  // Returns the appropriate interval to invoke `RunPeriodicPurge` next time.
+  static int64_t GetPeriodicPurgeNextIntervalInMicroseconds();
+
+  // Controls the thread cache size, by setting the multiplier to a value above
+  // or below |ThreadCache::kDefaultMultiplier|.
+  static void SetThreadCacheMultiplier(float multiplier);
+  // Purges all thread caches *now*. This is completely thread-unsafe, and
+  // should only be called in a post-fork() handler.
+  static void ForcePurgeAllThreadAfterForkUnsafe();
+
   // Sets the maximum size of allocations that may be cached by the thread
   // cache. This applies to all threads. However, the maximum size is bounded by
   // |kLargeSizeThreshold|.
@@ -335,6 +281,14 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) ThreadCache {
   PA_ALWAYS_INLINE void RecordAllocation(size_t size);
   PA_ALWAYS_INLINE void RecordDeallocation(size_t size);
   void ResetPerThreadAllocationStatsForTesting();
+
+  static constexpr internal::base::TimeDelta kMinPurgeInterval =
+      internal::base::Seconds(1);
+  static constexpr internal::base::TimeDelta kMaxPurgeInterval =
+      internal::base::Minutes(1);
+  static constexpr internal::base::TimeDelta kDefaultPurgeInterval =
+      2 * kMinPurgeInterval;
+  static constexpr size_t kMinCachedMemoryForPurgingBytes = 500 * 1024;
 
   // Fill 1 / kBatchFillRatio * bucket.limit slots at a time.
   static constexpr uint16_t kBatchFillRatio = 8;
@@ -353,15 +307,6 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) ThreadCache {
   static_assert(
       kBucketCount <= BucketIndexLookup::kNumBuckets,
       "Cannot have more cached buckets than what the allocator supports");
-
-  const ThreadCache* prev_for_testing() const
-      PA_EXCLUSIVE_LOCKS_REQUIRED(ThreadCacheRegistry::GetLock()) {
-    return prev_;
-  }
-  const ThreadCache* next_for_testing() const
-      PA_EXCLUSIVE_LOCKS_REQUIRED(ThreadCacheRegistry::GetLock()) {
-    return next_;
-  }
 
   ThreadCacheStats& stats_for_testing() {
     return GetEnclosingTls()->thread_cache_stats;
@@ -392,7 +337,6 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) ThreadCache {
   static_assert(sizeof(Bucket) <= 2 * sizeof(void*), "Keep Bucket small.");
 
   explicit ThreadCache(PartitionRoot* root);
-  static void Delete(void* thread_caches_ptr);
 
   static void* operator new(size_t count);
   static void operator delete(void* ptr);
@@ -468,23 +412,21 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) ThreadCache {
   std::array<Bucket, kBucketCount> buckets_;
 
   // Cold data below.
-  PartitionRoot* const root_;
+  // Left uninitialized in the member initializer list so the zero-initialized
+  // bytes in `PartitionTls::thread_cache_storage` remain 0 (i.e. `!IsValid()`)
+  // until `PartitionTlsRegistry::GetLock()` is acquired in the constructor
+  // body.
+  PartitionRoot* root_;
 
   const internal::base::PlatformThreadId thread_id_;
 #if PA_BUILDFLAG(DCHECKS_ARE_ON)
   bool is_in_thread_cache_ = false;
 #endif
 
-  // Intrusive list since ThreadCacheRegistry::RegisterThreadCache() cannot
-  // allocate.
-  ThreadCache* next_ PA_GUARDED_BY(ThreadCacheRegistry::GetLock()) = nullptr;
-  ThreadCache* prev_ PA_GUARDED_BY(ThreadCacheRegistry::GetLock()) = nullptr;
-
   // Thread-Local version of `PartitionRoot::scheduler_loop_quarantine_branch_`.
   internal::ThreadBoundSchedulerLoopQuarantineBranch
       scheduler_loop_quarantine_branch_;
 
-  friend class ThreadCacheRegistry;
   friend class PartitionAllocThreadCacheTest;
   friend class tools::ThreadCacheInspector;
 };

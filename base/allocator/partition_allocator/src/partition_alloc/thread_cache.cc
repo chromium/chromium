@@ -30,15 +30,10 @@
 
 namespace partition_alloc {
 
-namespace internal {
-namespace {
-ThreadCacheRegistry g_instance;
-}  // namespace
-}  // namespace internal
-
 namespace tools {
 uintptr_t kThreadCacheNeedleArray[kThreadCacheNeedleArraySize] = {
-    kNeedle1, reinterpret_cast<uintptr_t>(&internal::g_instance),
+    kNeedle1,
+    reinterpret_cast<uintptr_t>(&internal::PartitionTlsRegistry::Instance()),
 #if PA_BUILDFLAG(RECORD_ALLOC_INFO)
     reinterpret_cast<uintptr_t>(&internal::g_allocs),
 #else
@@ -61,6 +56,31 @@ namespace {
 // PartitionRoot can use it.
 static std::array<std::atomic<PartitionRoot*>, internal::kMaxThreadCacheIndex>
     g_thread_cache_roots;
+
+constinit bool g_periodic_purge_is_initialized = false;
+constinit internal::base::TimeDelta g_periodic_purge_next_interval =
+    internal::ThreadCache::kDefaultPurgeInterval;
+
+constinit uint16_t g_active_bucket_count
+    PA_GUARDED_BY(internal::PartitionTlsRegistry::GetLock()) =
+        BucketIndexLookup::GetIndexForNeutralBuckets(
+            kThreadCacheDefaultSizeThreshold) +
+        1;
+
+template <typename Fn>
+void ForEachValidThreadCacheLocked(Fn&& fn)
+    PA_EXCLUSIVE_LOCKS_REQUIRED(internal::PartitionTlsRegistry::GetLock()) {
+  for (internal::PartitionTls* tls =
+           internal::PartitionTlsRegistry::Instance().list_head();
+       tls; tls = tls->next_) {
+    for (size_t i = 0; i < internal::kMaxThreadCacheIndex; i++) {
+      auto* tcache = tls->GetThreadCache(i);
+      if (internal::ThreadCache::IsValid(tcache)) {
+        fn(tcache);
+      }
+    }
+  }
+}
 
 #if PA_BUILDFLAG(IS_WIN)
 void OnDllProcessDetach() {
@@ -87,65 +107,40 @@ namespace internal {
 std::array<uint8_t, ThreadCache::kBucketCount> ThreadCache::global_limits_;
 
 // static
-ThreadCacheRegistry& ThreadCacheRegistry::Instance() {
-  return g_instance;
-}
-
-void ThreadCacheRegistry::RegisterThreadCache(ThreadCache* cache) {
-  internal::ScopedGuard scoped_locker(GetLock());
-  cache->active_bucket_count_ = active_bucket_count_;
-  cache->next_ = nullptr;
-  cache->prev_ = nullptr;
-
-  ThreadCache* previous_head = list_head_;
-  list_head_ = cache;
-  cache->next_ = previous_head;
-  if (previous_head) {
-    previous_head->prev_ = cache;
-  }
-}
-
-void ThreadCacheRegistry::UnregisterThreadCache(ThreadCache* cache) {
-  internal::ScopedGuard scoped_locker(GetLock());
-  if (cache->prev_) {
-    cache->prev_->next_ = cache->next_;
-  }
-  if (cache->next_) {
-    cache->next_->prev_ = cache->prev_;
-  }
-  if (cache == list_head_) {
-    list_head_ = cache->next_;
-  }
-}
-
-void ThreadCacheRegistry::DumpStats(bool my_thread_only,
-                                    ThreadCacheStats* stats,
-                                    size_t index) {
+void ThreadCache::DumpStats(bool my_thread_only,
+                            ThreadCacheStats* stats,
+                            size_t index) {
   ThreadCache::EnsureThreadSpecificDataInitialized();
-  PartitionTlsRegistry::Instance().DumpStats(my_thread_only, stats);
+  *stats = {};
 
-  internal::ScopedGuard scoped_locker(GetLock());
   if (my_thread_only) {
-    auto* tcache = ThreadCache::Get(index);
-    if (!ThreadCache::IsValid(tcache)) {
+    auto* tls = internal::GetTls();
+    if (!tls) {
       return;
     }
-    stats->bucket_total_memory += tcache->CachedMemory();
-    stats->metadata_overhead += sizeof(ThreadCache);
-  } else {
-    ThreadCache* tcache = list_head_;
-    while (tcache) {
-      if (tcache->root_->settings_.thread_cache_index != index) {
-        continue;
-      }
+    stats->Accumulate(tls->thread_cache_stats);
+    auto* tcache = ThreadCache::Get(index);
+    if (ThreadCache::IsValid(tcache)) {
       stats->bucket_total_memory += tcache->CachedMemory();
       stats->metadata_overhead += sizeof(ThreadCache);
-      tcache = tcache->next_;
+    }
+  } else {
+    internal::ScopedGuard scoped_locker(PartitionTlsRegistry::GetLock());
+    PartitionTls* tls = PartitionTlsRegistry::Instance().list_head();
+    while (tls) {
+      stats->Accumulate(tls->thread_cache_stats);
+      auto* tcache = tls->GetThreadCache(index);
+      if (ThreadCache::IsValid(tcache)) {
+        stats->bucket_total_memory += tcache->CachedMemory();
+        stats->metadata_overhead += sizeof(ThreadCache);
+      }
+      tls = tls->next_;
     }
   }
 }
 
-void ThreadCacheRegistry::PurgeAll() {
+// static
+void ThreadCache::PurgeAll() {
   for (size_t i = 0; i < internal::kMaxThreadCacheIndex; i++) {
     auto* current_thread_tcache = ThreadCache::Get(i);
 
@@ -166,32 +161,32 @@ void ThreadCacheRegistry::PurgeAll() {
     }
 
     {
-      internal::ScopedGuard scoped_locker(GetLock());
-      ThreadCache* tcache = list_head_;
-      while (tcache) {
-        PA_DCHECK(ThreadCache::IsValid(tcache));
+      internal::ScopedGuard scoped_locker(PartitionTlsRegistry::GetLock());
+      PartitionTls* tls = PartitionTlsRegistry::Instance().list_head();
+      while (tls) {
+        auto* tcache = tls->GetThreadCache(i);
         // Cannot purge directly, need to ask the other thread to purge "at some
         // point".
         // Note that this will not work if the other thread is sleeping forever.
         // TODO(lizeb): Handle sleeping threads.
-        if (tcache != current_thread_tcache) {
+        if (ThreadCache::IsValid(tcache) && tcache != current_thread_tcache) {
           tcache->SetShouldPurge();
         }
-        tcache = tcache->next_;
+        tls = tls->next_;
       }
     }
   }
 }
 
-void ThreadCacheRegistry::ForcePurgeAllThreadAfterForkUnsafe() {
-  internal::ScopedGuard scoped_locker(GetLock());
-  ThreadCache* tcache = list_head_;
-  while (tcache) {
+// static
+void ThreadCache::ForcePurgeAllThreadAfterForkUnsafe() {
+  internal::ScopedGuard scoped_locker(PartitionTlsRegistry::GetLock());
+  ForEachValidThreadCacheLocked([](ThreadCache* tcache) {
 #if PA_BUILDFLAG(DCHECKS_ARE_ON)
-    // Before fork(), locks are acquired in the parent process. This means that
-    // a concurrent allocation in the parent which must be filled by the central
-    // allocator (i.e. the thread cache bucket is empty) will block inside the
-    // thread cache waiting for the lock to be released.
+    // Before fork(), locks are acquired in the parent process. This means
+    // that a concurrent allocation in the parent which must be filled by the
+    // central allocator (i.e. the thread cache bucket is empty) will block
+    // inside the thread cache waiting for the lock to be released.
     //
     // In the child process, this allocation will never complete since this
     // thread will not be resumed. However, calling |Purge()| triggers the
@@ -200,12 +195,12 @@ void ThreadCacheRegistry::ForcePurgeAllThreadAfterForkUnsafe() {
     // Clear the guard to prevent this from crashing.
     tcache->is_in_thread_cache_ = false;
 #endif
-    // There is a PA_DCHECK() in code called from |Purge()| checking that thread
-    // cache memory accounting is correct. Since we are after fork() and the
-    // other threads got interrupted mid-flight, this guarantee does not hold,
-    // and we get inconsistent results.  Rather than giving up on checking this
-    // invariant in regular code, reset it here so that the PA_DCHECK()
-    // passes. See crbug.com/1216964.
+    // There is a PA_DCHECK() in code called from |Purge()| checking that
+    // thread cache memory accounting is correct. Since we are after fork()
+    // and the other threads got interrupted mid-flight, this guarantee does
+    // not hold, and we get inconsistent results.  Rather than giving up on
+    // checking this invariant in regular code, reset it here so that the
+    // PA_DCHECK() passes. See crbug.com/1216964.
     tcache->cached_memory_ = tcache->CachedMemory();
 
     // At this point, we should call |Purge|. However, due to the thread
@@ -214,58 +209,37 @@ void ThreadCacheRegistry::ForcePurgeAllThreadAfterForkUnsafe() {
     // memory in some cases.
     //
     // see crbug.com/1289092 for details of the crashes.
-
-    tcache = tcache->next_;
-  }
+  });
 }
 
-void ThreadCacheRegistry::SetActiveBucketCount(uint16_t active_bucket_count) {
-  internal::ScopedGuard scoped_locker(GetLock());
-  active_bucket_count_ = active_bucket_count;
-  ThreadCache* tcache = list_head_;
-  while (tcache) {
-    PA_DCHECK(ThreadCache::IsValid(tcache));
-    tcache->active_bucket_count_ = active_bucket_count;
-    tcache = tcache->next_;
-  }
-}
-
-void ThreadCacheRegistry::SetThreadCacheMultiplier(float multiplier) {
+// static
+void ThreadCache::SetThreadCacheMultiplier(float multiplier) {
   // Two steps:
   // - Set the global limits, which will affect newly created threads.
   // - Enumerate all thread caches and set the limit to the global one.
-  {
-    internal::ScopedGuard scoped_locker(GetLock());
-    ThreadCache* tcache = list_head_;
-
-    // If this is called before *any* thread cache has serviced *any*
-    // allocation, which can happen in tests, and in theory in non-test code as
-    // well.
-    if (!tcache) {
-      return;
+  internal::ScopedGuard scoped_locker(PartitionTlsRegistry::GetLock());
+  bool limits_set = false;
+  ForEachValidThreadCacheLocked([&](ThreadCache* tcache) {
+    if (!limits_set) {
+      // Setting the global limit while locked, because we need
+      // |tcache->root_|.
+      ThreadCache::SetGlobalLimits(tcache->root_, multiplier);
+      limits_set = true;
     }
-
-    // Setting the global limit while locked, because we need |tcache->root_|.
-    ThreadCache::SetGlobalLimits(tcache->root_, multiplier);
-
-    while (tcache) {
-      PA_DCHECK(ThreadCache::IsValid(tcache));
-      for (int index = 0; index < ThreadCache::kBucketCount; index++) {
-        // This is racy, but we don't care if the limit is enforced later, and
-        // we really want to avoid atomic instructions on the fast path.
-        tcache->buckets_[index].limit.store(ThreadCache::global_limits_[index],
-                                            std::memory_order_relaxed);
-      }
-
-      tcache = tcache->next_;
+    for (int index = 0; index < ThreadCache::kBucketCount; index++) {
+      // This is racy, but we don't care if the limit is enforced later, and
+      // we really want to avoid atomic instructions on the fast path.
+      tcache->buckets_[index].limit.store(ThreadCache::global_limits_[index],
+                                          std::memory_order_relaxed);
     }
-  }
+  });
 }
 
-void ThreadCacheRegistry::RunPeriodicPurge() {
-  if (!periodic_purge_is_initialized_) {
+// static
+void ThreadCache::RunPeriodicPurge() {
+  if (!g_periodic_purge_is_initialized) {
     ThreadCache::EnsureThreadSpecificDataInitialized();
-    periodic_purge_is_initialized_ = true;
+    g_periodic_purge_is_initialized = true;
   }
 
   // Summing across all threads can be slow, but is necessary. Otherwise we rely
@@ -276,18 +250,17 @@ void ThreadCacheRegistry::RunPeriodicPurge() {
   // which is fine.
   size_t cached_memory_approx = 0;
   {
-    internal::ScopedGuard scoped_locker(GetLock());
-    ThreadCache* tcache = list_head_;
+    internal::ScopedGuard scoped_locker(PartitionTlsRegistry::GetLock());
+    bool has_tcache = false;
+    ForEachValidThreadCacheLocked([&](ThreadCache* tcache) {
+      has_tcache = true;
+      cached_memory_approx += tcache->cached_memory_;
+    });
     // Can run when there is no thread cache, in which case there is nothing to
     // do, and the task should not be rescheduled. This would typically indicate
     // a case where the thread cache was never enabled, or got disabled.
-    if (!tcache) {
+    if (!has_tcache) {
       return;
-    }
-
-    while (tcache) {
-      cached_memory_approx += tcache->cached_memory_;
-      tcache = tcache->next_;
     }
   }
 
@@ -303,14 +276,14 @@ void ThreadCacheRegistry::RunPeriodicPurge() {
   // of a renderer moving to foreground. To mitigate that, if cached memory
   // jumps is very large, make a greater leap to faster purging.
   if (cached_memory_approx > 10 * kMinCachedMemoryForPurgingBytes) {
-    periodic_purge_next_interval_ =
-        std::min(kDefaultPurgeInterval, periodic_purge_next_interval_ / 2);
+    g_periodic_purge_next_interval =
+        std::min(kDefaultPurgeInterval, g_periodic_purge_next_interval / 2);
   } else if (cached_memory_approx > 2 * kMinCachedMemoryForPurgingBytes) {
-    periodic_purge_next_interval_ =
-        std::max(kMinPurgeInterval, periodic_purge_next_interval_ / 2);
+    g_periodic_purge_next_interval =
+        std::max(kMinPurgeInterval, g_periodic_purge_next_interval / 2);
   } else if (cached_memory_approx < kMinCachedMemoryForPurgingBytes) {
-    periodic_purge_next_interval_ =
-        std::min(kMaxPurgeInterval, periodic_purge_next_interval_ * 2);
+    g_periodic_purge_next_interval =
+        std::min(kMaxPurgeInterval, g_periodic_purge_next_interval * 2);
   }
 
   // Make sure that the next interval is in the right bounds. Even though the
@@ -321,19 +294,15 @@ void ThreadCacheRegistry::RunPeriodicPurge() {
   // of cached memory cannot change between calls (since we do not purge
   // background threads, but only ask them to purge their own cache at the next
   // allocation).
-  periodic_purge_next_interval_ = std::clamp(
-      periodic_purge_next_interval_, kMinPurgeInterval, kMaxPurgeInterval);
+  g_periodic_purge_next_interval = std::clamp(
+      g_periodic_purge_next_interval, kMinPurgeInterval, kMaxPurgeInterval);
 
   PurgeAll();
 }
 
-int64_t ThreadCacheRegistry::GetPeriodicPurgeNextIntervalInMicroseconds()
-    const {
-  return periodic_purge_next_interval_.InMicroseconds();
-}
-
-void ThreadCacheRegistry::ResetForTesting() {
-  periodic_purge_next_interval_ = kDefaultPurgeInterval;
+// static
+int64_t ThreadCache::GetPeriodicPurgeNextIntervalInMicroseconds() {
+  return g_periodic_purge_next_interval.InMicroseconds();
 }
 
 // static
@@ -344,18 +313,21 @@ void ThreadCache::EnsureThreadSpecificDataInitialized() {
 // static
 void ThreadCache::DeleteForTesting() {
   auto* tls = internal::GetTls();
-  if (tls) {
-    for (size_t i = 0; i < internal::kMaxThreadCacheIndex; i++) {
-      auto* tcache = tls->GetThreadCache(i);
-      if (ThreadCache::IsValid(tcache)) {
+  if (!tls) {
+    return;
+  }
+  PartitionTlsRegistry::Instance().Unregister(tls);
+  for (size_t i = 0; i < internal::kMaxThreadCacheIndex; i++) {
+    auto* tcache = tls->GetThreadCache(i);
+    if (ThreadCache::IsValid(tcache)) {
 #if PA_CONFIG(THREAD_CACHE_FAST_TLS)
-        PA_UNSAFE_TODO(internal::g_thread_caches[i]) = nullptr;
+      PA_UNSAFE_TODO(internal::g_thread_caches[i]) = nullptr;
 #endif
-        tcache->~ThreadCache();
-        tls->ClearThreadCache(i);
-      }
+      tcache->~ThreadCache();
+      tls->ClearThreadCache(i);
     }
   }
+  PartitionTlsRegistry::Instance().Register(tls);
 }
 
 // static
@@ -391,10 +363,13 @@ void ThreadCache::RemoveTombstoneForTesting() {
 void ThreadCache::Init(PartitionRoot* root) {
   PA_CHECK(root->buckets_[kBucketCount - 1].slot_size ==
            ThreadCache::kLargeSizeThreshold);
-  // SAFETY: active_bucket_count is validated to be <= kBucketCount.
-  PA_CHECK(PA_UNSAFE_BUFFERS(
-      root->buckets_[ThreadCacheRegistry::Instance().active_bucket_count_ - 1]
-          .slot_size == ThreadCache::kDefaultSizeThreshold));
+  {
+    internal::ScopedGuard scoped_locker(PartitionTlsRegistry::GetLock());
+    // SAFETY: active_bucket_count is validated to be <= kBucketCount.
+    PA_CHECK(
+        PA_UNSAFE_BUFFERS(root->buckets_[g_active_bucket_count - 1].slot_size ==
+                          ThreadCache::kDefaultSizeThreshold));
+  }
   PA_DCHECK(root->settings_.thread_cache_index <
             internal::kMaxThreadCacheIndex);
 
@@ -485,7 +460,11 @@ void ThreadCache::SetLargestCachedSize(size_t size) {
           size, PartitionRoot::BucketDistribution::kNeutral) +
       1;
   PA_CHECK(active_bucket_count <= kBucketCount);
-  ThreadCacheRegistry::Instance().SetActiveBucketCount(active_bucket_count);
+  internal::ScopedGuard scoped_locker(PartitionTlsRegistry::GetLock());
+  g_active_bucket_count = active_bucket_count;
+  ForEachValidThreadCacheLocked([active_bucket_count](ThreadCache* tcache) {
+    tcache->active_bucket_count_ = active_bucket_count;
+  });
 }
 
 // static
@@ -530,33 +509,32 @@ ThreadCache* ThreadCache::Create(PartitionRoot* root, size_t index) {
 }
 
 ThreadCache::ThreadCache(PartitionRoot* root)
-    : active_bucket_count_(
-          ThreadCacheRegistry::Instance().active_bucket_count_),
-      should_purge_(false),
+    : should_purge_(false),
 #if PA_BUILDFLAG(HAS_64_BIT_POINTERS)
       offset_lookup_(root->GetOffsetLookup()),
 #endif  // PA_BUILDFLAG(HAS_64_BIT_POINTERS)
-      root_(root),
       thread_id_(internal::base::PlatformThread::CurrentId()),
-      next_(nullptr),
-      prev_(nullptr),
       scheduler_loop_quarantine_branch_(root, this) {
-  ThreadCacheRegistry::Instance().RegisterThreadCache(this);
+  {
+    internal::ScopedGuard scoped_locker(PartitionTlsRegistry::GetLock());
+    active_bucket_count_ = g_active_bucket_count;
 
-  for (int index = 0; index < kBucketCount; index++) {
-    const auto& root_bucket = PA_UNSAFE_TODO(root->buckets_[index]);
-    Bucket* tcache_bucket = &buckets_[index];
-    tcache_bucket->freelist_head = nullptr;
-    tcache_bucket->count = 0;
-    tcache_bucket->limit.store(global_limits_[index],
-                               std::memory_order_relaxed);
+    for (int index = 0; index < kBucketCount; index++) {
+      const auto& root_bucket = PA_UNSAFE_TODO(root->buckets_[index]);
+      Bucket* tcache_bucket = &buckets_[index];
+      tcache_bucket->freelist_head = nullptr;
+      tcache_bucket->count = 0;
+      tcache_bucket->limit.store(global_limits_[index],
+                                 std::memory_order_relaxed);
 
-    tcache_bucket->slot_size = root_bucket.slot_size;
-    // Invalid bucket.
-    if (!root_bucket.is_valid()) {
-      // Explicitly set this, as size computations iterate over all buckets_.
-      tcache_bucket->limit.store(0, std::memory_order_relaxed);
+      tcache_bucket->slot_size = root_bucket.slot_size;
+      // Invalid bucket.
+      if (!root_bucket.is_valid()) {
+        // Explicitly set this, as size computations iterate over all buckets_.
+        tcache_bucket->limit.store(0, std::memory_order_relaxed);
+      }
     }
+    root_ = root;
   }
 
   // When enabled, initialize scheduler loop quarantine branch.
@@ -567,33 +545,10 @@ ThreadCache::ThreadCache(PartitionRoot* root)
 }
 
 ThreadCache::~ThreadCache() {
-  ThreadCacheRegistry::Instance().UnregisterThreadCache(this);
   // Ordering is important here, as `scheduler_loop_quarantine_branch_` may
   // return quarantined allocations to this thread cache through `Purge()`.
   scheduler_loop_quarantine_branch_.Destroy();
   Purge();
-}
-
-// static
-void ThreadCache::Delete(void* tcache_ptr) {
-  auto* t = reinterpret_cast<ThreadCache*>(tcache_ptr);
-  if (!ThreadCache::IsValid(t)) {
-    return;
-  }
-  auto* tls = internal::GetTls();
-  if (tls) {
-    for (size_t i = 0; i < internal::kMaxThreadCacheIndex; i++) {
-      auto* tc = tls->GetThreadCache(i);
-      if (tc == t) {
-#if PA_CONFIG(THREAD_CACHE_FAST_TLS)
-        PA_UNSAFE_TODO(internal::g_thread_caches[i]) = nullptr;
-#endif
-        tc->~ThreadCache();
-        tls->ClearThreadCache(i);
-        break;
-      }
-    }
-  }
 }
 
 ThreadCache::Bucket::Bucket() {
@@ -774,6 +729,7 @@ void ThreadCache::ResetForTesting() {
   Purge();
   PA_CHECK(cached_memory_ == 0u);
   should_purge_.store(false, std::memory_order_relaxed);
+  g_periodic_purge_next_interval = kDefaultPurgeInterval;
 }
 
 size_t ThreadCache::CachedMemory() const {
@@ -858,17 +814,15 @@ bool ThreadCache::IsInFreelist(UntaggedSlotStart address,
 }  // namespace internal
 
 int64_t ThreadCache::GetPeriodicPurgeNextIntervalInMicroseconds() {
-  return internal::ThreadCacheRegistry::Instance()
-      .GetPeriodicPurgeNextIntervalInMicroseconds();
+  return internal::ThreadCache::GetPeriodicPurgeNextIntervalInMicroseconds();
 }
 
 void ThreadCache::RunPeriodicPurge() {
-  internal::ThreadCacheRegistry::Instance().RunPeriodicPurge();
+  internal::ThreadCache::RunPeriodicPurge();
 }
 
 void ThreadCache::SetThreadCacheMultiplier(float multiplier) {
-  internal::ThreadCacheRegistry::Instance().SetThreadCacheMultiplier(
-      multiplier);
+  internal::ThreadCache::SetThreadCacheMultiplier(multiplier);
 }
 
 void ThreadCache::SetLargestCachedSize(size_t size) {
@@ -885,7 +839,7 @@ void ThreadCache::PurgeCurrentThread() {
 }
 
 void ThreadCache::PurgeAllThread() {
-  internal::ThreadCacheRegistry::Instance().PurgeAll();
+  internal::ThreadCache::PurgeAll();
 }
 
 }  // namespace partition_alloc

@@ -56,7 +56,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) MemoryReclaimer {
   // reclaimer wakes up less often (saving power) while there is little
   // decommittable memory, and more often once there is a lot. This mirrors the
   // adaptive back-off the thread cache periodic purge already uses (see
-  // ThreadCacheRegistry::RunPeriodicPurge()).
+  // ThreadCache::RunPeriodicPurge()).
   //
   // The signal is how much each reclaim actually decommitted, reported by
   // PartitionRoot::PurgeMemory().

@@ -70,6 +70,8 @@ void TlsDestructor(void* value) {
     PartitionTlsSet(key, reinterpret_cast<void*>(kTombstone));
   }
 
+  PartitionTlsRegistry::Instance().Unregister(tls);
+
   for (size_t i = 0; i < kMaxThreadCacheIndex; i++) {
     auto* tcache = tls->GetThreadCache(i);
     if (ThreadCache::IsValid(tcache)) {
@@ -87,7 +89,6 @@ void TlsDestructor(void* value) {
       reinterpret_cast<ThreadCache*>(kTombstone);
 #endif
 
-  PartitionTlsRegistry::Instance().Unregister(tls);
   DestroyAtInternalPartition(tls);
 }
 

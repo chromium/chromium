@@ -55,9 +55,9 @@ using partition_alloc::internal::base::PlatformThreadId;
 
 namespace {
 
-// Scans the process memory to look for the thread cache registry address. This
-// does not need symbols.
-uintptr_t FindThreadCacheRegistry(RemoteProcessMemoryReader& reader) {
+// Scans the process memory to look for the TLS registry address. This does not
+// need symbols.
+uintptr_t FindTlsRegistry(RemoteProcessMemoryReader& reader) {
   return IndexThreadCacheNeedleArray(reader, 1);
 }
 
@@ -153,14 +153,16 @@ class ThreadCacheInspector {
 
   std::vector<BucketStats> AccumulateThreadCacheBuckets();
   std::uint16_t active_bucket_count() {
-    return registry_.get()->active_bucket_count_;
+    return thread_caches_.empty()
+               ? 0
+               : thread_caches_[0].get()->active_bucket_count_;
   }
 
  private:
   uintptr_t registry_addr_;
   pid_t pid_;
   RemoteProcessMemoryReader reader_;
-  RawBuffer<internal::ThreadCacheRegistry> registry_;
+  RawBuffer<internal::PartitionTlsRegistry> registry_;
   std::vector<RawBuffer<internal::ThreadCache>> thread_caches_;
   std::vector<ThreadCacheStats> thread_cache_stats_;
 };
@@ -210,33 +212,28 @@ bool ThreadCacheInspector::GetAllThreadCaches() NO_THREAD_SAFETY_ANALYSIS {
   ScopedSigStopper stopper{pid_};
 
   auto registry =
-      RawBuffer<internal::ThreadCacheRegistry>::ReadFromProcessMemory(
+      RawBuffer<internal::PartitionTlsRegistry>::ReadFromProcessMemory(
           reader_, registry_addr_);
   if (!registry.has_value())
     return false;
 
   registry_ = *registry;
-  internal::ThreadCache* head = registry_.get()->list_head_;
+  internal::PartitionTls* head = registry_.get()->list_head();
   while (head) {
-    auto tcache = RawBuffer<internal::ThreadCache>::ReadFromProcessMemory(
+    auto tls = RawBuffer<internal::PartitionTls>::ReadFromProcessMemory(
         reader_, reinterpret_cast<uintptr_t>(head));
-    if (!tcache.has_value()) {
-      LOG(WARNING) << "Failed to read a ThreadCache";
+    if (!tls.has_value()) {
+      LOG(WARNING) << "Failed to read a PartitionTls";
       return false;
     }
-    uintptr_t stats_addr =
-        reinterpret_cast<uintptr_t>(head) -
-        offsetof(internal::PartitionTls, thread_cache_storage) +
-        offsetof(internal::PartitionTls, thread_cache_stats);
-    auto stats =
-        RawBuffer<ThreadCacheStats>::ReadFromProcessMemory(reader_, stats_addr);
-    if (!stats.has_value()) {
-      LOG(WARNING) << "Failed to read ThreadCacheStats";
-      return false;
+    auto* tcache_ptr =
+        tls->get()->GetThreadCache(internal::kDefaultRootThreadCacheIndex);
+    if (internal::ThreadCache::IsValid(tcache_ptr)) {
+      thread_caches_.push_back(
+          RawBuffer<internal::ThreadCache>::FromData(tcache_ptr));
+      thread_cache_stats_.push_back(tls->get()->thread_cache_stats);
     }
-    thread_caches_.push_back(tcache.value());
-    thread_cache_stats_.push_back(*stats->get());
-    head = tcache->get()->next_;
+    head = tls->get()->next_;
   }
   return true;
 }
@@ -598,11 +595,10 @@ int main(int argc, char** argv) {
 
   // Scan the memory.
   partition_alloc::tools::RemoteProcessMemoryReader reader{pid};
-  uintptr_t registry_address =
-      partition_alloc::tools::FindThreadCacheRegistry(reader);
+  uintptr_t registry_address = partition_alloc::tools::FindTlsRegistry(reader);
   CHECK(registry_address);
 
-  LOG(INFO) << "Getting the thread cache registry";
+  LOG(INFO) << "Getting the TLS registry";
   partition_alloc::tools::ThreadCacheInspector thread_cache_inspector{
       registry_address, pid};
   std::map<PlatformThreadId, std::string> tid_to_name;

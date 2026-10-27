@@ -27,7 +27,7 @@ void DisableThreadCacheForRootIfEnabled(PartitionRoot* root) {
     return;
   }
 
-  ThreadCacheRegistry::Instance().PurgeAll();
+  ThreadCache::PurgeAll();
   root->settings_.with_thread_cache = false;
   root->settings_.thread_cache_index = kInvalidThreadCacheIndex;
 

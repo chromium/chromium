@@ -242,14 +242,12 @@ void BeforeForkInParent() PA_NO_THREAD_SAFETY_ANALYSIS {
       internal::PartitionRootEnumerator::EnumerateOrder::kNormal);
 
   internal::PartitionTlsRegistry::GetLock().Acquire();
-  internal::ThreadCacheRegistry::GetLock().Acquire();
   g_leak_size_map_lock.Acquire();
 }
 
 void ReleaseLocks(bool in_child) PA_NO_THREAD_SAFETY_ANALYSIS {
   UnlockOrReinit(g_leak_size_map_lock, in_child);
   // In reverse order, even though there are no lock ordering dependencies.
-  UnlockOrReinit(internal::ThreadCacheRegistry::GetLock(), in_child);
   UnlockOrReinit(internal::PartitionTlsRegistry::GetLock(), in_child);
   internal::PartitionRootEnumerator::Instance().Enumerate(
       UnlockOrReinitRoot, in_child,
@@ -274,8 +272,7 @@ void AfterForkInChild() {
   // If we don't reclaim this memory, it is lost forever. Note that this is only
   // really an issue if we fork() a multi-threaded process without calling
   // exec() right away, which is discouraged.
-  internal::ThreadCacheRegistry::Instance()
-      .ForcePurgeAllThreadAfterForkUnsafe();
+  internal::ThreadCache::ForcePurgeAllThreadAfterForkUnsafe();
 }
 #endif  // PA_CONFIG(HAS_ATFORK_HANDLER)
 
@@ -1776,11 +1773,10 @@ void PartitionRoot::DumpStats(const char* partition_name,
 
     stats.has_thread_cache = settings_.with_thread_cache;
     if (stats.has_thread_cache) {
-      internal::ThreadCacheRegistry::Instance().DumpStats(
-          true, &stats.current_thread_cache_stats,
-          settings_.thread_cache_index);
-      internal::ThreadCacheRegistry::Instance().DumpStats(
-          false, &stats.all_thread_caches_stats, settings_.thread_cache_index);
+      internal::ThreadCache::DumpStats(true, &stats.current_thread_cache_stats,
+                                       settings_.thread_cache_index);
+      internal::ThreadCache::DumpStats(false, &stats.all_thread_caches_stats,
+                                       settings_.thread_cache_index);
     }
 
     stats.has_scheduler_loop_quarantine =

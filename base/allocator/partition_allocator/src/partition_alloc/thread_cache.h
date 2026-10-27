@@ -21,8 +21,8 @@ namespace partition_alloc {
 namespace tools {
 
 // This is used from ThreadCacheInspector, which runs in a different process. It
-// scans the process memory looking for the two needles, to locate the thread
-// cache registry instance.
+// scans the process memory looking for the two needles, to locate the TLS
+// registry instance.
 //
 // These two values were chosen randomly, and in particular neither is a valid
 // pointer on most 64 bit architectures.
@@ -36,7 +36,7 @@ constexpr uintptr_t kNeedle2 = 0x9615ee1c;
 
 // This array contains, in order:
 // - kNeedle1
-// - &ThreadCacheRegistry::Instance()
+// - &PartitionTlsRegistry::Instance()
 // - kNeedle2
 //
 // It is refererenced in the thread cache constructor to make sure it is not
@@ -53,8 +53,7 @@ constexpr inline size_t kInvalidThreadCacheIndex = static_cast<size_t>(-1);
 
 }  // namespace internal
 
-// Static only struct, working as a wrapper of internal::ThreadCache and
-// internal::ThreadCacheRegistry.
+// Static only struct, working as a wrapper of internal::ThreadCache.
 struct ThreadCache {
   static constexpr float kDefaultMultiplier = 2.;
 
