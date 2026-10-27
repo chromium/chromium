@@ -1056,8 +1056,9 @@ void ProfileManager::CreateMultiProfileAsync(
   do {
     new_path = profile_manager->GenerateNextProfileDirectoryPath();
     // The generated path should be unused and free to use.
-    CHECK_EQ(profile_manager->GetProfileByPath(new_path), nullptr,
-             base::NotFatalUntil::M162);
+    // TODO(crbug.com/577271507): CHECK-exclusion: Convert to a CHECK once we
+    // are confident it won't be triggered.
+    DCHECK_EQ(profile_manager->GetProfileByPath(new_path), nullptr);
     CHECK(profile_manager->CanCreateProfileAtPath(new_path),
           base::NotFatalUntil::M162);
 
