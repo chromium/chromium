@@ -156,7 +156,7 @@ export default function plugin(
       // path before combining with the origin path.
       const fullSourcePath =
           (source.startsWith('/') && !source.startsWith(rootPath)) ?
-          path.join(rootPath, source) :
+          joinPaths(rootPath, source) :
           combinePaths(origin, source);
       if (fullSourcePath.startsWith(rootPath)) {
         const pathFromRoot = relativePath(rootPath, fullSourcePath);
