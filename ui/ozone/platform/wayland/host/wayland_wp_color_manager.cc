@@ -6,8 +6,12 @@
 
 #include <color-management-v1-client-protocol.h>
 
+#include <algorithm>
+
 #include "base/feature_list.h"
 #include "base/logging.h"
+#include "base/numerics/safe_conversions.h"
+#include "skia/ext/skcolorspace_primaries.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 #include "ui/ozone/platform/wayland/host/wayland_output_manager.h"
 
@@ -279,11 +283,34 @@ bool WaylandWpColorManager::PopulateDescriptionCreator(
   }
 
   if (color_space.IsHDR()) {
+    const uint32_t ref_luma = std::max<uint32_t>(
+        1, base::ClampRound<uint32_t>(
+               gfx::HDRMetadata::GetWaylandReferenceLuminance(color_space,
+                                                              hdr_metadata)));
+
+    // The content light levels. When the content light level is unknown,
+    // assume the same peak that tone mapping in viz assumes for HDR content
+    // without metadata. The primary plane always carries explicit metadata
+    // describing its peak, so this fallback only applies to overlays. Never
+    // report a content light level below the reference luminance, since that
+    // claims reference white is unreachable, which compositors may handle by
+    // clipping. Luminances are capped at the maximum that PQ can represent.
+    constexpr float kMaxLuminance = 10000.f;
+    uint32_t cll = std::max<uint32_t>(
+        ref_luma, base::ClampRound<uint32_t>(std::min(
+                      kMaxLuminance,
+                      gfx::HDRMetadata::GetContentMaxLuminance(hdr_metadata))));
+    uint32_t fall = ref_luma;
+    if (hdr_metadata.HasCLLI() && hdr_metadata.GetCLLI().fMaxFALL > 0) {
+      fall = hdr_metadata.GetCLLI().getUint16MaxFALL();
+    }
+
     if (IsSupportedFeature(
-            WP_COLOR_MANAGER_V1_FEATURE_SET_MASTERING_DISPLAY_PRIMARIES)) {
-      if (hdr_metadata.HasMDCV()) {
-        const auto& mdcv = hdr_metadata.GetMDCV();
-        const auto& primaries = mdcv.fDisplayPrimaries;
+            WP_COLOR_MANAGER_V1_FEATURE_SET_MASTERING_DISPLAY_PRIMARIES) &&
+        hdr_metadata.HasMDCV()) {
+      const auto& mdcv = hdr_metadata.GetMDCV();
+      const auto& primaries = mdcv.fDisplayPrimaries;
+      if (primaries != SkNamedPrimariesExt::kInvalid) {
         wp_image_description_creator_params_v1_set_mastering_display_primaries(
             creator, static_cast<int32_t>(primaries.fRX * 1000000),
             static_cast<int32_t>(primaries.fRY * 1000000),
@@ -293,34 +320,40 @@ bool WaylandWpColorManager::PopulateDescriptionCreator(
             static_cast<int32_t>(primaries.fBY * 1000000),
             static_cast<int32_t>(primaries.fWX * 1000000),
             static_cast<int32_t>(primaries.fWY * 1000000));
+      }
 
+      if (mdcv.fMaximumDisplayMasteringLuminance > 0.f) {
+        // Like the content light level, never report a mastering peak below
+        // the reference luminance.
+        const uint32_t mastering_max = std::max<uint32_t>(
+            ref_luma,
+            base::ClampRound<uint32_t>(std::min(
+                kMaxLuminance, mdcv.fMaximumDisplayMasteringLuminance)));
+        // The protocol requires max > min for the mastering luminance.
+        const uint32_t mastering_min = std::min<uint32_t>(
+            base::ClampRound<uint32_t>(
+                std::max(0.f, mdcv.fMinimumDisplayMasteringLuminance) * 10000),
+            mastering_max * 10000 - 1);
         wp_image_description_creator_params_v1_set_mastering_luminance(
-            creator,
-            static_cast<uint32_t>(mdcv.fMinimumDisplayMasteringLuminance *
-                                  10000),
-            static_cast<uint32_t>(mdcv.fMaximumDisplayMasteringLuminance));
+            creator, mastering_min, mastering_max);
+        // Some compositors (e.g. Weston) require max_cll and max_fall to not
+        // exceed the mastering peak. `mastering_max` >= `ref_luma`, so `cll`
+        // stays >= `ref_luma`.
+        cll = std::min(cll, mastering_max);
       }
     }
+    fall = std::min(fall, cll);
 
-    const float ref_luma = gfx::HDRMetadata::GetWaylandReferenceLuminance(
-        color_space, hdr_metadata);
     if (IsSupportedFeature(WP_COLOR_MANAGER_V1_FEATURE_SET_LUMINANCES)) {
-      wp_image_description_creator_params_v1_set_luminances(
-          creator, 0, gfx::HDRMetadata::GetContentMaxLuminance(hdr_metadata),
-          ref_luma);
+      // Use the content peak as the primary color volume's max luminance.
+      // The protocol says `max_lum` is ignored for PQ, but some compositors
+      // (e.g. Hyprland) tone map based on it, so it must not exceed the
+      // content's actual peak. `cll` >= `ref_luma`, which some compositors
+      // (e.g. mutter) require.
+      wp_image_description_creator_params_v1_set_luminances(creator, 0, cll,
+                                                            ref_luma);
     }
 
-    uint32_t cll = ref_luma;
-    uint32_t fall = ref_luma;
-    if (hdr_metadata.HasCLLI()) {
-      const auto& clli = hdr_metadata.GetCLLI();
-      if (clli.fMaxCLL > 0) {
-        cll = clli.getUint16MaxCLL();
-      }
-      if (clli.fMaxFALL > 0) {
-        fall = clli.getUint16MaxFALL();
-      }
-    }
     wp_image_description_creator_params_v1_set_max_cll(creator, cll);
     wp_image_description_creator_params_v1_set_max_fall(creator, fall);
   }

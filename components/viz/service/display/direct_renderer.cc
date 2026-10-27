@@ -300,6 +300,11 @@ void DirectRenderer::DrawFrame(
             .si_format = frame_si_format,
             .color_space = frame_color_space,
 #if BUILDFLAG(IS_OZONE)
+            // Ozone/Wayland forwards this to the system compositor.
+            .hdr_metadata =
+                OverlayProcessorInterface::ComputePrimaryPlaneHDRMetadata(
+                    current_frame()->display_color_spaces, frame_color_space,
+                    current_frame()->root_render_pass->content_color_usage),
             .overlay_testing_mailbox =
                 output_surface_->capabilities().renderer_allocates_images
                     ? GetPrimaryPlaneOverlayTestingMailbox()

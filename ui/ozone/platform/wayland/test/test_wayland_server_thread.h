@@ -32,6 +32,7 @@
 #include "ui/ozone/platform/wayland/test/test_seat.h"
 #include "ui/ozone/platform/wayland/test/test_subcompositor.h"
 #include "ui/ozone/platform/wayland/test/test_viewporter.h"
+#include "ui/ozone/platform/wayland/test/test_wp_color_manager.h"
 #include "ui/ozone/platform/wayland/test/test_wp_linux_drm_syncobj.h"
 #include "ui/ozone/platform/wayland/test/test_wp_pointer_gestures.h"
 #include "ui/ozone/platform/wayland/test/test_zwp_text_input_manager.h"
@@ -62,6 +63,8 @@ struct ServerConfig {
   ShouldUseLinuxDrmSyncobjProtocol use_linux_drm_syncobj =
       ShouldUseLinuxDrmSyncobjProtocol::kNone;
   bool supports_viewporter_surface_scaling = true;
+  // Whether to advertise the wp_color_manager_v1 global.
+  bool supports_color_management = false;
 };
 
 class TestWaylandServerThread;
@@ -142,6 +145,7 @@ class TestWaylandServerThread : public base::Thread,
     return &wp_linux_drm_syncobj_manager_v1_;
   }
   MockZwpLinuxDmabufV1* zwp_linux_dmabuf_v1() { return &zwp_linux_dmabuf_v1_; }
+  TestWpColorManager* wp_color_manager() { return &wp_color_manager_; }
 
   wl_display* display() const { return display_.get(); }
 
@@ -220,6 +224,7 @@ class TestWaylandServerThread : public base::Thread,
   TestWpPointerGestures wp_pointer_gestures_;
   MockXdgActivationV1 xdg_activation_v1_;
   MockXdgToplevelIconManagerV1 xdg_toplevel_icon_manager_v1_;
+  TestWpColorManager wp_color_manager_;
   std::unique_ptr<TestSelectionDeviceManager> primary_selection_device_manager_;
 
   std::vector<std::unique_ptr<GlobalObject>> globals_;

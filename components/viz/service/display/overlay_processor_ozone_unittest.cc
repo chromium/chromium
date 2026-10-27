@@ -13,6 +13,9 @@
 #include "gpu/command_buffer/service/shared_image/shared_image_manager.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/color_space.h"
+#include "ui/gfx/display_color_spaces.h"
+#include "ui/gfx/hdr_metadata.h"
 #include "ui/gfx/linux/native_pixmap_dmabuf.h"
 #include "ui/gfx/native_pixmap.h"
 #include "ui/gfx/native_pixmap_handle.h"
@@ -251,10 +254,112 @@ TEST(OverlayProcessorOzoneTest, ColorSpaceMismatch) {
 // that's already tested in overlay_unittest.cc.
 class TestOverlayProcessorOzone : public OverlayProcessorOzone {
  public:
+  using OverlayProcessorOzone::CreatePrimaryPlane;
   using OverlayProcessorOzone::OverlayProcessorOzone;
 
   int MaxOverlaysConsidered() { return max_overlays_considered_; }
 };
+
+// SDR output color spaces must not get any HDR metadata.
+TEST(OverlayProcessorOzoneTest, PrimaryPlaneHDRMetadataSDROutput) {
+  gfx::DisplayColorSpaces display_color_spaces(gfx::ColorSpace::CreateSRGB());
+  EXPECT_TRUE(OverlayProcessorInterface::ComputePrimaryPlaneHDRMetadata(
+                  display_color_spaces, gfx::ColorSpace::CreateSRGB(),
+                  gfx::ContentColorUsage::kSRGB)
+                  .IsEmpty());
+  EXPECT_TRUE(OverlayProcessorInterface::ComputePrimaryPlaneHDRMetadata(
+                  display_color_spaces, gfx::ColorSpace::CreateSRGB(),
+                  gfx::ContentColorUsage::kHDR)
+                  .IsEmpty());
+}
+
+// When the root render pass has HDR content, the primary plane's peak is the
+// SDR white level scaled by the display's HDR headroom.
+TEST(OverlayProcessorOzoneTest, PrimaryPlaneHDRMetadataHDRContent) {
+  constexpr float kSdrWhite = 500.f;
+  constexpr float kHdrRelative = 2.f;
+  const gfx::ColorSpace output_color_space =
+      gfx::ColorSpace::CreateHDR10().GetWithSdrWhiteLevel(kSdrWhite);
+  gfx::DisplayColorSpaces display_color_spaces(output_color_space);
+  display_color_spaces.SetSDRMaxLuminanceNits(kSdrWhite);
+  display_color_spaces.SetHDRMaxLuminanceRelative(kHdrRelative);
+
+  const gfx::HDRMetadata metadata =
+      OverlayProcessorInterface::ComputePrimaryPlaneHDRMetadata(
+          display_color_spaces, output_color_space,
+          gfx::ContentColorUsage::kHDR);
+  ASSERT_TRUE(metadata.HasCLLI());
+  ASSERT_TRUE(metadata.HasMDCV());
+  EXPECT_FLOAT_EQ(metadata.GetCLLI().fMaxCLL, kSdrWhite * kHdrRelative);
+  EXPECT_FLOAT_EQ(metadata.GetCLLI().fMaxFALL, kSdrWhite);
+  EXPECT_FLOAT_EQ(metadata.GetMDCV().fMaximumDisplayMasteringLuminance,
+                  kSdrWhite * kHdrRelative);
+  EXPECT_FLOAT_EQ(metadata.GetMDCV().fMinimumDisplayMasteringLuminance, 0.f);
+  EXPECT_EQ(metadata.GetMDCV().fDisplayPrimaries,
+            output_color_space.GetPrimaries());
+  EXPECT_FALSE(metadata.HasAgtm());
+}
+
+// When the root render pass has no HDR content but is still output in an HDR
+// color space, the primary plane's peak is the SDR white level.
+TEST(OverlayProcessorOzoneTest, PrimaryPlaneHDRMetadataSDRContent) {
+  constexpr float kSdrWhite = 203.f;
+  const gfx::ColorSpace output_color_space =
+      gfx::ColorSpace::CreateHDR10().GetWithSdrWhiteLevel(kSdrWhite);
+  gfx::DisplayColorSpaces display_color_spaces(output_color_space);
+  display_color_spaces.SetSDRMaxLuminanceNits(kSdrWhite);
+  display_color_spaces.SetHDRMaxLuminanceRelative(4.f);
+
+  for (auto usage : {gfx::ContentColorUsage::kSRGB,
+                     gfx::ContentColorUsage::kWideColorGamut}) {
+    const gfx::HDRMetadata metadata =
+        OverlayProcessorInterface::ComputePrimaryPlaneHDRMetadata(
+            display_color_spaces, output_color_space, usage);
+    ASSERT_TRUE(metadata.HasCLLI());
+    ASSERT_TRUE(metadata.HasMDCV());
+    EXPECT_FLOAT_EQ(metadata.GetCLLI().fMaxCLL, kSdrWhite);
+    EXPECT_FLOAT_EQ(metadata.GetCLLI().fMaxFALL, kSdrWhite);
+    EXPECT_FLOAT_EQ(metadata.GetMDCV().fMaximumDisplayMasteringLuminance,
+                    kSdrWhite);
+  }
+}
+
+// A display that reports less than 1x headroom must not produce a peak below
+// the SDR white level.
+TEST(OverlayProcessorOzoneTest, PrimaryPlaneHDRMetadataNoHeadroom) {
+  constexpr float kSdrWhite = 300.f;
+  const gfx::ColorSpace output_color_space = gfx::ColorSpace::CreateHLG();
+  gfx::DisplayColorSpaces display_color_spaces(output_color_space);
+  display_color_spaces.SetSDRMaxLuminanceNits(kSdrWhite);
+  display_color_spaces.SetHDRMaxLuminanceRelative(0.5f);
+
+  const gfx::HDRMetadata metadata =
+      OverlayProcessorInterface::ComputePrimaryPlaneHDRMetadata(
+          display_color_spaces, output_color_space,
+          gfx::ContentColorUsage::kHDR);
+  ASSERT_TRUE(metadata.HasCLLI());
+  EXPECT_FLOAT_EQ(metadata.GetCLLI().fMaxCLL, kSdrWhite);
+}
+
+// The primary plane candidate carries the HDR metadata from its params.
+TEST(OverlayProcessorOzoneTest, PrimaryPlaneCarriesHDRMetadata) {
+  const gfx::ColorSpace output_color_space = gfx::ColorSpace::CreateHDR10();
+  const gfx::HDRMetadata metadata(skhdr::ContentLightLevelInformation{
+      .fMaxCLL = 1234.f, .fMaxFALL = 203.f});
+  const OverlayCandidate primary_plane =
+      TestOverlayProcessorOzone::CreatePrimaryPlane(
+          OverlayProcessorInterface::PrimaryPlaneParams{
+              .viewport_size = gfx::Size(64, 64),
+              .resource_size_in_pixels = gfx::Size(64, 64),
+              .supports_hdr = true,
+              .si_format = SinglePlaneFormat::kRGBA_1010102,
+              .color_space = output_color_space,
+              .hdr_metadata = metadata,
+          });
+  EXPECT_TRUE(primary_plane.is_root_render_pass);
+  EXPECT_EQ(primary_plane.color_space, output_color_space);
+  EXPECT_EQ(primary_plane.hdr_metadata, metadata);
+}
 
 TEST(OverlayProcessorOzoneTest, ObserveHardwareCapabilites) {
   OverlayCandidateList candidates;

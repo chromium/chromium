@@ -24,6 +24,7 @@
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/rrect_f.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/hdr_metadata.h"
 #include "ui/gfx/overlay_priority_hint.h"
 #include "ui/gfx/swap_result.h"
 
@@ -37,6 +38,10 @@
 
 namespace gpu {
 class SharedImageManager;
+}
+
+namespace gfx {
+class DisplayColorSpaces;
 }
 
 namespace viz {
@@ -102,6 +107,10 @@ class VIZ_SERVICE_EXPORT OverlayProcessorInterface {
     // Android to determine the output color space, especially for HDR output.
     const gfx::ColorSpace color_space;
 
+    // HDR metadata describing the contents of the primary plane. See
+    // ComputePrimaryPlaneHDRMetadata().
+    gfx::HDRMetadata hdr_metadata;
+
 #if BUILDFLAG(IS_OZONE)
     // Ozone requires checking for overlay support with an actual buffer. To
     // create the primary plane, `OverlayProcessorOzone` will use an existing
@@ -163,6 +172,18 @@ class VIZ_SERVICE_EXPORT OverlayProcessorInterface {
 
   // Notifies the OverlayProcessor about the status of the last swap.
   virtual void OnSwapBuffersComplete(gfx::SwapResult swap_result) {}
+
+  // Returns HDR metadata that describes the primary plane after the renderer
+  // has composited the root render pass into `output_color_space`. All HDR
+  // content is tone mapped to at most the display's HDR headroom, so the peak
+  // luminance of the plane is the SDR white level scaled by that headroom when
+  // the root render pass has HDR content, and the SDR white level otherwise.
+  // The frame-average light level is reported as the SDR white level.
+  // Returns empty metadata if `output_color_space` is not HDR.
+  static gfx::HDRMetadata ComputePrimaryPlaneHDRMetadata(
+      const gfx::DisplayColorSpaces& display_color_spaces,
+      const gfx::ColorSpace& output_color_space,
+      gfx::ContentColorUsage content_color_usage);
 
  protected:
   OverlayProcessorInterface() = default;
