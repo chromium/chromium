@@ -1114,45 +1114,53 @@ void BrowserAccessibilityManagerWin::OnAtomicUpdateFinished(
   absl::flat_hash_set<AXPlatformNode*> objs_to_update;
   CollectChangedNodesAndParentsForAtomicUpdate(tree, changes, &objs_to_update);
 
-  std::vector<Microsoft::WRL::ComPtr<BrowserAccessibilityComWin>>
-      com_objs_to_update;
-  com_objs_to_update.reserve(objs_to_update.size());
-  for (auto* node : objs_to_update) {
-    if (auto* com_win = ToBrowserAccessibilityComWin(node)) {
-      com_objs_to_update.emplace_back(com_win);
-    }
-  }
-
-  // Allocate space to hold intermediate state for all nodes.
+  // Allocate space to hold intermediate state for all nodes;
+  // `objs_to_update.size()` is an upper bound on the number of
+  // `BrowserAccessibilityComWin` nodes updated.
   auto update_states =
       base::HeapArray<BrowserAccessibilityComWin::UpdateState>::WithSize(
-          com_objs_to_update.size());
+          objs_to_update.size());
 
   // The first step moves win_attributes_ to old_win_attributes_ and then
-  // recomputes all of win_attributes_ other than IAccessibleText.
+  // recomputes all of win_attributes_ other than IAccessibleText. Also record
+  // the AXNodeID of each node for Step 3 because firing synchronous WinEvents
+  // can mutate the tree and remove individual nodes without destroying `this`.
+  std::vector<AXNodeID> node_ids_to_update;
+  node_ids_to_update.reserve(objs_to_update.size());
   auto state_scan = update_states.begin();
-  for (const auto& com_win : com_objs_to_update) {
-    com_win->UpdateStep1ComputeWinAttributes(&*state_scan);
-    ++state_scan;
+  for (auto* node : objs_to_update) {
+    if (auto* com_win = ToBrowserAccessibilityComWin(node)) {
+      com_win->UpdateStep1ComputeWinAttributes(&*state_scan);
+      node_ids_to_update.push_back(com_win->GetDelegate()->GetId());
+      ++state_scan;
+    }
   }
 
   // The next step updates the hypertext of each node, which is a
   // concatenation of all of its child text nodes, so it can't run until
   // the text of all of the nodes was computed in the previous step.
-  for (const auto& com_win : com_objs_to_update) {
-    com_win->UpdateStep2ComputeHypertext();
+  for (auto* node : objs_to_update) {
+    if (auto* com_win = ToBrowserAccessibilityComWin(node)) {
+      com_win->UpdateStep2ComputeHypertext();
+    }
   }
 
   // The third step fires events on nodes based on what's changed - like
   // if the name, value, or description changed, or if the hypertext had
-  // text inserted or removed. It's able to figure out exactly what changed
-  // because we still have old_win_attributes_ populated.
-  // This step has to run after the previous two steps complete because the
+  // text inserted or removed. It's able to figure out those details because
+  // old_win_attributes_ is still pinned in update_states.
+  // This has to run after all nodes have been updated because a
   // client may walk the tree when it receives any of these events.
   // At the end, it deletes old_win_attributes_ since they're not needed
   // anymore.
-  for (const auto& com_win : com_objs_to_update) {
-    com_win->UpdateStep3FireEvents();
+  base::WeakPtr<AXTreeManager> alive = GetWeakPtr();
+  for (AXNodeID id : node_ids_to_update) {
+    if (auto* com_win = ToBrowserAccessibilityComWin(GetFromID(id))) {
+      com_win->UpdateStep3FireEvents();
+      if (!alive) {
+        return;
+      }
+    }
   }
 }
 

@@ -44,7 +44,9 @@ void BrowserAccessibilityWin::UpdatePlatformNode() {
 }
 
 void BrowserAccessibilityWin::UpdatePlatformAttributes() {
-  Microsoft::WRL::ComPtr<BrowserAccessibilityComWin> com_win = GetCOM();
+  // Safe to use a raw pointer because Steps 1 and 2 do not pump synchronous
+  // events, and Step 3 holds a self-reference around `FireNativeEvent()`.
+  BrowserAccessibilityComWin* com_win = GetCOM();
   if (!com_win || com_win->update_state_) {
     return;
   }

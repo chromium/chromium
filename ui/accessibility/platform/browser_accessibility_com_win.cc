@@ -62,6 +62,13 @@ BrowserAccessibilityComWin::BrowserAccessibilityComWin()
 
 BrowserAccessibilityComWin::~BrowserAccessibilityComWin() = default;
 
+void BrowserAccessibilityComWin::Destroy() {
+  // Clears transient update state to prevent dangling pointers to
+  // `update_states` if this node is destroyed mid-atomic-update.
+  update_state_ = nullptr;
+  AXPlatformNodeWin::Destroy();
+}
+
 void BrowserAccessibilityComWin::OnReferenced() {
   TRACE_EVENT_INSTANT("accessibility", "OnReferenced",
                       perfetto::Flow::FromPointer(this));
@@ -1719,16 +1726,23 @@ void BrowserAccessibilityComWin::ComputeStylesIfNeeded() {
 
 void BrowserAccessibilityComWin::UpdateStep1ComputeWinAttributes(
     UpdateState* update_state) {
-  DCHECK(!update_state_);
   DCHECK(win_attributes_);
 
   BrowserAccessibilityWin* const owner = GetOwner();
 
   // Move win_attributes_ and hypertext_ into update_state, allowing us to see
   // exactly what changed and fire appropriate events. Note that update_state is
-  // destroyed after UpdateStep3FireEvents.
-  update_state->old_win_attributes = std::move(win_attributes_);
-  update_state->old_hypertext = std::move(hypertext_);
+  // destroyed after UpdateStep3FireEvents. If a re-entrant atomic update
+  // occurs while an outer update is in UpdateStep3FireEvents, preserve the
+  // baseline state from before the outer update.
+  if (update_state_) {
+    update_state->old_win_attributes =
+        std::move(update_state_->old_win_attributes);
+    update_state->old_hypertext = std::move(update_state_->old_hypertext);
+  } else {
+    update_state->old_win_attributes = std::move(win_attributes_);
+    update_state->old_hypertext = std::move(hypertext_);
+  }
 
   // Hold a pointer to this node's update state (which the caller of this
   // function shall keep valid) until the end of UpdateStep3FireEvents.
@@ -1760,10 +1774,22 @@ void BrowserAccessibilityComWin::UpdateStep2ComputeHypertext() {
 }
 
 void BrowserAccessibilityComWin::UpdateStep3FireEvents() {
-  DCHECK(update_state_);
+  // `update_state_` is null if a re-entrant atomic update during an earlier
+  // node's event dispatch already ran Step 3 and cleared `update_state_` for
+  // this node.
+  if (!update_state_) {
+    return;
+  }
   DCHECK(update_state_->old_win_attributes);
 
-  Microsoft::WRL::ComPtr<BrowserAccessibilityComWin> this_ref(this);
+  // Hold a reference to `this` only when calling `FireNativeEvent`, as pumping
+  // in-context WinEvent hooks can destroy `owner` and drop its reference to
+  // `this`, while unconditionally calling `AddRef()`/`Release()` wakes dormant
+  // nodes and emits trace events. `this_ref` must be declared before
+  // `clear_update_state` so that `clear_update_state` runs before `this_ref` is
+  // released and potentially deletes `this`.
+  Microsoft::WRL::ComPtr<BrowserAccessibilityComWin> this_ref;
+
   absl::Cleanup clear_update_state = [this] { update_state_ = nullptr; };
 
   if (IsDestroyed()) {
@@ -1787,8 +1813,11 @@ void BrowserAccessibilityComWin::UpdateStep3FireEvents() {
   if (old_win_attributes.ia_role != 0) {
     // Fire an event if the description, help, or value changes.
     if (description() != old_win_attributes.description) {
+      if (!this_ref) {
+        this_ref = this;
+      }
       FireNativeEvent(EVENT_OBJECT_DESCRIPTIONCHANGE);
-      if (IsDestroyed()) {
+      if (IsDestroyed() || !update_state_) {
         return;
       }
     }
@@ -1799,13 +1828,16 @@ void BrowserAccessibilityComWin::UpdateStep3FireEvents() {
     if (owner->GetIntAttribute(ax::mojom::IntAttribute::kScrollX, &sx) &&
         owner->GetIntAttribute(ax::mojom::IntAttribute::kScrollY, &sy)) {
       if (sx != previous_scroll_x_ || sy != previous_scroll_y_) {
+        previous_scroll_x_ = sx;
+        previous_scroll_y_ = sy;
+        if (!this_ref) {
+          this_ref = this;
+        }
         FireNativeEvent(EVENT_SYSTEM_SCROLLINGEND);
-        if (IsDestroyed()) {
+        if (IsDestroyed() || !update_state_) {
           return;
         }
       }
-      previous_scroll_x_ = sx;
-      previous_scroll_y_ = sy;
     }
 
     // Fire hypertext-related events.
@@ -1820,16 +1852,22 @@ void BrowserAccessibilityComWin::UpdateStep3FireEvents() {
       if (old_len > 0) {
         // In-process screen readers may call IAccessibleText::get_oldText
         // in reaction to this event to retrieve the text that was removed.
+        if (!this_ref) {
+          this_ref = this;
+        }
         FireNativeEvent(IA2_EVENT_TEXT_REMOVED);
-        if (IsDestroyed()) {
+        if (IsDestroyed() || !update_state_) {
           return;
         }
       }
       if (new_len > 0) {
         // In-process screen readers may call IAccessibleText::get_newText
         // in reaction to this event to retrieve the text that was inserted.
+        if (!this_ref) {
+          this_ref = this;
+        }
         FireNativeEvent(IA2_EVENT_TEXT_INSERTED);
-        if (IsDestroyed()) {
+        if (IsDestroyed() || !update_state_) {
           return;
         }
       }
