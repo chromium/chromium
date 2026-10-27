@@ -2316,6 +2316,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithWebContentsWarming,
       return no_webview_manager->web_client_manager()
           .has_pending_web_client_receiver_for_testing();
     }));
+    ASSERT_TRUE(content::WaitForLoadStop(no_webview_manager->guest_contents()));
     return;
   }
 
@@ -5620,11 +5621,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testClientStorage) {
 }
 
 auto DefaultTestParamSet() {
-#if BUILDFLAG(IS_ANDROID)
-  return testing::Values(TestParams{});
-#else
   return testing::Values(TestParams{}, TestParams{.no_webview = true});
-#endif
 }
 
 INSTANTIATE_TEST_SUITE_P(,
@@ -5641,16 +5638,11 @@ INSTANTIATE_TEST_SUITE_P(,
 
 INSTANTIATE_TEST_SUITE_P(,
                          GlicApiTestWithRequestMonitor,
-#if BUILDFLAG(IS_ANDROID)
-                         testing::Values(TestParams{},
-                                         TestParams{.enable_ssr = true}),
-#else
                          testing::Values(TestParams{},
                                          TestParams{.enable_ssr = true},
                                          TestParams{.no_webview = true},
                                          TestParams{.no_webview = true,
                                                     .enable_ssr = true}),
-#endif
                          &WithTestParams::PrintTestVariant);
 
 INSTANTIATE_TEST_SUITE_P(
