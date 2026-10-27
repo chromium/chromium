@@ -10,6 +10,7 @@ import android.view.View;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.CalledByNativeForTesting;
+import org.jni_zero.JniPtr;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
@@ -17,6 +18,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask.NativeBrowserWindowInterface;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTaskFeature;
 
 /** JNI bridge for communicating with the native {@code SidePanelCoordinatorAndroid}. */
@@ -38,9 +40,8 @@ final class SidePanelCoordinatorAndroidBridge implements ChromeAndroidTaskFeatur
 
     @Override
     public void onAddedToTask(InitInfo initInfo) {
-        long nativeBrowserWindowPtr = initInfo.nativeBrowserWindowPtr;
-        log(TAG, "onAddedToTask", nativeBrowserWindowPtr);
-        createNativePtr(nativeBrowserWindowPtr);
+        log(TAG, "onAddedToTask");
+        createNativePtr(initInfo.nativeBrowserWindow);
     }
 
     @Override
@@ -149,15 +150,15 @@ final class SidePanelCoordinatorAndroidBridge implements ChromeAndroidTaskFeatur
         }
     }
 
-    private void createNativePtr(long nativeBrowserWindowPtr) {
-        log(TAG, "createNativePtr", nativeBrowserWindowPtr);
-        assert nativeBrowserWindowPtr != 0
+    private void createNativePtr(@Nullable JniPtr<NativeBrowserWindowInterface> browserWindow) {
+        log(TAG, "createNativePtr");
+        assert browserWindow != null
                 : "Native BrowserWindowInterface pointer shouldn't be null. Is the"
                         + " ChromeAndroidTaskFeatureKey correct?";
         assert mNativeSidePanelCoordinatorAndroid == 0
                 : "Native SidePanelCoordinatorAndroid already exists";
         mNativeSidePanelCoordinatorAndroid =
-                SidePanelCoordinatorAndroidBridgeJni.get().create(this, nativeBrowserWindowPtr);
+                SidePanelCoordinatorAndroidBridgeJni.get().create(this, browserWindow);
     }
 
     private void destroyNativePtr() {
@@ -277,10 +278,12 @@ final class SidePanelCoordinatorAndroidBridge implements ChromeAndroidTaskFeatur
          * Creates a native {@code SidePanelCoordinatorAndroid}.
          *
          * @param caller The Java object calling this method.
-         * @param nativeBrowserWindowPtr The pointer to the native {@code BrowserWindowInterface}.
+         * @param browserWindow The native {@code BrowserWindowInterface}.
          * @return The address of the native {@code SidePanelCoordinatorAndroid}.
          */
-        long create(SidePanelCoordinatorAndroidBridge caller, long nativeBrowserWindowPtr);
+        long create(
+                SidePanelCoordinatorAndroidBridge caller,
+                JniPtr<NativeBrowserWindowInterface> browserWindow);
 
         /**
          * Destroys the native {@code SidePanelCoordinatorAndroid}.

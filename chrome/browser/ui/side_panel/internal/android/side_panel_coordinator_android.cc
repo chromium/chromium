@@ -1014,12 +1014,11 @@ SidePanelCoordinatorAndroid::GetKeyToShow(TabAndroid* tab) const {
 static int64_t JNI_SidePanelCoordinatorAndroidBridge_Create(
     JNIEnv* env,
     const JavaRef<jobject>& caller,
-    int64_t nativeBrowserWindowPtr) {
-  SPLOG("JNI_SidePanelCoordinatorAndroidBridge_Create - ptr: "
-        << nativeBrowserWindowPtr);
-  return reinterpret_cast<intptr_t>(new SidePanelCoordinatorAndroid(
-      env, caller,
-      reinterpret_cast<BrowserWindowInterface*>(nativeBrowserWindowPtr)));
+    BrowserWindowInterface* browser_window) {
+  SPLOG(
+      "JNI_SidePanelCoordinatorAndroidBridge_Create - ptr: " << browser_window);
+  return reinterpret_cast<intptr_t>(
+      new SidePanelCoordinatorAndroid(env, caller, browser_window));
 }
 
 DEFINE_JNI(SidePanelCoordinatorAndroidBridge)
