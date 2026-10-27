@@ -14,6 +14,7 @@
 #include "base/path_service.h"
 #include "base/scoped_environment_variable_override.h"
 #include "device/vr/openxr/linux/openxr_platform_helper_linux.h"
+#include "device/vr/openxr/openxr_api_wrapper.h"
 #include "device/vr/openxr/openxr_platform.h"
 #include "device/vr/openxr/test/openxr_mock_helper.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -55,6 +56,23 @@ UseSwiftShaderVulkan() {
       "VK_ICD_FILENAMES", icd_path));
   return overrides;
 }
+
+// Records whether its max texture size was read before Initialize(), when the
+// Vulkan binding only has a fallback for it.
+class EarlyQueryRecordingBinding : public OpenXrGraphicsBindingVulkan {
+ public:
+  using OpenXrGraphicsBindingVulkan::OpenXrGraphicsBindingVulkan;
+
+  gfx::Size GetMaxTextureSize() override {
+    queried_before_initialize_ |= !CanUseSharedImages();
+    return OpenXrGraphicsBindingVulkan::GetMaxTextureSize();
+  }
+
+  bool queried_before_initialize() const { return queried_before_initialize_; }
+
+ private:
+  bool queried_before_initialize_ = false;
+};
 
 }  // namespace
 
@@ -201,6 +219,19 @@ TEST_F(OpenXrGraphicsBindingVulkanTest, GetMaxTextureSize) {
   gfx::Size max_size = binding_->GetMaxTextureSize();
   EXPECT_GT(max_size.width(), 0);
   EXPECT_GT(max_size.height(), 0);
+}
+
+// The view sizes are clamped to the max texture size, so OpenXrApiWrapper has
+// to initialize the binding before it sizes the views. Otherwise a runtime
+// that recommends 3024 pixels per eye gets 2048, half the 4096 fallback.
+TEST_F(OpenXrGraphicsBindingVulkanTest, ApiWrapperInitializesBeforeSizing) {
+  ASSERT_TRUE(XR_SUCCEEDED(helper_->CreateInstance(&xr_instance_)));
+
+  EarlyQueryRecordingBinding binding(helper_->GetExtensionEnumeration());
+  std::unique_ptr<OpenXrApiWrapper> wrapper =
+      OpenXrApiWrapper::Create(xr_instance_, &binding);
+  ASSERT_TRUE(wrapper);
+  EXPECT_FALSE(binding.queried_before_initialize());
 }
 
 TEST_F(OpenXrGraphicsBindingVulkanTest, CleanupWithoutSubmitDoesNotCrash) {

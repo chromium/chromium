@@ -193,10 +193,6 @@ bool OpenXrApiWrapper::Initialize(XrInstance instance,
     return false;
   }
 
-  if (!graphics_binding_->Initialize(instance_, system_)) {
-    return false;
-  }
-
   DCHECK(IsInitialized());
 
   return true;
@@ -334,6 +330,12 @@ XrResult OpenXrApiWrapper::InitializeSystem() {
   DCHECK(!HasSystem());
 
   RETURN_IF_XR_FAILED(GetSystem(instance_, &system_));
+
+  // The view configurations are clamped to the binding's max texture size,
+  // which a binding may only know once it is initialized.
+  if (!graphics_binding_->Initialize(instance_, system_)) {
+    return XR_ERROR_INITIALIZATION_FAILED;
+  }
 
   RETURN_IF_XR_FAILED(
       InitializeViewConfig(kPrimaryViewConfiguration, primary_view_config_));

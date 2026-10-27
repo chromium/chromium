@@ -70,10 +70,10 @@ class OpenXrApiWrapper {
   OpenXrApiWrapper(const OpenXrApiWrapper&) = delete;
   OpenXrApiWrapper& operator=(const OpenXrApiWrapper&) = delete;
 
-  ~OpenXrApiWrapper();
+  DEVICE_VR_EXPORT ~OpenXrApiWrapper();
   bool IsInitialized() const;
 
-  static std::unique_ptr<OpenXrApiWrapper> Create(
+  DEVICE_VR_EXPORT static std::unique_ptr<OpenXrApiWrapper> Create(
       XrInstance instance,
       OpenXrGraphicsBinding* graphics_binding);
 

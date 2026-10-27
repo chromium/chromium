@@ -421,9 +421,9 @@ void OpenXrGraphicsBindingVulkan::CleanupWithoutSubmit() {
 }
 
 gfx::Size OpenXrGraphicsBindingVulkan::GetMaxTextureSize() {
-  // Queried during session setup (InitializeViewConfig), which runs before the
-  // graphics binding's Initialize() creates the Vulkan context. Fall back to
-  // the conservative default until the real VkPhysicalDevice limit is known.
+  // The VkPhysicalDevice limit is only known once Initialize() has created the
+  // Vulkan context. OpenXrApiWrapper initializes the binding before it sizes
+  // the views, so the fallback is only for a binding that is not initialized.
   return vulkan_ ? vulkan_->max_texture_size() : gfx::Size(4096, 4096);
 }
 
