@@ -24,7 +24,7 @@ pub mod internal {
 // `FEATURE_ENABLED_FOR_COUNTRIES`) defined in C++ are not supported for
 /// Rust-defined features and are omitted here.
 #[repr(i32)]
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum FeatureState {
     Disabled = 0,
     Enabled = 1,
@@ -41,7 +41,7 @@ pub struct Feature {
     /// constructor.
     name: &'static c_char,
     /// The default state of the feature.
-    pub default_state: FeatureState,
+    default_state: FeatureState,
     /// Cached override state, used by C++ FeatureList::IsEnabled.
     /// Initialized to 0.
     cached_value: AtomicU32,
@@ -85,6 +85,11 @@ impl Feature {
     /// Check if the feature is enabled.
     pub fn is_enabled(&self) -> bool {
         ffi::FeatureList::IsEnabled(self.into())
+    }
+
+    /// Return the feature's default state.
+    pub fn default_state(&self) -> FeatureState {
+        self.default_state
     }
 }
 

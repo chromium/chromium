@@ -46,7 +46,7 @@ void RuntimeMutableFeaturesHandlerBase::HandleFetchRuntimeMutableFeatures(
     const bool enabled =
         (override_state == base::FeatureList::OVERRIDE_ENABLE_FEATURE) ||
         (override_state == base::FeatureList::OVERRIDE_USE_DEFAULT &&
-         feature.default_state == base::FEATURE_ENABLED_BY_DEFAULT);
+         feature.GetDefaultState() == base::FEATURE_ENABLED_BY_DEFAULT);
 
     // Determine which field trial, if any, is controlling the feature's
     // enabled/disabled state, and retrieve its group. Note, that we can

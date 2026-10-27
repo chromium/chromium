@@ -446,7 +446,7 @@ bool IsDefaultANGLEVulkan() {
   // population to protect, so answer directly.
   if (feature_list &&
       !feature_list->IsFeatureOverridden(features::kDefaultANGLEVulkan.name) &&
-      features::kDefaultANGLEVulkan.default_state ==
+      features::kDefaultANGLEVulkan.GetDefaultState() ==
           base::FEATURE_DISABLED_BY_DEFAULT) {
     return false;
   }

@@ -162,7 +162,7 @@ constinit std::atomic<TimeConstraints> g_time_constraints;
 
 // static
 void PlatformThreadApple::InitializeFeatures() {
-  CHECK((kOptimizedRealtimeThreadingMac.default_state ==
+  CHECK((kOptimizedRealtimeThreadingMac.GetDefaultState() ==
          FEATURE_ENABLED_BY_DEFAULT) ==
         kOptimizedRealtimeThreadingMacDefaultEnabled);
   CHECK(kOptimizedRealtimeThreadingMacPreemptible.default_value ==

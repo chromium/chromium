@@ -256,9 +256,13 @@ struct BASE_EXPORT LOGICALLY_CONST Feature {
   // "MyGreatFeature".
   const char* const name;
 
-  // The default state (i.e. enabled or disabled) for this feature.
+  // Returns the default state (i.e. enabled or disabled) for this feature.
   // NOTE: The actual runtime state may be different, due to a field trial or a
   // command line switch.
+  FeatureState GetDefaultState() const { return default_state; }
+
+  // TODO(crbug.com/564547797): Make private once internal callers migrate to
+  // GetDefaultState().
   const FeatureState default_state;
 
  protected:

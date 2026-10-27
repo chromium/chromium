@@ -29,6 +29,8 @@ base_feature_param!(
 
 #[gtest(RustFeatureTest, DefaultStates)]
 fn test_default_states() {
+    expect_eq!(FeatureOnByDefault.default_state(), FeatureState::Enabled);
+    expect_eq!(FeatureOffByDefault.default_state(), FeatureState::Disabled);
     expect_true!(FeatureOnByDefault.is_enabled());
     expect_false!(FeatureOffByDefault.is_enabled());
 }

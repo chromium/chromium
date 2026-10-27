@@ -63,7 +63,7 @@ bool IsFeatureEnabled(const base::Feature& feature) {
     }
   }
 
-  return feature.default_state == base::FEATURE_ENABLED_BY_DEFAULT;
+  return feature.GetDefaultState() == base::FEATURE_ENABLED_BY_DEFAULT;
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 

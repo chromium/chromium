@@ -79,7 +79,7 @@ bool ShouldSetupSystemTracing() {
   if (base::FeatureList::GetInstance()) {
     return base::FeatureList::IsEnabled(features::kEnablePerfettoSystemTracing);
   }
-  return features::kEnablePerfettoSystemTracing.default_state ==
+  return features::kEnablePerfettoSystemTracing.GetDefaultState() ==
          base::FEATURE_ENABLED_BY_DEFAULT;
 }
 

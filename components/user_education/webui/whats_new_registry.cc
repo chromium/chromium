@@ -24,14 +24,14 @@ bool WhatsNewModule::HasActiveFeature() const {
     return false;
   }
   return base::FeatureList::IsEnabled(*feature_) &&
-         feature_->default_state == base::FEATURE_DISABLED_BY_DEFAULT;
+         feature_->GetDefaultState() == base::FEATURE_DISABLED_BY_DEFAULT;
 }
 
 bool WhatsNewModule::HasRolledFeature() const {
   if (!HasFeature()) {
     return false;
   }
-  return feature_->default_state == base::FEATURE_ENABLED_BY_DEFAULT;
+  return feature_->GetDefaultState() == base::FEATURE_ENABLED_BY_DEFAULT;
 }
 
 bool WhatsNewModule::IsFeatureEnabled() const {

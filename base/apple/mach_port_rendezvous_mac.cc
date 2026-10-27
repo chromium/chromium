@@ -343,7 +343,7 @@ namespace {
 // Helper function to avoid the compiler detecting that comparisons involving
 // `default_state` are compile-time constants and declaring code as unreachable.
 bool IsEnabledByDefault(const Feature& feature) {
-  return feature.default_state == FEATURE_ENABLED_BY_DEFAULT;
+  return feature.GetDefaultState() == FEATURE_ENABLED_BY_DEFAULT;
 }
 
 MachPortRendezvousPeerValidationPolicy GetDefaultPeerValidationPolicy() {

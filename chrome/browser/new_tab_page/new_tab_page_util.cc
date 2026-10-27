@@ -148,8 +148,8 @@ bool IsFeatureEnabled(const base::Feature& feature) {
     return IsFeatureForceEnabled(feature);
   }
 
-  bool is_default_enabled =
-      feature.default_state == base::FeatureState::FEATURE_ENABLED_BY_DEFAULT;
+  bool is_default_enabled = feature.GetDefaultState() ==
+                            base::FeatureState::FEATURE_ENABLED_BY_DEFAULT;
   LogModuleEnablement(feature, is_default_enabled,
                       "default feature flag value");
   return is_default_enabled;

@@ -53,7 +53,7 @@ const char* g_title_to_use_for_app = nullptr;
 
 bool ShowRadioButtons() {
   // This UI is only for prototyping and is not intended for shipping.
-  CHECK_EQ(features::kDesktopPWAsTabStripSettings.default_state,
+  CHECK_EQ(features::kDesktopPWAsTabStripSettings.GetDefaultState(),
            base::FEATURE_DISABLED_BY_DEFAULT, base::NotFatalUntil::M162);
   return base::FeatureList::IsEnabled(blink::features::kDesktopPWAsTabStrip) &&
          base::FeatureList::IsEnabled(features::kDesktopPWAsTabStripSettings);

@@ -74,7 +74,7 @@ bool ScopedAddFeatureFlags::IsEnabledWithParameter(
   if (std::ranges::contains(enabled_features_, feature_name)) {
     return true;
   }
-  return feature.default_state == FEATURE_ENABLED_BY_DEFAULT;
+  return feature.GetDefaultState() == FEATURE_ENABLED_BY_DEFAULT;
 }
 
 void ScopedAddFeatureFlags::AddFeatureIfNotSet(const Feature& feature,
