@@ -26,8 +26,9 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabSupplierObserver;
-import org.chromium.chrome.browser.tabmodel.TabClosingSource;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
+import org.chromium.chrome.browser.tabmodel.TabCreatorUtil;
+import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorSupplier;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.external_intents.ExternalNavigationHandler;
@@ -300,15 +301,25 @@ public abstract class OpenInAppEntryPoint implements OpenInAppMenuItemProvider {
                             Tab tab = delegate.getTab();
                             Runnable closeTab =
                                     () -> {
+                                        if (tab.isClosing() || tab.isDestroyed()) return;
                                         var tabModelSelector =
                                                 TabModelSelectorSupplier.getValueOrNullFrom(
                                                         tab.getWindowAndroid());
                                         if (tabModelSelector == null) return;
+                                        // Do not close window when last tab in window is opened in
+                                        // an existing PWA (matching PWA install in
+                                        // WebApkReparentingHandler#detachAndRegisterTabAndClear).
+                                        if (tab.isTabInBrowser() && !tab.isOffTheRecord()) {
+                                            TabModel tabModel =
+                                                    tabModelSelector.getModel(
+                                                            /* incognito= */ false);
+                                            if (tabModel.getCount() == 1) {
+                                                TabCreatorUtil.launchNtp(tabModel.getTabCreator());
+                                            }
+                                        }
                                         tabModelSelector.closeTab(
                                                 TabClosureParams.closeTab(tab)
                                                         .allowUndo(/* allowUndo= */ false)
-                                                        .tabClosingSource(
-                                                                TabClosingSource.OPEN_IN_APP)
                                                         .build());
                                     };
                             // This is posted to prevent a crash as a result of the WebContents

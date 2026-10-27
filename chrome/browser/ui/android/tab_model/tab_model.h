@@ -224,8 +224,6 @@ class TabModel : public TabListInterface {
     KEYBOARD_SHORTCUT,
     // Tab closing is from vertical tab strip.
     VERTICAL_TAB_STRIP,
-    // Tab closing is from Open in app.
-    OPEN_IN_APP,
     // Tab closing is from Quick Delete.
     QUICK_DELETE,
     // Tab closing is from grid tab switcher.

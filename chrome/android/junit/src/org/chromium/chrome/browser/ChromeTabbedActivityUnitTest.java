@@ -361,7 +361,6 @@ public class ChromeTabbedActivityUnitTest {
         assertTrue(mActivity.shouldRemoveWindowWithZeroTabs(TabClosingSource.TABLET_TAB_STRIP));
         assertTrue(mActivity.shouldRemoveWindowWithZeroTabs(TabClosingSource.KEYBOARD_SHORTCUT));
         assertTrue(mActivity.shouldRemoveWindowWithZeroTabs(TabClosingSource.VERTICAL_TAB_STRIP));
-        assertTrue(mActivity.shouldRemoveWindowWithZeroTabs(TabClosingSource.OPEN_IN_APP));
         assertTrue(mActivity.shouldRemoveWindowWithZeroTabs(TabClosingSource.UNKNOWN));
 
         // Off-the-record profile case (Verify it closes unconditionally).
@@ -374,7 +373,6 @@ public class ChromeTabbedActivityUnitTest {
         assertTrue(mActivity.shouldRemoveWindowWithZeroTabs(TabClosingSource.TABLET_TAB_STRIP));
         assertTrue(mActivity.shouldRemoveWindowWithZeroTabs(TabClosingSource.KEYBOARD_SHORTCUT));
         assertTrue(mActivity.shouldRemoveWindowWithZeroTabs(TabClosingSource.VERTICAL_TAB_STRIP));
-        assertTrue(mActivity.shouldRemoveWindowWithZeroTabs(TabClosingSource.OPEN_IN_APP));
         assertTrue(mActivity.shouldRemoveWindowWithZeroTabs(TabClosingSource.UNKNOWN));
     }
 
@@ -393,7 +391,6 @@ public class ChromeTabbedActivityUnitTest {
         assertTrue(mActivity.shouldRemoveWindowWithZeroTabs(TabClosingSource.TABLET_TAB_STRIP));
         assertTrue(mActivity.shouldRemoveWindowWithZeroTabs(TabClosingSource.KEYBOARD_SHORTCUT));
         assertTrue(mActivity.shouldRemoveWindowWithZeroTabs(TabClosingSource.VERTICAL_TAB_STRIP));
-        assertTrue(mActivity.shouldRemoveWindowWithZeroTabs(TabClosingSource.OPEN_IN_APP));
         assertTrue(mActivity.shouldRemoveWindowWithZeroTabs(TabClosingSource.UNKNOWN));
 
         // Off-the-record profile case (Verify it closes unconditionally).
@@ -406,7 +403,6 @@ public class ChromeTabbedActivityUnitTest {
         assertTrue(mActivity.shouldRemoveWindowWithZeroTabs(TabClosingSource.TABLET_TAB_STRIP));
         assertTrue(mActivity.shouldRemoveWindowWithZeroTabs(TabClosingSource.KEYBOARD_SHORTCUT));
         assertTrue(mActivity.shouldRemoveWindowWithZeroTabs(TabClosingSource.VERTICAL_TAB_STRIP));
-        assertTrue(mActivity.shouldRemoveWindowWithZeroTabs(TabClosingSource.OPEN_IN_APP));
         assertTrue(mActivity.shouldRemoveWindowWithZeroTabs(TabClosingSource.UNKNOWN));
     }
 
@@ -423,7 +419,6 @@ public class ChromeTabbedActivityUnitTest {
         assertTrue(mActivity.shouldRemoveWindowWithZeroTabs(TabClosingSource.TABLET_TAB_STRIP));
         assertTrue(mActivity.shouldRemoveWindowWithZeroTabs(TabClosingSource.KEYBOARD_SHORTCUT));
         assertTrue(mActivity.shouldRemoveWindowWithZeroTabs(TabClosingSource.VERTICAL_TAB_STRIP));
-        assertTrue(mActivity.shouldRemoveWindowWithZeroTabs(TabClosingSource.OPEN_IN_APP));
         assertTrue(mActivity.shouldRemoveWindowWithZeroTabs(TabClosingSource.UNKNOWN));
 
         // Off-the-record profile case (Verify it closes unconditionally even when GTS is enabled)
@@ -436,7 +431,6 @@ public class ChromeTabbedActivityUnitTest {
         assertTrue(mActivity.shouldRemoveWindowWithZeroTabs(TabClosingSource.TABLET_TAB_STRIP));
         assertTrue(mActivity.shouldRemoveWindowWithZeroTabs(TabClosingSource.KEYBOARD_SHORTCUT));
         assertTrue(mActivity.shouldRemoveWindowWithZeroTabs(TabClosingSource.VERTICAL_TAB_STRIP));
-        assertTrue(mActivity.shouldRemoveWindowWithZeroTabs(TabClosingSource.OPEN_IN_APP));
         assertTrue(mActivity.shouldRemoveWindowWithZeroTabs(TabClosingSource.UNKNOWN));
     }
 
