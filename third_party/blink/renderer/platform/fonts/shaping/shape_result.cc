@@ -2300,7 +2300,8 @@ void ShapeResult::ComputePositionData(bool allow_compaction) const {
     kUnknown,
     kVariable,
     kMono
-  } advance_type = kIsRtl ? AdvanceType::kVariable : AdvanceType::kUnknown;
+  } advance_type =
+      allow_compaction ? AdvanceType::kUnknown : AdvanceType::kVariable;
   TextRunLayoutUnit mono_advance;
   wtf_size_t mono_glyph_count = 0;
 
@@ -2331,7 +2332,9 @@ void ShapeResult::ComputePositionData(bool allow_compaction) const {
         first_character_index =
             num_characters_ - first_logical_index - run.glyph_data_.size();
         gap_position = total_advance.ToCeil<LayoutUnit>();
-      } else if (advance_type != AdvanceType::kVariable) {
+      }
+
+      if (advance_type != AdvanceType::kVariable) {
         if (first_character_index != mono_glyph_count ||
             (advance_type == AdvanceType::kMono &&
              mono_advance != run.glyph_data_.CompactAdvance())) {
@@ -2397,9 +2400,9 @@ void ShapeResult::ComputePositionData(bool allow_compaction) const {
       }
 
       // Track whether this result is "monospace": every glyph maps 1:1 to a
-      // character in identity order (glyph N at character N), all glyphs share
-      // a single advance, and every glyph boundary is safe to break. Only then
-      // can positions be reconstructed analytically as `advance * offset`.
+      // character in visual order, all glyphs share a single advance, and every
+      // glyph boundary is safe to break. Only then can positions be
+      // reconstructed analytically as `advance * visual_offset`.
       // Ligatures, clusters, characters without glyphs, or unsafe boundaries
       // keep the full per-character table.
       switch (advance_type) {
@@ -2441,10 +2444,11 @@ void ShapeResult::ComputePositionData(bool allow_compaction) const {
     }
   }
 
-  if (allow_compaction && advance_type == AdvanceType::kMono && !kIsRtl &&
+  if (allow_compaction && advance_type == AdvanceType::kMono &&
       NumCharacters() > 1 && mono_glyph_count == num_characters_) {
-    // Every glyph shares one advance, maps 1:1 to a character in identity
-    // order, and is safe to break before, so positions are `advance * offset`.
+    // Every glyph shares one advance, maps 1:1 to a character in visual
+    // order, and is safe to break before, so positions are
+    // `advance * visual_offset`.
     // Keep only that advance (in element 0's union slot) and drop the
     // per-character table; read paths reconstruct positions analytically when
     // `character_position_.size() == 1 && NumCharacters() > 1`.
@@ -2456,6 +2460,49 @@ void ShapeResult::ComputePositionData(bool allow_compaction) const {
   width_ = total_advance;
 }
 
+bool ShapeResult::TryComputePositionDataFromCompactRuns() const {
+  CHECK_GT(num_characters_, 1u);
+  CHECK(character_position_.empty());
+
+  unsigned num_glyphs = 0;
+  TextRunLayoutUnit shared_advance;
+  for (const auto& run : runs_) {
+    if (!run) [[unlikely]] {
+      continue;
+    }
+    CHECK_EQ(IsRtl(), run->IsRtl());
+    if (!run->glyph_data_.IsCompact() || run->start_index_ < start_index_) {
+      return false;
+    }
+
+    if (run->glyph_data_.size() > num_characters_ - num_glyphs) {
+      return false;
+    }
+    const wtf_size_t expected_start =
+        IsRtl() ? num_characters_ - num_glyphs - run->glyph_data_.size()
+                : num_glyphs;
+    if (run->start_index_ - start_index_ != expected_start) {
+      return false;
+    }
+    if (num_glyphs && shared_advance != run->glyph_data_.CompactAdvance()) {
+      return false;
+    }
+    shared_advance = run->glyph_data_.CompactAdvance();
+    num_glyphs += run->glyph_data_.size();
+  }
+  if (num_glyphs != num_characters_) {
+    return false;
+  }
+
+  character_position_.reserve(1);
+  character_position_.resize(1);
+  ShapeResultCharacterData& first = character_position_.front();
+  first.SetCachedData(LayoutUnit(), true, true);
+  first.advance = shared_advance;
+  width_ = (shared_advance.To<InlineLayoutUnit>() * num_glyphs).ToFloat();
+  return true;
+}
+
 void ShapeResult::EnsurePositionData(bool allow_compaction) const {
   // `character_position_` holds either the full per-character table or, for a
   // constant-advance (monospace) result, a single compacted entry. Callers that
@@ -2464,6 +2511,14 @@ void ShapeResult::EnsurePositionData(bool allow_compaction) const {
   // need the full table rebuilt if only the compacted form is present.
   if (!character_position_.empty() &&
       (allow_compaction || character_position_.size() == num_characters_)) {
+    return;
+  }
+  // LTR position-cache compaction predates the glyph compaction feature.
+  if (IsRtl() && !RuntimeEnabledFeatures::MonospaceGlyphCompactionEnabled()) {
+    allow_compaction = false;
+  }
+  if (allow_compaction && num_characters_ > 1 &&
+      TryComputePositionDataFromCompactRuns()) {
     return;
   }
 
@@ -2498,10 +2553,8 @@ wtf_size_t ShapeResult::CachedOffsetForPosition(LayoutUnit x) const {
   }
 
   if (IsPositionDataCompacted()) [[unlikely]] {
-    // Monospace fast path: invert `position = advance * offset`. Estimate the
-    // offset, then adjust by at most one step so the result matches what the
-    // binary search below would return: the largest offset whose position
-    // (per `CachedPositionForOffset`) is <= x.
+    // Invert `position = advance * visual_offset`, matching the binary search's
+    // largest visual offset whose position is <= x.
     const int64_t advance_raw = character_position_.front().advance.RawValue();
     if (advance_raw <= 0) [[unlikely]] {
       return 0;
@@ -2511,17 +2564,20 @@ wtf_size_t ShapeResult::CachedOffsetForPosition(LayoutUnit x) const {
     const int64_t x_raw_16 =
         int64_t{x.RawValue()}
         << (InlineLayoutUnit::kFractionalBits - LayoutUnit::kFractionalBits);
-    wtf_size_t offset = static_cast<wtf_size_t>(x_raw_16 / advance_raw);
-    if (offset >= length) {
-      offset = length - 1;
+    // At the positive saturation limit, all later positions also equal x.
+    // Otherwise, ceiling to LayoutUnit preserves the quotient's <= x boundary.
+    wtf_size_t visual_offset = length - 1;
+    if (!x.MightBeSaturated()) {
+      visual_offset =
+          std::min(static_cast<wtf_size_t>(x_raw_16 / advance_raw), length - 1);
     }
-    while (offset + 1 < length && CachedPositionForOffset(offset + 1) <= x) {
-      ++offset;
+    if (!rtl) {
+      return visual_offset;
     }
-    while (offset > 0 && CachedPositionForOffset(offset) > x) {
-      --offset;
-    }
-    return offset;
+    // The border belongs to the logical next character.
+    return CachedPositionForOffset(length - visual_offset) == x
+               ? length - visual_offset
+               : length - visual_offset - 1;
   }
   DCHECK_EQ(character_position_.size(), length);
 
@@ -2556,18 +2612,20 @@ LayoutUnit ShapeResult::CachedPositionForOffset(wtf_size_t offset) const {
 
   const bool rtl = IsRtl();
   const wtf_size_t length = NumCharacters();
+  if (IsPositionDataCompacted()) [[unlikely]] {
+    const wtf_size_t visual_offset = rtl ? length - offset : offset;
+    if (visual_offset == length) {
+      return LayoutUnit::FromFloatCeil(width_);
+    }
+    // Match the full table's fixed-point accumulation without intermediate
+    // rounding. Only the outer edge above uses the float-rounded total width.
+    const InlineLayoutUnit position =
+        character_position_.front().advance.To<InlineLayoutUnit>() *
+        visual_offset;
+    return position.ToCeil<LayoutUnit>();
+  }
   if (!rtl) {
     if (offset < length) {
-      if (IsPositionDataCompacted()) [[unlikely]] {
-        // Monospace fast path: positions were collapsed to a single shared
-        // advance. `advance * offset` equals the accumulated table value (`+=`
-        // accumulates raw values without intermediate rounding), so this is
-        // bit-identical to the per-character table. 64-bit math avoids overflow
-        // on long runs.
-        const InlineLayoutUnit position = InlineLayoutUnit::FromRawValue(
-            int64_t{character_position_.front().advance.RawValue()} * offset);
-        return position.ToCeil<LayoutUnit>();
-      }
       DCHECK_EQ(character_position_.size(), length);
       return character_position_[offset].x_position;
     }

@@ -242,7 +242,9 @@ class PLATFORM_EXPORT ShapeResult : public GarbageCollected<ShapeResult> {
   // constant-advance (monospace) result the cache is compacted to a single
   // shared advance; pass `allow_compaction = false` to force the full
   // per-character table, which mutators that read or write per-character data
-  // (e.g. auto-spacing) require.
+  // (e.g. auto-spacing) require. Compatible LTR or RTL compact glyph runs can
+  // build the shared-advance cache directly without allocating a per-character
+  // table.
   void EnsurePositionData(bool allow_compaction = true) const;
 
   const ShapeResultCharacterData& CharacterData(wtf_size_t offset) const;
@@ -425,6 +427,7 @@ class PLATFORM_EXPORT ShapeResult : public GarbageCollected<ShapeResult> {
 
   template <bool>
   void ComputePositionData(bool allow_compaction) const;
+  bool TryComputePositionDataFromCompactRuns() const;
   bool IsPositionDataCompacted() const {
     return character_position_.size() == 1 && NumCharacters() > 1;
   }

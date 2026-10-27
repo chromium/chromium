@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_view.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
+#include "third_party/blink/renderer/platform/heap/thread_state_scopes.h"
 #include "third_party/blink/renderer/platform/testing/font_test_base.h"
 #include "third_party/blink/renderer/platform/testing/font_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
@@ -81,6 +82,14 @@ class ShapeResultTest : public FontTestBase {
 
   static wtf_size_t PositionDataSize(const ShapeResult& result) {
     return result.character_position_.size();
+  }
+
+  static wtf_size_t PositionDataCapacity(const ShapeResult& result) {
+    return result.character_position_.capacity();
+  }
+
+  static void ReserveSinglePositionEntry(ShapeResult& result) {
+    result.character_position_.reserve(1);
   }
 
   static ShapeResultRun* InsertConstantAdvanceRun(ShapeResult* result,
@@ -392,25 +401,107 @@ TEST_F(ShapeResultTest, AddUnsafeToBreakRange) {
   }
 }
 
-TEST_F(ShapeResultTest, UnsafeBreaksPreventPositionCompaction) {
-  ShapeResult* result =
-      MakeGarbageCollected<ShapeResult>(0, 4, TextDirection::kLtr);
-  result->InsertRunForTesting(0, 4, TextDirection::kLtr, {0, 2});
+class ShapeResultPositionCacheTest
+    : public ShapeResultTest,
+      public testing::WithParamInterface<TextDirection> {
+ private:
+  ScopedMonospaceGlyphCompactionForTest scoped_feature_{true};
+};
+
+INSTANTIATE_TEST_SUITE_P(ShapeResultTest,
+                         ShapeResultPositionCacheTest,
+                         testing::Values(TextDirection::kLtr,
+                                         TextDirection::kRtl));
+
+TEST_P(ShapeResultPositionCacheTest, PositionCompactionRespectsFeatureFlag) {
+  constexpr unsigned kStart = 13;
+  constexpr unsigned kGlyphsPerRun = 8;
+  constexpr unsigned kNumCharacters = 2 * kGlyphsPerRun;
+  for (bool enabled : {false, true}) {
+    SCOPED_TRACE(enabled);
+    ScopedMonospaceGlyphCompactionForTest scoped_feature(enabled);
+    for (unsigned compact_runs : {0u, 1u, 2u}) {
+      SCOPED_TRACE(compact_runs);
+      ShapeResult* result =
+          MakeGarbageCollected<ShapeResult>(kStart, kNumCharacters, GetParam());
+      ShapeResult* reference =
+          MakeGarbageCollected<ShapeResult>(kStart, kNumCharacters, GetParam());
+      for (unsigned i = 0; i < 2; ++i) {
+        const unsigned run_start = kStart + i * kGlyphsPerRun;
+        InsertConstantAdvanceRun(result, run_start, kGlyphsPerRun,
+                                 TextRunLayoutUnit(10), i < compact_runs);
+        InsertConstantAdvanceRun(reference, run_start, kGlyphsPerRun,
+                                 TextRunLayoutUnit(10), /*compact=*/false);
+      }
+      reference->EnsurePositionData(/*allow_compaction=*/false);
+      result->EnsurePositionData();
+      EXPECT_EQ(enabled || IsLtr(GetParam()) ? 1u : kNumCharacters,
+                PositionDataSize(*result));
+      EXPECT_EQ(reference->Width(), result->Width());
+      for (unsigned offset = 0; offset <= kNumCharacters; ++offset) {
+        EXPECT_EQ(reference->CachedPositionForOffset(offset),
+                  result->CachedPositionForOffset(offset));
+        if (offset < kNumCharacters) {
+          EXPECT_EQ(reference->CachedNextSafeToBreakOffset(kStart + offset),
+                    result->CachedNextSafeToBreakOffset(kStart + offset));
+        }
+        EXPECT_EQ(reference->CachedPreviousSafeToBreakOffset(kStart + offset),
+                  result->CachedPreviousSafeToBreakOffset(kStart + offset));
+      }
+      for (int x = -1; x <= reference->Width() + 1; ++x) {
+        EXPECT_EQ(reference->CachedOffsetForPosition(LayoutUnit(x)),
+                  result->CachedOffsetForPosition(LayoutUnit(x)));
+      }
+    }
+  }
+}
+
+TEST_P(ShapeResultPositionCacheTest,
+       ExistingCompactPositionDataSurvivesFeatureDisable) {
+  constexpr unsigned kNumCharacters = 16;
+  for (bool compact_glyphs : {false, true}) {
+    SCOPED_TRACE(compact_glyphs);
+    ShapeResult* result =
+        MakeGarbageCollected<ShapeResult>(0, kNumCharacters, GetParam());
+    InsertConstantAdvanceRun(result, 0, kNumCharacters, TextRunLayoutUnit(10),
+                             compact_glyphs);
+    result->EnsurePositionData();
+    ASSERT_EQ(1u, PositionDataSize(*result));
+
+    ScopedMonospaceGlyphCompactionForTest scoped_feature(false);
+    result->EnsurePositionData();
+    EXPECT_EQ(1u, PositionDataSize(*result));
+    for (unsigned offset = 0; offset <= kNumCharacters; ++offset) {
+      const LayoutUnit position(
+          (IsLtr(GetParam()) ? offset : kNumCharacters - offset) * 10);
+      EXPECT_EQ(position, result->CachedPositionForOffset(offset));
+      EXPECT_EQ(offset, result->CachedOffsetForPosition(position));
+    }
+    result->EnsurePositionData(/*allow_compaction=*/false);
+    EXPECT_EQ(kNumCharacters, PositionDataSize(*result));
+  }
+}
+
+TEST_P(ShapeResultPositionCacheTest, UnsafeBreaksPreventPositionCompaction) {
+  ShapeResult* result = MakeGarbageCollected<ShapeResult>(0, 4, GetParam());
+  result->InsertRunForTesting(0, 4, GetParam(), {0, 2});
   result->EnsurePositionData(/*allow_compaction=*/true);
+  EXPECT_EQ(4u, PositionDataSize(*result));
   EXPECT_EQ(2u, result->CachedNextSafeToBreakOffset(1));
   EXPECT_EQ(0u, result->CachedPreviousSafeToBreakOffset(1));
 
-  result = MakeGarbageCollected<ShapeResult>(0, 4, TextDirection::kLtr);
-  result->InsertRunForTesting(0, 4, TextDirection::kLtr, {1, 2, 3});
+  result = MakeGarbageCollected<ShapeResult>(0, 4, GetParam());
+  result->InsertRunForTesting(0, 4, GetParam(), {1, 2, 3});
   result->EnsurePositionData(/*allow_compaction=*/true);
+  EXPECT_EQ(4u, PositionDataSize(*result));
   EXPECT_EQ(1u, result->CachedNextSafeToBreakOffset(0));
 }
 
-TEST_F(ShapeResultTest, CompactPositionDataRebuildsFullTable) {
+TEST_P(ShapeResultPositionCacheTest, CompactPositionDataRebuildsFullTable) {
   constexpr wtf_size_t kNumCharacters = 8;
   ShapeResult* result =
-      MakeGarbageCollected<ShapeResult>(0, kNumCharacters, TextDirection::kLtr);
-  result->InsertRunForTesting(0, kNumCharacters, TextDirection::kLtr,
+      MakeGarbageCollected<ShapeResult>(0, kNumCharacters, GetParam());
+  result->InsertRunForTesting(0, kNumCharacters, GetParam(),
                               {0, 1, 2, 3, 4, 5, 6, 7});
 
   result->EnsurePositionData(/*allow_compaction=*/true);
@@ -430,6 +521,7 @@ TEST_F(ShapeResultTest, CompactPositionDataRebuildsFullTable) {
 }
 
 TEST_F(ShapeResultTest, RtlCompactGlyphStorageBuildsPositionData) {
+  ScopedMonospaceGlyphCompactionForTest enable_compaction(true);
   Font* font = test::CreateTestFont(
       AtomicString("Noto Mono"),
       test::BlinkWebTestsDir() +
@@ -457,10 +549,10 @@ TEST_F(ShapeResultTest, RtlCompactGlyphStorageBuildsPositionData) {
                   .GetGlyphDataRange()
                   .IsCompactSource());
 
-  full_result->EnsurePositionData();
+  full_result->EnsurePositionData(/*allow_compaction=*/false);
   compact_result->EnsurePositionData();
   ASSERT_EQ(string.length(), PositionDataSize(*full_result));
-  ASSERT_EQ(string.length(), PositionDataSize(*compact_result));
+  ASSERT_EQ(1u, PositionDataSize(*compact_result));
   for (unsigned offset = 0; offset <= string.length(); ++offset) {
     EXPECT_EQ(full_result->CachedPositionForOffset(offset),
               compact_result->CachedPositionForOffset(offset));
@@ -485,10 +577,159 @@ TEST_F(ShapeResultTest, RtlCompactGlyphStorageBuildsPositionData) {
   }
 }
 
-TEST_F(ShapeResultTest, CompactRunsForceFullPositionData) {
+TEST_P(ShapeResultPositionCacheTest,
+       CompactRunsBuildPositionDataWithoutFullTable) {
+  constexpr unsigned kStart = 13;
+  constexpr unsigned kGlyphsPerRun = 32768;
+  for (unsigned num_runs : {1u, 2u}) {
+    SCOPED_TRACE(num_runs);
+    const unsigned num_characters = num_runs * kGlyphsPerRun;
+    for (int advance_raw : {0, 1, 1023, 65536, 629146, 6124123, 4402067,
+                            TextRunLayoutUnit::Max().RawValue(), -629146}) {
+      SCOPED_TRACE(advance_raw);
+      const TextRunLayoutUnit advance =
+          TextRunLayoutUnit::FromRawValue(advance_raw);
+      ShapeResult* result =
+          MakeGarbageCollected<ShapeResult>(kStart, num_characters, GetParam());
+      ShapeResult* reference =
+          MakeGarbageCollected<ShapeResult>(kStart, num_characters, GetParam());
+      for (unsigned i = 0; i < num_runs; ++i) {
+        const unsigned run_start = kStart + i * kGlyphsPerRun;
+        InsertConstantAdvanceRun(result, run_start, kGlyphsPerRun, advance,
+                                 /*compact=*/true);
+        InsertConstantAdvanceRun(reference, run_start, kGlyphsPerRun, advance,
+                                 /*compact=*/false);
+      }
+      reference->EnsurePositionData(/*allow_compaction=*/false);
+
+      // Only the final shared-advance entry is available. Allocating a
+      // temporary per-character table would violate NoAllocationScope.
+      ReserveSinglePositionEntry(*result);
+      ASSERT_EQ(0u, PositionDataSize(*result));
+      ASSERT_EQ(1u, PositionDataCapacity(*result));
+      {
+        ThreadState::NoAllocationScope no_allocation(ThreadState::Current());
+        result->EnsurePositionData();
+        result->EnsurePositionData();
+      }
+      ASSERT_EQ(1u, PositionDataSize(*result));
+      EXPECT_EQ(1u, PositionDataCapacity(*result));
+      EXPECT_EQ(reference->Width(), result->Width());
+      EXPECT_TRUE(result->CharacterData(kStart).is_cluster_base);
+      EXPECT_TRUE(result->CharacterData(kStart).safe_to_break_before);
+      for (unsigned offset :
+           {0u, 1u, 269u, kGlyphsPerRun - 1, kGlyphsPerRun, num_characters}) {
+        SCOPED_TRACE(offset);
+        const LayoutUnit position = reference->CachedPositionForOffset(offset);
+        EXPECT_EQ(position, result->CachedPositionForOffset(offset));
+        EXPECT_EQ(reference->CachedWidth(kStart, kStart + offset),
+                  result->CachedWidth(kStart, kStart + offset));
+        for (int delta : {-1, 0, 1}) {
+          const LayoutUnit x = position + LayoutUnit::FromRawValue(delta);
+          EXPECT_EQ(reference->CachedOffsetForPosition(x),
+                    result->CachedOffsetForPosition(x));
+        }
+        if (offset < num_characters) {
+          EXPECT_EQ(reference->CachedNextSafeToBreakOffset(kStart + offset),
+                    result->CachedNextSafeToBreakOffset(kStart + offset));
+        }
+        EXPECT_EQ(reference->CachedPreviousSafeToBreakOffset(kStart + offset),
+                  result->CachedPreviousSafeToBreakOffset(kStart + offset));
+      }
+    }
+  }
+}
+
+TEST_P(ShapeResultPositionCacheTest, CompactPositionDataSaturatedOffsets) {
+  constexpr unsigned kNumCharacters = 32768;
+  ShapeResult* result =
+      MakeGarbageCollected<ShapeResult>(0, kNumCharacters, GetParam());
+  ShapeResult* reference =
+      MakeGarbageCollected<ShapeResult>(0, kNumCharacters, GetParam());
+  InsertConstantAdvanceRun(result, 0, kNumCharacters, TextRunLayoutUnit(2048),
+                           /*compact=*/true);
+  InsertConstantAdvanceRun(reference, 0, kNumCharacters,
+                           TextRunLayoutUnit(2048),
+                           /*compact=*/false);
+  result->EnsurePositionData();
+  reference->EnsurePositionData(/*allow_compaction=*/false);
+  ASSERT_EQ(1u, PositionDataSize(*result));
+  ASSERT_EQ(kNumCharacters, PositionDataSize(*reference));
+  ASSERT_GT(result->Width(), LayoutUnit::Max().ToFloat());
+
+  for (LayoutUnit x :
+       {LayoutUnit(), LayoutUnit(2048),
+        LayoutUnit::Max() - LayoutUnit::FromRawValue(1), LayoutUnit::Max()}) {
+    SCOPED_TRACE(x);
+    EXPECT_EQ(reference->CachedOffsetForPosition(x),
+              result->CachedOffsetForPosition(x));
+  }
+  EXPECT_EQ(IsLtr(GetParam()) ? kNumCharacters - 1 : 1u,
+            result->CachedOffsetForPosition(LayoutUnit::Max()));
+}
+
+TEST_P(ShapeResultPositionCacheTest, CompactPositionDataFastPathFallbacks) {
+  constexpr unsigned kStart = 13;
+  struct TestCase {
+    unsigned first_run_offset;
+    unsigned second_run_offset;
+    unsigned num_characters;
+    int second_advance;
+    bool second_is_compact;
+    unsigned expected_cache_size;
+  };
+  const TestCase test_cases[] = {
+      {0, 8, 16, 11, true, 16},   // Different advances.
+      {0, 10, 18, 10, true, 18},  // Gap between runs.
+      {2, 10, 18, 10, true, 18},  // Leading characters without glyphs.
+      {0, 8, 18, 10, true, 18},   // Trailing characters without glyphs.
+      {0, 8, 16, 10, false,
+       1},  // Mixed storage still compacts via the fallback.
+  };
+  for (const TestCase& test_case : test_cases) {
+    SCOPED_TRACE(test_case.first_run_offset);
+    SCOPED_TRACE(test_case.second_run_offset);
+    SCOPED_TRACE(test_case.num_characters);
+    SCOPED_TRACE(test_case.second_advance);
+    SCOPED_TRACE(test_case.second_is_compact);
+    ShapeResult* result = MakeGarbageCollected<ShapeResult>(
+        kStart, test_case.num_characters, GetParam());
+    ShapeResult* reference = MakeGarbageCollected<ShapeResult>(
+        kStart, test_case.num_characters, GetParam());
+    for (ShapeResult* target : {result, reference}) {
+      InsertConstantAdvanceRun(target, kStart + test_case.first_run_offset, 8,
+                               TextRunLayoutUnit(10),
+                               /*compact=*/target == result);
+      InsertConstantAdvanceRun(
+          target, kStart + test_case.second_run_offset, 8,
+          TextRunLayoutUnit(test_case.second_advance),
+          /*compact=*/target == result && test_case.second_is_compact);
+    }
+    reference->EnsurePositionData(/*allow_compaction=*/false);
+    result->EnsurePositionData();
+    EXPECT_EQ(test_case.expected_cache_size, PositionDataSize(*result));
+    EXPECT_EQ(reference->Width(), result->Width());
+    for (unsigned offset = 0; offset <= test_case.num_characters; ++offset) {
+      EXPECT_EQ(reference->CachedPositionForOffset(offset),
+                result->CachedPositionForOffset(offset));
+      if (offset < test_case.num_characters) {
+        EXPECT_EQ(reference->CachedNextSafeToBreakOffset(kStart + offset),
+                  result->CachedNextSafeToBreakOffset(kStart + offset));
+      }
+      EXPECT_EQ(reference->CachedPreviousSafeToBreakOffset(kStart + offset),
+                result->CachedPreviousSafeToBreakOffset(kStart + offset));
+    }
+    for (int x = -1; x <= reference->Width() + 1; ++x) {
+      EXPECT_EQ(reference->CachedOffsetForPosition(LayoutUnit(x)),
+                result->CachedOffsetForPosition(LayoutUnit(x)));
+    }
+  }
+}
+
+TEST_P(ShapeResultPositionCacheTest, CompactRunsForceFullPositionData) {
   constexpr unsigned kNumCharacters = 16;
   ShapeResult* result =
-      MakeGarbageCollected<ShapeResult>(0, kNumCharacters, TextDirection::kLtr);
+      MakeGarbageCollected<ShapeResult>(0, kNumCharacters, GetParam());
   ShapeResultRun* run = InsertConstantAdvanceRun(
       result, 0, kNumCharacters, TextRunLayoutUnit(10), /*compact=*/true);
   result->EnsurePositionData(/*allow_compaction=*/false);
@@ -536,6 +777,75 @@ TEST_F(ShapeResultTest, CompactPositionDataWithGapsMatchesFullStorage) {
       EXPECT_EQ(expected.safe_to_break_before, actual.safe_to_break_before);
     }
     EXPECT_EQ(full_result->Width(), compact_result->Width());
+  }
+}
+
+TEST_P(ShapeResultPositionCacheTest,
+       DirectCompactPositionDataPreservesAutoSpacing) {
+  constexpr unsigned kNumCharacters = 16;
+  ShapeResult* result =
+      MakeGarbageCollected<ShapeResult>(0, kNumCharacters, GetParam());
+  ShapeResult* reference =
+      MakeGarbageCollected<ShapeResult>(0, kNumCharacters, GetParam());
+  for (ShapeResult* target : {result, reference}) {
+    InsertConstantAdvanceRun(target, 0, kNumCharacters, TextRunLayoutUnit(10),
+                             /*compact=*/target == result);
+  }
+  result->EnsurePositionData();
+  ASSERT_EQ(1u, PositionDataSize(*result));
+  EXPECT_EQ(1u, PositionDataCapacity(*result));
+  reference->EnsurePositionData(/*allow_compaction=*/false);
+  for (unsigned spacing_offset : {4u, 6u}) {
+    for (ShapeResult* target : {result, reference}) {
+      target->ApplyTextAutoSpacing({{spacing_offset, 2}});
+    }
+    result->EnsurePositionData();
+    ASSERT_EQ(kNumCharacters, PositionDataSize(*result));
+    EXPECT_EQ(reference->Width(), result->Width());
+    EXPECT_TRUE(result->HasAutoSpacingAfter(3));
+    EXPECT_TRUE(result->HasAutoSpacingBefore(spacing_offset));
+    for (unsigned offset = 0; offset <= kNumCharacters; ++offset) {
+      EXPECT_EQ(reference->CachedPositionForOffset(offset),
+                result->CachedPositionForOffset(offset));
+      EXPECT_EQ(reference->HasAutoSpacingAfter(offset),
+                result->HasAutoSpacingAfter(offset));
+    }
+  }
+}
+
+TEST_P(ShapeResultPositionCacheTest, CompactPositionDataMatchesFullTable) {
+  constexpr wtf_size_t kNumCharacters = 16;
+  for (int advance_raw : {1, 511, 1023, 1024, 1025, 65536, 629146}) {
+    SCOPED_TRACE(advance_raw);
+    const TextRunLayoutUnit advance =
+        TextRunLayoutUnit::FromRawValue(advance_raw);
+    for (bool compact_glyphs : {false, true}) {
+      SCOPED_TRACE(compact_glyphs);
+      ShapeResult* result =
+          MakeGarbageCollected<ShapeResult>(0, kNumCharacters, GetParam());
+      ShapeResult* reference =
+          MakeGarbageCollected<ShapeResult>(0, kNumCharacters, GetParam());
+      InsertConstantAdvanceRun(result, 0, kNumCharacters, advance,
+                               compact_glyphs);
+      InsertConstantAdvanceRun(reference, 0, kNumCharacters, advance,
+                               /*compact=*/false);
+      reference->EnsurePositionData(/*allow_compaction=*/false);
+      result->EnsurePositionData();
+      ASSERT_EQ(1u, PositionDataSize(*result));
+      for (wtf_size_t offset = 0; offset <= kNumCharacters; ++offset) {
+        EXPECT_EQ(reference->CachedPositionForOffset(offset),
+                  result->CachedPositionForOffset(offset));
+      }
+      for (int raw_x = -1;
+           raw_x <=
+           LayoutUnit::FromFloatCeil(reference->Width()).RawValue() + 1;
+           ++raw_x) {
+        const LayoutUnit x = LayoutUnit::FromRawValue(raw_x);
+        EXPECT_EQ(reference->CachedOffsetForPosition(x),
+                  result->CachedOffsetForPosition(x))
+            << x;
+      }
+    }
   }
 }
 
