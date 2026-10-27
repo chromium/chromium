@@ -175,6 +175,12 @@ class PLATFORM_EXPORT PropertyTreeStateOrAlias
   using PropertyTreeStateOrAliasBase::PropertyTreeStateOrAliasBase;
   using PropertyTreeStateOrAliasBase::operator=;
 
+  // Walks `Effect()` up to the nearest untainted ancestor and strips trailing
+  // tainted pixel-moving filter clip expanders from `Clip()` so origin-tainted
+  // filter subtrees are excluded during read-back allowed rendering. No-op in
+  // drawable canvas subtrees, where tainted filters are already disallowed.
+  void StripTaintedFilters();
+
   String ToString() const;
 #if DCHECK_IS_ON()
   // Dumps the tree from this state up to the root as a string.
@@ -215,6 +221,7 @@ class PLATFORM_EXPORT PropertyTreeStateBase : public Super {
   }
 
   PropertyTreeState Unalias() const = delete;
+  void StripTaintedFilters() = delete;
 
   const TransformPaintPropertyNode& Transform() const {
     const auto& node = Super::Transform();

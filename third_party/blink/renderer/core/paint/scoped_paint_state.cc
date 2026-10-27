@@ -142,8 +142,14 @@ void ScopedBoxContentsPaintState::AdjustForBoxContents(const LayoutBox& box) {
 
   DCHECK_EQ(paint_offset_, fragment_to_paint_->PaintOffset());
 
+  PropertyTreeStateOrAlias contents_properties =
+      fragment_to_paint_->ContentsProperties();
+  if (input_paint_info_.IsReadBackAllowedRendering()) {
+    contents_properties.StripTaintedFilters();
+  }
+
   chunk_properties_.emplace(input_paint_info_.context.GetPaintController(),
-                            fragment_to_paint_->ContentsProperties(), box,
+                            contents_properties, box,
                             input_paint_info_.DisplayItemTypeForClipping());
 
   if (const auto* properties = fragment_to_paint_->PaintProperties()) {

@@ -190,6 +190,29 @@ std::optional<PropertyTreeState::UpcastResult> PropertyTreeState::CanUpcastWith(
       scroll_range_dependent);
 }
 
+void PropertyTreeStateOrAlias::StripTaintedFilters() {
+  if (Effect().Unalias().IsInDrawableCanvasSubtree()) {
+    return;
+  }
+
+  const EffectPaintPropertyNodeOrAlias* effect = &Effect();
+  while (!effect->Unalias().IsInDrawableCanvasSubtree() &&
+         effect->Unalias().IsInTaintedSubtree()) {
+    effect = effect->Parent();
+    DCHECK(effect);
+  }
+  SetEffect(*effect);
+
+  const ClipPaintPropertyNodeOrAlias* clip = &Clip();
+  while (clip->Unalias().PixelMovingFilter() &&
+         !clip->Unalias().PixelMovingFilter()->IsInDrawableCanvasSubtree() &&
+         clip->Unalias().PixelMovingFilter()->IsInTaintedSubtree()) {
+    clip = clip->Parent();
+    DCHECK(clip);
+  }
+  SetClip(*clip);
+}
+
 String PropertyTreeStateOrAlias::ToString() const {
   return Format("t:{} c:{} e:{}", transform_, clip_, effect_);
 }

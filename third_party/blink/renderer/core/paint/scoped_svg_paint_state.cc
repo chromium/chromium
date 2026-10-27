@@ -143,30 +143,22 @@ void ScopedSVGPaintState::ApplyPaintPropertyState(
   auto& paint_controller = paint_info_.context.GetPaintController();
   auto state = paint_controller.CurrentPaintChunkProperties();
 
-  const EffectPaintPropertyNodeOrAlias* effect = properties.Filter();
-  const auto* filter_clip = properties.PixelMovingFilterClipExpander();
-  if (!effect) {
-    effect = properties.Effect();
-    filter_clip = nullptr;
-  }
-
-  if (paint_info_.GetPaintFlags() & PaintFlag::kReadBackAllowedRendering) {
-    while (effect && (effect->Unalias().IsInTaintedSubtree())) {
-      filter_clip = nullptr;
-      effect = effect->Parent();
-    }
-  }
-
-  if (effect) {
+  if (const auto* filter = properties.Filter()) {
+    state.SetEffect(*filter);
+  } else if (const auto* effect = properties.Effect()) {
     state.SetEffect(*effect);
   }
 
-  if (filter_clip) {
+  if (const auto* filter_clip = properties.PixelMovingFilterClipExpander()) {
     state.SetClip(*filter_clip);
   } else if (const auto* mask_clip = properties.MaskClip()) {
     state.SetClip(*mask_clip);
   } else if (const auto* clip_path_clip = properties.ClipPathClip()) {
     state.SetClip(*clip_path_clip);
+  }
+
+  if (paint_info_.IsReadBackAllowedRendering()) {
+    state.StripTaintedFilters();
   }
 
   scoped_paint_chunk_properties_.emplace(
