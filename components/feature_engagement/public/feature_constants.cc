@@ -379,15 +379,6 @@ BASE_FEATURE(kIPHAndroidBottomBarEducation,
 BASE_FEATURE(kIPHAndroidBottomBarEducationTooltips,
              "IPH_AndroidBottomBarEducationTooltips",
              base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE(kIPHAndroidBottomBarGlic,
-             "IPH_AndroidBottomBarGlic",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE(kIPHAndroidBottomBarNewTab,
-             "IPH_AndroidBottomBarNewTab",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE(kIPHAndroidBottomBarPromoDialog,
-             "IPH_AndroidBottomBarPromoDialog",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHAndroidTabDeclutter,
              "IPH_AndroidTabDeclutter",
              base::FEATURE_DISABLED_BY_DEFAULT);

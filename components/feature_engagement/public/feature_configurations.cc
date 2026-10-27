@@ -748,56 +748,6 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
 
 #if BUILDFLAG(IS_ANDROID)
   // CONFIGURATION_ANDROID_START
-  if (kIPHAndroidBottomBarGlic.name == feature->name) {
-    FeatureConfig config;
-    config.valid = true;
-
-    // IPH is always available at start-up.
-    config.availability = kAlwaysAvailable;
-
-    // IPH only shows if no other IPH has shown this session.
-    config.session_rate = Comparator(EQUAL, 0);
-
-    // IPH only shows once per 360 days.
-    config.trigger =
-        EventConfig("android_bottom_bar_glic_trigger", Comparator(EQUAL, 0),
-                    /*window=*/360, /*storage=*/360);
-
-    // IPH will not show if the user has interacted with the GLIC button.
-    config.used =
-        EventConfig("android_bottom_bar_glic_used", Comparator(EQUAL, 0),
-                    /*window=*/360, /*storage=*/360);
-
-    // Require that the promo dialog IPH has been shown at least once.
-    config.event_configs.insert(EventConfig(
-        "android_bottom_bar_promo_dialog_trigger",
-        Comparator(GREATER_THAN_OR_EQUAL, 1), /*window=*/360, /*storage=*/360));
-    return config;
-  }
-
-  if (kIPHAndroidBottomBarNewTab.name == feature->name) {
-    FeatureConfig config;
-    config.valid = true;
-
-    // IPH is always available at start-up.
-    config.availability = kAlwaysAvailable;
-
-    // IPH can show even if other IPHs have shown this session.
-    config.session_rate = kNoRestrictions;
-
-    // IPH only shows once per 360 days.
-    config.trigger =
-        EventConfig("android_bottom_bar_new_tab_trigger", Comparator(EQUAL, 0),
-                    /*window=*/360, /*storage=*/360);
-
-    // IPH will not show if the user has interacted with the New Tab button.
-    config.used =
-        EventConfig("android_bottom_bar_new_tab_used", Comparator(EQUAL, 0),
-                    /*window=*/360, /*storage=*/360);
-
-    return config;
-  }
-
   if (kIPHAndroidBottomBarAddressBar.name == feature->name) {
     FeatureConfig config;
     config.valid = true;
@@ -896,24 +846,6 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
                     Comparator(GREATER_THAN_OR_EQUAL, 1), /*window=*/360,
                     /*storage=*/360));
 
-    return config;
-  }
-
-  if (kIPHAndroidBottomBarPromoDialog.name == feature->name) {
-    FeatureConfig config;
-    config.valid = true;
-    config.availability = kAlwaysAvailable;
-    config.session_rate = Comparator(EQUAL, 0);
-    config.session_rate_impact.type = SessionRateImpact::Type::NONE;
-    // IPH only shows once per 360 days.
-    config.trigger =
-        EventConfig("android_bottom_bar_promo_dialog_trigger",
-                    Comparator(EQUAL, 0), /*window=*/360, /*storage=*/360);
-
-    // IPH will not show if the user has interacted with the Promo Dialog.
-    config.used =
-        EventConfig("android_bottom_bar_promo_dialog_used",
-                    Comparator(EQUAL, 0), /*window=*/360, /*storage=*/360);
     return config;
   }
 

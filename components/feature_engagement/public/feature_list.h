@@ -53,11 +53,6 @@ DEFINE_VARIATION_PARAM(kIPHAndroidBottomBarEducation,
                        "IPH_AndroidBottomBarEducation");
 DEFINE_VARIATION_PARAM(kIPHAndroidBottomBarEducationTooltips,
                        "IPH_AndroidBottomBarEducationTooltips");
-DEFINE_VARIATION_PARAM(kIPHAndroidBottomBarGlic, "IPH_AndroidBottomBarGlic");
-DEFINE_VARIATION_PARAM(kIPHAndroidBottomBarNewTab,
-                       "IPH_AndroidBottomBarNewTab");
-DEFINE_VARIATION_PARAM(kIPHAndroidBottomBarPromoDialog,
-                       "IPH_AndroidBottomBarPromoDialog");
 DEFINE_VARIATION_PARAM(kIPHAndroidTabDeclutter, "IPH_AndroidTabDeclutter");
 DEFINE_VARIATION_PARAM(kIPHAndroidVerticalTabsNewLabel,
                        "IPH_AndroidVerticalTabsNewLabel");
@@ -711,9 +706,6 @@ inline constexpr flags_ui::FeatureEntry::FeatureVariation
         VARIATION_ENTRY(kIPHAndroidBottomBarAddressBar),
         VARIATION_ENTRY(kIPHAndroidBottomBarEducation),
         VARIATION_ENTRY(kIPHAndroidBottomBarEducationTooltips),
-        VARIATION_ENTRY(kIPHAndroidBottomBarGlic),
-        VARIATION_ENTRY(kIPHAndroidBottomBarNewTab),
-        VARIATION_ENTRY(kIPHAndroidBottomBarPromoDialog),
         VARIATION_ENTRY(kIPHAndroidTabDeclutter),
         VARIATION_ENTRY(kIPHAndroidVerticalTabsNewLabel),
         VARIATION_ENTRY(kIPHAndroidVerticalTabsPromoFeature),
