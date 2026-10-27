@@ -474,6 +474,11 @@ BASE_FEATURE(kTruncateSearchUrlQ, DISABLED);
 // Enable asynchronous Fusebox view inflation.
 BASE_FEATURE(kOmniboxFuseboxAsyncInflation, DISABLED);
 
+// When enabled, the Android omnibox suggestions container starts inflating on a
+// background thread as soon as AutocompleteCoordinator is created (rather than
+// on native initialization), and is never inflated synchronously as a fallback.
+BASE_FEATURE(kOmniboxEarlyInflation, DISABLED);
+
 // When enabled, AIM image attachments will be downscaled on load before
 // reaching the C++ side.
 BASE_FEATURE(kOmniboxAimImageDownscaling, ENABLED);
@@ -692,6 +697,7 @@ static int64_t JNI_OmniboxFeatureMap_GetNativeMap(JNIEnv* env) {
       &kOmniboxTouchDownTriggerForPrefetch,
       &kOmniboxPrefetchSelectedSuggestionsOmtAndroid,
       &kOmniboxFuseboxAsyncInflation,
+      &kOmniboxEarlyInflation,
       &kRichAutocompletion,
       &kUrlBarWithoutLigatures,
       &kPostDelayedTaskFocusTab,

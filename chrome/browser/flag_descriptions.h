@@ -3640,6 +3640,12 @@ inline constexpr char kOmniboxFuseboxAsyncInflationDescription[] =
     "When enabled, Fusebox RecyclerView will be inflated on a background thread"
     " instead of the UI thread.";
 
+inline constexpr char kOmniboxEarlyInflationName[] = "Omnibox Early Inflation";
+inline constexpr char kOmniboxEarlyInflationDescription[] =
+    "When enabled, the omnibox suggestions container starts inflating on a "
+    "background thread as soon as the omnibox is created, and is never "
+    "inflated synchronously as a fallback.";
+
 inline constexpr char kOmniboxAimImageDownscalingName[] =
     "Omnibox AIM Image Downscaling";
 inline constexpr char kOmniboxAimImageDownscalingDescription[] =

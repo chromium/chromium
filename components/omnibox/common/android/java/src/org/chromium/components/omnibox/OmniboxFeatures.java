@@ -117,6 +117,9 @@ public class OmniboxFeatures {
                     OmniboxFeatureList.OMNIBOX_FUSEBOX_ASYNC_INFLATION,
                     FeatureState.ENABLED_IN_TEST);
 
+    public static final CachedFlag sEarlyInflation =
+            newFlag(OmniboxFeatureList.OMNIBOX_EARLY_INFLATION, FeatureState.DISABLED_IN_PROD);
+
     public static final CachedFlag sOmniboxAimImageDownscaling =
             newFlag(OmniboxFeatureList.OMNIBOX_AIM_IMAGE_DOWNSCALING, FeatureState.ENABLED_IN_PROD);
 

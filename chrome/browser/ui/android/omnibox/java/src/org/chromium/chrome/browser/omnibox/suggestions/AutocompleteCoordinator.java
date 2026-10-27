@@ -214,6 +214,9 @@ public class AutocompleteCoordinator implements OmniboxSuggestionsVisualState {
         // https://crbug.com/41460582 Set initial layout direction ahead of inflating the
         // suggestions.
         updateSuggestionListLayoutDirection();
+        if (OmniboxFeatures.sEarlyInflation.isEnabled()) {
+            mViewProvider.inflate();
+        }
     }
 
     @VisibleForTesting
@@ -263,6 +266,12 @@ public class AutocompleteCoordinator implements OmniboxSuggestionsVisualState {
     public @Nullable OmniboxSuggestionsContainer getSuggestionsContainer() {
         if (mContainer == null) {
             OmniboxMetrics.recordForcedSyncInflation(true);
+            // TODO(crbug.com/573693703): Remove the synchronous inflation fallback (and
+            // mForceSyncInflate) once kOmniboxEarlyInflation launches.
+            if (OmniboxFeatures.sEarlyInflation.isEnabled()) {
+                assert false : "OmniboxSuggestionsContainer used before async inflation completed";
+                return null;
+            }
             mViewProvider.setForceSyncInflate(true);
             mViewProvider.inflate();
         }
@@ -272,8 +281,10 @@ public class AutocompleteCoordinator implements OmniboxSuggestionsVisualState {
     class SuggestionListViewHolderProvider implements ViewProvider<SuggestionListViewHolder> {
         private final List<Callback<SuggestionListViewHolder>> mCallbacks = new ArrayList<>();
         private @Nullable SuggestionListViewHolder mHolder;
+        private @Nullable AsyncViewProvider<ViewGroup> mAsyncProvider;
         private boolean mForceSyncInflate;
         private final ModelList mListItems;
+
         SuggestionListViewHolderProvider(ModelList listItems) {
             mListItems = listItems;
         }
@@ -281,18 +292,24 @@ public class AutocompleteCoordinator implements OmniboxSuggestionsVisualState {
         @Override
         @Initializer
         public void inflate() {
+            // Inflation is already in flight; only a forced synchronous inflation may preempt it.
+            if (mAsyncProvider != null && !mForceSyncInflate) return;
+
             AsyncViewStub stub = mLocationBarEmbedder.getSuggestionsContainerStub();
             if (stub == null) return;
 
             stub.setShouldInflateOnBackgroundThread(!mForceSyncInflate);
-            @IdRes int inflatedId = mLocationBarEmbedder.getSuggestionsContainerInflatedViewId();
-            AsyncViewProvider<ViewGroup> asyncProvider = AsyncViewProvider.of(stub, inflatedId);
-            asyncProvider.whenLoaded(this::onAsyncInflationComplete);
+            if (mAsyncProvider == null) {
+                @IdRes
+                int inflatedId = mLocationBarEmbedder.getSuggestionsContainerInflatedViewId();
+                mAsyncProvider = AsyncViewProvider.of(stub, inflatedId);
+                mAsyncProvider.whenLoaded(this::onAsyncInflationComplete);
+            }
             try (TimingMetric metric =
                             OmniboxMetrics.recordSuggestionsContainerInflationThreadTime();
                     TimingMetric metric2 =
                             OmniboxMetrics.recordSuggestionsContainerInflationWallTime()) {
-                asyncProvider.inflate();
+                mAsyncProvider.inflate();
             }
         }
 
@@ -444,7 +461,9 @@ public class AutocompleteCoordinator implements OmniboxSuggestionsVisualState {
     /** Signals that native initialization has completed. */
     public void onNativeInitialized() {
         mMediator.onNativeInitialized();
-        mViewProvider.inflate();
+        if (!OmniboxFeatures.sEarlyInflation.isEnabled()) {
+            mViewProvider.inflate();
+        }
     }
 
     /**

@@ -7094,6 +7094,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kOmniboxFuseboxAsyncInflationDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(omnibox::kOmniboxFuseboxAsyncInflation)},
 
+    {"omnibox-early-inflation", flag_descriptions::kOmniboxEarlyInflationName,
+     flag_descriptions::kOmniboxEarlyInflationDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(omnibox::kOmniboxEarlyInflation)},
+
     {"omnibox-multimodal-input", flag_descriptions::kOmniboxMultimodalInputName,
      flag_descriptions::kOmniboxMultimodalInputDescription, kOsAndroid,
      FEATURE_WITH_PARAMS_VALUE_TYPE(omnibox::kOmniboxMultimodalInput,

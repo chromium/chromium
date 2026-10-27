@@ -7619,6 +7619,11 @@
     "expiry_milestone": 120
   },
   {
+    "name": "omnibox-early-inflation",
+    "owners": ["peterkang@google.com", "ender@google.com", "chrome-mobile-search@google.com"],
+    "expiry_milestone": 160
+  },
+  {
     "name": "omnibox-enterprise-search-aggregator",
     "owners": [ "ftirelo@chromium.org", "jdonnelly@chromium.org", "mahmadi@chromium.org", "chrome-desktop-search@google.com"],
     "expiry_milestone": 145
