@@ -436,7 +436,7 @@
     ],
 
     'official_android_arm32_pgo': [
-      'official', 'remoteexec', 'android', 'android_external', 'arm', 'minimal_symbols', 'no_default_afdo', 'pgo_phase_1', 'stable_version_code',
+      'official', 'remoteexec', 'android', 'android_external', 'arm', 'minimal_symbols', 'no_default_afdo', 'pgo_phase_1',
     ],
 
     'official_android_arm64_orderfile': [
@@ -444,7 +444,7 @@
     ],
 
     'official_android_arm64_pgo': [
-      'official', 'remoteexec', 'android', 'android_external', 'arm64', 'minimal_symbols', 'no_default_afdo', 'pgo_phase_1', 'stable_version_code',
+      'official', 'remoteexec', 'android', 'android_external', 'arm64', 'minimal_symbols', 'no_default_afdo', 'pgo_phase_1',
     ],
 
     'official_celab_release_bot': [
@@ -581,7 +581,7 @@
     ],
 
     'official_webview_arm64_pgo': [
-      'official', 'remoteexec', 'android', 'arm64', 'minimal_symbols', 'no_default_afdo', 'pgo_phase_1', 'stable_version_code',
+      'official', 'remoteexec', 'android', 'arm64', 'minimal_symbols', 'no_default_afdo', 'pgo_phase_1',
     ],
 
     'official_win_arm64_pgo': [
@@ -1051,12 +1051,6 @@
 
     'shared': {
       'gn_args': 'is_component_build=true',
-    },
-
-    # Ensures we don't have mulitple versions of Trichrome Library installed on
-    # devices so as to not run out of disk space.
-    'stable_version_code': {
-      'gn_args': 'android_override_version_code="1234567980"',
     },
 
     'static': {
