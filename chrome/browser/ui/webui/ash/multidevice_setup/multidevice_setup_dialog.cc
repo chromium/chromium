@@ -10,12 +10,12 @@
 #include "ash/public/cpp/window_backdrop.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/webui/common/trusted_types_util.h"
+#include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/system/sys_info.h"
 #include "chrome/browser/ash/multidevice_setup/multidevice_setup_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/login/oobe_dialog_size_utils.h"
 #include "chrome/browser/ui/dialogs/browser_dialogs.h"
 #include "chrome/browser/ui/webui/ash/multidevice_setup/multidevice_setup_handler.h"
@@ -24,10 +24,15 @@
 #include "chrome/browser/ui/webui/theme_source.h"
 #include "chrome/grit/multidevice_setup_resources.h"
 #include "chrome/grit/multidevice_setup_resources_map.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
 #include "chromeos/ash/services/multidevice_setup/multidevice_setup_service.h"
 #include "chromeos/ash/services/multidevice_setup/public/cpp/url_provider.h"
+#include "components/session_manager/core/session.h"
+#include "components/session_manager/core/session_manager.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/url_data_source.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/aura/window.h"
@@ -54,9 +59,15 @@ void MultiDeviceSetupDialog::Show() {
     return;
   }
 
+  // TODO(crbug.com/278643115): Take the account_id from the callers.
+  const auto* active_session =
+      session_manager::SessionManager::Get()->GetActiveSession();
+  CHECK(active_session);
   current_instance_ = new MultiDeviceSetupDialog();
   current_instance_->ShowSystemDialogForBrowserContext(
-      ProfileManager::GetActiveUserProfile(), nullptr);
+      BrowserContextHelper::Get()->GetBrowserContextByAccountId(
+          active_session->account_id()),
+      nullptr);
 
   containing_window_ = current_instance_->dialog_window();
 
@@ -113,6 +124,11 @@ void MultiDeviceSetupDialog::AdjustWidgetInitParams(
   params->shadow_elevation = wm::kShadowElevationActiveWindow;
 }
 
+bool MultiDeviceSetupDialogUIConfig::IsWebUIEnabled(
+    content::BrowserContext* browser_context) {
+  return ash::IsUserBrowserContext(browser_context);
+}
+
 MultiDeviceSetupDialogUI::MultiDeviceSetupDialogUI(content::WebUI* web_ui)
     : ui::MojoWebDialogUI(web_ui) {
   Profile* profile = Profile::FromWebUI(web_ui);
@@ -131,7 +147,9 @@ MultiDeviceSetupDialogUI::MultiDeviceSetupDialogUI(content::WebUI* web_ui)
   // policies for JS WebUIs.
   ash::EnableTrustedTypesCSP(source);
 
-  web_ui->AddMessageHandler(std::make_unique<MultideviceSetupHandler>());
+  web_ui->AddMessageHandler(std::make_unique<MultideviceSetupHandler>(
+      BrowserContextHelper::Get()->GetUserByBrowserContext(
+          web_ui->GetWebContents()->GetBrowserContext())));
   web_ui->AddMessageHandler(std::make_unique<MetricsHandler>());
 }
 

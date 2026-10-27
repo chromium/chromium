@@ -69,6 +69,9 @@ class MultiDeviceSetupDialogUIConfig
   MultiDeviceSetupDialogUIConfig()
       : DefaultWebUIConfig(content::kChromeUIScheme,
                            ash::kChromeUIMultiDeviceSetupHost) {}
+
+  // content::WebUIConfig:
+  bool IsWebUIEnabled(content::BrowserContext* browser_context) override;
 };
 
 class MultiDeviceSetupDialogUI : public ui::MojoWebDialogUI {

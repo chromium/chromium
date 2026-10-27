@@ -16,7 +16,6 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/global_features.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/webui/ash/edu_coexistence/edu_coexistence_state_tracker.h"
@@ -57,6 +56,15 @@ class EduCoexistenceLoginHandlerBrowserTest
   void SetUpOnMainThread() override {
     MixinBasedInProcessBrowserTest::SetUpOnMainThread();
     logged_in_user_mixin_.LogInUser();
+    web_contents_ = content::WebContents::Create(
+        content::WebContents::CreateParams(browser()->GetProfile()));
+    web_ui_.set_web_contents(web_contents_.get());
+  }
+
+  void TearDownOnMainThread() override {
+    web_ui_.set_web_contents(nullptr);
+    web_contents_.reset();
+    MixinBasedInProcessBrowserTest::TearDownOnMainThread();
   }
 
   void TearDown() override { MixinBasedInProcessBrowserTest::TearDown(); }
@@ -116,6 +124,7 @@ class EduCoexistenceLoginHandlerBrowserTest
 
   base::HistogramTester histograms_;
 
+  std::unique_ptr<content::WebContents> web_contents_;
   content::TestWebUI web_ui_;
 };
 
@@ -225,7 +234,7 @@ IN_PROC_BROWSER_TEST_F(EduCoexistenceLoginHandlerBrowserTest,
   handler->OnRefreshTokenUpdatedForAccount(account);
 
   const std::string& accepted_tos = edu_coexistence::GetAcceptedToSVersion(
-      ProfileManager::GetActiveUserProfile(), FakeGaiaMixin::kFakeUserGaiaId);
+      browser()->GetProfile(), FakeGaiaMixin::kFakeUserGaiaId);
   EXPECT_EQ(accepted_tos, std::string(kToSVersion));
 
   EXPECT_EQ(web_ui()->call_data().size(), 1u);
@@ -249,7 +258,7 @@ IN_PROC_BROWSER_TEST_F(EduCoexistenceLoginHandlerBrowserTest,
   const GaiaId kUser2GaiaId("user2-gaia-id");
   const GaiaId kUser3GaiaId("user3-gaia-id");
 
-  Profile* profile = ProfileManager::GetActiveUserProfile();
+  Profile* profile = browser()->GetProfile();
 
   edu_coexistence::UpdateAcceptedToSVersionPref(
       profile, edu_coexistence::UserConsentInfo(kUser1GaiaId, kVersion1));

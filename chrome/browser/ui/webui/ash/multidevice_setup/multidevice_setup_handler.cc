@@ -5,31 +5,21 @@
 #include "chrome/browser/ui/webui/ash/multidevice_setup/multidevice_setup_handler.h"
 
 #include "ash/webui/settings/public/constants/routes.mojom.h"
+#include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/webui/ash/user_image/user_image_source.h"
-#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/experiences/settings_ui/settings_app_manager.h"
 #include "components/user_manager/user.h"
+#include "content/public/browser/web_ui.h"
 #include "ui/base/webui/web_ui_util.h"
 
 namespace ash::multidevice_setup {
 
-MultideviceSetupHandler::MultideviceSetupHandler()
-    : auth_factor_editor_(UserDataAuthClient::Get()) {
-  const user_manager::User* user = ProfileHelper::Get()->GetUserByProfile(
-      ProfileManager::GetActiveUserProfile());
-
-  if (!user) {
-    LOG(ERROR) << "User not found.";
-    return;
-  }
-
+MultideviceSetupHandler::MultideviceSetupHandler(const user_manager::User* user)
+    : auth_factor_editor_(UserDataAuthClient::Get()), user_(CHECK_DEREF(user)) {
   auth_factor_editor_.GetAuthFactorsConfiguration(
-      std::make_unique<UserContext>(*user),
+      std::make_unique<UserContext>(*user_),
       base::BindOnce(&MultideviceSetupHandler::OnGetAuthFactorsConfiguration,
                      base::Unretained(this)));
 }
@@ -73,14 +63,11 @@ void MultideviceSetupHandler::HandleGetProfileInfo(
   CHECK(!args.empty(), base::NotFatalUntil::M162);
   const std::string& callback_id = args[0].GetString();
 
-  const user_manager::User* user =
-      ProfileHelper::Get()->GetUserByProfile(Profile::FromWebUI(web_ui()));
-
   base::DictValue response;
-  response.Set("email", user->GetDisplayEmail());
+  response.Set("email", user_->GetDisplayEmail());
 
   scoped_refptr<base::RefCountedMemory> image =
-      UserImageSource::GetUserImage(user->GetAccountId());
+      UserImageSource::GetUserImage(user_->GetAccountId());
   response.Set("profilePhotoUrl", webui::GetPngDataUrl(*image));
   response.Set("authenticateByPin", authenticate_by_pin_);
 
@@ -90,16 +77,9 @@ void MultideviceSetupHandler::HandleGetProfileInfo(
 void MultideviceSetupHandler::HandleOpenMultiDeviceSettings(
     const base::ListValue& args) {
   CHECK(args.empty(), base::NotFatalUntil::M162);
-  auto* user = ash::BrowserContextHelper::Get()->GetUserByBrowserContext(
-      Profile::FromWebUI(web_ui()));
-  if (!user) {
-    // TODO(crbug.com/447287122): Revisit here to make sure this is always
-    // user profile.
-    return;
-  }
 
   ash::SettingsAppManager::Get()->Open(
-      *user,
+      *user_,
       {.sub_page = chromeos::settings::mojom::kMultiDeviceFeaturesSubpagePath});
 }
 

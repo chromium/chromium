@@ -4,9 +4,9 @@
 
 #include "chrome/browser/ui/webui/signin/ash/inline_login_dialog_onboarding.h"
 
-#include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_manager.h"
+#include "base/check.h"
 #include "components/account_manager_core/account_manager_metrics.h"
+#include "components/user_manager/user_manager.h"
 #include "ui/aura/window.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/gfx/geometry/size.h"
@@ -65,7 +65,7 @@ InlineLoginDialogOnboarding* InlineLoginDialogOnboarding::Show(
     const gfx::Size& size,
     gfx::NativeWindow window,
     base::OnceClosure dialog_closed_callback) {
-  CHECK(ProfileManager::GetActiveUserProfile()->IsChild(),
+  CHECK(user_manager::UserManager::Get()->IsLoggedInAsChildUser(),
         base::NotFatalUntil::M162);
 
   account_manager::RecordAccountAdditionSource(

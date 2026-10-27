@@ -9,7 +9,6 @@ include_rules = [
 
   # Other ash directories in //chrome.
   "+chrome/browser/ash/multidevice_setup",
-  "+chrome/browser/ash/profiles",
   "+chrome/browser/ui/ash/login",
   "+chrome/browser/ui/webui/ash/system_web_dialog",
   "+chrome/browser/ui/webui/ash/user_image",

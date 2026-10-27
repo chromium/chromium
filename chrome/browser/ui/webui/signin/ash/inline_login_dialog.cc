@@ -10,10 +10,11 @@
 
 #include "ash/constants/webui_url_constants.h"
 #include "ash/public/cpp/window_backdrop.h"
+#include "base/check.h"
+#include "base/check_deref.h"
 #include "base/check_op.h"
 #include "base/functional/callback_helpers.h"
 #include "base/json/json_writer.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/webui/ash/system_web_dialog/system_web_dialog_delegate.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/account_manager_core/account_addition_options.h"
@@ -50,18 +51,6 @@ constexpr int kSigninDialogHeight = 640;
 constexpr int kEduCoexistenceSigninDialogWidth = 1040;
 constexpr int kEduCoexistenceSigninDialogHeight = 680;
 
-bool IsDeviceAccountEmail(const std::string& email) {
-  const auto* active_session =
-      session_manager::SessionManager::Get()->GetActiveSession();
-  if (!active_session) {
-    return false;
-  }
-  const auto* active_user =
-      user_manager::UserManager::Get()->FindUser(active_session->account_id());
-  return active_user &&
-         gaia::AreEmailsSame(active_user->GetDisplayEmail(), email);
-}
-
 GURL GetUrlWithEmailParam(std::string_view url_string,
                           const std::string& email) {
   GURL url = GURL(url_string);
@@ -73,18 +62,25 @@ GURL GetUrlWithEmailParam(std::string_view url_string,
 }
 
 GURL GetInlineLoginUrl(const std::string& email) {
-  if (IsDeviceAccountEmail(email)) {
+  // TODO(crbug.com/278643115): Take the account_id from the callers.
+  const auto* active_session =
+      session_manager::SessionManager::Get()->GetActiveSession();
+  CHECK(active_session);
+  const user_manager::User& user = CHECK_DEREF(
+      user_manager::UserManager::Get()->FindUser(active_session->account_id()));
+  if (gaia::AreEmailsSame(user.GetDisplayEmail(), email)) {
     // It's a device account re-auth.
     return GetUrlWithEmailParam(chrome::kChromeUIChromeSigninURL, email);
   }
-  if (!ProfileManager::GetActiveUserProfile()->GetPrefs()->GetBoolean(
-          policy::policy_prefs::kSecondaryGoogleAccountSigninAllowed)) {
+  if (!CHECK_DEREF(user.GetProfilePrefs())
+           .GetBoolean(
+               policy::policy_prefs::kSecondaryGoogleAccountSigninAllowed)) {
     // Addition of secondary Google Accounts is not allowed.
     return GURL(ash::kChromeUIAccountManagerErrorURL);
   }
 
   // Addition of secondary Google Accounts is allowed.
-  if (ProfileManager::GetActiveUserProfile()->IsChild()) {
+  if (user.IsChild()) {
     return GetUrlWithEmailParam(chrome::kChromeUIEDUCoexistenceLoginURLV2,
                                 email);
   }
@@ -222,7 +218,7 @@ void InlineLoginDialog::GetDialogSize(gfx::Size* size) const {
   const display::Display display =
       display::Screen::Get()->GetDisplayNearestWindow(dialog_window());
 
-  if (ProfileManager::GetActiveUserProfile()->IsChild()) {
+  if (user_manager::UserManager::Get()->IsLoggedInAsChildUser()) {
     size->SetSize(
         std::min(kEduCoexistenceSigninDialogWidth, display.work_area().width()),
         std::min(kEduCoexistenceSigninDialogHeight,
