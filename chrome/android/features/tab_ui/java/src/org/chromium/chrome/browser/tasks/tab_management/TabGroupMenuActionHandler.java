@@ -14,12 +14,15 @@ import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
+import org.chromium.chrome.browser.tab_ui.ActionConfirmationManager;
 import org.chromium.chrome.browser.tabmodel.TabGroupUtils;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.widget.ActionConfirmationResult;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.tab_group_sync.TabGroupUiActionHandler;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -166,5 +169,100 @@ public class TabGroupMenuActionHandler {
                 /* tabMovedCallback= */ null,
                 /* bringToFront= */ true);
         return true;
+    }
+
+    /**
+     * Handles the "Open group" action for the given sync group ID.
+     *
+     * @param syncGroupId The target sync group ID for remote groups.
+     * @return Whether the action was handled.
+     */
+    public boolean handleOpenGroupAction(@Nullable String syncGroupId) {
+        if (syncGroupId == null) {
+            return false;
+        }
+        RecordUserAction.record("MobileMenuOpenGroup");
+        TabGroupUiUtils.openTabGroup(
+                mContext, mTabModel, mTabGroupSyncService, mTabGroupUiActionHandler, syncGroupId);
+        return true;
+    }
+
+    /**
+     * Handles the "Open group in new window" action for the given tab group.
+     *
+     * @param groupId The local tab group ID.
+     * @param syncGroupId The target sync group ID for remote groups.
+     * @param multiInstanceManager The {@link MultiInstanceManager} used to open in a new window.
+     * @return Whether the action was handled.
+     */
+    public boolean handleOpenGroupInNewWindowAction(
+            @Nullable Token groupId,
+            @Nullable String syncGroupId,
+            MultiInstanceManager multiInstanceManager) {
+        GroupWindowInfo groupInfo =
+                TabGroupUiUtils.getGroupWindowInfo(
+                        mContext, mTabModel, mTabGroupSyncService, groupId, syncGroupId);
+        if (groupInfo == null) {
+            return false;
+        }
+        RecordUserAction.record("MobileMenuOpenGroupInNewWindow");
+        return TabGroupUiUtils.openTabGroupInNewWindow(
+                mTabModel,
+                groupInfo,
+                mTabGroupSyncService,
+                mTabGroupUiActionHandler,
+                multiInstanceManager);
+    }
+
+    /**
+     * Handles the "Delete group" action for the given tab group.
+     *
+     * @param groupId The local tab group ID.
+     * @param syncGroupId The target sync group ID for remote groups.
+     * @return Whether the action was handled.
+     */
+    public boolean handleDeleteGroupAction(@Nullable Token groupId, @Nullable String syncGroupId) {
+        GroupWindowInfo groupInfo =
+                TabGroupUiUtils.getGroupWindowInfo(
+                        mContext, mTabModel, mTabGroupSyncService, groupId, syncGroupId);
+        if (groupInfo == null) {
+            return false;
+        }
+        RecordUserAction.record("MobileMenuDeleteGroup");
+        @GroupWindowState int state = groupInfo.groupWindowState;
+        if (!shouldConfirmDeleteGroup(state)) {
+            TabGroupUiUtils.deleteTabGroup(
+                    mTabModel, mTabGroupSyncService, groupInfo, state, /* allowDialog= */ true);
+            return true;
+        }
+        new ActionConfirmationManager(mProfile, mContext, mModalDialogManager)
+                .processDeleteGroupAttempt(
+                        result -> onDeleteGroupConfirmed(result, groupId, syncGroupId));
+        return true;
+    }
+
+    private static boolean shouldConfirmDeleteGroup(@GroupWindowState int state) {
+        return state == GroupWindowState.HIDDEN
+                || (state == GroupWindowState.IN_ANOTHER
+                        && TabGroupUiUtils.isCrossWindowTabGroupOperationsEnabled());
+    }
+
+    private void onDeleteGroupConfirmed(
+            @ActionConfirmationResult int result,
+            @Nullable Token groupId,
+            @Nullable String syncGroupId) {
+        if (result == ActionConfirmationResult.CONFIRMATION_NEGATIVE) return;
+
+        GroupWindowInfo updatedInfo =
+                TabGroupUiUtils.getGroupWindowInfo(
+                        mContext, mTabModel, mTabGroupSyncService, groupId, syncGroupId);
+        if (updatedInfo == null) return;
+
+        TabGroupUiUtils.deleteTabGroup(
+                mTabModel,
+                mTabGroupSyncService,
+                updatedInfo,
+                updatedInfo.groupWindowState,
+                /* allowDialog= */ false);
     }
 }

@@ -21965,6 +21965,14 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="MobileMenuDeleteGroup">
+  <owner>mfiaz@google.com</owner>
+  <owner>clank-tabs-dev@google.com</owner>
+  <description>
+    User pressed 'Delete group' in the tab group submenu.
+  </description>
+</action>
+
 <action name="MobileMenuDevTools">
   <owner>massan@google.com</owner>
   <description>User pressed 'Developer tools' in the app menu.</description>
@@ -22199,6 +22207,20 @@ should be able to be added at any place in this file.
 <action name="MobileMenuOpenBookmark">
   <owner>massan@google.com</owner>
   <description>User pressed a bookmark in the app menu to open it.</description>
+</action>
+
+<action name="MobileMenuOpenGroup">
+  <owner>mfiaz@google.com</owner>
+  <owner>clank-tabs-dev@google.com</owner>
+  <description>User pressed 'Open group' in the tab group submenu.</description>
+</action>
+
+<action name="MobileMenuOpenGroupInNewWindow">
+  <owner>mfiaz@google.com</owner>
+  <owner>clank-tabs-dev@google.com</owner>
+  <description>
+    User pressed 'Open group in new window' in the tab group submenu.
+  </description>
 </action>
 
 <action name="MobileMenuOpenWebApk">
