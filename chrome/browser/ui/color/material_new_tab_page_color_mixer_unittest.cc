@@ -38,6 +38,15 @@ TEST_F(MaterialNewTabPageColorMixerTest, NtpModulesRedesignedEnabled) {
             color_provider().GetColor(ui::kColorSysSurface));
 }
 
+TEST_F(MaterialNewTabPageColorMixerTest, ThreadsRailColors) {
+  AddMaterialColorMixers();
+
+  EXPECT_EQ(color_provider().GetColor(kColorNewTabPageThreadsRailBackground),
+            color_provider().GetColor(ui::kColorSysBaseContainer));
+  EXPECT_EQ(color_provider().GetColor(kColorNewTabPageThreadsRailPrimaryFont),
+            color_provider().GetColor(ui::kColorSysOnSurface));
+}
+
 TEST_F(MaterialNewTabPageColorMixerTest, IsolatedTabPageColors) {
   for (bool dark_mode : {false, true}) {
     ui::ColorProvider provider;

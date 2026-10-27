@@ -41,9 +41,17 @@ TEST(NewTabPageColorMixer, LightAndDarkThemeColors) {
     if (toolbar_color == SK_ColorWHITE) {
       EXPECT_EQ(provider.GetColor(kColorNewTabPageModuleBackground),
                 gfx::kGoogleGrey100);
+      EXPECT_EQ(provider.GetColor(kColorNewTabPageThreadsRailBackground),
+                gfx::kGoogleGrey100);
+      EXPECT_EQ(provider.GetColor(kColorNewTabPageThreadsRailPrimaryFont),
+                gfx::kGoogleGrey900);
     } else {
       EXPECT_EQ(provider.GetColor(kColorNewTabPageModuleBackground),
                 gfx::kGoogleGrey800);
+      EXPECT_EQ(provider.GetColor(kColorNewTabPageThreadsRailBackground),
+                gfx::kGoogleGrey800);
+      EXPECT_EQ(provider.GetColor(kColorNewTabPageThreadsRailPrimaryFont),
+                gfx::kGoogleGrey200);
     }
 
     // Isolated Tab Page colors always remain light.
@@ -77,6 +85,26 @@ TEST(NewTabPageColorMixer, CustomColorComprehensiveThemeColors) {
             contrasting_color);
   EXPECT_EQ(provider.GetColor(kColorNewTabPageMostVisitedTileBackground),
             contrasting_color);
+  EXPECT_EQ(provider.GetColor(kColorNewTabPageThreadsRailBackground),
+            contrasting_color);
+  EXPECT_EQ(provider.GetColor(kColorNewTabPageThreadsRailPrimaryFont),
+            color_utils::GetColorWithMaxContrast(contrasting_color));
+}
+
+TEST(NewTabPageColorMixer, CustomExtensionThemeThreadsRailColors) {
+  ui::ColorProvider provider;
+  ui::ColorMixer& mixer = provider.AddMixer();
+  mixer[kColorToolbar] = {gfx::kGoogleBlue900};
+  ui::ColorProviderKey key;
+  key.custom_theme =
+      base::WrapRefCounted(new CustomThemeSupplier(ThemeType::kExtension));
+  AddNewTabPageColorMixer(&provider, key);
+
+  SkColor contrasting_color = GetContrastingColor(gfx::kGoogleBlue900, 0.2f);
+  EXPECT_EQ(provider.GetColor(kColorNewTabPageThreadsRailBackground),
+            contrasting_color);
+  EXPECT_EQ(provider.GetColor(kColorNewTabPageThreadsRailPrimaryFont),
+            color_utils::GetColorWithMaxContrast(contrasting_color));
 }
 
 TEST(NewTabPageColorMixer, DefaultColorComprehensiveThemeColor) {

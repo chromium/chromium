@@ -37,7 +37,9 @@ cr-icon-button {
   --cr-icon-button-size: 40px;
   --cr-icon-button-focus-outline-color: var(--threads-rail-focus-outline-color);
   --cr-icon-button-fill-color:
-    var(--color-new-tab-page-threads-rail-icon-button);
+    var(--color-new-tab-page-threads-rail-primary-font);
+  --cr-icon-button-hover-background-color:
+    var(--color-new-tab-page-threads-rail-hover-background);
   align-items: center;
   border-radius: 12px;
   display: flex;
