@@ -13,6 +13,7 @@ import type {ContextualEntrypointAndMenuElement} from 'chrome://resources/cr_com
 import type {ComposeboxFileCarouselElement} from 'chrome://resources/cr_components/composebox/file_carousel.js';
 import {WindowProxy as CrWindowProxy} from 'chrome://resources/cr_components/composebox/window_proxy.js';
 import type {SearchAnimatedGlowElement} from 'chrome://resources/cr_components/search/animated_glow.js';
+import {GlowMode} from 'chrome://resources/cr_components/search/constants.js';
 import {createAutocompleteResultForTesting, createSearchMatchForTesting} from 'chrome://resources/cr_components/searchbox/searchbox_browser_proxy.js';
 import type {CrIconElement} from 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
@@ -42,6 +43,27 @@ suite('NewTabPageComposeboxTest', () => {
                                      'search-animated-glow');
         assertTrue(!!animatedGlow);
         assertFalse(animatedGlow.darkThemeColorsEnabled);
+      });
+
+  test(
+      'updates search-animated-glow glowMode based on willFulfillInAim',
+      async () => {
+        createComposeboxElement(testProxy);
+        await microtasksFinished();
+
+        const animatedGlow = testProxy.element.shadowRoot
+                                 .querySelector<SearchAnimatedGlowElement>(
+                                     'search-animated-glow');
+        assertTrue(!!animatedGlow);
+        assertTrue(testProxy.element.willFulfillInAim);
+        assertTrue(testProxy.element.hasAttribute('will-fulfill-in-aim'));
+        assertEquals(GlowMode.OUTER_GLOW, animatedGlow.glowMode);
+
+        testProxy.element.willFulfillInAim = false;
+        await microtasksFinished();
+
+        assertFalse(testProxy.element.hasAttribute('will-fulfill-in-aim'));
+        assertEquals(GlowMode.NONE, animatedGlow.glowMode);
       });
 
   test('ntp composebox uses configured forward submit icon', async () => {

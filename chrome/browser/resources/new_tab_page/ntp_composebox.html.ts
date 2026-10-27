@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {ToolMode} from '//resources/cr_components/composebox/composebox_query.mojom-webui.js';
+import {GlowMode} from '//resources/cr_components/search/constants.js';
 import {html} from '//resources/lit/v3_0/lit.rollup.js';
 
 import type {NtpComposeboxElement} from './ntp_composebox.js';
@@ -14,6 +15,7 @@ export function getHtml(this: NtpComposeboxElement) {
   return html`<!--_html_template_start_-->
     <search-animated-glow id="animatedSearchElement"
         animation-state="${this.animationState}"
+        .glowMode="${this.willFulfillInAim ? GlowMode.OUTER_GLOW : GlowMode.NONE}"
         .coloredTicTacVoiceAnimationEnabled="${this.voiceSearchCoherenceEnabled}"
         .requiresVoice="${this.shouldShowVoiceSearchAnimation()}"
         .transcript="${this.transcript}"

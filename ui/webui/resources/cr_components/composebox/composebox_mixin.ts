@@ -197,6 +197,10 @@ export const ComposeboxEmbedderMixin =
               reflect: true,
               type: Boolean,
             },
+            willFulfillInAim: {
+              reflect: true,
+              type: Boolean,
+            },
           };
         }
 
@@ -251,6 +255,7 @@ export const ComposeboxEmbedderMixin =
             loadTimeData.getBoolean('tabFaviconChipsToCoinsEnabled');
         accessor energyEffectEnabled: boolean = false;
         accessor energyEffectAnimationEnabled: boolean = false;
+        accessor willFulfillInAim: boolean = true;
 
         browserTabContextAdded: boolean = false;
         pendingAutomaticActiveTabUrl: string = '';
@@ -3491,6 +3496,7 @@ export interface ComposeboxEmbedderMixinInterface extends I18nMixinLitInterface,
   voiceSearchCoherenceEnabled: boolean;
   energyEffectEnabled: boolean;
   energyEffectAnimationEnabled: boolean;
+  willFulfillInAim: boolean;
   updateComplete: Promise<boolean>;
   pendingAutomaticActiveTabUrl: string;
   pendingAutomaticActiveTabTitle: string;
