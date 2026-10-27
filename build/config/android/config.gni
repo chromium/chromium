@@ -471,23 +471,36 @@ if (is_android) {
 
   android_sdk_tools_bundle_aapt2 = "${android_sdk_tools_bundle_aapt2_dir}/aapt2"
 
-  kotlinc_paths_for_inputs = [
-    "//third_party/kotlinc",
-    "//third_party/kotlinc/current/bin/kotlinc",
-    "//third_party/kotlinc/current/bin/kotlinc-graalvm",
-    "//third_party/kotlinc/current/lib/jvm-abi-gen.jar",
-    "//third_party/kotlinc/current/lib/annotations-13.0.jar",
-    "//third_party/kotlinc/current/lib/kotlin-compiler.jar",
-    "//third_party/kotlinc/current/lib/kotlin-preloader.jar",
-    "//third_party/kotlinc/current/lib/kotlin-reflect.jar",
-    "//third_party/kotlinc/current/lib/kotlin-script-runtime.jar",
-    "//third_party/kotlinc/current/lib/kotlin-scripting-common.jar",
-    "//third_party/kotlinc/current/lib/kotlin-scripting-compiler-impl.jar",
-    "//third_party/kotlinc/current/lib/kotlin-scripting-compiler.jar",
-    "//third_party/kotlinc/current/lib/kotlin-scripting-jvm.jar",
-    "//third_party/kotlinc/current/lib/kotlin-stdlib.jar",
-    "//third_party/kotlinc/current/lib/kotlinx-coroutines-core-jvm.jar",
-  ]
+  if (host_os == "linux" && host_cpu == "x64") {
+    # compile_kt.py uses kotlinc-graalvm, a native binary that needs no JRE and,
+    # apart from the jvm-abi-gen plugin, none of the JVM kotlinc jars.
+    kotlinc_paths_for_inputs = [
+      "//third_party/jdk/current/lib/ct.sym",
+      "//third_party/jdk/current/lib/jrt-fs.jar",
+      "//third_party/jdk/current/lib/modules",
+      "//third_party/kotlinc/current/bin/kotlinc-graalvm",
+      "//third_party/kotlinc/current/lib/jvm-abi-gen.jar",
+    ]
+  } else {
+    kotlinc_paths_for_inputs = [
+      "//third_party/kotlinc",
+      "//third_party/kotlinc/current/bin/kotlinc",
+      "//third_party/kotlinc/current/bin/kotlinc-graalvm",
+      "//third_party/kotlinc/current/lib/jvm-abi-gen.jar",
+      "//third_party/kotlinc/current/lib/annotations-13.0.jar",
+      "//third_party/kotlinc/current/lib/kotlin-compiler.jar",
+      "//third_party/kotlinc/current/lib/kotlin-preloader.jar",
+      "//third_party/kotlinc/current/lib/kotlin-reflect.jar",
+      "//third_party/kotlinc/current/lib/kotlin-script-runtime.jar",
+      "//third_party/kotlinc/current/lib/kotlin-scripting-common.jar",
+      "//third_party/kotlinc/current/lib/kotlin-scripting-compiler-impl.jar",
+      "//third_party/kotlinc/current/lib/kotlin-scripting-compiler.jar",
+      "//third_party/kotlinc/current/lib/kotlin-scripting-jvm.jar",
+      "//third_party/kotlinc/current/lib/kotlin-stdlib.jar",
+      "//third_party/kotlinc/current/lib/kotlinx-coroutines-core-jvm.jar",
+    ]
+    kotlinc_paths_for_inputs += java_paths_for_inputs
+  }
 
   android_logs = [ "android_ndk_api_level=${android_ndk_api_level}" ]
 }

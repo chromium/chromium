@@ -3272,12 +3272,11 @@ if (enable_java_templates) {
         invoker.output_jar_path,
         invoker.output_interface_jar_path,
       ]
-      inputs = kotlinc_paths_for_inputs + java_paths_for_inputs +
-               invoker.source_files + _java_srcjars +
-               [
-                 _build_config,
-                 invoker.target_sources_file,
-               ]
+      inputs =
+          kotlinc_paths_for_inputs + invoker.source_files + _java_srcjars + [
+            _build_config,
+            invoker.target_sources_file,
+          ]
 
       _rebased_build_config = rebase_path(_build_config, root_build_dir)
       _rebased_output_jar_path =
