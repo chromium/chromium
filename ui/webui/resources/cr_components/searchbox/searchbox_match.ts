@@ -142,6 +142,15 @@ export class SearchboxMatchElement extends CrLitElement {
       // Private properties
       //========================================================================
 
+      /**
+       * Whether the secondary text is a URL, e.g. a page title followed by its
+       * URL. The URL layout rules key on it.
+       */
+      secondaryTextIsUrl_: {
+        type: Boolean,
+        reflect: true,
+      },
+
       isTopChromeSearchbox_: {
         type: Boolean,
         reflect: true,
@@ -193,6 +202,7 @@ export class SearchboxMatchElement extends CrLitElement {
   accessor showEllipsis: boolean = false;
   accessor virtualFocusEnabled: boolean = false;
   accessor resultSequenceId: number = 0;
+  private accessor secondaryTextIsUrl_: boolean = false;
   private accessor isTopChromeSearchbox_: boolean =
       loadTimeData.getBoolean('isTopChromeSearchbox');
   private accessor isLensSearchbox_: boolean =
@@ -232,6 +242,7 @@ export class SearchboxMatchElement extends CrLitElement {
           this.match.showSecondaryTextOnlyOnSelection;
       this.isEntitySuggestion = this.computeIsEntitySuggestion_();
       this.secondaryTextPlacement = this.computeSecondaryTextPlacement_();
+      this.secondaryTextIsUrl_ = this.match.secondaryTextIsUrl;
       this.removeButtonAriaLabel_ = this.computeRemoveButtonAriaLabel_();
       this.separatorText_ = this.computeSeparatorText_();
       this.tailSuggestPrefix_ = this.computeTailSuggestPrefix_();
@@ -489,10 +500,6 @@ export class SearchboxMatchElement extends CrLitElement {
         break;
       case ColorType.kSuggestActionHigh:
         classes.push('color-primary');
-        // The URL layout rules key on `url`. Only URLs get ACTION_HIGH for now,
-        // so ACTION_HIGH text gets `url` too.
-        // TODO(crbug.com/574634127): Mark URLs without relying on the color.
-        classes.push('url');
         break;
       default:
         break;

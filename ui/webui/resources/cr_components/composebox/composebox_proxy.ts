@@ -39,6 +39,7 @@ export function createAutocompleteMatch(
       typeIcon: IconType.kIconTypeUnspecified,
       fuseboxAction: null,
     },
+    secondaryTextIsUrl: false,
     urlEmphasis: null,
     ...config,
   };

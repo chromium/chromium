@@ -124,6 +124,10 @@ struct AutocompleteMatch {
   // Presentation template for this match. Populated for every match, including
   // matches without a server-provided SuggestTemplateInfo.
   suggest_template_info.mojom.SuggestTemplateInfo suggest_template;
+  // Whether the match's description, or its contents if they're swapped, has
+  // the URL classification. True for a page title followed by its URL. The
+  // WebUI lays out these matches differently.
+  bool secondary_text_is_url;
   // Result of AutocompleteMatch::IsSearchType().
   bool is_search_type;
   // Used to determine if the match is an enterprise search aggregator people

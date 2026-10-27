@@ -300,36 +300,40 @@
       var(--color-searchbox-results-foreground));
 }
 
-/* The ellipsis of truncated secondary text gets the color of #secondaryText,
- * not of its spans. */
-#secondaryText:has(.color-on-surface-subtle),
+/* text-overflow draws the ellipsis of truncated secondary text in the color of
+ * #secondaryText, not of its spans, so #secondaryText takes its last span's
+ * color when that is on-surface-subtle or primary. */
+#secondaryText:has(> .color-on-surface-subtle:last-child),
 .color-on-surface-subtle {
   color: var(--color-searchbox-results-foreground-dimmed);
 }
 
-:host-context(cr-searchbox-match:-webkit-any(:focus-within, [selected])):host([is-entity-suggestion]) #secondaryText:has(.color-on-surface-subtle),
+:host-context(cr-searchbox-match:-webkit-any(:focus-within, [selected]))
+    #secondaryText:has(> .color-on-surface-subtle:last-child),
 :host-context(cr-searchbox-match:-webkit-any(:focus-within, [selected])) .color-on-surface-subtle {
   color: var(--color-searchbox-results-dim-selected);
 }
 
-/* URL ellipsis color to match the URL text color */
-#secondaryText:has(.url),
+#secondaryText:has(> .color-primary:last-child),
 .color-primary {
   color: var(--color-searchbox-results-url);
 }
 
+:host-context(cr-searchbox-match:-webkit-any(:focus-within, [selected]))
+    #secondaryText:has(> .color-primary:last-child),
 :host-context(cr-searchbox-match:-webkit-any(:focus-within, [selected])) .color-primary {
   color: var(--color-searchbox-results-url-selected);
 }
 
-/* For URL suggestions, allow customizing the text-to-URL distribution ratio via
- * custom properties (e.g. for narrow displays like small Loomnibox). */
-#suggestion:has(.url) #primaryText {
+/* For a page title followed by its URL, allow customizing the text-to-URL
+ * distribution ratio via custom properties (e.g. for narrow displays like small
+ * Loomnibox). */
+:host([secondary-text-is-url_]) #primaryText {
   flex-shrink: var(--cr-searchbox-url-primary-text-flex-shrink, 1);
   max-width: var(--cr-searchbox-url-primary-text-max-width, 100%);
 }
 
-#secondaryText:has(.url) {
+:host([secondary-text-is-url_]) #secondaryText {
   flex-shrink: var(--cr-searchbox-url-secondary-text-flex-shrink, 1);
 }
 
@@ -447,11 +451,11 @@
 
   .container:not(.actions):hover
       :is(#primaryText, #primaryText span, #secondaryText, #secondaryText span,
-          .dim, #ellipsis, .url),
+          #ellipsis),
   :host(:is(:focus-visible, :focus-within, [selected]))
       .container:not(.actions)
       :is(#primaryText, #primaryText span, #secondaryText, #secondaryText span,
-          .dim, #ellipsis, .url) {
+          #ellipsis) {
     color: HighlightText;
   }
 
