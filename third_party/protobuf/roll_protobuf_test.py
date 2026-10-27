@@ -2361,9 +2361,11 @@ class RollProtobufStartTest(unittest.TestCase):
             self.repository_root,
             {
                 '.gitignore':
-                '*.targets\n',
+                '*.targets\n*.orig\n*.rej\n',
                 'OTHER_CHROMIUM_FILE':
                 'outside third_party/protobuf\n',
+                'third_party/protobuf/src/file_lists.cmake':
+                _PLAN_OLD_UPSTREAM_FILES['src/file_lists.cmake'],
                 'third_party/protobuf/README.chromium':
                 ('Name: Protocol Buffers\n'
                  'Version: 36.0\n'
@@ -3979,6 +3981,162 @@ class RollProtobufStartTest(unittest.TestCase):
         _, list_error = roll_protobuf._RunCompileSizeProbeComparison(
             checkout, out_dir, 'custom')
         self.assertIn('expected object', list_error)
+
+    def testCheckRollFailsOnInventoryHygieneAndStaleBootstrapErrors(self):
+        clean_tree = roll_protobuf.TreeVerificationResult('abc', ())
+        dirty_tree = dataclasses.replace(clean_tree, modified_files=('a.h', ))
+        base_check = roll_protobuf.RollCheckResult(tree_result=clean_tree)
+        self.assertTrue(base_check.IsClean())
+        self.assertFalse(
+            dataclasses.replace(base_check, tree_result=dirty_tree).IsClean())
+        self.assertFalse(
+            dataclasses.replace(base_check,
+                                patch_inventory_errors=('err', )).IsClean())
+        self.assertFalse(
+            dataclasses.replace(base_check,
+                                hygiene_errors=('err', )).IsClean())
+        self.assertFalse(
+            dataclasses.replace(base_check,
+                                stale_bootstrap_triggers=('err', )).IsClean())
+
+        for patch_name in (_PLAN_CONFLICT_PATCH, _PLAN_MISSING_FILE_PATCH):
+            os.remove(
+                os.path.join(self.fixture.protobuf_directory, 'patches',
+                             patch_name))
+        _WriteFakeBootstrapGeneratorScript(self.fixture.protobuf_directory)
+        _RunGitCommand(self.repository_root,
+                       ['add', '-A', '--', 'third_party/protobuf'])
+        _RunGitCommand(self.repository_root,
+                       ['commit', '--quiet', '-m', 'Add fake generator'])
+        _RunGitCommand(self.repository_root,
+                       ['update-ref', 'refs/remotes/origin/main', 'HEAD'])
+        roll_protobuf.StartRoll(
+            to_revision='v37.0',
+            protobuf_directory=self.fixture.protobuf_directory,
+            upstream_repository_path=self.fixture.upstream_directory,
+        )
+        _WriteFilesToDirectory(self.fixture.protobuf_directory,
+                               {'src/leftover.orig': 'backup\n'})
+
+        result = roll_protobuf.CheckRoll(
+            protobuf_directory=self.fixture.protobuf_directory,
+            upstream_repository_path=self.fixture.upstream_directory,
+        )
+        report = roll_protobuf.FormatRollCheckReport(result)
+
+        self.assertTrue(result.tree_result.IsClean())
+        self.assertFalse(result.IsClean())
+        self.assertTrue(result.patch_inventory_errors)
+        self.assertEqual(
+            ('src/leftover.orig: leftover patch .rej/.orig file', ),
+            result.hygiene_errors)
+        self.assertIn('upstream revision changed',
+                      result.stale_bootstrap_triggers)
+        self.assertIn('Patch inventory / README.chromium errors:', report)
+        self.assertIn('Local hygiene errors:', report)
+        self.assertIn('Stale bootstrap files', report)
+        with self.assertRaisesRegex(roll_protobuf.RollProtobufError,
+                                    r'non-empty baseline name'):
+            roll_protobuf.CheckRoll(
+                protobuf_directory=self.fixture.protobuf_directory,
+                upstream_repository_path=self.fixture.upstream_directory,
+                baseline_name='  ',
+            )
+        with self.assertRaisesRegex(roll_protobuf.RollProtobufError,
+                                    r'--baseline requires -C'):
+            roll_protobuf.CheckRoll(
+                protobuf_directory=self.fixture.protobuf_directory,
+                upstream_repository_path=self.fixture.upstream_directory,
+                baseline_name='before',
+            )
+
+        # Unborn HEAD repository still runs CheckRoll without crashing.
+        unborn = os.path.join(self.temporary_directory, 'unborn_repo')
+        _WriteFilesToDirectory(
+            unborn, {
+                'README.chromium': f'Revision: {self.fixture.old_commit}\n\n'
+                'Description of the patches:\n',
+                **_PLAN_OLD_UPSTREAM_FILES,
+            })
+        _RunGitCommand(unborn, ['init', '--quiet'])
+        self.assertTrue(
+            roll_protobuf.CheckRoll(
+                protobuf_directory=unborn,
+                upstream_repository_path=self.fixture.upstream_directory,
+            ).IsClean())
+
+    def testCheckRollReportsFileListsAndCompileSizeProbeWithoutFailing(self):
+        for patch_name in (_PLAN_CONFLICT_PATCH, _PLAN_MISSING_FILE_PATCH):
+            os.remove(
+                os.path.join(self.fixture.protobuf_directory, 'patches',
+                             patch_name))
+        _WriteFakeBootstrapGeneratorScript(self.fixture.protobuf_directory)
+        _WriteFakeCompileSizeProbeScript(self.fixture.protobuf_directory)
+        _RunGitCommand(self.repository_root,
+                       ['add', '-A', '--', 'third_party/protobuf'])
+        _RunGitCommand(self.repository_root,
+                       ['commit', '--quiet', '-m', 'Add fake scripts'])
+        _RunGitCommand(self.repository_root,
+                       ['update-ref', 'refs/remotes/origin/main', 'HEAD'])
+        roll_protobuf.StartRoll(
+            to_revision='v37.0',
+            protobuf_directory=self.fixture.protobuf_directory,
+            upstream_repository_path=self.fixture.upstream_directory,
+        )
+        out_dir = os.path.join(self.temporary_directory, 'out_release')
+        _WriteFilesToDirectory(out_dir,
+                               {'.compile_size_probe/before.json': '{}'})
+        roll_protobuf.GenerateBootstrapFiles(out_dir,
+                                             self.fixture.protobuf_directory)
+        patch_names = sorted(name for name in os.listdir(
+            os.path.join(self.fixture.protobuf_directory, 'patches'))
+                             if name.endswith('.patch'))
+        readme_path = pathlib.Path(self.fixture.protobuf_directory,
+                                   'README.chromium')
+        readme_path.write_text(
+            readme_path.read_text(encoding='utf-8') +
+            '\nDescription of the patches:\n' +
+            ''.join(f'- {name}\n' for name in patch_names),
+            encoding='utf-8',
+            newline='\n',
+        )
+        _RunGitCommand(self.repository_root,
+                       ['add', '--', 'third_party/protobuf'])
+        _RunGitCommand(self.repository_root,
+                       ['commit', '--quiet', '-m', 'Sync README patches'])
+
+        result = roll_protobuf.CheckRoll(
+            protobuf_directory=self.fixture.protobuf_directory,
+            upstream_repository_path=self.fixture.upstream_directory,
+            build_directory=out_dir,
+        )
+        report = roll_protobuf.FormatRollCheckReport(result)
+        payload = result.ToDictionary()
+
+        self.assertTrue(result.IsClean())
+        self.assertTrue(payload['is_clean'])
+        self.assertEqual(
+            [_PLAN_ADDED_PATH],
+            [e['path'] for e in payload['file_lists']['added_files']])
+        self.assertEqual('before', payload['compile_size']['baseline_name'])
+        self.assertIn('Upstream files added in src/file_lists.cmake', report)
+        self.assertIn('Compile-size comparison against baseline "before"',
+                      report)
+
+        _WriteFakeCompileSizeProbeScript(self.fixture.protobuf_directory,
+                                         exit_code=1)
+        _RunGitCommand(self.repository_root,
+                       ['add', '--', 'third_party/protobuf'])
+        _RunGitCommand(self.repository_root,
+                       ['commit', '--quiet', '-m', 'Failing probe'])
+        err_result = roll_protobuf.CheckRoll(
+            protobuf_directory=self.fixture.protobuf_directory,
+            upstream_repository_path=self.fixture.upstream_directory,
+            build_directory=out_dir,
+        )
+        self.assertTrue(err_result.IsClean())
+        self.assertIn('Compile-size probe skipped due to error:',
+                      roll_protobuf.FormatRollCheckReport(err_result))
 
 
 if __name__ == '__main__':

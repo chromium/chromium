@@ -980,6 +980,31 @@ class RollPlan:
         }
 
 
+def _DiffFileListsAgainstGitSpec(
+        protobuf_directory: str, old_repository: str, old_spec: str,
+        new_tree_directory: str) -> check_file_lists.FileListsDiff | None:
+    new_cmake_path = os.path.join(new_tree_directory,
+                                  *_UPSTREAM_FILE_LISTS_PATH.split('/'))
+    if not os.path.isfile(new_cmake_path) or not all(
+            os.path.isfile(os.path.join(protobuf_directory, name))
+            for name in ('proto_sources.gni', 'BUILD.gn')):
+        return None
+    old_cmake = _RunScratchGit(old_repository,
+                               'cat-file',
+                               'blob',
+                               old_spec,
+                               accepted_return_codes=None)
+    if old_cmake.returncode != 0:
+        return None
+    return check_file_lists.ComputeFileListsDiff(
+        old_cmake_text=old_cmake.stdout.decode('utf-8', errors='replace'),
+        new_cmake_text=pathlib.Path(new_cmake_path).read_text(
+            encoding='utf-8', errors='replace'),
+        chromium_gn_files=check_file_lists.ReadChromiumGnSourceFiles(
+            protobuf_directory),
+        new_tree_directory=new_tree_directory)
+
+
 def _ComputeUpstreamFileListsDiff(
         protobuf_directory: str, patch_chain: PatchChain,
         replay_directory: str) -> check_file_lists.FileListsDiff | None:
@@ -988,23 +1013,10 @@ def _ComputeUpstreamFileListsDiff(
     The new tree is the replay repository after the CLEAN patches, so files a
     patch adds are on disk and do not show up as removed.
     """
-    old_cmake = _RunScratchGit(
-        patch_chain.repository_directory,
-        'show',
+    return _DiffFileListsAgainstGitSpec(
+        protobuf_directory, patch_chain.repository_directory,
         f'{patch_chain.base_commit}:{_UPSTREAM_FILE_LISTS_PATH}',
-        accepted_return_codes=(0, 128))
-    new_cmake_path = os.path.join(replay_directory,
-                                  *_UPSTREAM_FILE_LISTS_PATH.split('/'))
-    if old_cmake.returncode != 0 or not os.path.isfile(new_cmake_path):
-        return None
-    with open(new_cmake_path, encoding='utf-8') as new_cmake_file:
-        new_cmake_text = new_cmake_file.read()
-    return check_file_lists.ComputeFileListsDiff(
-        old_cmake_text=old_cmake.stdout.decode('utf-8'),
-        new_cmake_text=new_cmake_text,
-        chromium_gn_files=check_file_lists.ReadChromiumGnSourceFiles(
-            protobuf_directory),
-        new_tree_directory=replay_directory)
+        replay_directory)
 
 
 def PlanRoll(to_revision: str,
@@ -2333,6 +2345,109 @@ def _FormatCompileSizeSummary(comparison: Mapping[str, object]) -> str:
             lines.append(
                 f'    {change:+,} B  {resized.get("path", "")} (resized)')
     return '\n'.join(lines)
+
+
+def _ComputeBranchFileListsDiff(
+        checkout: _CheckoutPaths) -> check_file_lists.FileListsDiff | None:
+    """Diffs src/file_lists.cmake against the pre-roll baseline and GN lists."""
+    base_commit = _ResolveRollBaseCommit(checkout)
+    if base_commit is None:
+        return None
+    prefix = f'{checkout.protobuf_prefix}/' if checkout.protobuf_prefix else ''
+    return _DiffFileListsAgainstGitSpec(
+        checkout.protobuf_directory, checkout.repository_root,
+        f'{base_commit}:{prefix}{_UPSTREAM_FILE_LISTS_PATH}',
+        checkout.protobuf_directory)
+
+
+@dataclasses.dataclass(frozen=True)
+class RollCheckResult:
+    """Full verification and informational report for `roll_protobuf.py check`."""
+
+    tree_result: TreeVerificationResult
+    patch_inventory_errors: tuple[str, ...] = ()
+    hygiene_errors: tuple[str, ...] = ()
+    stale_bootstrap_triggers: tuple[str, ...] = ()
+    file_lists_diff: check_file_lists.FileListsDiff | None = None
+    compile_size_comparison: dict[str, object] | None = None
+    compile_size_error: str | None = None
+
+    def IsClean(self) -> bool:
+        return (self.tree_result.IsClean() and not self.patch_inventory_errors
+                and not self.hygiene_errors
+                and not self.stale_bootstrap_triggers)
+
+    def ToDictionary(self) -> dict[str, object]:
+        result = self.tree_result.ToDictionary()
+        result.update(is_clean=self.IsClean(),
+                      patch_inventory_errors=list(self.patch_inventory_errors),
+                      hygiene_errors=list(self.hygiene_errors),
+                      stale_bootstrap_triggers=list(
+                          self.stale_bootstrap_triggers),
+                      file_lists=(None if self.file_lists_diff is None else
+                                  self.file_lists_diff.ToDictionary()),
+                      compile_size=self.compile_size_comparison,
+                      compile_size_error=self.compile_size_error)
+        return result
+
+
+def CheckRoll(protobuf_directory: str = _PROTOBUF_DIRECTORY,
+              upstream_repository_path: str | None = None,
+              cache_directory: str | None = None,
+              build_directory: str | None = None,
+              upstream_url: str = UPSTREAM_REPOSITORY_URL,
+              baseline_name: str | None = None) -> RollCheckResult:
+    """Runs blocking verification checks plus informational roll reports."""
+    if baseline_name is not None:
+        if not baseline_name.strip():
+            raise RollProtobufError(
+                'Provide a non-empty baseline name to --baseline.')
+        if not build_directory or not build_directory.strip():
+            raise RollProtobufError('--baseline requires -C <out_dir>.')
+    tree_result = CheckTreeMatchesPatchedUpstream(protobuf_directory,
+                                                  upstream_repository_path,
+                                                  cache_directory,
+                                                  build_directory,
+                                                  upstream_url)
+    checkout = _ResolveCheckoutPaths(protobuf_directory)
+    compile_size, compile_size_error = _RunCompileSizeProbeComparison(
+        checkout, build_directory, baseline_name)
+    return RollCheckResult(
+        tree_result=tree_result,
+        patch_inventory_errors=_FindPatchInventoryErrors(
+            checkout.protobuf_directory),
+        hygiene_errors=_FindLocalHygieneErrors(checkout),
+        stale_bootstrap_triggers=_FindStaleBootstrapTriggers(checkout),
+        file_lists_diff=_ComputeBranchFileListsDiff(checkout),
+        compile_size_comparison=compile_size,
+        compile_size_error=compile_size_error)
+
+
+def FormatRollCheckReport(result: RollCheckResult) -> str:
+    sections = [FormatTreeVerificationReport(result.tree_result)]
+    if result.patch_inventory_errors:
+        sections.append('Patch inventory / README.chromium errors:\n' +
+                        '\n'.join(f'  {e}'
+                                  for e in result.patch_inventory_errors))
+    if result.hygiene_errors:
+        sections.append('Local hygiene errors:\n' +
+                        '\n'.join(f'  {e}' for e in result.hygiene_errors))
+    if result.stale_bootstrap_triggers:
+        sections.append(
+            'Stale bootstrap files (run `roll_protobuf.py generate -C '
+            '<out_dir>`):\n' +
+            '\n'.join(f'  {t}' for t in result.stale_bootstrap_triggers))
+    if (result.file_lists_diff is not None
+            and result.file_lists_diff.HasUnfollowedChanges()):
+        sections.append(
+            check_file_lists.FormatFileListsDiffReport(result.file_lists_diff))
+    if result.compile_size_comparison is not None:
+        sections.append(
+            _FormatCompileSizeSummary(result.compile_size_comparison))
+    elif result.compile_size_error:
+        sections.append('Compile-size probe skipped due to error: '
+                        f'{result.compile_size_error}')
+    return '\n\n'.join(sections)
 
 
 @dataclasses.dataclass(frozen=True)
