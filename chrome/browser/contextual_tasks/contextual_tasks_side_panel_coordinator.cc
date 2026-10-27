@@ -561,8 +561,6 @@ void ContextualTasksSidePanelCoordinator::Show(
                                 DESKTOP_CHROME_PAGE_CONTEXT_MENU_ASK_GOOGLE ||
              entry_point == omnibox::ChromeAimEntryPoint::
                                 DESKTOP_CHROME_APP_MENU_ASK_GOOGLE ||
-             entry_point == omnibox::ChromeAimEntryPoint::
-                                DESKTOP_CHROME_COBROWSE_PINNED_TOOLBAR_BUTTON ||
              entry_point ==
                  omnibox::ChromeAimEntryPoint::
                      DESKTOP_CHROME_CHROMNIENT_HOMEWORK_ACTION_CHIP) {

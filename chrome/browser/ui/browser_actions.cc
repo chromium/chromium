@@ -769,15 +769,9 @@ void BrowserActions::InitializeSidePanelActions() {
                 bwi))
             .SetActionId(kActionSidePanelShowContextualTasks)
             .SetText(l10n_util::GetStringUTF16(
-                contextual_tasks::AreContextualTasksUpdatedEntryPointsEnabled(
-                    profile)
-                    ? IDS_ASK_GOOGLE_ABOUT_THIS_PAGE
-                    : IDS_CONTEXTUAL_TASKS_CUSTOMIZE_CHROME_LABEL))
+                IDS_CONTEXTUAL_TASKS_CUSTOMIZE_CHROME_LABEL))
             .SetTooltipText(l10n_util::GetStringUTF16(
-                contextual_tasks::AreContextualTasksUpdatedEntryPointsEnabled(
-                    profile)
-                    ? IDS_ASK_GOOGLE_ABOUT_THIS_PAGE
-                    : IDS_CONTEXTUAL_TASKS_CUSTOMIZE_CHROME_LABEL))
+                IDS_CONTEXTUAL_TASKS_CUSTOMIZE_CHROME_LABEL))
             .SetImage(contextual_tasks_image)
             .SetProperty(
                 actions::kActionItemPinnableKey,

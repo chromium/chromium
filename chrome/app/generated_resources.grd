@@ -7657,7 +7657,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
           </message>
         </else>
       </if>
-      <message name="IDS_ASK_GOOGLE_ABOUT_THIS_PAGE" desc="The name of the Ask Google about this page command in the app menu and toolbar.">
+      <message name="IDS_ASK_GOOGLE_ABOUT_THIS_PAGE" desc="The name of the Ask Google about this page command in the app menu.">
         Ask Google about this page
       </message>
 

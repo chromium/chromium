@@ -80,8 +80,7 @@ chromium-metrics-reviews@google.com.
   <owner>chrome-contextual-tasks-eng@google.com</owner>
   <summary>
     Recorded when the user invokes 'Ask Google about this page' via any of the
-    updated entry points (context menu, app menu, pinned toolbar button, or
-    homework action chip).
+    updated entry points (context menu, app menu, or homework action chip).
   </summary>
 </histogram>
 

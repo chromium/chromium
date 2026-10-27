@@ -1671,13 +1671,6 @@ IN_PROC_BROWSER_TEST_F(LensSearchControllerStartZeroStateSessionTest,
       /*grant_session_permission=*/false);
 
   controller->IssueContextualSearchRequest(
-      lens::LensOverlayInvocationSource::kCobrowsePinnedToolbarButton,
-      GURL("https://www.google.com/search?q=test4"),
-      omnibox::AutocompleteMatchType::kSearchWhatYouTyped,
-      /*is_zero_prefix_suggestion=*/false,
-      /*grant_session_permission=*/false);
-
-  controller->IssueContextualSearchRequest(
       lens::LensOverlayInvocationSource::kHomeworkActionChip,
       GURL("https://www.google.com/search?q=test5"),
       omnibox::AutocompleteMatchType::kSearchWhatYouTyped,
@@ -1696,42 +1689,6 @@ class LensSearchControllerUpdatedEntryPointsTest
  private:
   base::test::ScopedFeatureList feature_list_;
 };
-
-IN_PROC_BROWSER_TEST_F(
-    LensSearchControllerUpdatedEntryPointsTest,
-    ToggleContextualTasksSidePanelZeroStateOpensAndClosesSidePanel) {
-  ASSERT_TRUE(browser()->tab_strip_model()->GetActiveWebContents());
-  BrowserWindowInterface* const bwi =
-      browser()->GetActiveTabInterface()->GetBrowserWindowInterface();
-  chrome::ToggleContextualTasksSidePanelZeroState(bwi);
-
-  ASSERT_TRUE(
-      base::test::RunUntil([&]() { return IsContextualTasksSidePanelOpen(); }));
-
-  auto* panel_controller =
-      contextual_tasks::ContextualTasksPanelController::From(browser());
-  ASSERT_TRUE(panel_controller);
-  auto* session_handle =
-      panel_controller->GetContextualSearchSessionHandleForPanel();
-  ASSERT_TRUE(session_handle);
-  EXPECT_EQ(session_handle->invocation_source(),
-            lens::LensOverlayInvocationSource::kCobrowsePinnedToolbarButton);
-
-  auto* ui_service =
-      contextual_tasks::ContextualTasksUiServiceFactory::GetForBrowserContext(
-          browser()->GetProfile());
-  ASSERT_TRUE(ui_service);
-  std::optional<contextual_tasks::ContextualTask> task =
-      panel_controller->GetCurrentTask();
-  ASSERT_TRUE(task.has_value());
-  EXPECT_EQ(ui_service->GetInitialEntryPointForTask(task->GetTaskId()),
-            omnibox::ChromeAimEntryPoint::
-                DESKTOP_CHROME_COBROWSE_PINNED_TOOLBAR_BUTTON);
-
-  chrome::ToggleContextualTasksSidePanelZeroState(bwi);
-  EXPECT_TRUE(base::test::RunUntil(
-      [&]() { return !IsContextualTasksSidePanelOpen(); }));
-}
 
 IN_PROC_BROWSER_TEST_F(LensSearchControllerUpdatedEntryPointsTest,
                        HomeworkActionChipOpensSidePanel) {
@@ -1791,22 +1748,6 @@ IN_PROC_BROWSER_TEST_F(LensSearchControllerAskGoogleOmniboxRoutingTest,
       lens::LensOverlayInvocationSource::kContentAreaContextMenuPage,
       omnibox::ChromeAimEntryPoint::
           DESKTOP_CHROME_PAGE_CONTEXT_MENU_ASK_GOOGLE);
-
-  LocationBar* location_bar =
-      BrowserWindow::FromBrowser(browser())->GetLocationBar();
-  ASSERT_TRUE(location_bar);
-  OmniboxController* omnibox_controller = location_bar->GetOmniboxController();
-  ASSERT_TRUE(omnibox_controller);
-  EXPECT_EQ(omnibox_controller->popup_state_manager()->popup_state(),
-            OmniboxPopupState::kAim);
-}
-
-IN_PROC_BROWSER_TEST_F(
-    LensSearchControllerAskGoogleOmniboxRoutingTest,
-    ToggleContextualTasksSidePanelZeroStateOpensOmniboxComposebox) {
-  ASSERT_TRUE(browser()->tab_strip_model()->GetActiveWebContents());
-  chrome::ToggleContextualTasksSidePanelZeroState(
-      browser()->GetActiveTabInterface()->GetBrowserWindowInterface());
 
   LocationBar* location_bar =
       BrowserWindow::FromBrowser(browser())->GetLocationBar();

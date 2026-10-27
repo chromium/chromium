@@ -2593,13 +2593,6 @@ void ToggleContextualTasksSidePanelZeroState(BrowserWindowInterface* browser) {
         /*transition_from_tab=*/false,
         omnibox::ChromeAimEntryPoint::
             DESKTOP_CHROME_COBROWSE_PINNED_TOOLBAR_BUTTON);
-  } else if (contextual_tasks::AreContextualTasksUpdatedEntryPointsEnabled(
-                 browser ? browser->GetProfile() : nullptr)) {
-    ExecAskGoogleAboutThisPage(
-        browser,
-        lens::LensOverlayInvocationSource::kCobrowsePinnedToolbarButton,
-        omnibox::ChromeAimEntryPoint::
-            DESKTOP_CHROME_COBROWSE_PINNED_TOOLBAR_BUTTON);
   } else {
     controller->OpenInZeroState();
   }

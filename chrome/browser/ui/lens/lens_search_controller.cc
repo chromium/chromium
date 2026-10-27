@@ -363,8 +363,6 @@ void LensSearchController::IssueContextualSearchRequest(
             lens::LensOverlayInvocationSource::kContentAreaContextMenuPage ||
         invocation_source == lens::LensOverlayInvocationSource::kAppMenu ||
         invocation_source ==
-            lens::LensOverlayInvocationSource::kCobrowsePinnedToolbarButton ||
-        invocation_source ==
             lens::LensOverlayInvocationSource::kHomeworkActionChip);
 
   std::string query_text =
