@@ -37,6 +37,7 @@ public class DownloadUserInitiatedTaskManager extends DownloadContinuityManager 
      * values are persisted to logs. Entries should not be renumbered and numeric values should
      * never be reused.
      */
+    // LINT.IfChange(NotificationAttachEvent)
     @IntDef({
         NotificationAttachEvent.ATTACHED_ON_JOB_START,
         NotificationAttachEvent.ATTACHED_AFTER_JOB_START,
@@ -52,6 +53,8 @@ public class DownloadUserInitiatedTaskManager extends DownloadContinuityManager 
 
         int COUNT = 4;
     }
+
+    // LINT.ThenChange(//tools/metrics/histograms/metadata/download/enums.xml:NotificationAttachEvent)
 
     /**
      * Notification callbacks for background jobs in progress. One callback for each type of Job.

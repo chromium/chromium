@@ -37,6 +37,7 @@ public class DownloadWarningBypassDialog {
      * the result of the dialog. These values are persisted to logs. Entries should not be
      * renumbered and numeric values should never be reused.
      */
+    // LINT.IfChange(DownloadWarningBypassDialogEvent)
     @IntDef({
         DownloadWarningBypassDialogEvent.SHOW,
         DownloadWarningBypassDialogEvent.VALIDATE,
@@ -55,6 +56,8 @@ public class DownloadWarningBypassDialog {
 
         int COUNT = 4;
     }
+
+    // LINT.ThenChange(//tools/metrics/histograms/metadata/download/enums.xml:AndroidDownloadWarningBypassDialogEvent)
 
     /**
      * Called to show a warning bypass dialog for dangerous download with Safe Browsing warning.

@@ -67,6 +67,7 @@ public class DownloadBroadcastManagerImpl extends SplitCompatService.Impl {
 
     // These values are persisted to logs. Entries should not be renumbered and
     // numeric values should never be reused.
+    // LINT.IfChange(ResumedFromNotificationEvent)
     @IntDef({ResumedFromNotificationEvent.TRIGGERED, ResumedFromNotificationEvent.PROPAGATED})
     @Retention(RetentionPolicy.SOURCE)
     private @interface ResumedFromNotificationEvent {
@@ -74,6 +75,8 @@ public class DownloadBroadcastManagerImpl extends SplitCompatService.Impl {
         int PROPAGATED = 1;
         int COUNT = 2;
     }
+
+    // LINT.ThenChange(//tools/metrics/histograms/metadata/download/enums.xml:DownloadAndroidResumedFromNotificationEvent)
 
     private static void recordResumedFromNotificationEvent(
             @ResumedFromNotificationEvent int event) {

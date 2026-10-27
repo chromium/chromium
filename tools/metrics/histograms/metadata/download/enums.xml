@@ -26,12 +26,16 @@ chromium-metrics-reviews@google.com.
 
 <enums>
 
+<!-- LINT.IfChange(AndroidDownloadWarningBypassDialogEvent) -->
+
 <enum name="AndroidDownloadWarningBypassDialogEvent">
   <int value="0" label="Dialog shown"/>
   <int value="1" label="User validated download"/>
   <int value="2" label="User tapped Learn More"/>
   <int value="3" label="Dialog dismissed"/>
 </enum>
+
+<!-- LINT.ThenChange(//chrome/browser/download/android/java/src/org/chromium/chrome/browser/download/dialogs/DownloadWarningBypassDialog.java:DownloadWarningBypassDialogEvent) -->
 
 <enum name="BooleanOpenFromDuplicates">
   <int value="0" label="Created New file"/>
@@ -58,6 +62,8 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="Initiated by Extension"/>
 </enum>
 
+<!-- LINT.IfChange(DangerousDownloadDialogEvent) -->
+
 <enum name="DangerousDownloadDialogEvent">
   <int value="0" label="dialog shown"/>
   <int value="1" label="Dialog confirmed"/>
@@ -65,6 +71,8 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Dialog dismissed"/>
   <int value="4" label="Dialog dismissed by native"/>
 </enum>
+
+<!-- LINT.ThenChange(//chrome/browser/download/android/java/src/org/chromium/chrome/browser/download/dialogs/DangerousDownloadDialog.java:DangerousDownloadDialogEvent) -->
 
 <enum name="Download.DragInfo">
   <int value="0" label="DRAG_STARTED"/>
@@ -137,10 +145,14 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="NOT_ADDED_DOWNLOAD_NOT_DANGEROUS"/>
 </enum>
 
+<!-- LINT.IfChange(DownloadAndroidResumedFromNotificationEvent) -->
+
 <enum name="DownloadAndroidResumedFromNotificationEvent">
   <int value="0" label="Triggered"/>
   <int value="1" label="Propagated"/>
 </enum>
+
+<!-- LINT.ThenChange(//chrome/android/java/src/org/chromium/chrome/browser/download/DownloadBroadcastManagerImpl.java:ResumedFromNotificationEvent) -->
 
 <enum name="DownloadAppleWalletOrderFileUI">
   <int value="0" label="Warning alert is presented"/>
@@ -657,12 +669,18 @@ chromium-metrics-reviews@google.com.
   <int value="9" label="Timeout and failed"/>
 </enum>
 
+<!-- LINT.IfChange(NotificationAttachEvent) -->
+
 <enum name="NotificationAttachEvent">
   <int value="0" label="Attached on job start"/>
   <int value="1" label="Attached after job start"/>
   <int value="2" label="Never attached before job complete"/>
   <int value="3" label="Resumption job started"/>
 </enum>
+
+<!-- LINT.ThenChange(//chrome/android/java/src/org/chromium/chrome/browser/download/DownloadUserInitiatedTaskManager.java:NotificationAttachEvent) -->
+
+<!-- LINT.IfChange(OpenDownloadWithExternalAppsSource) -->
 
 <enum name="OpenDownloadWithExternalAppsSource">
   <int value="0" label="Open file"/>
@@ -671,12 +689,18 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Download home menu"/>
 </enum>
 
+<!-- LINT.ThenChange(//chrome/android/java/src/org/chromium/chrome/browser/download/DownloadMetrics.java:OpenWithExternalAppsSource) -->
+
+<!-- LINT.IfChange(PolicyWarningDialogEvent) -->
+
 <enum name="PolicyWarningDialogEvent">
   <int value="0" label="dialog shown"/>
   <int value="1" label="Dialog confirmed"/>
   <int value="2" label="Dialog canceled"/>
   <int value="3" label="Dialog dismissed"/>
 </enum>
+
+<!-- LINT.ThenChange(//chrome/browser/download/android/java/src/org/chromium/chrome/browser/download/dialogs/PolicyWarningDownloadDialog.java:PolicyWarningDownloadDialogEvent) -->
 
 <enum name="PresentAddPassesDialogResult">
   <summary>

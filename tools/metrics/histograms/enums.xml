@@ -23845,12 +23845,16 @@ Called by update_net_error_codes.py.-->
 
 <!-- LINT.ThenChange(//ash/webui/eche_app_ui/apps_access_manager.h:OnboardingUserActionMetric) -->
 
+<!-- LINT.IfChange(OpenDownloadDialogEvent) -->
+
 <enum name="OpenDownloadDialogEvent">
   <int value="0" label="Dialog shown"/>
   <int value="1" label="Always open clicked"/>
   <int value="2" label="Just once clicked"/>
   <int value="3" label="Dialog dismissed"/>
 </enum>
+
+<!-- LINT.ThenChange(//chrome/browser/download/android/java/src/org/chromium/chrome/browser/download/dialogs/OpenDownloadDialog.java:OpenDownloadDialogEvent) -->
 
 <enum name="OptimizationGuideOptimizationGuideDecision">
   <int value="0" label="Unknown">

@@ -25,6 +25,7 @@ public class OpenDownloadDialog {
      * persisted to logs. Entries should not be renumbered and numeric values should never be
      * reused.
      */
+    // LINT.IfChange(OpenDownloadDialogEvent)
     @IntDef({
         OpenDownloadDialogEvent.OPEN_DOWNLOAD_DIALOG_SHOW,
         OpenDownloadDialogEvent.OPEN_DOWNLOAD_DIALOG_ALWAYS_OPEN,
@@ -39,6 +40,8 @@ public class OpenDownloadDialog {
 
         int COUNT = 4;
     }
+
+    // LINT.ThenChange(//tools/metrics/histograms/enums.xml:OpenDownloadDialogEvent)
 
     /**
      * Called to show a dialog for opening a download.

@@ -33,6 +33,7 @@ public class PolicyWarningDownloadDialog {
      * persisted to logs. Entries should not be renumbered and numeric values should never be
      * reused.
      */
+    // LINT.IfChange(PolicyWarningDownloadDialogEvent)
     @IntDef({
         PolicyWarningDownloadDialogEvent.DIALOG_SHOW,
         PolicyWarningDownloadDialogEvent.DIALOG_CONFIRM,
@@ -47,6 +48,8 @@ public class PolicyWarningDownloadDialog {
 
         int COUNT = 4;
     }
+
+    // LINT.ThenChange(//tools/metrics/histograms/metadata/download/enums.xml:PolicyWarningDialogEvent)
 
     public PolicyWarningDownloadDialog() {}
 

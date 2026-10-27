@@ -21,6 +21,7 @@ import java.lang.annotation.RetentionPolicy;
 public class DownloadMetrics {
     // These values are persisted to logs. Entries should not be renumbered and
     // numeric values should never be reused.
+    // LINT.IfChange(OpenWithExternalAppsSource)
     @IntDef({
         OpenWithExternalAppsSource.OPEN_FILE,
         OpenWithExternalAppsSource.DOWNLOAD_PROGRESS_MESSAGE,
@@ -38,8 +39,11 @@ public class DownloadMetrics {
         int NUM_ENTRIES = 4;
     }
 
+    // LINT.ThenChange(//tools/metrics/histograms/metadata/download/enums.xml:OpenDownloadWithExternalAppsSource)
+
     // These values are persisted to logs. Entries should not be renumbered and
     // numeric values should never be reused.
+    // LINT.IfChange(DownloadOpenTarget)
     @IntDef({
         DownloadOpenTarget.CHROME_DEFAULT,
         DownloadOpenTarget.CHROME_FALLBACK,
@@ -56,6 +60,8 @@ public class DownloadMetrics {
 
         int NUM_ENTRIES = 4;
     }
+
+    // LINT.ThenChange(//tools/metrics/histograms/metadata/android/enums.xml:AndroidDownloadOpenTarget)
 
     /**
      * Records download open source.

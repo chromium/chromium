@@ -48,6 +48,7 @@ public class DangerousDownloadDialog {
      * of the dialog. These values are persisted to logs. Entries should not be renumbered and
      * numeric values should never be reused.
      */
+    // LINT.IfChange(DangerousDownloadDialogEvent)
     @IntDef({
         DangerousDownloadDialogEvent.DANGEROUS_DOWNLOAD_DIALOG_SHOW,
         DangerousDownloadDialogEvent.DANGEROUS_DOWNLOAD_DIALOG_CONFIRM,
@@ -65,6 +66,8 @@ public class DangerousDownloadDialog {
 
         int COUNT = 5;
     }
+
+    // LINT.ThenChange(//tools/metrics/histograms/metadata/download/enums.xml:DangerousDownloadDialogEvent)
 
     private @Nullable ModalDialogManager mModalDialogManager;
     private @Nullable PropertyModel mModel;
