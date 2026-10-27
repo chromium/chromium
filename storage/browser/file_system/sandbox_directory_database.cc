@@ -192,76 +192,90 @@ bool DatabaseCheckHelper::ScanDatabase() {
   // backing file.
   int64_t max_file_id = -1;
   std::set<FileId> file_ids;
-
-  std::unique_ptr<leveldb::Iterator> itr(
-      db_->NewIterator(leveldb::ReadOptions()));
-  for (itr->SeekToFirst(); itr->Valid(); itr->Next()) {
-    std::string key = itr->key().ToString();
-    if (base::StartsWith(key, kChildLookupPrefix,
-                         base::CompareCase::SENSITIVE)) {
-      // key: "CHILD_OF:<parent_id>:<name>"
-      // value: "<child_id>"
-      ++num_hierarchy_links_in_db_;
-    } else if (key == kSandboxDirectoryLastFileIdKey) {
-      // key: "LAST_FILE_ID"
-      // value: "<last_file_id>"
-      if (last_file_id_ >= 0 ||
-          !base::StringToInt64(itr->value().ToString(), &last_file_id_))
-        return false;
-
-      if (last_file_id_ < 0)
-        return false;
-    } else if (key == kSandboxDirectoryLastIntegerKey) {
-      // key: "LAST_INTEGER"
-      // value: "<last_integer>"
-      if (last_integer_ >= 0 ||
-          !base::StringToInt64(itr->value().ToString(), &last_integer_))
-        return false;
-    } else {
-      // key: "<entry_id>"
-      // value: "<pickled FileInfo>"
-      FileInfo file_info;
-      if (!FileInfoFromPickle(
-              base::PickleIterator::WithData(base::as_byte_span(itr->value())),
-              &file_info)) {
-        return false;
-      }
-
-      FileId file_id = -1;
-      if (!base::StringToInt64(key, &file_id) || file_id < 0)
-        return false;
-
-      if (max_file_id < file_id)
-        max_file_id = file_id;
-      if (!file_ids.insert(file_id).second)
-        return false;
-
-      if (file_info.is_directory()) {
-        ++num_directories_in_db_;
-        DCHECK(file_info.data_path.empty());
-      } else {
-        // Ensure any pair of file entry don't share their data_path.
-        if (!files_in_db_.insert(file_info.data_path).second)
+  std::vector<FileId> files_to_remove;
+  {
+    // Scope the iterator to ensure it is deleted before the database can be
+    // closed in RemoveFileInfo().
+    std::unique_ptr<leveldb::Iterator> itr(
+        db_->NewIterator(leveldb::ReadOptions()));
+    db_ = nullptr;
+    for (itr->SeekToFirst(); itr->Valid(); itr->Next()) {
+      std::string key = itr->key().ToString();
+      if (base::StartsWith(key, kChildLookupPrefix,
+                           base::CompareCase::SENSITIVE)) {
+        // key: "CHILD_OF:<parent_id>:<name>"
+        // value: "<child_id>"
+        ++num_hierarchy_links_in_db_;
+      } else if (key == kSandboxDirectoryLastFileIdKey) {
+        // key: "LAST_FILE_ID"
+        // value: "<last_file_id>"
+        if (last_file_id_ >= 0 ||
+            !base::StringToInt64(itr->value().ToString(), &last_file_id_)) {
           return false;
+        }
 
-        // Ensure the backing file exists as a normal file.
-        base::File::Info platform_file_info;
-        if (!base::GetFileInfo(path_.Append(file_info.data_path),
-                               &platform_file_info) ||
-            platform_file_info.is_directory ||
-            platform_file_info.is_symbolic_link) {
-          // leveldb::Iterator iterates a snapshot of the database.
-          // So even after RemoveFileInfo() call, we'll visit hierarchy link
-          // from |parent_id| to |file_id|.
-          if (!dir_db_->RemoveFileInfo(file_id))
-            return false;
-          --num_hierarchy_links_in_db_;
-          files_in_db_.erase(file_info.data_path);
+        if (last_file_id_ < 0) {
+          return false;
+        }
+      } else if (key == kSandboxDirectoryLastIntegerKey) {
+        // key: "LAST_INTEGER"
+        // value: "<last_integer>"
+        if (last_integer_ >= 0 ||
+            !base::StringToInt64(itr->value().ToString(), &last_integer_)) {
+          return false;
+        }
+      } else {
+        // key: "<entry_id>"
+        // value: "<pickled FileInfo>"
+        FileInfo file_info;
+        if (!FileInfoFromPickle(base::PickleIterator::WithData(
+                                    base::as_byte_span(itr->value())),
+                                &file_info)) {
+          return false;
+        }
+
+        FileId file_id = -1;
+        if (!base::StringToInt64(key, &file_id) || file_id < 0) {
+          return false;
+        }
+
+        if (max_file_id < file_id) {
+          max_file_id = file_id;
+        }
+        if (!file_ids.insert(file_id).second) {
+          return false;
+        }
+
+        if (file_info.is_directory()) {
+          ++num_directories_in_db_;
+          DCHECK(file_info.data_path.empty());
         } else {
-          ++num_files_in_db_;
+          // Ensure any pair of file entry don't share their data_path.
+          if (!files_in_db_.insert(file_info.data_path).second) {
+            return false;
+          }
+
+          // Ensure the backing file exists as a normal file.
+          base::File::Info platform_file_info;
+          if (!base::GetFileInfo(path_.Append(file_info.data_path),
+                                 &platform_file_info) ||
+              platform_file_info.is_directory ||
+              platform_file_info.is_symbolic_link) {
+            files_to_remove.push_back(file_id);
+            files_in_db_.erase(file_info.data_path);
+          } else {
+            ++num_files_in_db_;
+          }
         }
       }
     }
+  }
+
+  for (FileId file_id : files_to_remove) {
+    if (!dir_db_->RemoveFileInfo(file_id)) {
+      return false;
+    }
+    --num_hierarchy_links_in_db_;
   }
 
   // TODO(tzik): Add constraint for |last_integer_| to avoid possible
