@@ -4,6 +4,11 @@
 
 package org.chromium.chrome.browser.actor;
 
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
+
 import android.app.Notification;
 import android.content.Intent;
 
@@ -70,6 +75,19 @@ public class ActorForegroundServiceImplTest {
         mServiceImpl.stopActorForegroundService(ServiceCompat.STOP_FOREGROUND_REMOVE);
 
         watcher.assertExpected();
+    }
+
+    @Test
+    public void testStartOrUpdateForegroundService_SwitchingNotificationId_DoesNotStopForeground() {
+        ActorForegroundServiceImpl spyService = spy(mServiceImpl);
+        Notification notification2 = new Notification();
+
+        spyService.startOrUpdateForegroundService(1, mNotification, -1, false);
+        spyService.startOrUpdateForegroundService(2, notification2, 1, true);
+
+        verify(spyService).startForegroundInternal(1, mNotification);
+        verify(spyService).startForegroundInternal(2, notification2);
+        verify(spyService, never()).stopForegroundInternal(anyInt());
     }
 
     @Test

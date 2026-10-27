@@ -28,9 +28,11 @@ import org.chromium.chrome.browser.notifications.NotificationConstants;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxy;
 import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxyFactory;
+import org.chromium.components.browser_ui.notifications.NotificationMetadata;
 import org.chromium.components.browser_ui.notifications.NotificationWrapper;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
@@ -51,12 +53,18 @@ public class ActorNotificationService {
     public static final long LIVE_NOTIFICATION_DEMOTION_DELAY_MS = TimeUnit.SECONDS.toMillis(30);
     private static long sDemotionDelayMs = LIVE_NOTIFICATION_DEMOTION_DELAY_MS;
 
+    // Tag for a task notification that is no longer pinned. Android cancels the previously pinned
+    // untagged key asynchronously and never treats a tagged notification as a foreground service
+    // notification.
+    @VisibleForTesting public static final String UNPINNED_NOTIFICATION_TAG = "actor_unpinned";
+
     private final Map<Integer, ActorTask> mTaskCache = new HashMap<>();
     private final Map<Integer, NotificationWrapper> mNotificationCache = new HashMap<>();
     private final Map<Integer, Integer> mTaskStates = new HashMap<>();
     private final Map<Integer, Long> mLastWorklogUpdateTimes = new HashMap<>();
     // Insertion-ordered so that the oldest pending demotion is promoted first.
     private final Map<Integer, Runnable> mDemoteRunnables = new LinkedHashMap<>();
+    private final Set<Integer> mUnpinnedTagTaskIds = new HashSet<>();
     private final Handler mHandler = new Handler(Looper.getMainLooper());
     private final BaseNotificationManagerProxy mNotificationManager;
     private final ActorKeyedService mKeyedService;
@@ -86,15 +94,48 @@ public class ActorNotificationService {
     }
 
     /**
-     * Reposts a cached notification as a regular notification. Used when the foreground service
-     * releases a notification that was removed along with the foreground state.
+     * Reposts a cached notification silently as a regular notification. Used when the foreground
+     * service releases a notification that was removed along with the foreground state.
      *
      * @param taskId The ID of the task whose notification should be reposted.
+     * @param isWarning Whether the task is in a warning state.
      */
-    public void repostNotification(int taskId) {
-        NotificationWrapper wrapper = mNotificationCache.get(taskId);
-        if (wrapper != null) {
-            mNotificationManager.notify(wrapper);
+    public void repostNotification(int taskId, boolean isWarning) {
+        ActorTask task = getTask(taskId);
+        Integer state = mTaskStates.get(taskId);
+        if (!mNotificationCache.containsKey(taskId) || task == null || state == null) return;
+        // The cached notification may be loud, and the repost under the unpinned tag is a new
+        // notification to Android, so it is rebuilt silently.
+        notifyTaskNotification(
+                ActorNotificationFactory.buildNotification(
+                        task,
+                        state,
+                        /* isSilent= */ true,
+                        isWarning,
+                        /* isLive= */ !ActorUtils.isCompletedState(state)));
+    }
+
+    /**
+     * Marks a task's notification as no longer pinned to the foreground service and cancels its
+     * untagged copy. Until {@link #onNotificationPinned} is called, the task's notifications are
+     * posted under {@link #UNPINNED_NOTIFICATION_TAG}.
+     *
+     * @param taskId The ID of the task whose notification was unpinned.
+     */
+    public void onNotificationUnpinned(int taskId) {
+        mUnpinnedTagTaskIds.add(taskId);
+        mNotificationManager.cancel(taskId);
+    }
+
+    /**
+     * Marks a task's notification as pinned to the foreground service again and cancels its copy
+     * posted under {@link #UNPINNED_NOTIFICATION_TAG}.
+     *
+     * @param taskId The ID of the task whose notification was pinned.
+     */
+    public void onNotificationPinned(int taskId) {
+        if (mUnpinnedTagTaskIds.remove(taskId)) {
+            mNotificationManager.cancel(UNPINNED_NOTIFICATION_TAG, taskId);
         }
     }
 
@@ -146,13 +187,13 @@ public class ActorNotificationService {
         NotificationWrapper current =
                 getOrBuildNotificationWrapper(taskId, newState, isSilent, isWarning);
         if (current == null) {
-            mNotificationManager.cancel(taskId);
+            cancelTaskNotifications(mNotificationManager, taskId);
             clearTaskData(taskId);
             return;
         }
 
         if (current != old) {
-            mNotificationManager.notify(current);
+            notifyTaskNotification(current);
         }
 
         if (ActorUtils.isOngoingNotification(ActorUtils.isCompletedState(newState))) {
@@ -207,7 +248,7 @@ public class ActorNotificationService {
                         /* isWarning= */ false,
                         /* isLive= */ false);
         mNotificationCache.put(taskId, nonLiveWrapper);
-        mNotificationManager.notify(nonLiveWrapper);
+        notifyTaskNotification(nonLiveWrapper);
     }
 
     /**
@@ -232,7 +273,7 @@ public class ActorNotificationService {
                 ActorNotificationFactory.buildNotification(
                         task, state, /* isSilent= */ true, /* isWarning= */ false);
         mNotificationCache.put(taskId, current);
-        mNotificationManager.notify(current);
+        notifyTaskNotification(current);
 
         if (ActorUtils.isRunningState(state) && !TextUtils.isEmpty(task.getCurrentActionName())) {
             long now = TimeUtils.elapsedRealtimeMillis();
@@ -258,7 +299,7 @@ public class ActorNotificationService {
                         task, task.getState(), /* isSilent= */ false, /* isWarning= */ false);
         mNotificationCache.put(taskId, loudNotification);
         mTaskStates.put(taskId, task.getState());
-        mNotificationManager.notify(loudNotification);
+        notifyTaskNotification(loudNotification);
     }
 
     /**
@@ -298,7 +339,7 @@ public class ActorNotificationService {
             if (manager != null) {
                 manager.onNotificationDismissed(taskId);
             }
-            BaseNotificationManagerProxyFactory.create().cancel(taskId);
+            cancelTaskNotifications(BaseNotificationManagerProxyFactory.create(), taskId);
         }
     }
 
@@ -356,6 +397,25 @@ public class ActorNotificationService {
         return cachedNotification;
     }
 
+    private void notifyTaskNotification(NotificationWrapper wrapper) {
+        NotificationMetadata metadata = wrapper.getMetadata();
+        if (mUnpinnedTagTaskIds.contains(metadata.id)) {
+            wrapper =
+                    new NotificationWrapper(
+                            wrapper.getNotification(),
+                            new NotificationMetadata(
+                                    metadata.type, UNPINNED_NOTIFICATION_TAG, metadata.id),
+                            wrapper.isSilent());
+        }
+        mNotificationManager.notify(wrapper);
+    }
+
+    private static void cancelTaskNotifications(
+            BaseNotificationManagerProxy notificationManager, int taskId) {
+        notificationManager.cancel(taskId);
+        notificationManager.cancel(UNPINNED_NOTIFICATION_TAG, taskId);
+    }
+
     /**
      * Returns the task with the given ID, checking both the keyed service and the local cache.
      *
@@ -372,6 +432,7 @@ public class ActorNotificationService {
             mHandler.removeCallbacks(runnable);
         }
         mDemoteRunnables.clear();
+        mUnpinnedTagTaskIds.clear();
         mNotificationCache.clear();
         mTaskStates.clear();
         mLastWorklogUpdateTimes.clear();
@@ -380,6 +441,7 @@ public class ActorNotificationService {
 
     public void clearTaskData(int taskId) {
         cancelDemoteRunnable(taskId);
+        mUnpinnedTagTaskIds.remove(taskId);
         mNotificationCache.remove(taskId);
         mTaskStates.remove(taskId);
         mLastWorklogUpdateTimes.remove(taskId);
