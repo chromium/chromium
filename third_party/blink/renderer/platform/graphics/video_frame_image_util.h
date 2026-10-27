@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/functional/function_ref.h"
 #include "base/memory/scoped_refptr.h"
 #include "components/viz/common/gpu/raster_context_provider.h"
 #include "components/viz/common/resources/shared_image_format.h"
@@ -49,9 +50,12 @@ class PLATFORM_EXPORT VideoFrameAcceleratedSnapshotPool {
   ~VideoFrameAcceleratedSnapshotPool();
 
   bool IsValid() const;
+  gfx::Size Size() const;
   CanvasSnapshotInfo GetInfo() const;
 
-  CanvasNon2DResourceProvider* provider() { return provider_.get(); }
+  scoped_refptr<StaticBitmapImage> DoExternalOverdrawAndSnapshot(
+      base::FunctionRef<void(cc::PaintCanvas&)> draw_callback,
+      ImageOrientation orientation);
 
  private:
   explicit VideoFrameAcceleratedSnapshotPool(

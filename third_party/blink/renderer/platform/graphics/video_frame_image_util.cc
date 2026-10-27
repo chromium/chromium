@@ -136,8 +136,8 @@ scoped_refptr<StaticBitmapImage> CreateImageFromVideoFrame(
       frame->metadata().transformation.value_or(media::kNoTransformation);
 
   media::PaintCanvasVideoRenderer::PaintParams params;
-  params.dest_rect = gfx::RectF(
-      snapshot_pool ? snapshot_pool->provider()->Size() : sw_draw_info->size);
+  params.dest_rect =
+      gfx::RectF(snapshot_pool ? snapshot_pool->Size() : sw_draw_info->size);
   params.transformation =
       orientation_behavior == VideoOrientationBehavior::kTagOrientation
           ? media::kNoTransformation
@@ -158,8 +158,8 @@ scoped_refptr<StaticBitmapImage> CreateImageFromVideoFrame(
                                   orientation);
   }
 
-  return snapshot_pool->provider()->DoExternalOverdrawAndSnapshot(draw_callback,
-                                                                  orientation);
+  return snapshot_pool->DoExternalOverdrawAndSnapshot(draw_callback,
+                                                      orientation);
 }
 
 }  // namespace
@@ -191,8 +191,19 @@ bool VideoFrameAcceleratedSnapshotPool::IsValid() const {
   return provider_->IsValid();
 }
 
+gfx::Size VideoFrameAcceleratedSnapshotPool::Size() const {
+  return provider_->Size();
+}
+
 CanvasSnapshotInfo VideoFrameAcceleratedSnapshotPool::GetInfo() const {
   return provider_->GetInfo();
+}
+
+scoped_refptr<StaticBitmapImage>
+VideoFrameAcceleratedSnapshotPool::DoExternalOverdrawAndSnapshot(
+    base::FunctionRef<void(cc::PaintCanvas&)> draw_callback,
+    ImageOrientation orientation) {
+  return provider_->DoExternalOverdrawAndSnapshot(draw_callback, orientation);
 }
 
 scoped_refptr<StaticBitmapImage> DrawAndSnapshotToImage(
