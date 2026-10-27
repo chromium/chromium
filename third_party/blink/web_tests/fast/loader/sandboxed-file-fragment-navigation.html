@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<body>
+<script>
+promise_test(async () => {
+  assert_equals(location.protocol, 'file:', 'The test must run from a local file');
+  const frame = document.createElement('iframe');
+  frame.sandbox = 'allow-scripts';
+  const result = new Promise(resolve => {
+    window.addEventListener('message', event => {
+      if (event.source === frame.contentWindow)
+        resolve(event);
+    });
+  });
+  frame.src = 'resources/sandboxed-file-fragment-navigation-child.html';
+  document.body.appendChild(frame);
+
+  const event = await result;
+  assert_equals(event.origin, 'null', 'The child must have an opaque origin');
+  assert_equals(event.data.hash, '#target');
+  assert_true(event.data.scrolled, 'The fragment target must be scrolled into view');
+}, 'A sandboxed local file can navigate to a fragment in its own document');
+</script>

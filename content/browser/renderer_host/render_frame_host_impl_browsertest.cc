@@ -5413,6 +5413,37 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
+                       SandboxedFileFrameFragmentNavigation) {
+  GURL parent_url = GetFileURL(FILE_PATH_LITERAL("title1.html"));
+  GURL child_url = GetFileURL(FILE_PATH_LITERAL("title2.html"));
+  ASSERT_TRUE(NavigateToURL(shell(), parent_url));
+  ASSERT_TRUE(ExecJs(web_contents(), JsReplace(R"(
+      const frame = document.createElement('iframe');
+      frame.sandbox = 'allow-scripts';
+      frame.src = $1;
+      document.body.appendChild(frame);
+  )",
+                                               child_url)));
+  ASSERT_TRUE(WaitForLoadStop(web_contents()));
+
+  RenderFrameHost* child = ChildFrameAt(root_frame_host(), 0);
+  ASSERT_TRUE(child);
+  ASSERT_TRUE(child->GetLastCommittedOrigin().opaque());
+  ASSERT_EQ(child_url, child->GetLastCommittedURL());
+
+  EXPECT_TRUE(ExecJs(child, "location.hash = 'top'"));
+  EXPECT_EQ(child_url.Resolve("#top"), child->GetLastCommittedURL());
+  EXPECT_EQ(child, ChildFrameAt(root_frame_host(), 0));
+
+  WebContentsConsoleObserver console_observer(web_contents());
+  console_observer.SetPattern("Not allowed to load local resource: file:*");
+  GURL other_url = GetFileURL(FILE_PATH_LITERAL("title3.html"));
+  EXPECT_TRUE(ExecJs(child, JsReplace("location.href = $1", other_url)));
+  ASSERT_TRUE(console_observer.Wait());
+  EXPECT_EQ(child_url.Resolve("#top"), child->GetLastCommittedURL());
+}
+
+IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
                        ComputeSiteForCookiesParentNavigatedAway) {
   // Navigate to site with same-domain frame, save a RenderFrameHostImpl to
   // the child.

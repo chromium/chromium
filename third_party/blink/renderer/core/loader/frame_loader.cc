@@ -600,7 +600,8 @@ void FrameLoader::ProcessScrollForSameDocumentNavigation(
   TakeObjectSnapshot();
 }
 
-bool FrameLoader::AllowRequestForThisFrame(const FrameLoadRequest& request) {
+bool FrameLoader::AllowRequestForThisFrame(const FrameLoadRequest& request,
+                                           bool is_same_document_navigation) {
   // If no origin Document* was specified, skip remaining security checks and
   // assume the caller has fully initialized the FrameLoadRequest.
   if (!request.GetOriginWindow())
@@ -619,7 +620,11 @@ bool FrameLoader::AllowRequestForThisFrame(const FrameLoadRequest& request) {
     }
   }
 
-  if (!request.CanDisplay(url)) {
+  // A fragment navigation initiated by this document does not load the URL
+  // again, even if its sandboxed origin cannot load local resources.
+  if (!request.CanDisplay(url) &&
+      !(is_same_document_navigation &&
+        request.GetOriginWindow() == frame_->DomWindow())) {
     request.GetOriginWindow()->AddConsoleMessage(
         MakeGarbageCollected<ConsoleMessage>(
             mojom::ConsoleMessageSource::kSecurity,
@@ -738,8 +743,44 @@ void FrameLoader::StartNavigation(FrameLoadRequest& request,
                url.GetString().Utf8(), "load_type",
                static_cast<int>(frame_load_type));
 
-  if (!AllowRequestForThisFrame(request))
+  // Convert navigations from the initial empty document to do replacement if
+  // needed. Note that we don't convert reloads or history navigations (so only
+  // kStandard navigations can get converted to do replacement).
+  if (frame_load_type == WebFrameLoadType::kStandard &&
+      IsOnInitialEmptyDocument()) {
+    frame_load_type = WebFrameLoadType::kReplaceCurrentItem;
+  }
+
+  bool same_document_navigation =
+      request.GetNavigationPolicy() == kNavigationPolicyCurrentTab &&
+      ShouldPerformFragmentNavigation(
+          request.Form(), resource_request.HttpMethod(), frame_load_type, url);
+
+  if (RuntimeEnabledFeatures::
+          TreatMhtmlInitialDocumentLoadsAsCrossDocumentEnabled()) {
+    if (auto* parent = DynamicTo<LocalFrame>(frame_->Tree().Parent())) {
+      // Within MHTML archives, treat the initial about:blank#fragment
+      // navigation as cross-document. Although it appears to be a same-document
+      // fragment navigation, it actually commits a new document with a new
+      // opaque origin.
+      //
+      // TODO(crbug.com/423663315): Consider refining this logic to only treat
+      // the initial about:blank#fragment navigation in MHTML as cross-document
+      // if the MHTML archive actually overrides the about:blank resource. If it
+      // doesn't, the navigation may be better treated as same-document,
+      // matching non-MHTML behavior.
+      if (parent->Loader().GetDocumentLoader()->HasBeenLoadedAsWebArchive()) {
+        if (url.HasFragmentIdentifier() &&
+            frame_->GetDocument()->IsInitialEmptyDocument()) {
+          same_document_navigation = false;
+        }
+      }
+    }
+  }
+
+  if (!AllowRequestForThisFrame(request, same_document_navigation)) {
     return;
+  }
 
   // Block renderer-initiated loads of data: and filesystem: URLs in the top
   // frame (unless they are reload requests).
@@ -775,41 +816,6 @@ void FrameLoader::StartNavigation(FrameLoadRequest& request,
   if (url.ProtocolIs("filesystem")) {
     document_loader_->CountUse(
         mojom::blink::WebFeature::kFileSystemUrlNavigation);
-  }
-
-  // Convert navigations from the initial empty document to do replacement if
-  // needed. Note that we don't convert reloads or history navigations (so only
-  // kStandard navigations can get converted to do replacement).
-  if (frame_load_type == WebFrameLoadType::kStandard &&
-      IsOnInitialEmptyDocument()) {
-    frame_load_type = WebFrameLoadType::kReplaceCurrentItem;
-  }
-
-  bool same_document_navigation =
-      request.GetNavigationPolicy() == kNavigationPolicyCurrentTab &&
-      ShouldPerformFragmentNavigation(
-          request.Form(), resource_request.HttpMethod(), frame_load_type, url);
-
-  if (RuntimeEnabledFeatures::
-          TreatMhtmlInitialDocumentLoadsAsCrossDocumentEnabled()) {
-    if (auto* parent = DynamicTo<LocalFrame>(frame_->Tree().Parent())) {
-      // Within MHTML archives, treat the initial about:blank#fragment
-      // navigation as cross-document. Although it appears to be a same-document
-      // fragment navigation, it actually commits a new document with a new
-      // opaque origin.
-      //
-      // TODO(crbug.com/423663315): Consider refining this logic to only treat
-      // the initial about:blank#fragment navigation in MHTML as cross-document
-      // if the MHTML archive actually overrides the about:blank resource. If it
-      // doesn't, the navigation may be better treated as same-document,
-      // matching non-MHTML behavior.
-      if (parent->Loader().GetDocumentLoader()->HasBeenLoadedAsWebArchive()) {
-        if (url.HasFragmentIdentifier() &&
-            frame_->GetDocument()->IsInitialEmptyDocument()) {
-          same_document_navigation = false;
-        }
-      }
-    }
   }
 
   // Perform same document navigation.

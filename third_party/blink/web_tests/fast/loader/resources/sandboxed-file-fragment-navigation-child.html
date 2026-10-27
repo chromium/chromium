@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<a id="link" href="#target">Jump to target</a>
+<div style="height: 1200px"></div>
+<div id="target">Target</div>
+<script>
+window.addEventListener('load', () => {
+  document.getElementById('link').click();
+  setTimeout(() => {
+    parent.postMessage({
+      hash: location.hash,
+      scrolled: window.scrollY > 0,
+    }, '*');
+  }, 0);
+});
+</script>
