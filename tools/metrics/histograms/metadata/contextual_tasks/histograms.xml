@@ -390,6 +390,71 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="ContextualTasks.ExtensionHandshake.Latency" units="ms"
+    expires_after="2027-04-15">
+  <owner>hujasonx@google.com</owner>
+  <owner>chrome-contextual-tasks-eng@google.com</owner>
+  <summary>
+    Time from when a Search Web document connects to the Contextual Tasks
+    component extension Service Worker port until the page acknowledges
+    readiness (HandshakeResponse). Recorded once per connection attempt, and
+    only when the handshake succeeds, so this measures the latency of successful
+    handshakes rather than overall health; pair it with
+    ContextualTasks.ExtensionHandshake.Status to see the failure mix.
+  </summary>
+</histogram>
+
+<histogram name="ContextualTasks.ExtensionHandshake.Status"
+    enum="ContextualTasksExtensionHandshakeStatus" expires_after="2027-04-15">
+  <owner>hujasonx@google.com</owner>
+  <owner>chrome-contextual-tasks-eng@google.com</owner>
+  <summary>
+    Outcome of a Contextual Tasks component extension Service Worker port
+    handshake with the Search Web page. Normally recorded once per connection
+    attempt; if the getHandshakeMessage() Mojo reply drops after the browser
+    registers the connection, both 'Mojo request failed' (from the Service
+    Worker) and 'Frame detached' (when the browser page state tears down) may be
+    recorded for the same attempt.
+
+    'Host origin rejected' means the connecting origin was not on the allow
+    list. 'Invalid document ID' means the connecting document could not be
+    validated in the browser process. 'Mojo request failed' means the Service
+    Worker's getHandshakeMessage() call failed. 'Frame detached' means the page
+    navigated away, reconnected, or was destroyed before the handshake
+    completed.
+  </summary>
+</histogram>
+
+<histogram name="ContextualTasks.ExtensionPostMessage.Error"
+    enum="ContextualTasksExtensionPostMessageError" expires_after="2027-04-15">
+  <owner>hujasonx@google.com</owner>
+  <owner>chrome-contextual-tasks-eng@google.com</owner>
+  <summary>
+    Recorded each time a search message between the Contextual Tasks component
+    extension Service Worker port and the Search Web page is dropped. Emitted
+    once per dropped message, so a single session may contribute many samples
+    and this cannot be read as a per-page rate.
+  </summary>
+</histogram>
+
+<histogram
+    name="ContextualTasks.ExtensionPostMessage.QueuedSearchMessagesDropped"
+    units="messages" expires_after="2027-04-15">
+  <owner>hujasonx@google.com</owner>
+  <owner>chrome-contextual-tasks-eng@google.com</owner>
+  <summary>
+    Number of browser-originated search messages that a Contextual Tasks page
+    search state was still holding (or dropped due to queue overflow) when the
+    page navigated, reconnected, or was torn down. Search messages that arrive
+    before the handshake completes are queued and flushed once ready; this
+    counts the ones that were never sent. Recorded once per page connection,
+    including when the count is zero, so the share of sessions that lost
+    messages can be read directly from the zero bucket. Queuing itself is
+    expected, so this is reported separately from
+    ContextualTasks.ExtensionPostMessage.Error.
+  </summary>
+</histogram>
+
 <histogram name="ContextualTasks.FileUpload.HttpStatus" enum="HttpResponseCode"
     expires_after="2027-03-07">
   <owner>hujasonx@google.com</owner>

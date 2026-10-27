@@ -712,6 +712,27 @@ std::vector<uint8_t> GetSerializedHandshakeMessage() {
   return serialized_message;
 }
 
+void RecordExtensionHandshakeStatus(ExtensionHandshakeStatus status) {
+  base::UmaHistogramEnumeration("ContextualTasks.ExtensionHandshake.Status",
+                                status);
+}
+
+void RecordExtensionHandshakeLatency(base::TimeDelta latency) {
+  base::UmaHistogramMediumTimes("ContextualTasks.ExtensionHandshake.Latency",
+                                latency);
+}
+
+void RecordExtensionPostMessageError(ExtensionPostMessageError error) {
+  base::UmaHistogramEnumeration("ContextualTasks.ExtensionPostMessage.Error",
+                                error);
+}
+
+void RecordExtensionQueuedSearchMessagesDropped(size_t count) {
+  base::UmaHistogramCounts100(
+      "ContextualTasks.ExtensionPostMessage.QueuedSearchMessagesDropped",
+      count);
+}
+
 bool ShouldUseDarkMode(Profile* profile, const GURL& url) {
   std::optional<bool> url_dark_mode = GetDarkModeFromUrl(url);
   if (url_dark_mode.has_value()) {

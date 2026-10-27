@@ -6,11 +6,13 @@
 
 #include "base/scoped_observation.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_eligibility_manager.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_factory.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_utils.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_web_contents_user_data.h"
 #include "chrome/browser/contextual_tasks/mock_contextual_tasks_ui_service.h"
 #include "chrome/browser/extensions/component_loader.h"
@@ -430,6 +432,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksExtensionMessagingOnlyApiPrivateTest,
 IN_PROC_BROWSER_TEST_F(
     ContextualTasksExtensionMessagingTest,
     ServiceWorkerPortHandshakeAndBidirectionalSearchMessage) {
+  base::HistogramTester histogram_tester;
   const Extension* extension =
       ExtensionRegistry::Get(profile())->enabled_extensions().GetByID(
           extension_misc::kContextualTasksExtensionId);
@@ -494,6 +497,25 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_NE(user_data->GetOrCreateContextualSessionHandle(), nullptr);
   EXPECT_EQ(2u,
             user_data->GetOrCreateContextualSessionHandle()->auth_user_index());
+  histogram_tester.ExpectUniqueSample(
+      "ContextualTasks.ExtensionHandshake.Status",
+      contextual_tasks::ExtensionHandshakeStatus::kSuccess, 1);
+  histogram_tester.ExpectTotalCount(
+      "ContextualTasks.ExtensionHandshake.Latency", 1);
+
+  // Send a malformed message over the Service Worker Port and verify that the
+  // Service Worker records kUnexpectedDataType via chrome.metricsPrivate.
+  std::string invalid_message_script = R"(
+    (() => {
+      window.__aimSearchPort.postMessage({
+        type: 'chrome-search-channel',
+        payload: 'not-an-array'
+      });
+      return 'sent_invalid';
+    })()
+  )";
+  EXPECT_EQ("sent_invalid",
+            content::EvalJs(GetActiveWebContents(), invalid_message_script));
 
   // Verify AIM -> Chrome SearchToClientMessage.OnSubmitQueryRequest over the
   // Service Worker Port returns ClientToSearchMessage.OnSubmitQueryResponse
@@ -523,6 +545,9 @@ IN_PROC_BROWSER_TEST_F(
                               blink::WebMouseEvent::Button::kLeft);
   EXPECT_EQ("got_submit_response",
             content::EvalJs(GetActiveWebContents(), submit_query_script));
+  histogram_tester.ExpectBucketCount(
+      "ContextualTasks.ExtensionPostMessage.Error",
+      contextual_tasks::ExtensionPostMessageError::kUnexpectedDataType, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(ContextualTasksExtensionMessagingTest,

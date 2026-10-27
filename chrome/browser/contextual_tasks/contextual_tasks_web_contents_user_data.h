@@ -31,6 +31,7 @@
 #include "components/contextual_tasks/public/contextual_tasks_service.h"
 #include "components/sessions/core/session_id.h"
 #include "components/tabs/public/tab_interface.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "url/gurl.h"
 
@@ -65,6 +66,7 @@ class QueryContextualizer;
 
 class ContextualTasksWebContentsUserData
     : public content::WebContentsUserData<ContextualTasksWebContentsUserData>,
+      public content::WebContentsObserver,
       public contextual_search::ContextualSearchContextController::
           ContextUploadStatusObserver,
       public ContextualTasksService::Observer {
@@ -186,6 +188,11 @@ class ContextualTasksWebContentsUserData
   void OnTaskDisassociatedFromTab(const base::Uuid& task_id,
                                   SessionID tab_id) override;
   void OnWillBeDestroyed() override;
+
+  // content::WebContentsObserver:
+  void RenderFrameHostChanged(content::RenderFrameHost* old_host,
+                              content::RenderFrameHost* new_host) override;
+  void RenderFrameDeleted(content::RenderFrameHost* render_frame_host) override;
 
   void HandleOnSubmitQueryRequest();
   void HandleOpenLinkInSidePanelMode(std::string_view url);

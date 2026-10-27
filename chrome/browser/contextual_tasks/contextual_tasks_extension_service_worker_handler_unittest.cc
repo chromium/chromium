@@ -10,8 +10,10 @@
 
 #include "base/base64.h"
 #include "base/scoped_observation.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_utils.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_web_contents_user_data.h"
 #include "chrome/browser/contextual_tasks/mock_contextual_tasks_page.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
@@ -308,6 +310,104 @@ TEST_F(ContextualTasksExtensionServiceWorkerHandlerTest,
   EXPECT_THAT(
       log_observer.entries()[0].message,
       testing::HasSubstr("SearchToClientMessage dropped: feature disabled"));
+}
+
+TEST_F(ContextualTasksExtensionServiceWorkerHandlerTest,
+       RecordsHandshakeAndErrorHistograms) {
+  base::HistogramTester histogram_tester;
+  const std::string document_id = GetMainFrameDocumentId();
+
+  // 1. Start handshake and complete it: records kSuccess and Latency, and
+  // records 0 dropped queued messages when the page navigates away.
+  base::test::TestFuture<mojo_base::ProtoWrapper> handshake_future;
+  handler_->GetHandshakeMessage(document_id, handshake_future.GetCallback());
+  (void)handshake_future.Take();
+
+  auto* user_data =
+      ContextualTasksWebContentsUserData::GetOrCreateForWebContents(
+          web_contents());
+  lens::ClientToSearchMessage queued_msg;
+  queued_msg.mutable_open_threads_view();
+  user_data->PostSearchMessage(queued_msg);
+
+  lens::SearchToClientMessage handshake_response;
+  handshake_response.mutable_handshake_response()->set_auth_user_index(0);
+  handler_->OnWebviewMessage(SerializeProto(handshake_response), document_id);
+  mock_page_.FlushForTesting();
+
+  histogram_tester.ExpectUniqueSample(
+      "ContextualTasks.ExtensionHandshake.Status",
+      ExtensionHandshakeStatus::kSuccess, 1);
+  histogram_tester.ExpectTotalCount(
+      "ContextualTasks.ExtensionHandshake.Latency", 1);
+
+  // Navigate to a new page to tear down PageSearchState; since the queued
+  // message was flushed on handshake completion, 0 dropped messages should be
+  // recorded.
+  NavigateAndCommit(GURL("https://example.com/next"));
+  histogram_tester.ExpectUniqueSample(
+      "ContextualTasks.ExtensionPostMessage.QueuedSearchMessagesDropped", 0, 1);
+
+  // 2. Start a second handshake on the new page, queue 2 search messages, and
+  // navigate away before the handshake completes: records kFrameDetached and 2
+  // dropped queued messages.
+  const std::string second_doc_id = GetMainFrameDocumentId();
+  base::test::TestFuture<mojo_base::ProtoWrapper> second_handshake_future;
+  handler_->GetHandshakeMessage(second_doc_id,
+                                second_handshake_future.GetCallback());
+  (void)second_handshake_future.Take();
+
+  user_data->PostSearchMessage(queued_msg);
+  user_data->PostSearchMessage(queued_msg);
+
+  NavigateAndCommit(GURL("https://www.google.com/search?udm=50&q=third"));
+  histogram_tester.ExpectBucketCount(
+      "ContextualTasks.ExtensionHandshake.Status",
+      ExtensionHandshakeStatus::kFrameDetached, 1);
+  histogram_tester.ExpectBucketCount(
+      "ContextualTasks.ExtensionPostMessage.QueuedSearchMessagesDropped", 2, 1);
+
+  // 3. Invalid document_id handshakes record kInvalidDocumentId.
+  base::test::TestFuture<mojo_base::ProtoWrapper> invalid_handshake_future;
+  handler_->GetHandshakeMessage("invalid-doc-id",
+                                invalid_handshake_future.GetCallback());
+  (void)invalid_handshake_future.Take();
+  histogram_tester.ExpectBucketCount(
+      "ContextualTasks.ExtensionHandshake.Status",
+      ExtensionHandshakeStatus::kInvalidDocumentId, 1);
+
+  // 4. Dropped inbound/outbound messages record ExtensionPostMessage.Error.
+  const std::string third_doc_id = GetMainFrameDocumentId();
+  handler_->OnWebviewMessage({0x0a, 0x00}, std::nullopt);
+  handler_->OnWebviewMessage({0x0a, 0x00}, "invalid-doc-id");
+  histogram_tester.ExpectBucketCount(
+      "ContextualTasks.ExtensionPostMessage.Error",
+      ExtensionPostMessageError::kInvalidDocumentId, 2);
+
+  handler_->OnWebviewMessage({}, third_doc_id);
+  histogram_tester.ExpectBucketCount(
+      "ContextualTasks.ExtensionPostMessage.Error",
+      ExtensionPostMessageError::kUnexpectedDataType, 1);
+
+  std::vector<uint8_t> oversized(1024 * 1024 + 1, 0x00);
+  handler_->OnWebviewMessage(oversized, third_doc_id);
+  histogram_tester.ExpectBucketCount(
+      "ContextualTasks.ExtensionPostMessage.Error",
+      ExtensionPostMessageError::kMessageTooLarge, 1);
+
+  handler_->OnWebviewMessage({0xff, 0xfe, 0xfd}, third_doc_id);
+  histogram_tester.ExpectBucketCount(
+      "ContextualTasks.ExtensionPostMessage.Error",
+      ExtensionPostMessageError::kProtoParseFailed, 1);
+
+  // Unbound page remote records kMojoPipeClosed on outbound dispatch.
+  ContextualTasksExtensionServiceWorkerHandler unbound_handler(*profile());
+  unbound_handler.OnWebviewMessage(SerializeProto(handshake_response),
+                                   third_doc_id);
+  user_data->PostSearchMessage(queued_msg);
+  histogram_tester.ExpectBucketCount(
+      "ContextualTasks.ExtensionPostMessage.Error",
+      ExtensionPostMessageError::kMojoPipeClosed, 1);
 }
 
 }  // namespace
