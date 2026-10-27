@@ -202,10 +202,6 @@ public class TabGridItemTouchHelperCallbackUnitTest {
         doReturn(mTab3).when(mTabModel).getTabById(TAB3_ID);
         doReturn(mTab4).when(mTabModel).getTabById(TAB4_ID);
         doReturn(4).when(mTabModel).getCount();
-        doReturn(mTab1).when(mTabModel).getRepresentativeTabAt(POSITION1);
-        doReturn(mTab2).when(mTabModel).getRepresentativeTabAt(POSITION2);
-        doReturn(mTab3).when(mTabModel).getRepresentativeTabAt(POSITION3);
-        doReturn(mTab4).when(mTabModel).getRepresentativeTabAt(POSITION4);
         initAndAssertAllProperties();
 
         setupRecyclerView();

@@ -611,7 +611,6 @@ public class TabListMediatorUnitTest {
                 .thenReturn(mTabFaviconFetcher);
         when(mTabModel.getRelatedTabList(TAB1_ID)).thenReturn(tabs1);
         when(mTabModel.getRelatedTabList(TAB2_ID)).thenReturn(tabs2);
-        mockRepresentativeTabs(mTab1, mTab2);
         when(mTabListItemOnClickListenerProvider.onTabGroupClicked(any(Tab.class)))
                 .thenReturn(mOpenGroupActionListener);
         when(mTabListItemOnClickListenerProvider.onTabGroupClicked(anyString()))
@@ -815,6 +814,7 @@ public class TabListMediatorUnitTest {
     @Test
     @DisableFeatures(ChromeFeatureList.ANDROID_TAB_UI_REFACTOR)
     public void tabGroupColorViewProviderDestroyed_Ungroup_featureDisabled() {
+        mockRepresentativeTabs(mTab1, mTab2);
         mMediator.resetWithListOfTabs(List.of(mTab1, mTab2), null, false);
 
         PropertyModel model = mModelList.get(0).model;
@@ -1495,6 +1495,7 @@ public class TabListMediatorUnitTest {
         RecyclerView.ViewHolder fakeViewHolder3 = prepareFakeViewHolder(mItemView3, 2);
         RecyclerView.ViewHolder fakeViewHolder4 = prepareFakeViewHolder(mItemView4, 3);
 
+        mockRepresentativeTabs(mTab1, mTab2);
         List<Tab> tabs = List.of(mTab1, mTab2, tab3, tab4);
         mMediator.resetWithListOfTabs(tabs, null, false);
         assertThat(mModelList.size(), equalTo(4));
@@ -1610,7 +1611,6 @@ public class TabListMediatorUnitTest {
         fakeViewHolder4 = prepareFakeViewHolder(mItemView4, 2);
 
         // Merge 4 to 3.
-        mockRepresentativeTabs(mTab1, tab3, tab4);
         itemTouchHelperCallback.setHoveredTabIndexForTesting(1);
         itemTouchHelperCallback.setSelectedTabIndexForTesting(2);
         itemTouchHelperCallback.setRecyclerView(mRecyclerView);
@@ -1634,7 +1634,6 @@ public class TabListMediatorUnitTest {
         fakeViewHolder3 = prepareFakeViewHolder(mItemView3, 1);
 
         // Merge 3 to 1.
-        mockRepresentativeTabs(mTab1, tab3);
         itemTouchHelperCallback.setHoveredTabIndexForTesting(0);
         itemTouchHelperCallback.setSelectedTabIndexForTesting(1);
         itemTouchHelperCallback.setRecyclerView(mRecyclerView);
@@ -5682,6 +5681,7 @@ public class TabListMediatorUnitTest {
         Tab newTab = prepareTab(TAB3_ID, TAB3_TITLE, TAB3_URL);
         List<Tab> tabs = List.of(mTab1, newTab);
         createTabGroup(tabs, TAB_GROUP_ID);
+        mockRepresentativeTabs(mTab1, newTab);
 
         mMediator.resetWithListOfTabs(tabs, null, false);
 
@@ -7429,7 +7429,6 @@ public class TabListMediatorUnitTest {
      * @param isGrouped true if the tabs should be grouped.
      */
     private void resetWithRegularTabs(boolean isGrouped) {
-        mockRepresentativeTabs(mTab1, mTab2);
         if (isGrouped) {
             when(mTabModel.getRelatedTabList(eq(TAB1_ID))).thenReturn(List.of(mTab1, mTab2));
             when(mTabModel.getRelatedTabList(eq(TAB2_ID))).thenReturn(List.of(mTab1, mTab2));
