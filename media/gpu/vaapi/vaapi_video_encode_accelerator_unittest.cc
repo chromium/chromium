@@ -37,6 +37,7 @@ using ::testing::_;
 using ::testing::Eq;
 using ::testing::HasSubstr;
 using ::testing::Return;
+using ::testing::SizeIs;
 using ::testing::WithArgs;
 
 namespace media {
@@ -183,9 +184,11 @@ class MockVaapiWrapper : public VaapiWrapper {
       std::unique_ptr<ScopedVASurface>(scoped_refptr<const gfx::NativePixmap>,
                                        bool));
   MOCK_METHOD2(GetEncodedChunkSize, uint64_t(VABufferID, VASurfaceID));
-  MOCK_METHOD5(
-      DownloadFromVABuffer,
-      bool(VABufferID, std::optional<VASurfaceID>, uint8_t*, size_t, size_t*));
+  MOCK_METHOD4(DownloadFromVABuffer,
+               bool(VABufferID,
+                    std::optional<VASurfaceID>,
+                    base::span<uint8_t>,
+                    size_t*));
   MOCK_METHOD3(UploadVideoFrameToSurface,
                bool(const VideoFrame&, VASurfaceID, const gfx::Size&));
   MOCK_METHOD1(ExecuteAndDestroyPendingBuffers, bool(VASurfaceID));
@@ -544,9 +547,9 @@ class VaapiVideoEncodeAcceleratorTest
                 BitrateControlUpdate(CheckEncodeData(kEncodedChunkSize)))
         .WillOnce(Return());
     EXPECT_CALL(*mock_vaapi_wrapper_,
-                DownloadFromVABuffer(kCodedBufferId, Eq(std::nullopt), _,
-                                     output_buffer_size_, _))
-        .WillOnce(WithArgs<4>([](size_t* coded_data_size) {
+                DownloadFromVABuffer(kCodedBufferId, Eq(std::nullopt),
+                                     SizeIs(output_buffer_size_), _))
+        .WillOnce(WithArgs<3>([](size_t* coded_data_size) {
           *coded_data_size = kEncodedChunkSize;
           return true;
         }));
@@ -734,9 +737,9 @@ class VaapiVideoEncodeAcceleratorTest
       const VABufferID kCodedBufferId = kCodedBufferIds[i];
       const uint64_t kEncodedChunkSize = kEncodedChunkSizes[i];
       EXPECT_CALL(*mock_vaapi_wrapper_,
-                  DownloadFromVABuffer(kCodedBufferId, Eq(std::nullopt), _,
-                                       output_buffer_size_, _))
-          .WillOnce(WithArgs<4>([kEncodedChunkSize](size_t* coded_data_size) {
+                  DownloadFromVABuffer(kCodedBufferId, Eq(std::nullopt),
+                                       SizeIs(output_buffer_size_), _))
+          .WillOnce(WithArgs<3>([kEncodedChunkSize](size_t* coded_data_size) {
             *coded_data_size = kEncodedChunkSize;
             return true;
           }));

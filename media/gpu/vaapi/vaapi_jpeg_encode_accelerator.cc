@@ -359,9 +359,9 @@ void VaapiJpegEncodeAccelerator::Encoder::EncodeWithDmaBufTask(
   auto frame_content = output_buffer.subspan(output_offset);
   // Get the encoded output. DownloadFromVABuffer() is a blocking call. It
   // would wait until encoding is finished.
-  if (!vaapi_wrapper_->DownloadFromVABuffer(
-          cached_output_buffer_->id(), va_surface_id_, frame_content.data(),
-          frame_content.size(), &encoded_size)) {
+  if (!vaapi_wrapper_->DownloadFromVABuffer(cached_output_buffer_->id(),
+                                            va_surface_id_, frame_content,
+                                            &encoded_size)) {
     VLOGF(1) << "Failed to retrieve output image from VA coded buffer";
     notify_error_cb_.Run(task_id, PLATFORM_FAILURE);
     return;
@@ -485,9 +485,9 @@ void VaapiJpegEncodeAccelerator::Encoder::EncodeTask(
   // would wait until encoding is finished.
   auto output_buffer = request->output_mapping.GetMemoryAsSpan<uint8_t>();
   size_t encoded_size = 0;
-  if (!vaapi_wrapper_->DownloadFromVABuffer(
-          cached_output_buffer_->id(), va_surface_id_, output_buffer.data(),
-          output_buffer.size(), &encoded_size)) {
+  if (!vaapi_wrapper_->DownloadFromVABuffer(cached_output_buffer_->id(),
+                                            va_surface_id_, output_buffer,
+                                            &encoded_size)) {
     VLOGF(1) << "Failed to retrieve output image from VA coded buffer";
     notify_error_cb_.Run(task_id, PLATFORM_FAILURE);
     return;

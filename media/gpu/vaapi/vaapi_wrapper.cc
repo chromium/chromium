@@ -3126,11 +3126,10 @@ uint64_t VaapiWrapper::GetEncodedChunkSize(VABufferID buffer_id,
 bool VaapiWrapper::DownloadFromVABuffer(
     VABufferID buffer_id,
     std::optional<VASurfaceID> sync_surface_id,
-    uint8_t* target_ptr,
-    size_t target_size,
+    base::span<uint8_t> target,
     size_t* coded_data_size) NO_THREAD_SAFETY_ANALYSIS {
   VAAPI_CHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(target_ptr);
+  DCHECK(target.data());
   TRACE_EVENT0("media,gpu", "VaapiWrapper::DownloadFromVABuffer");
   std::optional<base::AutoLock> auto_lock =
       AutoLockOnlyIfNeeded(va_lock_.get());
@@ -3166,16 +3165,17 @@ bool VaapiWrapper::DownloadFromVABuffer(
     while (buffer_segment) {
       DCHECK(buffer_segment->buf);
 
-      if (buffer_segment->size > target_size) {
-        LOG(ERROR) << "Insufficient output buffer size: " << target_size
+      if (buffer_segment->size > target.size()) {
+        LOG(ERROR) << "Insufficient output buffer size: " << target.size()
                    << ", the buffer segment size: " << buffer_segment->size;
         break;
       }
-      UNSAFE_TODO(
-          memcpy(target_ptr, buffer_segment->buf, buffer_segment->size));
-
-      UNSAFE_TODO(target_ptr += buffer_segment->size);
-      target_size -= buffer_segment->size;
+      // SAFETY: libva provides a buffer of `size` bytes for each coded segment.
+      // The mapping keeps these buffers valid until the copy completes.
+      const auto source = UNSAFE_BUFFERS(
+          base::span(static_cast<const uint8_t*>(buffer_segment->buf),
+                     buffer_segment->size));
+      target.take_first(source.size()).copy_from(source);
       *coded_data_size += buffer_segment->size;
       buffer_segment =
           reinterpret_cast<VACodedBufferSegment*>(buffer_segment->next);
