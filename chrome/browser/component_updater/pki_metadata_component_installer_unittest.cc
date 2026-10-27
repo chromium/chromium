@@ -42,6 +42,8 @@
 
 #if BUILDFLAG(CHROME_KEY_PINNING_SUPPORTED)
 #include "chrome/browser/net/key_pinning.pb.h"
+#include "net/cert/key_pinning_state.h"
+#include "net/cert/key_pinning_state_chrome_test_util.h"
 #include "net/http/transport_security_state.h"
 #endif
 
@@ -243,7 +245,9 @@ class PKIMetadataComponentInstallerKeyPinningTest
  public:
   // Constants for test pinset.
   static constexpr char kPinsetName[] = "example";
-  static constexpr char kPinsetHostName[] = "example.test";
+  // Hostname for the component updated pinset created by these tests. Must not
+  // be pinned in the compiled-in static test pins list.
+  static constexpr char kPinsetHostName[] = "not-pinned-by-default.test";
   static constexpr bool kPinsetIncludeSubdomains = true;
   static constexpr uint64_t kMaxSupportedKPCompatibilityVersion = 1;
 
@@ -256,6 +260,9 @@ class PKIMetadataComponentInstallerKeyPinningTest
       0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
       0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
       0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
+
+  // Hostname that is pinned in the compiled-in static test pinset.
+  static constexpr char kPinnedByDefaultHostname[] = "example.test";
 
   void SetUp() override {
     PKIMetadataComponentInstallerTest::SetUp();
@@ -296,7 +303,22 @@ class PKIMetadataComponentInstallerKeyPinningTest
     waiter.Wait();
   }
 
+  void ExpectCertVerifierServiceUsesCompiledInPins() {
+    cert_verifier::CertVerifierServiceFactoryImpl*
+        cert_verifier_service_factory =
+            content::GetCertVerifierServiceFactoryForTesting();
+    ASSERT_TRUE(cert_verifier_service_factory);
+    const net::CertVerifyProc::ImplParams& impl_params =
+        cert_verifier_service_factory->get_impl_params();
+    ASSERT_TRUE(impl_params.key_pinning_state);
+    EXPECT_TRUE(impl_params.key_pinning_state->HasPublicKeyPins(
+        kPinnedByDefaultHostname));
+    EXPECT_FALSE(
+        impl_params.key_pinning_state->HasPublicKeyPins(kPinsetHostName));
+  }
+
  protected:
+  net::ScopedKeyPinningStateChromeDefaults scoped_test_key_pinning_enable_;
   chrome_browser_key_pinning::PinList pinlist_;
 };
 #endif  // BUILDFLAG(CHROME_KEY_PINNING_SUPPORTED)
@@ -382,40 +404,74 @@ TEST_F(PKIMetadataComponentInstallerKeyPinningTest, VerifyInstallation) {
 // the network service.
 TEST_F(PKIMetadataComponentInstallerKeyPinningTest,
        InstallComponentUpdatesPinningConfig) {
-  // Initialize the network service.
+  // Initialize the network service and CertVerifierServiceFactory.
   content::GetNetworkService();
+  content::GetCertVerifierServiceFactory();
   task_environment_.RunUntilIdle();
+
+  // Check initial CertVerifierServiceFactory key_pinning_state. It should be
+  // initialized to the compiled-in static unittest data.
+  ExpectCertVerifierServiceUsesCompiledInPins();
 
   WriteKPConfigAndUpdate();
 
-  network::NetworkService* network_service =
-      network::NetworkService::GetNetworkServiceForTesting();
-  ASSERT_TRUE(network_service);
-  EXPECT_TRUE(network_service->pins_list_updated());
-  const std::vector<net::TransportSecurityState::PinSet>& pinsets =
-      network_service->pinsets();
-  const std::vector<net::TransportSecurityState::PinSetInfo>& host_pins =
-      network_service->host_pins();
-  EXPECT_EQ(pinsets.size(), 1u);
-  EXPECT_EQ(host_pins.size(), 1u);
+  {
+    network::NetworkService* network_service =
+        network::NetworkService::GetNetworkServiceForTesting();
+    ASSERT_TRUE(network_service);
+    EXPECT_TRUE(network_service->pins_list_updated());
+    const std::vector<net::TransportSecurityState::PinSet>& pinsets =
+        network_service->pinsets();
+    const std::vector<net::TransportSecurityState::PinSetInfo>& host_pins =
+        network_service->host_pins();
+    EXPECT_EQ(pinsets.size(), 1u);
+    EXPECT_EQ(host_pins.size(), 1u);
 
-  EXPECT_EQ(pinsets.at(0).name(), kPinsetName);
-  EXPECT_THAT(pinsets.at(0).static_spki_hashes(),
-              ::testing::ElementsAre(kSpkiHash1));
-  EXPECT_THAT(pinsets.at(0).bad_static_spki_hashes(),
-              ::testing::ElementsAre(kSpkiHash2));
+    EXPECT_EQ(pinsets.at(0).name(), kPinsetName);
+    EXPECT_THAT(pinsets.at(0).static_spki_hashes(),
+                ::testing::ElementsAre(kSpkiHash1));
+    EXPECT_THAT(pinsets.at(0).bad_static_spki_hashes(),
+                ::testing::ElementsAre(kSpkiHash2));
 
-  EXPECT_EQ(host_pins.at(0).hostname_, kPinsetHostName);
-  EXPECT_EQ(host_pins.at(0).pinset_name_, kPinsetName);
-  EXPECT_EQ(host_pins.at(0).include_subdomains_, kPinsetIncludeSubdomains);
+    EXPECT_EQ(host_pins.at(0).hostname_, kPinsetHostName);
+    EXPECT_EQ(host_pins.at(0).pinset_name_, kPinsetName);
+    EXPECT_EQ(host_pins.at(0).include_subdomains_, kPinsetIncludeSubdomains);
+  }
+
+  {
+    cert_verifier::CertVerifierServiceFactoryImpl*
+        cert_verifier_service_factory =
+            content::GetCertVerifierServiceFactoryForTesting();
+    ASSERT_TRUE(cert_verifier_service_factory);
+    const net::CertVerifyProc::ImplParams& impl_params =
+        cert_verifier_service_factory->get_impl_params();
+
+    ASSERT_TRUE(impl_params.key_pinning_state);
+    EXPECT_TRUE(
+        impl_params.key_pinning_state->HasPublicKeyPins(kPinsetHostName));
+    EXPECT_TRUE(impl_params.key_pinning_state->HasPublicKeyPins(
+        std::string("subdomain.") + kPinsetHostName));
+    EXPECT_EQ(net::KeyPinningState::PKPStatus::OK,
+              impl_params.key_pinning_state->CheckPublicKeyPins(
+                  kPinsetHostName,
+                  /*is_issued_by_known_root=*/true, {kSpkiHash1}));
+    EXPECT_EQ(net::KeyPinningState::PKPStatus::VIOLATED,
+              impl_params.key_pinning_state->CheckPublicKeyPins(
+                  kPinsetHostName,
+                  /*is_issued_by_known_root=*/true, {kSpkiHash1, kSpkiHash2}));
+
+    EXPECT_FALSE(impl_params.key_pinning_state->HasPublicKeyPins(
+        kPinnedByDefaultHostname));
+  }
 }
 
 // Tests that installing the PKI Metadata component bails out if the KP proto is
 // invalid.
 TEST_F(PKIMetadataComponentInstallerKeyPinningTest,
        InstallComponentInvalidKPProto) {
-  // Initialize the network service.
+  // Initialize the network service and CertVerifierServiceFactory.
   content::GetNetworkService();
+  content::GetCertVerifierServiceFactory();
   task_environment_.RunUntilIdle();
 
   // Write an invalid kp_pinslist.pb.
@@ -441,14 +497,17 @@ TEST_F(PKIMetadataComponentInstallerKeyPinningTest,
       network_service->host_pins();
   EXPECT_EQ(pinsets.size(), 0u);
   EXPECT_EQ(host_pins.size(), 0u);
+
+  ExpectCertVerifierServiceUsesCompiledInPins();
 }
 
 // Tests that installing the PKI Metadata component does not update the pinning
 // list if its compatibility version exceeds the value supported.
 TEST_F(PKIMetadataComponentInstallerKeyPinningTest,
        InstallComponentIncompatibleKPVersion) {
-  // Initialize the network service.
+  // Initialize the network service and CertVerifierServiceFactory.
   content::GetNetworkService();
+  content::GetCertVerifierServiceFactory();
   task_environment_.RunUntilIdle();
 
   // Change the version to an unsupported value.
@@ -468,14 +527,17 @@ TEST_F(PKIMetadataComponentInstallerKeyPinningTest,
       network_service->host_pins();
   EXPECT_EQ(pinsets.size(), 0u);
   EXPECT_EQ(host_pins.size(), 0u);
+
+  ExpectCertVerifierServiceUsesCompiledInPins();
 }
 
 // Tests that installing the PKI Metadata component does not update the pinning
 // list if the built in list is newer.
 TEST_F(PKIMetadataComponentInstallerKeyPinningTest,
        InstallComponentKPListOlderThanBuiltIn) {
-  // Initialize the network service.
+  // Initialize the network service and CertVerifierServiceFactory.
   content::GetNetworkService();
+  content::GetCertVerifierServiceFactory();
   task_environment_.RunUntilIdle();
 
   // Change the timestamp so it's older than the built in list.
@@ -495,6 +557,8 @@ TEST_F(PKIMetadataComponentInstallerKeyPinningTest,
   EXPECT_FALSE(network_service->pins_list_updated());
   EXPECT_EQ(network_service->pinsets().size(), 0u);
   EXPECT_EQ(network_service->host_pins().size(), 0u);
+
+  ExpectCertVerifierServiceUsesCompiledInPins();
 }
 #endif  // BUILDFLAG(CHROME_KEY_PINNING_SUPPORTED)
 

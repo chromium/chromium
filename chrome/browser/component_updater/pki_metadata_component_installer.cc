@@ -888,11 +888,19 @@ void PKIMetadataComponentInstallerService::UpdateNetworkServiceKPListOnUI(
     pinlist_ptr->host_pins.push_back(std::move(pininfo_ptr));
   }
 
-  network_service->UpdateKeyPinsList(
-      std::move(pinlist_ptr), proto_timestamp,
+  base::RepeatingClosure done_callback = BarrierClosure(
+      /*num_closures=*/2,
       base::BindOnce(
           &PKIMetadataComponentInstallerService::NotifyKeyPinsListProcessed,
           weak_factory_.GetWeakPtr()));
+
+  // TODO(crbug.com/497882860): remove once pins are no longer needed in the
+  // network service.
+  network_service->UpdateKeyPinsList(pinlist_ptr->Clone(), proto_timestamp,
+                                     done_callback);
+
+  content::GetCertVerifierServiceFactory()->UpdateKeyPinsList(
+      std::move(pinlist_ptr), proto_timestamp, done_callback);
 }
 
 void PKIMetadataComponentInstallerService::NotifyKeyPinsListProcessed() {

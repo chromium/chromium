@@ -17,6 +17,9 @@ import "services/network/public/mojom/network_param.mojom";
 [EnableIf=is_ct_supported]
 import "services/network/public/mojom/ct_log_info.mojom";
 
+[EnableIf=chrome_key_pinning_supported]
+import "services/network/public/mojom/key_pinning.mojom";
+
 // Parameters to specify how the net::CertVerifier and net::CertVerifyProc
 // objects should be instantiated.
 struct CertVerifierCreationParams {
@@ -104,6 +107,15 @@ interface CertVerifierServiceFactory {
   // Disables CT Enforcement until the next UpdateCtLogList call.
   [EnableIf=is_ct_supported]
   DisableCtEnforcement() => ();
+
+  // Updates the key pins list. `update_time` should contain the timestamp that
+  // the pins list was considered fresh/current, in order to ensure that key
+  // pinning is not enforced if the list is too out of date.  The callback will
+  // be run once the update has been processed (regardless if it was updated
+  // successfully or the update was ignored.)
+  [EnableIf=chrome_key_pinning_supported]
+  UpdateKeyPinsList(network.mojom.PinList pin_list,
+                    mojo_base.mojom.Time update_time) => ();
 
   // Updates the ChromeRootStore and optional MtcConfig used by the
   // CertVerifierServiceFactory with a new version. The callback will be run

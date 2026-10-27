@@ -106,7 +106,7 @@ bool KeyPinningStateChromeCompiledIn::GetPKPStateImpl(
 class KeyPinningStateChromeComponentUpdated : public KeyPinningStateChrome {
  public:
   KeyPinningStateChromeComponentUpdated(
-      const std::vector<PinSet>& pinsets,
+      std::vector<PinSet> pinsets,
       const std::vector<PinSetInfo>& host_pins,
       base::Time update_time);
 
@@ -138,11 +138,11 @@ class KeyPinningStateChromeComponentUpdated : public KeyPinningStateChrome {
 };
 
 KeyPinningStateChromeComponentUpdated::KeyPinningStateChromeComponentUpdated(
-    const std::vector<PinSet>& pinsets,
+    std::vector<PinSet> pinsets,
     const std::vector<PinSetInfo>& host_pins,
     base::Time update_time)
     : key_pins_list_last_update_time_(update_time),
-      pinsets_(pinsets),
+      pinsets_(std::move(pinsets)),
       host_pins_(InitializeHostPins(host_pins)) {}
 
 KeyPinningStateChromeComponentUpdated::
@@ -253,11 +253,11 @@ KeyPinningStateChrome::CreateForCompiledIn() {
 
 // static
 scoped_refptr<KeyPinningStateChrome> KeyPinningStateChrome::CreateForUpdated(
-    const std::vector<PinSet>& pinsets,
+    std::vector<PinSet> pinsets,
     const std::vector<PinSetInfo>& host_pins,
     base::Time update_time) {
   return base::MakeRefCounted<KeyPinningStateChromeComponentUpdated>(
-      pinsets, host_pins, update_time);
+      std::move(pinsets), host_pins, update_time);
 }
 
 // static

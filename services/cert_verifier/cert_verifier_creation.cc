@@ -14,6 +14,7 @@
 #include "net/cert/ct_policy_enforcer.h"
 #include "net/cert/ct_verifier.h"
 #include "net/cert/do_nothing_ct_verifier.h"
+#include "net/cert/key_pinning_state.h"
 #include "net/cert/multi_threaded_cert_verifier.h"
 #include "net/cert/x509_util.h"
 #include "net/net_buildflags.h"
@@ -63,7 +64,7 @@ class CertVerifyProcFactoryImpl : public net::CertVerifyProcFactory {
 #if BUILDFLAG(CHROME_ROOT_STORE_ONLY)
     return CreateNewCertVerifyProc(
         cert_net_fetcher, impl_params.crl_set, std::move(ct_verifier),
-        std::move(ct_policy_enforcer),
+        std::move(ct_policy_enforcer), impl_params.key_pinning_state,
         base::OptionalToPtr(impl_params.root_store_data),
         base::OptionalToPtr(impl_params.root_store_mtc_metadata),
         instance_params, impl_params.time_tracker);
@@ -72,7 +73,7 @@ class CertVerifyProcFactoryImpl : public net::CertVerifyProcFactory {
     if (impl_params.use_chrome_root_store) {
       return CreateNewCertVerifyProc(
           cert_net_fetcher, impl_params.crl_set, std::move(ct_verifier),
-          std::move(ct_policy_enforcer),
+          std::move(ct_policy_enforcer), impl_params.key_pinning_state,
           base::OptionalToPtr(impl_params.root_store_data),
           base::OptionalToPtr(impl_params.root_store_mtc_metadata),
           instance_params, impl_params.time_tracker);
@@ -120,6 +121,7 @@ class CertVerifyProcFactoryImpl : public net::CertVerifyProcFactory {
       scoped_refptr<net::CRLSet> crl_set,
       std::unique_ptr<net::CTVerifier> ct_verifier,
       scoped_refptr<net::CTPolicyEnforcer> ct_policy_enforcer,
+      scoped_refptr<net::KeyPinningState> key_pinning_state,
       const net::ChromeRootStoreData* root_store_data,
       const net::ChromeRootStoreMtcMetadata* root_store_mtc_metadata,
       const net::CertVerifyProc::InstanceParams& instance_params,
@@ -155,6 +157,8 @@ class CertVerifyProcFactoryImpl : public net::CertVerifyProcFactory {
     // tests that don't use threads otherwise.
     net::InitializeTrustStoreAndroid();
 #endif
+    // TODO(crbug.com/497882860): pass the key_pinning_state into the
+    // CertVerifyProcBuiltin.
     return net::CreateCertVerifyProcBuiltin(
         std::move(cert_net_fetcher), std::move(crl_set), std::move(ct_verifier),
         std::move(ct_policy_enforcer), std::move(trust_store), instance_params,

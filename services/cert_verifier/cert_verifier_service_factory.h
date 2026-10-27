@@ -69,6 +69,11 @@ class CertVerifierServiceFactoryImpl
                        UpdateCtLogListCallback callback) override;
   void DisableCtEnforcement(DisableCtEnforcementCallback callback) override;
 #endif
+#if BUILDFLAG(CHROME_KEY_PINNING_SUPPORTED)
+  void UpdateKeyPinsList(network::mojom::PinListPtr pin_list,
+                         base::Time update_time,
+                         UpdateKeyPinsListCallback callback) override;
+#endif
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
   void UpdateChromeRootStore(
       mojo_base::ProtoWrapper new_root_store,

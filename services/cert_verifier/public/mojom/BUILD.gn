@@ -36,4 +36,8 @@ mojom("mojom") {
   if (is_ct_supported) {
     enabled_features += [ "is_ct_supported" ]
   }
+
+  if (chrome_key_pinning_supported) {
+    enabled_features += [ "chrome_key_pinning_supported" ]
+  }
 }

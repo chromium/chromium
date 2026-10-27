@@ -73,7 +73,7 @@ class NET_EXPORT KeyPinningStateChrome : public KeyPinningState {
   // related to each hostname's pin, and |update_time| the time at which this
   // list was known to be up to date.
   static scoped_refptr<KeyPinningStateChrome> CreateForUpdated(
-      const std::vector<PinSet>& pinsets,
+      std::vector<PinSet> pinsets,
       const std::vector<PinSetInfo>& host_pins,
       base::Time update_time);
 

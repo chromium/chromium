@@ -41,6 +41,11 @@
 #include "services/cert_verifier/public/mojom/cert_verifier_service_factory.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 
+#if BUILDFLAG(CHROME_KEY_PINNING_SUPPORTED)
+#include "net/cert/key_pinning_state_chrome.h"
+#include "services/network/public/mojom/key_pinning.mojom.h"
+#endif  // BUILDFLAG(CHROME_KEY_PINNING_SUPPORTED)
+
 #if BUILDFLAG(IS_CT_SUPPORTED)
 #include "components/certificate_transparency/chrome_ct_policy_enforcer.h"
 #include "components/certificate_transparency/chrome_require_ct_delegate.h"
@@ -354,6 +359,40 @@ void CertVerifierServiceFactoryImpl::DisableCtEnforcement(
   std::move(callback).Run();
 }
 #endif  // BUILDFLAG(IS_CT_SUPPORTED)
+
+#if BUILDFLAG(CHROME_KEY_PINNING_SUPPORTED)
+void CertVerifierServiceFactoryImpl::UpdateKeyPinsList(
+    network::mojom::PinListPtr pin_list,
+    base::Time update_time,
+    UpdateKeyPinsListCallback callback) {
+  std::vector<net::KeyPinningStateChrome::PinSet> pinsets;
+  std::vector<net::KeyPinningStateChrome::PinSetInfo> host_pins;
+
+  pinsets.reserve(pin_list->pinsets.size());
+  for (auto& pinset : pin_list->pinsets) {
+    pinsets.emplace_back(std::move(pinset->name),
+                         std::move(pinset->static_spki_hashes),
+                         std::move(pinset->bad_static_spki_hashes));
+  }
+  // TODO(crbug.com/497882860): This converts the mojom host_pins into a
+  // different type and then constructing KeyPinningStateChrome immediately
+  // converts that into the internal representation. Can it be refactored to
+  // avoid the intermediate step?
+  host_pins.reserve(pin_list->host_pins.size());
+  for (auto& info : pin_list->host_pins) {
+    host_pins.emplace_back(std::move(info->hostname),
+                           std::move(info->pinset_name),
+                           info->include_subdomains);
+  }
+
+  proc_params_.key_pinning_state = net::KeyPinningStateChrome::CreateForUpdated(
+      std::move(pinsets), host_pins, update_time);
+
+  UpdateVerifierServices();
+
+  std::move(callback).Run();
+}
+#endif  // BUILDFLAG(CHROME_KEY_PINNING_SUPPORTED)
 
 void CertVerifierServiceFactoryImpl::OnCRLSetParsed(
     scoped_refptr<net::CRLSet> parsed_crl_set) {
