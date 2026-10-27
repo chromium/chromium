@@ -4,6 +4,7 @@
 
 import("//build/config/c++/c++.gni")
 import("//build/rust/rust_api_from_cpp.gni")
+import("//build/rust/rust_static_library.gni")
 import("//build_overrides/crubit.gni")
 
 # Public C++ APIs provided by Crubit.
@@ -162,5 +163,26 @@ if (enable_rust_api_from_cpp) {
     # Empty target to satisfy `rust_api_from_cpp` which requires
     # mandatory `bindings_target` (C++ standard library is special
     # in that it doesn't need an explicit target).
+  }
+
+  # The `cpp_std` crate re-exports the items of `cc_std::std`.  Rust code that
+  # needs to name C++ standard library types should depend on this target and
+  # use shorter paths (e.g. `cpp_std::vector<T>` instead of
+  # `cc_std::std::vector<T>`).
+  #
+  # `cpp_std` is defined here (rather than in Crubit's generated
+  # `$crubit_src_dir/support/BUILD.gn`), because it depends on `:cc_std`
+  # which is built by Chromium (via `rust_api_from_cpp("cc_std")` above).
+  rust_static_library("cpp_std") {
+    crate_name = "cpp_std"
+    crate_root = "${crubit_src_dir}/support/cpp_std.rs"
+    sources = [ crate_root ]
+    deps = [ ":cc_std" ]
+
+    # `cpp_std.rs` comes from Crubit (rather than from Chromium).
+    no_chromium_prelude = true
+    no_clippy = true
+    configs -= crubit_gn_configs_to_remove
+    configs += crubit_gn_support_configs_to_add
   }
 }

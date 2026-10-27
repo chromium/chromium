@@ -15,7 +15,7 @@ rust_static_library("rust_unittests") {
   sources = [ crate_root ]
   deps = [
     ":std_types_rs_api",
-    "//build/rust/crubit:cc_std",
+    "//build/rust/crubit:cpp_std",
     "//testing/rust_gtest_interop",
   ]
 }
