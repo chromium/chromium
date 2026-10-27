@@ -115,6 +115,7 @@ source_set("browser_prefs") {
     "//ios/chrome/app:variations_app_state_agent",
     "//ios/chrome/app/spotlight",
     "//ios/chrome/browser/app_store_rating/model",
+    "//ios/chrome/browser/authentication/account_switching_promo/model",
     "//ios/chrome/browser/authentication/history_sync/coordinator",
     "//ios/chrome/browser/authentication/history_sync/model:history_sync_utils",
     "//ios/chrome/browser/authentication/history_sync/public",

@@ -22,6 +22,7 @@
 #import "components/pref_registry/pref_registry_syncable.h"
 #import "components/signin/public/base/signin_metrics.h"
 #import "components/signin/public/base/signin_pref_names.h"
+#import "components/signin/public/base/signin_switches.h"
 #import "components/signin/public/identity_manager/tribool.h"
 #import "components/sync/test/test_sync_service.h"
 #import "components/sync_preferences/pref_service_mock_factory.h"
@@ -29,6 +30,7 @@
 #import "components/test/ios/test_utils.h"
 #import "ios/chrome/app/change_profile_commands.h"
 #import "ios/chrome/app/change_profile_continuation.h"
+#import "ios/chrome/browser/authentication/account_switching_promo/model/account_switching_promo_prefs.h"
 #import "ios/chrome/browser/authentication/enterprise/public/managed_profile_creation_constants.h"
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/authentication_flow_delegate.h"
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/authentication_flow_in_profile.h"
@@ -131,6 +133,42 @@ class AuthenticationFlowTest : public PlatformTest {
         factory.CreateSyncable(registry.get());
     RegisterProfilePrefs(registry.get());
     return prefs;
+  }
+
+  // Switches the primary account of the personal profile from `identity1_` to
+  // `identity2_` through the authentication flow, and checks that the switch
+  // succeeded.
+  void SwitchFromIdentity1ToIdentity2() {
+    CreateAuthenticationFlow(PostSignInActionSet(), identity2_,
+                             signin_metrics::AccessPoint::kStartPage,
+                             /*shouldHandOverToFlowInProfile=*/YES);
+
+    syncer::SyncService* sync_service =
+        SyncServiceFactory::GetForProfile(personal_profile_.get());
+    OCMExpect([performer_mock_ fetchUnsyncedDataWithSyncService:sync_service])
+        .andDo(^(NSInvocation*) {
+          [authentication_flow_
+                            authenticationFlowPerformer:performer_mock_
+              didFetchUnsyncedDataWithUnsyncedDataTypes:syncer::DataTypeSet()];
+        });
+    OCMExpect([performer_mock_ fetchManagedStatus:personal_profile_.get()
+                                      forIdentity:identity2_])
+        .andDo(^(NSInvocation*) {
+          [authentication_flow_ authenticationFlowPerformer:performer_mock_
+                                      didFetchManagedStatus:nil];
+        });
+    OCMExpect([in_profile_performer_mock_
+                  signOutForAccountSwitchWithProfile:personal_profile_.get()])
+        .andDo(^(NSInvocation*) {
+          SignOutPersonalProfile();
+        });
+    OCMExpect([in_profile_performer_mock_
+        signInIdentity:identity2_
+         atAccessPoint:signin_metrics::AccessPoint::kStartPage
+        currentProfile:personal_profile_.get()]);
+
+    [authentication_flow_ startSignIn];
+    CheckSignInCompletion(/*expected_signed_in=*/true);
   }
 
   // Creates a new AuthenticationFlow with default values for fields that are
@@ -834,6 +872,39 @@ TEST_F(AuthenticationFlowTest, TestAgeMismatchCancel) {
   CheckSignInCompletion(/*expected_signed_in=*/false);
   EXPECT_EQ(signin_ui::CancelationReason::kAgeMismatchCanceled,
             cancelation_reason_);
+}
+
+// Tests that switching from one account to another in the personal profile
+// permanently suppresses the reverse pair in account switching promo prefs.
+TEST_F(AuthenticationFlowTest, TestAccountSwitchRecordsReversePairSuppression) {
+  base::test::ScopedFeatureList feature_list(
+      switches::kEnableAccountPreviewSwitchingAccount);
+  AuthenticationServiceFactory::GetForProfile(personal_profile_.get())
+      ->SignIn(identity1_, signin_metrics::AccessPoint::kStartPage);
+  ASSERT_TRUE(signin::CanShowAccountSwitchingPromo(
+      *personal_profile_->GetPrefs(), identity2_.gaiaId, identity1_.gaiaId));
+
+  SwitchFromIdentity1ToIdentity2();
+
+  EXPECT_FALSE(signin::CanShowAccountSwitchingPromo(
+      *personal_profile_->GetPrefs(), identity2_.gaiaId, identity1_.gaiaId));
+}
+
+// Tests that switching accounts does not write account switching promo prefs
+// when the account switching feature is disabled.
+TEST_F(AuthenticationFlowTest,
+       TestAccountSwitchDoesNotRecordReversePairWhenFeatureDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      switches::kEnableAccountPreviewSwitchingAccount);
+  AuthenticationServiceFactory::GetForProfile(personal_profile_.get())
+      ->SignIn(identity1_, signin_metrics::AccessPoint::kStartPage);
+
+  SwitchFromIdentity1ToIdentity2();
+
+  EXPECT_TRUE(personal_profile_->GetPrefs()
+                  ->GetDict(signin::kAccountSwitchingPromoStatePref)
+                  .empty());
 }
 
 }  // namespace

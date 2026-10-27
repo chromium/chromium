@@ -9,6 +9,7 @@ include_rules = [
   "+components/subscription_eligibility/subscription_eligibility_prefs.h",
   "+components/themes/pref_names.h",
   "+components/webui/chrome_urls/pref_names.h",
+  "+ios/chrome/browser/authentication/account_switching_promo/model/account_switching_promo_prefs.h",
   "+ios/chrome/browser/authentication/ui_bundled",
   "+ios/chrome/browser/content_suggestions/coordinator",
   "+ios/chrome/browser/content_suggestions/price_tracking_promo/model/price_tracking_promo_prefs.h",
