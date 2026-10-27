@@ -325,8 +325,6 @@ crbug.com/553687628 [ win11 nvidia-0x2184 ] WebCodecs_cropEncode_hw_decoder_avc1
 
 crbug.com/575597357 [ android ] WebCodecs_SVC_av01.0.04M.08_prefer-software_layers_2 [ Failure ]
 crbug.com/575597357 [ android ] WebCodecs_SVC_av01.0.04M.08_prefer-software_layers_3 [ Failure ]
-crbug.com/575597357 [ chromeos ] WebCodecs_SVC_av01.0.04M.08_prefer-software_layers_2 [ Failure ]
-crbug.com/575597357 [ chromeos ] WebCodecs_SVC_av01.0.04M.08_prefer-software_layers_3 [ Failure ]
 crbug.com/575597357 [ linux ] WebCodecs_SVC_av01.0.04M.08_prefer-software_layers_2 [ Failure ]
 crbug.com/575597357 [ linux ] WebCodecs_SVC_av01.0.04M.08_prefer-software_layers_3 [ Failure ]
 crbug.com/575597357 [ mac ] WebCodecs_SVC_av01.0.04M.08_prefer-software_layers_2 [ Failure ]
