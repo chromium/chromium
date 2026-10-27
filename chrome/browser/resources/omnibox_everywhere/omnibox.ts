@@ -554,6 +554,17 @@ export class OmniboxEverywhereOmniboxElement extends
     return this.fileContextEnabled_ && this.isFuseboxEnabled;
   }
 
+  protected onInputWrapperDragover_(e: DragEvent) {
+    this.dragAndDropHandler.handleDragOver(e);
+    // Keep calling preventDefault() via `handleDragOver` so Blink treats the
+    // drag as handled by the page (instead of navigating the WebContents on
+    // drop), and set `dropEffect = 'none'` when file context cannot be added so
+    // the OS shows the no-drop cursor instead of the copy (+) cursor.
+    if (!this.canAddFileContext_() && e.dataTransfer) {
+      e.dataTransfer.dropEffect = 'none';
+    }
+  }
+
   // The drag-and-drop handler stays enabled when AI Mode is unavailable, so it
   // keeps calling preventDefault() on drops and a drop can't navigate this
   // WebContents to the file. Hide its glow in that case, since the drop does

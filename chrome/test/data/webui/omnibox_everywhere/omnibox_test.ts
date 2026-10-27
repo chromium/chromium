@@ -547,6 +547,12 @@ suite('OmniboxEverywhereOmniboxTest', () => {
   function dispatchFileDragEvent(target: HTMLElement, type: string): DragEvent {
     const dataTransfer = new DataTransfer();
     dataTransfer.items.add(new File(['foo'], 'foo.png', {type: 'image/png'}));
+    // Blink's `new DataTransfer()` creates a copy-and-paste instance whose
+    // native `dropEffect` setter is a no-op (`!IsForDragAndDrop()`), unlike the
+    // drag-and-drop DataTransfer created by `DragController` during OS drags.
+    // Define a writable own property so listeners can read and update it.
+    Object.defineProperty(
+        dataTransfer, 'dropEffect', {value: 'copy', writable: true});
     const event = new DragEvent(type, {
       bubbles: true,
       cancelable: true,
@@ -578,6 +584,7 @@ suite('OmniboxEverywhereOmniboxTest', () => {
 
     assertTrue(dragEnter.defaultPrevented);
     assertTrue(dragOver.defaultPrevented);
+    assertEquals('none', dragOver.dataTransfer!.dropEffect);
     assertEquals(
         GlowAnimationState.NONE, getAnimatedGlow(testOmnibox).animationState);
 
@@ -613,12 +620,19 @@ suite('OmniboxEverywhereOmniboxTest', () => {
         const glow = getAnimatedGlow(omnibox);
 
         dispatchFileDragEvent(inputWrapper, 'dragenter');
+        const dragOverWhileAvailable =
+            dispatchFileDragEvent(inputWrapper, 'dragover');
         await microtasksFinished();
+        assertEquals('copy', dragOverWhileAvailable.dataTransfer!.dropEffect);
         assertEquals(GlowAnimationState.DRAGGING, glow.animationState);
 
         testProxy.page.updateAimPopupEligibility(false);
         await microtasksFinished();
         assertEquals(GlowAnimationState.NONE, glow.animationState);
+
+        const dragOverWhileUnavailable =
+            dispatchFileDragEvent(inputWrapper, 'dragover');
+        assertEquals('none', dragOverWhileUnavailable.dataTransfer!.dropEffect);
 
         const drop = dispatchFileDragEvent(inputWrapper, 'drop');
         await microtasksFinished();
