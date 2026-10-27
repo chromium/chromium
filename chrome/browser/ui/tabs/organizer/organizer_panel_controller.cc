@@ -257,8 +257,13 @@ BrowserAnimationMotion OrganizerPanelController::GetTargetMotion() const {
     vts_enabled = vts_controller->ShouldDisplayVerticalTabs();
   }
   if (vts_enabled) {
-    return is_visible_ ? OrganizerPanelAnimations::kShowInVerticalTabs
-                       : OrganizerPanelAnimations::kHideInVerticalTabs;
+    if (panel_view_manager_->current_location() ==
+        OrganizerPanelLocation::kVerticalTabStrip) {
+      return is_visible_ ? OrganizerPanelAnimations::kShowInVerticalTabs
+                         : OrganizerPanelAnimations::kHideInVerticalTabs;
+    }
+    return is_visible_ ? OrganizerPanelAnimations::kShowExpandFromVerticalTabs
+                       : OrganizerPanelAnimations::kHideExpandFromVerticalTabs;
   }
   return is_visible_ ? OrganizerPanelAnimations::kShowInTray
                      : OrganizerPanelAnimations::kHideInTray;

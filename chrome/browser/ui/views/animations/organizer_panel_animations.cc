@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/animations/organizer_panel_animations.h"
 
+#include "base/time/time.h"
 #include "chrome/browser/ui/animation/browser_animation_types.h"
 #include "chrome/browser/ui/views/animations/common_animation_values.h"
 #include "ui/base/interaction/safe_castable.h"
@@ -17,6 +18,10 @@ DEFINE_CLASS_BROWSER_ANIMATION_GROUP(OrganizerPanelAnimations, kOrganizerPanel);
 DEFINE_CLASS_BROWSER_ANIMATION_MOTION(OrganizerPanelAnimations, kShowInTray);
 DEFINE_CLASS_BROWSER_ANIMATION_MOTION(OrganizerPanelAnimations, kHideInTray);
 DEFINE_CLASS_BROWSER_ANIMATION_MOTION(OrganizerPanelAnimations,
+                                      kShowExpandFromVerticalTabs);
+DEFINE_CLASS_BROWSER_ANIMATION_MOTION(OrganizerPanelAnimations,
+                                      kHideExpandFromVerticalTabs);
+DEFINE_CLASS_BROWSER_ANIMATION_MOTION(OrganizerPanelAnimations,
                                       kShowInVerticalTabs);
 DEFINE_CLASS_BROWSER_ANIMATION_MOTION(OrganizerPanelAnimations,
                                       kHideInVerticalTabs);
@@ -26,6 +31,17 @@ DEFINE_CLASS_BROWSER_ANIMATION_SEQUENCE(OrganizerPanelAnimations,
                                         kVisibleWidth);
 DEFINE_CLASS_BROWSER_ANIMATION_SEQUENCE(OrganizerPanelAnimations,
                                         kBackgroundOpacity);
+
+// static
+bool OrganizerPanelAnimations::IsShow(BrowserAnimationMotion motion) {
+  if (motion == kShowInTray || motion == kShowExpandFromVerticalTabs ||
+      motion == kShowInVerticalTabs) {
+    return true;
+  }
+  CHECK(motion == kHideInTray || motion == kHideExpandFromVerticalTabs ||
+        motion == kHideInVerticalTabs);
+  return false;
+}
 
 OrganizerPanelAnimations::OrganizerPanelAnimations() {
   // The collapsed state is the "home" state for most animations, so use that
@@ -38,6 +54,8 @@ OrganizerPanelAnimations::OrganizerPanelAnimations() {
   // LINT.IfChange(OrganizerPanelAnimations)
   SetHistogramName(kShowInTray, "Show");
   SetHistogramName(kHideInTray, "Hide");
+  SetHistogramName(kShowExpandFromVerticalTabs, "Show");
+  SetHistogramName(kHideExpandFromVerticalTabs, "Hide");
   SetHistogramName(kShowInVerticalTabs, "Show");
   SetHistogramName(kHideInVerticalTabs, "Hide");
   // LINT.ThenChange(//tools/metrics/histograms/metadata/projects/histograms.xml:OrganizerPanelAnimations)
@@ -74,15 +92,23 @@ OrganizerPanelAnimations::GenerateAnimations() const {
   const auto fade_ms = browser_animations::kShortExpandFadeMs;
   const auto fade_in_tween = browser_animations::kShortExpandFadeInTween;
   const auto fade_out_tween = browser_animations::kShortExpandFadeOutTween;
+  const int slide_ms = 250;
+  const auto slide_tween = gfx::Tween::FAST_OUT_SLOW_IN;
 
-  return Groups(Group(
-      kOrganizerPanel,
-      show_motion(kShowInTray, browser_animations::GetLongExpandShowMs(),
-                  tray_tween, fade_ms, fade_in_tween),
-      hide_motion(kHideInTray, browser_animations::GetLongExpandHideMs(),
-                  tray_tween, fade_ms, fade_out_tween),
-      show_motion(kShowInVerticalTabs, browser_animations::kShortExpandShowMs,
-                  vts_tween, fade_ms, fade_in_tween),
-      hide_motion(kHideInVerticalTabs, browser_animations::kShortExpandHideMs,
-                  vts_tween, fade_ms, fade_out_tween)));
+  return Groups(
+      Group(kOrganizerPanel,
+            show_motion(kShowInTray, browser_animations::GetLongExpandShowMs(),
+                        tray_tween, fade_ms, fade_in_tween),
+            hide_motion(kHideInTray, browser_animations::GetLongExpandHideMs(),
+                        tray_tween, fade_ms, fade_out_tween),
+            show_motion(kShowExpandFromVerticalTabs,
+                        browser_animations::kShortExpandShowMs, vts_tween,
+                        fade_ms, fade_in_tween),
+            hide_motion(kHideExpandFromVerticalTabs,
+                        browser_animations::kShortExpandHideMs, vts_tween,
+                        fade_ms, fade_out_tween),
+            show_motion(kShowInVerticalTabs, slide_ms, slide_tween, slide_ms,
+                        slide_tween),
+            hide_motion(kHideInVerticalTabs, slide_ms, slide_tween, slide_ms,
+                        slide_tween)));
 }
