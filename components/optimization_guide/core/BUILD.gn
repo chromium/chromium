@@ -182,10 +182,6 @@ source_set("core_util") {
     "//ui/accessibility:ax_enums_mojo",
     "//url",
   ]
-  visibility = [
-    "./*",
-    "//services/on_device_model/android/*",
-  ]
 }
 
 source_set("model_execution") {
@@ -707,16 +703,6 @@ group("test_support") {
       ":manifest_broker_test_support",
       ":ondevice_test_support",
       "//components/optimization_guide/core/model_execution/configs:substitution_builders",
-    ]
-  }
-}
-
-if (is_ios) {
-  group("eg_test_support+eg2") {
-    testonly = true
-    public_deps = [
-      ":core_util",
-      ":hints_test_support",
     ]
   }
 }

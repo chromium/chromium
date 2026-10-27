@@ -28,7 +28,7 @@ source_set("eg2_tests") {
   deps = [
     "//base",
     "//base/test:test_support",
-    "//components/optimization_guide/core:eg_test_support+eg2",
+    "//components/optimization_guide/core:core_util",
     "//components/optimization_guide/optimization_guide_internals/webui:url_constants",
     "//components/webui/chrome_urls",
     "//ios/chrome/browser/optimization_guide/model:eg_test_support+eg2",
