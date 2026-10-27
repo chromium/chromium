@@ -62,6 +62,9 @@ bool HasUserActionableErrorBlockingSendTabToSelf(
     case syncer::SyncService::UserActionableError::
         kTrustedVaultRecoverabilityDegradedForEverything:
     case syncer::SyncService::UserActionableError::kBookmarksLimitExceeded:
+#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
+    case syncer::SyncService::UserActionableError::kPasskeysLocked:
+#endif
 #if BUILDFLAG(IS_ANDROID)
     case syncer::SyncService::UserActionableError::kNeedsUPMBackendUpgrade:
 #endif

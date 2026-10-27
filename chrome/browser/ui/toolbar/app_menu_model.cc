@@ -396,6 +396,10 @@ SigninSectionInfo ComputeSigninSectionInfo(Profile* profile) {
           // For this specific error (as opposed to all others), there is no
           // error UI in the menu.
           return info;
+        case syncer::SyncService::UserActionableError::kPasskeysLocked:
+          // TODO(crbug.com/470338958): Show passkey unlock error UI in the app
+          // menu.
+          return info;
       }
       CHECK_NE(info.command_id, 0);
       return info;

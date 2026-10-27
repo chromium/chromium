@@ -96,6 +96,9 @@ class TestSyncService : public SyncService {
   void SetPassphraseRequired();
   void SetTrustedVaultKeyRequired(bool required);
   void SetTrustedVaultRecoverabilityDegraded(bool degraded);
+#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
+  void SetPasskeysLocked(bool locked);
+#endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
   void SetIsUsingExplicitPassphrase(bool enabled);
   void SetDownloadStatusFor(const DataTypeSet& types,
                             DataTypeDownloadStatus download_status);
@@ -180,6 +183,7 @@ class TestSyncService : public SyncService {
 #if BUILDFLAG(IS_ANDROID)
   void SetInvalidationsForSessionsEnabled(bool enabled) override;
 #endif  // BUILDFLAG(IS_ANDROID)
+  void PasskeysLockedChanged() override;
   void SendExplicitPassphraseToPlatformClient() override;
   void GetTypesWithUnsyncedData(
       DataTypeSet requested_types,
@@ -217,6 +221,9 @@ class TestSyncService : public SyncService {
   DataTypeSet failed_data_types_;
 
   bool bookmarks_limit_exceeded_ = false;
+#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
+  bool are_passkeys_locked_ = false;
+#endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
 
   std::map<DataType, DataTypeDownloadStatus> download_statuses_;
 

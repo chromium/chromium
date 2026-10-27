@@ -65,6 +65,9 @@ class SyncClient {
   // Returns whether custom passphrase is allowed for the current user.
   virtual bool IsCustomPassphraseAllowed() = 0;
 
+  // Returns whether user action is required to unlock passkeys.
+  virtual bool ArePasskeysLocked() = 0;
+
   // Registers synthetic field trials corresponding to autoupgrading users to
   // trusted vault passphrase type. `group` must be valid. Must be invoked at
   // most once.

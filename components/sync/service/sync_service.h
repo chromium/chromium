@@ -254,7 +254,10 @@ class SyncService : public KeyedService {
     kDeviceManagementError = 12,
     kMaxValue = kDeviceManagementError,
 #else
-    kMaxValue = kBookmarksLimitExceeded,
+    // The user needs to take action in order to get access to encryption keys
+    // for passkeys.
+    kPasskeysLocked = 13,
+    kMaxValue = kPasskeysLocked,
 #endif  // BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
   };
   // LINT.ThenChange(/tools/metrics/histograms/metadata/sync/enums.xml:UserActionableError)
@@ -583,6 +586,10 @@ class SyncService : public KeyedService {
   // page is opened.
   virtual void SetInvalidationsForSessionsEnabled(bool enabled) = 0;
 #endif  // BUILDFLAG(IS_ANDROID)
+
+  // Called when the value of `SyncClient::ArePasskeysLocked()` changes, so that
+  // `SyncService` can notify its observers.
+  virtual void PasskeysLockedChanged() = 0;
 
   // Shares the explicit passphrase content with layers outside of the browser
   // which have an independent sync client, and thus separate encryption

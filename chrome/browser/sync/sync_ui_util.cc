@@ -175,6 +175,9 @@ int GetSyncErrorButtonStringId(syncer::SyncService::UserActionableError error,
     case syncer::SyncService::UserActionableError::kBookmarksLimitExceeded:
       return support_title_case ? IDS_LEARN_MORE_MAYBE_TITLE_CASE
                                 : IDS_LEARN_MORE;
+    case syncer::SyncService::UserActionableError::kPasskeysLocked:
+      // TODO(crbug.com/470338958): Return the passkey unlock button string.
+      return IDS_SYNC_EMPTY_STRING;
   }
 }
 
@@ -266,6 +269,12 @@ SyncStatusLabels GetAvatarSyncErrorLabelsForSettings(
               IDS_SYNC_ERROR_BOOKMARKS_LIMIT_EXCEEDED_DESCRIPTION,
               button_string_id, IDS_SETTINGS_PEOPLE_SIGN_OUT,
               SyncStatusActionType::kShowBookmarksLimitHelpArticle};
+    case syncer::SyncService::UserActionableError::kPasskeysLocked:
+      // TODO(crbug.com/470338958): Return the passkey unlock status labels for
+      // settings.
+      return {SyncStatusMessageType::kSynced, IDS_SYNC_EMPTY_STRING,
+              IDS_SYNC_EMPTY_STRING, IDS_SYNC_EMPTY_STRING,
+              SyncStatusActionType::kNoAction};
   }
 }
 
@@ -311,6 +320,9 @@ std::u16string GetAvatarSyncErrorDescription(
     case syncer::SyncService::UserActionableError::kBookmarksLimitExceeded:
       return l10n_util::GetStringUTF16(
           IDS_SYNC_ERROR_BOOKMARKS_LIMIT_EXCEEDED_DESCRIPTION);
+    case syncer::SyncService::UserActionableError::kPasskeysLocked:
+      // TODO(crbug.com/470338958): Return the passkey unlock error description.
+      return std::u16string();
   }
 }
 #endif  // !BUILDFLAG(IS_ANDROID)

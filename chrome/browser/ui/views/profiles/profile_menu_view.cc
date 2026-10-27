@@ -376,6 +376,10 @@ void ProfileMenuView::OnSyncErrorButtonClicked(
           syncer::SyncService::BookmarksLimitExceededHelpClickedSource::
               kProfileMenu);
       break;
+    case syncer::SyncService::UserActionableError::kPasskeysLocked:
+      // TODO(crbug.com/470338958): Handle `kPasskeysLocked` in the profile
+      // menu.
+      break;
     case syncer::SyncService::UserActionableError::kNone:
       NOTREACHED();
   }

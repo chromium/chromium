@@ -147,6 +147,7 @@ class SyncServiceImpl : public SyncService,
 #if BUILDFLAG(IS_ANDROID)
   void SetInvalidationsForSessionsEnabled(bool enabled) override;
 #endif  // BUILDFLAG(IS_ANDROID)
+  void PasskeysLockedChanged() override;
   void SendExplicitPassphraseToPlatformClient() override;
   void AddObserver(SyncServiceObserver* observer) override;
   void RemoveObserver(SyncServiceObserver* observer) override;

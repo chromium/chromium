@@ -3204,5 +3204,88 @@ TEST_F(SyncServiceImplTest, AvoidCachingCredentialsInEngineWhenFeatureEnabled) {
   EXPECT_FALSE(engine()->last_credentials().has_value());
 }
 
+#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
+TEST_F(SyncServiceImplTest, ShouldReturnPasskeysLockedErrorAndRecordHistogram) {
+  base::HistogramTester histogram_tester;
+  PopulatePrefsForInitialSyncFeatureSetupComplete();
+  SignInWithSyncConsent();
+  std::vector<FakeControllerInitParams> params;
+  params.emplace_back(WEBAUTHN_CREDENTIAL, /*enable_transport_mode=*/true);
+  InitializeService(std::move(params));
+  RunUntilSyncTransportState(SyncService::TransportState::ACTIVE);
+  ASSERT_TRUE(service()->GetActiveDataTypes().Has(WEBAUTHN_CREDENTIAL));
+  ASSERT_EQ(SyncService::UserActionableError::kNone,
+            service()->GetUserActionableError());
+
+  testing::NiceMock<MockSyncServiceObserver> mock_sync_service_observer;
+  service()->AddObserver(&mock_sync_service_observer);
+
+  ON_CALL(*sync_client(), ArePasskeysLocked).WillByDefault(Return(true));
+  EXPECT_CALL(mock_sync_service_observer, OnStateChanged(service()));
+  service()->PasskeysLockedChanged();
+
+  EXPECT_EQ(SyncService::UserActionableError::kPasskeysLocked,
+            service()->GetUserActionableError());
+  histogram_tester.ExpectUniqueSample(
+      "Sync.UserActionableError",
+      SyncService::UserActionableError::kPasskeysLocked, 1);
+
+  ON_CALL(*sync_client(), ArePasskeysLocked).WillByDefault(Return(false));
+  EXPECT_CALL(mock_sync_service_observer, OnStateChanged(service()));
+  service()->PasskeysLockedChanged();
+
+  EXPECT_EQ(SyncService::UserActionableError::kNone,
+            service()->GetUserActionableError());
+  service()->RemoveObserver(&mock_sync_service_observer);
+}
+
+TEST_F(SyncServiceImplTest,
+       ShouldNotReturnPasskeysLockedErrorWhenWebauthnCredentialNotActive) {
+  PopulatePrefsForInitialSyncFeatureSetupComplete();
+  SignInWithSyncConsent();
+  InitializeService();
+  RunUntilSyncTransportState(SyncService::TransportState::ACTIVE);
+  ASSERT_FALSE(service()->GetActiveDataTypes().Has(WEBAUTHN_CREDENTIAL));
+
+  ON_CALL(*sync_client(), ArePasskeysLocked).WillByDefault(Return(true));
+  EXPECT_EQ(SyncService::UserActionableError::kNone,
+            service()->GetUserActionableError());
+}
+
+TEST_F(SyncServiceImplTest, PasskeysLockedErrorPriority) {
+  PopulatePrefsForInitialSyncFeatureSetupComplete();
+  SignInWithSyncConsent();
+  std::vector<FakeControllerInitParams> params;
+  params.emplace_back(PASSWORDS, /*enable_transport_mode=*/true);
+  params.emplace_back(WEBAUTHN_CREDENTIAL, /*enable_transport_mode=*/true);
+  InitializeService(std::move(params));
+  RunUntilSyncTransportState(SyncService::TransportState::ACTIVE);
+  ASSERT_TRUE(service()->GetActiveDataTypes().Has(WEBAUTHN_CREDENTIAL));
+
+  service()->GetEncryptionObserverForTest()->OnPassphraseTypeChanged(
+      PassphraseType::kTrustedVaultPassphrase, base::Time());
+
+  // Degraded recoverability is reported when passkeys are not locked.
+  trusted_vault_client()->SetIsRecoveryMethodRequired(true);
+  ASSERT_TRUE(trusted_vault_client()->CompleteAllPendingRequests());
+  ASSERT_EQ(SyncService::UserActionableError::
+                kTrustedVaultRecoverabilityDegradedForPasswords,
+            service()->GetUserActionableError());
+
+  // `kPasskeysLocked` takes priority over degraded recoverability.
+  ON_CALL(*sync_client(), ArePasskeysLocked).WillByDefault(Return(true));
+  EXPECT_EQ(SyncService::UserActionableError::kPasskeysLocked,
+            service()->GetUserActionableError());
+
+  // `kNeedsTrustedVaultKeyForPasswords` takes priority over `kPasskeysLocked`.
+  trusted_vault_client()->SetIsRecoveryMethodRequired(false);
+  ASSERT_TRUE(trusted_vault_client()->CompleteAllPendingRequests());
+  service()->GetEncryptionObserverForTest()->OnTrustedVaultKeyRequired();
+  ASSERT_TRUE(trusted_vault_client()->CompleteAllPendingRequests());
+  EXPECT_EQ(SyncService::UserActionableError::kNeedsTrustedVaultKeyForPasswords,
+            service()->GetUserActionableError());
+}
+#endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
+
 }  // namespace
 }  // namespace syncer

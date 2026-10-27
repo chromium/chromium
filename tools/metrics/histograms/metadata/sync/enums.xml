@@ -2012,6 +2012,7 @@ chromium-metrics-reviews@google.com.
   <int value="10" label="Needs client upgrade"/>
   <int value="11" label="Bookmarks limit exceeded"/>
   <int value="12" label="Device Management error"/>
+  <int value="13" label="Passkeys locked"/>
 </enum>
 
 <!-- LINT.ThenChange(/components/sync/service/sync_service.h:UserActionableError) -->

@@ -295,6 +295,10 @@ bool ProfileDynamicMenu::BuildSyncSectionImpl(actions::BaseAction* parent_item,
           break;
         case syncer::SyncService::UserActionableError::kBookmarksLimitExceeded:
           return true;
+        case syncer::SyncService::UserActionableError::kPasskeysLocked:
+          // TODO(crbug.com/470338958): Show passkey unlock error UI in the app
+          // menu.
+          return true;
       }
       CHECK_NE(action_id, 0);
       CHECK(icon);

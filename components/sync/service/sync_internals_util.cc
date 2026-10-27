@@ -207,6 +207,8 @@ std::string GetUserActionableErrorString(
       return "Needs settings confirmation";
     case SyncService::UserActionableError::kUnrecoverableError:
       return "Unrecoverable error";
+    case SyncService::UserActionableError::kPasskeysLocked:
+      return "Passkeys locked";
 #endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
 #if BUILDFLAG(IS_ANDROID)
     case SyncService::UserActionableError::kNeedsUPMBackendUpgrade:

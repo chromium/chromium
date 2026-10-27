@@ -46,6 +46,7 @@ class SyncClientMock : public SyncClient {
               (override));
   MOCK_METHOD(SyncEngineFactory*, GetSyncEngineFactory, (), (override));
   MOCK_METHOD(bool, IsCustomPassphraseAllowed, (), (override));
+  MOCK_METHOD(bool, ArePasskeysLocked, (), (override));
   MOCK_METHOD(void,
               RegisterTrustedVaultAutoUpgradeSyntheticFieldTrial,
               (const TrustedVaultAutoUpgradeSyntheticFieldTrialGroup&),

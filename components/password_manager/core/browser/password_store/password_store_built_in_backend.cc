@@ -86,6 +86,9 @@ bool ShouldForwardSyncErrorToStore(
     case SyncError::kTrustedVaultRecoverabilityDegradedForPasswords:
     case SyncError::kTrustedVaultRecoverabilityDegradedForEverything:
     case SyncError::kBookmarksLimitExceeded:
+#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
+    case SyncError::kPasskeysLocked:
+#endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
 #if BUILDFLAG(IS_IOS)
     case SyncError::kDeviceManagementError:
       // TODO(crbug.com/539816393): Update this case if it needs to block saving
@@ -120,6 +123,9 @@ SyncErrorToBackendError(syncer::SyncService::UserActionableError error) {
     case SyncError::kBookmarksLimitExceeded:
     case SyncError::kTrustedVaultRecoverabilityDegradedForPasswords:
     case SyncError::kTrustedVaultRecoverabilityDegradedForEverything:
+#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
+    case SyncError::kPasskeysLocked:
+#endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
 #if BUILDFLAG(IS_IOS)
     case SyncError::kDeviceManagementError:
 #endif  // BUILDFLAG(IS_IOS)
@@ -164,6 +170,9 @@ ActionableError SyncErrorToActionableError(
       return ActionableError::kTrustedVaultKeyNeeded;
     case SyncError::kTrustedVaultRecoverabilityDegradedForPasswords:
     case SyncError::kTrustedVaultRecoverabilityDegradedForEverything:
+#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
+    case SyncError::kPasskeysLocked:
+#endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
       return ActionableError::kNoError;
 #if !BUILDFLAG(IS_IOS)
     case SyncError::kNeedsSettingsConfirmation:

@@ -45,6 +45,7 @@ class WebViewSyncClient : public syncer::SyncClient {
   scoped_refptr<syncer::ExtensionsActivity> GetExtensionsActivity() override;
   syncer::SyncEngineFactory* GetSyncEngineFactory() override;
   bool IsCustomPassphraseAllowed() override;
+  bool ArePasskeysLocked() override;
   void RegisterTrustedVaultAutoUpgradeSyntheticFieldTrial(
       const syncer::TrustedVaultAutoUpgradeSyntheticFieldTrialGroup& group)
       override;
