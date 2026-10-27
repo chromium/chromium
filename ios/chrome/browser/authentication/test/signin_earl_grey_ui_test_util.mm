@@ -27,6 +27,7 @@
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers_app_interface.h"
+#import "ios/chrome/test/earl_grey/scoped_disable_timer_tracking.h"
 #import "ios/chrome/test/scoped_eg_synchronization_disabler.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ui/base/l10n/l10n_util.h"
@@ -46,15 +47,14 @@ namespace {
 // `identifier` is an accessibility identifier. It must be visible when the view
 // is scrolled to the bottom.
 void OpenSyncSettingsSubmenu(NSString* identifier) {
-  // First scroll down so that the button is visible.
+  ScopedDisableTimerTracking disabler;
   id<GREYMatcher> scroll_view_matcher =
       grey_accessibilityID(kManageSyncTableViewAccessibilityIdentifier);
-  // Now tap the button with `identifier`.
   id<GREYMatcher> button_matcher =
       grey_allOf(grey_accessibilityID(identifier), grey_interactable(), nil);
-  [[EarlGrey selectElementWithMatcher:scroll_view_matcher]
-      performAction:grey_scrollToContentEdge(kGREYContentEdgeBottom)];
-  [[EarlGrey selectElementWithMatcher:button_matcher] performAction:grey_tap()];
+  [[[EarlGrey selectElementWithMatcher:button_matcher]
+         usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 200)
+      onElementWithMatcher:scroll_view_matcher] performAction:grey_tap()];
 }
 
 BOOL IsIdentityPossiblyManaged(id<SystemIdentity> identity) {
