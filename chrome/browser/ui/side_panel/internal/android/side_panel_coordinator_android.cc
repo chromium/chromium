@@ -11,9 +11,11 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/check.h"
+#include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "chrome/browser/android/tab_android.h"
@@ -61,18 +63,31 @@ void RecordAutoCloseOrRestoreOnSpaceChange(SidePanelEntry* entry,
       base::StrCat({kAndroidSidePanelHistogramPrefix, ".", entry_name, action}),
       true);
 }
+// `SidePanelUIBase` already registers `SidePanelUI` with `UnownedUserDataHost`,
+// so `SidePanelCoordinatorAndroid` cannot register a second `UnownedUserData`
+// entry in the same inheritance hierarchy. Production code should use
+// `SidePanelUI::From(browser)`; this map backs `From()` for Android-specific
+// browser tests.
+base::flat_map<const BrowserWindowInterface*,
+               raw_ptr<SidePanelCoordinatorAndroid>>&
+GetCoordinatorsMap() {
+  static base::NoDestructor<base::flat_map<
+      const BrowserWindowInterface*, raw_ptr<SidePanelCoordinatorAndroid>>>
+      coordinators;
+  return *coordinators;
+}
+
 }  // namespace
 
 using jni_zero::AttachCurrentThread;
 using jni_zero::JavaRef;
 using jni_zero::ScopedJavaLocalRef;
 
-DEFINE_USER_DATA(SidePanelCoordinatorAndroid);
-
 // static
 SidePanelCoordinatorAndroid* SidePanelCoordinatorAndroid::From(
     BrowserWindowInterface* browser) {
-  return browser ? Get(browser->GetUnownedUserDataHost()) : nullptr;
+  auto it = GetCoordinatorsMap().find(browser);
+  return it != GetCoordinatorsMap().end() ? it->second : nullptr;
 }
 
 SidePanelCoordinatorAndroid::SidePanelCoordinatorAndroid(
@@ -81,15 +96,18 @@ SidePanelCoordinatorAndroid::SidePanelCoordinatorAndroid(
     BrowserWindowInterface* browser)
     : SidePanelUIBase(browser),
       java_coordinator_(env, java_coordinator),
-      scoped_unowned_user_data_(browser->GetUnownedUserDataHost(), *this),
       tab_model_observer_(
           static_cast<TabModel*>(TabListInterface::From(browser)),
           this) {
   SPLOG("SidePanelCoordinatorAndroid Constructor - browser: " << browser);
+  auto [it, inserted] = GetCoordinatorsMap().emplace(browser, this);
+  CHECK(inserted);
 }
 
 SidePanelCoordinatorAndroid::~SidePanelCoordinatorAndroid() {
   SPLOG("SidePanelCoordinatorAndroid Destructor");
+  size_t erased = GetCoordinatorsMap().erase(browser());
+  CHECK_EQ(erased, 1u);
   ClearCachedEntryViews(/*include_active_entry=*/true);
   Java_SidePanelCoordinatorAndroidBridge_clearNativePtr(AttachCurrentThread(),
                                                         java_coordinator());

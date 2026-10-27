@@ -207,6 +207,10 @@ SidePanelEntryWaiter* SidePanelUIBase::waiter() const {
   return panel_data_->waiter.get();
 }
 
+SidePanelEntry* SidePanelUIBase::GetLoadingEntryForTesting() const {
+  return waiter()->loading_entry();
+}
+
 void SidePanelUIBase::OnActiveTabChanged(content::WebContents* old_contents,
                                          content::WebContents* new_contents,
                                          bool tab_removed_for_deletion) {

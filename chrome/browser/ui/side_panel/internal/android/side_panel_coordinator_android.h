@@ -32,10 +32,9 @@ class TabAndroid;
 // https://chromium.googlesource.com/chromium/src/+/HEAD/docs/ui/android/mvc_overview.md
 class SidePanelCoordinatorAndroid : public SidePanelUIBase {
  public:
-  DECLARE_USER_DATA(SidePanelCoordinatorAndroid);
-
   // Returns the `SidePanelCoordinatorAndroid` associated with the given
   // `browser`. A `nullptr` will be returned if `browser` is a `nullptr`.
+  // Note: Production callers should prefer `SidePanelUI::From(browser)`.
   static SidePanelCoordinatorAndroid* From(BrowserWindowInterface* browser);
 
   SidePanelCoordinatorAndroid(
@@ -275,9 +274,6 @@ class SidePanelCoordinatorAndroid : public SidePanelUIBase {
   jni_zero::ScopedJavaGlobalWeakRef java_coordinator_;
 
   SidePanelDeferredEntryTracker deferred_entry_tracker_{browser()};
-
-  ui::ScopedUnownedUserData<SidePanelCoordinatorAndroid>
-      scoped_unowned_user_data_;
 
   SidePanelTabModelObserver tab_model_observer_;
 };

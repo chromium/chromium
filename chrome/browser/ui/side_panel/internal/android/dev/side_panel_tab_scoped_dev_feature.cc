@@ -58,12 +58,10 @@ void JNI_SidePanelTabScopedDevFeatureImpl_ToggleTabScopedDevFeature(
   CHECK(tab_android);
 
   tabs::TabInterface* tab = tab_android;
-  auto* side_panel_coordinator =
-      SidePanelCoordinatorAndroid::From(tab->GetBrowserWindowInterface());
-  if (side_panel_coordinator) {
-    side_panel_coordinator->Toggle(
-        SidePanelEntryKey(SidePanelEntry::Id::kSidePanelDev),
-        SidePanelOpenTrigger::kToolbarButton);
+  auto* side_panel_ui = SidePanelUI::From(tab->GetBrowserWindowInterface());
+  if (side_panel_ui) {
+    side_panel_ui->Toggle(SidePanelEntryKey(SidePanelEntry::Id::kSidePanelDev),
+                          SidePanelOpenTrigger::kToolbarButton);
   }
 }
 

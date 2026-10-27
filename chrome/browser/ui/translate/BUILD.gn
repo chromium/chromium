@@ -34,8 +34,13 @@ source_set("translate") {
     "//components/translate/core/browser",
     "//components/translate/core/common",
     "//ui/base",
+    "//ui/base/interaction",
     "//ui/base/unowned_user_data",
   ]
+
+  if (toolkit_views) {
+    public_deps += [ "//ui/views" ]
+  }
 
   deps = [ "//components/language_detection/core" ]
 }

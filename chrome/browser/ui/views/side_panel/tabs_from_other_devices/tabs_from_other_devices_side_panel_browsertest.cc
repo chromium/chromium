@@ -28,9 +28,7 @@ class TabsFromOtherDevicesSidePanelBrowserTest : public InProcessBrowserTest {
   }
   ~TabsFromOtherDevicesSidePanelBrowserTest() override = default;
 
-  SidePanelCoordinator* coordinator() {
-    return SidePanelCoordinator::From(browser());
-  }
+  SidePanelUI* coordinator() { return SidePanelUI::From(browser()); }
 
   SidePanel* GetSidePanel() {
     return BrowserView::GetBrowserViewForBrowser(browser())->side_panel();

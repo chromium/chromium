@@ -64,13 +64,11 @@ SidePanelWindowScopedDevFeature::~SidePanelWindowScopedDevFeature() {
 }
 
 void SidePanelWindowScopedDevFeature::Toggle() {
-  auto* side_panel_coordinator =
-      SidePanelCoordinatorAndroid::From(browser_window_);
-  CHECK(side_panel_coordinator);
+  auto* side_panel_ui = SidePanelUI::From(browser_window_);
+  CHECK(side_panel_ui);
 
-  side_panel_coordinator->Toggle(
-      SidePanelEntryKey(SidePanelEntry::Id::kSidePanelDev),
-      SidePanelOpenTrigger::kToolbarButton);
+  side_panel_ui->Toggle(SidePanelEntryKey(SidePanelEntry::Id::kSidePanelDev),
+                        SidePanelOpenTrigger::kToolbarButton);
 }
 
 void SidePanelWindowScopedDevFeature::Destroy() {

@@ -24,16 +24,13 @@ namespace {
 bool g_suppress_navigation_dialogs_for_testing = false;
 }  // namespace
 
-DEFINE_USER_DATA(ActorUiTabControllerAndroid);
-
 ActorUiTabControllerAndroid::ActorUiTabControllerAndroid(
     tabs::TabInterface& tab,
     ActorKeyedService* actor_keyed_service)
     : ActorUiTabControllerInterface(tab),
       tab_(tab),
       actor_keyed_service_(actor_keyed_service),
-      task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()),
-      scoped_unowned_user_data_(tab.GetUnownedUserDataHost(), *this) {}
+      task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()) {}
 
 ActorUiTabControllerAndroid::~ActorUiTabControllerAndroid() = default;
 

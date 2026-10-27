@@ -2515,8 +2515,7 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTranslateEntryPointTest,
   translate::TranslateManager::SetIgnoreMissingKeyForTesting(true);
 
   handler_ = CreateHandler();
-  TranslateBubbleController* controller =
-      TranslateBubbleController::From(browser());
+  TranslateController* controller = TranslateController::From(browser());
   EXPECT_TRUE(!controller || !controller->GetTranslateBubble());
 
   OnTranslationRequested();
@@ -2532,7 +2531,7 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTranslateEntryPointTest,
   EXPECT_EQ(ChromeTranslateClient::FromWebContents(web_contents_.get()),
             nullptr);
 
-  controller = TranslateBubbleController::From(browser());
+  controller = TranslateController::From(browser());
   ASSERT_NE(controller, nullptr);
   EXPECT_NE(controller->GetTranslateBubble(), nullptr);
 }

@@ -36,7 +36,7 @@ class TrackedElement;
 
 namespace contextual_tasks {
 
-class ContextualTasksSidePanelCoordinator;
+class ContextualTasksPanelController;
 
 // Custom LocationBar implementation for the contextual tasks side panel
 // toolbar. Inherits from LocationBarStub to avoid boilerplate for unused
@@ -94,10 +94,10 @@ class ContextualTasksLocationBar : public LocationBarStub,
   content::WebContents* GetToolbarWebContents() const;
 
  private:
-  // Resolves the coordinator that owns both the toolbar and the per-task
-  // `WebContents`. Looked up on demand because the coordinator lives
+  // Resolves the controller that owns both the toolbar and the per-task
+  // `WebContents`. Looked up on demand because the controller lives
   // the longest.
-  ContextualTasksSidePanelCoordinator* GetCoordinator() const;
+  ContextualTasksPanelController* GetCoordinator() const;
 
   raw_ptr<BrowserWindowInterface> browser_window_;
   base::RepeatingClosure state_changed_callback_;

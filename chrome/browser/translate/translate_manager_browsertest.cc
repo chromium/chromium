@@ -339,7 +339,7 @@ class TranslateManagerBrowserTest : public InProcessBrowserTest {
   }
 
   bool IsTranslateBubbleShown() {
-    return TranslateBubbleController::From(browser())->GetTranslateBubble() !=
+    return TranslateController::From(browser())->GetTranslateBubble() !=
            nullptr;
   }
 

@@ -125,6 +125,10 @@ class MockContextualTasksPanelController
               (bool is_pointer_interaction),
               (override));
   MOCK_METHOD(void, OnLogoPointerDown, (), (override));
+  MOCK_METHOD(ContextualTasksPermissionController*,
+              permission_controller,
+              (),
+              (override));
   MOCK_METHOD(void,
               RecordTimeToHandshakeComplete,
               (content::WebContents*),

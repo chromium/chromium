@@ -209,11 +209,10 @@ std::unique_ptr<content::WebContents> CreateWebContents(
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
   // Register the task `WebContents` with the side panel's single location bar.
-  if (auto* coordinator =
-          contextual_tasks::ContextualTasksSidePanelCoordinator::Get(
-              browser_window->GetUnownedUserDataHost());
-      coordinator && coordinator->permission_controller()) {
-    coordinator->permission_controller()->RegisterWebContents(
+  if (auto* controller = contextual_tasks::ContextualTasksPanelController::From(
+          browser_window);
+      controller && controller->permission_controller()) {
+    controller->permission_controller()->RegisterWebContents(
         web_contents.get());
   }
 
@@ -346,7 +345,6 @@ ContextualTasksSidePanelCoordinator::WebContentsCacheItem::
     ~WebContentsCacheItem() = default;
 
 DEFINE_USER_DATA(ContextualTasksPanelController);
-DEFINE_USER_DATA(ContextualTasksSidePanelCoordinator);
 
 ContextualTasksSidePanelCoordinator::ContextualTasksSidePanelCoordinator(
     BrowserWindowInterface* browser_window,
@@ -424,22 +422,15 @@ ContextualTasksUiService* ContextualTasksSidePanelCoordinator::GetUiService()
       browser_window_->GetProfile());
 }
 
-// static
-ContextualTasksSidePanelCoordinator* ContextualTasksSidePanelCoordinator::From(
-    BrowserWindowInterface* window) {
-  return window ? Get(window->GetUnownedUserDataHost()) : nullptr;
+ContextualTasksPermissionController*
+ContextualTasksSidePanelCoordinator::permission_controller() {
+  return permission_controller_.get();
 }
 
 // static
 ContextualTasksPanelController* ContextualTasksPanelController::From(
     BrowserWindowInterface* window) {
-  if (!window) {
-    return nullptr;
-  }
-  if (auto* controller = Get(window->GetUnownedUserDataHost())) {
-    return controller;
-  }
-  return ContextualTasksSidePanelCoordinator::From(window);
+  return window ? Get(window->GetUnownedUserDataHost()) : nullptr;
 }
 
 // static

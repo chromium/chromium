@@ -2144,7 +2144,7 @@ void BrowserView::OnActiveTabChanged(content::WebContents* old_contents,
   // Update all the UI bits.
   UpdateTitleBar();
 
-  CHECK_DEREF(TranslateBubbleController::From(browser_.get())).CloseBubble();
+  CHECK_DEREF(TranslateController::From(browser_.get())).CloseBubble();
 }
 
 void BrowserView::OnTabDetached(content::WebContents* contents,
@@ -3183,11 +3183,10 @@ ShowTranslateBubbleResult BrowserView::ShowTranslateBubble(
     // No need for a separate highlight.
     highlight_element = std::nullopt;
   }
-  CHECK_DEREF(TranslateBubbleController::From(browser_.get()))
+  CHECK_DEREF(TranslateController::From(browser_.get()))
       .ShowTranslateBubble(web_contents, anchor, highlight_element, step,
                            source_language, target_language, error_type,
-                           is_user_gesture ? TranslateBubbleView::USER_GESTURE
-                                           : TranslateBubbleView::AUTOMATIC);
+                           is_user_gesture);
 
   return ShowTranslateBubbleResult::kSuccess;
 }

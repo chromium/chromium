@@ -40,7 +40,51 @@ class TestScopedUnownedUserData2 {
 
 DEFINE_USER_DATA(TestScopedUnownedUserData2);
 
+class ClassWithoutUserData {};
+
+class DerivedWithoutDuplicateUserData : public TestScopedUnownedUserData {
+ public:
+  using TestScopedUnownedUserData::TestScopedUnownedUserData;
+};
+
+class GrandchildWithoutDuplicateUserData
+    : public DerivedWithoutDuplicateUserData {
+ public:
+  using DerivedWithoutDuplicateUserData::DerivedWithoutDuplicateUserData;
+};
+
+class MultiDerivedWithDuplicateUserData : public TestScopedUnownedUserData,
+                                          public TestScopedUnownedUserData2 {};
+
 }  // namespace
+
+// Declared outside the anonymous namespace so `DECLARE_USER_DATA`'s
+// `kDataKeyImplProvider` does not trigger `-Wundefined-internal` without
+// `DEFINE_USER_DATA`.
+class DerivedWithDuplicateUserData : public TestScopedUnownedUserData {
+ public:
+  DECLARE_USER_DATA(DerivedWithDuplicateUserData);
+};
+
+class GrandchildWithDuplicateUserData : public DerivedWithoutDuplicateUserData {
+ public:
+  DECLARE_USER_DATA(GrandchildWithDuplicateUserData);
+};
+
+static_assert(
+    !internal::SingleUnownedUserDataInHierarchy<ClassWithoutUserData>);
+static_assert(
+    internal::SingleUnownedUserDataInHierarchy<TestScopedUnownedUserData>);
+static_assert(internal::SingleUnownedUserDataInHierarchy<
+              DerivedWithoutDuplicateUserData>);
+static_assert(
+    !internal::SingleUnownedUserDataInHierarchy<DerivedWithDuplicateUserData>);
+static_assert(internal::SingleUnownedUserDataInHierarchy<
+              GrandchildWithoutDuplicateUserData>);
+static_assert(!internal::SingleUnownedUserDataInHierarchy<
+              GrandchildWithDuplicateUserData>);
+static_assert(!internal::SingleUnownedUserDataInHierarchy<
+              MultiDerivedWithDuplicateUserData>);
 
 // Tests basic functionality of a class with a ScopedUnownedUserData member.
 TEST(UnownedUserDataTest, ScopedUnownedUserData) {
@@ -49,6 +93,16 @@ TEST(UnownedUserDataTest, ScopedUnownedUserData) {
   {
     TestScopedUnownedUserData test_data(host);
     EXPECT_EQ(&test_data, TestScopedUnownedUserData::Get(host));
+  }
+  EXPECT_EQ(nullptr, TestScopedUnownedUserData::Get(host));
+}
+
+TEST(UnownedUserDataTest, DerivedClassUsesBaseRegistration) {
+  UnownedUserDataHost host;
+  EXPECT_EQ(nullptr, TestScopedUnownedUserData::Get(host));
+  {
+    DerivedWithoutDuplicateUserData derived_data(host);
+    EXPECT_EQ(&derived_data, TestScopedUnownedUserData::Get(host));
   }
   EXPECT_EQ(nullptr, TestScopedUnownedUserData::Get(host));
 }

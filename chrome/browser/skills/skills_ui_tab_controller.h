@@ -50,7 +50,6 @@ class SkillsUiTabController : public SkillsUiTabControllerInterface,
  public:
   explicit SkillsUiTabController(tabs::TabInterface& tab);
   ~SkillsUiTabController() override;
-  DECLARE_USER_DATA(SkillsUiTabController);
 
   // Opens the skills dialog.
   void ShowDialog(Skill skill,
@@ -120,8 +119,6 @@ class SkillsUiTabController : public SkillsUiTabControllerInterface,
   // The Widget represents the window.
   // CLIENT_OWNS_WIDGET ensures stability during tab reparenting/dragging.
   std::unique_ptr<views::Widget> dialog_widget_;
-
-  ::ui::ScopedUnownedUserData<SkillsUiTabController> scoped_unowned_user_data_;
 
   std::unique_ptr<glic::Target> target_;
   std::string last_invoked_skill_id_for_testing_;

@@ -32,9 +32,6 @@ class ActorUiTabController : public ActorUiTabControllerInterface {
   ActorUiTabController(tabs::TabInterface& tab,
                        ActorKeyedService* actor_keyed_service);
   ~ActorUiTabController() override;
-  DECLARE_USER_DATA(ActorUiTabController);
-
-  static ActorUiTabController* From(tabs::TabInterface* tab);
 
   // ActorUiTabControllerInterface:
   void OnUiTabStateChange(const UiTabState& ui_tab_state,
@@ -53,7 +50,8 @@ class ActorUiTabController : public ActorUiTabControllerInterface {
   // Closes this tab's navigation confirmation dialog, if one is showing.
   void CancelNavigationConfirmation(tabs::TabInterface* tab) override;
 
-  views::Widget* GetActiveNavigationConfirmDialogWidgetForTesting() const;
+  views::Widget* GetActiveNavigationConfirmDialogWidgetForTesting()
+      const override;
 
   void OnWebContentsAttached() override;
   void OnViewBoundsChanged() override;
@@ -158,8 +156,6 @@ class ActorUiTabController : public ActorUiTabControllerInterface {
 
   TabIndicatorStatus tab_indicator_ = TabIndicatorStatus::kNone;
   base::RetainingOneShotTimer update_scrim_background_debounce_timer_;
-
-  ::ui::ScopedUnownedUserData<ActorUiTabController> scoped_unowned_user_data_;
 
   base::WeakPtrFactory<ActorUiTabController> weak_factory_{this};
 };

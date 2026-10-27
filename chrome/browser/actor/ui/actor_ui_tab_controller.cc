@@ -26,8 +26,6 @@
 #include "ui/views/bubble/bubble_dialog_model_host.h"
 #include "ui/views/widget/widget.h"
 
-DEFINE_USER_DATA(actor::ui::ActorUiTabController);
-
 namespace actor::ui {
 using ::tabs::TabInterface;
 
@@ -37,14 +35,6 @@ void LogAndIgnoreCallbackError(const std::string_view source_name,
     LOG(DFATAL) << "Unexpected error in callback from " << source_name;
     RecordTabControllerError(ActorUiTabControllerError::kCallbackError);
   }
-}
-
-// static
-ActorUiTabController* ActorUiTabController::From(tabs::TabInterface* tab) {
-  if (!tab) {
-    return nullptr;
-  }
-  return Get(tab->GetUnownedUserDataHost());
 }
 
 ActorUiTabController::ActorUiTabController(
@@ -57,8 +47,7 @@ ActorUiTabController::ActorUiTabController(
           FROM_HERE,
           features::kGlicActorUiDebounceTimer.Get(),
           base::BindRepeating(&ActorUiTabController::UpdateScrimBackground,
-                              base::Unretained(this))),
-      scoped_unowned_user_data_(tab.GetUnownedUserDataHost(), *this) {
+                              base::Unretained(this))) {
   CHECK(base::FeatureList::IsEnabled(features::kGlicActorUi));
   CHECK(base::FeatureList::IsEnabled(features::kGlicActor));
   CHECK(actor_keyed_service_);

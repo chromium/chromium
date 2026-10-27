@@ -28,6 +28,7 @@ class WebContents;
 
 namespace contextual_tasks {
 class ContextualTask;
+class ContextualTasksPermissionController;
 
 class ContextualTasksPanelController {
  public:
@@ -208,6 +209,7 @@ class ContextualTasksPanelController {
   // Shows the native PageInfo bubble.
   virtual void ShowPageInfoBubble(bool is_pointer_interaction) = 0;
   virtual void OnLogoPointerDown() = 0;
+  virtual ContextualTasksPermissionController* permission_controller() = 0;
 
   // Records the time to handshake complete metric for the given WebContents.
   virtual void RecordTimeToHandshakeComplete(

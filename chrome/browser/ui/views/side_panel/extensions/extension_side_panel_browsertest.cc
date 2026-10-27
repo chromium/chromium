@@ -1537,9 +1537,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionSidePanelBrowserTest,
     RunSetOptions(*extension, first_tab_id, "default_path.html",
                   /*enabled=*/true);
     waiter.WaitForRegistration();
-    SidePanelCoordinator::From(browser())->Show(
-        {browser()->GetActiveTabInterface()->GetHandle(), extension_key},
-        /*open_trigger=*/std::nullopt, /*suppress_animations=*/true);
+    SidePanelUI::From(browser())->Show(extension_key,
+                                       /*open_trigger=*/std::nullopt,
+                                       /*suppress_animations=*/true);
 
     ASSERT_TRUE(default_path_listener.WaitUntilSatisfied());
 

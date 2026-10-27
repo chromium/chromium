@@ -116,7 +116,7 @@ TEST_F(ContextualTasksBridgeTest, InitPopulatesUserData) {
 
   // Initially, none of the window-scoped features should be in the host.
   EXPECT_EQ(nullptr,
-            ContextualTasksSidePanelCoordinator::Get(unowned_user_data_host_));
+            ContextualTasksPanelController::Get(unowned_user_data_host_));
   EXPECT_EQ(nullptr,
             EntryPointEligibilityManager::Get(unowned_user_data_host_));
   EXPECT_EQ(nullptr, ActiveTaskContextProvider::Get(unowned_user_data_host_));
@@ -126,7 +126,7 @@ TEST_F(ContextualTasksBridgeTest, InitPopulatesUserData) {
 
   // After bridge construction, the features should be present in the host.
   EXPECT_NE(nullptr,
-            ContextualTasksSidePanelCoordinator::Get(unowned_user_data_host_));
+            ContextualTasksPanelController::Get(unowned_user_data_host_));
   EXPECT_NE(nullptr,
             EntryPointEligibilityManager::Get(unowned_user_data_host_));
   EXPECT_NE(nullptr, ActiveTaskContextProvider::Get(unowned_user_data_host_));

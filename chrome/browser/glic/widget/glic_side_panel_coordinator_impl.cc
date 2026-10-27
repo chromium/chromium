@@ -87,10 +87,8 @@ void GlicSidePanelCoordinatorImpl::Show(const ShowOptions& options) {
     }
     return;
   }
-  SidePanelUIBase::UniqueKey unique_key{
-      .tab_handle = tab_->GetHandle(),
-      .key = SidePanelEntry::Key(SidePanelEntry::Id::kGlic)};
-  window_side_panel_coordinator->Show(unique_key, options.open_trigger,
+  window_side_panel_coordinator->Show(SidePanelEntry::Id::kGlic,
+                                      options.open_trigger,
                                       options.suppress_animations);
 }
 
@@ -217,10 +215,10 @@ bool GlicSidePanelCoordinatorImpl::IsGlicSidePanelActive() {
   return true;
 }
 
-SidePanelCoordinator*
-GlicSidePanelCoordinatorImpl::GetWindowSidePanelCoordinator() const {
+SidePanelUI* GlicSidePanelCoordinatorImpl::GetWindowSidePanelCoordinator()
+    const {
   if (auto* window = tab_->GetBrowserWindowInterface()) {
-    return SidePanelCoordinator::From(window);
+    return SidePanelUI::From(window);
   }
   return nullptr;
 }

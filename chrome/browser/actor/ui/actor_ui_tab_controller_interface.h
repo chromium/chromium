@@ -18,6 +18,12 @@
 #include "components/tabs/public/tab_interface.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
+#if !BUILDFLAG(IS_ANDROID)
+namespace views {
+class Widget;
+}  // namespace views
+#endif
+
 namespace actor::ui {
 #if !BUILDFLAG(IS_ANDROID)
 class HandoffButtonController;
@@ -82,6 +88,9 @@ class ActorUiTabControllerInterface : public ActorNavigationThrottle::Delegate {
       ActorTabIndicatorStateChangedCallback callback);
 
 #if !BUILDFLAG(IS_ANDROID)
+  virtual views::Widget* GetActiveNavigationConfirmDialogWidgetForTesting()
+      const;
+
   // Called whenever web contents are attached to this tab.
   virtual void OnWebContentsAttached() = 0;
 

@@ -1671,7 +1671,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksSignedOutPinnedButtonInteractiveUiTest,
   Profile* profile = browser()->GetProfile();
   EXPECT_TRUE(EntryPointEligibilityManager::IsPinningEligible(profile));
 
-  auto* coordinator = ContextualTasksSidePanelCoordinator::From(browser());
+  auto* coordinator = ContextualTasksPanelController::From(browser());
   ASSERT_NE(coordinator, nullptr);
   RunTestSequence(
       Do([&]() { coordinator->OpenInZeroState(); }),

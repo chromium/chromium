@@ -26,8 +26,6 @@ class View;
 class TranslateBubbleController : public TranslateController,
                                   public PartialTranslateBubbleModel::Observer {
  public:
-  DECLARE_USER_DATA(TranslateBubbleController);
-
   // `root_action_item` is used to retrieve the correct Translate ActionItem.
   TranslateBubbleController(BrowserWindowInterface* browser_window,
                             actions::ActionItem* root_action_item);
@@ -36,7 +34,16 @@ class TranslateBubbleController : public TranslateController,
   TranslateBubbleController& operator=(const TranslateBubbleController&) =
       delete;
 
-  static TranslateBubbleController* From(BrowserWindowInterface* window);
+  // TranslateController:
+  views::Widget* ShowTranslateBubble(
+      content::WebContents* web_contents,
+      views::BubbleAnchor anchor,
+      std::optional<ui::ElementIdentifier> highlighted_element,
+      translate::TranslateStep step,
+      const std::string& source_language,
+      const std::string& target_language,
+      translate::TranslateErrors error_type,
+      bool is_user_gesture) override;
 
   // Shows the Full Page Translate bubble. Returns the newly created bubble's
   // Widget or nullptr in cases when the bubble already exists or when the
@@ -59,15 +66,15 @@ class TranslateBubbleController : public TranslateController,
 
   // Closes the current Partial or Full Page Translate bubble, if either exists.
   // At most one of these bubbles should be non-null at any given time.
-  void CloseBubble();
+  void CloseBubble() override;
 
   // Returns the currently shown Full Page Translate bubble view. Returns
   // nullptr if the bubble is not currently shown.
-  TranslateBubbleView* GetTranslateBubble() const;
+  TranslateBubbleView* GetTranslateBubble() const override;
 
   // Returns the currently shown Partial Translate bubble view. Returns nullptr
   // if the bubble is not currently shown.
-  PartialTranslateBubbleView* GetPartialTranslateBubble() const;
+  PartialTranslateBubbleView* GetPartialTranslateBubble() const override;
 
   void SetTranslateBubbleModelFactory(
       base::RepeatingCallback<std::unique_ptr<TranslateBubbleModel>()>
@@ -132,9 +139,6 @@ class TranslateBubbleController : public TranslateController,
   // The bubbles use this to appropriately configure its "IsBubbleShowing"
   // property.
   const raw_ptr<actions::ActionItem> action_item_;
-
-  ui::ScopedUnownedUserData<TranslateBubbleController>
-      scoped_unowned_user_data_;
 
   ui::ScopedUnownedUserData<TranslateController> scoped_translate_controller_;
 

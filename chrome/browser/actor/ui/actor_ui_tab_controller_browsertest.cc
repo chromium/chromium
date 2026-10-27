@@ -479,7 +479,8 @@ class ActorUiTabControllerNavigationConfirmTest
                          /*via_keyboard=*/true);
   }
 
-  views::Widget* WaitForConfirmDialog(ActorUiTabController* controller) {
+  views::Widget* WaitForConfirmDialog(
+      ActorUiTabControllerInterface* controller) {
     EXPECT_TRUE(base::test::RunUntil([&]() {
       return controller->GetActiveNavigationConfirmDialogWidgetForTesting() !=
              nullptr;
@@ -514,7 +515,8 @@ class ActorUiTabControllerNavigationConfirmTest
 IN_PROC_BROWSER_TEST_F(ActorUiTabControllerNavigationConfirmTest,
                        UserUiNavigation_CancelKeepsTaskActive) {
   tabs::TabInterface* tab = browser()->GetTabStripModel()->GetActiveTab();
-  ActorUiTabController* controller = ActorUiTabController::From(tab);
+  ActorUiTabControllerInterface* controller =
+      ActorUiTabControllerInterface::From(tab);
   ASSERT_NE(controller, nullptr);
 
   const GURL initial_url = embedded_test_server()->GetURL("/title1.html");
@@ -541,7 +543,8 @@ IN_PROC_BROWSER_TEST_F(ActorUiTabControllerNavigationConfirmTest,
 IN_PROC_BROWSER_TEST_F(ActorUiTabControllerNavigationConfirmTest,
                        UserUiNavigation_SameUrlReloadsWithoutConfirm) {
   tabs::TabInterface* tab = browser()->GetTabStripModel()->GetActiveTab();
-  ActorUiTabController* controller = ActorUiTabController::From(tab);
+  ActorUiTabControllerInterface* controller =
+      ActorUiTabControllerInterface::From(tab);
   ASSERT_NE(controller, nullptr);
 
   const GURL url = embedded_test_server()->GetURL("/title1.html");
@@ -578,7 +581,8 @@ IN_PROC_BROWSER_TEST_F(ActorUiTabControllerNavigationConfirmTest,
 IN_PROC_BROWSER_TEST_F(ActorUiTabControllerNavigationConfirmTest,
                        UserUiNavigation_SameUrlWhileDialogOpen) {
   tabs::TabInterface* tab = browser()->GetTabStripModel()->GetActiveTab();
-  ActorUiTabController* controller = ActorUiTabController::From(tab);
+  ActorUiTabControllerInterface* controller =
+      ActorUiTabControllerInterface::From(tab);
   ASSERT_NE(controller, nullptr);
 
   const GURL initial_url = embedded_test_server()->GetURL("/title1.html");
@@ -616,7 +620,8 @@ IN_PROC_BROWSER_TEST_F(ActorUiTabControllerNavigationConfirmTest,
 IN_PROC_BROWSER_TEST_F(ActorUiTabControllerNavigationConfirmTest,
                        UserUiNavigation_PastedUrlWithPopupClosedConfirms) {
   tabs::TabInterface* tab = browser()->GetTabStripModel()->GetActiveTab();
-  ActorUiTabController* controller = ActorUiTabController::From(tab);
+  ActorUiTabControllerInterface* controller =
+      ActorUiTabControllerInterface::From(tab);
   ASSERT_NE(controller, nullptr);
 
   const GURL initial_url = embedded_test_server()->GetURL("/title1.html");
@@ -656,7 +661,8 @@ IN_PROC_BROWSER_TEST_F(ActorUiTabControllerNavigationConfirmTest,
                        UserUiNavigation_AcceptStopsTaskAndNavigates) {
   base::HistogramTester histogram_tester;
   tabs::TabInterface* tab = browser()->GetTabStripModel()->GetActiveTab();
-  ActorUiTabController* controller = ActorUiTabController::From(tab);
+  ActorUiTabControllerInterface* controller =
+      ActorUiTabControllerInterface::From(tab);
   ASSERT_NE(controller, nullptr);
 
   const GURL initial_url = embedded_test_server()->GetURL("/title1.html");
@@ -683,7 +689,8 @@ IN_PROC_BROWSER_TEST_F(ActorUiTabControllerNavigationConfirmTest,
 IN_PROC_BROWSER_TEST_F(ActorUiTabControllerNavigationConfirmTest,
                        UserUiNavigation_DuplicateNavigationWhileDialogOpen) {
   tabs::TabInterface* tab = browser()->GetTabStripModel()->GetActiveTab();
-  ActorUiTabController* controller = ActorUiTabController::From(tab);
+  ActorUiTabControllerInterface* controller =
+      ActorUiTabControllerInterface::From(tab);
   ASSERT_NE(controller, nullptr);
 
   const GURL initial_url = embedded_test_server()->GetURL("/title1.html");
@@ -730,8 +737,10 @@ IN_PROC_BROWSER_TEST_F(ActorUiTabControllerNavigationConfirmTest,
   tabs::TabInterface* tab_b = browser()->GetTabStripModel()->GetTabAtIndex(1);
   ASSERT_NE(tab_a, tab_b);
 
-  ActorUiTabController* controller_a = ActorUiTabController::From(tab_a);
-  ActorUiTabController* controller_b = ActorUiTabController::From(tab_b);
+  ActorUiTabControllerInterface* controller_a =
+      ActorUiTabControllerInterface::From(tab_a);
+  ActorUiTabControllerInterface* controller_b =
+      ActorUiTabControllerInterface::From(tab_b);
   ASSERT_NE(controller_a, nullptr);
   ASSERT_NE(controller_b, nullptr);
 
@@ -772,7 +781,8 @@ IN_PROC_BROWSER_TEST_F(ActorUiTabControllerNavigationConfirmTest,
                             ::ui::PageTransition::PAGE_TRANSITION_TYPED));
   tab_strip->ActivateTabAt(tab_strip->GetIndexOfTab(tab));
 
-  ActorUiTabController* controller = ActorUiTabController::From(tab);
+  ActorUiTabControllerInterface* controller =
+      ActorUiTabControllerInterface::From(tab);
   ASSERT_NE(controller, nullptr);
 
   actor::TaskId task_id = StartTaskOnTabs({tab}, /*stop_task_on_detach=*/true);
@@ -826,7 +836,8 @@ IN_PROC_BROWSER_TEST_F(ActorUiTabControllerNavigationConfirmTest,
                             ::ui::PageTransition::PAGE_TRANSITION_TYPED));
   tab_strip->ActivateTabAt(tab_strip->GetIndexOfTab(tab));
 
-  ActorUiTabController* controller = ActorUiTabController::From(tab);
+  ActorUiTabControllerInterface* controller =
+      ActorUiTabControllerInterface::From(tab);
   ASSERT_NE(controller, nullptr);
 
   actor::TaskId task_id = StartTaskOnTabs({tab}, /*stop_task_on_detach=*/true);
@@ -943,7 +954,8 @@ IN_PROC_BROWSER_TEST_F(
     ActorUiTabControllerNavigationConfirmLegacyContextualTasksTest,
     AiModeSearch_ConfirmsContextualTasksReload) {
   tabs::TabInterface* tab = browser()->GetTabStripModel()->GetActiveTab();
-  ActorUiTabController* controller = ActorUiTabController::From(tab);
+  ActorUiTabControllerInterface* controller =
+      ActorUiTabControllerInterface::From(tab);
   ASSERT_NE(controller, nullptr);
 
   const GURL initial_url = embedded_test_server()->GetURL("/title1.html");

@@ -358,8 +358,15 @@ class SidePanelCoordinatorAndroidBrowserTest
 
 IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorAndroidBrowserTest,
                        TestSidePanelUI) {
+  EXPECT_EQ(nullptr,
+            SidePanelUI::From(static_cast<BrowserWindowInterface*>(nullptr)));
+  EXPECT_EQ(nullptr, SidePanelUI::From(
+                         static_cast<const BrowserWindowInterface*>(nullptr)));
+  EXPECT_EQ(nullptr, SidePanelCoordinatorAndroid::From(nullptr));
+
   SidePanelUI* side_panel_ui = SidePanelUI::From(GetLastActiveBrowser());
   EXPECT_NE(nullptr, side_panel_ui);
+  EXPECT_EQ(coordinator_, side_panel_ui);
 }
 
 IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorAndroidBrowserTest,

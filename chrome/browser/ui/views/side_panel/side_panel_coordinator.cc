@@ -40,14 +40,11 @@
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 #include "ui/views/view.h"
 
-DEFINE_USER_DATA(SidePanelCoordinator);
-
 SidePanelCoordinator::SidePanelCoordinator(BrowserWindowInterface* browser)
     : SidePanelUIBase(browser),
       browser_(CHECK_DEREF(browser)),
       side_panel_toolbar_pinning_controller_(
-          std::make_unique<SidePanelToolbarPinningController>(browser)),
-      scoped_unowned_user_data_(browser->GetUnownedUserDataHost(), *this) {
+          std::make_unique<SidePanelToolbarPinningController>(browser)) {
   // SidePanelCoordinator should only be created for the Views implementation of
   // the BrowserWindow.
   SidePanel* side_panel = GetSidePanel();
@@ -60,12 +57,6 @@ SidePanelCoordinator::SidePanelCoordinator(BrowserWindowInterface* browser)
 }
 
 SidePanelCoordinator::~SidePanelCoordinator() = default;
-
-// static:
-SidePanelCoordinator* SidePanelCoordinator::From(
-    BrowserWindowInterface* browser_window_interface) {
-  return Get(browser_window_interface->GetUnownedUserDataHost());
-}
 
 void SidePanelCoordinator::TearDownPreBrowserWindowDestruction() {
   Close(SidePanelEntryHideReason::kSidePanelClosed,
@@ -124,10 +115,6 @@ content::WebContents* SidePanelCoordinator::GetWebContentsForTest(
 
 void SidePanelCoordinator::DisableAnimationsForTesting() {
   GetSidePanel()->DisableAnimationsForTesting();  // IN-TEST
-}
-
-SidePanelEntry* SidePanelCoordinator::GetLoadingEntryForTesting() const {
-  return waiter()->loading_entry();
 }
 
 void SidePanelCoordinator::Show(

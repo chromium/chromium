@@ -67,8 +67,8 @@ class GlicSidePanelCoordinatorImpl : public GlicSidePanelCoordinator,
   // Create and register the Glic side panel entry.
   void CreateAndRegisterEntry();
 
-  // Returns the SidePanelCoordinator for the window associated with `tab_`.
-  SidePanelCoordinator* GetWindowSidePanelCoordinator() const;
+  // Returns the SidePanelUI for the window associated with `tab_`.
+  SidePanelUI* GetWindowSidePanelCoordinator() const;
 
   // Gets the Glic WebView from the Glic service.
   std::unique_ptr<views::View> CreateView(SidePanelEntryScope& scope);

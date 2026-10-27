@@ -52,11 +52,9 @@ ContextualTasksLocationBar::~ContextualTasksLocationBar() {
   // order.
 }
 
-ContextualTasksSidePanelCoordinator*
-ContextualTasksLocationBar::GetCoordinator() const {
-  return browser_window_ ? ContextualTasksSidePanelCoordinator::Get(
-                               browser_window_->GetUnownedUserDataHost())
-                         : nullptr;
+ContextualTasksPanelController* ContextualTasksLocationBar::GetCoordinator()
+    const {
+  return ContextualTasksPanelController::From(browser_window_);
 }
 
 content::WebContents* ContextualTasksLocationBar::GetWebContents() {
@@ -65,7 +63,7 @@ content::WebContents* ContextualTasksLocationBar::GetWebContents() {
 
 content::WebContents* ContextualTasksLocationBar::GetToolbarWebContents()
     const {
-  ContextualTasksSidePanelCoordinator* coordinator = GetCoordinator();
+  ContextualTasksPanelController* coordinator = GetCoordinator();
   return coordinator ? coordinator->GetToolbarWebContents() : nullptr;
 }
 

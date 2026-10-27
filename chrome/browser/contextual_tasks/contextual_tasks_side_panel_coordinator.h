@@ -136,8 +136,6 @@ class ContextualTasksSidePanelCoordinator
     GURL restored_url;
   };
 
-  DECLARE_USER_DATA(ContextualTasksSidePanelCoordinator);
-
   explicit ContextualTasksSidePanelCoordinator(
       BrowserWindowInterface* browser_window,
       ActiveTaskContextProvider* active_task_context_provider,
@@ -155,9 +153,6 @@ class ContextualTasksSidePanelCoordinator
   ContextualTasksSidePanelCoordinator& operator=(
       const ContextualTasksSidePanelCoordinator&) = delete;
   ~ContextualTasksSidePanelCoordinator() override;
-
-  static ContextualTasksSidePanelCoordinator* From(
-      BrowserWindowInterface* window);
 
   // ContextualTasksPanelController:
   void AddObserver(ContextualTasksPanelController::Observer* observer) override;
@@ -213,9 +208,7 @@ class ContextualTasksSidePanelCoordinator
   bool CanExpandToFullTab() const override;
   void ShowPageInfoBubble(bool is_pointer_interaction) override;
   void OnLogoPointerDown() override;
-  ContextualTasksPermissionController* permission_controller() {
-    return permission_controller_.get();
-  }
+  ContextualTasksPermissionController* permission_controller() override;
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE) && !BUILDFLAG(IS_ANDROID)
   ContextualTasksExtensionsContainer* GetExtensionsContainerForTesting() {
     return extensions_container_.get();
@@ -461,7 +454,7 @@ class ContextualTasksSidePanelCoordinator
 
   base::CallbackListSubscription eligibility_change_subscription_;
 
-  ui::ScopedUnownedUserData<ContextualTasksSidePanelCoordinator>
+  ui::ScopedUnownedUserData<ContextualTasksPanelController>
       scoped_unowned_user_data_;
 
   bool in_cobrowsing_session_ = false;

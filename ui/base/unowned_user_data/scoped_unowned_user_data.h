@@ -15,6 +15,46 @@
 
 namespace ui {
 
+namespace internal {
+
+// Tag type used for ADL lookup of `CheckSingleUnownedUserDataInHierarchy`.
+// Each `DECLARE_USER_DATA(ClassName)` injects a hidden friend overload for
+// `DerivedT` derived from `ClassName`. Calling that function with
+// `UnownedUserDataHierarchyCheck<T>{}` succeeds iff exactly one class in `T`'s
+// inheritance hierarchy declares `DECLARE_USER_DATA` (zero declarations finds
+// no overload; multiple declarations in a hierarchy are ambiguous because
+// neither `std::derived_from` constraint subsumes the other).
+template <typename T>
+struct UnownedUserDataHierarchyCheck {};
+
+template <typename T>
+concept SingleUnownedUserDataInHierarchy = requires {
+  CheckSingleUnownedUserDataInHierarchy(UnownedUserDataHierarchyCheck<T>{});
+};
+
+// Note: C++23 does not allow passing a `constexpr std::string_view` to
+// `static_assert` (`-Wc++26-extensions`), so share the diagnostic message via a
+// `consteval` helper instead.
+template <typename T>
+consteval void AssertSingleUnownedUserDataInHierarchy() {
+  static_assert(SingleUnownedUserDataInHierarchy<T>, R"(
+DECLARE_USER_DATA may not be used by both a class and one of its descendants.
+
+If you wish to have From() methods on both a base class and one of its
+descendants, derive the base class from SafeCastable and have the derived
+class' From() method use AsA():
+
+DerivedClass* DerivedClass::From(Owner* owner) {
+  if (auto* base = BaseClass::From(owner)) {
+    return base->AsA<DerivedClass>();
+  }
+  return nullptr;
+}
+)");
+}
+
+}  // namespace internal
+
 // A scoped class to set and unset an UnownedUserData entry on an
 // UnownedUserDataHost.
 //
@@ -42,6 +82,10 @@ class ScopedUnownedUserData {
 
   ScopedUnownedUserData(UnownedUserDataHost& host, T& data)
       : host_(host), data_(data) {
+    // Checked here rather than at class scope because `T` is typically
+    // incomplete when `ScopedUnownedUserData<T>` is declared as a member of
+    // `T`.
+    internal::AssertSingleUnownedUserDataInHierarchy<T>();
     host_->Set(PassKey(), T::kDataKey, *data_);
   }
 
@@ -65,6 +109,10 @@ class ScopedUnownedUserData {
 // Helper macros. See above for usage.
 
 #define DECLARE_USER_DATA(ClassName)                                          \
+  template <typename DerivedT>                                                \
+    requires std::derived_from<DerivedT, ClassName>                           \
+  friend consteval void CheckSingleUnownedUserDataInHierarchy(                \
+      ::ui::internal::UnownedUserDataHierarchyCheck<DerivedT>) {}             \
   DECLARE_CLASS_TYPED_IDENTIFIER_VALUE(::ui::UnownedUserDataHost::UntypedKey, \
                                        ClassName, kDataKey);                  \
   static ClassName* Get(::ui::UnownedUserDataHost& host);                     \

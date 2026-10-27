@@ -46,12 +46,11 @@ class TranslatePageActionInteractiveUiTest : public InteractiveBrowserTest {
   }
 
   views::BubbleDialogDelegate* GetBubble() const {
-    return TranslateBubbleController::From(browser())->GetTranslateBubble();
+    return TranslateController::From(browser())->GetTranslateBubble();
   }
 
   PartialTranslateBubbleView* GetPartialTranslateBubble() {
-    return TranslateBubbleController::From(browser())
-        ->GetPartialTranslateBubble();
+    return TranslateController::From(browser())->GetPartialTranslateBubble();
   }
 };
 
@@ -59,8 +58,7 @@ class TranslatePageActionInteractiveUiTest : public InteractiveBrowserTest {
 // and results in neither of the two Translate bubbles being shown.
 IN_PROC_BROWSER_TEST_F(TranslatePageActionInteractiveUiTest,
                        ClosePartialTranslateBubble) {
-  TranslateBubbleController* controller =
-      TranslateBubbleController::From(browser());
+  TranslateController* controller = TranslateController::From(browser());
 
   RunTestSequence(
       // Show the Translate icon.

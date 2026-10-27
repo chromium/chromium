@@ -13,6 +13,7 @@
 #include "ui/gfx/geometry/rect.h"
 
 class BrowserWindowInterface;
+class SidePanelEntry;
 
 namespace content {
 class WebContents;
@@ -29,6 +30,8 @@ class SidePanelUI {
 
   static SidePanelUI* From(BrowserWindowInterface* browser);
   static const SidePanelUI* From(const BrowserWindowInterface* browser);
+
+  virtual void TearDownPreBrowserWindowDestruction() {}
 
   // Open side panel with entry_id.
   virtual void Show(SidePanelEntryId entry_id,
@@ -114,6 +117,8 @@ class SidePanelUI {
   // Prevent content swapping delays from happening for testing.
   // This should be called before the side panel is first shown.
   virtual void SetNoDelaysForTesting(bool no_delays_for_testing) = 0;
+
+  virtual SidePanelEntry* GetLoadingEntryForTesting() const;
 };
 
 #endif  // CHROME_BROWSER_UI_SIDE_PANEL_SIDE_PANEL_UI_H_

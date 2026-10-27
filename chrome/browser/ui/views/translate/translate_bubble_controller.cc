@@ -59,24 +59,30 @@ actions::ActionItem* GetTranslateActionItem(
 
 }  // namespace
 
-DEFINE_USER_DATA(TranslateBubbleController);
-
 TranslateBubbleController::TranslateBubbleController(
     BrowserWindowInterface* browser_window,
     actions::ActionItem* root_action_item)
     : browser_window_(browser_window),
       action_item_(GetTranslateActionItem(root_action_item)),
-      scoped_unowned_user_data_(browser_window->GetUnownedUserDataHost(),
-                                *this),
       scoped_translate_controller_(browser_window->GetUnownedUserDataHost(),
                                    *this) {}
 
 TranslateBubbleController::~TranslateBubbleController() = default;
 
-// static
-TranslateBubbleController* TranslateBubbleController::From(
-    BrowserWindowInterface* window) {
-  return Get(window->GetUnownedUserDataHost());
+views::Widget* TranslateBubbleController::ShowTranslateBubble(
+    content::WebContents* web_contents,
+    views::BubbleAnchor anchor,
+    std::optional<ui::ElementIdentifier> highlighted_element,
+    translate::TranslateStep step,
+    const std::string& source_language,
+    const std::string& target_language,
+    translate::TranslateErrors error_type,
+    bool is_user_gesture) {
+  return ShowTranslateBubble(web_contents, anchor, highlighted_element, step,
+                             source_language, target_language, error_type,
+                             is_user_gesture
+                                 ? LocationBarBubbleDelegateView::USER_GESTURE
+                                 : LocationBarBubbleDelegateView::AUTOMATIC);
 }
 
 views::Widget* TranslateBubbleController::ShowTranslateBubble(

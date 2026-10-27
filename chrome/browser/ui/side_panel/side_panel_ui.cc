@@ -10,10 +10,14 @@ DEFINE_USER_DATA(SidePanelUI);
 
 // static
 SidePanelUI* SidePanelUI::From(BrowserWindowInterface* browser) {
-  return Get(browser->GetUnownedUserDataHost());
+  return browser ? Get(browser->GetUnownedUserDataHost()) : nullptr;
 }
 
 // static
 const SidePanelUI* SidePanelUI::From(const BrowserWindowInterface* browser) {
-  return Get(browser->GetUnownedUserDataHost());
+  return browser ? Get(browser->GetUnownedUserDataHost()) : nullptr;
+}
+
+SidePanelEntry* SidePanelUI::GetLoadingEntryForTesting() const {
+  return nullptr;
 }

@@ -97,8 +97,8 @@ class ScrimViewController;
 class SearchboxContextData;
 class SessionServiceBrowserHelper;
 class SharingWindowController;
-class SidePanelCoordinator;
 class SidePanelRegistry;
+class SidePanelUI;
 class SigninViewController;
 class SplitViewIphController;
 class TabDragServiceFeature;
@@ -113,7 +113,7 @@ class TabStripModel;
 class TabStripServiceFeature;
 class TabsFromOtherDevicesSidePanelCoordinator;
 class ToastService;
-class TranslateBubbleController;
+class TranslateController;
 class UIControllerFactory;
 class UnloadController;
 class UpgradeNotificationController;
@@ -450,7 +450,7 @@ class BrowserWindowFeatures {
   std::unique_ptr<TabsFromOtherDevicesSidePanelCoordinator>
       tabs_from_other_devices_side_panel_coordinator_;
   std::unique_ptr<ToastService> toast_service_;
-  std::unique_ptr<TranslateBubbleController> translate_bubble_controller_;
+  std::unique_ptr<TranslateController> translate_bubble_controller_;
   std::unique_ptr<ttc::EntrypointController> ttc_entrypoint_controller_;
   std::unique_ptr<UpgradeNotificationController>
       upgrade_notification_controller_;
@@ -497,7 +497,7 @@ class BrowserWindowFeatures {
   std::unique_ptr<ScrimViewController> scrim_view_controller_;
   std::unique_ptr<tab_groups::SharedTabGroupFeedbackController>
       shared_tab_group_feedback_controller_;
-  std::unique_ptr<SidePanelCoordinator> side_panel_coordinator_;
+  std::unique_ptr<SidePanelUI> side_panel_coordinator_;
   std::unique_ptr<UIControllerFactory> ui_controller_factory_;
   std::unique_ptr<skills::SkillsUiWindowController>
       skills_ui_window_controller_;

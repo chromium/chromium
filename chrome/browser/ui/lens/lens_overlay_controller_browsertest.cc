@@ -725,7 +725,7 @@ class LensOverlayControllerBrowserTest : public InProcessBrowserTest {
 
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
-    SidePanelCoordinator::From(browser())->DisableAnimationsForTesting();
+    SidePanelUI::From(browser())->DisableAnimationsForTesting();
     embedded_test_server()->StartAcceptingConnections();
 
     // Permits sharing the page screenshot by default.

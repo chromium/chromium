@@ -30,7 +30,6 @@ class ActorUiTabControllerAndroid : public ActorUiTabControllerInterface {
   ActorUiTabControllerAndroid(tabs::TabInterface& tab,
                               ActorKeyedService* actor_keyed_service);
   ~ActorUiTabControllerAndroid() override;
-  DECLARE_USER_DATA(ActorUiTabControllerAndroid);
 
   // ActorUiTabControllerInterface implementation.
   void OnUiTabStateChange(const UiTabState& ui_tab_state,
@@ -52,8 +51,6 @@ class ActorUiTabControllerAndroid : public ActorUiTabControllerInterface {
   const raw_ptr<ActorKeyedService> actor_keyed_service_;
   UiTabState current_ui_tab_state_;
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
-  ::ui::ScopedUnownedUserData<ActorUiTabControllerAndroid>
-      scoped_unowned_user_data_;
 
   base::WeakPtrFactory<ActorUiTabControllerAndroid> weak_factory_{this};
 };

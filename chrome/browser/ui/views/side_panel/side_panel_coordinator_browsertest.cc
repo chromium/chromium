@@ -295,9 +295,7 @@ class SidePanelCoordinatorTest : public InProcessBrowserTest {
     return extension;
   }
 
-  SidePanelCoordinator* coordinator() {
-    return SidePanelCoordinator::From(browser());
-  }
+  SidePanelUI* coordinator() { return SidePanelUI::From(browser()); }
 
   SidePanelRegistry* global_registry() {
     return SidePanelRegistry::From(browser());
@@ -2221,7 +2219,7 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest,
   ASSERT_TRUE(guest_browser->GetProfile()->IsGuestSession());
 
   // Check that pin button does not show in guest window.
-  auto* const coordinator = SidePanelCoordinator::From(guest_browser);
+  auto* const coordinator = SidePanelUI::From(guest_browser);
   coordinator->SetNoDelaysForTesting(true);
   coordinator->DisableAnimationsForTesting();
   coordinator->Show(SidePanelEntry::Id::kBookmarks);

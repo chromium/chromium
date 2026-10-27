@@ -307,7 +307,7 @@ bool ActorTaskUnloadHandler::ShowCustomConfirmation(
   if (contents) {
     tabs::TabInterface* tab =
         tabs::TabInterface::MaybeGetFromContents(contents);
-    if (auto* tab_controller = ui::ActorUiTabController::From(tab)) {
+    if (auto* tab_controller = ui::ActorUiTabControllerInterface::From(tab)) {
       tab_controller->CancelNavigationConfirmation(tab);
     }
   }

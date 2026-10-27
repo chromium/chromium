@@ -195,7 +195,7 @@ class InteractiveGlicTestMixin : public T {
 
     LOG(INFO) << "InteractiveGlicTest: done setting up";
 
-    SidePanelCoordinator::From(browser())->DisableAnimationsForTesting();
+    SidePanelUI::From(browser())->DisableAnimationsForTesting();
   }
 
   void TearDownOnMainThread() override {

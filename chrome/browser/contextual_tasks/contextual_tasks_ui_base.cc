@@ -761,10 +761,9 @@ ContextualTasksUIBase::GetActiveController() {
   if (!browser) {
     return nullptr;
   }
-  auto* coordinator =
-      contextual_tasks::ContextualTasksSidePanelCoordinator::Get(
-          browser->GetUnownedUserDataHost());
-  return coordinator ? coordinator->permission_controller() : nullptr;
+  auto* controller =
+      contextual_tasks::ContextualTasksPanelController::From(browser);
+  return controller ? controller->permission_controller() : nullptr;
 }
 
 ContextualTasksUIBase* ContextualTasksUIBase::FromWebContents(

@@ -87,8 +87,8 @@ void FindBarOwnerWebUIBrowser::OnFindBarVisibilityChanged(
 }
 
 void FindBarOwnerWebUIBrowser::CloseOverlappingBubbles() {
-  if (TranslateBubbleController* controller =
-      TranslateBubbleController::From(window_->browser())) {
+  if (TranslateController* controller =
+          TranslateController::From(window_->browser())) {
     controller->CloseBubble();
   }
 }

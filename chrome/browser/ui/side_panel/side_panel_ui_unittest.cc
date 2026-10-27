@@ -9,8 +9,17 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 TEST(SidePanelUITest, FromReturnsSidePanelUI) {
+  EXPECT_EQ(SidePanelUI::From(static_cast<BrowserWindowInterface*>(nullptr)),
+            nullptr);
+  EXPECT_EQ(
+      SidePanelUI::From(static_cast<const BrowserWindowInterface*>(nullptr)),
+      nullptr);
+
   MockBrowserWindowInterface browser;
   MockSidePanelUI side_panel_ui(browser.GetUnownedUserDataHost());
 
   EXPECT_EQ(SidePanelUI::From(&browser), &side_panel_ui);
+  EXPECT_EQ(
+      SidePanelUI::From(static_cast<const BrowserWindowInterface*>(&browser)),
+      &side_panel_ui);
 }

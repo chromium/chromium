@@ -9,6 +9,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/test/bind.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
@@ -287,6 +288,25 @@ class TranslateBubbleControllerTest : public ChromeViewsTestBase {
   tabs::MockTabInterface mock_tab_interface_;
   std::unique_ptr<TranslateBubbleController> controller_;
 };
+
+TEST_F(TranslateBubbleControllerTest,
+       RegisteredAsTranslateControllerAndShowsBubbleViaInterface) {
+  TranslateController* translate_controller =
+      TranslateController::From(&mock_browser_window_interface_);
+  ASSERT_EQ(translate_controller, controller_.get());
+
+  views::Widget* widget = translate_controller->ShowTranslateBubble(
+      web_contents(), views::BubbleAnchor(anchor_widget_->GetContentsView()),
+      std::nullopt, translate::TranslateStep::TRANSLATE_STEP_BEFORE_TRANSLATE,
+      "fr", "en", translate::TranslateErrors::NONE,
+      /*is_user_gesture=*/true);
+  EXPECT_NE(widget, nullptr);
+  EXPECT_NE(translate_controller->GetTranslateBubble(), nullptr);
+
+  translate_controller->CloseBubble();
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return translate_controller->GetTranslateBubble() == nullptr; }));
+}
 
 TEST_F(TranslateBubbleControllerTest, ShowFullPageThenPartialTranslateBubble) {
   EXPECT_THAT(controller_->GetTranslateBubble(), testing::IsNull());

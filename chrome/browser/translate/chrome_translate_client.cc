@@ -647,8 +647,7 @@ ShowTranslateBubbleResult ChromeTranslateClient::ShowBubble(
     // auto-translating this page/site in this session. Show the toast instead
     // of the bubble.
     if (step == translate::TRANSLATE_STEP_AFTER_TRANSLATE) {
-      TranslateBubbleController* controller =
-          TranslateBubbleController::From(browser);
+      TranslateController* controller = TranslateController::From(browser);
       if (controller && controller->GetTranslateBubble()) {
         return TranslateBubbleFactory::Show(
             BrowserWindow::FromBrowser(browser), web_contents(), step,

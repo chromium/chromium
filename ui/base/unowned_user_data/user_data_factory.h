@@ -13,6 +13,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/base/identifier/typed_identifier.h"
+#include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 #include "ui/base/unowned_user_data/unowned_user_data_host.h"
 
 namespace ui {
@@ -215,6 +216,7 @@ class UserDataFactoryWithOwner : public UserDataFactory {
   std::unique_ptr<BaseType> CreateInstance(
       Owner& owner_for_override,
       Args&&... concrete_type_constructor_args) {
+    internal::AssertSingleUnownedUserDataInHierarchy<ConcreteType>();
     if (auto* const entry = GetEntry<TestingOverrideFactoryMethod<BaseType>>(
             ConcreteType::kDataKey)) {
       return entry->factory_method.Run(owner_for_override);
@@ -244,6 +246,7 @@ class UserDataFactoryWithOwner : public UserDataFactory {
       Owner& owner_for_override,
       std::unique_ptr<ConcreteType> (*factory_method)(Args...),
       Args... factory_method_args) {
+    internal::AssertSingleUnownedUserDataInHierarchy<ConcreteType>();
     if (auto* const entry = GetEntry<TestingOverrideFactoryMethod<BaseType>>(
             ConcreteType::kDataKey)) {
       return entry->factory_method.Run(owner_for_override);
@@ -264,6 +267,7 @@ class UserDataFactoryWithOwner : public UserDataFactory {
                           typename decltype(OverrideType::kDataKey)::Type>
   ScopedOverride AddOverrideForTesting(
       TestingOverrideFactoryMethod<OverrideType> factory_method) {
+    internal::AssertSingleUnownedUserDataInHierarchy<OverrideType>();
     const auto id = BaseType::kDataKey;
     using EntryType = TypedEntry<TestingOverrideFactoryMethod<BaseType>>;
     AddEntry(id.identifier(),

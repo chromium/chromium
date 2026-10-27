@@ -178,7 +178,7 @@ IN_PROC_BROWSER_TEST_F(GlicSidePanelCoordinatorTest,
 
 IN_PROC_BROWSER_TEST_F(GlicSidePanelCoordinatorTest,
                        IsGlicSidePanelActiveTest) {
-  SidePanelCoordinator::From(browser())->DisableAnimationsForTesting();
+  SidePanelUI::From(browser())->DisableAnimationsForTesting();
   ForceSigninAndGlicCapability(profile());
   ASSERT_TRUE(GlicEnabling::IsEnabledForProfile(profile()));
   CallOnGlicEnabledChanged();
@@ -216,14 +216,14 @@ IN_PROC_BROWSER_TEST_F(GlicSidePanelCoordinatorTest,
 
   // Open another tab-scoped side panel entry (Lens). This should make Glic side
   // panel inactive for the current (first) tab.
-  SidePanelCoordinator::From(browser())->Show(
+  SidePanelUI::From(browser())->Show(
       SidePanelEntry::Key(SidePanelEntry::Id::kLens));
 
   EXPECT_FALSE(GlicSidePanelCoordinator::IsGlicSidePanelActive(
       browser()->GetActiveTabInterface()));
 
   // Close the Lens side panel. Glic should still be inactive.
-  SidePanelCoordinator::From(browser())->Close();
+  SidePanelUI::From(browser())->Close();
   EXPECT_FALSE(GlicSidePanelCoordinator::IsGlicSidePanelActive(
       browser()->GetActiveTabInterface()));
 
@@ -355,7 +355,7 @@ IN_PROC_BROWSER_TEST_F(GlicSidePanelCoordinatorStateTest, Replaced) {
 
   // Open another side panel entry (Lens). This should replace the Glic
   // side panel and cause it to transition to kClosed.
-  SidePanelCoordinator::From(browser())->Show(
+  SidePanelUI::From(browser())->Show(
       SidePanelEntry::Key(SidePanelEntry::Id::kLens));
 
   EXPECT_EQ(future_.Take(), GlicSidePanelCoordinator::State::kClosed);

@@ -238,7 +238,7 @@ class TranslateBubbleViewUITest
   }
 
   TranslateBubbleView* GetCurrentTranslateBubble() {
-    return TranslateBubbleController::From(browser())->GetTranslateBubble();
+    return TranslateController::From(browser())->GetTranslateBubble();
   }
 
   base::HistogramTester& histograms_tester() { return histograms_tester_; }
