@@ -48,7 +48,7 @@ body {
     div3.appendChild(img);
 
     beforeRender = performance.now();
-  }, 'A parent containertiming root with transparent nesting policy does not get paints from children containertiming roots if an intermediate ignore is set.');
+  }, 'A parent containertiming root does not get paints from a nested containertiming root if an intermediate containertimingignore is set.');
 </script>
 
 </body>
