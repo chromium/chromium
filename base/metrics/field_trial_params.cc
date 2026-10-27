@@ -73,9 +73,18 @@ void LogInvalidValue(const Feature& feature,
                      const std::string& param_name,
                      const std::string& value_as_string,
                      const std::string& default_value_as_string) {
+  std::string trial_name;
+  if (feature.IsRuntimeMutable()) {
+    if (auto* feature_list = FeatureList::GetInstance()) {
+      trial_name =
+          feature_list->GetControllingTrialInfoByFeatureName(feature.name)
+              .trial_name;
+    }
+  } else if (FieldTrial* trial = FeatureList::GetFieldTrial(feature)) {
+    trial_name = trial->trial_name();
+  }
   UmaHistogramSparse("Variations.FieldTriamParamsLogInvalidValue",
-                     static_cast<int>(base::HashFieldTrialName(
-                         FeatureList::GetFieldTrial(feature)->trial_name())));
+                     static_cast<int>(base::HashFieldTrialName(trial_name)));
   // To anyone noticing these crash dumps in the wild, these parameters come
   // from server-side experiment configuration. If you're seeing an increase it
   // is likely due to a bad experiment rollout rather than changes in the client

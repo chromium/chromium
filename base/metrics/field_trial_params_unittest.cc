@@ -10,7 +10,9 @@
 #include "base/functional/callback.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/field_trial_param_associator.h"
+#include "base/metrics/metrics_hashes.h"
 #include "base/test/gtest_util.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_entropy_provider.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
@@ -293,6 +295,7 @@ TEST_F(FieldTrialParamsTest, FeatureParamInt) {
   CreateFeatureWithTrial(kFeature, FeatureList::OVERRIDE_ENABLE_FEATURE,
                          trial.get());
 
+  HistogramTester histogram_tester;
   EXPECT_EQ(1, GetFieldTrialParamByFeatureAsInt(kFeature, "a", 0));
   EXPECT_EQ(0, GetFieldTrialParamByFeatureAsInt(kFeature, "b", 0));  // invalid
   EXPECT_EQ(0, GetFieldTrialParamByFeatureAsInt(kFeature, "c", 0));  // invalid
@@ -304,6 +307,9 @@ TEST_F(FieldTrialParamsTest, FeatureParamInt) {
   EXPECT_EQ(0, c.Get());  // invalid
   EXPECT_EQ(0, d.Get());  // empty
   EXPECT_EQ(0, e.Get());  // empty
+  histogram_tester.ExpectUniqueSample(
+      "Variations.FieldTriamParamsLogInvalidValue",
+      static_cast<int>(HashFieldTrialName(kTrialName)), 4);
 }
 
 TEST_F(FieldTrialParamsTest, FeatureParamInt_Disable) {
@@ -336,6 +342,7 @@ TEST_F(FieldTrialParamsTest, FeatureParamDouble) {
   CreateFeatureWithTrial(kFeature, FeatureList::OVERRIDE_ENABLE_FEATURE,
                          trial.get());
 
+  HistogramTester histogram_tester;
   EXPECT_EQ(1, GetFieldTrialParamByFeatureAsDouble(kFeature, "a", 0));
   EXPECT_EQ(1.5, GetFieldTrialParamByFeatureAsDouble(kFeature, "b", 0));
   EXPECT_EQ(1.0e-10, GetFieldTrialParamByFeatureAsDouble(kFeature, "c", 0));
@@ -350,6 +357,9 @@ TEST_F(FieldTrialParamsTest, FeatureParamDouble) {
   EXPECT_EQ(0, d.Get());  // invalid
   EXPECT_EQ(0, e.Get());  // empty
   EXPECT_EQ(0, f.Get());  // empty
+  histogram_tester.ExpectUniqueSample(
+      "Variations.FieldTriamParamsLogInvalidValue",
+      static_cast<int>(HashFieldTrialName(kTrialName)), 2);
 }
 
 TEST_F(FieldTrialParamsTest, FeatureParamDouble_Disable) {
@@ -382,6 +392,7 @@ TEST_F(FieldTrialParamsTest, FeatureParamBool) {
   CreateFeatureWithTrial(kFeature, FeatureList::OVERRIDE_ENABLE_FEATURE,
                          trial.get());
 
+  HistogramTester histogram_tester;
   EXPECT_EQ(true, GetFieldTrialParamByFeatureAsBool(kFeature, "a", false));
   EXPECT_EQ(false, GetFieldTrialParamByFeatureAsBool(kFeature, "b", false));
   EXPECT_EQ(false, GetFieldTrialParamByFeatureAsBool(kFeature, "c",
@@ -399,6 +410,9 @@ TEST_F(FieldTrialParamsTest, FeatureParamBool) {
   EXPECT_TRUE(d.Get());   // invalid
   EXPECT_TRUE(e.Get());   // empty
   EXPECT_TRUE(f.Get());   // empty
+  histogram_tester.ExpectUniqueSample(
+      "Variations.FieldTriamParamsLogInvalidValue",
+      static_cast<int>(HashFieldTrialName(kTrialName)), 4);
 }
 
 TEST_F(FieldTrialParamsTest, FeatureParamBool_Disable) {
@@ -431,6 +445,7 @@ TEST_F(FieldTrialParamsTest, FeatureParamTimeDelta) {
   CreateFeatureWithTrial(kFeature, FeatureList::OVERRIDE_ENABLE_FEATURE,
                          trial.get());
 
+  HistogramTester histogram_tester;
   EXPECT_EQ(Seconds(1.5),
             GetFieldTrialParamByFeatureAsTimeDelta(kFeature, "a", TimeDelta()));
   EXPECT_EQ(Minutes(62),
@@ -450,6 +465,9 @@ TEST_F(FieldTrialParamsTest, FeatureParamTimeDelta) {
   EXPECT_EQ(d.Get(), TimeDelta());  // invalid
   EXPECT_EQ(e.Get(), TimeDelta());  // empty
   EXPECT_EQ(f.Get(), TimeDelta());  // empty
+  histogram_tester.ExpectUniqueSample(
+      "Variations.FieldTriamParamsLogInvalidValue",
+      static_cast<int>(HashFieldTrialName(kTrialName)), 4);
 }
 
 TEST_F(FieldTrialParamsTest, FeatureParamTimeDelta_Disable) {
@@ -486,6 +504,7 @@ TEST_F(FieldTrialParamsTest, FeatureParamEnum) {
   CreateFeatureWithTrial(kFeature, FeatureList::OVERRIDE_ENABLE_FEATURE,
                          trial.get());
 
+  HistogramTester histogram_tester;
   EXPECT_EQ(ROCK,
             GetFieldTrialParamByFeatureAsEnum(kFeature, "a", ROCK, hands));
   EXPECT_EQ(PAPER,
@@ -505,6 +524,9 @@ TEST_F(FieldTrialParamsTest, FeatureParamEnum) {
   EXPECT_EQ(ROCK, d.Get());      // invalid
   EXPECT_EQ(PAPER, e.Get());     // empty
   EXPECT_EQ(SCISSORS, f.Get());  // not registered
+  histogram_tester.ExpectUniqueSample(
+      "Variations.FieldTriamParamsLogInvalidValue",
+      static_cast<int>(HashFieldTrialName(kTrialName)), 2);
 }
 
 enum class UI { ONE_D, TWO_D, THREE_D };
@@ -535,6 +557,7 @@ TEST_F(FieldTrialParamsTest, FeatureParamEnumClass) {
   CreateFeatureWithTrial(kFeature, FeatureList::OVERRIDE_ENABLE_FEATURE,
                          trial.get());
 
+  HistogramTester histogram_tester;
   EXPECT_EQ(UI::ONE_D,
             GetFieldTrialParamByFeatureAsEnum(kFeature, "a", UI::ONE_D, uis));
   EXPECT_EQ(UI::TWO_D,
@@ -557,6 +580,9 @@ TEST_F(FieldTrialParamsTest, FeatureParamEnumClass) {
   EXPECT_EQ(UI::ONE_D, d.Get());    // invalid
   EXPECT_EQ(UI::TWO_D, e.Get());    // empty
   EXPECT_EQ(UI::THREE_D, f.Get());  // not registered
+  histogram_tester.ExpectUniqueSample(
+      "Variations.FieldTriamParamsLogInvalidValue",
+      static_cast<int>(HashFieldTrialName(kTrialName)), 2);
 }
 
 namespace {
@@ -637,5 +663,145 @@ TEST_F(FieldTrialParamsTest,
   EXPECT_EQ("1", GetFieldTrialParamValueByFeature(kTestFeatureRuntime, "x"));
   EXPECT_EQ("2", GetFieldTrialParamValueByFeature(kTestFeatureRuntime, "y"));
   EXPECT_EQ("", GetFieldTrialParamValueByFeature(kTestFeatureRuntime, "z"));
+}
+
+TEST_F(FieldTrialParamsTest,
+       GetFieldTrialParamByFeatureAsInt_RuntimeMutableInvalidValue) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  {
+    auto feature_list = std::make_unique<base::FeatureList>();
+    feature_list->EnableRuntimeMutability(
+        kTestFeatureRuntime,
+        base::FeatureList::OnRuntimeMutableFeatureStateChangedCallback());
+    scoped_feature_list.InitWithFeatureList(std::move(feature_list));
+  }
+
+  scoped_feature_list.MutateRuntimeMutableFeature(
+      kTestFeatureRuntime, /*enabled=*/true, {{"x", "not_an_int"}});
+
+  HistogramTester histogram_tester;
+  EXPECT_EQ(42, GetFieldTrialParamByFeatureAsInt(kTestFeatureRuntime, "x", 42));
+  FeatureList::ControllingTrialInfo trial_info =
+      FeatureList::GetInstance()->GetControllingTrialInfoByFeatureName(
+          kTestFeatureRuntime.name);
+  ASSERT_FALSE(trial_info.trial_name.empty());
+  histogram_tester.ExpectUniqueSample(
+      "Variations.FieldTriamParamsLogInvalidValue",
+      static_cast<int>(HashFieldTrialName(trial_info.trial_name)), 1);
+}
+
+TEST_F(
+    FieldTrialParamsTest,
+    GetFieldTrialParamByFeatureAsInt_RuntimeMutableOverridesStartupTrialInvalidValue) {
+  const std::string kStartupTrialName = "StartupTrialForRuntimeFeature";
+  ASSERT_TRUE(AssociateFieldTrialParams(kStartupTrialName, "A", {{"x", "10"}}));
+  scoped_refptr<base::FieldTrial> startup_trial =
+      base::FieldTrialList::CreateFieldTrial(kStartupTrialName, "A");
+
+  base::test::ScopedFeatureList scoped_feature_list;
+  {
+    auto feature_list = std::make_unique<base::FeatureList>();
+    feature_list->EnableRuntimeMutability(
+        kTestFeatureRuntime,
+        base::FeatureList::OnRuntimeMutableFeatureStateChangedCallback());
+    feature_list->RegisterFieldTrialOverride(
+        kTestFeatureRuntime.name, base::FeatureList::OVERRIDE_ENABLE_FEATURE,
+        startup_trial.get());
+    scoped_feature_list.InitWithFeatureList(std::move(feature_list));
+  }
+
+  scoped_feature_list.MutateRuntimeMutableFeature(
+      kTestFeatureRuntime, /*enabled=*/true, {{"x", "not_an_int"}});
+
+  HistogramTester histogram_tester;
+  EXPECT_EQ(42, GetFieldTrialParamByFeatureAsInt(kTestFeatureRuntime, "x", 42));
+  FeatureList::ControllingTrialInfo trial_info =
+      FeatureList::GetInstance()->GetControllingTrialInfoByFeatureName(
+          kTestFeatureRuntime.name);
+  ASSERT_FALSE(trial_info.trial_name.empty());
+  EXPECT_NE(kStartupTrialName, trial_info.trial_name);
+  histogram_tester.ExpectUniqueSample(
+      "Variations.FieldTriamParamsLogInvalidValue",
+      static_cast<int>(HashFieldTrialName(trial_info.trial_name)), 1);
+}
+
+TEST_F(
+    FieldTrialParamsTest,
+    GetFieldTrialParamByFeatureAsInt_RuntimeMutableStartupTrialInvalidValue) {
+  const std::string kStartupTrialName = "StartupTrialInvalidParam";
+  ASSERT_TRUE(
+      AssociateFieldTrialParams(kStartupTrialName, "A", {{"x", "not_an_int"}}));
+  scoped_refptr<base::FieldTrial> startup_trial =
+      base::FieldTrialList::CreateFieldTrial(kStartupTrialName, "A");
+
+  base::test::ScopedFeatureList scoped_feature_list;
+  {
+    auto feature_list = std::make_unique<base::FeatureList>();
+    feature_list->EnableRuntimeMutability(
+        kTestFeatureRuntime,
+        base::FeatureList::OnRuntimeMutableFeatureStateChangedCallback());
+    feature_list->RegisterFieldTrialOverride(
+        kTestFeatureRuntime.name, base::FeatureList::OVERRIDE_ENABLE_FEATURE,
+        startup_trial.get());
+    scoped_feature_list.InitWithFeatureList(std::move(feature_list));
+  }
+
+  HistogramTester histogram_tester;
+  EXPECT_EQ(42, GetFieldTrialParamByFeatureAsInt(kTestFeatureRuntime, "x", 42));
+  histogram_tester.ExpectUniqueSample(
+      "Variations.FieldTriamParamsLogInvalidValue",
+      static_cast<int>(HashFieldTrialName(kStartupTrialName)), 1);
+}
+
+TEST_F(FieldTrialParamsTest,
+       GetFieldTrialParamByFeatureAsInt_CommandLineImplicitTrialInvalidValue) {
+  static BASE_FEATURE(kFeature, "CmdLineParamFeature",
+                      FEATURE_DISABLED_BY_DEFAULT);
+
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitFromCommandLine("CmdLineParamFeature:x/not_an_int",
+                                          "");
+
+  HistogramTester histogram_tester;
+  EXPECT_EQ(42, GetFieldTrialParamByFeatureAsInt(kFeature, "x", 42));
+  histogram_tester.ExpectUniqueSample(
+      "Variations.FieldTriamParamsLogInvalidValue",
+      static_cast<int>(HashFieldTrialName("StudyCmdLineParamFeature")), 1);
+}
+
+TEST_F(FieldTrialParamsTest,
+       GetFieldTrialParamByFeatureAsInt_CommandLineExplicitTrialInvalidValue) {
+  static BASE_FEATURE(kFeature, "CmdLineExplicitTrialFeature",
+                      FEATURE_DISABLED_BY_DEFAULT);
+
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitFromCommandLine(
+      "CmdLineExplicitTrialFeature<ExplicitCmdLineTrial.Group1:x/not_an_int",
+      "");
+
+  HistogramTester histogram_tester;
+  EXPECT_EQ(42, GetFieldTrialParamByFeatureAsInt(kFeature, "x", 42));
+  histogram_tester.ExpectUniqueSample(
+      "Variations.FieldTriamParamsLogInvalidValue",
+      static_cast<int>(HashFieldTrialName("ExplicitCmdLineTrial")), 1);
+}
+
+TEST_F(FieldTrialParamsTest,
+       GetFieldTrialParamByFeatureAsInt_RuntimeMutableCommandLineInvalidValue) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  {
+    auto feature_list = std::make_unique<base::FeatureList>();
+    feature_list->InitFromCommandLine("TestFeatureRuntime:x/not_an_int", "");
+    feature_list->EnableRuntimeMutability(
+        kTestFeatureRuntime,
+        base::FeatureList::OnRuntimeMutableFeatureStateChangedCallback());
+    scoped_feature_list.InitWithFeatureList(std::move(feature_list));
+  }
+
+  HistogramTester histogram_tester;
+  EXPECT_EQ(42, GetFieldTrialParamByFeatureAsInt(kTestFeatureRuntime, "x", 42));
+  histogram_tester.ExpectUniqueSample(
+      "Variations.FieldTriamParamsLogInvalidValue",
+      static_cast<int>(HashFieldTrialName("StudyTestFeatureRuntime")), 1);
 }
 }  // namespace base
