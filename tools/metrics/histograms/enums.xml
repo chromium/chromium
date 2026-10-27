@@ -11672,6 +11672,7 @@ from previous Chrome versions.
       label="HoldingSpaceWallpaperNudgeForceEligibility:enabled"/>
   <int value="-1002391016" label="LensOverlayOptimizationFilter:disabled"/>
   <int value="-1001837588" label="EnableAppReinstallZeroState:enabled"/>
+  <int value="-1000784424" label="BrowsingHistoryFilterByDomain:disabled"/>
   <int value="-1000695123"
       label="AccessibilitySelectToSpeakPageMigration:disabled"/>
   <int value="-1000671573" label="TemporaryUnexpireFlagsM80:enabled"/>
@@ -15024,6 +15025,7 @@ from previous Chrome versions.
   <int value="3058782" label="EnableGamepadMultitouch:enabled"/>
   <int value="3354018" label="BrowserActuator:enabled"/>
   <int value="3428212" label="OmniboxAggregateShortcuts:disabled"/>
+  <int value="3491127" label="BrowsingHistoryFilterByDomain:enabled"/>
   <int value="3807825" label="MobilePromoOnDesktopWithQRCode:disabled"/>
   <int value="3826348" label="DarkenWebsitesCheckboxInThemesSetting:disabled"/>
   <int value="4277967" label="SideSearchStatePerTab:disabled"/>

@@ -378,6 +378,11 @@ inline constexpr char kBrowsingHistoryFilterByDeviceName[] =
 inline constexpr char kBrowsingHistoryFilterByDeviceDescription[] =
     "Enables browser history filtering by device.";
 
+inline constexpr char kBrowsingHistoryFilterByDomainName[] =
+    "Filter Browsing History By Domain";
+inline constexpr char kBrowsingHistoryFilterByDomainDescription[] =
+    "Enables browser history filtering by domain.";
+
 inline constexpr char kBrowsingHistoryFilterByTimeName[] =
     "Filter Browsing History By Time";
 inline constexpr char kBrowsingHistoryFilterByTimeDescription[] =

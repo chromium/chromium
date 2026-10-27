@@ -14149,6 +14149,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kBrowsingHistoryFilterByDeviceDescription, kOsAll,
      FEATURE_VALUE_TYPE(history::kBrowsingHistoryFilterByDevice)},
 
+    {"browsing-history-filter-by-domain",
+     flag_descriptions::kBrowsingHistoryFilterByDomainName,
+     flag_descriptions::kBrowsingHistoryFilterByDomainDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(history::kBrowsingHistoryFilterByDomain)},
+
     {"browsing-history-filter-by-time",
      flag_descriptions::kBrowsingHistoryFilterByTimeName,
      flag_descriptions::kBrowsingHistoryFilterByTimeDescription, kOsAll,
