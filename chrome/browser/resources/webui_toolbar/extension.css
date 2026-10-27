@@ -19,6 +19,7 @@ toolbar-chip-button:focus-within {
 }
 
 :host {
+  min-width: 0;
   interpolate-size: allow-keywords;
   width: auto;
 }
