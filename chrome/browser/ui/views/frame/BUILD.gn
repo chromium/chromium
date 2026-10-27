@@ -2407,8 +2407,10 @@ source_set("interactive_ui_tests") {
   deps = [
     ":app_menu_button_observer",
     ":base_tab_strip_region_view",
+    ":browser_native_widget",
     ":browser_view_header",
     ":browser_view_tabbed_layout_impl",
+    ":browser_widget",
     ":contents_container_outline",
     ":contents_container_view",
     ":contents_web_view",

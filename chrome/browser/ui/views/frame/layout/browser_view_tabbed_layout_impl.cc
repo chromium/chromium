@@ -96,11 +96,14 @@ void IncreasePaddingToMinimum(BrowserLayoutParams& params, int minimum) {
     params.trailing_exclusion.horizontal_padding =
         std::max(params.trailing_exclusion.horizontal_padding,
                  static_cast<float>(minimum));
-  } else {
+  } else if (params.leading_exclusion.content.width() > 0.0) {
     params.leading_exclusion.horizontal_padding =
         std::max(params.leading_exclusion.horizontal_padding,
                  static_cast<float>(minimum));
   }
+  // Otherwise, there are no caption buttons (e.g. when using the system title
+  // bar on Linux), so no grab handle is needed. Adding padding to an empty
+  // exclusion would only push the toolbar away from the vertical tab strip.
 }
 
 // Gets the sum of leading and trailing exclusions in `params` for minimum-size
