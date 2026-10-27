@@ -476,7 +476,9 @@ TEST_P(FFmpegRegressionTest, BasicPlayback) {
     if (GetParam().end_status == PIPELINE_OK) {
       ASSERT_TRUE(ended_);
 
-      // Tack a seek on the end to catch any seeking issues.
+      // Tack a seek on the end to catch any seeking issues. Pause first, since
+      // Seek() runs until idle, which would play the whole file again.
+      Pause();
       Seek(GetParam().seek_time == kNoTimestamp ? GetStartTime()
                                                 : GetParam().seek_time);
     }

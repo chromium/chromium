@@ -1873,6 +1873,22 @@ TEST_F(PipelineIntegrationTest, BasicPlaybackHashed_FlacInMp4) {
   EXPECT_AUDIO_HASH(kSfxLosslessHash);
 }
 
+// Makes sure an MP4 audio track can be played to the end a second time. FFmpeg
+// keeps some end-of-stream state from the first time it reads the last sample,
+// see mov_finalize_packet().
+TEST_F(PipelineIntegrationTest, PlayToEndTwice_FlacInMp4) {
+  ASSERT_EQ(PIPELINE_OK, Start("sfx-flac.mp4"));
+  Play();
+  ASSERT_TRUE(WaitUntilOnEnded());
+
+  // Pause first, so the second playback happens below rather than inside
+  // Seek(), which runs until idle.
+  Pause();
+  ASSERT_TRUE(Seek(base::TimeDelta()));
+  Play();
+  ASSERT_TRUE(WaitUntilOnEnded());
+}
+
 #if BUILDFLAG(ENABLE_AV1_DECODER)
 TEST_F(PipelineIntegrationTest, BasicPlayback_VideoOnly_AV1_Mp4) {
   ASSERT_EQ(PIPELINE_OK, Start("bear-av1.mp4"));
