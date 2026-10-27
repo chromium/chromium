@@ -280,9 +280,10 @@ NSString* CapitalizeFirstLetter(NSString* string) {
                              IDS_IOS_TOOLS_MENU_CLEAR_BROWSING_DATA))];
 
   // Wait for the summary to be loaded.
-  [ChromeEarlGrey waitForUIElementToDisappearWithMatcher:
-                      grey_text(l10n_util::GetNSString(
-                          IDS_CLEAR_BROWSING_DATA_CALCULATING))];
+  [ChromeEarlGrey
+      waitForUIElementToDisappearWithMatcher:
+          grey_text(l10n_util::GetNSString(IDS_CLEAR_BROWSING_DATA_CALCULATING))
+                                     timeout:kWaitForClearBrowsingDataTimeout];
 }
 
 // Opens Quick Delete from the three dot menu.
@@ -297,9 +298,10 @@ NSString* CapitalizeFirstLetter(NSString* string) {
       windowIndex, CGVectorMake(0.0, 0.0));
 
   // Wait for the summary to be loaded.
-  [ChromeEarlGrey waitForUIElementToDisappearWithMatcher:
-                      grey_text(l10n_util::GetNSString(
-                          IDS_CLEAR_BROWSING_DATA_CALCULATING))];
+  [ChromeEarlGrey
+      waitForUIElementToDisappearWithMatcher:
+          grey_text(l10n_util::GetNSString(IDS_CLEAR_BROWSING_DATA_CALCULATING))
+                                     timeout:kWaitForClearBrowsingDataTimeout];
 }
 
 // Triggers the deletion from Quick Delete by tapping the delete data button and
@@ -689,8 +691,7 @@ TAG_SMOKE_TEST(QuickDeleteTestCase, testBrowsingHistoryForDeletion);
 // row when browsing history is selected as a data type to be deleted and when
 // the user syncs history. It also tests that the history entries get deleted
 // when the deletion of browsing data is selected.
-// TODO(crbug.com/484951999): Unflake the test.
-- (void)FLAKY_testBrowsingHistoryForDeletionWithHistorySync {
+- (void)testBrowsingHistoryForDeletionWithHistorySync {
   // Sign in and enable history sync.
   [self signInAndEnableHistorySync];
 
@@ -713,18 +714,19 @@ TAG_SMOKE_TEST(QuickDeleteTestCase, testBrowsingHistoryForDeletion);
   [self openQuickDeleteFromThreeDotMenu];
 
   // Check that Quick Delete is presented.
-  [[EarlGrey selectElementWithMatcher:ClearBrowsingDataView()]
-      assertWithMatcher:grey_notNil()];
+  [ChromeEarlGrey
+      waitForSufficientlyVisibleElementWithMatcher:ClearBrowsingDataView()];
 
   // Check that the browsing data row and the browsing history substring are
   // presented.
-  [[EarlGrey selectElementWithMatcher:grey_text(l10n_util::GetNSString(
-                                          IDS_IOS_DELETE_BROWSING_DATA_TITLE))]
-      assertWithMatcher:grey_sufficientlyVisible()];
-  [[EarlGrey selectElementWithMatcher:
-                 ContainsPartialText(l10n_util::GetPluralNSStringF(
-                     IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_SITES_SYNCED, 1))]
-      assertWithMatcher:grey_sufficientlyVisible()];
+  [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:
+                      grey_text(l10n_util::GetNSString(
+                          IDS_IOS_DELETE_BROWSING_DATA_TITLE))];
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:
+          ContainsPartialText(l10n_util::GetPluralNSStringF(
+              IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_SITES_SYNCED, 1))
+                                  timeout:kWaitForClearBrowsingDataTimeout];
 
   // Tap the browsing data button.
   [self triggerDeletionFromQuickDelete];
