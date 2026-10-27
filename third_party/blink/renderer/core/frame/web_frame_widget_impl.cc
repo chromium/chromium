@@ -3758,11 +3758,8 @@ const display::ScreenInfos& WebFrameWidgetImpl::GetScreenInfos() {
   return widget_base_->screen_infos();
 }
 
-const display::ScreenInfo& WebFrameWidgetImpl::GetOriginalScreenInfo() {
-  if (device_emulator_ && !widget_base_->WillBeDestroyed()) {
-    return device_emulator_->GetOriginalScreenInfo();
-  }
-  return widget_base_->GetScreenInfo();
+float WebFrameWidgetImpl::GetOriginalDeviceScaleFactor() {
+  return widget_base_->GetOriginalDeviceScaleFactor();
 }
 
 const display::ScreenInfos& WebFrameWidgetImpl::GetOriginalScreenInfos() {

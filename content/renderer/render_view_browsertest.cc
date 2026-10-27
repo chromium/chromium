@@ -543,7 +543,7 @@ class RenderViewImplScaleFactorTest : public RenderViewImplTest {
         MakeVisualPropertiesWithDeviceScaleFactor(dsf));
 
     ASSERT_EQ(dsf, GetMainRenderFrame()->GetDeviceScaleFactor());
-    ASSERT_EQ(dsf, widget->GetOriginalScreenInfo().device_scale_factor);
+    ASSERT_EQ(dsf, widget->GetOriginalDeviceScaleFactor());
   }
 
   blink::VisualProperties MakeVisualPropertiesWithDeviceScaleFactor(float dsf) {
@@ -582,8 +582,7 @@ class RenderViewImplScaleFactorTest : public RenderViewImplTest {
     EXPECT_EQ(height, emulated_height);
     EXPECT_TRUE(ExecuteJavaScriptAndReturnIntValue(get_dpr, &emulated_dpr));
     EXPECT_EQ(static_cast<int>(dpr * 10), emulated_dpr);
-    ASSERT_EQ(dsf,
-              main_frame_widget()->GetOriginalScreenInfo().device_scale_factor);
+    ASSERT_EQ(dsf, main_frame_widget()->GetOriginalDeviceScaleFactor());
   }
 
   void EnableAutoResize(const gfx::Size& min_size, const gfx::Size& max_size) {
@@ -1036,15 +1035,13 @@ TEST_F(RenderViewImplScaleFactorTest, DeviceEmulationWithOOPIF) {
   // Verify that the system device scale factor has propagated into the
   // WebRemoteFrame.
   EXPECT_EQ(device_scale, GetMainRenderFrame()->GetDeviceScaleFactor());
-  EXPECT_EQ(device_scale,
-            main_frame_widget()->GetOriginalScreenInfo().device_scale_factor);
+  EXPECT_EQ(device_scale, main_frame_widget()->GetOriginalDeviceScaleFactor());
 
   TestEmulatedSizeDprDsf(640, 480, 3.f, device_scale);
 
   // Verify that the WebRemoteFrame device scale factor is still the same.
   EXPECT_EQ(3.f, GetMainRenderFrame()->GetDeviceScaleFactor());
-  EXPECT_EQ(device_scale,
-            main_frame_widget()->GetOriginalScreenInfo().device_scale_factor);
+  EXPECT_EQ(device_scale, main_frame_widget()->GetOriginalDeviceScaleFactor());
 
   ReceiveDisableDeviceEmulation();
 

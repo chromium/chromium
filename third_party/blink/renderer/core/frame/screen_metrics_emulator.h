@@ -15,7 +15,6 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
-#include "ui/display/screen_info.h"
 #include "ui/display/screen_infos.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
@@ -41,7 +40,6 @@ class ScreenMetricsEmulator : public GarbageCollected<ScreenMetricsEmulator> {
   ScreenMetricsEmulator& operator=(const ScreenMetricsEmulator&) = delete;
   virtual ~ScreenMetricsEmulator() = default;
 
-  const display::ScreenInfo& GetOriginalScreenInfo() const;
   const display::ScreenInfos& original_screen_infos() const {
     return original_screen_infos_;
   }

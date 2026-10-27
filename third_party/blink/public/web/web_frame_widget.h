@@ -58,6 +58,11 @@ struct ApplyViewportChangesArgs;
 class LayerTreeHost;
 }  // namespace cc
 
+namespace display {
+struct ScreenInfo;
+struct ScreenInfos;
+}  // namespace display
+
 namespace gfx {
 class PointF;
 class RectF;
@@ -269,6 +274,16 @@ class WebFrameWidget : public WebWidget {
 
   // Update the LocalSurfaceId used for frames produced by this widget.
   virtual void ApplyLocalSurfaceIdUpdate(const viz::LocalSurfaceId& id) = 0;
+
+  // Returns information about the screen where this widget is being displayed.
+  virtual const display::ScreenInfo& GetScreenInfo() = 0;
+
+  // Returns information about all available screens.
+  virtual const display::ScreenInfos& GetScreenInfos() = 0;
+
+  // Returns the original (non-emulated) device scale factor of the screen
+  // where this widget is being displayed.
+  virtual float GetOriginalDeviceScaleFactor() = 0;
 
  private:
   // This is a private virtual method so we don't expose cc::LayerTreeHost

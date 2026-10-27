@@ -116,6 +116,55 @@ class CORE_EXPORT WebPagePopupImpl final : public WebPagePopup,
   WebDocument GetDocument() override;
   Handle GetHandle() const override;
 
+  // WebWidget implementation.
+  // NOTE: The WebWidget may still be used after requesting the popup to be
+  // closed and destroyed. But the Page and the MainFrame are destroyed
+  // immediately. So all methods (outside of initialization) that are part
+  // of the WebWidget need to check if close has already been initiated (they
+  // can do so by checking |page_|) and not crash! https://crbug.com/906340
+  void SetCompositorVisible(bool visible) override;
+  void WarmUpCompositor() override;
+  void UpdateLifecycle(WebLifecycleUpdate requested_update,
+                       DocumentUpdateReason reason) override;
+  void Resize(const gfx::Size&) override;
+  WebInputEventResult HandleInputEvent(const WebCoalescedInputEvent&) override;
+  WebInputEventResult DispatchBufferedTouchEvents() override;
+  void SetFocus(bool) override;
+  bool HasFocus() override;
+  WebHitTestResult HitTestResultAt(const gfx::PointF&) override;
+  void InitializeCompositing(
+      const display::ScreenInfos& screen_infos,
+      const cc::LayerTreeSettings* settings,
+      CrossVariantMojoRemote<
+          viz::mojom::blink::CompositorFrameSinkInterfaceBase>
+          initial_frame_sink,
+      CrossVariantMojoReceiver<
+          viz::mojom::blink::CompositorFrameSinkClientInterfaceBase>
+          initial_frame_sink_client,
+      CrossVariantMojoReceiver<
+          mojom::blink::RenderInputRouterClientInterfaceBase>
+          initial_viz_rir_client) override;
+  void SetCursor(const ui::Cursor& cursor) override;
+  bool HandlingInputEvent() override;
+  void SetHandlingInputEvent(bool handling) override;
+  void ProcessInputEventSynchronouslyForTesting(
+      const WebCoalescedInputEvent&) override;
+  void DispatchNonBlockingEventForTesting(
+      std::unique_ptr<WebCoalescedInputEvent> event) override;
+  void UpdateTextInputState() override;
+  void UpdateSelectionBounds() override;
+  void ShowVirtualKeyboard() override;
+  void FlushInputProcessedCallback() override;
+  void CancelComposition() override;
+  void ApplyVisualProperties(
+      const VisualProperties& visual_properties) override;
+  gfx::Rect WindowRect() override;
+  gfx::Rect ViewRect() override;
+  void SetScreenRects(const gfx::Rect& widget_screen_rect,
+                      const gfx::Rect& window_screen_rect) override;
+  gfx::Size VisibleViewportSize() override;
+  bool IsHidden() const override;
+
   // PagePopup implementation.
   void PostMessageToPopup(const String& message) override;
   void Update() override;
@@ -147,12 +196,13 @@ class CORE_EXPORT WebPagePopupImpl final : public WebPagePopup,
   // The element which created this popup.
   Element& OwnerElement();
 
+  const display::ScreenInfo& GetScreenInfo() const;
+
  private:
   // WidgetBaseClient overrides:
   void OnCommitRequested() override;
   void BeginMainFrame(const viz::BeginFrameArgs& args) override;
   void SetSuppressFrameRequestsWorkaroundFor704763Only(bool) final;
-  WebInputEventResult DispatchBufferedTouchEvents() override;
   void WillHandleGestureEvent(const WebGestureEvent& event,
                               bool* suppress) override;
   void WillHandleMouseEvent(const WebMouseEvent& event) override;
@@ -166,64 +216,13 @@ class CORE_EXPORT WebPagePopupImpl final : public WebPagePopup,
   void ScheduleAnimation(cc::BeginMainFrameReason, bool urgent) override;
   void UpdateVisualProperties(
       const VisualProperties& visual_properties) override;
+  const display::ScreenInfos& GetOriginalScreenInfos() override;
   gfx::Rect ViewportVisibleRect() override;
   void ScreenRectToEmulated(gfx::Rect& screen_rect) override;
   void EmulatedToScreenRect(gfx::Rect& screen_rect) override;
   KURL GetURLForDebugTrace() override;
   std::unique_ptr<cc::LayerTreeFrameSink> AllocateNewLayerTreeFrameSink()
       override;
-
-  // WebWidget implementation.
-  // NOTE: The WebWidget may still be used after requesting the popup to be
-  // closed and destroyed. But the Page and the MainFrame are destroyed
-  // immediately. So all methods (outside of initialization) that are part
-  // of the WebWidget need to check if close has already been initiated (they
-  // can do so by checking |page_|) and not crash! https://crbug.com/906340
-  void SetCompositorVisible(bool visible) override;
-  void WarmUpCompositor() override;
-  void UpdateLifecycle(WebLifecycleUpdate requested_update,
-                       DocumentUpdateReason reason) override;
-  void Resize(const gfx::Size&) override;
-  WebInputEventResult HandleInputEvent(const WebCoalescedInputEvent&) override;
-  void SetFocus(bool) override;
-  bool HasFocus() override;
-  WebHitTestResult HitTestResultAt(const gfx::PointF&) override;
-  void InitializeCompositing(
-      const display::ScreenInfos& screen_infos,
-      const cc::LayerTreeSettings* settings,
-      CrossVariantMojoRemote<
-          viz::mojom::blink::CompositorFrameSinkInterfaceBase>
-          initial_frame_sink,
-      CrossVariantMojoReceiver<
-          viz::mojom::blink::CompositorFrameSinkClientInterfaceBase>
-          initial_frame_sink_client,
-      CrossVariantMojoReceiver<
-          mojom::blink::RenderInputRouterClientInterfaceBase>
-          initial_viz_rir_client) override;
-  void SetCursor(const ui::Cursor& cursor) override;
-  bool HandlingInputEvent() override;
-  void SetHandlingInputEvent(bool handling) override;
-  void ProcessInputEventSynchronouslyForTesting(
-      const WebCoalescedInputEvent&) override;
-  void DispatchNonBlockingEventForTesting(
-      std::unique_ptr<WebCoalescedInputEvent> event) override;
-  void UpdateTextInputState() override;
-  void UpdateSelectionBounds() override;
-  void ShowVirtualKeyboard() override;
-  void FlushInputProcessedCallback() override;
-  void CancelComposition() override;
-  void ApplyVisualProperties(
-      const VisualProperties& visual_properties) override;
-  const display::ScreenInfo& GetScreenInfo() override;
-  const display::ScreenInfos& GetScreenInfos() override;
-  const display::ScreenInfo& GetOriginalScreenInfo() override;
-  const display::ScreenInfos& GetOriginalScreenInfos() override;
-  gfx::Rect WindowRect() override;
-  gfx::Rect ViewRect() override;
-  void SetScreenRects(const gfx::Rect& widget_screen_rect,
-                      const gfx::Rect& window_screen_rect) override;
-  gfx::Size VisibleViewportSize() override;
-  bool IsHidden() const override;
 
   // WidgetEventHandler functions
   WebInputEventResult HandleCharEvent(const WebKeyboardEvent&) override;

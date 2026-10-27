@@ -302,8 +302,6 @@ class TestWebFrameWidget : public WebFrameWidgetImpl {
                      base::OnceCallback<void(bool)>,
                      bool speculative) override;
 
-  using WebFrameWidgetImpl::GetOriginalScreenInfo;
-
  protected:
   // Allow subclasses to provide their own input handler host.
   virtual TestWidgetInputHandlerHost* GetInputHandlerHost();

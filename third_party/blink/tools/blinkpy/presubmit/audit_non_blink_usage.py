@@ -3221,6 +3221,15 @@ _CONFIG = [
     },
     {
         'paths': [
+            'third_party/blink/public/web/web_frame_widget.h',
+        ],
+        'allowed': [
+            'display::ScreenInfo',
+            'display::ScreenInfos',
+        ],
+    },
+    {
+        'paths': [
             'third_party/blink/public/web/web_widget.h',
         ],
         'allowed': [

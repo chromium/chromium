@@ -356,8 +356,7 @@ class CORE_EXPORT ChromeClient : public GarbageCollected<ChromeClient> {
   virtual const display::ScreenInfos& GetScreenInfos(
       LocalFrame& frame) const = 0;
 
-  virtual const display::ScreenInfo& GetOriginalScreenInfo(
-      LocalFrame& frame) const = 0;
+  virtual float GetOriginalDeviceScaleFactor(LocalFrame& frame) const = 0;
 
   virtual void SetCursor(const ui::Cursor&, LocalFrame* local_root) = 0;
   virtual void SetCursorOverridden(bool) = 0;

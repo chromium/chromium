@@ -60,6 +60,8 @@ class WebTestWebFrameWidgetImpl : public WebFrameWidgetImpl,
 
   // WebFrameWidget overrides.
   FrameWidgetTestHelper* GetFrameWidgetTestHelperForTesting() override;
+  const display::ScreenInfo& GetScreenInfo() override;
+  const display::ScreenInfos& GetScreenInfos() override;
 
   // FrameWidget overrides.
   void RequestDecode(const cc::DrawImage&,
@@ -77,13 +79,8 @@ class WebTestWebFrameWidgetImpl : public WebFrameWidgetImpl,
                      const gfx::Rect& drag_obj_rect) override;
   void DidAutoResize(const gfx::Size& size) override;
 
-  // WebWidget overrides.
-  const display::ScreenInfo& GetScreenInfo() override;
-  const display::ScreenInfos& GetScreenInfos() override;
-  const display::ScreenInfo& GetOriginalScreenInfo() override;
-  const display::ScreenInfos& GetOriginalScreenInfos() override;
-
   // WidgetBaseClient overrides:
+  const display::ScreenInfos& GetOriginalScreenInfos() override;
   void ScheduleAnimation(cc::BeginMainFrameReason reason, bool urgent) override;
   void WillBeginMainFrame() override;
   void ScheduleAnimationForWebTests() override;

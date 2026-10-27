@@ -929,7 +929,7 @@ void RemoteFrame::SetFrameSinkId(const viz::FrameSinkId& frame_sink_id,
 void RemoteFrame::ChildProcessGone() {
   remote_process_gone_ = true;
   compositing_helper_->ChildFrameGone(
-      ancestor_widget_->GetOriginalScreenInfo().device_scale_factor);
+      ancestor_widget_->GetOriginalDeviceScaleFactor());
 }
 
 bool RemoteFrame::IsIgnoredForHitTest() const {

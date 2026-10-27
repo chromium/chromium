@@ -550,8 +550,7 @@ scoped_refptr<cc::DisplayItemList>
 SurfaceEmbedWebPlugin::PaintContentsToDisplayList() {
   blink::WebFrameWidget* ancestor_widget =
       container_->GetDocument().GetFrame()->LocalRoot()->FrameWidget();
-  auto device_scale_factor =
-      ancestor_widget->GetOriginalScreenInfo().device_scale_factor;
+  auto device_scale_factor = ancestor_widget->GetOriginalDeviceScaleFactor();
   // Adapted from ChildFrameCompositingHelper::PaintContentsToDisplayList().
   auto layer_size = crashed_layer_->bounds();
   auto display_list = base::MakeRefCounted<cc::DisplayItemList>();

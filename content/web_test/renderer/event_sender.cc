@@ -2860,7 +2860,7 @@ void EventSender::UpdateLifecycleToPrePaint() {
 }
 
 float EventSender::DeviceScaleFactorForEvents() {
-  return web_frame_widget_->GetOriginalScreenInfo().device_scale_factor;
+  return web_frame_widget_->GetOriginalDeviceScaleFactor();
 }
 
 }  // namespace content

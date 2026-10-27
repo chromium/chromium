@@ -1929,7 +1929,7 @@ void UpdateScreenInfoAndResizeView(
     int viewport_width,
     int viewport_height) {
   display::ScreenInfo screen_info =
-      web_view_helper->GetMainFrameWidget()->GetOriginalScreenInfo();
+      web_view_helper->GetMainFrameWidget()->GetOriginalScreenInfos().current();
   screen_info.rect = gfx::Rect(viewport_width, viewport_height);
   UpdateScreenInfoAndResizeView(web_view_helper, screen_info);
 }
@@ -10882,7 +10882,7 @@ TEST_F(WebFrameTest, ResizeInvalidatesDeviceMediaQueries) {
   ASSERT_TRUE(element);
 
   display::ScreenInfo screen_info =
-      web_view_helper.GetMainFrameWidget()->GetOriginalScreenInfo();
+      web_view_helper.GetMainFrameWidget()->GetOriginalScreenInfos().current();
   screen_info.rect = screen_info.available_rect = gfx::Rect(700, 500);
   UpdateScreenInfoAndResizeView(&web_view_helper, screen_info);
   EXPECT_EQ(300, element->OffsetWidth());
@@ -10923,8 +10923,9 @@ class DeviceEmulationTest : public WebFrameTest {
   }
 
   void TestResize(const gfx::Size& size, const String& expected_size) {
-    display::ScreenInfo screen_info =
-        web_view_helper_.GetMainFrameWidget()->GetOriginalScreenInfo();
+    display::ScreenInfo screen_info = web_view_helper_.GetMainFrameWidget()
+                                          ->GetOriginalScreenInfos()
+                                          .current();
     screen_info.rect = screen_info.available_rect = gfx::Rect(size);
     UpdateScreenInfoAndResizeView(&web_view_helper_, screen_info);
     EXPECT_EQ(expected_size, DumpSize("test"));
@@ -14967,7 +14968,7 @@ TEST_F(WebFrameTest, MediaQueriesInLocalFrameInsideRemote) {
       static_cast<frame_test_helpers::TestWebFrameWidget*>(
           local_frame->FrameWidgetImpl());
   display::ScreenInfos screen_infos(
-      local_frame_widget->GetOriginalScreenInfo());
+      local_frame_widget->GetOriginalScreenInfos().current());
   screen_infos.mutable_current().is_monochrome = false;
   screen_infos.mutable_current().depth_per_component = 8;
   local_frame_widget->UpdateScreenInfo(screen_infos);

@@ -71,9 +71,7 @@ float ExternalPopupMenu::GetDprForSizeAdjustment(const Element& owner_element) {
   // device scale factor instead of the value emulated for the outermost main
   // frame to correctly place the select menu.
   if (frame->IsCrossOriginToOutermostMainFrame()) {
-    dpr = page->GetChromeClient()
-              .GetOriginalScreenInfo(*frame)
-              .device_scale_factor;
+    dpr = page->GetChromeClient().GetOriginalDeviceScaleFactor(*frame);
   } else {
     dpr = page->GetChromeClient().GetScreenInfo(*frame).device_scale_factor;
   }

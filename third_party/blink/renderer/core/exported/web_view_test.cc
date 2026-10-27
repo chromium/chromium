@@ -7787,10 +7787,10 @@ TEST_F(WebViewTest, EmulatingPopupRect) {
       MakeGarbageCollected<EmptyChromeClient>(), *select);
   {
     // Make a popup widget.
-    WebPagePopup* popup = web_view->OpenPagePopup(menu);
+    WebPagePopupImpl* popup = web_view->OpenPagePopup(menu);
 
     // Fake that the browser showed it.
-    static_cast<WebPagePopupImpl*>(popup)->DidShowPopup();
+    popup->DidShowPopup();
 
     // Set its size.
     popup->SetScreenRects(widget_screen_rect, window_screen_rect);
@@ -7801,7 +7801,7 @@ TEST_F(WebViewTest, EmulatingPopupRect) {
     EXPECT_EQ(widget_screen_rect, gfx::Rect(popup->ViewRect()));
     EXPECT_EQ(screen_rect, gfx::Rect(popup->GetScreenInfo().rect));
 
-    static_cast<WebPagePopupImpl*>(popup)->ClosePopup();
+    popup->ClosePopup();
   }
 
   // Enable device emulation on the parent widget.
@@ -7816,10 +7816,10 @@ TEST_F(WebViewTest, EmulatingPopupRect) {
 
   {
     // Make a popup again. It should inherit device emulation params.
-    WebPagePopup* popup = web_view->OpenPagePopup(menu);
+    WebPagePopupImpl* popup = web_view->OpenPagePopup(menu);
 
     // Fake that the browser showed it.
-    static_cast<WebPagePopupImpl*>(popup)->DidShowPopup();
+    popup->DidShowPopup();
 
     // Set its size again.
     popup->SetScreenRects(widget_screen_rect, window_screen_rect);
@@ -7858,7 +7858,7 @@ TEST_F(WebViewTest, EmulatingPopupRect) {
     EXPECT_EQ(emulated_widget_rect,
               gfx::Rect(web_view->MainFrameWidget()->GetScreenInfo().rect));
 
-    static_cast<WebPagePopupImpl*>(popup)->ClosePopup();
+    popup->ClosePopup();
   }
 }
 

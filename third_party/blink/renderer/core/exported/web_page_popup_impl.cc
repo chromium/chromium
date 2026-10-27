@@ -294,15 +294,15 @@ class PagePopupChromeClient final : public EmptyChromeClient {
   }
 
   const display::ScreenInfo& GetScreenInfo(LocalFrame&) const override {
-    // LocalFrame is ignored since there is only 1 frame in a popup.
     CHECK(popup_);
+    // LocalFrame is ignored since there is only 1 frame in a popup.
     return popup_->GetScreenInfo();
   }
 
   const display::ScreenInfos& GetScreenInfos(LocalFrame&) const override {
     CHECK(popup_);
     // LocalFrame is ignored since there is only 1 frame in a popup.
-    return popup_->GetScreenInfos();
+    return popup_->widget_base_->screen_infos();
   }
 
   gfx::Size MinimumWindowSize() const override { return gfx::Size(0, 0); }
@@ -589,15 +589,7 @@ void WebPagePopupImpl::ApplyVisualProperties(
   widget_base_->UpdateVisualProperties(visual_properties);
 }
 
-const display::ScreenInfo& WebPagePopupImpl::GetScreenInfo() {
-  return widget_base_->GetScreenInfo();
-}
-
-const display::ScreenInfos& WebPagePopupImpl::GetScreenInfos() {
-  return widget_base_->screen_infos();
-}
-
-const display::ScreenInfo& WebPagePopupImpl::GetOriginalScreenInfo() {
+const display::ScreenInfo& WebPagePopupImpl::GetScreenInfo() const {
   return widget_base_->GetScreenInfo();
 }
 

@@ -210,8 +210,8 @@ class CORE_EXPORT EmptyChromeClient : public ChromeClient {
   const display::ScreenInfos& GetScreenInfos(LocalFrame&) const override {
     return empty_screen_infos_;
   }
-  const display::ScreenInfo& GetOriginalScreenInfo(LocalFrame&) const override {
-    return empty_screen_infos_.current();
+  float GetOriginalDeviceScaleFactor(LocalFrame&) const override {
+    return empty_screen_infos_.current().device_scale_factor;
   }
   void ContentsSizeChanged(LocalFrame*, const gfx::Size&) const override {}
   void ShowMouseOverURL(const HitTestResult&) override {}

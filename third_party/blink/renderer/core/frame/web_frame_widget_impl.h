@@ -433,6 +433,9 @@ class CORE_EXPORT WebFrameWidgetImpl
   FrameWidgetTestHelper* GetFrameWidgetTestHelperForTesting() override;
   void PrepareForFinalLifecyclUpdateForTesting() override;
   void ApplyLocalSurfaceIdUpdate(const viz::LocalSurfaceId& id) override;
+  const display::ScreenInfo& GetScreenInfo() override;
+  const display::ScreenInfos& GetScreenInfos() override;
+  float GetOriginalDeviceScaleFactor() override;
 
   // Called when a drag-n-drop operation should begin.
   virtual void StartDragging(LocalFrame* source_frame,
@@ -496,10 +499,6 @@ class CORE_EXPORT WebFrameWidgetImpl
       const VisualProperties& visual_properties) override;
   bool PinchGestureActiveInMainFrame() override;
   float PageScaleInMainFrame() override;
-  const display::ScreenInfo& GetScreenInfo() override;
-  const display::ScreenInfos& GetScreenInfos() override;
-  const display::ScreenInfo& GetOriginalScreenInfo() override;
-  const display::ScreenInfos& GetOriginalScreenInfos() override;
   gfx::Rect WindowRect() override;
   gfx::Rect ViewRect() override;
   void SetScreenRects(const gfx::Rect& widget_screen_rect,
@@ -523,6 +522,7 @@ class CORE_EXPORT WebFrameWidgetImpl
   void BindInputTargetClient(
       mojo::PendingReceiver<viz::mojom::blink::InputTargetClient> receiver)
       override;
+  const display::ScreenInfos& GetOriginalScreenInfos() override;
 
   // mojom::blink::FrameWidget overrides:
   void SetViewportIntersection(

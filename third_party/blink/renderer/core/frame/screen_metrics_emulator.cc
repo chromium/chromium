@@ -7,6 +7,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "third_party/blink/public/common/widget/visual_properties.h"
 #include "third_party/blink/renderer/core/frame/web_frame_widget_impl.h"
+#include "ui/display/screen_info.h"
 
 namespace blink {
 
@@ -23,11 +24,6 @@ ScreenMetricsEmulator::ScreenMetricsEmulator(
       original_visible_viewport_size_(visible_viewport_size),
       original_view_screen_rect_(view_screen_rect),
       original_window_screen_rect_(window_screen_rect) {}
-
-const display::ScreenInfo& ScreenMetricsEmulator::GetOriginalScreenInfo()
-    const {
-  return original_screen_infos_.current();
-}
 
 void ScreenMetricsEmulator::Trace(Visitor* vistor) const {
   vistor->Trace(frame_widget_);

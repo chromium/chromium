@@ -240,12 +240,6 @@ const display::ScreenInfos& WebTestWebFrameWidgetImpl::GetScreenInfos() {
                                    : WebFrameWidgetImpl::GetScreenInfos();
 }
 
-const display::ScreenInfo& WebTestWebFrameWidgetImpl::GetOriginalScreenInfo() {
-  return screen_infos_for_testing_
-             ? screen_infos_for_testing_->current()
-             : WebFrameWidgetImpl::GetOriginalScreenInfo();
-}
-
 const display::ScreenInfos&
 WebTestWebFrameWidgetImpl::GetOriginalScreenInfos() {
   return screen_infos_for_testing_

@@ -663,9 +663,8 @@ const display::ScreenInfos& ChromeClientImpl::GetScreenInfos(
   return frame.GetWidgetForLocalRoot()->GetScreenInfos();
 }
 
-const display::ScreenInfo& ChromeClientImpl::GetOriginalScreenInfo(
-    LocalFrame& frame) const {
-  return frame.GetWidgetForLocalRoot()->GetOriginalScreenInfo();
+float ChromeClientImpl::GetOriginalDeviceScaleFactor(LocalFrame& frame) const {
+  return frame.GetWidgetForLocalRoot()->GetOriginalDeviceScaleFactor();
 }
 
 float ChromeClientImpl::InputEventsScaleForEmulation() const {

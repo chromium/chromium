@@ -46,7 +46,6 @@ class LayerTreeSettings;
 }
 
 namespace display {
-struct ScreenInfo;
 struct ScreenInfos;
 }  // namespace display
 
@@ -187,20 +186,6 @@ class WebWidget {
   // Apply the visual properties to the widget.
   virtual void ApplyVisualProperties(
       const VisualProperties& visual_properties) = 0;
-
-  // Returns information about the screen where this view's widgets are being
-  // displayed.
-  virtual const display::ScreenInfo& GetScreenInfo() = 0;
-
-  // Returns information about all available screens.
-  virtual const display::ScreenInfos& GetScreenInfos() = 0;
-
-  // Returns original (non-emulated) information about the screen where this
-  // view's widgets are being displayed.
-  virtual const display::ScreenInfo& GetOriginalScreenInfo() = 0;
-
-  // Returns original (non-emulated) information about all available screens.
-  virtual const display::ScreenInfos& GetOriginalScreenInfos() = 0;
 
   // Called to get the position of the widget's window in screen
   // coordinates. Note, the window includes any decorations such as borders,
