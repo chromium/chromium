@@ -11,9 +11,9 @@
 
 [package]
 edition = "2021"
-rust-version = "1.85.0"
+rust-version = "1.89.0"
 name = "uuid"
-version = "1.26.1"
+version = "1.27.0"
 authors = [
     "Ashley Mannix<ashleymannix@live.com.au>",
     "Dylan DPC<dylan.dpc@gmail.com>",
@@ -208,7 +208,7 @@ version = "1.0.56"
 version = "1.0.52"
 
 [target.'cfg(all(target_arch = "wasm32", any(target_os = "unknown", target_os = "none")))'.dependencies.uuid-rng-internal-lib]
-version = "1.26.1"
+version = "1.27.0"
 optional = true
 package = "uuid-rng-internal"
 

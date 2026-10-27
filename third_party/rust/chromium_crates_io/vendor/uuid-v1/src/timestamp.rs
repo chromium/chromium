@@ -903,14 +903,22 @@ pub mod context {
 
                 if incoming.last_seed > self.last_seed {
                     // The incoming value is part of a new millisecond
+                    //
+                    // Return it unchanged, signalling that a counter reseed is also necessary
                     (incoming, true)
-                } else {
-                    // The incoming value is part of the same or an earlier millisecond
+                } else if incoming.last_seed == self.last_seed {
+                    // The incoming value is part of the same millisecond
+                    //
                     // We may still have advanced the subsecond portion, so use the larger value
                     let mut value = *self;
                     value.subsec_nanos = cmp::max(self.subsec_nanos, subsec_nanos);
 
                     (value, false)
+                } else {
+                    // The incoming value is part of an earlier millisecond
+                    //
+                    // Return our last seen value, relying entirely on the counter for monotonicity
+                    (*self, false)
                 }
             }
 
@@ -1233,6 +1241,20 @@ pub mod context {
                 ] {
                     Timestamp::from_unix(&context, seconds, subsec_nanos);
                 }
+            }
+
+            #[test]
+            fn context_subsec_ordering() {
+                let context = ContextV7::new();
+
+                // Wall-clock order of incoming timestamps is b, a, c
+                // UUID order is a, b, c
+                let a = Timestamp::from_unix(&context, 100, 0);
+                let b = Timestamp::from_unix(&context, 99, 2_000_000);
+                let c = Timestamp::from_unix(&context, 100, 1_000_000);
+
+                assert!(Uuid::new_v7(a) < Uuid::new_v7(b), "a: {a:?} < b: {b:?}");
+                assert!(Uuid::new_v7(b) < Uuid::new_v7(c), "b: {b:?} < c: {c:?}");
             }
         }
     }

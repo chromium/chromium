@@ -152,10 +152,15 @@ const fn try_parse(input: &'_ [u8]) -> Result<[u8; 16], InvalidUuid<'_>> {
         // - `{UUID}` for braced UUIDs
         // - `urn:uuid:UUID` for URNs
         // - `UUID` for a regular hyphenated UUID
-        (36, s)
-        | (38, [b'{', s @ .., b'}'])
-        | (45, [b'u', b'r', b'n', b':', b'u', b'u', b'i', b'd', b':', s @ ..]) => {
-            parse_hyphenated(s)
+        (36, s) | (38, [b'{', s @ .., b'}']) => parse_hyphenated(s),
+        (45, s) => {
+            let (prefix, s) = s.split_at(9);
+
+            if prefix.eq_ignore_ascii_case(b"urn:uuid:") {
+                parse_hyphenated(s)
+            } else {
+                Err(InvalidUuid(input, RequestedUuid::Any))
+            }
         }
         // Any other shaped input is immediately invalid
         _ => Err(InvalidUuid(input, RequestedUuid::Any)),
@@ -175,10 +180,8 @@ pub(crate) const fn parse_braced(input: &'_ [u8]) -> Result<[u8; 16], InvalidUui
 #[inline]
 #[allow(dead_code)]
 pub(crate) const fn parse_urn(input: &'_ [u8]) -> Result<[u8; 16], InvalidUuid<'_>> {
-    if let (45, [b'u', b'r', b'n', b':', b'u', b'u', b'i', b'd', b':', s @ ..]) =
-        (input.len(), input)
-    {
-        parse_hyphenated(s)
+    if input.len() == 45 && input.split_at(9).0.eq_ignore_ascii_case(b"urn:uuid:") {
+        parse_hyphenated(input.split_at(9).1)
     } else {
         Err(InvalidUuid(input, RequestedUuid::Urn))
     }
@@ -347,7 +350,18 @@ mod tests {
         assert!(Uuid::parse_str("67e5504410b1426f9247bb680e5fe0c8").is_ok());
         assert!(Uuid::parse_str("01020304-1112-2122-3132-414243444546").is_ok());
         assert!(Uuid::parse_str("urn:uuid:67e55044-10b1-426f-9247-bb680e5fe0c8").is_ok());
+        assert!(Uuid::parse_str("URN:UUID:67e55044-10b1-426f-9247-bb680e5fe0c8").is_ok());
+        assert!(Uuid::parse_str("Urn:Uuid:67e55044-10b1-426f-9247-bb680e5fe0c8").is_ok());
         assert!(Uuid::parse_str("{6d93bade-bd9f-4e13-8914-9474e1e3567b}").is_ok());
+
+        assert_eq!(
+            from_urn,
+            Uuid::parse_str("URN:UUID:67e55044-10b1-426f-9247-bb680e5fe0c8").unwrap()
+        );
+        assert_eq!(
+            from_urn,
+            Uuid::parse_str("urn:UUID:67e55044-10b1-426f-9247-bb680e5fe0c8").unwrap()
+        );
 
         // Nil
         let nil = Uuid::nil();
@@ -578,6 +592,12 @@ mod tests {
                 index: 0
             })),
             Urn::from_str(":550e8400-e29b-41d4-a716-446655440000")
+        );
+        assert_eq!(
+            Uuid::parse_str("urn:uuid:67e55044-10b1-426f-9247-bb680e5fe0c8").unwrap(),
+            Urn::from_str("URN:UUID:67e55044-10b1-426f-9247-bb680e5fe0c8")
+                .unwrap()
+                .into_uuid()
         );
 
         assert_eq!(
