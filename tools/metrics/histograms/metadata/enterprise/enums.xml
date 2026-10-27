@@ -1641,10 +1641,6 @@ chromium-metrics-reviews@google.com.
   <int value="467" label="NetBiosShareDiscoveryEnabled"/>
   <int value="468" label="WebAppInstallForceList"/>
   <int value="469" label="SmsMessagesAllowed"/>
-  <int value="470" label="ReportVersionData"/>
-  <int value="471" label="ReportPolicyData"/>
-  <int value="472" label="ReportMachineIDData"/>
-  <int value="473" label="ReportUserIDData"/>
   <int value="474" label="PrintingAllowedColorModes"/>
   <int value="475" label="PrintingAllowedDuplexModes"/>
   <int value="477" label="PrintingColorDefault"/>
@@ -1669,7 +1665,6 @@ chromium-metrics-reviews@google.com.
   <int value="496" label="BrowserSwitcherUrlList"/>
   <int value="497" label="BrowserSwitcherUrlGreylist"/>
   <int value="498" label="BrowserSwitcherUseIeSitelist"/>
-  <int value="499" label="ReportExtensionsAndPluginsData"/>
   <int value="500" label="ReportSafeBrowsingData"/>
   <int value="501" label="DeviceWiFiFastTransitionEnabled"/>
   <int value="502" label="DeviceDisplayResolution"/>

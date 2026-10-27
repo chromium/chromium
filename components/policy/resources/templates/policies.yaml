@@ -468,10 +468,10 @@ policies:
   467: NetBiosShareDiscoveryEnabled
   468: WebAppInstallForceList
   469: SmsMessagesAllowed
-  470: ReportVersionData
-  471: ReportPolicyData
-  472: ReportMachineIDData
-  473: ReportUserIDData
+  470: ''
+  471: ''
+  472: ''
+  473: ''
   474: PrintingAllowedColorModes
   475: PrintingAllowedDuplexModes
   476: ''
@@ -497,7 +497,7 @@ policies:
   496: BrowserSwitcherUrlList
   497: BrowserSwitcherUrlGreylist
   498: BrowserSwitcherUseIeSitelist
-  499: ReportExtensionsAndPluginsData
+  499: ''
   500: ReportSafeBrowsingData
   501: DeviceWiFiFastTransitionEnabled
   502: DeviceDisplayResolution
