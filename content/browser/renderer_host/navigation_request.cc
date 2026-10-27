@@ -10207,6 +10207,12 @@ void NavigationRequest::ReadyToCommitNavigation(bool is_error) {
   commit_params_->is_load_data_with_base_url = IsLoadDataWithBaseURL();
   commit_params_->origin_to_commit = origin_to_commit.value();
 
+  if (frame_tree_node_->frame_tree()
+          .delegate()
+          ->DoesWebContentsDisallowSharedWorkers()) {
+    GetMutableRuntimeFeatureStateContext().SetSharedWorkerEnabled(false);
+  }
+
   if (!IsSameDocument()) {
     // TODO(crbug.com/504574017): Remove the WeakPtr check once Android
     // WebView can avoid the synchronous deletion case.

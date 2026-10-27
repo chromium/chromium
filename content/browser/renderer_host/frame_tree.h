@@ -231,6 +231,12 @@ class CONTENT_EXPORT FrameTree {
     // WebContents::PrivilegedParams). Used to skip the service worker for the
     // main resource of navigations in such a WebContents.
     virtual bool DoesWebContentsDisallowServiceWorkerControl();
+
+    // Returns true if this FrameTree is hosted by a WebContents that disallows
+    // shared workers for the pages it hosts (see
+    // WebContents::PrivilegedParams). Used to disable the SharedWorker
+    // interface in Blink for documents committed in such a WebContents.
+    virtual bool DoesWebContentsDisallowSharedWorkers();
   };
 
   // Type of FrameTree instance.

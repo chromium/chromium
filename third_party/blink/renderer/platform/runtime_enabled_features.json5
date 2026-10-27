@@ -6198,6 +6198,7 @@
     },
     {
       name: "SharedWorker",
+      browser_process_read_write_access: true,
       public: true,
       status: "stable",
     },

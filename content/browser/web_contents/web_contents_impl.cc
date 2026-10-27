@@ -11192,6 +11192,10 @@ bool WebContentsImpl::DoesWebContentsDisallowServiceWorkerControl() {
          privileged_params_->disallow_service_worker_control;
 }
 
+bool WebContentsImpl::DoesWebContentsDisallowSharedWorkers() {
+  return privileged_params_ && privileged_params_->disallow_shared_workers;
+}
+
 WebContents* WebContentsImpl::GetDocumentPictureInPictureOpener() {
   return picture_in_picture_opener_.get();
 }

@@ -34,9 +34,11 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/client_certificate_delegate.h"
 #include "content/public/browser/dedicated_worker_service.h"
+#include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/shared_worker_service.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_paths.h"
 #include "content/public/common/content_switches.h"
@@ -79,6 +81,7 @@
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
+#include "third_party/blink/public/common/runtime_feature_state/runtime_feature_state_context.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/gurl.h"
 
@@ -580,8 +583,8 @@ IN_PROC_BROWSER_TEST_F(WorkerTest, PrivilegedWebContentsCannotUseSharedWorker) {
     })
   )";
 
-  // A privileged WebContents that disallows shared workers is blocked, and no
-  // shared worker host is created for it.
+  // A privileged WebContents that disallows shared workers does not expose the
+  // SharedWorker constructor in Blink.
   WebContents::CreateParams privileged_params(
       shell()->web_contents()->GetBrowserContext());
   WebContents::PrivilegedParams marker;
@@ -591,11 +594,28 @@ IN_PROC_BROWSER_TEST_F(WorkerTest, PrivilegedWebContentsCannotUseSharedWorker) {
   std::unique_ptr<WebContents> privileged(
       WebContents::Create(privileged_params));
   ASSERT_TRUE(NavigateToURL(privileged.get(), page_url));
+  EXPECT_EQ(false, EvalJs(privileged.get(), "'SharedWorker' in window"));
+
+  // Even if a renderer still has the SharedWorker interface enabled (e.g. a
+  // compromised renderer), the browser process blocks the connection and no
+  // shared worker host is created for it.
+  class ForceEnableSharedWorkerObserver : public WebContentsObserver {
+   public:
+    explicit ForceEnableSharedWorkerObserver(WebContents* web_contents)
+        : WebContentsObserver(web_contents) {}
+    void ReadyToCommitNavigation(NavigationHandle* navigation_handle) override {
+      navigation_handle->GetMutableRuntimeFeatureStateContext()
+          .SetSharedWorkerEnabled(true);
+    }
+  } force_enable_observer(privileged.get());
+  ASSERT_TRUE(NavigateToURL(privileged.get(), page_url));
   EXPECT_EQ("Worker blocked.", EvalJs(privileged.get(), kConnectSharedWorker));
   EXPECT_FALSE(GetSharedWorkerHost(worker_url));
 
-  // Control: an ordinary WebContents at the same URL connects normally.
+  // Control: an ordinary WebContents at the same URL exposes SharedWorker and
+  // connects normally.
   ASSERT_TRUE(NavigateToURL(shell(), page_url));
+  EXPECT_EQ(true, EvalJs(shell(), "'SharedWorker' in window"));
   EXPECT_EQ("Worker connected.", EvalJs(shell(), kConnectSharedWorker));
   EXPECT_TRUE(GetSharedWorkerHost(worker_url));
 }

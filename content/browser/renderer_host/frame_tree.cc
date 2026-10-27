@@ -203,6 +203,10 @@ bool FrameTree::Delegate::DoesWebContentsDisallowServiceWorkerControl() {
   return false;
 }
 
+bool FrameTree::Delegate::DoesWebContentsDisallowSharedWorkers() {
+  return false;
+}
+
 FrameTree::FrameTree(
     BrowserContext* browser_context,
     Delegate* delegate,
