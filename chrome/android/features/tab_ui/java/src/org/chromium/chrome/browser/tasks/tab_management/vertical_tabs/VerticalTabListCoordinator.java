@@ -557,6 +557,7 @@ public class VerticalTabListCoordinator {
         // Handle right-clicks on the root background space and fully consume the window event.
         mContainerView.setOnContextClickListener(
                 createEmptySpaceContextClickListener(activity, mContainerView));
+        mContainerView.setOnTouchDownListener(this::dismissActiveContextMenus);
 
         mContainerLayoutChangeListener =
                 (v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) -> {
@@ -940,6 +941,7 @@ public class VerticalTabListCoordinator {
 
     public void destroy() {
         mContainerView.setKeyEventListener(null);
+        mContainerView.setOnTouchDownListener(/* listener= */ null);
         mPinnedTabsModelList.removeObserver(mPinnedTabsListObserver);
         mPinnedTabsMediator.destroy();
         mPinnedTabsRecyclerView.setAdapter(null);
@@ -2262,6 +2264,7 @@ public class VerticalTabListCoordinator {
                             this::onContextMenuDismissed);
         }
         mTabItemHoverController.hideHoverCard();
+        dismissActiveContextMenus();
         mTabGroupContextMenuCoordinator.showMenu(rectProvider, tabGroupId);
         return true;
     }
@@ -2321,6 +2324,7 @@ public class VerticalTabListCoordinator {
                             this::onContextMenuDismissed);
         }
         mTabItemHoverController.hideHoverCard();
+        dismissActiveContextMenus();
         mTabContextMenuCoordinator.showMenu(rectProvider, anchorInfo);
         return true;
     }
@@ -2341,6 +2345,7 @@ public class VerticalTabListCoordinator {
 
         boolean isIncognito = mTabModelSelector.getCurrentModel().isIncognitoBranded();
         mTabItemHoverController.hideHoverCard();
+        dismissActiveContextMenus();
         mTabStripContextMenuCoordinator.showMenu(rectProvider, isIncognito, activity);
     }
 
@@ -2353,6 +2358,7 @@ public class VerticalTabListCoordinator {
 
         boolean isIncognito = mTabModelSelector.getCurrentModel().isIncognitoBranded();
         mTabItemHoverController.hideHoverCard();
+        dismissActiveContextMenus();
         mCollapseButtonContextMenuCoordinator.showMenu(rectProvider, isIncognito);
     }
 

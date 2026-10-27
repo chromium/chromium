@@ -65,6 +65,7 @@ public class VerticalTabRailLayout extends ConstraintLayout {
     }
 
     private @Nullable RailEventListener mRailEventListener;
+    private @Nullable Runnable mOnTouchDownListener;
     private @Nullable KeyEventListener mKeyEventListener;
     private VerticalTabListRecyclerView mRecyclerView;
     private VerticalPinnedTabListRecyclerView mPinnedTabsRecyclerView;
@@ -90,6 +91,11 @@ public class VerticalTabRailLayout extends ConstraintLayout {
     private @RailCollapseState int mCollapseState = RailCollapseState.EXPANDED;
     // Cache for the last applied collapse state to prevent redundant header layout updates.
     private @RailCollapseState int mLastAppliedCollapseState = RailCollapseState.UNKNOWN;
+    // Tracks the eventTime of the rail's own ACTION_DOWN when a split multi-touch sequence starts
+    // with an earlier window-level downTime (e.g. while another finger is held on web contents or
+    // the resize handle). This is needed so that we can update the event's downTime to its
+    // eventTime. 0 when no split-downTime touch sequence is active.
+    private long mSplitTouchDownTime;
 
     public VerticalTabRailLayout(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
@@ -301,6 +307,11 @@ public class VerticalTabRailLayout extends ConstraintLayout {
         mRailEventListener = listener;
     }
 
+    /** Sets the listener invoked whenever an {@link MotionEvent#ACTION_DOWN} reaches the rail. */
+    void setOnTouchDownListener(@Nullable Runnable listener) {
+        mOnTouchDownListener = listener;
+    }
+
     /** Updates internal child view styling based on the current rail collapse state. */
     void setCollapseState(@RailCollapseState int collapseState) {
         if (mCollapseState == collapseState) return;
@@ -343,8 +354,66 @@ public class VerticalTabRailLayout extends ConstraintLayout {
 
     @Override
     public boolean dispatchTouchEvent(MotionEvent event) {
-        if (mRailEventListener != null) mRailEventListener.onTouchEventDispatched(event);
-        return super.dispatchTouchEvent(event);
+        int actionMasked = event.getActionMasked();
+        if (actionMasked == MotionEvent.ACTION_DOWN) {
+            if (mOnTouchDownListener != null) {
+                mOnTouchDownListener.run();
+            }
+            // For a normal 1-finger touch/mouse click, downTime == eventTime. If downTime came
+            // from another finger down, we use the current event's eventTime as the downTime.
+            long eventTime = event.getEventTime();
+            mSplitTouchDownTime = event.getDownTime() != eventTime ? eventTime : 0L;
+        }
+
+        // Android's MotionEvent is mostly immutable, and does not provide a #setDownTime(...). We
+        // change the downTime on a MotionEvent by creating a copy of the event using
+        // MotionEvent.obtain(...). Remaining events in the gesture (ACTION_MOVE, ACTION_UP,
+        // ACTION_CANCEL) also arrive with the other finger's downTime, so we keep replacing
+        // downTime until the gesture ends.
+        MotionEvent eventToDispatch =
+                mSplitTouchDownTime != 0L ? obtainWithDownTime(event, mSplitTouchDownTime) : event;
+        if (actionMasked == MotionEvent.ACTION_UP || actionMasked == MotionEvent.ACTION_CANCEL) {
+            mSplitTouchDownTime = 0L;
+        }
+
+        if (mRailEventListener != null) {
+            mRailEventListener.onTouchEventDispatched(eventToDispatch);
+        }
+        boolean handled = super.dispatchTouchEvent(eventToDispatch);
+        if (eventToDispatch != event) {
+            eventToDispatch.recycle();
+        }
+        return handled;
+    }
+
+    private static MotionEvent obtainWithDownTime(MotionEvent event, long downTime) {
+        int pointerCount = event.getPointerCount();
+        MotionEvent.PointerProperties[] properties =
+                new MotionEvent.PointerProperties[pointerCount];
+        MotionEvent.PointerCoords[] coords = new MotionEvent.PointerCoords[pointerCount];
+        for (int i = 0; i < pointerCount; i++) {
+            properties[i] = new MotionEvent.PointerProperties();
+            event.getPointerProperties(i, properties[i]);
+            coords[i] = new MotionEvent.PointerCoords();
+            event.getPointerCoords(i, coords[i]);
+        }
+        // We keep every parameter identical except for the first param, in which we update the
+        // downTime.
+        return MotionEvent.obtain(
+                /* downTime= */ downTime,
+                /* eventTime= */ event.getEventTime(),
+                /* action= */ event.getAction(),
+                /* pointerCount= */ pointerCount,
+                /* pointerProperties= */ properties,
+                /* pointerCoords= */ coords,
+                /* metaState= */ event.getMetaState(),
+                /* buttonState= */ event.getButtonState(),
+                /* xPrecision= */ event.getXPrecision(),
+                /* yPrecision= */ event.getYPrecision(),
+                /* deviceId= */ event.getDeviceId(),
+                /* edgeFlags= */ event.getEdgeFlags(),
+                /* source= */ event.getSource(),
+                /* flags= */ event.getFlags());
     }
 
     @Override

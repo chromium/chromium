@@ -9,6 +9,8 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
@@ -54,6 +56,9 @@ import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.modelutil.PropertyModel;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /** Unit tests for {@link VerticalTabRailLayout} and {@link VerticalTabListViewBinder}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -1057,6 +1062,158 @@ public class VerticalTabRailLayoutUnitTest {
         ViewGroup.MarginLayoutParams lp =
                 (ViewGroup.MarginLayoutParams) mRailLayout.getRecyclerView().getLayoutParams();
         assertEquals(0, lp.topMargin);
+    }
+
+    @Test
+    public void testDispatchTouchEvent_InvokesOnTouchDownListenerOnlyOnActionDown() {
+        Runnable onTouchDownListener = mock(Runnable.class);
+        mRailLayout.setOnTouchDownListener(onTouchDownListener);
+
+        MotionEvent downEvent =
+                MotionEvent.obtain(
+                        /* downTime= */ 100L,
+                        /* eventTime= */ 100L,
+                        /* action= */ MotionEvent.ACTION_DOWN,
+                        /* x= */ 50f,
+                        /* y= */ 50f,
+                        /* metaState= */ 0);
+        mRailLayout.dispatchTouchEvent(downEvent);
+        downEvent.recycle();
+        verify(
+                        onTouchDownListener,
+                        times(1).description("Listener should run once on ACTION_DOWN."))
+                .run();
+
+        MotionEvent moveEvent =
+                MotionEvent.obtain(
+                        /* downTime= */ 100L,
+                        /* eventTime= */ 150L,
+                        /* action= */ MotionEvent.ACTION_MOVE,
+                        /* x= */ 55f,
+                        /* y= */ 55f,
+                        /* metaState= */ 0);
+        mRailLayout.dispatchTouchEvent(moveEvent);
+        moveEvent.recycle();
+        verify(
+                        onTouchDownListener,
+                        times(1).description(
+                                        "Listener should only have run once on ACTION_DOWN (not on"
+                                                + " ACTION_MOVE)."))
+                .run();
+
+        MotionEvent upEvent =
+                MotionEvent.obtain(
+                        /* downTime= */ 100L,
+                        /* eventTime= */ 200L,
+                        /* action= */ MotionEvent.ACTION_UP,
+                        /* x= */ 55f,
+                        /* y= */ 55f,
+                        /* metaState= */ 0);
+        mRailLayout.dispatchTouchEvent(upEvent);
+        upEvent.recycle();
+        verify(
+                        onTouchDownListener,
+                        times(1).description(
+                                        "Listener should only have run once on ACTION_DOWN (not on"
+                                                + " ACTION_UP)."))
+                .run();
+    }
+
+    @Test
+    public void testDispatchTouchEvent_SplitMultiTouch_NormalizesDownTimeAcrossGesture() {
+        List<Long> observedDownTimes = new ArrayList<>();
+        List<Long> observedEventTimes = new ArrayList<>();
+        // Records every touch event that passes through mRailLayout.
+        mRailLayout.setOnTouchListener(
+                (v, event) -> {
+                    observedDownTimes.add(event.getDownTime());
+                    observedEventTimes.add(event.getEventTime());
+                    return true;
+                });
+
+        // Simulate a split multi-touch gesture where Finger 1 went down outside the rail at t=1000
+        // and Finger 2 touches down on the rail at t=3000. DOWN, MOVE, and UP all have Finger 1's
+        // downTime.
+        MotionEvent splitDown =
+                MotionEvent.obtain(
+                        /* downTime= */ 1000L,
+                        /* eventTime= */ 3000L,
+                        /* action= */ MotionEvent.ACTION_DOWN,
+                        /* x= */ 50f,
+                        /* y= */ 50f,
+                        /* metaState= */ 0);
+        mRailLayout.dispatchTouchEvent(splitDown);
+        splitDown.recycle();
+
+        MotionEvent splitMove =
+                MotionEvent.obtain(
+                        /* downTime= */ 1000L,
+                        /* eventTime= */ 3050L,
+                        /* action= */ MotionEvent.ACTION_MOVE,
+                        /* x= */ 52f,
+                        /* y= */ 52f,
+                        /* metaState= */ 0);
+        mRailLayout.dispatchTouchEvent(splitMove);
+        splitMove.recycle();
+
+        MotionEvent splitUp =
+                MotionEvent.obtain(
+                        /* downTime= */ 1000L,
+                        /* eventTime= */ 3100L,
+                        /* action= */ MotionEvent.ACTION_UP,
+                        /* x= */ 52f,
+                        /* y= */ 52f,
+                        /* metaState= */ 0);
+        mRailLayout.dispatchTouchEvent(splitUp);
+        splitUp.recycle();
+
+        assertEquals(
+                "All events in the split multi-touch gesture (DOWN, MOVE, UP) should have their"
+                        + " downTime rewritten from Finger 1's downTime (1000L) to Finger 2's"
+                        + " ACTION_DOWN eventTime (3000L).",
+                List.of(3000L, 3000L, 3000L),
+                observedDownTimes);
+        assertEquals(
+                "Each event in the split multi-touch gesture should preserve its own eventTime.",
+                List.of(3000L, 3050L, 3100L),
+                observedEventTimes);
+
+        observedDownTimes.clear();
+        observedEventTimes.clear();
+
+        // Subsequent single-pointer gesture with matching downTime and eventTime.
+        MotionEvent singleDown =
+                MotionEvent.obtain(
+                        /* downTime= */ 4000L,
+                        /* eventTime= */ 4000L,
+                        /* action= */ MotionEvent.ACTION_DOWN,
+                        /* x= */ 60f,
+                        /* y= */ 60f,
+                        /* metaState= */ 0);
+        mRailLayout.dispatchTouchEvent(singleDown);
+        singleDown.recycle();
+
+        MotionEvent singleUp =
+                MotionEvent.obtain(
+                        /* downTime= */ 4000L,
+                        /* eventTime= */ 4050L,
+                        /* action= */ MotionEvent.ACTION_UP,
+                        /* x= */ 60f,
+                        /* y= */ 60f,
+                        /* metaState= */ 0);
+        mRailLayout.dispatchTouchEvent(singleUp);
+        singleUp.recycle();
+
+        assertEquals(
+                "After ACTION_UP resets mSplitTouchDownTime, a subsequent normal 1-finger gesture"
+                        + " should keep its original downTime (4000L).",
+                List.of(4000L, 4000L),
+                observedDownTimes);
+        assertEquals(
+                "Each event in the subsequent normal 1-finger gesture should preserve its own"
+                        + " eventTime.",
+                List.of(4000L, 4050L),
+                observedEventTimes);
     }
 
     private void measureAndLayout(View view, int width, int height) {

@@ -4780,6 +4780,79 @@ public class VerticalTabListCoordinatorUnitTest {
         verify(mTabGroupContextMenuCoordinator).dismiss();
     }
 
+    @Test
+    public void testTouchDownOnRail_DismissesActiveContextMenus() {
+        createCoordinator();
+        mCoordinator.setTabContextMenuCoordinatorForTesting(mTabContextMenuCoordinator);
+        mCoordinator.setTabStripContextMenuCoordinatorForTesting(mTabStripContextMenuCoordinator);
+        mCoordinator.setTabGroupContextMenuCoordinatorForTesting(mTabGroupContextMenuCoordinator);
+
+        MotionEvent downEvent = obtainMotionEvent(MotionEvent.ACTION_DOWN, 50f, 50f);
+        mCoordinator.getView().dispatchTouchEvent(downEvent);
+        downEvent.recycle();
+
+        verify(mTabContextMenuCoordinator).dismiss();
+        verify(mTabStripContextMenuCoordinator).dismiss();
+        verify(mTabGroupContextMenuCoordinator).dismiss();
+    }
+
+    @Test
+    public void testSplitMultiTouchQuickTapOnRail_DoesNotTriggerEmptySpaceLongPress() {
+        createCoordinator();
+        View container = mCoordinator.getView();
+        assertNull(mCoordinator.getTabStripContextMenuCoordinatorForTesting());
+
+        long now = SystemClock.uptimeMillis();
+        // Simulate the raw split MotionEvents that Android's parent ViewGroup dispatches into
+        // VerticalTabRailLayout#dispatchTouchEvent when Finger 1 was held outside the rail 2000ms
+        // ago and Finger 2 taps the rail quickly (50ms tap). VerticalTabRailLayout normalizes the
+        // downTime to Finger 2's eventTime so GestureDetector does not treat the tap as a long
+        // press.
+        MotionEvent splitDown =
+                MotionEvent.obtain(
+                        /* downTime= */ now - 2000L,
+                        /* eventTime= */ now,
+                        /* action= */ MotionEvent.ACTION_DOWN,
+                        /* x= */ 50f,
+                        /* y= */ 50f,
+                        /* metaState= */ 0);
+        container.dispatchTouchEvent(splitDown);
+        splitDown.recycle();
+        ShadowLooper.idleMainLooper();
+
+        MotionEvent splitUp =
+                MotionEvent.obtain(
+                        /* downTime= */ now - 2000L,
+                        /* eventTime= */ now + 50L,
+                        /* action= */ MotionEvent.ACTION_UP,
+                        /* x= */ 50f,
+                        /* y= */ 50f,
+                        /* metaState= */ 0);
+        container.dispatchTouchEvent(splitUp);
+        splitUp.recycle();
+
+        assertNull(
+                "A quick secondary-finger tap on the rail must not trigger a long-press menu.",
+                mCoordinator.getTabStripContextMenuCoordinatorForTesting());
+    }
+
+    @Test
+    public void testRightClickShowingContextMenu_DismissesExistingActiveContextMenus() {
+        createCoordinator();
+        mCoordinator.setTabContextMenuCoordinatorForTesting(mTabContextMenuCoordinator);
+        mCoordinator.setTabStripContextMenuCoordinatorForTesting(mTabStripContextMenuCoordinator);
+        mCoordinator.setTabGroupContextMenuCoordinatorForTesting(mTabGroupContextMenuCoordinator);
+
+        // Simulate a right-click (context click) opening the empty-space context menu without a
+        // touch ACTION_DOWN event.
+        mCoordinator.getView().performContextClick();
+
+        verify(mTabContextMenuCoordinator).dismiss();
+        verify(mTabStripContextMenuCoordinator).dismiss();
+        verify(mTabGroupContextMenuCoordinator).dismiss();
+        verify(mTabStripContextMenuCoordinator).showMenu(any(), eq(false), eq(mActivity));
+    }
+
     private void setupMockTabModelWithTabs(List<Tab> tabs, int initialSelectedIndex) {
         int[] currentIndex = new int[] {initialSelectedIndex};
         when(mTabModel.getCount()).thenReturn(tabs.size());
