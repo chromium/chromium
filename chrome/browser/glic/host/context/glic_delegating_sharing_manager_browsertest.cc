@@ -526,10 +526,6 @@ class GlicStablePinningDelegatingSharingManagerBrowserTest
 // TODO(b:479854184): make this work on Android.
 #if BUILDFLAG(IS_ANDROID)
 #define MAYBE_StablePinningDelegateSwap DISABLED_StablePinningDelegateSwap
-// TODO(crbug.com/542347163): Re-enable test.
-#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || \
-    BUILDFLAG(IS_WIN)
-#define MAYBE_StablePinningDelegateSwap DISABLED_StablePinningDelegateSwap
 #else
 #define MAYBE_StablePinningDelegateSwap StablePinningDelegateSwap
 #endif

@@ -205,8 +205,7 @@
       },
       {
         "args": [
-          "--test-launcher-jobs=3",
-          "--disable-features=WebUIOmniboxPopup,WebUIOmniboxAimPopup"
+          "--test-launcher-jobs=3"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -781,8 +780,7 @@
       },
       {
         "args": [
-          "--test-launcher-jobs=3",
-          "--disable-features=WebUIOmniboxPopup,WebUIOmniboxAimPopup"
+          "--test-launcher-jobs=3"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -1271,8 +1269,7 @@
       },
       {
         "args": [
-          "--test-launcher-jobs=3",
-          "--disable-features=WebUIOmniboxPopup,WebUIOmniboxAimPopup"
+          "--test-launcher-jobs=3"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"

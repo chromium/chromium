@@ -824,8 +824,7 @@
       },
       {
         "args": [
-          "--test-launcher-print-test-stdio=always",
-          "--disable-features=WebUIOmniboxPopup,WebUIOmniboxAimPopup"
+          "--test-launcher-print-test-stdio=always"
         ],
         "ci_only": true,
         "merge": {
@@ -1362,8 +1361,7 @@
       },
       {
         "args": [
-          "--test-launcher-print-test-stdio=always",
-          "--disable-features=WebUIOmniboxPopup,WebUIOmniboxAimPopup"
+          "--test-launcher-print-test-stdio=always"
         ],
         "ci_only": true,
         "merge": {

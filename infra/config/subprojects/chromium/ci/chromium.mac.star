@@ -724,10 +724,6 @@ ci.thin_tester(
                 ),
             ),
             "browser_tests": targets.mixin(
-                args = [
-                    # TODO(crbug.com/542347163): Re-enable when the runtime regression is fixed.
-                    "--disable-features=WebUIOmniboxPopup,WebUIOmniboxAimPopup",
-                ],
                 ci_only = True,
                 swarming = targets.swarming(
                     # crbug.com/1361887, crbug.com/509389281, crbug.com/563035821
@@ -740,19 +736,11 @@ ci.thin_tester(
                 ),
             ),
             "interactive_ui_tests": targets.mixin(
-                args = [
-                    # TODO(crbug.com/542347163): Re-enable when the runtime regression is fixed.
-                    "--disable-features=WebUIOmniboxPopup,WebUIOmniboxAimPopup",
-                ],
                 swarming = targets.swarming(
                     shards = 11,
                 ),
             ),
             "sync_integration_tests": targets.mixin(
-                args = [
-                    # TODO(crbug.com/542347163): Re-enable when the runtime regression is fixed.
-                    "--disable-features=WebUIOmniboxPopup,WebUIOmniboxAimPopup",
-                ],
                 ci_only = True,
                 swarming = targets.swarming(
                     shards = 4,

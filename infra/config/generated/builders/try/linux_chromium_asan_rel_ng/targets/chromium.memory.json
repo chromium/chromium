@@ -241,8 +241,7 @@
       {
         "args": [
           "--test-launcher-print-test-stdio=always",
-          "--test-launcher-filter-file=../../testing/buildbot/filters/linux.asan.browser_tests.filter",
-          "--disable-features=WebUIOmniboxPopup,WebUIOmniboxAimPopup"
+          "--test-launcher-filter-file=../../testing/buildbot/filters/linux.asan.browser_tests.filter"
         ],
         "ci_only": true,
         "merge": {
@@ -850,8 +849,7 @@
       },
       {
         "args": [
-          "--test-launcher-print-test-stdio=always",
-          "--disable-features=WebUIOmniboxPopup,WebUIOmniboxAimPopup"
+          "--test-launcher-print-test-stdio=always"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -1392,8 +1390,7 @@
       },
       {
         "args": [
-          "--test-launcher-print-test-stdio=always",
-          "--disable-features=WebUIOmniboxPopup,WebUIOmniboxAimPopup"
+          "--test-launcher-print-test-stdio=always"
         ],
         "enable_rts_filtering": true,
         "merge": {
