@@ -150,7 +150,7 @@ TEST_F(StyledMarkupSerializerTest, SpaceInsideSelectionNotConvertedToNbsp) {
 // survives re-parsing.
 TEST_F(StyledMarkupSerializerTest, TrailingSpaceAtSelectionEndConvertedToNbsp) {
   SetBodyContent("<div id='d'>Hello <b>World</b></div>");
-  Element* div = GetDocument().getElementById(AtomicString("d"));
+  Element* div = GetElementById("d");
   auto* hello = To<Text>(div->firstChild());
 
   Position start_dom(hello, 0);
@@ -174,7 +174,7 @@ TEST_F(StyledMarkupSerializerTest, TrailingSpaceAtSelectionEndConvertedToNbsp) {
 // changing behavior for element-anchored boundaries.
 TEST_F(StyledMarkupSerializerTest, ElementAnchoredBoundaryNotConvertedToNbsp) {
   SetBodyContent("<div id='d'> Hello</div>");
-  Element* div = GetDocument().getElementById(AtomicString("d"));
+  Element* div = GetElementById("d");
 
   Position start_dom(div, 0);
   Position end_dom = Position::LastPositionInNode(*div);
@@ -309,7 +309,7 @@ TEST_F(StyledMarkupSerializerTest, ShadowTreeStyle) {
       "<p id='host' style='color: red'><span style='font-weight: bold;'><span "
       "id='one'>11</span></span></p>\n";
   SetBodyContent(body_content);
-  Element* one = GetDocument().getElementById(AtomicString("one"));
+  Element* one = GetElementById("one");
   auto* text = To<Text>(one->firstChild());
   Position start_dom(text, 0);
   Position end_dom(text, 2);
@@ -323,7 +323,7 @@ TEST_F(StyledMarkupSerializerTest, ShadowTreeStyle) {
       "<span style='font-weight: bold'><slot name='#one'></slot></span>";
   SetBodyContent(body_content);
   SetShadowContent(shadow_content, "host");
-  one = GetDocument().getElementById(AtomicString("one"));
+  one = GetElementById("one");
   text = To<Text>(one->firstChild());
   PositionInFlatTree start_ict(text, 0);
   PositionInFlatTree end_ict(text, 2);
@@ -339,8 +339,8 @@ TEST_F(StyledMarkupSerializerTest, DISABLED_AcrossShadow) {
       "<p id='host1'>[<span id='one'>11</span>]</p><p id='host2'>[<span "
       "id='two'>22</span>]</p>";
   SetBodyContent(body_content);
-  Element* one = GetDocument().getElementById(AtomicString("one"));
-  Element* two = GetDocument().getElementById(AtomicString("two"));
+  Element* one = GetElementById("one");
+  Element* two = GetElementById("two");
   Position start_dom(To<Text>(one->firstChild()), 0);
   Position end_dom(To<Text>(two->firstChild()), 2);
   const std::string& serialized_dom = SerializePart<EditingStrategy>(
@@ -355,8 +355,8 @@ TEST_F(StyledMarkupSerializerTest, DISABLED_AcrossShadow) {
   SetBodyContent(body_content);
   SetShadowContent(shadow_content1, "host1");
   SetShadowContent(shadow_content2, "host2");
-  one = GetDocument().getElementById(AtomicString("one"));
-  two = GetDocument().getElementById(AtomicString("two"));
+  one = GetElementById("one");
+  two = GetElementById("two");
   PositionInFlatTree start_ict(To<Text>(one->firstChild()), 0);
   PositionInFlatTree end_ict(To<Text>(two->firstChild()), 2);
   const std::string& serialized_ict = SerializePart<EditingInFlatTreeStrategy>(
@@ -372,8 +372,8 @@ TEST_F(StyledMarkupSerializerTest, AcrossInvisibleElements) {
       "<span id='span1' style='display: none'>11</span><span id='span2' "
       "style='display: none'>22</span>";
   SetBodyContent(body_content);
-  Element* span1 = GetDocument().getElementById(AtomicString("span1"));
-  Element* span2 = GetDocument().getElementById(AtomicString("span2"));
+  Element* span1 = GetElementById("span1");
+  Element* span2 = GetElementById("span2");
   Position start_dom = Position::FirstPositionInNode(*span1);
   Position end_dom = Position::LastPositionInNode(*span2);
   EXPECT_EQ("", SerializePart<EditingStrategy>(start_dom, end_dom));
@@ -454,8 +454,8 @@ TEST_F(StyledMarkupSerializerTest, MathMLTableRowNotDuplicated) {
 
   SetBodyContent(body_content);
 
-  Element* first_mtd = GetDocument().getElementById(AtomicString("first"));
-  Element* last_mtd = GetDocument().getElementById(AtomicString("last"));
+  Element* first_mtd = GetElementById("first");
+  Element* last_mtd = GetElementById("last");
   ASSERT_TRUE(first_mtd);
   ASSERT_TRUE(last_mtd);
 
@@ -515,8 +515,8 @@ TEST_F(StyledMarkupSerializerTest,
 
   SetBodyContent(body_content);
 
-  Element* start_mo = GetDocument().getElementById(AtomicString("start"));
-  Element* after_mi = GetDocument().getElementById(AtomicString("after"));
+  Element* start_mo = GetElementById("start");
+  Element* after_mi = GetElementById("after");
   ASSERT_TRUE(start_mo);
   ASSERT_TRUE(after_mi);
 

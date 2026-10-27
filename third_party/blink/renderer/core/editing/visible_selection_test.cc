@@ -121,8 +121,8 @@ TEST_F(VisibleSelectionTest, expandUsingGranularity) {
   SetBodyContent(body_content);
   ShadowRoot* shadow_root = SetShadowContent(shadow_content, "host");
 
-  Node* one = GetDocument().getElementById(AtomicString("one"))->firstChild();
-  Node* two = GetDocument().getElementById(AtomicString("two"))->firstChild();
+  Node* one = GetElementById("one")->firstChild();
+  Node* two = GetElementById("two")->firstChild();
   Node* three =
       shadow_root->getElementById(AtomicString("three"))->firstChild();
   Node* four = shadow_root->getElementById(AtomicString("four"))->firstChild();
@@ -657,7 +657,7 @@ TEST_F(VisibleSelectionTest, WordGranularityAfterTextControl) {
 TEST_F(VisibleSelectionTest, updateIfNeededWithShadowHost) {
   SetBodyContent("<div id=host></div><div id=sample>foo</div>");
   SetShadowContent("<slot>", "host");
-  Element* sample = GetDocument().getElementById(AtomicString("sample"));
+  Element* sample = GetElementById("sample");
 
   // Simulates saving selection in undo stack.
   VisibleSelection selection =
@@ -667,7 +667,7 @@ TEST_F(VisibleSelectionTest, updateIfNeededWithShadowHost) {
   EXPECT_EQ(Position(sample->firstChild(), 0), selection.Start());
 
   // Simulates modifying DOM tree to invalidate distribution.
-  Element* host = GetDocument().getElementById(AtomicString("host"));
+  Element* host = GetElementById("host");
   host->AppendChild(sample);
   GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
 

@@ -23,20 +23,10 @@ namespace blink {
 
 class SurroundingTextTest : public PageTestBase {
  protected:
-  Document& GetDocument() const { return dummy_page_holder_->GetDocument(); }
   void SetHtml(const String&);
   EphemeralRange Select(int offset) { return Select(offset, offset); }
   EphemeralRange Select(int start, int end);
-
- private:
-  void SetUp() override;
-
-  std::unique_ptr<DummyPageHolder> dummy_page_holder_;
 };
-
-void SurroundingTextTest::SetUp() {
-  dummy_page_holder_ = std::make_unique<DummyPageHolder>(gfx::Size(800, 600));
-}
 
 void SurroundingTextTest::SetHtml(const String& content) {
   GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(content);
@@ -44,7 +34,7 @@ void SurroundingTextTest::SetHtml(const String& content) {
 }
 
 EphemeralRange SurroundingTextTest::Select(int start, int end) {
-  Element* element = GetDocument().getElementById(AtomicString("selection"));
+  Element* element = GetElementById("selection");
   return EphemeralRange(Position(element->firstChild(), start),
                         Position(element->firstChild(), end));
 }
@@ -290,8 +280,8 @@ TEST_F(SurroundingTextTest, TextAreaSelection) {
       "<textarea id='selection'>abc def ghi</textarea>"
       "<p>Second paragraph</p>");
 
-  TextControlElement* text_ctrl = reinterpret_cast<TextControlElement*>(
-      GetDocument().getElementById(AtomicString("selection")));
+  TextControlElement* text_ctrl =
+      reinterpret_cast<TextControlElement*>(GetElementById("selection"));
 
   text_ctrl->SetSelectionRange(4, 7);
   EphemeralRange selection = text_ctrl->Selection().ComputeRange();
@@ -307,8 +297,8 @@ TEST_F(SurroundingTextTest, TextAreaSelection) {
 TEST_F(SurroundingTextTest, EmptyInputElementWithChild) {
   SetHtml("<input type=\"text\" id=\"input_name\"/>");
 
-  TextControlElement* input_element = reinterpret_cast<TextControlElement*>(
-      GetDocument().getElementById(AtomicString("input_name")));
+  TextControlElement* input_element =
+      reinterpret_cast<TextControlElement*>(GetElementById("input_name"));
   input_element->SetInnerEditorValue("John Smith");
   GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
 

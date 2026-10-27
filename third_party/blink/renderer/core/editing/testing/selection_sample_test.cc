@@ -371,10 +371,8 @@ TEST_F(SelectionSampleTest, TraverseShadowContentWithSlot) {
       "<div id=\"shadow2\">shadow_second</div>",
       shadow_root->GetInnerHTMLString());
 
-  EXPECT_EQ(
-      Position(GetDocument().getElementById(AtomicString("host"))->firstChild(),
-               0),
-      selection.Anchor());
+  EXPECT_EQ(Position(GetElementById("host")->firstChild(), 0),
+            selection.Anchor());
   EXPECT_EQ(Position(shadow_root->QuerySelector(AtomicString("[name=slot1]"))
                          ->firstChild(),
                      4),

@@ -95,11 +95,10 @@ TEST_F(VisibleUnitsLineTest, endOfLine) {
   SetBodyContent(body_content);
   ShadowRoot* shadow_root = SetShadowContent(shadow_content, "host");
 
-  Node* one = GetDocument().getElementById(AtomicString("one"))->firstChild();
-  Node* two = GetDocument().getElementById(AtomicString("two"))->firstChild();
-  Node* three =
-      GetDocument().getElementById(AtomicString("three"))->firstChild();
-  Node* four = GetDocument().getElementById(AtomicString("four"))->firstChild();
+  Node* one = GetElementById("one")->firstChild();
+  Node* two = GetElementById("two")->firstChild();
+  Node* three = GetElementById("three")->firstChild();
+  Node* four = GetElementById("four")->firstChild();
   Node* five = shadow_root->getElementById(AtomicString("five"))->firstChild();
   Node* six = shadow_root->getElementById(AtomicString("six"))->firstChild();
   Node* seven =
@@ -193,11 +192,10 @@ TEST_F(VisibleUnitsLineTest, isEndOfLine) {
   SetBodyContent(body_content);
   ShadowRoot* shadow_root = SetShadowContent(shadow_content, "host");
 
-  Node* one = GetDocument().getElementById(AtomicString("one"))->firstChild();
-  Node* two = GetDocument().getElementById(AtomicString("two"))->firstChild();
-  Node* three =
-      GetDocument().getElementById(AtomicString("three"))->firstChild();
-  Node* four = GetDocument().getElementById(AtomicString("four"))->firstChild();
+  Node* one = GetElementById("one")->firstChild();
+  Node* two = GetElementById("two")->firstChild();
+  Node* three = GetElementById("three")->firstChild();
+  Node* four = GetElementById("four")->firstChild();
   Node* five = shadow_root->getElementById(AtomicString("five"))->firstChild();
   Node* six = shadow_root->getElementById(AtomicString("six"))->firstChild();
   Node* seven =
@@ -247,11 +245,10 @@ TEST_F(VisibleUnitsLineTest, isLogicalEndOfLine) {
   SetBodyContent(body_content);
   ShadowRoot* shadow_root = SetShadowContent(shadow_content, "host");
 
-  Node* one = GetDocument().getElementById(AtomicString("one"))->firstChild();
-  Node* two = GetDocument().getElementById(AtomicString("two"))->firstChild();
-  Node* three =
-      GetDocument().getElementById(AtomicString("three"))->firstChild();
-  Node* four = GetDocument().getElementById(AtomicString("four"))->firstChild();
+  Node* one = GetElementById("one")->firstChild();
+  Node* two = GetElementById("two")->firstChild();
+  Node* three = GetElementById("three")->firstChild();
+  Node* four = GetElementById("four")->firstChild();
   Node* five = shadow_root->getElementById(AtomicString("five"))->firstChild();
   Node* six = shadow_root->getElementById(AtomicString("six"))->firstChild();
   Node* seven =
@@ -372,11 +369,10 @@ TEST_F(VisibleUnitsLineTest, isStartOfLine) {
   SetBodyContent(body_content);
   ShadowRoot* shadow_root = SetShadowContent(shadow_content, "host");
 
-  Node* one = GetDocument().getElementById(AtomicString("one"))->firstChild();
-  Node* two = GetDocument().getElementById(AtomicString("two"))->firstChild();
-  Node* three =
-      GetDocument().getElementById(AtomicString("three"))->firstChild();
-  Node* four = GetDocument().getElementById(AtomicString("four"))->firstChild();
+  Node* one = GetElementById("one")->firstChild();
+  Node* two = GetElementById("two")->firstChild();
+  Node* three = GetElementById("three")->firstChild();
+  Node* four = GetElementById("four")->firstChild();
   Node* five = shadow_root->getElementById(AtomicString("five"))->firstChild();
   Node* six = shadow_root->getElementById(AtomicString("six"))->firstChild();
   Node* seven =
@@ -426,11 +422,10 @@ TEST_F(VisibleUnitsLineTest, logicalEndOfLine) {
   SetBodyContent(body_content);
   ShadowRoot* shadow_root = SetShadowContent(shadow_content, "host");
 
-  Node* one = GetDocument().getElementById(AtomicString("one"))->firstChild();
-  Node* two = GetDocument().getElementById(AtomicString("two"))->firstChild();
-  Node* three =
-      GetDocument().getElementById(AtomicString("three"))->firstChild();
-  Node* four = GetDocument().getElementById(AtomicString("four"))->firstChild();
+  Node* one = GetElementById("one")->firstChild();
+  Node* two = GetElementById("two")->firstChild();
+  Node* three = GetElementById("three")->firstChild();
+  Node* four = GetElementById("four")->firstChild();
   Node* five = shadow_root->getElementById(AtomicString("five"))->firstChild();
   Node* six = shadow_root->getElementById(AtomicString("six"))->firstChild();
   Node* seven =
@@ -565,11 +560,10 @@ TEST_F(VisibleUnitsLineTest, logicalStartOfLine) {
   SetBodyContent(body_content);
   ShadowRoot* shadow_root = SetShadowContent(shadow_content, "host");
 
-  Node* one = GetDocument().getElementById(AtomicString("one"))->firstChild();
-  Node* two = GetDocument().getElementById(AtomicString("two"))->firstChild();
-  Node* three =
-      GetDocument().getElementById(AtomicString("three"))->firstChild();
-  Node* four = GetDocument().getElementById(AtomicString("four"))->firstChild();
+  Node* one = GetElementById("one")->firstChild();
+  Node* two = GetElementById("two")->firstChild();
+  Node* three = GetElementById("three")->firstChild();
+  Node* four = GetElementById("four")->firstChild();
   Node* five = shadow_root->getElementById(AtomicString("five"))->firstChild();
   Node* six = shadow_root->getElementById(AtomicString("six"))->firstChild();
   Node* seven =
@@ -668,11 +662,10 @@ TEST_F(VisibleUnitsLineTest, startOfLine) {
   SetBodyContent(body_content);
   ShadowRoot* shadow_root = SetShadowContent(shadow_content, "host");
 
-  Node* one = GetDocument().getElementById(AtomicString("one"))->firstChild();
-  Node* two = GetDocument().getElementById(AtomicString("two"))->firstChild();
-  Node* three =
-      GetDocument().getElementById(AtomicString("three"))->firstChild();
-  Node* four = GetDocument().getElementById(AtomicString("four"))->firstChild();
+  Node* one = GetElementById("one")->firstChild();
+  Node* two = GetElementById("two")->firstChild();
+  Node* three = GetElementById("three")->firstChild();
+  Node* four = GetElementById("four")->firstChild();
   Node* five = shadow_root->getElementById(AtomicString("five"))->firstChild();
   Node* six = shadow_root->getElementById(AtomicString("six"))->firstChild();
   Node* seven =

@@ -27,7 +27,7 @@ TEST_F(SelectionTest, defaultConstructor) {
 TEST_F(SelectionTest, IsAnchorFirst) {
   SetBodyContent("<div id='sample'>abcdef</div>");
 
-  Element* sample = GetDocument().getElementById(AtomicString("sample"));
+  Element* sample = GetElementById("sample");
   Position base(Position(sample->firstChild(), 4));
   Position extent(Position(sample->firstChild(), 2));
   SelectionInDomTree::Builder builder;
@@ -45,7 +45,7 @@ TEST_F(SelectionTest, IsAnchorFirst) {
 TEST_F(SelectionTest, caret) {
   SetBodyContent("<div id='sample'>abcdef</div>");
 
-  Element* sample = GetDocument().getElementById(AtomicString("sample"));
+  Element* sample = GetElementById("sample");
   Position position(Position(sample->firstChild(), 2));
   SelectionInDomTree::Builder builder;
   builder.Collapse(position);
@@ -61,7 +61,7 @@ TEST_F(SelectionTest, caret) {
 TEST_F(SelectionTest, range) {
   SetBodyContent("<div id='sample'>abcdef</div>");
 
-  Element* sample = GetDocument().getElementById(AtomicString("sample"));
+  Element* sample = GetElementById("sample");
   Position base(Position(sample->firstChild(), 2));
   Position extent(Position(sample->firstChild(), 4));
   SelectionInDomTree::Builder builder;
@@ -79,7 +79,7 @@ TEST_F(SelectionTest, range) {
 TEST_F(SelectionTest, SetAsBacwardAndForward) {
   SetBodyContent("<div id='sample'>abcdef</div>");
 
-  Element* sample = GetDocument().getElementById(AtomicString("sample"));
+  Element* sample = GetElementById("sample");
   Position start(Position(sample->firstChild(), 2));
   Position end(Position(sample->firstChild(), 4));
   EphemeralRange range(start, end);
@@ -124,8 +124,8 @@ TEST_F(SelectionTest, EquivalentPositions) {
   SetBodyContent(
       "<div id='first'></div>"
       "<div id='last'></div>");
-  Element* first = GetDocument().getElementById(AtomicString("first"));
-  Element* last = GetDocument().getElementById(AtomicString("last"));
+  Element* first = GetElementById("first");
+  Element* last = GetElementById("last");
   Position after_first = Position::AfterNode(*first);
   Position before_last = Position::BeforeNode(*last);
 

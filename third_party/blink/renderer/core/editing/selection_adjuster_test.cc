@@ -245,12 +245,12 @@ TEST_F(SelectionAdjusterTest, ShadowDistributedNodesWithoutEditingBoundary) {
         <div id=s3>333</div>
       </div>)HTML";
   SetBodyContent(body_content);
-  Element* host = GetDocument().getElementById(AtomicString("host"));
+  Element* host = GetElementById("host");
   ShadowRoot& shadow_root =
       host->AttachShadowRootForTesting(ShadowRootMode::kOpen);
   shadow_root.SetInnerHTMLWithoutTrustedTypes(shadow_content);
 
-  Element* foo = GetDocument().getElementById(AtomicString("foo"));
+  Element* foo = GetElementById("foo");
   Element* s1 = shadow_root.QuerySelector(AtomicString("#s1"));
 
   // Select from 111 to foo.
@@ -312,13 +312,13 @@ TEST_F(SelectionAdjusterTest, ShadowDistributedNodesWithEditingBoundary) {
         <div id=s3>333</div>
       </div>)HTML";
   SetBodyContent(body_content);
-  Element* host = GetDocument().getElementById(AtomicString("host"));
+  Element* host = GetElementById("host");
   ShadowRoot& shadow_root =
       host->AttachShadowRootForTesting(ShadowRootMode::kOpen);
   shadow_root.SetInnerHTMLWithoutTrustedTypes(shadow_content);
 
-  Element* foo = GetDocument().getElementById(AtomicString("foo"));
-  Element* bar = GetDocument().getElementById(AtomicString("bar"));
+  Element* foo = GetElementById("foo");
+  Element* bar = GetElementById("bar");
   Element* s1 = shadow_root.QuerySelector(AtomicString("#s1"));
   Element* s2 = shadow_root.QuerySelector(AtomicString("#s2"));
 
@@ -504,7 +504,7 @@ TEST_F(SelectionAdjusterTest, EditingBoundaryOutsideOfShadowTree) {
     </div>)HTML");
   ShadowRoot* shadow_root =
       SetShadowContent("<div id=extent>extent</div>", "host");
-  Element* base = GetDocument().getElementById(AtomicString("base"));
+  Element* base = GetElementById("base");
   Element* extent = shadow_root->QuerySelector(AtomicString("#extent"));
 
   const SelectionInFlatTree& selection =
@@ -540,7 +540,7 @@ TEST_F(SelectionAdjusterTest, EditingBoundaryInsideOfShadowTree) {
     </div>)HTML",
                                              "host");
 
-  Element* base = GetDocument().getElementById(AtomicString("base"));
+  Element* base = GetElementById("base");
   Element* extent = shadow_root->QuerySelector(AtomicString("#extent"));
 
   const SelectionInFlatTree& selection =
@@ -575,7 +575,7 @@ TEST_F(SelectionAdjusterTest, ShadowHostAndShadowTreeAreEditable) {
   ShadowRoot* shadow_root =
       SetShadowContent("<div contenteditable id=bar>bar</div>", "host");
 
-  Element* foo = GetDocument().getElementById(AtomicString("foo"));
+  Element* foo = GetElementById("foo");
   Element* bar = shadow_root->QuerySelector(AtomicString("#bar"));
 
   // Select from foo to bar.
@@ -677,7 +677,7 @@ TEST_F(SelectionAdjusterTest, AdjustSelectionTypeWithShadow) {
   SetBodyContent("<p id='host'>foo</p>");
   SetShadowContent("bar<slot></slot>", "host");
 
-  Element* host = GetDocument().getElementById(AtomicString("host"));
+  Element* host = GetElementById("host");
   const Position& base = Position(host->firstChild(), 0);
   const Position& extent = Position(host, 0);
   const SelectionInDomTree& selection =
@@ -695,7 +695,7 @@ TEST_F(SelectionAdjusterTest, AdjustShadowWithRootAndHost) {
   SetBodyContent("<div id='host'></div>");
   ShadowRoot* shadow_root = SetShadowContent("", "host");
 
-  Element* host = GetDocument().getElementById(AtomicString("host"));
+  Element* host = GetElementById("host");
   const SelectionInDomTree& selection = SelectionInDomTree::Builder()
                                             .Collapse(Position(shadow_root, 0))
                                             .Extend(Position(host, 0))
@@ -720,8 +720,8 @@ TEST_F(SelectionAdjusterTest, AdjustSelectionWithNextNonEditableNode) {
       </div>
     </div>)HTML");
 
-  Element* one = GetDocument().getElementById(AtomicString("one"));
-  Element* two = GetDocument().getElementById(AtomicString("two"));
+  Element* one = GetElementById("one");
+  Element* two = GetElementById("two");
   const SelectionInDomTree& selection = SelectionInDomTree::Builder()
                                             .Collapse(Position(one, 0))
                                             .Extend(Position(two, 0))

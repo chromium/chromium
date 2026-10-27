@@ -119,16 +119,15 @@ TEST_F(EphemeralRangeTest, RangeTraversalLimitedDom) {
   SetBodyContent(body_content);
 
   Range* until_b = GetBodyRange();
-  until_b->setEnd(GetDocument().getElementById(AtomicString("one")), 0,
-                  IGNORE_EXCEPTION_FOR_TESTING);
+  until_b->setEnd(GetElementById("one"), 0, IGNORE_EXCEPTION_FOR_TESTING);
   EXPECT_EQ("[BODY][P id=\"host\"][B id=\"zero\"][#text \"0\"][B id=\"one\"]",
             TraverseRange<>(until_b));
   EXPECT_EQ(TraverseRange<>(until_b), TraverseRange(EphemeralRange(until_b)));
 
   Range* from_b_to_span = GetBodyRange();
-  from_b_to_span->setStart(GetDocument().getElementById(AtomicString("one")), 0,
+  from_b_to_span->setStart(GetElementById("one"), 0,
                            IGNORE_EXCEPTION_FOR_TESTING);
-  from_b_to_span->setEnd(GetDocument().getElementById(AtomicString("three")), 0,
+  from_b_to_span->setEnd(GetElementById("three"), 0,
                          IGNORE_EXCEPTION_FOR_TESTING);
   EXPECT_EQ("[#text \"1\"][B id=\"two\"][#text \"22\"][SPAN id=\"three\"]",
             TraverseRange<>(from_b_to_span));
@@ -153,8 +152,7 @@ TEST_F(EphemeralRangeTest, rangeTraversalLimitedFlatTree) {
   SetBodyContent(body_content);
   ShadowRoot* shadow_root = SetShadowContent(shadow_content, "host");
 
-  const PositionInFlatTree start_position(
-      GetDocument().getElementById(AtomicString("one")), 0);
+  const PositionInFlatTree start_position(GetElementById("one"), 0);
   const PositionInFlatTree limit_position(
       shadow_root->getElementById(AtomicString("five")), 0);
   const PositionInFlatTree end_position(
@@ -196,13 +194,10 @@ TEST_F(EphemeralRangeTest, CommonAncesstorDom) {
       "</p>";
   SetBodyContent(body_content);
 
-  const Position start_position(
-      GetDocument().getElementById(AtomicString("one")), 0);
-  const Position end_position(GetDocument().getElementById(AtomicString("two")),
-                              0);
+  const Position start_position(GetElementById("one"), 0);
+  const Position end_position(GetElementById("two"), 0);
   const EphemeralRange range(start_position, end_position);
-  EXPECT_EQ(GetDocument().getElementById(AtomicString("host")),
-            range.CommonAncestorContainer());
+  EXPECT_EQ(GetElementById("host"), range.CommonAncestorContainer());
 }
 
 TEST_F(EphemeralRangeTest, commonAncesstorFlatTree) {
@@ -221,21 +216,19 @@ TEST_F(EphemeralRangeTest, commonAncesstorFlatTree) {
   SetBodyContent(body_content);
   ShadowRoot* shadow_root = SetShadowContent(shadow_content, "host");
 
-  const PositionInFlatTree start_position(
-      GetDocument().getElementById(AtomicString("one")), 0);
+  const PositionInFlatTree start_position(GetElementById("one"), 0);
   const PositionInFlatTree end_position(
       shadow_root->getElementById(AtomicString("five")), 0);
   const EphemeralRangeInFlatTree range(start_position, end_position);
-  EXPECT_EQ(GetDocument().getElementById(AtomicString("host")),
-            range.CommonAncestorContainer());
+  EXPECT_EQ(GetElementById("host"), range.CommonAncestorContainer());
 }
 
 TEST_F(EphemeralRangeTest, EquivalentPositions) {
   SetBodyContent(
       "<div id='first'></div>"
       "<div id='last'></div>");
-  Element* first = GetDocument().getElementById(AtomicString("first"));
-  Element* last = GetDocument().getElementById(AtomicString("last"));
+  Element* first = GetElementById("first");
+  Element* last = GetElementById("last");
   Position after_first = Position::AfterNode(*first);
   Position before_last = Position::BeforeNode(*last);
 

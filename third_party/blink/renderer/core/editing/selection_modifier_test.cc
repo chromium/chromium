@@ -242,7 +242,7 @@ TEST_F(SelectionModifierTest, MoveCaretWithShadow) {
   LoadAhem();
   InsertStyleElement("body {font-family: Ahem}");
   SetBodyContent(body_content);
-  Element* host = GetDocument().getElementById(AtomicString("host"));
+  Element* host = GetElementById("host");
   ShadowRoot& shadow_root =
       host->AttachShadowRootForTesting(ShadowRootMode::kOpen);
   shadow_root.SetInnerHTMLWithoutTrustedTypes(shadow_content);

@@ -45,7 +45,7 @@ TEST_F(CharacterIteratorTest, SubrangeWithReplacedElements) {
   SetBodyContent(body_content);
   UpdateAllLifecyclePhasesForTest();
 
-  Node* div_node = GetDocument().getElementById(AtomicString("div"));
+  Node* div_node = GetElementById("div");
   auto* entire_range =
       MakeGarbageCollected<Range>(GetDocument(), div_node, 0, div_node, 3);
 
@@ -62,8 +62,7 @@ TEST_F(CharacterIteratorTest, CollapsedSubrange) {
   SetBodyContent(body_content);
   UpdateAllLifecyclePhasesForTest();
 
-  Node* text_node =
-      GetDocument().getElementById(AtomicString("div"))->lastChild();
+  Node* text_node = GetElementById("div")->lastChild();
   auto* entire_range =
       MakeGarbageCollected<Range>(GetDocument(), text_node, 1, text_node, 4);
   EXPECT_EQ(1u, entire_range->startOffset());
@@ -135,9 +134,9 @@ TEST_F(CharacterIteratorTest, GetPositionWithBlocks) {
   const Element& body = *GetDocument().body();
   CharacterIterator it(EphemeralRange::RangeOfContents(body));
 
-  const Node& element_p_a = *GetDocument().getElementById(AtomicString("a"));
+  const Node& element_p_a = *GetElementById("a");
   const Node& text_b = *element_p_a.firstChild();
-  const Node& element_p_c = *GetDocument().getElementById(AtomicString("c"));
+  const Node& element_p_c = *GetElementById("c");
   const Node& text_d = *element_p_c.firstChild();
 
   EXPECT_EQ(Position(text_b, 0), it.GetPositionBefore());

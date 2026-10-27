@@ -99,7 +99,7 @@ TEST_F(SelectionControllerTest, setNonDirectionalSelectionIfNeeded) {
   SetBodyContent(body_content);
   ShadowRoot* shadow_root = SetShadowContent(shadow_content, "host");
 
-  Node* top = GetDocument().getElementById(AtomicString("top"))->firstChild();
+  Node* top = GetElementById("top")->firstChild();
   Node* bottom =
       shadow_root->getElementById(AtomicString("bottom"))->firstChild();
 
@@ -531,7 +531,7 @@ TEST_F(SelectionControllerTest, AdjustSelectionByUserSelectWithInput) {
     </div>
     <div id="two">22</div>)HTML");
 
-  Element* one = GetDocument().getElementById(AtomicString("one"));
+  Element* one = GetElementById("one");
   const SelectionInFlatTree& selection =
       ExpandWithGranularity(SelectionInFlatTree::Builder()
                                 .Collapse(PositionInFlatTree(one, 0))
@@ -553,8 +553,8 @@ TEST_F(SelectionControllerTest, AdjustSelectionByUserSelectWithSpan) {
       <span style="user-select:text"> lo </span>
       <span id="two" style="user-select:text">there</span></div>)HTML");
 
-  Element* one = GetDocument().getElementById(AtomicString("one"));
-  Element* two = GetDocument().getElementById(AtomicString("two"));
+  Element* one = GetElementById("one");
+  Element* two = GetElementById("two");
 
   const SelectionInFlatTree& selection =
       ExpandWithGranularity(SelectionInFlatTree::Builder()
@@ -577,8 +577,8 @@ TEST_F(SelectionControllerTest, AdjustSelectionByUserSelectWithComment) {
       <span id="two">after comment Hello World!</span>
     </div>)HTML");
 
-  Element* one = GetDocument().getElementById(AtomicString("one"));
-  Element* two = GetDocument().getElementById(AtomicString("two"));
+  Element* one = GetElementById("one");
+  Element* two = GetElementById("two");
 
   const SelectionInFlatTree& selection =
       ExpandWithGranularity(SelectionInFlatTree::Builder()
@@ -605,8 +605,7 @@ TEST_F(SelectionControllerTest,
           style="user-select:none">EMBED</span></span>
       <span id="two">inline widget inside it</span></p></div>)HTML");
 
-  Node* const one =
-      GetDocument().getElementById(AtomicString("one"))->firstChild();
+  Node* const one = GetElementById("one")->firstChild();
   const SelectionInFlatTree& selection =
       ExpandWithGranularity(SelectionInFlatTree::Builder()
                                 .Collapse(PositionInFlatTree(one, 0))

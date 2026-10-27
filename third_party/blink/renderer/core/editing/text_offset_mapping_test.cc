@@ -242,7 +242,7 @@ TEST_F(TextOffsetMappingTest, RangeOfEmptyBlock) {
           "<div><p>abc</p><p id='target'>|</p><p>ghi</p></div>")
           .Anchor());
   const LayoutObject* const target_layout_object =
-      GetDocument().getElementById(AtomicString("target"))->GetLayoutObject();
+      GetElementById("target")->GetLayoutObject();
   const TextOffsetMapping::InlineContents inline_contents =
       TextOffsetMapping::FindForwardInlineContents(position);
   ASSERT_TRUE(inline_contents.IsNotNull());

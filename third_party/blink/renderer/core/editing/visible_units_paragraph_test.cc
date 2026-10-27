@@ -53,7 +53,7 @@ TEST_F(VisibleUnitsParagraphTest, endOfParagraphFirstLetter) {
       "<style>div::first-letter { color: red }</style><div "
       "id=sample>1ab\nde</div>");
 
-  Node* sample = GetDocument().getElementById(AtomicString("sample"));
+  Node* sample = GetElementById("sample");
   Node* text = sample->firstChild();
 
   EXPECT_EQ(Position(text, 6),
@@ -84,7 +84,7 @@ TEST_F(VisibleUnitsParagraphTest, endOfParagraphFirstLetterPre) {
       "<style>pre::first-letter { color: red }</style><pre "
       "id=sample>1ab\nde</pre>");
 
-  Node* sample = GetDocument().getElementById(AtomicString("sample"));
+  Node* sample = GetElementById("sample");
   Node* text = sample->firstChild();
 
   EXPECT_EQ(Position(text, 3),
@@ -119,9 +119,9 @@ TEST_F(VisibleUnitsParagraphTest, endOfParagraphShadow) {
   SetBodyContent(body_content);
   SetShadowContent(shadow_content, "host");
 
-  Element* one = GetDocument().getElementById(AtomicString("one"));
-  Element* two = GetDocument().getElementById(AtomicString("two"));
-  Element* three = GetDocument().getElementById(AtomicString("three"));
+  Element* one = GetElementById("one");
+  Element* two = GetElementById("two");
+  Element* three = GetElementById("three");
 
   EXPECT_EQ(
       Position(three->firstChild(), 3),
@@ -145,7 +145,7 @@ TEST_F(VisibleUnitsParagraphTest, endOfParagraphShadow) {
 TEST_F(VisibleUnitsParagraphTest, endOfParagraphSimple) {
   SetBodyContent("<div id=sample>1ab\nde</div>");
 
-  Node* sample = GetDocument().getElementById(AtomicString("sample"));
+  Node* sample = GetElementById("sample");
   Node* text = sample->firstChild();
 
   EXPECT_EQ(Position(text, 6),
@@ -174,7 +174,7 @@ TEST_F(VisibleUnitsParagraphTest, endOfParagraphSimple) {
 TEST_F(VisibleUnitsParagraphTest, endOfParagraphSimplePre) {
   SetBodyContent("<pre id=sample>1ab\nde</pre>");
 
-  Node* sample = GetDocument().getElementById(AtomicString("sample"));
+  Node* sample = GetElementById("sample");
   Node* text = sample->firstChild();
 
   EXPECT_EQ(Position(text, 3),
@@ -277,10 +277,9 @@ TEST_F(VisibleUnitsParagraphTest, isEndOfParagraph) {
   SetBodyContent(body_content);
   SetShadowContent(shadow_content, "host");
 
-  Node* one = GetDocument().getElementById(AtomicString("one"))->firstChild();
-  Node* two = GetDocument().getElementById(AtomicString("two"))->firstChild();
-  Node* three =
-      GetDocument().getElementById(AtomicString("three"))->firstChild();
+  Node* one = GetElementById("one")->firstChild();
+  Node* two = GetElementById("two")->firstChild();
+  Node* three = GetElementById("three")->firstChild();
 
   EXPECT_FALSE(IsEndOfParagraph(CreateVisiblePositionInDomTree(*one, 0)));
   EXPECT_FALSE(IsEndOfParagraph(CreateVisiblePositionInFlatTree(*one, 0)));
@@ -307,11 +306,10 @@ TEST_F(VisibleUnitsParagraphTest, isStartOfParagraph) {
   SetBodyContent(body_content);
   SetShadowContent(shadow_content, "host");
 
-  Node* zero = GetDocument().getElementById(AtomicString("zero"))->firstChild();
-  Node* one = GetDocument().getElementById(AtomicString("one"))->firstChild();
-  Node* two = GetDocument().getElementById(AtomicString("two"))->firstChild();
-  Node* three =
-      GetDocument().getElementById(AtomicString("three"))->firstChild();
+  Node* zero = GetElementById("zero")->firstChild();
+  Node* one = GetElementById("one")->firstChild();
+  Node* two = GetElementById("two")->firstChild();
+  Node* three = GetElementById("three")->firstChild();
 
   EXPECT_TRUE(IsStartOfParagraph(CreateVisiblePositionInDomTree(*zero, 0)));
   EXPECT_TRUE(IsStartOfParagraph(CreateVisiblePositionInFlatTree(*zero, 0)));
