@@ -99,11 +99,21 @@ gfx::Rect TransformFirstRectResult(base::WeakPtr<RenderFrameHostImpl> rfhi,
             // `rect` is in (child) frame coordinate and needs to be transformed
             // to the root frame coordinate. If `rfhi` has been deleted, it's
             // too late to do the transform but the result is moot anyway.
-            return rfhi ? gfx::Rect(
-                              rfhi->GetView()->TransformPointToRootCoordSpace(
-                                  rect.origin()),
-                              rect.size())
-                        : gfx::Rect();
+            if (!rfhi) {
+              return gfx::Rect();
+            }
+            RenderWidgetHostViewBase* view = rfhi->GetView();
+            if (!view) {
+              return gfx::Rect();
+            }
+            // `rect` is in physical pixels, but the transform works in DIPs.
+            const float scale = view->GetDeviceScaleFactor();
+            const gfx::PointF root_origin_in_dips =
+                view->TransformPointToRootCoordSpaceF(
+                    gfx::ScalePoint(gfx::PointF(rect.origin()), 1.f / scale));
+            const gfx::Point root_origin = gfx::ToRoundedPoint(
+                gfx::ScalePoint(root_origin_in_dips, scale));
+            return gfx::Rect(root_origin, rect.size());
           },
       },
       result);

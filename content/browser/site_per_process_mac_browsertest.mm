@@ -5,9 +5,11 @@
 #include <Cocoa/Cocoa.h>
 
 #include "base/functional/bind.h"
+#include "base/test/test_future.h"
 #include "components/input/render_widget_host_input_event_router.h"
 #import "content/app_shim_remote_cocoa/render_widget_host_view_cocoa.h"
 #include "content/browser/renderer_host/render_widget_host_view_mac.h"
+#include "content/browser/renderer_host/text_input_client_mac.h"
 #include "content/browser/site_per_process_browsertest.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -137,6 +139,54 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessMacBrowserTest,
   helper.WaitForStringAtPoint(widget_host, point);
   EXPECT_EQ(word, helper.word());
   EXPECT_EQ("This", word);
+}
+
+// Runs at a device scale factor of 2, where physical pixels and DIPs differ.
+class SitePerProcessMacHighDPIBrowserTest
+    : public SitePerProcessMacBrowserTest {
+ protected:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    SitePerProcessMacBrowserTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitchASCII(switches::kForceDeviceScaleFactor, "2");
+  }
+};
+
+// Verifies that the first rect of a range in a cross-site child frame is
+// transformed from the child frame's coordinates to the root frame's.
+IN_PROC_BROWSER_TEST_P(SitePerProcessMacHighDPIBrowserTest,
+                       GetFirstRectForRangeChildFrame) {
+  GURL main_url(embedded_test_server()->GetURL(
+      "/frame_tree/page_with_positioned_nested_frames.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+  FrameTreeNode* child =
+      web_contents()->GetPrimaryFrameTree().root()->child_at(0);
+  EXPECT_TRUE(NavigateToURLFromRenderer(
+      child, embedded_test_server()->GetURL("b.com", "/title1.html")));
+  RenderFrameHostImpl* child_rfh = child->current_frame_host();
+  ASSERT_TRUE(child_rfh->GetView()->IsRenderWidgetHostViewChildFrame());
+  WaitForHitTestData(child_rfh);
+  web_contents()->GetPrimaryFrameTree().SetFocusedFrame(
+      child, web_contents()->GetSiteInstance()->group());
+
+  base::test::TestFuture<gfx::Rect> future;
+  TextInputClientMac::GetInstance()->AsyncGetFirstRectForRange(
+      child_rfh->GetRenderWidgetHost(), gfx::Range(0, 4), future.GetCallback());
+  // The rect is in the root frame's physical pixels.
+  const double rect_left =
+      future.Get().x() / child_rfh->GetView()->GetDeviceScaleFactor();
+
+  // In the root frame, the text starts at the child frame's content edge plus
+  // the text's left edge in the child frame.
+  const double frame_left = EvalJs(shell(), R"(
+      (() => {
+        const iframe = document.querySelector('iframe');
+        return iframe.getBoundingClientRect().left + iframe.clientLeft;
+      })())")
+                                .ExtractDouble();
+  const double text_left =
+      EvalJs(child_rfh, "document.body.getBoundingClientRect().left")
+          .ExtractDouble();
+  EXPECT_NEAR(rect_left, frame_left + text_left, 1);
 }
 
 // Ensure that the RWHVCF forwards wheel events with phase ending information.
@@ -349,5 +399,8 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessMacBrowserTest,
 
 INSTANTIATE_TEST_SUITE_P(All,
                          SitePerProcessMacBrowserTest,
+                         testing::ValuesIn(RenderDocumentFeatureLevelValues()));
+INSTANTIATE_TEST_SUITE_P(All,
+                         SitePerProcessMacHighDPIBrowserTest,
                          testing::ValuesIn(RenderDocumentFeatureLevelValues()));
 }  // namespace content
