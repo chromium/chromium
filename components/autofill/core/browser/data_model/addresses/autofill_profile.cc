@@ -302,10 +302,10 @@ base::android::ScopedJavaLocalRef<jobject> AutofillProfile::CreateJavaObject(
   JNIEnv* env = base::android::AttachCurrentThread();
   base::android::ScopedJavaLocalRef<jobject> jprofile =
       Java_AutofillProfile_Constructor(
-          env, guid(), static_cast<int32_t>(record_type()), language_code());
+          env, guid(), std::to_underlying(record_type()), language_code());
 
   for (FieldType type : AutofillProfile::kDatabaseStoredTypes) {
-    auto status = static_cast<int32_t>(GetVerificationStatus(type));
+    auto status = std::to_underlying(GetVerificationStatus(type));
     // TODO(crbug.com/40278253): Reconcile usage of GetInfo and GetRawInfo
     // below.
     if (type == NAME_FULL) {

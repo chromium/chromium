@@ -75,7 +75,7 @@ base::android::ScopedJavaLocalRef<jobject> CreateJavaEwalletFromNative(
   std::vector<int32_t> supported_payment_rails_array =
       base::ToVector(payment_instrument_supported_rails,
                      [](PaymentInstrument::PaymentRail rail) {
-                       return static_cast<int32_t>(rail);
+                       return std::to_underlying(rail);
                      });
 
   return Java_Ewallet_create(env, ewallet.payment_instrument().instrument_id(),
