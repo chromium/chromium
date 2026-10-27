@@ -218,15 +218,6 @@ Current WebView Update Service state
 This APK does not contain a WebView implementation. Make sure you're building
 `system_webview_apk`.
 
-### Invalid package ... Version code too low
-
-This shouldn't happen for userdebug builds. If it does, add this GN arg:
-
-```gn
-# Any number >= "Minimum WebView version code":
-android_override_version_code = "987654321"
-```
-
 ### Invalid package ... SDK version too low
 
 The targetSdkVersion of your APK is too low (it must be >= the platform's API

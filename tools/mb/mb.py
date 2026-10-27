@@ -202,14 +202,6 @@ class MetaBuildWrapper:
         metavar='PATH',
         help=('path to config file (default is mb_config.pyl'),
       )
-      subp.add_argument(
-        '--android-version-code',
-        help='Sets GN arg android_default_version_code',
-      )
-      subp.add_argument(
-        '--android-version-name',
-        help='Sets GN arg android_default_version_name',
-      )
       # TODO(crbug.com/40122201): Remove this once swarming task templates
       # support command prefixes.
       luci_auth_group = subp.add_mutually_exclusive_group()
@@ -1846,14 +1838,6 @@ class MetaBuildWrapper:
     If expand_imports is true, any import() lines will be read in and
     valuese them will be included."""
     gn_args = vals['gn_args']
-
-    android_version_code = self.args.android_version_code
-    if android_version_code:
-      gn_args += ' android_default_version_code="%s"' % android_version_code
-
-    android_version_name = self.args.android_version_name
-    if android_version_name:
-      gn_args += ' android_default_version_name="%s"' % android_version_name
 
     args_gn_lines = []
     parsed_gn_args = {}

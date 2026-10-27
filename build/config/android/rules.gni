@@ -2305,18 +2305,10 @@ if (!is_robolectric && enable_java_templates) {
       _version_code = android_default_version_code
     }
 
-    if (android_override_version_code != "") {
-      _version_code = android_override_version_code
-    }
-
     if (defined(invoker.version_name)) {
       _version_name = invoker.version_name
     } else {
       _version_name = android_default_version_name
-    }
-
-    if (android_override_version_name != "") {
-      _version_name = android_override_version_name
     }
 
     if (defined(invoker.deps)) {
