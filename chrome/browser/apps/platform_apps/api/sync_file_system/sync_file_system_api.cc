@@ -12,6 +12,7 @@
 #include "base/functional/bind.h"
 #include "base/notreached.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/apps/platform_apps/api/sync_file_system/sync_file_system_api_helpers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync_file_system/sync_status_code.h"
@@ -25,7 +26,7 @@
 #include "content/public/common/content_client.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/file_system_url.h"
-#include "storage/browser/quota/quota_manager.h"
+#include "storage/browser/quota/quota_manager_proxy.h"
 #include "storage/common/file_system/file_system_types.h"
 #include "storage/common/file_system/file_system_util.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
@@ -156,19 +157,16 @@ SyncFileSystemGetUsageAndQuotaFunction::Run() {
   storage::FileSystemURL file_system_url(
       file_system_context->CrackURLInFirstPartyContext(GURL(url)));
 
-  scoped_refptr<storage::QuotaManager> quota_manager =
-      browser_context()
-          ->GetStoragePartition(render_frame_host()->GetSiteInstance())
-          ->GetQuotaManager();
-
-  content::GetIOThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      BindOnce(
-          &storage::QuotaManager::GetUsageAndQuotaForWebApps, quota_manager,
+  browser_context()
+      ->GetStoragePartition(render_frame_host()->GetSiteInstance())
+      ->GetQuotaManagerProxy()
+      ->GetUsageAndQuotaForWebApps(
           blink::StorageKey::CreateFirstParty(
               url::Origin::Create(source_url())),
-          BindOnce(&SyncFileSystemGetUsageAndQuotaFunction::DidGetUsageAndQuota,
-                   this)));
+          base::SequencedTaskRunner::GetCurrentDefault(),
+          base::BindOnce(
+              &SyncFileSystemGetUsageAndQuotaFunction::DidGetUsageAndQuota,
+              this));
 
   return RespondLater();
 }
@@ -177,16 +175,6 @@ void SyncFileSystemGetUsageAndQuotaFunction::DidGetUsageAndQuota(
     blink::mojom::QuotaStatusCode status,
     int64_t usage,
     int64_t quota) {
-  // Repost to switch from IO thread to UI thread for SendResponse().
-  if (!BrowserThread::CurrentlyOn(BrowserThread::UI)) {
-    CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M161);
-    content::GetUIThreadTaskRunner({})->PostTask(
-        FROM_HERE,
-        BindOnce(&SyncFileSystemGetUsageAndQuotaFunction::DidGetUsageAndQuota,
-                 this, status, usage, quota));
-    return;
-  }
-
   CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
   if (status != blink::mojom::QuotaStatusCode::kOk) {
     Respond(Error(QuotaStatusCodeToString(status)));

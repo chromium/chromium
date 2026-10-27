@@ -198,6 +198,11 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerProxy
       scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
       UsageAndQuotaCallback callback);
 
+  void GetUsageAndQuotaForWebApps(
+      const blink::StorageKey& storage_key,
+      scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
+      UsageAndQuotaCallback callback);
+
   void GetUsageAndQuotaForDevtools(
       const blink::StorageKey& storage_key,
       scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
