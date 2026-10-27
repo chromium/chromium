@@ -35,6 +35,7 @@
 #include "components/viz/common/quads/compositor_frame.h"
 #include "components/viz/test/compositor_frame_helpers.h"
 #include "components/viz/test/fake_compositor_frame_sink_client.h"
+#include "content/browser/browser_url_handler_impl.h"
 #include "content/browser/process_lock.h"
 #include "content/browser/renderer_host/frame_navigation_entry.h"
 #include "content/browser/renderer_host/frame_tree.h"
@@ -57,6 +58,7 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/invalidate_type.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_details.h"
 #include "content/public/browser/render_frame_host.h"
@@ -25518,5 +25520,215 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_TRUE(controller.GetVisibleEntry()->IsInitialEntry());
   EXPECT_EQ(GURL::EmptyGURL(), controller.GetVisibleEntry()->GetURL());
 }
+
+namespace {
+
+// Records the union of the InvalidateTypes passed to NavigationStateChanged().
+class RecordNavigationStateChangedDelegate : public WebContentsDelegate {
+ public:
+  RecordNavigationStateChangedDelegate() = default;
+  RecordNavigationStateChangedDelegate(
+      const RecordNavigationStateChangedDelegate&) = delete;
+  RecordNavigationStateChangedDelegate& operator=(
+      const RecordNavigationStateChangedDelegate&) = delete;
+  ~RecordNavigationStateChangedDelegate() override = default;
+
+  void NavigationStateChanged(WebContents* source,
+                              InvalidateTypes changed_flags) override {
+    ++call_count_;
+    changed_flags_ |= changed_flags;
+  }
+
+  int call_count() const { return call_count_; }
+  bool url_invalidated() const { return changed_flags_ & INVALIDATE_TYPE_URL; }
+
+  void Reset() {
+    call_count_ = 0;
+    changed_flags_ = 0;
+  }
+
+ private:
+  int call_count_ = 0;
+  int changed_flags_ = 0;
+};
+
+}  // namespace
+
+class NavigationControllerSkipUrlInvalidationBrowserTest
+    : public NavigationControllerBrowserTestBase,
+      public ::testing::WithParamInterface<bool> {
+ public:
+  NavigationControllerSkipUrlInvalidationBrowserTest() {
+    feature_list_.InitWithFeatureState(
+        features::kSkipUrlInvalidationForUnchangedSameDocumentReplacement,
+        IsFeatureEnabled());
+  }
+
+  bool IsFeatureEnabled() const { return GetParam(); }
+
+ protected:
+  // Runs `script` in the main frame, waits for the resulting same-document
+  // navigation to commit, and returns whether it invalidated the URL.
+  bool RunSameDocumentNavigationAndCheckUrlInvalidated(
+      RecordNavigationStateChangedDelegate& delegate,
+      const std::string& script) {
+    delegate.Reset();
+    FrameNavigateParamsCapturer capturer(
+        contents()->GetPrimaryFrameTree().root());
+    capturer.set_wait_for_load(false);
+    EXPECT_TRUE(ExecJs(shell(), script));
+    capturer.Wait();
+    EXPECT_TRUE(capturer.is_same_document());
+    EXPECT_GT(delegate.call_count(), 0);
+    return delegate.url_invalidated();
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Checks that a main frame same-document navigation that replaces the current
+// entry without changing its URL only invalidates the URL when the feature is
+// disabled, and that other same-document navigations always invalidate it.
+IN_PROC_BROWSER_TEST_P(NavigationControllerSkipUrlInvalidationBrowserTest,
+                       SameDocumentNavigations) {
+  GURL url(embedded_test_server()->GetURL("/title1.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  RecordNavigationStateChangedDelegate delegate;
+  contents()->SetDelegate(&delegate);
+
+  // history.replaceState() with the current URL.
+  EXPECT_EQ(!IsFeatureEnabled(),
+            RunSameDocumentNavigationAndCheckUrlInvalidated(
+                delegate, "history.replaceState({}, '', location.href)"));
+  EXPECT_EQ(url, contents()->GetLastCommittedURL());
+
+  // history.replaceState() with a different URL.
+  GURL replaced_url(embedded_test_server()->GetURL("/replaced"));
+  EXPECT_TRUE(RunSameDocumentNavigationAndCheckUrlInvalidated(
+      delegate, "history.replaceState({}, '', '/replaced')"));
+  EXPECT_EQ(replaced_url, contents()->GetLastCommittedURL());
+
+  // history.pushState() with the current URL creates a new entry.
+  EXPECT_TRUE(RunSameDocumentNavigationAndCheckUrlInvalidated(
+      delegate, "history.pushState({}, '', location.href)"));
+  EXPECT_EQ(replaced_url, contents()->GetLastCommittedURL());
+
+  // location.replace() to a new fragment changes the URL, whereas repeating it
+  // with the same fragment replaces the current entry without changing the URL.
+  GURL fragment_url(embedded_test_server()->GetURL("/replaced#foo"));
+  EXPECT_TRUE(RunSameDocumentNavigationAndCheckUrlInvalidated(
+      delegate, "location.replace('#foo')"));
+  EXPECT_EQ(fragment_url, contents()->GetLastCommittedURL());
+  EXPECT_EQ(!IsFeatureEnabled(),
+            RunSameDocumentNavigationAndCheckUrlInvalidated(
+                delegate, "location.replace('#foo')"));
+  EXPECT_EQ(fragment_url, contents()->GetLastCommittedURL());
+
+  // If the current entry's virtual URL changes during a same-document
+  // replacement (even when the real URL stays the same), the URL must still be
+  // invalidated.
+  NavigationEntryImpl* entry =
+      contents()->GetController().GetLastCommittedEntry();
+  const GURL virtual_url("http://virtual.example.com/");
+  BrowserURLHandlerImpl::URLHandler null_handler = nullptr;
+  BrowserURLHandlerImpl::URLHandler reset_to_real_url =
+      [](GURL* url, BrowserContext* browser_context) { return true; };
+  BrowserURLHandlerImpl::GetInstance()->AddHandlerPair(null_handler,
+                                                       reset_to_real_url);
+  entry->SetVirtualURL(virtual_url);
+  entry->set_update_virtual_url_with_url(true);
+  EXPECT_TRUE(RunSameDocumentNavigationAndCheckUrlInvalidated(
+      delegate, "history.replaceState({}, '', location.href)"));
+  EXPECT_EQ(fragment_url, entry->GetVirtualURL());
+  BrowserURLHandlerImpl::GetInstance()->RemoveHandlerForTesting(null_handler);
+
+  contents()->SetDelegate(shell());
+}
+
+// Verifies that when a browser-initiated navigation is pending, a same-document
+// history.replaceState() preserves the pending entry
+// (https://crbug.com/900036), skips INVALIDATE_TYPE_URL when the committed URL
+// is unchanged, and still invalidates the URL when the committed URL changes or
+// when the pending browser-initiated navigation later finishes or is canceled.
+IN_PROC_BROWSER_TEST_P(NavigationControllerSkipUrlInvalidationBrowserTest,
+                       SameDocumentReplaceStateWithPendingBrowserNavigation) {
+  GURL initial_url(embedded_test_server()->GetURL("/title1.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), initial_url));
+
+  RecordNavigationStateChangedDelegate delegate;
+  contents()->SetDelegate(&delegate);
+  NavigationControllerImpl& controller = contents()->GetController();
+
+  // 1. Start a browser-initiated navigation and pause it before it commits, so
+  // that `pending_entry_` is active and visible.
+  GURL pending_url(embedded_test_server()->GetURL("/title2.html"));
+  TestNavigationManager stalled_navigation(contents(), pending_url);
+  controller.LoadURL(pending_url, Referrer(), ui::PAGE_TRANSITION_TYPED,
+                     std::string());
+  ASSERT_TRUE(stalled_navigation.WaitForRequestStart());
+  ASSERT_NE(nullptr, controller.GetPendingEntry());
+  EXPECT_EQ(pending_url, controller.GetPendingEntry()->GetURL());
+  EXPECT_EQ(pending_url, contents()->GetVisibleURL());
+
+  // 2. While the browser-initiated navigation is pending, an unchanged-URL
+  // history.replaceState() keeps the pending entry and only invalidates the URL
+  // when the feature is disabled.
+  EXPECT_EQ(
+      !IsFeatureEnabled(),
+      RunSameDocumentNavigationAndCheckUrlInvalidated(
+          delegate, "history.replaceState({step: 1}, '', location.href)"));
+  ASSERT_NE(nullptr, controller.GetPendingEntry());
+  EXPECT_EQ(pending_url, contents()->GetVisibleURL());
+  EXPECT_EQ(initial_url, contents()->GetLastCommittedURL());
+
+  // 3. A history.replaceState() that changes the committed entry's URL while
+  // the browser-initiated navigation is pending still invalidates the URL and
+  // preserves the pending entry.
+  GURL replaced_url(embedded_test_server()->GetURL("/replaced"));
+  EXPECT_TRUE(RunSameDocumentNavigationAndCheckUrlInvalidated(
+      delegate, "history.replaceState({step: 2}, '', '/replaced')"));
+  ASSERT_NE(nullptr, controller.GetPendingEntry());
+  EXPECT_EQ(pending_url, contents()->GetVisibleURL());
+  EXPECT_EQ(replaced_url, contents()->GetLastCommittedURL());
+
+  // 4. Canceling the pending browser-initiated navigation discards the pending
+  // entry, invalidates the URL, and reverts the visible URL to the replaced
+  // committed entry.
+  delegate.Reset();
+  contents()->Stop();
+  EXPECT_TRUE(delegate.url_invalidated());
+  EXPECT_EQ(nullptr, controller.GetPendingEntry());
+  EXPECT_EQ(replaced_url, contents()->GetVisibleURL());
+
+  // 5. Start another browser-initiated navigation, commit an unchanged-URL
+  // replaceState() while it is pending, and then let the browser-initiated
+  // navigation commit; the cross-document commit must invalidate the URL and
+  // update the visible URL.
+  TestNavigationManager committing_navigation(contents(), pending_url);
+  controller.LoadURL(pending_url, Referrer(), ui::PAGE_TRANSITION_TYPED,
+                     std::string());
+  ASSERT_TRUE(committing_navigation.WaitForRequestStart());
+  EXPECT_EQ(
+      !IsFeatureEnabled(),
+      RunSameDocumentNavigationAndCheckUrlInvalidated(
+          delegate, "history.replaceState({step: 3}, '', location.href)"));
+  EXPECT_EQ(pending_url, contents()->GetVisibleURL());
+
+  delegate.Reset();
+  ASSERT_TRUE(committing_navigation.WaitForNavigationFinished());
+  EXPECT_TRUE(committing_navigation.was_successful());
+  EXPECT_TRUE(delegate.url_invalidated());
+  EXPECT_EQ(nullptr, controller.GetPendingEntry());
+  EXPECT_EQ(pending_url, contents()->GetLastCommittedURL());
+  EXPECT_EQ(pending_url, contents()->GetVisibleURL());
+
+  contents()->SetDelegate(shell());
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         NavigationControllerSkipUrlInvalidationBrowserTest,
+                         ::testing::Bool());
 
 }  // namespace content

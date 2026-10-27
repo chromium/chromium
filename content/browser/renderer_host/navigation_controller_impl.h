@@ -28,6 +28,7 @@
 #include "content/browser/ssl/ssl_manager.h"
 #include "content/common/content_export.h"
 #include "content/common/navigation_client.mojom-forward.h"
+#include "content/public/browser/invalidate_type.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/reload_type.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
@@ -37,6 +38,7 @@
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/navigation/navigation_api_history_entry_arrays.mojom-forward.h"
 #include "third_party/blink/public/mojom/navigation/navigation_params.mojom-forward.h"
+#include "url/gurl.h"
 
 namespace blink {
 struct NavigationDownloadPolicy;
@@ -621,24 +623,33 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
   };
 
   // In most but not all navigation commits, the RendererDidNavigate logic needs
-  // to notify the delegate of navigation state changes (using
+  // to notify the delegate of navigation state changes (usually using
   // INVALIDATE_TYPE_ALL), so that the address bar and other UI can be updated.
   // There are several places in that function and its helper functions that
   // must ensure a notification is sent, but it is redundant and expensive to
   // send multiple notifications. This scoped object ensures that, at most, one
   // notification will be sent at the end of RendererDidNavigate (when it is
-  // deallocated) and only if RequestDeferredNotification has been called.
+  // deallocated) and only if RequestDeferredNotification has been called. The
+  // notification uses the union of all requested InvalidateTypes.
   class ScopedDeferredNavigationStateChangeNotifier {
    public:
-    explicit ScopedDeferredNavigationStateChangeNotifier(
-        raw_ptr<NavigationControllerDelegate> delegate);
+    // `previous_virtual_url` is the virtual URL of the last committed entry
+    // before the navigation commits.
+    ScopedDeferredNavigationStateChangeNotifier(
+        raw_ptr<NavigationControllerDelegate> delegate,
+        const GURL& previous_virtual_url);
     ~ScopedDeferredNavigationStateChangeNotifier();
 
-    void RequestDeferredNotification();
+    void RequestDeferredNotification(
+        InvalidateTypes changed_flags = INVALIDATE_TYPE_ALL);
+
+    const GURL& previous_virtual_url() const { return previous_virtual_url_; }
 
    private:
     raw_ptr<NavigationControllerDelegate> delegate_;
-    bool requested_ = false;
+    const GURL previous_virtual_url_;
+    // Union of the InvalidateTypes passed to RequestDeferredNotification().
+    int changed_flags_ = 0;
   };
 
   // Records which navigation API keys are associated with live frames.

@@ -864,6 +864,14 @@ BASE_FEATURE(kSkipEarlyCommitPendingForCrashedFrame,
 BASE_FEATURE(kSkipRendererCancellationThrottle,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// When enabled, main-frame same-document commits that replace the current
+// entry without changing its URL or virtual URL (e.g.
+// `history.replaceState()` with the current URL) do not include
+// INVALIDATE_TYPE_URL in the resulting NavigationStateChanged() notification,
+// so that embedders can skip URL-dependent UI updates.
+BASE_FEATURE(kSkipUrlInvalidationForUnchangedSameDocumentReplacement,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 #if BUILDFLAG(IS_ANDROID)
 // When enabled, ensure high-rank processes are on the LRU list while app is in
 // background or the effective binding state is in conflict with low rank
