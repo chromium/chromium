@@ -374,7 +374,7 @@ bool GpuControlList::More::Contains(const GPUInfo& gpu_info) const {
     return false;
   }
 #if BUILDFLAG(IS_WIN)
-  if (d3d11_feature_level.IsSpecified()) {
+  if (d3d11_feature_level.IsSpecified() && gpu_info.d3d11_feature_level > 0) {
     std::string feature_level_string =
         D3DFeatureLevelToNumberString(gpu_info.d3d11_feature_level);
     if (!d3d11_feature_level.Contains(feature_level_string)) {
@@ -616,6 +616,12 @@ bool GpuControlList::Conditions::NeedsMoreInfo(const GPUInfo& gpu_info) const {
       gpu_info.pixel_shader_version.empty()) {
     return true;
   }
+#if BUILDFLAG(IS_WIN)
+  if (more && more->d3d11_feature_level.IsSpecified() &&
+      gpu_info.d3d11_feature_level == 0) {
+    return true;
+  }
+#endif
   return false;
 }
 

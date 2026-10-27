@@ -300,27 +300,38 @@ TEST_P(GpuControlListTest, D3DFeatureLevel) {
   std::unique_ptr<GpuControlList> control_list = Create(kEntries);
   GPUInfo gpu_info;
 
-  // D3D feature level 11.0. Entry requires < 12.0. So it applies.
-  gpu_info.d3d11_feature_level = D3D_FEATURE_LEVEL_11_0;
+  // If d3d11_feature_level is unspecified (0), the entry does not apply yet,
+  // but needs_more_info() should be true.
   std::set<int> features = control_list->MakeDecision(GpuControlList::kOsWin,
                                                       kOsVersion, gpu_info, {});
+  EXPECT_EMPTY_SET(features);
+  EXPECT_TRUE(control_list->needs_more_info());
+
+  // D3D feature level 11.0. Entry requires < 12.0. So it applies.
+  gpu_info.d3d11_feature_level = D3D_FEATURE_LEVEL_11_0;
+  features = control_list->MakeDecision(GpuControlList::kOsWin, kOsVersion,
+                                        gpu_info, {});
   EXPECT_SINGLE_FEATURE(features, TEST_FEATURE_0);
+  EXPECT_FALSE(control_list->needs_more_info());
 
   gpu_info.d3d11_feature_level = D3D_FEATURE_LEVEL_11_1;
   features = control_list->MakeDecision(GpuControlList::kOsWin, kOsVersion,
                                         gpu_info, {});
   EXPECT_SINGLE_FEATURE(features, TEST_FEATURE_0);
+  EXPECT_FALSE(control_list->needs_more_info());
 
   // D3D feature level 12.0. Entry requires < 12.0. So it does not apply.
   gpu_info.d3d11_feature_level = D3D_FEATURE_LEVEL_12_0;
   features = control_list->MakeDecision(GpuControlList::kOsWin, kOsVersion,
                                         gpu_info, {});
   EXPECT_EMPTY_SET(features);
+  EXPECT_FALSE(control_list->needs_more_info());
 
   gpu_info.d3d11_feature_level = D3D_FEATURE_LEVEL_12_1;
   features = control_list->MakeDecision(GpuControlList::kOsWin, kOsVersion,
                                         gpu_info, {});
   EXPECT_EMPTY_SET(features);
+  EXPECT_FALSE(control_list->needs_more_info());
 }
 #endif  // BUILDFLAG(IS_WIN)
 
