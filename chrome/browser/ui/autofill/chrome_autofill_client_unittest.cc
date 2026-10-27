@@ -32,6 +32,7 @@
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/user_education/user_education_service.h"
 #include "chrome/browser/user_education/user_education_service_factory.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/user_education/mock_browser_user_education_interface.h"
@@ -591,7 +592,10 @@ TEST_F(ChromeAutofillClientTest,
 class ChromeAutofillClientTestWithMockWindow : public ChromeAutofillClientTest {
  public:
   ChromeAutofillClientTestWithMockWindow() {
-    scoped_feature_list_.InitAndEnableFeature(features::kAutofillActorMode);
+    scoped_feature_list_.InitWithFeatures(
+        {features::kAutofillActorMode,
+         ::features::kLazyKeyedServiceInstantiation},
+        {});
     manager_injector_ =
         std::make_unique<TestAutofillManagerInjector<MockAutofillManager>>();
   }
@@ -789,10 +793,16 @@ TEST_F(ChromeAutofillClientTestWithMockWindow,
   task->AddTab(mock_tab_interface().GetHandle(),
                /*stop_task_on_detach=*/true, base::DoNothing());
 
-  // Verify first call (assignment) triggers `ReparseKnownForms`.
-  EXPECT_CALL(*mock_manager, ReparseKnownForms()).Times(1);
+  EXPECT_FALSE(client()->IsTabInActorMode());
+
+  // Verify first call (assignment) triggers `ReparseKnownForms` with actor mode
+  // already enabled.
+  EXPECT_CALL(*mock_manager, ReparseKnownForms()).WillOnce([this]() {
+    EXPECT_TRUE(client()->IsTabInActorMode());
+  });
   actor_service->NotifyTaskStateChanged(*task);
   testing::Mock::VerifyAndClearExpectations(mock_manager);
+  EXPECT_TRUE(client()->IsTabInActorMode());
 
   // Verify second call (no new task) does NOT trigger ReparseKnownForms
   EXPECT_CALL(*mock_manager, ReparseKnownForms()).Times(0);

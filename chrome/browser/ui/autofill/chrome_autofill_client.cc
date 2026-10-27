@@ -102,6 +102,7 @@
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/webdata_services/web_data_service_factory.h"
 #include "chrome/common/channel_info.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/account_settings/account_setting_service.h"
@@ -1065,10 +1066,19 @@ void ChromeAutofillClient::
 
 bool ChromeAutofillClient::IsTabInActorMode() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (base::FeatureList::IsEnabled(features::debug::kAutofillForceActorMode)) {
+    return true;
+  }
   return actor_autofill_manager_ && actor_autofill_manager_->IsTabInActorMode();
 }
 
 ActorAutofillManager* ChromeAutofillClient::GetActorAutofillManager() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!actor_autofill_manager_) {
+    actor_autofill_manager_ = std::make_unique<ActorAutofillManager>(
+        this,
+        critical_actions::CriticalActionFactory::GetForProfile(GetProfile()));
+  }
   return actor_autofill_manager_.get();
 }
 
@@ -1394,9 +1404,12 @@ ChromeAutofillClient::ChromeAutofillClient(content::WebContents* web_contents)
   }
 
   form_predictions_tracker_ = std::make_unique<FormPredictionsTracker>(this);
-  actor_autofill_manager_ = std::make_unique<ActorAutofillManager>(
-      this,
-      critical_actions::CriticalActionFactory::GetForProfile(GetProfile()));
+  if (base::FeatureList::IsEnabled(features::debug::kAutofillForceActorMode) ||
+      !base::FeatureList::IsEnabled(
+          ::features::kLazyKeyedServiceInstantiation) ||
+      !::features::kLazyKeyedServiceInstantiationAutofillAndPassword.Get()) {
+    GetActorAutofillManager();
+  }
 
 #if !BUILDFLAG(IS_ANDROID)
   one_time_tokens::GmailOtpBackend* gmail_otp_backend =
@@ -1814,14 +1827,12 @@ ToastController* ChromeAutofillClient::GetToastController() {
 
 void ChromeAutofillClient::OnActorTaskStateChange(actor::ActorTask& task) {
   // TODO(crbug.com/551883788): Move this logic to ActorAutofillManager.
-  if (!actor_autofill_manager_) {
-    return;
-  }
   const actor::TaskId task_id = task.id();
   const actor::ActorTask::State state = task.GetState();
 
   std::optional<ActorAutofillManager::ActorTaskInfo> active_task =
-      actor_autofill_manager_->active_actor_task();
+      actor_autofill_manager_ ? actor_autofill_manager_->active_actor_task()
+                              : std::nullopt;
 
   if (active_task && active_task->task_id != task_id) {
     // The update is for an actor that isn't working on the current tab.
@@ -1832,7 +1843,9 @@ void ChromeAutofillClient::OnActorTaskStateChange(actor::ActorTask& task) {
   // TODO(crbug.com/472336281): The state changes leading to the task
   // completion should be issued before the `ActorTask` gets removed.
   if (actor::ActorTask::IsCompletedState(state)) {
-    actor_autofill_manager_->set_active_actor_task(std::nullopt);
+    if (actor_autofill_manager_) {
+      actor_autofill_manager_->set_active_actor_task(std::nullopt);
+    }
     return;
   }
 
@@ -1844,6 +1857,14 @@ void ChromeAutofillClient::OnActorTaskStateChange(actor::ActorTask& task) {
     return;
   }
 
+  // TODO(crbug.com/469428128): Evaluate whether
+  // `actor::ActorTask::State::kCreated` state should enable the actor mode.
+  GetActorAutofillManager()->set_active_actor_task(
+      ActorAutofillManager::ActorTaskInfo{
+          .conversation_id = task.source_info().id.value_or(""),
+          .task_id = task_id,
+      });
+
   // If the task was just created, known forms should be reparsed to ensure that
   // actor specific behaviors are in place.
   if (!active_task.has_value()) {
@@ -1852,14 +1873,6 @@ void ChromeAutofillClient::OnActorTaskStateChange(actor::ActorTask& task) {
       driver->GetAutofillManager().ReparseKnownForms();
     }
   }
-
-  // TODO(crbug.com/469428128): Evaluate whether
-  // `actor::ActorTask::State::kCreated` state should enable the actor mode.
-  actor_autofill_manager_->set_active_actor_task(
-      ActorAutofillManager::ActorTaskInfo{
-          .conversation_id = task.source_info().id.value_or(""),
-          .task_id = task_id,
-      });
 }
 
 void ChromeAutofillClient::OpenGmailForOtps() {
