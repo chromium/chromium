@@ -107,15 +107,17 @@ SkPath TabGroupLineView::GetHorizontalLinePath(
   const float stroke_thickness = TabGroupUnderline::kStrokeThickness * scale;
   const bool is_rtl = base::i18n::IsRTL();
   const float width_pixels = width() * scale;
+  const float start_x = is_rtl ? stroke_inset : 0.0f;
+  const float end_x = is_rtl ? width_pixels : (width_pixels - stroke_inset);
+  if (end_x <= start_x) {
+    return SkPath();
+  }
 
   SkPathBuilder path_builder;
   if (active_tab_path.has_value() && !active_tab_path->isEmpty() &&
       active_tab_path->countPoints() > 0) {
     SkPoint start_pt = active_tab_path->getPoint(0);
     SkPoint end_pt = active_tab_path->getLastPt().value_or(start_pt);
-
-    const float start_x = is_rtl ? stroke_inset : 0.0f;
-    const float end_x = is_rtl ? width_pixels : (width_pixels - stroke_inset);
 
     if (start_pt.x() > start_x) {
       path_builder.moveTo(start_x, start_pt.y());
@@ -130,21 +132,17 @@ SkPath TabGroupLineView::GetHorizontalLinePath(
     float bottom_extension =
         GetLayoutConstant(LayoutConstant::kTabstripToolbarOverlap) * scale;
     float y = height() * scale - bottom_extension - 0.5f * stroke_thickness;
-
-    if (is_rtl) {
-      path_builder.moveTo(stroke_inset, y);
-      path_builder.lineTo(width_pixels, y);
-    } else {
-      path_builder.moveTo(0, y);
-      path_builder.lineTo(width_pixels - stroke_inset, y);
-    }
+    path_builder.moveTo(start_x, y);
+    path_builder.lineTo(end_x, y);
   }
   return path_builder.detach();
 }
 
 SkPath TabGroupLineView::GetOffsetOverlinePath(const TabView& tab_view,
                                                float scale) const {
-  if (!tab_view.tab_styling()) {
+  const int min_overline_width = 2 * TabStyle::Get()->GetBottomCornerRadius() +
+                                 TabStyle::Get()->GetSeparatorSize().width();
+  if (!tab_view.tab_styling() || tab_view.width() <= min_overline_width) {
     return SkPath();
   }
   SkPath path = tab_view.tab_styling()->GetOverlinePath(scale);

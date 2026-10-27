@@ -22,6 +22,7 @@
 #include "chrome/browser/ui/views/tabs/common/tab_group_header_view.h"
 #include "chrome/browser/ui/views/tabs/common/tab_group_line_view.h"
 #include "chrome/browser/ui/views/tabs/common/tab_group_style.h"
+#include "chrome/browser/ui/views/tabs/common/tab_strip_collection_controller.h"
 #include "chrome/browser/ui/views/tabs/common/tab_strip_utils.h"
 #include "chrome/browser/ui/views/tabs/common/tab_strip_view.h"
 #include "chrome/browser/ui/views/tabs/common/tab_view.h"
@@ -41,6 +42,9 @@
 #include "ui/events/event_constants.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/animation/animation_test_api.h"
+#include "ui/gfx/animation/slide_animation.h"
+#include "ui/gfx/canvas.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/widget_utils.h"
@@ -633,10 +637,12 @@ class HorizontalTabGroupViewBrowserTest : public InProcessBrowserTest {
                      /*foreground=*/true);
   }
 
+  void ResetAnimationMode() { animation_mode_reset_.reset(); }
+
  private:
+  base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<base::AutoReset<gfx::Animation::RichAnimationRenderMode>>
       animation_mode_reset_;
-  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(HorizontalTabGroupViewBrowserTest,
@@ -976,6 +982,92 @@ IN_PROC_BROWSER_TEST_F(HorizontalTabGroupViewBrowserTest,
   EXPECT_EQ(pinned_tab_view->GetBoundsInScreen().right() -
                 header_view->GetBoundsInScreen().x(),
             header_overlap);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    HorizontalTabGroupViewBrowserTest,
+    GroupLineRemainsVisibleAndShrinksDuringCollapseAnimation) {
+  ResetAnimationMode();
+  auto animation_mode_reset = gfx::AnimationTestApi::SetRichAnimationRenderMode(
+      gfx::Animation::RichAnimationRenderMode::FORCE_ENABLED);
+  gfx::ScopedAnimationDurationScaleMode duration_scale_mode(
+      gfx::ScopedAnimationDurationScaleMode::SLOW_DURATION);
+
+  AppendTab();
+  AppendTab();
+  GetTabStripModel()->AddToNewGroup({1, 2});
+  GetTabStripModel()->ActivateTabAt(0);
+
+  auto* base_region_view = views::AsViewClass<BaseTabStripRegionView>(
+      BrowserView::GetBrowserViewForBrowser(browser())->tab_strip_view());
+  ASSERT_NE(base_region_view, nullptr);
+  auto* controller = base_region_view->GetTabStripCollectionController();
+  ASSERT_NE(controller, nullptr);
+  auto* widget = base_region_view->GetWidget();
+
+  controller->animation_coordinator().AnimationEnded(nullptr);
+  widget->LayoutRootViewIfNecessary();
+
+  auto* group_node = root_node()
+                         ->GetChildNodeOfType(TabCollectionNode::Type::UNPINNED)
+                         ->GetChildNodeOfType(TabCollectionNode::Type::GROUP);
+  ASSERT_NE(group_node, nullptr);
+  auto* group_view = views::AsViewClass<TabGroupView>(group_node->view());
+  ASSERT_NE(group_view, nullptr);
+  auto* last_grouped_tab = group_node->children()[1]->view();
+
+  const int expanded_width = group_view->width();
+  const int header_width = group_view->group_header()->width();
+  ASSERT_GT(expanded_width, header_width);
+  EXPECT_TRUE(group_view->group_line()->GetVisible());
+  EXPECT_EQ(group_view->group_line()->width(), expanded_width);
+
+  group_view->ToggleCollapsedState(ToggleTabGroupCollapsedStateOrigin::kMouse);
+  widget->LayoutRootViewIfNecessary();
+  EXPECT_TRUE(group_view->IsCollapsed());
+  EXPECT_TRUE(TabCollectionAnimatingLayoutManager::IsViewAnimating(group_view));
+  EXPECT_TRUE(group_view->group_line()->GetVisible());
+  EXPECT_EQ(group_view->group_line()->width(), group_view->width());
+
+  gfx::SlideAnimation half_progress(nullptr);
+  half_progress.Reset(0.5);
+  controller->animation_coordinator().AnimationProgressed(&half_progress);
+  widget->LayoutRootViewIfNecessary();
+  EXPECT_LT(group_view->width(), expanded_width);
+  EXPECT_GT(group_view->width(), header_width);
+  EXPECT_TRUE(group_view->group_line()->GetVisible());
+  EXPECT_NEAR(group_view->group_line()->width(), group_view->width(), 1);
+  EXPECT_LE(last_grouped_tab->bounds().right(), group_view->width() + 1);
+
+  controller->animation_coordinator().AnimationEnded(nullptr);
+  widget->LayoutRootViewIfNecessary();
+  EXPECT_EQ(group_view->width(), header_width);
+  EXPECT_FALSE(group_view->group_line()->GetVisible());
+  EXPECT_FALSE(last_grouped_tab->GetVisible());
+
+  // Expanding by activating a grouped tab starts that active tab at 0 width;
+  // group_line must stay visible without painting an overline arch past
+  // header_width.
+  GetTabStripModel()->ActivateTabAt(1);
+  widget->LayoutRootViewIfNecessary();
+  EXPECT_FALSE(group_view->IsCollapsed());
+  EXPECT_TRUE(group_view->group_line()->GetVisible());
+  EXPECT_EQ(group_view->group_line()->width(), group_view->width());
+  gfx::Canvas canvas(gfx::Size(expanded_width, group_view->height()), 1.0f,
+                     false);
+  group_view->group_line()->OnPaint(&canvas);
+  EXPECT_EQ(canvas.GetBitmap().getColor(header_width + 2, 1),
+            SK_ColorTRANSPARENT);
+
+  controller->animation_coordinator().AnimationProgressed(&half_progress);
+  widget->LayoutRootViewIfNecessary();
+  EXPECT_TRUE(group_view->group_line()->GetVisible());
+  EXPECT_NEAR(group_view->group_line()->width(), group_view->width(), 1);
+
+  controller->animation_coordinator().AnimationEnded(nullptr);
+  widget->LayoutRootViewIfNecessary();
+  EXPECT_TRUE(group_view->group_line()->GetVisible());
+  EXPECT_EQ(group_view->group_line()->width(), expanded_width);
 }
 
 // TODO(crbug.com/490428062): Create Tests to Verify Focus Order of Tab Group

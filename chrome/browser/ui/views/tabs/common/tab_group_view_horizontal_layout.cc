@@ -176,57 +176,66 @@ views::ProposedLayout TabGroupViewHorizontalLayout::CalculateProposedLayout(
           this));
 
   const size_t num_children = collection.visible_children.size();
-  const int header_space = (header_width > 0 && num_children > 0)
-                               ? header_width - header_overlap
-                               : header_width;
+  const bool is_collapsed = TabGroupView().IsCollapsed();
+  const int header_space =
+      (header_width > 0 && num_children > 0 && !is_collapsed)
+          ? header_width - header_overlap
+          : header_width;
   const int overlap_total = collection.overlap_total;
 
   int x = header_space;
 
   if (num_children > 0) {
-    const int net_preferred_width =
-        std::max(0, collection.total_preferred_width - overlap_total);
+    if (is_collapsed) {
+      for (const auto& info : collection.visible_children) {
+        auto drag_data = TabGroupView().GetVisualDataForDraggedView(*info.view);
+        int child_x = drag_data ? drag_data->offset.x() : header_width;
+        layouts.child_layouts.emplace_back(
+            info.view.get(), true, gfx::Rect(child_x, 0, 0, container_height));
+      }
+    } else {
+      const int net_preferred_width =
+          std::max(0, collection.total_preferred_width - overlap_total);
 
-    int available_width =
-        size_bounds.width().value_or(net_preferred_width + header_space);
-    int width_for_children = std::max(0, available_width - header_space);
+      int available_width =
+          size_bounds.width().value_or(net_preferred_width + header_space);
+      int width_for_children = std::max(0, available_width - header_space);
 
-    const int available_for_children_allocation =
-        width_for_children + overlap_total;
+      const int available_for_children_allocation =
+          width_for_children + overlap_total;
 
-    std::vector<int> allocated_widths = CalculateProportionalChildWidths(
-        available_for_children_allocation, collection.preferred_widths,
-        collection.crossover_widths, collection.min_widths,
-        collection.total_preferred_width, collection.total_crossover_width,
-        collection.total_min_width);
+      std::vector<int> allocated_widths = CalculateProportionalChildWidths(
+          available_for_children_allocation, collection.preferred_widths,
+          collection.crossover_widths, collection.min_widths,
+          collection.total_preferred_width, collection.total_crossover_width,
+          collection.total_min_width);
 
-    for (size_t i = 0; i < collection.visible_children.size(); ++i) {
-      const auto& info = collection.visible_children[i];
-      int child_width = allocated_widths[i];
+      for (size_t i = 0; i < collection.visible_children.size(); ++i) {
+        const auto& info = collection.visible_children[i];
+        int child_width = allocated_widths[i];
 
-      auto drag_data = TabGroupView().GetVisualDataForDraggedView(*info.view);
-      int child_x = drag_data ? drag_data->offset.x() : x;
-      gfx::Rect bounds(child_x, 0, child_width, container_height);
-      layouts.child_layouts.emplace_back(info.view.get(), true, bounds);
+        auto drag_data = TabGroupView().GetVisualDataForDraggedView(*info.view);
+        int child_x = drag_data ? drag_data->offset.x() : x;
+        gfx::Rect bounds(child_x, 0, child_width, container_height);
+        layouts.child_layouts.emplace_back(info.view.get(), true, bounds);
 
-      x += child_width - tab_overlap;
+        x += child_width - tab_overlap;
+      }
     }
   }
 
+  // If collapsed, the group only takes up the width of the header.
   const int total_group_width =
-      num_children > 0 ? (x + tab_overlap) : header_width;
+      (num_children > 0 && !is_collapsed) ? (x + tab_overlap) : header_width;
 
   if (TabGroupView().group_line_) {
     const bool show_group_line =
-        !TabGroupView().IsGroupFocused() && !TabGroupView().IsCollapsed();
+        !TabGroupView().IsGroupFocused() && !TabGroupView().is_collapsed();
     gfx::Rect group_line_bounds(0, 0, total_group_width, container_height);
     layouts.child_layouts.emplace_back(TabGroupView().group_line_.get(),
                                        show_group_line, group_line_bounds);
   }
 
-  // If collapsed, the group only takes up the width of the header.
-  layouts.host_size =
-      gfx::Size(TabGroupView().IsCollapsed() ? header_width : total_group_width,
-                container_height);
+  layouts.host_size = gfx::Size(total_group_width, container_height);
   return layouts;
 }
