@@ -5,9 +5,9 @@
 #ifndef CHROME_BROWSER_ASH_EXTENSIONS_FILE_MANAGER_FILE_SYSTEM_PROVIDER_METRICS_UTIL_H_
 #define CHROME_BROWSER_ASH_EXTENSIONS_FILE_MANAGER_FILE_SYSTEM_PROVIDER_METRICS_UTIL_H_
 
-#include <string>
-#include <unordered_map>
-#include <vector>
+#include <string_view>
+
+#include "base/containers/fixed_flat_map.h"
 
 namespace file_manager {
 
@@ -38,10 +38,48 @@ enum class FileSystemProviderMountedType {
   kMaxValue = NATIVE_NETWORK_SMB,
 };
 
-// Returns a map of File System Provider extension ID to the UMA value that is
-// recorded.
-std::unordered_map<std::string, FileSystemProviderMountedType>
-GetUmaForFileSystemProvider();
+// Enumeration of known File System Providers used to map to a UMA enumeration
+// index. All File System Providers NOT present in this list will be reported as
+// UNKNOWN. These look like extension ids, but are actually provider ids which
+// may but don't have to be extension ids.
+inline constexpr auto kUmaForFileSystemProvider =
+    base::MakeFixedFlatMap<std::string_view, FileSystemProviderMountedType>({
+        {"hlffpaajmfllggclnjppbblobdhokjhe",
+         FileSystemProviderMountedType::FILE_SYSTEM_FOR_DROPBOX},
+        {"jbfdfcehgafdbfpniaimfbfomafoadgo",
+         FileSystemProviderMountedType::FILE_SYSTEM_FOR_ONEDRIVE},
+        {"gbheifiifcfekkamhepkeogobihicgmn",
+         FileSystemProviderMountedType::SFTP_FILE_SYSTEM},
+        {"dikonaebkejmpbpcnnmfaeopkaenicgf",
+         FileSystemProviderMountedType::BOX_FOR_CHROMEOS},
+        {"iibcngmpkgghccnakicfmgajlkhnohep",
+         FileSystemProviderMountedType::TED_TALKS},
+        {"hmckflbfniicjijmdoffagjkpnjgbieh",
+         FileSystemProviderMountedType::WEBDAV_FILE_SYSTEM},
+        {"ibfbhbegfkamboeglpnianlggahglbfi",
+         FileSystemProviderMountedType::CLOUD_STORAGE},
+        {"pmnllmkmjilbojkpgplbdmckghmaocjh",
+         FileSystemProviderMountedType::SCAN},
+        {"mfhnnfciefdpolbelmfkpmhhmlkehbdf",
+         FileSystemProviderMountedType::FILE_SYSTEM_FOR_SMB_CIFS},
+        {"plmanjiaoflhcilcfdnjeffklbgejmje",
+         FileSystemProviderMountedType::ADD_MY_DOCUMENTS},
+        {"mljpablpddhocfbnokacjggdbmafjnon",
+         FileSystemProviderMountedType::WICKED_GOOD_UNARCHIVER},
+        {"ndjpildffkeodjdaeebdhnncfhopkajk",
+         FileSystemProviderMountedType::NETWORK_FILE_SHARE_FOR_CHROMEOS},
+        {"gmhmnhjihabohahcllfgjooaoecglhpi",
+         FileSystemProviderMountedType::LAN_FOLDER},
+        {"pnhechapfaindjhompbnflcldabbghjo",
+         FileSystemProviderMountedType::SECURE_SHELL_APP},
+        {"okddffdblfhhnmhodogpojmfkjmhinfp",
+         FileSystemProviderMountedType::SECURE_SHELL_APP},
+        {"iodihamcpbpeioajjeobimgagajmlibd",
+         FileSystemProviderMountedType::SECURE_SHELL_APP},
+        {"algkcnfjnajfhgimadimbjhmpaeohhln",
+         FileSystemProviderMountedType::SECURE_SHELL_APP},
+        {"@smb", FileSystemProviderMountedType::NATIVE_NETWORK_SMB},
+    });
 
 }  // namespace file_manager
 

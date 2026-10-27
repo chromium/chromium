@@ -10,7 +10,6 @@
 #include <memory>
 #include <ranges>
 #include <set>
-#include <unordered_map>
 #include <utility>
 #include <vector>
 
@@ -464,15 +463,8 @@ void RecordFileSystemProviderMountMetrics(const Volume& volume) {
   const ash::file_system_provider::ProviderId& provider_id =
       volume.provider_id();
   if (provider_id.GetType() != ash::file_system_provider::ProviderId::INVALID) {
-    using FileSystemProviderMountedTypeMap =
-        std::unordered_map<std::string, FileSystemProviderMountedType>;
-
-    const std::string fsp_key = provider_id.ToString();
-    FileSystemProviderMountedTypeMap fsp_sample_map =
-        GetUmaForFileSystemProvider();
-    FileSystemProviderMountedTypeMap::iterator sample =
-        fsp_sample_map.find(fsp_key);
-    if (sample != fsp_sample_map.end()) {
+    auto sample = kUmaForFileSystemProvider.find(provider_id.ToString());
+    if (sample != kUmaForFileSystemProvider.end()) {
       UMA_HISTOGRAM_ENUMERATION(kFileSystemProviderMountedMetricName,
                                 sample->second);
     } else {
