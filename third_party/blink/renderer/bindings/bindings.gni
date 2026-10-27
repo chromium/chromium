@@ -261,6 +261,7 @@ bindings_unittest_files = get_path_info(
           "core/v8/v8_binding_for_testing.cc",
           "core/v8/v8_binding_for_testing.h",
           "core/v8/v8_compile_hints_for_streaming_test.cc",
+          "core/v8/v8_metrics_test.cc",
           "core/v8/v8_microtasks_scope_test.cc",
           "core/v8/v8_object_builder_test.cc",
           "core/v8/v8_script_runner_test.cc",

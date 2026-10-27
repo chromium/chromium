@@ -386,10 +386,10 @@ void ReportCppHistograms(std::string_view priority,
   /* Report size metrics: */
   ReportHistogramCollectionSizes(
       base::StrCat({"V8.GC.Cycle", priority, ".Objects"}), ".Full.Cpp",
-      event.objects);
+      event.objects_cpp);
   base::UmaHistogramCustomCounts(
       base::StrCat({"V8.GC.Cycle", priority, ".Memory", ".Freed.Full.Cpp"}),
-      CappedSizeInKB(event.memory.bytes_freed), kMinSize, kMaxSize,
+      CappedSizeInKB(event.memory_cpp.bytes_freed), kMinSize, kMaxSize,
       kNumBuckets);
 
   /* Report efficacy metrics: */
