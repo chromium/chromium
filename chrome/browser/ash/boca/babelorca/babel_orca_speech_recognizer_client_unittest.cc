@@ -17,7 +17,6 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/speech/speech_recognizer.h"
 #include "chrome/browser/speech/speech_recognizer_delegate.h"
 #include "chromeos/ash/components/boca/babelorca/soda_installer.h"

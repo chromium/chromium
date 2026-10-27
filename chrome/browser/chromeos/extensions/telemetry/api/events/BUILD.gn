@@ -103,7 +103,6 @@ source_set("browser_tests") {
     ":events",
     "//chrome/browser/chromeos/extensions/telemetry/api/common",
     "//chrome/browser/chromeos/extensions/telemetry/api/common:test_support",
-    "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/navigator",
     "//chrome/browser/ui/tabs:tab_strip",
     "//chrome/browser/web_applications:web_applications_test_support",

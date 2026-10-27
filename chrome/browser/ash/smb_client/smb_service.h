@@ -25,7 +25,6 @@
 #include "chrome/browser/ash/smb_client/smb_persisted_share_registry.h"
 #include "chrome/browser/ash/smb_client/smb_share_finder.h"
 #include "chrome/browser/ash/smb_client/smbfs_share.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/dbus/smbprovider/smb_provider_client.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "net/base/network_change_notifier.h"

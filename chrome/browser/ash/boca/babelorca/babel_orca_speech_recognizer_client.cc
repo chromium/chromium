@@ -13,7 +13,6 @@
 #include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/speech/speech_recognition_recognizer_client_impl.h"
 #include "chrome/browser/speech/speech_recognizer_delegate.h"
 #include "chromeos/ash/components/boca/babelorca/soda_installer.h"
