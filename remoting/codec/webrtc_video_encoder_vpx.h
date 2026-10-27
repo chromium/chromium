@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include "base/functional/callback.h"
+#include "base/time/time.h"
 #include "remoting/codec/encoder_bitrate_filter.h"
 #include "remoting/codec/scoped_vpx_codec.h"
 #include "remoting/codec/video_encoder_active_map.h"
@@ -84,6 +85,11 @@ class WebrtcVideoEncoderVpx : public WebrtcVideoEncoder {
   vpx_active_map_t active_map_;
   // TODO(joedow): Remove this flag after we're done with performance tuning.
   const bool use_active_map_ = true;
+
+  // This timestamp is monotonically increased using the current frame duration.
+  // It's only used for rate control and is not related to the timestamps on the
+  // incoming frames to encode.
+  base::TimeDelta artificial_timestamp_;
 
   EncoderBitrateFilter bitrate_filter_;
 };

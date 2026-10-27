@@ -262,9 +262,13 @@ void WebrtcVideoEncoderVpx::Encode(std::unique_ptr<webrtc::DesktopFrame> frame,
     }
   }
 
+  auto duration_ms = params.duration.InMilliseconds();
+  DCHECK_GT(duration_ms, 0);
   vpx_codec_err_t ret = vpx_codec_encode(
-      codec_.get(), image_.get(), 0, params.duration.InMicroseconds(),
-      (params.key_frame) ? VPX_EFLAG_FORCE_KF : 0, VPX_DL_REALTIME);
+      codec_.get(), image_.get(), artificial_timestamp_.InMilliseconds(),
+      duration_ms, (params.key_frame) ? VPX_EFLAG_FORCE_KF : 0,
+      VPX_DL_REALTIME);
+  artificial_timestamp_ += params.duration;
   if (ret != VPX_CODEC_OK) {
     const char* error_detail = vpx_codec_error_detail(codec_.get());
     LOG(ERROR) << "Encoding error: " << vpx_codec_err_to_string(ret) << "\n  "
