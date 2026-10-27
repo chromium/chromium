@@ -45,7 +45,7 @@ conflict (or for invalid CLI arguments), 1 when verification failed or an error
 occurred.
 """
 
-from collections.abc import Collection, Iterable, Sequence
+from collections.abc import Collection, Iterable, Mapping, Sequence
 import argparse
 import collections
 import dataclasses
@@ -2226,6 +2226,113 @@ def _FindStaleBootstrapTriggers(checkout: _CheckoutPaths) -> tuple[str, ...]:
         stale.add('generator inputs changed since last '
                   '`roll_protobuf.py generate`')
     return tuple(sorted(stale))
+
+
+def _SelectCompileSizeBaseline(build_directory: str,
+                               baseline_name: str | None) -> str | None:
+    if baseline_name is not None:
+        if not baseline_name.strip():
+            raise RollProtobufError(
+                'Provide a non-empty baseline name to --baseline.')
+        return baseline_name.strip()
+    probe_dir = os.path.join(os.path.abspath(build_directory),
+                             '.compile_size_probe')
+    if not os.path.isdir(probe_dir):
+        return None
+    candidates = [
+        stem for name in os.listdir(probe_dir) if not name.startswith('.')
+        and name.endswith('.json') and not name.endswith('.artifacts.json')
+        and os.path.isfile(os.path.join(probe_dir, name))
+        and re.fullmatch(r'[A-Za-z0-9_.-]+', stem := name[:-len('.json')])
+        and '..' not in stem
+    ]
+    if not candidates:
+        return None
+    preferred = [name for name in ('before', 'pre_roll') if name in candidates]
+    return max(
+        preferred or candidates,
+        key=lambda name:
+        (os.path.getmtime(os.path.join(probe_dir, f'{name}.json')), name))
+
+
+def _RunCompileSizeProbeComparison(
+        checkout: _CheckoutPaths, build_directory: str | None,
+        baseline_name: str | None
+) -> tuple[dict[str, object] | None, str | None]:
+    """Invokes compile_size_probe.py --compare=<name> --json if available."""
+    if not build_directory or not build_directory.strip():
+        if baseline_name is not None:
+            raise RollProtobufError('--baseline requires -C <out_dir>.')
+        return None, None
+    selected = _SelectCompileSizeBaseline(build_directory, baseline_name)
+    probe_script = os.path.join(checkout.protobuf_directory,
+                                'compile_size_probe.py')
+    if not os.path.isfile(probe_script):
+        if baseline_name is not None:
+            return None, f'Missing compile_size_probe.py at {probe_script}.'
+        return None, None
+    if selected is None:
+        return None, None
+    command = [
+        sys.executable, probe_script, '-C',
+        os.path.abspath(build_directory), f'--compare={selected}', '--json'
+    ]
+    process = subprocess.run(command,
+                             env=_IsolatedGitEnvironment(),
+                             stdin=subprocess.DEVNULL,
+                             capture_output=True,
+                             cwd=checkout.repository_root,
+                             check=False)
+    if process.returncode != 0:
+        stderr_text = process.stderr.decode('utf-8', errors='replace').strip()
+        stdout_text = process.stdout.decode('utf-8', errors='replace').strip()
+        details = stderr_text or stdout_text
+        return None, details or f'exit {process.returncode}'
+    try:
+        payload = json.loads(process.stdout.decode('utf-8'))
+    except ValueError as error:
+        return None, f'invalid JSON from compile_size_probe.py: {error}'
+    if not isinstance(payload, dict):
+        return None, 'invalid JSON from compile_size_probe.py: expected object'
+    return payload, None
+
+
+def _FormatCompileSizeSummary(comparison: Mapping[str, object]) -> str:
+    baseline = comparison.get('baseline_name', 'before')
+    before = int(comparison.get('before_total_bytes', 0))
+    after = int(comparison.get('after_total_bytes', 0))
+    delta = int(comparison.get('delta_total_bytes', after - before))
+    lines = [
+        f'Compile-size comparison against baseline "{baseline}": '
+        f'{before:,} B -> {after:,} B ({delta:+,} B)'
+    ]
+    sym_before = int(comparison.get('before_total_symbol_bytes', 0))
+    sym_after = int(comparison.get('after_total_symbol_bytes', 0))
+    if sym_before or sym_after:
+        sym_delta = int(
+            comparison.get('delta_total_symbol_bytes', sym_after - sym_before))
+        lines.append(f'  Compiled symbol bytes: {sym_before:,} B -> '
+                     f'{sym_after:,} B ({sym_delta:+,} B)')
+    for unit in comparison.get('translation_units', ()):
+        u_before = int(unit.get('before_bytes', 0))
+        u_after = int(unit.get('after_bytes', 0))
+        u_delta = int(unit.get('delta_bytes', u_after - u_before))
+        lines.append(f'  {unit.get("translation_unit")}: {u_delta:+,} B '
+                     f'({u_before:,} B -> {u_after:,} B)')
+        for header in list(unit.get('added_headers', ()))[:5]:
+            size = int(header.get('size_bytes', 0))
+            lines.append(f'    +{size:,} B  {header.get("path", "")}')
+            chain = header.get('include_chain', ())
+            if len(chain) > 1:
+                lines.append('      via: ' + ' -> '.join(chain))
+        for header in list(unit.get('removed_headers', ()))[:5]:
+            size = int(header.get('size_bytes', 0))
+            lines.append(f'    -{size:,} B  {header.get("path", "")}')
+        for resized in list(unit.get('resized_files', ()))[:5]:
+            change = int(resized.get('delta_bytes', 0))
+            lines.append(
+                f'    {change:+,} B  {resized.get("path", "")} (resized)')
+    return '\n'.join(lines)
 
 
 @dataclasses.dataclass(frozen=True)

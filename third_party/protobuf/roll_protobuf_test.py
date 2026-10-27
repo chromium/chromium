@@ -2271,6 +2271,56 @@ def _WriteFakeBootstrapGeneratorScript(protobuf_directory: str,
                            {'gen_extra_chromium_files.py': script})
 
 
+def _WriteFakeCompileSizeProbeScript(protobuf_directory: str,
+                                     *,
+                                     raw_stdout: str | None = None,
+                                     stderr_only_whitespace: bool = False,
+                                     exit_code: int = 0) -> None:
+    """Writes a hermetic compile_size_probe.py into protobuf_directory."""
+    script = (
+        'import argparse, json, sys\n'
+        'parser = argparse.ArgumentParser()\n'
+        'parser.add_argument("-C", required=True)\n'
+        'parser.add_argument("--compare", required=True)\n'
+        'parser.add_argument("--json", action="store_true")\n'
+        'args = parser.parse_args()\n'
+        f'if {exit_code}:\n'
+        f'    if {stderr_only_whitespace!r}:\n'
+        '        sys.stderr.write("   \\n")\n'
+        '        print(f"stdout error for {args.compare}")\n'
+        '    else:\n'
+        '        print(f"probe failed for {args.compare}", file=sys.stderr)\n'
+        f'    sys.exit({exit_code})\n'
+        f'if {raw_stdout is not None!r}:\n'
+        f'    print({raw_stdout or ""!r})\n'
+        '    sys.exit(0)\n'
+        'print(json.dumps({\n'
+        '    "baseline_name": args.compare,\n'
+        '    "before_total_bytes": 1000,\n'
+        '    "after_total_bytes": 1250,\n'
+        '    "delta_total_bytes": 250,\n'
+        '    "before_total_symbol_bytes": 400,\n'
+        '    "after_total_symbol_bytes": 440,\n'
+        '    "delta_total_symbol_bytes": 40,\n'
+        '    "translation_units": [{\n'
+        '        "translation_unit": "gen/duration.pb.cc",\n'
+        '        "before_bytes": 1000,\n'
+        '        "after_bytes": 1250,\n'
+        '        "delta_bytes": 250,\n'
+        '        "added_headers": [{\n'
+        '            "path": "absl/container/btree_map.h",\n'
+        '            "size_bytes": 200,\n'
+        '            "include_chain": ["gen/duration.pb.cc", "map.h",\n'
+        '                              "absl/container/btree_map.h"],\n'
+        '        }],\n'
+        '        "removed_headers": [{"path": "old.h", "size_bytes": 10}],\n'
+        '        "resized_files": [{"path": "arena.h", "delta_bytes": 60}],\n'
+        '    }],\n'
+        '}))')
+    _WriteFilesToDirectory(protobuf_directory,
+                           {'compile_size_probe.py': script + '\n'})
+
+
 class RollProtobufStartTest(unittest.TestCase):
     """Proves checkout-modifying roll commands (prepare, start, status, abort)."""
 
@@ -3821,6 +3871,114 @@ class RollProtobufStartTest(unittest.TestCase):
         self.assertEqual(
             ('generator inputs changed since last `roll_protobuf.py generate`',
              ), roll_protobuf._FindStaleBootstrapTriggers(checkout))
+
+    def testCompileSizeProbeComparisonSelectsBaselineFormatsAndHandlesErrors(
+            self):
+        checkout = roll_protobuf._ResolveCheckoutPaths(
+            self.fixture.protobuf_directory)
+        out_dir = os.path.join(self.temporary_directory, 'out_release')
+        self.assertEqual(
+            (None, None),
+            roll_protobuf._RunCompileSizeProbeComparison(checkout, None, None))
+        with self.assertRaisesRegex(roll_protobuf.RollProtobufError,
+                                    r'--baseline requires -C'):
+            roll_protobuf._RunCompileSizeProbeComparison(
+                checkout, None, 'before')
+        with self.assertRaisesRegex(roll_protobuf.RollProtobufError,
+                                    r'non-empty baseline name'):
+            roll_protobuf._RunCompileSizeProbeComparison(
+                checkout, out_dir, '  ')
+
+        # Missing probe script skips cleanly by default, or reports an error
+        # when an explicit --baseline was requested.
+        self.assertEqual((None, None),
+                         roll_protobuf._RunCompileSizeProbeComparison(
+                             checkout, out_dir, None))
+        _, missing_err = roll_protobuf._RunCompileSizeProbeComparison(
+            checkout, out_dir, 'before')
+        self.assertIn('Missing compile_size_probe.py', missing_err)
+
+        _WriteFakeCompileSizeProbeScript(self.fixture.protobuf_directory)
+        _WriteFilesToDirectory(
+            out_dir, {
+                '.compile_size_probe/.tmp.json': '{}',
+                '.compile_size_probe/custom.artifacts.json': '{}',
+                '.compile_size_probe/foo..bar.json': '{}',
+            })
+        self.assertEqual((None, None),
+                         roll_protobuf._RunCompileSizeProbeComparison(
+                             checkout, out_dir, None))
+
+        _WriteFilesToDirectory(
+            out_dir, {
+                '.compile_size_probe/zeta.json': '{}',
+                '.compile_size_probe/alpha.json': '{}',
+            })
+        os.utime(os.path.join(out_dir, '.compile_size_probe', 'zeta.json'),
+                 (100, 100))
+        os.utime(os.path.join(out_dir, '.compile_size_probe', 'alpha.json'),
+                 (200, 200))
+        newest_payload, _ = roll_protobuf._RunCompileSizeProbeComparison(
+            checkout, out_dir, None)
+        self.assertEqual('alpha', newest_payload['baseline_name'])
+
+        _WriteFilesToDirectory(out_dir,
+                               {'.compile_size_probe/pre_roll.json': '{}'})
+        os.utime(os.path.join(out_dir, '.compile_size_probe', 'pre_roll.json'),
+                 (50, 50))
+        payload, error = roll_protobuf._RunCompileSizeProbeComparison(
+            checkout, out_dir, None)
+        self.assertIsNone(error)
+        self.assertEqual('pre_roll', payload['baseline_name'])
+
+        _WriteFilesToDirectory(out_dir,
+                               {'.compile_size_probe/before.json': '{}'})
+        os.utime(os.path.join(out_dir, '.compile_size_probe', 'before.json'),
+                 (10, 10))
+        stale_before_payload, _ = roll_protobuf._RunCompileSizeProbeComparison(
+            checkout, out_dir, None)
+        self.assertEqual('pre_roll', stale_before_payload['baseline_name'])
+        os.utime(os.path.join(out_dir, '.compile_size_probe', 'before.json'),
+                 (60, 60))
+        before_payload, _ = roll_protobuf._RunCompileSizeProbeComparison(
+            checkout, out_dir, None)
+        self.assertEqual('before', before_payload['baseline_name'])
+
+        dash_payload, _ = roll_protobuf._RunCompileSizeProbeComparison(
+            checkout, out_dir, '-v36')
+        self.assertEqual('-v36', dash_payload['baseline_name'])
+
+        summary = roll_protobuf._FormatCompileSizeSummary(payload)
+        self.assertIn('baseline "pre_roll": 1,000 B -> 1,250 B (+250 B)',
+                      summary)
+        self.assertIn('Compiled symbol bytes: 400 B -> 440 B (+40 B)', summary)
+        self.assertIn(
+            'via: gen/duration.pb.cc -> map.h -> '
+            'absl/container/btree_map.h', summary)
+        self.assertIn('-10 B  old.h', summary)
+        self.assertIn('+60 B  arena.h (resized)', summary)
+
+        _WriteFakeCompileSizeProbeScript(self.fixture.protobuf_directory,
+                                         exit_code=1)
+        self.assertEqual((None, 'probe failed for custom'),
+                         roll_protobuf._RunCompileSizeProbeComparison(
+                             checkout, out_dir, 'custom'))
+        _WriteFakeCompileSizeProbeScript(self.fixture.protobuf_directory,
+                                         stderr_only_whitespace=True,
+                                         exit_code=1)
+        self.assertEqual((None, 'stdout error for custom'),
+                         roll_protobuf._RunCompileSizeProbeComparison(
+                             checkout, out_dir, 'custom'))
+        _WriteFakeCompileSizeProbeScript(self.fixture.protobuf_directory,
+                                         raw_stdout='not-json')
+        _, json_error = roll_protobuf._RunCompileSizeProbeComparison(
+            checkout, out_dir, 'custom')
+        self.assertIn('invalid JSON', json_error)
+        _WriteFakeCompileSizeProbeScript(self.fixture.protobuf_directory,
+                                         raw_stdout='[]')
+        _, list_error = roll_protobuf._RunCompileSizeProbeComparison(
+            checkout, out_dir, 'custom')
+        self.assertIn('expected object', list_error)
 
 
 if __name__ == '__main__':
