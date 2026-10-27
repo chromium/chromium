@@ -84,14 +84,10 @@ const char* Page::MessageToMethodName_(mojo::Message& message) {
 uint32_t Page::OnSomethingHappened_Sym::IPCStableHash() {
   // This method's address is used for identifying the mojo method name after
   // symbolization. So each IPCStableHash should have a unique address.
-  // We cannot use NO_CODE_FOLDING() here - it relies on the uniqueness of
-  // __LINE__ value, which is not unique across different mojo modules.
-  // The code below is very similar to NO_CODE_FOLDING, but it uses a unique
-  // hash instead of __LINE__.
-  static constexpr uint32_t kHash = 0x3d2c8bb6;  // IPCStableHash for golden::Page::OnSomethingHappened
-  const uint32_t hash = kHash;
-  base::debug::Alias(&hash);
-  return hash;
+  // Returning a unique hash ensures that the function body is unique, and thus
+  // prevents identical code folding (except for the variants of the same
+  // method, e.g. blink and non-blink, which is fine).
+  return 0x3d2c8bb6;  // IPCStableHash for golden::Page::OnSomethingHappened
 }
 # endif // !BUILDFLAG(IS_FUCHSIA)
 
@@ -238,14 +234,10 @@ const char* PageHandler::MessageToMethodName_(mojo::Message& message) {
 uint32_t PageHandler::DoSomething_Sym::IPCStableHash() {
   // This method's address is used for identifying the mojo method name after
   // symbolization. So each IPCStableHash should have a unique address.
-  // We cannot use NO_CODE_FOLDING() here - it relies on the uniqueness of
-  // __LINE__ value, which is not unique across different mojo modules.
-  // The code below is very similar to NO_CODE_FOLDING, but it uses a unique
-  // hash instead of __LINE__.
-  static constexpr uint32_t kHash = 0x3a41f374;  // IPCStableHash for golden::PageHandler::DoSomething
-  const uint32_t hash = kHash;
-  base::debug::Alias(&hash);
-  return hash;
+  // Returning a unique hash ensures that the function body is unique, and thus
+  // prevents identical code folding (except for the variants of the same
+  // method, e.g. blink and non-blink, which is fine).
+  return 0x3a41f374;  // IPCStableHash for golden::PageHandler::DoSomething
 }
 # endif // !BUILDFLAG(IS_FUCHSIA)
 
@@ -392,14 +384,10 @@ const char* WebUiPageHandlerFactory::MessageToMethodName_(mojo::Message& message
 uint32_t WebUiPageHandlerFactory::CreatePageHandler_Sym::IPCStableHash() {
   // This method's address is used for identifying the mojo method name after
   // symbolization. So each IPCStableHash should have a unique address.
-  // We cannot use NO_CODE_FOLDING() here - it relies on the uniqueness of
-  // __LINE__ value, which is not unique across different mojo modules.
-  // The code below is very similar to NO_CODE_FOLDING, but it uses a unique
-  // hash instead of __LINE__.
-  static constexpr uint32_t kHash = 0x722803d6;  // IPCStableHash for golden::WebUiPageHandlerFactory::CreatePageHandler
-  const uint32_t hash = kHash;
-  base::debug::Alias(&hash);
-  return hash;
+  // Returning a unique hash ensures that the function body is unique, and thus
+  // prevents identical code folding (except for the variants of the same
+  // method, e.g. blink and non-blink, which is fine).
+  return 0x722803d6;  // IPCStableHash for golden::WebUiPageHandlerFactory::CreatePageHandler
 }
 # endif // !BUILDFLAG(IS_FUCHSIA)
 

@@ -296,26 +296,18 @@ const char* ResultInterface::MessageToMethodName_(mojo::Message& message) {
 uint32_t ResultInterface::Method_Sym::IPCStableHash() {
   // This method's address is used for identifying the mojo method name after
   // symbolization. So each IPCStableHash should have a unique address.
-  // We cannot use NO_CODE_FOLDING() here - it relies on the uniqueness of
-  // __LINE__ value, which is not unique across different mojo modules.
-  // The code below is very similar to NO_CODE_FOLDING, but it uses a unique
-  // hash instead of __LINE__.
-  static constexpr uint32_t kHash = 0x826d7762;  // IPCStableHash for golden::ResultInterface::Method
-  const uint32_t hash = kHash;
-  base::debug::Alias(&hash);
-  return hash;
+  // Returning a unique hash ensures that the function body is unique, and thus
+  // prevents identical code folding (except for the variants of the same
+  // method, e.g. blink and non-blink, which is fine).
+  return 0x826d7762;  // IPCStableHash for golden::ResultInterface::Method
 }
 uint32_t ResultInterface::SyncMethod_Sym::IPCStableHash() {
   // This method's address is used for identifying the mojo method name after
   // symbolization. So each IPCStableHash should have a unique address.
-  // We cannot use NO_CODE_FOLDING() here - it relies on the uniqueness of
-  // __LINE__ value, which is not unique across different mojo modules.
-  // The code below is very similar to NO_CODE_FOLDING, but it uses a unique
-  // hash instead of __LINE__.
-  static constexpr uint32_t kHash = 0x42fd29bb;  // IPCStableHash for golden::ResultInterface::SyncMethod
-  const uint32_t hash = kHash;
-  base::debug::Alias(&hash);
-  return hash;
+  // Returning a unique hash ensures that the function body is unique, and thus
+  // prevents identical code folding (except for the variants of the same
+  // method, e.g. blink and non-blink, which is fine).
+  return 0x42fd29bb;  // IPCStableHash for golden::ResultInterface::SyncMethod
 }
 # endif // !BUILDFLAG(IS_FUCHSIA)
 bool ResultInterface::SyncMethod(bool a,
