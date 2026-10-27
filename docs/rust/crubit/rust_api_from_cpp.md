@@ -190,13 +190,13 @@ cases, annotate the C++ API:
   it into Rust lifetimes.  Clang warnings also lightly check it (e.g.
   `-Wdangling` reports a temporary passed to a `LIFETIME_BOUND` parameter
   if the result outlives the temporary).  See
-  `build/rust/tests/test_rust_api_from_cpp/lifetime_bound.h`.
+  `build/rust/tests/test_rust_api_from_cpp/lifetimes/lifetime_bound.h`.
 * Use explicit lifetime annotations (e.g. `$a` from
   `#include "third_party/crubit/support/lifetime_annotations.h"`) only if
   `LIFETIME_BOUND` can't express the lifetimes.  Nothing checks that these
   annotations are correct.  C++ targets that use these annotations need to
   depend on `//build/rust/crubit`.  See
-  `build/rust/tests/test_rust_api_from_cpp/explicit_lifetimes.h`.
+  `build/rust/tests/test_rust_api_from_cpp/lifetimes/explicit_lifetimes.h`.
 
 See
 [Crubit's "References and lifetimes" docs](https://crubit.rs/cpp/references_and_lifetimes.html)

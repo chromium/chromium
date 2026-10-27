@@ -1,0 +1,57 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Tests for how `rust_api_from_cpp` handles lifetimes of C++ references.
+
+import("//build/rust/rust_api_from_cpp.gni")
+import("//build/rust/rust_static_library.gni")
+
+rust_static_library("rust_unittests") {
+  testonly = true
+  is_gtest_unittests = true
+  crate_root = "unittests.rs"
+  sources = [ crate_root ]
+  deps = [
+    ":assume_lifetimes_rs_api",
+    ":explicit_lifetimes_rs_api",
+    ":lifetime_bound_rs_api",
+    "//build/rust/crubit:cref",
+    "//testing/rust_gtest_interop",
+  ]
+}
+
+rust_api_from_cpp("assume_lifetimes_rs_api") {
+  testonly = true
+  bindings_target = ":assume_lifetimes"
+  public_headers = [ "assume_lifetimes.h" ]
+}
+
+source_set("assume_lifetimes") {
+  testonly = true
+  sources = [ "assume_lifetimes.h" ]
+}
+
+rust_api_from_cpp("lifetime_bound_rs_api") {
+  testonly = true
+  bindings_target = ":lifetime_bound"
+  public_headers = [ "lifetime_bound.h" ]
+}
+
+source_set("lifetime_bound") {
+  testonly = true
+  sources = [ "lifetime_bound.h" ]
+  public_deps = [ "//base:compiler_specific" ]
+}
+
+rust_api_from_cpp("explicit_lifetimes_rs_api") {
+  testonly = true
+  bindings_target = ":explicit_lifetimes"
+  public_headers = [ "explicit_lifetimes.h" ]
+}
+
+source_set("explicit_lifetimes") {
+  testonly = true
+  sources = [ "explicit_lifetimes.h" ]
+  public_deps = [ "//build/rust/crubit" ]
+}

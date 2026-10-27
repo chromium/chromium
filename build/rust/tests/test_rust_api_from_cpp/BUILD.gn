@@ -10,6 +10,7 @@ group("test_rust_api_from_cpp") {
   deps = [
     ":rust_api_from_cpp_unittests",
     "extra_rust_sources:rust_unittests",
+    "lifetimes:rust_unittests",
     "round_trip:cpp_unittests",
     "round_trip:rust_unittests",
     "std:rust_unittests",
@@ -22,13 +23,9 @@ rust_static_library("rust_api_from_cpp_unittests") {
   crate_root = "tests.rs"
   sources = [ crate_root ]
   deps = [
-    ":assume_lifetimes_rs_api",
-    ":explicit_lifetimes_rs_api",
-    ":lifetime_bound_rs_api",
     ":self_contained_target_rs_api",
     ":target_depending_on_another_rs_api",
     ":test_browsing_instance_id_rs_api",
-    "//build/rust/crubit:cref",
     "//testing/rust_gtest_interop",
   ]
 }
@@ -72,35 +69,6 @@ rust_api_from_cpp("target_depending_on_another_rs_api") {
 source_set("target_depending_on_another") {
   sources = [ "target_depending_on_another.h" ]
   public_deps = [ ":self_contained_target" ]
-}
-
-rust_api_from_cpp("assume_lifetimes_rs_api") {
-  bindings_target = ":assume_lifetimes"
-  public_headers = [ "assume_lifetimes.h" ]
-}
-
-source_set("assume_lifetimes") {
-  sources = [ "assume_lifetimes.h" ]
-}
-
-rust_api_from_cpp("lifetime_bound_rs_api") {
-  bindings_target = ":lifetime_bound"
-  public_headers = [ "lifetime_bound.h" ]
-}
-
-source_set("lifetime_bound") {
-  sources = [ "lifetime_bound.h" ]
-  public_deps = [ "//base:compiler_specific" ]
-}
-
-rust_api_from_cpp("explicit_lifetimes_rs_api") {
-  bindings_target = ":explicit_lifetimes"
-  public_headers = [ "explicit_lifetimes.h" ]
-}
-
-source_set("explicit_lifetimes") {
-  sources = [ "explicit_lifetimes.h" ]
-  public_deps = [ "//build/rust/crubit" ]
 }
 
 rust_api_from_cpp("test_browsing_instance_id_rs_api") {
