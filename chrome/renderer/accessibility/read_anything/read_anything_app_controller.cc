@@ -93,17 +93,6 @@ const double kPostInputDistillSeconds = 1.5;
 // The amount of time after a distillation for a PDF to wait before drawing.
 const int kPdfDrawDebounceMs = 500;
 
-SkBitmap CorrectColorOfBitMap(SkBitmap& originalBitmap) {
-  SkBitmap converted;
-  converted.allocPixels(SkImageInfo::Make(
-      originalBitmap.width(), originalBitmap.height(),
-      SkColorType::kRGBA_8888_SkColorType, originalBitmap.alphaType()));
-
-  originalBitmap.readPixels(converted.info(), converted.getPixels(),
-                            converted.rowBytes(), 0, 0);
-  return converted;
-}
-
 template <typename T>
   requires(std::is_enum_v<T> &&
            requires {
@@ -2257,19 +2246,26 @@ v8::Local<v8::Value> ReadAnythingAppController::GetImageBitmap(
     SkBitmap bitmap = std::move(itr->second);
     // Remove the downloaded image from the map.
     downloaded_images_.erase(node_id);
-    // Ensure that the bitmap is in the correct color format.
-    if (bitmap.colorType() != SkColorType::kRGBA_8888_SkColorType) {
-      bitmap = CorrectColorOfBitMap(bitmap);
+    ui::AXNode* node = model_.GetAXNode(node_id);
+    DUMP_WILL_BE_CHECK(node);
+    if (bitmap.empty() || !node) {
+      return v8::Undefined(isolate);
     }
 
-    // Get the pixmap to compute the bytes.
-    auto pixmap = std::move(bitmap.pixmap());
-    auto size = pixmap.computeByteSize();
+    // Convert to RGBA and copy into the array buffer in a single pass.
+    SkImageInfo rgba_info =
+        bitmap.info().makeColorType(SkColorType::kRGBA_8888_SkColorType);
+    size_t size = rgba_info.computeMinByteSize();
+    if (SkImageInfo::ByteSizeOverflowed(size)) {
+      return v8::Undefined(isolate);
+    }
     // Create an array buffer with the image bytes.
     v8::Local<v8::ArrayBuffer> buffer = v8::ArrayBuffer::New(isolate, size);
     // Copy the memory in.
-    pixmap.readPixels(pixmap.info(), buffer->GetBackingStore()->Data(),
-                      pixmap.rowBytes());
+    if (!bitmap.readPixels(rgba_info, buffer->GetBackingStore()->Data(),
+                           rgba_info.minRowBytes(), 0, 0)) {
+      return v8::Undefined(isolate);
+    }
     // Create a clamped array so we can create an ImageData object on the
     // javascript side.
     v8::Local<v8::Uint8ClampedArray> array =
@@ -2277,11 +2273,6 @@ v8::Local<v8::Value> ReadAnythingAppController::GetImageBitmap(
 
     // Create an object with the image data and height, as well as a scale
     // factor.
-    ui::AXNode* node = model_.GetAXNode(node_id);
-    DUMP_WILL_BE_CHECK(node);
-    if (!node) {
-      return v8::Undefined(isolate);
-    }
     int width = bitmap.width();
     int height = bitmap.height();
     float scale = (node->data().relative_bounds.bounds.width()) / width;
