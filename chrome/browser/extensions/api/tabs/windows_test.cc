@@ -10,8 +10,11 @@
 #include <string>
 
 #include "base/format_macros.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/strings/pattern.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/to_string.h"
@@ -27,6 +30,7 @@
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/extensions/window_controller.h"
+#include "chrome/browser/extensions/window_controller_list.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
@@ -710,6 +714,162 @@ IN_PROC_BROWSER_TEST_F(ExtensionWindowsTest,
                          base::StringPrintf(kArgsUpdateFunction, window_id,
                                             center.x(), center.y()),
                          profile(), api_test_utils::FunctionMode::kNone));
+}
+
+namespace {
+
+// A WindowController that synchronously destroys its Browser (and itself) when
+// SetFullscreenMode() is called, simulating a platform fullscreen transition
+// that spins a nested event loop (e.g., -[NSWindow toggleFullScreen:] on macOS)
+// during which the window is closed and synchronously destroyed.
+class SelfClosingWindowController : public WindowController {
+ public:
+  SelfClosingWindowController(BrowserWindowInterface* browser,
+                              int window_id,
+                              base::OnceClosure on_set_fullscreen_callback)
+      : WindowController(browser->GetWindow(), browser->GetProfile()),
+        browser_(browser),
+        window_id_(window_id),
+        on_set_fullscreen_callback_(std::move(on_set_fullscreen_callback)) {
+    WindowControllerList::GetInstance()->AddExtensionWindow(this);
+  }
+
+  ~SelfClosingWindowController() override {
+    WindowControllerList::GetInstance()->RemoveExtensionWindow(this);
+  }
+
+  // WindowController:
+  int GetWindowId() const override { return window_id_; }
+  std::string GetWindowTypeText() const override {
+    return BrowserExtensionWindowController::From(browser_)
+        ->GetWindowTypeText();
+  }
+  void SetFullscreenMode(bool is_fullscreen,
+                         const GURL& extension_url) const override {
+    CHECK(on_set_fullscreen_callback_);
+    std::move(on_set_fullscreen_callback_).Run();
+  }
+  BrowserWindowInterface* GetBrowserWindowInterface() override {
+    return browser_;
+  }
+  BrowserWindowInterface* GetBrowser() const override { return browser_; }
+  content::WebContents* GetActiveTab() const override {
+    return BrowserExtensionWindowController::From(browser_)->GetActiveTab();
+  }
+  int GetTabCount() const override {
+    return BrowserExtensionWindowController::From(browser_)->GetTabCount();
+  }
+  content::WebContents* GetWebContentsAt(int i) const override {
+    return BrowserExtensionWindowController::From(browser_)->GetWebContentsAt(
+        i);
+  }
+  bool IsVisibleToTabsAPIForExtension(
+      const Extension* extension,
+      bool allow_dev_tools_windows) const override {
+    return BrowserExtensionWindowController::From(browser_)
+        ->IsVisibleToTabsAPIForExtension(extension, allow_dev_tools_windows);
+  }
+  base::DictValue CreateWindowValueForExtension(
+      const Extension* extension,
+      PopulateTabBehavior populate_tab_behavior,
+      mojom::ContextType context) const override {
+    return BrowserExtensionWindowController::From(browser_)
+        ->CreateWindowValueForExtension(extension, populate_tab_behavior,
+                                        context);
+  }
+  base::ListValue CreateTabList(const Extension* extension,
+                                mojom::ContextType context) const override {
+    return BrowserExtensionWindowController::From(browser_)->CreateTabList(
+        extension, context);
+  }
+  bool OpenOptionsPage(const Extension* extension,
+                       const GURL& url,
+                       bool open_in_tab) override {
+    return BrowserExtensionWindowController::From(browser_)->OpenOptionsPage(
+        extension, url, open_in_tab);
+  }
+
+ private:
+  raw_ptr<BrowserWindowInterface> browser_;
+  const int window_id_;
+  mutable base::OnceClosure on_set_fullscreen_callback_;
+};
+
+}  // namespace
+
+// Regression test for crbug.com/572991399: Verifies that WindowsUpdateFunction
+// does not use-after-free `Browser`, `ui::BaseWindow`, or `WindowController`
+// when a fullscreen transition synchronously closes and destroys the window
+// (such as via a nested message loop on macOS).
+IN_PROC_BROWSER_TEST_F(
+    ExtensionWindowsTest,
+    UpdateWindowState_WindowDestroyedDuringFullscreenTransition) {
+  scoped_refptr<const Extension> extension(ExtensionBuilder("Test").Build());
+
+  // Case 1: Entering fullscreen (`SetFullscreenMode(true, ...)` inside
+  // `switch (show_state)`) synchronously destroys the window before subsequent
+  // `Activate()`, `FlashFrame()`, and `CreateWindowValueForExtension()` calls.
+  {
+    BrowserWindowInterface* target_browser = CreateBrowser(profile());
+    base::WeakPtr<BrowserWindowInterface> weak_browser =
+        target_browser->GetWeakPtr();
+    const int kTestWindowId = 999991;
+    std::unique_ptr<SelfClosingWindowController> controller;
+    controller = std::make_unique<SelfClosingWindowController>(
+        target_browser, kTestWindowId,
+        base::BindOnce(
+            [](auto* test, BrowserWindowInterface* browser,
+               std::unique_ptr<SelfClosingWindowController>* slot) {
+              slot->reset();
+              test->CloseBrowserSynchronously(browser);
+            },
+            this, target_browser, &controller));
+
+    auto function = base::MakeRefCounted<WindowsUpdateFunction>();
+    function->set_extension(extension.get());
+    std::string error = utils::RunFunctionAndReturnError(
+        function.get(),
+        base::StringPrintf(
+            R"([%d, {"state": "fullscreen", "focused": true, "drawAttention": true}])",
+            kTestWindowId),
+        profile());
+    EXPECT_EQ(ExtensionTabUtil::kNoCurrentWindowError, error);
+    EXPECT_FALSE(controller);
+    EXPECT_FALSE(weak_browser);
+  }
+
+  // Case 2: Exiting fullscreen to another state (`SetFullscreenMode(false,
+  // ...)` before `switch (show_state)`) synchronously destroys the window
+  // before `Minimize()`, `FlashFrame()`, and `CreateWindowValueForExtension()`
+  // calls.
+  {
+    BrowserWindowInterface* target_browser = CreateBrowser(profile());
+    base::WeakPtr<BrowserWindowInterface> weak_browser =
+        target_browser->GetWeakPtr();
+    const int kTestWindowId = 999992;
+    std::unique_ptr<SelfClosingWindowController> controller;
+    controller = std::make_unique<SelfClosingWindowController>(
+        target_browser, kTestWindowId,
+        base::BindOnce(
+            [](auto* test, BrowserWindowInterface* browser,
+               std::unique_ptr<SelfClosingWindowController>* slot) {
+              slot->reset();
+              test->CloseBrowserSynchronously(browser);
+            },
+            this, target_browser, &controller));
+
+    auto function = base::MakeRefCounted<WindowsUpdateFunction>();
+    function->set_extension(extension.get());
+    std::string error = utils::RunFunctionAndReturnError(
+        function.get(),
+        base::StringPrintf(
+            R"([%d, {"state": "minimized", "drawAttention": true}])",
+            kTestWindowId),
+        profile());
+    EXPECT_EQ(ExtensionTabUtil::kNoCurrentWindowError, error);
+    EXPECT_FALSE(controller);
+    EXPECT_FALSE(weak_browser);
+  }
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 

@@ -102,13 +102,16 @@ class WindowsUpdateFunction : public ExtensionFunction {
   DECLARE_EXTENSION_FUNCTION("windows.update", WINDOWS_UPDATE)
 
  private:
-  // Applies the updates from `params` to the `browser` window.
-  void UpdateWindowState(const api::windows::Update::Params& params,
-                         BrowserWindowInterface* browser,
-                         WindowController* window_controller,
-                         ui::mojom::WindowShowState show_state,
-                         bool set_window_bounds,
-                         const gfx::Rect& window_bounds);
+  // Applies the updates from `params` to the `browser` window. Returns false if
+  // the `browser` or `window_controller` was synchronously destroyed during a
+  // platform window state transition.
+  [[nodiscard]] bool UpdateWindowState(
+      const api::windows::Update::Params& params,
+      BrowserWindowInterface* browser,
+      WindowController* window_controller,
+      ui::mojom::WindowShowState show_state,
+      bool set_window_bounds,
+      const gfx::Rect& window_bounds);
 };
 class WindowsRemoveFunction : public ExtensionFunction {
   ~WindowsRemoveFunction() override = default;
