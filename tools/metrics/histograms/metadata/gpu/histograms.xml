@@ -142,7 +142,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ConfigureDisplays.Internal.Modeset.AttemptSucceeded"
-    enum="BooleanSuccess" expires_after="2027-01-21">
+    enum="BooleanSuccess" expires_after="2027-04-25">
   <owner>gildekel@chromium.org</owner>
   <owner>chromeos-gfx-display@chromium.org</owner>
   <summary>
@@ -1736,7 +1736,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.PaintOpReader.DeserializationError"
-    enum="PaintOpDeserializationError" expires_after="2027-02-22">
+    enum="PaintOpDeserializationError" expires_after="2027-04-25">
   <owner>jonross@chromium.org</owner>
   <owner>chrome-gpu-metric-alerts@chromium.org</owner>
   <summary>
@@ -1930,7 +1930,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.RequestAdapterStatus.WebGPU"
-    enum="WebGPURequestAdapterStatus" expires_after="2027-01-17">
+    enum="WebGPURequestAdapterStatus" expires_after="2027-04-25">
   <owner>olivierli@chromium.org</owner>
   <owner>fdoray@chromium.org</owner>
   <summary>
@@ -2348,7 +2348,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.{GraphiteDawnOrWebGPU}.Support" enum="WebGPUSupport"
-    expires_after="2027-02-07">
+    expires_after="2027-04-25">
   <owner>cwallez@google.com</owner>
   <owner>enga@google.com</owner>
   <owner>kainino@google.com</owner>

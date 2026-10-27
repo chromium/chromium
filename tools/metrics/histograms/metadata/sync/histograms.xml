@@ -2780,7 +2780,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.SyncToSigninMigrationOutcome.EncryptedBookmarksFileMove"
-    enum="PlatformFileError" expires_after="2027-02-24">
+    enum="PlatformFileError" expires_after="2027-04-25">
   <owner>treib@chromium.org</owner>
   <owner>mastiz@chromium.org</owner>
   <owner>plcoirier@chromium.org</owner>
@@ -3241,7 +3241,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Theme.BatchUpload.HasLocalTheme" enum="Boolean"
-    expires_after="2027-02-24">
+    expires_after="2027-04-25">
   <owner>ankushkush@google.com</owner>
   <owner>src/components/sync/OWNERS</owner>
   <summary>
@@ -3251,7 +3251,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Theme.BatchUpload.LocalThemeMigrationTriggered" enum="Boolean"
-    expires_after="2027-02-24">
+    expires_after="2027-04-25">
   <owner>ankushkush@google.com</owner>
   <owner>src/components/sync/OWNERS</owner>
   <summary>

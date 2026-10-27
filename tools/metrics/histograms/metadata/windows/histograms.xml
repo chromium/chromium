@@ -418,7 +418,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Windows.IsPinnedToTaskbar3" enum="IsPinnedToTaskbarResult"
-    expires_after="2027-02-24">
+    expires_after="2027-04-25">
   <owner>songhaoli@chromium.org</owner>
   <owner>davidbienvenu@chromium.org</owner>
   <summary>

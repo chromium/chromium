@@ -3008,7 +3008,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 <histogram
     name="PasswordManager.PasswordGenerationBottomSheet.InteractionResult"
     enum="PasswordManager.PasswordGenerationBottomSheet.InteractionResult"
-    expires_after="2027-02-24">
+    expires_after="2027-04-25">
   <owner>atsvirchkova@google.com</owner>
   <owner>ioanap@chromium.org</owner>
   <summary>
@@ -4313,7 +4313,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="PasswordManager.UPM.{DialogType}.DownloadCsvFlowLastStep"
-    enum="DownloadCsvFlowStep" expires_after="2027-01-03">
+    enum="DownloadCsvFlowStep" expires_after="2027-04-25">
   <owner>ioanap@chromium.org</owner>
   <owner>atsvirchkova@google.com</owner>
   <summary>

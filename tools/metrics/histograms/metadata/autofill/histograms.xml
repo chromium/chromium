@@ -2363,7 +2363,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 
 <histogram name="Autofill.Ai.PersonalContext.Prefetch.TriggerResult"
     enum="AutofillAiPersonalContextPrefetchTriggerResult"
-    expires_after="2026-12-12">
+    expires_after="2027-04-25">
   <owner>vidhanj@google.com</owner>
   <owner>vizcay@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
@@ -4757,7 +4757,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 </histogram>
 
 <histogram name="Autofill.DOMContentLoadedInOutermostMainFrame" enum="Boolean"
-    expires_after="2027-02-22">
+    expires_after="2027-04-25">
   <owner>schwering@google.com</owner>
   <owner>jkeitel@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
@@ -5328,7 +5328,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 </histogram>
 
 <histogram name="Autofill.FormatString.IsCompatible" enum="Boolean"
-    expires_after="2026-12-12">
+    expires_after="2027-04-25">
   <owner>jihadghanna@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
@@ -7897,7 +7897,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 </histogram>
 
 <histogram name="Autofill.ProfileImport.PlaceholderValueRemoved.ByFieldType"
-    enum="AutofillFieldType" expires_after="2027-02-19">
+    enum="AutofillFieldType" expires_after="2027-04-25">
   <owner>mmaryia@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
@@ -10225,7 +10225,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 </histogram>
 
 <histogram name="Autofill.TimingPrecise.{Callee}" units="microseconds"
-    expires_after="2027-02-22">
+    expires_after="2027-04-25">
   <owner>schwering@google.com</owner>
   <owner>jkeitel@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
@@ -10246,7 +10246,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 </histogram>
 
 <histogram name="Autofill.TimingPrecise.{Callee}.{Caller}" units="microseconds"
-    expires_after="2027-02-22">
+    expires_after="2027-04-25">
   <owner>schwering@google.com</owner>
   <owner>jkeitel@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>

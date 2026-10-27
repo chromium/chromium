@@ -1694,7 +1694,7 @@ ApiRequestType variants; see go/geic-metrics-split. -->
 </histogram>
 
 <histogram name="Glic.Preferences.HotkeyCleared" enum="GlicHotkeyCleared"
-    expires_after="2027-02-01">
+    expires_after="2027-04-25">
   <owner>perrier@chromium.org</owner>
   <owner>chrome-glic@google.com</owner>
   <summary>
@@ -1922,7 +1922,7 @@ ApiRequestType variants; see go/geic-metrics-split. -->
 </histogram>
 
 <histogram name="Glic.ScrollTo.ScrollDistance" units="dip"
-    expires_after="2027-01-15">
+    expires_after="2027-04-25">
   <owner>liuwilliam@google.com</owner>
   <owner>adithyas@google.com</owner>
   <summary>

@@ -1847,7 +1847,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Net.DeviceBoundSessions.AttestationKeySaveOutcome"
     enum="DeviceBoundSessionAttestationKeySaveOutcome"
-    expires_after="2026-12-25">
+    expires_after="2027-04-25">
   <owner>jdoerrie@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -8676,7 +8676,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Net.SharedDictionaryUsedResponseErrorCodes2.{DestinationType}.{CertState}"
-    enum="NetErrorCodes" expires_after="2027-01-01">
+    enum="NetErrorCodes" expires_after="2027-04-25">
   <owner>pmeenan@chromium.org</owner>
   <owner>src/net/extras/shared_dictionary/OWNERS</owner>
   <summary>
@@ -10562,7 +10562,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SimpleCache.{CacheInstance}DiskWriteLatency" units="ms"
-    expires_after="2027-02-07">
+    expires_after="2027-04-25">
   <owner>morlovich@chromium.org</owner>
   <owner>wanderview@chromium.org</owner>
   <summary>

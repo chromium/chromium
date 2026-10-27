@@ -1604,7 +1604,7 @@ tools/metrics/histograms/metadata/stability/enums.xml
 </histogram>
 
 <histogram name="Power.KeyboardBacklightLevel" units="%"
-    expires_after="2027-02-07">
+    expires_after="2027-04-25">
   <owner>tbroch@chromium.org</owner>
   <summary>
     The level of the keyboard backlight as a percentage. Sampled every 30

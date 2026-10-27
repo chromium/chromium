@@ -1890,7 +1890,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.Clients.DocWrite.Block.{PageLoadClientsDocWriteTimingMetric}"
-    units="ms" expires_after="2027-02-14">
+    units="ms" expires_after="2027-04-25">
   <owner>csharrison@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
   <summary>

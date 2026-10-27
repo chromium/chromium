@@ -1417,7 +1417,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApp.InstallMigrateToApp.Result"
-    enum="InstallMigrateToAppResult" expires_after="2027-02-11">
+    enum="InstallMigrateToAppResult" expires_after="2027-04-25">
   <owner>mek@chromium.org</owner>
   <owner>pwa-team@google.com</owner>
   <summary>

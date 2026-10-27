@@ -704,7 +704,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.CacheEncryptionPolicyEnabled" enum="BooleanEnabled"
-    expires_after="2027-02-17">
+    expires_after="2027-04-25">
   <owner>haihan@google.com</owner>
   <owner>valadkevich@google.com</owner>
   <owner>cbe-cep-eng@google.com</owner>
@@ -3276,7 +3276,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.FileDownloadObfuscation.ReplaceRetryCount"
-    units="retries" expires_after="2027-02-19">
+    units="retries" expires_after="2027-04-25">
   <owner>mingyil@google.com</owner>
   <owner>haihan@google.com</owner>
   <owner>cbe-cep-eng@google.com</owner>

@@ -318,7 +318,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bookmarks.BookmarkBar.PrerenderNavigationToActivation"
-    units="ms" expires_after="2026-12-16">
+    units="ms" expires_after="2027-04-25">
   <owner>robertlin@chromium.org</owner>
   <owner>chrome-prerendering@google.com</owner>
   <summary>
@@ -459,7 +459,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bookmarks.BookmarksSerializationResult.{ImportantFileWriter}"
-    enum="BookmarksSerializationResult" expires_after="2027-02-24">
+    enum="BookmarksSerializationResult" expires_after="2027-04-25">
   <owner>plcoirier@google.com</owner>
   <owner>chrome-collections@google.com</owner>
   <summary>
@@ -501,7 +501,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bookmarks.DeleteClearTextFile.{BookmarksFileType}"
-    enum="BooleanDeletedOrNot" expires_after="2027-02-24">
+    enum="BooleanDeletedOrNot" expires_after="2027-04-25">
   <owner>plcoirier@google.com</owner>
   <owner>chrome-collections@google.com</owner>
   <summary>
@@ -567,7 +567,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Bookmarks.EncryptedBookmarksFileMatchesResult.{BookmarksFileType}"
-    enum="BooleanMatched" expires_after="2027-02-24">
+    enum="BooleanMatched" expires_after="2027-04-25">
   <owner>plcoirier@google.com</owner>
   <owner>chrome-collections@google.com</owner>
   <summary>
@@ -878,7 +878,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bookmarks.Storage.EncryptedFileSizeAtStartup" units="KB"
-    expires_after="2027-02-24">
+    expires_after="2027-04-25">
   <owner>plcoirier@google.com</owner>
   <owner>chrome-collections@google.com</owner>
   <summary>
@@ -920,7 +920,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bookmarks.Storage.TimeToLoadAtStartup2" units="ms"
-    expires_after="2027-02-24">
+    expires_after="2027-04-25">
   <owner>wylieb@google.com</owner>
   <owner>chrome-collections@google.com</owner>
   <summary>
