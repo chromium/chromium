@@ -49,8 +49,11 @@ class TestsTerminated(Exception):
 ESTIMATED_RUNTIME_PER_CLASS_DEFAULT = 8.0
 ESTIMATED_RUNTIME_PER_TEST_DEFAULT = 1.0
 
-# 0.05-0.10 best in offline sweep; eps=0.20 regressed.
-BOUNDED_LOAD_EPSILON = 0.05
+# Replaying android_browsertests (25 shards) over real durations: a lower cap
+# tightens the slowest shard for every weight estimator tried, with the
+# fraction of groups keeping their shard across test-list changes dropping
+# only from 99% (0.05) to 98% (0.02). 0.20 regressed in the original sweep.
+BOUNDED_LOAD_EPSILON = 0.02
 
 SHARDING_STRATEGY_HASH = 'hash'
 SHARDING_STRATEGY_BOUNDED_LOAD = 'bounded-load'
