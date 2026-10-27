@@ -2976,6 +2976,52 @@ public class ChromeAndroidTaskImplUnitTest {
     }
 
     @Test
+    @Config(sdk = Build.VERSION_CODES.CINNAMON_BUN)
+    public void maximize_whenMoveTaskToSettlesAfterDestroy_staysDestroyed() {
+        // Arrange.
+        var chromeAndroidTaskWithMockDeps = createChromeAndroidTaskWithMockDeps(/* taskId= */ 1);
+        var chromeAndroidTask =
+                (ChromeAndroidTaskImpl) chromeAndroidTaskWithMockDeps.mChromeAndroidTask;
+        var apiDelegate = chromeAndroidTaskWithMockDeps.mMockMoveTaskDelegate;
+        var promise = new Promise<Pair<Integer, Rect>>();
+        when(apiDelegate.moveTaskToWithPromise(any(), anyInt(), any())).thenReturn(promise);
+
+        // Act.
+        chromeAndroidTask.maximize();
+        chromeAndroidTask.destroy();
+        promise.fulfill(Pair.create(0, DEFAULT_MAXIMIZED_WINDOW_BOUNDS_IN_PX));
+        shadowOf(getMainLooper()).idle();
+
+        // Assert: A late completion must not resurrect the destroyed Task.
+        assertEquals(State.DESTROYED, chromeAndroidTask.getState());
+    }
+
+    @Test
+    @Config(sdk = Build.VERSION_CODES.CINNAMON_BUN)
+    public void maximize_whenMoveTaskToRejected_returnsToIdle() {
+        // Arrange.
+        var chromeAndroidTaskWithMockDeps = createChromeAndroidTaskWithMockDeps(/* taskId= */ 1);
+        var chromeAndroidTask =
+                (ChromeAndroidTaskImpl) chromeAndroidTaskWithMockDeps.mChromeAndroidTask;
+        var apiDelegate = chromeAndroidTaskWithMockDeps.mMockMoveTaskDelegate;
+        var promise = new Promise<Pair<Integer, Rect>>();
+        when(apiDelegate.moveTaskToWithPromise(any(), anyInt(), any())).thenReturn(promise);
+
+        // Act.
+        chromeAndroidTask.maximize();
+        assertEquals(State.PENDING_UPDATE, chromeAndroidTask.getState());
+        assertTrue("isMaximized is true while pending", chromeAndroidTask.isMaximized());
+
+        promise.reject(new Exception("moveTaskTo failed"));
+        shadowOf(getMainLooper()).idle();
+
+        // Assert: The Task isn't stuck in PENDING_UPDATE and no longer predicts a maximized state.
+        assertEquals(State.IDLE, chromeAndroidTask.getState());
+        assertNoPendingActions(chromeAndroidTask);
+        assertFalse(chromeAndroidTask.isMaximized());
+    }
+
+    @Test
     public void restore_whenPendingUpdate_restoreReturnsCorrectBounds() {
         // Arrange.
         var chromeAndroidTaskWithMockDeps = createChromeAndroidTaskWithMockDeps(/* taskId= */ 1);
