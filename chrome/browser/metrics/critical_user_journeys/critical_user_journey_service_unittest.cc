@@ -187,6 +187,59 @@ TEST_F(CriticalUserJourneyServiceTest, HaTSSurveyAbandonedExitBranchPSD) {
 }
 
 TEST_F(CriticalUserJourneyServiceTest,
+       ActivatedTriggerHidingBeforeNextStepCompletesJourney) {
+  class ActivatedTriggerService : public CriticalUserJourneyService {
+   public:
+    explicit ActivatedTriggerService(Profile* profile)
+        : CriticalUserJourneyService(profile) {}
+
+   protected:
+    void RegisterJourneys(CriticalUserJourneyRegistry* registry) override {
+      registry->AddJourney(
+          CriticalUserJourney::Builder(&kTestJourney)
+              .AddAnyOf({Branch(kTestElementId1,
+                                ui::InteractionSequence::StepType::kActivated,
+                                1)})
+              .AddStep(kTestElementId2,
+                       ui::InteractionSequence::StepType::kShown, 2)
+              .Build());
+    }
+  };
+
+  // Tear down the default service so only `ActivatedTriggerService` listens for
+  // `kTestElementId1`.
+  service_.reset();
+  ActivatedTriggerService activated_service(&profile_);
+  activated_service.Initialize();
+
+  base::HistogramTester histograms;
+
+  // Showing `el1` (and even showing and hiding `el2`) without activating `el1`
+  // must not start or complete the journey.
+  ui::test::TestElement el1(kTestElementId1, kTestContext);
+  el1.Show();
+  ui::test::TestElement el2(kTestElementId2, kTestContext);
+  el2.Show();
+  el2.Hide();
+  base::RunLoop().RunUntilIdle();
+  histograms.ExpectTotalCount("CriticalUserJourney.TestJourney.Result", 0);
+
+  // Activating `el1` starts the session. Hiding `el1` before `el2` is shown
+  // (e.g. a page action chip disappearing as the side panel opens) must not
+  // abort the journey.
+  el1.Activate();
+  el1.Hide();
+  el2.Show();
+  base::RunLoop().RunUntilIdle();
+
+  histograms.ExpectUniqueSample(
+      "CriticalUserJourney.TestJourney.Result",
+      CriticalUserJourneySession::JourneyResult::kCompleted, 1);
+  histograms.ExpectBucketCount("CriticalUserJourney.TestJourney.StepReached", 2,
+                               1);
+}
+
+TEST_F(CriticalUserJourneyServiceTest,
        SettingsGlowupJourneysHaveDistinctNamesAndOneBasedSteps) {
   CriticalUserJourneyRegistry registry;
   registry.AddJourneys();

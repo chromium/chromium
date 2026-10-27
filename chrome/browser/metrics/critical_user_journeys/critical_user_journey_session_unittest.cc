@@ -356,8 +356,14 @@ TEST_F(CriticalUserJourneySessionTest,
         final_result = result;
       }));
 
+  // In production, `CriticalUserJourneyService` subscribes to `el1`'s
+  // activation via `ElementTracker` and calls `session->Start()` from that
+  // callback (covered end-to-end in `CriticalUserJourneyServiceTest`). Here we
+  // invoke `session->Start()` directly to unit-test `CriticalUserJourneySession`
+  // after the trigger activation has fired.
   ui::test::TestElement el1(kTestElementId1, kTestContext);
   el1.Show();
+  el1.Activate();
   session->Start(/*first_step_metric_id=*/1, &el1);
 
   // Hiding the activated trigger (e.g. an omnibox page action icon hiding as
@@ -375,7 +381,11 @@ TEST_F(CriticalUserJourneySessionTest,
       "CriticalUserJourney.TestJourney.Result",
       CriticalUserJourneySession::JourneyResult::kCompleted, 1);
   histogram_tester.ExpectBucketCount(
+      "CriticalUserJourney.TestJourney.StepReached", 1, 1);
+  histogram_tester.ExpectBucketCount(
       "CriticalUserJourney.TestJourney.StepReached", 2, 1);
+  histogram_tester.ExpectTotalCount(
+      "CriticalUserJourney.TestJourney.Step1ToStep2Duration", 1);
 }
 
 TEST_F(CriticalUserJourneySessionTest,
@@ -401,6 +411,7 @@ TEST_F(CriticalUserJourneySessionTest,
 
   ui::test::TestElement el1(kTestElementId1, kTestContext);
   el1.Show();
+  el1.Activate();
   session->Start(/*first_step_metric_id=*/std::nullopt, &el1);
 
   // Show step 2 in a separate WebUI ElementContext.
