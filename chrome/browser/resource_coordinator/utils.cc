@@ -43,28 +43,28 @@ void AttemptFastKillForDiscard(
       base::FeatureList::IsEnabled(features::kWebContentsDiscard);
 
   bool allow_skip_unload = false;
-  if (discard_reason == ::mojom::LifecycleUnitDiscardReason::URGENT) {
+  if (web_contents_discard_enabled) {
+    allow_skip_unload = true;
+  } else if (discard_reason == ::mojom::LifecycleUnitDiscardReason::URGENT) {
 #if BUILDFLAG(IS_CHROMEOS)
     allow_skip_unload = true;
-#else
-    allow_skip_unload = web_contents_discard_enabled;
 #endif
   }
 
-  const bool should_ignore_workers =
-#if BUILDFLAG(IS_CHROMEOS)
-      discard_reason == ::mojom::LifecycleUnitDiscardReason::URGENT &&
-      features::kUrgentDiscardIgnoreWorkers.Get();
-#else
-      false;
-#endif
+  const bool should_ignore_workers = web_contents_discard_enabled;
 
+  // Check if any frame has a beforeunload handler. On URGENT discards, the
+  // discard eligibility policy has already accounted for beforeunload, and
+  // legacy discard destroyed the WebContents without running beforeunload.
+  const bool check_before_unload =
+      !web_contents_discard_enabled ||
+      discard_reason != ::mojom::LifecycleUnitDiscardReason::URGENT;
   bool has_before_unload = false;
   absl::flat_hash_set<content::RenderProcessHost*> subframe_processes;
   main_frame->ForEachRenderFrameHost([&](content::RenderFrameHost* rfh) {
-    if (rfh->GetSuddenTerminationDisablerState(
-            blink::mojom::SuddenTerminationDisablerType::
-                kBeforeUnloadHandler)) {
+    if (check_before_unload && rfh->GetSuddenTerminationDisablerState(
+                                   blink::mojom::SuddenTerminationDisablerType::
+                                       kBeforeUnloadHandler)) {
       has_before_unload = true;
     }
     content::RenderProcessHost* process = rfh->GetProcess();
@@ -73,6 +73,7 @@ void AttemptFastKillForDiscard(
     }
   });
 
+  const bool should_skip_unload = allow_skip_unload && !has_before_unload;
   if (web_contents_discard_enabled) {
     // Attempt fast shutdown for any dedicated out-of-process iframe (OOPIF)
     // processes before shutting down the main frame process. Shutting down the
@@ -87,7 +88,7 @@ void AttemptFastKillForDiscard(
           /*ignore_keep_alive=*/false,
           /*ignore_pending_reuse=*/false,
           /*use_outermost_main_frame_check=*/true);
-      if (!subframe_killed && allow_skip_unload && !has_before_unload) {
+      if (!subframe_killed && should_skip_unload) {
         process->FastShutdownIfPossible(
             1u, /*skip_unload_handlers=*/true,
             /*ignore_workers=*/should_ignore_workers,
@@ -111,20 +112,26 @@ void AttemptFastKillForDiscard(
       succeed ? AttemptFastKillForDiscardResult::kKilled
               : AttemptFastKillForDiscardResult::kSkipped;
 
-  if (!succeed && allow_skip_unload && !has_before_unload) {
+  if (!succeed && should_skip_unload) {
     // We avoid fast shutdown on tabs with beforeunload handlers, as that is
     // often an indication of unsaved user state.
     if (render_process_host->FastShutdownIfPossible(
             1u, /*skip_unload_handlers=*/true,
-            /*ignore_workers=*/should_ignore_workers,
+            /*ignore_workers=*/false,
             /*ignore_keep_alive=*/false,
             /*ignore_pending_reuse=*/false,
             /*use_outermost_main_frame_check=*/web_contents_discard_enabled)) {
-      result =
-          should_ignore_workers
-              ? AttemptFastKillForDiscardResult::
-                    kKilledWithoutUnloadHandlersAndWorkers
-              : AttemptFastKillForDiscardResult::kKilledWithoutUnloadHandlers;
+      result = AttemptFastKillForDiscardResult::kKilledWithoutUnloadHandlers;
+    } else if (should_ignore_workers &&
+               render_process_host->FastShutdownIfPossible(
+                   1u, /*skip_unload_handlers=*/true,
+                   /*ignore_workers=*/true,
+                   /*ignore_keep_alive=*/false,
+                   /*ignore_pending_reuse=*/false,
+                   /*use_outermost_main_frame_check=*/
+                   web_contents_discard_enabled)) {
+      result = AttemptFastKillForDiscardResult::
+          kKilledWithoutUnloadHandlersAndWorkers;
     }
   }
 

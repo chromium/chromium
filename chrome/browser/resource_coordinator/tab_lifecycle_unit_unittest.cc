@@ -454,13 +454,10 @@ TEST_F(TabLifecycleUnitTest, MetricsRecordedOnFocusTriggeredReload) {
 
   tab_strip_model_->RemoveObserver(GetTabLifecycleUnitSource());
 }
-#if BUILDFLAG(IS_CHROMEOS)
 class TabLifecycleUnitTestWithWorker : public TabLifecycleUnitTest {
  public:
   TabLifecycleUnitTestWithWorker() {
-    feature_list_.InitAndEnableFeatureWithParameters(
-        features::kWebContentsDiscard,
-        {{"urgent_discard_ignore_workers", "true"}});
+    feature_list_.InitAndEnableFeature(features::kWebContentsDiscard);
   }
 
  private:
@@ -480,13 +477,12 @@ TEST_F(TabLifecycleUnitTestWithWorker, DiscardWithWorker) {
   EXPECT_FALSE(mock_process->FastShutdownStarted());
 
   const uint64_t kMemoryEstimateBytes = 100 * 1024 * 1024;
-  EXPECT_TRUE(tab_lifecycle_unit->Discard(LifecycleUnitDiscardReason::URGENT,
+  EXPECT_TRUE(tab_lifecycle_unit->Discard(LifecycleUnitDiscardReason::PROACTIVE,
                                           kMemoryEstimateBytes));
   EXPECT_TRUE(mock_process->FastShutdownStarted());
 
   mock_process->DecrementWorkerRefCount();
   tab_strip_model_->RemoveObserver(GetTabLifecycleUnitSource());
 }
-#endif
 
 }  // namespace resource_coordinator
