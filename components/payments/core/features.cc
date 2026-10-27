@@ -37,8 +37,6 @@ BASE_FEATURE(kDelayNativePaymentAppScrimShow,
 
 BASE_FEATURE(kEnforceFullDelegation, base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kGPayAppDynamicUpdate, base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kSecurePaymentConfirmationCredentialDiscoveryMode,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
