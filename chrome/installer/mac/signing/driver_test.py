@@ -43,6 +43,7 @@ class TestDriverExecution(unittest.TestCase):
                     disable_packaging=mock.ANY,
                     skip_brands=mock.ANY,
                     channels=mock.ANY,
+                    tag_tool=mock.ANY,
                 ),
             ]
         )
@@ -112,6 +113,23 @@ class TestCommandLine(unittest.TestCase):
         self.assertEquals(model.NotarizeAndStapleLevel.NONE, config.notarize)
         self.assertEquals([], sign_all.call_args.kwargs['skip_brands'])
         self.assertEquals([], sign_all.call_args.kwargs['channels'])
+        self.assertIsNone(sign_all.call_args.kwargs['tag_tool'])
+
+    def test_tag_tool(self, sign_all, **kwargs):
+        driver.main(
+            [
+                '--input',
+                '/input',
+                '--output',
+                '/output',
+                '--identity',
+                '-',
+                '--tag-tool',
+                '/path/to/tag',
+            ]
+        )
+        self.assertEqual(1, sign_all.call_count)
+        self.assertEqual('/path/to/tag', sign_all.call_args.kwargs['tag_tool'])
 
     def test_development(self, sign_all, **kwargs):
         driver.main(

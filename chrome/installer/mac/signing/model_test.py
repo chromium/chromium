@@ -151,6 +151,40 @@ class TestDistribution(unittest.TestCase):
             'AppProductDev-99.0.9999.99-Dev', config.packaging_basename
         )
 
+    def test_tagged_variants(self):
+        dist = model.Distribution(
+            package_as_pkg=True, tagged_variants=['GCSW', 'GCSX']
+        )
+        self.assertEqual(('GCSW', 'GCSX'), dist.tagged_variants)
+        copy_dist = dist.brandless_copy()
+        self.assertEqual((), copy_dist.tagged_variants)
+
+        empty_variants = model.Distribution(
+            package_as_pkg=True, tagged_variants=[]
+        )
+        self.assertEqual((), empty_variants.tagged_variants)
+
+        with self.assertRaises(AssertionError):
+            model.Distribution(package_as_pkg=False, tagged_variants=['GCSW'])
+
+        dist = model.Distribution(
+            branding_code='GCEM',
+            package_as_pkg=True,
+            tagged_variants=['GCEM'],
+        )
+        self.assertEqual(('GCEM',), dist.tagged_variants)
+
+        with self.assertRaises(ValueError):
+            model.Distribution(
+                package_as_pkg=True, tagged_variants=['GCSW', 'GCSW']
+            )
+
+        for invalid in ('GC=M', 'GC&M', 'GC M', 'GC\tM', ''):
+            with self.assertRaises(ValueError):
+                model.Distribution(
+                    package_as_pkg=True, tagged_variants=[invalid]
+                )
+
 
 class TestPaths(unittest.TestCase):
     def test_construct(self):

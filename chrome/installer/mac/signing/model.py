@@ -291,6 +291,7 @@ class Distribution(object):
         package_as_zip=False,
         inflation_kilobytes=0,
         direct_launch_scheme=None,
+        tagged_variants=None,
     ):
         """Creates a new Distribution object. All arguments are optional.
 
@@ -328,6 +329,14 @@ class Distribution(object):
             direct_launch_scheme: The URL scheme that launches this specific
                 product (e.g. "google-chrome"). If None, the scheme will be
                 removed from the Info.plist if present.
+            tagged_variants: A list of brand code strings for which to produce
+                tagged PKG variants, or an empty list to inject an empty tag
+                space without generating variants. If None, tagging is disabled.
+                The taggable PKG is named '<basename>-Taggable.pkg' and each
+                variant '<basename>-Tagged-<brand>.pkg', where <basename> is
+                the distribution's |config.CodeSignConfig.packaging_basename|,
+                followed by |branding_code| (or 'Unbranded') if
+                |packaging_name_fragment| is unset.
         """
         if channel_customize:
             # Side-by-side channels must have a distinct names and creator
@@ -349,9 +358,29 @@ class Distribution(object):
         self.package_as_pkg = package_as_pkg
         self.inflation_kilobytes = inflation_kilobytes
         self.direct_launch_scheme = direct_launch_scheme
+        if tagged_variants is not None:
+            self.tagged_variants = tuple(tagged_variants)
+            if len(self.tagged_variants) != len(set(self.tagged_variants)):
+                raise ValueError(
+                    'Duplicate brand codes in tagged_variants: {!r}'.format(
+                        tagged_variants
+                    )
+                )
+            for brand in self.tagged_variants:
+                if not brand or any(c in '&=' or c.isspace() for c in brand):
+                    raise ValueError(
+                        'Invalid brand code {!r} in tagged_variants: '
+                        'cannot be empty or contain \'&\', \'=\', '
+                        'or whitespace'.format(brand)
+                    )
+        else:
+            self.tagged_variants = None
 
         # inflation_kilobytes are only inserted into DMGs
         assert not self.inflation_kilobytes or self.package_as_dmg
+
+        # tagged_variants are only supported for PKGs.
+        assert self.package_as_pkg or self.tagged_variants is None
 
     def brandless_copy(self):
         """Derives and returns a copy of this Distribution object, identical
@@ -373,6 +402,7 @@ class Distribution(object):
             self.package_as_zip,
             self.inflation_kilobytes,
             self.direct_launch_scheme,
+            (() if self.tagged_variants is not None else None),
         )
 
     def to_config(self, base_config):
@@ -449,6 +479,7 @@ class Distribution(object):
                     'identity',
                     'installer_identity',
                     'codesign_requirements_basic',
+                    'notarize',
                 ),
             )
         )

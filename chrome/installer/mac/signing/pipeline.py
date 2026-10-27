@@ -10,6 +10,8 @@ The pipeline module orchestrates the entire signing process, which includes:
 """
 
 import asyncio
+import collections
+import copy
 import os.path
 
 from signing import (
@@ -20,6 +22,10 @@ from signing import (
     notarize,
     parts,
     signing,
+)
+
+PkgDistribution = collections.namedtuple(
+    'PkgDistribution', ['dist', 'dist_config', 'paths', 'pkg_path']
 )
 
 
@@ -428,9 +434,7 @@ def _package_and_sign_pkg(paths, dist_config):
             paths, pkg_paths, dist_config, component_pkg_path
         )
 
-        product_pkg_path = os.path.join(
-            pkg_paths.output, '{}.pkg'.format(dist_config.packaging_basename)
-        )
+        product_pkg_path = _pkg_path(pkg_paths, dist_config)
 
         command = [
             'productbuild',
@@ -453,7 +457,88 @@ def _package_and_sign_pkg(paths, dist_config):
         command.append(product_pkg_path)
         commands.run_command(command)
 
+        _verify_pkg_signature(product_pkg_path)
+
         return product_pkg_path
+
+
+def _verify_pkg_signature(pkg_path):
+    """Verifies the code signature of a PKG.
+
+    Args:
+        pkg_path: Path to the PKG file to verify.
+
+    Raises:
+        subprocess.CalledProcessError: If validation fails.
+    """
+    commands.run_command(['pkgutil', '--check-signature', pkg_path])
+
+
+def _pkg_path(paths, dist_config):
+    """Computes the output path for the base PKG of |dist_config|."""
+    return os.path.join(
+        paths.output, '{}.pkg'.format(dist_config.packaging_basename)
+    )
+
+
+def _derived_pkg_path(paths, dist_config, suffix):
+    """Computes the output path for a PKG derived from the base PKG of
+    |dist_config|, such as the taggable PKG or a tagged variant.
+
+    The PKG is named '<packaging_basename>[-<brand>]-<suffix>.pkg'. The
+    configured |packaging_basename| is always used as the prefix, so derived
+    PKGs are named consistently with the base PKG. If the distribution has no
+    packaging name fragment, <brand> is its brand code (or 'Unbranded' if it
+    has none) so that derived PKGs identify their source distribution;
+    otherwise the fragment, which is already part of |packaging_basename|,
+    serves that purpose.
+
+    Args:
+        paths: A |model.Paths| object.
+        dist_config: The |config.CodeSignConfig| object for the base
+            distribution.
+        suffix: The string identifying the kind of derived PKG.
+
+    Returns:
+        The path where the derived PKG should be written.
+    """
+    dist = dist_config.distribution
+    parts = [dist_config.packaging_basename]
+    if not dist.packaging_name_fragment:
+        parts.append(dist.branding_code or 'Unbranded')
+    parts.append(suffix)
+    return os.path.join(paths.output, '{}.pkg'.format('-'.join(parts)))
+
+
+def _taggable_pkg_path(paths, dist_config):
+    """Returns the path to the taggable base PKG with empty tag space.
+
+    See |_derived_pkg_path| for naming; the suffix is 'Taggable'.
+    """
+    return _derived_pkg_path(paths, dist_config, 'Taggable')
+
+
+def _variant_pkg_path(paths, dist_config, variant_brand):
+    """Determines the output file path for a tagged variant PKG.
+
+    See |_derived_pkg_path| for naming; the suffix is 'Tagged-<variant_brand>'.
+    The name identifies both the distribution the variant was built from and
+    the brand it was tagged with, and the 'Tagged' infix keeps variant names
+    distinct from natively branded PKGs.
+
+    Args:
+        paths: A |model.Paths| object.
+        dist_config: The |config.CodeSignConfig| object for the base
+            distribution.
+        variant_brand: The brand code string for this variant.
+
+    Returns:
+        The path where the tagged variant PKG should be written.
+    """
+    assert variant_brand
+    return _derived_pkg_path(
+        paths, dist_config, 'Tagged-{}'.format(variant_brand)
+    )
 
 
 def _package_and_sign_dmg(paths, dist_config):
@@ -645,16 +730,24 @@ def _intermediate_work_dir_name(dist):
 
 
 def _filter_distributions(distributions, skip_brands, channels):
-    """Filters |distributions| by filtering out those whose brand code is
-    indicated for skipping by |skip_brands|, and filtering in those whose
-    channel is indicated for inclusion by |channels|. Returns the filtered
-    distribution list.
+    """Filters |distributions| by brand code and channel.
+
+    Distributions whose brand code is indicated for skipping by |skip_brands|
+    are filtered out, and those whose channel is indicated for inclusion by
+    |channels| are filtered in. When a distribution's brand code is skipped,
+    the brand code is removed from the distribution's |tagged_variants| without
+    skipping the distribution itself. Distributions whose variants are filtered
+    are returned as copies, so the caller's objects are not modified.
 
     Args:
         distributions: A list of |model.Distribution| objects.
         skip_brands: A list of brand code strings. If a distribution has a brand
             code in this list, or if a distribution has a brand code and
-            |skip_brands| contains *, that distribution will be skipped.
+            |skip_brands| contains *, that distribution will be skipped. Brand
+            codes in this list that match a tagged variant remove that variant
+            from its distribution, and * removes all tagged variants. A
+            distribution whose variants are all removed is still produced (with
+            an empty |tagged_variants|), so its taggable PKG is still built.
         channels: A list of channel names. If the list is non-empty, then only
             distributions that match a channel name in this list will be
             produced. The string 'stable' matches the None channel.
@@ -664,19 +757,24 @@ def _filter_distributions(distributions, skip_brands, channels):
 
     Raises:
         ValueError: If any value provided in |skip_brands| does not match at
-            least one distribution.
+            least one distribution's brand code or tagged variant.
         ValueError: If any value provided in |channels| does not match at least
             one distribution.
         ValueError: If no distribution matching a value provided in |channels|
             can be returned due to brand filtering.
     """
-    all_distribution_brands = {dist.branding_code for dist in distributions}
+    all_distribution_brands = {
+        dist.branding_code for dist in distributions if dist.branding_code
+    }
+    for dist in distributions:
+        if dist.tagged_variants:
+            all_distribution_brands.update(dist.tagged_variants)
     invalid_brands = set(skip_brands) - all_distribution_brands
     invalid_brands.discard('*')
     if invalid_brands:
         raise ValueError(
             'Brand codes do not match any distribution: {}'.format(
-                invalid_brands
+                sorted(invalid_brands)
             )
         )
 
@@ -710,11 +808,22 @@ def _filter_distributions(distributions, skip_brands, channels):
             channel = 'stable'
         return channel in channels
 
-    filtered_distributions = [
-        dist
-        for dist in distributions
-        if include_brand(dist) and include_channel(dist)
-    ]
+    filtered_distributions = []
+    for dist in distributions:
+        if not (include_brand(dist) and include_channel(dist)):
+            continue
+
+        if dist.tagged_variants:
+            filtered_variants = tuple(
+                v
+                for v in dist.tagged_variants
+                if v not in skip_brands and '*' not in skip_brands
+            )
+            if filtered_variants != dist.tagged_variants:
+                dist = copy.copy(dist)
+                dist.tagged_variants = filtered_variants
+
+        filtered_distributions.append(dist)
 
     filtered_distribution_channels = {
         "stable" if dist.channel is None else dist.channel
@@ -732,7 +841,12 @@ def _filter_distributions(distributions, skip_brands, channels):
 
 
 async def sign_all(
-    orig_paths, config, disable_packaging=False, skip_brands=[], channels=[]
+    orig_paths,
+    config,
+    disable_packaging=False,
+    skip_brands=[],
+    channels=[],
+    tag_tool=None,
 ):
     """For each distribution in |config|, performs customization, signing, and
     DMG packaging and places the resulting signed DMG in |orig_paths.output|.
@@ -751,11 +865,22 @@ async def sign_all(
         channels: A list of channel names. If the list is non-empty, then only
             distributions that match a channel name in this list will be
             produced. The string 'stable' matches the None channel.
+        tag_tool: Path to the tag tool binary. Must be specified if any
+            distribution has tagged_variants configured.
     """
     with commands.WorkDirectory(orig_paths) as notary_paths:
         distributions = _filter_distributions(
             config.distributions, skip_brands, channels
         )
+
+        def _has_taggable_pkg(distributions):
+            return any(
+                d.package_as_pkg and d.tagged_variants is not None
+                for d in distributions
+            )
+
+        if not disable_packaging:
+            _verify_pkg_paths_noncolliding(distributions, config, notary_paths)
 
         # First, sign all the distributions and optionally submit the
         # notarization requests.
@@ -779,7 +904,10 @@ async def sign_all(
         if not disable_packaging:
             await asyncio.wait_for(
                 _package_and_maybe_notarize_distributions(
-                    config, distributions, notary_paths
+                    config,
+                    distributions,
+                    notary_paths,
+                    tag_tool=tag_tool,
                 ),
                 timeout=60 * 60 * 2,
             )
@@ -888,8 +1016,116 @@ async def _zip_and_notarize(notary_paths, dist_config, dest_dir):
     await notarize.submit(zip_file, dist_config)
 
 
+def _verify_pkg_paths_noncolliding(distributions, config, paths):
+    """Verifies that none of the PKG distributions or tagged variants have
+    colliding file paths.
+
+    Args:
+        distributions: A list of |model.Distribution| objects.
+        config: The |config.CodeSignConfig| object.
+        paths: A |model.Paths| object.
+
+    Raises:
+        ValueError: If any duplicate package output paths are detected. The
+            message lists every collision, one per line.
+    """
+    seen_paths = set()
+    errors = []
+
+    for dist in distributions:
+        if not dist.package_as_pkg:
+            continue
+
+        dist_config = dist.to_config(config)
+        base_pkg_path = _pkg_path(paths, dist_config)
+        if base_pkg_path in seen_paths:
+            errors.append(
+                'Duplicate package output path: {}'.format(base_pkg_path)
+            )
+        seen_paths.add(base_pkg_path)
+
+        if dist.tagged_variants is None:
+            continue
+
+        taggable_pkg_path = _taggable_pkg_path(paths, dist_config)
+        if taggable_pkg_path in seen_paths:
+            errors.append(
+                'Duplicate package output path for taggable package: {}'.format(
+                    taggable_pkg_path
+                )
+            )
+        seen_paths.add(taggable_pkg_path)
+
+        for variant_brand in dist.tagged_variants:
+            variant_pkg_path = _variant_pkg_path(
+                paths, dist_config, variant_brand
+            )
+            if variant_pkg_path in seen_paths:
+                errors.append(
+                    'Duplicate package output path for tagged variant '
+                    '{!r}: {}'.format(variant_brand, variant_pkg_path)
+                )
+            seen_paths.add(variant_pkg_path)
+
+    if errors:
+        raise ValueError('\n'.join(errors))
+
+
+def _tag_pkg_distributions(pkg_distributions, tag_tool=None):
+    """Injects tag space and creates tagged variants for PKG distributions.
+
+    Args:
+        pkg_distributions: A list of |PkgDistribution| tuples for distributions
+            packaged as PKG.
+        tag_tool: Path to the tag tool binary. Must be specified when tagging
+            distribution variants.
+    """
+    for dist, dist_config, paths, pkg_path in pkg_distributions:
+        if dist.tagged_variants is None:
+            continue
+
+        if tag_tool is None:
+            raise ValueError(
+                'tag_tool must be specified when a distribution '
+                'has tagged_variants'
+            )
+
+        taggable_pkg_path = _taggable_pkg_path(paths, dist_config)
+        commands.run_command(
+            [
+                tag_tool,
+                '--set-tag',
+                '--out={}'.format(taggable_pkg_path),
+                pkg_path,
+            ]
+        )
+        _verify_pkg_signature(taggable_pkg_path)
+        if dist_config.notarize.should_staple():
+            commands.run_command(
+                ['xcrun', 'stapler', 'validate', taggable_pkg_path]
+            )
+
+        for variant_brand in dist.tagged_variants:
+            variant_pkg_path = _variant_pkg_path(
+                paths, dist_config, variant_brand
+            )
+            commands.run_command(
+                [
+                    tag_tool,
+                    '--set-tag=brand={}'.format(variant_brand),
+                    '--out={}'.format(variant_pkg_path),
+                    taggable_pkg_path,
+                ]
+            )
+            _verify_pkg_signature(variant_pkg_path)
+            if dist_config.notarize.should_staple():
+                commands.run_command(
+                    ['xcrun', 'stapler', 'validate', variant_pkg_path]
+                )
+
+
 async def _package_and_maybe_notarize_distributions(
-    config, distributions, notary_paths
+    config, distributions, notary_paths, tag_tool=None
 ):
     """Iterates each |model.Distribution| in |distributions| and packages it
     according to its specification. If notarization is requested, that is
@@ -900,8 +1136,11 @@ async def _package_and_maybe_notarize_distributions(
         distributions: The |model.Distribution|s to sign.
         notary_paths: A |model.Paths| object where artifacts will be placed when
             notarizing.
+        tag_tool: Path to the tag tool binary. Must be specified if any
+            distribution has tagged_variants configured.
     """
     staple_paths = []
+    pkgs_to_tag = []
     async with asyncio.TaskGroup() as tasks:
         for dist in distributions:
             dist_config = dist.to_config(config)
@@ -935,6 +1174,12 @@ async def _package_and_maybe_notarize_distributions(
 
             if dist.package_as_pkg:
                 pkg_path = _package_and_sign_pkg(paths, dist_config)
+                # Tagged variants are built out of the already-notarized
+                # packages later in the call to `_tag_pkg_distributions`.
+                if dist.tagged_variants is not None:
+                    pkgs_to_tag.append(
+                        PkgDistribution(dist, dist_config, paths, pkg_path)
+                    )
 
                 if config.notarize.should_notarize():
                     tasks.create_task(notarize.submit(pkg_path, dist_config))
@@ -950,3 +1195,4 @@ async def _package_and_maybe_notarize_distributions(
     if config.notarize.should_staple():
         for path in staple_paths:
             notarize.staple(path)
+    _tag_pkg_distributions(pkgs_to_tag, tag_tool=tag_tool)

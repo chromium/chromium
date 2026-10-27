@@ -741,14 +741,24 @@ updater requirement is 'true '""",
         )
 
         manager.assert_has_calls(
-            [mock.call.run_command(mock.ANY), mock.call.run_command(mock.ANY)]
+            [
+                mock.call.run_command(mock.ANY),
+                mock.call.run_command(mock.ANY),
+                mock.call.run_command(mock.ANY),
+            ]
         )
 
         run_commands = [
             call for call in manager.mock_calls if call[0] == 'run_command'
         ]
+        self.assertEqual(3, len(run_commands))
         pkgbuild_args = run_commands[0][1][0]
         productbuild_args = run_commands[1][1][0]
+        pkgutil_args = run_commands[2][1][0]
+        self.assertEqual(
+            ['pkgutil', '--check-signature', '/$O/AppProduct-99.0.9999.99.pkg'],
+            pkgutil_args,
+        )
 
         self.assertEqual(
             '/$W_1/payload', _get_adjacent_item(pkgbuild_args, '--root')
@@ -874,14 +884,28 @@ updater requirement is 'true '""",
         )
 
         manager.assert_has_calls(
-            [mock.call.run_command(mock.ANY), mock.call.run_command(mock.ANY)]
+            [
+                mock.call.run_command(mock.ANY),
+                mock.call.run_command(mock.ANY),
+                mock.call.run_command(mock.ANY),
+            ]
         )
 
         run_commands = [
             call for call in manager.mock_calls if call[0] == 'run_command'
         ]
+        self.assertEqual(3, len(run_commands))
         pkgbuild_args = run_commands[0][1][0]
         productbuild_args = run_commands[1][1][0]
+        pkgutil_args = run_commands[2][1][0]
+        self.assertEqual(
+            [
+                'pkgutil',
+                '--check-signature',
+                '/$O/AppProduct-99.0.9999.99-ForCows.pkg',
+            ],
+            pkgutil_args,
+        )
 
         self.assertEqual(
             '/$W_1/payload', _get_adjacent_item(pkgbuild_args, '--root')
@@ -925,6 +949,500 @@ updater requirement is 'true '""",
         self.assertEqual(
             '[INSTALLER-IDENTITY]',
             _get_adjacent_item(productbuild_args, '--sign'),
+        )
+
+    def test_verify_pkg_signature(self, **kwargs):
+        pipeline._verify_pkg_signature('/$O/AppProduct-99.0.9999.99.pkg')
+        kwargs['run_command'].assert_called_once_with(
+            ['pkgutil', '--check-signature', '/$O/AppProduct-99.0.9999.99.pkg']
+        )
+
+    def test_taggable_pkg_path(self, **kwargs):
+        config = test_config.TestConfig()
+
+        def taggable_path(**dist_kwargs):
+            dist = model.Distribution(package_as_pkg=True, **dist_kwargs)
+            return pipeline._taggable_pkg_path(
+                self.paths, dist.to_config(config)
+            )
+
+        # Fragment and brand: the fragment is used.
+        self.assertEqual(
+            '/$O/AppProduct-99.0.9999.99-Enterprise-Brand-GCEM-Taggable.pkg',
+            taggable_path(
+                branding_code='GCEM',
+                packaging_name_fragment='Enterprise-Brand-GCEM',
+            ),
+        )
+        # Brand without fragment: the brand code is used.
+        self.assertEqual(
+            '/$O/AppProduct-99.0.9999.99-GCEM-Taggable.pkg',
+            taggable_path(branding_code='GCEM'),
+        )
+        # Neither: 'Unbranded' is used.
+        self.assertEqual(
+            '/$O/AppProduct-99.0.9999.99-Unbranded-Taggable.pkg',
+            taggable_path(),
+        )
+
+    def test_derived_pkg_paths_use_packaging_basename(self, **kwargs):
+        # Derived PKGs are always prefixed by the distribution's
+        # packaging_basename, including when a config customizes it.
+        class Config(test_config.TestConfig):
+            @property
+            def packaging_basename(self):
+                return 'Custom-Basename'
+
+        config = Config()
+        for dist in (
+            model.Distribution(
+                branding_code='GCEM',
+                packaging_name_fragment='Enterprise',
+                package_as_pkg=True,
+            ),
+            model.Distribution(branding_code='GCEM', package_as_pkg=True),
+        ):
+            dist_config = dist.to_config(config)
+            prefix = '/$O/' + dist_config.packaging_basename
+            self.assertEqual(
+                prefix + '.pkg', pipeline._pkg_path(self.paths, dist_config)
+            )
+            self.assertTrue(
+                pipeline._taggable_pkg_path(self.paths, dist_config).startswith(
+                    prefix + '-'
+                )
+            )
+            self.assertTrue(
+                pipeline._variant_pkg_path(
+                    self.paths, dist_config, 'GCSW'
+                ).startswith(prefix + '-')
+            )
+
+        # Without a packaging name fragment, the customized basename is used.
+        dist_config = model.Distribution(
+            branding_code='GCEM', package_as_pkg=True
+        ).to_config(config)
+        self.assertEqual(
+            '/$O/Custom-Basename-GCEM-Tagged-GCSW.pkg',
+            pipeline._variant_pkg_path(self.paths, dist_config, 'GCSW'),
+        )
+
+    def test_variant_pkg_path(self, **kwargs):
+        config = test_config.TestConfig()
+
+        def variant_path(variant_brand, **dist_kwargs):
+            dist = model.Distribution(package_as_pkg=True, **dist_kwargs)
+            return pipeline._variant_pkg_path(
+                self.paths, dist.to_config(config), variant_brand
+            )
+
+        # Fragment and brand: the fragment is used verbatim, even when it
+        # contains the brand code.
+        self.assertEqual(
+            (
+                '/$O/AppProduct-99.0.9999.99-'
+                'Stable-Enterprise-Brand-GCEM-Tagged-GCSW.pkg'
+            ),
+            variant_path(
+                'GCSW',
+                branding_code='GCEM',
+                packaging_name_fragment='Stable-Enterprise-Brand-GCEM',
+            ),
+        )
+        # Fragment without brand.
+        self.assertEqual(
+            '/$O/AppProduct-99.0.9999.99-Stable-Enterprise-Tagged-GCSW.pkg',
+            variant_path('GCSW', packaging_name_fragment='Stable-Enterprise'),
+        )
+        # Brand without fragment: the brand code is used.
+        self.assertEqual(
+            '/$O/AppProduct-99.0.9999.99-GCEM-Tagged-GCSW.pkg',
+            variant_path('GCSW', branding_code='GCEM'),
+        )
+        # Neither: 'Unbranded' is used.
+        self.assertEqual(
+            '/$O/AppProduct-99.0.9999.99-Unbranded-Tagged-GCSW.pkg',
+            variant_path('GCSW'),
+        )
+        # Re-tagging with the distribution's own brand needs no special case.
+        self.assertEqual(
+            '/$O/AppProduct-99.0.9999.99-Enterprise-Brand-GCEM-Tagged-GCEM.pkg',
+            variant_path(
+                'GCEM',
+                branding_code='GCEM',
+                packaging_name_fragment='Enterprise-Brand-GCEM',
+            ),
+        )
+        # Different source distributions tagged with the same brand produce
+        # different names.
+        self.assertNotEqual(
+            variant_path('GCSW', branding_code='GCEM'),
+            variant_path('GCSW', branding_code='GCOA'),
+        )
+
+    def test_tag_pkg_distributions_no_tag_tool(self, **kwargs):
+        dist = model.Distribution(package_as_pkg=True, tagged_variants=[])
+        dist_config = dist.to_config(test_config.TestConfig())
+        pkg_dists = [
+            pipeline.PkgDistribution(
+                dist, dist_config, self.paths, '/$O/base.pkg'
+            )
+        ]
+        with self.assertRaises(ValueError) as cm:
+            pipeline._tag_pkg_distributions(pkg_dists, tag_tool=None)
+        self.assertEqual(
+            'tag_tool must be specified when a distribution '
+            'has tagged_variants',
+            str(cm.exception),
+        )
+
+    @mock.patch('signing.logger.warning')
+    def test_tag_pkg_distributions_none_variants_no_tag_tool(
+        self, warning, **kwargs
+    ):
+        dist = model.Distribution(package_as_pkg=True, tagged_variants=None)
+        dist_config = dist.to_config(test_config.TestConfig())
+        pkg_dists = [
+            pipeline.PkgDistribution(
+                dist, dist_config, self.paths, '/$O/base.pkg'
+            )
+        ]
+        pipeline._tag_pkg_distributions(pkg_dists, tag_tool=None)
+        kwargs['run_command'].assert_not_called()
+        warning.assert_not_called()
+
+    def test_tag_pkg_distributions_none_variants(self, **kwargs):
+        dist = model.Distribution(package_as_pkg=True, tagged_variants=None)
+        dist_config = dist.to_config(test_config.TestConfig())
+        pkg_dists = [
+            pipeline.PkgDistribution(
+                dist, dist_config, self.paths, '/$O/base.pkg'
+            )
+        ]
+        pipeline._tag_pkg_distributions(pkg_dists, tag_tool='/path/to/tag')
+        kwargs['run_command'].assert_not_called()
+
+    def test_tag_pkg_distributions_empty_variants(self, **kwargs):
+        dist = model.Distribution(package_as_pkg=True, tagged_variants=[])
+        dist_config = dist.to_config(test_config.TestConfig())
+        pkg_dists = [
+            pipeline.PkgDistribution(
+                dist, dist_config, self.paths, '/$O/base.pkg'
+            )
+        ]
+        taggable_path = '/$O/AppProduct-99.0.9999.99-Unbranded-Taggable.pkg'
+        pipeline._tag_pkg_distributions(pkg_dists, tag_tool='/path/to/tag')
+        self.assertEqual(
+            [
+                mock.call(
+                    [
+                        '/path/to/tag',
+                        '--set-tag',
+                        '--out=' + taggable_path,
+                        '/$O/base.pkg',
+                    ]
+                ),
+                mock.call(
+                    [
+                        'pkgutil',
+                        '--check-signature',
+                        taggable_path,
+                    ]
+                ),
+                mock.call(
+                    [
+                        'xcrun',
+                        'stapler',
+                        'validate',
+                        taggable_path,
+                    ]
+                ),
+            ],
+            kwargs['run_command'].mock_calls,
+        )
+
+    def test_tag_pkg_distributions_with_variants(self, **kwargs):
+        dist = model.Distribution(
+            branding_code='GCEM',
+            packaging_name_fragment='Enterprise-Brand-GCEM',
+            package_as_pkg=True,
+            tagged_variants=['GCSW', 'GCOA'],
+        )
+        dist_config = dist.to_config(test_config.TestConfig())
+        pkg_dists = [
+            pipeline.PkgDistribution(
+                dist, dist_config, self.paths, '/$O/Enterprise-Brand-GCEM.pkg'
+            )
+        ]
+        taggable_path = (
+            '/$O/AppProduct-99.0.9999.99-Enterprise-Brand-GCEM-Taggable.pkg'
+        )
+        gcsw_path = (
+            '/$O/AppProduct-99.0.9999.99-Enterprise-Brand-GCEM-Tagged-GCSW.pkg'
+        )
+        gcoa_path = (
+            '/$O/AppProduct-99.0.9999.99-Enterprise-Brand-GCEM-Tagged-GCOA.pkg'
+        )
+        pipeline._tag_pkg_distributions(pkg_dists, tag_tool='/path/to/tag')
+        self.assertEqual(
+            [
+                mock.call(
+                    [
+                        '/path/to/tag',
+                        '--set-tag',
+                        '--out=' + taggable_path,
+                        '/$O/Enterprise-Brand-GCEM.pkg',
+                    ]
+                ),
+                mock.call(['pkgutil', '--check-signature', taggable_path]),
+                mock.call(['xcrun', 'stapler', 'validate', taggable_path]),
+                mock.call(
+                    [
+                        '/path/to/tag',
+                        '--set-tag=brand=GCSW',
+                        '--out=' + gcsw_path,
+                        taggable_path,
+                    ]
+                ),
+                mock.call(
+                    [
+                        'pkgutil',
+                        '--check-signature',
+                        gcsw_path,
+                    ]
+                ),
+                mock.call(
+                    [
+                        'xcrun',
+                        'stapler',
+                        'validate',
+                        gcsw_path,
+                    ]
+                ),
+                mock.call(
+                    [
+                        '/path/to/tag',
+                        '--set-tag=brand=GCOA',
+                        '--out=' + gcoa_path,
+                        taggable_path,
+                    ]
+                ),
+                mock.call(
+                    [
+                        'pkgutil',
+                        '--check-signature',
+                        gcoa_path,
+                    ]
+                ),
+                mock.call(
+                    [
+                        'xcrun',
+                        'stapler',
+                        'validate',
+                        gcoa_path,
+                    ]
+                ),
+            ],
+            kwargs['run_command'].mock_calls,
+        )
+
+    def test_tag_pkg_distributions_base_pkg_never_modified_in_place(
+        self, **kwargs
+    ):
+        base_pkg = '/$O/base.pkg'
+        dist = model.Distribution(
+            package_as_pkg=True,
+            tagged_variants=['GCSW'],
+        )
+        dist_config = dist.to_config(
+            test_config.TestConfig(notarize=model.NotarizeAndStapleLevel.NONE)
+        )
+        pkg_dists = [
+            pipeline.PkgDistribution(dist, dist_config, self.paths, base_pkg)
+        ]
+        pipeline._tag_pkg_distributions(pkg_dists, tag_tool='/path/to/tag')
+        tag_tool_calls = [
+            call[0][0]
+            for call in kwargs['run_command'].call_args_list
+            if call[0][0][0] == '/path/to/tag'
+        ]
+        self.assertTrue(tag_tool_calls)
+        for cmd in tag_tool_calls:
+            self.assertTrue(any(arg.startswith('--out=') for arg in cmd))
+            self.assertNotEqual(['/path/to/tag', '--set-tag', base_pkg], cmd)
+
+    def test_tag_pkg_distributions_own_brand_variant(self, **kwargs):
+        dist = model.Distribution(
+            branding_code='GCEM',
+            package_as_pkg=True,
+            tagged_variants=['GCEM'],
+        )
+        dist_config = dist.to_config(test_config.TestConfig())
+        pkg_path = '/$O/base.pkg'
+        pkg_dists = [
+            pipeline.PkgDistribution(dist, dist_config, self.paths, pkg_path)
+        ]
+        taggable_path = '/$O/AppProduct-99.0.9999.99-GCEM-Taggable.pkg'
+        variant_path = '/$O/AppProduct-99.0.9999.99-GCEM-Tagged-GCEM.pkg'
+        pipeline._tag_pkg_distributions(pkg_dists, tag_tool='/path/to/tag')
+        kwargs['run_command'].assert_has_calls(
+            [
+                mock.call(
+                    [
+                        '/path/to/tag',
+                        '--set-tag',
+                        '--out=' + taggable_path,
+                        '/$O/base.pkg',
+                    ]
+                ),
+                mock.call(['pkgutil', '--check-signature', taggable_path]),
+                mock.call(['xcrun', 'stapler', 'validate', taggable_path]),
+                mock.call(
+                    [
+                        '/path/to/tag',
+                        '--set-tag=brand=GCEM',
+                        '--out=' + variant_path,
+                        taggable_path,
+                    ]
+                ),
+                mock.call(['pkgutil', '--check-signature', variant_path]),
+                mock.call(['xcrun', 'stapler', 'validate', variant_path]),
+            ]
+        )
+
+    def test_verify_pkg_paths_path_collision(self, **kwargs):
+        # A hand-written fragment that matches a variant name still collides.
+        dist1 = model.Distribution(
+            packaging_name_fragment='Unbranded-Tagged-GCSW',
+            package_as_pkg=True,
+        )
+        dist2 = model.Distribution(
+            package_as_pkg=True,
+            tagged_variants=['GCSW'],
+        )
+        config = test_config.TestConfig()
+        with self.assertRaises(ValueError) as cm:
+            pipeline._verify_pkg_paths_noncolliding(
+                [dist1, dist2], config, self.paths
+            )
+        self.assertEqual(
+            "Duplicate package output path for tagged variant 'GCSW': "
+            '/$O/AppProduct-99.0.9999.99-Unbranded-Tagged-GCSW.pkg',
+            str(cm.exception),
+        )
+
+    def test_verify_pkg_paths_variant_and_native_brand_do_not_collide(
+        self, **kwargs
+    ):
+        # A natively branded PKG and a variant tagged with the same brand get
+        # different names.
+        dist1 = model.Distribution(
+            branding_code='GCSW',
+            packaging_name_fragment='Brand-GCSW',
+            package_as_pkg=True,
+        )
+        dist2 = model.Distribution(
+            package_as_pkg=True,
+            tagged_variants=['GCSW'],
+        )
+        config = test_config.TestConfig()
+        pipeline._verify_pkg_paths_noncolliding(
+            [dist1, dist2], config, self.paths
+        )
+
+    def test_verify_pkg_paths_duplicate_variant_collision(self, **kwargs):
+        # Both distributions have the tagging base fragment 'GCEM' (one from
+        # its brand code, one from its fragment) but distinct base PKGs.
+        dist1 = model.Distribution(
+            branding_code='GCEM',
+            package_as_pkg=True,
+            tagged_variants=['GCSW'],
+        )
+        dist2 = model.Distribution(
+            packaging_name_fragment='GCEM',
+            package_as_pkg=True,
+            tagged_variants=['GCSW'],
+        )
+        config = test_config.TestConfig()
+        with self.assertRaises(ValueError) as cm:
+            pipeline._verify_pkg_paths_noncolliding(
+                [dist1, dist2], config, self.paths
+            )
+        self.assertEqual(
+            'Duplicate package output path for taggable package: '
+            '/$O/AppProduct-99.0.9999.99-GCEM-Taggable.pkg\n'
+            "Duplicate package output path for tagged variant 'GCSW': "
+            '/$O/AppProduct-99.0.9999.99-GCEM-Tagged-GCSW.pkg',
+            str(cm.exception),
+        )
+
+    def test_verify_pkg_paths_same_variant_different_sources(self, **kwargs):
+        # The same variant brand built from different distributions does not
+        # collide.
+        dist1 = model.Distribution(
+            branding_code='GCEM',
+            packaging_name_fragment='Enterprise-Brand-GCEM',
+            package_as_pkg=True,
+            tagged_variants=['GCSW'],
+        )
+        dist2 = model.Distribution(
+            branding_code='GCOA',
+            packaging_name_fragment='Enterprise-Brand-GCOA',
+            package_as_pkg=True,
+            tagged_variants=['GCSW'],
+        )
+        config = test_config.TestConfig()
+        pipeline._verify_pkg_paths_noncolliding(
+            [dist1, dist2], config, self.paths
+        )
+
+    def test_verify_pkg_paths_taggable_package_collision(self, **kwargs):
+        dist1 = model.Distribution(
+            packaging_name_fragment='Unbranded-Taggable',
+            package_as_pkg=True,
+        )
+        dist2 = model.Distribution(
+            package_as_pkg=True,
+            tagged_variants=[],
+        )
+        config = test_config.TestConfig()
+        with self.assertRaises(ValueError) as cm:
+            pipeline._verify_pkg_paths_noncolliding(
+                [dist1, dist2], config, self.paths
+            )
+        self.assertIn(
+            'Duplicate package output path for taggable package: '
+            '/$O/AppProduct-99.0.9999.99-Unbranded-Taggable.pkg',
+            str(cm.exception),
+        )
+
+    def test_verify_pkg_paths_duplicate_base_package_collision(self, **kwargs):
+        dist1 = model.Distribution(package_as_pkg=True, tagged_variants=[])
+        dist2 = model.Distribution(package_as_pkg=True, tagged_variants=[])
+        config = test_config.TestConfig()
+        with self.assertRaises(ValueError) as cm:
+            pipeline._verify_pkg_paths_noncolliding(
+                [dist1, dist2], config, self.paths
+            )
+        self.assertIn(
+            'Duplicate package output path: /$O/AppProduct-99.0.9999.99.pkg',
+            str(cm.exception),
+        )
+
+    def test_verify_pkg_paths_reports_all_collisions(self, **kwargs):
+        dist1 = model.Distribution(package_as_pkg=True, tagged_variants=[])
+        dist2 = model.Distribution(package_as_pkg=True, tagged_variants=[])
+        config = test_config.TestConfig()
+        with self.assertRaises(ValueError) as cm:
+            pipeline._verify_pkg_paths_noncolliding(
+                [dist1, dist2], config, self.paths
+            )
+        self.assertEqual(
+            'Duplicate package output path: '
+            '/$O/AppProduct-99.0.9999.99.pkg\n'
+            'Duplicate package output path for taggable package: '
+            '/$O/AppProduct-99.0.9999.99-Unbranded-Taggable.pkg',
+            str(cm.exception),
         )
 
     def test_package_dmg_no_customize(self, **kwargs):
@@ -1058,7 +1576,7 @@ updater requirement is 'true '""",
             pipeline._filter_distributions(distributions, ['MOOG'], [])
         self.assertEqual(
             cm.exception.args[0],
-            "Brand codes do not match any distribution: %r" % {'MOOG'},
+            "Brand codes do not match any distribution: ['MOOG']",
         )
 
         # Filtering one or more brand codes explicitly should remove them.
@@ -1136,6 +1654,41 @@ updater requirement is 'true '""",
             "All distributions for channels were filtered out by brand: %r"
             % {'beta'},
         )
+
+        # --- Tagged Variants ---
+
+        dist_variants = model.Distribution(
+            branding_code='BASE',
+            package_as_pkg=True,
+            tagged_variants=['VAR1', 'VAR2', 'VAR3'],
+        )
+
+        # Filtering one variant
+        filtered = pipeline._filter_distributions([dist_variants], ['VAR2'], [])
+        self.assertEqual(1, len(filtered))
+        self.assertEqual('BASE', filtered[0].branding_code)
+        self.assertEqual(('VAR1', 'VAR3'), filtered[0].tagged_variants)
+
+        # Filtering multiple variants
+        filtered = pipeline._filter_distributions(
+            [dist_variants], ['VAR1', 'VAR3'], []
+        )
+        self.assertEqual(1, len(filtered))
+        self.assertEqual(('VAR2',), filtered[0].tagged_variants)
+
+        # Filtering '*' for a branded distribution removes the entire
+        # distribution.
+        filtered = pipeline._filter_distributions([dist_variants], ['*'], [])
+        self.assertEqual(0, len(filtered))
+
+        # Filtering '*' for an unbranded distribution removes just the
+        # variants.
+        dist_unbranded = model.Distribution(
+            package_as_pkg=True, tagged_variants=['VAR1', 'VAR2']
+        )
+        filtered = pipeline._filter_distributions([dist_unbranded], ['*'], [])
+        self.assertEqual(1, len(filtered))
+        self.assertEqual((), filtered[0].tagged_variants)
 
 
 @mock.patch.multiple(
@@ -1372,7 +1925,11 @@ class TestSignAll(unittest.TestCase):
                 ]
 
         config = Config()
-        asyncio.run(pipeline.sign_all(self.paths, config))
+        asyncio.run(
+            pipeline.sign_all(
+                self.paths, config, tag_tool='/$I/Product Packaging/tag'
+            )
+        )
 
         manager.assert_has_calls(
             [
@@ -1397,13 +1954,85 @@ class TestSignAll(unittest.TestCase):
                 mock.call._staple_chrome(
                     self.paths.replace_work('/$W_1/stable'), mock.ANY
                 ),
-                # Make the DMG.
+                # Make the PKG.
                 mock.call._package_and_sign_pkg(mock.ANY, mock.ANY),
-                # Notarize the DMG.
+                # Notarize the PKG.
                 mock.call.submit('/$O/AppProduct-99.0.9999.99.pkg', mock.ANY),
                 mock.call.staple('/$O/AppProduct-99.0.9999.99.pkg'),
                 mock.call.shutil.rmtree('/$W_1'),
             ]
+        )
+        self.assertEqual(0, kwargs['run_command'].call_count)
+
+    def test_sign_basic_distribution_pkg_tagging(self, **kwargs):
+        kwargs['run_command_all_output_async'].return_value = ('', 0, '', '')
+        manager = mock.Mock()
+        for attr in kwargs:
+            manager.attach_mock(kwargs[attr], attr)
+
+        kwargs[
+            '_package_and_sign_pkg'
+        ].return_value = '/$O/AppProduct-99.0.9999.99.pkg'
+
+        class Config(test_config.TestConfig):
+            @property
+            def distributions(self):
+                return [
+                    model.Distribution(
+                        package_as_dmg=False,
+                        package_as_pkg=True,
+                        package_as_zip=False,
+                        tagged_variants=[],
+                    ),
+                ]
+
+        config = Config()
+        tag_tool = '/$I/Product Packaging/tag'
+        asyncio.run(pipeline.sign_all(self.paths, config, tag_tool=tag_tool))
+
+        pkg_path = '/$O/AppProduct-99.0.9999.99.pkg'
+        taggable_pkg_path = '/$O/AppProduct-99.0.9999.99-Unbranded-Taggable.pkg'
+        staple_call = mock.call.staple(pkg_path)
+        tag_call = mock.call.run_command(
+            [tag_tool, '--set-tag', '--out=' + taggable_pkg_path, pkg_path]
+        )
+        verify_call = mock.call.run_command(
+            ['pkgutil', '--check-signature', taggable_pkg_path]
+        )
+        staple_validate_call = mock.call.run_command(
+            ['xcrun', 'stapler', 'validate', taggable_pkg_path]
+        )
+
+        self.assertIn(staple_call, manager.mock_calls)
+        self.assertIn(tag_call, manager.mock_calls)
+        self.assertIn(verify_call, manager.mock_calls)
+        self.assertIn(staple_validate_call, manager.mock_calls)
+        self.assertLess(
+            manager.mock_calls.index(staple_call),
+            manager.mock_calls.index(tag_call),
+        )
+        self.assertLess(
+            manager.mock_calls.index(tag_call),
+            manager.mock_calls.index(verify_call),
+        )
+        self.assertLess(
+            manager.mock_calls.index(verify_call),
+            manager.mock_calls.index(staple_validate_call),
+        )
+        self.assertEqual(
+            [
+                mock.call(
+                    [
+                        tag_tool,
+                        '--set-tag',
+                        '--out=' + taggable_pkg_path,
+                        pkg_path,
+                    ]
+                ),
+                mock.call(['pkgutil', '--check-signature', taggable_pkg_path]),
+                mock.call(['xcrun', 'stapler', 'validate', taggable_pkg_path]),
+            ],
+            kwargs['run_command'].mock_calls,
         )
 
     def test_sign_basic_distribution_dmg_zip(self, **kwargs):
@@ -1490,7 +2119,11 @@ class TestSignAll(unittest.TestCase):
                 ]
 
         config = Config()
-        asyncio.run(pipeline.sign_all(self.paths, config))
+        asyncio.run(
+            pipeline.sign_all(
+                self.paths, config, tag_tool='/$I/Product Packaging/tag'
+            )
+        )
 
         manager.assert_has_calls(
             [
@@ -1528,6 +2161,80 @@ class TestSignAll(unittest.TestCase):
             ]
         )
 
+    def test_sign_basic_distribution_dmg_pkg_tagging(self, **kwargs):
+        kwargs['run_command_all_output_async'].return_value = ('', 0, '', '')
+        manager = mock.Mock()
+        for attr in kwargs:
+            manager.attach_mock(kwargs[attr], attr)
+
+        kwargs[
+            '_package_and_sign_dmg'
+        ].return_value = '/$O/AppProduct-99.0.9999.99.dmg'
+        kwargs[
+            '_package_and_sign_pkg'
+        ].return_value = '/$O/AppProduct-99.0.9999.99.pkg'
+
+        class Config(test_config.TestConfig):
+            @property
+            def distributions(self):
+                return [
+                    model.Distribution(
+                        package_as_dmg=True,
+                        package_as_pkg=True,
+                        package_as_zip=False,
+                        tagged_variants=[],
+                    ),
+                ]
+
+        config = Config()
+        tag_tool = '/$I/Product Packaging/tag'
+        asyncio.run(pipeline.sign_all(self.paths, config, tag_tool=tag_tool))
+
+        pkg_path = '/$O/AppProduct-99.0.9999.99.pkg'
+        taggable_pkg_path = '/$O/AppProduct-99.0.9999.99-Unbranded-Taggable.pkg'
+        staple_call = mock.call.staple(pkg_path)
+        tag_call = mock.call.run_command(
+            [tag_tool, '--set-tag', '--out=' + taggable_pkg_path, pkg_path]
+        )
+        verify_call = mock.call.run_command(
+            ['pkgutil', '--check-signature', taggable_pkg_path]
+        )
+        staple_validate_call = mock.call.run_command(
+            ['xcrun', 'stapler', 'validate', taggable_pkg_path]
+        )
+
+        self.assertIn(staple_call, manager.mock_calls)
+        self.assertIn(tag_call, manager.mock_calls)
+        self.assertIn(verify_call, manager.mock_calls)
+        self.assertIn(staple_validate_call, manager.mock_calls)
+        self.assertLess(
+            manager.mock_calls.index(staple_call),
+            manager.mock_calls.index(tag_call),
+        )
+        self.assertLess(
+            manager.mock_calls.index(tag_call),
+            manager.mock_calls.index(verify_call),
+        )
+        self.assertLess(
+            manager.mock_calls.index(verify_call),
+            manager.mock_calls.index(staple_validate_call),
+        )
+        self.assertEqual(
+            [
+                mock.call(
+                    [
+                        tag_tool,
+                        '--set-tag',
+                        '--out=' + taggable_pkg_path,
+                        pkg_path,
+                    ]
+                ),
+                mock.call(['pkgutil', '--check-signature', taggable_pkg_path]),
+                mock.call(['xcrun', 'stapler', 'validate', taggable_pkg_path]),
+            ],
+            kwargs['run_command'].mock_calls,
+        )
+
     def test_sign_basic_distribution_pkg_zip(self, **kwargs):
         kwargs['run_command_all_output_async'].return_value = ('', 0, '', '')
         manager = mock.Mock()
@@ -1551,7 +2258,11 @@ class TestSignAll(unittest.TestCase):
                 ]
 
         config = Config()
-        asyncio.run(pipeline.sign_all(self.paths, config))
+        asyncio.run(
+            pipeline.sign_all(
+                self.paths, config, tag_tool='/$I/Product Packaging/tag'
+            )
+        )
 
         manager.assert_has_calls(
             [
@@ -1613,7 +2324,11 @@ class TestSignAll(unittest.TestCase):
                 ]
 
         config = Config()
-        asyncio.run(pipeline.sign_all(self.paths, config))
+        asyncio.run(
+            pipeline.sign_all(
+                self.paths, config, tag_tool='/$I/Product Packaging/tag'
+            )
+        )
 
         manager.assert_has_calls(
             [
@@ -1848,7 +2563,11 @@ class TestSignAll(unittest.TestCase):
                 ]
 
         config = Config(notarize=model.NotarizeAndStapleLevel.NONE)
-        asyncio.run(pipeline.sign_all(self.paths, config))
+        asyncio.run(
+            pipeline.sign_all(
+                self.paths, config, tag_tool='/$I/Product Packaging/tag'
+            )
+        )
 
         self.assertEqual(6, kwargs['_customize_and_sign_chrome'].call_count)
 
@@ -1923,6 +2642,281 @@ class TestSignAll(unittest.TestCase):
                 ),
                 mock.call.shutil.rmtree('/$W_1'),
             ]
+        )
+
+    def test_sign_branded_distribution_tagging(self, **kwargs):
+        manager = mock.Mock()
+        for attr in kwargs:
+            manager.attach_mock(kwargs[attr], attr)
+
+        kwargs['_package_and_sign_pkg'].side_effect = lambda paths, config: (
+            '{}/{}.pkg'.format(paths.output, config.packaging_basename)
+        )
+
+        class Config(test_config.TestConfig):
+            @property
+            def distributions(self):
+                return [
+                    model.Distribution(
+                        branding_code='GCEM',
+                        packaging_name_fragment='Enterprise-Brand-GCEM',
+                        package_as_dmg=False,
+                        package_as_pkg=True,
+                        package_as_zip=False,
+                        tagged_variants=['GCSW', 'GCOA'],
+                    ),
+                    model.Distribution(
+                        package_as_dmg=False,
+                        package_as_pkg=True,
+                        package_as_zip=False,
+                        tagged_variants=[],
+                    ),
+                    model.Distribution(
+                        branding_code='MOO',
+                        packaging_name_fragment='ForCows',
+                        package_as_dmg=False,
+                        package_as_pkg=True,
+                        package_as_zip=False,
+                    ),
+                ]
+
+        config = Config(notarize=model.NotarizeAndStapleLevel.NONE)
+        tag_tool = '/path/to/tag'
+        asyncio.run(pipeline.sign_all(self.paths, config, tag_tool=tag_tool))
+
+        self.assertEqual(1, kwargs['_customize_and_sign_chrome'].call_count)
+
+        self.assertEqual(3, kwargs['_package_and_sign_pkg'].call_count)
+        gcsw_path = (
+            '/$O/AppProduct-99.0.9999.99-Enterprise-Brand-GCEM-Tagged-GCSW.pkg'
+        )
+        gcoa_path = (
+            '/$O/AppProduct-99.0.9999.99-Enterprise-Brand-GCEM-Tagged-GCOA.pkg'
+        )
+        unbranded_taggable_path = (
+            '/$O/AppProduct-99.0.9999.99-Unbranded-Taggable.pkg'
+        )
+        taggable_path = (
+            '/$O/AppProduct-99.0.9999.99-Enterprise-Brand-GCEM-Taggable.pkg'
+        )
+        self.assertEqual(
+            [
+                mock.call(
+                    [
+                        tag_tool,
+                        '--set-tag',
+                        '--out=' + taggable_path,
+                        (
+                            '/$O/'
+                            'AppProduct-99.0.9999.99-Enterprise-Brand-GCEM.pkg'
+                        ),
+                    ]
+                ),
+                mock.call(['pkgutil', '--check-signature', taggable_path]),
+                mock.call(
+                    [
+                        tag_tool,
+                        '--set-tag=brand=GCSW',
+                        '--out=' + gcsw_path,
+                        taggable_path,
+                    ]
+                ),
+                mock.call(
+                    [
+                        'pkgutil',
+                        '--check-signature',
+                        gcsw_path,
+                    ]
+                ),
+                mock.call(
+                    [
+                        tag_tool,
+                        '--set-tag=brand=GCOA',
+                        '--out=' + gcoa_path,
+                        taggable_path,
+                    ]
+                ),
+                mock.call(
+                    [
+                        'pkgutil',
+                        '--check-signature',
+                        gcoa_path,
+                    ]
+                ),
+                mock.call(
+                    [
+                        tag_tool,
+                        '--set-tag',
+                        '--out=' + unbranded_taggable_path,
+                        '/$O/AppProduct-99.0.9999.99.pkg',
+                    ]
+                ),
+                mock.call(
+                    [
+                        'pkgutil',
+                        '--check-signature',
+                        unbranded_taggable_path,
+                    ]
+                ),
+            ],
+            kwargs['run_command'].mock_calls,
+        )
+
+    def test_sign_all_pkg_requires_tag_tool(self, **kwargs):
+        class Config(test_config.TestConfig):
+            @property
+            def distributions(self):
+                return [
+                    model.Distribution(
+                        package_as_dmg=False,
+                        package_as_pkg=True,
+                        package_as_zip=False,
+                        tagged_variants=[],
+                    ),
+                ]
+
+        config = Config(notarize=model.NotarizeAndStapleLevel.NONE)
+        with self.assertRaises(ValueError) as cm:
+            asyncio.run(pipeline.sign_all(self.paths, config, tag_tool=None))
+        self.assertEqual(
+            'tag_tool must be specified when a distribution '
+            'has tagged_variants',
+            str(cm.exception),
+        )
+
+    def test_sign_all_pkg_no_tagged_variants_no_tag_tool(self, **kwargs):
+        class Config(test_config.TestConfig):
+            @property
+            def distributions(self):
+                return [
+                    model.Distribution(
+                        package_as_dmg=False,
+                        package_as_pkg=True,
+                        package_as_zip=False,
+                        tagged_variants=None,
+                    ),
+                ]
+
+        config = Config(notarize=model.NotarizeAndStapleLevel.NONE)
+        asyncio.run(pipeline.sign_all(self.paths, config, tag_tool=None))
+
+    def test_sign_tagged_variants_skip_brands(self, **kwargs):
+        manager = mock.Mock()
+        for attr in kwargs:
+            manager.attach_mock(kwargs[attr], attr)
+
+        kwargs['_package_and_sign_pkg'].side_effect = lambda paths, config: (
+            '{}/{}.pkg'.format(paths.output, config.packaging_basename)
+        )
+
+        class Config(test_config.TestConfig):
+            @property
+            def distributions(self):
+                return [
+                    model.Distribution(
+                        branding_code='GCEM',
+                        packaging_name_fragment='Enterprise-Brand-GCEM',
+                        package_as_dmg=False,
+                        package_as_pkg=True,
+                        package_as_zip=False,
+                        tagged_variants=['GCSW', 'GCOA'],
+                    ),
+                ]
+
+        config = Config(notarize=model.NotarizeAndStapleLevel.NONE)
+        tag_tool = '/path/to/tag'
+        asyncio.run(
+            pipeline.sign_all(
+                self.paths, config, tag_tool=tag_tool, skip_brands=['GCOA']
+            )
+        )
+
+        gcsw_path = (
+            '/$O/AppProduct-99.0.9999.99-Enterprise-Brand-GCEM-Tagged-GCSW.pkg'
+        )
+        taggable_path = (
+            '/$O/AppProduct-99.0.9999.99-Enterprise-Brand-GCEM-Taggable.pkg'
+        )
+        self.assertEqual(
+            [
+                mock.call(
+                    [
+                        tag_tool,
+                        '--set-tag',
+                        '--out=' + taggable_path,
+                        (
+                            '/$O/'
+                            'AppProduct-99.0.9999.99-Enterprise-Brand-GCEM.pkg'
+                        ),
+                    ]
+                ),
+                mock.call(['pkgutil', '--check-signature', taggable_path]),
+                mock.call(
+                    [
+                        tag_tool,
+                        '--set-tag=brand=GCSW',
+                        '--out=' + gcsw_path,
+                        taggable_path,
+                    ]
+                ),
+                mock.call(
+                    [
+                        'pkgutil',
+                        '--check-signature',
+                        gcsw_path,
+                    ]
+                ),
+            ],
+            kwargs['run_command'].mock_calls,
+        )
+
+    def test_sign_tagged_variants_own_brand_variant(self, **kwargs):
+        dist = model.Distribution(
+            branding_code='GCEM',
+            package_as_dmg=False,
+            package_as_pkg=True,
+            package_as_zip=False,
+            tagged_variants=['GCEM'],
+        )
+
+        class Config(test_config.TestConfig):
+            @property
+            def distributions(self):
+                return [dist]
+
+        config = Config(notarize=model.NotarizeAndStapleLevel.NONE)
+        asyncio.run(
+            pipeline.sign_all(self.paths, config, tag_tool='/path/to/tag')
+        )
+
+    def test_sign_tagged_variants_path_collision(self, **kwargs):
+        class Config(test_config.TestConfig):
+            @property
+            def distributions(self):
+                return [
+                    model.Distribution(
+                        packaging_name_fragment='Unbranded-Tagged-GCSW',
+                        package_as_dmg=False,
+                        package_as_pkg=True,
+                        package_as_zip=False,
+                    ),
+                    model.Distribution(
+                        package_as_dmg=False,
+                        package_as_pkg=True,
+                        package_as_zip=False,
+                        tagged_variants=['GCSW'],
+                    ),
+                ]
+
+        config = Config(notarize=model.NotarizeAndStapleLevel.NONE)
+        with self.assertRaises(ValueError) as cm:
+            asyncio.run(
+                pipeline.sign_all(self.paths, config, tag_tool='/path/to/tag')
+            )
+        self.assertEqual(
+            "Duplicate package output path for tagged variant 'GCSW': "
+            '/$O/AppProduct-99.0.9999.99-Unbranded-Tagged-GCSW.pkg',
+            str(cm.exception),
         )
 
     @mock.patch('signing.pipeline._filter_distributions', _filter_distributions)
