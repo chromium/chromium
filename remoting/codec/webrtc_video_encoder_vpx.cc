@@ -50,7 +50,7 @@ constexpr int kVp8MinimumTargetBitrateKbpsPerMegapixel = 2500;
 
 // Default values for the encoder speed of the supported codecs.
 constexpr int kVp9LosslessEncodeSpeed = 5;
-constexpr int kVp9DefaultEncoderSpeed = 6;
+constexpr int kVp9DefaultEncoderSpeed = 9;
 constexpr int kVp9MaxEncoderSpeed = 9;
 
 void SetCommonCodecParameters(vpx_codec_enc_cfg_t* config,

@@ -58,7 +58,7 @@ constexpr int kAv1DefaultEncoderSpeed = 11;
 constexpr int kAv1MinEncoderSpeed = 7;
 constexpr int kAv1MaxEncoderSpeed = 11;
 
-constexpr int kVp9DefaultEncoderSpeed = 6;
+constexpr int kVp9DefaultEncoderSpeed = 9;
 constexpr int kVp9MinEncoderSpeed = 5;
 constexpr int kVp9MaxEncoderSpeed = 9;
 
@@ -741,10 +741,10 @@ Example JSON configuration:
       "use_active_map": false
     },
     {
-      "name": "vp9_s6_i420",
+      "name": "vp9_s9_i420",
       "codec": "vp9",
       "profile": 0,
-      "encoder_speed": 6
+      "encoder_speed": 9
     },
     {
       "name": "vp8_default",
