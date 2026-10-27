@@ -9,7 +9,7 @@ import type {ContextLibraryElement} from 'chrome://contextual-tasks/contextual_t
 import {TrackedElementManager} from 'chrome://resources/js/tracked_element/tracked_element_manager.js';
 import type {TabInfo} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
+import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestExtensionBrowserProxy} from './test_contextual_tasks_browser_proxy.js';
 
@@ -136,26 +136,6 @@ suite('ContextLibraryTest', () => {
     await microtasksFinished();
 
     assertEquals(submitted, app.$.faviconGroup.submittedTabIds);
-  });
-
-  test('Updates tabs via SET_TABS postMessage', async () => {
-    const messageDelivered = eventToPromise('message', window);
-    window.postMessage(
-        {
-          type: 'SET_TABS',
-          tabs: [
-            createTab(1, 'https://www.google.com'),
-            createTab(2, 'https://www.youtube.com'),
-          ],
-        },
-        '*');
-    await messageDelivered;
-    await microtasksFinished();
-
-    assertEquals(2, app.tabs.length);
-    const items =
-        app.$.faviconGroup.shadowRoot.querySelectorAll('.favicon-item');
-    assertEquals(2, items.length);
   });
 
   test(

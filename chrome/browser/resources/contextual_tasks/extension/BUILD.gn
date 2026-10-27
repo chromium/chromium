@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//chrome/common/features.gni")
+import("//tools/grit/preprocess_if_expr.gni")
 import("//ui/webui/resources/tools/build_webui.gni")
 import("//ui/webui/resources/tools/bundle_js.gni")
 import("//ui/webui/resources/tools/bundle_js_excludes.gni")
@@ -41,8 +43,16 @@ action("rewrite_mojo_imports") {
   ]
 }
 
+preprocess_if_expr("preprocess_background") {
+  visibility = [ ":build_background_ts" ]
+  defines = chrome_grit_defines
+  in_folder = "."
+  out_folder = "$target_gen_dir/preprocessed_background"
+  in_files = [ "background.ts" ]
+}
+
 ts_library("build_background_ts") {
-  root_dir = "."
+  root_dir = "$target_gen_dir/preprocessed_background"
   out_dir = "$target_gen_dir/background"
   in_files = [ "background.ts" ]
   composite = true
@@ -50,6 +60,7 @@ ts_library("build_background_ts") {
     "//chrome/browser/resources/contextual_tasks:build_ts",
     "//ui/webui/resources/mojo:build_ts",
   ]
+  extra_deps = [ ":preprocess_background" ]
   path_mappings =
       [ "chrome://contextual-tasks/*|" +
         rebase_path(
@@ -103,83 +114,6 @@ generate_grd("build_background_grdp") {
   resource_path_rewrites =
       [ "background_bundled/background.rollup.js|background.js" ]
   deps = [ ":bundle_background" ]
-}
-
-ts_library("build_post_message_handler_ts") {
-  root_dir = "."
-  out_dir = "$target_gen_dir/post_message_handler"
-  in_files = [
-    "post_message_entrypoint.ts",
-    "post_message_handler.ts",
-  ]
-  composite = true
-  deps = [
-    "//chrome/browser/resources/contextual_tasks:build_ts",
-    "//ui/webui/resources/js:build_ts",
-    "//ui/webui/resources/mojo:build_ts",
-  ]
-  path_mappings =
-      [ "chrome://contextual-tasks/*|" +
-        rebase_path(
-            "$root_gen_dir/chrome/browser/resources/contextual_tasks/tsc/*",
-            target_gen_dir) ]
-}
-
-bundle_js("bundle_post_message_handler") {
-  host = "chrome-extension://glbjnfimcajjenihimblfaponejbkoph"
-  input = rebase_path("$target_gen_dir/post_message_handler", root_build_dir)
-  js_module_in_files = [ "post_message_handler.js" ]
-  out_folder = "$target_gen_dir/post_message_handler_bundled"
-  excludes = BUNDLE_JS_EXCLUDES
-  deps = [
-    ":build_post_message_handler_ts",
-    "//chrome/browser/resources/contextual_tasks:build_ts",
-    "//ui/webui/resources/js:build_ts",
-    "//ui/webui/resources/mojo:build_ts",
-  ]
-  external_paths =
-      [ "chrome://contextual-tasks/|" +
-        rebase_path(
-            "$root_gen_dir/chrome/browser/resources/contextual_tasks/tsc",
-            root_build_dir) ]
-}
-
-bundle_js("bundle_post_message_entrypoint") {
-  host = "chrome-extension://glbjnfimcajjenihimblfaponejbkoph"
-  input = rebase_path("$target_gen_dir/post_message_handler", root_build_dir)
-  js_module_in_files = [ "post_message_entrypoint.js" ]
-  out_folder = "$target_gen_dir/post_message_entrypoint_bundled"
-  excludes = BUNDLE_JS_EXCLUDES
-  deps = [
-    ":build_post_message_handler_ts",
-    "//chrome/browser/resources/contextual_tasks:build_ts",
-    "//ui/webui/resources/js:build_ts",
-    "//ui/webui/resources/mojo:build_ts",
-  ]
-  external_paths =
-      [ "chrome://contextual-tasks/|" +
-        rebase_path(
-            "$root_gen_dir/chrome/browser/resources/contextual_tasks/tsc",
-            root_build_dir) ]
-}
-
-generate_grd("build_post_message_handler_grdp") {
-  grd_prefix = "contextual_tasks_extension"
-  out_grd = "$target_gen_dir/post_message_handler_resources.grdp"
-  resource_path_prefix = "contextual_tasks_extension"
-  input_files_base_dir = rebase_path(target_gen_dir, root_build_dir)
-  input_files = [
-    "post_message_entrypoint_bundled/post_message_entrypoint.rollup.js",
-    "post_message_handler_bundled/post_message_handler.rollup.js",
-  ]
-  resource_path_rewrites = [
-    "post_message_entrypoint_bundled/post_message_entrypoint.rollup.js|post_message_entrypoint.js",
-    "post_message_handler_bundled/post_message_handler.rollup.js|post_message_handler.js",
-  ]
-  deps = [
-    ":bundle_post_message_entrypoint",
-    ":bundle_post_message_handler",
-  ]
 }
 
 bundle_js("bundle_tab_picker") {
@@ -270,14 +204,12 @@ build_webui("build") {
     ":build_background_grdp",
     ":build_color_scheme_grdp",
     ":build_lens_chip_grdp",
-    ":build_post_message_handler_grdp",
     ":build_tab_picker_grdp",
   ]
   extra_grdp_files = [
     "$target_gen_dir/background_resources.grdp",
     "$target_gen_dir/color_scheme_resources.grdp",
     "$target_gen_dir/lens_chip_resources.grdp",
-    "$target_gen_dir/post_message_handler_resources.grdp",
     "$target_gen_dir/tab_picker_resources.grdp",
   ]
 

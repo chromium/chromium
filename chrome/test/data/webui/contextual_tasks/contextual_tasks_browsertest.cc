@@ -282,12 +282,6 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksBrowserTest, Composebox_ErrorScrim) {
 }
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
-IN_PROC_BROWSER_TEST_F(ContextualTasksBrowserTest,
-                       ExtensionPostMessageHandler) {
-  RunTest("contextual_tasks/extension_post_message_handler_test.js",
-          "mocha.run();");
-}
-
 IN_PROC_BROWSER_TEST_F(ContextualTasksBrowserTest, LensButton) {
   RunTest("contextual_tasks/lens_button_test.js", "mocha.run();");
 }

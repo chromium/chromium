@@ -25,13 +25,16 @@
   "externally_connectable": {
     // LINT.IfChange(AllowedOrigins)
     "matches": [
-      "https://google.com/search*",
-      "https://www.google.com/search*",
-      "https://*.borg.google.com/search*",
+      "https://*.google.com/search*",
       "https://*.corp.google.com/search*",
-      "https://*.prod.google.com/search*"
+      "https://*.prod.google.com/search*",
+      "https://*.googlers.com/search*"
+// <if expr="not is_official_build">
+      ,"http://localhost/*",
+      "file:///*"
+// </if>
     ]
-    // LINT.ThenChange(post_message_handler.ts:AllowedOrigins)
+    // LINT.ThenChange(background.ts:AllowedOrigins)
   },
   "web_accessible_resources": [
     {
@@ -63,7 +66,7 @@
         "file:///*"
 // </if>
       ]
-      // LINT.ThenChange(post_message_handler.ts:AllowedOrigins)
+      // LINT.ThenChange(background.ts:AllowedOrigins)
     }
   ]
 }
