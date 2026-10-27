@@ -102,6 +102,12 @@ enum class HomeCustomizationEntrypoint {
 // Logs a metric for the AIM entry point being tapped in the NTP.
 - (void)recordAIMButtonTapped;
 
+// Logs a metric for the AIM image generation button being tapped in the NTP.
+- (void)recordAIMImageGenerationButtonTapped;
+
+// Logs a metric for the AIM attach image button being tapped in the NTP.
+- (void)recordAIMAttachImageButtonTapped;
+
 // Logs a metric for the plus button being tapped in the NTP.
 - (void)recordPlusButtonTapped;
 

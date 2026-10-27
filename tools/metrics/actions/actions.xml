@@ -22725,6 +22725,24 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="MobileNTPAIMAttachImageButtonTapped">
+  <owner>ericekey@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
+  <description>
+    Recorded when the user taps on the AIM attach image button in the quick
+    actions row on the NTP. iOS only.
+  </description>
+</action>
+
+<action name="MobileNTPAIMImageGenerationButtonTapped">
+  <owner>ericekey@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
+  <description>
+    Recorded when the user taps on the AIM image generation button in the quick
+    actions row on the NTP. iOS only.
+  </description>
+</action>
+
 <action name="MobileNTPAIMPlusButtonTapped">
   <owner>radunitescu@google.com</owner>
   <owner>bling-search@google.com</owner>

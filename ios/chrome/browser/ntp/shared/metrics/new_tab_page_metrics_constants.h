@@ -17,6 +17,8 @@ extern const char kNTPCustomizationNewBadgeTappedAction[];
 extern const char kNTPMIAEntryPointTappedAction[];
 extern const char kNTPIncognitoButtonTappedAction[];
 extern const char kNTPAIMPlusButtonTappedAction[];
+extern const char kNTPAIMImageGenerationButtonTappedAction[];
+extern const char kNTPAIMAttachImageButtonTappedAction[];
 
 #pragma mark - Histograms
 

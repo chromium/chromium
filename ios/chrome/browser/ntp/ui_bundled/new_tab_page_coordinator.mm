@@ -2687,8 +2687,10 @@ using ntp_tiles::AimButtonRefactorArm;
 - (void)openAIMImageGeneration {
   CHECK_EQ(ntp_tiles::GetAimButtonRefactorArm(),
            ntp_tiles::AimButtonRefactorArm::kImageGenerationQuickAction);
+  RecordHomeAction(IOSHomeActionType::kQuickActionAIMImageGeneration,
+                   [self isStartSurface]);
+  [self.NTPMetricsRecorder recordAIMImageGenerationButtonTapped];
 
-  // TODO(crbug.com/549020046): Add metrics recording hooks.
   if (![self canFocusComposeboxForAIM]) {
     return;
   }
@@ -2706,7 +2708,9 @@ using ntp_tiles::AimButtonRefactorArm;
   ntp_tiles::AimButtonRefactorArm arm = ntp_tiles::GetAimButtonRefactorArm();
   CHECK(arm == ntp_tiles::AimButtonRefactorArm::kAttachImageQuickAction ||
         arm == ntp_tiles::AimButtonRefactorArm::kImageGenerationQuickAction);
-  // TODO(crbug.com/549020046): Add metrics recording hooks.
+  RecordHomeAction(IOSHomeActionType::kQuickActionAIMAttachImage,
+                   [self isStartSurface]);
+  [self.NTPMetricsRecorder recordAIMAttachImageButtonTapped];
   if (![self canFocusComposeboxForAIM]) {
     return;
   }
