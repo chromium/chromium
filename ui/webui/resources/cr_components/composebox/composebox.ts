@@ -23,7 +23,7 @@ import {loadTimeData} from '//resources/js/load_time_data.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import {TabAttachmentSource} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
-import type {AutocompleteResult, FileAttachment, PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote, SearchContext, TabAttachment, TabInfo} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+import type {FileAttachment, PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote, SearchContext, TabAttachment, TabInfo} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import type {UnguessableToken} from '//resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
 
 import {ComposeboxFile, GlifAnimationState, mapUploadErrorToProcessFilesError, ProcessFilesError, recordBoolean, recordContextAdditionMethod, recordUserAction} from './common.js';
@@ -330,7 +330,6 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
       this.syncResizeObservers_();
     }
   }
-
 
   playGlowAnimation() {
     // If |animationState_| were still EXPANDING, this function would have no
@@ -714,71 +713,6 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
 
     super.submitCleanup();
   }
-
-  // TODO(crbug.com/486706573): Refactor this function and move the common logic
-  // to the mixin class. Move embedder specific logic to the embedder class.
-  override onAutocompleteResultChanged(result: AutocompleteResult) {
-    if (this.submitting) {
-      return;
-    }
-    if (result.queryId !== this.activeQueryId) {
-      return;
-    }
-
-    this.maybeCarryOverPreviousMatches(result);
-    this.result = result;
-    /* Indicates when suggestion results have changed so that zero state
-     * suggestion results in contextual tasks composebox can update accordingly.
-     */
-    this.fire('result-changed', result);
-
-    const hasMatches = this.result.matches.length > 0;
-    const firstMatch = hasMatches ? this.result.matches[0] : null;
-    // Zero suggest matches are not allowed to be default. Therefore, this
-    // makes sure zero suggest results aren't focused when they are returned.
-    if (firstMatch && firstMatch.allowedToBeDefaultMatch) {
-      this.selectFirstMatch();
-    } else if (
-        this.input.trim() && hasMatches && this.selectedMatchIndex >= 0 &&
-        this.selectedMatchIndex < this.result.matches.length) {
-      // Restore the selection and update the input. Don't restore when the
-      // user deletes all their input and autocomplete is queried or else the
-      // empty input will change to the value of the first result.
-      this.$.matches.selectIndex(this.selectedMatchIndex);
-
-      // Set the selected match since the `selectedMatchIndex` does not change
-      // (and therefore `selectedMatch` does not get updated since
-      // `onSelectedMatchIndexChanged_` is not called).
-      this.selectedMatch = this.result.matches[this.selectedMatchIndex]!;
-      this.input = this.selectedMatch.fillIntoEdit;
-    } else {
-      this.$.matches.unselect();
-    }
-
-    // Smart compose hints should only be updated from the async response.
-    // This prevents the hint flicker from an empty smart compose response
-    // in the synchronous pass.
-    if (this.haveReceivedSynchronousAutocompleteResponse) {
-      // Populate the smart compose suggestion.
-      const nextHint = this.result.smartComposeInlineHint?.trim() ?
-          this.result.smartComposeInlineHint :
-          '';
-      if (this.smartComposeInlineHint !== nextHint) {
-        this.smartComposeInlineHint = nextHint;
-      }
-
-      // Smart compose stats are incremented on every response from the
-      // server.
-      if (this.smartComposeInlineHint) {
-        this.smartComposeStats.shownCount++;
-        this.smartComposeStats.shownLength +=
-            this.smartComposeInlineHint.length;
-      }
-    }
-
-    this.haveReceivedSynchronousAutocompleteResponse = true;
-  }
-
 
   // TODO(crbug.com/486706573): common logic is moved
   // to the mixin class. Move embedder specific logic to the embedder class.
