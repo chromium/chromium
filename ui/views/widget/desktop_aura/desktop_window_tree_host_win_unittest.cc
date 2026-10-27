@@ -33,6 +33,8 @@
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/events/test/event_generator.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/test/desktop_window_tree_host_win_test_api.h"
@@ -125,6 +127,89 @@ TEST_F(DesktopWindowTreeHostWinTest, RunMoveLoopClearsMousePressedHandler) {
   ASSERT_EQ(dispatcher, widget.GetNativeWindow()->GetHost()->dispatcher());
 
   EXPECT_FALSE(dispatcher->mouse_pressed_handler());
+}
+
+// Verifies that SetBounds() and SetSize() take effect immediately after
+// exiting fullscreen or restoring from maximized, without waiting for the
+// posted StopIgnoringPosChanges() task to run.
+TEST_F(DesktopWindowTreeHostWinTest, SetBoundsAfterFullscreenOrMaximize) {
+  Widget widget;
+  Widget::InitParams params = CreateParams(
+      Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_WINDOW);
+  params.bounds = gfx::Rect(100, 100, 200, 200);
+  widget.Init(std::move(params));
+  widget.Show();
+
+  HWNDMessageHandler* handler =
+      DesktopWindowTreeHostWinTestApi(static_cast<DesktopWindowTreeHostWin*>(
+                                          widget.GetNativeWindow()->GetHost()))
+          .GetHwndMessageHandler();
+  EXPECT_FALSE(handler->ignore_window_pos_changes_for_testing());
+
+  widget.SetFullscreen(true);
+  ASSERT_TRUE(widget.IsFullscreen());
+  EXPECT_TRUE(handler->ignore_window_pos_changes_for_testing());
+  widget.SetFullscreen(false);
+  ASSERT_FALSE(widget.IsFullscreen());
+  EXPECT_FALSE(handler->ignore_window_pos_changes_for_testing());
+
+  // SetBounds() immediately after exiting fullscreen should not be ignored.
+  const gfx::Rect bounds_after_fullscreen(120, 120, 250, 250);
+  widget.SetBounds(bounds_after_fullscreen);
+  EXPECT_EQ(bounds_after_fullscreen, widget.GetWindowBoundsInScreen());
+
+  widget.Maximize();
+  ASSERT_TRUE(widget.IsMaximized());
+  EXPECT_TRUE(handler->ignore_window_pos_changes_for_testing());
+  widget.Restore();
+  ASSERT_FALSE(widget.IsMaximized());
+  EXPECT_FALSE(handler->ignore_window_pos_changes_for_testing());
+
+  // SetBounds() immediately after restoring from maximized should not be
+  // ignored.
+  const gfx::Rect bounds_after_maximize(140, 140, 300, 300);
+  widget.SetBounds(bounds_after_maximize);
+  EXPECT_EQ(bounds_after_maximize, widget.GetWindowBoundsInScreen());
+
+  widget.SetFullscreen(true);
+  ASSERT_TRUE(widget.IsFullscreen());
+  EXPECT_TRUE(handler->ignore_window_pos_changes_for_testing());
+  widget.SetFullscreen(false);
+  ASSERT_FALSE(widget.IsFullscreen());
+  EXPECT_FALSE(handler->ignore_window_pos_changes_for_testing());
+
+  // SetSize() immediately after exiting fullscreen should not be ignored.
+  const gfx::Size size_after_fullscreen(350, 350);
+  widget.SetSize(size_after_fullscreen);
+  EXPECT_EQ(size_after_fullscreen, widget.GetWindowBoundsInScreen().size());
+
+  // Restoring from maximized via the OS (bypassing HWNDMessageHandler::Restore,
+  // e.g. a title-bar double-click) leaves `ignore_window_pos_changes_` true on
+  // entry to SetBounds() and SetSize().
+  HWND hwnd = widget.GetNativeWindow()->GetHost()->GetAcceleratedWidget();
+  widget.Maximize();
+  ASSERT_TRUE(widget.IsMaximized());
+  EXPECT_TRUE(handler->ignore_window_pos_changes_for_testing());
+  ::ShowWindow(hwnd, SW_RESTORE);
+  ASSERT_FALSE(widget.IsMaximized());
+  EXPECT_TRUE(handler->ignore_window_pos_changes_for_testing());
+
+  const gfx::Rect bounds_after_os_restore(160, 160, 280, 280);
+  widget.SetBounds(bounds_after_os_restore);
+  EXPECT_FALSE(handler->ignore_window_pos_changes_for_testing());
+  EXPECT_EQ(bounds_after_os_restore, widget.GetWindowBoundsInScreen());
+
+  widget.Maximize();
+  ASSERT_TRUE(widget.IsMaximized());
+  EXPECT_TRUE(handler->ignore_window_pos_changes_for_testing());
+  ::ShowWindow(hwnd, SW_RESTORE);
+  ASSERT_FALSE(widget.IsMaximized());
+  EXPECT_TRUE(handler->ignore_window_pos_changes_for_testing());
+
+  const gfx::Size size_after_os_restore(320, 320);
+  widget.SetSize(size_after_os_restore);
+  EXPECT_FALSE(handler->ignore_window_pos_changes_for_testing());
+  EXPECT_EQ(size_after_os_restore, widget.GetWindowBoundsInScreen().size());
 }
 
 TEST_F(DesktopWindowTreeHostWinTest, SetAllowScreenshots) {

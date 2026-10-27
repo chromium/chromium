@@ -255,6 +255,10 @@ class VIEWS_EXPORT HWNDMessageHandler : public gfx::WindowImpl,
     raw_input_button_state_ = state;
   }
 
+  bool ignore_window_pos_changes_for_testing() const {
+    return ignore_window_pos_changes_;
+  }
+
  protected:
   HWNDMessageHandler(HWNDMessageHandlerDelegate* delegate,
                      const std::string& debugging_id);

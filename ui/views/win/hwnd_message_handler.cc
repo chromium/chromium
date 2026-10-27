@@ -658,6 +658,7 @@ void HWNDMessageHandler::GetWindowPlacement(
 
 void HWNDMessageHandler::SetBounds(const gfx::Rect& bounds_in_pixels,
                                    bool force_size_changed) {
+  StopIgnoringPosChanges();
   background_fullscreen_hack_ = false;
   SetBoundsInternal(bounds_in_pixels, force_size_changed);
 }
@@ -731,6 +732,7 @@ void HWNDMessageHandler::SetDwmFrameExtension(DwmFrameState state) {
 }
 
 void HWNDMessageHandler::SetSize(const gfx::Size& size) {
+  StopIgnoringPosChanges();
   ::SetWindowPos(hwnd(), nullptr, 0, 0, size.width(), size.height(),
                  SWP_NOACTIVATE | SWP_NOZORDER | SWP_NOMOVE);
 }
@@ -740,6 +742,7 @@ void HWNDMessageHandler::CenterWindow(const gfx::Size& size) {
   if (!::IsWindow(parent)) {
     parent = ::GetWindow(hwnd(), GW_OWNER);
   }
+  StopIgnoringPosChanges();
   gfx::CenterAndSizeWindow(parent, hwnd(), size);
 }
 
@@ -865,10 +868,12 @@ void HWNDMessageHandler::Maximize() {
   if (IsFullscreen()) {
     SetFullscreen(false, display::kInvalidDisplayId);
   }
+  StopIgnoringPosChanges();
   ExecuteSystemMenuCommand(SC_MAXIMIZE);
 }
 
 void HWNDMessageHandler::Minimize() {
+  StopIgnoringPosChanges();
   ExecuteSystemMenuCommand(SC_MINIMIZE);
   delegate_->HandleNativeBlur(nullptr);
 }
@@ -877,6 +882,7 @@ void HWNDMessageHandler::Restore() {
   if (IsFullscreen()) {
     SetFullscreen(false, display::kInvalidDisplayId);
   } else {
+    StopIgnoringPosChanges();
     ExecuteSystemMenuCommand(SC_RESTORE);
   }
 }
@@ -1099,6 +1105,7 @@ void HWNDMessageHandler::SetFullscreen(bool fullscreen,
   RemoveCurrentWindowFromFullscreenMonitorMap();
 
   background_fullscreen_hack_ = false;
+  StopIgnoringPosChanges();
   fullscreen_handler()->SetFullscreen(fullscreen, target_display_id);
   if (IsDestroyed()) {
     return;
@@ -1132,6 +1139,7 @@ void HWNDMessageHandler::SetAspectRatio(float aspect_ratio,
     gfx::Rect rect(window_rect);
 
     SizeWindowToAspectRatio(WMSZ_BOTTOMRIGHT, &rect);
+    StopIgnoringPosChanges();
     SetBoundsInternal(rect, false);
   }
 }
