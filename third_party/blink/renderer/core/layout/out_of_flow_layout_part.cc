@@ -693,6 +693,13 @@ void OutOfFlowLayoutPart::Run() {
       BlockNode(box).FinishRepeatableRoot();
     }
   }
+
+  // OOF breaks may have caused the containing block to break.
+  if (container_builder_.ShouldBreakInsideForContent() &&
+      !container_builder_.FoundColumnSpanner() &&
+      RuntimeEnabledFeatures::FragmentedOofInCbEnabled()) {
+    container_builder_.UpdateConsumedBlockSizeToFragmentainerEnd();
+  }
 }
 
 void OutOfFlowLayoutPart::PropagateOOFsFromPageAreas() {

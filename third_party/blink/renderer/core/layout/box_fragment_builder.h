@@ -446,9 +446,11 @@ class CORE_EXPORT BoxFragmentBuilder final : public FragmentBuilder {
   void SetIsMonolithic(bool b) { is_monolithic_ = b; }
 
   // Set how much of the block-size we've used so far for this box. This will be
-  // the sum of the block-size of all previous fragments PLUS the one we're
-  // building now.
+  // the sum of the fragmentainer space used by all previous fragments PLUS the
+  // one we're building now.
   void SetConsumedBlockSize(LayoutUnit size) { consumed_block_size_ = size; }
+
+  void UpdateConsumedBlockSizeToFragmentainerEnd();
 
   void ReserveSpaceForMonolithicOverflow(LayoutUnit monolithic_overflow) {
     DCHECK(GetConstraintSpace().IsPaginated());

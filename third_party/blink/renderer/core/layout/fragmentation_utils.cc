@@ -768,8 +768,7 @@ BreakStatus FinishFragmentation(BoxFragmentBuilder* builder) {
       // consumed block-size includes the entire remainder of the fragmentainer.
       // The fragment will normally take up all that space, but not if we've
       // reached the end of the node (and we are breaking because of
-      // overflow). We include the entire fragmentainer in consumed block-size
-      // in order to write offsets correctly back to legacy layout.
+      // overflow).
       builder->SetConsumedBlockSize(previously_consumed_block_size +
                                     std::max(final_block_size, space_left));
     } else {

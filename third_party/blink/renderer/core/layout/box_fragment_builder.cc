@@ -403,6 +403,18 @@ void BoxFragmentBuilder::AddBreakToken(const BreakToken* token,
   has_inflow_child_break_inside_ |= !is_in_parallel_flow;
 }
 
+void BoxFragmentBuilder::UpdateConsumedBlockSizeToFragmentainerEnd() {
+  LayoutUnit fragmentainer_end =
+      FragmentainerSpaceLeft(*this, /*is_for_children=*/false);
+  if (!GetConstraintSpace().HasKnownFragmentainerBlockSize()) {
+    return;
+  }
+  if (const BlockBreakToken* token = PreviousBreakToken()) {
+    fragmentainer_end += token->ConsumedBlockSize();
+  }
+  consumed_block_size_ = std::max(consumed_block_size_, fragmentainer_end);
+}
+
 EBreakBetween BoxFragmentBuilder::JoinedBreakBetweenValue(
     EBreakBetween break_before) const {
   return JoinFragmentainerBreakValues(previous_break_after_, break_before);

@@ -6,6 +6,7 @@
 #include "third_party/blink/renderer/core/layout/block_layout_algorithm.h"
 #include "third_party/blink/renderer/core/layout/length_utils.h"
 #include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
 namespace blink {
 namespace {
@@ -338,6 +339,63 @@ TEST_F(FragmentationTest, OffsetFromOwnerLayoutBoxNested) {
   EXPECT_EQ(fragment1->OffsetFromOwnerLayoutBox(), PhysicalOffset(55, -300));
   const PhysicalBoxFragment* fragment2 = target->GetPhysicalFragment(2);
   EXPECT_EQ(fragment2->OffsetFromOwnerLayoutBox(), PhysicalOffset(110, -300));
+}
+
+// Consumed block size should include overflow.
+TEST_F(FragmentationTest, ConsumedBlockSizeOverflowInflow) {
+  SetBodyInnerHTML(R"HTML(
+    <div style="columns:4; height:100px; column-fill:auto;">
+      <div id="container" style="height:150px;">
+        <div style="height:333px;"></div>
+      </div>
+    </div>
+  )HTML");
+  const auto* container = GetLayoutBoxByElementId("container");
+  ASSERT_EQ(container->PhysicalFragmentCount(), 4u);
+  const BlockBreakToken* break_token =
+      container->GetPhysicalFragment(0)->GetBreakToken();
+  ASSERT_TRUE(break_token);
+  EXPECT_EQ(break_token->ConsumedBlockSize(), LayoutUnit(100));
+
+  break_token = container->GetPhysicalFragment(1)->GetBreakToken();
+  ASSERT_TRUE(break_token);
+  EXPECT_EQ(break_token->ConsumedBlockSize(), LayoutUnit(200));
+
+  break_token = container->GetPhysicalFragment(2)->GetBreakToken();
+  ASSERT_TRUE(break_token);
+  EXPECT_EQ(break_token->ConsumedBlockSize(), LayoutUnit(300));
+
+  break_token = container->GetPhysicalFragment(3)->GetBreakToken();
+  EXPECT_FALSE(break_token);
+}
+
+// Consumed block size should include overflow.
+TEST_F(FragmentationTest, ConsumedBlockSizeOverflowOutOfFlow) {
+  ScopedFragmentedOofInCbForTest enable_flag(true);
+  SetBodyInnerHTML(R"HTML(
+    <div style="columns:4; height:100px; column-fill:auto;">
+      <div id="container" style="position:relative; height:150px;">
+        <div style="position:absolute; height:333px;"></div>
+      </div>
+    </div>
+  )HTML");
+  const auto* container = GetLayoutBoxByElementId("container");
+  ASSERT_EQ(container->PhysicalFragmentCount(), 4u);
+  const BlockBreakToken* break_token =
+      container->GetPhysicalFragment(0)->GetBreakToken();
+  ASSERT_TRUE(break_token);
+  EXPECT_EQ(break_token->ConsumedBlockSize(), LayoutUnit(100));
+
+  break_token = container->GetPhysicalFragment(1)->GetBreakToken();
+  ASSERT_TRUE(break_token);
+  EXPECT_EQ(break_token->ConsumedBlockSize(), LayoutUnit(200));
+
+  break_token = container->GetPhysicalFragment(2)->GetBreakToken();
+  ASSERT_TRUE(break_token);
+  EXPECT_EQ(break_token->ConsumedBlockSize(), LayoutUnit(300));
+
+  break_token = container->GetPhysicalFragment(3)->GetBreakToken();
+  EXPECT_FALSE(break_token);
 }
 
 }  // anonymous namespace
