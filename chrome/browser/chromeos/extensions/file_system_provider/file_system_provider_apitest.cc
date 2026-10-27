@@ -19,7 +19,6 @@
 #include "chrome/browser/ash/file_system_provider/request_manager.h"
 #include "chrome/browser/ash/file_system_provider/request_value.h"
 #include "chrome/browser/ash/file_system_provider/service.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "content/public/test/browser_test.h"
 #include "ui/message_center/message_center.h"

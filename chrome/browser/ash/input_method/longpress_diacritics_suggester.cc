@@ -25,7 +25,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/input_method/native_input_method_engine_observer.h"
 #include "chrome/browser/ash/input_method/suggestion_handler_interface.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "chromeos/ash/services/ime/public/cpp/assistive_suggestions.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"

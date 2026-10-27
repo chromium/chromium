@@ -14,7 +14,6 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "chromeos/ash/components/osauth/public/auth_policy_utils.h"
 #include "chromeos/ash/components/osauth/public/common_types.h"
 #include "components/prefs/pref_service.h"

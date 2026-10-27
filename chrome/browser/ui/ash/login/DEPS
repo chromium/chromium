@@ -44,7 +44,6 @@ include_rules = [
   "+chrome/browser/ui/webui/ash/system_web_dialog/system_web_dialog_delegate.h",
   "+chrome/browser/ui/webui/chrome_web_contents_handler.h",
   "+chrome/browser/ui/webui/feedback",
-  "+chrome/common",
   "+chrome/grit",
 ]
 

@@ -6,7 +6,6 @@
 
 #include <string>
 
-#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/webui/ash/parent_access/parent_access_dialog.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"

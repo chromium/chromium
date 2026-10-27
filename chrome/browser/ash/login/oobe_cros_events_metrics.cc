@@ -12,7 +12,6 @@
 #include "base/time/time.h"
 #include "chrome/browser/ash/login/demo_mode/demo_setup_controller.h"
 #include "chrome/browser/ash/login/users/chrome_user_manager_util.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "chromeos/ash/components/demo_mode/utils/demo_session_utils.h"
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "components/metrics/structured/structured_events.h"

@@ -11,7 +11,6 @@
 #include "base/functional/bind.h"
 #include "base/task/bind_post_task.h"
 #include "chrome/browser/ash/boca/spotlight/spotlight_oauth_token_fetcher_impl.h"
-#include "chrome/browser/device_identity/device_oauth2_token_service.h"
 #include "chrome/browser/device_identity/device_oauth2_token_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/boca/invalidations/fcm_handler.h"

@@ -139,7 +139,6 @@
 #include "chrome/browser/ui/webui/ash/login/wrong_hwid_screen_handler.h"
 #include "chrome/browser/ui/webui/metrics_handler.h"
 #include "chrome/browser/ui/webui/theme_source.h"
-#include "chrome/common/chrome_constants.h"
 #include "chrome/grit/browser_resources.h"
 #include "chrome/grit/chrome_unscaled_resources.h"
 #include "chrome/grit/component_extension_resources.h"

@@ -5,7 +5,6 @@
 #include "chrome/browser/chromeos/extensions/login_screen/login_state/login_state_api.h"
 
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/common/chrome_constants.h"
 #include "chrome/common/extensions/api/login_state.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
 #include "components/session_manager/core/session_manager.h"

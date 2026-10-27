@@ -17,7 +17,6 @@
 #include "base/path_service.h"
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/ash/login/test/scoped_policy_update.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/common/chrome_paths.h"
 #include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"

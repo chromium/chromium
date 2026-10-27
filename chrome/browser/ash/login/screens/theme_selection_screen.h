@@ -10,7 +10,6 @@
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
-#include "chrome/browser/profiles/profile_manager.h"
 
 namespace ash {
 

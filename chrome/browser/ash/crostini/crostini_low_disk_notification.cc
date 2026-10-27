@@ -14,7 +14,6 @@
 #include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "chromeos/ash/experiences/settings_ui/settings_app_manager.h"
