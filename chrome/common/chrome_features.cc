@@ -1265,7 +1265,7 @@ BASE_FEATURE(kIncomingCallNotifications,
 
 // Experimental image replacement feature. b/482792874
 BASE_FEATURE(kIndigo, base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE(kIndigoContextMenu, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kIndigoContextMenu, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kIndigoContextualCueingV2, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kIndigoWatermark, base::FEATURE_ENABLED_BY_DEFAULT);
 

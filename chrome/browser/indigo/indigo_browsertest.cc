@@ -226,6 +226,9 @@ class IndigoBrowserTestBase : public InteractiveBrowserTest {
       // Cueing V2 is enabled, even though it doesn't delegate to it.
       enabled_features.push_back({contextual_cueing::kContextualCueingV2, {}});
       disabled_features.push_back(features::kIndigoContextualCueingV2);
+      // TODO(b/572032182): Update legacy tests to run with kIndigoContextMenu
+      // enabled.
+      disabled_features.push_back(features::kIndigoContextMenu);
     }
     scoped_feature_list_.InitWithFeaturesAndParameters(enabled_features,
                                                        disabled_features);

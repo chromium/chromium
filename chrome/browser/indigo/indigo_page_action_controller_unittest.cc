@@ -200,6 +200,9 @@ class IndigoPageActionControllerTestBase : public testing::Test {
                                     base::FieldTrialParams());
     } else {
       disabled_features.emplace_back(features::kIndigoContextualCueingV2);
+      // TODO(b/572032182): Update legacy tests to run with kIndigoContextMenu
+      // enabled.
+      disabled_features.emplace_back(features::kIndigoContextMenu);
     }
     feature_list_.InitWithFeaturesAndParameters(enabled_features,
                                                 disabled_features);
