@@ -806,8 +806,11 @@ base::DictValue NewTabPageUI::GetLoadTimeData(
   dict.Set("composeboxSmartComposeEnabled",
            ntp_composebox::kShowSmartCompose.Get());
 
+  // The left-hand side (LHS) threads rail embeds AI Mode content, so it is only
+  // shown to AIM eligible users.
   dict.Set("enableThreadsRail",
-           base::FeatureList::IsEnabled(ntp_features::kNtpThreadsRail));
+           aim_eligible &&
+               base::FeatureList::IsEnabled(ntp_features::kNtpThreadsRail));
   dict.Set("enableThreadsRailHybrid",
            ntp_features::kNtpThreadsRailHybridParam.Get());
 
