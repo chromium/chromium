@@ -236,6 +236,17 @@ BASE_FEATURE(kBypassRedirectChecksPerRequest, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kCacheControlNoStoreEnterBackForwardCache,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// When enabled, download_utils::MustDownload() matches the MHTML MIME types
+// "multipart/related" and "message/rfc822" case-insensitively, so MHTML served
+// with a mixed-case MIME type (e.g. "Multipart/Related") over schemes other
+// than file: and content: is downloaded rather than rendered. When disabled,
+// such responses are rendered, but NavigationRequest still treats them as
+// MHTML and applies the MHTML sandbox. Kill switch for
+// https://crbug.com/574381704.
+// TODO(crbug.com/574381704): Remove once the change has shipped to stable.
+BASE_FEATURE(kCaseInsensitiveMhtmlMustDownload,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Enables the experimental Rust implementation of ChildProcessSecurityPolicy.
 // This includes managing global state but not per-process ProcessState (which
 // is handled by the ChildProcessSecurityPolicyRustProcessState feature). See
