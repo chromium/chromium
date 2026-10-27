@@ -112,6 +112,10 @@ def main(argv):
             options.turbine_binary_path,
             # Needed to locate lib/ct.sym for --release.
             '-Djava.home=' + build_utils.JAVA_HOME,
+            # Start with a big heap to avoid frequent GCs. 1.7-2x faster for
+            # mid-sized targets with no RSS increase. Large targets (e.g.
+            # chrome_java) are ~18% faster but use more RSS (255MB -> 506MB).
+            '-Xms1g',
         ]
     else:
         cmd = build_utils.JavaCmd() + [
