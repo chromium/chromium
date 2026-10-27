@@ -17,7 +17,6 @@ import '../../components/dialogs/oobe_adaptive_dialog.js';
 import '../../components/dialogs/oobe_loading_dialog.js';
 import '../../components/dialogs/oobe_modal_dialog.js';
 
-import {loadTimeData} from '//resources/js/load_time_data.js';
 import type {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
 import {afterNextRender, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -249,15 +248,9 @@ export class OsInstall extends OsInstallScreenElementBase {
   }
 
   /**
-   * Generates fonts styling for the service log WebView based on OobeJelly
-   * flag.
+   * Generates fonts styling for the service log WebView.
    */
   private getServiceLogsFontsStyling(): string {
-    const isOobeJellyEnabled = loadTimeData.getBoolean('isOobeJellyEnabled');
-    if (!isOobeJellyEnabled) {
-      return '  font-family: Roboto, sans-serif;' +
-          '  font-size: 14sp;';
-    }
     // Those values correspond to the cros-body-1 token.
     return (
         '  font-family: Google Sans Text Regular, Google Sans, Roboto, sans-serif;' +

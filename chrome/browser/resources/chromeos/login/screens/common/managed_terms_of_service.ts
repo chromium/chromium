@@ -15,7 +15,6 @@ import '../../components/common_styles/oobe_common_styles.css.js';
 import '../../components/common_styles/oobe_dialog_host_styles.css.js';
 import '../../components/dialogs/oobe_loading_dialog.js';
 
-import {loadTimeData} from '//resources/js/load_time_data.js';
 import type {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -181,14 +180,9 @@ export class ManagedTermsOfService extends ManagedTermsOfServiceBase {
   }
 
   /**
-   * Generates fonts styling for the ToS WebView based on OobeJelly flag.
+   * Generates fonts styling for the ToS WebView.
    */
   private getServiceLogsFontsStyling(): string {
-    const isOobeJellyEnabled = loadTimeData.getBoolean('isOobeJellyEnabled');
-    if (!isOobeJellyEnabled) {
-      return '  font-family: Roboto, sans-serif;' +
-          '  font-size: 14sp;';
-    }
     // Those values correspond to the cros-body-2 token.
     return (
         '  font-family: Google Sans Text Regular, Google Sans, Roboto, sans-serif;' +

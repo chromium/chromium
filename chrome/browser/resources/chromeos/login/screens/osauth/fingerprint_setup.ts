@@ -13,7 +13,6 @@ import '../../components/common_styles/oobe_common_styles.css.js';
 import '../../components/common_styles/oobe_dialog_host_styles.css.js';
 
 import {FingerprintProgressElement} from '//resources/ash/common/quick_unlock/fingerprint_progress.js';
-import {loadTimeData} from '//resources/js/load_time_data.js';
 import type {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -109,14 +108,6 @@ export class FingerprintSetup extends FingerprintSetupBase {
         type: Boolean,
         value: false,
       },
-
-      /**
-       * Indicates whether Jelly is enabled.
-       */
-      isDynamicColor: {
-        type: Boolean,
-        value: loadTimeData.getBoolean('isOobeJellyEnabled'),
-      },
     };
   }
 
@@ -125,7 +116,6 @@ export class FingerprintSetup extends FingerprintSetupBase {
   declare private canAddFinger: boolean;
   declare private scanResult: FingerprintResultType;
   declare private isChildAccount: boolean;
-  declare private isDynamicColor: boolean;
 
   constructor() {
     super();
