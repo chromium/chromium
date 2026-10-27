@@ -43,10 +43,9 @@ namespace autofill {
 
 namespace {
 
-static base::android::ScopedJavaLocalRef<jobject>
+base::android::ScopedJavaLocalRef<jobject>
 ConvertBnplIssuerTosDetailToJavaObject(
     JNIEnv* env,
-    const jni_zero::JavaRef<jobject>& obj,
     const payments::BnplIssuerTosDetail& bnpl_issuer_tos_detail) {
   return Java_BnplIssuerTosDetail_Constructor(
       env,
@@ -59,7 +58,7 @@ ConvertBnplIssuerTosDetailToJavaObject(
 
 // TODO(crbug.com/449764859): Refactor BnplIssuerContext to use JNI type
 // converters.
-static base::android::ScopedJavaLocalRef<jobject>
+base::android::ScopedJavaLocalRef<jobject>
 CreateJavaBnplIssuerContextFromNative(
     JNIEnv* env,
     const payments::BnplIssuerContext& bnpl_issuer_context,
@@ -307,8 +306,7 @@ bool TouchToFillPaymentMethodViewImpl::ShowBnplIssuerTos(
 
   Java_TouchToFillPaymentMethodViewBridge_showBnplIssuerTos(
       env, java_object_,
-      ConvertBnplIssuerTosDetailToJavaObject(env, java_object_,
-                                             bnpl_issuer_tos_detail));
+      ConvertBnplIssuerTosDetailToJavaObject(env, bnpl_issuer_tos_detail));
 
   return true;
 }
