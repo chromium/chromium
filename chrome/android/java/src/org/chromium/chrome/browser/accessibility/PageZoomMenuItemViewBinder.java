@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.accessibility;
 
+import static org.chromium.chrome.browser.ui.appmenu.AppMenuItemProperties.HOVER_LISTENER;
 import static org.chromium.chrome.browser.ui.appmenu.AppMenuItemProperties.ICON;
 import static org.chromium.chrome.browser.ui.appmenu.AppMenuItemProperties.MENU_ITEM_ID;
 import static org.chromium.chrome.browser.ui.appmenu.AppMenuItemProperties.TITLE;
@@ -56,6 +57,8 @@ public class PageZoomMenuItemViewBinder {
             view.setFullscreenEnabled(model.get(IMMERIVE_MODE_ENABLED));
         } else if (key == IMMERIVE_MODE_CALLBACK) {
             view.setFullscreenCallback(model.get(IMMERIVE_MODE_CALLBACK));
+        } else if (key == HOVER_LISTENER) {
+            view.setOnHoverListener(model.get(HOVER_LISTENER));
         }
     }
 }

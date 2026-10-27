@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.accessibility;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -26,9 +27,27 @@ public class PageZoomMenuItemView extends LinearLayout {
     private ChromeImageButton mZoomInButton;
     private View mFullscreenContainer;
     private ChromeImageButton mFullscreenButton;
+    private @Nullable OnHoverListener mHoverListener;
 
     public PageZoomMenuItemView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
+    }
+
+    @Override
+    public void setOnHoverListener(@Nullable OnHoverListener listener) {
+        mHoverListener = listener;
+        // We don't call {@code super.setOnHoverListener()} here because we don't want this view to
+        // intercept hover.
+    }
+
+    @Override
+    protected boolean dispatchHoverEvent(MotionEvent event) {
+        boolean handled = super.dispatchHoverEvent(event);
+        if (mHoverListener != null) {
+            mHoverListener.onHover(this, event);
+            return true;
+        }
+        return handled;
     }
 
     @Override

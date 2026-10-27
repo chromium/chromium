@@ -9,6 +9,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import static org.chromium.chrome.browser.ui.appmenu.AppMenuItemProperties.HOVER_LISTENER;
 import static org.chromium.chrome.browser.ui.appmenu.AppMenuItemProperties.ICON;
 import static org.chromium.chrome.browser.ui.appmenu.AppMenuItemProperties.MENU_ITEM_ID;
 import static org.chromium.chrome.browser.ui.appmenu.AppMenuItemProperties.TITLE;
@@ -25,7 +26,9 @@ import android.app.Activity;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+import android.view.InputDevice;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 
 import org.junit.Before;
@@ -53,6 +56,7 @@ public class PageZoomMenuItemViewUnitTest {
     private boolean mZoomInClicked;
     private boolean mZoomOutClicked;
     private boolean mImmersiveClicked;
+    private boolean mHovered;
 
     @Before
     public void setUp() {
@@ -160,5 +164,23 @@ public class PageZoomMenuItemViewUnitTest {
     public void testMenuItemId() {
         mModel.set(MENU_ITEM_ID, R.id.page_zoom_id);
         assertEquals(R.id.page_zoom_id, mView.getId());
+    }
+
+    @Test
+    public void testHoverListener() {
+        mModel.set(
+                HOVER_LISTENER,
+                (_, _) -> {
+                    mHovered = true;
+                    return true;
+                });
+
+        MotionEvent hoverEnter =
+                MotionEvent.obtain(0, 0, MotionEvent.ACTION_HOVER_ENTER, 0f, 0f, 0);
+        hoverEnter.setSource(InputDevice.SOURCE_CLASS_POINTER);
+        assertTrue(mView.dispatchGenericMotionEvent(hoverEnter));
+        assertTrue(mHovered);
+        assertFalse(mView.isHovered());
+        hoverEnter.recycle();
     }
 }
