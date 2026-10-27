@@ -169,6 +169,11 @@ CGRect GetBoundingRectOfElement(web::WebState* web_state,
                 << selector.selectorDescription;
   }
 
+  // `getBoundingClientRect()` returns coordinates relative to the element's
+  // own document viewport. When `selector` targets an element inside an
+  // iframe, walk up the `frameElement` chain to the top-level window and add
+  // each enclosing frame's viewport offset so the returned rect is in the
+  // top-level web view's coordinate space.
   std::string kGetBoundsScript =
       "(function() {"
       "  var element = " +
@@ -181,9 +186,27 @@ CGRect GetBoundingRectOfElement(web::WebState* web_state,
       "    return {'error': 'Element ' + description + ' not found'};"
       "  }"
       "  var rect = element.getBoundingClientRect();"
+      "  var offsetLeft = 0;"
+      "  var offsetTop = 0;"
+      "  var win = element.ownerDocument.defaultView;"
+      "  while (win && win !== window) {"
+      "    try {"
+      "      var frame = win.frameElement;"
+      "      if (frame) {"
+      "        var frameRect = frame.getBoundingClientRect();"
+      "        offsetLeft += frameRect.left;"
+      "        offsetTop += frameRect.top;"
+      "        win = frame.ownerDocument.defaultView;"
+      "      } else {"
+      "        break;"
+      "      }"
+      "    } catch (e) {"
+      "      break;"
+      "    }"
+      "  }"
       "  return {"
-      "      'left': rect.left,"
-      "      'top': rect.top,"
+      "      'left': rect.left + offsetLeft,"
+      "      'top': rect.top + offsetTop,"
       "      'width': rect.right - rect.left,"
       "      'height': rect.bottom - rect.top,"
       "    };"
