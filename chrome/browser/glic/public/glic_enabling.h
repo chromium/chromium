@@ -11,6 +11,7 @@
 
 #include "base/auto_reset.h"
 #include "base/callback_list.h"
+#include "base/check.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
@@ -627,21 +628,32 @@ class GlicEnabling final : public signin::IdentityManager::Observer,
   // called once per profile.
   static void RecordProfileIneligibilityMetricsAtStartup(Profile* profile);
 
+  // The user status fetcher only exists if `features::kGlicUserStatusCheck` is
+  // enabled and the profile's provider requires Gemini account eligibility.
+  bool HasUserStatusFetcherForTesting() const {
+    return !!glic_user_status_fetcher_;
+  }
+
   void SetGlicUserStatusUrlForTest(const GURL& test_url) {
+    CHECK(glic_user_status_fetcher_);
     glic_user_status_fetcher_->SetGlicUserStatusUrlForTest(test_url);
   }
 
   void SetUserStatusFetchOverrideForTest(
       GlicUserStatusFetcher::FetchOverrideCallback fetch_override) {
+    CHECK(glic_user_status_fetcher_);
     glic_user_status_fetcher_->SetFetchOverrideForTest(
         std::move(fetch_override));
   }
 
   // Updates the user status when information suggests that it might have
   // changed recently. This is internally debounced to avoid excessive
-  // requests, for signals that might be received multiple times.
+  // requests, for signals that might be received multiple times. Does nothing
+  // if there is no user status fetcher.
   void UpdateUserStatusWithThrottling() {
-    glic_user_status_fetcher_->UpdateUserStatusWithThrottling();
+    if (glic_user_status_fetcher_) {
+      glic_user_status_fetcher_->UpdateUserStatusWithThrottling();
+    }
   }
 
   // RAII helper to temporarily bypass enablement checks during a test, and

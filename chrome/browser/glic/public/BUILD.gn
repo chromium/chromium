@@ -28,6 +28,7 @@ source_set("provider") {
   # Feature code outside Glic should use GlicKeyedService::provider_spec().
   visibility = [ "//chrome/browser/glic/*" ]
   sources = [
+    "glic_feature.h",
     "glic_provider.h",
     "glic_provider_latch.cc",
     "glic_provider_latch.h",

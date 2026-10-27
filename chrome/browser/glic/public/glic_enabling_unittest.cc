@@ -61,6 +61,7 @@
 #include "components/metrics/metrics_state_manager.h"
 #include "components/metrics/startup_visibility.h"
 #include "components/metrics/test/test_enabled_state_provider.h"
+#include "components/optimization_guide/core/feature_registry/feature_registration.h"
 #include "components/policy/core/common/management/scoped_management_service_override_for_testing.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -1184,22 +1185,21 @@ TEST_F(GlicEnablingGeicAnchorEntryPointTest,
   EXPECT_FALSE(enablement.ShouldShowGlicButton());
 }
 
-TEST_F(GlicEnablingGeicAnchorEntryPointTest, NotAnchoredForIneligibleAccount) {
-  signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(profile());
-  AccountInfo account_info =
-      identity_manager->FindExtendedAccountInfoByAccountId(
-          identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin));
-  AccountCapabilitiesTestMutator mutator(&account_info);
-  SetGlicCapability(mutator, false);
-  signin::UpdateAccountInfoForAccount(identity_manager, account_info);
+TEST_F(GlicEnablingGeicAnchorEntryPointTest, NotAnchoredForCountryDisabled) {
+  auto delegate = std::make_unique<TestDelegate>();
+  delegate->SetBothCountryCodes("zz");
+  g_browser_process->GetFeatures()
+      ->glic_global_enabling()
+      .UpdateStateForTesting(std::move(delegate));
 
   base::test::ScopedFeatureList features;
-  features.InitWithFeatures(
-      {features::kGlicAnchorEntryPointForOnboardedUsers, features::kGlic}, {});
+  features.InitWithFeatures({features::kGlicAnchorEntryPointForOnboardedUsers,
+                             features::kGlic, features::kGlicCountryFiltering},
+                            {});
 
   GlicEnabling::ProfileEnablement enablement =
       GlicEnabling::EnablementForProfile(profile());
+  EXPECT_FALSE(enablement.allowed_by_country_filter);
   EXPECT_FALSE(enablement.anchor_entrypoint_override_active);
   EXPECT_FALSE(enablement.ShouldShowGlicButton());
   EXPECT_EQ(GlicEnabling::GetProfileReadyState(profile()),
@@ -3846,6 +3846,98 @@ TEST_F(GlicEnablingGeicPolicyGlicDisabledTest,
   EXPECT_EQ(GlicKeyedService::Get(profile()), nullptr);
 }
 
+// Like `GlicEnablingGeicPolicyTest`, but with the `enabled` param of
+// `features::kGeic` set to false when the profile is created.
+class GlicEnablingGeicPolicyEnabledParamFalseTest
+    : public GlicEnablingGeicPolicyTest {
+ public:
+  GlicEnablingGeicPolicyEnabledParamFalseTest() {
+    geic_param_feature_list_.InitAndEnableFeatureWithParameters(
+        features::kGeic, {{"enabled", "false"}});
+  }
+
+ private:
+  base::test::ScopedFeatureList geic_param_feature_list_;
+};
+
+// Like `GlicEnablingProfileEligibilityTest`, but with `features::kGeic`
+// enabled and no Gemini Enterprise guest URL configured when the profile is
+// created.
+class GlicEnablingGeicWithoutUrlTest
+    : public GlicEnablingProfileEligibilityTest {
+ public:
+  GlicEnablingGeicWithoutUrlTest() {
+    geic_feature_list_.InitAndEnableFeature(features::kGeic);
+  }
+
+ private:
+  base::test::ScopedFeatureList geic_feature_list_;
+};
+
+// Expects `profile` to be latched to consumer Gemini and to get consumer
+// enablement, including the Gemini account eligibility checks: the profile is
+// signed out, so it isn't ready.
+void ExpectConsumerProviderAndEnablement(Profile* profile) {
+  ASSERT_TRUE(IdentityManagerFactory::GetForProfile(profile)
+                  ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
+                  .IsEmpty());
+  EXPECT_EQ(GlicProviderLatch::GetProvider(*profile), GlicProvider::kGemini);
+  EXPECT_TRUE(GetGlicProviderSpec(profile).RequiresGeminiAccountEligibility());
+
+  GlicEnabling::ProfileEnablement enablement =
+      GlicEnabling::EnablementForProfile(profile);
+  EXPECT_TRUE(enablement.primary_account_needs_signed_in ||
+              !enablement.primary_account_is_capable);
+  EXPECT_NE(GlicEnabling::GetProfileReadyState(profile),
+            mojom::ProfileReadyState::kReady);
+}
+
+// Enablement has no `features::kGeic` check of its own (see
+// ComputeProfileEnablement()), because a profile is only latched to Gemini
+// Enterprise if kGeic is fully enabled and a guest URL is configured. The
+// following tests check each way the latch falls back to consumer Gemini, and
+// that consumer enablement then applies.
+
+// The Gemini Enterprise policy URL is set, but kGeic is disabled.
+TEST_F(GlicEnablingGeicPolicyFeatureDisabledTest,
+       ConsumerEnablementWhenGeicFeatureDisabled) {
+  ExpectConsumerProviderAndEnablement(profile());
+}
+
+// The Gemini Enterprise policy URL is set, but kGeic's `enabled` param is
+// false.
+TEST_F(GlicEnablingGeicPolicyEnabledParamFalseTest,
+       ConsumerEnablementWhenGeicEnabledParamFalse) {
+  ExpectConsumerProviderAndEnablement(profile());
+}
+
+// kGeic is enabled, but no Gemini Enterprise guest URL is configured.
+TEST_F(GlicEnablingGeicWithoutUrlTest, ConsumerEnablementWithoutGuestUrl) {
+  ExpectConsumerProviderAndEnablement(profile());
+}
+
+// kGeic is enabled and the Gemini Enterprise policy URL is set, so the profile
+// is latched to Gemini Enterprise and skips the Gemini account eligibility
+// checks: a signed-out profile is enabled and ready.
+TEST_F(GlicEnablingGeicPolicyTest,
+       GeminiEnterpriseEnablementWithGeicFeatureAndUrl) {
+  ASSERT_TRUE(IdentityManagerFactory::GetForProfile(profile())
+                  ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
+                  .IsEmpty());
+  EXPECT_EQ(GlicProviderLatch::GetProvider(*profile()),
+            GlicProvider::kGeminiEnterprise);
+  EXPECT_FALSE(
+      GetGlicProviderSpec(profile()).RequiresGeminiAccountEligibility());
+
+  GlicEnabling::ProfileEnablement enablement =
+      GlicEnabling::EnablementForProfile(profile());
+  EXPECT_FALSE(enablement.primary_account_needs_signed_in);
+  EXPECT_TRUE(enablement.primary_account_is_capable);
+  EXPECT_TRUE(enablement.IsEnabled());
+  EXPECT_EQ(GlicEnabling::GetProfileReadyState(profile()),
+            mojom::ProfileReadyState::kReady);
+}
+
 TEST_F(GlicEnablingGeicPolicyTest, Provider_LatchedAtCreation) {
   // Removing the policy after the profile was created does not change the
   // provider or the latched guest URL for the rest of the session.
@@ -3870,6 +3962,281 @@ TEST_F(GlicEnablingGeicPolicyTest, KeyedServicesBuildForGeicProfile) {
                                                            /*create=*/true));
   EXPECT_EQ(GlicProviderLatch::GetProvider(*profile()),
             GlicProvider::kGeminiEnterprise);
+}
+
+// Gemini Enterprise doesn't apply the consumer account checks, so a signed-out
+// profile that never completed the consumer FRE is enabled, consented and
+// ready.
+TEST_F(GlicEnablingGeicPolicyTest, GeicEnabledWithoutConsumerAccountChecks) {
+  ASSERT_EQ(GlicProviderLatch::GetProvider(*profile()),
+            GlicProvider::kGeminiEnterprise);
+  ASSERT_TRUE(identity_test_env_adaptor_->identity_test_env()
+                  ->identity_manager()
+                  ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
+                  .IsEmpty());
+
+  GlicEnabling::ProfileEnablement enablement =
+      GlicEnabling::EnablementForProfile(profile());
+  EXPECT_TRUE(enablement.IsEnabled());
+  // This is true only because `features::kGeicFre` is disabled (the default),
+  // so `GeminiEnterpriseGlicFreStore` reports the FRE as `kCompleted` (see
+  // glic_fre_store_impl.cc). `GeicFreControlsConsentInEnablement` covers
+  // consent with the GEiC FRE enabled.
+  EXPECT_TRUE(enablement.IsEnabledAndConsented());
+  EXPECT_TRUE(enablement.ShouldShowGlicButton());
+  EXPECT_TRUE(enablement.ShouldShowSettingsPage());
+  EXPECT_FALSE(enablement.primary_account_needs_signed_in);
+  EXPECT_FALSE(enablement.DisallowedByAdmin());
+  EXPECT_FALSE(enablement.EligibleForLive());
+  EXPECT_FALSE(enablement.EligibleForShareImage());
+  EXPECT_FALSE(enablement.live_allowed);
+  EXPECT_FALSE(enablement.share_image_allowed);
+  EXPECT_EQ(GlicEnabling::GetProfileReadyState(profile()),
+            mojom::ProfileReadyState::kReady);
+
+  // Gemini Enterprise profiles are reported as consented by all consent
+  // readers, without writing the consumer consent pref.
+  EXPECT_TRUE(GlicEnabling::HasConsentedForProfile(profile()));
+  EXPECT_EQ(profile()->GetPrefs()->GetInteger(prefs::kGlicCompletedFre),
+            std::to_underlying(prefs::FreStatus::kNotStarted));
+  GlicKeyedService* service = GlicKeyedService::Get(profile());
+  ASSERT_TRUE(service);
+  EXPECT_NE(service->enabling().GetRequiredExperimentalOptIn(),
+            RequiredExperimentalOptIn::kGlic);
+}
+
+// With `features::kGeicFre` enabled, Gemini Enterprise enablement requires
+// completing the GEiC FRE rather than the consumer FRE.
+TEST_F(GlicEnablingGeicPolicyTest, GeicFreControlsConsentInEnablement) {
+  base::test::ScopedFeatureList geic_fre_feature;
+  geic_fre_feature.InitAndEnableFeature(features::kGeicFre);
+
+  // Completing the consumer FRE does not consent the GEiC profile.
+  profile()->GetPrefs()->SetInteger(
+      prefs::kGlicCompletedFre,
+      std::to_underlying(prefs::FreStatus::kCompleted));
+
+  {
+    GlicEnabling::ProfileEnablement enablement =
+        GlicEnabling::EnablementForProfile(profile());
+    EXPECT_TRUE(enablement.IsEnabled());
+    EXPECT_FALSE(enablement.fre_is_consented);
+    EXPECT_FALSE(enablement.IsEnabledAndConsented());
+    EXPECT_FALSE(GlicEnabling::IsEnabledAndConsentForProfile(profile()));
+  }
+
+  geic::CompleteFre(profile());
+
+  {
+    GlicEnabling::ProfileEnablement enablement =
+        GlicEnabling::EnablementForProfile(profile());
+    EXPECT_TRUE(enablement.IsEnabled());
+    EXPECT_TRUE(enablement.fre_is_consented);
+    EXPECT_TRUE(enablement.IsEnabledAndConsented());
+    EXPECT_TRUE(GlicEnabling::IsEnabledAndConsentForProfile(profile()));
+  }
+}
+
+// An off-the-record profile of a Gemini Enterprise profile is not eligible,
+// enabled, or ready for Glic.
+TEST_F(GlicEnablingGeicPolicyTest, GeicDisabledForOffTheRecordProfile) {
+  ASSERT_TRUE(GlicEnabling::IsEnabledForProfile(profile()));
+  ASSERT_EQ(GlicEnabling::GetProfileReadyState(profile()),
+            mojom::ProfileReadyState::kReady);
+
+  Profile* otr_profile =
+      profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true);
+  EXPECT_FALSE(GlicEnabling::IsProfileEligible(otr_profile));
+  EXPECT_FALSE(GlicEnabling::IsEnabledForProfile(otr_profile));
+  EXPECT_FALSE(GlicEnabling::EnablementForProfile(otr_profile).IsEnabled());
+  EXPECT_EQ(GlicEnabling::GetProfileReadyState(otr_profile),
+            mojom::ProfileReadyState::kIneligible);
+}
+
+// Gemini Enterprise ignores the consumer GeminiSettings policy and does not
+// observe it, so changing it does not trigger enablement callbacks.
+TEST_F(GlicEnablingGeicPolicyTest, GeicIgnoresGeminiSettingsPolicy) {
+  GlicKeyedService* service =
+      GlicKeyedServiceFactory::GetGlicKeyedService(profile(), /*create=*/true);
+  ASSERT_TRUE(service);
+
+  int callback_count = 0;
+  base::CallbackListSubscription subscription =
+      service->enabling().RegisterAllowedChanged(
+          base::BindRepeating([](int* count) { (*count)++; }, &callback_count));
+
+  profile()->GetPrefs()->SetInteger(
+      optimization_guide::prefs::kGeminiSettings,
+      std::to_underlying(
+          optimization_guide::prefs::GeminiSettingsPolicyState::kDisabled));
+
+  EXPECT_EQ(callback_count, 0);
+
+  GlicEnabling::ProfileEnablement enablement =
+      GlicEnabling::EnablementForProfile(profile());
+  EXPECT_TRUE(enablement.IsEnabled());
+  EXPECT_FALSE(enablement.DisallowedByAdmin());
+  EXPECT_EQ(GlicEnabling::GetProfileReadyState(profile()),
+            mojom::ProfileReadyState::kReady);
+}
+
+// Gemini Enterprise does not observe primary account changes.
+TEST_F(GlicEnablingGeicPolicyTest,
+       GeicPrimaryAccountChangesDoNotNotifyAllowedChanged) {
+  GlicKeyedService* service =
+      GlicKeyedServiceFactory::GetGlicKeyedService(profile(), /*create=*/true);
+  ASSERT_TRUE(service);
+
+  int callback_count = 0;
+  base::CallbackListSubscription subscription =
+      service->enabling().RegisterAllowedChanged(
+          base::BindRepeating([](int* count) { (*count)++; }, &callback_count));
+
+  auto* identity_test_env = identity_test_env_adaptor_->identity_test_env();
+  AccountInfo account_info = identity_test_env->MakePrimaryAccountAvailable(
+      "test@example.com", signin::ConsentLevel::kSignin);
+  AccountCapabilitiesTestMutator mutator(&account_info);
+  SetGlicCapability(mutator, true);
+  signin::UpdateAccountInfoForAccount(identity_test_env->identity_manager(),
+                                      account_info);
+  identity_test_env->SetInvalidRefreshTokenForPrimaryAccount();
+  EXPECT_EQ(callback_count, 0);
+
+#if !BUILDFLAG(IS_CHROMEOS)
+  identity_test_env->ClearPrimaryAccount();
+  EXPECT_EQ(callback_count, 0);
+#endif
+}
+
+// Gemini Enterprise is not anchored: without the Glic feature the profile is
+// ineligible and disabled, even if the user completed the consumer FRE.
+TEST_F(GlicEnablingGeicPolicyTest, GeicNotAnchoredWhenGlobalCriteriaFail) {
+  profile()->GetPrefs()->SetInteger(
+      prefs::kGlicCompletedFre,
+      std::to_underlying(prefs::FreStatus::kCompleted));
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {features::kGlicAnchorEntryPointForOnboardedUsers}, {features::kGlic});
+
+  EXPECT_FALSE(GlicEnabling::IsProfileEligible(profile()));
+  GlicEnabling::ProfileEnablement enablement =
+      GlicEnabling::EnablementForProfile(profile());
+  EXPECT_FALSE(enablement.IsEnabled());
+  EXPECT_FALSE(enablement.ShouldShowGlicButton());
+  EXPECT_FALSE(enablement.anchor_entrypoint_override_active);
+  EXPECT_EQ(GlicEnabling::GetProfileReadyState(profile()),
+            mojom::ProfileReadyState::kIneligible);
+}
+
+// Like `GlicEnablingGeicPolicyTest`, but with the Glic country filter enabled.
+class GlicEnablingGeicPolicyCountryCheckTest
+    : public GlicEnablingGeicPolicyTest {
+ public:
+  GlicEnablingGeicPolicyCountryCheckTest() {
+    country_feature_list_.InitAndEnableFeature(features::kGlicCountryFiltering);
+  }
+
+ protected:
+  void SetCountry(const std::string& country) {
+    auto delegate = std::make_unique<TestDelegate>();
+    delegate->SetBothCountryCodes(country);
+    g_browser_process->GetFeatures()
+        ->glic_global_enabling()
+        .UpdateStateForTesting(std::move(delegate));
+  }
+
+ private:
+  base::test::ScopedFeatureList country_feature_list_;
+};
+
+// Gemini Enterprise uses the consumer country filter, at the same layer
+// (profile enablement, not the provider latch).
+TEST_F(GlicEnablingGeicPolicyCountryCheckTest, GeicUsesConsumerCountryFilter) {
+  SetCountry("zz");
+  EXPECT_EQ(GlicProviderLatch::GetProvider(*profile()),
+            GlicProvider::kGeminiEnterprise);
+  EXPECT_TRUE(GlicEnabling::IsProfileEligible(profile()));
+  GlicEnabling::ProfileEnablement enablement =
+      GlicEnabling::EnablementForProfile(profile());
+  EXPECT_FALSE(enablement.allowed_by_country_filter);
+  EXPECT_FALSE(enablement.IsEnabled());
+  EXPECT_EQ(GlicEnabling::GetProfileReadyState(profile()),
+            mojom::ProfileReadyState::kIneligible);
+
+  {
+    GlicEnabling::ScopedBypassEnablementChecksForTesting bypass;
+    EXPECT_TRUE(GlicEnabling::IsEnabledForProfile(profile()));
+  }
+
+  SetCountry("us");
+  EXPECT_TRUE(GlicEnabling::IsEnabledForProfile(profile()));
+  EXPECT_EQ(GlicEnabling::GetProfileReadyState(profile()),
+            mojom::ProfileReadyState::kReady);
+}
+
+// Gemini Enterprise doesn't use the consumer First Run Gemini step, so the
+// First Run check is false even for an eligible account in an allowed country.
+TEST_F(GlicEnablingGeicPolicyCountryCheckTest,
+       GeicIsNotEnabledForFirstRunProfile) {
+  SetCountry("us");
+  ASSERT_TRUE(GlicEnabling::IsEnabledForProfile(profile()));
+
+  auto* identity_test_env = identity_test_env_adaptor_->identity_test_env();
+  AccountInfo account_info = identity_test_env->MakePrimaryAccountAvailable(
+      "test@example.com", signin::ConsentLevel::kSignin);
+  AccountCapabilitiesTestMutator mutator(&account_info);
+  SetGlicCapability(mutator, true);
+  signin::UpdateAccountInfoForAccount(identity_test_env->identity_manager(),
+                                      account_info);
+
+  EXPECT_FALSE(GlicEnabling::IsEnabledForFirstRunProfile(profile(), "us", "us",
+                                                         account_info));
+}
+
+// Gemini Enterprise skips the server-side user status check, so it doesn't
+// create the user status fetcher.
+TEST_F(GlicEnablingGeicPolicyTest, GeicDoesNotCreateUserStatusFetcher) {
+  ASSERT_TRUE(base::FeatureList::IsEnabled(features::kGlicUserStatusCheck));
+  ASSERT_EQ(GlicProviderLatch::GetProvider(*profile()),
+            GlicProvider::kGeminiEnterprise);
+  GlicKeyedService* service =
+      GlicKeyedServiceFactory::GetGlicKeyedService(profile(), /*create=*/true);
+  ASSERT_TRUE(service);
+  EXPECT_FALSE(service->enabling().HasUserStatusFetcherForTesting());
+  // Refresh requests are ignored rather than crashing.
+  service->enabling().UpdateUserStatusWithThrottling();
+}
+
+// Consumer Gemini creates the user status fetcher.
+TEST_F(GlicEnablingGeicPolicyFeatureDisabledTest,
+       ConsumerCreatesUserStatusFetcher) {
+  ASSERT_TRUE(base::FeatureList::IsEnabled(features::kGlicUserStatusCheck));
+  ASSERT_EQ(GlicProviderLatch::GetProvider(*profile()), GlicProvider::kGemini);
+  GlicKeyedService* service =
+      GlicKeyedServiceFactory::GetGlicKeyedService(profile(), /*create=*/true);
+  ASSERT_TRUE(service);
+  EXPECT_TRUE(service->enabling().HasUserStatusFetcherForTesting());
+}
+
+// Consumer Gemini observes the GeminiSettings policy and fires enablement
+// callbacks when it changes.
+TEST_F(GlicEnablingGeicPolicyFeatureDisabledTest,
+       ConsumerObservesGeminiSettingsPolicy) {
+  GlicKeyedService* service =
+      GlicKeyedServiceFactory::GetGlicKeyedService(profile(), /*create=*/true);
+  ASSERT_TRUE(service);
+
+  int callback_count = 0;
+  base::CallbackListSubscription subscription =
+      service->enabling().RegisterAllowedChanged(
+          base::BindRepeating([](int* count) { (*count)++; }, &callback_count));
+
+  profile()->GetPrefs()->SetInteger(
+      optimization_guide::prefs::kGeminiSettings,
+      std::to_underlying(
+          optimization_guide::prefs::GeminiSettingsPolicyState::kDisabled));
+
+  EXPECT_GT(callback_count, 0);
 }
 
 #if BUILDFLAG(IS_ANDROID)

@@ -12,9 +12,11 @@
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
+#include "base/notreached.h"
 #include "chrome/browser/glic/glic_fre_store_impl.h"
 #include "chrome/browser/glic/host/guest_util.h"
 #include "chrome/browser/glic/public/features.h"
+#include "chrome/browser/glic/public/glic_feature.h"
 #include "chrome/browser/glic/public/glic_fre_store.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_provider.h"
@@ -106,6 +108,8 @@ class GeminiGlicProviderSpec final : public GlicProviderSpec {
   }
   bool SupportsAnchoredEntryPoint() const override { return true; }
   const GlicFreStore& GetFreStore() const override { return *fre_store_; }
+  bool RequiresGeminiAccountEligibility() const override { return true; }
+  bool SupportsFeature(GlicFeature feature) const override { return true; }
 
  private:
   const std::unique_ptr<GlicFreStore> fre_store_ = CreateGeminiFreStore();
@@ -142,6 +146,15 @@ class GeminiEnterpriseGlicProviderSpec final : public GlicProviderSpec {
   // TODO(b/576834093): Support anchoring with GEiC error states.
   bool SupportsAnchoredEntryPoint() const override { return false; }
   const GlicFreStore& GetFreStore() const override { return *fre_store_; }
+  bool RequiresGeminiAccountEligibility() const override { return false; }
+  bool SupportsFeature(GlicFeature feature) const override {
+    switch (feature) {
+      case GlicFeature::kLive:
+      case GlicFeature::kShareImage:
+        return false;
+    }
+    NOTREACHED();
+  }
 
  private:
   const GURL guest_url_;

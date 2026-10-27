@@ -40,6 +40,7 @@
 #include "chrome/browser/glic/host/glic_features.mojom-features.h"
 #include "chrome/browser/glic/host/glic_synthetic_trial_manager.h"
 #include "chrome/browser/glic/public/features.h"
+#include "chrome/browser/glic/public/glic_feature.h"
 #include "chrome/browser/glic/public/glic_fre_store.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
@@ -404,52 +405,12 @@ mojom::ProfileReadyState GetSanitizedProfileReadyState(int state_val) {
   return mojom::ProfileReadyState::kUnknownError;
 }
 
-GlicEnabling::ProfileEnablement ComputeProfileEnablement(
+void ApplyGeminiAccountEligibility(
     Profile* profile,
     std::optional<std::pair<std::string_view, std::string_view>>
         country_override,
-    const AccountInfo* account_info_override) {
-  GlicEnabling::ProfileEnablement result;
-
-  if (g_bypass_enablement_checks_for_testing) {
-    return result;
-  }
-
-  GlicGlobalEnabling& global_enabling =
-      g_browser_process->GetFeatures()->glic_global_enabling();
-
-  result.feature_flag_enabled = base::FeatureList::IsEnabled(features::kGlic);
-  if (country_override.has_value()) {
-    result.allowed_by_country_filter =
-        GlicEnabling::IsRetailDemoModeDesktop() ||
-        EvaluateCountryEnablement(country_override->first,
-                                  country_override->second);
-  } else {
-    result.allowed_by_country_filter = global_enabling.IsCountryEnabled();
-  }
-  result.allowed_by_locale_filter = global_enabling.IsLocaleEnabled();
-  result.system_requirement_met = global_enabling.IsSystemRequirementMet();
-  result.fre_is_consented = GlicEnabling::HasConsentedForProfile(profile);
-  result.os_version_supported = global_enabling.IsOsVersionSupported();
-
-  bool global_criteria_met = global_enabling.IsEnabledByGlobalCriteria();
-  if (!global_criteria_met) {
-    result.anchor_entrypoint_override_active =
-        result.feature_flag_enabled &&
-        GlicEnabling::IsAnchoredButIneligible(
-            global_criteria_met,
-            IsAnchorable(profile, result.fre_is_consented));
-    if (!result.anchor_entrypoint_override_active) {
-      result.feature_enabled = false;
-      return result;
-    }
-  }
-
-  if (!profile || !profile->IsRegularProfile()) {
-    result.is_regular_profile = false;
-    return result;
-  }
-
+    const AccountInfo* account_info_override,
+    GlicEnabling::ProfileEnablement& result) {
   // Certain checks are bypassed if --glic-dev is passed.
   auto* command_line = base::CommandLine::ForCurrentProcess();
   if (!command_line->HasSwitch(::switches::kGlicDev)) {
@@ -491,6 +452,8 @@ GlicEnabling::ProfileEnablement ComputeProfileEnablement(
       // adults are capable, so minor users outside minor-enabled countries are
       // reported as not capable (rather than blocked by the country filter,
       // which always reflects the adult country list).
+      GlicGlobalEnabling& global_enabling =
+          g_browser_process->GetFeatures()->glic_global_enabling();
       const bool allowed_by_minor_country_filter =
           country_override.has_value()
               ? GlicEnabling::IsRetailDemoModeDesktop() ||
@@ -525,7 +488,6 @@ GlicEnabling::ProfileEnablement ComputeProfileEnablement(
     }
   }
 
-
   if (profile->GetPrefs()->GetInteger(
           optimization_guide::prefs::kGeminiSettings) !=
       std::to_underlying(
@@ -552,6 +514,78 @@ GlicEnabling::ProfileEnablement ComputeProfileEnablement(
       }
     }
   }
+}
+
+GlicEnabling::ProfileEnablement ComputeProfileEnablement(
+    Profile* profile,
+    std::optional<std::pair<std::string_view, std::string_view>>
+        country_override,
+    const AccountInfo* account_info_override) {
+  GlicEnabling::ProfileEnablement result;
+
+  if (g_bypass_enablement_checks_for_testing) {
+    return result;
+  }
+
+  GlicGlobalEnabling& global_enabling =
+      g_browser_process->GetFeatures()->glic_global_enabling();
+
+  result.feature_flag_enabled = base::FeatureList::IsEnabled(features::kGlic);
+  if (country_override.has_value()) {
+    result.allowed_by_country_filter =
+        GlicEnabling::IsRetailDemoModeDesktop() ||
+        EvaluateCountryEnablement(country_override->first,
+                                  country_override->second);
+  } else {
+    result.allowed_by_country_filter = global_enabling.IsCountryEnabled();
+  }
+  result.allowed_by_locale_filter = global_enabling.IsLocaleEnabled();
+  result.system_requirement_met = global_enabling.IsSystemRequirementMet();
+  result.fre_is_consented = GlicEnabling::HasConsentedForProfile(profile);
+  result.os_version_supported = global_enabling.IsOsVersionSupported();
+
+  // The global criteria are shared by all providers. There is no
+  // `features::kGeic` check for Gemini Enterprise here: a profile is only
+  // latched to Gemini Enterprise if kGeic is enabled when the provider is
+  // latched (see GlicProviderLatchFactory), and features don't change at
+  // runtime.
+  bool global_criteria_met = global_enabling.IsEnabledByGlobalCriteria();
+  if (!global_criteria_met) {
+    result.anchor_entrypoint_override_active =
+        result.feature_flag_enabled &&
+        GlicEnabling::IsAnchoredButIneligible(
+            global_criteria_met,
+            IsAnchorable(profile, result.fre_is_consented));
+    if (!result.anchor_entrypoint_override_active) {
+      result.feature_enabled = false;
+      return result;
+    }
+  }
+
+  if (!profile || !profile->IsRegularProfile()) {
+    result.is_regular_profile = false;
+    return result;
+  }
+
+  // Gemini account eligibility (whether the consumer Google account may use
+  // Gemini) doesn't apply to providers whose access is decided when the
+  // provider is latched (Gemini Enterprise); see
+  // GlicProviderSpec::RequiresGeminiAccountEligibility(). They skip the
+  // rollout, the primary account's sign-in state and capabilities
+  // (`account_info_override` is ignored), the GeminiSettings policy and the
+  // server-side user status checks below. Those fields keep their default
+  // (allowed) values, and the checks above still apply.
+  const GlicProviderSpec& provider_spec = GetGlicProviderSpec(profile);
+  if (provider_spec.RequiresGeminiAccountEligibility()) {
+    ApplyGeminiAccountEligibility(profile, country_override,
+                                  account_info_override, result);
+  }
+
+  result.live_allowed =
+      result.live_allowed && provider_spec.SupportsFeature(GlicFeature::kLive);
+  result.share_image_allowed =
+      result.share_image_allowed &&
+      provider_spec.SupportsFeature(GlicFeature::kShareImage);
 
   return result;
 }
@@ -743,7 +777,6 @@ bool GlicEnabling::ProfileEnablement::EligibleForLive() const {
 bool GlicEnabling::ProfileEnablement::EligibleForShareImage() const {
   return IsProfileEligible() && share_image_allowed;
 }
-
 
 bool GlicEnabling::ProfileEnablement::DisallowedByAdmin() const {
   return !allowed_by_chrome_policy || !allowed_by_remote_admin;
@@ -1004,6 +1037,10 @@ bool GlicEnabling::IsEnabledForFirstRunProfile(
     std::string_view permanent_country,
     std::string_view session_country,
     const AccountInfo& account_info) {
+  // Gemini Enterprise doesn't use the consumer First Run Gemini step.
+  if (!GetGlicProviderSpec(profile).RequiresGeminiAccountEligibility()) {
+    return false;
+  }
   // Chrome First Run dedicated checks should go first before 'general' GiC
   // eligibility checks.
   if (!CanUseAdultFeatures(account_info.GetAccountCapabilities())) {
@@ -1334,7 +1371,6 @@ bool GlicEnabling::IsShareImageEnabledForProfile(Profile* profile) {
          base::FeatureList::IsEnabled(features::kGlicShareImage);
 }
 
-
 // static
 std::unique_ptr<GlicEnabling> GlicEnabling::CreateForTesting(  // IN-TEST
     Profile* profile,
@@ -1353,10 +1389,6 @@ GlicEnabling::GlicEnabling(
       profile_attributes_storage_(profile_attributes_storage),
       actor_policy_checker_(actor_policy_checker) {
   pref_registrar_.Init(profile_->GetPrefs());
-  pref_registrar_.Add(
-      optimization_guide::prefs::kGeminiSettings,
-      base::BindRepeating(&GlicEnabling::OnGlicSettingsPolicyChanged,
-                          base::Unretained(this)));
   // Only the active provider's FRE pref is observed, so that changes to the
   // other provider's FRE don't notify consent observers.
   pref_registrar_.Add(GetFreStore(profile_).GetStatusPrefName(),
@@ -1370,30 +1402,46 @@ GlicEnabling::GlicEnabling(
       prefs::kGlicExperimentalTriggeringEnabled,
       base::BindRepeating(&GlicEnabling::OnExperimentalTriggeringEnabledChanged,
                           base::Unretained(this)));
-  if (!base::FeatureList::IsEnabled(features::kGlicRollout) &&
-      base::FeatureList::IsEnabled(features::kGlicTieredRollout)) {
+
+  // The provider is latched before GlicEnabling is created, so it doesn't
+  // change for the lifetime of this object. Consumer Gemini account eligibility
+  // and policy checks (rollout, primary account identity and capabilities,
+  // GeminiSettings policy, server-side user status, and AI subscription tier)
+  // don't apply to providers that skip those checks (Gemini Enterprise).
+  const bool requires_gemini_account_eligibility =
+      GetGlicProviderSpec(profile_).RequiresGeminiAccountEligibility();
+  if (requires_gemini_account_eligibility) {
     pref_registrar_.Add(
-        prefs::kGlicRolloutEligibility,
-        base::BindRepeating(&GlicEnabling::OnTieredRolloutStatusMaybeChanged,
+        optimization_guide::prefs::kGeminiSettings,
+        base::BindRepeating(&GlicEnabling::OnGlicSettingsPolicyChanged,
                             base::Unretained(this)));
-  }
-  signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(profile);
-  CHECK(identity_manager);
-  identity_manager_observation_.Observe(identity_manager);
 
-  if (base::FeatureList::IsEnabled(features::kGlicUserStatusCheck)) {
-    glic_user_status_fetcher_ = std::make_unique<GlicUserStatusFetcher>(
-        profile_, base::BindRepeating(&GlicEnabling::UpdateEnabledStatus,
-                                      base::Unretained(this)));
-  }
+    if (!base::FeatureList::IsEnabled(features::kGlicRollout) &&
+        base::FeatureList::IsEnabled(features::kGlicTieredRollout)) {
+      pref_registrar_.Add(
+          prefs::kGlicRolloutEligibility,
+          base::BindRepeating(&GlicEnabling::OnTieredRolloutStatusMaybeChanged,
+                              base::Unretained(this)));
+    }
 
-  subscription_eligibility::SubscriptionEligibilityService*
-      subscription_eligibility_service = subscription_eligibility::
-          SubscriptionEligibilityServiceFactory::GetForProfile(profile);
-  if (subscription_eligibility_service) {
-    subscription_eligibility_service_observation_.Observe(
-        subscription_eligibility_service);
+    signin::IdentityManager* identity_manager =
+        IdentityManagerFactory::GetForProfile(profile);
+    CHECK(identity_manager);
+    identity_manager_observation_.Observe(identity_manager);
+
+    if (base::FeatureList::IsEnabled(features::kGlicUserStatusCheck)) {
+      glic_user_status_fetcher_ = std::make_unique<GlicUserStatusFetcher>(
+          profile_, base::BindRepeating(&GlicEnabling::UpdateEnabledStatus,
+                                        base::Unretained(this)));
+    }
+
+    subscription_eligibility::SubscriptionEligibilityService*
+        subscription_eligibility_service = subscription_eligibility::
+            SubscriptionEligibilityServiceFactory::GetForProfile(profile);
+    if (subscription_eligibility_service) {
+      subscription_eligibility_service_observation_.Observe(
+          subscription_eligibility_service);
+    }
   }
 
   if (actor_policy_checker_) {
@@ -1786,14 +1834,17 @@ void GlicEnabling::OnErrorStateOfRefreshTokenUpdatedForAccount(
 }
 
 void GlicEnabling::UpdateEnabledStatus() {
-  if (IsAllowed()) {
-    profile_->GetPrefs()->SetBoolean(prefs::kGlicPreviouslyNotAllowed, false);
-  } else {
-    signin::IdentityManager* identity_manager =
-        IdentityManagerFactory::GetForProfile(profile_);
-    if (identity_manager &&
-        identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
-      profile_->GetPrefs()->SetBoolean(prefs::kGlicPreviouslyNotAllowed, true);
+  if (GetGlicProviderSpec(profile_).RequiresGeminiAccountEligibility()) {
+    if (IsAllowed()) {
+      profile_->GetPrefs()->SetBoolean(prefs::kGlicPreviouslyNotAllowed, false);
+    } else {
+      signin::IdentityManager* identity_manager =
+          IdentityManagerFactory::GetForProfile(profile_);
+      if (identity_manager &&
+          identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
+        profile_->GetPrefs()->SetBoolean(prefs::kGlicPreviouslyNotAllowed,
+                                         true);
+      }
     }
   }
   if (profile_attributes_storage_) {
