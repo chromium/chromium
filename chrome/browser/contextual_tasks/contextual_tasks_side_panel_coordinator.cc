@@ -56,6 +56,7 @@
 #include "extensions/buildflags/buildflags.h"
 #include "net/base/url_util.h"
 #if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/contextual_tasks/contextual_tasks_onboarding_tooltip_controller.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_web_view.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
@@ -374,6 +375,11 @@ ContextualTasksSidePanelCoordinator::ContextualTasksSidePanelCoordinator(
       active_task_context_provider_(active_task_context_provider),
       scoped_unowned_user_data_(browser_window->GetUnownedUserDataHost(),
                                 *this) {
+#if !BUILDFLAG(IS_ANDROID)
+  onboarding_controller_ =
+      std::make_unique<ContextualTasksOnboardingTooltipController>(
+          browser_window, browser_window->GetProfile());
+#endif
   active_task_context_provider_->SetContextualTasksPanelController(this);
   TabListInterface::From(browser_window_)->AddTabListInterfaceObserver(this);
   contextual_tasks_panel_host_->AddObserver(this);
@@ -598,6 +604,7 @@ void ContextualTasksSidePanelCoordinator::Show(
     auto it = task_id_to_web_contents_cache_.find(task->GetTaskId());
     if (it != task_id_to_web_contents_cache_.end()) {
       it->second->entry_source = entry_source;
+      it->second->entry_point = entry_point;
       it->second->last_active_time_ticks = base::TimeTicks::Now();
       it->second->open_time_ticks =
           open_time_ticks.value_or(base::TimeTicks::Now());
@@ -606,6 +613,9 @@ void ContextualTasksSidePanelCoordinator::Show(
     }
   }
   UpdateWebContentsForActiveTab();
+#if !BUILDFLAG(IS_ANDROID)
+  onboarding_controller_->SetEntryPoint(entry_point);
+#endif
 
   ContextualTasksPanelHost::AnimationStyle animation_style =
       ContextualTasksPanelHost::AnimationStyle::kStandard;
@@ -679,6 +689,10 @@ void ContextualTasksSidePanelCoordinator::Close() {
       ContextualTasksPanelHost::AnimationStyle::kStandard);
   MaybeRemoveImplicitTabContext();
   Observe(nullptr);
+
+#if !BUILDFLAG(IS_ANDROID)
+  onboarding_controller_->CloseBubble();
+#endif
 
   if (active_task_context_provider_) {
     active_task_context_provider_->ClearAllLocalTabUnderlines();
@@ -1681,14 +1695,20 @@ bool ContextualTasksSidePanelCoordinator::UpdateWebContentsForActiveTab() {
       extensions_container_->SetWebContents(web_contents);
     }
 #endif
-    if (auto* next_cache_item =
-            GetWebContentsCacheItemForWebContents(web_contents)) {
+    auto* next_cache_item = GetWebContentsCacheItemForWebContents(web_contents);
+    if (next_cache_item) {
       next_cache_item->last_active_time_ticks = base::TimeTicks::Now();
     }
     contextual_tasks_panel_host_->SetWebContents(web_contents);
     if (prev_web_contents) {
       MaybeRemoveImplicitTabContext(prev_web_contents);
     }
+#if !BUILDFLAG(IS_ANDROID)
+    onboarding_controller_->CloseBubble();
+    if (next_cache_item) {
+      onboarding_controller_->SetEntryPoint(next_cache_item->entry_point);
+    }
+#endif
     NotifyExpandToFullTabStateChanged();
   }
 
@@ -1868,10 +1888,20 @@ void ContextualTasksSidePanelCoordinator::Hide() {
   MaybeRemoveImplicitTabContext();
   Observe(nullptr);
 
+#if !BUILDFLAG(IS_ANDROID)
+  onboarding_controller_->CloseBubble();
+#endif
+
   NotifyActiveTaskContextProvider();
 }
 
 void ContextualTasksSidePanelCoordinator::Unhide() {
+#if !BUILDFLAG(IS_ANDROID)
+  if (auto* cache_item = GetWebContentsCacheItemForWebContents(
+          GetPanelWebContentsForActiveTab())) {
+    onboarding_controller_->SetEntryPoint(cache_item->entry_point);
+  }
+#endif
   contextual_tasks_panel_host_->Show(
       ContextualTasksPanelHost::AnimationStyle::kNoAnimation);
   UpdateContextualTaskUI();
@@ -2598,6 +2628,9 @@ void ContextualTasksSidePanelCoordinator::OnSurfaceStateChanged(
 
   if (state == ContextualTasksPanelHost::SurfaceState::kClosed) {
     MaybeRemoveImplicitTabContext();
+#if !BUILDFLAG(IS_ANDROID)
+    onboarding_controller_->CloseBubble();
+#endif
     if (reason == ContextualTasksPanelHost::StateChangeReason::kUserAction) {
       if (closing_entry_source_.has_value()) {
         EntrySource entry_source = *closing_entry_source_;

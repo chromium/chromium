@@ -1012,6 +1012,7 @@ source_set("interactive_ui_tests") {
       "//chrome/browser/ui/lens",
       "//chrome/browser/ui/lens:test_support",
       "//chrome/browser/ui/toolbar/pinned_toolbar",
+      "//chrome/browser/ui/views/contextual_tasks:onboarding_bubble",
       "//chrome/browser/ui/views/frame:browser_view_header",
       "//chrome/browser/ui/views/toolbar",
       "//chrome/browser/ui/views/toolbar:test_support",
@@ -1022,6 +1023,8 @@ source_set("interactive_ui_tests") {
       "//components/strings:components_strings",
       "//extensions/common",
       "//third_party/lens_server_proto:lens_overlay_proto",
+      "//ui/base/interaction:test_support",
+      "//ui/views",
     ]
   }
 
