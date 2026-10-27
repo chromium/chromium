@@ -46,28 +46,6 @@ bool ProcessHasWebUIBindings(content::ChildProcessId process_id) {
       process_id);
 }
 
-// Returns true if `process_id` is associated with a webview owned by the
-// extension with the specified `extension_id`.
-bool IsWebViewProcessForExtension(content::ChildProcessId process_id,
-                                  const ExtensionId& extension_id) {
-#if BUILDFLAG(ENABLE_GUEST_VIEW)
-  WebViewRendererState* web_view_state = WebViewRendererState::GetInstance();
-  // TODO(crbug.com/379869738) Remove GetUnsafeValue.
-  if (!web_view_state->IsGuest(process_id.GetUnsafeValue())) {
-    return false;
-  }
-
-  std::string webview_owner;
-  int owner_process_id = -1;
-  // TODO(crbug.com/379869738) Remove GetUnsafeValue.
-  bool found_info = web_view_state->GetOwnerInfo(
-      process_id.GetUnsafeValue(), &owner_process_id, &webview_owner);
-  return found_info && webview_owner == extension_id;
-#else
-  return false;
-#endif
-}
-
 }  // namespace
 
 // ProcessMap
@@ -136,6 +114,27 @@ bool ProcessMap::IsPrivilegedExtensionProcess(
           extension.location() == mojom::ManifestLocation::kComponent);
 }
 
+bool ProcessMap::IsWebViewProcessForExtension(
+    const ExtensionId& extension_id,
+    content::ChildProcessId process_id) const {
+#if BUILDFLAG(ENABLE_GUEST_VIEW)
+  WebViewRendererState* web_view_state = WebViewRendererState::GetInstance();
+  // TODO(crbug.com/379869738) Remove GetUnsafeValue.
+  if (!web_view_state->IsGuest(process_id.GetUnsafeValue())) {
+    return false;
+  }
+
+  std::string webview_owner;
+  int owner_process_id = -1;
+  // TODO(crbug.com/379869738) Remove GetUnsafeValue.
+  bool found_info = web_view_state->GetOwnerInfo(
+      process_id.GetUnsafeValue(), &owner_process_id, &webview_owner);
+  return found_info && webview_owner == extension_id;
+#else
+  return false;
+#endif
+}
+
 bool ProcessMap::CanProcessHostContextType(
     const Extension* extension,
     const content::RenderProcessHost& process,
@@ -154,7 +153,7 @@ bool ProcessMap::CanProcessHostContextType(
       return extension && IsPrivilegedExtensionProcess(*extension, process_id);
     case mojom::ContextType::kUnprivilegedExtension:
       return extension &&
-             IsWebViewProcessForExtension(process_id, extension->id());
+             IsWebViewProcessForExtension(extension->id(), process_id);
     case mojom::ContextType::kContentScript:
       return extension &&
              ScriptInjectionTracker::DidProcessRunContentScriptFromExtension(
@@ -217,7 +216,7 @@ mojom::ContextType ProcessMap::GetMostLikelyContextType(
     // We (deliberately) don't add webview-hosted frames to the process map and
     // don't classify them as kPrivilegedExtension contexts.
     if (url && extension->origin().IsSameOriginWith(*url) &&
-        IsWebViewProcessForExtension(process_id, extension->id())) {
+        IsWebViewProcessForExtension(extension->id(), process_id)) {
       // Yep, it's an extension frame in a webview.
 #if BUILDFLAG(ENABLE_PDF)
       // The PDF Viewer extension is an exception, since webviews need to be

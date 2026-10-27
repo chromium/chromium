@@ -5804,6 +5804,28 @@ IN_PROC_BROWSER_TEST_P(WebViewTest,
          });)";
   EXPECT_EQ("success", content::EvalJs(web_view_frame, kGetAcceptLanguages));
 
+  // Also test extension messaging APIs (which go through MessageService rather
+  // than ExtensionFunctionDispatcher, and are exposed to unprivileged extension
+  // contexts). Regression test for https://crbug.com/559361086.
+  static constexpr char kAddMessageListener[] =
+      R"(chrome.runtime.onMessage.addListener(
+             (message, sender, sendResponse) => {
+           sendResponse('ack: ' + message);
+         });)";
+  ASSERT_TRUE(content::ExecJs(embedder_contents, kAddMessageListener));
+
+  static constexpr char kSendMessage[] =
+      R"(new Promise(resolve => {
+           chrome.runtime.sendMessage('ping', (response) => {
+             if (chrome.runtime.lastError) {
+               resolve('Error: ' + chrome.runtime.lastError.message);
+             } else {
+               resolve(response);
+             }
+           });
+         });)";
+  EXPECT_EQ("ack: ping", content::EvalJs(web_view_frame, kSendMessage));
+
   // Finally, try accessing a privileged API, which shouldn't be available to
   // the embedded resource.
   static constexpr char kCallAppWindowCreate[] =
