@@ -500,8 +500,6 @@ if (!is_android) {
       "//ui/views",
       "//url",
     ]
-
-    allow_circular_includes_from = [ ":tab_group" ]
   }
 
   source_set("impl") {
