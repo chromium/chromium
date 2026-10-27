@@ -3441,22 +3441,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Tabs.TabSearch.WebUI.SearchUpdateDuration" units="ms"
-    expires_after="2027-03-07">
-  <owner>behery@chromium.org</owner>
-  <owner>top-chrome-desktop-ui@google.com</owner>
-  <summary>
-    The time taken to perform a search filter update on the Tab Search WebUI
-    page. This measures the complete duration of the updateFilteredTabs_
-    pipeline, starting when a tab state update or search query input change is
-    received and ending after the media tabs, open tabs, and recently closed
-    lists are filtered (i.e. the WebUI list component has completed rendering
-    the results in the DOM). Recorded every time the search result list in the
-    Tab Search bubble is updated (e.g., on keystroke, tab update/close, or
-    section expand/collapse).
-  </summary>
-</histogram>
-
 <histogram name="Tabs.TabSearch.WebUI.TabListDataReceived2" units="ms"
     expires_after="2027-02-28">
   <owner>kerenzhu@chromium.org</owner>
