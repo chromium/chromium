@@ -352,4 +352,183 @@ TEST(DOMArrayBufferTest, AsSpanMixedUnion) {
             buffer->ByteSpan().subspan(1u, 2u));
 }
 
+using AllowSharedUnion =
+    V8UnionArrayBufferAllowSharedOrArrayBufferViewAllowShared;
+
+template <typename T>
+concept CanCallCoerceToArrayBufferView =
+    requires(const T& t) { CoerceToArrayBufferView(t); };
+
+static_assert(CanCallCoerceToArrayBufferView<AllowSharedUnion>);
+static_assert(
+    !CanCallCoerceToArrayBufferView<V8UnionArrayBufferOrArrayBufferView>);
+static_assert(!CanCallCoerceToArrayBufferView<V8UnionArrayBufferOrString>);
+static_assert(!CanCallCoerceToArrayBufferView<DOMArrayBuffer>);
+
+TEST(DOMArrayBufferTest, CoerceToArrayBufferViewReturnsExistingView) {
+  constexpr std::array<uint8_t, 8> kData = {1, 2, 3, 4, 5, 6, 7, 8};
+  auto* buffer = DOMArrayBuffer::Create(kData);
+  auto* view = DOMUint8Array::Create(buffer, /*byte_offset=*/2, /*length=*/4);
+
+  auto* view_union = MakeGarbageCollected<AllowSharedUnion>(
+      MaybeShared<DOMArrayBufferView>(view));
+  EXPECT_EQ(CoerceToArrayBufferView(*view_union), view);
+
+  auto* shared_buffer = DOMSharedArrayBuffer::Create(kData);
+  auto* shared_view =
+      DOMUint8Array::Create(shared_buffer, /*byte_offset=*/1, /*length=*/3);
+  auto* shared_view_union = MakeGarbageCollected<AllowSharedUnion>(
+      MaybeShared<DOMArrayBufferView>(shared_view));
+  EXPECT_EQ(CoerceToArrayBufferView(*shared_view_union), shared_view);
+}
+
+TEST(DOMArrayBufferTest, CoerceToArrayBufferViewWrapsWholeBuffer) {
+  constexpr std::array<uint8_t, 8> kData = {1, 2, 3, 4, 5, 6, 7, 8};
+  auto* buffer = DOMArrayBuffer::Create(kData);
+
+  auto* buffer_union = MakeGarbageCollected<AllowSharedUnion>(buffer);
+  DOMArrayBufferView* result = CoerceToArrayBufferView(*buffer_union);
+  ASSERT_TRUE(result);
+  EXPECT_EQ(result->GetType(), DOMArrayBufferView::kTypeUint8);
+  EXPECT_EQ(result->buffer(), buffer);
+  EXPECT_EQ(result->byteOffset(), 0u);
+  EXPECT_EQ(result->byteLength(), kData.size());
+  EXPECT_EQ(result->ByteSpan(), buffer->ByteSpan());
+
+  // Each coercion creates a distinct view over the same buffer.
+  DOMArrayBufferView* again = CoerceToArrayBufferView(*buffer_union);
+  EXPECT_NE(again, result);
+  EXPECT_EQ(again->buffer(), buffer);
+}
+
+TEST(DOMArrayBufferTest, CoerceToArrayBufferViewWrapsSharedBuffer) {
+  constexpr std::array<uint8_t, 6> kData = {10, 20, 30, 40, 50, 60};
+  auto* shared_buffer = DOMSharedArrayBuffer::Create(kData);
+
+  auto* shared_buffer_union =
+      MakeGarbageCollected<AllowSharedUnion>(shared_buffer);
+  DOMArrayBufferView* result = CoerceToArrayBufferView(*shared_buffer_union);
+  ASSERT_TRUE(result);
+  EXPECT_TRUE(result->IsShared());
+  EXPECT_EQ(result->BufferShared(), shared_buffer);
+  EXPECT_EQ(result->byteOffset(), 0u);
+  EXPECT_EQ(result->byteLength(), kData.size());
+  EXPECT_EQ(result->ByteSpanMaybeShared(),
+            shared_buffer->ByteSpanMaybeShared());
+}
+
+TEST(DOMArrayBufferTest, CoerceToArrayBufferViewDetachedBuffer) {
+  auto* buffer = DOMArrayBuffer::Create(8, 1);
+  buffer->DetachForTesting();
+  ASSERT_TRUE(buffer->IsDetached());
+
+  // Wrapping a detached buffer must not crash (the sub-range check passes with
+  // a zero length) and yields a view that itself reports as detached/empty.
+  auto* buffer_union = MakeGarbageCollected<AllowSharedUnion>(buffer);
+  DOMArrayBufferView* result = CoerceToArrayBufferView(*buffer_union);
+  ASSERT_TRUE(result);
+  EXPECT_EQ(result->GetType(), DOMArrayBufferView::kTypeUint8);
+  EXPECT_EQ(result->buffer(), buffer);
+  EXPECT_TRUE(result->IsDetached());
+  EXPECT_EQ(result->byteOffset(), 0u);
+  EXPECT_EQ(result->byteLength(), 0u);
+  EXPECT_TRUE(result->ByteSpan().empty());
+}
+
+TEST(DOMArrayBufferTest, CoerceToArrayBufferViewDetachedView) {
+  auto* buffer = DOMArrayBuffer::Create(8, 1);
+  auto* view = DOMUint8Array::Create(buffer, /*byte_offset=*/2, /*length=*/4);
+  buffer->DetachForTesting();
+  ASSERT_TRUE(view->IsDetached());
+
+  // An existing view is returned as-is even when its buffer is detached.
+  auto* view_union = MakeGarbageCollected<AllowSharedUnion>(
+      MaybeShared<DOMArrayBufferView>(view));
+  DOMArrayBufferView* result = CoerceToArrayBufferView(*view_union);
+  EXPECT_EQ(result, view);
+  EXPECT_TRUE(result->IsDetached());
+  EXPECT_EQ(result->byteOffset(), 0u);
+  EXPECT_EQ(result->byteLength(), 0u);
+  EXPECT_TRUE(result->ByteSpan().empty());
+}
+
+TEST(DOMArrayBufferTest, TransferViewMovesUniquelyOwnedBuffer) {
+  test::TaskEnvironment task_environment;
+  V8TestingScope scope;
+  constexpr std::array<uint8_t, 8> kData = {1, 2, 3, 4, 5, 6, 7, 8};
+  auto* buffer = DOMArrayBuffer::Create(kData);
+  const uint8_t* original_data = buffer->ByteSpan().data();
+  auto* view = DOMUint8Array::Create(buffer, /*byte_offset=*/2, /*length=*/4);
+
+  auto [contents, span] = TransferArrayBufferView(scope.GetIsolate(), view,
+                                                  scope.GetExceptionState());
+  ASSERT_FALSE(scope.GetExceptionState().HadException());
+  ASSERT_TRUE(contents.IsValid());
+  EXPECT_TRUE(buffer->IsDetached());
+  EXPECT_TRUE(view->IsDetached());
+
+  // Single owner: the backing store is moved, not copied.
+  EXPECT_EQ(contents.ByteSpan().data(), original_data);
+  EXPECT_EQ(span, contents.ByteSpan().subspan(2u, 4u));
+  EXPECT_EQ(span, base::span(kData).subspan(2u, 4u));
+}
+
+TEST(DOMArrayBufferTest, TransferViewCopiesSharedlyOwnedBuffer) {
+  test::TaskEnvironment task_environment;
+  V8TestingScope scope;
+  constexpr std::array<uint8_t, 8> kData = {1, 2, 3, 4, 5, 6, 7, 8};
+
+  // `extra_owner` keeps a second reference to the backing store, forcing
+  // `DOMArrayBuffer::Transfer()` to copy it.
+  ArrayBufferContents extra_owner(kData.size(), 1,
+                                  ArrayBufferContents::kNotShared,
+                                  ArrayBufferContents::kDontInitialize);
+  extra_owner.ByteSpan().copy_from(kData);
+  auto* buffer = DOMArrayBuffer::Create(extra_owner);
+  auto* view = DOMUint8Array::Create(buffer, /*byte_offset=*/2, /*length=*/4);
+
+  auto [contents, span] = TransferArrayBufferView(scope.GetIsolate(), view,
+                                                  scope.GetExceptionState());
+  ASSERT_FALSE(scope.GetExceptionState().HadException());
+  ASSERT_TRUE(contents.IsValid());
+  EXPECT_TRUE(buffer->IsDetached());
+
+  // The span points into the copy, at the view's original offset.
+  EXPECT_NE(contents.ByteSpan().data(), extra_owner.ByteSpan().data());
+  EXPECT_EQ(span, contents.ByteSpan().subspan(2u, 4u));
+  EXPECT_EQ(span, base::span(kData).subspan(2u, 4u));
+  EXPECT_EQ(extra_owner.ByteSpan(), base::span(kData));
+}
+
+TEST(DOMArrayBufferTest, TransferViewSpanningWholeBuffer) {
+  test::TaskEnvironment task_environment;
+  V8TestingScope scope;
+  constexpr std::array<uint8_t, 4> kData = {9, 8, 7, 6};
+  auto* buffer = DOMArrayBuffer::Create(kData);
+  auto* buffer_union = MakeGarbageCollected<AllowSharedUnion>(buffer);
+
+  auto [contents, span] = TransferArrayBufferView(
+      scope.GetIsolate(), CoerceToArrayBufferView(*buffer_union),
+      scope.GetExceptionState());
+  ASSERT_FALSE(scope.GetExceptionState().HadException());
+  ASSERT_TRUE(contents.IsValid());
+  EXPECT_TRUE(buffer->IsDetached());
+  EXPECT_EQ(span, contents.ByteSpan());
+  EXPECT_EQ(span, base::span(kData));
+}
+
+TEST(DOMArrayBufferTest, TransferViewOfDetachedBufferThrows) {
+  test::TaskEnvironment task_environment;
+  V8TestingScope scope;
+  auto* buffer = DOMArrayBuffer::Create(8, 1);
+  auto* view = DOMUint8Array::Create(buffer, /*byte_offset=*/0, /*length=*/8);
+  buffer->DetachForTesting();
+
+  auto [contents, span] = TransferArrayBufferView(scope.GetIsolate(), view,
+                                                  scope.GetExceptionState());
+  EXPECT_TRUE(scope.GetExceptionState().HadException());
+  EXPECT_FALSE(contents.IsValid());
+  EXPECT_TRUE(span.empty());
+}
+
 }  // namespace blink

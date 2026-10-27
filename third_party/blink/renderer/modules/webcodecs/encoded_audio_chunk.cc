@@ -27,13 +27,12 @@ EncodedAudioChunk* EncodedAudioChunk::Create(ScriptState* script_state,
     }
   }
 
-  base::span<const uint8_t> array_span =
-      AsSpan<SharedBufferPolicy::kAllow>(*init->data());
   auto* isolate = script_state->GetIsolate();
+  DOMArrayBufferView* data = CoerceToArrayBufferView(*init->data());
 
   // Try if we can transfer `init.data` into this chunk without copying it.
-  auto buffer_contents = TransferArrayBufferForSpan(
-      init->transfer(), array_span, exception_state, isolate);
+  auto [buffer_contents, array_span] =
+      TransferArrayBuffers(isolate, init->transfer(), data, exception_state);
   if (exception_state.HadException()) {
     return nullptr;
   }

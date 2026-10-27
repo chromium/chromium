@@ -216,17 +216,14 @@ ImageDecoderExternal::ImageDecoderExternal(ScriptState* script_state,
     return;
   }
 
-  base::span<const uint8_t> array_span =
-      AsSpan<SharedBufferPolicy::kAllow>(*init->data());
-
-  if (array_span.empty()) {
+  DOMArrayBufferView* data = CoerceToArrayBufferView(*init->data());
+  if (data->byteLength() == 0) {
     exception_state.ThrowTypeError("No image data provided");
     return;
   }
 
-  auto buffer_contents =
-      TransferArrayBufferForSpan(init->transfer(), array_span, exception_state,
-                                 script_state_->GetIsolate());
+  auto [buffer_contents, array_span] = TransferArrayBuffers(
+      script_state_->GetIsolate(), init->transfer(), data, exception_state);
   if (exception_state.HadException()) {
     return;
   }

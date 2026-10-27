@@ -360,16 +360,15 @@ AudioData::AudioData(ScriptState* script_state,
     return;
   }
 
-  base::span<uint8_t> array_span =
-      AsSpan<SharedBufferPolicy::kAllow>(*init->data());
-  if (!array_span.data()) {
+  DOMArrayBufferView* data = CoerceToArrayBufferView(*init->data());
+  if (data->IsDetached()) {
     exception_state.ThrowTypeError("data is detached.");
     return;
   }
-  if (total_bytes > array_span.size()) {
+  if (total_bytes > data->byteLength()) {
     exception_state.ThrowTypeError(
         Format("data is too small: needs {} bytes, received {}.", total_bytes,
-               array_span.size()));
+               data->byteLength()));
     return;
   }
 
@@ -379,8 +378,8 @@ AudioData::AudioData(ScriptState* script_state,
   // TODO(crbug.com/1446808) Modify `media::AudioBuffer` to allow moving
   // `buffer_contents` into it without copying.
   auto* isolate = script_state->GetIsolate();
-  auto buffer_contents = TransferArrayBufferForSpan(
-      init->transfer(), array_span, exception_state, isolate);
+  auto [buffer_contents, array_span] =
+      TransferArrayBuffers(isolate, init->transfer(), data, exception_state);
   if (exception_state.HadException()) {
     return;
   }
