@@ -7,11 +7,8 @@
 #include <memory>
 #include <utility>
 
-#include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_prefs.h"
+#include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_fre_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_everywhere_service.h"
-#include "chrome/browser/ui/omnibox/omnibox_next_features.h"
-#include "components/prefs/pref_service.h"
 #include "components/user_education/common/feature_promo/feature_promo_precondition.h"
 #include "components/user_education/common/feature_promo/feature_promo_result.h"
 #include "ui/base/interaction/element_tracker.h"
@@ -81,10 +78,8 @@ class OmniboxEverywhereOpenAndActivePrecondition
     if (!service_ || !service_->IsPopupVisibleForProfile()) {
       return user_education::FeaturePromoResult::kBlockedByUi;
     }
-    if (service_->profile() &&
-        base::FeatureList::IsEnabled(omnibox::kOmniboxEverywhereFre) &&
-        !service_->profile()->GetPrefs()->GetBoolean(
-            omnibox_everywhere::prefs::kFreDismissed)) {
+    if (service_->fre_controller() &&
+        !service_->fre_controller()->IsFreDismissed()) {
       return user_education::FeaturePromoResult::kBlockedByUi;
     }
     return user_education::FeaturePromoResult::Success();

@@ -43,6 +43,7 @@ source_set("omnibox_everywhere") {
   public = [
     "omnibox_everywhere_controller.h",
     "omnibox_everywhere_feature_promo_controller.h",
+    "omnibox_everywhere_fre_controller.h",
     "omnibox_everywhere_icon.h",
     "omnibox_everywhere_region_select_overlay.h",
     "omnibox_everywhere_ui_manager.h",
@@ -77,6 +78,7 @@ source_set("impl") {
   sources = [
     "omnibox_everywhere_controller.cc",
     "omnibox_everywhere_feature_promo_controller.cc",
+    "omnibox_everywhere_fre_controller.cc",
     "omnibox_everywhere_region_select_overlay.cc",
     "omnibox_everywhere_ui_manager.cc",
     "omnibox_everywhere_widget_delegate.cc",
@@ -161,6 +163,7 @@ if (is_mac || is_win) {
     sources = [
       "//chrome/browser/background/omnibox_everywhere/omnibox_everywhere_background_mode_manager_unittest.cc",
       "omnibox_everywhere_controller_unittest.cc",
+      "omnibox_everywhere_fre_controller_unittest.cc",
       "omnibox_everywhere_prefs_unittest.cc",
       "omnibox_everywhere_region_select_overlay_unittest.cc",
       "omnibox_everywhere_ui_manager_unittest.cc",
@@ -193,6 +196,8 @@ if (is_mac || is_win) {
       "//chrome/test/base:testing_browser_process",
       "//chrome/test/views",
       "//components/ntp_tiles:test_support",
+      "//components/prefs:test_support",
+      "//components/sync_preferences:test_support",
       "//content/test:test_support",
       "//testing/gtest",
       "//ui/base/emoji",

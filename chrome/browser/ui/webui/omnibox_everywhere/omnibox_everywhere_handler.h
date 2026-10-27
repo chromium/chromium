@@ -118,8 +118,8 @@ class OmniboxEverywhereHandler : public ContextualSearchboxHandler,
 
   raw_ptr<OmniboxEverywhereService> service_;
   base::CallbackListSubscription aim_eligibility_subscription_;
+  base::CallbackListSubscription fre_state_subscription_;
   PrefChangeRegistrar pref_change_registrar_;
-  PrefChangeRegistrar local_state_pref_change_registrar_;
   base::ScopedObservation<ProfileAttributesStorage,
                           ProfileAttributesStorage::Observer>
       profile_attributes_storage_observation_{this};

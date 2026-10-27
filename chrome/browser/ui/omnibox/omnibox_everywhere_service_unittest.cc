@@ -8,6 +8,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "build/build_config.h"
+#include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_fre_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_prefs.h"
 #include "chrome/browser/ui/omnibox/omnibox_everywhere_service_factory.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
@@ -47,6 +48,20 @@ TEST_F(OmniboxEverywhereServiceTest, FrePreferenceDefaultsToFalse) {
       profile.GetPrefs()->GetBoolean(omnibox_everywhere::prefs::kFreDismissed));
   EXPECT_EQ(0, profile.GetPrefs()->GetInteger(
                    omnibox_everywhere::prefs::kFreImpressionCount));
+}
+
+TEST_F(OmniboxEverywhereServiceTest, FreControllerLifecycle) {
+  TestingProfile profile;
+  OmniboxEverywhereService* service =
+      OmniboxEverywhereServiceFactory::GetForProfile(&profile);
+  ASSERT_TRUE(service);
+  ASSERT_TRUE(service->fre_controller());
+  EXPECT_EQ(omnibox_everywhere::FreStage::kIntroModal,
+            service->fre_controller()->GetCurrentStage());
+  EXPECT_FALSE(service->fre_controller()->IsFreDismissed());
+
+  service->Shutdown();
+  EXPECT_FALSE(service->fre_controller());
 }
 
 TEST_F(OmniboxEverywhereServiceTest,

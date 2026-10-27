@@ -24,19 +24,6 @@ class Accelerator;
 namespace omnibox_everywhere {
 namespace prefs {
 
-// Stages of the Omnibox Everywhere First Run Experience (FRE).
-enum class FreStage {
-  // FRE is complete or inactive.
-  kNone = 0,
-  // Stage 1: Two-row modal card (Value prop + Where to find).
-  kIntroModal = 1,
-  // Stage 2: One-row chin with shortcut selector dropdown & "Set as shortcut"
-  // CTA.
-  kShortcutSetupChin = 2,
-  // Stage 3: One-row educational chin showing active shortcut reminder.
-  kShortcutReminderChin = 3,
-};
-
 // Returns true if the ephemeral model (close/hide on focus loss) is enabled.
 bool IsEphemeralModelEnabled();
 
@@ -129,27 +116,6 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
 
 // Registers Profile preferences for Omnibox Everywhere.
 void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
-
-// TODO(crbug.com/559175507): Introduce a dedicated onboarding controller to
-// encapsulate FRE state machine transitions and pref observation.
-// Returns the active FRE stage for the profile.
-FreStage GetCurrentFreStage(Profile* profile,
-                            PrefService* local_state = nullptr);
-
-// Increments the impression count for the currently active FRE stage.
-void IncrementFreImpression(Profile* profile,
-                            PrefService* local_state = nullptr);
-
-// Records that the specified FRE stage was dismissed (or marks overall FRE
-// completed).
-void OnFreStageDismissed(Profile* profile,
-                         FreStage stage,
-                         PrefService* local_state = nullptr);
-
-// Marks the specified FRE stage as completed (as opposed to dismissed via 'X').
-// For example, configuring a shortcut outside the chin (e.g. via Settings)
-// completes Stage 2 and advances past it without skipping downstream stages.
-void MarkFreStageCompleted(Profile* profile, FreStage stage);
 
 // Returns the configured global hotkey accelerator for Omnibox Everywhere from
 // local state, or an empty accelerator if unset or invalid.
