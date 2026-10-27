@@ -28,7 +28,6 @@ build_webui("build") {
 
   ts_files = [
     "help_bubble_icons.html.ts",
-    "custom_help_bubble_proxy.ts",
     "help_bubble.html.ts",
     "help_bubble.ts",
     "help_bubble_controller.ts",

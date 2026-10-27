@@ -2,10 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {PageHandlerFactory, PageHandlerRemote} from './browser.mojom-webui.js';
+import '/strings.m.js';
+
 import {loadTimeData} from '//resources/js/load_time_data.js';
 
-import '/strings.m.js';
+import {browserProxyFactory} from './browser.mojom-webui.js';
 
 const SURFACE_EMBED_MIME_TYPE = 'application/x-chromium-surface-embed';
 
@@ -16,28 +17,6 @@ interface WebshellServices {
 }
 
 declare var webshell: WebshellServices;
-
-class BrowserProxy {
-  private handler: PageHandlerRemote;
-  static instance_: BrowserProxy ;
-
-  constructor() {
-    this.handler = new PageHandlerRemote();
-    const factory = PageHandlerFactory.getRemote();
-    factory.createPageHandler(this.handler.$.bindNewPipeAndPassReceiver());
-  }
-
-  getHandler(): PageHandlerRemote {
-    return this.handler;
-  }
-
-  static getInstance(): PageHandlerRemote {
-    if (!BrowserProxy.instance_) {
-      BrowserProxy.instance_ = new BrowserProxy();
-    }
-    return BrowserProxy.instance_.getHandler();
-  }
-}
 
 abstract class EmbeddableElement extends HTMLElement {
   protected childElement: HTMLElement;
@@ -65,15 +44,16 @@ abstract class EmbeddableElement extends HTMLElement {
   protected onAttached(): void {}
 
   navigate(src: string) {
-    BrowserProxy.getInstance().navigate(this.guestContentsId, src);
+    browserProxyFactory.getInstance().handler.navigate(
+        this.guestContentsId, src);
   }
 
   goBack() {
-    BrowserProxy.getInstance().goBack(this.guestContentsId);
+    browserProxyFactory.getInstance().handler.goBack(this.guestContentsId);
   }
 
   goForward() {
-    BrowserProxy.getInstance().goForward(this.guestContentsId);
+    browserProxyFactory.getInstance().handler.goForward(this.guestContentsId);
   }
 }
 

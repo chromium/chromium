@@ -6,10 +6,8 @@ import 'chrome://extensions-zero-state/zero_state_promo_app.js';
 import {browserProxyFactory as zeroStatePromoProxyFactory, WebStoreLinkClicked} from 'chrome://extensions-zero-state/zero_state_promo.mojom-webui.js';
 import type {PageHandlerInterface} from 'chrome://extensions-zero-state/zero_state_promo.mojom-webui.js';
 import type {ZeroStatePromoAppElement} from 'chrome://extensions-zero-state/zero_state_promo_app.js';
-import {CustomHelpBubbleUserAction} from 'chrome://resources/cr_components/help_bubble/custom_help_bubble.mojom-webui.js';
+import {browserProxyFactory as customHelpBubbleProxyFactory, CustomHelpBubbleUserAction} from 'chrome://resources/cr_components/help_bubble/custom_help_bubble.mojom-webui.js';
 import type {CustomHelpBubbleHandlerInterface} from 'chrome://resources/cr_components/help_bubble/custom_help_bubble.mojom-webui.js';
-import type {CustomHelpBubbleProxy} from 'chrome://resources/cr_components/help_bubble/custom_help_bubble_proxy.js';
-import {CustomHelpBubbleProxyImpl} from 'chrome://resources/cr_components/help_bubble/custom_help_bubble_proxy.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
@@ -23,18 +21,6 @@ export class TestBubbleHandler extends TestBrowserProxy implements
 
   notifyUserAction(action: CustomHelpBubbleUserAction) {
     this.methodCalled('notifyUserAction', action);
-  }
-}
-
-export class TestBubbleProxy implements CustomHelpBubbleProxy {
-  private handler_: TestBubbleHandler;
-
-  constructor(handler: TestBubbleHandler) {
-    this.handler_ = handler;
-  }
-
-  getHandler(): TestBubbleHandler {
-    return this.handler_;
   }
 }
 
@@ -56,7 +42,7 @@ suite('ChipsUiV1Test', () => {
 
   setup(() => {
     bubbleHandler = new TestBubbleHandler();
-    CustomHelpBubbleProxyImpl.setInstance(new TestBubbleProxy(bubbleHandler));
+    customHelpBubbleProxyFactory.setInstance({handler: bubbleHandler});
 
     promoProxy = new TestPromoProxy();
     zeroStatePromoProxyFactory.setInstance({handler: promoProxy});
@@ -156,7 +142,7 @@ suite('ChipsUiV2Test', () => {
 
   setup(() => {
     bubbleHandler = new TestBubbleHandler();
-    CustomHelpBubbleProxyImpl.setInstance(new TestBubbleProxy(bubbleHandler));
+    customHelpBubbleProxyFactory.setInstance({handler: bubbleHandler});
 
     promoProxy = new TestPromoProxy();
     zeroStatePromoProxyFactory.setInstance({handler: promoProxy});
@@ -256,7 +242,7 @@ suite('ChipsUiV3Test', () => {
 
   setup(() => {
     bubbleHandler = new TestBubbleHandler();
-    CustomHelpBubbleProxyImpl.setInstance(new TestBubbleProxy(bubbleHandler));
+    customHelpBubbleProxyFactory.setInstance({handler: bubbleHandler});
 
     promoProxy = new TestPromoProxy();
     zeroStatePromoProxyFactory.setInstance({handler: promoProxy});
@@ -356,7 +342,7 @@ suite('PlainLinkUiTest', () => {
 
   setup(() => {
     bubbleHandler = new TestBubbleHandler();
-    CustomHelpBubbleProxyImpl.setInstance(new TestBubbleProxy(bubbleHandler));
+    customHelpBubbleProxyFactory.setInstance({handler: bubbleHandler});
 
     promoProxy = new TestPromoProxy();
     zeroStatePromoProxyFactory.setInstance({handler: promoProxy});
