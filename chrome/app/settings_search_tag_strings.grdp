@@ -635,4 +635,178 @@
   <message name="IDS_SETTINGS_TAG_GOOGLE_WALLET_ALT3" meaning="Settings search keyword for 'Google Wallet'" desc="Search keyword for the link row to open Google Wallet to manage payment methods, loyalty cards, passes, and tickets. Alternate keyword for: 'Google Wallet'" translateable="false">
     payment
   </message>
+
+  <!-- Performance section. -->
+  <message name="IDS_SETTINGS_TAG_PERFORMANCE_ALT1" meaning="Settings search keyword for 'Performance'" desc="Search keyword for the Performance settings page to manage memory usage, battery saving, tab alerts, and page preloading. Alternate keyword for: 'Performance'" translateable="false">
+    speed
+  </message>
+  <message name="IDS_SETTINGS_TAG_PERFORMANCE_ALT2" meaning="Settings search keyword for 'Performance'" desc="Search keyword for the Performance settings page to manage memory usage, battery saving, tab alerts, and page preloading. Alternate keyword for: 'Performance'" translateable="false">
+    ram
+  </message>
+  <message name="IDS_SETTINGS_TAG_PERFORMANCE_ALT3" meaning="Settings search keyword for 'Performance'" desc="Search keyword for the Performance settings page to manage memory usage, battery saving, tab alerts, and page preloading. Alternate keyword for: 'Performance'" translateable="false">
+    lag
+  </message>
+  <message name="IDS_SETTINGS_TAG_MEMORY_SAVER_ALT1" meaning="Settings search keyword for 'Memory Saver'" desc="Search keyword for the setting that frees up memory from inactive tabs to keep active tabs running smoothly. Alternate keyword for: 'Memory Saver'" translateable="false">
+    performance
+  </message>
+  <message name="IDS_SETTINGS_TAG_MEMORY_SAVER_ALT2" meaning="Settings search keyword for 'Memory Saver'" desc="Search keyword for the setting that frees up memory from inactive tabs to keep active tabs running smoothly. Alternate keyword for: 'Memory Saver'" translateable="false">
+    ram
+  </message>
+  <message name="IDS_SETTINGS_TAG_MEMORY_SAVER_ALT3" meaning="Settings search keyword for 'Memory Saver'" desc="Search keyword for the setting that frees up memory from inactive tabs to keep active tabs running smoothly. Alternate keyword for: 'Memory Saver'" translateable="false">
+    speed up
+  </message>
+  <message name="IDS_SETTINGS_TAG_ENERGY_SAVER_ALT1" meaning="Settings search keyword for 'Energy Saver'" desc="Search keyword for the setting that conserves battery power by limiting background activity and visual effects. Alternate keyword for: 'Energy Saver'" translateable="false">
+    activity
+  </message>
+  <message name="IDS_SETTINGS_TAG_ENERGY_SAVER_ALT2" meaning="Settings search keyword for 'Energy Saver'" desc="Search keyword for the setting that conserves battery power by limiting background activity and visual effects. Alternate keyword for: 'Energy Saver'" translateable="false">
+    performance
+  </message>
+  <message name="IDS_SETTINGS_TAG_ENERGY_SAVER_ALT3" meaning="Settings search keyword for 'Energy Saver'" desc="Search keyword for the setting that conserves battery power by limiting background activity and visual effects. Alternate keyword for: 'Energy Saver'" translateable="false">
+    battery
+  </message>
+
+  <!-- AI controls section. -->
+  <message name="IDS_SETTINGS_TAG_AI_CONTROLS_ALT1" meaning="Settings search keyword for 'AI controls'" desc="Search keyword for the AI controls settings page to manage AI-powered features in Chrome. Alternate keyword for: 'AI controls'" translateable="false">
+    gemini
+  </message>
+  <message name="IDS_SETTINGS_TAG_AI_CONTROLS_ALT2" meaning="Settings search keyword for 'AI controls'" desc="Search keyword for the AI controls settings page to manage AI-powered features in Chrome. Alternate keyword for: 'AI controls'" translateable="false">
+    spark
+  </message>
+  <message name="IDS_SETTINGS_TAG_AI_CONTROLS_ALT3" meaning="Settings search keyword for 'AI controls'" desc="Search keyword for the AI controls settings page to manage AI-powered features in Chrome. Alternate keyword for: 'AI controls'" translateable="false">
+    assistant
+  </message>
+  <message name="IDS_SETTINGS_TAG_HELP_ME_WRITE_ALT1" meaning="Settings search keyword for 'Help me write'" desc="Search keyword for the setting that enables AI writing assistance for drafting and refining text on the web. Alternate keyword for: 'Help me write'" translateable="false">
+    compose
+  </message>
+  <message name="IDS_SETTINGS_TAG_HELP_ME_WRITE_ALT2" meaning="Settings search keyword for 'Help me write'" desc="Search keyword for the setting that enables AI writing assistance for drafting and refining text on the web. Alternate keyword for: 'Help me write'" translateable="false">
+    draft
+  </message>
+  <message name="IDS_SETTINGS_TAG_HELP_ME_WRITE_ALT3" meaning="Settings search keyword for 'Help me write'" desc="Search keyword for the setting that enables AI writing assistance for drafting and refining text on the web. Alternate keyword for: 'Help me write'" translateable="false">
+    rewrite
+  </message>
+  <message name="IDS_SETTINGS_TAG_HISTORY_SEARCH_ALT1" meaning="Settings search keyword for 'History search, powered by AI'" desc="Search keyword for the setting that enables conversational AI search across browsing history. Alternate keyword for: 'History search, powered by AI'" translateable="false">
+    semantic
+  </message>
+  <message name="IDS_SETTINGS_TAG_HISTORY_SEARCH_ALT2" meaning="Settings search keyword for 'History search, powered by AI'" desc="Search keyword for the setting that enables conversational AI search across browsing history. Alternate keyword for: 'History search, powered by AI'" translateable="false">
+    recall
+  </message>
+  <message name="IDS_SETTINGS_TAG_HISTORY_SEARCH_ALT3" meaning="Settings search keyword for 'History search, powered by AI'" desc="Search keyword for the setting that enables conversational AI search across browsing history. Alternate keyword for: 'History search, powered by AI'" translateable="false">
+    past
+  </message>
+
+  <!-- Search engine, Default browser, and On startup sections. -->
+  <message name="IDS_SETTINGS_TAG_SEARCH_ENGINE_ALT1" meaning="Settings search keyword for 'Search engine'" desc="Search keyword for the Search engine settings page to choose the default search provider and site search shortcuts. Alternate keyword for: 'Search engine'" translateable="false">
+    address
+  </message>
+  <message name="IDS_SETTINGS_TAG_SEARCH_ENGINE_ALT2" meaning="Settings search keyword for 'Search engine'" desc="Search keyword for the Search engine settings page to choose the default search provider and site search shortcuts. Alternate keyword for: 'Search engine'" translateable="false">
+    bar
+  </message>
+  <message name="IDS_SETTINGS_TAG_SEARCH_ENGINE_ALT3" meaning="Settings search keyword for 'Search engine'" desc="Search keyword for the Search engine settings page to choose the default search provider and site search shortcuts. Alternate keyword for: 'Search engine'" translateable="false">
+    browser
+  </message>
+  <message name="IDS_SETTINGS_TAG_DEFAULT_BROWSER_ALT1" meaning="Settings search keyword for 'Default browser'" desc="Search keyword for the Default browser settings page to make Chrome the default application for web links. Alternate keyword for: 'Default browser'" translateable="false">
+    web
+  </message>
+  <message name="IDS_SETTINGS_TAG_DEFAULT_BROWSER_ALT2" meaning="Settings search keyword for 'Default browser'" desc="Search keyword for the Default browser settings page to make Chrome the default application for web links. Alternate keyword for: 'Default browser'" translateable="false">
+    links
+  </message>
+  <message name="IDS_SETTINGS_TAG_DEFAULT_BROWSER_ALT3" meaning="Settings search keyword for 'Default browser'" desc="Search keyword for the Default browser settings page to make Chrome the default application for web links. Alternate keyword for: 'Default browser'" translateable="false">
+    browser
+  </message>
+  <message name="IDS_SETTINGS_TAG_ON_STARTUP_ALT1" meaning="Settings search keyword for 'On startup'" desc="Search keyword for the On startup settings page to configure which pages or tabs open when Chrome launches. Alternate keyword for: 'On startup'" translateable="false">
+    home
+  </message>
+  <message name="IDS_SETTINGS_TAG_ON_STARTUP_ALT2" meaning="Settings search keyword for 'On startup'" desc="Search keyword for the On startup settings page to configure which pages or tabs open when Chrome launches. Alternate keyword for: 'On startup'" translateable="false">
+    launch
+  </message>
+  <message name="IDS_SETTINGS_TAG_ON_STARTUP_ALT3" meaning="Settings search keyword for 'On startup'" desc="Search keyword for the On startup settings page to configure which pages or tabs open when Chrome launches. Alternate keyword for: 'On startup'" translateable="false">
+    open
+  </message>
+
+  <!-- Languages section. -->
+  <message name="IDS_SETTINGS_TAG_LANGUAGES_ALT1" meaning="Settings search keyword for 'Languages'" desc="Search keyword for the Languages settings page to manage preferred languages, spell check, and translation options. Alternate keyword for: 'Languages'" translateable="false">
+    spellcheck
+  </message>
+  <message name="IDS_SETTINGS_TAG_LANGUAGES_ALT2" meaning="Settings search keyword for 'Languages'" desc="Search keyword for the Languages settings page to manage preferred languages, spell check, and translation options. Alternate keyword for: 'Languages'" translateable="false">
+    preferred
+  </message>
+  <message name="IDS_SETTINGS_TAG_LANGUAGES_ALT3" meaning="Settings search keyword for 'Languages'" desc="Search keyword for the Languages settings page to manage preferred languages, spell check, and translation options. Alternate keyword for: 'Languages'" translateable="false">
+    bilingual
+  </message>
+  <message name="IDS_SETTINGS_TAG_PREFERRED_LANGUAGES_ALT1" meaning="Settings search keyword for 'Preferred languages'" desc="Search keyword for the setting to add, remove, and reorder preferred languages for web content and Chrome UI. Alternate keyword for: 'Preferred languages'" translateable="false">
+    locale
+  </message>
+  <message name="IDS_SETTINGS_TAG_PREFERRED_LANGUAGES_ALT2" meaning="Settings search keyword for 'Preferred languages'" desc="Search keyword for the setting to add, remove, and reorder preferred languages for web content and Chrome UI. Alternate keyword for: 'Preferred languages'" translateable="false">
+    foreign
+  </message>
+  <message name="IDS_SETTINGS_TAG_PREFERRED_LANGUAGES_ALT3" meaning="Settings search keyword for 'Preferred languages'" desc="Search keyword for the setting to add, remove, and reorder preferred languages for web content and Chrome UI. Alternate keyword for: 'Preferred languages'" translateable="false">
+    bilingual
+  </message>
+  <message name="IDS_SETTINGS_TAG_SPELL_CHECK_ALT1" meaning="Settings search keyword for 'Spell check'" desc="Search keyword for the setting to check spelling and grammar when typing text in web pages. Alternate keyword for: 'Spell check'" translateable="false">
+    errors
+  </message>
+  <message name="IDS_SETTINGS_TAG_SPELL_CHECK_ALT2" meaning="Settings search keyword for 'Spell check'" desc="Search keyword for the setting to check spelling and grammar when typing text in web pages. Alternate keyword for: 'Spell check'" translateable="false">
+    grammar
+  </message>
+  <message name="IDS_SETTINGS_TAG_SPELL_CHECK_ALT3" meaning="Settings search keyword for 'Spell check'" desc="Search keyword for the setting to check spelling and grammar when typing text in web pages. Alternate keyword for: 'Spell check'" translateable="false">
+    spelling
+  </message>
+
+  <!-- Downloads, System, and Reset sections. -->
+  <message name="IDS_SETTINGS_TAG_DOWNLOADS_ALT1" meaning="Settings search keyword for 'Downloads'" desc="Search keyword for the Downloads settings page to configure the default download folder and download prompts. Alternate keyword for: 'Downloads'" translateable="false">
+    folder
+  </message>
+  <message name="IDS_SETTINGS_TAG_DOWNLOADS_ALT2" meaning="Settings search keyword for 'Downloads'" desc="Search keyword for the Downloads settings page to configure the default download folder and download prompts. Alternate keyword for: 'Downloads'" translateable="false">
+    location
+  </message>
+  <message name="IDS_SETTINGS_TAG_DOWNLOADS_ALT3" meaning="Settings search keyword for 'Downloads'" desc="Search keyword for the Downloads settings page to configure the default download folder and download prompts. Alternate keyword for: 'Downloads'" translateable="false">
+    save
+  </message>
+  <message name="IDS_SETTINGS_TAG_SYSTEM_ALT1" meaning="Settings search keyword for 'System'" desc="Search keyword for the System settings page to configure background apps, hardware acceleration, and proxy settings. Alternate keyword for: 'System'" translateable="false">
+    acceleration
+  </message>
+  <message name="IDS_SETTINGS_TAG_SYSTEM_ALT2" meaning="Settings search keyword for 'System'" desc="Search keyword for the System settings page to configure background apps, hardware acceleration, and proxy settings. Alternate keyword for: 'System'" translateable="false">
+    apps
+  </message>
+  <message name="IDS_SETTINGS_TAG_SYSTEM_ALT3" meaning="Settings search keyword for 'System'" desc="Search keyword for the System settings page to configure background apps, hardware acceleration, and proxy settings. Alternate keyword for: 'System'" translateable="false">
+    background
+  </message>
+  <message name="IDS_SETTINGS_TAG_RESET_SETTINGS_ALT1" meaning="Settings search keyword for 'Reset settings'" desc="Search keyword for the Reset settings page to restore Chrome settings to their original defaults. Alternate keyword for: 'Reset settings'" translateable="false">
+    clean
+  </message>
+  <message name="IDS_SETTINGS_TAG_RESET_SETTINGS_ALT2" meaning="Settings search keyword for 'Reset settings'" desc="Search keyword for the Reset settings page to restore Chrome settings to their original defaults. Alternate keyword for: 'Reset settings'" translateable="false">
+    defaults
+  </message>
+  <message name="IDS_SETTINGS_TAG_RESET_SETTINGS_ALT3" meaning="Settings search keyword for 'Reset settings'" desc="Search keyword for the Reset settings page to restore Chrome settings to their original defaults. Alternate keyword for: 'Reset settings'" translateable="false">
+    factory
+  </message>
+
+  <!-- Accessibility and About sections. -->
+  <message name="IDS_SETTINGS_TAG_ACCESSIBILITY_ALT1" meaning="Settings search keyword for 'Accessibility'" desc="Search keyword for the Accessibility settings page to configure captions, screen readers, text cursor navigation, and display aids. Alternate keyword for: 'Accessibility'" translateable="false">
+    subtitles
+  </message>
+  <message name="IDS_SETTINGS_TAG_ACCESSIBILITY_ALT2" meaning="Settings search keyword for 'Accessibility'" desc="Search keyword for the Accessibility settings page to configure captions, screen readers, text cursor navigation, and display aids. Alternate keyword for: 'Accessibility'" translateable="false">
+    caret
+  </message>
+  <message name="IDS_SETTINGS_TAG_ACCESSIBILITY_ALT3" meaning="Settings search keyword for 'Accessibility'" desc="Search keyword for the Accessibility settings page to configure captions, screen readers, text cursor navigation, and display aids. Alternate keyword for: 'Accessibility'" translateable="false">
+    browsing
+  </message>
+  <message name="IDS_SETTINGS_TAG_LIVE_CAPTION_ALT1" meaning="Settings search keyword for 'Live Caption'" desc="Search keyword for the setting that automatically generates captions for English and other supported audio and video media. Alternate keyword for: 'Live Caption'" translateable="false">
+    audio
+  </message>
+  <message name="IDS_SETTINGS_TAG_LIVE_CAPTION_ALT2" meaning="Settings search keyword for 'Live Caption'" desc="Search keyword for the setting that automatically generates captions for English and other supported audio and video media. Alternate keyword for: 'Live Caption'" translateable="false">
+    speech
+  </message>
+  <message name="IDS_SETTINGS_TAG_LIVE_CAPTION_ALT3" meaning="Settings search keyword for 'Live Caption'" desc="Search keyword for the setting that automatically generates captions for English and other supported audio and video media. Alternate keyword for: 'Live Caption'" translateable="false">
+    subtitles
+  </message>
+  <message name="IDS_SETTINGS_TAG_ABOUT_CHROME_ALT1" meaning="Settings search keyword for 'About Chrome'" desc="Search keyword for the About Chrome page to check the browser version, install updates, and view help and legal info. Alternate keyword for: 'About Chrome'" translateable="false">
+    build
+  </message>
+  <message name="IDS_SETTINGS_TAG_ABOUT_CHROME_ALT2" meaning="Settings search keyword for 'About Chrome'" desc="Search keyword for the About Chrome page to check the browser version, install updates, and view help and legal info. Alternate keyword for: 'About Chrome'" translateable="false">
+    google
+  </message>
+  <message name="IDS_SETTINGS_TAG_ABOUT_CHROME_ALT3" meaning="Settings search keyword for 'About Chrome'" desc="Search keyword for the About Chrome page to check the browser version, install updates, and view help and legal info. Alternate keyword for: 'About Chrome'" translateable="false">
+    info
+  </message>
 </grit-part>
