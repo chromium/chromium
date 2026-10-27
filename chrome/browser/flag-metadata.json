@@ -8806,7 +8806,7 @@
       "thefrog@chromium.org",
       "chrome-counter-abuse-alerts@google.com"
     ],
-    "expiry_milestone": 159
+    "expiry_milestone": 161
   },
   {
     "name": "safe-browsing-no-protection-suppress-warnings",
