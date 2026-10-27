@@ -124,8 +124,13 @@ Notes (hints) for the next roll(er):
 
 * Run `third_party/protobuf/roll_protobuf.py check` before starting a roll (to
   verify no prior commit modified `src/` or `python/` without updating
-  `patches/`) and again after completing the roll (to verify `patches/*.patch`
-  reproduces the updated tree).
+  `patches/`) and `third_party/protobuf/roll_protobuf.py check -C out/Default`
+  after completing the roll. Post-roll `check` fails if `patches/*.patch` does
+  not reproduce the tree, if `README.chromium`'s patch descriptions and
+  `patches/` disagree, if `.rej`, `.orig`, or conflict markers remain, or if
+  bootstrap files are stale; and it reports unfollowed `src/file_lists.cmake`
+  changes plus any saved `compile_size_probe.py` baseline (`--baseline
+  pre_roll`) without failing.
 * Run `third_party/protobuf/roll_protobuf.py plan --to <tag or commit>` (for
   example `--to v37.0`) to size a roll before starting it. It replays
   `patches/*.patch` onto that upstream version with `git apply -3` in a
@@ -145,9 +150,11 @@ Notes (hints) for the next roll(er):
   [--json]` shows where the roll is, `roll_protobuf.py continue` commits a
   resolved conflict and moves on, `roll_protobuf.py drop --reason "<why>"`
   discards a patch that is no longer needed, `roll_protobuf.py resume` takes
-  back control after manual commits, `roll_protobuf.py prepare --to <version>`
-  populates `GITDIR/protobuf-roll/` without modifying the working tree, and
-  `roll_protobuf.py abort` resets the branch to the commit before `start`.
+  back control after manual commits, `roll_protobuf.py generate -C out/Default`
+  regenerates and commits bootstrap files (as an alternative to step 4 above),
+  `roll_protobuf.py prepare --to <version>` populates `GITDIR/protobuf-roll/`
+  without modifying the working tree, and `roll_protobuf.py abort` resets the
+  branch to the commit before `start`.
 * Run
   `third_party/protobuf/compile_size_probe.py -C out/Default --save pre_roll`
   before starting a roll and
@@ -217,6 +224,12 @@ hand (in sorted order of `GITDIR/protobuf-roll/chain/`):
        > third_party/protobuf/patches/NNNN-name.patch
    $ git commit --amend --no-edit \
        third_party/protobuf/patches/NNNN-name.patch
+
+4. Once all patches have replayed (and after any later `src/` or `python/`
+   compiler edits), regenerate and commit the bootstrap files as in step 4 at
+   the top of this file (`git commit -m "Regenerate bootstrap files"`), or run
+   `third_party/protobuf/roll_protobuf.py generate -C out/Default`, then verify
+   the tree with `third_party/protobuf/roll_protobuf.py check -C out/Default`.
 
 Note about vpython:
 

@@ -13,9 +13,11 @@ that never made it into a patch is silently lost on the next roll
 Design: https://crbug.com/568074175.
 
 Subcommands:
-  check: Applies patches/*.patch in sorted order to the upstream commit on
-    README.chromium's 'Revision:' line and verifies that the result matches
-    //third_party/protobuf, modulo known Chromium exceptions.
+  check [-C <out_dir>] [--baseline <name>]: Verifies that patches/*.patch
+    reproduces //third_party/protobuf, README.chromium's patch descriptions
+    match patches/, no .rej/.orig/conflict markers remain, and bootstrap files
+    are up to date; also reports unfollowed src/file_lists.cmake changes and
+    optional compile_size_probe.py deltas (https://crbug.com/568074591).
   plan --to <tag or commit>: Dry run of a roll in temporary repositories
     (https://crbug.com/568074498). Replays every patch onto the target with
     `git apply -3`, classifies it (see PatchReplayStatus), and lists upstream
@@ -36,6 +38,9 @@ Subcommands:
     .patch file, and continues replaying remaining patches.
   resume: Reconciles GITDIR/protobuf-roll/state.json with manual Apply/Drop
     commits and continues replaying remaining patches.
+  generate -C <out_dir>: Runs gen_extra_chromium_files.py -C <out_dir>,
+    force-stages gitignored *_pb2.py outputs alongside bootstrap files, and
+    commits "Regenerate bootstrap files".
   abort: Resets the branch to the commit recorded by `start` and removes
     GITDIR/protobuf-roll/.
 
@@ -1277,7 +1282,11 @@ def PrepareRoll(to_revision: str,
     """
     checkout = _ResolveCheckoutPaths(protobuf_directory)
     existing_state = LoadRollState(checkout.protobuf_directory)
-    if existing_state is not None and existing_state.phase != 'prepared':
+    if existing_state is not None and (
+        (existing_state.phase == 'conflict'
+         and _FindLocalRollBranch(checkout, existing_state) is not None) or
+        (existing_state.phase == 'replayed'
+         and _IsRollBranchHead(checkout, existing_state))):
         raise RollProtobufError(
             f'A roll to {existing_state.new_revision} is already in '
             f'progress (phase: {existing_state.phase}); run '
@@ -1497,11 +1506,17 @@ def _ReplayRemainingPatches(checkout: _CheckoutPaths,
 def _RequireActiveConflictState(checkout: _CheckoutPaths,
                                 subcommand: str) -> RollState:
     state = LoadRollState(checkout.protobuf_directory)
-    if (state is None or state.phase != 'conflict'
+    roll_branch = (_FindLocalRollBranch(checkout, state) if state is not None
+                   and state.phase == 'conflict' else None)
+    if (state is None or roll_branch is None
             or not 0 <= state.current_index < len(state.patches)):
         raise RollProtobufError(
             f'No conflicting protobuf patch is waiting for `{subcommand}`; '
             'run `roll_protobuf.py status` first.')
+    if roll_branch != 'HEAD':
+        raise RollProtobufError(
+            f'Current HEAD is not on the {state.new_revision} roll branch; '
+            f'run `git checkout {roll_branch}` before `{subcommand}`.')
     current_head = _RunScratchGit(checkout.repository_root, 'rev-parse',
                                   'HEAD').stdout.decode().strip()
     if current_head != state.expected_head:
@@ -1708,10 +1723,17 @@ def ResumeRoll(protobuf_directory: str = _PROTOBUF_DIRECTORY) -> RollState:
     """Reconciles state.json with manual Apply/Drop commits and continues."""
     checkout = _ResolveCheckoutPaths(protobuf_directory)
     state = LoadRollState(checkout.protobuf_directory)
-    if state is None or state.phase == 'prepared':
+    roll_branch = (_FindLocalRollBranch(checkout, state) if state is not None
+                   and state.phase != 'prepared' else None)
+    if state is None or roll_branch is None:
         raise RollProtobufError(
             'No active protobuf roll to resume; run `roll_protobuf.py start` '
             'first.')
+    if roll_branch != 'HEAD':
+        raise RollProtobufError(
+            f'Current HEAD is not on the {state.new_revision} roll branch; '
+            f'run `git checkout {roll_branch}` before '
+            '`roll_protobuf.py resume`.')
     dirty_status = _RunScratchGit(checkout.repository_root, 'status',
                                   '--porcelain',
                                   '--ignore-submodules=all').stdout.strip()
@@ -1725,27 +1747,18 @@ def ResumeRoll(protobuf_directory: str = _PROTOBUF_DIRECTORY) -> RollState:
             'finish committing the manual step (or run '
             '`roll_protobuf.py continue`) before running '
             '`roll_protobuf.py resume`.')
-    ancestry = _RunScratchGit(checkout.repository_root,
-                              'merge-base',
-                              '--is-ancestor',
-                              state.start_commit,
-                              'HEAD',
-                              accepted_return_codes=(0, 1))
-    commit_lines = _RunScratchGit(
-        checkout.repository_root, 'log', '--reverse', '--format=%H%x00%s',
-        f'{state.start_commit}..HEAD').stdout.decode(
-            'utf-8', errors='replace').splitlines() if (ancestry.returncode
-                                                        == 0) else []
-    if not commit_lines:
+    commit_lines = _RunScratchGit(checkout.repository_root, 'log',
+                                  '--no-show-signature', '--reverse',
+                                  '--format=%H%x00%s',
+                                  f'{state.start_commit}..HEAD').stdout.decode(
+                                      'utf-8', errors='replace').splitlines()
+    expected_import = (
+        f'Import upstream protobuf {state.new_revision} (unmodified)')
+    if not commit_lines or commit_lines[0].split('\0',
+                                                 1)[1] != expected_import:
         raise RollProtobufError(
-            f'HEAD does not descend from roll start commit '
-            f'{state.start_commit}; run `roll_protobuf.py abort` to reset.')
-    _, import_subject = commit_lines[0].split('\0', 1)
-    expected_import = f'Import upstream protobuf {state.new_revision} (unmodified)'
-    if import_subject != expected_import:
-        raise RollProtobufError(
-            f'Expected first roll commit {expected_import!r}, found '
-            f'{import_subject!r}.')
+            f'Expected first roll commit {expected_import!r} after '
+            f'{state.start_commit}.')
     patch_commits = commit_lines[1:]
     if len(patch_commits) > len(state.patches):
         raise RollProtobufError(
@@ -1828,7 +1841,10 @@ def StartRoll(to_revision: str,
     import_commit = ImportUpstreamRelease(checkout.protobuf_directory,
                                           repository_path, to_revision,
                                           state.new_commit)
-    state = dataclasses.replace(state, expected_head=import_commit)
+    state = dataclasses.replace(
+        state,
+        phase='conflict' if state.patches else 'replayed',
+        expected_head=import_commit)
     _SaveRollState(checkout, state)
     return _ReplayRemainingPatches(checkout, state)
 
@@ -1861,6 +1877,35 @@ def _IsRollBranchHead(checkout: _CheckoutPaths,
                                   'utf-8', errors='replace').splitlines()
     return (f'Import upstream protobuf {state.new_revision} (unmodified)'
             in subjects)
+
+
+def _CanResetRollHead(checkout: _CheckoutPaths, state: RollState) -> bool:
+    return state.phase != 'prepared' and (
+        _IsRollBranchHead(checkout, state) or
+        (state.phase == 'conflict'
+         and state.expected_head == state.start_commit and _ResolveCommitHash(
+             checkout.repository_root, 'HEAD') == state.expected_head))
+
+
+def _FindLocalRollBranch(checkout: _CheckoutPaths,
+                         state: RollState) -> str | None:
+    if state.phase == 'prepared':
+        return None
+    if _CanResetRollHead(checkout, state):
+        return 'HEAD'
+    root = checkout.repository_root
+    if _ResolveCommitHash(root, state.start_commit) is None:
+        return None
+    records = _RunScratchGit(
+        root, 'for-each-ref', '--format=%(objectname) %(refname:lstrip=2)',
+        '--contains', state.start_commit,
+        'refs/heads').stdout.decode('utf-8', errors='replace').splitlines()
+    for record in records:
+        sha, _, branch_name = record.partition(' ')
+        if (sha != state.start_commit and _IsRollBranchHead(
+                checkout, state, f'refs/heads/{branch_name}')):
+            return branch_name
+    return None
 
 
 def _ComputeBootstrapInputsDigest(protobuf_directory: str) -> str:
@@ -2473,8 +2518,15 @@ class RollStatus:
 
 
 def GetRollStatus(protobuf_directory: str = _PROTOBUF_DIRECTORY) -> RollStatus:
-    roll_state = LoadRollState(protobuf_directory)
-    if roll_state is None:
+    checkout = _ResolveCheckoutPaths(protobuf_directory)
+    roll_state = LoadRollState(checkout.protobuf_directory)
+    roll_branch = (_FindLocalRollBranch(checkout, roll_state)
+                   if roll_state is not None and roll_state.phase == 'conflict'
+                   else None)
+    if (roll_state is None
+            or (roll_state.phase == 'conflict' and roll_branch is None)
+            or (roll_state.phase == 'replayed'
+                and not _IsRollBranchHead(checkout, roll_state))):
         return RollStatus(
             state='idle',
             index=0,
@@ -2490,30 +2542,43 @@ def GetRollStatus(protobuf_directory: str = _PROTOBUF_DIRECTORY) -> RollStatus:
             next_commands=(
                 f'roll_protobuf.py start --to {roll_state.new_revision}',
                 'roll_protobuf.py abort'))
-    if roll_state.phase == 'conflict':
+    if roll_state.phase == 'conflict' and 0 <= roll_state.current_index < total:
+        on_roll_head = roll_branch == 'HEAD'
         return RollStatus(
             state='conflict',
             index=roll_state.current_index + 1,
             total=total,
             patch=roll_state.patches[roll_state.current_index].patch_name,
-            files=roll_state.conflict_files,
+            files=roll_state.conflict_files if on_roll_head else (),
             next_commands=('roll_protobuf.py continue',
                            'roll_protobuf.py drop --reason <why>',
-                           'roll_protobuf.py abort'))
+                           'roll_protobuf.py abort') if on_roll_head else
+            (f'git checkout {roll_branch}', ))
+    stale = _FindStaleBootstrapTriggers(checkout)
+    next_step = ('roll_protobuf.py generate -C <out_dir>'
+                 if stale else 'roll_protobuf.py check -C <out_dir>')
     return RollStatus(state='replayed',
                       index=total,
                       total=total,
-                      next_commands=('roll_protobuf.py check',
-                                     'roll_protobuf.py abort'))
+                      next_commands=(next_step, 'roll_protobuf.py abort'))
 
 
 def AbortRoll(protobuf_directory: str = _PROTOBUF_DIRECTORY) -> RollState:
-    """Resets the branch to start_commit and removes GITDIR/protobuf-roll/."""
+    """Resets an active roll to start_commit or clears stale roll state."""
     checkout = _ResolveCheckoutPaths(protobuf_directory)
     roll_state = LoadRollState(checkout.protobuf_directory)
     if roll_state is None:
         raise RollProtobufError('No protobuf roll is in progress (missing '
                                 f'{checkout.state_file_path}).')
+    roll_branch = _FindLocalRollBranch(checkout, roll_state)
+    if roll_branch != 'HEAD':
+        if roll_state.phase == 'prepared' or roll_branch is None:
+            shutil.rmtree(checkout.roll_state_directory)
+            return roll_state
+        raise RollProtobufError(
+            f'Current HEAD is not on the {roll_state.new_revision} roll '
+            f'branch; run `git checkout {roll_branch}` before running '
+            '`roll_protobuf.py abort`.')
     _RunScratchGit(checkout.repository_root, 'reset', '--quiet', '--hard',
                    roll_state.start_commit)
     _CleanUntrackedAndBackupFiles(checkout.protobuf_directory)
@@ -2537,7 +2602,7 @@ def FormatRollStateReport(state: RollState) -> str:
         f'{_DescribePatchReplayResult(result)}'
         for index, result in enumerate(state.patch_results, start=1)
     ]
-    if state.phase == 'conflict':
+    if state.phase == 'conflict' and 0 <= state.current_index < total:
         lines += [
             '',
             f'Stopped at [{state.current_index + 1}/{total}] '
@@ -2573,10 +2638,15 @@ def main(command_line_arguments: Sequence[str] | None = None) -> int:
         description='Verifies //third_party/protobuf against upstream plus '
         'patches/*.patch, and sizes rolls to new upstream versions.')
     subparsers = parser.add_subparsers(dest='subcommand', required=True)
-    subparsers.add_parser(
+    check_parser = subparsers.add_parser(
         'check',
-        help='Verify that upstream at README.chromium Revision plus '
-        'patches/*.patch reproduces //third_party/protobuf.')
+        help='Verify //third_party/protobuf invariants and report '
+        'file_lists.cmake and optional compile_size_probe.py deltas.')
+    check_parser.add_argument(
+        '--baseline',
+        dest='baseline_name',
+        help='Saved compile_size_probe.py baseline name to compare against '
+        'when -C is set (default: "before" or "pre_roll", else newest).')
     plan_parser = subparsers.add_parser(
         'plan',
         help='Dry run: classify every patch as CLEAN, EMPTY, CONFLICT or '
@@ -2616,8 +2686,12 @@ def main(command_line_arguments: Sequence[str] | None = None) -> int:
         help='Reconcile roll state after manual Apply/Drop commits and '
         'continue replaying remaining patches.')
     subparsers.add_parser(
+        'generate',
+        help='Run gen_extra_chromium_files.py -C <out_dir> and commit '
+        'regenerated bootstrap files.')
+    subparsers.add_parser(
         'abort',
-        help='Reset the branch to the commit before start and delete '
+        help='Reset an active roll branch to start_commit or clear '
         'GITDIR/protobuf-roll/.')
     for target_parser in (plan_parser, prepare_parser, start_parser):
         target_parser.add_argument(
@@ -2703,19 +2777,34 @@ def main(command_line_arguments: Sequence[str] | None = None) -> int:
             report = FormatRollStateReport(result)
             exit_code = (EXIT_CODE_CONFLICT
                          if result.phase == 'conflict' else EXIT_CODE_SUCCESS)
+        elif arguments.subcommand == 'generate':
+            result = GenerateBootstrapFiles(arguments.build_directory or '',
+                                            arguments.protobuf_directory)
+            report = FormatGenerateReport(result)
+            exit_code = EXIT_CODE_SUCCESS
         elif arguments.subcommand == 'status':
             result = GetRollStatus(arguments.protobuf_directory)
             report = FormatRollStatusReport(result)
             exit_code = EXIT_CODE_SUCCESS
         elif arguments.subcommand == 'abort':
+            checkout = _ResolveCheckoutPaths(arguments.protobuf_directory)
+            prior_state = LoadRollState(checkout.protobuf_directory)
+            did_reset = (prior_state is not None
+                         and _CanResetRollHead(checkout, prior_state))
             result = AbortRoll(arguments.protobuf_directory)
-            report = (f'Aborted roll to {result.new_revision} and reset to '
-                      f'{result.start_commit}.')
+            if did_reset:
+                report = (f'Aborted roll to {result.new_revision} and reset '
+                          f'to {result.start_commit}.')
+            elif result.phase == 'prepared':
+                report = f'Aborted prepared roll to {result.new_revision}.'
+            else:
+                report = f'Removed stale roll state for {result.new_revision}.'
             exit_code = EXIT_CODE_SUCCESS
         else:
-            result = CheckTreeMatchesPatchedUpstream(
-                arguments.protobuf_directory, *upstream_arguments)
-            report = FormatTreeVerificationReport(result)
+            result = CheckRoll(arguments.protobuf_directory,
+                               *upstream_arguments,
+                               baseline_name=arguments.baseline_name)
+            report = FormatRollCheckReport(result)
             exit_code = (EXIT_CODE_SUCCESS
                          if result.IsClean() else EXIT_CODE_ERROR)
         if arguments.should_output_json:
