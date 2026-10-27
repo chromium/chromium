@@ -770,8 +770,9 @@ class CONTENT_EXPORT FrameTreeNode : public RenderFrameHostOwner {
   // Verify that the renderer process is allowed to set user activation on this
   // frame by checking whether this frame's RenderWidgetHost had previously seen
   // an input event that might lead to user activation. If user activation
-  // should be allowed, this returns true and also clears corresponding pending
-  // user activation state in the widget. Otherwise, this returns false.
+  // should be allowed, this returns true and also decrements
+  // `expected_user_activation_notifications_` in the widget. Otherwise, this
+  // returns false.
   bool VerifyUserActivation();
 
   // See `RestartBackForwardCachedNavigationAsync()`.

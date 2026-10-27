@@ -83,7 +83,10 @@ void ExpectAttributesEq(FrameTreeNode* node,
 
 class FrameTreeBrowserTest : public ContentBrowserTest {
  public:
-  FrameTreeBrowserTest() = default;
+  FrameTreeBrowserTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        blink::features::kTrustedUserActivationTriggers);
+  }
 
   FrameTreeBrowserTest(const FrameTreeBrowserTest&) = delete;
   FrameTreeBrowserTest& operator=(const FrameTreeBrowserTest&) = delete;
@@ -93,6 +96,9 @@ class FrameTreeBrowserTest : public ContentBrowserTest {
     SetupCrossSiteRedirector(embedded_test_server());
     ASSERT_TRUE(embedded_test_server()->Start());
   }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Ensures FrameTree correctly reflects page structure during navigations.
@@ -1624,6 +1630,31 @@ IN_PROC_BROWSER_TEST_F(FrameTreeBrowserTest,
   GURL url(embedded_test_server()->GetURL("/title1.html"));
   EXPECT_TRUE(NavigateToURL(shell(), url));
 
+  EXPECT_FALSE(root->HasStickyUserActivation());
+  EXPECT_FALSE(root->HasTransientUserActivation());
+}
+
+// Tests that the user activation bits do not get set when a notification
+// pending browser verification fails verification.
+IN_PROC_BROWSER_TEST_F(FrameTreeBrowserTest,
+                       UserActivationVerificationFailure) {
+  GURL main_url(embedded_test_server()->GetURL("/frame_tree/top.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  // It is safe to obtain the root frame tree node here, as it doesn't change.
+  FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
+                            ->GetPrimaryFrameTree()
+                            .root();
+
+  EXPECT_FALSE(root->HasStickyUserActivation());
+  EXPECT_FALSE(root->HasTransientUserActivation());
+
+  // Attempt to set the user activation bits without a prior input event in the
+  // browser.
+  EXPECT_FALSE(root->UpdateUserActivationState(
+      blink::mojom::UserActivationUpdateType::
+          kNotifyActivationPendingBrowserVerification,
+      blink::mojom::UserActivationNotificationType::kTest));
   EXPECT_FALSE(root->HasStickyUserActivation());
   EXPECT_FALSE(root->HasTransientUserActivation());
 }

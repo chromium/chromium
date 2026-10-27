@@ -901,6 +901,16 @@ bool FrameTreeNode::ClearUserActivation() {
   return true;
 }
 
+bool FrameTreeNode::VerifyUserActivation() {
+  if (!base::FeatureList::IsEnabled(
+          blink::features::kTrustedUserActivationTriggers)) {
+    return true;
+  }
+  return current_frame_host()
+      ->GetRenderWidgetHost()
+      ->RemoveExpectedUserActivationNotificationIfAvailable();
+}
+
 bool FrameTreeNode::UpdateUserActivationState(
     blink::mojom::UserActivationUpdateType update_type,
     blink::mojom::UserActivationNotificationType notification_type) {
@@ -911,6 +921,19 @@ bool FrameTreeNode::UpdateUserActivationState(
       break;
     case blink::mojom::UserActivationUpdateType::kNotifyActivation:
       update_result = NotifyUserActivation(notification_type);
+      break;
+    case blink::mojom::UserActivationUpdateType::
+        kNotifyActivationPendingBrowserVerification:
+      if (VerifyUserActivation()) {
+        update_result = NotifyUserActivation(notification_type);
+        update_type = blink::mojom::UserActivationUpdateType::kNotifyActivation;
+      } else {
+        // TODO(crbug.com/572033015): Check how frequently we fail to verify
+        // user activation notifications in prod and for which input cases. Also
+        // investigate how to handle all the tests (there are many!) that inject
+        // input events to renderer processes directly.
+        update_result = false;
+      }
       break;
     case blink::mojom::UserActivationUpdateType::kNotifyActivationStickyOnly:
       update_result = NotifyUserActivationStickyOnly();

@@ -85,7 +85,7 @@ inline constexpr base::TimeDelta kActivationLifespan = base::Seconds(5);
 // renderers each of which then updates its local frame tree.
 //
 // [B'] Notification updates on user inputs is like [B] (renderer first).  These
-// should really be like [A] (browser first), see https://crbug.com/848778.
+// should really be like [A] (browser first), see https://crbug.com/40091540.
 //
 // [C] Expiration of an active state is tracked independently in each process.
 //

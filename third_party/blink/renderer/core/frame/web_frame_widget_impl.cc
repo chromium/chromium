@@ -2395,7 +2395,8 @@ void WebFrameWidgetImpl::PointerLockMouseEvent(
               .GetElement()
               ->GetDocument()
               .GetFrame(),
-          mojom::blink::UserActivationNotificationType::kInteraction);
+          mojom::blink::UserActivationNotificationType::kInteraction,
+          RuntimeEnabledFeatures::TrustedUserActivationTriggersEnabled());
       break;
     case WebInputEvent::Type::kMouseUp:
       event_type = event_type_names::kMouseup;
@@ -3630,7 +3631,8 @@ WebInputEventResult WebFrameWidgetImpl::HandleCapturedMouseEvent(
       event_type = event_type_names::kMousedown;
       LocalFrame::NotifyUserActivation(
           element->GetDocument().GetFrame(),
-          mojom::blink::UserActivationNotificationType::kInteraction);
+          mojom::blink::UserActivationNotificationType::kInteraction,
+          RuntimeEnabledFeatures::TrustedUserActivationTriggersEnabled());
       break;
     case WebInputEvent::Type::kMouseUp:
       event_type = event_type_names::kMouseup;

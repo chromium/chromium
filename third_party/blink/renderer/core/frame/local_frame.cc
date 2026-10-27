@@ -3046,9 +3046,10 @@ mojom::blink::DevicePostureProvider* LocalFrame::GetDevicePostureProvider() {
 // static
 void LocalFrame::NotifyUserActivation(
     LocalFrame* frame,
-    mojom::blink::UserActivationNotificationType notification_type) {
+    mojom::blink::UserActivationNotificationType notification_type,
+    bool need_browser_verification) {
   if (frame) {
-    frame->NotifyUserActivation(notification_type);
+    frame->NotifyUserActivation(notification_type, need_browser_verification);
   }
 }
 
@@ -3065,10 +3066,15 @@ bool LocalFrame::ConsumeTransientUserActivation(
 }
 
 void LocalFrame::NotifyUserActivation(
-    mojom::blink::UserActivationNotificationType notification_type) {
-  GetLocalFrameHostRemote().UpdateUserActivationState(
-      mojom::blink::UserActivationUpdateType::kNotifyActivation,
-      notification_type);
+    mojom::blink::UserActivationNotificationType notification_type,
+    bool need_browser_verification) {
+  mojom::blink::UserActivationUpdateType update_type =
+      need_browser_verification
+          ? mojom::blink::UserActivationUpdateType::
+                kNotifyActivationPendingBrowserVerification
+          : mojom::blink::UserActivationUpdateType::kNotifyActivation;
+  GetLocalFrameHostRemote().UpdateUserActivationState(update_type,
+                                                      notification_type);
   Client()->NotifyUserActivation();
   NotifyUserActivationInFrameTree(notification_type);
 }

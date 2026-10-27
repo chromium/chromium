@@ -15,6 +15,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
@@ -45,9 +46,11 @@
 #include "content/public/test/hit_test_region_observer.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
+#include "content/public/test/update_user_activation_state_interceptor.h"
 #include "content/shell/common/shell_switches.h"
 #include "content/test/mock_overscroll_observer.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/switches.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "third_party/blink/public/mojom/frame/media_player_action.mojom.h"
@@ -7721,6 +7724,106 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestBrowserTest,
     LoopVideoAt(child_rfh, root_point + gfx::Vector2d(1, 1));
     EXPECT_EQ("", LoopingVideoIn(child_rfh));
   }
+}
+
+class SitePerProcessHitTestTrustedUserActivationTriggersTest
+    : public SitePerProcessHitTestBrowserTest {
+ public:
+  SitePerProcessHitTestTrustedUserActivationTriggersTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        blink::features::kTrustedUserActivationTriggers);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestTrustedUserActivationTriggersTest,
+                       RenderWidgetUserActivationStateTest) {
+  GURL main_url(embedded_test_server()->GetURL(
+      "foo.com", "/frame_tree/page_with_positioned_frame.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
+  FrameTreeNode* child = root->child_at(0);
+  ASSERT_EQ(
+      " Site A ------------ proxies for B\n"
+      "   +--Site B ------- proxies for A\n"
+      "Where A = http://foo.com/\n"
+      "      B = http://baz.com/",
+      DepictFrameTree(root));
+
+  WaitForHitTestData(child->current_frame_host());
+
+  RenderWidgetHostViewBase* rwhv_root = static_cast<RenderWidgetHostViewBase*>(
+      root->current_frame_host()->GetRenderWidgetHost()->GetView());
+  RenderWidgetHostViewBase* rwhv_child = static_cast<RenderWidgetHostViewBase*>(
+      child->current_frame_host()->GetRenderWidgetHost()->GetView());
+
+  // Send a mouse down event to main frame.
+  blink::WebMouseEvent mouse_event(
+      blink::WebInputEvent::Type::kMouseDown,
+      blink::WebInputEvent::kNoModifiers,
+      blink::WebInputEvent::GetStaticTimeStampForTests());
+  mouse_event.button = blink::WebPointerProperties::Button::kLeft;
+  mouse_event.click_count = 1;
+
+  UpdateUserActivationStateInterceptor main_frame_activation_interceptor(
+      root->current_frame_host());
+  base::RunLoop main_frame_run_loop;
+  main_frame_activation_interceptor.set_quit_handler(
+      main_frame_run_loop.QuitClosure());
+
+  gfx::PointF click_point(10, 10);
+  DispatchMouseEventAndWaitUntilDispatch(web_contents(), mouse_event, rwhv_root,
+                                         click_point, rwhv_root, click_point);
+  main_frame_run_loop.Run();
+  EXPECT_TRUE(main_frame_activation_interceptor.update_user_activation_state());
+
+  // Root frame's expected activation notification has been claimed by the
+  // activation notification, and it has user activation.
+  EXPECT_FALSE(root->current_frame_host()
+                   ->GetRenderWidgetHost()
+                   ->RemoveExpectedUserActivationNotificationIfAvailable());
+  EXPECT_TRUE(root->HasTransientUserActivation());
+  // Child frame doesn't have any expected activation notification, and does not
+  // have user activation.
+  EXPECT_FALSE(child->current_frame_host()
+                   ->GetRenderWidgetHost()
+                   ->RemoveExpectedUserActivationNotificationIfAvailable());
+  EXPECT_FALSE(child->HasTransientUserActivation());
+
+  // Clear the activation state.
+  EXPECT_TRUE(root->UpdateUserActivationState(
+      blink::mojom::UserActivationUpdateType::kClearActivation,
+      blink::mojom::UserActivationNotificationType::kNone));
+
+  // Send a mouse down to child frame.
+  mouse_event.SetType(blink::WebInputEvent::Type::kMouseDown);
+  UpdateUserActivationStateInterceptor child_frame_activation_interceptor(
+      child->current_frame_host());
+  base::RunLoop child_frame_run_loop;
+  child_frame_activation_interceptor.set_quit_handler(
+      child_frame_run_loop.QuitClosure());
+  DispatchMouseEventAndWaitUntilDispatch(web_contents(), mouse_event,
+                                         rwhv_child, click_point, rwhv_child,
+                                         click_point);
+  child_frame_run_loop.Run();
+  EXPECT_TRUE(
+      child_frame_activation_interceptor.update_user_activation_state());
+
+  // Child frame's expected activation notification has been claimed by
+  // the activation notification, and it has user activation.
+  EXPECT_FALSE(child->current_frame_host()
+                   ->GetRenderWidgetHost()
+                   ->RemoveExpectedUserActivationNotificationIfAvailable());
+  EXPECT_TRUE(child->HasTransientUserActivation());
+  // Root frame doesn't have any expected activation notification, but has user
+  // activation because with UAv2, ancestor frames get activated as well.
+  EXPECT_FALSE(root->current_frame_host()
+                   ->GetRenderWidgetHost()
+                   ->RemoveExpectedUserActivationNotificationIfAvailable());
+  EXPECT_TRUE(root->HasTransientUserActivation());
 }
 
 }  // namespace content

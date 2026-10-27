@@ -779,6 +779,12 @@ WebInputEventResult WebPagePopupImpl::HandleKeyEvent(
       suppress_next_keypress_event_ = true;
     }
   }
+  // TODO(crbug.com/40091540): Remove user activation notification for all
+  // non-keydown events. Apparently this notification was added without the
+  // understanding that a single user key "click" fires down/up/char events.
+  // While sending 3 notifications for a single user action is not terrible
+  // (because we only ever track a _single_ user activation per Window), this
+  // allows opportunistic "in-between" consumptions by the popup client.
   LocalFrame::NotifyUserActivation(
       popup_client_->OwnerElement().GetDocument().GetFrame(),
       mojom::blink::UserActivationNotificationType::kInteraction);

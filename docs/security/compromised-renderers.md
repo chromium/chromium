@@ -315,7 +315,7 @@ actions requiring them:
   extra capabilities to a web origin.   For example, a compromised renderer
   should not be able to open an unlimited number of popup
   windows by forging user gestures.
-  **Work-in-progress / not protected today** - see https://crbug.com/848778.
+  **Work-in-progress / not protected today** - see https://crbug.com/40091540.
 
 
 ## Web Accessible Resources of Chrome Extensions

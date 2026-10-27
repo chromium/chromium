@@ -8837,7 +8837,7 @@ void Element::Focus(const FocusParams& params) {
   if (should_consume_user_activation) {
     // Fenced frames should consume user activation when attempting to pull
     // focus across a fenced boundary into itself.
-    // TODO(crbug.com/848778) Right now the browser can't verify that the
+    // TODO(crbug.com/40091540) Right now the browser can't verify that the
     // renderer properly consumed user activation. When user activation code is
     // migrated to the browser, move this logic to the browser as well.
     LocalFrame::ConsumeTransientUserActivation(GetDocument().GetFrame());

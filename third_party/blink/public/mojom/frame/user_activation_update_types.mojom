@@ -5,17 +5,26 @@
 module blink.mojom;
 
 // Types of UserActivationV2 state updates sent between the browser and the
-// renderer processes.
+// renderer processes to synchronize activation states.
 enum UserActivationUpdateType {
-  // Used to give a document sticky and transient user activation as a result of
-  // a user gesture.
+  // Notifies the target about a user interaction in a renderer. It gives the
+  // target both sticky and transient activation.
+  //
+  // TODO(https://crbug.com/40091540): Replace all such notifications from a
+  // renderer to the browser with the verified notification below.
   kNotifyActivation,
-  // Used to propagate the sticky user activation state during cross-document
-  // navigations.
+  // Notifies the target after a cross-document navigation that the
+  // pre-navigation renderer had sticky user activation. It gives the target
+  // only sticky activation. This notification originates only from the browser
+  // process.
   kNotifyActivationStickyOnly,
-  // Used after a sensitive API is called to prevent abuse of the API.
+  // Notifies the target about the invocation of an activation consuming API.
   kConsumeTransientActivation,
-  // Used during cross-document navigations when the user activation state
-  // shouldn't be propagated.
-  kClearActivation
+  // Notifies the target after a cross-document navigation about activation
+  // state reset.
+  kClearActivation,
+  // Similar to `kNotifyActivation` above but it is sent only from the renderer
+  // the user has interacted with and only to the browser, and is verified in
+  // the browser before any state update.
+  kNotifyActivationPendingBrowserVerification,
 };

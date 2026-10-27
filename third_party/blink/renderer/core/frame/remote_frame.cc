@@ -729,7 +729,8 @@ void RemoteFrame::UpdateUserActivationState(
     case mojom::blink::UserActivationUpdateType::kClearActivation:
       ClearUserActivationInFrameTree();
       break;
-    default:
+    case mojom::blink::UserActivationUpdateType::
+        kNotifyActivationPendingBrowserVerification:
       NOTREACHED() << "Unexpected UserActivationUpdateType from browser";
   }
 }

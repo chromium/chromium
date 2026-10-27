@@ -7071,6 +7071,13 @@
       status: "experimental",
     },
     {
+      // Make the browser process verify user activation notification calls
+      // from renderers before updating its own states and propagating the
+      // information to other renderers (https://crbug.com/40091540).
+      name: "TrustedUserActivationTriggers",
+      status: "experimental",
+    },
+    {
       name: "TwoPhaseViewTransition",
       status: "experimental",
     },

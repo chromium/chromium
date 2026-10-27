@@ -82,6 +82,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/dom/dom_node_id.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/input/synthetic_web_input_event_builders.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
 #include "third_party/blink/public/common/page/page_zoom.h"
@@ -3760,6 +3761,35 @@ TEST_F(RenderWidgetHostTest, RenderFrameMetadataOutOfRangeMessageDisconnects) {
   run_loop.Run();
 
   EXPECT_FALSE(client_remote.is_connected());
+}
+
+TEST_F(RenderWidgetHostTest, ExpectedUserActivationNotification) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      blink::features::kTrustedUserActivationTriggers);
+
+  // One event allows one activation notification.
+  SimulateMouseEvent(blink::WebInputEvent::Type::kMouseDown);
+  EXPECT_TRUE(host_->RemoveExpectedUserActivationNotificationIfAvailable());
+  EXPECT_FALSE(host_->RemoveExpectedUserActivationNotificationIfAvailable());
+
+  // Mouse move and up does not increase expected user activation notifications.
+  SimulateMouseEvent(blink::WebInputEvent::Type::kMouseMove);
+  SimulateMouseEvent(blink::WebInputEvent::Type::kMouseUp);
+  EXPECT_FALSE(host_->RemoveExpectedUserActivationNotificationIfAvailable());
+
+  // Two events allow 2 activation notifications.
+  SimulateMouseEvent(blink::WebInputEvent::Type::kMouseDown);
+  SimulateKeyboardEvent(blink::WebInputEvent::Type::kKeyDown);
+  EXPECT_TRUE(host_->RemoveExpectedUserActivationNotificationIfAvailable());
+  EXPECT_TRUE(host_->RemoveExpectedUserActivationNotificationIfAvailable());
+  EXPECT_FALSE(host_->RemoveExpectedUserActivationNotificationIfAvailable());
+
+  // Timer resets the expected activation notifications.
+  SimulateMouseEvent(blink::WebInputEvent::Type::kMouseDown);
+  SimulateMouseEvent(blink::WebInputEvent::Type::kMouseDown);
+  task_environment_.FastForwardBy(
+      RenderWidgetHostImpl::kUserActivationVerificationTimeout);
+  EXPECT_FALSE(host_->RemoveExpectedUserActivationNotificationIfAvailable());
 }
 
 }  // namespace content

@@ -342,7 +342,7 @@ RenderFrameHostImpl* FindOpenerRFH(const WebContents::CreateParams& params) {
 // user interaction observers.
 bool IsUserInteractionInputType(blink::WebInputEvent::Type type) {
   // TODO(mustaq): This list should be based off the HTML spec:
-  // https://html.spec.whatwg.org/multipage/interaction.html#tracking-user-activation,
+  // https://html.spec.whatwg.org/multipage/interaction.html#activation-triggering-input-event,
   // and kGestureScrollBegin is a clear outlier.
   return type == blink::WebInputEvent::Type::kMouseDown ||
          type == blink::WebInputEvent::Type::kGestureScrollBegin ||
