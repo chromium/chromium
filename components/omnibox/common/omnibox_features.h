@@ -343,10 +343,6 @@ extern const base::FeatureParam<bool> kAskGLensSearchHintText;
 extern const base::FeatureParam<bool> kAskGShowFirstDescription;
 // Whether to show the lens chip in omnibox composebox.
 extern const base::FeatureParam<bool> kAskGComposeboxLensChip;
-// Whether to block initial zero state suggestions in omnibox composebox
-// when we have auto added tabs so we can show the user contextual suggestions
-// from the auto added tabs instead.
-extern const base::FeatureParam<bool> kAskGBlockAutoTabZeroStateSuggestions;
 // Whether to use "Ask about this page" placeholder text in omnibox composebox.
 extern const base::FeatureParam<bool> kAskGComposeboxPlaceholder;
 // Whether to bypass the Lens privacy notice.

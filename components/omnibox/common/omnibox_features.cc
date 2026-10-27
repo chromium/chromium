@@ -801,9 +801,6 @@ const base::FeatureParam<bool> kAskGShowFirstDescription{
     &kWebUIOmniboxAskGAboutThisPage, "Omnibox_AskGShowFirstDescription", false};
 const base::FeatureParam<bool> kAskGComposeboxLensChip{
     &kWebUIOmniboxAskGAboutThisPage, "Omnibox_AskGComposeboxLensChip", false};
-const base::FeatureParam<bool> kAskGBlockAutoTabZeroStateSuggestions{
-    &kWebUIOmniboxAskGAboutThisPage,
-    "Omnibox_AskGBlockAutoTabZeroStateSuggestions", false};
 const base::FeatureParam<bool> kAskGComposeboxPlaceholder{
     &kWebUIOmniboxAskGAboutThisPage, "Omnibox_AskGComposeboxPlaceholder", false};
 const base::FeatureParam<bool> kAskGBypassPrivacyNotice{
