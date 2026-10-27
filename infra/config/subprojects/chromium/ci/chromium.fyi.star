@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 """Definitions of builders in the chromium.fyi builder group."""
 
+load("@chromium-luci//args.star", "args")
 load("@chromium-luci//branches.star", "branches")
 load("@chromium-luci//builder_config.star", "builder_config")
 load("@chromium-luci//builder_health_indicators.star", "health_spec")
@@ -2672,6 +2673,112 @@ ci.builder(
         ),
     ],
     contact_team_email = "chrome-gpu-team@google.com",
+)
+
+ci.builder(
+    name = "linux-devtools-frontend-rel",
+    description_html = "Builder for DevTools Frontend tests",
+    schedule = "triggered",
+    triggered_by = [],
+    builder_spec = builder_config.copy_from("ci/Linux Builder"),
+    gn_args = "ci/Linux Builder",
+    targets = targets.bundle(
+        targets = [
+            "devtools_api_tests",
+            "devtools_node_unit_tests",
+            "devtools_unit_tests",
+        ],
+        mixins = [
+            "linux-jammy",
+        ],
+        per_test_modifications = {
+            "devtools_unit_tests": targets.mixin(
+                swarming = targets.swarming(
+                    shards = 4,
+                ),
+            ),
+        },
+    ),
+    os = os.LINUX_DEFAULT,
+    # TODO(crbug.com/563186272): Enable when verified.
+    gardener_rotations = args.ignore_default(None),
+    tree_closing = False,
+    console_view_entry = consoles.console_view_entry(
+        category = "devtools",
+    ),
+    contact_team_email = "chrome-devtools@google.com",
+)
+
+ci.builder(
+    name = "mac-devtools-frontend-rel",
+    description_html = "Builder for DevTools Frontend tests",
+    schedule = "triggered",
+    triggered_by = [],
+    builder_spec = builder_config.copy_from("ci/mac-arm64-rel"),
+    gn_args = "ci/mac-arm64-rel",
+    targets = targets.bundle(
+        targets = [
+            "devtools_api_tests",
+            "devtools_node_unit_tests",
+            "devtools_unit_tests",
+        ],
+        mixins = [
+            "mac_default_arm64",
+        ],
+        per_test_modifications = {
+            "devtools_unit_tests": targets.mixin(
+                swarming = targets.swarming(
+                    shards = 4,
+                ),
+            ),
+        },
+    ),
+    cores = None,
+    os = os.MAC_DEFAULT,
+    cpu = cpu.ARM64,
+    # TODO(crbug.com/563186272): Enable when verified.
+    gardener_rotations = args.ignore_default(None),
+    tree_closing = False,
+    console_view_entry = consoles.console_view_entry(
+        category = "devtools",
+    ),
+    contact_team_email = "chrome-devtools@google.com",
+)
+
+ci.builder(
+    name = "win-devtools-frontend-rel",
+    description_html = "Builder for DevTools Frontend tests",
+    schedule = "triggered",
+    triggered_by = [],
+    builder_spec = builder_config.copy_from("ci/Win x64 Builder"),
+    gn_args = "ci/Win x64 Builder",
+    targets = targets.bundle(
+        targets = [
+            "devtools_api_tests",
+            "devtools_node_unit_tests",
+            "devtools_unit_tests",
+        ],
+        mixins = [
+            "x86-64",
+            "win10",
+        ],
+        per_test_modifications = {
+            "devtools_unit_tests": targets.mixin(
+                swarming = targets.swarming(
+                    shards = 4,
+                ),
+            ),
+        },
+    ),
+    os = os.WINDOWS_DEFAULT,
+    ssd = None,
+    # TODO(crbug.com/563186272): Enable when verified.
+    gardener_rotations = args.ignore_default(None),
+    tree_closing = False,
+    console_view_entry = consoles.console_view_entry(
+        category = "devtools",
+    ),
+    contact_team_email = "chrome-devtools@google.com",
 )
 
 ci.builder(

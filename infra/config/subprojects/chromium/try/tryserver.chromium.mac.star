@@ -232,6 +232,21 @@ try_.compilator_builder(
 )
 
 try_.builder(
+    name = "mac-devtools-frontend-rel",
+    description_html = "Runs DevTools Frontend tests exactly like mac-rel",
+    mirrors = [
+        "ci/mac-devtools-frontend-rel",
+    ],
+    gn_args = "ci/mac-devtools-frontend-rel",
+    cpu = cpu.ARM64,
+    contact_team_email = "chrome-devtools@google.com",
+    cq_settings = try_.cq_settings(
+        includable_only = True,
+    ),
+    main_list_view = "try",
+)
+
+try_.builder(
     name = "mac-webdriver-bidi-rel",
     description_html = "Runs webdriver bidi tests exactly like mac-rel",
     mirrors = [

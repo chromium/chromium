@@ -1018,6 +1018,24 @@
     "type": "console_test_launcher",
     "module_scheme": "gtest",
   },
+  "devtools_api_tests": {
+    "label": "//third_party/devtools-frontend/src/test/api:devtools_api_tests",
+    "type": "generated_script",
+    "module_scheme": "mocha",
+    "skip_usage_check": True,
+  },
+  "devtools_node_unit_tests": {
+    "label": "//third_party/devtools-frontend/src/test/unit:devtools_node_unit_tests",
+    "type": "generated_script",
+    "module_scheme": "mocha",
+    "skip_usage_check": True,
+  },
+  "devtools_unit_tests": {
+    "label": "//third_party/devtools-frontend/src/test/unit:devtools_unit_tests",
+    "type": "generated_script",
+    "module_scheme": "mocha",
+    "skip_usage_check": True,
+  },
   "disk_usage_tast_test": {
     "label": "//chromeos:disk_usage_tast_test",
     "type": "generated_script",

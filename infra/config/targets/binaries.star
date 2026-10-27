@@ -1061,6 +1061,27 @@ targets.binaries.console_test_launcher(
 )
 
 targets.binaries.generated_script(
+    name = "devtools_api_tests",
+    label = "//third_party/devtools-frontend/src/test/api:devtools_api_tests",
+    skip_usage_check = True,
+    module_scheme = "mocha",
+)
+
+targets.binaries.generated_script(
+    name = "devtools_node_unit_tests",
+    label = "//third_party/devtools-frontend/src/test/unit:devtools_node_unit_tests",
+    skip_usage_check = True,
+    module_scheme = "mocha",
+)
+
+targets.binaries.generated_script(
+    name = "devtools_unit_tests",
+    label = "//third_party/devtools-frontend/src/test/unit:devtools_unit_tests",
+    skip_usage_check = True,
+    module_scheme = "mocha",
+)
+
+targets.binaries.generated_script(
     name = "disk_usage_tast_test",
     label = "//chromeos:disk_usage_tast_test",
     # All references have been moved to starlark

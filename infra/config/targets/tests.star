@@ -1035,12 +1035,33 @@ targets.tests.gtest_test(
     name = "device_realtarget_browsertests",
 )
 
+targets.tests.isolated_script_test(
+    name = "devtools_api_tests",
+    mixins = [
+        "has_native_resultdb_integration",
+    ],
+)
+
 targets.tests.gtest_test(
     name = "devtools_browser_tests",
     args = [
         "--gtest_filter=*DevTools*",
     ],
     binary = "browser_tests",
+)
+
+targets.tests.isolated_script_test(
+    name = "devtools_node_unit_tests",
+    mixins = [
+        "has_native_resultdb_integration",
+    ],
+)
+
+targets.tests.isolated_script_test(
+    name = "devtools_unit_tests",
+    mixins = [
+        "has_native_resultdb_integration",
+    ],
 )
 
 targets.tests.gtest_test(

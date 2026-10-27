@@ -1,6 +1,12 @@
+ci/linux-devtools-frontend-rel
 ci/linux-webdriver-bidi-rel
+ci/mac-devtools-frontend-rel
 ci/mac-webdriver-bidi-rel
+ci/win-devtools-frontend-rel
 ci/win-webdriver-bidi-rel
+try/linux-devtools-frontend-rel
 try/linux-webdriver-bidi-rel
+try/mac-devtools-frontend-rel
 try/mac-webdriver-bidi-rel
+try/win-devtools-frontend-rel
 try/win-webdriver-bidi-rel

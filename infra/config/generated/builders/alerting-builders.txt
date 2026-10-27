@@ -623,6 +623,7 @@ try/linux-chromeos-rel
 try/linux-clobber-rel
 try/linux-crossbench
 try/linux-dcheck-off-rel
+try/linux-devtools-frontend-rel
 try/linux-enterprise-companion-try-builder-dbg
 try/linux-enterprise-companion-try-builder-rel
 try/linux-extended-tracing-rel
@@ -681,6 +682,7 @@ try/mac-arm64-on-arm64-rel
 try/mac-asan-media-rel
 try/mac-asan-rel
 try/mac-clobber-rel
+try/mac-devtools-frontend-rel
 try/mac-enterprise-companion-try-builder-dbg
 try/mac-enterprise-companion-try-builder-rel
 try/mac-fieldtrial-tester
@@ -727,6 +729,7 @@ try/win-asan
 try/win-asan-media-rel
 try/win-asan-rel
 try/win-clobber-rel
+try/win-devtools-frontend-rel
 try/win-enterprise-companion-try-builder-dbg
 try/win-enterprise-companion-try-builder-rel
 try/win-libfuzzer-asan-rel

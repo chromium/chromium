@@ -1,0 +1,70 @@
+{
+  "win-devtools-frontend-rel": {
+    "isolated_scripts": [
+      {
+        "merge": {
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
+        },
+        "module_name": "//third_party/devtools-frontend/src/test/api:devtools_api_tests",
+        "module_scheme": "mocha",
+        "name": "devtools_api_tests",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "dimensions": {
+            "cpu": "x86-64",
+            "os": "Windows-10-19045"
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "devtools_api_tests",
+        "test_id_prefix": "ninja://third_party/devtools-frontend/src/test/api:devtools_api_tests/"
+      },
+      {
+        "merge": {
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
+        },
+        "module_name": "//third_party/devtools-frontend/src/test/unit:devtools_node_unit_tests",
+        "module_scheme": "mocha",
+        "name": "devtools_node_unit_tests",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "dimensions": {
+            "cpu": "x86-64",
+            "os": "Windows-10-19045"
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "devtools_node_unit_tests",
+        "test_id_prefix": "ninja://third_party/devtools-frontend/src/test/unit:devtools_node_unit_tests/"
+      },
+      {
+        "merge": {
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
+        },
+        "module_name": "//third_party/devtools-frontend/src/test/unit:devtools_unit_tests",
+        "module_scheme": "mocha",
+        "name": "devtools_unit_tests",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "dimensions": {
+            "cpu": "x86-64",
+            "os": "Windows-10-19045"
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 4
+        },
+        "test": "devtools_unit_tests",
+        "test_id_prefix": "ninja://third_party/devtools-frontend/src/test/unit:devtools_unit_tests/"
+      }
+    ]
+  }
+}

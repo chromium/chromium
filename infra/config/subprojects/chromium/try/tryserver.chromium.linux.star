@@ -518,6 +518,21 @@ try_.compilator_builder(
 )
 
 try_.builder(
+    name = "linux-devtools-frontend-rel",
+    description_html = "Runs DevTools Frontend tests exactly like linux-rel",
+    mirrors = [
+        "ci/linux-devtools-frontend-rel",
+    ],
+    gn_args = "ci/linux-devtools-frontend-rel",
+    ssd = True,
+    contact_team_email = "chrome-devtools@google.com",
+    cq_settings = try_.cq_settings(
+        includable_only = True,
+    ),
+    main_list_view = "try",
+)
+
+try_.builder(
     name = "linux-webdriver-bidi-rel",
     description_html = "Runs webdriver bidi tests exactly like linux-rel",
     mirrors = [

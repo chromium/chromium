@@ -10092,6 +10092,27 @@
           }
         ]
       },
+      "linux-devtools-frontend-rel": {
+        "contact_team_email": "chrome-devtools@google.com",
+        "problem_specs": [
+          {
+            "name": "Unhealthy",
+            "period_days": 7,
+            "score": 5,
+            "thresholds": {
+              "_default": "_default"
+            }
+          },
+          {
+            "name": "Low Value",
+            "period_days": 90,
+            "score": 1,
+            "thresholds": {
+              "_default": "_default"
+            }
+          }
+        ]
+      },
       "linux-enterprise-companion-builder-dbg": {
         "contact_team_email": "omaha-client-dev@google.com",
         "problem_specs": [
@@ -11315,6 +11336,27 @@
         ]
       },
       "mac-code-coverage": {
+        "problem_specs": [
+          {
+            "name": "Unhealthy",
+            "period_days": 7,
+            "score": 5,
+            "thresholds": {
+              "_default": "_default"
+            }
+          },
+          {
+            "name": "Low Value",
+            "period_days": 90,
+            "score": 1,
+            "thresholds": {
+              "_default": "_default"
+            }
+          }
+        ]
+      },
+      "mac-devtools-frontend-rel": {
+        "contact_team_email": "chrome-devtools@google.com",
         "problem_specs": [
           {
             "name": "Unhealthy",
@@ -12670,6 +12712,27 @@
       },
       "win-asan": {
         "contact_team_email": "chrome-sanitizer-builder-owners@google.com",
+        "problem_specs": [
+          {
+            "name": "Unhealthy",
+            "period_days": 7,
+            "score": 5,
+            "thresholds": {
+              "_default": "_default"
+            }
+          },
+          {
+            "name": "Low Value",
+            "period_days": 90,
+            "score": 1,
+            "thresholds": {
+              "_default": "_default"
+            }
+          }
+        ]
+      },
+      "win-devtools-frontend-rel": {
+        "contact_team_email": "chrome-devtools@google.com",
         "problem_specs": [
           {
             "name": "Unhealthy",
