@@ -37,7 +37,7 @@ constexpr base::TimeDelta kURLLookupTimeout = base::Seconds(2);
 net::NetworkTrafficAnnotationTag GetTrafficAnnotationTag() {
   return net::DefineNetworkTrafficAnnotation("permission_predictions", R"(
     semantics {
-      sender: "Web Permission Perdictions"
+      sender: "Web Permission Predictions"
       description:
         "A request to the Web Permission Predictions Service. The service will "
         "attempt to predict the likelihood that the user would grant this "
@@ -53,6 +53,7 @@ net::NetworkTrafficAnnotationTag GetTrafficAnnotationTag() {
         "and total prompts shown, both for the specific permission type and "
         "overall for all permission types."
       destination: GOOGLE_OWNED_SERVICE
+      api_service_name: "webpermissionpredictions.googleapis.com"
     }
     policy {
       cookies_allowed: NO
