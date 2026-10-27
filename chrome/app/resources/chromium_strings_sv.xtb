@@ -19,6 +19,7 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="1131805035311359397"><ph name="BEGIN_LINK" />Logga in i Chromium<ph name="END_LINK" /> om du vill kontrollera att dina lösenord skyddas från dataintrång och andra säkerhetsproblem.</translation>
 <translation id="1145158441928281100">{COUNT,plural, =1{Administratören meddelar att du bör starta om Chromium så att uppdateringen tillämpas. Det finns ett öppet inkognitofönster eller isolerat fönster. Det öppnas inte på nytt när programmet startas om.}other{Administratören meddelar att du bör starta om Chromium så att uppdateringen tillämpas. Det finns # inkognitofönster eller isolerade fönster öppna i olika profiler. De öppnas inte på nytt när programmet startas om.}}</translation>
 <translation id="1153368717515616349">Klicka på Chromium-menyn</translation>
+<translation id="1157952955648710254">Stäng sidopanelen för Google Sök</translation>
 <translation id="1157985233335035034">Nyligen använda språk</translation>
 <translation id="1184145431117212167">Installationen misslyckades eftersom du använder en version av Windows som inte stöds.</translation>
 <translation id="1185134272377778587">Om Chromium</translation>
@@ -46,6 +47,7 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="1383876407941801731">Sök</translation>
 <translation id="1388276868779258475">Använd Chromium-appen för att fortsätta surfa var du än är</translation>
 <translation id="141901961143729572">Dela dina tankar</translation>
+<translation id="1438812738230833934">Du kan öppna Google Sök i sidopanelen för att ställa frågor medan du surfar</translation>
 <translation id="1465192221147974788">För att dela fönstret tillåter du skärminspelning för Chromium i systeminställningarna.</translation>
 <translation id="1478370723027452770">Få hjälp med Chrome for Testing</translation>
 <translation id="147870194906295621">Logga in i Chromium om du vill få tillgång till din sparade information med mera från <ph name="DEVICE" /></translation>
@@ -342,6 +344,7 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="4470974262661801543">Ange lösenfrasen om du vill använda och spara Chromium-data i ditt Google-konto</translation>
 <translation id="4493028449971051158">Startfel: Kör installationsprogrammet som administratör.</translation>
 <translation id="4501471624619070934">Installationen misslyckades eftersom åtkomsten är begränsad i det här landet.</translation>
+<translation id="4501839397124711198">Du kan fästa Google Sök i sidopanelen för att ställa frågor medan du surfar</translation>
 <translation id="4510853178268397146">Tillägget har ingen publicerad integritetspraxis, till exempel hur det samlar in och använder data. Vi rekommenderar att du tar bort det.</translation>
 <translation id="452711251841752011">Välkommen till Chromium, ett nytt webbläsarfönster har öppnats</translation>
 <translation id="4531137820806573936">Chromium behöver behörighet för att kartlägga din omgivning och spåra dina händer</translation>
@@ -385,8 +388,10 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="4987820182225656817">Gäster kan använda Chromium utan att lämna spår efter sig.</translation>
 <translation id="4992938037305302429">Ditt konto i Chromium</translation>
 <translation id="4994636714258228724">Lägg till dig själv i Chromium</translation>
+<translation id="5000497292978544380">AI-läge i Google Sök</translation>
 <translation id="504699503110800016">Öppna menyn med fler alternativ</translation>
 <translation id="5074496654342756568">Få åtkomst till alla dina Google-favoriter med Chromium på din <ph name="DEVICE_TYPE" /></translation>
+<translation id="5121592697493894155">Google Sök i sidopanelen</translation>
 <translation id="5123973130450702873">Chromium behöver behörighet för handspårning</translation>
 <translation id="5141988424377517949">Du har inte besökt webbplatsen på sistone. Chromium har tagit bort <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> och <ph name="PERMISSION_3" />.</translation>
 <translation id="5171868502429358653">Logga in i Chromium</translation>
@@ -674,6 +679,7 @@ Chromium kan inte återställa dina inställningar.</translation>
 <translation id="7781047659465034537">Ställ in Chromium som standard och fäst den på aktivitetsfältet</translation>
 <translation id="7786760609782648049">Gör Chromium snabbare</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> – Chromium Canary</translation>
+<translation id="7800043020703832708">Stäng Google Sök i sidopanelen</translation>
 <translation id="7803986347287457849">Gör det svårare för personer som har åtkomst till din internettrafik att se vilka webbplatser du besöker. Chromium använder en säker anslutning för att söka efter en webbplats IP-adress i domännamnssystemet (DNS).</translation>
 <translation id="7810005234485217901">Du kan fästa Bildsökning för enkel åtkomst</translation>
 <translation id="7813559034750130602">{COUNT,plural, =1{Det finns en ny Chromium-uppdatering som tillämpas så snart du startar om. Det finns ett öppet inkognitofönster eller isolerat fönster. Det öppnas inte på nytt när programmet startas om.}other{Det finns en ny Chromium-uppdatering som tillämpas så snart du startar om. Det finns # inkognitofönster eller isolerade fönster öppna i olika profiler. De öppnas inte på nytt när programmet startas om.}}</translation>
@@ -688,6 +694,7 @@ Chromium kan inte återställa dina inställningar.</translation>
 <translation id="7873537467422636035">Om du har glömt lösenfrasen eller vill ändra den här inställningen måste du <ph name="BEGIN_LINK" />radera Chromium-datan i kontot<ph name="END_LINK" />.</translation>
 <translation id="7874369989024033742">Öppna Gemini snabbt i Chromium när du behöver den</translation>
 <translation id="7888981273428720788">Ställ in Chromium som standardwebbläsare</translation>
+<translation id="7904213866086517086">Öppna Google Sök i sidopanelen</translation>
 <translation id="7934340546140346950">Chromium uppgraderar automatiskt osäkra anslutningar till HTTPS när det är möjligt</translation>
 <translation id="7937630085815544518">Du var inloggad i Chromium som <ph name="USER_EMAIL_ADDRESS" />. Använd samma konto när du loggar in igen.</translation>
 <translation id="7944602660083060118"><ph name="EXISTING_USER" /> är redan inloggad. Du kan hålla isär webbinformationen genom att logga in i Chromium i din egen profil med <ph name="USER_EMAIL_ADDRESS" />. Du får även dina bokmärken med mera på alla dina enheter.</translation>
@@ -742,14 +749,15 @@ Chromium kan inte återställa dina inställningar.</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Med ensamrätt.</translation>
 <translation id="8372327902843331129">Logga in i Chromium om du vill få tillgång till dina lösenord med mera på alla dina enheter. Lösenordet sparas i ditt Google-konto när du har loggat in.</translation>
 <translation id="837460953767177950">Du måste sedan starta om Chromium.</translation>
+<translation id="8376752431516546391">Sidopanel med Google Sök</translation>
 <translation id="8397248745433792218">Vi rekommenderar att du tar bort det. <ph name="BEGIN_LINK" />Läs mer om tillägg som stöds<ph name="END_LINK" /></translation>
 <translation id="8401454788024434101">Det här tillägget har tagits bort av utvecklaren och kan vara osäkert. Ta bort det från Chromium så att det inte längre kan se och ändra data, inklusive dina personliga uppgifter, på webbplatser du besöker.</translation>
+<translation id="8406687098231754303">Med knappen Google Sök i sidopanelen i verktygsfältet kan du öppna Google Sök i sidopanelen för att ställa frågor medan du surfar</translation>
 <translation id="8416884904046428725">Chromium måste verifiera din identitet innan viss data kan sparas i Google-kontot och användas på alla dina enheter. Om du loggar ut nu raderas denna data.</translation>
 <translation id="8417404458978023919">{0,plural, =1{Starta om Chromium inom en dag}other{Starta om Chromium inom # dagar}}</translation>
 <translation id="8438543370129609977">När du använder bildsökning skickas sidans rubrik, webbadress och innehåll, inklusive PDF-filer, till servern. <ph name="LEARN_MORE" /></translation>
 <translation id="8447525028100794994">Läs mer om att söka med bildsökning i Chromium</translation>
 <translation id="8453117565092476964">Arkivet för installationsfilen är skadat eller ogiltigt. Ladda ned Chromium igen.</translation>
-<translation id="8458614432758743027">För Chromium krävs Windows 10 eller senare.</translation>
 <translation id="8463672209299734063">Valfritt: Skicka diagnostik- och användningsdata automatiskt till Google och hjälp oss att förbättra funktioner och prestanda i Chromium OS.</translation>
 <translation id="8471947159125090285">Verifiera din identitet för att använda och spara Chromium-data i ditt Google-konto</translation>
 <translation id="8482493977473846331">Visar meddelanden om att logga in i Chromium</translation>
@@ -761,6 +769,7 @@ Chromium kan inte återställa dina inställningar.</translation>
 <translation id="8555465886620020932">Tjänstfel: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="8556055872671007529">Vissa funktioner och tillägg i Chromium har kortkommandon. Du kan välja att aktivera dem igen.</translation>
 <translation id="8556420416730706394">Du kan fästa Bildsökning för enkel åtkomst. Klicka på knappen Fäst högst upp på sidopanelen</translation>
+<translation id="8564408666201523086">Klart! Nu kan du enkelt ställa frågor i sidopanelen medan du surfar med Google Sök</translation>
 <translation id="856656450041460113">Sök efter språklista</translation>
 <translation id="8576826849825683917">Flera organisationer hanterar Chromium</translation>
 <translation id="8586442755830160949">Upphovsrätt <ph name="YEAR" /> The Chromium Authors. Med ensamrätt.</translation>

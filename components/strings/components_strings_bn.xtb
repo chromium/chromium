@@ -662,6 +662,7 @@
 <translation id="2118132148597630479">এনভেলপ C5</translation>
 <translation id="2119505898009119320">এই সংস্থাকে ইস্যু করা হয়েছিল: <ph name="ORGANIZATION" /> [<ph name="JURISDICTION" />]</translation>
 <translation id="2119867082804433120">নিচে ডানদিকে পাঞ্চ করুন</translation>
+<translation id="2121418473709291357">Chrome ব্রাউজার ক্লাউড ম্যানেজমেন্ট বন্ধ থাকায় এটি উপেক্ষা করা হয়েছে।</translation>
 <translation id="2122214041802369259">দাম বেশি</translation>
 <translation id="2122719317867821810">এই নীতি আশানুরূপ কাজ করছে। আসলে অন্য একটি জায়গাতে এমন মান সেট করা হয়েছে যা একে অপরের সাথে ম্যাচ করে না এবং সেই মানকে এই নীতির মাধ্যমে ওভাররাইড করে দেওয়া হয়।</translation>
 <translation id="2124081665399116863">Google Wallet-এ গাড়ি আপডেট করুন</translation>
@@ -691,6 +692,7 @@
 <translation id="2155260325161282517">৫ x ৭ ইঞ্চি</translation>
 <translation id="2156467141257470387">Google প্রোডাক্ট জুড়ে সেভ করা ঠিকানা আপনি ব্যবহার করতে পারবেন। এর জন্য আপনার বর্তমান থাকা কর্মস্থলের ঠিকানা পরিবর্তন হবে না। এটি আপনার Google অ্যাকাউন্ট, <ph name="ACCOUNT" />-এ সেভ করা হবে।</translation>
 <translation id="2157640075051554492">দাম ট্র্যাক করার বিজ্ঞপ্তি</translation>
+<translation id="2158964559178498011">অটোফিল আরও অনেক জায়গায় কাজ করে — তথ্য খুঁজে পেতে ও পূরণ করতে Ctrl দুবার প্রেস করুন</translation>
 <translation id="2161656808144014275">পাঠ্য</translation>
 <translation id="2162435186600002085">প্রাথমিক হেডারের লোগো</translation>
 <translation id="2162535140284745414">রিয়েল-টাইমে এমন সাজেশন পান যা আপনাকে AI-এর মাধ্যমে ব্রাউজ করার নতুন উপায় খুঁজে পাওয়ার ব্যাপারে সাহায্য করতে পারবে।</translation>
@@ -2201,6 +2203,7 @@
 <translation id="4678379207584374453"><ph name="BEGIN_LINK" />আরও জানুন<ph name="END_LINK" /></translation>
 <translation id="4682496302933121474">পৃষ্ঠাটি অনুবাদ করবেন?</translation>
 <translation id="468314109939257734">আপনার ভার্চুয়াল কার্ড নম্বর দেখুন</translation>
+<translation id="4684818564800397688">অটোফিল আরও অনেক জায়গায় কাজ করে — তথ্য খুঁজে পেতে ও পূরণ করতে ⌘ দুবার প্রেস করুন</translation>
 <translation id="4686942373615810936">এইমাত্র তৈরি করা হয়েছে</translation>
 <translation id="4690205240253392065">এমন কোনও পরিষেবা প্রদানকারী বেছে নিন যা পরে পেমেন্ট করার সুবিধা দেয়</translation>
 <translation id="469028408546145398">ছদ্মবেশী উইন্ডো বন্ধ করুন বোতাম, বর্তমানে খোলা থাকা সব ছদ্মবেশী উইন্ডো বন্ধ করতে এটি চালু করুন</translation>
@@ -2481,6 +2484,7 @@
 <translation id="5115232566827194440">সীমাবদ্ধ ম্যানেজ করা গেস্ট সেশন ওভাররাইড করুন</translation>
 <translation id="5115563688576182185">(৬৪-বিট)</translation>
 <translation id="5116015291385561204">সংবেদনশীল তথ্য অটোফিল করতে, আপনার পরিচয় যাচাই করুন</translation>
+<translation id="5121592697493894155">সাইড প্যানেলে থাকা Google Search</translation>
 <translation id="5122786942953798871">এনভেলপ (কটন)</translation>
 <translation id="5123063207673082822">সপ্তাহান্ত</translation>
 <translation id="5124797626438336458">'এখন কিনুন, পরে পেমেন্ট করুন' পেমেন্ট পদ্ধতি সম্পর্কিত সমস্যা দেখানো স্ক্রিন অর্ধেক স্ক্রিন জুড়ে খোলা আছে।</translation>
@@ -2917,6 +2921,7 @@
 <translation id="5843987376989109187">এই ভাষায় এখনও ব্যবহারের সুবিধা নেই।
     <ph name="BEGIN_LINK" />আরও জানুন<ph name="END_LINK" /></translation>
 <translation id="5848445080378515710">অর্ডার পর্যালোচনা করার পরে, আপনাকে সাইন-ইন করতে হবে অথবা একটি <ph name="BNPL_ISSUER_NAME" /> অ্যাকাউন্ট তৈরি করতে হবে। এই অ্যাকাউন্টটি Google Wallet-এ অটোমেটিক লিঙ্ক হয়ে যাবে।</translation>
+<translation id="5848916806551637625">Pix অ্যাকাউন্ট <ph name="ACCOUNT_EMAIL" />-এর সাথে লিঙ্ক করা হবে। Pix কোড শনাক্তকরণ বন্ধ করতে, <ph name="BEGIN_LINK1" />Chrome সেটিংসে<ph name="END_LINK1" /> যান।</translation>
 <translation id="5851548754964597211">ট্যাব তালিকা</translation>
 <translation id="5851868085455377790">ইস্যুকারী</translation>
 <translation id="5852909432155870672">RA4</translation>
@@ -4427,6 +4432,7 @@
 <translation id="8371841335382565017">কাস্টিংয়ের জন্য ডিভাইসের তালিকা দেখুন</translation>
 <translation id="8371889962595521444">কাস্টম রুট সার্টিফিকেট</translation>
 <translation id="8374636051559112948">একই রকম হয় না</translation>
+<translation id="8376752431516546391">Google Search সাইড প্যানেল</translation>
 <translation id="8377507422902936905">অর্ডার</translation>
 <translation id="837840316697671463">আপনার ডিভাইসে ফাইল খুঁজে না পেলে, <ph name="CLOUD_PROVIDER" />-এ দেখুন।</translation>
 <translation id="8378714024927312812">আপনার প্রতিষ্ঠানের দ্বারা ম্যানেজ করা</translation>

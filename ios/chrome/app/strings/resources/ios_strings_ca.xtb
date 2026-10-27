@@ -600,7 +600,6 @@
 <translation id="2781331604911854368">Activat</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2783161812871838616">Sol·licita el lloc web per a ordinadors</translation>
-<translation id="2789486458103222910">D'acord</translation>
 <translation id="2789552044937754463">{COUNT,plural, =1{Contrasenya desada al teu Compte de Google ({EMAIL})}other{Contrasenyes desades al teu Compte de Google ({EMAIL})}}</translation>
 <translation id="2791174088547598693">Afegeix una contrasenya…</translation>
 <translation id="2793703503584038325">Selecciona una contrasenya i toca la icona de compartir</translation>
@@ -1707,7 +1706,6 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="6301767200000930965">Aa</translation>
 <translation id="630308129961693966">Posició de la barra d'adreces</translation>
 <translation id="6305257382500066042">Prova-ho ara</translation>
-<translation id="6307241780749477694">Verifica la teva identitat per obtenir totes les teves contrasenyes en aquest dispositiu</translation>
 <translation id="6307792728709337290">Desa la targeta al teu Compte de Google perquè s'empleni automàticament en aquesta compra i en les que facis en el futur a Chrome.</translation>
 <translation id="6316141353357700666">Tria la contrasenya que vols utilitzar de la llista que es mostra.</translation>
 <translation id="6321526113093607004">Afegeix a Adreces d'interès</translation>
@@ -2171,7 +2169,6 @@ Pots reiniciar Level Up en qualsevol moment.</translation>
 <translation id="7700527812567437847">Cerca a la pantalla amb Google Lens</translation>
 <translation id="7701040980221191251">Cap</translation>
 <translation id="7702428539671224160">Emplena automàticament la informació de pagament a <ph name="URL" /></translation>
-<translation id="7708994397325774423">Obtén totes les teves contrasenyes</translation>
 <translation id="7710096647785049958">Estalvia temps en cada enllaç</translation>
 <translation id="7711440461521638739">No estàs reutilitzant cap contrasenya</translation>
 <translation id="7712361583414030698">S'està mostrant la versió sense connexió</translation>

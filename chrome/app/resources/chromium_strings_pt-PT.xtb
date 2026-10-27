@@ -17,6 +17,7 @@
 <translation id="1131805035311359397">Para verificar se as suas palavras-passe estão protegidas contra violação de dados e outros problemas de segurança, <ph name="BEGIN_LINK" />inicie sessão no Chromium<ph name="END_LINK" />.</translation>
 <translation id="1145158441928281100">{COUNT,plural, =1{O seu administrador pede-lhe que reinicie o Chromium para aplicar esta atualização. Existe uma janela de navegação anónima ou isolada aberta. Não é possível reabri-la após o reinício.}other{O seu administrador pede-lhe que reinicie o Chromium para aplicar esta atualização. Existem # janelas de navegação anónima e isoladas abertas em vários perfis. Não é possível reabri-las após o reinício.}}</translation>
 <translation id="1153368717515616349">Clique no menu do Chromium</translation>
+<translation id="1157952955648710254">Fechar o painel lateral da Pesquisa Google</translation>
 <translation id="1157985233335035034">Idiomas recentes</translation>
 <translation id="1184145431117212167">A instalação falhou porque a sua versão do Windows não é compatível.</translation>
 <translation id="1185134272377778587">Acerca do Chromium</translation>
@@ -44,6 +45,7 @@
 <translation id="1383876407941801731">Pesquisar</translation>
 <translation id="1388276868779258475">Use a app Chromium para continuar a navegar em qualquer lugar</translation>
 <translation id="141901961143729572">Partilhe a sua opinião</translation>
+<translation id="1438812738230833934">Pode reabrir a Pesquisa Google no painel lateral para fazer perguntas enquanto navega</translation>
 <translation id="1465192221147974788">Para partilhar a sua janela, permita a gravação de ecrã para o Chromium nas Definições do sistema.</translation>
 <translation id="1478370723027452770">Obter ajuda com o Chrome for Testing</translation>
 <translation id="147870194906295621">Para aceder às suas informações guardadas e muito mais do <ph name="DEVICE" />, inicie sessão no Chromium</translation>
@@ -340,6 +342,7 @@
 <translation id="4470974262661801543">Para usar e guardar dados do Chromium na sua Conta Google, introduza a sua frase de acesso</translation>
 <translation id="4493028449971051158">Erro de arranque: execute o instalador como administrador.</translation>
 <translation id="4501471624619070934">A instalação falhou porque o acesso é restrito neste país.</translation>
+<translation id="4501839397124711198">Pode fixar a Pesquisa Google no painel lateral para fazer perguntas enquanto navega</translation>
 <translation id="4510853178268397146">Esta extensão não publicou Práticas de Privacidade, por exemplo, a forma como recolhe e usa os dados. O Chromium recomenda que a remova.</translation>
 <translation id="452711251841752011">Damos-lhe as boas-vindas ao Chromium; nova janela do navegador aberta</translation>
 <translation id="4531137820806573936">O Chromium precisa de autorização para mapear o ambiente à sua volta e acompanhar as suas mãos</translation>
@@ -383,8 +386,10 @@
 <translation id="4987820182225656817">Os convidados podem utilizar o Chromium sem perder qualquer funcionalidade.</translation>
 <translation id="4992938037305302429">A sua conta no Chromium</translation>
 <translation id="4994636714258228724">Adicionar-se ao Chromium</translation>
+<translation id="5000497292978544380">Modo IA da Pesquisa Google</translation>
 <translation id="504699503110800016">Abra o menu adicional</translation>
 <translation id="5074496654342756568">Aceda a todos os seus favoritos da Google com o Chromium no <ph name="DEVICE_TYPE" /></translation>
+<translation id="5121592697493894155">Pesquisa Google no painel lateral</translation>
 <translation id="5123973130450702873">O Chromium precisa de autorização para monitorizar as suas mãos</translation>
 <translation id="5141988424377517949">Não visitou o site recentemente. O Chromium removeu <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> e <ph name="PERMISSION_3" />.</translation>
 <translation id="5171868502429358653">Inicie sessão no Chromium</translation>
@@ -672,6 +677,7 @@ O Chromium não consegue recuperar as suas definições.</translation>
 <translation id="7781047659465034537">Defina o Chromium como navegador predefinido e afixe-o à barra de tarefas</translation>
 <translation id="7786760609782648049">Torne o Chromium mais rápido</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> – Chromium Canary</translation>
+<translation id="7800043020703832708">Fechar Pesquisa Google no painel lateral</translation>
 <translation id="7803986347287457849">Torne mais difícil a visualização dos sites que visita por parte das pessoas com acesso ao seu tráfego da Internet. O Chromium usa uma ligação segura para procurar o endereço IP de um site no DNS (Sistema de Nomes de Domínio).</translation>
 <translation id="7810005234485217901">Pode fixar a pesquisa de imagens para um acesso fácil</translation>
 <translation id="7813559034750130602">{COUNT,plural, =1{Está disponível uma atualização para o Chromium que será aplicada logo que o reinicie. Existe uma janela de navegação anónima ou isolada aberta. Não é possível reabri-la após o reinício.}other{Está disponível uma atualização para o Chromium que será aplicada logo que o reinicie. Existem # janelas de navegação anónima e isoladas abertas em vários perfis. Não é possível reabri-las após o reinício.}}</translation>
@@ -686,6 +692,7 @@ O Chromium não consegue recuperar as suas definições.</translation>
 <translation id="7873537467422636035">Se se esqueceu da frase de acesso ou quiser alterar esta definição, <ph name="BEGIN_LINK" />elimine os dados do Chromium na sua conta<ph name="END_LINK" /></translation>
 <translation id="7874369989024033742">Abrir rapidamente o Gemini no Chromium sempre que precisar</translation>
 <translation id="7888981273428720788">Defina o Chromium como o navegador predefinido</translation>
+<translation id="7904213866086517086">Reabrir Pesquisa Google no painel lateral</translation>
 <translation id="7934340546140346950">Sempre que possível, o Chromium atualiza automaticamente as ligações inseguras para HTTPS</translation>
 <translation id="7937630085815544518">Iniciou sessão no Chromium com a conta <ph name="USER_EMAIL_ADDRESS" />. Use a mesma conta para iniciar sessão novamente.</translation>
 <translation id="7944602660083060118"><ph name="EXISTING_USER" /> já tem sessão iniciada. Para manter a sua navegação separada, inicie sessão no Chromium no seu perfil como <ph name="USER_EMAIL_ADDRESS" />. Também tem acesso aos seus marcadores e muito mais em todos os seus dispositivos.</translation>
@@ -740,14 +747,15 @@ O Chromium não consegue recuperar as suas definições.</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Todos os direitos reservados.</translation>
 <translation id="8372327902843331129">Para aceder às suas palavras-passe e muito mais em todos os seus dispositivos, inicie sessão no Chromium. Esta palavra-passe é guardada na sua Conta Google depois de iniciar sessão.</translation>
 <translation id="837460953767177950">Em seguida, tem de reiniciar o Chromium.</translation>
+<translation id="8376752431516546391">Painel lateral da Pesquisa Google</translation>
 <translation id="8397248745433792218">O Chromium recomenda que a remova. <ph name="BEGIN_LINK" />Saiba mais sobre as extensões suportadas<ph name="END_LINK" /></translation>
 <translation id="8401454788024434101">A publicação desta extensão foi anulada pelo programador e pode não ser segura. Remova-a do Chromium para que deixe de poder ver e alterar os seus dados nos sites que visita, incluindo as suas informações pessoais.</translation>
+<translation id="8406687098231754303">A partir do botão "Pesquisa Google no painel lateral" na barra de ferramentas, pode reabrir a Pesquisa Google no painel lateral para fazer perguntas enquanto navega</translation>
 <translation id="8416884904046428725">O Chromium precisa de validar a sua identidade antes de ser possível guardar alguns dados na sua Conta Google e usá-los em todos os seus dispositivos. Se terminar sessão agora, estes dados vão ser eliminados.</translation>
 <translation id="8417404458978023919">{0,plural, =1{Reinicie o Chromium dentro de um dia}other{Reinicie o Chromium dentro de # dias}}</translation>
 <translation id="8438543370129609977">Quando usa a pesquisa de imagens, o título, o URL e o conteúdo da página, incluindo PDFs, são enviados para o servidor. <ph name="LEARN_MORE" /></translation>
 <translation id="8447525028100794994">Saber mais sobre a pesquisa com a pesquisa de imagens no Chromium</translation>
 <translation id="8453117565092476964">O arquivo do programa de instalação está corrompido ou não é válido. Descarregue novamente o Chromium.</translation>
-<translation id="8458614432758743027">O Chromium requer o Windows 10 ou superior.</translation>
 <translation id="8463672209299734063">Opcional: ajudar a melhorar as funcionalidades e o desempenho do ChromiumOS ao enviar automaticamente dados de diagnóstico e utilização para a Google.</translation>
 <translation id="8471947159125090285">Para usar e guardar dados do Chromium na sua Conta Google, valide a sua identidade</translation>
 <translation id="8482493977473846331">Mostra pedidos para iniciar sessão no Chromium</translation>
@@ -759,6 +767,7 @@ O Chromium não consegue recuperar as suas definições.</translation>
 <translation id="8555465886620020932">Erro no serviço: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="8556055872671007529">Algumas funcionalidades e extensões do Chromium incluem atalhos. Pode optar por voltar a ativá-las.</translation>
 <translation id="8556420416730706394">Pode fixar a pesquisa de imagens para acesso fácil. Clique no botão Fixar na parte superior do painel lateral</translation>
+<translation id="8564408666201523086">Concluído com êxito! Agora, pode fazer perguntas facilmente enquanto navega com a Pesquisa Google no painel lateral</translation>
 <translation id="856656450041460113">Pesquisar na lista de idiomas</translation>
 <translation id="8576826849825683917">Várias organizações gerem o Chromium</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> Os autores do Chromium. Todos os direitos reservados.</translation>

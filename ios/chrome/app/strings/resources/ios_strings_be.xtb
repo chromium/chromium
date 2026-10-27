@@ -600,7 +600,6 @@
 <translation id="2781331604911854368">Уключана</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2783161812871838616">Запытаць сайт для ПК</translation>
-<translation id="2789486458103222910">OK</translation>
 <translation id="2789552044937754463">{COUNT,plural, =1{Пароль захаваны ў вашым Уліковым запісе Google {EMAIL}}one{Паролі захаваны ў вашым Уліковым запісе Google {EMAIL}}few{Паролі захаваны ў вашым Уліковым запісе Google {EMAIL}}many{Паролі захаваны ў вашым Уліковым запісе Google {EMAIL}}other{Паролі захаваны ў вашым Уліковым запісе Google {EMAIL}}}</translation>
 <translation id="2791174088547598693">Дадаць пароль…</translation>
 <translation id="2793703503584038325">Выберыце пароль і націсніце значок абагульвання.</translation>
@@ -1707,7 +1706,6 @@
 <translation id="6301767200000930965">Аа</translation>
 <translation id="630308129961693966">Выберыце пазіцыю адраснага радка</translation>
 <translation id="6305257382500066042">Паспрабаваць</translation>
-<translation id="6307241780749477694">Каб атрымаць доступ да ўсіх пароляў на гэтай прыладзе, спраўдзіце сваю асобу</translation>
 <translation id="6307792728709337290">Захавайце картку ва Уліковым запісе Google, каб яе рэквізіты запаўняліся аўтаматычна пры гэтай і наступных куплях у Chrome.</translation>
 <translation id="6316141353357700666">Выберыце патрэбны пароль са спіса.</translation>
 <translation id="6321526113093607004">Дадаць у Закладкі</translation>
@@ -2171,7 +2169,6 @@
 <translation id="7700527812567437847">Шукаць змесціва на экране з дапамогай Google Аб’ектыва</translation>
 <translation id="7701040980221191251">Няма</translation>
 <translation id="7702428539671224160">Запаўняць аўтаматычна плацежную інфармацыю на сайце <ph name="URL" /></translation>
-<translation id="7708994397325774423">Атрымаць усе паролі</translation>
 <translation id="7710096647785049958">Сэканомце час на кожнай спасылцы</translation>
 <translation id="7711440461521638739">У вас няма ўжытых раней пароляў</translation>
 <translation id="7712361583414030698">Паказваецца пазасеткавая версія</translation>

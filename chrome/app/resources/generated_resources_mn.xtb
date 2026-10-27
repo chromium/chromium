@@ -7950,6 +7950,7 @@
 <translation id="706949303827219454">Аюулгүй байдлын тохиргооны хуудсыг шинэ таб дээр нээнэ</translation>
 <translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{Энэ сайтын шинэ нууц үг}other{Энэ сайтын шинэ нууц үгнүүд}}</translation>
 <translation id="7070484045139057854">Энэ нь сайтын өгөгдлийг унших болон өөрчлөх боломжтой</translation>
+<translation id="7071521146534760487">Бүртгэл удирдах</translation>
 <translation id="7072010813301522126">Shortcut-н нэр</translation>
 <translation id="7072078320324181561">Байршлын зөвшөөрөлтэй апп болон вебсайтаас гадна системийн үйлчилгээ таны байршлыг ашиглах боломжтой. <ph name="LINK_BEGIN" />Нэмэлт мэдээлэл авах<ph name="LINK_END" /></translation>
 <translation id="7072573590175540692">Боломжтой онцлог, өргөтгөлийн товчлол</translation>
@@ -8586,6 +8587,7 @@
 <translation id="755472745191515939">Танай администратор энэ хэлийг зөвшөөрдөггүй</translation>
 <translation id="7554791636758816595">Шинэ таб</translation>
 <translation id="7557194624273628371">Linux-н порт дамжуулах</translation>
+<translation id="7557508262441527045">Гарсан</translation>
 <translation id="7561196759112975576">Үргэлж</translation>
 <translation id="7561759921596375678">Дууг асаах</translation>
 <translation id="7563576896417108627"><ph name="APP_NAME" />-г тусгайлан өөрчилж, хянана уу. Шинэчлэх боломжтой.</translation>

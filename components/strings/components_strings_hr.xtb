@@ -661,6 +661,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="2118132148597630479">Omotnica C5</translation>
 <translation id="2119505898009119320">Izdano za: <ph name="ORGANIZATION" /> [<ph name="JURISDICTION" />]</translation>
 <translation id="2119867082804433120">Bušenje pri dnu desno</translation>
+<translation id="2121418473709291357">Zanemareno jer je upravljanje u oblaku putem preglednika Chrome onemogućeno.</translation>
 <translation id="2122214041802369259">Cijena je visoka</translation>
 <translation id="2122719317867821810">Pravilo funkcionira kako je predviđeno, ali na drugoj lokaciji postavljena je sukobljena vrijednost koju ovo pravilo nadjačava.</translation>
 <translation id="2124081665399116863">Ažurirajte vozilo u Google Walletu</translation>
@@ -2479,6 +2480,7 @@ Da biste sakrili opcije plaćanja kasnije, otvorite <ph name="BEGIN_LINK" />post
 <translation id="5115232566827194440">Nadjačavanje ograničene upravljane gostujuće sesije</translation>
 <translation id="5115563688576182185">(64-bitni)</translation>
 <translation id="5116015291385561204">Potvrdite svoj identitet da bi se automatski popunili osjetljivi podaci</translation>
+<translation id="5121592697493894155">Google pretraživanje na bočnoj ploči</translation>
 <translation id="5122786942953798871">Omotnica (pamuk)</translation>
 <translation id="5123063207673082822">Vikend</translation>
 <translation id="5124797626438336458">Zaslon s pogreškom pri kupnji s odgodom plaćanja otvoren je na pola visine.</translation>
@@ -2915,6 +2917,7 @@ Da biste sakrili opcije plaćanja kasnije, otvorite <ph name="BEGIN_LINK" />post
 <translation id="5843987376989109187">Taj jezik još nije podržan.
     <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="5848445080378515710">Nakon što pregledate narudžbu, morate se prijaviti na <ph name="BNPL_ISSUER_NAME" /> račun ili ga izraditi. Taj će se račun automatski povezati u Google Walletu.</translation>
+<translation id="5848916806551637625">Pix račun povezat će se s računom <ph name="ACCOUNT_EMAIL" />. Da biste isključili otkrivanje Pix koda, otvorite <ph name="BEGIN_LINK1" />postavke Chromea<ph name="END_LINK1" />.</translation>
 <translation id="5851548754964597211">Popis kartica</translation>
 <translation id="5851868085455377790">Izdavač</translation>
 <translation id="5852909432155870672">RA4</translation>
@@ -4426,6 +4429,7 @@ Dodatne pojedinosti:
 <translation id="8371841335382565017">Prikaži popis uređaja za emitiranje</translation>
 <translation id="8371889962595521444">Prilagođeni korijenski certifikati</translation>
 <translation id="8374636051559112948">razlikuje se</translation>
+<translation id="8376752431516546391">Bočna ploča Google pretraživanja</translation>
 <translation id="8377507422902936905">Narudžbe</translation>
 <translation id="837840316697671463">Ako ne možete pronaći datoteku na uređaju, potražite je na usluzi <ph name="CLOUD_PROVIDER" />.</translation>
 <translation id="8378714024927312812">Pod upravljanjem vaše organizacije</translation>

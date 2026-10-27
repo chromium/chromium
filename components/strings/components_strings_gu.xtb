@@ -661,6 +661,7 @@
 <translation id="2118132148597630479">એન્વલપ C5</translation>
 <translation id="2119505898009119320">આપવામાં આવ્યું છે: <ph name="ORGANIZATION" /> [<ph name="JURISDICTION" />]ને</translation>
 <translation id="2119867082804433120">નીચે જમણી બાજુએ કાણું પાડો</translation>
+<translation id="2121418473709291357">અવગણવામાં આવ્યું કારણ કે Chrome બ્રાઉઝર ક્લાઉડ મેનેજમેન્ટ બંધ છે.</translation>
 <translation id="2122214041802369259">કિંમત વધુ છે</translation>
 <translation id="2122719317867821810">આ પૉલિસી હેતુ મુજબ કાર્ય કરી રહી છે, પરંતુ વિરોધાભાસ ધરાવતું મૂલ્ય બીજે ક્યાંક સેટ કરવામાં આવ્યું છે અને આ પૉલિસી તેને ઓવરરાઇડ કરે છે.</translation>
 <translation id="2124081665399116863">Google Walletમાં વાહનની માહિતી અપડેટ કરો</translation>
@@ -690,6 +691,7 @@
 <translation id="2155260325161282517">5 x 7 ઇંચ</translation>
 <translation id="2156467141257470387">તમે Googleની સમગ્ર પ્રોડક્ટ પર સાચવેલા સરનામાનો ઉપયોગ કરી શકો છો. તેનાથી તમારું ઑફિસનું વર્તમાન સરનામું બદલાશે નહીં. તેને તમારા Google એકાઉન્ટ <ph name="ACCOUNT" />માં સાચવવામાં આવશે.</translation>
 <translation id="2157640075051554492">કિંમત ટ્રૅક કરવા વિશેના નોટિફિકેશન</translation>
+<translation id="2158964559178498011">ઑટોમૅટિક રીતે ભરવાની સુવિધા વધુ સ્થાનો પર કામ કરે છે — માહિતી શોધવા અને ભરવા માટે બે વાર Ctrl દબાવો</translation>
 <translation id="2161656808144014275">ટેક્સ્ટ</translation>
 <translation id="2162435186600002085">પ્રાથમિક હેડરનો લોગો</translation>
 <translation id="2162535140284745414">AI વડે બ્રાઉઝ કરવાની નવી રીતો શોધવામાં તમારી મદદ કરી શકે તેવા રિઅલ-ટાઇમ સૂચનો મેળવો.</translation>
@@ -2200,6 +2202,7 @@
 <translation id="4678379207584374453"><ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>
 <translation id="4682496302933121474">પેજનો અનુવાદ કરીએ?</translation>
 <translation id="468314109939257734">તમારો વર્ચ્યુઅલ કાર્ડ નંબર જુઓ</translation>
+<translation id="4684818564800397688">ઑટોમૅટિક રીતે ભરવાની સુવિધા વધુ સ્થાનો પર કામ કરે છે — માહિતી શોધવા અને ભરવા માટે બે વાર ⌘ દબાવો</translation>
 <translation id="4686942373615810936">હમણાં જ બનાવ્યું</translation>
 <translation id="4690205240253392065">પછીથી ચુકવણી કરવાની સુવિધાના પ્રદાતા પસંદ કરો</translation>
 <translation id="469028408546145398">'છૂપી વિન્ડો બંધ કરો' બટન, હાલમાં ખુલ્લી તમામ છૂપી વિન્ડો બંધ કરવા માટે સક્રિય કરો</translation>
@@ -2480,6 +2483,7 @@
 <translation id="5115232566827194440">પ્રતિબંધિત 'મેનેજ કરેલા અતિથિ સત્ર' માટે ઓવરરાઇડ</translation>
 <translation id="5115563688576182185">(64-બિટ)</translation>
 <translation id="5116015291385561204">સંવેદનશીલ માહિતી ઑટોમૅટિક રીતે ભરવા માટે, આ તમે જ છો તેની ચકાસણી કરો</translation>
+<translation id="5121592697493894155">બાજુની પૅનલમાં Google Search</translation>
 <translation id="5122786942953798871">એન્વલપ (કૉટન)</translation>
 <translation id="5123063207673082822">વીકએન્ડ</translation>
 <translation id="5124797626438336458">'હમણાં ખરીદો, પછીથી ચુકવો' ભૂલ બતાવતી સ્ક્રીન અડધી ઊંચાઈએ ખુલી છે.</translation>
@@ -2916,6 +2920,7 @@
 <translation id="5843987376989109187">હજુ પણ આ ભાષાને સપોર્ટ કરવામાં આવતો નથી.
     <ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>
 <translation id="5848445080378515710">તમે તમારા ઑર્ડરનો રિવ્યૂ કરી લો, પછી તમારે <ph name="BNPL_ISSUER_NAME" />માં સાઇન ઇન કરવું કે તેમાં નવું એકાઉન્ટ બનાવવું આવશ્યક છે. આ એકાઉન્ટ ઑટોમૅટિક રીતે Google Wallet સાથે લિંક થઈ જશે.</translation>
+<translation id="5848916806551637625">Pix એકાઉન્ટ <ph name="ACCOUNT_EMAIL" /> સાથે લિંક કરવામાં આવશે. Pix કોડની ભાળ મેળવવાની સુવિધા બંધ કરવા માટે, <ph name="BEGIN_LINK1" />Chromeના સેટિંગ<ph name="END_LINK1" />માં જાઓ.</translation>
 <translation id="5851548754964597211">ટેબ સૂચિ</translation>
 <translation id="5851868085455377790">રજૂકર્તા </translation>
 <translation id="5852909432155870672">RA4</translation>
@@ -4427,6 +4432,7 @@
 <translation id="8371841335382565017">કાસ્ટ કરવા માટે, ડિવાઇસની સૂચિ બતાવો</translation>
 <translation id="8371889962595521444">કસ્ટમ રૂટ પ્રમાણપત્રો</translation>
 <translation id="8374636051559112948">બદલાતી રહે છે</translation>
+<translation id="8376752431516546391">Google Searchની બાજુની પૅનલ</translation>
 <translation id="8377507422902936905">ઑર્ડર</translation>
 <translation id="837840316697671463">જો તમે તમારા ડિવાઇસ પર કોઈ ફાઇલ શોધી શકતા ન હો, તો તેને <ph name="CLOUD_PROVIDER" /> પર શોધો.</translation>
 <translation id="8378714024927312812">તમારી સંસ્થા દ્વારા મેનેજ કરેલ</translation>

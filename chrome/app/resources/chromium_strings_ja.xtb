@@ -17,6 +17,7 @@
 <translation id="1131805035311359397">パスワードにデータ侵害などセキュリティに関する問題がないかどうかを確認するには、<ph name="BEGIN_LINK" />Chromium にログイン<ph name="END_LINK" />してください。</translation>
 <translation id="1145158441928281100">{COUNT,plural, =1{管理者が、このアップデートを適用するために Chromium を再起動するよう求めています。シークレット ウィンドウまたはアイソレート ウィンドウが開いていますが、再起動後は自動的には開きません。}other{管理者が、このアップデートを適用するために Chromium を再起動するよう求めています。プロファイル全体で # 個のシークレット ウィンドウとアイソレート ウィンドウが開いていますが、再起動後は自動的には開きません。}}</translation>
 <translation id="1153368717515616349">Chromium メニューをクリックする</translation>
+<translation id="1157952955648710254">Google 検索のサイドパネルを閉じる</translation>
 <translation id="1157985233335035034">最近使用した言語</translation>
 <translation id="1184145431117212167">Windows のバージョンがサポートされていないためインストールできませんでした。</translation>
 <translation id="1185134272377778587">Chromium について</translation>
@@ -43,6 +44,7 @@
 <translation id="1383876407941801731">検索</translation>
 <translation id="1388276868779258475">Chromium アプリで、ブラウジングを外出先でも続けられます</translation>
 <translation id="141901961143729572">ご意見をお聞かせください</translation>
+<translation id="1438812738230833934">サイドパネルで Google 検索を再度開いて、ブラウジング中に質問できます</translation>
 <translation id="1465192221147974788">ウィンドウを共有するには、[システム設定] で Chromium に画面の録画を許可してください。</translation>
 <translation id="1478370723027452770">Chrome for Testing のヘルプを見る</translation>
 <translation id="147870194906295621"><ph name="DEVICE" /> で保存した情報などを使用するには、Chromium にログインしてください</translation>
@@ -339,6 +341,7 @@
 <translation id="4470974262661801543">Google アカウントで Chromium データを使用、保存するには、パスフレーズを入力してください</translation>
 <translation id="4493028449971051158">起動エラー: 管理者としてインストーラを実行してください。</translation>
 <translation id="4501471624619070934">お住まいの国ではアクセスが制限されているため、インストールに失敗しました。</translation>
+<translation id="4501839397124711198">サイドパネルに Google 検索を固定して、ブラウジング中に質問できます</translation>
 <translation id="4510853178268397146">この拡張機能は、データの収集方法や使用方法などのプライバシー保護の取り組みを公開していません。削除することをおすすめします。</translation>
 <translation id="452711251841752011">Chromium へようこそ。新しいブラウザ ウィンドウが開いています</translation>
 <translation id="4531137820806573936">Chromium にシーン認識とハンド トラッキングを許可する必要があります</translation>
@@ -382,8 +385,10 @@
 <translation id="4987820182225656817">ゲスト ユーザーは、記録を残さずに Chromium を使用できます。</translation>
 <translation id="4992938037305302429">Chromium のアカウント設定</translation>
 <translation id="4994636714258228724">Chromium に自分を追加</translation>
+<translation id="5000497292978544380">Google 検索の AI モード</translation>
 <translation id="504699503110800016">オーバーフロー メニューを開きます</translation>
 <translation id="5074496654342756568"><ph name="DEVICE_TYPE" /> の Chromium で、Google のお気に入りすべてにアクセスできます</translation>
+<translation id="5121592697493894155">サイドパネルで Google 検索</translation>
 <translation id="5123973130450702873">Chromium がハンド トラッキングの許可を求めています</translation>
 <translation id="5141988424377517949">最近アクセスしていないため、Chromium で <ph name="PERMISSION_1" />、<ph name="PERMISSION_2" />、<ph name="PERMISSION_3" /> の権限を削除しました。</translation>
 <translation id="5171868502429358653">Chromium にログイン</translation>
@@ -669,6 +674,7 @@
 <translation id="7781047659465034537">Chromium を既定に設定してタスクバーに固定する</translation>
 <translation id="7786760609782648049">Chromium を高速化する</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> - Chromium Canary</translation>
+<translation id="7800043020703832708">サイドパネルの Google 検索を閉じる</translation>
 <translation id="7803986347287457849">あなたのインターネット トラフィックにアクセスできるユーザーに、あなたがアクセスしたサイトを知られないようにします。Chromium では、安全な接続を使用して、DNS（ドメイン ネーム システム）でサイトの IP アドレスを検索します。</translation>
 <translation id="7810005234485217901">画像検索を固定して簡単にアクセスできます</translation>
 <translation id="7813559034750130602">{COUNT,plural, =1{Chromium の新しいアップデートを利用できます。再起動するとすぐにアップデートが適用されます。シークレット ウィンドウまたはアイソレート ウィンドウが開いていますが、再起動後は自動的には開きません。}other{Chromium の新しいアップデートを利用できます。再起動するとすぐにアップデートが適用されます。プロファイル全体で # 個のシークレット ウィンドウとアイソレート ウィンドウが開いていますが、再起動後は自動的には開きません。}}</translation>
@@ -683,6 +689,7 @@
 <translation id="7873537467422636035">パスフレーズを忘れた場合や、この設定を変更する場合は、<ph name="BEGIN_LINK" />アカウントの Chromium データを削除<ph name="END_LINK" />してください。</translation>
 <translation id="7874369989024033742">必要なときに Gemini in Chromium をすばやく開くことができます。</translation>
 <translation id="7888981273428720788">Chromium を既定として設定</translation>
+<translation id="7904213866086517086">サイドパネルで Google 検索を再度開く</translation>
 <translation id="7934340546140346950">可能な場合に安全でない接続を HTTPS に自動的にアップグレードします</translation>
 <translation id="7937630085815544518">Chromium に <ph name="USER_EMAIL_ADDRESS" /> としてログインしていました。再度ログインするには同じアカウントを使用してください。</translation>
 <translation id="7944602660083060118"><ph name="EXISTING_USER" /> がすでにログインしています。ブラウジング環境を分ける場合は、<ph name="USER_EMAIL_ADDRESS" /> として自分用のプロフィールで Chromium にログインしてください。すべてのデバイスでブックマークなどの設定を使用できます。</translation>
@@ -737,14 +744,15 @@
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. All rights reserved.</translation>
 <translation id="8372327902843331129">すべてのデバイスでパスワードやその他の設定を使用するには、Chromium にログインしてください。このパスワードは、ログイン後に Google アカウントに保存されます。</translation>
 <translation id="837460953767177950">その後、Chromium を再起動する必要があります。</translation>
+<translation id="8376752431516546391">Google 検索サイドパネル</translation>
 <translation id="8397248745433792218">削除することをおすすめします。<ph name="BEGIN_LINK" />サポートされている拡張機能の詳細<ph name="END_LINK" /></translation>
 <translation id="8401454788024434101">この拡張機能はデベロッパーが非公開にしており、安全でない可能性があります。アクセスしたサイトでユーザーデータ（個人情報を含む）が参照、変更されないように、Chromium からこの拡張機能を削除してください。</translation>
+<translation id="8406687098231754303">ツールバーの [サイドパネルで Google 検索] ボタンから、サイドパネルで Google 検索を再度開いて、ブラウジング中に質問できます</translation>
 <translation id="8416884904046428725">Google アカウントに一部のデータを保存してすべてのデバイスで使用できるようにするには、Chromium で本人確認を行う必要があります。今すぐログアウトすると、このデータは削除されます。</translation>
 <translation id="8417404458978023919">{0,plural, =1{1 日以内に Chromium を再起動してください}other{# 日以内に Chromium を再起動してください}}</translation>
 <translation id="8438543370129609977">画像検索を使用すると、ページのタイトル、URL、コンテンツ（PDF を含む）がサーバーに送信されます。<ph name="LEARN_MORE" /></translation>
 <translation id="8447525028100794994">Chromium で画像検索を使用して検索する方法を確認</translation>
 <translation id="8453117565092476964">インストーラ アーカイブが壊れているか無効です。Chromium をダウンロードし直してください。</translation>
-<translation id="8458614432758743027">Chromium のご利用には Windows 10 以上が必要です。</translation>
 <translation id="8463672209299734063">任意: 診断と使用状況のデータを Google に自動送信して、Chromium OS の機能とパフォーマンスの改善に協力する。</translation>
 <translation id="8471947159125090285">Google アカウントで Chromium のデータを使用、保存するには、本人確認を行ってください</translation>
 <translation id="8482493977473846331">Chromium へのログインを促すメッセージが表示されます</translation>
@@ -756,6 +764,7 @@
 <translation id="8555465886620020932">サービスエラー: <ph name="SERVICE_ERROR" />。</translation>
 <translation id="8556055872671007529">Chromium の一部の機能と拡張機能にはショートカットが用意されており、有効にするよう選択できます。</translation>
 <translation id="8556420416730706394">画像検索を固定して簡単にアクセスできます。固定するには、サイドパネルの上部にある [固定] ボタンをクリックします</translation>
+<translation id="8564408666201523086">完了しました。ブラウジング中にサイドパネルの Google 検索で簡単に質問できるようになりました</translation>
 <translation id="856656450041460113">言語リストを検索</translation>
 <translation id="8576826849825683917">Chromium は複数の組織によって管理されています</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> The Chromium Authors. All rights reserved.</translation>

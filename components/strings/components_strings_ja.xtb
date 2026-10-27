@@ -691,6 +691,7 @@
 <translation id="2155260325161282517">5x7 インチ（2L 判）</translation>
 <translation id="2156467141257470387">保存した住所は Google サービス全体で使用できます。既存の職場の住所は変更されません。この住所は Google アカウント（<ph name="ACCOUNT" />）に保存されます。</translation>
 <translation id="2157640075051554492">価格トラッキングの通知</translation>
+<translation id="2158964559178498011">自動入力がより多くの場所で利用可能に - Ctrl キーを 2 回押すと情報を検索して入力できます</translation>
 <translation id="2161656808144014275">テキスト</translation>
 <translation id="2162435186600002085">メインヘッダーのロゴ</translation>
 <translation id="2162535140284745414">AI を活用した新しいブラウジング方法を見つけるのに役立つリアルタイムの提案が表示されます。</translation>
@@ -2201,6 +2202,7 @@
 <translation id="4678379207584374453"><ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
 <translation id="4682496302933121474">ページを翻訳しますか？</translation>
 <translation id="468314109939257734">仮想カード番号を表示します</translation>
+<translation id="4684818564800397688">自動入力がより多くの場所で利用可能に - ⌘ キーを 2 回押すと情報を検索して入力できます</translation>
 <translation id="4686942373615810936">たった今作成</translation>
 <translation id="4690205240253392065">後払いの金融機関を選択</translation>
 <translation id="469028408546145398">[すべてのシークレット ウィンドウを閉じる] ボタンです。実行すると、現在開いているすべてのシークレット ウィンドウを閉じることができます</translation>
@@ -2481,6 +2483,7 @@
 <translation id="5115232566827194440">制限付き管理対象ゲスト セッションのオーバーライド</translation>
 <translation id="5115563688576182185">（64 ビット）</translation>
 <translation id="5116015291385561204">機密情報を自動入力する際に本人確認を行う</translation>
+<translation id="5121592697493894155">サイドパネルで Google 検索</translation>
 <translation id="5122786942953798871">封筒（コットン）</translation>
 <translation id="5123063207673082822">週末</translation>
 <translation id="5124797626438336458">後払い決済のエラー画面が画面の下半分に表示されています。</translation>
@@ -4429,6 +4432,7 @@
 <translation id="8371841335382565017">キャストするデバイスリストを表示する</translation>
 <translation id="8371889962595521444">カスタムルート証明書</translation>
 <translation id="8374636051559112948">各サイズに対応</translation>
+<translation id="8376752431516546391">Google 検索サイドパネル</translation>
 <translation id="8377507422902936905">注文</translation>
 <translation id="837840316697671463">デバイスでファイルが見つからない場合は、<ph name="CLOUD_PROVIDER" /> で探してみてください。</translation>
 <translation id="8378714024927312812">組織によって管理されています</translation>

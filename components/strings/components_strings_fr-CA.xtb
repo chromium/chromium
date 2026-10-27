@@ -659,6 +659,7 @@
 <translation id="2118132148597630479">Enveloppe C5</translation>
 <translation id="2119505898009119320">Délivré à : <ph name="ORGANIZATION" /> [<ph name="JURISDICTION" />]</translation>
 <translation id="2119867082804433120">Perforation en bas à droite</translation>
+<translation id="2121418473709291357">Ignorée parce que Gestion infonuagique du navigateur Chrome est désactivée.</translation>
 <translation id="2122214041802369259">Le prix est élevé</translation>
 <translation id="2122719317867821810">Cette politique fonctionne comme prévu, mais notez qu'une valeur conflictuelle a été définie ailleurs et que cette politique la remplace.</translation>
 <translation id="2124081665399116863">Mettre à jour le véhicule dans Google Portefeuille</translation>
@@ -2470,6 +2471,7 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="5115232566827194440">Annulation de la session d'invité gérée limitée</translation>
 <translation id="5115563688576182185">(64 bits)</translation>
 <translation id="5116015291385561204">Confirmer qu'il s'agit bien de vous pour remplir automatiquement les infos sensibles</translation>
+<translation id="5121592697493894155">Recherche Google dans le panneau latéral</translation>
 <translation id="5122786942953798871">Enveloppe (coton)</translation>
 <translation id="5123063207673082822">Fin de semaine</translation>
 <translation id="5124797626438336458">L'écran d'erreur Acheter maintenant, payer plus tard est ouvert à mi-hauteur.</translation>
@@ -2906,6 +2908,7 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="5843987376989109187">Cette langue n'est pas encore prise en charge.
     <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="5848445080378515710">Une fois que vous aurez examiné votre commande, vous devrez vous connecter à un compte <ph name="BNPL_ISSUER_NAME" /> ou en créer un. Ce compte sera automatiquement associé dans Google Portefeuille.</translation>
+<translation id="5848916806551637625">Le compte Pix sera associé à <ph name="ACCOUNT_EMAIL" />. Pour désactiver la détection du code Pix, accédez aux <ph name="BEGIN_LINK1" />paramètres de Chrome<ph name="END_LINK1" />.</translation>
 <translation id="5851548754964597211">Liste d'onglets</translation>
 <translation id="5851868085455377790">Émetteur</translation>
 <translation id="5852909432155870672">RA4</translation>
@@ -4406,6 +4409,7 @@ Détails supplémentaires :
 <translation id="8371841335382565017">Afficher la liste d'appareils pour la diffusion</translation>
 <translation id="8371889962595521444">Certificats racines personnalisés</translation>
 <translation id="8374636051559112948">Variable</translation>
+<translation id="8376752431516546391">Panneau latéral de la recherche Google</translation>
 <translation id="8377507422902936905">Commandes</translation>
 <translation id="837840316697671463">Si vous ne trouvez pas un fichier sur votre appareil, recherchez-le dans <ph name="CLOUD_PROVIDER" />.</translation>
 <translation id="8378714024927312812">Géré par votre organisation</translation>

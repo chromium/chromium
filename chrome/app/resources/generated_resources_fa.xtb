@@ -1848,6 +1848,7 @@
 <translation id="2423506062824112361">محتوا به‌دلیل نامشخصی بارگیری نشد.</translation>
 <translation id="2423578206845792524">ذ&amp;خیره فایل تصویری به‌عنوان...</translation>
 <translation id="2424424966051154874">{0,plural, =1{مهمان}one{مهمان (#)}other{مهمان (#)}}</translation>
+<translation id="2424762488607770568">پیش‌فرض (مطابق با سیستم)</translation>
 <translation id="2426805022920575512">انتخاب یک حساب دیگر</translation>
 <translation id="2427507373259914951">کلیک چپ</translation>
 <translation id="2428245692671442472">{NUM_PASSWORDS,plural, =1{<ph name="DOMAIN_LINK" /> ۱ حساب، گذرواژه فقط در این دستگاه ذخیره شد. جزئیات بیشتر}one{<ph name="DOMAIN_LINK" /> {NUM_PASSWORDS} حساب، گذرواژه فقط در این دستگاه ذخیره شد. جزئیات بیشتر}other{<ph name="DOMAIN_LINK" /> {NUM_PASSWORDS} حساب، گذرواژه فقط در این دستگاه ذخیره شد. جزئیات بیشتر}}</translation>
@@ -5659,6 +5660,7 @@
 <translation id="5280426389926346830">میان‌بر ایجاد شود؟</translation>
 <translation id="5280966903879030278">سابقه مرورتان را بااستفاده از زبان روزمره جستجو کنید و سایت‌هایی را که بازدید کرده‌اید پیدا کنید. این تنظیم خاموش است.</translation>
 <translation id="5281013262333731149">در این مرورگر باز می‌شود: <ph name="OPEN_BROWSER" /></translation>
+<translation id="5283747245540449968">رنگ‌های صفحه</translation>
 <translation id="5284107433515104664">‏هنگام تغییر گذرواژه، محتوای صفحه و اطلاعات مرتبط برای Google ارسال می‌شود و ممکن است برای بهبود این ویژگی، توسط بازبین‌های انسانی بررسی شود. گذرواژه شما رمزگذاری شده است و برای هیچ‌کس قابل‌مشاهده نیست.</translation>
 <translation id="5284445933715251131">ادامه بارگیری</translation>
 <translation id="5285635972691565180">نمایشگر <ph name="DISPLAY_ID" /></translation>
@@ -6549,6 +6551,7 @@
 <translation id="5989497858237037960">‏وقتی سایت‌ها را مرور می‌کنید، محتوای صفحه آن‌ها به‌صورت رمزگذاری‌شده در دستگاهتان ذخیره می‌شود. این ویژگی ممکن است بر عملکرد Chrome تأثیر بگذارد</translation>
 <translation id="5990266201903445068">‏فقط Wi-Fi</translation>
 <translation id="5990386583461751448">ترجمه‌شده</translation>
+<translation id="5991039386730545918">مضمون رنگ صفحه انتخابی شما فقط زمانی استفاده می‌شود که کنتراست بالای سیستم روشن باشد</translation>
 <translation id="5992225669837656567">همه میکروفون‌ها قطع ارتباط شده است</translation>
 <translation id="5992652489368666106">بدون حاشیه</translation>
 <translation id="5996490984199062729">نمایه‌تان هنوز راه‌اندازی نشده است</translation>
@@ -6705,6 +6708,7 @@
 <translation id="6124698108608891449">این سایت به مجوزهای بیشتری نیاز دارد.</translation>
 <translation id="6125202119952209826">به گروه زبانه با <ph name="OWNER_FIRST_NAME" /> بپیوندید</translation>
 <translation id="6125639926370653692">ماه</translation>
+<translation id="6125649408655762488">تمرکز کردن روی گروه</translation>
 <translation id="6126601353087978360">لطفاً بازخوردتان را اینجا وارد کنید:</translation>
 <translation id="6127292407256937949">صدا روشن است. صدا خاموش است.</translation>
 <translation id="6127598727646973981">اتصال‌های ایمن</translation>
@@ -7950,6 +7954,7 @@
 <translation id="706949303827219454">صفحه تنظیمات امنیتی را در زبانه جدیدی باز می‌کند</translation>
 <translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{گذرواژه جدید برای این سایت}one{گذرواژه جدید برای این سایت}other{گذرواژه‌های جدید برای این سایت}}</translation>
 <translation id="7070484045139057854">می‌تواند داده‌های سایت را بخواند و تغییر دهد</translation>
+<translation id="7071521146534760487">مدیریت حساب</translation>
 <translation id="7072010813301522126">نام میان‌بر</translation>
 <translation id="7072078320324181561">برنامه‌ها و وب‌سایت‌هایی که اجازه مکان دارند، و همچنین خدمات سیستم، می‌توانند از مکان شما استفاده کنند <ph name="LINK_BEGIN" />بیشتر بدانید<ph name="LINK_END" /></translation>
 <translation id="7072573590175540692">میان‌برهای ویژگی و افزونه دردسترس</translation>
@@ -8586,6 +8591,7 @@
 <translation id="755472745191515939">سرپرست این زبان را مجاز نکرده است</translation>
 <translation id="7554791636758816595">زبانه جدید</translation>
 <translation id="7557194624273628371">‏بازارسال درگاه Linux</translation>
+<translation id="7557508262441527045">از سیستم خارج شدید</translation>
 <translation id="7561196759112975576">همیشه</translation>
 <translation id="7561759921596375678">روشن کردن صدا</translation>
 <translation id="7563576896417108627">سفارشی‌سازی و کنترل <ph name="APP_NAME" />. به‌روزرسانی دردسترس است.</translation>
@@ -9335,6 +9341,7 @@
 <translation id="8118362518458010043">‏توسط Chrome غیرفعال شده است. ممکن است این افزونه ناامن باشد.</translation>
 <translation id="8118448640060360549">{EXTENSIONS_COUNT,plural, =1{‫# نشانک}one{‫# نشانک}other{‫# نشانک}}</translation>
 <translation id="8118488170956489476">سازمانتان<ph name="BEGIN_LINK" />مرورگر را مدیریت می‌کند<ph name="END_LINK" /></translation>
+<translation id="8118496140027032067">رنگ‌های صفحه وب را با زمینه‌های دارای کنتراست بالا لغو کنید یا رنگ‌های اجباری را خاموش کنید</translation>
 <translation id="8118515372935001629">نرخ بازآوری نمایشگر</translation>
 <translation id="8118860139461251237">مدیریت بارگیری‌ها</translation>
 <translation id="8119438628456698432">درحال ایجاد فایل‌های گزارش…</translation>
@@ -9740,7 +9747,7 @@
 <translation id="8434837876193928924">جزئیات گروه زبانه</translation>
 <translation id="8435951291982398331">{NUM_TABS,plural, =1{برطرف کردن مشکل این زبانه}one{برطرف کردن مشکل این زبانه}other{برطرف کردن مشکل این زبانه‌ها}}</translation>
 <translation id="8436800506934625875">‏پین بازیابی حرفی عددی برای «مدیر گذرواژه Google» ایجاد کنید</translation>
-<translation id="8437209419043462667">آمریکایی</translation>
+<translation id="8437209419043462667">امریکایی</translation>
 <translation id="8438518537545182071">ازاین‌پس انتخاب‌های ولی‌تان کمک می‌کند در فضای آنلاین ایمن‌تر باشید</translation>
 <translation id="8438566539970814960">بهبود جستجوها و مرور</translation>
 <translation id="8439351243086395033">بااستفاده از «کم‌مصرف»، به دستگاه‌های «بلوتوث» پیام ارسال کنید و از آن‌ها پیام دریافت کنید.</translation>
@@ -10012,6 +10019,7 @@
 <translation id="8648408795949963811">دمای رنگ «نور شب»</translation>
 <translation id="8648544143274677280"><ph name="SITE_NAME" /> می‌خواهد: <ph name="FIRST_PERMISSION" />، <ph name="SECOND_PERMISSION" />، و غیره</translation>
 <translation id="8648889679430451455">پاک کردن داده‌های شخصی‌سازی</translation>
+<translation id="8649290269169747916">استفاده کردن از رنگ‌های پیش‌فرض صفحه در زمان خاموش بودن کنتراست بالای سیستم</translation>
 <translation id="8651585100578802546">تازه سازی اجباری این صفحه</translation>
 <translation id="8651806635673244884">می‌توانید با کلیک‌راست روی هر زبانه و انتخاب «نمایش افقی زبانه‌ها»، زبانه‌ها را به بالا برگردانید</translation>
 <translation id="8652400352452647993">خطا در بسته‌بندی افزونه</translation>
@@ -10700,7 +10708,7 @@
 <translation id="9154194610265714752">به‌روزرسانی ‌شد</translation>
 <translation id="915485121129452731">رایانه لوحی دارای قلم</translation>
 <translation id="9155344700756733162">لغو انتخاب رنگ</translation>
-<translation id="9155515662479003830">هر زمان که بخواهید می‌توانید در تنظیمات به‌سبک کلاسیک برگردید</translation>
+<translation id="9155515662479003830">هر زمان بخواهید می‌توانید در تنظیمات به‌سبک کلاسیک برگردید</translation>
 <translation id="9157096865782046368">۰٫۸ ثانیه</translation>
 <translation id="9157697743260533322">راه‌اندازی به‌روزرسانی‌های خودکار برای همه کاربران انجام نشد (خطای راه‌اندازی قبل از تولید: <ph name="ERROR_NUMBER" />)</translation>
 <translation id="9157915340203975005">در چاپگر باز است</translation>

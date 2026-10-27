@@ -1850,6 +1850,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2423506062824112361">Indholdet kunne ikke downloades af ukendte årsager.</translation>
 <translation id="2423578206845792524">&amp;Gem billede som...</translation>
 <translation id="2424424966051154874">{0,plural, =1{Gæst}one{Gæst (#)}other{Gæst (#)}}</translation>
+<translation id="2424762488607770568">Standard (match systemet)</translation>
 <translation id="2426805022920575512">Vælg en anden konto</translation>
 <translation id="2427507373259914951">Venstreklik</translation>
 <translation id="2428245692671442472">{NUM_PASSWORDS,plural, =1{<ph name="DOMAIN_LINK" /> 1 konto. Adgangskoden er kun gemt på denne enhed. Flere oplysninger}one{<ph name="DOMAIN_LINK" /> {NUM_PASSWORDS} konto. Adgangskoden er kun gemt på denne enhed. Flere oplysninger}other{<ph name="DOMAIN_LINK" /> {NUM_PASSWORDS} konti. Adgangskoden er kun gemt på denne enhed. Flere oplysninger}}</translation>
@@ -5661,6 +5662,7 @@ Brug Ctrl+Alt+Lysstyrke ned for at zoome ud.</translation>
 <translation id="5280426389926346830">Vil du oprette en genvej?</translation>
 <translation id="5280966903879030278">Brug dagligsprog til at søge i din browserhistorik og finde websites, du har besøgt. Denne indstilling er deaktiveret.</translation>
 <translation id="5281013262333731149">Åbnes i: <ph name="OPEN_BROWSER" /></translation>
+<translation id="5283747245540449968">Sidefarver</translation>
 <translation id="5284107433515104664">Under ændringen af adgangskoden sendes sideindhold og relaterede oplysninger til Google, og de kan blive gennemgået af menneskelige kontrollanter med henblik på at forbedre denne funktion. Din adgangskode er krypteret og kan ikke ses af nogen.</translation>
 <translation id="5284445933715251131">Fortsæt download</translation>
 <translation id="5285635972691565180">Skærm <ph name="DISPLAY_ID" /></translation>
@@ -6551,6 +6553,7 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="5989497858237037960">Når du besøger websites, gemmes indholdet på de pågældende sider i krypteret form på din enhed. Dette kan påvirke Chromes ydeevne</translation>
 <translation id="5990266201903445068">Kun Wi-Fi</translation>
 <translation id="5990386583461751448">Oversat</translation>
+<translation id="5991039386730545918">Det valgte farvetema for siden bruges kun, når Høj kontrast er aktiveret for systemet</translation>
 <translation id="5992225669837656567">Forbindelsen til alle musene er blevet afbrudt</translation>
 <translation id="5992652489368666106">Ingen kant</translation>
 <translation id="5996490984199062729">Din profil er ikke blevet konfigureret</translation>
@@ -6707,6 +6710,7 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="6124698108608891449">Dette website kræver flere tilladelser.</translation>
 <translation id="6125202119952209826">Deltag i fanegruppen med <ph name="OWNER_FIRST_NAME" /></translation>
 <translation id="6125639926370653692">Måne</translation>
+<translation id="6125649408655762488">Fokuser på gruppe</translation>
 <translation id="6126601353087978360">Angiv din feedback her:</translation>
 <translation id="6127292407256937949">Lyden er slået til. Slå lyden fra.</translation>
 <translation id="6127598727646973981">Sikre forbindelser</translation>
@@ -7952,6 +7956,7 @@ Du har # andre kompromitterede adgangskoder. Google Adgangs­kode­admin­istrat
 <translation id="706949303827219454">Åbner siden med sikkerhedsindstillinger på en ny fane</translation>
 <translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{Ny adgangskode til dette website}one{Ny adgangskode til dette website}other{Nye adgangskoder til dette website}}</translation>
 <translation id="7070484045139057854">Udvidelsen kan læse og ændre websitedata</translation>
+<translation id="7071521146534760487">Administrer konto</translation>
 <translation id="7072010813301522126">Navn på genvejen</translation>
 <translation id="7072078320324181561">Apps og websites, der har lokationstilladelse, samt systemtjenester kan bruge din lokation <ph name="LINK_BEGIN" />Få flere oplysninger<ph name="LINK_END" /></translation>
 <translation id="7072573590175540692">Tilgængelige genveje til funktioner og udvidelser</translation>
@@ -8588,6 +8593,7 @@ Du har # andre kompromitterede adgangskoder. Google Adgangs­kode­admin­istrat
 <translation id="755472745191515939">Din administrator tillader ikke brug af dette sprog</translation>
 <translation id="7554791636758816595">Ny fane</translation>
 <translation id="7557194624273628371">Omdirigering af port i Linux</translation>
+<translation id="7557508262441527045">Logget ud</translation>
 <translation id="7561196759112975576">Altid</translation>
 <translation id="7561759921596375678">Slå lyden til</translation>
 <translation id="7563576896417108627">Tilpas og administrer <ph name="APP_NAME" />. Der er en tilgængelig opdatering.</translation>
@@ -9337,6 +9343,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8118362518458010043">Deaktiveret af Chrome. Denne udvidelse er muligvis ikke sikker.</translation>
 <translation id="8118448640060360549">{EXTENSIONS_COUNT,plural, =1{# bogmærke}one{# bogmærke}other{# bogmærker}}</translation>
 <translation id="8118488170956489476">Din <ph name="BEGIN_LINK" />browser administreres<ph name="END_LINK" /> af din organisation</translation>
+<translation id="8118496140027032067">Erstat websidefarver med temaer med høj kontrast, eller deaktiver gennemtvungne farver</translation>
 <translation id="8118515372935001629">Opdateringshastighed for display</translation>
 <translation id="8118860139461251237">Administrere dine downloads</translation>
 <translation id="8119438628456698432">Genererer logfiler...</translation>
@@ -10014,6 +10021,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8648408795949963811">Farvetemperatur for Nattelys</translation>
 <translation id="8648544143274677280"><ph name="SITE_NAME" /> vil gerne have tilladelse til at: <ph name="FIRST_PERMISSION" />, <ph name="SECOND_PERMISSION" /> og andre ting</translation>
 <translation id="8648889679430451455">Ryd personligt tilpassede data</translation>
+<translation id="8649290269169747916">Brug standardsidefarver, når Høj kontrast er deaktiveret for systemet</translation>
 <translation id="8651585100578802546">Gennemtving genindlæsning af denne side</translation>
 <translation id="8651806635673244884">Du kan flytte dine faner tilbage til toppen ved at højreklikke på en fane og vælge "Vis faner vandret"</translation>
 <translation id="8652400352452647993">Fejl i pakkeudvidelse</translation>

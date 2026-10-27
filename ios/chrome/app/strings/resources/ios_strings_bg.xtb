@@ -600,7 +600,6 @@
 <translation id="2781331604911854368">Вкл.</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2783161812871838616">Заявка за настолния сайт</translation>
-<translation id="2789486458103222910">OK</translation>
 <translation id="2789552044937754463">{COUNT,plural, =1{Паролата е запазена в профила ви в Google {EMAIL}}other{Паролите са запазени в профила ви в Google {EMAIL}}}</translation>
 <translation id="2791174088547598693">Добавяне на парола…</translation>
 <translation id="2793703503584038325">Изберете парола и докоснете иконата за споделяне.</translation>
@@ -1707,7 +1706,6 @@
 <translation id="6301767200000930965">Aa</translation>
 <translation id="630308129961693966">Позиционирайте адресната лента</translation>
 <translation id="6305257382500066042">Изпробване сега</translation>
-<translation id="6307241780749477694">Потвърдете самоличността си, за да получите всичките си пароли на това устройство</translation>
 <translation id="6307792728709337290">Запазете картата си в профила си в Google, за да се попълват автоматично данните ѝ за тази и бъдещи покупки в Chrome.</translation>
 <translation id="6316141353357700666">Изберете паролата, която искате да използвате, от показания списък.</translation>
 <translation id="6321526113093607004">Добавяне към отметките</translation>
@@ -2171,7 +2169,6 @@
 <translation id="7700527812567437847">Търсене на съдържанието на екрана с Google Обектив</translation>
 <translation id="7701040980221191251">Няма</translation>
 <translation id="7702428539671224160">Функцията за автоматично попълване на данните за плащане е включена за <ph name="URL" /></translation>
-<translation id="7708994397325774423">Получете всичките си пароли</translation>
 <translation id="7710096647785049958">Пестете време за всяка връзка</translation>
 <translation id="7711440461521638739">Не използвате повторно нито една парола</translation>
 <translation id="7712361583414030698">Гледате офлайн версията</translation>

@@ -661,6 +661,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="2118132148597630479">Koperta C5</translation>
 <translation id="2119505898009119320">Wystawiony dla: <ph name="ORGANIZATION" /> [<ph name="JURISDICTION" />]</translation>
 <translation id="2119867082804433120">Otwór w prawym dolnym rogu</translation>
+<translation id="2121418473709291357">Zignorowano, ponieważ zarządzanie przeglądarką Chrome w chmurze jest wyłączone.</translation>
 <translation id="2122214041802369259">Cena jest wysoka</translation>
 <translation id="2122719317867821810">Ta zasada działa w oczekiwany sposób, ale zastąpiła pewną sprzeczną wartość, którą ustawiono w innym miejscu.</translation>
 <translation id="2124081665399116863">Zaktualizuj pojazd w Portfelu Google</translation>
@@ -2482,6 +2483,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="5115232566827194440">Zastąpienie zarządzanej sesji gościa z ograniczonym dostępem</translation>
 <translation id="5115563688576182185">(64-bitowa)</translation>
 <translation id="5116015291385561204">Potwierdzaj tożsamość w celu autouzupełniania informacji poufnych</translation>
+<translation id="5121592697493894155">Wyszukiwarka Google w panelu bocznym</translation>
 <translation id="5122786942953798871">Koperta (bawełna)</translation>
 <translation id="5123063207673082822">Weekend</translation>
 <translation id="5124797626438336458">Ekran błędu opcji „Kup teraz, zapłać później” otwarty do połowy wysokości.</translation>
@@ -2918,6 +2920,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="5843987376989109187">Ten język nie jest jeszcze obsługiwany.
     <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
 <translation id="5848445080378515710">Po sprawdzeniu zamówienia musisz zalogować się na konto <ph name="BNPL_ISSUER_NAME" /> lub je utworzyć. To konto zostanie automatycznie połączone w Portfelu Google.</translation>
+<translation id="5848916806551637625">Konto Pix zostanie połączone z adresem <ph name="ACCOUNT_EMAIL" />. Aby wyłączyć wykrywanie kodu Pix, otwórz <ph name="BEGIN_LINK1" />Ustawienia Chrome<ph name="END_LINK1" />.</translation>
 <translation id="5851548754964597211">Lista kart</translation>
 <translation id="5851868085455377790">Wystawca</translation>
 <translation id="5852909432155870672">RA4</translation>
@@ -4429,6 +4432,7 @@ Dodatkowe informacje:
 <translation id="8371841335382565017">Pokaż listę urządzeń do przesyłania</translation>
 <translation id="8371889962595521444">Niestandardowy certyfikat główny</translation>
 <translation id="8374636051559112948">Różne opcje</translation>
+<translation id="8376752431516546391">Panel boczny wyszukiwarki Google</translation>
 <translation id="8377507422902936905">Zamówienia</translation>
 <translation id="837840316697671463">Jeśli nie możesz znaleźć pliku na urządzeniu, poszukaj go w usłudze <ph name="CLOUD_PROVIDER" />.</translation>
 <translation id="8378714024927312812">Zarządzane przez Twoją organizację</translation>

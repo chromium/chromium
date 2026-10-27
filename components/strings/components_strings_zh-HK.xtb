@@ -691,6 +691,7 @@
 <translation id="2155260325161282517">5 x 7 吋</translation>
 <translation id="2156467141257470387">你可在不同的 Google 產品中使用已儲存的地址。這不會改變現有公司地址。地址會儲存在 Google 帳戶 <ph name="ACCOUNT" /> 中。</translation>
 <translation id="2157640075051554492">價格追蹤通知</translation>
+<translation id="2158964559178498011">自動填入功能可在更多位置使用，按兩下 Ctrl 鍵即可尋找並填入資料</translation>
 <translation id="2161656808144014275">文字</translation>
 <translation id="2162435186600002085">主要頁首標誌</translation>
 <translation id="2162535140284745414">取得 AI 即時建議，探索全新瀏覽方式。</translation>
@@ -2200,6 +2201,7 @@
 <translation id="4678379207584374453"><ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="4682496302933121474">要翻譯網頁嗎？</translation>
 <translation id="468314109939257734">查看虛擬卡號</translation>
+<translation id="4684818564800397688">自動填入功能可在更多位置使用，按兩下 ⌘ 鍵即可尋找並填入資料</translation>
 <translation id="4686942373615810936">剛才建立</translation>
 <translation id="4690205240253392065">選擇稍後付款服務商</translation>
 <translation id="469028408546145398">閂無痕式視窗按鈕，啟動之後就可以閂晒所有宜家開咗嘅無痕式視窗</translation>
@@ -2480,6 +2482,7 @@
 <translation id="5115232566827194440">受限制的受管理訪客工作階段的覆寫值</translation>
 <translation id="5115563688576182185">(64 位元)</translation>
 <translation id="5116015291385561204">驗證身分以自動填入敏感資料</translation>
+<translation id="5121592697493894155">在側面板開啟「Google 搜尋」</translation>
 <translation id="5122786942953798871">信封 (棉紙)</translation>
 <translation id="5123063207673082822">週末</translation>
 <translation id="5124797626438336458">「先買後付」嘅錯誤畫面宜家顯示喺螢幕下半部。</translation>
@@ -4428,6 +4431,7 @@
 <translation id="8371841335382565017">顯示投放裝置清單</translation>
 <translation id="8371889962595521444">自訂根憑證</translation>
 <translation id="8374636051559112948">不定</translation>
+<translation id="8376752431516546391">「Google 搜尋」側面板</translation>
 <translation id="8377507422902936905">訂單</translation>
 <translation id="837840316697671463">如果你在裝置上找不到檔案，請前往「<ph name="CLOUD_PROVIDER" />」搜尋。</translation>
 <translation id="8378714024927312812">由您的機構管理</translation>

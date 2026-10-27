@@ -661,6 +661,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="2118132148597630479">Sobre C5</translation>
 <translation id="2119505898009119320">Emitida a: <ph name="ORGANIZATION" /> [<ph name="JURISDICTION" />]</translation>
 <translation id="2119867082804433120">Perforación en la esquina inferior derecha</translation>
+<translation id="2121418473709291357">Se ignora porque la Administración en la nube para el navegador Chrome está inhabilitada.</translation>
 <translation id="2122214041802369259">El precio es alto</translation>
 <translation id="2122719317867821810">Esta política se comporta según lo esperado, pero anuló un valor en conflicto que se configuró en otro lugar.</translation>
 <translation id="2124081665399116863">Actualizar el vehículo en la Billetera de Google</translation>
@@ -2481,6 +2482,7 @@ Para ocultar las opciones de pago más tarde, ve a la <ph name="BEGIN_LINK" />co
 <translation id="5115232566827194440">Anulación de la sesión de invitado administrada y restringida</translation>
 <translation id="5115563688576182185">(64 bits)</translation>
 <translation id="5116015291385561204">Verificar tu identidad para autocompletar información sensible</translation>
+<translation id="5121592697493894155">Búsqueda de Google en el panel lateral</translation>
 <translation id="5122786942953798871">Sobre (algodón)</translation>
 <translation id="5123063207673082822">Fin de semana</translation>
 <translation id="5124797626438336458">La pantalla de error de Compra ahora y paga después está abierta a media altura.</translation>
@@ -2917,6 +2919,7 @@ Para ocultar las opciones de pago más tarde, ve a la <ph name="BEGIN_LINK" />co
 <translation id="5843987376989109187">Aún no se admite este idioma.
     <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="5848445080378515710">Después de revisar tu pedido, debes acceder a tu cuenta o crear una con <ph name="BNPL_ISSUER_NAME" />. Esta cuenta se vinculará automáticamente a la Billetera de Google.</translation>
+<translation id="5848916806551637625">La cuenta de Pix se vinculará a <ph name="ACCOUNT_EMAIL" />. Para desactivar la detección de códigos Pix, ve a la <ph name="BEGIN_LINK1" />configuración de Chrome<ph name="END_LINK1" />.</translation>
 <translation id="5851548754964597211">Lista de pestañas</translation>
 <translation id="5851868085455377790">Emisor</translation>
 <translation id="5852909432155870672">RA4</translation>
@@ -4428,6 +4431,7 @@ Detalles adicionales:
 <translation id="8371841335382565017">Mostrar la lista de dispositivos para transmitir</translation>
 <translation id="8371889962595521444">Certificados raíz personalizados</translation>
 <translation id="8374636051559112948">Variable</translation>
+<translation id="8376752431516546391">Panel lateral de la Búsqueda de Google</translation>
 <translation id="8377507422902936905">Pedidos</translation>
 <translation id="837840316697671463">Si no encuentras un archivo en tu dispositivo, búscalo en <ph name="CLOUD_PROVIDER" />.</translation>
 <translation id="8378714024927312812">Administrado por tu organización</translation>

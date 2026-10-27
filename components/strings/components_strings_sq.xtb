@@ -661,6 +661,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="2118132148597630479">Zarf C5</translation>
 <translation id="2119505898009119320">Lëshuar për: <ph name="ORGANIZATION" /> [<ph name="JURISDICTION" />]</translation>
 <translation id="2119867082804433120">Shpim poshtë djathtas</translation>
+<translation id="2121418473709291357">Shpërfillur sepse Chrome Browser Cloud Management është çaktivizuar.</translation>
 <translation id="2122214041802369259">Çmimi është i lartë</translation>
 <translation id="2122719317867821810">Kjo politikë funksionon sipas parashikimit, por diku është caktuar një vlerë në konflikt dhe ajo është anuluar nga kjo politikë.</translation>
 <translation id="2124081665399116863">Përditëso automjetin në "Portofolin e Google"</translation>
@@ -690,6 +691,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="2155260325161282517">5 x 7 inç</translation>
 <translation id="2156467141257470387">Adresat e ruajtura mund t'i përdorësh nëpër produktet e Google. Kjo nuk do të ndryshojë adresën tënde ekzistuese të punës. Ajo do të ruhet në "Llogarinë tënde të Google", <ph name="ACCOUNT" />.</translation>
 <translation id="2157640075051554492">Njoftimet e monitorimit të çmimeve</translation>
+<translation id="2158964559178498011">Plotësimi automatik funksionon në më shumë vende - shtyp dy herë tastin Ctrl për të gjetur dhe plotësuar informacionet</translation>
 <translation id="2161656808144014275">Teksti</translation>
 <translation id="2162435186600002085">Logoja kryesore e titullit</translation>
 <translation id="2162535140284745414">Merr sugjerime në kohë reale që mund të të ndihmojnë të gjesh mënyra të reja për të shfletuar me IA-në.</translation>
@@ -2200,6 +2202,7 @@ Për të fshehur opsionet e "Paguaj më vonë", shko te <ph name="BEGIN_LINK" />
 <translation id="4678379207584374453"><ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
 <translation id="4682496302933121474">Të përkthehet faqja?</translation>
 <translation id="468314109939257734">Shiko numrin e kartës sate virtuale</translation>
+<translation id="4684818564800397688">Plotësimi automatik funksionon në më shumë vende - shtyp dy herë tastin ⌘ për të gjetur dhe plotësuar informacionet</translation>
 <translation id="4686942373615810936">Krijuar pikërisht tani</translation>
 <translation id="4690205240253392065">Zgjidh një ofrues të "Paguaj më vonë"</translation>
 <translation id="469028408546145398">Butoni "Mbyll dritaret e fshehta". Aktivizoje për të mbyllur të gjitha dritaret e fshehta që janë aktualisht të hapura</translation>
@@ -2480,6 +2483,7 @@ Për të fshehur opsionet e "Paguaj më vonë", shko te <ph name="BEGIN_LINK" />
 <translation id="5115232566827194440">Anulimi i seancës së vizitorit të menaxhuar të kufizuar</translation>
 <translation id="5115563688576182185">(64-bit)</translation>
 <translation id="5116015291385561204">Verifiko që je ti për të plotësuar automatikisht informacionet delikate</translation>
+<translation id="5121592697493894155">"Kërko në Google" në panelin anësor</translation>
 <translation id="5122786942953798871">Zarf (pambuk)</translation>
 <translation id="5123063207673082822">Fundjavë</translation>
 <translation id="5124797626438336458">Ekrani i gabimit për metodën "Bli tani, paguaj më vonë" u hap në gjysmë lartësi.</translation>
@@ -2916,6 +2920,7 @@ Për të fshehur opsionet e "Paguaj më vonë", shko te <ph name="BEGIN_LINK" />
 <translation id="5843987376989109187">Kjo gjuhë nuk mbështetet ende.
     <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
 <translation id="5848445080378515710">Pasi të rishikosh porosinë, duhet të identifikohesh ose të krijosh një llogari me <ph name="BNPL_ISSUER_NAME" />. Kjo llogari do të lidhet automatikisht te "Portofoli i Google".</translation>
+<translation id="5848916806551637625">Llogaria e Pix do të lidhet me <ph name="ACCOUNT_EMAIL" />. Për të çaktivizuar zbulimin e kodit Pix, shko te <ph name="BEGIN_LINK1" />cilësimet e Chrome<ph name="END_LINK1" />.</translation>
 <translation id="5851548754964597211">Lista e skedave</translation>
 <translation id="5851868085455377790">Publikuesi</translation>
 <translation id="5852909432155870672">RA4</translation>
@@ -4425,6 +4430,7 @@ Detaje shtesë:
 <translation id="8371841335382565017">Shfaq listën e pajisjeve për transmetim</translation>
 <translation id="8371889962595521444">Certifikatat rrënjë të personalizuara</translation>
 <translation id="8374636051559112948">Ndryshon</translation>
+<translation id="8376752431516546391">Paneli anësor i "Kërko në Google"</translation>
 <translation id="8377507422902936905">Porosi</translation>
 <translation id="837840316697671463">Nëse nuk mund ta gjesh një skedar në pajisjen tënde, kërko për të te "<ph name="CLOUD_PROVIDER" />".</translation>
 <translation id="8378714024927312812">Menaxhohet nga organizata jote</translation>

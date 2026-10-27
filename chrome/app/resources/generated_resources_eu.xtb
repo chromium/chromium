@@ -1835,6 +1835,7 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="2423506062824112361">Arrazoi ezezagun bat dela eta, ezin izan da deskargatu edukia.</translation>
 <translation id="2423578206845792524">&amp;Gorde irudia honela…</translation>
 <translation id="2424424966051154874">{0,plural, =1{Gonbidatua}other{Gonbidatua (#)}}</translation>
+<translation id="2424762488607770568">Lehenetsia (bat dator sistemarekin)</translation>
 <translation id="2426805022920575512">Aukeratu beste kontu bat</translation>
 <translation id="2427507373259914951">Egin klik ezkerreko botoiarekin</translation>
 <translation id="2428245692671442472">{NUM_PASSWORDS,plural, =1{<ph name="DOMAIN_LINK" /> webguneko kontu bat eta pasahitza gailu honetan soilik gorde dira. Xehetasun gehiago.}other{<ph name="DOMAIN_LINK" /> webguneko {NUM_PASSWORDS} kontu eta pasahitzak gailu honetan soilik gorde dira. Xehetasun gehiago.}}</translation>
@@ -5643,6 +5644,7 @@ Pantaila txikitzeko, berriz, erabili Ktrl + Alt + Txikitu distira.</translat
 <translation id="5280426389926346830">Lasterbide bat sortu nahi al duzu?</translation>
 <translation id="5280966903879030278">Erabili eguneroko hizkera arakatze-historian bilaketak egiteko eta bisitatu dituzun webguneak aurkitzeko. Desaktibatuta dago ezarpena.</translation>
 <translation id="5281013262333731149"><ph name="OPEN_BROWSER" /> arakatzailean irekitzen da</translation>
+<translation id="5283747245540449968">Orriaren koloreak</translation>
 <translation id="5284107433515104664">Pasahitza aldatu bitartean, orriaren edukia eta erlazionatutako informazioa Google-ri bidaltzen zaizkio, eta baliteke gizakiek hura berrikustea, eginbidea hobetzeko. Pasahitza enkriptatuta dago, eta inork ez du inoiz ikusten.</translation>
 <translation id="5284445933715251131">Jarraitu deskargatzen</translation>
 <translation id="5285635972691565180"><ph name="DISPLAY_ID" /> pantaila</translation>
@@ -6529,6 +6531,7 @@ Erabilerraztasun-etengailu bat baino gehiago eslei diezazkiokezu ekintza horri.<
 <translation id="5989497858237037960">Webguneak arakatu ahala, haien orrien edukia enkriptatu, eta gailuan gordetzen da. Baliteke horrek Chrome-ren errendimenduari eragitea.</translation>
 <translation id="5990266201903445068">Wifi bidez soilik</translation>
 <translation id="5990386583461751448">Itzulita</translation>
+<translation id="5991039386730545918">Hautatutako orriaren kolore-gaia sistemaren kontraste handia aktibatuta dagoenean soilik erabiltzen da</translation>
 <translation id="5992225669837656567">Sagu guztiak deskonektatu dira</translation>
 <translation id="5992652489368666106">Ertzik gabe</translation>
 <translation id="5996490984199062729">Profila ez da konfiguratu</translation>
@@ -7927,6 +7930,7 @@ Arriskuan dauden # pasahitz gehiago dauzkazu. Google-ren Pasahitz-kudeatzailea z
 <translation id="706949303827219454">Segurtasun-ezarpenen orria irekitzen du beste fitxa batean</translation>
 <translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{Webgunerako pasahitz berria}other{Webgunerako pasahitz berriak}}</translation>
 <translation id="7070484045139057854">Webguneko datuak irakurri eta alda ditzake</translation>
+<translation id="7071521146534760487">Kudeatu kontua</translation>
 <translation id="7072010813301522126">Lasterbidearen izena</translation>
 <translation id="7072078320324181561">Kokapena erabiltzeko baimena duten aplikazio eta webguneek erabil dezakete kokapena, baita sistemaren zerbitzuek ere. <ph name="LINK_BEGIN" />Lortu informazio gehiago<ph name="LINK_END" /></translation>
 <translation id="7072573590175540692">Eginbide eta luzapenetarako lasterbide erabilgarriak</translation>
@@ -8562,6 +8566,7 @@ Arriskuan dauden # pasahitz gehiago dauzkazu. Google-ren Pasahitz-kudeatzailea z
 <translation id="755472745191515939">Administratzaileak ez du onartzen hizkuntza hori</translation>
 <translation id="7554791636758816595">Fitxa berria</translation>
 <translation id="7557194624273628371">Linux-en ataka-birbideratzea</translation>
+<translation id="7557508262441527045">Amaitu da saioa</translation>
 <translation id="7561196759112975576">Beti</translation>
 <translation id="7561759921596375678">Aktibatu bolumena</translation>
 <translation id="7563576896417108627">Pertsonalizatu eta kontrolatu <ph name="APP_NAME" />. Eguneratze bat erabilgarri dago.</translation>
@@ -9311,6 +9316,7 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="8118362518458010043">Chrome-k desgaitu du. Baliteke luzapena segurua ez izatea.</translation>
 <translation id="8118448640060360549">{EXTENSIONS_COUNT,plural, =1{# laster-marka}other{# laster-marka}}</translation>
 <translation id="8118488170956489476">Zure erakundeak <ph name="BEGIN_LINK" />kudeatzen du arakatzailea<ph name="END_LINK" /></translation>
+<translation id="8118496140027032067">Ordeztu web-orrien koloreak kontraste handiko gaiekin edo desaktibatu behartutako koloreak</translation>
 <translation id="8118515372935001629">Pantailaren freskatze-abiadura</translation>
 <translation id="8118860139461251237">Deskargak kudeatu.</translation>
 <translation id="8119438628456698432">Erregistro-fitxategiak sortzen…</translation>
@@ -9988,6 +9994,7 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="8648408795949963811">Gaueko argiaren koloreen tenperatura</translation>
 <translation id="8648544143274677280"><ph name="SITE_NAME" /> webguneak hauetarako baimena nahi du: <ph name="FIRST_PERMISSION" />, <ph name="SECOND_PERMISSION" />, etab.</translation>
 <translation id="8648889679430451455">Garbitu pertsonalizazio-datuak</translation>
+<translation id="8649290269169747916">Erabili orriaren kolore lehenetsiak sistemaren kontraste handia desaktibatuta dagoenean</translation>
 <translation id="8651585100578802546">Behartu orria berriro kargatzera.</translation>
 <translation id="8651806635673244884">Fitxak berriro goialdera eramateko, egin klik eskuineko botoiarekin edozein fitxatan eta hautatu "Erakutsi fitxak horizontalki".</translation>
 <translation id="8652400352452647993">Paketearen luzapenaren errorea</translation>

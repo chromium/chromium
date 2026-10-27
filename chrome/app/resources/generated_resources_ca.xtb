@@ -1836,6 +1836,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2423506062824112361">No s'ha pogut baixar el contingut a causa d'un motiu desconegut.</translation>
 <translation id="2423578206845792524">De&amp;sa la imatge com a...</translation>
 <translation id="2424424966051154874">{0,plural, =1{Convidat}other{Convidat (#)}}</translation>
+<translation id="2424762488607770568">Predeterminats (coincideixen amb els del sistema)</translation>
 <translation id="2426805022920575512">Tria un altre compte</translation>
 <translation id="2427507373259914951">Fes clic amb el botó esquerre</translation>
 <translation id="2428245692671442472">{NUM_PASSWORDS,plural, =1{<ph name="DOMAIN_LINK" />: 1 compte; la contrasenya s'ha desat només en aquest dispositiu. Més detalls}other{<ph name="DOMAIN_LINK" />: {NUM_PASSWORDS} comptes; la contrasenya s'ha desat només en aquest dispositiu. Més detalls}}</translation>
@@ -5644,6 +5645,7 @@ Fes servir Ctrl+Alt+disminueix la brillantor per reduir el zoom.</translation>
 <translation id="5280426389926346830">Vols crear una drecera?</translation>
 <translation id="5280966903879030278">Utilitza llenguatge quotidià per fer cerques al teu historial de navegació i trobar llocs web que has visitat. Aquesta opció de configuració està desactivada.</translation>
 <translation id="5281013262333731149">S'obre a <ph name="OPEN_BROWSER" /></translation>
+<translation id="5283747245540449968">Colors de pàgina</translation>
 <translation id="5284107433515104664">Durant el canvi de contrasenya, el contingut de la pàgina i la informació relacionada s'envien a Google i els poden revisar persones per millorar aquesta funció. La contrasenya està encriptada i no la veu mai ningú.</translation>
 <translation id="5284445933715251131">Continua la baixada</translation>
 <translation id="5285635972691565180">Pantalla <ph name="DISPLAY_ID" /></translation>
@@ -6531,6 +6533,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="5989497858237037960">A mesura que navegues pels llocs web, el contingut de les pàgines s'encripta i es desa al dispositiu. Això pot afectar el rendiment de Chrome.</translation>
 <translation id="5990266201903445068">Només Wi‑Fi</translation>
 <translation id="5990386583461751448">Traduïda</translation>
+<translation id="5991039386730545918">El tema de colors de pàgina seleccionat només s'utilitza mentre el contrast alt del sistema està activat</translation>
 <translation id="5992225669837656567">S'han desconnectat tots els ratolins</translation>
 <translation id="5992652489368666106">Sense vores</translation>
 <translation id="5996490984199062729">El teu perfil no s'ha configurat</translation>
@@ -7930,6 +7933,7 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="706949303827219454">Obre la pàgina de configuració de seguretat en una pestanya nova</translation>
 <translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{Contrasenya nova per a aquest lloc web}other{Contrasenyes noves per a aquest lloc web}}</translation>
 <translation id="7070484045139057854">Aquesta extensió pot llegir i modificar les dades dels llocs web</translation>
+<translation id="7071521146534760487">Gestiona el compte</translation>
 <translation id="7072010813301522126">Nom de la drecera</translation>
 <translation id="7072078320324181561">Les aplicacions i els llocs web amb el permís d'ubicació, així com els serveis del sistema, poden utilitzar la teva ubicació. <ph name="LINK_BEGIN" />Més informació<ph name="LINK_END" /></translation>
 <translation id="7072573590175540692">Dreceres de funcions i extensions disponibles</translation>
@@ -8566,6 +8570,7 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="755472745191515939">El teu administrador no permet aquest idioma</translation>
 <translation id="7554791636758816595">Pestanya nova</translation>
 <translation id="7557194624273628371">Redirecció de ports de Linux</translation>
+<translation id="7557508262441527045">S'ha tancat la sessió</translation>
 <translation id="7561196759112975576">Sempre</translation>
 <translation id="7561759921596375678">Activa el volum</translation>
 <translation id="7563576896417108627">Personalitza i controla <ph name="APP_NAME" />. Hi ha una actualització disponible.</translation>
@@ -9315,6 +9320,7 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8118362518458010043">Desactivada per Chrome. Pot ser que aquesta extensió no sigui segura.</translation>
 <translation id="8118448640060360549">{EXTENSIONS_COUNT,plural, =1{# adreça d'interès}other{# adreces d'interès}}</translation>
 <translation id="8118488170956489476">La teva organització <ph name="BEGIN_LINK" />gestiona el navegador<ph name="END_LINK" /></translation>
+<translation id="8118496140027032067">Anul·la els colors de les pàgines web amb temes de contrast alt o desactiva els colors forçats</translation>
 <translation id="8118515372935001629">Freqüència d'actualització de la pantalla</translation>
 <translation id="8118860139461251237">Gestionar les baixades</translation>
 <translation id="8119438628456698432">S'estan generant fitxers de registre...</translation>
@@ -9992,6 +9998,7 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8648408795949963811">Temperatura de color de Llum nocturna</translation>
 <translation id="8648544143274677280"><ph name="SITE_NAME" /> vol <ph name="FIRST_PERMISSION" />, <ph name="SECOND_PERMISSION" /> i obtenir altres permisos</translation>
 <translation id="8648889679430451455">Esborra les dades de personalització</translation>
+<translation id="8649290269169747916">Utilitza els colors de pàgina predeterminats quan el contrast alt del sistema estigui desactivat</translation>
 <translation id="8651585100578802546">Força que es torni a carregar aquesta pàgina</translation>
 <translation id="8651806635673244884">Pots tornar a moure les pestanyes a la part superior fent clic amb el botó dret en qualsevol pestanya i seleccionant Mostra les pestanyes horitzontalment</translation>
 <translation id="8652400352452647993">Error de l'empaquetatge d'extensió</translation>

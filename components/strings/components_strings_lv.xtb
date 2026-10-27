@@ -661,6 +661,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="2118132148597630479">Aploksne C5</translation>
 <translation id="2119505898009119320">Izsniegts: <ph name="ORGANIZATION" /> [<ph name="JURISDICTION" />]</translation>
 <translation id="2119867082804433120">Caurums apakšējā labajā malā</translation>
+<translation id="2121418473709291357">Ignorēta, jo pārlūka Chrome mākoņa pārvaldība ir atspējota.</translation>
 <translation id="2122214041802369259">Cena ir augsta</translation>
 <translation id="2122719317867821810">Šī politika darbojas, kā paredzēts, taču citur ir iestatīta konfliktējoša vērtība, kas tiek ignorēta šīs politikas dēļ.</translation>
 <translation id="2124081665399116863">Transportlīdzekļa informācijas atjaunināšana lietotnē Google maks</translation>
@@ -690,6 +691,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="2155260325161282517">5 x 7 collas</translation>
 <translation id="2156467141257470387">Saglabātās adreses varat izmantot dažādos Google produktos. Tādējādi netiks mainīta jūsu esošā darbavietas adrese. Tā tiks saglabāta jūsu Google kontā (<ph name="ACCOUNT" />).</translation>
 <translation id="2157640075051554492">Cenu izsekošanas paziņojumi</translation>
+<translation id="2158964559178498011">Automātiskā aizpilde darbojas vairākās vietās — divreiz nospiediet taustiņu Ctrl, lai atrastu un aizpildītu informāciju</translation>
 <translation id="2161656808144014275">Teksts</translation>
 <translation id="2162435186600002085">Galvenes primārais logotips</translation>
 <translation id="2162535140284745414">Saņemiet reāllaika ieteikumus, kas var palīdzēt jums atrast jaunus veidus, kā pārlūkot saturu, izmantojot MI.</translation>
@@ -2198,6 +2200,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="4678379207584374453"><ph name="BEGIN_LINK" />Uzzināt vairāk<ph name="END_LINK" /></translation>
 <translation id="4682496302933121474">Vai tulkot lapu?</translation>
 <translation id="468314109939257734">Skatiet savas virtuālās kartes numuru</translation>
+<translation id="4684818564800397688">Automātiskā aizpilde darbojas vairākās vietās — divreiz nospiediet taustiņu ⌘, lai atrastu un aizpildītu informāciju</translation>
 <translation id="4686942373615810936">Izveidota tikko</translation>
 <translation id="4690205240253392065">Izvēlieties pakalpojumu sniedzēju maksāšanai vēlāk</translation>
 <translation id="469028408546145398">Poga “Aizvērt inkognito režīma logus”. Aktivizējiet, lai aizvērtu visus atvērtos inkognito režīma logus.</translation>
@@ -2478,6 +2481,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="5115232566827194440">Ierobežotas, pārvaldītas viesa sesijas ignorēšana</translation>
 <translation id="5115563688576182185">(64 bitu)</translation>
 <translation id="5116015291385561204">Verificēt identitāti, lai automātiski aizpildītu sensitīvu informāciju</translation>
+<translation id="5121592697493894155">Google meklēšana sānu panelī</translation>
 <translation id="5122786942953798871">Aploksne (kokvilna)</translation>
 <translation id="5123063207673082822">Nedēļas nogale</translation>
 <translation id="5124797626438336458">Funkcijas “Pērciet tūlīt, maksājiet vēlāk” kļūdas ekrāns ir atvērts pusekrāna augstumā.</translation>
@@ -2914,6 +2918,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="5843987376989109187">Šī valoda vēl netiek atbalstīta.
     <ph name="BEGIN_LINK" />Uzziniet vairāk<ph name="END_LINK" />.</translation>
 <translation id="5848445080378515710">Pēc pasūtījuma pārskatīšanas jums ir jāpierakstās <ph name="BNPL_ISSUER_NAME" /> kontā vai jāizveido šāds konts. Šis konts tiks automātiski saistīts lietotnē Google maks.</translation>
+<translation id="5848916806551637625">Pix konts tiks saistīts ar e-pasta adresi <ph name="ACCOUNT_EMAIL" />. Lai izslēgtu Pix kodu noteikšanu, pārejiet uz <ph name="BEGIN_LINK1" />Chrome iestatījumiem<ph name="END_LINK1" />.</translation>
 <translation id="5851548754964597211">Ciļņu saraksts</translation>
 <translation id="5851868085455377790">Izdevējs</translation>
 <translation id="5852909432155870672">RA4</translation>
@@ -4425,6 +4430,7 @@ Papildu informācija:
 <translation id="8371841335382565017">Rādīt ierīču sarakstu apraidei</translation>
 <translation id="8371889962595521444">Pielāgoti saknes sertifikāti</translation>
 <translation id="8374636051559112948">Atšķiras</translation>
+<translation id="8376752431516546391">Google meklēšanas sānu panelis</translation>
 <translation id="8377507422902936905">Pasūtījumi</translation>
 <translation id="837840316697671463">Ja neizdodas atrast kādu failu ierīcē, meklējiet to pakalpojumā <ph name="CLOUD_PROVIDER" />.</translation>
 <translation id="8378714024927312812">Pārvalda jūsu organizācija</translation>

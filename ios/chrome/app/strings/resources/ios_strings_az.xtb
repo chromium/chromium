@@ -600,7 +600,6 @@
 <translation id="2781331604911854368">Aktiv</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2783161812871838616">Masaüstü Sayt sorğusu</translation>
-<translation id="2789486458103222910">Oldu</translation>
 <translation id="2789552044937754463">{COUNT,plural, =1{Parol Google Hesabında ({EMAIL}) yadda saxlandı}other{Parollar Google Hesabında ({EMAIL}) yadda saxlandı}}</translation>
 <translation id="2791174088547598693">Parol əlavə edin…</translation>
 <translation id="2793703503584038325">Parol seçin və "paylaşın" ikonuna toxunun</translation>
@@ -1170,6 +1169,7 @@
 <translation id="4658335131052370646">Yadda saxlayın</translation>
 <translation id="465947902531722727">Profilləri dəyişin</translation>
 <translation id="466307903888586355">Faylların yadda saxlanılması təşkilatınız tərəfindən bloklanıb</translation>
+<translation id="4665303625242639572">Bağlayın: <ph name="PAGE_TITLE" /></translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4669618761237477717">Təşkilatınız məxfi şəkildə baxış keçirməyinizi tələb edir. Tab qrupları Anonim rejimdə sinxronlaşdırılmır.
 <ph name="BEGIN_LINK" />Ətraflı məlumat<ph name="END_LINK" /></translation>
@@ -1707,7 +1707,6 @@ Handoff Ayarların Ümumi bölməsindən də aktiv edilə bilər və cihazların
 <translation id="6301767200000930965">Aa</translation>
 <translation id="630308129961693966">Ünvan panelinin yerini seçin</translation>
 <translation id="6305257382500066042">Elə indi sınayın</translation>
-<translation id="6307241780749477694">Bu cihazda bütün parollarınızı əldə etmək üçün kimliyinizi doğrulayın</translation>
 <translation id="6307792728709337290">Kartı Google Hesabında yadda saxlayaraq bu və Chrome-da ediləcək gələcək alışlar üçün avtomatik doldurun.</translation>
 <translation id="6316141353357700666">Göstərilən siyahıdan istifadə etmək istədiyiniz parolu seçin.</translation>
 <translation id="6321526113093607004">Əlfəcinlərə əlavə edin</translation>
@@ -2171,7 +2170,6 @@ Kompüterinizdə davam etmək üçün <ph name="OTHER_EMAIL" /> hesabına keçin
 <translation id="7700527812567437847">Google Linza ilə ekranda axtarın</translation>
 <translation id="7701040980221191251">Heç biri</translation>
 <translation id="7702428539671224160">Ödəniş məlumatını <ph name="URL" /> saytında avtomatik doldurun</translation>
-<translation id="7708994397325774423">Bütün parollarınızı əldə edin</translation>
 <translation id="7710096647785049958">Hər keçiddə vaxta qənaət edin</translation>
 <translation id="7711440461521638739">Heç bir parolu təkrar istifadə etmirsiniz</translation>
 <translation id="7712361583414030698">Oflayn versiyaya baxırsınız</translation>

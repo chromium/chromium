@@ -656,6 +656,7 @@
 <translation id="2118132148597630479">ఎన్వలప్ C5</translation>
 <translation id="2119505898009119320">వీరికి జారీ చేయబడింది: <ph name="ORGANIZATION" /> [<ph name="JURISDICTION" />]</translation>
 <translation id="2119867082804433120">కుడివైపు దిగువ భాగంలో రంధ్రాలు</translation>
+<translation id="2121418473709291357">Chrome బ్రౌజర్ క్లౌడ్ మేనేజ్‌మెంట్ డిజేబుల్ అయి ఉన్నందున విస్మరించింది.</translation>
 <translation id="2122214041802369259">ధర ఎక్కువగా ఉంటుంది</translation>
 <translation id="2122719317867821810">ఈ పాలసీ అనుకున్నట్టుగా పని చేస్తోంది, కానీ వైరుధ్య విలువ మరో చోట సెట్ చేయబడింది, అలాగే ఈ పాలసీ ద్వారా ఓవర్‌రైడ్ అయ్యింది.</translation>
 <translation id="2124081665399116863">Google Walletలో వెహికల్‌ను అప్‌డేట్ చేయండి</translation>
@@ -685,6 +686,7 @@
 <translation id="2155260325161282517">5 x 7 అంగుళాలు</translation>
 <translation id="2156467141257470387">మీరు Google ప్రోడక్ట్‌లలో సేవ్ చేసిన అడ్రస్‌లను ఉపయోగించవచ్చు. ఇది మీ ప్రస్తుత వర్క్ ప్లేస్ అడ్రస్ మార్చదు. ఇది మీ Google ఖాతా, <ph name="ACCOUNT" />లో సేవ్ చేయబడుతుంది.</translation>
 <translation id="2157640075051554492">ధర ట్రాకింగ్ నోటిఫికేషన్‌లు</translation>
+<translation id="2158964559178498011">'ఆటోఫిల్' ఫీచర్ మరిన్ని చోట్ల పని చేస్తుంది — సమాచారాన్ని కనుగొని, ఫిల్ చేయడానికి Ctrlను రెండుసార్లు నొక్కండి</translation>
 <translation id="2161656808144014275">వచనం</translation>
 <translation id="2162435186600002085">ప్రధాన హెడర్ లోగో</translation>
 <translation id="2162535140284745414">AIతో బ్రౌజ్ చేయడానికి కొత్త మార్గాలను కనుగొనడంలో మీకు సహాయపడే రియల్ టైమ్ సూచనలను పొందండి.</translation>
@@ -2195,6 +2197,7 @@
 <translation id="4678379207584374453"><ph name="BEGIN_LINK" />మరింత తెలుసుకోండి<ph name="END_LINK" /></translation>
 <translation id="4682496302933121474">పేజీని అనువదించాలా?</translation>
 <translation id="468314109939257734">వర్చువల్ కార్డ్ నంబర్‌ను చూడండి</translation>
+<translation id="4684818564800397688">'ఆటోఫిల్' ఫీచర్ మరిన్ని చోట్ల పని చేస్తుంది — సమాచారాన్ని కనుగొని, ఫిల్ చేయడానికి ⌘ను రెండుసార్లు నొక్కండి</translation>
 <translation id="4686942373615810936">ఇప్పుడే క్రియేట్ చేయడం జరిగింది</translation>
 <translation id="4690205240253392065">'తర్వాత పే చేయండి' ప్రొవైడర్‌ను ఎంచుకోండి</translation>
 <translation id="469028408546145398">'అజ్ఞాత విండోలను మూసివేయండి' బటన్, ప్రస్తుతం తెరిచి ఉన్న అజ్ఞాత విండోలన్నింటినీ మూసివేయడానికి దీన్ని యాక్టివేట్ చేయండి</translation>
@@ -2475,6 +2478,7 @@
 <translation id="5115232566827194440">పరిమితి విధించబడిన మేనేజ్ చేయబడే గెస్ట్ సెషన్ ఓవర్‌రైడ్</translation>
 <translation id="5115563688576182185">(64-బిట్)</translation>
 <translation id="5116015291385561204">గోప్యమైన సమాచారాన్ని ఆటోఫిల్ చేయడానికి ఇది మీరేనని వెరిఫై చేయండి</translation>
+<translation id="5121592697493894155">సైడ్ ప్యానెల్‌లో Google Search</translation>
 <translation id="5122786942953798871">ఎన్వలప్ (కాటన్)</translation>
 <translation id="5123063207673082822">వారాంతం</translation>
 <translation id="5124797626438336458">'ఇప్పుడు కొనండి, పేమెంట్ తర్వాత చేయండి' ఎర్రర్, హాఫ్ స్క్రీన్‌లో తెరవబడింది.</translation>
@@ -2911,6 +2915,7 @@
 <translation id="5843987376989109187">ఈ భాషకు ఇంకా సపోర్ట్ లేదు.
     <ph name="BEGIN_LINK" />మరింత తెలుసుకోండి<ph name="END_LINK" /></translation>
 <translation id="5848445080378515710">మీ ఆర్డర్‌ను రివ్యూ చేసిన తర్వాత, మీరు తప్పనిసరిగా సైన్ ఇన్ చేయాలి లేదా <ph name="BNPL_ISSUER_NAME" /> ఖాతాను క్రియేట్ చేయాలి. ఈ ఖాతా ఆటోమేటిక్‌గా Google Walletలో లింక్ అవుతుంది.</translation>
+<translation id="5848916806551637625">Pix ఖాతా <ph name="ACCOUNT_EMAIL" />‌కు లింక్ అవుతుంది. Pix కోడ్ డిటెక్షన్‌ను (గుర్తింపును) నిలిపివేయడానికి, <ph name="BEGIN_LINK1" />Chrome సెట్టింగ్స్‌<ph name="END_LINK1" />కు వెళ్లండి.</translation>
 <translation id="5851548754964597211">ట్యాబ్ లిస్ట్‌</translation>
 <translation id="5851868085455377790">జారీ చేసినవారు</translation>
 <translation id="5852909432155870672">RA4</translation>
@@ -4422,6 +4427,7 @@
 <translation id="8371841335382565017">ప్రసారం చేయడం కోసం పరికర లిస్ట్‌ను చూపించండి</translation>
 <translation id="8371889962595521444">అనుకూల రూట్ సెట్టింగ్‌లు</translation>
 <translation id="8374636051559112948">మారుతుంది</translation>
+<translation id="8376752431516546391">Google Search సైడ్ ప్యానెల్</translation>
 <translation id="8377507422902936905">ఆర్డర్‌లు</translation>
 <translation id="837840316697671463">మీరు మీ పరికరంలో ఫైల్‌ను కనుగొనలేకపోతే, దాని కోసం <ph name="CLOUD_PROVIDER" />‌లో చూడండి.</translation>
 <translation id="8378714024927312812">మీ సంస్థ ద్వారా నిర్వహించబడుతున్నవి</translation>

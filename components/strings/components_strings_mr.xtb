@@ -661,6 +661,7 @@
 <translation id="2118132148597630479">एन्व्हलप सी५</translation>
 <translation id="2119505898009119320"><ph name="ORGANIZATION" /> [<ph name="JURISDICTION" />] यांना जारी केलेले</translation>
 <translation id="2119867082804433120">पंच बॉटम राइट</translation>
+<translation id="2121418473709291357">दुर्लक्ष केले आहे, कारण Chrome ब्राउझर क्लाउड व्यवस्थापन बंद केले आहे.</translation>
 <translation id="2122214041802369259">किंमत जास्त आहे</translation>
 <translation id="2122719317867821810">हे धोरण अपेक्षेनुसार काम करत आहे पण, कुठेतरी एक परस्परविरोधी मूल्य सेट केले आहे आणि हे धोरण ते मूल्य ओव्हरराइड करत आहे.</translation>
 <translation id="2124081665399116863">Google Wallet मध्ये वाहन अपडेट करा</translation>
@@ -2481,6 +2482,7 @@
 <translation id="5115232566827194440">व्यवस्थापित केलेले प्रतिबंधित अतिथी सत्र ओव्हरराइड</translation>
 <translation id="5115563688576182185">(64-बिट)</translation>
 <translation id="5116015291385561204">संवेदनशील माहिती ऑटोफिल करण्यासाठी हे तुम्हीच असल्याची पडताळणी करा</translation>
+<translation id="5121592697493894155">साइड पॅनलमधील Google Search</translation>
 <translation id="5122786942953798871">एन्व्हलप (कॉटन)</translation>
 <translation id="5123063207673082822">वीकेंड</translation>
 <translation id="5124797626438336458">आता विकत घ्या, नंतर पैसे द्या यासंबंधित एरर स्क्रीन अर्ध्या उंचीवर उघडली आहे.</translation>
@@ -2917,6 +2919,7 @@
 <translation id="5843987376989109187">या भाषेला अद्याप सपोर्ट नाही.
     <ph name="BEGIN_LINK" />अधिक जाणून घ्या<ph name="END_LINK" /></translation>
 <translation id="5848445080378515710">तुम्ही तुमच्या ऑर्डरचे पुनरावलोकन केल्यानंतर, तुम्ही <ph name="BNPL_ISSUER_NAME" /> खात्यामध्ये साइन इन करणे किंवा ते तयार करणे आवश्यक आहे. हे खाते Google Wallet मध्ये आपोआप लिंक केले जाईल.</translation>
+<translation id="5848916806551637625">Pix खाते <ph name="ACCOUNT_EMAIL" /> शी लिंक केले जाईल. Pix कोड डिटेक्ट करणे बंद करण्यासाठी, <ph name="BEGIN_LINK1" />Chrome सेटिंग्ज<ph name="END_LINK1" /> वर जा.</translation>
 <translation id="5851548754964597211">टॅब सूची</translation>
 <translation id="5851868085455377790">जारीकर्ता</translation>
 <translation id="5852909432155870672">RA4</translation>
@@ -4429,6 +4432,7 @@
 <translation id="8371841335382565017">कास्ट करण्यासाठीची डिव्हाइस सूची दाखवा</translation>
 <translation id="8371889962595521444">कस्टम रूट सर्टिफिकेट</translation>
 <translation id="8374636051559112948">बदलते</translation>
+<translation id="8376752431516546391">Google Search साइड पॅनल</translation>
 <translation id="8377507422902936905">ऑर्डर</translation>
 <translation id="837840316697671463">तुम्हाला तुमच्या डिव्हाइसवर फाइल सापडत नसल्यास, ती <ph name="CLOUD_PROVIDER" /> वर शोधा.</translation>
 <translation id="8378714024927312812">तुमच्या संस्थेकडून व्यवस्थापित केलेले</translation>

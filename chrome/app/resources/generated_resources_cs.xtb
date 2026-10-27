@@ -1836,6 +1836,7 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2423506062824112361">Obsah se z neznámého důvodu nepodařilo stáhnout.</translation>
 <translation id="2423578206845792524">Uložit o&amp;brázek jako...</translation>
 <translation id="2424424966051154874">{0,plural, =1{Host}few{Host (#)}many{Host (#)}other{Host (#)}}</translation>
+<translation id="2424762488607770568">Výchozí (podle systému)</translation>
 <translation id="2426805022920575512">Vybrat jiný účet</translation>
 <translation id="2427507373259914951">Kliknutí levým tlačítkem</translation>
 <translation id="2428245692671442472">{NUM_PASSWORDS,plural, =1{<ph name="DOMAIN_LINK" /> 1 účet, heslo je uloženo pouze na tomto zařízení. Další podrobnosti}few{<ph name="DOMAIN_LINK" /> {NUM_PASSWORDS} účty, hesla jsou uložena pouze na tomto zařízení. Další podrobnosti}many{<ph name="DOMAIN_LINK" /> {NUM_PASSWORDS} účtu, hesla jsou uložena pouze na tomto zařízení. Další podrobnosti}other{<ph name="DOMAIN_LINK" /> {NUM_PASSWORDS} účtů, hesla jsou uložena pouze na tomto zařízení. Další podrobnosti}}</translation>
@@ -5643,6 +5644,7 @@ Oddálení provedete stisknutím kláves Ctrl + Alt + Snížit jas.</translation
 <translation id="5280426389926346830">Vytvořit zástupce?</translation>
 <translation id="5280966903879030278">Vyhledávejte běžným jazykem v historii prohlížení a najděte navštívené weby. Toto nastavení je vypnuté.</translation>
 <translation id="5281013262333731149">Otevře se v: <ph name="OPEN_BROWSER" /></translation>
+<translation id="5283747245540449968">Barvy stránek</translation>
 <translation id="5284107433515104664">Během změny hesla se obsah stránky a související informace odesílají do Googlu a mohou je kontrolovat lidé za účelem vylepšení této funkce. Vaše heslo je zašifrováno a nikdo ho neuvidí.</translation>
 <translation id="5284445933715251131">Pokračovat ve stahování</translation>
 <translation id="5285635972691565180">Obrazovka <ph name="DISPLAY_ID" /></translation>
@@ -6529,6 +6531,7 @@ K této akci lze přiřadit několik přepínačů.</translation>
 <translation id="5989497858237037960">Při procházení webů se obsah stránek šifruje a ukládá na vašem zařízení. Může to mít dopad na výkon Chromu</translation>
 <translation id="5990266201903445068">Pouze Wi-Fi</translation>
 <translation id="5990386583461751448">Přeloženo</translation>
+<translation id="5991039386730545918">Vybraný barevný motiv stránky se použije, jen když je zapnutý systémový vysoký kontrast</translation>
 <translation id="5992225669837656567">Všechny myši byly odpojeny</translation>
 <translation id="5992652489368666106">Bez okraje</translation>
 <translation id="5996490984199062729">Váš profil ještě není nastaven</translation>
@@ -6685,6 +6688,7 @@ K této akci lze přiřadit několik přepínačů.</translation>
 <translation id="6124698108608891449">Web potřebuje další oprávnění.</translation>
 <translation id="6125202119952209826">Přidat se ke skupině karet s uživatelem <ph name="OWNER_FIRST_NAME" /></translation>
 <translation id="6125639926370653692">Měsíc</translation>
+<translation id="6125649408655762488">Vybrat skupinu</translation>
 <translation id="6126601353087978360">Sem zadejte svoji zpětnou vazbu:</translation>
 <translation id="6127292407256937949">Zvuk je zapnutý. Vypnout zvuk.</translation>
 <translation id="6127598727646973981">Zabezpečená připojení</translation>
@@ -7932,6 +7936,7 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="706949303827219454">Otevře na nové kartě stránku nastavení zabezpečení</translation>
 <translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{Nové heslo pro tento web}few{Nová hesla pro tento web}many{Nová hesla pro tento web}other{Nová hesla pro tento web}}</translation>
 <translation id="7070484045139057854">Rozšíření může číst a měnit data webů</translation>
+<translation id="7071521146534760487">Spravovat účet</translation>
 <translation id="7072010813301522126">Název zástupce</translation>
 <translation id="7072078320324181561">Aplikace a weby s oprávněním pro přístup k poloze a systémové služby můžou používat vaši polohu. <ph name="LINK_BEGIN" />Další informace<ph name="LINK_END" /></translation>
 <translation id="7072573590175540692">Dostupné zkratky funkcí a rozšíření</translation>
@@ -8567,6 +8572,7 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="755472745191515939">Váš administrátor tento jazyk nepovolil</translation>
 <translation id="7554791636758816595">Nová karta</translation>
 <translation id="7557194624273628371">Přesměrování portů Linuxu</translation>
+<translation id="7557508262441527045">Odhlášeno</translation>
 <translation id="7561196759112975576">Vždy</translation>
 <translation id="7561759921596375678">Zapnout zvuk</translation>
 <translation id="7563576896417108627">Přizpůsobení a ovládání aplikace <ph name="APP_NAME" />. Je k dispozici aktualizace.</translation>
@@ -9316,6 +9322,7 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8118362518458010043">Toto rozšíření Chrome zakázal, protože může být nebezpečné.</translation>
 <translation id="8118448640060360549">{EXTENSIONS_COUNT,plural, =1{# záložka}few{# záložky}many{# záložky}other{# záložek}}</translation>
 <translation id="8118488170956489476">Váš <ph name="BEGIN_LINK" />prohlížeč je spravován<ph name="END_LINK" /> vaší organizací</translation>
+<translation id="8118496140027032067">Přepsat barvy webových stránek motivy s vysokým kontrastem nebo vypnout vynucené barvy</translation>
 <translation id="8118515372935001629">Obnovovací frekvence displeje</translation>
 <translation id="8118860139461251237">Správa stahování</translation>
 <translation id="8119438628456698432">Generování souborů protokolů…</translation>
@@ -9993,6 +10000,7 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8648408795949963811">Teplota barev nočního režimu</translation>
 <translation id="8648544143274677280">Web <ph name="SITE_NAME" /> žádá o tato oprávnění: <ph name="FIRST_PERMISSION" />, <ph name="SECOND_PERMISSION" /> a další</translation>
 <translation id="8648889679430451455">Vymazat data přizpůsobení</translation>
+<translation id="8649290269169747916">Když je vypnutý vysoký kontrast systému, používat výchozí barvy stránek</translation>
 <translation id="8651585100578802546">Vynutit opětovné načtení této stránky</translation>
 <translation id="8651806635673244884">Karty můžete přesunout zpět nahoru tak, že pravým tlačítkem kliknete na libovolnou kartu a vyberete Zobrazit karty vodorovně.</translation>
 <translation id="8652400352452647993">Chyba zabalení rozšíření</translation>

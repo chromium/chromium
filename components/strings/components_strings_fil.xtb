@@ -661,6 +661,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="2118132148597630479">Envelope C5</translation>
 <translation id="2119505898009119320">Ibinigay sa: <ph name="ORGANIZATION" /> [<ph name="JURISDICTION" />]</translation>
 <translation id="2119867082804433120">Punch bottom right</translation>
+<translation id="2121418473709291357">Binalewala dahil naka-disable ang Chrome Browser Cloud Management.</translation>
 <translation id="2122214041802369259">Mataas ang Presyo</translation>
 <translation id="2122719317867821810">Gumagana ang patakarang ito tulad ng inaasahan pero may itinakdang hindi tumutugmang value sa ibang lugar at nao-override ito ng patakarang ito.</translation>
 <translation id="2124081665399116863">I-update ang sasakyan sa Google Wallet</translation>
@@ -2482,6 +2483,7 @@ Para i-hide ang mga opsyon sa pay later, pumunta sa <ph name="BEGIN_LINK" />mga 
 <translation id="5115232566827194440">Pinaghihigpitang override ng pinapamahalaang session ng bisita</translation>
 <translation id="5115563688576182185">(64-bit)</translation>
 <translation id="5116015291385561204">I-verify na ikaw ito para mag-autofill ng sensitibong impormasyon</translation>
+<translation id="5121592697493894155">Google Search sa panel sa gilid</translation>
 <translation id="5122786942953798871">Envelope (Cotton)</translation>
 <translation id="5123063207673082822">Weekend</translation>
 <translation id="5124797626438336458">Binuksan nang kalahati ang screen ng error ng Buy-Now-Pay-Later.</translation>
@@ -2918,6 +2920,7 @@ Para i-hide ang mga opsyon sa pay later, pumunta sa <ph name="BEGIN_LINK" />mga 
 <translation id="5843987376989109187">Hindi pa sinusuportahan ang wikang ito.
     <ph name="BEGIN_LINK" />Matuto pa<ph name="END_LINK" /></translation>
 <translation id="5848445080378515710">Kapag nasuri mo na ang iyong order, dapat kang mag-sign in o gumawa ng account sa <ph name="BNPL_ISSUER_NAME" />. Awtomatikong ili-link ang account na ito sa Google Wallet.</translation>
+<translation id="5848916806551637625">Ili-link sa <ph name="ACCOUNT_EMAIL" /> ang Pix account. Para i-off ang pag-detect ng Pix code, pumunta sa <ph name="BEGIN_LINK1" />mga setting ng Chrome<ph name="END_LINK1" />.</translation>
 <translation id="5851548754964597211">Listahan ng tab</translation>
 <translation id="5851868085455377790">Nagbigay</translation>
 <translation id="5852909432155870672">RA4</translation>
@@ -4429,6 +4432,7 @@ Mga karagdagang detalye:
 <translation id="8371841335382565017">Ipakita ang listahan ng device para sa pag-cast</translation>
 <translation id="8371889962595521444">Mga custom na root certificate</translation>
 <translation id="8374636051559112948">Iba't iba</translation>
+<translation id="8376752431516546391">Panel sa gilid ng Google Search</translation>
 <translation id="8377507422902936905">Mga Order</translation>
 <translation id="837840316697671463">Kung may hindi ka makitang file sa iyong device, hanapin ito sa <ph name="CLOUD_PROVIDER" />.</translation>
 <translation id="8378714024927312812">Pinapamahalaan ng iyong organisasyon</translation>

@@ -661,6 +661,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="2118132148597630479">Koverta C5</translation>
 <translation id="2119505898009119320">Izdato za: <ph name="ORGANIZATION" /> [<ph name="JURISDICTION" />]</translation>
 <translation id="2119867082804433120">Bušenje na donjoj strani</translation>
+<translation id="2121418473709291357">Zanemareno jer je onemogućeno upravljanje u oblaku putem preglednika Chrome.</translation>
 <translation id="2122214041802369259">Cijena je visoka</translation>
 <translation id="2122719317867821810">Ovo pravilo radi kako je predviđeno, ali je konfliktna vrijednost postavljena negdje drugo i ovo pravilo ju je zaobišlo.</translation>
 <translation id="2124081665399116863">Ažurirajte vozilo u Google Novčaniku</translation>
@@ -690,6 +691,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="2155260325161282517">5 x 7 in</translation>
 <translation id="2156467141257470387">Možete koristiti sačuvane adrese na Googleovim proizvodima. Time se neće promijeniti vaša postojeća poslovna adresa. Sačuvat će se na Google računu <ph name="ACCOUNT" />.</translation>
 <translation id="2157640075051554492">Obavještenja o praćenju cijene</translation>
+<translation id="2158964559178498011">Automatsko popunjavanje funkcionira na više mjesta – dvaput pritisnite Ctrl da pronađete i popunite informacije</translation>
 <translation id="2161656808144014275">Tekst</translation>
 <translation id="2162435186600002085">Logotip u primarnom zaglavlju</translation>
 <translation id="2162535140284745414">Dobijajte prijedloge u stvarnom vremenu koji vam mogu pomoći da pronađete nove načine pregledanja uz AI.</translation>
@@ -2200,6 +2202,7 @@ Da sakrijete opcije kasnijeg plaćanja, idite u <ph name="BEGIN_LINK" />postavke
 <translation id="4678379207584374453"><ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="4682496302933121474">Prevesti stranicu?</translation>
 <translation id="468314109939257734">Pogledajte broj virtuelne kartice</translation>
+<translation id="4684818564800397688">Automatsko popunjavanje funkcionira na više mjesta – dvaput pritisnite ⌘ da pronađete i popunite informacije</translation>
 <translation id="4686942373615810936">Kreirano je upravo sada</translation>
 <translation id="4690205240253392065">Odaberite pružaoca usluge kasnijeg plaćanja</translation>
 <translation id="469028408546145398">Dugme Zatvori anonimni prozor, aktivirajte da zatvorite sve anonimne prozore koji su trenutno otvoreni</translation>
@@ -2480,6 +2483,7 @@ Da sakrijete opcije kasnijeg plaćanja, idite u <ph name="BEGIN_LINK" />postavke
 <translation id="5115232566827194440">Zaobilaženje ograničene sesije gosta kojom se upravlja</translation>
 <translation id="5115563688576182185">(64-bitno)</translation>
 <translation id="5116015291385561204">Potvrdite identitet da automatski popunite osjetljive informacije</translation>
+<translation id="5121592697493894155">Google Pretraživanje na bočnoj ploči</translation>
 <translation id="5122786942953798871">Koverta (pamuk)</translation>
 <translation id="5123063207673082822">Vikend</translation>
 <translation id="5124797626438336458">Ekran greške naknadnog plaćanja je otvoren na pola visine.</translation>
@@ -2916,6 +2920,7 @@ Da sakrijete opcije kasnijeg plaćanja, idite u <ph name="BEGIN_LINK" />postavke
 <translation id="5843987376989109187">Taj jezik još uvijek nije podržan.
     <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="5848445080378515710">Nakon što pregledate narudžbu, morate se prijaviti na <ph name="BNPL_ISSUER_NAME" /> račun ili ga kreirati. Račun će se automatski povezati u Google Novčaniku.</translation>
+<translation id="5848916806551637625">Pix račun će se povezati sa <ph name="ACCOUNT_EMAIL" />. Da isključite otkrivanje Pix koda, idite u <ph name="BEGIN_LINK1" />postavke Chromea<ph name="END_LINK1" />.</translation>
 <translation id="5851548754964597211">Lista kartica</translation>
 <translation id="5851868085455377790">Izdaje:</translation>
 <translation id="5852909432155870672">RA4</translation>
@@ -4427,6 +4432,7 @@ Dodatni detalji:
 <translation id="8371841335382565017">Prikaži listu uređaja za emitiranje</translation>
 <translation id="8371889962595521444">Prilagođeni temeljni certifikati</translation>
 <translation id="8374636051559112948">Varira</translation>
+<translation id="8376752431516546391">Bočna ploča Google Pretraživanja</translation>
 <translation id="8377507422902936905">Narudžbe</translation>
 <translation id="837840316697671463">Ako ne možete pronaći fajl na uređaju, potražite ga na usluzi <ph name="CLOUD_PROVIDER" />.</translation>
 <translation id="8378714024927312812">Ovim upravlja vaša organizacija</translation>

@@ -661,6 +661,7 @@
 <translation id="2118132148597630479">Envelope C5</translation>
 <translation id="2119505898009119320">जारी गरिएको सङ्गठन: <ph name="ORGANIZATION" /> [<ph name="JURISDICTION" />]</translation>
 <translation id="2119867082804433120">फेदको दायाँपट्टि प्वाल</translation>
+<translation id="2121418473709291357">Chrome ब्राउजरको क्लाउड व्यवस्थापन अफ गरिएको हुनाले बेवास्ता गरिएको छ।</translation>
 <translation id="2122214041802369259">धेरै महँगो मूल्य</translation>
 <translation id="2122719317867821810">यो नीतिले सोचेअनुसार काम गरिरहेको छ तर बेमेल मान अन्यत्र तय गरिएका कारण यस नीतिअनुसार उक्त मान प्रतिस्थापन गरिएको छ।</translation>
 <translation id="2124081665399116863">Google Wallet मा सवारी साधन अपडेट गर्नुहोस्</translation>
@@ -690,6 +691,7 @@
 <translation id="2155260325161282517">५ x ७ इन्च</translation>
 <translation id="2156467141257470387">तपाईं सेभ गरिएका ठेगानाहरू Google का विभिन्न उत्पादनहरूमा प्रयोग गर्न सक्नुहुन्छ। यसो गर्दैमा तपाईंको हालको कार्यस्थलको ठेगाना परिवर्तन हुँदैन। यो ठेगाना तपाईंको Google खाता <ph name="ACCOUNT" /> मा सेभ गरिने छ।</translation>
 <translation id="2157640075051554492">मूल्य ट्र्याक गर्ने सुविधासम्बन्धी सूचनाहरू</translation>
+<translation id="2158964559178498011">अटोफिल गर्ने सुविधा प्रयोग गरी अझ धेरै ठाउँमा काम गर्न सकिन्छ — जानकारी भेट्टाउन र भर्न दुई पटक Ctrl थिच्नुहोस्</translation>
 <translation id="2161656808144014275">पाठ</translation>
 <translation id="2162435186600002085">मुख्य हेडरको लोगो</translation>
 <translation id="2162535140284745414">तपाईंलाई AI प्रयोग गरी ब्राउज गर्ने नयाँ तरिकाहरू भेट्टाउन सघाउन सक्ने तत्काल उपलब्ध हुने सुझावहरू प्राप्त गर्नुहोस्।</translation>
@@ -2198,6 +2200,7 @@
 <translation id="4678379207584374453">थप जान्नुहोस्<ph name="BEGIN_LINK" /><ph name="END_LINK" /></translation>
 <translation id="4682496302933121474">पेज अनुवाद गर्ने हो?</translation>
 <translation id="468314109939257734">आफ्नो भर्चुअल कार्ड नम्बर हेर्नुहोस्</translation>
+<translation id="4684818564800397688">अटोफिल गर्ने सुविधा प्रयोग गरी अझ धेरै ठाउँमा काम गर्न सकिन्छ — जानकारी भेट्टाउन र भर्न दुई पटक ⌘ थिच्नुहोस्</translation>
 <translation id="4686942373615810936">भर्खरै बनाइएको</translation>
 <translation id="4690205240253392065">पछि भुक्तानी गर्ने सुविधा प्रदान गर्ने प्रदायक छनौट गर्नुहोस्</translation>
 <translation id="469028408546145398">इन्कोग्निटो विन्डो बन्द गर्ने बटन, हाल खोलिएका सबै इन्कोग्निटो विन्डो बन्द गर्न यो बटन थिच्नुहोस्</translation>
@@ -2478,6 +2481,7 @@
 <translation id="5115232566827194440">व्यवस्थापन गरिएका प्रतिबन्धित अतिथिको सत्रको ओभरराइड</translation>
 <translation id="5115563688576182185">(64-बिट)</translation>
 <translation id="5116015291385561204">संवेदनशील जानकारी अटोफिल गर्न आफ्नो पहिचान पुष्टि गर्नुहोस्</translation>
+<translation id="5121592697493894155">साइड प्यानलमा खुल्ने Google Search</translation>
 <translation id="5122786942953798871">इन्भलप (कटन)</translation>
 <translation id="5123063207673082822">सप्ताहान्त</translation>
 <translation id="5124797626438336458">"अहिले किन्नुहोस्, पछि तिर्नुहोस्" मा त्रुटि देखिएको कुरा जानकारी दिने स्क्रिन आधा स्क्रिनमा खोलिएको छ।</translation>
@@ -2914,6 +2918,7 @@
 <translation id="5843987376989109187">यो भाषा अझै पनि प्रयोग गर्न मिल्दैन।
     <ph name="BEGIN_LINK" />थप जान्नुहोस्<ph name="END_LINK" /></translation>
 <translation id="5848445080378515710">तपाईंले आफ्नो अर्डरको समीक्षा गरेपछि तपाईंले अनिवार्य रूपमा <ph name="BNPL_ISSUER_NAME" /> खातामा साइन इन गर्नु पर्ने हुन्छ वा यो खाता छैन भने नयाँ खाता बनाउनु पर्ने हुन्छ। यो खाता Google Wallet मा स्वतः लिंक गरिने छ।</translation>
+<translation id="5848916806551637625">Pix खाता <ph name="ACCOUNT_EMAIL" /> मा लिंक गरिने छ। Pix कोड पत्ता लगाउने सुविधा अफ गर्न <ph name="BEGIN_LINK1" />Chrome का सेटिङ<ph name="END_LINK1" />मा जानुहोस्।</translation>
 <translation id="5851548754964597211">ट्याब सूची</translation>
 <translation id="5851868085455377790">जारीकर्ता</translation>
 <translation id="5852909432155870672">RA4</translation>
@@ -4424,6 +4429,7 @@
 <translation id="8371841335382565017">कास्ट गर्ने डिभाइसको सूची देखाउनुहोस्</translation>
 <translation id="8371889962595521444"> कस्टम मूल प्रमाणपत्रहरू</translation>
 <translation id="8374636051559112948">पेजअनुसार फरक छ</translation>
+<translation id="8376752431516546391">Google Search को साइड प्यानल</translation>
 <translation id="8377507422902936905">अर्डरहरू</translation>
 <translation id="837840316697671463">तपाईंले आफ्नो डिभाइसमा कुनै फाइल भेट्टाउन सक्नुभएन भने उक्त फाइल <ph name="CLOUD_PROVIDER" /> मा खोज्नुहोस्।</translation>
 <translation id="8378714024927312812">तपाईंको सङ्गठनले व्यवस्थापन गरेको</translation>

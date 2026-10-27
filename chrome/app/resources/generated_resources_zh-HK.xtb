@@ -6701,6 +6701,7 @@
 <translation id="6124698108608891449">此網站需要更多權限。</translation>
 <translation id="6125202119952209826">加入<ph name="OWNER_FIRST_NAME" />所在的分頁群組</translation>
 <translation id="6125639926370653692">月亮</translation>
+<translation id="6125649408655762488">聚焦群組</translation>
 <translation id="6126601353087978360">請在此輸入您的意見：</translation>
 <translation id="6127292407256937949">音量開咗。閂音量。</translation>
 <translation id="6127598727646973981">安全連線</translation>
@@ -7944,6 +7945,7 @@
 <translation id="706949303827219454">喺新分頁入面打開安全設定頁面</translation>
 <translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{收到此網站的新密碼}other{收到此網站的新密碼}}</translation>
 <translation id="7070484045139057854">可讀取及變更網站資料</translation>
+<translation id="7071521146534760487">管理帳戶</translation>
 <translation id="7072010813301522126">捷徑名稱</translation>
 <translation id="7072078320324181561">系統服務與具備位置權限的應用程式和網站可使用你的位置。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="7072573590175540692">可用功能和擴充程式捷徑</translation>
@@ -8579,6 +8581,7 @@
 <translation id="755472745191515939">管理員已禁止使用此語言</translation>
 <translation id="7554791636758816595">新分頁</translation>
 <translation id="7557194624273628371">Linux 連接埠轉送</translation>
+<translation id="7557508262441527045">已登出</translation>
 <translation id="7561196759112975576">永遠使用</translation>
 <translation id="7561759921596375678">開啟音量</translation>
 <translation id="7563576896417108627">自訂和控制 <ph name="APP_NAME" /> (有可用的更新)。</translation>

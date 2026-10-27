@@ -661,6 +661,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="2118132148597630479">C5 boríték</translation>
 <translation id="2119505898009119320">Tulajdonos: <ph name="ORGANIZATION" /> [<ph name="JURISDICTION" />]</translation>
 <translation id="2119867082804433120">Lyuk jobbra lent</translation>
+<translation id="2121418473709291357">Figyelmen kívül hagyva, mert a Chrome Browser Cloud Management le van tiltva.</translation>
 <translation id="2122214041802369259">Magas ár</translation>
 <translation id="2122719317867821810">A házirend az elvárt módon működik, de valahol máshol ütköző érték van beállítva, amelyet felülbírál ez a házirend.</translation>
 <translation id="2124081665399116863">Jármű frissítése a Google Walletben</translation>
@@ -690,6 +691,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="2155260325161282517">5 × 7 hüvelyk</translation>
 <translation id="2156467141257470387">A mentett címeket használhatja a Google-termékekben. Ez nem módosítja a meglévő munkahelyi címét. A rendszer a címet a Google-fiókjába (<ph name="ACCOUNT" />) menti.</translation>
 <translation id="2157640075051554492">Árkövetési értesítések</translation>
+<translation id="2158964559178498011">Az automatikus kitöltés több helyen működik – nyomja le kétszer a Ctrl billentyűt az adatok kereséséhez és kitöltéséhez</translation>
 <translation id="2161656808144014275">Szöveg</translation>
 <translation id="2162435186600002085">Elsődleges fejléclogó</translation>
 <translation id="2162535140284745414">Valós idejű javaslatokat kaphat, amelyek segítségével új módokon böngészhet az AI használatával.</translation>
@@ -2197,6 +2199,7 @@ A későbbi fizetési lehetőségek elrejtéséhez lépjen a <ph name="BEGIN_LIN
 <translation id="4678379207584374453"><ph name="BEGIN_LINK" />További információ<ph name="END_LINK" /></translation>
 <translation id="4682496302933121474">Lefordítja az oldalt?</translation>
 <translation id="468314109939257734">Virtuális kártyaszám megtekintése</translation>
+<translation id="4684818564800397688">Az automatikus kitöltés több helyen működik – nyomja le kétszer a ⌘ billentyűt az adatok kereséséhez és kitöltéséhez</translation>
 <translation id="4686942373615810936">Épp most létrehozva</translation>
 <translation id="4690205240253392065">Későbbi fizetési lehetőséget kínáló szolgáltató kiválasztása</translation>
 <translation id="469028408546145398">Inkognitó ablakok bezárása gomb. A gombot megnyomva bezárhatja a jelenleg megnyitott összes inkognitó ablakot.</translation>
@@ -2477,6 +2480,7 @@ A későbbi fizetési lehetőségek elrejtéséhez lépjen a <ph name="BEGIN_LIN
 <translation id="5115232566827194440">Korlátozott felügyelt vendégmunkamenet felülírása</translation>
 <translation id="5115563688576182185">(64 bites)</translation>
 <translation id="5116015291385561204">Személyazonosság igazolása bizalmas információk automatikus kitöltéséhez</translation>
+<translation id="5121592697493894155">Google Kereső az oldalsó panelen</translation>
 <translation id="5122786942953798871">Boríték (karton)</translation>
 <translation id="5123063207673082822">Hétvége</translation>
 <translation id="5124797626438336458">A Késleltetett fizetés hibajelző képernyője félmagasságban van megnyitva.</translation>
@@ -2913,6 +2917,7 @@ A későbbi fizetési lehetőségek elrejtéséhez lépjen a <ph name="BEGIN_LIN
 <translation id="5843987376989109187">Ez a nyelv még nem támogatott.
     <ph name="BEGIN_LINK" />További információ<ph name="END_LINK" />.</translation>
 <translation id="5848445080378515710">A megrendelés ellenőrzését követően be kell jelentkeznie <ph name="BNPL_ISSUER_NAME" />-fiókjába, vagy létre kell hoznia egy újat. Ezt a fiókot automatikusan összekapcsoljuk a Google Wallet szolgáltatásban.</translation>
+<translation id="5848916806551637625">A Pix-fiók össze lesz kapcsolva a következővel: <ph name="ACCOUNT_EMAIL" />. A Pix-kód észlelésének kikapcsolásához nyissa meg a <ph name="BEGIN_LINK1" />Chrome-beállításokat<ph name="END_LINK1" />.</translation>
 <translation id="5851548754964597211">Laplista</translation>
 <translation id="5851868085455377790">Kiállító</translation>
 <translation id="5852909432155870672">RA4</translation>
@@ -4424,6 +4429,7 @@ További részletek:
 <translation id="8371841335382565017">Az átküldéshez használható eszközlista megjelenítése</translation>
 <translation id="8371889962595521444">Egyéni gyökérszintű tanúsítványok</translation>
 <translation id="8374636051559112948">Változó</translation>
+<translation id="8376752431516546391">A Google Kereső oldalsó panelje</translation>
 <translation id="8377507422902936905">Megrendelések</translation>
 <translation id="837840316697671463">Ha nem találja a kívánt fájlt az eszközén, keresse meg itt: <ph name="CLOUD_PROVIDER" />.</translation>
 <translation id="8378714024927312812">Az Ön szervezete kezeli</translation>

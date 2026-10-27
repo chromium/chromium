@@ -661,6 +661,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="2118132148597630479">C5-konvolutt</translation>
 <translation id="2119505898009119320">Utstedt til: <ph name="ORGANIZATION" /> [<ph name="JURISDICTION" />]</translation>
 <translation id="2119867082804433120">Hull nede til høyre</translation>
+<translation id="2121418473709291357">Ignorert fordi Skybasert Chrome-administrering er slått av.</translation>
 <translation id="2122214041802369259">Prisen er høy</translation>
 <translation id="2122719317867821810">Denne regelen fungerer som den skal, men en motstridende verdi er angitt et annet sted og overstyres av denne regelen.</translation>
 <translation id="2124081665399116863">Oppdater kjøretøyet i Google Wallet</translation>
@@ -2480,6 +2481,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> fo
 <translation id="5115232566827194440">Overstyring av begrenset, administrert gjesteøkt</translation>
 <translation id="5115563688576182185">(64-bit)</translation>
 <translation id="5116015291385561204">Bekreft at det er deg, for å autofylle sensitiv informasjon</translation>
+<translation id="5121592697493894155">Google Søk i sidepanelet</translation>
 <translation id="5122786942953798871">Konvolutt (bomull)</translation>
 <translation id="5123063207673082822">Helg</translation>
 <translation id="5124797626438336458">Feilskjermen for Kjøp nå, betal senere er åpnet i halv høyde.</translation>
@@ -2916,6 +2918,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> fo
 <translation id="5843987376989109187">Dette språket støttes ikke ennå.
     <ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /></translation>
 <translation id="5848445080378515710">Når du har gjennomgått bestillingen, må du logge på eller opprette en konto hos <ph name="BNPL_ISSUER_NAME" />. Denne kontoen knyttes automatisk sammen med Google Wallet.</translation>
+<translation id="5848916806551637625">Pix-kontoen blir knyttet til <ph name="ACCOUNT_EMAIL" />. For å slå av gjenkjenning av Pix-koder, gå til <ph name="BEGIN_LINK1" />Chrome-innstillingene<ph name="END_LINK1" />.</translation>
 <translation id="5851548754964597211">Faneliste</translation>
 <translation id="5851868085455377790">Utsteder </translation>
 <translation id="5852909432155870672">RA4</translation>
@@ -4426,6 +4429,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> fo
 <translation id="8371841335382565017">Vis enhetslisten for casting</translation>
 <translation id="8371889962595521444">Tilpassede rotsertifikater</translation>
 <translation id="8374636051559112948">Varierer</translation>
+<translation id="8376752431516546391">Google Søk-sidepanelet</translation>
 <translation id="8377507422902936905">Bestillinger</translation>
 <translation id="837840316697671463">Hvis du ikke finner en fil på enheten din, kan du se etter den i <ph name="CLOUD_PROVIDER" />.</translation>
 <translation id="8378714024927312812">Administreres av organisasjonen din</translation>

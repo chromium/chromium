@@ -600,7 +600,6 @@
 <translation id="2781331604911854368">Ativado</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2783161812871838616">Pedir site para computador</translation>
-<translation id="2789486458103222910">Ok</translation>
 <translation id="2789552044937754463">{COUNT,plural, =1{Senha salva na sua Conta do Google {EMAIL}}one{Senha salva na sua Conta do Google {EMAIL}}other{Senhas salvas na sua Conta do Google {EMAIL}}}</translation>
 <translation id="2791174088547598693">Adicionar senha…</translation>
 <translation id="2793703503584038325">Selecione uma senha e toque no ícone de compartilhamento</translation>
@@ -1170,6 +1169,7 @@
 <translation id="4658335131052370646">Salvar</translation>
 <translation id="465947902531722727">Trocar de perfil</translation>
 <translation id="466307903888586355">O salvamento de arquivos foi bloqueado pela sua organização</translation>
+<translation id="4665303625242639572">Fechar <ph name="PAGE_TITLE" /></translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4669618761237477717">Sua organização requer o uso do modo de navegação particular. Os grupos de guias não são sincronizados no modo de navegação anônima.
 <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
@@ -1707,7 +1707,6 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="6301767200000930965">Aa</translation>
 <translation id="630308129961693966">Escolha a posição da barra de endereço</translation>
 <translation id="6305257382500066042">Faça um teste agora</translation>
-<translation id="6307241780749477694">Confirme sua identidade para acessar todas as suas senhas neste dispositivo</translation>
 <translation id="6307792728709337290">Salve o cartão na sua Conta do Google para que ele seja preenchido automaticamente nesta compra e em compras futuras feitas no Chrome.</translation>
 <translation id="6316141353357700666">Escolha a senha que você quer usar na lista que aparecer.</translation>
 <translation id="6321526113093607004">Adicionar aos favoritos</translation>
@@ -1814,7 +1813,7 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="6596324345367949437">O Gemini não está disponível no modo de navegação anônima</translation>
 <translation id="6596481460663245319">Pesquisar imagem com o Google</translation>
 <translation id="6601302169302852717">Imagem salva no Google Fotos de <ph name="USER_EMAIL" /></translation>
-<translation id="6602173570135186741">Preenc. automático e senhas</translation>
+<translation id="6602173570135186741">Preenchim. automático e senhas</translation>
 <translation id="6603393121510733479">Sua organização desativou a navegação privada.
 <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="6606914854592108404">A Confirmação de segurança está sendo executada…</translation>
@@ -2171,7 +2170,6 @@ Você pode reiniciar a qualquer momento.</translation>
 <translation id="7700527812567437847">Pesquisar na tela com o Google Lens</translation>
 <translation id="7701040980221191251">Nenhum</translation>
 <translation id="7702428539671224160">Preencher automaticamente as informações de pagamento em <ph name="URL" /></translation>
-<translation id="7708994397325774423">Acesse todas as suas senhas</translation>
 <translation id="7710096647785049958">Economize tempo em cada link</translation>
 <translation id="7711440461521638739">Você não está reutilizando senhas</translation>
 <translation id="7712361583414030698">Mostrando a versão off-line</translation>

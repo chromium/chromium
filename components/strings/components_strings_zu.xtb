@@ -661,6 +661,7 @@ Lokhu uma kungenjalo kuzovinjelwa izilungiselelo zakho zobumfihlo. Lokhu kuzovum
 <translation id="2118132148597630479">Imvilophu ye-C5</translation>
 <translation id="2119505898009119320">Ikhishelwe kulokhu: <ph name="ORGANIZATION" /> [<ph name="JURISDICTION" />]</translation>
 <translation id="2119867082804433120">Ukushaya phansi kwesokudla</translation>
+<translation id="2121418473709291357">Kuzitshwe ngenxa yokuthi iChrome Browser Cloud Management ivaliwe.</translation>
 <translation id="2122214041802369259">Intengo Iphezulu</translation>
 <translation id="2122719317867821810">Le nqubomgomo isebenza njengokuhlosiwe kodwa inani eliphambene lisethiwe kwenye indawo futhi likhishwa yile nqubomgomo.</translation>
 <translation id="2124081665399116863">Buyekeza imoto kuGoogle Wallet</translation>
@@ -2477,6 +2478,7 @@ Ukuze ufihle okungakhethwa kukho kokukhokha kamuva, iya <ph name="BEGIN_LINK" />
 <translation id="5115232566827194440">Ukukhipha isikhathi sesivakashi esiphethwe ngokulinganisela</translation>
 <translation id="5115563688576182185">(64-bhithi)</translation>
 <translation id="5116015291385561204">Qinisekisa ukuthi nguwe ukuze ugcwalise ngokuzigcwalisela ulwazi olubucayi</translation>
+<translation id="5121592697493894155">IGoogle Search kuphaneli eseceleni</translation>
 <translation id="5122786942953798871">Imvilophu (Ukotini)</translation>
 <translation id="5123063207673082822">Impelasonto</translation>
 <translation id="5124797626438336458">Isikrini sokuThenga Manje, Ubuye Ukhokhe sivulwe sekugamenxe ihora lesishiyagalombili.</translation>
@@ -2913,6 +2915,7 @@ Ukuze ufihle okungakhethwa kukho kokukhokha kamuva, iya <ph name="BEGIN_LINK" />
 <translation id="5843987376989109187">Ulimi alukakasekelwa okwamanje.
     <ph name="BEGIN_LINK" />Funda kabanzi<ph name="END_LINK" /></translation>
 <translation id="5848445080378515710">Ngemva kokubuyekeza i-oda lakho, kufanele ungene ngemvume noma uvule i-akhawunti ye-<ph name="BNPL_ISSUER_NAME" />. Le akhawunti izolinkwa ngokuzenzekelayo kuGoogle Wallet.</translation>
+<translation id="5848916806551637625">I-akhawunti yePix izolinkwa ku-<ph name="ACCOUNT_EMAIL" />. Ukuze uvale ukutholwa kwekhodi yePix, iya kokuthi <ph name="BEGIN_LINK1" />Amasethingi eChrome<ph name="END_LINK1" />.</translation>
 <translation id="5851548754964597211">Uhlu lwethebhu</translation>
 <translation id="5851868085455377790">Isikhiphi</translation>
 <translation id="5852909432155870672">I-RA4</translation>
@@ -4423,6 +4426,7 @@ Imininingwane engeziwe:
 <translation id="8371841335382565017">Bonisa uhlu lwedivayisi ekusakazeni</translation>
 <translation id="8371889962595521444">Izitifiketi zempande yangokwezifiso</translation>
 <translation id="8374636051559112948">Kuyahlukahluka</translation>
+<translation id="8376752431516546391">Iphaneli eseceleni ye-Google Search</translation>
 <translation id="8377507422902936905">Ama-oda</translation>
 <translation id="837840316697671463">Uma ungakwazi ukuthola ifayela kudivayisi yakho, bheka ku-<ph name="CLOUD_PROVIDER" />.</translation>
 <translation id="8378714024927312812">Kuphethwe inhlangano yakho</translation>

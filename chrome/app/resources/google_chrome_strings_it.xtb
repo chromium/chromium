@@ -22,6 +22,7 @@
 <translation id="1148360048981192980">La prossima volta che aprirai Chrome sul tuo <ph name="DEVICE_TYPE" />, ti verrà chiesto se vuoi utilizzare Gestore delle password di Google.</translation>
 <translation id="1152920704813762236">Informazioni su ChromeOS</translation>
 <translation id="1154147086299354128">&amp;Apri in Chrome</translation>
+<translation id="1157952955648710254">Chiudi il riquadro laterale della Ricerca Google</translation>
 <translation id="1157985233335035034">Lingue recenti</translation>
 <translation id="1158134713295836892">Gemini in Chrome</translation>
 <translation id="1184145431117212167">Installazione non riuscita perché la versione di Windows non è supportata.</translation>
@@ -46,6 +47,7 @@
 <translation id="141901961143729572">Condividi le tue opinioni</translation>
 <translation id="1425903838053942728">{COUNT,plural, =0{Chrome ha terminato l'aggiornamento. Puoi utilizzare l'ultima versione non appena eseguirai il riavvio. Dopodiché verranno riaperte le schede correnti.}=1{Chrome ha terminato l'aggiornamento. Puoi utilizzare l'ultima versione non appena eseguirai il riavvio. Dopodiché verranno riaperte le schede correnti. La finestra Incognito non verrà riaperta.}other{Chrome ha terminato l'aggiornamento. Puoi utilizzare l'ultima versione non appena eseguirai il riavvio. Dopodiché verranno riaperte le schede correnti. # finestre Incognito non verranno riaperte.}}</translation>
 <translation id="1434626383986940139">Applicazioni Chrome Canary</translation>
+<translation id="1438812738230833934">Puoi riaprire la Ricerca Google nel riquadro laterale per porre domande mentre navighi</translation>
 <translation id="1439793550875056299">Fissa Chrome</translation>
 <translation id="1446616215961349840">{COUNT,plural, =1{L'amministratore richiede il riavvio di Chrome per applicare un aggiornamento. La finestra isolata non verrà riaperta.}other{L'amministratore richiede il riavvio di Chrome per applicare un aggiornamento. # finestre isolate non verranno riaperte.}}</translation>
 <translation id="146866447420868597">Accedere a Chrome?</translation>
@@ -302,7 +304,6 @@ Se questa pagina non funziona come previsto, prova a consentire l'ottimizzazione
 <translation id="3780814664026482060">Chrome - <ph name="PAGE_TITLE" /></translation>
 <translation id="3785324443014631273">Impossibile sincronizzare i dati in ChromeOS Flex a causa di un errore durante l'accesso.</translation>
 <translation id="3795971588916395511">Google ChromeOS</translation>
-<translation id="3809772425479558446">Google Chrome richiede Windows 10 o versioni successive.</translation>
 <translation id="3810973564298564668">Gestisci</translation>
 <translation id="383455301564000773">Stai facendo l'upgrade a Windows 11? Scarica Chrome su OneDrive per avere tutto pronto fin dal primo giorno.</translation>
 <translation id="383928141529488001">Google Chrome richiede l'accesso al Bluetooth per individuare i dispositivi Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
@@ -374,6 +375,7 @@ Se questa pagina non funziona come previsto, prova a consentire l'ottimizzazione
 <translation id="4458462641685292929">C'è un'altra operazione in corso su Google Chrome. Riprova più tardi.</translation>
 <translation id="4493028449971051158">Errore di avvio: esegui il programma di installazione come amministratore.</translation>
 <translation id="4501471624619070934">Installazione non riuscita perché l'accesso in questo paese è sottoposto a limitazioni.</translation>
+<translation id="4501839397124711198">Puoi fissare la Ricerca Google nel riquadro laterale per porre domande mentre navighi</translation>
 <translation id="4571503333518166079">Vai alle impostazioni di notifica di Chrome</translation>
 <translation id="4580939929828762295">Naviga sicuro con Gestore delle password di Google</translation>
 <translation id="459622048091363950">Dopo che Chrome avrà ottenuto l'accesso, i siti web potranno chiederti l'accesso.</translation>
@@ -416,6 +418,7 @@ Se questa pagina non funziona come previsto, prova a consentire l'ottimizzazione
 <translation id="4970761609246024540">Ti diamo il benvenuto nei profili Chrome</translation>
 <translation id="4970880042055371251">Versione di ChromeOS</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
+<translation id="5000497292978544380">AI Mode nella Ricerca Google</translation>
 <translation id="5003967926796347400">Fai clic su "Gestore delle password di Google"</translation>
 <translation id="5043786843026425788">Scopri di più sulla ricerca con Google Lens in Chrome</translation>
 <translation id="504867494566807945">Apri i link in Chrome da qualsiasi app. Inoltre, per un accesso più facile, l'app viene fissata sulla barra delle applicazioni.</translation>
@@ -423,6 +426,7 @@ Se questa pagina non funziona come previsto, prova a consentire l'ottimizzazione
 <translation id="5105120510934353742">Per ricevere gli aggiornamenti futuri di Google Chrome, devi avere macOS 13 o versioni successive. Su questo computer è installato macOS 12.</translation>
 <translation id="5114340746415930644">Inserisci la tua passphrase per utilizzare e salvare i dati di Chrome nel tuo account, <ph name="USER_EMAIL" /></translation>
 <translation id="5120334927898581447">Accedi a Chrome quando accedi ad altri servizi Google</translation>
+<translation id="5121592697493894155">Ricerca Google nel riquadro laterale</translation>
 <translation id="5126049312684316860">Chrome precarica ancora più pagine che è probabile che visiterai, in modo che vengano caricate più rapidamente quando lo farai</translation>
 <translation id="5127558335897923940">Mantieni Chrome nel dock per accedervi rapidamente in qualsiasi momento</translation>
 <translation id="5132929315877954718">Scopri applicazioni, giochi, estensioni e temi straordinari per Google Chrome.</translation>
@@ -720,6 +724,7 @@ Se questa pagina non funziona come previsto, prova a consentire l'ottimizzazione
 <translation id="7777080907402804672">Se un'immagine è senza descrizione utile, Chrome proverà a fornirne una. Per la creazione delle descrizioni, le immagini vengono inviate a Google. Puoi disattivare questa funzionalità in qualsiasi momento nelle Impostazioni.</translation>
 <translation id="778331955594035129">Chrome deve avere l'autorizzazione di accesso alla posizione per questo sito</translation>
 <translation id="7787950393032327779">Sembra che il profilo sia in uso in un altro processo Google Chrome (<ph name="PROCESS_ID" />) su un altro computer (<ph name="HOST_NAME" />). Chrome ha bloccato il profilo affinché non venga danneggiato. Se sei sicuro che nessun altro processo stia utilizzando questo profilo, puoi sbloccare il profilo e riavviare Chrome.</translation>
+<translation id="7800043020703832708">Chiudi la Ricerca Google nel riquadro laterale</translation>
 <translation id="7801699035218095297">Google Chrome sta cercando di copiare le password. Per consentire l'operazione, digita la tua password Windows.</translation>
 <translation id="7804364787702057554">Il tuo account in Chrome</translation>
 <translation id="7804947029129221742">Il tuo motore di ricerca è stato modificato dall'esterno di Chrome. Per proteggerti, Chrome l'ha reimpostato al valore predefinito originale. <ph name="LEARN_MORE_LINK" /></translation>
@@ -736,6 +741,7 @@ Se questa pagina non funziona come previsto, prova a consentire l'ottimizzazione
 <translation id="7886087451482920026">Seleziona testo con Google Lens</translation>
 <translation id="7890208801193284374">Se condividi un computer, i tuoi amici e la tua famiglia possono navigare separatamente e configurare Chrome in base alle proprie esigenze.</translation>
 <translation id="7896673875602241923">Qualcuno ha già eseguito l'accesso a Chrome su questo computer come <ph name="ACCOUNT_EMAIL_LAST" />. Crea un nuovo utente Chrome per tenere separate le tue informazioni.</translation>
+<translation id="7904213866086517086">Riapri la Ricerca Google nel riquadro laterale</translation>
 <translation id="7904985524660297937">Prova Gemini in Google Chrome</translation>
 <translation id="7905880575591690197">A causa di un errore di accesso, ChromeOS non ha potuto salvare i dati di Chrome nel tuo Account Google</translation>
 <translation id="7917876797003313048">Puoi gestire gli Account Google a cui hai eseguito l'accesso. I tuoi Account Google vengono usati per il browser Chrome, il Play Store, Gmail e altro ancora. Se vuoi aggiungere un account per qualcun altro, come un membro del gruppo Famiglia, aggiungi invece una nuova persona a <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Scopri di più<ph name="LINK_END" /></translation>
@@ -794,12 +800,14 @@ Se questa pagina non funziona come previsto, prova a consentire l'ottimizzazione
 <translation id="8367950957770994118">Apri rapidamente Gemini in Chrome quando ti serve</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Tutti i diritti riservati.</translation>
 <translation id="8370748943308169953">Codice QR per accedere a Chrome come <ph name="USER_NAME" /></translation>
+<translation id="8376752431516546391">Riquadro laterale della Ricerca Google</translation>
 <translation id="8377158135256176353">Attiva/disattiva Gemini in Chrome Canary</translation>
 <translation id="8380754585531979907">Usa la tastiera per spostarti tra Gemini in Chrome e la scheda aperta.</translation>
 <translation id="8387459386171870978">Continua a utilizzare Chrome</translation>
 <translation id="8394720698884623075">Controlla gli URL confrontandoli con un elenco di siti non sicuri memorizzato in Chrome</translation>
 <translation id="8402881611069691789">{COUNT,plural, =1{Chrome ha terminato l'aggiornamento. Puoi utilizzare l'ultima versione non appena farai il riavvio. Dopodiché verranno riaperte le schede correnti. C'è una finestra Incognito o isolata aperta. Non verrà riaperta dopo il riavvio.}other{Chrome ha terminato l'aggiornamento. Puoi utilizzare l'ultima versione non appena farai il riavvio. Dopodiché verranno riaperte le schede correnti. Ci sono # finestre Incognito e isolate aperte nei profili. Non verranno riaperte dopo il riavvio.}}</translation>
 <translation id="8403038600646341038">Logo di Chrome sullo schermo di un computer.</translation>
+<translation id="8406687098231754303">Dal pulsante "Ricerca Google nel riquadro laterale" sulla barra degli strumenti, puoi riaprire Ricerca Google nel riquadro laterale per porre domande mentre navighi</translation>
 <translation id="8418845734693287262">Impossibile sincronizzare i dati in ChromeOS perché i dati di accesso dell'account sono obsoleti.</translation>
 <translation id="842386925677997438">Strumenti per la sicurezza di Chrome</translation>
 <translation id="8425765582779547329">Per navigare online in modo più sicuro con le scelte del tuo genitore, accedi a Chrome</translation>
@@ -817,6 +825,7 @@ Non è possibile salvare nuovi preferiti nel tuo account finché non ne elimini 
 <translation id="8533056045953418157">Imposta Google Chrome come visualizzatore PDF predefinito</translation>
 <translation id="854593887324189900">Cerca in questa immagine con Google Lens</translation>
 <translation id="8555465886620020932">Errore del servizio: <ph name="SERVICE_ERROR" /></translation>
+<translation id="8564408666201523086">Fatto! Ora puoi porre domande in tutta semplicità mentre navighi con la Ricerca Google nel riquadro laterale</translation>
 <translation id="856656450041460113">Elenco di ricerca delle lingue</translation>
 <translation id="8575047640889685742">Usa la <ph name="BEGIN_LINK" />tua passphrase<ph name="END_LINK" /> per criptare tutti i dati di Chrome nel tuo Account Google. I metodi di pagamento e gli indirizzi memorizzati su Google Pay non verranno criptati. La cronologia di navigazione di Chrome non verrà sincronizzata.</translation>
 <translation id="8590782867495422699">Riapri AI Mode della Ricerca Google</translation>

@@ -17,6 +17,7 @@
 <translation id="1131805035311359397">Per controllare che le tue password siano protette da violazioni dei dati e altri problemi di sicurezza, <ph name="BEGIN_LINK" />accedi a Chromium<ph name="END_LINK" />.</translation>
 <translation id="1145158441928281100">{COUNT,plural, =1{L'amministratore richiede il riavvio di Chromium per applicare questo aggiornamento. C'è una finestra Incognito o isolata aperta. Non verrà riaperta dopo il riavvio.}other{L'amministratore richiede il riavvio di Chromium per applicare questo aggiornamento. Ci sono # finestre Incognito e finestre isolate aperte nei profili. Non verranno riaperte dopo il riavvio.}}</translation>
 <translation id="1153368717515616349">Fai clic sul menu Chromium</translation>
+<translation id="1157952955648710254">Chiudi il riquadro laterale della Ricerca Google</translation>
 <translation id="1157985233335035034">Lingue recenti</translation>
 <translation id="1184145431117212167">Installazione non riuscita perché la versione di Windows non è supportata.</translation>
 <translation id="1185134272377778587">Informazioni su Chromium</translation>
@@ -43,6 +44,7 @@
 <translation id="1383876407941801731">Cerca</translation>
 <translation id="1388276868779258475">Usa l'app Chromium per continuare a navigare ovunque ti trovi</translation>
 <translation id="141901961143729572">Condividi le tue opinioni</translation>
+<translation id="1438812738230833934">Puoi riaprire la Ricerca Google nel riquadro laterale per porre domande mentre navighi</translation>
 <translation id="1465192221147974788">Per condividere la finestra, consenti la Registrazione dello schermo per Chromium nelle Impostazioni di sistema.</translation>
 <translation id="1478370723027452770">Richiedi assistenza per Chrome for Testing</translation>
 <translation id="147870194906295621">Accedi a Chromium per trovare le informazioni salvate e altri dati dal <ph name="DEVICE" /></translation>
@@ -339,6 +341,7 @@
 <translation id="4470974262661801543">Per usare e salvare i dati di Chromium nel tuo Account Google, inserisci la passphrase</translation>
 <translation id="4493028449971051158">Errore di avvio: esegui il programma di installazione come amministratore.</translation>
 <translation id="4501471624619070934">Installazione non riuscita perché l'accesso in questo paese è sottoposto a limitazioni.</translation>
+<translation id="4501839397124711198">Puoi fissare la Ricerca Google nel riquadro laterale per porre domande mentre navighi</translation>
 <translation id="4510853178268397146">Per questa estensione non sono state pubblicate Norme di tutela della privacy, ad esempio la modalità di raccolta e utilizzo dei dati. Chromium consiglia di rimuoverla.</translation>
 <translation id="452711251841752011">Ti diamo il benvenuto in Chromium; nuova finestra del browser aperta</translation>
 <translation id="4531137820806573936">Chromium deve avere l'autorizzazione per mappare l'ambiente circostante e monitorare le tue mani</translation>
@@ -382,8 +385,10 @@
 <translation id="4987820182225656817">Gli ospiti possono utilizzare Chromium senza lasciare tracce.</translation>
 <translation id="4992938037305302429">Il tuo account in Chromium</translation>
 <translation id="4994636714258228724">Aggiungiti a Chromium</translation>
+<translation id="5000497292978544380">AI Mode nella Ricerca Google</translation>
 <translation id="504699503110800016">Apri il menu extra</translation>
 <translation id="5074496654342756568">Accedi a tutti i tuoi preferiti Google con Chromium sul tuo <ph name="DEVICE_TYPE" /></translation>
+<translation id="5121592697493894155">Ricerca Google nel riquadro laterale</translation>
 <translation id="5123973130450702873">Chromium deve avere l'autorizzazione per monitorare le tue mani</translation>
 <translation id="5141988424377517949">Non hai visitato il sito di recente. Chromium ha rimosso <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> e <ph name="PERMISSION_3" />.</translation>
 <translation id="5171868502429358653">Accedi a Chromium</translation>
@@ -670,6 +675,7 @@ Chromium non è in grado di recuperare le impostazioni.</translation>
 <translation id="7781047659465034537">Imposta Chromium come browser predefinito e fissalo alla barra delle app</translation>
 <translation id="7786760609782648049">Rendi Chromium più veloce</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> - Chromium Canary</translation>
+<translation id="7800043020703832708">Chiudi la Ricerca Google nel riquadro laterale</translation>
 <translation id="7803986347287457849">Rendi più difficile vedere quali siti visiti alle persone che hanno accesso al tuo traffico internet. Chromium utilizza una connessione sicura per cercare l'indirizzo IP di un sito nel DNS (Domain Name System).</translation>
 <translation id="7810005234485217901">Puoi bloccare la ricerca immagini per un facile accesso</translation>
 <translation id="7813559034750130602">{COUNT,plural, =1{È disponibile un nuovo aggiornamento di Chromium che verrà applicato al prossimo riavvio. C'è una finestra Incognito o isolata aperta. Non verrà riaperta dopo il riavvio.}other{È disponibile un nuovo aggiornamento di Chromium che verrà applicato al prossimo riavvio. Ci sono # finestre Incognito e finestre isolate aperte nei profili. Non verranno riaperte dopo il riavvio.}}</translation>
@@ -684,6 +690,7 @@ Chromium non è in grado di recuperare le impostazioni.</translation>
 <translation id="7873537467422636035">Se dimentichi la passphrase o vuoi modificare questa impostazione, <ph name="BEGIN_LINK" />elimina i dati di Chromium nel tuo account<ph name="END_LINK" /></translation>
 <translation id="7874369989024033742">Apri rapidamente Gemini in Chromium quando ti serve</translation>
 <translation id="7888981273428720788">Imposta Chromium come browser predefinito</translation>
+<translation id="7904213866086517086">Riapri la Ricerca Google nel riquadro laterale</translation>
 <translation id="7934340546140346950">Quando possibile, Chromium esegue automaticamente l'upgrade delle connessioni non sicure a HTTPS</translation>
 <translation id="7937630085815544518">Hai eseguito l'accesso a Chromium come <ph name="USER_EMAIL_ADDRESS" />. Utilizza lo stesso account per eseguire di nuovo l'accesso.</translation>
 <translation id="7944602660083060118"><ph name="EXISTING_USER" /> ha già eseguito l’accesso. Per tenere separata la tua navigazione, accedi a Chromium nel tuo profilo per <ph name="USER_EMAIL_ADDRESS" />. Potrai anche accedere ai preferiti e ad altri dati su tutti i tuoi dispositivi.</translation>
@@ -738,14 +745,15 @@ Chromium non è in grado di recuperare le impostazioni.</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Tutti i diritti riservati.</translation>
 <translation id="8372327902843331129">Accedi a Chromium per trovare le password e altri dati su tutti i dispositivi. Questa password verrà salvata nel tuo Account Google dopo l'accesso.</translation>
 <translation id="837460953767177950">Dovrai quindi riavviare Chromium.</translation>
+<translation id="8376752431516546391">Riquadro laterale della Ricerca Google</translation>
 <translation id="8397248745433792218">Chromium consiglia di rimuoverla. <ph name="BEGIN_LINK" />Scopri di più sulle estensioni supportate<ph name="END_LINK" /></translation>
 <translation id="8401454788024434101">La pubblicazione di questa estensione è stata annullata dallo sviluppatore e potrebbe non essere sicura. Rimuovila da Chromium in modo che non possa più vedere e modificare i tuoi dati sui siti che visiti, incluse le tue informazioni personali.</translation>
+<translation id="8406687098231754303">Dal pulsante "Ricerca Google nel riquadro laterale" sulla barra degli strumenti, puoi riaprire Ricerca Google nel riquadro laterale per porre domande mentre navighi</translation>
 <translation id="8416884904046428725">Chromium deve verificare la tua identità per poter salvare alcuni dati nel tuo Account Google e utilizzarli su tutti i tuoi dispositivi. Se esci ora, questi dati verranno eliminati.</translation>
 <translation id="8417404458978023919">{0,plural, =1{Riavvia Chromium entro un giorno}other{Riavvia Chromium entro # giorni}}</translation>
 <translation id="8438543370129609977">Quando utilizzi la ricerca immagini, il titolo della pagina, l'URL e i contenuti, inclusi i PDF, vengono inviati al server. <ph name="LEARN_MORE" /></translation>
 <translation id="8447525028100794994">Scopri di più sulla ricerca con la ricerca immagini in Chromium</translation>
 <translation id="8453117565092476964">L'archivio di installazione è danneggiato o non valido. Scarica di nuovo Chromium.</translation>
-<translation id="8458614432758743027">Chromium richiede Windows 10 o versioni successive.</translation>
 <translation id="8463672209299734063">(Facoltativo) Contribuisci a migliorare le funzionalità e le prestazioni di Chromium OS inviando automaticamente a Google dati diagnostici e sull'utilizzo.</translation>
 <translation id="8471947159125090285">Per usare e salvare i dati di Chromium nel tuo Account Google, verifica la tua identità</translation>
 <translation id="8482493977473846331">Mostra le richieste di accesso a Chromium</translation>
@@ -757,6 +765,7 @@ Chromium non è in grado di recuperare le impostazioni.</translation>
 <translation id="8555465886620020932">Errore del servizio: <ph name="SERVICE_ERROR" /></translation>
 <translation id="8556055872671007529">Alcune funzionalità ed estensioni di Chromium sono dotate di scorciatoie. Puoi scegliere di riattivarle.</translation>
 <translation id="8556420416730706394">Puoi bloccare la ricerca immagini per un facile accesso; fai clic sul pulsante Blocca nella parte superiore del riquadro laterale</translation>
+<translation id="8564408666201523086">Fatto! Ora puoi porre domande in tutta semplicità mentre navighi con la Ricerca Google nel riquadro laterale</translation>
 <translation id="856656450041460113">Elenco di ricerca delle lingue</translation>
 <translation id="8576826849825683917">Più organizzazioni gestiscono Chromium</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> The Chromium Authors. Tutti i diritti riservati.</translation>

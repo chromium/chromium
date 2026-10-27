@@ -600,7 +600,6 @@
 <translation id="2781331604911854368">已开启</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2783161812871838616">请求切换到桌面版网站</translation>
-<translation id="2789486458103222910">确定</translation>
 <translation id="2789552044937754463">{COUNT,plural, =1{密码已保存到您的 Google 账号 {EMAIL}}other{密码已保存到您的 Google 账号 {EMAIL}}}</translation>
 <translation id="2791174088547598693">添加密码…</translation>
 <translation id="2793703503584038325">选择一个密码，然后点按“分享”图标</translation>
@@ -1707,7 +1706,6 @@
 <translation id="6301767200000930965">Aa</translation>
 <translation id="630308129961693966">选择地址栏的位置</translation>
 <translation id="6305257382500066042">立即试用</translation>
-<translation id="6307241780749477694">请验证您的身份，以便在此设备上获取您的所有密码</translation>
 <translation id="6307792728709337290">将卡片保存至 Google 账号，以便在本次及日后使用 Chrome 购物时自动填充信息。</translation>
 <translation id="6316141353357700666">从显示的列表中选择要使用的密码。</translation>
 <translation id="6321526113093607004">添加到书签</translation>
@@ -2171,7 +2169,6 @@
 <translation id="7700527812567437847">使用 Google 智能镜头搜索屏幕内容</translation>
 <translation id="7701040980221191251">无</translation>
 <translation id="7702428539671224160">在 <ph name="URL" /> 上自动填充支付信息</translation>
-<translation id="7708994397325774423">获取您的所有密码</translation>
 <translation id="7710096647785049958">打开每个链接都更省时</translation>
 <translation id="7711440461521638739">您未重复使用任何密码</translation>
 <translation id="7712361583414030698">正在查看离线版本</translation>

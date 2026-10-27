@@ -6689,6 +6689,7 @@
 <translation id="6124698108608891449">このサイトが追加の権限をリクエストしています。</translation>
 <translation id="6125202119952209826"><ph name="OWNER_FIRST_NAME" /> さんのタブグループに参加</translation>
 <translation id="6125639926370653692">月</translation>
+<translation id="6125649408655762488">グループにフォーカス</translation>
 <translation id="6126601353087978360">フィードバックの内容をご記入ください。</translation>
 <translation id="6127292407256937949">音量はオンになっています。音量をオフにします。</translation>
 <translation id="6127598727646973981">安全な接続</translation>
@@ -7932,6 +7933,7 @@
 <translation id="706949303827219454">セキュリティ設定ページを新しいタブで開きます</translation>
 <translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{このサイトの新しいパスワード}other{このサイトの新しいパスワード}}</translation>
 <translation id="7070484045139057854">サイトデータの読み取りと変更を行います</translation>
+<translation id="7071521146534760487">アカウントを管理</translation>
 <translation id="7072010813301522126">ショートカット名</translation>
 <translation id="7072078320324181561">位置情報へのアクセス権を持つアプリとウェブサイト、システム サービスは位置情報を使用できます。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
 <translation id="7072573590175540692">利用可能な機能と拡張機能のショートカット</translation>
@@ -8568,6 +8570,7 @@
 <translation id="755472745191515939">この言語は管理者が許可していません</translation>
 <translation id="7554791636758816595">新しいタブ</translation>
 <translation id="7557194624273628371">Linux のポート転送</translation>
+<translation id="7557508262441527045">ログアウトしました</translation>
 <translation id="7561196759112975576">常に使用</translation>
 <translation id="7561759921596375678">音量をオンにする</translation>
 <translation id="7563576896417108627"><ph name="APP_NAME" /> をカスタマイズして制御します。アップデートが利用可能です。</translation>

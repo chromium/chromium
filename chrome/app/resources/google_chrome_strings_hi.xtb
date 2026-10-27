@@ -22,6 +22,7 @@
 <translation id="1148360048981192980">अगली बार अपने <ph name="DEVICE_TYPE" /> पर Chrome खोलने पर, आपको Google Password Manager इस्तेमाल करने का प्रॉम्प्ट दिखेगा.</translation>
 <translation id="1152920704813762236">ChromeOS के बारे में जानकारी</translation>
 <translation id="1154147086299354128">Chrome में &amp;खोलें</translation>
+<translation id="1157952955648710254">Google Search का साइड पैनल बंद करें</translation>
 <translation id="1157985233335035034">हाल ही की भाषाएं</translation>
 <translation id="1158134713295836892">Chrome में Gemini</translation>
 <translation id="1184145431117212167">इंस्टॉल नहीं किया जा सका, क्योंकि Windows के आपके वर्शन पर यह काम नहीं करता.</translation>
@@ -46,6 +47,7 @@
 <translation id="141901961143729572">अपने विचार शेयर करें</translation>
 <translation id="1425903838053942728">{COUNT,plural, =0{Chrome अपडेट हो गया है. फिर से लॉन्च करके, नए वर्शन का इस्तेमाल किया जा सकता है. इसके बाद, आपके मौजूदा टैब फिर से खुल जाएंगे.}=1{Chrome अपडेट हो गया है. फिर से लॉन्च करके, नए वर्शन का इस्तेमाल किया जा सकता है. इसके बाद, आपके मौजूदा टैब फिर से खुल जाएंगे. आपकी गुप्त विंडो फिर से नहीं खुलेगी.}one{Chrome अपडेट हो गया है. फिर से लॉन्च करके, नए वर्शन का इस्तेमाल किया जा सकता है. इसके बाद, आपके मौजूदा टैब फिर से खुल जाएंगे. आपकी # गुप्त विंडो फिर से नहीं खुलेगी.}other{Chrome अपडेट हो गया है. फिर से लॉन्च करके, नए वर्शन का इस्तेमाल किया जा सकता है. इसके बाद, आपके मौजूदा टैब फिर से खुल जाएंगे. आपकी # गुप्त विंडो फिर से नहीं खुलेंगी.}}</translation>
 <translation id="1434626383986940139">Chrome Canary ऐप्स </translation>
+<translation id="1438812738230833934">ब्राउज़ करते समय सवाल पूछने के लिए, 'साइड पैनल में Google Search' को फिर से खोला जा सकता है</translation>
 <translation id="1439793550875056299">Chrome को पिन करें</translation>
 <translation id="1446616215961349840">{COUNT,plural, =1{आपके एडमिन चाहते हैं कि आप अपडेट लागू करने के लिए Chrome को फिर से लॉन्च करें. आपकी आइसोलेटेड विंडो दोबारा नहीं खुलेगी.}one{आपके एडमिन चाहते हैं कि आप अपडेट लागू करने के लिए Chrome को फिर से लॉन्च करें. आपकी # आइसोलेटेड विंडो दोबारा नहीं खुलेगी.}other{आपके एडमिन चाहते हैं कि आप अपडेट लागू करने के लिए Chrome को फिर से लॉन्च करें. आपकी # आइसोलेटेड विंडो दोबारा नहीं खुलेंगी.}}</translation>
 <translation id="146866447420868597">क्या आपको Chrome में साइन इन करना है?</translation>
@@ -303,7 +305,6 @@
 <translation id="3780814664026482060">Chrome - <ph name="PAGE_TITLE" /></translation>
 <translation id="3785324443014631273">ChromeOS Flex आपके डेटा को सिंक नहीं कर सका, क्योंकि साइन इन करने के दौरान कोई गड़बड़ी हुई है.</translation>
 <translation id="3795971588916395511">Google ChromeOS</translation>
-<translation id="3809772425479558446">Google Chrome के लिए, आपके डिवाइस में Windows 10 या उसके बाद का वर्शन होना चाहिए.</translation>
 <translation id="3810973564298564668">मैनेज करें</translation>
 <translation id="383455301564000773">क्या आपको Windows 11 पर अपग्रेड करना है? Chrome को OneDrive में डाउनलोड करें, ताकि आप पहले दिन से ही तैयार रहें.</translation>
 <translation id="383928141529488001">Google Chrome को ब्लूटूथ का ऐक्सेस चाहिए, ताकि वह ब्लूटूथ डिवाइस ढूंढ पाए. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
@@ -375,6 +376,7 @@
 <translation id="4458462641685292929">Google Chrome पर कोई और क्रिया चल रही है. कृपया बाद में फिर से कोशिश करें.</translation>
 <translation id="4493028449971051158">स्टार्टअप में गड़बड़ी हुई: कृपया इंस्टॉलर को एडमिन के तौर पर चलाएं.</translation>
 <translation id="4501471624619070934">इंस्टॉल नहीं हो पाया, क्योंकि इस देश में ऐक्सेस करने की अनुमति नहीं है.</translation>
+<translation id="4501839397124711198">ब्राउज़ करते समय सवाल पूछने के लिए, 'साइड पैनल में Google Search' को पिन किया जा सकता है</translation>
 <translation id="4571503333518166079">Chrome की सूचना सेटिंग पर जाएं</translation>
 <translation id="4580939929828762295">Google Password Manager की मदद से सुरक्षित रहें</translation>
 <translation id="459622048091363950">Chrome को ऐक्सेस मिलने के बाद, वेबसाइटें आपसे ऐक्सेस मांग सकेंगी.</translation>
@@ -417,6 +419,7 @@
 <translation id="4970761609246024540">Chrome प्रोफ़ाइलों में आपका स्वागत है</translation>
 <translation id="4970880042055371251">ChromeOS वर्शन</translation>
 <translation id="4990567037958725628">Google Chrome कैनरी</translation>
+<translation id="5000497292978544380">Google Search का एआई मोड</translation>
 <translation id="5003967926796347400">“Google Password Manager” पर क्लिक करें</translation>
 <translation id="5043786843026425788">Chrome में Google Lens का इस्तेमाल करके कॉन्टेंट खोजने के बारे में ज़्यादा जानें</translation>
 <translation id="504867494566807945">किसी भी ऐप्लिकेशन से Chrome में लिंक खोलें. साथ ही, आसानी से ऐक्सेस करने के लिए, इसे टास्कबार में पिन करें.</translation>
@@ -424,6 +427,7 @@
 <translation id="5105120510934353742">Google Chrome के अपडेट पाने के लिए, आपके कंप्यूटर में macOS 13 या इसके बाद का वर्शन इंस्टॉल होना चाहिए. फ़िलहाल, इस कंप्यूटर में macOS 12 का इस्तेमाल किया जा रहा है.</translation>
 <translation id="5114340746415930644">अपने खाते <ph name="USER_EMAIL" /> में Chrome का डेटा सेव करने और इस्तेमाल करने के लिए, अपना लंबा पासवर्ड डालें</translation>
 <translation id="5120334927898581447">Google की अन्य सेवाओं में साइन इन करते समय, Chrome में साइन इन करें</translation>
+<translation id="5121592697493894155">साइड पैनल में मौजूद Google Search</translation>
 <translation id="5126049312684316860">Chrome ऐसे कई और पेजों को पहले से लोड करके रखता है जिन पर आपके जाने की संभावना होती है, ताकि जब आप उन पर जाएं, तो वे ज़्यादा तेज़ी से लोड हो जाएं</translation>
 <translation id="5127558335897923940">Chrome को अपने डॉक में रखें, ताकि आप इसे कभी भी जल्द से जल्द ऐक्सेस कर सकें</translation>
 <translation id="5132929315877954718">Google Chrome के लिए बेहतरीन ऐप्स ,गेम, एक्सटेंशन और थीम खोजें.</translation>
@@ -725,6 +729,7 @@ Google Chrome आपकी सेटिंग बहाल नहीं कर �
 <translation id="7777080907402804672">अगर किसी इमेज के बारे में मददगार जानकारी मौजूद नहीं है, तो Chrome उसके बारे में जानकारी देने की कोशिश करेगा. जानकारी तैयार करने के लिए, इमेज Google को भेजी जाती हैं. आप किसी भी समय सेटिंग में जाकर इसे बंद कर सकते हैं.</translation>
 <translation id="778331955594035129">Chrome को इस साइट के लिए, जगह की जानकारी ऐक्सेस करने की अनुमति चाहिए</translation>
 <translation id="7787950393032327779">ऐसा लगता है कि प्रोफ़ाइल का उपयोग अन्य Google Chrome प्रोसेस (<ph name="PROCESS_ID" />) द्वारा किसी अन्य कंप्यूटर (<ph name="HOST_NAME" />) पर किया जा रहा है.  Chrome ने प्रोफ़ाइल को लॉक कर दिया है ताकि वह दूषित न हो. अगर आप पक्का हैं कि अन्य प्रोसेस इस प्रोफ़ाइल का उपयोग नहीं कर रही हैं, तो आप प्रोफ़ाइल को अनलॉक कर सकते हैं और Chrome को फिर से लॉन्च कर सकते हैं.</translation>
+<translation id="7800043020703832708">साइड पैनल में Google Search को बंद करें</translation>
 <translation id="7801699035218095297">Google Chrome, पासवर्ड कॉपी करने की कोशिश कर रहा है. इसकी अनुमति देने के लिए Windows का पासवर्ड डालें.</translation>
 <translation id="7804364787702057554">Chrome में आपका खाता</translation>
 <translation id="7804947029129221742">आपके सर्च इंजन को Chrome के बाहर से बदला गया था. आपकी सुरक्षा के लिए, Chrome ने इसे वापस डिफ़ॉल्ट पर सेट कर दिया है. <ph name="LEARN_MORE_LINK" /></translation>
@@ -741,6 +746,7 @@ Google Chrome आपकी सेटिंग बहाल नहीं कर �
 <translation id="7886087451482920026">Google Lens की मदद से टेक्स्ट चुनें</translation>
 <translation id="7890208801193284374">अगर आप कंप्यूटर शेयर करते हैं, तो दोस्त और परिवार अलग-अलग ब्राउज़ कर सकते हैं और Chrome को जैसा चाहें सेट कर सकते हैं.</translation>
 <translation id="7896673875602241923">इस कंप्यूटर पर पहले किसी और ने <ph name="ACCOUNT_EMAIL_LAST" /> के रूप में Chrome में साइन इन किया है. अपनी जानकारी अलग रखने के लिए कृपया नया 'Chrome उपयोगकर्ता' बनाएं.</translation>
+<translation id="7904213866086517086">'साइड पैनल में Google Search' को फिर से खोलें</translation>
 <translation id="7904985524660297937">Google Chrome में Gemini आज़माएं</translation>
 <translation id="7905880575591690197">साइन इन करने के दौरान हुई किसी गड़बड़ी की वजह से, ChromeOS आपके Google खाते में Chrome का डेटा सेव नहीं कर सका</translation>
 <translation id="7917876797003313048">आप अपने साइन-इन किए गए Google खाते मैनेज कर सकते हैं. आपके Google खाते, Chrome ब्राउज़र, Play Store, Gmail वगैरह के लिए इस्तेमाल किए जाते हैं. अगर आप किसी अन्य व्यक्ति के लिए कोई खाता जोड़ना चाहते हैं, तो अपने <ph name="DEVICE_TYPE" /> में एक नया व्यक्ति जोड़ें. <ph name="LINK_BEGIN" />ज़्यादा जानें<ph name="LINK_END" /></translation>
@@ -800,12 +806,14 @@ Google Chrome आपकी सेटिंग बहाल नहीं कर �
 <translation id="8367950957770994118">जब भी ज़रूरत हो, 'Chrome में Gemini' को तुरंत खोलें</translation>
 <translation id="8370517070665726704">कॉपीराइट <ph name="YEAR" /> Google LLC. सर्वाधिकार सुरक्षित.</translation>
 <translation id="8370748943308169953"><ph name="USER_NAME" /> के तौर पर Chrome में साइन इन करने के लिए क्यूआर कोड</translation>
+<translation id="8376752431516546391">Google Search का साइड पैनल</translation>
 <translation id="8377158135256176353">Chrome कैनरी में Gemini को टॉगल करें</translation>
 <translation id="8380754585531979907">'Chrome में Gemini' और खुले हुए टैब के बीच स्विच करने के लिए, कीबोर्ड का इस्तेमाल करें.</translation>
 <translation id="8387459386171870978">Chrome को इस्तेमाल करना जारी रखें</translation>
 <translation id="8394720698884623075">Chrome में पहले से सेव की गई असुरक्षित साइटों की सूची का इस्तेमाल करके, यूआरएल की जांच की जाती है</translation>
 <translation id="8402881611069691789">{COUNT,plural, =1{Chrome अपडेट हो गया है. इसे फिर से लॉन्च करते ही नए वर्शन का इस्तेमाल किया जा सकता है. इसके लॉन्च होने के बाद, मौजूदा टैब फिर से खुल जाएंगे. आपकी गुप्त या आइसोलेटेड विंडो खुली है. Chrome को फिर से लॉन्च करने पर, यह विंडो दोबारा नहीं खुलेगी.}one{Chrome अपडेट हो गया है. इसे फिर से लॉन्च करते ही नए वर्शन का इस्तेमाल किया जा सकता है. इसके लॉन्च होने के बाद, मौजूदा टैब फिर से खुल जाएंगे. आपकी # गुप्त या आइसोलेटेड विंडो खुली है. Chrome को फिर से लॉन्च करने पर, यह विंडो दोबारा नहीं खुलेगी.}other{Chrome अपडेट हो गया है. इसे फिर से लॉन्च करते ही नए वर्शन का इस्तेमाल किया जा सकता है. इसके लॉन्च होने के बाद, मौजूदा टैब फिर से खुल जाएंगे. आपकी # गुप्त या आइसोलेटेड विंडो खुली हैं. Chrome को फिर से लॉन्च करने पर, ये विंडो दोबारा नहीं खुलेंगी.}}</translation>
 <translation id="8403038600646341038">कंप्यूटर की स्क्रीन में Chrome का लोगो.</translation>
+<translation id="8406687098231754303">ब्राउज़ करते समय सवाल पूछने के लिए, टूलबार पर मौजूद "साइड पैनल में Google Search" बटन पर क्लिक करके, साइड पैनल में Google Search को फिर से खोला जा सकता है</translation>
 <translation id="8418845734693287262">ChromeOS आपका डेटा सिंक नहीं कर सका, क्योंकि आपके खाते में साइन इन करने से जुड़ी जानकारी पुरानी हो चुकी है.</translation>
 <translation id="842386925677997438">Chrome के सुरक्षा टूल</translation>
 <translation id="8425765582779547329">अपने माता-पिता के चुने गए विकल्पों के साथ, ऑनलाइन सुरक्षित रहने के लिए, Chrome में साइन इन करें</translation>
@@ -823,6 +831,7 @@ Google Chrome आपकी सेटिंग बहाल नहीं कर �
 <translation id="8533056045953418157">Google Chrome को अपने डिफ़ॉल्ट PDF व्यूअर के तौर पर सेट करें</translation>
 <translation id="854593887324189900">Google Lens की मदद से, इस इमेज को खोजें</translation>
 <translation id="8555465886620020932">सेवा में गड़बड़ी: <ph name="SERVICE_ERROR" />.</translation>
+<translation id="8564408666201523086">हो गया! 'साइड पैनल में Google Search' की मदद से, अब ब्राउज़ करते समय आसानी से सवाल पूछे जा सकते हैं</translation>
 <translation id="856656450041460113">भाषाओं की सूची में खोजें</translation>
 <translation id="8575047640889685742">अपने Google खाते में मौजूद Chrome का पूरा डेटा एन्क्रिप्ट (सुरक्षित) करने के लिए, <ph name="BEGIN_LINK" />अपना लंबा पासवर्ड<ph name="END_LINK" /> इस्तेमाल करें. Google Pay पर जोड़े गए पेमेंट के तरीके और पते एन्क्रिप्ट (सुरक्षित) नहीं किए जाएंगे. Chrome का ब्राउज़िंग इतिहास सिंक नहीं किया जाएगा.</translation>
 <translation id="8590782867495422699">Google Search के एआई मोड को फिर से खोलें</translation>

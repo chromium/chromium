@@ -1836,6 +1836,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="2423506062824112361">Kan content niet downloaden om een onbekende reden.</translation>
 <translation id="2423578206845792524">Af&amp;beelding opslaan als...</translation>
 <translation id="2424424966051154874">{0,plural, =1{Gast}other{Gast (#)}}</translation>
+<translation id="2424762488607770568">Standaard (overeenkomen met systeem)</translation>
 <translation id="2426805022920575512">Een ander account kiezen</translation>
 <translation id="2427507373259914951">Klik met linkermuisknop</translation>
 <translation id="2428245692671442472">{NUM_PASSWORDS,plural, =1{1 account voor <ph name="DOMAIN_LINK" />, wachtwoord alleen opgeslagen op dit apparaat. Meer informatie}other{{NUM_PASSWORDS} accounts voor <ph name="DOMAIN_LINK" />, wachtwoord alleen opgeslagen op dit apparaat. Meer informatie}}</translation>
@@ -5643,6 +5644,7 @@ Gebruik Ctrl + Alt + Helderheid omlaag om uit te zoomen.</translation>
 <translation id="5280426389926346830">Snelkoppeling maken?</translation>
 <translation id="5280966903879030278">Gebruik alledaagse taal om in je browsegeschiedenis te zoeken en sites te vinden die je hebt bezocht. Deze instelling staat uit.</translation>
 <translation id="5281013262333731149">Wordt geopend in: <ph name="OPEN_BROWSER" /></translation>
+<translation id="5283747245540449968">Paginakleuren</translation>
 <translation id="5284107433515104664">Tijdens de wachtwoordwijziging worden paginacontent en gerelateerde informatie naar Google gestuurd en kunnen deze door mensen worden beoordeeld om deze functie te verbeteren. Je wachtwoord is versleuteld en wordt nooit door iemand gezien.</translation>
 <translation id="5284445933715251131">Doorgaan met downloaden</translation>
 <translation id="5285635972691565180">Scherm <ph name="DISPLAY_ID" /></translation>
@@ -6529,6 +6531,7 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="5989497858237037960">Als je op sites browst, wordt de content van de pagina's versleuteld en opgeslagen op je apparaat. Dit kan van invloed zijn op de prestaties van Chrome.</translation>
 <translation id="5990266201903445068">Alleen wifi</translation>
 <translation id="5990386583461751448">Vertaald</translation>
+<translation id="5991039386730545918">Het geselecteerde kleurenthema voor de pagina wordt alleen gebruikt als hoog contrast van het systeem aanstaat</translation>
 <translation id="5992225669837656567">De verbinding met alle muizen is verbroken</translation>
 <translation id="5992652489368666106">Geen rand</translation>
 <translation id="5996490984199062729">Je profiel is niet ingesteld</translation>
@@ -6685,6 +6688,7 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="6124698108608891449">Deze site heeft meer rechten nodig.</translation>
 <translation id="6125202119952209826">Lid worden van tabbladgroep met <ph name="OWNER_FIRST_NAME" /></translation>
 <translation id="6125639926370653692">Maan</translation>
+<translation id="6125649408655762488">Focus op groep plaatsen</translation>
 <translation id="6126601353087978360">Geef hieronder je feedback op:</translation>
 <translation id="6127292407256937949">Volume staat aan. Zet het volume uit.</translation>
 <translation id="6127598727646973981">Beveiligde verbindingen</translation>
@@ -7928,6 +7932,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="706949303827219454">Opent de pagina met beveiligingsinstellingen in een nieuw tabblad</translation>
 <translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{Nieuw wachtwoord voor deze site}other{Nieuwe wachtwoorden voor deze site}}</translation>
 <translation id="7070484045139057854">Hiermee kun je sitegegevens lezen en wijzigen</translation>
+<translation id="7071521146534760487">Account beheren</translation>
 <translation id="7072010813301522126">Naam van snelkoppeling</translation>
 <translation id="7072078320324181561">Apps en websites met locatierechten en systeemservices kunnen je locatie gebruiken. <ph name="LINK_BEGIN" />Meer informatie<ph name="LINK_END" /></translation>
 <translation id="7072573590175540692">Beschikbare snelkoppelingen voor functies en extensies</translation>
@@ -8563,6 +8568,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="755472745191515939">Je beheerder staat deze taal niet toe</translation>
 <translation id="7554791636758816595">Nieuw tabblad</translation>
 <translation id="7557194624273628371">Poortdoorschakeling voor Linux</translation>
+<translation id="7557508262441527045">Uitgelogd</translation>
 <translation id="7561196759112975576">Altijd</translation>
 <translation id="7561759921596375678">Volume aanzetten</translation>
 <translation id="7563576896417108627"><ph name="APP_NAME" /> aanpassen en beheren. Update is beschikbaar.</translation>
@@ -9312,6 +9318,7 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8118362518458010043">Uitgezet door Chrome. Deze extensie kan onveilig zijn.</translation>
 <translation id="8118448640060360549">{EXTENSIONS_COUNT,plural, =1{# bookmark}other{# bookmarks}}</translation>
 <translation id="8118488170956489476">Je <ph name="BEGIN_LINK" />browser wordt beheerd<ph name="END_LINK" /> door je organisatie</translation>
+<translation id="8118496140027032067">Overschrijf webpaginakleuren met thema's met hoog contrast of zet afgedwongen kleuren uit</translation>
 <translation id="8118515372935001629">Vernieuwingssnelheid van scherm</translation>
 <translation id="8118860139461251237">Je downloads beheren</translation>
 <translation id="8119438628456698432">Logbestanden genereren...</translation>
@@ -9989,6 +9996,7 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8648408795949963811">Kleurtemperatuur Nachtverlichting</translation>
 <translation id="8648544143274677280"><ph name="SITE_NAME" /> wil het volgende: <ph name="FIRST_PERMISSION" />, <ph name="SECOND_PERMISSION" /> en meer</translation>
 <translation id="8648889679430451455">Personalisatiegegevens wissen</translation>
+<translation id="8649290269169747916">Standaard paginakleuren gebruiken als hoog contrast van systeem uitstaat</translation>
 <translation id="8651585100578802546">Laad pagina opnieuw</translation>
 <translation id="8651806635673244884">Je kunt je tabbladen weer naar de bovenkant verplaatsen door met de rechtermuisknop op een tabblad te klikken en Tabbladen horizontaal tonen te selecteren.</translation>
 <translation id="8652400352452647993">Fout met pakketextensie</translation>

@@ -661,6 +661,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="2118132148597630479">Sobre C5</translation>
 <translation id="2119505898009119320">Emitida para: <ph name="ORGANIZATION" /> [<ph name="JURISDICTION" />]</translation>
 <translation id="2119867082804433120">Perforación na parte inferior dereita</translation>
+<translation id="2121418473709291357">Ignorouse porque Chrome Browser Cloud Management está desactivado.</translation>
 <translation id="2122214041802369259">Prezo alto</translation>
 <translation id="2122719317867821810">Esta política funciona segundo o previsto, pero anula un valor en conflito que está definido noutro lugar.</translation>
 <translation id="2124081665399116863">Actualiza o vehículo en Google Wallet</translation>
@@ -690,6 +691,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="2155260325161282517">5 x 7 polgadas</translation>
 <translation id="2156467141257470387">Podes usar os enderezos gardados nos produtos de Google. Isto non cambiará o teu enderezo actual do traballo, que se gardará na túa Conta de Google (<ph name="ACCOUNT" />).</translation>
 <translation id="2157640075051554492">Notificacións de seguimento de prezos</translation>
+<translation id="2158964559178498011">A función de autocompletar funciona en máis lugares. Preme Control dúas veces para buscar e completar información</translation>
 <translation id="2161656808144014275">Texto</translation>
 <translation id="2162435186600002085">Logotipo da cabeceira principal</translation>
 <translation id="2162535140284745414">Recibe suxestións en tempo real que che poden axudar a atopar novas formas de navegar coa IA.</translation>
@@ -2200,6 +2202,7 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 <translation id="4678379207584374453"><ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
 <translation id="4682496302933121474">Queres traducir a páxina?</translation>
 <translation id="468314109939257734">Ver número de tarxeta virtual</translation>
+<translation id="4684818564800397688">A función de autocompletar funciona en máis lugares. Preme ⌘ dúas veces para buscar e completar información</translation>
 <translation id="4686942373615810936">Creouse agora mesmo</translation>
 <translation id="4690205240253392065">Escolle un fornecedor para pagar máis tarde</translation>
 <translation id="469028408546145398">Botón para pechar as ventás do modo de incógnito. Actívao para pechar todas as ventás do modo de incógnito que estean abertas</translation>
@@ -2480,6 +2483,7 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 <translation id="5115232566827194440">Omisión da sesión de convidado xestionada e restrinxida</translation>
 <translation id="5115563688576182185">(64 bits)</translation>
 <translation id="5116015291385561204">Verifica a túa identidade para autocompletar a información confidencial</translation>
+<translation id="5121592697493894155">Busca de Google no panel lateral</translation>
 <translation id="5122786942953798871">Sobre (algodón)</translation>
 <translation id="5123063207673082822">Fin de semana</translation>
 <translation id="5124797626438336458">A pantalla de erro de pago aprazado está aberta a altura media.</translation>
@@ -2916,6 +2920,7 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 <translation id="5843987376989109187">Este idioma aínda non está dispoñible.
     <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
 <translation id="5848445080378515710">Unha vez que revises o pedido, debes iniciar sesión ou crear unha conta de <ph name="BNPL_ISSUER_NAME" />. Esta conta vincularase automaticamente a Google Wallet.</translation>
+<translation id="5848916806551637625">A conta de Pix vincularase a <ph name="ACCOUNT_EMAIL" />. Para desactivar a detección de código de Pix, vai á <ph name="BEGIN_LINK1" />configuración de Chrome<ph name="END_LINK1" />.</translation>
 <translation id="5851548754964597211">Lista de pestanas</translation>
 <translation id="5851868085455377790">Emisor</translation>
 <translation id="5852909432155870672">RA4</translation>
@@ -4426,6 +4431,7 @@ Detalles adicionais:
 <translation id="8371841335382565017">Mostrar lista dos dispositivos de emisión</translation>
 <translation id="8371889962595521444">Certificados raíz personalizados</translation>
 <translation id="8374636051559112948">Varía</translation>
+<translation id="8376752431516546391">Panel lateral da Busca de Google</translation>
 <translation id="8377507422902936905">Pedidos</translation>
 <translation id="837840316697671463">Se non podes atopar un ficheiro no dispositivo, búscao en <ph name="CLOUD_PROVIDER" />.</translation>
 <translation id="8378714024927312812">Xestionado pola túa organización</translation>

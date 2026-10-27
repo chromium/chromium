@@ -661,6 +661,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="2118132148597630479">Konvolut C5</translation>
 <translation id="2119505898009119320">Udstedt til: <ph name="ORGANIZATION" /> [<ph name="JURISDICTION" />]</translation>
 <translation id="2119867082804433120">Hul nederst til højre</translation>
+<translation id="2121418473709291357">Ignoreret, fordi Skybaseret administration af Chrome-browseren er deaktiveret.</translation>
 <translation id="2122214041802369259">Prisen er høj</translation>
 <translation id="2122719317867821810">Denne politik fungerer efter hensigten, men et andet sted er en modstridende værdi blevet tilsidesat af denne politik.</translation>
 <translation id="2124081665399116863">Opdater køretøjet i Google Wallet</translation>
@@ -690,6 +691,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="2155260325161282517">5 x 7 tommer</translation>
 <translation id="2156467141257470387">Du kan bruge gemte adresser på tværs af Google-produkter. Dette ændrer ikke din eksisterende arbejdsadresse. Den gemmes på din Google-konto <ph name="ACCOUNT" />.</translation>
 <translation id="2157640075051554492">Notifikationer om prissporing</translation>
+<translation id="2158964559178498011">Autofyld fungerer flere steder – tryk to gange på Ctrl for at finde og udfylde oplysninger</translation>
 <translation id="2161656808144014275">Tekst</translation>
 <translation id="2162435186600002085">Primært headerlogo</translation>
 <translation id="2162535140284745414">Få forslag i realtid, der kan hjælpe dig med at finde nye måder at browse på med AI.</translation>
@@ -2200,6 +2202,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsindstillingerne<ph name="END_LINK" /> f
 <translation id="4678379207584374453"><ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /></translation>
 <translation id="4682496302933121474">Vil du oversætte siden?</translation>
 <translation id="468314109939257734">Se dit virtuelle kortnummer</translation>
+<translation id="4684818564800397688">Autofyld fungerer flere steder – tryk to gange på ⌘ for at finde og udfylde oplysninger</translation>
 <translation id="4686942373615810936">Oprettet lige nu</translation>
 <translation id="4690205240253392065">Vælg en udbyder af Betal senere</translation>
 <translation id="469028408546145398">Knappen Luk inkognitovinduer, aktivér for at lukke alle inkognitovinduer, der i øjeblikket er åbne</translation>
@@ -2480,6 +2483,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsindstillingerne<ph name="END_LINK" /> f
 <translation id="5115232566827194440">Tilsidesættelse af begrænset administreret gæstesession</translation>
 <translation id="5115563688576182185">(64-bit)</translation>
 <translation id="5116015291385561204">Verificer din identitet for at bruge autofyld i forbindelse med følsomme oplysninger</translation>
+<translation id="5121592697493894155">Google Søgning i sidepanelet</translation>
 <translation id="5122786942953798871">Kuvert (bomuld)</translation>
 <translation id="5123063207673082822">Weekend</translation>
 <translation id="5124797626438336458">Skærmen med fejlmeddelelse for Køb nu, betal senere er åbnet i halv højde.</translation>
@@ -2916,6 +2920,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsindstillingerne<ph name="END_LINK" /> f
 <translation id="5843987376989109187">Dette sprog understøttes ikke endnu.
     <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /></translation>
 <translation id="5848445080378515710">Når du har gennemgået din ordre, skal du logge ind på eller oprette en konto med <ph name="BNPL_ISSUER_NAME" />. Denne konto knyttes automatisk i Google Wallet.</translation>
+<translation id="5848916806551637625">Pix-kontoen knyttes til <ph name="ACCOUNT_EMAIL" />. Gå til <ph name="BEGIN_LINK1" />Chrome-indstillingerne<ph name="END_LINK1" /> for at deaktivere registrering af Pix-kode.</translation>
 <translation id="5851548754964597211">Faneliste</translation>
 <translation id="5851868085455377790">Udsteder</translation>
 <translation id="5852909432155870672">RA4</translation>
@@ -4427,6 +4432,7 @@ Yderligere oplysninger:
 <translation id="8371841335382565017">Vis listen over enheder til casting</translation>
 <translation id="8371889962595521444">Tilpassede rodcertifikater</translation>
 <translation id="8374636051559112948">Varierer</translation>
+<translation id="8376752431516546391">Sidepanel i Google Søgning</translation>
 <translation id="8377507422902936905">Ordrer</translation>
 <translation id="837840316697671463">Hvis du ikke kan finde en fil på din enhed, kan du kigge efter den i <ph name="CLOUD_PROVIDER" />.</translation>
 <translation id="8378714024927312812">Administreret af din organisation</translation>

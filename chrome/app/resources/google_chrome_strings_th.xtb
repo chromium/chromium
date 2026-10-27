@@ -22,6 +22,7 @@
 <translation id="1148360048981192980">ครั้งถัดไปที่เปิด Chrome ใน <ph name="DEVICE_TYPE" /> คุณจะเห็นข้อความแจ้งให้ใช้เครื่องมือจัดการรหัสผ่านบน Google</translation>
 <translation id="1152920704813762236">เกี่ยวกับ ChromeOS</translation>
 <translation id="1154147086299354128">เ&amp;ปิดใน Chrome</translation>
+<translation id="1157952955648710254">ปิดแผงด้านข้างของ Google Search</translation>
 <translation id="1157985233335035034">ภาษาล่าสุด</translation>
 <translation id="1158134713295836892">Gemini ใน Chrome</translation>
 <translation id="1184145431117212167">ติดตั้งไม่สำเร็จเนื่องจากระบบไม่รองรับ Windows เวอร์ชันที่คุณใช้</translation>
@@ -46,6 +47,7 @@
 <translation id="141901961143729572">แชร์ความคิดเห็นของคุณ</translation>
 <translation id="1425903838053942728">{COUNT,plural, =0{Chrome อัปเดตเสร็จแล้ว คุณจะใช้เวอร์ชันล่าสุดได้ทันทีที่เปิดอีกครั้ง หลังจากนั้น แท็บปัจจุบันจะเปิดขึ้นอีกครั้ง}=1{Chrome อัปเดตเสร็จแล้ว คุณจะใช้เวอร์ชันล่าสุดได้ทันทีที่เปิดอีกครั้ง หลังจากนั้น แท็บปัจจุบันจะเปิดขึ้นอีกครั้ง หน้าต่างที่ไม่ระบุตัวตนจะไม่เปิดขึ้นอีก}other{Chrome อัปเดตเสร็จแล้ว คุณจะใช้เวอร์ชันล่าสุดได้ทันทีที่เปิดอีกครั้ง หลังจากนั้น แท็บปัจจุบันจะเปิดขึ้นอีกครั้ง หน้าต่างที่ไม่ระบุตัวตนจำนวน # หน้าต่างจะไม่เปิดขึ้นอีก}}</translation>
 <translation id="1434626383986940139">แอป Chrome Canary</translation>
+<translation id="1438812738230833934">คุณสามารถเปิด Google Search ในแผงด้านข้างอีกครั้งเพื่อถามคำถามขณะท่องเว็บได้</translation>
 <translation id="1439793550875056299">ปักหมุด Chrome</translation>
 <translation id="1446616215961349840">{COUNT,plural, =1{ผู้ดูแลระบบต้องการให้คุณเปิด Chrome ขึ้นมาใหม่เพื่อใช้การอัปเดต หน้าต่างแยกจะไม่เปิดขึ้นมาใหม่}other{ผู้ดูแลระบบต้องการให้คุณเปิด Chrome ขึ้นมาใหม่เพื่อใช้การอัปเดต หน้าต่างแยก # หน้าต่างจะไม่เปิดขึ้นมาใหม่}}</translation>
 <translation id="146866447420868597">ลงชื่อเข้าใช้ Chrome ไหม</translation>
@@ -302,7 +304,6 @@
 <translation id="3780814664026482060">Chrome - <ph name="PAGE_TITLE" /></translation>
 <translation id="3785324443014631273">Chrome OS Flex ซิงค์ข้อมูลไม่ได้เนื่องจากเกิดข้อผิดพลาดในการลงชื่อเข้าใช้</translation>
 <translation id="3795971588916395511">Google Chrome OS</translation>
-<translation id="3809772425479558446">Google Chrome ต้องใช้ Windows 10 ขึ้นไป</translation>
 <translation id="3810973564298564668">จัดการ</translation>
 <translation id="383455301564000773">หากจะอัปเกรดเป็น Windows 11 ดาวน์โหลด Chrome ลงใน OneDrive เพื่อให้คุณพร้อมใช้งานตั้งแต่วันแรก</translation>
 <translation id="383928141529488001">Google Chrome ต้องการสิทธิ์เข้าถึงบลูทูธเพื่อสำรวจอุปกรณ์บลูทูธ <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
@@ -374,6 +375,7 @@
 <translation id="4458462641685292929">Google Chrome กำลังดำเนินการอย่างอื่นอยู่ โปรดลองอีกครั้งในภายหลัง</translation>
 <translation id="4493028449971051158">ข้อผิดพลาดในการเริ่มต้น: โปรดเรียกใช้โปรแกรมติดตั้งในฐานะผู้ดูแลระบบ</translation>
 <translation id="4501471624619070934">การติดตั้งล้มเหลวเนื่องจากมีการควบคุมการเข้าใช้งานในประเทศนี้</translation>
+<translation id="4501839397124711198">คุณสามารถปักหมุด Google Search ในแผงด้านข้างเพื่อถามคำถามขณะท่องเว็บได้</translation>
 <translation id="4571503333518166079">ไปที่การตั้งค่าการแจ้งเตือน Chrome</translation>
 <translation id="4580939929828762295">ปลอดภัยอยู่เสมอด้วยเครื่องมือจัดการรหัสผ่านบน Google</translation>
 <translation id="459622048091363950">เมื่อ Chrome มีสิทธิ์การเข้าถึงแล้ว เว็บไซต์จะขอสิทธิ์การเข้าถึงจากคุณได้</translation>
@@ -416,6 +418,7 @@
 <translation id="4970761609246024540">ยินดีต้อนรับสู่โปรไฟล์ Chrome</translation>
 <translation id="4970880042055371251">เวอร์ชัน Chrome OS</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
+<translation id="5000497292978544380">โหมด AI ของ Google Search</translation>
 <translation id="5003967926796347400">คลิก "เครื่องมือจัดการรหัสผ่านบน Google"</translation>
 <translation id="5043786843026425788">ดูข้อมูลเพิ่มเติมเกี่ยวกับการค้นหาด้วย Google Lens ใน Chrome</translation>
 <translation id="504867494566807945">เปิดลิงก์ใน Chrome จากแอปใดก็ได้ และปักหมุดไว้ที่แถบงานเพื่อให้เข้าถึงได้ง่าย</translation>
@@ -423,6 +426,7 @@
 <translation id="5105120510934353742">คุณจะต้องใช้ macOS 13 ขึ้นไปเพื่อรับการอัปเดต Google Chrome ในอนาคต คอมพิวเตอร์เครื่องนี้ใช้ macOS 12</translation>
 <translation id="5114340746415930644">ป้อนพาสเฟรสเพื่อใช้และบันทึกข้อมูล Chrome ในบัญชี <ph name="USER_EMAIL" /></translation>
 <translation id="5120334927898581447">ลงชื่อเข้าใช้ Chrome เมื่อคุณลงชื่อเข้าใช้บริการอื่นๆ ของ Google</translation>
+<translation id="5121592697493894155">Google Search ในแผงด้านข้าง</translation>
 <translation id="5126049312684316860">Chrome จะโหลดหน้าเว็บที่คุณน่าจะเข้าชมเอาไว้ล่วงหน้าเพิ่มมากขึ้น เพื่อให้หน้าเหล่านั้นโหลดเร็วขึ้นเมื่อคุณเข้าชม</translation>
 <translation id="5127558335897923940">ปักหมุด Chrome ไว้ที่แถบแอปเพื่อให้เข้าถึงได้อย่างรวดเร็วทุกเมื่อ</translation>
 <translation id="5132929315877954718">พบกับแอป เกม ส่วนขยาย และธีมเด็ดๆ สำหรับ Google Chrome</translation>
@@ -720,6 +724,7 @@
 <translation id="7777080907402804672">หากรูปภาพไม่มีคำอธิบายที่เป็นประโยชน์ Chrome จะพยายามใส่คำอธิบายให้คุณ รูปภาพจะส่งมายัง Google เพื่อสร้างคำอธิบาย คุณปิดการดำเนินการนี้ได้ทุกเมื่อในการตั้งค่า</translation>
 <translation id="778331955594035129">Chrome ต้องการสิทธิ์เข้าถึงตำแหน่งสำหรับเว็บไซต์นี้</translation>
 <translation id="7787950393032327779">ดูเหมือนว่าโปรไฟล์กำลังถูกใช้งานโดยกระบวนการอื่นของ Google Chrome (<ph name="PROCESS_ID" />) บนคอมพิวเตอร์อีกเครื่อง (<ph name="HOST_NAME" />)  Chrome ล็อกโปรไฟล์ไว้เพื่อไม่ให้โปรไฟล์เกิดความเสียหาย  หากคุณมั่นใจว่าไม่มีกระบวนการอื่นใดกำลังใช้โปรไฟล์นี้อยู่ คุณสามารถปลดล็อกโปรไฟล์และเปิด Chrome ใหม่</translation>
+<translation id="7800043020703832708">ปิด Google Search ในแผงด้านข้าง</translation>
 <translation id="7801699035218095297">Google Chrome กำลังพยายามคัดลอกรหัสผ่าน โปรดพิมพ์รหัสผ่าน Windows ของคุณเพื่ออนุญาต</translation>
 <translation id="7804364787702057554">บัญชีของคุณใน Chrome</translation>
 <translation id="7804947029129221742">มีการเปลี่ยนเครื่องมือค้นหาของคุณจากภายนอก Chrome Chrome จึงรีเซ็ตเครื่องมือดังกล่าวเป็นค่าเริ่มต้นเดิมเพื่อปกป้องคุณ <ph name="LEARN_MORE_LINK" /></translation>
@@ -736,6 +741,7 @@
 <translation id="7886087451482920026">เลือกข้อความด้วย Google Lens</translation>
 <translation id="7890208801193284374">ถ้าคุณให้ผู้อื่นใช้คอมพิวเตอร์ร่วมด้วย เพื่อนๆ และครอบครัวของคุณสามารถท่องเว็บแยกกันได้และตั้งค่า Chrome ได้ตามที่พวกเขาต้องการ</translation>
 <translation id="7896673875602241923">ก่อนหน้านี้มีผู้ลงชื่อเข้าใช้ Chrome ในคอมพิวเตอร์นี้ด้วยชื่อ <ph name="ACCOUNT_EMAIL_LAST" /> โปรดสร้างผู้ใช้ Chrome ใหม่เพื่อเก็บข้อมูลแยก</translation>
+<translation id="7904213866086517086">เปิด Google Search ในแผงด้านข้างอีกครั้ง</translation>
 <translation id="7904985524660297937">ลองใช้ Gemini ใน Google Chrome</translation>
 <translation id="7905880575591690197">ChromeOS บันทึกข้อมูล Chrome ในบัญชี Google ไม่ได้เนื่องจากเกิดข้อผิดพลาดในการลงชื่อเข้าใช้</translation>
 <translation id="7917876797003313048">คุณจัดการบัญชี Google ที่ลงชื่อเข้าใช้ได้ บัญชี Google ใช้สำหรับเบราว์เซอร์ Chrome, Play Store, Gmail และอื่นๆ หากต้องการเพิ่มบัญชีให้คนอื่น เช่น สมาชิกในครอบครัว ให้เพิ่มบุคคลใหม่ลงใน <ph name="DEVICE_TYPE" /> แทน <ph name="LINK_BEGIN" />ดูข้อมูลเพิ่มเติม<ph name="LINK_END" /></translation>
@@ -795,12 +801,14 @@
 <translation id="8367950957770994118">เปิด Gemini ใน Chrome ได้อย่างรวดเร็วทุกเมื่อที่ต้องการ</translation>
 <translation id="8370517070665726704">ลิขสิทธิ์ <ph name="YEAR" /> Google LLC สงวนลิขสิทธิ์</translation>
 <translation id="8370748943308169953">คิวอาร์โค้ดเพื่อลงชื่อเข้าใช้ Chrome ด้วย <ph name="USER_NAME" /></translation>
+<translation id="8376752431516546391">แผงด้านข้างของ Google Search</translation>
 <translation id="8377158135256176353">เปิด/ปิด Gemini ใน Chrome Canary</translation>
 <translation id="8380754585531979907">ใช้แป้นพิมพ์เพื่อไปยังส่วนต่างๆ ระหว่าง Gemini ใน Chrome กับแท็บที่เปิดอยู่</translation>
 <translation id="8387459386171870978">ใช้ Chrome ต่อ</translation>
 <translation id="8394720698884623075">ตรวจสอบ URL กับรายการเว็บไซต์ที่ไม่ปลอดภัยซึ่งจัดเก็บไว้ใน Chrome</translation>
 <translation id="8402881611069691789">{COUNT,plural, =1{Chrome อัปเดตเสร็จแล้ว คุณจะใช้เวอร์ชันล่าสุดได้ทันทีที่เปิดอีกครั้ง หลังจากนั้น แท็บปัจจุบันจะเปิดขึ้นอีกครั้ง มีหน้าต่างที่ไม่ระบุตัวตนหรือหน้าต่างแยกเปิดอยู่ หน้าต่างดังกล่าวจะไม่เปิดขึ้นมาใหม่เมื่อคุณเปิดเบราว์เซอร์อีกครั้ง}other{Chrome อัปเดตเสร็จแล้ว คุณจะใช้เวอร์ชันล่าสุดได้ทันทีที่เปิดอีกครั้ง หลังจากนั้น แท็บปัจจุบันจะเปิดขึ้นอีกครั้ง มีหน้าต่างที่ไม่ระบุตัวตนและหน้าต่างแยก # หน้าต่างเปิดอยู่ในโปรไฟล์ต่างๆ หน้าต่างดังกล่าวจะไม่เปิดขึ้นมาใหม่เมื่อคุณเปิดเบราว์เซอร์อีกครั้ง}}</translation>
 <translation id="8403038600646341038">โลโก้ Chrome ในหน้าจอคอมพิวเตอร์</translation>
+<translation id="8406687098231754303">จากปุ่ม "Google Search ในแผงด้านข้าง" บนแถบเครื่องมือ คุณสามารถเปิด Google Search ในแผงด้านข้างอีกครั้งเพื่อถามคำถามขณะท่องเว็บได้</translation>
 <translation id="8418845734693287262">Chrome OS ซิงค์ข้อมูลไม่ได้เนื่องจากรายละเอียดการลงชื่อเข้าใช้บัญชีของคุณไม่ใช่ข้อมูลปัจจุบัน</translation>
 <translation id="842386925677997438">เครื่องมือด้านความปลอดภัยของ Chrome</translation>
 <translation id="8425765582779547329">หากต้องการท่องโลกออนไลน์อย่างปลอดภัยยิ่งขึ้นด้วยตัวเลือกของผู้ปกครอง ให้ลงชื่อเข้าใช้ Chrome</translation>
@@ -818,6 +826,7 @@
 <translation id="8533056045953418157">ตั้ง Google Chrome เป็นโปรแกรมอ่าน PDF เริ่มต้น</translation>
 <translation id="854593887324189900">ค้นหารูปภาพนี้ด้วย Google Lens</translation>
 <translation id="8555465886620020932">ข้อผิดพลาดในการบริการ: <ph name="SERVICE_ERROR" /></translation>
+<translation id="8564408666201523086">สำเร็จ! ตอนนี้คุณสามารถถามคำถามได้อย่างง่ายดายขณะท่องเว็บด้วย Google Search ในแผงด้านข้าง</translation>
 <translation id="856656450041460113">ค้นหารายการภาษา</translation>
 <translation id="8575047640889685742">ใช้<ph name="BEGIN_LINK" />พาสเฟรสของคุณเอง<ph name="END_LINK" />ในการเข้ารหัสข้อมูล Chrome ทั้งหมดในบัญชี Google ที่อยู่และวิธีการชำระเงินจาก Google Pay จะไม่มีการเข้ารหัส ประวัติการท่องเว็บจาก Chrome จะไม่ซิงค์</translation>
 <translation id="8590782867495422699">เปิดโหมด AI ของ Google Search อีกครั้ง</translation>

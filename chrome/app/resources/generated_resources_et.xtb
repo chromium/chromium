@@ -1840,6 +1840,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="2423506062824112361">Sisu allalaadimine ebaõnnestus teadmata põhjusel.</translation>
 <translation id="2423578206845792524">Sa&amp;lvesta pilt nimega...</translation>
 <translation id="2424424966051154874">{0,plural, =1{Külaline}other{Külaline (#)}}</translation>
+<translation id="2424762488607770568">Vaikeseade (vastendub süsteemiga)</translation>
 <translation id="2426805022920575512">Vali muu konto</translation>
 <translation id="2427507373259914951">Vasakklikk</translation>
 <translation id="2428245692671442472">{NUM_PASSWORDS,plural, =1{<ph name="DOMAIN_LINK" /> 1 konto, parool salvestati ainult sellesse seadmesse. Rohkem üksikasju}other{<ph name="DOMAIN_LINK" /> {NUM_PASSWORDS} kontot, parool salvestati ainult sellesse seadmesse. Rohkem üksikasju}}</translation>
@@ -5651,6 +5652,7 @@ Väljasuumimiseks kasutage klahvikombinatsiooni Ctrl + Alt + Ereduse vähendamin
 <translation id="5280426389926346830">Kas soovite luua otsetee?</translation>
 <translation id="5280966903879030278">Kasutage sirvimisajaloo otsimiseks ja külastatud saitide leidmiseks igapäevakeelt. See seade on välja lülitatud.</translation>
 <translation id="5281013262333731149">Avaneb brauseris: <ph name="OPEN_BROWSER" /></translation>
+<translation id="5283747245540449968">Lehe värvid</translation>
 <translation id="5284107433515104664">Parooli muutmise ajal saadetakse lehe sisu ja seotud teave Google'ile ning selle funktsiooni täiustamiseks võivad inimesed selle üle vaadata. Teie parool on krüpteeritud ja keegi pole seda kunagi näinud.</translation>
 <translation id="5284445933715251131">Jätka allalaadimist</translation>
 <translation id="5285635972691565180">Kuva <ph name="DISPLAY_ID" /></translation>
@@ -6541,6 +6543,7 @@ Saate sellele toimingule määrata mitu lülitit.</translation>
 <translation id="5989497858237037960">Saitide sirvimisel krüpteeritakse nende lehtede sisu ja salvestatakse teie seadmesse. See võib mõjutada Chrome'i toimivust</translation>
 <translation id="5990266201903445068">Ainult WiFi</translation>
 <translation id="5990386583461751448">Tõlgitud</translation>
+<translation id="5991039386730545918">Teie valitud lehe värviteemat kasutatakse ainult siis, kui süsteemi suur kontrastsus on sisse lülitatud.</translation>
 <translation id="5992225669837656567">Kõik hiired on lahti ühendatud</translation>
 <translation id="5992652489368666106">Ääriseta</translation>
 <translation id="5996490984199062729">Teie profiil pole seadistatud</translation>
@@ -7940,6 +7943,7 @@ Teil on veel # ohustatud parooli. Google'i paroolihaldur soovitab kohe neid paro
 <translation id="706949303827219454">Avab turvaseadete lehe uuel vahelehel</translation>
 <translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{Uus parool selle saidi jaoks}other{Uued paroolid selle saidi jaoks}}</translation>
 <translation id="7070484045139057854">Laiendus võib lugeda ja muuta saidiandmeid</translation>
+<translation id="7071521146534760487">Konto haldamine</translation>
 <translation id="7072010813301522126">Otsetee nimi</translation>
 <translation id="7072078320324181561">Asukohale juurdepääsu loaga rakendused ja veebisaidid ning süsteemiteenused saavad kasutada teie asukohta <ph name="LINK_BEGIN" />Lisateave<ph name="LINK_END" /></translation>
 <translation id="7072573590175540692">Saadaolevad funktsioonide ja laienduste otseteed</translation>
@@ -8576,6 +8580,7 @@ Teil on veel # ohustatud parooli. Google'i paroolihaldur soovitab kohe neid paro
 <translation id="755472745191515939">Teie administraator ei luba seda keelt kasutada</translation>
 <translation id="7554791636758816595">Uus vaheleht</translation>
 <translation id="7557194624273628371">Linuxi pordisiire</translation>
+<translation id="7557508262441527045">Välja logitud</translation>
 <translation id="7561196759112975576">Alati</translation>
 <translation id="7561759921596375678">Lülita heli sisse</translation>
 <translation id="7563576896417108627">Rakenduse <ph name="APP_NAME" /> kohandamine ja juhtimine. Saadaval on värskendus.</translation>
@@ -9325,6 +9330,7 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="8118362518458010043">Chrome on selle keelanud. See laiendus võib olla ebaturvaline.</translation>
 <translation id="8118448640060360549">{EXTENSIONS_COUNT,plural, =1{# järjehoidja}other{# järjehoidjat}}</translation>
 <translation id="8118488170956489476">Teie <ph name="BEGIN_LINK" />brauserit haldab<ph name="END_LINK" /> teie organisatsioon</translation>
+<translation id="8118496140027032067">Alisstage veebilehe värvid suure kontrastsusega teemadega või lülitage sunnitud värvid välja.</translation>
 <translation id="8118515372935001629">Kuva värskendamissagedus</translation>
 <translation id="8118860139461251237">Allalaadimiste haldamine</translation>
 <translation id="8119438628456698432">Logifailide loomine …</translation>
@@ -10002,6 +10008,7 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="8648408795949963811">Öövalguse värvitemperatuur</translation>
 <translation id="8648544143274677280"><ph name="SITE_NAME" /> soovib teha järgmist: <ph name="FIRST_PERMISSION" />, <ph name="SECOND_PERMISSION" /> ja muud</translation>
 <translation id="8648889679430451455">Kustutage isikupärastamisandmed</translation>
+<translation id="8649290269169747916">Lehe vaikevärvide kasutamine, kui süsteemi suur kontrastsus on välja lülitatud</translation>
 <translation id="8651585100578802546">Sundlaadi see leht uuesti</translation>
 <translation id="8651806635673244884">Saate vahelehed tagasi ülaossa teisaldada, kui paremklõpsate mis tahes vahelehel ja teete valiku „Kuva vahelehed horisontaalselt“.</translation>
 <translation id="8652400352452647993">Viga laienduse ettevalmistamisel</translation>

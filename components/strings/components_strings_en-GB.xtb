@@ -661,6 +661,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2118132148597630479">Envelope C5</translation>
 <translation id="2119505898009119320">Issued to: <ph name="ORGANIZATION" /> [<ph name="JURISDICTION" />]</translation>
 <translation id="2119867082804433120">Punch bottom right</translation>
+<translation id="2121418473709291357">Ignored because Chrome Browser Cloud Management is disabled.</translation>
 <translation id="2122214041802369259">Price is high</translation>
 <translation id="2122719317867821810">This policy is working as intended but a conflicting value is set elsewhere and is overridden by this policy.</translation>
 <translation id="2124081665399116863">Update vehicle in Google Wallet</translation>
@@ -2480,6 +2481,7 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="5115232566827194440">Restricted managed Guest session override</translation>
 <translation id="5115563688576182185">(64-bit)</translation>
 <translation id="5116015291385561204">Verify that it's you to autofill sensitive info</translation>
+<translation id="5121592697493894155">Google Search in side panel</translation>
 <translation id="5122786942953798871">Envelope (cotton)</translation>
 <translation id="5123063207673082822">Weekend</translation>
 <translation id="5124797626438336458">Buy now, pay later error screen opened at half height.</translation>
@@ -2916,6 +2918,7 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="5843987376989109187">This language is not yet supported.
     <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
 <translation id="5848445080378515710">Once you review your order, you must sign into or create an account with <ph name="BNPL_ISSUER_NAME" />. This account will be automatically linked in Google Wallet.</translation>
+<translation id="5848916806551637625">Pix account will be linked to <ph name="ACCOUNT_EMAIL" />. To turn off Pix code detection, go to <ph name="BEGIN_LINK1" />Chrome settings<ph name="END_LINK1" />.</translation>
 <translation id="5851548754964597211">Tab list</translation>
 <translation id="5851868085455377790">Issuer</translation>
 <translation id="5852909432155870672">RA4</translation>
@@ -4427,6 +4430,7 @@ Additional details:
 <translation id="8371841335382565017">Show device list for casting</translation>
 <translation id="8371889962595521444">Custom root certificates</translation>
 <translation id="8374636051559112948">Varies</translation>
+<translation id="8376752431516546391">Google Search side panel</translation>
 <translation id="8377507422902936905">Orders</translation>
 <translation id="837840316697671463">If you can't find a file on your device, look for it on <ph name="CLOUD_PROVIDER" />.</translation>
 <translation id="8378714024927312812">Managed by your organisation</translation>

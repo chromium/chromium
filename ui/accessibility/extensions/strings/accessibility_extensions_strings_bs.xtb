@@ -27,6 +27,7 @@
 <translation id="3812541808639806898">Preglednik alternativnog teksta slike</translation>
 <translation id="381767806621926835">Desnim klikom kliknite na bilo šta s atributom "longdesc" ili "aria-describedat" da pristupite opširnijem opisu.</translation>
 <translation id="4023902424053835668">Pretraživanje teksta web stranica korištenjem tipki sa strelicama.</translation>
+<translation id="4384008284958619421">Moderni čitači ekrana i Google Chrome sada imaju ugrađenu podršku za opise pristupačnih elemenata i ARIA standarde.</translation>
 <translation id="4388820049312272371">Istakni položaj kursora kratkim bljeskom.</translation>
 <translation id="4394049700291259645">Onemogući</translation>
 <translation id="4769065380738716500">Slike su zamijenjene "alt" tekstom.</translation>
@@ -63,6 +64,7 @@
 <translation id="7658239707568436148">Otkaži</translation>
 <translation id="786423340267544509">Dodaj okvir elementima s atributima aria-describedat ili longdesc.</translation>
 <translation id="7942349550061667556">Crvena</translation>
+<translation id="8081200409424070383">Dugi opisi se ukidaju 20. novembra 2026.</translation>
 <translation id="8260673944985561857">Opcije navigacije kursorom</translation>
 <translation id="8321034316479930120">Pravila za animaciju</translation>
 <translation id="8480209185614411573">Visoki kontrast</translation>

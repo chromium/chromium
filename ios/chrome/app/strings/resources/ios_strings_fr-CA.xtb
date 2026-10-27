@@ -600,7 +600,6 @@
 <translation id="2781331604911854368">Activé</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2783161812871838616">Voir le site pour ordinateurs</translation>
-<translation id="2789486458103222910">OK</translation>
 <translation id="2789552044937754463">{COUNT,plural, =1{Mot de passe enregistré dans votre compte Google, {EMAIL}}one{Mot de passe enregistré dans votre compte Google, {EMAIL}}other{Mots de passe enregistrés dans votre compte Google, {EMAIL}}}</translation>
 <translation id="2791174088547598693">Ajouter un mot de passe…</translation>
 <translation id="2793703503584038325">Sélectionnez un mot de passe et touchez l'icône « Partager »</translation>
@@ -1707,7 +1706,6 @@ La fonction de transfert doit également être activée dans la section Généra
 <translation id="6301767200000930965">Aa</translation>
 <translation id="630308129961693966">Choisir la position de votre barre d'adresse</translation>
 <translation id="6305257382500066042">Essayer maintenant</translation>
-<translation id="6307241780749477694">Confirmez qu'il s'agit bien de vous pour obtenir tous vos mots de passe sur cet appareil</translation>
 <translation id="6307792728709337290">Enregistrez votre carte dans votre compte Google pour remplir automatiquement les informations associées pour cet achat et vos futurs achats effectués sur Chrome.</translation>
 <translation id="6316141353357700666">Choisissez le mot de passe que vous souhaitez utiliser dans la liste qui s'affiche.</translation>
 <translation id="6321526113093607004">Ajouter aux favoris</translation>
@@ -2170,7 +2168,6 @@ Vous pouvez le redémarrer à tout moment.</translation>
 <translation id="7700527812567437847">Rechercher du contenu sur l'écran avec Lentille Google</translation>
 <translation id="7701040980221191251">Aucun</translation>
 <translation id="7702428539671224160">Remplissage automatique des infos de paiement activé sur <ph name="URL" /></translation>
-<translation id="7708994397325774423">Obtenez tous vos mots de passe</translation>
 <translation id="7710096647785049958">Gagnez du temps lorsque vous ouvrez chaque lien</translation>
 <translation id="7711440461521638739">Vous ne réutilisez aucun mot de passe</translation>
 <translation id="7712361583414030698">Affichage de la version hors ligne</translation>

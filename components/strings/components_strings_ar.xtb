@@ -661,6 +661,7 @@
 <translation id="2118132148597630479">‏ظرف C5</translation>
 <translation id="2119505898009119320">تم الإصدار إلى: <ph name="ORGANIZATION" /> [<ph name="JURISDICTION" />]</translation>
 <translation id="2119867082804433120">عمل ثقب أسفل اليمين</translation>
+<translation id="2121418473709291357">‏تم تجاهل السياسة لأنّ "إدارة السحابة الإلكترونية في متصفِّح Chrome" غير مفعَّلة.</translation>
 <translation id="2122214041802369259">السعر مرتفع</translation>
 <translation id="2122719317867821810">تعمل هذه السياسة على النحو المنشود، غير أنّ قيمة مُحدّدة في مكان آخر تم إلغاؤها بسبب تعارضها مع هذه السياسة.</translation>
 <translation id="2124081665399116863">‏ما رأيك في تعديل بيانات المركبة في "محفظة Google"؟</translation>
@@ -2480,6 +2481,7 @@
 <translation id="5115232566827194440">تجاوز جلسة الضيف المُدارة المحظورة</translation>
 <translation id="5115563688576182185">(64 بت)</translation>
 <translation id="5116015291385561204">إثبات هويتك قبل الملء التلقائي للمعلومات الحساسة</translation>
+<translation id="5121592697493894155">‏فتح "بحث Google" في اللوحة الجانبية</translation>
 <translation id="5122786942953798871">ظرف (قطني)</translation>
 <translation id="5123063207673082822">نهاية الأسبوع</translation>
 <translation id="5124797626438336458">‏تم فتح شاشة خطأ عملية "الدفع الآجل" (BNPL) في نصف الشاشة.</translation>
@@ -2916,6 +2918,7 @@
 <translation id="5843987376989109187">هذه اللغة غير متوفّرة بعد.
     <ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>
 <translation id="5848445080378515710">‏بعد مراجعة طلبك، عليك تسجيل الدخول أو إنشاء حساب باستخدام "<ph name="BNPL_ISSUER_NAME" />". وسيتم ربط هذا الحساب تلقائيًا في "محفظة Google".</translation>
+<translation id="5848916806551637625">‏سيتم ربط حساب Pix بحساب <ph name="ACCOUNT_EMAIL" />. لإيقاف ميزة "رصد رمز Pix"، يُرجى الانتقال إلى <ph name="BEGIN_LINK1" />إعدادات Chrome<ph name="END_LINK1" />.</translation>
 <translation id="5851548754964597211">قائمة علامات التبويب</translation>
 <translation id="5851868085455377790">جهة الإصدار</translation>
 <translation id="5852909432155870672">RA4</translation>
@@ -4429,6 +4432,7 @@
 <translation id="8371841335382565017">عرض قائمة أجهزة البث</translation>
 <translation id="8371889962595521444">شهادات الجذر المُخصَّصة</translation>
 <translation id="8374636051559112948">يختلف من جهاز إلى آخر</translation>
+<translation id="8376752431516546391">‏اللوحة الجانبية لمحرك بحث Google</translation>
 <translation id="8377507422902936905">الطلبات</translation>
 <translation id="837840316697671463">إذا لم تتمكن من العثور على ملف على جهازك، ابحث عنه في <ph name="CLOUD_PROVIDER" />.</translation>
 <translation id="8378714024927312812">بإدارة مؤسستك</translation>

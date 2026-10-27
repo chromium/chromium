@@ -661,6 +661,7 @@
 <translation id="2118132148597630479">Plic C5</translation>
 <translation id="2119505898009119320">Emis către: <ph name="ORGANIZATION" /> [<ph name="JURISDICTION" />]</translation>
 <translation id="2119867082804433120">Perforare în dreapta jos</translation>
+<translation id="2121418473709291357">Ignorată deoarece Gestionarea în cloud pentru browserul Chrome este dezactivată.</translation>
 <translation id="2122214041802369259">Prețul este mare</translation>
 <translation id="2122719317867821810">Politica funcționează corespunzător, dar în altă sursă a fost setată o valoare conflictuală, care este modificată de această politică.</translation>
 <translation id="2124081665399116863">Actualizează vehiculul în Portofelul Google</translation>
@@ -690,6 +691,7 @@
 <translation id="2155260325161282517">5 x 7 in</translation>
 <translation id="2156467141257470387">Poți folosi adresele salvate în toate produsele Google. Această acțiune nu va modifica adresa de serviciu existentă. Adresa se va salva în Contul tău Google, <ph name="ACCOUNT" />.</translation>
 <translation id="2157640075051554492">Notificări privind urmărirea prețurilor</translation>
+<translation id="2158964559178498011">Completarea automată funcționează în mai multe locuri. Apasă de două ori pe Ctrl pentru a găsi și completa informații</translation>
 <translation id="2161656808144014275">Text</translation>
 <translation id="2162435186600002085">Sigla principală din antet</translation>
 <translation id="2162535140284745414">Primește sugestii în timp real care te pot ajuta să găsești noi moduri de a naviga cu AI.</translation>
@@ -2200,6 +2202,7 @@ Pentru a ascunde opțiunile de plată mai târziu, accesează <ph name="BEGIN_LI
 <translation id="4678379207584374453"><ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" /></translation>
 <translation id="4682496302933121474">Traduci pagina?</translation>
 <translation id="468314109939257734">Vezi numărul de card virtual</translation>
+<translation id="4684818564800397688">Completarea automată funcționează în mai multe locuri. Apasă de două ori pe ⌘ pentru a găsi și a completa informații.</translation>
 <translation id="4686942373615810936">Creat chiar acum</translation>
 <translation id="4690205240253392065">Alege un furnizor de plăți ulterioare</translation>
 <translation id="469028408546145398">Butonul Închide ferestrele incognito, activează pentru a închide toate ferestrele incognito deschise</translation>
@@ -2480,6 +2483,7 @@ Pentru a ascunde opțiunile de plată mai târziu, accesează <ph name="BEGIN_LI
 <translation id="5115232566827194440">Modificarea sesiunii gestionate și restricționate pentru invitați</translation>
 <translation id="5115563688576182185">(64 de biți)</translation>
 <translation id="5116015291385561204">Confirmă-ți identitatea pentru a completa automat informații sensibile</translation>
+<translation id="5121592697493894155">Căutarea Google în panoul lateral</translation>
 <translation id="5122786942953798871">Plic (bumbac)</translation>
 <translation id="5123063207673082822">Weekend</translation>
 <translation id="5124797626438336458">Ecranul de eroare Cumpără acum, plătește mai târziu deschis la jumătate din înălțime.</translation>
@@ -2916,6 +2920,7 @@ Pentru a ascunde opțiunile de plată mai târziu, accesează <ph name="BEGIN_LI
 <translation id="5843987376989109187">Această limbă nu este încă acceptată.
     <ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" /></translation>
 <translation id="5848445080378515710">După ce examinezi comanda, trebuie să te conectezi la cont sau să creezi un cont <ph name="BNPL_ISSUER_NAME" />. Contul va fi conectat automat la Portofelul Google.</translation>
+<translation id="5848916806551637625">Contul Pix va fi conectat la <ph name="ACCOUNT_EMAIL" />. Pentru a dezactiva detectarea codului Pix, accesează <ph name="BEGIN_LINK1" />setările Chrome<ph name="END_LINK1" />.</translation>
 <translation id="5851548754964597211">Listă de file</translation>
 <translation id="5851868085455377790">Emitent</translation>
 <translation id="5852909432155870672">RA4</translation>
@@ -4427,6 +4432,7 @@ Detalii suplimentare:
 <translation id="8371841335382565017">Afișează lista de dispozitive pentru proiectare</translation>
 <translation id="8371889962595521444">Certificate rădăcină personalizate</translation>
 <translation id="8374636051559112948">Variază</translation>
+<translation id="8376752431516546391">Panoul lateral Căutare Google</translation>
 <translation id="8377507422902936905">Comenzi</translation>
 <translation id="837840316697671463">Dacă nu găsești un fișier pe dispozitiv, caută-l pe <ph name="CLOUD_PROVIDER" />.</translation>
 <translation id="8378714024927312812">Gestionat de organizația ta</translation>

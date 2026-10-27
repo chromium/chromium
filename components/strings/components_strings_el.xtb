@@ -661,6 +661,7 @@
 <translation id="2118132148597630479">Φάκελος C5</translation>
 <translation id="2119505898009119320">Εκδόθηκε σε: <ph name="ORGANIZATION" /> [<ph name="JURISDICTION" />]</translation>
 <translation id="2119867082804433120">Τρύπημα κάτω δεξιά</translation>
+<translation id="2121418473709291357">Έγινε παράβλεψη επειδή η Διαχείριση cloud του προγράμματος περιήγησης Chrome είναι απενεργοποιημένη.</translation>
 <translation id="2122214041802369259">Η τιμή είναι υψηλή</translation>
 <translation id="2122719317867821810">Αυτή η πολιτική λειτουργεί με τον αναμενόμενο τρόπο αλλά μια τιμή σε διένεξη έχει οριστεί αλλού και παρακάμπτεται από αυτή την πολιτική.</translation>
 <translation id="2124081665399116863">Ενημέρωση οχήματος στο Πορτοφόλι Google</translation>
@@ -2481,6 +2482,7 @@
 <translation id="5115232566827194440">Παράκαμψη περιορισμένης διαχειριζόμενης περιόδου σύνδεσης επισκέπτη</translation>
 <translation id="5115563688576182185">(64-bit)</translation>
 <translation id="5116015291385561204">Επαλήθευση της ταυτότητάς σας για αυτόματη συμπλήρωση ευαίσθητων πληροφοριών</translation>
+<translation id="5121592697493894155">Αναζήτηση Google στο πλαϊνό πλαίσιο</translation>
 <translation id="5122786942953798871">Φάκελος (Βαμβακερός)</translation>
 <translation id="5123063207673082822">Σαββατοκύριακο</translation>
 <translation id="5124797626438336458">Η οθόνη σφάλματος της δυνατότητας Αγοράστε τώρα, πληρώστε αργότερα άνοιξε στο μισό ύψος.</translation>
@@ -2917,6 +2919,7 @@
 <translation id="5843987376989109187">Αυτή η γλώσσα δεν υποστηρίζεται ακόμη.
     <ph name="BEGIN_LINK" />Μάθετε περισσότερα<ph name="END_LINK" /></translation>
 <translation id="5848445080378515710">Αφού ελέγξετε την παραγγελία σας, πρέπει να συνδεθείτε ή να δημιουργήσετε έναν λογαριασμό με τον εκδότη <ph name="BNPL_ISSUER_NAME" />. Ο συγκεκριμένος λογαριασμός θα συνδεθεί αυτόματα στο Πορτοφόλι Google.</translation>
+<translation id="5848916806551637625">Ο λογαριασμός Pix θα συνδεθεί με τη διεύθυνση <ph name="ACCOUNT_EMAIL" />. Για να απενεργοποιήσετε την ανίχνευση κωδικού Pix, μεταβείτε στις <ph name="BEGIN_LINK1" />ρυθμίσεις του Chrome<ph name="END_LINK1" />.</translation>
 <translation id="5851548754964597211">Λίστα καρτελών</translation>
 <translation id="5851868085455377790">Εκδότης</translation>
 <translation id="5852909432155870672">RA4</translation>
@@ -4429,6 +4432,7 @@
 <translation id="8371841335382565017">Εμφάνιση λίστας συσκευών για μετάδοση</translation>
 <translation id="8371889962595521444">Προσαρμοσμένα πιστοποιητικά ρίζας</translation>
 <translation id="8374636051559112948">Ποικίλλει</translation>
+<translation id="8376752431516546391">Πλαϊνό πλαίσιο Αναζήτησης Google</translation>
 <translation id="8377507422902936905">Παραγγελίες</translation>
 <translation id="837840316697671463">Εάν δεν μπορείτε να βρείτε ένα αρχείο στη συσκευή σας, αναζητήστε το στο <ph name="CLOUD_PROVIDER" />.</translation>
 <translation id="8378714024927312812">Διαχειριζόμενο από τον οργανισμό σας</translation>

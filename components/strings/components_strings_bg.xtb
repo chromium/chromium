@@ -661,6 +661,7 @@
 <translation id="2118132148597630479">Плик C5</translation>
 <translation id="2119505898009119320">Издаден на: <ph name="ORGANIZATION" /> [<ph name="JURISDICTION" />]</translation>
 <translation id="2119867082804433120">Перфориране долу вдясно</translation>
+<translation id="2121418473709291357">Пренебрегнато, защото услугата за управление на облака в браузъра Chrome е деактивирана.</translation>
 <translation id="2122214041802369259">Цената е висока</translation>
 <translation id="2122719317867821810">Това правило работи нормално, но на друго място е зададена несъвместима стойност, която е заменена от него.</translation>
 <translation id="2124081665399116863">Актуализиране на превозното средство в Google Wallet</translation>
@@ -2480,6 +2481,7 @@
 <translation id="5115232566827194440">Отмяна на ограничената управлявана сесия като гост</translation>
 <translation id="5115563688576182185">(64 бита)</translation>
 <translation id="5116015291385561204">Потвърдете, че това сте вие, за да се попълва автоматично поверителната информация</translation>
+<translation id="5121592697493894155">Google Търсене в страничния панел</translation>
 <translation id="5122786942953798871">Плик (памучен)</translation>
 <translation id="5123063207673082822">Уикенда</translation>
 <translation id="5124797626438336458">Екранът за грешка на „Купете сега, платете по-късно“ е отворен на половината височина.</translation>
@@ -2916,6 +2918,7 @@
 <translation id="5843987376989109187">Този език още не се поддържа.
     <ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>
 <translation id="5848445080378515710">След като прегледате поръчката си, трябва да влезете в профила си в(ъв) <ph name="BNPL_ISSUER_NAME" /> или да си създадете такъв. Този профил автоматично ще бъде свързан в Google Wallet.</translation>
+<translation id="5848916806551637625">Профилът в Pix ще бъде свързан с(ъс) <ph name="ACCOUNT_EMAIL" />. За да изключите разпознаването на кода за Pix, отворете <ph name="BEGIN_LINK1" />настройките на Chrome<ph name="END_LINK1" />.</translation>
 <translation id="5851548754964597211">Списък с раздели</translation>
 <translation id="5851868085455377790">Издател</translation>
 <translation id="5852909432155870672">RA4</translation>
@@ -4427,6 +4430,7 @@
 <translation id="8371841335382565017">Показване на списъка с устройства за предаване</translation>
 <translation id="8371889962595521444">Персонализирани основни сертификати</translation>
 <translation id="8374636051559112948">Варира</translation>
+<translation id="8376752431516546391">Страничен панел на Google Търсене</translation>
 <translation id="8377507422902936905">Поръчки</translation>
 <translation id="837840316697671463">Ако не можете да намерите файл на устройството си, потърсете го в(ъв) <ph name="CLOUD_PROVIDER" />.</translation>
 <translation id="8378714024927312812">Управлява се от организацията ви</translation>

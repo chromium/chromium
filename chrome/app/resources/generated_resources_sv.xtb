@@ -1849,6 +1849,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2423506062824112361">Det gick inte att ladda ned innehållet av okänd anledning.</translation>
 <translation id="2423578206845792524">S&amp;para bild som...</translation>
 <translation id="2424424966051154874">{0,plural, =1{Gäst}other{Gäst (#)}}</translation>
+<translation id="2424762488607770568">Standard (matcha systemet)</translation>
 <translation id="2426805022920575512">Välj ett annat konto</translation>
 <translation id="2427507373259914951">Vänsterklicka</translation>
 <translation id="2428245692671442472">{NUM_PASSWORDS,plural, =1{<ph name="DOMAIN_LINK" /> 1 konto. Lösenordet har endast sparats på den här enheten. Mer information}other{<ph name="DOMAIN_LINK" /> {NUM_PASSWORDS} konton. Lösenordet har endast sparats på den här enheten. Mer information}}</translation>
@@ -5660,6 +5661,7 @@ Zooma ut med Ctrl + Alt + Minska ljusstyrkan.</translation>
 <translation id="5280426389926346830">Vill du skapa en genväg?</translation>
 <translation id="5280966903879030278">Använd vardagligt språk för att söka i webbhistoriken och hitta webbplatser du har besökt. Inställningen är inaktiverad.</translation>
 <translation id="5281013262333731149">Öppnas i <ph name="OPEN_BROWSER" /></translation>
+<translation id="5283747245540449968">Sidfärger</translation>
 <translation id="5284107433515104664">När lösenordet ändras skickas sidinnehåll och relaterad information till Google och kan granskas av människor för att förbättra den här funktionen. Lösenordet krypteras och visas aldrig för någon.</translation>
 <translation id="5284445933715251131">Fortsätt nedladdning</translation>
 <translation id="5285635972691565180">Skärm <ph name="DISPLAY_ID" /></translation>
@@ -6550,6 +6552,7 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="5989497858237037960">När du besöker webbplatser krypteras deras sidinnehåll och sparas på din enhet. Detta kan påverka Chromes prestanda</translation>
 <translation id="5990266201903445068">Endast wifi</translation>
 <translation id="5990386583461751448">Översatt</translation>
+<translation id="5991039386730545918">Det valda färgtemat för sidan används bara när hög kontrast är aktiverat i systemet</translation>
 <translation id="5992225669837656567">Alla möss har kopplats bort</translation>
 <translation id="5992652489368666106">Ingen kant</translation>
 <translation id="5996490984199062729">Din profil har inte ställts in</translation>
@@ -6706,6 +6709,7 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="6124698108608891449">Fler behörigheter behövs för webbplatsen.</translation>
 <translation id="6125202119952209826">Gå med i flikgruppen med <ph name="OWNER_FIRST_NAME" /></translation>
 <translation id="6125639926370653692">Månen</translation>
+<translation id="6125649408655762488">Fokusera på grupp</translation>
 <translation id="6126601353087978360">Ge feedback här:</translation>
 <translation id="6127292407256937949">Ljudet är på. Stäng av ljudet.</translation>
 <translation id="6127598727646973981">Säkra anslutningar</translation>
@@ -7949,6 +7953,7 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="706949303827219454">Öppnar sidan Säkerhetsinställningar på en ny flik</translation>
 <translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{Nytt lösenord för den här webbplatsen}other{Nya lösenord för den här webbplatsen}}</translation>
 <translation id="7070484045139057854">Kan läsa och ändra webbplatsdata</translation>
+<translation id="7071521146534760487">Hantera konto</translation>
 <translation id="7072010813301522126">Namn på genvägen</translation>
 <translation id="7072078320324181561">Appar och webbplatser med platsbehörighet och systemtjänster kan använda din plats. <ph name="LINK_BEGIN" />Läs mer<ph name="LINK_END" /></translation>
 <translation id="7072573590175540692">Tillgängliga kortkommandon för funktioner och tillägg</translation>
@@ -8585,6 +8590,7 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="755472745191515939">Administratören tillåter inte det här språket</translation>
 <translation id="7554791636758816595">Ny flik</translation>
 <translation id="7557194624273628371">Portvidarebefordran i Linux</translation>
+<translation id="7557508262441527045">Utloggad</translation>
 <translation id="7561196759112975576">Alltid</translation>
 <translation id="7561759921596375678">Sätt på ljudet</translation>
 <translation id="7563576896417108627">Anpassa och kontrollera <ph name="APP_NAME" />. Det finns en uppdatering.</translation>
@@ -9334,6 +9340,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8118362518458010043">Tillägget har inaktiverats. Det kan vara osäkert.</translation>
 <translation id="8118448640060360549">{EXTENSIONS_COUNT,plural, =1{# bokmärke}other{# bokmärken}}</translation>
 <translation id="8118488170956489476"><ph name="BEGIN_LINK" />Webbläsaren hanteras<ph name="END_LINK" /> av din organisation</translation>
+<translation id="8118496140027032067">Åsidosätt webbsidors färger med högkontrastteman eller inaktivera framtvingade färger</translation>
 <translation id="8118515372935001629">Skärmens uppdateringsfrekvens</translation>
 <translation id="8118860139461251237">Hantera dina nedladdningar</translation>
 <translation id="8119438628456698432">Loggfilerna genereras …</translation>
@@ -10011,6 +10018,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8648408795949963811">Färgtemperatur för Nattljus</translation>
 <translation id="8648544143274677280"><ph name="SITE_NAME" /> vill <ph name="FIRST_PERMISSION" />, <ph name="SECOND_PERMISSION" /> med mera</translation>
 <translation id="8648889679430451455">Rensa anpassningsdata</translation>
+<translation id="8649290269169747916">Använd standardsidans färger när systemets höga kontrast är inaktiverad</translation>
 <translation id="8651585100578802546">Tvinga webbläsaren att hämta sidan igen</translation>
 <translation id="8651806635673244884">Du kan flytta flikarna tillbaka till toppen genom att högerklicka på en flik och välja Visa flikar horisontellt</translation>
 <translation id="8652400352452647993">Fel vid paketering av tillägg</translation>

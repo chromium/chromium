@@ -50,6 +50,7 @@
 <translation id="1165109137568919258">写真を撮るか、フォト ギャラリーから画像を追加して検索</translation>
 <translation id="1173894706177603556">名前を変更</translation>
 <translation id="1174479719160874822">画面の幅が狭い場合、Chrome はモバイルサイトをリクエストします</translation>
+<translation id="1174759280027683968">Chrome に移動する</translation>
 <translation id="1175241315203286684">管理者は、ユーザーのプロフィールやブラウザをリモートで変更したり、レポートを通じてブラウザに関する情報を分析したり、その他の必要なタスクを行ったりすることができます。このデバイスでのアクティビティは、Chrome 以外でも管理されている可能性があります。</translation>
 <translation id="1177863135347784049">カスタム</translation>
 <translation id="1181037720776840403">削除</translation>
@@ -608,6 +609,7 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="3452832259067974318">プライバシー保護のため、Chrome ではこの欄のパスワードの自動入力は行われません。</translation>
 <translation id="3474624961160222204"><ph name="NAME" /> として続行</translation>
 <translation id="3478363558367712427">検索エンジンを選択できます</translation>
+<translation id="3479552764303398839">後で</translation>
 <translation id="3482805106082349287">キーボード、音声、シークレット モード、カメラを使って検索</translation>
 <translation id="3487903178221457900">エクスポートしたファイルは、他のユーザー（アプリを含む）がアクセスできる可能性があります。エクスポートすると、パスワードは Chrome から削除されます。</translation>
 <translation id="3488199663160411179">名前</translation>
@@ -896,6 +898,7 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="4578289292431526768">始める</translation>
 <translation id="4583164079174244168">{MINUTES,plural, =1{# 分前}other{# 分前}}</translation>
 <translation id="4585751637295612750">質問に追加するには新しいタブを開いてください</translation>
+<translation id="4585793705637313973">ページの編集</translation>
 <translation id="4587589328781138893">ウェブサイト</translation>
 <translation id="4594952190837476234">このオフライン ページは <ph name="CREATION_TIME" /> 時点のものであり、オンライン版とは異なる可能性があります。</translation>
 <translation id="4595237294768457124">新しいタブページを開く</translation>
@@ -1536,6 +1539,7 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="6996145122199359148">このページをダウンロード</translation>
 <translation id="7007648447224463482">すべてを新しいウィンドウで開く</translation>
 <translation id="7013762323294215682">このパスキーはパスワード マネージャーに保存されます。パスワード マネージャーにアクセスできるユーザーなら誰でも、このパスキーを使用できます。</translation>
+<translation id="7017219178341817193">新しいページを追加</translation>
 <translation id="7022756207310403729">ブラウザで開く</translation>
 <translation id="7029809446516969842">パスワード</translation>
 <translation id="7037994709569287156">Chrome をデフォルトに設定</translation>

@@ -1836,6 +1836,7 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="2423506062824112361">Die Inhalte konnten aus einem unbekannten Grund nicht heruntergeladen werden.</translation>
 <translation id="2423578206845792524">Bi&amp;ld speichern unter...</translation>
 <translation id="2424424966051154874">{0,plural, =1{Gast}other{Gäste (#)}}</translation>
+<translation id="2424762488607770568">Standard (an System anpassen)</translation>
 <translation id="2426805022920575512">Anderes Konto auswählen</translation>
 <translation id="2427507373259914951">Linksklick</translation>
 <translation id="2428245692671442472">{NUM_PASSWORDS,plural, =1{<ph name="DOMAIN_LINK" /> 1 Kontopasswort, nur auf diesem Gerät gespeichert. Weitere Details}other{<ph name="DOMAIN_LINK" /> {NUM_PASSWORDS} Kontopasswörter, nur auf diesem Gerät gespeichert. Weitere Details}}</translation>
@@ -2365,7 +2366,7 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="2801954693771979815">Bildschirmgröße</translation>
 <translation id="2802557211515765772">Es gibt keine verwalteten Drucker.</translation>
 <translation id="2802911274872454492">Einstellung für Touch-Gesten: <ph name="SELECTED_GESTURE" /></translation>
-<translation id="2803242359099950130">Wenn du mit dieser Website interagieren möchtest, pausiere die aktuelle Aufgabe oder warte, bis Gemini fertig ist</translation>
+<translation id="2803242359099950130">Zur Interaktion mit dieser Website pausiere die aktuelle Aufgabe oder warte, bis Gemini fertig ist</translation>
 <translation id="2803313416453193357">Ordner öffnen</translation>
 <translation id="2803719750464280163">Bitte bestätige, dass <ph name="PASSKEY" /> der auf dem Bluetooth-Gerät „<ph name="DEVICE" />“ angezeigte Passkey ist.</translation>
 <translation id="2804043232879091219">Der alternative Browser konnte nicht geöffnet werden</translation>
@@ -5644,6 +5645,7 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="5280426389926346830">Verknüpfung erstellen?</translation>
 <translation id="5280966903879030278">Du kannst Alltagssprache verwenden, um in deinem Browserverlauf nach Websites zu suchen, die du besucht hast. Diese Einstellung ist deaktiviert.</translation>
 <translation id="5281013262333731149">Wird in <ph name="OPEN_BROWSER" /> geöffnet</translation>
+<translation id="5283747245540449968">Seitenfarben</translation>
 <translation id="5284107433515104664">Während der Passwortänderung werden Seiteninhalte und zugehörige Informationen an Google gesendet und können von Prüfern angesehen werden, um diese Funktion zu verbessern. Dein Passwort wird verschlüsselt und kann zu keinem Zeitpunkt von jemandem angesehen werden.</translation>
 <translation id="5284445933715251131">Download fortsetzen</translation>
 <translation id="5285635972691565180">Bildschirm <ph name="DISPLAY_ID" /></translation>
@@ -6530,6 +6532,7 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="5989497858237037960">Wenn du Websites besuchst, werden die Seiteninhalte verschlüsselt und auf deinem Gerät gespeichert. Das kann die Leistung von Chrome beeinträchtigen.</translation>
 <translation id="5990266201903445068">Nur WLAN</translation>
 <translation id="5990386583461751448">Übersetzt</translation>
+<translation id="5991039386730545918">Das ausgewählte Farbschema für die Seite wird nur verwendet, wenn der hohe Kontrast des Systems aktiviert ist</translation>
 <translation id="5992225669837656567">Alle Mäuse wurden getrennt</translation>
 <translation id="5992652489368666106">Kein Rand</translation>
 <translation id="5996490984199062729">Dein Profil wurde nicht eingerichtet</translation>
@@ -7928,6 +7931,7 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="706949303827219454">Öffnet die Seite mit den Sicherheitseinstellungen in einem neuen Tab</translation>
 <translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{Neues Passwort für diese Website}other{Neue Passwörter für diese Website}}</translation>
 <translation id="7070484045139057854">Kann Websitedaten lesen und ändern</translation>
+<translation id="7071521146534760487">Konto verwalten</translation>
 <translation id="7072010813301522126">Verknüpfungsname</translation>
 <translation id="7072078320324181561">Apps und Websites mit Berechtigung zur Standortermittlung sowie Systemdienste können deinen Standort verwenden. <ph name="LINK_BEGIN" />Weitere Informationen<ph name="LINK_END" /></translation>
 <translation id="7072573590175540692">Verfügbare Kürzel für Funktionen und Erweiterungen</translation>
@@ -8564,6 +8568,7 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="755472745191515939">Dein Administrator erlaubt diese Sprache nicht</translation>
 <translation id="7554791636758816595">Neuer Tab</translation>
 <translation id="7557194624273628371">Linux-Portweiterleitung</translation>
+<translation id="7557508262441527045">Abgemeldet</translation>
 <translation id="7561196759112975576">Immer</translation>
 <translation id="7561759921596375678">Ton einschalten</translation>
 <translation id="7563576896417108627"><ph name="APP_NAME" /> anpassen und verwalten. Update ist verfügbar.</translation>
@@ -9313,6 +9318,7 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8118362518458010043">Von Chrome deaktiviert. Diese Erweiterung könnte unsicher sein.</translation>
 <translation id="8118448640060360549">{EXTENSIONS_COUNT,plural, =1{# Lesezeichen}other{# Lesezeichen}}</translation>
 <translation id="8118488170956489476">Dein Browser wird <ph name="BEGIN_LINK" />von deiner Organisation verwaltet<ph name="END_LINK" /></translation>
+<translation id="8118496140027032067">Webseitenfarben mit kontrastreichen Designs überschreiben oder erzwungene Farben deaktivieren</translation>
 <translation id="8118515372935001629">Displayaktualisierungsrate</translation>
 <translation id="8118860139461251237">Downloads verwalten</translation>
 <translation id="8119438628456698432">Protokolldateien werden erstellt…</translation>
@@ -9562,7 +9568,7 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="831207808878314375">Definition</translation>
 <translation id="8312841338723044391">LIVE</translation>
 <translation id="8313308349366087671">Anwendungsoptionen</translation>
-<translation id="8313599942510782709">Deine Aufgabe wird noch ausgeführt</translation>
+<translation id="8313599942510782709">Deine Aufgabe wird aktuell ausgeführt</translation>
 <translation id="8314219340741508325">Das heruntergeladene Update enthält nicht den erwarteten Inhalt.</translation>
 <translation id="8314381333424235892">Erweiterung fehlt oder wurde deinstalliert</translation>
 <translation id="831440797644402910">Dieser Ordner kann nicht geöffnet werden</translation>
@@ -9990,6 +9996,7 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8648408795949963811">Farbtemperatur des Nachtlichts</translation>
 <translation id="8648544143274677280"><ph name="SITE_NAME" /> möchte: <ph name="FIRST_PERMISSION" />, <ph name="SECOND_PERMISSION" /> und mehr</translation>
 <translation id="8648889679430451455">Personalisierungsdaten löschen</translation>
+<translation id="8649290269169747916">Standardseitenfarben verwenden, wenn der hohe Kontrast des Systems deaktiviert ist</translation>
 <translation id="8651585100578802546">Erneutes Laden dieser Seite erzwingen</translation>
 <translation id="8651806635673244884">Du kannst deine Tabs wieder nach oben verschieben, indem du mit der rechten Maustaste auf einen beliebigen Tab klickst und „Tabs horizontal anzeigen“ auswählst</translation>
 <translation id="8652400352452647993">Erweiterung packen: Fehler</translation>

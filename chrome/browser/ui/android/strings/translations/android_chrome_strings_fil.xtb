@@ -50,6 +50,7 @@
 <translation id="1165109137568919258">Kumuha ng larawan o magdagdag ng imahe mula sa iyong gallery ng larawan para maghanap</translation>
 <translation id="1173894706177603556">Pangalanang muli</translation>
 <translation id="1174479719160874822">Ire-request ng Chrome ang pang-mobile na site kapag makitid ang screen</translation>
+<translation id="1174759280027683968">Pumunta sa Chrome</translation>
 <translation id="1175241315203286684">Puwedeng remote na gumawa ng mga pagbabago sa profile at browser mo, magsuri ng impormasyon tungkol sa browser sa pamamagitan ng pag-uulat, at gumawa ng iba pang kinakailangang gawain ang iyong administrator. Puwede ring pamahalaan sa labas ng Chrome ang aktibidad sa device na ito.</translation>
 <translation id="1177863135347784049">Custom</translation>
 <translation id="1181037720776840403">Alisin</translation>
@@ -608,6 +609,7 @@ Ang taong may passphrase mo lang ang makakabasa ng iyong naka-encrypt na data. H
 <translation id="3452832259067974318">Para protektahan ang iyong privacy, hindi io-autofill ng Chrome ang password mo sa field na ito.</translation>
 <translation id="3474624961160222204">Magpatuloy bilang si <ph name="NAME" /></translation>
 <translation id="3478363558367712427">Puwede mong piliin ang iyong search engine</translation>
+<translation id="3479552764303398839">Hindi ngayon</translation>
 <translation id="3482805106082349287">Maghanap gamit ang keyboard, boses, Incognito, o camera</translation>
 <translation id="3487903178221457900">Ang na-export na file ay posibleng ma-access ng iba, kabilang ang mga app. Kapag nag-export ka na, made-delete na sa Chrome ang iyong mga password.</translation>
 <translation id="3488199663160411179">pangalan</translation>
@@ -896,6 +898,7 @@ Maaaring may ibang uri ng history ng pag-browse ang iyong Google account tulad n
 <translation id="4578289292431526768">Tara na</translation>
 <translation id="4583164079174244168">{MINUTES,plural, =1{# minuto ang nakalipas}one{# minuto ang nakalipas}other{# na minuto ang nakalipas}}</translation>
 <translation id="4585751637295612750">Magbukas ng bagong tab para idagdag ito sa iyong tanong</translation>
+<translation id="4585793705637313973">I-edit ang page</translation>
 <translation id="4587589328781138893">Mga Site</translation>
 <translation id="4594952190837476234">Naka-offline ang page na ito mula noong <ph name="CREATION_TIME" /> at maaaring iba ito sa online na bersyon.</translation>
 <translation id="4595237294768457124">Magbukas ng page ng Bagong tab.</translation>
@@ -1536,6 +1539,7 @@ Halimbawa, puwedeng tumugon ang ilang website sa kahilingang ito sa pamamagitan 
 <translation id="6996145122199359148">I-download ang page na ito</translation>
 <translation id="7007648447224463482">Buksan ang lahat sa bagong window</translation>
 <translation id="7013762323294215682">Mase-save ang passkey na ito sa iyong password manager. Magagamit ng sinumang may access dito ang passkey na ito.</translation>
+<translation id="7017219178341817193">Magdagdag ng bagong page </translation>
 <translation id="7022756207310403729">Buksan sa browser</translation>
 <translation id="7029809446516969842">Mga Password</translation>
 <translation id="7037994709569287156">Gawing default ang Chrome</translation>

@@ -17,6 +17,7 @@
 <translation id="1131805035311359397">Jos haluat tarkistaa, ovatko salasanasi turvassa tietosuojaloukkauksilta ja muilta tietoturvaongelmilta, <ph name="BEGIN_LINK" />kirjaudu Chromiumiin<ph name="END_LINK" />.</translation>
 <translation id="1145158441928281100">{COUNT,plural, =1{Järjestelmänvalvoja pyytää Chromiumin uudelleenkäynnistystä, jotta tämä päivitys voidaan ottaa käyttöön. Incognito- tai eristetty selainikkuna on auki. Sitä ei avata uudelleenkäynnistyksen jälkeen.}other{Järjestelmänvalvoja pyytää Chromiumin uudelleenkäynnistystä, jotta tämä päivitys voidaan ottaa käyttöön. Profiileissa on auki # incognito- ja eristetty selainikkuna. Niitä ei avata uudelleen uudelleenkäynnistyksen jälkeen.}}</translation>
 <translation id="1153368717515616349">Klikkaa Chromium-valikkoa</translation>
+<translation id="1157952955648710254">Sulje Google Haun sivupaneeli</translation>
 <translation id="1157985233335035034">Viimeksi käytetyt kielet</translation>
 <translation id="1184145431117212167">Asennus epäonnistui, koska käyttämääsi Windows-versiota ei tueta.</translation>
 <translation id="1185134272377778587">Tietoja Chromiumista</translation>
@@ -44,6 +45,7 @@
 <translation id="1383876407941801731">Haku</translation>
 <translation id="1388276868779258475">Jatka selaamista missä tahansa Chromium-sovelluksella</translation>
 <translation id="141901961143729572">Kerro mielipiteesi</translation>
+<translation id="1438812738230833934">Voit avata Google Haun uudelleen sivupaneelissa, jotta voit esittää kysymyksiä selaamisen aikana</translation>
 <translation id="1465192221147974788">Jos haluat jakaa ikkunan, salli Chromiumin näytön tallennus järjestelmäasetuksista.</translation>
 <translation id="1478370723027452770">Ohjeita Chrome for Testingin käyttöön</translation>
 <translation id="147870194906295621">Kirjaudu Chromiumiin, niin voit käyttää esimerkiksi tallennettuja tietoja tältä laitteelta: <ph name="DEVICE" /></translation>
@@ -340,6 +342,7 @@
 <translation id="4470974262661801543">Chromium-datan käyttö ja tallennus Google-tilillä edellyttää, että lisäät tunnuslauseesi</translation>
 <translation id="4493028449971051158">Käynnistysvirhe: Suorita asennusohjelma järjestelmänvalvojana.</translation>
 <translation id="4501471624619070934">Asentaminen epäonnistui, koska pääsyä on rajoitettu tässä maassa.</translation>
+<translation id="4501839397124711198">Voit kiinnittää Google Haun sivupaneeliin, jotta voit esittää kysymyksiä selailun aikana</translation>
 <translation id="4510853178268397146">Tästä laajennuksesta ei ole julkaistu tietosuojakäytäntöjä koskien esimerkiksi datan keräämistä ja käyttöä. Chromium suosittelee sen poistamista.</translation>
 <translation id="452711251841752011">Tervetuloa Chromiumiin, uusi selainikkuna avattu</translation>
 <translation id="4531137820806573936">Chromium tarvitsee luvan ympäristösi kartoittamiseen ja käsiesi liikkeiden seuraamiseen</translation>
@@ -383,8 +386,10 @@
 <translation id="4987820182225656817">Vierailijat voivat käyttää Chromiumia jälkiä jättämättä.</translation>
 <translation id="4992938037305302429">Tilisi Chromiumissa</translation>
 <translation id="4994636714258228724">Lisää itsesi Chromiumiin</translation>
+<translation id="5000497292978544380">Google Haun tekoälytila</translation>
 <translation id="504699503110800016">Avaa ylivuotovalikko</translation>
 <translation id="5074496654342756568">Käytä kaikkia Googlen suosikkeja Chromiumin kautta laitteellasi (<ph name="DEVICE_TYPE" />)</translation>
+<translation id="5121592697493894155">Google Haku sivupaneelissa</translation>
 <translation id="5123973130450702873">Chromium tarvitsee luvan käsien liikkeen seuraamiseen</translation>
 <translation id="5141988424377517949">Sivustot, joilla et ole käynyt viime aikoina. Chromium poisti nämä luvat: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ja <ph name="PERMISSION_3" />.</translation>
 <translation id="5171868502429358653">Kirjaudu Chromiumiin</translation>
@@ -672,6 +677,7 @@ Chromium ei voi palauttaa asetuksiasi.</translation>
 <translation id="7781047659465034537">Valitse Chromium oletukseksi ja kiinnitä se tehtäväpalkkiin</translation>
 <translation id="7786760609782648049">Chromiumin nopeuttaminen</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> – Chromium Canary</translation>
+<translation id="7800043020703832708">Sulje Google Haku sivupaneelista</translation>
 <translation id="7803986347287457849">Pyri estämään avaamiesi sivustojen näkyminen henkilöille, joilla on pääsy internetliikenteeseesi. Chromium käyttää turvallista yhteyttä sivuston IP-osoitteen etsimiseen DNS:stä (Domain Name System)</translation>
 <translation id="7810005234485217901">Kiinnitä kuvahaku, niin löydät sen helposti</translation>
 <translation id="7813559034750130602">{COUNT,plural, =1{Uusi Chromium-päivitys on saatavilla, ja se otetaan käyttöön uudelleenkäynnistyksen jälkeen. Incognito- tai eristetty selainikkuna on auki. Sitä ei avata uudelleenkäynnistyksen jälkeen.}other{Uusi Chromium-päivitys on saatavilla, ja se otetaan käyttöön uudelleenkäynnistyksen jälkeen. Profiileissa on auki # incognito- ja eristetty selainikkuna. Niitä ei avata uudelleen uudelleenkäynnistyksen jälkeen.}}</translation>
@@ -686,6 +692,7 @@ Chromium ei voi palauttaa asetuksiasi.</translation>
 <translation id="7873537467422636035">Jos unohdit tunnuslauseen tai haluat muuttaa asetusta, <ph name="BEGIN_LINK" />poista tilin Chromium-data<ph name="END_LINK" /></translation>
 <translation id="7874369989024033742">Avaa Gemini in Chromium nopeasti aina tarvittaessa</translation>
 <translation id="7888981273428720788">Valitse Chromium oletusselaimeksi</translation>
+<translation id="7904213866086517086">Avaa Google Haku uudelleen sivupaneelissa</translation>
 <translation id="7934340546140346950">Chromium päivittää suojaamattomat yhteydet HTTPS:ään automaattisesti, jos mahdollista</translation>
 <translation id="7937630085815544518">Chromiumiin kirjautunut käyttäjä: <ph name="USER_EMAIL_ADDRESS" />. Kirjaudu uudelleen sisään samalla tilillä.</translation>
 <translation id="7944602660083060118"><ph name="EXISTING_USER" /> on jo kirjautunut sisään. Jos haluat pitää selaamisen erillään, kirjaudu Chromiumiin omalla profiilillasi käyttämällä tiliä <ph name="USER_EMAIL_ADDRESS" />. Voit myös käyttää esimerkiksi kirjanmerkkejä kaikilla laitteillasi.</translation>
@@ -740,14 +747,15 @@ Chromium ei voi palauttaa asetuksiasi.</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Kaikki oikeudet pidätetään.</translation>
 <translation id="8372327902843331129">Kirjaudu sisään Chromiumiin, niin voit käyttää salasanojasi ja muita tietoja kaikilla laitteillasi. Tämä salasana tallennetaan Google-tilillesi kirjautumisen jälkeen.</translation>
 <translation id="837460953767177950">Käynnistä Chromium uudelleen.</translation>
+<translation id="8376752431516546391">Google Haun sivupaneeli</translation>
 <translation id="8397248745433792218">Chromium suosittelee sen poistamista. <ph name="BEGIN_LINK" />Lue lisää tuetuista laajennuksista<ph name="END_LINK" /></translation>
 <translation id="8401454788024434101">Kehittäjä on perunut laajennuksen julkaisun, joten se voi olla vaarallinen. Poista se Chromiumista, jotta se ei enää voi nähdä tai muuttaa dataasi avaamillasi sivustoilla, mukaan lukien henkilökohtaisia tietojasi.</translation>
+<translation id="8406687098231754303">Yläpalkin "Google Haku sivupaneelissa" ‑painikkeella voit avata Google Haun sivupaneelissa uudelleen ja esittää kysymyksiä selailun aikana</translation>
 <translation id="8416884904046428725">Chromiumin on vahvistettava henkilöllisyytesi, ennen kuin tiettyä dataa voidaan tallentaa Google-tilillesi ja käyttää kaikilla laitteillasi. Jos kirjaudut ulos nyt, tämä data poistetaan.</translation>
 <translation id="8417404458978023919">{0,plural, =1{Käynnistä Chromium uudelleen vuorokauden kuluessa}other{Käynnistä Chromium uudelleen # vuorokauden kuluessa}}</translation>
 <translation id="8438543370129609977">Kun käytät kuvahakua, sivun otsikko, URL-osoite ja sisältö (mukaan lukien PDF-tiedostot) lähetetään palvelimelle. <ph name="LEARN_MORE" /></translation>
 <translation id="8447525028100794994">Lue lisää kuvahausta Chromiumissa</translation>
 <translation id="8453117565092476964">Asennusarkisto on virheellinen. Lataa Chromium uudelleen.</translation>
-<translation id="8458614432758743027">Chromium edellyttää Windows 10:tä tai uudempaa versiota.</translation>
 <translation id="8463672209299734063">Valinnainen: Auta parantamaan Chromium-käyttöjärjestelmän ominaisuuksia ja suorituskykyä lähettämällä diagnostiikka- ja käyttödataa Googlelle automaattisesti.</translation>
 <translation id="8471947159125090285">Chromium-datan käyttö ja tallennus Google-tilillä edellyttää, että vahvistat henkilöllisyytesi</translation>
 <translation id="8482493977473846331">Näytä kehotteet kirjautua Chromiumiin</translation>
@@ -759,6 +767,7 @@ Chromium ei voi palauttaa asetuksiasi.</translation>
 <translation id="8555465886620020932">Palveluvirhe: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="8556055872671007529">Joissakin Chromiumin ominaisuuksissa ja laajennuksissa on pikanäppäimiä. Voit halutessasi laittaa ne takaisin päälle.</translation>
 <translation id="8556420416730706394">Kiinnitä kuvahaku klikkaamalla sivupaneelin yläreunan Kiinnitä-painiketta, niin löydät sen helposti</translation>
+<translation id="8564408666201523086">Valmista! Voit nyt helposti esittää kysymyksiä selailun aikana Google Haun sivupaneelissa</translation>
 <translation id="856656450041460113">Hakukielilista</translation>
 <translation id="8576826849825683917">Useat organisaatiot ylläpitävät Chromiumia</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> The Chromium Authors. Kaikki oikeudet pidätetään.</translation>

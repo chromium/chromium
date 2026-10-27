@@ -24,6 +24,7 @@
 <translation id="1148360048981192980">A próxima vez que abras Chrome no teu dispositivo (<ph name="DEVICE_TYPE" />), verás unha solicitude para usar o xestor de contrasinais de Google.</translation>
 <translation id="1152920704813762236">Acerca de ChromeOS</translation>
 <translation id="1154147086299354128">&amp;Abrir en Chrome</translation>
+<translation id="1157952955648710254">Pechar o panel lateral da Busca de Google</translation>
 <translation id="1157985233335035034">Idiomas recentes</translation>
 <translation id="1158134713295836892">Gemini en Chrome</translation>
 <translation id="1184145431117212167">Produciuse un erro durante a instalación porque a versión de Windows non é compatible.</translation>
@@ -48,6 +49,7 @@
 <translation id="141901961143729572">Comparte o que pensas</translation>
 <translation id="1425903838053942728">{COUNT,plural, =0{Actualizouse Chrome. Podes usar a versión máis recente tan pronto como o reinicies. Despois volverán abrirse as pestanas actuais.}=1{Actualizouse Chrome. Cando reinicies o dispositivo, xa podes usar a versión máis recente. Despois volverán abrirse as pestanas actuais. A ventá do modo de incógnito non se volverá abrir.}other{Actualizouse Chrome. Cando reinicies o dispositivo, xa podes usar a versión máis recente. Despois volverán abrirse as pestanas actuais. As # ventás do modo de incógnito non se volverán abrir.}}</translation>
 <translation id="1434626383986940139">Aplicacións de Chrome Canary</translation>
+<translation id="1438812738230833934">Podes volver abrir a Busca de Google no panel lateral para facer preguntas mentres navegas</translation>
 <translation id="1439793550875056299">Fixar Chrome</translation>
 <translation id="1446616215961349840">{COUNT,plural, =1{A persoa que che administra a conta esixe que reinicies Chrome para aplicar unha actualización. Non se volverá abrir a ventá illada.}other{A persoa que che administra a conta esixe que reinicies Chrome para aplicar unha actualización. Non se volverá abrir # ventás illadas.}}</translation>
 <translation id="146866447420868597">Queres iniciar sesión en Chrome?</translation>
@@ -306,7 +308,6 @@ Proba a permitila se esta páxina non funciona como debería.</translation>
 <translation id="3780814664026482060">Chrome: <ph name="PAGE_TITLE" /></translation>
 <translation id="3785324443014631273">Chrome OS Flex non puido sincronizar os teus datos por mor dun erro durante o inicio de sesión.</translation>
 <translation id="3795971588916395511">Google Chrome OS</translation>
-<translation id="3809772425479558446">Para usar Chrome, precísase Windows 10 ou unha versión posterior.</translation>
 <translation id="3810973564298564668">Xestionar</translation>
 <translation id="383455301564000773">Vas cambiar a Windows 11? Descarga Chrome en OneDrive para teres todo listo desde o primeiro día.</translation>
 <translation id="383928141529488001">Google Chrome precisa acceso ao Bluetooth para explorar 
@@ -379,6 +380,7 @@ Proba a permitila se esta páxina non funciona como debería.</translation>
 <translation id="4458462641685292929">Hai outra operación en Google Chrome que está en curso. Téntao de novo máis tarde.</translation>
 <translation id="4493028449971051158">Produciuse un erro de inicio do sistema: Executa o instalador como persoa administradora.</translation>
 <translation id="4501471624619070934">Produciuse un erro durante a instalación porque o acceso está restrinxido neste país.</translation>
+<translation id="4501839397124711198">Podes fixar a Busca de Google no panel lateral para facer preguntas mentres navegas</translation>
 <translation id="4571503333518166079">Ir á configuración de notificacións de Chrome</translation>
 <translation id="4580939929828762295">Protéxete co xestor de contrasinais de Google</translation>
 <translation id="459622048091363950">Unha vez que Chrome teña acceso, os sitios web poderán solicitalo tamén.</translation>
@@ -421,6 +423,7 @@ Proba a permitila se esta páxina non funciona como debería.</translation>
 <translation id="4970761609246024540">Dámosche a benvida aos perfís de Chrome</translation>
 <translation id="4970880042055371251">Versión de Chrome OS</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
+<translation id="5000497292978544380">Modo IA da Busca de Google</translation>
 <translation id="5003967926796347400">Fai clic en Xestor de contrasinais de Google</translation>
 <translation id="5043786843026425788">Máis información sobre como facer consultas con Google Lens en Chrome</translation>
 <translation id="504867494566807945">Abre ligazóns en Chrome desde calquera aplicación. Ademais, o navegador fíxase na barra de tarefas para que poidas acceder a el facilmente.</translation>
@@ -428,6 +431,7 @@ Proba a permitila se esta páxina non funciona como debería.</translation>
 <translation id="5105120510934353742">Se queres recibir actualizacións de Google Chrome no futuro, debes instalar o sistema operativo macOS 13 ou unha versión posterior. Este ordenador ten macOS 12.</translation>
 <translation id="5114340746415930644">Escribe a túa frase de acceso para usar e gardar os datos de Chrome na túa conta (<ph name="USER_EMAIL" />)</translation>
 <translation id="5120334927898581447">Iniciar sesión en Chrome cando inicies sesión noutros servizos de Google</translation>
+<translation id="5121592697493894155">Busca de Google no panel lateral</translation>
 <translation id="5126049312684316860">Chrome precargará aínda máis páxinas que é probable que visites para que carguen máis rapidamente cando accedas a elas</translation>
 <translation id="5127558335897923940">Mantén Chrome na barra de aplicacións para acceder rapidamente en calquera momento</translation>
 <translation id="5132929315877954718">Descubre aplicacións, xogos, extensións e temas fantásticos para Google Chrome.</translation>
@@ -729,6 +733,7 @@ Google Chrome non pode recuperar a túa configuración.</translation>
 <translation id="7777080907402804672">Se unha imaxe non ten unha descrición útil, Chrome tentará proporcionarche unha. Para crear descricións, envíanse imaxes a Google. Podes desactivar esta función na configuración cando queiras.</translation>
 <translation id="778331955594035129">Chrome necesita permiso de acceso á localización para este sitio</translation>
 <translation id="7787950393032327779">Parece que outro proceso de Google Chrome (<ph name="PROCESS_ID" />) está utilizando o perfil noutro ordenador (<ph name="HOST_NAME" />). Chrome bloqueou o perfil para que non se dane. Se estás seguro de que ningún outro proceso está utilizando este perfil, podes desbloquealo e volver iniciar Chrome.</translation>
+<translation id="7800043020703832708">Pechar Busca de Google no panel lateral</translation>
 <translation id="7801699035218095297">Google Chrome está tentando copiar os contrasinais. Escribe o teu contrasinal de Windows para permitir esta acción.</translation>
 <translation id="7804364787702057554">A túa conta en Chrome</translation>
 <translation id="7804947029129221742">O teu buscador cambiouse desde fóra de Chrome. Para protexerte, Chrome restableceu a configuración predeterminada orixinal. <ph name="LEARN_MORE_LINK" /></translation>
@@ -745,6 +750,7 @@ Google Chrome non pode recuperar a túa configuración.</translation>
 <translation id="7886087451482920026">Selecciona o texto con Google Lens</translation>
 <translation id="7890208801193284374">Se compartes un ordenador, os teus amigos e familiares poderán navegar por separado e configurar Chrome como prefiran.</translation>
 <translation id="7896673875602241923">Anteriormente, alguén iniciou sesión como <ph name="ACCOUNT_EMAIL_LAST" /> en Chrome neste ordenador. Crea un novo usuario de Chrome para manter a túa información por separado.</translation>
+<translation id="7904213866086517086">Volver abrir a Busca de Google no panel lateral</translation>
 <translation id="7904985524660297937">Proba Gemini en Google Chrome</translation>
 <translation id="7905880575591690197">ChromeOS non puido gardar os datos de Chrome na túa Conta de Google porque se produciu un erro ao iniciar sesión</translation>
 <translation id="7917876797003313048">Podes xestionar as Contas de Google nas que teñas a sesión iniciada. As túas Contas de Google úsanse para o navegador Chrome, Play Store, Gmail e moito máis. Se queres engadir unha conta para outra persoa, como un familiar, engade unha persoa nova ao teu dispositivo (<ph name="DEVICE_TYPE" />). <ph name="LINK_BEGIN" />Máis información<ph name="LINK_END" /></translation>
@@ -804,12 +810,14 @@ Google Chrome non pode recuperar a túa configuración.</translation>
 <translation id="8367950957770994118">Abre rapidamente Gemini en Chrome cando o necesites</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Todos os dereitos reservados.</translation>
 <translation id="8370748943308169953">Código QR para iniciar sesión en Chrome como <ph name="USER_NAME" /></translation>
+<translation id="8376752431516546391">Panel lateral da Busca de Google</translation>
 <translation id="8377158135256176353">Activar ou desactivar Gemini en Chrome Canary</translation>
 <translation id="8380754585531979907">Usa o teclado para navegar entre Gemini en Chrome e a pestana que tes aberta.</translation>
 <translation id="8387459386171870978">Seguir usando Chrome</translation>
 <translation id="8394720698884623075">Comproba enderezos URL cunha lista de sitios non seguros almacenada en Chrome</translation>
 <translation id="8402881611069691789">{COUNT,plural, =1{Chrome terminou de actualizarse. Cando reinicies o dispositivo, xa poderás usar a versión máis recente. Despois volverán abrirse as pestanas actuais. Hai unha ventá no modo de incógnito ou illada aberta. Non se volverá abrir tras o reinicio.}other{Chrome terminou de actualizarse. Cando reinicies o dispositivo, xa poderás usar a versión máis recente. Despois volverán abrirse as pestanas actuais. Hai # ventás no modo de incógnito e illadas abertas nos perfís. Non se volverán abrir tras o reinicio.}}</translation>
 <translation id="8403038600646341038">O logotipo de Chrome dentro da pantalla dun ordenador.</translation>
+<translation id="8406687098231754303">Usa o botón Busca de Google no panel lateral, situado na barra de ferramentas, para volver abrir ese motor de busca no panel lateral e facer preguntas mentres navegas</translation>
 <translation id="8418845734693287262">Chrome OS non puido sincronizar os teus datos porque a información de inicio de sesión da túa conta está desactualizada.</translation>
 <translation id="842386925677997438">Ferramentas de privacidade de Chrome</translation>
 <translation id="8425765582779547329">Para protexerte en liña coas eleccións dos teus pais, inicia sesión en Chrome</translation>
@@ -827,6 +835,7 @@ Non poderás gardar máis ata que elimines uns cantos. Se pechas a sesión agora
 <translation id="8533056045953418157">Define Google Chrome como o visor de PDF predeterminado</translation>
 <translation id="854593887324189900">Buscar nesta imaxe con Google Lens</translation>
 <translation id="8555465886620020932">Produciuse un erro no servizo: <ph name="SERVICE_ERROR" />.</translation>
+<translation id="8564408666201523086">Feito! Agora podes facer preguntas facilmente mentres navegas coa Busca de Google no panel lateral</translation>
 <translation id="856656450041460113">Buscar na lista de idiomas</translation>
 <translation id="8575047640889685742">Usa a túa <ph name="BEGIN_LINK" />propia frase de acceso<ph name="END_LINK" /> para encriptar todos os datos de Chrome na túa Conta de Google. Non se encriptarán os métodos de pago nin os enderezos de Google Pay. Tampouco se sincronizará o historial de navegación de Chrome.</translation>
 <translation id="8590782867495422699">Volver abrir o modo IA da Busca de Google</translation>

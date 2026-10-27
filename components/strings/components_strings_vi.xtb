@@ -661,6 +661,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="2118132148597630479">Phong bì C5</translation>
 <translation id="2119505898009119320">Cấp cho: <ph name="ORGANIZATION" /> [<ph name="JURISDICTION" />]</translation>
 <translation id="2119867082804433120">Đục lỗ dưới cùng bên phải</translation>
+<translation id="2121418473709291357">Bị bỏ qua vì giải pháp Quản lý trình duyệt Chrome qua đám mây đã tắt.</translation>
 <translation id="2122214041802369259">Giá cao</translation>
 <translation id="2122719317867821810">Chính sách này đang hoạt động như dự kiến nhưng lại ghi đè một giá trị xung đột được đặt trong một nguồn khác.</translation>
 <translation id="2124081665399116863">Cập nhật thông tin xe trong Google Wallet</translation>
@@ -2480,6 +2481,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="5115232566827194440">Ghi đè phiên khách được quản lý và bị hạn chế</translation>
 <translation id="5115563688576182185">(64 bit)</translation>
 <translation id="5116015291385561204">Xác minh danh tính của bạn để tự động điền thông tin nhạy cảm</translation>
+<translation id="5121592697493894155">Google Tìm kiếm trong bảng điều khiển bên</translation>
 <translation id="5122786942953798871">Phong bì (Cotton)</translation>
 <translation id="5123063207673082822">Cuối tuần</translation>
 <translation id="5124797626438336458">Màn hình báo lỗi khi Mua trước trả sau đã mở trên một nửa màn hình.</translation>
@@ -2916,6 +2918,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="5843987376989109187">Ngôn ngữ này chưa được hỗ trợ.
     <ph name="BEGIN_LINK" />Tìm hiểu thêm<ph name="END_LINK" /></translation>
 <translation id="5848445080378515710">Sau khi xem lại đơn đặt hàng, bạn phải đăng nhập hoặc tạo một tài khoản <ph name="BNPL_ISSUER_NAME" />. Tài khoản này sẽ tự động được liên kết trong Google Wallet.</translation>
+<translation id="5848916806551637625">Tài khoản Pix sẽ được liên kết với <ph name="ACCOUNT_EMAIL" />. Để tắt tính năng phát hiện mã Pix, hãy chuyển đến <ph name="BEGIN_LINK1" />phần cài đặt Chrome<ph name="END_LINK1" />.</translation>
 <translation id="5851548754964597211">Danh sách thẻ</translation>
 <translation id="5851868085455377790">Nhà cung cấp</translation>
 <translation id="5852909432155870672">RA4</translation>
@@ -4427,6 +4430,7 @@ Thông tin chi tiết bổ sung:
 <translation id="8371841335382565017">Hiện danh sách thiết bị để truyền</translation>
 <translation id="8371889962595521444">Chứng chỉ gốc tùy chỉnh</translation>
 <translation id="8374636051559112948">Khác nhau</translation>
+<translation id="8376752431516546391">Bảng điều khiển bên của Google Tìm kiếm</translation>
 <translation id="8377507422902936905">Đơn đặt hàng</translation>
 <translation id="837840316697671463">Nếu bạn không thấy tệp trên thiết bị, hãy tìm tệp đó trên <ph name="CLOUD_PROVIDER" />.</translation>
 <translation id="8378714024927312812">Do tổ chức của bạn quản lý</translation>

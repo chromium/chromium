@@ -661,6 +661,7 @@
 <translation id="2118132148597630479">‏C5 لفافہ</translation>
 <translation id="2119505898009119320">جاری کردہ بنام: <ph name="ORGANIZATION" /> [<ph name="JURISDICTION" />]</translation>
 <translation id="2119867082804433120">نیچے دائیں طرف سوراخ</translation>
+<translation id="2121418473709291357">‏نظر انداز کر دیا گیا کیونکہ Chrome براؤزر کلاؤڈ مینجمنٹ غیر فعال ہے۔</translation>
 <translation id="2122214041802369259">قیمت زیادہ ہے</translation>
 <translation id="2122719317867821810">یہ پالیسی توقع کے مطابق کام کر رہی ہے لیکن کسی دوسری جگہ ایک متضاد قدر سیٹ کی گئی ہے اور اسے اس پالیسی سے اوور رائیڈ کر دیا گیا ہے۔</translation>
 <translation id="2124081665399116863">‏‫Google والٹ میں گاڑی کی معلومات اپ ڈیٹ کریں</translation>
@@ -690,6 +691,7 @@
 <translation id="2155260325161282517">‏‎5 x 7 انچ</translation>
 <translation id="2156467141257470387">‏آپ پورے Google پروڈکٹس میں محفوظ کردہ پتے استعمال کر سکتے ہیں۔ اس سے آپ کے موجودہ دفتر کا پتہ تبدیل نہیں ہوگا۔ یہ آپ کے Google اکاؤنٹ <ph name="ACCOUNT" /> میں محفوظ ہو جائے گا۔</translation>
 <translation id="2157640075051554492">قیمت کو ٹریک کرنے کی اطلاعات</translation>
+<translation id="2158964559178498011">‏آٹو فل مزید مقامات پر کام کرتا ہے — معلومات تلاش کرنے اور پُر کرنے کیلئے دو بار Ctrl دبائیں</translation>
 <translation id="2161656808144014275">متن</translation>
 <translation id="2162435186600002085">بنیادی ہیڈر لوگو</translation>
 <translation id="2162535140284745414">‏رئیل ٹائم تجاویز حاصل کریں جو آپ کو AI کے ساتھ براؤز کرنے کے نئے طریقے تلاش کرنے میں مدد کر سکتی ہیں۔</translation>
@@ -2201,6 +2203,7 @@
 <translation id="4678379207584374453"><ph name="BEGIN_LINK" />مزید جانیں<ph name="END_LINK" /></translation>
 <translation id="4682496302933121474">صفحہ کا ترجمہ کریں؟</translation>
 <translation id="468314109939257734">اپنا ورچوئل کارڈ نمبر دیکھیں</translation>
+<translation id="4684818564800397688">آٹو فل مزید مقامات پر کام کرتا ہے — معلومات تلاش کرنے اور پُر کرنے کیلئے ⌘ کو دو بار دبائیں</translation>
 <translation id="4686942373615810936">ابھی ابھی تخلیق کیا گیا</translation>
 <translation id="4690205240253392065">بعد میں ادائیگی کریں فراہم کنندہ کا انتخاب کریں</translation>
 <translation id="469028408546145398">پوشیدگی ونڈوز کو بند کریں بٹن، ان تمام پوشیدگی ونڈوز کو بند کرنے کے لیے فعال کریں جو فی الحال کھلی ہیں</translation>
@@ -2481,6 +2484,7 @@
 <translation id="5115232566827194440">نظم کردہ ممنوع مہمان کا سیشن اوور رائیڈ کریں</translation>
 <translation id="5115563688576182185">(64 بٹ)</translation>
 <translation id="5116015291385561204">توثیق کریں کہ حساس معلومات کو آٹو فل کرنے والے آپ ہی ہیں</translation>
+<translation id="5121592697493894155">‏سائڈ پینل میں Google تلاش</translation>
 <translation id="5122786942953798871">لفافہ (کاٹن)</translation>
 <translation id="5123063207673082822">ویک اینڈ</translation>
 <translation id="5124797626438336458">ابھی خریدیں، ادائیگی بعد میں کریں کی خرابی کی اسکرین آدھی کھلی ہے۔</translation>
@@ -2917,6 +2921,7 @@
 <translation id="5843987376989109187">یہ زبان ابھی تک تعاون یافتہ نہیں ہے۔
     <ph name="BEGIN_LINK" />مزید جانیں<ph name="END_LINK" /></translation>
 <translation id="5848445080378515710">‏اپنے آرڈر کا جائزہ لینے کے بعد، آپ کو <ph name="BNPL_ISSUER_NAME" /> کے ساتھ اکاؤنٹ میں سائن ان کرنا ہوگا یا نیا تخلیق کرنا ہوگا۔ یہ اکاؤنٹ خودکار طور پر Google والٹ میں لنک ہو جائے گا۔</translation>
+<translation id="5848916806551637625">‏‫Pix اکاؤنٹ <ph name="ACCOUNT_EMAIL" /> سے لنک ہو جائے گا۔ ‫Pix کوڈ کا پتہ لگانے کی خصوصیت کو آف کرنے کے لیے <ph name="BEGIN_LINK1" />Chrome کی ترتیبات<ph name="END_LINK1" /> پر جائیں۔</translation>
 <translation id="5851548754964597211">ٹیب کی فہرست</translation>
 <translation id="5851868085455377790">جاری کنندہ</translation>
 <translation id="5852909432155870672">RA4</translation>
@@ -4428,6 +4433,7 @@
 <translation id="8371841335382565017">کاسٹ کرنے کے لیے آلے کی فہرست دکھائیں</translation>
 <translation id="8371889962595521444">حسب ضرورت روٹ سرٹیفکیٹس</translation>
 <translation id="8374636051559112948">تبدیل ہوتا رہتا ہے</translation>
+<translation id="8376752431516546391">‏Google تلاش کا سائیڈ پینل</translation>
 <translation id="8377507422902936905">آرڈرز</translation>
 <translation id="837840316697671463">اگر آپ کو اپنے آلہ پر فائل نہیں ملتی ہے تو اسے <ph name="CLOUD_PROVIDER" /> پر تلاش کریں۔</translation>
 <translation id="8378714024927312812">آپ کی تنظیم کے زیر نظم</translation>

@@ -661,6 +661,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="2118132148597630479">C5-kuvert</translation>
 <translation id="2119505898009119320">Utfärdat till: <ph name="ORGANIZATION" /> [<ph name="JURISDICTION" />]</translation>
 <translation id="2119867082804433120">Hål nere till höger</translation>
+<translation id="2121418473709291357">Ignoreras eftersom Chrome Browser Cloud Management är inaktiverat.</translation>
 <translation id="2122214041802369259">Priset är högt</translation>
 <translation id="2122719317867821810">Den här principen fungerar som avsett, men den har även ställts in på annan plats med ett annat värde och detta andra värde åsidosätts av denna princip.</translation>
 <translation id="2124081665399116863">Uppdatera fordonet i Google Wallet</translation>
@@ -690,6 +691,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="2155260325161282517">5 x 7 tum</translation>
 <translation id="2156467141257470387">Du kan använda sparade adresser i Googles produkter. Detta ändrar inte din befintliga jobbadress. Den sparas i ditt Google-konto, <ph name="ACCOUNT" />.</translation>
 <translation id="2157640075051554492">Aviseringar för prisbevakningar</translation>
+<translation id="2158964559178498011">Autofyll fungerar på fler ställen – tryck två gånger på Ctrl för att hitta och fylla i information</translation>
 <translation id="2161656808144014275">Text</translation>
 <translation id="2162435186600002085">Primär sidhuvudslogotyp</translation>
 <translation id="2162535140284745414">Få förslag i realtid som kan hjälpa dig att hitta nya sätt att surfa med AI.</translation>
@@ -2200,6 +2202,7 @@ Gå till <ph name="BEGIN_LINK" />betalningsinställningarna<ph name="END_LINK" /
 <translation id="4678379207584374453"><ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
 <translation id="4682496302933121474">Vill du översätta sidan?</translation>
 <translation id="468314109939257734">Visa ditt virtuella kortnummer</translation>
+<translation id="4684818564800397688">Autofyll fungerar på fler ställen – tryck två gånger på ⌘ för att hitta och fylla i information</translation>
 <translation id="4686942373615810936">Skapades just nu</translation>
 <translation id="4690205240253392065">Välj en leverantör för att betala senare</translation>
 <translation id="469028408546145398">Knappen Stäng inkognitofönster: aktivera om du vill stänga alla inkognitofönster som är öppna för närvarande</translation>
@@ -2480,6 +2483,7 @@ Gå till <ph name="BEGIN_LINK" />betalningsinställningarna<ph name="END_LINK" /
 <translation id="5115232566827194440">Åsidosättning av begränsning för hanterad gästsession</translation>
 <translation id="5115563688576182185">(64 bitar)</translation>
 <translation id="5116015291385561204">Verifiera din identitet för att autofylla känsliga uppgifter</translation>
+<translation id="5121592697493894155">Google Sök i sidopanelen</translation>
 <translation id="5122786942953798871">Kuvert (bomull)</translation>
 <translation id="5123063207673082822">helgen</translation>
 <translation id="5124797626438336458">Felskärmen för Köp nu, betala senare har öppnats över halva skärmen.</translation>
@@ -2916,6 +2920,7 @@ Gå till <ph name="BEGIN_LINK" />betalningsinställningarna<ph name="END_LINK" /
 <translation id="5843987376989109187">Det här språket stöds inte än.
     <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
 <translation id="5848445080378515710">När du har granskat beställningen måste du logga in på eller skapa ett konto hos <ph name="BNPL_ISSUER_NAME" />. Det här kontot länkas automatiskt i Google Wallet.</translation>
+<translation id="5848916806551637625">Pix-kontot länkas till <ph name="ACCOUNT_EMAIL" />. Gå till <ph name="BEGIN_LINK1" />inställningarna i Chrome<ph name="END_LINK1" /> om du vill inaktivera identifiering av Pix-kod.</translation>
 <translation id="5851548754964597211">Fliklista</translation>
 <translation id="5851868085455377790">Utfärdare</translation>
 <translation id="5852909432155870672">RA4</translation>
@@ -4427,6 +4432,7 @@ Mer information.
 <translation id="8371841335382565017">Visa enhetslistan för casting</translation>
 <translation id="8371889962595521444">Anpassade rotcertifikat</translation>
 <translation id="8374636051559112948">Varierar</translation>
+<translation id="8376752431516546391">Sidopanel med Google Sök</translation>
 <translation id="8377507422902936905">Beställningar</translation>
 <translation id="837840316697671463">Om du inte hittar en fil på enheten tittar du efter den på <ph name="CLOUD_PROVIDER" />.</translation>
 <translation id="8378714024927312812">Hanteras av organisationen</translation>

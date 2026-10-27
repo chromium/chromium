@@ -1849,6 +1849,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2423506062824112361">Failed to download content due to an unknown reason.</translation>
 <translation id="2423578206845792524">Sa&amp;ve image as...</translation>
 <translation id="2424424966051154874">{0,plural, =1{Guest}other{Guest (#)}}</translation>
+<translation id="2424762488607770568">Default (match system)</translation>
 <translation id="2426805022920575512">Choose another account</translation>
 <translation id="2427507373259914951">Left click</translation>
 <translation id="2428245692671442472">{NUM_PASSWORDS,plural, =1{<ph name="DOMAIN_LINK" /> one account, password saved only to this device. More details}other{<ph name="DOMAIN_LINK" /> {NUM_PASSWORDS} accounts, password saved only to this device. More details}}</translation>
@@ -5660,6 +5661,7 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="5280426389926346830">Create Shortcut?</translation>
 <translation id="5280966903879030278">Use everyday language to search your browsing history and find sites that you visited. This setting is off.</translation>
 <translation id="5281013262333731149">Opens in: <ph name="OPEN_BROWSER" /></translation>
+<translation id="5283747245540449968">Page colours</translation>
 <translation id="5284107433515104664">During the password change, page content and related info are sent to Google and can be reviewed by humans to improve this feature. Your password is encrypted and never seen by anyone.</translation>
 <translation id="5284445933715251131">Continue Downloading</translation>
 <translation id="5285635972691565180">Display <ph name="DISPLAY_ID" /></translation>
@@ -6550,6 +6552,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="5989497858237037960">As you browse sites, their page contents are encrypted and saved to your device. This may affect Chrome's performance</translation>
 <translation id="5990266201903445068">Wi-Fi only</translation>
 <translation id="5990386583461751448">Translated</translation>
+<translation id="5991039386730545918">Your selected page colour theme is used only while system high contrast is on</translation>
 <translation id="5992225669837656567">All mice have been disconnected</translation>
 <translation id="5992652489368666106">No border</translation>
 <translation id="5996490984199062729">Your profile hasn't been set up</translation>
@@ -7949,6 +7952,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="706949303827219454">Opens security settings page in a new tab</translation>
 <translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{New password for this site}other{New passwords for this site}}</translation>
 <translation id="7070484045139057854">This Can Read and Change Site Data</translation>
+<translation id="7071521146534760487">Manage account</translation>
 <translation id="7072010813301522126">Shortcut name</translation>
 <translation id="7072078320324181561">Apps and websites with the location permission, as well as system services, can use your location <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
 <translation id="7072573590175540692">Available feature and extension shortcuts</translation>
@@ -8585,6 +8589,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="755472745191515939">Your administrator doesn't allow this language</translation>
 <translation id="7554791636758816595">New tab</translation>
 <translation id="7557194624273628371">Linux port forwarding</translation>
+<translation id="7557508262441527045">Signed out</translation>
 <translation id="7561196759112975576">Always</translation>
 <translation id="7561759921596375678">Turn on volume</translation>
 <translation id="7563576896417108627">Customise and control <ph name="APP_NAME" />. Update is available.</translation>
@@ -9334,6 +9339,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8118362518458010043">Disabled by Chrome. This extension may be unsafe.</translation>
 <translation id="8118448640060360549">{EXTENSIONS_COUNT,plural, =1{# bookmark}other{# bookmarks}}</translation>
 <translation id="8118488170956489476">Your <ph name="BEGIN_LINK" />browser is managed<ph name="END_LINK" /> by your organisation</translation>
+<translation id="8118496140027032067">Override web page colours with high-contrast themes or turn off forced colours</translation>
 <translation id="8118515372935001629">Display refresh rate</translation>
 <translation id="8118860139461251237">Manage your downloads</translation>
 <translation id="8119438628456698432">Generating log files…</translation>
@@ -10011,6 +10017,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8648408795949963811">Night Light colour temperature</translation>
 <translation id="8648544143274677280"><ph name="SITE_NAME" /> wants to: <ph name="FIRST_PERMISSION" />, <ph name="SECOND_PERMISSION" /> and more</translation>
 <translation id="8648889679430451455">Clear personalisation data</translation>
+<translation id="8649290269169747916">Use default page colours when system high contrast is off</translation>
 <translation id="8651585100578802546">Force Reload This Page</translation>
 <translation id="8651806635673244884">You can move your tabs back to the top by right-clicking any tab and selecting 'Show tabs horizontally'</translation>
 <translation id="8652400352452647993">Pack extension error</translation>
@@ -10772,7 +10779,7 @@ This can include information about installed software, files, your browser, the 
 <translation id="9222839391870847423">Duration: <ph name="DURATION" /></translation>
 <translation id="9223158240932249417">Not allowed to show text actions</translation>
 <translation id="923306663772315007">Send to your &amp;device</translation>
-<translation id="923467487918828349">Show All</translation>
+<translation id="923467487918828349">Show all</translation>
 <translation id="923900195646492191">{NUM_EXTENSIONS,plural, =1{To manage it, open Extensions}other{To manage them, open Extensions}}</translation>
 <translation id="924818813611903184">Manage languages in Chrome OS settings</translation>
 <translation id="925575170771547168">This will delete <ph name="TOTAL_USAGE" /> of data stored by sites</translation>

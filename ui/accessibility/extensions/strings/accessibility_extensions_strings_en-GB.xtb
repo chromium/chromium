@@ -27,6 +27,7 @@
 <translation id="3812541808639806898">Image Alt Text Viewer</translation>
 <translation id="381767806621926835">Right-click on anything with a "longdesc" or "aria-describedat" attribute to access its long description.</translation>
 <translation id="4023902424053835668">Browse the text of web pages using arrow keys.</translation>
+<translation id="4384008284958619421">Modern screen readers and Google Chrome now support accessible element descriptions and ARIA standards natively.</translation>
 <translation id="4388820049312272371">Highlight the cursor position with a quick flash.</translation>
 <translation id="4394049700291259645">Disable</translation>
 <translation id="4769065380738716500">Images have been replaced by their alt text.</translation>
@@ -63,6 +64,7 @@
 <translation id="7658239707568436148">Cancel</translation>
 <translation id="786423340267544509">Add border to elements with aria-describedat or longdesc attributes.</translation>
 <translation id="7942349550061667556">Red</translation>
+<translation id="8081200409424070383">Long descriptions is being deprecated on 20 November 2026.</translation>
 <translation id="8260673944985561857">Caret Browsing Options</translation>
 <translation id="8321034316479930120">Animation Policy</translation>
 <translation id="8480209185614411573">High Contrast</translation>

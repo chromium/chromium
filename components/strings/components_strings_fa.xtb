@@ -661,6 +661,7 @@
 <translation id="2118132148597630479">پاکت سی۵</translation>
 <translation id="2119505898009119320">صادر شده برای: <ph name="ORGANIZATION" /> [<ph name="JURISDICTION" />]</translation>
 <translation id="2119867082804433120">سوراخ کردن پایین راست</translation>
+<translation id="2121418473709291357">‏نادیده گرفته شد چون «مدیریت ابری مرورگر Chrome» غیرفعال است.</translation>
 <translation id="2122214041802369259">قیمت بالا است</translation>
 <translation id="2122719317867821810">این خط‌مشی درست کار می‌کند اما مقدار مغایری در جای دیگری تنظیم شده است که این خط‌مشی آن را ملغی می‌کند.</translation>
 <translation id="2124081665399116863">‏اطلاعات وسیله نقلیه را در «کیف پول Google» به‌روزرسانی کنید</translation>
@@ -690,6 +691,7 @@
 <translation id="2155260325161282517">۷ × ۵ اینچ</translation>
 <translation id="2156467141257470387">‏می‌توانید از نشانی‌های ذخیره‌شده در محصولات مختلف Google استفاده کنید. این کار نشانی محل کار فعلی‌تان را تغییر نخواهد داد. این نشانی در «حساب Google» شما، <ph name="ACCOUNT" />، ذخیره خواهد شد.</translation>
 <translation id="2157640075051554492">اعلان‌های ردیابی قیمت</translation>
+<translation id="2158964559178498011">‏«تکمیل خودکار» در جاهای بیشتری کار می‌کند — برای پیدا کردن و پر کردن اطلاعات، کلید Ctrl را دو بار فشار دهید</translation>
 <translation id="2161656808144014275">نوشتار</translation>
 <translation id="2162435186600002085">نشان‌واره سرصفحه اصلی</translation>
 <translation id="2162535140284745414">دریافت پیشنهادهای لحظه‌ای که می‌توانند در پیدا کردن روش‌های جدیدی برای مرور کردن با هوشواره به شما کمک کنند.</translation>
@@ -2201,6 +2203,7 @@
 <translation id="4678379207584374453"><ph name="BEGIN_LINK" />بیشتر بدانید<ph name="END_LINK" /></translation>
 <translation id="4682496302933121474">صفحه ترجمه شود؟</translation>
 <translation id="468314109939257734">مشاهده شماره کارت مجازی</translation>
+<translation id="4684818564800397688">«تکمیل خودکار» در جاهای بیشتری کار می‌کند — برای پیدا کردن و پر کردن اطلاعات، ⌘ را دوبار فشار دهید</translation>
 <translation id="4686942373615810936">همین الآن ایجاد شد</translation>
 <translation id="4690205240253392065">یک ارائه‌دهنده «پرداخت بعداً» انتخاب کنید</translation>
 <translation id="469028408546145398">دکمه «بستن پنجره‌های ناشناس»؛ برای بستن همه پنجره‌ها ناشناسی که درحال‌حاضر باز هستند، آن را فعال کنید</translation>
@@ -2481,6 +2484,7 @@
 <translation id="5115232566827194440">ملغی کردن جلسه مهمان مدیریت‌شده محدود</translation>
 <translation id="5115563688576182185">(۶۴ بیت)</translation>
 <translation id="5116015291385561204">برای تکمیل خودکار اطلاعات حساس، هویتتان را درستی‌سنجی کنید</translation>
+<translation id="5121592697493894155">‏«جستجوی Google» در پانل کناری</translation>
 <translation id="5122786942953798871">پاکت (پنبه‌ای)</translation>
 <translation id="5123063207673082822">آخر هفته</translation>
 <translation id="5124797626438336458">صفحه خطای «الآن خریدن، پراخت بعداً» به‌صورت نیمه باز شده است.</translation>
@@ -2917,6 +2921,7 @@
 <translation id="5843987376989109187">هنوز از این زبان پشتیبانی نمی‌شود.
     <ph name="BEGIN_LINK" />بیشتر بدانید<ph name="END_LINK" /></translation>
 <translation id="5848445080378515710">‏پس‌از بررسی سفارشتان، باید به سیستم وارد شوید یا با <ph name="BNPL_ISSUER_NAME" /> حساب ایجاد کنید. این حساب به‌طور خودکار در «کیف پول Google» پیوند داده خواهد شد.</translation>
+<translation id="5848916806551637625">‏حساب Pix به <ph name="ACCOUNT_EMAIL" /> پیوند خواهد شد. برای خاموش کردن تشخیص کد Pix، به <ph name="BEGIN_LINK1" />تنظیمات Chrome<ph name="END_LINK1" /> بروید.</translation>
 <translation id="5851548754964597211">فهرست برگه</translation>
 <translation id="5851868085455377790">صادرکننده</translation>
 <translation id="5852909432155870672">RA4</translation>
@@ -3132,7 +3137,7 @@
 <translation id="6197648101609735209">۸۹ × ۸۹ میلی‌متر</translation>
 <translation id="6198480336395236519">برگه‌های کامل برش‌خورده</translation>
 <translation id="6203231073485539293">اتصال اینترنتتان را بررسی کنید</translation>
-<translation id="6212314149070368045">تاشوی آمریکایی</translation>
+<translation id="6212314149070368045">تاشوی امریکایی</translation>
 <translation id="6213685130162740188">شماره‌های مسافران شناخته‌شده</translation>
 <translation id="6215936431492593050">فلز (ساتن)</translation>
 <translation id="6218305986815100395">کارت مجازی فعال نشد</translation>
@@ -4428,6 +4433,7 @@
 <translation id="8371841335382565017">نمایش فهرست دستگاه برای پخش محتوا</translation>
 <translation id="8371889962595521444">گواهی‌نامه ریشه سفارشی</translation>
 <translation id="8374636051559112948">متفاوت است</translation>
+<translation id="8376752431516546391">‏پانل کناری «جستجوی Google»</translation>
 <translation id="8377507422902936905">سفارش‌ها</translation>
 <translation id="837840316697671463">اگر نمی‌توانید فایلی را در دستگاهتان پیدا کنید، آن را در <ph name="CLOUD_PROVIDER" /> جستجو کنید.</translation>
 <translation id="8378714024927312812">توسط سازمانتان مدیریت می‌شود</translation>

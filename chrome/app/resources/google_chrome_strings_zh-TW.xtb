@@ -22,6 +22,7 @@
 <translation id="1148360048981192980">下次在 <ph name="DEVICE_TYPE" /> 上開啟 Chrome 時，系統會提示你使用 Google 密碼管理工具。</translation>
 <translation id="1152920704813762236">關於 ChromeOS</translation>
 <translation id="1154147086299354128">在 Chrome 中開啟(&amp;O)</translation>
+<translation id="1157952955648710254">關閉 Google 搜尋側邊面板</translation>
 <translation id="1157985233335035034">最近使用過的語言</translation>
 <translation id="1158134713295836892">Chrome 內建 Gemini</translation>
 <translation id="1184145431117212167">Windows 版本不受支援，因此無法安裝</translation>
@@ -46,6 +47,7 @@
 <translation id="141901961143729572">分享你的想法</translation>
 <translation id="1425903838053942728">{COUNT,plural, =0{Chrome 已完成更新。重新啟動後即可立即使用最新版本。屆時會重新開啟你目前的分頁。}=1{Chrome 已完成更新。重新啟動後即可立即使用最新版本。屆時會重新開啟你目前的分頁，但無痕視窗不會重新開啟。}other{Chrome 已完成更新。重新啟動後即可立即使用最新版本。屆時會重新開啟你目前的分頁，但有 # 個無痕視窗不會重新開啟。}}</translation>
 <translation id="1434626383986940139">Chrome Canary 應用程式</translation>
+<translation id="1438812738230833934">你可以在側邊面板重新開啟 Google 搜尋，在瀏覽時提問</translation>
 <translation id="1439793550875056299">釘選 Chrome</translation>
 <translation id="1446616215961349840">{COUNT,plural, =1{系統管理員要求你重新啟動 Chrome，以套用更新。隔離視窗不會重新開啟。}other{系統管理員要求你重新啟動 Chrome，以套用更新。# 個隔離視窗不會重新開啟。}}</translation>
 <translation id="146866447420868597">要登入 Chrome 嗎？</translation>
@@ -300,7 +302,6 @@
 <translation id="3780814664026482060">Chrome - <ph name="PAGE_TITLE" /></translation>
 <translation id="3785324443014631273">登入時發生錯誤，因此 ChromeOS Flex 無法同步處理你的資料。</translation>
 <translation id="3795971588916395511">Google Chrome OS</translation>
-<translation id="3809772425479558446">Google Chrome 僅支援 Windows 10 以上版本的作業系統。</translation>
 <translation id="3810973564298564668">管理</translation>
 <translation id="383455301564000773">準備要升級至 Windows 11 嗎？請將 Chrome 下載到 OneDrive，預先準備即可隨時上路。</translation>
 <translation id="383928141529488001">Google Chrome 需要藍牙存取權才能偵測藍牙裝置。<ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
@@ -372,6 +373,7 @@
 <translation id="4458462641685292929">Google Chrome 正在執行另一項作業，請稍後再試。</translation>
 <translation id="4493028449971051158">啟動錯誤：請以系統管理員身分執行安裝程式。</translation>
 <translation id="4501471624619070934">安裝失敗，因為這個國家/地區設有存取限制。</translation>
+<translation id="4501839397124711198">你可以將 Google 搜尋固定在側邊面板，方便在瀏覽時提問</translation>
 <translation id="4571503333518166079">前往 Chrome 通知設定</translation>
 <translation id="4580939929828762295">使用 Google 密碼管理工具確保安全</translation>
 <translation id="459622048091363950">Chrome 取得存取權後，網站將可要求你授予存取權。</translation>
@@ -414,6 +416,7 @@
 <translation id="4970761609246024540">歡迎使用 Chrome 設定檔</translation>
 <translation id="4970880042055371251">Chrome OS 版本</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
+<translation id="5000497292978544380">Google 搜尋 AI 模式</translation>
 <translation id="5003967926796347400">按一下「Google 密碼管理工具」</translation>
 <translation id="5043786843026425788">進一步瞭解如何透過 Chrome 使用 Google 智慧鏡頭搜尋</translation>
 <translation id="504867494566807945">Chrome 將開啟任何應用程式的連結。此外，Chrome 會固定在工作列，方便你隨時使用。</translation>
@@ -421,6 +424,7 @@
 <translation id="5105120510934353742">如果之後要更新 Google Chrome，需使用 macOS 13 以上版本。這部電腦目前搭載的版本為 macOS 12。</translation>
 <translation id="5114340746415930644">請輸入通關密語，才能將 Chrome 資料儲存到帳戶 (<ph name="USER_EMAIL" />)，或使用帳戶中的 Chrome 資料</translation>
 <translation id="5120334927898581447">登入其他 Google 服務時一併登入 Chrome</translation>
+<translation id="5121592697493894155">側邊面板中的 Google 搜尋</translation>
 <translation id="5126049312684316860">Chrome 會預先載入更多你可能會造訪的網頁，以便在你造訪時更快載入</translation>
 <translation id="5127558335897923940">將 Chrome 保留在 Dock 上，隨時都能快速存取</translation>
 <translation id="5132929315877954718">幫你的 Google Chrome 物色各種實用有趣的應用程式、遊戲、擴充功能和主題。</translation>
@@ -720,6 +724,7 @@ Google Chrome 無法復原你的設定。</translation>
 <translation id="7777080907402804672">如果圖片缺少有用的說明，Chrome 會嘗試為你提供說明。系統會將圖片傳送給 Google，以便產生說明。你隨時可以在設定中關閉這項功能。</translation>
 <translation id="778331955594035129">Chrome 需要位置存取權，才能執行這個網站要求的功能</translation>
 <translation id="7787950393032327779">另一台電腦 (<ph name="HOST_NAME" />) 的 Google Chrome 處理程序 (<ph name="PROCESS_ID" />) 正在使用這個設定檔。Chrome 已鎖定此設定檔，確保其不致受損。如果你確定其他處理程序目前未使用此設定檔，請予以解除鎖定，然後重新啟動 Chrome。</translation>
+<translation id="7800043020703832708">關閉側邊面板的 Google 搜尋</translation>
 <translation id="7801699035218095297">Google Chrome 正在嘗試複製密碼。如果你同意這項作業，請輸入你的 Windows 密碼。</translation>
 <translation id="7804364787702057554">你在 Chrome 中的帳戶</translation>
 <translation id="7804947029129221742">搜尋引擎被 Chrome 以外的程式變更。Chrome 已將這項設定重設為原始預設值，保護你的安全。<ph name="LEARN_MORE_LINK" /></translation>
@@ -736,6 +741,7 @@ Google Chrome 無法復原你的設定。</translation>
 <translation id="7886087451482920026">使用 Google 智慧鏡頭選取文字</translation>
 <translation id="7890208801193284374">如果你與親朋好友共用電腦，人人皆可享有獨立的瀏覽空間，依照自己的偏好設定 Chrome。</translation>
 <translation id="7896673875602241923">先前已有其他使用者使用 <ph name="ACCOUNT_EMAIL_LAST" /> 在這部電腦上登入 Chrome。請建立新的 Chrome 使用者，以便另行保存你的資訊。</translation>
+<translation id="7904213866086517086">在側邊面板重新開啟 Google 搜尋</translation>
 <translation id="7904985524660297937">試試 Chrome 內建 Gemini</translation>
 <translation id="7905880575591690197">登入時發生錯誤，因此 ChromeOS 無法將 Chrome 資料儲存到你的 Google 帳戶</translation>
 <translation id="7917876797003313048">你可以管理已登入的 Google 帳戶。Google 帳戶可用於 Chrome 瀏覽器、Play 商店和 Gmail 等服務。如要添加他人 (例如家庭成員) 的帳戶，請改為將使用者新增至你的 <ph name="DEVICE_TYPE" />。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
@@ -795,12 +801,14 @@ Google Chrome 無法復原你的設定。</translation>
 <translation id="8367950957770994118">需要時快速開啟 Chrome 內建 Gemini</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. 保留所有權利。</translation>
 <translation id="8370748943308169953">此 QR code 是用於以「<ph name="USER_NAME" />」登入 Chrome</translation>
+<translation id="8376752431516546391">Google 搜尋側邊面板</translation>
 <translation id="8377158135256176353">開啟/關閉 Chrome Canary 內建的 Gemini</translation>
 <translation id="8380754585531979907">使用鍵盤在 Chrome 內建 Gemini 和開啟的分頁之間切換。</translation>
 <translation id="8387459386171870978">繼續使用 Chrome</translation>
 <translation id="8394720698884623075">可使用儲存在 Chrome 中的不安全網站清單檢查網址</translation>
 <translation id="8402881611069691789">{COUNT,plural, =1{Chrome 已完成更新。重新啟動後即可立即使用最新版本。屆時會重新開啟你目前的分頁，目前有開啟無痕或隔離視窗。重新啟動後，這個視窗不會重新開啟。}other{Chrome 已完成更新。重新啟動後即可立即使用最新版本。屆時會重新開啟你目前的分頁，各設定檔中目前共開啟 # 個無痕和隔離視窗。重新啟動後，這些視窗不會重新開啟。}}</translation>
 <translation id="8403038600646341038">電腦螢幕畫面中的 Chrome 標誌。</translation>
+<translation id="8406687098231754303">你可以在工具列上透過「側邊面板中的 Google 搜尋」按鈕，重新開啟側邊面板中的 Google 搜尋，在瀏覽時提問</translation>
 <translation id="8418845734693287262">你的帳戶登入詳細資料尚未更新，因此 Chrome OS 無法同步處理你的資料。</translation>
 <translation id="842386925677997438">Chrome 安全工具</translation>
 <translation id="8425765582779547329">為確保家長監護設定可以進一步守護你的上網安全，請登入 Chrome</translation>
@@ -818,6 +826,7 @@ Google Chrome 無法復原你的設定。</translation>
 <translation id="8533056045953418157">將 Google Chrome 設為預設 PDF 檢視器</translation>
 <translation id="854593887324189900">使用 Google 智慧鏡頭搜尋這張圖片</translation>
 <translation id="8555465886620020932">服務錯誤：<ph name="SERVICE_ERROR" />。</translation>
+<translation id="8564408666201523086">大功告成！現在使用側邊面板的 Google 搜尋，就能在瀏覽時輕鬆提問</translation>
 <translation id="856656450041460113">搜尋語言清單</translation>
 <translation id="8575047640889685742">使用<ph name="BEGIN_LINK" />通關密語<ph name="END_LINK" />加密 Google 帳戶中的所有 Chrome 資料。系統將不會加密你在 Google Pay 中的付款方式和地址，也不會同步 Chrome 中的瀏覽記錄。</translation>
 <translation id="8590782867495422699">重新開啟 Google 搜尋 AI 模式</translation>

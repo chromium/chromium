@@ -50,6 +50,7 @@
 <translation id="1165109137568919258">Take a photo or add an image from your photo gallery to search</translation>
 <translation id="1173894706177603556">Rename</translation>
 <translation id="1174479719160874822">Chrome will request the mobile site when the screen is narrow</translation>
+<translation id="1174759280027683968">Go to Chrome</translation>
 <translation id="1175241315203286684">Your administrator can make changes to your profile and browser remotely, analyse information about the browser through reporting and perform other necessary tasks. Activity on this device may also be managed outside of Chrome.</translation>
 <translation id="1177863135347784049">Customised</translation>
 <translation id="1181037720776840403">Remove</translation>
@@ -608,6 +609,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="3452832259067974318">To protect your privacy, Chrome will not auto-fill your password in this field.</translation>
 <translation id="3474624961160222204">Continue as <ph name="NAME" /></translation>
 <translation id="3478363558367712427">You can choose your search engine</translation>
+<translation id="3479552764303398839">Not now</translation>
 <translation id="3482805106082349287">Search using keyboard, voice, Incognito or camera</translation>
 <translation id="3487903178221457900">The exported file may be accessible to others, including apps. Once you export, your passwords are deleted from Chrome.</translation>
 <translation id="3488199663160411179">name</translation>
@@ -896,6 +898,7 @@ Your Google Account may have other forms of browsing history such as searches an
 <translation id="4578289292431526768">Let’s go</translation>
 <translation id="4583164079174244168">{MINUTES,plural, =1{# minute ago}other{# minutes ago}}</translation>
 <translation id="4585751637295612750">Open a new tab to add it to your question</translation>
+<translation id="4585793705637313973">Edit page</translation>
 <translation id="4587589328781138893">Sites</translation>
 <translation id="4594952190837476234">This offline page is from <ph name="CREATION_TIME" /> and may differ from the online version.</translation>
 <translation id="4595237294768457124">Open a New tab page</translation>
@@ -1536,6 +1539,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="6996145122199359148">Download this page</translation>
 <translation id="7007648447224463482">Open all in new window</translation>
 <translation id="7013762323294215682">This passkey will be saved to your password manager. Anyone with access to it will be able to use this passkey.</translation>
+<translation id="7017219178341817193">Add a new page</translation>
 <translation id="7022756207310403729">Open in browser</translation>
 <translation id="7029809446516969842">Passwords</translation>
 <translation id="7037994709569287156">Make Chrome default</translation>

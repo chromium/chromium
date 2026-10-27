@@ -661,6 +661,7 @@
 <translation id="2118132148597630479">봉투 C5</translation>
 <translation id="2119505898009119320">발급 대상: <ph name="ORGANIZATION" />[<ph name="JURISDICTION" />]</translation>
 <translation id="2119867082804433120">오른쪽 하단 펀칭</translation>
+<translation id="2121418473709291357">Chrome 브라우저 클라우드 관리가 사용 중지되어 무시되었습니다.</translation>
 <translation id="2122214041802369259">가격이 비쌈</translation>
 <translation id="2122719317867821810">이 정책은 정상 작동 중이나 다른 곳에 충돌하는 값이 설정되어 있어 이 정책에 의해 재정의되었습니다.</translation>
 <translation id="2124081665399116863">Google 월렛에 저장된 차량 업데이트</translation>
@@ -690,6 +691,7 @@
 <translation id="2155260325161282517">5x7인치</translation>
 <translation id="2156467141257470387">Google 제품 전반에서 저장된 주소를 사용할 수 있습니다. 기존 직장 주소는 변경되지 않으며, 이러한 주소는 Google 계정(<ph name="ACCOUNT" />)에 저장됩니다.</translation>
 <translation id="2157640075051554492">가격 추적 알림</translation>
+<translation id="2158964559178498011">더 많은 곳에서 지원되는 자동 완성 기능 - Ctrl 키를 두 번 눌러 정보를 검색하고 입력해 보세요</translation>
 <translation id="2161656808144014275">텍스트</translation>
 <translation id="2162435186600002085">기본 헤더 로고</translation>
 <translation id="2162535140284745414">AI로 새로운 탐색 방법을 찾을 수 있는 실시간 추천을 받습니다.</translation>
@@ -2200,6 +2202,7 @@
 <translation id="4678379207584374453"><ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="4682496302933121474">페이지를 번역하시겠습니까?</translation>
 <translation id="468314109939257734">가상 카드 번호 보기</translation>
+<translation id="4684818564800397688">더 많은 곳에서 지원되는 자동 완성 기능 - ⌘ 키를 두 번 눌러 정보를 검색하고 입력해 보세요</translation>
 <translation id="4686942373615810936">방금 생성됨</translation>
 <translation id="4690205240253392065">후불 결제 제공업체 선택</translation>
 <translation id="469028408546145398">시크릿 창 닫기 버튼, 현재 열려 있는 시크릿 창을 모두 닫으려면 활성화하세요.</translation>
@@ -2480,6 +2483,7 @@
 <translation id="5115232566827194440">제한된 관리 게스트 세션 재정의</translation>
 <translation id="5115563688576182185">(64비트)</translation>
 <translation id="5116015291385561204">본인 인증을 완료하여 민감한 정보 자동 완성</translation>
+<translation id="5121592697493894155">측면 패널의 Google 검색</translation>
 <translation id="5122786942953798871">봉투(면)</translation>
 <translation id="5123063207673082822">주말</translation>
 <translation id="5124797626438336458">선구매 후지불 오류 화면이 절반 높이로 열렸습니다.</translation>
@@ -2916,6 +2920,7 @@
 <translation id="5843987376989109187">아직 지원되지 않는 언어입니다.
     <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="5848445080378515710">주문을 검토한 후에는 <ph name="BNPL_ISSUER_NAME" />에 로그인하거나 계정을 만들어야 합니다. 이 계정은 Google 월렛에 자동으로 연결됩니다.</translation>
+<translation id="5848916806551637625">Pix 계정이 <ph name="ACCOUNT_EMAIL" />에 연결됩니다. Pix 코드 감지를 사용 중지하려면 <ph name="BEGIN_LINK1" />Chrome 설정<ph name="END_LINK1" />으로 이동하세요.</translation>
 <translation id="5851548754964597211">탭 목록</translation>
 <translation id="5851868085455377790">발행기관</translation>
 <translation id="5852909432155870672">RA4</translation>
@@ -4426,6 +4431,7 @@
 <translation id="8371841335382565017">전송 기기 목록 표시</translation>
 <translation id="8371889962595521444">맞춤 루트 인증서</translation>
 <translation id="8374636051559112948">다양함</translation>
+<translation id="8376752431516546391">Google 검색 측면 패널</translation>
 <translation id="8377507422902936905">주문</translation>
 <translation id="837840316697671463">기기에서 파일을 찾을 수 없는 경우 <ph name="CLOUD_PROVIDER" />에서 파일을 찾으세요.</translation>
 <translation id="8378714024927312812">조직에서 관리</translation>

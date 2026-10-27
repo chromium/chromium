@@ -24,6 +24,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="1148360048981192980">Next time you open Chrome on your <ph name="DEVICE_TYPE" />, you'll see a prompt to use Google Password Manager.</translation>
 <translation id="1152920704813762236">About ChromeOS</translation>
 <translation id="1154147086299354128">&amp;Open in Chrome</translation>
+<translation id="1157952955648710254">Close Google Search side panel</translation>
 <translation id="1157985233335035034">Recent languages</translation>
 <translation id="1158134713295836892">Gemini in Chrome</translation>
 <translation id="1184145431117212167">Installation failed because your version of Windows is not supported.</translation>
@@ -48,6 +49,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="141901961143729572">Share your thoughts</translation>
 <translation id="1425903838053942728">{COUNT,plural, =0{Chrome is done updating. You can use the latest version as soon as you relaunch. Your current tabs will then reopen.}=1{Chrome is done updating. You can use the latest version as soon as you relaunch. Your current tabs will then reopen. Your incognito window won't reopen.}other{Chrome is done updating. You can use the latest version as soon as you relaunch. Your current tabs will then reopen. Your # incognito windows won't reopen.}}</translation>
 <translation id="1434626383986940139">Chrome Canary Apps</translation>
+<translation id="1438812738230833934">You can reopen Google Search in side panel to ask questions while you browse</translation>
 <translation id="1439793550875056299">Pin Chrome</translation>
 <translation id="1446616215961349840">{COUNT,plural, =1{Your administrator requires that you relaunch Chrome to apply an update. Your Isolated Window won't reopen.}other{Your administrator requires that you relaunch Chrome to apply an update. Your # Isolated Windows won't reopen.}}</translation>
 <translation id="146866447420868597">Sign in to Chrome?</translation>
@@ -306,7 +308,6 @@ If this page isn't working as expected, try allowing optimisation.</translation>
 <translation id="3780814664026482060">Chrome - <ph name="PAGE_TITLE" /></translation>
 <translation id="3785324443014631273">Chrome OS Flex could not sync your data due to an error signing in.</translation>
 <translation id="3795971588916395511">Google ChromeOS</translation>
-<translation id="3809772425479558446">Google Chrome requires Windows 10 or higher.</translation>
 <translation id="3810973564298564668">Manage</translation>
 <translation id="383455301564000773">Upgrading to Windows 11? Download Chrome to OneDrive so that you're ready from day one.</translation>
 <translation id="383928141529488001">Google Chrome needs Bluetooth access to explore 
@@ -379,6 +380,7 @@ If this page isn't working as expected, try allowing optimisation.</translation>
 <translation id="4458462641685292929">Another operation on Google Chrome is in progress. Please try again later.</translation>
 <translation id="4493028449971051158">Startup error: Please run the installer as administrator.</translation>
 <translation id="4501471624619070934">Installation failed because access is restricted in this country.</translation>
+<translation id="4501839397124711198">You can pin Google Search in side panel to ask questions as you browse</translation>
 <translation id="4571503333518166079">Go to Chrome notification settings</translation>
 <translation id="4580939929828762295">Stay safe with Google Password Manager</translation>
 <translation id="459622048091363950">Once Chrome has access, websites will be able to ask you for access.</translation>
@@ -421,6 +423,7 @@ If this page isn't working as expected, try allowing optimisation.</translation>
 <translation id="4970761609246024540">Welcome to Chrome profiles</translation>
 <translation id="4970880042055371251">Chrome OS version</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
+<translation id="5000497292978544380">Google Search AI Mode</translation>
 <translation id="5003967926796347400">Click 'Google Password Manager'</translation>
 <translation id="5043786843026425788">Learn more about searching with Google Lens in Chrome</translation>
 <translation id="504867494566807945">Open links in Chrome from any app. Plus for easy access, it gets pinned to your taskbar.</translation>
@@ -428,6 +431,7 @@ If this page isn't working as expected, try allowing optimisation.</translation>
 <translation id="5105120510934353742">To get future Google Chrome updates, you'll need macOS 13 or later. This computer is using macOS 12.</translation>
 <translation id="5114340746415930644">Enter your passphrase to use and save Chrome data in your account, <ph name="USER_EMAIL" /></translation>
 <translation id="5120334927898581447">Sign in to Chrome when you sign in to other Google services</translation>
+<translation id="5121592697493894155">Google Search in side panel</translation>
 <translation id="5126049312684316860">Chrome preloads even more pages that you're likely to visit, so that they load more quickly when you visit them.</translation>
 <translation id="5127558335897923940">Keep Chrome in your Dock to get to it quickly at any time</translation>
 <translation id="5132929315877954718">Discover great apps, games, extensions and themes for Google Chrome.</translation>
@@ -729,6 +733,7 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="7777080907402804672">If an image doesn’t have a useful description, Chrome will try to provide one for you. To create descriptions, images are sent to Google. You can turn this off in settings at any time.</translation>
 <translation id="778331955594035129">Chrome needs location permission for this site</translation>
 <translation id="7787950393032327779">The profile appears to be in use by another Google Chrome process (<ph name="PROCESS_ID" />) on another computer (<ph name="HOST_NAME" />). Chrome has locked the profile so that it doesn't get corrupted. If you are sure no other processes are using this profile, you can unlock the profile and relaunch Chrome.</translation>
+<translation id="7800043020703832708">Close Google Search in side panel</translation>
 <translation id="7801699035218095297">Google Chrome is trying to copy passwords. Type your Windows password to allow this.</translation>
 <translation id="7804364787702057554">Your account in Chrome</translation>
 <translation id="7804947029129221742">Your search engine was changed from outside of Chrome. To protect you, Chrome reset it to its original default. <ph name="LEARN_MORE_LINK" /></translation>
@@ -745,6 +750,7 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="7886087451482920026">Select text with Google Lens</translation>
 <translation id="7890208801193284374">If you share a computer, friends and family can browse separately and set up Chrome just the way they want.</translation>
 <translation id="7896673875602241923">Someone previously signed in to Chrome on this computer as <ph name="ACCOUNT_EMAIL_LAST" />. Please create a new Chrome user to keep your information separate.</translation>
+<translation id="7904213866086517086">Reopen Google Search in side panel</translation>
 <translation id="7904985524660297937">Try Gemini in Google Chrome</translation>
 <translation id="7905880575591690197">ChromeOS could not save Chrome data in your Google Account due to an error signing in</translation>
 <translation id="7917876797003313048">You can manage your signed-in Google Accounts. Your Google Accounts are used for Chrome Browser, Play Store, Gmail and more. If you want to add an account for someone else, like a family member, add a new person to your <ph name="DEVICE_TYPE" /> instead. <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
@@ -804,12 +810,14 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="8367950957770994118">Quickly open Gemini in Chrome whenever you need it</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. All rights reserved.</translation>
 <translation id="8370748943308169953">QR code to sign in to Chrome as <ph name="USER_NAME" /></translation>
+<translation id="8376752431516546391">Google Search side panel</translation>
 <translation id="8377158135256176353">Toggle Gemini in Chrome Canary</translation>
 <translation id="8380754585531979907">Use your keyboard to navigate between Gemini in Chrome and your open tab.</translation>
 <translation id="8387459386171870978">Continue using Chrome</translation>
 <translation id="8394720698884623075">Checks URLs with a list of unsafe sites stored in Chrome</translation>
 <translation id="8402881611069691789">{COUNT,plural, =1{Chrome is done updating. You can use the latest version as soon as you relaunch. Your current tabs will then reopen. There is an Incognito or Isolated Window open. It won't reopen after you relaunch.}other{Chrome is done updating. You can use the latest version as soon as you relaunch. Your current tabs will then reopen. There are # Incognito and Isolated Windows open across profiles. They won't reopen after you relaunch.}}</translation>
 <translation id="8403038600646341038">Chrome logo inside a computer screen.</translation>
+<translation id="8406687098231754303">From the 'Google Search in side panel' button on the toolbar, you can reopen Google Search in side panel to ask questions while you browse</translation>
 <translation id="8418845734693287262">Chrome OS could not sync your data because your account sign-in details are out of date.</translation>
 <translation id="842386925677997438">Chrome’s safety tools</translation>
 <translation id="8425765582779547329">To stay safer online with your parent's choices, sign in to Chrome</translation>
@@ -827,6 +835,7 @@ New bookmarks can't be saved in your account until you delete some. If you sign 
 <translation id="8533056045953418157">Set Google Chrome as your default PDF viewer</translation>
 <translation id="854593887324189900">Search this image with Google Lens</translation>
 <translation id="8555465886620020932">Service error: <ph name="SERVICE_ERROR" />.</translation>
+<translation id="8564408666201523086">Success! You can now easily ask questions as you browse with Google Search in side panel</translation>
 <translation id="856656450041460113">Search language list</translation>
 <translation id="8575047640889685742">Use your <ph name="BEGIN_LINK" />own passphrase<ph name="END_LINK" /> to encrypt all the Chrome data in your Google Account. Payment methods and addresses from Google Pay won't be encrypted. Browsing history from Chrome won't sync.</translation>
 <translation id="8590782867495422699">Reopen Google Search AI Mode</translation>

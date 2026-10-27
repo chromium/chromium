@@ -1847,6 +1847,7 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="2423506062824112361">Ismeretlen okból nem sikerült letölteni a tartalmat.</translation>
 <translation id="2423578206845792524">Ké&amp;p mentése másként...</translation>
 <translation id="2424424966051154874">{0,plural, =1{Vendég}other{Vendég (#)}}</translation>
+<translation id="2424762488607770568">Alapértelmezett (rendszernek megfelelő)</translation>
 <translation id="2426805022920575512">Másik fiók választása</translation>
 <translation id="2427507373259914951">Kattintás bal egérgombbal</translation>
 <translation id="2428245692671442472">{NUM_PASSWORDS,plural, =1{<ph name="DOMAIN_LINK" /> – 1 fiók; a jelszót csak erre az eszközre mentette a rendszer. További részletek.}other{<ph name="DOMAIN_LINK" /> – {NUM_PASSWORDS} fiók; a jelszót csak erre az eszközre mentette a rendszer. További részletek.}}</translation>
@@ -5657,6 +5658,7 @@ kicsinyítéshez pedig a Ctrl + Alt + Fényerő csökkentése billentyűpara
 <translation id="5280426389926346830">Létrehozza a parancsikont?</translation>
 <translation id="5280966903879030278">Hétköznapi nyelven kereshet a böngészési előzmények között, és megkeresheti a korábban felkeresett webhelyeket. Ez a beállítás ki van kapcsolva.</translation>
 <translation id="5281013262333731149">Itt nyílik meg: <ph name="OPEN_BROWSER" /></translation>
+<translation id="5283747245540449968">Oldalszínek</translation>
 <translation id="5284107433515104664">A jelszó módosítása során az oldal tartalmát és a kapcsolódó információkat a rendszer elküldi a Google-nak, és a funkció továbbfejlesztése érdekében emberek is ellenőrizhetik őket. Jelszava titkosítva van, és senki sem láthatja.</translation>
 <translation id="5284445933715251131">Letöltés folytatása</translation>
 <translation id="5285635972691565180">Kijelző (<ph name="DISPLAY_ID" />)</translation>
@@ -6548,6 +6550,7 @@ Győződjön meg arról, hogy nem ad ki bizalmas adatokat.</translation>
 <translation id="5989497858237037960">A webhelyek közötti böngészés során az oldalak tartalmát a rendszer titkosítja és az Ön eszközére menti. Ez hatással lehet a Chrome teljesítményére.</translation>
 <translation id="5990266201903445068">Csak Wi-Fi</translation>
 <translation id="5990386583461751448">Fordítás</translation>
+<translation id="5991039386730545918">A kiválasztott oldalszín-összeállítás csak akkor van használatban, ha a rendszer nagy kontrasztú módja be van kapcsolva</translation>
 <translation id="5992225669837656567">Az összes egér le lett választva</translation>
 <translation id="5992652489368666106">Nincs szegély</translation>
 <translation id="5996490984199062729">A profilja még nincs beállítva</translation>
@@ -6704,6 +6707,7 @@ Győződjön meg arról, hogy nem ad ki bizalmas adatokat.</translation>
 <translation id="6124698108608891449">A webhelynek több engedélyre van szüksége.</translation>
 <translation id="6125202119952209826">Csatlakozás <ph name="OWNER_FIRST_NAME" /> lapcsoportjához</translation>
 <translation id="6125639926370653692">Hold</translation>
+<translation id="6125649408655762488">Csoport fókuszba helyezése</translation>
 <translation id="6126601353087978360">Kérjük, itt adja meg visszajelzését:</translation>
 <translation id="6127292407256937949">Hang bekapcsolva. Hangerő kikapcsolása.</translation>
 <translation id="6127598727646973981">Biztonságos kapcsolatok</translation>
@@ -7947,6 +7951,7 @@ Győződjön meg arról, hogy nem ad ki bizalmas adatokat.</translation>
 <translation id="706949303827219454">Megnyitja a biztonsági beállítások oldalát egy új lapon</translation>
 <translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{Új jelszó ehhez a webhelyhez}other{Új jelszavak ehhez a webhelyhez}}</translation>
 <translation id="7070484045139057854">Olvashatja és módosíthatja a webhelyadatokat</translation>
+<translation id="7071521146534760487">Fiók kezelése</translation>
 <translation id="7072010813301522126">Gyorsparancs neve</translation>
 <translation id="7072078320324181561">A helymeghatározási jogosultsággal rendelkező alkalmazások és webhelyek, valamint a rendszerszolgáltatások használhatják a helyadatokat. <ph name="LINK_BEGIN" />További információ<ph name="LINK_END" />.</translation>
 <translation id="7072573590175540692">Funkciók és bővítmények rendelkezésre álló gyorsparancsai</translation>
@@ -8582,6 +8587,7 @@ Győződjön meg arról, hogy nem ad ki bizalmas adatokat.</translation>
 <translation id="755472745191515939">Rendszergazdája nem engedélyezi ezt a nyelvet</translation>
 <translation id="7554791636758816595">Új lap</translation>
 <translation id="7557194624273628371">Linuxos portátirányítás</translation>
+<translation id="7557508262441527045">Kijelentkezve</translation>
 <translation id="7561196759112975576">Mindig</translation>
 <translation id="7561759921596375678">Hang bekapcsolása</translation>
 <translation id="7563576896417108627">A(z) <ph name="APP_NAME" /> személyre szabása és beállításai. Rendelkezésre áll frissítés.</translation>
@@ -9331,6 +9337,7 @@ A kulcsfájlt tartsa biztonságos helyen. Szüksége lesz rá ahhoz, hogy új ve
 <translation id="8118362518458010043">A Chrome letiltotta. Ez a bővítmény nem biztonságos.</translation>
 <translation id="8118448640060360549">{EXTENSIONS_COUNT,plural, =1{# könyvjelző}other{# könyvjelző}}</translation>
 <translation id="8118488170956489476"><ph name="BEGIN_LINK" />Böngészőjének kezelését<ph name="END_LINK" /> a szervezete végzi</translation>
+<translation id="8118496140027032067">A weboldalak színeinek felülbírálása nagy kontrasztú témákkal, vagy a kényszerített színek kikapcsolása</translation>
 <translation id="8118515372935001629">Kijelző frissítési gyakorisága</translation>
 <translation id="8118860139461251237">A letöltések kezelése</translation>
 <translation id="8119438628456698432">Naplófájlok generálása…</translation>
@@ -10008,6 +10015,7 @@ A kulcsfájlt tartsa biztonságos helyen. Szüksége lesz rá ahhoz, hogy új ve
 <translation id="8648408795949963811">Éjszakai fény színhőmérséklete</translation>
 <translation id="8648544143274677280">A(z) <ph name="SITE_NAME" /> a következőkre kér engedélyt: <ph name="FIRST_PERMISSION" />, <ph name="SECOND_PERMISSION" /> stb.</translation>
 <translation id="8648889679430451455">Személyre szabási adatok törlése</translation>
+<translation id="8649290269169747916">Az oldal alapértelmezett színeinek használata, ha a rendszer nagy kontrasztú módja ki van kapcsolva</translation>
 <translation id="8651585100578802546">Az oldal kényszerített újratöltése</translation>
 <translation id="8651806635673244884">Visszahelyezheti a lapokat felülre, ha jobb egérgombbal rákattint bármelyik lapra, és kiválasztja a „Lapok megjelenítése vízszintesen” lehetőséget.</translation>
 <translation id="8652400352452647993">Csomagbővítmény-hiba</translation>

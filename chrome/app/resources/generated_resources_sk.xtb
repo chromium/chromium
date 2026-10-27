@@ -1836,6 +1836,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="2423506062824112361">Obsah sa z neznámeho dôvodu nepodarilo stiahnuť.</translation>
 <translation id="2423578206845792524">Uložiť &amp;obrázok ako...</translation>
 <translation id="2424424966051154874">{0,plural, =1{Hosť}few{Hosť (#)}many{Guest (#)}other{Hosť (#)}}</translation>
+<translation id="2424762488607770568">Predvolené (podľa systému)</translation>
 <translation id="2426805022920575512">Vybrať iný účet</translation>
 <translation id="2427507373259914951">Kliknutie ľavým tlačidlom myši</translation>
 <translation id="2428245692671442472">{NUM_PASSWORDS,plural, =1{<ph name="DOMAIN_LINK" /> – 1 účet, heslo bolo uložené iba do tohto zariadenia. Ďalšie podrobnosti}few{<ph name="DOMAIN_LINK" /> – {NUM_PASSWORDS} účty, heslo bolo uložené iba do tohto zariadenia. Ďalšie podrobnosti}many{<ph name="DOMAIN_LINK" /> {NUM_PASSWORDS} accounts, password saved only to this device. More details}other{<ph name="DOMAIN_LINK" /> – {NUM_PASSWORDS} účtov, heslo bolo uložené iba do tohto zariadenia. Ďalšie podrobnosti}}</translation>
@@ -5646,6 +5647,7 @@ Ak chcete zobrazenie oddialiť, stlačte Ctrl + Alt + zníženie jasu.</translat
 <translation id="5280426389926346830">Vytvoriť odkaz?</translation>
 <translation id="5280966903879030278">Pomocou bežných výrazov môžete vyhľadávať vo svojej histórii prehliadania a nájsť weby, ktoré ste navštívili. Toto nastavenie je vypnuté.</translation>
 <translation id="5281013262333731149">Otvára sa v prehliadači <ph name="OPEN_BROWSER" /></translation>
+<translation id="5283747245540449968">Farby stránky</translation>
 <translation id="5284107433515104664">Pri zmene hesla sa obsah stránky a súvisiace informácie posielajú Googlu a môžu ich kontrolovať ľudia s cieľom zlepšiť túto funkciu. Vaše heslo je šifrované a nikomu sa nikdy nezobrazí.</translation>
 <translation id="5284445933715251131">Pokračovať v sťahovaní</translation>
 <translation id="5285635972691565180">Obrazovka <ph name="DISPLAY_ID" /></translation>
@@ -6535,6 +6537,7 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="5989497858237037960">Keď prehliadate weby, obsah ich stránok sa šifruje a ukladá vo vašom zariadení. Môže to ovplyvniť výkon Chromu.</translation>
 <translation id="5990266201903445068">Len Wi‑Fi</translation>
 <translation id="5990386583461751448">Preložené</translation>
+<translation id="5991039386730545918">Vybraný farebný motív stránky sa použije iba vtedy, keď je v systéme zapnutý vysoký kontrast</translation>
 <translation id="5992225669837656567">Všetky myši boli odpojené</translation>
 <translation id="5992652489368666106">Bez okraja</translation>
 <translation id="5996490984199062729">Váš profil nebol nastavený</translation>
@@ -6691,6 +6694,7 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="6124698108608891449">Tento web potrebuje ďalšie povolenia.</translation>
 <translation id="6125202119952209826">Pripojte sa ku skupine kariet s používateľom <ph name="OWNER_FIRST_NAME" /></translation>
 <translation id="6125639926370653692">Mesiac</translation>
+<translation id="6125649408655762488">Označiť skupinu</translation>
 <translation id="6126601353087978360">Tu zadajte spätnú väzbu:</translation>
 <translation id="6127292407256937949">Zvuk je zapnutý. Vypnite ho.</translation>
 <translation id="6127598727646973981">Zabezpečené pripojenia</translation>
@@ -7938,6 +7942,7 @@ Máte ešte # ďalších. Správca hesiel Google odporúča okamžite dané hes
 <translation id="706949303827219454">Otvorí stránku s nastaveniami zabezpečenia na novej karte</translation>
 <translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{Nové heslo tohto webu}few{Nové heslá tohto webu}many{Nové heslá tohto webu}other{Nové heslá tohto webu}}</translation>
 <translation id="7070484045139057854">Môže čítať dáta webu a meniť ich</translation>
+<translation id="7071521146534760487">Spravovať účet</translation>
 <translation id="7072010813301522126">Názov skratky</translation>
 <translation id="7072078320324181561">Aplikácie a weby s povoleným prístupom k polohe a systémové služby môžu používať vašu polohu. <ph name="LINK_BEGIN" />Ďalšie informácie<ph name="LINK_END" /></translation>
 <translation id="7072573590175540692">Dostupné skratky funkcií a rozšírení</translation>
@@ -8573,6 +8578,7 @@ Máte ešte # ďalších. Správca hesiel Google odporúča okamžite dané hes
 <translation id="755472745191515939">Váš správca tento jazyk nepovoľuje</translation>
 <translation id="7554791636758816595">Nová karta</translation>
 <translation id="7557194624273628371">Presmerovanie portov v systéme Linux</translation>
+<translation id="7557508262441527045">Účet je odhlásený</translation>
 <translation id="7561196759112975576">Vždy</translation>
 <translation id="7561759921596375678">Zapnutie zvuku</translation>
 <translation id="7563576896417108627">Prispôsobiť a spravovať aplikáciu <ph name="APP_NAME" />. K dispozícií je aktualizácia.</translation>
@@ -9322,6 +9328,7 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="8118362518458010043">Zakázané Chromom. Toto rozšírenie môže byť nebezpečné.</translation>
 <translation id="8118448640060360549">{EXTENSIONS_COUNT,plural, =1{# záložka}few{# záložky}many{# bookmarks}other{# záložiek}}</translation>
 <translation id="8118488170956489476"><ph name="BEGIN_LINK" />Prehliadač je spravovaný<ph name="END_LINK" /> vašou organizáciou</translation>
+<translation id="8118496140027032067">Prepíšte farby webových stránok motívmi s vysokým kontrastom alebo vypnite vynútené farby</translation>
 <translation id="8118515372935001629">Frekvencia obnovenia obrazovky</translation>
 <translation id="8118860139461251237">Spravovať sťahovanie</translation>
 <translation id="8119438628456698432">Generujú sa súbory denníka…</translation>
@@ -9999,6 +10006,7 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="8648408795949963811">Teplota farby nočného režimu</translation>
 <translation id="8648544143274677280"><ph name="SITE_NAME" /> vyžaduje povolenia <ph name="FIRST_PERMISSION" />, <ph name="SECOND_PERMISSION" /> a ďalšie</translation>
 <translation id="8648889679430451455">Vymazať údaje prispôsobenia</translation>
+<translation id="8649290269169747916">Používať predvolené farby stránok, keď je v systéme vypnutý vysoký kontrast</translation>
 <translation id="8651585100578802546">Vynútiť obnovenie tejto stránky</translation>
 <translation id="8651806635673244884">Karty môžete presunúť späť nahor tak, že kliknete pravým tlačidlom na ľubovoľnú kartu a vyberiete Zobrazovať karty vodorovne.</translation>
 <translation id="8652400352452647993">Chyba zbalenia rozšírenia</translation>

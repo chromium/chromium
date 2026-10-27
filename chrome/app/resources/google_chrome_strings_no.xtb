@@ -22,6 +22,7 @@
 <translation id="1148360048981192980">Neste gang du åpner Chrome på <ph name="DEVICE_TYPE" />, ser du en forespørsel om å bruke Google Passordlagring.</translation>
 <translation id="1152920704813762236">Om ChromeOS</translation>
 <translation id="1154147086299354128">&amp;Åpne i Chrome</translation>
+<translation id="1157952955648710254">Lukk sidepanelet for Google Søk</translation>
 <translation id="1157985233335035034">Nylig brukte språk</translation>
 <translation id="1158134713295836892">Gemini i Chrome</translation>
 <translation id="1184145431117212167">Installasjonen mislyktes fordi du bruker en Windows-versjon som ikke støttes.</translation>
@@ -46,6 +47,7 @@
 <translation id="141901961143729572">Del det du har på hjertet</translation>
 <translation id="1425903838053942728">{COUNT,plural, =0{Chrome er ferdig med å oppdatere. Du kan bruke den nyeste versjonen så snart du starter på nytt. Deretter åpnes de aktive fanene på nytt.}=1{Chrome er ferdig med å oppdatere. Du kan bruke den nyeste versjonen så snart du starter på nytt. Deretter åpnes de aktive fanene på nytt. Inkognitovinduet ditt blir ikke gjenåpnet.}other{Chrome er ferdig med å oppdatere. Du kan bruke den nyeste versjonen så snart du starter på nytt. Deretter åpnes de aktive fanene på nytt. Dine # inkognitovinduer åpnes ikke på nytt.}}</translation>
 <translation id="1434626383986940139">Chrome Canary-apper</translation>
+<translation id="1438812738230833934">Du kan åpne Google Søk i sidepanelet igjen for å stille spørsmål mens du surfer</translation>
 <translation id="1439793550875056299">Fest Chrome</translation>
 <translation id="1446616215961349840">{COUNT,plural, =1{Administratoren din krever at du starter Chrome start på nytt for å ta i bruk en oppdatering. Det isolerte vinduet ditt blir ikke gjenåpnet.}other{Administratoren din krever at du starter Chrome start på nytt for å ta i bruk en oppdatering. # isolert vindu gjenåpnes ikke.}}</translation>
 <translation id="146866447420868597">Vil du logge på Chrome?</translation>
@@ -302,7 +304,6 @@ Hvis denne siden ikke fungerer som forventet, kan du prøve å tillate optimalis
 <translation id="3780814664026482060">Chrome – <ph name="PAGE_TITLE" /></translation>
 <translation id="3785324443014631273">ChromeOS Flex kunne ikke synkronisere dataene dine på grunn av en påloggingsfeil.</translation>
 <translation id="3795971588916395511">Google ChromeOS</translation>
-<translation id="3809772425479558446">Google Chrome krever Windows 10 eller nyere.</translation>
 <translation id="3810973564298564668">Administrer</translation>
 <translation id="383455301564000773">Oppgraderer du til Windows 11? Last ned Chrome til OneDrive, så er du klar fra dag én.</translation>
 <translation id="383928141529488001">Google Chrome trenger Bluetooth-tilgang for å utforske 
@@ -375,6 +376,7 @@ Hvis denne siden ikke fungerer som forventet, kan du prøve å tillate optimalis
 <translation id="4458462641685292929">En annen handling er i gang på Google Chrome. Prøv på nytt senere.</translation>
 <translation id="4493028449971051158">Oppstartsfeil: Kjør installasjonsprogrammet som administrator.</translation>
 <translation id="4501471624619070934">Installasjonen mislyktes fordi tilgangen er begrenset i dette landet.</translation>
+<translation id="4501839397124711198">Du kan feste Google Søk i sidepanelet for å stille spørsmål mens du surfer</translation>
 <translation id="4571503333518166079">Gå til innstillingene for Chrome-varsler</translation>
 <translation id="4580939929828762295">Hold deg trygg med Google Passordlagring</translation>
 <translation id="459622048091363950">Når Chrome har fått tilgang, kan nettsteder spørre deg om tilgang.</translation>
@@ -417,6 +419,7 @@ Hvis denne siden ikke fungerer som forventet, kan du prøve å tillate optimalis
 <translation id="4970761609246024540">Velkommen til Chrome-profiler</translation>
 <translation id="4970880042055371251">ChromeOS-versjon</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
+<translation id="5000497292978544380">AI-modus for Google Søk</translation>
 <translation id="5003967926796347400">Klikk på «Google Passordlagring»</translation>
 <translation id="5043786843026425788">Finn ut mer om å søke med Google Lens i Chrome</translation>
 <translation id="504867494566807945">Åpne linker i Chrome fra alle apper. For å få enkel tilgang, festes Chrome på oppgavelinjen.</translation>
@@ -424,6 +427,7 @@ Hvis denne siden ikke fungerer som forventet, kan du prøve å tillate optimalis
 <translation id="5105120510934353742">For å få fremtidige Google Chrome-oppdateringer må du ha macOS 13 eller nyere. Denne datamaskinen bruker macOS 12.</translation>
 <translation id="5114340746415930644">Skriv inn passordfrasen din for å bruke og lagre Chrome-data i kontoen din, <ph name="USER_EMAIL" /></translation>
 <translation id="5120334927898581447">Logg på Chrome når du logger på andre Google-tjenester</translation>
+<translation id="5121592697493894155">Google Søk i sidepanelet</translation>
 <translation id="5126049312684316860">Chrome forhåndslaster enda flere sider du sannsynligvis kommer til å besøke, slik at de lastes inn raskere når du faktisk besøker dem</translation>
 <translation id="5127558335897923940">Ha Chrome i dokken for å få rask tilgang til den når som helst</translation>
 <translation id="5132929315877954718">Oppdag flotte apper, spill, utvidelser og temaer for Google Chrome.</translation>
@@ -721,6 +725,7 @@ Hvis denne siden ikke fungerer som forventet, kan du prøve å tillate optimalis
 <translation id="7777080907402804672">Hvis et bilde ikke har noen nyttig beskrivelse, prøver Chrome å finne en til deg. For å opprette beskrivelser blir bilder sendt til Google. Du kan slå av dette i innstillingene når som helst.</translation>
 <translation id="778331955594035129">Chrome trenger posisjonstillatelse for dette nettstedet</translation>
 <translation id="7787950393032327779">Profilen ser ut til å være i bruk av en annen Google Chrome-prosess (<ph name="PROCESS_ID" />) på en annen datamaskin (<ph name="HOST_NAME" />). Chrome har låst profilen slik at den ikke blir infisert. Hvis du er sikker på at ingen andre prosesser bruker profilen, kan du låse opp profilen og starte Chrome på nytt.</translation>
+<translation id="7800043020703832708">Lukk Google Søk i sidepanelet</translation>
 <translation id="7801699035218095297">Google Chrome prøver å kopiere passord. Skriv inn Windows-passordet ditt for å tillate dette.</translation>
 <translation id="7804364787702057554">Kontoen din i Chrome</translation>
 <translation id="7804947029129221742">Søkemotoren er endret utenfor Chrome. For å beskytte deg har Chrome tilbakestilt den til den opprinnelige standardinnstillingen. <ph name="LEARN_MORE_LINK" /></translation>
@@ -737,6 +742,7 @@ Hvis denne siden ikke fungerer som forventet, kan du prøve å tillate optimalis
 <translation id="7886087451482920026">Marker tekst med Google Lens</translation>
 <translation id="7890208801193284374">Hvis du deler en datamaskin med andre, kan venner og familie surfe hver for seg og konfigurere Chrome akkurat slik de vil.</translation>
 <translation id="7896673875602241923">Noen har tidligere logget på Chrome på denne datamaskinen som <ph name="ACCOUNT_EMAIL_LAST" />. Opprett en ny Chrome-bruker for å holde informasjonen din atskilt.</translation>
+<translation id="7904213866086517086">Åpne Google Søk i sidepanelet igjen</translation>
 <translation id="7904985524660297937">Prøv Gemini i Google Chrome</translation>
 <translation id="7905880575591690197">ChromeOS kunne ikke lagre Chrome-data i Google-kontoen din på grunn av en påloggingsfeil</translation>
 <translation id="7917876797003313048">Du kan administrere de påloggede Google-kontoene dine. Google-kontoene dine brukes i Chrome-nettleseren, Play-butikken, Gmail med mer. Hvis du vil legge til en konto for noen andre, for eksempel et familiemedlem, legger du til en ny person på <ph name="DEVICE_TYPE" /> i stedet. <ph name="LINK_BEGIN" />Finn ut mer<ph name="LINK_END" /></translation>
@@ -796,12 +802,14 @@ Hvis denne siden ikke fungerer som forventet, kan du prøve å tillate optimalis
 <translation id="8367950957770994118">Få rask tilgang til Gemini i Chrome når du trenger det</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Med enerett.</translation>
 <translation id="8370748943308169953">QR-kode for å logge på Chrome som <ph name="USER_NAME" /></translation>
+<translation id="8376752431516546391">Google Søk-sidepanelet</translation>
 <translation id="8377158135256176353">Slå av/på Gemini i Chrome Canary</translation>
 <translation id="8380754585531979907">Bruk tastaturet til å navigere mellom Gemini i Chrome og den åpne fanen.</translation>
 <translation id="8387459386171870978">Fortsett å bruke Chrome</translation>
 <translation id="8394720698884623075">Kontrollerer nettadresser opp mot en liste i Chrome over utrygge nettsteder</translation>
 <translation id="8402881611069691789">{COUNT,plural, =1{Chrome er ferdig med å oppdatere. Du kan bruke den nyeste versjonen så snart du starter start på nytt Deretter åpnes de aktive fanene på nytt. Det er et inkognitovindu eller et isolert vindu åpent. Det blir ikke gjenåpnet når du starter nettleseren start på nytt}other{Chrome er ferdig med å oppdatere. Du kan bruke den nyeste versjonen så snart du starter start på nytt Deretter åpnes de aktive fanene på nytt. Det er # inkognitovinduer og isolerte vinduer åpne i flere profiler. De åpnes ikke igjen etter start på nytt.}}</translation>
 <translation id="8403038600646341038">Chrome-logo på en dataskjerm.</translation>
+<translation id="8406687098231754303">Med knappen «Google Søk i sidepanelet» på verktøylinjen kan du åpne Google Søk i sidepanelet igjen for å stille spørsmål mens du surfer</translation>
 <translation id="8418845734693287262">ChromeOS kunne ikke synkronisere dataene dine, ettersom påloggingsopplysningene for kontoen din er utdaterte.</translation>
 <translation id="842386925677997438">Sikkerhetsverktøyene i Chrome</translation>
 <translation id="8425765582779547329">For å holde deg tryggere på nettet med innstillingene som forelderen din har valgt, logg på Chrome</translation>
@@ -819,6 +827,7 @@ Du kan ikke lagre nye bokmerker i kontoen din før du sletter noen. Hvis du logg
 <translation id="8533056045953418157">Angi Google Chrome som standard PDF-visningsprogram</translation>
 <translation id="854593887324189900">Søk i dette bildet med Google Lens</translation>
 <translation id="8555465886620020932">Tjenestefeil: ‏<ph name="SERVICE_ERROR" />.</translation>
+<translation id="8564408666201523086">Fullført. Med Google Søk i sidepanelet kan du enkelt stille spørsmål mens du surfer.</translation>
 <translation id="856656450041460113">Søk på språklisten</translation>
 <translation id="8575047640889685742">Bruk din <ph name="BEGIN_LINK" />egen passordfrase<ph name="END_LINK" /> for å kryptere alle Chrome-dataene i Google-kontoen din. Betalingsmåter og adresser fra Google Pay krypteres ikke. Nettleserloggen fra Chrome synkroniseres ikke.</translation>
 <translation id="8590782867495422699">Åpne AI-modus for Google Søk igjen</translation>

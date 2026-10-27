@@ -22,6 +22,7 @@
 <translation id="1148360048981192980">Data viitoare când deschizi Chrome pe <ph name="DEVICE_TYPE" />, vei vedea o solicitare de a folosi Managerul de parole Google.</translation>
 <translation id="1152920704813762236">Despre ChromeOS</translation>
 <translation id="1154147086299354128">&amp;Deschide în Chrome</translation>
+<translation id="1157952955648710254">Închide panoul lateral Căutare Google</translation>
 <translation id="1157985233335035034">Limbi recente</translation>
 <translation id="1158134713295836892">Gemini în Chrome</translation>
 <translation id="1184145431117212167">Instalarea nu a reușit, deoarece versiunea ta de Windows nu este acceptată.</translation>
@@ -46,6 +47,7 @@
 <translation id="141901961143729572">Spune-ți părerea</translation>
 <translation id="1425903838053942728">{COUNT,plural, =0{Chrome s-a actualizat. Poți folosi cea mai recentă versiune după ce relansezi browserul. Apoi, filele actuale se vor redeschide.}=1{Chrome s-a actualizat. Poți folosi cea mai recentă versiune după ce relansezi browserul. Apoi, filele actuale se vor redeschide. Fereastra incognito nu se va mai deschide.}few{Chrome s-a actualizat. Poți folosi cea mai recentă versiune după ce relansezi browserul. Apoi, filele actuale se vor redeschide. Cele # ferestre incognito nu se vor mai deschide.}other{Chrome s-a actualizat. Poți folosi cea mai recentă versiune după ce relansezi browserul. Apoi, filele actuale se vor redeschide. Cele # de ferestre incognito nu se vor mai deschide.}}</translation>
 <translation id="1434626383986940139">Aplicații Chrome Canary</translation>
+<translation id="1438812738230833934">Poți să redeschizi Căutarea Google în panoul lateral pentru a pune întrebări în timp ce navighezi</translation>
 <translation id="1439793550875056299">Fixează Chrome</translation>
 <translation id="1446616215961349840">{COUNT,plural, =1{Administratorul solicită să relansezi Chrome pentru a aplica o actualizare. Fereastra izolată nu se va mai deschide.}few{Administratorul solicită să relansezi Chrome pentru a aplica o actualizare. Cele # ferestre izolate nu se vor mai deschide.}other{Administratorul solicită să relansezi Chrome pentru a aplica o actualizare. Cele # de ferestre izolate nu se vor mai deschide.}}</translation>
 <translation id="146866447420868597">Te conectezi la Chrome?</translation>
@@ -302,7 +304,6 @@ Dacă această pagină nu funcționează conform așteptărilor, încearcă să 
 <translation id="3780814664026482060">Chrome – <ph name="PAGE_TITLE" /></translation>
 <translation id="3785324443014631273">ChromeOS Flex nu a putut sincroniza datele din cauza unei erori la conectare.</translation>
 <translation id="3795971588916395511">Sistemul de operare Google Chrome</translation>
-<translation id="3809772425479558446">Google Chrome necesită Windows 10 sau o versiune ulterioară.</translation>
 <translation id="3810973564298564668">Gestionează</translation>
 <translation id="383455301564000773">Faci upgrade la Windows 11? Descarcă Chrome în OneDrive ca să fii gata încă din prima zi.</translation>
 <translation id="383928141529488001">Google Chrome are nevoie de acces la Bluetooth pentru a explora 
@@ -375,6 +376,7 @@ Dacă această pagină nu funcționează conform așteptărilor, încearcă să 
 <translation id="4458462641685292929">O altă operație din Google Chrome este în curs de desfășurare. Încearcă din nou mai târziu.</translation>
 <translation id="4493028449971051158">Eroare la pornire: rulează programul de instalare ca administrator.</translation>
 <translation id="4501471624619070934">Instalarea nu a reușit deoarece accesul este restricționat în această țară.</translation>
+<translation id="4501839397124711198">Poți să fixezi Căutarea Google în panoul lateral pentru a pune întrebări în timp ce navighezi</translation>
 <translation id="4571503333518166079">Accesează setările pentru notificări Chrome</translation>
 <translation id="4580939929828762295">Rămâi în siguranță cu Managerul de parole Google</translation>
 <translation id="459622048091363950">Odată ce Chrome are acces, site-urile web îți vor putea solicita accesul.</translation>
@@ -417,6 +419,7 @@ Dacă această pagină nu funcționează conform așteptărilor, încearcă să 
 <translation id="4970761609246024540">Bun venit la profilurile Chrome</translation>
 <translation id="4970880042055371251">Versiunea sistemului de operare Chrome</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
+<translation id="5000497292978544380">Modul AI în Căutarea Google</translation>
 <translation id="5003967926796347400">Dă clic pe Managerul de parole Google</translation>
 <translation id="5043786843026425788">Află mai multe despre căutarea cu Google Lens în Chrome</translation>
 <translation id="504867494566807945">Deschide linkuri în Chrome din orice aplicație. În plus, pentru acces ușor, browserul se fixează în bara de activități.</translation>
@@ -424,6 +427,7 @@ Dacă această pagină nu funcționează conform așteptărilor, încearcă să 
 <translation id="5105120510934353742">Pentru a primi actualizările Google Chrome viitoare, vei avea nevoie de macOS 13 sau o versiune ulterioară. Acest computer folosește macOS 12.</translation>
 <translation id="5114340746415930644">Introdu expresia de acces pentru a folosi și a salva datele Chrome în contul <ph name="USER_EMAIL" /></translation>
 <translation id="5120334927898581447">Conectează-te la Chrome când te conectezi la alte servicii Google</translation>
+<translation id="5121592697493894155">Căutarea Google în panoul lateral</translation>
 <translation id="5126049312684316860">Chrome preîncarcă și mai multe pagini pe care este posibil să le accesezi, astfel încât să se încarce mai rapid când le accesezi</translation>
 <translation id="5127558335897923940">Păstrează Chrome în bara de andocare pentru a-l accesa rapid oricând</translation>
 <translation id="5132929315877954718">Descoperă aplicații, jocuri, extensii și teme extraordinare pentru Google Chrome.</translation>
@@ -721,6 +725,7 @@ Dacă această pagină nu funcționează conform așteptărilor, încearcă să 
 <translation id="7777080907402804672">Dacă o imagine nu are o descriere utilă, Chrome va încerca să o completeze. Pentru a crea descrieri, imaginile sunt trimise la Google. Poți dezactiva această opțiune oricând din setări.</translation>
 <translation id="778331955594035129">Chrome necesită permisiuni pentru locație pentru acest site</translation>
 <translation id="7787950393032327779">Profilul pare să fie utilizat de alt proces Google Chrome (<ph name="PROCESS_ID" />), pe alt computer (<ph name="HOST_NAME" />). Chrome a blocat profilul pentru a nu se deteriora. Dacă aveți certitudinea că profilul nu este utilizat de alte procese, puteți să îl deblocați și să relansați Chrome.</translation>
+<translation id="7800043020703832708">Închide Căutarea Google în panoul lateral</translation>
 <translation id="7801699035218095297">Google Chrome încearcă să copieze parolele. Pentru a permite acest lucru, introdu parola pentru Windows.</translation>
 <translation id="7804364787702057554">Contul tău în Chrome</translation>
 <translation id="7804947029129221742">Motorul de căutare a fost schimbat din afara browserului Chrome. Pentru a te proteja, Chrome l-a resetat la opțiunea prestabilită inițială. <ph name="LEARN_MORE_LINK" /></translation>
@@ -737,6 +742,7 @@ Dacă această pagină nu funcționează conform așteptărilor, încearcă să 
 <translation id="7886087451482920026">Selectează text cu Google Lens</translation>
 <translation id="7890208801193284374">Dacă permiteți accesul la un computer, familia și prietenii pot să navigheze separat și să configureze Chrome cum doresc.</translation>
 <translation id="7896673875602241923">Un alt utilizator s-a conectat anterior la Chrome pe acest computer ca <ph name="ACCOUNT_EMAIL_LAST" />. Creează un nou utilizator Chrome pentru a-ți păstra separat informațiile.</translation>
+<translation id="7904213866086517086">Redeschide Căutarea Google în panoul lateral</translation>
 <translation id="7904985524660297937">Încearcă Gemini în Google Chrome</translation>
 <translation id="7905880575591690197">ChromeOS nu a putut salva datele Chrome în Contul Google din cauza unei erori la conectare</translation>
 <translation id="7917876797003313048">Îți poți gestiona Conturile Google la care te-ai conectat. Conturile tale Google sunt folosite pentru browserul Chrome, pentru Magazinul Play, pentru Gmail și pentru multe altele. Dacă vrei să adaugi un cont pentru altcineva, de exemplu, pentru un membru al familiei, adaugă noua persoană pe <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Află mai multe<ph name="LINK_END" /></translation>
@@ -796,12 +802,14 @@ Dacă această pagină nu funcționează conform așteptărilor, încearcă să 
 <translation id="8367950957770994118">Deschide rapid Gemini în Chrome oricând ai nevoie</translation>
 <translation id="8370517070665726704">Drept de autor <ph name="YEAR" /> Google LLC. Toate drepturile rezervate.</translation>
 <translation id="8370748943308169953">Cod QR pentru conectarea la Chrome ca <ph name="USER_NAME" /></translation>
+<translation id="8376752431516546391">Panoul lateral Căutare Google</translation>
 <translation id="8377158135256176353">Activează / dezactivează Gemini în Chrome Canary</translation>
 <translation id="8380754585531979907">Folosește tastatura pentru a naviga între Gemini în Chrome și fila deschisă.</translation>
 <translation id="8387459386171870978">Continuă să folosești Chrome</translation>
 <translation id="8394720698884623075">Verifică adresele URL folosind o listă de site-uri nesigure, stocată în Chrome</translation>
 <translation id="8402881611069691789">{COUNT,plural, =1{Chrome s-a actualizat. Poți folosi cea mai recentă versiune după ce relansezi browserul. Apoi, filele actuale se vor redeschide. Există o fereastră incognito sau izolată deschisă. Nu se va redeschide după relansare.}few{Chrome s-a actualizat. Poți folosi cea mai recentă versiune după ce relansezi browserul. Apoi, filele actuale se vor redeschide. Există # ferestre incognito și izolate deschise în toate profilurile. Nu se vor redeschide după relansare.}other{Chrome s-a actualizat. Poți folosi cea mai recentă versiune după ce relansezi browserul. Apoi, filele actuale se vor redeschide. Există # de ferestre incognito și izolate deschise în toate profilurile. Nu se vor redeschide după relansare.}}</translation>
 <translation id="8403038600646341038">Sigla Chrome pe un ecran de computer.</translation>
+<translation id="8406687098231754303">Cu butonul Căutare Google în panoul lateral din bara de instrumente, poți să redeschizi Căutarea Google în panoul lateral pentru a pune întrebări în timp ce navighezi</translation>
 <translation id="8418845734693287262">ChromeOS nu a putut sincroniza datele, deoarece detaliile de conectare pentru cont nu sunt actualizate.</translation>
 <translation id="842386925677997438">Instrumentele de siguranță din Chrome</translation>
 <translation id="8425765582779547329">Pentru a fi mai în siguranță online cu alegerile părintelui, conectează-te la Chrome</translation>
@@ -819,6 +827,7 @@ Nu poți salva marcaje noi în cont până când nu ștergi câteva. Dacă te de
 <translation id="8533056045953418157">Setează Google Chrome ca vizualizator PDF prestabilit</translation>
 <translation id="854593887324189900">Caută în această imagine cu Google Lens</translation>
 <translation id="8555465886620020932">Eroare de serviciu: <ph name="SERVICE_ERROR" />.</translation>
+<translation id="8564408666201523086">Succes! Acum poți să pui cu ușurință întrebări în timp ce navighezi cu Căutarea Google în panoul lateral</translation>
 <translation id="856656450041460113">Caută lista de limbi</translation>
 <translation id="8575047640889685742">Folosește <ph name="BEGIN_LINK" />propria expresie de acces<ph name="END_LINK" /> pentru a cripta toate datele Chrome din Contul Google. Metodele de plată și adresele din Google Pay nu vor fi criptate. Istoricul de navigare din Chrome nu se va sincroniza.</translation>
 <translation id="8590782867495422699">Redeschide Modul AI în Căutarea Google</translation>

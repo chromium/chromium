@@ -661,6 +661,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="2118132148597630479">Umslag: C5</translation>
 <translation id="2119505898009119320">Úthlutað til: <ph name="ORGANIZATION" /> [<ph name="JURISDICTION" />]</translation>
 <translation id="2119867082804433120">Gat neðst til hægri</translation>
+<translation id="2121418473709291357">Hunsað vegna þess að slökkt er á skýjastjórnun Chrome-vafra.</translation>
 <translation id="2122214041802369259">Verð er hátt</translation>
 <translation id="2122719317867821810">Þessi regla virkar sem skyldi en gildi sem skarast á við hana er stillt annars staðar og þessi regla hnekkir því.</translation>
 <translation id="2124081665399116863">Uppfæra ökutæki í Google-veski</translation>
@@ -2480,6 +2481,7 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="5115232566827194440">Hnekkja takmarkaðri og stýrðri gestalotu</translation>
 <translation id="5115563688576182185">(64 bita)</translation>
 <translation id="5116015291385561204">Staðfestu að þetta sért þú til að fylla sjálfkrafa út viðkvæmar upplýsingar</translation>
+<translation id="5121592697493894155">Google-leit í hliðarglugga</translation>
 <translation id="5122786942953798871">Umslag (bómull)</translation>
 <translation id="5123063207673082822">Helgi</translation>
 <translation id="5124797626438336458">Villuskjár „Kauptu núna, borgaðu síðar“, opinn til hálfs.</translation>
@@ -2916,6 +2918,7 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="5843987376989109187">Þetta tungumál er ekki stutt enn sem komið er
     <ph name="BEGIN_LINK" />Nánar<ph name="END_LINK" /></translation>
 <translation id="5848445080378515710">Þegar þú hefur farið yfir pöntunina þína þarftu að skrá þig inn á eða stofna reikning hjá <ph name="BNPL_ISSUER_NAME" />. Þessi reikningur verður sjálfkrafa tengdur í Google-veski.</translation>
+<translation id="5848916806551637625">Pix-reikningur verður tengdur við <ph name="ACCOUNT_EMAIL" />. Opnaðu <ph name="BEGIN_LINK1" />stillingar Chrome<ph name="END_LINK1" /> til að slökkva á Pix-kóðagreiningu.</translation>
 <translation id="5851548754964597211">Flipalisti</translation>
 <translation id="5851868085455377790">Útgefandi</translation>
 <translation id="5852909432155870672">RA4</translation>
@@ -4426,6 +4429,7 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="8371841335382565017">Sýna tækjalista fyrir vörpun</translation>
 <translation id="8371889962595521444">Sérsniðin rótarvottorð</translation>
 <translation id="8374636051559112948">Breytileg</translation>
+<translation id="8376752431516546391">Hliðargluggi í Google-leit</translation>
 <translation id="8377507422902936905">Pantanir</translation>
 <translation id="837840316697671463">Ef þú finnur ekki skrá í tækinu þínu geturðu leitað að henni á <ph name="CLOUD_PROVIDER" />.</translation>
 <translation id="8378714024927312812">Stjórnað af fyrirtækinu þínu</translation>

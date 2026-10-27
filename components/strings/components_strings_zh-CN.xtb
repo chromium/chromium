@@ -661,6 +661,7 @@
 <translation id="2118132148597630479">C5 信封</translation>
 <translation id="2119505898009119320">颁发对象：<ph name="ORGANIZATION" /> [<ph name="JURISDICTION" />]</translation>
 <translation id="2119867082804433120">打孔（右下角）</translation>
+<translation id="2121418473709291357">已忽略，因为 Chrome 浏览器云管理服务已停用。</translation>
 <translation id="2122214041802369259">价格高</translation>
 <translation id="2122719317867821810">此政策正在正常运作，但与别处设置的值冲突且已覆盖该值。</translation>
 <translation id="2124081665399116863">更新 Google 钱包中的车辆信息</translation>
@@ -2476,6 +2477,7 @@
 <translation id="5115232566827194440">受限受管理访客会话的替换设置</translation>
 <translation id="5115563688576182185">（64 位）</translation>
 <translation id="5116015291385561204">先验证身份，再自动填充敏感信息</translation>
+<translation id="5121592697493894155">侧边栏中的 Google 搜索结果</translation>
 <translation id="5122786942953798871">信封（棉纸）</translation>
 <translation id="5123063207673082822">周末</translation>
 <translation id="5124797626438336458">“先买后付”错误界面已以一半高度显示。</translation>
@@ -2912,6 +2914,7 @@
 <translation id="5843987376989109187">尚不支持此语言。
     <ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="5848445080378515710">查看订单后，您必须登录或创建 <ph name="BNPL_ISSUER_NAME" /> 账号。该账号将自动关联至 Google 钱包。</translation>
+<translation id="5848916806551637625">Pix 账号将关联到 <ph name="ACCOUNT_EMAIL" />。如需关闭 Pix 代码检测，请前往 <ph name="BEGIN_LINK1" />Chrome 设置<ph name="END_LINK1" />。</translation>
 <translation id="5851548754964597211">标签列表</translation>
 <translation id="5851868085455377790">颁发者</translation>
 <translation id="5852909432155870672">RA4</translation>
@@ -4422,6 +4425,7 @@
 <translation id="8371841335382565017">显示投放设备列表</translation>
 <translation id="8371889962595521444">自定义的根证书</translation>
 <translation id="8374636051559112948">视具体情况而定</translation>
+<translation id="8376752431516546391">Google 搜索侧边栏</translation>
 <translation id="8377507422902936905">订单</translation>
 <translation id="837840316697671463">如果您在设备上找不到某个文件，请在“<ph name="CLOUD_PROVIDER" />”上查找。</translation>
 <translation id="8378714024927312812">由您的组织管理</translation>

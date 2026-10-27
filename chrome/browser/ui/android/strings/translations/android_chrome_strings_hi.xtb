@@ -50,6 +50,7 @@
 <translation id="1165109137568919258">कोई फ़ोटो लें या अपनी फ़ोटो गैलरी से कोई इमेज जोड़ें, ताकि उसके बारे में खोजा जा सके</translation>
 <translation id="1173894706177603556">नाम बदलें</translation>
 <translation id="1174479719160874822">स्क्रीन छोटी होने पर Chrome, मोबाइल साइट का अनुरोध करेगा</translation>
+<translation id="1174759280027683968">Chrome पर जाएं</translation>
 <translation id="1175241315203286684">प्रोफ़ाइल का एडमिन, कहीं दूर रहकर भी आपकी प्रोफ़ाइल और ब्राउज़र में बदलाव कर सकता है. साथ ही, रिपोर्टिंग के ज़रिए ब्राउज़र से जुड़ी जानकारी का विश्लेषण और दूसरे ज़रूरी काम कर सकता है. इस डिवाइस में की गई गतिविधि को Chrome से बाहर भी मैनेज किया जा सकता है.</translation>
 <translation id="1177863135347784049">कस्टम</translation>
 <translation id="1181037720776840403">हटाएं</translation>
@@ -608,6 +609,7 @@ Chrome के अनुभव को बेहतर बनाने के ल�
 <translation id="3452832259067974318">आपकी निजता की सुरक्षा के लिए, Chrome इस फ़ील्ड में आपके पासवर्ड को ऑटोमैटिक तरीके से नहीं भरेगा.</translation>
 <translation id="3474624961160222204"><ph name="NAME" /> के रूप में जारी रखें</translation>
 <translation id="3478363558367712427">आप अपना सर्च इंजन चुन सकते हैं</translation>
+<translation id="3479552764303398839">अभी नहीं</translation>
 <translation id="3482805106082349287">कीबोर्ड, आवाज़, गुप्त मोड या कैमरे का इस्तेमाल करके खोजें</translation>
 <translation id="3487903178221457900">एक्सपोर्ट की गई फ़ाइल का ऐक्सेस अन्य ऐप्लिकेशन वगैरह के पास हो सकता है. एक्सपोर्ट करने के बाद, आपके पासवर्ड Chrome से मिट जाते हैं.</translation>
 <translation id="3488199663160411179">नाम</translation>
@@ -896,6 +898,7 @@ Chrome के अनुभव को बेहतर बनाने के ल�
 <translation id="4578289292431526768">आइए, शुरू करें</translation>
 <translation id="4583164079174244168">{MINUTES,plural, =1{# मिनट पहले}one{# मिनट पहले}other{# मिनट पहले}}</translation>
 <translation id="4585751637295612750">सवाल में जोड़ने के लिए, नया टैब खोलें</translation>
+<translation id="4585793705637313973">पेज में बदलाव करें</translation>
 <translation id="4587589328781138893">साइटें</translation>
 <translation id="4594952190837476234">यह पेज <ph name="CREATION_TIME" /> का है और यह ऑनलाइन वर्शन से अलग हो सकता है.</translation>
 <translation id="4595237294768457124">'नया टैब' पेज खोलें</translation>
@@ -1536,6 +1539,7 @@ Chrome के अनुभव को बेहतर बनाने के ल�
 <translation id="6996145122199359148">यह पेज डाउनलोड करें</translation>
 <translation id="7007648447224463482">सभी को नई विंडो में खोलें</translation>
 <translation id="7013762323294215682">यह पासकी आपके Password Manager में सेव हो जाएगी. जिन लोगों के पास इस पासकी का ऐक्सेस होगा वे इसका इस्तेमाल कर पाएंगे.</translation>
+<translation id="7017219178341817193">कोई नया पेज जोड़ें</translation>
 <translation id="7022756207310403729">ब्राउज़र में खोलें</translation>
 <translation id="7029809446516969842">पासवर्ड</translation>
 <translation id="7037994709569287156">Chrome को डिफ़ॉल्ट ब्राउज़र बनाएं</translation>

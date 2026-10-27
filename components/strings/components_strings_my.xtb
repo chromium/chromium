@@ -662,6 +662,7 @@
 <translation id="2118132148597630479">C5 စာအိတ်</translation>
 <translation id="2119505898009119320">အောက်ပါသို့ ထုတ်ပေးထားသည်− <ph name="ORGANIZATION" /> [<ph name="JURISDICTION" />]</translation>
 <translation id="2119867082804433120">ညာဘက်အောက်ခြေတွင် ဖောက်ရန်</translation>
+<translation id="2121418473709291357">Chrome Browser Cloud Management ကို ပိတ်ထားသောကြောင့် လျစ်လျူရှုထားသည်။</translation>
 <translation id="2122214041802369259">ဈေးနှုန်း မြင့်သည်</translation>
 <translation id="2122719317867821810">ဤမူဝါဒသည် သတ်မှတ်ထားသည့်အတိုင်း အလုပ်လုပ်နေသော်လည်း ကွဲလွဲသောတန်ဖိုးကို တစ်နေရာတွင် သတ်မှတ်ထားပြီး ဤမူဝါဒက အစားထိုးထားသည်။</translation>
 <translation id="2124081665399116863">Google Wallet တွင် ယာဉ်အပ်ဒိတ်လုပ်ပါ</translation>
@@ -691,6 +692,7 @@
 <translation id="2155260325161282517">၅ x ၇ လက်မ</translation>
 <translation id="2156467141257470387">သိမ်းထားသောလိပ်စာများကို Google ထုတ်ကုန်များတွင် သုံးနိုင်သည်။ ၎င်းက သင်၏လက်ရှိအလုပ်လိပ်စာကို ပြောင်းမည်မဟုတ်ပါ။ ၎င်းကို သင်၏ Google Account <ph name="ACCOUNT" /> တွင် သိမ်းပါမည်။</translation>
 <translation id="2157640075051554492">ဈေးနှုန်းစောင့်ကြည့်မှု အကြောင်းကြားချက်များ</translation>
+<translation id="2158964559178498011">အော်တိုဖြည့်ကို နေရာများစွာတွင် သုံးနိုင်သည် — အချက်အလက်များ ရှာဖြည့်ရန် Ctrl နှစ်ကြိမ်နှိပ်ပါ</translation>
 <translation id="2161656808144014275">စာသား</translation>
 <translation id="2162435186600002085">ပင်မခေါင်းစီး လိုဂို</translation>
 <translation id="2162535140284745414">AI ဖြင့် ဘရောက်စ်လုပ်ရန် နည်းလမ်းအသစ်များ ကူရှာပေးနိုင်သော အချိန်နှင့်တစ်ပြေးညီ အကြံပြုချက်များ ရယူနိုင်သည်။</translation>
@@ -2201,6 +2203,7 @@
 <translation id="4678379207584374453"><ph name="BEGIN_LINK" />ပိုမိုသိရှိရန်<ph name="END_LINK" /></translation>
 <translation id="4682496302933121474">စာမျက်နှာကို ဘာသာပြန်မလား။</translation>
 <translation id="468314109939257734">သင်၏ ပကတိအသွင်ကတ်နံပါတ်ကို ကြည့်ပါ</translation>
+<translation id="4684818564800397688">အော်တိုဖြည့်ကို နေရာများစွာတွင် သုံးနိုင်သည် — အချက်အလက်များ ရှာဖြည့်ရန် ⌘ နှစ်ကြိမ်နှိပ်ပါ</translation>
 <translation id="4686942373615810936">ယခုလေးတင် ပြုလုပ်ထားသည်</translation>
 <translation id="4690205240253392065">‘နောက်မှပေး’ ဝန်ဆောင်မှုပေးသူကို ရွေးပါ</translation>
 <translation id="469028408546145398">လက်ရှိဖွင့်ထားသည့် ရုပ်ဖျက် ဝင်ဒိုးအားလုံးပိတ်ရန်အတွက် ‘ရုပ်ဖျက် ဝင်ဒိုးများပိတ်ရန်’ ခလုတ်ကို နှိပ်နိုင်သည်</translation>
@@ -2481,6 +2484,7 @@
 <translation id="5115232566827194440">ကြီးကြပ်ထားသော ဧည့်သည် စက်ရှင် အစားထိုးခြင်းကို ကန့်သတ်ထားသည်</translation>
 <translation id="5115563688576182185">(64-bit)</translation>
 <translation id="5116015291385561204">သတိထားရမည့် အချက်အလက် အော်တိုဖြည့်ရန် သင်ဖြစ်ကြောင်း အတည်ပြုပါ</translation>
+<translation id="5121592697493894155">ဘေးအကန့်တွင် Google Search</translation>
 <translation id="5122786942953798871">စာအိတ် (ဝါဂွမ်း)</translation>
 <translation id="5123063207673082822">စနေ၊ တနင်္ဂနွေ</translation>
 <translation id="5124797626438336458">‘အခုဝယ်-နောက်မှပေး’ အမှားပြစခရင်ကို မြင်ကွင်းတစ်ဝက် ဖွင့်လိုက်သည်။</translation>
@@ -2917,6 +2921,7 @@
 <translation id="5843987376989109187">ဤဘာသာစကားကို မပံ့ပိုးသေးပါ။
     <ph name="BEGIN_LINK" />ပိုမိုလေ့လာရန်<ph name="END_LINK" /></translation>
 <translation id="5848445080378515710">သင့်မှာယူမှုကို စစ်ပြီးပါက <ph name="BNPL_ISSUER_NAME" /> ဖြင့် အကောင့်သို့ လက်မှတ်ထိုးဝင်ရမည် (သို့) အကောင့်ဖွင့်ရမည်။ ဤအကောင့်ကို Google Wallet တွင် အလိုအလျောက် လင့်ခ်ချိတ်ပါမည်။</translation>
+<translation id="5848916806551637625">Pix အကောင့်ကို <ph name="ACCOUNT_EMAIL" /> နှင့် လင့်ခ်ချိတ်ပါမည်။ Pix ကုဒ် သိရှိစနစ်ကို ပိတ်ရန် <ph name="BEGIN_LINK1" />Chrome ဆက်တင်များ<ph name="END_LINK1" /> သို့ သွားပါ။</translation>
 <translation id="5851548754964597211">တဲပ် စာရင်း</translation>
 <translation id="5851868085455377790">ထုတ်ပေးသူ</translation>
 <translation id="5852909432155870672">RA4</translation>
@@ -4428,6 +4433,7 @@
 <translation id="8371841335382565017">ကာစ်လုပ်ခြင်းအတွက် စက်စာရင်းကို ပြပါ</translation>
 <translation id="8371889962595521444">စိတ်ကြိုက် ပင်မအသိအမှတ်ပြုလက်မှတ်များ</translation>
 <translation id="8374636051559112948">ကွဲပြားသည်</translation>
+<translation id="8376752431516546391">Google Search ဘေးအကန့်</translation>
 <translation id="8377507422902936905">မှာယူမှု</translation>
 <translation id="837840316697671463">သင့်စက်တွင် ဖိုင်ရှာမတွေ့ပါက <ph name="CLOUD_PROVIDER" /> တွင် ရှာပါ။</translation>
 <translation id="8378714024927312812">သင်၏ 'အဖွဲ့အစည်း' က စီမံခန့်ခွဲထားသည်</translation>

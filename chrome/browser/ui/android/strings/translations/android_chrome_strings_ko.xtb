@@ -50,6 +50,7 @@
 <translation id="1165109137568919258">사진을 찍거나 사진 갤러리에서 이미지를 추가하여 검색합니다.</translation>
 <translation id="1173894706177603556">이름 바꾸기</translation>
 <translation id="1174479719160874822">화면이 좁을 때 Chrome에서 모바일 사이트를 요청합니다</translation>
+<translation id="1174759280027683968">Chrome으로 이동</translation>
 <translation id="1175241315203286684">관리자는 프로필과 브라우저를 원격으로 변경하고, 보고를 통해 브라우저에 대한 정보를 분석하고, 기타 필요한 작업을 수행할 수 있습니다. 이 기기의 활동은 Chrome 외부에서도 관리할 수 있습니다.</translation>
 <translation id="1177863135347784049">맞춤설정</translation>
 <translation id="1181037720776840403">삭제</translation>
@@ -608,6 +609,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="3452832259067974318">Chrome에서는 개인 정보 보호를 위해 이 입력란의 비밀번호를 자동 완성하지 않습니다.</translation>
 <translation id="3474624961160222204"><ph name="NAME" /> 계정으로 계속</translation>
 <translation id="3478363558367712427">검색엔진을 선택할 수 있습니다.</translation>
+<translation id="3479552764303398839">나중에</translation>
 <translation id="3482805106082349287">키보드, 음성, 시크릿 모드 또는 카메라를 사용하여 검색</translation>
 <translation id="3487903178221457900">내보낸 파일은 앱을 포함한 다른 사용자가 액세스할 수 있습니다. 내보내면 비밀번호가 Chrome에서 삭제됩니다.</translation>
 <translation id="3488199663160411179">이름</translation>
@@ -896,6 +898,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="4578289292431526768">시작</translation>
 <translation id="4583164079174244168">{MINUTES,plural, =1{#분 전}other{#분 전}}</translation>
 <translation id="4585751637295612750">새 탭을 열어 질문에 추가하세요.</translation>
+<translation id="4585793705637313973">페이지 수정</translation>
 <translation id="4587589328781138893">사이트</translation>
 <translation id="4594952190837476234">이 오프라인 페이지는 <ph name="CREATION_TIME" />에 생성되었으며 온라인 버전과 다를 수 있습니다.</translation>
 <translation id="4595237294768457124">새 탭 페이지를 엽니다.</translation>
@@ -1536,6 +1539,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="6996145122199359148">이 페이지 다운로드</translation>
 <translation id="7007648447224463482">모두 새 창에서 열기</translation>
 <translation id="7013762323294215682">이 패스키는 비밀번호 관리자에 저장됩니다. 패스키에 액세스할 수 있는 사용자는 모두 이 패스키를 사용할 수 있습니다.</translation>
+<translation id="7017219178341817193">새 페이지 추가</translation>
 <translation id="7022756207310403729">브라우저에서 열기</translation>
 <translation id="7029809446516969842">비밀번호</translation>
 <translation id="7037994709569287156">Chrome을 기본값으로 설정</translation>

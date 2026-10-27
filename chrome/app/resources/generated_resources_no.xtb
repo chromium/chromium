@@ -1846,6 +1846,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2423506062824112361">Kunne ikke laste ned innholdet av en ukjent grunn.</translation>
 <translation id="2423578206845792524">Lagre &amp;bildet som...</translation>
 <translation id="2424424966051154874">{0,plural, =1{Gjest}other{Gjest (#)}}</translation>
+<translation id="2424762488607770568">Standard (samme som systemet)</translation>
 <translation id="2426805022920575512">Velg en annen konto</translation>
 <translation id="2427507373259914951">Venstreklikk</translation>
 <translation id="2428245692671442472">{NUM_PASSWORDS,plural, =1{<ph name="DOMAIN_LINK" />. 1 konto. Passordet er bare lagret på denne enheten. Mer informasjon}other{<ph name="DOMAIN_LINK" />. {NUM_PASSWORDS} kontoer. Passordet er bare lagret på denne enheten. Mer informasjon}}</translation>
@@ -5654,6 +5655,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="5280426389926346830">Vil du opprette en snarvei?</translation>
 <translation id="5280966903879030278">Bruk dagligdags språk for å søke i nettleserloggen og finne nettsteder du har besøkt. Denne innstillingen er slått av.</translation>
 <translation id="5281013262333731149">Åpnes i <ph name="OPEN_BROWSER" /></translation>
+<translation id="5283747245540449968">Sidefarger</translation>
 <translation id="5284107433515104664">Når passordet endres, sendes sideinnhold og relatert informasjon til Google og kan bli gjennomgått av mennesker for å forbedre denne funksjonen. Passordet ditt er kryptert og blir aldri sett av noen.</translation>
 <translation id="5284445933715251131">Fortsett nedlastingen</translation>
 <translation id="5285635972691565180">Skjerm <ph name="DISPLAY_ID" /></translation>
@@ -6542,6 +6544,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="5989497858237037960">Når du besøker nettsteder, krypteres sideinnholdet og lagres på enheten din. Dette kan påvirke ytelsen til Chrome</translation>
 <translation id="5990266201903445068">Bare wifi</translation>
 <translation id="5990386583461751448">Oversatt</translation>
+<translation id="5991039386730545918">Det valgte fargetemaet for siden brukes bare når høy kontrast er på i systemet</translation>
 <translation id="5992225669837656567">Alle mus er frakoblet</translation>
 <translation id="5992652489368666106">Ingen kantlinje</translation>
 <translation id="5996490984199062729">Profilen din er ikke konfigurert</translation>
@@ -7941,6 +7944,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="706949303827219454">Åpner siden for sikkerhetsinnstillinger på en ny fane</translation>
 <translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{Nytt passord for dette nettstedet}other{Nye passord for dette nettstedet}}</translation>
 <translation id="7070484045139057854">Dette innebærer lesing og endring av nettstedsdata</translation>
+<translation id="7071521146534760487">Administrer kontoen</translation>
 <translation id="7072010813301522126">Snarveisnavn</translation>
 <translation id="7072078320324181561">Apper og nettsteder med posisjonstillatelse, samt systemtjenester, kan bruke posisjonen din <ph name="LINK_BEGIN" />Finn ut mer<ph name="LINK_END" /></translation>
 <translation id="7072573590175540692">Tilgjengelige snarveier for funksjoner og utvidelser</translation>
@@ -8577,6 +8581,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="755472745191515939">Administratoren din tillater ikke dette språket</translation>
 <translation id="7554791636758816595">Ny fane</translation>
 <translation id="7557194624273628371">Viderekobling av porter for Linux</translation>
+<translation id="7557508262441527045">Logget av</translation>
 <translation id="7561196759112975576">Alltid</translation>
 <translation id="7561759921596375678">Slå på lyd</translation>
 <translation id="7563576896417108627">Tilpass og kontroller <ph name="APP_NAME" /> Oppdatering er tilgjengelig.</translation>
@@ -9326,6 +9331,7 @@ Oppbevar nøkkelfilen på et trygt sted. Du får bruk for den når du skal oppre
 <translation id="8118362518458010043">Deaktivert av Chrome. Denne utvidelsen kan være usikker.</translation>
 <translation id="8118448640060360549">{EXTENSIONS_COUNT,plural, =1{# bokmerke}other{# bokmerker}}</translation>
 <translation id="8118488170956489476"><ph name="BEGIN_LINK" />Nettleseren administreres<ph name="END_LINK" /> av organisasjonen din</translation>
+<translation id="8118496140027032067">Overstyr fargene på nettsider til fordel for temaer med høy kontrast, eller slå av tvungne farger</translation>
 <translation id="8118515372935001629">Oppdateringsfrekvens for skjermen</translation>
 <translation id="8118860139461251237">administrere nedlastingene dine</translation>
 <translation id="8119438628456698432">Genererer loggfiler …</translation>
@@ -10003,6 +10009,7 @@ Oppbevar nøkkelfilen på et trygt sted. Du får bruk for den når du skal oppre
 <translation id="8648408795949963811">Fargetemperatur for Nattlys</translation>
 <translation id="8648544143274677280"><ph name="SITE_NAME" /> vil <ph name="FIRST_PERMISSION" />, <ph name="SECOND_PERMISSION" /> med mer</translation>
 <translation id="8648889679430451455">Tøm data for personlig tilpassing</translation>
+<translation id="8649290269169747916">Bruk standard sidefarger når høy kontrast er av i systemet</translation>
 <translation id="8651585100578802546">Tving ny innlasting av siden</translation>
 <translation id="8651806635673244884">Du kan flytte fanene tilbake til toppen ved å høyreklikke på en fane og velge «Vis faner horisontalt»</translation>
 <translation id="8652400352452647993">Feil med pakkeutvidelse</translation>

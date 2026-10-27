@@ -289,6 +289,7 @@ Verifique suas senhas a qualquer momento no <ph name="GOOGLE_PASSWORD_MANAGER" /
 <translation id="1195210374336998651">Acessar as configurações do app</translation>
 <translation id="1195447618553298278">Erro desconhecido.</translation>
 <translation id="1195558154361252544">As notificações são bloqueadas automaticamente para todos os sites, exceto para aqueles que têm permissão</translation>
+<translation id="1196850329140740621">Clique no botão "Desfocar" para trazer as outras guias de volta</translation>
 <translation id="1197088940767939838">Laranja</translation>
 <translation id="11978075283960463">Dados armazenados no app: <ph name="APP_SIZE" /></translation>
 <translation id="1198066799963193307">Ferramentas de fala para pessoas com baixa visão</translation>
@@ -770,6 +771,7 @@ Verifique suas senhas a qualquer momento no <ph name="GOOGLE_PASSWORD_MANAGER" /
 <translation id="1586075235463145108">Primeiro, ative a navegação automática do Chrome para este dispositivo</translation>
 <translation id="1587275751631642843">&amp;Console JavaScript</translation>
 <translation id="1588438908519853928">Normal</translation>
+<translation id="1588626416445753732">Mais usados na sua região (em ordem aleatória)</translation>
 <translation id="1588772269240419305">Revisar atualizações de nome e logotipo</translation>
 <translation id="1588870296199743671">Abrir link com...</translation>
 <translation id="1588919647604819635">Card de clique com o botão direito do mouse</translation>
@@ -1258,6 +1260,7 @@ Verifique suas senhas a qualquer momento no <ph name="GOOGLE_PASSWORD_MANAGER" /
 <translation id="1944921356641260203">Atualização encontrada</translation>
 <translation id="1947136734041527201">Permite fazer login em sites usando a conta que você tem com um serviço de identidade</translation>
 <translation id="1948528728718281125">O acesso à câmera é concedido a apps e sites com essa permissão e serviços do sistema</translation>
+<translation id="1949054568937504107">Mais usados na sua região</translation>
 <translation id="1949332606889020901">IDs de falha</translation>
 <translation id="1949584741547056205">Respostas rápidas</translation>
 <translation id="1949980990364952348">Nome do app</translation>
@@ -3409,6 +3412,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3577178956237526436">Ativar som do site à esquerda</translation>
 <translation id="3577473026931028326">Algo deu errado. Tente novamente.</translation>
 <translation id="3577487026101678864">Sincronização de arquivos ativada</translation>
+<translation id="3578100826941720337">Mais mecanismos de pesquisa</translation>
 <translation id="3578230582111850125">selecione o texto para perguntar ao Gemini</translation>
 <translation id="3581605050355435601">Configurar endereço IP automaticamente</translation>
 <translation id="3581861561942370740">Pesquisar no histórico de downloads</translation>
@@ -3576,6 +3580,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3699920817649120894">Desativar a sincronização e a personalização?</translation>
 <translation id="3700888195348409686">Apresentando (<ph name="PAGE_ORIGIN" />)</translation>
 <translation id="3700993174159313525">Não permitir que os sites rastreiem a posição da câmera</translation>
+<translation id="3701028563242674350">Balance o cursor do mouse para aumentar o tamanho dele</translation>
 <translation id="3701167022068948696">Corrigir agora</translation>
 <translation id="3701515417135397388">Avisar caso uma senha seja comprometida em uma violação de dados</translation>
 <translation id="3701778844313851487">Acesse as extensões</translation>
@@ -4838,6 +4843,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="4663373278480897665">Câmera permitida</translation>
 <translation id="4664375726751122009">Mudar para a visualização visual</translation>
 <translation id="4665014895760275686">Fabricante</translation>
+<translation id="4665035764476941598">Clique aqui para trazer as outras guias de volta</translation>
 <translation id="4665446389743427678">Todos os dados armazenados pelo site <ph name="SITE" /> serão excluídos.</translation>
 <translation id="4666472247053585787">Veja notificações do seu smartphone no <ph name="DEVICE_TYPE" /></translation>
 <translation id="4666911709726371538">Mais apps</translation>
@@ -5828,6 +5834,7 @@ Você pode atribuir vários interruptores a essa ação.</translation>
 <translation id="5425042808445046667">Continuar o download</translation>
 <translation id="542570217857307910">Agora você pode expandir as guias ao passar o cursor sobre elas. Para desativar essa função, clique com o botão direito aqui.</translation>
 <translation id="5425863515030416387">Fazer login de forma fácil em todos os dispositivos</translation>
+<translation id="542606797693939821">Encontre o ponteiro do mouse</translation>
 <translation id="5427278936122846523">Sempre traduzir</translation>
 <translation id="5427459444770871191">Girar no &amp;sentido horário</translation>
 <translation id="5428850089342283580"><ph name="ACCNAME_APP" /> (atualização disponível)</translation>
@@ -6693,6 +6700,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="6104929924898022309">Usar a tecla de pesquisa para mudar o comportamento das teclas de função</translation>
 <translation id="6108952804512516814">Criar com IA</translation>
 <translation id="6110794992500777605">Meus atalhos e sites</translation>
+<translation id="611080676871930948">Enviar feedback sobre o modo de leitura</translation>
 <translation id="6111718295497931251">Remover o acesso ao Google Drive</translation>
 <translation id="6112197885362646874">Perguntar ao Google sobre "<ph name="SEARCH_TERMS" />"</translation>
 <translation id="6112727384379533756">Adicionar um tíquete</translation>
@@ -6943,6 +6951,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="6300478323573969040">Precisa ter pelo menos 12 caracteres e incluir letras maiúsculas, minúsculas, números e símbolos. Não pode ter repetição de caracteres ou sequências de quatro ou mais.</translation>
 <translation id="630065524203833229">&amp;Sair</translation>
 <translation id="6300718114348072351">Não foi possível configurar <ph name="PRINTER_NAME" /> automaticamente. Especifique as configurações avançadas da impressora. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
+<translation id="6302411260734295784">Mais opções</translation>
 <translation id="6302661287897119265">Filtrar</translation>
 <translation id="6303023592034094909">Uma nova versão deste app está disponível</translation>
 <translation id="630308129961693966">Escolha a posição da barra de endereço</translation>
@@ -7063,6 +7072,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="6402042774506839496">Para saber o motivo, entre em contato com o desenvolvedor do app.</translation>
 <translation id="6402921224457714577">Sites podem pedir para controlar e reprogramar seus dispositivos MIDI</translation>
 <translation id="6404511346730675251">Editar favorito</translation>
+<translation id="6405999530973682789">Cursor do mouse perdido</translation>
 <translation id="6406303162637086258">Simular reinicialização do navegador</translation>
 <translation id="6406506848690869874">Sincronização</translation>
 <translation id="6406571339342621375">Não mostrar o Gemini na barra de menus</translation>
@@ -7323,7 +7333,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="659894938503552850">mais recente</translation>
 <translation id="6599829027342135752">Insira e toque na chave de segurança para usá-la no app <ph name="APP_NAME" /></translation>
 <translation id="6601262427770154296">Gerenciar dicionários do usuário</translation>
-<translation id="6602173570135186741">Preenc. automático e senhas</translation>
+<translation id="6602173570135186741">Preenchim. automático e senhas</translation>
 <translation id="6602173667290651224">Nenhum atalho de site foi encontrado.</translation>
 <translation id="6602336931411102724">Mostrar grupos de guias na barra de favoritos</translation>
 <translation id="6602937173026466876">Acessar suas impressoras</translation>
@@ -7956,6 +7966,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="706949303827219454">Abre a página de configurações de segurança em uma nova guia</translation>
 <translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{Nova senha para este site}one{Nova senha para este site}other{Novas senhas para este site}}</translation>
 <translation id="7070484045139057854">Pode ler e alterar os dados do site</translation>
+<translation id="7071521146534760487">Gerenciar conta</translation>
 <translation id="7072010813301522126">Nome do atalho</translation>
 <translation id="7072078320324181561">Apps e sites com a permissão de localização e serviços do sistema podem usar seu local. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
 <translation id="7072573590175540692">Atalhos disponíveis para recursos e extensões</translation>
@@ -8007,6 +8018,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="7113314569799918830">O Gemini no Chrome está sendo lançado em mais locais, mas ainda não está disponível em todos os lugares</translation>
 <translation id="7113502843173351041">Saiba seu endereço de e-mail</translation>
 <translation id="7115361495406486998">Não há contatos acessíveis</translation>
+<translation id="7116931001458704701">Agite para localizar o cursor</translation>
 <translation id="7117228822971127758">Tente novamente mais tarde</translation>
 <translation id="7118268675952955085">captura de tela</translation>
 <translation id="711840821796638741">Mostrar favoritos gerenciados</translation>
@@ -8592,6 +8604,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="755472745191515939">O administrador não permite o uso desse idioma</translation>
 <translation id="7554791636758816595">Nova guia</translation>
 <translation id="7557194624273628371">Encaminhamento de portas do Linux</translation>
+<translation id="7557508262441527045">Saiu</translation>
 <translation id="7561196759112975576">Sempre</translation>
 <translation id="7561759921596375678">Ativar o som</translation>
 <translation id="7563576896417108627">Personalizar e controlar o app <ph name="APP_NAME" /> Uma atualização está disponível.</translation>
@@ -8680,6 +8693,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="7634337648687970851">No momento, não é possível recuperar dados locais.</translation>
 <translation id="7634566076839829401">Ocorreu um erro. Tente novamente.</translation>
 <translation id="7635048370253485243">Fixada pelo administrador</translation>
+<translation id="7636175154537919400">Clique com o botão direito do mouse para ocultar outras guias temporariamente</translation>
 <translation id="7636346903338549690">Sites em que o uso de cookies de terceiros foi permitido</translation>
 <translation id="7636919061354591437">Instalar neste dispositivo</translation>
 <translation id="7637593984496473097">Não há espaço em disco suficiente</translation>
@@ -9641,6 +9655,7 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8345099007452202761">Uma nova versão (<ph name="VERSION" />) do app <ph name="APP_NAME" /> está disponível. Quer aplicá-la agora?</translation>
 <translation id="8345848587667658367">Agora, você pode ver apps, mídias, notificações e fotos recentes do seu smartphone</translation>
 <translation id="8347227221149377169">Trabalhos de impressão</translation>
+<translation id="8347654878156675116">Pesquisar</translation>
 <translation id="8347728744337089388">Enviar para seu &amp;dispositivo</translation>
 <translation id="8348430946834215779">Use HTTPS sempre que possível e receba um aviso antes de carregar sites que não têm suporte a esse protocolo</translation>
 <translation id="8348896480272971199">Verifique sua conexão de Internet e tente de novo.</translation>

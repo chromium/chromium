@@ -661,6 +661,7 @@
 <translation id="2118132148597630479">Плик C5</translation>
 <translation id="2119505898009119320">Издаден на: <ph name="ORGANIZATION" /> [<ph name="JURISDICTION" />]</translation>
 <translation id="2119867082804433120">Дупка долу десно</translation>
+<translation id="2121418473709291357">Игнорирано бидејќи Chrome Browser Cloud Management е оневозможен.</translation>
 <translation id="2122214041802369259">Цената е висока</translation>
 <translation id="2122719317867821810">Правилово работи како што е предвидено, но конфликтна вредност е поставена некаде на друго место и е отфрлена од правилово.</translation>
 <translation id="2124081665399116863">Ажурирајте го возилото во Google Wallet</translation>
@@ -690,6 +691,7 @@
 <translation id="2155260325161282517">5 x 7 инчи</translation>
 <translation id="2156467141257470387">Може да ги користите зачуваните адреси во производите на Google. Ова нема да ја промени вашата постојна адреса на работа. Ќе се зачува во вашата сметка на Google, <ph name="ACCOUNT" />.</translation>
 <translation id="2157640075051554492">Известувања за следење на цените</translation>
+<translation id="2158964559178498011">„Автоматско пополнување“ функционира на повеќе места – притиснете Ctrl двапати за да најдете и да пополните податоци</translation>
 <translation id="2161656808144014275">Текст</translation>
 <translation id="2162435186600002085">Примарно лого во заглавјето</translation>
 <translation id="2162535140284745414">Добивајте предлози во реално време што може да ви помогнат да најдете нови начини на прелистување со AI.</translation>
@@ -2200,6 +2202,7 @@
 <translation id="4678379207584374453"><ph name="BEGIN_LINK" />Дознајте повеќе<ph name="END_LINK" /></translation>
 <translation id="4682496302933121474">Да се преведе страницата?</translation>
 <translation id="468314109939257734">Прикажи го бројот на виртуелната картичка</translation>
+<translation id="4684818564800397688">„Автоматско пополнување“ функционира на повеќе места – притиснете ⌘ двапати за да најдете и да пополните податоци</translation>
 <translation id="4686942373615810936">Создадено пред малку</translation>
 <translation id="4690205240253392065">Изберете давател на „Платете подоцна“</translation>
 <translation id="469028408546145398">Копче за затворање на прозорците „Инкогнито“, активирајте го за да ги затворите сите прозорци „Инкогнито“ што се отворени во моментов</translation>
@@ -2480,6 +2483,7 @@
 <translation id="5115232566827194440">Отфрлање ограничена управувана гостинска сесија</translation>
 <translation id="5115563688576182185">(64-бита)</translation>
 <translation id="5116015291385561204">Потврдете дека сте вие за да се пополнуваат автоматски чувствителните податоци</translation>
+<translation id="5121592697493894155">„Пребарување на Google“ во страничната табла</translation>
 <translation id="5122786942953798871">Коверт (памук)</translation>
 <translation id="5123063207673082822">Викенд</translation>
 <translation id="5124797626438336458">Екранот со грешка на „Купете сега, платете подоцна“ е отворен на половина висина.</translation>
@@ -2916,6 +2920,7 @@
 <translation id="5843987376989109187">Овој јазик сѐ уште не е поддржан.
     <ph name="BEGIN_LINK" />Дознајте повеќе<ph name="END_LINK" /></translation>
 <translation id="5848445080378515710">Откако ќе ја прегледате нарачката, мора да се најавите на сметката на <ph name="BNPL_ISSUER_NAME" /> или да ја создадете ако немате. Сметкава автоматски ќе се поврзе во Google Wallet.</translation>
+<translation id="5848916806551637625">Сметката на Pix ќе биде поврзана со <ph name="ACCOUNT_EMAIL" />. За да го исклучите откривањето Pix-код, одете во <ph name="BEGIN_LINK1" />поставките за Chrome<ph name="END_LINK1" />.</translation>
 <translation id="5851548754964597211">Список со картички</translation>
 <translation id="5851868085455377790">Издавач</translation>
 <translation id="5852909432155870672">RA4</translation>
@@ -4426,6 +4431,7 @@
 <translation id="8371841335382565017">Прикажи го списокот со уреди за емитување</translation>
 <translation id="8371889962595521444">Приспособен сертификат за администраторски права</translation>
 <translation id="8374636051559112948">варира</translation>
+<translation id="8376752431516546391">Странична табла на „Пребарување на Google“</translation>
 <translation id="8377507422902936905">Нарачки</translation>
 <translation id="837840316697671463">Ако не може да најдете конкретна датотека на вашиот уред, побарајте ја во <ph name="CLOUD_PROVIDER" />.</translation>
 <translation id="8378714024927312812">Управувано од вашата организација</translation>

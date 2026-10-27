@@ -661,6 +661,7 @@
 <translation id="2118132148597630479">კონვერტი C5</translation>
 <translation id="2119505898009119320">გაცემულია შემდეგის სახელზე: <ph name="ORGANIZATION" /> [<ph name="JURISDICTION" />]</translation>
 <translation id="2119867082804433120">ქვედა მარჯვენა ნაწილის გახვრეტა</translation>
+<translation id="2121418473709291357">იგნორირებულია, რადგან Chrome ბრაუზერის ღრუბლოვანი საცავის მართვა გათიშულია.</translation>
 <translation id="2122214041802369259">ფასი მაღალია</translation>
 <translation id="2122719317867821810">ეს წესები სათანადოდ მუშაობს, თუმცა სხვაგან დაყენებულია კონფლიქტში მყოფი მნიშვნელობა, რომელსაც ეს წესები უგულებელყოფს.</translation>
 <translation id="2124081665399116863">ავტომობილის განახლება Google საფულეში</translation>
@@ -690,6 +691,7 @@
 <translation id="2155260325161282517">5 x 7 დუიმი</translation>
 <translation id="2156467141257470387">შენახული მისამართების გამოყენება Google-ის სხვადასხვა პროდუქტში შეგიძლიათ. ამით არ შეიცვლება თქვენი სამსახურის არსებული მისამართი. ის შეინახება თქვენს Google ანგარიშში, <ph name="ACCOUNT" />.</translation>
 <translation id="2157640075051554492">შეტყობინებები ფასებისთვის თვალის მიდევნების შესახებ</translation>
+<translation id="2158964559178498011">ავტომატური შევსება მეტ ადგილას მუშაობს – დააჭირეთ Ctrl-ს ორჯერ, რათა იპოვოთ და შეავსოთ ინფორმაცია</translation>
 <translation id="2161656808144014275">ტექსტი</translation>
 <translation id="2162435186600002085">ძირითადი სათაურის ლოგო</translation>
 <translation id="2162535140284745414">რეალურ დროში მიიღეთ შემოთავაზებები, რომლებიც დაგეხმარებათ ხელოვნური ინტელექტით დათვალიერების ახალი გზების პოვნაში.</translation>
@@ -2200,6 +2202,7 @@
 <translation id="4678379207584374453"><ph name="BEGIN_LINK" />შეიტყვეთ მეტი<ph name="END_LINK" /></translation>
 <translation id="4682496302933121474">გსურთ გვერდის თარგმნა?</translation>
 <translation id="468314109939257734">იხილეთ თქვენი ვირტუალური ბარათის ნომერი</translation>
+<translation id="4684818564800397688">ავტომატური შევსება მეტ ადგილას მუშაობს – დააჭირეთ ⌘-ს ორჯერ, რათა იპოვოთ და შეავსოთ ინფორმაცია</translation>
 <translation id="4686942373615810936">შეიქმნა ახლახან</translation>
 <translation id="4690205240253392065">აირჩიეთ მოგვიანებით გადახდის პროვაიდერი</translation>
 <translation id="469028408546145398">ინკოგნიტო ფანჯრების დახურვის ღილაკი, ამჟამად გახსნილი ყველა ინკოგნიტო ფანჯრის დასახურად გაააქტიურეთ ის</translation>
@@ -2480,6 +2483,7 @@
 <translation id="5115232566827194440">სტუმრის შეზღუდული მართული სესიის უგულებელყოფა</translation>
 <translation id="5115563688576182185">(64-ბიტი)</translation>
 <translation id="5116015291385561204">დაადასტურეთ ვინაობა სენსიტიური ინფორმაციის ავტომატური შევსებისთვის</translation>
+<translation id="5121592697493894155">Google Search გვერდით პანელში</translation>
 <translation id="5122786942953798871">კონვერტი (ბამბის)</translation>
 <translation id="5123063207673082822">შაბათ-კვირა</translation>
 <translation id="5124797626438336458">„იყიდეთ ახლა, გადაიხადეთ მოგვიანებით“ შეცდომის ეკრანი გახსნილია ნახევარ სიმაღლეზე.</translation>
@@ -2916,6 +2920,7 @@
 <translation id="5843987376989109187">ეს ენა არ არის ჯერჯერობით მხარდაჭერილი.
     <ph name="BEGIN_LINK" />შეიტყვეთ მეტი<ph name="END_LINK" /></translation>
 <translation id="5848445080378515710">შეკვეთის გადახედვის შემდეგ უნდა შეხვიდეთ <ph name="BNPL_ISSUER_NAME" /> ანგარიშში ან შექმნათ ახალი. ეს ანგარიში ავტომატურად მიებმება Google საფულეს.</translation>
+<translation id="5848916806551637625">Pix-ანგარიში მიებმება ელფოსტას <ph name="ACCOUNT_EMAIL" />. Pix კოდის ამოცნობის გამოსართავად გადადით <ph name="BEGIN_LINK1" />Chrome-ის პარამეტრებში<ph name="END_LINK1" />.</translation>
 <translation id="5851548754964597211">ჩანართების სია</translation>
 <translation id="5851868085455377790">გამცემი</translation>
 <translation id="5852909432155870672">RA4</translation>
@@ -4426,6 +4431,7 @@
 <translation id="8371841335382565017">ტრანსლირებისთვის მოწყობილობათა სიის ჩვენება</translation>
 <translation id="8371889962595521444">მორგებული ძირეული სერტიფიკატები</translation>
 <translation id="8374636051559112948">ცვალებადი</translation>
+<translation id="8376752431516546391">Google Search-ის გვერდითი პანელი</translation>
 <translation id="8377507422902936905">შეკვეთები</translation>
 <translation id="837840316697671463">თუ ვერ პოულობთ ფაილს თქვენს მოწყობილობაში, მოიძიეთ ის <ph name="CLOUD_PROVIDER" />-ზე.</translation>
 <translation id="8378714024927312812">იმართება თქვენი ორგანიზაციის მიერ</translation>

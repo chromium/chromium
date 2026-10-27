@@ -661,6 +661,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="2118132148597630479">Kirjekuori C5</translation>
 <translation id="2119505898009119320">Myönnetty: <ph name="ORGANIZATION" /> [<ph name="JURISDICTION" />]</translation>
 <translation id="2119867082804433120">Reikä oikeassa alakulmassa</translation>
+<translation id="2121418473709291357">Ohitettu, koska Chrome-selaimen pilvihallinta on poistettu käytöstä.</translation>
 <translation id="2122214041802369259">Hinta on korkea</translation>
 <translation id="2122719317867821810">Tämä käytäntö toimii odotetusti, mutta muualla on asetettu ristiriitainen arvo, jonka tämä käytäntö ohittaa.</translation>
 <translation id="2124081665399116863">Päivitä ajoneuvo Google Walletissa</translation>
@@ -2481,6 +2482,7 @@ Jos haluat piilottaa maksa myöhemmin ‑vaihtoehdot, siirry <ph name="BEGIN_LIN
 <translation id="5115232566827194440">Rajoitetun hallinnoidun vierailijakäyttökerran ohitus</translation>
 <translation id="5115563688576182185">(64-bittinen)</translation>
 <translation id="5116015291385561204">Vahvista henkilöllisyytesi, jotta arkaluontoiset tiedot voidaan täyttää automaattisesti</translation>
+<translation id="5121592697493894155">Google Haku sivupaneelissa</translation>
 <translation id="5122786942953798871">Kirjekuori (puuvilla)</translation>
 <translation id="5123063207673082822">Viikonloppu</translation>
 <translation id="5124797626438336458">Osta nyt, maksa myöhemmin ‑edistymisnäkymä puoliksi avattuna.</translation>
@@ -2917,6 +2919,7 @@ Jos haluat piilottaa maksa myöhemmin ‑vaihtoehdot, siirry <ph name="BEGIN_LIN
 <translation id="5843987376989109187">Kieltä ei vielä tueta.
     <ph name="BEGIN_LINK" />Lue lisää<ph name="END_LINK" /></translation>
 <translation id="5848445080378515710">Kun olet tarkistanut tilauksen, sinun on kirjauduttava palvelun <ph name="BNPL_ISSUER_NAME" /> tilille tai luotava sellainen. Tili linkitetään automaattisesti Google Walletiin.</translation>
+<translation id="5848916806551637625">Pix-tili linkitetään tähän: <ph name="ACCOUNT_EMAIL" />. Voit laittaa Pix-koodin tunnistuksen pois päältä <ph name="BEGIN_LINK1" />Chrome-asetuksista<ph name="END_LINK1" />.</translation>
 <translation id="5851548754964597211">Välilehtiluettelo</translation>
 <translation id="5851868085455377790">Myöntäjä</translation>
 <translation id="5852909432155870672">RA4</translation>
@@ -4428,6 +4431,7 @@ Lisätietoja:
 <translation id="8371841335382565017">Näytä striimauksen laitelista</translation>
 <translation id="8371889962595521444">Yksilöidyt juurivarmenteet</translation>
 <translation id="8374636051559112948">Vaihtelee</translation>
+<translation id="8376752431516546391">Google Haun sivupaneeli</translation>
 <translation id="8377507422902936905">Tilaukset</translation>
 <translation id="837840316697671463">Jos et löydä tiedostoa laitteeltasi, etsi sitä täältä: <ph name="CLOUD_PROVIDER" />.</translation>
 <translation id="8378714024927312812">Organisaatiosi ylläpitämä</translation>

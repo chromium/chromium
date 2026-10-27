@@ -661,6 +661,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="2118132148597630479">Obálka C5</translation>
 <translation id="2119505898009119320">Vydané pre: <ph name="ORGANIZATION" /> [<ph name="JURISDICTION" />]</translation>
 <translation id="2119867082804433120">Prederaviť vpravo dole</translation>
+<translation id="2121418473709291357">Ignorované, pretože cloudová správa Chromu je vypnutá.</translation>
 <translation id="2122214041802369259">Cena je vysoká</translation>
 <translation id="2122719317867821810">Toto pravidlo funguje podľa očakávania, ale niekde inde je nastavená konfliktná hodnota, ktorú toto pravidlo prepísalo.</translation>
 <translation id="2124081665399116863">Aktualizujte si vozidlo v Peňaženke Google</translation>
@@ -690,6 +691,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="2155260325161282517">5 × 7 palcov</translation>
 <translation id="2156467141257470387">V službách Googlu môžete používať uložené adresy. Vaša existujúca adresa práce sa nezmení. Bude uložené vo vašom účte Google <ph name="ACCOUNT" />.</translation>
 <translation id="2157640075051554492">Upozornenia sledovania cien</translation>
+<translation id="2158964559178498011">Automatické dopĺňanie funguje na viacerých miestach – ak chcete nájsť a vyplniť informácie, dvakrát stlačte Ctrl</translation>
 <translation id="2161656808144014275">Text</translation>
 <translation id="2162435186600002085">Hlavné logo hlavičky</translation>
 <translation id="2162535140284745414">Dostávajte návrhy v reálnom čase, ktoré vám pomôžu nájsť nové spôsoby prehliadania pomocou umelej inteligencie.</translation>
@@ -2196,6 +2198,7 @@ Ak chcete skryť možnosti zaplatenia neskôr, prejdite do sekcie <ph name="BEGI
 <translation id="4678379207584374453"><ph name="BEGIN_LINK" />Ďalšie informácie<ph name="END_LINK" /></translation>
 <translation id="4682496302933121474">Chcete stránku preložiť?</translation>
 <translation id="468314109939257734">Zobraziť číslo virtuálnej karty</translation>
+<translation id="4684818564800397688">Automatické dopĺňanie funguje na viacerých miestach – ak chcete nájsť a vyplniť informácie, dvakrát stlačte ⌘</translation>
 <translation id="4686942373615810936">Vytvorená práve teraz</translation>
 <translation id="4690205240253392065">Vyberte poskytovateľa platby neskôr</translation>
 <translation id="469028408546145398">Tlačidlo Zavrieť okná inkognito, ktorého aktivovaním zavriete všetky aktuálne otvorené okná inkognito</translation>
@@ -2476,6 +2479,7 @@ Ak chcete skryť možnosti zaplatenia neskôr, prejdite do sekcie <ph name="BEGI
 <translation id="5115232566827194440">Prepísanie relácie hosťa s obmedzeným spravovaním</translation>
 <translation id="5115563688576182185">(64-bitová verzia)</translation>
 <translation id="5116015291385561204">Ak chcete automaticky dopĺňať citlivé údaje, overte svoju totožnosť</translation>
+<translation id="5121592697493894155">Vyhľadávanie Google na bočnom paneli</translation>
 <translation id="5122786942953798871">Obálka (bavlna)</translation>
 <translation id="5123063207673082822">Víkend</translation>
 <translation id="5124797626438336458">Obrazovka chyby platby Kúpte hneď, plaťte neskôr je otvorená na polovičnú výšku.</translation>
@@ -2912,6 +2916,7 @@ Ak chcete skryť možnosti zaplatenia neskôr, prejdite do sekcie <ph name="BEGI
 <translation id="5843987376989109187">Tento jazyk zatiaľ nie je podporovaný.
     <ph name="BEGIN_LINK" />Ďalšie informácie<ph name="END_LINK" /></translation>
 <translation id="5848445080378515710">Po kontrole objednávky sa musíte prihlásiť do účtu <ph name="BNPL_ISSUER_NAME" /> alebo si ho vytvoriť. Tento účet bude automaticky prepojený v Peňaženke Google.</translation>
+<translation id="5848916806551637625">Účet Pix bude prepojený s účtom <ph name="ACCOUNT_EMAIL" />. Ak chcete vypnúť rozpoznávanie kódu Pix, prejdite do <ph name="BEGIN_LINK1" />nastavení Chromu<ph name="END_LINK1" />.</translation>
 <translation id="5851548754964597211">Zoznam kariet</translation>
 <translation id="5851868085455377790">Vydavateľ</translation>
 <translation id="5852909432155870672">RA4</translation>
@@ -4422,6 +4427,7 @@ Ak chcete skryť možnosti zaplatenia neskôr, prejdite do sekcie <ph name="BEGI
 <translation id="8371841335382565017">Zobraziť zoznam zariadení na prenos</translation>
 <translation id="8371889962595521444">Vlastné koreňové certifikáty</translation>
 <translation id="8374636051559112948">Rôzna</translation>
+<translation id="8376752431516546391">Bočný panel Vyhľadávania Google</translation>
 <translation id="8377507422902936905">Objednávky</translation>
 <translation id="837840316697671463">Ak v zariadení nemôžete nájsť súbor, vyhľadajte ho v službe <ph name="CLOUD_PROVIDER" />.</translation>
 <translation id="8378714024927312812">Spravované vašou organizáciou</translation>

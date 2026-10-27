@@ -661,6 +661,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="2118132148597630479">Sobre C5</translation>
 <translation id="2119505898009119320">Emès per a: <ph name="ORGANIZATION" /> [<ph name="JURISDICTION" />]</translation>
 <translation id="2119867082804433120">Encunyació a la part inferior dreta</translation>
+<translation id="2121418473709291357">S'ha ignorat perquè la Gestió de navegadors Chrome al núvol està desactivada.</translation>
 <translation id="2122214041802369259">El preu és alt</translation>
 <translation id="2122719317867821810">Aquesta política funciona correctament, però s'ha establert un valor en conflicte en un altre lloc i s'ha substituït per la política.</translation>
 <translation id="2124081665399116863">Actualitza el vehicle a Google Wallet</translation>
@@ -2480,6 +2481,7 @@ Per amagar les opcions de Paga més tard, ves a la <ph name="BEGIN_LINK" />confi
 <translation id="5115232566827194440">Substitució de la sessió de convidat gestionada restringida</translation>
 <translation id="5115563688576182185">(64 bits)</translation>
 <translation id="5116015291385561204">Verifica la teva identitat per emplenar automàticament informació sensible</translation>
+<translation id="5121592697493894155">Cerca de Google al tauler lateral</translation>
 <translation id="5122786942953798871">Sobre (cotó)</translation>
 <translation id="5123063207673082822">Cap de setmana</translation>
 <translation id="5124797626438336458">La pantalla d'error de Compra ara, paga més tard està oberta a mitja alçada.</translation>
@@ -2916,6 +2918,7 @@ Per amagar les opcions de Paga més tard, ves a la <ph name="BEGIN_LINK" />confi
 <translation id="5843987376989109187">Aquest idioma encara no s'admet.
     <ph name="BEGIN_LINK" />Més informació<ph name="END_LINK" /></translation>
 <translation id="5848445080378515710">Després de revisar la comanda, has d'iniciar la sessió al compte de <ph name="BNPL_ISSUER_NAME" /> o crear-ne un. Aquest compte s'enllaçarà automàticament a Google Wallet.</translation>
+<translation id="5848916806551637625">El compte de Pix s'enllaçarà a <ph name="ACCOUNT_EMAIL" />. Per desactivar la detecció de codis Pix, ves a la <ph name="BEGIN_LINK1" />configuració de Chrome<ph name="END_LINK1" />.</translation>
 <translation id="5851548754964597211">Llista de pestanyes</translation>
 <translation id="5851868085455377790">Emissor</translation>
 <translation id="5852909432155870672">RA4</translation>
@@ -4427,6 +4430,7 @@ Detalls addicionals:
 <translation id="8371841335382565017">Mostra la llista de dispositius per emetre</translation>
 <translation id="8371889962595521444">Certificats arrel personalitzats</translation>
 <translation id="8374636051559112948">Varia</translation>
+<translation id="8376752431516546391">Tauler lateral de la Cerca de Google</translation>
 <translation id="8377507422902936905">Comandes</translation>
 <translation id="837840316697671463">Si no trobes un fitxer al dispositiu, cerca'l a <ph name="CLOUD_PROVIDER" />.</translation>
 <translation id="8378714024927312812">Gestionat per la teva organització</translation>

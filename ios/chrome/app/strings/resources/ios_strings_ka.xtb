@@ -600,7 +600,6 @@
 <translation id="2781331604911854368">ჩართული</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2783161812871838616">დესკტოპის საიტის მოთხოვნა</translation>
-<translation id="2789486458103222910">კარგი</translation>
 <translation id="2789552044937754463">{COUNT,plural, =1{პაროლი შეინახა თქვენს Google ანგარიშში ({EMAIL})}other{პაროლები შეინახა თქვენს Google ანგარიშში ({EMAIL})}}</translation>
 <translation id="2791174088547598693">პაროლის დამატება…</translation>
 <translation id="2793703503584038325">აირჩიეთ პაროლი და შეეხეთ „გაზიარების“ ხატულას</translation>
@@ -1707,7 +1706,6 @@ Handoff ასევე უნდა იყოს ჩართული პა�
 <translation id="6301767200000930965">Aa</translation>
 <translation id="630308129961693966">აირჩიეთ მისამართთა ზოლის პოზიცია</translation>
 <translation id="6305257382500066042">ახლავე ცდა</translation>
-<translation id="6307241780749477694">დაადასტურეთ ვინაობა თქვენს ყველა პაროლზე წვდომის მისაღებად</translation>
 <translation id="6307792728709337290">შეინახეთ თქვენი ბარათი Google ანგარიშში, რომ ავტომატურად შეავსოთ ის ამ და მომავალი შესყიდვებისთვის, რომლებიც Chrome-ში განხორციელდება.</translation>
 <translation id="6316141353357700666">ნაჩვენები სიიდან აირჩიეთ სასურველი პაროლი.</translation>
 <translation id="6321526113093607004">სანიშნეებში დამატება</translation>
@@ -2171,7 +2169,6 @@ Handoff ასევე უნდა იყოს ჩართული პა�
 <translation id="7700527812567437847">ეკრანზე ძიება Google Lens-ით</translation>
 <translation id="7701040980221191251">არცერთი</translation>
 <translation id="7702428539671224160">გადახდის ინფორმაციის ავტომატური შევსება <ph name="URL" />-ზე</translation>
-<translation id="7708994397325774423">მიიღეთ თქვენი ყველა პაროლი</translation>
 <translation id="7710096647785049958">დაზოგეთ დრო თითოეულ ბმულზე</translation>
 <translation id="7711440461521638739">ხელახლა გამოყენებული პაროლები არ გაქვთ</translation>
 <translation id="7712361583414030698">თქვენ ხაზგარეშე ვერსიას ათვალიერებთ</translation>

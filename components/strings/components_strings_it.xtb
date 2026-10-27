@@ -661,6 +661,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="2118132148597630479">Busta C5</translation>
 <translation id="2119505898009119320">Rilasciato a: <ph name="ORGANIZATION" /> [<ph name="JURISDICTION" />]</translation>
 <translation id="2119867082804433120">Perforatura in basso a destra</translation>
+<translation id="2121418473709291357">Ignorata perché Chrome Browser Cloud Management è disattivato.</translation>
 <translation id="2122214041802369259">Prezzo alto</translation>
 <translation id="2122719317867821810">Questa policy funziona come previsto, ma altrove è impostato un valore in conflitto che viene sostituito da questa policy.</translation>
 <translation id="2124081665399116863">Aggiorna il veicolo in Google Wallet</translation>
@@ -2477,6 +2478,7 @@ Per nascondere le opzioni di pagamento posticipato, vai alle <ph name="BEGIN_LIN
 <translation id="5115232566827194440">Override della sessione Ospite gestita limitata</translation>
 <translation id="5115563688576182185">(a 64 bit)</translation>
 <translation id="5116015291385561204">Verifica la tua identità per la compilazione automatica di informazioni sensibili</translation>
+<translation id="5121592697493894155">Ricerca Google nel riquadro laterale</translation>
 <translation id="5122786942953798871">Busta (cotone)</translation>
 <translation id="5123063207673082822">Weekend</translation>
 <translation id="5124797626438336458">Schermata di errore di Buy now, pay later aperta nella parte inferiore dello schermo.</translation>
@@ -2913,6 +2915,7 @@ Per nascondere le opzioni di pagamento posticipato, vai alle <ph name="BEGIN_LIN
 <translation id="5843987376989109187">Questa lingua non è ancora supportata.
     <ph name="BEGIN_LINK" />Scopri di più<ph name="END_LINK" /></translation>
 <translation id="5848445080378515710">Dopo aver esaminato l'ordine, devi accedere o creare un account con <ph name="BNPL_ISSUER_NAME" />. Questo account verrà collegato automaticamente in Google Wallet.</translation>
+<translation id="5848916806551637625">L'account Pix verrà collegato a <ph name="ACCOUNT_EMAIL" />. Per disattivare il rilevamento del codice Pix, vai alle <ph name="BEGIN_LINK1" />Impostazioni di Chrome<ph name="END_LINK1" />.</translation>
 <translation id="5851548754964597211">Elenco schede</translation>
 <translation id="5851868085455377790">Autorità emittente</translation>
 <translation id="5852909432155870672">RA4</translation>
@@ -4423,6 +4426,7 @@ Ulteriori dettagli:
 <translation id="8371841335382565017">Mostra l'elenco dei dispositivi per la trasmissione</translation>
 <translation id="8371889962595521444">Certificati radice personalizzati</translation>
 <translation id="8374636051559112948">Varia</translation>
+<translation id="8376752431516546391">Riquadro laterale della Ricerca Google</translation>
 <translation id="8377507422902936905">Ordini</translation>
 <translation id="837840316697671463">Se non riesci a trovare un file sul dispositivo, cercalo su <ph name="CLOUD_PROVIDER" />.</translation>
 <translation id="8378714024927312812">Gestito dalla tua organizzazione</translation>

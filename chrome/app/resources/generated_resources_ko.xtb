@@ -1850,6 +1850,7 @@
 <translation id="2423506062824112361">알 수 없는 이유로 콘텐츠를 다운로드할 수 없습니다.</translation>
 <translation id="2423578206845792524">이미지를 다른 이름으로 저장(&amp;V)...</translation>
 <translation id="2424424966051154874">{0,plural, =1{게스트}other{게스트(#)}}</translation>
+<translation id="2424762488607770568">기본값(시스템과 일치)</translation>
 <translation id="2426805022920575512">다른 계정 선택</translation>
 <translation id="2427507373259914951">왼쪽 클릭</translation>
 <translation id="2428245692671442472">{NUM_PASSWORDS,plural, =1{<ph name="DOMAIN_LINK" /> 계정 1개, 비밀번호는 이 기기에만 저장됩니다. 세부정보 더보기}other{<ph name="DOMAIN_LINK" /> 계정 {NUM_PASSWORDS}개, 비밀번호는 이 기기에만 저장됩니다. 세부정보 더보기}}</translation>
@@ -5659,6 +5660,7 @@
 <translation id="5280426389926346830">바로가기를 만드시겠습니까?</translation>
 <translation id="5280966903879030278">일상적인 단어를 사용하여 방문 기록을 검색하고 방문한 사이트를 찾아보세요. 설정이 사용 중지되어 있습니다</translation>
 <translation id="5281013262333731149"><ph name="OPEN_BROWSER" />에서 열기</translation>
+<translation id="5283747245540449968">페이지 색상</translation>
 <translation id="5284107433515104664">비밀번호를 변경하는 동안 페이지 콘텐츠 및 관련 정보가 Google로 전송되며, 이 기능을 개선하기 위해 검토자가 이를 검토할 수 있습니다. 비밀번호는 암호화되며, 누구에게도 표시되지 않습니다.</translation>
 <translation id="5284445933715251131">다운로드 계속</translation>
 <translation id="5285635972691565180"><ph name="DISPLAY_ID" /> 표시</translation>
@@ -6549,6 +6551,7 @@
 <translation id="5989497858237037960">사이트를 탐색하면 페이지 콘텐츠가 암호화되어 기기에 저장됩니다. 이로 인해 Chrome의 성능이 저하될 수 있습니다.</translation>
 <translation id="5990266201903445068">Wi-Fi만 사용</translation>
 <translation id="5990386583461751448">번역됨</translation>
+<translation id="5991039386730545918">선택한 페이지 색상 테마는 시스템 고대비가 사용 설정된 경우에만 사용됩니다</translation>
 <translation id="5992225669837656567">모든 마우스의 연결이 해제되었습니다</translation>
 <translation id="5992652489368666106">테두리 없음</translation>
 <translation id="5996490984199062729">프로필이 설정되지 않았습니다</translation>
@@ -6705,6 +6708,7 @@
 <translation id="6124698108608891449">추가 권한이 필요한 사이트입니다.</translation>
 <translation id="6125202119952209826"><ph name="OWNER_FIRST_NAME" />님이 있는 탭 그룹에 참여</translation>
 <translation id="6125639926370653692">달</translation>
+<translation id="6125649408655762488">그룹으로 포커스 이동</translation>
 <translation id="6126601353087978360">여기에 의견을 입력해 주세요.</translation>
 <translation id="6127292407256937949">볼륨이 켜져 있습니다. 볼륨을 끕니다.</translation>
 <translation id="6127598727646973981">보안 연결</translation>
@@ -7948,6 +7952,7 @@
 <translation id="706949303827219454">새 탭에서 보안 설정 페이지 열기</translation>
 <translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{이 사이트의 새 비밀번호}other{이 사이트의 새 비밀번호}}</translation>
 <translation id="7070484045139057854">사이트 데이터를 읽고 변경할 수 있음</translation>
+<translation id="7071521146534760487">계정 관리</translation>
 <translation id="7072010813301522126">바로가기 이름</translation>
 <translation id="7072078320324181561">위치 정보 액세스 권한이 있는 앱 및 웹사이트와 시스템 서비스에서 내 위치 정보를 사용할 수 있습니다. <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
 <translation id="7072573590175540692">사용 가능한 기능 및 확장 프로그램 바로가기</translation>
@@ -8583,6 +8588,7 @@
 <translation id="755472745191515939">관리자가 허용하지 않는 언어입니다.</translation>
 <translation id="7554791636758816595">새 탭</translation>
 <translation id="7557194624273628371">Linux 포트 전달</translation>
+<translation id="7557508262441527045">로그아웃됨</translation>
 <translation id="7561196759112975576">항상</translation>
 <translation id="7561759921596375678">볼륨 켜기</translation>
 <translation id="7563576896417108627"><ph name="APP_NAME" /> 앱을 맞춤설정 및 제어하세요. 사용 가능한 업데이트가 있습니다</translation>
@@ -9332,6 +9338,7 @@
 <translation id="8118362518458010043">Chrome에서 사용 중지했습니다. 이 확장 프로그램은 안전하지 않을 수 있습니다.</translation>
 <translation id="8118448640060360549">{EXTENSIONS_COUNT,plural, =1{북마크 #개}other{북마크 #개}}</translation>
 <translation id="8118488170956489476">조직에서 <ph name="BEGIN_LINK" />관리하는 브라우저<ph name="END_LINK" />입니다.</translation>
+<translation id="8118496140027032067">고대비 테마로 웹페이지 색상을 재정의하거나 강제 색상을 사용 중지합니다</translation>
 <translation id="8118515372935001629">화면 새로고침 빈도</translation>
 <translation id="8118860139461251237">다운로드 관리</translation>
 <translation id="8119438628456698432">로그 파일 생성 중...</translation>
@@ -10009,6 +10016,7 @@
 <translation id="8648408795949963811">야간 조명 색상 온도</translation>
 <translation id="8648544143274677280"><ph name="SITE_NAME" />의 권한 요청: <ph name="FIRST_PERMISSION" />, <ph name="SECOND_PERMISSION" /> 등</translation>
 <translation id="8648889679430451455">맞춤설정 데이터 지우기</translation>
+<translation id="8649290269169747916">시스템 고대비가 사용 중지된 경우 기본 페이지 색상 사용</translation>
 <translation id="8651585100578802546">캐시를 무시하고 페이지 새로고침</translation>
 <translation id="8651806635673244884">탭을 마우스 오른쪽 버튼으로 클릭하고 '가로로 탭 표시'를 선택하여 탭을 다시 상단으로 이동할 수 있습니다.</translation>
 <translation id="8652400352452647993">확장 프로그램 패키지 오류</translation>

@@ -661,6 +661,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="2118132148597630479">Envelop C5</translation>
 <translation id="2119505898009119320">Verleend aan: <ph name="ORGANIZATION" /> [<ph name="JURISDICTION" />]</translation>
 <translation id="2119867082804433120">Perforatie rechtsonder</translation>
+<translation id="2121418473709291357">Genegeerd omdat Cloudbeheer voor de Chrome-browser uitstaat.</translation>
 <translation id="2122214041802369259">Prijs is hoog</translation>
 <translation id="2122719317867821810">Dit beleid werkt zoals bedoeld, maar ergens anders is een conflicterende waarde ingesteld die wordt overschreven door dit beleid.</translation>
 <translation id="2124081665399116863">Voertuig updaten in Google Wallet</translation>
@@ -690,6 +691,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="2155260325161282517">5 x 7 inch</translation>
 <translation id="2156467141257470387">Je kunt opgeslagen adressen gebruiken in meerdere Google-producten. Dit heeft geen invloed op je bestaande werkadres. Het wordt opgeslagen in je Google-account, <ph name="ACCOUNT" />.</translation>
 <translation id="2157640075051554492">Meldingen voor prijstracking</translation>
+<translation id="2158964559178498011">Automatisch invullen werkt op meer plaatsen: druk 2 keer op Ctrl om informatie te vinden en in te vullen</translation>
 <translation id="2161656808144014275">Tekst</translation>
 <translation id="2162435186600002085">Primair koptekstlogo</translation>
 <translation id="2162535140284745414">Krijg realtime suggesties waarmee je nieuwe manieren kunt vinden om te browsen met AI.</translation>
@@ -2194,6 +2196,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="4678379207584374453"><ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>
 <translation id="4682496302933121474">Pagina vertalen?</translation>
 <translation id="468314109939257734">Bekijk je virtuele kaartnummer</translation>
+<translation id="4684818564800397688">Automatisch invullen werkt op meer plaatsen: druk 2 keer op ⌘ om informatie te vinden en in te vullen</translation>
 <translation id="4686942373615810936">Zojuist gemaakt</translation>
 <translation id="4690205240253392065">Een aanbieder van achteraf betalen kiezen</translation>
 <translation id="469028408546145398">Knop Incognitovensters sluiten. Activeer deze om alle momenteel geopende incognitovensters te sluiten.</translation>
@@ -2474,6 +2477,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="5115232566827194440">Beperkte beheerde gastsessie overschrijven</translation>
 <translation id="5115563688576182185">(64-bits)</translation>
 <translation id="5116015291385561204">Laten verifiëren dat jij het bent om gevoelige informatie automatisch in te vullen</translation>
+<translation id="5121592697493894155">Google Zoeken in zijvenster</translation>
 <translation id="5122786942953798871">Envelop (katoen)</translation>
 <translation id="5123063207673082822">Weekend</translation>
 <translation id="5124797626438336458">Voortgangsscherm voor Koop nu, betaal later is op halve hoogte geopend.</translation>
@@ -2910,6 +2914,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="5843987376989109187">Deze taal wordt nog niet ondersteund.
     <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>
 <translation id="5848445080378515710">Nadat je je bestelling hebt gecontroleerd, moet je inloggen of een account maken bij <ph name="BNPL_ISSUER_NAME" />. Dit account wordt automatisch gekoppeld in Google Wallet.</translation>
+<translation id="5848916806551637625">Het Pix-account wordt gekoppeld aan <ph name="ACCOUNT_EMAIL" />. Als je detectie van Pix-codes wilt uitzetten, ga je naar de <ph name="BEGIN_LINK1" />Chrome-instellingen<ph name="END_LINK1" />.</translation>
 <translation id="5851548754964597211">Tabbladlijst</translation>
 <translation id="5851868085455377790">Uitgever</translation>
 <translation id="5852909432155870672">RA4</translation>
@@ -4420,6 +4425,7 @@ Aanvullende informatie:
 <translation id="8371841335382565017">Apparaatlijst tonen voor casten</translation>
 <translation id="8371889962595521444">Custom rootcertificaten</translation>
 <translation id="8374636051559112948">Varieert</translation>
+<translation id="8376752431516546391">Zijvenster van Google Zoeken</translation>
 <translation id="8377507422902936905">Bestellingen</translation>
 <translation id="837840316697671463">Als je een bestand niet kunt vinden op je apparaat, zoek je het in <ph name="CLOUD_PROVIDER" />.</translation>
 <translation id="8378714024927312812">Beheerd door je organisatie</translation>

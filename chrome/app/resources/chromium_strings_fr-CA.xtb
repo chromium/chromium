@@ -19,6 +19,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles et les modificat
 <translation id="1131805035311359397">Pour vérifier si vos mots de passe sont en sécurité contre les violations de données et d'autres risques de sécurité, <ph name="BEGIN_LINK" />connectez-vous à Chromium<ph name="END_LINK" />.</translation>
 <translation id="1145158441928281100">{COUNT,plural, =1{Votre administrateur vous demande de relancer Chromium pour appliquer cette mise à jour. Une fenêtre de navigation privée ou isolée est ouverte. Elle ne se rouvrira pas après la relance.}one{Votre administrateur vous demande de relancer Chromium pour appliquer cette mise à jour. Il y a une fenêtre de navigation privée ou une fenêtre isolée (#) ouverte dans les profils. Elles ne se rouvriront pas après la relance.}other{Votre administrateur vous demande de relancer Chromium pour appliquer cette mise à jour. Il y a # fenêtres de navigation privée et isolées ouvertes dans les profils. Elles ne se rouvriront pas après la relance.}}</translation>
 <translation id="1153368717515616349">Cliquez sur le menu Chromium</translation>
+<translation id="1157952955648710254">Fermer le panneau latéral de la recherche Google</translation>
 <translation id="1157985233335035034">Langues récemment sélectionnées</translation>
 <translation id="1184145431117212167">L'installation a échoué, car votre version de Windows n'est pas prise en charge.</translation>
 <translation id="1185134272377778587">À propos de Chromium</translation>
@@ -383,8 +384,10 @@ Certaines fonctionnalités ne seront peut-être pas disponibles et les modificat
 <translation id="4987820182225656817">Les invités peuvent utiliser Chromium sans rien laisser derrière eux.</translation>
 <translation id="4992938037305302429">Votre compte dans Chromium</translation>
 <translation id="4994636714258228724">Ajouter un utilisateur à Chromium</translation>
+<translation id="5000497292978544380">Recherche Google en mode IA</translation>
 <translation id="504699503110800016">Ouvrez le menu à développer</translation>
 <translation id="5074496654342756568">Accédez à tous vos favoris de Google avec Chromium sur votre <ph name="DEVICE_TYPE" /></translation>
+<translation id="5121592697493894155">Recherche Google dans le panneau latéral</translation>
 <translation id="5123973130450702873">Chromium a besoin de l'autorisation de suivre vos mains</translation>
 <translation id="5141988424377517949">Vous n'avez pas effectué de visite récemment. Chromium a retiré <ph name="PERMISSION_1" />,<ph name="PERMISSION_2" /> et <ph name="PERMISSION_3" />.</translation>
 <translation id="5171868502429358653">Connectez-vous à Chromium</translation>
@@ -672,6 +675,7 @@ Chromium est incapable de récupérer vos paramètres.</translation>
 <translation id="7781047659465034537">Définissez Chromium comme navigateur par défaut et épinglez-le à la barre des tâches</translation>
 <translation id="7786760609782648049">Rendre Chromium plus rapide</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> - Chromium Canary</translation>
+<translation id="7800043020703832708">Fermer Recherche Google dans le panneau latéral</translation>
 <translation id="7803986347287457849">Faites en sorte qu'il soit plus difficile pour les personnes ayant accès à votre trafic Internet de voir les sites que vous visitez. Chromium utilise une connexion sécurisée pour rechercher l'adresse IP d'un site dans le DNS (système de noms de domaine).</translation>
 <translation id="7810005234485217901">Vous pouvez épingler la recherche d'images pour un accès facile</translation>
 <translation id="7813559034750130602">{COUNT,plural, =1{Une nouvelle mise à jour de Chromium est proposée et sera appliquée dès que vous le relancerez le navigateur. Une fenêtre de navigation privée ou isolée est ouverte. Elle ne se rouvrira pas après la relance.}one{Une nouvelle mise à jour de Chromium est proposée et sera appliquée dès que vous le relancerez le navigateur. Il y a # fenêtre de navigation privée ou isolée ouverte dans les profils. Elles ne se rouvriront pas après la relance.}other{Une nouvelle mise à jour de Chromium est proposée et sera appliquée dès que vous le relancerez le navigateur. Il y a # fenêtres de navigation privée et isolées ouvertes dans les profils. Elles ne se rouvriront pas après la relance.}}</translation>
@@ -740,6 +744,7 @@ Chromium est incapable de récupérer vos paramètres.</translation>
 <translation id="8370517070665726704">© <ph name="YEAR" /> Google LLC. Tous droits réservés.</translation>
 <translation id="8372327902843331129">Pour obtenir vos mots de passe et bien plus encore sur tous vos appareils, connectez-vous à Chromium. Ce mot de passe sera enregistré dans votre compte Google après votre connexion.</translation>
 <translation id="837460953767177950">Vous devrez ensuite redémarrer Chromium.</translation>
+<translation id="8376752431516546391">Panneau latéral de la recherche Google</translation>
 <translation id="8397248745433792218">Chromium vous recommande de la retirer. <ph name="BEGIN_LINK" />En savoir plus sur les extensions prises en charge<ph name="END_LINK" /></translation>
 <translation id="8401454788024434101">Cette extension n'a pas été publiée par son développeur et pourrait être dangereuse. Retirez-la de Chromium afin qu'elle ne puisse plus voir ni modifier vos données sur les sites que vous visitez, y compris vos renseignements personnels.</translation>
 <translation id="8416884904046428725">Chromium doit confirmer votre identité avant que certaines données puissent être enregistrées dans votre compte Google et utilisées sur tous vos appareils. Si vous vous déconnectez maintenant, ces données seront supprimées.</translation>
@@ -747,7 +752,6 @@ Chromium est incapable de récupérer vos paramètres.</translation>
 <translation id="8438543370129609977">Lorsque vous utilisez la recherche d'images, le titre de la page, l'URL et le contenu, y compris les fichiers PDF, sont envoyés au serveur. <ph name="LEARN_MORE" /></translation>
 <translation id="8447525028100794994">En savoir plus sur la manière de rechercher avec la recherche d'images dans Chromium</translation>
 <translation id="8453117565092476964">L'archive du programme d'installation est corrompue ou n'est pas valide. Veuillez télécharger Chromium à nouveau.</translation>
-<translation id="8458614432758743027">Chromium requiert Windows 10 ou une version ultérieure.</translation>
 <translation id="8463672209299734063">Facultatif : aidez-nous à améliorer les fonctionnalités ainsi que les performances de Chromium OS en envoyant automatiquement les données de diagnostic et d'utilisation à Google.</translation>
 <translation id="8471947159125090285">Pour utiliser et enregistrer des données Chromium dans votre compte Google, confirmez qu'il s'agit bien de vous</translation>
 <translation id="8482493977473846331">Affiche les invites de connexion dans Chromium</translation>

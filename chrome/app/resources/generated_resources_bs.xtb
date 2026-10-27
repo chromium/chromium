@@ -1846,6 +1846,7 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="2423506062824112361">Preuzimanje sadržaja nije uspjelo iz nepoznatog razloga.</translation>
 <translation id="2423578206845792524">Saču&amp;vaj sliku kao...</translation>
 <translation id="2424424966051154874">{0,plural, =1{Gost}one{Gost (#)}few{Gost (#)}other{Gost (#)}}</translation>
+<translation id="2424762488607770568">Zadano (podudaranje sa sistemom)</translation>
 <translation id="2426805022920575512">Odaberite drugi račun</translation>
 <translation id="2427507373259914951">Lijevi klik</translation>
 <translation id="2428245692671442472">{NUM_PASSWORDS,plural, =1{<ph name="DOMAIN_LINK" /> 1 račun; lozinka je sačuvana samo na ovaj uređaj. Više detalja}one{<ph name="DOMAIN_LINK" /> {NUM_PASSWORDS} račun; lozinka je sačuvana samo na ovaj uređaj. Više detalja}few{<ph name="DOMAIN_LINK" /> {NUM_PASSWORDS} računa; lozinka je sačuvana samo na ovaj uređaj. Više detalja}other{<ph name="DOMAIN_LINK" /> {NUM_PASSWORDS} računa; lozinka je sačuvana samo na ovaj uređaj. Više detalja}}</translation>
@@ -5657,6 +5658,7 @@ Koristite Ctrl + Alt + Smanjivanje osvjetljenja da umanjite.</translation>
 <translation id="5280426389926346830">Napraviti prečicu?</translation>
 <translation id="5280966903879030278">Pomoću svakodnevnog jezika pretražujte historiju pregledanja i pronađite web lokacije koje ste posjetili. Ova postavka je isključena.</translation>
 <translation id="5281013262333731149">Otvara se u: <ph name="OPEN_BROWSER" /></translation>
+<translation id="5283747245540449968">Boje stranice</translation>
 <translation id="5284107433515104664">Tokom promjene lozinke sadržaj stranice i povezane informacije se šalju Googleu i mogu ih pregledati osobe koje vrše pregled radi poboljšavanja ove funkcije. Lozinka je šifrirana i nikada nije vidljiva drugima.</translation>
 <translation id="5284445933715251131">Nastavi preuzimati</translation>
 <translation id="5285635972691565180">Ekran <ph name="DISPLAY_ID" /></translation>
@@ -6547,6 +6549,7 @@ Ovoj radnji možete dodijeliti više prekidača.</translation>
 <translation id="5989497858237037960">Dok pregledate web lokacije, sadržaji stranica se šifriraju i pohranjuju na uređaj. Ovo može uticati na Chromeove performanse</translation>
 <translation id="5990266201903445068">Samo WiFi</translation>
 <translation id="5990386583461751448">Prevedeno</translation>
+<translation id="5991039386730545918">Odabrana šema boja stranice se koristi samo dok je uključen visoki kontrast sistema</translation>
 <translation id="5992225669837656567">Veza svih miševa je prekinuta</translation>
 <translation id="5992652489368666106">Bez ivica</translation>
 <translation id="5996490984199062729">Profil nije postavljen</translation>
@@ -6703,6 +6706,7 @@ Ovoj radnji možete dodijeliti više prekidača.</translation>
 <translation id="6124698108608891449">Ovoj web lokaciji je potrebno više odobrenja.</translation>
 <translation id="6125202119952209826">Pridružite se grupi kartica koju koristi <ph name="OWNER_FIRST_NAME" /></translation>
 <translation id="6125639926370653692">Mjesec</translation>
+<translation id="6125649408655762488">Fokusiraj grupu</translation>
 <translation id="6126601353087978360">Ovdje unesite povratne informacije:</translation>
 <translation id="6127292407256937949">Zvuk je uključen. Isključivanje zvuka.</translation>
 <translation id="6127598727646973981">Sigurne veze</translation>
@@ -7950,6 +7954,7 @@ Imate još # ugroženih lozinki. Googleov Upravitelj lozinki preporučuje da odm
 <translation id="706949303827219454">Otvara stranicu s postavkama sigurnosti na novoj kartici</translation>
 <translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{Nova lozinka za ovu web lokaciju}one{Nove lozinke za ovu web lokaciju}few{Nove lozinke za ovu web lokaciju}other{Nove lozinke za ovu web lokaciju}}</translation>
 <translation id="7070484045139057854">Ovo može čitati i mijenjati podatke na web lokaciji</translation>
+<translation id="7071521146534760487">Upravljaj računom</translation>
 <translation id="7072010813301522126">Naziv prečice</translation>
 <translation id="7072078320324181561">Vašu lokaciju mogu koristiti aplikacije i web lokacije s odobrenjem za lokaciju, kao i sistemske usluge <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
 <translation id="7072573590175540692">Dostupne prečice funkcija i ekstenzija</translation>
@@ -8586,6 +8591,7 @@ Imate još # ugroženih lozinki. Googleov Upravitelj lozinki preporučuje da odm
 <translation id="755472745191515939">Administrator ne dozvoljava ovaj jezik</translation>
 <translation id="7554791636758816595">Nova kartica</translation>
 <translation id="7557194624273628371">Prosljeđivanje priključka Linuxa</translation>
+<translation id="7557508262441527045">Odjavljeni ste</translation>
 <translation id="7561196759112975576">Uvijek</translation>
 <translation id="7561759921596375678">Uključite zvuk</translation>
 <translation id="7563576896417108627">Prilagodite aplikaciju <ph name="APP_NAME" /> i upravljajte njom. Dostupno je ažuriranje.</translation>
@@ -9335,6 +9341,7 @@ Fajl ključa: <ph name="KEY_FILE" />
 <translation id="8118362518458010043">Onemogućio Chrome. Ova ekstenzija može biti nesigurna.</translation>
 <translation id="8118448640060360549">{EXTENSIONS_COUNT,plural, =1{# oznaku}one{# oznaku}few{# oznake}other{# oznaka}}</translation>
 <translation id="8118488170956489476">Vašim <ph name="BEGIN_LINK" />preglednikom upravlja<ph name="END_LINK" /> vaša organizacija</translation>
+<translation id="8118496140027032067">Nadjačajte boje web stranice temama visokog kontrasta ili isključite prisilne boje</translation>
 <translation id="8118515372935001629">Brzina osvježavanja ekrana</translation>
 <translation id="8118860139461251237">Upravljanje preuzimanjima</translation>
 <translation id="8119438628456698432">Generiranje fajlova zapisnika...</translation>
@@ -10012,6 +10019,7 @@ Fajl ključa: <ph name="KEY_FILE" />
 <translation id="8648408795949963811">Temperatura boja noćnog svjetla</translation>
 <translation id="8648544143274677280">Web lokacija <ph name="SITE_NAME" /> želi: <ph name="FIRST_PERMISSION" />, <ph name="SECOND_PERMISSION" /> i drugo</translation>
 <translation id="8648889679430451455">Obrišite podatke o personalizaciji</translation>
+<translation id="8649290269169747916">Koristi zadane boje stranice kada je visoki kontrast sistema isključen</translation>
 <translation id="8651585100578802546">Prisilno ponovo učitaj ovu stranicu</translation>
 <translation id="8651806635673244884">Možete vratiti kartice na vrh desnim klikom na bilo koju karticu i odabirom opcije "Prikaži kartice vodoravno"</translation>
 <translation id="8652400352452647993">Greška s paketom ekstenzije</translation>
@@ -10521,7 +10529,7 @@ One mogu uključivati informacije o instaliranom softveru, fajlovima, preglednik
 <translation id="9020362265352758658">4 x</translation>
 <translation id="9021662811137657072">Otkriven je virus</translation>
 <translation id="902236149563113779">Web lokacije obično prate položaj kamere radi funkcija AR-a, kao što su igre ili smjernice u visini očiju</translation>
-<translation id="9022465823323373917">{COUNT,plural, =1{Otvoren je {COUNT} anonimni ili izolirani prozor. Neće se ponovo otvoriti nakon ponovnog pokretanja}one{Na svim profilima je otvoren {COUNT} anonimni ili izolirani prozor. Neće se ponovo otvoriti nakon ponovnog pokretanja}few{Na svim profilima su otvorena {COUNT} anonimna ili izolirana prozora. Neće se ponovo otvoriti nakon ponovnog pokretanja}other{Na svim profilima je otvoreno {COUNT} anonimnih ili izoliranih prozora. Neće se ponovo otvoriti nakon ponovnog pokretanja}}</translation>
+<translation id="9022465823323373917">{COUNT,plural, =1{Otvoren je {COUNT} anonimni ili izolirani prozor. Neće se ponovo otvoriti nakon ponovnog pokretanja}one{Na različitim profilima je otvoren {COUNT} anonimni ili izolirani prozor. Neće se ponovo otvoriti nakon ponovnog pokretanja}few{Na različitim profilima su otvorena {COUNT} anonimna ili izolirana prozora. Neće se ponovo otvoriti nakon ponovnog pokretanja}other{Na različitim profilima je otvoreno {COUNT} anonimnih ili izoliranih prozora. Neće se ponovo otvoriti nakon ponovnog pokretanja}}</translation>
 <translation id="9022847679183471841"><ph name="AVATAR_NAME" /> već koristi ovaj račun na ovom računaru.</translation>
 <translation id="9023015617655685412">Označi ovu karticu…</translation>
 <translation id="902319268551617004">Skenirajte QR kôd pomoću kamere uređaja ili unesite kôd za aktivaciju koji pruža vaš mobilni operater.</translation>

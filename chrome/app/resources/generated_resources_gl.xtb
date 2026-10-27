@@ -1836,6 +1836,7 @@ Instala a aplicación Family Link no teu dispositivo e poderás xestionar a conf
 <translation id="2423506062824112361">Produciuse un erro descoñecido ao descargar o contido.</translation>
 <translation id="2423578206845792524">Gar&amp;dar imaxe como...</translation>
 <translation id="2424424966051154874">{0,plural, =1{Invitado}other{Invitado (#)}}</translation>
+<translation id="2424762488607770568">Opción predeterminada (coincidir co sistema)</translation>
 <translation id="2426805022920575512">Escoller outra conta</translation>
 <translation id="2427507373259914951">Clic co botón esquerdo do rato</translation>
 <translation id="2428245692671442472">{NUM_PASSWORDS,plural, =1{<ph name="DOMAIN_LINK" />, 1 conta, contrasinal gardado só neste dispositivo. Máis detalles}other{<ph name="DOMAIN_LINK" />, {NUM_PASSWORDS} contas, contrasinal gardado só neste dispositivo. Máis detalles}}</translation>
@@ -5650,6 +5651,7 @@ Se queres afastala, usa Control + Alt + Reducir brillo.</translation>
 <translation id="5280426389926346830">Queres crear un atallo?</translation>
 <translation id="5280966903879030278">Usa frases cotiás para facer buscas no historial de navegación e atopar sitios que visitases. Esta opción de configuración está desactivada.</translation>
 <translation id="5281013262333731149">Ábrese en: <ph name="OPEN_BROWSER" /></translation>
+<translation id="5283747245540449968">Cores da páxina</translation>
 <translation id="5284107433515104664">Durante o cambio de contrasinal, o contido da páxina e a información relacionada envíanse a Google e poden someterse a un proceso de revisión manual para mellorar esta función. O teu contrasinal está encriptado e ninguén o pode ver.</translation>
 <translation id="5284445933715251131">Continuar coa descarga</translation>
 <translation id="5285635972691565180">Pantalla <ph name="DISPLAY_ID" /></translation>
@@ -6537,6 +6539,7 @@ Podes asignarlles esta acción a varios interruptores.</translation>
 <translation id="5989497858237037960">Cando navegas polos sitios, o contido das súas páxinas está encriptado e gárdase no teu dispositivo. Isto pode afectar ao rendemento de Chrome</translation>
 <translation id="5990266201903445068">Só por wifi</translation>
 <translation id="5990386583461751448">Páxina traducida</translation>
+<translation id="5991039386730545918">O tema de cor seleccionado da páxina só se usará cando estea activado o alto contraste do sistema</translation>
 <translation id="5992225669837656567">Desconectáronse todos os ratos</translation>
 <translation id="5992652489368666106">Sen bordos</translation>
 <translation id="5996490984199062729">Non tes o perfil configurado</translation>
@@ -6693,6 +6696,7 @@ Podes asignarlles esta acción a varios interruptores.</translation>
 <translation id="6124698108608891449">Este sitio necesita máis permisos.</translation>
 <translation id="6125202119952209826">Unirte ao grupo de pestanas con <ph name="OWNER_FIRST_NAME" /></translation>
 <translation id="6125639926370653692">Lúa</translation>
+<translation id="6125649408655762488">Enfocar grupo</translation>
 <translation id="6126601353087978360">Pon aquí o teu comentario:</translation>
 <translation id="6127292407256937949">O volume está activado. Desactivar o volume.</translation>
 <translation id="6127598727646973981">Conexións seguras</translation>
@@ -7935,6 +7939,7 @@ Quédanche # máis. O xestor de contrasinais de Google recomenda que comprobes e
 <translation id="706949303827219454">Abre a páxina de configuración da seguranza nunha nova pestana</translation>
 <translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{Novo contrasinal para este sitio}other{Novos contrasinais para este sitio}}</translation>
 <translation id="7070484045139057854">Pode consultar e modificar os datos do sitio</translation>
+<translation id="7071521146534760487">Xestiona a conta</translation>
 <translation id="7072010813301522126">Nome do atallo</translation>
 <translation id="7072078320324181561">As aplicacións e os sitios web co permiso correspondente, así como os servizos do sistema, poden utilizar a túa localización. <ph name="LINK_BEGIN" />Máis información<ph name="LINK_END" /></translation>
 <translation id="7072573590175540692">Atallos a funcións e extensións dispoñibles</translation>
@@ -8571,6 +8576,7 @@ Quédanche # máis. O xestor de contrasinais de Google recomenda que comprobes e
 <translation id="755472745191515939">O teu administrador non habilitou este idioma</translation>
 <translation id="7554791636758816595">Nova pestana</translation>
 <translation id="7557194624273628371">Encamiñamento de porto de Linux</translation>
+<translation id="7557508262441527045">Pechouse a sesión</translation>
 <translation id="7561196759112975576">Sempre</translation>
 <translation id="7561759921596375678">Activar o volume</translation>
 <translation id="7563576896417108627">Personaliza e controla <ph name="APP_NAME" />. Hai unha actualización dispoñible.</translation>
@@ -9320,6 +9326,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8118362518458010043">Chrome desactivou esta extensión porque é posible que non sexa segura.</translation>
 <translation id="8118448640060360549">{EXTENSIONS_COUNT,plural, =1{# marcador}other{# marcadores}}</translation>
 <translation id="8118488170956489476">A túa organización <ph name="BEGIN_LINK" />xestiona o teu navegador<ph name="END_LINK" /></translation>
+<translation id="8118496140027032067">Ignora as cores das páxinas web con temas de alto contraste ou desactiva as cores forzadas</translation>
 <translation id="8118515372935001629">Frecuencia de actualización da pantalla</translation>
 <translation id="8118860139461251237">Xestionar as túas descargas</translation>
 <translation id="8119438628456698432">Xerando ficheiros de rexistro…</translation>
@@ -9997,6 +10004,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8648408795949963811">Temperatura da cor da luz nocturna</translation>
 <translation id="8648544143274677280"><ph name="SITE_NAME" /> require permisos para: <ph name="FIRST_PERMISSION" />, <ph name="SECOND_PERMISSION" /> etc.</translation>
 <translation id="8648889679430451455">Borrar datos de personalización</translation>
+<translation id="8649290269169747916">Usar as cores predeterminadas das páxinas cando o alto contraste do sistema estea desactivado</translation>
 <translation id="8651585100578802546">Forzar recarga desta páxina</translation>
 <translation id="8651806635673244884">Podes volver colocar as pestanas na parte superior facendo clic co botón dereito en calquera pestana e seleccionando Mostrar pestanas en horizontal</translation>
 <translation id="8652400352452647993">Produciuse un erro na extensión do paquete</translation>

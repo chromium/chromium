@@ -27,6 +27,7 @@
 <translation id="3812541808639806898">图片替代文字查看器</translation>
 <translation id="381767806621926835">右键点击任何具有“longdesc”或“aria-describedat”属性的内容，可查看其详细说明。</translation>
 <translation id="4023902424053835668">使用箭头键浏览网页中的文字。</translation>
+<translation id="4384008284958619421">现代屏幕阅读器和 Google Chrome 现在原生支持无障碍元素说明和 ARIA 标准。</translation>
 <translation id="4388820049312272371">使用快速闪烁突出显示光标位置。</translation>
 <translation id="4394049700291259645">停用</translation>
 <translation id="4769065380738716500">图片已被其 alt 文字取代。</translation>
@@ -62,6 +63,7 @@
 <translation id="7658239707568436148">取消</translation>
 <translation id="786423340267544509">为具有“aria-describedat”或“longdesc”属性的元素添加边框。</translation>
 <translation id="7942349550061667556">红色</translation>
+<translation id="8081200409424070383">“详细说明”将于 2026 年 11 月 20 日弃用。</translation>
 <translation id="8260673944985561857">光标浏览模式相关选项</translation>
 <translation id="8321034316479930120">动画政策</translation>
 <translation id="8480209185614411573">高对比度模式</translation>

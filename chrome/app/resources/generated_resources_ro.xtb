@@ -1836,6 +1836,7 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2423506062824112361">Conținutul nu a putut fi descărcat dintr-un motiv necunoscut.</translation>
 <translation id="2423578206845792524">Sal&amp;vează imaginea ca...</translation>
 <translation id="2424424966051154874">{0,plural, =1{Invitat}few{Invitați (#)}other{Invitați (#)}}</translation>
+<translation id="2424762488607770568">Prestabilit (potrivire cu sistemul)</translation>
 <translation id="2426805022920575512">Alege alt cont</translation>
 <translation id="2427507373259914951">Clic stânga</translation>
 <translation id="2428245692671442472">{NUM_PASSWORDS,plural, =1{<ph name="DOMAIN_LINK" /> Un cont, parola a fost salvată numai pe acest dispozitiv. Mai multe detalii}few{<ph name="DOMAIN_LINK" /> {NUM_PASSWORDS} conturi, parola a fost salvată numai pe acest dispozitiv. Mai multe detalii}other{<ph name="DOMAIN_LINK" /> {NUM_PASSWORDS} de conturi, parola a fost salvată numai pe acest dispozitiv. Mai multe detalii}}</translation>
@@ -5645,6 +5646,7 @@ Folosește Ctrl + Alt + tasta de reducere a luminozității pentru a micșora.</
 <translation id="5280426389926346830">Creezi o comandă rapidă?</translation>
 <translation id="5280966903879030278">Folosește limbajul cotidian pentru a căuta în istoricul de navigare și pentru a găsi site-urile pe care le-ai accesat. Setarea este dezactivată.</translation>
 <translation id="5281013262333731149">Se deschide în <ph name="OPEN_BROWSER" /></translation>
+<translation id="5283747245540449968">Culorile paginii</translation>
 <translation id="5284107433515104664">În timpul schimbării parolei, conținutul paginii și informațiile asociate sunt trimise la Google și pot fi examinate de oameni pentru a îmbunătăți această funcție. Parola este criptată și nu este văzută niciodată de nimeni.</translation>
 <translation id="5284445933715251131">Continuă descărcarea</translation>
 <translation id="5285635972691565180">Ecranul <ph name="DISPLAY_ID" /></translation>
@@ -6534,6 +6536,7 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="5989497858237037960">În timp ce navighezi pe site-uri, conținutul paginilor respective se criptează și se salvează pe dispozitiv. Acest lucru poate afecta performanța Chrome</translation>
 <translation id="5990266201903445068">Numai Wi-Fi</translation>
 <translation id="5990386583461751448">Tradusă</translation>
+<translation id="5991039386730545918">Tema de culoare selectată pentru pagină este folosită numai când este activat contrastul ridicat al sistemului</translation>
 <translation id="5992225669837656567">Toate mouse-urile au fost deconectate</translation>
 <translation id="5992652489368666106">Fără chenar</translation>
 <translation id="5996490984199062729">Profilul tău nu a fost configurat</translation>
@@ -6690,6 +6693,7 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="6124698108608891449">Acest site are nevoie de mai multe permisiuni.</translation>
 <translation id="6125202119952209826">Alătură-te grupului de file cu <ph name="OWNER_FIRST_NAME" /></translation>
 <translation id="6125639926370653692">Lună</translation>
+<translation id="6125649408655762488">Focalizează pe grup</translation>
 <translation id="6126601353087978360">Introdu feedbackul aici:</translation>
 <translation id="6127292407256937949">Sunetul este activat. Dezactivează sunetul.</translation>
 <translation id="6127598727646973981">Conexiuni securizate</translation>
@@ -7935,6 +7939,7 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="706949303827219454">Deschide pagina cu setările de securitate într-o filă nouă</translation>
 <translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{Parolă nouă pentru acest site}few{Parole noi pentru acest site}other{Parole noi pentru acest site}}</translation>
 <translation id="7070484045139057854">Poate să citească și să modifice datele site-ului</translation>
+<translation id="7071521146534760487">Gestionează contul</translation>
 <translation id="7072010813301522126">Numele comenzii rapide</translation>
 <translation id="7072078320324181561">Aplicațiile și site-urile care au permisiunea pentru locație, precum și serviciile de sistem pot folosi locația ta <ph name="LINK_BEGIN" />Află mai multe<ph name="LINK_END" /></translation>
 <translation id="7072573590175540692">Comenzi rapide disponibile pentru funcții și extensii</translation>
@@ -8571,6 +8576,7 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="755472745191515939">Administratorul nu permite această limbă</translation>
 <translation id="7554791636758816595">Filă nouă</translation>
 <translation id="7557194624273628371">Redirecționarea de port în Linux</translation>
+<translation id="7557508262441527045">Te-ai deconectat</translation>
 <translation id="7561196759112975576">Întotdeauna</translation>
 <translation id="7561759921596375678">Activează sunetul</translation>
 <translation id="7563576896417108627">Personalizează și controlează <ph name="APP_NAME" />. Este disponibilă o actualizare.</translation>
@@ -9320,6 +9326,7 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8118362518458010043">Dezactivată de Chrome. Această extensie ar putea fi nesigură.</translation>
 <translation id="8118448640060360549">{EXTENSIONS_COUNT,plural, =1{# marcaj}few{# marcaje}other{# de marcaje}}</translation>
 <translation id="8118488170956489476"><ph name="BEGIN_LINK" />Browserul este gestionat<ph name="END_LINK" /> de organizația ta.</translation>
+<translation id="8118496140027032067">Înlocuiește culorile paginii web cu teme cu contrast ridicat sau dezactivează culorile optimizate</translation>
 <translation id="8118515372935001629">Rata de actualizare a afișajului</translation>
 <translation id="8118860139461251237">Gestionează descărcările</translation>
 <translation id="8119438628456698432">Se generează fișiere jurnal...</translation>
@@ -9997,6 +10004,7 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8648408795949963811">Temperatura culorii pentru Lumina de noapte</translation>
 <translation id="8648544143274677280"><ph name="SITE_NAME" /> dorește să <ph name="FIRST_PERMISSION" />, să <ph name="SECOND_PERMISSION" /> și altele</translation>
 <translation id="8648889679430451455">Șterge datele personalizate</translation>
+<translation id="8649290269169747916">Folosește culorile prestabilite ale paginii când contrastul ridicat al sistemului este dezactivat</translation>
 <translation id="8651585100578802546">Reîncarcă forțat această pagină</translation>
 <translation id="8651806635673244884">Poți să muți filele înapoi în partea de sus dacă dai clic dreapta pe orice filă și selectezi Afișează filele pe orizontală</translation>
 <translation id="8652400352452647993">Eroare privind pachetul pentru extensie</translation>

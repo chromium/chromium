@@ -19,6 +19,7 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="1131805035311359397">Për të kontrolluar nëse fjalëkalimet e tua janë të sigurta nga nxjerrjet e paautorizuara të të dhënave dhe probleme të tjera të sigurisë, <ph name="BEGIN_LINK" />identifikohu në Chromium<ph name="END_LINK" />.</translation>
 <translation id="1145158441928281100">{COUNT,plural, =1{Administratori yt kërkon që të nisësh sërish Chromium për të zbatuar këtë përditësim. Është hapur një "Dritare e izoluar" ose "E fshehtë". Ajo nuk do të rihapet pasi ta nisësh sërish.}other{Administratori yt kërkon që të nisësh sërish Chromium për të zbatuar këtë përditësim. Janë hapur # "Dritare të izoluara" dhe "Të fshehta" nëpër profile. Ato nuk do të rihapen pasi ta nisësh sërish.}}</translation>
 <translation id="1153368717515616349">Kliko te menyja e Chromium</translation>
+<translation id="1157952955648710254">Mbyll panelin anësor të "Kërko në Google"</translation>
 <translation id="1157985233335035034">Gjuhët e fundit</translation>
 <translation id="1184145431117212167">Instalimi dështoi pasi versioni yt i Windows nuk mbështetet.</translation>
 <translation id="1185134272377778587">Rreth Chromium</translation>
@@ -45,6 +46,7 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="1383876407941801731">Kërko</translation>
 <translation id="1388276868779258475">Përdor aplikacionin e Chromium për të vazhduar të shfletosh kur je në lëvizje</translation>
 <translation id="141901961143729572">Ndaj mendimet e tua</translation>
+<translation id="1438812738230833934">Mund ta rihapësh "Kërko në Google" në panelin anësor për të bërë pyetje ndërkohë që shfleton</translation>
 <translation id="1465192221147974788">Për të ndarë dritaren tënde, lejo regjistrimin e ekranit për Chromium te "Cilësimet e sistemit".</translation>
 <translation id="1478370723027452770">Merr ndihmë për Chrome for Testing</translation>
 <translation id="147870194906295621">Për të marrë informacionet e ruajtura etj. nga <ph name="DEVICE" />, identifikohu në Chromium</translation>
@@ -341,6 +343,7 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="4470974262661801543">Për të përdorur dhe për të ruajtur të dhënat e Chromium në "Llogarinë tënde të Google", fut frazën tënde të kalimit</translation>
 <translation id="4493028449971051158">Gabim në nisje: ekzekuto instaluesin si administrator.</translation>
 <translation id="4501471624619070934">Instalimi nuk u krye sepse qasja është e kufizuar në këtë shtet.</translation>
+<translation id="4501839397124711198">Mund ta gozhdosh "Kërko në Google" në panelin anësor për të bërë pyetje ndërkohë që shfleton</translation>
 <translation id="4510853178268397146">Kjo shtesë nuk i ka publikuar praktikat e privatësisë, si p.sh. se si i mbledh dhe i përdor të dhënat. Chromium rekomandon që ta heqësh atë.</translation>
 <translation id="452711251841752011">Mirë se erdhe në Chromium. U hap një dritare e re e shfletuesit</translation>
 <translation id="4531137820806573936">Chromium ka nevojë për leje për të krijuar një hartë të ambientit rrethues dhe për të ndjekur duart e tua</translation>
@@ -384,8 +387,10 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="4987820182225656817">Vizitorët mund të përdorin Chromium pa lënë asgjë prapa.</translation>
 <translation id="4992938037305302429">Llogaria jote në Chromium</translation>
 <translation id="4994636714258228724">Shtoje veten te Chromium</translation>
+<translation id="5000497292978544380">"Modaliteti i IA-së" i "Kërko në Google"</translation>
 <translation id="504699503110800016">Hap menynë e tejkalimit</translation>
 <translation id="5074496654342756568">Qasu te të gjitha të preferuarat e tua të Google me Chromium në <ph name="DEVICE_TYPE" /></translation>
+<translation id="5121592697493894155">"Kërko në Google" në panelin anësor</translation>
 <translation id="5123973130450702873">Chromium ka nevojë për leje për të gjurmuar duart e tua</translation>
 <translation id="5141988424377517949">Nuk ke vizituar së fundi. Chromium ka hequr lejen "<ph name="PERMISSION_1" />", "<ph name="PERMISSION_2" />", "<ph name="PERMISSION_3" />".</translation>
 <translation id="5171868502429358653">Identifikohu në Chromium</translation>
@@ -671,6 +676,7 @@ Chromium nuk është në gjendje të rikuperojë cilësimet e tua.</translation>
 <translation id="7781047659465034537">Cakto Chromium si parazgjedhje dhe gozhdoje te shiriti i detyrave</translation>
 <translation id="7786760609782648049">Bëje Chromium më të shpejtë</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> - Chromium Canary</translation>
+<translation id="7800043020703832708">Mbyll "Kërko në Google" në panelin anësor</translation>
 <translation id="7803986347287457849">Bëj që personat që kanë qasje në trafikun tënd të internetit ta kenë më të vështirë të shikojnë sajtet që viziton ti. Chromium përdor një lidhje të sigurt për të kërkuar për adresën IP të një sajt në sistemin e emrave të domeneve (DNS).</translation>
 <translation id="7810005234485217901">Mund të gozhdosh "Kërkimin nëpërmjet imazheve" për qasje të lehtë</translation>
 <translation id="7813559034750130602">{COUNT,plural, =1{Ofrohet një përditësim i ri për Chromium dhe do të zbatohet sapo ta nisësh sërish. Është hapur një "Dritare e izoluar" ose "E fshehtë". Ajo nuk do të rihapet pasi ta nisësh sërish.}other{Ofrohet një përditësim i ri për Chromium dhe do të zbatohet sapo ta nisësh sërish. Janë hapur # "Dritare të izoluara" dhe "Të fshehta" nëpër profile. Ato nuk do të rihapen pasi ta nisësh sërish.}}</translation>
@@ -685,6 +691,7 @@ Chromium nuk është në gjendje të rikuperojë cilësimet e tua.</translation>
 <translation id="7873537467422636035">Nëse ke harruar frazën tënde të kalimit apo dëshiron ta ndryshosh këtë cilësim, <ph name="BEGIN_LINK" />fshi të dhënat e Chromium në llogarinë tënde<ph name="END_LINK" /></translation>
 <translation id="7874369989024033742">Hap me shpejtësi Gemini në Chromium sa herë që të nevojitet</translation>
 <translation id="7888981273428720788">Cakto Chromium si parazgjedhje</translation>
+<translation id="7904213866086517086">Rihap "Kërko në Google" në panelin anësor</translation>
 <translation id="7934340546140346950">Chromium i përmirëson lidhjet e pasigurta automatikisht në HTTPS kur është e mundur</translation>
 <translation id="7937630085815544518">Je i identifikuar në Chromium si <ph name="USER_EMAIL_ADDRESS" />. Përdor të njëjtën llogari për t'u identifikuar sërish.</translation>
 <translation id="7944602660083060118"><ph name="EXISTING_USER" /> është identifikuar tashmë. Për ta mbajtur shfletimin tënd të ndarë, identifikohu në Chromium në profilin tënd si <ph name="USER_EMAIL_ADDRESS" />. Do të marrësh gjithashtu faqeshënuesit etj. në të gjitha pajisjet e tua.</translation>
@@ -739,14 +746,15 @@ Chromium nuk është në gjendje të rikuperojë cilësimet e tua.</translation>
 <translation id="8370517070665726704">Të drejtat e autorit <ph name="YEAR" /> Google LLC. Të gjitha të drejtat e rezervuara.</translation>
 <translation id="8372327902843331129">Për të marrë fjalëkalimet etj. në të gjitha pajisjet e tua, identifikohu në Chromium. Ky fjalëkalim do të ruhet në "Llogarinë tënde të Google" pasi të identifikohesh.</translation>
 <translation id="837460953767177950">Më pas do të të duhet të rinisësh Chromium.</translation>
+<translation id="8376752431516546391">Paneli anësor i "Kërko në Google"</translation>
 <translation id="8397248745433792218">Chromium rekomandon që ta heqësh atë. <ph name="BEGIN_LINK" />Mëso më shumë rreth shtesave të mbështetura<ph name="END_LINK" /></translation>
 <translation id="8401454788024434101">Publikimi i kësaj shtese është anuluar nga zhvilluesi i saj dhe ajo mund të mos jetë e sigurt. Hiqe atë nga Chromium që të mos arrijë të shikojë dhe të ndryshojë më të dhënat e tua në sajtin që viziton ti, duke përfshirë informacionet e tua personale.</translation>
+<translation id="8406687098231754303">Nga butoni "'Kërko në Google' në panelin anësor" në shiritin e veglave, mund të rihapësh "Kërko në Google" në panelin anësor për të bërë pyetje ndërkohë që shfleton</translation>
 <translation id="8416884904046428725">Chromium duhet të verifikojë që je ti përpara se të mund të ruhen disa të dhëna në "Llogarinë tënde të Google" dhe të përdoren në të gjitha pajisjet e tua. Nëse del tani, këto të dhëna do të fshihen.</translation>
 <translation id="8417404458978023919">{0,plural, =1{Hap përsëri Chromium brenda një dite}other{Hap përsëri Chromium brenda # ditësh}}</translation>
 <translation id="8438543370129609977">Kur përdor "Kërkimin nëpërmjet imazheve", titulli i faqes, URL-ja dhe përmbajtja, duke përfshirë skedarët PDF, dërgohen te serveri. <ph name="LEARN_MORE" /></translation>
 <translation id="8447525028100794994">Mëso më shumë rreth kërkimit me "Kërkimin e imazheve" në Chromium</translation>
 <translation id="8453117565092476964">Arkivi i instaluesit është i dëmtuar ose i pavlefshëm. Shkarkoje Chromium përsëri.</translation>
-<translation id="8458614432758743027">Chromium kërkon Windows 10 ose një version më të lartë.</translation>
 <translation id="8463672209299734063">Opsionale: Ndihmo në përmirësimin e veçorive dhe performancës së ChromiumOS duke dërguar automatikisht te Google të dhëna diagnostikuese dhe përdorimi.</translation>
 <translation id="8471947159125090285">Për të përdorur dhe për të ruajtur të dhënat e Chromium në "Llogarinë tënde të Google", verifiko që je ti</translation>
 <translation id="8482493977473846331">Shfaq kërkesat për t'u identifikuar në Chromium</translation>
@@ -758,6 +766,7 @@ Chromium nuk është në gjendje të rikuperojë cilësimet e tua.</translation>
 <translation id="8555465886620020932">Gabim shërbimi: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="8556055872671007529">Disa veçori dhe shtesa të Chromium vijnë me shkurtore. Mund të zgjedhësh që t'i aktivizosh përsëri.</translation>
 <translation id="8556420416730706394">Mund të gozhdosh "Kërkimin nëpërmjet imazheve" për qasje të lehtë; kliko te butoni "Gozhdo" në krye të panelit anësor</translation>
+<translation id="8564408666201523086">Me sukses! Tani mund të bësh me lehtësi pyetje ndërkohë që shfleton me "Kërko në Google" në panelin anësor</translation>
 <translation id="856656450041460113">Kërko në listën e gjuhëve</translation>
 <translation id="8576826849825683917">Disa organizata menaxhojnë Chromium</translation>
 <translation id="8586442755830160949">Të drejtat e autorit <ph name="YEAR" /> Autorët e Chromium. Të gjitha të drejtat të rezervuara.</translation>

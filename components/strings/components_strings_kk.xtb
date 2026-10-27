@@ -661,6 +661,7 @@
 <translation id="2118132148597630479">C5 хатқалтасы</translation>
 <translation id="2119505898009119320">Берілетін ұйым: <ph name="ORGANIZATION" /> [<ph name="JURISDICTION" />]</translation>
 <translation id="2119867082804433120">Төменгі оң жақты тесу</translation>
+<translation id="2121418473709291357">Еленбеді, себебі Chrome Browser Cloud Management өшірілген.</translation>
 <translation id="2122214041802369259">Бағасы жоғары</translation>
 <translation id="2122719317867821810">Бұл саясат ойдағыдай жұмыс істеуде, бірақ басқа жерде осы саясат бойынша қабылданбайтын қарама-қайшы мән орнатылған.</translation>
 <translation id="2124081665399116863">Көлікті Google Wallet-те жаңартыңыз</translation>
@@ -2479,6 +2480,7 @@
 <translation id="5115232566827194440">Шектелген басқарылатын қонақ сеансын қайта анықтау</translation>
 <translation id="5115563688576182185">(64 биттік)</translation>
 <translation id="5116015291385561204">Құпия ақпаратты автоматты түрде толтыру үшін жеке басыңызды растаңыз</translation>
+<translation id="5121592697493894155">Бүйірлік панельдегі Google Search</translation>
 <translation id="5122786942953798871">Хатқалта (мақта)</translation>
 <translation id="5123063207673082822">Демалыс күндері</translation>
 <translation id="5124797626438336458">Бөліп төлеу қатесінің экраны жартылай ашылды.</translation>
@@ -2915,6 +2917,7 @@
 <translation id="5843987376989109187">Бұл тілге әзірше қолдау көрсетілмейді.
     <ph name="BEGIN_LINK" />Толық ақпарат<ph name="END_LINK" /></translation>
 <translation id="5848445080378515710">Тапсырысыңызды тексергеннен кейін, <ph name="BNPL_ISSUER_NAME" /> аккаунтына кіруіңіз немесе жаңасын жасауыңыз керек. Бұл аккаунт Google Wallet-те автоматты түрде байланыстырылады.</translation>
+<translation id="5848916806551637625">Pix аккаунты <ph name="ACCOUNT_EMAIL" /> поштасымен байланыстырылады. Pix кодын анықтау функциясын өшіру үшін <ph name="BEGIN_LINK1" />Chrome параметрлеріне<ph name="END_LINK1" /> өтіңіз.</translation>
 <translation id="5851548754964597211">Қойындылар тізімі</translation>
 <translation id="5851868085455377790">Эмитент</translation>
 <translation id="5852909432155870672">RA4</translation>
@@ -4425,6 +4428,7 @@
 <translation id="8371841335382565017">Трансляциялауға арналған құрылғылар тізімін көрсету</translation>
 <translation id="8371889962595521444">Арнаулы түбірлік сертификаттар</translation>
 <translation id="8374636051559112948">Әртүрлі</translation>
+<translation id="8376752431516546391">Google Search бүйірлік панелі</translation>
 <translation id="8377507422902936905">Тапсырыстар</translation>
 <translation id="837840316697671463">Файлды құрылғыдан таба алмасаңыз, оны <ph name="CLOUD_PROVIDER" /> қызметінен іздеңіз.</translation>
 <translation id="8378714024927312812">Ұйым басқарады</translation>

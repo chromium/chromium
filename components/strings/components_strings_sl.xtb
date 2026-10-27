@@ -661,6 +661,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="2118132148597630479">Kuverta C5</translation>
 <translation id="2119505898009119320">Izdano za: <ph name="ORGANIZATION" /> [<ph name="JURISDICTION" />]</translation>
 <translation id="2119867082804433120">Luknjanje spodaj desno</translation>
+<translation id="2121418473709291357">Prezrto, ker je upravljanje v oblaku za brskalnik Chrome onemogočeno.</translation>
 <translation id="2122214041802369259">Cena je visoka</translation>
 <translation id="2122719317867821810">Ta pravilnik deluje, kot je predvideno, vendar je nekje drugje nastavljena sporna vrednost, ki jo ta pravilnik preglasi.</translation>
 <translation id="2124081665399116863">Posodobitev vozila v Google Denarnici</translation>
@@ -2482,6 +2483,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="5115232566827194440">Preglasitev za omejeno upravljano gostujočo sejo</translation>
 <translation id="5115563688576182185">(64-bitno)</translation>
 <translation id="5116015291385561204">Za samodejno izpolnjevanje občutljivih podatkov potrdite, da ste to vi</translation>
+<translation id="5121592697493894155">Iskanje Google v stranskem podoknu</translation>
 <translation id="5122786942953798871">Envelope (Cotton)</translation>
 <translation id="5123063207673082822">Konec tedna</translation>
 <translation id="5124797626438336458">Zaslon z napako za »Kupi zdaj, plačaj pozneje« je odprt pri polovični višini.</translation>
@@ -2918,6 +2920,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="5843987376989109187">Ta jezik še ni podprt.
     <ph name="BEGIN_LINK" />Več o tem<ph name="END_LINK" /></translation>
 <translation id="5848445080378515710">Ko pregledate naročilo, se morate prijaviti v račun pri ponudniku <ph name="BNPL_ISSUER_NAME" /> ali ga ustvariti. Ta račun bo samodejno povezan v Google Denarnici.</translation>
+<translation id="5848916806551637625">Račun Pix bo povezan z računom <ph name="ACCOUNT_EMAIL" />. Zaznavanje kode Pix lahko izklopite v <ph name="BEGIN_LINK1" />Chromovih nastavitvah<ph name="END_LINK1" />.</translation>
 <translation id="5851548754964597211">Seznam zavihkov</translation>
 <translation id="5851868085455377790">Izdajatelj</translation>
 <translation id="5852909432155870672">RA4</translation>
@@ -4429,6 +4432,7 @@ Dodatne podrobnosti:
 <translation id="8371841335382565017">Prikaz seznama naprav za predvajanje</translation>
 <translation id="8371889962595521444">Korenska potrdila po meri</translation>
 <translation id="8374636051559112948">Se razlikuje</translation>
+<translation id="8376752431516546391">Stransko podokno Iskanja Google</translation>
 <translation id="8377507422902936905">Naročila</translation>
 <translation id="837840316697671463">Če v napravi ne najdete datoteke, jo poiščite v storitvi <ph name="CLOUD_PROVIDER" />.</translation>
 <translation id="8378714024927312812">Upravlja vaša organizacija</translation>

@@ -661,6 +661,7 @@
 <translation id="2118132148597630479">ሲ5 ፖስታ</translation>
 <translation id="2119505898009119320">ለዚህ ተሰጥቷል፦ <ph name="ORGANIZATION" /> [<ph name="JURISDICTION" />]</translation>
 <translation id="2119867082804433120">ከታች በቀን በኩል ብስ</translation>
+<translation id="2121418473709291357">የChrome አሳሽ የደመና አስተዳደር ስለተሰናከለ ችላ ተብሏል።</translation>
 <translation id="2122214041802369259">ዋጋ ከፍተኛ ነው</translation>
 <translation id="2122719317867821810">ይህ መመሪያ እንደታሰበው እየሰራ ነው ነገር ግን የሚጋጭ እሴት በሌላ ቦታ የተቀናበረ ሲሆን በዚህ መመሪያ ተሽሯል።</translation>
 <translation id="2124081665399116863">ተሽከርካሪን Google Wallet ውስጥ ያዘምኑ</translation>
@@ -2479,6 +2480,7 @@
 <translation id="5115232566827194440">የተገደበ የሚተዳደር የእንግዳ ክፍለ ጊዜ መሻር</translation>
 <translation id="5115563688576182185">(64-ቢት)</translation>
 <translation id="5116015291385561204">ልዩ ጥንቃቄ የሚያስፈልገው መረጃን በራስ-ሰር ለመሙላት እርስዎ መሆንዎን ያረጋግጡ</translation>
+<translation id="5121592697493894155">የጎን ፓነል ውስጥ ያለ Google ፍለጋ</translation>
 <translation id="5122786942953798871">ፖስታ (ጥጥ)</translation>
 <translation id="5123063207673082822">የሳምንት እረፍት ቀን</translation>
 <translation id="5124797626438336458">የአሁን ይግዙ፣ በኋላ ይክፈሉ ስሕተት ማያ ገጽ በግማሽ ቁመት ተከፍቷል።</translation>
@@ -2915,6 +2917,7 @@
 <translation id="5843987376989109187">ይህ ቋንቋ ገና አይደገፍም።
     <ph name="BEGIN_LINK" />የበለጠ ለመረዳት<ph name="END_LINK" /></translation>
 <translation id="5848445080378515710">ትዕዛዝዎን ከገመገሙ በኋላ፣ በመለያ መግባት ወይም በ<ph name="BNPL_ISSUER_NAME" /> መለያ መፍጠር አለብዎት። ይህ መለያ በGoogle Wallet ውስጥ በራስ-ሰር ይገናኛል።</translation>
+<translation id="5848916806551637625">የPix መለያ ከ<ph name="ACCOUNT_EMAIL" /> ጋር ይገናኛል። የPix ኮድ ማወቂያን ለማጥፋት ወደ <ph name="BEGIN_LINK1" />Chrome ቅንብሮች<ph name="END_LINK1" /> ይሂዱ።</translation>
 <translation id="5851548754964597211">የትር ዝርዝር</translation>
 <translation id="5851868085455377790">ሰጪው</translation>
 <translation id="5852909432155870672">RA4</translation>
@@ -4426,6 +4429,7 @@
 <translation id="8371841335382565017">cast ማድረጊያ የመሣሪያ ዝርዝርን አሳይ</translation>
 <translation id="8371889962595521444">ብጁ የስር ቅንብሮች</translation>
 <translation id="8374636051559112948">ይለያያል</translation>
+<translation id="8376752431516546391">የGoogle ፍለጋ የጎን ፓነል</translation>
 <translation id="8377507422902936905">ትዕዛዞች</translation>
 <translation id="837840316697671463">በመሣሪያዎ ላይ ፋይል ማግኘት ካልቻሉ <ph name="CLOUD_PROVIDER" /> ላይ ይፈልጉት።</translation>
 <translation id="8378714024927312812">በእርስዎ ድርጅት የሚተዳደር</translation>

@@ -27,6 +27,7 @@
 <translation id="3812541808639806898">Visualizzazione testo alternativo immagine</translation>
 <translation id="381767806621926835">Fai clic con il pulsante destro del mouse su qualsiasi elemento con attributo "longdesc" o "aria-describedat" per accedere alla relativa descrizione dettagliata.</translation>
 <translation id="4023902424053835668">Scorri il testo delle pagine web utilizzando i tasti freccia.</translation>
+<translation id="4384008284958619421">Gli screen reader moderni e Google Chrome ora supportano in modo nativo le descrizioni degli elementi accessibili e gli standard ARIA.</translation>
 <translation id="4388820049312272371">Metti in evidenza la posizione del cursore con un breve flash.</translation>
 <translation id="4394049700291259645">Disabilita</translation>
 <translation id="4769065380738716500">Le immagini sono state sostituite dal rispettivo testo alternativo.</translation>
@@ -62,6 +63,7 @@
 <translation id="7658239707568436148">Annulla</translation>
 <translation id="786423340267544509">Aggiungi bordo a elementi con attributi aria-describedat o longdesc.</translation>
 <translation id="7942349550061667556">Rosso</translation>
+<translation id="8081200409424070383">Le descrizioni lunghe verranno ritirate il 20 novembre 2026.</translation>
 <translation id="8260673944985561857">Opzioni di navigazione con cursore</translation>
 <translation id="8321034316479930120">Norme relative alle animazioni</translation>
 <translation id="8480209185614411573">Contrasto elevato</translation>

@@ -19,6 +19,7 @@
 <translation id="1131805035311359397">암호가 정보 유출 및 다른 보안 문제로부터 안전한지 확인하려면 <ph name="BEGIN_LINK" />Chromium에 로그인<ph name="END_LINK" />하세요.</translation>
 <translation id="1145158441928281100">{COUNT,plural, =1{관리자의 요구에 따라 이 업데이트를 적용하려면 Chromium을 다시 실행해야 합니다. 시크릿 창 또는 보안 시크릿 창이 열려 있습니다. 다시 실행하면 해당 창은 다시 열리지 않습니다.}other{관리자의 요구에 따라 이 업데이트를 적용하려면 Chromium을 다시 실행해야 합니다. 프로필 전반에 #개의 시크릿 창 및 보안 시크릿 창이 열려 있습니다. 다시 실행하면 해당 창은 다시 열리지 않습니다.}}</translation>
 <translation id="1153368717515616349">Chromium 메뉴를 클릭합니다</translation>
+<translation id="1157952955648710254">Google 검색 측면 패널 닫기</translation>
 <translation id="1157985233335035034">최근에 사용한 언어</translation>
 <translation id="1184145431117212167">지원되지 않는 Windows 버전으로 인해 설치할 수 없습니다.</translation>
 <translation id="1185134272377778587">Chromium 정보</translation>
@@ -45,6 +46,7 @@
 <translation id="1383876407941801731">검색</translation>
 <translation id="1388276868779258475">Chromium 앱을 사용하여 이동 중에도 탐색하세요.</translation>
 <translation id="141901961143729572">의견 공유</translation>
+<translation id="1438812738230833934">측면 패널에서 Google 검색을 다시 열어 탐색 중에 질문할 수 있습니다.</translation>
 <translation id="1465192221147974788">창을 공유하려면 시스템 설정에서 Chromium의 화면 녹화를 허용하세요.</translation>
 <translation id="1478370723027452770">Chrome for Testing 관련 지원받기</translation>
 <translation id="147870194906295621"><ph name="DEVICE" />에서 저장된 정보 등을 사용하려면 Chromium에 로그인하세요</translation>
@@ -341,6 +343,7 @@
 <translation id="4470974262661801543">Google 계정에서 Chromium 데이터를 사용하고 저장하려면 비밀번호를 입력하세요</translation>
 <translation id="4493028449971051158">시작 오류: 관리자로 설치 프로그램을 실행하세요.</translation>
 <translation id="4501471624619070934">이 국가에서는 액세스가 제한되므로 설치할 수 없습니다.</translation>
+<translation id="4501839397124711198">측면 패널에 Google 검색을 고정하여 탐색 중에 질문할 수 있습니다.</translation>
 <translation id="4510853178268397146">이 확장 프로그램은 데이터 수집 및 사용 방식과 같은 개인 정보 보호 관행을 게시하지 않았습니다. Chromium에서 삭제할 것을 권장합니다.</translation>
 <translation id="452711251841752011">Chromium에 오신 것을 환영합니다. 새 브라우저 창이 열렸습니다</translation>
 <translation id="4531137820806573936">Chromium에서 주변 환경을 매핑하고 손을 추적하려면 권한이 필요합니다</translation>
@@ -384,8 +387,10 @@
 <translation id="4987820182225656817">게스트로 사용 기록을 남기지 않고 Chromium을 사용할 수 있습니다.</translation>
 <translation id="4992938037305302429">Chromium의 내 계정</translation>
 <translation id="4994636714258228724">Chromium에 본인 추가</translation>
+<translation id="5000497292978544380">Google 검색 AI 모드</translation>
 <translation id="504699503110800016">더보기 메뉴를 엽니다</translation>
 <translation id="5074496654342756568"><ph name="DEVICE_TYPE" />에서 Chromium으로 즐겨 사용하는 모든 Google 서비스에 액세스하세요.</translation>
+<translation id="5121592697493894155">측면 패널의 Google 검색</translation>
 <translation id="5123973130450702873">Chromium에서 손 추적 기능을 사용하려면 권한이 필요합니다.</translation>
 <translation id="5141988424377517949">최근에 사이트를 방문하지 않았습니다. Chromium에서 <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /> 권한을 삭제했습니다.</translation>
 <translation id="5171868502429358653">Chromium에 로그인</translation>
@@ -673,6 +678,7 @@ Chromium에서 설정을 복구할 수 없습니다.</translation>
 <translation id="7781047659465034537">Chromium을 기본 브라우저로 설정하고 작업 표시줄에 고정하세요</translation>
 <translation id="7786760609782648049">Chromium의 속도를 높여보세요</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> - Chromium Canary</translation>
+<translation id="7800043020703832708">측면 패널에서 Google 검색 닫기</translation>
 <translation id="7803986347287457849">내 인터넷 트래픽에 액세스할 수 있는 사용자가 내가 방문하는 사이트를 확인하기가 더 어려워집니다. Chromium은 DNS(도메인 이름 시스템)에서 사이트의 IP 주소를 조회하는 데 보안 연결을 사용합니다.</translation>
 <translation id="7810005234485217901">이미지 검색을 고정하면 쉽게 액세스할 수 있습니다</translation>
 <translation id="7813559034750130602">{COUNT,plural, =1{새 Chromium 업데이트가 있습니다. Chromium을 다시 실행하면 업데이트가 바로 적용됩니다. 시크릿 창 또는 보안 시크릿 창이 열려 있습니다. 다시 실행하면 해당 창은 다시 열리지 않습니다.}other{새 Chromium 업데이트가 있습니다. Chromium을 다시 실행하면 업데이트가 바로 적용됩니다. 프로필 전반에 #개의 시크릿 창 및 보안 시크릿 창이 열려 있습니다. 다시 실행하면 해당 창은 다시 열리지 않습니다.}}</translation>
@@ -687,6 +693,7 @@ Chromium에서 설정을 복구할 수 없습니다.</translation>
 <translation id="7873537467422636035">암호가 기억나지 않거나 이 설정을 변경하려면 <ph name="BEGIN_LINK" />계정에서 Chromium 데이터를 삭제<ph name="END_LINK" />하세요</translation>
 <translation id="7874369989024033742">필요할 때마다 빠르게 Chromium의 Gemini를 여세요</translation>
 <translation id="7888981273428720788">Chromium을 기본 브라우저로 설정</translation>
+<translation id="7904213866086517086">측면 패널에서 Google 검색 다시 열기</translation>
 <translation id="7934340546140346950">가능한 경우 Chromium이 비보안 연결을 HTTPS로 자동 업그레이드합니다.</translation>
 <translation id="7937630085815544518"><ph name="USER_EMAIL_ADDRESS" />(으)로 Chromium에 로그인되어 있습니다. 같은 계정으로 다시 로그인해 주세요.</translation>
 <translation id="7944602660083060118"><ph name="EXISTING_USER" /> 계정은 이미 로그인되어 있습니다. 방문 기록을 별도로 보관하려면 내 프로필에서 <ph name="USER_EMAIL_ADDRESS" /> 주소로 Chromium에 로그인하세요. 이렇게 하면 모든 기기에서 북마크 등을 사용할 수 있습니다.</translation>
@@ -741,14 +748,15 @@ Chromium에서 설정을 복구할 수 없습니다.</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. All rights reserved.</translation>
 <translation id="8372327902843331129">모든 기기에서 비밀번호 등을 사용하려면 Chromium에 로그인하세요. 로그인하면 이 비밀번호가 Google 계정에 저장됩니다.</translation>
 <translation id="837460953767177950">그런 다음 Chromium을 다시 시작해야 합니다.</translation>
+<translation id="8376752431516546391">Google 검색 측면 패널</translation>
 <translation id="8397248745433792218">Chromium에서 삭제할 것을 권장합니다. <ph name="BEGIN_LINK" />지원되는 확장 프로그램에 대해 자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="8401454788024434101">이 확장 프로그램은 개발자가 게시 취소했으며, 안전하지 않을 수 있습니다. 더 이상 개인 정보를 비롯한 방문 사이트의 데이터를 확인하고 변경할 수 없도록 Chromium에서 이 확장 프로그램을 삭제하세요.</translation>
+<translation id="8406687098231754303">툴바에 있는 '측면 패널의 Google 검색' 버튼을 통해 측면 패널에서 Google 검색을 다시 열어 탐색 중에 질문할 수 있습니다.</translation>
 <translation id="8416884904046428725">일부 데이터를 Google 계정에 저장하고 모든 기기에서 사용하려면 Chromium에서 본인 인증을 거쳐야 합니다. 지금 로그아웃하면 이 데이터가 삭제됩니다.</translation>
 <translation id="8417404458978023919">{0,plural, =1{1일 이내로 Chromium을 다시 시작해 주세요}other{#일 이내로 Chromium을 다시 시작해 주세요}}</translation>
 <translation id="8438543370129609977">이미지 검색을 사용하면 페이지 제목, URL, PDF를 포함한 콘텐츠가 서버로 전송됩니다. <ph name="LEARN_MORE" /></translation>
 <translation id="8447525028100794994">Chromium의 이미지 검색으로 검색하는 방법 자세히 알아보기</translation>
 <translation id="8453117565092476964">설치 프로그램 아카이브가 손상되었거나 잘못되었습니다. Chromium을 다시 다운로드하세요.</translation>
-<translation id="8458614432758743027">Chromium은 Windows 10 이상 버전에서 사용할 수 있습니다.</translation>
 <translation id="8463672209299734063">선택사항: 진단 및 사용 데이터를 Google에 자동으로 전송하여 ChromiumOS의 기능 및 성능 개선에 참여합니다.</translation>
 <translation id="8471947159125090285">Google 계정에서 Chromium 데이터를 사용하고 저장하려면 본인 인증을 완료하세요.</translation>
 <translation id="8482493977473846331">Chromium에 로그인하기 위한 메시지를 표시합니다.</translation>
@@ -760,6 +768,7 @@ Chromium에서 설정을 복구할 수 없습니다.</translation>
 <translation id="8555465886620020932">서비스 오류(<ph name="SERVICE_ERROR" />)가 발생했습니다.</translation>
 <translation id="8556055872671007529">일부 Chromium 기능 및 확장 프로그램에는 바로가기가 제공됩니다. 다시 사용 설정할 수 있습니다</translation>
 <translation id="8556420416730706394">측면 패널 상단의 고정 버튼을 클릭하여 이미지 검색을 고정하면 쉽게 액세스할 수 있습니다</translation>
+<translation id="8564408666201523086">완료되었습니다. 이제 측면 패널에서 Google 검색을 사용해 탐색 중에도 쉽게 질문할 수 있습니다.</translation>
 <translation id="856656450041460113">언어 목록 검색</translation>
 <translation id="8576826849825683917">여러 조직에서 Chromium을 관리합니다.</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> The Chromium Authors. All rights reserved.</translation>

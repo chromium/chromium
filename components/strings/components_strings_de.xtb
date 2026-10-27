@@ -659,6 +659,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="2118132148597630479">Umschlag C5</translation>
 <translation id="2119505898009119320">Ausgestellt für: <ph name="ORGANIZATION" /> [<ph name="JURISDICTION" />]</translation>
 <translation id="2119867082804433120">Lochung unten rechts</translation>
+<translation id="2121418473709291357">Ignoriert, weil die Chrome-Verwaltung über die Cloud deaktiviert ist.</translation>
 <translation id="2122214041802369259">Der Preis ist hoch</translation>
 <translation id="2122719317867821810">Diese Richtlinie funktioniert wie beabsichtigt, an anderer Stelle ist jedoch ein widersprüchlicher Wert festgelegt, der von dieser Richtlinie überschrieben wird.</translation>
 <translation id="2124081665399116863">Fahrzeug in Google Wallet aktualisieren</translation>
@@ -2468,6 +2469,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="5115232566827194440">Eingeschränkte verwaltete Gastsitzung überschreiben</translation>
 <translation id="5115563688576182185">(64-Bit)</translation>
 <translation id="5116015291385561204">Vor Autofill von vertraulichen Daten Identität bestätigen</translation>
+<translation id="5121592697493894155">Google Suche in der Seitenleiste</translation>
 <translation id="5122786942953798871">Umschlag (Baumwolle)</translation>
 <translation id="5123063207673082822">Wochenende</translation>
 <translation id="5124797626438336458">Der Fehlerbildschirm für „Jetzt kaufen, später bezahlen“ ist halb geöffnet.</translation>
@@ -2904,6 +2906,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="5843987376989109187">Diese Sprache wird noch nicht unterstützt.
     <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
 <translation id="5848445080378515710">Nachdem du deine Bestellung geprüft hast, musst du dich mit <ph name="BNPL_ISSUER_NAME" /> in deinem Konto anmelden oder ein neues Konto erstellen. Dieses Konto wird automatisch in Google Wallet verknüpft.</translation>
+<translation id="5848916806551637625">Das Pix-Konto wird mit <ph name="ACCOUNT_EMAIL" /> verknüpft. Wenn du die Erkennung von Pix-Codes deaktivieren möchtest, rufe die <ph name="BEGIN_LINK1" />Chrome-Einstellungen<ph name="END_LINK1" /> auf.</translation>
 <translation id="5851548754964597211">Tab-Liste</translation>
 <translation id="5851868085455377790">Aussteller</translation>
 <translation id="5852909432155870672">RA4</translation>
@@ -4405,6 +4408,7 @@ Weitere Details:
 <translation id="8371841335382565017">Geräteliste für das Streamen anzeigen</translation>
 <translation id="8371889962595521444">Benutzerdefinierte Root-Zertifikate</translation>
 <translation id="8374636051559112948">Variiert</translation>
+<translation id="8376752431516546391">Seitenleiste der Google Suche</translation>
 <translation id="8377507422902936905">Bestellungen</translation>
 <translation id="837840316697671463">Wenn du eine Datei auf deinem Gerät nicht findest, suche in <ph name="CLOUD_PROVIDER" /> danach.</translation>
 <translation id="8378714024927312812">Von deiner Organisation verwaltet</translation>

@@ -50,6 +50,7 @@
 <translation id="1165109137568919258">拍攝相片或從相片庫新增圖片，以進行搜尋</translation>
 <translation id="1173894706177603556">重新命名</translation>
 <translation id="1174479719160874822">Chrome 會在螢幕較窄時要求使用行動版網站</translation>
+<translation id="1174759280027683968">前往 Chrome</translation>
 <translation id="1175241315203286684">系統管理員可以從遠端變更你的設定檔和瀏覽器、透過報告分析瀏覽器的資訊，以及執行其他必要工作。這部裝置上的活動也可以透過 Chrome 以外的服務管理。</translation>
 <translation id="1177863135347784049">自訂</translation>
 <translation id="1181037720776840403">移除</translation>
@@ -608,6 +609,7 @@
 <translation id="3452832259067974318">為保護個人隱私，Chrome 不會在這個欄位中自動填入密碼。</translation>
 <translation id="3474624961160222204">以「<ph name="NAME" />」的身分繼續</translation>
 <translation id="3478363558367712427">你可以選擇搜尋引擎</translation>
+<translation id="3479552764303398839">現在不要</translation>
 <translation id="3482805106082349287">使用鍵盤、語音、無痕模式或相機搜尋</translation>
 <translation id="3487903178221457900">其他人 (包括應用程式) 可能可以存取匯出的檔案。匯出後，系統會從 Chrome 中刪除密碼。</translation>
 <translation id="3488199663160411179">名稱</translation>
@@ -896,6 +898,7 @@
 <translation id="4578289292431526768">開始設定</translation>
 <translation id="4583164079174244168">{MINUTES,plural, =1{# 分鐘前}other{# 分鐘前}}</translation>
 <translation id="4585751637295612750">開啟新分頁，將其新增至問題</translation>
+<translation id="4585793705637313973">編輯頁面</translation>
 <translation id="4587589328781138893">網站</translation>
 <translation id="4594952190837476234">這個離線版網頁是於 <ph name="CREATION_TIME" />建立，可能會和線上版本有所不同。</translation>
 <translation id="4595237294768457124">開啟新分頁</translation>
@@ -1536,6 +1539,7 @@
 <translation id="6996145122199359148">下載這個網頁</translation>
 <translation id="7007648447224463482">在新視窗中開啟所有書籤</translation>
 <translation id="7013762323294215682">這個密碼金鑰會儲存至密碼管理工具。凡是有權存取密碼管理工具的使用者，都能使用這個密碼金鑰。</translation>
+<translation id="7017219178341817193">新增網頁</translation>
 <translation id="7022756207310403729">在瀏覽器中開啟</translation>
 <translation id="7029809446516969842">密碼</translation>
 <translation id="7037994709569287156">將 Chrome 設為預設瀏覽器</translation>

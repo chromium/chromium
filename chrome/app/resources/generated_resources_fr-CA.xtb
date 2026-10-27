@@ -1836,6 +1836,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2423506062824112361">Échec du téléchargement du contenu pour une raison inconnue.</translation>
 <translation id="2423578206845792524">En&amp;registrer l'image sous...</translation>
 <translation id="2424424966051154874">{0,plural, =1{Fenêtre d'invité}one{Fenêtre d'invité (#)}other{Fenêtres d'invité (#)}}</translation>
+<translation id="2424762488607770568">Par défaut (correspond au système)</translation>
 <translation id="2426805022920575512">Choisir un autre compte</translation>
 <translation id="2427507373259914951">Clic gauche</translation>
 <translation id="2428245692671442472">{NUM_PASSWORDS,plural, =1{<ph name="DOMAIN_LINK" /> 1 compte, mot de passe enregistré uniquement sur cet appareil. Plus de détails}one{<ph name="DOMAIN_LINK" /> {NUM_PASSWORDS} compte, mot de passe enregistré uniquement sur cet appareil. Plus de détails}other{<ph name="DOMAIN_LINK" /> {NUM_PASSWORDS} comptes, mot de passe enregistré uniquement sur cet appareil. Plus de détails}}</translation>
@@ -5648,6 +5649,7 @@ Appuyez sur Ctrl+Alt+diminuer la luminosité pour dézoomer.</translation>
 <translation id="5280426389926346830">Créer un raccourci?</translation>
 <translation id="5280966903879030278">Utilisez un langage courant pour effectuer des recherches dans votre historique de navigation et trouver les sites que vous avez visités. Ce paramètre est désactivé.</translation>
 <translation id="5281013262333731149">S'ouvre dans : <ph name="OPEN_BROWSER" /></translation>
+<translation id="5283747245540449968">Couleurs de la page</translation>
 <translation id="5284107433515104664">Lors de la modification du mot de passe, le contenu de la page et les renseignements connexes sont envoyés à Google et peuvent être examinés par des humains pour améliorer cette fonctionnalité. Votre mot de passe est chiffré et n'est jamais vu par personne.</translation>
 <translation id="5284445933715251131">Poursuivre le téléchargement</translation>
 <translation id="5285635972691565180">Écran <ph name="DISPLAY_ID" /></translation>
@@ -6537,6 +6539,7 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="5989497858237037960">Lorsque vous naviguez sur des sites, le contenu de leurs pages est chiffré et enregistré sur votre appareil. Cela peut avoir une incidence sur les performances de Chrome.</translation>
 <translation id="5990266201903445068">Wi-Fi seulement</translation>
 <translation id="5990386583461751448">Traduit</translation>
+<translation id="5991039386730545918">Le thème de couleurs de la page sélectionné s'applique uniquement lorsque le mode Contraste élevé du système est activé</translation>
 <translation id="5992225669837656567">Toutes les souris ont été déconnectées</translation>
 <translation id="5992652489368666106">Aucune bordure</translation>
 <translation id="5996490984199062729">Votre profil n'a pas été configuré</translation>
@@ -7936,6 +7939,7 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou afficher plu
 <translation id="706949303827219454">Ouvre la page des paramètres de sécurité dans un nouvel onglet</translation>
 <translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{Nouveau mot de passe pour ce site}one{Nouveau mot de passe pour ce site}other{Nouveaux mots de passe pour ce site}}</translation>
 <translation id="7070484045139057854">Cette extension peut lire et modifier les données du site</translation>
+<translation id="7071521146534760487">Gérer le compte</translation>
 <translation id="7072010813301522126">Nom du raccourci</translation>
 <translation id="7072078320324181561">Les services système ainsi que les applis et les sites Web disposant de l'autorisation de localisation peuvent utiliser votre position. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
 <translation id="7072573590175540692">Raccourcis de fonctionnalités et d'extensions accessibles</translation>
@@ -8572,6 +8576,7 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou afficher plu
 <translation id="755472745191515939">Votre administrateur n'autorise pas l'utilisation de cette langue</translation>
 <translation id="7554791636758816595">Nouvel onglet</translation>
 <translation id="7557194624273628371">Redirection de port Linux</translation>
+<translation id="7557508262441527045">Déconnecté</translation>
 <translation id="7561196759112975576">Toujours</translation>
 <translation id="7561759921596375678">Activer le volume</translation>
 <translation id="7563576896417108627">Personnalisez et contrôlez <ph name="APP_NAME" />. Une mise à jour est offerte.</translation>
@@ -9321,6 +9326,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8118362518458010043">Désactivée par Chrome. Cette extension est peut-être dangereuse.</translation>
 <translation id="8118448640060360549">{EXTENSIONS_COUNT,plural, =1{# favori}one{# favori}other{# favoris}}</translation>
 <translation id="8118488170956489476">Votre <ph name="BEGIN_LINK" />navigateur est géré<ph name="END_LINK" /> par votre organisation</translation>
+<translation id="8118496140027032067">Remplacez les couleurs des pages Web par des thèmes à contraste élevé ou désactivez les couleurs forcées</translation>
 <translation id="8118515372935001629">Fréquence d'actualisation de l'affichage</translation>
 <translation id="8118860139461251237">Gérer vos téléchargements</translation>
 <translation id="8119438628456698432">Création des fichiers journaux en cours…</translation>
@@ -9998,6 +10004,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8648408795949963811">Température des couleurs Éclairage nocturne</translation>
 <translation id="8648544143274677280"><ph name="SITE_NAME" /> veut : <ph name="FIRST_PERMISSION" />, <ph name="SECOND_PERMISSION" /> et effectuer d'autres actions</translation>
 <translation id="8648889679430451455">Effacer les données de personnalisation</translation>
+<translation id="8649290269169747916">Utiliser les couleurs par défaut des pages lorsque le mode Contraste élevé du système est désactivé</translation>
 <translation id="8651585100578802546">Forcer l'actualisation de la page</translation>
 <translation id="8651806635673244884">Vous pouvez faire remonter vos onglets en faisant un clic droit sur n'importe quel onglet et en sélectionnant « Afficher les onglets horizontalement »</translation>
 <translation id="8652400352452647993">Erreur concernant l'empaquetage d'extensions</translation>
