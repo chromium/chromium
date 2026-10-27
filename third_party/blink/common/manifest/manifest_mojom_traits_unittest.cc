@@ -152,4 +152,101 @@ TEST_F(ManifestMojomTraitsTest, ImageResourceEmptySrcFails) {
           original, round_tripped));
 }
 
+TEST_F(ManifestMojomTraitsTest, NestedStructTraitsRoundTrip) {
+  // Screenshot
+  {
+    Manifest::Screenshot original;
+    original.image.src = GURL("https://example.com/screenshot.png");
+    original.image.type = u"image/png";
+    original.image.sizes.emplace_back(1280, 720);
+    original.form_factor = mojom::ManifestScreenshot_FormFactor::kWide;
+    original.label = u"Wide screenshot";
+    Manifest::Screenshot round_tripped;
+    EXPECT_TRUE(mojo::test::SerializeAndDeserialize<mojom::ManifestScreenshot>(
+        original, round_tripped));
+    EXPECT_EQ(original, round_tripped);
+  }
+
+  // FileHandler
+  {
+    Manifest::FileHandler original;
+    original.action = GURL("https://example.com/open");
+    original.name = u"Text files";
+    original.accept[u"text/plain"].push_back(u".txt");
+    original.accept[u"text/plain"].push_back(u".text");
+    original.launch_type = Manifest::FileHandler::LaunchType::kMultipleClients;
+    Manifest::FileHandler round_tripped;
+    EXPECT_TRUE(mojo::test::SerializeAndDeserialize<mojom::ManifestFileHandler>(
+        original, round_tripped));
+    EXPECT_EQ(original, round_tripped);
+  }
+
+  // ProtocolHandler
+  {
+    Manifest::ProtocolHandler original;
+    original.protocol = u"web+custom";
+    original.url = GURL("https://example.com/handle?p=%s");
+    Manifest::ProtocolHandler round_tripped;
+    EXPECT_TRUE(
+        mojo::test::SerializeAndDeserialize<mojom::ManifestProtocolHandler>(
+            original, round_tripped));
+    EXPECT_EQ(original, round_tripped);
+  }
+
+  // ScopeExtension
+  {
+    Manifest::ScopeExtension original;
+    original.origin = url::Origin::Create(GURL("https://sub.example.com"));
+    original.has_origin_wildcard = true;
+    Manifest::ScopeExtension round_tripped;
+    EXPECT_TRUE(
+        mojo::test::SerializeAndDeserialize<mojom::ManifestScopeExtension>(
+            original, round_tripped));
+    EXPECT_EQ(original, round_tripped);
+  }
+
+  // LockScreen
+  {
+    Manifest::LockScreen original;
+    original.start_url = GURL("https://example.com/lock");
+    Manifest::LockScreen round_tripped;
+    EXPECT_TRUE(mojo::test::SerializeAndDeserialize<mojom::ManifestLockScreen>(
+        original, round_tripped));
+    EXPECT_EQ(original, round_tripped);
+  }
+
+  // NoteTaking
+  {
+    Manifest::NoteTaking original;
+    original.new_note_url = GURL("https://example.com/new-note");
+    Manifest::NoteTaking round_tripped;
+    EXPECT_TRUE(mojo::test::SerializeAndDeserialize<mojom::ManifestNoteTaking>(
+        original, round_tripped));
+    EXPECT_EQ(original, round_tripped);
+  }
+
+  // MigrateFrom
+  {
+    Manifest::MigrateFrom original;
+    original.id = GURL("https://example.com/old/id");
+    original.install_url = GURL("https://example.com/old/install");
+    original.behavior = mojom::ManifestMigrationBehavior::kForce;
+    Manifest::MigrateFrom round_tripped;
+    EXPECT_TRUE(mojo::test::SerializeAndDeserialize<mojom::ManifestMigrateFrom>(
+        original, round_tripped));
+    EXPECT_EQ(original, round_tripped);
+  }
+
+  // MigrateTo
+  {
+    Manifest::MigrateTo original;
+    original.id = GURL("https://example.com/new/id");
+    original.install_url = GURL("https://example.com/new/install");
+    Manifest::MigrateTo round_tripped;
+    EXPECT_TRUE(mojo::test::SerializeAndDeserialize<mojom::ManifestMigrateTo>(
+        original, round_tripped));
+    EXPECT_EQ(original, round_tripped);
+  }
+}
+
 }  // namespace blink

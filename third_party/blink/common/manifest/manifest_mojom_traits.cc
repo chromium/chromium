@@ -21,6 +21,7 @@
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 #include "third_party/blink/public/mojom/manifest/manifest_launch_handler.mojom.h"
 #include "ui/gfx/geometry/mojom/geometry_mojom_traits.h"
+#include "url/mojom/origin_mojom_traits.h"
 #include "url/mojom/url_gurl_mojom_traits.h"
 #include "url/url_constants.h"
 #include "url/url_util.h"
@@ -30,6 +31,15 @@ namespace {
 
 // A wrapper around std::optional<std::u16string> so a custom StructTraits
 // specialization can enforce maximum string length.
+//
+// NOTE: Do NOT use `TruncatedString16` in newly typemapped Manifest structs or
+// `blink::Manifest` itself. Because `blink::ManifestParser` populates
+// `mojom::blink::Manifest` directly without 4 KiB truncation (unlike URLs,
+// where `url::kMaxURLChars` is enforced in both Blink and non-Blink Mojo traits
+// and checked in `blink::ManifestManager::ResolveCallbacks`), using
+// `TruncatedString16` causes valid manifests with strings > 4 KiB from the
+// renderer to fail Mojo deserialization. See `internal::TruncateString16` in
+// `manifest_mojom_traits.h` for details.
 struct TruncatedString16 {
   std::optional<std::u16string> string;
 };
@@ -358,6 +368,93 @@ bool StructTraits<blink::mojom::DisplayOverrideItemDataView,
   }
 
   return true;
+}
+
+bool StructTraits<blink::mojom::ManifestScreenshotDataView,
+                  ::blink::Manifest::Screenshot>::
+    Read(blink::mojom::ManifestScreenshotDataView data,
+         ::blink::Manifest::Screenshot* out) {
+  if (!data.ReadImage(&out->image)) {
+    return false;
+  }
+  if (!data.ReadFormFactor(&out->form_factor)) {
+    return false;
+  }
+  if (!data.ReadLabel(&out->label)) {
+    return false;
+  }
+  return true;
+}
+
+bool StructTraits<blink::mojom::ManifestFileHandlerDataView,
+                  ::blink::Manifest::FileHandler>::
+    Read(blink::mojom::ManifestFileHandlerDataView data,
+         ::blink::Manifest::FileHandler* out) {
+  if (!data.ReadAction(&out->action)) {
+    return false;
+  }
+  if (!data.ReadName(&out->name)) {
+    return false;
+  }
+  if (!data.ReadAccept(&out->accept)) {
+    return false;
+  }
+  return data.ReadLaunchType(&out->launch_type);
+}
+
+bool StructTraits<blink::mojom::ManifestProtocolHandlerDataView,
+                  ::blink::Manifest::ProtocolHandler>::
+    Read(blink::mojom::ManifestProtocolHandlerDataView data,
+         ::blink::Manifest::ProtocolHandler* out) {
+  if (!data.ReadProtocol(&out->protocol)) {
+    return false;
+  }
+  return data.ReadUrl(&out->url);
+}
+
+bool StructTraits<blink::mojom::ManifestScopeExtensionDataView,
+                  ::blink::Manifest::ScopeExtension>::
+    Read(blink::mojom::ManifestScopeExtensionDataView data,
+         ::blink::Manifest::ScopeExtension* out) {
+  out->has_origin_wildcard = data.has_origin_wildcard();
+  return data.ReadOrigin(&out->origin);
+}
+
+bool StructTraits<blink::mojom::ManifestLockScreenDataView,
+                  ::blink::Manifest::LockScreen>::
+    Read(blink::mojom::ManifestLockScreenDataView data,
+         ::blink::Manifest::LockScreen* out) {
+  return data.ReadStartUrl(&out->start_url);
+}
+
+bool StructTraits<blink::mojom::ManifestNoteTakingDataView,
+                  ::blink::Manifest::NoteTaking>::
+    Read(blink::mojom::ManifestNoteTakingDataView data,
+         ::blink::Manifest::NoteTaking* out) {
+  return data.ReadNewNoteUrl(&out->new_note_url);
+}
+
+bool StructTraits<blink::mojom::ManifestMigrateFromDataView,
+                  ::blink::Manifest::MigrateFrom>::
+    Read(blink::mojom::ManifestMigrateFromDataView data,
+         ::blink::Manifest::MigrateFrom* out) {
+  if (!data.ReadId(&out->id)) {
+    return false;
+  }
+  if (!data.ReadInstallUrl(&out->install_url)) {
+    return false;
+  }
+  return data.ReadBehavior(&out->behavior);
+}
+
+bool StructTraits<blink::mojom::ManifestMigrateToDataView,
+                  ::blink::Manifest::MigrateTo>::
+    Read(blink::mojom::ManifestMigrateToDataView data,
+         ::blink::Manifest::MigrateTo* out) {
+  if (!data.ReadId(&out->id)) {
+    return false;
+  }
+  return data.ReadInstallUrl(&out->install_url);
 }
 
 }  // namespace mojo

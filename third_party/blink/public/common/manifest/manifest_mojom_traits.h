@@ -10,8 +10,10 @@
 #include <variant>
 #include <vector>
 
+#include "base/containers/flat_map.h"
 #include "base/strings/utf_string_conversions.h"
 #include "mojo/public/cpp/bindings/map_traits_absl.h"
+#include "mojo/public/cpp/bindings/map_traits_flat_map.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
 #include "third_party/blink/public/common/common_export.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
@@ -23,9 +25,26 @@ namespace mojo {
 namespace internal {
 
 inline std::u16string_view TruncateString16(const std::u16string& string) {
-  // We restrict the maximum length for all the strings inside the Manifest
-  // when it is sent over Mojo. The renderer process truncates the strings
-  // before sending the Manifest and the browser process validates that.
+  // Legacy 4 KiB string limit used by older nested Manifest `StructTraits`.
+  //
+  // NOTE: Do NOT use `TruncateString16` or `TruncatedString16` in newly
+  // typemapped Manifest structs (or `blink::Manifest` itself). These
+  // `StructTraits` are only registered in `cpp_typemaps` (browser / non-Blink),
+  // NOT `blink_cpp_typemaps`. In the Blink renderer, `blink::ManifestParser`
+  // populates `mojom::blink::Manifest` directly using `blink::String` without
+  // truncating strings to 4 KiB, so `TruncateString16` is never called during
+  // renderer-to-browser IPC serialization. Enforcing `TruncatedString16` on
+  // deserialization causes valid manifests from the renderer with strings
+  // exceeding 4 KiB to fail Mojo deserialization in the browser.
+  //
+  // By contrast, for URLs, Mojo enforces a 2 MiB size limit
+  // (`url::kMaxURLChars`) in both `kurl_mojom_traits.h` (Blink) and
+  // `url_gurl_mojom_traits.cc` (non-Blink), which silently serializes any
+  // `KURL` or `GURL` exceeding `url::kMaxURLChars` as an empty/invalid URL. To
+  // prevent silent URL truncation from breaking manifest invariants,
+  // `blink::ManifestManager::ResolveCallbacks` explicitly checks for URLs
+  // exceeding `url::kMaxURLChars` in Blink before sending the manifest over
+  // Mojo.
   return std::u16string_view(string).substr(0, 4 * 1024);
 }
 
@@ -367,6 +386,137 @@ struct BLINK_COMMON_EXPORT StructTraits<
 
   static bool Read(blink::mojom::DisplayOverrideItemDataView data,
                    ::blink::Manifest::DisplayOverride* out);
+};
+
+template <>
+struct BLINK_COMMON_EXPORT
+    StructTraits<blink::mojom::ManifestScreenshotDataView,
+                 ::blink::Manifest::Screenshot> {
+  static const ::blink::Manifest::ImageResource& image(
+      const ::blink::Manifest::Screenshot& screenshot) {
+    return screenshot.image;
+  }
+  static ::blink::mojom::ManifestScreenshot_FormFactor form_factor(
+      const ::blink::Manifest::Screenshot& screenshot) {
+    return screenshot.form_factor;
+  }
+  static const std::optional<std::u16string>& label(
+      const ::blink::Manifest::Screenshot& screenshot) {
+    return screenshot.label;
+  }
+  static bool Read(blink::mojom::ManifestScreenshotDataView data,
+                   ::blink::Manifest::Screenshot* out);
+};
+
+template <>
+struct BLINK_COMMON_EXPORT
+    StructTraits<blink::mojom::ManifestFileHandlerDataView,
+                 ::blink::Manifest::FileHandler> {
+  static const GURL& action(const ::blink::Manifest::FileHandler& handler) {
+    return handler.action;
+  }
+  static const std::u16string& name(
+      const ::blink::Manifest::FileHandler& handler) {
+    return handler.name;
+  }
+  static const base::flat_map<std::u16string, std::vector<std::u16string>>&
+  accept(const ::blink::Manifest::FileHandler& handler) {
+    return handler.accept;
+  }
+  static ::blink::mojom::ManifestFileHandler_LaunchType launch_type(
+      const ::blink::Manifest::FileHandler& handler) {
+    return handler.launch_type;
+  }
+  static bool Read(blink::mojom::ManifestFileHandlerDataView data,
+                   ::blink::Manifest::FileHandler* out);
+};
+
+template <>
+struct BLINK_COMMON_EXPORT
+    StructTraits<blink::mojom::ManifestProtocolHandlerDataView,
+                 ::blink::Manifest::ProtocolHandler> {
+  static const std::u16string& protocol(
+      const ::blink::Manifest::ProtocolHandler& handler) {
+    return handler.protocol;
+  }
+  static const GURL& url(const ::blink::Manifest::ProtocolHandler& handler) {
+    return handler.url;
+  }
+  static bool Read(blink::mojom::ManifestProtocolHandlerDataView data,
+                   ::blink::Manifest::ProtocolHandler* out);
+};
+
+template <>
+struct BLINK_COMMON_EXPORT
+    StructTraits<blink::mojom::ManifestScopeExtensionDataView,
+                 ::blink::Manifest::ScopeExtension> {
+  static const url::Origin& origin(
+      const ::blink::Manifest::ScopeExtension& ext) {
+    return ext.origin;
+  }
+  static bool has_origin_wildcard(
+      const ::blink::Manifest::ScopeExtension& ext) {
+    return ext.has_origin_wildcard;
+  }
+  static bool Read(blink::mojom::ManifestScopeExtensionDataView data,
+                   ::blink::Manifest::ScopeExtension* out);
+};
+
+template <>
+struct BLINK_COMMON_EXPORT
+    StructTraits<blink::mojom::ManifestLockScreenDataView,
+                 ::blink::Manifest::LockScreen> {
+  static const GURL& start_url(
+      const ::blink::Manifest::LockScreen& lock_screen) {
+    return lock_screen.start_url;
+  }
+  static bool Read(blink::mojom::ManifestLockScreenDataView data,
+                   ::blink::Manifest::LockScreen* out);
+};
+
+template <>
+struct BLINK_COMMON_EXPORT
+    StructTraits<blink::mojom::ManifestNoteTakingDataView,
+                 ::blink::Manifest::NoteTaking> {
+  static const GURL& new_note_url(
+      const ::blink::Manifest::NoteTaking& note_taking) {
+    return note_taking.new_note_url;
+  }
+  static bool Read(blink::mojom::ManifestNoteTakingDataView data,
+                   ::blink::Manifest::NoteTaking* out);
+};
+
+template <>
+struct BLINK_COMMON_EXPORT
+    StructTraits<blink::mojom::ManifestMigrateFromDataView,
+                 ::blink::Manifest::MigrateFrom> {
+  static const GURL& id(const ::blink::Manifest::MigrateFrom& migrate_from) {
+    return migrate_from.id;
+  }
+  static const std::optional<GURL>& install_url(
+      const ::blink::Manifest::MigrateFrom& migrate_from) {
+    return migrate_from.install_url;
+  }
+  static ::blink::mojom::ManifestMigrationBehavior behavior(
+      const ::blink::Manifest::MigrateFrom& migrate_from) {
+    return migrate_from.behavior;
+  }
+  static bool Read(blink::mojom::ManifestMigrateFromDataView data,
+                   ::blink::Manifest::MigrateFrom* out);
+};
+
+template <>
+struct BLINK_COMMON_EXPORT StructTraits<blink::mojom::ManifestMigrateToDataView,
+                                        ::blink::Manifest::MigrateTo> {
+  static const GURL& id(const ::blink::Manifest::MigrateTo& migrate_to) {
+    return migrate_to.id;
+  }
+  static const GURL& install_url(
+      const ::blink::Manifest::MigrateTo& migrate_to) {
+    return migrate_to.install_url;
+  }
+  static bool Read(blink::mojom::ManifestMigrateToDataView data,
+                   ::blink::Manifest::MigrateTo* out);
 };
 
 }  // namespace mojo
