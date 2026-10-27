@@ -219,4 +219,11 @@ public class TabBottomSheetSkeletonCoordinatorUnitTest {
         assertNotNull(bottomGroup);
         assertEquals(1.0f, bottomGroup.getChildAt(0).getAlpha(), EPSILON);
     }
+
+    @Test
+    public void testUpdateVisibleHeight_NegativeHeightClampedToZero() {
+        TabBottomSheetSkeletonView skeletonView = mCoordinator.getSkeletonViewForTesting();
+        mCoordinator.updateVisibleHeight(-50);
+        assertEquals(0, skeletonView.getLayoutParams().height);
+    }
 }

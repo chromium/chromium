@@ -69,6 +69,7 @@ public class TabBottomSheetSkeletonCoordinator implements ResizingPlaceholderCoo
 
     @Override
     public void updateVisibleHeight(@Px int visibleHeight) {
+        visibleHeight = Math.max(0, visibleHeight);
         mLastVisibleHeight = visibleHeight;
         ViewGroup.LayoutParams params = mSkeletonView.getLayoutParams();
         if (params != null && params.height != visibleHeight) {

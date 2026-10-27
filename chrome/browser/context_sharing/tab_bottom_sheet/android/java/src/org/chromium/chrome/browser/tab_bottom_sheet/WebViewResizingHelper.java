@@ -101,6 +101,7 @@ public class WebViewResizingHelper {
     private @Nullable WebContents mWebContents;
     private boolean mIsViewportSizeFixed;
     private boolean mPauseInsetUpdates;
+    private @Nullable TimeoutRunnable mPendingTimeoutRunnable;
 
     /**
      * Constructs a {@link WebViewResizingHelper} with a nullable {@link CoBrowseComponentProvider}.
@@ -188,6 +189,10 @@ public class WebViewResizingHelper {
     private void resetInternal(boolean reattachPlaceholder) {
         if (mPlaceholderCoordinator != null) {
             mPlaceholderCoordinator.setIsResizing(false);
+        }
+        if (mPendingTimeoutRunnable != null) {
+            mPendingTimeoutRunnable.cancel();
+            mPendingTimeoutRunnable = null;
         }
         mAnimationHandler.forceFinishAnimation();
         mResizingContainer.removeAllViews();
@@ -327,13 +332,13 @@ public class WebViewResizingHelper {
         webView.setVisibility(View.VISIBLE);
 
         if (sizeChanged) {
-            TimeoutRunnable timeoutRunnable =
+            mPendingTimeoutRunnable =
                     new TimeoutRunnable(
                             this::onNextFrameAfterResize,
                             this::onNextFrameAfterResize,
                             TIMEOUT_RUNNABLE_TIMEOUT_MS);
-            timeoutRunnable.startTimeout();
-            mThinWebView.runOnNextFrame(timeoutRunnable);
+            mPendingTimeoutRunnable.startTimeout();
+            mThinWebView.runOnNextFrame(mPendingTimeoutRunnable);
         } else {
             onNextFrameAfterResize();
         }
@@ -445,5 +450,9 @@ public class WebViewResizingHelper {
     /** Returns the {@link ResizingPlaceholderCoordinator} managing the placeholder view. */
     @Nullable ResizingPlaceholderCoordinator getPlaceholderCoordinator() {
         return mPlaceholderCoordinator;
+    }
+
+    @Nullable TimeoutRunnable getPendingTimeoutRunnableForTesting() {
+        return mPendingTimeoutRunnable;
     }
 }

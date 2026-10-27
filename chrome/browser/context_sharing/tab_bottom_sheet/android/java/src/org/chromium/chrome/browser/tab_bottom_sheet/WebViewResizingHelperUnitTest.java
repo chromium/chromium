@@ -831,4 +831,32 @@ public class WebViewResizingHelperUnitTest {
 
         helper.destroy();
     }
+
+    @Test
+    public void testReset_CancelsPendingTimeoutRunnable() {
+        mHelper.setThinWebView(mMockThinWebView, mMockWebContents);
+        mView.layout(0, 0, 100, 200);
+        FrameLayout container = (FrameLayout) mHelper.getResizingContainer();
+
+        doAnswer(invocation -> null).when(mMockThinWebView).runOnNextFrame(any());
+
+        when(mMockWebContents.getWidth()).thenReturn(ViewUtils.pxToDp(mContext, 100));
+        when(mMockWebContents.getHeight()).thenReturn(ViewUtils.pxToDp(mContext, 200));
+
+        ResizeLock lock = mHelper.requestResize();
+        assertNotNull(lock);
+
+        container.measure(
+                View.MeasureSpec.makeMeasureSpec(300, View.MeasureSpec.EXACTLY),
+                View.MeasureSpec.makeMeasureSpec(400, View.MeasureSpec.EXACTLY));
+        container.layout(0, 0, 300, 400);
+
+        lock.unlock();
+
+        assertNotNull(mHelper.getPendingTimeoutRunnableForTesting());
+
+        mHelper.reset();
+
+        assertNull(mHelper.getPendingTimeoutRunnableForTesting());
+    }
 }
