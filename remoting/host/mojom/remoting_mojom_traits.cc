@@ -679,7 +679,6 @@ bool mojo::StructTraits<remoting::mojom::AgentStatusDataView,
     return false;
   }
   out_status->Clear();
-  out_status->set_terminal_id(data_view.terminal_id());
   if (state.has_value()) {
     out_status->set_agent_state(*state);
   }

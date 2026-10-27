@@ -35,7 +35,7 @@
 #if !BUILDFLAG(IS_CHROMEOS)
 #include "remoting/host/chromoting_host_services_client.h"
 #include "remoting/host/mojom/chromoting_host_services.mojom.h"
-#include "remoting/proto/control.pb.h"
+#include "remoting/proto/terminal.pb.h"
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_LINUX)
@@ -236,9 +236,9 @@ MainRoutineFn SelectMainRoutine(const std::string& process_type) {
 constexpr base::TimeDelta kAgentStatusTimeout = base::Seconds(5);
 
 int SendAgentStatusMain(const base::CommandLine* command_line) {
-  std::optional<protocol::TerminalControl::AgentInfo> status =
+  auto parsed_args =
       ChromotingHostServicesClient::ParseAgentStatusArgs(command_line);
-  if (!status.has_value()) {
+  if (!parsed_args.has_value()) {
     Usage(command_line->GetProgram());
     return kInvalidCommandLineExitCode;
   }
@@ -264,12 +264,13 @@ int SendAgentStatusMain(const base::CommandLine* command_line) {
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, run_loop.QuitClosure(), kAgentStatusTimeout);
   session_services->SetAgentStatus(
-      *status, base::BindOnce(
-                   [](bool* succeeded, base::OnceClosure quit_closure) {
-                     *succeeded = true;
-                     std::move(quit_closure).Run();
-                   },
-                   &succeeded, run_loop.QuitClosure()));
+      parsed_args->terminal_id, std::move(parsed_args->status),
+      base::BindOnce(
+          [](bool* succeeded, base::OnceClosure quit_closure) {
+            *succeeded = true;
+            std::move(quit_closure).Run();
+          },
+          &succeeded, run_loop.QuitClosure()));
   run_loop.Run();
 
   return succeeded ? kSuccessExitCode : kInitializationFailed;

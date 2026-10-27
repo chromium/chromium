@@ -45,5 +45,5 @@ interface ChromotingSessionServices {
   // Updates the status of an AI coding agent running on the host and forwards
   // it to the connected client. Successive invocations of this method patch the
   // existing status, leaving omitted optional fields unchanged.
-  SetAgentStatus(AgentStatus agent_status) => ();
+  SetAgentStatus(int32 terminal_id, AgentStatus agent_status) => ();
 };

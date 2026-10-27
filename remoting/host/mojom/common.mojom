@@ -205,7 +205,7 @@ struct SessionOptions {
 // Current state of an AI coding agent running on the host.
 // Maps to C++ enum:
 // `::remoting::protocol::TerminalControl_AgentInfo_AgentState`
-// (defined in remoting/proto/control.pb.h).
+// (defined in remoting/proto/terminal.pb.h).
 enum AgentState {
   kIdle = 1,
   kWorking = 2,
@@ -218,16 +218,13 @@ enum AgentState {
 
 // Status of a terminal / AI coding agent running on the host.
 // Maps to C++ type: `::remoting::protocol::TerminalControl_AgentInfo`
-// (defined in remoting/proto/control.pb.h).
+// (defined in remoting/proto/terminal.pb.h).
 struct AgentStatus {
-  // The terminal in which the agent is running.
-  int32 terminal_id;
-
   // The current state of the agent, if being updated.
   AgentState? agent_state;
 
   // The title for the terminal tab, if being updated.
   string? conversation_title;
 };
-// LINT.ThenChange(//remoting/proto/control.proto:AgentStatus)
+// LINT.ThenChange(//remoting/proto/terminal.proto:AgentStatus)
 

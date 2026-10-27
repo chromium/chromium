@@ -79,6 +79,7 @@
 #include "remoting/host/webauthn/remote_webauthn_state_change_notifier.h"
 #include "remoting/proto/control.pb.h"
 #include "remoting/proto/event.pb.h"
+#include "remoting/proto/terminal.pb.h"
 #include "remoting/protocol/audio_sample_info.h"
 #include "remoting/protocol/audio_stream.h"
 #include "remoting/protocol/authenticator.h"
@@ -685,12 +686,12 @@ void PeerSessionImpl::ControlTerminal(
 }
 
 void PeerSessionImpl::SetAgentStatus(
+    int32_t terminal_id,
     const protocol::TerminalControl::AgentInfo& agent_status,
     SetAgentStatusCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   std::move(callback).Run();
-  if (!channels_connected_ || !terminal_session_manager_ ||
-      !agent_status.has_terminal_id()) {
+  if (!channels_connected_ || !terminal_session_manager_) {
     return;
   }
 
@@ -702,7 +703,6 @@ void PeerSessionImpl::SetAgentStatus(
     return;
   }
 
-  int32_t terminal_id = agent_status.terminal_id();
   if (!terminal_session_manager_->GetTerminalSession(terminal_id)) {
     LOG(WARNING) << "Dropping SetAgentStatus for unknown terminal ID: "
                  << terminal_id;

@@ -47,6 +47,7 @@
 #include "remoting/host/webauthn/remote_webauthn_state_change_notifier.h"
 #include "remoting/proto/control.pb.h"
 #include "remoting/proto/event.pb.h"
+#include "remoting/proto/terminal.pb.h"
 #include "remoting/protocol/clipboard_stub.h"
 #include "remoting/protocol/mouse_cursor_monitor.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -407,7 +408,8 @@ class MockChromotingSessionServices : public mojom::ChromotingSessionServices {
 #endif
   MOCK_METHOD(void,
               SetAgentStatus,
-              (const protocol::TerminalControl::AgentInfo& agent_status,
+              (int32_t terminal_id,
+               const protocol::TerminalControl::AgentInfo& agent_status,
                SetAgentStatusCallback callback),
               (override));
 };

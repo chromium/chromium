@@ -37,6 +37,7 @@
 #include "remoting/base/source_location.h"
 #include "remoting/host/mojom/common.mojom-shared.h"
 #include "remoting/proto/control.pb.h"
+#include "remoting/proto/terminal.pb.h"
 
 #if BUILDFLAG(REMOTING_MULTI_PROCESS)
 #include "remoting/host/base/desktop_environment_options.h"
@@ -1785,11 +1786,6 @@ template <>
 class StructTraits<remoting::mojom::AgentStatusDataView,
                    ::remoting::protocol::TerminalControl_AgentInfo> {
  public:
-  static int32_t terminal_id(
-      const ::remoting::protocol::TerminalControl_AgentInfo& status) {
-    return status.terminal_id();
-  }
-
   static std::optional<
       ::remoting::protocol::TerminalControl_AgentInfo_AgentState>
   agent_state(const ::remoting::protocol::TerminalControl_AgentInfo& status) {

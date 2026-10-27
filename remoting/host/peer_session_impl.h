@@ -42,6 +42,7 @@
 #include "remoting/host/terminal_error.h"
 #include "remoting/proto/action.pb.h"
 #include "remoting/proto/control.pb.h"
+#include "remoting/proto/terminal.pb.h"
 #include "remoting/protocol/audio_sample_info.h"
 #include "remoting/protocol/clipboard_echo_filter.h"
 #include "remoting/protocol/clipboard_filter.h"
@@ -189,8 +190,10 @@ class PeerSessionImpl : public PeerSession,
   void BindSecurityKeyForwarder(
       mojo::PendingReceiver<mojom::SecurityKeyForwarder> receiver) override;
 #endif
-  void SetAgentStatus(const protocol::TerminalControl::AgentInfo& agent_status,
-                      SetAgentStatusCallback callback) override;
+  void SetAgentStatus(
+      int32_t terminal_id,
+      const protocol::TerminalControl::AgentInfo& agent_status,
+      SetAgentStatusCallback callback) override;
 
   protocol::Transport* transport() override;
 

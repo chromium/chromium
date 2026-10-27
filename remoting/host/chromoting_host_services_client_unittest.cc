@@ -174,12 +174,13 @@ TEST_F(ChromotingHostServicesClientTest, ParseAgentStatusArgs) {
     cmd.AppendSwitchASCII(kAgentStatusSwitchName, "working");
     cmd.AppendSwitchASCII(kTerminalTitleSwitchName, "My Title");
     cmd.AppendSwitchASCII(kTerminalIdSwitchName, "3");
-    auto status = ChromotingHostServicesClient::ParseAgentStatusArgs(&cmd);
-    ASSERT_TRUE(status.has_value());
-    EXPECT_TRUE(status->has_terminal_id());
-    EXPECT_EQ(status->terminal_id(), 3);
-    EXPECT_EQ(status->agent_state(), AgentInfo::WORKING);
-    EXPECT_EQ(status->conversation_title(), "My Title");
+    auto args = ChromotingHostServicesClient::ParseAgentStatusArgs(&cmd);
+    ASSERT_TRUE(args.has_value());
+    EXPECT_EQ(args->terminal_id, 3);
+    EXPECT_TRUE(args->status.has_agent_state());
+    EXPECT_EQ(args->status.agent_state(), AgentInfo::WORKING);
+    EXPECT_TRUE(args->status.has_conversation_title());
+    EXPECT_EQ(args->status.conversation_title(), "My Title");
   }
 
   // 2. --agent-status and --terminal-id without title.
@@ -187,12 +188,12 @@ TEST_F(ChromotingHostServicesClientTest, ParseAgentStatusArgs) {
     base::CommandLine cmd(base::CommandLine::NO_PROGRAM);
     cmd.AppendSwitchASCII(kAgentStatusSwitchName, "tool_use");
     cmd.AppendSwitchASCII(kTerminalIdSwitchName, "5");
-    auto status = ChromotingHostServicesClient::ParseAgentStatusArgs(&cmd);
-    ASSERT_TRUE(status.has_value());
-    EXPECT_TRUE(status->has_terminal_id());
-    EXPECT_EQ(status->terminal_id(), 5);
-    EXPECT_EQ(status->agent_state(), AgentInfo::TOOL_USE);
-    EXPECT_FALSE(status->has_conversation_title());
+    auto args = ChromotingHostServicesClient::ParseAgentStatusArgs(&cmd);
+    ASSERT_TRUE(args.has_value());
+    EXPECT_EQ(args->terminal_id, 5);
+    EXPECT_TRUE(args->status.has_agent_state());
+    EXPECT_EQ(args->status.agent_state(), AgentInfo::TOOL_USE);
+    EXPECT_FALSE(args->status.has_conversation_title());
   }
 
   // 3. Title-only update with --terminal-id.
@@ -200,12 +201,12 @@ TEST_F(ChromotingHostServicesClientTest, ParseAgentStatusArgs) {
     base::CommandLine cmd(base::CommandLine::NO_PROGRAM);
     cmd.AppendSwitchASCII(kTerminalTitleSwitchName, "Custom Tab");
     cmd.AppendSwitchASCII(kTerminalIdSwitchName, "7");
-    auto status = ChromotingHostServicesClient::ParseAgentStatusArgs(&cmd);
-    ASSERT_TRUE(status.has_value());
-    EXPECT_TRUE(status->has_terminal_id());
-    EXPECT_EQ(status->terminal_id(), 7);
-    EXPECT_FALSE(status->has_agent_state());
-    EXPECT_EQ(status->conversation_title(), "Custom Tab");
+    auto args = ChromotingHostServicesClient::ParseAgentStatusArgs(&cmd);
+    ASSERT_TRUE(args.has_value());
+    EXPECT_EQ(args->terminal_id, 7);
+    EXPECT_FALSE(args->status.has_agent_state());
+    EXPECT_TRUE(args->status.has_conversation_title());
+    EXPECT_EQ(args->status.conversation_title(), "Custom Tab");
   }
 
   // 4. Missing --terminal-id returns std::nullopt.

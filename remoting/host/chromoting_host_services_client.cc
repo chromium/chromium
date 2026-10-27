@@ -105,7 +105,7 @@ mojo::PendingRemote<mojom::ChromotingHostServices> ConnectToServer(
 }  // namespace
 
 // static
-std::optional<protocol::TerminalControl::AgentInfo>
+std::optional<ChromotingHostServicesClient::AgentStatusArgs>
 ChromotingHostServicesClient::ParseAgentStatusArgs(
     const base::CommandLine* command_line) {
   if (!command_line || !command_line->HasSwitch(kTerminalIdSwitchName) ||
@@ -135,7 +135,6 @@ ChromotingHostServicesClient::ParseAgentStatusArgs(
   }
 
   protocol::TerminalControl::AgentInfo status;
-  status.set_terminal_id(terminal_id);
   if (state.has_value()) {
     status.set_agent_state(*state);
   }
@@ -143,7 +142,8 @@ ChromotingHostServicesClient::ParseAgentStatusArgs(
     status.set_conversation_title(
         command_line->GetSwitchValueUTF8(kTerminalTitleSwitchName));
   }
-  return status;
+  return AgentStatusArgs{.terminal_id = terminal_id,
+                         .status = std::move(status)};
 }
 
 ChromotingHostServicesClient::ChromotingHostServicesClient()

@@ -1,0 +1,164 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+
+package remoting.protocol;
+
+// Next ID: 10
+message TerminalControl {
+  // Message sent by the client to the host to create a terminal.
+  message CreateTerminal {}
+
+  // Message sent by the host to the client to indicate the result of a terminal
+  // creation request.
+  //
+  // Next ID: 3
+  message CreateTerminalResponse {
+    // Next ID: 6
+    message Error {
+      enum Reason {
+        // The reason is unknown.
+        UNKNOWN = 0;
+
+        // An unexpected error occurred on the host.
+        INTERNAL_ERROR = 1;
+
+        // The host is temporarily unable to create a terminal (for example,
+        // because it is still restoring persistent terminals). The request may
+        // be retried later.
+        BUSY = 2;
+
+        // The host failed to allocate a pseudo-terminal.
+        PTY_ERROR = 3;
+
+        // tmux is not installed on the host.
+        TMUX_MISSING = 4;
+
+        // The host failed to launch the terminal process.
+        LAUNCH_FAILED = 5;
+      }
+
+      optional Reason reason = 1;
+
+      // The system error code, as returned by the platform.
+      optional int32 code = 2;
+
+      // The filename where the error occurred.
+      optional string file_name = 3;
+
+      // The line number where the error occurred.
+      optional uint32 line_number = 4;
+
+      optional string error_message = 5;
+    }
+
+    oneof result {
+      // The id of the newly created terminal.
+      int32 terminal_id = 1;
+
+      // A human-readable error message.
+      Error error = 2;
+    }
+  }
+
+  // Message sent by the client to the host to remove a terminal.
+  //
+  // Next ID: 2
+  message RemoveTerminal {
+    optional int32 terminal_id = 1;
+  }
+
+  // Message sent by the client to the host on user input.
+  //
+  // Next ID: 3
+  message TerminalInput {
+    optional int32 terminal_id = 1;
+    optional string input = 2;
+  }
+
+  // Message sent by the host to the client when terminal output is received, or
+  // on connection with the initial contents of the terminal. Note that the id
+  // may not match any terminal returned in a CreateTerminalResponse, as the
+  // terminal may have existed before the client was connected.
+  //
+  // Next ID: 6
+  message TerminalOutput {
+    optional int32 terminal_id = 1;
+    optional string output = 2;
+  }
+
+  // Next ID: 5
+  message ProcessInfo {
+    optional int32 terminal_id = 1;
+
+    // The name of the current running process.
+    optional string process_name = 2;
+
+    // True if the process is "active", in which case the client should prompt
+    // the user to confirm before destroying the terminal.
+    optional bool is_active = 3;
+
+    // True if the process is terminated, in which case no further input will be
+    // accepted.
+    optional bool is_terminated = 4;
+  }
+
+  // LINT.IfChange(AgentStatus)
+  // Next ID: 4
+  message AgentInfo {
+    enum AgentState {
+      UNSPECIFIED = 0;
+      IDLE = 1;
+      WORKING = 2;
+      TOOL_USE = 3;
+      REVIEWING = 4;
+      AUTHENTICATING = 5;
+      INITIALIZING = 6;
+      ERROR = 7;
+    }
+
+    optional int32 terminal_id = 1;
+
+    // The current state of the AI coding agent running in this terminal, if
+    // any.
+    optional AgentState agent_state = 2;
+
+    // The title for the active agent conversation. While an agent is active,
+    // this value takes precedence over any title set via escape sequences.
+    optional string conversation_title = 3;
+  }
+  // LINT.ThenChange(//remoting/host/mojom/common.mojom:AgentStatus)
+
+  // Message sent by the client to the host to resize a terminal.
+  //
+  // Next ID: 4
+  message ResizeTerminal {
+    optional int32 terminal_id = 1;
+    optional uint32 width = 2;
+    optional uint32 height = 3;
+  }
+
+  // Message sent by the client to the host (or host to client) to close a
+  // terminal.
+  //
+  // Next ID: 2
+  message CloseTerminal {
+    optional int32 terminal_id = 1;
+  }
+
+  oneof control {
+    CreateTerminal create_request = 1;
+    CreateTerminalResponse create_response = 2;
+    RemoveTerminal remove_request = 3;
+    TerminalInput terminal_input = 4;
+    TerminalOutput terminal_output = 5;
+    ProcessInfo process_info = 6;
+    ResizeTerminal resize_terminal = 7;
+    CloseTerminal close_terminal = 8;
+    AgentInfo agent_info = 9;
+  }
+}

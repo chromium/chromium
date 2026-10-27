@@ -28,6 +28,7 @@ proto_library("proto") {
     "remote_open_url.proto",
     "remote_webauthn.proto",
     "security_key.proto",
+    "terminal.proto",
     "test_data_channel_manager.proto",
     "url_forwarder_control.proto",
     "video.proto",

@@ -916,15 +916,12 @@ TEST(RemotingMojomTraitsTest, AgentStatusRoundTrip) {
 
   for (AgentInfo::AgentState state : kStates) {
     AgentInfo input;
-    input.set_terminal_id(42);
     input.set_agent_state(state);
     input.set_conversation_title("My Terminal");
 
     AgentInfo output;
     ASSERT_TRUE(
         mojo::test::SerializeAndDeserialize<mojom::AgentStatus>(input, output));
-    EXPECT_TRUE(output.has_terminal_id());
-    EXPECT_EQ(output.terminal_id(), 42);
     EXPECT_TRUE(output.has_agent_state());
     EXPECT_EQ(output.agent_state(), state);
     EXPECT_TRUE(output.has_conversation_title());
@@ -932,24 +929,18 @@ TEST(RemotingMojomTraitsTest, AgentStatusRoundTrip) {
   }
 
   AgentInfo state_only_input;
-  state_only_input.set_terminal_id(7);
   state_only_input.set_agent_state(AgentInfo::WORKING);
   AgentInfo state_only_output;
   ASSERT_TRUE(mojo::test::SerializeAndDeserialize<mojom::AgentStatus>(
       state_only_input, state_only_output));
-  EXPECT_TRUE(state_only_output.has_terminal_id());
-  EXPECT_EQ(state_only_output.terminal_id(), 7);
   EXPECT_EQ(state_only_output.agent_state(), AgentInfo::WORKING);
   EXPECT_FALSE(state_only_output.has_conversation_title());
 
   AgentInfo title_only_input;
-  title_only_input.set_terminal_id(5);
   title_only_input.set_conversation_title("Custom Title");
   AgentInfo title_only_output;
   ASSERT_TRUE(mojo::test::SerializeAndDeserialize<mojom::AgentStatus>(
       title_only_input, title_only_output));
-  EXPECT_TRUE(title_only_output.has_terminal_id());
-  EXPECT_EQ(title_only_output.terminal_id(), 5);
   EXPECT_FALSE(title_only_output.has_agent_state());
   EXPECT_TRUE(title_only_output.has_conversation_title());
   EXPECT_EQ(title_only_output.conversation_title(), "Custom Title");
