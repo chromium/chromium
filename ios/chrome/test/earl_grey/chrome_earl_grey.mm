@@ -8,7 +8,6 @@
 #import <WebKit/WebKit.h>
 
 #import "base/apple/foundation_util.h"
-#import "base/apple/scoped_objc_class_swizzler.h"
 #import "base/format_macros.h"
 #import "base/json/json_reader.h"
 #import "base/logging.h"
@@ -45,10 +44,6 @@ using chrome_test_util::ShareButton;
 
 namespace {
 
-// Tracks the root window matcher set via
-// `[EarlGrey setRootMatcherForSubsequentInteractions:]`.
-id<GREYMatcher> g_root_window_matcher = nil;
-
 // Default polling interval for `GREYCondition` waits, avoiding
 // `GREYCondition`'s 0.5s default sleep when `pollInterval` is omitted.
 constexpr base::TimeDelta kDefaultPollInterval = base::Milliseconds(100);
@@ -75,18 +70,6 @@ bool WaitForAppInterfaceCondition(base::TimeDelta timeout,
     [ChromeEarlGreyAppInterface cancelPendingWait];
   }
   return success;
-}
-
-// Polls in-app until the UI element matching `matcher` satisfies
-// `assertion_matcher` within `timeout`.
-bool WaitForUIElementWithMatcher(id<GREYMatcher> matcher,
-                                 id<GREYMatcher> assertion_matcher,
-                                 base::TimeDelta timeout) {
-  return WaitForAppInterfaceCondition(
-      timeout, [ChromeEarlGreyAppInterface
-                   prepareConditionForUIElementWithMatcher:matcher
-                                               rootMatcher:g_root_window_matcher
-                                          assertionMatcher:assertion_matcher]);
 }
 
 constexpr base::TimeDelta kDuoTransitionTimeout = base::Seconds(10);
@@ -185,32 +168,6 @@ void GREYAssertErrorNil(NSError* error, NSString* format, ...) {
 }
 }  // namespace chrome_test_util
 
-// Intercepts `-[EarlGreyImpl setRootMatcherForSubsequentInteractions:]` so
-// `ChromeEarlGrey`'s in-app UI waits use the same root window matcher as
-// `EarlGrey`.
-// TODO(crbug.com/576674495): Remove once `EarlGreyImpl` exposes a getter for
-// its root window matcher.
-@implementation EarlGreyImpl (ChromeEarlGreyRootMatcher)
-
-+ (void)load {
-  static dispatch_once_t once_token;
-  dispatch_once(&once_token, ^{
-    method_exchangeImplementations(
-        class_getInstanceMethod(
-            self, @selector(setRootMatcherForSubsequentInteractions:)),
-        class_getInstanceMethod(
-            self, @selector(cr_setRootMatcherForSubsequentInteractions:)));
-  });
-}
-
-- (void)cr_setRootMatcherForSubsequentInteractions:
-    (id<GREYMatcher>)rootWindowMatcher {
-  g_root_window_matcher = rootWindowMatcher;
-  [self cr_setRootMatcherForSubsequentInteractions:rootWindowMatcher];
-}
-
-@end
-
 id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
   return grey_longPressWithDuration(duration.InSecondsF());
 }
@@ -220,11 +177,17 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
 #pragma mark - Test Utilities
 
 - (void)waitForMatcher:(id<GREYMatcher>)matcher {
+  ConditionBlock condition = ^{
+    NSError* error = nil;
+    [[EarlGrey selectElementWithMatcher:matcher] assertWithMatcher:grey_notNil()
+                                                             error:&error];
+    return error == nil;
+  };
   NSString* errorString =
       [NSString stringWithFormat:@"Waiting for matcher %@ failed.", matcher];
   EG_TEST_HELPER_ASSERT_TRUE(
-      WaitForUIElementWithMatcher(matcher, grey_notNil(),
-                                  kWaitForUIElementTimeout),
+      base::test::ios::WaitUntilConditionOrTimeout(
+          base::test::ios::kWaitForUIElementTimeout, condition),
       errorString);
 }
 
@@ -688,8 +651,20 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
       stringWithFormat:
           @"Failed waiting for element with matcher %@ to become visible",
           matcher];
-  bool matchedElement = WaitForUIElementWithMatcher(
-      matcher, grey_sufficientlyVisible(), kWaitForUIElementTimeout);
+
+  GREYCondition* waitForElement = [GREYCondition
+      conditionWithName:errorDescription
+                  block:^{
+                    NSError* error = nil;
+                    [[EarlGrey selectElementWithMatcher:matcher]
+                        assertWithMatcher:grey_sufficientlyVisible()
+                                    error:&error];
+                    return error == nil;
+                  }];
+
+  bool matchedElement =
+      [waitForElement waitWithTimeout:kWaitForUIElementTimeout.InSecondsF()
+                         pollInterval:kDefaultPollInterval.InSecondsF()];
   EG_TEST_HELPER_ASSERT_TRUE(matchedElement, errorDescription);
 }
 
@@ -699,8 +674,20 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
       stringWithFormat:
           @"Failed waiting for element with matcher %@ to become not visible",
           matcher];
-  bool matchedElement = WaitForUIElementWithMatcher(
-      matcher, grey_not(grey_sufficientlyVisible()), kWaitForUIElementTimeout);
+
+  GREYCondition* waitForElement = [GREYCondition
+      conditionWithName:errorDescription
+                  block:^{
+                    NSError* error = nil;
+                    [[EarlGrey selectElementWithMatcher:matcher]
+                        assertWithMatcher:grey_sufficientlyVisible()
+                                    error:&error];
+                    return error != nil;
+                  }];
+
+  bool matchedElement =
+      [waitForElement waitWithTimeout:kWaitForUIElementTimeout.InSecondsF()
+                         pollInterval:kDefaultPollInterval.InSecondsF()];
   EG_TEST_HELPER_ASSERT_TRUE(matchedElement, errorDescription);
 }
 
@@ -726,7 +713,14 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
 
 - (BOOL)testUIElementAppearanceWithMatcher:(id<GREYMatcher>)matcher
                                    timeout:(base::TimeDelta)timeout {
-  return WaitForUIElementWithMatcher(matcher, grey_notNil(), timeout);
+  ConditionBlock condition = ^{
+    NSError* error = nil;
+    [[EarlGrey selectElementWithMatcher:matcher] assertWithMatcher:grey_notNil()
+                                                             error:&error];
+    return error == nil;
+  };
+
+  return WaitUntilConditionOrTimeout(timeout, condition);
 }
 
 - (void)waitForUIElementToDisappearWithMatcher:(id<GREYMatcher>)matcher {
@@ -739,7 +733,15 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
   NSString* errorDescription = [NSString
       stringWithFormat:
           @"Failed waiting for element with matcher %@ to disappear", matcher];
-  bool matched = WaitForUIElementWithMatcher(matcher, grey_nil(), timeout);
+
+  ConditionBlock condition = ^{
+    NSError* error = nil;
+    [[EarlGrey selectElementWithMatcher:matcher] assertWithMatcher:grey_nil()
+                                                             error:&error];
+    return error == nil;
+  };
+
+  bool matched = WaitUntilConditionOrTimeout(timeout, condition);
   EG_TEST_HELPER_ASSERT_TRUE(matched, errorDescription);
 }
 

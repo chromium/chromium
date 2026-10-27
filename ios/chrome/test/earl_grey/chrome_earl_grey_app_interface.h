@@ -15,7 +15,6 @@
 #import "third_party/metrics_proto/user_demographics.pb.h"
 
 @class ElementSelector;
-@protocol GREYMatcher;
 enum class TipsNotificationType;
 
 @interface JavaScriptExecutionResult : NSObject
@@ -122,15 +121,6 @@ enum class TipsNotificationType;
 
 // Cancels any pending asynchronous in-app wait timer.
 + (void)cancelPendingWait;
-
-// Prepares an in-app wait for the UI element matching `matcher` (scoped to
-// `rootMatcher` if non-nil) to satisfy `assertionMatcher`. Returns YES if a
-// wait was needed and prepared for `startPendingWaitWithCompletion:`, or NO
-// immediately if already satisfied.
-+ (BOOL)prepareConditionForUIElementWithMatcher:(id<GREYMatcher>)matcher
-                                    rootMatcher:(id<GREYMatcher>)rootMatcher
-                               assertionMatcher:
-                                   (id<GREYMatcher>)assertionMatcher;
 
 // Prepares an in-app wait for the current WebState to finish loading. Returns
 // YES if a wait was needed and prepared for `startPendingWaitWithCompletion:`,
