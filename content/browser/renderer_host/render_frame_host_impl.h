@@ -4182,6 +4182,20 @@ class CONTENT_EXPORT RenderFrameHostImpl
   [[nodiscard]] bool UpdateCurrentInitiatorNavigationState(
       bool bypass_lifecycle_checks);
 
+  // Helpers to record and query `document_token_history_` for diagnosing
+  // initiator token mismatches (crbug.com/510258191).
+  void RecordNewDocumentInInitiatorTokenHistory(
+      const blink::DocumentToken& document_token);
+  void RecordInitiatorStateTokenInHistory(
+      const blink::InitiatorStateToken& state_token);
+  std::string GetInitiatorStateTokenStatusForCrashKey(
+      const blink::InitiatorStateToken& state_token) const;
+  std::string GetInitiatorDocTokenStatusForCrashKey(
+      const blink::DocumentToken& doc_token) const;
+  std::string_view GetInitiatorDocAndStateMatchForCrashKey(
+      const blink::DocumentToken& doc_token,
+      const blink::InitiatorStateToken& state_token) const;
+
   // Initializes |local_network_access_request_policy_|. Constructor helper.
   void InitializeLocalNetworkAccessRequestPolicy();
 
@@ -5330,6 +5344,30 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // the initiator of the navigation that committed inside the RenderFrameHost,
   // but the state of the RenderFrameHost itself.
   scoped_refptr<InitiatorNavigationState> current_navigation_state_;
+
+  // Tracks the history of DocumentTokens and their associated
+  // InitiatorStateTokens that have existed in this RenderFrameHostImpl, used to
+  // diagnose token mismatches in IssueKeepAliveHandle and BeginNavigation
+  // (crbug.com/510258191). Both the number of tracked documents and the number
+  // of state tokens per document are capped to bound memory usage.
+  struct DocumentInitiatorTokenHistory {
+    static constexpr size_t kMaxDocuments = 10;
+    static constexpr size_t kMaxStateTokensPerDocument = 10;
+
+    DocumentInitiatorTokenHistory(
+        const blink::DocumentToken& document_token,
+        std::vector<blink::InitiatorStateToken> state_tokens);
+    ~DocumentInitiatorTokenHistory();
+    DocumentInitiatorTokenHistory(const DocumentInitiatorTokenHistory&);
+    DocumentInitiatorTokenHistory& operator=(
+        const DocumentInitiatorTokenHistory&);
+    DocumentInitiatorTokenHistory(DocumentInitiatorTokenHistory&&);
+    DocumentInitiatorTokenHistory& operator=(DocumentInitiatorTokenHistory&&);
+
+    blink::DocumentToken document_token;
+    std::vector<blink::InitiatorStateToken> state_tokens;
+  };
+  std::vector<DocumentInitiatorTokenHistory> document_token_history_;
 
   // The current document's HTTP response head. This is used by back-forward
   // cache, for navigating a second time toward the same document.

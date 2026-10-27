@@ -2713,6 +2713,9 @@ RenderFrameHostImpl::RenderFrameHostImpl(
     CHECK(frame_tree_node_->is_on_initial_empty_document());
   }
 
+  RecordNewDocumentInInitiatorTokenHistory(document_token);
+  RecordInitiatorStateTokenInHistory(current_initiator_state_token_);
+
   InitializePolicyContainerHost(renderer_initiated_creation_of_main_frame);
 
   InitializeLocalNetworkAccessRequestPolicy();
@@ -4599,6 +4602,7 @@ void RenderFrameHostImpl::SetPolicyContainerHost(
   CHECK(parent_ || !IsCredentialless());
 
   current_initiator_state_token_ = new_initiator_state_token;
+  RecordInitiatorStateTokenInHistory(current_initiator_state_token_);
 
   // Update the InitiatorNavigationState to store the new PolicyContainerHost's
   // policies. This is a browser process driven update of the initiator state
@@ -4629,6 +4633,7 @@ void RenderFrameHostImpl::DidUpdateInitiatorStateToken(
         GetProcess(), bad_message::RFHI_INVALID_INITIATOR_STATE_TOKEN_UPDATE);
     return;
   }
+  RecordInitiatorStateTokenInHistory(current_initiator_state_token_);
 }
 
 bool RenderFrameHostImpl::UpdateCurrentInitiatorNavigationState(
@@ -4660,6 +4665,114 @@ bool RenderFrameHostImpl::UpdateCurrentInitiatorNavigationState(
   }
   current_navigation_state_ = std::move(new_initiator_navigation_state);
   return true;
+}
+
+RenderFrameHostImpl::DocumentInitiatorTokenHistory::
+    DocumentInitiatorTokenHistory(
+        const blink::DocumentToken& document_token,
+        std::vector<blink::InitiatorStateToken> state_tokens)
+    : document_token(document_token), state_tokens(std::move(state_tokens)) {}
+
+RenderFrameHostImpl::DocumentInitiatorTokenHistory::
+    ~DocumentInitiatorTokenHistory() = default;
+
+RenderFrameHostImpl::DocumentInitiatorTokenHistory::
+    DocumentInitiatorTokenHistory(const DocumentInitiatorTokenHistory&) =
+        default;
+
+RenderFrameHostImpl::DocumentInitiatorTokenHistory&
+RenderFrameHostImpl::DocumentInitiatorTokenHistory::operator=(
+    const DocumentInitiatorTokenHistory&) = default;
+
+RenderFrameHostImpl::DocumentInitiatorTokenHistory::
+    DocumentInitiatorTokenHistory(DocumentInitiatorTokenHistory&&) = default;
+
+RenderFrameHostImpl::DocumentInitiatorTokenHistory&
+RenderFrameHostImpl::DocumentInitiatorTokenHistory::operator=(
+    DocumentInitiatorTokenHistory&&) = default;
+
+void RenderFrameHostImpl::RecordNewDocumentInInitiatorTokenHistory(
+    const blink::DocumentToken& document_token) {
+  if (document_token_history_.size() >=
+      DocumentInitiatorTokenHistory::kMaxDocuments) {
+    document_token_history_.erase(document_token_history_.begin());
+  }
+  document_token_history_.emplace_back(
+      document_token, std::vector<blink::InitiatorStateToken>());
+}
+
+void RenderFrameHostImpl::RecordInitiatorStateTokenInHistory(
+    const blink::InitiatorStateToken& state_token) {
+  CHECK(!document_token_history_.empty());
+  auto& state_tokens = document_token_history_.back().state_tokens;
+  if (state_tokens.empty() || state_tokens.back() != state_token) {
+    if (state_tokens.size() >=
+        DocumentInitiatorTokenHistory::kMaxStateTokensPerDocument) {
+      state_tokens.erase(state_tokens.begin());
+    }
+    state_tokens.push_back(state_token);
+  }
+}
+
+std::string RenderFrameHostImpl::GetInitiatorStateTokenStatusForCrashKey(
+    const blink::InitiatorStateToken& state_token) const {
+  if (state_token == current_initiator_state_token_) {
+    return "current_state_of_current_doc";
+  }
+  CHECK(!document_token_history_.empty());
+  if (std::ranges::contains(document_token_history_.back().state_tokens,
+                            state_token)) {
+    return "past_state_of_current_doc";
+  }
+  for (size_t i = 0; i + 1 < document_token_history_.size(); ++i) {
+    const auto& state_tokens = document_token_history_[i].state_tokens;
+    size_t prev_doc_index = document_token_history_.size() - 1 - i;
+    if (!state_tokens.empty() && state_tokens.back() == state_token) {
+      return base::StrCat(
+          {"last_state_of_prev_doc_", base::NumberToString(prev_doc_index)});
+    }
+    if (std::ranges::contains(state_tokens, state_token)) {
+      return base::StrCat(
+          {"past_state_of_prev_doc_", base::NumberToString(prev_doc_index)});
+    }
+  }
+  return "unknown_state";
+}
+
+std::string RenderFrameHostImpl::GetInitiatorDocTokenStatusForCrashKey(
+    const blink::DocumentToken& doc_token) const {
+  CHECK(!document_token_history_.empty());
+  if (document_token_history_.back().document_token == doc_token) {
+    return "current_doc";
+  }
+  for (size_t i = 0; i + 1 < document_token_history_.size(); ++i) {
+    if (document_token_history_[i].document_token == doc_token) {
+      size_t prev_doc_index = document_token_history_.size() - 1 - i;
+      return base::StrCat(
+          {"prev_doc_in_rfh_", base::NumberToString(prev_doc_index)});
+    }
+  }
+  return "unknown_doc";
+}
+
+std::string_view RenderFrameHostImpl::GetInitiatorDocAndStateMatchForCrashKey(
+    const blink::DocumentToken& doc_token,
+    const blink::InitiatorStateToken& state_token) const {
+  std::optional<size_t> doc_index;
+  std::optional<size_t> state_doc_index;
+  for (size_t i = 0; i < document_token_history_.size(); ++i) {
+    if (document_token_history_[i].document_token == doc_token) {
+      doc_index = i;
+    }
+    if (std::ranges::contains(document_token_history_[i].state_tokens,
+                              state_token)) {
+      state_doc_index = i;
+    }
+  }
+  if (!doc_index.has_value() || !state_doc_index.has_value()) {
+    return "not_both_in_rfh";
+  }
+  return *doc_index == *state_doc_index ? "same_doc" : "different_docs_in_rfh";
 }
 
 void RenderFrameHostImpl::InitializeLocalNetworkAccessRequestPolicy() {
@@ -11215,6 +11328,11 @@ void RenderFrameHostImpl::IssueKeepAliveHandle(
   // TODO(crbug.com/510258191): Investigate why this happens and re-enable
   // renderer process termination upon having the wrong token.
   if (initiator_state_token != current_initiator_state_token_) {
+    SCOPED_CRASH_KEY_STRING32(
+        "IssueKeepAlive", "state_token_status",
+        GetInitiatorStateTokenStatusForCrashKey(initiator_state_token));
+    base::debug::DumpWithoutCrashing();
+
     // Attempt to find a matching InitiatorNavigationState.
     auto initiator_navigation_state =
         browser_context->GetInitiatorNavigationState(GetDocumentToken(),
@@ -11676,6 +11794,30 @@ void RenderFrameHostImpl::BeginNavigation(
   // TODO(crbug.com/510258191): Investigate why this happens and re-enable
   // renderer process termination upon having the wrong token.
   if (!initiator_navigation_state) {
+    RenderFrameHostImpl* initiator_rfh =
+        begin_params->initiator_frame_token
+            ? RenderFrameHostImpl::FromFrameToken(
+                  GetProcess()->GetID(),
+                  begin_params->initiator_frame_token.value())
+            : this;
+    SCOPED_CRASH_KEY_STRING32(
+        "BeginNavigation", "doc_token_status",
+        initiator_rfh ? initiator_rfh->GetInitiatorDocTokenStatusForCrashKey(
+                            begin_params->initiator_document_token.value())
+                      : "destroyed_initiator_rfh");
+    SCOPED_CRASH_KEY_STRING32(
+        "BeginNavigation", "state_token_status",
+        initiator_rfh ? initiator_rfh->GetInitiatorStateTokenStatusForCrashKey(
+                            begin_params->initiator_state_token.value())
+                      : "destroyed_initiator_rfh");
+    SCOPED_CRASH_KEY_STRING32(
+        "BeginNavigation", "doc_and_state_match",
+        initiator_rfh ? initiator_rfh->GetInitiatorDocAndStateMatchForCrashKey(
+                            begin_params->initiator_document_token.value(),
+                            begin_params->initiator_state_token.value())
+                      : "not_both_in_rfh");
+    base::debug::DumpWithoutCrashing();
+
     // As a fallback, use the current InitiatorNavigationState.
     initiator_navigation_state = GetCurrentInitiatorNavigationState();
   }
@@ -16860,6 +17002,8 @@ bool RenderFrameHostImpl::DidCommitNavigationInternal(
       // URL.
       document_associated_data_.emplace(*this,
                                         navigation_request->GetDocumentToken());
+      RecordNewDocumentInInitiatorTokenHistory(
+          navigation_request->GetDocumentToken());
 
       // The old Reporting API configuration is no longer valid, as a new
       // document is being loaded into the frame. Inform the network service
@@ -19712,6 +19856,7 @@ void RenderFrameHostImpl::ReinitializeDocumentAssociatedDataForReuseAfterCrash(
   // - a) the new state set in RenderFrameCreated doesn't get deleted.
   // - b) the old state is not leaked to a new RenderFrameHost.
   document_associated_data_.emplace(*this, blink::DocumentToken());
+  RecordNewDocumentInInitiatorTokenHistory(document_associated_data_->token());
 }
 
 void RenderFrameHostImpl::ReinitializeInitiatorStateTokenAfterCrash(
@@ -19719,10 +19864,12 @@ void RenderFrameHostImpl::ReinitializeInitiatorStateTokenAfterCrash(
   CHECK(is_main_frame());
   CHECK_EQ(RenderFrameState::kDeleted, render_frame_state_);
   current_initiator_state_token_ = blink::InitiatorStateToken();
+  RecordInitiatorStateTokenInHistory(current_initiator_state_token_);
 }
 
 void RenderFrameHostImpl::ReinitializeDocumentAssociatedDataForTesting() {
   document_associated_data_.emplace(*this, blink::DocumentToken());
+  RecordNewDocumentInInitiatorTokenHistory(document_associated_data_->token());
 }
 
 void RenderFrameHostImpl::IsClipboardPasteAllowedByPolicy(
