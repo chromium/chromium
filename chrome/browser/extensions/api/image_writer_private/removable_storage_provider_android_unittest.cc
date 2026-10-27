@@ -6,16 +6,22 @@
 
 #include <stdint.h>
 
+#include <array>
 #include <map>
+#include <memory>
 #include <optional>
 #include <string>
 #include <tuple>
 #include <utility>
 #include <vector>
 
+#include "base/containers/span.h"
+#include "base/containers/span_reader.h"
+#include "base/containers/span_writer.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/numerics/byte_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/extensions/api/image_writer_private/removable_storage_provider.h"
@@ -24,6 +30,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
+#include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "services/device/public/mojom/usb_device.mojom.h"
 #include "services/device/public/mojom/usb_enumeration_options.mojom.h"
 #include "services/device/public/mojom/usb_manager.mojom.h"
@@ -32,6 +39,17 @@
 
 namespace extensions::image_writer {
 namespace {
+
+// USB Mass Storage Bulk-Only Transport (BOT) protocol constants:
+// - 31-byte Command Block Wrapper (CBW) signature "USBC" (0x43425355).
+// - 13-byte Command Status Wrapper (CSW) signature "USBS" (0x53425355).
+constexpr uint32_t kCommandBlockWrapperSignature = 0x43425355;   // "USBC"
+constexpr uint32_t kCommandStatusWrapperSignature = 0x53425355;  // "USBS"
+constexpr size_t kCommandBlockWrapperSize = 31;
+constexpr size_t kCommandStatusWrapperSize = 13;
+constexpr uint8_t kScsiTestUnitReadyOpcode = 0x00;
+constexpr uint8_t kScsiRequestSenseOpcode = 0x03;
+constexpr uint8_t kScsiReadCapacity10Opcode = 0x25;
 
 device::mojom::UsbDeviceInfoPtr CreateUsbDeviceInfo(
     const std::string& guid,
@@ -85,6 +103,160 @@ device::mojom::UsbDeviceInfoPtr CreateUsbDeviceInfo(
   return info;
 }
 
+class FakeBotUsbDevice : public device::mojom::UsbDevice {
+ public:
+  FakeBotUsbDevice(uint32_t block_count,
+                   uint32_t block_size,
+                   bool fail_first_test_unit_ready_with_unit_attention)
+      : block_count_(block_count),
+        block_size_(block_size),
+        unit_attention_pending_(
+            fail_first_test_unit_ready_with_unit_attention) {}
+
+  ~FakeBotUsbDevice() override = default;
+
+  void Open(OpenCallback callback) override {
+    std::move(callback).Run(device::mojom::UsbOpenDeviceResult::NewSuccess(
+        device::mojom::UsbOpenDeviceSuccess::OK));
+  }
+  void Close(CloseCallback callback) override { std::move(callback).Run(); }
+  void SetConfiguration(uint8_t value,
+                        SetConfigurationCallback callback) override {
+    std::move(callback).Run(true);
+  }
+  void ClaimInterface(uint8_t interface_number,
+                      ClaimInterfaceCallback callback) override {
+    std::move(callback).Run(device::mojom::UsbClaimInterfaceResult::kSuccess);
+  }
+  void ReleaseInterface(uint8_t interface_number,
+                        ReleaseInterfaceCallback callback) override {
+    std::move(callback).Run(true);
+  }
+  void SetInterfaceAlternateSetting(
+      uint8_t interface_number,
+      uint8_t alternate_setting,
+      SetInterfaceAlternateSettingCallback callback) override {
+    std::move(callback).Run(true);
+  }
+  void Reset(ResetCallback callback) override { std::move(callback).Run(true); }
+  void ClearHalt(device::mojom::UsbTransferDirection direction,
+                 uint8_t endpoint_number,
+                 ClearHaltCallback callback) override {
+    std::move(callback).Run(true);
+  }
+  void ControlTransferIn(device::mojom::UsbControlTransferParamsPtr params,
+                         uint32_t length,
+                         uint32_t timeout,
+                         ControlTransferInCallback callback) override {
+    std::move(callback).Run(device::mojom::UsbTransferStatus::TRANSFER_ERROR,
+                            {});
+  }
+  void ControlTransferOut(device::mojom::UsbControlTransferParamsPtr params,
+                          base::span<const uint8_t> data,
+                          uint32_t timeout,
+                          ControlTransferOutCallback callback) override {
+    std::move(callback).Run(device::mojom::UsbTransferStatus::TRANSFER_ERROR);
+  }
+  void GenericTransferOut(uint8_t endpoint_number,
+                          base::span<const uint8_t> data,
+                          uint32_t timeout,
+                          GenericTransferOutCallback callback) override {
+    if (data.size() == kCommandBlockWrapperSize) {
+      base::SpanReader reader(data);
+      uint32_t signature = 0;
+      uint32_t tag = 0;
+      uint8_t opcode = 0;
+      if (reader.ReadU32LittleEndian(signature) &&
+          signature == kCommandBlockWrapperSignature &&
+          reader.ReadU32LittleEndian(tag) &&
+          reader.Skip(7u) &&  // data_transfer_length (4), flags (1), lun (1),
+                              // scsi_command_length (1)
+          reader.ReadU8LittleEndian(opcode)) {
+        current_tag_ = tag;
+        current_opcode_ = opcode;
+        std::move(callback).Run(device::mojom::UsbTransferStatus::COMPLETED);
+        return;
+      }
+    }
+    std::move(callback).Run(device::mojom::UsbTransferStatus::TRANSFER_ERROR);
+  }
+  void GenericTransferIn(uint8_t endpoint_number,
+                         uint32_t length,
+                         uint32_t timeout,
+                         GenericTransferInCallback callback) override {
+    if (length == kCommandStatusWrapperSize) {
+      uint8_t status = next_command_status_;
+      next_command_status_ = 0;
+      if (current_opcode_ == kScsiTestUnitReadyOpcode &&
+          unit_attention_pending_) {
+        status = 1;  // Check Condition (UNIT ATTENTION)
+      }
+      std::vector<uint8_t> status_bytes(kCommandStatusWrapperSize, 0);
+      base::SpanWriter<uint8_t> writer(status_bytes);
+      writer.WriteU32LittleEndian(kCommandStatusWrapperSignature);
+      writer.WriteU32LittleEndian(current_tag_);
+      writer.WriteU32LittleEndian(0u);  // data_residue
+      writer.WriteU8LittleEndian(status);
+      std::move(callback).Run(device::mojom::UsbTransferStatus::COMPLETED,
+                              std::move(status_bytes));
+      return;
+    }
+
+    if (current_opcode_ == kScsiRequestSenseOpcode && length == 18) {
+      // REQUEST SENSE clears pending UNIT ATTENTION.
+      unit_attention_pending_ = false;
+      std::vector<uint8_t> sense(18, 0);
+      sense[0] = 0x70;
+      sense[2] = 0x06;  // UNIT ATTENTION
+      std::move(callback).Run(device::mojom::UsbTransferStatus::COMPLETED,
+                              std::move(sense));
+      return;
+    }
+
+    if (current_opcode_ == kScsiReadCapacity10Opcode && length == 8) {
+      if (unit_attention_pending_) {
+        next_command_status_ = 1;
+        std::move(callback).Run(device::mojom::UsbTransferStatus::COMPLETED,
+                                std::vector<uint8_t>(8, 0));
+        return;
+      }
+      const uint32_t last_logical_block_address = block_count_ - 1;
+      std::vector<uint8_t> capacity_response(8, 0);
+      base::SpanWriter<uint8_t> writer(capacity_response);
+      writer.Write(base::U32ToBigEndian(last_logical_block_address));
+      writer.Write(base::U32ToBigEndian(block_size_));
+      std::move(callback).Run(device::mojom::UsbTransferStatus::COMPLETED,
+                              std::move(capacity_response));
+      return;
+    }
+
+    std::move(callback).Run(device::mojom::UsbTransferStatus::TRANSFER_ERROR,
+                            {});
+  }
+  void IsochronousTransferIn(uint8_t endpoint_number,
+                             const std::vector<uint32_t>& packet_lengths,
+                             uint32_t timeout,
+                             IsochronousTransferInCallback callback) override {
+    std::move(callback).Run({}, {});
+  }
+  void IsochronousTransferOut(
+      uint8_t endpoint_number,
+      base::span<const uint8_t> data,
+      const std::vector<uint32_t>& packet_lengths,
+      uint32_t timeout,
+      IsochronousTransferOutCallback callback) override {
+    std::move(callback).Run({});
+  }
+
+ private:
+  uint32_t block_count_;
+  uint32_t block_size_;
+  bool unit_attention_pending_;
+  uint32_t current_tag_ = 0;
+  uint8_t current_opcode_ = 0;
+  uint8_t next_command_status_ = 0;
+};
+
 class TestUsbDeviceManager : public device::mojom::UsbDeviceManager {
  public:
   TestUsbDeviceManager() = default;
@@ -97,10 +269,17 @@ class TestUsbDeviceManager : public device::mojom::UsbDeviceManager {
     return remote;
   }
 
-  void AddDevice(device::mojom::UsbDeviceInfoPtr info, bool grant_permission) {
+  void AddDevice(device::mojom::UsbDeviceInfoPtr info,
+                 bool grant_permission,
+                 uint32_t block_count = 32768,
+                 uint32_t block_size = 512,
+                 bool unit_attention = false) {
     std::string guid = info->guid;
     devices_[guid] = std::move(info);
     permissions_[guid] = grant_permission;
+    block_counts_[guid] = block_count;
+    block_sizes_[guid] = block_size;
+    unit_attention_[guid] = unit_attention;
   }
 
   void EnumerateDevicesAndSetClient(
@@ -124,14 +303,25 @@ class TestUsbDeviceManager : public device::mojom::UsbDeviceManager {
       const std::vector<uint8_t>& blocked_interface_classes,
       mojo::PendingReceiver<device::mojom::UsbDevice> device_receiver,
       mojo::PendingRemote<device::mojom::UsbDeviceClient> device_client)
-      override {}
+      override {
+    GetUnrestrictedDevice(guid, blocked_interface_classes,
+                          std::move(device_receiver), std::move(device_client));
+  }
 
   void GetUnrestrictedDevice(
       const std::string& guid,
       const std::vector<uint8_t>& blocked_interface_classes,
       mojo::PendingReceiver<device::mojom::UsbDevice> device_receiver,
       mojo::PendingRemote<device::mojom::UsbDeviceClient> device_client)
-      override {}
+      override {
+    if (!devices_.contains(guid) || !permissions_[guid]) {
+      return;
+    }
+    mojo::MakeSelfOwnedReceiver(
+        std::make_unique<FakeBotUsbDevice>(
+            block_counts_[guid], block_sizes_[guid], unit_attention_[guid]),
+        std::move(device_receiver));
+  }
 
   void GetSecurityKeyDevice(
       const std::string& guid,
@@ -156,6 +346,9 @@ class TestUsbDeviceManager : public device::mojom::UsbDeviceManager {
   mojo::ReceiverSet<device::mojom::UsbDeviceManager> receivers_;
   std::map<std::string, device::mojom::UsbDeviceInfoPtr> devices_;
   std::map<std::string, bool> permissions_;
+  std::map<std::string, uint32_t> block_counts_;
+  std::map<std::string, uint32_t> block_sizes_;
+  std::map<std::string, bool> unit_attention_;
 };
 
 class RemovableStorageProviderAndroidTest : public testing::Test {
@@ -207,13 +400,17 @@ TEST_F(RemovableStorageProviderAndroidTest,
 }
 
 TEST_F(RemovableStorageProviderAndroidTest,
-       EnumeratesPermittedUsbMassStorageDevices) {
-  // 1. Permitted USB Mass Storage Bulk-Only Transport flash drive.
+       EnumeratesUsbMassStorageAndHandlesUnitAttention) {
+  // 1. Permitted USB Mass Storage Bulk-Only Transport flash drive that reports
+  // UNIT ATTENTION on first TEST UNIT READY.
   usb_manager_.AddDevice(
       CreateUsbDeviceInfo("guid-sandisk", 0x0781, 0x5581, "SanDisk", "Ultra",
                           /*class_code=*/0x08, /*subclass_code=*/0x06,
                           /*protocol_code=*/0x50),
-      /*grant_permission=*/true);
+      /*grant_permission=*/true,
+      /*block_count=*/32768,
+      /*block_size=*/512,
+      /*unit_attention=*/true);
 
   // 2. USB Mass Storage device where Android USB permission was denied.
   usb_manager_.AddDevice(
@@ -236,6 +433,25 @@ TEST_F(RemovableStorageProviderAndroidTest,
   EXPECT_EQ(devices->data[0].vendor, "SanDisk");
   EXPECT_EQ(devices->data[0].model, "Ultra");
   EXPECT_TRUE(devices->data[0].removable);
+  EXPECT_DOUBLE_EQ(devices->data[0].capacity, 32768.0 * 512.0);
+}
+
+TEST_F(RemovableStorageProviderAndroidTest,
+       FiltersOutZeroOrOverflowCapacityUsbDevices) {
+  // block_count = 0 produces last_lba = 0xFFFFFFFF in FakeBotUsbDevice, which
+  // ParseReadCapacityBytes rejects as 0.0, causing FinalizeDeviceList to omit
+  // the unready/unsupported device.
+  usb_manager_.AddDevice(
+      CreateUsbDeviceInfo("guid-overflow", 0x0781, 0x5582, "SanDisk", "Extreme",
+                          /*class_code=*/0x08, /*subclass_code=*/0x06,
+                          /*protocol_code=*/0x50),
+      /*grant_permission=*/true,
+      /*block_count=*/0,
+      /*block_size=*/512);
+
+  scoped_refptr<StorageDeviceList> devices = EnumerateDevices();
+  ASSERT_TRUE(devices);
+  EXPECT_TRUE(devices->data.empty());
 }
 
 // Verifies sysfs block device enumeration, USB ancestor traversal, ignored

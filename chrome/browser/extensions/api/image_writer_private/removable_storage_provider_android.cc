@@ -10,6 +10,7 @@
 #include <array>
 #include <compare>
 #include <map>
+#include <memory>
 #include <optional>
 #include <set>
 #include <string>
@@ -19,6 +20,9 @@
 
 #include "base/barrier_closure.h"
 #include "base/check.h"
+#include "base/containers/span.h"
+#include "base/containers/span_reader.h"
+#include "base/containers/span_writer.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -26,7 +30,10 @@
 #include "base/functional/callback.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
+#include "base/numerics/byte_conversions.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -48,12 +55,98 @@ constexpr uint8_t kUsbClassMassStorage = 0x08;
 constexpr uint8_t kUsbSubClassScsi = 0x06;
 constexpr uint8_t kUsbProtocolBulkOnly = 0x50;
 
+// USB Mass Storage Bulk-Only Transport (BOT) protocol constants (USB Mass
+// Storage Class Bulk-Only Transport 1.0 specification, Section 5):
+// - Every command phase sends a 31-byte Command Block Wrapper (CBW) starting
+//   with the little-endian signature "USBC" (0x43425355).
+// - Every status phase reads a 13-byte Command Status Wrapper (CSW) starting
+//   with the little-endian signature "USBS" (0x53425355).
+constexpr uint32_t kCommandBlockWrapperSignature = 0x43425355;   // "USBC"
+constexpr uint32_t kCommandStatusWrapperSignature = 0x53425355;  // "USBS"
+constexpr size_t kCommandBlockWrapperSize = 31;
+constexpr size_t kCommandStatusWrapperSize = 13;
+constexpr size_t kMaxScsiCommandBlockSize = 16;
+constexpr uint8_t kDirectionDeviceToHost = 0x80;
+constexpr uint8_t kDirectionHostToDevice = 0x00;
+// Target Logical Unit Number (LUN) on the USB storage device (always 0 for
+// single-LUN USB flash drives).
+constexpr uint8_t kLogicalUnitNumber = 0;
+constexpr uint8_t kScsiTestUnitReadyOpcode = 0x00;
+constexpr uint8_t kScsiRequestSenseOpcode = 0x03;
+constexpr uint8_t kScsiReadCapacity10Opcode = 0x25;
+constexpr uint32_t kScsiRequestSenseAllocationLength = 18;
+constexpr uint32_t kScsiReadCapacity10ResponseLength = 8;
+constexpr unsigned int kUsbTimeoutMs = 10000;
+
 // In Linux sysfs, a block device's `device` symlink resolves into a path such
 // as `/sys/devices/.../usbX/.../hostY/targetY:0:0/Y:0:0:0/block/sdZ`, where the
 // enclosing USB device directory (`idVendor`/`idProduct`) is typically 4-6
 // levels above the block device. Cap upward traversal at 12 levels to guard
 // against unexpected hierarchy depth or symlink cycles.
 constexpr int kMaxSysfsUsbAncestorDepth = 12;
+
+struct CommandStatusWrapper {
+  uint32_t signature = 0;
+  uint32_t tag = 0;
+  uint32_t data_residue = 0;
+  uint8_t status = 0;
+};
+
+// Serializes a 31-byte USB Mass Storage Bulk-Only Transport Command Block
+// Wrapper (CBW) containing `scsi_command` (a 6-to-16-byte SCSI command
+// descriptor block).
+std::vector<uint8_t> BuildCommandBlockWrapper(
+    uint32_t tag,
+    uint32_t data_transfer_length,
+    uint8_t direction_flags,
+    base::span<const uint8_t> scsi_command) {
+  std::vector<uint8_t> packet(kCommandBlockWrapperSize, 0);
+  base::SpanWriter<uint8_t> writer(packet);
+  writer.WriteU32LittleEndian(kCommandBlockWrapperSignature);
+  writer.WriteU32LittleEndian(tag);
+  writer.WriteU32LittleEndian(data_transfer_length);
+  writer.WriteU8LittleEndian(direction_flags);
+  writer.WriteU8LittleEndian(kLogicalUnitNumber);
+  const size_t command_length =
+      std::min(scsi_command.size(), kMaxScsiCommandBlockSize);
+  writer.WriteU8LittleEndian(static_cast<uint8_t>(command_length));
+  writer.Write(scsi_command.first(command_length));
+  return packet;
+}
+
+// Parses a 13-byte USB Mass Storage Bulk-Only Transport Command Status Wrapper
+// (CSW).
+std::optional<CommandStatusWrapper> ParseCommandStatusWrapper(
+    base::span<const uint8_t> bytes) {
+  base::SpanReader reader(bytes);
+  CommandStatusWrapper status_wrapper;
+  if (!reader.ReadU32LittleEndian(status_wrapper.signature) ||
+      !reader.ReadU32LittleEndian(status_wrapper.tag) ||
+      !reader.ReadU32LittleEndian(status_wrapper.data_residue) ||
+      !reader.ReadU8LittleEndian(status_wrapper.status)) {
+    return std::nullopt;
+  }
+  return status_wrapper;
+}
+
+// Parses the 8-byte big-endian parameter data returned by the SCSI
+// `READ CAPACITY (10)` command:
+// - Bytes 0..3: 0-based Logical Block Address (LBA) of the last logical block
+//   on the medium (or 0xFFFFFFFF if the capacity exceeds 2 TiB / is invalid).
+// - Bytes 4..7: Block length in bytes (typically 512 or 4096).
+double ParseReadCapacityBytes(base::span<const uint8_t> data) {
+  if (data.size() < kScsiReadCapacity10ResponseLength) {
+    return 0.0;
+  }
+  const uint32_t last_logical_block_address =
+      base::U32FromBigEndian(data.first<4>());
+  const uint32_t block_length_bytes =
+      base::U32FromBigEndian(data.subspan<4, 4>());
+  return (last_logical_block_address == 0xFFFFFFFF || block_length_bytes == 0)
+             ? 0.0
+             : (static_cast<double>(last_logical_block_address) + 1.0) *
+                   static_cast<double>(block_length_bytes);
+}
 
 struct UsbMassStorageCandidate {
   std::string guid;
@@ -306,6 +399,286 @@ class SysfsBlockDeviceScanner {
   const base::FilePath dev_dir_;
 };
 
+// Queries the storage capacity of a USB Mass Storage Bulk-Only Transport device
+// over `device::mojom::UsbDevice` on the UI thread using SCSI
+// `TEST UNIT READY`, `REQUEST SENSE`, and `READ CAPACITY (10)`.
+class MojoUsbCapacityReader {
+ public:
+  using ResultCallback = base::OnceCallback<void(double)>;
+
+  MojoUsbCapacityReader(mojo::PendingRemote<device::mojom::UsbDevice> device,
+                        const UsbMassStorageCandidate& candidate,
+                        ResultCallback callback)
+      : device_(std::move(device)),
+        candidate_(candidate),
+        callback_(std::move(callback)) {}
+
+  MojoUsbCapacityReader(const MojoUsbCapacityReader&) = delete;
+  MojoUsbCapacityReader& operator=(const MojoUsbCapacityReader&) = delete;
+
+  ~MojoUsbCapacityReader() = default;
+
+  void Start() {
+    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    device_.set_disconnect_handler(base::BindOnce(
+        &MojoUsbCapacityReader::OnDisconnected, weak_factory_.GetWeakPtr()));
+    device_->Open(base::BindOnce(&MojoUsbCapacityReader::OnOpened,
+                                 weak_factory_.GetWeakPtr()));
+  }
+
+ private:
+  using BotCommandCallback =
+      base::OnceCallback<void(bool, std::vector<uint8_t>)>;
+
+  void OnOpened(device::mojom::UsbOpenDeviceResultPtr result) {
+    if (!result || !result->is_success()) {
+      return Finish(0.0);
+    }
+    opened_ = true;
+    device_->ClaimInterface(candidate_.endpoints.interface_number,
+                            base::BindOnce(&MojoUsbCapacityReader::OnClaimed,
+                                           weak_factory_.GetWeakPtr()));
+  }
+
+  void OnClaimed(device::mojom::UsbClaimInterfaceResult result) {
+    if (result != device::mojom::UsbClaimInterfaceResult::kSuccess) {
+      return Finish(0.0);
+    }
+    claimed_ = true;
+    // Send a 6-byte SCSI `TEST UNIT READY` command (opcode 0x00) to verify the
+    // logical unit is ready and clear any initial `UNIT ATTENTION` condition
+    // before reading capacity.
+    SendCommandWithRetry(
+        {kScsiTestUnitReadyOpcode, 0, 0, 0, 0, 0}, kDirectionHostToDevice, 0,
+        /*attempts_left=*/3,
+        base::BindOnce(&MojoUsbCapacityReader::OnTestUnitReadyDone,
+                       weak_factory_.GetWeakPtr()));
+  }
+
+  void OnTestUnitReadyDone(bool ok, std::vector<uint8_t>) {
+    if (!ok) {
+      return Finish(0.0);
+    }
+    // Send a 10-byte SCSI `READ CAPACITY (10)` command (opcode 0x25) to read
+    // the 8-byte capacity descriptor (last logical block address + block size).
+    SendCommandWithRetry(
+        {kScsiReadCapacity10Opcode, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+        kDirectionDeviceToHost, kScsiReadCapacity10ResponseLength,
+        /*attempts_left=*/3,
+        base::BindOnce(&MojoUsbCapacityReader::OnReadCapacityDone,
+                       weak_factory_.GetWeakPtr()));
+  }
+
+  void OnReadCapacityDone(bool ok, std::vector<uint8_t> data) {
+    Finish(ok ? ParseReadCapacityBytes(data) : 0.0);
+  }
+
+  // Sends a 6-to-16-byte SCSI command descriptor block (`scsi_command`) wrapped
+  // in a USB Mass Storage Bulk-Only Transport Command Block Wrapper, retrying
+  // with `REQUEST SENSE` if the device reports a `CHECK CONDITION` status.
+  void SendCommandWithRetry(std::vector<uint8_t> scsi_command,
+                            uint8_t direction_flags,
+                            uint32_t data_length,
+                            int attempts_left,
+                            BotCommandCallback callback) {
+    active_scsi_command_ = std::move(scsi_command);
+    active_direction_flags_ = direction_flags;
+    active_data_length_ = data_length;
+    attempts_left_ = attempts_left;
+    active_callback_ = std::move(callback);
+    SendActiveCommandBlock();
+  }
+
+  void SendActiveCommandBlock() {
+    active_tag_ = next_tag_++;
+    active_data_.clear();
+    std::vector<uint8_t> command_block_packet =
+        BuildCommandBlockWrapper(active_tag_, active_data_length_,
+                                 active_direction_flags_, active_scsi_command_);
+    device_->GenericTransferOut(
+        candidate_.endpoints.endpoint_out, command_block_packet, kUsbTimeoutMs,
+        base::BindOnce(&MojoUsbCapacityReader::OnCommandBlockSent,
+                       weak_factory_.GetWeakPtr()));
+  }
+
+  void OnCommandBlockSent(device::mojom::UsbTransferStatus status) {
+    if (status != device::mojom::UsbTransferStatus::COMPLETED) {
+      return std::move(active_callback_).Run(false, {});
+    }
+    if (active_data_length_ > 0 &&
+        (active_direction_flags_ & kDirectionDeviceToHost)) {
+      device_->GenericTransferIn(
+          candidate_.endpoints.endpoint_in, active_data_length_, kUsbTimeoutMs,
+          base::BindOnce(&MojoUsbCapacityReader::OnDataInReceived,
+                         weak_factory_.GetWeakPtr()));
+      return;
+    }
+    ReadCommandStatus();
+  }
+
+  void OnDataInReceived(device::mojom::UsbTransferStatus status,
+                        base::span<const uint8_t> data) {
+    if (status != device::mojom::UsbTransferStatus::COMPLETED &&
+        status != device::mojom::UsbTransferStatus::SHORT_PACKET) {
+      return std::move(active_callback_).Run(false, {});
+    }
+    active_data_.assign(data.begin(), data.end());
+    ReadCommandStatus();
+  }
+
+  void ReadCommandStatus() {
+    device_->GenericTransferIn(
+        candidate_.endpoints.endpoint_in, kCommandStatusWrapperSize,
+        kUsbTimeoutMs,
+        base::BindOnce(&MojoUsbCapacityReader::OnCommandStatusReceived,
+                       weak_factory_.GetWeakPtr()));
+  }
+
+  void OnCommandStatusReceived(device::mojom::UsbTransferStatus status,
+                               base::span<const uint8_t> status_bytes) {
+    if (status != device::mojom::UsbTransferStatus::COMPLETED &&
+        status != device::mojom::UsbTransferStatus::SHORT_PACKET) {
+      return std::move(active_callback_).Run(false, {});
+    }
+    std::optional<CommandStatusWrapper> status_wrapper =
+        ParseCommandStatusWrapper(status_bytes);
+    if (!status_wrapper ||
+        status_wrapper->signature != kCommandStatusWrapperSignature ||
+        status_wrapper->tag != active_tag_) {
+      return std::move(active_callback_).Run(false, {});
+    }
+    // Status 0x00 indicates Command Passed (good status) per the USB Mass
+    // Storage Bulk-Only Transport 1.0 specification (Table 5.3).
+    if (status_wrapper->status == 0) {
+      return std::move(active_callback_).Run(true, std::move(active_data_));
+    }
+    // Status 0x01 indicates Command Failed (for example, `UNIT ATTENTION` on
+    // newly connected media); issue `REQUEST SENSE` and retry if attempts
+    // remain.
+    if (status_wrapper->status != 1 || attempts_left_ <= 1) {
+      return std::move(active_callback_).Run(false, {});
+    }
+    --attempts_left_;
+    request_sense_tag_ = next_tag_++;
+    const std::array<uint8_t, 6> request_sense_command = {
+        kScsiRequestSenseOpcode,
+        0,
+        0,
+        0,
+        static_cast<uint8_t>(kScsiRequestSenseAllocationLength),
+        0};
+    std::vector<uint8_t> sense_command_packet = BuildCommandBlockWrapper(
+        request_sense_tag_, kScsiRequestSenseAllocationLength,
+        kDirectionDeviceToHost, request_sense_command);
+    device_->GenericTransferOut(
+        candidate_.endpoints.endpoint_out, sense_command_packet, kUsbTimeoutMs,
+        base::BindOnce(&MojoUsbCapacityReader::OnRequestSenseCommandSent,
+                       weak_factory_.GetWeakPtr()));
+  }
+
+  void OnRequestSenseCommandSent(device::mojom::UsbTransferStatus status) {
+    if (status != device::mojom::UsbTransferStatus::COMPLETED) {
+      return std::move(active_callback_).Run(false, {});
+    }
+    device_->GenericTransferIn(
+        candidate_.endpoints.endpoint_in, kScsiRequestSenseAllocationLength,
+        kUsbTimeoutMs,
+        base::BindOnce(&MojoUsbCapacityReader::OnRequestSenseDataReceived,
+                       weak_factory_.GetWeakPtr()));
+  }
+
+  void OnRequestSenseDataReceived(device::mojom::UsbTransferStatus status,
+                                  base::span<const uint8_t>) {
+    if (status != device::mojom::UsbTransferStatus::COMPLETED &&
+        status != device::mojom::UsbTransferStatus::SHORT_PACKET) {
+      return std::move(active_callback_).Run(false, {});
+    }
+    device_->GenericTransferIn(
+        candidate_.endpoints.endpoint_in, kCommandStatusWrapperSize,
+        kUsbTimeoutMs,
+        base::BindOnce(&MojoUsbCapacityReader::OnRequestSenseStatusReceived,
+                       weak_factory_.GetWeakPtr()));
+  }
+
+  void OnRequestSenseStatusReceived(device::mojom::UsbTransferStatus status,
+                                    base::span<const uint8_t> status_bytes) {
+    if (status != device::mojom::UsbTransferStatus::COMPLETED &&
+        status != device::mojom::UsbTransferStatus::SHORT_PACKET) {
+      return std::move(active_callback_).Run(false, {});
+    }
+    std::optional<CommandStatusWrapper> status_wrapper =
+        ParseCommandStatusWrapper(status_bytes);
+    if (!status_wrapper ||
+        status_wrapper->signature != kCommandStatusWrapperSignature ||
+        status_wrapper->tag != request_sense_tag_ ||
+        status_wrapper->status != 0) {
+      return std::move(active_callback_).Run(false, {});
+    }
+    SendActiveCommandBlock();
+  }
+
+  void OnDisconnected() {
+    claimed_ = false;
+    opened_ = false;
+    if (callback_) {
+      std::move(callback_).Run(result_capacity_.value_or(0.0));
+    }
+  }
+
+  void Finish(double capacity) {
+    CHECK(callback_);
+    result_capacity_ = capacity;
+    if (!device_.is_connected()) {
+      return OnDisconnected();
+    }
+    if (claimed_) {
+      claimed_ = false;
+      device_->ReleaseInterface(
+          candidate_.endpoints.interface_number,
+          base::BindOnce(&MojoUsbCapacityReader::OnReleased,
+                         weak_factory_.GetWeakPtr()));
+      return;
+    }
+    OnReleased(true);
+  }
+
+  void OnReleased(bool /*success*/) {
+    if (opened_ && device_.is_connected()) {
+      opened_ = false;
+      device_->Close(base::BindOnce(&MojoUsbCapacityReader::OnClosed,
+                                    weak_factory_.GetWeakPtr()));
+      return;
+    }
+    opened_ = false;
+    if (callback_) {
+      std::move(callback_).Run(result_capacity_.value_or(0.0));
+    }
+  }
+
+  void OnClosed() {
+    if (callback_) {
+      std::move(callback_).Run(result_capacity_.value_or(0.0));
+    }
+  }
+
+  mojo::Remote<device::mojom::UsbDevice> device_;
+  UsbMassStorageCandidate candidate_;
+  ResultCallback callback_;
+  std::optional<double> result_capacity_;
+  BotCommandCallback active_callback_;
+  std::vector<uint8_t> active_scsi_command_;
+  std::vector<uint8_t> active_data_;
+  uint32_t active_tag_ = 0;
+  uint32_t request_sense_tag_ = 0;
+  uint32_t active_data_length_ = 0;
+  uint8_t active_direction_flags_ = 0;
+  int attempts_left_ = 0;
+  bool opened_ = false;
+  bool claimed_ = false;
+  uint32_t next_tag_ = 1;
+  base::WeakPtrFactory<MojoUsbCapacityReader> weak_factory_{this};
+};
+
 // Coordinates asynchronous Android removable storage enumeration. All methods
 // run on `content::BrowserThread::UI`. Uses `base::RefCountedThreadSafe`
 // because the `PostTaskAndReplyWithResult` reply callback holding `this` may be
@@ -386,6 +759,9 @@ class AndroidUsbDeviceEnumerator
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
     CHECK(!started_background_scan_);
     started_background_scan_ = true;
+    // Pass a copy of `refreshed_candidates_` to the background scan so
+    // `refreshed_candidates_` remains populated on the UI thread for
+    // `OnBackgroundScanComplete()` to look up candidates by GUID.
     base::ThreadPool::PostTaskAndReplyWithResult(
         FROM_HERE,
         {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
@@ -399,21 +775,98 @@ class AndroidUsbDeviceEnumerator
                                              std::move(dev_dir))
                   .GetDeviceList(usb_candidates);
             },
-            sys_block_dir_, dev_block_dir_, dev_dir_,
-            std::move(refreshed_candidates_)),
+            sys_block_dir_, dev_block_dir_, dev_dir_, refreshed_candidates_),
         base::BindOnce(&AndroidUsbDeviceEnumerator::OnBackgroundScanComplete,
                        this));
   }
 
   void OnBackgroundScanComplete(scoped_refptr<StorageDeviceList> device_list) {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-    FinalizeDeviceList(std::move(device_list));
+    if (!device_list || !usb_manager_.is_bound()) {
+      FinalizeDeviceList(std::move(device_list));
+      return;
+    }
+
+    // For each USB Mass Storage candidate whose capacity could not be read from
+    // `/sys/block` (for example, when SELinux blocks untrusted_app access to
+    // the USB sysfs hierarchy on Android), open the USB device over Mojo and
+    // query its capacity directly via SCSI `READ CAPACITY (10)`.
+    struct PendingCapacityQuery {
+      size_t item_index;
+      size_t candidate_index;
+    };
+    std::vector<PendingCapacityQuery> queries;
+    for (size_t i = 0; i < device_list->data.size(); ++i) {
+      const auto& item = device_list->data[i];
+      if (item.capacity > 0 ||
+          !base::StartsWith(item.storage_unit_id, "usb:")) {
+        continue;
+      }
+      // `storage_unit_id` for USB candidates is formatted as
+      // "usb:<guid>:<vid>:<pid>". Extract `<guid>` (`parts[1]`) to look up the
+      // matching `UsbMassStorageCandidate` and open its Mojo `UsbDevice`.
+      std::vector<std::string_view> parts =
+          base::SplitStringPiece(item.storage_unit_id, ":",
+                                 base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
+      if (parts.size() < 2) {
+        continue;
+      }
+      auto it = std::ranges::find(refreshed_candidates_, parts[1],
+                                  &UsbMassStorageCandidate::guid);
+      if (it == refreshed_candidates_.end()) {
+        continue;
+      }
+      queries.push_back({
+          .item_index = i,
+          .candidate_index =
+              static_cast<size_t>(it - refreshed_candidates_.begin()),
+      });
+    }
+
+    if (queries.empty()) {
+      FinalizeDeviceList(std::move(device_list));
+      return;
+    }
+
+    base::RepeatingClosure barrier = base::BarrierClosure(
+        queries.size(),
+        base::BindOnce(&AndroidUsbDeviceEnumerator::FinalizeDeviceList, this,
+                       device_list));
+    for (const auto& query : queries) {
+      const UsbMassStorageCandidate& candidate =
+          refreshed_candidates_[query.candidate_index];
+      mojo::PendingRemote<device::mojom::UsbDevice> device_remote;
+      usb_manager_->GetUnrestrictedDevice(
+          candidate.guid, {}, device_remote.InitWithNewPipeAndPassReceiver(),
+          mojo::NullRemote());
+      auto reader = std::make_unique<MojoUsbCapacityReader>(
+          std::move(device_remote), candidate,
+          base::BindOnce(&AndroidUsbDeviceEnumerator::OnMojoCapacityResult,
+                         this, device_list, query.item_index, barrier));
+      capacity_readers_.push_back(std::move(reader));
+      capacity_readers_.back()->Start();
+    }
+  }
+
+  void OnMojoCapacityResult(scoped_refptr<StorageDeviceList> device_list,
+                            size_t item_index,
+                            base::OnceClosure done_closure,
+                            double capacity) {
+    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    if (capacity > 0) {
+      device_list->data[item_index].capacity = capacity;
+    }
+    std::move(done_closure).Run();
   }
 
   void FinalizeDeviceList(scoped_refptr<StorageDeviceList> device_list) {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
     if (!callback_) {
       return;
+    }
+    if (device_list) {
+      std::erase_if(device_list->data,
+                    [](const auto& item) { return item.capacity <= 0; });
     }
     std::move(callback_).Run(std::move(device_list));
   }
@@ -424,6 +877,7 @@ class AndroidUsbDeviceEnumerator
   const base::FilePath dev_block_dir_;
   const base::FilePath dev_dir_;
   std::vector<UsbMassStorageCandidate> refreshed_candidates_;
+  std::vector<std::unique_ptr<MojoUsbCapacityReader>> capacity_readers_;
   bool started_background_scan_ = false;
 };
 
