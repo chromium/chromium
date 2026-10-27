@@ -97,11 +97,22 @@ class UsbDeviceHandle : public base::RefCountedThreadSafe<UsbDeviceHandle> {
   virtual const mojom::UsbInterfaceInfo* FindInterfaceByEndpoint(
       uint8_t endpoint_address) = 0;
 
+  // Sets whether this handle is permitted to detach kernel drivers marked as
+  // `unrestricted_only` in `UsbInterfaceDetachAllowlist` (true only when opened
+  // via `UsbDeviceManager::GetUnrestrictedDevice` by internal callers).
+  void set_allow_unrestricted_detach(bool allow) {
+    allow_unrestricted_detach_ = allow;
+  }
+  bool allow_unrestricted_detach() const { return allow_unrestricted_detach_; }
+
  protected:
   friend class base::RefCountedThreadSafe<UsbDeviceHandle>;
 
   UsbDeviceHandle();
   virtual ~UsbDeviceHandle();
+
+ private:
+  bool allow_unrestricted_detach_ = false;
 };
 
 }  // namespace device

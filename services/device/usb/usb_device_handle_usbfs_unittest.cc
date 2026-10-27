@@ -77,7 +77,9 @@ class MockBlockingTaskRunnerHelper
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX)
   MOCK_METHOD(bool,
               DetachInterface,
-              (int, const CombinedInterfaceInfo& interfaceInfo),
+              (int,
+               const CombinedInterfaceInfo& interfaceInfo,
+               bool allow_unrestricted_detach),
               (override));
   MOCK_METHOD(bool, ReattachInterface, (int), (override));
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX)
@@ -310,6 +312,36 @@ TEST_F(UsbDeviceHandleUsbfsTest, ClaimSameInterfaceSequentially) {
   handle2_->ReleaseInterface(1, release_interface_future2.GetCallback());
   ASSERT_TRUE(release_interface_future2.Get());
 }
+
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX)
+TEST_F(UsbDeviceHandleUsbfsTest, ClaimForwardsAllowUnrestrictedDetach) {
+  auto helper1 = std::make_unique<MockBlockingTaskRunnerHelper>();
+  EXPECT_CALL(*helper1,
+              DetachInterface(1, testing::_, /*allow_unrestricted_detach=*/false))
+      .WillOnce(testing::Return(true));
+  scoped_refptr<UsbDeviceHandleUsbfs> restricted_handle =
+      CreateHandle(usb_device_, std::move(helper1));
+
+  TestFuture<bool> claim_restricted_future;
+  restricted_handle->ClaimInterface(1, claim_restricted_future.GetCallback());
+  ASSERT_TRUE(claim_restricted_future.Get());
+  restricted_handle->Close();
+
+  auto helper2 = std::make_unique<MockBlockingTaskRunnerHelper>();
+  EXPECT_CALL(*helper2,
+              DetachInterface(2, testing::_, /*allow_unrestricted_detach=*/true))
+      .WillOnce(testing::Return(true));
+  scoped_refptr<UsbDeviceHandleUsbfs> unrestricted_handle =
+      CreateHandle(usb_device_, std::move(helper2));
+  unrestricted_handle->set_allow_unrestricted_detach(true);
+
+  TestFuture<bool> claim_unrestricted_future;
+  unrestricted_handle->ClaimInterface(
+      2, claim_unrestricted_future.GetCallback());
+  ASSERT_TRUE(claim_unrestricted_future.Get());
+  unrestricted_handle->Close();
+}
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX)
 
 TEST_F(UsbDeviceHandleUsbfsTest, SetInterfaceAlternateSettingUnclaimed) {
   TestFuture<bool> set_interface_future;

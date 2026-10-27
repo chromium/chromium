@@ -10,6 +10,7 @@ namespace device {
 namespace {
 
 using ::device::mojom::kUsbCommClass;
+using ::device::mojom::kUsbMassStorageClass;
 
 constexpr uint8_t kUsbCdcSubClassAcm = 2;
 constexpr uint8_t kUsbCdcProtoNone = 0;
@@ -19,6 +20,8 @@ constexpr uint8_t kUsbCdcProtoAtPcca101Wake = 3;
 constexpr uint8_t kUsbCdcProtoAtGsm = 4;
 constexpr uint8_t kUsbCdcProtoAt3G = 5;
 constexpr uint8_t kUsbCdcProtoAtCdma = 6;
+constexpr uint8_t kUsbMassStorageSubClassScsi = 0x06;
+constexpr uint8_t kUsbMassStorageProtoBulkOnly = 0x50;
 
 }  // namespace
 
@@ -42,6 +45,17 @@ UsbInterfaceDetachAllowlist::UsbInterfaceDetachAllowlist()
 
           // FTDI serial devices
           {/*driver_name=*/"ftdi_sio", /*protocols=ALL*/ {}},
+
+          // USB Mass Storage Bulk-Only Transport devices (restricted to
+          // internal callers via UsbDeviceManager::GetUnrestrictedDevice,
+          // such as chrome.imageWriterPrivate, and not WebUSB or IWAs).
+          {/*driver_name=*/"usb-storage",
+           /*protocols=*/
+           {
+               {kUsbMassStorageClass, kUsbMassStorageSubClassScsi,
+                kUsbMassStorageProtoBulkOnly},
+           },
+           /*unrestricted_only=*/true},
       }) {}
 
 UsbInterfaceDetachAllowlist::UsbInterfaceDetachAllowlist(
@@ -58,9 +72,13 @@ const UsbInterfaceDetachAllowlist& UsbInterfaceDetachAllowlist::Get() {
 
 bool UsbInterfaceDetachAllowlist::CanDetach(
     std::string_view driver_name,
-    const mojom::UsbAlternateInterfaceInfo& interface_info) const {
+    const mojom::UsbAlternateInterfaceInfo& interface_info,
+    bool allow_unrestricted_detach) const {
   return std::ranges::any_of(entries_, [&](const Entry& rule) {
     if (rule.driver_name != driver_name) {
+      return false;
+    }
+    if (rule.unrestricted_only && !allow_unrestricted_detach) {
       return false;
     }
     if (rule.protocols.empty()) {
@@ -76,8 +94,11 @@ bool UsbInterfaceDetachAllowlist::CanDetach(
 
 UsbInterfaceDetachAllowlist::Entry::Entry(
     const std::string& driver_name,
-    const std::vector<Protocol>& protocols)
-    : driver_name(driver_name), protocols(protocols) {}
+    const std::vector<Protocol>& protocols,
+    bool unrestricted_only)
+    : driver_name(driver_name),
+      protocols(protocols),
+      unrestricted_only(unrestricted_only) {}
 
 UsbInterfaceDetachAllowlist::Entry::Entry(
     const UsbInterfaceDetachAllowlist::Entry& other) = default;

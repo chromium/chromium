@@ -70,7 +70,7 @@ void DeviceManagerImpl::GetDevice(
   return GetDeviceInternal(guid, std::move(device_receiver),
                            std::move(device_client), blocked_interface_classes,
                            /*allow_security_key_requests=*/false,
-                           /*allow_unrestricted_control_transfers=*/false);
+                           /*allow_unrestricted_access=*/false);
 }
 
 void DeviceManagerImpl::GetUnrestrictedDevice(
@@ -81,7 +81,7 @@ void DeviceManagerImpl::GetUnrestrictedDevice(
   return GetDeviceInternal(guid, std::move(device_receiver),
                            std::move(device_client), blocked_interface_classes,
                            /*allow_security_key_requests=*/false,
-                           /*allow_unrestricted_control_transfers=*/true);
+                           /*allow_unrestricted_access=*/true);
 }
 
 void DeviceManagerImpl::GetSecurityKeyDevice(
@@ -92,7 +92,7 @@ void DeviceManagerImpl::GetSecurityKeyDevice(
                            std::move(device_client),
                            /*blocked_interface_classes=*/{},
                            /*allow_security_key_requests=*/true,
-                           /*allow_unrestricted_control_transfers=*/false);
+                           /*allow_unrestricted_access=*/false);
 }
 
 #if BUILDFLAG(IS_ANDROID)
@@ -237,15 +237,14 @@ void DeviceManagerImpl::GetDeviceInternal(
     mojo::PendingRemote<mojom::UsbDeviceClient> device_client,
     base::span<const uint8_t> blocked_interface_classes,
     bool allow_security_key_requests,
-    bool allow_unrestricted_control_transfers) {
+    bool allow_unrestricted_access) {
   scoped_refptr<UsbDevice> device = usb_service_->GetDevice(guid);
   if (!device)
     return;
 
   DeviceImpl::Create(std::move(device), std::move(device_receiver),
                      std::move(device_client), blocked_interface_classes,
-                     allow_security_key_requests,
-                     allow_unrestricted_control_transfers);
+                     allow_security_key_requests, allow_unrestricted_access);
 }
 
 }  // namespace device::usb

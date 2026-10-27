@@ -72,7 +72,9 @@ enum class DetachKernelDriverOutcome {
   kDetachedUsblp = 5,
   // Kernel driver `ftdi_sio` was detached
   kDetachedFtdiSio = 6,
-  kMaxValue = kDetachedFtdiSio
+  // Kernel driver `usb-storage` was detached
+  kDetachedUsbStorage = 7,
+  kMaxValue = kDetachedUsbStorage
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/others/enums.xml:DetachKernelDriverOutcome)
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX)
@@ -321,7 +323,8 @@ bool UsbDeviceHandleUsbfs::BlockingTaskRunnerHelper::ReleaseInterface(
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX)
 bool UsbDeviceHandleUsbfs::BlockingTaskRunnerHelper::DetachInterface(
     int interface_number,
-    const CombinedInterfaceInfo& interface_info) {
+    const CombinedInterfaceInfo& interface_info,
+    bool allow_unrestricted_detach) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   DetachKernelDriverOutcome outcome;
@@ -333,7 +336,8 @@ bool UsbDeviceHandleUsbfs::BlockingTaskRunnerHelper::DetachInterface(
                     << " can be claimed right away";
     outcome = DetachKernelDriverOutcome::kWasNoDriver;
   } else if (!UsbInterfaceDetachAllowlist::Get().CanDetach(
-                 driver_name, *interface_info.alternate)) {
+                 driver_name, *interface_info.alternate,
+                 allow_unrestricted_detach)) {
     USB_PLOG(DEBUG) << "Not allowed to detach interface " << interface_number
                     << " attached to driver " << driver_name;
     outcome = DetachKernelDriverOutcome::kDetachingForbidden;
@@ -355,6 +359,8 @@ bool UsbDeviceHandleUsbfs::BlockingTaskRunnerHelper::DetachInterface(
           : driver_name == "usblp" ? DetachKernelDriverOutcome::kDetachedUsblp
           : driver_name == "ftdi_sio"
               ? DetachKernelDriverOutcome::kDetachedFtdiSio
+          : driver_name == "usb-storage"
+              ? DetachKernelDriverOutcome::kDetachedUsbStorage
               : DetachKernelDriverOutcome::kDetachedOther;
     }
   }
@@ -687,7 +693,8 @@ void UsbDeviceHandleUsbfs::ClaimInterface(int interface_number,
         config, interface_number, /*alternate_setting=*/0);
     CHECK(interface_info.IsValid());
     helper_.AsyncCall(&BlockingTaskRunnerHelper::DetachInterface)
-        .WithArgs(interface_number, interface_info)
+        .WithArgs(interface_number, interface_info,
+                  allow_unrestricted_detach())
         .Then(base::BindOnce(&UsbDeviceHandleUsbfs::DetachInterfaceComplete,
                              this, interface_number, std::move(callback)));
     return;

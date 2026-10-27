@@ -228,7 +228,7 @@ class USBDeviceImplTest : public testing::Test {
       base::span<const uint8_t> blocked_interface_classes,
       bool allow_security_key_requests,
       mojo::PendingRemote<mojom::UsbDeviceClient> client,
-      bool allow_unrestricted_control_transfers = false) {
+      bool allow_unrestricted_access = false) {
     mock_device_ =
         new MockUsbDevice(vendor_id, product_id, manufacturer, product, serial);
     mock_handle_ = new MockUsbDeviceHandle(mock_device_.get());
@@ -236,8 +236,7 @@ class USBDeviceImplTest : public testing::Test {
     mojo::Remote<mojom::UsbDevice> proxy;
     DeviceImpl::Create(mock_device_, proxy.BindNewPipeAndPassReceiver(),
                        std::move(client), blocked_interface_classes,
-                       allow_security_key_requests,
-                       allow_unrestricted_control_transfers);
+                       allow_security_key_requests, allow_unrestricted_access);
 
     // Set up mock handle calls to respond based on mock device configs
     // established by the test.
@@ -305,7 +304,7 @@ class USBDeviceImplTest : public testing::Test {
                        mojo::NullRemote(),
                        /*blocked_interface_classes=*/{},
                        /*allow_security_key_requests=*/false,
-                       /*allow_unrestricted_control_transfers=*/false);
+                       /*allow_unrestricted_access=*/false);
     return proxy;
   }
 
@@ -1772,7 +1771,7 @@ TEST_F(USBDeviceImplTest, ClaimInterfaceFailsDuringSetConfigurationMultiPipe) {
                      /*client=*/mojo::NullRemote(),
                      /*blocked_interface_classes=*/{},
                      /*allow_security_key_requests=*/false,
-                     /*allow_unrestricted_control_transfers=*/false);
+                     /*allow_unrestricted_access=*/false);
 
   EXPECT_CALL(mock_device(), OpenInternal(_)).Times(2);
 
@@ -2061,6 +2060,7 @@ TEST_F(USBDeviceImplTest, ControlTransferStandardWriteBlocked) {
     base::test::TestFuture<mojom::UsbOpenDeviceResultPtr> future;
     device->Open(future.GetCallback());
     EXPECT_TRUE(future.Get()->is_success());
+    EXPECT_FALSE(mock_handle().allow_unrestricted_detach());
   }
 
   std::vector<uint8_t> fake_data = {1, 2, 3};
@@ -2094,13 +2094,14 @@ TEST_F(USBDeviceImplTest, ControlTransferStandardWriteAllowedWithBypass) {
       /*blocked_interface_classes=*/{},
       /*allow_security_key_requests=*/false,
       /*client=*/mojo::NullRemote(),
-      /*allow_unrestricted_control_transfers=*/true);
+      /*allow_unrestricted_access=*/true);
 
   EXPECT_CALL(mock_device(), OpenInternal(/*callback=*/_));
 
   base::test::TestFuture<mojom::UsbOpenDeviceResultPtr> open_future;
   device->Open(open_future.GetCallback());
   EXPECT_TRUE(open_future.Get()->is_success());
+  EXPECT_TRUE(mock_handle().allow_unrestricted_detach());
 
   AddMockConfig(ConfigBuilder(/*configuration_value=*/1)
                     .AddInterface(/*interface_number=*/7,
@@ -2123,8 +2124,8 @@ TEST_F(USBDeviceImplTest, ControlTransferStandardWriteAllowedWithBypass) {
   params->recipient = UsbControlTransferRecipient::DEVICE;
   // Request 9 is SetConfiguration (kUsbRequestSetConfiguration). In WebUSB, all
   // OUTBOUND standard requests and all non-allowlisted standard requests are
-  // blocked. Setting allow_unrestricted_control_transfers to true bypasses this
-  // allowlist entirely, permitting the request to go through.
+  // blocked. Setting allow_unrestricted_access to true bypasses this allowlist
+  // entirely, permitting the request to go through.
   params->request = 9; /*kUsbRequestSetConfiguration*/
   params->value = 1;
   params->index = 0;

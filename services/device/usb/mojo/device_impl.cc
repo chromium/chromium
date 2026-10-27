@@ -162,10 +162,10 @@ void DeviceImpl::Create(scoped_refptr<device::UsbDevice> device,
                         mojo::PendingRemote<mojom::UsbDeviceClient> client,
                         base::span<const uint8_t> blocked_interface_classes,
                         bool allow_security_key_requests,
-                        bool allow_unrestricted_control_transfers) {
+                        bool allow_unrestricted_access) {
   auto* device_impl = new DeviceImpl(
       std::move(device), std::move(client), blocked_interface_classes,
-      allow_security_key_requests, allow_unrestricted_control_transfers);
+      allow_security_key_requests, allow_unrestricted_access);
   device_impl->receiver_ = mojo::MakeSelfOwnedReceiver(
       base::WrapUnique(device_impl), std::move(receiver));
 }
@@ -184,13 +184,12 @@ DeviceImpl::DeviceImpl(scoped_refptr<device::UsbDevice> device,
                        mojo::PendingRemote<mojom::UsbDeviceClient> client,
                        base::span<const uint8_t> blocked_interface_classes,
                        bool allow_security_key_requests,
-                       bool allow_unrestricted_control_transfers)
+                       bool allow_unrestricted_access)
     : device_(std::move(device)),
       blocked_interface_classes_(blocked_interface_classes.begin(),
                                  blocked_interface_classes.end()),
       allow_security_key_requests_(allow_security_key_requests),
-      allow_unrestricted_control_transfers_(
-          allow_unrestricted_control_transfers),
+      allow_unrestricted_access_(allow_unrestricted_access),
       client_(std::move(client)) {
   DCHECK(device_);
   observation_.Observe(device_.get());
@@ -272,7 +271,7 @@ bool DeviceImpl::HasControlTransferPermission(
   // 1. STANDARD Requests
   // ==========================================
   if (type == UsbControlTransferType::STANDARD) {
-    if (!allow_unrestricted_control_transfers_ &&
+    if (!allow_unrestricted_access_ &&
         base::FeatureList::IsEnabled(
             features::kWebUsbEnforceStandardRequestAllowlist)) {
       // Reject all Standard requests except fundamental inspection and
@@ -409,8 +408,13 @@ void DeviceImpl::OnOpen(base::WeakPtr<DeviceImpl> self,
 
   self->opening_ = false;
   self->device_handle_ = std::move(handle);
-  if (self->device_handle_ && self->client_)
-    self->client_->OnDeviceOpened();
+  if (self->device_handle_) {
+    self->device_handle_->set_allow_unrestricted_detach(
+        self->allow_unrestricted_access_);
+    if (self->client_) {
+      self->client_->OnDeviceOpened();
+    }
+  }
 
   if (self->device_handle_) {
     std::move(callback).Run(mojom::UsbOpenDeviceResult::NewSuccess(

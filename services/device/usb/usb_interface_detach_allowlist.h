@@ -24,7 +24,8 @@ class UsbInterfaceDetachAllowlist final {
   // Element of allowlist for detaching USB kernel drivers
   struct Entry {
     Entry(const std::string& driver_name,
-          const std::vector<Protocol>& protocols);
+          const std::vector<Protocol>& protocols,
+          bool unrestricted_only = false);
     Entry(const Entry& other);
     ~Entry();
 
@@ -33,6 +34,11 @@ class UsbInterfaceDetachAllowlist final {
 
     // The list of protocols that are allowed to detach (empty means "all").
     std::vector<Protocol> protocols;
+
+    // If true, detaching this driver is only permitted for internal callers
+    // that opened the device via UsbDeviceManager::GetUnrestrictedDevice
+    // (not WebUSB or Isolated Web Apps).
+    bool unrestricted_only = false;
   };
 
   // For testing
@@ -48,7 +54,8 @@ class UsbInterfaceDetachAllowlist final {
   static const UsbInterfaceDetachAllowlist& Get();
 
   bool CanDetach(std::string_view driver_name,
-                 const mojom::UsbAlternateInterfaceInfo& interface_info) const;
+                 const mojom::UsbAlternateInterfaceInfo& interface_info,
+                 bool allow_unrestricted_detach = false) const;
 
  private:
   // friend NoDestructor to permit access to private constructor.

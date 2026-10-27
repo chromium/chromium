@@ -241,7 +241,8 @@ class UsbDeviceHandleUsbfs::BlockingTaskRunnerHelper {
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX)
   // Detach the interface from a kernel driver before ClaimInterface
   virtual bool DetachInterface(int interface_number,
-                               const CombinedInterfaceInfo& interfaceInfo);
+                               const CombinedInterfaceInfo& interfaceInfo,
+                               bool allow_unrestricted_detach);
 
   // Reattach the interface to a kernel driver after ReleaseInterface
   virtual bool ReattachInterface(int interface_number);

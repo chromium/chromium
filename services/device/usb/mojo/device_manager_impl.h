@@ -116,7 +116,7 @@ class DeviceManagerImpl : public mojom::UsbDeviceManager,
       mojo::PendingRemote<mojom::UsbDeviceClient> device_client,
       base::span<const uint8_t> blocked_interface_classes,
       bool allow_security_key_requests,
-      bool allow_unrestricted_control_transfers);
+      bool allow_unrestricted_access);
 
   std::unique_ptr<UsbService> usb_service_;
   base::ScopedObservation<UsbService, UsbService::Observer> observation_{this};

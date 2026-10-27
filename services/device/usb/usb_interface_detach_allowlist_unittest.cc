@@ -62,5 +62,27 @@ TEST_F(UsbInterfaceDetachAllowlistTest, Interface_NoMatch) {
   ASSERT_FALSE(allowlist.CanDetach(driver_name_, interface_info_));
 }
 
+TEST_F(UsbInterfaceDetachAllowlistTest, DefaultAllowlist_UsbStorageBulkOnly) {
+  mojom::UsbAlternateInterfaceInfo bot_interface;
+  bot_interface.class_code = mojom::kUsbMassStorageClass;
+  bot_interface.subclass_code = 0x06;
+  bot_interface.protocol_code = 0x50;
+  // Restricted callers (including WebUSB and Isolated Web Apps opened via
+  // UsbDeviceManager::GetDevice) are not permitted to detach usb-storage.
+  EXPECT_FALSE(UsbInterfaceDetachAllowlist::Get().CanDetach(
+      "usb-storage", bot_interface, /*allow_unrestricted_detach=*/false));
+  // Only internal callers opened via UsbDeviceManager::GetUnrestrictedDevice
+  // are permitted to detach usb-storage.
+  EXPECT_TRUE(UsbInterfaceDetachAllowlist::Get().CanDetach(
+      "usb-storage", bot_interface, /*allow_unrestricted_detach=*/true));
+
+  mojom::UsbAlternateInterfaceInfo non_bot_interface;
+  non_bot_interface.class_code = mojom::kUsbMassStorageClass;
+  non_bot_interface.subclass_code = 0x06;
+  non_bot_interface.protocol_code = 0x62;  // UAS
+  EXPECT_FALSE(UsbInterfaceDetachAllowlist::Get().CanDetach(
+      "usb-storage", non_bot_interface, /*allow_unrestricted_detach=*/true));
+}
+
 }  // namespace
 }  // namespace device
