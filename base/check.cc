@@ -13,6 +13,7 @@
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/logging.h"
+#include "base/not_fatal_until_severity_override.h"
 #include "base/notreached.h"
 #include "base/thread_annotations.h"
 #include "build/build_config.h"
@@ -20,6 +21,9 @@
 namespace logging {
 
 namespace {
+
+using ::base::internal::GetNotFatalUntilSeverityOverride;
+using ::base::internal::NotFatalUntilSeverityOverride;
 
 // End check failure messages with a period, e.g.:
 //
@@ -67,6 +71,11 @@ LogSeverity GetDumpSeverity() {
 }
 
 LogSeverity GetNotFatalUntilSeverity(base::NotFatalUntil fatal_milestone) {
+  std::optional<NotFatalUntilSeverityOverride>& severity_override =
+      GetNotFatalUntilSeverityOverride();
+  if (severity_override && severity_override->milestone == fatal_milestone) {
+    return severity_override->severity;
+  }
   if (fatal_milestone != base::NotFatalUntil::NoSpecifiedMilestoneInternal &&
       std::to_underlying(fatal_milestone) <= BASE_CHECK_VERSION_INTERNAL) {
     return LOGGING_FATAL;

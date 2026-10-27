@@ -12,6 +12,10 @@
 
 #include "base/check.h"
 #include "base/debug/debugging_buildflags.h"
+#include "base/macros/if.h"
+#include "base/macros/is_empty.h"
+#include "base/not_fatal_until.h"
+#include "base/test/scoped_not_fatal_until_severity_override.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -51,41 +55,142 @@
 #endif  // DCHECK_IS_ON() && defined(GTEST_HAS_DEATH_TEST) &&
         // !BUILDFLAG(DCHECK_IS_CONFIGURABLE) && !BUILDFLAG(IS_ANDROID)
 
-// As above, but for CHECK().
+// EXPECT/ASSERT_CHECK_DEATH and EXPECT/ASSERT_NOTREACHED_DEATH, for testing
+// CHECK() and NOTREACHED().
+//
+// These accept an optional `base::NotFatalUntil` `milestone` parameter to test
+// NotFatalUntil CHECKs. For instance, `CHECK(..., base::NotFatalUntil::M123)`
+// can be tested with:
+//   EXPECT_CHECK_DEATH(Foo(), base::NotFatalUntil::M123);
+//
+// Until the milestone is reached, `UNTIL_THEN` can be used to validate the
+// non-fatal behavior observed on stable builds. For instance:
+//   EXPECT_CHECK_DEATH(Divide(10, 0), base::NotFatalUntil::M123, UNTIL_THEN({
+//                        EXPECT_EQ(Divide(10, 0), 0);
+//                      }));
+//
+// Once `milestone` has been reached, the `UNTIL_THEN` block is skipped.
+//
+// Note that `EXPECT_CHECK_DEATH` runs the death test in a forked process, but
+// runs the `UNTIL_THEN` block in the main process. This means that any side
+// effects of the `UNTIL_THEN` block will be observable by statements following
+// `EXPECT_CHECK_DEATH`. The test should never rely on these side effects
+// because if it did, removing the `UNTIL_THEN` when the milestone is reached
+// would break the test.
+
 #if defined(GTEST_HAS_DEATH_TEST) && !BUILDFLAG(IS_ANDROID)
 
 #if CHECK_WILL_STREAM()
-#define EXPECT_CHECK_DEATH(statement) EXPECT_DEATH(statement, "Check failed")
-#define EXPECT_CHECK_DEATH_WITH(statement, msg) EXPECT_DEATH(statement, msg)
-#define ASSERT_CHECK_DEATH(statement) ASSERT_DEATH(statement, "Check failed")
-#define EXPECT_NOTREACHED_DEATH(statement) \
+#define BASE_INTERNAL_EXPECT_CHECK_DEATH(statement) \
+  EXPECT_DEATH(statement, "Check failed")
+#define BASE_INTERNAL_EXPECT_CHECK_DEATH_WITH(statement, msg) \
+  EXPECT_DEATH(statement, msg)
+#define BASE_INTERNAL_ASSERT_CHECK_DEATH(statement) \
+  ASSERT_DEATH(statement, "Check failed")
+#define BASE_INTERNAL_EXPECT_NOTREACHED_DEATH(statement) \
   EXPECT_DEATH(statement, "NOTREACHED hit")
-#define ASSERT_NOTREACHED_DEATH(statement) \
+#define BASE_INTERNAL_ASSERT_NOTREACHED_DEATH(statement) \
   ASSERT_DEATH(statement, "NOTREACHED hit")
 #else
-#define EXPECT_CHECK_DEATH(statement) EXPECT_DEATH(statement, "")
-#define EXPECT_CHECK_DEATH_WITH(statement, msg) EXPECT_DEATH(statement, "")
-#define ASSERT_CHECK_DEATH(statement) ASSERT_DEATH(statement, "")
-#define EXPECT_NOTREACHED_DEATH(statement) EXPECT_DEATH(statement, "")
-#define ASSERT_NOTREACHED_DEATH(statement) ASSERT_DEATH(statement, "")
+#define BASE_INTERNAL_EXPECT_CHECK_DEATH(statement) EXPECT_DEATH(statement, "")
+#define BASE_INTERNAL_EXPECT_CHECK_DEATH_WITH(statement, msg) \
+  EXPECT_DEATH(statement, "")
+#define BASE_INTERNAL_ASSERT_CHECK_DEATH(statement) ASSERT_DEATH(statement, "")
+#define BASE_INTERNAL_EXPECT_NOTREACHED_DEATH(statement) \
+  EXPECT_DEATH(statement, "")
+#define BASE_INTERNAL_ASSERT_NOTREACHED_DEATH(statement) \
+  ASSERT_DEATH(statement, "")
 #endif  // CHECK_WILL_STREAM()
 
 #else  // defined(GTEST_HAS_DEATH_TEST) && !BUILDFLAG(IS_ANDROID)
 
 // Note GTEST_UNSUPPORTED_DEATH_TEST takes a |regex| only to see whether it is a
 // valid regex. It is never evaluated.
-#define EXPECT_CHECK_DEATH(statement) \
+#define BASE_INTERNAL_EXPECT_CHECK_DEATH(statement) \
   GTEST_UNSUPPORTED_DEATH_TEST(statement, "", )
-#define EXPECT_CHECK_DEATH_WITH(statement, msg) \
+#define BASE_INTERNAL_EXPECT_CHECK_DEATH_WITH(statement, msg) \
   GTEST_UNSUPPORTED_DEATH_TEST(statement, "", )
-#define ASSERT_CHECK_DEATH(statement) \
+#define BASE_INTERNAL_ASSERT_CHECK_DEATH(statement) \
   GTEST_UNSUPPORTED_DEATH_TEST(statement, "", return)
-#define EXPECT_NOTREACHED_DEATH(statement) \
+#define BASE_INTERNAL_EXPECT_NOTREACHED_DEATH(statement) \
   GTEST_UNSUPPORTED_DEATH_TEST(statement, "", )
-#define ASSERT_NOTREACHED_DEATH(statement) \
+#define BASE_INTERNAL_ASSERT_NOTREACHED_DEATH(statement) \
   GTEST_UNSUPPORTED_DEATH_TEST(statement, "", return)
 
 #endif  // defined(GTEST_HAS_DEATH_TEST) && !BUILDFLAG(IS_ANDROID)
+
+// `UNTIL_THEN` is not defined as a standalone macro to avoid
+// polluting the global namespace; it's instead prefixed with
+// `BASE_INTERNAL_CHECK_DEATH_` during macro expansion.
+#define BASE_INTERNAL_CHECK_DEATH_UNTIL_THEN(...) __VA_ARGS__;
+
+#define BASE_INTERNAL_CHECK_DEATH_RUN_UNTIL_THEN(milestone, non_fatal_clause) \
+  if (!base::internal::ScopedNotFatalUntilSeverityOverride::                  \
+          IsMilestoneReached(milestone)) {                                    \
+    base::internal::ScopedNotFatalUntilSeverityOverride                       \
+        base_internal_non_fatal_override(milestone, /*is_fatal=*/false);      \
+    BASE_INTERNAL_CHECK_DEATH_##non_fatal_clause                              \
+  }
+
+#define BASE_INTERNAL_CHECK_DEATH_NOT_FATAL_UNTIL(death_statement, milestone, \
+                                                  ...)                        \
+  do {                                                                        \
+    const base::NotFatalUntil base_internal_milestone = (milestone);          \
+    {                                                                         \
+      base::internal::ScopedNotFatalUntilSeverityOverride                     \
+          base_internal_fatal_override(base_internal_milestone,               \
+                                       /*is_fatal=*/true);                    \
+      death_statement;                                                        \
+    }                                                                         \
+    __VA_OPT__(BASE_INTERNAL_CHECK_DEATH_RUN_UNTIL_THEN(                      \
+        base_internal_milestone, __VA_ARGS__))                                \
+  } while (0)
+
+#define BASE_INTERNAL_EXPECT_CHECK_DEATH_NOT_FATAL_UNTIL(statement, milestone, \
+                                                         ...)                  \
+  BASE_INTERNAL_CHECK_DEATH_NOT_FATAL_UNTIL(                                   \
+      BASE_INTERNAL_EXPECT_CHECK_DEATH(statement),                             \
+      milestone __VA_OPT__(, ) __VA_ARGS__)
+
+#define BASE_INTERNAL_EXPECT_CHECK_DEATH_WITH_NOT_FATAL_UNTIL(statement, msg, \
+                                                              milestone, ...) \
+  BASE_INTERNAL_CHECK_DEATH_NOT_FATAL_UNTIL(                                  \
+      BASE_INTERNAL_EXPECT_CHECK_DEATH_WITH(statement, msg),                  \
+      milestone __VA_OPT__(, ) __VA_ARGS__)
+
+#define BASE_INTERNAL_ASSERT_CHECK_DEATH_NOT_FATAL_UNTIL(statement, milestone, \
+                                                         ...)                  \
+  BASE_INTERNAL_CHECK_DEATH_NOT_FATAL_UNTIL(                                   \
+      BASE_INTERNAL_ASSERT_CHECK_DEATH(statement),                             \
+      milestone __VA_OPT__(, ) __VA_ARGS__)
+
+#define EXPECT_CHECK_DEATH(statement, ...)                              \
+  BASE_IF(BASE_IS_EMPTY(__VA_ARGS__), BASE_INTERNAL_EXPECT_CHECK_DEATH, \
+          BASE_INTERNAL_EXPECT_CHECK_DEATH_NOT_FATAL_UNTIL)             \
+  (statement __VA_OPT__(, ) __VA_ARGS__)
+
+#define EXPECT_CHECK_DEATH_WITH(statement, msg, ...)                         \
+  BASE_IF(BASE_IS_EMPTY(__VA_ARGS__), BASE_INTERNAL_EXPECT_CHECK_DEATH_WITH, \
+          BASE_INTERNAL_EXPECT_CHECK_DEATH_WITH_NOT_FATAL_UNTIL)             \
+  (statement, msg __VA_OPT__(, ) __VA_ARGS__)
+
+#define ASSERT_CHECK_DEATH(statement, ...)                              \
+  BASE_IF(BASE_IS_EMPTY(__VA_ARGS__), BASE_INTERNAL_ASSERT_CHECK_DEATH, \
+          BASE_INTERNAL_ASSERT_CHECK_DEATH_NOT_FATAL_UNTIL)             \
+  (statement __VA_OPT__(, ) __VA_ARGS__)
+
+// Note: `NOTREACHED(milestone)` currently logs "Check failed: false." instead
+// of "NOTREACHED hit.", so the `NotFatalUntil` overloads below have to use
+// `CHECK` expectation instead of `NOTREACHED`.
+#define EXPECT_NOTREACHED_DEATH(statement, ...)                              \
+  BASE_IF(BASE_IS_EMPTY(__VA_ARGS__), BASE_INTERNAL_EXPECT_NOTREACHED_DEATH, \
+          BASE_INTERNAL_EXPECT_CHECK_DEATH_NOT_FATAL_UNTIL)                  \
+  (statement __VA_OPT__(, ) __VA_ARGS__)
+
+#define ASSERT_NOTREACHED_DEATH(statement, ...)                              \
+  BASE_IF(BASE_IS_EMPTY(__VA_ARGS__), BASE_INTERNAL_ASSERT_NOTREACHED_DEATH, \
+          BASE_INTERNAL_ASSERT_CHECK_DEATH_NOT_FATAL_UNTIL)                  \
+  (statement __VA_OPT__(, ) __VA_ARGS__)
 
 // `BASE_EXPECT_DEATH` is similar to gtest's `EXPECT_DEATH_IF_SUPPORTED`. It
 // takes into account that Android does not support them.

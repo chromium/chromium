@@ -24,6 +24,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/gtest_util.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/scoped_not_fatal_until_severity_override.h"
 #include "build/build_config.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -55,6 +56,7 @@ class ScopedExpectDumpWithoutCrashing {
   ~ScopedExpectDumpWithoutCrashing() {
     EXPECT_EQ(1, g_dump_without_crashing_count);
     base::debug::SetDumpWithoutCrashingFunction(nullptr);
+    base::debug::ResetDumpWithoutCrashingThrottlingForTesting();
   }
 
  private:
@@ -771,6 +773,128 @@ TEST(CheckDeathTest, NotReachedNotFatalUntil) {
   // Fatal in current major version.
   EXPECT_CHECK("Check failed: false. foo", NOTREACHED(kCurrentMilestone)
                                                << "foo");
+}
+
+TEST(CheckDeathTest, ScopedNotFatalUntilSeverityOverrideToFatal) {
+  base::internal::ScopedNotFatalUntilSeverityOverride fatal_check(
+      kNextMilestone, /*is_fatal=*/true);
+  // The specified milestone is forced to be fatal.
+  EXPECT_CHECK("Check failed: false. ", CHECK(false, kNextMilestone));
+  EXPECT_CHECK("Check failed: 1 == 2 (1 vs. 2). ",
+               CHECK_EQ(1, 2, kNextMilestone));
+  EXPECT_CHECK("Check failed: false. ", NOTREACHED(kNextMilestone));
+}
+
+TEST(CheckTest, ScopedNotFatalUntilSeverityOverrideToNonFatal) {
+  base::internal::ScopedNotFatalUntilSeverityOverride non_fatal_check(
+      kCurrentMilestone, /*is_fatal=*/false);
+  // The specified milestone is forced to be non-fatal.
+  {
+    ScopedExpectDumpWithoutCrashing expect_dump;
+    CHECK(false, kCurrentMilestone);
+  }
+  {
+    ScopedExpectDumpWithoutCrashing expect_dump;
+    CHECK_EQ(1, 2, kCurrentMilestone);
+  }
+  {
+    ScopedExpectDumpWithoutCrashing expect_dump;
+    NOTREACHED(kCurrentMilestone);
+  }
+}
+
+TEST(CheckDeathTest, ScopedNotFatalUntilSeverityOverrideCannotBeCalledTwice) {
+  base::internal::ScopedNotFatalUntilSeverityOverride fatal_check(
+      kNextMilestone, logging::LOGGING_FATAL);
+  EXPECT_CHECK_DEATH(
+      base::internal::ScopedNotFatalUntilSeverityOverride non_fatal_check(
+          kNextMilestone, logging::LOGGING_ERROR));
+}
+
+int Divide(int dividend, int divisor) {
+  CHECK_NE(divisor, 0, kNextMilestone) << "Cannot divide by 0";
+  if (divisor == 0) {
+    return 0;
+  }
+  return dividend / divisor;
+}
+
+TEST(CheckDeathTest, ExpectCheckDeathNotFatalUntilFutureMilestone) {
+  bool until_then_executed = false;
+  EXPECT_CHECK_DEATH(Divide(1, 0), kNextMilestone, UNTIL_THEN({
+                       ScopedExpectDumpWithoutCrashing expect_dump;
+                       EXPECT_EQ(Divide(1, 0), 0);
+                       until_then_executed = true;
+                     }));
+  EXPECT_TRUE(until_then_executed);
+}
+
+TEST(CheckDeathTest, ExpectCheckDeathWithNotFatalUntilFutureMilestone) {
+  bool until_then_executed = false;
+  EXPECT_CHECK_DEATH_WITH(Divide(1, 0), "Cannot divide by 0", kNextMilestone,
+                          UNTIL_THEN({
+                            ScopedExpectDumpWithoutCrashing expect_dump;
+                            EXPECT_EQ(Divide(1, 0), 0);
+                            until_then_executed = true;
+                          }));
+  EXPECT_TRUE(until_then_executed);
+}
+
+TEST(CheckDeathTest, AssertCheckDeathNotFatalUntilFutureMilestone) {
+  bool until_then_executed = false;
+  ASSERT_CHECK_DEATH(Divide(1, 0), kNextMilestone, UNTIL_THEN({
+                       ScopedExpectDumpWithoutCrashing expect_dump;
+                       EXPECT_EQ(Divide(1, 0), 0);
+                       until_then_executed = true;
+                     }));
+  EXPECT_TRUE(until_then_executed);
+}
+
+bool NotReached() {
+  NOTREACHED(kNextMilestone);
+  return false;
+}
+
+TEST(CheckDeathTest, ExpectNotReachedDeathNotFatalUntilFutureMilestone) {
+  bool until_then_executed = false;
+  EXPECT_NOTREACHED_DEATH(NotReached(), kNextMilestone, UNTIL_THEN({
+                            ScopedExpectDumpWithoutCrashing expect_dump;
+                            EXPECT_FALSE(NotReached());
+                            until_then_executed = true;
+                          }));
+  EXPECT_TRUE(until_then_executed);
+}
+
+TEST(CheckDeathTest, AssertNotReachedDeathNotFatalUntilFutureMilestone) {
+  bool until_then_executed = false;
+  ASSERT_NOTREACHED_DEATH(NotReached(), kNextMilestone, UNTIL_THEN({
+                            ScopedExpectDumpWithoutCrashing expect_dump;
+                            EXPECT_FALSE(NotReached());
+                            until_then_executed = true;
+                          }));
+  EXPECT_TRUE(until_then_executed);
+}
+
+TEST(CheckDeathTest, ExpectCheckDeathNotFatalUntilFutureMilestoneNoUntilThen) {
+  EXPECT_CHECK_DEATH(Divide(1, 0), kNextMilestone);
+  EXPECT_CHECK_DEATH_WITH(Divide(1, 0), "Cannot divide by 0", kNextMilestone);
+  ASSERT_CHECK_DEATH(Divide(1, 0), kNextMilestone);
+  EXPECT_NOTREACHED_DEATH(NotReached(), kNextMilestone);
+  ASSERT_NOTREACHED_DEATH(NotReached(), kNextMilestone);
+}
+
+TEST(CheckDeathTest,
+     ExpectCheckDeathNotFatalUntilReachedMilestoneSkipsUntilThen) {
+  EXPECT_CHECK_DEATH(CHECK(false, kCurrentMilestone), kCurrentMilestone,
+                     UNTIL_THEN({ ADD_FAILURE(); }));
+  EXPECT_CHECK_DEATH_WITH(CHECK(false, kCurrentMilestone) << "foo", "foo",
+                          kCurrentMilestone, UNTIL_THEN({ ADD_FAILURE(); }));
+  ASSERT_CHECK_DEATH(CHECK(false, kCurrentMilestone), kCurrentMilestone,
+                     UNTIL_THEN({ ADD_FAILURE(); }));
+  EXPECT_NOTREACHED_DEATH(NOTREACHED(kCurrentMilestone), kCurrentMilestone,
+                          UNTIL_THEN({ ADD_FAILURE(); }));
+  ASSERT_NOTREACHED_DEATH(NOTREACHED(kCurrentMilestone), kCurrentMilestone,
+                          UNTIL_THEN({ ADD_FAILURE(); }));
 }
 
 TEST(CheckDeathTest, CorrectSystemErrorUsed) {
