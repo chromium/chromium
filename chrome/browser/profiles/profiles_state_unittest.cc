@@ -9,6 +9,7 @@
 #include "base/command_line.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
@@ -22,6 +23,10 @@
 #include "components/sync_preferences/pref_service_syncable.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/flags/android/chrome_feature_list.h"
+#endif
 
 namespace {
 
@@ -172,3 +177,19 @@ INSTANTIATE_TEST_SUITE_P(ProfilesState,
                          testing::Bool());
 
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_ANDROID)
+// On Android, multiple profiles are only enabled with kAndroidMultiprofile.
+TEST(ProfilesStateTest, MultipleProfilesFollowAndroidMultiprofileFeature) {
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndEnableFeature(chrome::android::kAndroidMultiprofile);
+    EXPECT_TRUE(profiles::IsMultipleProfilesEnabled());
+  }
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndDisableFeature(chrome::android::kAndroidMultiprofile);
+    EXPECT_FALSE(profiles::IsMultipleProfilesEnabled());
+  }
+}
+#endif  // BUILDFLAG(IS_ANDROID)

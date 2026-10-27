@@ -6,6 +6,7 @@
 
 #include "base/check.h"
 #include "base/command_line.h"
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/strings/utf_string_conversions.h"
@@ -34,7 +35,9 @@
 #include "content/public/browser/browsing_data_remover.h"
 #include "ui/base/l10n/l10n_util.h"
 
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/flags/android/chrome_feature_list.h"
+#else
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #endif
 
@@ -58,7 +61,7 @@ namespace profiles {
 
 bool IsMultipleProfilesEnabled() {
 #if BUILDFLAG(IS_ANDROID)
-  return false;
+  return base::FeatureList::IsEnabled(chrome::android::kAndroidMultiprofile);
 #else
   return true;
 #endif
