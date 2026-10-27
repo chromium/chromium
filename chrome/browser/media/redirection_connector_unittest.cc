@@ -193,10 +193,7 @@ class MockRemotingSource : public media::mojom::RemotingSource {
 
 class RedirectionConnectorTest : public ::testing::Test {
  public:
-  RedirectionConnectorTest()
-      : cast_connector_(&pref_service_,
-                        kRemotingTabId,
-                        std::make_unique<MediaRemotingDialogCoordinator>()) {
+  RedirectionConnectorTest() : cast_connector_(&pref_service_, kRemotingTabId) {
     cast_connector_.set_remoting_allowed_for_testing(true);
   }
 

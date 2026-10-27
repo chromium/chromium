@@ -165,23 +165,6 @@
     Stop casting tab to <ph name="DEVICE_NAME">$1<ex>Living Room TV</ex></ph>
   </message>
 
-  <!-- Media Remoting Dialog -->
-  <message name="IDS_MEDIA_ROUTER_REMOTING_DIALOG_TITLE" desc="Title text shown at the top of the dialog asking the user whether they want to enable the Media Remoting feature. Media Remoting is a feature that can be enabled during a Cast session for improved playback.">
-    Optimize fullscreen casting?
-  </message>
-  <message name="IDS_MEDIA_ROUTER_REMOTING_DIALOG_BODY_TEXT" desc="Body text shown in the dialog to enable/disable Media Remoting. Media Remoting is a feature that can be enabled during a Cast session for improved playback.">
-    Get better quality video and save battery life. Video will play only on your cast-enabled screen.
-  </message>
-  <message name="IDS_MEDIA_ROUTER_REMOTING_DIALOG_CHECKBOX" desc="Label for the checkbox that the user can click on to get their preference to enable/disable Media Remoting recorded. Media Remoting is a feature that can be enabled during a Cast session for improved playback.">
-    Don't ask again
-  </message>
-  <message name="IDS_MEDIA_ROUTER_REMOTING_DIALOG_OPTIMIZE_BUTTON" desc="Label for a button in the Media Remoting dialog that the user can click on to enable the feature. Shown next to the 'Cancel' button. Media Remoting is a feature that can be enabled during a Cast session for improved playback.">
-    Optimize
-  </message>
-  <message name="IDS_MEDIA_ROUTER_REMOTING_DIALOG_CANCEL_BUTTON" desc="Label for a button in the Media Remoting dialog that the user can click on to cancel enabling the feature. Shown next to the 'Optimize' button. Media Remoting is a feature that can be enabled during a Cast session for improved playback.">
-    No thanks
-  </message>
-
   <!-- Wired Display Media Route Provider -->
   <message name="IDS_MEDIA_ROUTER_WIRED_DISPLAY_SINK_NAME" desc="Name shown for a wired display that can be used as a Cast destination.">
     Display <ph name="DISPLAY_ID">$1<ex>1</ex></ph>

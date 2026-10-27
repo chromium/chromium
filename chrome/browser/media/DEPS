@@ -21,9 +21,6 @@ specific_include_rules = {
     "+ash/system/privacy/screen_security_observer.h",
     "+ash/system/tray/system_tray_notifier.h",
   ],
-  "cast_remoting_connector\\.cc": [
-    "+chrome/browser/ui/views/media_router/media_remoting_dialog_view.h",
-  ],
   "output_protection_proxy\\.h": [
     "+ash/display/output_protection_delegate.h",
   ],

@@ -164,9 +164,7 @@ class CastRemotingConnectorTest : public ::testing::Test {
 
   void CreateConnector(bool remoting_allowed) {
     connector_.reset();  // Call dtor first if there is one created.
-    connector_.reset(new CastRemotingConnector(
-        &pref_service_, kRemotingTabId,
-        std::make_unique<MediaRemotingDialogCoordinator>()));
+    connector_.reset(new CastRemotingConnector(&pref_service_, kRemotingTabId));
     connector_->set_remoting_allowed_for_testing(remoting_allowed);
   }
 
@@ -310,11 +308,9 @@ TEST_F(CastRemotingConnectorTest, PrefPersistsAcrossReset) {
   CreateConnector(false);
   pref_service_.registry()->RegisterBooleanPref(
       media_router::prefs::kMediaRouterMediaRemotingEnabled, true);
-  pref_service_.SetBoolean(
-      media_router::prefs::kMediaRouterMediaRemotingEnabled, true);
 
-  // This resets the per-session remoting allowed/disallowed state, but the
-  // pref set above should not be affected.
+  // Even when the preference is at its default value (true), resetting
+  // permission should allow remoting without prompting.
   GetConnector()->ResetRemotingPermission();
 
   MockRemotingSource source;
