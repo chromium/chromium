@@ -705,32 +705,20 @@ TEST_F(ContextualTasksUiServiceTest, IsGoogleCaptchaUrl) {
 }
 
 TEST_F(ContextualTasksUiServiceTest, IsAiUrl) {
-  // Mock IsAimUrl to return false for everything.
+  // When IsAimUrl returns false, IsAiUrl should return false.
   ON_CALL(*aim_eligibility_service_, IsAimUrl(_, _))
       .WillByDefault(Return(false));
-
-  // g.ai should be recognized as AI URL.
-  EXPECT_TRUE(service_for_nav_->IsAiUrl(GURL("https://g.ai/")));
-  EXPECT_TRUE(service_for_nav_->IsAiUrl(GURL("https://www.g.ai/")));
-  EXPECT_TRUE(service_for_nav_->IsAiUrl(GURL("http://g.ai/path")));
-
-  // Non-HTTP/HTTPS URLs or invalid URLs should return false.
-  EXPECT_FALSE(service_for_nav_->IsAiUrl(GURL("chrome://g.ai/")));
-  EXPECT_FALSE(service_for_nav_->IsAiUrl(GURL("file://g.ai/")));
-  EXPECT_FALSE(service_for_nav_->IsAiUrl(GURL()));
-
-  // Other URLs should fall back to mock service (which returns false).
   EXPECT_FALSE(service_for_nav_->IsAiUrl(GURL("https://example.com/")));
   EXPECT_FALSE(service_for_nav_->IsAiUrl(GURL("https://google.com/")));
 
-  // When IsAimUrl returns true for valid URLs:
+  // When IsAimUrl returns true, IsAiUrl should return true.
   ON_CALL(*aim_eligibility_service_, IsAimUrl(_, _))
       .WillByDefault(Return(true));
+  EXPECT_TRUE(service_for_nav_->IsAiUrl(GURL("https://g.ai/")));
+  EXPECT_TRUE(service_for_nav_->IsAiUrl(GURL("https://www.g.ai/")));
+  EXPECT_TRUE(service_for_nav_->IsAiUrl(GURL("http://g.ai/path")));
   EXPECT_TRUE(service_for_nav_->IsAiUrl(GURL("https://example.com/")));
   EXPECT_TRUE(service_for_nav_->IsAiUrl(GURL("https://google.com/")));
-  // But invalid/non-HTTP/HTTPS URLs should still return false for g.ai.
-  EXPECT_FALSE(service_for_nav_->IsAiUrl(GURL("chrome://g.ai/")));
-  EXPECT_FALSE(service_for_nav_->IsAiUrl(GURL()));
 }
 
 TEST_F(ContextualTasksUiServiceTest, HandleNavigation_AiPage_ChecksCobrowse) {
@@ -3227,6 +3215,11 @@ TEST_F(ContextualTasksUiServiceTest, IsWebContentsInSidePanel) {
 TEST_F(ContextualTasksUiServiceTest, IsAllowedSidePanelUrl) {
   EXPECT_CALL(*aim_eligibility_service_, IsAimUrl(_, _))
       .WillRepeatedly(testing::Return(false));
+  EXPECT_CALL(*aim_eligibility_service_, IsAimUrl(GURL("https://g.ai/"), _))
+      .WillOnce(testing::Return(true));
+  EXPECT_CALL(*aim_eligibility_service_,
+              IsAimUrl(GURL("https://www.g.ai/chat"), _))
+      .WillOnce(testing::Return(true));
 
   // AI URL is allowed.
   EXPECT_TRUE(service_for_nav_->IsAllowedSidePanelUrl(GURL("https://g.ai/")));
@@ -3266,6 +3259,8 @@ TEST_F(ContextualTasksUiServiceTest, IsAllowedSidePanelUrl) {
 TEST_F(ContextualTasksUiServiceTest, IsRestorableSidePanelUrl) {
   EXPECT_CALL(*aim_eligibility_service_, IsAimUrl(_, _))
       .WillRepeatedly(testing::Return(false));
+  EXPECT_CALL(*aim_eligibility_service_, IsAimUrl(GURL("https://g.ai/"), _))
+      .WillOnce(testing::Return(true));
 
   // AI URLs and valid search results pages, like a Lens search, can be loaded
   // again.
