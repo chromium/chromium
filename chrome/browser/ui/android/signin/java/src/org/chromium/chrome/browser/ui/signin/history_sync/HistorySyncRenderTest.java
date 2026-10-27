@@ -141,8 +141,8 @@ public class HistorySyncRenderTest {
     public final RenderTestRule mRenderTestRule =
             RenderTestRule.Builder.withPublicCorpus()
                     .setBugComponent(RenderTestRule.Component.SERVICES_SIGN_IN)
-                    .setRevision(4)
-                    .setDescription("Update button stacking")
+                    .setRevision(5)
+                    .setDescription("Landscape subtitle top padding.")
                     .build();
 
     @Mock private SyncService mSyncServiceMock;
