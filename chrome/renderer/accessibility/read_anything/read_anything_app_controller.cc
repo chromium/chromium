@@ -18,6 +18,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/i18n/language_tag.h"
 #include "base/i18n/tag_converters.h"
+#include "base/json/json_writer.h"
 #include "base/json/string_escape.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/metrics_hashes.h"
@@ -1543,6 +1544,8 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
       .SetMethod<
           &ReadAnythingAppController::GetHighlightForCurrentSegmentIndex>(
           "getHighlightForCurrentSegmentIndex")
+      .SetMethod<&ReadAnythingAppController::RequestPhraseBoundaries>(
+          "requestPhraseBoundaries")
       .SetMethod<&ReadAnythingAppController::GetValidatedFontName>(
           "getValidatedFontName")
       .SetMethod<&ReadAnythingAppController::SendGetPresentationStateRequest>(
@@ -3171,6 +3174,44 @@ void ReadAnythingAppController::UpdateDependencyParserModel(
   read_aloud_model_.GetDependencyParserModel()
       .AsyncCall(&DependencyParserModel::UpdateWithFile)
       .WithArgs(std::move(model_file));
+}
+
+void ReadAnythingAppController::RequestPhraseBoundaries(
+    const std::vector<std::u16string>& sentences) {
+  if (!features::IsReadAnythingReadAloudPhraseHighlightingEnabled() ||
+      sentences.empty()) {
+    return;
+  }
+
+  // If the model isn't available yet, this returns an empty list of
+  // boundaries for each sentence.
+  read_aloud_model_.GetDependencyParserModel()
+      .AsyncCall(&DependencyParserModel::GetPhraseBoundariesForSentences)
+      .WithArgs(sentences)
+      .Then(
+          base::BindOnce(&ReadAnythingAppController::OnPhraseBoundariesComputed,
+                         weak_ptr_factory_.GetWeakPtr()));
+}
+
+void ReadAnythingAppController::OnPhraseBoundariesComputed(
+    std::vector<std::vector<int>> boundaries) {
+  base::ListValue boundaries_list;
+  boundaries_list.reserve(boundaries.size());
+  for (const std::vector<int>& sentence_boundaries : boundaries) {
+    base::ListValue sentence_list;
+    sentence_list.reserve(sentence_boundaries.size());
+    for (int boundary : sentence_boundaries) {
+      sentence_list.Append(boundary);
+    }
+    boundaries_list.Append(std::move(sentence_list));
+  }
+
+  std::optional<std::string> json = base::WriteJson(boundaries_list);
+  if (!json) {
+    return;
+  }
+  ExecuteJavaScript("chrome.readingMode.onPhraseBoundariesReady(" + *json +
+                    ");");
 }
 
 base::SequenceBound<DependencyParserModel>&

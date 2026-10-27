@@ -80,6 +80,10 @@ export class AudioBrowserProxyImpl implements AudioBrowserProxy {
       this.onLockScreen.forward();
     };
 
+    // TODO: crbug.com/440400392 - Forward phrase boundaries to the read aloud
+    // model once it requests them.
+    chrome.readingMode.onPhraseBoundariesReady = () => {};
+
     chrome.readingMode.onTabMuteStateChange = (muted: boolean) => {
       this.onTabMuteStateChange.forward(muted);
     };

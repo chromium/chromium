@@ -848,6 +848,23 @@ TEST_F(
 }
 
 TEST_F(ReadAnythingAppControllerTest,
+       OnPhraseBoundariesComputed_ForwardsBoundariesToJavaScript) {
+  ExecuteJavaScriptForTests(
+      "var receivedBoundaries = null;"
+      "chrome.readingMode.onPhraseBoundariesReady = (boundaries) => {"
+      "  receivedBoundaries = boundaries;"
+      "};");
+
+  controller().OnPhraseBoundariesComputed({{0, 12}, {}});
+
+  int boundaries_match = 0;
+  EXPECT_TRUE(ExecuteJavaScriptAndReturnIntValue(
+      u"JSON.stringify(receivedBoundaries) === '[[0,12],[]]' ? 1 : 0",
+      &boundaries_match));
+  EXPECT_EQ(1, boundaries_match);
+}
+
+TEST_F(ReadAnythingAppControllerTest,
        OnTranslationStateChanged_ExecutesOnTranslationStateChanged) {
   base::test::ScopedFeatureList feature_list(translate::kEnableTranslatePdf);
   // Record how often the callback runs and the translation state that the
