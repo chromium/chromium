@@ -2484,6 +2484,26 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="CLD3 (TFLite model run but is ignored) (deprecated)"/>
 </enum>
 
+<!-- LINT.IfChange(LevelUpTaskType) -->
+
+<enum name="LevelUpTaskType">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="TabGroups"/>
+  <int value="2" label="Autofill"/>
+  <int value="3" label="PinTabs"/>
+  <int value="4" label="Gemini"/>
+  <int value="5" label="PaymentMethods"/>
+  <int value="6" label="ClearBrowsingData"/>
+  <int value="7" label="SafeBrowsing"/>
+  <int value="8" label="Incognito"/>
+  <int value="9" label="PasswordCheckup"/>
+  <int value="10" label="LensWebsiteSearch"/>
+  <int value="11" label="AISearch"/>
+  <int value="12" label="LensCameraSearch"/>
+</enum>
+
+<!-- LINT.ThenChange(//ios/chrome/browser/level_up/model/task_types.h:LevelUpTaskType) -->
+
 <enum name="LinkToTextShouldOfferResult">
   <int value="0" label="Success"/>
   <int value="1" label="Rejected in JavaScript (deprecated)"/>

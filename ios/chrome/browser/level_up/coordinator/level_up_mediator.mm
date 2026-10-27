@@ -18,6 +18,7 @@
 #import "ios/chrome/browser/level_up/coordinator/level_up_category.h"
 #import "ios/chrome/browser/level_up/coordinator/level_up_stat.h"
 #import "ios/chrome/browser/level_up/coordinator/level_up_task.h"
+#import "ios/chrome/browser/level_up/model/level_up_metrics.h"
 #import "ios/chrome/browser/level_up/model/level_up_service.h"
 #import "ios/chrome/browser/level_up/model/level_up_service_observer_bridge.h"
 #import "ios/chrome/browser/level_up/model/task_info.h"
@@ -458,6 +459,7 @@
   BOOL oldValue = _prefService->GetBoolean(prefs::kLevelUpUIEnabled);
   BOOL newValue = !oldValue;
   _prefService->SetBoolean(prefs::kLevelUpUIEnabled, newValue);
+  RecordLevelUpNotificationsStateChanged(newValue);
   if ([self.consumer
           respondsToSelector:@selector(setProgressUpdatesEnabled:)]) {
     [self.consumer setProgressUpdatesEnabled:newValue];
@@ -467,12 +469,14 @@
 
 - (void)setNewTasksNotificationEnabled:(BOOL)enabled {
   _prefService->SetBoolean(prefs::kLevelUpNewTasksNotificationEnabled, enabled);
+  RecordLevelUpNewTaskNotificationsStateChanged(enabled);
 }
 
 - (void)turnOffLevelUp {
   if (!_levelUpService) {
     return;
   }
+  RecordLevelUpOptInStateChanged(false);
   _levelUpService->ResetAllTasksStatus();
   if (_prefService) {
     _prefService->SetBoolean(prefs::kLevelUpOptIn, false);

@@ -35,7 +35,7 @@ source_set("ui") {
     "//base",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/level_up/coordinator:view_models",
-    "//ios/chrome/browser/level_up/model",
+    "//ios/chrome/browser/level_up/model:task_info",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/ui/animated_promo:utils",
     "//ios/chrome/browser/shared/ui/elements/gradient",
