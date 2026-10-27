@@ -439,16 +439,16 @@ bool GlicInstanceImpl::IsLiveMode() const {
 
 bool GlicInstanceImpl::ShouldShowInactiveSidePanel(
     const SidePanelShowOptions& options) const {
+  EmbedderKey key = SidePanelEmbedderKey(options.tab);
+  if (IsActiveEmbedder(key)) {
+    return false;
+  }
+
   if (!options.tab->IsActivated()) {
     return true;
   }
 
   if (!options.prefer_peek) {
-    return false;
-  }
-
-  EmbedderKey key = SidePanelEmbedderKey(options.tab);
-  if (IsActiveEmbedder(key)) {
     return false;
   }
 
