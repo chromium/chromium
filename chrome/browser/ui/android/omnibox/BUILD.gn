@@ -222,6 +222,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/omnibox/suggestions/tail/TailSuggestionView.java",
     "java/src/org/chromium/chrome/browser/omnibox/suggestions/tail/TailSuggestionViewBinder.java",
     "java/src/org/chromium/chrome/browser/omnibox/suggestions/tail/TailSuggestionViewProperties.java",
+    "java/src/org/chromium/chrome/browser/omnibox/voice/VoicePlateIntentFactory.java",
     "java/src/org/chromium/chrome/browser/omnibox/voice/VoiceRecognitionHandler.java",
     "java/src/org/chromium/chrome/browser/omnibox/voice/VoiceRecognitionIntentHandler.java",
   ]
@@ -251,6 +252,7 @@ android_library("java") {
     "//chrome/browser/device:java",
     "//chrome/browser/feature_engagement:java",
     "//chrome/browser/flags:java",
+    "//chrome/browser/gsa:java",
     "//chrome/browser/history_clusters:java",
     "//chrome/browser/language/android:java",
     "//chrome/browser/lens:java",
@@ -672,6 +674,7 @@ robolectric_library("junit") {
     "java/src/org/chromium/chrome/browser/omnibox/suggestions/tail/TailSuggestionProcessorUnitTest.java",
     "java/src/org/chromium/chrome/browser/omnibox/suggestions/tail/TailSuggestionViewBinderUnitTest.java",
     "java/src/org/chromium/chrome/browser/omnibox/voice/RecognitionTestHelper.java",
+    "java/src/org/chromium/chrome/browser/omnibox/voice/VoicePlateIntentFactoryUnitTest.java",
     "java/src/org/chromium/chrome/browser/omnibox/voice/VoiceRecognitionHandlerUnitTest.java",
     "java/src/org/chromium/chrome/browser/omnibox/voice/VoiceRecognitionUtilUnitTest.java",
   ]
@@ -695,6 +698,7 @@ robolectric_library("junit") {
     "//chrome/browser/device:java",
     "//chrome/browser/feature_engagement:java",
     "//chrome/browser/flags:java",
+    "//chrome/browser/gsa:java",
     "//chrome/browser/lens:java",
     "//chrome/browser/locale:java",
     "//chrome/browser/preferences:java",
