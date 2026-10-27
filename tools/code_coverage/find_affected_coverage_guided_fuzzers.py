@@ -31,7 +31,6 @@ proprietary_codecs = true
 target_cpu = "x64"
 target_os = "linux"
 use_libfuzzer = true
-use_reclient = false
 use_remoteexec = true
 use_siso = true
 """
