@@ -2557,6 +2557,42 @@ TEST_F(GlicExperimentalTriggeringCoordinatorWithTabTest,
   ASSERT_TRUE(response2.has_value());
   EXPECT_EQ(captured_show_panel, true);
 }
+
+TEST_F(GlicExperimentalTriggeringCoordinatorTest,
+       DeviceOptInRequestFailsWhenChromeInBackground) {
+  coordinator_->set_is_chrome_in_background(true);
+
+  ExperimentalTriggeringRequest request;
+  request.version = 1;
+  request.context_id = kTestContextId;
+  request.task_metadata = TaskMetadata{.sender_sequence_number = 42};
+  request.payload = DeviceOptInRequest{.triggering_source = "Android"};
+
+  base::HistogramTester histogram_tester;
+  base::test::TestFuture<ExperimentalTriggeringResponse> update_future;
+  auto response = coordinator_->OnRequest(
+      kTestContextId, request,
+      ScopedIncomingMessageResultLogger(
+          GlicMetricReporter(profile_),
+          ScopedIncomingMessageResultLogger::Channel::kSharingMessage),
+      update_future.GetRepeatingCallback(), nullptr);
+
+  // The opt-in UI can't be shown, so the reply is synchronous.
+  ASSERT_TRUE(response.has_value());
+  EXPECT_EQ(response->context_id, kTestContextId);
+  ASSERT_TRUE(response->device_opt_in_result.has_value());
+  EXPECT_EQ(*response->device_opt_in_result, DeviceOptInResult::kFailed);
+  EXPECT_FALSE(response->task_update.has_value());
+  ASSERT_TRUE(response->task_metadata.has_value());
+  EXPECT_EQ(response->task_metadata->last_seen_sequence_number, 42);
+  EXPECT_FALSE(update_future.IsReady());
+  EXPECT_EQ(coordinator_->GetUpdatesHandlerMapSizeForTesting(), 0u);
+
+  histogram_tester.ExpectUniqueSample(
+      "Glic.ExperimentalTriggering.IncomingMessageResult.SharingMessage",
+      GlicExperimentalTriggeringIncomingMessageResult::kAndroidOptInUnsupported,
+      1);
+}
 #endif
 
 }  // namespace

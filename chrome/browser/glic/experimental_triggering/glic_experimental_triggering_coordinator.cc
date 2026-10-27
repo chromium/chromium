@@ -279,12 +279,6 @@ ExperimentalTriggeringResponse CreateBaseResponse(
   return response;
 }
 
-#if BUILDFLAG(IS_ANDROID)
-bool CanShowDeviceOptInUi() {
-  return base::android::ApplicationStatusListener::HasVisibleActivities();
-}
-#endif
-
 GlicExperimentalTriggeringExecutionOutcome GlicInvokeErrorToOutcome(
     GlicInvokeError error,
     bool client_connected) {
@@ -1316,17 +1310,6 @@ class ExperimentalTriggeringUpdatesHandler
       const TaskMetadata* task_metadata,
       base::ScopedClosureRunner cleanup_runner,
       ScopedIncomingMessageResultLogger result_logger) {
-#if BUILDFLAG(IS_ANDROID)
-    if (!CanShowDeviceOptInUi()) {
-      result_logger.set_result(GlicExperimentalTriggeringIncomingMessageResult::
-                                   kAndroidOptInUnsupported);
-      return CreateResponseMessage(
-          context_id_, TaskUpdate::State::kFailed,
-          TaskUpdate::DataType::kErrorMessage,
-          "Ignoring unexpected Android Opt-in request.", task_metadata,
-          sequence_generator_.GetNext());
-    }
-#endif
     if (!coordinator_) {
       result_logger.set_result(GlicExperimentalTriggeringIncomingMessageResult::
                                    kCoordinatorUnavailable);
@@ -1334,6 +1317,18 @@ class ExperimentalTriggeringUpdatesHandler
                                        task_metadata,
                                        sequence_generator_.GetNext());
     }
+
+#if BUILDFLAG(IS_ANDROID)
+    if (coordinator_->IsChromeInBackground()) {
+      result_logger.set_result(GlicExperimentalTriggeringIncomingMessageResult::
+                                   kAndroidOptInUnsupported);
+      // Chrome isn't in the foreground, so the opt-in UI can't be shown.
+      // Reply with a device opt-in result so the server stops waiting.
+      return CreateDeviceOptInResponse(context_id_, DeviceOptInResult::kFailed,
+                                       task_metadata,
+                                       sequence_generator_.GetNext());
+    }
+#endif
 
     GlicKeyedService* glic_service =
         GlicKeyedServiceFactory::GetGlicKeyedService(coordinator_->profile_,
