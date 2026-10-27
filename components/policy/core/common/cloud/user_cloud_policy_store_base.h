@@ -37,6 +37,8 @@ class POLICY_EXPORT UserCloudPolicyStoreBase : public CloudPolicyStore {
     return background_task_runner_;
   }
 
+  PolicyScope policy_scope() const { return policy_scope_; }
+
  protected:
   // Creates a validator configured to validate a user policy. The caller owns
   // the resulting object until StartValidation() is invoked.

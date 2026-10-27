@@ -12,7 +12,8 @@
 #include "base/logging.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/gmock_callback_support.h"
-#include "base/test/run_until.h"
+#include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
@@ -21,13 +22,13 @@
 #include "components/policy/core/common/cloud/mock_cloud_external_data_manager.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_store.h"
 #include "components/policy/core/common/cloud/test/policy_builder.h"
+#include "components/policy/core/common/features.h"
 #include "components/policy/core/common/policy_switches.h"
 #include "components/policy/policy_constants.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using base::test::RunUntil;
 using base::test::TaskEnvironment;
 using base::test::TestFuture;
 using testing::AllOf;
@@ -562,6 +563,91 @@ TEST_F(UserCloudPolicyStoreTest, InvalidCachedVerificationSignature) {
   store2->Load();
   EXPECT_TRUE(error_observed.Wait());
   store2->RemoveObserver(&observer_);
+}
+
+TEST_F(UserCloudPolicyStoreTest, LoadPolicyExceedingOneMegabyte) {
+  // Generate a valid policy payload of ~1.5 MB (> 1 MB limit at ToT).
+  UserPolicyBuilder builder;
+  builder.SetDefaultInitialSigningKey();
+  std::string large_string(1500 * 1024, 'a');
+  builder.payload().mutable_urlblocklist()->mutable_value()->add_entries(
+      large_string);
+  builder.Build();
+
+  std::string policy_data = builder.GetBlob();
+  ASSERT_GT(policy_data.size(), 1024u * 1024u);
+  ASSERT_TRUE(WriteStringToFile(policy_file(), policy_data));
+
+  // Write key to disk so key validation would succeed.
+  std::string key_data;
+  enterprise_management::PolicySigningKey key;
+  key.set_signing_key(builder.policy().new_public_key());
+  key.set_signing_key_signature(
+      builder.policy().new_public_key_verification_signature_deprecated());
+  key.set_new_public_key_verification_data(
+      builder.policy().new_public_key_verification_data());
+  key.set_new_public_key_verification_data_signature(
+      builder.policy().new_public_key_verification_data_signature());
+  key.set_verification_key(GetPolicyVerificationKey());
+  ASSERT_TRUE(key.SerializeToString(&key_data));
+  ASSERT_TRUE(WriteStringToFile(key_file(), key_data));
+
+  // With the feature disabled (kUserPolicyCacheSizeLimit2MB disabled),
+  // loading should fail with STATUS_LOAD_ERROR.
+  {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitAndDisableFeature(
+        features::kUserPolicyCacheSizeLimit2MB);
+
+    std::unique_ptr<UserCloudPolicyStore> store_disabled =
+        std::make_unique<UserCloudPolicyStore>(
+            policy_file(), key_file(), dm_protocol::GetChromeUserPolicyType(),
+            base::SingleThreadTaskRunner::GetCurrentDefault());
+    store_disabled->SetSigninAccountId(
+        PolicyBuilder::GetFakeAccountIdForTesting());
+    MockCloudPolicyStoreObserver observer_disabled;
+    store_disabled->AddObserver(&observer_disabled);
+
+    base::test::TestFuture<void> error_future;
+    EXPECT_CALL(
+        observer_disabled,
+        OnStoreError(AllOf(Eq(store_disabled.get()),
+                           Property(&CloudPolicyStore::status,
+                                    Eq(CloudPolicyStore::STATUS_LOAD_ERROR)))))
+        .WillOnce(base::test::RunOnceClosure(error_future.GetCallback()));
+
+    store_disabled->Load();
+    EXPECT_TRUE(error_future.Wait());
+    EXPECT_FALSE(store_disabled->policy());
+    store_disabled->RemoveObserver(&observer_disabled);
+  }
+
+  // With default features (kUserPolicyCacheSizeLimit2MB enabled by default),
+  // loading a ~1.5 MB cache should succeed with STATUS_OK and record cache
+  // size in KB.
+  base::HistogramTester histogram_tester;
+  std::unique_ptr<UserCloudPolicyStore> store_default =
+      std::make_unique<UserCloudPolicyStore>(
+          policy_file(), key_file(), dm_protocol::GetChromeUserPolicyType(),
+          base::SingleThreadTaskRunner::GetCurrentDefault());
+  store_default->SetSigninAccountId(
+      PolicyBuilder::GetFakeAccountIdForTesting());
+  MockCloudPolicyStoreObserver observer_default;
+  store_default->AddObserver(&observer_default);
+
+  base::test::TestFuture<void> loaded_future;
+  EXPECT_CALL(observer_default, OnStoreLoaded(store_default.get()))
+      .WillOnce(base::test::RunOnceClosure(loaded_future.GetCallback()));
+
+  store_default->Load();
+  EXPECT_TRUE(loaded_future.Wait());
+  EXPECT_EQ(CloudPolicyStore::STATUS_OK, store_default->status());
+  ASSERT_TRUE(store_default->policy());
+  histogram_tester.ExpectUniqueSample(
+      "Enterprise.CloudPolicy.LocalCacheSize.User", policy_data.size() / 1024,
+      1);
+
+  store_default->RemoveObserver(&observer_default);
 }
 
 }  // namespace policy

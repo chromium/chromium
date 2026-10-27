@@ -219,11 +219,11 @@ PolicyLoadResult MachineLevelUserCloudPolicyStore::LoadExternalCachedPolicies(
     const base::FilePath& policy_info_path) {
   // Loads cached cloud policies by an external provider.
   PolicyLoadResult policy_cache_load_result =
-      DesktopCloudPolicyStore::LoadPolicyFromDisk(policy_cache_path,
-                                                  base::FilePath());
+      DesktopCloudPolicyStore::LoadPolicyFromDisk(
+          policy_cache_path, base::FilePath(), POLICY_SCOPE_MACHINE);
   PolicyLoadResult policy_info_load_result =
-      DesktopCloudPolicyStore::LoadPolicyFromDisk(policy_info_path,
-                                                  base::FilePath());
+      DesktopCloudPolicyStore::LoadPolicyFromDisk(
+          policy_info_path, base::FilePath(), std::nullopt);
 
   // External policy source doesn't provide full components policies data hence
   // browser will rely on the local cache which requires public key to verify

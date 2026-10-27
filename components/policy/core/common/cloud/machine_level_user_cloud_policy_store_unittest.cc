@@ -12,6 +12,7 @@
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
@@ -224,6 +225,7 @@ TEST_F(MachineLevelUserCloudPolicyStoreTest, StorePolicy) {
 }
 
 TEST_F(MachineLevelUserCloudPolicyStoreTest, StoreThenLoadPolicy) {
+  base::HistogramTester histogram_tester;
   EXPECT_CALL(observer_, OnStoreLoaded(store_.get()));
   store_->Store(policy_.policy());
   base::RunLoop().RunUntilIdle();
@@ -243,7 +245,28 @@ TEST_F(MachineLevelUserCloudPolicyStoreTest, StoreThenLoadPolicy) {
   EXPECT_EQ(CloudPolicyStore::STATUS_OK, loader->status());
   loader->RemoveObserver(&observer_);
 
+  histogram_tester.ExpectTotalCount(
+      "Enterprise.CloudPolicy.LocalCacheSize.Machine", 1);
+  histogram_tester.ExpectTotalCount(
+      "Enterprise.CloudPolicy.LocalCacheSize.User", 0);
+
   ::testing::Mock::VerifyAndClearExpectations(&observer_);
+}
+
+TEST_F(MachineLevelUserCloudPolicyStoreTest,
+       LoadExternalCachedPoliciesMetrics) {
+  base::HistogramTester histogram_tester;
+  policy_.policy_data().set_timestamp(2000);
+  policy_.Build();
+  WritePolicyToUpdaterPath(policy_.policy());
+
+  MachineLevelUserCloudPolicyStore::LoadExternalCachedPolicies(
+      updater_policy_cache_path(), updater_policy_info_path());
+
+  histogram_tester.ExpectTotalCount(
+      "Enterprise.CloudPolicy.LocalCacheSize.Machine", 1);
+  histogram_tester.ExpectTotalCount(
+      "Enterprise.CloudPolicy.LocalCacheSize.User", 0);
 }
 
 TEST_F(MachineLevelUserCloudPolicyStoreTest, LoadOlderExternalPolicies) {
