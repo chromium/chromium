@@ -250,6 +250,7 @@ export class MostVisitedElement extends MostVisitedElementBase {
   protected accessor toastSource_: TileSource = TileSource.CUSTOM_LINKS;
   protected accessor visible_: boolean = false;
   private adding_: boolean = false;
+  private isTileMoveInProgress_: boolean = false;
   private browserProxy_: BrowserProxy;
   private windowProxy_: MostVisitedWindowProxy;
   private actionMenuTargetIndex_: number = -1;
@@ -1024,6 +1025,7 @@ export class MostVisitedElement extends MostVisitedElementBase {
     this.inReorderMode_ = true;
     this.reordering_ = true;
     await this.updateComplete;
+    await new Promise(requestAnimationFrame);
     this.tileFocus_(this.actionMenuTargetIndex_);
   }
 
@@ -1113,25 +1115,34 @@ export class MostVisitedElement extends MostVisitedElementBase {
     }
 
     if (this.shortcutsReorderEnabled && this.inReorderMode_) {
+      // TODO(crbug.com/568860213): Listen for exit keys.
+      if (this.isTileMoveInProgress_) {
+        return;
+      }
+
       // Handle reordering key events.
       if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
+        e.preventDefault();
+        this.isTileMoveInProgress_ = true;
         const currentIndex = this.actionMenuTargetIndex_;
-        const direction = e.key === 'ArrowLeft' ? -1 : 1;
-        const newIndex = (currentIndex + direction + this.tiles_.length) %
-            this.tiles_.length;
+        const isForward = e.key === (this.isRtl_ ? 'ArrowLeft' : 'ArrowRight');
+        const direction = isForward ? 1 : -1;
+        const visibleTileCount = this.tileElements_.length;
+        const newIndex =
+            (currentIndex + direction + visibleTileCount) % visibleTileCount;
 
-        const selectedTile = this.tiles_[currentIndex]!;
-        const adjacentTile = this.tiles_[newIndex]!;
-        this.tiles_[currentIndex] = adjacentTile;
-        this.tiles_[newIndex] = selectedTile;
-
+        const [selectedTile] = this.tiles_.splice(currentIndex, 1);
+        assert(selectedTile);
+        this.tiles_.splice(newIndex, 0, selectedTile);
         this.requestUpdate();
+
         this.browserProxy_.handler.reorderMostVisitedTile(
             selectedTile, newIndex);
 
         this.actionMenuTargetIndex_ = newIndex;
         await this.updateComplete;
         this.tileFocus_(newIndex);
+        this.isTileMoveInProgress_ = false;
         return;
       }
     }
