@@ -193,6 +193,7 @@ public class WebSigninAccountPickerDelegateTest {
                         eq(mProfileMock),
                         eq(TestAccounts.ACCOUNT1.getId()),
                         mWebSigninCallbackCaptor.capture());
+        verify(mWebSigninTrackerBridgeMock).start();
 
         mWebSigninCallbackCaptor.getValue().onResult(result);
 

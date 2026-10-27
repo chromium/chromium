@@ -127,11 +127,9 @@ public class WebSigninRedirectCoordinator {
         mContinueUrl = continueUrl;
         mInitialTabURL = initialTabURL;
 
-        mWebSigninTrackerBridge =
+        startWebSigninTrackerBridge(
                 new WebSigninTrackerBridge.Factory()
-                        .createWithEmail(tab.getProfile(), email, this::onSigninResult);
-
-        startTimerOrForceShowDialog();
+                        .createWithEmail(tab.getProfile(), email, this::onSigninResult));
     }
 
     /**
@@ -157,11 +155,10 @@ public class WebSigninRedirectCoordinator {
         mContinueUrl = continueUrl;
         mInitialTabURL = initialTabURL;
 
-        mWebSigninTrackerBridge =
+        startWebSigninTrackerBridge(
                 new WebSigninTrackerBridge.Factory()
-                        .createWithCoreAccountId(tab.getProfile(), accountId, this::onSigninResult);
-
-        startTimerOrForceShowDialog();
+                        .createWithCoreAccountId(
+                                tab.getProfile(), accountId, this::onSigninResult));
     }
 
     /**
@@ -369,6 +366,22 @@ public class WebSigninRedirectCoordinator {
         // privileges.
         params.setInitiatorOrigin(Origin.createOpaqueOrigin());
         mTab.loadUrl(params);
+    }
+
+    /**
+     * Stores and starts the given bridge, then starts the timer to show the loading dialog. The
+     * bridge must be stored before it's started, as it reports the result synchronously if it's
+     * already known (e.g. the account is already in cookies) and {@link #onSigninResult} ignores
+     * results while {@link #mWebSigninTrackerBridge} is null.
+     */
+    private void startWebSigninTrackerBridge(WebSigninTrackerBridge webSigninTrackerBridge) {
+        mWebSigninTrackerBridge = webSigninTrackerBridge;
+        webSigninTrackerBridge.start();
+        if (mWebSigninTrackerBridge == null) {
+            // The result was reported synchronously and has already been handled.
+            return;
+        }
+        startTimerOrForceShowDialog();
     }
 
     private void startTimerOrForceShowDialog() {
