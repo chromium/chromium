@@ -27,12 +27,6 @@
   --cr-searchbox-voice-search-button-width: 0px;
   --cr-compose-button-width: 104px;
   --cr-searchbox-icon-spacing: 11px;
-  --color-searchbox-foreground: #1f1f1f;
-  --color-searchbox-border: #dadce0;
-  --color-searchbox-results-typed-prefix: var(
-      --color-searchbox-results-foreground, #1f1f1f);
-  --color-searchbox-selection-background: rgba(26, 115, 232, 0.2);
-  --color-searchbox-selection-foreground: #1f1f1f;
   --cr-composebox-background-color: var(--color-searchbox-background);
   /* Easing and duration tokens for expand/collapse animations (300ms
    * when expanded, overridden to 220ms when collapsed). */
@@ -73,13 +67,6 @@
   --cr-searchbox-secondary-side-display: block;
 }
 
-:host([is-dark]) {
-  --color-searchbox-foreground: #fff;
-  --color-searchbox-border: #3c4043;
-  --color-searchbox-selection-foreground: #fff;
-  --cr-searchbox-shadow: 0 2px 6px 0 var(--color-searchbox-shadow);
-}
-
 :host-context([energy-effect-enabled_]) {
   --cr-searchbox-shadow: 0 4px 18px -2px rgba(60, 64, 67, 0.12);
 }
@@ -94,6 +81,9 @@
 
 @media (forced-colors: active) {
   :host {
+    border: 1px solid ActiveBorder;
+  }
+  #inputWrapper {
     border: 1px solid ActiveBorder;
   }
 }
@@ -312,6 +302,23 @@ cr-composebox-contextual-entrypoint-and-menu,
     .searchbox-icon-button-container,
 :host([is-fusebox-enabled][is-dragging-file]) .searchbox-icon-button {
   opacity: 0;
+}
+
+#composeButton::part(compose-button) {
+  --cr-hover-background-color: transparent;
+  background-color: var(--color-sys-surface-container-high);
+  color: var(--color-sys-on-surface);
+}
+
+#composeButton::part(hoverBackground) {
+  background-color: var(--color-sys-state-hover-dim-blend-protection);
+  display: block;
+  opacity: 0;
+  transition: opacity 250ms linear;
+}
+
+#composeButton:hover::part(hoverBackground) {
+  opacity: 1;
 }
 
 :host([is-fusebox-enabled]) #composeButton {

@@ -8,6 +8,7 @@
  * #css_wrapper_metadata_end */
 
 :host {
+  --profile-icon-background: var(--color-sys-surface);
   display: inline-block;
   inset-inline-end: 16px;
   pointer-events: auto;
@@ -97,7 +98,7 @@
 }
 
 #profileMenu::part(dialog) {
-  border: 1px solid rgba(0, 0, 0, 0.08);
+  border: 1px solid var(--color-sys-neutral-outline, rgba(0, 0, 0, 0.08));
   border-radius: 20px;
   margin-top: 8px;
   max-height: none;

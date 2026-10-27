@@ -24,6 +24,9 @@
 #include "chrome/browser/new_tab_page/prefs/ntp_pref_names.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/ai_mode_button_service_factory.h"
+#include "chrome/browser/themes/theme_service.h"
+#include "chrome/browser/themes/theme_service_factory.h"
+#include "chrome/browser/themes/theme_service_observer.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/omnibox/clipboard_utils.h"
 #include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_prefs.h"
@@ -239,6 +242,64 @@ class OmniboxEverywhereContentsWrapper
       ui_manager->OnDragExited();
     }
   }
+};
+
+// Top-level widget hosting the Omnibox Everywhere WebUI. Because this widget
+// has no parent BrowserWidget, a plain views::Widget only queries
+// ui::NativeTheme (the OS theme) and ignores the active Profile's ThemeService.
+// Subclassing views::Widget and observing ThemeService ensures the widget's
+// ColorProviderKey reflects Chrome's BrowserColorScheme (Light/Dark/System)
+// while always using the unthemed GM3 baseline palette.
+class OmniboxEverywhereWidget : public views::Widget,
+                                public ThemeServiceObserver {
+ public:
+  explicit OmniboxEverywhereWidget(Profile* profile) {
+    if (profile) {
+      if (auto* theme_service = ThemeServiceFactory::GetForProfile(profile)) {
+        theme_service_observation_.Observe(theme_service);
+      }
+    }
+  }
+  OmniboxEverywhereWidget(const OmniboxEverywhereWidget&) = delete;
+  OmniboxEverywhereWidget& operator=(const OmniboxEverywhereWidget&) = delete;
+  ~OmniboxEverywhereWidget() override = default;
+
+  void ResetThemeObserver() { theme_service_observation_.Reset(); }
+
+  // ThemeServiceObserver:
+  void OnThemeChanged() override {
+    NotifyColorProviderChanged();
+    ThemeChanged();
+  }
+
+  // views::Widget:
+  ui::ColorProviderKey GetColorProviderKey() const override {
+    ui::ColorProviderKey key = views::Widget::GetColorProviderKey();
+    if (const auto* theme_service = theme_service_observation_.GetSource()) {
+      const auto browser_color_scheme =
+          theme_service->GetBrowserColorScheme();
+      if (browser_color_scheme != ThemeService::BrowserColorScheme::kSystem) {
+        key.color_mode =
+            browser_color_scheme == ThemeService::BrowserColorScheme::kLight
+                ? ui::ColorProviderKey::ColorMode::kLight
+                : ui::ColorProviderKey::ColorMode::kDark;
+      }
+    }
+    if (color_mode_override().has_value()) {
+      key.color_mode = color_mode_override().value();
+    }
+    // Always use the unthemed GM3 baseline palette so Omnibox Everywhere
+    // respects Light/Dark mode (from chrome://settings/appearance or the
+    // OS) without inheriting Chrome browser color themes or OS accent
+    // tinting.
+    key.user_color_source = ui::ColorProviderKey::UserColorSource::kBaseline;
+    key.user_color = std::nullopt;
+    return key;
+  }
+
+ private:
+  base::ScopedObservation<ThemeService, ThemeServiceObserver>
+      theme_service_observation_{this};
 };
 
 }  // namespace
@@ -523,11 +584,7 @@ void OmniboxEverywhereUIManager::CreateAndInitWidget(
     return;
   }
 
-  widget_ = std::make_unique<views::Widget>();
-
-  // TODO(crbug.com/542731882): Remove once dark mode for loomnibox is
-  // implemented.
-  widget_->SetColorModeOverride(ui::ColorProviderKey::ColorMode::kLight);
+  widget_ = std::make_unique<OmniboxEverywhereWidget>(profile_);
 
   views::Widget::InitParams params(
       views::Widget::InitParams::CLIENT_OWNS_WIDGET,
@@ -818,6 +875,7 @@ void OmniboxEverywhereUIManager::DestroyWidget() {
   is_screenshare_disclosure_open_ = false;
   scoped_ignore_input_events_.reset();
   if (widget_) {
+    static_cast<OmniboxEverywhereWidget*>(widget_.get())->ResetThemeObserver();
     widget_observation_.Reset();
 #if defined(USE_AURA)
     if (auto* native_view = widget_->GetNativeView()) {

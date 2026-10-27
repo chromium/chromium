@@ -13,26 +13,12 @@
    * composebox. */
   border-inline: 2px solid transparent;
   box-sizing: border-box;
-  color-scheme: light;
   display: block;
   font-family: 'Google Sans Text', 'Google Sans',
       var(--cr-primary-font-family, Roboto, sans-serif);
   user-select: none;
   -webkit-app-region: drag;
   -webkit-font-smoothing: antialiased;
-
-  /* TODO(crbug.com/550425049): Remove scoped light-mode token overrides once
-   * full Dark Mode support is enabled across the FRE modal. */
-  --color-sys-divider: #fff;
-  --color-sys-on-primary-container: #041e49;
-  --color-sys-on-surface: #1f1f1f;
-  --color-sys-on-surface-subtle: #474747;
-  --color-sys-primary: #0b57d0;
-  --color-sys-primary-container: #d3e3fd;
-  --color-sys-state-hover-on-subtle: rgba(0, 0, 0, 0.06);
-  --color-sys-surface: #fff;
-  --color-sys-surface-container: #f0f4f9;
-  --color-sys-surface-container-highest: #dde3ea;
 }
 
 img {
@@ -137,7 +123,7 @@ img {
 }
 
 .second-container {
-  background-color: var(--color-sys-divider);
+  background-color: var(--color-sys-surface);
   border-radius: 12px;
   display: flex;
   flex-direction: column;
@@ -146,7 +132,7 @@ img {
 }
 
 .list-item {
-  background-color: var(--color-sys-surface-container);
+  background-color: var(--color-sys-surface-container-high);
   box-sizing: border-box;
   display: flex;
   padding: 12px 16px;
