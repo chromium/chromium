@@ -102,7 +102,8 @@ std::optional<Capacity10Response> ParseReadCapacity10Response(
                             .block_size = parsed_block_size};
 }
 
-// Builds a 10-byte SCSI `WRITE (10)` (opcode 0x2A) command descriptor block:
+// Builds a 10-byte SCSI `WRITE (10)` (opcode 0x2A) or `READ (10)` (opcode 0x28)
+// command descriptor block:
 // - Byte 0: Operation code
 // - Bytes 2..5: Big-endian 32-bit starting Logical Block Address (LBA)
 // - Bytes 7..8: Big-endian 16-bit transfer length in logical blocks
@@ -407,17 +408,20 @@ class UsbScsiCommandRunner {
   CommandCallback callback_;
 };
 
-// Streams an image file to a USB Mass Storage Bulk-Only Transport device over
-// `device::mojom::UsbDevice` on `Operation::task_runner_`.
+// Streams an image file to (or verifies it against) a USB Mass Storage
+// Bulk-Only Transport device over `device::mojom::UsbDevice` on
+// `Operation::task_runner_`.
 class MojoUsbBotSession : public Operation::UsbSession {
  public:
   MojoUsbBotSession(base::FilePath image_path,
+                    TransferMode mode,
                     bool wipe_backup_gpt,
                     UsbMassStorageEndpoints endpoints,
                     mojo::PendingRemote<device::mojom::UsbDevice> device_remote,
                     base::RepeatingCallback<bool()> is_cancelled,
                     base::RepeatingCallback<void(int)> set_progress)
       : image_path_(std::move(image_path)),
+        mode_(mode),
         wipe_backup_gpt_(wipe_backup_gpt),
         endpoints_(endpoints),
         device_(std::move(device_remote)),
@@ -500,11 +504,14 @@ class MojoUsbBotSession : public Operation::UsbSession {
     const uint64_t device_capacity_bytes =
         (static_cast<uint64_t>(last_block_index_) + 1) *
         static_cast<uint64_t>(block_size_);
-    // Return `kDeviceWriteError` when the image exceeds the target device's
-    // capacity to match the desktop ImageWriter implementation (and what the
-    // Chromebook Recovery Utility extension expects during the write stage).
+    // Return `kDeviceWriteError` (or `kHashReadError` during verification) when
+    // the image exceeds the target device's capacity to match the desktop
+    // ImageWriter implementation (and what the Chromebook Recovery Utility
+    // extension expects during the write stage).
     if (static_cast<uint64_t>(total_size_) > device_capacity_bytes) {
-      return Finish(base::unexpected(error::kDeviceWriteError));
+      return Finish(base::unexpected(mode_ == TransferMode::kWrite
+                                         ? error::kDeviceWriteError
+                                         : error::kHashReadError));
     }
     // `ParseReadCapacity10Response()` rejects `block_size >
     // kTransferBufferSize`.
@@ -525,6 +532,12 @@ class MojoUsbBotSession : public Operation::UsbSession {
       return Finish(base::unexpected(error::kAborted));
     }
     if (bytes_processed_ >= total_size_) {
+      if (mode_ != TransferMode::kWrite) {
+        // Verification compares only the first `total_size_` bytes against
+        // `image_path_`; the best-effort backup GPT wipe region at the end of
+        // the disk (when `wipe_backup_gpt_` is set) is not verified.
+        return Finish(base::ok());
+      }
       // Only wipe the backup GPT if requested by `DestroyPartitionsOperation`
       // and the disk is large enough that the trailing `kBackupGptBlocks`
       // blocks do not overlap the primary partition table written at the start
@@ -567,10 +580,14 @@ class MojoUsbBotSession : public Operation::UsbSession {
         AlignAndZeroPad(&current_chunk_, *bytes_read, block_size_);
     const uint16_t num_blocks =
         static_cast<uint16_t>(aligned_size / block_size_);
+    const bool is_write = (mode_ == TransferMode::kWrite);
     SendCommandWithRetry(
-        BuildScsiReadWrite10Command(kScsiWrite10Opcode, current_block_index_,
-                                    num_blocks),
-        DataOutPhase{current_chunk_}, /*attempts_left=*/3, kUsbCommandTimeout,
+        BuildScsiReadWrite10Command(
+            is_write ? kScsiWrite10Opcode : kScsiRead10Opcode,
+            current_block_index_, num_blocks),
+        is_write ? DataPhase(DataOutPhase{current_chunk_})
+                 : DataPhase(DataInPhase{static_cast<uint32_t>(aligned_size)}),
+        /*attempts_left=*/3, kUsbCommandTimeout,
         base::BindOnce(&MojoUsbBotSession::OnChunkDone, base::Unretained(this),
                        num_blocks, *bytes_read));
   }
@@ -578,9 +595,22 @@ class MojoUsbBotSession : public Operation::UsbSession {
   void OnChunkDone(uint16_t num_blocks,
                    size_t unaligned_bytes,
                    bool ok,
-                   std::vector<uint8_t> /*device_data*/) {
-    if (!ok) {
-      return Finish(base::unexpected(error::kDeviceWriteError));
+                   std::vector<uint8_t> device_data) {
+    if (mode_ == TransferMode::kWrite) {
+      if (!ok) {
+        return Finish(base::unexpected(error::kDeviceWriteError));
+      }
+    } else {
+      if (!ok || device_data.size() < unaligned_bytes) {
+        // TODO(crbug.com/538632205): Consider introducing a dedicated device
+        // read error constant (or reporting `error::kDeviceOpenError`) rather
+        // than reusing `error::kHashReadError` on transport/CSW read failures.
+        return Finish(base::unexpected(error::kHashReadError));
+      }
+      if (base::span(current_chunk_).first(unaligned_bytes) !=
+          base::span(device_data).first(unaligned_bytes)) {
+        return Finish(base::unexpected(error::kVerificationFailed));
+      }
     }
     current_block_index_ += num_blocks;
     bytes_processed_ += static_cast<int64_t>(unaligned_bytes);
@@ -678,6 +708,7 @@ class MojoUsbBotSession : public Operation::UsbSession {
   }
 
   const base::FilePath image_path_;
+  const TransferMode mode_;
   const bool wipe_backup_gpt_;
   const UsbMassStorageEndpoints endpoints_;
   mojo::Remote<device::mojom::UsbDevice> device_;
@@ -932,8 +963,13 @@ void Operation::OnUsbDeviceConnected(
     Error(error::kDeviceOpenError);
     return;
   }
+  const TransferMode mode = stage_ == image_writer_api::Stage::kVerifyWrite
+                                ? TransferMode::kVerify
+                                : TransferMode::kWrite;
+  const bool wipe_backup_gpt =
+      mode == TransferMode::kWrite && ShouldWipeBackupGpt();
   usb_session_ = std::make_unique<MojoUsbBotSession>(
-      image_path_, ShouldWipeBackupGpt(), endpoints, std::move(device_remote),
+      image_path_, mode, wipe_backup_gpt, endpoints, std::move(device_remote),
       base::BindRepeating(&Operation::IsCancelled, base::Unretained(this)),
       base::BindRepeating(&Operation::SetProgress, base::Unretained(this)));
   usb_session_->Start(base::BindOnce(&Operation::OnUsbBotSessionFinished,
@@ -988,7 +1024,14 @@ void Operation::VerifyWrite(base::OnceClosure continuation) {
 
   if (std::optional<ParsedDeviceId> parsed_id =
           ParseUsbDeviceId(device_path_.value())) {
-    CompleteAndContinue(std::move(continuation));
+    // Note: Opening a second `MojoUsbBotSession` after `Write()` closes its
+    // handle relies on `ClaimInterface()` detaching `usb-storage` via
+    // `USBDEVFS_DISCONNECT_CLAIM` if the kernel re-probed the partition table
+    // between sessions.
+    // TODO(crbug.com/538632205): Consider retaining a single
+    // `MojoUsbBotSession` across `Write()` and `VerifyWrite()` on `Operation`
+    // to avoid re-opening the device.
+    ConnectToUsbDevice(std::move(*parsed_id), std::move(continuation));
     return;
   }
 
