@@ -16,15 +16,32 @@
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "chrome/common/safe_browsing/archive_analyzer_results.h"
 #include "chrome/utility/safe_browsing/mac/dmg_iterator.h"
 #include "chrome/utility/safe_browsing/mac/read_stream.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace safe_browsing {
 namespace dmg {
 namespace {
+
+std::string GetRustParamName(const testing::TestParamInfo<bool>& info) {
+  return info.param ? "Rust" : "Cpp";
+}
+
+class DMGAnalyzerTest : public testing::TestWithParam<bool> {
+ public:
+  DMGAnalyzerTest() {
+    scoped_feature_list_.InitWithFeatureState(kSafeBrowsingRustDmgParser,
+                                              GetParam());
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
 
 class MockDMGIterator : public DMGIterator {
  public:
@@ -74,7 +91,7 @@ class MockDMGIterator : public DMGIterator {
   std::vector<uint8_t> code_signature_;
 };
 
-TEST(DMGAnalyzerTest, FailToOpen) {
+TEST_P(DMGAnalyzerTest, FailToOpen) {
   base::test::TaskEnvironment task_environment;
   DMGAnalyzer analyzer_;
   base::FilePath temp_path;
@@ -99,7 +116,7 @@ TEST(DMGAnalyzerTest, FailToOpen) {
   EXPECT_TRUE(results.archived_binary.empty());
 }
 
-TEST(DMGAnalyzerTest, EmptyDMG) {
+TEST_P(DMGAnalyzerTest, EmptyDMG) {
   base::test::TaskEnvironment task_environment;
   DMGAnalyzer analyzer_;
   base::FilePath temp_path;
@@ -124,7 +141,7 @@ TEST(DMGAnalyzerTest, EmptyDMG) {
   EXPECT_TRUE(results.archived_binary.empty());
 }
 
-TEST(DMGAnalyzerTest, DetachedCodeSignature) {
+TEST_P(DMGAnalyzerTest, DetachedCodeSignature) {
   base::test::TaskEnvironment task_environment;
   DMGAnalyzer analyzer_;
   base::FilePath temp_path;
@@ -173,7 +190,7 @@ TEST(DMGAnalyzerTest, DetachedCodeSignature) {
             results.detached_code_signatures.Get(0).contents());
 }
 
-TEST(DMGAnalyzerTest, InvalidDetachedCodeSignature) {
+TEST_P(DMGAnalyzerTest, InvalidDetachedCodeSignature) {
   base::test::TaskEnvironment task_environment;
   DMGAnalyzer analyzer_;
   base::FilePath temp_path;
@@ -208,7 +225,7 @@ TEST(DMGAnalyzerTest, InvalidDetachedCodeSignature) {
 // Note: We expect results.success to be false because the nested archive
 // provided in the test is intentionally invalid (it has no 7z header), which
 // causes the nested analyzer (and thus the overall analysis) to report failure.
-TEST(DMGAnalyzerTest, NestedArchive) {
+TEST_P(DMGAnalyzerTest, NestedArchive) {
   base::test::TaskEnvironment task_environment;
   DMGAnalyzer analyzer_;
   base::FilePath temp_path;
@@ -258,7 +275,7 @@ TEST(DMGAnalyzerTest, NestedArchive) {
 // Regression test for crbug.com/517063658. The entire contents of the nested
 // archive should be copied; we shouldn't lose any bytes from the beginning due
 // to checking for the Mach-O header.
-TEST(DMGAnalyzerTest, NestedArchiveCopiedIntact) {
+TEST_P(DMGAnalyzerTest, NestedArchiveCopiedIntact) {
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
   base::test::TaskEnvironment task_environment;
@@ -315,7 +332,7 @@ TEST(DMGAnalyzerTest, NestedArchiveCopiedIntact) {
 // Non-Mach-O entries with extensions that are checked binaries (e.g. .pkg)
 // should be recorded in `archived_binary` so they are included in the download
 // protection request, matching the behavior of the other archive analyzers.
-TEST(DMGAnalyzerTest, ContainedPkgRecorded) {
+TEST_P(DMGAnalyzerTest, ContainedPkgRecorded) {
   base::test::TaskEnvironment task_environment;
   DMGAnalyzer analyzer_;
   base::FilePath temp_path;
@@ -350,7 +367,7 @@ TEST(DMGAnalyzerTest, ContainedPkgRecorded) {
 // Non-Mach-O entries with extensions that are archives (e.g. .tar) should be
 // recorded in `archived_binary`, matching the behavior of the other archive
 // analyzers.
-TEST(DMGAnalyzerTest, ContainedTarRecorded) {
+TEST_P(DMGAnalyzerTest, ContainedTarRecorded) {
   base::test::TaskEnvironment task_environment;
   DMGAnalyzer analyzer_;
   base::FilePath temp_path;
@@ -381,6 +398,11 @@ TEST(DMGAnalyzerTest, ContainedTarRecorded) {
   EXPECT_TRUE(results.archived_binary.Get(0).is_archive());
   EXPECT_TRUE(results.archived_binary.Get(0).has_digests());
 }
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         DMGAnalyzerTest,
+                         testing::Bool(),
+                         GetRustParamName);
 
 }  // namespace
 }  // namespace dmg
