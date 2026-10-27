@@ -10,6 +10,7 @@
 #include <cmath>
 #include <cstring>
 
+#include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/types/to_address.h"
@@ -49,15 +50,14 @@ void H265NaluParser::SetEncryptedStream(
   previous_nalu_range_.clear();
 
   encrypted_ranges_.clear();
-  const uint8_t* start = stream.data();
-  const uint8_t* stream_end = base::to_address(stream_.end());
-  for (size_t i = 0; i < subsamples.size() && start < stream_end; ++i) {
-    UNSAFE_TODO(start += subsamples[i].clear_bytes);
-
-    const uint8_t* end =
-        std::min(UNSAFE_TODO(start + subsamples[i].cypher_bytes), stream_end);
-    encrypted_ranges_.Add(start, end);
-    start = end;
+  base::span<const uint8_t> remaining = stream;
+  for (size_t i = 0; i < subsamples.size() && !remaining.empty(); ++i) {
+    // Clamp to the stream since subsample sizes may be malformed.
+    remaining = remaining.subspan(
+        std::min<size_t>(subsamples[i].clear_bytes, remaining.size()));
+    base::span<const uint8_t> encrypted = remaining.take_first(
+        std::min<size_t>(subsamples[i].cypher_bytes, remaining.size()));
+    encrypted_ranges_.Add(encrypted.data(), base::to_address(encrypted.end()));
   }
 }
 

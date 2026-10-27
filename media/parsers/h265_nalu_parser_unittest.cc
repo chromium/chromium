@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <limits>
 #include <memory>
 #include <string>
 
@@ -233,6 +234,53 @@ TEST_F(H265NaluParserTest, ClearSecondHeaderByteStillValidated) {
 
   H265NALU nalu;
   EXPECT_EQ(H265NaluParser::kInvalidStream, parser.AdvanceToNextNALU(&nalu));
+}
+
+// Verify that a cypher_bytes value running past the end of the stream is
+// clamped to the end of the stream, i.e. the rest of the stream is encrypted.
+TEST_F(H265NaluParserTest, GetCurrentSubsamplesCypherBytesExceedStream) {
+  constexpr uint8_t kStream[] = {
+      // Start code and NALU header (type = 20, IDR slice). Clear bytes = 5.
+      0x00, 0x00, 0x01, 0x28, 0x01,
+      // Bogus encrypted data. The stream ends before the cypher bytes do.
+      0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17, 0x18, 0x19};
+  std::vector<SubsampleEntry> subsamples;
+  subsamples.emplace_back(5u, std::numeric_limits<uint32_t>::max());
+  H265NaluParser parser;
+  parser.SetEncryptedStream(kStream, subsamples);
+
+  H265NALU nalu;
+  EXPECT_EQ(H265NaluParser::kOk, parser.AdvanceToNextNALU(&nalu));
+  EXPECT_EQ(H265NALU::IDR_N_LP, nalu.nal_unit_type);
+  auto nalu_subsamples = parser.GetCurrentSubsamples();
+  ASSERT_EQ(1u, nalu_subsamples.size());
+  EXPECT_EQ(2u, nalu_subsamples[0].clear_bytes);
+  EXPECT_EQ(10u, nalu_subsamples[0].cypher_bytes);
+
+  EXPECT_EQ(H265NaluParser::kEOStream, parser.AdvanceToNextNALU(&nalu));
+}
+
+// Verify that a clear_bytes value running past the end of the stream leaves
+// the rest of the stream clear.
+TEST_F(H265NaluParserTest, GetCurrentSubsamplesClearBytesExceedStream) {
+  constexpr uint8_t kStream[] = {
+      // Start code and NALU header (type = 20, IDR slice).
+      0x00, 0x00, 0x01, 0x28, 0x01,
+      // Bogus data.
+      0x10, 0x11, 0x12, 0x13};
+  std::vector<SubsampleEntry> subsamples;
+  subsamples.emplace_back(std::numeric_limits<uint32_t>::max(),
+                          std::numeric_limits<uint32_t>::max());
+  H265NaluParser parser;
+  parser.SetEncryptedStream(kStream, subsamples);
+
+  H265NALU nalu;
+  EXPECT_EQ(H265NaluParser::kOk, parser.AdvanceToNextNALU(&nalu));
+  EXPECT_EQ(H265NALU::IDR_N_LP, nalu.nal_unit_type);
+  auto nalu_subsamples = parser.GetCurrentSubsamples();
+  ASSERT_EQ(1u, nalu_subsamples.size());
+  EXPECT_EQ(6u, nalu_subsamples[0].clear_bytes);
+  EXPECT_EQ(0u, nalu_subsamples[0].cypher_bytes);
 }
 
 }  // namespace media
