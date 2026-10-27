@@ -6,6 +6,7 @@
 
 #import <utility>
 
+#import "base/check.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_service_impl.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
@@ -20,11 +21,12 @@ class GeminiService;
 namespace {
 
 std::unique_ptr<KeyedService> BuildGeminiService(ProfileIOS* profile) {
+  CHECK(!profile->IsOffTheRecord());
   if (!IsPageActionMenuEnabled()) {
     return nullptr;
   }
   return std::make_unique<GeminiServiceImpl>(
-      profile, AuthenticationServiceFactory::GetForProfile(profile),
+      AuthenticationServiceFactory::GetForProfile(profile),
       IdentityManagerFactory::GetForProfile(profile), profile->GetPrefs(),
       OptimizationGuideServiceFactory::GetForProfile(profile));
 }

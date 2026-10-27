@@ -113,8 +113,7 @@ class ToolbarMediatorTest : public PlatformTest,
 
     auth_service_ = AuthenticationServiceFactory::GetForProfile(profile_.get());
     gemini_service_ptr_ = std::make_unique<GeminiServiceImpl>(
-        profile_.get(), auth_service_,
-        IdentityManagerFactory::GetForProfile(profile_.get()),
+        auth_service_, IdentityManagerFactory::GetForProfile(profile_.get()),
         profile_->GetPrefs(),
         OptimizationGuideServiceFactory::GetForProfile(profile_.get()));
 

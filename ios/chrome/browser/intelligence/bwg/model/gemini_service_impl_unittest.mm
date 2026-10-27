@@ -89,7 +89,7 @@ class GeminiServiceImplTest : public PlatformTest {
     optimization_guide_service_ =
         OptimizationGuideServiceFactory::GetForProfile(profile_);
     gemini_service_ = std::make_unique<GeminiServiceImpl>(
-        profile_, auth_service_, identity_manager_, pref_service_.get(),
+        auth_service_, identity_manager_, pref_service_.get(),
         optimization_guide_service_);
   }
 

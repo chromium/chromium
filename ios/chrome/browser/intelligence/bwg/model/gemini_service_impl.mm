@@ -21,7 +21,6 @@
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
-#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/public/provider/chrome/browser/bwg/gemini_api.h"
@@ -29,12 +28,10 @@
 #import "ios/web/public/web_state.h"
 
 GeminiServiceImpl::GeminiServiceImpl(
-    ProfileIOS* profile,
     AuthenticationService* auth_service,
     signin::IdentityManager* identity_manager,
     PrefService* pref_service,
     OptimizationGuideService* optimization_guide) {
-  profile_ = profile;
   auth_service_ = auth_service;
   identity_manager_ = identity_manager;
   identity_manager_observation_.Observe(identity_manager_);
@@ -114,7 +111,7 @@ GeminiServiceImpl::GeminiIneligibilityForProfile() {
   const bool is_eligible =
       has_capabilities && allowed_by_enterprise &&
       !is_disabled_by_gemini_policy_.value_or(is_managed_account) &&
-      authenticated && !profile_->IsOffTheRecord();
+      authenticated;
   // We ignore the gemini workspace log until we actually get the response to
   // `is_disabled_by_gemini_policy_`.
   const gemini::IneligibilityReasons ineligibility_reasons =

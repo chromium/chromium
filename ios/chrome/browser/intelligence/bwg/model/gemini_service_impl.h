@@ -26,14 +26,12 @@ class IdentityManager;
 }  // namespace signin
 class OptimizationGuideService;
 class PrefService;
-class ProfileIOS;
 
 // Implementation of GeminiService.
 class GeminiServiceImpl : public GeminiService,
                           public signin::IdentityManager::Observer {
  public:
-  GeminiServiceImpl(ProfileIOS* profile,
-                    AuthenticationService* auth_service,
+  GeminiServiceImpl(AuthenticationService* auth_service,
                     signin::IdentityManager* identity_manager,
                     PrefService* pref_service,
                     OptimizationGuideService* optimization_guide);
@@ -67,9 +65,6 @@ class GeminiServiceImpl : public GeminiService,
 
  private:
   friend class GeminiServiceImplTest;
-
-  // The associated profile.
-  raw_ptr<ProfileIOS> profile_;
 
   // AuthenticationService used to check the user's account status.
   raw_ptr<AuthenticationService> auth_service_;
