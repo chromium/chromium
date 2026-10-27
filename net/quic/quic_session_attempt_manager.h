@@ -11,6 +11,8 @@
 #include <string>
 
 #include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
+#include "base/containers/unique_ptr_adapters.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "net/base/net_export.h"
@@ -84,8 +86,14 @@ class NET_EXPORT_PRIVATE QuicSessionAttemptManager {
     return active_jobs_.find(key) != active_jobs_.end();
   }
 
+  bool HasCompletingJobsForTesting() const { return !completing_jobs_.empty(); }
+
  private:
   class Job;
+
+  // Moves `job` from `active_jobs_` to `completing_jobs_` before it notifies
+  // waiting requests.
+  void OnJobCompleting(Job* job);
 
   // Called by Job when the last request is completed.
   void OnJobComplete(Job* job);
@@ -93,6 +101,8 @@ class NET_EXPORT_PRIVATE QuicSessionAttemptManager {
   const raw_ptr<QuicSessionPool> pool_;
 
   base::flat_map<QuicSessionAliasKey, std::unique_ptr<Job>> active_jobs_;
+  base::flat_set<std::unique_ptr<Job>, base::UniquePtrComparator>
+      completing_jobs_;
 };
 
 }  // namespace net

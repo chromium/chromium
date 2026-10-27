@@ -8,11 +8,13 @@
 #include <optional>
 #include <set>
 #include <string>
+#include <vector>
 
 #include "base/check.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "net/base/net_errors.h"
 #include "net/base/net_export.h"
@@ -46,16 +48,18 @@ class QuicSessionAttemptManager::Job : public QuicSessionAttempt::Delegate {
       const NetLogWithSource& net_log)
       : manager_(manager), key_(std::move(key)), net_log_(net_log) {}
 
-  ~Job() override {
+  ~Job() override { Abort(); }
+
+  Job(const Job&) = delete;
+  Job& operator=(const Job&) = delete;
+
+  void Abort() {
     // Notify all pending requests that the job is aborted.
     if (!requests_.empty()) {
       NotifyRequests(ERR_ABORTED, /*session=*/nullptr, NetErrorDetails());
     }
     CancelAttempts();
   }
-
-  Job(const Job&) = delete;
-  Job& operator=(const Job&) = delete;
 
   // Attempts to create a QUIC session for the given endpoint. If an attempt
   // already exists for the endpoint, returns ERR_IO_PENDING and the request
@@ -111,16 +115,22 @@ class QuicSessionAttemptManager::Job : public QuicSessionAttempt::Delegate {
     CHECK(it != requests_.end());
     requests_.erase(it);
 
-    if (requests_.empty()) {
+    if (requests_.empty() && !notifying_requests_) {
       manager_->OnJobComplete(this);
       // `this` is deleted.
     }
+  }
+
+  bool HasRequest(QuicSessionAttemptRequest* request) const {
+    return requests_.contains(request);
   }
 
   void OnOriginFrameMatched(QuicChromiumClientSession* session) {
     NotifyRequestsAndComplete(OK, session, NetErrorDetails());
     // `this` is deleted.
   }
+
+  base::WeakPtr<Job> GetWeakPtr() { return weak_ptr_factory_.GetWeakPtr(); }
 
   // QuicSessionAttempt::Delegate implementation.
   QuicSessionPool* GetQuicSessionPool() override { return manager_->pool_; }
@@ -172,14 +182,19 @@ class QuicSessionAttemptManager::Job : public QuicSessionAttempt::Delegate {
   void NotifyRequests(int rv,
                       QuicChromiumClientSession* session,
                       NetErrorDetails error_details) {
+    notifying_requests_ = true;
     // Cancel other attempts.
     CancelAttempts();
 
+    base::WeakPtr<Job> weak_this = GetWeakPtr();
     while (!requests_.empty()) {
       raw_ptr<QuicSessionAttemptRequest> request =
           requests_.extract(requests_.begin()).value();
       // Use ExtractAsDangling() because `request` may delete itself.
       request.ExtractAsDangling()->Complete(rv, session, error_details);
+      if (!weak_this) {
+        return;
+      }
     }
     CHECK(requests_.empty());
   }
@@ -194,7 +209,12 @@ class QuicSessionAttemptManager::Job : public QuicSessionAttempt::Delegate {
   void NotifyRequestsAndComplete(int rv,
                                  QuicChromiumClientSession* session,
                                  NetErrorDetails error_details) {
+    manager_->OnJobCompleting(this);
+    base::WeakPtr<Job> weak_this = GetWeakPtr();
     NotifyRequests(rv, session, std::move(error_details));
+    if (!weak_this) {
+      return;
+    }
     manager_->OnJobComplete(this);
     // `this` is deleted.
   }
@@ -204,21 +224,35 @@ class QuicSessionAttemptManager::Job : public QuicSessionAttempt::Delegate {
 
   NetLogWithSource net_log_;
 
+  // Set when `NotifyRequests()` starts invoking request completion callbacks
+  // and never reset: it prevents `RemoveRequest()` from deleting `this` via
+  // `OnJobComplete()` while the notification loop is still on the stack, and
+  // a `Job` is always destroyed right after `NotifyRequests()` returns.
+  // Deliberately not a `base::AutoReset`, which would write to `this` if a
+  // callback destroys the `Job`.
+  bool notifying_requests_ = false;
   std::set<raw_ptr<QuicSessionAttemptRequest>> requests_;
 
   base::flat_set<std::unique_ptr<QuicSessionAttempt>, base::UniquePtrComparator>
       attempts_;
+
+  base::WeakPtrFactory<Job> weak_ptr_factory_{this};
 };
 
 QuicSessionAttemptManager::QuicSessionAttemptManager(QuicSessionPool* pool)
     : pool_(pool) {}
 
 QuicSessionAttemptManager::~QuicSessionAttemptManager() {
-  // Clear the active jobs, first moving out of the instance variable so that
-  // calls to RemoveRequest for any pending requests do not cause recursion.
-  base::flat_map<QuicSessionAliasKey, std::unique_ptr<Job>> active_jobs =
-      std::move(active_jobs_);
-  active_jobs.clear();
+  for (auto& [_, job] : active_jobs_) {
+    completing_jobs_.insert(std::move(job));
+  }
+  active_jobs_.clear();
+  while (!completing_jobs_.empty()) {
+    Job* job = completing_jobs_.begin()->get();
+    job->Abort();
+    completing_jobs_.erase(job);
+  }
+  CHECK(active_jobs_.empty());
 }
 
 std::unique_ptr<QuicSessionAttemptRequest>
@@ -256,32 +290,54 @@ int QuicSessionAttemptManager::RequestSession(
 void QuicSessionAttemptManager::RemoveRequest(
     QuicSessionAttemptRequest* request) {
   auto it = active_jobs_.find(request->key_);
-  if (it == active_jobs_.end()) {
+  if (it != active_jobs_.end() && it->second->HasRequest(request)) {
+    it->second->RemoveRequest(request);
     return;
   }
-  it->second->RemoveRequest(request);
+  for (const auto& job : completing_jobs_) {
+    if (job->HasRequest(request)) {
+      job->RemoveRequest(request);
+      return;
+    }
+  }
 }
 
 void QuicSessionAttemptManager::OnOriginFrame(
     QuicChromiumClientSession* session) {
   // Collect jobs that can be completed with `session` and then notify them
   // later to avoid erasing jobs during the loop.
-  std::vector<Job*> matched_jobs;
+  std::vector<base::WeakPtr<Job>> matched_jobs;
   for (auto& [key, job] : active_jobs_) {
     if (pool_->CanWaiveIpMatching(key.destination(), session) &&
         session->CanPool(key.session_key().host(), key.session_key())) {
-      matched_jobs.push_back(job.get());
+      matched_jobs.push_back(job->GetWeakPtr());
     }
   }
 
-  for (auto job : matched_jobs) {
-    job->OnOriginFrameMatched(session);
-    // `job` was removed from `active_jobs_` and it was deleted.
+  for (base::WeakPtr<Job>& job : matched_jobs) {
+    if (job) {
+      job->OnOriginFrameMatched(session);
+      // `job` was removed from `active_jobs_` and it was deleted.
+    }
   }
-  matched_jobs.clear();
+}
+
+void QuicSessionAttemptManager::OnJobCompleting(Job* job) {
+  auto it = active_jobs_.find(job->GetKey());
+  CHECK(it != active_jobs_.end());
+  CHECK_EQ(it->second.get(), job);
+  std::unique_ptr<Job> owned_job = std::move(it->second);
+  active_jobs_.erase(it);
+  auto [_, inserted] = completing_jobs_.insert(std::move(owned_job));
+  CHECK(inserted);
 }
 
 void QuicSessionAttemptManager::OnJobComplete(Job* job) {
+  auto completing_it = completing_jobs_.find(job);
+  if (completing_it != completing_jobs_.end()) {
+    completing_jobs_.erase(completing_it);
+    return;
+  }
   auto it = active_jobs_.find(job->GetKey());
   CHECK(it != active_jobs_.end());
   active_jobs_.erase(it);

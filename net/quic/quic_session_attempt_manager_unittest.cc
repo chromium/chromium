@@ -8,6 +8,7 @@
 #include <optional>
 #include <set>
 
+#include "base/test/bind.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
@@ -113,6 +114,10 @@ class SessionRequester {
 
   void ResetRequest() { request_.reset(); }
 
+  void SetOnCompleteCallback(base::OnceClosure callback) {
+    on_complete_callback_ = std::move(callback);
+  }
+
   const QuicSessionAliasKey& key() const {
     CHECK(request_);
     return request_->key();
@@ -140,6 +145,10 @@ class SessionRequester {
     request_.reset();
     // Clear the request to avoid dangling pointer.
     manager_ = nullptr;
+
+    if (on_complete_callback_) {
+      std::move(on_complete_callback_).Run();
+    }
 
     if (wait_for_result_closure_) {
       std::move(wait_for_result_closure_).Run();
@@ -177,6 +186,7 @@ class SessionRequester {
 
   std::unique_ptr<QuicSessionAttemptRequest> request_;
 
+  base::OnceClosure on_complete_callback_;
   base::OnceClosure wait_for_result_closure_;
 
   std::optional<int> result_;
@@ -612,6 +622,142 @@ TEST_P(QuicSessionAttemptManagerTest, OnOriginFrame) {
 
   // The job for `requester1` should be gone.
   EXPECT_FALSE(session_attempt_manager()->HasActiveJobForTesting(key1));
+}
+
+TEST_P(QuicSessionAttemptManagerTest,
+       CancelSiblingRequestInCompletionCallback) {
+  InitializeWithDefaultProofVerifyDetails();
+
+  MockQuicData socket_data(version_);
+  socket_data.AddReadPauseForever();
+  socket_data.AddWrite(ASYNC, ConstructInitialSettingsPacket());
+  socket_data.AddSocketDataToFactory(socket_factory_.get());
+
+  SessionRequester requester1 = CreateRequester();
+  SessionRequester requester2 = CreateRequester();
+  requester1.SetOnCompleteCallback(
+      base::BindLambdaForTesting([&] { requester2.ResetRequest(); }));
+  requester2.SetOnCompleteCallback(
+      base::BindLambdaForTesting([&] { requester1.ResetRequest(); }));
+
+  EXPECT_THAT(requester1.Request(), IsError(ERR_IO_PENDING));
+  EXPECT_THAT(requester2.Request(), IsError(ERR_IO_PENDING));
+  const QuicSessionAliasKey key = requester1.key();
+
+  EXPECT_TRUE(base::test::RunUntil([&] {
+    return requester1.result().has_value() || requester2.result().has_value();
+  }));
+  EXPECT_NE(requester1.result().has_value(), requester2.result().has_value());
+  EXPECT_FALSE(session_attempt_manager()->HasActiveJobForTesting(key));
+  EXPECT_FALSE(session_attempt_manager()->HasCompletingJobsForTesting());
+}
+
+TEST_P(QuicSessionAttemptManagerTest, OnOriginFrameCancelsOtherMatchedJob) {
+  InitializeWithDefaultProofVerifyDetails();
+
+  MockQuicData socket_data1(version_);
+  socket_data1.AddConnect(SYNCHRONOUS, ERR_IO_PENDING);
+  socket_data1.AddSocketDataToFactory(socket_factory_.get());
+
+  SessionRequester requester1 = CreateRequester();
+  requester1.SetIPEndPoint(MakeIPEndPoint("192.0.2.1"));
+  EXPECT_THAT(requester1.Request(), IsError(ERR_IO_PENDING));
+  const QuicSessionAliasKey key1 = requester1.key();
+
+  MockQuicData socket_data2(version_);
+  socket_data2.AddConnect(SYNCHRONOUS, ERR_IO_PENDING);
+  socket_data2.AddSocketDataToFactory(socket_factory_.get());
+
+  const url::SchemeHostPort kSecondDestination(
+      url::kHttpsScheme, kServer2HostName, kDefaultServerPort);
+  SessionRequester requester2 = CreateRequester();
+  requester2.SetDestination(kSecondDestination);
+  requester2.SetIPEndPoint(MakeIPEndPoint("192.0.2.2"));
+  EXPECT_THAT(requester2.Request(), IsError(ERR_IO_PENDING));
+  const QuicSessionAliasKey key2 = requester2.key();
+
+  requester1.SetOnCompleteCallback(
+      base::BindLambdaForTesting([&] { requester2.ResetRequest(); }));
+  requester2.SetOnCompleteCallback(
+      base::BindLambdaForTesting([&] { requester1.ResetRequest(); }));
+
+  const url::SchemeHostPort kOtherDestination(url::kHttpsScheme,
+                                              "other.example.org", 443);
+  MockQuicData socket_data3(version_);
+  socket_data3.AddReadPauseForever();
+  socket_data3.AddWrite(ASYNC, ConstructInitialSettingsPacket());
+  socket_data3.AddSocketDataToFactory(socket_factory_.get());
+
+  SessionRequester requester3 = CreateRequester();
+  requester3.SetDestination(kOtherDestination);
+  requester3.SetIPEndPoint(MakeIPEndPoint("192.0.2.3"));
+  EXPECT_THAT(requester3.Request(), IsError(ERR_IO_PENDING));
+  EXPECT_THAT(requester3.WaitForResult(), IsOk());
+  QuicChromiumClientSession* session3 = requester3.session();
+  EXPECT_TRUE(session3);
+
+  quic::OriginFrame origin_frame;
+  origin_frame.origins.emplace_back(requester1.destination().Serialize());
+  origin_frame.origins.emplace_back(requester2.destination().Serialize());
+  session3->OnOriginFrame(origin_frame);
+
+  EXPECT_NE(requester1.result().has_value(), requester2.result().has_value());
+  EXPECT_FALSE(session_attempt_manager()->HasActiveJobForTesting(key1));
+  EXPECT_FALSE(session_attempt_manager()->HasActiveJobForTesting(key2));
+  EXPECT_FALSE(session_attempt_manager()->HasCompletingJobsForTesting());
+}
+
+TEST_P(QuicSessionAttemptManagerTest, RequestSameSessionInCompletionCallback) {
+  InitializeWithDefaultProofVerifyDetails();
+
+  MockQuicData socket_data1(version_);
+  socket_data1.AddConnect(ASYNC, ERR_CONNECTION_FAILED);
+  socket_data1.AddSocketDataToFactory(socket_factory_.get());
+
+  MockQuicData socket_data2(version_);
+  socket_data2.AddReadPauseForever();
+  socket_data2.AddWrite(ASYNC, ConstructInitialSettingsPacket());
+  socket_data2.AddSocketDataToFactory(socket_factory_.get());
+
+  SessionRequester requester1 = CreateRequester();
+  SessionRequester requester2 = CreateRequester();
+  requester1.SetOnCompleteCallback(base::BindLambdaForTesting(
+      [&] { EXPECT_THAT(requester2.Request(), IsError(ERR_IO_PENDING)); }));
+
+  EXPECT_THAT(requester1.Request(), IsError(ERR_IO_PENDING));
+  EXPECT_THAT(requester1.WaitForResult(), IsError(ERR_CONNECTION_FAILED));
+  EXPECT_THAT(requester2.WaitForResult(), IsOk());
+  EXPECT_TRUE(requester2.session());
+  EXPECT_FALSE(session_attempt_manager()->HasCompletingJobsForTesting());
+}
+
+TEST_P(QuicSessionAttemptManagerTest, DestroyPoolInCompletionCallback) {
+  InitializeWithDefaultProofVerifyDetails();
+
+  MockQuicData socket_data(version_);
+  socket_data.AddConnect(ASYNC, ERR_CONNECTION_FAILED);
+  socket_data.AddSocketDataToFactory(socket_factory_.get());
+
+  SessionRequester requester1 = CreateRequester();
+  SessionRequester requester2 = CreateRequester();
+  requester1.SetOnCompleteCallback(
+      base::BindLambdaForTesting([&] { pool_.reset(); }));
+  requester2.SetOnCompleteCallback(
+      base::BindLambdaForTesting([&] { pool_.reset(); }));
+
+  EXPECT_THAT(requester1.Request(), IsError(ERR_IO_PENDING));
+  EXPECT_THAT(requester2.Request(), IsError(ERR_IO_PENDING));
+
+  EXPECT_TRUE(base::test::RunUntil([&] {
+    return requester1.result().has_value() && requester2.result().has_value();
+  }));
+  EXPECT_FALSE(pool_);
+  if (*requester1.result() == ERR_CONNECTION_FAILED) {
+    EXPECT_THAT(*requester2.result(), IsError(ERR_ABORTED));
+  } else {
+    EXPECT_THAT(*requester1.result(), IsError(ERR_ABORTED));
+    EXPECT_THAT(*requester2.result(), IsError(ERR_CONNECTION_FAILED));
+  }
 }
 
 }  // namespace net::test
