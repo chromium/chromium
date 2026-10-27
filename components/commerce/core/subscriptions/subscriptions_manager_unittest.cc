@@ -20,7 +20,6 @@
 #include "components/commerce/core/subscriptions/subscriptions_server_proxy.h"
 #include "components/commerce/core/subscriptions/subscriptions_storage.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
-#include "components/sync/base/features.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -787,38 +786,6 @@ TEST_F(SubscriptionsManagerTest, TestUnsubscribe_NonExistingSubscriptions) {
 }
 
 TEST_F(SubscriptionsManagerTest, TestIdentityChange) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      syncer::kReplaceSyncPromosWithSignInPromos);
-
-  SetAccountStatus(true, true);
-  mock_server_proxy_->MockGetResponses("111");
-  mock_storage_->MockUpdateResponses(true);
-
-  {
-    InSequence s;
-    // First sync on manager instantiation.
-    EXPECT_CALL(*mock_server_proxy_, Get);
-    EXPECT_CALL(*mock_storage_,
-                UpdateStorage(_, _, AreExpectedSubscriptions("111")));
-    // Second sync on primary account change.
-    EXPECT_CALL(*mock_storage_, DeleteAll);
-    EXPECT_CALL(*mock_server_proxy_, Get);
-    EXPECT_CALL(*mock_storage_,
-                UpdateStorage(_, _, AreExpectedSubscriptions("111")));
-  }
-
-  CreateManagerAndVerify(true);
-  identity_test_env_.MakePrimaryAccountAvailable("mock_email@gmail.com",
-                                                 signin::ConsentLevel::kSync);
-}
-
-TEST_F(SubscriptionsManagerTest,
-       TestIdentityChange_ReplaceSyncPromosWithSignInPromosEnabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      syncer::kReplaceSyncPromosWithSignInPromos);
-
   SetAccountStatus(true, true);
   mock_server_proxy_->MockGetResponses("111");
   mock_storage_->MockUpdateResponses(true);

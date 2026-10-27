@@ -86,10 +86,6 @@ class ShoppingUiHandlerDelegateBrowserTest : public InProcessBrowserTest {
 
   raw_ptr<Profile, DanglingUntriaged> profile_;
   raw_ptr<bookmarks::BookmarkModel, DanglingUntriaged> bookmark_model_;
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-  base::test::ScopedFeatureList feature_list_{
-      syncer::kReplaceSyncPromosWithSignInPromos};
-#endif
 };
 
 IN_PROC_BROWSER_TEST_F(ShoppingUiHandlerDelegateBrowserTest,

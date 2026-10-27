@@ -33,7 +33,6 @@
 #include "components/image_fetcher/core/mock_image_fetcher.h"
 #include "components/image_fetcher/core/request_metadata.h"
 #include "components/signin/public/base/signin_switches.h"
-#include "components/sync/base/features.h"
 #include "components/tabs/public/mock_tab_interface.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/browser/navigation_details.h"
@@ -108,14 +107,12 @@ class CommerceUiTabHelperTest : public testing::TestWithParam<TestSyncConfig> {
         IsSyncFeatureEnabledIncludingBookmarks());
     if (IsTransportModeFeatureEnabled()) {
       sync_features_.InitWithFeatures(
-          /*enabled_features=*/{syncer::kReplaceSyncPromosWithSignInPromos,
-                                switches::kSyncEnableBookmarksInTransportMode},
+          /*enabled_features=*/{switches::kSyncEnableBookmarksInTransportMode},
           /*disabled_features=*/{});
     } else {
       sync_features_.InitWithFeatures(
           /*enabled_features=*/{},
           /*disabled_features=*/{
-              syncer::kReplaceSyncPromosWithSignInPromos,
               switches::kSyncEnableBookmarksInTransportMode});
     }
     bookmark_model_ =

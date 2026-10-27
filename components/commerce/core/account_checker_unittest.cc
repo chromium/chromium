@@ -21,7 +21,6 @@
 #include "components/endpoint_fetcher/mock_endpoint_fetcher.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
-#include "components/sync/base/features.h"
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/test/test_sync_service.h"
 #include "components/sync/test/test_sync_user_settings.h"
@@ -87,8 +86,7 @@ class AccountCheckerTest : public testing::Test {
   ~AccountCheckerTest() override = default;
 
   void SetUp() override {
-    test_features_.InitWithFeatures(
-        {kShoppingList, syncer::kReplaceSyncPromosWithSignInPromos}, {});
+    test_features_.InitWithFeatures({kShoppingList}, {});
     RegisterProfilePrefs(pref_service_.registry());
     scoped_refptr<network::SharedURLLoaderFactory> test_url_loader_factory =
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(

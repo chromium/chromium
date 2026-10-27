@@ -22,7 +22,6 @@
 #include "components/commerce/core/test_utils.h"
 #include "components/power_bookmarks/core/power_bookmark_utils.h"
 #include "components/signin/public/base/signin_switches.h"
-#include "components/sync/base/features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -44,8 +43,8 @@ class ShoppingBookmarkModelObserverTest
     switch (GetParam()) {
       case TestSyncConfig::kTransportMode:
         test_features_.InitWithFeatures(
-            /*enabled_features=*/{switches::kSyncEnableBookmarksInTransportMode,
-                                  syncer::kReplaceSyncPromosWithSignInPromos},
+            /*enabled_features=*/{switches::
+                                      kSyncEnableBookmarksInTransportMode},
             /*disabled_features=*/{});
         client->SetIsSyncFeatureEnabledIncludingBookmarks(false);
         break;
@@ -53,8 +52,7 @@ class ShoppingBookmarkModelObserverTest
         test_features_.InitWithFeatures(
             /*enabled_features=*/{},
             /*disabled_features=*/{
-                switches::kSyncEnableBookmarksInTransportMode,
-                syncer::kReplaceSyncPromosWithSignInPromos});
+                switches::kSyncEnableBookmarksInTransportMode});
         client->SetIsSyncFeatureEnabledIncludingBookmarks(true);
         break;
     }
