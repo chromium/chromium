@@ -2040,8 +2040,9 @@ void ComposeboxQueryController::SendClusterInfoNetworkRequest(
   cluster_info_access_token_fetcher_.reset();
 
   // Add protobuf content type to the request headers.
-  request_headers.push_back(kContentTypeKey);
-  request_headers.push_back(kContentType);
+  std::vector<std::string> fetch_headers = request_headers;
+  fetch_headers.push_back(kContentTypeKey);
+  fetch_headers.push_back(kContentType);
 
   // Get client experiment variations to include in the request.
   std::vector<std::string> cors_exempt_headers;
@@ -2068,21 +2069,29 @@ void ComposeboxQueryController::SendClusterInfoNetworkRequest(
   cluster_info_endpoint_fetcher_ = CreateEndpointFetcher(
       std::move(request_string), fetch_url, HttpMethod::kPost,
       base::Milliseconds(lens::features::GetLensOverlayServerRequestTimeout()),
-      request_headers, cors_exempt_headers, base::DoNothing());
+      fetch_headers, cors_exempt_headers, base::DoNothing());
 
   // Finally, perform the request.
   cluster_info_endpoint_fetcher_->PerformRequest(
       base::BindOnce(&ComposeboxQueryController::HandleClusterInfoResponse,
-                     weak_ptr_factory_.GetWeakPtr()),
+                     weak_ptr_factory_.GetWeakPtr(),
+                     std::move(request_headers)),
       google_apis::GetAPIKey().c_str());
 }
 
 void ComposeboxQueryController::HandleClusterInfoResponse(
+    std::vector<std::string> request_headers,
     std::unique_ptr<endpoint_fetcher::EndpointResponse> response) {
   if (is_backgrounded_) {
     return;
   }
   cluster_info_endpoint_fetcher_.reset();
+
+  if (lens::ShouldRetryRequestWithoutAuthOn401(response.get(),
+                                               request_headers)) {
+    SendClusterInfoNetworkRequest(std::move(request_headers));
+    return;
+  }
 
   if (cluster_info_fetch_start_time_.has_value()) {
     base::UmaHistogramTimes(
@@ -2713,9 +2722,9 @@ void ComposeboxQueryController::SendUploadNetworkRequest(FileInfo* file_info,
       upload_request->request_body.get(), file_info->request_headers_.get(),
       base::Milliseconds(
           lens::features::GetLensOverlayPageContentRequestTimeoutMs()),
-      base::BindOnce(&ComposeboxQueryController::OnUploadEndpointFetcherCreated,
-                     weak_ptr_factory_.GetWeakPtr(), file_info->file_token,
-                     request_index),
+      base::BindRepeating(
+          &ComposeboxQueryController::OnUploadEndpointFetcherCreated,
+          weak_ptr_factory_.GetWeakPtr(), file_info->file_token, request_index),
       base::BindOnce(&ComposeboxQueryController::HandleUploadResponse,
                      weak_ptr_factory_.GetWeakPtr(), file_info->file_token,
                      request_index),
@@ -2746,7 +2755,7 @@ void ComposeboxQueryController::TrySendInteractionRequest() {
         latest_interaction_request_data_->request_headers_.get(),
         base::Milliseconds(
             lens::features::GetLensOverlayPageContentRequestTimeoutMs()),
-        base::BindOnce(
+        base::BindRepeating(
             &ComposeboxQueryController::OnInteractionEndpointFetcherCreated,
             weak_ptr_factory_.GetWeakPtr()),
         base::BindOnce(&ComposeboxQueryController::HandleInteractionResponse,
@@ -2920,7 +2929,8 @@ void ComposeboxQueryController::PerformFetchRequest(
     lens::LensOverlayServerRequest* request,
     std::vector<std::string>* request_headers,
     base::TimeDelta timeout,
-    base::OnceCallback<void(std::unique_ptr<endpoint_fetcher::EndpointFetcher>)>
+    base::RepeatingCallback<
+        void(std::unique_ptr<endpoint_fetcher::EndpointFetcher>)>
         fetcher_created_callback,
     endpoint_fetcher::EndpointFetcherCallback response_received_callback,
     UploadProgressCallback upload_progress_callback) {
@@ -2960,7 +2970,8 @@ void ComposeboxQueryController::PerformFetchRequest(
     std::string request_string,
     std::vector<std::string>* request_headers,
     base::TimeDelta timeout,
-    base::OnceCallback<void(std::unique_ptr<endpoint_fetcher::EndpointFetcher>)>
+    base::RepeatingCallback<
+        void(std::unique_ptr<endpoint_fetcher::EndpointFetcher>)>
         fetcher_created_callback,
     endpoint_fetcher::EndpointFetcherCallback response_received_callback,
     UploadProgressCallback upload_progress_callback,
@@ -2981,20 +2992,57 @@ void ComposeboxQueryController::PerformFetchRequest(
       net::AppendOrReplaceQueryParameter(fetch_url, kSessionIdQueryParameterKey,
                                          cluster_info_->server_session_id());
 
+  std::vector<std::string> headers =
+      request_headers ? *request_headers : std::vector<std::string>();
+
   // Create the EndpointFetcher, responsible for making the request using our
   // given params.
   std::unique_ptr<EndpointFetcher> endpoint_fetcher = CreateEndpointFetcher(
-      std::move(request_string), fetch_url, HttpMethod::kPost, timeout,
-      *request_headers, cors_exempt_headers,
-      std::move(upload_progress_callback));
+      request_string, fetch_url, HttpMethod::kPost, timeout, headers,
+      cors_exempt_headers, upload_progress_callback);
   EndpointFetcher* fetcher = endpoint_fetcher.get();
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(fetcher_created_callback),
-                                std::move(endpoint_fetcher)));
+      FROM_HERE,
+      base::BindOnce(fetcher_created_callback, std::move(endpoint_fetcher)));
 
   // Finally, perform the request.
-  fetcher->PerformRequest(std::move(response_received_callback),
-                          google_apis::GetAPIKey().c_str());
+  fetcher->PerformRequest(
+      base::BindOnce(&ComposeboxQueryController::OnFetchResponseReceived,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(request_string),
+                     std::move(headers), std::move(cors_exempt_headers),
+                     fetch_url, timeout, std::move(fetcher_created_callback),
+                     std::move(response_received_callback),
+                     std::move(upload_progress_callback)),
+      google_apis::GetAPIKey().c_str());
+}
+
+void ComposeboxQueryController::OnFetchResponseReceived(
+    std::string request_string,
+    std::vector<std::string> request_headers,
+    std::vector<std::string> cors_exempt_headers,
+    GURL fetch_url,
+    base::TimeDelta timeout,
+    base::RepeatingCallback<
+        void(std::unique_ptr<endpoint_fetcher::EndpointFetcher>)>
+        fetcher_created_callback,
+    endpoint_fetcher::EndpointFetcherCallback response_received_callback,
+    UploadProgressCallback upload_progress_callback,
+    std::unique_ptr<endpoint_fetcher::EndpointResponse> response) {
+  if (lens::ShouldRetryRequestWithoutAuthOn401(response.get(),
+                                               request_headers)) {
+    std::unique_ptr<EndpointFetcher> endpoint_fetcher = CreateEndpointFetcher(
+        std::move(request_string), fetch_url, HttpMethod::kPost, timeout,
+        request_headers, cors_exempt_headers,
+        std::move(upload_progress_callback));
+    EndpointFetcher* fetcher = endpoint_fetcher.get();
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(fetcher_created_callback),
+                                  std::move(endpoint_fetcher)));
+    fetcher->PerformRequest(std::move(response_received_callback),
+                            google_apis::GetAPIKey().c_str());
+    return;
+  }
+  std::move(response_received_callback).Run(std::move(response));
 }
 
 const contextual_search::FileInfo* ComposeboxQueryController::GetFileInfo(
@@ -3235,7 +3283,7 @@ void ComposeboxQueryController::UploadChunk(
       std::move(request_string), file_info->request_headers_.get(),
       base::Milliseconds(
           lens::features::GetLensOverlayUploadChunkRequestTimeoutMs()),
-      base::BindOnce(
+      base::BindRepeating(
           &ComposeboxQueryController::OnChunkUploadEndpointFetcherCreated,
           weak_ptr_factory_.GetWeakPtr(), file_token),
       base::BindOnce(

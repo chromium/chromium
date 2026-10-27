@@ -15,6 +15,7 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
+#include "components/lens/lens_request_construction.h"
 #include "components/signin/public/base/list_accounts_test_utils.h"
 #include "components/signin/public/identity_manager/accounts_cookie_mutator.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
@@ -666,6 +667,28 @@ TEST_F(LensIdentityDelegationHelperTest,
   histogram_tester.ExpectTotalCount(kAccountErrorReasonFreshHistogram, 0);
   histogram_tester.ExpectUniqueSample(kCookieJarAccountsFreshHistogram, false,
                                       1);
+}
+
+TEST_F(LensIdentityDelegationHelperTest, StripAuthorizationHeader) {
+  std::vector<std::string> headers = {
+      "Origin",          "https://www.google.com",
+      "Authorization",   "SAPISIDHASH 12345_fakehash",
+      "X-Goog-AuthUser", "0"};
+  EXPECT_TRUE(StripAuthorizationHeader(headers));
+  EXPECT_THAT(headers, ElementsAre("Origin", "https://www.google.com",
+                                   "X-Goog-AuthUser", "0"));
+
+  // Stripping again when Authorization is already absent returns false.
+  EXPECT_FALSE(StripAuthorizationHeader(headers));
+  EXPECT_THAT(headers, ElementsAre("Origin", "https://www.google.com",
+                                   "X-Goog-AuthUser", "0"));
+
+  // Case-insensitive matching on key only (does not match values).
+  std::vector<std::string> lowercase_headers = {
+      "Custom-Header", "Authorization", "authorization",
+      "SAPISIDHASH 12345_fakehash"};
+  EXPECT_TRUE(StripAuthorizationHeader(lowercase_headers));
+  EXPECT_THAT(lowercase_headers, ElementsAre("Custom-Header", "Authorization"));
 }
 
 }  // namespace lens

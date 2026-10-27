@@ -101,6 +101,16 @@ class TestComposeboxQueryController : public ComposeboxQueryController {
         set_next_cluster_info_request_should_return_error;
   }
 
+  void set_all_cluster_info_requests_should_return_unauthorized(
+      bool all_cluster_info_requests_should_return_unauthorized) {
+    all_cluster_info_requests_should_return_unauthorized_ =
+        all_cluster_info_requests_should_return_unauthorized;
+  }
+
+  void set_reject_requests_with_auth_header_with_401(bool reject) {
+    reject_requests_with_auth_header_with_401_ = reject;
+  }
+
   void set_next_file_upload_request_should_return_error(
       bool set_next_file_upload_request_should_return_error) {
     next_file_upload_request_should_return_error_ =
@@ -196,6 +206,12 @@ class TestComposeboxQueryController : public ComposeboxQueryController {
     return last_sent_cors_exempt_headers_;
   }
 
+  // Gets the history of request headers sent across all requests.
+  const std::vector<std::vector<std::string>>& sent_request_headers_history()
+      const {
+    return sent_request_headers_history_;
+  }
+
   // Gets the client context used for the requests.
   lens::LensOverlayClientContext client_context() const {
     return ComposeboxQueryController::CreateClientContext();
@@ -256,6 +272,13 @@ class TestComposeboxQueryController : public ComposeboxQueryController {
   // If true, the next cluster info request will return an error.
   bool next_cluster_info_request_should_return_error_ = false;
 
+  // If true, all cluster info requests will return HTTP 401 Unauthorized.
+  bool all_cluster_info_requests_should_return_unauthorized_ = false;
+
+  // If true, any request containing an Authorization header will return HTTP
+  // 401 Unauthorized.
+  bool reject_requests_with_auth_header_with_401_ = false;
+
   // If true, the next file upload request will return an error.
   bool next_file_upload_request_should_return_error_ = false;
 
@@ -295,6 +318,9 @@ class TestComposeboxQueryController : public ComposeboxQueryController {
 
   // The last sent cors exempt headers.
   std::vector<std::string> last_sent_cors_exempt_headers_;
+
+  // History of request headers sent across all requests.
+  std::vector<std::vector<std::string>> sent_request_headers_history_;
 };
 
 }  // namespace contextual_search
