@@ -8183,6 +8183,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.SicBottomSheet.AutoAddedTabRemoved" enum="Boolean"
+    expires_after="2027-04-04">
+  <owner>ameurhosni@google.com</owner>
+  <owner>bling-team@google.com</owner>
+  <summary>
+    Records whether the user explicitly removed at least one automatically
+    attached tab from the input plate during an Assistant AIM bottom sheet
+    session. Logged once when the session ends.
+  </summary>
+</histogram>
+
 <histogram name="IOS.SicBottomSheet.CloseUndoTapped" enum="Boolean"
     expires_after="2027-04-04">
   <owner>ameurhosni@google.com</owner>
@@ -8220,6 +8231,22 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the total number of follow-up queries submitted during an Assistant
     AIM bottom sheet session. Logged once when the session ends.
+  </summary>
+</histogram>
+
+<histogram name="IOS.SicBottomSheet.FRENoticeAction"
+    enum="IOSSicBottomSheetFRENoticeAction" expires_after="2027-04-04">
+  <owner>ameurhosni@google.com</owner>
+  <owner>bling-team@google.com</owner>
+  <summary>
+    Records presentations of and user interactions with the Assistant AIM bottom
+    sheet first run experience (FRE) tab sharing notice alert. &quot;Shown&quot;
+    is recorded each time the notice is presented. Tapping &quot;Got it&quot;
+    (Accepted) permanently acknowledges the notice and is recorded at most once
+    per profile, whereas tapping &quot;Learn More&quot; minimizes the sheet and
+    opens the help page without acknowledging the notice (so the alert is shown
+    again on subsequent keyboard presentations and can be recorded multiple
+    times before the notice is acknowledged).
   </summary>
 </histogram>
 

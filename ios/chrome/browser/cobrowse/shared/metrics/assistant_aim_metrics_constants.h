@@ -40,6 +40,10 @@ inline constexpr std::string_view kAssistantAimFollowupHadAttachmentHistogram =
     "IOS.SicBottomSheet.FollowupHadAttachment";
 inline constexpr std::string_view kAssistantAimAttachmentsPerSessionHistogram =
     "IOS.SicBottomSheet.AttachmentsPerSession";
+inline constexpr std::string_view kAssistantAimAutoAddedTabRemovedHistogram =
+    "IOS.SicBottomSheet.AutoAddedTabRemoved";
+inline constexpr std::string_view kAssistantAimFRENoticeActionHistogram =
+    "IOS.SicBottomSheet.FRENoticeAction";
 
 // Entrypoints for starting an Assistant AIM bottom sheet session.
 // These values are persisted to logs. Entries should not be renumbered and
@@ -90,5 +94,18 @@ enum class AssistantAimHeaderAction {
   kMaxValue = kHelpTapped,
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml:IOSSicBottomSheetHeaderAction)
+
+// Events and actions on the Assistant AIM first run experience (FRE) notice
+// alert.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(AssistantAimFRENoticeAction)
+enum class AssistantAimFRENoticeAction {
+  kShown = 0,
+  kAccepted = 1,
+  kLearnMoreTapped = 2,
+  kMaxValue = kLearnMoreTapped,
+};
+// LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml:IOSSicBottomSheetFRENoticeAction)
 
 #endif  // IOS_CHROME_BROWSER_COBROWSE_SHARED_METRICS_ASSISTANT_AIM_METRICS_CONSTANTS_H_

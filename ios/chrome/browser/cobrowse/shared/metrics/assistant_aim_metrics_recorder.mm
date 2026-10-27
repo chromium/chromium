@@ -57,6 +57,9 @@ AssistantAimStateTransition AssistantAimStateTransitionFromDetent(
   // Total number of attachments submitted with follow-up queries during the
   // active session.
   int _attachmentsSubmittedCount;
+  // Whether the user explicitly removed an auto-added tab during the active
+  // session.
+  BOOL _autoAddedTabRemoved;
 }
 
 #pragma mark - Public
@@ -143,6 +146,20 @@ AssistantAimStateTransition AssistantAimStateTransitionFromDetent(
                             attachmentCount > 0);
 }
 
+- (void)recordAutoAddedTabRemoved {
+  if (!_sessionActive) {
+    return;
+  }
+  _autoAddedTabRemoved = YES;
+}
+
+- (void)recordFRENoticeAction:(AssistantAimFRENoticeAction)action {
+  if (!_sessionActive) {
+    return;
+  }
+  base::UmaHistogramEnumeration(kAssistantAimFRENoticeActionHistogram, action);
+}
+
 - (void)recordSessionEnded {
   if (!_sessionActive) {
     return;
@@ -168,6 +185,8 @@ AssistantAimStateTransition AssistantAimStateTransitionFromDetent(
                               _linksClickedCount);
   base::UmaHistogramBoolean(kAssistantAimSessionHadLinkClickHistogram,
                             _linksClickedCount > 0);
+  base::UmaHistogramBoolean(kAssistantAimAutoAddedTabRemovedHistogram,
+                            _autoAddedTabRemoved);
   [self recordSessionEngagementAndDurationMetrics];
 
   _sessionActive = NO;
@@ -187,6 +206,7 @@ AssistantAimStateTransition AssistantAimStateTransitionFromDetent(
   _awaitingReturnFromLinkClick = NO;
   _followupsSubmittedCount = 0;
   _attachmentsSubmittedCount = 0;
+  _autoAddedTabRemoved = NO;
 }
 
 // Logs engagement boolean, active visible time, and immediate dismissal.

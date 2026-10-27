@@ -89,6 +89,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/cobrowse/debugger:unit_tests",
     "//ios/chrome/browser/cobrowse/model",
     "//ios/chrome/browser/cobrowse/shared/metrics",
+    "//ios/chrome/browser/cobrowse/shared/metrics:metrics_constants",
     "//ios/chrome/browser/cobrowse/ui",
     "//ios/chrome/browser/cobrowse/ui:constants",
     "//ios/chrome/browser/metrics/model:activity_reporter",

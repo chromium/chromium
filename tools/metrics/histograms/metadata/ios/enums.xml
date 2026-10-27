@@ -2123,6 +2123,16 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(/ios/chrome/browser/cobrowse/shared/metrics/assistant_aim_metrics_constants.h:AssistantAimEntrypoint) -->
 
+<!-- LINT.IfChange(IOSSicBottomSheetFRENoticeAction) -->
+
+<enum name="IOSSicBottomSheetFRENoticeAction">
+  <int value="0" label="Shown"/>
+  <int value="1" label="Accepted"/>
+  <int value="2" label="Learn more tapped"/>
+</enum>
+
+<!-- LINT.ThenChange(/ios/chrome/browser/cobrowse/shared/metrics/assistant_aim_metrics_constants.h:AssistantAimFRENoticeAction) -->
+
 <!-- LINT.IfChange(IOSSicBottomSheetHeaderAction) -->
 
 <enum name="IOSSicBottomSheetHeaderAction">

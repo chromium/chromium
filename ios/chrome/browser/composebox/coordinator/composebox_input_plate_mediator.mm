@@ -776,6 +776,9 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
 - (void)removeItem:(ComposeboxInputItem*)item {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   if (item.type == ComposeboxInputItemType::kComposeboxInputItemTypeTab) {
+    if (item.isAutoAdded) {
+      [self.assistantMetricsRecorder recordAutoAddedTabRemoved];
+    }
     web::WebStateID webStateID = _latestTabSelectionMapping[item.identifier];
     if ([self isItem:item matchingCurrentURLOfWebStateID:webStateID]) {
       _removedWebStateIDs.insert(webStateID);

@@ -2693,6 +2693,59 @@ TEST_F(ComposeboxInputPlateMediatorTest,
   EXPECT_OCMOCK_VERIFY(assistant_recorder);
 }
 
+// Tests that explicitly removing an auto-added tab records
+// `recordAutoAddedTabRemoved` on the assistant metrics recorder, whereas
+// removing a manually added tab does not.
+TEST_F(ComposeboxInputPlateMediatorTest,
+       RemoveAutoAddedTabRecordsMetricOnlyForAutoAdded) {
+  SetAIMEligible(true);
+  SetDSEGoogle(true);
+  StubPageContextExtraction();
+  web::FakeWebState* active_web_state =
+      static_cast<web::FakeWebState*>(web_state_list_->GetActiveWebState());
+  ASSERT_TRUE(active_web_state);
+  PrepareForAutoAttachment(active_web_state);
+
+  id assistant_recorder = OCMClassMock([AssistantAIMMetricsRecorder class]);
+  auto mock_session =
+      std::make_unique<testing::NiceMock<TestContextualSearchSessionHandle>>();
+  TestContextualSearchSessionHandle* raw_mock_session = mock_session.get();
+  testing::NiceMock<contextual_search::MockContextualSearchContextController>
+      mock_controller;
+  ON_CALL(*raw_mock_session, GetController())
+      .WillByDefault(testing::Return(&mock_controller));
+
+  ComposeboxInputPlateMediator* mediator =
+      CreateMediator(std::move(mock_session));
+  mediator.assistantMetricsRecorder = assistant_recorder;
+
+  TestComposeboxInputPlateConsumer* consumer =
+      [[TestComposeboxInputPlateConsumer alloc] init];
+  mediator.consumer = consumer;
+
+  base::ScopedClosureRunner disconnect_runner(base::BindOnce(^{
+    [mediator disconnect];
+  }));
+
+  // 1. Focus to auto-attach the active tab, then remove it: should record.
+  [mediator setOmniboxFocused:YES];
+  ASSERT_EQ(consumer.items.count, 1U);
+  ASSERT_TRUE(consumer.items[0].isAutoAdded);
+
+  OCMExpect([assistant_recorder recordAutoAddedTabRemoved]);
+  [mediator removeItem:consumer.items[0]];
+  EXPECT_OCMOCK_VERIFY(assistant_recorder);
+
+  // 2. Manually attach the tab, then remove it: should not record.
+  OCMReject([assistant_recorder recordAutoAddedTabRemoved]);
+  [mediator attachCurrentTabContent];
+  ASSERT_EQ(consumer.items.count, 1U);
+  ASSERT_FALSE(consumer.items[0].isAutoAdded);
+
+  [mediator removeItem:consumer.items[0]];
+  EXPECT_OCMOCK_VERIFY(assistant_recorder);
+}
+
 // Tests that in Co-browse mode, after sending a follow-up query (which promotes
 // the auto-added initial page in the active tab) and navigating the same tab to
 // a new URL, focusing the omnibox auto-attaches the new page while preserving
