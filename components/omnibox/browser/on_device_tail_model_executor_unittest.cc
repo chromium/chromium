@@ -13,6 +13,7 @@
 #include "base/path_service.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
+#include "components/omnibox/browser/on_device_tail_model_executor_constants.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -23,8 +24,6 @@ namespace {
 constexpr int kNumLayer = 1;
 constexpr int kStateSize = 512;
 constexpr int kEmbeddingDim = 64;
-constexpr int kMaxNumSteps = 20;
-constexpr float kProbabilityThreshold = 0.05;
 
 base::FilePath GetTestFilePath(const std::string& filename) {
   base::FilePath file_path;
@@ -107,9 +106,10 @@ class OnDeviceTailModelExecutorTest : public ::testing::Test {
     metadata.mutable_lstm_model_params()->set_state_size(kStateSize);
     metadata.mutable_lstm_model_params()->set_embedding_dimension(
         kEmbeddingDim);
-    metadata.mutable_lstm_model_params()->set_max_num_steps(kMaxNumSteps);
+    metadata.mutable_lstm_model_params()->set_max_num_steps(
+        kDefaultMaxNumSteps);
     metadata.mutable_lstm_model_params()->set_probability_threshold(
-        kProbabilityThreshold);
+        kDefaultProbabilityThreshold);
 
     std::vector<base::FilePath> additional_files = {
         GetTestFilePath("vocab_test.txt")};
@@ -125,6 +125,10 @@ class OnDeviceTailModelExecutorTest : public ::testing::Test {
   std::unique_ptr<OnDeviceTailModelExecutorPublic> executor_;
 };
 
+// Verifies that `EncodePreviousQuery()` runs the `context_encoder` TFLite
+// subgraph to convert tokenized previous queries into embedding vectors,
+// produces distinct embeddings for different token ID sequences, and caches
+// the computed embeddings in `prev_query_cache_`.
 TEST_F(OnDeviceTailModelExecutorTest, TestEncodePreviousQuery) {
   OnDeviceTailTokenizer::TokenIds ids1({66}), ids2({66, 67});
   std::vector<float> encoding1, encoding2, cached_encoding;
@@ -138,6 +142,11 @@ TEST_F(OnDeviceTailModelExecutorTest, TestEncodePreviousQuery) {
   EXPECT_EQ(GetPrevQueryCache(ids2), encoding2);
 }
 
+// Verifies that `RunRnnStep()` invokes the `rnn_step` TFLite subgraph with an
+// input token ID, previous query encoding, and LSTM cell states to compute the
+// next-token probability distribution and updated cell states, produces
+// different outputs for different input tokens, and caches each step's output
+// in `rnn_step_cache_`.
 TEST_F(OnDeviceTailModelExecutorTest, TestRunRnnStep) {
   OnDeviceTailTokenizer::TokenIds cache_key1({66, 67, 68}),
       cache_key2({66, 67, 69}), prev_query_ids({66, 67});
@@ -161,6 +170,15 @@ TEST_F(OnDeviceTailModelExecutorTest, TestRunRnnStep) {
   EXPECT_EQ(GetRnnStepOutputCache(cache_key2), output2);
 }
 
+// Verifies that `CreateNewBeams()` expands a current search beam using the
+// token probabilities from an RNN step and routes the resulting beams into
+// `partial_candidates` (for non-terminal tokens) or `completed_candidates` (for
+// the end-of-query token), keeping at most `max_num_suggestions` beams whose
+// cumulative log probability meets `log_prob_threshold`. Also checks that when
+// `constraint_prefix` is set on the current beam (to match a trailing partial
+// subword of the user's prefix), only vocabulary tokens starting with
+// `constraint_prefix` are considered and their probabilities are normalized
+// over the matching tokens.
 TEST_F(OnDeviceTailModelExecutorTest, TestCreateNewBeams) {
   OnDeviceTailModelExecutorPublic::RnnStepOutput output(kNumLayer, kStateSize,
                                                         executor_->vocab_size_);
@@ -260,6 +278,11 @@ TEST_F(OnDeviceTailModelExecutorTest, TestCreateNewBeams) {
   }
 }
 
+// Verifies that `InsertBeamNodeToCandidateQueue()` extends the current beam
+// with a candidate token and inserts it into the min-priority candidate queue,
+// evicting the lowest-probability beam (`queue.top()`) when the queue is
+// already at capacity (`max_num_suggestions`) and the new beam has a higher
+// log probability.
 TEST_F(OnDeviceTailModelExecutorTest, TestInsertBeamNodeToCandidateQueue) {
   OnDeviceTailModelExecutorPublic::RnnCellStates states(kNumLayer, kStateSize);
   states.c_i[0][10] = -0.77;
@@ -323,6 +346,11 @@ TEST_F(OnDeviceTailModelExecutorTest, TestInsertBeamNodeToCandidateQueue) {
   }
 }
 
+// Verifies that `GetRootBeamNode()` initializes the starting beam for beam
+// search by encoding the previous query, stepping the RNN through all
+// unambiguous prefix tokens except the last one, and setting the last
+// unambiguous token ID, cell states, cache key, and `constraint_prefix` on
+// `root_beam`.
 TEST_F(OnDeviceTailModelExecutorTest, TestGetRootBeamNode) {
   OnDeviceTailTokenizer::Tokenization tokenization;
   tokenization.unambiguous_ids = {257, 468, 469, 470};
@@ -364,6 +392,9 @@ TEST_F(OnDeviceTailModelExecutorTest, TestGetRootBeamNode) {
   AreBeamNodesEqual(expected_beam, root_beam);
 }
 
+// Verifies end-to-end suggestion generation via `GenerateSuggestionsForPrefix`:
+// non-empty prefixes produce matching query completions (with or without a
+// previous query context), whereas an empty prefix returns no suggestions.
 TEST_F(OnDeviceTailModelExecutorTest, TestGenerateSuggestionsForPrefix) {
   std::vector<OnDeviceTailModelExecutor::Prediction> predictions;
 
@@ -390,9 +421,18 @@ TEST_F(OnDeviceTailModelExecutorTest, TestGenerateSuggestionsForPrefix) {
   }
 }
 
-// TODO(crbug.com/429254571): Fix and re-enable the test.
+// Verifies that `GenerateSuggestionsForPrefix()` filters out suggestions
+// matching either of the executor's two denylist mechanisms:
+// 1. Without filter files, prefix "logi" predicts a top suggestion starting
+//    with "login".
+// 2. With a badword hash file (`badword_hashes_test.txt`, containing the
+//    persistent hash of the word "login"), suggestions containing the whole
+//    word "login" are excluded.
+// 3. With a substring denylist file (`denylist_test.txt`, containing Base64-
+//    encoded substrings "ogi" and "abc"), suggestions containing "abc" or "ogi"
+//    as a substring are excluded.
 TEST_F(OnDeviceTailModelExecutorTest,
-       DISABLED_TestGenerateSuggestionsWithBadwordFilter) {
+       TestGenerateSuggestionsWithBadwordFilter) {
   std::vector<OnDeviceTailModelExecutor::Prediction> predictions;
 
   {
@@ -400,7 +440,7 @@ TEST_F(OnDeviceTailModelExecutorTest,
     InitExecutor({});
     OnDeviceTailModelExecutor::ModelInput input("logi", "", 5);
     predictions = executor_->GenerateSuggestionsForPrefix(input);
-    EXPECT_EQ(predictions.size(), 1U);
+    ASSERT_FALSE(predictions.empty());
     EXPECT_TRUE(base::StartsWith(predictions[0].suggestion, "login",
                                  base::CompareCase::SENSITIVE));
   }

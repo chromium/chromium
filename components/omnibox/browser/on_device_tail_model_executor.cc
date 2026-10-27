@@ -20,6 +20,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
+#include "components/omnibox/browser/on_device_tail_model_executor_constants.h"
 #include "components/optimization_guide/core/delivery/model_util.h"
 #include "components/optimization_guide/core/tflite_op_resolver.h"
 #include "third_party/tflite/src/tensorflow/lite/c/c_api_types.h"
@@ -47,10 +48,6 @@ static constexpr std::string_view kRnnStepCStateOutputNamePrefix = "c_out_";
 static constexpr std::string_view kRnnStepMStateOutputNamePrefix = "m_out_";
 
 static constexpr char kRnnStepOutputProbsNodeName[] = "probs";
-
-// Some default values of params needed to run the model.
-static constexpr size_t kDefaultMaxNumSteps = 20;
-static constexpr float kDefaultProbabilityThreshold = 0.01;
 
 // The sizes of the caches.
 static constexpr size_t kPreQueryEncodingCacheSize = 10;

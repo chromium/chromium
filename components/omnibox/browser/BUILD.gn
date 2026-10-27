@@ -310,6 +310,7 @@ static_library("browser") {
     "on_device_model_update_listener.h",
     "on_device_tail_model_executor.cc",
     "on_device_tail_model_executor.h",
+    "on_device_tail_model_executor_constants.h",
     "on_device_tail_model_service.cc",
     "on_device_tail_model_service.h",
     "on_device_tail_tokenizer.cc",
