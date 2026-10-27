@@ -331,9 +331,9 @@ class JavaType:
     return self.to_cpp()
 
   def to_backend_cpp_type(self):
+    if self.converted_type:
+      return self.converted_type
     if not self.is_safe_pointer():
-      if self.converted_type:
-        return self.converted_type
       return self.to_cpp()
 
     assert self.generics and len(self.generics) == 1
@@ -431,7 +431,7 @@ class JavaType:
         num_generics = 1  # Parser drops Class<T> generics.
       if num_generics and (
           self.java_class.full_name_with_slashes.startswith('java/')
-          or self.java_class == JNI_PTR_CLASS):
+          or self.is_safe_pointer()):
         ret += '<' + ', '.join(['*'] * num_generics) + '>'
     if self.nullable:
       ret += '?'
@@ -760,7 +760,7 @@ COLLECTION_CLASS = JavaClass('java/util/Collection')
 SET_CLASS = JavaClass('java/util/Set')
 
 JNI_PTR_CLASS = JavaClass('org/jni_zero/JniPtr')
-JNI_PTR_INNER_CLASS = JavaClass('org/jni_zero/JniPtrInner')
+JNI_PTR_IMPL_BASE_CLASS = JavaClass('org/jni_zero/JniPtrImplBase')
 JNI_ZERO_INTERNAL_CLASS = JavaClass('org/jni_zero/JniZeroInternal')
 JNI_UNIQUE_PTR_CLASS = JavaClass('org/jni_zero/JniUniquePtr')
 JNI_RAW_PTR_CLASS = JavaClass('org/jni_zero/JniRawPtr')

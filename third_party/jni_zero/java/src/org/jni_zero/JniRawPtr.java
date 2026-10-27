@@ -36,11 +36,11 @@ public interface JniRawPtr<T extends JniTypeToken> extends JniPtr<T> {
         return new JniRawPtrImpl<>(fakePtr) {
             @Override
             public void release() {
-                if (mNativePointer != 0) {
+                if (mNativePtr != 0) {
                     if (mTracker != null) {
                         mTracker.destroy();
                     }
-                    mNativePointer = 0;
+                    mNativePtr = 0;
                 }
             }
         };

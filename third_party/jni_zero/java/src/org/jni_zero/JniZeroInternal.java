@@ -17,6 +17,6 @@ public final class JniZeroInternal {
      * and C++ entrypoints.
      */
     public static long getNativePtr(JniPtr<?> ptr) {
-        return ptr == null ? 0 : ((JniPtrInner<?>) ptr).getNativePtr();
+        return ptr == null ? 0 : ((JniPtrImplBase<?>) ptr).getNativePtr();
     }
 }

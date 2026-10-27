@@ -10,13 +10,13 @@ import org.jni_zero.internal.Nullable;
 /**
  * Implementation of {@link JniUniquePtr} representing an owned C++ object.
  *
- * <p>Access to {@link #getNativePtr()} is provided via {@link JniPtrInner} for JNI Zero generated
- * glue code.
+ * <p>Access to {@link #getNativePtr()} is provided via {@link JniPtrImplBase} for JNI Zero
+ * generated glue code.
  */
-class JniUniquePtrImpl<T extends JniTypeToken> implements JniUniquePtr<T>, JniPtrInner<T> {
+class JniUniquePtrImpl<T extends JniTypeToken> extends JniPtrImplBase<T>
+        implements JniUniquePtr<T> {
     private final long mDeleter;
     private final @Nullable SafePointersTracker mTracker;
-    private long mNativePointer;
 
     JniUniquePtrImpl(long nativePointer, long deleter) {
         this(nativePointer, deleter, null);
@@ -24,30 +24,30 @@ class JniUniquePtrImpl<T extends JniTypeToken> implements JniUniquePtr<T>, JniPt
 
     @CalledByNative
     JniUniquePtrImpl(long nativePointer, long deleter, @Nullable String creationContext) {
+        super(nativePointer);
         assert nativePointer != 0;
-        mNativePointer = nativePointer;
         mDeleter = deleter;
         mTracker = JniZero.createSafePointersTracker(this, creationContext);
     }
 
     @Override
     public long getNativePtr() {
-        if (mNativePointer == 0) {
+        if (mNativePtr == 0) {
             throw new IllegalStateException(
                     "Safe JNI Pointer violation: Attempted to access a JniUniquePtr after it was"
                             + " destroyed.");
         }
-        return mNativePointer;
+        return mNativePtr;
     }
 
     @Override
     public void destroy() {
-        if (mNativePointer != 0) {
+        if (mNativePtr != 0) {
             if (mTracker != null) {
                 mTracker.destroy();
             }
-            long ptr = mNativePointer;
-            mNativePointer = 0;
+            long ptr = mNativePtr;
+            mNativePtr = 0;
             if (mDeleter != 0) {
                 CommonApisJni.get().deleteDeleterBasePtr(ptr, mDeleter);
             }

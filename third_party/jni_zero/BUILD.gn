@@ -160,7 +160,7 @@ if (enable_java_templates && is_android) {
     sources = [
       "java/src/org/jni_zero/CheckDiscard.java",
       "java/src/org/jni_zero/JniPtr.java",
-      "java/src/org/jni_zero/JniPtrInner.java",
+      "java/src/org/jni_zero/JniPtrImplBase.java",
       "java/src/org/jni_zero/JniStaticTestMocker.java",
       "java/src/org/jni_zero/JniTestInstanceHolder.java",
       "java/src/org/jni_zero/JniTypeToken.java",

@@ -51,7 +51,7 @@ public class JniZero {
     }
 
     @CalledByNative
-    private static long getNativePtr(JniPtrInner<?> ptr) {
+    private static long getNativePtr(JniPtrImplBase<?> ptr) {
         return JniZeroInternal.getNativePtr(ptr);
     }
 
