@@ -903,6 +903,31 @@ TEST_F(FormAutofillUtilsTest, GetButtonTitles_NoForm) {
   EXPECT_EQ(GetButtonTitles(form, /*button_titles_cache=*/nullptr).size(), 0u);
 }
 
+TEST_F(FormAutofillUtilsTest,
+       GetButtonTitles_ButtonFeaturesWithNonAsciiAttributes) {
+  constexpr char kHtml[] =
+      "<form id='target'>"
+      "  <a id='é-Submit-按钮' value='Create account'>Ignored text</a>"
+      "  <div name='Ñoño_BTN'> Join </div>"
+      "  <span class='icono 🚀 Boton'> Start </span>"
+      "  <div class='button_🔥'> Continue </div>"
+      "  <span class='botón'> Ignored accented o </span>"
+      "  <div id='unrelated-ñ'> Ignored </div>"
+      "</form>";
+
+  LoadHTML(kHtml);
+  const WebFormElement form_target =
+      GetFormElementById(GetDocument(), "target");
+  const ButtonTitleList actual =
+      GetButtonTitles(form_target, /*button_titles_cache=*/nullptr);
+
+  EXPECT_THAT(actual,
+              ElementsAre(Pair(u"Create account", ButtonTitleType::HYPERLINK),
+                          Pair(u"Join", ButtonTitleType::DIV),
+                          Pair(u"Continue", ButtonTitleType::DIV),
+                          Pair(u"Start", ButtonTitleType::SPAN)));
+}
+
 TEST_F(FormAutofillUtilsTest, IsEnabled) {
   LoadHTML(
       "<input type='text' id='name1'>"

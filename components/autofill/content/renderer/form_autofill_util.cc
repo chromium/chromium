@@ -5,6 +5,7 @@
 #include "components/autofill/content/renderer/form_autofill_util.h"
 
 #include <algorithm>
+#include <array>
 #include <limits>
 #include <map>
 #include <memory>
@@ -109,8 +110,8 @@ constexpr size_t kMaxShadowLevelsUp = 2;
 // on analysis of real forms and their buttons.
 // TODO(crbug.com/41429204): Consider to add more features (e.g. non-English
 // features).
-const char* const kButtonFeatures[] = {"button", "btn", "submit",
-                                       "boton" /* "button" in Spanish */};
+constexpr auto kButtonFeatures = std::to_array<std::string_view>(
+    {"button", "btn", "submit", "boton" /* "button" in Spanish */});
 
 // Number of form neighbor nodes to traverse in search of four digit
 // combinations on the webpage.
@@ -537,15 +538,17 @@ void AddButtonTitleToList(std::u16string title,
 
 // Returns true iff |attribute| contains one of |kButtonFeatures|.
 bool AttributeHasButtonFeature(const WebString& attribute) {
-  if (attribute.IsNull())
+  if (attribute.IsNull()) {
     return false;
+  }
   std::string value = attribute.Utf8();
   for (char& c : value) {
-    c = ::tolower(c);
+    c = base::ToLowerASCII(c);
   }
-  for (const char* const button_feature : kButtonFeatures) {
-    if (value.find(button_feature, 0) != std::string::npos)
+  for (const std::string_view button_feature : kButtonFeatures) {
+    if (value.contains(button_feature)) {
       return true;
+    }
   }
   return false;
 }
