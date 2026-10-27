@@ -59,12 +59,14 @@
 #include "third_party/blink/renderer/core/frame/find_in_page.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
+#include "third_party/blink/renderer/core/frame/visual_viewport.h"
 #include "third_party/blink/renderer/core/frame/web_frame_widget_impl.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_text_area_element.h"
 #include "third_party/blink/renderer/core/html/html_details_element.h"
 #include "third_party/blink/renderer/core/html/html_frame_owner_element.h"
+#include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/layout_shift_tracker.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
@@ -154,8 +156,9 @@ static void ScrollToVisible(Range* match) {
 
   // We don't always have a LayoutObject for the node we're trying to scroll to
   // after the async step: crbug.com/1129341
-  if (!first_node.GetLayoutObject())
+  if (!first_node.GetLayoutObject()) {
     return;
+  }
 
   Settings* settings = first_node.GetDocument().GetSettings();
   bool smooth_find_enabled =
@@ -172,6 +175,49 @@ static void ScrollToVisible(Range* match) {
           true /* is_for_scroll_sequence */));
   first_node.GetDocument().SetSequentialFocusNavigationStartingPoint(
       const_cast<Node*>(&first_node));
+}
+
+// Returns whether `match` is at least partially visible in the viewport after
+// clipping against inner scrollers, ancestor clips, intermediate frames, and
+// the root viewport.
+// Note: Visibility is evaluated against the current synchronous layout and
+// visual viewport state; if an asynchronous smooth scroll or cross-process
+// OOPIF scroll is still in flight, the target scroll offset is not predicted.
+static bool IsMatchInViewport(const Range& match,
+                              const LocalFrameView& frame_view) {
+  const Node* common_ancestor = match.commonAncestorContainer();
+  const LayoutObject* layout_object =
+      common_ancestor ? common_ancestor->GetLayoutObject() : nullptr;
+  const LocalFrameView* root_view =
+      frame_view.GetFrame().LocalFrameRoot().View();
+  if (!layout_object || !root_view || !root_view->GetLayoutView()) {
+    return false;
+  }
+  PhysicalRect rect =
+      layout_object->AbsoluteToLocalRect(PhysicalRect(match.BoundingBox()));
+  if (!layout_object->MapToVisualRectInAncestorSpace(/*ancestor=*/nullptr,
+                                                     rect) ||
+      rect.IsEmpty()) {
+    return false;
+  }
+  // For a cross-origin remote iframe (OOPIF), `MapToVisualRectInAncestorSpace`
+  // with a null ancestor calls
+  // `LocalFrameView::MapToVisualRectInRemoteRootFrame`, which already clips
+  // `rect` against `LocalFrame::RemoteViewportIntersection` (the visible
+  // viewport intersection propagated from the embedder). For the outermost main
+  // frame, also intersect with `VisualViewport` to account for pinch-zoom.
+  const LocalFrame& root_frame = root_view->GetFrame();
+  if (root_frame.IsOutermostMainFrame()) {
+    if (const Page* page = root_frame.GetPage()) {
+      const VisualViewport& visual_viewport = page->GetVisualViewport();
+      if (visual_viewport.IsActiveViewport() &&
+          !visual_viewport.Size().IsEmpty()) {
+        return visual_viewport.VisibleContentRect(kExcludeScrollbars)
+            .Intersects(ToEnclosingRect(rect));
+      }
+    }
+  }
+  return true;
 }
 
 void TextFinder::InitNewSession(const mojom::blink::FindOptions& options) {
@@ -223,9 +269,10 @@ bool TextFinder::FindInternal(int identifier,
   } else {
     SetMarkerActive(active_match_.Get(), false);
   }
-  if (active_match_ &&
-      &active_match_->OwnerDocument() != OwnerFrame().GetFrame()->GetDocument())
+  if (active_match_ && &active_match_->OwnerDocument() !=
+                           OwnerFrame().GetFrame()->GetDocument()) {
     active_match_ = nullptr;
+  }
 
   // If the user has selected something since the last Find operation we want
   // to start from there. Otherwise, we start searching from where the last Find
@@ -248,6 +295,21 @@ bool TextFinder::FindInternal(int identifier,
     }
   }
 
+  Range* const previous_active_match =
+      active_selection ? nullptr : active_match_.Get();
+  if (options.skip_viewport && !options.new_session && previous_active_match &&
+      !scroll_task_.IsCancelled()) {
+    // At the end of the previous `FindInternal` call, scrolling to
+    // `previous_active_match` was queued on the next animation frame
+    // (`scroll_task_`) rather than executed synchronously. If a `skip_viewport`
+    // request arrives before that animation frame runs, the viewport is still
+    // at its old scroll offset from before `previous_active_match` was found;
+    // run that pending scroll now so `IsMatchInViewport` checks against the
+    // viewport scrolled to `previous_active_match`.
+    scroll_task_.Cancel();
+    ScrollToVisible(previous_active_match);
+  }
+
   DCHECK(OwnerFrame().GetFrame());
   DCHECK(OwnerFrame().GetFrame()->View());
   const auto find_options = FindOptions()
@@ -262,14 +324,25 @@ bool TextFinder::FindInternal(int identifier,
       &wrapped_around);
 
   if (!active_match_) {
-    if (current_active_match_frame_ && options.new_session)
+    if (current_active_match_frame_ && options.new_session) {
       should_locate_active_rect_ = true;
+    }
     // In an existing session the next active match might not be in
     // frame.  In this case we don't want to clear the matches cache.
-    if (options.new_session)
+    if (options.new_session) {
       ClearFindMatchesCache();
+    }
 
     InvalidatePaintForTickmarks();
+    return false;
+  }
+
+  // The number of matches the active match moved by, which is greater than one
+  // when matches inside the viewport are skipped.
+  int matches_advanced = 1;
+  if (!SkipMatchesInViewport(search_text, options, find_options,
+                             previous_active_match, wrap_within_frame,
+                             wrapped_around, matches_advanced)) {
     return false;
   }
 
@@ -317,12 +390,12 @@ bool TextFinder::FindInternal(int identifier,
     }
   }
 
-  bool was_active_frame = current_active_match_frame_;
   current_active_match_frame_ = true;
 
   bool is_active = SetMarkerActive(active_match_.Get(), true);
-  if (active_now)
+  if (active_now) {
     *active_now = is_active;
+  }
 
   // Make sure no node is focused. See http://crbug.com/38700.
   OwnerFrame().GetFrame()->GetDocument()->ClearFocusedElement();
@@ -338,21 +411,16 @@ bool TextFinder::FindInternal(int identifier,
     // us and report it back to the UI.
     should_locate_active_rect_ = true;
   } else {
-    if (!was_active_frame) {
-      if (options.forward)
-        active_match_index_ = 0;
-      else
-        active_match_index_ = find_task_controller_->CurrentMatchCount() - 1;
-    } else {
-      if (options.forward)
-        ++active_match_index_;
-      else
-        --active_match_index_;
-
-      if (active_match_index_ + 1 > find_task_controller_->CurrentMatchCount())
-        active_match_index_ = 0;
-      else if (active_match_index_ < 0)
-        active_match_index_ = find_task_controller_->CurrentMatchCount() - 1;
+    // Move the active match index to the next match, wrapping around to
+    // the beginning of the document if necessary.
+    const int match_count = find_task_controller_->CurrentMatchCount();
+    active_match_index_ +=
+        options.forward ? matches_advanced : -matches_advanced;
+    if (active_match_index_ >= match_count) {
+      active_match_index_ -= match_count;
+    }
+    if (active_match_index_ < 0) {
+      active_match_index_ += match_count;
     }
     gfx::Rect selection_rect = OwnerFrame().GetFrameView()->ConvertToRootFrame(
         active_match_->BoundingBox());
@@ -366,10 +434,100 @@ bool TextFinder::FindInternal(int identifier,
   return true;
 }
 
+bool TextFinder::SkipMatchesInViewport(const String& search_text,
+                                       const mojom::blink::FindOptions& options,
+                                       const FindOptions& find_options,
+                                       Range* previous_active_match,
+                                       bool wrap_within_frame,
+                                       bool& wrapped_around,
+                                       int& matches_advanced) {
+  Range* fallback_match = skip_viewport_fallback_match_.Release();
+  const int fallback_base_index = active_match_index_;
+  if (!previous_active_match) {
+    // Set to the value that, if incremented / decremented by 1, will result in
+    // 0 (in forward mode) or CurrentMatchCount()-1 (in non-forward mode).
+    active_match_index_ = options.forward ? -1 : 0;
+  }
+  if (!options.skip_viewport || options.new_session) {
+    return true;
+  }
+
+  // `active_match_` has already advanced by 1 match (to `first_candidate`)
+  // before `SkipMatchesInViewport` was called. Step over additional matches
+  // while they remain in the viewport; if every match is visible in the
+  // viewport, fall back to `first_candidate` (or `fallback_match` from the
+  // first pass), keeping `matches_advanced` at 1.
+  Range* const first_candidate = active_match_.Get();
+  const bool first_candidate_wrapped = wrapped_around;
+  // Tracks whether the loop itself has wrapped around the document after
+  // `first_candidate` (`wrapped_around` may already be true if finding
+  // `first_candidate` wrapped from `previous_active_match`).
+  bool wrapped_since_first_candidate = false;
+  int skipped_matches = 0;
+  while (IsMatchInViewport(*active_match_, *OwnerFrame().GetFrameView())) {
+    bool step_wrapped = false;
+    Range* next_candidate = Editor::FindRangeOfString(
+        *OwnerFrame().GetFrame()->GetDocument(), search_text,
+        EphemeralRangeInFlatTree(active_match_.Get()), find_options,
+        &step_wrapped);
+    if (!next_candidate) {
+      // Production `FindInPage::Find` passes `wrap_within_frame = false` so
+      // `FindRequestManager` in the browser process can advance across frames.
+      // When all remaining matches in this frame are visible in the viewport,
+      // save `first_candidate` and return false so `FindRequestManager` can
+      // search other frames first. If no other frame has an off-screen match,
+      // `FindRequestManager` wraps around and calls `Find` on this frame a
+      // second time (with `previous_active_match == nullptr`), which will then
+      // scan from the start of the frame and fall back to `fallback_match`
+      // below if every match in the frame is visible.
+      if (!wrap_within_frame) {
+        if (previous_active_match) {
+          skip_viewport_fallback_match_ = first_candidate;
+          active_match_ = nullptr;
+          return false;
+        }
+        if (!current_active_match_frame_) {
+          active_match_ = nullptr;
+          return false;
+        }
+      }
+      if (fallback_match && !fallback_match->collapsed() &&
+          fallback_match->IsConnected()) {
+        active_match_ = fallback_match;
+        active_match_index_ = fallback_base_index;
+        return true;
+      }
+      active_match_ = first_candidate;
+      wrapped_around = first_candidate_wrapped;
+      return true;
+    }
+    wrapped_since_first_candidate |= step_wrapped;
+    const bool passed_first_candidate =
+        wrapped_since_first_candidate &&
+        (options.forward
+             ? ComparePositions(first_candidate->StartPosition(),
+                                next_candidate->StartPosition()) <= 0
+             : ComparePositions(next_candidate->EndPosition(),
+                                first_candidate->EndPosition()) <= 0);
+    if (passed_first_candidate) {
+      active_match_ = first_candidate;
+      wrapped_around = first_candidate_wrapped;
+      return true;
+    }
+    wrapped_around |= step_wrapped;
+    active_match_ = next_candidate;
+    ++skipped_matches;
+  }
+
+  matches_advanced += skipped_matches;
+  return true;
+}
+
 void TextFinder::ClearActiveFindMatch() {
   current_active_match_frame_ = false;
   SetMarkerActive(active_match_.Get(), false);
   ResetActiveMatch();
+  scroll_task_.Cancel();
 }
 
 LocalFrame* TextFinder::GetFrame() const {
@@ -377,12 +535,14 @@ LocalFrame* TextFinder::GetFrame() const {
 }
 
 void TextFinder::SetFindEndstateFocusAndSelection() {
-  if (!ActiveMatchFrame())
+  if (!ActiveMatchFrame()) {
     return;
+  }
 
   Range* active_match = ActiveMatch();
-  if (!active_match)
+  if (!active_match) {
     return;
+  }
 
   // If the user has set the selection since the match was found, we
   // don't focus anything.
@@ -400,16 +560,18 @@ void TextFinder::SetFindEndstateFocusAndSelection() {
   Node* node = active_match->FirstNode();
   if (node && node->IsInShadowTree()) {
     if (Node* host = node->OwnerShadowHost()) {
-      if (IsA<HTMLInputElement>(*host) || IsA<HTMLTextAreaElement>(*host))
+      if (IsA<HTMLInputElement>(*host) || IsA<HTMLTextAreaElement>(*host)) {
         node = host;
+      }
     }
   }
   const EphemeralRange active_match_range(active_match);
   if (node) {
     for (Node& runner : NodeTraversal::InclusiveAncestorsOf(*node)) {
       auto* element = DynamicTo<Element>(runner);
-      if (!element)
+      if (!element) {
         continue;
+      }
       bool focusable = element->IsKeyboardFocusableSlow();
       if (focusable) {
         // Found a focusable parent node. Set the active match as the
@@ -431,8 +593,9 @@ void TextFinder::SetFindEndstateFocusAndSelection() {
   // text and text that is within one or more links.
   for (Node& runner : active_match_range.Nodes()) {
     auto* element = DynamicTo<Element>(runner);
-    if (!element)
+    if (!element) {
       continue;
+    }
     if (element->IsFocusable()) {
       GetFrame()->GetDocument()->SetFocusedElement(
           element, FocusParams(SelectionBehaviorOnFocus::kNone,
@@ -483,13 +646,15 @@ void TextFinder::ReportFindInPageTerminationToAccessibility() {
 }
 
 void TextFinder::ReportFindInPageResultToAccessibility(int identifier) {
-  if (!active_match_)
+  if (!active_match_) {
     return;
+  }
 
   auto* ax_object_cache =
       OwnerFrame().GetFrame()->GetDocument()->ExistingAXObjectCache();
-  if (!ax_object_cache)
+  if (!ax_object_cache) {
     return;
+  }
 
   Node* start_node = active_match_->startContainer();
   Node* end_node = active_match_->endContainer();
@@ -533,15 +698,17 @@ void TextFinder::StartScopingStringMatches(
 
   // The view might be null on detached frames.
   LocalFrame* frame = OwnerFrame().GetFrame();
-  if (frame && frame->GetPage())
+  if (frame && frame->GetPage()) {
     frame_scoping_ = true;
+  }
 
   find_task_controller_->StartRequest(identifier, search_text, options);
 }
 
 void TextFinder::FlushCurrentScopingEffort(int identifier) {
-  if (!OwnerFrame().GetFrame() || !OwnerFrame().GetFrame()->GetPage())
+  if (!OwnerFrame().GetFrame() || !OwnerFrame().GetFrame()->GetPage()) {
     return;
+  }
 
   frame_scoping_ = false;
   IncreaseMatchCount(identifier, 0);
@@ -602,17 +769,20 @@ void TextFinder::UpdateMatches(int identifier,
   // If we found anything during this pass, we should redraw. However, we
   // don't want to spam too much if the page is extremely long, so if we
   // reach a certain point we start throttling the redraw requests.
-  if (!finished_whole_request)
+  if (!finished_whole_request) {
     InvalidateIfNecessary();
+  }
 }
 
 void TextFinder::FinishCurrentScopingEffort(int identifier) {
   scoping_in_progress_ = false;
-  if (!OwnerFrame().GetFrame())
+  if (!OwnerFrame().GetFrame()) {
     return;
+  }
 
-  if (!total_match_count_)
+  if (!total_match_count_) {
     OwnerFrame().GetFrame()->Selection().Clear();
+  }
 
   FlushCurrentScopingEffort(identifier);
   // This frame is done, so show any scrollbar tickmarks we haven't drawn yet.
@@ -626,8 +796,9 @@ void TextFinder::CancelPendingScopingEffort() {
 }
 
 void TextFinder::IncreaseMatchCount(int identifier, int count) {
-  if (count)
+  if (count) {
     ++find_match_markers_version_;
+  }
 
   total_match_count_ += count;
 
@@ -649,16 +820,18 @@ void TextFinder::ReportFindInPageSelection(const gfx::Rect& selection_rect,
 }
 
 void TextFinder::ResetMatchCount() {
-  if (total_match_count_ > 0)
+  if (total_match_count_ > 0) {
     ++find_match_markers_version_;
+  }
 
   total_match_count_ = 0;
   frame_scoping_ = false;
 }
 
 void TextFinder::ClearFindMatchesCache() {
-  if (!find_matches_cache_.empty())
+  if (!find_matches_cache_.empty()) {
     ++find_match_markers_version_;
+  }
 
   find_matches_cache_.clear();
   find_match_rects_are_valid_ = false;
@@ -667,8 +840,9 @@ void TextFinder::ClearFindMatchesCache() {
 void TextFinder::InvalidateFindMatchRects() {
   // Increase version number is required to trigger FindMatchRects update when
   // next find.
-  if (!find_matches_cache_.empty())
+  if (!find_matches_cache_.empty()) {
     ++find_match_markers_version_;
+  }
 
   // For subframes, we need to recalculate the FindMatchRects when the
   // document size of mainframe changed even if the document size of current
@@ -689,13 +863,15 @@ void TextFinder::UpdateFindMatchRects() {
   wtf_size_t dead_matches = 0;
   for (FindMatch& match : find_matches_cache_) {
     if (!match.range_->BoundaryPointsValid() ||
-        !match.range_->startContainer()->isConnected())
+        !match.range_->startContainer()->isConnected()) {
       match.rect_ = gfx::RectF();
-    else if (!find_match_rects_are_valid_)
+    } else if (!find_match_rects_are_valid_) {
       match.rect_ = FindInPageRectFromRange(EphemeralRange(match.range_.Get()));
+    }
 
-    if (match.rect_.IsEmpty())
+    if (match.rect_.IsEmpty()) {
       ++dead_matches;
+    }
   }
 
   // Remove any invalid matches from the cache.
@@ -704,8 +880,9 @@ void TextFinder::UpdateFindMatchRects() {
     filtered_matches.reserve(find_matches_cache_.size() - dead_matches);
 
     for (const FindMatch& match : find_matches_cache_) {
-      if (!match.rect_.IsEmpty())
+      if (!match.rect_.IsEmpty()) {
         filtered_matches.push_back(match);
+      }
     }
 
     find_matches_cache_.swap(filtered_matches);
@@ -716,8 +893,9 @@ void TextFinder::UpdateFindMatchRects() {
 
 #if BUILDFLAG(IS_ANDROID)
 gfx::RectF TextFinder::ActiveFindMatchRect() {
-  if (!current_active_match_frame_ || !active_match_)
+  if (!current_active_match_frame_ || !active_match_) {
     return gfx::RectF();
+  }
 
   return FindInPageRectFromRange(EphemeralRange(ActiveMatch()));
 }
@@ -761,8 +939,9 @@ std::optional<wtf_size_t> TextFinder::NearestFindMatch(
     }
   }
 
-  if (distance_squared)
+  if (distance_squared) {
     *distance_squared = nearest_distance_squared;
+  }
 
   return nearest;
 }
@@ -773,8 +952,10 @@ std::optional<wtf_size_t> TextFinder::SelectFindMatch(
   SECURITY_DCHECK(index < find_matches_cache_.size());
 
   Range* range = find_matches_cache_[index].range_;
-  if (!range->BoundaryPointsValid() || !range->startContainer()->isConnected())
+  if (!range->BoundaryPointsValid() ||
+      !range->startContainer()->isConnected()) {
     return std::nullopt;
+  }
 
   // Check if the match is already selected.
   if (!current_active_match_frame_ || !active_match_ ||
@@ -785,8 +966,9 @@ std::optional<wtf_size_t> TextFinder::SelectFindMatch(
     current_active_match_frame_ = true;
     OwnerFrame().ViewImpl()->SetFocusedFrame(&OwnerFrame());
 
-    if (active_match_)
+    if (active_match_) {
       SetMarkerActive(active_match_.Get(), false);
+    }
     active_match_ = range;
     SetMarkerActive(active_match_.Get(), true);
 
@@ -832,8 +1014,9 @@ std::optional<wtf_size_t> TextFinder::SelectFindMatch(
         active_match_rect);
   }
 
-  if (selection_rect)
+  if (selection_rect) {
     *selection_rect = active_match_rect;
+  }
 
   return active_match_index_ + 1;
 }
@@ -845,8 +1028,9 @@ TextFinder::TextFinder(WebLocalFrameImpl& owner_frame)
           MakeGarbageCollected<FindTaskController>(owner_frame, *this)) {}
 
 bool TextFinder::SetMarkerActive(Range* range, bool active) {
-  if (!range || range->collapsed())
+  if (!range || range->collapsed()) {
     return false;
+  }
   Document* document = OwnerFrame().GetFrame()->GetDocument();
   document->SetFindInPageActiveMatchNode(active ? range->startContainer()
                                                 : nullptr);
@@ -863,8 +1047,9 @@ void TextFinder::UnmarkAllTextMatches() {
 }
 
 void TextFinder::InvalidateIfNecessary() {
-  if (find_task_controller_->CurrentMatchCount() <= next_invalidate_after_)
+  if (find_task_controller_->CurrentMatchCount() <= next_invalidate_after_) {
     return;
+  }
 
   // FIXME: (http://crbug.com/6819) Optimize the drawing of the tickmarks and
   // remove this. This calculation sets a milestone for when next to
@@ -893,6 +1078,7 @@ void TextFinder::Trace(Visitor* visitor) const {
   visitor->Trace(owner_frame_);
   visitor->Trace(find_task_controller_);
   visitor->Trace(active_match_);
+  visitor->Trace(skip_viewport_fallback_match_);
   visitor->Trace(find_matches_cache_);
 }
 

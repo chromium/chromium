@@ -125,4 +125,11 @@ struct FindOptions {
 
   // Controls whether the viewport should scroll to the active match.
   bool scroll_to_match = true;
+
+  // Controls whether find-next/previous (`new_session` == false) should skip
+  // matches that are currently visible within the viewport and jump to the
+  // first match outside the viewport. If no match exists outside the viewport,
+  // falls back to the normal next/previous match. Ignored when `new_session`
+  // is true.
+  bool skip_viewport = false;
 };

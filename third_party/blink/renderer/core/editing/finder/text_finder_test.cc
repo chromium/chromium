@@ -30,6 +30,7 @@
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
+#include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/page/focus_controller.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
@@ -1112,6 +1113,415 @@ TEST_F(TextFinderTest, FindWithScrollToMatchFalse_BackwardSearch) {
 
   // Verify that NO scrolling happened.
   EXPECT_EQ(ScrollOffset(0, 0), viewport->GetScrollOffset());
+}
+
+TEST_F(TextFinderTest, FindSkipViewportForwardAndBackward) {
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(
+      "<span id='m1'>abc</span> "
+      "<span id='m2'>abc</span> "
+      "<span id='m3'>abc</span>"
+      "<div style='height: 2000px;'>Spacer</div>"
+      "<span id='m4'>abc</span> "
+      "<span id='m5'>abc</span>"
+      "<div style='height: 2000px;'>Spacer</div>"
+      "<span id='m6'>abc</span>");
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+
+  Node* m1 = GetDocument().getElementById(AtomicString("m1"))->firstChild();
+  Node* m2 = GetDocument().getElementById(AtomicString("m2"))->firstChild();
+  Node* m4 = GetDocument().getElementById(AtomicString("m4"))->firstChild();
+  Node* m6 = GetDocument().getElementById(AtomicString("m6"))->firstChild();
+
+  ScrollableArea* viewport = GetDocument().View()->LayoutViewport();
+  viewport->SetScrollOffset(ScrollOffset(0, 0),
+                            mojom::blink::ScrollType::kProgrammatic,
+                            cc::ScrollSourceType::kNone);
+  ASSERT_EQ(ScrollOffset(0, 0), viewport->GetScrollOffset());
+
+  int identifier = 0;
+  String search_text("abc");
+  auto find_options = mojom::blink::FindOptions::New();
+  find_options->new_session = true;
+  find_options->find_match = true;
+  find_options->run_synchronously_for_testing = true;
+
+  // Initial search starts at m1 (index 0). m1, m2, m3 are all in the initial
+  // viewport; m4 and m5 are ~2000px down; m6 is ~4000px down.
+  EXPECT_TRUE(GetTextFinder().Find(identifier, search_text, *find_options,
+                                   /*wrap_within_frame=*/true));
+  GetTextFinder().ResetMatchCount();
+  GetTextFinder().StartScopingStringMatches(identifier, search_text,
+                                            *find_options);
+  EXPECT_EQ(6, GetTextFinder().TotalMatchCount());
+  ASSERT_TRUE(GetTextFinder().ActiveMatch());
+  EXPECT_EQ(m1, GetTextFinder().ActiveMatch()->startContainer());
+  EXPECT_EQ(0, GetTextFinder().ActiveMatchIndexForTesting());
+
+  // Find next with skip_viewport = true should skip m2 and m3 (which are in
+  // the current viewport) and jump directly to m4 (index 3).
+  find_options->new_session = false;
+  find_options->forward = true;
+  find_options->skip_viewport = true;
+  EXPECT_TRUE(GetTextFinder().Find(++identifier, search_text, *find_options,
+                                   /*wrap_within_frame=*/true));
+  ASSERT_TRUE(GetTextFinder().ActiveMatch());
+  EXPECT_EQ(m4, GetTextFinder().ActiveMatch()->startContainer());
+  EXPECT_EQ(3, GetTextFinder().ActiveMatchIndexForTesting());
+
+  // Now viewport is scrolled to m4/m5. Find next with skip_viewport = true
+  // should skip m5 (visible alongside m4) and jump to m6 (index 5).
+  EXPECT_TRUE(GetTextFinder().Find(++identifier, search_text, *find_options,
+                                   /*wrap_within_frame=*/true));
+  ASSERT_TRUE(GetTextFinder().ActiveMatch());
+  EXPECT_EQ(m6, GetTextFinder().ActiveMatch()->startContainer());
+  EXPECT_EQ(5, GetTextFinder().ActiveMatchIndexForTesting());
+
+  // From m6 at the bottom, find next with skip_viewport = true should wrap
+  // around to m1 (index 0) at the top.
+  EXPECT_TRUE(GetTextFinder().Find(++identifier, search_text, *find_options,
+                                   /*wrap_within_frame=*/true));
+  ASSERT_TRUE(GetTextFinder().ActiveMatch());
+  EXPECT_EQ(m1, GetTextFinder().ActiveMatch()->startContainer());
+  EXPECT_EQ(0, GetTextFinder().ActiveMatchIndexForTesting());
+
+  // From m1 (with m1, m2, m3 visible at the top), find previous with
+  // skip_viewport = true should wrap backwards to m6 (index 5).
+  find_options->forward = false;
+  EXPECT_TRUE(GetTextFinder().Find(++identifier, search_text, *find_options,
+                                   /*wrap_within_frame=*/true));
+  ASSERT_TRUE(GetTextFinder().ActiveMatch());
+  EXPECT_EQ(m6, GetTextFinder().ActiveMatch()->startContainer());
+  EXPECT_EQ(5, GetTextFinder().ActiveMatchIndexForTesting());
+
+  // From m1, if we first advance to m2 (inside top viewport) and then search
+  // backwards with skip_viewport = true, it should skip m1 (also in top
+  // viewport) and wrap to m6 (index 5).
+  find_options->forward = true;
+  EXPECT_TRUE(GetTextFinder().Find(++identifier, search_text, *find_options,
+                                   /*wrap_within_frame=*/true));
+  EXPECT_EQ(m1, GetTextFinder().ActiveMatch()->startContainer());
+  find_options->skip_viewport = false;
+  EXPECT_TRUE(GetTextFinder().Find(++identifier, search_text, *find_options,
+                                   /*wrap_within_frame=*/true));
+  EXPECT_EQ(m2, GetTextFinder().ActiveMatch()->startContainer());
+  EXPECT_EQ(1, GetTextFinder().ActiveMatchIndexForTesting());
+
+  find_options->forward = false;
+  find_options->skip_viewport = true;
+  EXPECT_TRUE(GetTextFinder().Find(++identifier, search_text, *find_options,
+                                   /*wrap_within_frame=*/true));
+  ASSERT_TRUE(GetTextFinder().ActiveMatch());
+  EXPECT_EQ(m6, GetTextFinder().ActiveMatch()->startContainer());
+  EXPECT_EQ(5, GetTextFinder().ActiveMatchIndexForTesting());
+}
+
+TEST_F(TextFinderTest, FindSkipViewportAllMatchesInViewportFallback) {
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(
+      "<span id='m1'>abc</span> "
+      "<span id='m2'>abc</span> "
+      "<span id='m3'>abc</span>");
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+
+  Node* m1 = GetDocument().getElementById(AtomicString("m1"))->firstChild();
+  Node* m2 = GetDocument().getElementById(AtomicString("m2"))->firstChild();
+  Node* m3 = GetDocument().getElementById(AtomicString("m3"))->firstChild();
+
+  int identifier = 0;
+  String search_text("abc");
+  auto find_options = mojom::blink::FindOptions::New();
+  find_options->new_session = true;
+  find_options->find_match = true;
+  find_options->run_synchronously_for_testing = true;
+
+  EXPECT_TRUE(GetTextFinder().Find(identifier, search_text, *find_options,
+                                   /*wrap_within_frame=*/true));
+  GetTextFinder().ResetMatchCount();
+  GetTextFinder().StartScopingStringMatches(identifier, search_text,
+                                            *find_options);
+  EXPECT_EQ(3, GetTextFinder().TotalMatchCount());
+  EXPECT_EQ(m1, GetTextFinder().ActiveMatch()->startContainer());
+  EXPECT_EQ(0, GetTextFinder().ActiveMatchIndexForTesting());
+
+  // When all matches are visible in the current viewport, skip_viewport = true
+  // should gracefully fall back to advancing to the immediate next/previous
+  // match rather than getting stuck, both with wrap_within_frame = true and
+  // with the two-step wrap_within_frame = false flow used by
+  // FindRequestManager.
+  find_options->new_session = false;
+  find_options->forward = true;
+  find_options->skip_viewport = true;
+  EXPECT_TRUE(GetTextFinder().Find(++identifier, search_text, *find_options,
+                                   /*wrap_within_frame=*/true));
+  EXPECT_EQ(m2, GetTextFinder().ActiveMatch()->startContainer());
+  EXPECT_EQ(1, GetTextFinder().ActiveMatchIndexForTesting());
+
+  EXPECT_FALSE(GetTextFinder().Find(++identifier, search_text, *find_options,
+                                    /*wrap_within_frame=*/false));
+  EXPECT_TRUE(GetTextFinder().Find(identifier, search_text, *find_options,
+                                   /*wrap_within_frame=*/false));
+  EXPECT_EQ(m3, GetTextFinder().ActiveMatch()->startContainer());
+  EXPECT_EQ(2, GetTextFinder().ActiveMatchIndexForTesting());
+
+  // Also test backwards (`forward = false`) fallback with both
+  // `wrap_within_frame = true` and `wrap_within_frame = false`.
+  find_options->forward = false;
+  EXPECT_TRUE(GetTextFinder().Find(++identifier, search_text, *find_options,
+                                   /*wrap_within_frame=*/true));
+  EXPECT_EQ(m2, GetTextFinder().ActiveMatch()->startContainer());
+  EXPECT_EQ(1, GetTextFinder().ActiveMatchIndexForTesting());
+
+  EXPECT_FALSE(GetTextFinder().Find(++identifier, search_text, *find_options,
+                                    /*wrap_within_frame=*/false));
+  EXPECT_TRUE(GetTextFinder().Find(identifier, search_text, *find_options,
+                                   /*wrap_within_frame=*/false));
+  EXPECT_EQ(m1, GetTextFinder().ActiveMatch()->startContainer());
+  EXPECT_EQ(0, GetTextFinder().ActiveMatchIndexForTesting());
+
+  // Overlapping matches ("aa" in "aaaa") starting from offset 1 via selection
+  // must also terminate in one pass when all matches are visible.
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(
+      "<span id='overlap'>aaaa</span>");
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+  Node* overlap =
+      GetDocument().getElementById(AtomicString("overlap"))->firstChild();
+  GetDocument().GetFrame()->Selection().SetSelection(
+      SelectionInDomTree::Builder().Collapse(Position(overlap, 1)).Build(),
+      SetSelectionOptions());
+  find_options->new_session = false;
+  find_options->forward = true;
+  find_options->skip_viewport = true;
+  EXPECT_TRUE(GetTextFinder().Find(++identifier, String("aa"), *find_options,
+                                   /*wrap_within_frame=*/true));
+  ASSERT_TRUE(GetTextFinder().ActiveMatch());
+  EXPECT_EQ(1u, GetTextFinder().ActiveMatch()->startOffset());
+  EXPECT_EQ(3u, GetTextFinder().ActiveMatch()->endOffset());
+
+  GetDocument().GetFrame()->Selection().SetSelection(
+      SelectionInDomTree::Builder().Collapse(Position(overlap, 3)).Build(),
+      SetSelectionOptions());
+  find_options->forward = false;
+  EXPECT_TRUE(GetTextFinder().Find(++identifier, String("aa"), *find_options,
+                                   /*wrap_within_frame=*/true));
+  ASSERT_TRUE(GetTextFinder().ActiveMatch());
+  EXPECT_EQ(0u, GetTextFinder().ActiveMatch()->startOffset());
+  EXPECT_EQ(2u, GetTextFinder().ActiveMatch()->endOffset());
+}
+
+TEST_F(TextFinderTest, FindSkipViewportAppliesPendingScroll) {
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(
+      "<span id='m1'>abc</span> "
+      "<span id='m2'>abc</span>"
+      "<div style='height: 2000px;'>Spacer</div>"
+      "<span id='m3'>abc</span> "
+      "<span id='m4'>abc</span>"
+      "<div style='height: 2000px;'>Spacer</div>"
+      "<span id='m5'>abc</span>");
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+
+  Node* m1 = GetDocument().getElementById(AtomicString("m1"))->firstChild();
+  Node* m3 = GetDocument().getElementById(AtomicString("m3"))->firstChild();
+  Node* m5 = GetDocument().getElementById(AtomicString("m5"))->firstChild();
+
+  ScrollableArea* viewport = GetDocument().View()->LayoutViewport();
+  ASSERT_EQ(ScrollOffset(0, 0), viewport->GetScrollOffset());
+
+  int identifier = 0;
+  String search_text("abc");
+  auto find_options = mojom::blink::FindOptions::New();
+  find_options->new_session = true;
+  find_options->find_match = true;
+  find_options->run_synchronously_for_testing = true;
+  EXPECT_TRUE(GetTextFinder().Find(identifier, search_text, *find_options,
+                                   /*wrap_within_frame=*/true));
+  EXPECT_EQ(m1, GetTextFinder().ActiveMatch()->startContainer());
+
+  // Skip to m3 without running the scroll synchronously, so that scrolling m3
+  // into view stays pending in an animation frame task.
+  find_options->new_session = false;
+  find_options->forward = true;
+  find_options->skip_viewport = true;
+  find_options->run_synchronously_for_testing = false;
+  EXPECT_TRUE(GetTextFinder().Find(++identifier, search_text, *find_options,
+                                   /*wrap_within_frame=*/true));
+  EXPECT_EQ(m3, GetTextFinder().ActiveMatch()->startContainer());
+  ASSERT_EQ(ScrollOffset(0, 0), viewport->GetScrollOffset());
+
+  // Skipping again must first apply the pending scroll to m3 synchronously, so
+  // that m4 (which is visible alongside m3) is skipped and the search lands on
+  // m5 below the second 2000px spacer.
+  EXPECT_TRUE(GetTextFinder().Find(++identifier, search_text, *find_options,
+                                   /*wrap_within_frame=*/true));
+  EXPECT_EQ(m5, GetTextFinder().ActiveMatch()->startContainer());
+  EXPECT_GT(viewport->GetScrollOffset().y(), 0);
+}
+
+TEST_F(TextFinderTest, FindSkipViewportInInnerScrollerAndPinchZoom) {
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(
+      "<div id='scroller' style='height: 60px; overflow: auto;'>"
+      "  <div style='height: 20px;'>"
+      "    <span id='m1'>abc</span> <span id='m2'>abc</span>"
+      "  </div>"
+      "  <div style='height: 200px;'>Spacer</div>"
+      "  <div style='height: 20px;'><span id='m3'>abc</span></div>"
+      "</div>"
+      "<div style='height: 200px;'>Spacer</div>"
+      "<span id='m4'>abc</span>");
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+
+  Node* m1 = GetDocument().getElementById(AtomicString("m1"))->firstChild();
+  Node* m3 = GetDocument().getElementById(AtomicString("m3"))->firstChild();
+  Node* m4 = GetDocument().getElementById(AtomicString("m4"))->firstChild();
+
+  int identifier = 0;
+  String search_text("abc");
+  auto find_options = mojom::blink::FindOptions::New();
+  find_options->new_session = true;
+  find_options->find_match = true;
+  find_options->scroll_to_match = false;
+  find_options->run_synchronously_for_testing = true;
+  EXPECT_TRUE(GetTextFinder().Find(identifier, search_text, *find_options,
+                                   /*wrap_within_frame=*/true));
+  EXPECT_EQ(m1, GetTextFinder().ActiveMatch()->startContainer());
+
+  // m3 is within the layout viewport's bounds vertically (~220px down), but it
+  // is scrolled out of view inside the 60px-tall inner scroller, so skipping
+  // the viewport from m1 must skip m2 and stop at m3.
+  find_options->new_session = false;
+  find_options->forward = true;
+  find_options->skip_viewport = true;
+  EXPECT_TRUE(GetTextFinder().Find(++identifier, search_text, *find_options,
+                                   /*wrap_within_frame=*/true));
+  EXPECT_EQ(m3, GetTextFinder().ActiveMatch()->startContainer());
+
+  // Scroll the inner scroller so m3 is visible, and zoom the visual viewport
+  // in so that m3 (at top) is inside the visual viewport while m4 (~260px down)
+  // is outside the zoomed visual viewport despite being inside the layout
+  // viewport.
+  Element* scroller = GetDocument().getElementById(AtomicString("scroller"));
+  scroller->GetLayoutBox()->GetScrollableArea()->SetScrollOffset(
+      ScrollOffset(0, 200), mojom::blink::ScrollType::kProgrammatic,
+      cc::ScrollSourceType::kNone);
+  VisualViewport& visual_viewport =
+      GetDocument().GetPage()->GetVisualViewport();
+  visual_viewport.SetSize(gfx::Size(800, 600));
+  visual_viewport.SetScale(4.0f);
+
+  EXPECT_TRUE(GetTextFinder().Find(++identifier, search_text, *find_options,
+                                   /*wrap_within_frame=*/true));
+  EXPECT_EQ(m4, GetTextFinder().ActiveMatch()->startContainer());
+}
+
+TEST_F(TextFinderSimTest, FindSkipViewportInNestedFrame) {
+  ResizeView(gfx::Size(640, 480));
+  SimRequest main_request("https://example.com/test.html", "text/html");
+  SimRequest frame_request("https://example.com/frame.html", "text/html");
+  LoadURL("https://example.com/test.html");
+  main_request.Complete(R"HTML(
+    <!DOCTYPE html>
+    <span id="m1">abc</span>
+    <div style="height: 1500px;">Spacer</div>
+    <span id="m2">abc</span> <span id="m3">abc</span>
+    <div style="height: 1500px;">Spacer</div>
+    <iframe src="frame.html" style="width: 400px; height: 300px;"></iframe>
+  )HTML");
+  frame_request.Complete(R"HTML(
+    <!DOCTYPE html>
+    <span id="f1">abc</span> <span id="f2">abc</span>
+    <div style="height: 2000px;">Spacer</div>
+    <span id="f3">abc</span>
+  )HTML");
+  Compositor().BeginFrame();
+
+  TextFinder& main_finder = GetTextFinder();
+  Node* m2 = GetDocument().getElementById(AtomicString("m2"))->firstChild();
+  Node* m3 = GetDocument().getElementById(AtomicString("m3"))->firstChild();
+  auto* child_frame =
+      To<LocalFrame>(GetDocument().GetFrame()->Tree().FirstChild());
+  Document& child_document = *child_frame->GetDocument();
+  TextFinder& text_finder =
+      WebLocalFrameImpl::FromFrame(child_frame)->EnsureTextFinder();
+  Node* f1 = child_document.getElementById(AtomicString("f1"))->firstChild();
+  Node* f2 = child_document.getElementById(AtomicString("f2"))->firstChild();
+  Node* f3 = child_document.getElementById(AtomicString("f3"))->firstChild();
+
+  int identifier = 0;
+  String search_text("abc");
+  auto find_options = mojom::blink::FindOptions::New();
+  find_options->new_session = true;
+  find_options->find_match = true;
+  find_options->scroll_to_match = true;
+  find_options->run_synchronously_for_testing = true;
+
+  // Start in the main frame at m1, then skip the viewport with
+  // wrap_within_frame = false to jump to m2 (scrolling m2 and m3 into view
+  // while m1 is now above the fold).
+  EXPECT_TRUE(main_finder.Find(identifier, search_text, *find_options,
+                               /*wrap_within_frame=*/false));
+  find_options->new_session = false;
+  find_options->forward = true;
+  find_options->skip_viewport = true;
+  EXPECT_TRUE(main_finder.Find(++identifier, search_text, *find_options,
+                               /*wrap_within_frame=*/false));
+  EXPECT_EQ(m2, main_finder.ActiveMatch()->startContainer());
+
+  // Skipping again from m2 with wrap_within_frame = false must skip m3 (visible
+  // alongside m2) and return false at the end of the main frame rather than
+  // wrapping back to m1, so the browser can move to the iframe below.
+  EXPECT_FALSE(main_finder.Find(++identifier, search_text, *find_options,
+                                /*wrap_within_frame=*/false));
+
+  // When the browser advances to the iframe with asynchronous scrolling
+  // (run_synchronously_for_testing = false), f1 becomes active and queues a
+  // pending scroll_task_ on the iframe. If the user immediately searches
+  // backwards with skip_viewport = true before the animation frame runs,
+  // returning false at the start of the iframe must still flush its pending
+  // scroll_task_ so the main frame scrolls to the iframe and does not skip m3.
+  find_options->run_synchronously_for_testing = false;
+  EXPECT_TRUE(text_finder.Find(identifier, search_text, *find_options,
+                               /*wrap_within_frame=*/false));
+  EXPECT_EQ(f1, text_finder.ActiveMatch()->startContainer());
+  main_finder.ClearActiveFindMatch();
+
+  find_options->forward = false;
+  EXPECT_FALSE(text_finder.Find(++identifier, search_text, *find_options,
+                                /*wrap_within_frame=*/false));
+  EXPECT_TRUE(main_finder.Find(identifier, search_text, *find_options,
+                               /*wrap_within_frame=*/false));
+  EXPECT_EQ(m3, main_finder.ActiveMatch()->startContainer());
+  main_finder.ClearActiveFindMatch();
+
+  find_options->new_session = true;
+  find_options->forward = true;
+  find_options->skip_viewport = false;
+  find_options->scroll_to_match = false;
+  find_options->run_synchronously_for_testing = true;
+  GetDocument().View()->LayoutViewport()->SetScrollOffset(
+      ScrollOffset(0, 1500), mojom::blink::ScrollType::kProgrammatic,
+      cc::ScrollSourceType::kNone);
+  EXPECT_TRUE(text_finder.Find(++identifier, search_text, *find_options,
+                               /*wrap_within_frame=*/true));
+  EXPECT_EQ(f1, text_finder.ActiveMatch()->startContainer());
+
+  // The iframe is below the fold of the main frame, so even though f2 is within
+  // the iframe's own viewport it is not actually visible and must not be
+  // skipped.
+  find_options->new_session = false;
+  find_options->forward = true;
+  find_options->skip_viewport = true;
+  EXPECT_TRUE(text_finder.Find(++identifier, search_text, *find_options,
+                               /*wrap_within_frame=*/true));
+  EXPECT_EQ(f2, text_finder.ActiveMatch()->startContainer());
+
+  // Once the iframe is scrolled into view in the main frame, f1 is visible and
+  // searching backwards from f2 skips it and wraps around to f3.
+  GetDocument().View()->LayoutViewport()->SetScrollOffset(
+      ScrollOffset(0, 3000), mojom::blink::ScrollType::kProgrammatic,
+      cc::ScrollSourceType::kNone);
+  Compositor().BeginFrame();
+  find_options->forward = false;
+  EXPECT_TRUE(text_finder.Find(++identifier, search_text, *find_options,
+                               /*wrap_within_frame=*/true));
+  EXPECT_EQ(f3, text_finder.ActiveMatch()->startContainer());
 }
 
 }  // namespace blink

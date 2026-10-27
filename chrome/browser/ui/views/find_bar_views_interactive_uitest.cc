@@ -5,6 +5,7 @@
 #include "base/i18n/number_formatting.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
@@ -58,6 +59,7 @@
 #include "ui/events/event_modifiers.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/interaction/view_focus_observer.h"
@@ -66,6 +68,7 @@
 #include "ui/views/test/widget_activation_waiter.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
+#include "ui/views/view_utils.h"
 #include "ui/webui/tracked_element/tracked_element_web_ui.h"
 
 #if BUILDFLAG(IS_OZONE)
@@ -153,6 +156,8 @@ DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(FindResulStateObserver, kFindResultState);
 class LegacyFindInPageTest : public InProcessBrowserTest {
  public:
   LegacyFindInPageTest() = default;
+  base::test::ScopedFeatureList feature_list_{
+      features::kFindInPageSkipViewport};
   base::AutoReset<bool> enable_animation_for_test_ =
       FindBarHost::SetEnableAnimationsForTesting(false);
 
@@ -194,6 +199,17 @@ class LegacyFindInPageTest : public InProcessBrowserTest {
         base::TimeTicks(), ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON));
   }
 
+  // Sends a Return key press with `flags` to the find bar text field.
+  void PressReturnInFindBar(int flags) {
+    FindBarView* find_bar_view = GetFindBarView();
+    const ui::KeyEvent key_event(ui::EventType::kKeyPressed, ui::VKEY_RETURN,
+                                 flags);
+    EXPECT_TRUE(find_bar_view->HandleKeyEvent(
+        views::AsViewClass<views::Textfield>(
+            find_bar_view->GetViewByID(VIEW_ID_FIND_IN_PAGE_TEXT_FIELD)),
+        key_event));
+  }
+
   void TapOnView(views::View* view) {
     // EventGenerator and ui_test_utils can't target the find bar (on Windows).
     ui::GestureEvent event(0, 0, 0, base::TimeTicks(),
@@ -223,7 +239,9 @@ class FindBarViewsUiTest : public WebUIAndViewsToolbarInteractiveUiTestBase,
                            public ::testing::WithParamInterface<bool> {
  public:
   FindBarViewsUiTest() {
-    feature_list_.InitAndDisableFeature(features::kNonBlockingOsClipboardReads);
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{features::kFindInPageSkipViewport},
+        /*disabled_features=*/{features::kNonBlockingOsClipboardReads});
   }
 
   void SetUp() override {
@@ -537,6 +555,61 @@ IN_PROC_BROWSER_TEST_F(LegacyFindInPageTest, ButtonsDoNotAlterFocus) {
   EXPECT_TRUE(IsViewFocused(browser(), VIEW_ID_FIND_IN_PAGE_PREVIOUS_BUTTON));
 }
 
+IN_PROC_BROWSER_TEST_F(LegacyFindInPageTest, SkipViewportButtonsAndAltEnter) {
+  ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser()));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(),
+      GURL("data:text/html,"
+           "<body style='margin:0;white-space:nowrap'>"
+           "<span>needle</span> <span>needle</span> <span>needle</span>"
+           "<div style='height:200vh'></div>"
+           "<span>needle</span> <span>needle</span>"
+           "<div style='height:200vh'></div>"
+           "<iframe srcdoc='<span>needle</span>'></iframe>"
+           "</body>")));
+
+  FindBarController::From(browser())->Show();
+  int ordinal = 0;
+  const int match_count = ui_test_utils::FindInPage(
+      browser()->GetTabStripModel()->GetActiveWebContents(), u"needle", true,
+      false, &ordinal, nullptr);
+  ASSERT_EQ(6, match_count);
+  EXPECT_EQ(1, ordinal);
+
+  FindBarView* find_bar_view = GetFindBarView();
+  views::View* next_outside_button = find_bar_view->GetViewByID(
+      VIEW_ID_FIND_IN_PAGE_NEXT_OUTSIDE_VIEWPORT_BUTTON);
+  views::View* previous_outside_button = find_bar_view->GetViewByID(
+      VIEW_ID_FIND_IN_PAGE_PREVIOUS_OUTSIDE_VIEWPORT_BUTTON);
+  ASSERT_TRUE(next_outside_button);
+  ASSERT_TRUE(previous_outside_button);
+  EXPECT_TRUE(next_outside_button->GetVisible());
+  EXPECT_TRUE(previous_outside_button->GetVisible());
+
+  // Clicking "Next outside view" from match 1 skips matches 2 and 3 in the top
+  // viewport and jumps directly to match 4.
+  ClickOnView(next_outside_button);
+  EXPECT_EQ(4, WaitForFinalFindResult().active_match_ordinal());
+
+  // Alt+Enter from match 4 skips match 5 (in the same viewport) and advances
+  // across the end of the main frame to match 6 in the iframe below the fold.
+  PressReturnInFindBar(ui::EF_ALT_DOWN);
+  EXPECT_EQ(6, WaitForFinalFindResult().active_match_ordinal());
+
+  // Clicking "Previous outside view" from match 6 in the iframe jumps back to
+  // match 5 in the main frame.
+  ClickOnView(previous_outside_button);
+  EXPECT_EQ(5, WaitForFinalFindResult().active_match_ordinal());
+
+  // Alt+Shift+Enter from match 5 skips match 4 and jumps back to match 3.
+  PressReturnInFindBar(ui::EF_ALT_DOWN | ui::EF_SHIFT_DOWN);
+  EXPECT_EQ(3, WaitForFinalFindResult().active_match_ordinal());
+
+  // Enter without Alt advances to the immediate next match as usual.
+  PressReturnInFindBar(ui::EF_NONE);
+  EXPECT_EQ(4, WaitForFinalFindResult().active_match_ordinal());
+}
+
 IN_PROC_BROWSER_TEST_F(FindBarViewsUiTest, ButtonsDisabledWithoutText) {
   if (FindBarController::From(browser())
           ->find_bar()
@@ -548,13 +621,18 @@ IN_PROC_BROWSER_TEST_F(FindBarViewsUiTest, ButtonsDisabledWithoutText) {
 
   const GURL page_a = embedded_test_server()->GetURL("/a.html");
 
-  RunTestSequence(Init(page_a), ShowFindBar(),
-                  CheckViewProperty(FindBarView::kPreviousButtonElementId,
-                                    &views::View::GetEnabled, false),
-                  CheckViewProperty(FindBarView::kNextButtonElementId,
-                                    &views::View::GetEnabled, false),
-                  SendKeyPress(ui::VKEY_TAB, false, false),
-                  CheckHasFocus(FindBarView::kCloseButtonElementId));
+  RunTestSequence(
+      Init(page_a), ShowFindBar(),
+      CheckViewProperty(FindBarView::kPreviousButtonElementId,
+                        &views::View::GetEnabled, false),
+      CheckViewProperty(FindBarView::kNextButtonElementId,
+                        &views::View::GetEnabled, false),
+      CheckViewProperty(FindBarView::kPreviousOutsideViewportButtonElementId,
+                        &views::View::GetEnabled, false),
+      CheckViewProperty(FindBarView::kNextOutsideViewportButtonElementId,
+                        &views::View::GetEnabled, false),
+      SendKeyPress(ui::VKEY_TAB, false, false),
+      CheckHasFocus(FindBarView::kCloseButtonElementId));
 }
 
 // TODO(crbug.com/361216144): Re-enable on Mac.

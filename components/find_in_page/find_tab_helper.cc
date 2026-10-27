@@ -43,7 +43,8 @@ void FindTabHelper::StartFinding(std::u16string search_string,
                                  bool case_sensitive,
                                  bool find_match,
                                  bool scroll_to_match,
-                                 bool run_synchronously_for_testing) {
+                                 bool run_synchronously_for_testing,
+                                 bool skip_viewport) {
   // Remove the carriage return character, which generally isn't in web content.
   const char16_t kInvalidChars[] = u"\r";
   base::RemoveChars(search_string, kInvalidChars, &search_string);
@@ -82,6 +83,7 @@ void FindTabHelper::StartFinding(std::u16string search_string,
   options->find_match = find_match;
   options->run_synchronously_for_testing = run_synchronously_for_testing;
   options->scroll_to_match = scroll_to_match;
+  options->skip_viewport = skip_viewport;
   GetWebContents().Find(find_text_, std::move(options), /*skip_delay=*/false,
                         [this, new_session](int request_id) {
                           current_find_request_id_ = request_id;

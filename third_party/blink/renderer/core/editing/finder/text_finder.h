@@ -44,6 +44,7 @@
 
 namespace blink {
 
+class FindOptions;
 class FindTaskController;
 class LocalFrame;
 class Range;
@@ -56,7 +57,7 @@ class CORE_EXPORT TextFinder final : public GarbageCollected<TextFinder> {
             const mojom::blink::FindOptions& options,
             bool wrap_within_frame,
             bool* active_now = nullptr);
-  void InitNewSession(const mojom::blink::FindOptions&  options);
+  void InitNewSession(const mojom::blink::FindOptions& options);
   void ClearActiveFindMatch();
   void SetFindEndstateFocusAndSelection();
   void StopFindingAndClearSelection();
@@ -98,6 +99,8 @@ class CORE_EXPORT TextFinder final : public GarbageCollected<TextFinder> {
   // the local frame has no active match.
   Range* ActiveMatch() const { return active_match_.Get(); }
 
+  int ActiveMatchIndexForTesting() const { return active_match_index_; }
+
   void FlushCurrentScoping();
 
   // A match has been found by the current finding effort, so we should
@@ -106,7 +109,10 @@ class CORE_EXPORT TextFinder final : public GarbageCollected<TextFinder> {
                     int current_total_matches,
                     Range* result_range);
 
-  void ResetActiveMatch() { active_match_ = nullptr; }
+  void ResetActiveMatch() {
+    active_match_ = nullptr;
+    skip_viewport_fallback_match_ = nullptr;
+  }
 
   bool FrameScoping() const { return frame_scoping_; }
   int TotalMatchCount() const { return total_match_count_; }
@@ -172,6 +178,18 @@ class CORE_EXPORT TextFinder final : public GarbageCollected<TextFinder> {
                     bool wrap_within_frame,
                     bool wrapped_around,
                     bool* active_now);
+
+  // Advances `active_match_` past matches that are currently visible in the
+  // viewport when `options.skip_viewport` is set. Returns false when reaching
+  // the end of the frame with `wrap_within_frame = false` so the browser
+  // process can search other frames.
+  bool SkipMatchesInViewport(const String& search_text,
+                             const mojom::blink::FindOptions& options,
+                             const FindOptions& find_options,
+                             Range* previous_active_match,
+                             bool wrap_within_frame,
+                             bool& wrapped_around,
+                             int& matches_advanced);
 
   // Notifies the delegate about a new selection rect.
   void ReportFindInPageSelection(const gfx::Rect& selection_rect,
@@ -243,6 +261,15 @@ class CORE_EXPORT TextFinder final : public GarbageCollected<TextFinder> {
 
   // The index of the active match for the current frame.
   int active_match_index_ = -1;
+
+  // Fallback match saved when a `skip_viewport` search with
+  // `wrap_within_frame = false` reaches the end of the frame with all remaining
+  // matches visible. If the browser process wraps around and calls `Find` on
+  // this frame a second time because no other frame has an off-screen match,
+  // this match is used if every match in the frame is visible in the viewport.
+  // (Otherwise an infinite loop might result when continually attempting to
+  // find matches not in the viewport.)
+  Member<Range> skip_viewport_fallback_match_;
 
   // This variable keeps a cumulative total of matches found so far in this
   // frame, and is only incremented by calling IncreaseMatchCount.

@@ -66,12 +66,17 @@ class FindTabHelper : public content::WebContentsUserData<FindTabHelper>,
   //
   // `scroll_to_match`: Controls whether the viewport should scroll to the
   // activated match. Only applicable when `find_match` is true.
+  //
+  // `skip_viewport`: Controls whether find-next/previous should skip matches
+  // currently visible in the viewport and jump to the first match outside the
+  // viewport.
   void StartFinding(std::u16string search_string,
                     bool forward_direction,
                     bool case_sensitive,
                     bool find_match,
                     bool scroll_to_match = true,
-                    bool run_synchronously_for_testing = false);
+                    bool run_synchronously_for_testing = false,
+                    bool skip_viewport = false);
 
   // Stops the current Find operation.
   void StopFinding(SelectionAction selection_action);

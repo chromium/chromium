@@ -24,6 +24,12 @@
   <message name="IDS_FIND_IN_PAGE_NEXT_TOOLTIP" desc="The tooltip for the next button">
     Next
   </message>
+  <message name="IDS_FIND_IN_PAGE_PREVIOUS_OUTSIDE_VIEWPORT_TOOLTIP" desc="The tooltip for the find bar button that jumps to the previous match outside of the currently visible part of the page.">
+    Previous outside view
+  </message>
+  <message name="IDS_FIND_IN_PAGE_NEXT_OUTSIDE_VIEWPORT_TOOLTIP" desc="The tooltip for the find bar button that jumps to the next match outside of the currently visible part of the page.">
+    Next outside view
+  </message>
   <message name="IDS_FIND_IN_PAGE_CLOSE_TOOLTIP" desc="The tooltip for the close button">
     Close find bar
   </message>

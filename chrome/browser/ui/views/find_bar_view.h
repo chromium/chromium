@@ -54,6 +54,9 @@ class FindBarView : public views::BoxLayoutView,
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kTextField);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kPreviousButtonElementId);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kNextButtonElementId);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(
+      kPreviousOutsideViewportButtonElementId);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kNextOutsideViewportButtonElementId);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kCloseButtonElementId);
 
   explicit FindBarView(FindBarHost* host = nullptr);
@@ -121,9 +124,10 @@ class FindBarView : public views::BoxLayoutView,
   // Starts finding |search_text|.  If the text is empty, stops finding.
   void Find(std::u16string_view search_text);
 
-  // Find the next/previous occurrence of search text when clicking the
-  // next/previous button.
-  void FindNext(bool reverse = false);
+  // Finds the next (or previous, if `reverse`) occurrence of the search text.
+  // If `skip_viewport`, the occurrences currently visible in the viewport are
+  // skipped so that the first one outside of it becomes active.
+  void FindNext(bool reverse, bool skip_viewport);
   // End the current find session and close the find bubble.
   void EndFindSession();
 
@@ -148,6 +152,8 @@ class FindBarView : public views::BoxLayoutView,
   raw_ptr<views::Separator> separator_;
   raw_ptr<views::ImageButton> find_previous_button_;
   raw_ptr<views::ImageButton> find_next_button_;
+  raw_ptr<views::ImageButton> find_previous_outside_viewport_button_;
+  raw_ptr<views::ImageButton> find_next_outside_viewport_button_;
   raw_ptr<views::ImageButton> close_button_;
 };
 

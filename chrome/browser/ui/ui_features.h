@@ -42,6 +42,8 @@ BASE_DECLARE_FEATURE(kImportExportFlags);
 // infobars wait in the prioritization queue.
 BASE_DECLARE_FEATURE(kInfoBarQueuedCountPill);
 
+BASE_DECLARE_FEATURE(kFindInPageSkipViewport);
+
 BASE_DECLARE_FEATURE(kKeyboardLockHeldEscExitsTabFullscreen);
 
 #if BUILDFLAG(IS_LINUX)
