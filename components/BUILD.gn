@@ -1476,6 +1476,7 @@ if (is_android) {
       "//components/crash/android:junit",
       "//components/credential_management/android:junit_tests",
       "//components/data_sharing/internal:data_sharing_junit_tests",
+      "//components/device_signals/core/browser/android:junit",
       "//components/download/internal/common:junit",
       "//components/download/network:junit",
       "//components/embedder_support/android:components_embedder_support_junit_tests",

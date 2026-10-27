@@ -5,6 +5,15 @@
 import("//build/config/features.gni")
 import("//build/config/ui.gni")
 
+if (is_android) {
+  import("//build/config/android/rules.gni")
+
+  # Exposes device_signals::SettingValue to Java.
+  java_cpp_enum("java_enums") {
+    sources = [ "common_types.h" ]
+  }
+}
+
 static_library("common") {
   public = [
     "cached_signal.h",

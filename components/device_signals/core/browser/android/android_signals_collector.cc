@@ -111,6 +111,8 @@ void AndroidSignalsCollector::GetOsSignals(
   signal_response.screen_lock_secured =
       os_security_info_provider_->IsDeviceSecure() ? SettingValue::ENABLED
                                                    : SettingValue::DISABLED;
+  signal_response.disk_encryption =
+      os_security_info_provider_->GetDiskEncryption();
 
   response.os_signals_response = std::move(signal_response);
 

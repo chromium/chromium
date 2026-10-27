@@ -16,6 +16,7 @@ class MockOsSecurityInfoProvider : public OsSecurityInfoProvider {
   ~MockOsSecurityInfoProvider() override;
 
   MOCK_METHOD(bool, IsDeviceSecure, (), (override));
+  MOCK_METHOD(SettingValue, GetDiskEncryption, (), (override));
 };
 
 }  // namespace device_signals

@@ -19,6 +19,8 @@ namespace device_signals {
 // indicate a reason for not being able to find it.
 enum class PresenceValue { kUnspecified, kAccessDenied, kNotFound, kFound };
 
+// A Java counterpart will be generated for this enum.
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.device_signals
 enum class SettingValue {
   UNKNOWN,
   DISABLED,

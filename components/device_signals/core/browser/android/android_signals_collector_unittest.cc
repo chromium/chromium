@@ -78,6 +78,8 @@ class AndroidSignalsCollectorTest : public GenericOsSignalsCollectorTestBase {
         std::move(mock_os_security_info_provider));
 
     SetDeviceSecure(true);
+    ON_CALL(*mock_os_security_info_provider_, GetDiskEncryption())
+        .WillByDefault(Return(SettingValue::ENABLED));
     SetVerifyAppsResult(VerifyAppsEnabledResult::SUCCESS_NOT_ENABLED);
     SetHarmfulAppsResult(HasHarmfulAppsResultStatus::SUCCESS, 2);
   }
@@ -96,6 +98,7 @@ class AndroidSignalsCollectorTest : public GenericOsSignalsCollectorTestBase {
     EXPECT_EQ(response.security_patch_ms,
               device_signals::GetSecurityPatchLevelEpoch());
     EXPECT_EQ(response.screen_lock_secured, expected_screen_lock_secured_);
+    EXPECT_EQ(response.disk_encryption, SettingValue::ENABLED);
   }
 
   void SetDeviceSecure(bool is_device_secure) {
@@ -235,6 +238,26 @@ TEST_F(AndroidSignalsCollectorTest, GetOsSignals_ScreenLockNotSecured) {
   EXPECT_EQ(response.os_signals_response->screen_lock_secured,
             SettingValue::DISABLED);
   ExpectCollectionSuccessLogged({SignalName::kOsSignals});
+}
+
+// Tests that `disk_encryption` is DISABLED when the storage is not encrypted.
+// The ENABLED case is covered by the default setup in the other OS signals
+// tests, and the mapping from the Android status by DeviceSignalsUtilsTest.
+TEST_F(AndroidSignalsCollectorTest, GetOsSignals_DiskNotEncrypted) {
+  ON_CALL(*mock_os_security_info_provider_, GetDiskEncryption())
+      .WillByDefault(Return(SettingValue::DISABLED));
+
+  SignalsAggregationRequest empty_request;
+  SignalsAggregationResponse response;
+  base::RunLoop run_loop;
+  signal_collector_->GetSignal(SignalName::kOsSignals, UserPermission::kGranted,
+                               empty_request, response, run_loop.QuitClosure());
+  run_loop.Run();
+
+  ASSERT_FALSE(response.top_level_error.has_value());
+  ASSERT_TRUE(response.os_signals_response);
+  EXPECT_EQ(response.os_signals_response->disk_encryption,
+            SettingValue::DISABLED);
 }
 
 // Happy path test case for VerifyApps signals collection with full permission.
