@@ -104,12 +104,9 @@ TabContextualizationController* TabContextualizationController::From(
 }
 
 void TabContextualizationController::CreatePageContextEligibilityAPI() {
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, {base::TaskPriority::BEST_EFFORT, base::MayBlock()},
-      base::BindOnce(&optimization_guide::PageContextEligibility::Get),
-      base::BindOnce(
-          &TabContextualizationController::OnPageContextEligibilityAPILoaded,
-          weak_ptr_factory_.GetWeakPtr()));
+  optimization_guide::PageContextEligibility::GetAsync(base::BindOnce(
+      &TabContextualizationController::OnPageContextEligibilityAPILoaded,
+      weak_ptr_factory_.GetWeakPtr()));
 }
 
 void TabContextualizationController::OnPageContextEligibilityAPILoaded(

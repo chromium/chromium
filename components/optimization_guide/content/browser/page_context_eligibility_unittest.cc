@@ -6,7 +6,10 @@
 
 #include <vector>
 
+#include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
+#include "components/optimization_guide/content/browser/page_context_eligibility_api.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/content_extraction/ai_page_content_metadata.mojom.h"
 
@@ -43,4 +46,42 @@ TEST(PageContextEligibilityTest, GetFrameMetadataFromPageContent) {
   const auto meta_tag_struct = frame_metadata_struct.meta_tags[0];
   EXPECT_EQ("meta-tag-name", meta_tag_struct.name);
   EXPECT_EQ("meta-tag-content", meta_tag_struct.content);
+}
+
+TEST(PageContextEligibilityTest, GetAsyncCoalescesAndRespectsSetForTesting) {
+  base::test::TaskEnvironment task_environment;
+
+  // Concurrent `GetAsync` calls should coalesce and return the same instance
+  // as `Get()`.
+  base::test::TestFuture<optimization_guide::PageContextEligibility*> future1;
+  base::test::TestFuture<optimization_guide::PageContextEligibility*> future2;
+  optimization_guide::PageContextEligibility::GetAsync(future1.GetCallback());
+  optimization_guide::PageContextEligibility::GetAsync(future2.GetCallback());
+  EXPECT_EQ(future1.Get(), future2.Get());
+  EXPECT_EQ(future1.Get(), optimization_guide::PageContextEligibility::Get());
+
+  // `SetForTesting` should override `GetAsync` while set and safely restore
+  // after destruction without leaving a dangling pointer.
+  optimization_guide::PageContextEligibilityAPI test_api{};
+  base::test::TestFuture<optimization_guide::PageContextEligibility*>
+      cleared_before_run_future;
+  {
+    optimization_guide::PageContextEligibility test_holder(&test_api);
+    optimization_guide::PageContextEligibility::SetForTesting(&test_holder);
+
+    base::test::TestFuture<optimization_guide::PageContextEligibility*>
+        test_future;
+    optimization_guide::PageContextEligibility::GetAsync(
+        test_future.GetCallback());
+    EXPECT_EQ(&test_holder, test_future.Get());
+
+    optimization_guide::PageContextEligibility::GetAsync(
+        cleared_before_run_future.GetCallback());
+    optimization_guide::PageContextEligibility::SetForTesting(nullptr);
+  }
+  EXPECT_EQ(nullptr, cleared_before_run_future.Get());
+
+  base::test::TestFuture<optimization_guide::PageContextEligibility*> future3;
+  optimization_guide::PageContextEligibility::GetAsync(future3.GetCallback());
+  EXPECT_EQ(future1.Get(), future3.Get());
 }

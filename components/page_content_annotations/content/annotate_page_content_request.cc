@@ -204,13 +204,9 @@ AnnotatedPageContentRequest::AnnotatedPageContentRequest(
       fetch_page_context_callback_(std::move(fetch_page_context_callback)),
       get_tab_id_callback_(std::move(get_tab_id_callback)),
       scoped_unowned_user_data_(tab.GetUnownedUserDataHost(), *this) {
-  // Post to a background thread to avoid blocking the set up of the overlay.
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, {base::TaskPriority::BEST_EFFORT, base::MayBlock()},
-      base::BindOnce(&optimization_guide::PageContextEligibility::Get),
-      base::BindOnce(
-          &AnnotatedPageContentRequest::OnPageContextEligibilityAPILoaded,
-          weak_factory_.GetWeakPtr()));
+  optimization_guide::PageContextEligibility::GetAsync(base::BindOnce(
+      &AnnotatedPageContentRequest::OnPageContextEligibilityAPILoaded,
+      weak_factory_.GetWeakPtr()));
 }
 
 AnnotatedPageContentRequest::~AnnotatedPageContentRequest() {

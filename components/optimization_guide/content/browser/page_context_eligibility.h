@@ -9,6 +9,7 @@
 #include <optional>
 
 #include "base/component_export.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_native_library.h"
 #include "base/types/pass_key.h"
@@ -33,12 +34,19 @@ class PageContextEligibility {
   // return null if the underlying library could not be loaded.
   static PageContextEligibility* Get();
 
+  // Asynchronously retrieves the lazily initialized global instance of
+  // `PageContextEligibility`, coalescing concurrent background loads so only a
+  // single `ThreadPool` worker loads the shared library.
+  static void GetAsync(
+      base::OnceCallback<void(PageContextEligibility*)> callback);
+
   static void SetForTesting(PageContextEligibility* api_holder);
 
   // Exposes the raw PageContextEligibilityAPI functions defined by the library.
   const PageContextEligibilityAPI& api() const { return *api_; }
 
  private:
+  static PageContextEligibility* GetLoadedInstance();
   static std::unique_ptr<PageContextEligibility> Create();
 
   raw_ptr<const PageContextEligibilityAPI> api_;

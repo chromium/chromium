@@ -10,8 +10,6 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/task/task_traits.h"
-#include "base/task/thread_pool.h"
 #include "chrome/browser/glic/suggestions/contextual_cueing_features.h"
 #include "chrome/browser/glic/suggestions/contextual_cueing_helper.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
@@ -125,12 +123,9 @@ ZeroStateSuggestionsPageData::ZeroStateSuggestionsPageData(content::Page& page)
   }
 
   // Post to a background thread to avoid blocking the set up of the overlay.
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, {base::TaskPriority::BEST_EFFORT, base::MayBlock()},
-      base::BindOnce(&optimization_guide::PageContextEligibility::Get),
-      base::BindOnce(
-          &ZeroStateSuggestionsPageData::OnPageContextEligibilityAPILoaded,
-          weak_ptr_factory_.GetWeakPtr()));
+  optimization_guide::PageContextEligibility::GetAsync(base::BindOnce(
+      &ZeroStateSuggestionsPageData::OnPageContextEligibilityAPILoaded,
+      weak_ptr_factory_.GetWeakPtr()));
 }
 
 ZeroStateSuggestionsPageData::~ZeroStateSuggestionsPageData() {

@@ -6,7 +6,6 @@
 
 #include "base/containers/span.h"
 #include "base/memory/ptr_util.h"
-#include "base/task/thread_pool.h"
 #include "components/optimization_guide/content/browser/page_content_metadata_observer.h"
 #include "components/optimization_guide/content/browser/page_content_proto_util.h"
 #include "components/optimization_guide/content/browser/page_context_eligibility.h"
@@ -249,15 +248,12 @@ void PageContextEligibilityObserver::OnMetaTagsChanged(
 }
 
 void PageContextEligibilityObserver::StartApiLoading() {
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, {base::TaskPriority::USER_VISIBLE, base::MayBlock()},
-      base::BindOnce(&PageContextEligibility::Get),
+  PageContextEligibility::GetAsync(
       base::BindOnce(&PageContextEligibilityObserver::OnApiLoaded,
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-void PageContextEligibilityObserver::OnApiLoaded(
-    const PageContextEligibility* api) {
+void PageContextEligibilityObserver::OnApiLoaded(PageContextEligibility* api) {
   api_holder_ = api;
   is_api_loaded_ = true;
   UpdateObserver();

@@ -78,7 +78,7 @@ class PageContextEligibilityObserver : public content::WebContentsObserver {
   void UpdateObserver();
 
   void StartApiLoading();
-  void OnApiLoaded(const PageContextEligibility* api);
+  void OnApiLoaded(PageContextEligibility* api);
 
   const std::string account_;
   EligibilityChangedCallback callback_;

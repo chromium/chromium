@@ -10,7 +10,6 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/task/thread_pool.h"
 #include "build/build_config.h"
 #include "chrome/browser/glic/browser_ui/glic_selection_widget_controller.h"
 #include "chrome/browser/glic/common/local_hotkey_manager.h"
@@ -698,9 +697,7 @@ void GlicSelectionObserver::OnGlobalPanelShowHide() {
 
 void GlicSelectionObserver::CreatePageContextEligibilityAPI(
     std::string account) {
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, {base::TaskPriority::BEST_EFFORT, base::MayBlock()},
-      base::BindOnce(&optimization_guide::PageContextEligibility::Get),
+  optimization_guide::PageContextEligibility::GetAsync(
       base::BindOnce(&GlicSelectionObserver::OnPageContextEligibilityAPILoaded,
                      weak_ptr_factory_.GetWeakPtr(), std::move(account)));
 }

@@ -4,9 +4,20 @@
 
 #include "components/optimization_guide/content/browser/page_context_eligibility.h"
 
+#include <utility>
+#include <vector>
+
 #include "base/compiler_specific.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
+#include "base/synchronization/lock.h"
+#include "base/task/bind_post_task.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/thread_pool.h"
+#include "base/thread_annotations.h"
 #include "components/optimization_guide/content/browser/page_context_eligibility_api.h"
 #include "components/optimization_guide/core/optimization_guide_library_holder.h"
 
@@ -18,7 +29,26 @@ PageContextEligibility::PageContextEligibility(
 PageContextEligibility::~PageContextEligibility() = default;
 
 namespace {
+
 PageContextEligibility* g_page_context_eligibility_for_testing = nullptr;
+
+// Coordinates concurrent `GetAsync()` requests across calling sequences with
+// the background `ThreadPool` worker task that loads the singleton instance.
+// All state transitions and the pending callback queue are guarded by `lock`.
+struct AsyncLoadState {
+  base::Lock lock;
+  bool is_loading GUARDED_BY(lock) = false;
+  bool is_loaded GUARDED_BY(lock) = false;
+  raw_ptr<PageContextEligibility> instance GUARDED_BY(lock) = nullptr;
+  std::vector<base::OnceCallback<void(PageContextEligibility*)>>
+      pending_callbacks GUARDED_BY(lock);
+};
+
+AsyncLoadState& GetAsyncLoadState() {
+  static base::NoDestructor<AsyncLoadState> state;
+  return *state;
+}
+
 }  // namespace
 
 // static
@@ -27,9 +57,69 @@ PageContextEligibility* PageContextEligibility::Get() {
   if (g_page_context_eligibility_for_testing) {
     return g_page_context_eligibility_for_testing;
   }
+  return GetLoadedInstance();
+}
+
+// static
+DISABLE_CFI_DLSYM
+PageContextEligibility* PageContextEligibility::GetLoadedInstance() {
   static base::NoDestructor<std::unique_ptr<PageContextEligibility>>
       page_context_eligibility{Create()};
   return page_context_eligibility->get();
+}
+
+// static
+void PageContextEligibility::GetAsync(
+    base::OnceCallback<void(PageContextEligibility*)> callback) {
+  if (g_page_context_eligibility_for_testing) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            [](base::OnceCallback<void(PageContextEligibility*)> cb) {
+              std::move(cb).Run(g_page_context_eligibility_for_testing);
+            },
+            std::move(callback)));
+    return;
+  }
+
+  AsyncLoadState& state = GetAsyncLoadState();
+  bool should_post_worker_task = false;
+  {
+    base::AutoLock auto_lock(state.lock);
+    if (state.is_loaded) {
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE, base::BindOnce(std::move(callback), state.instance));
+      return;
+    }
+    state.pending_callbacks.push_back(
+        base::BindPostTaskToCurrentDefault(std::move(callback)));
+    if (!state.is_loading) {
+      state.is_loading = true;
+      should_post_worker_task = true;
+    }
+  }
+
+  if (should_post_worker_task) {
+    base::ThreadPool::PostTask(
+        FROM_HERE, {base::TaskPriority::USER_BLOCKING, base::MayBlock()},
+        base::BindOnce([]() {
+          PageContextEligibility* instance =
+              PageContextEligibility::GetLoadedInstance();
+          std::vector<base::OnceCallback<void(PageContextEligibility*)>>
+              callbacks;
+          {
+            AsyncLoadState& state = GetAsyncLoadState();
+            base::AutoLock auto_lock(state.lock);
+            state.instance = instance;
+            state.is_loaded = true;
+            state.is_loading = false;
+            callbacks = std::exchange(state.pending_callbacks, {});
+          }
+          for (auto& cb : callbacks) {
+            std::move(cb).Run(instance);
+          }
+        }));
+  }
 }
 
 // static
