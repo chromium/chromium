@@ -212,4 +212,9 @@ agentic_review {
     rules: "agents/knowledge_base/rules/general/cpp_safety_and_correctness/remove-platform-guards-when-disabling-gtests-unconditionally.md"
     rules: "agents/knowledge_base/rules/general/cpp_safety_and_correctness/run-taskobserver-dependent-checks-inside-posted-tasks.md"
   }
+  capability_groups {
+    path_expression: "(?:.*/)?[^/]*\\.(?:h|hpp|cc|cpp|mm)"
+    content_patterns: "\\b\\w*(?:Deprecated|DEPRECATED|_deprecated|deprecated_)\\w*(?:<[^>]*>)?\\s*\\(|&[\\w:]*(?:Deprecated|DEPRECATED|_deprecated|deprecated_)\\w*"
+    rules: "agents/knowledge_base/rules/general/cpp_safety_and_correctness/no-new-calls-to-deprecated-apis.md"
+  }
 }
