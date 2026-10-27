@@ -25,39 +25,46 @@
   }
 
   .update-section {
+    align-items: flex-start;
     display: flex;
     justify-content: space-between;
-    align-items: center;
-    padding-inline-end: 20px;
+    min-height: 42px;
   }
 
   .update-info {
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
+    line-height: 20px;
   }
 
-  .invisible {
-    visibility: hidden;
-  }
-
-  #checkUpdateButton {
-    width: 180px;
-    justify-content: center;
+  .update-controls {
+    /* Center the 36px cr-button (--cr-button-height) on the 20px Version
+     * text line without shifting .update-section's 42px min-height. */
+    margin-block: calc((20px - var(--cr-button-height)) / 2);
   }
 
   .last-check-text {
-    color: var(--cros-text-color-secondary);
-    font-size: 12px;
-    margin-top: 4px;
-    display: flex;
     align-items: center;
+    color: var(--cros-text-color-secondary);
+    display: flex;
+    font-size: 12px;
+    line-height: 18px;
+  }
+
+  .last-check-status {
+    margin-top: 4px;
   }
 
   .spinner {
-    margin-inline-start: 8px;
-    width: 16px;
     height: 16px;
+    margin-inline-start: 8px;
+    margin-top: 4px;
+    width: 16px;
+  }
+
+  #storageTitle > .indented-app-details:first-of-type {
+    padding-top: 6px;
   }
 </style>
 <div class="permission-section-header">
@@ -108,7 +115,10 @@
     <div class="update-info">
       [[i18n('appManagementAppDetailsVersion', app.version)]]
       <div class="last-check-text" aria-live="polite" aria-atomic="true">
-        [[getUpdateStatusString_(updateState_)]]
+        <span class="last-check-status"
+            hidden$="[[!getUpdateStatusString_(updateState_)]]">
+          [[getUpdateStatusString_(updateState_)]]
+        </span>
         <template is="dom-if" if="[[isChecking_(updateState_)]]">
           <paper-spinner-lite active class="spinner" aria-hidden="true">
           </paper-spinner-lite>
