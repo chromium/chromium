@@ -14,6 +14,7 @@
 # limitations under the License.
 
 import asyncio
+import json
 from unittest.mock import ANY
 
 import pytest
@@ -22,6 +23,7 @@ from test_helpers import (
     ANY_TIMESTAMP,
     AnyExtending,
     execute_command,
+    get_tree,
     goto_url,
     read_JSON_message,
     send_JSON_command,
@@ -470,3 +472,154 @@ async def test_cdp_no_errors_on_non_page_targets(
         },
     )
     assert errors_result["result"]["result"]["value"] == []
+
+
+@pytest.mark.asyncio
+async def test_cdp_ignores_events_from_non_owning_session(
+    websocket,
+    context_id,
+    iframe_id,
+    create_context,
+    get_cdp_session_id,
+    html,
+):
+    # Create a second top-level context and move the iframe cross-origin so
+    # that `iframe_id` and `second_context_id` run in separate CDP sessions.
+    second_context_id = await create_context()
+    await goto_url(
+        websocket, iframe_id, html("<h1>CHILD</h1>", same_origin=False), "complete"
+    )
+
+    iframe_session_id = await get_cdp_session_id(iframe_id)
+    second_session_id = await get_cdp_session_id(second_context_id)
+
+    # Attach to the BiDi-CDP Mapper target via a custom page session (so
+    # CdpTargetManager does not auto-detach the mapper target) to invoke
+    # `window.cdp.onmessage` with synthetic CDP events directly.
+    targets = await execute_command(
+        websocket,
+        {
+            "method": "goog:cdp.sendCommand",
+            "params": {"method": "Target.getTargets", "params": {}},
+        },
+    )
+    mapper_target_id = next(
+        t["targetId"]
+        for t in targets["result"]["targetInfos"]
+        if t["title"] == "BiDi-CDP Mapper"
+    )
+    custom_session = await execute_command(
+        websocket,
+        {
+            "method": "goog:cdp.sendCommand",
+            "params": {
+                "method": "Target.attachToTarget",
+                "params": {"targetId": context_id, "flatten": True},
+            },
+        },
+    )
+    mapper_session = await execute_command(
+        websocket,
+        {
+            "method": "goog:cdp.sendCommand",
+            "params": {
+                "method": "Target.attachToTarget",
+                "params": {"targetId": mapper_target_id, "flatten": True},
+                "session": custom_session["result"]["sessionId"],
+            },
+        },
+    )
+    mapper_session_id = mapper_session["result"]["sessionId"]
+
+    # Emit synthetic CDP events from `iframe_session_id` targeting contexts and
+    # sessions that `iframe_session_id` does not own.
+    synthetic_events = [
+        # `context_id` is already tracked (and owned by the parent session);
+        # re-attaching it under `iframe_id` would create a parent cycle.
+        {
+            "method": "Page.frameAttached",
+            "params": {
+                "frameId": context_id,
+                "parentFrameId": iframe_id,
+            },
+            "sessionId": iframe_session_id,
+        },
+        # `second_context_id` is owned by `second_session_id`, not `iframe_session_id`.
+        {
+            "method": "Page.frameAttached",
+            "params": {
+                "frameId": "synthetic-frame",
+                "parentFrameId": second_context_id,
+            },
+            "sessionId": iframe_session_id,
+        },
+        # `second_context_id` cannot be detached by `iframe_session_id`.
+        {
+            "method": "Page.frameSubtreeWillBeDetached",
+            "params": {
+                "frameId": second_context_id,
+            },
+            "sessionId": iframe_session_id,
+        },
+        # `second_session_id` is already active and cannot be replaced.
+        {
+            "method": "Target.attachedToTarget",
+            "params": {
+                "sessionId": second_session_id,
+                "targetInfo": {
+                    "targetId": "synthetic-target",
+                    "type": "page",
+                    "title": "",
+                    "url": "about:blank",
+                    "attached": True,
+                    "canAccessOpener": False,
+                },
+                "waitingForDebugger": False,
+            },
+            "sessionId": iframe_session_id,
+        },
+        # `second_session_id` was attached by the browser session, not `iframe_session_id`.
+        {
+            "method": "Target.detachedFromTarget",
+            "params": {
+                "sessionId": second_session_id,
+                "targetId": second_context_id,
+            },
+            "sessionId": iframe_session_id,
+        },
+    ]
+
+    for event in synthetic_events:
+        await execute_command(
+            websocket,
+            {
+                "method": "goog:cdp.sendCommand",
+                "params": {
+                    "method": "Runtime.evaluate",
+                    "params": {
+                        "expression": f"window.cdp.onmessage('{json.dumps(event)}')",
+                    },
+                    "session": mapper_session_id,
+                },
+            },
+        )
+
+    # Verify the browsing context tree is intact and `second_context_id` still works.
+    tree = await get_tree(websocket)
+    contexts_by_id = {c["context"]: c for c in tree["contexts"]}
+    assert set(contexts_by_id.keys()) == {context_id, second_context_id}
+    assert [c["context"] for c in contexts_by_id[context_id]["children"]] == [iframe_id]
+    assert contexts_by_id[second_context_id]["children"] == []
+
+    eval_result = await execute_command(
+        websocket,
+        {
+            "method": "script.evaluate",
+            "params": {
+                "expression": "1 + 1",
+                "awaitPromise": False,
+                "target": {"context": second_context_id},
+            },
+        },
+    )
+    assert eval_result["result"] == {"type": "number", "value": 2}

@@ -346,6 +346,7 @@ ts_library("unit_tests") {
     "bidiMapper/modules/autofill/AutofillProcessor.test.ts",
     "bidiMapper/modules/browser/BrowserProcessot.test.ts",
     "bidiMapper/modules/browser/ContextConfigStorage.test.ts",
+    "bidiMapper/modules/cdp/CdpTargetManager.test.ts",
     "bidiMapper/modules/context/BrowsingContextStorage.test.ts",
     "bidiMapper/modules/context/NavigationTracker.test.ts",
     "bidiMapper/modules/digitalCredentials/DigitalCredentialsProcessor.test.ts",

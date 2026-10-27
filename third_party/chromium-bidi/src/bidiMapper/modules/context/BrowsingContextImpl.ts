@@ -17,6 +17,7 @@
 
 import type {Protocol} from 'devtools-protocol';
 
+import type {CdpClient, CdpEvents} from '../../../cdp/CdpClient.js';
 import {
   BrowsingContext,
   ChromiumBidi,
@@ -56,6 +57,14 @@ import {
   type NavigationState,
   NavigationTracker,
 } from './NavigationTracker.js';
+
+/** Subscribes to the events of a CDP client. */
+interface CdpEventSubscriber {
+  on<Event extends keyof CdpEvents>(
+    event: Event,
+    handler: (params: CdpEvents[Event]) => void,
+  ): void;
+}
 
 export class BrowsingContextImpl {
   static readonly LOGGER_PREFIX: `${LogType.debug}:browsingContext` =
@@ -99,6 +108,8 @@ export class BrowsingContextImpl {
   readonly #navigationTracker: NavigationTracker;
   readonly #realmStorage: RealmStorage;
   readonly #configStorage: ContextConfigStorage;
+  // Tracks the CDP listeners installed by `#initListeners`.
+  #cdpListeners = new DisposableStack();
 
   // Set when the user prompt is opened. Required to provide the type in closing event.
   #lastUserPromptType?: BrowsingContext.UserPromptType;
@@ -221,6 +232,8 @@ export class BrowsingContextImpl {
   }
 
   dispose(emitContextDestroyed: boolean): void {
+    // A disposed context must not react to CDP events anymore.
+    this.#cdpListeners.dispose();
     this.#navigationTracker.dispose();
 
     // Reject any pending callers awaiting the default realm when the context
@@ -284,6 +297,9 @@ export class BrowsingContextImpl {
     if (!this.isTopLevelContext()) {
       this.parent!.addChild(this.id);
     }
+    // The top-level context is known only now: move the dialog listeners to
+    // its CDP target.
+    this.#initListeners();
   }
 
   /** Returns the parent context. */
@@ -442,8 +458,41 @@ export class BrowsingContextImpl {
     this.#navigationTracker.onTargetInfoChanged(params.targetInfo.url);
   }
 
+  /**
+   * Returns a subscriber to the given CDP client's events which remembers how
+   * to unsubscribe, so that the listeners can be dropped when the context
+   * changes its CDP target or is disposed.
+   */
+  #subscriberFor(cdpClient: CdpClient): CdpEventSubscriber {
+    return {
+      on: <Event extends keyof CdpEvents>(
+        event: Event,
+        handler: (params: CdpEvents[Event]) => void,
+      ) => {
+        cdpClient.on(event, handler);
+        this.#cdpListeners.defer(() => cdpClient.off(event, handler));
+      },
+    };
+  }
+
   #initListeners() {
-    this.#cdpTarget.cdpClient.on('Network.loadingFailed', (params) => {
+    // Drop the listeners of the previous CDP target: events from a session
+    // that no longer hosts this frame must not change its state.
+    this.#cdpListeners.dispose();
+    this.#cdpListeners = new DisposableStack();
+    const cdpTargetClientSubscriber = this.#subscriberFor(
+      this.#cdpTarget.cdpClient,
+    );
+    const cdpTargetBrowserClientSubscriber = this.#subscriberFor(
+      this.#cdpTarget.browserCdpClient,
+    );
+    // JavaScript dialogs of any frame are reported by the top-level page
+    // target, which also handles them (see `handleUserPrompt`).
+    const dialogCdpClientSubscriber = this.#subscriberFor(
+      this.top.#cdpTarget.cdpClient,
+    );
+
+    cdpTargetClientSubscriber.on('Network.loadingFailed', (params) => {
       // Detect navigation errors like `net::ERR_BLOCKED_BY_RESPONSE`.
       // Network related to navigation has request id equals to navigation's loader id.
       this.#navigationTracker.networkLoadingFailed(
@@ -452,7 +501,7 @@ export class BrowsingContextImpl {
       );
     });
 
-    this.#cdpTarget.cdpClient.on('Page.fileChooserOpened', (params) => {
+    cdpTargetClientSubscriber.on('Page.fileChooserOpened', (params) => {
       if (this.id !== params.frameId) {
         return;
       }
@@ -490,7 +539,7 @@ export class BrowsingContextImpl {
       );
     });
 
-    this.#cdpTarget.cdpClient.on('Page.frameNavigated', (params) => {
+    cdpTargetClientSubscriber.on('Page.frameNavigated', (params) => {
       if (this.id !== params.frame.id) {
         return;
       }
@@ -530,7 +579,7 @@ export class BrowsingContextImpl {
       }
     });
 
-    this.#cdpTarget.cdpClient.on('Page.frameStartedNavigating', (params) => {
+    cdpTargetClientSubscriber.on('Page.frameStartedNavigating', (params) => {
       if (this.id !== params.frameId) {
         return;
       }
@@ -555,7 +604,7 @@ export class BrowsingContextImpl {
       );
     });
 
-    this.#cdpTarget.cdpClient.on('Page.navigatedWithinDocument', (params) => {
+    cdpTargetClientSubscriber.on('Page.navigatedWithinDocument', (params) => {
       if (this.id !== params.frameId) {
         return;
       }
@@ -581,7 +630,7 @@ export class BrowsingContextImpl {
       }
     });
 
-    this.#cdpTarget.cdpClient.on('Page.lifecycleEvent', (params) => {
+    cdpTargetClientSubscriber.on('Page.lifecycleEvent', (params) => {
       if (this.id !== params.frameId) {
         return;
       }
@@ -670,7 +719,7 @@ export class BrowsingContextImpl {
       }
     });
 
-    this.#cdpTarget.cdpClient.on(
+    cdpTargetClientSubscriber.on(
       'Runtime.executionContextCreated',
       (params) => {
         const {auxData, name, uniqueId, id} = params.context;
@@ -743,7 +792,7 @@ export class BrowsingContextImpl {
       },
     );
 
-    this.#cdpTarget.cdpClient.on(
+    cdpTargetClientSubscriber.on(
       'Runtime.executionContextDestroyed',
       (params) => {
         // If the destroyed context is the currently resolved default realm,
@@ -764,7 +813,7 @@ export class BrowsingContextImpl {
       },
     );
 
-    this.#cdpTarget.cdpClient.on('Runtime.executionContextsCleared', () => {
+    cdpTargetClientSubscriber.on('Runtime.executionContextsCleared', () => {
       // Only replace `#defaultRealmDeferred` if it was already resolved.
       // If it is currently pending, do not reject it so callers waiting for
       // a navigating context's realm will resolve when the new default realm
@@ -777,7 +826,7 @@ export class BrowsingContextImpl {
       });
     });
 
-    this.#cdpTarget.cdpClient.on('Page.javascriptDialogClosed', (params) => {
+    dialogCdpClientSubscriber.on('Page.javascriptDialogClosed', (params) => {
       // Checking for `params.frameId` for comptaibility with Chrome
       // versions that do not have a frameId. TODO: remove once
       // https://crrev.com/c/6487891 is in stable.
@@ -827,7 +876,7 @@ export class BrowsingContextImpl {
       this.#lastUserPromptType = undefined;
     });
 
-    this.#cdpTarget.cdpClient.on('Page.javascriptDialogOpening', (params) => {
+    dialogCdpClientSubscriber.on('Page.javascriptDialogOpening', (params) => {
       // Checking for `params.frameId` for comptaibility with Chrome
       // versions that do not have a frameId. TODO: remove once
       // https://crrev.com/c/6487891 is in stable.
@@ -883,7 +932,7 @@ export class BrowsingContextImpl {
       }
     });
 
-    this.#cdpTarget.browserCdpClient.on(
+    cdpTargetBrowserClientSubscriber.on(
       'Browser.downloadWillBegin',
       (params) => {
         if (this.id !== params.frameId) {
@@ -946,7 +995,7 @@ export class BrowsingContextImpl {
       },
     );
 
-    this.#cdpTarget.browserCdpClient.on(
+    cdpTargetBrowserClientSubscriber.on(
       'Browser.downloadProgress',
       (params) => {
         if (!this.#downloadIdToInfoMap.has(params.guid)) {

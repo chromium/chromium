@@ -127,6 +127,15 @@ export class CdpTargetManager {
    * for creating and destroying all targets and browsing contexts.
    */
   #setEventListeners(cdpClient: CdpClient) {
+    // The browser session reports info changes for all targets (see
+    // `Target.setDiscoverTargets` in `BidiServer`). Other sessions can carry
+    // renderer-originated events, so only trust the browser session here.
+    if (cdpClient === this.#browserCdpClient) {
+      cdpClient.on(
+        'Target.targetInfoChanged',
+        this.#handleTargetInfoChangedEvent.bind(this),
+      );
+    }
     cdpClient.on('Target.attachedToTarget', (params) => {
       this.#handleAttachedToTargetEvent(params, cdpClient);
     });
@@ -134,51 +143,74 @@ export class CdpTargetManager {
       'Target.detachedFromTarget',
       this.#handleDetachedFromTargetEvent.bind(this),
     );
-    cdpClient.on(
-      'Target.targetInfoChanged',
-      this.#handleTargetInfoChangedEvent.bind(this),
-    );
     cdpClient.on('Inspector.targetCrashed', () => {
       this.#handleTargetCrashedEvent(cdpClient);
     });
 
-    cdpClient.on(
-      'Page.frameAttached',
-      this.#handleFrameAttachedEvent.bind(this),
-    );
-    cdpClient.on(
-      'Page.frameSubtreeWillBeDetached',
-      this.#handleFrameSubtreeWillBeDetached.bind(this),
-    );
+    // Pass the emitting session, so that frame events are only applied to
+    // frames hosted by that session.
+    cdpClient.on('Page.frameAttached', (params) => {
+      this.#handleFrameAttachedEvent(params, cdpClient);
+    });
+    cdpClient.on('Page.frameSubtreeWillBeDetached', (params) => {
+      this.#handleFrameSubtreeWillBeDetached(params, cdpClient);
+    });
   }
 
-  #handleFrameAttachedEvent(params: Protocol.Page.FrameAttachedEvent) {
+  #handleFrameAttachedEvent(
+    params: Protocol.Page.FrameAttachedEvent,
+    cdpClient: CdpClient,
+  ) {
     const parentBrowsingContext = this.#browsingContextStorage.findContext(
       params.parentFrameId,
     );
-    if (parentBrowsingContext !== undefined) {
-      BrowsingContextImpl.create(
-        params.frameId,
-        params.parentFrameId,
-        parentBrowsingContext.userContext,
-        parentBrowsingContext.cdpTarget,
-        this.#eventManager,
-        this.#browsingContextStorage,
-        this.#realmStorage,
-        this.#configStorage,
-        // At this point, we don't know the URL of the frame yet, so it will be updated
-        // later.
-        'about:blank',
-        undefined,
-        this.#logger,
-      );
+    if (parentBrowsingContext === undefined) {
+      return;
     }
+    // A renderer reports frames attached to the frames it hosts. A session
+    // that does not host the parent frame cannot attach frames to it.
+    if (parentBrowsingContext.cdpTarget.cdpClient !== cdpClient) {
+      this.#logger?.(LogType.debugError)?.(
+        `Ignoring frameAttached for ${params.frameId}: the session does not host parent ${params.parentFrameId}`,
+      );
+      return;
+    }
+    // A known frame is either already hosted by this session, or by another
+    // target which only the browser can release (`Target.detachedFromTarget`).
+    // Never re-create or re-bind it here. This also prevents parent cycles,
+    // as every ancestor of the parent is a known frame.
+    if (this.#browsingContextStorage.hasContext(params.frameId)) {
+      return;
+    }
+    BrowsingContextImpl.create(
+      params.frameId,
+      params.parentFrameId,
+      parentBrowsingContext.userContext,
+      parentBrowsingContext.cdpTarget,
+      this.#eventManager,
+      this.#browsingContextStorage,
+      this.#realmStorage,
+      this.#configStorage,
+      // At this point, we don't know the URL of the frame yet, so it will be updated
+      // later.
+      'about:blank',
+      undefined,
+      this.#logger,
+    );
   }
 
   #handleFrameSubtreeWillBeDetached(
     params: Protocol.Page.FrameSubtreeWillBeDetachedEvent,
+    cdpClient: CdpClient,
   ) {
-    this.#browsingContextStorage.findContext(params.frameId)?.dispose(true);
+    const context = this.#browsingContextStorage.findContext(params.frameId);
+    // Only the session hosting the frame can remove it here. A frame with its
+    // own target (OOPIF) is disposed when the browser reports that target
+    // detached, as the embedder's session does not host it.
+    if (context?.cdpTarget.cdpClient !== cdpClient) {
+      return;
+    }
+    context.dispose(true);
   }
 
   #handleAttachedToTargetEvent(

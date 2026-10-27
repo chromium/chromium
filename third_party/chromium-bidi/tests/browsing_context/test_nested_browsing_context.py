@@ -452,3 +452,64 @@ async def test_browsingContext_addAndRemoveNestedContext_contextAddedAndRemoved(
             }
         ]
     } == result
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("same_origin", [False, True])
+async def test_nestedBrowsingContext_navigateToParentOrigin_eventsEmittedOnce(
+    websocket, context_id, iframe_id, html, same_origin
+):
+    await goto_url(
+        websocket,
+        iframe_id,
+        html("<h1>INITIAL</h1>", same_origin=same_origin),
+        "complete",
+    )
+
+    await subscribe(
+        websocket, ["browsingContext.domContentLoaded", "browsingContext.load"]
+    )
+
+    same_origin_url = html("<h1>BACK</h1>")
+    await execute_command(
+        websocket,
+        {
+            "method": "script.evaluate",
+            "params": {
+                "expression": f"document.querySelector('iframe').src = '{same_origin_url}'",
+                "awaitPromise": False,
+                "target": {"context": context_id},
+            },
+        },
+    )
+
+    iframe_events = []
+    while "browsingContext.load" not in iframe_events:
+        message = await read_JSON_message(websocket)
+        if message.get("params", {}).get("context") == iframe_id:
+            iframe_events.append(message["method"])
+
+    # Duplicated events, if any, are emitted before the command result.
+    command_id = await send_JSON_command(
+        websocket,
+        {
+            "method": "script.evaluate",
+            "params": {
+                "expression": "document.body.innerText",
+                "awaitPromise": False,
+                "target": {"context": iframe_id},
+            },
+        },
+    )
+    while True:
+        message = await read_JSON_message(websocket)
+        if message.get("id") == command_id:
+            break
+        if message.get("params", {}).get("context") == iframe_id:
+            iframe_events.append(message["method"])
+
+    assert iframe_events == [
+        "browsingContext.domContentLoaded",
+        "browsingContext.load",
+    ]
+    assert message["result"]["result"] == {"type": "string", "value": "BACK"}

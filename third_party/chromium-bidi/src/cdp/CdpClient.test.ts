@@ -28,6 +28,7 @@ import {MapperCdpConnection} from './CdpConnection.js';
 const TEST_TARGET_ID = 'TargetA';
 const ANOTHER_TARGET_ID = 'TargetB';
 const CDP_SESSION_ID = 'SessionA';
+const CHILD_SESSION_ID = 'SessionB';
 
 async function createCdpClient(
   stubTransport: StubTransport,
@@ -135,10 +136,11 @@ describe('CdpClient', () => {
     const typedCallback = sinon.fake();
     cdpClient.on('Target.attachedToTarget', typedCallback);
 
-    // Send a CDP event.
+    // Send a CDP event. A child session must have a new session ID, otherwise
+    // the event is ignored.
     await mockCdpServer.emulateIncomingMessage({
       method: 'Target.attachedToTarget',
-      params: {targetId: TEST_TARGET_ID},
+      params: {sessionId: CHILD_SESSION_ID, targetId: TEST_TARGET_ID},
       sessionId: CDP_SESSION_ID,
     });
 
@@ -146,11 +148,12 @@ describe('CdpClient', () => {
     sinon.assert.calledOnceWithExactly(
       genericCallback,
       'Target.attachedToTarget',
-      {targetId: TEST_TARGET_ID},
+      {sessionId: CHILD_SESSION_ID, targetId: TEST_TARGET_ID},
     );
     genericCallback.resetHistory();
 
     sinon.assert.calledOnceWithExactly(typedCallback, {
+      sessionId: CHILD_SESSION_ID,
       targetId: TEST_TARGET_ID,
     });
     typedCallback.resetHistory();

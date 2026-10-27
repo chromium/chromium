@@ -149,4 +149,103 @@ describe('CdpConnection', () => {
     cdpConnection.close();
     sinon.assert.calledOnce(mockCdpServer.close);
   });
+
+  it('ignores Target.attachedToTarget reusing a known session ID', async () => {
+    const mockCdpServer = new StubTransport();
+    const cdpConnection = new MapperCdpConnection(mockCdpServer);
+
+    await mockCdpServer.emulateIncomingMessage({
+      method: 'Target.attachedToTarget',
+      params: {sessionId: SOME_SESSION_ID},
+    });
+    await mockCdpServer.emulateIncomingMessage({
+      method: 'Target.attachedToTarget',
+      params: {sessionId: ANOTHER_SESSION_ID},
+    });
+    const someSessionClient = cdpConnection.getCdpClient(SOME_SESSION_ID);
+    const anotherSessionCallback = sinon.fake();
+    cdpConnection
+      .getCdpClient(ANOTHER_SESSION_ID)
+      .on('Target.attachedToTarget', anotherSessionCallback);
+
+    // A session announces a child session reusing an existing session ID.
+    await mockCdpServer.emulateIncomingMessage({
+      sessionId: ANOTHER_SESSION_ID,
+      method: 'Target.attachedToTarget',
+      params: {sessionId: SOME_SESSION_ID},
+    });
+
+    assert.strictEqual(
+      cdpConnection.getCdpClient(SOME_SESSION_ID),
+      someSessionClient,
+    );
+    sinon.assert.notCalled(anotherSessionCallback);
+  });
+
+  it('ignores Target.detachedFromTarget from a session that does not own the detached session', async () => {
+    const mockCdpServer = new StubTransport();
+    const cdpConnection = new MapperCdpConnection(mockCdpServer);
+
+    await mockCdpServer.emulateIncomingMessage({
+      method: 'Target.attachedToTarget',
+      params: {sessionId: SOME_SESSION_ID},
+    });
+    await mockCdpServer.emulateIncomingMessage({
+      method: 'Target.attachedToTarget',
+      params: {sessionId: ANOTHER_SESSION_ID},
+    });
+    const someSessionClient = cdpConnection.getCdpClient(SOME_SESSION_ID);
+    const someSessionCallback = sinon.fake();
+    someSessionClient.on('Page.frameNavigated', someSessionCallback);
+    const anotherSessionCallback = sinon.fake();
+    cdpConnection
+      .getCdpClient(ANOTHER_SESSION_ID)
+      .on('Target.detachedFromTarget', anotherSessionCallback);
+
+    // `SOME_SESSION_ID` was attached through the browser session, not through
+    // `ANOTHER_SESSION_ID`.
+    await mockCdpServer.emulateIncomingMessage({
+      sessionId: ANOTHER_SESSION_ID,
+      method: 'Target.detachedFromTarget',
+      params: {sessionId: SOME_SESSION_ID},
+    });
+
+    sinon.assert.notCalled(anotherSessionCallback);
+    assert.strictEqual(
+      cdpConnection.getCdpClient(SOME_SESSION_ID),
+      someSessionClient,
+    );
+    await mockCdpServer.emulateIncomingMessage({
+      sessionId: SOME_SESSION_ID,
+      method: 'Page.frameNavigated',
+    });
+    sinon.assert.calledOnceWithExactly(someSessionCallback, {});
+  });
+
+  it('removes a child session when its owner reports it detached', async () => {
+    const mockCdpServer = new StubTransport();
+    const cdpConnection = new MapperCdpConnection(mockCdpServer);
+
+    await mockCdpServer.emulateIncomingMessage({
+      method: 'Target.attachedToTarget',
+      params: {sessionId: SOME_SESSION_ID},
+    });
+    // `ANOTHER_SESSION_ID` is a child of `SOME_SESSION_ID`.
+    await mockCdpServer.emulateIncomingMessage({
+      sessionId: SOME_SESSION_ID,
+      method: 'Target.attachedToTarget',
+      params: {sessionId: ANOTHER_SESSION_ID},
+    });
+
+    await mockCdpServer.emulateIncomingMessage({
+      sessionId: SOME_SESSION_ID,
+      method: 'Target.detachedFromTarget',
+      params: {sessionId: ANOTHER_SESSION_ID},
+    });
+
+    assert.throws(
+      () => cdpConnection.getCdpClient(ANOTHER_SESSION_ID),
+      'Unknown CDP session ID',
+    );
+  });
 });

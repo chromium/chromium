@@ -56,6 +56,12 @@ export class MapperCdpConnection implements CdpConnection {
     Protocol.Target.SessionID | undefined,
     MapperCdpClient
   >();
+  /** Map from a child session ID to the ID of the session it was attached
+   * through. `undefined` points to the main browser session. */
+  readonly #parentSessionIds = new Map<
+    Protocol.Target.SessionID,
+    Protocol.Target.SessionID | undefined
+  >();
   readonly #commandCallbacks = new Map<number, CdpCallbacks>();
   readonly #logger?: LoggerFn;
   #nextId = 0;
@@ -77,12 +83,15 @@ export class MapperCdpConnection implements CdpConnection {
     }
     this.#commandCallbacks.clear();
     this.#sessionCdpClients.clear();
+    this.#parentSessionIds.clear();
   }
 
   async createBrowserSession(): Promise<MapperCdpClient> {
     const {sessionId} = await this.#mainBrowserCdpClient.sendCommand(
       'Target.attachToBrowserTarget',
     );
+    // The browser target session is owned by the main browser session.
+    this.#parentSessionIds.set(sessionId, undefined);
     return this.#createCdpClient(sessionId);
   }
 
@@ -134,11 +143,42 @@ export class MapperCdpConnection implements CdpConnection {
     const message: CdpMessage<any> = JSON.parse(json);
     this.#logger?.(MapperCdpConnection.LOGGER_PREFIX_RECV)?.(message);
 
+    // `undefined` is the main browser session.
+    const emittingSessionId: Protocol.Target.SessionID | undefined =
+      message.sessionId ?? undefined;
+
     // Update client map if a session is attached
     // Listen for these events on every session.
     if (message.method === 'Target.attachedToTarget') {
       const {sessionId} = message.params;
+      // Session IDs are unique per attachment. Drop an event reusing a known
+      // ID: replacing the client would cut the existing session off its
+      // listeners.
+      if (this.#sessionCdpClients.has(sessionId)) {
+        this.#logger?.(LogType.debugError)?.(
+          `Ignoring Target.attachedToTarget for known session ${sessionId}`,
+        );
+        return;
+      }
       this.#createCdpClient(sessionId);
+      // Remember the owner, as only it can report the session detached.
+      this.#parentSessionIds.set(sessionId, emittingSessionId);
+    }
+
+    if (message.method === 'Target.detachedFromTarget') {
+      const {sessionId} = message.params;
+      // A session is detached by the session it was attached through. Drop
+      // the event from any other session, so it cannot tear down a session it
+      // does not own.
+      if (
+        !this.#parentSessionIds.has(sessionId) ||
+        this.#parentSessionIds.get(sessionId) !== emittingSessionId
+      ) {
+        this.#logger?.(LogType.debugError)?.(
+          `Ignoring Target.detachedFromTarget for session ${sessionId} not owned by ${emittingSessionId}`,
+        );
+        return;
+      }
     }
 
     if (message.id !== undefined) {
@@ -153,15 +193,14 @@ export class MapperCdpConnection implements CdpConnection {
         }
       }
     } else if (message.method) {
-      const client = this.#sessionCdpClients.get(
-        message.sessionId ?? undefined,
-      );
+      const client = this.#sessionCdpClients.get(emittingSessionId);
       client?.emit(message.method, message.params || {});
 
       // Update client map if a session is detached
       // But emit on that session
       if (message.method === 'Target.detachedFromTarget') {
         const {sessionId} = message.params;
+        this.#parentSessionIds.delete(sessionId);
         const client = this.#sessionCdpClients.get(sessionId);
         if (client) {
           this.#sessionCdpClients.delete(sessionId);
