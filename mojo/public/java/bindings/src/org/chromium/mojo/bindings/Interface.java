@@ -246,6 +246,42 @@ public interface Interface extends ConnectionErrorHandler, Closeable {
         public void onConnectionError(MojoException e) {
             mHandler.onConnectionError(e);
         }
+
+        /** Serializes and sends a message for a method without a response. */
+        protected final void sendMessage(Struct message, int methodId) {
+            try {
+                mHandler.getMessageReceiver()
+                        .accept(
+                                message.serializeWithHeader(
+                                        mHandler.getCore(),
+                                        new MessageHeader(
+                                                MessageHeader.TEMPORARY_DEFAULT_INTERFACE_ID,
+                                                methodId)));
+            } catch (BadMessageException e) {
+                // Should not be possible, because we serialized above.
+                throw new IllegalStateException(e);
+            }
+        }
+
+        /** Serializes and sends a message for a method with a response. */
+        protected final void sendMessageWithResponder(
+                Struct message, int methodId, MessageReceiver responder) {
+            try {
+                mHandler.getMessageReceiver()
+                        .acceptWithResponder(
+                                message.serializeWithHeader(
+                                        mHandler.getCore(),
+                                        new MessageHeader(
+                                                MessageHeader.TEMPORARY_DEFAULT_INTERFACE_ID,
+                                                methodId,
+                                                MessageHeader.MESSAGE_EXPECTS_RESPONSE_FLAG,
+                                                0)),
+                                responder);
+            } catch (BadMessageException e) {
+                // Should not be possible, because we serialized above.
+                throw new IllegalStateException(e);
+            }
+        }
     }
 
     /**
@@ -335,15 +371,30 @@ public interface Interface extends ConnectionErrorHandler, Closeable {
      * @param <P> the type of the proxy the manager can handle. To be noted, P always extends I.
      */
     abstract class Manager<I extends Interface, P extends Proxy> {
+        private final String mName;
+        private final int mVersion;
+
+        /**
+         * @param name the name of the interface.
+         * @param version the version of the interface.
+         */
+        protected Manager(String name, int version) {
+            mName = name;
+            mVersion = version;
+        }
 
         /**
          * Returns the name of the interface. This is an opaque (but human readable) identifier used
          * by the service provider to identify services.
          */
-        public abstract String getName();
+        public final String getName() {
+            return mName;
+        }
 
         /** Returns the version of the managed interface. */
-        public abstract int getVersion();
+        public final int getVersion() {
+            return mVersion;
+        }
 
         /** Binds the given implementation to the InterfaceRequest. */
         public final Router bind(I impl, InterfaceRequest<I> request) {

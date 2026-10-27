@@ -5,8 +5,6 @@
 package org.chromium.mojo.bindings;
 
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.mojo.bindings.Interface.Manager;
-import org.chromium.mojo.bindings.Interface.Proxy;
 import org.chromium.mojo.bindings.interfacecontrol.InterfaceControlMessagesConstants;
 import org.chromium.mojo.bindings.interfacecontrol.QueryVersionResult;
 import org.chromium.mojo.bindings.interfacecontrol.RunInput;
@@ -98,8 +96,8 @@ public class InterfaceControlMessagesHelper {
 
     /** Handles a received run message. */
     @SuppressWarnings("NullAway") // Thinks response.output is @NonNull.
-    public static <I extends Interface, P extends Proxy> boolean handleRun(
-            Core core, Manager<I, P> manager, ServiceMessage message, MessageReceiver responder)
+    static boolean handleRun(
+            Core core, int version, ServiceMessage message, MessageReceiver responder)
             throws BadMessageException {
         Message payload = message.getPayload();
         RunMessageParams query = RunMessageParams.deserialize(payload);
@@ -107,7 +105,7 @@ public class InterfaceControlMessagesHelper {
         response.output = new RunOutput();
         if (query.input.which() == RunInput.Tag.QueryVersion) {
             response.output.setQueryVersionResult(new QueryVersionResult());
-            response.output.getQueryVersionResult().version = manager.getVersion();
+            response.output.getQueryVersionResult().version = version;
         } else {
             response.output = null;
         }
@@ -126,12 +124,12 @@ public class InterfaceControlMessagesHelper {
      * Handles a received run or close pipe message. Closing the pipe is handled by returning
      * |false|.
      */
-    public static <I extends Interface, P extends Proxy> boolean handleRunOrClosePipe(
-            Manager<I, P> manager, ServiceMessage message) throws BadMessageException {
+    static boolean handleRunOrClosePipe(int version, ServiceMessage message)
+            throws BadMessageException {
         Message payload = message.getPayload();
         RunOrClosePipeMessageParams query = RunOrClosePipeMessageParams.deserialize(payload);
         if (query.input.which() == RunOrClosePipeInput.Tag.RequireVersion) {
-            return query.input.getRequireVersion().version <= manager.getVersion();
+            return query.input.getRequireVersion().version <= version;
         }
         return false;
     }

@@ -23,17 +23,7 @@ import org.chromium.mojo.bindings.Result;
 class ResultInterface_Internal {
 
     public static final org.chromium.mojo.bindings.Interface.Manager<ResultInterface, ResultInterface.Proxy> MANAGER =
-            new org.chromium.mojo.bindings.Interface.Manager<ResultInterface, ResultInterface.Proxy>() {
-
-        @Override
-        public String getName() {
-            return "golden.ResultInterface";
-        }
-
-        @Override
-        public int getVersion() {
-          return 0;
-        }
+            new org.chromium.mojo.bindings.Interface.Manager<ResultInterface, ResultInterface.Proxy>("golden.ResultInterface", 0) {
 
         @Override
         public Proxy buildProxy(org.chromium.mojo.system.Core core,
@@ -78,22 +68,12 @@ Method_Response callback) {
 
             _message.a = a;
 
-            try {
 
-                getProxyHandler().getMessageReceiver().acceptWithResponder(
-                        _message.serializeWithHeader(
-                                getProxyHandler().getCore(),
-                                new org.chromium.mojo.bindings.MessageHeader(
-                                        org.chromium.mojo.bindings.MessageHeader.TEMPORARY_DEFAULT_INTERFACE_ID,
-                                        METHOD_ORDINAL,
-                                        org.chromium.mojo.bindings.MessageHeader.MESSAGE_EXPECTS_RESPONSE_FLAG,
-                                        0)),
-                        new ResultInterfaceMethodResponseParamsForwardToCallback(callback));
+            sendMessageWithResponder(
+                    _message,
+                    METHOD_ORDINAL,
+                    new ResultInterfaceMethodResponseParamsForwardToCallback(callback));
 
-            } catch (org.chromium.mojo.bindings.BadMessageException e) {
-                // Should not be possible, because we serialized above.
-                throw new IllegalStateException(e);
-            }
         }
 
 
@@ -106,22 +86,12 @@ SyncMethod_Response callback) {
 
             _message.a = a;
 
-            try {
 
-                getProxyHandler().getMessageReceiver().acceptWithResponder(
-                        _message.serializeWithHeader(
-                                getProxyHandler().getCore(),
-                                new org.chromium.mojo.bindings.MessageHeader(
-                                        org.chromium.mojo.bindings.MessageHeader.TEMPORARY_DEFAULT_INTERFACE_ID,
-                                        SYNC_METHOD_ORDINAL,
-                                        org.chromium.mojo.bindings.MessageHeader.MESSAGE_EXPECTS_RESPONSE_FLAG,
-                                        0)),
-                        new ResultInterfaceSyncMethodResponseParamsForwardToCallback(callback));
+            sendMessageWithResponder(
+                    _message,
+                    SYNC_METHOD_ORDINAL,
+                    new ResultInterfaceSyncMethodResponseParamsForwardToCallback(callback));
 
-            } catch (org.chromium.mojo.bindings.BadMessageException e) {
-                // Should not be possible, because we serialized above.
-                throw new IllegalStateException(e);
-            }
         }
 
 
@@ -130,104 +100,49 @@ SyncMethod_Response callback) {
     static final class ResultInterfaceStub extends org.chromium.mojo.bindings.Stub<ResultInterface> {
 
         ResultInterfaceStub(org.chromium.mojo.system.Core core, ResultInterface impl, int interfaceId) {
-            super(core, impl, interfaceId);
+            super(core, impl, interfaceId, 0);
         }
 
         @Override
-        public boolean accept(org.chromium.mojo.bindings.Message message) throws org.chromium.mojo.bindings.BadMessageException {
-            try {
-                org.chromium.mojo.bindings.ServiceMessage messageWithHeader =
-                        message.asServiceMessage();
-                org.chromium.mojo.bindings.MessageHeader header = messageWithHeader.getHeader();
-                int flags = org.chromium.mojo.bindings.MessageHeader.NO_FLAG;
-                if (header.hasFlag(org.chromium.mojo.bindings.MessageHeader.MESSAGE_IS_SYNC_FLAG)) {
-                    flags = flags | org.chromium.mojo.bindings.MessageHeader.MESSAGE_IS_SYNC_FLAG;
+        protected boolean handleMessageWithResponder(
+                int methodId,
+                org.chromium.mojo.bindings.Message payload,
+                org.chromium.mojo.bindings.MessageReceiver receiver,
+                long requestId) {
+            switch (methodId) {
+
+
+
+
+
+
+                case METHOD_ORDINAL: {
+
+                    ResultInterfaceMethodParams data =
+                            ResultInterfaceMethodParams.deserialize(payload);
+
+                    getImpl().method(data.a, new ResultInterfaceMethodResponseParamsProxyToResponder(getCore(), receiver, requestId));
+                    return true;
                 }
-                if (!header.hasExactFlags(flags)) {
-                    throw new org.chromium.mojo.bindings.InvalidHeaderException(
-                        "expected flags: " + flags + ", but got: " + header.getFlags()
-                    );
+
+
+
+
+
+
+
+                case SYNC_METHOD_ORDINAL: {
+
+                    ResultInterfaceSyncMethodParams data =
+                            ResultInterfaceSyncMethodParams.deserialize(payload);
+
+                    getImpl().syncMethod(data.a, new ResultInterfaceSyncMethodResponseParamsProxyToResponder(getCore(), receiver, requestId));
+                    return true;
                 }
-                switch(header.getMethodId()) {
-
-                    case org.chromium.mojo.bindings.interfacecontrol.InterfaceControlMessagesConstants.RUN_OR_CLOSE_PIPE_MESSAGE_ID:
-                        return org.chromium.mojo.bindings.InterfaceControlMessagesHelper.handleRunOrClosePipe(
-                                ResultInterface_Internal.MANAGER, messageWithHeader);
 
 
-
-
-
-
-                    default:
-                        throw new org.chromium.mojo.bindings.UnknownMethodException(
-                            "unknown method: " + header.getMethodId());
-                }
-            } catch (org.chromium.mojo.bindings.DeserializationException e) {
-                throw new org.chromium.mojo.bindings.UnmarshalException(e);
             }
-        }
-
-        @Override
-        public boolean acceptWithResponder(org.chromium.mojo.bindings.Message message, org.chromium.mojo.bindings.MessageReceiver receiver)
-                throws org.chromium.mojo.bindings.BadMessageException {
-            try {
-                org.chromium.mojo.bindings.ServiceMessage messageWithHeader =
-                        message.asServiceMessage();
-                org.chromium.mojo.bindings.MessageHeader header = messageWithHeader.getHeader();
-                int flags = org.chromium.mojo.bindings.MessageHeader.MESSAGE_EXPECTS_RESPONSE_FLAG;
-                if (header.hasFlag(org.chromium.mojo.bindings.MessageHeader.MESSAGE_IS_SYNC_FLAG)) {
-                    flags = flags | org.chromium.mojo.bindings.MessageHeader.MESSAGE_IS_SYNC_FLAG;
-                }
-                if (!header.hasExactFlags(flags)) {
-                    throw new org.chromium.mojo.bindings.InvalidHeaderException(
-                        "expected flags: " + flags + ", but got: " + header.getFlags()
-                    );
-                }
-                switch(header.getMethodId()) {
-
-                    case org.chromium.mojo.bindings.interfacecontrol.InterfaceControlMessagesConstants.RUN_MESSAGE_ID:
-                        return org.chromium.mojo.bindings.InterfaceControlMessagesHelper.handleRun(
-                                getCore(), ResultInterface_Internal.MANAGER, messageWithHeader, receiver);
-
-
-
-
-
-
-
-                    case METHOD_ORDINAL: {
-
-                        ResultInterfaceMethodParams data =
-                                ResultInterfaceMethodParams.deserialize(messageWithHeader.getPayload());
-
-                        getImpl().method(data.a, new ResultInterfaceMethodResponseParamsProxyToResponder(getCore(), receiver, header.getRequestId()));
-                        return true;
-                    }
-
-
-
-
-
-
-
-                    case SYNC_METHOD_ORDINAL: {
-
-                        ResultInterfaceSyncMethodParams data =
-                                ResultInterfaceSyncMethodParams.deserialize(messageWithHeader.getPayload());
-
-                        getImpl().syncMethod(data.a, new ResultInterfaceSyncMethodResponseParamsProxyToResponder(getCore(), receiver, header.getRequestId()));
-                        return true;
-                    }
-
-
-                    default:
-                        throw new org.chromium.mojo.bindings.UnknownMethodException(
-                            "unknown method: " + header.getMethodId());
-                }
-            } catch (org.chromium.mojo.bindings.DeserializationException e) {
-                throw new org.chromium.mojo.bindings.UnmarshalException(e);
-            }
+            return false;
         }
     }
 
@@ -358,73 +273,37 @@ SyncMethod_Response callback) {
         }
     }
 
-    static class ResultInterfaceMethodResponseParamsForwardToCallback implements org.chromium.mojo.bindings.MessageReceiver {
+    static class ResultInterfaceMethodResponseParamsForwardToCallback extends org.chromium.mojo.bindings.ForwardToCallback {
         private final ResultInterface.Method_Response mCallback;
 
         ResultInterfaceMethodResponseParamsForwardToCallback(ResultInterface.Method_Response callback) {
+            super(METHOD_ORDINAL, org.chromium.mojo.bindings.MessageHeader.MESSAGE_IS_RESPONSE_FLAG);
             this.mCallback = callback;
         }
 
         @Override
-        public boolean accept(org.chromium.mojo.bindings.Message message) throws org.chromium.mojo.bindings.BadMessageException {
-            try {
-                org.chromium.mojo.bindings.ServiceMessage messageWithHeader =
-                        message.asServiceMessage();
-                org.chromium.mojo.bindings.MessageHeader header = messageWithHeader.getHeader();
-                if (header.getMethodId() != METHOD_ORDINAL) {
-                    return false;
-                }
-                if (!header.hasExactFlags(org.chromium.mojo.bindings.MessageHeader.MESSAGE_IS_RESPONSE_FLAG)) {
-                    return false;
-                }
-
-                ResultInterfaceMethodResponseParams response = ResultInterfaceMethodResponseParams.deserialize(messageWithHeader.getPayload());
-
-                var mojoObj = response.result;
-                mCallback.call(Method_Response_Converter.convert(mojoObj));
-                return true;
-            } catch (org.chromium.mojo.bindings.DeserializationException e) {
-                throw new org.chromium.mojo.bindings.UnmarshalException(e);
-            }
+        protected void forwardResponse(org.chromium.mojo.bindings.Message payload) {
+            ResultInterfaceMethodResponseParams response = ResultInterfaceMethodResponseParams.deserialize(payload);
+            var mojoObj = response.result;
+            mCallback.call(Method_Response_Converter.convert(mojoObj));
         }
-
-        @Override
-        public void close() {}
     }
 
-    static class ResultInterfaceMethodResponseParamsProxyToResponder implements ResultInterface.Method_Response {
-
-        private final org.chromium.mojo.system.Core mCore;
-        private final org.chromium.mojo.bindings.MessageReceiver mMessageReceiver;
-        private final long mRequestId;
+    static class ResultInterfaceMethodResponseParamsProxyToResponder extends org.chromium.mojo.bindings.ProxyToResponder
+            implements ResultInterface.Method_Response {
 
         ResultInterfaceMethodResponseParamsProxyToResponder(
                 org.chromium.mojo.system.Core core,
                 org.chromium.mojo.bindings.MessageReceiver messageReceiver,
                 long requestId) {
-            mCore = core;
-            mMessageReceiver = messageReceiver;
-            mRequestId = requestId;
+            super(core, messageReceiver, requestId);
         }
 
         @Override
         public void call(Result<Boolean, ResultTestError> result) {
             ResultInterfaceMethodResponseParams _response = new ResultInterfaceMethodResponseParams();
             _response.result = Method_Response_Converter.convert(result);
-            try {
-                org.chromium.mojo.bindings.ServiceMessage _message =
-                        _response.serializeWithHeader(
-                                mCore,
-                                new org.chromium.mojo.bindings.MessageHeader(
-                                        org.chromium.mojo.bindings.MessageHeader.TEMPORARY_DEFAULT_INTERFACE_ID,
-                                        METHOD_ORDINAL,
-                                        org.chromium.mojo.bindings.MessageHeader.MESSAGE_IS_RESPONSE_FLAG,
-                                        mRequestId));
-                mMessageReceiver.accept(_message);
-            } catch (org.chromium.mojo.bindings.BadMessageException e) {
-                // Should not be possible, because we serialized above.
-                throw new IllegalStateException(e);
-            }
+            sendResponse(_response, METHOD_ORDINAL, org.chromium.mojo.bindings.MessageHeader.MESSAGE_IS_RESPONSE_FLAG);
         }
     }
 
@@ -556,73 +435,37 @@ SyncMethod_Response callback) {
         }
     }
 
-    static class ResultInterfaceSyncMethodResponseParamsForwardToCallback implements org.chromium.mojo.bindings.MessageReceiver {
+    static class ResultInterfaceSyncMethodResponseParamsForwardToCallback extends org.chromium.mojo.bindings.ForwardToCallback {
         private final ResultInterface.SyncMethod_Response mCallback;
 
         ResultInterfaceSyncMethodResponseParamsForwardToCallback(ResultInterface.SyncMethod_Response callback) {
+            super(SYNC_METHOD_ORDINAL, org.chromium.mojo.bindings.MessageHeader.MESSAGE_IS_RESPONSE_FLAG| org.chromium.mojo.bindings.MessageHeader.MESSAGE_IS_SYNC_FLAG);
             this.mCallback = callback;
         }
 
         @Override
-        public boolean accept(org.chromium.mojo.bindings.Message message) throws org.chromium.mojo.bindings.BadMessageException {
-            try {
-                org.chromium.mojo.bindings.ServiceMessage messageWithHeader =
-                        message.asServiceMessage();
-                org.chromium.mojo.bindings.MessageHeader header = messageWithHeader.getHeader();
-                if (header.getMethodId() != SYNC_METHOD_ORDINAL) {
-                    return false;
-                }
-                if (!header.hasExactFlags(org.chromium.mojo.bindings.MessageHeader.MESSAGE_IS_RESPONSE_FLAG| org.chromium.mojo.bindings.MessageHeader.MESSAGE_IS_SYNC_FLAG)) {
-                    return false;
-                }
-
-                ResultInterfaceSyncMethodResponseParams response = ResultInterfaceSyncMethodResponseParams.deserialize(messageWithHeader.getPayload());
-
-                var mojoObj = response.result;
-                mCallback.call(SyncMethod_Response_Converter.convert(mojoObj));
-                return true;
-            } catch (org.chromium.mojo.bindings.DeserializationException e) {
-                throw new org.chromium.mojo.bindings.UnmarshalException(e);
-            }
+        protected void forwardResponse(org.chromium.mojo.bindings.Message payload) {
+            ResultInterfaceSyncMethodResponseParams response = ResultInterfaceSyncMethodResponseParams.deserialize(payload);
+            var mojoObj = response.result;
+            mCallback.call(SyncMethod_Response_Converter.convert(mojoObj));
         }
-
-        @Override
-        public void close() {}
     }
 
-    static class ResultInterfaceSyncMethodResponseParamsProxyToResponder implements ResultInterface.SyncMethod_Response {
-
-        private final org.chromium.mojo.system.Core mCore;
-        private final org.chromium.mojo.bindings.MessageReceiver mMessageReceiver;
-        private final long mRequestId;
+    static class ResultInterfaceSyncMethodResponseParamsProxyToResponder extends org.chromium.mojo.bindings.ProxyToResponder
+            implements ResultInterface.SyncMethod_Response {
 
         ResultInterfaceSyncMethodResponseParamsProxyToResponder(
                 org.chromium.mojo.system.Core core,
                 org.chromium.mojo.bindings.MessageReceiver messageReceiver,
                 long requestId) {
-            mCore = core;
-            mMessageReceiver = messageReceiver;
-            mRequestId = requestId;
+            super(core, messageReceiver, requestId);
         }
 
         @Override
         public void call(Result<Boolean, ResultTestError> result) {
             ResultInterfaceSyncMethodResponseParams _response = new ResultInterfaceSyncMethodResponseParams();
             _response.result = SyncMethod_Response_Converter.convert(result);
-            try {
-                org.chromium.mojo.bindings.ServiceMessage _message =
-                        _response.serializeWithHeader(
-                                mCore,
-                                new org.chromium.mojo.bindings.MessageHeader(
-                                        org.chromium.mojo.bindings.MessageHeader.TEMPORARY_DEFAULT_INTERFACE_ID,
-                                        SYNC_METHOD_ORDINAL,
-                                        org.chromium.mojo.bindings.MessageHeader.MESSAGE_IS_RESPONSE_FLAG| org.chromium.mojo.bindings.MessageHeader.MESSAGE_IS_SYNC_FLAG,
-                                        mRequestId));
-                mMessageReceiver.accept(_message);
-            } catch (org.chromium.mojo.bindings.BadMessageException e) {
-                // Should not be possible, because we serialized above.
-                throw new IllegalStateException(e);
-            }
+            sendResponse(_response, SYNC_METHOD_ORDINAL, org.chromium.mojo.bindings.MessageHeader.MESSAGE_IS_RESPONSE_FLAG| org.chromium.mojo.bindings.MessageHeader.MESSAGE_IS_SYNC_FLAG);
         }
     }
 
