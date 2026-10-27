@@ -53,10 +53,10 @@ class BlobSliceTest : public testing::Test {
   }
 
   void Slice(BlobDataBuilder& builder,
-             BlobEntry* source,
+             scoped_refptr<BlobEntry> source,
              uint64_t slice_offset,
              uint64_t slice_size) {
-    builder.SliceBlob(source, slice_offset, slice_size);
+    builder.SliceBlob(std::move(source), slice_offset, slice_size);
   }
 
   void ExpectSlice(scoped_refptr<ShareableBlobDataItem> dest_item,
@@ -76,12 +76,12 @@ class BlobSliceTest : public testing::Test {
 TEST_F(BlobSliceTest, FullItem) {
   const size_t kSize = 5u;
 
-  BlobEntry data(kType);
+  auto data = base::MakeRefCounted<BlobEntry>(kType);
   scoped_refptr<ShareableBlobDataItem> item = CreateDataItem(kSize);
-  data.AppendSharedBlobItem(item);
+  data->AppendSharedBlobItem(item);
 
   BlobDataBuilder builder(kId);
-  Slice(builder, &data, 0, 5);
+  Slice(builder, data, 0, 5);
   EXPECT_TRUE(builder.copies().empty());
   ASSERT_EQ(1u, builder.items().size());
   EXPECT_EQ(item, builder.items()[0]);
@@ -90,12 +90,12 @@ TEST_F(BlobSliceTest, FullItem) {
 TEST_F(BlobSliceTest, SliceSingleItem) {
   const size_t kSize = 5u;
 
-  BlobEntry data(kType);
+  auto data = base::MakeRefCounted<BlobEntry>(kType);
   scoped_refptr<ShareableBlobDataItem> item = CreateDataItem(kSize);
-  data.AppendSharedBlobItem(item);
+  data->AppendSharedBlobItem(item);
 
   BlobDataBuilder builder(kId);
-  Slice(builder, &data, 1, 3);
+  Slice(builder, data, 1, 3);
   ASSERT_EQ(1u, builder.copies().size());
   ASSERT_EQ(1u, builder.items().size());
 
@@ -106,14 +106,14 @@ TEST_F(BlobSliceTest, SliceSingleLastItem) {
   const size_t kSize1 = 5u;
   const size_t kSize2 = 10u;
 
-  BlobEntry data(kType);
+  auto data = base::MakeRefCounted<BlobEntry>(kType);
   scoped_refptr<ShareableBlobDataItem> item1 = CreateDataItem(kSize1);
   scoped_refptr<ShareableBlobDataItem> item2 = CreateDataItem(kSize2);
-  data.AppendSharedBlobItem(item1);
-  data.AppendSharedBlobItem(item2);
+  data->AppendSharedBlobItem(item1);
+  data->AppendSharedBlobItem(item2);
 
   BlobDataBuilder builder(kId);
-  Slice(builder, &data, 6, 2);
+  Slice(builder, data, 6, 2);
   ASSERT_EQ(1u, builder.copies().size());
   ASSERT_EQ(1u, builder.items().size());
 
@@ -124,14 +124,14 @@ TEST_F(BlobSliceTest, SliceAcrossTwoItems) {
   const size_t kSize1 = 5u;
   const size_t kSize2 = 10u;
 
-  BlobEntry data(kType);
+  auto data = base::MakeRefCounted<BlobEntry>(kType);
   scoped_refptr<ShareableBlobDataItem> item1 = CreateDataItem(kSize1);
   scoped_refptr<ShareableBlobDataItem> item2 = CreateDataItem(kSize2);
-  data.AppendSharedBlobItem(item1);
-  data.AppendSharedBlobItem(item2);
+  data->AppendSharedBlobItem(item1);
+  data->AppendSharedBlobItem(item2);
 
   BlobDataBuilder builder(kId);
-  Slice(builder, &data, 4, 10);
+  Slice(builder, data, 4, 10);
   ASSERT_EQ(2u, builder.copies().size());
   ASSERT_EQ(2u, builder.items().size());
 
@@ -143,14 +143,14 @@ TEST_F(BlobSliceTest, SliceFileAndLastItem) {
   const size_t kSize1 = 5u;
   const size_t kSize2 = 10u;
 
-  BlobEntry data(kType);
+  auto data = base::MakeRefCounted<BlobEntry>(kType);
   scoped_refptr<ShareableBlobDataItem> item1 = CreateFileItem(0u, kSize1);
   scoped_refptr<ShareableBlobDataItem> item2 = CreateDataItem(kSize2);
-  data.AppendSharedBlobItem(item1);
-  data.AppendSharedBlobItem(item2);
+  data->AppendSharedBlobItem(item1);
+  data->AppendSharedBlobItem(item2);
 
   BlobDataBuilder builder(kId);
-  Slice(builder, &data, 4, 2);
+  Slice(builder, data, 4, 2);
   ASSERT_EQ(1u, builder.copies().size());
   ASSERT_EQ(2u, builder.items().size());
 
@@ -163,16 +163,16 @@ TEST_F(BlobSliceTest, SliceAcrossLargeItem) {
   const size_t kSize2 = 10u;
   const size_t kSize3 = 10u;
 
-  BlobEntry data(kType);
+  auto data = base::MakeRefCounted<BlobEntry>(kType);
   scoped_refptr<ShareableBlobDataItem> item1 = CreateDataItem(kSize1);
   scoped_refptr<ShareableBlobDataItem> item2 = CreateFileItem(0u, kSize2);
   scoped_refptr<ShareableBlobDataItem> item3 = CreateDataItem(kSize3);
-  data.AppendSharedBlobItem(item1);
-  data.AppendSharedBlobItem(item2);
-  data.AppendSharedBlobItem(item3);
+  data->AppendSharedBlobItem(item1);
+  data->AppendSharedBlobItem(item2);
+  data->AppendSharedBlobItem(item3);
 
   BlobDataBuilder builder(kId);
-  Slice(builder, &data, 2, 20);
+  Slice(builder, data, 2, 20);
   ASSERT_EQ(2u, builder.copies().size());
   ASSERT_EQ(3u, builder.items().size());
 
@@ -182,12 +182,12 @@ TEST_F(BlobSliceTest, SliceAcrossLargeItem) {
 }
 
 TEST_F(BlobSliceTest, SliceTempFileItem) {
-  BlobEntry data(kType);
+  auto data = base::MakeRefCounted<BlobEntry>(kType);
   scoped_refptr<ShareableBlobDataItem> item1 = CreateTempFileItem(1u, 10u);
-  data.AppendSharedBlobItem(item1);
+  data->AppendSharedBlobItem(item1);
 
   BlobDataBuilder builder(kId);
-  Slice(builder, &data, 2, 5);
+  Slice(builder, data, 2, 5);
   ASSERT_EQ(1u, builder.copies().size());
   ASSERT_EQ(1u, builder.items().size());
   auto dest_item = builder.items()[0];

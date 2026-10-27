@@ -2,13 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "storage/browser/blob/blob_entry.h"
+
 #include <utility>
 
 #include "base/functional/callback.h"
 #include "base/metrics/histogram.h"
+#include "base/task/sequenced_task_runner.h"
 #include "storage/browser/blob/blob_data_handle.h"
 #include "storage/browser/blob/blob_data_item.h"
-#include "storage/browser/blob/blob_entry.h"
 #include "storage/browser/blob/shareable_blob_data_item.h"
 
 namespace storage {
@@ -35,17 +37,19 @@ BlobEntry::BuildingState::BuildingState(
       num_building_dependent_blobs(num_building_dependent_blobs) {}
 
 BlobEntry::BuildingState::~BuildingState() {
-  DCHECK(!copy_quota_request);
-  DCHECK(!transport_quota_request);
+  CancelRequestsAndAbort();
 }
 
 void BlobEntry::BuildingState::CancelRequestsAndAbort() {
-  if (copy_quota_request)
+  if (copy_quota_request) {
     copy_quota_request->Cancel();
-  if (transport_quota_request)
+  }
+  if (transport_quota_request) {
     transport_quota_request->Cancel();
-  if (build_aborted_callback)
+  }
+  if (build_aborted_callback) {
     std::move(build_aborted_callback).Run();
+  }
 }
 
 BlobEntry::BlobEntry(const std::string& content_type)
@@ -85,12 +89,33 @@ const std::vector<scoped_refptr<ShareableBlobDataItem>>& BlobEntry::items()
   return items_;
 }
 
-void BlobEntry::ClearItems() {
-  items_.clear();
-}
+void BlobEntry::OnCancelBuilding(BlobStatus reason) {
+  TransportAllowedCallback transport_allowed;
 
-void BlobEntry::ClearOffsets() {
+  if (building_state_) {
+    transport_allowed = std::move(building_state_->transport_allowed_callback);
+
+    if (status_ == BlobStatus::PENDING_CONSTRUCTION) {
+      auto runner = base::SequencedTaskRunner::GetCurrentDefault();
+      for (auto& callback : building_state_->build_started_callbacks) {
+        runner->PostTask(FROM_HERE,
+                         base::BindOnce(std::move(callback), reason));
+      }
+    }
+
+    building_state_->CancelRequestsAndAbort();
+    building_state_->transport_items.clear();
+  }
+
+  items_.clear();
   offsets_.clear();
+  size_ = 0;
+  status_ = reason;
+
+  if (transport_allowed) {
+    std::move(transport_allowed)
+        .Run(reason, std::vector<BlobMemoryController::FileCreationInfo>());
+  }
 }
 
 }  // namespace storage

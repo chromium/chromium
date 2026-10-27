@@ -14,6 +14,7 @@
 #include "base/component_export.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "storage/browser/blob/blob_memory_controller.h"
@@ -23,7 +24,8 @@ class BlobDataHandle;
 class ShareableBlobDataItem;
 
 // Represents a blob in BlobStorageRegistry. Exported only for unit tests.
-class COMPONENT_EXPORT(STORAGE_BROWSER) BlobEntry {
+class COMPONENT_EXPORT(STORAGE_BROWSER) BlobEntry
+    : public base::RefCounted<BlobEntry> {
  public:
   using TransportAllowedCallback = base::OnceCallback<
       void(BlobStatus, std::vector<BlobMemoryController::FileCreationInfo>)>;
@@ -70,11 +72,10 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobEntry {
     void CancelRequestsAndAbort();
 
     const bool transport_items_present;
-    // We can have trasnport data that's either populated or unpopulated. If we
+    // We can have transport data that's either populated or unpopulated. If we
     // need population, this is populated.
     TransportAllowedCallback transport_allowed_callback;
-    std::vector<raw_ptr<ShareableBlobDataItem, VectorExperimental>>
-        transport_items;
+    std::vector<raw_ptr<ShareableBlobDataItem>> transport_items;
 
     BuildAbortedCallback build_aborted_callback;
 
@@ -106,8 +107,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobEntry {
   BlobEntry(const BlobEntry&) = delete;
   BlobEntry& operator=(const BlobEntry&) = delete;
 
-  ~BlobEntry();
-
   // Appends the given shared blob data item to this object.
   void AppendSharedBlobItem(scoped_refptr<ShareableBlobDataItem> item);
   void SetSharedBlobItems(
@@ -123,7 +122,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobEntry {
 
   BlobStatus status() const { return status_; }
 
-  size_t refcount() const { return refcount_; }
+  size_t handle_count() const { return handle_count_; }
 
   const std::string& content_type() const { return content_type_; }
 
@@ -140,22 +139,25 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobEntry {
  protected:
   friend class BlobStorageContext;
 
-  void IncrementRefCount() { ++refcount_; }
-  void DecrementRefCount() { --refcount_; }
+  void IncrementHandleCount() { ++handle_count_; }
+  void DecrementHandleCount() { --handle_count_; }
+
+  void OnCancelBuilding(BlobStatus reason);
 
   void set_status(BlobStatus status) { status_ = status; }
   void set_size(uint64_t size) { size_ = size; }
-
-  void ClearItems();
-  void ClearOffsets();
 
   void set_building_state(std::unique_ptr<BuildingState> building_state) {
     building_state_ = std::move(building_state);
   }
 
  private:
+  friend class base::RefCounted<BlobEntry>;
+
+  ~BlobEntry();
+
   BlobStatus status_ = BlobStatus::PENDING_QUOTA;
-  size_t refcount_ = 0;
+  size_t handle_count_ = 0;
 
   // Metadata.
   std::string content_type_;
