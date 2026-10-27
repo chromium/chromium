@@ -7,6 +7,7 @@
 # ==============================================================================
 
 import("//build/config/chromeos/args.gni")
+import("//build/config/compiler/pgo/pgo.gni")
 import("//build/config/devtools.gni")
 import("//build/config/gclient_args.gni")
 import("//build/config/rts.gni")
@@ -1143,6 +1144,19 @@ template("test") {
       forward_variables_from(invoker, [ "visibility" ])
       if (!defined(deps)) {
         deps = []
+      }
+
+      # On macOS x64, PGO instrumentation counters(__llvm_prf_cnts and
+      # __llvm_prf_data) can push large monolithic test executables past the
+      # 256 MiB segment size limit(65, 536 * 4 KiB pages) of Mach - O chained
+      # fixups(DYLD_CHAINED_PTR_64).Disable fixup chains for test binaries so
+      # non - test binaries(like Chromium Framework) continue to be instrumented
+      # with chained fixups enabled.
+      if (chrome_pgo_phase == 1 && is_mac && current_cpu == "x64") {
+        if (!defined(ldflags)) {
+          ldflags = []
+        }
+        ldflags += [ "-Wl,-no_fixup_chains" ]
       }
 
       deps += [
