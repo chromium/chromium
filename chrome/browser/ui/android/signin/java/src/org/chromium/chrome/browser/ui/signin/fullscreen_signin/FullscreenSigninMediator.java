@@ -961,10 +961,7 @@ public class FullscreenSigninMediator
             }
             mPendingSelectedAccountEmail = null;
             onAccountSelected(pendingSelectedAccount);
-            return;
-        }
-
-        if (accounts.isEmpty()) {
+        } else if (accounts.isEmpty()) {
             mDefaultAccount = null;
             mSelectedAccount = null;
             mModel.set(FullscreenSigninProperties.BOTTOM_GROUP_ACCOUNT_DATA, null);

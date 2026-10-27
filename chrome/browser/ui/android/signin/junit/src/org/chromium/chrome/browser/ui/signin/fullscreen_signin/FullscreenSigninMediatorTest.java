@@ -124,6 +124,7 @@ public class FullscreenSigninMediatorTest {
 
     // Config used by createMediator(). Tests can change these before calling it.
     private int mLogoId;
+    private String mSelectedAccountEmail;
 
     public FullscreenSigninMediatorTest(boolean isIdentityManagerSourceOfAccounts) {
         mIsIdentityManagerSourceOfAccounts = isIdentityManagerSourceOfAccounts;
@@ -487,6 +488,30 @@ public class FullscreenSigninMediatorTest {
                         SigninAccessPoint.START_PAGE, SigninFunnelEvent.PROMO_SHOWN_WITH_ACCOUNT);
     }
 
+    @Test
+    public void testPendingChildAccountShowsSupervisedUi() {
+        // The selected account isn't on the device yet, so it becomes a pending selection.
+        setUpSigninSupported(true);
+        mSelectedAccountEmail = TestAccounts.CHILD_ACCOUNT.getEmail();
+        createMediator();
+        initializeNative();
+        assertNoAccountIsDisplayed();
+        assertFalse(mModel.get(FullscreenSigninProperties.SHOW_ACCOUNT_SUPERVISION_NOTICE));
+
+        // The parental check needs the account in AccountManagerFacade first.
+        mAccountManagerTestRule.getAccountManagerFacade().addAccount(TestAccounts.CHILD_ACCOUNT);
+        mAccountManagerTestRule
+                .getIdentityManager()
+                .addOrUpdateExtendedAccountInfo(TestAccounts.CHILD_ACCOUNT);
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        assertSelectedAccountIsDisplayed(TestAccounts.CHILD_ACCOUNT);
+        assertTrue(mModel.get(FullscreenSigninProperties.SHOW_ACCOUNT_SUPERVISION_NOTICE));
+        assertNull(mModel.get(FullscreenSigninProperties.SUBTITLE_STRING));
+        assertTrue(mModel.get(FullscreenSigninProperties.SHOULD_HIDE_DISMISS_BUTTON));
+        assertFalse(mModel.get(FullscreenSigninProperties.ENABLE_ACCOUNT_SELECTION));
+    }
+
     private void setUpSigninSupported(boolean isSigninSupported) {
         when(mExternalAuthUtilsMock.canUseGooglePlayServices()).thenReturn(isSigninSupported);
         ExternalAuthUtils.setInstanceForTesting(mExternalAuthUtilsMock);
@@ -511,7 +536,7 @@ public class FullscreenSigninMediatorTest {
                                 mLogoId,
                                 /* shouldDisableSignin= */ false,
                                 /* surveyType= */ null,
-                                /* selectedAccountEmail= */ null,
+                                mSelectedAccountEmail,
                                 SigninFlow.DEFAULT_SIGNIN),
                         SigninAccessPoint.START_PAGE);
         mModel = mMediator.getModel();
