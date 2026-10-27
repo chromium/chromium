@@ -11142,6 +11142,7 @@ from previous Chrome versions.
   <int value="-1164012332" label="SysUiShouldHoldbackForest:enabled"/>
   <int value="-1163777157" label="ContextualSearchSimplifiedServer:disabled"/>
   <int value="-1163718295" label="AndroidHubFloatingActionButton:enabled"/>
+  <int value="-1163707150" label="LensSendDriveTabUrlsInComposeboxes:enabled"/>
   <int value="-1163430139" label="PageColorsSettings:enabled"/>
   <int value="-1162944097" label="enable-color-correct-rendering"/>
   <int value="-1162636562" label="ReduceHorizontalFlingVelocity:disabled"/>
@@ -11234,6 +11235,7 @@ from previous Chrome versions.
   <int value="-1139057843" label="ActorStepProgressNotification:disabled"/>
   <int value="-1138851579" label="QuerySearchBurnInPeriod:disabled"/>
   <int value="-1138146296" label="CriticalActionHistory:enabled"/>
+  <int value="-1138140585" label="LensSendDriveTabUrlsInComposeboxes:disabled"/>
   <int value="-1137745598" label="PhoneHubNudge:disabled"/>
   <int value="-1137696948" label="enable-chromeos-account-manager"/>
   <int value="-1137470863" label="FedCmWebIdentitySubdomain:enabled"/>
