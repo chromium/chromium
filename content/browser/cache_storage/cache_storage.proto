@@ -86,6 +86,7 @@ message CacheResponse {
   // than consuming this field directly.
   optional bool request_include_credentials = 17;
   optional bool timing_allow_passed = 18;
+  optional bool has_range_requested = 19;
 }
 
 message CacheMetadata {
