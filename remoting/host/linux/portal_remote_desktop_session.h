@@ -133,8 +133,6 @@ class PortalRemoteDesktopSession {
 
   void OnInitError(std::string_view what, Loggable why);
   void OnConnectionCreated(GDBusConnectionRef connection);
-  void OnRegisterResponse(base::expected<std::tuple<>, Loggable> result);
-  void CreateSession();
   void OnCreateSessionResponse(gvariant::GVariantRef<"a{sv}"> result);
   void OnSelectDevicesResponse(gvariant::GVariantRef<"a{sv}"> result);
   void OnRequestClipboardResponse(
