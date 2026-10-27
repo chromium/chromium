@@ -47,6 +47,32 @@ class MockFrameClient : public frame_test_helpers::TestWebFrameClient {
   gfx::Rect last_main_frame_viewport_rect_;
 };
 
+// A video player displayed inline near the top of the page, with the ad
+// absolutely positioned within the relatively positioned player (a common
+// responsive player layout). The placeholder around the player reserves its
+// space in the document if the player pops out.
+constexpr char kInlinePlayerHtml[] = R"(
+  <body style="margin:0">
+    <div style="height:100px"></div>
+    <div style="height:225px">
+      <div id="player" style="position:relative; width:400px; height:225px;">
+        <img id="ad" style="position:absolute; left:0px; top:0px; width:100%; height:100%;">
+      </div>
+    </div>
+    <div style="height:3000px"></div>
+  </body>
+)";
+
+// The style of the player in `kInlinePlayerHtml` while displayed inline, as in
+// the markup, to restore once it has popped back in.
+constexpr char kInlinePlayerStyle[] =
+    "position:relative; width:400px; height:225px;";
+
+// The style of the player in `kInlinePlayerHtml` once it has popped out,
+// docked at the bottom-right corner of the viewport as a smaller player.
+constexpr char kDockedPlayerStyle[] =
+    "position:fixed; right:10px; bottom:10px; width:320px; height:180px;";
+
 }  // namespace
 
 class DisplayAdElementMonitorTest : public testing::Test {
@@ -65,6 +91,12 @@ class DisplayAdElementMonitorTest : public testing::Test {
     GetDocument().View()->UpdateAllLifecyclePhasesForTest();
   }
 
+  void ScrollTo(float y) {
+    GetDocument().View()->LayoutViewport()->SetScrollOffset(
+        ScrollOffset(0, y), mojom::blink::ScrollType::kProgrammatic,
+        cc::ScrollSourceType::kNone);
+  }
+
   void MarkFirstContentfulPaint() {
     viz::FrameTimingDetails presentation_details;
     presentation_details.presentation_feedback.timestamp =
@@ -73,6 +105,30 @@ class DisplayAdElementMonitorTest : public testing::Test {
     PaintTiming::From(GetDocument())
         .ReportPresentationTime(PaintEvent::kFirstContentfulPaint,
                                 base::TimeTicks(), presentation_details);
+  }
+
+  // Tags the element with id "ad" as an ad (and as a video ad, unless
+  // `as_video_ad` is false) once First Contentful Paint is reported. Ad
+  // rectangle and large sticky ad notifications are allowed but not verified,
+  // as the sticky pop-out ad tests aren't concerned with them.
+  HTMLImageElement* TagAdElement(bool as_video_ad = true) {
+    MarkFirstContentfulPaint();
+    UpdateLifecycle();
+
+    EXPECT_CALL(MockClient(),
+                OnMainFrameAdRectangleChanged(testing::_, testing::_))
+        .Times(testing::AnyNumber());
+    EXPECT_CALL(MockClient(), OnLargeStickyAdDetected())
+        .Times(testing::AnyNumber());
+
+    auto* ad_element =
+        To<HTMLImageElement>(GetDocument().getElementById(AtomicString("ad")));
+    ad_element->SetIsAdRelated(NoProvenance{});
+    if (as_video_ad) {
+      ad_element->UpdateToVideoAd();
+    }
+    UpdateLifecycle();
+    return ad_element;
   }
 
   MockFrameClient& MockClient() { return *mock_frame_client_; }
@@ -1241,6 +1297,11 @@ TEST_F(DisplayAdElementMonitorTest, StickyVideoAdDetected) {
   UpdateLifecycle();
 
   EXPECT_TRUE(GetDocument().IsUseCounted(WebFeature::kStickyVideoAdDetected));
+
+  // The ad was never displayed inline, so it's not a pop-out ad even though it
+  // is sticky.
+  EXPECT_FALSE(
+      GetDocument().IsUseCounted(WebFeature::kStickyPopOutVideoAdDetected));
 }
 
 TEST_F(DisplayAdElementMonitorTest, StickyNonVideoAd) {
@@ -1354,6 +1415,260 @@ TEST_F(DisplayAdElementMonitorTest,
 
   EXPECT_TRUE(GetDocument().IsUseCounted(WebFeature::kVideoAdDetected));
   EXPECT_TRUE(GetDocument().IsUseCounted(WebFeature::kStickyVideoAdDetected));
+}
+
+TEST_F(DisplayAdElementMonitorTest, StickyPopOutVideoAdDetected) {
+  frame_test_helpers::LoadHTMLString(helper_.LocalMainFrame(),
+                                     kInlinePlayerHtml,
+                                     WebURL(KURL("https://example.com")));
+  TagAdElement();
+  auto* player_element = GetDocument().getElementById(AtomicString("player"));
+
+  // Scroll down while the player moves along with the document, which confirms
+  // that it's inline.
+  ScrollTo(100);
+  UpdateLifecycle();
+
+  // Scroll the player out of the viewport, upon which it pops out and docks at
+  // the bottom-right corner of the viewport as a smaller player.
+  ScrollTo(400);
+  UpdateLifecycle();
+  player_element->setAttribute(html_names::kStyleAttr,
+                               AtomicString(kDockedPlayerStyle));
+  UpdateLifecycle();
+
+  // The page keeps updating while the user pauses scrolling (e.g., due to
+  // animations elsewhere). The docked player keeps its document position
+  // meanwhile, which isn't mistaken for scrolling along with the document.
+  UpdateLifecycle();
+
+  EXPECT_FALSE(
+      GetDocument().IsUseCounted(WebFeature::kStickyPopOutVideoAdDetected));
+
+  // Keep scrolling (by more than the ad's height) while the player stays
+  // docked, which confirms that it's sticky.
+  ScrollTo(700);
+  UpdateLifecycle();
+
+  EXPECT_TRUE(GetDocument().IsUseCounted(WebFeature::kStickyVideoAdDetected));
+  EXPECT_TRUE(
+      GetDocument().IsUseCounted(WebFeature::kStickyPopOutVideoAdDetected));
+}
+
+TEST_F(DisplayAdElementMonitorTest,
+       StickyPopOutVideoAdDetectedWithFractionalScrollOffset) {
+  frame_test_helpers::LoadHTMLString(helper_.LocalMainFrame(),
+                                     kInlinePlayerHtml,
+                                     WebURL(KURL("https://example.com")));
+  GetDocument().GetFrame()->SetLayoutZoomFactor(1.1f);
+  TagAdElement();
+  auto* player_element = GetDocument().getElementById(AtomicString("player"));
+
+  // Scroll to a fractional offset (55.33px, which layout applies as
+  // 55.328125px). The ad's document position stays exactly 110px, whereas
+  // flooring its viewport position and the scroll offset to whole pixels would
+  // add up to 109px.
+  ScrollTo(55.33f);
+  UpdateLifecycle();
+
+  ScrollTo(440);
+  UpdateLifecycle();
+  player_element->setAttribute(html_names::kStyleAttr,
+                               AtomicString(kDockedPlayerStyle));
+  UpdateLifecycle();
+
+  ScrollTo(770);
+  UpdateLifecycle();
+
+  EXPECT_TRUE(GetDocument().IsUseCounted(WebFeature::kStickyVideoAdDetected));
+  EXPECT_TRUE(
+      GetDocument().IsUseCounted(WebFeature::kStickyPopOutVideoAdDetected));
+}
+
+TEST_F(DisplayAdElementMonitorTest,
+       VideoAdPoppingOutAgainAfterPoppingBackInIsPopOutAd) {
+  frame_test_helpers::LoadHTMLString(helper_.LocalMainFrame(),
+                                     kInlinePlayerHtml,
+                                     WebURL(KURL("https://example.com")));
+
+  // The player is already docked when the ad is tagged, e.g., the video ad
+  // starts playing in a player that popped out earlier.
+  auto* player_element = GetDocument().getElementById(AtomicString("player"));
+  player_element->setAttribute(html_names::kStyleAttr,
+                               AtomicString(kDockedPlayerStyle));
+  TagAdElement();
+
+  // Scroll (by more than the ad's height) while the player stays docked, which
+  // confirms that it's sticky. It hasn't been displayed inline yet, so it's not
+  // a pop-out ad.
+  ScrollTo(250);
+  UpdateLifecycle();
+
+  EXPECT_TRUE(GetDocument().IsUseCounted(WebFeature::kStickyVideoAdDetected));
+  EXPECT_FALSE(
+      GetDocument().IsUseCounted(WebFeature::kStickyPopOutVideoAdDetected));
+
+  // Scroll back to the top, upon which the player pops back into its inline
+  // slot.
+  ScrollTo(0);
+  UpdateLifecycle();
+  player_element->setAttribute(html_names::kStyleAttr,
+                               AtomicString(kInlinePlayerStyle));
+  UpdateLifecycle();
+
+  // Scroll down (by more than the tolerance for lagging sticky ads) while the
+  // player moves along with the document, which confirms that it's inline now.
+  ScrollTo(100);
+  UpdateLifecycle();
+
+  // Scroll the player out of the viewport, upon which it pops out and docks
+  // again.
+  ScrollTo(400);
+  UpdateLifecycle();
+  player_element->setAttribute(html_names::kStyleAttr,
+                               AtomicString(kDockedPlayerStyle));
+  UpdateLifecycle();
+
+  EXPECT_FALSE(
+      GetDocument().IsUseCounted(WebFeature::kStickyPopOutVideoAdDetected));
+
+  // Keep scrolling (by more than the ad's height) while the player stays
+  // docked, which confirms that it's sticky again. This time, it has popped out
+  // (it could only have become sticky again from being inline), so it's a
+  // pop-out ad.
+  ScrollTo(700);
+  UpdateLifecycle();
+
+  EXPECT_TRUE(
+      GetDocument().IsUseCounted(WebFeature::kStickyPopOutVideoAdDetected));
+}
+
+TEST_F(DisplayAdElementMonitorTest, VideoAdStuckInPlaceIsNotPopOutAd) {
+  // The player sticks via `position: sticky` once it reaches the top of the
+  // viewport.
+  frame_test_helpers::LoadHTMLString(helper_.LocalMainFrame(), R"(
+    <body style="margin:0">
+      <div style="height:100px"></div>
+      <div style="position:sticky; top:0px; width:400px; height:225px;">
+        <img id="ad" style="display:block; width:100%; height:100%;">
+      </div>
+      <div style="height:3000px"></div>
+    </body>
+  )",
+                                     WebURL(KURL("https://example.com")));
+  TagAdElement();
+
+  // Scroll down in steps. The player moves along with the document, which
+  // confirms that it's inline, until it reaches the top of the viewport (at a
+  // scroll offset of 100px) and sticks there. Keep scrolling (by more than the
+  // ad's height) while it stays stuck, which confirms that it's sticky.
+  for (int scroll_offset = 10; scroll_offset <= 400; scroll_offset += 20) {
+    ScrollTo(scroll_offset);
+    UpdateLifecycle();
+  }
+
+  // The player sticks where it was last seen inline (10px lower, at the last
+  // step before the sticking point), rather than popping out.
+  EXPECT_TRUE(GetDocument().IsUseCounted(WebFeature::kStickyVideoAdDetected));
+  EXPECT_FALSE(
+      GetDocument().IsUseCounted(WebFeature::kStickyPopOutVideoAdDetected));
+}
+
+TEST_F(DisplayAdElementMonitorTest, LaggingStickyPopOutVideoAdDetected) {
+  frame_test_helpers::LoadHTMLString(helper_.LocalMainFrame(),
+                                     kInlinePlayerHtml,
+                                     WebURL(KURL("https://example.com")));
+  TagAdElement();
+  auto* player_element = GetDocument().getElementById(AtomicString("player"));
+
+  // Scroll down while the player moves along with the document, which confirms
+  // that it's inline, and then scroll it out of the viewport.
+  ScrollTo(100);
+  UpdateLifecycle();
+  ScrollTo(400);
+  UpdateLifecycle();
+
+  // The player pops out and docks at the bottom-right corner of the viewport
+  // (at a Y-position of 410px), but by a script that repositions it after each
+  // scroll rather than via `position: fixed`, so it lags behind scrolling by
+  // one lifecycle update.
+  int current_scroll = 400;
+  auto DockPlayer = [&]() {
+    player_element->setAttribute(
+        html_names::kStyleAttr,
+        AtomicString("position:absolute; left:470px; top:" +
+                     String::Number(current_scroll + 410) +
+                     "px; width:320px; height:180px;"));
+  };
+  DockPlayer();
+  UpdateLifecycle();
+
+  // Keep scrolling (by more than the ad's height in total) in steps within the
+  // tolerance (20% of the ad's height of 180px, i.e., 36px).
+  while (current_scroll < 700) {
+    current_scroll += 30;
+    ScrollTo(current_scroll);
+
+    // In the first lifecycle update after each step, the docked player has
+    // moved along with the document by 30px, which is within the tolerance, so
+    // it's neither seen inline there nor is that taken as where it was last
+    // seen inline.
+    UpdateLifecycle();
+
+    // The script repositions the player back into the corner.
+    DockPlayer();
+    UpdateLifecycle();
+  }
+
+  // The player is sticky, and it has popped out from where it was last seen
+  // inline (at the top of the viewport) rather than stuck in place.
+  EXPECT_TRUE(GetDocument().IsUseCounted(WebFeature::kStickyVideoAdDetected));
+  EXPECT_TRUE(
+      GetDocument().IsUseCounted(WebFeature::kStickyPopOutVideoAdDetected));
+}
+
+TEST_F(DisplayAdElementMonitorTest,
+       AdTaggedAsVideoAdAfterPoppingOutIsPopOutVideoAd) {
+  frame_test_helpers::LoadHTMLString(helper_.LocalMainFrame(),
+                                     kInlinePlayerHtml,
+                                     WebURL(KURL("https://example.com")));
+  auto* ad_element = TagAdElement(/*as_video_ad=*/false);
+  auto* player_element = GetDocument().getElementById(AtomicString("player"));
+
+  ScrollTo(100);
+  UpdateLifecycle();
+
+  ScrollTo(400);
+  UpdateLifecycle();
+  player_element->setAttribute(html_names::kStyleAttr,
+                               AtomicString(kDockedPlayerStyle));
+  UpdateLifecycle();
+
+  ScrollTo(700);
+  UpdateLifecycle();
+
+  EXPECT_FALSE(
+      GetDocument().IsUseCounted(WebFeature::kStickyPopOutVideoAdDetected));
+
+  // Scroll back to the top, upon which the player pops back into its inline
+  // slot. Then scroll down while it moves along with the document, which
+  // confirms that it's inline again.
+  ScrollTo(0);
+  UpdateLifecycle();
+  player_element->setAttribute(html_names::kStyleAttr,
+                               AtomicString(kInlinePlayerStyle));
+  UpdateLifecycle();
+  ScrollTo(100);
+  UpdateLifecycle();
+
+  // The ad is tagged as a video ad only after it has popped out and back in. It
+  // still counts as a sticky video ad, as well as a sticky pop-out video ad.
+  ad_element->UpdateToVideoAd();
+  UpdateLifecycle();
+
+  EXPECT_TRUE(GetDocument().IsUseCounted(WebFeature::kStickyVideoAdDetected));
+  EXPECT_TRUE(
+      GetDocument().IsUseCounted(WebFeature::kStickyPopOutVideoAdDetected));
 }
 
 TEST_F(DisplayAdElementMonitorTest, HighlightAdsRequiresFirstContentfulPaint) {

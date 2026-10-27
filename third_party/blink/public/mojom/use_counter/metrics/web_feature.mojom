@@ -5364,6 +5364,7 @@ enum WebFeature {
   kSmartCardContextRelease = 6046,
   kSameDocumentSameSiteCrossOriginInitiator = 6047,
   kSameDocumentCrossSiteInitiator = 6048,
+  kStickyPopOutVideoAdDetected = 6049,
 
   // Add new features immediately above this line. Don't change the existing
   // numbers of any item, and don't reuse removed slots. Also don't add extra
