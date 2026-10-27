@@ -43,7 +43,6 @@ class ReadAloudPlaybackSession : public content::MediaSessionPlayerObserver,
   void NotifyPlaybackStopped();
 
   bool is_paused() const { return is_paused_; }
-  bool is_playback_in_progress() const { return is_playback_in_progress_; }
 
   // content::MediaSessionPlayerObserver overrides:
   void OnSuspend(int player_id, bool triggered_by_user) override;
@@ -61,14 +60,14 @@ class ReadAloudPlaybackSession : public content::MediaSessionPlayerObserver,
   // not happened yet.
   enum class SessionCommand { kNone, kSuspend, kResume };
 
-  // Returns true and clears `pending_session_command_` if it is `command`.
+  // Consumes any pending MediaSession command and returns whether it matched
+  // `command`.
   bool ConsumePendingSessionCommand(SessionCommand command);
 
   const raw_ptr<ReadAloudService> service_;
   static constexpr int kPlayerId = 0;
 
   bool is_paused_ = true;
-  bool is_playback_in_progress_ = false;
 
   SessionCommand pending_session_command_ = SessionCommand::kNone;
 

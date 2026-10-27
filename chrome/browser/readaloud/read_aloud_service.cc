@@ -126,10 +126,6 @@ void ReadAloudService::Play(content::WebContents* new_web_contents) {
 
   user_requested_play_ = true;
 
-  // Start or resume audio playback.
-  CHECK(media_session_);
-  media_session_->NotifyPlaybackStarted();
-
   // In overview mode, the utility Play() is deferred until
   // OnOverviewGenerated() has loaded the script, so the utility play-on-ready
   // watchdog does not race the browser-owned overview generation wait.
@@ -141,18 +137,8 @@ void ReadAloudService::Play(content::WebContents* new_web_contents) {
 void ReadAloudService::Pause() {
   user_requested_play_ = false;
 
-  if (media_session_) {
-    media_session_->NotifyPlaybackPaused();
-  }
-
   if (utility_player_.is_bound()) {
     utility_player_->Pause();
-  }
-
-  // TODO(b/562011435): Handle late kPlaying updates arriving from utility
-  // after Pause() is called.
-  if (media_session_ && media_session_->is_playback_in_progress()) {
-    NotifyPlaybackStateChanged(read_aloud::mojom::PlaybackState::kPaused);
   }
 }
 
@@ -648,14 +634,24 @@ void ReadAloudService::OnPlaybackStateChanged(
   switch (state) {
     case read_aloud::mojom::PlaybackState::kEndOfStream:
       user_requested_play_ = false;
+      if (media_session_) {
+        media_session_->NotifyPlaybackPaused();
+      }
       NotifyPlaybackStateChanged(state);
       return;
     case read_aloud::mojom::PlaybackState::kPaused:
+      if (media_session_) {
+        media_session_->NotifyPlaybackPaused();
+      }
+      NotifyPlaybackStateChanged(state);
+      return;
     case read_aloud::mojom::PlaybackState::kBuffering:
+      NotifyPlaybackStateChanged(state);
+      return;
     case read_aloud::mojom::PlaybackState::kPlaying:
-      // TODO(b/562011435): Utility-initiated pauses do not reach MediaSession.
-      // media_session_->NotifyPlaybackPaused() should be called so the OS
-      // notification reflects the paused state.
+      if (media_session_) {
+        media_session_->NotifyPlaybackStarted();
+      }
       NotifyPlaybackStateChanged(state);
       return;
     case read_aloud::mojom::PlaybackState::kError:

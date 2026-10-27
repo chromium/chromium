@@ -4,6 +4,8 @@
 
 #include "chrome/browser/readaloud/read_aloud_playback_session.h"
 
+#include <utility>
+
 #include "chrome/browser/readaloud/read_aloud_service.h"
 #include "content/public/browser/media_session.h"
 #include "content/public/browser/web_contents.h"
@@ -25,7 +27,6 @@ ReadAloudPlaybackSession::~ReadAloudPlaybackSession() {
 }
 
 void ReadAloudPlaybackSession::NotifyPlaybackStarted() {
-  is_playback_in_progress_ = true;
   is_paused_ = false;
   if (ConsumePendingSessionCommand(SessionCommand::kResume)) {
     // `MediaSession` initiated the resume and already holds audio focus.
@@ -52,7 +53,6 @@ void ReadAloudPlaybackSession::NotifyPlaybackPaused() {
 }
 
 void ReadAloudPlaybackSession::NotifyPlaybackStopped() {
-  is_playback_in_progress_ = false;
   is_paused_ = true;
   pending_session_command_ = SessionCommand::kNone;
   if (web_contents()) {
@@ -64,11 +64,8 @@ void ReadAloudPlaybackSession::NotifyPlaybackStopped() {
 
 bool ReadAloudPlaybackSession::ConsumePendingSessionCommand(
     SessionCommand command) {
-  if (pending_session_command_ != command) {
-    return false;
-  }
-  pending_session_command_ = SessionCommand::kNone;
-  return true;
+  return std::exchange(pending_session_command_, SessionCommand::kNone) ==
+         command;
 }
 
 void ReadAloudPlaybackSession::OnSuspend(int player_id,
