@@ -2410,7 +2410,6 @@ if (_is_default_toolchain) {
     additional_apks = [
       "//chrome/android/webapk/shell_apk:javatests_webapk",
       "//chrome/test/android/chrome_public_test_support:chrome_public_test_support_apk",
-      "//components/media_router/test/android/media_router_test_support:media_router_test_support_apk",
     ]
 
     # TrustedWebActivityClientTest relies on sending a browsable Intent to an
