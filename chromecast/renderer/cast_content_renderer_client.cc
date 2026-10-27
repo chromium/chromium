@@ -21,8 +21,6 @@
 #include "chromecast/media/base/media_codec_support.h"
 #include "chromecast/media/base/supported_codec_profile_levels_memo.h"
 #include "chromecast/public/media/media_capabilities_shlib.h"
-#include "chromecast/renderer/cast_url_loader_throttle_provider.h"
-#include "chromecast/renderer/cast_websocket_handshake_throttle_provider.h"
 #include "chromecast/renderer/media/key_systems_cast.h"
 #include "chromecast/renderer/media/media_caps_observer_impl.h"
 #include "components/cast_receiver/renderer/public/content_renderer_client_mixins.h"
@@ -90,9 +88,7 @@ CastContentRendererClient::CastContentRendererClient()
     : cast_receiver_mixins_(cast_receiver::ContentRendererClientMixins::Create(
           base::BindRepeating(&IsCorsExemptHeader))),
       supported_profiles_(
-          std::make_unique<media::SupportedCodecProfileLevelsMemo>()),
-      activity_url_filter_manager_(
-          std::make_unique<CastActivityUrlFilterManager>()) {
+          std::make_unique<media::SupportedCodecProfileLevelsMemo>()) {
 #if BUILDFLAG(IS_ANDROID)
   // Registers a custom content::AudioDeviceFactory
   cast_audio_device_factory_ =
@@ -148,8 +144,6 @@ void CastContentRendererClient::RenderFrameCreated(
     app_media_capabilities->AddObserver(
         app_media_capabilities_observer_receiver_.BindNewPipeAndPassRemote());
   }
-
-  activity_url_filter_manager_->OnRenderFrameCreated(render_frame);
 }
 
 void CastContentRendererClient::RunScriptsAtDocumentStart(
@@ -324,19 +318,10 @@ void CastContentRendererClient::OnSupportedBitstreamAudioCodecsChanged(
 #endif  // BUILDFLAG(IS_ANDROID)
 }
 
-std::unique_ptr<blink::WebSocketHandshakeThrottleProvider>
-CastContentRendererClient::CreateWebSocketHandshakeThrottleProvider() {
-  return std::make_unique<CastWebSocketHandshakeThrottleProvider>(
-      activity_url_filter_manager_.get());
-}
-
 std::unique_ptr<blink::URLLoaderThrottleProvider>
 CastContentRendererClient::CreateURLLoaderThrottleProvider(
     blink::URLLoaderThrottleProviderType type) {
-  auto throttle_provider = std::make_unique<CastURLLoaderThrottleProvider>(
-      type, activity_url_filter_manager());
-  return cast_receiver_mixins_->ExtendURLLoaderThrottleProvider(
-      std::move(throttle_provider));
+  return cast_receiver_mixins_->CreateURLLoaderThrottleProvider();
 }
 
 std::optional<::media::AudioRendererAlgorithmParameters>

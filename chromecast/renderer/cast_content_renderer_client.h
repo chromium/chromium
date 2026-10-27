@@ -12,7 +12,6 @@
 #include "build/build_config.h"
 #include "chromecast/chromecast_buildflags.h"
 #include "chromecast/common/mojom/application_media_capabilities.mojom.h"
-#include "chromecast/renderer/cast_activity_url_filter_manager.h"
 #include "chromecast/renderer/feature_manager_on_associated_interface.h"
 #include "content/public/renderer/content_renderer_client.h"
 #include "media/base/audio_codecs.h"
@@ -33,7 +32,7 @@ class SupportedCodecProfileLevelsMemo;
 #if BUILDFLAG(IS_ANDROID)
 class CastAudioDeviceFactory;
 #endif  // BUILDFLAG(IS_ANDROID)
-}
+}  // namespace media
 
 namespace shell {
 
@@ -73,8 +72,6 @@ class CastContentRendererClient
       scoped_refptr<base::SequencedTaskRunner> task_runner) override;
   bool IsIdleMediaSuspendEnabled() override;
   void SetRuntimeFeaturesDefaultsBeforeBlinkInitialization() override;
-  std::unique_ptr<blink::WebSocketHandshakeThrottleProvider>
-  CreateWebSocketHandshakeThrottleProvider() override;
   std::unique_ptr<blink::URLLoaderThrottleProvider>
   CreateURLLoaderThrottleProvider(
       blink::URLLoaderThrottleProviderType type) override;
@@ -84,10 +81,6 @@ class CastContentRendererClient
 
  protected:
   CastContentRendererClient();
-
-  CastActivityUrlFilterManager* activity_url_filter_manager() {
-    return activity_url_filter_manager_.get();
-  }
 
   // TODO(guohuideng): Move |feature_manager_on_associated_interface_| to
   // private when we can.
@@ -115,8 +108,6 @@ class CastContentRendererClient
 #endif
 
   BitstreamAudioCodecsInfo supported_bitstream_audio_codecs_info_;
-
-  std::unique_ptr<CastActivityUrlFilterManager> activity_url_filter_manager_;
 };
 
 }  // namespace shell

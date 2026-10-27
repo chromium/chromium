@@ -25,7 +25,6 @@
 #include "chromecast/browser/cast_permission_user_data.h"
 #include "chromecast/browser/cast_session_id_map.h"
 #include "chromecast/browser/devtools/remote_debugging_server.h"
-#include "chromecast/common/mojom/activity_url_filter.mojom.h"
 #include "chromecast/common/mojom/queryable_data_store.mojom.h"
 #include "chromecast/common/queryable_data.h"
 #include "chromecast/net/connectivity_checker.h"
@@ -524,17 +523,6 @@ void CastWebContentsImpl::RenderFrameCreated(
   for (const auto& value : QueryableData::GetValues()) {
     // base::Value is not copyable.
     queryable_data_store_remote->Set(value.first, value.second.Clone());
-  }
-
-  // Set up URL filter
-  if (params_->url_filters) {
-    mojo::AssociatedRemote<chromecast::mojom::ActivityUrlFilterConfiguration>
-        activity_filter_setter;
-    frame_host->GetRemoteAssociatedInterfaces()->GetInterface(
-        &activity_filter_setter);
-    activity_filter_setter->SetFilter(
-        chromecast::mojom::ActivityUrlFilterCriteria::New(
-            params_->url_filters.value()));
   }
 
   // Set the background color for main frames.

@@ -170,7 +170,6 @@ class CastWebContentsImpl : public CastWebContents,
   PageState last_state_;
   shell::RemoteDebuggingServer* const remote_debugging_server_;
   std::unique_ptr<CastMediaBlocker> media_blocker_;
-  std::optional<std::vector<std::string>> activity_url_filter_;
 
   // Retained so that this observer can be removed before being destroyed:
   content::RenderProcessHost* main_process_host_;

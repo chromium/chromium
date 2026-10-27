@@ -8,20 +8,12 @@ import("//tools/grit/grit_rule.gni")
 
 cast_source_set("renderer") {
   sources = [
-    "activity_filtering_websocket_handshake_throttle.cc",
-    "activity_filtering_websocket_handshake_throttle.h",
-    "cast_activity_url_filter_manager.cc",
-    "cast_activity_url_filter_manager.h",
     "cast_content_renderer_client.cc",
     "cast_content_renderer_client.h",
     "cast_content_settings_client.cc",
     "cast_content_settings_client.h",
     "cast_demo_bindings.cc",
     "cast_demo_bindings.h",
-    "cast_url_loader_throttle_provider.cc",
-    "cast_url_loader_throttle_provider.h",
-    "cast_websocket_handshake_throttle_provider.cc",
-    "cast_websocket_handshake_throttle_provider.h",
     "cast_window_manager_bindings.cc",
     "cast_window_manager_bindings.h",
     "feature_manager.cc",
@@ -53,7 +45,6 @@ cast_source_set("renderer") {
     "//base",
     "//chromecast/base",
     "//chromecast/common",
-    "//chromecast/common:activity_url_filter",
     "//chromecast/common:cors_exempt_headers",
     "//chromecast/common:feature_constants",
     "//chromecast/common:queryable_data",
@@ -83,7 +74,7 @@ cast_source_set("renderer") {
 }
 
 test("cast_renderer_unittests") {
-  sources = [ "cast_activity_url_filter_manager_unittest.cc" ]
+  sources = []
 
   deps = [
     ":renderer",

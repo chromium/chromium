@@ -8,12 +8,12 @@
 #include "base/logging.h"
 #include "chromecast/base/metrics/cast_metrics_helper.h"
 #include "chromecast/browser/cast_permission_user_data.h"
-#include "chromecast/common/activity_url_filter.h"
 #include "components/cast_receiver/browser/public/permissions_manager.h"
 #include "content/public/browser/permission_controller.h"
 #include "content/public/browser/permission_result.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
+#include "url/origin.h"
 
 namespace {
 
@@ -25,9 +25,13 @@ bool IsRequestingOriginAllowed(
   if (requesting_origin == app_web_url.DeprecatedGetOriginAsURL()) {
     return true;
   }
-  chromecast::ActivityUrlFilter activity_url_filter(
-      additional_feature_permission_origins);
-  return activity_url_filter.UrlMatchesWhitelist(requesting_origin);
+  const url::Origin target_origin = url::Origin::Create(requesting_origin);
+  for (const std::string& origin_str : additional_feature_permission_origins) {
+    if (url::Origin::Create(GURL(origin_str)) == target_origin) {
+      return true;
+    }
+  }
+  return false;
 }
 
 blink::mojom::PermissionStatus GetPermissionStatusFromCastPermissionUserData(

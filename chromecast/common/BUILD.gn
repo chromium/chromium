@@ -15,24 +15,6 @@ cast_source_set("queryable_data") {
   deps = [ "//base" ]
 }
 
-cast_source_set("activity_url_filter") {
-  sources = [
-    "activity_filtering_url_loader_throttle.cc",
-    "activity_filtering_url_loader_throttle.h",
-    "activity_url_filter.cc",
-    "activity_url_filter.h",
-  ]
-
-  deps = [
-    "//base",
-    "//components/url_matcher",
-    "//services/network/public/cpp:cpp_base",
-    "//third_party/blink/public/common",
-    "//third_party/blink/public/common:headers",
-    "//url",
-  ]
-}
-
 cast_source_set("feature_constants") {
   sources = [
     "feature_constants.cc",
@@ -44,13 +26,11 @@ test("cast_common_unittests") {
   testonly = true
 
   sources = [
-    "activity_url_filter_unittest.cc",
     "cors_exempt_headers_unittest.cc",
     "user_agent_unittest.cc",
   ]
 
   deps = [
-    ":activity_url_filter",
     ":common",
     ":cors_exempt_headers",
     "//base/test:run_all_unittests",
