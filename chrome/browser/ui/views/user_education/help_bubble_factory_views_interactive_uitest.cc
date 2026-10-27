@@ -10,7 +10,6 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/browser/user_education/user_education_service.h"
 #include "chrome/browser/user_education/user_education_service_factory.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -81,8 +80,7 @@ IN_PROC_BROWSER_TEST_F(HelpBubbleFactoryViewsUiTest,
   RunTestSequence(
       ObserveState(views::test::kCurrentWidgetFocus),
       // A help bubble without buttons should not start focused.
-      CreateHelpBubble(kToolbarAppMenuButtonElementId,
-                       GetDefaultHelpBubbleParams()),
+      CreateHelpBubble(kNewTabButtonElementId, GetDefaultHelpBubbleParams()),
       // Toggle focus to the help bubble.
       Do([this]() { help_bubble_->ToggleFocusForAccessibility(); }),
       WaitForState(views::test::kCurrentWidgetFocus,
@@ -90,8 +88,7 @@ IN_PROC_BROWSER_TEST_F(HelpBubbleFactoryViewsUiTest,
       // Toggle focus to the anchor view.
       Do([this]() { help_bubble_->ToggleFocusForAccessibility(); }),
       WaitForState(views::test::kCurrentWidgetFocus, std::ref(browser_widget_)),
-      CheckViewProperty(kToolbarAppMenuButtonElementId, &views::View::HasFocus,
-                        true),
+      CheckViewProperty(kNewTabButtonElementId, &views::View::HasFocus, true),
       CloseHelpBubble());
 }
 
@@ -106,14 +103,13 @@ IN_PROC_BROWSER_TEST_F(HelpBubbleFactoryViewsUiTest,
   RunTestSequence(
       ObserveState(views::test::kCurrentWidgetFocus),
       // A help bubble with a button should start focused.
-      CreateHelpBubble(kToolbarAppMenuButtonElementId, std::move(params)),
+      CreateHelpBubble(kNewTabButtonElementId, std::move(params)),
       WaitForState(views::test::kCurrentWidgetFocus,
                    std::ref(help_bubble_widget_)),
       // Toggle focus to the anchor view.
       Do([this]() { help_bubble_->ToggleFocusForAccessibility(); }),
       WaitForState(views::test::kCurrentWidgetFocus, std::ref(browser_widget_)),
-      CheckViewProperty(kToolbarAppMenuButtonElementId, &views::View::HasFocus,
-                        true),
+      CheckViewProperty(kNewTabButtonElementId, &views::View::HasFocus, true),
       CloseHelpBubble());
 }
 
@@ -125,8 +121,7 @@ IN_PROC_BROWSER_TEST_F(HelpBubbleFactoryViewsUiTest,
 
   RunTestSequence(
       ObserveState(views::test::kCurrentWidgetFocus),
-      CreateHelpBubble(kToolbarAppMenuButtonElementId,
-                       GetDefaultHelpBubbleParams()),
+      CreateHelpBubble(kNewTabButtonElementId, GetDefaultHelpBubbleParams()),
       SendAccelerator(kBrowserViewElementId, next_pane),
       WaitForState(views::test::kCurrentWidgetFocus,
                    std::ref(help_bubble_widget_)),
