@@ -101,15 +101,8 @@ class OofInlineContainer {
   void Trace(Visitor* visitor) const { visitor->Trace(container_); }
 
   const LayoutInline* Container() const { return container_; }
-  OffsetType RelativeOffset() const {
-    // This field is only used by the old OOF fragmentation machinery.
-    if (RuntimeEnabledFeatures::FragmentedOofInCbEnabled()) {
-      return OffsetType();
-    }
-    return relative_offset_;
-  }
+  OffsetType RelativeOffset() const { return relative_offset_; }
   void IncreaseRelativeOffset(OffsetType increase) {
-    DCHECK(!RuntimeEnabledFeatures::FragmentedOofInCbEnabled());
     relative_offset_ += increase;
   }
 

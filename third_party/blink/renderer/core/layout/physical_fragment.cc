@@ -521,12 +521,11 @@ PhysicalFragment::OofData* PhysicalFragment::FragmentedOofDataFromBuilder(
     OofInlineContainer<PhysicalOffset> inline_container(
         descendant.InlineContainer(),
         converter.ToPhysical(descendant.InlineContainerInfo().RelativeOffset(),
-                             PhysicalSize()));
+                             size));
     OofInlineContainer<PhysicalOffset> fixedpos_inline_container(
         descendant.fixedpos_inline_container.Container(),
         converter.ToPhysical(
-            descendant.fixedpos_inline_container.RelativeOffset(),
-            PhysicalSize()));
+            descendant.fixedpos_inline_container.RelativeOffset(), size));
 
     // The static position should remain relative to the containing block.
     PhysicalSize containing_block_size =

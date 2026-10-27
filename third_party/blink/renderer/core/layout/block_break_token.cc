@@ -22,7 +22,8 @@ struct SameSizeAsBlockBreakToken : BreakToken {
   Member<BreakTokenAlgorithmData> data;
   LayoutUnit consumed_block_size;
   LayoutUnit monolithic_overflow;
-  LogicalOffset oof_start_offset;
+  LogicalOffset oof_post_layout_offset;
+  LayoutUnit oof_block_start_offset;
   unsigned sequence_number;
   unsigned numbers[1];
 };
@@ -144,9 +145,14 @@ String BlockBreakToken::ToString(bool skip_node_info) const {
     string_builder.Append(" (at block-end)");
   }
 
-  if (oof_start_offset_ != LogicalOffset()) {
-    string_builder.Append(" oof-offset:");
-    string_builder.Append(oof_start_offset_.ToString());
+  if (oof_block_start_offset_ != LayoutUnit()) {
+    string_builder.Append(" start-offset:");
+    string_builder.Append(oof_block_start_offset_.ToString());
+  }
+
+  if (oof_post_layout_offset_ != LogicalOffset()) {
+    string_builder.Append(" post-layout-offset:");
+    string_builder.Append(oof_post_layout_offset_.ToString());
   }
 
   string_builder.Append(" consumed:");

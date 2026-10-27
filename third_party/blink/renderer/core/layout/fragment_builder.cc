@@ -955,7 +955,7 @@ void FragmentBuilder::PropagateOOFPositionedInfo(
   // reason to be here.
   DCHECK(fragment.NeedsOOFPositionedInfoPropagation());
 
-  LogicalOffset adjusted_offset = offset + offset_adjustment + relative_offset;
+  LogicalOffset adjusted_offset = offset + offset_adjustment;
 
   // Collect the child's out of flow descendants.
   const WritingModeConverter converter(GetWritingDirection(), fragment.Size());
@@ -965,6 +965,7 @@ void FragmentBuilder::PropagateOOFPositionedInfo(
     LogicalOofPositionedNode logical_descendant =
         PhysicalOofPositionedNodeToLogical(descendant, converter);
     LogicalStaticPosition static_position = logical_descendant.StaticPosition();
+    LogicalOffset static_position_adjustment = adjusted_offset;
 
     OofInlineContainer<LogicalOffset>& new_inline_container =
         logical_descendant.InlineContainerInfo();
@@ -972,10 +973,12 @@ void FragmentBuilder::PropagateOOFPositionedInfo(
         IsInlineContainerForNode(node, inline_container->Container())) {
       // Found an inline container for this OOF.
       new_inline_container = *inline_container;
-    } else if (!RuntimeEnabledFeatures::FragmentedOofInCbEnabled()) {
-      if (new_inline_container.Container()) {
-        new_inline_container.IncreaseRelativeOffset(relative_offset);
-      }
+    } else if (new_inline_container.Container()) {
+      new_inline_container.IncreaseRelativeOffset(relative_offset);
+    } else {
+      // This is so that any relative offsets in the containing block chain are
+      // taken into account. This matters for fixed-positioned descendants.
+      static_position_adjustment += relative_offset;
     }
 
     // If an OOF element is inside a fragmentation context, it will be laid out
@@ -1023,7 +1026,7 @@ void FragmentBuilder::PropagateOOFPositionedInfo(
         continue;
       }
     }
-    static_position.offset += adjusted_offset;
+    static_position.offset += static_position_adjustment;
 
     // |oof_positioned_candidates_| should not have duplicated entries.
     DCHECK(!std::ranges::contains(oof_positioned_candidates_, node,
@@ -1214,8 +1217,9 @@ void FragmentBuilder::PropagateOOFFragmentainerDescendants(
     std::optional<LayoutUnit> clipped_container_block_offset =
         UpdatedClippedContainerBlockOffset(descendant.containing_block);
 
-    LogicalOffset inline_relative_offset = converter.ToLogical(
-        descendant.InlineContainerInfo().RelativeOffset(), PhysicalSize());
+    LogicalOffset inline_relative_offset =
+        converter.ToLogical(descendant.InlineContainerInfo().RelativeOffset(),
+                            containing_block_fragment->Size());
     OofInlineContainer<LogicalOffset> new_inline_container(
         descendant.InlineContainer(), inline_relative_offset);
 
@@ -1227,16 +1231,9 @@ void FragmentBuilder::PropagateOOFFragmentainerDescendants(
         descendant.StaticPosition().ConvertToLogical(
             containing_block_converter);
 
-    // The relative offset should be applied after fragmentation. Subtract out
-    // the accumulated relative offset from the inline container to the
-    // containing block so that it can be re-applied at the correct time.
-    if (new_inline_container.Container() && box_fragment &&
-        containing_block_fragment == box_fragment) {
-      static_position.offset -= inline_relative_offset;
-    }
-
     LogicalOffset fixedpos_inline_relative_offset = converter.ToLogical(
-        descendant.fixedpos_inline_container.RelativeOffset(), PhysicalSize());
+        descendant.fixedpos_inline_container.RelativeOffset(),
+        containing_block_fragment->Size());
     OofInlineContainer<LogicalOffset> new_fixedpos_inline_container(
         descendant.fixedpos_inline_container.Container(),
         fixedpos_inline_relative_offset);

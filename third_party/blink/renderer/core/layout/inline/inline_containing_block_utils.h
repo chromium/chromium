@@ -28,8 +28,6 @@ struct InlineContainingBlockGeometry {
   PhysicalRect end_fragment_union_rect;
   // The accumulated relative offset of the inline container to be applied to
   // any descendants after fragmentation.
-  //
-  // TODO(crbug.com/40267498): Remove along with non-FragmentedOofInCb code.
   LogicalOffset relative_offset;
   bool is_hidden_due_to_layout;
 };

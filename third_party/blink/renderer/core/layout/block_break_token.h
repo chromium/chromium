@@ -33,19 +33,38 @@ class CORE_EXPORT BlockBreakToken final : public BreakToken {
   // Creates a break token for a node that needs to produce its first fragment
   // in a subsequent fragmentainer. In this case we create a break token for a
   // node that hasn't yet produced any fragments.
-  //
-  // An out-of-flow positioned node may need to skip multiple fragmentainers
-  // before creating a fragment, for instance due to a large block-start inset.
-  // `oof_start_offset` is used for that.
-  static BlockBreakToken* CreateBreakBefore(
-      LayoutInputNode node,
-      bool is_forced_break,
-      LogicalOffset oof_start_offset = LogicalOffset()) {
+  static BlockBreakToken* CreateBreakBefore(LayoutInputNode node,
+                                            bool is_forced_break) {
     auto* token = MakeGarbageCollected<BlockBreakToken>(PassKey(), node);
     token->is_break_before_ = true;
     token->is_forced_break_ = is_forced_break;
-    token->oof_start_offset_ = oof_start_offset;
     token->has_unpositioned_list_marker_ = node.IsListItem();
+    return token;
+  }
+
+  // Create a break token for an out-of-flow node that needs to produce its
+  // first fragment in a subsequent fragmentainer. In this case we create a
+  // break token for a node that hasn't yet produced any fragments.
+  //
+  // An out-of-flow positioned node may need to skip one or more fragmentainers
+  // before creating a fragment. `block_start_offset` is used to specify how
+  // much space still needs to be skipped before a fragment can start. A node
+  // may need to skip fragmentainers due to a large block-start inset, for
+  // instance.
+  //
+  // Any post-layout offset (`post_layout_offset`) also needs to be recorded,
+  // since the inline-offset may be based on the hypothetically static position,
+  // which cannot be recomputed when in a subsequent fragmentainer. Also,
+  // offsets caused by non-atomic inline containing blocks are also part of the
+  // post-layout offset. None of this can be computed in subsequent fragments,
+  // so it's carried in the break tokens.
+  static BlockBreakToken* CreateBreakBeforeOof(
+      BlockNode node,
+      LayoutUnit block_start_offset,
+      LogicalOffset post_layout_offset) {
+    auto* token = CreateBreakBefore(node, /*is_forced_break=*/false);
+    token->oof_block_start_offset_ = block_start_offset;
+    token->oof_post_layout_offset_ = post_layout_offset;
     return token;
   }
 
@@ -115,30 +134,29 @@ class CORE_EXPORT BlockBreakToken final : public BreakToken {
     return data_.Get();
   }
 
-  // Return the start block-offset for the next / first fragment to be generated
-  // for an OOF node. This is used for two purposes:
+  // Return the start block-offset for the first fragment to be generated for an
+  // OOF node.
   //
-  // 1. When there's a block-start inset too large for the node to produce a
+  // When there's a block-start inset too large for the node to produce a
   // fragment in the current fragmentainer. This value will then be the
   // remaining block-start inset to use in the next fragmentainer. This may
   // repeat across multiple fragmentainers before all of the inset has been
   // "eaten" and we're ready to produce a fragment.
-  //
-  // 2. Repeated fixed-positioned nodes (printing). Then the offset will be the
-  // same at every break token for the node.
   LayoutUnit OofBlockStartOffset() const {
     DCHECK(InputNode().IsOutOfFlowPositioned());
-    return oof_start_offset_.block_offset;
+    return oof_block_start_offset_;
   }
 
-  // Return the start inline-offset for the next fragment to be generated for an
-  // OOF node. When resuming layout of an OOF after a break, there's no easy way
-  // of recomputing the inline offset, since it may be based on a static
-  // position, which in turn may be based on something in the middle of a line
-  // box, for instance.
-  LayoutUnit OofInlineStartOffset() const {
+  // Return the offset to apply after layout/fragmentation.
+  //
+  // This includes any relative offsets caused by non-atomic inline containing
+  // blocks. Additionally, the inline offset includes any inline shift caused by
+  // insets or static positioning. Repeated fixed-positioned nodes (printing)
+  // will also need this offset, so that they appear on the same position on
+  // every page.
+  LogicalOffset OofPostLayoutOffset() const {
     DCHECK(InputNode().IsOutOfFlowPositioned());
-    return oof_start_offset_.inline_offset;
+    return oof_post_layout_offset_;
   }
 
   // Return true if this is a break token that was produced without any
@@ -226,11 +244,8 @@ class CORE_EXPORT BlockBreakToken final : public BreakToken {
     // token into this one.
     void Merge(const BlockBreakToken&);
 
-    void SetInlineStartOffset(LayoutUnit offset) {
-      break_token_.oof_start_offset_.inline_offset = offset;
-    }
-    void SetBlockStartOffset(LayoutUnit offset) {
-      break_token_.oof_start_offset_.block_offset = offset;
+    void SetPostLayoutOffset(LogicalOffset offset) {
+      break_token_.oof_post_layout_offset_ = offset;
     }
 
    private:
@@ -267,7 +282,8 @@ class CORE_EXPORT BlockBreakToken final : public BreakToken {
 
   LayoutUnit consumed_block_size_;
   LayoutUnit monolithic_overflow_;
-  LogicalOffset oof_start_offset_;
+  LogicalOffset oof_post_layout_offset_;
+  LayoutUnit oof_block_start_offset_;
   unsigned sequence_number_ = 0;
 
   const wtf_size_t const_num_children_;

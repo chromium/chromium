@@ -38,7 +38,7 @@ PhysicalOofPositionedNode LogicalOofPositionedNodeToPhysical(
   OofInlineContainer<PhysicalOffset> inline_container(
       logical.InlineContainer(),
       converter.ToPhysical(logical.InlineContainerInfo().RelativeOffset(),
-                           PhysicalSize()));
+                           converter.OuterSize()));
   return PhysicalOofPositionedNode(
       logical.Node(), logical.GetBreakToken(),
       logical.StaticPosition().ConvertToPhysical(converter),
@@ -51,7 +51,7 @@ LogicalOofPositionedNode PhysicalOofPositionedNodeToLogical(
   OofInlineContainer<LogicalOffset> inline_container(
       physical.InlineContainer(),
       converter.ToLogical(physical.InlineContainerInfo().RelativeOffset(),
-                          PhysicalSize()));
+                          converter.OuterSize()));
   return LogicalOofPositionedNode(
       physical.Node(), physical.GetBreakToken(),
       physical.StaticPosition().ConvertToLogical(converter),

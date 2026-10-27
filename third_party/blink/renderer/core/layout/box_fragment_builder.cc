@@ -120,8 +120,7 @@ const LayoutResult& BoxFragmentBuilder::LayoutResultForPropagation(
 
 void BoxFragmentBuilder::AddBreakBeforeChild(LayoutInputNode child,
                                              std::optional<BreakAppeal> appeal,
-                                             bool is_forced_break,
-                                             LogicalOffset oof_start_offset) {
+                                             bool is_forced_break) {
   // If there's a pre-set break token, we shouldn't be here.
   DCHECK(!break_token_);
 
@@ -172,9 +171,22 @@ void BoxFragmentBuilder::AddBreakBeforeChild(LayoutInputNode child,
     }
     return;
   }
-  auto* token = BlockBreakToken::CreateBreakBefore(child, is_forced_break,
-                                                   oof_start_offset);
+  auto* token = BlockBreakToken::CreateBreakBefore(child, is_forced_break);
   child_break_tokens_.push_back(token);
+}
+
+void BoxFragmentBuilder::AddBreakBeforeOofChild(
+    BlockNode child,
+    LayoutUnit oof_block_start_offset,
+    LogicalOffset oof_post_layout_offset) {
+  DCHECK(RuntimeEnabledFeatures::FragmentedOofInCbEnabled());
+  DCHECK(child.IsOutOfFlowPositioned());
+  // If there's a pre-set break token, we shouldn't be here.
+  DCHECK(!break_token_);
+
+  const auto* break_token = BlockBreakToken::CreateBreakBeforeOof(
+      child, oof_block_start_offset, oof_post_layout_offset);
+  child_break_tokens_.push_back(break_token);
 }
 
 void BoxFragmentBuilder::AddResult(
