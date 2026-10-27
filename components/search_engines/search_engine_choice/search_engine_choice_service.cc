@@ -244,11 +244,6 @@ void RecordChoiceScreenCompletionDate(
       kSearchEngineChoiceCompletedOnMonthHistogram, year * 100 + month);
 }
 
-void RecordWipeOnMissingDse(bool will_wipe) {
-  base::UmaHistogramBoolean("Search.ChoicePrefsCheck.WipeOnMissingDse",
-                            will_wipe);
-}
-
 regional_capabilities::FunnelStage ToFunnelStage(
     SearchEngineChoiceScreenConditions condition) {
   switch (condition) {
@@ -1002,13 +997,11 @@ SearchEngineChoiceService::CheckPrefsForWipeReason() {
 
   if (!profile_prefs_->HasPrefPath(
           DefaultSearchManager::kDefaultSearchProviderDataPrefName)) {
-    if (base::FeatureList::IsEnabled(
-            switches::kWipeChoicePrefsOnMissingDefaultSearchEngine)) {
-      RecordWipeOnMissingDse(true);
-      return SearchEngineChoiceWipeReason::kMissingDefaultSearchEngine;
-    } else {
-      RecordWipeOnMissingDse(false);
-    }
+    // The presence of choice metadata implies that a DSE choice was made, so we
+    // also expect a DSE to be set in prefs. Some flows, like pref tampering
+    // detection, can cause the DSE pref to be cleared. When this happens, wipe
+    // the choice metadata as well to trigger a new choice prompt.
+    return SearchEngineChoiceWipeReason::kMissingDefaultSearchEngine;
   }
 
   // Allow re-triggering the choice screen for testing the screen itself.
