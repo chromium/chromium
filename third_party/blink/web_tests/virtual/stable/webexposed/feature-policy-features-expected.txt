@@ -4,7 +4,6 @@ All changes to this list should go through Blink's feature review process: http:
 accelerometer
 aria-notify
 autoplay
-browsing-topics
 camera
 captured-surface-control
 ch-device-memory
@@ -49,7 +48,6 @@ gyroscope
 hid
 identity-credentials-get
 idle-detection
-interest-cohort
 keyboard-map
 language-detector
 language-model
