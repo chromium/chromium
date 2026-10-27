@@ -293,7 +293,9 @@ BrowserWindowInterface* StartupBrowserCreatorImpl::OpenTabsInBrowser(
     chrome::startup::IsProcessStartup process_startup,
     const StartupTabs& tabs,
     TabOverWrite is_active_tab_overwrite) {
-  CHECK(!tabs.empty(), base::NotFatalUntil::M162);
+  // TODO(crbug.com/577331562): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(!tabs.empty());
 
   // If we don't yet have a profile, try to use the one we're given from
   // |browser|. While we may not end up actually using |browser| (since it
