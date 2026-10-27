@@ -185,6 +185,17 @@ std::unique_ptr<GtkUiPlatform> CreateGtkUiPlatform(ui::LinuxUiBackend backend) {
   }
 }
 
+const ui::ColorProvider* GetGtkColorProvider(size_t system_theme_version) {
+  ui::ColorProviderKey key;
+  // Match `NativeThemeGtk::CalculatePreferredColorScheme()`.
+  if (IsGtkThemeDark()) {
+    key.color_mode = ui::ColorProviderKey::ColorMode::kDark;
+  }
+  key.system_theme = ui::SystemTheme::kGtk;
+  key.system_theme_version = system_theme_version;
+  return ui::ColorProviderManager::Get().GetColorProviderFor(key);
+}
+
 }  // namespace
 
 GtkUi::GtkUi() : window_frame_actions_() {}
@@ -311,7 +322,7 @@ bool GtkUi::Initialize() {
     }
   }
 
-  LoadGtkValues();
+  UpdateDeviceScaleFactor();
 
   // We must build this after GTK gets initialized.
   settings_provider_ = std::make_unique<SettingsProviderGtk>(this);
@@ -380,15 +391,32 @@ ui::NativeTheme* GtkUi::GetNativeTheme() const {
 }
 
 bool GtkUi::GetColor(int id, SkColor* color, bool use_custom_frame) const {
-  const ColorMap& color_map =
-      use_custom_frame ? custom_frame_colors_ : native_frame_colors_;
-  auto it = color_map.find(id);
-  if (it != color_map.end()) {
-    *color = it->second;
-    return true;
+  switch (id) {
+    case ThemeProperties::COLOR_TAB_BACKGROUND_ACTIVE_FRAME_ACTIVE:
+    case ThemeProperties::COLOR_TAB_BACKGROUND_ACTIVE_FRAME_INACTIVE: {
+      const SkColor frame_color = SkColorSetA(
+          GetBgColor(use_custom_frame ? "headerbar.header-bar.titlebar"
+                                      : "menubar"),
+          SK_AlphaOPAQUE);
+      // Compose the window color on the frame color to ensure the resulting
+      // tab color is opaque.
+      *color = color_utils::GetResultingPaintColor(GetBgColor(""), frame_color);
+      return true;
+    }
+    case ThemeProperties::COLOR_TAB_FOREGROUND_INACTIVE_FRAME_ACTIVE:
+      *color = GetFgColor(use_custom_frame
+                              ? "headerbar.header-bar.titlebar label.title"
+                              : "menubar label.title");
+      return true;
+    case ThemeProperties::COLOR_TAB_FOREGROUND_INACTIVE_FRAME_INACTIVE:
+      *color =
+          GetFgColor(use_custom_frame
+                         ? "headerbar.header-bar.titlebar:backdrop label.title"
+                         : "menubar:backdrop label.title");
+      return true;
+    default:
+      return false;
   }
-
-  return false;
 }
 
 bool GtkUi::GetDisplayProperty(int id, int* result) const {
@@ -400,23 +428,30 @@ bool GtkUi::GetDisplayProperty(int id, int* result) const {
 }
 
 void GtkUi::GetFocusRingColor(SkColor* color) const {
-  *color = focus_ring_color_;
+  *color = GetGtkColorProvider(native_theme_->system_color_version())
+               ->GetColor(ui::kColorFocusableBorderFocused);
 }
 
 void GtkUi::GetActiveSelectionBgColor(SkColor* color) const {
-  *color = active_selection_bg_color_;
+  *color = GetGtkColorProvider(native_theme_->system_color_version())
+               ->GetColor(ui::kColorTextfieldSelectionBackground);
 }
 
 void GtkUi::GetActiveSelectionFgColor(SkColor* color) const {
-  *color = active_selection_fg_color_;
+  *color = GetGtkColorProvider(native_theme_->system_color_version())
+               ->GetColor(ui::kColorTextfieldSelectionForeground);
 }
 
 void GtkUi::GetInactiveSelectionBgColor(SkColor* color) const {
-  *color = inactive_selection_bg_color_;
+  *color = GetBgColor(
+      "textview.view:backdrop "
+      "text:backdrop selection:backdrop");
 }
 
 void GtkUi::GetInactiveSelectionFgColor(SkColor* color) const {
-  *color = inactive_selection_fg_color_;
+  *color = GetFgColor(
+      "textview.view:backdrop "
+      "text:backdrop selection:backdrop");
 }
 
 gfx::Image GtkUi::GetIconForContentType(const std::string& content_type,
@@ -771,9 +806,7 @@ gfx::Size GtkUi::GetPdfPaperSize(printing::PrintingContextLinux* context) {
 
 void GtkUi::OnThemeChanged(GtkSettings* settings, GtkParamSpec* param) {
   ClearStyleColorCache();
-  custom_frame_colors_.clear();
-  native_frame_colors_.clear();
-  LoadGtkValues();
+  UpdateDeviceScaleFactor();
   // Recompute values derived from the theme (e.g. `NativeThemeGtk`'s color
   // scheme) now that the cached colors have been cleared.
   os_settings_provider_->OnThemeChanged();
@@ -851,68 +884,6 @@ void GtkUi::OnMonitorsChanged(GListModel* list,
     return !monitors.contains(pair.first);
   });
   UpdateDeviceScaleFactor();
-}
-
-void GtkUi::LoadGtkValues() {
-  // TODO(thomasanderson): GtkThemeService had a comment here about having to
-  // muck with the raw Prefs object to remove prefs::kCurrentThemeImages or else
-  // we'd regress startup time. Figure out how to do that when we can't access
-  // the prefs system from here.
-  UpdateDeviceScaleFactor();
-
-  ui::ColorProviderKey key;
-  // Match `NativeThemeGtk::CalculatePreferredColorScheme()`.
-  if (IsGtkThemeDark()) {
-    key.color_mode = ui::ColorProviderKey::ColorMode::kDark;
-  }
-  key.system_theme = ui::SystemTheme::kGtk;
-  const auto* color_provider =
-      ui::ColorProviderManager::Get().GetColorProviderFor(key);
-
-  inactive_selection_bg_color_ = GetBgColor(
-      "textview.view:backdrop "
-      "text:backdrop selection:backdrop");
-  inactive_selection_fg_color_ = GetFgColor(
-      "textview.view:backdrop "
-      "text:backdrop selection:backdrop");
-
-  // Generate the colors that we pass to Blink.
-  focus_ring_color_ =
-      color_provider->GetColor(ui::kColorFocusableBorderFocused);
-
-  // Some GTK themes only define the text selection colors on the GtkEntry
-  // class, so we need to use that for getting selection colors.
-  active_selection_bg_color_ =
-      color_provider->GetColor(ui::kColorTextfieldSelectionBackground);
-  active_selection_fg_color_ =
-      color_provider->GetColor(ui::kColorTextfieldSelectionForeground);
-
-  // Generate tab-strip colors that depend on whether or not a custom window
-  // frame is used.
-  for (bool custom_frame : {false, true}) {
-    ColorMap& color_map =
-        custom_frame ? custom_frame_colors_ : native_frame_colors_;
-    const std::string header_selector =
-        custom_frame ? "headerbar.header-bar.titlebar" : "menubar";
-    const std::string header_selector_inactive = header_selector + ":backdrop";
-    const SkColor frame_color =
-        SkColorSetA(GetBgColor(header_selector), SK_AlphaOPAQUE);
-
-    // Compose the window color on the frame color to ensure the resulting tab
-    // color is opaque.
-    SkColor tab_color =
-        color_utils::GetResultingPaintColor(GetBgColor(""), frame_color);
-
-    color_map[ThemeProperties::COLOR_TAB_BACKGROUND_ACTIVE_FRAME_ACTIVE] =
-        tab_color;
-    color_map[ThemeProperties::COLOR_TAB_BACKGROUND_ACTIVE_FRAME_INACTIVE] =
-        tab_color;
-
-    color_map[ThemeProperties::COLOR_TAB_FOREGROUND_INACTIVE_FRAME_ACTIVE] =
-        GetFgColor(header_selector + " label.title");
-    color_map[ThemeProperties::COLOR_TAB_FOREGROUND_INACTIVE_FRAME_INACTIVE] =
-        GetFgColor(header_selector_inactive + " label.title");
-  }
 }
 
 void GtkUi::TrackMonitor(GdkMonitor* monitor) {

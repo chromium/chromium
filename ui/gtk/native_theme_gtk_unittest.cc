@@ -15,9 +15,12 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
+#include "base/test/scoped_feature_list.h"
+#include "chrome/browser/themes/theme_properties.h"  // nogncheck
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/glib/scoped_gsignal.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/color/color_provider_key.h"
 #include "ui/color/color_provider_manager.h"
 #include "ui/gtk/gtk_compat.h"
@@ -82,6 +85,25 @@ class NativeThemeGtkTest : public testing::Test {
  private:
   std::string original_theme_name_;
   gboolean original_prefer_dark_ = false;
+};
+
+class StubLinuxUiDelegate : public ui::LinuxUiDelegate {
+ public:
+  // ui::LinuxUiDelegate:
+  ui::LinuxUiBackend GetBackend() const override {
+    return ui::LinuxUiBackend::kStub;
+  }
+  void ExportWindowHandle(
+      gfx::AcceleratedWidget window_id,
+      base::OnceCallback<void(std::string)> callback) override {
+    std::move(callback).Run({});
+  }
+};
+
+struct ScopedColorProviderManagerReset {
+  ~ScopedColorProviderManagerReset() {
+    ui::ColorProviderManager::ResetForTesting();
+  }
 };
 
 // A dark-only GTK theme with a light desktop preference must keep the GTK
@@ -153,19 +175,6 @@ TEST_F(NativeThemeGtkTest, UserColorFallsBackToThemeAccent) {
 // `GtkUi::SetDarkTheme()` should skip redundant updates while still applying
 // genuine dark/light changes.
 TEST_F(NativeThemeGtkTest, SetDarkThemeSkipsRedundantUpdates) {
-  class StubLinuxUiDelegate : public ui::LinuxUiDelegate {
-   public:
-    // ui::LinuxUiDelegate:
-    ui::LinuxUiBackend GetBackend() const override {
-      return ui::LinuxUiBackend::kStub;
-    }
-    void ExportWindowHandle(
-        gfx::AcceleratedWidget window_id,
-        base::OnceCallback<void(std::string)> callback) override {
-      std::move(callback).Run({});
-    }
-  };
-
   class CountingNativeThemeObserver : public ui::NativeThemeObserver {
    public:
     // ui::NativeThemeObserver:
@@ -178,12 +187,6 @@ TEST_F(NativeThemeGtkTest, SetDarkThemeSkipsRedundantUpdates) {
 
    private:
     int count_ = 0;
-  };
-
-  struct ScopedColorProviderManagerReset {
-    ~ScopedColorProviderManagerReset() {
-      ui::ColorProviderManager::ResetForTesting();
-    }
   };
 
   UseAdwaita(/*dark=*/false);
@@ -237,6 +240,74 @@ TEST_F(NativeThemeGtkTest, SetDarkThemeSkipsRedundantUpdates) {
   EXPECT_EQ(gtk_notify_count, 2);
   EXPECT_GT(theme_observer.count(), 0);
   EXPECT_EQ(GtkThemeScheme(), PreferredColorScheme::kLight);
+}
+
+// `GtkUi` should not initialize a `SystemTheme::kGtk` `ColorProvider` during
+// `Initialize()` or `OnThemeChanged()`, and should instead query and cache it
+// on demand when a GTK color getter is called.
+TEST_F(NativeThemeGtkTest, LazilyLoadsGtkColorsOnDemand) {
+  for (bool theme_change_optimization : {false, true}) {
+    SCOPED_TRACE(theme_change_optimization);
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithFeatureState(features::kThemeChangeOptimization,
+                                      theme_change_optimization);
+
+    UseAdwaita(/*dark=*/false);
+    ui::ColorProviderManager::ResetForTesting();
+
+    StubLinuxUiDelegate delegate;
+    std::unique_ptr<ui::LinuxUiAndTheme> gtk_ui = BuildGtkUi();
+    ScopedColorProviderManagerReset reset_color_provider_manager;
+    ASSERT_TRUE(gtk_ui->Initialize());
+
+    // Initializing `GtkUi` or changing the GTK theme must not eagerly
+    // initialize a `SystemTheme::kGtk` `ColorProvider` when no GTK theme colors
+    // are queried.
+    EXPECT_EQ(ui::ColorProviderManager::Get().num_providers_initialized(), 0u);
+    gtk_ui->SetDarkTheme(true);
+    EXPECT_EQ(ui::ColorProviderManager::Get().num_providers_initialized(), 0u);
+
+    // Querying a GTK theme color lazily initializes the `SystemTheme::kGtk`
+    // `ColorProvider` once.
+    SkColor focus_ring = SK_ColorTRANSPARENT;
+    gtk_ui->GetFocusRingColor(&focus_ring);
+    EXPECT_EQ(ui::ColorProviderManager::Get().num_providers_initialized(), 1u);
+    EXPECT_NE(SkColorGetA(focus_ring), 0u);
+
+    // Subsequent color queries reuse the cached `ColorProvider` and style
+    // cache.
+    SkColor active_sel_bg = SK_ColorTRANSPARENT;
+    SkColor active_sel_fg = SK_ColorTRANSPARENT;
+    SkColor inactive_sel_bg = SK_ColorTRANSPARENT;
+    SkColor inactive_sel_fg = SK_ColorTRANSPARENT;
+    SkColor custom_color = SK_ColorTRANSPARENT;
+    gtk_ui->GetActiveSelectionBgColor(&active_sel_bg);
+    gtk_ui->GetActiveSelectionFgColor(&active_sel_fg);
+    gtk_ui->GetInactiveSelectionBgColor(&inactive_sel_bg);
+    gtk_ui->GetInactiveSelectionFgColor(&inactive_sel_fg);
+    EXPECT_TRUE(gtk_ui->GetColor(
+        ThemeProperties::COLOR_TAB_BACKGROUND_ACTIVE_FRAME_ACTIVE,
+        &custom_color,
+        /*use_custom_frame=*/true));
+    EXPECT_FALSE(
+        gtk_ui->GetColor(/*id=*/-1, &custom_color, /*use_custom_frame=*/true));
+    EXPECT_EQ(ui::ColorProviderManager::Get().num_providers_initialized(), 1u);
+    EXPECT_NE(SkColorGetA(active_sel_bg), 0u);
+    EXPECT_NE(SkColorGetA(active_sel_fg), 0u);
+    EXPECT_NE(SkColorGetA(inactive_sel_bg), 0u);
+    EXPECT_NE(SkColorGetA(inactive_sel_fg), 0u);
+    EXPECT_NE(SkColorGetA(custom_color), 0u);
+
+    // Changing the accent color invalidates `ColorProviderManager`'s cache
+    // lazily: the setter itself does not initialize a new `ColorProvider` until
+    // a getter is called.
+    constexpr SkColor kAccent = SkColorSetRGB(0xE9, 0x54, 0x20);
+    gtk_ui->SetAccentColor(kAccent);
+    EXPECT_EQ(ui::ColorProviderManager::Get().num_providers_initialized(), 1u);
+
+    gtk_ui->GetFocusRingColor(&focus_ring);
+    EXPECT_EQ(ui::ColorProviderManager::Get().num_providers_initialized(), 2u);
+  }
 }
 
 }  // namespace
