@@ -6,10 +6,12 @@
 
 #include <optional>
 #include <string>
+#include <utility>
 
 #include "base/barrier_callback.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/files/important_file_writer.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/strcat.h"
@@ -48,16 +50,22 @@ namespace {
 
 constexpr char kSidePanelSnapshotImageOptions[] = "=w320-h180-p-k-no-nd-mv";
 
-void CopyFileToProfilePath(const base::FilePath& from_path,
-                           const base::FilePath& profile_path) {
-  base::CopyFile(from_path,
-                 profile_path.AppendASCII(
-                     chrome::kChromeUIUntrustedNewTabPageBackgroundFilename));
-}
-
-std::string ReadFileToString(const base::FilePath& path) {
+// Copies the image at `from_path` into the profile directory and returns its
+// bytes, or std::nullopt on failure. Writes via temp file + rename so a
+// symlink at the fixed destination name is replaced rather than followed.
+std::optional<std::string> CopyFileToProfilePath(
+    const base::FilePath& from_path,
+    const base::FilePath& profile_path) {
   std::string image_data;
-  base::ReadFileToString(path, &image_data);
+  if (!base::ReadFileToString(from_path, &image_data)) {
+    return std::nullopt;
+  }
+  if (!base::ImportantFileWriter::WriteFileAtomically(
+          profile_path.AppendASCII(
+              chrome::kChromeUIUntrustedNewTabPageBackgroundFilename),
+          image_data)) {
+    return std::nullopt;
+  }
   return image_data;
 }
 
@@ -240,7 +248,7 @@ void NtpCustomBackgroundService::SelectLocalBackgroundImage(
   if (IsCustomBackgroundDisabledByPolicy()) {
     return;
   }
-  base::ThreadPool::PostTaskAndReply(
+  base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::TaskPriority::USER_VISIBLE, base::MayBlock()},
       base::BindOnce(&CopyFileToProfilePath, path, profile_->GetPath()),
       base::BindOnce(&NtpCustomBackgroundService::SetBackgroundToLocalResource,
@@ -387,7 +395,11 @@ void NtpCustomBackgroundService::VerifyCustomBackgroundImageURL() {
   }
 }
 
-void NtpCustomBackgroundService::SetBackgroundToLocalResource() {
+void NtpCustomBackgroundService::SetBackgroundToLocalResource(
+    std::optional<std::string> image_data) {
+  if (!image_data.has_value()) {
+    return;
+  }
   background_updated_timestamp_ = base::TimeTicks::Now();
   // If these conditions are true, a wallpaper search image is set so it must
   // be removed.
@@ -405,13 +417,7 @@ void NtpCustomBackgroundService::SetBackgroundToLocalResource() {
           ntp_features::kCustomizeChromeWallpaperSearch) &&
       base::FeatureList::IsEnabled(
           optimization_guide::features::kOptimizationGuideModelExecution)) {
-    base::FilePath path = profile_->GetPath().AppendASCII(
-        chrome::kChromeUIUntrustedNewTabPageBackgroundFilename);
-    base::ThreadPool::PostTaskAndReplyWithResult(
-        FROM_HERE, {base::TaskPriority::USER_VISIBLE, base::MayBlock()},
-        base::BindOnce(&ReadFileToString, path),
-        base::BindOnce(&NtpCustomBackgroundService::ProcessLocalImageData,
-                       weak_ptr_factory_.GetWeakPtr()));
+    ProcessLocalImageData(std::move(*image_data));
   }
 }
 
