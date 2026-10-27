@@ -1412,6 +1412,8 @@ UIImage* SendButtonImage(BOOL highlighted,
       [ExtendedTouchTargetButton buttonWithType:UIButtonTypeSystem];
   sendButton.configuration = buttonConfig;
   sendButton.backgroundColor = [_theme sendButtonBackgroundColorHighlighted:NO];
+  sendButton.layer.cornerRadius = kSendButtonDimension / 2;
+  sendButton.clipsToBounds = YES;
 
   __weak __typeof(self) weakSelf = self;
   sendButton.configurationUpdateHandler = ^(UIButton* button) {
