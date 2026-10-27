@@ -502,6 +502,44 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTest,
                   WaitForHide(OverlayBaseController::kOverlayId));
 }
 
+// Selects a region before the page context is ready. The region must reach the
+// web client once the context arrives, not get dropped.
+//
+// Show() starts the page context fetch, which is async. Calling AdjustRegion()
+// in the same step, before the run loop gets to run, guarantees the region is
+// selected while the fetch is still in flight. Don't split the two calls into
+// separate steps.
+IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTest,
+                       RegionSelectedBeforeContextReachesClient) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlayWebContentsId);
+  const DeepQuery kRenderer = {"selection-overlay-app",
+                               "glic-selection-overlay",
+                               "post-selection-renderer"};
+
+  RunTestSequence(
+      // Open the panel first so the tab has a Glic instance to send to.
+      LoadPageAndWaitForPaint(kActiveTab), OpenGlic(), Do([this]() {
+        SelectionOverlayController* controller = GetController();
+        controller->Show(/*options=*/nullptr);
+        static_cast<selection::SelectionOverlayPageHandler*>(controller)
+            ->AdjustRegion(selection::SelectedRegion::New(
+                               base::UnguessableToken::Create(),
+                               selection::RegionShape::NewRect(
+                                   gfx::RectF(0.5f, 0.5f, 0.2f, 0.2f))),
+                           /*is_using_keyboard=*/true);
+      }),
+      WaitForShow(OverlayBaseController::kOverlayId),
+      InstrumentNonTabWebView(kOverlayWebContentsId,
+                              OverlayBaseController::kOverlayId),
+      WaitForJsResultAt(kOverlayWebContentsId, kRenderer,
+                        "el => el.selectedRegions.length === 1"),
+      // Times out if the region was dropped instead of deferred.
+      WaitForJsResultAt(kGlicContentsElementId, {"#additionalContextResult"},
+                        "el => el.innerText.includes('Tab Context: present') "
+                        "&& el.innerText.includes('Region: ')"));
+}
+
 // Nothing carries over from a closed session to the next one: the next
 // session starts with its own interaction options and no regions.
 IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTest,
