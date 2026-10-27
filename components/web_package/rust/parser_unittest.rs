@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+chromium::import! {
+    "//components/cbor/rust:cbor";
+    "//components/web_package/rust:web_package_rust";
+}
+
 use cbor::{Map, MapEntry, MapKey, Value};
 use rust_gtest_interop::prelude::*;
 use web_package_rust::{

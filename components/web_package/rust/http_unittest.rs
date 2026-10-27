@@ -2,6 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+chromium::import! {
+    "//components/web_package/rust:web_package_rust";
+}
+
 use rust_gtest_interop::prelude::*;
 use web_package_rust::http::{
     is_delimiter, is_field_vchar, is_token_char, is_valid_header_name, is_valid_header_value,
