@@ -490,13 +490,11 @@ def _generate_per_platform_dep_lists(
 def _generate_main_source_set(
         platform_source_sets: list[PlatformSourceSets]) -> str:
     """Generates the BUILD file text for the main XNNPACK build target."""
-    # The sources for the "xnnpack" target are assumed to be the same for each
-    # target architecture.
     for pss in platform_source_sets[1:]:
-        assert pss.xnnpack.srcs == platform_source_sets[0].xnnpack.srcs
         assert pss.xnnpack.args == platform_source_sets[0].xnnpack.args
-    srcs = ',\n'.join(
-        ['    "%s"' % src for src in platform_source_sets[0].xnnpack.srcs])
+    all_srcs = sorted(
+        set.union(*(set(pss.xnnpack.srcs) for pss in platform_source_sets)))
+    srcs = ',\n'.join(['    "%s"' % src for src in all_srcs])
     target = _MAIN_TMPL
     target = target.replace('%SRCS%', srcs)
     return target
