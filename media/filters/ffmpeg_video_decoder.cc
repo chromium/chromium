@@ -212,14 +212,12 @@ int FFmpegVideoDecoder::GetVideoBuffer(struct AVCodecContext* codec_context,
       base::bits::AlignUp(span_ptr, layout->buffer_addr_align());
   auto aligned_span = span.subspan(aligned_span_ptr - span_ptr);
 
-  // SAFETY: This CHECK makes sure that we don't go out of bounds accessing
-  // `AVFrame::data` and `AVFrame::linesize`.
-  // `AV_NUM_DATA_POINTERS` is their size.
-  CHECK_LE(base::saturated_cast<int>(num_planes), AV_NUM_DATA_POINTERS);
+  const auto frame_data = base::span(frame->data);
+  const auto frame_linesize = base::span(frame->linesize);
   for (size_t plane = 0; plane < num_planes; ++plane) {
-    UNSAFE_BUFFERS(frame->data[plane]) =
+    frame_data[plane] =
         aligned_span.subspan(layout->planes()[plane].offset).data();
-    UNSAFE_BUFFERS(frame->linesize[plane]) = layout->planes()[plane].stride;
+    frame_linesize[plane] = layout->planes()[plane].stride;
   }
 
   // This will be freed by `ReleaseVideoBufferImpl`.
