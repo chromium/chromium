@@ -20,7 +20,6 @@
 
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
-#include "base/containers/flat_set.h"
 #include "base/json/json_reader.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
@@ -1258,7 +1257,6 @@ bool Schema::Validate(const base::Value& value,
   }
 
   if (value.is_dict()) {
-    base::flat_set<std::string> present_properties;
     for (auto dict_item : value.GetDict()) {
       SchemaList schema_list = GetMatchingProperties(dict_item.first);
       if (schema_list.empty()) {
@@ -1286,12 +1284,11 @@ bool Schema::Validate(const base::Value& value,
             return false;
           }
         }
-        present_properties.insert(dict_item.first);
       }
     }
 
     for (const auto& required_property : GetRequiredProperties()) {
-      if (present_properties.contains(required_property)) {
+      if (value.GetDict().contains(required_property)) {
         continue;
       }
 
@@ -1360,7 +1357,6 @@ bool Schema::Normalize(base::Value* value,
   }
 
   if (value->is_dict()) {
-    base::flat_set<std::string> present_properties;
     std::vector<std::string> drop_list;  // Contains the keys to drop.
     for (auto dict_item : value->GetDict()) {
       SchemaList schema_list = GetMatchingProperties(dict_item.first);
@@ -1393,12 +1389,11 @@ bool Schema::Normalize(base::Value* value,
             return false;
           }
         }
-        present_properties.insert(dict_item.first);
       }
     }
 
     for (const auto& required_property : GetRequiredProperties()) {
-      if (present_properties.contains(required_property)) {
+      if (value->GetDict().contains(required_property)) {
         continue;
       }
 

@@ -8,6 +8,7 @@
 
 #include <array>
 #include <memory>
+#include <string>
 #include <utility>
 
 #include "base/strings/stringprintf.h"
@@ -21,9 +22,9 @@ namespace policy {
 
 namespace {
 
-#define TestSchemaValidation(a, b, c, d) \
-    TestSchemaValidationHelper(          \
-        base::StringPrintf("%s:%i", __FILE__, __LINE__), a, b, c, d)
+#define TestSchemaValidation(a, b, c, d)                                      \
+  TestSchemaValidationHelper(base::StringPrintf("%s:%i", __FILE__, __LINE__), \
+                             a, b, c, d)
 
 const char kTestSchema[] = R"({
   "type": "object",
@@ -180,8 +181,9 @@ void TestSchemaValidationHelper(const std::string& source,
       schema.Normalize(&cloned_value, strategy, nullptr, &error, &touched);
   EXPECT_EQ(expected_return_value, returned) << source << ": " << error;
 
-  if (strategy == SCHEMA_ALLOW_UNKNOWN_WITHOUT_WARNING)
+  if (strategy == SCHEMA_ALLOW_UNKNOWN_WITHOUT_WARNING) {
     return;
+  }
 
   bool strictly_valid = schema.Validate(value, SCHEMA_STRICT, nullptr, &error);
   EXPECT_EQ(touched, !strictly_valid && returned) << source;
@@ -212,7 +214,8 @@ std::string SchemaObjectWrapper(const std::string& subschema) {
   return "{"
          "  \"type\": \"object\","
          "  \"properties\": {"
-         "    \"SomePropertyName\":" + subschema +
+         "    \"SomePropertyName\":" +
+         subschema +
          "  }"
          "}";
 }
@@ -584,19 +587,19 @@ TEST(SchemaTest, Wrap) {
   };
 
   const internal::PropertyNode kPropertyNodes[] = {
-    { "Boolean",       1},  //  0
-    { "DictRequired", 11},  //  1
-    { "Integer",       2},  //  2
-    { "List",          5},  //  3
-    { "Number",        3},  //  4
-    { "String",        4},  //  5
-    { "IntEnum",       7},  //  6
-    { "RangedInt",     8},  //  7
-    { "StrEnum",       9},  //  8
-    { "StrPat",       10},  //  9
-    { "bar+$",         4},  // 10
-    { "String",        4},  // 11
-    { "Number",        3},  // 12
+      {"Boolean", 1},        //  0
+      {"DictRequired", 11},  //  1
+      {"Integer", 2},        //  2
+      {"List", 5},           //  3
+      {"Number", 3},         //  4
+      {"String", 4},         //  5
+      {"IntEnum", 7},        //  6
+      {"RangedInt", 8},      //  7
+      {"StrEnum", 9},        //  8
+      {"StrPat", 10},        //  9
+      {"bar+$", 4},          // 10
+      {"String", 4},         // 11
+      {"Number", 3},         // 12
   };
 
   const internal::PropertiesNode kProperties[] = {
@@ -614,10 +617,10 @@ TEST(SchemaTest, Wrap) {
   };
 
   const internal::RestrictionNode kRestriction[] = {
-    {{0, 3}},  // 0: [1, 2, 3]
-    {{5, 1}},  // 1: minimum = 1, maximum = 5
-    {{0, 3}},  // 2: ["one", "two", "three"]
-    {{3, 3}},  // 3: pattern "foo+"
+      {{0, 3}},  // 0: [1, 2, 3]
+      {{5, 1}},  // 1: minimum = 1, maximum = 5
+      {{0, 3}},  // 2: ["one", "two", "three"]
+      {{3, 3}},  // 3: pattern "foo+"
   };
 
   const char* kRequired[] = {"String"};
@@ -625,10 +628,10 @@ TEST(SchemaTest, Wrap) {
   const int kIntEnums[] = {1, 2, 3};
 
   const char* kStringEnums[] = {
-    "one",    // 0
-    "two",    // 1
-    "three",  // 2
-    "foo+",   // 3
+      "one",    // 0
+      "two",    // 1
+      "three",  // 2
+      "foo+",   // 3
   };
 
   const internal::SchemaData kData = {
@@ -1667,6 +1670,44 @@ TEST(SchemaTest, ErrorPathToString) {
   EXPECT_EQ(ErrorPathToString("Policy", {1, 2, 3}), "Policy[1][2][3]");
   EXPECT_EQ(ErrorPathToString("Policy", {0, "key", 5, 7, "example"}),
             "Policy[0].key[5][7].example");
+}
+
+TEST(SchemaTest, LargeDictionary) {
+  static constexpr char kSchema[] = R"({
+    "type": "object",
+    "properties": {
+      "required_key": { "type": "string" }
+    },
+    "required": ["required_key"]
+  })";
+  const auto schema = Schema::Parse(kSchema);
+  ASSERT_TRUE(schema.has_value()) << schema.error();
+
+  base::DictValue dict;
+  for (int i = 0; i < 10000; ++i) {
+    dict.Set(base::StringPrintf("key_%d", i), "value");
+  }
+  base::Value bundle(std::move(dict));
+
+  PolicyErrorPath error_path;
+  std::string error;
+  // Missing required property should fail validation.
+  EXPECT_FALSE(
+      schema->Validate(bundle, SCHEMA_ALLOW_UNKNOWN, &error_path, &error));
+  EXPECT_NE(error.find("Missing or invalid required property: required_key"),
+            std::string::npos);
+
+  // Adding the required property satisfies validation and normalization.
+  bundle.GetDict().Set("required_key", "valid_value");
+  EXPECT_TRUE(
+      schema->Validate(bundle, SCHEMA_ALLOW_UNKNOWN, &error_path, &error));
+
+  bool changed = false;
+  EXPECT_TRUE(schema->Normalize(&bundle, SCHEMA_ALLOW_UNKNOWN, &error_path,
+                                &error, &changed));
+  EXPECT_TRUE(changed);
+  EXPECT_EQ(bundle.GetDict().size(), 1u);
+  EXPECT_TRUE(bundle.GetDict().contains("required_key"));
 }
 
 }  // namespace policy
