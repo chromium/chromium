@@ -8,6 +8,7 @@
 
 #include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/input/web_mouse_event.h"
 #include "third_party/blink/public/mojom/input/pointer_lock_result.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
@@ -18,16 +19,24 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_pointer_lock_options.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/events/native_event_listener.h"
+#include "third_party/blink/renderer/core/editing/frame_caret.h"
+#include "third_party/blink/renderer/core/editing/frame_selection.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/html/html_iframe_element.h"
+#include "third_party/blink/renderer/core/input/event_handler.h"
+#include "third_party/blink/renderer/core/layout/layout_theme.h"
+#include "third_party/blink/renderer/core/page/focus_controller.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
+#include "third_party/blink/renderer/platform/scheduler/test/fake_task_runner.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
+#include "third_party/blink/renderer/platform/web_test_support.h"
 
 namespace blink {
 
@@ -168,6 +177,65 @@ TEST_F(PointerLockControllerTest, SuccessfulLockAddsToRecentTimestamps) {
 
   SimulateAcquireAndReleasePointerLock(script_state, target);
   EXPECT_EQ(2, GetRecentLockCount());
+}
+
+TEST_F(PointerLockControllerTest, CaretBlinksBeforeDuringAndAfterPointerLock) {
+  ScopedWebTestMode web_test_mode(false);
+  auto task_runner = base::MakeRefCounted<scheduler::FakeTaskRunner>();
+  task_runner->SetTime(0);
+  auto& selection = GetDocument().GetFrame()->Selection();
+  auto& caret = selection.FrameCaretForTesting();
+  caret.RecreateCaretBlinkTimerForTesting(task_runner.get(),
+                                          task_runner->GetMockTickClock());
+
+  ResizeView(gfx::Size(800, 600));
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(
+      "<input id='target' value='value' "
+      "style='position:absolute;left:0;top:0'>");
+  auto& focus_controller = GetDocument().GetPage()->GetFocusController();
+  focus_controller.SetActive(true);
+  focus_controller.SetFocused(true);
+  GetTargetElement()->Focus();
+  GetDocument().View()->UpdateAllLifecyclePhasesForTest();
+  ASSERT_EQ(GetTargetElement(), GetDocument().FocusedElement());
+
+  const auto blink_interval = LayoutTheme::GetTheme().CaretBlinkInterval();
+  ASSERT_GT(blink_interval, base::TimeDelta());
+  const auto expect_caret_blinks = [&](const char* stage) {
+    SCOPED_TRACE(stage);
+    ASSERT_TRUE(caret.IsActive());
+    EXPECT_FALSE(selection.IsCaretBlinkingSuspended());
+    EXPECT_EQ(1.f, caret.CaretEffectNode().Opacity());
+    task_runner->AdvanceTimeAndRun(blink_interval);
+    // The hidden caret retains its compositing quad with a nonzero opacity.
+    EXPECT_NEAR(0.0f, caret.CaretEffectNode().Opacity(), 0.01f);
+    task_runner->AdvanceTimeAndRun(blink_interval);
+    EXPECT_EQ(1.f, caret.CaretEffectNode().Opacity());
+  };
+  expect_caret_blinks("before pointer lock");
+
+  WebMouseEvent event(WebInputEvent::Type::kMouseDown,
+                      WebInputEvent::kLeftButtonDown,
+                      WebInputEvent::GetStaticTimeStampForTests());
+  event.button = WebPointerProperties::Button::kLeft;
+  event.click_count = 1;
+  event.SetPositionInWidget(10, 10);
+  GetDocument().GetFrame()->GetEventHandler().HandleMousePressEvent(event);
+  GetDocument().View()->UpdateAllLifecyclePhasesForTest();
+  // Mouse-down suspends blinking to keep the caret solid until mouse-up.
+  // Acquiring pointer lock must clear this suspension because locked mouse-up
+  // events bypass the normal cleanup.
+  ASSERT_TRUE(selection.IsCaretBlinkingSuspended());
+
+  ScriptState* script_state = ToScriptStateForMainWorld(Window().GetFrame());
+  ScriptState::Scope scope(script_state);
+  SimulateAcquirePointerLock(script_state, GetTargetElement());
+  ASSERT_EQ(GetTargetElement(), GetDocument().PointerLockElement());
+  expect_caret_blinks("during pointer lock");
+
+  PointerLockController().ExitPointerLock();
+  ASSERT_EQ(nullptr, GetDocument().PointerLockElement());
+  expect_caret_blinks("after pointer unlock");
 }
 
 // Simulate enough locks to exceed the threshold and assert that the pointer

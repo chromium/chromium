@@ -34,6 +34,7 @@
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
+#include "third_party/blink/renderer/core/editing/frame_selection.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -350,6 +351,8 @@ void PointerLockController::DidAcquirePointerLock() {
         frame->GetPage()->GetFocusController().FocusedFrame();
     if (focused_frame) {
       focused_frame->GetEventHandler().ReleaseMousePointerCapture();
+      // Locked mouse events bypass the normal mouse-up caret cleanup.
+      focused_frame->Selection().SetCaretBlinkingSuspended(false);
     }
 
     // Mouse Lock removes the system cursor and provides all mouse motion as
