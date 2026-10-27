@@ -382,8 +382,9 @@ void OnTaskSystemWebAppManagerImpl::PrepareSystemWebAppWindowForOnTask(
         tab_ids_to_remove.insert(tab_id);
       }
     }
-    CHECK_NE(tab_ids_to_remove.size(), browser->GetWebContentsCount(),
-             base::NotFatalUntil::M160);
+    // TODO(crbug.com/577783385): CHECK-exclusion: Convert to a CHECK once we
+    // are confident it won't be triggered.
+    DCHECK_NE(tab_ids_to_remove.size(), browser->GetWebContentsCount());
     RemoveTabsWithTabIds(window_id, tab_ids_to_remove);
   }
 }
