@@ -10,7 +10,6 @@
 #include "base/hash/hash.h"
 #include "base/native_library.h"
 #include "base/win/scoped_co_mem.h"
-#include "base/win/scoped_variant.h"
 #include "base/win/win_util.h"
 #include "build/build_config.h"
 #include "media/base/media_switches.h"
@@ -19,6 +18,13 @@
 #include "media/gpu/windows/mf_video_encoder_switches.h"
 
 namespace media {
+
+ScopedActivationShutdown::ScopedActivationShutdown(IMFActivate* activate)
+    : activate_(activate) {}
+
+ScopedActivationShutdown::~ScopedActivationShutdown() {
+  activate_->ShutdownObject();
+}
 
 // According to AV1/VP9's bitstream specification, the valid range of qp
 // value (defined as base_q_idx) should be 0-255.
@@ -191,53 +197,6 @@ int GetMaxTemporalLayerVendorLimit(
 #endif
 }
 
-int GetNumSupportedTemporalLayers(
-    IMFActivate* activate,
-    VideoCodec codec,
-    const gpu::GpuDriverBugWorkarounds& workarounds) {
-  DCHECK(activate);
-  auto vendor = GetDriverVendor(activate);
-  int max_temporal_layer_vendor_limit =
-      GetMaxTemporalLayerVendorLimit(vendor, codec, workarounds);
-  if (max_temporal_layer_vendor_limit == 1) {
-    return 1;
-  }
-
-  ComMFTransform encoder;
-  ComCodecAPI codec_api;
-  HRESULT hr = activate->ActivateObject(IID_PPV_ARGS(&encoder));
-  if (FAILED(hr)) {
-    // Log to VLOG since errors are expected as part of GetSupportedProfiles().
-    DVLOG(2) << "Failed to activate encoder: " << PrintHr(hr);
-    return 1;
-  }
-
-  hr = encoder.As(&codec_api);
-  if (FAILED(hr)) {
-    // Log to VLOG since errors are expected as part of GetSupportedProfiles().
-    DVLOG(2) << "Failed to get encoder as CodecAPI: " << PrintHr(hr);
-    return 1;
-  }
-
-  if (codec_api->IsSupported(&CODECAPI_AVEncVideoTemporalLayerCount) != S_OK) {
-    return 1;
-  }
-
-  base::win::ScopedVariant min, max, step;
-  if (FAILED(codec_api->GetParameterRange(
-          &CODECAPI_AVEncVideoTemporalLayerCount, min.AsInput(), max.AsInput(),
-          step.AsInput()))) {
-    return 1;
-  }
-
-  // Temporal encoding is only considered supported if the driver reports at
-  // least a span of 1-3 temporal layers.
-  if (V_UI4(min.ptr()) > 1u || V_UI4(max.ptr()) < 3u) {
-    return 1;
-  }
-  return max_temporal_layer_vendor_limit;
-}
-
 bool IsIntelHybridAV1Encoder(IMFActivate* activate) {
   DCHECK(activate);
   if (GetDriverVendor(activate) == DriverVendor::kIntel) {
@@ -307,10 +266,10 @@ EnumerateHardwareEncodersLegacy(VideoCodec codec) {
     }
   }
 
-  IMFActivate** pp_activates = nullptr;
+  base::win::ScopedCoMem<IMFActivate*> activates;
   uint32_t count = 0;
   hr = MFTEnumEx(MFT_CATEGORY_VIDEO_ENCODER, flags, &input_info, &output_info,
-                 &pp_activates, &count);
+                 &activates, &count);
 
   if (FAILED(hr)) {
     // Log to VLOG since errors are expected as part of
@@ -320,25 +279,25 @@ EnumerateHardwareEncodersLegacy(VideoCodec codec) {
     return encoders;
   }
 
-  for (UINT32 i = 0; i < count; i++) {
-    if (codec == VideoCodec::kAV1 &&
-        IsIntelHybridAV1Encoder(UNSAFE_TODO(pp_activates[i]))) {
+  // SAFETY: MFTEnumEx() returns the actual size of the activates buffer via
+  // the count out parameter.
+  base::span<IMFActivate*> activates_span =
+      UNSAFE_BUFFERS(base::span<IMFActivate*>(activates.get(), count));
+  for (IMFActivate* activate_ptr : activates_span) {
+    ComMFActivate activate;
+    activate.Attach(activate_ptr);
+    if (codec == VideoCodec::kAV1 && IsIntelHybridAV1Encoder(activate.Get())) {
       continue;
     }
 
     // We can still infer the MFT's adapter LUID if there's only one adapter
     // in the system.
     if (num_adapters == 1) {
-      UNSAFE_TODO(pp_activates[i])
-          ->SetBlob(MFT_ENUM_ADAPTER_LUID,
-                    reinterpret_cast<BYTE*>(&single_adapter_luid),
-                    sizeof(LUID));
+      activate->SetBlob(MFT_ENUM_ADAPTER_LUID,
+                        reinterpret_cast<BYTE*>(&single_adapter_luid),
+                        sizeof(LUID));
     }
-    encoders.push_back(UNSAFE_TODO(pp_activates[i]));
-  }
-
-  if (pp_activates) {
-    CoTaskMemFree(pp_activates);
+    encoders.push_back(std::move(activate));
   }
 
   return encoders;
@@ -391,11 +350,11 @@ std::vector<Microsoft::WRL::ComPtr<IMFActivate>> EnumerateHardwareEncoders(
       continue;
     }
 
-    IMFActivate** pp_activates = nullptr;
+    base::win::ScopedCoMem<IMFActivate*> activates;
     uint32_t count = 0;
     // MFTEnum2() function call.
     hr = mftenum2_func(MFT_CATEGORY_VIDEO_ENCODER, flags, &input_info,
-                       &output_info, attributes.Get(), &pp_activates, &count);
+                       &output_info, attributes.Get(), &activates, &count);
 
     if (FAILED(hr)) {
       // Log to VLOG since errors are expected as part of
@@ -406,23 +365,25 @@ std::vector<Microsoft::WRL::ComPtr<IMFActivate>> EnumerateHardwareEncoders(
       continue;
     }
 
-    for (UINT32 i = 0; i < count; i++) {
+    // SAFETY: MFTEnum2() returns the actual size of the activates buffer via
+    // the count out parameter.
+    base::span<IMFActivate*> activates_span =
+        UNSAFE_BUFFERS(base::span<IMFActivate*>(activates.get(), count));
+    for (IMFActivate* activate_ptr : activates_span) {
+      ComMFActivate activate;
+      activate.Attach(activate_ptr);
       if (codec == VideoCodec::kAV1 &&
-          IsIntelHybridAV1Encoder(UNSAFE_TODO(pp_activates[i]))) {
+          IsIntelHybridAV1Encoder(activate.Get())) {
         continue;
       }
       // It's safe to ignore return value here.
       // if SetBlob fails, the IMFActivate won't have a valid adapter LUID
       // which will fail the check for preferred adapter LUID, so the
       // MFDXGIDeviceManager will not be set for MFT, which is a safe option.
-      UNSAFE_TODO(pp_activates[i])
-          ->SetBlob(MFT_ENUM_ADAPTER_LUID,
-                    reinterpret_cast<BYTE*>(&desc.AdapterLuid), sizeof(LUID));
-      encoders.push_back(UNSAFE_TODO(pp_activates[i]));
-    }
-
-    if (pp_activates) {
-      CoTaskMemFree(pp_activates);
+      activate->SetBlob(MFT_ENUM_ADAPTER_LUID,
+                        reinterpret_cast<BYTE*>(&desc.AdapterLuid),
+                        sizeof(LUID));
+      encoders.push_back(std::move(activate));
     }
   }
 

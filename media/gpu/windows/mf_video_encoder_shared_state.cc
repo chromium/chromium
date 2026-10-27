@@ -49,6 +49,8 @@ int GetNumSupportedTemporalLayers(
     return 1;
   }
 
+  ScopedActivationShutdown shutdown_activation(activate);
+
   hr = encoder.As(&codec_api);
   if (FAILED(hr)) {
     // Log to VLOG since errors are expected as part of GetSupportedProfiles().

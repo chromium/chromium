@@ -127,6 +127,19 @@ static constexpr uint8_t kH265MinQuantizer = 10;
 static constexpr uint8_t kH265MaxQuantizer = 42;
 #endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC)
 
+// Shuts down an activated IMFActivate on scope exit.
+class ScopedActivationShutdown {
+ public:
+  explicit ScopedActivationShutdown(IMFActivate* activate);
+  ~ScopedActivationShutdown();
+
+  ScopedActivationShutdown(const ScopedActivationShutdown&) = delete;
+  ScopedActivationShutdown& operator=(const ScopedActivationShutdown&) = delete;
+
+ private:
+  ComMFActivate activate_;
+};
+
 // Returns true if |qp| is a valid quantizer parameter for |codec|.
 bool IsValidQp(VideoCodec codec, uint64_t qp);
 

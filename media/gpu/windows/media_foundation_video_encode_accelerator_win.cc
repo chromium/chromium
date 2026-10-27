@@ -1331,7 +1331,7 @@ void MediaFoundationVideoEncodeAccelerator::Destroy() {
 
   if (activate_) {
     activate_->ShutdownObject();
-    activate_->Release();
+    // `activate_` is released by the ComPtr destructor.
   }
   delete this;
 }
