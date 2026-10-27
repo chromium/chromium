@@ -132,6 +132,17 @@ extern const base::FeatureParam<bool>
 // be true.
 bool IsSingleTabMenuItemInComposeboxEnabled();
 
+// If enabled, tab context state in the composebox is driven by the backend
+// session handle (`OnTabContextUpdated`) rather than tracked separately on the
+// frontend.
+extern const base::FeatureParam<bool>
+    kContextManagementInComposeboxTabStateUnification;
+
+// Helper to check if tab state unification is enabled, which requires the
+// parent feature kContextManagementInComposebox to be enabled and the param to
+// be true.
+bool IsTabStateUnificationInComposeboxEnabled();
+
 }  // namespace omnibox
 
 #endif  // COMPONENTS_OMNIBOX_COMMON_COMPOSEBOX_FEATURES_H_

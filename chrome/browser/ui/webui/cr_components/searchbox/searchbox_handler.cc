@@ -562,6 +562,8 @@ base::DictValue SearchboxHandler::GetProfileIndependentWebUIDataSourceDict(
            ntp_composebox::kShowContextMenuHeaders.Get());
   dict.Set("composeboxSingleTabMenuItemEnabled",
            omnibox::IsSingleTabMenuItemInComposeboxEnabled());
+  dict.Set("composeboxTabStateUnificationEnabled",
+           omnibox::IsTabStateUnificationInComposeboxEnabled());
   dict.Set("stsMegaplusShareRelevantOpenTabs",
            GetSmartTabSharingMegaplusString());
   dict.Set(

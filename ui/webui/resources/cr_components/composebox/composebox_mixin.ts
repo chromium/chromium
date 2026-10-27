@@ -183,6 +183,7 @@ export const ComposeboxEmbedderMixin =
             tabSuggestionsState: {type: Number},
             aimThreadRestoredTabs: {type: Array},
             tabDeselectionEnabled: {type: Boolean},
+            tabStateUnificationEnabled: {type: Boolean},
             transcript: {type: String},
             hasVoiceSearchError: {type: Boolean},
             voiceSearchCoherenceEnabled: {type: Boolean},
@@ -229,6 +230,8 @@ export const ComposeboxEmbedderMixin =
             getLoadTimeBoolean('composeboxContextMenuTooltipsEnabled', false);
         accessor tabDeselectionEnabled: boolean = getLoadTimeBoolean(
             'composeboxContextMenuEnableTabDeselection', false);
+        accessor tabStateUnificationEnabled: boolean =
+            getLoadTimeBoolean('composeboxTabStateUnificationEnabled', true);
         contextMenuDescriptionEnabled: boolean =
             getLoadTimeBoolean('composeboxShowContextMenuDescription', false);
         accessor showContextMenuDescription: boolean =
@@ -3472,6 +3475,7 @@ export interface ComposeboxEmbedderMixinInterface extends I18nMixinLitInterface,
   tabSuggestions: TabInfo[];
   tabSuggestionsState: TabSuggestionsState;
   tabDeselectionEnabled: boolean;
+  tabStateUnificationEnabled: boolean;
   transcript: string;
   composeboxNoFlickerSuggestionsFix: boolean;
   unselectMatchOnTabExit: boolean;
