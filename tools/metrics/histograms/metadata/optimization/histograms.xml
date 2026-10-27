@@ -2097,18 +2097,6 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="OptimizationGuide.PageContentAnnotationsService.RelatedSearchesExtracted"
-    enum="BooleanAnnotated" expires_after="M155">
-  <owner>mahmadi@chromium.org</owner>
-  <owner>sophiechang@chromium.org</owner>
-  <summary>
-    Records whether related searches were successfully extracted from Google
-    SRP, if requested. This will be recorded approximately once per page load
-    after the page has finished loading.
-  </summary>
-</histogram>
-
-<histogram
     name="OptimizationGuide.PageContentAnnotationsService.VisibilityScoreOfGoogleSRP"
     units="score" expires_after="2026-04-26">
   <owner>robertogden@chromium.org</owner>

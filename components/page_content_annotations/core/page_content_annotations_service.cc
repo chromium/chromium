@@ -80,13 +80,6 @@ void LogPageContentAnnotationsStorageStatus(
       status);
 }
 
-void LogRelatedSearchesExtracted(bool success) {
-  base::UmaHistogramBoolean(
-      "OptimizationGuide.PageContentAnnotationsService."
-      "RelatedSearchesExtracted",
-      success);
-}
-
 void LogRelatedSearchesCacheHit(bool cache_hit) {
   base::UmaHistogramBoolean(
       "OptimizationGuide.PageContentAnnotationsService.RelatedSearchesCache."
@@ -622,7 +615,6 @@ void PageContentAnnotationsService::OnRelatedSearchesExtracted(
       status ==
           continuous_search::SearchResultExtractorClientStatus::kSuccess ||
       !related_searches_from_zps_prefetch.empty();
-  LogRelatedSearchesExtracted(success);
 
   if (!success) {
     return;
