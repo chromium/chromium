@@ -477,6 +477,12 @@ void GlicSelectionObserver::SendAdditionalContextToPanel(
     }
   }
 
+  // Clearing a previous selection only matters while the panel is open to
+  // display it; never start an invocation just to send an empty selection.
+  if (selected_text.empty()) {
+    return;
+  }
+
   // Otherwise fall back to an invocation so the surface is resolved and shown
   // the same way as before.
   GlicInvokeOptions options(glic::Target(*tab_interface),

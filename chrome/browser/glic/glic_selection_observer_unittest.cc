@@ -1351,6 +1351,35 @@ TEST_F(GlicSelectionObserverPromptTest,
                                                   u"Sample selected text");
 }
 
+// Clearing the selection when the tab has no showing instance must not trigger
+// an invocation to open the panel.
+TEST_F(
+    GlicSelectionObserverPromptTest,
+    SendAdditionalContextToPanelDoesNotInvokeWhenClearingWithoutShowingInstance) {
+  tabs::MockTabInterface mock_tab;
+  MockBrowserWindowInterface mock_bwi;
+  tabs::TabLookupFromWebContents::CreateForWebContents(web_contents(),
+                                                       &mock_tab);
+  EXPECT_CALL(mock_tab, GetBrowserWindowInterface())
+      .WillRepeatedly(testing::Return(&mock_bwi));
+  SetMockEligibility(true);
+
+  EXPECT_CALL(*mock_glic_service(), GetInstanceForTab(&mock_tab))
+      .WillOnce(testing::Return(nullptr));
+  EXPECT_CALL(*mock_glic_service(), Invoke).Times(0);
+
+  GetObserver()->BaseSendAdditionalContextToPanel(&mock_tab, u"");
+
+  testing::NiceMock<MockGlicInstance> hidden_instance;
+  EXPECT_CALL(hidden_instance, IsShowing())
+      .WillRepeatedly(testing::Return(false));
+  EXPECT_CALL(*mock_glic_service(), GetInstanceForTab(&mock_tab))
+      .WillOnce(testing::Return(&hidden_instance));
+  EXPECT_CALL(hidden_instance, SendAdditionalContext).Times(0);
+
+  GetObserver()->BaseSendAdditionalContextToPanel(&mock_tab, u"");
+}
+
 TEST_F(GlicSelectionObserverPromptTest, ShakeInvokesRegionCapture) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(features::kGlicShakeTrigger);
