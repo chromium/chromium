@@ -38,6 +38,7 @@
 #include "base/byte_size.h"
 #include "base/compiler_specific.h"
 #include "base/feature_list.h"
+#include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/numerics/checked_math.h"
@@ -878,12 +879,11 @@ scoped_refptr<StaticBitmapImage> DrawingBuffer::ExportLowLatencyBitmap() {
     back_color_buffer_->BeginAccess(gpu::SyncToken(), /*readonly=*/false);
   }
 
-  return base::MakeRefCounted<ExternalCanvasResource>(
-             back_color_buffer_->shared_image, sync_token,
-             viz::TransferableResource::ResourceSource::kDrawingBuffer,
-             hdr_metadata_, viz::ReleaseCallback(),
-             context_provider_->GetWeakPtr())
-      ->Bitmap();
+  return AcceleratedStaticBitmapImage::CreateFromCanvasSharedImage(
+      back_color_buffer_->shared_image, sync_token, kPremul_SkAlphaType,
+      hdr_metadata_, context_provider_->GetWeakPtr(),
+      base::PlatformThread::CurrentRef(),
+      ThreadScheduler::Current()->CleanupTaskRunner(), base::DoNothing());
 }
 
 scoped_refptr<ExportedCanvasResource> DrawingBuffer::ExportCanvasResource() {
