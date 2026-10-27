@@ -637,9 +637,8 @@ TAG_SMOKE_TEST(FirstRunWithoutSearchEngineChoiceTestCase,
 
 #pragma mark - Supervised User
 
-// TODO(crbug.com/40070867): This test is failing.
 // Tests FRE with UMA default value and with sign-in for a supervised user.
-- (void)DISABLED_testWithUMACheckedAndSigninSupervised {
+- (void)testWithUMACheckedAndSigninSupervised {
   // Add a fake supervised identity to the device.
   FakeSystemIdentity* fakeSupervisedIdentity =
       [FakeSystemIdentity fakeIdentity1];
