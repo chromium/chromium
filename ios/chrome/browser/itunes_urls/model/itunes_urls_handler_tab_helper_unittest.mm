@@ -21,6 +21,7 @@ class ITunesUrlsHandlerTabHelperTest : public PlatformTest {
       : fake_handler_([[FakeWebContentHandler alloc] init]),
         profile_(TestProfileIOS::Builder().Build()) {
     web_state_.SetBrowserState(profile_->GetOriginalProfile());
+    web_state_.WasShown();
     ITunesUrlsHandlerTabHelper::CreateForWebState(&web_state_);
     ITunesUrlsHandlerTabHelper::FromWebState(&web_state_)
         ->SetWebContentsHandler(fake_handler_);
@@ -29,6 +30,7 @@ class ITunesUrlsHandlerTabHelperTest : public PlatformTest {
   // Calls ShouldAllowRequest for a request with the given `url_string` and
   // returns true if storekit was launched.
   bool VerifyStoreKitLaunched(NSString* url_string, bool main_frame) {
+    fake_handler_.productParams = nil;
     const web::WebStatePolicyDecider::RequestInfo request_info(
         ui::PageTransition::PAGE_TRANSITION_LINK, main_frame,
         /*target_frame_is_cross_origin=*/false,
@@ -47,6 +49,8 @@ class ITunesUrlsHandlerTabHelperTest : public PlatformTest {
         request_info, std::move(callback));
     base::RunLoop().RunUntilIdle();
     EXPECT_TRUE(callback_called);
+    EXPECT_EQ(request_policy.ShouldCancelNavigation(),
+              fake_handler_.productParams != nil);
     return request_policy.ShouldCancelNavigation() &&
            fake_handler_.productParams != nil;
   }
@@ -63,6 +67,16 @@ TEST_F(ITunesUrlsHandlerTabHelperTest, NoHandlingInOffTheRecordMode) {
   EXPECT_TRUE(VerifyStoreKitLaunched(url, /*main_frame=*/true));
   web_state_.SetBrowserState(profile_->GetOffTheRecordProfile());
   EXPECT_FALSE(VerifyStoreKitLaunched(url, /*main_frame=*/true));
+}
+
+// Tests that iTunes URLs do not launch StoreKit when the WebState is not
+// visible.
+TEST_F(ITunesUrlsHandlerTabHelperTest,
+       DoesNotHandleUrlWhenWebStateIsNotVisible) {
+  web_state_.WasHidden();
+
+  EXPECT_FALSE(VerifyStoreKitLaunched(
+      @"http://itunes.apple.com/us/app/app_name/id123", /*main_frame=*/true));
 }
 
 // Verifies that iTunes URLs are not handled when the request is from iframe.

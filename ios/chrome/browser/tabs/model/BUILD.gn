@@ -275,6 +275,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/enterprise/connectors/device_trust:features",
     "//ios/chrome/browser/enterprise/connectors/device_trust/model",
     "//ios/chrome/browser/infobars/model:badge",
+    "//ios/chrome/browser/itunes_urls/model",
     "//ios/chrome/browser/lens/model",
     "//ios/chrome/browser/ntp/ui_bundled:feature_flags",
     "//ios/chrome/browser/overlays/model",

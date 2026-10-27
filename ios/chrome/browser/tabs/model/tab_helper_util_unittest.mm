@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/enterprise/connectors/device_trust/features.h"
 #import "ios/chrome/browser/enterprise/connectors/device_trust/model/device_trust_challenge_tab_helper.h"
 #import "ios/chrome/browser/infobars/model/infobar_badge_tab_helper.h"
+#import "ios/chrome/browser/itunes_urls/model/itunes_urls_handler_tab_helper.h"
 #import "ios/chrome/browser/lens/model/lens_tab_helper.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_modality.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_request_queue.h"
@@ -170,6 +171,25 @@ TEST_P(TabHelperUtilTest, InfobarBadgeTabHelper) {
     case TabHelperFilter::kGeminiWebModal: {
       ASSERT_FALSE(tab_helper);
     } break;
+  }
+}
+
+// Tests that `ITunesUrlsHandlerTabHelper` is not created for Prerender, Lens
+// Overlay, or Gemini Web Modal WebStates.
+TEST_P(TabHelperUtilTest, ITunesUrlsHandlerTabHelper) {
+  AttachTabHelpers(&web_state_, tab_helper_filter());
+
+  switch (tab_helper_filter()) {
+    case TabHelperFilter::kEmpty:
+    case TabHelperFilter::kReaderMode:
+    case TabHelperFilter::kAssistantAim:
+      EXPECT_TRUE(ITunesUrlsHandlerTabHelper::FromWebState(&web_state_));
+      break;
+    case TabHelperFilter::kPrerender:
+    case TabHelperFilter::kLensOverlay:
+    case TabHelperFilter::kGeminiWebModal:
+      EXPECT_FALSE(ITunesUrlsHandlerTabHelper::FromWebState(&web_state_));
+      break;
   }
 }
 

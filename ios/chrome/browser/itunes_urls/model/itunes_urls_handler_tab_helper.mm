@@ -20,6 +20,7 @@
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/navigation/web_state_policy_decider.h"
+#import "ios/web/public/web_state.h"
 #import "net/base/apple/url_conversions.h"
 #import "net/base/url_util.h"
 #import "url/gurl.h"
@@ -110,9 +111,12 @@ void ITunesUrlsHandlerTabHelper::ShouldAllowRequest(
     web::WebStatePolicyDecider::PolicyDecisionCallback callback) {
   // Don't Handle URLS in Off The record mode as this will open StoreKit with
   // Users' iTunes account. Also don't Handle navigations in iframe because they
-  // may be spam, and they will be handled by other policy deciders.
+  // may be spam, and they will be handled by other policy deciders. Finally,
+  // don't handle navigations when the WebState is not visible, so background
+  // tabs can load the web page instead of presenting StoreKit over the active
+  // tab.
   if (web_state()->GetBrowserState()->IsOffTheRecord() ||
-      !request_info.target_frame_is_main) {
+      !request_info.target_frame_is_main || !web_state()->IsVisible()) {
     return std::move(callback).Run(
         web::WebStatePolicyDecider::PolicyDecision::Allow());
   }

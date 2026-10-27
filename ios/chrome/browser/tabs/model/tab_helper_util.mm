@@ -268,7 +268,9 @@ void AttachTabHelpers(web::WebState* web_state, TabHelperFilter filter_flags) {
   attacher.Create<PassKitTabHelper>();
   attacher.Create<DriveTabHelper>();
 
-  attacher.Create<ITunesUrlsHandlerTabHelper>();
+  attacher.CreateWhen<ITunesUrlsHandlerTabHelper>(
+      !attacher.IsForLensOverlay() && !attacher.IsForPrerender() &&
+      !attacher.IsForGeminiWebModal());
   attacher.Create<PageloadForegroundDurationTabHelper>();
 
   attacher.Create<LookalikeUrlTabHelper>();
