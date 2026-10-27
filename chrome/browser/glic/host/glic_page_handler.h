@@ -47,8 +47,6 @@ class GlicPageHandler : public glic::mojom::PageHandler, public Host::Observer {
 
   void NotifyWindowIntentToShow();
 
-  void WaitForLoad(mojom::Page::WaitForLoadCallback callback);
-
   void Zoom(mojom::ZoomAction zoom_action, ZoomSource source);
 
   Host& host();

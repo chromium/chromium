@@ -1640,7 +1640,6 @@ void GlicInstanceImpl::MaybeInitializeHiddenClient(
     EnsureHostAwake();
   }
 
-  host_.NotifyWindowIntentToShow();
   NotifyPanelWillOpen(invocation_source, std::nullopt, fre_override);
 }
 

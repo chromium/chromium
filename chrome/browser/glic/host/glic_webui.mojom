@@ -100,11 +100,6 @@ interface Page {
   // again, through `OnClientLoadFailed(true)`, in response to this call.
   IntentToShow();
 
-  // Waits for the page to finish loading, or returns immediately if loading
-  // has already succeeded or failed. `failed` is true if the page reached a
-  // failure state it will not leave without being reloaded.
-  WaitForLoad() => (bool failed);
-
   // TODO(crbug.com/454120908): Remove this method after WebContents warming is
   // rolled out.
   // Called any time the ready state of the profile changes.

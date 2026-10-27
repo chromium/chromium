@@ -295,19 +295,6 @@ WaitForClientReadyTask::~WaitForClientReadyTask() = default;
 
 void WaitForClientReadyTask::Start(base::OnceClosure done_callback) {
   done_callback_ = std::move(done_callback);
-  // TODO(b/573171097): Have Invoke send an explicit load request to the
-  // instance/host that is guaranteed to resolve, rather than triggering load
-  // and waiting for load separately.
-  host_->WaitForLoad(
-      base::BindOnce(&WaitForClientReadyTask::OnWaitForLoadComplete,
-                     weak_ptr_factory_.GetWeakPtr()));
-}
-
-void WaitForClientReadyTask::OnWaitForLoadComplete(bool failed) {
-  if (failed) {
-    CheckState(ClientLoadState::kError);
-    return;
-  }
   observation_.Observe(&*host_);
   CheckState(host_->client_load_state());
 }

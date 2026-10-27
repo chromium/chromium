@@ -93,10 +93,6 @@ class GlicWebContentsManager {
   // contents.
   virtual void Zoom(mojom::ZoomAction zoom_action, ZoomSource source) {}
 
-  // Waits for the client load to finish, or runs `callback` immediately if
-  // loading has already succeeded or failed.
-  virtual void WaitForLoad(base::OnceCallback<void(bool failed)> callback) = 0;
-
   // Registers a callback invoked if the manager encounters an error requiring
   // reload (i.e. ShouldReloadOnShow() becomes true). Used by the warming pool
   // to discard failed background containers immediately.

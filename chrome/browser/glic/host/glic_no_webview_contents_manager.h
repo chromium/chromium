@@ -182,7 +182,6 @@ class GlicNoWebviewContentsManager : public GlicWebContentsManager,
   bool IsCrashed() const override;
   void Zoom(mojom::ZoomAction zoom_action, ZoomSource source) override;
   void SetErrorCallback(base::RepeatingClosure callback) override;
-  void WaitForLoad(base::OnceCallback<void(bool failed)> callback) override;
 
   // GlicWebClientManager::Delegate implementation:
   void OnGuestNavigationStarted() override;
@@ -356,7 +355,6 @@ class GlicNoWebviewContentsManager : public GlicWebContentsManager,
   void OnProfileReadyStateChanged();
   void UpdateForProfileReadyState(bool is_initial);
   void OnHibernationTimerExpired();
-  void ResolvePendingWaitForLoadCallbacks();
 
   raw_ptr<Profile> profile_;
   raw_ptr<GlicEnabling> enabling_ = nullptr;
@@ -401,7 +399,6 @@ class GlicNoWebviewContentsManager : public GlicWebContentsManager,
   base::OneShotTimer loading_timer_;
   base::OneShotTimer unconnected_hibernation_timer_;
   base::RepeatingClosure error_callback_;
-  std::vector<base::OnceCallback<void(bool)>> pending_wait_for_load_callbacks_;
 
   base::WeakPtrFactory<GlicNoWebviewContentsManager> weak_ptr_factory_{this};
 };

@@ -12,7 +12,6 @@
 #include "base/metrics/user_metrics.h"
 #include "base/trace_event/trace_event.h"
 #include "chrome/browser/glic/glic_profile_manager.h"
-#include "chrome/browser/glic/host/glic_page_handler.h"
 #include "chrome/browser/glic/host/glic_theme_util.h"
 #include "chrome/browser/glic/host/glic_ui.h"
 #include "chrome/browser/glic/host/glic_web_client_manager.h"
@@ -85,12 +84,6 @@ GlicWebUIContentsManager::GlicWebUIContentsManager(Profile* profile,
 }
 
 GlicWebUIContentsManager::~GlicWebUIContentsManager() {
-  page_handler_ = nullptr;
-  auto callbacks = std::move(pending_wait_for_load_callbacks_);
-  pending_wait_for_load_callbacks_.clear();
-  for (auto& [_, callback] : callbacks) {
-    std::move(callback).Run(/*failed=*/true);
-  }
   SetContentsManagerForWebContents(web_contents(), nullptr);
   Observe(nullptr);
 #if BUILDFLAG(IS_ANDROID)
@@ -188,11 +181,6 @@ void GlicWebUIContentsManager::PrimaryMainFrameRenderProcessGone(
   if (browser_shutdown::HasShutdownStarted()) {
     return;
   }
-  auto callbacks = std::move(pending_wait_for_load_callbacks_);
-  pending_wait_for_load_callbacks_.clear();
-  for (auto& [_, callback] : callbacks) {
-    std::move(callback).Run(/*failed=*/true);
-  }
   auto* keyed_service = GlicKeyedServiceFactory::GetGlicKeyedService(profile_);
   // TODO(crbug.com/454120908): swap for a reloaded host in case of a crash.
   keyed_service->CloseAndShutdown(web_contents()->GetPrimaryMainFrame());
@@ -286,57 +274,6 @@ bool GlicWebUIContentsManager::ShouldReloadOnShow() const {
 
 bool GlicWebUIContentsManager::IsCrashed() const {
   return web_contents_ ? web_contents_->IsCrashed() : false;
-}
-
-void GlicWebUIContentsManager::WaitForLoad(
-    base::OnceCallback<void(bool failed)> callback) {
-  if (IsCrashed()) {
-    std::move(callback).Run(/*failed=*/true);
-    return;
-  }
-  const uint64_t request_id = next_wait_for_load_id_++;
-  pending_wait_for_load_callbacks_.emplace(request_id, std::move(callback));
-  if (page_handler_) {
-    page_handler_->WaitForLoad(base::BindOnce(
-        &GlicWebUIContentsManager::OnWebUiLoadComplete,
-        weak_ptr_factory_.GetWeakPtr(), page_handler_, request_id));
-  }
-}
-
-void GlicWebUIContentsManager::WebUIPageHandlerAdded(
-    GlicPageHandler* page_handler) {
-  page_handler_ = page_handler;
-  for (const auto& [request_id, _] : pending_wait_for_load_callbacks_) {
-    page_handler_->WaitForLoad(base::BindOnce(
-        &GlicWebUIContentsManager::OnWebUiLoadComplete,
-        weak_ptr_factory_.GetWeakPtr(), page_handler_, request_id));
-  }
-}
-
-void GlicWebUIContentsManager::WebUIPageHandlerRemoved(
-    GlicPageHandler* page_handler) {
-  if (page_handler_ == page_handler) {
-    page_handler_ = nullptr;
-  }
-}
-
-void GlicWebUIContentsManager::OnWebUiLoadComplete(
-    GlicPageHandler* page_handler,
-    uint64_t request_id,
-    bool failed) {
-  if (page_handler != page_handler_) {
-    return;
-  }
-  auto it = pending_wait_for_load_callbacks_.find(request_id);
-  if (it == pending_wait_for_load_callbacks_.end()) {
-    return;
-  }
-  auto callback = std::move(it->second);
-  pending_wait_for_load_callbacks_.erase(it);
-  if (host_) {
-    host_->SetClientLoadFailed(page_handler, failed);
-  }
-  std::move(callback).Run(failed);
 }
 
 }  // namespace glic
