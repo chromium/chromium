@@ -87,6 +87,9 @@ enum GuestPageType {
   kLoadError = 3,
   kDisabledByAdmin = 4,
   kSecurityInterstitial = 5,
+  // The navigation was cancelled because its origin is not an allowed guest
+  // origin (GlicGuestNavigationThrottle, or the PWC navigation policy).
+  kOriginBlocked = 6,
 };
 
 // Functions provided by the WebUI page.
@@ -219,6 +222,8 @@ enum ClientLoadErrorReason {
   kClientError = 10,
   kClientLoadTimeout = 11,
   kWarmedTimeout = 12,
+  [MinVersion=1] kGuestOriginBlocked = 13,
+  [MinVersion=1] kGuestApiNotAllowed = 14,
 };
 
 // The result of `PrepareForClient()`.

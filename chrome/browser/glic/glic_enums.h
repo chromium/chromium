@@ -219,7 +219,8 @@ enum class ClientLoadErrorReason {
 
   // Guest failures. The guest contents itself did not come up.
 
-  // The guest navigation committed an error page.
+  // The guest navigation committed an error page: a network error, or an HTTP
+  // status of 400 or above.
   kGuestLoadFailed = 8,
 
   // The guest renderer process crashed or was killed.
@@ -239,7 +240,18 @@ enum class ClientLoadErrorReason {
   // A warmed client never became ready after the panel was shown.
   kWarmedTimeout = 12,
 
-  kMaxValue = kWarmedTimeout,
+  // More guest failures (see kGuestLoadFailed). Both were reported as
+  // kGuestLoadFailed before M158.
+
+  // The guest navigation was cancelled because its origin is not an allowed
+  // guest origin, e.g. a redirect to a host that is not on the list.
+  kGuestOriginBlocked = 13,
+
+  // The guest navigation committed a regular page, but on an origin that is
+  // not allowed to use the Glic API, so the web client can never connect.
+  kGuestApiNotAllowed = 14,
+
+  kMaxValue = kGuestApiNotAllowed,
 };
 // LINT.ThenChange(//tools/metrics/structured/sync/structured.xml)
 

@@ -3728,6 +3728,8 @@
     <variant value="10">CLIENT_ERROR</variant>
     <variant value="11">CLIENT_LOAD_TIMEOUT</variant>
     <variant value="12">WARMED_TIMEOUT</variant>
+    <variant value="13">GUEST_ORIGIN_BLOCKED</variant>
+    <variant value="14">GUEST_API_NOT_ALLOWED</variant>
   </enum>
 
   <enum name="GlicEmbedderType">

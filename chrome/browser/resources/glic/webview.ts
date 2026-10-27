@@ -315,10 +315,7 @@ export class WebviewController {
     this.resetWebClientState();
 
     if (pageType !== GuestPageType.kRegular || !isApiAllowed) {
-      this.delegate.webviewPageCommit(
-          pageType === GuestPageType.kRegular ? GuestPageType.kLoadError :
-                                                pageType,
-          isApiAllowed);
+      this.delegate.webviewPageCommit(pageType, isApiAllowed);
       return;
     }
 

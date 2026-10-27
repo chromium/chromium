@@ -513,7 +513,7 @@ void GlicWebClientManager::DidFinishNavigation(
                 url::Origin::Create(url))) {
           OnGuestNavigationBlocked(IsAdminBlockedUrl(url)
                                        ? mojom::GuestPageType::kDisabledByAdmin
-                                       : mojom::GuestPageType::kLoadError);
+                                       : mojom::GuestPageType::kOriginBlocked);
         }
       }
     }

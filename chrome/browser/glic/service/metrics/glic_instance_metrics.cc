@@ -181,6 +181,10 @@ ToStructuredReason(ClientLoadErrorReason reason) {
       return Reason::CLIENT_LOAD_TIMEOUT;
     case ClientLoadErrorReason::kWarmedTimeout:
       return Reason::WARMED_TIMEOUT;
+    case ClientLoadErrorReason::kGuestOriginBlocked:
+      return Reason::GUEST_ORIGIN_BLOCKED;
+    case ClientLoadErrorReason::kGuestApiNotAllowed:
+      return Reason::GUEST_API_NOT_ALLOWED;
   }
 }
 #endif
@@ -1280,8 +1284,7 @@ void GlicInstanceMetrics::OnUserInputSubmitted(mojom::WebClientMode mode,
   session_manager_.OnUserInputSubmitted(mode);
   LogEvent(GlicInstanceEvent::kUserInputSubmitted);
   cui_trackers_.push_back(std::make_unique<GlicSubmitQueryCuiTracker>());
-  cui_trackers_.push_back(
-      std::make_unique<GlicResponseCompletionCuiTracker>());
+  cui_trackers_.push_back(std::make_unique<GlicResponseCompletionCuiTracker>());
 
   base::RecordAction(base::UserMetricsAction("GlicResponseInputSubmit"));
   metric_reporter_.RecordEnumeration("Turn.PromptType", prompt_type);

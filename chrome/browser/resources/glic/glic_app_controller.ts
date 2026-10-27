@@ -285,7 +285,7 @@ export class GlicAppController implements WebviewDelegate {
     }
   }
 
-  webviewPageCommit(type: GuestPageType, _isApiAllowed: boolean) {
+  webviewPageCommit(type: GuestPageType, isApiAllowed: boolean) {
     const wasShowingSecurityInterstitial = this.showingSecurityInterstitial;
     this.showingSecurityInterstitial = false;
     switch (type) {
@@ -305,6 +305,13 @@ export class GlicAppController implements WebviewDelegate {
         this.setState(WebUiState.kGuestError);
         break;
       case GuestPageType.kRegular:
+        if (!isApiAllowed) {
+          // The page came up, but the web client on it can never connect.
+          this.setErrorState(
+              WebUiErrorReason.LOAD_ERROR,
+              ClientLoadErrorReason.kGuestApiNotAllowed);
+          break;
+        }
         $.guestPanel.classList.toggle('show-header', false);
         if (wasShowingSecurityInterstitial) {
           this.trackLoadingStageStart(LoadingStage.LOADING_WEB_CLIENT);
@@ -336,6 +343,11 @@ export class GlicAppController implements WebviewDelegate {
         this.setErrorState(
             WebUiErrorReason.LOAD_ERROR,
             ClientLoadErrorReason.kGuestLoadFailed);
+        break;
+      case GuestPageType.kOriginBlocked:
+        this.setErrorState(
+            WebUiErrorReason.LOAD_ERROR,
+            ClientLoadErrorReason.kGuestOriginBlocked);
         break;
       case GuestPageType.kDisabledByAdmin:
         this.webviewDeniedByAdmin();

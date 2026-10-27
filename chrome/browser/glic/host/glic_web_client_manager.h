@@ -85,8 +85,9 @@ class GlicWebClientManager : public content::WebContentsObserver {
   // to know when an actionable guest is on screen.
   void SetGuestMounted(bool mounted);
 
-  void OnGuestNavigationBlocked(
-      mojom::GuestPageType page_type = mojom::GuestPageType::kLoadError);
+  // Called when a guest navigation is cancelled before it commits. `page_type`
+  // says why: kDisabledByAdmin or kOriginBlocked.
+  void OnGuestNavigationBlocked(mojom::GuestPageType page_type);
 
   content::RenderFrameHost* GetGuestMainFrame() const;
   content::WebContents* web_client_contents() const;

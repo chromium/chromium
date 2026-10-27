@@ -90,6 +90,10 @@ ClientLoadErrorReason ToClientLoadErrorReason(
       return ClientLoadErrorReason::kClientLoadTimeout;
     case mojom::ClientLoadErrorReason::kWarmedTimeout:
       return ClientLoadErrorReason::kWarmedTimeout;
+    case mojom::ClientLoadErrorReason::kGuestOriginBlocked:
+      return ClientLoadErrorReason::kGuestOriginBlocked;
+    case mojom::ClientLoadErrorReason::kGuestApiNotAllowed:
+      return ClientLoadErrorReason::kGuestApiNotAllowed;
   }
 }
 

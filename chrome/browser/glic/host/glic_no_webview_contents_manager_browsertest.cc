@@ -346,6 +346,47 @@ IN_PROC_BROWSER_TEST_F(GlicNoWebviewOverlayBrowserTest,
                                    StructuredErrorReason::GUEST_PROCESS_GONE,
                                    StructuredErrorReason::DISABLED_BY_ADMIN));
 }
+
+// The three ways a guest can fail to come up all show the generic error panel
+// but are reported apart: an error page, a navigation blocked for its origin,
+// and a page on an origin the Glic API is not allowed on.
+IN_PROC_BROWSER_TEST_F(GlicNoWebviewOverlayBrowserTest,
+                       GuestFailuresReportDistinctCauses) {
+  metrics::structured::TestStructuredMetricsRecorder recorder;
+  recorder.Initialize();
+
+  ASSERT_OK_AND_ASSIGN(GlicInstanceImpl * instance, OpenGlicForActiveTab());
+  auto* manager = GetNoWebviewContentsManager(instance);
+  ASSERT_TRUE(manager);
+
+  manager->OnGuestNavigated(GURL("https://example.com/"),
+                            /*is_api_allowed=*/true,
+                            mojom::GuestPageType::kLoadError,
+                            /*is_initial_commit=*/true);
+  EXPECT_EQ(manager->error_type(), mojom::ErrorPanelType::kError);
+  EXPECT_THAT(GetRecordedClientLoadErrors(recorder),
+              testing::ElementsAre(StructuredErrorReason::GUEST_LOAD_FAILED));
+
+  manager->OnGuestNavigated(GURL(), /*is_api_allowed=*/false,
+                            mojom::GuestPageType::kOriginBlocked,
+                            /*is_initial_commit=*/true);
+  EXPECT_EQ(manager->error_type(), mojom::ErrorPanelType::kError);
+  EXPECT_THAT(
+      GetRecordedClientLoadErrors(recorder),
+      testing::ElementsAre(StructuredErrorReason::GUEST_LOAD_FAILED,
+                           StructuredErrorReason::GUEST_ORIGIN_BLOCKED));
+
+  manager->OnGuestNavigated(GURL("https://example.com/"),
+                            /*is_api_allowed=*/false,
+                            mojom::GuestPageType::kRegular,
+                            /*is_initial_commit=*/true);
+  EXPECT_EQ(manager->error_type(), mojom::ErrorPanelType::kError);
+  EXPECT_THAT(
+      GetRecordedClientLoadErrors(recorder),
+      testing::ElementsAre(StructuredErrorReason::GUEST_LOAD_FAILED,
+                           StructuredErrorReason::GUEST_ORIGIN_BLOCKED,
+                           StructuredErrorReason::GUEST_API_NOT_ALLOWED));
+}
 #endif  // BUILDFLAG(STRUCTURED_METRICS_ENABLED)
 
 // An error that occurs while warming but is resolved before AttachToHost() is

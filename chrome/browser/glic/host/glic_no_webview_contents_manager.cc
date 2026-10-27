@@ -1029,6 +1029,11 @@ void GlicNoWebviewContentsManager::OnGuestNavigated(
       SetErrorState(mojom::ErrorPanelType::kError,
                     ClientLoadErrorReason::kGuestLoadFailed);
       break;
+    case mojom::GuestPageType::kOriginBlocked:
+      guest_state_.Set(GuestState::kLoading);
+      SetErrorState(mojom::ErrorPanelType::kError,
+                    ClientLoadErrorReason::kGuestOriginBlocked);
+      break;
     case mojom::GuestPageType::kLogin:
       // When the guest encounters a web login or proxy authentication page,
       // present the guest WebContents directly so the user can enter
@@ -1050,12 +1055,8 @@ void GlicNoWebviewContentsManager::OnGuestNavigated(
     case mojom::GuestPageType::kRegular:
       if (!is_api_allowed) {
         guest_state_.Set(GuestState::kLoading);
-        // TODO(markeh): report kGuestApiNotAllowed once it exists. The
-        // webview host currently rewrites this case into a plain load error
-        // too, so reporting kGuestLoadFailed keeps the two worlds comparable
-        // until both are split at once.
         SetErrorState(mojom::ErrorPanelType::kError,
-                      ClientLoadErrorReason::kGuestLoadFailed);
+                      ClientLoadErrorReason::kGuestApiNotAllowed);
       } else {
         ClearTransientErrorState();
         guest_state_.Set(GuestState::kLoading);

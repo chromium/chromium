@@ -83,7 +83,7 @@ GlicGuestNavigationThrottle::CheckUrl() {
           url::Origin::Create(url),
           navigation_handle()->GetWebContents()->GetBrowserContext())) {
     if (manager) {
-      manager->OnGuestNavigationBlocked(mojom::GuestPageType::kLoadError);
+      manager->OnGuestNavigationBlocked(mojom::GuestPageType::kOriginBlocked);
     }
     return CANCEL_AND_IGNORE;
   }
