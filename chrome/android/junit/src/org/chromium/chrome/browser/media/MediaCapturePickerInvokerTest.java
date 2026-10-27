@@ -8,6 +8,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -37,6 +39,7 @@ import org.robolectric.shadows.ShadowActivity.IntentForResult;
 import org.chromium.base.CallbackUtils;
 import org.chromium.base.ServiceLoaderUtil;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.media.MediaCapturePickerHeadlessFragment.CaptureAction;
 import org.chromium.chrome.browser.media.MediaCapturePickerManager.Delegate;
 import org.chromium.chrome.browser.media.MediaCapturePickerManager.Params;
@@ -66,6 +69,7 @@ public class MediaCapturePickerInvokerTest {
         private boolean mShouldShareAudio;
         private WebContents mStartedWebContents;
         private WebContents mStoppedWebContents;
+        private WebContents mFinishedWebContents;
 
         @Override
         public Intent createScreenCaptureIntent(Context context, Params params, Delegate delegate) {
@@ -96,12 +100,21 @@ public class MediaCapturePickerInvokerTest {
             mStoppedWebContents = webContents;
         }
 
+        @Override
+        public void onFinish(WebContents webContents) {
+            mFinishedWebContents = webContents;
+        }
+
         private WebContents getStartedWebContents() {
             return mStartedWebContents;
         }
 
         private WebContents getStoppedWebContents() {
             return mStoppedWebContents;
+        }
+
+        private WebContents getFinishedWebContents() {
+            return mFinishedWebContents;
         }
 
         private void setIntent(Intent intent) {
@@ -201,6 +214,53 @@ public class MediaCapturePickerInvokerTest {
         verify(mDelegate).onPickTab(mTabWebContents, false);
     }
 
+    /** A picked tab that this request's filter excludes is not shared. */
+    @Test
+    public void testShow_pickedTabExcludedByFilter() {
+        var resultWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Media.MediaCapture.UI.Android.Picker.Result",
+                        MediaCapturePickerManager.Result.CANCELLED);
+        Tab tab = mock(Tab.class);
+        doReturn(mTabWebContents).when(tab).getWebContents();
+        doReturn(true).when(mDelegate).shouldFilterWebContents(mTabWebContents);
+
+        mPickerDelegate.setIntent(new Intent());
+        mPickerDelegate.setPickedTab(tab);
+        Params params = mediaCaptureParams();
+        MediaCapturePickerInvoker.show(mActivity, params, mDelegate);
+        pendingDelegate()
+                .onPicked(
+                        CaptureAction.CAPTURE_WINDOW,
+                        new ActivityResult(Activity.RESULT_OK, new Intent()));
+
+        verify(mDelegate).onCancel();
+        verify(mDelegate, never()).onPickTab(any(), anyBoolean());
+        verify(mDelegate, never()).onPickWindow();
+        assertNull(mPickerDelegate.getStartedWebContents());
+        assertEquals(params.webContents, mPickerDelegate.getFinishedWebContents());
+        resultWatcher.assertExpected();
+    }
+
+    /** A picked tab with no WebContents, e.g. closed after it was picked, is not shared. */
+    @Test
+    public void testShow_pickedTabWithoutWebContents() {
+        Tab tab = mock(Tab.class);
+        mPickerDelegate.setIntent(new Intent());
+        mPickerDelegate.setPickedTab(tab);
+        Params params = mediaCaptureParams();
+        MediaCapturePickerInvoker.show(mActivity, params, mDelegate);
+        pendingDelegate()
+                .onPicked(
+                        CaptureAction.CAPTURE_WINDOW,
+                        new ActivityResult(Activity.RESULT_OK, new Intent()));
+
+        verify(mDelegate).onCancel();
+        verify(mDelegate, never()).onPickTab(any(), anyBoolean());
+        assertNull(mPickerDelegate.getStartedWebContents());
+        assertEquals(params.webContents, mPickerDelegate.getFinishedWebContents());
+    }
+
     @Test
     public void testShow_window() {
         mPickerDelegate.setIntent(new Intent());
@@ -235,7 +295,8 @@ public class MediaCapturePickerInvokerTest {
     @Test
     public void testShow_activityRecreatedWhilePromptShowing() {
         mPickerDelegate.setIntent(new Intent());
-        MediaCapturePickerInvoker.show(mActivity, mediaCaptureParams(), mDelegate);
+        Params params = mediaCaptureParams();
+        MediaCapturePickerInvoker.show(mActivity, params, mDelegate);
         MediaCapturePickerHeadlessFragment fragmentBefore =
                 MediaCapturePickerHeadlessFragment.getInstance((FragmentActivity) mActivity);
         IntentForResult launched = shadowOf(mActivity).getNextStartedActivityForResult();
@@ -247,6 +308,8 @@ public class MediaCapturePickerInvokerTest {
         assertNotSame(
                 fragmentBefore,
                 MediaCapturePickerHeadlessFragment.getInstance((FragmentActivity) mActivity));
+        verify(mDelegate, never()).onCancel();
+        assertNull(mPickerDelegate.getFinishedWebContents());
 
         // Same path as Activity#onActivityResult -> ActivityResultRegistry#dispatchResult.
         ((FragmentActivity) mActivity)
@@ -254,13 +317,21 @@ public class MediaCapturePickerInvokerTest {
                 .dispatchResult(launched.requestCode, Activity.RESULT_OK, new Intent());
 
         verify(mDelegate).onPickWindow();
+        assertEquals(params.webContents, mPickerDelegate.getFinishedWebContents());
     }
 
-    /** Closing the window while its prompt is showing must free the window's slot. */
+    /**
+     * Closing the window while its prompt is showing cancels the request and finishes the picker.
+     */
     @Test
     public void testShow_windowClosedWhilePromptShowing() {
+        var resultWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Media.MediaCapture.UI.Android.Picker.Result",
+                        MediaCapturePickerManager.Result.CANCELLED);
         mPickerDelegate.setIntent(new Intent());
-        MediaCapturePickerInvoker.show(mActivity, mediaCaptureParams(), mDelegate);
+        Params params = mediaCaptureParams();
+        MediaCapturePickerInvoker.show(mActivity, params, mDelegate);
         assertNotNull(pendingDelegate());
 
         // finish() then destroy: onDestroy() runs with isFinishing() == true.
@@ -268,24 +339,98 @@ public class MediaCapturePickerInvokerTest {
         mActivityScenarioRule.getScenario().moveToState(Lifecycle.State.DESTROYED);
 
         assertNull(pendingDelegate());
-        verify(mDelegate, never()).onCancel();
+        verify(mDelegate).onCancel();
+        assertEquals(params.webContents, mPickerDelegate.getFinishedWebContents());
+        resultWatcher.assertExpected();
     }
 
     /**
-     * An Activity destroyed for a reason other than recreation (no relaunch pending) must also free
-     * its slot, even if it is not finishing.
+     * An Activity destroyed for a reason other than recreation (no relaunch pending) also cancels
+     * the request and finishes the picker, even if it is not finishing.
      */
     @Test
     public void testShow_activityDestroyedWhilePromptShowing() {
         mPickerDelegate.setIntent(new Intent());
-        MediaCapturePickerInvoker.show(mActivity, mediaCaptureParams(), mDelegate);
+        Params params = mediaCaptureParams();
+        MediaCapturePickerInvoker.show(mActivity, params, mDelegate);
         assertNotNull(pendingDelegate());
 
         // Destroy without finish() and without recreate(): isChangingConfigurations() is false.
         mActivityScenarioRule.getScenario().moveToState(Lifecycle.State.DESTROYED);
 
         assertNull(pendingDelegate());
-        verify(mDelegate, never()).onCancel();
+        verify(mDelegate).onCancel();
+        assertEquals(params.webContents, mPickerDelegate.getFinishedWebContents());
+    }
+
+    /**
+     * If the requesting tab closes while the system prompt is open, a positive picker result
+     * cancels cleanly and finishes the picker instead of starting a projection with no requester.
+     */
+    @Test
+    public void testShow_requestingWebContentsDestroyedBeforeResult() {
+        var resultWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Media.MediaCapture.UI.Android.Picker.Result",
+                        MediaCapturePickerManager.Result.CANCELLED);
+        Tab tab = mock(Tab.class);
+        doReturn(mTabWebContents).when(tab).getWebContents();
+        mPickerDelegate.setIntent(new Intent());
+        mPickerDelegate.setPickedTab(tab);
+        Params params = mediaCaptureParams();
+        MediaCapturePickerInvoker.show(mActivity, params, mDelegate);
+
+        doReturn(true).when(params.webContents).isDestroyed();
+        pendingDelegate()
+                .onPicked(
+                        CaptureAction.CAPTURE_WINDOW,
+                        new ActivityResult(Activity.RESULT_OK, new Intent()));
+
+        verify(mDelegate).onCancel();
+        verify(mDelegate, never()).onPickTab(any(), anyBoolean());
+        verify(mDelegate, never()).onPickWindow();
+        assertNull(mPickerDelegate.getStartedWebContents());
+        assertEquals(params.webContents, mPickerDelegate.getFinishedWebContents());
+        resultWatcher.assertExpected();
+    }
+
+    /**
+     * If the capture request is torn down while its WebContents stays alive (e.g. frame navigation
+     * or iframe detach), a positive picker result cancels cleanly instead of arming ScreenCapture
+     * or starting an orphaned projection.
+     */
+    @Test
+    public void testShow_requestDestroyedBeforeResult() {
+        var resultWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Media.MediaCapture.UI.Android.Picker.Result",
+                        MediaCapturePickerManager.Result.CANCELLED);
+        mPickerDelegate.setIntent(new Intent());
+        Params params = mediaCaptureParams();
+        MediaCapturePickerInvoker.show(mActivity, params, mDelegate);
+        IntentForResult launched = shadowOf(mActivity).getNextStartedActivityForResult();
+        assertNotNull(launched);
+
+        doReturn(true).when(mDelegate).isRequestDestroyed();
+        ((FragmentActivity) mActivity)
+                .getActivityResultRegistry()
+                .dispatchResult(launched.requestCode, Activity.RESULT_OK, new Intent());
+
+        verify(mDelegate).onCancel();
+        verify(mDelegate, never()).onPickWindow();
+        assertNull(mPickerDelegate.getStartedWebContents());
+        assertNull(mPickerDelegate.getStoppedWebContents());
+        assertEquals(params.webContents, mPickerDelegate.getFinishedWebContents());
+        resultWatcher.assertExpected();
+
+        // A subsequent window capture must succeed without hitting stale ScreenCapture pick state.
+        Delegate nextDelegate = mock(Delegate.class);
+        MediaCapturePickerInvoker.show(mActivity, mediaCaptureParams(), nextDelegate);
+        pendingDelegate()
+                .onPicked(
+                        CaptureAction.CAPTURE_WINDOW,
+                        new ActivityResult(Activity.RESULT_OK, new Intent()));
+        verify(nextDelegate).onPickWindow();
     }
 
     /** A second request from the same window while its prompt is showing is cancelled. */

@@ -80,6 +80,14 @@ public class MediaCapturePickerManager {
 
         /** Called when the user has elected to not share anything. */
         void onCancel();
+
+        /**
+         * Returns whether the capture request was torn down (e.g. on frame navigation or iframe
+         * detach) while the picker is open, even if the WebContents is still alive.
+         */
+        default boolean isRequestDestroyed() {
+            return false;
+        }
     }
 
     /** The parameters for showing the media capture picker. */

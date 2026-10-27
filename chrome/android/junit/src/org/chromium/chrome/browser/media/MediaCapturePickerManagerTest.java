@@ -4,8 +4,11 @@
 
 package org.chromium.chrome.browser.media;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 import android.content.Context;
 
@@ -42,6 +45,7 @@ public class MediaCapturePickerManagerTest {
     @Mock private WebContents mWebContents;
     @Mock private WindowAndroid mWindowAndroid;
     @Mock private MediaCapturePickerManager.Delegate mDelegate;
+    @Mock private MediaCapturePickerManagerBridge.Natives mBridgeNatives;
     @Mock private Tab mTab;
     @Mock private Callback<Tab> mTestingCallback;
 
@@ -50,6 +54,7 @@ public class MediaCapturePickerManagerTest {
     @Before
     public void setUp() {
         mActivityScenarioRule.getScenario().onActivity(activity -> mContext = activity);
+        MediaCapturePickerManagerBridgeJni.setInstanceForTesting(mBridgeNatives);
     }
 
     @After
@@ -135,5 +140,33 @@ public class MediaCapturePickerManagerTest {
         MediaCapturePickerManager.setBringTabToFrontCallbackForTesting(mTestingCallback);
         MediaCapturePickerManager.bringTabToFront(mContext, mTab);
         verify(mTestingCallback).onResult(mTab);
+    }
+
+    @Test
+    public void testBridge_liveVsDestroyed() {
+        MediaCapturePickerManagerBridge bridge = MediaCapturePickerManagerBridge.create(1L);
+        doReturn(false).when(mBridgeNatives).shouldFilterWebContents(1L, mWebContents);
+
+        assertFalse(bridge.isRequestDestroyed());
+        assertFalse(bridge.shouldFilterWebContents(mWebContents));
+        bridge.onCancel();
+        bridge.onPickTab(mWebContents, /* audioShare= */ true);
+        bridge.onPickWindow();
+        bridge.onPickScreen();
+        verify(mBridgeNatives).shouldFilterWebContents(1L, mWebContents);
+        verify(mBridgeNatives).onCancel(1L);
+        verify(mBridgeNatives).onPickTab(1L, mWebContents, true);
+        verify(mBridgeNatives).onPickWindow(1L);
+        verify(mBridgeNatives).onPickScreen(1L);
+
+        bridge.destroy();
+
+        assertTrue(bridge.isRequestDestroyed());
+        assertTrue(bridge.shouldFilterWebContents(mWebContents));
+        bridge.onCancel();
+        bridge.onPickTab(mWebContents, /* audioShare= */ true);
+        bridge.onPickWindow();
+        bridge.onPickScreen();
+        verifyNoMoreInteractions(mBridgeNatives);
     }
 }

@@ -69,8 +69,8 @@ public class MediaCapturePickerHeadlessFragment extends Fragment {
      * <p>Static because the Activity, and this fragment with it, may be recreated while the system
      * prompt is showing; the result is then delivered to the new fragment instance. The task id is
      * stable across recreation and unique per Chrome window. Entries are removed when the result
-     * arrives or the Activity is destroyed other than for recreation, and do not survive process
-     * death.
+     * arrives, or when the Activity is destroyed other than for recreation, which also cancels the
+     * request. They do not survive process death.
      */
     /* package */ static final SparseArray<Delegate> sNextDelegates = new SparseArray<>();
 
@@ -122,9 +122,17 @@ public class MediaCapturePickerHeadlessFragment extends Fragment {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        // Keep the entry only across recreate() / a configuration relaunch, where the pending
-        // result is delivered to the new instance; drop it for any other destruction.
-        if (!requireActivity().isChangingConfigurations()) sNextDelegates.remove(mTaskId);
+        // Keep the entry across recreate() / a configuration relaunch, where the pending result is
+        // delivered to the new instance; otherwise cancel so picker state is cleaned up.
+        if (!requireActivity().isChangingConfigurations()) {
+            Delegate delegate = sNextDelegates.get(mTaskId);
+            sNextDelegates.remove(mTaskId);
+            if (delegate != null) {
+                delegate.onPicked(
+                        CaptureAction.CAPTURE_CANCELLED,
+                        new ActivityResult(Activity.RESULT_CANCELED, null));
+            }
+        }
     }
 
     /** Returns whether a prompt launched from this window is still awaiting the user's choice. */

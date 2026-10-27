@@ -19,6 +19,9 @@ import org.chromium.content_public.browser.WebContents;
 public class MediaCapturePickerManagerBridge implements MediaCapturePickerManager.Delegate {
     private static final String TAG = "MediaCapture";
 
+    // Zeroed by native ~MediaCapturePickerManagerBridge() when DisplayMediaAccessHandler erases the
+    // pending request (e.g. request cancelled or WebContents destroyed) while the system picker may
+    // still be open.
     private long mNativeMediaCapturePickerManagerBridge;
 
     /**
@@ -79,16 +82,15 @@ public class MediaCapturePickerManagerBridge implements MediaCapturePickerManage
     }
 
     @CalledByNative
-    private void destroy() {
+    /* package */ void destroy() {
         mNativeMediaCapturePickerManagerBridge = 0;
     }
 
     @Override
     public void onPickTab(WebContents webContents, boolean audioShare) {
         Log.d(TAG, "PickerManagerBridge on pick tab");
-        // We know `mNativeMediaCapturePickerManagerBridge` is non-zero because
-        // `destroy` will only be called after the dialog is dismissed.
-        assert mNativeMediaCapturePickerManagerBridge != 0;
+        // The native request was already erased, so no callback awaits a result.
+        if (mNativeMediaCapturePickerManagerBridge == 0) return;
         MediaCapturePickerManagerBridgeJni.get()
                 .onPickTab(mNativeMediaCapturePickerManagerBridge, webContents, audioShare);
     }
@@ -96,9 +98,8 @@ public class MediaCapturePickerManagerBridge implements MediaCapturePickerManage
     @Override
     public void onPickWindow() {
         Log.d(TAG, "PickerManagerBridge on pick window");
-        // We know `mNativeMediaCapturePickerManagerBridge` is non-zero because
-        // `destroy` will only be called after the dialog is dismissed.
-        assert mNativeMediaCapturePickerManagerBridge != 0;
+        // The native request was already erased, so no callback awaits a result.
+        if (mNativeMediaCapturePickerManagerBridge == 0) return;
         MediaCapturePickerManagerBridgeJni.get()
                 .onPickWindow(mNativeMediaCapturePickerManagerBridge);
     }
@@ -106,9 +107,8 @@ public class MediaCapturePickerManagerBridge implements MediaCapturePickerManage
     @Override
     public void onPickScreen() {
         Log.d(TAG, "PickerManagerBridge on pick screen");
-        // We know `mNativeMediaCapturePickerManagerBridge` is non-zero because
-        // `destroy` will only be called after the dialog is dismissed.
-        assert mNativeMediaCapturePickerManagerBridge != 0;
+        // The native request was already erased, so no callback awaits a result.
+        if (mNativeMediaCapturePickerManagerBridge == 0) return;
         MediaCapturePickerManagerBridgeJni.get()
                 .onPickScreen(mNativeMediaCapturePickerManagerBridge);
     }
@@ -116,17 +116,20 @@ public class MediaCapturePickerManagerBridge implements MediaCapturePickerManage
     @Override
     public void onCancel() {
         Log.d(TAG, "PickerManagerBridge on cancel");
-        // We know `mNativeMediaCapturePickerManagerBridge` is non-zero because
-        // `destroy` will only be called after the dialog is dismissed.
-        assert mNativeMediaCapturePickerManagerBridge != 0;
+        // The native request was already erased, so no callback awaits a result.
+        if (mNativeMediaCapturePickerManagerBridge == 0) return;
         MediaCapturePickerManagerBridgeJni.get().onCancel(mNativeMediaCapturePickerManagerBridge);
     }
 
     @Override
+    public boolean isRequestDestroyed() {
+        return mNativeMediaCapturePickerManagerBridge == 0;
+    }
+
+    @Override
     public boolean shouldFilterWebContents(WebContents webContents) {
-        // We know `mNativeMediaCapturePickerManagerBridge` is non-zero because
-        // `destroy` will only be called after the dialog is dismissed.
-        assert mNativeMediaCapturePickerManagerBridge != 0;
+        // Filter out tabs once the request has torn down its native bridge.
+        if (mNativeMediaCapturePickerManagerBridge == 0) return true;
         return MediaCapturePickerManagerBridgeJni.get()
                 .shouldFilterWebContents(mNativeMediaCapturePickerManagerBridge, webContents);
     }
