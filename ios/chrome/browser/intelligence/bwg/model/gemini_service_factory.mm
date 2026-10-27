@@ -40,11 +40,6 @@ GeminiServiceFactory::GeminiServiceFactory(PassKey key)
   DependsOn(OptimizationGuideServiceFactory::GetInstance());
 }
 
-// static
-GeminiServiceFactory::TestingFactory GeminiServiceFactory::GetDefaultFactory() {
-  return base::BindOnce(&BuildGeminiService);
-}
-
 std::unique_ptr<KeyedService> GeminiServiceFactory::BuildServiceInstanceFor(
     ProfileIOS* profile) const {
   return BuildGeminiService(profile);

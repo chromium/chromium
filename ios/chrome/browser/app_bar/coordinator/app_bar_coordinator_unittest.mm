@@ -84,8 +84,6 @@ class AppBarCoordinatorTest : public PlatformTest {
         AuthenticationServiceFactory::GetDefaultFactory());
     builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
                               base::BindRepeating(&CreateMockSyncService));
-    builder.AddTestingFactory(GeminiServiceFactory::GetInstance(),
-                              GeminiServiceFactory::GetDefaultFactory());
     regular_profile_ = std::move(builder).Build();
     incognito_profile_ = TestProfileIOS::Builder().Build();
     scene_state_ = [[SceneState alloc] init];

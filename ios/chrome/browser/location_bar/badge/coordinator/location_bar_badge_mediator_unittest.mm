@@ -165,8 +165,6 @@ class LocationBarBadgeMediatorTest : public PlatformTest {
     builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
         AuthenticationServiceFactory::GetDefaultFactory());
-    builder.AddTestingFactory(GeminiServiceFactory::GetInstance(),
-                              GeminiServiceFactory::GetDefaultFactory());
     builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
                               base::BindRepeating(&CreateMockSyncService));
     builder.AddTestingFactory(

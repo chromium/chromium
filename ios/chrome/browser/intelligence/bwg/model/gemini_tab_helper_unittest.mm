@@ -88,8 +88,6 @@ class GeminiTabHelperTest : public PlatformTest {
         IdentityManagerFactory::GetInstance(),
         base::BindRepeating(IdentityTestEnvironmentBrowserStateAdaptor::
                                 BuildIdentityManagerForTests));
-    builder.AddTestingFactory(GeminiServiceFactory::GetInstance(),
-                              GeminiServiceFactory::GetDefaultFactory());
     profile_ = std::move(builder).Build();
 
     gemini::test::SetUpEligibleAccount(profile_.get());
