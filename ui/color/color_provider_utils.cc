@@ -186,21 +186,9 @@ bool ColorProviderUtilsCallbacks::NameToColorId(std::string_view color_name,
 }
 
 std::string ColorIdName(ColorId color_id) {
-#include "ui/color/color_id_map_macros.inc"  // NOLINT(build/include)
-  static constexpr auto kColorIdMap =
-      base::MakeFixedFlatMap<ColorId, const char*>({COLOR_IDS});
-// Note that this second include is not redundant. The second inclusion of the
-// .inc file serves to undefine the macros the first inclusion defined.
-#include "ui/color/color_id_map_macros.inc"  // NOLINT(build/include)
-
-  auto it = kColorIdMap.find(color_id);
-  if (it != kColorIdMap.cend()) {
-    return {it->second};
-  }
-  std::string_view color_name;
-  if (g_color_provider_utils_callbacks &&
-      g_color_provider_utils_callbacks->ColorIdName(color_id, &color_name)) {
-    return std::string(color_name);
+  if (std::string_view css_name = ColorIdToCSSColorId(color_id);
+      !css_name.empty()) {
+    return ConvertCSSColorIdToColorIdName(css_name);
   }
   return base::StringPrintf("ColorId(%d)", color_id);
 }
@@ -397,6 +385,25 @@ std::string ConvertColorProviderColorIdToCSSColorId(
     }
   }
   return css_color_id_name;
+}
+
+std::string ConvertCSSColorIdToColorIdName(std::string_view css_color_id_name) {
+  if (css_color_id_name.empty()) {
+    return std::string();
+  }
+  std::string color_id_name;
+  color_id_name.reserve(css_color_id_name.size());
+  color_id_name.push_back('k');
+  for (size_t i = 1; i < css_color_id_name.size(); ++i) {
+    if (css_color_id_name[i] == '-') {
+      if (++i < css_color_id_name.size()) {
+        color_id_name.push_back(base::ToUpperASCII(css_color_id_name[i]));
+      }
+    } else {
+      color_id_name.push_back(css_color_id_name[i]);
+    }
+  }
+  return color_id_name;
 }
 
 void FastAppendCssHexColor(SkColor color, std::string& out) {

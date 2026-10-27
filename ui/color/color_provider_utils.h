@@ -26,7 +26,6 @@ using RendererColorMap = base::flat_map<color::mojom::RendererColorId, SkColor>;
 class COMPONENT_EXPORT(COLOR) ColorProviderUtilsCallbacks {
  public:
   virtual ~ColorProviderUtilsCallbacks();
-  virtual bool ColorIdName(ColorId color_id, std::string_view* color_name) = 0;
   virtual bool ColorIdToCSSColorId(ColorId color_id,
                                    std::string_view* css_name);
   virtual bool NameToColorId(std::string_view color_name, ColorId* color_id);
@@ -61,6 +60,11 @@ std::string COMPONENT_EXPORT(COLOR) SkColorName(SkColor color);
 // "--color-X-X-X" for CSS
 std::string COMPONENT_EXPORT(COLOR)
     ConvertColorProviderColorIdToCSSColorId(std::string_view color_id_name);
+
+// Converts a CSS color variable name from "--color-x-x-x" back to its
+// C++ ColorId identifier format "kColorXXX".
+std::string COMPONENT_EXPORT(COLOR)
+    ConvertCSSColorIdToColorIdName(std::string_view css_color_id_name);
 
 // Converts `color` to a CSS hex color string formatted as `#RRGGBBAA` and
 // appends it directly into `out`.

@@ -21,6 +21,20 @@ TEST_F(ColorProviderUtilsTest, ConvertColorProviderColorIdToCSSColorId) {
                 ui::ColorIdName(ui::kColorPrimaryBackground)));
 }
 
+TEST_F(ColorProviderUtilsTest, ConvertCSSColorIdToColorIdName) {
+  EXPECT_EQ("kColorPrimaryBackground",
+            ui::ConvertCSSColorIdToColorIdName("--color-primary-background"));
+  EXPECT_EQ("kColorRefPrimary0",
+            ui::ConvertCSSColorIdToColorIdName("--color-ref-primary0"));
+  EXPECT_TRUE(ui::ConvertCSSColorIdToColorIdName("").empty());
+}
+
+TEST_F(ColorProviderUtilsTest, ColorIdName) {
+  EXPECT_EQ("kColorPrimaryBackground",
+            ui::ColorIdName(ui::kColorPrimaryBackground));
+  EXPECT_EQ("ColorId(-1)", ui::ColorIdName(ui::kUiColorsStart - 1));
+}
+
 TEST_F(ColorProviderUtilsTest, ColorIdToCSSColorId) {
   EXPECT_EQ("--color-primary-background",
             ui::ColorIdToCSSColorId(ui::kColorPrimaryBackground));
