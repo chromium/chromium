@@ -428,7 +428,7 @@ void ScriptRunIterator::OpenBracket(UChar32 ch) {
       --brackets_fixup_depth_;
     }
   }
-  FixScriptsByEastAsianWidth(ch, next_set_.get());
+  FixScriptsByEastAsianWidth(ch, next_set_);
   brackets_.push_back(BracketRec({ch, USCRIPT_COMMON}));
   ++brackets_fixup_depth_;
 }
