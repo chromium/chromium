@@ -4683,7 +4683,11 @@ void PaintPropertyTreeBuilder::InitPaintProperties() {
     // SVG resources are painted within one or more other locations in the
     // SVG during paint, and hence have their own independent paint property
     // trees, paint offset, etc.
+    bool is_in_drawable_canvas_subtree =
+        context_.fragment_context.is_in_drawable_canvas_subtree;
     context_.fragment_context = PaintPropertyTreeBuilderFragmentContext();
+    context_.fragment_context.is_in_drawable_canvas_subtree =
+        is_in_drawable_canvas_subtree;
     context_.has_svg_hidden_container_ancestor = true;
 
     PaintPropertyTreeBuilderFragmentContext& fragment_context =
