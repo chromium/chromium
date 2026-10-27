@@ -86,7 +86,7 @@ public class OmniboxFeatures {
     public static final CachedFlag sPrefetchSelectedSuggestionsOmtAndroid =
             newFlag(
                     OmniboxFeatureList.OMNIBOX_PREFETCH_SELECTED_SUGGESTIONS_OMT_ANDROID,
-                    FeatureState.DISABLED_IN_PROD);
+                    FeatureState.ENABLED_IN_TEST);
 
     public static final CachedFlag sOmniboxSearchPrefetchOnEnterKeyDown =
             newFlag(
