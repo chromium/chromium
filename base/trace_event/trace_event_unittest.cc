@@ -1192,13 +1192,7 @@ class MyData : public ConvertableToTraceFormat {
   }
 };
 
-// crbug.com/325641473: Flaky on Mac due to missing last event.
-#if BUILDFLAG(IS_APPLE)
-#define MAYBE_ConvertableTypes DISABLED_ConvertableTypes
-#else
-#define MAYBE_ConvertableTypes ConvertableTypes
-#endif
-TEST_F(TraceEventTestFixture, MAYBE_ConvertableTypes) {
+TEST_F(TraceEventTestFixture, ConvertableTypes) {
   TraceLog::GetInstance()->SetEnabled(
       TraceConfig(kRecordAllCategoryFilter, ""));
 
@@ -1211,6 +1205,10 @@ TEST_F(TraceEventTestFixture, MAYBE_ConvertableTypes) {
     TRACE_EVENT1("foo", "bar", "data", std::move(data));
     TRACE_EVENT2("foo", "baz", "data1", std::move(data1), "data2",
                  std::move(data2));
+    // Perfetto's legacy JSON exporter exports zero-duration slices with phase
+    // "I" instead of "X". Ensure the clock advances by at least one tick before
+    // the innermost scope closes.
+    PlatformThread::Sleep(Microseconds(1));
   }
 
   // Check that std::unique_ptr<DerivedClassOfConvertable> are properly treated
@@ -1226,6 +1224,7 @@ TEST_F(TraceEventTestFixture, MAYBE_ConvertableTypes) {
                  "str", "string value 2");
     TRACE_EVENT2("foo", "both_conv", "convert1", std::move(convertData3),
                  "convert2", std::move(convertData4));
+    PlatformThread::Sleep(Microseconds(1));
   }
   EndTraceAndFlush();
 
@@ -1293,13 +1292,7 @@ TEST_F(TraceEventTestFixture, MAYBE_ConvertableTypes) {
   ASSERT_TRUE(convertable_dict);
 }
 
-// crbug.com/325641473: Flaky on Mac due to missing last event.
-#if BUILDFLAG(IS_APPLE)
-#define MAYBE_PrimitiveArgs DISABLED_PrimitiveArgs
-#else
-#define MAYBE_PrimitiveArgs PrimitiveArgs
-#endif
-TEST_F(TraceEventTestFixture, MAYBE_PrimitiveArgs) {
+TEST_F(TraceEventTestFixture, PrimitiveArgs) {
   TraceLog::GetInstance()->SetEnabled(
       TraceConfig(kRecordAllCategoryFilter, ""));
 
@@ -1327,6 +1320,10 @@ TEST_F(TraceEventTestFixture, MAYBE_PrimitiveArgs) {
     TRACE_EVENT1("foo", "event14", "timeticks_null", base::TimeTicks());
     TRACE_EVENT1("foo", "event15", "timeticks_one",
                  base::TimeTicks::FromInternalValue(1));
+    // Perfetto's legacy JSON exporter exports zero-duration slices with phase
+    // "I" instead of "X". Ensure the clock advances by at least one tick before
+    // the innermost scope closes.
+    PlatformThread::Sleep(Microseconds(1));
   }
   EndTraceAndFlush();
 
