@@ -34,7 +34,7 @@ import java.util.function.Supplier;
 public class BottomBarEducationDialogCoordinator
         implements ModalDialogProperties.Controller, Destroyable, ComponentCallbacks {
     private final Context mContext;
-    private final @Nullable ModalDialogManager mModalDialogManager;
+    private final ModalDialogManager mModalDialogManager;
     private final Supplier<@Nullable Tab> mTabSupplier;
     private @Nullable PropertyModel mDialogModel;
     private @Nullable Tracker mTracker;
@@ -51,7 +51,7 @@ public class BottomBarEducationDialogCoordinator
      */
     public BottomBarEducationDialogCoordinator(
             Context context,
-            @Nullable ModalDialogManager modalDialogManager,
+            ModalDialogManager modalDialogManager,
             Supplier<@Nullable Tab> tabSupplier) {
         mContext = context;
         mModalDialogManager = modalDialogManager;
@@ -62,7 +62,7 @@ public class BottomBarEducationDialogCoordinator
     @Override
     public void destroy() {
         mContext.unregisterComponentCallbacks(this);
-        if (mDialogModel != null && mModalDialogManager != null) {
+        if (mDialogModel != null) {
             if (!mResultRecorded) {
                 mResultRecorded = true;
                 BottomBarMetrics.recordEducationOnboardingEvent(
@@ -85,7 +85,6 @@ public class BottomBarEducationDialogCoordinator
      */
     public boolean maybeShow(Profile profile) {
         if (mDialogModel != null) return true;
-        if (mModalDialogManager == null) return false;
 
         if (!BottomBarConfigUtils.isEducationEnabled()
                 || !BottomBarConfigUtils.isBottomBarEligible(mContext)
@@ -117,7 +116,6 @@ public class BottomBarEducationDialogCoordinator
 
     private void showDialog() {
         mResultRecorded = false;
-        assert mModalDialogManager != null;
         mDialogView =
                 BottomBarEducationUtils.inflateDialogContent(
                         mContext, /* onSettingsClicked= */ this::onLearnMoreClicked);
@@ -158,9 +156,7 @@ public class BottomBarEducationDialogCoordinator
         }
         dismissFeatureEngagementTracker();
 
-        // Dismiss before writing the pref: pref listeners are notified synchronously, and
-        // ChromeTabbedActivity recreates itself with the bottom bar in response.
-        if (mDialogModel != null && mModalDialogManager != null) {
+        if (mDialogModel != null) {
             mModalDialogManager.dismissDialog(
                     mDialogModel, DialogDismissalCause.POSITIVE_BUTTON_CLICKED);
         }
@@ -173,7 +169,7 @@ public class BottomBarEducationDialogCoordinator
         BottomBarMetrics.recordEducationOnboardingEvent(
                 EducationOnboardingType.OPT_IN_DIALOG, EducationOnboardingEvent.DECLINED);
         dismissFeatureEngagementTracker();
-        if (mDialogModel != null && mModalDialogManager != null) {
+        if (mDialogModel != null) {
             mModalDialogManager.dismissDialog(
                     mDialogModel, DialogDismissalCause.NEGATIVE_BUTTON_CLICKED);
         }
@@ -187,7 +183,7 @@ public class BottomBarEducationDialogCoordinator
         SettingsNavigation settingsNavigation =
                 SettingsNavigationFactory.createSettingsNavigation();
         settingsNavigation.startSettings(mContext, SettingsNavigation.SettingsFragment.APPEARANCE);
-        if (mDialogModel != null && mModalDialogManager != null) {
+        if (mDialogModel != null) {
             mModalDialogManager.dismissDialog(mDialogModel, DialogDismissalCause.ACTION_ON_CONTENT);
         }
     }
