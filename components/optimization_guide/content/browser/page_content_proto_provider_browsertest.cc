@@ -768,7 +768,14 @@ IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest,
           optimization_guide::proto::CLICKABILITY_REASON_CLICKABLE_CONTROL));
 
   const auto& label = ActionableContentRootNode().children_nodes()[1];
-  EXPECT_FALSE(label.content_attributes().has_interaction_info());
+  ASSERT_TRUE(label.content_attributes().has_interaction_info());
+  const auto& label_interaction = label.content_attributes().interaction_info();
+  EXPECT_TRUE(label_interaction.clickability_reasons().empty());
+  EXPECT_FALSE(label_interaction.is_disabled());
+  EXPECT_THAT(label_interaction.interaction_disabled_reasons(),
+              testing::UnorderedElementsAre(
+                  optimization_guide::proto::
+                      INTERACTION_DISABLED_REASON_POINTER_EVENTS_NONE));
   EXPECT_EQ(label.content_attributes().label_for_dom_node_id(),
             input.content_attributes().common_ancestor_dom_node_id());
 }
@@ -830,7 +837,14 @@ IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest,
   // be offscreen because there is no overlap with the viewport rect.
   EXPECT_GE(option_geometry.outer_bounding_box().y(),
             page_content().viewport_geometry().height());
-  EXPECT_FALSE(size_option->content_attributes().has_interaction_info());
+  ASSERT_TRUE(size_option->content_attributes().has_interaction_info());
+  const auto& option_interaction =
+      size_option->content_attributes().interaction_info();
+  EXPECT_TRUE(option_interaction.clickability_reasons().empty());
+  EXPECT_THAT(option_interaction.interaction_disabled_reasons(),
+              testing::UnorderedElementsAre(
+                  optimization_guide::proto::
+                      INTERACTION_DISABLED_REASON_VISUALLY_UNREACHABLE));
 }
 
 IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest,
@@ -858,7 +872,14 @@ IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest,
   // it as directly actionable because scrolling cannot bring it on screen.
   const auto& option_geometry = size_option->content_attributes().geometry();
   EXPECT_LT(option_geometry.outer_bounding_box().x(), 0);
-  EXPECT_FALSE(size_option->content_attributes().has_interaction_info());
+  ASSERT_TRUE(size_option->content_attributes().has_interaction_info());
+  const auto& option_interaction =
+      size_option->content_attributes().interaction_info();
+  EXPECT_TRUE(option_interaction.clickability_reasons().empty());
+  EXPECT_THAT(option_interaction.interaction_disabled_reasons(),
+              testing::UnorderedElementsAre(
+                  optimization_guide::proto::
+                      INTERACTION_DISABLED_REASON_VISUALLY_UNREACHABLE));
 }
 
 IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest,

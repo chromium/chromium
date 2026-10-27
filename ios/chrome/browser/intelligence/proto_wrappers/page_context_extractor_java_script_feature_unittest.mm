@@ -2575,7 +2575,29 @@ TEST_F(PageContextExtractorJavaScriptFeatureTest,
   const base::DictValue* offscreen_interaction_info =
       offscreen_button.FindDictByDottedPath(
           "contentAttributes.nodeInteractionInfo");
-  EXPECT_FALSE(offscreen_interaction_info);
+  ASSERT_TRUE(offscreen_interaction_info);
+  const base::ListValue* disabled_reasons =
+      offscreen_interaction_info->FindList("interactionDisabledReasons");
+  ASSERT_TRUE(disabled_reasons);
+  bool has_visually_unreachable = false;
+  for (const base::Value& reason : *disabled_reasons) {
+    if (reason.is_int() &&
+        reason.GetInt() ==
+            static_cast<int>(
+                optimization_guide::proto::
+                    INTERACTION_DISABLED_REASON_VISUALLY_UNREACHABLE)) {
+      has_visually_unreachable = true;
+      break;
+    }
+  }
+  EXPECT_TRUE(has_visually_unreachable);
+  const base::ListValue* clickability_reasons =
+      offscreen_interaction_info->FindList("clickabilityReasons");
+  if (clickability_reasons) {
+    EXPECT_TRUE(clickability_reasons->empty());
+  }
+  EXPECT_FALSE(
+      offscreen_interaction_info->FindBool("isFocusable").value_or(false));
 }
 
 // Test fieldset extraction logic.

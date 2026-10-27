@@ -77,6 +77,7 @@ const getAttributeMethod = Element.prototype.getAttribute;
 const hasAttributeMethod = Element.prototype.hasAttribute;
 const setAttributeMethod = Element.prototype.setAttribute;
 const matchesMethod = Element.prototype.matches;
+const closestMethod = Element.prototype.closest;
 
 // These safe getters prevent DOM stomping/clobbering by calling the getter
 // on the prototype instead of directly on the element.
@@ -169,6 +170,20 @@ function safeMatches(element: Element, selector: string): boolean {
     return element.matches(selector);
   }
   return matchesMethod.call(element, selector);
+}
+
+// Returns the equivalent of `element.closest(selector)` but directly calls the
+// `Element` prototype to prevent clobbering.
+function safeClosest(element: Element, selector: string): Element|null {
+  if (typeof element.closest === 'function') {
+    return element.closest(selector);
+  }
+  return closestMethod.call(element, selector);
+}
+
+// Returns whether an element is marked inert or within an inert subtree.
+function isElementInert(element: Element): boolean {
+  return safeClosest(element, '[inert]') !== null;
 }
 
 // Returns the equivalent of `element.isContentEditable` but directly calls the
@@ -520,6 +535,7 @@ const ATTR_VALUE_FALSE = 'false';
 const ATTR_VALUE_CURSOR_AUTO = 'auto';
 const ATTR_VALUE_CURSOR_NOT_ALLOWED = 'not-allowed';
 const ATTR_VALUE_CURSOR_POINTER = 'pointer';
+const ATTR_VALUE_POINTER_EVENTS_NONE = 'none';
 const ATTR_VALUE_ROLE_BUTTON = 'button';
 const ATTR_VALUE_ROLE_LINK = 'link';
 const ATTR_VALUE_ROLE_CHECKBOX = 'checkbox';
@@ -1415,9 +1431,21 @@ function isGenericContainer(
     return false;
   }
 
-  // Treat as container if we extracted interaction info (e.g. it's scrollable).
+  // Treat as container if we extracted interaction info (e.g. it's scrollable,
+  // clickable, focusable, or has explicit disabled semantics like
+  // aria-disabled, cursor: not-allowed, or disabled). Elements with only
+  // pointer-events: none without other semantics should not be preserved as
+  // generic containers.
   if (interactionInfo) {
-    return true;
+    const hasOtherDisabledReasons =
+        interactionInfo.interactionDisabledReasons.some(
+            reason => reason !==
+                PageContentInteractionDisabledReason.POINTER_EVENTS_NONE);
+    if (interactionInfo.scrollerInfo ||
+        interactionInfo.clickabilityReasons.length > 0 ||
+        interactionInfo.isFocusable || hasOtherDisabledReasons) {
+      return true;
+    }
   }
 
   const style = getComputedStyleForElement(element, styleCache);
@@ -1612,7 +1640,23 @@ function getNodeInteractionInfo(
     interactionDisabledReasons.push(
         PageContentInteractionDisabledReason.CURSOR_NOT_ALLOWED);
   }
+  // Check pointer-events: none and inert subtrees.
+  const isPointerEventsNone =
+      style?.pointerEvents === ATTR_VALUE_POINTER_EVENTS_NONE ||
+      isElementInert(element);
+  if (isPointerEventsNone) {
+    interactionDisabledReasons.push(
+        PageContentInteractionDisabledReason.POINTER_EVENTS_NONE);
+  }
   interactionInfo.isDisabled = isDisabled;
+
+  // Early return if pointer-events: none blocks input interaction, matching
+  // Blink. Skipping positive clickability computation avoids computing signals
+  // that can never be dispatched, and prevents unspecialized containers from
+  // surviving.
+  if (isPointerEventsNone) {
+    return interactionDisabledReasons.length > 0 ? interactionInfo : undefined;
+  }
 
   const clickabilityReasons = interactionInfo.clickabilityReasons;
 
@@ -3548,10 +3592,25 @@ function addNodeGeometry(
 
   // Match Blink's IsAnchoredOffscreen logic: if an interactive node is
   // clipped completely offscreen inside an overflow container, drop
-  // nodeInteractionInfo so offscreen carousel items are not retained.
+  // positive interaction signals but retain explicit disabled reasons
+  // (and add VISUALLY_UNREACHABLE) so downstream consumers know the
+  // element was disabled and why.
   if (!geometry.visibleBoundingBox && attributes.nodeInteractionInfo &&
       context.hasOverflowClip) {
-    delete attributes.nodeInteractionInfo;
+    const existingDisabledReasons =
+        attributes.nodeInteractionInfo.interactionDisabledReasons || [];
+    const isDisabled = attributes.nodeInteractionInfo.isDisabled;
+    attributes.nodeInteractionInfo = {
+      clickabilityReasons: [],
+      isDisabled: isDisabled,
+      interactionDisabledReasons: existingDisabledReasons,
+      isFocusable: false,
+    };
+    if (!attributes.nodeInteractionInfo.interactionDisabledReasons.includes(
+            PageContentInteractionDisabledReason.VISUALLY_UNREACHABLE)) {
+      attributes.nodeInteractionInfo.interactionDisabledReasons.push(
+          PageContentInteractionDisabledReason.VISUALLY_UNREACHABLE);
+    }
   }
 
   // Determine the new clip context to pass down to children. An element that

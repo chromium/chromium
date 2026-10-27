@@ -6168,7 +6168,10 @@ TEST_P(PageContextWrapperTest,
       RawHtml("<button disabled id='disabled_btn'>Disabled</button>"
               "<div aria-disabled='true' id='aria_disabled'>Aria Disabled</div>"
               "<div style='cursor: not-allowed;' id='cursor_disabled'>Cursor "
-              "Disabled</div>"));
+              "Disabled</div>"
+              "<button style='pointer-events: none;' id='pe_none_btn'>Pointer "
+              "Events None</button>"
+              "<button inert id='inert_btn'>Inert</button>"));
 
   std::string main_html = page_helper_->Build(page_structure);
   web::test::LoadHtml(base::SysUTF8ToNSString(main_html),
@@ -6224,6 +6227,83 @@ TEST_P(PageContextWrapperTest,
           .interaction_disabled_reasons(),
       testing::Contains(optimization_guide::proto::
                             INTERACTION_DISABLED_REASON_CURSOR_NOT_ALLOWED));
+
+  // 4. Pointer Events None (pointer-events: none) -> reason =
+  // POINTER_EVENTS_NONE.
+  const auto& pe_none = root.children_nodes(3);
+  ASSERT_TRUE(pe_none.content_attributes().has_interaction_info());
+  EXPECT_FALSE(pe_none.content_attributes().interaction_info().is_disabled());
+  EXPECT_THAT(
+      pe_none.content_attributes()
+          .interaction_info()
+          .interaction_disabled_reasons(),
+      testing::Contains(optimization_guide::proto::
+                            INTERACTION_DISABLED_REASON_POINTER_EVENTS_NONE));
+
+  // 5. Inert Button (inert) -> reason = POINTER_EVENTS_NONE.
+  const auto& inert = root.children_nodes(4);
+  ASSERT_TRUE(inert.content_attributes().has_interaction_info());
+  EXPECT_FALSE(inert.content_attributes().interaction_info().is_disabled());
+  EXPECT_THAT(
+      inert.content_attributes()
+          .interaction_info()
+          .interaction_disabled_reasons(),
+      testing::Contains(optimization_guide::proto::
+                            INTERACTION_DISABLED_REASON_POINTER_EVENTS_NONE));
+}
+
+// Tests that an interactive element clipped offscreen inside an overflow
+// container receives INTERACTION_DISABLED_REASON_VISUALLY_UNREACHABLE and has
+// its positive interaction signals stripped.
+TEST_P(PageContextWrapperTest,
+       PopulatePageContext_ApcV2_NodeInteraction_VisuallyUnreachable) {
+  if (!IsRefactored()) {
+    return;
+  }
+
+  auto page_structure = HtmlPage(
+      "Visually Unreachable Test",
+      RawHtml("<div style='width: 100px; height: 100px; overflow: hidden;'>"
+              "<button style='position: relative; left: -200px;' "
+              "id='offscreen_btn'>Offscreen</button>"
+              "</div>"));
+
+  std::string main_html = page_helper_->Build(page_structure);
+  web::test::LoadHtml(base::SysUTF8ToNSString(main_html),
+                      test_server_.GetURL(kMainPagePath), web_state());
+
+  PageContextWrapperConfig config =
+      PageContextWrapperConfigBuilder()
+          .SetUseRichExtraction(true)
+          .SetUseRichExtractionWithActionable(true)
+          .Build();
+
+  PageContextWrapperCallbackResponse response = RunPageContextWrapperWithConfig(
+      web_state(), config, ^(PageContextWrapper* wrapper) {
+        wrapper.shouldGetAnnotatedPageContent = YES;
+      });
+
+  ASSERT_TRUE(response.has_value());
+  std::unique_ptr<optimization_guide::proto::PageContext> page_context =
+      std::move(response.value());
+  ASSERT_TRUE(page_context);
+  const auto& root = page_context->annotated_page_content().root_node();
+  ASSERT_GE(root.children_nodes_size(), 1);
+  const auto* btn_node = FindFirstFormControlNode(root);
+  ASSERT_NE(btn_node, nullptr);
+  const auto& btn = *btn_node;
+  ASSERT_TRUE(btn.content_attributes().has_interaction_info());
+  EXPECT_FALSE(btn.content_attributes().interaction_info().is_focusable());
+  EXPECT_TRUE(btn.content_attributes()
+                  .interaction_info()
+                  .clickability_reasons()
+                  .empty());
+  EXPECT_THAT(
+      btn.content_attributes()
+          .interaction_info()
+          .interaction_disabled_reasons(),
+      testing::Contains(optimization_guide::proto::
+                            INTERACTION_DISABLED_REASON_VISUALLY_UNREACHABLE));
 }
 
 // Tests extraction of scroller bounds and visibility mapping, including

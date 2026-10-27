@@ -278,6 +278,14 @@ ConvertInteractionDisabledReason(
         kAriaRolePresentational:
       return optimization_guide::proto::
           INTERACTION_DISABLED_REASON_ARIA_ROLE_PRESENTATIONAL;
+    case blink::mojom::AIPageContentInteractionDisabledReason::
+        kPointerEventsNone:
+      return optimization_guide::proto::
+          INTERACTION_DISABLED_REASON_POINTER_EVENTS_NONE;
+    case blink::mojom::AIPageContentInteractionDisabledReason::
+        kVisuallyUnreachable:
+      return optimization_guide::proto::
+          INTERACTION_DISABLED_REASON_VISUALLY_UNREACHABLE;
   }
   NOTREACHED();
 }

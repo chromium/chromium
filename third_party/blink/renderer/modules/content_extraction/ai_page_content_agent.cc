@@ -993,55 +993,9 @@ void AddClickabilityReasons(
   }
 }
 
-// Returns whether the node is in the strong disabled state that requires click
-// rejection.
-bool AddInteractionDisabledReasons(
-    const Element& element,
-    ax::mojom::blink::Role aria_role,
-    bool is_aria_disabled,
-    bool is_aria_hidden,
-    mojom::blink::AIPageContentNodeInteractionInfo& interaction_info) {
-  using Reason = mojom::blink::AIPageContentInteractionDisabledReason;
-
-  bool is_disabled = false;
-
-  if (is_aria_disabled) {
-    // aria-disabled asks consumers to avoid the node, but it does not prevent
-    // DOM events. Record the advisory reason without setting `is_disabled`.
-    interaction_info.interaction_disabled_reasons.push_back(
-        Reason::kAriaDisabled);
-  }
-
-  if (is_aria_hidden) {
-    // aria-hidden hides the node from assistive technology, but it does not
-    // require click rejection. Record the reason without setting `is_disabled`.
-    interaction_info.interaction_disabled_reasons.push_back(
-        Reason::kAriaHidden);
-  }
-
-  // ARIA treats role=presentation and role=none as the same role. Blink's raw
-  // ARIA role resolver reports both as kNone.
-  if (aria_role == ax::mojom::blink::Role::kNone) {
-    // A presentational role hides the node's role from assistive technology,
-    // but it does not require click rejection. Record the reason without
-    // setting `is_disabled`.
-    interaction_info.interaction_disabled_reasons.push_back(
-        Reason::kAriaRolePresentational);
-  }
-
-  if (auto* form_control_element = DynamicTo<HTMLFormControlElement>(&element);
-      form_control_element && form_control_element->IsActuallyDisabled()) {
-    interaction_info.interaction_disabled_reasons.push_back(Reason::kDisabled);
-    is_disabled = true;
-  }
-
-  const ComputedStyle& style = element.ComputedStyleRef();
-  if (style.Cursor() == ECursor::kNotAllowed) {
-    interaction_info.interaction_disabled_reasons.push_back(
-        Reason::kCursorNotAllowed);
-  }
-
-  return is_disabled;
+bool IsActuallyDisabled(const Element* element) {
+  const auto* form_control = DynamicTo<HTMLFormControlElement>(element);
+  return form_control && form_control->IsActuallyDisabled();
 }
 
 bool ShouldSkipNonSalientNode(
@@ -3168,9 +3122,7 @@ AIPageContentAgent::ContentBuilder::MaybeGenerateContentNodeImpl(
     // Missing, empty, and invalid roles have no role metadata to serialize.
     attributes.aria_role = aria_role;
   }
-  AddNodeInteractionInfo(object, aria_role, attributes,
-                         recursion_data.is_aria_disabled,
-                         recursion_data.is_aria_hidden);
+  AddNodeInteractionInfo(object, aria_role, attributes);
 
   // Set the attribute type and add any special attributes if the attribute type
   // requires it.
@@ -3290,17 +3242,7 @@ AIPageContentAgent::ContentBuilder::MaybeGenerateContentNodeImpl(
 
   AddNodeGeometry(object, attributes,
                   recursion_data.accessibility_focused_node_id);
-  // Some popup patterns keep clickable content rendered but park it outside
-  // the area reachable by scrolling until another control changes state.
-  // We drop the actionable metadata so that downstream click generation does
-  // not chase nodes that scrolling can never reach.
-  if (attributes.node_interaction_info && attributes.geometry &&
-      IsAnchoredOffscreen(
-          object, *attributes.geometry, recursion_data.is_in_fixed_pos_subtree,
-          recursion_data.nearest_overflow_container,
-          recursion_data.is_inside_unreachable_overflow_container)) {
-    attributes.node_interaction_info.reset();
-  }
+  AddInteractionDisabledReasons(object, aria_role, recursion_data, attributes);
 
   AddLabel(object, attributes);
   attributes.is_ad_related = element && element->IsAdRelated();
@@ -3864,9 +3806,7 @@ void AIPageContentAgent::ContentBuilder::AddInteractionInfoForHitTesting(
 void AIPageContentAgent::ContentBuilder::AddNodeInteractionInfo(
     const LayoutObject& object,
     ax::mojom::blink::Role aria_role,
-    mojom::blink::AIPageContentAttributes& attributes,
-    bool is_aria_disabled,
-    bool is_aria_hidden) {
+    mojom::blink::AIPageContentAttributes& attributes) {
   const ComputedStyle& style = object.Style();
   if (style.UsedPointerEvents() == EPointerEvents::kNone) {
     // Treat nodes exposed through pointer-events:none as non-actionable. This
@@ -3889,24 +3829,15 @@ void AIPageContentAgent::ContentBuilder::AddNodeInteractionInfo(
   AddInteractionInfoForHitTesting(node, *node_interaction_info);
 
   auto* element = DynamicTo<Element>(object.GetNode());
-  bool is_disabled = false;
-  if (element) {
-    is_disabled =
-        AddInteractionDisabledReasons(*element, aria_role, is_aria_disabled,
-                                      is_aria_hidden, *node_interaction_info);
-  }
-
   // Strongly disabled nodes are not valid action targets, so do not populate
-  // their normal clickability or focus signals. Keep interaction information
-  // for visible nodes so consumers can see `is_disabled` and reject them.
-  if (is_disabled) {
+  // their normal clickability or focus signals. Keep hit-testing info for
+  // visible nodes so consumers know they consume events in the viewport;
+  // `AddInteractionDisabledReasons()` populates `is_disabled` and
+  // `interaction_disabled_reasons` after geometry is computed.
+  if (IsActuallyDisabled(element)) {
     if (node_interaction_info->document_scoped_z_order) {
       attributes.node_interaction_info = std::move(node_interaction_info);
-      // Offscreen nodes do not have a z-order, so this branch cannot retain
-      // interaction information or expose `is_disabled` for them.
-      attributes.node_interaction_info->is_disabled = true;
     }
-
     return;
   }
 
@@ -3955,7 +3886,6 @@ void AIPageContentAgent::ContentBuilder::AddNodeInteractionInfo(
       node_interaction_info->scroller_info ||
       node_interaction_info->is_focusable ||
       !node_interaction_info->aria_action_target_node_ids.empty() ||
-      !node_interaction_info->interaction_disabled_reasons.empty() ||
       node_interaction_info->document_scoped_z_order ||
       !node_interaction_info->clickability_reasons.empty();
 
@@ -3964,6 +3894,85 @@ void AIPageContentAgent::ContentBuilder::AddNodeInteractionInfo(
   }
 
   attributes.node_interaction_info = std::move(node_interaction_info);
+}
+
+void AIPageContentAgent::ContentBuilder::AddInteractionDisabledReasons(
+    const LayoutObject& object,
+    ax::mojom::blink::Role aria_role,
+    const RecursionData& recursion_data,
+    mojom::blink::AIPageContentAttributes& attributes) const {
+  using Reason = mojom::blink::AIPageContentInteractionDisabledReason;
+  Vector<Reason> reasons;
+
+  // Some popups keep clickable content rendered but park it outside the area
+  // reachable by scrolling until another control opens them. Such nodes can't
+  // receive input, so drop their positive interaction signals. Unlike
+  // `kDisabled` and `kPointerEventsNone`, which `AddNodeInteractionInfo()`
+  // skips up front, this check needs geometry, so it runs here. It runs before
+  // the `actionable_mode()` check because both modes emit scroller info.
+  if (attributes.node_interaction_info && attributes.geometry &&
+      IsAnchoredOffscreen(
+          object, *attributes.geometry, recursion_data.is_in_fixed_pos_subtree,
+          recursion_data.nearest_overflow_container,
+          recursion_data.is_inside_unreachable_overflow_container)) {
+    attributes.node_interaction_info.reset();
+    reasons.push_back(Reason::kVisuallyUnreachable);
+  }
+
+  const auto* element = DynamicTo<Element>(object.GetNode());
+  if (!actionable_mode() || !element) {
+    return;
+  }
+
+  if (recursion_data.is_aria_disabled) {
+    // aria-disabled asks consumers to avoid the node, but it does not prevent
+    // DOM events. Record the advisory reason without setting `is_disabled`.
+    reasons.push_back(Reason::kAriaDisabled);
+  }
+
+  if (recursion_data.is_aria_hidden) {
+    // aria-hidden hides the node from assistive technology, but it does not
+    // require click rejection. Record the reason without setting `is_disabled`.
+    reasons.push_back(Reason::kAriaHidden);
+  }
+
+  // ARIA treats role=presentation and role=none as the same role. Blink's raw
+  // ARIA role resolver reports both as kNone.
+  if (aria_role == ax::mojom::blink::Role::kNone) {
+    // A presentational role hides the node's role from assistive technology,
+    // but it does not require click rejection. Record the reason without
+    // setting `is_disabled`.
+    reasons.push_back(Reason::kAriaRolePresentational);
+  }
+
+  const bool is_disabled = IsActuallyDisabled(element);
+  if (is_disabled) {
+    reasons.push_back(Reason::kDisabled);
+  }
+
+  const ComputedStyle& style = element->ComputedStyleRef();
+  if (style.Cursor() == ECursor::kNotAllowed) {
+    reasons.push_back(Reason::kCursorNotAllowed);
+  }
+
+  // UsedPointerEvents() evaluates the effective pointer events, returning none
+  // for both pointer-events: none and inert subtrees.
+  if (style.UsedPointerEvents() == EPointerEvents::kNone) {
+    reasons.push_back(Reason::kPointerEventsNone);
+  }
+
+  if (reasons.empty()) {
+    return;
+  }
+  if (!attributes.node_interaction_info) {
+    attributes.node_interaction_info =
+        mojom::blink::AIPageContentNodeInteractionInfo::New();
+  }
+  if (is_disabled) {
+    attributes.node_interaction_info->is_disabled = true;
+  }
+  attributes.node_interaction_info->interaction_disabled_reasons =
+      std::move(reasons);
 }
 
 AIPageContentAgent::ContentBuilder::RecursionData::RecursionData(

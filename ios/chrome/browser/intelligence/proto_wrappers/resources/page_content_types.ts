@@ -206,6 +206,10 @@ export enum PageContentInteractionDisabledReason {
   DISABLED = 1,
   ARIA_DISABLED = 2,
   CURSOR_NOT_ALLOWED = 3,
+  ARIA_HIDDEN = 4,
+  ARIA_ROLE_PRESENTATIONAL = 5,
+  POINTER_EVENTS_NONE = 6,
+  VISUALLY_UNREACHABLE = 7,
 }
 
 export interface PageContentNodeInteractionInfo {

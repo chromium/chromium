@@ -1601,6 +1601,11 @@ TEST_F(PageContentProtoUtilTest, ConvertInteractionDisabledReasons) {
   disabled_reasons.push_back(
       blink::mojom::AIPageContentInteractionDisabledReason::
           kAriaRolePresentational);
+  disabled_reasons.push_back(
+      blink::mojom::AIPageContentInteractionDisabledReason::kPointerEventsNone);
+  disabled_reasons.push_back(
+      blink::mojom::AIPageContentInteractionDisabledReason::
+          kVisuallyUnreachable);
   root_content->root_node->children_nodes.emplace_back(
       std::move(container_node));
 
@@ -1619,7 +1624,11 @@ TEST_F(PageContentProtoUtilTest, ConvertInteractionDisabledReasons) {
       testing::UnorderedElementsAre(
           optimization_guide::proto::INTERACTION_DISABLED_REASON_ARIA_HIDDEN,
           optimization_guide::proto::
-              INTERACTION_DISABLED_REASON_ARIA_ROLE_PRESENTATIONAL));
+              INTERACTION_DISABLED_REASON_ARIA_ROLE_PRESENTATIONAL,
+          optimization_guide::proto::
+              INTERACTION_DISABLED_REASON_POINTER_EVENTS_NONE,
+          optimization_guide::proto::
+              INTERACTION_DISABLED_REASON_VISUALLY_UNREACHABLE));
 }
 
 TEST_F(PageContentProtoUtilTest, ConvertClickabilityReasonsMouseEnterAndOver) {

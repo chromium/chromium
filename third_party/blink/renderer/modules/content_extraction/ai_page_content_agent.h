@@ -165,9 +165,12 @@ class MODULES_EXPORT AIPageContentAgent final
     void AddNodeInteractionInfo(
         const LayoutObject& object,
         ax::mojom::blink::Role aria_role,
-        mojom::blink::AIPageContentAttributes& attributes,
-        bool is_aria_disabled,
-        bool is_aria_hidden);
+        mojom::blink::AIPageContentAttributes& attributes);
+    void AddInteractionDisabledReasons(
+        const LayoutObject& object,
+        ax::mojom::blink::Role aria_role,
+        const RecursionData& recursion_data,
+        mojom::blink::AIPageContentAttributes& attributes) const;
     void AddInteractionInfoForHitTesting(
         const Node* node,
         mojom::blink::AIPageContentNodeInteractionInfo& interaction_info) const;
