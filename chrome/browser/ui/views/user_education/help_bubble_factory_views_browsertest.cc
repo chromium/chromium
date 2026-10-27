@@ -8,7 +8,6 @@
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
-#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
@@ -55,10 +54,8 @@ class HelpBubbleFactoryViewsBrowsertest : public DialogBrowserTest {
   }
 
   ui::TrackedElement* GetAnchorElement() {
-    auto* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
     return views::ElementTrackerViews::GetInstance()->GetElementForView(
-        views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
-            kToolbarAppMenuButtonElementId, browser_view->GetElementContext()));
+        BrowserView::GetBrowserViewForBrowser(browser())->toolbar());
   }
 
   std::unique_ptr<user_education::HelpBubble> help_bubble_;
