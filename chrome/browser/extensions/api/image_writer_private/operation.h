@@ -104,6 +104,15 @@ class Operation : public base::RefCountedThreadSafe<Operation> {
   void PostTask(base::OnceClosure task);
 
 #if BUILDFLAG(IS_ANDROID)
+  class UsbSession {
+   public:
+    using CompletionCallback =
+        base::OnceCallback<void(base::expected<void, std::string>)>;
+
+    virtual ~UsbSession() = default;
+    virtual void Start(CompletionCallback callback) = 0;
+  };
+
   using UsbDeviceManagerBinder = base::RepeatingCallback<void(
       mojo::PendingReceiver<device::mojom::UsbDeviceManager>)>;
 
@@ -233,6 +242,8 @@ class Operation : public base::RefCountedThreadSafe<Operation> {
       base::OnceClosure continuation,
       const UsbMassStorageEndpoints& endpoints,
       mojo::PendingRemote<device::mojom::UsbDevice> device_remote);
+  void OnUsbBotSessionFinished(base::OnceClosure continuation,
+                               base::expected<void, std::string> result);
 #endif
 
   // Incrementally calculates the MD5 sum of a file.
@@ -292,13 +303,14 @@ class Operation : public base::RefCountedThreadSafe<Operation> {
 
 #if BUILDFLAG(IS_ANDROID)
   UsbDeviceManagerBinder usb_binder_;
-  // Created, used, and reset exclusively on `task_runner_`. `CleanUp()` (called
-  // on `task_runner_` by `Error()`, `Cancel()`, and `Abort()`, including
-  // `OperationManager::Shutdown()`) resets `usb_manager_`, dropping any pending
-  // response callbacks before `this` can be destroyed, and `~Operation()` hands
-  // it to `task_runner_->DeleteSoon()`. Callbacks therefore safely bind
+  // `usb_manager_` and `usb_session_` are created, used, and reset exclusively
+  // on `task_runner_`. `CleanUp()` (called on `task_runner_` by `Error()`,
+  // `Cancel()`, and `Abort()`, including `OperationManager::Shutdown()`) resets
+  // both before `this` can be destroyed, and `~Operation()` hands them to
+  // `task_runner_->DeleteSoon()`. Their callbacks therefore safely bind
   // `base::Unretained(this)`.
   std::unique_ptr<mojo::Remote<device::mojom::UsbDeviceManager>> usb_manager_;
+  std::unique_ptr<UsbSession> usb_session_;
 #endif
 };
 

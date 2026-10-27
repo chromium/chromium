@@ -11,10 +11,15 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/span.h"
+#include "base/containers/span_reader.h"
+#include "base/containers/span_writer.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "chrome/browser/extensions/api/image_writer_private/error_constants.h"
 #include "chrome/browser/extensions/api/image_writer_private/operation_manager.h"
+#include "chrome/browser/extensions/api/image_writer_private/removable_storage_provider_android.h"
 #include "chrome/browser/extensions/api/image_writer_private/test_utils.h"
 #include "chrome/browser/extensions/api/image_writer_private/write_from_file_operation.h"
 #include "chrome/test/base/testing_profile.h"
@@ -22,6 +27,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
+#include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "services/device/public/mojom/usb_device.mojom.h"
 #include "services/device/public/mojom/usb_enumeration_options.mojom.h"
 #include "services/device/public/mojom/usb_manager.mojom.h"
@@ -35,6 +41,182 @@ namespace {
 using testing::_;
 using testing::AnyNumber;
 using testing::AtLeast;
+using testing::ElementsAre;
+
+struct SimulatedUsbDiskState {
+  bool unit_attention_on_open = true;
+  bool persistent_unit_attention = false;
+  bool fail_cbw_transfer = false;
+  bool disconnect_on_release = false;
+  std::vector<uint8_t> executed_opcodes;
+  bool interface_released = false;
+  bool device_closed = false;
+};
+
+// Simulated USB Mass Storage Bulk-Only Transport disk.
+class InMemoryBotUsbDisk : public device::mojom::UsbDevice {
+ public:
+  explicit InMemoryBotUsbDisk(SimulatedUsbDiskState* state)
+      : state_(state), unit_attention_(state->unit_attention_on_open) {}
+
+  ~InMemoryBotUsbDisk() override = default;
+
+  void set_self_receiver(
+      mojo::SelfOwnedReceiverRef<device::mojom::UsbDevice> self_receiver) {
+    self_receiver_ = std::move(self_receiver);
+  }
+
+  void Open(OpenCallback callback) override {
+    std::move(callback).Run(device::mojom::UsbOpenDeviceResult::NewSuccess(
+        device::mojom::UsbOpenDeviceSuccess::OK));
+  }
+  void Close(CloseCallback callback) override {
+    state_->device_closed = true;
+    std::move(callback).Run();
+  }
+  void SetConfiguration(uint8_t value,
+                        SetConfigurationCallback callback) override {
+    std::move(callback).Run(true);
+  }
+  void ClaimInterface(uint8_t interface_number,
+                      ClaimInterfaceCallback callback) override {
+    std::move(callback).Run(device::mojom::UsbClaimInterfaceResult::kSuccess);
+  }
+  void ReleaseInterface(uint8_t interface_number,
+                        ReleaseInterfaceCallback callback) override {
+    state_->interface_released = true;
+    if (state_->disconnect_on_release && self_receiver_) {
+      self_receiver_->Close();
+      return;
+    }
+    std::move(callback).Run(true);
+  }
+  void SetInterfaceAlternateSetting(
+      uint8_t interface_number,
+      uint8_t alternate_setting,
+      SetInterfaceAlternateSettingCallback callback) override {
+    std::move(callback).Run(true);
+  }
+  void Reset(ResetCallback callback) override { std::move(callback).Run(true); }
+  void ClearHalt(device::mojom::UsbTransferDirection direction,
+                 uint8_t endpoint_number,
+                 ClearHaltCallback callback) override {
+    std::move(callback).Run(true);
+  }
+  void ControlTransferIn(device::mojom::UsbControlTransferParamsPtr params,
+                         uint32_t length,
+                         uint32_t timeout,
+                         ControlTransferInCallback callback) override {
+    std::move(callback).Run(device::mojom::UsbTransferStatus::TRANSFER_ERROR,
+                            {});
+  }
+  void ControlTransferOut(device::mojom::UsbControlTransferParamsPtr params,
+                          base::span<const uint8_t> data,
+                          uint32_t timeout,
+                          ControlTransferOutCallback callback) override {
+    std::move(callback).Run(device::mojom::UsbTransferStatus::TRANSFER_ERROR);
+  }
+
+  void GenericTransferOut(uint8_t endpoint_number,
+                          base::span<const uint8_t> data,
+                          uint32_t timeout,
+                          GenericTransferOutCallback callback) override {
+    if (endpoint_number != 2 || state_->fail_cbw_transfer) {
+      std::move(callback).Run(device::mojom::UsbTransferStatus::TRANSFER_ERROR);
+      return;
+    }
+    if (data.size() == kCommandBlockWrapperSize) {
+      base::SpanReader reader(data);
+      uint32_t signature = 0;
+      uint32_t tag = 0;
+      uint32_t data_transfer_length = 0;
+      uint8_t flags = 0;
+      uint8_t lun = 0;
+      uint8_t command_length = 0;
+      uint8_t opcode = 0;
+      if (reader.ReadU32LittleEndian(signature) &&
+          signature == kCommandBlockWrapperSignature &&
+          reader.ReadU32LittleEndian(tag) &&
+          reader.ReadU32LittleEndian(data_transfer_length) &&
+          reader.ReadU8LittleEndian(flags) &&
+          reader.ReadU8LittleEndian(lun) && lun == kLogicalUnitNumber &&
+          reader.ReadU8LittleEndian(command_length) && command_length >= 6 &&
+          command_length <= kMaxScsiCommandBlockSize &&
+          reader.ReadU8LittleEndian(opcode)) {
+        current_tag_ = tag;
+        current_opcode_ = opcode;
+        state_->executed_opcodes.push_back(opcode);
+        std::move(callback).Run(device::mojom::UsbTransferStatus::COMPLETED);
+        return;
+      }
+    }
+    std::move(callback).Run(device::mojom::UsbTransferStatus::TRANSFER_ERROR);
+  }
+
+  void GenericTransferIn(uint8_t endpoint_number,
+                         uint32_t length,
+                         uint32_t timeout,
+                         GenericTransferInCallback callback) override {
+    if (endpoint_number != 1) {
+      std::move(callback).Run(device::mojom::UsbTransferStatus::TRANSFER_ERROR,
+                              {});
+      return;
+    }
+    if (length == kCommandStatusWrapperSize) {
+      uint8_t status = 0;
+      if (current_opcode_ == kScsiTestUnitReadyOpcode && unit_attention_) {
+        status = 1;
+      }
+      std::vector<uint8_t> status_bytes(kCommandStatusWrapperSize, 0);
+      base::SpanWriter<uint8_t> writer(status_bytes);
+      writer.WriteU32LittleEndian(kCommandStatusWrapperSignature);
+      writer.WriteU32LittleEndian(current_tag_);
+      writer.WriteU32LittleEndian(0u);
+      writer.WriteU8LittleEndian(status);
+      std::move(callback).Run(device::mojom::UsbTransferStatus::COMPLETED,
+                              std::move(status_bytes));
+      return;
+    }
+
+    if (current_opcode_ == kScsiRequestSenseOpcode &&
+        length == kScsiRequestSenseAllocationLength) {
+      if (!state_->persistent_unit_attention) {
+        unit_attention_ = false;
+      }
+      std::vector<uint8_t> sense(kScsiRequestSenseAllocationLength, 0);
+      sense[0] = 0x70;
+      sense[2] = kScsiSenseKeyUnitAttention;
+      std::move(callback).Run(device::mojom::UsbTransferStatus::COMPLETED,
+                              std::move(sense));
+      return;
+    }
+
+    std::move(callback).Run(device::mojom::UsbTransferStatus::TRANSFER_ERROR,
+                            {});
+  }
+
+  void IsochronousTransferIn(uint8_t endpoint_number,
+                             const std::vector<uint32_t>& packet_lengths,
+                             uint32_t timeout,
+                             IsochronousTransferInCallback callback) override {
+    std::move(callback).Run({}, {});
+  }
+  void IsochronousTransferOut(
+      uint8_t endpoint_number,
+      base::span<const uint8_t> data,
+      const std::vector<uint32_t>& packet_lengths,
+      uint32_t timeout,
+      IsochronousTransferOutCallback callback) override {
+    std::move(callback).Run({});
+  }
+
+ private:
+  raw_ptr<SimulatedUsbDiskState> state_;
+  mojo::SelfOwnedReceiverRef<device::mojom::UsbDevice> self_receiver_;
+  bool unit_attention_;
+  uint32_t current_tag_ = 0;
+  uint8_t current_opcode_ = 0;
+};
 
 class FakeBotUsbDeviceManager : public device::mojom::UsbDeviceManager {
  public:
@@ -122,7 +304,15 @@ class FakeBotUsbDeviceManager : public device::mojom::UsbDeviceManager {
       mojo::PendingReceiver<device::mojom::UsbDevice> device_receiver,
       mojo::PendingRemote<device::mojom::UsbDeviceClient> device_client)
       override {
+    if (guid != "guid-usb-flash") {
+      return;
+    }
     last_unrestricted_device_guid_ = guid;
+    auto disk = std::make_unique<InMemoryBotUsbDisk>(&disk_state_);
+    InMemoryBotUsbDisk* raw_disk = disk.get();
+    auto ref = mojo::MakeSelfOwnedReceiver(std::move(disk),
+                                           std::move(device_receiver));
+    raw_disk->set_self_receiver(std::move(ref));
   }
 
   void GetSecurityKeyDevice(
@@ -147,11 +337,13 @@ class FakeBotUsbDeviceManager : public device::mojom::UsbDeviceManager {
   const std::string& last_unrestricted_device_guid() const {
     return last_unrestricted_device_guid_;
   }
+  SimulatedUsbDiskState& disk_state() { return disk_state_; }
 
  private:
   mojo::ReceiverSet<device::mojom::UsbDeviceManager> receivers_;
   uint8_t interface_class_code_ = 0x08;
   std::string last_unrestricted_device_guid_;
+  SimulatedUsbDiskState disk_state_;
 };
 
 class OperationAndroidUsbTest : public ImageWriterUnitTestBase {
@@ -165,7 +357,7 @@ class OperationAndroidUsbTest : public ImageWriterUnitTestBase {
   FakeBotUsbDeviceManager usb_manager_;
 };
 
-TEST_F(OperationAndroidUsbTest, ConnectToUsbDeviceBindsUnrestrictedDevice) {
+TEST_F(OperationAndroidUsbTest, OpenAndInitializeUsbBotSessionSucceeds) {
   auto operation = base::MakeRefCounted<WriteFromFileOperation>(
       manager_.AsWeakPtr(), kDummyExtensionId, test_utils_.GetImagePath(),
       "usb:guid-usb-flash:0781:5581",
@@ -178,18 +370,113 @@ TEST_F(OperationAndroidUsbTest, ConnectToUsbDeviceBindsUnrestrictedDevice) {
   EXPECT_CALL(manager_,
               OnProgress(kDummyExtensionId, image_writer_api::Stage::kWrite, _))
       .Times(AtLeast(1));
-  EXPECT_CALL(manager_, OnComplete(kDummyExtensionId)).Times(0);
-  // Fails closed with `kDeviceWriteError` after binding the unrestricted USB
-  // device until `MojoUsbBotSession` is wired up in (4b/6).
-  EXPECT_CALL(manager_,
-              OnError(kDummyExtensionId, image_writer_api::Stage::kWrite, _,
-                      error::kDeviceWriteError))
-      .WillOnce([&]() { run_loop.Quit(); });
+  EXPECT_CALL(manager_, OnProgress(kDummyExtensionId,
+                                   image_writer_api::Stage::kVerifyWrite, _))
+      .Times(AtLeast(1));
+  EXPECT_CALL(manager_, OnComplete(kDummyExtensionId)).WillOnce([&]() {
+    run_loop.Quit();
+  });
+  EXPECT_CALL(manager_, OnError(kDummyExtensionId, _, _, _)).Times(0);
 
   operation->PostTask(base::BindOnce(&Operation::Start, operation));
   run_loop.Run();
 
   EXPECT_EQ(usb_manager_.last_unrestricted_device_guid(), "guid-usb-flash");
+  EXPECT_THAT(
+      usb_manager_.disk_state().executed_opcodes,
+      ElementsAre(kScsiTestUnitReadyOpcode, kScsiRequestSenseOpcode,
+                  kScsiTestUnitReadyOpcode, kScsiSynchronizeCache10Opcode));
+  EXPECT_TRUE(usb_manager_.disk_state().interface_released);
+  EXPECT_TRUE(usb_manager_.disk_state().device_closed);
+}
+
+TEST_F(OperationAndroidUsbTest,
+       PersistentUnitAttentionExhaustsRetriesAndReportsDeviceOpenError) {
+  usb_manager_.disk_state().persistent_unit_attention = true;
+  auto operation = base::MakeRefCounted<WriteFromFileOperation>(
+      manager_.AsWeakPtr(), kDummyExtensionId, test_utils_.GetImagePath(),
+      "usb:guid-usb-flash:0781:5581",
+      base::FilePath(FILE_PATH_LITERAL("/var/tmp")));
+  operation->SetUsbDeviceManagerBinderForTesting(
+      base::BindRepeating(&FakeBotUsbDeviceManager::BindReceiver,
+                          base::Unretained(&usb_manager_)));
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(manager_,
+              OnProgress(kDummyExtensionId, image_writer_api::Stage::kWrite, _))
+      .Times(AnyNumber());
+  EXPECT_CALL(manager_, OnComplete(kDummyExtensionId)).Times(0);
+  EXPECT_CALL(manager_,
+              OnError(kDummyExtensionId, image_writer_api::Stage::kWrite, _,
+                      error::kDeviceOpenError))
+      .WillOnce([&]() { run_loop.Quit(); });
+
+  operation->PostTask(base::BindOnce(&Operation::Start, operation));
+  run_loop.Run();
+
+  EXPECT_THAT(usb_manager_.disk_state().executed_opcodes,
+              ElementsAre(kScsiTestUnitReadyOpcode, kScsiRequestSenseOpcode,
+                          kScsiTestUnitReadyOpcode, kScsiRequestSenseOpcode,
+                          kScsiTestUnitReadyOpcode, kScsiRequestSenseOpcode));
+  EXPECT_TRUE(usb_manager_.disk_state().interface_released);
+  EXPECT_TRUE(usb_manager_.disk_state().device_closed);
+}
+
+TEST_F(OperationAndroidUsbTest,
+       TransferErrorOnCommandBlockReportsDeviceOpenError) {
+  usb_manager_.disk_state().fail_cbw_transfer = true;
+  auto operation = base::MakeRefCounted<WriteFromFileOperation>(
+      manager_.AsWeakPtr(), kDummyExtensionId, test_utils_.GetImagePath(),
+      "usb:guid-usb-flash:0781:5581",
+      base::FilePath(FILE_PATH_LITERAL("/var/tmp")));
+  operation->SetUsbDeviceManagerBinderForTesting(
+      base::BindRepeating(&FakeBotUsbDeviceManager::BindReceiver,
+                          base::Unretained(&usb_manager_)));
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(manager_,
+              OnProgress(kDummyExtensionId, image_writer_api::Stage::kWrite, _))
+      .Times(AnyNumber());
+  EXPECT_CALL(manager_, OnComplete(kDummyExtensionId)).Times(0);
+  EXPECT_CALL(manager_,
+              OnError(kDummyExtensionId, image_writer_api::Stage::kWrite, _,
+                      error::kDeviceOpenError))
+      .WillOnce([&]() { run_loop.Quit(); });
+
+  operation->PostTask(base::BindOnce(&Operation::Start, operation));
+  run_loop.Run();
+
+  EXPECT_TRUE(usb_manager_.disk_state().interface_released);
+  EXPECT_TRUE(usb_manager_.disk_state().device_closed);
+}
+
+TEST_F(OperationAndroidUsbTest,
+       DisconnectDuringReleaseAfterSuccessStillCompletes) {
+  usb_manager_.disk_state().disconnect_on_release = true;
+  auto operation = base::MakeRefCounted<WriteFromFileOperation>(
+      manager_.AsWeakPtr(), kDummyExtensionId, test_utils_.GetImagePath(),
+      "usb:guid-usb-flash:0781:5581",
+      base::FilePath(FILE_PATH_LITERAL("/var/tmp")));
+  operation->SetUsbDeviceManagerBinderForTesting(
+      base::BindRepeating(&FakeBotUsbDeviceManager::BindReceiver,
+                          base::Unretained(&usb_manager_)));
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(manager_,
+              OnProgress(kDummyExtensionId, image_writer_api::Stage::kWrite, _))
+      .Times(AtLeast(1));
+  EXPECT_CALL(manager_, OnProgress(kDummyExtensionId,
+                                   image_writer_api::Stage::kVerifyWrite, _))
+      .Times(AtLeast(1));
+  EXPECT_CALL(manager_, OnComplete(kDummyExtensionId)).WillOnce([&]() {
+    run_loop.Quit();
+  });
+  EXPECT_CALL(manager_, OnError(kDummyExtensionId, _, _, _)).Times(0);
+
+  operation->PostTask(base::BindOnce(&Operation::Start, operation));
+  run_loop.Run();
+
+  EXPECT_TRUE(usb_manager_.disk_state().interface_released);
 }
 
 TEST_F(OperationAndroidUsbTest, MissingUsbDeviceReportsDeviceOpenError) {
@@ -213,7 +500,6 @@ TEST_F(OperationAndroidUsbTest, MissingUsbDeviceReportsDeviceOpenError) {
 
   operation->PostTask(base::BindOnce(&Operation::Start, operation));
   run_loop.Run();
-
   EXPECT_TRUE(usb_manager_.last_unrestricted_device_guid().empty());
 }
 

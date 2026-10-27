@@ -99,9 +99,17 @@ Operation::Operation(base::WeakPtr<OperationManager> manager,
 }
 
 Operation::~Operation() {
+  // `Operation` is `RefCountedThreadSafe` and every task posted to
+  // `task_runner_` (including `Start()`, `Cancel()`, and `Abort()`, which call
+  // `CleanUp()`) holds a `scoped_refptr<Operation>`. Therefore `~Operation()`
+  // only runs once no `Operation` task is queued or executing on
+  // `task_runner_`, and in normal operation `CleanUp()` has already reset
+  // these members on `task_runner_`. `DeleteSoon` handles unit tests that drop
+  // an unstarted or uncancelled `Operation` on the UI thread.
   task_runner_->DeleteSoon(FROM_HERE, std::move(zstd_extractor_));
 #if BUILDFLAG(IS_ANDROID)
   task_runner_->DeleteSoon(FROM_HERE, std::move(usb_manager_));
+  task_runner_->DeleteSoon(FROM_HERE, std::move(usb_session_));
 #endif
   // base::ScopedTempDir must be destroyed on a thread that allows blocking IO
   // because it will try delete the directory if a call to Delete() hasn't been
@@ -392,6 +400,7 @@ void Operation::CleanUp() {
   zstd_extractor_.reset();
 #if BUILDFLAG(IS_ANDROID)
   usb_manager_.reset();
+  usb_session_.reset();
 #endif
   for (base::OnceClosure& cleanup_function : cleanup_functions_) {
     std::move(cleanup_function).Run();

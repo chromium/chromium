@@ -54,28 +54,6 @@ namespace {
 constexpr uint8_t kUsbClassMassStorage = 0x08;
 constexpr uint8_t kUsbSubClassScsi = 0x06;
 constexpr uint8_t kUsbProtocolBulkOnly = 0x50;
-
-// USB Mass Storage Bulk-Only Transport (BOT) protocol constants (USB Mass
-// Storage Class Bulk-Only Transport 1.0 specification, Section 5):
-// - Every command phase sends a 31-byte Command Block Wrapper (CBW) starting
-//   with the little-endian signature "USBC" (0x43425355).
-// - Every status phase reads a 13-byte Command Status Wrapper (CSW) starting
-//   with the little-endian signature "USBS" (0x53425355).
-constexpr uint32_t kCommandBlockWrapperSignature = 0x43425355;   // "USBC"
-constexpr uint32_t kCommandStatusWrapperSignature = 0x53425355;  // "USBS"
-constexpr size_t kCommandBlockWrapperSize = 31;
-constexpr size_t kCommandStatusWrapperSize = 13;
-constexpr size_t kMaxScsiCommandBlockSize = 16;
-constexpr uint8_t kDirectionDeviceToHost = 0x80;
-constexpr uint8_t kDirectionHostToDevice = 0x00;
-// Target Logical Unit Number (LUN) on the USB storage device (always 0 for
-// single-LUN USB flash drives).
-constexpr uint8_t kLogicalUnitNumber = 0;
-constexpr uint8_t kScsiTestUnitReadyOpcode = 0x00;
-constexpr uint8_t kScsiRequestSenseOpcode = 0x03;
-constexpr uint8_t kScsiReadCapacity10Opcode = 0x25;
-constexpr uint32_t kScsiRequestSenseAllocationLength = 18;
-constexpr uint32_t kScsiReadCapacity10ResponseLength = 8;
 constexpr unsigned int kUsbTimeoutMs = 10000;
 
 // In Linux sysfs, a block device's `device` symlink resolves into a path such
@@ -84,50 +62,6 @@ constexpr unsigned int kUsbTimeoutMs = 10000;
 // levels above the block device. Cap upward traversal at 12 levels to guard
 // against unexpected hierarchy depth or symlink cycles.
 constexpr int kMaxSysfsUsbAncestorDepth = 12;
-
-struct CommandStatusWrapper {
-  uint32_t signature = 0;
-  uint32_t tag = 0;
-  uint32_t data_residue = 0;
-  uint8_t status = 0;
-};
-
-// Serializes a 31-byte USB Mass Storage Bulk-Only Transport Command Block
-// Wrapper (CBW) containing `scsi_command` (a 6-to-16-byte SCSI command
-// descriptor block).
-std::vector<uint8_t> BuildCommandBlockWrapper(
-    uint32_t tag,
-    uint32_t data_transfer_length,
-    uint8_t direction_flags,
-    base::span<const uint8_t> scsi_command) {
-  std::vector<uint8_t> packet(kCommandBlockWrapperSize, 0);
-  base::SpanWriter<uint8_t> writer(packet);
-  writer.WriteU32LittleEndian(kCommandBlockWrapperSignature);
-  writer.WriteU32LittleEndian(tag);
-  writer.WriteU32LittleEndian(data_transfer_length);
-  writer.WriteU8LittleEndian(direction_flags);
-  writer.WriteU8LittleEndian(kLogicalUnitNumber);
-  const size_t command_length =
-      std::min(scsi_command.size(), kMaxScsiCommandBlockSize);
-  writer.WriteU8LittleEndian(static_cast<uint8_t>(command_length));
-  writer.Write(scsi_command.first(command_length));
-  return packet;
-}
-
-// Parses a 13-byte USB Mass Storage Bulk-Only Transport Command Status Wrapper
-// (CSW).
-std::optional<CommandStatusWrapper> ParseCommandStatusWrapper(
-    base::span<const uint8_t> bytes) {
-  base::SpanReader reader(bytes);
-  CommandStatusWrapper status_wrapper;
-  if (!reader.ReadU32LittleEndian(status_wrapper.signature) ||
-      !reader.ReadU32LittleEndian(status_wrapper.tag) ||
-      !reader.ReadU32LittleEndian(status_wrapper.data_residue) ||
-      !reader.ReadU8LittleEndian(status_wrapper.status)) {
-    return std::nullopt;
-  }
-  return status_wrapper;
-}
 
 // Parses the 8-byte big-endian parameter data returned by the SCSI
 // `READ CAPACITY (10)` command:
@@ -905,6 +839,38 @@ std::optional<ParsedDeviceId> ParseUsbDeviceId(
       .vendor_id = static_cast<uint16_t>(parsed_vendor_id),
       .product_id = static_cast<uint16_t>(parsed_product_id),
   };
+}
+
+std::vector<uint8_t> BuildCommandBlockWrapper(
+    uint32_t tag,
+    uint32_t data_transfer_length,
+    uint8_t direction_flags,
+    base::span<const uint8_t> scsi_command) {
+  std::vector<uint8_t> packet(kCommandBlockWrapperSize, 0);
+  base::SpanWriter<uint8_t> writer(packet);
+  writer.WriteU32LittleEndian(kCommandBlockWrapperSignature);
+  writer.WriteU32LittleEndian(tag);
+  writer.WriteU32LittleEndian(data_transfer_length);
+  writer.WriteU8LittleEndian(direction_flags);
+  writer.WriteU8LittleEndian(kLogicalUnitNumber);
+  const size_t command_length =
+      std::min(scsi_command.size(), kMaxScsiCommandBlockSize);
+  writer.WriteU8LittleEndian(static_cast<uint8_t>(command_length));
+  writer.Write(scsi_command.first(command_length));
+  return packet;
+}
+
+std::optional<CommandStatusWrapper> ParseCommandStatusWrapper(
+    base::span<const uint8_t> bytes) {
+  base::SpanReader reader(bytes);
+  CommandStatusWrapper status_wrapper;
+  if (!reader.ReadU32LittleEndian(status_wrapper.signature) ||
+      !reader.ReadU32LittleEndian(status_wrapper.tag) ||
+      !reader.ReadU32LittleEndian(status_wrapper.data_residue) ||
+      !reader.ReadU8LittleEndian(status_wrapper.status)) {
+    return std::nullopt;
+  }
+  return status_wrapper;
 }
 
 std::optional<UsbMassStorageEndpoints> ExtractMassStorageEndpoints(
