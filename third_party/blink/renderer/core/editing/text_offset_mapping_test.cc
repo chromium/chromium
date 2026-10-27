@@ -274,9 +274,13 @@ TEST_F(TextOffsetMappingTest, BlockInInlineWithAbsolute) {
   for (const auto contents : TextOffsetMapping::BackwardRangeOf(position))
     results.push_back(GetRange(contents));
 
-  ElementsAre("<div id=\"t\"><i><p><a></a></p></i> </div><p>^ab|</p>",
-              "<div id=\"t\"><i><p><a></a></p></i>^ |</div><p>ab</p>",
-              "<div id=\"t\">^<i><p><a></a></p></i>| </div><p>ab</p>");
+  EXPECT_THAT(
+      results,
+      ElementsAre("<div id=\"t\"><i><p><a></a></p></i> </div><p>^ab|</p>",
+                  "<div id=\"t\"><i><p><a></a></p></i>^ |</div><p>ab</p>",
+                  "<div id=\"t\"><i><p><a>|</a></p></i> </div><p>ab</p>",
+                  "<div id=\"t\"><i><p>^<a></a>|</p></i> </div><p>ab</p>",
+                  "<div id=\"t\">^<i><p><a></a></p></i>| </div><p>ab</p>"));
 }
 
 TEST_F(TextOffsetMappingTest, ForwardRangesWithTextControl) {
