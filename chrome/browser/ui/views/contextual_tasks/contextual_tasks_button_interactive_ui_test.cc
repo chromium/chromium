@@ -1351,6 +1351,46 @@ class ContextualTasksEphemeralButtonPinningV2InteractiveTest
   }
 };
 
+IN_PROC_BROWSER_TEST_F(ContextualTasksEphemeralButtonPinningV2InteractiveTest,
+                       EphemeralButtonDoesNotShowInIncognito) {
+  BrowserWindowInterface* const incognito_browser =
+      CreateIncognitoBrowser(browser()->GetProfile());
+  SidePanelUI::From(incognito_browser)->DisableAnimationsForTesting();
+
+  auto* const incognito_service =
+      contextual_tasks::ContextualTasksServiceFactory::GetForProfile(
+          incognito_browser->GetProfile());
+  ASSERT_NE(incognito_service, nullptr);
+  auto* const incognito_ephemeral_controller =
+      ContextualTasksEphemeralButtonController::From(incognito_browser);
+  ASSERT_NE(incognito_ephemeral_controller, nullptr);
+  auto* const incognito_panel_controller =
+      contextual_tasks::ContextualTasksPanelController::From(incognito_browser);
+  ASSERT_NE(incognito_panel_controller, nullptr);
+
+  content::WebContents* const web_contents =
+      incognito_browser->GetActiveTabInterface()->GetContents();
+  const SessionID session_id =
+      sessions::SessionTabHelper::IdForTab(web_contents);
+
+  contextual_tasks::ContextualTask task = incognito_service->CreateTask();
+  incognito_service->AssociateTabWithTask(task.GetTaskId(), session_id);
+  incognito_service->UpdateThreadForTask(
+      task.GetTaskId(), contextual_tasks::ThreadType::kAiMode, "test_server_id",
+      std::nullopt, "Test Title");
+
+  incognito_panel_controller->Show();
+  EXPECT_FALSE(incognito_ephemeral_controller->ShouldShowEphemeralButton());
+
+  incognito_panel_controller->Close();
+  EXPECT_FALSE(incognito_ephemeral_controller->ShouldShowEphemeralButton());
+
+  RunTestSequence(InContext(
+      BrowserView::GetBrowserViewForBrowser(incognito_browser)
+          ->GetElementContext(),
+      EnsureNotPresent(kContextualTasksEphemeralToolbarButtonElementId)));
+}
+
 IN_PROC_BROWSER_TEST_F(
     ContextualTasksEphemeralButtonPinningV2InteractiveTest,
     AlwaysShowsAsCircleButtonInRightDockRegardlessOfSidePanelAlignment) {

@@ -1966,6 +1966,10 @@ void ContextualTasksSidePanelCoordinator::DisassociateTabFromTask(
 }
 
 bool ContextualTasksSidePanelCoordinator::ShouldPreserveTaskOnClose() const {
+  if (!browser_window_ || !browser_window_->GetProfile() ||
+      browser_window_->GetProfile()->IsOffTheRecord()) {
+    return false;
+  }
   const bool can_resume_from_pinned_button =
       contextual_tasks::IsContextualTasksPinningV2Enabled() &&
       contextual_tasks::IsContextualTasksPinButtonInToolbarEnabled() &&
