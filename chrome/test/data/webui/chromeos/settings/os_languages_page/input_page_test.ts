@@ -313,11 +313,14 @@ suite('<os-settings-input-page>', () => {
       assertTrue(!!addInputMethodButton);
       assertFalse(addInputMethodButton.disabled);
 
+      inputPage.setPrefValue(
+          'settings.language.allowed_input_methods_force_enabled', true);
+      flush();
+
+      assertFalse(addInputMethodButton.disabled);
 
       inputPage.setPrefValue(
           'settings.language.allowed_input_methods', ['xkb:us::eng']);
-      inputPage.setPrefValue(
-          'settings.language.allowed_input_methods_force_enabled', true);
       flush();
 
       assertTrue(addInputMethodButton.disabled);

@@ -300,7 +300,8 @@ export class OsSettingsInputPageElement extends OsSettingsInputPageElementBase {
     const allowedInputMethodsForceEnabled = this.getPref<boolean>(
         'settings.language.allowed_input_methods_force_enabled');
     return !!allowedInputMethodsForceEnabled &&
-        allowedInputMethodsForceEnabled.value;
+        allowedInputMethodsForceEnabled.value &&
+        this.inputMethodsLimitedByPolicy_();
   }
 
   private addInputMethodButtonDisabled_(): boolean {

@@ -235,7 +235,10 @@
         <div class="separator"></div>
         <cr-icon-button class="icon-clear"
             disabled$="[[disableRemoveInputMethod_(item,
-                languages.inputMethods.enabled.*)]]"
+                languages.inputMethods.enabled.*,
+                prefs.settings.language.allowed_input_methods.*,
+                prefs.settings.language.allowed_input_methods_force_enabled.value
+                )]]"
             on-click="onRemoveInputMethodClick_"
             title="[[getRemoveInputMethodTooltip_(item)]]">
         </cr-icon-button>
@@ -246,6 +249,7 @@
           deep-link-focus-id$="[[Setting.kAddInputMethod]]"
           disabled$="[[addInputMethodButtonDisabled_(
               languages.inputMethods.enabled.*,
+              prefs.settings.language.allowed_input_methods.*,
               prefs.settings.language.allowed_input_methods_force_enabled.value
               )]]">
         <iron-icon icon="cr:add" slot="prefix-icon"></iron-icon>
