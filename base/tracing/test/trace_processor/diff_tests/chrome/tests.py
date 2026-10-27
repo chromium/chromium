@@ -232,6 +232,182 @@ class ChromeStdlib(TestSuite):
         "google_search_result",92176269047844,92176276990547,92176286094844,92176276922481,92176326400844,92176365000844,92176391496844,92176571700844,92176587400844,92176607896844,92176764223844
         """))
 
+  def test_loadline_2_renderer_slices(self):
+    return DiffTestBlueprint(
+        trace=DataPath('loadline2_phone_perfetto_trace.pb.gz'),
+        query="""
+        INCLUDE PERFETTO MODULE chrome.loadline_2;
+
+        SELECT
+          ROW_NUMBER() OVER (ORDER BY id) AS id,
+          page,
+          ts,
+          dur,
+          subsystem
+        FROM chrome_loadline2_renderer_slices
+        WHERE page = 'wikipedia_article'
+        ORDER BY id
+        LIMIT 10;
+        """,
+        out=Csv("""
+        "id","page","ts","dur","subsystem"
+        1,"wikipedia_article",92172747906244,1398000,"navigation_commit"
+        2,"wikipedia_article",92172749304244,12114000,"html_parse"
+        3,"wikipedia_article",92172761418244,2000,"navigation_commit"
+        4,"wikipedia_article",92172761420244,10000,"js_execute"
+        5,"wikipedia_article",92172761430244,80000,"js_compile"
+        6,"wikipedia_article",92172761510244,1000,"js_execute"
+        7,"wikipedia_article",92172761511244,213000,"js_compile"
+        8,"wikipedia_article",92172761724244,986000,"js_execute"
+        9,"wikipedia_article",92172762710244,4000,"navigation_commit"
+        10,"wikipedia_article",92172762714244,146000,"js_execute"
+        """))
+
+  def test_loadline_2_renderer_breakdown(self):
+    return DiffTestBlueprint(
+        trace=DataPath('loadline2_phone_perfetto_trace.pb.gz'),
+        query="""
+        INCLUDE PERFETTO MODULE chrome.loadline_2;
+
+        SELECT
+          page,
+          metric,
+          subsystem,
+          dur,
+          format('%.2f', percentage) AS pct
+        FROM chrome_loadline2_renderer_breakdown
+        WHERE page = 'wikipedia_article'
+        ORDER BY metric, dur DESC, subsystem;
+        """,
+        out=Csv("""
+        "page","metric","subsystem","dur","pct"
+        "wikipedia_article","interactive","idle_wait",36979600,"47.04"
+        "wikipedia_article","interactive","html_parse",13166000,"16.75"
+        "wikipedia_article","interactive","js_execute",9938000,"12.64"
+        "wikipedia_article","interactive","style_layout",8807000,"11.20"
+        "wikipedia_article","interactive","navigation_commit",3736000,"4.75"
+        "wikipedia_article","interactive","paint_compositing",3019000,"3.84"
+        "wikipedia_article","interactive","gc",1694000,"2.15"
+        "wikipedia_article","interactive","js_compile",1175000,"1.49"
+        "wikipedia_article","interactive","other_busy",106000,"0.13"
+        "wikipedia_article","visual","idle_wait",21699000,"40.70"
+        "wikipedia_article","visual","html_parse",13097000,"24.56"
+        "wikipedia_article","visual","js_execute",7499600,"14.07"
+        "wikipedia_article","visual","style_layout",4911000,"9.21"
+        "wikipedia_article","visual","navigation_commit",3429000,"6.43"
+        "wikipedia_article","visual","js_compile",1138000,"2.13"
+        "wikipedia_article","visual","paint_compositing",791000,"1.48"
+        "wikipedia_article","visual","gc",658000,"1.23"
+        "wikipedia_article","visual","other_busy",98000,"0.18"
+        """))
+
+  def test_loadline_2_presentation_breakdown(self):
+    return DiffTestBlueprint(
+        trace=DataPath('loadline2_phone_perfetto_trace.pb.gz'),
+        query="""
+        INCLUDE PERFETTO MODULE chrome.loadline_2;
+
+        SELECT
+          stage_depth,
+          stage,
+          dur
+        FROM chrome_loadline2_presentation_breakdown
+        WHERE page = 'wikipedia_article' AND metric = 'visual'
+        ORDER BY id;
+        """,
+        out=Csv("""
+        "stage_depth","stage","dur"
+        1,"SendBeginMainFrameToCommit",7436000
+        1,"Commit",66000
+        1,"EndCommitToActivation",3468000
+        1,"Activation",29000
+        1,"EndActivateToSubmitCompositorFrame",260000
+        1,"SubmitCompositorFrameToPresentationCompositorFrame",33629000
+        2,"SubmitToReceiveCompositorFrame",110000
+        2,"ReceiveCompositorFrameToStartDraw",11382000
+        2,"StartDrawToSwapStart",438000
+        2,"BufferAvailableToBufferReady",1056000
+        2,"BufferReadyToLatch",12718000
+        2,"LatchToSwapEnd",1948000
+        2,"SwapEndToPresentationCompositorFrame",5977000
+        """))
+
+  def test_loadline_2_js_scripts(self):
+    return DiffTestBlueprint(
+        trace=DataPath('loadline2_phone_perfetto_trace.pb.gz'),
+        query="""
+        INCLUDE PERFETTO MODULE chrome.loadline_2;
+
+        SELECT
+          ROW_NUMBER() OVER (ORDER BY script_id) AS id,
+          script_kind AS kind,
+          is_inline AS inl,
+          is_streamed AS str,
+          milestone_status AS status,
+          bg_parse_cpu_dur AS parse_dur,
+          compile_dur AS comp_dur,
+          execute_dur AS exec_dur,
+          end_to_end_dur AS e2e
+        FROM chrome_loadline2_js_scripts
+        WHERE page = 'wikipedia_article'
+        ORDER BY script_id;
+        """,
+        out=Csv("""
+        "id","kind","inl","str","status","parse_dur","comp_dur","exec_dur","e2e"
+        1,"streamed",0,1,"before_visual",2059000,13000,3587000,23082074
+        2,"inline",1,0,"before_visual","[NULL]",141000,120000,268000
+        3,"inline",1,0,"before_visual","[NULL]",105000,53000,170000
+        4,"inline",1,0,"before_visual","[NULL]",457000,1590000,2051000
+        5,"inline",1,0,"before_visual","[NULL]",51000,14000,69000
+        6,"inline",1,0,"before_visual","[NULL]",59000,10000,73000
+        7,"streamed",0,1,"before_interactive",670000,16000,74000,36893074
+        8,"streamed",0,1,"after_interactive",12940000,11000,1383000,43995074
+        9,"inline",1,0,"after_interactive","[NULL]",106000,135000,243000
+        10,"inline",1,0,"after_interactive","[NULL]",18000,6000,25000
+        11,"inline",1,0,"after_interactive","[NULL]",16000,4000,22000
+        12,"streamed",0,1,"after_interactive",323000,11000,34000,42530074
+        """))
+
+  def test_loadline_2_js_script_slices(self):
+    return DiffTestBlueprint(
+        trace=DataPath('loadline2_phone_perfetto_trace.pb.gz'),
+        query="""
+        INCLUDE PERFETTO MODULE chrome.loadline_2;
+
+        SELECT
+          stage,
+          ts,
+          dur,
+          script_kind,
+          milestone_status
+        FROM chrome_loadline2_js_script_slices
+        WHERE page = 'wikipedia_article' AND is_inline = 0
+        ORDER BY id;
+        """,
+        out=Csv("""
+        "stage","ts","dur","script_kind","milestone_status"
+        "request",92172761385170,4426000,"streamed","before_visual"
+        "response",92172765811170,2316000,"streamed","before_visual"
+        "bg_parse",92172765999170,2069000,"streamed","before_visual"
+        "compile",92172780866244,13000,"streamed","before_visual"
+        "execute",92172780880244,3587000,"streamed","before_visual"
+        "request",92172784269170,3485000,"streamed","before_interactive"
+        "request",92172784393170,4238000,"streamed","after_interactive"
+        "response",92172787754170,828000,"streamed","before_interactive"
+        "bg_parse",92172787877170,680000,"streamed","before_interactive"
+        "response",92172788631170,13832000,"streamed","after_interactive"
+        "bg_parse",92172788758170,12946000,"streamed","after_interactive"
+        "compile",92172821069244,16000,"streamed","before_interactive"
+        "execute",92172821088244,74000,"streamed","before_interactive"
+        "compile",92172826992244,11000,"streamed","after_interactive"
+        "execute",92172827005244,1383000,"streamed","after_interactive"
+        "request",92172844860170,4014000,"streamed","after_interactive"
+        "response",92172848874170,546531,"streamed","after_interactive"
+        "bg_parse",92172849023701,341000,"streamed","after_interactive"
+        "compile",92172887343244,11000,"streamed","after_interactive"
+        "execute",92172887356244,34000,"streamed","after_interactive"
+        """))
+
   def test_chrome_graphics_pipeline_surface_frame_steps(self):
     return DiffTestBlueprint(
         trace=DataPath('scroll_m131.pftrace'),
