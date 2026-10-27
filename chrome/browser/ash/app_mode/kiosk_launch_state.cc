@@ -24,6 +24,8 @@ std::string KioskLaunchStateToString(KioskLaunchState state) {
       return "launch-failed";
     case KioskLaunchState::kAppWindowCreated:
       return "app-window-created";
+    case KioskLaunchState::kAppLaunchTimedOut:
+      return "app-launch-timed-out";
   }
 }
 

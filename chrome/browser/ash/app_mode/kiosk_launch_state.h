@@ -18,6 +18,7 @@ enum class KioskLaunchState {
   kLauncherStarted,
   kLaunchFailed,
   kAppWindowCreated,
+  kAppLaunchTimedOut,
 };
 
 std::string KioskLaunchStateToString(KioskLaunchState state);

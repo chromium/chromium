@@ -6234,6 +6234,11 @@ Called by update_net_error_codes.py.-->
   <int value="3" label="Consumer manual launch (deprecated in M136)"/>
 </enum>
 
+<enum name="KioskLaunchWatchdogAction">
+  <int value="0" label="Reboot device"/>
+  <int value="1" label="Reboots exhausted (no action)"/>
+</enum>
+
 <enum name="KioskLowDiskSeverity">
   <int value="0" label="None"/>
   <int value="1" label="Medium severity"/>

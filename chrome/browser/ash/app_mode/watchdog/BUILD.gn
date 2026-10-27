@@ -1,0 +1,31 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_chromeos)
+
+static_library("watchdog") {
+  sources = [
+    "kiosk_app_launch_watchdog.cc",
+    "kiosk_app_launch_watchdog.h",
+  ]
+  public_deps = [ "//base" ]
+  deps = [
+    "//ash/constants",
+    "//components/prefs",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "kiosk_app_launch_watchdog_unittest.cc" ]
+  deps = [
+    ":watchdog",
+    "//ash/constants",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser/ash/app_mode",
+    "//components/prefs:test_support",
+    "//testing/gtest",
+  ]
+}
