@@ -184,6 +184,7 @@ class ContextualTasksSidePanelCoordinator
   void UnshareTabs(const std::vector<tabs::TabHandle>& tab_handles) override;
   bool IsPanelOpenForContextualTask() const override;
   bool IsShowingResults() const override;
+  bool HasResults() const override;
   ContextualTasksPanelController::EntrySource GetActiveEntrySource()
       const override;
   std::optional<tabs::TabHandle> GetAutoSuggestedTabHandle() override;
@@ -278,6 +279,10 @@ class ContextualTasksSidePanelCoordinator
 
   // Hide or show panel base on open state of the current task.
   void UpdatePanelVisibility();
+
+  // Returns the task associated with the active side panel without
+  // mutating pending task state.
+  std::optional<ContextualTask> GetCurrentTask() const;
 
   // Clean up unused WebContents.
   void CleanUpUnusedWebContents() override;
@@ -375,13 +380,17 @@ class ContextualTasksSidePanelCoordinator
   // Get the open state of the panel.
   bool ShouldBeOpen();
 
-  // Returns true if the side panel is currently open and showing Lens results
-  // (e.g. a task waiting for its search URL, or a non-AIM Search Results Page /
-  // Lens SRP).
+  // Returns the active task's HTTP/HTTPS results URL, agnostic to whether side
+  // panel rearchitecture is enabled, or an empty `GURL` if no results URL is
+  // loaded.
+  GURL GetActiveResultsUrl() const;
+
+  // Returns true if the active tab's side panel has Lens results loaded (e.g.
+  // a Lens Overlay entry or a non-AIM Search Results Page / Lens SRP).
   bool IsShowingLensResults() const;
 
-  // Returns true if the side panel is currently open and showing AIM results
-  // (i.e. an AIM page that is not in zero state).
+  // Returns true if the active tab's side panel has AIM results loaded (i.e.
+  // an AIM page that is not in zero state).
   bool IsShowingAimResults() const;
 
   // Closes any active Lens sessions for tabs associated with the given task.

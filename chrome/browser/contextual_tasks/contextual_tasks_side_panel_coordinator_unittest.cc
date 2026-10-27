@@ -3442,6 +3442,7 @@ TEST_F(ContextualTasksSidePanelCoordinatorTest, IsShowingResults) {
   ON_CALL(*mock_panel_host_, IsPanelOpenForContextualTask())
       .WillByDefault(Return(false));
   EXPECT_FALSE(coordinator_->IsShowingResults());
+  EXPECT_FALSE(coordinator_->HasResults());
   EXPECT_FALSE(IsShowingLensResults());
   EXPECT_FALSE(IsShowingAimResults());
 
@@ -3453,20 +3454,37 @@ TEST_F(ContextualTasksSidePanelCoordinatorTest, IsShowingResults) {
   content::WebContents* zero_state_wc =
       GetWebContentsForTaskForTesting(zero_state_id);
   mock_panel_host_->SetWebContents(zero_state_wc);
+  ON_CALL(*mock_controller_, GetContextualTaskForTab(_))
+      .WillByDefault(Return(ContextualTask(zero_state_id)));
   ON_CALL(*mock_panel_host_, IsPanelOpenForContextualTask())
       .WillByDefault(Return(true));
   EXPECT_FALSE(coordinator_->IsShowingResults());
+  EXPECT_FALSE(coordinator_->HasResults());
   EXPECT_FALSE(IsShowingLensResults());
   EXPECT_FALSE(IsShowingAimResults());
+
+  // 1b. While a navigation to AIM results is still in progress (before commit),
+  // HasResults() and IsShowingResults() are already true.
+  auto pending_aim_nav = content::NavigationSimulator::CreateBrowserInitiated(
+      GURL("https://www.google.com/search?udm=50&mtid=1&q=hello"),
+      zero_state_wc);
+  pending_aim_nav->Start();
+  EXPECT_TRUE(coordinator_->IsShowingResults());
+  EXPECT_TRUE(coordinator_->HasResults());
+  EXPECT_FALSE(IsShowingLensResults());
+  EXPECT_TRUE(IsShowingAimResults());
 
   // 2. Open panel in non-zero-state AIM thread -> true (showing AIM results).
   base::Uuid active_thread_id = base::Uuid::GenerateRandomV4();
   CreateCachedWebContentsWithUrlForTesting(
       active_thread_id, /*is_open=*/true,
       GURL("https://www.google.com/search?udm=50&mtid=1&q=hello"));
+  ON_CALL(*mock_controller_, GetContextualTaskForTab(_))
+      .WillByDefault(Return(ContextualTask(active_thread_id)));
   mock_panel_host_->SetWebContents(
       GetWebContentsForTaskForTesting(active_thread_id));
   EXPECT_TRUE(coordinator_->IsShowingResults());
+  EXPECT_TRUE(coordinator_->HasResults());
   EXPECT_FALSE(IsShowingLensResults());
   EXPECT_TRUE(IsShowingAimResults());
 
@@ -3475,16 +3493,56 @@ TEST_F(ContextualTasksSidePanelCoordinatorTest, IsShowingResults) {
   CreateCachedWebContentsWithUrlForTesting(
       lens_srp_id, /*is_open=*/true,
       GURL("https://www.google.com/search?lns_mode=un&vsrid=123"));
+  ON_CALL(*mock_controller_, GetContextualTaskForTab(_))
+      .WillByDefault(Return(ContextualTask(lens_srp_id)));
   mock_panel_host_->SetWebContents(
       GetWebContentsForTaskForTesting(lens_srp_id));
   EXPECT_TRUE(coordinator_->IsShowingResults());
+  EXPECT_TRUE(coordinator_->HasResults());
   EXPECT_TRUE(IsShowingLensResults());
   EXPECT_FALSE(IsShowingAimResults());
 
-  // 4. Closed panel with an active thread -> false.
+  // 3b. Open panel from Lens Overlay entry point before inner frame commits ->
+  // true (showing Lens results).
+  base::Uuid lens_overlay_id = base::Uuid::GenerateRandomV4();
+  CreateCachedWebContentsWithUrlForTesting(
+      lens_overlay_id, /*is_open=*/true, GURL("chrome://contextual-tasks"));
+  SetCacheItemEntrySourceForTesting(
+      lens_overlay_id, ContextualTasksPanelController::EntrySource::kLensOverlay,
+      base::TimeTicks::Now());
+  ON_CALL(*mock_controller_, GetContextualTaskForTab(_))
+      .WillByDefault(Return(ContextualTask(lens_overlay_id)));
+  mock_panel_host_->SetWebContents(
+      GetWebContentsForTaskForTesting(lens_overlay_id));
+  EXPECT_TRUE(coordinator_->IsShowingResults());
+  EXPECT_TRUE(coordinator_->HasResults());
+  EXPECT_TRUE(IsShowingLensResults());
+  EXPECT_FALSE(IsShowingAimResults());
+
+  // 4. Closed panel with an active thread preserved on the active tab (even
+  // when the cached WebContents URL is non-HTTP) -> IsShowingResults() is
+  // false, while HasResults() and IsShowingAimResults() remain true.
+  base::Uuid closed_thread_id = base::Uuid::GenerateRandomV4();
+  CreateCachedWebContentsWithUrlForTesting(
+      closed_thread_id, /*is_open=*/false, GURL("chrome://contextual-tasks"));
+  ContextualTask closed_thread_task(closed_thread_id);
+  closed_thread_task.AddThread(
+      Thread(ThreadType::kAiMode, "thread_1", "Title", 1000));
   ON_CALL(*mock_panel_host_, IsPanelOpenForContextualTask())
       .WillByDefault(Return(false));
+  mock_panel_host_->SetWebContents(nullptr);
+  ON_CALL(*mock_controller_, GetContextualTaskForTab(_))
+      .WillByDefault(Return(closed_thread_task));
   EXPECT_FALSE(coordinator_->IsShowingResults());
+  EXPECT_TRUE(coordinator_->HasResults());
+  EXPECT_FALSE(IsShowingLensResults());
+  EXPECT_TRUE(IsShowingAimResults());
+
+  // 5. Closed panel when the active tab has no associated task -> both false.
+  ON_CALL(*mock_controller_, GetContextualTaskForTab(_))
+      .WillByDefault(Return(std::nullopt));
+  EXPECT_FALSE(coordinator_->IsShowingResults());
+  EXPECT_FALSE(coordinator_->HasResults());
   EXPECT_FALSE(IsShowingLensResults());
   EXPECT_FALSE(IsShowingAimResults());
 }
