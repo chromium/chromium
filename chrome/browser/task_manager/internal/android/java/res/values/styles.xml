@@ -10,6 +10,8 @@ found in the LICENSE file.
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_weight">1</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:ellipsize">end</item>
         <item name="android:layout_marginHorizontal">
             @dimen/task_header_margin_horizontal
         </item>

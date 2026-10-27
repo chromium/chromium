@@ -22,14 +22,14 @@ found in the LICENSE file.
         android:id="@+id/memory_footprint"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
+        android:layout_weight="1.6"
         android:paddingStart="@dimen/task_item_column_padding"
     />
     <TextView
         android:id="@+id/cpu"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
+        android:layout_weight="0.6"
         android:paddingStart="@dimen/task_item_column_padding"
     />
     <TextView

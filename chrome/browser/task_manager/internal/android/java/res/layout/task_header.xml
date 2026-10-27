@@ -20,10 +20,12 @@ found in the LICENSE file.
         style="@style/TaskManagerHeaderColumn" />
     <TextView
         android:id="@+id/memory_footprint"
-        style="@style/TaskManagerHeaderColumn" />
+        style="@style/TaskManagerHeaderColumn"
+        android:layout_weight="1.6" />
     <TextView
         android:id="@+id/cpu"
-        style="@style/TaskManagerHeaderColumn" />
+        style="@style/TaskManagerHeaderColumn"
+        android:layout_weight="0.6" />
     <TextView
         android:id="@+id/network_usage"
         style="@style/TaskManagerHeaderColumn" />
