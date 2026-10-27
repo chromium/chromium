@@ -26,6 +26,18 @@ found in the LICENSE file.
     <string name="help_context_sync_and_services">syncgoogleservices</string>
     <string name="help_context_webpage">mobile_webpage</string>
     <!-- go/keep-sorted end -->
+    <!-- Help contexts that open the help homepage, which also exposes the
+     "Send feedback" entry. All other help contexts open a specific help article
+     via p-link (Open-to-Content), so a p-link for them must exist on
+     support.google.com/chrome/?p=<context>. -->
+    <string-array name="help_contexts_using_homepage" translatable="false">
+        <!-- go/keep-sorted start -->
+        <item>@string/help_context_general</item>
+        <item>@string/help_context_new_tab</item>
+        <item>@string/help_context_search_results</item>
+        <item>@string/help_context_webpage</item>
+        <!-- go/keep-sorted end -->
+    </string-array>
     <!-- TODO(peconn): Add help section. -->
     <!-- <string name="help_context_suggestions">mobile_content_suggestions</string> -->
 </resources>
