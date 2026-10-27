@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/functional/bind.h"
-#include "base/logging.h"
 #include "base/notimplemented.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
@@ -851,18 +850,7 @@ void WebUILocationBar::OnLhsChipClicked(
                 toolbar_ui_api::mojom::LhsChipIdentifier::kPermissionIndicator
             ? permission_dashboard_->indicator_chip()
             : permission_dashboard_->request_chip();
-
-    // Drop stale clicks: the WebUI echoes the token it rendered with, so a
-    // mismatch means the chip's backing model changed while the click IPC was
-    // in flight (e.g. across a tab switch or same-tab navigation). See
-    // crbug.com/557279024.
-    if (chip->state_token() != state_token) {
-      VLOG(1) << "Dropped stale chip click for identifier "
-              << static_cast<int>(identifier) << ": received token "
-              << state_token << " != current token " << chip->state_token();
-      return;
-    }
-    chip->OnClicked(is_mouse_interaction);
+    chip->OnClickedIfCurrent(is_mouse_interaction, state_token);
     return;
   }
 

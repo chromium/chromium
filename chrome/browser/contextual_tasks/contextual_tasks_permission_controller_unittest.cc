@@ -160,10 +160,163 @@ TEST_F(ContextualTasksPermissionControllerTest, ForwardsChipInteractions) {
 
   controller()->OnChipClicked(
       toolbar_ui_api::mojom::LhsChipIdentifier::kPermissionRequest,
-      /*is_mouse_interaction=*/true);
+      /*is_mouse_interaction=*/true, request_chip->state_token());
 
   EXPECT_TRUE(pressed_callback_ran);
   EXPECT_TRUE(pressed_with_pointer);
+}
+
+// Switching the active task invalidates the chips' tokens even if their
+// visibility doesn't change, so a click sent for the previous task is dropped.
+TEST_F(ContextualTasksPermissionControllerTest,
+       TaskSwitchInvalidatesChipClicks) {
+  auto* dashboard =
+      controller()->GetLocationBarForTesting()->permission_dashboard();
+  auto* request_chip = dashboard->request_chip();
+  auto* indicator_chip = dashboard->indicator_chip();
+
+  // Both chips are hidden and stay hidden across the switch: neither
+  // `ResetPermissionPromptChip()` nor the indicator update changes them, so
+  // only the task switch itself can change their tokens. (A visible request
+  // chip would be hidden by `ResetPermissionPromptChip()`, which changes its
+  // token anyway. An indicator chip can stay visible across the switch; see
+  // `TaskSwitchInvalidatesClicksOnIndicatorThatStaysVisible`.)
+  ASSERT_FALSE(request_chip->GetVisible());
+  ASSERT_FALSE(indicator_chip->GetVisible());
+  const uint32_t first_task_request_token = request_chip->state_token();
+  const uint32_t first_task_indicator_token = indicator_chip->state_token();
+
+  std::unique_ptr<content::WebContents> second_web_contents =
+      CreateTestWebContents();
+  controller()->RegisterWebContents(second_web_contents.get());
+  controller()->Update(second_web_contents.get());
+
+  ASSERT_FALSE(request_chip->GetVisible());
+  ASSERT_FALSE(indicator_chip->GetVisible());
+  EXPECT_NE(request_chip->state_token(), first_task_request_token);
+  EXPECT_NE(indicator_chip->state_token(), first_task_indicator_token);
+  // `GetState()`, which is what the WebUI is sent, reports the new tokens.
+  toolbar_ui_api::mojom::PermissionDashboardStatePtr state =
+      controller()->GetState();
+  EXPECT_EQ(state->request_chip->state_token, request_chip->state_token());
+  EXPECT_EQ(state->indicator_chip->state_token, indicator_chip->state_token());
+
+  // Set after the switch, which resets the request chip's pressed callback.
+  int request_pressed_count = 0;
+  request_chip->SetPressedCallback(base::BindLambdaForTesting(
+      [&request_pressed_count](bool is_pointer_interaction) {
+        ++request_pressed_count;
+      }));
+  int indicator_pressed_count = 0;
+  indicator_chip->SetPressedCallback(base::BindLambdaForTesting(
+      [&indicator_pressed_count](bool is_pointer_interaction) {
+        ++indicator_pressed_count;
+      }));
+
+  controller()->OnChipClicked(
+      toolbar_ui_api::mojom::LhsChipIdentifier::kPermissionRequest,
+      /*is_mouse_interaction=*/true, first_task_request_token);
+  controller()->OnChipClicked(
+      toolbar_ui_api::mojom::LhsChipIdentifier::kPermissionIndicator,
+      /*is_mouse_interaction=*/true, first_task_indicator_token);
+  EXPECT_EQ(request_pressed_count, 0);
+  EXPECT_EQ(indicator_pressed_count, 0);
+
+  controller()->OnChipClicked(
+      toolbar_ui_api::mojom::LhsChipIdentifier::kPermissionRequest,
+      /*is_mouse_interaction=*/true, request_chip->state_token());
+  controller()->OnChipClicked(
+      toolbar_ui_api::mojom::LhsChipIdentifier::kPermissionIndicator,
+      /*is_mouse_interaction=*/true, indicator_chip->state_token());
+  EXPECT_EQ(request_pressed_count, 1);
+  EXPECT_EQ(indicator_pressed_count, 1);
+
+  // Updating with the same task doesn't invalidate the tokens.
+  const uint32_t second_task_request_token = request_chip->state_token();
+  const uint32_t second_task_indicator_token = indicator_chip->state_token();
+  controller()->Update(second_web_contents.get());
+  EXPECT_EQ(request_chip->state_token(), second_task_request_token);
+  EXPECT_EQ(indicator_chip->state_token(), second_task_indicator_token);
+
+  controller()->UnregisterWebContents(second_web_contents.get());
+}
+
+// If both tasks have an active indicator and each has already shown its
+// verbose animation, the indicator chip stays visible across the switch and
+// doesn't re-animate, so only the task switch itself invalidates its token. A
+// click sent for the previous task is still dropped.
+TEST_F(ContextualTasksPermissionControllerTest,
+       TaskSwitchInvalidatesClicksOnIndicatorThatStaysVisible) {
+  const GURL url("https://example.com");
+  auto* location_bar = controller()->GetLocationBarForTesting();
+  auto* indicator_chip = location_bar->permission_dashboard()->indicator_chip();
+  auto* dashboard_controller = location_bar->GetPermissionDashboardController();
+  // Runs the first indicator's verbose expand/collapse animation to the end.
+  auto finish_verbose_animation = [&] {
+    controller()->OnChipExpandAnimationEnded(
+        toolbar_ui_api::mojom::LhsChipIdentifier::kPermissionIndicator);
+    dashboard_controller->get_collapse_timer_for_testing().FireNow();
+    controller()->OnChipCollapseAnimationEnded(
+        toolbar_ui_api::mojom::LhsChipIdentifier::kPermissionIndicator);
+  };
+
+  // Task A shows a blocked mic indicator.
+  NavigateAndCommit(url);
+  content_settings::PageSpecificContentSettings::CreateForWebContents(
+      web_contents(),
+      std::make_unique<PageSpecificContentSettingsDelegate>(web_contents()));
+  content_settings::PageSpecificContentSettings::GetForFrame(
+      web_contents()->GetPrimaryMainFrame())
+      ->OnMediaStreamPermissionSet(
+          url,
+          {content_settings::PageSpecificContentSettings::kMicrophoneAccessed,
+           content_settings::PageSpecificContentSettings::kMicrophoneBlocked});
+  ASSERT_TRUE(indicator_chip->GetVisible());
+  finish_verbose_animation();
+
+  // Switch to task B, which also shows a blocked mic indicator.
+  std::unique_ptr<content::WebContents> second_web_contents =
+      CreateTestWebContents();
+  controller()->RegisterWebContents(second_web_contents.get());
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(
+      second_web_contents.get(), url);
+  content_settings::PageSpecificContentSettings::CreateForWebContents(
+      second_web_contents.get(),
+      std::make_unique<PageSpecificContentSettingsDelegate>(
+          second_web_contents.get()));
+  controller()->Update(second_web_contents.get());
+  content_settings::PageSpecificContentSettings::GetForFrame(
+      second_web_contents->GetPrimaryMainFrame())
+      ->OnMediaStreamPermissionSet(
+          url,
+          {content_settings::PageSpecificContentSettings::kMicrophoneAccessed,
+           content_settings::PageSpecificContentSettings::kMicrophoneBlocked});
+  ASSERT_TRUE(indicator_chip->GetVisible());
+  finish_verbose_animation();
+  ASSERT_FALSE(indicator_chip->IsAnimating());
+  const uint32_t second_task_token = indicator_chip->state_token();
+
+  // Switch back to task A. A's indicator is still active and has already shown
+  // its verbose animation, so the chip stays visible and doesn't animate.
+  controller()->Update(web_contents());
+  ASSERT_TRUE(indicator_chip->GetVisible());
+  ASSERT_FALSE(indicator_chip->IsAnimating());
+  EXPECT_NE(indicator_chip->state_token(), second_task_token);
+
+  int pressed_count = 0;
+  indicator_chip->SetPressedCallback(base::BindLambdaForTesting(
+      [&pressed_count](bool is_pointer_interaction) { ++pressed_count; }));
+  controller()->OnChipClicked(
+      toolbar_ui_api::mojom::LhsChipIdentifier::kPermissionIndicator,
+      /*is_mouse_interaction=*/true, second_task_token);
+  EXPECT_EQ(pressed_count, 0);
+
+  controller()->OnChipClicked(
+      toolbar_ui_api::mojom::LhsChipIdentifier::kPermissionIndicator,
+      /*is_mouse_interaction=*/true, indicator_chip->state_token());
+  EXPECT_EQ(pressed_count, 1);
+
+  controller()->UnregisterWebContents(second_web_contents.get());
 }
 
 TEST_F(ContextualTasksPermissionControllerTest,

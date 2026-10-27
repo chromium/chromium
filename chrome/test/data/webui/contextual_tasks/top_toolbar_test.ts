@@ -1206,9 +1206,9 @@ suite('TopToolbarTest', () => {
       assertTrue(!!dashboard.delegate);
 
       dashboard.delegate.onChipClicked(
-          LhsChipIdentifier.kPermissionRequest, true);
+          LhsChipIdentifier.kPermissionRequest, true, 7);
       assertDeepEquals(
-          [LhsChipIdentifier.kPermissionRequest, true],
+          [LhsChipIdentifier.kPermissionRequest, true, 7],
           await toolbarUiService.whenCalled('onChipClicked'));
 
       dashboard.delegate.onChipPointerEntered(

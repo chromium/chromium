@@ -72,9 +72,13 @@ class ContextualTasksPermissionController
   void PushStateToWebUI();
 
   // Chip Interactions (called from Mojo via ContextualTasksUI):
+  // `state_token` is the token the WebUI rendered the chip with. The click is
+  // dropped if it no longer matches the chip's current token (e.g. the active
+  // task changed while the click IPC was in flight).
   virtual void OnChipClicked(
       toolbar_ui_api::mojom::LhsChipIdentifier chip_identifier,
-      bool is_mouse_interaction);
+      bool is_mouse_interaction,
+      uint32_t state_token);
   virtual void OnChipExpandAnimationEnded(
       toolbar_ui_api::mojom::LhsChipIdentifier chip_identifier);
   virtual void OnChipCollapseAnimationEnded(

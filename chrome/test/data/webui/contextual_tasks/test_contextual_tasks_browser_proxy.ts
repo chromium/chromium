@@ -638,8 +638,11 @@ export class TestContextualTasksToolbarUiService extends TestBrowserProxy
     this.methodCalled('onChipMousePressed', identifier);
   }
 
-  onChipClicked(identifier: LhsChipIdentifier, isMouseInteraction: boolean) {
-    this.methodCalled('onChipClicked', [identifier, isMouseInteraction]);
+  onChipClicked(
+      identifier: LhsChipIdentifier, isMouseInteraction: boolean,
+      stateToken: number) {
+    this.methodCalled(
+        'onChipClicked', [identifier, isMouseInteraction, stateToken]);
   }
 
   onChipPointerEntered(identifier: LhsChipIdentifier) {

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/permissions/chip/webui_permission_chip.h"
 
+#include "base/logging.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/browser/ui/views/location_bar/webui_location_bar.h"
@@ -414,10 +415,22 @@ void WebUIPermissionChip::OnMousePressed() {
   observers_.Notify(&Observer::OnMousePressed);
 }
 
-void WebUIPermissionChip::OnClicked(bool is_pointer_interaction) {
+bool WebUIPermissionChip::OnClickedIfCurrent(bool is_pointer_interaction,
+                                             uint32_t state_token) {
+  // Drop stale clicks: the WebUI echoes the token it rendered with, so a
+  // mismatch means the chip's backing model changed while the click IPC was
+  // in flight (e.g. across a tab switch or same-tab navigation). See
+  // crbug.com/557279024.
+  if (state_token_ != state_token) {
+    VLOG(1) << "Dropped stale chip click for " << element_id_
+            << ": received token " << state_token << " != current token "
+            << state_token_;
+    return false;
+  }
   if (pressed_callback_) {
     pressed_callback_.Run(is_pointer_interaction);
   }
+  return true;
 }
 
 void WebUIPermissionChip::OnMouseEntered() {

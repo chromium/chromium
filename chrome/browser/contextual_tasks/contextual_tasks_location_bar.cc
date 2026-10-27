@@ -169,6 +169,13 @@ void ContextualTasksLocationBar::Update(content::WebContents* contents) {
     if (auto* chip_controller = GetChipController()) {
       chip_controller->ResetPermissionPromptChip();
     }
+    // Mirrors `WebUILocationBar::Update()`: invalidate the chips' state tokens
+    // so that click IPCs still in flight from the previous task are dropped,
+    // even if a chip stays visible across the switch. `OnChanged()` below
+    // pushes the new tokens to the WebUI.
+    if (permission_dashboard_) {
+      permission_dashboard_->ResetTabState();
+    }
     web_contents_ = contents ? contents->GetWeakPtr() : nullptr;
   }
   // Re-evaluate the activity indicator models (camera/mic/sensors) for the
