@@ -23,6 +23,7 @@ found in the LICENSE file.
     <string name="help_context_safe_browsing">safebrowsing_android</string>
     <string name="help_context_search_results">mobile_search_results</string>
     <string name="help_context_settings">mobile_settings</string>
+    <string name="help_context_site_settings">mobile_site_settings</string>
     <string name="help_context_sync_and_services">syncgoogleservices</string>
     <string name="help_context_webpage">mobile_webpage</string>
     <!-- go/keep-sorted end -->
@@ -35,6 +36,7 @@ found in the LICENSE file.
         <item>@string/help_context_general</item>
         <item>@string/help_context_new_tab</item>
         <item>@string/help_context_search_results</item>
+        <item>@string/help_context_settings</item>
         <item>@string/help_context_webpage</item>
         <!-- go/keep-sorted end -->
     </string-array>

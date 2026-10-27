@@ -9,6 +9,9 @@ import static org.chromium.components.content_settings.PrefNames.COOKIE_CONTROLS
 
 import android.content.Context;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 
 import androidx.annotation.VisibleForTesting;
 import androidx.preference.Preference;
@@ -27,6 +30,7 @@ import org.chromium.components.browser_ui.settings.search.BaseSearchIndexProvide
 import org.chromium.components.browser_ui.settings.search.PreferenceParser;
 import org.chromium.components.browser_ui.settings.search.SettingsIndexData;
 import org.chromium.components.browser_ui.site_settings.SiteSettingsCategory.Type;
+import org.chromium.components.browser_ui.util.TraceEventVectorDrawableCompat;
 import org.chromium.components.content_settings.ContentSetting;
 import org.chromium.components.content_settings.CookieControlsMode;
 import org.chromium.components.user_prefs.UserPrefs;
@@ -65,6 +69,32 @@ public class SiteSettings extends BaseSiteSettingsFragment
 
         configurePreferences();
         updatePreferenceStates();
+        setHasOptionsMenu(true);
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        menu.clear();
+        if (getSiteSettingsDelegate().isHelpAndFeedbackEnabled()) {
+            MenuItem help =
+                    menu.add(
+                            Menu.NONE,
+                            R.id.menu_id_site_settings_help,
+                            Menu.NONE,
+                            getSiteSettingsDelegate().getHelpMenuStringRes());
+            help.setIcon(
+                    TraceEventVectorDrawableCompat.create(
+                            getResources(), R.drawable.ic_help_24dp, getContext().getTheme()));
+        }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.menu_id_site_settings_help) {
+            getSiteSettingsDelegate().launchSettingsHelpAndFeedbackActivity(getActivity());
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override

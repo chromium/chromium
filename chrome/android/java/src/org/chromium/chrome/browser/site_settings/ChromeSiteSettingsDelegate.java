@@ -235,11 +235,14 @@ public class ChromeSiteSettingsDelegate implements SiteSettingsDelegate {
 
     @Override
     public void launchSettingsHelpAndFeedbackActivity(Activity currentActivity) {
+        // TODO(crbug.com/365755043): Always use help_context_site_settings once UsePLinkInHelp is
+        // removed.
+        int helpContextRes =
+                ChromeFeatureList.isEnabled(ChromeFeatureList.USE_P_LINK_IN_HELP)
+                        ? R.string.help_context_site_settings
+                        : R.string.help_context_settings;
         HelpAndFeedbackLauncherImpl.getForProfile(mProfile)
-                .show(
-                        currentActivity,
-                        currentActivity.getString(R.string.help_context_settings),
-                        null);
+                .show(currentActivity, currentActivity.getString(helpContextRes), null);
     }
 
     @Override
