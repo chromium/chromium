@@ -251,9 +251,6 @@ class AwMetricsServiceClient
   // Path where files related to metrics are stored.
   base::FilePath GetMetricsDir();
 
-  // Path for the pre-migration metrics directory, used for migration testing.
-  base::FilePath GetOldMetricsDirForTesting();
-
   // Set up the path used to store metrics. Separate from `Initialize` to enable
   // this to check feature flags, which aren't initialized yet when `Initialize`
   // runs.
@@ -335,7 +332,6 @@ class AwMetricsServiceClient
   base::Time time_created_;
   std::unique_ptr<Delegate> delegate_;
   base::FilePath metrics_dir_;
-  base::FilePath old_metrics_dir_;
 
   base::WeakPtrFactory<AwMetricsServiceClient> weak_ptr_factory_{this};
 };
