@@ -21,6 +21,7 @@
 #include "remoting/base/loggable.h"
 #include "remoting/base/logging.h"
 #include "remoting/host/delegating_desktop_display_info_monitor.h"
+#include "remoting/host/linux/dbus_interfaces/org_freedesktop_host_portal_Registry.h"
 #include "remoting/host/linux/dbus_interfaces/org_freedesktop_portal_Clipboard.h"
 #include "remoting/host/linux/dbus_interfaces/org_freedesktop_portal_RemoteDesktop.h"
 #include "remoting/host/linux/ei_sender_session.h"
@@ -161,6 +162,32 @@ void PortalRemoteDesktopSession::OnConnectionCreated(
     GDBusConnectionRef connection) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   connection_ = std::move(connection);
+
+  connection_.Call<org_freedesktop_host_portal_Registry::Register>(
+      kPortalBusName, kPortalObjectPath,
+      std::make_tuple(kPortalApplicationId, GVariantDictBuilder().Build()),
+      base::BindOnce(&PortalRemoteDesktopSession::OnRegisterResponse,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void PortalRemoteDesktopSession::OnRegisterResponse(
+    base::expected<std::tuple<>, Loggable> result) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (result.has_value()) {
+    HOST_LOG << "Host.Registry.Register succeeded for " << kPortalApplicationId;
+  } else {
+    // If the host registry portal is not supported (e.g. older
+    // xdg-desktop-portal) or registration fails, continue anyway with an
+    // unassigned app ID.
+    LOG(WARNING) << "Host.Registry.Register failed: "
+                 << result.error().ToString();
+  }
+
+  CreateSession();
+}
+
+void PortalRemoteDesktopSession::CreateSession() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   create_session_request_ = std::make_unique<ScopedPortalRequest>(
       connection_,

@@ -110,6 +110,7 @@ if (is_chrome_branded && enable_me2me_host && target_cpu == "x64" &&
       "$root_out_dir/remoting/com.google.chrome.remote_desktop-firefox.json",
       "$root_out_dir/remoting/com.google.chrome.remote_desktop.json",
       "$root_out_dir/remoting/com.google.chrome.remote_webauthn.json",
+      "$root_out_dir/remoting/com.google.ChromeRemoteDesktop.desktop",
       "$root_out_dir/remoting/crd-url-forwarder.desktop",
     ]
 

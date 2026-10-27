@@ -20,6 +20,8 @@ inline constexpr char kPortalBusName[] = "org.freedesktop.portal.Desktop";
 inline constexpr gvariant::ObjectPathCStr kPortalObjectPath =
     "/org/freedesktop/portal/desktop";
 
+inline constexpr char kPortalApplicationId[] = "com.google.ChromeRemoteDesktop";
+
 // Generate a random token that is in the form of `${prefix}_${random_number}`.
 std::string GeneratePortalToken(std::string_view prefix);
 

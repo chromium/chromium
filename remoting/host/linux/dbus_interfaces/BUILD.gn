@@ -14,6 +14,7 @@ source_set("interface_headers") {
     "org_freedesktop_DBus_ObjectManager.h",
     "org_freedesktop_DBus_Properties.h",
     "org_freedesktop_ScreenSaver.h",
+    "org_freedesktop_host_portal_Registry.h",
     "org_freedesktop_login1_Manager.h",
     "org_freedesktop_login1_Session.h",
     "org_freedesktop_portal_Clipboard.h",
