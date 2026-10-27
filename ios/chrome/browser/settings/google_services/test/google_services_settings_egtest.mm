@@ -187,11 +187,7 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
 
   // Turn off "Allow Chrome Sign-in" feature, which prompts the user with a
   // confirmation dialog to sign out.
-  [ChromeEarlGreyUI openSettingsMenu];
-  [ChromeEarlGreyUI tapSettingsMenuButton:GoogleServicesSettingsButton()];
-  [ChromeEarlGrey
-      waitForUIElementToAppearWithMatcher:
-          grey_accessibilityID(kGoogleServicesSettingsViewIdentifier)];
+  [self openGoogleServicesSettings];
   [[EarlGrey
       selectElementWithMatcher:chrome_test_util::TableViewSwitchCell(
                                    kAllowSigninItemAccessibilityIdentifier,
@@ -224,11 +220,7 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
       performAction:grey_tap()];
 
   // Turn on "Allow Chrome Sign-in" feature.
-  [ChromeEarlGreyUI openSettingsMenu];
-  [ChromeEarlGreyUI tapSettingsMenuButton:GoogleServicesSettingsButton()];
-  [ChromeEarlGrey
-      waitForUIElementToAppearWithMatcher:
-          grey_accessibilityID(kGoogleServicesSettingsViewIdentifier)];
+  [self openGoogleServicesSettings];
   [[EarlGrey
       selectElementWithMatcher:chrome_test_util::TableViewSwitchCell(
                                    kAllowSigninItemAccessibilityIdentifier,
@@ -251,11 +243,7 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
 
-  [ChromeEarlGreyUI openSettingsMenu];
-  [ChromeEarlGreyUI tapSettingsMenuButton:GoogleServicesSettingsButton()];
-  [ChromeEarlGrey
-      waitForUIElementToAppearWithMatcher:
-          grey_accessibilityID(kGoogleServicesSettingsViewIdentifier)];
+  [self openGoogleServicesSettings];
 
   // Turn off "Allow Chrome Sign-in" feature.
   [[EarlGrey
@@ -282,11 +270,7 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
 
   [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
 
-  [ChromeEarlGreyUI openSettingsMenu];
-  [ChromeEarlGreyUI tapSettingsMenuButton:GoogleServicesSettingsButton()];
-  [ChromeEarlGrey
-      waitForUIElementToAppearWithMatcher:
-          grey_accessibilityID(kGoogleServicesSettingsViewIdentifier)];
+  [self openGoogleServicesSettings];
 
   id<GREYMatcher> signinMatcher = [self
       cellMatcherWithTitleID:IDS_IOS_GOOGLE_SERVICES_SETTINGS_ALLOW_SIGNIN_TEXT
@@ -335,9 +319,19 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
 // Opens the Google services settings.
 - (void)openGoogleServicesSettings {
   [ChromeEarlGreyUI openSettingsMenu];
+  // Both `openSettingsMenu` and `tapSettingsMenuButton:` use
+  // `ScopedDisableTimerTracking`, so wait with full synchronization for
+  // `SettingsCollectionView()` to finish presenting before tapping
+  // `GoogleServicesSettingsButton()`.
+  [ChromeEarlGrey
+      waitForSufficientlyVisibleElementWithMatcher:SettingsCollectionView()];
   [ChromeEarlGreyUI tapSettingsMenuButton:GoogleServicesSettingsButton()];
   self.scrollViewMatcher =
       grey_accessibilityID(kGoogleServicesSettingsViewIdentifier);
+  if (![ChromeEarlGrey testUIElementAppearanceWithMatcher:self.scrollViewMatcher
+                                                  timeout:base::Seconds(2)]) {
+    [ChromeEarlGreyUI tapSettingsMenuButton:GoogleServicesSettingsButton()];
+  }
   [ChromeEarlGrey waitForUIElementToAppearWithMatcher:self.scrollViewMatcher];
   [[EarlGrey selectElementWithMatcher:self.scrollViewMatcher]
       assertWithMatcher:grey_notNil()];
