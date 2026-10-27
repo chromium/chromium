@@ -2,13 +2,24 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "remoting/host/linux/x_server_clipboard.h"
+
+#include <sys/file.h>
+#include <unistd.h>
+
 #include <memory>
 #include <string>
 
+#include "base/environment.h"
+#include "base/files/file.h"
+#include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/posix/eintr_wrapper.h"
+#include "base/strings/string_util.h"
+#include "base/strings/stringprintf.h"
 #include "remoting/base/constants.h"
-#include "remoting/host/linux/x_server_clipboard.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/x/connection.h"
 
@@ -24,8 +35,9 @@ class ClipboardTestClient : public x11::EventObserver {
   ClipboardTestClient& operator=(const ClipboardTestClient&) = delete;
 
   ~ClipboardTestClient() override {
-    DCHECK(connection_);
-    connection_->RemoveEventObserver(this);
+    if (connection_) {
+      connection_->RemoveEventObserver(this);
+    }
   }
 
   void Init(x11::Connection* connection) {
@@ -75,6 +87,23 @@ class ClipboardTestClient : public x11::EventObserver {
 class XServerClipboardTest : public testing::Test {
  public:
   void SetUp() override {
+    // Serialize access to the shared X11 clipboard across parallel test
+    // processes on the same X display (e.g. when run with
+    // --test-launcher-bot-mode and --gtest_repeat).
+    base::FilePath temp_dir;
+    ASSERT_TRUE(base::GetTempDir(&temp_dir));
+    std::string display =
+        base::Environment::Create()->GetVar("DISPLAY").value_or("default");
+    base::ReplaceChars(display, "/", "_", &display);
+    std::string lock_filename =
+        base::StringPrintf("remoting_x_server_clipboard_unittest_%d_%s.lock",
+                           geteuid(), display.c_str());
+    lock_file_.Initialize(
+        temp_dir.AppendASCII(lock_filename),
+        base::File::FLAG_OPEN_ALWAYS | base::File::FLAG_WRITE);
+    ASSERT_TRUE(lock_file_.IsValid());
+    ASSERT_EQ(HANDLE_EINTR(flock(lock_file_.GetPlatformFile(), LOCK_EX)), 0);
+
     // SynchronizeForTest() ensures that PumpXEvents() fully processes all X
     // server requests and responses before returning to the caller.
     connection1_ = std::make_unique<x11::Connection>();
@@ -85,11 +114,6 @@ class XServerClipboardTest : public testing::Test {
     client2_.Init(connection2_.get());
   }
 
-  void TearDown() override {
-    connection1_.reset();
-    connection2_.reset();
-  }
-
   void PumpXEvents() {
     while (true) {
       if (!client1_.PumpXEvents() && !client2_.PumpXEvents()) {
@@ -98,14 +122,16 @@ class XServerClipboardTest : public testing::Test {
     }
   }
 
+  // `lock_file_` must outlive the X11 connections, and the connections must
+  // outlive `client1_` and `client2_`.
+  base::File lock_file_;
   std::unique_ptr<x11::Connection> connection1_;
   std::unique_ptr<x11::Connection> connection2_;
   ClipboardTestClient client1_;
   ClipboardTestClient client2_;
 };
 
-// http://crbug.com/163428
-TEST_F(XServerClipboardTest, DISABLED_CopyPaste) {
+TEST_F(XServerClipboardTest, CopyPaste) {
   // Verify clipboard data can be transferred more than once. Then verify that
   // the code continues to function in the opposite direction (so client1_ will
   // send then receive, and client2_ will receive then send).
