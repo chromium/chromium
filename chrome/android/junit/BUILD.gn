@@ -1832,6 +1832,7 @@ if (is_android) {
       "src/org/chromium/chrome/browser/payments/ContactEditorTest.java",
       "src/org/chromium/chrome/browser/payments/PaymentErrorStringsTest.java",
       "src/org/chromium/chrome/browser/payments/handler/PaymentHandlerMediatorUnitTest.java",
+      "src/org/chromium/chrome/browser/payments/ui/PaymentAppComparatorUnitTest.java",
       "src/org/chromium/chrome/browser/pdf/PdfFragmentViewTrackerImplUnitTest.java",
       "src/org/chromium/chrome/browser/pdf/PdfPageIphControllerUnitTest.java",
       "src/org/chromium/chrome/browser/printing/WebContentsPrinterUnitTest.java",

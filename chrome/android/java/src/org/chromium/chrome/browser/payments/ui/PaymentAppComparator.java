@@ -39,7 +39,7 @@ import java.util.Comparator;
         int aCount = PaymentPreferencesUtil.getPaymentAppUseCount(a.getIdentifier());
         int bCount = PaymentPreferencesUtil.getPaymentAppUseCount(b.getIdentifier());
         long aDate = PaymentPreferencesUtil.getPaymentAppLastUseDate(a.getIdentifier());
-        long bDate = PaymentPreferencesUtil.getPaymentAppLastUseDate(a.getIdentifier());
+        long bDate = PaymentPreferencesUtil.getPaymentAppLastUseDate(b.getIdentifier());
 
         return Double.compare(getRankingScore(aCount, aDate), getRankingScore(bCount, bDate));
     }
