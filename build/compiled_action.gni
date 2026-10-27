@@ -156,6 +156,9 @@ template("compiled_action_foreach") {
                              "testonly",
                              "visibility",
                            ])
+    if (!defined(configs)) {
+      configs = []
+    }
     if (!defined(deps)) {
       deps = []
     }
@@ -183,5 +186,14 @@ template("compiled_action_foreach") {
     # The script takes as arguments the binary to run, and then the arguments
     # to pass it.
     args = [ rebase_path(host_executable, root_build_dir) ] + invoker.args
+
+    if (build_with_chromium && host_toolchain_is_msan) {
+      _msan_config =
+          "//third_party/instrumented_libs:msan_runtime_libs($host_toolchain)"
+      if (filter_include(configs, [ _msan_config ]) == []) {
+        configs += [ _msan_config ]
+      }
+      deps += [ "//third_party/instrumented_libs:ld-linux($host_toolchain)" ]
+    }
   }
 }
