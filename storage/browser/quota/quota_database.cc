@@ -590,6 +590,7 @@ QuotaErrorOr<mojom::BucketTableEntryPtr> QuotaDatabase::DeleteBucketData(
   // directory deletion fails. `storage_directory_` may be nullptr for
   // in-memory only.
   if (storage_directory_ && !storage_directory_->DoomBucket(bucket)) {
+    storage_directory_->ClearDoomedBuckets();
     return base::unexpected(QuotaError::kFileOperationError);
   }
 
@@ -600,6 +601,9 @@ QuotaErrorOr<mojom::BucketTableEntryPtr> QuotaDatabase::DeleteBucketData(
   statement.BindInt64(0, bucket.id.value());
 
   if (!statement.Step()) {
+    if (storage_directory_) {
+      storage_directory_->ClearDoomedBuckets();
+    }
     return base::unexpected(QuotaError::kDatabaseError);
   }
 

@@ -8,6 +8,8 @@
 #include "base/files/file_util.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
+#include "base/uuid.h"
+#include "build/build_config.h"
 #include "components/services/storage/public/cpp/constants.h"
 #include "storage/browser/quota/storage_directory_util.h"
 
@@ -59,20 +61,43 @@ void StorageDirectory::ClearDoomedBuckets() {
 }
 
 bool StorageDirectory::DoomPath(const base::FilePath& path) {
-  if (!base::PathExists(path))
+  if (!base::PathExists(path) && !base::IsLink(path)) {
     return true;
+  }
 
-  base::FilePath doomed_dir;
-  base::CreateTemporaryDirInDir(
-      path.DirName(), base::StrCat({path.BaseName().value(), kDoomedPathName}),
-      &doomed_dir);
+  // Atomically rename `path` onto a fresh name that does not exist yet.
+  //
+  // Do not pre-create the destination directory: when `rename(2)` fails (e.g.
+  // with `EISDIR` on POSIX because `path` has been swapped for a symlink and
+  // the destination already exists as a directory), `base::Move()` falls back
+  // to the symlink-following `base::CopyDirectory()` and copies the link target
+  // into the profile directory. On POSIX, `base::ReplaceFile()` performs a
+  // direct `rename(2)` without a copy fallback: a real directory moves as
+  // before, while a planted symlink is renamed without being followed and then
+  // unlinked by `ClearDoomed*()`. On Windows, `base::ReplaceFile()` creates a
+  // temporary backup file and calls Win32 `::ReplaceFile()` (which fails for
+  // directories and logs a failed `Windows.ReplaceFileResult` histogram sample
+  // before falling back to `::MoveFile()`), so remove reparse points directly
+  // and use `base::Move()` onto the non-existent `doomed_dir`.
+  base::FilePath doomed_dir = path.DirName().Append(base::StrCat(
+      {path.BaseName().value(), kDoomedPathName,
+       base::FilePath::FromASCII(
+           base::Uuid::GenerateRandomV4().AsLowercaseString())
+           .value()}));
+#if BUILDFLAG(IS_POSIX)
+  return base::ReplaceFile(path, doomed_dir, /*error=*/nullptr);
+#else
+  if (base::IsLink(path)) {
+    return base::DeletePathRecursively(path);
+  }
   return base::Move(path, doomed_dir);
+#endif
 }
 
 std::set<base::FilePath> StorageDirectory::EnumerateDoomedDirectories() {
   base::FileEnumerator enumerator(
       web_storage_path_.DirName(),
-      /*recursive=*/false, base::FileEnumerator::DIRECTORIES,
+      /*recursive=*/false, base::FileEnumerator::NAMES_ONLY,
       base::StrCat(
           {kWebStorageDirectory, kDoomedPathName, FILE_PATH_LITERAL("*")}));
 
@@ -85,7 +110,7 @@ std::set<base::FilePath> StorageDirectory::EnumerateDoomedDirectories() {
 
 std::set<base::FilePath> StorageDirectory::EnumerateDoomedBuckets() {
   base::FileEnumerator enumerator(
-      web_storage_path_, /*recursive=*/false, base::FileEnumerator::DIRECTORIES,
+      web_storage_path_, /*recursive=*/false, base::FileEnumerator::NAMES_ONLY,
       base::StrCat(
           {FILE_PATH_LITERAL("*"), kDoomedPathName, FILE_PATH_LITERAL("*")}));
 
