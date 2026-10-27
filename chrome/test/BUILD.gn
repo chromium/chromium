@@ -3129,6 +3129,7 @@ test("unit_tests") {
       "//chrome/browser/ui/views/tabs/vertical:unit_tests",
       "//chrome/browser/ui/views/toolbar:unit_tests",
       "//chrome/browser/ui/views/user_education:unit_tests",
+      "//chrome/browser/ui/views/voice:unit_tests",
       "//chrome/browser/ui/views/webauthn:unit_tests",
       "//chrome/browser/ui/views/webid:unit_tests",
       "//chrome/browser/ui/waap:unit_tests",

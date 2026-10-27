@@ -13,7 +13,7 @@
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/dictation/reviewing_page_status_view.h"
-#include "chrome/browser/ui/views/dictation/waveform_view.h"
+#include "chrome/browser/ui/views/voice/waveform_view.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/strings/grit/components_strings.h"
@@ -23,7 +23,6 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/views/accessibility/view_accessibility.h"
-#include "ui/views/bubble/bubble_border.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/image_button_factory.h"
@@ -40,6 +39,8 @@
 #include "ui/views/widget/widget.h"
 
 namespace dictation {
+
+using voice::WaveformView;
 
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(DictationBubbleUi,
                                       kViewElementIdForTesting);
@@ -60,6 +61,7 @@ namespace {
 // The contents view of the dictation toast.
 class DictationToastView : public views::View {
   METADATA_HEADER(DictationToastView, views::View)
+
  public:
   explicit DictationToastView(
       base::RepeatingClosure close_callback,
@@ -146,6 +148,7 @@ void DictationToastView::Init() {
   waveform_view_ = waveform_view;
   waveform_view->SetProperty(views::kElementIdentifierKey,
                              DictationBubbleUi::kWaveformElementIdForTesting);
+  waveform_view->SetCollapseWhenIdle(!kSessionEndsOnStreamEnd.Get());
   waveform_view->SetProperty(views::kMarginsKey, child_margins);
   waveform_view->SetProperty(
       views::kFlexBehaviorKey,
@@ -202,7 +205,7 @@ void DictationToastView::Init() {
 
 void DictationToastView::UpdateForState(UiState state) {
   if (waveform_view_) {
-    waveform_view_->SetState(state);
+    waveform_view_->SetMode(ToWaveformMode(state));
   }
 
   if (toggle_button_) {
@@ -288,25 +291,12 @@ DictationBubbleUi::DictationBubbleUi(
     base::RepeatingClosure close_callback,
     base::RepeatingClosure toggle_active_stream_callback,
     bool show_reviewing_page_status)
-    : BubbleDialogDelegate(anchor_view, views::BubbleBorder::NONE) {
-  SetBackgroundColor(ui::kColorBubbleBackground);
-  SetShowCloseButton(false);
-  DialogDelegate::SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
-  set_corner_radius(ChromeLayoutProvider::Get()->GetDistanceMetric(
-      DISTANCE_TOAST_BUBBLE_HEIGHT));
-  set_close_on_deactivate(false);
+    : VoicePlate(anchor_view) {
   SetContentsView(std::make_unique<DictationToastView>(
       std::move(close_callback), std::move(toggle_active_stream_callback),
       base::BindRepeating(&DictationBubbleUi::SizeToContents,
                           base::Unretained(this))));
-
-  // TODO(crbug.com/509983464): Update this to call an undeprecated factory
-  // function when this bug is fixed.
-  widget_ =
-      base::WrapUnique(views::BubbleDialogDelegate::CreateBubbleDeprecated(
-          this, views::Widget::InitParams::CLIENT_OWNS_WIDGET));
-
-  GetBubbleFrameView()->bubble_border()->set_draw_border_stroke(false);
+  CreateWidget();
 
   if (show_reviewing_page_status) {
     views::AsViewClass<DictationToastView>(GetContentsView())
@@ -317,8 +307,7 @@ DictationBubbleUi::DictationBubbleUi(
 DictationBubbleUi::~DictationBubbleUi() = default;
 
 void DictationBubbleUi::Show() {
-  CHECK(widget_);
-  widget_->ShowInactive();
+  VoicePlate::Show();
   // While the reviewing page status is shown, `GetInitiallyFocusedView()`
   // returns the close button, which `ShowInactive()` stores as the view to
   // focus on activation. Clear it so that the widget becoming active without
@@ -328,7 +317,7 @@ void DictationBubbleUi::Show() {
       views::AsViewClass<DictationToastView>(GetContentsView())
           ->toggle_button();
   if (!toggle_button->GetVisible()) {
-    widget_->GetFocusManager()->SetStoredFocusView(nullptr);
+    GetWidget()->GetFocusManager()->SetStoredFocusView(nullptr);
   }
 }
 
@@ -362,34 +351,13 @@ void DictationBubbleUi::SetReviewingPageStatusDurationForTesting(
 }
 
 void DictationBubbleUi::Init() {
+  VoicePlate::Init();
   CHECK(GetContentsView());
   auto* toast_view = views::AsViewClass<DictationToastView>(GetContentsView());
   toast_view->Init();
   toast_view->UpdateForState(state_);
 
   SetInitiallyFocusedView(toast_view->toggle_button());
-
-  const auto* const layout_provider = ChromeLayoutProvider::Get();
-  const gfx::Insets insets = layout_provider->GetInsetsMetric(
-      views::InsetsMetric::INSETS_VECTOR_IMAGE_BUTTON);
-  const int max_child_height = std::max(
-      {layout_provider->GetDistanceMetric(DISTANCE_TOAST_BUBBLE_HEIGHT_CONTENT),
-       layout_provider->GetDistanceMetric(
-           DISTANCE_TOAST_BUBBLE_HEIGHT_ACTION_BUTTON),
-       layout_provider->GetDistanceMetric(DISTANCE_TOAST_BUBBLE_ICON_SIZE) +
-           insets.height()});
-
-  const int total_vertical_margins =
-      layout_provider->GetDistanceMetric(DISTANCE_TOAST_BUBBLE_HEIGHT) -
-      max_child_height;
-  const int top_margin = total_vertical_margins / 2;
-
-  set_margins(gfx::Insets::TLBR(
-      top_margin,
-      layout_provider->GetDistanceMetric(DISTANCE_TOAST_BUBBLE_MARGIN_LEFT),
-      total_vertical_margins - top_margin,
-      layout_provider->GetDistanceMetric(
-          DISTANCE_TOAST_BUBBLE_MARGIN_RIGHT_CLOSE_BUTTON)));
 }
 
 views::View* DictationBubbleUi::GetInitiallyFocusedView() {
@@ -405,31 +373,6 @@ views::View* DictationBubbleUi::GetInitiallyFocusedView() {
     return toggle_button;
   }
   return toast_view->close_button();
-}
-
-gfx::Rect DictationBubbleUi::GetBubbleBounds() {
-  views::View* anchor_view = GetAnchorView();
-  if (!anchor_view || !GetWidget()) {
-    return gfx::Rect();
-  }
-
-  const gfx::Size preferred_size =
-      GetWidget()->GetContentsView()->GetPreferredSize();
-  const gfx::Rect anchor_bounds = anchor_view->GetBoundsInScreen();
-
-  const int minimum_margin = ChromeLayoutProvider::Get()->GetDistanceMetric(
-                                 DISTANCE_TOAST_BUBBLE_BROWSER_WINDOW_MARGIN) -
-                             views::BubbleBorder::kShadowBlur;
-  const int width =
-      std::min(preferred_size.width(),
-               std::max(anchor_bounds.width() - 2 * minimum_margin, 0));
-  const int x = anchor_bounds.x() + ((anchor_bounds.width() - width) / 2);
-
-  // Overlap the bottom of the toolbar/omnibox by only a few pixels (e.g. 10
-  // dip).
-  constexpr int kOverlapAmount = 10;
-  const int y = anchor_bounds.bottom() - kOverlapAmount;
-  return gfx::Rect(x, y, width, preferred_size.height());
 }
 
 }  // namespace dictation

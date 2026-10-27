@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_DICTATION_UI_STATE_H_
 #define CHROME_BROWSER_UI_VIEWS_DICTATION_UI_STATE_H_
 
+#include "chrome/browser/ui/views/voice/waveform_mode.h"
+
 namespace dictation {
 
 enum class UiState {
@@ -13,6 +15,8 @@ enum class UiState {
   kTranscribing,
   kFinalizing,
 };
+
+voice::WaveformMode ToWaveformMode(UiState state);
 
 }  // namespace dictation
 

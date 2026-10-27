@@ -29,7 +29,6 @@
 #include "chrome/browser/ui/views/dictation/dictation_bubble_ui.h"
 #include "chrome/browser/ui/views/dictation/dictation_overlay_view.h"
 #include "chrome/browser/ui/views/dictation/ui_state.h"
-#include "chrome/browser/ui/views/dictation/waveform_view.h"
 #include "chrome/browser/ui/views/dictation/waveform_view_button.h"
 #include "chrome/common/extensions/api/dictation_private.h"
 #include "chrome/test/base/chrome_test_utils.h"
@@ -475,7 +474,7 @@ IN_PROC_BROWSER_TEST_P(DictationSessionUiImplBrowserTest,
     CheckHasSession(true),
     CheckResult(GetSessionState(), SessionState::kFinalizing),
 
-    // Once the finalization completes the sesison should be ended.
+    // Once the finalization completes the session should be ended.
     ExtensionAPISetStreamState(ExtensionStreamState::kComplete),
     WaitForSessionState(SessionState::kInactive),
     CheckHasSession(false),

@@ -2,21 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/dictation/waveform_view.h"
+#include "chrome/browser/ui/views/voice/waveform_view.h"
 
 #include <algorithm>
 #include <cmath>
 #include <numbers>
 
 #include "base/check_op.h"
-#include "chrome/browser/dictation/features.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_provider.h"
 #include "ui/gfx/animation/infinite_animation.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/rect_f.h"
-namespace dictation {
+
+namespace voice {
 
 namespace {
 
@@ -46,14 +46,16 @@ constexpr float kAudioSensitivity = 8.0f;
 constexpr float kInflectionInput = 0.75f;
 constexpr float kInflectionOutputPercent = 0.75f;
 
-// Finalizing wave animation parameters.
-constexpr base::TimeDelta kFinalizingWaveTravelDuration =
+// The size of the resting dots.
+constexpr float kDotSize = 2.0f;
+
+// Processing wave animation parameters.
+constexpr base::TimeDelta kProcessingWaveTravelDuration =
     base::Milliseconds(700);
-constexpr base::TimeDelta kFinalizingWavePauseDuration = base::Milliseconds(50);
-constexpr float kFinalizingWaveAmplitude = 5.0f;
-constexpr float kFinalizingBaseDotSize = 2.0f;
-constexpr float kFinalizingHighlightDotSize = 3.5f;
-constexpr double kFinalizingPacketHalfWidth = 2.5;
+constexpr base::TimeDelta kProcessingWavePauseDuration = base::Milliseconds(50);
+constexpr float kProcessingWaveAmplitude = 5.0f;
+constexpr float kProcessingHighlightDotSize = 3.5f;
+constexpr double kProcessingPacketHalfWidth = 2.5;
 
 float MapRange(float value,
                float from_min,
@@ -113,21 +115,30 @@ size_t WaveformView::GetCenterBarIndex() const {
   return bars_.size() / 2;
 }
 
-bool WaveformView::IsCollapsedInParent() const {
-  return !kSessionEndsOnStreamEnd.Get() && state_ == UiState::kInactive;
-}
-
-void WaveformView::SetState(UiState state) {
-  if (state_ == state) {
+void WaveformView::SetCollapseWhenIdle(bool collapse_when_idle) {
+  if (collapse_when_idle_ == collapse_when_idle) {
     return;
   }
-  state_ = state;
-  if (state_ == UiState::kFinalizing) {
-    finalizing_start_time_ = base::TimeTicks::Now();
-  } else {
-    finalizing_start_time_ = base::TimeTicks();
+  collapse_when_idle_ = collapse_when_idle;
+  InvalidateLayout();
+  SchedulePaint();
+}
+
+bool WaveformView::IsCollapsed() const {
+  return collapse_when_idle_ && mode_ == WaveformMode::kIdle;
+}
+
+void WaveformView::SetMode(WaveformMode mode) {
+  if (mode_ == mode) {
+    return;
   }
-  if (state_ == UiState::kInactive) {
+  mode_ = mode;
+  if (mode_ == WaveformMode::kProcessing) {
+    processing_start_time_ = base::TimeTicks::Now();
+  } else {
+    processing_start_time_ = base::TimeTicks();
+  }
+  if (mode_ == WaveformMode::kIdle) {
     std::fill(audio_history_.begin(), audio_history_.end(), 0.0f);
     for (auto& bar : bars_) {
       bar.height = kMinBarHeight;
@@ -146,43 +157,42 @@ void WaveformView::SetAudioLevel(float level) {
   active_volume_ = audio_level_;
 }
 
-WaveformView::AnimationState WaveformView::GetFinalizingAnimationState(
+WaveformView::AnimationState WaveformView::GetProcessingAnimationState(
     size_t index,
     base::TimeTicks now) const {
   const float baseline_y =
       height() > 0 ? height() / 2.0f : GetPreferredSize().height() / 2.0f;
-  if (finalizing_start_time_.is_null()) {
-    return {baseline_y, kFinalizingBaseDotSize};
+  if (processing_start_time_.is_null()) {
+    return {baseline_y, kDotSize};
   }
 
-  const base::TimeDelta elapsed = now - finalizing_start_time_;
+  const base::TimeDelta elapsed = now - processing_start_time_;
   const base::TimeDelta cycle_period =
-      kFinalizingWaveTravelDuration + kFinalizingWavePauseDuration;
+      kProcessingWaveTravelDuration + kProcessingWavePauseDuration;
   const base::TimeDelta cycle_time = elapsed % cycle_period;
 
   double wave_weight = 0.0;
-  if (cycle_time < kFinalizingWaveTravelDuration) {
-    const double progress = cycle_time / kFinalizingWaveTravelDuration;
+  if (cycle_time < kProcessingWaveTravelDuration) {
+    const double progress = cycle_time / kProcessingWaveTravelDuration;
     const double bar_count = static_cast<double>(bars_.size());
     const double crest_pos =
-        -kFinalizingPacketHalfWidth +
-        progress * (bar_count - 1 + 2.0 * kFinalizingPacketHalfWidth);
+        -kProcessingPacketHalfWidth +
+        progress * (bar_count - 1 + 2.0 * kProcessingPacketHalfWidth);
     const double dist = std::abs(static_cast<double>(index) - crest_pos);
-    if (dist < kFinalizingPacketHalfWidth) {
+    if (dist < kProcessingPacketHalfWidth) {
       wave_weight = 0.5 * (1.0 + std::cos(std::numbers::pi_v<double> * dist /
-                                          kFinalizingPacketHalfWidth));
+                                          kProcessingPacketHalfWidth));
     }
   }
 
   const float weight = static_cast<float>(wave_weight);
-  return {
-      baseline_y - kFinalizingWaveAmplitude * weight,
-      std::lerp(kFinalizingBaseDotSize, kFinalizingHighlightDotSize, weight)};
+  return {baseline_y - kProcessingWaveAmplitude * weight,
+          std::lerp(kDotSize, kProcessingHighlightDotSize, weight)};
 }
 
 gfx::Size WaveformView::CalculatePreferredSize(
     const views::SizeBounds& available_size) const {
-  if (IsCollapsedInParent()) {
+  if (IsCollapsed()) {
     return gfx::Size(0, 0);
   }
   const auto* const layout_provider = ChromeLayoutProvider::Get();
@@ -196,9 +206,7 @@ gfx::Size WaveformView::CalculatePreferredSize(
 }
 
 void WaveformView::OnPaint(gfx::Canvas* canvas) {
-  // Painting is skipped in kInactive and kInitializing states as the parent
-  // view is expected to hide or collapse this view in those states.
-  if (IsCollapsedInParent()) {
+  if (IsCollapsed()) {
     return;
   }
 
@@ -213,23 +221,22 @@ void WaveformView::OnPaint(gfx::Canvas* canvas) {
   flags.setAntiAlias(true);
   flags.setStyle(cc::PaintFlags::kFill_Style);
 
-  if (state_ == UiState::kInactive || state_ == UiState::kInitializing) {
+  if (mode_ == WaveformMode::kIdle || mode_ == WaveformMode::kWaiting) {
     for (size_t i = 0; i < bars_.size(); ++i) {
       const float dot_x = start_x + i * bar_spacing + kBarWidth / 2.0f;
-      const gfx::RectF rect(dot_x - kFinalizingBaseDotSize / 2.0f,
-                            baseline_y - kFinalizingBaseDotSize / 2.0f,
-                            kFinalizingBaseDotSize, kFinalizingBaseDotSize);
-      canvas->DrawRoundRect(rect, kFinalizingBaseDotSize / 2.0f, flags);
+      const gfx::RectF rect(dot_x - kDotSize / 2.0f,
+                            baseline_y - kDotSize / 2.0f, kDotSize, kDotSize);
+      canvas->DrawRoundRect(rect, kDotSize / 2.0f, flags);
     }
     return;
   }
 
-  if (state_ == UiState::kFinalizing) {
+  if (mode_ == WaveformMode::kProcessing) {
     const base::TimeTicks now = base::TimeTicks::Now();
     for (size_t i = 0; i < bars_.size(); ++i) {
       const float dot_x = start_x + i * bar_spacing + kBarWidth / 2.0f;
       const AnimationState animation_state =
-          GetFinalizingAnimationState(i, now);
+          GetProcessingAnimationState(i, now);
       const gfx::RectF rect(
           dot_x - animation_state.size / 2.0f,
           animation_state.center_y - animation_state.size / 2.0f,
@@ -266,7 +273,7 @@ void WaveformView::AnimationProgressed(const gfx::Animation* animation) {
 }
 
 void WaveformView::UpdatePhysics(base::TimeDelta delta) {
-  if (state_ != UiState::kTranscribing) {
+  if (mode_ != WaveformMode::kLive) {
     return;
   }
 
@@ -308,9 +315,9 @@ void WaveformView::UpdatePhysics(base::TimeDelta delta) {
 float WaveformView::GetTargetHeightForBar(size_t index,
                                           float min_height,
                                           float max_height) const {
-  switch (state_) {
-    case UiState::kInitializing:
-    case UiState::kTranscribing: {
+  switch (mode_) {
+    case WaveformMode::kWaiting:
+    case WaveformMode::kLive: {
       const size_t center_bar_index = GetCenterBarIndex();
       const size_t dist = index > center_bar_index ? index - center_bar_index
                                                    : center_bar_index - index;
@@ -321,8 +328,8 @@ float WaveformView::GetTargetHeightForBar(size_t index,
           1.0f - (static_cast<float>(dist) / (center_bar_index + 1.0f));
       return std::max(min_height, raw_height * taper);
     }
-    case UiState::kInactive:
-    case UiState::kFinalizing:
+    case WaveformMode::kIdle:
+    case WaveformMode::kProcessing:
       return min_height;
   }
 }
@@ -330,4 +337,4 @@ float WaveformView::GetTargetHeightForBar(size_t index,
 BEGIN_METADATA(WaveformView)
 END_METADATA
 
-}  // namespace dictation
+}  // namespace voice

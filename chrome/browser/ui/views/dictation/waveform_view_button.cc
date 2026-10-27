@@ -13,6 +13,8 @@
 
 namespace dictation {
 
+using voice::WaveformView;
+
 WaveformViewButton::WaveformViewButton(bool full_size, PressedCallback callback)
     : views::Button(std::move(callback)) {
   SetAccessibleName(

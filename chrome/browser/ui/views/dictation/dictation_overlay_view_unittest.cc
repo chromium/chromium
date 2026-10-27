@@ -12,7 +12,6 @@
 #include "base/test/icu_test_util.h"
 #include "chrome/browser/dictation/test_util.h"
 #include "chrome/browser/ui/views/dictation/ui_state.h"
-#include "chrome/browser/ui/views/dictation/waveform_view.h"
 #include "chrome/browser/ui/views/dictation/waveform_view_button.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "testing/gtest/include/gtest/gtest.h"

@@ -14,7 +14,6 @@ source_set("dictation") {
     "reviewing_page_status_view.h",
     "text_field_filter.h",
     "ui_state.h",
-    "waveform_view.h",
     "waveform_view_button.h",
   ]
   sources = [
@@ -23,12 +22,13 @@ source_set("dictation") {
     "onboarding_dialog_controller.cc",
     "reviewing_page_status_view.cc",
     "text_field_filter.cc",
-    "waveform_view.cc",
+    "ui_state.cc",
     "waveform_view_button.cc",
   ]
 
   public_deps = [
     "//base",
+    "//chrome/browser/ui/views/voice",
     "//content/public/browser",
     "//ui/base",
     "//ui/base/ime:text_input_types",
@@ -124,6 +124,7 @@ source_set("unit_tests") {
     "//base",
     "//base:i18n",
     "//chrome/browser/dictation:test_support",
+    "//chrome/browser/ui/views/voice",
     "//chrome/test:test_support",
     "//components/user_education/common",
     "//testing/gtest",

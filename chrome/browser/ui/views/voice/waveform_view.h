@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_DICTATION_WAVEFORM_VIEW_H_
-#define CHROME_BROWSER_UI_VIEWS_DICTATION_WAVEFORM_VIEW_H_
+#ifndef CHROME_BROWSER_UI_VIEWS_VOICE_WAVEFORM_VIEW_H_
+#define CHROME_BROWSER_UI_VIEWS_VOICE_WAVEFORM_VIEW_H_
 
 #include <optional>
 #include <vector>
@@ -11,7 +11,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "chrome/browser/ui/views/dictation/ui_state.h"
+#include "chrome/browser/ui/views/voice/waveform_mode.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/animation/animation_delegate.h"
 #include "ui/views/view.h"
@@ -20,11 +20,11 @@ namespace gfx {
 class InfiniteAnimation;
 }
 
-namespace dictation {
+namespace voice {
 
 // A custom View that draws an animated voice waveform consisting of vertical
-// rounded bars. The animation plays during transcribing (driven by mic volume)
-// and plays a traveling wave animation during finalizing.
+// rounded bars. The bars are driven by the mic volume in `WaveformMode::kLive`,
+// and a traveling wave animation plays in `WaveformMode::kProcessing`.
 class WaveformView : public views::View, public gfx::AnimationDelegate {
   METADATA_HEADER(WaveformView, views::View)
 
@@ -42,9 +42,11 @@ class WaveformView : public views::View, public gfx::AnimationDelegate {
   void SetBarCount(size_t bar_count);
   size_t bar_count() const { return bars_.size(); }
 
-  // Set the current dictation state to control the animation behavior.
-  void SetState(UiState state);
-  UiState state() const { return state_; }
+  void SetCollapseWhenIdle(bool collapse_when_idle);
+
+  // Sets what the waveform draws.
+  void SetMode(WaveformMode mode);
+  WaveformMode mode() const { return mode_; }
 
   float audio_level_for_testing() const { return audio_level_; }
 
@@ -62,8 +64,8 @@ class WaveformView : public views::View, public gfx::AnimationDelegate {
   void AnimationProgressed(const gfx::Animation* animation) override;
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(DictationBubbleUiTest, FinalizingWaveAnimation);
-  FRIEND_TEST_ALL_PREFIXES(DictationBubbleUiTest, AudioLevelMath);
+  FRIEND_TEST_ALL_PREFIXES(WaveformViewTest, ProcessingWaveAnimation);
+  FRIEND_TEST_ALL_PREFIXES(WaveformViewTest, AudioLevelMath);
 
   struct AnimationState {
     float center_y = 0.0f;
@@ -74,20 +76,21 @@ class WaveformView : public views::View, public gfx::AnimationDelegate {
   float GetTargetHeightForBar(size_t index,
                               float min_height,
                               float max_height) const;
-  AnimationState GetFinalizingAnimationState(size_t index,
+  AnimationState GetProcessingAnimationState(size_t index,
                                              base::TimeTicks now) const;
 
   size_t GetCenterBarIndex() const;
-  bool IsCollapsedInParent() const;
+  bool IsCollapsed() const;
 
   const bool full_size_;
+  bool collapse_when_idle_ = false;
 
-  UiState state_ = UiState::kInactive;
+  WaveformMode mode_ = WaveformMode::kIdle;
 
   // Animation timer and tracking.
   std::unique_ptr<gfx::InfiniteAnimation> animation_;
   base::TimeTicks last_update_time_;
-  base::TimeTicks finalizing_start_time_;
+  base::TimeTicks processing_start_time_;
 
   // Audio level and ripple history.
   float audio_level_ = 0.0f;
@@ -103,9 +106,8 @@ class WaveformView : public views::View, public gfx::AnimationDelegate {
     float target_height = 4.0f;
   };
   std::vector<BarState> bars_;
-
 };
 
-}  // namespace dictation
+}  // namespace voice
 
-#endif  // CHROME_BROWSER_UI_VIEWS_DICTATION_WAVEFORM_VIEW_H_
+#endif  // CHROME_BROWSER_UI_VIEWS_VOICE_WAVEFORM_VIEW_H_
