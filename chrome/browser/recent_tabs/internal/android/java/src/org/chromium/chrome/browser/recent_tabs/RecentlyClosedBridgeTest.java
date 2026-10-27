@@ -6,6 +6,9 @@ package org.chromium.chrome.browser.recent_tabs;
 
 import static com.google.common.truth.Truth.assertThat;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
 import android.os.Build;
@@ -30,8 +33,11 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
@@ -1446,6 +1452,39 @@ public class RecentlyClosedBridgeTest {
                 });
     }
 
+    @Test
+    @MediumTest
+    @EnableFeatures(ChromeFeatureList.UNDOABLE_TAB_CLOSURE_REWORK)
+    public void testOpenMostRecentlyClosedEntry_Bulk_FlagOn_RestoresPinnedFromClosedTab() {
+        final Tab[] restored = closePinnedAndUnpinnedTabsInBulkAndRestore();
+
+        // Pinned state is read from each closed tab, so it round-trips.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    assertTrue("Pinned tab restored unpinned.", restored[0].getIsPinned());
+                    assertFalse("Unpinned tab restored pinned.", restored[1].getIsPinned());
+                });
+    }
+
+    /**
+     * Asserts the legacy (incorrect) result on purpose: it proves the fix is gated behind the
+     * feature flag. With the flag off, saving the bulk closure reads pinned state from the live tab
+     * model at the close wrapper's relative index. Both relative indices resolve to a pinned tab
+     * (see the helper), so the unpinned closed tab is also restored pinned.
+     */
+    @Test
+    @MediumTest
+    @DisableFeatures(ChromeFeatureList.UNDOABLE_TAB_CLOSURE_REWORK)
+    public void testOpenMostRecentlyClosedEntry_Bulk_FlagOff_LegacyReadsLiveModelPinnedState() {
+        final Tab[] restored = closePinnedAndUnpinnedTabsInBulkAndRestore();
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    assertTrue(restored[0].getIsPinned());
+                    assertTrue(restored[1].getIsPinned());
+                });
+    }
+
     /** Tests tabs are not saved when unrestorable. */
     @Test
     @MediumTest
@@ -1846,6 +1885,70 @@ public class RecentlyClosedBridgeTest {
 
     private void closeTabs(TabClosureParams params) {
         mTabModel.getTabRemover().closeTabs(params, /* allowDialog= */ false);
+    }
+
+    /**
+     * Arranges the model as [P1, P2, P3, Blank, U4] (P = pinned, U = unpinned), closes [P3, U4]
+     * together so they are saved as a bulk closure through AndroidLiveTabContextCloseWrapper, then
+     * restores that entry.
+     *
+     * <p>The wrapper's relative indices are 0 (P3) and 1 (U4). The legacy code reads pinned state
+     * from the live model at those indices instead of from the closed tabs. Live index 1 is the
+     * pinned P2 whether the closed tabs are still in the model ([P1, P2, P3, Blank, U4]) or already
+     * removed ([P1, P2, Blank]), so the legacy read always saves U4 as pinned.
+     *
+     * @return The restored copies of P3 and U4, in that order.
+     */
+    private Tab[] closePinnedAndUnpinnedTabsInBulkAndRestore() {
+        final String urlA = getUrl(TEST_PAGE_A);
+        final String urlB = getUrl(TEST_PAGE_B);
+        final String urlC = getUrl(TEST_PAGE_C);
+        final Tab blankTab = mActivityTestRule.getActivityTab();
+        final Tab pinned1 = mActivityTestRule.loadUrlInNewTab(urlA, /* incognito= */ false);
+        final Tab pinned2 = mActivityTestRule.loadUrlInNewTab(urlB, /* incognito= */ false);
+        final Tab pinned3 = mActivityTestRule.loadUrlInNewTab(urlC, /* incognito= */ false);
+        final Tab unpinned4 = mActivityTestRule.loadUrlInNewTab(urlA, /* incognito= */ false);
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mTabModel.pinTab(pinned1.getId(), /* showUngroupDialog= */ false);
+                    mTabModel.pinTab(pinned2.getId(), /* showUngroupDialog= */ false);
+                    mTabModel.pinTab(pinned3.getId(), /* showUngroupDialog= */ false);
+                });
+        assertEquals(List.of(pinned1, pinned2, pinned3, blankTab, unpinned4), getAllTabs());
+
+        // Tab order is inverted in RecentlyClosedEntry as most recent comes first.
+        final String[] urls = new String[] {urlA, urlC};
+        final String[] titles = new String[2];
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    titles[0] = unpinned4.getTitle();
+                    titles[1] = pinned3.getTitle();
+                    closeTabs(TabClosureParams.closeTabs(List.of(pinned3, unpinned4)).build());
+                    mTabModel.commitAllTabClosures();
+                });
+
+        final List<RecentlyClosedEntry> recentEntries = new ArrayList<>();
+        assertEquals(3, getRecentEntriesAndReturnActiveTabCount(recentEntries));
+        assertEquals(1, recentEntries.size());
+        assertEntryIs(
+                recentEntries.get(0), RecentlyClosedBulkEvent.class, new String[0], titles, urls);
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> mRecentlyClosedBridge.openMostRecentlyClosedEntry(mTabModel));
+
+        final List<Tab> restoredTabs = getAllTabs();
+        assertEquals(5, restoredTabs.size());
+        restoredTabs.removeAll(List.of(pinned1, pinned2, blankTab));
+        assertEquals(2, restoredTabs.size());
+        return new Tab[] {findTabWithUrl(restoredTabs, urlC), findTabWithUrl(restoredTabs, urlA)};
+    }
+
+    private Tab findTabWithUrl(List<Tab> tabs, String url) {
+        for (Tab tab : tabs) {
+            if (url.equals(ChromeTabUtils.getUrlOnUiThread(tab).getSpec())) return tab;
+        }
+        throw new AssertionError("No tab with url " + url + " in " + tabsToString(tabs));
     }
 
     private String tabsToString(List<Tab> tabs) {

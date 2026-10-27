@@ -7,9 +7,13 @@
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/strings/string_number_conversions.h"
 #include "chrome/browser/android/tab_android.h"
+#include "chrome/browser/flags/android/chrome_feature_list.h"
+#include "chrome/browser/glic/glic_tab_restore_helper.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "components/sessions/content/content_live_tab.h"
 #include "components/sessions/core/tab_restore_types.h"
@@ -87,6 +91,39 @@ AndroidLiveTabContextCloseWrapper::GetGroupIdForSavedGroup(
     }
   }
   return std::nullopt;
+}
+
+bool AndroidLiveTabContextCloseWrapper::IsTabPinned(int relative_index) const {
+  if (!base::FeatureList::IsEnabled(
+          chrome::android::kUndoableTabClosureRework)) {
+    // Legacy behavior: `AndroidLiveTabContextCloseWrapper` previously did not
+    // override this method, so `TabRestoreServiceHelper` called
+    // `AndroidLiveTabContext::IsTabPinned(relative_index)`, which looks up
+    // `tab_model_->GetTabAt(relative_index)` in the live `TabModel` instead of
+    // `closed_tabs_[relative_index]`.
+    return AndroidLiveTabContext::IsTabPinned(relative_index);
+  }
+  return GetTabAt(relative_index)->IsPinned();
+}
+
+std::map<std::string, std::string>
+AndroidLiveTabContextCloseWrapper::GetExtraDataForTab(
+    int relative_index) const {
+  if (!base::FeatureList::IsEnabled(
+          chrome::android::kUndoableTabClosureRework)) {
+    // Legacy behavior: `AndroidLiveTabContextCloseWrapper` previously did not
+    // override this method, so `TabRestoreServiceHelper` called
+    // `AndroidLiveTabContext::GetExtraDataForTab(relative_index)`, which looks
+    // up `tab_model_->GetTabAt(relative_index)` in the live `TabModel` instead
+    // of `closed_tabs_[relative_index]`.
+    return AndroidLiveTabContext::GetExtraDataForTab(relative_index);
+  }
+  std::map<std::string, std::string> extra_data;
+  TabAndroid* tab_android = GetTabAt(relative_index);
+  glic::PopulateGlicExtraData(tab_android, &extra_data);
+  extra_data[kUndoOldTabIdKey] =
+      base::NumberToString(tab_android->GetAndroidId());
+  return extra_data;
 }
 
 TabAndroid* AndroidLiveTabContextCloseWrapper::GetTabAt(
