@@ -8812,7 +8812,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_NTP_COMPOSE_ADD_FILE" desc="Text for a button label that opens a menu so users can add a file to their search.">
         Add file
       </message>
-      <message name="IDS_NTP_COMPOSE_ADD_DRIVE" desc="Label for the menu item in the Composebox context menu that lets users add a file from Google Drive to their search. 'Drive' refers to the Google Drive product.">
+      <message name="IDS_NTP_COMPOSE_ADD_DRIVE" desc="Label for the menu item in the Composebox context menu that lets users add a file from Google Drive to their search. 'Drive' refers to the Google Drive product." formatter_data="android_java">
         Add from Drive
       </message>
       <message name="IDS_NTP_COMPOSE_ADD_CONTEXT" desc="The text to display to ask user to add context to their search e.g. pdf or image.">

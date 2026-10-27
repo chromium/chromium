@@ -288,7 +288,9 @@ class FuseboxPopup {
                 R.string.accessibility_omnibox_add_files);
         initializeItem(
                 mDriveButton,
-                R.string.omnibox_navattach_drive,
+                OmniboxCapabilities.isDesktopPlatform()
+                        ? R.string.ntp_compose_add_drive
+                        : R.string.omnibox_navattach_drive,
                 R.drawable.gs_drive_vd_theme_24,
                 R.string.accessibility_omnibox_add_from_drive);
         initializeItem(
