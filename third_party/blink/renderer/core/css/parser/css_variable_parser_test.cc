@@ -4,9 +4,12 @@
 
 #include "third_party/blink/renderer/core/css/parser/css_variable_parser.h"
 
+#include <tuple>
+
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/css/css_test_helpers.h"
 #include "third_party/blink/renderer/core/css/css_unparsed_declaration_value.h"
+#include "third_party/blink/renderer/core/css/css_variable_data.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_token_stream.h"
 #include "third_party/blink/renderer/core/css/parser/css_tokenizer.h"
@@ -435,6 +438,70 @@ TEST(CSSVariableParserTest, StripTrailingWhitespaceAndComments) {
                 String(test.expected));
     }
   }
+}
+
+struct UnparsedDeclarationTextData {
+  const char* input;
+  const char* expected;
+};
+UnparsedDeclarationTextData unparsed_declaration_text_data[] = {
+    {"var(--x)", "var(--x)"},
+    {"var(--x)   ", "var(--x)"},
+    {"var(--x) /* c */", "var(--x)"},
+    {"var(--x) /* c */ /* d */ ", "var(--x)"},
+    {"var(--x)/**/", "var(--x)"},
+    {"a /* c */ var(--x)", "a /* c */ var(--x)"},
+    {"var(--x) /* unfinished", "var(--x)"},
+    {"var(--x) !important", "var(--x)"},
+    {"var(--x)  \t\n !important /* c */ ", "var(--x)"},
+    {"var(--x) \"a /* not a comment */\"",
+     "var(--x) \"a /* not a comment */\""},
+    // Escaped whitespace is part of the identifier and must be kept.
+    {"var(--x) a\\ ", "var(--x) a\\ "},
+    {"var(--x) a\\ \t ", "var(--x) a\\ "},
+    // Unterminated string/url()/block running into EOF: the last token
+    // spans the trailing whitespace, but it is still stripped.
+    {"var(--x) \"abc  ", "var(--x) \"abc"},
+    // An escaped backslash before the whitespace does not escape it.
+    {"var(--x) \"ab\\\\ ", "var(--x) \"ab\\\\"},
+    {"var(--x) \"ab\\\\\\ ", "var(--x) \"ab\\\\\\ "},
+    {"var(--x) url(foo  ", "var(--x) url(foo"},
+    {"var(--y  ", "var(--y"},
+    {"var(--x) calc(1px  ", "var(--x) calc(1px"},
+};
+
+class UnparsedDeclarationTextTest
+    : public testing::Test,
+      public testing::WithParamInterface<
+          std::tuple<UnparsedDeclarationTextData, bool>> {};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    UnparsedDeclarationTextTest,
+    testing::Combine(testing::ValuesIn(unparsed_declaration_text_data),
+                     testing::Bool()));
+
+// The stored text of an unparsed value excludes trailing whitespace and
+// comments (which the tokenizer skips), regardless of the string width.
+TEST_P(UnparsedDeclarationTextTest, ExcludesTrailingJunk) {
+  const auto& [data, wide] = GetParam();
+  String input(data.input);
+  if (wide) {
+    input.Ensure16Bit();
+  }
+  SCOPED_TRACE(testing::Message() << data.input << (wide ? " (16-bit)" : ""));
+  auto* context = MakeGarbageCollected<CSSParserContext>(
+      kHTMLStandardMode, SecureContextMode::kInsecureContext);
+  CSSParserTokenStream stream(input);
+  bool important = false;
+  CSSVariableData* result = CSSVariableParser::ConsumeUnparsedDeclaration(
+      stream, /*allow_important_annotation=*/true,
+      /*is_animation_tainted=*/false,
+      /*must_contain_variable_reference=*/true,
+      /*restricted_value=*/true, /*comma_ends_declaration=*/false, important,
+      *context);
+  ASSERT_TRUE(result);
+  EXPECT_EQ(result->OriginalText().ToString(), String(data.expected));
 }
 
 TEST(CSSVariableParserTest, ParseDeclarationValueWithDashedFunctions) {
