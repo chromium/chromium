@@ -16,14 +16,10 @@ class DeviceSharingManagerFactory final
  public:
   explicit DeviceSharingManagerFactory(PassKey key);
 
-  // Returns the default factory used to build DeviceSharingManagers. Can be
-  // registered with AddTestingFactory to use real instances during testing.
-  static TestingFactory GetDefaultFactory();
-
  private:
   // ProfileKeyedServiceFactoryIOS:
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const final;
+      ProfileIOS& profile) const final;
 };
 
 #endif  // IOS_CHROME_BROWSER_DEVICE_SHARING_MODEL_DEVICE_SHARING_MANAGER_FACTORY_H_

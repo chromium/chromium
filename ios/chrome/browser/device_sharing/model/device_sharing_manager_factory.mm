@@ -14,18 +14,12 @@
 namespace {
 
 // Build an instance of DeviceSharingManagerImpl.
-std::unique_ptr<KeyedService> BuildDeviceSharingManager(ProfileIOS* profile) {
-  CHECK(!profile->IsOffTheRecord());
-  return std::make_unique<DeviceSharingManagerImpl>(profile->GetPrefs());
+std::unique_ptr<KeyedService> BuildDeviceSharingManager(ProfileIOS& profile) {
+  CHECK(!profile.IsOffTheRecord());
+  return std::make_unique<DeviceSharingManagerImpl>(profile.GetPrefs());
 }
 
 }  // namespace
-
-// static
-DeviceSharingManagerFactory::TestingFactory
-DeviceSharingManagerFactory::GetDefaultFactory() {
-  return base::BindOnce(&BuildDeviceSharingManager);
-}
 
 DeviceSharingManagerFactory::DeviceSharingManagerFactory(PassKey key)
     : TypedProfileKeyedServiceFactoryIOS(
@@ -35,6 +29,6 @@ DeviceSharingManagerFactory::DeviceSharingManagerFactory(PassKey key)
 
 std::unique_ptr<KeyedService>
 DeviceSharingManagerFactory::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
+    ProfileIOS& profile) const {
   return BuildDeviceSharingManager(profile);
 }
