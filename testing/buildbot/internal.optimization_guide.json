@@ -5031,7 +5031,7 @@
         "swarming": {
           "dimensions": {
             "gpu": "10de:2184",
-            "os": "Ubuntu-22.04",
+            "os": "Ubuntu",
             "pool": "chrome.tests.intelligence"
           },
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -5055,7 +5055,7 @@
         "swarming": {
           "dimensions": {
             "gpu": "10de:2184",
-            "os": "Ubuntu-22.04",
+            "os": "Ubuntu",
             "pool": "chrome.tests.intelligence"
           },
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -5091,7 +5091,7 @@
         "swarming": {
           "dimensions": {
             "gpu": "10de:2184",
-            "os": "Ubuntu-22.04",
+            "os": "Ubuntu",
             "pool": "chrome.tests.intelligence"
           },
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
