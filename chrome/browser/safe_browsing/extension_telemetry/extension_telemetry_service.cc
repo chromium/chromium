@@ -1066,9 +1066,10 @@ ExtensionTelemetryService::CreateReportForEnterprise() {
 
 std::unique_ptr<SafeBrowsingTokenFetcher>
 ExtensionTelemetryService::GetTokenFetcher() {
-  CHECK(!profile_->IsOffTheRecord() &&
-            IsEnhancedProtectionEnabled(*profile_->GetPrefs()),
-        base::NotFatalUntil::M162);
+  // TODO(crbug.com/577280434): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(!profile_->IsOffTheRecord() &&
+         IsEnhancedProtectionEnabled(*profile_->GetPrefs()));
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile_);
   if (identity_manager &&
