@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.toolbar;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.clearInvocations;
@@ -76,6 +77,7 @@ import org.chromium.chrome.browser.toolbar.ToolbarPositionController.ToolbarPosi
 import org.chromium.chrome.browser.toolbar.settings.AddressBarPreference;
 import org.chromium.chrome.browser.toolbar.top.ToolbarLayout;
 import org.chromium.chrome.browser.toolbar.top.ToolbarPhone;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.edge_to_edge.TopInsetProvider;
 import org.chromium.chrome.browser.url_constants.UrlConstantResolver;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
@@ -300,6 +302,7 @@ public class ToolbarPositionControllerTest {
     @Mock private ControlContainer mControlContainer;
     @Mock private BottomSheetController mBottomSheetController;
     @Mock private TopInsetProvider mTopInsetProvider;
+    @Mock private EdgeToEdgeController mEdgeToEdgeController;
     @Mock private Profile mProfile;
     @Mock private UserPrefs.Natives mUserPrefsNatives;
     @Mock private PrefService mPrefs;
@@ -342,6 +345,8 @@ public class ToolbarPositionControllerTest {
     private SettableNonNullObservableSupplier<Profile> mProfileSupplier;
     private final SettableMonotonicObservableSupplier<Tab> mActivityTabSupplier =
             ObservableSuppliers.createMonotonic();
+    private final SettableMonotonicObservableSupplier<EdgeToEdgeController>
+            mEdgeToEdgeControllerSupplier = ObservableSuppliers.createMonotonic();
     private HistogramWatcher mStartupExpectation;
     private int mTopAnchorViewId = CONTROL_CONTAINER_ID;
     private int mHairlineHeight;
@@ -431,6 +436,7 @@ public class ToolbarPositionControllerTest {
                         mControlContainerTranslationSupplier,
                         mControlContainerHeightSupplier,
                         mTopInsetProvider,
+                        mEdgeToEdgeControllerSupplier,
                         new Handler(Looper.getMainLooper()),
                         mContext,
                         mToolbarPosition,
@@ -1175,6 +1181,58 @@ public class ToolbarPositionControllerTest {
         assertTrue(result);
         assertEquals(topInset, mToolbarLayout.getEdgeToEdgeTopPadding());
         assertEquals(topInset, mToolbarLayout.getPaddingTop());
+    }
+
+    @Test
+    @Config(sdk = 30)
+    @EnableFeatures(ChromeFeatureList.EDGE_TO_EDGE_TOP_INSET)
+    public void testTopInsetAdjustment_EdgeToEdgeRefactorEnabled() {
+        verify(mTopInsetProvider, never()).addObserver(any());
+        mActivityTabSupplier.set(mock(Tab.class));
+        mEdgeToEdgeControllerSupplier.set(mEdgeToEdgeController);
+
+        ArgumentCaptor<TopInsetProvider.Observer> observerCaptor =
+                ArgumentCaptor.forClass(TopInsetProvider.Observer.class);
+        verify(mEdgeToEdgeController).addObserver(observerCaptor.capture());
+        TopInsetProvider.Observer observer = observerCaptor.getValue();
+
+        int topInset = 50;
+        observer.onToEdgeChange(topInset, /* consumeTopInset= */ true, LayoutType.BROWSING);
+        assertEquals(topInset, mToolbarLayout.getEdgeToEdgeTopPadding());
+        assertEquals(topInset, mToolbarLayout.getPaddingTop());
+
+        observer.onToEdgeChange(0, /* consumeTopInset= */ false, LayoutType.BROWSING);
+        assertEquals(0, mToolbarLayout.getEdgeToEdgeTopPadding());
+        assertEquals(0, mToolbarLayout.getPaddingTop());
+
+        mController.destroy();
+        verify(mEdgeToEdgeController).removeObserver(observer);
+    }
+
+    @Test
+    @Config(sdk = 30)
+    @DisableFeatures(ChromeFeatureList.EDGE_TO_EDGE_TOP_INSET)
+    public void testTopInsetAdjustment_EdgeToEdgeRefactorDisabled() {
+        mActivityTabSupplier.set(mock(Tab.class));
+        mEdgeToEdgeControllerSupplier.set(mEdgeToEdgeController);
+        verify(mEdgeToEdgeController, never()).addObserver(any());
+
+        ArgumentCaptor<TopInsetProvider.Observer> observerCaptor =
+                ArgumentCaptor.forClass(TopInsetProvider.Observer.class);
+        verify(mTopInsetProvider).addObserver(observerCaptor.capture());
+        TopInsetProvider.Observer observer = observerCaptor.getValue();
+
+        int topInset = 50;
+        observer.onToEdgeChange(topInset, /* consumeTopInset= */ true, LayoutType.BROWSING);
+        assertEquals(topInset, mToolbarLayout.getEdgeToEdgeTopPadding());
+        assertEquals(topInset, mToolbarLayout.getPaddingTop());
+
+        observer.onToEdgeChange(0, /* consumeTopInset= */ false, LayoutType.BROWSING);
+        assertEquals(0, mToolbarLayout.getEdgeToEdgeTopPadding());
+        assertEquals(0, mToolbarLayout.getPaddingTop());
+
+        mController.destroy();
+        verify(mTopInsetProvider).removeObserver(observer);
     }
 
     @Test

@@ -46,6 +46,8 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.settings.AddressBarPreference;
 import org.chromium.chrome.browser.toolbar.top.ToolbarLayout;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
 import org.chromium.chrome.browser.ui.edge_to_edge.TopInsetProvider;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -143,6 +145,7 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
     private final NonNullObservableSupplier<Integer> mControlContainerTranslationSupplier;
     private final NonNullObservableSupplier<Integer> mControlContainerHeightSupplier;
     private final TopInsetProvider mTopInsetProvider;
+    private final MonotonicObservableSupplier<EdgeToEdgeController> mEdgeToEdgeControllerSupplier;
     private final MonotonicObservableSupplier<Profile> mProfileSupplier;
     private final Supplier<@Nullable Tab> mActiveTabSupplier;
     private final Supplier<Integer> mTopAnchorViewIdSupplier;
@@ -169,6 +172,8 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
     private final BrowserControlsStateProvider.Observer mBrowserControlsObserver;
     private final SharedPreferences mSharedPreferences;
     private final TopInsetProvider.Observer mTopInsetProviderObserver;
+    private @Nullable EdgeToEdgeController mEdgeToEdgeController;
+    private @Nullable Callback<EdgeToEdgeController> mEdgeToEdgeControllerCallback;
     private int mTopInset;
     private boolean mIsFirstPositionChange;
 
@@ -208,6 +213,7 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
      *     container. If the value is equal to LayoutParams.WRAP_CONTENT, it should be understood as
      *     meaning that the height should no longer be overridden.
      * @param topInsetProvider The {@link TopInsetProvider} instance.
+     * @param edgeToEdgeControllerSupplier Supplier of the {@link EdgeToEdgeController}.
      * @param controlsPosition Supplier to update whenever toolbar position changes.
      * @param profileSupplier Supplier of the currently applicable profile.
      */
@@ -232,6 +238,7 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
             NonNullObservableSupplier<Integer> controlContainerTranslationSupplier,
             NonNullObservableSupplier<Integer> controlContainerHeightSupplier,
             TopInsetProvider topInsetProvider,
+            MonotonicObservableSupplier<EdgeToEdgeController> edgeToEdgeControllerSupplier,
             Handler handler,
             Context context,
             SettableNonNullObservableSupplier<Integer> controlsPosition,
@@ -259,6 +266,7 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
         mControlContainerTranslationSupplier = controlContainerTranslationSupplier;
         mControlContainerHeightSupplier = controlContainerHeightSupplier;
         mTopInsetProvider = topInsetProvider;
+        mEdgeToEdgeControllerSupplier = edgeToEdgeControllerSupplier;
         mCurrentPosition = controlsPosition;
         mKeyboardHeightSupplier = keyboardHeightSupplier;
         mWindowAndroid = windowAndroid;
@@ -451,7 +459,23 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
         // Set up observer to handle edge-to-edge changes.
         mIsNtpCustomizationV2Enabled = NtpCustomizationUtils.isNtpThemeCustomizationEnabled();
         mTopInsetProviderObserver = this::onToEdgeChange;
-        mTopInsetProvider.addObserver(mTopInsetProviderObserver);
+        if (EdgeToEdgeUtils.isEdgeToEdgeRefactorEnabled()) {
+            mEdgeToEdgeControllerCallback =
+                    controller -> {
+                        if (mEdgeToEdgeController != null) {
+                            mEdgeToEdgeController.removeObserver(mTopInsetProviderObserver);
+                        }
+                        mEdgeToEdgeController = controller;
+                        if (mEdgeToEdgeController != null) {
+                            mEdgeToEdgeController.addObserver(mTopInsetProviderObserver);
+                        }
+                    };
+            mEdgeToEdgeControllerSupplier.addSyncObserverAndCallIfNonNull(
+                    mEdgeToEdgeControllerCallback);
+        } else {
+            mEdgeToEdgeControllerCallback = null;
+            mTopInsetProvider.addObserver(mTopInsetProviderObserver);
+        }
 
         updateCurrentPosition();
         mHandler = handler;
@@ -476,6 +500,14 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
         mControlContainerTranslationSupplier.removeObserver(mControlContainerTranslationCallback);
         mControlContainerHeightSupplier.removeObserver(mControlContainerHeightCallback);
         mKeyboardAccessoryHeightSupplier.removeObserver(mKeyboardAccessoryHeightObserver);
+        if (mEdgeToEdgeControllerCallback != null) {
+            mEdgeToEdgeControllerSupplier.removeObserver(mEdgeToEdgeControllerCallback);
+            mEdgeToEdgeControllerCallback = null;
+        }
+        if (mEdgeToEdgeController != null) {
+            mEdgeToEdgeController.removeObserver(mTopInsetProviderObserver);
+            mEdgeToEdgeController = null;
+        }
         mTopInsetProvider.removeObserver(mTopInsetProviderObserver);
         mBottomSheetController.removeObserver(mBottomSheetObserver);
         mBrowserControlsSizer.removeObserver(mBrowserControlsObserver);

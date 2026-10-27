@@ -755,7 +755,7 @@ public class ToolbarManager
      * @param controlsSizer The {@link BrowserControlsSizer} for the activity.
      * @param fullscreenManager The {@link FullscreenManager} for the activity.
      * @param edgeToEdgeControllerSupplier Supplies an {@link EdgeToEdgeController} needed for
-     *     Bottom Controls Toolbar.
+     *     Bottom Controls Toolbar and top inset adjustments in {@link ToolbarPositionController}.
      * @param controlContainer The container of the toolbar.
      * @param compositorViewHolder Class that holds a {@link CompositorView}.
      * @param urlFocusChangedCallback The callback to be notified when the URL focus changes.
@@ -2143,6 +2143,7 @@ public class ToolbarManager
                         controlContainerTranslationSupplier,
                         controlContainerHeightSupplier,
                         mTopInsetProvider,
+                        mEdgeToEdgeControllerSupplier,
                         new Handler(Looper.getMainLooper()),
                         mActivity,
                         mToolbarPositionSupplier,
