@@ -560,7 +560,7 @@ public class PaymentRequestService
         }
         if (methodData.containsKey(MethodStrings.SECURE_PAYMENT_CONFIRMATION)) {
             @SecurePaymentConfirmationRequestValidationError
-            int validationResult = validateSecurePaymentConfirmationRequest(methodData, options);
+            int validationResult = validateSecurePaymentConfirmationRequest(rawMethodData, options);
             if (validationResult != SecurePaymentConfirmationRequestValidationError.OK) {
                 mJourneyLogger.setAborted(AbortReason.INVALID_DATA_FROM_RENDERER);
 
@@ -622,27 +622,30 @@ public class PaymentRequestService
      * SecurePaymentConfirmation (SPC) request. Checks both structural constraints (e.g. SPC cannot
      * be combined with shipping/payer requests) and the SPC parameters.
      *
-     * @param methodData The map of requested payment methods.
+     * @param rawMethodData The array of raw PaymentMethodData from the renderer.
      * @param options The payment options requested by the merchant.
      * @return An error code indicating if the request parameters are valid and acceptable to
      *     proceed. Returns SecurePaymentConfirmationRequestValidationError.OK if valid.
      */
     private @SecurePaymentConfirmationRequestValidationError int
             validateSecurePaymentConfirmationRequest(
-                    Map<String, PaymentMethodData> methodData, PaymentOptions options) {
-        PaymentMethodData spcMethodData = methodData.get(MethodStrings.SECURE_PAYMENT_CONFIRMATION);
-        assumeNonNull(spcMethodData);
+                    PaymentMethodData[] rawMethodData, PaymentOptions options) {
+        assert rawMethodData.length > 0;
 
         // If the SPC feature is not enabled and a website specifies "secure-payment-confirmation",
         // the renderer should pass the browser a null SPC object.
         if (!PaymentFeatureList.isEnabled(PaymentFeatureList.SECURE_PAYMENT_CONFIRMATION)) {
-            return spcMethodData.securePaymentConfirmation == null
-                    ? SecurePaymentConfirmationRequestValidationError.OK
-                    : SecurePaymentConfirmationRequestValidationError.SPC_METHOD_MUST_BE_NULL;
+            for (PaymentMethodData entry : rawMethodData) {
+                if (MethodStrings.SECURE_PAYMENT_CONFIRMATION.equals(entry.supportedMethod)
+                        && entry.securePaymentConfirmation != null) {
+                    return SecurePaymentConfirmationRequestValidationError.SPC_METHOD_MUST_BE_NULL;
+                }
+            }
+            return SecurePaymentConfirmationRequestValidationError.OK;
         }
 
         // SPC cannot be combined with other payment methods or shipping/payer requests.
-        if (methodData.size() > 1) {
+        if (rawMethodData.length > 1) {
             return SecurePaymentConfirmationRequestValidationError
                     .MULTIPLE_PAYMENT_METHODS_NOT_ALLOWED;
         }
@@ -653,6 +656,9 @@ public class PaymentRequestService
                 || options.requestPayerName) {
             return SecurePaymentConfirmationRequestValidationError.UNSUPPORTED_OPTIONS;
         }
+
+        PaymentMethodData spcMethodData = rawMethodData[0];
+        assert MethodStrings.SECURE_PAYMENT_CONFIRMATION.equals(spcMethodData.supportedMethod);
 
         // The SPC data from the renderer must not be null if the feature is enabled.
         if (spcMethodData.securePaymentConfirmation == null) {

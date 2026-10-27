@@ -41,6 +41,7 @@ import org.chromium.payments.mojom.PaymentMethodData;
 import org.chromium.payments.mojom.PaymentOptions;
 import org.chromium.payments.mojom.PaymentRequestClient;
 import org.chromium.payments.mojom.PaymentResponse;
+import org.chromium.payments.mojom.SecurePaymentConfirmationRequest;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 import org.chromium.url.mojom.Url;
@@ -937,6 +938,72 @@ public class PaymentRequestServiceTest implements PaymentRequestClient {
 
     @Test
     @Feature({"Payments"})
+    public void testSpcCanOnlyBeRequestedAlone_failedForMultipleMethods() {
+        PaymentMethodData[] methodData = new PaymentMethodData[2];
+        methodData[0] = new PaymentMethodData();
+        methodData[0].supportedMethod = MethodStrings.SECURE_PAYMENT_CONFIRMATION;
+        methodData[0].securePaymentConfirmation = new SecurePaymentConfirmationRequest();
+        methodData[1] = new PaymentMethodData();
+        methodData[1].supportedMethod = "https://www.chromium.org";
+
+        Assert.assertNull(
+                defaultBuilder()
+                        .setOnlySpcMethodWithoutPaymentOptions()
+                        .setMethodData(methodData)
+                        .build());
+        assertErrorAndReason(
+                ErrorStrings.INVALID_PAYMENT_METHODS_OR_DATA,
+                PaymentErrorReason.INVALID_DATA_FROM_RENDERER);
+        Mockito.verify(mJourneyLogger, Mockito.times(1))
+                .setAborted(AbortReason.INVALID_DATA_FROM_RENDERER);
+    }
+
+    @Test
+    @Feature({"Payments"})
+    public void testSpcCanOnlyBeRequestedAlone_failedForDuplicateSpcMethods() {
+        PaymentMethodData[] methodData = new PaymentMethodData[2];
+        methodData[0] = new PaymentMethodData();
+        methodData[0].supportedMethod = MethodStrings.SECURE_PAYMENT_CONFIRMATION;
+        methodData[0].securePaymentConfirmation = new SecurePaymentConfirmationRequest();
+        methodData[1] = new PaymentMethodData();
+        methodData[1].supportedMethod = MethodStrings.SECURE_PAYMENT_CONFIRMATION;
+        methodData[1].securePaymentConfirmation = new SecurePaymentConfirmationRequest();
+
+        Assert.assertNull(
+                defaultBuilder()
+                        .setOnlySpcMethodWithoutPaymentOptions()
+                        .setMethodData(methodData)
+                        .build());
+        assertErrorAndReason(
+                ErrorStrings.INVALID_PAYMENT_METHODS_OR_DATA,
+                PaymentErrorReason.INVALID_DATA_FROM_RENDERER);
+        Mockito.verify(mJourneyLogger, Mockito.times(1))
+                .setAborted(AbortReason.INVALID_DATA_FROM_RENDERER);
+    }
+
+    @Test
+    @Feature({"Payments"})
+    public void testSpcEnabled_failedForNullSpcData() {
+        // When SPC is enabled, the renderer must pass a non-null SPC object.
+        PaymentMethodData[] methodData = new PaymentMethodData[1];
+        methodData[0] = new PaymentMethodData();
+        methodData[0].supportedMethod = MethodStrings.SECURE_PAYMENT_CONFIRMATION;
+        methodData[0].securePaymentConfirmation = null;
+
+        Assert.assertNull(
+                defaultBuilder()
+                        .setOnlySpcMethodWithoutPaymentOptions()
+                        .setMethodData(methodData)
+                        .build());
+        assertErrorAndReason(
+                ErrorStrings.INVALID_PAYMENT_METHODS_OR_DATA,
+                PaymentErrorReason.INVALID_DATA_FROM_RENDERER);
+        Mockito.verify(mJourneyLogger, Mockito.times(1))
+                .setAborted(AbortReason.INVALID_DATA_FROM_RENDERER);
+    }
+
+    @Test
+    @Feature({"Payments"})
     public void testSpcCanOnlyBeRequestedAlone_allowsNullPayeeOrigin() {
         // If a valid payeeName is passed, then payeeOrigin is not needed.
         Assert.assertNotNull(
@@ -1017,6 +1084,30 @@ public class PaymentRequestServiceTest implements PaymentRequestClient {
         Assert.assertNotNull(
                 defaultBuilder().setMethodData(methodData).setOptions(options).build());
         assertNoError();
+    }
+
+    @Test
+    @Feature({"Payments"})
+    @DisableFeatures({PaymentFeatureList.SECURE_PAYMENT_CONFIRMATION})
+    public void testSpcDisabled_failedWhenNonNullSpcOverwrittenByNullSpc() {
+        PaymentMethodData[] methodData = new PaymentMethodData[2];
+        methodData[0] = new PaymentMethodData();
+        methodData[0].supportedMethod = MethodStrings.SECURE_PAYMENT_CONFIRMATION;
+        methodData[0].securePaymentConfirmation = new SecurePaymentConfirmationRequest();
+        methodData[1] = new PaymentMethodData();
+        methodData[1].supportedMethod = MethodStrings.SECURE_PAYMENT_CONFIRMATION;
+        methodData[1].securePaymentConfirmation = null;
+
+        Assert.assertNull(
+                defaultBuilder()
+                        .setMethodData(methodData)
+                        .setOptions(new PaymentOptions())
+                        .build());
+        assertErrorAndReason(
+                ErrorStrings.INVALID_PAYMENT_METHODS_OR_DATA,
+                PaymentErrorReason.INVALID_DATA_FROM_RENDERER);
+        Mockito.verify(mJourneyLogger, Mockito.times(1))
+                .setAborted(AbortReason.INVALID_DATA_FROM_RENDERER);
     }
 
     @Test
