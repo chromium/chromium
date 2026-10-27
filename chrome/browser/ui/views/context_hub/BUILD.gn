@@ -8,6 +8,8 @@ assert(toolkit_views)
 
 source_set("memory_bank") {
   public = [
+    "memory_banks_palette_bubble_controller.h",
+    "memory_banks_palette_bubble_view.h",
     "save_to_memory_bank_bubble_controller.h",
     "save_to_memory_bank_bubble_view.h",
   ]
@@ -20,6 +22,8 @@ source_set("memory_bank") {
 
 source_set("memory_bank_impl") {
   sources = [
+    "memory_banks_palette_bubble_controller.cc",
+    "memory_banks_palette_bubble_view.cc",
     "save_to_memory_bank_bubble_controller.cc",
     "save_to_memory_bank_bubble_view.cc",
   ]
@@ -43,7 +47,11 @@ source_set("memory_bank_impl") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "save_to_memory_bank_bubble_view_unittest.cc" ]
+  sources = [
+    "memory_banks_palette_bubble_controller_unittest.cc",
+    "memory_banks_palette_bubble_view_unittest.cc",
+    "save_to_memory_bank_bubble_view_unittest.cc",
+  ]
   deps = [
     ":memory_bank",
     ":memory_bank_impl",
