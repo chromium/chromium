@@ -22,6 +22,7 @@
 #include "net/third_party/quiche/src/quiche/quic/core/http/http_constants.h"
 #include "net/third_party/quiche/src/quiche/quic/core/qpack/qpack_instruction_encoder.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_framer.h"
+#include "net/third_party/quiche/src/quiche/quic/core/quic_receive_time.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_stream.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_types.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_utils.h"
@@ -727,8 +728,10 @@ QuicTestPacketBuilder& QuicTestPacketBuilder::AddAckFrame(
   ack_frame->largest_acked = quic::QuicPacketNumber(largest_received);
   ack_frame->ack_delay_time = quic::QuicTime::Delta::Zero();
   for (uint64_t i = smallest_received; i <= largest_received; ++i) {
-    ack_frame->received_packet_times.emplace_back(quic::QuicPacketNumber(i),
-                                                  maker_->clock()->Now());
+    ack_frame->received_packet_times.emplace_back(
+        quic::QuicPacketNumber(i),
+        *quic::QuicReceiveTime::FromLocalTime(maker_->clock()->Now(),
+                                              quic::QuicTime::Zero()));
   }
   if (largest_received > 0) {
     DCHECK_GE(largest_received, first_received);

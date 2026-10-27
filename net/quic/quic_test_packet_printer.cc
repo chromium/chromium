@@ -10,6 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_framer.h"
+#include "net/third_party/quiche/src/quiche/quic/core/quic_receive_time.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_utils.h"
 #include "net/third_party/quiche/src/quiche/quic/platform/api/quic_flags.h"
 #include "net/third_party/quiche/src/quiche/quic/test_tools/quic_test_utils.h"
@@ -126,7 +127,7 @@ class QuicPacketPrinter : public QuicFramerVisitorInterface {
     return true;
   }
   bool OnAckTimestamp(QuicPacketNumber packet_number,
-                      QuicTime timestamp) override {
+                      QuicReceiveTime timestamp) override {
     *output_ << "OnAckTimestamp: [" << packet_number << ", "
              << timestamp.ToDebuggingValue() << ")\n";
     return true;
