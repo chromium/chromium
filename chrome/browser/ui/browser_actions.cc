@@ -4858,9 +4858,7 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
           IDS_CHROME_ENTERPRISE_RELEASE_NOTES, omnibox::kChromeProductIcon,
           /*is_pinnable=*/false)
 #if BUILDFLAG(IS_LINUX)
-          .SetVisible(
-              enterprise_util::IsBrowserManaged(profile) &&
-              base::FeatureList::IsEnabled(features::kEnterpriseReleaseNotes))
+          .SetVisible(enterprise_util::IsBrowserManaged(profile))
 #else
           .SetVisible(false)
 #endif
