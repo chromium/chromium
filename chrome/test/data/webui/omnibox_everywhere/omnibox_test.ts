@@ -769,7 +769,8 @@ suite('OmniboxEverywhereOmniboxTest', () => {
 
     // Once the collapse animation ends on #bottomControls, has-expanded is
     // cleared so subsequent collapsed re-shows do not replay the animation.
-    bottomControls.dispatchEvent(new AnimationEvent('animationend'));
+    bottomControls.dispatchEvent(new AnimationEvent(
+        'animationend', {animationName: 'loomniboxTopControlsEnter'}));
     assertFalse(omnibox.hasAttribute('has-expanded'));
     assertEquals('none', window.getComputedStyle(bottomControls).animationName);
 
