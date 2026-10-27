@@ -20,8 +20,8 @@ import org.chromium.base.test.params.ParameterAnnotations.UseMethodParameter;
 import org.chromium.base.test.params.ParameterAnnotations.UseMethodParameterBefore;
 import org.chromium.base.test.params.ParameterAnnotations.UseRunnerDelegate;
 import org.chromium.base.test.params.ParameterizedRunner;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -52,21 +52,21 @@ import java.io.IOException;
 /** Render tests for {@link SigninButtonCoordinator}. */
 @RunWith(ParameterizedRunner.class)
 @UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
-@DoNotBatch(reason = "This test relies on native initialization")
+@Batch(Batch.PER_CLASS)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @EnableFeatures(SigninFeatures.SIGNIN_LEVEL_UP_BUTTON)
 // TODO(b/555414915): Update Android tests with WebUI NTP enabled on AL.
 @DisableFeatures(ChromeFeatureList.USE_WEB_UI_NTP_ANDROID)
 public class SigninButtonRenderTest {
 
-    @Rule(order = 1)
-    public final FreshCtaTransitTestRule mActivityTestRule =
-            ChromeTransitTestRules.freshChromeTabbedActivityRule();
-
     // Mock sign-in environment needs to be destroyed after ChromeTabbedActivity in case there are
     // observers registered in the AccountManagerFacade mock.
     @Rule(order = 0)
-    public final SigninTestRule mSigninTestRule = new SigninTestRule();
+    public final SigninTestRule mSigninTestRule = SigninTestRule.createWithCleanups();
+
+    @Rule(order = 1)
+    public final FreshCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
     @Rule
     public final ChromeRenderTestRule mRenderTestRule =
@@ -95,11 +95,15 @@ public class SigninButtonRenderTest {
 
     @After
     public void tearDown() {
-        if (mFakeSyncServiceImpl != null) {
-            mFakeSyncServiceImpl = null;
-            SyncServiceFactory.setInstanceForTesting(null);
+        mFakeSyncServiceImpl = null;
+        if (ProfileManager.isInitialized()) {
+            ThreadUtils.runOnUiThreadBlocking(
+                    () -> {
+                        UserPrefs.get(ProfileManager.getLastUsedRegularProfile())
+                                .clearPref("sync.ai_subscription_tier");
+                    });
+            setSigninAllowed(true);
         }
-        setSigninAllowed(true);
     }
 
     @Test
