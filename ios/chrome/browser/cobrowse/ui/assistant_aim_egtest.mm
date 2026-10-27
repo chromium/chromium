@@ -1096,7 +1096,7 @@ void RemoveSharedTab(NSString* title) {
 // triggered and not in other windows on iPad.
 - (void)testAssistantOnlyInTriggeringWindowOniPad {
   if (![ChromeEarlGrey areMultipleWindowsSupported]) {
-    EARL_GREY_TEST_DISABLED(@"Multiple windows can't be opened.");
+    EARL_GREY_TEST_SKIPPED(@"Multiple windows can't be opened.");
   }
 
   OpenCoBrowse(_defaultURL);
