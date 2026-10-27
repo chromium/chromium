@@ -144,6 +144,8 @@ class DesktopProduct(Product):
             '--disable-features=ScrollbarAnimations',
             # Keep focused carets visible for deterministic screenshots.
             '--disable-blink-features=CaretBlinking',
+            # Allow headless embedders to use SwiftShader for WebGL/WebGPU.
+            '--enable-unsafe-swiftshader',
         ]
         fs = self._host.filesystem
         if (
@@ -184,7 +186,6 @@ class HeadlessShell(DesktopProduct):
             "--canvas-2d-layers",
             '--enable-bfcache',
             '--enable-field-trial-config',
-            '--enable-unsafe-swiftshader',
             '--force-reporting-destination-attested',
             # `headless_shell` doesn't send the `Accept-Language` header by
             # default, so set an arbitrary one that some tests expect.
