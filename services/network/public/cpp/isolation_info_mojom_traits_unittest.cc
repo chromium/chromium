@@ -71,7 +71,7 @@ TEST(IsolationInfoMojomTraitsTest, SerializeAndDeserialize) {
           net::IsolationInfo::RequestType::kOther, url::Origin(), url::Origin(),
           net::SiteForCookies(), /*nonce=*/std::nullopt,
           /*network_isolation_partition=*/
-          net::NetworkIsolationPartition::kProtectedAudienceSellerWorklet),
+          net::NetworkIsolationPartition::kFedCmUncredentialedRequests),
       net::IsolationInfo::Create(
           net::IsolationInfo::RequestType::kOther, kOrigin1,
           kOrigin1, net::SiteForCookies(), /*nonce=*/std::nullopt,

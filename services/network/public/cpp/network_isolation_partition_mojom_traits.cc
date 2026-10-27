@@ -20,8 +20,6 @@ EnumTraits<network::mojom::NetworkIsolationPartition,
   switch (network_isolation_partition) {
     case NetworkIsolationPartition::kGeneral:
       return net::NetworkIsolationPartition::kGeneral;
-    case NetworkIsolationPartition::kProtectedAudienceSellerWorklet:
-      return net::NetworkIsolationPartition::kProtectedAudienceSellerWorklet;
     case NetworkIsolationPartition::kFedCmUncredentialedRequests:
       return net::NetworkIsolationPartition::kFedCmUncredentialedRequests;
     case NetworkIsolationPartition::kDnsOverHttps:
@@ -41,8 +39,6 @@ network::mojom::NetworkIsolationPartition EnumTraits<
   switch (network_isolation_partition) {
     case net::NetworkIsolationPartition::kGeneral:
       return NetworkIsolationPartition::kGeneral;
-    case net::NetworkIsolationPartition::kProtectedAudienceSellerWorklet:
-      return NetworkIsolationPartition::kProtectedAudienceSellerWorklet;
     case net::NetworkIsolationPartition::kFedCmUncredentialedRequests:
       return NetworkIsolationPartition::kFedCmUncredentialedRequests;
     case net::NetworkIsolationPartition::kDnsOverHttps:

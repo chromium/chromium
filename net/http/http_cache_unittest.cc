@@ -12153,7 +12153,7 @@ TEST_F(HttpCacheTestSplitCacheFeatureEnabled,
   // differentiate it from the response we received earlier.
   NetworkIsolationKey special_partition_nik(
       site, site, /*nonce=*/std::nullopt,
-      NetworkIsolationPartition::kProtectedAudienceSellerWorklet);
+      NetworkIsolationPartition::kFedCmUncredentialedRequests);
   MockHttpRequest special_partition_request(kSimpleGET_Transaction);
   request.network_isolation_key = special_partition_nik;
   request.network_anonymization_key =
@@ -12173,7 +12173,7 @@ TEST_F(HttpCacheTestSplitCacheFeatureEnabled,
   EXPECT_EQ(base::Seconds(50000), response.headers->GetMaxAgeValue().value());
 
   // We now have a cache entry for
-  // NetworkIsolationPartition::kProtectedAudienceSellerWorklet.
+  // NetworkIsolationPartition::kFedCmUncredentialedRequests.
   RunTransactionTestWithRequest(cache.http_cache(),
                                 transaction_info_for_special_partition, request,
                                 &response);

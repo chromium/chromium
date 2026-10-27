@@ -38,7 +38,7 @@ TEST(NetworkIsolationKeyMojomTraitsTest, SerializeAndDeserialize) {
       net::NetworkIsolationKey(
           net::SchemefulSite(GURL("http://foo.a.test/")),
           net::SchemefulSite(GURL("http://bar.b.test/")), std::nullopt,
-          net::NetworkIsolationPartition::kProtectedAudienceSellerWorklet),
+          net::NetworkIsolationPartition::kFedCmUncredentialedRequests),
       net::NetworkIsolationKey(net::SchemefulSite(GURL("http://foo.a.test/")),
                                net::SchemefulSite(GURL("http://bar.b.test/")),
                                std::nullopt,

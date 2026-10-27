@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include <optional>
 #include <string>
 
 #include "net/base/net_export.h"
@@ -25,9 +26,12 @@ enum class NetworkIsolationPartition : int32_t {
   // General use case. This is the default and should be used for most
   // requests.
   kGeneral = 0,
-  // This use case isolates network state for Protected Audience seller
-  // worklets.
-  kProtectedAudienceSellerWorklet = 1,
+
+  // Protected Audience has been removed, so kProtectedAudienceSellerWorklet is
+  // no longer used. However, it
+  // may still appear in persisted data, and should not be reused.
+  // kProtectedAudienceSellerWorklet = 1,
+
   // This use case isolates network state for FedCM-related requests.
   kFedCmUncredentialedRequests = 2,
   // This use case isolates network state for DNS over HTTPS requests.
@@ -45,6 +49,13 @@ enum class NetworkIsolationPartition : int32_t {
 
 std::string NetworkIsolationPartitionToDebugString(
     NetworkIsolationPartition network_isolation_partition);
+
+// Converts `value` to a NetworkIsolationPartition, returning std::nullopt if
+// it does not correspond to a current NetworkIsolationPartition value. Use this
+// when deserializing persisted values, which may contain values that have since
+// been removed.
+NET_EXPORT_PRIVATE std::optional<NetworkIsolationPartition>
+NetworkIsolationPartitionFromInt(int32_t value);
 
 // Returns true if requests in this partition are allowed to have an empty
 // IsolationInfo, even when

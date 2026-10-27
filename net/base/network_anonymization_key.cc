@@ -39,14 +39,7 @@ std::optional<NetworkIsolationPartition> ValueToNetworkIsolationPartition(
     return std::nullopt;
   }
 
-  int partition_int = value.GetInt();
-  if (partition_int < 0 ||
-      partition_int >
-          base::strict_cast<int32_t>(NetworkIsolationPartition::kMaxValue)) {
-    return std::nullopt;
-  }
-
-  return static_cast<NetworkIsolationPartition>(partition_int);
+  return NetworkIsolationPartitionFromInt(value.GetInt());
 }
 
 }  // namespace

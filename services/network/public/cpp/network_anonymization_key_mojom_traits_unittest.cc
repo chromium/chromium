@@ -30,7 +30,7 @@ TEST(NetworkAnonymizationKeyMojomTraitsTest,
       net::NetworkAnonymizationKey::CreateFromParts(
           net::SchemefulSite(GURL("http://a.test/")), /*is_cross_site=*/true,
           /*nonce=*/std::nullopt,
-          net::NetworkIsolationPartition::kProtectedAudienceSellerWorklet),
+          net::NetworkIsolationPartition::kFedCmUncredentialedRequests),
       net::NetworkAnonymizationKey::CreateFromParts(
           net::SchemefulSite(GURL("http://a.test/")), /*is_cross_site=*/true,
           /*nonce=*/std::nullopt, net::NetworkIsolationPartition::kGeneral),

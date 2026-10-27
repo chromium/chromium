@@ -8,7 +8,6 @@ module network.mojom;
 // be using instead of using this directly.
 enum NetworkIsolationPartition {
   kGeneral,
-  kProtectedAudienceSellerWorklet,
   kFedCmUncredentialedRequests,
   kDnsOverHttps,
   kSharedWorkerSameSiteCookiesNone,

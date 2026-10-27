@@ -177,6 +177,15 @@ class NET_EXPORT NetworkAnonymizationKey {
   // Inverse of ToValue(). Writes the result to |network_anonymization_key|.
   // Returns false on failure. Fails on values that could not have been produced
   // by ToValue(), like transient origins.
+  //
+  // Any data associated with an NetworkAnonymizationKey that cannot be
+  // deserialized MUST be discarded, rather than used with a different
+  // NetworkAnonymizationKey (even an empty one).
+  //
+  // It is recommended that when some entries in a database cannot be
+  // deserialized, all other entries be preserved, as a deserialization failure
+  // could indicate an NetworkAnonymizationKey with obsolete data, a partition
+  // that no longer exists, etc., rather than that the data has been corrupted.
   [[nodiscard]] static bool FromValue(
       const base::Value& value,
       NetworkAnonymizationKey* out_network_anonymization_key);

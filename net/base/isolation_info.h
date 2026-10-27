@@ -187,6 +187,15 @@ class NET_EXPORT IsolationInfo {
 
   // Creates an IsolationInfo from the serialized contents. Returns a nullopt
   // if deserialization fails or if data is inconsistent.
+  //
+  // Any data associated with an IsolationInfo that cannot be deserialized MUST
+  // be discarded, rather than used with a different IsolationInfo (even an
+  // empty one).
+  //
+  // It is recommended that when some entries in a database cannot be
+  // deserialized, all other entries be preserved, as a deserialization failure
+  // could indicate an IsolationInfo with obsolete data, a partition that no
+  // longer exists, etc., rather than that the data has been corrupted.
   static std::optional<IsolationInfo> Deserialize(
       const std::string& serialized);
 

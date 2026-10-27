@@ -210,7 +210,7 @@ TEST(CookiePartitionKeyTest, FromNetworkIsolationKey) {
       {"WithNetworkIsolationPartition",
        NetworkIsolationKey(
            kTopLevelSite, kCookieSite, /*nonce=*/std::nullopt,
-           NetworkIsolationPartition::kProtectedAudienceSellerWorklet),
+           NetworkIsolationPartition::kFedCmUncredentialedRequests),
        std::nullopt, SiteForCookies(), kTopLevelSite,
        /*main_frame_navigation=*/false},
       {"WithCrossSiteAncestorSameSite",

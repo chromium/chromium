@@ -4,7 +4,12 @@
 
 #include "net/base/network_isolation_partition.h"
 
+#include <stdint.h>
+
+#include <optional>
 #include <string>
+
+#include "base/notreached.h"
 
 namespace net {
 
@@ -13,8 +18,6 @@ std::string NetworkIsolationPartitionToDebugString(
   switch (network_isolation_partition) {
     case NetworkIsolationPartition::kGeneral:
       return "general partition";
-    case NetworkIsolationPartition::kProtectedAudienceSellerWorklet:
-      return "protected audience seller worklet partition";
     case NetworkIsolationPartition::kFedCmUncredentialedRequests:
       return "fedcm uncredentialed requests";
     case NetworkIsolationPartition::kDnsOverHttps:
@@ -22,6 +25,27 @@ std::string NetworkIsolationPartitionToDebugString(
     case NetworkIsolationPartition::kSharedWorkerSameSiteCookiesNone:
       return "shared worker same site cookies none";
   }
+  NOTREACHED();
+}
+
+std::optional<NetworkIsolationPartition> NetworkIsolationPartitionFromInt(
+    int32_t value) {
+  if (value < 0 ||
+      value > static_cast<int32_t>(NetworkIsolationPartition::kMaxValue)) {
+    return std::nullopt;
+  }
+  auto network_isolation_partition =
+      static_cast<NetworkIsolationPartition>(value);
+  switch (network_isolation_partition) {
+    case NetworkIsolationPartition::kGeneral:
+    case NetworkIsolationPartition::kFedCmUncredentialedRequests:
+    case NetworkIsolationPartition::kDnsOverHttps:
+    case NetworkIsolationPartition::kSharedWorkerSameSiteCookiesNone:
+      return network_isolation_partition;
+  }
+  // Obsolete values are still in the range [0, kMaxValue], but should return
+  // std::nullopt.
+  return std::nullopt;
 }
 
 bool NetworkIsolationPartitionAlwaysAllowEmptyPartition(

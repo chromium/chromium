@@ -200,13 +200,12 @@ std::optional<IsolationInfo> IsolationInfo::Deserialize(
   NetworkIsolationPartition network_isolation_partition =
       NetworkIsolationPartition::kGeneral;
   if (proto.has_network_isolation_partition()) {
-    if (proto.network_isolation_partition() >
-            static_cast<int32_t>(NetworkIsolationPartition::kMaxValue) ||
-        proto.network_isolation_partition() < 0) {
+    std::optional<NetworkIsolationPartition> deserialized_partition =
+        NetworkIsolationPartitionFromInt(proto.network_isolation_partition());
+    if (!deserialized_partition) {
       return std::nullopt;
     }
-    network_isolation_partition = static_cast<NetworkIsolationPartition>(
-        proto.network_isolation_partition());
+    network_isolation_partition = *deserialized_partition;
   }
 
   if (proto.request_type() < 0 ||

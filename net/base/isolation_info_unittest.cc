@@ -209,20 +209,20 @@ TEST_F(IsolationInfoTest,
   IsolationInfo isolation_info = IsolationInfo::Create(
       IsolationInfo::RequestType::kMainFrame, kOrigin1, kOrigin1,
       SiteForCookies::FromOrigin(kOrigin1), /*nonce=*/std::nullopt,
-      NetworkIsolationPartition::kProtectedAudienceSellerWorklet);
+      NetworkIsolationPartition::kFedCmUncredentialedRequests);
   EXPECT_EQ(IsolationInfo::RequestType::kMainFrame,
             isolation_info.request_type());
   EXPECT_EQ(kOrigin1, isolation_info.top_frame_origin());
   EXPECT_EQ(kOrigin1, isolation_info.frame_origin());
-  EXPECT_EQ(NetworkIsolationPartition::kProtectedAudienceSellerWorklet,
+  EXPECT_EQ(NetworkIsolationPartition::kFedCmUncredentialedRequests,
             isolation_info.GetNetworkIsolationPartition());
   EXPECT_EQ(
-      NetworkIsolationPartition::kProtectedAudienceSellerWorklet,
+      NetworkIsolationPartition::kFedCmUncredentialedRequests,
       isolation_info.network_anonymization_key().network_isolation_partition());
   EXPECT_EQ(
-      NetworkIsolationPartition::kProtectedAudienceSellerWorklet,
+      NetworkIsolationPartition::kFedCmUncredentialedRequests,
       isolation_info.network_isolation_key().GetNetworkIsolationPartition());
-  EXPECT_EQ("https://foo.test https://foo.test 1",
+  EXPECT_EQ("https://foo.test https://foo.test 2",
             isolation_info.network_isolation_key().ToCacheKeyString());
   EXPECT_FALSE(isolation_info.network_isolation_key().IsEmpty());
   EXPECT_FALSE(isolation_info.network_isolation_key().IsTransient());
@@ -240,18 +240,18 @@ TEST_F(IsolationInfoTest,
             redirected_isolation_info.request_type());
   EXPECT_EQ(kOrigin3, redirected_isolation_info.top_frame_origin());
   EXPECT_EQ(kOrigin3, redirected_isolation_info.frame_origin());
-  EXPECT_EQ(NetworkIsolationPartition::kProtectedAudienceSellerWorklet,
+  EXPECT_EQ(NetworkIsolationPartition::kFedCmUncredentialedRequests,
             redirected_isolation_info.GetNetworkIsolationPartition());
-  EXPECT_EQ(NetworkIsolationPartition::kProtectedAudienceSellerWorklet,
+  EXPECT_EQ(NetworkIsolationPartition::kFedCmUncredentialedRequests,
             redirected_isolation_info.network_anonymization_key()
                 .network_isolation_partition());
-  EXPECT_EQ(NetworkIsolationPartition::kProtectedAudienceSellerWorklet,
+  EXPECT_EQ(NetworkIsolationPartition::kFedCmUncredentialedRequests,
             redirected_isolation_info.network_isolation_key()
                 .GetNetworkIsolationPartition());
   EXPECT_FALSE(redirected_isolation_info.network_isolation_key().IsEmpty());
   EXPECT_FALSE(redirected_isolation_info.network_isolation_key().IsTransient());
   EXPECT_EQ(
-      "https://baz.test https://baz.test 1",
+      "https://baz.test https://baz.test 2",
       redirected_isolation_info.network_isolation_key().ToCacheKeyString());
 
   EXPECT_TRUE(redirected_isolation_info.site_for_cookies().IsFirstParty(
@@ -577,7 +577,7 @@ TEST_F(IsolationInfoTest, Serialization) {
       IsolationInfo::Create(
           IsolationInfo::RequestType::kMainFrame, kOrigin1, kOrigin1,
           SiteForCookies::FromOrigin(kOrigin1), /*nonce=*/std::nullopt,
-          NetworkIsolationPartition::kProtectedAudienceSellerWorklet,
+          NetworkIsolationPartition::kSharedWorkerSameSiteCookiesNone,
           IsolationInfo::FrameAncestorRelation::kSameOrigin),
       // Second non-general NetworkIsolationPartition
       IsolationInfo::Create(
@@ -694,6 +694,11 @@ TEST_F(IsolationInfoTest,
   // We can't deserialize a too large value.
   info.set_network_isolation_partition(
       static_cast<int32_t>(NetworkIsolationPartition::kMaxValue) + 1);
+  EXPECT_FALSE(IsolationInfo::Deserialize(info.SerializeAsString()));
+
+  // We can't deserialize a removed value (1 was
+  // kProtectedAudienceSellerWorklet).
+  info.set_network_isolation_partition(1);
   EXPECT_FALSE(IsolationInfo::Deserialize(info.SerializeAsString()));
 }
 

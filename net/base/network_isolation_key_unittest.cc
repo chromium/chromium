@@ -84,25 +84,25 @@ TEST(NetworkIsolationKeyTest, KeyWithNonGeneralNetworkPartition) {
   SchemefulSite site2 = SchemefulSite(GURL("http://b.test/"));
   NetworkIsolationKey key(
       site1, site2, /*nonce=*/std::nullopt,
-      NetworkIsolationPartition::kProtectedAudienceSellerWorklet);
+      NetworkIsolationPartition::kFedCmUncredentialedRequests);
   EXPECT_FALSE(key.IsEmpty());
-  EXPECT_EQ(NetworkIsolationPartition::kProtectedAudienceSellerWorklet,
+  EXPECT_EQ(NetworkIsolationPartition::kFedCmUncredentialedRequests,
             key.GetNetworkIsolationPartition());
-  EXPECT_EQ(site1.Serialize() + " " + site2.Serialize() + " 1",
+  EXPECT_EQ(site1.Serialize() + " " + site2.Serialize() + " 2",
             key.ToCacheKeyString());
   EXPECT_FALSE(key.IsTransient());
   EXPECT_EQ(site1.GetDebugString() + " " + site2.GetDebugString() +
-                " (protected audience seller worklet partition)",
+                " (fedcm uncredentialed requests)",
             key.ToDebugString());
-  EXPECT_EQ(site1.Serialize() + " " + site2.Serialize() + " 1",
+  EXPECT_EQ(site1.Serialize() + " " + site2.Serialize() + " 2",
             key.ToCacheKeyString());
 
   // Create another NetworkIsolationKey with the same input parameters, and
   // check that it is equal.
   NetworkIsolationKey same_key(
       site1, site2, /*nonce=*/std::nullopt,
-      NetworkIsolationPartition::kProtectedAudienceSellerWorklet);
-  EXPECT_EQ(NetworkIsolationPartition::kProtectedAudienceSellerWorklet,
+      NetworkIsolationPartition::kFedCmUncredentialedRequests);
+  EXPECT_EQ(NetworkIsolationPartition::kFedCmUncredentialedRequests,
             same_key.GetNetworkIsolationPartition());
   EXPECT_EQ(key, same_key);
   EXPECT_EQ(key.ToCacheKeyString(), same_key.ToCacheKeyString());
@@ -123,13 +123,13 @@ TEST(NetworkIsolationKeyTest, KeyWithNonGeneralNetworkPartition) {
   auto nonce = base::UnguessableToken::Create();
   NetworkIsolationKey key3(
       site1, site2, /*nonce=*/nonce,
-      NetworkIsolationPartition::kProtectedAudienceSellerWorklet);
+      NetworkIsolationPartition::kFedCmUncredentialedRequests);
   EXPECT_TRUE(key3.IsTransient());
 
   // Make sure if there's an opaque origin, the NIK is still transient.
   NetworkIsolationKey key4(
       site1, SchemefulSite(GURL(kDataUrl)), /*nonce=*/std::nullopt,
-      NetworkIsolationPartition::kProtectedAudienceSellerWorklet);
+      NetworkIsolationPartition::kFedCmUncredentialedRequests);
   EXPECT_TRUE(key4.IsTransient());
 }
 
@@ -263,7 +263,7 @@ TEST(NetworkIsolationKeyTest, Operators) {
       NetworkIsolationKey(
           SchemefulSite(GURL("https://a.test/")),
           SchemefulSite(GURL("https://a.test/")), /*nonce=*/std::nullopt,
-          NetworkIsolationPartition::kProtectedAudienceSellerWorklet),
+          NetworkIsolationPartition::kFedCmUncredentialedRequests),
       NetworkIsolationKey(SchemefulSite(GURL("https://a.test/")),
                           SchemefulSite(GURL("https://a.test/")), nonce1),
       NetworkIsolationKey(SchemefulSite(GURL("https://a.test/")),
@@ -386,11 +386,11 @@ TEST(NetworkIsolationKeyTest, CreateWithNewFrameSite) {
   // NetworkIsolationPartition.
   NetworkIsolationKey key_with_partition(
       site_a, site_b, /*nonce=*/std::nullopt,
-      NetworkIsolationPartition::kProtectedAudienceSellerWorklet);
+      NetworkIsolationPartition::kFedCmUncredentialedRequests);
   NetworkIsolationKey key_with_partition_c =
       key_with_partition.CreateWithNewFrameSite(site_c);
   EXPECT_EQ(key_with_partition.GetNetworkIsolationPartition(),
-            NetworkIsolationPartition::kProtectedAudienceSellerWorklet);
+            NetworkIsolationPartition::kFedCmUncredentialedRequests);
   EXPECT_EQ(key_with_partition.GetNetworkIsolationPartition(),
             key_with_partition_c.GetNetworkIsolationPartition());
 }
@@ -435,7 +435,7 @@ TEST(NetworkIsolationKeyTest, SupportsAbslHash) {
       NetworkIsolationKey(site_a, site_b, different_nonce),
       NetworkIsolationKey(
           site_a, site_a, std::nullopt,
-          NetworkIsolationPartition::kProtectedAudienceSellerWorklet),
+          NetworkIsolationPartition::kSharedWorkerSameSiteCookiesNone),
       NetworkIsolationKey(
           site_a, site_a, std::nullopt,
           NetworkIsolationPartition::kFedCmUncredentialedRequests),
