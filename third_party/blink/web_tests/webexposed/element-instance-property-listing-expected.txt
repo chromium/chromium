@@ -431,6 +431,7 @@ html element a
     property text
     property type
     property username
+    property windowFeatures
 html element abbr
 html element acronym
 html element address
@@ -459,6 +460,7 @@ html element area
     property target
     property type
     property username
+    property windowFeatures
 html element article
 html element aside
 html element audio
@@ -705,6 +707,7 @@ html element form
     property reset
     property submit
     property target
+    property windowFeatures
 html element frame
     property contentDocument
     property contentWindow

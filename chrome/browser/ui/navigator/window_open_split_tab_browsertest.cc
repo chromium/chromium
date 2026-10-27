@@ -18,6 +18,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/test_navigation_observer.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features_generated.h"
@@ -92,6 +93,30 @@ class WindowOpenSplitTabBrowserTest : public InProcessBrowserTest {
     content::WebContentsAddedObserver observer;
     content::SimulateMouseClick(opener, modifiers,
                                 blink::WebMouseEvent::Button::kLeft);
+    content::WebContents* new_contents = observer.GetWebContents();
+    EXPECT_TRUE(content::WaitForLoadStop(new_contents));
+    return new_contents;
+  }
+
+  // Creates an element of `element_type` ("a", "area", or "form") in `opener`
+  // targeting "/title2.html" with the given `window_features` and `rel`,
+  // activates it (via click() or submit()), and returns the new WebContents.
+  content::WebContents* OpenViaElement(content::WebContents* opener,
+                                       const std::string& element_type,
+                                       const std::string& window_features,
+                                       const std::string& rel = "") {
+    content::WebContentsAddedObserver observer;
+    EXPECT_TRUE(content::ExecJs(
+        opener,
+        content::JsReplace(
+            "const el = document.createElement($1);"
+            "if ($1 === 'form') { el.action = $2; } else { el.href = $2; }"
+            "el.windowFeatures = $3;"
+            "if ($4) { el.rel = $4; }"
+            "document.body.appendChild(el);"
+            "if ($1 === 'form') { el.submit(); } else { el.click(); }",
+            element_type, embedded_test_server()->GetURL("/title2.html"),
+            window_features, rel)));
     content::WebContents* new_contents = observer.GetWebContents();
     EXPECT_TRUE(content::WaitForLoadStop(new_contents));
     return new_contents;
@@ -420,4 +445,86 @@ IN_PROC_BROWSER_TEST_F(WindowOpenSplitTabDisabledBrowserTest, Split) {
   ASSERT_TRUE(tab);
   EXPECT_EQ(BrowserWindowInterface::TYPE_POPUP,
             tab->GetBrowserWindowInterface()->GetType());
+}
+
+// Clicking an `<a windowfeatures="split">` without a `target` attribute
+// implies `target="_blank"` (and `noopener`) and creates a split tab.
+IN_PROC_BROWSER_TEST_F(WindowOpenSplitTabBrowserTest,
+                       AnchorWindowFeaturesSplitImpliesTargetBlank) {
+  content::WebContents* opener = opener_contents();
+  content::WebContents* new_contents =
+      OpenViaElement(opener, "a", "split, splitposition=left, splitsize=30");
+  EXPECT_EQ(2, tab_strip_model()->count());
+  ExpectSplit(opener, new_contents, /*new_tab_first=*/true,
+              split_tabs::SplitTabLayout::kSideBySide, 0.3);
+
+  // Implied target="_blank" implies noopener by default.
+  EXPECT_EQ(true, content::EvalJs(new_contents, "window.opener === null"));
+}
+
+// `<a windowfeatures="split" rel="opener">` preserves `window.opener`.
+IN_PROC_BROWSER_TEST_F(WindowOpenSplitTabBrowserTest,
+                       AnchorWindowFeaturesSplitWithRelOpener) {
+  content::WebContents* opener = opener_contents();
+  content::WebContents* new_contents =
+      OpenViaElement(opener, "a", "split", /*rel=*/"opener");
+  EXPECT_EQ(2, tab_strip_model()->count());
+  ExpectSplit(opener, new_contents, /*new_tab_first=*/false,
+              split_tabs::SplitTabLayout::kSideBySide, 0.5);
+  EXPECT_EQ(true, content::EvalJs(new_contents, "window.opener !== null"));
+}
+
+// `windowfeatures` is ignored when `target="_self"` navigates an existing
+// frame.
+IN_PROC_BROWSER_TEST_F(WindowOpenSplitTabBrowserTest,
+                       AnchorWindowFeaturesIgnoredForTargetSelf) {
+  content::WebContents* contents = opener_contents();
+  GURL target_url = embedded_test_server()->GetURL("/title2.html");
+  content::TestNavigationObserver nav_observer(contents);
+  ASSERT_TRUE(content::ExecJs(
+      contents, content::JsReplace("const a = document.createElement('a');"
+                                   "a.href = $1;"
+                                   "a.target = '_self';"
+                                   "a.windowFeatures = 'split';"
+                                   "document.body.appendChild(a);"
+                                   "a.click();",
+                                   target_url)));
+  nav_observer.Wait();
+
+  EXPECT_EQ(1, tab_strip_model()->count());
+  EXPECT_FALSE(GetSplitData(contents));
+  EXPECT_EQ(target_url, contents->GetLastCommittedURL());
+}
+
+// `<area windowfeatures="split">` creates a split tab.
+IN_PROC_BROWSER_TEST_F(WindowOpenSplitTabBrowserTest, AreaWindowFeaturesSplit) {
+  content::WebContents* opener = opener_contents();
+  content::WebContents* new_contents = OpenViaElement(opener, "area", "split");
+  EXPECT_EQ(2, tab_strip_model()->count());
+  ExpectSplit(opener, new_contents, /*new_tab_first=*/false,
+              split_tabs::SplitTabLayout::kSideBySide, 0.5);
+}
+
+// Submitting a `<form windowfeatures="split">` creates a split tab and implies
+// `target="_blank"`.
+IN_PROC_BROWSER_TEST_F(WindowOpenSplitTabBrowserTest, FormWindowFeaturesSplit) {
+  content::WebContents* opener = opener_contents();
+  content::WebContents* new_contents =
+      OpenViaElement(opener, "form", "split, splitposition=left");
+  EXPECT_EQ(2, tab_strip_model()->count());
+  ExpectSplit(opener, new_contents, /*new_tab_first=*/true,
+              split_tabs::SplitTabLayout::kSideBySide, 0.5);
+  EXPECT_EQ(true, content::EvalJs(new_contents, "window.opener === null"));
+}
+
+// `<a windowfeatures="popup, width=400, height=300">` opens a popup window and
+// implies `target="_blank"`.
+IN_PROC_BROWSER_TEST_F(WindowOpenSplitTabBrowserTest,
+                       AnchorWindowFeaturesPopup) {
+  content::WebContents* opener = opener_contents();
+  content::WebContents* new_contents =
+      OpenViaElement(opener, "a", "popup, width=400, height=300");
+  EXPECT_EQ(1, tab_strip_model()->count());
+  ExpectPopup(new_contents);
+  EXPECT_EQ(true, content::EvalJs(new_contents, "window.opener === null"));
 }

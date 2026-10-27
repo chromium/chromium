@@ -2,3 +2,5 @@ file://chrome/browser/ui/OWNERS
 
 # For Android
 per-file browser_navigator_params*.*=jthiesen@chromium.org
+
+per-file window_open_split_tab_browsertest.cc=masonf@chromium.org

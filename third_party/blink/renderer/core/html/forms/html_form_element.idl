@@ -34,6 +34,7 @@
     [CEReactions, Reflect] attribute DOMString name;
     [CEReactions, Reflect] attribute boolean noValidate;
     [CEReactions, Reflect] attribute DOMString target;
+    [RuntimeEnabled=WindowOpenSplitTab, CEReactions, Reflect] attribute DOMString windowFeatures;
     [CEReactions, Reflect] attribute DOMString rel;
     [SameObject, PutForwards=value] readonly attribute DOMTokenList relList;
 

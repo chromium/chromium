@@ -67,6 +67,7 @@
 #include "third_party/blink/renderer/core/loader/render_blocking_resource_manager.h"
 #include "third_party/blink/renderer/core/navigation_api/navigation_api.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
+#include "third_party/blink/renderer/core/page/create_window.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/scroll/scroll_into_view_util.h"
 #include "third_party/blink/renderer/core/speculation_rules/document_speculation_rules.h"
@@ -415,8 +416,17 @@ void HTMLAnchorElementBase::NavigateToHyperlink(
   frame_request.SetNavigationPolicy(navigation_policy);
   frame_request.SetClientNavigationReason(ClientNavigationReason::kAnchorClick);
   frame_request.SetSourceElement(this);
-  const AtomicString target =
+  AtomicString target =
       frame_request.CleanNavigationTarget(GetEffectiveTarget());
+  if (RuntimeEnabledFeatures::WindowOpenSplitTabEnabled()) {
+    WebWindowFeatures window_features = GetWindowFeaturesFromAttribute(
+        FastGetAttribute(html_names::kWindowfeaturesAttr));
+    frame_request.SetFeaturesForWindowOpen(window_features);
+    if (target.empty() &&
+        (window_features.is_split || window_features.is_popup)) {
+      target = AtomicString("_blank");
+    }
+  }
 
   AnchorElementUtils::HandleRelAttribute(frame_request, frame->GetSettings(),
                                          GetExecutionContext(), target,

@@ -288,4 +288,101 @@ TEST_F(WindowFeaturesTest, SplitDisabled) {
   }
 }
 
+TEST_F(WindowFeaturesTest, WindowFeaturesFromAttribute) {
+  ScopedWindowOpenSplitTabForTest split_tab_enabled{true};
+
+  // Empty string gives default features.
+  {
+    WebWindowFeatures features = GetWindowFeaturesFromAttribute("");
+    EXPECT_FALSE(features.is_split);
+    EXPECT_FALSE(features.is_popup);
+    EXPECT_FALSE(features.noopener);
+    EXPECT_FALSE(features.noreferrer);
+    EXPECT_FALSE(features.explicit_opener);
+  }
+
+  // Split features are parsed.
+  {
+    WebWindowFeatures features = GetWindowFeaturesFromAttribute(
+        "split, splitposition=left, splitsize=35");
+    EXPECT_TRUE(features.is_split);
+    EXPECT_FALSE(features.is_popup);
+    EXPECT_EQ(mojom::SplitTabPosition::kLeft, features.split_position);
+    EXPECT_EQ(35, features.split_size);
+  }
+
+  // Popup and bounds features are parsed.
+  {
+    WebWindowFeatures features = GetWindowFeaturesFromAttribute(
+        "popup, left=10, top=20, width=300, height=400");
+    EXPECT_FALSE(features.is_split);
+    EXPECT_TRUE(features.is_popup);
+    EXPECT_TRUE(features.x_set);
+    EXPECT_EQ(10, features.x);
+    EXPECT_TRUE(features.y_set);
+    EXPECT_EQ(20, features.y);
+    EXPECT_TRUE(features.width_set);
+    EXPECT_EQ(300, features.width);
+    EXPECT_TRUE(features.height_set);
+    EXPECT_EQ(400, features.height);
+  }
+
+  // Bounds aliases (screenx, screeny, innerwidth, innerheight) are parsed,
+  // and setting bounds alone does NOT apply the legacy popup heuristic.
+  {
+    WebWindowFeatures features = GetWindowFeaturesFromAttribute(
+        "screenx=15, screeny=25, innerwidth=350, innerheight=450");
+    EXPECT_FALSE(features.is_split);
+    EXPECT_FALSE(features.is_popup);
+    EXPECT_TRUE(features.x_set);
+    EXPECT_EQ(15, features.x);
+    EXPECT_TRUE(features.y_set);
+    EXPECT_EQ(25, features.y);
+    EXPECT_TRUE(features.width_set);
+    EXPECT_EQ(350, features.width);
+    EXPECT_TRUE(features.height_set);
+    EXPECT_EQ(450, features.height);
+  }
+
+  // Disallowed features (noopener, noreferrer, opener, toolbar, menubar, etc.)
+  // and unknown features are ignored and do NOT trigger the legacy popup
+  // heuristic.
+  static const char* const kDisallowedOrLegacyPopupCases[] = {
+      "something",     "split=0",
+      "popup=0",       "noopener",
+      "noreferrer",    "opener",
+      "toolbar=0",     "menubar=0",
+      "location=0",    "resizable=0",
+      "scrollbars=0",  "status=0",
+      "alwaysontop=1", "background=1",
+      "persistent=1",  "attributionsrc=https://example.com",
+  };
+  for (const char* feature_string : kDisallowedOrLegacyPopupCases) {
+    WebWindowFeatures features = GetWindowFeaturesFromAttribute(feature_string);
+    EXPECT_FALSE(features.is_split) << "Testing '" << feature_string << "'";
+    EXPECT_FALSE(features.is_popup) << "Testing '" << feature_string << "'";
+    EXPECT_FALSE(features.noopener) << "Testing '" << feature_string << "'";
+    EXPECT_FALSE(features.noreferrer) << "Testing '" << feature_string << "'";
+    EXPECT_FALSE(features.explicit_opener)
+        << "Testing '" << feature_string << "'";
+    EXPECT_FALSE(features.always_on_top)
+        << "Testing '" << feature_string << "'";
+    EXPECT_FALSE(features.background) << "Testing '" << feature_string << "'";
+    EXPECT_FALSE(features.persistent) << "Testing '" << feature_string << "'";
+  }
+}
+
+TEST_F(WindowFeaturesTest, WindowFeaturesFromAttributeDisabled) {
+  ScopedWindowOpenSplitTabForTest split_tab_enabled{false};
+
+  WebWindowFeatures features = GetWindowFeaturesFromAttribute(
+      "split, splitposition=left, splitsize=30, popup, width=400, height=300");
+  EXPECT_FALSE(features.is_split);
+  EXPECT_FALSE(features.is_popup);
+  EXPECT_EQ(mojom::SplitTabPosition::kUnspecified, features.split_position);
+  EXPECT_EQ(std::nullopt, features.split_size);
+  EXPECT_FALSE(features.width_set);
+  EXPECT_FALSE(features.height_set);
+}
+
 }  // namespace blink

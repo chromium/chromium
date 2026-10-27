@@ -77,8 +77,13 @@ static bool IsWindowFeaturesSeparator(UChar c) {
          c == ',' || c == '\f';
 }
 
-WebWindowFeatures GetWindowFeaturesFromString(const String& feature_string,
-                                              LocalDOMWindow* dom_window) {
+namespace {
+
+enum class WindowFeaturesSource { kWindowOpen, kAttribute };
+
+WebWindowFeatures ParseWindowFeatures(const String& feature_string,
+                                      LocalDOMWindow* dom_window,
+                                      WindowFeaturesSource source) {
   WebWindowFeatures window_features;
 
   const bool explicit_opener_enabled =
@@ -87,6 +92,9 @@ WebWindowFeatures GetWindowFeaturesFromString(const String& feature_string,
       RuntimeEnabledFeatures::WindowOpenAlwaysOnTopEnabled();
   const bool split_tab_enabled =
       RuntimeEnabledFeatures::WindowOpenSplitTabEnabled();
+  if (source == WindowFeaturesSource::kAttribute && !split_tab_enabled) {
+    return window_features;
+  }
 
   // This code follows the HTML spec, specifically
   // https://html.spec.whatwg.org/C/#concept-window-open-features-tokenize
@@ -179,7 +187,8 @@ WebWindowFeatures GetWindowFeaturesFromString(const String& feature_string,
     const bool window_open_attribution_src_enabled =
         dom_window &&
         RuntimeEnabledFeatures::WindowOpenAttributionSrcEnabled(dom_window);
-    if (!ui_features_were_disabled && key_string != "noopener" &&
+    if (source == WindowFeaturesSource::kWindowOpen &&
+        !ui_features_were_disabled && key_string != "noopener" &&
         (!explicit_opener_enabled || key_string != "opener") &&
         key_string != "noreferrer" &&
         (!window_open_attribution_src_enabled ||
@@ -206,24 +215,6 @@ WebWindowFeatures GetWindowFeaturesFromString(const String& feature_string,
     } else if (key_string == "height" || key_string == "innerheight") {
       window_features.height_set = true;
       window_features.height = value;
-    } else if (key_string == "menubar") {
-      menu_bar = value;
-    } else if (key_string == "toolbar" || key_string == "location") {
-      tool_bar |= static_cast<bool>(value);
-    } else if (key_string == "status") {
-      status_bar = value;
-    } else if (key_string == "scrollbars") {
-      scrollbars = value;
-    } else if (key_string == "resizable") {
-      window_features.resizable = value;
-    } else if (key_string == "noopener") {
-      window_features.noopener = value;
-    } else if (explicit_opener_enabled && key_string == "opener") {
-      window_features.explicit_opener = value;
-    } else if (key_string == "noreferrer") {
-      window_features.noreferrer = value;
-    } else if (always_on_top_enabled && key_string == "alwaysontop") {
-      window_features.always_on_top = value;
     } else if (split_tab_enabled && key_string == "split") {
       split_requested = value;
     } else if (split_tab_enabled && key_string == "splitposition") {
@@ -253,15 +244,35 @@ WebWindowFeatures GetWindowFeaturesFromString(const String& feature_string,
       } else {
         split_size = std::nullopt;
       }
-    } else if (key_string == "background") {
-      window_features.background = true;
-    } else if (key_string == "persistent") {
-      window_features.persistent = true;
-    } else if (window_open_attribution_src_enabled &&
-               key_string == "attributionsrc") {
-      UseCounter::Count(
-          dom_window,
-          mojom::blink::WebFeature::kAttributionReportingWindowOpen);
+    } else if (source == WindowFeaturesSource::kWindowOpen) {
+      if (key_string == "menubar") {
+        menu_bar = value;
+      } else if (key_string == "toolbar" || key_string == "location") {
+        tool_bar |= static_cast<bool>(value);
+      } else if (key_string == "status") {
+        status_bar = value;
+      } else if (key_string == "scrollbars") {
+        scrollbars = value;
+      } else if (key_string == "resizable") {
+        window_features.resizable = value;
+      } else if (key_string == "noopener") {
+        window_features.noopener = value;
+      } else if (explicit_opener_enabled && key_string == "opener") {
+        window_features.explicit_opener = value;
+      } else if (key_string == "noreferrer") {
+        window_features.noreferrer = value;
+      } else if (always_on_top_enabled && key_string == "alwaysontop") {
+        window_features.always_on_top = value;
+      } else if (key_string == "background") {
+        window_features.background = true;
+      } else if (key_string == "persistent") {
+        window_features.persistent = true;
+      } else if (window_open_attribution_src_enabled &&
+                 key_string == "attributionsrc") {
+        UseCounter::Count(
+            dom_window,
+            mojom::blink::WebFeature::kAttributionReportingWindowOpen);
+      }
     }
   }
 
@@ -275,7 +286,10 @@ WebWindowFeatures GetWindowFeaturesFromString(const String& feature_string,
     // heuristic does not apply. `is_popup` is only true if "popup" was
     // explicitly requested, in which case it is the fallback when the browser
     // does not create the split. Otherwise the fallback is a new tab.
-  } else if (popup_state == PopupState::kUnknown) {
+  } else if (source == WindowFeaturesSource::kWindowOpen &&
+             popup_state == PopupState::kUnknown) {
+    // The legacy popup heuristic only applies to window.open(), not to the
+    // "windowfeatures" content attribute.
     window_features.is_popup = !tool_bar || !menu_bar || !scrollbars ||
                                !status_bar || !window_features.resizable;
   }
@@ -288,6 +302,19 @@ WebWindowFeatures GetWindowFeaturesFromString(const String& feature_string,
   }
 
   return window_features;
+}
+
+}  // namespace
+
+WebWindowFeatures GetWindowFeaturesFromString(const String& feature_string,
+                                              LocalDOMWindow* dom_window) {
+  return ParseWindowFeatures(feature_string, dom_window,
+                             WindowFeaturesSource::kWindowOpen);
+}
+
+WebWindowFeatures GetWindowFeaturesFromAttribute(const String& feature_string) {
+  return ParseWindowFeatures(feature_string, /*dom_window=*/nullptr,
+                             WindowFeaturesSource::kAttribute);
 }
 
 static void MaybeLogWindowOpen(LocalFrame& opener_frame) {

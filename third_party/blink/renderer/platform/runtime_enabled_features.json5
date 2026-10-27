@@ -8044,8 +8044,9 @@
     },
     {
       // Supports the "split", "splitposition", and "splitsize" features in
-      // window.open(), which request that the new content be opened in a split
-      // tab alongside the opener.
+      // window.open(), and the "windowfeatures" content attribute on <a>,
+      // <area>, and <form>, which request that the new content be opened in a
+      // split tab alongside the opener.
       //
       // The base::Feature is enabled by default, and serves as a kill switch
       // for the browser-side implementation. The Blink side follows the

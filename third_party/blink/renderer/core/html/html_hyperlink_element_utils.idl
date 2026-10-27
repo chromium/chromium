@@ -7,4 +7,5 @@
 interface mixin HTMLHyperlinkElementUtils {
     [CEReactions] stringifier attribute USVString href;
     [CEReactions, Reflect] attribute DOMString target;
+    [RuntimeEnabled=WindowOpenSplitTab, CEReactions, Reflect] attribute DOMString windowFeatures;
 };
