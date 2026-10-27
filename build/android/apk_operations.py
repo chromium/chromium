@@ -62,11 +62,6 @@ BASE_MODULE = 'base'
 LOGCAT_LEVELS = "VDIWEF"
 
 
-def _IsTrichrome():
-    calling_script_name = os.path.basename(sys.argv[0])
-    return 'trichrome' in calling_script_name
-
-
 def _Colorize(text, style=''):
     return style + text + colorama.Style.RESET_ALL
 
@@ -1975,11 +1970,7 @@ class _PackageInfoCommand(_Command):
         print('Supported ABIs: %r' % self.apk_helper.GetAbis())
 
         if len(str(self.apk_helper.GetVersionCode())) == 9:
-            # android_chrome_version expects Trichrome to be is_webview=False, even if
-            # this is TrichromeWebView.
-            is_webview = (
-                _IsWebViewProvider(self.apk_helper) and not _IsTrichrome()
-            )
+            is_webview = _IsWebViewProvider(self.apk_helper)
             x = android_chrome_version.TranslateVersionCode(
                 str(self.apk_helper.GetVersionCode()), is_webview
             )

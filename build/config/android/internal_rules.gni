@@ -740,7 +740,6 @@ template("test_runner_script") {
       output_conversion = "json"
       outputs = [ _install_artifacts_json ]
       data_keys = [ "install_artifacts" ]
-      walk_keys = [ "install_artifacts_barrier" ]
       rebase = root_build_dir
     }
   }
@@ -2523,12 +2522,6 @@ if (enable_java_templates) {
           args += [
             "--verification-version-code-offset",
             invoker.expected_android_manifest_version_code_offset,
-          ]
-        }
-        if (defined(invoker.expected_android_manifest_library_version_offset)) {
-          args += [
-            "--verification-library-version-offset",
-            invoker.expected_android_manifest_library_version_offset,
           ]
         }
         if (fail_on_android_expectations) {

@@ -50,22 +50,6 @@ if (_is_default_toolchain) {
   import("channel.gni")
   import("java_sources.gni")
   import("static_initializers.gni")
-  import("trichrome.gni")
-}
-
-# 32-bit library will have browser code in it. 64-bit is webview-only.
-if (defined(android_app_secondary_abi)) {
-  _trichrome_browser_toolchain = android_secondary_abi_toolchain
-} else {
-  _trichrome_browser_toolchain = default_toolchain
-}
-
-if (android_64bit_target_cpu) {
-  _main_trichrome_chrome_bundle_target = "trichrome_chrome_32_64_bundle"
-  _main_trichrome_library_apk_target = "trichrome_library_32_64_apk"
-} else {
-  _main_trichrome_chrome_bundle_target = "trichrome_chrome_bundle"
-  _main_trichrome_library_apk_target = "trichrome_library_apk"
 }
 
 if (_is_default_toolchain) {
@@ -78,10 +62,6 @@ if (_is_default_toolchain) {
                                "assert_no_deps",
                                "expected_android_manifest",
                                "is_64_bit_browser",
-                               "is_trichrome",
-                               "include_32_bit_webview",
-                               "include_64_bit_webview",
-                               "static_library_provider",
                                "resource_ids_provider_dep",
                              ])
       target_type = "android_app_bundle_module"
@@ -106,11 +86,7 @@ if (_is_default_toolchain) {
       forward_variables_from(invoker,
                              [
                                "bundle_name",
-                               "include_32_bit_webview",
-                               "include_64_bit_webview",
                                "is_64_bit_browser",
-                               "is_trichrome",
-                               "static_library_provider",
                                "expected_android_manifest_template",
                                "expected_libs_and_assets",
                                "expected_proguard_config",
@@ -1894,21 +1870,14 @@ if (_is_default_toolchain) {
   # resources. The generated target names are derived from input variables.
   #
   # Variables:
-  #    is_trichrome: (Optional) Generate Trichrome targets that use monochrome
-  #      library targets but don't include webview resources.
   #    is_bundle_module: (Optional) If true, generate targets for base bundle
   #      module.
   template("resource_packaging") {
     not_needed([ "invoker" ])
-    _is_trichrome = defined(invoker.is_trichrome) && invoker.is_trichrome
     _is_bundle_module =
         defined(invoker.is_bundle_module) && invoker.is_bundle_module
 
-    if (_is_trichrome) {
-      _variant = "trichrome_chrome"
-    } else {
-      _variant = "chrome"
-    }
+    _variant = "chrome"
     if (_is_bundle_module) {
       _variant += "_bundle_module"
     } else {
@@ -1916,24 +1885,14 @@ if (_is_default_toolchain) {
     }
 
     if (enable_resource_allowlist_generation) {
-      if (_is_trichrome) {
-        _lib = "libmonochrome_inputs"
-      } else {
-        _lib = "libchrome_inputs"
-      }
+      _lib = "libchrome_inputs"
       _resource_allowlist_target = "${_variant}_resource_allowlist"
       _resource_allowlist_file =
           "$target_gen_dir/${_variant}_resource_allowlist.txt"
       _lib_path = "/" + _lib + shlib_extension
 
       generate_resource_allowlist(_resource_allowlist_target) {
-        _fat_lib_toolchain = current_toolchain
-        if (_is_trichrome) {
-          # TODO(agrieve): For 64-bit primary, using libmonochrome_64 would be
-          #     more efficient.
-          _fat_lib_toolchain = _trichrome_browser_toolchain
-        }
-        deps = [ ":${_lib}($_fat_lib_toolchain)" ]
+        deps = [ ":$_lib" ]
 
         inputs = [ get_label_info(deps[0], "root_out_dir") + _lib_path ]
         output = _resource_allowlist_file

@@ -261,9 +261,7 @@ def _AddDiffTags(lines):
     assert not hash_stack, 'hash_stack was not empty:\n' + '\n'.join(hash_stack)
 
 
-def NormalizeManifest(
-    manifest_contents, version_code_offset, library_version_offset
-):
+def NormalizeManifest(manifest_contents, version_code_offset):
     _RegisterElementTreeNamespaces()
     # This also strips comments and sorts node attributes alphabetically.
     root = ElementTree.fromstring(manifest_contents)
@@ -286,16 +284,6 @@ def NormalizeManifest(
         if version_name:
             version_name = re.sub(r'\d+', '#', version_name)
             NamespacedSet(root, 'versionName', version_name)
-
-        # Trichrome's static library version number is updated daily. To avoid
-        # frequent manifest check failures, we remove the exact version number
-        # during normalization.
-        for node in app_node:
-            if node.tag in ['uses-static-library', 'static-library']:
-                version = NamespacedGet(node, 'version')
-                if version and library_version_offset:
-                    version = int(version) - int(library_version_offset)
-                    NamespacedSet(node, 'version', f'OFFSET={version}')
 
     # We also remove the exact package name (except the one at the root level)
     # to avoid noise during manifest comparison.

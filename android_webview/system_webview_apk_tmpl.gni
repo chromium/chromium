@@ -120,7 +120,6 @@ template("system_webview_apk_or_module_tmpl") {
         _version_code_offset = chrome_version_code
       }
       expected_android_manifest_version_code_offset = _version_code_offset
-      expected_android_manifest_library_version_offset = _version_code_offset
     }
 
     android_manifest = _android_manifest

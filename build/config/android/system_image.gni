@@ -12,10 +12,6 @@ import("//build/config/android/rules.gni")
 #   version_name: Version name for the stub.
 #   package_info_from_target: Use the package name, version_code, and <permission>s
 #       from this apk/bundle target.
-#   static_library_name: For static library apks, name for the <static-library>.
-#   static_library_version: For static library apks, version for the
-#       <static-library> tag (for TrichromeLibrary, we set this to be the same
-#       as the package's version_code)
 #   stub_output: Path to output stub apk (default: do not create a stub).
 #
 # package_name and package_info_from_target are mutually exclusive.
@@ -45,22 +41,6 @@ template("system_image_stub_apk") {
       "--output",
       rebase_path(_manifest_path, root_build_dir),
     ]
-    if (defined(invoker.static_library_name)) {
-      args += [
-        "--static-library-name",
-        invoker.static_library_name,
-      ]
-
-      # TODO(crbug.com/40253411): Make static_library_version mandatory.
-      if (defined(invoker.static_library_version)) {
-        args += [
-          "--static-library-version",
-          invoker.static_library_version,
-        ]
-      } else {
-        args += [ "--static-library-version=1" ]
-      }
-    }
     if (defined(_apk_or_bundle_target)) {
       deps = [ "$_apk_or_bundle_target$build_config_target_suffix" ]
       inputs = [ _build_config ]
@@ -157,28 +137,12 @@ template("system_image_stub_apk") {
       _package_name = invoker.package_name
       _version_code = invoker.version_code
       _version_name = invoker.version_name
-
-      # TODO(crbug.com/40253411): Make static_library_version mandatory.
-      if (defined(invoker.static_library_version)) {
-        assert(invoker.static_library_version == _version_code,
-               "$invoker.static_library_version must equal $_version_code.")
-      }
     } else {
       deps += [ "${_apk_or_bundle_target}$build_config_target_suffix" ]
       inputs += [ _build_config ]
       _package_name = "@FileArg($_rebased_build_config:package_name)"
       _version_code = "@FileArg($_rebased_build_config:version_code)"
       _version_name = "@FileArg($_rebased_build_config:version_name)"
-
-      # TODO(crbug.com/40253411): Make static_library_version mandatory.
-      # Pass this through to ensure that the version code in the build config is
-      # the same as the static library version.
-      if (defined(invoker.static_library_version)) {
-        args += [
-          "--static-library-version",
-          invoker.static_library_version,
-        ]
-      }
     }
 
     args += [
@@ -211,10 +175,6 @@ template("system_image_stub_apk") {
 # Variables:
 #   apk_or_bundle_target: Target that creates input bundle or apk.
 #   input_apk_or_bundle: Path to input .apk or .aab.
-#   static_library_name: For static library apks, name for the <static-library>.
-#   static_library_version: For static library apks, version for the
-#       <static-library> tag (for TrichromeLibrary, we set this to be the same
-#       as the package's version_code)
 #   output: Path to the output system .apk or .zip.
 #   fuse_apk: Fuse all apk splits into a single .apk (default: false).
 #   stub_output: Path to output stub apk (default: do not create a stub).
@@ -224,12 +184,7 @@ template("system_image_apks") {
     _stub_apk_target_name = "${target_name}__stub"
 
     system_image_stub_apk(_stub_apk_target_name) {
-      forward_variables_from(invoker,
-                             [
-                               "static_library_name",
-                               "static_library_version",
-                               "override_target_sdk",
-                             ])
+      forward_variables_from(invoker, [ "override_target_sdk" ])
       package_info_from_target = invoker.apk_or_bundle_target
       stub_output = invoker.stub_output
     }

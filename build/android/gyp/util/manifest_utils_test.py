@@ -113,12 +113,12 @@ class ManifestUtilsTest(unittest.TestCase):
 
     def testNormalizeManifest_golden(self):
         test_manifest, expected = _CreateTestData()
-        actual = manifest_utils.NormalizeManifest(test_manifest, 1230, None)
+        actual = manifest_utils.NormalizeManifest(test_manifest, 1230)
         self.assertMultiLineEqual(expected, actual)
 
     def testNormalizeManifest_nameUsedForActivity(self):
         test_manifest, expected = _CreateTestData(extra_activity_attr='a="b"')
-        actual = manifest_utils.NormalizeManifest(test_manifest, 1230, None)
+        actual = manifest_utils.NormalizeManifest(test_manifest, 1230)
         # Checks that the DIFF-ANCHOR does not change with the added attribute.
         self.assertMultiLineEqual(expected, actual)
 
@@ -127,7 +127,7 @@ class ManifestUtilsTest(unittest.TestCase):
             extra_intent_filter_elem='<a/>',
             intent_filter_diff_anchor='5f5c8a70',
         )
-        actual = manifest_utils.NormalizeManifest(test_manifest, 1230, None)
+        actual = manifest_utils.NormalizeManifest(test_manifest, 1230)
         # Checks that the DIFF-ANCHOR does change with the added element despite
         # having a nested element with an android:name set.
         self.assertMultiLineEqual(expected, actual)

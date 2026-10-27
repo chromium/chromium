@@ -2202,8 +2202,6 @@ if (!is_robolectric && enable_java_templates) {
   #     dependent resource targets which override another target set
   #     overlay_resources=true. This check is on for non-test targets and
   #     cannot be disabled.
-  #   static_library_provider: Specifies a single target that this target will
-  #     use as a static library APK.
   #   min_sdk_version: The minimum Android SDK version this target supports.
   #     Optional, default $default_min_sdk_version.
   #   target_sdk_version: The target Android SDK version for this target.
@@ -2404,19 +2402,16 @@ if (!is_robolectric && enable_java_templates) {
       }
     }
 
-    _uses_static_library = defined(invoker.static_library_provider)
-
     _loadable_modules = []
     if (defined(invoker.loadable_modules)) {
       _loadable_modules = invoker.loadable_modules
     }
     _sanitizer_loadable_modules = []
     _sanitizer_deps = []
-    if (_is_base_module && _native_libs_deps != [] && !_uses_static_library) {
+    if (_is_base_module && _native_libs_deps != []) {
       _sanitizer_loadable_modules += _sanitizer_runtimes
     }
-    if (enable_wrap_sh && _is_base_module &&
-        (_uses_static_library || _native_libs_deps != [])) {
+    if (enable_wrap_sh && _is_base_module && _native_libs_deps != []) {
       _sanitizer_loadable_modules +=
           [ "$root_gen_dir/build/android/generate_wrap_sh/wrap.sh" ]
       _sanitizer_deps += [ "//build/android:generate_wrap_sh" ]
@@ -2484,27 +2479,25 @@ if (!is_robolectric && enable_java_templates) {
         "${target_gen_dir}/${_compile_resources_target}.resource_ids"
 
     compile_resources(_compile_resources_target) {
-      forward_variables_from(
-          invoker,
-          [
-            "aapt_locale_allowlist",
-            "app_as_shared_lib",
-            "enforce_resource_overlays_in_tests",
-            "expected_android_manifest",
-            "expected_android_manifest_base",
-            "expected_android_manifest_library_version_offset",
-            "expected_android_manifest_version_code_offset",
-            "manifest_package",
-            "max_sdk_version",
-            "override_target_sdk",
-            "package_id",
-            "r_java_root_package_name",
-            "resource_exclusion_exceptions",
-            "resource_exclusion_regex",
-            "resource_values_filter_rules",
+      forward_variables_from(invoker,
+                             [
+                               "aapt_locale_allowlist",
+                               "app_as_shared_lib",
+                               "enforce_resource_overlays_in_tests",
+                               "expected_android_manifest",
+                               "expected_android_manifest_base",
+                               "expected_android_manifest_version_code_offset",
+                               "manifest_package",
+                               "max_sdk_version",
+                               "override_target_sdk",
+                               "package_id",
+                               "r_java_root_package_name",
+                               "resource_exclusion_exceptions",
+                               "resource_exclusion_regex",
+                               "resource_values_filter_rules",
 
-            "uses_split",
-          ])
+                               "uses_split",
+                             ])
       android_manifest = _android_manifest
       android_manifest_dep = ":$_merge_manifest_target"
       version_code = _version_code
@@ -2621,47 +2614,15 @@ if (!is_robolectric && enable_java_templates) {
     if (_generate_native_libraries_java) {
       write_native_libraries_java("${_template_name}__native_libraries") {
         if (defined(_shared_library_list_file)) {
-          _use_secondary_abi = false
-        } else if (defined(_secondary_abi_shared_library_list_file)) {
-          _use_secondary_abi = true
-        }
-        if (_uses_static_library) {
-          if (defined(_use_secondary_abi)) {
-            # Use the library list in TrichromeWebView instead of
-            # TrichromeLibrary.
-            _from_static_library = false
-          } else {
-            _from_static_library = true
-            _use_secondary_abi =
-                defined(invoker.static_library_provider_use_secondary_abi) &&
-                invoker.static_library_provider_use_secondary_abi
-          }
-        } else {
-          _from_static_library = false
-        }
-        if (_from_static_library) {
-          _prefix = get_label_info(invoker.static_library_provider,
-                                   "target_gen_dir") + "/" +
-                    get_label_info(invoker.static_library_provider, "name")
-          if (_use_secondary_abi) {
-            native_libraries_list_file = "${_prefix}.secondary_abi_native_libs"
-          } else {
-            native_libraries_list_file = "${_prefix}.native_libs"
-          }
-        } else if (defined(_use_secondary_abi)) {
-          if (_use_secondary_abi) {
-            native_libraries_list_file = _secondary_abi_shared_library_list_file
-          } else {
-            native_libraries_list_file = _shared_library_list_file
-          }
-        }
-
-        if (defined(_use_secondary_abi)) {
-          if (_use_secondary_abi || !android_64bit_target_cpu) {
-            native_lib_32_bit = true
-          } else {
+          native_libraries_list_file = _shared_library_list_file
+          if (android_64bit_target_cpu) {
             native_lib_64_bit = true
+          } else {
+            native_lib_32_bit = true
           }
+        } else if (defined(_secondary_abi_shared_library_list_file)) {
+          native_libraries_list_file = _secondary_abi_shared_library_list_file
+          native_lib_32_bit = true
         }
 
         enable_chromium_linker = _use_chromium_linker
@@ -3077,19 +3038,6 @@ if (!is_robolectric && enable_java_templates) {
     # Generate apk operation related script.
     if (!_is_bundle_module &&
         (!defined(invoker.create_apk_script) || invoker.create_apk_script)) {
-      if (_uses_static_library) {
-        _install_artifacts_target = "${target_name}__install_artifacts"
-        _install_artifacts_json =
-            "${target_gen_dir}/${target_name}.install_artifacts"
-
-        generated_file(_install_artifacts_target) {
-          output_conversion = "json"
-          deps = [ invoker.static_library_provider ]
-          outputs = [ _install_artifacts_json ]
-          data_keys = [ "install_artifacts" ]
-          rebase = root_build_dir
-        }
-      }
       _apk_operations_target_name = "${target_name}__apk_operations"
 
       action_with_pydeps(_apk_operations_target_name) {
@@ -3111,17 +3059,6 @@ if (!is_robolectric && enable_java_templates) {
           "--apk-path",
           rebase_path(_final_apk_path, root_build_dir),
         ]
-        if (_uses_static_library) {
-          deps = [ ":$_install_artifacts_target" ]
-          _rebased_install_artifacts_json =
-              rebase_path(_install_artifacts_json, root_build_dir)
-          _static_library_apk_path =
-              "@FileArg($_rebased_install_artifacts_json[])"
-          args += [
-            "--additional-apk",
-            _static_library_apk_path,
-          ]
-        }
         data = [ _generated_script ]
         data_deps = [
           "//build/android:apk_operations_py",
@@ -3210,10 +3147,6 @@ if (!is_robolectric && enable_java_templates) {
       if (_enable_lint) {
         validations = [ ":${target_name}__lint" ]
       }
-
-      if (_uses_static_library) {
-        data_deps += [ invoker.static_library_provider ]
-      }
     }
   }
 
@@ -3246,96 +3179,92 @@ if (!is_robolectric && enable_java_templates) {
   #   }
   template("android_apk") {
     android_apk_or_module(target_name) {
-      forward_variables_from(
-          invoker,
-          [
-            "aapt_locale_allowlist",
-            "additional_jar_files",
-            "allow_unused_jni_from_native",
-            "alternative_android_sdk_dep",
-            "android_manifest",
-            "android_manifest_dep",
-            "annotation_processor_deps",
-            "apk_under_test",
-            "app_as_shared_lib",
-            "assert_no_deps",
-            "assert_no_native_deps",
-            "asset_deps",
-            "bundles_supported",
-            "bytecode_rewriter_target",
-            "chromium_code",
-            "command_line_flags_file",
-            "create_apk_script",
-            "custom_assertion_handler",
-            "data",
-            "data_deps",
-            "deps",
-            "disallowed_library_classes",
-            "enable_lint",
-            "enable_proguard_checks",
-            "errorprone_args",
-            "disable_strict_mode_context",
-            "enforce_resource_overlays_in_tests",
-            "expected_android_manifest",
-            "expected_android_manifest_base",
-            "expected_android_manifest_library_version_offset",
-            "expected_android_manifest_version_code_offset",
-            "expected_libs_and_assets",
-            "expected_libs_and_assets_base",
-            "generate_buildconfig_java",
-            "generate_native_libraries_java",
-            "include_size_info",
-            "input_jars_paths",
-            "jacoco_never_instrument",
-            "javac_args",
-            "keystore_name",
-            "keystore_password",
-            "keystore_path",
-            "lint_baseline_file",
-            "lint_gen_dir",
-            "lint_min_sdk_version",
-            "lint_suppressions_dep",
-            "lint_suppressions_file",
-            "loadable_modules",
-            "manifest_package",
-            "max_sdk_version",
-            "mergeable_android_manifests",
-            "min_sdk_version",
-            "native_lib_placeholders",
-            "omit_dex",
-            "post_process_package_resources_script",
-            "processor_args_javac",
-            "proguard_configs",
-            "proguard_enabled",
-            "proguard_enable_obfuscation",
-            "r_java_root_package_name",
-            "repackage_classes",
-            "resource_exclusion_exceptions",
-            "resource_exclusion_regex",
-            "resource_ids_provider_dep",
-            "resource_values_filter_rules",
-            "resources_config_paths",
-            "require_native_mocks",
-            "secondary_abi_loadable_modules",
-            "secondary_abi_shared_libraries",
-            "secondary_native_lib_placeholders",
-            "shared_libraries",
-            "sources",
-            "srcjar_deps",
-            "static_library_provider",
-            "static_library_provider_use_secondary_abi",
-            "strip_unused_resources",
-            "suffix_apk_assets_string",
-            "suffix_apk_assets_used_by",
-            "target_sdk_version",
-            "testonly",
-            "uncompress_dex",
-            "library_always_compress",
-            "use_chromium_linker",
-            "version_code",
-            "version_name",
-            "visibility",
-          ])
+      forward_variables_from(invoker,
+                             [
+                               "aapt_locale_allowlist",
+                               "additional_jar_files",
+                               "allow_unused_jni_from_native",
+                               "alternative_android_sdk_dep",
+                               "android_manifest",
+                               "android_manifest_dep",
+                               "annotation_processor_deps",
+                               "apk_under_test",
+                               "app_as_shared_lib",
+                               "assert_no_deps",
+                               "assert_no_native_deps",
+                               "asset_deps",
+                               "bundles_supported",
+                               "bytecode_rewriter_target",
+                               "chromium_code",
+                               "command_line_flags_file",
+                               "create_apk_script",
+                               "custom_assertion_handler",
+                               "data",
+                               "data_deps",
+                               "deps",
+                               "disallowed_library_classes",
+                               "enable_lint",
+                               "enable_proguard_checks",
+                               "errorprone_args",
+                               "disable_strict_mode_context",
+                               "enforce_resource_overlays_in_tests",
+                               "expected_android_manifest",
+                               "expected_android_manifest_base",
+                               "expected_android_manifest_version_code_offset",
+                               "expected_libs_and_assets",
+                               "expected_libs_and_assets_base",
+                               "generate_buildconfig_java",
+                               "generate_native_libraries_java",
+                               "include_size_info",
+                               "input_jars_paths",
+                               "jacoco_never_instrument",
+                               "javac_args",
+                               "keystore_name",
+                               "keystore_password",
+                               "keystore_path",
+                               "lint_baseline_file",
+                               "lint_gen_dir",
+                               "lint_min_sdk_version",
+                               "lint_suppressions_dep",
+                               "lint_suppressions_file",
+                               "loadable_modules",
+                               "manifest_package",
+                               "max_sdk_version",
+                               "mergeable_android_manifests",
+                               "min_sdk_version",
+                               "native_lib_placeholders",
+                               "omit_dex",
+                               "post_process_package_resources_script",
+                               "processor_args_javac",
+                               "proguard_configs",
+                               "proguard_enabled",
+                               "proguard_enable_obfuscation",
+                               "r_java_root_package_name",
+                               "repackage_classes",
+                               "resource_exclusion_exceptions",
+                               "resource_exclusion_regex",
+                               "resource_ids_provider_dep",
+                               "resource_values_filter_rules",
+                               "resources_config_paths",
+                               "require_native_mocks",
+                               "secondary_abi_loadable_modules",
+                               "secondary_abi_shared_libraries",
+                               "secondary_native_lib_placeholders",
+                               "shared_libraries",
+                               "sources",
+                               "srcjar_deps",
+                               "strip_unused_resources",
+                               "suffix_apk_assets_string",
+                               "suffix_apk_assets_used_by",
+                               "target_sdk_version",
+                               "testonly",
+                               "uncompress_dex",
+                               "library_always_compress",
+                               "use_chromium_linker",
+                               "version_code",
+                               "version_name",
+                               "visibility",
+                             ])
       is_bundle_module = false
       name = invoker.apk_name
       if (defined(invoker.final_apk_path)) {
@@ -3345,9 +3274,6 @@ if (!is_robolectric && enable_java_templates) {
       }
       metadata = {
         install_artifacts = [ final_apk_path ]
-        if (defined(invoker.static_library_provider)) {
-          install_artifacts_barrier = []
-        }
       }
 
       # TODO(smaier) - there were some remaining usages of this in angle. Once
@@ -3395,80 +3321,76 @@ if (!is_robolectric && enable_java_templates) {
     # target. Doing so would keep the bundle modules independent from the bundle
     # and potentially reuse the same bundle modules for multiple bundles.
     android_apk_or_module(target_name) {
-      forward_variables_from(
-          invoker,
-          [
-            "add_view_trace_events",
-            "aapt_locale_allowlist",
-            "additional_jar_files",
-            "allow_unused_jni_from_native",
-            "alternative_android_sdk_dep",
-            "android_manifest",
-            "android_manifest_dep",
-            "annotation_processor_deps",
-            "app_as_shared_lib",
-            "assert_no_deps",
-            "assert_no_native_deps",
-            "asset_deps",
-            "base_module_target",
-            "bundle_target",
-            "chromium_code",
-            "custom_assertion_handler",
-            "data",
-            "data_deps",
-            "deps",
-            "disable_strict_mode_context",
-            "expected_android_manifest",
-            "expected_android_manifest_base",
-            "expected_android_manifest_library_version_offset",
-            "expected_android_manifest_version_code_offset",
-            "generate_buildconfig_java",
-            "generate_native_libraries_java",
-            "input_jars_paths",
-            "isolated_splits_enabled",
-            "is_base_module",
-            "jacoco_never_instrument",
-            "jar_excluded_patterns",
-            "javac_args",
-            "loadable_modules",
-            "manifest_package",
-            "max_sdk_version",
-            "min_sdk_version",
-            "mergeable_android_manifests",
-            "override_target_sdk",
-            "module_name",
-            "native_lib_placeholders",
-            "package_id",
-            "parent_module_target",
-            "processor_args_javac",
-            "proguard_configs",
-            "proguard_enabled",
-            "proguard_enable_obfuscation",
-            "repackage_classes",
-            "resource_exclusion_exceptions",
-            "resource_exclusion_regex",
-            "resource_ids_provider_dep",
-            "resource_values_filter_rules",
-            "resources_config_paths",
-            "secondary_abi_loadable_modules",
-            "secondary_abi_shared_libraries",
-            "secondary_native_lib_placeholders",
-            "shared_libraries",
-            "srcjar_deps",
-            "static_library_provider",
-            "static_library_provider_use_secondary_abi",
-            "strip_unused_resources",
-            "suffix_apk_assets_string",
-            "suffix_apk_assets_used_by",
-            "target_sdk_version",
-            "testonly",
-            "library_always_compress",
-            "use_chromium_linker",
-            "uses_split",
-            "version_code",
-            "version_name",
-            "visibility",
-          ])
+      forward_variables_from(invoker,
+                             [
+                               "add_view_trace_events",
+                               "aapt_locale_allowlist",
+                               "additional_jar_files",
+                               "allow_unused_jni_from_native",
+                               "alternative_android_sdk_dep",
+                               "android_manifest",
+                               "android_manifest_dep",
+                               "annotation_processor_deps",
+                               "app_as_shared_lib",
+                               "assert_no_deps",
+                               "assert_no_native_deps",
+                               "asset_deps",
+                               "base_module_target",
+                               "bundle_target",
+                               "chromium_code",
+                               "custom_assertion_handler",
+                               "data",
+                               "data_deps",
+                               "deps",
+                               "disable_strict_mode_context",
+                               "expected_android_manifest",
+                               "expected_android_manifest_base",
+                               "expected_android_manifest_version_code_offset",
+                               "generate_buildconfig_java",
+                               "generate_native_libraries_java",
+                               "input_jars_paths",
+                               "isolated_splits_enabled",
+                               "is_base_module",
+                               "jacoco_never_instrument",
+                               "jar_excluded_patterns",
+                               "javac_args",
+                               "loadable_modules",
+                               "manifest_package",
+                               "max_sdk_version",
+                               "min_sdk_version",
+                               "mergeable_android_manifests",
+                               "override_target_sdk",
+                               "module_name",
+                               "native_lib_placeholders",
+                               "package_id",
+                               "parent_module_target",
+                               "processor_args_javac",
+                               "proguard_configs",
+                               "proguard_enabled",
+                               "proguard_enable_obfuscation",
+                               "repackage_classes",
+                               "resource_exclusion_exceptions",
+                               "resource_exclusion_regex",
+                               "resource_ids_provider_dep",
+                               "resource_values_filter_rules",
+                               "resources_config_paths",
+                               "secondary_abi_loadable_modules",
+                               "secondary_abi_shared_libraries",
+                               "secondary_native_lib_placeholders",
+                               "shared_libraries",
+                               "srcjar_deps",
+                               "strip_unused_resources",
+                               "suffix_apk_assets_string",
+                               "suffix_apk_assets_used_by",
+                               "target_sdk_version",
+                               "testonly",
+                               "library_always_compress",
+                               "use_chromium_linker",
+                               "uses_split",
+                               "version_code",
+                               "version_name",
+                               "visibility",
+                             ])
       is_bundle_module = true
       generate_buildconfig_java = _is_base_module
     }
@@ -4572,9 +4494,6 @@ if (!is_robolectric && enable_java_templates) {
   #    system_image_locale_allowlist: List of locales that should be included
   #      on system APKs generated from this bundle.
   #
-  #    static_library_provider: Specifies a single target that this target will
-  #      use as a static library APK.
-  #
   #    expected_libs_and_assets: Verify the list of included native libraries
   #      and assets is consistent with the given expectation file.
   #    expected_libs_and_assets_base: Treat expected_libs_and_assets as a diff
@@ -4610,7 +4529,6 @@ if (!is_robolectric && enable_java_templates) {
   #
   template("android_app_bundle") {
     _target_name = target_name
-    _uses_static_library = defined(invoker.static_library_provider)
     _proguard_enabled =
         defined(invoker.proguard_enabled) && invoker.proguard_enabled
 
@@ -4651,9 +4569,6 @@ if (!is_robolectric && enable_java_templates) {
         module_target = invoker.base_module_target
         build_config = _base_module_build_config
         build_config_target = _base_module_build_config_target
-        if (_uses_static_library) {
-          parent = "lib"
-        }
       },
     ]
 
@@ -5039,20 +4954,6 @@ if (!is_robolectric && enable_java_templates) {
       }
     }
 
-    if (_uses_static_library) {
-      _install_artifacts_target = "${target_name}__install_artifacts"
-      _install_artifacts_json =
-          "${target_gen_dir}/${target_name}.install_artifacts"
-
-      generated_file(_install_artifacts_target) {
-        output_conversion = "json"
-        deps = [ invoker.static_library_provider ]
-        outputs = [ _install_artifacts_json ]
-        data_keys = [ "install_artifacts" ]
-        rebase = root_build_dir
-      }
-    }
-
     # Generate a wrapper script for the bundle.
     _android_aapt2_path = android_sdk_tools_bundle_aapt2
 
@@ -5110,18 +5011,6 @@ if (!is_robolectric && enable_java_templates) {
           invoker.command_line_flags_file,
         ]
       }
-      if (_uses_static_library) {
-        deps += [ ":$_install_artifacts_target" ]
-        _rebased_install_artifacts_json =
-            rebase_path(_install_artifacts_json, root_build_dir)
-        _static_library_apk_path =
-            "@FileArg($_rebased_install_artifacts_json[])"
-        args += [
-          "--additional-apk",
-          _static_library_apk_path,
-        ]
-      }
-
       if (_proguard_enabled) {
         args += [
           "--proguard-mapping-path",
@@ -5180,9 +5069,6 @@ if (!is_robolectric && enable_java_templates) {
       deps = [ ":$_bundle_target_name" ]
       metadata = {
         install_artifacts = [ _apks_path ]
-        if (defined(invoker.static_library_provider)) {
-          install_artifacts_barrier = []
-        }
       }
 
       # http://crbug.com/725224. Fix for bots running out of memory.

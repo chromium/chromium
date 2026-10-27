@@ -116,9 +116,6 @@ def _ParseArgs(args):
         action='store_true',
         help='Whether to add android:debuggable="true".',
     )
-    input_opts.add_argument(
-        '--static-library-version', help='Version code for static library.'
-    )
     input_opts.add_argument('--version-code', help='Version code for apk.')
     input_opts.add_argument('--version-name', help='Version name for apk.')
     input_opts.add_argument(
@@ -180,10 +177,6 @@ def _ParseArgs(args):
         '--verification-version-code-offset',
         help='Subtract this from versionCode for expectation files',
     )
-    input_opts.add_argument(
-        '--verification-library-version-offset',
-        help='Subtract this from static-library version for expectation files',
-    )
 
     action_helpers.add_depfile_arg(output_opts)
     output_opts.add_argument('--arsc-path', help='Apk output for arsc format.')
@@ -237,15 +230,6 @@ def _ParseArgs(args):
 
     if not options.arsc_path and not options.proto_path:
         parser.error('One of --arsc-path or --proto-path is required.')
-
-    if options.static_library_version and (
-        options.static_library_version != options.version_code
-    ):
-        assert options.static_library_version == options.version_code, (
-            f'static_library_version={options.static_library_version} must equal '
-            f'version_code={options.version_code}. Please verify the version code '
-            'map for this target is defined correctly.'
-        )
 
     return options
 
@@ -775,9 +759,7 @@ def _CreateNormalizedManifestForVerification(options):
         fixed_manifest, _, _ = _FixManifest(options, tempdir)
         with open(fixed_manifest, encoding='utf-8') as f:
             return manifest_utils.NormalizeManifest(
-                f.read(),
-                options.verification_version_code_offset,
-                options.verification_library_version_offset,
+                f.read(), options.verification_version_code_offset
             )
 
 
