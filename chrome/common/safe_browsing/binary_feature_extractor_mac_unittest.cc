@@ -4,16 +4,30 @@
 
 #include "chrome/common/safe_browsing/binary_feature_extractor.h"
 
+#include <string>
+
 #include "base/files/file_path.h"
 #include "base/path_service.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/common/chrome_paths.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace safe_browsing {
 namespace {
 
-class BinaryFeatureExtractorMacTest : public testing::Test {
+std::string GetRustParamName(const testing::TestParamInfo<bool>& info) {
+  return info.param ? "Rust" : "Cpp";
+}
+
+class BinaryFeatureExtractorMacTest : public testing::TestWithParam<bool> {
+ public:
+  BinaryFeatureExtractorMacTest() {
+    scoped_feature_list_.InitWithFeatureState(kSafeBrowsingRustDmgParser,
+                                              GetParam());
+  }
+
  protected:
   void SetUp() override {
     ASSERT_TRUE(base::PathService::Get(chrome::DIR_TEST_DATA, &test_data_));
@@ -31,11 +45,12 @@ class BinaryFeatureExtractorMacTest : public testing::Test {
   }
 
  private:
+  base::test::ScopedFeatureList scoped_feature_list_;
   base::FilePath test_data_;
   scoped_refptr<BinaryFeatureExtractor> feature_extractor_;
 };
 
-TEST_F(BinaryFeatureExtractorMacTest, UnsignedMachOThin) {
+TEST_P(BinaryFeatureExtractorMacTest, UnsignedMachOThin) {
   ClientDownloadRequest_ImageHeaders image_headers;
   google::protobuf::RepeatedPtrField<std::string> signed_data;
 
@@ -47,7 +62,7 @@ TEST_F(BinaryFeatureExtractorMacTest, UnsignedMachOThin) {
   EXPECT_EQ(0, signed_data.size());
 }
 
-TEST_F(BinaryFeatureExtractorMacTest, SignedMachOFat) {
+TEST_P(BinaryFeatureExtractorMacTest, SignedMachOFat) {
   ClientDownloadRequest_ImageHeaders image_headers;
   google::protobuf::RepeatedPtrField<std::string> signed_data;
 
@@ -59,7 +74,7 @@ TEST_F(BinaryFeatureExtractorMacTest, SignedMachOFat) {
   EXPECT_EQ(2, signed_data.size());
 }
 
-TEST_F(BinaryFeatureExtractorMacTest, NotMachO) {
+TEST_P(BinaryFeatureExtractorMacTest, NotMachO) {
   ClientDownloadRequest_ImageHeaders image_headers;
   google::protobuf::RepeatedPtrField<std::string> signed_data;
 
@@ -70,6 +85,11 @@ TEST_F(BinaryFeatureExtractorMacTest, NotMachO) {
   EXPECT_EQ(0, image_headers.mach_o_headers().size());
   EXPECT_EQ(0, signed_data.size());
 }
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         BinaryFeatureExtractorMacTest,
+                         testing::Bool(),
+                         GetRustParamName);
 
 }  // namespace
 }  // namespace safe_browsing
