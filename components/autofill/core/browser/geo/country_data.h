@@ -320,13 +320,24 @@ inline constexpr auto kCountryAddressImportRequirementsData =
          {"ZM", ADDRESS_REQUIRES_LINE1_CITY},
          {"ZW", ADDRESS_REQUIRES_LINE1_CITY}});
 
-// Compute at compile-time a base::fixed_flat_set<std::string_view> containing
-// all the country codes used as keys in kCountryAddressImportRequirementsData
-constexpr base::fixed_flat_set<std::string_view, 252u> GetCountryCodes() {
-  return []<size_t... I>(std::index_sequence<I...>) {
-    return base::MakeFixedFlatSet<std::string_view>(
-        {kCountryAddressImportRequirementsData.begin()[I].first...});
-  }(std::make_index_sequence<kCountryAddressImportRequirementsData.size()>());
+namespace internal {
+
+inline constexpr auto kCountryCodes =
+    []<size_t... I>(std::index_sequence<I...>) consteval {
+      return base::MakeFixedFlatSet<std::string_view>(
+          {kCountryAddressImportRequirementsData.begin()[I].first...});
+    }(std::make_index_sequence<kCountryAddressImportRequirementsData.size()>());
+
+}  // namespace internal
+
+// Returns a compile-time `base::fixed_flat_set<std::string_view>` containing
+// all the country codes used as keys in
+// `kCountryAddressImportRequirementsData`.
+constexpr const base::fixed_flat_set<
+    std::string_view,
+    kCountryAddressImportRequirementsData.size()>&
+GetCountryCodes() {
+  return internal::kCountryCodes;
 }
 
 // A singleton class that encapsulates a map from country codes to country data.
