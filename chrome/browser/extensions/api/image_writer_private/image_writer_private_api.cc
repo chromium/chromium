@@ -8,9 +8,11 @@
 #include <utility>
 #include <vector>
 
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/api/image_writer_private/error_constants.h"
+#include "chrome/browser/extensions/api/image_writer_private/features.h"
 #include "chrome/browser/extensions/api/image_writer_private/operation_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/prefs/pref_service.h"
@@ -42,6 +44,8 @@ bool IsDeviceWriteable(content::BrowserContext* browser_context,
 
   return policy::ExternalStoragePolicyController::IsDeviceWriteable(
       pref_service, device_id);
+#elif BUILDFLAG(IS_ANDROID)
+  return base::FeatureList::IsEnabled(image_writer::kImageWriterPrivateAndroid);
 #else
   return true;
 #endif
@@ -193,6 +197,11 @@ ImageWriterPrivateListRemovableStorageDevicesFunction::
 
 ExtensionFunction::ResponseAction
 ImageWriterPrivateListRemovableStorageDevicesFunction::Run() {
+#if BUILDFLAG(IS_ANDROID)
+  if (!base::FeatureList::IsEnabled(image_writer::kImageWriterPrivateAndroid)) {
+    return RespondNow(Error(image_writer::error::kUnsupportedOperation));
+  }
+#endif
   RemovableStorageProvider::GetAllDevices(base::BindOnce(
       &ImageWriterPrivateListRemovableStorageDevicesFunction::OnDeviceListReady,
       this));

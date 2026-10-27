@@ -14,6 +14,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/api/image_writer_private/destroy_partitions_operation.h"
 #include "chrome/browser/extensions/api/image_writer_private/error_constants.h"
+#include "chrome/browser/extensions/api/image_writer_private/features.h"
 #include "chrome/browser/extensions/api/image_writer_private/operation.h"
 #include "chrome/browser/extensions/api/image_writer_private/write_from_file_operation.h"
 #include "chrome/browser/extensions/api/image_writer_private/write_from_url_operation.h"
@@ -73,6 +74,12 @@ void OperationManager::StartWriteFromUrl(
     const std::string& hash,
     const std::string& device_path,
     Operation::StartWriteCallback callback) {
+#if BUILDFLAG(IS_ANDROID)
+  if (!base::FeatureList::IsEnabled(kImageWriterPrivateAndroid)) {
+    std::move(callback).Run(false, error::kUnsupportedOperation);
+    return;
+  }
+#endif
 #if BUILDFLAG(IS_CHROMEOS)
   // Chrome OS can only support a single operation at a time.
   if (operations_.size() > 0) {
@@ -107,6 +114,12 @@ void OperationManager::StartWriteFromFile(
     const base::FilePath& path,
     const std::string& device_path,
     Operation::StartWriteCallback callback) {
+#if BUILDFLAG(IS_ANDROID)
+  if (!base::FeatureList::IsEnabled(kImageWriterPrivateAndroid)) {
+    std::move(callback).Run(false, error::kUnsupportedOperation);
+    return;
+  }
+#endif
 #if BUILDFLAG(IS_CHROMEOS)
   // Chrome OS can only support a single operation at a time.
   if (operations_.size() > 0) {
@@ -145,6 +158,12 @@ void OperationManager::DestroyPartitions(
     const ExtensionId& extension_id,
     const std::string& device_path,
     Operation::StartWriteCallback callback) {
+#if BUILDFLAG(IS_ANDROID)
+  if (!base::FeatureList::IsEnabled(kImageWriterPrivateAndroid)) {
+    std::move(callback).Run(false, error::kUnsupportedOperation);
+    return;
+  }
+#endif
   auto existing_operation = operations_.find(extension_id);
 
   if (existing_operation != operations_.end()) {

@@ -830,8 +830,7 @@
   "imageWriterPrivate": {
     "channel": "stable",
     "extension_types": ["extension", "platform_app"],
-    // "desktop_android" is not supported.
-    "platforms": ["chromeos", "linux", "mac", "win"],
+    "platforms": ["chromeos", "desktop_android", "linux", "mac", "win"],
     "allowlist": [
       // TODO(ntang): Remove these 2 hashes when the app is no longer active.
       "A291B26E088FA6BA53FFD72F0916F06EBA7C585A", // http://crbug.com/40345217

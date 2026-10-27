@@ -28,6 +28,7 @@ schema_sources_ = [
   "glic_private.webidl",
   "history.json",
   "identity.webidl",
+  "image_writer_private.webidl",
   "instance_id.json",
   "notifications.webidl",
   "omnibox.json",
@@ -85,7 +86,6 @@ if (enable_extensions) {
     "enterprise_reporting_private.webidl",
     "experimental_actor.webidl",
     "experimental_ai_data.webidl",
-    "image_writer_private.webidl",
     "indigo_private.webidl",
     "language_settings_private.webidl",
     "passwords_private.webidl",
@@ -147,8 +147,6 @@ if (enable_extensions) {
       "media_player_private.json",
     ]
   }
-} else {
-  types_only_schema_sources_ += [ "image_writer_private.webidl" ]
 }
 
 chrome_extensions_api_schema_sources = get_path_info(schema_sources_, "abspath")

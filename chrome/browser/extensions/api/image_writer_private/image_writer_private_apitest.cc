@@ -4,9 +4,11 @@
 
 #include "base/functional/bind.h"
 #include "base/strings/pattern.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/api/image_writer_private/error_constants.h"
+#include "chrome/browser/extensions/api/image_writer_private/features.h"
 #include "chrome/browser/extensions/api/image_writer_private/removable_storage_provider.h"
 #include "chrome/browser/extensions/api/image_writer_private/test_utils.h"
 #include "chrome/browser/extensions/extension_apitest.h"
@@ -15,12 +17,16 @@
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/test/browser_test.h"
+#if !BUILDFLAG(IS_ANDROID)
 #include "extensions/browser/api/file_system/file_system_api.h"
-#include "extensions/browser/api_unittest.h"
+#endif
+
 namespace extensions {
 
 using api::image_writer_private::RemovableStorageDevice;
+#if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
 using extensions::image_writer::FakeImageWriterClient;
+#endif
 
 class ImageWriterPrivateApiTest : public ExtensionApiTest {
  public:
@@ -71,9 +77,12 @@ class ImageWriterPrivateApiTest : public ExtensionApiTest {
     RemovableStorageProvider::ClearDeviceListForTesting();
   }
 
-
  protected:
   image_writer::ImageWriterTestUtils test_utils_;
+#if BUILDFLAG(IS_ANDROID)
+  base::test::ScopedFeatureList scoped_feature_list_{
+      image_writer::kImageWriterPrivateAndroid};
+#endif
 };
 
 IN_PROC_BROWSER_TEST_F(ImageWriterPrivateApiTest, TestListDevices) {
@@ -81,6 +90,10 @@ IN_PROC_BROWSER_TEST_F(ImageWriterPrivateApiTest, TestListDevices) {
       << message_;
 }
 
+// TODO(crbug.com/538632205): Add an Android end-to-end JS apitest for the
+// write/destroy flow that does not depend on chrome.fileSystem.chooseEntry
+// (which is a Chrome App API not supported on Desktop Android).
+#if !BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_F(ImageWriterPrivateApiTest, TestWriteFromFile) {
   FileSystemChooseEntryFunction::RegisterTempExternalFileSystemForTest(
       "test_temp", test_utils_.GetTempDir());
@@ -108,4 +121,5 @@ IN_PROC_BROWSER_TEST_F(ImageWriterPrivateApiTest, TestWriteFromFile) {
                                {.launch_as_platform_app = true}))
       << message_;
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 }  // namespace extensions
