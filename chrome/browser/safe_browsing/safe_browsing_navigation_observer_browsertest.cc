@@ -426,6 +426,78 @@ class SBNavigationObserverBrowserTest : public InProcessBrowserTest {
     }
   }
 
+  void TriggerCrossOriginSubFrameDownload(const GURL& main_frame_url,
+                                          const GURL& iframe_url,
+                                          bool target_top,
+                                          ReferrerChain* out_referrer_chain) {
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_frame_url));
+    ASSERT_TRUE(
+        content::NavigateIframeToURL(web_contents(), "test", iframe_url));
+
+    content::RenderFrameHost* subframe =
+        content::ChildFrameAt(web_contents()->GetPrimaryMainFrame(), 0);
+    ASSERT_TRUE(subframe);
+    ASSERT_TRUE(subframe->IsCrossProcessSubframe());
+
+    // Use EXECUTE_SCRIPT_NO_USER_GESTURE so script execution does not grant a
+    // synthetic user gesture before the simulated mouse click.
+    if (target_top) {
+      // Simulate a click handler that first performs a same-document state
+      // update (e.g. analytics/routing pushState), which consumes the single
+      // WebContents-level user gesture in SafeBrowsingNavigationObserverManager
+      // while Blink's transient user activation remains active for the
+      // subsequent target="_top" navigation.
+      ASSERT_TRUE(content::ExecJs(
+          subframe,
+          "const link = document.getElementById('iframe_direct_download');"
+          "link.target = '_top';"
+          "link.addEventListener('click', () => {"
+          "  history.pushState({}, '', '#clicked');"
+          "});",
+          content::EXECUTE_SCRIPT_NO_USER_GESTURE));
+    }
+    int iframe_x =
+        content::EvalJs(web_contents(),
+                        "const iframe = document.getElementById('test');"
+                        "Math.floor(iframe.getBoundingClientRect().left + "
+                        "iframe.clientLeft)",
+                        content::EXECUTE_SCRIPT_NO_USER_GESTURE)
+            .ExtractInt();
+    int iframe_y =
+        content::EvalJs(
+            web_contents(),
+            "const iframe = document.getElementById('test');"
+            "Math.floor(iframe.getBoundingClientRect().top + iframe.clientTop)",
+            content::EXECUTE_SCRIPT_NO_USER_GESTURE)
+            .ExtractInt();
+    int link_x =
+        content::EvalJs(
+            subframe,
+            "const bounds = document.getElementById('iframe_direct_download')"
+            ".getBoundingClientRect();"
+            "Math.floor(bounds.left + bounds.width / 2)",
+            content::EXECUTE_SCRIPT_NO_USER_GESTURE)
+            .ExtractInt();
+    int link_y =
+        content::EvalJs(
+            subframe,
+            "const bounds = document.getElementById('iframe_direct_download')"
+            ".getBoundingClientRect();"
+            "Math.floor(bounds.top + bounds.height / 2)",
+            content::EXECUTE_SCRIPT_NO_USER_GESTURE)
+            .ExtractInt();
+
+    content::WaitForHitTestData(subframe);
+    content::TestNavigationObserver navigation_observer(
+        web_contents(), /*expected_number_of_navigations=*/target_top ? 2 : 1);
+    content::SimulateMouseClickAt(
+        web_contents(), /*modifiers=*/0, blink::WebMouseEvent::Button::kLeft,
+        gfx::Point(iframe_x + link_x, iframe_y + link_y));
+    navigation_observer.Wait();
+
+    IdentifyReferrerChainForDownload(GetDownload(), out_referrer_chain);
+  }
+
   void IdentifyReferrerChainForWebContents(content::WebContents* web_contents,
                                            ReferrerChain* referrer_chain) {
     observer_manager_->IdentifyReferrerChainByRenderFrameHost(
@@ -3174,57 +3246,9 @@ IN_PROC_BROWSER_TEST_F(SBNavigationObserverBrowserTest,
   GURL download_url = embedded_test_server()->GetURL("b.com", kDownloadItemURL);
   std::string test_server_ip(embedded_test_server()->host_port_pair().host());
 
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_frame_url));
-  ASSERT_TRUE(content::NavigateIframeToURL(web_contents(), "test", iframe_url));
-
-  content::RenderFrameHost* subframe =
-      content::ChildFrameAt(web_contents()->GetPrimaryMainFrame(), 0);
-  ASSERT_TRUE(subframe);
-  ASSERT_TRUE(subframe->IsCrossProcessSubframe());
-
-  // Compute the link's center coordinates in the main frame's coordinate space
-  // using EXECUTE_SCRIPT_NO_USER_GESTURE so script execution does not grant a
-  // synthetic user gesture before the simulated mouse click.
-  int iframe_x =
-      content::EvalJs(
-          web_contents(),
-          "const iframe = document.getElementById('test');"
-          "Math.floor(iframe.getBoundingClientRect().left + iframe.clientLeft)",
-          content::EXECUTE_SCRIPT_NO_USER_GESTURE)
-          .ExtractInt();
-  int iframe_y =
-      content::EvalJs(
-          web_contents(),
-          "const iframe = document.getElementById('test');"
-          "Math.floor(iframe.getBoundingClientRect().top + iframe.clientTop)",
-          content::EXECUTE_SCRIPT_NO_USER_GESTURE)
-          .ExtractInt();
-  int link_x =
-      content::EvalJs(
-          subframe,
-          "const bounds = document.getElementById('iframe_direct_download')"
-          ".getBoundingClientRect();"
-          "Math.floor(bounds.left + bounds.width / 2)",
-          content::EXECUTE_SCRIPT_NO_USER_GESTURE)
-          .ExtractInt();
-  int link_y =
-      content::EvalJs(
-          subframe,
-          "const bounds = document.getElementById('iframe_direct_download')"
-          ".getBoundingClientRect();"
-          "Math.floor(bounds.top + bounds.height / 2)",
-          content::EXECUTE_SCRIPT_NO_USER_GESTURE)
-          .ExtractInt();
-
-  content::WaitForHitTestData(subframe);
-  content::TestNavigationObserver navigation_observer(web_contents(), 1);
-  content::SimulateMouseClickAt(
-      web_contents(), /*modifiers=*/0, blink::WebMouseEvent::Button::kLeft,
-      gfx::Point(iframe_x + link_x, iframe_y + link_y));
-  navigation_observer.Wait();
-
   ReferrerChain referrer_chain;
-  IdentifyReferrerChainForDownload(GetDownload(), &referrer_chain);
+  TriggerCrossOriginSubFrameDownload(main_frame_url, iframe_url,
+                                     /*target_top=*/false, &referrer_chain);
   ASSERT_EQ(4, referrer_chain.size());
   VerifyReferrerChainEntry(
       download_url,                   // url
@@ -3269,6 +3293,47 @@ IN_PROC_BROWSER_TEST_F(SBNavigationObserverBrowserTest,
                            std::vector<GURL>(),  // server redirects
                            ReferrerChainEntry::BROWSER_INITIATED,
                            referrer_chain.Get(3));
+}
+
+// Regression test for b/568560137.
+// Click a target="_top" link in a cross-origin subframe (OOPIF) and start
+// download. Because navigating a cross-origin top frame goes through
+// NavigateFromFrameProxy, NavigationHandle::HasUserGesture() is filtered out to
+// false while NavigationHandle::StartedWithTransientActivation() is true.
+IN_PROC_BROWSER_TEST_F(SBNavigationObserverBrowserTest,
+                       CrossOriginSubFrameTargetTopDownload) {
+  GURL main_frame_url =
+      embedded_test_server()->GetURL("a.com", kBasicIframeURL);
+  GURL iframe_url =
+      embedded_test_server()->GetURL("b.com", kIframeDirectDownloadURL);
+  GURL download_url = embedded_test_server()->GetURL("b.com", kDownloadItemURL);
+  std::string test_server_ip(embedded_test_server()->host_port_pair().host());
+
+  ReferrerChain referrer_chain;
+  TriggerCrossOriginSubFrameDownload(main_frame_url, iframe_url,
+                                     /*target_top=*/true, &referrer_chain);
+  ASSERT_EQ(2, referrer_chain.size());
+  VerifyReferrerChainEntry(
+      download_url,                   // url
+      GURL(),                         // main_frame_url
+      ReferrerChainEntry::EVENT_URL,  // type
+      test_server_ip,                 // ip_address
+      main_frame_url,                 // referrer_url
+      GURL(),                         // referrer_main_frame_url
+      false,                          // is_retargeting
+      std::vector<GURL>(),            // server redirects
+      ReferrerChainEntry::RENDERER_INITIATED_WITH_USER_GESTURE,
+      referrer_chain.Get(0));
+  VerifyReferrerChainEntry(main_frame_url,                    // url
+                           GURL(),                            // main_frame_url
+                           ReferrerChainEntry::LANDING_PAGE,  // type
+                           test_server_ip,                    // ip_address
+                           GURL(),                            // referrer_url
+                           GURL(),               // referrer_main_frame_url
+                           false,                // is_retargeting
+                           std::vector<GURL>(),  // server redirects
+                           ReferrerChainEntry::BROWSER_INITIATED,
+                           referrer_chain.Get(1));
 }
 
 }  // namespace safe_browsing
