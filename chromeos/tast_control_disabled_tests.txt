@@ -31,9 +31,6 @@ tast.arc.BuildProperties
 tast.arc.CheckAndroidVersion
 tast.arc.Downloads
 
-# b/338111076
-tast.crostini.AppAndroidStudio.bookworm_clamshell_stable@octopus
-
 # b/346793249, b/330290054
 tast.videoconferencing.OpenCLCacher
 
