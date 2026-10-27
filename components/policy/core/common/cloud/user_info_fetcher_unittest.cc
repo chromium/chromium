@@ -5,11 +5,15 @@
 #include "components/policy/core/common/cloud/user_info_fetcher.h"
 
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
+#include "components/policy/core/common/features.h"
+#include "google_apis/credentials_mode.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "net/http/http_status_code.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+#include "services/network/public/mojom/fetch_api.mojom.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -50,7 +54,7 @@ class UserInfoFetcherTest : public testing::Test {
   ~UserInfoFetcherTest() override = default;
 
  protected:
-  base::test::TaskEnvironment task_env_;
+  base::test::SingleThreadTaskEnvironment task_env_;
   network::TestURLLoaderFactory loader_factory_;
 };
 
@@ -141,6 +145,56 @@ TEST_F(UserInfoFetcherTest, FetchResponseNotDict) {
   histogram_tester.ExpectUniqueSample(
       "Enterprise.UserInfoFetch.Status",
       EnterpriseUserInfoFetchStatus::kResponseIsNotDict, 1);
+}
+
+TEST_F(UserInfoFetcherTest, CredentialsModeDefault) {
+  MockUserInfoFetcherDelegate delegate;
+  UserInfoFetcher fetcher(
+      &delegate,
+      base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
+          &loader_factory_));
+  fetcher.Start("access_token");
+
+  auto* pending_request = loader_factory_.GetPendingRequest(0);
+  ASSERT_TRUE(pending_request);
+  EXPECT_EQ(pending_request->request.credentials_mode,
+            network::mojom::CredentialsMode::kOmit);
+}
+
+TEST_F(UserInfoFetcherTest, CredentialsModeFeatureDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      features::kPolicyUserInfoFetcherUseOmitBugWorkaround);
+
+  MockUserInfoFetcherDelegate delegate;
+  UserInfoFetcher fetcher(
+      &delegate,
+      base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
+          &loader_factory_));
+  fetcher.Start("access_token");
+
+  auto* pending_request = loader_factory_.GetPendingRequest(0);
+  ASSERT_TRUE(pending_request);
+  EXPECT_EQ(pending_request->request.credentials_mode,
+            network::mojom::CredentialsMode::kOmit);
+}
+
+TEST_F(UserInfoFetcherTest, CredentialsModeFeatureEnabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kPolicyUserInfoFetcherUseOmitBugWorkaround);
+
+  MockUserInfoFetcherDelegate delegate;
+  UserInfoFetcher fetcher(
+      &delegate,
+      base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
+          &loader_factory_));
+  fetcher.Start("access_token");
+
+  auto* pending_request = loader_factory_.GetPendingRequest(0);
+  ASSERT_TRUE(pending_request);
+  EXPECT_EQ(pending_request->request.credentials_mode,
+            google_apis::GetOmitCredentialsModeForGaiaRequests());
 }
 
 }  // namespace

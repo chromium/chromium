@@ -7,12 +7,15 @@
 #include <optional>
 #include <string>
 
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
+#include "components/policy/core/common/features.h"
 #include "components/policy/core/common/policy_logger.h"
+#include "google_apis/credentials_mode.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "net/base/load_flags.h"
@@ -101,7 +104,11 @@ void UserInfoFetcher::Start(const std::string& access_token) {
       GaiaUrls::GetInstance()->oauth_user_info_url());
   resource_request->headers.SetHeader(net::HttpRequestHeaders::kAuthorization,
                                       MakeAuthorizationHeader(access_token));
-  resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
+  resource_request->credentials_mode =
+      base::FeatureList::IsEnabled(
+          features::kPolicyUserInfoFetcherUseOmitBugWorkaround)
+          ? google_apis::GetOmitCredentialsModeForGaiaRequests()
+          : network::mojom::CredentialsMode::kOmit;
 
   url_loader_ = network::SimpleURLLoader::Create(std::move(resource_request),
                                                  traffic_annotation);

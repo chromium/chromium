@@ -110,6 +110,11 @@ POLICY_EXPORT extern const base::FeatureParam<base::TimeDelta>
 // Returns true if `kMigrateSecureConnectApiToDmServer` is enabled.
 POLICY_EXPORT bool IsMigrateSecureConnectApiToDmServerEnabled();
 
+// When enabled, UserInfoFetcher will use
+// CredentialsMode::kOmitBug_775438_Workaround instead of CredentialsMode::kOmit
+// for user info requests.
+POLICY_EXPORT BASE_DECLARE_FEATURE(kPolicyUserInfoFetcherUseOmitBugWorkaround);
+
 }  // namespace policy::features
 
 #endif  // COMPONENTS_POLICY_CORE_COMMON_FEATURES_H_

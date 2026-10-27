@@ -107,4 +107,7 @@ bool IsMigrateSecureConnectApiToDmServerEnabled() {
   return base::FeatureList::IsEnabled(kMigrateSecureConnectApiToDmServer);
 }
 
+BASE_FEATURE(kPolicyUserInfoFetcherUseOmitBugWorkaround,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace policy::features
