@@ -21,6 +21,8 @@
 #include "media/gfx/paint_canvas_video_renderer.h"
 #include "skia/ext/legacy_display_globals.h"
 #include "third_party/blink/renderer/platform/graphics/accelerated_static_bitmap_image.h"
+#include "third_party/blink/renderer/platform/graphics/canvas_2d_resource_provider.h"
+#include "third_party/blink/renderer/platform/graphics/canvas_image_provider.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_non_2d_resource_provider.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
 #include "third_party/blink/renderer/platform/graphics/memory_managed_paint_recorder.h"
@@ -200,6 +202,30 @@ CanvasSnapshotInfo VideoFrameAcceleratedSnapshotPool::GetInfo() const {
   return provider_->GetInfo();
 }
 
+void VideoFrameAcceleratedSnapshotPool::FlushRecording(
+    cc::PaintRecord last_recording) {
+  if (!provider_->IsGpuContextLost()) {
+    provider_->EnsureResourceReadyForDraw();
+
+    const bool needs_clear = !provider_->is_cleared_;
+    provider_->is_cleared_ = true;
+    auto* image_provider = provider_->GetOrCreateImageProvider();
+
+    gpu::SyncToken sync_token = provider_->RasterInterface()->RasterSharedImage(
+        provider_->resource()->GetSharedImage(),
+        provider_->resource()->acquire_sync_token(), std::move(last_recording),
+        image_provider, needs_clear);
+    provider_->resource()->SetReleaseSyncToken(sync_token);
+  }
+
+  // Images are locked for the duration of the rasterization, in case they get
+  // used multiple times. We can unlock them once the rasterization is complete.
+  if (provider_->canvas_image_provider_) {
+    provider_->canvas_image_provider_->ReleaseLockedImages();
+    provider_->canvas_image_provider_->UnbindTextureBackedImages();
+  }
+}
+
 scoped_refptr<StaticBitmapImage>
 VideoFrameAcceleratedSnapshotPool::DoExternalOverdrawAndSnapshot(
     base::FunctionRef<void(cc::PaintCanvas&)> draw_callback,
@@ -212,7 +238,7 @@ VideoFrameAcceleratedSnapshotPool::DoExternalOverdrawAndSnapshot(
 
   draw_callback(provider_->recorder_for_external_draws_->getRecordingCanvas());
   if (provider_->recorder_for_external_draws_->HasReleasableDrawOps()) {
-    provider_->FlushRecording(
+    FlushRecording(
         provider_->recorder_for_external_draws_->ReleaseMainRecording());
   }
   return provider_->Snapshot(orientation);
