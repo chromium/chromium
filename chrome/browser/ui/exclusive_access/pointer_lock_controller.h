@@ -47,6 +47,10 @@ class PointerLockController : public ExclusiveAccessControllerBase {
 
   void UnlockPointer();
 
+  // Blocks pointer lock requests for a short time after the user pressed Esc
+  // to leave a pointer lock.
+  void StartUserEscapeCooldown();
+
   void set_bubble_hide_callback_for_test(
       ExclusiveAccessBubbleHideCallbackForTest callback) {
     bubble_hide_callback_for_test_ = std::move(callback);

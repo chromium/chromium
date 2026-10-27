@@ -91,11 +91,15 @@ void PointerLockController::NotifyTabExclusiveAccessLost() {
 bool PointerLockController::HandleUserPressedEscape() {
   if (IsPointerLocked()) {
     ExitExclusiveAccessIfNecessary();
-    last_user_escape_time_ = base::TimeTicks::Now();
+    StartUserEscapeCooldown();
     return true;
   }
 
   return false;
+}
+
+void PointerLockController::StartUserEscapeCooldown() {
+  last_user_escape_time_ = base::TimeTicks::Now();
 }
 
 void PointerLockController::HandleUserHeldEscape() {

@@ -251,6 +251,9 @@ bool ExclusiveAccessManager::HandleUserKeyEvent(
     }
   }
 
+  // Leaving fullscreen also drops the pointer lock, so check the pointer lock
+  // before any controller sees the Esc.
+  const bool was_pointer_locked = pointer_lock_controller_.IsPointerLocked();
   bool handled = false;
   for (auto controller : exclusive_access_controllers_) {
     if (controller->HandleUserPressedEscape()) {
@@ -259,6 +262,9 @@ bool ExclusiveAccessManager::HandleUserKeyEvent(
     if (!weak_ptr) {
       return handled;
     }
+  }
+  if (was_pointer_locked) {
+    pointer_lock_controller_.StartUserEscapeCooldown();
   }
   return handled;
 }
@@ -279,10 +285,14 @@ void ExclusiveAccessManager::ExitExclusiveAccess() {
 
 void ExclusiveAccessManager::HandleUserHeldEscape() {
   auto weak_ptr = weak_ptr_factory_.GetWeakPtr();
+  const bool was_pointer_locked = pointer_lock_controller_.IsPointerLocked();
   for (auto controller : exclusive_access_controllers_) {
     controller->HandleUserHeldEscape();
     if (!weak_ptr) {
       return;
     }
+  }
+  if (was_pointer_locked) {
+    pointer_lock_controller_.StartUserEscapeCooldown();
   }
 }

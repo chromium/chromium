@@ -498,6 +498,46 @@ IN_PROC_BROWSER_TEST_F(FullscreenControllerInteractiveTest,
   ASSERT_FALSE(IsWindowFullscreenForTabOrPending());
 }
 
+// Tests that escaping pointer lock and fullscreen together still blocks an
+// immediate pointer lock request from the page.
+IN_PROC_BROWSER_TEST_F(FullscreenControllerInteractiveTest,
+                       EscapingPointerLockAndFullscreenBlocksRelock) {
+  auto test_server_handle = embedded_test_server()->StartAndReturnHandle();
+  ASSERT_TRUE(test_server_handle);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL(kFullscreenPointerLockHTML)));
+
+  // Enter fullscreen, then lock the pointer with a user gesture.
+  ASSERT_NO_FATAL_FAILURE(ToggleTabFullscreen(true));
+  PressKeyAndWaitForPointerLockRequest(ui::VKEY_1);
+  ASSERT_TRUE(IsPointerLocked());
+
+  {
+    ui_test_utils::FullscreenWaiter waiter(browser(),
+                                           {.tab_fullscreen = false});
+    SendEscapeToExclusiveAccessManager();
+    waiter.Wait();
+  }
+  ASSERT_FALSE(IsPointerLocked());
+
+  // Wait for the page to see the unlock, so the next request reaches the
+  // browser instead of failing in the renderer.
+  WebContents* tab = browser()->GetTabStripModel()->GetActiveWebContents();
+  ASSERT_TRUE(content::ExecJs(tab, R"(new Promise(resolve => {
+        if (!document.pointerLockElement) {
+          resolve();
+          return;
+        }
+        document.addEventListener('pointerlockchange', resolve, {once: true});
+      }))",
+                              content::EXECUTE_SCRIPT_NO_USER_GESTURE));
+
+  // Lock the pointer with a user gesture right after the escape. It should be
+  // rejected.
+  PressKeyAndWaitForPointerLockRequest(ui::VKEY_1);
+  EXPECT_FALSE(IsPointerLocked());
+}
+
 // Tests pointer lock then fullscreen.
 // TODO(crbug.com/40835508): Re-enable this test
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
