@@ -51,6 +51,25 @@ fn test_basic_message_write_and_send() {
     let _ = bytes_only_msg.read_bytes().unwrap();
 }
 
+#[gtest(RustSystemAPITestSuite, EmptyMessageWriteAndSendTest)]
+fn test_empty_message_write_and_send() {
+    // A message with no bytes and no handles is valid, and reading it should
+    // produce an empty payload. Mojo may represent an empty payload with a
+    // null data pointer, which can't be passed to `slice::from_raw_parts`.
+    let (endpoint_a, endpoint_b) = system::message_pipe::MessageEndpoint::create_pipe().unwrap();
+
+    let empty = system::message::WritableMessage::new_with_bytes(&[]).unwrap();
+    endpoint_b.write(empty.into()).unwrap();
+
+    let empty_msg = endpoint_a.read().expect("failed to read from endpoint_a");
+    expect_eq!(empty_msg.read_bytes().unwrap(), b"");
+
+    // `read_data` also requests the handles, so check that path too.
+    let (handles, bytes_only_msg) = empty_msg.read_data().unwrap();
+    expect_true!(handles.is_empty());
+    expect_eq!(bytes_only_msg.read_bytes().unwrap(), b"");
+}
+
 #[gtest(RustSystemAPITestSuite, DataPipeWriteAndSendTest)]
 fn test_data_pipe_write_and_send() {
     let (producer, consumer) = system::data_pipe::create(5).unwrap();

@@ -307,13 +307,22 @@ fn MojoGetMessageDataInternal(
 
     match result {
         Ok(()) => {
-            debug_assert!(!buffer.is_null());
             // Will not panic if usize has at least 32 bits, which is true for
             // Chromium targets
             let buffer_size: usize = num_bytes.try_into().unwrap();
+            // Mojo may return a null buffer if the payload is empty, but slices
+            // must have a non-null pointer even when they're empty.
+            let buffer: *mut u8 = if buffer.is_null() {
+                assert_eq!(buffer_size, 0, "Mojo returned a null buffer for a non-empty payload");
+                std::ptr::dangling_mut()
+            } else {
+                buffer.cast()
+            };
             // SAFETY: We must show that it is valid to call
             // `std::slice::from_raw_parts` on the `bytes` field of
-            // the return value. `buffer` and `buffer_size`
+            // the return value. If Mojo returned a null buffer, then
+            // `buffer_size` is 0 and `buffer` is now dangling, which is valid
+            // for an empty slice. Otherwise, `buffer` and `buffer_size`
             // were obtained by calling `MojoGetMessageData`, so we trust that
             // they are valid, aligned, readable, etc.
             // The buffer is readable as long as the message is alive, and the
@@ -322,7 +331,7 @@ fn MojoGetMessageDataInternal(
             // `message`. If `message` is writable, then the buffer
             // is also writable.
             return GetMessageDataStatus::Success {
-                bytes: (buffer.cast(), buffer_size),
+                bytes: (buffer, buffer_size),
                 num_handles_written: num_handles.try_into().unwrap(),
             };
         }
