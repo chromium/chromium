@@ -187,6 +187,7 @@ class ContextualTasksUI
   void SetInNlm(bool in_nlm) override;
   void PrepareForTaskChange() override;
   void OnTaskChanged() override;
+  void MaybeTriggerPinningPromo() override;
 
   // contextual_tasks::ContextualTasksUIInterface implementation:
   Profile* GetProfile() override;
@@ -210,7 +211,6 @@ class ContextualTasksUI
   bool IsActiveTabContextSuggestionShowing() const override;
   void MoveTaskUiToNewTab() override;
   void ShowThreadHistory() override;
-  void MaybeTriggerPinningPromo() override;
   bool CanExpandToFullTab() const override;
   void PostAimMessage(const lens::ClientToAimMessage& message) override;
   contextual_search::ContextualSearchSessionHandle*

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_base.h"
 
+#include <algorithm>
 #include <optional>
 #include <string_view>
 
@@ -41,6 +42,7 @@
 #include "chrome/grit/contextual_tasks_resources.h"
 #include "chrome/grit/contextual_tasks_resources_map.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/contextual_search/contextual_search_session_handle.h"
 #include "components/contextual_tasks/public/account_utils.h"
 #include "components/contextual_tasks/public/contextual_task.h"
 #include "components/contextual_tasks/public/features.h"
@@ -59,6 +61,7 @@
 #include "extensions/buildflags/buildflags.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "mojo/public/mojom/base/error.mojom.h"
+#include "net/base/url_util.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "third_party/lens_server_proto/search_communication.pb.h"
 #include "ui/base/device_form_factor.h"
@@ -179,6 +182,18 @@ void HandleContextualTasksRequest(
     }
   }
   std::move(callback).Run(std::move(png_bytes));
+}
+
+// Returns true if the AI page at `url` has finished streaming a response.
+// Initial AI query navigations commit with `q` and a client `mtid` before the
+// response streams in. The turn token (`mstk`, or `smstk` on shared threads)
+// is appended via a same-document navigation once streaming completes, so its
+// presence is used as the signal that there are active results on the page.
+// TODO(crbug.com/578072477): Replace this query param check with an explicit
+// post message from AIM once one is available to signal streaming completion.
+bool HasActiveAimResults(const GURL& url) {
+  return net::GetValueForKeyInQuery(url, "mstk", nullptr) ||
+         net::GetValueForKeyInQuery(url, "smstk", nullptr);
 }
 
 }  // namespace
@@ -644,8 +659,64 @@ void ContextualTasksUIBase::CreateNewThread() {
   SetThreadTitle(std::nullopt);
 }
 
+// Pinning IPH trigger criteria: The pinning IPH should try to trigger when:
+// 1. Results have fully loaded for a contextual query about a tab or PDF
+// 2. The side panel is open & the ephemeral button is showing
+// 3. The user hasn't yet pinned the side panel
+bool ContextualTasksUIBase::CanTriggerPinningPromoForAiPage(
+    const GURL& url,
+    ContextualTasksPanelController* panel_controller) {
+  // 1a. Results have fully loaded (finished streaming).
+  if (!HasActiveAimResults(url) || !panel_controller) {
+    return false;
+  }
+
+  // 1b. Query has tab or PDF context.
+  const bool is_lens_overlay_entry =
+      panel_controller->GetActiveEntrySource() ==
+      ContextualTasksPanelController::EntrySource::kLensOverlay;
+  // Server-committed resources on the task (skipped for Lens Overlay, which
+  // includes the implicit initial Lens upload).
+  if (!is_lens_overlay_entry) {
+    std::optional<ContextualTask> current_task =
+        panel_controller->GetCurrentTask();
+    if (current_task &&
+        std::ranges::any_of(
+            current_task->GetUrlResources(), [](const UrlResource& r) {
+              return r.resource_type == ResourceType::kPdf ||
+                     r.resource_type == ResourceType::kWebpage ||
+                     r.tab_id.has_value() || r.has_chrome_tab_data;
+            })) {
+      return true;
+    }
+  }
+
+  // Fallback: client-side composebox tab/PDF context (before `ContextualTask`
+  // updates, or when manually added in a Lens Overlay session).
+  contextual_search::ContextualSearchSessionHandle* session_handle =
+      panel_controller->GetContextualSearchSessionHandleForPanel();
+  if (!session_handle) {
+    return false;
+  }
+
+  const contextual_search::TabContextState& tab_context =
+      session_handle->GetTabContextState();
+  if ((!is_lens_overlay_entry && !tab_context.restored.empty()) ||
+      std::ranges::any_of(
+          tab_context.attached,
+          [is_lens_overlay_entry](const contextual_search::TabInfo& tab) {
+            return !is_lens_overlay_entry || tab.uploaded ||
+                   tab.pending_delayed_upload;
+          })) {
+    return true;
+  }
+
+  return session_handle->HasPdfContext();
+}
+
 void ContextualTasksUIBase::MaybeTriggerPinningPromo() {
 #if !BUILDFLAG(IS_ANDROID)
+  // Side panel is open & pinning/ephemeral button eligibility is active.
   auto* panel_controller = GetPanelController();
   if (!panel_controller || !panel_controller->IsPanelOpenForContextualTask()) {
     return;
@@ -662,18 +733,19 @@ void ContextualTasksUIBase::MaybeTriggerPinningPromo() {
     return;
   }
 
+  // Results have fully loaded for a contextual query about a tab or PDF.
   if (!IsAiPage()) {
     return;
   }
 
-  if (auto* active_contents = panel_controller->GetActiveWebContents()) {
-    if (auto* ui_service = GetUiService();
-        ui_service && ContextualTasksUI::IsZeroState(
-                          active_contents->GetLastCommittedURL(), ui_service)) {
-      return;
-    }
+  auto* active_contents = panel_controller->GetActiveWebContents();
+  if (!active_contents ||
+      !CanTriggerPinningPromoForAiPage(active_contents->GetLastCommittedURL(),
+                                       panel_controller)) {
+    return;
   }
 
+  // User hasn't yet pinned the side panel.
   if (contextual_tasks::GetEffectivePinState(profile)) {
     return;
   }
@@ -685,6 +757,8 @@ void ContextualTasksUIBase::MaybeTriggerPinningPromo() {
     return;
   }
 
+  // Anchored to `kContextualTasksEphemeralToolbarButtonElementId`,
+  // so it only shows if the ephemeral button is visible.
   BrowserWindowInterface* browser_window = GetBrowser();
   if (!browser_window) {
     return;

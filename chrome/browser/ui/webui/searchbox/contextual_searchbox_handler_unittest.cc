@@ -187,6 +187,7 @@ class FakeContextualTasksUIInterface
                              bool replace_navigation_entry) override {}
   void PrepareForTaskChange() override {}
   void OnTaskChanged() override {}
+  void MaybeTriggerPinningPromo() override {}
 
   // ContextualTasksUIInterface:
   mojo::Remote<contextual_tasks::mojom::Page>& GetPageRemote() override {

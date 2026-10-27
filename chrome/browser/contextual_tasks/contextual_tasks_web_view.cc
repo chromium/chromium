@@ -415,6 +415,7 @@ void ContextualTasksWebView::DidFinishNavigation(
       toolbar_ui->SetThreadTitle(query_value);
     }
   }
+  toolbar_ui->MaybeTriggerPinningPromo();
 
   if (ui_service) {
     const GURL& previous_url =

@@ -497,6 +497,10 @@ class ContextualSearchSessionHandle {
   // Returns whether the current session_id is part of the uploaded context.
   bool IsTabInContext(SessionID session_id) const;
 
+  // Returns whether any submitted or uploaded file in this session represents
+  // PDF context, excluding implicit initial Lens overlay query uploads.
+  bool HasPdfContext() const;
+
   // Accessors for the last query and public turns in the contextual session.
   void AddThreadTurn(const contextual_tasks::ThreadTurn& turn);
   const std::vector<contextual_tasks::ThreadTurn>& previous_turns() const {
@@ -663,6 +667,11 @@ class ContextualSearchSessionHandle {
 
   // Whether any context tokens were submitted in a query in this session.
   bool has_submitted_context_ = false;
+
+  // Whether an explicit (non-implicit-initial-query) PDF was submitted in a
+  // query in this session. Retained across `ClearSubmittedContextTokens()` so
+  // `HasPdfContext()` remains true after AIM commits the context library.
+  bool has_submitted_pdf_context_ = false;
 
   // Tab of each token returned by `AddPendingDelayedTab()`, which is replaced
   // in the attached tab once the tab is uploaded. Lets the token's chip delete

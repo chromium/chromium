@@ -178,6 +178,29 @@ bool IsTabDeselectionEnabled() {
          contextual_tasks::IsContextualTasksSidePanelRearchitectureEnabled();
 }
 
+bool IsImplicitInitialQueryUpload(const FileInfo& info) {
+  return info.input_data &&
+         (info.is_implicit_upload || info.input_data->is_implicit_upload) &&
+         info.input_data->upload_type ==
+             lens::LensOverlayContextualInputUploadType::
+                 CONTEXTUAL_INPUT_UPLOAD_TYPE_CONTEXTUAL_SEARCHBOX_INITIAL_QUERY;
+}
+
+bool IsPdfFileInfo(const FileInfo& info) {
+  if (IsImplicitInitialQueryUpload(info)) {
+    return false;
+  }
+  if (info.mime_type == lens::MimeType::kPdf) {
+    return true;
+  }
+  if (info.mime_type_string.has_value() &&
+      info.mime_type_string->find("pdf") != std::string::npos) {
+    return true;
+  }
+  return info.input_data && info.input_data->mime_type_string.has_value() &&
+         info.input_data->mime_type_string->find("pdf") != std::string::npos;
+}
+
 }  // namespace
 
 ContextualSearchSessionHandle::ContextualSearchSessionHandle(
@@ -718,6 +741,12 @@ void ContextualSearchSessionHandle::CreateSearchUrl(
 
   if (!search_url_request_info->file_tokens.empty()) {
     has_submitted_context_ = true;
+    if (std::ranges::any_of(
+            TokensToFileInfos(context_controller,
+                              search_url_request_info->file_tokens),
+            IsPdfFileInfo)) {
+      has_submitted_pdf_context_ = true;
+    }
   }
 
   // Copy the tokens from this request to the list of all submitted tokens.
@@ -805,6 +834,7 @@ void ContextualSearchSessionHandle::OnSmartTabSharingToggled(bool active) {
       ClearAllPersistedTabs();
       submitted_context_tokens_.clear();
       uploaded_context_tokens_.clear();
+      has_submitted_pdf_context_ = false;
     } else {
       auto is_smart_or_implicit_tab = [&](const base::UnguessableToken& token) {
         if (!context_controller) {
@@ -1137,6 +1167,10 @@ ContextualSearchSessionHandle::MarkQuerySubmitted(
 
   if (!file_tokens.empty()) {
     has_submitted_context_ = true;
+    if (std::ranges::any_of(TokensToFileInfos(GetController(), file_tokens),
+                            IsPdfFileInfo)) {
+      has_submitted_pdf_context_ = true;
+    }
   }
 
   // Copy the tokens from this request to the list of all submitted tokens.
@@ -1223,6 +1257,11 @@ ContextualSearchSessionHandle::GetSubmittedContextTabTitles() const {
 }
 
 void ContextualSearchSessionHandle::ClearSubmittedContextTokens() {
+  if (std::ranges::any_of(
+          TokensToFileInfos(GetController(), submitted_context_tokens_),
+          IsPdfFileInfo)) {
+    has_submitted_pdf_context_ = true;
+  }
   submitted_context_tokens_.clear();
 }
 
@@ -1230,6 +1269,10 @@ void ContextualSearchSessionHandle::SetSubmittedContextTokens(
     const std::vector<base::UnguessableToken>& tokens) {
   if (!tokens.empty()) {
     has_submitted_context_ = true;
+    if (std::ranges::any_of(TokensToFileInfos(GetController(), tokens),
+                            IsPdfFileInfo)) {
+      has_submitted_pdf_context_ = true;
+    }
   }
   submitted_context_tokens_ = tokens;
 }
@@ -1778,6 +1821,9 @@ void ContextualSearchSessionHandle::AddAttachedTab(TabInfo tab) {
   } else if (*it == tab) {
     return;
   } else {
+    if (it->submitted) {
+      tab.uploaded = tab.uploaded || it->uploaded;
+    }
     if (it->submitted && it->context_token != tab.context_token) {
       displaced_submitted_tabs_.push_back(std::move(*it));
     }
@@ -1837,6 +1883,12 @@ bool ContextualSearchSessionHandle::IsTabInContext(SessionID session_id) const {
     }
   }
   return false;
+}
+
+bool ContextualSearchSessionHandle::HasPdfContext() const {
+  return has_submitted_pdf_context_ ||
+         std::ranges::any_of(GetSubmittedContextFileInfos(), IsPdfFileInfo) ||
+         std::ranges::any_of(GetUploadedContextFileInfos(), IsPdfFileInfo);
 }
 
 bool ContextualSearchSessionHandle::IsTabToken(
@@ -1920,7 +1972,7 @@ void ContextualSearchSessionHandle::MarkTabAckByServer(
   if (file_info->tab_title.has_value()) {
     tab->title = *file_info->tab_title;
   }
-  tab->uploaded = !file_info->is_implicit_upload;
+  tab->uploaded = tab->uploaded || !file_info->is_implicit_upload;
   tab->submitted = true;
   tab_context_dirty_ = true;
 }

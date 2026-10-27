@@ -4475,4 +4475,78 @@ TEST_F(
   EXPECT_FALSE(handle_->DeleteTabContext(delayed_token).has_value());
 }
 
+TEST_F(ContextualSearchSessionHandleTest, HasPdfContext) {
+  auto mock_controller =
+      std::make_unique<MockContextualSearchContextController>();
+  MockContextualSearchContextController* mock_controller_ptr =
+      mock_controller.get();
+  auto local_handle =
+      service_->CreateSessionForTesting(std::move(mock_controller), nullptr);
+  local_handle->CheckSearchContentSharingSettings(&prefs_);
+
+  EXPECT_FALSE(local_handle->HasPdfContext());
+
+  // 1. Implicit initial Lens overlay PDF uploads are excluded from
+  // `HasPdfContext()`.
+  const base::UnguessableToken implicit_pdf_token =
+      local_handle->CreateContextToken();
+  FileInfo implicit_pdf_info;
+  implicit_pdf_info.file_token = implicit_pdf_token;
+  implicit_pdf_info.mime_type = lens::MimeType::kPdf;
+  implicit_pdf_info.is_implicit_upload = true;
+  implicit_pdf_info.input_data = std::make_unique<lens::ContextualInputData>();
+  implicit_pdf_info.input_data->is_implicit_upload = true;
+  implicit_pdf_info.input_data->upload_type =
+      lens::LensOverlayContextualInputUploadType::
+          CONTEXTUAL_INPUT_UPLOAD_TYPE_CONTEXTUAL_SEARCHBOX_INITIAL_QUERY;
+
+  EXPECT_CALL(*mock_controller_ptr, GetFileInfo(implicit_pdf_token))
+      .WillRepeatedly(testing::Return(&implicit_pdf_info));
+
+  EXPECT_FALSE(local_handle->HasPdfContext());
+
+  // 2. Non-PDF context does not satisfy `HasPdfContext()`.
+  const base::UnguessableToken explicit_tab_token =
+      local_handle->CreateContextToken();
+  FileInfo explicit_tab_info;
+  explicit_tab_info.file_token = explicit_tab_token;
+  explicit_tab_info.tab_url = GURL("https://example.com");
+  explicit_tab_info.mime_type = lens::MimeType::kAnnotatedPageContent;
+  EXPECT_CALL(*mock_controller_ptr, GetFileInfo(explicit_tab_token))
+      .WillRepeatedly(testing::Return(&explicit_tab_info));
+
+  EXPECT_FALSE(local_handle->HasPdfContext());
+
+  // 3. Explicit raw-file PDF upload (`mime_type == kUnknown` with
+  // `mime_type_string == "application/pdf"`, used when
+  // `kLensSendRawFileMediaTypes` is enabled) satisfies `HasPdfContext()`.
+  const base::UnguessableToken raw_pdf_token =
+      local_handle->CreateContextToken();
+  FileInfo raw_pdf_info;
+  raw_pdf_info.file_token = raw_pdf_token;
+  raw_pdf_info.mime_type = lens::MimeType::kUnknown;
+  raw_pdf_info.mime_type_string = "application/pdf";
+  EXPECT_CALL(*mock_controller_ptr, GetFileInfo(raw_pdf_token))
+      .WillRepeatedly(testing::Return(&raw_pdf_info));
+
+  EXPECT_TRUE(local_handle->HasPdfContext());
+  EXPECT_TRUE(local_handle->RemoveUploadedContextToken(raw_pdf_token));
+  EXPECT_FALSE(local_handle->HasPdfContext());
+
+  // 4. Explicit PDF context satisfies `HasPdfContext()` even after
+  // `ClearSubmittedContextTokens()` is called when AIM updates the context
+  // library.
+  const base::UnguessableToken explicit_pdf_token =
+      base::UnguessableToken::Create();
+  FileInfo explicit_pdf_info;
+  explicit_pdf_info.file_token = explicit_pdf_token;
+  explicit_pdf_info.mime_type = lens::MimeType::kPdf;
+  EXPECT_CALL(*mock_controller_ptr, GetFileInfo(explicit_pdf_token))
+      .WillRepeatedly(testing::Return(&explicit_pdf_info));
+  local_handle->SetSubmittedContextTokens({explicit_pdf_token});
+
+  EXPECT_TRUE(local_handle->HasPdfContext());
+  local_handle->ClearSubmittedContextTokens();
+  EXPECT_TRUE(local_handle->HasPdfContext());
+}
 }  // namespace contextual_search

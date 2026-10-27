@@ -45,6 +45,9 @@ class TaskInfoDelegate {
 
   // Called when the task has been changed.
   virtual void OnTaskChanged() = 0;
+
+  // Attempts to trigger the pinning IPH promo if all criteria are met.
+  virtual void MaybeTriggerPinningPromo() = 0;
 };
 
 }  // namespace contextual_tasks
