@@ -6,14 +6,12 @@
 #import <XCTest/XCTest.h>
 
 #import "base/json/json_reader.h"
-#import "base/strings/strcat.h"
 #import "base/strings/stringprintf.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/system/sys_info.h"
 #import "base/test/ios/wait_util.h"
 #import "base/version_info/version_info.h"
-#import "components/enterprise/browser/enterprise_switches.h"
 #import "components/grit/policy_resources.h"
 #import "components/grit/policy_resources_map.h"
 #import "components/policy/core/common/features.h"
@@ -205,7 +203,11 @@ id<GREYMatcher> DownloadButton() {
 @interface PolicyUITestCaseBase : ChromeTestCase
 @end
 
-@implementation PolicyUITestCaseBase
+@implementation PolicyUITestCaseBase {
+  // Fake DM server used by CBCM tests so that the app never contacts the
+  // production DM server, whose latency would otherwise delay app startup.
+  std::unique_ptr<policy::EmbeddedPolicyTestServer> _policyServer;
+}
 
 // Prevents this base class from being executed directly by the XCTest runner.
 - (void)invokeTest {
@@ -293,16 +295,14 @@ id<GREYMatcher> DownloadButton() {
 
 // Tests the chrome://policy page when there are machine level policies.
 - (void)testPolicyPageManagedWithCBCM {
+  _policyServer = std::make_unique<policy::EmbeddedPolicyTestServer>();
+  GREYAssertTrue(_policyServer->Start(), @"Policy server did not start.");
+
   // Fake browser enrollment with an enrollment token that will start chrome
   // browser cloud management without making network calls.
   AppLaunchConfiguration config = [self appConfigurationForTestCase];
-  config.additional_args.push_back(
-      base::StrCat({"--", switches::kEnableChromeBrowserCloudManagement}));
-  config.additional_args.push_back("-com.apple.configuration.managed");
-
-  config.additional_args.push_back(
-      base::StrCat({"<dict><key>CloudManagementEnrollmentToken</key><string>",
-                    policy::kInvalidEnrollmentToken, "</string></dict>"}));
+  policy_test_utils::AddCBCMEnrollmentArguments(
+      config, policy::kInvalidEnrollmentToken, _policyServer->GetServiceURL());
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
 
   // Open the policy page and check that the enrollment token is shown.

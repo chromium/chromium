@@ -7,8 +7,15 @@
 #import <string>
 
 #import "base/json/json_writer.h"
+#import "base/strings/strcat.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/enterprise/browser/enterprise_switches.h"
+#import "components/policy/core/common/policy_loader_ios_constants.h"
+#import "components/policy/core/common/policy_switches.h"
+#import "components/policy/policy_constants.h"
 #import "ios/chrome/browser/policy/model/policy_app_interface.h"
+#import "ios/testing/earl_grey/app_launch_configuration.h"
+#import "url/gurl.h"
 
 namespace {
 
@@ -94,6 +101,23 @@ void SetPolicy(base::Value value, const std::string& policy_key) {
 
 void ClearPolicies() {
   [PolicyAppInterface clearPolicies];
+}
+
+void AddCBCMEnrollmentArguments(AppLaunchConfiguration& config,
+                                const std::string& enrollment_token,
+                                const GURL& policy_server_url) {
+  config.additional_args.push_back(
+      base::StrCat({"--", switches::kEnableChromeBrowserCloudManagement}));
+  // Inserts the enrollment token into `NSUserDefaults` under the managed app
+  // configuration key, where the app reads platform policies from.
+  config.additional_args.push_back(base::StrCat(
+      {"-", base::SysNSStringToUTF8(kPolicyLoaderIOSConfigurationKey)}));
+  config.additional_args.push_back(
+      base::StrCat({"<dict><key>", policy::key::kCloudManagementEnrollmentToken,
+                    "</key><string>", enrollment_token, "</string></dict>"}));
+  config.additional_args.push_back(
+      base::StrCat({"--", policy::switches::kDeviceManagementUrl, "=",
+                    policy_server_url.spec()}));
 }
 
 }  // namespace policy_test_utils

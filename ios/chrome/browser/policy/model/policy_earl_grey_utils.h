@@ -7,6 +7,9 @@
 
 #import <string>
 
+struct AppLaunchConfiguration;
+class GURL;
+
 namespace base {
 class Value;
 }
@@ -62,6 +65,15 @@ void SetPolicy(base::Value value, const std::string& policy_key);
 
 // Clears all policy values.
 void ClearPolicies();
+
+// Adds launch arguments to `config` that enable Chrome Browser Cloud
+// Management with `enrollment_token`, using `policy_server_url` as the device
+// management server. The server URL is required so that tests never enroll
+// against the production server: on first run, startup is blocked on
+// `AppInitStage::kEnterprise` until the server responds.
+void AddCBCMEnrollmentArguments(AppLaunchConfiguration& config,
+                                const std::string& enrollment_token,
+                                const GURL& policy_server_url);
 
 }  // namespace policy_test_utils
 

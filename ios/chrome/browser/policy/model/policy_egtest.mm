@@ -14,7 +14,6 @@
 #import "components/password_manager/core/common/password_manager_pref_names.h"
 #import "components/policy/core/common/cloud/cloud_policy_constants.h"
 #import "components/policy/core/common/policy_loader_ios_constants.h"
-#import "components/policy/core/common/policy_switches.h"
 #import "components/policy/policy_constants.h"
 #import "components/policy/test_support/embedded_policy_test_server.h"
 #import "components/policy/test_support/signature_provider.h"
@@ -519,20 +518,11 @@ const char kTestPageText[] = "pony";
   _server = std::make_unique<policy::EmbeddedPolicyTestServer>();
   _server->Start();
 
-  // Enable machine level (browser) cloud policies.
+  // Enable machine level (browser) cloud policies. Use an enrollment token that
+  // will start chrome browser cloud management without making network calls.
   AppLaunchConfiguration config;
-  config.additional_args.push_back(
-      base::StrCat({"--", switches::kEnableChromeBrowserCloudManagement}));
-  config.additional_args.push_back("-com.apple.configuration.managed");
-  // Use an enrollment token that will start chrome browser cloud management
-  // without making network calls.
-  config.additional_args.push_back(
-      base::StrCat({"<dict><key>CloudManagementEnrollmentToken</key><string>",
-                    policy::kInvalidEnrollmentToken, "</string></dict>"}));
-  // Use the embedded test server as the policy server.
-  config.additional_args.push_back(
-      base::StrCat({"--", policy::switches::kDeviceManagementUrl, "=",
-                    _server->GetServiceURL().spec()}));
+  policy_test_utils::AddCBCMEnrollmentArguments(
+      config, policy::kInvalidEnrollmentToken, _server->GetServiceURL());
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
 
   [PolicyAppInterface setBrowserCloudPolicyDataWithDomain:kDomain1];
@@ -626,20 +616,11 @@ const char kTestPageText[] = "pony";
   _server = std::make_unique<policy::EmbeddedPolicyTestServer>();
   _server->Start();
 
-  // Enable browser cloud policies.
+  // Enable browser cloud policies. Use a CBCM enrollment token that will start
+  // chrome browser cloud management without making network calls.
   AppLaunchConfiguration config;
-  config.additional_args.push_back(
-      base::StrCat({"--", switches::kEnableChromeBrowserCloudManagement}));
-  config.additional_args.push_back("-com.apple.configuration.managed");
-  // Use a CBCM enrollment token that will start chrome browser cloud management
-  // without making network calls.
-  config.additional_args.push_back(
-      base::StrCat({"<dict><key>CloudManagementEnrollmentToken</key><string>",
-                    policy::kInvalidEnrollmentToken, "</string></dict>"}));
-  // Use the embedded test server as the policy server.
-  config.additional_args.push_back(
-      base::StrCat({"--", policy::switches::kDeviceManagementUrl, "=",
-                    _server->GetServiceURL().spec()}));
+  policy_test_utils::AddCBCMEnrollmentArguments(
+      config, policy::kInvalidEnrollmentToken, _server->GetServiceURL());
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
 
   // Set CBCM policies.
@@ -669,20 +650,11 @@ const char kTestPageText[] = "pony";
   _server = std::make_unique<policy::EmbeddedPolicyTestServer>();
   _server->Start();
 
-  // Enable browser cloud policies.
+  // Enable browser cloud policies. Use a CBCM enrollment token that will start
+  // chrome browser cloud management without making network calls.
   AppLaunchConfiguration config;
-  config.additional_args.push_back(
-      base::StrCat({"--", switches::kEnableChromeBrowserCloudManagement}));
-  config.additional_args.push_back("-com.apple.configuration.managed");
-  // Use a CBCM enrollment token that will start chrome browser cloud management
-  // without making network calls.
-  config.additional_args.push_back(
-      base::StrCat({"<dict><key>CloudManagementEnrollmentToken</key><string>",
-                    policy::kInvalidEnrollmentToken, "</string></dict>"}));
-  // Use the embedded test server as the policy server.
-  config.additional_args.push_back(
-      base::StrCat({"--", policy::switches::kDeviceManagementUrl, "=",
-                    _server->GetServiceURL().spec()}));
+  policy_test_utils::AddCBCMEnrollmentArguments(
+      config, policy::kInvalidEnrollmentToken, _server->GetServiceURL());
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
 
   // Set CBCM policies.
@@ -714,17 +686,8 @@ const char kTestPageText[] = "pony";
   CHECK(_server->Start());
 
   AppLaunchConfiguration config;
-
-  config.additional_args.push_back(
-      base::StrCat({"--", switches::kEnableChromeBrowserCloudManagement}));
-  config.additional_args.push_back(base::StrCat(
-      {"-", base::SysNSStringToUTF8(kPolicyLoaderIOSConfigurationKey)}));
-  config.additional_args.push_back(
-      base::StrCat({"<dict><key>", policy::key::kCloudManagementEnrollmentToken,
-                    "</key><string>", kEnrollmentToken, "</string></dict>"}));
-  config.additional_args.push_back(
-      base::StrCat({"--", policy::switches::kDeviceManagementUrl, "=",
-                    _server->GetServiceURL().spec()}));
+  policy_test_utils::AddCBCMEnrollmentArguments(config, kEnrollmentToken,
+                                                _server->GetServiceURL());
 
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
 

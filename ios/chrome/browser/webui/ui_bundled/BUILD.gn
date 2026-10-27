@@ -214,7 +214,6 @@ source_set("eg2_tests") {
     ":eg_test_support+eg2",
     "//base",
     "//base/test:test_support",
-    "//components/enterprise",
     "//components/policy/core/common:test_support",
     "//components/policy/resources/webui:resources",
     "//components/policy/test_support",

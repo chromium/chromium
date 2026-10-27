@@ -535,6 +535,11 @@ source_set("eg_test_support+eg2") {
   ]
   deps = [
     "//base",
+    "//components/enterprise",
+    "//components/policy:generated",
+    "//components/policy/core/common:common_constants",
     "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//ios/testing/earl_grey:launch_configuration",
+    "//url",
   ]
 }
