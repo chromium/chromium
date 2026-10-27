@@ -43,6 +43,7 @@ class FakeWebContentsManager : public GlicWebContentsManager {
   bool ShouldReloadOnShow() const override;
   bool IsCrashed() const override;
   void SetErrorCallback(base::RepeatingClosure callback) override;
+  void WaitForLoad(base::OnceCallback<void(bool failed)> callback) override;
 
   // Test helpers:
   void TriggerErrorCallback();

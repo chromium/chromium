@@ -830,6 +830,38 @@ void GlicNoWebviewContentsManager::SetErrorCallback(
   }
 }
 
+void GlicNoWebviewContentsManager::WaitForLoad(
+    base::OnceCallback<void(bool failed)> callback) {
+  const mojom::WebClientState state = web_client_state();
+  if (state == mojom::WebClientState::kResponsive ||
+      state == mojom::WebClientState::kUnresponsive) {
+    std::move(callback).Run(/*failed=*/false);
+    return;
+  }
+  if (HasClientLoadFailed()) {
+    std::move(callback).Run(/*failed=*/true);
+    return;
+  }
+  pending_wait_for_load_callbacks_.push_back(std::move(callback));
+}
+
+void GlicNoWebviewContentsManager::ResolvePendingWaitForLoadCallbacks() {
+  if (pending_wait_for_load_callbacks_.empty()) {
+    return;
+  }
+  const mojom::WebClientState state = web_client_state();
+  const bool is_ready = state == mojom::WebClientState::kResponsive ||
+                        state == mojom::WebClientState::kUnresponsive;
+  const bool is_failed = HasClientLoadFailed();
+  if (!is_ready && !is_failed) {
+    return;
+  }
+  auto callbacks = std::exchange(pending_wait_for_load_callbacks_, {});
+  for (auto& cb : callbacks) {
+    std::move(cb).Run(is_failed);
+  }
+}
+
 void GlicNoWebviewContentsManager::OnZoomLevelChange() {
   if (host_) {
     host_->instance_metrics().OnZoomLevelChange();
@@ -948,6 +980,7 @@ void GlicNoWebviewContentsManager::UpdateClientLoadFailed() {
   if (host_) {
     host_->SetClientLoadFailed(HasClientLoadFailed());
   }
+  ResolvePendingWaitForLoadCallbacks();
 }
 
 void GlicNoWebviewContentsManager::UpdateDisplayState() {
@@ -957,6 +990,7 @@ void GlicNoWebviewContentsManager::UpdateDisplayState() {
     TransitionTo(desired);
   }
   UpdateLoadingTimer();
+  ResolvePendingWaitForLoadCallbacks();
 }
 
 void GlicNoWebviewContentsManager::OnGuestNavigationStarted() {

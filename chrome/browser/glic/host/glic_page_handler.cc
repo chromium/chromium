@@ -24,6 +24,7 @@
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/host/glic_web_client_access.h"
 #include "chrome/browser/glic/host/glic_web_client_handler.h"
+#include "chrome/browser/glic/host/glic_webui_contents_manager.h"
 #include "chrome/browser/glic/host/guest_util.h"
 #include "chrome/browser/glic/host/host.h"
 #include "chrome/browser/glic/public/features.h"
@@ -111,6 +112,10 @@ GlicPageHandler::GlicPageHandler(
   MarkProcessAsGlic(webui_contents->GetPrimaryMainFrame()->GetProcess());
   host_observation_.Observe(host_);
   host_->WebUIPageHandlerAdded(this);
+  if (auto* contents_manager = static_cast<GlicWebUIContentsManager*>(
+          GetContentsManagerForWebContents(webui_contents_))) {
+    contents_manager->WebUIPageHandlerAdded(this);
+  }
   subscriptions_.push_back(
       host_->instance().GetPanelState().AddObserverAndNotify(
           base::BindRepeating(&GlicPageHandler::PanelStateChanged,
@@ -124,6 +129,10 @@ GlicPageHandler::GlicPageHandler(
 
 GlicPageHandler::~GlicPageHandler() {
   VLOG(1) << "Glic [PageHandler] Destructor";
+  if (auto* contents_manager = static_cast<GlicWebUIContentsManager*>(
+          GetContentsManagerForWebContents(webui_contents_))) {
+    contents_manager->WebUIPageHandlerRemoved(this);
+  }
   host_->WebUIPageHandlerRemoved(this);
 }
 
@@ -210,6 +219,10 @@ void GlicPageHandler::NotifyWindowIntentToShow() {
   // that does not retry reasserts its failure in response to `IntentToShow()`.
   host().SetClientLoadFailed(this, false);
   page_->IntentToShow();
+}
+
+void GlicPageHandler::WaitForLoad(mojom::Page::WaitForLoadCallback callback) {
+  page_->WaitForLoad(std::move(callback));
 }
 
 void GlicPageHandler::Zoom(mojom::ZoomAction zoom_action, ZoomSource source) {
