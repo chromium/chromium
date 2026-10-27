@@ -6,10 +6,9 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_COMMON_THREAD_SCHEDULER_BASE_H_
 
 #include "base/memory/raw_ptr.h"
-#include "third_party/blink/renderer/platform/platform_export.h"
-
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
+#include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/scheduler/common/scheduler_helper.h"
 #include "third_party/blink/renderer/platform/scheduler/public/virtual_time_controller.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -106,7 +105,6 @@ class PLATFORM_EXPORT ThreadSchedulerBase : public VirtualTimeController,
   virtual void OnVirtualTimeResumed() {}
 
  private:
-  void NotifyVirtualTimePaused();
   void SetVirtualTimeStopped(bool virtual_time_stopped);
   void ApplyVirtualTimePolicy();
 

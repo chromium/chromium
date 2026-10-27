@@ -149,7 +149,6 @@ class SynchronousLayerTreeFrameSink
   void InvokeComposite(const gfx::Transform& transform,
                        const gfx::Rect& viewport);
   void DidActivatePendingTree();
-  void DeliverMessages();
 
   const uint32_t layer_tree_frame_sink_id_;
   const raw_ptr<SynchronousCompositorRegistry> registry_;  // Not owned.

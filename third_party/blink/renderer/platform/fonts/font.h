@@ -162,10 +162,6 @@ class PLATFORM_EXPORT Font : public GarbageCollected<Font> {
   // True if `this` has font-features which encompass the entire range.
   bool HasSimpleFontFeatures() const;
 
-  // Access the NG shape cache associated with this particular font object.
-  // Should *not* be retained across layout calls as it may become invalid.
-  NGShapeCache& GetNGShapeCache() const;
-
   // Whether the font supports shaping word by word instead of shaping the
   // full run in one go. Allows better caching for fonts where space cannot
   // participate in kerning and/or ligatures.
@@ -209,14 +205,16 @@ class PLATFORM_EXPORT Font : public GarbageCollected<Font> {
   bool IsFallbackValid() const;
 
   bool ShouldSkipDrawing() const {
-    if (!font_fallback_list_)
+    if (!font_fallback_list_) {
       return false;
+    }
     return EnsureFontFallbackList()->ShouldSkipDrawing();
   }
 
   bool HasCustomFont() const {
-    if (!font_fallback_list_)
+    if (!font_fallback_list_) {
       return false;
+    }
     return EnsureFontFallbackList()->HasCustomFont();
   }
 

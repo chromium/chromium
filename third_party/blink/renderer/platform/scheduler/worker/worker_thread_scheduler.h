@@ -119,9 +119,6 @@ class PLATFORM_EXPORT WorkerThreadScheduler : public NonMainThreadSchedulerBase,
   void OnVirtualTimePaused() override;
   void OnVirtualTimeResumed() override;
 
-  void MaybeStartLongIdlePeriod();
-
-  const ThreadType thread_type_;
   scoped_refptr<NonMainThreadTaskQueue> idle_helper_queue_;
   IdleHelper idle_helper_;
   bool initialized_ = false;

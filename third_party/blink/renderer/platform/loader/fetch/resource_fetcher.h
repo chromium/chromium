@@ -148,10 +148,6 @@ class PLATFORM_EXPORT ResourceFetcher
     return *properties_;
   }
 
-  // Returns true if optimizations for loading 1x1 transparent placeholder
-  // images is enabled.
-  bool IsSimplifyLoadingTransparentPlaceholderImageEnabled();
-
   // Returns whether this fetcher is detached from the associated context.
   bool IsDetached() const;
 
@@ -621,11 +617,7 @@ class PLATFORM_EXPORT ResourceFetcher
   void WarnUnusedPreloads(
       base::OnceCallback<void(Vector<KURL> unused_preloads)> callback);
 
-  void RemoveResourceStrongReference(Resource* resource);
-
   KURL PrepareRequestForWebBundle(ResourceRequest& resource_request) const;
-
-  void AttachWebBundleTokenIfNeeded(ResourceRequest&) const;
 
   // Information about a resource fetch that had started but not completed yet.
   // Would be added to the response data when the response arrives.

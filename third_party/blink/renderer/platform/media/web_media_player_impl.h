@@ -413,10 +413,6 @@ class PLATFORM_EXPORT WebMediaPlayerImpl
   void EnableOverlay();
   void DisableOverlay();
 
-  // Do we have overlay information?  For CVV, this is a surface id.  For
-  // AndroidOverlay, this is the routing token.
-  bool HaveOverlayInfo();
-
   // Send OverlayInfo to the decoder.
   //
   // If we've requested but not yet received the surface id or routing token, or
@@ -732,7 +728,6 @@ class PLATFORM_EXPORT WebMediaPlayerImpl
   // Returns whether the player has an audio track and whether it should be
   // allowed to play it.
   bool HasUnmutedAudio() const;
-
 
   // Report UMAs when this object instance is destroyed.
   void ReportSessionUMAs() const;

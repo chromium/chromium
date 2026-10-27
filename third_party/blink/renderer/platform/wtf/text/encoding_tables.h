@@ -52,7 +52,6 @@ const WTF_EXPORT Jis0208EncodeIndex& EnsureJis0208EncodeIndexForDecode();
 constexpr size_t kJis0212EncodeIndexSize = 6067;
 using Jis0212EncodeIndex =
     std::array<std::pair<uint16_t, UChar>, kJis0212EncodeIndexSize>;
-const WTF_EXPORT Jis0212EncodeIndex& EnsureJis0212EncodeIndexForEncode();
 const WTF_EXPORT Jis0212EncodeIndex& EnsureJis0212EncodeIndexForDecode();
 
 constexpr size_t kEucKrEncodeIndexSize = 17048;
@@ -129,13 +128,15 @@ static auto FindFirstInSortedPairs(const CollectionType& collection,
                                    const KeyType& key)
     -> std::optional<decltype(std::begin(collection)->second)> {
   if constexpr (std::is_integral_v<KeyType>) {
-    if (key != decltype(std::begin(collection)->first)(key))
+    if (key != decltype(std::begin(collection)->first)(key)) {
       return std::nullopt;
+    }
   }
   auto iterator = std::lower_bound(std::begin(collection), std::end(collection),
                                    MakeFirstAdapter(key), CompareFirst{});
-  if (iterator == std::end(collection) || key < iterator->first)
+  if (iterator == std::end(collection) || key < iterator->first) {
     return std::nullopt;
+  }
   return iterator->second;
 }
 
@@ -145,8 +146,9 @@ static auto FindInSortedPairs(const CollectionType& collection,
     -> std::pair<decltype(std::begin(collection)),
                  decltype(std::begin(collection))> {
   if constexpr (std::is_integral_v<KeyType>) {
-    if (key != decltype(std::begin(collection)->first)(key))
+    if (key != decltype(std::begin(collection)->first)(key)) {
       return {std::end(collection), std::end(collection)};
+    }
   }
   return std::equal_range(std::begin(collection), std::end(collection),
                           MakeFirstAdapter(key), CompareFirst{});

@@ -26,12 +26,12 @@ class TransformTree;
 struct EffectNode;
 struct TransformNode;
 enum class RenderSurfaceReason : uint8_t;
-}
+}  // namespace cc
 
 namespace gfx {
 class PointF;
 class RRectF;
-}
+}  // namespace gfx
 
 namespace blink {
 
@@ -309,7 +309,6 @@ class PropertyTreeManager {
       const TransformPaintPropertyNode& transform,
       const EffectPaintPropertyNode* next_effect);
 
-  void CollectAnimationElementId(CompositorElementId);
   void BuildEffectNodesRecursively(const EffectPaintPropertyNode& next_effect);
   void ForceRenderSurfaceIfSyntheticRoundedCornerClip(EffectState& state);
 

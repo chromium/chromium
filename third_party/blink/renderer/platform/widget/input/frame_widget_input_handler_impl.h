@@ -116,16 +116,6 @@ class PLATFORM_EXPORT FrameWidgetInputHandlerImpl
  private:
   enum class UpdateState { kNone, kIsPasting, kIsSelectingRange };
 
-  static void SetCompositionFromExistingTextMainThread(
-      base::WeakPtr<WidgetBase> widget,
-      int32_t start,
-      int32_t end,
-      const Vector<ui::ImeTextSpan>& ui_ime_text_spans);
-  static void ExtendSelectionAndDeleteMainThread(
-      base::WeakPtr<WidgetBase> widget,
-      int32_t before,
-      int32_t after);
-
   class HandlingState {
    public:
     HandlingState(const base::WeakPtr<WidgetBase>& widget, UpdateState state);

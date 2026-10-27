@@ -85,8 +85,6 @@ class PLATFORM_EXPORT LocaleIcu : public Locale {
                               UDateFormatStyle date_style) const;
   UDateFormat* OpenDateFormatForStandAloneMonthLabels(bool is_short) const;
 
-  void InitializeCalendar();
-
   Vector<String> CreateLabelVector(const UDateFormat*,
                                    UDateFormatSymbolType,
                                    int32_t start_index,

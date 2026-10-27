@@ -207,8 +207,6 @@ class PLATFORM_EXPORT MultiBufferDataSource
   void StartCallback();
 
   // Check if we've moved to a new url and update has_signgle_origin_.
-  void UpdateSingleOrigin();
-
   // MultiBufferReader progress callback.
   void ProgressCallback(int64_t begin, int64_t end);
 

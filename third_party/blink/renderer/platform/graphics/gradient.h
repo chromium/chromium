@@ -163,7 +163,6 @@ class PLATFORM_EXPORT Gradient {
 
   void SortStopsIfNecessary() const;
   void FillSkiaStops(ColorBuffer&, OffsetBuffer&) const;
-  bool HasNonLegacyColor() const;
 
   mutable sk_sp<PaintShader> cached_shader_;
   mutable sk_sp<cc::ColorFilter> color_filter_;

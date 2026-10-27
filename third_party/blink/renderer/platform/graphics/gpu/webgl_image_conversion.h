@@ -20,7 +20,6 @@ class Size;
 }
 
 namespace blink {
-class Image;
 
 // Helper functions for texture uploading and pixel readback.
 class PLATFORM_EXPORT WebGLImageConversion final {
@@ -191,24 +190,6 @@ class PLATFORM_EXPORT WebGLImageConversion final {
                            unsigned source_unpack_alignment,
                            int unpack_image_height,
                            Vector<uint8_t>& data);
-
-  // Packs the contents of the given Image, which is passed in |pixels|, into
-  // the passed Vector according to the given format and type, and obeying the
-  // flipY and AlphaOp flags. Returns true upon success.
-  static bool PackImageData(Image*,
-                            const void* pixels,
-                            GLenum format,
-                            GLenum type,
-                            bool flip_y,
-                            AlphaOp,
-                            DataFormat source_format,
-                            unsigned source_image_width,
-                            unsigned source_image_height,
-                            const gfx::Rect& source_image_sub_rectangle,
-                            int depth,
-                            unsigned source_unpack_alignment,
-                            int unpack_image_height,
-                            Vector<uint8_t>& data);
 
   // Extracts the contents of the given ImageData into the passed Vector,
   // packing the pixel data according to the given format and type,

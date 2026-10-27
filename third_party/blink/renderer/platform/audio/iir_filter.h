@@ -35,9 +35,6 @@ class PLATFORM_EXPORT IIRFilter final {
                   bool is_filter_stable,
                   unsigned render_quantum_frames);
 
-  // Reset the internal state of the IIR filter to the initial state.
-  void ResetState();
-
  private:
   // Filter memory
   //

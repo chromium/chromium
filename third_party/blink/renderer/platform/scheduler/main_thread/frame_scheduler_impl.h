@@ -262,7 +262,6 @@ class PLATFORM_EXPORT FrameSchedulerImpl : public FrameScheduler,
   void OnFrameAndPageVisibleChanged(PolicyUpdater& policy_updater);
 
   void RemoveThrottleableQueueFromBudgetPools(MainThreadTaskQueue*);
-  void ApplyPolicyToThrottleableQueue();
   ThrottlingType ComputeThrottlingType();
   SchedulingLifecycleState CalculateLifecycleState(
       ObserverType type) const override;
@@ -353,7 +352,7 @@ class PLATFORM_EXPORT FrameSchedulerImpl : public FrameScheduler,
       tracing_track_;
 
   const raw_ptr<MainThreadSchedulerImpl, DanglingUntriaged>
-      main_thread_scheduler_;  // NOT OWNED
+      main_thread_scheduler_;                         // NOT OWNED
   raw_ptr<PageSchedulerImpl> parent_page_scheduler_;  // NOT OWNED
   raw_ptr<FrameScheduler::Delegate> delegate_;        // NOT OWNED
   TraceableState<PageVisibilityState, "renderer.scheduler.status">

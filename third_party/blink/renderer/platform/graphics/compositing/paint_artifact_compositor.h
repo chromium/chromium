@@ -75,8 +75,9 @@ class SynthesizedClip : public cc::ContentLayerClient {
         CompositorElementIdFromUniqueObjectId(NewUniqueObjectId());
   }
   ~SynthesizedClip() override {
-    if (layer_)
+    if (layer_) {
       layer_->ClearClient();
+    }
   }
 
   void UpdateLayer(const ClipPaintPropertyNode&,
@@ -322,11 +323,6 @@ class PLATFORM_EXPORT PaintArtifactCompositor final
                                                      const PaintChunk&) const;
 
   void AddRangeDependentScroll(const PropertyTreeState&);
-
-  static void UpdateRenderSurfaceForEffects(
-      cc::EffectTree&,
-      const cc::LayerList&,
-      const Vector<const EffectPaintPropertyNode*>&);
 
   bool CanDirectlyUpdateProperties() const;
 

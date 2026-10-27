@@ -248,10 +248,6 @@ class PLATFORM_EXPORT ResourceLoader final
       const ResourceLoaderOptions& options,
       const ResourceRequest::RedirectInfo redirect_info);
 
-  // Increments the right UseCounter for the given PNA preflight result, if any.
-  void CountPrivateNetworkAccessPreflightResult(
-      network::mojom::PrivateNetworkAccessPreflightResult result);
-
   // The request object which will be passed to URLLoader. This is not used when
   // the request URL is a data URL.
   std::unique_ptr<network::ResourceRequest> network_resource_request_;

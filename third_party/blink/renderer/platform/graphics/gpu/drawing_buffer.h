@@ -71,7 +71,7 @@
 namespace cc {
 class Layer;
 class TextureLayer;
-}
+}  // namespace cc
 
 namespace gpu {
 namespace gles2 {
@@ -558,9 +558,6 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
   // s_currentResourceUsePixels is updated.
   void SetSize(const gfx::Size&);
 
-  // Read the content of the FrameBuffer into the bitmap.
-  void ReadFramebufferIntoBitmapPixels(uint8_t* pixels);
-
   // Helper function which does a readback from the currently-bound
   // framebuffer into a buffer of a certain size with 4-byte pixels.
   void ReadBackFramebuffer(base::span<uint8_t> pixels,
@@ -568,11 +565,6 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
                            SkAlphaType destination_alpha_type,
                            GrSurfaceOrigin destination_origin,
                            SourceDrawingBuffer source_buffer);
-
-  // If RGB emulation is required, then the CHROMIUM image's alpha channel
-  // must be immediately cleared after it is bound to a texture. Nothing
-  // should be allowed to change the alpha channel after this.
-  void ClearChromiumImageAlpha(const ColorBuffer&);
 
   // Tries to create a CHROMIUM_image backed texture if
   // SharedGpuContext::WebGLImageChromiumEnabled() is true. On failure,
@@ -594,11 +586,6 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
 
   // Whether the WebGL client wants a depth or stencil buffer.
   bool WantDepthOrStencil();
-
-  // Helpers to ensure correct behavior of BlitFramebuffer when using
-  // an emulated RGB CHROMIUM_image back buffer.
-  bool SetupRGBEmulationForBlitFramebuffer(bool is_user_draw_framebuffer_bound);
-  void CleanupRGBEmulationForBlitFramebuffer();
 
   // Reallocate Multisampled renderbuffer, used by explicit resolve when resize
   // and GPU switch

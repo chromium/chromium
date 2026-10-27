@@ -31,6 +31,10 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_SHAPING_HARFBUZZ_FACE_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_SHAPING_HARFBUZZ_FACE_H_
 
+#include <hb.h>
+
+#include <hb-cplusplus.hh>
+
 #include "third_party/blink/renderer/platform/fonts/font_variant_emoji.h"
 #include "third_party/blink/renderer/platform/fonts/glyph.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/variation_selector_mode.h"
@@ -41,9 +45,6 @@
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
-
-#include <hb.h>
-#include <hb-cplusplus.hh>
 
 namespace blink {
 
@@ -97,8 +98,6 @@ class PLATFORM_EXPORT HarfBuzzFace final
   void SetVariationSelectorMode(VariationSelectorMode value);
 
  private:
-  void PrepareHarfBuzzFontData();
-
   Member<const FontPlatformData> platform_data_;
   Member<HarfBuzzFontData> harfbuzz_font_data_;
 };

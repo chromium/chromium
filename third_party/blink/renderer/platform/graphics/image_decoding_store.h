@@ -248,7 +248,6 @@ class PLATFORM_EXPORT ImageDecodingStore final {
   void SetCacheLimitInBytes(size_t);
   size_t MemoryUsageInBytes();
   int CacheEntries();
-  int DecoderCacheEntries();
 
  private:
   void Prune();

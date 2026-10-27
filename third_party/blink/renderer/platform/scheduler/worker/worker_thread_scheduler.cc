@@ -55,8 +55,9 @@ std::optional<base::TimeDelta> GetMaxBudgetLevel() {
           &max_budget_level_ms)) {
     return kDefaultMaxBudget;
   }
-  if (max_budget_level_ms < 0)
+  if (max_budget_level_ms < 0) {
     return std::nullopt;
+  }
   return base::Milliseconds(max_budget_level_ms);
 }
 
@@ -79,8 +80,9 @@ std::optional<base::TimeDelta> GetMaxThrottlingDelay() {
           &max_throttling_delay_ms)) {
     return kDefaultMaxThrottlingDelay;
   }
-  if (max_throttling_delay_ms < 0)
+  if (max_throttling_delay_ms < 0) {
     return std::nullopt;
+  }
   return base::Milliseconds(max_throttling_delay_ms);
 }
 
@@ -92,7 +94,6 @@ WorkerThreadScheduler::WorkerThreadScheduler(
     WorkerSchedulerProxy* proxy)
     : NonMainThreadSchedulerBase(sequence_manager,
                                  TaskType::kWorkerThreadTaskQueueDefault),
-      thread_type_(thread_type),
       idle_helper_queue_(GetHelper().NewTaskQueue(
           TaskQueue::Spec(base::sequence_manager::QueueName::WORKER_IDLE_TQ))),
       idle_helper_(&GetHelper(),
@@ -216,12 +217,14 @@ base::TimeTicks WorkerThreadScheduler::CurrentIdleTaskDeadlineForTesting()
 
 void WorkerThreadScheduler::OnLifecycleStateChanged(
     SchedulingLifecycleState lifecycle_state) {
-  if (lifecycle_state_ == lifecycle_state)
+  if (lifecycle_state_ == lifecycle_state) {
     return;
+  }
   lifecycle_state_ = lifecycle_state;
 
-  for (WorkerScheduler* worker_scheduler : worker_schedulers_)
+  for (WorkerScheduler* worker_scheduler : worker_schedulers_) {
     worker_scheduler->OnLifecycleStateChanged(lifecycle_state);
+  }
 }
 
 void WorkerThreadScheduler::RegisterWorkerScheduler(
@@ -242,8 +245,9 @@ WorkerThreadScheduler::ControlTaskQueue() {
 }
 
 void WorkerThreadScheduler::CreateBudgetPools() {
-  if (wake_up_budget_pool_ && cpu_time_budget_pool_)
+  if (wake_up_budget_pool_ && cpu_time_budget_pool_) {
     return;
+  }
   base::TimeTicks now = GetTickClock()->NowTicks();
   wake_up_budget_pool_ =
       std::make_unique<WakeUpBudgetPool>("worker_wake_up_pool");
@@ -268,8 +272,9 @@ WorkerThreadScheduler::GetWorkerSchedulersForTesting() {
 }
 
 void WorkerThreadScheduler::PerformMicrotaskCheckpoint() {
-  if (isolate())
+  if (isolate()) {
     EventLoop::PerformIsolateGlobalMicrotasksCheckpoint(isolate());
+  }
 }
 
 base::SequencedTaskRunner* WorkerThreadScheduler::GetVirtualTimeTaskRunner() {

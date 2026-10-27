@@ -240,9 +240,6 @@ class PLATFORM_EXPORT ScriptState : public GarbageCollected<ScriptState> {
   ScriptState(v8::Local<v8::Context>, DOMWrapperWorld*, scheduler::EventLoop*);
 
  private:
-  static void OnV8ContextCollectedCallback(
-      const v8::WeakCallbackInfo<ScriptState>&);
-
   // This is de-facto a `raw_ref`, but actually using `raw_ref` here
   // leads to considerable bloat in bindings, so we just CHECK() it
   // upon construction.

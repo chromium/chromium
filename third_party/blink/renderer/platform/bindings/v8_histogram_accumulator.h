@@ -47,11 +47,6 @@ class PLATFORM_EXPORT V8HistogramAccumulator {
     raw_ptr<std::atomic<int>> sum_microseconds = nullptr;
   };
 
-  void* RegisterHistogramImpl(base::HistogramBase* histogram,
-                              const std::string& name);
-  void AddSampleImpl(void* raw_histogram, int sample);
-  void GenerateDataInteractiveImpl();
-
  private:
   struct AccumulatingHistograms {
     raw_ptr<base::HistogramBase> interactive_histogram;

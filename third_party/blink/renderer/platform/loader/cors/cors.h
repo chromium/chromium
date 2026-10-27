@@ -43,8 +43,6 @@ PLATFORM_EXPORT bool IsForbiddenRequestHeader(const String& name,
                                               const String& value);
 PLATFORM_EXPORT bool ContainsOnlyCorsSafelistedHeaders(const HTTPHeaderMap&);
 
-PLATFORM_EXPORT bool IsOkStatus(int status);
-
 // Calculates and returns the CORS flag used in several "fetch" algorithms in
 // https://fetch.spec.whatwg.org/. This function is corresponding to the CORS
 // flag setting logic in https://fetch.spec.whatwg.org/#main-fetch.

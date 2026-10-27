@@ -151,9 +151,6 @@ class PLATFORM_EXPORT ClipPaintPropertyNode final
                                                        std::move(state));
   }
 
-  static const FloatClipRect& ExpandedLayoutClipRect();
-  static const FloatRoundedRect& ExpandedPaintClipRect();
-
   void Trace(Visitor* visitor) const final {
     ClipPaintPropertyNodeOrAlias::Trace(visitor);
     visitor->Trace(state_);
