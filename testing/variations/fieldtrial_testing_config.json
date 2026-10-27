@@ -10315,21 +10315,6 @@
             ]
         }
     ],
-    "IOSLensGestureTextSelectionDisabled": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "LensGestureTextSelectionDisabled"
-                    ]
-                }
-            ]
-        }
-    ],
     "IOSLensOmnientShaderV2": [
         {
             "platforms": [
