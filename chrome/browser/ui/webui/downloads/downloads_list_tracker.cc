@@ -457,7 +457,9 @@ downloads::mojom::DataPtr DownloadsListTracker::CreateDownloadData(
       break;
 
     case download::DownloadItem::COMPLETE:
-      CHECK(!download_item->IsDangerous(), base::NotFatalUntil::M162);
+      // TODO(crbug.com/577213141): CHECK-exclusion: Convert to a CHECK once we
+      // are confident it won't be triggered.
+      DCHECK(!download_item->IsDangerous());
       state = downloads::mojom::State::kComplete;
       break;
 
