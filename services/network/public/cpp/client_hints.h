@@ -10,9 +10,10 @@
 #include <array>
 #include <optional>
 #include <string>
+#include <string_view>
 
 #include "base/component_export.h"
-#include "base/containers/flat_map.h"
+#include "base/containers/fixed_flat_map.h"
 #include "base/time/time.h"
 #include "net/nqe/effective_connection_type.h"
 #include "services/network/public/mojom/web_client_hints_types.mojom-shared.h"
@@ -63,14 +64,57 @@ static_assert(network::kWebEffectiveConnectionTypeMapping.size() ==
 static_assert(network::kWebEffectiveConnectionTypeMapping.size() ==
               static_cast<size_t>(net::EFFECTIVE_CONNECTION_TYPE_LAST));
 
-using ClientHintToNameMap =
-    base::flat_map<network::mojom::WebClientHintsType, std::string>;
-
 // Mapping from WebClientHintsType to the hint's name in Accept-CH header.
 // The ordering matches the ordering of enums in
 // services/network/public/mojom/web_client_hints_types.mojom
-COMPONENT_EXPORT(NETWORK_CPP_WEB_PLATFORM)
-const ClientHintToNameMap& GetClientHintToNameMap();
+inline constexpr auto kClientHintToNameMap =
+    base::MakeFixedFlatMap<network::mojom::WebClientHintsType,
+                           std::string_view>({
+        {network::mojom::WebClientHintsType::kDeviceMemory_DEPRECATED,
+         "device-memory"},
+        {network::mojom::WebClientHintsType::kDpr_DEPRECATED, "dpr"},
+        {network::mojom::WebClientHintsType::kResourceWidth_DEPRECATED,
+         "width"},
+        {network::mojom::WebClientHintsType::kViewportWidth_DEPRECATED,
+         "viewport-width"},
+        {network::mojom::WebClientHintsType::kRtt_DEPRECATED, "rtt"},
+        {network::mojom::WebClientHintsType::kDownlink_DEPRECATED, "downlink"},
+        {network::mojom::WebClientHintsType::kEct_DEPRECATED, "ect"},
+        {network::mojom::WebClientHintsType::kUA, "sec-ch-ua"},
+        {network::mojom::WebClientHintsType::kUAArch, "sec-ch-ua-arch"},
+        {network::mojom::WebClientHintsType::kUAPlatform, "sec-ch-ua-platform"},
+        {network::mojom::WebClientHintsType::kUAModel, "sec-ch-ua-model"},
+        {network::mojom::WebClientHintsType::kUAMobile, "sec-ch-ua-mobile"},
+        {network::mojom::WebClientHintsType::kUAFullVersion,
+         "sec-ch-ua-full-version"},
+        {network::mojom::WebClientHintsType::kUAPlatformVersion,
+         "sec-ch-ua-platform-version"},
+        {network::mojom::WebClientHintsType::kPrefersColorScheme,
+         "sec-ch-prefers-color-scheme"},
+        {network::mojom::WebClientHintsType::kUABitness, "sec-ch-ua-bitness"},
+        {network::mojom::WebClientHintsType::kViewportHeight,
+         "sec-ch-viewport-height"},
+        {network::mojom::WebClientHintsType::kDeviceMemory,
+         "sec-ch-device-memory"},
+        {network::mojom::WebClientHintsType::kDpr, "sec-ch-dpr"},
+        {network::mojom::WebClientHintsType::kResourceWidth, "sec-ch-width"},
+        {network::mojom::WebClientHintsType::kViewportWidth,
+         "sec-ch-viewport-width"},
+        {network::mojom::WebClientHintsType::kUAFullVersionList,
+         "sec-ch-ua-full-version-list"},
+        {network::mojom::WebClientHintsType::kUAWoW64, "sec-ch-ua-wow64"},
+        {network::mojom::WebClientHintsType::kSaveData, "save-data"},
+        {network::mojom::WebClientHintsType::kPrefersReducedMotion,
+         "sec-ch-prefers-reduced-motion"},
+        {network::mojom::WebClientHintsType::kUAFormFactors,
+         "sec-ch-ua-form-factors"},
+        {network::mojom::WebClientHintsType::kPrefersReducedTransparency,
+         "sec-ch-prefers-reduced-transparency"},
+    });
+
+static_assert(
+    kClientHintToNameMap.size() <=
+    static_cast<size_t>(network::mojom::WebClientHintsType::kMaxValue) + 1);
 
 // Tries to parse an Accept-CH header. Returns std::nullopt if parsing
 // failed and the header should be ignored; otherwise returns a (possibly

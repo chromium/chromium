@@ -6777,9 +6777,9 @@ void NavigationRequest::OnRedirectChecksComplete(
 
   // Removes all Client Hints from the request, that were passed on from the
   // previous one.
-  for (const auto& elem : network::GetClientHintToNameMap()) {
+  for (const auto& elem : network::kClientHintToNameMap) {
     const auto& header = elem.second;
-    headers_update_params.removed_headers.push_back(header);
+    headers_update_params.removed_headers.emplace_back(header);
   }
 
   // Add any required Client Hints to the current request.

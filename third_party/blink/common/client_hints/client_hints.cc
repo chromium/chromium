@@ -40,7 +40,7 @@ void FindClientHintsToRemove(
     std::vector<std::string>* removed_headers) {
   DCHECK(removed_headers);
   url::Origin origin = url::Origin::Create(url);
-  for (const auto& elem : network::GetClientHintToNameMap()) {
+  for (const auto& elem : network::kClientHintToNameMap) {
     const auto& type = elem.first;
     const auto& header = elem.second;
     // Remove the hint if any is true:
@@ -51,7 +51,7 @@ void FindClientHintsToRemove(
         (permissions_policy &&
          !permissions_policy->IsFeatureEnabledForOrigin(
              network::GetClientHintToPolicyFeatureMap().at(type), origin))) {
-      removed_headers->push_back(header);
+      removed_headers->emplace_back(header);
     }
   }
 }

@@ -5,6 +5,7 @@
 #include "services/network/accept_ch_frame_interceptor.h"
 
 #include <algorithm>
+#include <string_view>
 
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
@@ -42,7 +43,7 @@ std::vector<mojom::WebClientHintsType> ComputeAcceptCHFrameHints(
       continue;
     }
 
-    const std::string header = GetClientHintToNameMap().at(hint);
+    std::string_view header = kClientHintToNameMap.at(hint);
     if (!headers.HasHeader(header)) {
       hints.push_back(hint);
     }

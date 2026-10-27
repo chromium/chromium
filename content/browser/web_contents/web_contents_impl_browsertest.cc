@@ -3160,8 +3160,8 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTestClientHintsEnabled,
       NavigationController::LoadURLParams(
           embedded_test_server()->GetURL("/test.html")));
   EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
-  const std::string mobile_id = network::GetClientHintToNameMap().at(
-      network::mojom::WebClientHintsType::kUAMobile);
+  const std::string mobile_id(network::kClientHintToNameMap.at(
+      network::mojom::WebClientHintsType::kUAMobile));
   const net::test_server::HttpRequest& request = request_future.Get();
   ASSERT_TRUE(request.headers.contains(mobile_id));
   // "?!" corresponds to "mobile=true".
@@ -3185,9 +3185,10 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTestClientHintsEnabled,
       ->browser_context()
       ->set_client_hints_controller_delegate(&client_hints_controller_delegate);
 
-  std::vector<std::string> accept_ch_tokens;
-  for (const auto& pair : network::GetClientHintToNameMap())
+  std::vector<std::string_view> accept_ch_tokens;
+  for (const auto& pair : network::kClientHintToNameMap) {
     accept_ch_tokens.push_back(pair.second);
+  }
   http2_server.SetAlpsAcceptCH("", base::JoinString(accept_ch_tokens, ","));
   http2_server.ServeFilesFromSourceDirectory("content/test/data");
 

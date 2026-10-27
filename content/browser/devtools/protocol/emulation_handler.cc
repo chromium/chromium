@@ -1289,7 +1289,7 @@ void EmulationHandler::ApplyOverrides(net::HttpRequestHeaders* headers,
   *accept_language_overridden = !accept_language_.empty();
   if (!prefers_color_scheme_.empty()) {
     const auto& prefers_color_scheme_client_hint_name =
-        network::GetClientHintToNameMap().at(
+        network::kClientHintToNameMap.at(
             network::mojom::WebClientHintsType::kPrefersColorScheme);
     if (headers->HasHeader(prefers_color_scheme_client_hint_name)) {
       headers->SetHeader(prefers_color_scheme_client_hint_name,
@@ -1298,7 +1298,7 @@ void EmulationHandler::ApplyOverrides(net::HttpRequestHeaders* headers,
   }
   if (!prefers_reduced_motion_.empty()) {
     const auto& prefers_reduced_motion_client_hint_name =
-        network::GetClientHintToNameMap().at(
+        network::kClientHintToNameMap.at(
             network::mojom::WebClientHintsType::kPrefersReducedMotion);
     if (headers->HasHeader(prefers_reduced_motion_client_hint_name)) {
       headers->SetHeader(prefers_reduced_motion_client_hint_name,
@@ -1307,7 +1307,7 @@ void EmulationHandler::ApplyOverrides(net::HttpRequestHeaders* headers,
   }
   if (!prefers_reduced_transparency_.empty()) {
     const auto& prefers_reduced_transparency_client_hint_name =
-        network::GetClientHintToNameMap().at(
+        network::kClientHintToNameMap.at(
             network::mojom::WebClientHintsType::kPrefersReducedTransparency);
     if (headers->HasHeader(prefers_reduced_transparency_client_hint_name)) {
       headers->SetHeader(prefers_reduced_transparency_client_hint_name,

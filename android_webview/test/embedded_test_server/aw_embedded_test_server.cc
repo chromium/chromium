@@ -8,6 +8,7 @@
 
 #include "base/android/jni_array.h"
 #include "base/base64.h"
+#include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
@@ -262,18 +263,19 @@ std::unique_ptr<HttpResponse> HandleClientHintsHeaderResponseHelper(
 
   // Reflect any client hint headers in the request.
   std::string client_hint_dict;
-  for (const auto& client_hint_name : network::GetClientHintToNameMap()) {
+  for (const auto& client_hint_name : network::kClientHintToNameMap) {
     const auto& client_hint_value =
         request.headers.find(client_hint_name.second);
     if (!client_hint_dict.empty()) {
       client_hint_dict += ",";
     }
     if (client_hint_value == request.headers.end()) {
-      client_hint_dict +=
-          "\"" + client_hint_name.second + "\":\"HEADER_NOT_FOUND\"";
+      base::StrAppend(&client_hint_dict, {"\"", client_hint_name.second,
+                                          "\":\"HEADER_NOT_FOUND\""});
     } else {
-      client_hint_dict += "\"" + client_hint_name.second + "\":\"" +
-                          client_hint_value->second + "\"";
+      base::StrAppend(&client_hint_dict,
+                      {"\"", client_hint_name.second, "\":\"",
+                       client_hint_value->second, "\""});
     }
   }
   http_response->set_content("{" + client_hint_dict + "}");

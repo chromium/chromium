@@ -6,11 +6,12 @@
 
 #include <algorithm>
 #include <optional>
+#include <string_view>
 #include <utility>
 #include <vector>
 
+#include "base/containers/fixed_flat_map.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_tokenizer.h"
@@ -31,82 +32,27 @@ const char kPrefersReducedMotionReduce[] = "reduce";
 const char kPrefersReducedTransparencyNoPreference[] = "no-preference";
 const char kPrefersReducedTransparencyReduce[] = "reduce";
 
-ClientHintToNameMap MakeClientHintToNameMap() {
-  return {
-      {network::mojom::WebClientHintsType::kDeviceMemory_DEPRECATED,
-       "device-memory"},
-      {network::mojom::WebClientHintsType::kDpr_DEPRECATED, "dpr"},
-      {network::mojom::WebClientHintsType::kResourceWidth_DEPRECATED, "width"},
-      {network::mojom::WebClientHintsType::kViewportWidth_DEPRECATED,
-       "viewport-width"},
-      {network::mojom::WebClientHintsType::kRtt_DEPRECATED, "rtt"},
-      {network::mojom::WebClientHintsType::kDownlink_DEPRECATED, "downlink"},
-      {network::mojom::WebClientHintsType::kEct_DEPRECATED, "ect"},
-      {network::mojom::WebClientHintsType::kUA, "sec-ch-ua"},
-      {network::mojom::WebClientHintsType::kUAArch, "sec-ch-ua-arch"},
-      {network::mojom::WebClientHintsType::kUAPlatform, "sec-ch-ua-platform"},
-      {network::mojom::WebClientHintsType::kUAModel, "sec-ch-ua-model"},
-      {network::mojom::WebClientHintsType::kUAMobile, "sec-ch-ua-mobile"},
-      {network::mojom::WebClientHintsType::kUAFullVersion,
-       "sec-ch-ua-full-version"},
-      {network::mojom::WebClientHintsType::kUAPlatformVersion,
-       "sec-ch-ua-platform-version"},
-      {network::mojom::WebClientHintsType::kPrefersColorScheme,
-       "sec-ch-prefers-color-scheme"},
-      {network::mojom::WebClientHintsType::kUABitness, "sec-ch-ua-bitness"},
-      {network::mojom::WebClientHintsType::kViewportHeight,
-       "sec-ch-viewport-height"},
-      {network::mojom::WebClientHintsType::kDeviceMemory,
-       "sec-ch-device-memory"},
-      {network::mojom::WebClientHintsType::kDpr, "sec-ch-dpr"},
-      {network::mojom::WebClientHintsType::kResourceWidth, "sec-ch-width"},
-      {network::mojom::WebClientHintsType::kViewportWidth,
-       "sec-ch-viewport-width"},
-      {network::mojom::WebClientHintsType::kUAFullVersionList,
-       "sec-ch-ua-full-version-list"},
-      {network::mojom::WebClientHintsType::kUAWoW64, "sec-ch-ua-wow64"},
-      {network::mojom::WebClientHintsType::kSaveData, "save-data"},
-      {network::mojom::WebClientHintsType::kPrefersReducedMotion,
-       "sec-ch-prefers-reduced-motion"},
-      {network::mojom::WebClientHintsType::kUAFormFactors,
-       "sec-ch-ua-form-factors"},
-      {network::mojom::WebClientHintsType::kPrefersReducedTransparency,
-       "sec-ch-prefers-reduced-transparency"},
-  };
-}
-
-const ClientHintToNameMap& GetClientHintToNameMap() {
-  static const base::NoDestructor<ClientHintToNameMap> map(
-      MakeClientHintToNameMap());
-  return *map;
-}
-
 namespace {
 
 struct ClientHintNameComparator {
-  bool operator()(const std::string& lhs, const std::string& rhs) const {
+  constexpr bool operator()(std::string_view lhs, std::string_view rhs) const {
     return base::CompareCaseInsensitiveASCII(lhs, rhs) < 0;
   }
 };
 
-using DecodeMap = base::flat_map<std::string,
-                                 network::mojom::WebClientHintsType,
-                                 ClientHintNameComparator>;
-
-DecodeMap MakeDecodeMap() {
-  DecodeMap result;
-  for (const auto& elem : network::GetClientHintToNameMap()) {
-    const auto& type = elem.first;
-    const auto& header = elem.second;
-    result.insert(std::make_pair(header, type));
+consteval auto MakeDecodeMap() {
+  std::pair<std::string_view, network::mojom::WebClientHintsType>
+      data[kClientHintToNameMap.size()] = {};
+  size_t i = 0;
+  for (const auto& [type, header] : kClientHintToNameMap) {
+    data[i++] = {header, type};
   }
-  return result;
+  return base::MakeFixedFlatMap<std::string_view,
+                                network::mojom::WebClientHintsType>(
+      std::move(data), ClientHintNameComparator());
 }
 
-const DecodeMap& GetDecodeMap() {
-  static const base::NoDestructor<DecodeMap> decode_map(MakeDecodeMap());
-  return *decode_map;
-}
+constexpr auto kDecodeMap = MakeDecodeMap();
 
 }  // namespace
 
@@ -133,12 +79,12 @@ ParseClientHintsHeader(const std::string& header) {
   std::vector<network::mojom::WebClientHintsType> result;
 
   // Now convert those to actual hint enums.
-  const DecodeMap& decode_map = GetDecodeMap();
   for (const auto& list_item : maybe_list.value()) {
     const std::string& token_value = list_item.GetIfItem()->item.GetToken();
-    auto iter = decode_map.find(token_value);
-    if (iter != decode_map.end())
+    auto iter = kDecodeMap.find(token_value);
+    if (iter != kDecodeMap.end()) {
       result.push_back(iter->second);
+    }
   }  // for list_item
   return result;
 }
@@ -156,8 +102,6 @@ ClientHintToDelegatedThirdPartiesHeader::
 const ClientHintToDelegatedThirdPartiesHeader
 ParseClientHintToDelegatedThirdPartiesHeader(const std::string& header,
                                              MetaCHType type) {
-  const DecodeMap& decode_map = GetDecodeMap();
-
   switch (type) {
     case MetaCHType::HttpEquivAcceptCH: {
       // ParseClientHintsHeader should have been called instead.
@@ -176,10 +120,11 @@ ParseClientHintToDelegatedThirdPartiesHeader(const std::string& header,
             entry, " ", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
         // Shouldn't be possible given this only processes non-empty parts.
         DCHECK(components.size());
-        auto found_token = decode_map.find(components[0]);
+        auto found_token = kDecodeMap.find(components[0]);
         // Bail early if the token is invalid
-        if (found_token == decode_map.end())
+        if (found_token == kDecodeMap.end()) {
           continue;
+        }
         std::vector<url::Origin> delegates;
         for (size_t i = 1; i < components.size(); ++i) {
           const GURL gurl = GURL(components[i]);

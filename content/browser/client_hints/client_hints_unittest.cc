@@ -106,23 +106,23 @@ class ClientHintsTest : public RenderViewHostImplTestHarness {
   }
 
   std::string HintsToString(std::optional<ClientHintsVector> hints) {
-    if (!hints)
+    if (!hints) {
       return "";
+    }
 
-    std::vector<std::string> hints_list;
-    const auto& map = network::GetClientHintToNameMap();
+    std::vector<std::string_view> hints_list;
     std::ranges::transform(hints.value(), std::back_inserter(hints_list),
-                           [&map](network::mojom::WebClientHintsType hint) {
-                             return map.at(hint);
+                           [](network::mojom::WebClientHintsType hint) {
+                             return network::kClientHintToNameMap.at(hint);
                            });
 
     return base::JoinString(hints_list, ",");
   }
 
   std::pair<std::string, ClientHintsVector> GetAllClientHints() {
-    std::vector<std::string> accept_ch_tokens;
+    std::vector<std::string_view> accept_ch_tokens;
     ClientHintsVector hints_list;
-    for (const auto& pair : network::GetClientHintToNameMap()) {
+    for (const auto& pair : network::kClientHintToNameMap) {
       hints_list.push_back(pair.first);
       accept_ch_tokens.push_back(pair.second);
     }
@@ -394,7 +394,7 @@ TEST_F(ClientHintsTest, GetEnabledClientHintsMainFrame) {
   };
   delegate.SetAdditionalClientHints(expected_types);
   // Add default ClientHints.
-  for (const auto& [hint, _] : network::GetClientHintToNameMap()) {
+  for (const auto& [hint, _] : network::kClientHintToNameMap) {
     if (blink::IsClientHintSentByDefault(hint)) {
       expected_types.push_back(hint);
     }
@@ -426,7 +426,7 @@ TEST_F(ClientHintsTest, GetEnabledClientHintsSubframe) {
 
   // Add default ClientHints.
   std::vector<network::mojom::WebClientHintsType> expected_types;
-  for (const auto& [hint, _] : network::GetClientHintToNameMap()) {
+  for (const auto& [hint, _] : network::kClientHintToNameMap) {
     if (blink::IsClientHintSentByDefault(hint)) {
       expected_types.push_back(hint);
     }
@@ -628,7 +628,7 @@ TEST_F(ClientHintsTest, GetEnabledClientHintsSubframeNotAllowed) {
   std::vector<network::mojom::WebClientHintsType> expected_allowed_hints;
   std::vector<network::mojom::WebClientHintsType> expected_not_allowed_hints;
 
-  for (const auto& [hint, _] : network::GetClientHintToNameMap()) {
+  for (const auto& [hint, _] : network::kClientHintToNameMap) {
     if (blink::IsClientHintSentByDefault(hint)) {
       expected_allowed_hints.push_back(hint);
     } else {

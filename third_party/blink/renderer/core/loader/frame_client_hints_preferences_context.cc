@@ -82,7 +82,7 @@ ClientHintToWebFeatureMap MakeClientHintToWebFeatureMap() {
 }
 
 const ClientHintToWebFeatureMap& GetClientHintToWebFeatureMap() {
-  DCHECK_EQ(network::GetClientHintToNameMap().size(),
+  DCHECK_EQ(network::kClientHintToNameMap.size(),
             MakeClientHintToWebFeatureMap().size());
   static const base::NoDestructor<ClientHintToWebFeatureMap> map(
       MakeClientHintToWebFeatureMap());

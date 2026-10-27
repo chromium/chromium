@@ -339,7 +339,7 @@ void AddClientHintsHeaders(net::HttpRequestHeaders& request_headers,
     request_headers.MergeFrom(client_hints_headers);
   } else if (cross_site_behavior ==
              features::PrefetchClientHintsCrossSiteBehavior::kLowEntropy) {
-    for (const auto& [ch, header] : network::GetClientHintToNameMap()) {
+    for (const auto& [ch, header] : network::kClientHintToNameMap) {
       if (blink::IsClientHintSentByDefault(ch)) {
         std::optional<std::string> header_value =
             client_hints_headers.GetHeader(header);
@@ -570,11 +570,11 @@ network::HttpRequestHeadersUpdateParams PrepareRedirectHeadersForPrefetch(
   // Remove any existing client hints headers, then (re-)add the new client
   // hints that are appropriate for the redirect.
   if (base::FeatureList::IsEnabled(features::kPrefetchClientHints)) {
-    const auto& client_hints = network::GetClientHintToNameMap();
+    const auto& client_hints = network::kClientHintToNameMap;
     headers_update_params.removed_headers.reserve(
         headers_update_params.removed_headers.size() + client_hints.size());
     for (const auto& [_, header] : client_hints) {
-      headers_update_params.removed_headers.push_back(header);
+      headers_update_params.removed_headers.emplace_back(header);
     }
     AddClientHintsHeaders(headers_update_params.modified_headers,
                           request_url_origin, prefetch_request);

@@ -161,7 +161,7 @@ Add a new Blink feature, named `ClientHints<HintName>` (without `Sec-CH-UA`) to 
 
 The canonical enum for client hint tokens is [network::mojom::WebClientHintsType]. Any new token should be added to the end of that list. Along with that:
 
-*   Add the header name to the map in `MakeClientHintToNameMap` in [/services/network/public/cpp/client_hints.cc].
+*   Add the header name to the map in `kClientHintToNameMap` in [/services/network/public/cpp/client_hints.h].
 *   Add an enum value to `WebFeature` in [/third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom] and run [/tools/metrics/histograms/update_use_counter_feature_enum.py] to update the enum in [/tools/metrics/histograms/enums.xml].
 *   Map the hint to the web feature in `MakeClientHintToWebFeatureMap` in [/third_party/blink/renderer/core/loader/frame_client_hints_preferences_context.cc].
 *   Update the `static_assert` for `network::mojom::WebClientHintsType::kMaxValue` in [/content/browser/client_hints/client_hints.cc], leaving a TODO for your implementation.

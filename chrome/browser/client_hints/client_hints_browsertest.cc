@@ -174,7 +174,7 @@ class ThirdPartyURLLoaderInterceptor {
       unique_request_count_seen_++;
     }
 
-    for (const auto& elem : network::GetClientHintToNameMap()) {
+    for (const auto& elem : network::kClientHintToNameMap) {
       const auto& header = elem.second;
       if (params->url_request.headers.HasHeader(header)) {
         client_hints_count_seen_++;
@@ -557,9 +557,10 @@ class ClientHintsBrowserTest : public policy::PolicyTest {
 
     http2_server_.AddDefaultHandlers();
 
-    std::vector<std::string> accept_ch_tokens;
-    for (const auto& pair : network::GetClientHintToNameMap())
+    std::vector<std::string_view> accept_ch_tokens;
+    for (const auto& pair : network::kClientHintToNameMap) {
       accept_ch_tokens.push_back(pair.second);
+    }
 
     http2_server_.SetAlpsAcceptCH("", base::JoinString(accept_ch_tokens, ","));
 
@@ -1197,7 +1198,7 @@ class ClientHintsBrowserTest : public policy::PolicyTest {
       }
     }
 
-    for (const auto& elem : network::GetClientHintToNameMap()) {
+    for (const auto& elem : network::kClientHintToNameMap) {
       const auto& header = elem.second;
       if (request.headers.contains(header)) {
         base::AutoLock lock(count_headers_lock_);
@@ -1219,7 +1220,7 @@ class ClientHintsBrowserTest : public policy::PolicyTest {
 
   void VerifyClientHintsReceived(bool expect_client_hints,
                                  const net::test_server::HttpRequest& request) {
-    for (const auto& elem : network::GetClientHintToNameMap()) {
+    for (const auto& elem : network::kClientHintToNameMap) {
       const auto& header = elem.second;
       SCOPED_TRACE(testing::Message() << header);
       SCOPED_TRACE(testing::Message() << request.GetURL().spec());
@@ -1384,7 +1385,7 @@ INSTANTIATE_TEST_SUITE_P(
                     network::MetaCHType::HttpEquivDelegateCH));
 
 IN_PROC_BROWSER_TEST_F(ClientHintsBrowserTest, CorsChecks) {
-  for (const auto& elem : network::GetClientHintToNameMap()) {
+  for (const auto& elem : network::kClientHintToNameMap) {
     const auto& header = elem.second;
     // Do not test for headers that have not been enabled on the blink "stable"
     // yet.
@@ -1394,8 +1395,8 @@ IN_PROC_BROWSER_TEST_F(ClientHintsBrowserTest, CorsChecks) {
     // Save-Data can only have the 'on' value so it's tested below.
     if (header == "save-data")
       continue;
-    EXPECT_TRUE(
-        network::cors::IsCorsSafelistedHeader(header, "42" /* value */));
+    EXPECT_TRUE(network::cors::IsCorsSafelistedHeader(std::string(header),
+                                                      "42" /* value */));
   }
   EXPECT_FALSE(network::cors::IsCorsSafelistedHeader("not-a-client-hint-header",
                                                      "" /* value */));
@@ -4880,9 +4881,10 @@ class ClientHintsCommandLineSwitchBrowserTest : public ClientHintsBrowserTest {
     std::string server_origin =
         url::Origin::Create(accept_ch_url()).Serialize();
 
-    std::vector<std::string> accept_ch_tokens;
-    for (const auto& pair : network::GetClientHintToNameMap())
+    std::vector<std::string_view> accept_ch_tokens;
+    for (const auto& pair : network::kClientHintToNameMap) {
       accept_ch_tokens.push_back(pair.second);
+    }
 
     cmd->AppendSwitchASCII(
         client_hints::switches::kInitializeClientHintsStorage,

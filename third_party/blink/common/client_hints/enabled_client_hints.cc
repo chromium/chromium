@@ -79,10 +79,11 @@ void EnabledClientHints::SetIsEnabled(const WebClientHintsType type,
 
 std::vector<WebClientHintsType> EnabledClientHints::GetEnabledHints() const {
   std::vector<WebClientHintsType> hints;
-  for (const auto& elem : network::GetClientHintToNameMap()) {
+  for (const auto& elem : network::kClientHintToNameMap) {
     const auto& type = elem.first;
-    if (IsEnabled(type))
+    if (IsEnabled(type)) {
       hints.push_back(type);
+    }
   }
   return hints;
 }

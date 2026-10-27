@@ -71,7 +71,7 @@ ClientHintToPolicyFeatureMap MakeClientHintToPolicyFeatureMap() {
 }
 
 const ClientHintToPolicyFeatureMap& GetClientHintToPolicyFeatureMap() {
-  DCHECK_EQ(network::GetClientHintToNameMap().size(),
+  DCHECK_EQ(network::kClientHintToNameMap.size(),
             MakeClientHintToPolicyFeatureMap().size());
   static const base::NoDestructor<ClientHintToPolicyFeatureMap> map(
       MakeClientHintToPolicyFeatureMap());

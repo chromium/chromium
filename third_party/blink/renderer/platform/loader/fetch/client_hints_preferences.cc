@@ -17,15 +17,11 @@
 
 namespace blink {
 
-ClientHintsPreferences::ClientHintsPreferences() {
-  DCHECK_LE(
-      network::GetClientHintToNameMap().size(),
-      static_cast<size_t>(network::mojom::WebClientHintsType::kMaxValue) + 1);
-}
+ClientHintsPreferences::ClientHintsPreferences() = default;
 
 void ClientHintsPreferences::UpdateFrom(
     const ClientHintsPreferences& preferences) {
-  for (const auto& elem : network::GetClientHintToNameMap()) {
+  for (const auto& elem : network::kClientHintToNameMap) {
     const auto& type = elem.first;
     enabled_hints_.SetIsEnabled(type, preferences.ShouldSend(type));
   }
@@ -33,10 +29,11 @@ void ClientHintsPreferences::UpdateFrom(
 
 void ClientHintsPreferences::CombineWith(
     const ClientHintsPreferences& preferences) {
-  for (const auto& elem : network::GetClientHintToNameMap()) {
+  for (const auto& elem : network::kClientHintToNameMap) {
     const auto& type = elem.first;
-    if (preferences.ShouldSend(type))
+    if (preferences.ShouldSend(type)) {
       SetShouldSend(type);
+    }
   }
 }
 
@@ -108,10 +105,11 @@ bool ClientHintsPreferences::UpdateFromMetaCH(const String& header_value,
   }
 
   if (context) {
-    for (const auto& elem : network::GetClientHintToNameMap()) {
+    for (const auto& elem : network::kClientHintToNameMap) {
       const auto& hint_type = elem.first;
-      if (enabled_hints_.IsEnabled(hint_type))
+      if (enabled_hints_.IsEnabled(hint_type)) {
         context->CountClientHints(hint_type);
+      }
     }
   }
   return true;

@@ -214,27 +214,26 @@ GetWebHoldbackEffectiveConnectionType() {
 void SetHeaderToDouble(net::HttpRequestHeaders* headers,
                        WebClientHintsType client_hint_type,
                        double value) {
-  headers->SetHeader(network::GetClientHintToNameMap().at(client_hint_type),
+  headers->SetHeader(network::kClientHintToNameMap.at(client_hint_type),
                      DoubleToSpecCompliantString(value));
 }
 
 void SetHeaderToInt(net::HttpRequestHeaders* headers,
                     WebClientHintsType client_hint_type,
                     double value) {
-  headers->SetHeader(network::GetClientHintToNameMap().at(client_hint_type),
+  headers->SetHeader(network::kClientHintToNameMap.at(client_hint_type),
                      base::NumberToString(std::round(value)));
 }
 
 void SetHeaderToString(net::HttpRequestHeaders* headers,
                        WebClientHintsType client_hint_type,
                        const std::string& value) {
-  headers->SetHeader(network::GetClientHintToNameMap().at(client_hint_type),
-                     value);
+  headers->SetHeader(network::kClientHintToNameMap.at(client_hint_type), value);
 }
 
 void RemoveClientHintHeader(WebClientHintsType client_hint_type,
                             net::HttpRequestHeaders* headers) {
-  headers->RemoveHeader(network::GetClientHintToNameMap().at(client_hint_type));
+  headers->RemoveHeader(network::kClientHintToNameMap.at(client_hint_type));
 }
 
 void AddDeviceMemoryHeader(net::HttpRequestHeaders* headers,
@@ -1128,7 +1127,7 @@ GetEnabledClientHints(const url::Origin& origin,
   network::ResourceRequest::TrustedParams::EnabledClientHints
       enabled_client_hints;
   enabled_client_hints.is_outermost_main_frame = data.is_outermost_main_frame;
-  const auto& client_hints_map = network::GetClientHintToNameMap();
+  const auto& client_hints_map = network::kClientHintToNameMap;
   // Note: these only check for per-hint origin/permissions policy settings, not
   // origin-level or "browser-level" policies like disabling JS or other
   // features.

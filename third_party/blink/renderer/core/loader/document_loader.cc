@@ -3809,7 +3809,7 @@ void DocumentLoader::RecordUseCountersForCommit() {
   }
 
   FrameClientHintsPreferencesContext hints_context(frame_);
-  for (const auto& elem : network::GetClientHintToNameMap()) {
+  for (const auto& elem : network::kClientHintToNameMap) {
     const auto& type = elem.first;
     if (client_hints_preferences_.ShouldSend(type)) {
       hints_context.CountClientHints(type);
