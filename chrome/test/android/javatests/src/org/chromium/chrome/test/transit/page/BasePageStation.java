@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.test.transit.page;
 
+import static org.hamcrest.Matchers.containsString;
+
 import com.google.errorprone.annotations.CheckReturnValue;
 
 import org.chromium.base.ThreadUtils;
@@ -272,7 +274,8 @@ public class BasePageStation<HostActivity extends ChromeActivity>
         // URL substring is optional.
         if (config.mExpectedUrlSubstring != null) {
             declareEnterCondition(
-                    new PageUrlContainsCondition(config.mExpectedUrlSubstring, loadedTabElement));
+                    new PageUrlCondition(
+                            containsString(config.mExpectedUrlSubstring), loadedTabElement));
         }
 
         // title is optional

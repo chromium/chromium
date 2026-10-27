@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.test.util;
 
+import static org.hamcrest.Matchers.is;
+
 import android.app.Instrumentation;
 import android.text.TextUtils;
 
@@ -14,10 +16,13 @@ import org.junit.Assert;
 
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.TriState;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
+import org.chromium.base.test.transit.CallbackCondition;
+import org.chromium.base.test.transit.Condition;
 import org.chromium.base.test.transit.Triggers;
+import org.chromium.base.test.transit.TripBuilder;
 import org.chromium.base.test.util.CallbackHelper;
-import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.app.ChromeActivity;
@@ -36,16 +41,18 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelectorSupplier;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.test.transit.page.PageHitTestDataCondition;
 import org.chromium.chrome.test.transit.page.PageInteractableOrHiddenCondition;
+import org.chromium.chrome.test.transit.page.PageLoadedCondition;
+import org.chromium.chrome.test.transit.page.PageTitleCondition;
+import org.chromium.chrome.test.transit.page.PageUrlCondition;
 import org.chromium.chrome.test.transit.tabmodel.TabClosingCondition;
-import org.chromium.chrome.test.util.browser.TabTitleObserver;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.RenderWidgetHostView;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -62,58 +69,77 @@ public class ChromeTabUtils {
     private static final float CONSIDERED_READY_LOAD_PERCENTAGE = 1;
 
     /**
-     * An observer that waits for a Tab to load a page.
-     *
-     * <p>The observer can be configured to either wait for the Tab to load a specific page (if
-     * expectedUrl is non-null) or any page (otherwise). On seeing the tab finish a page load or
-     * crash, the observer will notify the provided callback and stop watching the tab. On load
-     * stop, the observer will decrement the provided latch and continue watching the page in case
-     * the tab subsequently crashes or finishes a page load.
-     *
-     * <p>This may seem complicated, but it's intended to handle three distinct cases:
-     *
-     * <ol>
-     *   <li>Successful page load + observer starts watching before onPageLoadFinished fires. This
-     *       is the most normal case: onPageLoadFinished fires, then onLoadStopped fires, and we see
-     *       both.
-     *   <li>Crash on page load. onLoadStopped fires, then onCrash fires, and we see both.
-     *   <li>Successful page load + observer starts watching after onPageLoadFinished fires. We miss
-     *       the onPageLoadFinished and *only* see onLoadStopped.
-     * </ol>
-     *
-     * <p>Receiving onPageLoadFinished is sufficient to know that we're dealing with scenario #1.
-     * Receiving onCrash is sufficient to know that we're dealing with scenario #2. Receiving
-     * onLoadStopped without a preceding onPageLoadFinished indicates that we're dealing with either
-     * scenario #2 *or* #3, so we have to keep watching for a call to onCrash.
+     * Fulfilled when the Tab calls onLoadStopped() for the expected URL (or any URL if null) after
+     * monitoring starts, so that the state from before a load trigger isn't mistaken for the new
+     * load. Unlike PageLoadCallbackCondition, this also covers same-document and failed loads.
      */
-    private static class TabPageLoadedObserver implements TabObserver {
-        private final CallbackHelper mCallback;
-        private final String mExpectedUrl;
+    private static class TabLoadStoppedCondition extends CallbackCondition implements TabObserver {
+        private final Tab mTab;
+        private final @Nullable String mExpectedUrl;
 
-        public TabPageLoadedObserver(CallbackHelper loadCompleteCallback, String expectedUrl) {
-            mCallback = loadCompleteCallback;
+        TabLoadStoppedCondition(Tab tab, @Nullable String expectedUrl) {
+            super(
+                    expectedUrl == null ? "onLoadStopped" : "onLoadStopped for " + expectedUrl,
+                    /* numCallsExpected= */ 1);
+            mTab = tab;
             mExpectedUrl = expectedUrl;
-        }
-
-        @Override
-        public void onCrash(Tab tab) {
-            mCallback.notifyFailed("Tab crashed :(");
-            tab.removeObserver(this);
         }
 
         @Override
         public void onLoadStopped(Tab tab, boolean toDifferentDocument) {
             if (mExpectedUrl == null || TextUtils.equals(tab.getUrl().getSpec(), mExpectedUrl)) {
-                mCallback.notifyCalled();
-                tab.removeObserver(this);
+                notifyCalled();
             }
+        }
+
+        @Override
+        public void onStartMonitoring() {
+            super.onStartMonitoring();
+            ThreadUtils.runOnUiThreadBlocking(() -> mTab.addObserver(this));
+        }
+
+        @Override
+        public void onStopMonitoring() {
+            super.onStopMonitoring();
+            ThreadUtils.runOnUiThreadBlocking(() -> mTab.removeObserver(this));
         }
     }
 
-    private static boolean loadComplete(Tab tab, String url) {
-        return !tab.isLoading()
-                && (url == null || TextUtils.equals(getUrlStringOnUiThread(tab), url))
-                && !tab.getWebContents().shouldShowLoadingUI();
+    /**
+     * Fulfilled when the Tab calls onPageLoadStarted() for the expected URL (or any URL if null).
+     */
+    private static class TabLoadStartedCondition extends CallbackCondition implements TabObserver {
+        private final Tab mTab;
+        private final @Nullable String mExpectedUrl;
+
+        TabLoadStartedCondition(Tab tab, @Nullable String expectedUrl) {
+            super(
+                    expectedUrl == null
+                            ? "onPageLoadStarted"
+                            : "onPageLoadStarted for " + expectedUrl,
+                    /* numCallsExpected= */ 1);
+            mTab = tab;
+            mExpectedUrl = expectedUrl;
+        }
+
+        @Override
+        public void onPageLoadStarted(Tab tab, GURL url) {
+            if (mExpectedUrl == null || TextUtils.equals(url.getSpec(), mExpectedUrl)) {
+                notifyCalled();
+            }
+        }
+
+        @Override
+        public void onStartMonitoring() {
+            super.onStartMonitoring();
+            ThreadUtils.runOnUiThreadBlocking(() -> mTab.addObserver(this));
+        }
+
+        @Override
+        public void onStopMonitoring() {
+            super.onStopMonitoring();
+            ThreadUtils.runOnUiThreadBlocking(() -> mTab.removeObserver(this));
+        }
     }
 
     public static Tab getActivityTab(ChromeActivity activity) {
@@ -128,24 +154,8 @@ public class ChromeTabUtils {
         return ThreadUtils.runOnUiThreadBlocking(() -> tabModel.getCount());
     }
 
-    public static String getCurrentTabTitleOnUiThread(ChromeActivity activity) {
-        return ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    Tab tab = activity.getActivityTab();
-                    return tab.getTitle();
-                });
-    }
-
     public static String getTitleOnUiThread(Tab tab) {
         return ThreadUtils.runOnUiThreadBlocking(() -> tab.getTitle());
-    }
-
-    public static String getCurrentTabUrlOnUiThread(ChromeActivity activity) {
-        return ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    Tab tab = activity.getActivityTab();
-                    return tab.getUrl().getSpec();
-                });
     }
 
     public static String getUrlStringOnUiThread(Tab tab) {
@@ -157,27 +167,31 @@ public class ChromeTabUtils {
     }
 
     /**
-     * Waits for the given tab to finish loading the given URL, or, if the given URL is
-     * null, waits for the current page to load.
+     * Waits for the given tab to finish loading the given URL, or, if the given URL is null, waits
+     * for the current page to load.
      *
      * @param tab The tab to wait for the page loading to be complete.
-     * @param url The URL that will be waited to load for.  Pass in null if loading the
-     *            current page is sufficient.
+     * @param url The URL that will be waited to load for. Pass in null if loading the current page
+     *     is sufficient.
+     * @deprecated See {@link #waitForTabPageLoaded(Tab, String, Runnable, long)}.
      */
+    @Deprecated
     public static void waitForTabPageLoaded(final Tab tab, @Nullable final String url) {
         waitForTabPageLoaded(tab, url, null, 10L);
     }
 
     /**
-     * Waits for the given tab to load the given URL, or, if the given URL is null, waits
-     * for the triggered load to complete.
+     * Waits for the given tab to load the given URL, or, if the given URL is null, waits for the
+     * triggered load to complete.
      *
      * @param tab The tab to wait for the page loading to be complete.
-     * @param url The expected url of the loaded page.  Pass in null if loading the
-     *            current page is sufficient.
-     * @param loadTrigger The trigger action that will result in a page load finished event
-     *                    to be fired (not run on the UI thread by default).
+     * @param url The expected url of the loaded page. Pass in null if loading the current page is
+     *     sufficient.
+     * @param loadTrigger The trigger action that will result in a page load finished event to be
+     *     fired (not run on the UI thread by default).
+     * @deprecated See {@link #waitForTabPageLoaded(Tab, String, Runnable, long)}.
      */
+    @Deprecated
     public static void waitForTabPageLoaded(
             final Tab tab, @Nullable final String url, @Nullable Runnable loadTrigger) {
         waitForTabPageLoaded(tab, url, loadTrigger, CallbackHelper.WAIT_TIMEOUT_SECONDS);
@@ -187,10 +201,12 @@ public class ChromeTabUtils {
      * Waits for the given tab to finish loading its current page.
      *
      * @param tab The tab to wait for the page loading to be complete.
-     * @param loadTrigger The trigger action that will result in a page load finished event
-     *                    to be fired (not run on the UI thread by default).
+     * @param loadTrigger The trigger action that will result in a page load finished event to be
+     *     fired (not run on the UI thread by default).
      * @param secondsToWait The number of seconds to wait for the page to be loaded.
+     * @deprecated See {@link #waitForTabPageLoaded(Tab, String, Runnable, long)}.
      */
+    @Deprecated
     public static void waitForTabPageLoaded(
             final Tab tab, Runnable loadTrigger, long secondsToWait) {
         waitForTabPageLoaded(tab, null, loadTrigger, secondsToWait);
@@ -207,7 +223,13 @@ public class ChromeTabUtils {
      *     fired (not run on the UI thread by default). Pass in null if the load is triggered
      *     externally.
      * @param secondsToWait The number of seconds to wait for the page to be loaded.
+     * @deprecated Prefer Station transitions. From a Station, use {@code
+     *     loadWebPageProgrammatically()} or {@code runTo(trigger).arriveAt(WebPageStation...)}.
+     *     From a test without a Station, use {@code runTo(trigger).hopOnTo(activity,
+     *     WebPageStation/CctPageStation...)}. Kept for callers that cannot hop on, such as
+     *     ChromeActivityTestRule, newTabFromMenu and webapps.
      */
+    @Deprecated
     public static void waitForTabPageLoaded(
             final Tab tab,
             @Nullable final String url,
@@ -215,54 +237,15 @@ public class ChromeTabUtils {
             long secondsToWait) {
         Assert.assertFalse(ThreadUtils.runningOnUiThread());
 
-        final CallbackHelper loadedCallback = new CallbackHelper();
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    // Don't check for the load being already complete if there is a trigger to run.
-                    if (loadTrigger == null && loadComplete(tab, url)) {
-                        loadedCallback.notifyCalled();
-                        return;
-                    }
-                    tab.addObserver(new TabPageLoadedObserver(loadedCallback, url));
-                });
-        if (loadTrigger != null) {
-            loadTrigger.run();
-        }
-        try {
-            loadedCallback.waitForCallback(0, 1, secondsToWait, TimeUnit.SECONDS);
-        } catch (TimeoutException e) {
-            throw new AssertionError("Page did not load. " + tabDebugInfo(tab, url), e);
-        }
-
-        boolean complete = ThreadUtils.runOnUiThreadBlocking(() -> loadComplete(tab, url));
-
-        if (complete) return;
-
-        CriteriaHelper.pollUiThread(
-                () -> {
-                    return loadComplete(tab, url);
-                },
-                "Tab failed to complete load after additional polling. " + tabDebugInfo(tab, url));
-    }
-
-    private static String tabDebugInfo(final Tab tab, @Nullable final String url) {
-        WebContents webContents = tab.getWebContents();
-        boolean shouldShowLoadingUi = false;
-        if (webContents != null) {
-            shouldShowLoadingUi =
-                    ThreadUtils.runOnUiThreadBlocking(() -> webContents.shouldShowLoadingUI());
-        }
-        return String.format(
-                Locale.ENGLISH,
-                "Tab information at time of failure -- "
-                        + "expected url: '%s', actual URL: '%s', load progress: %d, is "
-                        + "loading: %b, web contents init: %b, web contents loading: %b",
-                url,
-                getUrlStringOnUiThread(tab),
-                Math.round(100 * tab.getProgress()),
-                tab.isLoading(),
-                webContents != null,
-                shouldShowLoadingUi);
+        List<Condition> conditions = new ArrayList<>();
+        conditions.add(new PageLoadedCondition(() -> tab, TriState.NOT_SET));
+        if (url != null) conditions.add(new PageUrlCondition(is(url), () -> tab));
+        // With a trigger, also wait for the load it starts to stop, so the state from before the
+        // trigger isn't mistaken for it. Without one, the load may already be complete.
+        if (loadTrigger != null) conditions.add(new TabLoadStoppedCondition(tab, url));
+        TripBuilder trip = loadTrigger == null ? Triggers.noopTo() : Triggers.runTo(loadTrigger);
+        trip.withTimeout(TimeUnit.SECONDS.toMillis(secondsToWait))
+                .waitFor(conditions.toArray(new Condition[0]));
     }
 
     /**
@@ -294,35 +277,9 @@ public class ChromeTabUtils {
             @Nullable final String expectedUrl,
             Runnable loadTrigger,
             long secondsToWait) {
-        final CallbackHelper startedCallback = new CallbackHelper();
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    tab.addObserver(
-                            new TabObserver() {
-                                @Override
-                                public void onPageLoadStarted(Tab tab, GURL url) {
-                                    if (expectedUrl == null
-                                            || TextUtils.equals(url.getSpec(), expectedUrl)) {
-                                        startedCallback.notifyCalled();
-                                        tab.removeObserver(this);
-                                    }
-                                }
-                            });
-                });
-        loadTrigger.run();
-        try {
-            startedCallback.waitForCallback(0, 1, secondsToWait, TimeUnit.SECONDS);
-        } catch (TimeoutException e) {
-            throw new AssertionError(
-                    "Page did not start loading.  Tab information at time of failure --"
-                            + " url: "
-                            + tab.getUrl().getSpec()
-                            + ", load progress: "
-                            + tab.getProgress()
-                            + ", is loading: "
-                            + Boolean.toString(tab.isLoading()),
-                    e);
-        }
+        Triggers.runTo(loadTrigger)
+                .withTimeout(TimeUnit.SECONDS.toMillis(secondsToWait))
+                .waitFor(new TabLoadStartedCondition(tab, expectedUrl));
     }
 
     /**
@@ -631,15 +588,9 @@ public class ChromeTabUtils {
     }
 
     public static void waitForTitle(Tab tab, String newTitle) {
-        TabTitleObserver titleObserver = new TabTitleObserver(tab, newTitle);
-        try {
-            titleObserver.waitForTitleUpdate(TITLE_UPDATE_TIMEOUT_SECONDS);
-        } catch (TimeoutException e) {
-            throw new AssertionError(
-                    String.format(
-                            Locale.ENGLISH, "Tab title didn't update to %s in time.", newTitle),
-                    e);
-        }
+        Triggers.noopTo()
+                .withTimeout(TimeUnit.SECONDS.toMillis(TITLE_UPDATE_TIMEOUT_SECONDS))
+                .waitFor(new PageTitleCondition(newTitle, () -> tab));
     }
 
     /**
