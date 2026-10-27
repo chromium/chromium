@@ -19,46 +19,65 @@ EndAccessState::EndAccessState() = default;
 EndAccessState::EndAccessState(
     GraphiteSharedContext* context,
     skgpu::graphite::BackendTexture texture,
-    std::unique_ptr<skgpu::MutableTextureState> end_state)
+    std::unique_ptr<skgpu::MutableTextureState> texture_state,
+    const skgpu::graphite::BackendSemaphore& signal_semaphore)
     : context_(context),
       texture_(std::move(texture)),
-      end_state_(std::move(end_state)) {
-  CHECK(context_);
-  CHECK(texture_.isValid());
-  CHECK(end_state_->isValid());
+      texture_state_(std::move(texture_state)),
+      signal_semaphore_(signal_semaphore) {
+  DCHECK(context_);
+  DCHECK(texture_.isValid());
+  DCHECK(texture_state_->isValid());
+  DCHECK(signal_semaphore_->isValid());
 }
 
 EndAccessState::EndAccessState(EndAccessState&& other)
     : context_(std::exchange(other.context_, nullptr)),
       texture_(std::exchange(other.texture_, {})),
-      end_state_(std::move(other.end_state_)) {}
+      texture_state_(std::move(other.texture_state_)),
+      signal_semaphore_(std::exchange(other.signal_semaphore_, {})),
+      signal_generation_(std::exchange(other.signal_generation_, {})) {}
 
 EndAccessState& EndAccessState::operator=(EndAccessState&& other) {
   if (this != &other) {
     CHECK(!NeedsApply());
     context_ = std::exchange(other.context_, nullptr);
     texture_ = std::exchange(other.texture_, {});
-    end_state_ = std::move(other.end_state_);
+    texture_state_ = std::move(other.texture_state_);
+    signal_semaphore_ = std::exchange(other.signal_semaphore_, {});
+    signal_generation_ = std::exchange(other.signal_generation_, {});
   }
   return *this;
 }
 
 EndAccessState::~EndAccessState() {
   CHECK(!NeedsApply());
+
+  if (signal_generation_) {
+    // The signal semaphore must be submitted before the representation exports
+    // a sync fd from the semaphore. If the caller didn't call submit, trigger
+    // it here before end access logic runs and export fails.
+    if (context_->submit_generation() == *signal_generation_) {
+      LOG(ERROR) << "Access was ended without submit";
+      context_->submit();
+    }
+  }
 }
 
 bool EndAccessState::NeedsApply() const {
-  return context_ != nullptr;
+  return texture_state_ != nullptr;
 }
 
 void EndAccessState::Apply() {
   if (!NeedsApply()) {
     return;
   }
-  if (!context_->setMutableState(texture_, *end_state_)) {
+  if (!context_->setMutableState(texture_, *texture_state_)) {
     LOG(ERROR) << "setMutableState() failed.";
   }
-  context_ = nullptr;
+  texture_state_.reset();
+  signal_generation_ = context_->AddPendingSignalSemaphore(*signal_semaphore_);
+  signal_semaphore_.reset();
 }
 
 }  // namespace gpu

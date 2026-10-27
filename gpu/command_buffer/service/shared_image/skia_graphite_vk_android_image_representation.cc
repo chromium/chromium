@@ -35,6 +35,26 @@
 #include "ui/gl/gl_utils.h"
 
 namespace gpu {
+namespace {
+
+bool IsSingleDeviceUsage(const AndroidImageBacking* backing) {
+  // `kSingleDeviceUsage` defines the set of usages for which only the Vulkan
+  // device from SharedContextState is used. If the SI has any usages outside
+  // this set (eg, if it has any GLES2 usage), then it will be accessed beyond
+  // the Vulkan device from SharedContextState and hence does not have
+  // single-device usage.
+  static constexpr SharedImageUsageSet kSingleDeviceUsage =
+      SHARED_IMAGE_USAGE_DISPLAY_READ | SHARED_IMAGE_USAGE_DISPLAY_WRITE |
+      SHARED_IMAGE_USAGE_RASTER_READ | SHARED_IMAGE_USAGE_RASTER_WRITE;
+
+  // Note that for multithreading we use same vkDevice, so technically we could
+  // transfer between queues instead of jumping to external queue. But currently
+  // it's not possible because we create new vkImage each time.
+  return kSingleDeviceUsage.HasAll(backing->usage()) &&
+         !backing->is_thread_safe();
+}
+
+}  // namespace
 
 SkiaGraphiteVkAndroidImageRepresentation::
     SkiaGraphiteVkAndroidImageRepresentation(
@@ -43,7 +63,8 @@ SkiaGraphiteVkAndroidImageRepresentation::
         scoped_refptr<SharedContextState> context_state,
         MemoryTypeTracker* tracker)
     : SkiaGraphiteImageRepresentation(manager, backing, tracker),
-      context_state_(std::move(context_state)) {
+      context_state_(std::move(context_state)),
+      needs_end_access_state_(!IsSingleDeviceUsage(backing)) {
   // This doesn't support per plane access for multi-planar images.
   CHECK(format().is_single_plane() || format().PrefersExternalSampler());
 }
@@ -69,23 +90,23 @@ SkiaGraphiteVkAndroidImageRepresentation::BeginWriteAccess(
     EndAccessState& end_access_state) {
   CHECK(graphite_texture_holder_);
 
-  if (!BeginAccessInternal(/*readonly=*/false)) {
-    return {};
-  }
-
   SkColorType sk_color_type = viz::ToClosestSkColorType(format());
 
-  write_surface_ = SkSurfaces::WrapBackendTexture(
+  auto surface = SkSurfaces::WrapBackendTexture(
       context_state_->gpu_main_graphite_recorder(),
       graphite_texture_holder_->texture(), sk_color_type,
       color_space().ToSkColorSpace(), &surface_props,
       /*release_proc=*/nullptr,
       /*release_context=*/nullptr, WrappedTextureDebugLabel(0));
-  if (!write_surface_) {
-    EndAccessInternal(/*readonly=*/false);
+  if (!surface) {
     return {};
   }
 
+  if (!BeginAccessInternal(/*readonly=*/false)) {
+    return {};
+  }
+
+  write_surface_ = std::move(surface);
   end_access_state = GenerateEndAccessState();
   return {write_surface_};
 }
@@ -168,13 +189,23 @@ bool SkiaGraphiteVkAndroidImageRepresentation::BeginAccessInternal(
       gl::MergeFDs(std::move(begin_access_fd), std::move(initial_fence_));
 
   // Ensure any failure after BeginRead/BeginWrite unwinds the backing state.
-  absl::Cleanup end_access_helper = [this, readonly]() {
+  absl::Cleanup end_access_helper = [this, readonly, &begin_access_fd]() {
     if (readonly) {
-      android_backing()->EndRead(this, base::ScopedFD());
+      android_backing()->EndRead(this, std::move(begin_access_fd));
     } else {
-      android_backing()->EndWrite(base::ScopedFD());
+      android_backing()->EndWrite(std::move(begin_access_fd));
     }
   };
+
+  DCHECK(end_access_semaphore_ == VK_NULL_HANDLE);
+  if (needs_end_access_state_) {
+    end_access_semaphore_ =
+        GetVulkanImplementation()->CreateExternalSemaphore(GetVkDevice());
+    if (end_access_semaphore_ == VK_NULL_HANDLE) {
+      DLOG(ERROR) << "Failed to create external semaphore for end access.";
+      return false;
+    }
+  }
 
   DCHECK(begin_access_semaphore_ == VK_NULL_HANDLE);
   if (begin_access_fd.is_valid()) {
@@ -184,14 +215,12 @@ bool SkiaGraphiteVkAndroidImageRepresentation::BeginAccessInternal(
                         std::move(begin_access_fd)));
     if (begin_access_semaphore_ == VK_NULL_HANDLE) {
       DLOG(ERROR) << "Failed to import semaphore from sync_fd.";
+      vkDestroySemaphore(GetVkDevice(),
+                         std::exchange(end_access_semaphore_, VK_NULL_HANDLE),
+                         /*pAllocator=*/nullptr);
       return false;
     }
-  }
 
-  // TODO(crbug.com/55295190): Create `end_access_semaphore_`, if necessary,
-  // and pass to Skia to signal after work is completed.
-
-  if (begin_access_semaphore_ != VK_NULL_HANDLE) {
     // Any work submitted after this access begins will wait for the semaphore.
     context_state_->graphite_shared_context()->AddPendingWaitSemaphore(
         skgpu::graphite::BackendSemaphores::MakeVulkan(
@@ -208,10 +237,13 @@ void SkiaGraphiteVkAndroidImageRepresentation::EndAccessInternal(
     bool readonly) {
   base::ScopedFD end_access_fd;
   if (end_access_semaphore_ != VK_NULL_HANDLE) {
+    // ~EndAccessState() guarantees the signal semaphore has been submitted by
+    // now.
     SemaphoreHandle semaphore_handle =
         GetVulkanImplementation()->GetSemaphoreHandle(GetVkDevice(),
                                                       end_access_semaphore_);
     end_access_fd = semaphore_handle.TakeHandle();
+    CHECK(end_access_fd.is_valid());
   }
 
   if (readonly) {
@@ -277,31 +309,21 @@ SkiaGraphiteVkAndroidImageRepresentation::CreateGraphiteTextureHolder() {
 
 EndAccessState
 SkiaGraphiteVkAndroidImageRepresentation::GenerateEndAccessState() {
-  // `kSingleDeviceUsage` defines the set of usages for which only the Vulkan
-  // device from SharedContextState is used. If the SI has any usages outside
-  // this set (e.g., if it has any GLES2 usage), then it will be accessed
-  // beyond the Vulkan device from SharedContextState and hence does not have
-  // single-device usage.
-  static constexpr SharedImageUsageSet kSingleDeviceUsage =
-      SHARED_IMAGE_USAGE_DISPLAY_READ | SHARED_IMAGE_USAGE_DISPLAY_WRITE |
-      SHARED_IMAGE_USAGE_RASTER_READ | SHARED_IMAGE_USAGE_RASTER_WRITE;
-
-  // If SharedImage is used outside of current VkDeviceQueue we need to transfer
-  // image back to it's original queue. Note, that for multithreading we use
-  // same vkDevice, so technically we could transfer between queues instead of
-  // jumping to external queue. But currently it's not possible because we
-  // create new vkImage each time.
-  if (kSingleDeviceUsage.HasAll(android_backing()->usage()) &&
-      !android_backing()->is_thread_safe()) {
+  if (!needs_end_access_state_) {
     return {};
   }
 
+  // The signal semaphore must not be enqueued until all work using this image
+  // has been inserted, otherwise another insert/submit could signal it before
+  // that work executes. The scoped access enqueues it from
+  // ApplyBackendSurfaceEndState().
   return EndAccessState(
       context_state_->graphite_shared_context(),
       graphite_texture_holder_->texture(),
       std::make_unique<skgpu::MutableTextureState>(
           skgpu::MutableTextureStates::MakeVulkan(
-              VK_IMAGE_LAYOUT_UNDEFINED, vulkan_image_->queue_family_index())));
+              VK_IMAGE_LAYOUT_UNDEFINED, vulkan_image_->queue_family_index())),
+      skgpu::graphite::BackendSemaphores::MakeVulkan(end_access_semaphore_));
 }
 
 }  // namespace gpu

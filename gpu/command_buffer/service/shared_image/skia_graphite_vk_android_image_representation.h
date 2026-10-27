@@ -68,6 +68,7 @@ class GPU_GLES2_EXPORT SkiaGraphiteVkAndroidImageRepresentation
   const scoped_refptr<SharedContextState> context_state_;
   std::unique_ptr<VulkanImage> vulkan_image_;
   RepresentationAccessMode mode_ = RepresentationAccessMode::kNone;
+  const bool needs_end_access_state_;
 
   // Initial fence to wait on before accessing |vulkan_image_|.
   base::ScopedFD initial_fence_;

@@ -774,6 +774,8 @@ class GPU_GLES2_EXPORT SkiaGraphiteImageRepresentation
   // update_rect is a hint to the backend about the portion of the image that
   // will be drawn to. Callers shouldn't draw outside of this area, but aren't
   // required to overwrite every pixel inside it.
+  // If external synchronization/transitions are needed at the end of access,
+  // implementations should populate `end_access_state`.
   virtual std::vector<sk_sp<SkSurface>> BeginWriteAccess(
       const SkSurfaceProps& surface_props,
       const gfx::Rect& update_rect,
@@ -781,6 +783,8 @@ class GPU_GLES2_EXPORT SkiaGraphiteImageRepresentation
 
   // Returns a vector of ref counted GraphiteTextureHolder that holds
   // skgpu::graphite::BackendTexture which graphite can use for writing.
+  // If external synchronization/transitions are needed at the end of access,
+  // implementations should populate `end_access_state`.
   // Notes:
   // - If `NeedGraphiteContextSubmitBeforeEndAccess()` returns true: it's only
   // safe to use the contained BackendTexture within the access' scope.
