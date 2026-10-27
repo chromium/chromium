@@ -918,7 +918,14 @@ class DeltaSymbol(BaseSymbol):
     #     symbols all happen the same size (hence delta size = 0).
     # The purpose of checking PSS is to account for (2). However, this means (1)
     # would produce much more diffs than before!
-    if self.size != 0 or self.pss != 0:
+    # When neither symbol has aliases (and |before_symbol| is not
+    # padding-only), delta PSS == delta size, so skip computing PSS.
+    before = self.before_symbol
+    after = self.after_symbol
+    if self.size != 0 or (
+      (before.aliases or after.aliases or before.size == before.padding)
+      and self.pss != 0
+    ):
       return DIFF_STATUS_CHANGED
     return DIFF_STATUS_UNCHANGED
 
