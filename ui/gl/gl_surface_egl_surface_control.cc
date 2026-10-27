@@ -123,6 +123,9 @@ void GLSurfaceEGLSurfaceControl::Destroy() {
     for (auto& surface : surface_list_) {
       transaction.SetParent(*surface.surface, nullptr);
     }
+    if (root_surface_ && root_surface_->surface()) {
+      transaction.SetParent(*root_surface_, nullptr);
+    }
     transaction.Apply();
   }
 
