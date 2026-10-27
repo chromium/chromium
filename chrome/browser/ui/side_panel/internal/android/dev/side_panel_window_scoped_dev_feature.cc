@@ -29,10 +29,9 @@ using jni_zero::ScopedJavaLocalRef;
 static int64_t JNI_SidePanelWindowScopedDevFeatureImpl_Init(
     JNIEnv* env,
     const JavaRef<jobject>& caller,
-    int64_t nativeBrowserWindowPtr) {
-  return reinterpret_cast<intptr_t>(new SidePanelWindowScopedDevFeature(
-      env, caller,
-      reinterpret_cast<BrowserWindowInterface*>(nativeBrowserWindowPtr)));
+    BrowserWindowInterface* browser_window) {
+  return reinterpret_cast<intptr_t>(
+      new SidePanelWindowScopedDevFeature(env, caller, browser_window));
 }
 
 SidePanelWindowScopedDevFeature::SidePanelWindowScopedDevFeature(

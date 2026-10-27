@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.ui.side_panel.dev;
 import android.view.View;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniPtr;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ThreadUtils;
@@ -15,6 +16,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.content.WebContentsFactory;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.thin_webview.ThinWebViewHost;
+import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask.NativeBrowserWindowInterface;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTaskFeature;
 import org.chromium.chrome.browser.ui.side_panel.AndroidSidePanelEnabledFn;
 import org.chromium.content_public.browser.LoadUrlParams;
@@ -47,7 +49,7 @@ public final class SidePanelWindowScopedDevFeatureImpl
     @Override
     public void onAddedToTask(InitInfo initInfo) {
         ThreadUtils.assertOnUiThread();
-        createNativePtr(initInfo.nativeBrowserWindowPtr);
+        createNativePtr(initInfo.nativeBrowserWindow);
     }
 
     @Override
@@ -86,14 +88,13 @@ public final class SidePanelWindowScopedDevFeatureImpl
     //              End of SidePanelDevFeature Implementation                                    //
     ///////////////////////////////////////////////////////////////////////////////////////////////
 
-    private void createNativePtr(long nativeBrowserWindowPtr) {
-        assert nativeBrowserWindowPtr != 0
-                : "Native BrowserWindowInterface pointer shouldn't be null.";
+    private void createNativePtr(@Nullable JniPtr<NativeBrowserWindowInterface> browserWindow) {
+        assert browserWindow != null : "Native BrowserWindowInterface pointer shouldn't be null.";
         assert mNativeSidePanelWindowScopedDevFeature == 0
                 : "Native SidePanelWindowScopedDevFeature already exists";
 
         mNativeSidePanelWindowScopedDevFeature =
-                SidePanelWindowScopedDevFeatureImplJni.get().init(this, nativeBrowserWindowPtr);
+                SidePanelWindowScopedDevFeatureImplJni.get().init(this, browserWindow);
     }
 
     private void destroyNativePtr() {
@@ -120,7 +121,9 @@ public final class SidePanelWindowScopedDevFeatureImpl
 
     @NativeMethods
     interface Natives {
-        long init(SidePanelWindowScopedDevFeatureImpl caller, long nativeBrowserWindowPtr);
+        long init(
+                SidePanelWindowScopedDevFeatureImpl caller,
+                JniPtr<NativeBrowserWindowInterface> browserWindow);
 
         void destroy(long nativeSidePanelWindowScopedDevFeature);
 
