@@ -7,6 +7,7 @@
 #include "base/unguessable_token.h"
 #include "components/omnibox/browser/searchbox.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/omnibox_proto/model_mode.pb.h"
 #include "third_party/omnibox_proto/tool_mode.pb.h"
 #include "ui/base/unowned_user_data/unowned_user_data_host.h"
 #include "url/gurl.h"
@@ -58,6 +59,33 @@ TEST_F(SearchboxContextDataTest, SetAndTakePendingContextWithToolMode) {
   EXPECT_NE(nullptr, taken_context);
   EXPECT_EQ(omnibox::TOOL_MODE_IMAGE_GEN, taken_context->mode);
   EXPECT_EQ(nullptr, data.TakePendingContext());
+}
+
+TEST_F(SearchboxContextDataTest, GetOrCreatePendingContextCreatesContext) {
+  ui::UnownedUserDataHost host;
+  SearchboxContextData data(host);
+  data.GetOrCreatePendingContext().model = omnibox::MODEL_MODE_GEMINI_PRO;
+
+  std::unique_ptr<SearchboxContextData::Context> taken_context =
+      data.TakePendingContext();
+  ASSERT_NE(nullptr, taken_context);
+  EXPECT_EQ(omnibox::MODEL_MODE_GEMINI_PRO, taken_context->model);
+  EXPECT_EQ(nullptr, data.TakePendingContext());
+}
+
+TEST_F(SearchboxContextDataTest, GetOrCreatePendingContextKeepsContext) {
+  ui::UnownedUserDataHost host;
+  SearchboxContextData data(host);
+  auto context = std::make_unique<SearchboxContextData::Context>();
+  context->text = kHelloText;
+  data.SetPendingContext(std::move(context));
+  data.GetOrCreatePendingContext().mode = omnibox::TOOL_MODE_DEEP_SEARCH;
+
+  std::unique_ptr<SearchboxContextData::Context> taken_context =
+      data.TakePendingContext();
+  ASSERT_NE(nullptr, taken_context);
+  EXPECT_EQ(kHelloText, taken_context->text);
+  EXPECT_EQ(omnibox::TOOL_MODE_DEEP_SEARCH, taken_context->mode);
 }
 
 TEST_F(SearchboxContextDataTest, SetAndTakePendingContextWithFileAttachment) {

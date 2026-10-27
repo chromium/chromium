@@ -46,6 +46,8 @@ OmniboxAimPopupWebUIContent::OmniboxAimPopupWebUIContent(
 OmniboxAimPopupWebUIContent::~OmniboxAimPopupWebUIContent() = default;
 
 void OmniboxAimPopupWebUIContent::Clear() {
+  // `SendShow()` must not send a show for a hidden popup.
+  set_is_shown(false);
   auto* handler = popup_aim_handler();
   if (handler) {
     // Pass the original web contents captured during ShowUI to handle
@@ -225,12 +227,19 @@ void OmniboxAimPopupWebUIContent::ShowUI() {
                              ? location_bar()->GetWebContents()->GetWeakPtr()
                              : nullptr;
 
-  auto* handler = popup_aim_handler();
-  if (!handler) {
+  // Before the page binds its handler, the handler sends this show when it is
+  // created.
+  if (auto* handler = popup_aim_handler()) {
+    SendShow(*handler);
+  }
+}
+
+void OmniboxAimPopupWebUIContent::SendShow(OmniboxPopupAimHandler& handler) {
+  if (!IsShown()) {
     return;
   }
   // Drop any draft left over from a close that didn't drain it.
-  handler->clear_cached_draft_text();
+  handler.clear_cached_draft_text();
 
   auto* web_contents = contents_wrapper()->web_contents();
   auto* browser_window = webui::GetBrowserWindowInterface(web_contents);
@@ -257,7 +266,7 @@ void OmniboxAimPopupWebUIContent::ShowUI() {
     context->text =
         base::UTF16ToUTF8(location_bar()->GetOmniboxView()->GetText());
   }
-  handler->OnPopupShown(std::move(context));
+  handler.OnPopupShown(std::move(context));
 }
 
 OmniboxPopupAimHandler* OmniboxAimPopupWebUIContent::popup_aim_handler() {

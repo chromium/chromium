@@ -69,6 +69,7 @@ suite('AimAppTest', function() {
       input: 'test input',
       attachments: [],
       toolMode: 0,
+      modelMode: 0,
     });
     assertTrue(!!app.$.composebox.input);
 
@@ -87,6 +88,7 @@ suite('AimAppTest', function() {
       input: 'test input',
       attachments: [],
       toolMode: 0,
+      modelMode: 0,
     });
     assertTrue(!!app.$.composebox.input);
 
@@ -122,6 +124,7 @@ suite('AimAppTest', function() {
       input: '',
       attachments: [],
       toolMode: 0,
+      modelMode: 0,
     });
     await microtasksFinished();
     response = await page.clearPopup();
@@ -137,6 +140,7 @@ suite('AimAppTest', function() {
       input: 'test input',
       attachments: [],
       toolMode: 0,
+      modelMode: 0,
     });
 
     // Close with preserving context.
@@ -149,6 +153,7 @@ suite('AimAppTest', function() {
       input: '',
       attachments: [],
       toolMode: 0,
+      modelMode: 0,
     });
     await microtasksFinished();
 
@@ -178,6 +183,7 @@ suite('AimAppTest', function() {
       input: 'test context',
       attachments: [],
       toolMode: 0,
+      modelMode: 0,
     });
     await microtasksFinished();
 
@@ -236,6 +242,7 @@ suite('AimAppTest', function() {
         input: 'test context',
         attachments: [],
         toolMode: 0,
+        modelMode: 0,
       });
       await microtasksFinished();
     } finally {
@@ -262,6 +269,7 @@ suite('AimAppTest', function() {
       input: '',
       attachments: [],
       toolMode: 0,
+      modelMode: 0,
     });
     await microtasksFinished();
     assertTrue(glowAnimationPlayed);
@@ -283,6 +291,7 @@ suite('AimAppTest', function() {
       input: '',
       attachments: [],
       toolMode: 0,
+      modelMode: 0,
     });
     await microtasksFinished();
     // Should NOT have played.
@@ -294,6 +303,7 @@ suite('AimAppTest', function() {
       input: '',
       attachments: [],
       toolMode: 0,
+      modelMode: 0,
     });
     await microtasksFinished();
     assertTrue(glowAnimationPlayed);

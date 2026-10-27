@@ -33,7 +33,7 @@ import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {RenderType} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import type {FileAttachment, PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote, SearchContext, TabAttachment} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
-import {ToolMode} from '//resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
+import {ModelMode, ToolMode} from '//resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 import type {UnguessableToken} from '//resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
 
 import {getCss} from './omnibox_composebox.css.js';
@@ -476,6 +476,14 @@ export class OmniboxComposeboxElement extends ComposeboxEmbedderMixin
         } else if (attachment.tabAttachment) {
           this.addTabFromAttachment_(attachment.tabAttachment);
         }
+      }
+      // A tool or model the user picked in the browser before this page could
+      // take it, e.g. from the omnibox context menu while the page loaded.
+      if (context.toolMode !== ToolMode.kUnspecified) {
+        this.selectToolMode(context.toolMode);
+      }
+      if (context.modelMode !== ModelMode.kUnspecified) {
+        this.selectModelMode(context.modelMode);
       }
     }
 

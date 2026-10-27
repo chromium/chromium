@@ -2,9 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <string>
+#include <string_view>
+
 #include "base/auto_reset.h"
 #include "base/callback_list.h"
 #include "base/functional/callback_helpers.h"
+#include "base/strings/strcat.h"
 #include "base/test/bind.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
@@ -200,6 +204,15 @@ class OmniboxAimPopupBrowserTest : public InProcessBrowserTest {
     }));
   }
 
+ protected:
+  // A test that leaves a permission request pending sets this instead of
+  // using a local factory. The manager shows the prompt again whenever its
+  // WebContents turns visible, which on Mac can happen while the browser
+  // closes after the test body. A local factory is gone by then and its
+  // replacement hits NOTREACHED. This member outlives the browser, and the
+  // factory stops serving the manager once the manager is destroyed.
+  std::unique_ptr<permissions::MockPermissionPromptFactory> prompt_factory_;
+
  private:
   base::test::ScopedFeatureList feature_list_;
   base::CallbackListSubscription create_services_subscription_;
@@ -363,7 +376,8 @@ IN_PROC_BROWSER_TEST_F(OmniboxAimPopupBrowserTest,
           content->GetWebContents());
   ASSERT_TRUE(permission_manager);
 
-  permissions::MockPermissionPromptFactory prompt_factory(permission_manager);
+  prompt_factory_ = std::make_unique<permissions::MockPermissionPromptFactory>(
+      permission_manager);
 
   // Add a mock permission request for a standard origin to set
   // IsRequestInProgress() to true without auto-approving. This avoids needing
@@ -374,7 +388,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxAimPopupBrowserTest,
       permissions::PermissionRequestGestureType::GESTURE);
   permission_manager->AddRequest(
       content->GetWebContents()->GetPrimaryMainFrame(), std::move(request));
-  prompt_factory.WaitForPermissionBubble();
+  prompt_factory_->WaitForPermissionBubble();
 
   EXPECT_TRUE(permission_manager->IsRequestInProgress());
 
@@ -1117,9 +1131,25 @@ IN_PROC_BROWSER_TEST_F(OmniboxAimPopupFullWebUIBrowserTest,
   EXPECT_EQ(state_manager->popup_state(), OmniboxPopupState::kNone);
 }
 
+// Tests the AIM popup without `omnibox::kOmniboxAimPopupDeferCreation`, the
+// feature's default state. Browser tests apply
+// testing/variations/fieldtrial_testing_config.json, whose
+// WebUIReloadButtonStudy entry enables the feature, so a test of the default
+// path has to disable it explicitly rather than rely on the default.
+class OmniboxAimPopupNoDeferCreationBrowserTest
+    : public OmniboxAimPopupBrowserTest {
+ public:
+  OmniboxAimPopupNoDeferCreationBrowserTest() {
+    feature_list_.InitAndDisableFeature(omnibox::kOmniboxAimPopupDeferCreation);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
 // Without `omnibox::kOmniboxAimPopupDeferCreation`, a new window's AIM popup
 // creates its content with the presenter, before the window is shown.
-IN_PROC_BROWSER_TEST_F(OmniboxAimPopupBrowserTest,
+IN_PROC_BROWSER_TEST_F(OmniboxAimPopupNoDeferCreationBrowserTest,
                        CreatesContentWithPresenterWithoutDeferCreation) {
   ASSERT_FALSE(
       base::FeatureList::IsEnabled(omnibox::kOmniboxAimPopupDeferCreation));
@@ -1331,6 +1361,17 @@ IN_PROC_BROWSER_TEST_F(OmniboxAimPopupDeferCreationLateEligibilityBrowserTest,
 // presentation, to test the paths that create it before the post-paint task.
 class OmniboxAimPopupDeferCreationPendingBrowserTest
     : public OmniboxAimPopupDeferCreationBrowserTest {
+ protected:
+  void SetUpOnMainThread() override {
+    OmniboxAimPopupDeferCreationBrowserTest::SetUpOnMainThread();
+    // No permission prompt shows here. `browser_tests` runs multiple browser
+    // processes at once, so another test window can take OS activation while
+    // the AIM page loads. Marking a prompt as showing keeps the popup open
+    // through that deactivation, as it does for a real prompt.
+    location_bar()->GetOmniboxPopupAimPresenter()->SetPermissionPromptShowing(
+        true);
+  }
+
  private:
   base::AutoReset<bool> ignore_presentation_ =
       OmniboxPopupPresenterBase::IgnoreBrowserWindowPresentationForTesting();
@@ -1397,4 +1438,52 @@ IN_PROC_BROWSER_TEST_F(OmniboxAimPopupDeferCreationPendingBrowserTest,
   ASSERT_TRUE(action);
   action->InvokeAction();
   EXPECT_TRUE(aim_presenter->GetWebUIContent());
+}
+
+namespace {
+
+// Returns a script that evaluates `expression` against the AIM page's
+// composebox element `box`, or returns `fallback` before the page renders it.
+std::string ComposeboxScript(std::string_view expression,
+                             std::string_view fallback) {
+  return base::StrCat(
+      {"(() => {"
+       "  const app = document.querySelector('omnibox-aim-app');"
+       "  const box = app && app.shadowRoot &&"
+       "              app.shadowRoot.querySelector('cr-omnibox-composebox');"
+       "  return box ? (",
+       expression, ") : ", fallback,
+       ";"
+       "})()"});
+}
+
+}  // namespace
+
+// The show that creates the AIM content runs before the page binds its
+// handler. The page still receives the omnibox text of that show.
+IN_PROC_BROWSER_TEST_F(OmniboxAimPopupDeferCreationPendingBrowserTest,
+                       FirstShowTransfersOmniboxText) {
+  ASSERT_FALSE(
+      location_bar()->GetOmniboxPopupAimPresenter()->GetWebUIContent());
+  location_bar()->GetOmniboxView()->SetUserText(u"hello world",
+                                                /*update_popup=*/false);
+
+  auto* content = ShowPopupAndGetWebUIContent();
+  ASSERT_TRUE(content);
+  content::WebContents* aim_contents = content->GetWrappedWebContents();
+  ASSERT_TRUE(content::WaitForLoadStop(aim_contents));
+
+  const std::string script = ComposeboxScript("box.input", "''");
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return content::EvalJs(aim_contents, script).ExtractString() ==
+           "hello world";
+  })) << "input: "
+      << content::EvalJs(aim_contents, script).ExtractString()
+      << ", popup state: "
+      << static_cast<int>(location_bar()
+                              ->GetOmniboxController()
+                              ->popup_state_manager()
+                              ->popup_state())
+      << ", presenter shown: "
+      << location_bar()->GetOmniboxPopupAimPresenter()->IsShown();
 }

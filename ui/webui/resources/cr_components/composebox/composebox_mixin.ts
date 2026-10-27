@@ -1421,9 +1421,20 @@ export const ComposeboxEmbedderMixin =
         onModelClick(e: CustomEvent<{model: ModelMode}>) {
           recordModelModeSelection(
               e.detail.model, this.composeboxSource, 'AimPopup');
-          this.getSearchboxHandler().recordModelSelectionAction(e.detail.model);
+          this.selectModelMode(e.detail.model);
+        }
+
+        // Records and applies a tool the user selected.
+        selectToolMode(tool: ToolMode) {
+          this.getSearchboxHandler().recordToolSelectionAction(tool);
+          this.handleToolModeUpdate(tool);
+        }
+
+        // Records and applies a model the user selected.
+        selectModelMode(model: ModelMode) {
+          this.getSearchboxHandler().recordModelSelectionAction(model);
           this.getSearchboxHandler().setActiveModelMode(
-              e.detail.model, /*isSetByAim=*/ false);
+              model, /*isSetByAim=*/ false);
           this.updateInputPlaceholder();
         }
 
@@ -3585,6 +3596,8 @@ export interface ComposeboxEmbedderMixinInterface extends I18nMixinLitInterface,
   handleToolClick(tool: ToolMode, allowToggleOff?: boolean): void;
   handleToolModeUpdate(newTool: ToolMode, isSetByAim?: boolean): void;
   onModelClick(e: CustomEvent<{model: ModelMode}>): void;
+  selectToolMode(tool: ToolMode): void;
+  selectModelMode(model: ModelMode): void;
   onOpenImageUpload(): void;
   onOpenFileUpload(): void;
   onOpenDriveUpload(): void;

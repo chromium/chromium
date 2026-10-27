@@ -153,6 +153,16 @@ std::optional<ui::ColorId> TabSimpleMenuModel::GetSelectedBackgroundColorId(
 
 namespace {
 
+// Returns the pending searchbox context of the browser window of
+// `web_contents`, creating it if needed. The AI Mode popup sends this context
+// to its page when it is shown.
+SearchboxContextData::Context* GetOrCreatePendingSearchboxContext(
+    content::WebContents* web_contents) {
+  auto* browser = webui::GetBrowserWindowInterface(web_contents);
+  auto* data = browser ? SearchboxContextData::From(browser) : nullptr;
+  return data ? &data->GetOrCreatePendingContext() : nullptr;
+}
+
 bool IsStaticOmniboxCommandId(int command_id) {
   switch (command_id) {
     case IDC_OMNIBOX_CONTEXT_ADD_IMAGE:
@@ -1053,10 +1063,12 @@ void OmniboxContextMenuController::UpdateSearchboxContext(
     auto* omnibox_popup_ui = GetOmniboxPopupUI(web_contents);
     if (omnibox_popup_ui && omnibox_popup_ui->popup_aim_handler()) {
       omnibox_popup_ui->popup_aim_handler()->AddContext(std::move(context));
+      return;
     }
-  } else if (searchbox_context_data) {
-    searchbox_context_data->SetPendingContext(std::move(context));
+    // The AI Mode page has not bound its handler yet. The show that the page
+    // receives once it binds takes the pending context.
   }
+  searchbox_context_data->SetPendingContext(std::move(context));
 }
 
 // static
@@ -1662,6 +1674,28 @@ OmniboxPopupUI* OmniboxContextMenuController::GetOmniboxPopupUI() const {
   return GetOmniboxPopupUI(web_contents_.get());
 }
 
+void OmniboxContextMenuController::SetActiveToolMode(
+    omnibox::ToolMode tool_mode) {
+  if (auto* handler = GetContextualSearchboxHandler()) {
+    handler->SetActiveToolMode(tool_mode, /*is_set_by_aim=*/false);
+    handler->RecordToolSelectionAction(tool_mode);
+  } else if (auto* context =
+                 GetOrCreatePendingSearchboxContext(web_contents_.get())) {
+    context->mode = tool_mode;
+  }
+}
+
+void OmniboxContextMenuController::SetActiveModelMode(
+    omnibox::ModelMode model_mode) {
+  if (auto* handler = GetContextualSearchboxHandler()) {
+    handler->SetActiveModelMode(model_mode, /*is_set_by_aim=*/false);
+    handler->RecordModelSelectionAction(model_mode);
+  } else if (auto* context =
+                 GetOrCreatePendingSearchboxContext(web_contents_.get())) {
+    context->model = model_mode;
+  }
+}
+
 void OmniboxContextMenuController::ExecuteCommand(int id, int event_flags) {
   const bool is_single_tab_item = (id == IDC_OMNIBOX_CONTEXT_SINGLE_TAB);
   // The standalone single tab row behaves exactly like the flyout row for the
@@ -1852,12 +1886,7 @@ void OmniboxContextMenuController::ExecuteCommand(int id, int event_flags) {
           it != tool_for_command_id_.end()) {
         const omnibox::ToolMode tool_mode = it->second;
         RecordContextMenuItemSelection(sliced_prefix, id);
-        if (contextual_searchbox_handler) {
-          contextual_searchbox_handler->SetActiveToolMode(
-              tool_mode,
-              /*is_set_by_aim=*/false);
-          contextual_searchbox_handler->RecordToolSelectionAction(tool_mode);
-        }
+        SetActiveToolMode(tool_mode);
 
         auto initial_state =
             omnibox_everywhere::mojom::ComposeboxInitialState::New();
@@ -1871,12 +1900,7 @@ void OmniboxContextMenuController::ExecuteCommand(int id, int event_flags) {
           it != model_for_command_id_.end()) {
         const omnibox::ModelMode model_mode = it->second;
         RecordContextMenuItemSelection(sliced_prefix, id);
-        if (contextual_searchbox_handler) {
-          contextual_searchbox_handler->SetActiveModelMode(
-              model_mode,
-              /*is_set_by_aim=*/false);
-          contextual_searchbox_handler->RecordModelSelectionAction(model_mode);
-        }
+        SetActiveModelMode(model_mode);
         if (is_aim_popup_open) {
           if (auto* omnibox_popup_ui = GetOmniboxPopupUI()) {
             if (omnibox_popup_ui->popup_aim_handler()) {
@@ -1913,13 +1937,7 @@ void OmniboxContextMenuController::ExecuteCommand(int id, int event_flags) {
             /*was_ai_mode_open=*/is_aim_popup_open);
         break;
       case IDC_OMNIBOX_CONTEXT_CREATE_IMAGES: {
-        if (contextual_searchbox_handler) {
-          contextual_searchbox_handler->SetActiveToolMode(
-              omnibox::ToolMode::TOOL_MODE_IMAGE_GEN,
-              /*is_set_by_aim=*/false);
-          contextual_searchbox_handler->RecordToolSelectionAction(
-              omnibox::ToolMode::TOOL_MODE_IMAGE_GEN);
-        }
+        SetActiveToolMode(omnibox::ToolMode::TOOL_MODE_IMAGE_GEN);
         RecordContextMenuItemSelection(sliced_prefix, id);
         auto initial_state =
             omnibox_everywhere::mojom::ComposeboxInitialState::New();
@@ -1929,13 +1947,7 @@ void OmniboxContextMenuController::ExecuteCommand(int id, int event_flags) {
         break;
       }
       case IDC_OMNIBOX_CONTEXT_DEEP_RESEARCH: {
-        if (contextual_searchbox_handler) {
-          contextual_searchbox_handler->SetActiveToolMode(
-              omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH,
-              /*is_set_by_aim=*/false);
-          contextual_searchbox_handler->RecordToolSelectionAction(
-              omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH);
-        }
+        SetActiveToolMode(omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH);
         RecordContextMenuItemSelection(sliced_prefix, id);
         auto initial_state =
             omnibox_everywhere::mojom::ComposeboxInitialState::New();
@@ -1945,12 +1957,7 @@ void OmniboxContextMenuController::ExecuteCommand(int id, int event_flags) {
         break;
       }
       case IDC_OMNIBOX_CONTEXT_CANVAS: {
-        if (contextual_searchbox_handler) {
-          contextual_searchbox_handler->SetActiveToolMode(
-              omnibox::ToolMode::TOOL_MODE_CANVAS, /*is_set_by_aim=*/false);
-          contextual_searchbox_handler->RecordToolSelectionAction(
-              omnibox::ToolMode::TOOL_MODE_CANVAS);
-        }
+        SetActiveToolMode(omnibox::ToolMode::TOOL_MODE_CANVAS);
         RecordContextMenuItemSelection(sliced_prefix, id);
         auto initial_state =
             omnibox_everywhere::mojom::ComposeboxInitialState::New();
