@@ -417,18 +417,6 @@ public class ChromeTabUtils {
     }
 
     /**
-     * New multiple tabs by invoking the 'new' menu item n times.
-     * @param n The number of tabs you want to create.
-     */
-    public static void newTabsFromMenu(
-            Instrumentation instrumentation, ChromeTabbedActivity activity, int n) {
-        while (n > 0) {
-            newTabFromMenu(instrumentation, activity);
-            --n;
-        }
-    }
-
-    /**
      * Creates a new tab in the specified model then waits for it to load.
      *
      * <p>Returns when the tab has been created and finishes loading.
@@ -476,15 +464,6 @@ public class ChromeTabUtils {
                 () -> {
                     tab.loadUrl(new LoadUrlParams(url));
                 });
-    }
-
-    /** Ensure that at least some given number of tabs are open. */
-    public static void ensureNumOpenTabs(
-            Instrumentation instrumentation, ChromeTabbedActivity activity, int newCount) {
-        int curCount = getNumOpenTabs(activity);
-        if (curCount < newCount) {
-            newTabsFromMenu(instrumentation, activity, newCount - curCount);
-        }
     }
 
     /** Fetch the number of tabs open in the current model. */

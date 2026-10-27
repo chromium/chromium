@@ -110,8 +110,10 @@ public abstract class TabStripDragDropTestBase {
     protected ChromeTabbedActivity setupSourceWindow(int additionalTabs) {
         ChromeTabbedActivity sourceActivity = mActivityTestRule.getActivity();
         if (additionalTabs > 0) {
-            ChromeTabUtils.newTabsFromMenu(
-                    InstrumentationRegistry.getInstrumentation(), sourceActivity, additionalTabs);
+            for (int i = 0; i < additionalTabs; i++) {
+                ChromeTabUtils.newTabFromMenu(
+                        InstrumentationRegistry.getInstrumentation(), sourceActivity);
+            }
         }
         TabStripUtils.settleDownCompositor(mStripLayoutHelper);
         return sourceActivity;
@@ -126,8 +128,10 @@ public abstract class TabStripDragDropTestBase {
         StripLayoutHelper destHelper = TabStripTestUtils.getActiveStripLayoutHelper(destActivity);
         TabStripUtils.settleDownCompositor(destHelper);
         if (additionalTabs > 0) {
-            ChromeTabUtils.newTabsFromMenu(
-                    InstrumentationRegistry.getInstrumentation(), destActivity, additionalTabs);
+            for (int i = 0; i < additionalTabs; i++) {
+                ChromeTabUtils.newTabFromMenu(
+                        InstrumentationRegistry.getInstrumentation(), destActivity);
+            }
             TabStripUtils.settleDownCompositor(destHelper);
         }
         return destActivity;
