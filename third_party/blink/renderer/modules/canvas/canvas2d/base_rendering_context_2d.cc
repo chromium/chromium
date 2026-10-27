@@ -532,10 +532,7 @@ BaseRenderingContext2D::PaintRenderingResultsToResource(
     return nullptr;
   }
   FlushCanvas(reason);
-  auto resource = shared_image_provider_->ProduceCanvasResource(surface_.get());
-  return resource
-             ? base::MakeRefCounted<ExportedCanvasResource>(std::move(resource))
-             : nullptr;
+  return shared_image_provider_->ProduceCanvasResource(surface_.get());
 }
 
 const MemoryManagedPaintCanvas* BaseRenderingContext2D::GetPaintCanvas() const {

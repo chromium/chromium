@@ -48,7 +48,7 @@
 #include "third_party/blink/public/platform/web_graphics_shared_image_interface_provider.h"
 #include "third_party/blink/renderer/platform/graphics/accelerated_static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_image_provider.h"
-#include "third_party/blink/renderer/platform/graphics/canvas_resource.h"
+#include "third_party/blink/renderer/platform/graphics/exported_canvas_resource.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/canvas_utils.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
 #include "third_party/blink/renderer/platform/graphics/memory_managed_paint_canvas.h"
@@ -298,8 +298,8 @@ void Canvas2DResourceProvider::OnContextDestroyed() {
   }
 }
 
-scoped_refptr<CanvasResource> Canvas2DResourceProvider::ProduceCanvasResource(
-    SkSurface* surface) {
+scoped_refptr<ExportedCanvasResource>
+Canvas2DResourceProvider::ProduceCanvasResource(SkSurface* surface) {
   TRACE_EVENT0("blink", "Canvas2DResourceProvider::ProduceCanvasResource");
 
   if (IsSoftware()) {
@@ -312,7 +312,8 @@ scoped_refptr<CanvasResource> Canvas2DResourceProvider::ProduceCanvasResource(
 
     output_resource->UploadSoftwareRenderingResults(surface);
 
-    return output_resource;
+    return base::MakeRefCounted<ExportedCanvasResource>(
+        std::move(output_resource));
   }
 
   if (IsGpuContextLost()) {
@@ -324,7 +325,8 @@ scoped_refptr<CanvasResource> Canvas2DResourceProvider::ProduceCanvasResource(
   // access.
   EndWriteAccess(surface);
 
-  return resource_;
+  return resource_ ? base::MakeRefCounted<ExportedCanvasResource>(resource_)
+                   : nullptr;
 }
 
 bool Canvas2DResourceProvider::IsValid() const {

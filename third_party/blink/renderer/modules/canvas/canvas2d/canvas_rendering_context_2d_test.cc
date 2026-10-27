@@ -3680,7 +3680,8 @@ TEST_P(CanvasRenderingContext2DTestLowLatency, LowLatencyIsSingleBuffered) {
       Context2D()->GetSharedImageProviderForTesting()->ProduceCanvasResource(
           /*surface=*/nullptr);
   EXPECT_TRUE(frame2_resource);
-  EXPECT_EQ(frame1_resource.get(), frame2_resource.get());
+  EXPECT_EQ(frame1_resource->GetSharedImageForTesting(),
+            frame2_resource->GetSharedImageForTesting());
 }
 
 #if BUILDFLAG(IS_WIN)
@@ -3725,7 +3726,8 @@ TEST_P(CanvasRenderingContext2DTestSwapChain, LowLatencyIsSingleBuffered) {
       Context2D()->GetSharedImageProviderForTesting()->ProduceCanvasResource(
           /*surface=*/nullptr);
   EXPECT_TRUE(frame2_resource);
-  EXPECT_EQ(frame1_resource.get(), frame2_resource.get());
+  EXPECT_EQ(frame1_resource->GetSharedImageForTesting(),
+            frame2_resource->GetSharedImageForTesting());
 }
 #endif
 
