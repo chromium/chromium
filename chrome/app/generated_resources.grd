@@ -8899,6 +8899,12 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_COMPOSE_MAX_FILE_UPLOAD_ERROR" desc="Error message shown in toast when file limit maximum is reached.">
         You can only add up to <ph name="COUNT">$1<ex>10</ex></ph> files
       </message>
+      <message name="IDS_COMPOSE_RELOAD_TAB" desc="Label for a button in the composebox error message that reloads the inactive browser tabs that failed to be attached as context and retries adding them.">
+        Reload tabs
+      </message>
+      <message name="IDS_COMPOSE_STALE_TAB_ERROR" desc="Error message shown in the composebox when one or more inactive or stale browser tabs could not be attached as context for a query.">
+        Reload inactive tabs to add them to your search
+      </message>
 
       <message name="IDS_NTP_ACTION_CHIP_TAB_HEADING_1" desc="Heading of the tab action chip on the NTP." >
         Ask about previous tab
