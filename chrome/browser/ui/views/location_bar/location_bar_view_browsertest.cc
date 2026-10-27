@@ -41,7 +41,6 @@
 #include "chrome/browser/ui/views/location_bar/zoom_bubble_coordinator.h"
 #include "chrome/browser/ui/views/location_bar/zoom_bubble_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_context_menu.h"
-#include "chrome/browser/ui/views/omnibox/omnibox_popup_aim_presenter.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_view_views.h"
 #include "chrome/browser/ui/views/page_action/page_action_container_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_view.h"
@@ -710,15 +709,6 @@ IN_PROC_BROWSER_TEST_F(LocationBarViewAddContextButtonBrowserTest,
   EXPECT_FALSE(location_bar_view->ShouldShowAddContextButton());
   const auto icon_when_closed =
       location_icon_view->GetImageModel(views::Button::STATE_NORMAL);
-
-  // The button needs the AI Mode popup's content, which the deferral creates
-  // after the window's first frame. The location icon refreshes on popup state
-  // changes and typing, so wait for the content before opening the popup.
-  OmniboxPopupAimPresenter* aim_presenter =
-      location_bar_view->GetOmniboxPopupAimPresenter();
-  ASSERT_TRUE(aim_presenter);
-  ASSERT_TRUE(base::test::RunUntil(
-      [&]() { return aim_presenter->GetWebUIContent() != nullptr; }));
 
   // The "Add Context" button does show up when the Omnibox popup is open.
   location_bar_view->FocusLocation(/*is_user_initiated=*/true,
