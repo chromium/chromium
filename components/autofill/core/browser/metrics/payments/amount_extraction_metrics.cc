@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include <optional>
+#include <utility>
 
 #include "base/check.h"
 #include "base/metrics/histogram_functions.h"
@@ -45,7 +46,7 @@ void LogAmountExtractionResult(std::optional<base::TimeDelta> latency,
       ukm_builder.SetFailureLatencyInMillis(latency.value().InMilliseconds());
     }
   }
-  ukm_builder.SetResult(static_cast<uint8_t>(result))
+  ukm_builder.SetResult(std::to_underlying(result))
       .Record(ukm::UkmRecorder::Get());
 }
 

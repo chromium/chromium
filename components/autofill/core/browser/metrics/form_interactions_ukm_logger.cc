@@ -111,9 +111,9 @@ void FormInteractionsUkmLogger::LogSuggestionsShown(
   }
 
   ukm::builders::Autofill_SuggestionsShown(ukm_source_id)
-      .SetHeuristicType(static_cast<int>(field.heuristic_type()))
-      .SetHtmlFieldType(static_cast<int>(field.html_type()))
-      .SetServerType(static_cast<int>(field.server_type()))
+      .SetHeuristicType(field.heuristic_type())
+      .SetHtmlFieldType(std::to_underlying(field.html_type()))
+      .SetServerType(field.server_type())
       .SetFormSignature(HashFormSignature(form.form_signature()))
       .SetFieldSignature(HashFieldSignature(field.GetFieldSignature()))
       .SetMillisecondsSinceFormParsed(MillisecondsSinceFormParsed(
@@ -142,7 +142,7 @@ void FormInteractionsUkmLogger::LogSuggestionAccepted(
       .SetAcceptedIndex(accepted_suggestion_position)
       .SetOverallType(*field.Type().GetTypes().begin())
       .SetPriorValueLength(field.value().size())
-      .SetSuggestionType(static_cast<int64_t>(accepted_suggestion_type))
+      .SetSuggestionType(std::to_underlying(accepted_suggestion_type))
       .Record(autofill_client_->GetUkmRecorder());
 }
 
@@ -203,7 +203,7 @@ void FormInteractionsUkmLogger::LogTextFieldValueChanged(
   auto next_field_type_group = [&field_type_groups,
                                 it = field_type_groups.begin()]() mutable {
     return it != field_type_groups.end()
-               ? std::optional(static_cast<int64_t>(*it++))
+               ? std::optional<int64_t>(std::to_underlying(*it++))
                : std::nullopt;
   };
   using UkmEvent = ukm::builders::Autofill_TextFieldDidChange;
@@ -214,10 +214,10 @@ void FormInteractionsUkmLogger::LogTextFieldValueChanged(
   MaybeSet(e, &UkmEvent::SetFieldTypeGroup2, next_field_type_group());
   MaybeSet(e, &UkmEvent::SetFieldTypeGroup3, next_field_type_group());
   MaybeSet(e, &UkmEvent::SetFieldTypeGroup4, next_field_type_group());
-  e.SetHeuristicType(static_cast<int>(field.heuristic_type()));
-  e.SetServerType(static_cast<int>(field.server_type()));
-  e.SetHtmlFieldType(static_cast<int>(field.html_type()));
-  e.SetHtmlFieldMode(static_cast<int>(field.html_mode()));
+  e.SetHeuristicType(field.heuristic_type());
+  e.SetServerType(field.server_type());
+  e.SetHtmlFieldType(std::to_underlying(field.html_type()));
+  e.SetHtmlFieldMode(std::to_underlying(field.html_mode()));
   e.SetIsAutofilled(field.last_modifier() == FieldModifier::kAutofill);
   e.SetIsEmpty(field.value().empty());
   e.SetMillisecondsSinceFormParsed(MillisecondsSinceFormParsed(
@@ -238,7 +238,7 @@ void FormInteractionsUkmLogger::LogFieldFillStatus(
   ukm::builders::Autofill_FieldFillStatus(ukm_source_id)
       .SetFormSignature(HashFormSignature(form.form_signature()))
       .SetFieldSignature(HashFieldSignature(field.GetFieldSignature()))
-      .SetValidationEvent(static_cast<int64_t>(metric_type))
+      .SetValidationEvent(std::to_underlying(metric_type))
       .SetIsAutofilled(static_cast<int64_t>(field.last_modifier() ==
                                             FieldModifier::kAutofill))
       .SetWasPreviouslyAutofilled(static_cast<int64_t>(
@@ -270,10 +270,10 @@ void FormInteractionsUkmLogger::LogFieldType(
           MillisecondsSinceFormParsed(form_parsed_timestamp, now))
       .SetFormSignature(HashFormSignature(form_signature))
       .SetFieldSignature(HashFieldSignature(field_signature))
-      .SetValidationEvent(static_cast<int64_t>(metric_type))
-      .SetPredictionSource(static_cast<int64_t>(prediction_source))
-      .SetPredictedType(static_cast<int64_t>(predicted_type))
-      .SetActualType(static_cast<int64_t>(actual_type))
+      .SetValidationEvent(std::to_underlying(metric_type))
+      .SetPredictionSource(std::to_underlying(prediction_source))
+      .SetPredictedType(predicted_type)
+      .SetActualType(actual_type)
       .Record(autofill_client_->GetUkmRecorder());
 }
 
@@ -847,7 +847,7 @@ void FormInteractionsUkmLogger::LogFormEvent(
   }
 
   ukm::builders::Autofill_FormEvent builder(ukm_source_id);
-  builder.SetAutofillFormEvent(static_cast<int>(form_event))
+  builder.SetAutofillFormEvent(std::to_underlying(form_event))
       .SetFormTypes(AutofillMetrics::FormTypesToBitVector(form_types))
       .SetMillisecondsSinceFormParsed(MillisecondsSinceFormParsed(
           form_parsed_timestamp, base::TimeTicks::Now()))

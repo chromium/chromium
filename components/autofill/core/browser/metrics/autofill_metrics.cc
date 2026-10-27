@@ -231,7 +231,7 @@ void AutofillMetrics::LogCardUnmaskAuthenticationSelectionDialogResultMetric(
 // static
 void AutofillMetrics::LogCardUnmaskAuthenticationSelectionDialogShown(
     size_t number_of_challenge_options) {
-  static_assert(static_cast<int>(CardUnmaskChallengeOptionType::kMaxValue) <
+  static_assert(std::to_underlying(CardUnmaskChallengeOptionType::kMaxValue) <
                 10);
   DCHECK_GE(number_of_challenge_options, 0U);
   // We are using an exact linear histogram, with a max of 10. This is a
@@ -1458,7 +1458,7 @@ void AutofillMetrics::LogAutofillFieldInfoAfterSubmission(
     }
 
     builder.SetSubmittedType1(submitted_type1)
-        .SetSubmissionSource(static_cast<int>(form.submission_source()))
+        .SetSubmissionSource(std::to_underlying(form.submission_source()))
         .SetMillisecondsFromFormParsedUntilSubmission(
             autofill_metrics::GetSemanticBucketMinForAutofillDurationTiming(
                 (form_submitted_timestamp - form.form_parsed_timestamp())
@@ -1471,8 +1471,8 @@ int64_t AutofillMetrics::FormTypesToBitVector(
     const DenseSet<FormTypeNameForLogging>& form_types) {
   int64_t form_type_bv = 0;
   for (FormTypeNameForLogging form_type : form_types) {
-    DCHECK_LT(static_cast<int64_t>(form_type), 63);
-    form_type_bv |= 1LL << static_cast<int64_t>(form_type);
+    DCHECK_LT(std::to_underlying(form_type), 63);
+    form_type_bv |= 1LL << std::to_underlying(form_type);
   }
   return form_type_bv;
 }
@@ -1590,8 +1590,8 @@ void AutofillMetrics::LogAutocompletePredictionCollisionState(
   // The buckets are calculated by using the least significant two bits to
   // encode the `autocomplete_state`, and the next two bits to encode the
   // `prediction_state`.
-  int bucket = (static_cast<int>(prediction_state) << 2) |
-               static_cast<int>(autocomplete_state);
+  int bucket = (std::to_underlying(prediction_state) << 2) |
+               std::to_underlying(autocomplete_state);
   // Without (kNone, kNone), 4*4 - 1 = 15 possible pairs remain. Log the bucket
   // 0-based, in order to interpret the metric as an enum.
   DCHECK(1 <= bucket && bucket <= 15);

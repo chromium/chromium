@@ -8,6 +8,7 @@
 
 #include <optional>
 #include <string>
+#include <utility>
 
 #include "base/check.h"
 #include "base/metrics/histogram_functions.h"
@@ -68,14 +69,14 @@ void LogAiAmountExtractionResult(
   }
 
   base::UmaHistogramEnumeration("Autofill.AiAmountExtraction.Result", result);
-  ukm_builder.SetResult(static_cast<int64_t>(result));
+  ukm_builder.SetResult(std::to_underlying(result));
 
   if (invalid_response_reason.has_value()) {
     base::UmaHistogramEnumeration(
         "Autofill.AiAmountExtraction.InvalidResponseReason",
         invalid_response_reason.value());
     ukm_builder.SetInvalidResponseReason(
-        static_cast<int64_t>(invalid_response_reason.value()));
+        std::to_underlying(invalid_response_reason.value()));
   }
 
   CHECK(latency.has_value() || result == AiAmountExtractionResult::kTimeout);
@@ -116,7 +117,7 @@ void LogAiAmountExtractedInIssuerRange(bool is_within_range,
 
   ukm::builders::Autofill_Bnpl_AiAmountExtraction_AmountInIssuerRange(
       ukm_source_id)
-      .SetIssuer(static_cast<int64_t>(issuer_id))
+      .SetIssuer(std::to_underlying(issuer_id))
       .SetIsWithinRange(is_within_range)
       .Record(ukm::UkmRecorder::Get());
 }

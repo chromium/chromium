@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <string_view>
+#include <utility>
 
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -64,7 +65,7 @@ bool TryRecordTickleMetrics(std::optional<base::TimeTicks>& previous_event_time,
           *ukm_source_id != ukm::kInvalidSourceId) {
         ukm::builders::Autofill_OneTimeTokens builder(*ukm_source_id);
         (builder.*latency_setter)(latency.InMilliseconds());
-        builder.SetTickle_Arrival(static_cast<int64_t>(arrival_type));
+        builder.SetTickle_Arrival(std::to_underlying(arrival_type));
         builder.Record(ukm::UkmRecorder::Get());
       }
       return true;
@@ -223,7 +224,7 @@ void OtpMetricsTracker::RecordFormOutcomeMetrics(
                                 form_outcome);
   if (ukm_source_id_.has_value() && *ukm_source_id_ != ukm::kInvalidSourceId) {
     ukm::builders::Autofill_OneTimeTokens builder(*ukm_source_id_);
-    builder.SetTickle_FormOutcome(static_cast<int64_t>(form_outcome));
+    builder.SetTickle_FormOutcome(std::to_underlying(form_outcome));
     builder.Record(ukm::UkmRecorder::Get());
   }
 

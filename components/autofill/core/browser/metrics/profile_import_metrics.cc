@@ -188,11 +188,11 @@ void LogAddressProfileImportUkm(
       .SetAutocompleteUnrecognizedImport(
           profile_import_metadata
               .did_import_from_unrecognized_autocomplete_field)
-      .SetImportType(static_cast<int64_t>(import_type))
+      .SetImportType(std::to_underlying(import_type))
       .SetNumberOfEditedFields(num_edited_fields)
       .SetPhoneNumberStatus(
-          static_cast<int64_t>(profile_import_metadata.phone_import_status))
-      .SetUserDecision(static_cast<int64_t>(user_decision))
+          std::to_underlying(profile_import_metadata.phone_import_status))
+      .SetUserDecision(std::to_underlying(user_decision))
       .SetUserHasExistingProfile(!existing_profiles.empty());
   if (import_type == AutofillProfileImportType::kNewProfile &&
       !existing_profiles.empty() && import_candidate) {
