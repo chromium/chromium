@@ -564,13 +564,16 @@ void GetSearchOverriddenParamsThenRun(
   // Find the active search engine (which is provided by the extension).
   TemplateURLService* template_url_service =
       TemplateURLServiceFactory::GetForProfile(profile);
-  CHECK(template_url_service->IsExtensionControlledDefaultSearch(),
-        base::NotFatalUntil::M162);
+  // TODO(crbug.com/577354943): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(template_url_service->IsExtensionControlledDefaultSearch());
   const TemplateURL* default_search =
       template_url_service->GetDefaultSearchProvider();
   CHECK(default_search, base::NotFatalUntil::M162);
-  CHECK_EQ(TemplateURL::NORMAL_CONTROLLED_BY_EXTENSION, default_search->type(),
-           base::NotFatalUntil::M162);
+  // TODO(crbug.com/577354943): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK_EQ(TemplateURL::NORMAL_CONTROLLED_BY_EXTENSION,
+            default_search->type());
 
   // NOTE: For most TemplateURLs, there's no guarantee that search_url is a
   // valid URL (it could contain placeholders, etc). However, for extension-
