@@ -3917,8 +3917,6 @@ if (!is_android && !is_chromeos_device) {
     ldflags = []
 
     deps = [
-      ":test_support",
-      ":test_support_ui",
       "//chrome/browser/actor/ui:interactive_ui_tests",
       "//chrome/browser/ai:interactive_ui_tests",
       "//chrome/browser/autofill:interactive_ui_tests",
@@ -3997,7 +3995,6 @@ if (!is_android && !is_chromeos_device) {
       "//chrome/browser/ui/webui/downloads:interactive_ui_tests",
       "//chrome/browser/ui/webui/print_preview:interactive_ui_tests",
       "//chrome/browser/ui/webui/searchbox:interactive_ui_tests",
-      "//chrome/browser/ui/webui/searchbox:searchbox_test_utils",
       "//chrome/browser/ui/webui/settings:interactive_ui_tests",
       "//chrome/browser/ui/webui/side_panel/customize_chrome:interactive_ui_tests",
       "//chrome/browser/ui/webui/side_panel/customize_chrome/wallpaper_search:interactive_ui_tests",
@@ -4008,23 +4005,15 @@ if (!is_android && !is_chromeos_device) {
       "//chrome/browser/web_applications:interactive_ui_tests",
       "//chrome/browser/webapps:interactive_ui_tests",
       "//chrome/browser/webauthn:interactive_ui_tests",
-      "//chrome/test/base:chrome_test_launcher",
-      "//chrome/test/base:chrome_test_suite",
       "//chrome/test/base:interactive_ui_tests_runner",
-      "//chrome/test/base:testing_browser_process",
       "//chrome/test/media:performance_tests",
       "//chrome/test/media_router:browser_tests",
       "//chrome/test/supervised_user:live_tests",
-      "//ui/accessibility:test_support",
       "//ui/base:base_interactive_ui_tests",
       "//ui/base/clipboard:clipboard_interactive_ui_tests",
       "//ui/display:display_interactive_ui_tests",
       "//ui/events:events_interactive_ui_tests",
     ]
-
-    if (is_linux) {
-      deps += [ "//ui/linux:display_server_utils" ]
-    }
 
     if (!is_chrome_for_testing) {
       deps += [ "//chrome/browser/search_engine_choice:interactive_ui_tests" ]
@@ -4080,18 +4069,13 @@ if (!is_android && !is_chromeos_device) {
     }
 
     if (use_ozone) {
-      deps += [
-        "//ui/ozone",
-        "//ui/ozone:ozone_interactive_ui_tests",
-        "//ui/platform_window/common",
-      ]
+      deps += [ "//ui/ozone:ozone_interactive_ui_tests" ]
     }
 
     if (use_aura) {
       deps += [
         "//chrome/browser/ui/aura/accessibility:interactive_ui_tests",
         "//chrome/browser/ui/views/eye_dropper:interactive_ui_tests",
-        "//ui/aura:test_support",
       ]
     }
 
@@ -4125,7 +4109,6 @@ if (!is_android && !is_chromeos_device) {
         "//chrome/browser/ui/views/web_apps/frame_toolbar:interactive_ui_tests",
         "//chrome/browser/ui/views/webid:interactive_ui_tests",
         "//chrome/browser/ui/views/zoom:interactive_ui_tests",
-        "//chrome/test/base:chrome_unit_test_suite",
         "//chrome/test/interaction:interactive_ui_tests",
         "//chrome/test/user_education:interactive_ui_tests",
         "//ui/views:views_interactive_ui_tests",
