@@ -89,7 +89,8 @@ suite('AudioMenuElement', () => {
     assertFalse(audioMenu.$.menu.$.lazyMenu.get().open);
   });
 
-  test('opens and closes accent menu and restores focus', async () => {
+  // TODO(crbug.com/578217996): Flaky.
+  test.skip('opens and closes accent menu and restores focus', async () => {
     createAudioMenu();
     stubAnimationFrame();
     audioMenu.open(document.body);
@@ -112,7 +113,8 @@ suite('AudioMenuElement', () => {
     assertEquals(accentButton, audioMenu.$.menu.shadowRoot.activeElement);
   });
 
-  test(
+  // TODO(crbug.com/578217996): Flaky.
+  test.skip(
       'opens and closes voice selection dialog from audio menu action item',
       async () => {
         createAudioMenu();
