@@ -367,10 +367,7 @@ void FieldClassificationModelHandler::GetModelPredictionsForForms(
   auto sort_results =
       base::BindOnce([](std::vector<IndexAndOutput> indexed_predictions)
                          -> std::vector<ModelPredictions> {
-        std::ranges::sort(indexed_predictions,
-                          [](IndexAndOutput& a, IndexAndOutput& b) {
-                            return a.first < b.first;
-                          });
+        std::ranges::sort(indexed_predictions, {}, &IndexAndOutput::first);
         return base::ToVector(std::move(indexed_predictions),
                               [](IndexAndOutput& p) -> ModelPredictions&& {
                                 return std::move(p.second);
@@ -502,13 +499,12 @@ std::pair<FieldType, float> FieldClassificationModelHandler::GetMostLikelyType(
 ModelPredictions FieldClassificationModelHandler::BuildModelPredictions(
     const FormData& form,
     base::span<const FieldType> predicted_types) const {
-  std::vector<std::pair<FieldGlobalId, FieldType>> field_predictions;
-  field_predictions.reserve(predicted_types.size());
-  for (auto [field, type] : std::views::zip(form.fields(), predicted_types)) {
-    field_predictions.emplace_back(field.global_id(), type);
-  }
-  return ModelPredictions(GetHeuristicSource(optimization_target_),
-                          supported_types_, std::move(field_predictions));
+  return ModelPredictions(
+      GetHeuristicSource(optimization_target_), supported_types_,
+      base::ToVector(std::views::zip(form.fields(), predicted_types),
+                     [](std::pair<const FormFieldData&, FieldType> p) {
+                       return std::make_pair(p.first.global_id(), p.second);
+                     }));
 }
 
 bool FieldClassificationModelHandler::ShouldEmitPredictions(

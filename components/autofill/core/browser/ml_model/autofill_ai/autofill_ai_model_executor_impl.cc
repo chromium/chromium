@@ -211,16 +211,16 @@ void AutofillAiModelExecutorImpl::OnModelExecuted(
   // First compute all field identifiers because we cannot assume that
   // `field_index` in the response is monotonically increasing.
   std::map<FieldSignature, size_t> field_ranks_in_signature_group;
-  std::vector<AutofillAiModelCache::FieldIdentifier> all_field_identifiers;
-  all_field_identifiers.reserve(form_data.fields().size());
-  for (const FormFieldData& field : form_data.fields()) {
-    const FieldSignature field_signature =
-        CalculateFieldSignatureForField(field);
-    all_field_identifiers.push_back(
-        {.signature = field_signature,
-         .rank_in_signature_group =
-             field_ranks_in_signature_group[field_signature]++});
-  }
+  std::vector<AutofillAiModelCache::FieldIdentifier> all_field_identifiers =
+      base::ToVector(form_data.fields(), [&field_ranks_in_signature_group](
+                                             const FormFieldData& field) {
+        const FieldSignature field_signature =
+            CalculateFieldSignatureForField(field);
+        return AutofillAiModelCache::FieldIdentifier{
+            .signature = field_signature,
+            .rank_in_signature_group =
+                field_ranks_in_signature_group[field_signature]++};
+      });
 
   // Now select the identifiers corresponding to fields in the response.
   std::vector<AutofillAiModelCache::FieldIdentifier>
