@@ -154,6 +154,7 @@ void LeakDetectionRequest::LookupSingleLeak(
             "A hash prefix of the username and the encrypted username and "
             "password. An OAuth2 access token for the user account."
           destination: GOOGLE_OWNED_SERVICE
+          api_service_name: "passwordsleakcheck-pa.googleapis.com"
           internal {
             contacts {
               owners: "//components/password_manager/OWNERS"
