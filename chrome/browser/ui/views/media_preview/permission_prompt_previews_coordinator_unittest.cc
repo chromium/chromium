@@ -7,7 +7,6 @@
 #include <optional>
 
 #include "base/system/system_monitor.h"
-#include "base/test/gtest_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
@@ -40,11 +39,12 @@ class PermissionPromptPreviewsCoordinatorTest : public ChromeViewsTestBase {
   PermissionPromptPreviewsCoordinatorTest() = default;
 
   void InitializeCoordinator(
+      MediaCoordinator::ViewType view_type,
       std::vector<std::string> requested_audio_capture_device_ids,
       std::vector<std::string> requested_video_capture_device_ids) {
-    coordinator_.emplace(&profile_, &parent_view_, /*index=*/0,
-                         requested_audio_capture_device_ids,
-                         requested_video_capture_device_ids);
+    coordinator_.emplace(&profile_, &parent_view_, /*index=*/0, view_type,
+                         std::move(requested_audio_capture_device_ids),
+                         std::move(requested_video_capture_device_ids));
   }
 
   void TearDown() override {
@@ -76,7 +76,8 @@ class PermissionPromptPreviewsCoordinatorTest : public ChromeViewsTestBase {
 };
 
 TEST_F(PermissionPromptPreviewsCoordinatorTest, EligibleCamerasandMics) {
-  InitializeCoordinator({kMicId}, {kCameraId});
+  InitializeCoordinator(MediaCoordinator::ViewType::kBoth, {kMicId},
+                        {kCameraId});
   auto view_type = coordinator_->GetViewTypeForTesting();
   ASSERT_EQ(view_type, MediaCoordinator::ViewType::kBoth);
 
@@ -86,7 +87,8 @@ TEST_F(PermissionPromptPreviewsCoordinatorTest, EligibleCamerasandMics) {
 }
 
 TEST_F(PermissionPromptPreviewsCoordinatorTest, EligibleCameras) {
-  InitializeCoordinator({}, {kCameraId});
+  InitializeCoordinator(MediaCoordinator::ViewType::kCameraOnly, {},
+                        {kCameraId});
   auto view_type = coordinator_->GetViewTypeForTesting();
   ASSERT_EQ(view_type, MediaCoordinator::ViewType::kCameraOnly);
 
@@ -96,7 +98,7 @@ TEST_F(PermissionPromptPreviewsCoordinatorTest, EligibleCameras) {
 }
 
 TEST_F(PermissionPromptPreviewsCoordinatorTest, EligibleMics) {
-  InitializeCoordinator({kMicId}, {});
+  InitializeCoordinator(MediaCoordinator::ViewType::kMicOnly, {kMicId}, {});
   auto view_type = coordinator_->GetViewTypeForTesting();
   ASSERT_EQ(view_type, MediaCoordinator::ViewType::kMicOnly);
 
@@ -105,9 +107,13 @@ TEST_F(PermissionPromptPreviewsCoordinatorTest, EligibleMics) {
   ExpectDurationHistogramUpdate(/*expected_bucket_min_value=*/8, view_type);
 }
 
-using PermissionPromptPreviewsCoordinatorDeathTest =
-    PermissionPromptPreviewsCoordinatorTest;
+TEST_F(PermissionPromptPreviewsCoordinatorTest,
+       ExplicitViewTypeWithoutSpecificDeviceIds) {
+  InitializeCoordinator(MediaCoordinator::ViewType::kBoth, {}, {});
+  auto view_type = coordinator_->GetViewTypeForTesting();
+  ASSERT_EQ(view_type, MediaCoordinator::ViewType::kBoth);
 
-TEST_F(PermissionPromptPreviewsCoordinatorDeathTest, NoEligibleDevices) {
-  EXPECT_CHECK_DEATH_WITH(InitializeCoordinator({}, {}), "");
+  AdvanceClock(base::Seconds(2.5));
+  coordinator_.reset();
+  ExpectDurationHistogramUpdate(/*expected_bucket_min_value=*/2, view_type);
 }

@@ -122,6 +122,7 @@ class EmbeddedPermissionPromptBaseView : public PermissionPromptBaseView,
   virtual std::vector<ButtonConfiguration> GetButtonsConfiguration() const = 0;
   const virtual gfx::VectorIcon& GetIcon() const;
   virtual bool ShowLoadingIcon() const;
+  virtual bool ShouldShowMediaPreview() const;
 
   base::WeakPtr<EmbeddedPermissionPromptViewDelegate>& delegate() {
     return delegate_;

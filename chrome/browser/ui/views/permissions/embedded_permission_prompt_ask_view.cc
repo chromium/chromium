@@ -38,8 +38,10 @@ void EmbeddedPermissionPromptAskView::RunButtonCallback(int button_id) {
 
   if (delegate()) {
     if (button == ButtonType::kAllowThisTime) {
+      UpdateMediaDevicePreferenceRanking();
       delegate()->AllowThisTime();
     } else if (button == ButtonType::kAllow) {
+      UpdateMediaDevicePreferenceRanking();
       delegate()->Allow();
     }
   }
@@ -71,6 +73,10 @@ EmbeddedPermissionPromptAskView::GetButtonsConfiguration() const {
   buttons.push_back(allow_once);
 
   return buttons;
+}
+
+bool EmbeddedPermissionPromptAskView::ShouldShowMediaPreview() const {
+  return true;
 }
 
 std::u16string EmbeddedPermissionPromptAskView::GetMessageText() const {

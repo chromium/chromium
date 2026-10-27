@@ -4,41 +4,21 @@
 
 #include "chrome/browser/ui/views/media_preview/permission_prompt_previews_coordinator.h"
 
+#include <utility>
+
 #include "base/check.h"
-#include "base/notreached.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/views/media_preview/media_preview_metrics.h"
 #include "chrome/browser/ui/views/media_preview/scroll_media_preview.h"
-
-namespace {
-
-MediaCoordinator::ViewType ComputePreviewType(
-    std::vector<std::string> requested_audio_capture_device_ids,
-    std::vector<std::string> requested_video_capture_device_ids) {
-  if (!requested_audio_capture_device_ids.empty() &&
-      !requested_video_capture_device_ids.empty()) {
-    return MediaCoordinator::ViewType::kBoth;
-  }
-  if (!requested_video_capture_device_ids.empty()) {
-    return MediaCoordinator::ViewType::kCameraOnly;
-  }
-  if (!requested_audio_capture_device_ids.empty()) {
-    return MediaCoordinator::ViewType::kMicOnly;
-  }
-  // We always expect that at least one of the 2 vectors is not empty.
-  NOTREACHED();
-}
-
-}  // namespace
 
 PermissionPromptPreviewsCoordinator::PermissionPromptPreviewsCoordinator(
     Profile* profile,
     views::View* parent_view,
     size_t index,
+    MediaCoordinator::ViewType view_type,
     std::vector<std::string> requested_audio_capture_device_ids,
     std::vector<std::string> requested_video_capture_device_ids)
-    : view_type_(ComputePreviewType(requested_audio_capture_device_ids,
-                                    requested_video_capture_device_ids)) {
+    : view_type_(view_type) {
   CHECK(parent_view);
   CHECK(profile);
 
@@ -46,8 +26,8 @@ PermissionPromptPreviewsCoordinator::PermissionPromptPreviewsCoordinator(
       scroll_media_preview::CreateScrollViewAndGetContents(*parent_view, index);
 
   const auto eligible_devices = MediaCoordinator::EligibleDevices{
-      /*cameras=*/requested_video_capture_device_ids,
-      /*mics=*/requested_audio_capture_device_ids};
+      /*cameras=*/std::move(requested_video_capture_device_ids),
+      /*mics=*/std::move(requested_audio_capture_device_ids)};
 
   const auto metrics_context = media_preview_metrics::Context(
       media_preview_metrics::UiLocation::kPermissionPrompt,

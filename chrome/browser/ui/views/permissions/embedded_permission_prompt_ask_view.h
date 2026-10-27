@@ -41,6 +41,7 @@ class EmbeddedPermissionPromptAskView
   std::vector<RequestLineConfiguration> GetRequestLinesConfiguration()
       const override;
   std::vector<ButtonConfiguration> GetButtonsConfiguration() const override;
+  bool ShouldShowMediaPreview() const override;
 
  private:
   std::u16string GetMessageText() const;

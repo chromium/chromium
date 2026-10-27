@@ -139,6 +139,10 @@ bool EmbeddedPermissionPromptBaseView::ShowLoadingIcon() const {
   return false;
 }
 
+bool EmbeddedPermissionPromptBaseView::ShouldShowMediaPreview() const {
+  return false;
+}
+
 void EmbeddedPermissionPromptBaseView::CreateWidget() {
   CHECK(GetNativeWindow(), base::NotFatalUntil::M162);
   views::Widget* widget = views::BubbleDialogDelegateView::CreateBubble(this);
@@ -259,6 +263,7 @@ void EmbeddedPermissionPromptBaseView::OnWidgetVisibilityChanged(
 
 // For clicking a button in the PEPC permission prompt:
 void EmbeddedPermissionPromptBaseView::ClosingPermission() {
+  ResetMediaPreview();
   if (delegate()) {
     delegate()->Dismiss();
   }
@@ -275,6 +280,7 @@ void EmbeddedPermissionPromptBaseView::ClosingPermission() {
 }
 
 void EmbeddedPermissionPromptBaseView::PrepareToClose() {
+  ResetMediaPreview();
   DialogDelegate::SetCloseCallback(base::DoNothing());
 }
 
@@ -334,6 +340,12 @@ void EmbeddedPermissionPromptBaseView::Init() {
   int index = 0;
   for (auto& request : requests_configuration) {
     AddRequestLine(request, index++);
+  }
+
+  if (base::FeatureList::IsEnabled(
+          blink::features::kMediaCaptureElementPreview) &&
+      ShouldShowMediaPreview()) {
+    MaybeAddMediaPreview(index, /*allow_empty_device_ids=*/true);
   }
 
   if (delegate_ && delegate_->GetPermissionPromptDelegate()) {

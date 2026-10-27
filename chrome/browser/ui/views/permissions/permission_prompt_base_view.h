@@ -70,13 +70,17 @@ class PermissionPromptBaseView : public views::BubbleDialogDelegateView,
 
  protected:
   // Adds Media (Camera / Mic) live preview feeds at `index` if the current
-  // prompt requests camera or microphone permissions with non-empty requested
-  // audio/video capture device IDs.
-  bool MaybeAddMediaPreview(size_t index);
+  // prompt requests camera or microphone permissions. When
+  // `allow_empty_device_ids` is false, at least one request must specify
+  // non-empty requested audio/video capture device IDs.
+  bool MaybeAddMediaPreview(size_t index, bool allow_empty_device_ids = false);
 
   // Updates the preferred device ranking in user prefs based on the user's
   // device selection in the active media preview, if any.
   void UpdateMediaDevicePreferenceRanking();
+
+  // Tears down any active media preview.
+  void ResetMediaPreview();
   // Performs clickjacking checks and executes the button callback if the click
   // is valid. Subclasses need to make sure to set this as the callback for
   // custom buttons in order for this to work. This function will call
