@@ -66,12 +66,6 @@ BASE_FEATURE_PARAM(int,
                    "shared_memory_size_bytes",
                    tracing::kDefaultSharedMemorySizeBytes);
 
-BASE_FEATURE_PARAM(int,
-                   kPerfettoBrowserSharedMemorySizeBytes,
-                   &kPerfettoBackendParams,
-                   "browser_shared_memory_size_bytes",
-                   tracing::kDefaultBrowserSharedMemorySizeBytes);
-
 }  // namespace features
 
 namespace tracing {

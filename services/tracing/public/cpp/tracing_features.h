@@ -8,8 +8,6 @@
 #ifndef SERVICES_TRACING_PUBLIC_CPP_TRACING_FEATURES_H_
 #define SERVICES_TRACING_PUBLIC_CPP_TRACING_FEATURES_H_
 
-#include <stddef.h>
-
 #include "base/component_export.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
@@ -33,9 +31,6 @@ BASE_DECLARE_FEATURE_PARAM(int, kPerfettoSMBPageSizeBytes);
 COMPONENT_EXPORT(TRACING_CPP)
 BASE_DECLARE_FEATURE_PARAM(int, kPerfettoSharedMemorySizeBytes);
 
-COMPONENT_EXPORT(TRACING_CPP)
-BASE_DECLARE_FEATURE_PARAM(int, kPerfettoBrowserSharedMemorySizeBytes);
-
 }  // namespace features
 
 namespace tracing {
@@ -43,9 +38,6 @@ namespace tracing {
 // TODO(crbug.com/40574594): Figure out a good buffer size.
 inline constexpr size_t kDefaultSharedMemorySizeBytes =
     4 * 1024 * 1024;  // 4 MB
-
-inline constexpr size_t kDefaultBrowserSharedMemorySizeBytes =
-    32 * 1024 * 1024;  // 32 MB
 
 inline constexpr size_t kDefaultSMBPageSizeBytes = 4 * 1024;
 
