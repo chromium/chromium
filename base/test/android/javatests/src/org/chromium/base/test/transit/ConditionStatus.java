@@ -11,6 +11,8 @@ import org.chromium.build.annotations.Nullable;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.Map;
+import java.util.function.Supplier;
 
 /**
  * The return value of {@link Condition#checkWithSuppliers()}.
@@ -41,6 +43,7 @@ public class ConditionStatus {
     private final long mTimestamp;
     private final @Status int mStatus;
     private @Nullable String mMessage;
+    private @Nullable Map<String, Supplier<?>> mBlockingSuppliers;
 
     ConditionStatus(@Status int status, @Nullable String message) {
         mTimestamp = ConditionWaiter.getNow();
@@ -76,6 +79,22 @@ public class ConditionStatus {
 
     public long getTimestamp() {
         return mTimestamp;
+    }
+
+    /**
+     * Mark this AWAITING status as blocked on |blockingSuppliers| not supplying a value yet, which
+     * means the Condition's own check did not run.
+     *
+     * @param blockingSuppliers the Suppliers without a value, keyed by their input name.
+     */
+    void setBlockingSuppliers(Map<String, Supplier<?>> blockingSuppliers) {
+        assert mStatus == Status.AWAITING;
+        mBlockingSuppliers = blockingSuppliers;
+    }
+
+    /** The Suppliers without a value that blocked the check, keyed by their input name. */
+    @Nullable Map<String, Supplier<?>> getBlockingSuppliers() {
+        return mBlockingSuppliers;
     }
 
     void amendMessage(String otherMessage) {

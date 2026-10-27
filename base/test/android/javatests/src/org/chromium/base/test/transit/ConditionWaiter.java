@@ -30,10 +30,12 @@ import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.IdentityHashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Supplier;
 
 /** Polls multiple {@link Condition}s in parallel. */
 @NullMarked
@@ -268,6 +270,7 @@ public class ConditionWaiter {
 
     // Emoji make the blocks easy to tell apart when scanning; the word keeps them readable without.
     private static final String FAILED_HEADER_PREFIX = "❌ FAILED ";
+    private static final String BLOCKED_HEADER_PREFIX = "⏳ BLOCKED ";
     private static final String OK_HEADER_PREFIX = "✅ OK ";
 
     protected final Transition mTransition;
@@ -644,14 +647,25 @@ public class ConditionWaiter {
     /**
      * Creates a summary of the status of all {@link ConditionWait}s, grouped by the
      * ConditionalState entered/exited or the Transition. Failed Conditions are listed first, then
-     * OK ones.
+     * Conditions blocked on inputs, then OK ones.
      */
     private static String createWaitConditionsSummary(
             List<ConditionWait> conditionWaits, boolean generateMainMessage) {
         String firstFailedConditionString = null;
+        String firstBlockedConditionString = null;
         int failedConditionCount = 0;
+        int blockedConditionCount = 0;
         Map<String, ConditionGroup> groups = new LinkedHashMap<>();
+
+        // Index Conditions to reference which Condition blocks another.
+        IdentityHashMap<Condition, Integer> conditionIndices = new IdentityHashMap<>();
         int i = 1;
+        for (ConditionWait conditionWait : conditionWaits) {
+            conditionIndices.put(conditionWait.mCondition, i);
+            i++;
+        }
+
+        i = 1;
         for (ConditionWait conditionWait : conditionWaits) {
             String conditionDescription = conditionWait.mCondition.getDescription();
 
@@ -661,6 +675,7 @@ public class ConditionWaiter {
             String delayedString = conditionWait.isInitialWait() ? " " : "+";
 
             boolean failed = false;
+            Map<String, Supplier<?>> blockingSuppliers = null;
             String verdictString;
             if (conditionWait.isFulfilled()) {
                 if (conditionWait.isTimedOut()) {
@@ -672,14 +687,24 @@ public class ConditionWaiter {
                     verdictString = "[OK  ]";
                 }
             } else {
+                blockingSuppliers = conditionWait.getStatusStore().getLastBlockingSuppliers();
                 if (conditionWait.getStatusStore().anyErrorsReported()) {
                     verdictString = "[ERR*]";
+                    blockingSuppliers = null;
+                } else if (blockingSuppliers != null) {
+                    verdictString = "[BLKD]";
                 } else {
                     verdictString = "[FAIL]";
                 }
                 failed = true;
             }
-            if (failed) {
+            boolean blocked = blockingSuppliers != null;
+            if (blocked) {
+                if (firstBlockedConditionString == null) {
+                    firstBlockedConditionString = indexString + " " + conditionDescription;
+                }
+                blockedConditionCount++;
+            } else if (failed) {
                 if (firstFailedConditionString == null) {
                     firstFailedConditionString = indexString + " " + conditionDescription;
                 }
@@ -687,7 +712,8 @@ public class ConditionWaiter {
             }
 
             StringBuilder historyString = new StringBuilder();
-            if (conditionWait.getStatusStore().shouldPrintRegions()) {
+            // Blocked Conditions only waited for their inputs, which "blocked on" already says.
+            if (!blocked && conditionWait.getStatusStore().shouldPrintRegions()) {
                 List<StatusRegion> statusRegions =
                         conditionWait.getStatusStore().getStatusRegions();
                 for (StatusRegion r : statusRegions) {
@@ -720,17 +746,24 @@ public class ConditionWaiter {
                                     timeToFulfill.first, timeToFulfill.second);
                 }
             } else {
+                String unfulfilledPrefix =
+                        blockingSuppliers != null
+                                ? "blocked on "
+                                        + describeBlockers(blockingSuppliers, conditionIndices)
+                                        + " for"
+                                : "unfulfilled after";
                 if (conditionWait.hasCustomTimeout()) {
                     fulfilledString =
                             String.format(
-                                    "{unfulfilled after %d ms, timeout was %d ms}",
+                                    "{%s %d ms, timeout was %d ms}",
+                                    unfulfilledPrefix,
                                     conditionWait.getTimeUnfulfilled(),
                                     conditionWait.getScaledTimeoutMs());
                 } else {
                     fulfilledString =
                             String.format(
-                                    "{unfulfilled after %d ms}",
-                                    conditionWait.getTimeUnfulfilled());
+                                    "{%s %d ms}",
+                                    unfulfilledPrefix, conditionWait.getTimeUnfulfilled());
                 }
             }
 
@@ -752,36 +785,49 @@ public class ConditionWaiter {
 
             ConditionGroup group =
                     groups.computeIfAbsent(getGroupHeader(conditionWait), ConditionGroup::new);
-            (failed ? group.mFailedRows : group.mOkRows).append(rowString);
+            StringBuilder rows;
+            if (blocked) {
+                rows = group.mBlockedRows;
+            } else if (failed) {
+                rows = group.mFailedRows;
+            } else {
+                rows = group.mOkRows;
+            }
+            rows.append(rowString);
             i++;
         }
 
         StringBuilder failedBlock = new StringBuilder();
+        StringBuilder blockedBlock = new StringBuilder();
         StringBuilder okBlock = new StringBuilder();
         for (ConditionGroup group : groups.values()) {
-            if (group.mFailedRows.length() > 0) {
-                failedBlock
-                        .append(FAILED_HEADER_PREFIX)
-                        .append(group.mHeader)
-                        .append(":\n")
-                        .append(group.mFailedRows);
-            }
-            if (group.mOkRows.length() > 0) {
-                okBlock.append(OK_HEADER_PREFIX)
-                        .append(group.mHeader)
-                        .append(":\n")
-                        .append(group.mOkRows);
-            }
+            appendGroup(failedBlock, FAILED_HEADER_PREFIX, group.mHeader, group.mFailedRows);
+            appendGroup(blockedBlock, BLOCKED_HEADER_PREFIX, group.mHeader, group.mBlockedRows);
+            appendGroup(okBlock, OK_HEADER_PREFIX, group.mHeader, group.mOkRows);
         }
-        StringBuilder detailsString = new StringBuilder(failedBlock);
-        if (failedBlock.length() > 0 && okBlock.length() > 0) {
-            detailsString.append('\n');
+        StringBuilder detailsString = new StringBuilder();
+        for (StringBuilder block : List.of(failedBlock, blockedBlock, okBlock)) {
+            if (block.length() == 0) {
+                continue;
+            }
+            if (detailsString.length() > 0) {
+                detailsString.append('\n');
+            }
+            detailsString.append(block);
         }
-        detailsString.append(okBlock);
 
         if (generateMainMessage) {
-            if (failedConditionCount == 0) {
+            if (failedConditionCount == 0 && blockedConditionCount == 0) {
                 return String.format("all Conditions fulfilled:\n\n%s", detailsString);
+            } else if (failedConditionCount == 0) {
+                // Only blocked Conditions, e.g. a Supplier from outside this Transition never
+                // supplied a value.
+                return String.format(
+                        "%d Condition%s blocked: %s\n\n%s",
+                        blockedConditionCount,
+                        blockedConditionCount == 1 ? "" : "s",
+                        firstBlockedConditionString,
+                        detailsString);
             } else if (failedConditionCount == 1) {
                 return String.format(
                         "failed 1 Condition: %s\n\n%s", firstFailedConditionString, detailsString);
@@ -796,6 +842,36 @@ public class ConditionWaiter {
         } else {
             return detailsString.toString();
         }
+    }
+
+    private static void appendGroup(
+            StringBuilder block, String prefix, String header, StringBuilder rows) {
+        if (rows.length() > 0) {
+            block.append(prefix).append(header).append(":\n").append(rows);
+        }
+    }
+
+    /**
+     * Describes the Suppliers blocking a Condition, referencing the Condition that provides each
+     * Supplier's value by index when it is part of this Transition, e.g. "[5]", or by the input
+     * name given to {@link Condition#dependOnSupplier(Supplier, String)} otherwise.
+     */
+    private static String describeBlockers(
+            Map<String, Supplier<?>> blockingSuppliers,
+            IdentityHashMap<Condition, Integer> conditionIndices) {
+        List<String> blockers = new ArrayList<>();
+        for (Map.Entry<String, Supplier<?>> entry : blockingSuppliers.entrySet()) {
+            Supplier<?> supplier = entry.getValue();
+            Condition producer = null;
+            if (supplier instanceof Element<?> element) {
+                producer = element.getEnterCondition();
+            } else if (supplier instanceof Condition condition) {
+                producer = condition;
+            }
+            Integer index = producer != null ? conditionIndices.get(producer) : null;
+            blockers.add(index != null ? "[" + index + "]" : entry.getKey());
+        }
+        return String.join(", ", blockers);
     }
 
     /** Returns e.g. "ENTER <S1: SomeStation>", "EXIT <C2: SomeFacility>" or "TRANSITION". */
@@ -813,6 +889,7 @@ public class ConditionWaiter {
     private static class ConditionGroup {
         final String mHeader;
         final StringBuilder mFailedRows = new StringBuilder();
+        final StringBuilder mBlockedRows = new StringBuilder();
         final StringBuilder mOkRows = new StringBuilder();
 
         ConditionGroup(String header) {

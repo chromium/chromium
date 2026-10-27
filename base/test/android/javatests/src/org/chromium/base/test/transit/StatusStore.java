@@ -13,7 +13,9 @@ import org.chromium.build.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.function.Supplier;
 
 /** Receives status updates and stores them as regions of equal updates. */
 @NullMarked
@@ -67,6 +69,14 @@ class StatusStore {
         return mAnyErrorsReported || mAnyMessages || mStatusRegions.size() > 2;
     }
 
+    /**
+     * @return the Suppliers without a value that blocked the last check, keyed by input name, or
+     *     null if the last check was not blocked.
+     */
+    @Nullable Map<String, Supplier<?>> getLastBlockingSuppliers() {
+        return mLastRegion != null ? mLastRegion.mBlockingSuppliers : null;
+    }
+
     /** Represents one or more consecutive reports of the same status message. */
     static class StatusRegion {
 
@@ -74,11 +84,13 @@ class StatusStore {
         private final long mFirstTimestamp;
         private long mLastTimestamp;
         private final @Nullable String mMessage;
+        private final @Nullable Map<String, Supplier<?>> mBlockingSuppliers;
         private int mCount = 1;
 
         private StatusRegion(ConditionStatus firstStatus) {
             mStatus = firstStatus.getStatus();
             mMessage = firstStatus.getMessage();
+            mBlockingSuppliers = firstStatus.getBlockingSuppliers();
             mFirstTimestamp = firstStatus.getTimestamp();
             mLastTimestamp = mFirstTimestamp;
         }

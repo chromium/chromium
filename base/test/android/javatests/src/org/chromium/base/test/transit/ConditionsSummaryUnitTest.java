@@ -13,6 +13,8 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
+import java.util.function.Supplier;
+
 /** Unit Tests for the summary of Conditions printed in TravelExceptions and logs. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class ConditionsSummaryUnitTest {
@@ -70,6 +72,31 @@ public class ConditionsSummaryUnitTest {
         assertThat(messages).doesNotContain("FAILED");
     }
 
+    @Test
+    public void testConditionsBlockedOnSuppliersReportedAsBlocked() {
+        State destinationState = new FixedNameState("<destination state>");
+        Element<String> producerElement =
+                destinationState.declareEnterConditionAsElement(new NeverResolvingCondition());
+        destinationState.declareEnterCondition(
+                new DependentCondition("dependent on producer", producerElement, "Product"));
+        destinationState.declareEnterCondition(
+                new DependentCondition("dependent on outside", () -> null, "OutsideInput"));
+
+        TravelException exception =
+                mTransitRule.runTransitionExpectingThrow(
+                        TravelException.class,
+                        () -> Triggers.noopTo().withTimeout(100).enterState(destinationState));
+        String message = exception.getMessage();
+
+        assertInOrder(
+                message,
+                "failed 1 Condition: [1] producer\n\n",
+                "❌ FAILED ENTER <destination state>:\n    [1] [FAIL] producer {unfulfilled after",
+                "\n\n⏳ BLOCKED ENTER <destination state>:\n"
+                        + "    [2] [BLKD] dependent on producer {blocked on [1] for",
+                "    [3] [BLKD] dependent on outside {blocked on OutsideInput for");
+    }
+
     private static void assertInOrder(String message, String... expectedSubstrings) {
         int lastIndex = -1;
         for (String expected : expectedSubstrings) {
@@ -121,6 +148,42 @@ public class ConditionsSummaryUnitTest {
         @Override
         protected ConditionStatus checkWithSuppliers() {
             return mFulfilled ? fulfilled() : notFulfilled();
+        }
+
+        @Override
+        public String buildDescription() {
+            return mDescription;
+        }
+    }
+
+    private static class NeverResolvingCondition extends ConditionWithResult<String> {
+        NeverResolvingCondition() {
+            super(/* isRunOnUiThread= */ false);
+        }
+
+        @Override
+        protected ConditionStatusWithResult<String> resolveWithSuppliers() {
+            return notFulfilled("not resolved").withoutResult();
+        }
+
+        @Override
+        public String buildDescription() {
+            return "producer";
+        }
+    }
+
+    private static class DependentCondition extends Condition {
+        private final String mDescription;
+
+        DependentCondition(String description, Supplier<?> supplier, String inputName) {
+            super(/* isRunOnUiThread= */ false);
+            mDescription = description;
+            dependOnSupplier(supplier, inputName);
+        }
+
+        @Override
+        protected ConditionStatus checkWithSuppliers() {
+            return fulfilled();
         }
 
         @Override
