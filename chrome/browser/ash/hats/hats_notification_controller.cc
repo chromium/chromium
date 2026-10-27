@@ -28,9 +28,9 @@
 #include "chrome/browser/ash/hats/hats_finch_helper.h"
 #include "chrome/browser/ash/login/startup_utils.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "chromeos/ash/components/network/network_handler.h"
@@ -40,6 +40,8 @@
 #include "components/language/core/browser/pref_names.h"
 #include "components/language/core/common/locale_util.h"
 #include "components/prefs/pref_service.h"
+#include "components/session_manager/core/session.h"
+#include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "components/version_info/version_info.h"
@@ -361,7 +363,11 @@ void HatsNotificationController::Click(
 }
 
 void HatsNotificationController::ShowDialog(const std::string& site_context) {
-  if (profile_ != ProfileManager::GetActiveUserProfile()) {
+  const auto* active_session =
+      session_manager::SessionManager::Get()->GetActiveSession();
+  if (!active_session ||
+      CHECK_DEREF(AnnotatedAccountId::Get(profile_->GetOriginalProfile())) !=
+          active_session->account_id()) {
     DVLOG(1) << "Different user detected, not showing dialog";
     return;
   }

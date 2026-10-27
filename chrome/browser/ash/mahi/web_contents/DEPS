@@ -9,7 +9,7 @@ include_rules = [
   # this list.
   "+chrome/browser/ash/mahi",
   "+chrome/browser/printing",
-  "+chrome/browser/profiles/profile_manager.h",
+  "+chrome/browser/profiles/profile.h",
   "+chrome/browser/screen_ai",
   "+chrome/test",
 ]

@@ -24,7 +24,7 @@
 #include "base/unguessable_token.h"
 #include "chrome/browser/ash/mahi/web_contents/mahi_content_extraction_delegate.h"
 #include "chrome/browser/printing/print_view_manager_common.h"
-#include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chromeos/components/mahi/public/cpp/mahi_browser_util.h"
 #include "chromeos/components/mahi/public/cpp/mahi_manager.h"
 #include "chromeos/components/mahi/public/cpp/mahi_media_app_content_manager.h"

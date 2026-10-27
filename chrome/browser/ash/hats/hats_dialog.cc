@@ -7,6 +7,7 @@
 #include <string_view>
 
 #include "ash/constants/ash_features.h"
+#include "base/check.h"
 #include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
@@ -17,14 +18,15 @@
 #include "base/task/thread_pool.h"
 #include "chrome/browser/ash/hats/hats_config.h"
 #include "chrome/browser/ash/hats/hats_finch_helper.h"
-#include "chrome/browser/profiles/profile_destroyer.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/dialogs/browser_dialogs.h"
 #include "chrome/grit/browser_resources.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/version/version_loader.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/language/core/common/locale_util.h"
 #include "components/prefs/pref_service.h"
+#include "components/session_manager/core/session.h"
+#include "components/session_manager/core/session_manager.h"
 #include "components/version_info/version_info.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
@@ -183,9 +185,15 @@ HatsDialog::~HatsDialog() = default;
 void HatsDialog::Show(const std::string& trigger_id,
                       const std::string& histogram_name,
                       const std::string& site_context) {
+  // TODO(crbug.com/278643115): Take the account_id from the callers.
+  const auto* active_session =
+      session_manager::SessionManager::Get()->GetActiveSession();
+  CHECK(active_session);
   // HatsDialog is self-deleting via OnDialogClosed().
   chrome::ShowWebDialog(
-      nullptr, ProfileManager::GetActiveUserProfile(),
+      nullptr,
+      BrowserContextHelper::Get()->GetBrowserContextByAccountId(
+          active_session->account_id()),
       new HatsDialog(trigger_id, histogram_name, site_context));
 }
 

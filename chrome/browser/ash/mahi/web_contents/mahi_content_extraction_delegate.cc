@@ -8,15 +8,18 @@
 #include <optional>
 #include <string>
 
+#include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/screen_ai/screen_ai_service_router.h"
 #include "chrome/browser/screen_ai/screen_ai_service_router_factory.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/components/mahi/public/cpp/mahi_browser_util.h"
 #include "chromeos/components/mahi/public/cpp/mahi_types.h"
 #include "chromeos/components/mahi/public/mojom/content_extraction.mojom.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "components/session_manager/core/session.h"
+#include "components/session_manager/core/session_manager.h"
 #include "content/public/browser/service_process_host.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -36,9 +39,15 @@ MahiContentExtractionDelegate::MahiContentExtractionDelegate() {
   EnsureContentExtractionServiceIsSetUp();
   EnsureServiceIsConnected();
 
+  // TODO(crbug.com/278643115): Take the account_id from the callers.
+  const auto* active_session =
+      session_manager::SessionManager::Get()->GetActiveSession();
+  CHECK(active_session);
+
   // Builds connection with screen ai service.
   screen_ai::ScreenAIServiceRouterFactory::GetForBrowserContext(
-      ProfileManager::GetActiveUserProfile())
+      ash::BrowserContextHelper::Get()->GetBrowserContextByAccountId(
+          active_session->account_id()))
       ->GetServiceStateAsync(
           screen_ai::ScreenAIServiceRouter::Service::kMainContentExtraction,
           base::BindOnce(
@@ -185,8 +194,13 @@ void MahiContentExtractionDelegate::MaybeBindScreenAIContentExtraction() {
       screen_ai_receiver;
   auto screen_ai_remote = screen_ai_receiver.InitWithNewPipeAndPassRemote();
 
+  // TODO(crbug.com/278643115): Take the account_id from the callers.
+  const auto* active_session =
+      session_manager::SessionManager::Get()->GetActiveSession();
+  CHECK(active_session);
   screen_ai::ScreenAIServiceRouterFactory::GetForBrowserContext(
-      ProfileManager::GetActiveUserProfile())
+      ash::BrowserContextHelper::Get()->GetBrowserContextByAccountId(
+          active_session->account_id()))
       ->BindMainContentExtractor(std::move(screen_ai_receiver));
   remote_content_extraction_service_factory_->OnScreen2xReady(
       std::move(screen_ai_remote));

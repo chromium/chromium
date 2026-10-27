@@ -16,7 +16,7 @@ include_rules = [
   # directory basis. See //tools/chromeos/gen_deps.sh for details.
   "+chrome/browser/ash/magic_boost",
   "+chrome/browser/feedback/show_feedback_page.h",
-  "+chrome/browser/profiles",
+  "+chrome/browser/profiles/profile.h",
   "+chrome/browser/ui/browser_window/public/profile_browser_collection.h",
   "+chrome/test/base",
 ]
