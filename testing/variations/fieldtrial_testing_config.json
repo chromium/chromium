@@ -17721,8 +17721,8 @@
                 {
                     "name": "Enabled",
                     "params": {
-                        "truncate_search_url_oq_length": "2048",
-                        "truncate_search_url_q_length": "60416"
+                        "truncate_search_url_oq_length": "1024",
+                        "truncate_search_url_q_length": "52224"
                     },
                     "enable_features": [
                         "TruncateSearchUrlOq",
