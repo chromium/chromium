@@ -16,6 +16,7 @@
 #include "base/functional/callback.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_string_value_serializer.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/sequence_bound.h"
@@ -220,6 +221,7 @@ class ManagedConfigurationAPI::OriginConfiguration {
     if (desired_ != desired) {
       retry_timer_.Stop();
       retry_backoff_.Reset();
+      retry_count_ = 0;
     }
     desired_ = std::move(desired);
     SyncStoreWithDesiredConfiguration();
@@ -230,6 +232,7 @@ class ManagedConfigurationAPI::OriginConfiguration {
     downloader_.reset();
     retry_timer_.Stop();
     retry_backoff_.Reset();
+    retry_count_ = 0;
     ScopedDictPrefUpdate update(api_->profile_->GetPrefs(),
                                 prefs::kLastManagedConfigurationHashForOrigin);
     update->Remove(GetOriginEncoded(origin_));
@@ -252,6 +255,9 @@ class ManagedConfigurationAPI::OriginConfiguration {
       return;
     }
     retry_timer_.Stop();
+    // Reset backoff to fast-track the pending retry on reconnection, while
+    // keeping `retry_count_` intact so total retries for `desired_` remain
+    // accurate.
     retry_backoff_.Reset();
     EnsureSynced();
   }
@@ -279,10 +285,12 @@ class ManagedConfigurationAPI::OriginConfiguration {
     return policy;
   }
 
-  void ScheduleRetry() {
+  void ScheduleRetry(RetryReason reason) {
     if (!IsRecoveryEnabled()) {
       return;
     }
+    ++retry_count_;
+    base::UmaHistogramEnumeration(kRetryReasonHistogram, reason);
     retry_backoff_.InformOfRequest(false);
     retry_timer_.Start(FROM_HERE, retry_backoff_.GetTimeUntilRelease(),
                        base::BindOnce(&OriginConfiguration::EnsureSynced,
@@ -323,6 +331,7 @@ class ManagedConfigurationAPI::OriginConfiguration {
         downloader_.reset();
         retry_timer_.Stop();
         retry_backoff_.Reset();
+        retry_count_ = 0;
       }
       return;
     }
@@ -366,7 +375,7 @@ class ManagedConfigurationAPI::OriginConfiguration {
                   std::optional<std::string> data) {
     downloader_.reset();
     if (!data) {
-      ScheduleRetry();
+      ScheduleRetry(RetryReason::kDownloadFailed);
       return;
     }
 
@@ -377,7 +386,7 @@ class ManagedConfigurationAPI::OriginConfiguration {
               << origin_.Serialize();
       PostStoreConfiguration(/*hash_to_commit=*/std::nullopt,
                              base::DictValue());
-      ScheduleRetry();
+      ScheduleRetry(RetryReason::kInvalidJson);
       return;
     }
     retry_timer_.Stop();
@@ -452,7 +461,7 @@ class ManagedConfigurationAPI::OriginConfiguration {
                                   hash_to_commit == desired_->hash;
     if (!changed.has_value()) {
       if (is_desired_write) {
-        ScheduleRetry();
+        ScheduleRetry(RetryReason::kStoreWriteFailed);
       }
       return;
     }
@@ -461,9 +470,12 @@ class ManagedConfigurationAPI::OriginConfiguration {
           api_->profile_->GetPrefs(),
           prefs::kLastManagedConfigurationHashForOrigin);
       update->Set(GetOriginEncoded(origin_), *hash_to_commit);
+      base::UmaHistogramCounts1000(kRetryCountUntilSuccessHistogram,
+                                   retry_count_);
       // Only a durably committed configuration counts as success; resetting
       // earlier would keep the backoff from growing while writes keep failing.
       retry_backoff_.Reset();
+      retry_count_ = 0;
     }
     api_->InformObserversIfConfigurationChanged(origin_, *changed);
   }
@@ -480,6 +492,10 @@ class ManagedConfigurationAPI::OriginConfiguration {
   std::unique_ptr<ManagedConfigurationDownloader> downloader_;
   net::BackoffEntry retry_backoff_{&retry_policy_};
   base::OneShotTimer retry_timer_;
+  // Number of retries scheduled for the current `desired_` configuration.
+  // Tracked separately from `retry_backoff_.failure_count()` because network
+  // reconnection resets `retry_backoff_` to retry immediately.
+  int retry_count_ = 0;
   int in_flight_store_writes_ = 0;
   // Hash the most recently queued store write will commit, while any write is
   // in flight. std::nullopt for clears and test writes.

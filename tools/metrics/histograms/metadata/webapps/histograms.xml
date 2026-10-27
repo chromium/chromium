@@ -2036,6 +2036,41 @@ chromium-metrics-reviews@google.com.
   <summary>Whether the given launch url is in the web app's scope.</summary>
 </histogram>
 
+<histogram name="WebApp.ManagedConfiguration.RetryCountUntilSuccess"
+    units="retries" expires_after="2027-10-26">
+  <owner>simonha@google.com</owner>
+  <owner>iwa-team@google.com</owner>
+  <owner>src/chrome/browser/device_api/OWNERS</owner>
+  <summary>
+    Records the number of retries required before an origin's managed
+    configuration from the ManagedConfigurationPerOrigin policy is successfully
+    downloaded, parsed, and committed to the LevelDB store. Emits 0 when the
+    initial attempt succeeds without needing a retry. Internal SimpleURLLoader
+    retries within a single download attempt are not counted separately.
+    Recorded once per committed configuration sync (not recorded when a cached
+    hash already matches policy, or if a sync is superseded or ends before
+    succeeding; see WebApp.ManagedConfiguration.RetryReason for all scheduled
+    retries).
+  </summary>
+</histogram>
+
+<histogram name="WebApp.ManagedConfiguration.RetryReason"
+    enum="ManagedConfigurationRetryReason" expires_after="2027-10-26">
+  <owner>simonha@google.com</owner>
+  <owner>iwa-team@google.com</owner>
+  <owner>src/chrome/browser/device_api/OWNERS</owner>
+  <summary>
+    Records the failure reason each time ManagedConfigurationAPI schedules a
+    retry to sync an origin's managed configuration from the
+    ManagedConfigurationPerOrigin policy (download failure, invalid or
+    non-dictionary JSON payload, or LevelDB store write failure). Internal
+    SimpleURLLoader retries within a single download attempt are not counted
+    separately. Emitted immediately when the retry is scheduled, including for
+    configurations that never recover before the session ends or before the
+    policy changes.
+  </summary>
+</histogram>
+
 <histogram name="WebApp.Manifest.ForOpaqueOrigin" enum="Boolean"
     expires_after="2027-05-11">
   <owner>japhet@chromium.org</owner>

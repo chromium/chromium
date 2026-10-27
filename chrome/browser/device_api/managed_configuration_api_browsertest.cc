@@ -22,6 +22,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/test/gtest_tags.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
@@ -952,6 +953,268 @@ IN_PROC_BROWSER_TEST_F(ManagedConfigurationAPITest,
                               {{kKey1, kValue12}, {kKey2, kValue22}}));
 }
 
+// Verifies that a configuration sync succeeding on the first attempt records 0
+// retries and no retry reasons, and that subsequent reads when the committed
+// hash already matches policy do not emit additional samples.
+IN_PROC_BROWSER_TEST_F(ManagedConfigurationAPITest,
+                       MetricsRecordedOnImmediateSuccessWithoutDuplicateReads) {
+  base::HistogramTester histogram_tester;
+  EnableTestServer({{kConfigurationUrl1, {kConfigurationData1}}});
+  SetConfiguration(kConfigurationUrl1, kConfigurationHash1);
+  WaitForUpdate();
+  ASSERT_EQ(GetCommittedHash(), kConfigurationHash1);
+
+  histogram_tester.ExpectTotalCount(
+      ManagedConfigurationAPI::kRetryReasonHistogram, 0);
+  histogram_tester.ExpectUniqueSample(
+      ManagedConfigurationAPI::kRetryCountUntilSuccessHistogram, 0, 1);
+
+  // Subsequent reads and no-op policy refreshes with the same committed hash
+  // must not record extra samples.
+  ASSERT_TRUE(DictValueEquals(GetValues({kKey1, kKey2}),
+                              {{kKey1, kValue1}, {kKey2, kValue2}}));
+  SetConfiguration(kConfigurationUrl1, kConfigurationHash1);
+  histogram_tester.ExpectTotalCount(
+      ManagedConfigurationAPI::kRetryReasonHistogram, 0);
+  histogram_tester.ExpectUniqueSample(
+      ManagedConfigurationAPI::kRetryCountUntilSuccessHistogram, 0, 1);
+}
+
+// Verifies that each failed download attempt records `kDownloadFailed` as it is
+// scheduled, and that `RetryCountUntilSuccess` records the exact retry count
+// once a retry succeeds.
+IN_PROC_BROWSER_TEST_F(ManagedConfigurationAPITest,
+                       MetricsRecordedForMultipleDownloadRetries) {
+  base::HistogramTester histogram_tester;
+  api()->SetRetryBackoffForTesting(base::Milliseconds(10), 1.0);
+  auto remaining_failures =
+      base::MakeRefCounted<base::RefCountedData<std::atomic<int>>>(
+          std::in_place, 2);
+  embedded_test_server()->RegisterRequestHandler(base::BindRepeating(
+      [](scoped_refptr<base::RefCountedData<std::atomic<int>>>
+             remaining_failures,
+         const net::test_server::HttpRequest& request)
+          -> std::unique_ptr<net::test_server::HttpResponse> {
+        if (request.relative_url == kConfigurationUrl1 &&
+            remaining_failures->data.fetch_sub(1) > 0) {
+          auto response =
+              std::make_unique<net::test_server::BasicHttpResponse>();
+          response->set_code(net::HTTP_NOT_FOUND);
+          return response;
+        }
+        return nullptr;
+      },
+      remaining_failures));
+  EnableTestServer({{kConfigurationUrl1, {kConfigurationData1}}});
+
+  SetConfiguration(kConfigurationUrl1, kConfigurationHash1);
+  WaitForUpdate();
+  ASSERT_EQ(GetCommittedHash(), kConfigurationHash1);
+
+  histogram_tester.ExpectUniqueSample(
+      ManagedConfigurationAPI::kRetryReasonHistogram,
+      ManagedConfigurationAPI::RetryReason::kDownloadFailed, 2);
+  histogram_tester.ExpectUniqueSample(
+      ManagedConfigurationAPI::kRetryCountUntilSuccessHistogram, 2, 1);
+}
+
+// Verifies that recovering via `OnConnectionChanged()` (which resets
+// `retry_backoff_` to retry immediately) preserves the retry count for the
+// active sync rather than reporting 0 retries.
+IN_PROC_BROWSER_TEST_F(ManagedConfigurationAPITest,
+                       MetricsPreservedAcrossNetworkReconnectionRecovery) {
+  base::HistogramTester histogram_tester;
+  api()->SetRetryBackoffForTesting(base::Hours(1), 2.0);
+  auto fail_requests =
+      base::MakeRefCounted<base::RefCountedData<std::atomic<bool>>>(
+          std::in_place, true);
+  embedded_test_server()->RegisterRequestHandler(base::BindRepeating(
+      [](scoped_refptr<base::RefCountedData<std::atomic<bool>>> fail_requests,
+         const net::test_server::HttpRequest& request)
+          -> std::unique_ptr<net::test_server::HttpResponse> {
+        if (request.relative_url == kConfigurationUrl1 &&
+            fail_requests->data.load()) {
+          auto response =
+              std::make_unique<net::test_server::BasicHttpResponse>();
+          response->set_code(net::HTTP_NOT_FOUND);
+          return response;
+        }
+        return nullptr;
+      },
+      fail_requests));
+  EnableTestServer({{kConfigurationUrl1, {kConfigurationData1}}});
+
+  SetConfiguration(kConfigurationUrl1, kConfigurationHash1);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&] { return !api()->IsFetchInProgressForTesting(origin()); }));
+
+  // `RetryReason` is emitted immediately when the retry is scheduled, before
+  // recovery succeeds.
+  histogram_tester.ExpectUniqueSample(
+      ManagedConfigurationAPI::kRetryReasonHistogram,
+      ManagedConfigurationAPI::RetryReason::kDownloadFailed, 1);
+  histogram_tester.ExpectTotalCount(
+      ManagedConfigurationAPI::kRetryCountUntilSuccessHistogram, 0);
+
+  fail_requests->data.store(false);
+  static_cast<network::NetworkConnectionTracker::NetworkConnectionObserver*>(
+      api())
+      ->OnConnectionChanged(net::NetworkChangeNotifier::CONNECTION_WIFI);
+  WaitForUpdate();
+  ASSERT_EQ(GetCommittedHash(), kConfigurationHash1);
+
+  histogram_tester.ExpectUniqueSample(
+      ManagedConfigurationAPI::kRetryReasonHistogram,
+      ManagedConfigurationAPI::RetryReason::kDownloadFailed, 1);
+  histogram_tester.ExpectUniqueSample(
+      ManagedConfigurationAPI::kRetryCountUntilSuccessHistogram, 1, 1);
+}
+
+// Verifies that an invalid or non-dictionary JSON payload records
+// `kInvalidJson` without prematurely emitting `RetryCountUntilSuccess` when
+// clearing the store, and emits the retry count once valid JSON is committed.
+IN_PROC_BROWSER_TEST_F(ManagedConfigurationAPITest,
+                       MetricsRecordedForInvalidJsonRetry) {
+  base::HistogramTester histogram_tester;
+  api()->SetRetryBackoffForTesting(base::Milliseconds(10), 1.0);
+  auto remaining_invalid =
+      base::MakeRefCounted<base::RefCountedData<std::atomic<int>>>(
+          std::in_place, 1);
+  embedded_test_server()->RegisterRequestHandler(base::BindRepeating(
+      [](scoped_refptr<base::RefCountedData<std::atomic<int>>>
+             remaining_invalid,
+         const net::test_server::HttpRequest& request)
+          -> std::unique_ptr<net::test_server::HttpResponse> {
+        if (request.relative_url == kConfigurationUrl1 &&
+            remaining_invalid->data.fetch_sub(1) > 0) {
+          auto response =
+              std::make_unique<net::test_server::BasicHttpResponse>();
+          response->set_code(net::HTTP_OK);
+          response->set_content(kConfigurationData3);
+          response->set_content_type("text/plain");
+          return response;
+        }
+        return nullptr;
+      },
+      remaining_invalid));
+  EnableTestServer({{kConfigurationUrl1, {kConfigurationData1}}});
+
+  SetConfiguration(kConfigurationUrl1, kConfigurationHash1);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&] { return GetCommittedHash() == kConfigurationHash1; }));
+
+  histogram_tester.ExpectUniqueSample(
+      ManagedConfigurationAPI::kRetryReasonHistogram,
+      ManagedConfigurationAPI::RetryReason::kInvalidJson, 1);
+  histogram_tester.ExpectUniqueSample(
+      ManagedConfigurationAPI::kRetryCountUntilSuccessHistogram, 1, 1);
+}
+
+// Verifies that a LevelDB write failure records `kStoreWriteFailed` without
+// emitting `RetryCountUntilSuccess`, and emits the retry count once a
+// subsequent write succeeds.
+IN_PROC_BROWSER_TEST_F(ManagedConfigurationAPITest,
+                       MetricsRecordedForStoreWriteRetry) {
+  base::HistogramTester histogram_tester;
+  scoped_refptr<base::SequencedTaskRunner> store_task_runner =
+      base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()});
+  api()->SetStoreTaskRunnerForTesting(store_task_runner);
+  api()->SetRetryBackoffForTesting(base::Hours(1), 2.0);
+  EnableTestServer({{kConfigurationUrl1, {kConfigurationData1}}});
+
+  const base::FilePath origin_store_path =
+      profile()
+          ->GetPath()
+          .AppendASCII("Managed Configuration")
+          .AppendASCII(base::HexEncode(origin().Serialize()));
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    ASSERT_TRUE(base::CreateDirectory(origin_store_path.DirName()));
+    ASSERT_TRUE(base::WriteFile(origin_store_path, "x"));
+  }
+
+  SetConfiguration(kConfigurationUrl1, kConfigurationHash1);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&] { return !api()->IsFetchInProgressForTesting(origin()); }));
+  // Wait until the queued write completed and its reply ran on the UI thread.
+  base::RunLoop store_flush_loop;
+  store_task_runner->PostTaskAndReply(FROM_HERE, base::DoNothing(),
+                                      store_flush_loop.QuitClosure());
+  store_flush_loop.Run();
+
+  EXPECT_FALSE(GetCommittedHash());
+  histogram_tester.ExpectUniqueSample(
+      ManagedConfigurationAPI::kRetryReasonHistogram,
+      ManagedConfigurationAPI::RetryReason::kStoreWriteFailed, 1);
+  histogram_tester.ExpectTotalCount(
+      ManagedConfigurationAPI::kRetryCountUntilSuccessHistogram, 0);
+
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    ASSERT_TRUE(base::DeleteFile(origin_store_path));
+  }
+  static_cast<network::NetworkConnectionTracker::NetworkConnectionObserver*>(
+      api())
+      ->OnConnectionChanged(net::NetworkChangeNotifier::CONNECTION_WIFI);
+  WaitForUpdate();
+  ASSERT_EQ(GetCommittedHash(), kConfigurationHash1);
+
+  histogram_tester.ExpectUniqueSample(
+      ManagedConfigurationAPI::kRetryReasonHistogram,
+      ManagedConfigurationAPI::RetryReason::kStoreWriteFailed, 1);
+  histogram_tester.ExpectUniqueSample(
+      ManagedConfigurationAPI::kRetryCountUntilSuccessHistogram, 1, 1);
+}
+
+// Verifies that when a failing configuration sync is superseded by a new policy
+// before recovering, the scheduled retry for the abandoned configuration is
+// still recorded in `RetryReason`, while the new configuration starts with a
+// fresh retry count of 0.
+IN_PROC_BROWSER_TEST_F(ManagedConfigurationAPITest,
+                       MetricsResetRetryCountWhenPolicyChangesAfterFailure) {
+  base::HistogramTester histogram_tester;
+  api()->SetRetryBackoffForTesting(base::Hours(1), 2.0);
+  auto fail_url1 =
+      base::MakeRefCounted<base::RefCountedData<std::atomic<bool>>>(
+          std::in_place, true);
+  embedded_test_server()->RegisterRequestHandler(base::BindRepeating(
+      [](scoped_refptr<base::RefCountedData<std::atomic<bool>>> fail_url1,
+         const net::test_server::HttpRequest& request)
+          -> std::unique_ptr<net::test_server::HttpResponse> {
+        if (request.relative_url == kConfigurationUrl1 &&
+            fail_url1->data.load()) {
+          auto response =
+              std::make_unique<net::test_server::BasicHttpResponse>();
+          response->set_code(net::HTTP_NOT_FOUND);
+          return response;
+        }
+        return nullptr;
+      },
+      fail_url1));
+  EnableTestServer({{kConfigurationUrl1, {kConfigurationData1}},
+                    {kConfigurationUrl2, {kConfigurationData2}}});
+
+  SetConfiguration(kConfigurationUrl1, kConfigurationHash1);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&] { return !api()->IsFetchInProgressForTesting(origin()); }));
+
+  histogram_tester.ExpectUniqueSample(
+      ManagedConfigurationAPI::kRetryReasonHistogram,
+      ManagedConfigurationAPI::RetryReason::kDownloadFailed, 1);
+  histogram_tester.ExpectTotalCount(
+      ManagedConfigurationAPI::kRetryCountUntilSuccessHistogram, 0);
+
+  SetConfiguration(kConfigurationUrl2, kConfigurationHash2);
+  WaitForUpdate();
+  ASSERT_EQ(GetCommittedHash(), kConfigurationHash2);
+
+  histogram_tester.ExpectUniqueSample(
+      ManagedConfigurationAPI::kRetryReasonHistogram,
+      ManagedConfigurationAPI::RetryReason::kDownloadFailed, 1);
+  histogram_tester.ExpectUniqueSample(
+      ManagedConfigurationAPI::kRetryCountUntilSuccessHistogram, 0, 1);
+}
+
 class ManagedConfigurationAPIRecoveryDisabledTest
     : public ManagedConfigurationAPITest {
  public:
@@ -969,6 +1232,7 @@ class ManagedConfigurationAPIRecoveryDisabledTest
 // updates still work, while failed fetches are not automatically retried).
 IN_PROC_BROWSER_TEST_F(ManagedConfigurationAPIRecoveryDisabledTest,
                        FallbackToLegacyBehaviorWhenFlagDisabled) {
+  base::HistogramTester histogram_tester;
   base::RunLoop url1_request_loop;
   std::atomic<bool> fail_url1{true};
   embedded_test_server()->RegisterRequestHandler(base::BindRepeating(
@@ -1005,6 +1269,10 @@ IN_PROC_BROWSER_TEST_F(ManagedConfigurationAPIRecoveryDisabledTest,
   WaitForUpdate();
   ASSERT_TRUE(DictValueEquals(GetValues({kKey1, kKey2}),
                               {{kKey1, kValue12}, {kKey2, kValue22}}));
+  histogram_tester.ExpectTotalCount(
+      ManagedConfigurationAPI::kRetryReasonHistogram, 0);
+  histogram_tester.ExpectTotalCount(
+      ManagedConfigurationAPI::kRetryCountUntilSuccessHistogram, 0);
 }
 
 #if BUILDFLAG(IS_CHROMEOS)

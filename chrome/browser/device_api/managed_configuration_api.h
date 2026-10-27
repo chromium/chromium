@@ -58,6 +58,24 @@ class ManagedConfigurationAPI
         const url::Origin& origin) = 0;
   };
 
+  // Reasons why syncing an origin's managed configuration needed a retry.
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  //
+  // LINT.IfChange(ManagedConfigurationRetryReason)
+  enum class RetryReason {
+    kDownloadFailed = 0,
+    kInvalidJson = 1,
+    kStoreWriteFailed = 2,
+    kMaxValue = kStoreWriteFailed,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/webapps/enums.xml:ManagedConfigurationRetryReason)
+
+  static constexpr char kRetryReasonHistogram[] =
+      "WebApp.ManagedConfiguration.RetryReason";
+  static constexpr char kRetryCountUntilSuccessHistogram[] =
+      "WebApp.ManagedConfiguration.RetryCountUntilSuccess";
+
   static const char kOriginKey[];
   static const char kManagedConfigurationUrlKey[];
   static const char kManagedConfigurationHashKey[];

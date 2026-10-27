@@ -388,6 +388,16 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(chrome/browser/ui/web_applications/web_app_launch_process.cc:LaunchUrlInScopeResult) -->
 
+<!-- LINT.IfChange(ManagedConfigurationRetryReason) -->
+
+<enum name="ManagedConfigurationRetryReason">
+  <int value="0" label="Download failed"/>
+  <int value="1" label="Invalid JSON"/>
+  <int value="2" label="Store write failed"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/device_api/managed_configuration_api.h:ManagedConfigurationRetryReason) -->
+
 <enum name="ManagedSessionType">
   <int value="0" label="Managed User Session"/>
   <int value="1" label="Managed Guest Session"/>
