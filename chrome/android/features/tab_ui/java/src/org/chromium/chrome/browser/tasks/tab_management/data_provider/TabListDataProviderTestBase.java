@@ -120,6 +120,30 @@ abstract class TabListDataProviderTestBase {
                             }
                             return false;
                         });
+        when(model.getTabsInGroup(any()))
+                .thenAnswer(
+                        invocation -> {
+                            Token tabGroupId = invocation.getArgument(0);
+                            if (tabGroupId == null) return List.of();
+                            List<Tab> groupTabs = new ArrayList<>();
+                            for (Tab tab : tabs) {
+                                if (tabGroupId.equals(tab.getTabGroupId())) {
+                                    groupTabs.add(tab);
+                                }
+                            }
+                            return groupTabs;
+                        });
+        when(model.getTabCountForGroup(any()))
+                .thenAnswer(
+                        invocation -> {
+                            Token tabGroupId = invocation.getArgument(0);
+                            if (tabGroupId == null) return 0;
+                            int count = 0;
+                            for (Tab tab : tabs) {
+                                if (tabGroupId.equals(tab.getTabGroupId())) count++;
+                            }
+                            return count;
+                        });
     }
 
     void initProvider(TabListDataProvider provider) {

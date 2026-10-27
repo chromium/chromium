@@ -29,6 +29,7 @@ import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabGroupObserver.DidRemoveTabGroupReason;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tasks.tab_management.data_provider.TabListDataObserver.PayloadType;
+import org.chromium.components.tab_groups.TabGroupColorId;
 
 import java.util.List;
 
@@ -55,11 +56,20 @@ public class GroupedTabListDataProviderUnitTest extends TabListDataProviderTestB
         // Calling withSelected with the current value returns the same instance.
         assertSame(item, item.withSelected(/* isSelected= */ false));
 
-        // Flipping state returns a new instance with the updated field.
+        // Flipping selection state returns a new instance with the updated field.
         TabGroupItem selectedItem = item.withSelected(/* isSelected= */ true);
         assertNotSame(item, selectedItem);
         assertTrue(selectedItem.isSelected());
         assertTrue(selectedItem.isCollapsed());
+
+        // Calling withCollapsed with the current value returns the same instance.
+        assertSame(item, item.withCollapsed(/* isCollapsed= */ true));
+
+        // Flipping collapse state returns a new instance with the updated field.
+        TabGroupItem expandedItem = item.withCollapsed(/* isCollapsed= */ false);
+        assertNotSame(item, expandedItem);
+        assertFalse(expandedItem.isSelected());
+        assertFalse(expandedItem.isCollapsed());
 
         // Value equality and hashCode across fields.
         TabGroupItem duplicate =
@@ -785,6 +795,145 @@ public class GroupedTabListDataProviderUnitTest extends TabListDataProviderTestB
                         group(TAB_GROUP_ID, /* isSelected= */ false, /* isCollapsed= */ true),
                         PayloadType.GROUP_MEMBERSHIP);
         verifyNoMoreInteractions(mObserver);
+    }
+
+    // ============================================================================================
+    // Section F: Group Metadata & Visuals
+    // ============================================================================================
+
+    @Test
+    public void testDidChangeTabGroupTitle_UpdatesGroupItem() {
+        groupTabs(TAB_GROUP_ID, mTab1, mTab2);
+        setUpProviderWithTabs(/* supportsGroupExpansion= */ false, mTab1, mTab2);
+
+        mTabGroupObserver.didChangeTabGroupTitle(TAB_GROUP_ID, "New Title");
+
+        verify(mObserver)
+                .onItemUpdated(
+                        group(TAB_GROUP_ID, /* isSelected= */ false, /* isCollapsed= */ true),
+                        PayloadType.TITLE);
+        verifyNoMoreInteractions(mObserver);
+        assertItems(group(TAB_GROUP_ID, /* isSelected= */ false, /* isCollapsed= */ true));
+    }
+
+    @Test
+    public void testDidChangeTabGroupTitle_UnknownGroup_NoOps() {
+        setUpProviderWithTabs(/* supportsGroupExpansion= */ false, mTab1);
+
+        mTabGroupObserver.didChangeTabGroupTitle(TAB_GROUP_ID, "New Title");
+
+        verifyNoMoreInteractions(mObserver);
+        assertItems(item(TAB1_ID));
+    }
+
+    @Test
+    public void testDidChangeTabGroupColor_UpdatesGroupItem() {
+        groupTabs(TAB_GROUP_ID, mTab1, mTab2);
+        setUpProviderWithTabs(/* supportsGroupExpansion= */ false, mTab1, mTab2);
+
+        mTabGroupObserver.didChangeTabGroupColor(TAB_GROUP_ID, TabGroupColorId.BLUE);
+
+        verify(mObserver)
+                .onItemUpdated(
+                        group(TAB_GROUP_ID, /* isSelected= */ false, /* isCollapsed= */ true),
+                        PayloadType.COLOR);
+        verifyNoMoreInteractions(mObserver);
+        assertItems(group(TAB_GROUP_ID, /* isSelected= */ false, /* isCollapsed= */ true));
+    }
+
+    @Test
+    public void testDidChangeTabGroupColor_UnknownGroup_NoOps() {
+        setUpProviderWithTabs(/* supportsGroupExpansion= */ false, mTab1);
+
+        mTabGroupObserver.didChangeTabGroupColor(TAB_GROUP_ID, TabGroupColorId.BLUE);
+
+        verifyNoMoreInteractions(mObserver);
+        assertItems(item(TAB1_ID));
+    }
+
+    @Test
+    public void testDidChangeTabGroupCollapsed_GroupedMode_NoOps() {
+        groupTabs(TAB_GROUP_ID, mTab1, mTab2);
+        setUpProviderWithTabs(/* supportsGroupExpansion= */ false, mTab1, mTab2);
+
+        mTabGroupObserver.didChangeTabGroupCollapsed(
+                TAB_GROUP_ID, /* isCollapsed= */ false, /* animate= */ false);
+
+        verifyNoMoreInteractions(mObserver);
+        assertItems(group(TAB_GROUP_ID, /* isSelected= */ false, /* isCollapsed= */ true));
+    }
+
+    @Test
+    public void testDidChangeTabGroupCollapsed_NestedMode_Collapse_RemovesChildItems() {
+        groupTabs(TAB_GROUP_ID, mTab1, mTab2);
+        mCollapsed.put(TAB_GROUP_ID, /* value= */ false);
+        setUpProviderWithTabs(/* supportsGroupExpansion= */ true, mTab1, mTab2);
+        assertItems(
+                group(TAB_GROUP_ID, /* isSelected= */ false, /* isCollapsed= */ false),
+                item(TAB1_ID),
+                item(TAB2_ID));
+
+        mCollapsed.put(TAB_GROUP_ID, /* value= */ true);
+        mTabGroupObserver.didChangeTabGroupCollapsed(
+                TAB_GROUP_ID, /* isCollapsed= */ true, /* animate= */ false);
+
+        verify(mObserver)
+                .onItemUpdated(
+                        group(TAB_GROUP_ID, /* isSelected= */ false, /* isCollapsed= */ true),
+                        PayloadType.COLLAPSED);
+        verify(mObserver).onItemsRemoved(List.of(item(TAB1_ID), item(TAB2_ID)));
+        verifyNoMoreInteractions(mObserver);
+        assertItems(group(TAB_GROUP_ID, /* isSelected= */ false, /* isCollapsed= */ true));
+    }
+
+    @Test
+    public void testDidChangeTabGroupCollapsed_NestedMode_Expand_InsertsChildItems() {
+        groupTabs(TAB_GROUP_ID, mTab1, mTab2);
+        mCollapsed.put(TAB_GROUP_ID, /* value= */ true);
+        setUpProviderWithTabs(/* supportsGroupExpansion= */ true, mTab1, mTab2);
+        assertItems(group(TAB_GROUP_ID, /* isSelected= */ false, /* isCollapsed= */ true));
+
+        mCollapsed.put(TAB_GROUP_ID, /* value= */ false);
+        mTabGroupObserver.didChangeTabGroupCollapsed(
+                TAB_GROUP_ID, /* isCollapsed= */ false, /* animate= */ false);
+
+        verify(mObserver)
+                .onItemUpdated(
+                        group(TAB_GROUP_ID, /* isSelected= */ false, /* isCollapsed= */ false),
+                        PayloadType.COLLAPSED);
+        verify(mObserver)
+                .onItemsInserted(
+                        List.of(item(TAB1_ID), item(TAB2_ID)),
+                        group(TAB_GROUP_ID, /* isSelected= */ false, /* isCollapsed= */ false));
+        verifyNoMoreInteractions(mObserver);
+        assertItems(
+                group(TAB_GROUP_ID, /* isSelected= */ false, /* isCollapsed= */ false),
+                item(TAB1_ID),
+                item(TAB2_ID));
+    }
+
+    @Test
+    public void testDidChangeTabGroupCollapsed_NestedMode_AlreadyMatchesState_NoOps() {
+        groupTabs(TAB_GROUP_ID, mTab1, mTab2);
+        mCollapsed.put(TAB_GROUP_ID, /* value= */ true);
+        setUpProviderWithTabs(/* supportsGroupExpansion= */ true, mTab1, mTab2);
+
+        mTabGroupObserver.didChangeTabGroupCollapsed(
+                TAB_GROUP_ID, /* isCollapsed= */ true, /* animate= */ false);
+
+        verifyNoMoreInteractions(mObserver);
+        assertItems(group(TAB_GROUP_ID, /* isSelected= */ false, /* isCollapsed= */ true));
+    }
+
+    @Test
+    public void testDidChangeTabGroupCollapsed_NestedMode_UnknownGroup_NoOps() {
+        setUpProviderWithTabs(/* supportsGroupExpansion= */ true, mTab1);
+
+        mTabGroupObserver.didChangeTabGroupCollapsed(
+                TAB_GROUP_ID, /* isCollapsed= */ true, /* animate= */ false);
+
+        verifyNoMoreInteractions(mObserver);
+        assertItems(item(TAB1_ID));
     }
 
     // ============================================================================================

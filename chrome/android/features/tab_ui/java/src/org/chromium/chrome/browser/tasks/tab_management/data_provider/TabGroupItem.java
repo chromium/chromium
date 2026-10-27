@@ -56,8 +56,15 @@ public final class TabGroupItem implements TabListItem {
         return mIsCollapsed;
     }
 
-    // TODO(crbug.com/562590772): Add withCollapsed(boolean) copy helper for granular collapse
-    // updates.
+    /**
+     * Returns a copy of this {@link TabGroupItem} with the updated collapse state.
+     *
+     * @param isCollapsed Whether the group is collapsed.
+     */
+    public TabGroupItem withCollapsed(boolean isCollapsed) {
+        if (mIsCollapsed == isCollapsed) return this;
+        return new TabGroupItem(mTabGroupId, mIsSelected, isCollapsed);
+    }
 
     @Override
     public boolean equals(@Nullable Object obj) {

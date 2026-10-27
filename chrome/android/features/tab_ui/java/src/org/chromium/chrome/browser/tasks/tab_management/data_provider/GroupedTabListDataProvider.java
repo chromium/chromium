@@ -18,8 +18,11 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tasks.tab_management.data_provider.TabListDataObserver.PayloadType;
+import org.chromium.components.tab_groups.TabGroupColorId;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -126,6 +129,24 @@ public class GroupedTabListDataProvider extends TabListDataProvider {
                             Token oldTabGroupId, @DidRemoveTabGroupReason int removalReason) {
                         mRemovingTabGroupIds.remove(oldTabGroupId);
                         removeGroupItem(oldTabGroupId);
+                    }
+
+                    @Override
+                    public void didChangeTabGroupTitle(Token tabGroupId, String newTitle) {
+                        updateGroupItem(tabGroupId, PayloadType.TITLE);
+                    }
+
+                    @Override
+                    public void didChangeTabGroupColor(
+                            Token tabGroupId, @TabGroupColorId int newColor) {
+                        updateGroupItem(tabGroupId, PayloadType.COLOR);
+                    }
+
+                    @Override
+                    public void didChangeTabGroupCollapsed(
+                            Token tabGroupId, boolean isCollapsed, boolean animate) {
+                        if (!mSupportsGroupExpansion) return;
+                        updateGroupCollapsed(tabGroupId, isCollapsed);
                     }
                 };
 
@@ -247,7 +268,37 @@ public class GroupedTabListDataProvider extends TabListDataProvider {
         int index = indexOfTabGroupId(tabGroupId);
         if (index == TabList.INVALID_TAB_INDEX) return;
 
-        removeItemAt(index);
+        removeItemsAt(index, /* count= */ 1);
+    }
+
+    private void updateGroupCollapsed(Token tabGroupId, boolean isCollapsed) {
+        int headerIndex = indexOfTabGroupId(tabGroupId);
+        if (headerIndex == TabList.INVALID_TAB_INDEX) return;
+
+        TabGroupItem groupItem = (TabGroupItem) mItems.get(headerIndex);
+        if (groupItem.isCollapsed() == isCollapsed) return;
+
+        TabModel model = getTabModelIfTabStateInitialized();
+        if (model == null
+                || !model.containsTabGroup(tabGroupId)
+                || mRemovingTabGroupIds.contains(tabGroupId)) {
+            return;
+        }
+
+        TabGroupItem updatedGroupItem = groupItem.withCollapsed(isCollapsed);
+        updateItemAt(headerIndex, updatedGroupItem, PayloadType.COLLAPSED);
+
+        if (isCollapsed) {
+            removeItemsAt(headerIndex + 1, model.getTabCountForGroup(tabGroupId));
+        } else {
+            List<Tab> children = model.getTabsInGroup(tabGroupId);
+            Tab selectedTab = TabModelUtils.getCurrentTab(model);
+            List<TabItem> childItems = new ArrayList<>(children.size());
+            for (Tab childTab : children) {
+                childItems.add(createTabItem(selectedTab, childTab));
+            }
+            insertItemsAt(headerIndex + 1, childItems);
+        }
     }
 
     private boolean isGroupCollapsed(TabModel model, Token tabGroupId) {

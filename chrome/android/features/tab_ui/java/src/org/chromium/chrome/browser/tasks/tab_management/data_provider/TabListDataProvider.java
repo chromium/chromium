@@ -188,7 +188,7 @@ public abstract class TabListDataProvider {
         int index = indexOfTabId(tabId);
         if (index == TabList.INVALID_TAB_INDEX) return;
 
-        removeItemAt(index);
+        removeItemsAt(index, /* count= */ 1);
     }
 
     /**
@@ -348,14 +348,27 @@ public abstract class TabListDataProvider {
      * @param item The {@link TabListItem} to insert.
      */
     protected void insertItem(TabModel model, TabListItem item) {
-        int index = getInsertionIndex(model, item);
-        if (index == TabList.INVALID_TAB_INDEX) return;
+        insertItemsAt(getInsertionIndex(model, item), List.of(item));
+    }
+
+    /**
+     * Inserts {@code items} starting at {@code index} in {@link #mItems} and notifies observers via
+     * {@link TabListDataObserver#onItemsInserted}.
+     *
+     * @param index The insertion index in {@link #mItems}.
+     * @param items The contiguous {@link TabListItem} entries to insert.
+     */
+    protected void insertItemsAt(int index, List<? extends TabListItem> items) {
+        if (!isValidInsertionIndex(index) || items.isEmpty()) {
+            return;
+        }
 
         // Pass the preceding item as an anchor (or null for the start of the tab region) so UI
         // consumers can insert relative to it without index offset math around non-tab items.
         TabListItem previousItem = getPreviousItem(index);
-        mItems.add(index, item);
-        notifyObservers(obs -> obs.onItemsInserted(List.of(item), previousItem));
+        List<TabListItem> insertedItems = List.copyOf(items);
+        mItems.addAll(index, insertedItems);
+        notifyObservers(obs -> obs.onItemsInserted(insertedItems, previousItem));
     }
 
     /**
@@ -367,21 +380,38 @@ public abstract class TabListDataProvider {
      * @param payload The {@link PayloadType} indicating which property changed.
      */
     protected void updateItemAt(int index, TabListItem updatedItem, @PayloadType int payload) {
+        if (!isValidIndex(index)) return;
+
         mItems.set(index, updatedItem);
         notifyObservers(obs -> obs.onItemUpdated(updatedItem, payload));
     }
 
     /**
-     * Removes the {@link TabListItem} at {@code index} from {@link #mItems} and notifies observers
-     * via {@link TabListDataObserver#onItemsRemoved}.
+     * Removes {@code count} {@link TabListItem} entries starting at {@code startIndex} and notifies
+     * observers via {@link TabListDataObserver#onItemsRemoved}.
      *
-     * @param index The index in {@link #mItems} to remove.
-     * @return The removed {@link TabListItem}.
+     * @param startIndex The starting index in {@link #mItems}.
+     * @param count The number of contiguous items to remove.
      */
-    protected TabListItem removeItemAt(int index) {
-        TabListItem removedItem = mItems.remove(index);
-        notifyObservers(obs -> obs.onItemsRemoved(List.of(removedItem)));
-        return removedItem;
+    protected void removeItemsAt(int startIndex, int count) {
+        if (count <= 0 || !isValidIndex(startIndex) || startIndex + count > mItems.size()) {
+            return;
+        }
+
+        List<TabListItem> subList = mItems.subList(startIndex, startIndex + count);
+        List<TabListItem> removedItems = List.copyOf(subList);
+        subList.clear();
+        notifyObservers(obs -> obs.onItemsRemoved(removedItems));
+    }
+
+    /** Returns whether {@code index} is a valid index in {@link #mItems}. */
+    private boolean isValidIndex(int index) {
+        return index >= 0 && index < mItems.size();
+    }
+
+    /** Returns whether {@code index} is a valid insertion position in {@link #mItems}. */
+    private boolean isValidInsertionIndex(int index) {
+        return isValidIndex(index) || index == mItems.size();
     }
 
     /**
