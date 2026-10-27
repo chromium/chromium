@@ -11,6 +11,7 @@
     },
     "ci": {
         "Win Builder (dbg)": "Windows-11",
+        "Windows deterministic": "Windows-11",
         "Libfuzzer Upload Windows ASan": "Windows-11",
         "win-arm64-dbg": "Windows-11",
         "win-asan": "Windows-11",
