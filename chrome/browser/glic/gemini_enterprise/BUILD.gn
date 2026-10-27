@@ -112,6 +112,7 @@ source_set("unit_tests") {
   sources = [
     "geic_enabling_unittest.cc",
     "geic_fre_unittest.cc",
+    "geic_url_allowlist_unittest.cc",
     "glic_gemini_enterprise_manager_unittest.cc",
   ]
 
@@ -120,6 +121,7 @@ source_set("unit_tests") {
     ":geic_fre",
     ":geic_pref_names",
     ":gemini_enterprise",
+    ":url_allowlist",
     "//base",
     "//base/test:test_support",
     "//chrome/browser/glic",

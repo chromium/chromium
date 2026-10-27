@@ -7,6 +7,7 @@
 #include <string_view>
 
 #include "base/containers/fixed_flat_set.h"
+#include "base/feature_list.h"
 #include "chrome/browser/glic/public/features.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
@@ -28,6 +29,14 @@ bool IsAllowedGeminiEnterpriseHost(const GURL& url) {
       });
   if (kAllowedCloudHosts.contains(url.host())) {
     return true;
+  }
+
+  // Policy handlers also run while local state is created, before the
+  // FeatureList is initialized, and reading a feature param then crashes.
+  // The per-profile policy is validated again once the profile's prefs are
+  // built.
+  if (!base::FeatureList::GetInstance()) {
+    return false;
   }
 
   const GURL finch_url(features::kGeicGuestURL.Get());
