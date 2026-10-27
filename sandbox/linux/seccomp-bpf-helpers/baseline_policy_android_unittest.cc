@@ -17,12 +17,15 @@
 #include <sys/syscall.h>
 #include <sys/types.h>
 
+#include "base/clang_profiling_buildflags.h"
 #include "base/compiler_specific.h"
 #include "base/files/scoped_file.h"
 #include "base/posix/eintr_wrapper.h"
 #include "sandbox/linux/seccomp-bpf-helpers/sigsys_handlers.h"
 #include "sandbox/linux/seccomp-bpf/bpf_tests.h"
 #include "sandbox/linux/services/syscall_wrappers.h"
+#include "sandbox/linux/system_headers/linux_prctl.h"
+#include "sandbox/linux/system_headers/linux_syscalls.h"
 #include "sandbox/linux/tests/test_utils.h"
 
 namespace sandbox {
@@ -218,6 +221,25 @@ BPF_DEATH_TEST_C(BaselinePolicyAndroid,
             nullptr, nullptr);
   TestUtils::HandlePostForkReturn(pid);
 }
+
+#if defined(__x86_64__)
+BPF_TEST_C(BaselinePolicyAndroid, ArchPrctlUntagMask, BaselinePolicyAndroid) {
+  errno = 0;
+  uint64_t untag_mask;
+  const int ret = syscall(__NR_arch_prctl, ARCH_GET_UNTAG_MASK, &untag_mask);
+  BPF_ASSERT(ret == 0 || (ret == -1 && errno == EINVAL));
+}
+
+#if !BUILDFLAG(CLANG_PROFILING_INSIDE_SANDBOX)
+BPF_DEATH_TEST_C(BaselinePolicyAndroid,
+                 ArchPrctlEnableTaggedAddrSigsys,
+                 DEATH_SEGV_MESSAGE(GetErrorMessageContentForTests()),
+                 BaselinePolicyAndroid) {
+  syscall(__NR_arch_prctl, ARCH_ENABLE_TAGGED_ADDR, 6);
+  _exit(1);
+}
+#endif
+#endif  // defined(__x86_64__)
 
 }  // namespace
 }  // namespace sandbox

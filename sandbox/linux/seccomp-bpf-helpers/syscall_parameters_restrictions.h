@@ -31,6 +31,12 @@ SANDBOX_EXPORT bpf_dsl::ResultExpr RestrictCloneToThreadsAndEPERMFork();
 // Crash if anything else is attempted.
 SANDBOX_EXPORT bpf_dsl::ResultExpr RestrictPrctl();
 
+#if defined(__x86_64__)
+// Allow ARCH_GET_UNTAG_MASK.
+// Crash if anything else is attempted.
+SANDBOX_EXPORT bpf_dsl::ResultExpr RestrictArchPrctl();
+#endif
+
 // Allow TCGETS and FIONREAD.
 // Crash if anything else is attempted.
 SANDBOX_EXPORT bpf_dsl::ResultExpr RestrictIoctl();

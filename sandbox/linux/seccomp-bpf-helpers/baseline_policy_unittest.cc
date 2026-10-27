@@ -44,6 +44,7 @@
 #include "sandbox/linux/services/syscall_wrappers.h"
 #include "sandbox/linux/services/thread_helpers.h"
 #include "sandbox/linux/system_headers/linux_futex.h"
+#include "sandbox/linux/system_headers/linux_prctl.h"
 #include "sandbox/linux/system_headers/linux_syscalls.h"
 #include "sandbox/linux/system_headers/linux_time.h"
 #include "sandbox/linux/tests/test_utils.h"
@@ -432,6 +433,36 @@ BPF_DEATH_TEST_C(BaselinePolicy,
   _exit(1);
 }
 #endif
+
+#if defined(__x86_64__)
+BPF_TEST_C(BaselinePolicy, ArchPrctlUntagMask, BaselinePolicy) {
+  errno = 0;
+  uint64_t untag_mask;
+  const int ret = syscall(__NR_arch_prctl, ARCH_GET_UNTAG_MASK, &untag_mask);
+  // Kernels older than 6.4 do not recognize ARCH_GET_UNTAG_MASK and return
+  // EINVAL.
+  BPF_ASSERT(ret == 0 || (ret == -1 && errno == EINVAL));
+}
+
+#if !BUILDFLAG(CLANG_PROFILING_INSIDE_SANDBOX)
+BPF_DEATH_TEST_C(BaselinePolicy,
+                 ArchPrctlSigsys,
+                 DEATH_SEGV_MESSAGE(GetErrorMessageContentForTests()),
+                 BaselinePolicy) {
+  uint64_t fs;
+  syscall(__NR_arch_prctl, ARCH_GET_FS, &fs);
+  _exit(1);
+}
+
+BPF_DEATH_TEST_C(BaselinePolicy,
+                 ArchPrctlEnableTaggedAddrSigsys,
+                 DEATH_SEGV_MESSAGE(GetErrorMessageContentForTests()),
+                 BaselinePolicy) {
+  syscall(__NR_arch_prctl, ARCH_ENABLE_TAGGED_ADDR, 6);
+  _exit(1);
+}
+#endif
+#endif  // defined(__x86_64__)
 
 BPF_TEST_C(BaselinePolicy, GetOrSetPriority, BaselinePolicy) {
   errno = 0;

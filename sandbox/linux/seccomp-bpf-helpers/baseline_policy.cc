@@ -271,6 +271,12 @@ ResultExpr EvaluateSyscallImpl(int fs_denied_errno,
   if (sysno == __NR_prctl)
     return RestrictPrctl();
 
+#if defined(__x86_64__)
+  if (sysno == __NR_arch_prctl) {
+    return RestrictArchPrctl();
+  }
+#endif
+
   // (Note that i386 may also use socketcall() for this, handled below.)
   if (sysno == __NR_socketpair) {
     // Only allow AF_UNIX, PF_UNIX. Crash if anything else is seen.

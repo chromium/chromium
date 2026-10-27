@@ -273,7 +273,8 @@ ResultExpr BaselinePolicyAndroid::EvaluateSyscall(int sysno) const {
 #if defined(__x86_64__)
   if (sysno == __NR_arch_prctl) {
     const Arg<int> code(0);
-    return If(code == ARCH_SET_GS, Allow()).Else(Error(EPERM));
+    return If(code == ARCH_SET_GS, Allow())
+        .Else(BaselinePolicy::EvaluateSyscall(sysno));
   }
 #endif
 

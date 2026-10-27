@@ -232,6 +232,16 @@ ResultExpr RestrictPrctl() {
           If(option == PR_SET_PTRACER, Error(EPERM)).Else(CrashSIGSYSPrctl()));
 }
 
+#if defined(__x86_64__)
+ResultExpr RestrictArchPrctl() {
+  // ARCH_GET_UNTAG_MASK: The V8 sandbox tags upper address bits and checks that
+  // hardware untagging is disabled so tagged addresses consistently crash when
+  // dereferenced.
+  const Arg<int> code(0);
+  return If(code == ARCH_GET_UNTAG_MASK, Allow()).Else(CrashSIGSYS());
+}
+#endif
+
 ResultExpr RestrictIoctl() {
   const Arg<int> request(1);
   return Switch(request).Cases({TCGETS, FIONREAD}, Allow()).Default(

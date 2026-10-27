@@ -53,4 +53,17 @@
 
 #endif
 
+#if defined(ARCH_CPU_X86_64)
+#include <asm/prctl.h>
+
+#if !defined(ARCH_GET_UNTAG_MASK)
+#define ARCH_GET_UNTAG_MASK 0x4001
+#endif
+
+#if !defined(ARCH_ENABLE_TAGGED_ADDR)
+#define ARCH_ENABLE_TAGGED_ADDR 0x4002
+#endif
+
+#endif
+
 #endif  // SANDBOX_LINUX_SYSTEM_HEADERS_LINUX_PRCTL_H_
