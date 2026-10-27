@@ -28,8 +28,13 @@ class FilterSheetViewBinder {
         } else if (FilterSheetProperties.SELECTED == key) {
             ImageView checkMark = view.findViewById(R.id.end_button);
             checkMark.setImageResource(R.drawable.ic_check_googblue_24dp);
+            checkMark.setClickable(false);
+            checkMark.setFocusable(false);
+            checkMark.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);
+            checkMark.setBackground(null);
             boolean selected = model.get(FilterSheetProperties.SELECTED);
             checkMark.setVisibility(selected ? View.VISIBLE : View.INVISIBLE);
+            view.setSelected(selected);
         } else if (FilterSheetProperties.CLICK_LISTENER == key) {
             view.setOnClickListener(model.get(FilterSheetProperties.CLICK_LISTENER));
         } else if (FilterSheetProperties.CLOSE_BUTTON_CALLBACK == key) {

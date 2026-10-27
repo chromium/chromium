@@ -5,11 +5,17 @@
 package org.chromium.chrome.browser.history;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import static org.chromium.chrome.browser.history.FilterSheetCoordinator.MAX_SHEET_HEIGHT_RATIO;
 import static org.chromium.chrome.browser.history.FilterSheetCoordinator.MAX_VISIBLE_ITEM_COUNT;
 
 import android.graphics.drawable.Drawable;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.ImageView;
 
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
@@ -25,6 +31,8 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.history.FilterSheetCoordinator.FilterItem;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.ui.base.TestActivity;
+import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -242,5 +250,29 @@ public class FilterSheetCoordinatorTest {
                 "Chosen ids are not correct.",
                 List.of("client_1", "client_2"),
                 selectedItems.get(0).id);
+    }
+
+    @Test
+    public void testSelectedItemCheckMarkAndAccessibility() {
+        View rowView =
+                LayoutInflater.from(mActivity).inflate(R.layout.modern_list_item_view, null, false);
+        PropertyModel model =
+                new PropertyModel.Builder(FilterSheetProperties.LIST_ITEM_KEYS)
+                        .with(FilterSheetProperties.ITEM, ITEM_YOUTUBE)
+                        .with(FilterSheetProperties.SELECTED, true)
+                        .build();
+        PropertyModelChangeProcessor.create(model, rowView, FilterSheetViewBinder::bind);
+
+        ImageView checkMark = rowView.findViewById(R.id.end_button);
+        assertEquals(View.VISIBLE, checkMark.getVisibility());
+        assertFalse(checkMark.isClickable());
+        assertFalse(checkMark.isFocusable());
+        assertEquals(View.IMPORTANT_FOR_ACCESSIBILITY_NO, checkMark.getImportantForAccessibility());
+        assertNull(checkMark.getBackground());
+        assertTrue(rowView.isSelected());
+
+        model.set(FilterSheetProperties.SELECTED, false);
+        assertEquals(View.INVISIBLE, checkMark.getVisibility());
+        assertFalse(rowView.isSelected());
     }
 }
