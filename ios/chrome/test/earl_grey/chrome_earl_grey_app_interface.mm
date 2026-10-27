@@ -11,6 +11,8 @@
 #import <memory>
 #import <string>
 
+#import "GREYAppStateTracker.h"
+#import "GREYElementFilter.h"
 #import "base/apple/foundation_util.h"
 #import "base/barrier_closure.h"
 #import "base/command_line.h"
@@ -104,6 +106,7 @@
 #import "ios/public/provider/chrome/browser/lens/lens_api.h"
 #import "ios/public/provider/chrome/browser/primes/primes_api.h"
 #import "ios/public/provider/chrome/browser/signin/choice_api.h"
+#import "ios/testing/earl_grey/earl_grey_app.h"
 #import "ios/testing/hardware_keyboard_util.h"
 #import "ios/testing/nserror_util.h"
 #import "ios/testing/open_url_context.h"
@@ -206,6 +209,11 @@ UIViewController* FindBrowserViewController(UIViewController* root) {
   return nil;
 }
 
+// Interval between polling attempts for UI element waits. UI hierarchy walks
+// and matcher evaluation are relatively expensive compared to simple state
+// boolean checks, so 50ms provides low latency with minimal CPU contention.
+constexpr base::TimeDelta kUIElementPollInterval = base::Milliseconds(50);
+
 // Manages an in-app condition wait on the main thread so the test process does
 // not need to poll across EDO on every spin iteration.
 class InAppWaiter {
@@ -218,15 +226,18 @@ class InAppWaiter {
   }
 
   // Evaluates `condition` immediately on the app's main thread. If not yet
-  // satisfied, stores `condition` for `StartWithCompletion()` and returns YES.
-  // Returns NO if `condition` is already satisfied and no wait is needed.
-  BOOL PrepareCondition(ConditionBlock condition) {
+  // satisfied, stores `condition` and `poll_interval` for
+  // `StartWithCompletion()` and returns YES. Returns NO if `condition` is
+  // already satisfied and no wait is needed.
+  BOOL PrepareCondition(ConditionBlock condition,
+                        base::TimeDelta poll_interval = kSpinDelaySeconds) {
     CHECK(!condition_);
     CHECK(!timer_);
     if (condition()) {
       return NO;
     }
     condition_ = [condition copy];
+    poll_interval_ = poll_interval;
     return YES;
   }
 
@@ -237,7 +248,7 @@ class InAppWaiter {
     CHECK(completion);
     CHECK(!timer_);
     completion_ = [completion copy];
-    timer_ = [NSTimer timerWithTimeInterval:kSpinDelaySeconds.InSecondsF()
+    timer_ = [NSTimer timerWithTimeInterval:poll_interval_.InSecondsF()
                                     repeats:YES
                                       block:^(NSTimer*) {
                                         InAppWaiter::Get().OnTimerFired();
@@ -252,6 +263,7 @@ class InAppWaiter {
     timer_ = nil;
     condition_ = nil;
     completion_ = nil;
+    poll_interval_ = kSpinDelaySeconds;
   }
 
  private:
@@ -271,6 +283,7 @@ class InAppWaiter {
   NSTimer* timer_ = nil;
   ConditionBlock condition_ = nil;
   ProceduralBlock completion_ = nil;
+  base::TimeDelta poll_interval_ = kSpinDelaySeconds;
 };
 
 }  // namespace
@@ -544,6 +557,40 @@ class InAppWaiter {
 
 + (void)cancelPendingWait {
   InAppWaiter::Get().Cancel();
+}
+
++ (BOOL)prepareConditionForUIElementWithMatcher:(id<GREYMatcher>)matcher
+                                    rootMatcher:(id<GREYMatcher>)rootMatcher
+                               assertionMatcher:
+                                   (id<GREYMatcher>)assertionMatcher {
+  id<GREYMatcher> effectiveMatcher = matcher;
+  if (rootMatcher) {
+    effectiveMatcher = [[GREYAllOf alloc]
+        initWithMatchers:@[ matcher, grey_ancestor(rootMatcher) ]];
+  }
+  GREYElementFinder* elementFinder =
+      [[GREYElementFinder alloc] initWithMatcher:effectiveMatcher];
+  return InAppWaiter::Get().PrepareCondition(
+      ^bool {
+        // Check `GREYAppStateTracker` directly rather than
+        // `GREYUIThreadExecutor`, which also tracks
+        // `dispatch_get_main_queue()` and would treat the initial synchronous
+        // EDO invocation on the main queue as busy.
+        if (GREY_CONFIG_BOOL(kGREYConfigKeySynchronizationEnabled) &&
+            ![[GREYAppStateTracker sharedInstance] isIdleNow]) {
+          return false;
+        }
+        NSArray<id>* elements =
+            [elementFinder elementsMatchedInAllWindowsIncludingStatusBar:NO];
+        if (elements.count > 1) {
+          elements = [GREYElementFilter filterElements:elements];
+        }
+        if (elements.count > 1) {
+          return false;
+        }
+        return [assertionMatcher matches:elements.firstObject];
+      },
+      kUIElementPollInterval);
 }
 
 + (BOOL)prepareConditionForPageToFinishLoading {
