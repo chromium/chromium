@@ -16,8 +16,10 @@ void MockVideoSourceProvider::GetVideoSource(
   DoGetVideoSource(device_id, &source_receiver);
 }
 
-void MockVideoSourceProvider::GetSourceInfos(GetSourceInfosCallback callback) {
-  DoGetSourceInfos(callback);
+void MockVideoSourceProvider::GetSourceInfos(
+    media::mojom::VideoCaptureDeviceEnumerationMode enumeration_mode,
+    GetSourceInfosCallback callback) {
+  DoGetSourceInfos(enumeration_mode, callback);
 }
 
 void MockVideoSourceProvider::AddSharedMemoryVirtualDevice(

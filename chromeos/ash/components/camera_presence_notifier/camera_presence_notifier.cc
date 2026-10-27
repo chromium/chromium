@@ -9,6 +9,7 @@
 #include "base/time/time.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/video_capture_service.h"
+#include "media/capture/video/video_capture_device_enumeration_mode_util.h"
 #include "services/video_capture/public/mojom/video_capture_service.mojom.h"
 
 namespace ash {
@@ -71,8 +72,10 @@ void CameraPresenceNotifier::Stop() {
 
 void CameraPresenceNotifier::CheckCameraPresence() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  video_source_provider_remote_->GetSourceInfos(base::BindOnce(
-      &CameraPresenceNotifier::OnGotSourceInfos, weak_factory_.GetWeakPtr()));
+  video_source_provider_remote_->GetSourceInfos(
+      media::GetDefaultVideoEnumerationMode(),
+      base::BindOnce(&CameraPresenceNotifier::OnGotSourceInfos,
+                     weak_factory_.GetWeakPtr()));
 }
 
 void CameraPresenceNotifier::OnGotSourceInfos(

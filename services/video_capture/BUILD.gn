@@ -60,6 +60,7 @@ source_set("tests") {
 
   sources = [
     "broadcasting_receiver_unittest.cc",
+    "device_factory_impl_unittest.cc",
     "device_media_to_mojo_adapter_unittest.cc",
     "devices_changed_notifier_unittest.cc",
     "gpu_memory_buffer_virtual_device_mojo_adapter_unittest.cc",

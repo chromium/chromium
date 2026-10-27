@@ -97,8 +97,9 @@ class ServiceVideoCaptureProviderTest : public testing::Test {
               wait_for_connection_to_service_.Quit();
             });
 
-    ON_CALL(mock_source_provider_, DoGetSourceInfos(_))
-        .WillByDefault([](video_capture::mojom::VideoSourceProvider::
+    ON_CALL(mock_source_provider_, DoGetSourceInfos(_, _))
+        .WillByDefault([](media::mojom::VideoCaptureDeviceEnumerationMode,
+                          video_capture::mojom::VideoSourceProvider::
                               GetSourceInfosCallback& callback) {
           std::vector<media::VideoCaptureDeviceInfo> arbitrarily_empty_results;
           std::move(callback).Run(GetSourceInfosResult::kSuccess,
@@ -166,10 +167,11 @@ TEST_F(ServiceVideoCaptureProviderTest,
   video_capture::mojom::VideoSourceProvider::GetSourceInfosCallback
       callback_to_be_called_by_service;
   base::RunLoop wait_for_call_to_arrive_at_service;
-  EXPECT_CALL(mock_source_provider_, DoGetSourceInfos(_))
+  EXPECT_CALL(mock_source_provider_, DoGetSourceInfos(_, _))
       .WillOnce(
           [&callback_to_be_called_by_service,
            &wait_for_call_to_arrive_at_service](
+              media::mojom::VideoCaptureDeviceEnumerationMode,
               video_capture::mojom::VideoSourceProvider::GetSourceInfosCallback&
                   callback) {
             // Hold on to the callback so we can drop it later.
@@ -206,10 +208,11 @@ TEST_F(ServiceVideoCaptureProviderTest,
   video_capture::mojom::VideoSourceProvider::GetSourceInfosCallback
       callback_to_be_called_by_service;
   base::RunLoop wait_for_call_to_arrive_at_service;
-  EXPECT_CALL(mock_source_provider_, DoGetSourceInfos(_))
+  EXPECT_CALL(mock_source_provider_, DoGetSourceInfos(_, _))
       .WillOnce(
           [&callback_to_be_called_by_service,
            &wait_for_call_to_arrive_at_service](
+              media::mojom::VideoCaptureDeviceEnumerationMode,
               video_capture::mojom::VideoSourceProvider::GetSourceInfosCallback&
                   callback) {
             // Hold on to the callback so we can drop it later.
@@ -325,9 +328,10 @@ TEST_F(ServiceVideoCaptureProviderTest,
   // yet invoke them.
   std::vector<video_capture::mojom::VideoSourceProvider::GetSourceInfosCallback>
       callbacks_to_be_called_by_service;
-  ON_CALL(mock_source_provider_, DoGetSourceInfos(_))
+  ON_CALL(mock_source_provider_, DoGetSourceInfos(_, _))
       .WillByDefault(
           [&callbacks_to_be_called_by_service](
+              media::mojom::VideoCaptureDeviceEnumerationMode,
               video_capture::mojom::VideoSourceProvider::GetSourceInfosCallback&
                   callback) {
             callbacks_to_be_called_by_service.push_back(std::move(callback));
@@ -386,9 +390,10 @@ TEST_F(ServiceVideoCaptureProviderTest, ServiceGetSourceInfosFails) {
   video_capture::mojom::VideoSourceProvider::GetSourceInfosCallback
       callback_to_be_called_by_service;
   base::RunLoop wait_for_call_to_arrive_at_service;
-  EXPECT_CALL(mock_source_provider_, DoGetSourceInfos(_))
+  EXPECT_CALL(mock_source_provider_, DoGetSourceInfos(_, _))
       .WillOnce(
           [&wait_for_call_to_arrive_at_service](
+              media::mojom::VideoCaptureDeviceEnumerationMode,
               video_capture::mojom::VideoSourceProvider::GetSourceInfosCallback&
                   callback) {
             std::move(callback).Run(GetSourceInfosResult::kErrorDroppedRequest,

@@ -59,6 +59,7 @@
 #include "extensions/browser/app_window/app_window_registry.h"
 #include "extensions/browser/process_manager.h"
 #include "media/capture/video/chromeos/public/cros_features.h"
+#include "media/capture/video/video_capture_device_enumeration_mode_util.h"
 #include "services/media_session/public/mojom/media_session.mojom.h"
 #include "services/video_capture/public/mojom/video_capture_service.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -389,9 +390,11 @@ void MediaClientImpl::OnCameraHWPrivacySwitchStateChanged(
     const std::string& device_id,
     cros::mojom::CameraPrivacySwitchState state) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  video_source_provider_remote_->GetSourceInfos(base::BindOnce(
-      &MediaClientImpl::OnGetSourceInfosByCameraHWPrivacySwitchStateChanged,
-      weak_ptr_factory_.GetWeakPtr(), device_id, state));
+  video_source_provider_remote_->GetSourceInfos(
+      media::GetDefaultVideoEnumerationMode(),
+      base::BindOnce(
+          &MediaClientImpl::OnGetSourceInfosByCameraHWPrivacySwitchStateChanged,
+          weak_ptr_factory_.GetWeakPtr(), device_id, state));
 }
 
 void MediaClientImpl::OnCameraSWPrivacySwitchStateChanged(
@@ -400,9 +403,11 @@ void MediaClientImpl::OnCameraSWPrivacySwitchStateChanged(
   camera_sw_privacy_switch_state_ = state;
   if (state == cros::mojom::CameraPrivacySwitchState::OFF) {
     // The software switch is OFF. Display hardware switch notifications if any.
-    video_source_provider_remote_->GetSourceInfos(base::BindOnce(
-        &MediaClientImpl::OnGetSourceInfosByCameraSWPrivacySwitchStateChanged,
-        weak_ptr_factory_.GetWeakPtr()));
+    video_source_provider_remote_->GetSourceInfos(
+        media::GetDefaultVideoEnumerationMode(),
+        base::BindOnce(&MediaClientImpl::
+                           OnGetSourceInfosByCameraSWPrivacySwitchStateChanged,
+                       weak_ptr_factory_.GetWeakPtr()));
   } else if (state == cros::mojom::CameraPrivacySwitchState::ON) {
     // The software switch is ON. Clear all hardware switch notifications.
     for (auto it = devices_having_visible_notification_.begin();
@@ -450,7 +455,8 @@ void MediaClientImpl::OnActiveClientChange(
 
 void MediaClientImpl::ProcessSourceInfos(GetSourceCallback callback) {
   hw_switch_toasts_disabled_ = false;
-  video_source_provider_remote_->GetSourceInfos(std::move(callback));
+  video_source_provider_remote_->GetSourceInfos(
+      media::GetDefaultVideoEnumerationMode(), std::move(callback));
 }
 
 void MediaClientImpl::EnableCustomMediaKeyHandler(

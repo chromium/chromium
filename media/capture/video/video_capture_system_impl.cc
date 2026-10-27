@@ -103,6 +103,11 @@ void VideoCaptureSystemImpl::GetDeviceInfosAsync(
   }
 }
 
+bool VideoCaptureSystemImpl::HasDeviceInfosWithCapabilities() const {
+  DCHECK(thread_checker_.CalledOnValidThread());
+  return devices_descriptors_cache_includes_capabilities_;
+}
+
 void VideoCaptureSystemImpl::StartDeviceEnumeration(
     mojom::VideoCaptureDeviceEnumerationMode enumeration_mode) {
   CHECK(!enumeration_mode_in_progress_);
@@ -169,6 +174,9 @@ void VideoCaptureSystemImpl::DevicesInfoReady(
   }
 
   devices_descriptors_cache_ = std::move(devices_info);
+  devices_descriptors_cache_includes_capabilities_ =
+      enumeration_mode ==
+      mojom::VideoCaptureDeviceEnumerationMode::kDevicesWithCapabilities;
 
   // Move all requests that can use these results to the ready queue.
   DeviceEnumQueue ready_requests;

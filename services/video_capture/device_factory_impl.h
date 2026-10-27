@@ -46,7 +46,9 @@ class DeviceFactoryImpl : public DeviceFactory {
   ~DeviceFactoryImpl() override;
 
   // DeviceFactory implementation.
-  void GetDeviceInfos(GetDeviceInfosCallback callback) override;
+  void GetDeviceInfos(
+      media::mojom::VideoCaptureDeviceEnumerationMode enumeration_mode,
+      GetDeviceInfosCallback callback) override;
   void CreateDevice(const std::string& device_id,
                     CreateDeviceCallback callback) override;
   void StopDevice(const std::string device_id) override;
@@ -92,7 +94,6 @@ class DeviceFactoryImpl : public DeviceFactory {
   base::DelayTimer collision_delay_timer_;
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-  bool has_called_get_device_infos_;
   base::WeakPtrFactory<DeviceFactoryImpl> weak_factory_{this};
 };
 

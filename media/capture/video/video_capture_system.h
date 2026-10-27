@@ -28,6 +28,10 @@ class CAPTURE_EXPORT VideoCaptureSystem {
       mojom::VideoCaptureDeviceEnumerationMode enumeration_mode,
       DeviceInfoCallback result_callback) = 0;
 
+  // Returns true if the latest `GetDeviceInfosAsync()` result came from a
+  // `kDevicesWithCapabilities` enumeration.
+  virtual bool HasDeviceInfosWithCapabilities() const = 0;
+
   // Creates a VideoCaptureErrorOrDevice object. Contains an error code if
   // something goes wrong.
   virtual VideoCaptureErrorOrDevice CreateDevice(

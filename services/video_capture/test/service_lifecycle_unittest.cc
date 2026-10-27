@@ -88,7 +88,9 @@ TEST_F(VideoCaptureServiceLifecycleTest, ServiceQuitsAfterEnumeratingDevices) {
   EXPECT_CALL(device_info_receiver_, Run).WillOnce([&wait_loop]() {
     wait_loop.Quit();
   });
-  source_provider->GetSourceInfos(device_info_receiver_.Get());
+  source_provider->GetSourceInfos(
+      media::mojom::VideoCaptureDeviceEnumerationMode::kDevicesWithCapabilities,
+      device_info_receiver_.Get());
   wait_loop.Run();
 
   source_provider.reset();
@@ -123,7 +125,9 @@ TEST_F(VideoCaptureServiceLifecycleTest, EnumerateDevicesAfterReconnect) {
   EXPECT_CALL(device_info_receiver_, Run).WillOnce([&wait_loop]() {
     wait_loop.Quit();
   });
-  source_provider->GetSourceInfos(device_info_receiver_.Get());
+  source_provider->GetSourceInfos(
+      media::mojom::VideoCaptureDeviceEnumerationMode::kDevicesWithCapabilities,
+      device_info_receiver_.Get());
   wait_loop.Run();
 
   source_provider.reset();

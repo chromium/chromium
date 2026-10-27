@@ -47,7 +47,9 @@ void MockVideoCaptureDeviceTest::SetUp() {
   EXPECT_CALL(device_infos_receiver_, Run(_)).WillOnce([&wait_loop]() {
     wait_loop.Quit();
   });
-  mock_device_factory_adapter_->GetDeviceInfos(device_infos_receiver_.Get());
+  mock_device_factory_adapter_->GetDeviceInfos(
+      media::mojom::VideoCaptureDeviceEnumerationMode::kDevicesWithCapabilities,
+      device_infos_receiver_.Get());
   // We must wait for the response to GetDeviceInfos before calling
   // CreateDevice.
   wait_loop.Run();

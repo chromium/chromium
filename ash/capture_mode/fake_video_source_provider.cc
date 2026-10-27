@@ -102,7 +102,9 @@ void FakeVideoSourceProvider::RemoveFakeCameraWithoutNotifying(
   devices_map_.erase(device_id);
 }
 
-void FakeVideoSourceProvider::GetSourceInfos(GetSourceInfosCallback callback) {
+void FakeVideoSourceProvider::GetSourceInfos(
+    media::mojom::VideoCaptureDeviceEnumerationMode enumeration_mode,
+    GetSourceInfosCallback callback) {
   DCHECK(callback);
 
   std::vector<media::VideoCaptureDeviceInfo> devices;

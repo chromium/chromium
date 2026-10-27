@@ -762,9 +762,11 @@ void CaptureModeCameraController::GetCameraDevices() {
 
   DCHECK(video_source_provider_remote_);
 
-  video_source_provider_remote_->GetSourceInfos(base::BindOnce(
-      &CaptureModeCameraController::OnCameraDevicesReceived,
-      weak_ptr_factory_.GetWeakPtr(), ++most_recent_request_id_));
+  video_source_provider_remote_->GetSourceInfos(
+      media::mojom::VideoCaptureDeviceEnumerationMode::kDevicesWithCapabilities,
+      base::BindOnce(&CaptureModeCameraController::OnCameraDevicesReceived,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     ++most_recent_request_id_));
 }
 
 void CaptureModeCameraController::OnCameraDevicesReceived(

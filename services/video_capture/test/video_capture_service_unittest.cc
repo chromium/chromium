@@ -24,6 +24,8 @@ using testing::Exactly;
 namespace video_capture {
 using GetSourceInfosResult =
     video_capture::mojom::VideoSourceProvider::GetSourceInfosResult;
+constexpr auto kDevicesWithCapabilitiesEnumerationMode =
+    media::mojom::VideoCaptureDeviceEnumerationMode::kDevicesWithCapabilities;
 
 class VideoCaptureServiceVirtualDevicesOnlyTest
     : public VideoCaptureServiceTest {
@@ -46,7 +48,8 @@ TEST_F(VideoCaptureServiceTest, GetSourceInfosCallbackArrives) {
       .Times(Exactly(1))
       .WillOnce([&wait_loop]() { wait_loop.Quit(); });
 
-  video_source_provider_->GetSourceInfos(device_info_receiver_.Get());
+  video_source_provider_->GetSourceInfos(
+      kDevicesWithCapabilitiesEnumerationMode, device_info_receiver_.Get());
   wait_loop.Run();
 }
 
@@ -63,7 +66,8 @@ TEST_F(VideoCaptureServiceTest, FakeDeviceFactoryEnumeratesThreeDevices) {
         wait_loop.Quit();
       });
 
-  video_source_provider_->GetSourceInfos(device_info_receiver_.Get());
+  video_source_provider_->GetSourceInfos(
+      kDevicesWithCapabilitiesEnumerationMode, device_info_receiver_.Get());
   wait_loop.Run();
   ASSERT_EQ(3u, num_devices_enumerated);
 }
@@ -84,7 +88,8 @@ TEST_F(VideoCaptureServiceVirtualDevicesOnlyTest,
           wait_loop.Quit();
         });
 
-    video_source_provider_->GetSourceInfos(device_info_receiver_.Get());
+    video_source_provider_->GetSourceInfos(
+        kDevicesWithCapabilitiesEnumerationMode, device_info_receiver_.Get());
     wait_loop.Run();
   }
 
@@ -105,7 +110,8 @@ TEST_F(VideoCaptureServiceVirtualDevicesOnlyTest,
         wait_loop.Quit();
       });
 
-  video_source_provider_->GetSourceInfos(device_info_receiver_.Get());
+  video_source_provider_->GetSourceInfos(
+      kDevicesWithCapabilitiesEnumerationMode, device_info_receiver_.Get());
   wait_loop.Run();
 }
 
@@ -132,7 +138,8 @@ TEST_F(VideoCaptureServiceTest, VirtualDeviceEnumeratedAfterAdd) {
         EXPECT_TRUE(virtual_device_enumerated);
         wait_loop.Quit();
       });
-  video_source_provider_->GetSourceInfos(device_info_receiver_.Get());
+  video_source_provider_->GetSourceInfos(
+      kDevicesWithCapabilitiesEnumerationMode, device_info_receiver_.Get());
   wait_loop.Run();
 }
 
@@ -234,7 +241,8 @@ TEST_F(VideoCaptureServiceTest,
                 media::VideoCaptureError::kVideoCaptureSystemDeviceIdNotFound);
             wait_loop.Quit();
           });
-  video_source_provider_->GetSourceInfos(device_info_receiver_.Get());
+  video_source_provider_->GetSourceInfos(
+      kDevicesWithCapabilitiesEnumerationMode, device_info_receiver_.Get());
 
   video_source_provider_->GetVideoSource(
       invalid_device_id, video_source_remote.BindNewPipeAndPassReceiver());
@@ -300,7 +308,8 @@ TEST_F(VideoCaptureServiceTest,
         physical_devices = infos;
         get_infos_loop.Quit();
       });
-  video_source_provider_->GetSourceInfos(device_info_receiver_.Get());
+  video_source_provider_->GetSourceInfos(
+      kDevicesWithCapabilitiesEnumerationMode, device_info_receiver_.Get());
   get_infos_loop.Run();
   const std::string physical_device_id =
       physical_devices[0].descriptor.device_id;
@@ -360,19 +369,22 @@ TEST_F(VideoCaptureServiceTest,
         EXPECT_EQ(1u, occurrences);
         verify_infos_loop.Quit();
       });
-  video_source_provider_->GetSourceInfos(device_info_receiver_.Get());
+  video_source_provider_->GetSourceInfos(
+      kDevicesWithCapabilitiesEnumerationMode, device_info_receiver_.Get());
   verify_infos_loop.Run();
 
   // Cleanup
   subscription.reset();
   video_source_remote.reset();
   base::RunLoop cleanup_loop;
-  video_source_provider_->GetSourceInfos(base::BindOnce(
-      [](base::RunLoop* run_loop, GetSourceInfosResult result,
-         const std::vector<media::VideoCaptureDeviceInfo>& infos) {
-        run_loop->Quit();
-      },
-      &cleanup_loop));
+  video_source_provider_->GetSourceInfos(
+      kDevicesWithCapabilitiesEnumerationMode,
+      base::BindOnce(
+          [](base::RunLoop* run_loop, GetSourceInfosResult result,
+             const std::vector<media::VideoCaptureDeviceInfo>& infos) {
+            run_loop->Quit();
+          },
+          &cleanup_loop));
   cleanup_loop.Run();
 }
 
@@ -389,7 +401,8 @@ TEST_F(VideoCaptureServiceTest, CannotAddVirtualDeviceWhilePhysicalDeviceIdle) {
         physical_devices = infos;
         get_infos_loop.Quit();
       });
-  video_source_provider_->GetSourceInfos(device_info_receiver_.Get());
+  video_source_provider_->GetSourceInfos(
+      kDevicesWithCapabilitiesEnumerationMode, device_info_receiver_.Get());
   get_infos_loop.Run();
   const std::string physical_device_id =
       physical_devices[0].descriptor.device_id;
@@ -422,7 +435,8 @@ TEST_F(VideoCaptureServiceTest, CannotAddVirtualDeviceWhilePhysicalDeviceIdle) {
         EXPECT_EQ(1u, occurrences);
         verify_infos_loop.Quit();
       });
-  video_source_provider_->GetSourceInfos(device_info_receiver_.Get());
+  video_source_provider_->GetSourceInfos(
+      kDevicesWithCapabilitiesEnumerationMode, device_info_receiver_.Get());
   verify_infos_loop.Run();
 }
 
@@ -440,7 +454,8 @@ TEST_F(VideoCaptureServiceTest,
         physical_devices = infos;
         get_infos_loop.Quit();
       });
-  video_source_provider_->GetSourceInfos(device_info_receiver_.Get());
+  video_source_provider_->GetSourceInfos(
+      kDevicesWithCapabilitiesEnumerationMode, device_info_receiver_.Get());
   get_infos_loop.Run();
 
   ASSERT_FALSE(physical_devices.empty());

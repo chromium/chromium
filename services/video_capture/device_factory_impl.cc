@@ -85,22 +85,21 @@ DeviceFactoryImpl::DeviceFactoryImpl(
                              base::Seconds(3),
                              this,
                              &DeviceFactoryImpl::RecordCollision),
-      has_called_get_device_infos_(false),
       weak_factory_(this) {}
 #else
 DeviceFactoryImpl::DeviceFactoryImpl(
     std::unique_ptr<media::VideoCaptureSystem> capture_system)
-    : capture_system_(std::move(capture_system)),
-      has_called_get_device_infos_(false) {}
+    : capture_system_(std::move(capture_system)) {}
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 DeviceFactoryImpl::~DeviceFactoryImpl() = default;
 
-void DeviceFactoryImpl::GetDeviceInfos(GetDeviceInfosCallback callback) {
+void DeviceFactoryImpl::GetDeviceInfos(
+    media::mojom::VideoCaptureDeviceEnumerationMode enumeration_mode,
+    GetDeviceInfosCallback callback) {
   capture_system_->GetDeviceInfosAsync(
-      media::mojom::VideoCaptureDeviceEnumerationMode::kDevicesWithCapabilities,
+      enumeration_mode,
       base::BindOnce(&TranslateDeviceInfos, std::move(callback)));
-  has_called_get_device_infos_ = true;
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -132,7 +131,7 @@ void DeviceFactoryImpl::CreateDevice(const std::string& device_id,
       &DeviceFactoryImpl::CreateAndAddNewDevice, weak_factory_.GetWeakPtr(),
       device_id, std::move(create_callback));
 
-  if (has_called_get_device_infos_) {
+  if (capture_system_->HasDeviceInfosWithCapabilities()) {
     std::move(create_and_add_new_device_cb).Run();
     return;
   }
@@ -141,7 +140,6 @@ void DeviceFactoryImpl::CreateDevice(const std::string& device_id,
       media::mojom::VideoCaptureDeviceEnumerationMode::kDevicesWithCapabilities,
       base::BindOnce(&DiscardDeviceInfosAndCallContinuation,
                      std::move(create_and_add_new_device_cb)));
-  has_called_get_device_infos_ = true;
 }
 
 void DeviceFactoryImpl::StopDevice(const std::string device_id) {

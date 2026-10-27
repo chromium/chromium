@@ -31,7 +31,9 @@ void VideoSourceProviderImpl::AddClient(
   client_count_++;
 }
 
-void VideoSourceProviderImpl::GetSourceInfos(GetSourceInfosCallback callback) {
+void VideoSourceProviderImpl::GetSourceInfos(
+    media::mojom::VideoCaptureDeviceEnumerationMode enumeration_mode,
+    GetSourceInfosCallback callback) {
   // The service might be shut down before the callback has a chance to be
   // executed. This triggers the CHECK in mojo code, which assumes that
   // callbacks are either executed or the underlying channel is closed. Wrap
@@ -42,6 +44,7 @@ void VideoSourceProviderImpl::GetSourceInfos(GetSourceInfosCallback callback) {
           VideoSourceProvider::GetSourceInfosResult::kErrorDroppedRequest,
           std::vector<media::VideoCaptureDeviceInfo>());
   device_factory_->GetDeviceInfos(
+      enumeration_mode,
       base::BindOnce(std::move(callback_with_default),
                      VideoSourceProvider::GetSourceInfosResult::kSuccess));
 }

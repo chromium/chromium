@@ -29,7 +29,9 @@ void FakeDeviceDescriptorTest::SetUp() {
             mjpeg_fake_device_info_ = infos[2];
             wait_loop.Quit();
           });
-  video_source_provider_->GetSourceInfos(device_info_receiver_.Get());
+  video_source_provider_->GetSourceInfos(
+      media::mojom::VideoCaptureDeviceEnumerationMode::kDevicesWithCapabilities,
+      device_info_receiver_.Get());
   wait_loop.Run();
 }
 

@@ -179,13 +179,16 @@ void MediaDeviceInfo::OnDevicesChanged(
       video_source_provider_) {
     // Unretained is safe here because the `video_source_provider_` remote will
     // be destroyed before `this`.
-    video_source_provider_->GetSourceInfos(base::BindOnce(
-        [](MediaDeviceInfo* mdi,
-           video_capture::mojom::VideoSourceProvider::GetSourceInfosResult,
-           const std::vector<media::VideoCaptureDeviceInfo>& device_infos) {
-          mdi->OnVideoDeviceInfosReceived(device_infos);
-        },
-        base::Unretained(this)));
+    video_source_provider_->GetSourceInfos(
+        media::mojom::VideoCaptureDeviceEnumerationMode::
+            kDevicesWithCapabilities,
+        base::BindOnce(
+            [](MediaDeviceInfo* mdi,
+               video_capture::mojom::VideoSourceProvider::GetSourceInfosResult,
+               const std::vector<media::VideoCaptureDeviceInfo>& device_infos) {
+              mdi->OnVideoDeviceInfosReceived(device_infos);
+            },
+            base::Unretained(this)));
   } else if (device_type == base::SystemMonitor::DEVTYPE_AUDIO &&
              audio_system_info_) {
     // Unretained is safe here because the `audio_system_info_` remote will

@@ -123,6 +123,25 @@ TEST(VideoCaptureSystemImplTest, MetricsWaitForNonemptyCapabilitiesResult) {
       "Media.VideoCapture.Device.SupportedPixelFormat", PIXEL_FORMAT_NV12, 1);
 }
 
+TEST(VideoCaptureSystemImplTest,
+     HasDeviceInfosWithCapabilitiesOnlyAfterResult) {
+  auto factory = std::make_unique<ControlledVideoCaptureDeviceFactory>();
+  ControlledVideoCaptureDeviceFactory* factory_ptr = factory.get();
+  VideoCaptureSystemImpl system(std::move(factory));
+
+  EXPECT_FALSE(system.HasDeviceInfosWithCapabilities());
+  system.GetDeviceInfosAsync(
+      mojom::VideoCaptureDeviceEnumerationMode::kDevicesWithCapabilities,
+      base::BindLambdaForTesting(
+          [&](const std::vector<VideoCaptureDeviceInfo>&) {
+            EXPECT_TRUE(system.HasDeviceInfosWithCapabilities());
+          }));
+  EXPECT_FALSE(system.HasDeviceInfosWithCapabilities());
+
+  factory_ptr->CompleteNextEnumeration();
+  EXPECT_TRUE(system.HasDeviceInfosWithCapabilities());
+}
+
 #if BUILDFLAG(IS_WIN)
 TEST(VideoCaptureSystemImplTest,
      DevicesWithCapabilitiesRequestWaitsForEnumeration) {

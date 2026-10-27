@@ -45,7 +45,9 @@ class FakeVideoSourceProvider
   void SetOnGetVideoSourceCallback(GetVideoSourceCallback callback);
 
   // video_capture::mojom::VideoSourceProvider:
-  void GetSourceInfos(GetSourceInfosCallback callback) override;
+  void GetSourceInfos(
+      media::mojom::VideoCaptureDeviceEnumerationMode enumeration_mode,
+      GetSourceInfosCallback callback) override;
   void GetVideoSource(
       const std::string& source_id,
       mojo::PendingReceiver<video_capture::mojom::VideoSource> stream) override;

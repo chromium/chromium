@@ -274,6 +274,7 @@ void ServiceVideoCaptureProvider::GetDeviceInfosAsyncForRetry() {
   // Make sure that the callback gets invoked with an empty result in case
   // that the service drops the request.
   service_connection->source_provider()->GetSourceInfos(
+      media::mojom::VideoCaptureDeviceEnumerationMode::kDevicesWithCapabilities,
       mojo::WrapCallbackWithDropHandler(
           base::BindOnce(&ServiceVideoCaptureProvider::OnDeviceInfosReceived,
                          weak_ptr_factory_.GetWeakPtr(), service_connection),

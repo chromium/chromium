@@ -22,8 +22,10 @@ interface VideoSourceProvider {
 
   // Get a list of available video sources. source_infos is empty whenever
   // result is not kSuccess.
-  GetSourceInfos() => (GetSourceInfosResult result,
-                       array<media.mojom.VideoCaptureDeviceInfo> source_infos);
+  GetSourceInfos(
+      media.mojom.VideoCaptureDeviceEnumerationMode enumeration_mode)
+      => (GetSourceInfosResult result,
+          array<media.mojom.VideoCaptureDeviceInfo> source_infos);
 
   // This essentially constrains things down to a particular source. This is
   // useful for subsequently passing the resulting |stream| to clients that

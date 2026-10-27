@@ -45,7 +45,9 @@ void FakeVideoSourceProvider::SetOnGetVideoSourceCallback(
   on_get_video_source_ = std::move(callback);
 }
 
-void FakeVideoSourceProvider::GetSourceInfos(GetSourceInfosCallback callback) {
+void FakeVideoSourceProvider::GetSourceInfos(
+    media::mojom::VideoCaptureDeviceEnumerationMode enumeration_mode,
+    GetSourceInfosCallback callback) {
   std::vector<media::VideoCaptureDeviceInfo> devices;
   for (const auto& [_, device_info] : device_infos_) {
     devices.emplace_back(device_info);

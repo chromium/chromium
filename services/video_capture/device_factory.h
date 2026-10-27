@@ -24,7 +24,9 @@ class DeviceFactory {
   using GetDeviceInfosCallback = base::OnceCallback<void(
       const std::vector<media::VideoCaptureDeviceInfo>&)>;
 
-  virtual void GetDeviceInfos(GetDeviceInfosCallback callback) = 0;
+  virtual void GetDeviceInfos(
+      media::mojom::VideoCaptureDeviceEnumerationMode enumeration_mode,
+      GetDeviceInfosCallback callback) = 0;
 
   virtual void CreateDevice(const std::string& device_id,
                             CreateDeviceCallback callback) = 0;

@@ -68,7 +68,10 @@ class MockVideoCaptureDeviceSharedAccessTest : public ::testing::Test {
     EXPECT_CALL(source_infos_receiver, Run).WillOnce([&wait_loop]() {
       wait_loop.Quit();
     });
-    source_provider_->GetSourceInfos(source_infos_receiver.Get());
+    source_provider_->GetSourceInfos(
+        media::mojom::VideoCaptureDeviceEnumerationMode::
+            kDevicesWithCapabilities,
+        source_infos_receiver.Get());
     // We must wait for the response to GetDeviceInfos before calling
     // CreateDevice.
     wait_loop.Run();

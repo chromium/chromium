@@ -10,6 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/strings/string_util.h"
+#include "media/capture/video/video_capture_device_enumeration_mode_util.h"
 #include "media/capture/video/video_capture_device_info.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -156,6 +157,7 @@ VirtualDeviceEnabledDeviceFactory::~VirtualDeviceEnabledDeviceFactory() =
     default;
 
 void VirtualDeviceEnabledDeviceFactory::GetDeviceInfos(
+    media::mojom::VideoCaptureDeviceEnumerationMode enumeration_mode,
     GetDeviceInfosCallback callback) {
   if (!device_factory_) {
     OnGetDeviceInfos(std::move(callback), {});
@@ -163,6 +165,7 @@ void VirtualDeviceEnabledDeviceFactory::GetDeviceInfos(
   }
 
   device_factory_->GetDeviceInfos(
+      enumeration_mode,
       base::BindOnce(&VirtualDeviceEnabledDeviceFactory::OnGetDeviceInfos,
                      weak_factory_.GetWeakPtr(), std::move(callback)));
 }
@@ -239,14 +242,16 @@ void VirtualDeviceEnabledDeviceFactory::AddSharedMemoryVirtualDevice(
                                          std::move(virtual_device_receiver));
     return;
   }
-  device_factory_->GetDeviceInfos(base::BindOnce(
-      &VirtualDeviceEnabledDeviceFactory::OnGetDeviceInfosForVirtualDevice,
-      weak_factory_.GetWeakPtr(), device_info.descriptor.device_id,
-      base::BindOnce(&VirtualDeviceEnabledDeviceFactory::
-                         CompleteAddSharedMemoryVirtualDevice,
-                     weak_factory_.GetWeakPtr(), device_info,
-                     std::move(producer_pending_remote),
-                     std::move(virtual_device_receiver))));
+  device_factory_->GetDeviceInfos(
+      media::GetDefaultVideoEnumerationMode(),
+      base::BindOnce(
+          &VirtualDeviceEnabledDeviceFactory::OnGetDeviceInfosForVirtualDevice,
+          weak_factory_.GetWeakPtr(), device_info.descriptor.device_id,
+          base::BindOnce(&VirtualDeviceEnabledDeviceFactory::
+                             CompleteAddSharedMemoryVirtualDevice,
+                         weak_factory_.GetWeakPtr(), device_info,
+                         std::move(producer_pending_remote),
+                         std::move(virtual_device_receiver))));
 }
 
 void VirtualDeviceEnabledDeviceFactory::CompleteAddSharedMemoryVirtualDevice(
@@ -290,13 +295,15 @@ void VirtualDeviceEnabledDeviceFactory::AddTextureVirtualDevice(
                                     std::move(virtual_device_receiver));
     return;
   }
-  device_factory_->GetDeviceInfos(base::BindOnce(
-      &VirtualDeviceEnabledDeviceFactory::OnGetDeviceInfosForVirtualDevice,
-      weak_factory_.GetWeakPtr(), device_info.descriptor.device_id,
+  device_factory_->GetDeviceInfos(
+      media::GetDefaultVideoEnumerationMode(),
       base::BindOnce(
-          &VirtualDeviceEnabledDeviceFactory::CompleteAddTextureVirtualDevice,
-          weak_factory_.GetWeakPtr(), device_info,
-          std::move(virtual_device_receiver))));
+          &VirtualDeviceEnabledDeviceFactory::OnGetDeviceInfosForVirtualDevice,
+          weak_factory_.GetWeakPtr(), device_info.descriptor.device_id,
+          base::BindOnce(&VirtualDeviceEnabledDeviceFactory::
+                             CompleteAddTextureVirtualDevice,
+                         weak_factory_.GetWeakPtr(), device_info,
+                         std::move(virtual_device_receiver))));
 }
 
 void VirtualDeviceEnabledDeviceFactory::CompleteAddTextureVirtualDevice(
@@ -333,13 +340,15 @@ void VirtualDeviceEnabledDeviceFactory::AddGpuMemoryBufferVirtualDevice(
                                             std::move(virtual_device_receiver));
     return;
   }
-  device_factory_->GetDeviceInfos(base::BindOnce(
-      &VirtualDeviceEnabledDeviceFactory::OnGetDeviceInfosForVirtualDevice,
-      weak_factory_.GetWeakPtr(), device_info.descriptor.device_id,
-      base::BindOnce(&VirtualDeviceEnabledDeviceFactory::
-                         CompleteAddGpuMemoryBufferVirtualDevice,
-                     weak_factory_.GetWeakPtr(), device_info,
-                     std::move(virtual_device_receiver))));
+  device_factory_->GetDeviceInfos(
+      media::GetDefaultVideoEnumerationMode(),
+      base::BindOnce(
+          &VirtualDeviceEnabledDeviceFactory::OnGetDeviceInfosForVirtualDevice,
+          weak_factory_.GetWeakPtr(), device_info.descriptor.device_id,
+          base::BindOnce(&VirtualDeviceEnabledDeviceFactory::
+                             CompleteAddGpuMemoryBufferVirtualDevice,
+                         weak_factory_.GetWeakPtr(), device_info,
+                         std::move(virtual_device_receiver))));
 }
 
 void VirtualDeviceEnabledDeviceFactory::CompleteAddGpuMemoryBufferVirtualDevice(

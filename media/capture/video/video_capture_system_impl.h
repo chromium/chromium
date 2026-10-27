@@ -29,6 +29,7 @@ class CAPTURE_EXPORT VideoCaptureSystemImpl : public VideoCaptureSystem {
   void GetDeviceInfosAsync(
       mojom::VideoCaptureDeviceEnumerationMode enumeration_mode,
       DeviceInfoCallback result_callback) override;
+  bool HasDeviceInfosWithCapabilities() const override;
   VideoCaptureErrorOrDevice CreateDevice(const std::string& device_id) override;
 
   VideoCaptureDeviceFactory* GetFactory() override;
@@ -63,6 +64,7 @@ class CAPTURE_EXPORT VideoCaptureSystemImpl : public VideoCaptureSystem {
   // descriptors are guaranteed to be populated. On Windows, supported
   // formats and control support may not have been queried.
   std::vector<VideoCaptureDeviceInfo> devices_descriptors_cache_;
+  bool devices_descriptors_cache_includes_capabilities_ = false;
   bool has_logged_capture_device_metrics_ = false;
 
   base::ThreadChecker thread_checker_;

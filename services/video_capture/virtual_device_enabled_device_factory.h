@@ -36,7 +36,9 @@ class VirtualDeviceEnabledDeviceFactory : public DeviceFactory {
   ~VirtualDeviceEnabledDeviceFactory() override;
 
   // DeviceFactory implementation.
-  void GetDeviceInfos(GetDeviceInfosCallback callback) override;
+  void GetDeviceInfos(
+      media::mojom::VideoCaptureDeviceEnumerationMode enumeration_mode,
+      GetDeviceInfosCallback callback) override;
   void CreateDevice(const std::string& device_id,
                     CreateDeviceCallback callback) override;
   void StopDevice(const std::string device_id) override;

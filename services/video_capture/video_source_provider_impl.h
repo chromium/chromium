@@ -33,7 +33,9 @@ class VideoSourceProviderImpl : public mojom::VideoSourceProvider {
   void AddClient(mojo::PendingReceiver<mojom::VideoSourceProvider> receiver);
 
   // mojom::VideoSourceProvider implementation.
-  void GetSourceInfos(GetSourceInfosCallback callback) override;
+  void GetSourceInfos(
+      media::mojom::VideoCaptureDeviceEnumerationMode enumeration_mode,
+      GetSourceInfosCallback callback) override;
   void GetVideoSource(
       const std::string& device_id,
       mojo::PendingReceiver<mojom::VideoSource> source_receiver) override;

@@ -10,12 +10,14 @@
 #include "base/run_loop.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
+#include "build/build_config.h"
 #include "media/capture/video/video_capture_device_info.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/video_capture/public/cpp/mock_producer.h"
 #include "services/video_capture/public/cpp/mock_video_frame_handler.h"
 #include "services/video_capture/public/mojom/video_frame_handler.mojom.h"
 #include "services/video_capture/shared_memory_virtual_device_mojo_adapter.h"
+#include "services/video_capture/video_source_provider_impl.h"
 #include "services/video_capture/virtual_device_enabled_device_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -202,7 +204,8 @@ class MockDeviceFactory : public DeviceFactory {
 
   MOCK_METHOD(void,
               GetDeviceInfos,
-              (GetDeviceInfosCallback callback),
+              (media::mojom::VideoCaptureDeviceEnumerationMode enumeration_mode,
+               GetDeviceInfosCallback callback),
               (override));
   MOCK_METHOD(void,
               CreateDevice,
@@ -269,7 +272,9 @@ TEST_F(VirtualDeviceEnabledDeviceFactoryWithoutWrappedFactoryTest,
       .WillOnce([](const std::vector<media::VideoCaptureDeviceInfo>& infos) {
         EXPECT_TRUE(infos.empty());
       });
-  factory_->GetDeviceInfos(infos_callback.Get());
+  factory_->GetDeviceInfos(
+      media::mojom::VideoCaptureDeviceEnumerationMode::kDevicesWithCapabilities,
+      infos_callback.Get());
 
   base::MockCallback<DeviceFactory::CreateDeviceCallback> create_callback;
   EXPECT_CALL(create_callback, Run)
@@ -304,7 +309,9 @@ TEST_F(VirtualDeviceEnabledDeviceFactoryWithoutWrappedFactoryTest,
         ASSERT_EQ(infos.size(), 1u);
         EXPECT_EQ(infos.front().descriptor.device_id, device_id);
       });
-  factory_->GetDeviceInfos(infos_callback.Get());
+  factory_->GetDeviceInfos(
+      media::mojom::VideoCaptureDeviceEnumerationMode::kDevicesWithCapabilities,
+      infos_callback.Get());
 
   base::MockCallback<DeviceFactory::CreateDeviceCallback> create_callback;
   EXPECT_CALL(create_callback, Run)
@@ -315,6 +322,31 @@ TEST_F(VirtualDeviceEnabledDeviceFactoryWithoutWrappedFactoryTest,
   factory_->CreateDevice(device_id, create_callback.Get());
 }
 
+#if BUILDFLAG(IS_WIN)
+TEST_F(VirtualDeviceEnabledDeviceFactoryTest,
+       SourceProviderForwardsDevicesOnlyEnumerationMode) {
+  VideoSourceProviderImpl source_provider(factory_.get(),
+                                          base::BindRepeating([] {}));
+  EXPECT_CALL(
+      *mock_factory_,
+      GetDeviceInfos(
+          media::mojom::VideoCaptureDeviceEnumerationMode::kDevicesOnly, _))
+      .WillOnce([](media::mojom::VideoCaptureDeviceEnumerationMode,
+                   DeviceFactory::GetDeviceInfosCallback callback) {
+        std::move(callback).Run({});
+      });
+  base::MockCallback<mojom::VideoSourceProvider::GetSourceInfosCallback>
+      result_callback;
+  EXPECT_CALL(
+      result_callback,
+      Run(mojom::VideoSourceProvider::GetSourceInfosResult::kSuccess, _));
+
+  source_provider.GetSourceInfos(
+      media::mojom::VideoCaptureDeviceEnumerationMode::kDevicesOnly,
+      result_callback.Get());
+}
+#endif  // BUILDFLAG(IS_WIN)
+
 // Tests that when an underlying device creation succeeds, any old virtual
 // device connection with the same device ID is severed.
 TEST_F(VirtualDeviceEnabledDeviceFactoryTest,
@@ -322,8 +354,9 @@ TEST_F(VirtualDeviceEnabledDeviceFactoryTest,
   const std::string device_id = "virtual-chromium-test-device";
 
   // Register the virtual device first by having GetDeviceInfos return empty
-  EXPECT_CALL(*mock_factory_, GetDeviceInfos)
-      .WillOnce([](DeviceFactory::GetDeviceInfosCallback callback) {
+  EXPECT_CALL(*mock_factory_, GetDeviceInfos(_, _))
+      .WillOnce([](media::mojom::VideoCaptureDeviceEnumerationMode,
+                   DeviceFactory::GetDeviceInfosCallback callback) {
         std::move(callback).Run(std::vector<media::VideoCaptureDeviceInfo>());
       });
 
@@ -374,8 +407,9 @@ TEST_F(VirtualDeviceEnabledDeviceFactoryTest,
   const std::string device_id = "virtual-chromium-test-device";
 
   // Register the virtual device first
-  EXPECT_CALL(*mock_factory_, GetDeviceInfos)
-      .WillOnce([](DeviceFactory::GetDeviceInfosCallback callback) {
+  EXPECT_CALL(*mock_factory_, GetDeviceInfos(_, _))
+      .WillOnce([](media::mojom::VideoCaptureDeviceEnumerationMode,
+                   DeviceFactory::GetDeviceInfosCallback callback) {
         std::move(callback).Run(std::vector<media::VideoCaptureDeviceInfo>());
       });
 
@@ -460,8 +494,9 @@ TEST_F(VirtualDeviceEnabledDeviceFactoryTest,
   const std::string device_id = "virtual-chromium-test-device";
 
   // Register the virtual device first
-  EXPECT_CALL(*mock_factory_, GetDeviceInfos)
-      .WillOnce([](DeviceFactory::GetDeviceInfosCallback callback) {
+  EXPECT_CALL(*mock_factory_, GetDeviceInfos(_, _))
+      .WillOnce([](media::mojom::VideoCaptureDeviceEnumerationMode,
+                   DeviceFactory::GetDeviceInfosCallback callback) {
         std::move(callback).Run(std::vector<media::VideoCaptureDeviceInfo>());
       });
 

@@ -65,10 +65,13 @@ class WebRtcVideoCaptureSharedDeviceBrowserTest : public ContentBrowserTest {
   void OpenDeviceViaService() {
     GetVideoCaptureService().ConnectToVideoSourceProvider(
         video_source_provider_.BindNewPipeAndPassReceiver());
-    video_source_provider_->GetSourceInfos(base::BindOnce(
-        &WebRtcVideoCaptureSharedDeviceBrowserTest::OnSourceInfosReceived,
-        weak_factory_.GetWeakPtr(),
-        media::VideoCaptureBufferType::kSharedMemory));
+    video_source_provider_->GetSourceInfos(
+        media::mojom::VideoCaptureDeviceEnumerationMode::
+            kDevicesWithCapabilities,
+        base::BindOnce(
+            &WebRtcVideoCaptureSharedDeviceBrowserTest::OnSourceInfosReceived,
+            weak_factory_.GetWeakPtr(),
+            media::VideoCaptureBufferType::kSharedMemory));
   }
 
   void OpenDeviceInRendererAndWaitForPlaying() {

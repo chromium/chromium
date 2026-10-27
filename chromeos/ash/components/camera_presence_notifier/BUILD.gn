@@ -16,7 +16,10 @@ static_library("camera_presence_notifier") {
     "//services/video_capture/public/mojom",
   ]
 
-  deps = [ "//content/public/browser" ]
+  deps = [
+    "//content/public/browser",
+    "//media/capture:capture_lib",
+  ]
 }
 
 source_set("unit_tests") {
