@@ -34,7 +34,6 @@ class TextInputManagerTest : public RenderViewHostTestHarness {
   ~TextInputManagerTest() override = default;
 };
 
-#if BUILDFLAG(IS_WIN)
 class TestTextInputManagerObserver : public TextInputManager::Observer {
  public:
   void OnUpdateTextInputStateCalled(TextInputManager* text_input_manager,
@@ -48,6 +47,7 @@ class TestTextInputManagerObserver : public TextInputManager::Observer {
   int update_call_count_ = 0;
 };
 
+#if BUILDFLAG(IS_WIN)
 TEST_F(TextInputManagerTest, CustomPasswordFlagDoesNotRefocusNativePassword) {
   auto* view =
       static_cast<RenderWidgetHostViewBase*>(rvh()->GetWidget()->GetView());
@@ -272,6 +272,80 @@ TEST_F(TextInputManagerTest, UnfocusedChildFrameCannotBecomeActive) {
   // Active view and widget must remain unchanged (main frame).
   EXPECT_EQ(main_view, manager->active_view_for_testing());
   EXPECT_EQ(main_rfh()->GetRenderWidgetHost(), manager->GetActiveWidget());
+}
+
+// Test that transitions in active_view_ (from nullptr to a focused view whose
+// TextInputState was already cached while unfocused, and from an active view to
+// nullptr when it loses focus) report did_update_state = true to observers even
+// when the view's TextInputState fields did not change.
+TEST_F(TextInputManagerTest, ActiveViewTransitionMarksStateUpdated) {
+  GURL parent_url("https://a.test/");
+  NavigationSimulator::CreateRendererInitiated(parent_url, main_rfh())
+      ->Commit();
+
+  auto* child_rfh = static_cast<RenderFrameHostImpl*>(
+      NavigationSimulator::NavigateAndCommitFromDocument(
+          GURL("https://b.test/"),
+          content::RenderFrameHostTester::For(main_rfh())
+              ->AppendChild("child")));
+
+  auto* main_view = static_cast<RenderWidgetHostViewBase*>(
+      main_rfh()->GetRenderWidgetHost()->GetView());
+  auto* child_view = static_cast<RenderWidgetHostViewBase*>(
+      child_rfh->GetRenderWidgetHost()->GetView());
+
+  TextInputManager* manager = main_view->GetTextInputManager();
+  ASSERT_TRUE(manager);
+
+  TestTextInputManagerObserver observer;
+  manager->AddObserver(&observer);
+
+  // 1. While main_rfh is focused, child_view (unfocused) reports EMAIL input
+  // state. Its state is cached, but active_view_ remains nullptr.
+  ui::mojom::TextInputState email_state;
+  email_state.type = ui::TEXT_INPUT_TYPE_EMAIL;
+  email_state.node_id = 1;
+  manager->UpdateTextInputState(child_view, email_state);
+  EXPECT_EQ(nullptr, manager->active_view_for_testing());
+  EXPECT_EQ(observer.update_call_count_, 1);
+  EXPECT_TRUE(observer.last_did_update_state_);
+
+  // 2. Focus moves to child_rfh and the user taps the same email input,
+  // sending the identical TextInputState. Because active_view_ transitions from
+  // nullptr to child_view, did_update_state must be true.
+  child_rfh->frame_tree_node()->frame_tree().SetFocusedFrame(
+      child_rfh->frame_tree_node(), nullptr);
+  email_state.show_ime_if_needed = true;
+  manager->UpdateTextInputState(child_view, email_state);
+  EXPECT_EQ(child_view, manager->active_view_for_testing());
+  EXPECT_EQ(observer.update_call_count_, 2);
+  EXPECT_TRUE(observer.last_did_update_state_);
+
+  // 3. Focus moves back to main_rfh while child_view sends another update with
+  // the same TextInputState. Because active_view_ transitions from child_view
+  // to nullptr, did_update_state must be true.
+  static_cast<RenderFrameHostImpl*>(main_rfh())
+      ->frame_tree_node()
+      ->frame_tree()
+      .SetFocusedFrame(
+          static_cast<RenderFrameHostImpl*>(main_rfh())->frame_tree_node(),
+          nullptr);
+  manager->UpdateTextInputState(child_view, email_state);
+  EXPECT_EQ(nullptr, manager->active_view_for_testing());
+  EXPECT_EQ(observer.update_call_count_, 3);
+  EXPECT_TRUE(observer.last_did_update_state_);
+
+  // 4. Focus returns to child_rfh again with the same cached TextInputState.
+  // active_view_ transitions from nullptr to child_view, so did_update_state
+  // must be true.
+  child_rfh->frame_tree_node()->frame_tree().SetFocusedFrame(
+      child_rfh->frame_tree_node(), nullptr);
+  manager->UpdateTextInputState(child_view, email_state);
+  EXPECT_EQ(child_view, manager->active_view_for_testing());
+  EXPECT_EQ(observer.update_call_count_, 4);
+  EXPECT_TRUE(observer.last_did_update_state_);
+
+  manager->RemoveObserver(&observer);
 }
 
 // Test that a popup widget's ability to become active depends on whether
