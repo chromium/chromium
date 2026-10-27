@@ -246,9 +246,10 @@ fn test_shared_buffer() {
     let mut mapped = handle.map(0, num_bytes as usize).unwrap();
 
     // Write to the mapped memory safely using the mutable slice.
-    // SAFETY: We are the only ones with a mapping to this memory right now.
-    unsafe {
-        let mapped_slice = mapped.as_mut_slice();
+    {
+        // SAFETY: We are the only ones with a mapping to this memory right now,
+        // and the reference expires at the end of the block.
+        let mapped_slice = unsafe { mapped.as_mut_slice() };
         mapped_slice[0] = 42;
         mapped_slice[1023] = 43;
     }
@@ -261,9 +262,10 @@ fn test_shared_buffer() {
     // exactly what we wrote using the original handle.
     let mapped_dup = duplicate.map(0, num_bytes as usize).unwrap();
 
-    // SAFETY: We mapped it successfully and we are just reading from it.
-    unsafe {
-        let mapped_dup_slice = mapped_dup.as_slice();
+    {
+        // SAFETY: We are the only ones with a mapping to this memory right now,
+        // and the reference expires at the end of the block.
+        let mapped_dup_slice = unsafe { mapped_dup.as_slice() };
         expect_eq!(mapped_dup_slice[0], 42);
         expect_eq!(mapped_dup_slice[1023], 43);
     }
