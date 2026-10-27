@@ -98,6 +98,10 @@ export class LeftHandSideElement extends CrLitElement {
     return url.toString();
   }
 
+  protected onFoldedClick_(): void {
+    this.isExpanded_ = true;
+  }
+
   private onMessage_ = (event: MessageEvent) => {
     const expectedOrigin = new URL(this.expandedLhsUrl_).origin;
     if (event.origin !== expectedOrigin) {

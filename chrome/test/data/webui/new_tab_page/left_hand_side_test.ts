@@ -238,6 +238,27 @@ suite('NewTabPageLeftHandSideTest', () => {
     assertFalse(folded.hidden);
   });
 
+  test('expands LHS when folded rail is clicked in hybrid mode', async () => {
+    loadTimeData.overrideValues({enableThreadsRailHybrid: true});
+    await createLeftHandSide();
+
+    const expanded =
+        leftHandSide.shadowRoot.querySelector<HTMLElement>('#expanded')!;
+    const folded =
+        leftHandSide.shadowRoot.querySelector<HTMLElement>('#folded')!;
+
+    postLhsMessage({type: NtpLhsMessageType.NTP_LHS_READY});
+    postLhsMessage({type: NtpLhsMessageType.NTP_LHS_CLOSE});
+    await microtasksFinished();
+    assertTrue(expanded.hidden);
+    assertFalse(folded.hidden);
+
+    folded.click();
+    await microtasksFinished();
+    assertFalse(expanded.hidden);
+    assertTrue(folded.hidden);
+  });
+
   test('handles NTP_LHS_NEW_THREAD message', async () => {
     await createLeftHandSide();
 

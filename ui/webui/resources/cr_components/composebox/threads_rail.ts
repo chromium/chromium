@@ -61,13 +61,15 @@ export class ThreadsRailElement extends ThreadsRailElementBase {
     super.disconnectedCallback();
   }
 
-  protected onLogoClick_(): void {
+  protected onLogoClick_(e: Event): void {
+    e.stopPropagation();
     const googleBaseUrl = loadTimeData.getString('googleBaseUrl');
     assert(googleBaseUrl);
     WindowProxy.getInstance().navigate(googleBaseUrl);
   }
 
-  protected onShowHistoryClick_(): void {
+  protected onShowHistoryClick_(e: Event): void {
+    e.stopPropagation();
     recordAction(ThreadsAction.SHOW_HISTORY_CLICKED);
     // Navigate to the AI Mode search page. This will be intercepted
     // by the co-browse service if the contextual task flag is enabled.
