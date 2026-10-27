@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 //! Hand-written Rust code that `extra_rust_sources` merges into the
-//! Crubit-generated bindings for `test_time_delta.h`.
+//! Crubit-generated bindings for `time_delta.h`.
 //!
 //! The code below can implement a foreign trait (`TryFrom`) for a type from
 //! the generated bindings, because it is compiled as part of the same crate.

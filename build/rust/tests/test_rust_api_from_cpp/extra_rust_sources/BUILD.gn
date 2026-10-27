@@ -1,0 +1,63 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Tests for `extra_rust_sources` and `extra_rust_source_groups` of
+# `rust_api_from_cpp`.
+
+import("//build/rust/rust_api_from_cpp.gni")
+import("//build/rust/rust_static_library.gni")
+
+rust_static_library("rust_unittests") {
+  testonly = true
+  is_gtest_unittests = true
+  crate_root = "unittests.rs"
+  sources = [ crate_root ]
+  deps = [
+    ":source_groups_rs_api",
+    ":time_delta_rs_api",
+    "//testing/rust_gtest_interop",
+  ]
+}
+
+rust_api_from_cpp("time_delta_rs_api") {
+  testonly = true
+  bindings_target = ":time_delta"
+  public_headers = [ "time_delta.h" ]
+
+  # Hand-written Rust code (e.g. trait impls) to merge into the generated
+  # bindings.
+  extra_rust_sources = [ "time_delta.rs" ]
+}
+
+source_set("time_delta") {
+  testonly = true
+  sources = [ "time_delta.h" ]
+}
+
+rust_api_from_cpp("source_groups_rs_api") {
+  testonly = true
+  bindings_target = ":source_groups"
+  public_headers = [ "source_groups.h" ]
+
+  # Placed at the root of the crate.
+  extra_rust_sources = [ "source_groups_root.rs" ]
+
+  # Placed into the `test_outer::test_inner` and `test_outer` modules (which
+  # correspond to the C++ namespaces with the same names).
+  extra_rust_source_groups = [
+    {
+      sources = [ "source_groups_nested.rs" ]
+      mod = "test_outer::test_inner"
+    },
+    {
+      sources = [ "source_groups_outer.rs" ]
+      mod = "test_outer"
+    },
+  ]
+}
+
+source_set("source_groups") {
+  testonly = true
+  sources = [ "source_groups.h" ]
+}

@@ -8,7 +8,7 @@
 use super::TestMeters;
 
 pub fn double_meters(m: TestMeters) -> TestMeters {
-    // `scale_factor` is provided by `test_extra_rust_source_groups_root.rs`,
+    // `scale_factor` is provided by `source_groups_root.rs`,
     // which is placed at the root of the crate.
     TestMeters { value: m.value * crate::scale_factor() }
 }

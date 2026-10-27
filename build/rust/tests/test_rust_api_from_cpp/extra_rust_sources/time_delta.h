@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef BUILD_RUST_TESTS_TEST_RUST_API_FROM_CPP_TEST_TIME_DELTA_H_
-#define BUILD_RUST_TESTS_TEST_RUST_API_FROM_CPP_TEST_TIME_DELTA_H_
+#ifndef BUILD_RUST_TESTS_TEST_RUST_API_FROM_CPP_EXTRA_RUST_SOURCES_TIME_DELTA_H_
+#define BUILD_RUST_TESTS_TEST_RUST_API_FROM_CPP_EXTRA_RUST_SOURCES_TIME_DELTA_H_
 
 #include <stdint.h>
 
@@ -28,4 +28,4 @@ class TestTimeDelta {
 
 }  // namespace test_base
 
-#endif  // BUILD_RUST_TESTS_TEST_RUST_API_FROM_CPP_TEST_TIME_DELTA_H_
+#endif  // BUILD_RUST_TESTS_TEST_RUST_API_FROM_CPP_EXTRA_RUST_SOURCES_TIME_DELTA_H_

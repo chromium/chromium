@@ -218,7 +218,7 @@ section below).
 Example:
 
 ```cpp
-// build/rust/tests/test_rust_api_from_cpp/test_time_delta.h:
+// build/rust/tests/test_rust_api_from_cpp/extra_rust_sources/time_delta.h:
 
 namespace test_base {
 
@@ -233,7 +233,7 @@ class TestTimeDelta {
 ```
 
 ```rust
-// build/rust/tests/test_rust_api_from_cpp/test_time_delta.rs:
+// build/rust/tests/test_rust_api_from_cpp/extra_rust_sources/time_delta.rs:
 
 use crate::test_base::TestTimeDelta;
 use core::num::TryFromIntError;
@@ -250,25 +250,25 @@ impl TryFrom<TestTimeDelta> for Duration {
 ```
 
 ```gn
-# build/rust/tests/test_rust_api_from_cpp/BUILD.gn
+# build/rust/tests/test_rust_api_from_cpp/extra_rust_sources/BUILD.gn
 
-rust_api_from_cpp("test_time_delta_rs_api") {
-  bindings_target = ":test_time_delta"
-  public_headers = [ "test_time_delta.h" ]
-  extra_rust_sources = [ "test_time_delta.rs" ]
+rust_api_from_cpp("time_delta_rs_api") {
+  bindings_target = ":time_delta"
+  public_headers = [ "time_delta.h" ]
+  extra_rust_sources = [ "time_delta.rs" ]
 }
 ```
 
 ```rust
-// build/rust/tests/test_rust_api_from_cpp/tests.rs:
+// build/rust/tests/test_rust_api_from_cpp/extra_rust_sources/unittests.rs:
 
 chromium::import! {
-    "//build/rust/tests/test_rust_api_from_cpp:test_time_delta_rs_api"
-        as test_time_delta;
+    "//build/rust/tests/test_rust_api_from_cpp/extra_rust_sources:time_delta_rs_api"
+        as time_delta;
 }
 
 fn foo() {
-    let delta = ::test_time_delta::test_base::TestTimeDelta::FromMicroseconds(123);
+    let delta = ::time_delta::test_base::TestTimeDelta::FromMicroseconds(123);
     let duration = std::time::Duration::try_from(delta).unwrap();
 }
 ```
@@ -288,8 +288,8 @@ Notes:
   `sources` and a Rust module path in `mod` (e.g. `"foo::bar"`) - the sources
   are placed into that module.  Reaching for this attribute should be
   needed quite rarely - usually only for `cc_std` or `base` bindings.  See
-  `test_extra_rust_source_groups_rs_api` in
-  [`build/rust/tests/test_rust_api_from_cpp/BUILD.gn`](../../../build/rust/tests/test_rust_api_from_cpp/BUILD.gn)
+  `source_groups_rs_api` in
+  [`build/rust/tests/test_rust_api_from_cpp/extra_rust_sources/BUILD.gn`](../../../build/rust/tests/test_rust_api_from_cpp/extra_rust_sources/BUILD.gn)
   for an example.
 
 ## Troubleshooting
@@ -325,17 +325,17 @@ Then you want to read the "Specifying binding dependencies" section above.
 Rust's
 [orphan rule](https://doc.rust-lang.org/reference/items/implementations.html#r-items.impl.trait.orphan-rule)
 prevents implementing a foreign trait for foreign types.  For example, if
-`tests.rs` tries to implement `TryFrom` for a type from `rust_api_from_cpp`
-bindings, then the build fails with an error like:
+`extra_rust_sources/unittests.rs` tries to implement `TryFrom` for a type from
+`rust_api_from_cpp` bindings, then the build fails with an error like:
 
 ```
 error[E0117]: only traits defined in the current crate can be implemented for types defined outside of the crate
-  --> ../../build/rust/tests/test_rust_api_from_cpp/tests.rs:47:1
+  --> ../../build/rust/tests/test_rust_api_from_cpp/extra_rust_sources/unittests.rs:47:1
    |
-47 | impl TryFrom<::test_time_delta::test_base::TestTimeDelta> for std::time::Duration {
-   | ^^^^^----------------------------------------------------^^^^^-------------------
-   |      |                                                        |
-   |      |                                                        `Duration` is not defined in the current crate
+47 | impl TryFrom<::time_delta::test_base::TestTimeDelta> for std::time::Duration {
+   | ^^^^^-----------------------------------------------^^^^^-------------------
+   |      |                                                   |
+   |      |                                                   `Duration` is not defined in the current crate
    |      this is not defined in the current crate because this is a foreign trait
 ```
 
