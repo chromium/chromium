@@ -350,7 +350,9 @@ void TrustSafetySentimentService::RanSafetyCheck() {
 
 void TrustSafetySentimentService::PageInfoOpened() {
   // Only one Page Info should ever be open.
-  CHECK(!page_info_state_, base::NotFatalUntil::M162);
+  // TODO(crbug.com/577090882): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(!page_info_state_);
   page_info_state_ = std::make_unique<PageInfoState>();
 }
 
