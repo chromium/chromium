@@ -36,6 +36,12 @@ constexpr Strategy kPhraseStrategy = Strategy::kWords;
 // phrases can be longer.
 constexpr int kPhraseStrategyParameter = 5;
 
+// Safety bounds on the input to the dependency parser model. Inference cost
+// grows quadratically with the number of tokens, so very long sentences are
+// not tokenized rather than risking excessive memory use or latency.
+constexpr size_t kMaxPhraseSentenceLength = 1000;
+constexpr size_t kMaxTokensPerSentence = 200;
+
 // Util class for recording the result of loading the dependency parser model.
 // The result is recorded when it goes out of scope and its destructor is
 // called.
@@ -199,13 +205,21 @@ std::vector<size_t> DependencyParserModel::GetDependencyHeads(
 
 std::vector<int> DependencyParserModel::GetPhraseBoundaries(
     const std::u16string& input) {
-  if (!IsAvailable() || input.empty()) {
+  if (!IsAvailable() || input.empty() ||
+      input.size() > kMaxPhraseSentenceLength) {
     return {};
   }
 
   const TokenizedSentence tokenized_sentence(input);
-  if (tokenized_sentence.tokens().empty()) {
+  if (tokenized_sentence.tokens().empty() ||
+      tokenized_sentence.tokens().size() > kMaxTokensPerSentence) {
     return {};
+  }
+
+  // A single token is always a single phrase, so there's no need to run the
+  // model.
+  if (tokenized_sentence.tokens().size() == 1) {
+    return {0};
   }
 
   // Need to convert because model inference only takes std::string array.
@@ -232,6 +246,17 @@ std::vector<int> DependencyParserModel::GetPhraseBoundaries(
   return CalculatePhraseBoundaries(smart_highlight, tokenized_sentence,
                                    token_boundaries, kPhraseStrategy,
                                    kPhraseStrategyParameter);
+}
+
+std::vector<std::vector<int>>
+DependencyParserModel::GetPhraseBoundariesForSentences(
+    const std::vector<std::u16string>& sentences) {
+  std::vector<std::vector<int>> boundaries;
+  boundaries.reserve(sentences.size());
+  for (const std::u16string& sentence : sentences) {
+    boundaries.push_back(GetPhraseBoundaries(sentence));
+  }
+  return boundaries;
 }
 
 std::vector<size_t> DependencyParserModel::SolveDependencies(

@@ -67,6 +67,13 @@ class DependencyParserModel {
   // unavailable or `input` is empty).
   std::vector<int> GetPhraseBoundaries(const std::u16string& input);
 
+  // Runs GetPhraseBoundaries on each sentence in `sentences`. The returned
+  // vector always has the same size as `sentences`, where the i-th element
+  // contains the phrase boundaries for the i-th sentence (or is empty if
+  // phrase boundaries could not be calculated for that sentence).
+  std::vector<std::vector<int>> GetPhraseBoundariesForSentences(
+      const std::vector<std::u16string>& sentences);
+
  private:
   // Returns the dependency head of each node in a dependency graph. The input
   // is the the matrix of probabilities where input[i][j] signals the

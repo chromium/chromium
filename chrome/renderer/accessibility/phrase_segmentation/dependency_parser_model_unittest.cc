@@ -6,6 +6,7 @@
 
 #include <array>
 #include <string>
+#include <vector>
 
 #include "base/base_paths.h"
 #include "base/containers/span.h"
@@ -65,6 +66,17 @@ TEST_F(DependencyParserModelTest, ModelUnavailable) {
   EXPECT_FALSE(dependency_parser_model.IsAvailable());
   EXPECT_THAT(dependency_parser_model.GetPhraseBoundaries(u"Hello world."),
               ::testing::IsEmpty());
+}
+
+TEST_F(DependencyParserModelTest,
+       GetPhraseBoundariesForSentencesModelUnavailable) {
+  DependencyParserModel dependency_parser_model;
+  EXPECT_FALSE(dependency_parser_model.IsAvailable());
+  // The result should still have one (empty) entry per input sentence.
+  EXPECT_THAT(
+      dependency_parser_model.GetPhraseBoundariesForSentences(
+          {u"Hello world.", u"Goodbye world."}),
+      ::testing::ElementsAre(::testing::IsEmpty(), ::testing::IsEmpty()));
 }
 
 TEST_F(DependencyParserModelTest, EmptyFileProvided) {
@@ -152,6 +164,43 @@ TEST_F(DependencyParserModelValidTest, GetPhraseBoundaries) {
               ::testing::ElementsAre(0, 32));
   EXPECT_THAT(dependency_parser_model_->GetPhraseBoundaries(u""),
               ::testing::IsEmpty());
+}
+
+TEST_F(DependencyParserModelValidTest, GetPhraseBoundariesSingleToken) {
+  EXPECT_THAT(dependency_parser_model_->GetPhraseBoundaries(u"Hello"),
+              ::testing::ElementsAre(0));
+  // A single token shouldn't need to run model inference.
+  histogram_tester_.ExpectTotalCount(
+      "Accessibility.DependencyParserModel.Inference.Duration", 0);
+}
+
+TEST_F(DependencyParserModelValidTest, GetPhraseBoundariesSafetyBounds) {
+  // Sentences that are too long are skipped.
+  const std::u16string too_long(1001, u'a');
+  EXPECT_THAT(dependency_parser_model_->GetPhraseBoundaries(too_long),
+              ::testing::IsEmpty());
+
+  // Sentences with too many tokens are skipped, even if they're under the
+  // length limit.
+  std::u16string too_many_tokens;
+  for (int i = 0; i < 201; i++) {
+    too_many_tokens += u"a ";
+  }
+  EXPECT_THAT(dependency_parser_model_->GetPhraseBoundaries(too_many_tokens),
+              ::testing::IsEmpty());
+
+  histogram_tester_.ExpectTotalCount(
+      "Accessibility.DependencyParserModel.Inference.Duration", 0);
+}
+
+TEST_F(DependencyParserModelValidTest, GetPhraseBoundariesForSentences) {
+  EXPECT_THAT(
+      dependency_parser_model_->GetPhraseBoundariesForSentences(
+          {u"Hello", u"",
+           u"Never feel heavy or earthbound, no worries or doubts "
+           u"interfere."}),
+      ::testing::ElementsAre(::testing::ElementsAre(0), ::testing::IsEmpty(),
+                             ::testing::ElementsAre(0, 32)));
 }
 
 }  // namespace
