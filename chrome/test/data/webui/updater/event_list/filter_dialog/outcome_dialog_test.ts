@@ -2,8 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://updater/event_list/filter_dialog/outcome_dialog.js';
+
 import type {CrCheckboxElement} from '//resources/cr_elements/cr_checkbox/cr_checkbox.js';
-import {OutcomeDialogElement} from 'chrome://updater/event_list/filter_dialog/outcome_dialog.js';
+import type {OutcomeDialogElement} from 'chrome://updater/event_list/filter_dialog/outcome_dialog.js';
 import {assertEquals, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
@@ -11,7 +13,7 @@ suite('OutcomeDialogElement', () => {
   let filterOutcome: OutcomeDialogElement;
 
   setup(() => {
-    filterOutcome = new OutcomeDialogElement();
+    filterOutcome = document.createElement('outcome-dialog');
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     document.body.appendChild(filterOutcome);
   });

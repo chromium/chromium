@@ -41,7 +41,7 @@ export function getInstance(container: HTMLElement = document.body):
     return instances.get(container)!;
   }
   assert(container.isConnected);
-  const instance = new CrA11yAnnouncerElement();
+  const instance = document.createElement('cr-a11y-announcer');
   container.appendChild(instance);
   instances.set(container, instance);
   return instance;

@@ -2,12 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import './webview.js';
+
 import {assert} from '//resources/js/assert.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 
 import {getCss} from './content_region.css.js';
-import {TabWebviewElement} from './webview.js';
+import type {TabWebviewElement} from './webview.js';
 
 export class ContentRegionElement extends CrLitElement {
   static get is() {
@@ -57,7 +59,8 @@ export class ContentRegionElement extends CrLitElement {
       return;
     }
 
-    const webview = new TabWebviewElement(tabId);
+    const webview = document.createElement('cr-tab-webview');
+    webview.attachTabContents(tabId);
     this.webviews.set(tabId, webview);
     this.shadowRoot.appendChild(webview);
     if (isActive) {

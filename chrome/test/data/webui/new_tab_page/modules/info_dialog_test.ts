@@ -2,7 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {InfoDialogElement} from 'chrome://new-tab-page/lazy_load.js';
+import 'chrome://new-tab-page/lazy_load.js';
+
+import type {InfoDialogElement} from 'chrome://new-tab-page/lazy_load.js';
 import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 suite('NewTabPageModulesInfoDialogTest', () => {
@@ -10,7 +12,7 @@ suite('NewTabPageModulesInfoDialogTest', () => {
 
   setup(() => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    infoDialog = new InfoDialogElement();
+    infoDialog = document.createElement('ntp-info-dialog');
     document.body.appendChild(infoDialog);
   });
 
@@ -34,7 +36,7 @@ suite('NewTabPageModulesInfoDialogTest', () => {
   test('show-on-attach', () => {
     // Arrange.
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    infoDialog = new InfoDialogElement();
+    infoDialog = document.createElement('ntp-info-dialog');
     infoDialog.showOnAttach = true;
 
     // Act.

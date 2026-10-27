@@ -106,7 +106,7 @@ async function createDriveElement(): Promise<DriveModuleElement|null> {
   if (files.length === 0) {
     return null;
   }
-  const element = new DriveModuleElement();
+  const element = document.createElement('ntp-drive-module');
   element.files = files;
   return element;
 }

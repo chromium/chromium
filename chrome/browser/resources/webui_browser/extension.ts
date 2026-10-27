@@ -6,6 +6,7 @@ import './icons.html.js';
 import '//resources/cr_elements/cr_button/cr_button.js';
 import '/shared/icon_from_table.js';
 
+import {assert} from '//resources/js/assert.js';
 import {TrackedElementManager} from '//resources/js/tracked_element/tracked_element_manager.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import {MenuSourceType} from '//resources/mojo/ui/base/mojom/menu_source_type.mojom-webui.js';
@@ -39,15 +40,9 @@ export class ExtensionElement extends CrLitElement {
   accessor iconHandle: IconHandle = {handleId: 0n};
   accessor visible: boolean = false;
 
-  private bar: ExtensionsBarElement;
-  private extensionId: string;
+  private bar?: ExtensionsBarElement;
+  private extensionId: string = '';
   protected highlightTracker_: HighlightTracker = new HighlightTracker();
-
-  constructor(extensionId: string, bar: ExtensionsBarElement) {
-    super();
-    this.extensionId = extensionId;
-    this.bar = bar;
-  }
 
   override connectedCallback() {
     super.connectedCallback();
@@ -63,10 +58,16 @@ export class ExtensionElement extends CrLitElement {
     TrackedElementManager.getInstance().stopTracking(this);
   }
 
+  init(extensionId: string, bar: ExtensionsBarElement) {
+    this.extensionId = extensionId;
+    this.bar = bar;
+  }
+
   protected onClick(e: PointerEvent) {
     if (this.highlightTracker_.shouldSkipClick(e)) {
       return;
     }
+    assert(this.bar);
     this.bar.onClick(this.extensionId);
   }
 
@@ -86,6 +87,7 @@ export class ExtensionElement extends CrLitElement {
       default:
         break;
     }
+    assert(this.bar);
     this.bar.onContextMenu(sourceType, this.extensionId);
   }
 }

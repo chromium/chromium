@@ -102,13 +102,18 @@ export class TabWebviewElement extends WebviewElement {
     return 'cr-tab-webview';
   }
 
-  tabId: string;
+  tabId: string = '';
   private guestHandler: GuestHandlerRemote = new GuestHandlerRemote();
 
-  constructor(tabId: string) {
-    super();
-    this.tabId = tabId;
-    this.attachTabContents();
+  override updated(changedProperties: PropertyValues<this>) {
+    super.updated(changedProperties);
+    // Focus the content element when guestId is set and the tab is active.
+    if (this.classList.contains('active') && changedProperties.has('guestId')) {
+      const content = this.shadowRoot.querySelector<HTMLElement>('.content');
+      if (content) {
+        content.focus();
+      }
+    }
   }
 
   setActive(active: boolean) {
@@ -124,17 +129,6 @@ export class TabWebviewElement extends WebviewElement {
     }
   }
 
-  override updated(changedProperties: PropertyValues<this>) {
-    super.updated(changedProperties);
-    // Focus the content element when guestId is set and the tab is active.
-    if (this.classList.contains('active') && changedProperties.has('guestId')) {
-      const content = this.shadowRoot.querySelector<HTMLElement>('.content');
-      if (content) {
-        content.focus();
-      }
-    }
-  }
-
   openPageInfoMenu() {
     this.guestHandler.openPageInfoMenu();
   }
@@ -144,7 +138,8 @@ export class TabWebviewElement extends WebviewElement {
     return securityIcon;
   }
 
-  private attachTabContents() {
+  attachTabContents(tabId: string) {
+    this.tabId = tabId;
     browserProxyFactory.getInstance()
         .handler
         .getGuestIdForTabId(

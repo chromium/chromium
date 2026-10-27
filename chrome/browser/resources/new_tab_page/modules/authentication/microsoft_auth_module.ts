@@ -93,7 +93,7 @@ customElements.define(
 
 function createMicrosoftAuthElement():
     Promise<MicrosoftAuthModuleElement|null> {
-  return Promise.resolve(new MicrosoftAuthModuleElement());
+  return Promise.resolve(document.createElement('ntp-microsoft-auth-module'));
 }
 
 export const microsoftAuthModuleDescriptor: ModuleDescriptor =

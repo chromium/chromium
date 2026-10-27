@@ -230,7 +230,7 @@ async function createElement(): Promise<TabGroupsModuleElement|null> {
     return null;
   }
 
-  const element = new TabGroupsModuleElement();
+  const element = document.createElement('ntp-tab-groups-module');
   element.tabGroups = tabGroups;
   element.showZeroState = showZeroState;
   return element;

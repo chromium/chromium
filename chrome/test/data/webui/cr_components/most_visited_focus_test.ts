@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 
 
-import {MostVisitedElement} from 'chrome://resources/cr_components/most_visited/most_visited.js';
+import 'chrome://resources/cr_components/most_visited/most_visited.js';
+
+import type {MostVisitedElement} from 'chrome://resources/cr_components/most_visited/most_visited.js';
 import type {MostVisitedPageRemote} from 'chrome://resources/cr_components/most_visited/most_visited.mojom-webui.js';
 import {browserProxyFactory, MostVisitedPageHandlerRemote} from 'chrome://resources/cr_components/most_visited/most_visited.mojom-webui.js';
 import {TextDirection} from 'chrome://resources/mojo/mojo/public/mojom/base/text_direction.mojom-webui.js';
@@ -43,7 +45,7 @@ suite('CrComponentsMostVisitedFocusTest', () => {
     browserProxyFactory.setInstance(instance);
     callbackRouterRemote = remote;
 
-    mostVisited = new MostVisitedElement();
+    mostVisited = document.createElement('cr-most-visited');
     if (options.expandableTilesEnabled) {
       mostVisited.setAttribute('expandable-tiles-enabled', '');
     }

@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {ComposeboxElement} from 'chrome://new-tab-page/lazy_load.js';
 import type {CrA11yAnnouncerMessagesSentEvent} from 'chrome://new-tab-page/new_tab_page.js';
 import {$$} from 'chrome://new-tab-page/new_tab_page.js';
 import {ComposeboxFile, ContextualSearchInputStateDeletionType} from 'chrome://resources/cr_components/composebox/common.js';
@@ -1727,7 +1726,7 @@ suite('CrComposeboxUploadContextTest', () => {
   // `cr-composebox` element is no longer used. AutoChip is not used in
   // `ntp-composebox`, it could be related to contextual_tasks.
   function createCrComposeboxElement() {
-    testProxy.element = new ComposeboxElement();
+    testProxy.element = document.createElement('cr-composebox');
     document.body.appendChild(testProxy.element);
   }
   test(

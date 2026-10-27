@@ -66,7 +66,8 @@ suite('CrComponentsSearchboxSelectionMixinTest', () => {
 
   setup(() => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    element = new TestSearchboxSelectionMixinElement();
+    element = document.createElement('test-searchbox-selection-mixin') as
+        TestSearchboxSelectionMixinElement;
     document.body.appendChild(element);
   });
 

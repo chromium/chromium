@@ -4,8 +4,8 @@
 
 import 'chrome://customize-chrome-side-panel.top-chrome/strings.m.js';
 
-import type {ColorSchemeModeOption} from 'chrome://resources/cr_components/customize_color_scheme_mode/customize_color_scheme_mode.js';
-import {colorSchemeModeOptions, CustomizeColorSchemeModeElement} from 'chrome://resources/cr_components/customize_color_scheme_mode/customize_color_scheme_mode.js';
+import type {ColorSchemeModeOption, CustomizeColorSchemeModeElement} from 'chrome://resources/cr_components/customize_color_scheme_mode/customize_color_scheme_mode.js';
+import {colorSchemeModeOptions} from 'chrome://resources/cr_components/customize_color_scheme_mode/customize_color_scheme_mode.js';
 import {browserProxyFactory, CustomizeColorSchemeModeHandlerRemote} from 'chrome://resources/cr_components/customize_color_scheme_mode/customize_color_scheme_mode.mojom-webui.js';
 import type {ColorSchemeMode, CustomizeColorSchemeModeClientRemote} from 'chrome://resources/cr_components/customize_color_scheme_mode/customize_color_scheme_mode.mojom-webui.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -27,7 +27,7 @@ suite('CrComponentsCustomizeColorSchemeModeTest', () => {
 
   async function initializeElement(colorSchemeMode: ColorSchemeMode):
       Promise<CustomizeColorSchemeModeElement> {
-    const element = new CustomizeColorSchemeModeElement();
+    const element = document.createElement('customize-color-scheme-mode');
     callbackRouter.setColorSchemeMode(colorSchemeMode);
     document.body.appendChild(element);
     await microtasksFinished();

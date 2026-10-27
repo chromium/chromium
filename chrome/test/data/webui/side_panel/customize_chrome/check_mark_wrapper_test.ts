@@ -2,7 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {CheckMarkWrapperElement} from 'chrome://customize-chrome-side-panel.top-chrome/check_mark_wrapper.js';
+import 'chrome://customize-chrome-side-panel.top-chrome/check_mark_wrapper.js';
+
+import type {CheckMarkWrapperElement} from 'chrome://customize-chrome-side-panel.top-chrome/check_mark_wrapper.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {assertNotStyle, assertStyle} from './test_support.js';
@@ -12,7 +14,8 @@ suite('CheckMarkWrapperTest', () => {
 
   setup(() => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    checkMarkWrapperElement = new CheckMarkWrapperElement();
+    checkMarkWrapperElement =
+        document.createElement('customize-chrome-check-mark-wrapper');
     document.body.appendChild(checkMarkWrapperElement);
   });
 

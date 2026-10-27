@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {FileAction, FileSuggestionElement} from 'chrome://new-tab-page/lazy_load.js';
+import type {FileSuggestionElement} from 'chrome://new-tab-page/lazy_load.js';
+import {FileAction} from 'chrome://new-tab-page/lazy_load.js';
 import type {File} from 'chrome://new-tab-page/new_tab_page.js';
 import {RecommendationType} from 'chrome://new-tab-page/new_tab_page.js';
 import type {CrAutoImgElement} from 'chrome://new-tab-page/new_tab_page.js';
@@ -15,7 +16,7 @@ suite('FileSuggestion', () => {
 
   setup(() => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    fileSuggestion = new FileSuggestionElement();
+    fileSuggestion = document.createElement('ntp-file-suggestion');
     document.body.appendChild(fileSuggestion);
   });
 

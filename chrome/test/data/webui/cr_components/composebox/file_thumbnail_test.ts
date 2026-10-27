@@ -3,9 +3,10 @@
 // found in the LICENSE file.
 
 import 'chrome://contextual-tasks/strings.m.js';
+import 'chrome://resources/cr_components/composebox/file_thumbnail.js';
 
 import type {TabFaviconElement} from 'chrome://resources/cr_components/composebox/composebox_tab_favicon.js';
-import {ComposeboxFileThumbnailElement} from 'chrome://resources/cr_components/composebox/file_thumbnail.js';
+import type {ComposeboxFileThumbnailElement} from 'chrome://resources/cr_components/composebox/file_thumbnail.js';
 import type {CrIconElement} from 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {ContextUploadStatus} from 'chrome://resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
@@ -24,14 +25,16 @@ suite('ComposeboxFileThumbnailTest', () => {
       tabFaviconChipsToCoinsEnabled: false,
     });
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    fileThumbnailElement = new ComposeboxFileThumbnailElement();
+    fileThumbnailElement =
+        document.createElement('cr-composebox-file-thumbnail');
     document.body.appendChild(fileThumbnailElement);
   });
 
   test('display document file (flag disabled)', async () => {
     loadTimeData.overrideValues({lensSendRawFileMediaTypesEnabled: false});
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    fileThumbnailElement = new ComposeboxFileThumbnailElement();
+    fileThumbnailElement =
+        document.createElement('cr-composebox-file-thumbnail');
     document.body.appendChild(fileThumbnailElement);
 
     // Arrange.
@@ -55,7 +58,8 @@ suite('ComposeboxFileThumbnailTest', () => {
   test('display document file (flag enabled) for non-pdf', async () => {
     loadTimeData.overrideValues({lensSendRawFileMediaTypesEnabled: true});
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    fileThumbnailElement = new ComposeboxFileThumbnailElement();
+    fileThumbnailElement =
+        document.createElement('cr-composebox-file-thumbnail');
     document.body.appendChild(fileThumbnailElement);
 
     // Arrange.
@@ -79,7 +83,8 @@ suite('ComposeboxFileThumbnailTest', () => {
   test('display pdf file (flag enabled)', async () => {
     loadTimeData.overrideValues({lensSendRawFileMediaTypesEnabled: true});
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    fileThumbnailElement = new ComposeboxFileThumbnailElement();
+    fileThumbnailElement =
+        document.createElement('cr-composebox-file-thumbnail');
     document.body.appendChild(fileThumbnailElement);
 
     // Arrange.
@@ -105,7 +110,8 @@ suite('ComposeboxFileThumbnailTest', () => {
   test('display document file (flag enabled) for google doc', async () => {
     loadTimeData.overrideValues({lensSendRawFileMediaTypesEnabled: true});
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    fileThumbnailElement = new ComposeboxFileThumbnailElement();
+    fileThumbnailElement =
+        document.createElement('cr-composebox-file-thumbnail');
     document.body.appendChild(fileThumbnailElement);
 
     // Arrange.
@@ -157,7 +163,8 @@ suite('ComposeboxFileThumbnailTest', () => {
   test('android renders clank chip structure', async () => {
     loadTimeData.overrideValues({isAndroid: true});
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    fileThumbnailElement = new ComposeboxFileThumbnailElement();
+    fileThumbnailElement =
+        document.createElement('cr-composebox-file-thumbnail');
     document.body.appendChild(fileThumbnailElement);
 
     // Image.
@@ -207,7 +214,8 @@ suite('ComposeboxFileThumbnailTest', () => {
 
   test('shows animation for entering attachment', async () => {
     // Arrange.
-    fileThumbnailElement = new ComposeboxFileThumbnailElement();
+    fileThumbnailElement =
+        document.createElement('cr-composebox-file-thumbnail');
     document.body.appendChild(fileThumbnailElement);
 
     const animation = new Animation();
@@ -352,7 +360,7 @@ function createThumbnailElement(isAndroid: boolean):
     tabFaviconChipsToCoinsEnabled: false,
   });
   document.body.innerHTML = window.trustedTypes!.emptyHTML;
-  const element = new ComposeboxFileThumbnailElement();
+  const element = document.createElement('cr-composebox-file-thumbnail');
   document.body.appendChild(element);
   return element;
 }

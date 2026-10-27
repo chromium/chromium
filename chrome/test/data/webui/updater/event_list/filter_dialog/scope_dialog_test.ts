@@ -2,9 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://updater/event_list/filter_dialog/scope_dialog.js';
+
 import type {CrCheckboxElement} from '//resources/cr_elements/cr_checkbox/cr_checkbox.js';
 import type {Scope} from 'chrome://updater/event_history.js';
-import {ScopeDialogElement} from 'chrome://updater/event_list/filter_dialog/scope_dialog.js';
+import type {ScopeDialogElement} from 'chrome://updater/event_list/filter_dialog/scope_dialog.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
@@ -12,7 +14,7 @@ suite('ScopeDialogElement', () => {
   let filterScope: ScopeDialogElement;
 
   setup(() => {
-    filterScope = new ScopeDialogElement();
+    filterScope = document.createElement('scope-dialog');
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     document.body.appendChild(filterScope);
   });

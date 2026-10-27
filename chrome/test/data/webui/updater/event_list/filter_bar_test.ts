@@ -2,10 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://updater/event_list/filter_bar.js';
+
 import type {CrButtonElement} from '//resources/cr_elements/cr_button/cr_button.js';
 import type {CrCheckboxElement} from '//resources/cr_elements/cr_checkbox/cr_checkbox.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {FilterBarElement} from 'chrome://updater/event_list/filter_bar.js';
+import type {FilterBarElement} from 'chrome://updater/event_list/filter_bar.js';
 import {assertDeepEquals, assertEquals, assertNotEquals, assertStringContains, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
@@ -34,7 +36,7 @@ suite('FilterBarElement', () => {
       'defaultAppFilters': 'Google Chrome,Google Chrome Beta',
     });
 
-    filterBar = new FilterBarElement();
+    filterBar = document.createElement('filter-bar');
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     document.body.appendChild(filterBar);
   });

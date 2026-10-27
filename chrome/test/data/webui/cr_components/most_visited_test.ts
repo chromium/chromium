@@ -2,9 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://resources/cr_components/most_visited/most_visited.js';
+
 import {TileSource} from '//resources/mojo/components/ntp_tiles/tile_source.mojom-webui.js';
-import {MostVisitedElement} from 'chrome://resources/cr_components/most_visited/most_visited.js';
-import type {AutoRemovedEventDetail} from 'chrome://resources/cr_components/most_visited/most_visited.js';
+import type {AutoRemovedEventDetail, MostVisitedElement} from 'chrome://resources/cr_components/most_visited/most_visited.js';
 import type {MostVisitedPageRemote, MostVisitedTile} from 'chrome://resources/cr_components/most_visited/most_visited.mojom-webui.js';
 import {browserProxyFactory, MostVisitedPageHandlerRemote} from 'chrome://resources/cr_components/most_visited/most_visited.mojom-webui.js';
 import {MostVisitedWindowProxy} from 'chrome://resources/cr_components/most_visited/window_proxy.js';
@@ -196,7 +197,7 @@ function setUpTest(providedOptions: Partial<SetUpTestOptions> = {}) {
   createBrowserProxy();
   createWindowProxy();
 
-  mostVisited = new MostVisitedElement();
+  mostVisited = document.createElement('cr-most-visited');
   mostVisited.nonEditable = options.nonEditable;
   mostVisited.hideTitle = options.hideTitle;
   mostVisited.singleRow = options.singleRow;
@@ -360,7 +361,7 @@ suite('ExpandableTiles', () => {
         'getMostVisitedExpandedState', Promise.resolve({isExpanded: true}));
     createWindowProxy();
 
-    mostVisited = new MostVisitedElement();
+    mostVisited = document.createElement('cr-most-visited');
     mostVisited.setAttribute('expandable-tiles-enabled', '');
     document.body.appendChild(mostVisited);
     await wide();

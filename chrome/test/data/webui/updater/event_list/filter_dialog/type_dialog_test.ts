@@ -2,8 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://updater/event_list/filter_dialog/type_dialog.js';
+
 import {FilterCategory} from 'chrome://updater/event_list/filter_bar.js';
-import {TypeDialogElement} from 'chrome://updater/event_list/filter_dialog/type_dialog.js';
+import type {TypeDialogElement} from 'chrome://updater/event_list/filter_dialog/type_dialog.js';
 import {assertEquals, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
@@ -11,7 +13,7 @@ suite('TypeDialogElement', () => {
   let filterType: TypeDialogElement;
 
   setup(() => {
-    filterType = new TypeDialogElement();
+    filterType = document.createElement('type-dialog');
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     document.body.appendChild(filterType);
   });

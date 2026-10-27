@@ -3,8 +3,9 @@
 // found in the LICENSE file.
 
 import 'chrome://contextual-tasks/strings.m.js';
+import 'chrome://resources/cr_components/composebox/error_scrim.js';
 
-import {ErrorScrimElement} from 'chrome://resources/cr_components/composebox/error_scrim.js';
+import type {ErrorScrimElement} from 'chrome://resources/cr_components/composebox/error_scrim.js';
 import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
@@ -14,7 +15,7 @@ suite('ComposeboxErrorScrimTest', () => {
 
   setup(() => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    errorScrimElement = new ErrorScrimElement();
+    errorScrimElement = document.createElement('ntp-error-scrim');
     document.body.appendChild(errorScrimElement);
   });
 

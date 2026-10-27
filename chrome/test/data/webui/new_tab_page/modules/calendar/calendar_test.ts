@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {CalendarAction, CalendarElement} from 'chrome://new-tab-page/lazy_load.js';
+import type {CalendarElement} from 'chrome://new-tab-page/lazy_load.js';
+import {CalendarAction} from 'chrome://new-tab-page/lazy_load.js';
 import type {CalendarEvent} from 'chrome://new-tab-page/new_tab_page.js';
 import {WindowProxy} from 'chrome://new-tab-page/new_tab_page.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -22,7 +23,7 @@ suite('NewTabPageModulesCalendarTest', () => {
   setup(() => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     windowProxy = installMock(WindowProxy);
-    element = new CalendarElement();
+    element = document.createElement('ntp-calendar');
     document.body.append(element);
   });
 

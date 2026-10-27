@@ -86,7 +86,7 @@ customElements.define(ModuleElement.is, ModuleElement);
 async function createDummyElements(): Promise<HTMLElement[]> {
   const tiles = (await FooProxy.getHandler().getData()).data;
   return Array(12).fill(0).map(_ => {
-    const element = new ModuleElement();
+    const element = document.createElement('ntp-dummy-module');
     element.title = loadTimeData.getString('modulesDummyTitle');
     element.tiles = [...tiles];
     return element;

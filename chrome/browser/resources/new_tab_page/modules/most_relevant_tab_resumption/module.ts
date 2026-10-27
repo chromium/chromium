@@ -259,7 +259,8 @@ async function createElement():
     return null;
   }
 
-  const element = new MostRelevantTabResumptionModuleElement();
+  const element =
+      document.createElement('ntp-most-relevant-tab-resumption-module');
   element.urlVisits = urlVisits;
 
   urlVisits.slice(0, MAX_URL_VISITS).forEach((urlVisit) => {

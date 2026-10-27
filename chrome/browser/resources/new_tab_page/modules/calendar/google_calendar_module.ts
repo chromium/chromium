@@ -43,18 +43,13 @@ export class GoogleCalendarModuleElement extends
 
   static override get properties() {
     return {
-      events_: {type: Array},
+      events: {type: Array},
       showInfoDialog_: {type: Boolean},
     };
   }
 
-  protected accessor events_: CalendarEvent[] = [];
+  accessor events: CalendarEvent[] = [];
   protected accessor showInfoDialog_: boolean = false;
-
-  constructor(events: CalendarEvent[]) {
-    super();
-    this.events_ = events;
-  }
 
   protected getMenuItems_(): MenuItem[] {
     return [
@@ -108,7 +103,12 @@ async function createGoogleCalendarElement():
     Promise<GoogleCalendarModuleElement|null> {
   const {events} =
       await GoogleCalendarProxyImpl.getInstance().handler.getEvents();
-  return events.length > 0 ? new GoogleCalendarModuleElement(events) : null;
+  if (events.length === 0) {
+    return null;
+  }
+  const element = document.createElement('ntp-google-calendar-module');
+  element.events = events;
+  return element;
 }
 
 export const googleCalendarDescriptor: ModuleDescriptor = new ModuleDescriptor(

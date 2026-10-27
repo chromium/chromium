@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {AimButtonMode, ComposeboxElement, NtpComposeboxElement, SubmitButtonIconType} from 'chrome://new-tab-page/lazy_load.js';
+import type {ComposeboxElement, NtpComposeboxElement} from 'chrome://new-tab-page/lazy_load.js';
+import {AimButtonMode, SubmitButtonIconType} from 'chrome://new-tab-page/lazy_load.js';
 import {$$, InputSource, QueryActionOverride, SearchboxTutorial} from 'chrome://new-tab-page/new_tab_page.js';
 import {GlifAnimationState} from 'chrome://resources/cr_components/composebox/common.js';
 import type {ComposeboxAimButtonElement} from 'chrome://resources/cr_components/composebox/composebox_aim_button.js';
@@ -1092,7 +1093,7 @@ suite('NewTabPageComposeboxTest', () => {
   });
 
   test('handleFuseboxAction applies and resets action state', async () => {
-    const composebox = new NtpComposeboxElement();
+    const composebox = document.createElement('ntp-composebox');
     assertTrue(composebox.shouldHandleSuggestionFuseboxActions());
     const inputStateRequested =
         testProxy.searchboxHandler.whenCalled('getInputState');
@@ -1150,7 +1151,7 @@ suite('NewTabPageComposeboxTest', () => {
   test(
       'handleFuseboxAction triggers imageInput click for kInputSourceGallery',
       async () => {
-        const composebox = new NtpComposeboxElement();
+        const composebox = document.createElement('ntp-composebox');
         document.body.appendChild(composebox);
         await microtasksFinished();
 
@@ -1178,7 +1179,7 @@ suite('NewTabPageComposeboxTest', () => {
   test(
       'handleFuseboxAction triggers fileInput click for kInputSourceFilePicker',
       async () => {
-        const composebox = new NtpComposeboxElement();
+        const composebox = document.createElement('ntp-composebox');
         document.body.appendChild(composebox);
         await microtasksFinished();
 
@@ -1206,7 +1207,7 @@ suite('NewTabPageComposeboxTest', () => {
   test(
       'getFileInputsElement returns element or null when disabled',
       async () => {
-        const composebox = new NtpComposeboxElement();
+        const composebox = document.createElement('ntp-composebox');
         composebox.contextMenuEnabled = true;
         document.body.appendChild(composebox);
         await microtasksFinished();
@@ -1220,7 +1221,7 @@ suite('NewTabPageComposeboxTest', () => {
   test(
       'handleFuseboxAction opens tab picker for kInputSourceTabPicker',
       async () => {
-        const composebox = new NtpComposeboxElement();
+        const composebox = document.createElement('ntp-composebox');
         composebox.contextMenuEnabled = true;
         document.body.appendChild(composebox);
         await microtasksFinished();
@@ -1240,7 +1241,7 @@ suite('NewTabPageComposeboxTest', () => {
   test(
       'handleFuseboxAction triggers voice search for kInputSourceVoice',
       async () => {
-        const composebox = new NtpComposeboxElement();
+        const composebox = document.createElement('ntp-composebox');
         document.body.appendChild(composebox);
         await microtasksFinished();
 
@@ -1264,7 +1265,7 @@ suite('NewTabPageComposeboxTest', () => {
   test(
       'hint action sets the placeholder and survives input state updates',
       async () => {
-        const composebox = new NtpComposeboxElement();
+        const composebox = document.createElement('ntp-composebox');
         document.body.appendChild(composebox);
         await microtasksFinished();
         await composebox.updateComplete;
@@ -1306,7 +1307,7 @@ suite('NewTabPageComposeboxTest', () => {
                   searchboxTutorial}, energyEnabled=${
                   energyEffectAnimationEnabled}`,
               async () => {
-                const composebox = new NtpComposeboxElement();
+                const composebox = document.createElement('ntp-composebox');
                 composebox.energyEffectAnimationEnabled =
                     energyEffectAnimationEnabled;
                 document.body.appendChild(composebox);
@@ -1349,7 +1350,7 @@ suite('NewTabPageComposeboxTest', () => {
     });
 
     async function createComposebox(): Promise<NtpComposeboxElement> {
-      const composebox = new NtpComposeboxElement();
+      const composebox = document.createElement('ntp-composebox');
       document.body.appendChild(composebox);
       await testProxy.searchboxHandler.whenCalled('getInputState');
       await microtasksFinished();
@@ -1660,7 +1661,7 @@ suite('NewTabPageComposeboxResizeObserverTest', () => {
   test(
       'observeResize emits composebox resize events for host and dropdown',
       async () => {
-        testProxy.element = new ComposeboxElement();
+        testProxy.element = document.createElement('cr-composebox');
         Object.assign(testProxy.element, {observeResize: true});
         document.body.appendChild(testProxy.element);
         await flushComposebox();
@@ -1691,7 +1692,7 @@ suite('NewTabPageComposeboxResizeObserverTest', () => {
       });
 
   test('observeResize false skips public resize observers', async () => {
-    testProxy.element = new ComposeboxElement();
+    testProxy.element = document.createElement('cr-composebox');
     Object.assign(testProxy.element, {observeResize: false});
     document.body.appendChild(testProxy.element);
     await flushComposebox();
@@ -1708,7 +1709,7 @@ suite('NewTabPageComposeboxResizeObserverTest', () => {
   });
 
   test('observeResize changes resync public resize observers', async () => {
-    testProxy.element = new ComposeboxElement();
+    testProxy.element = document.createElement('cr-composebox');
     Object.assign(testProxy.element, {observeResize: false});
     document.body.appendChild(testProxy.element);
     await flushComposebox();

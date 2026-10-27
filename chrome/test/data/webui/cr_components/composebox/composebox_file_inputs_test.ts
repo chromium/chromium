@@ -3,8 +3,9 @@
 // found in the LICENSE file.
 
 import 'chrome://contextual-tasks/strings.m.js';
+import 'chrome://resources/cr_components/composebox/composebox_file_inputs.js';
 
-import {ComposeboxFileInputsElement} from 'chrome://resources/cr_components/composebox/composebox_file_inputs.js';
+import type {ComposeboxFileInputsElement} from 'chrome://resources/cr_components/composebox/composebox_file_inputs.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
@@ -14,7 +15,7 @@ suite('ComposeboxFileInputsTest', () => {
 
   setup(() => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    fileInputsElement = new ComposeboxFileInputsElement();
+    fileInputsElement = document.createElement('cr-composebox-file-inputs');
     fileUploadSlot = document.createElement('button');
     fileInputsElement.appendChild(fileUploadSlot);
     document.body.appendChild(fileInputsElement);

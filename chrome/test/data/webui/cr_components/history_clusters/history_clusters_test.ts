@@ -3,8 +3,9 @@
 // found in the LICENSE file.
 
 import 'chrome://history/strings.m.js';
+import 'chrome://resources/cr_components/history_clusters/clusters.js';
 
-import {HistoryClustersElement} from 'chrome://resources/cr_components/history_clusters/clusters.js';
+import type {HistoryClustersElement} from 'chrome://resources/cr_components/history_clusters/clusters.js';
 import type {Cluster, RawVisitData, URLVisit} from 'chrome://resources/cr_components/history_clusters/history_cluster_types.mojom-webui.js';
 import {browserProxyFactory, PageHandlerRemote} from 'chrome://resources/cr_components/history_clusters/history_clusters.mojom-webui.js';
 import type {PageRemote, QueryResult} from 'chrome://resources/cr_components/history_clusters/history_clusters.mojom-webui.js';
@@ -98,7 +99,7 @@ suite('HistoryClustersTest', () => {
   });
 
   async function setupClustersElement() {
-    const clustersElement = new HistoryClustersElement();
+    const clustersElement = document.createElement('history-clusters');
     document.body.appendChild(clustersElement);
 
     const query = (await handler.whenCalled('startQueryClusters'))[0];
@@ -115,7 +116,7 @@ suite('HistoryClustersTest', () => {
   }
 
   test('Updates IsEmpty attribute', async () => {
-    const clustersElement = new HistoryClustersElement();
+    const clustersElement = document.createElement('history-clusters');
     document.body.appendChild(clustersElement);
     await handler.whenCalled('startQueryClusters');
 
@@ -295,7 +296,7 @@ suite('HistoryClustersTest', () => {
   });
 
   test('loads and renders more results for tall monitors', async () => {
-    const clustersElement = new HistoryClustersElement();
+    const clustersElement = document.createElement('history-clusters');
     clustersElement.scrollTarget = document.body;
     document.body.appendChild(clustersElement);
     await handler.whenCalled('startQueryClusters');
@@ -427,7 +428,7 @@ suite('HistoryClustersFocusTest', () => {
     scrollTarget.style.overflowY = 'auto';
     document.body.appendChild(scrollTarget);
 
-    const clustersElement = new HistoryClustersElement();
+    const clustersElement = document.createElement('history-clusters');
     clustersElement.scrollTarget = scrollTarget;
     clustersElement.setScrollDebounceForTest(1);
     scrollTarget.appendChild(clustersElement);

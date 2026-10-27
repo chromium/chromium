@@ -43,19 +43,13 @@ export class MicrosoftFilesModuleElement extends
 
   static override get properties() {
     return {
-      files_: {type: Array},
+      files: {type: Array},
       showInfoDialog_: {type: Boolean},
     };
   }
 
-  protected accessor files_: File[] = [];
+  accessor files: File[] = [];
   protected accessor showInfoDialog_: boolean = false;
-
-  constructor(files: File[]) {
-    super();
-    this.files_ = files;
-    this.recordFileTypesShown_(files);
-  }
 
   protected getMenuItems_(): MenuItem[] {
     return [
@@ -107,30 +101,30 @@ export class MicrosoftFilesModuleElement extends
   protected onSignoutButtonClick_() {
     ParentTrustedDocumentProxy.getInstance()?.getChildDocument().signOut();
   }
+}
 
-  protected recordFileTypesShown_(files: File[]) {
-    const numOfFiles = new Map<RecommendationType, number>();
-    numOfFiles.set(RecommendationType.kUsed, 0);
-    numOfFiles.set(RecommendationType.kShared, 0);
-    numOfFiles.set(RecommendationType.kTrending, 0);
-    for (let i = 0; i < files.length; i++) {
-      const file = files[i]!;
-      const recommendationType = file.recommendationType;
-      if (recommendationType !== null) {
-        numOfFiles.set(
-            recommendationType, numOfFiles.get(recommendationType)! + 1);
-      }
+function recordFileTypesShown(files: File[]) {
+  const numOfFiles = new Map<RecommendationType, number>();
+  numOfFiles.set(RecommendationType.kUsed, 0);
+  numOfFiles.set(RecommendationType.kShared, 0);
+  numOfFiles.set(RecommendationType.kTrending, 0);
+  for (let i = 0; i < files.length; i++) {
+    const file = files[i]!;
+    const recommendationType = file.recommendationType;
+    if (recommendationType !== null) {
+      numOfFiles.set(
+          recommendationType, numOfFiles.get(recommendationType)! + 1);
     }
-    recordSmallCount(
-        'NewTabPage.MicrosoftFiles.ShownFiles.Used',
-        numOfFiles.get(RecommendationType.kUsed)!);
-    recordSmallCount(
-        'NewTabPage.MicrosoftFiles.ShownFiles.Shared',
-        numOfFiles.get(RecommendationType.kShared)!);
-    recordSmallCount(
-        'NewTabPage.MicrosoftFiles.ShownFiles.Trending',
-        numOfFiles.get(RecommendationType.kTrending)!);
   }
+  recordSmallCount(
+      'NewTabPage.MicrosoftFiles.ShownFiles.Used',
+      numOfFiles.get(RecommendationType.kUsed)!);
+  recordSmallCount(
+      'NewTabPage.MicrosoftFiles.ShownFiles.Shared',
+      numOfFiles.get(RecommendationType.kShared)!);
+  recordSmallCount(
+      'NewTabPage.MicrosoftFiles.ShownFiles.Trending',
+      numOfFiles.get(RecommendationType.kTrending)!);
 }
 
 declare global {
@@ -146,7 +140,13 @@ async function createMicrosoftFilesElement():
     Promise<MicrosoftFilesModuleElement|null> {
   const {files} =
       await MicrosoftFilesProxyImpl.getInstance().handler.getFiles();
-  return files.length > 0 ? new MicrosoftFilesModuleElement(files) : null;
+  if (files.length === 0) {
+    return null;
+  }
+  const element = document.createElement('ntp-microsoft-files-module');
+  element.files = files;
+  recordFileTypesShown(files);
+  return element;
 }
 
 export const microsoftFilesModuleDescriptor: ModuleDescriptor =

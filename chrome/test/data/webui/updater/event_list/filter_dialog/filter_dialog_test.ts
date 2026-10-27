@@ -2,7 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {FilterDialogElement} from 'chrome://updater/event_list/filter_dialog/filter_dialog.js';
+import 'chrome://updater/event_list/filter_dialog/filter_dialog.js';
+
+import type {FilterDialogElement} from 'chrome://updater/event_list/filter_dialog/filter_dialog.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {whenCheck} from 'chrome://webui-test/test_util.js';
 
@@ -14,7 +16,7 @@ suite('FilterDialogElement', () => {
   });
 
   test('renders correctly', () => {
-    filterDialog = new FilterDialogElement();
+    filterDialog = document.createElement('filter-dialog');
     document.body.appendChild(filterDialog);
     assertTrue(filterDialog instanceof HTMLElement);
     assertEquals('FILTER-DIALOG', filterDialog.tagName);
@@ -29,7 +31,7 @@ suite('FilterDialogElement', () => {
     parent.style.height = '100px';
     document.body.appendChild(parent);
 
-    filterDialog = new FilterDialogElement();
+    filterDialog = document.createElement('filter-dialog');
     parent.appendChild(filterDialog);
 
     const dialog = filterDialog.$.dialog;
@@ -48,7 +50,7 @@ suite('FilterDialogElement', () => {
     anchor.style.height = '50px';
     document.body.appendChild(anchor);
 
-    filterDialog = new FilterDialogElement();
+    filterDialog = document.createElement('filter-dialog');
     filterDialog.anchorElement = anchor;
     document.body.appendChild(filterDialog);
 
@@ -68,7 +70,7 @@ suite('FilterDialogElement', () => {
     initialAnchor.style.height = '20px';
     document.body.appendChild(initialAnchor);
 
-    filterDialog = new FilterDialogElement();
+    filterDialog = document.createElement('filter-dialog');
     filterDialog.anchorElement = initialAnchor;
     document.body.appendChild(filterDialog);
 
@@ -102,7 +104,7 @@ suite('FilterDialogElement', () => {
     anchor.style.height = '50px';
     document.body.appendChild(anchor);
 
-    filterDialog = new FilterDialogElement();
+    filterDialog = document.createElement('filter-dialog');
     filterDialog.anchorElement = anchor;
     document.body.appendChild(filterDialog);
 

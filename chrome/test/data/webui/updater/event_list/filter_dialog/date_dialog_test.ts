@@ -2,7 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {DateDialogElement} from 'chrome://updater/event_list/filter_dialog/date_dialog.js';
+import 'chrome://updater/event_list/filter_dialog/date_dialog.js';
+
+import type {DateDialogElement} from 'chrome://updater/event_list/filter_dialog/date_dialog.js';
 import {assertEquals, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
@@ -10,7 +12,7 @@ suite('DateDialogElement', () => {
   let filterDate: DateDialogElement;
 
   setup(() => {
-    filterDate = new DateDialogElement();
+    filterDate = document.createElement('date-dialog');
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     document.body.appendChild(filterDate);
   });

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {Module, ModuleWrapperElement, NamedWidth} from 'chrome://new-tab-page/lazy_load.js';
-import {ModuleDescriptor, ModuleRegistry, ModulesElement, SUPPORTED_MODULE_WIDTHS} from 'chrome://new-tab-page/lazy_load.js';
+import type {Module, ModulesElement, ModuleWrapperElement, NamedWidth} from 'chrome://new-tab-page/lazy_load.js';
+import {ModuleDescriptor, ModuleRegistry, SUPPORTED_MODULE_WIDTHS} from 'chrome://new-tab-page/lazy_load.js';
 import type {PageRemote} from 'chrome://new-tab-page/new_tab_page.js';
 import {NewTabPageProxy, PageCallbackRouter, PageHandlerRemote, WindowProxy} from 'chrome://new-tab-page/new_tab_page.js';
 import {assert} from 'chrome://resources/js/assert.js';
@@ -62,7 +62,7 @@ suite('NewTabPageModulesModulesV2Test', () => {
     });
 
     moduleRegistry.setResultFor('initializeModulesHavingIds', modulesPromise);
-    const element = new ModulesElement();
+    const element = document.createElement('ntp-modules');
     document.body.style.width = `${width}px`;
     document.body.appendChild(element);
     await modulesPromise;

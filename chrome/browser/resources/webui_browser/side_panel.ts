@@ -4,6 +4,7 @@
 
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import './bookmarks/bookmarks.js';
+import './webview.js';
 
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
@@ -11,7 +12,7 @@ import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {browserProxyFactory} from './browser.mojom-webui.js';
 import {getCss} from './side_panel.css.js';
 import {getHtml} from './side_panel.html.js';
-import {WebviewElement} from './webview.js';
+import type {WebviewElement} from './webview.js';
 
 export class SidePanelElement extends CrLitElement {
   static get is() {
@@ -44,7 +45,7 @@ export class SidePanelElement extends CrLitElement {
   protected accessor showBookmarks_: boolean = false;
 
   show(guestContentsId: string, title: string) {
-    this.webView = new WebviewElement();
+    this.webView = document.createElement('cr-webview');
     this.webView.guestId = guestContentsId;
     this.showBookmarks_ = false;
     this.title_ = title;

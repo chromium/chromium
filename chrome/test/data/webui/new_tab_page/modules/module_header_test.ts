@@ -2,7 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {ModuleHeaderElementV2} from 'chrome://new-tab-page/lazy_load.js';
+import 'chrome://new-tab-page/lazy_load.js';
+
+import type {ModuleHeaderElementV2} from 'chrome://new-tab-page/lazy_load.js';
 import {$$} from 'chrome://new-tab-page/new_tab_page.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
@@ -12,7 +14,7 @@ suite('ModuleHeaderV2', () => {
 
   setup(() => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    moduleHeader = new ModuleHeaderElementV2();
+    moduleHeader = document.createElement('ntp-module-header');
     document.body.appendChild(moduleHeader);
   });
 
