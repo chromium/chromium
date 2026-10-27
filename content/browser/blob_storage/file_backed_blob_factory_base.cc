@@ -57,7 +57,9 @@ void ContinueRegisterBlob(
     file_access::ScopedFileAccessDelegate::RequestFilesAccessIOCallback
         file_access,
     bool security_check_success,
-    scoped_refptr<ChromeBlobStorageContext> blob_storage_context) {
+    scoped_refptr<ChromeBlobStorageContext> blob_storage_context,
+    mojo::PendingRemote<blink::mojom::SnapshotPermissionToken>
+        snapshot_permission_token) {
   CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M159);
 
   if (!security_check_success) {
@@ -83,6 +85,8 @@ void ContinueRegisterBlob(
   CHECK(!handle->IsBroken());
 
   storage::BlobImpl::Create(std::move(handle), std::move(blob));
+
+  // `snapshot_permission_token` is dropped.
 }
 
 }  // namespace
@@ -96,7 +100,8 @@ void FileBackedBlobFactoryBase::RegisterBlob(
     mojo::PendingReceiver<blink::mojom::Blob> blob,
     const std::string& content_type,
     blink::mojom::DataElementFilePtr file,
-    bool block_on_registration,
+    mojo::PendingRemote<blink::mojom::SnapshotPermissionToken>
+        snapshot_permission_token,
     RegisterBlobCallback finish_callback) {
   CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
 
@@ -106,20 +111,15 @@ void FileBackedBlobFactoryBase::RegisterBlob(
 
   const GURL url_for_file_access_checks = GetCurrentUrl();
   const std::string uuid = base::Uuid::GenerateRandomV4().AsLowercaseString();
-  base::OnceClosure done = base::BindOnce(std::move(finish_callback), uuid);
+  std::move(finish_callback).Run(uuid);
 
   base::OnceClosure do_register = base::BindOnce(
       &ContinueRegisterBlob, std::move(blob), uuid, content_type,
       std::move(file), GetAccessCallback(url_for_file_access_checks),
-      security_check_success, blob_storage_context_);
-  if (block_on_registration) {
-    content::GetIOThreadTaskRunner({})->PostTaskAndReply(
-        FROM_HERE, std::move(do_register), std::move(done));
-  } else {
-    content::GetIOThreadTaskRunner({})->PostTask(FROM_HERE,
-                                                 std::move(do_register));
-    std::move(done).Run();
-  }
+      security_check_success, blob_storage_context_,
+      std::move(snapshot_permission_token));
+  content::GetIOThreadTaskRunner({})->PostTask(FROM_HERE,
+                                               std::move(do_register));
 }
 
 }  // namespace content

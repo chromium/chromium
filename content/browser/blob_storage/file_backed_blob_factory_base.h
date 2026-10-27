@@ -12,6 +12,7 @@
 #include "content/public/common/child_process_id.h"
 #include "mojo/public/cpp/bindings/message.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/mojom/blob/file_backed_blob_factory.mojom.h"
 #include "url/gurl.h"
 
@@ -55,7 +56,8 @@ class CONTENT_EXPORT FileBackedBlobFactoryBase
   void RegisterBlob(mojo::PendingReceiver<blink::mojom::Blob> blob,
                     const std::string& content_type,
                     blink::mojom::DataElementFilePtr file,
-                    bool block_on_registration,
+                    mojo::PendingRemote<blink::mojom::SnapshotPermissionToken>
+                        snapshot_permission_token,
                     RegisterBlobCallback finish_callback) override;
 
  protected:

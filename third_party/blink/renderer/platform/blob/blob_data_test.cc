@@ -238,10 +238,13 @@ TEST_F(BlobDataHandleTest, CreateFromFile) {
   mojo::Remote<FileBackedBlobFactory> file_factory_remote;
   mojo::Receiver<FileBackedBlobFactory> file_factory_receiver(
       &file_factory, file_factory_remote.BindNewPipeAndPassReceiver());
+  mojo::PendingRemote<mojom::blink::SnapshotPermissionToken> token;
+  mojo::PendingReceiver<mojom::blink::SnapshotPermissionToken> token_receiver =
+      token.InitWithNewPipeAndPassReceiver();
 
-  scoped_refptr<BlobDataHandle> handle =
-      BlobDataHandle::CreateForFile(file_factory_remote.get(), kPath, kOffset,
-                                    kSize, kModificationTime, kType);
+  scoped_refptr<BlobDataHandle> handle = BlobDataHandle::CreateForFile(
+      file_factory_remote.get(), kPath, kOffset, kSize, kModificationTime,
+      kType, std::move(token));
 
   EXPECT_EQ(kType, handle->GetType());
   EXPECT_EQ(kSize, handle->size());
@@ -250,6 +253,7 @@ TEST_F(BlobDataHandleTest, CreateFromFile) {
   file_factory_remote.FlushForTesting();
   EXPECT_EQ(1u, file_factory.registrations.size());
   const auto& reg = file_factory.registrations[0];
+  EXPECT_TRUE(reg.snapshot_permission_token_received);
   EXPECT_EQ(handle->MaybeUuid(), reg.uuid);
   EXPECT_EQ(kType, reg.content_type);
   EXPECT_EQ(StringToFilePath(kPath), reg.file->path);

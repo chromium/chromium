@@ -13,6 +13,7 @@ import "mojo/public/mojom/base/file_info.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "third_party/blink/public/mojom/blob/serialized_blob.mojom";
 import "third_party/blink/public/mojom/blob/blob.mojom";
+import "third_party/blink/public/mojom/blob/file_backed_blob_factory.mojom";
 
 enum FileSystemType {
   kTemporary,
@@ -57,13 +58,6 @@ interface FileSystemOperationListener {
   // Called by all operations that use a listener to indicate an error. No
   // other listener callbacks will be called after this.
   ErrorOccurred(mojo_base.mojom.FileError error_code);
-};
-
-// Used by the renderer to notify the browser that it has received a snapshot
-// after calling CreateSnapshotFile. The browser sends a pending remote along
-// with the result of the CreateSnapshotFile call.
-interface ReceivedSnapshotListener {
-  DidReceiveSnapshotFile();
 };
 
 // Interface provided by the browser to the renderer to carry out filesystem
@@ -182,15 +176,16 @@ interface FileSystemManager {
   // cases, the backend may download the file into a temporary snapshot file and
   // return the metadata of the temporary file.
   //
-  // If |snapshot_listener| is provided, the renderer is expected to call
-  // DidReceiveSnapshotFile on the listener (which allows the backend to drop
-  // a ref to the temporary snapshot file).
+  // If |snapshot_permission_token| is provided, the renderer must keep it alive
+  // until after Blob registration completes, which can be by passing it to
+  // FileBackedBlobFactory.RegisterBlob or by holding it until
+  // `BlobRegistry.Register` replies.
   [Sync]
   CreateSnapshotFile(url.mojom.Url file_path) =>
       (mojo_base.mojom.FileInfo file_info,
        mojo_base.mojom.FilePath platform_path,
        mojo_base.mojom.FileError error_code,
-       pending_remote<ReceivedSnapshotListener>? snapshot_listener);
+       pending_remote<SnapshotPermissionToken>? snapshot_permission_token);
 
   // Synchronously gets the platform path for the given |file_path|.
   [Sync]

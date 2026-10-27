@@ -26,6 +26,7 @@
 #include "third_party/blink/renderer/platform/blob/testing/fake_blob_registry.h"
 #include "third_party/blink/renderer/platform/file_metadata.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/network/mime/mime_type_registry.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
@@ -177,6 +178,57 @@ void ExpectTimestampIsNow(const File& file) {
 }
 
 }  // namespace
+
+TEST(FileTest, ExplicitEmptyNativeFileName) {
+  test::TaskEnvironment task_environment;
+  ScopedNullExecutionContext context;
+  for (const String& path : {String("/native/path.txt"), String("")}) {
+    File* file = MakeGarbageCollected<File>(&context.GetExecutionContext(),
+                                            path, g_empty_string);
+    EXPECT_EQ(g_empty_string, file->name());
+    EXPECT_TRUE(file->type().empty());
+    EXPECT_TRUE(file->GetBlobDataHandle()->IsSingleUnknownSizeFile());
+
+    File* relative_file = File::CreateWithRelativePath(
+        &context.GetExecutionContext(), path, g_empty_string, "directory/file");
+    EXPECT_EQ(g_empty_string, relative_file->name());
+    EXPECT_TRUE(relative_file->type().empty());
+    EXPECT_EQ("directory/file", relative_file->webkitRelativePath());
+    EXPECT_TRUE(relative_file->GetBlobDataHandle()->IsSingleUnknownSizeFile());
+  }
+}
+
+TEST(FileTest, EmptyNativeFileNameInFactories) {
+  test::TaskEnvironment task_environment;
+  ScopedNullExecutionContext context;
+  for (const String& path : {String("/native/path.txt"), String("")}) {
+    File* user_file = File::CreateForUserProvidedFile(
+        &context.GetExecutionContext(), path, g_empty_string);
+    File* filesystem_file = File::CreateForFileSystemFile(path, g_empty_string);
+    File* unnamed_file =
+        MakeGarbageCollected<File>(&context.GetExecutionContext(), path);
+    if (!path.empty()) {
+      EXPECT_EQ(MIMETypeRegistry::GetMIMETypeForExtension("txt"),
+                user_file->type());
+    }
+    for (File* file : {user_file, filesystem_file, unnamed_file}) {
+      if (path.empty()) {
+        EXPECT_TRUE(file->name().IsNull());
+        EXPECT_EQ("application/octet-stream", file->type());
+      } else {
+        EXPECT_EQ("path.txt", file->name());
+        if (file != user_file) {
+          EXPECT_EQ("text/plain", file->type());
+        }
+      }
+      EXPECT_EQ(!path.empty(),
+                file->GetBlobDataHandle()->IsSingleUnknownSizeFile());
+      if (path.empty()) {
+        EXPECT_EQ(0u, file->size());
+      }
+    }
+  }
+}
 
 TEST(FileTest, NativeFileWithoutTimestamp) {
   test::TaskEnvironment task_environment;

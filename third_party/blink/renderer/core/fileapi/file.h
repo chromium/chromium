@@ -31,6 +31,8 @@
 #include "base/dcheck_is_on.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "third_party/blink/public/mojom/blob/file_backed_blob_factory.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/fileapi/blob.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -111,11 +113,15 @@ class CORE_EXPORT File final : public Blob {
   //
   // Otherwise calling size(), lastModifiedTime() and slice() will synchronously
   // query the file metadata.
-  static File* CreateForFileSystemFile(ExecutionContext* context,
-                                       const String& name,
-                                       const FileMetadata& metadata,
-                                       UserVisibility user_visibility) {
-    return MakeGarbageCollected<File>(context, name, metadata, user_visibility);
+  static File* CreateForFileSystemFile(
+      ExecutionContext* context,
+      const String& name,
+      const FileMetadata& metadata,
+      UserVisibility user_visibility,
+      mojo::PendingRemote<mojom::blink::SnapshotPermissionToken>
+          snapshot_permission_token = {}) {
+    return MakeGarbageCollected<File>(context, name, metadata, user_visibility,
+                                      std::move(snapshot_permission_token));
   }
 
   // KURL has a String() operator, so if this signature is called and not
@@ -143,13 +149,11 @@ class CORE_EXPORT File final : public Blob {
 
   File(ExecutionContext* context,
        const String& path,
+       const std::optional<String>& name = std::nullopt,
        ContentTypeLookupPolicy = kWellKnownContentTypes,
-       UserVisibility = File::kIsUserVisible);
-  File(ExecutionContext* context,
-       const String& path,
-       const String& name,
-       ContentTypeLookupPolicy,
-       UserVisibility);
+       UserVisibility = File::kIsUserVisible,
+       mojo::PendingRemote<mojom::blink::SnapshotPermissionToken>
+           snapshot_permission_token = {});
   File(const String& path,
        const String& name,
        const String& relative_path,
@@ -164,7 +168,9 @@ class CORE_EXPORT File final : public Blob {
   File(ExecutionContext* context,
        const String& name,
        const FileMetadata& metadata,
-       UserVisibility user_visibility);
+       UserVisibility user_visibility,
+       mojo::PendingRemote<mojom::blink::SnapshotPermissionToken>
+           snapshot_permission_token = {});
   File(const KURL& file_system_url,
        const FileMetadata& metadata,
        UserVisibility user_visibility,
@@ -184,25 +190,22 @@ class CORE_EXPORT File final : public Blob {
   static File* CreateForUserProvidedFile(ExecutionContext* context,
                                          const String& path,
                                          const String& display_name) {
-    if (display_name.empty()) {
-      return MakeGarbageCollected<File>(context, path, File::kAllContentTypes,
-                                        File::kIsUserVisible);
-    }
-    return MakeGarbageCollected<File>(context, path, display_name,
-                                      File::kAllContentTypes,
-                                      File::kIsUserVisible);
+    return MakeGarbageCollected<File>(
+        context, path,
+        display_name.empty() ? std::nullopt : std::make_optional(display_name),
+        File::kAllContentTypes, File::kIsUserVisible);
   }
 
   static File* CreateForFileSystemFile(
       const String& path,
       const String& name,
-      ContentTypeLookupPolicy policy = kWellKnownContentTypes) {
-    if (name.empty()) {
-      return MakeGarbageCollected<File>(/*context=*/nullptr, path, policy,
-                                        File::kIsNotUserVisible);
-    }
-    return MakeGarbageCollected<File>(/*context=*/nullptr, path, name, policy,
-                                      File::kIsNotUserVisible);
+      mojo::PendingRemote<mojom::blink::SnapshotPermissionToken>
+          snapshot_permission_token = {}) {
+    return MakeGarbageCollected<File>(
+        /*context=*/nullptr, path,
+        name.empty() ? std::nullopt : std::make_optional(name),
+        kWellKnownContentTypes, File::kIsNotUserVisible,
+        std::move(snapshot_permission_token));
   }
 
   File* Clone(const String& name = String()) const;

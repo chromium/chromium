@@ -24,13 +24,15 @@ void FakeFileBackedBlobFactory::RegisterBlob(
     mojo::PendingReceiver<mojom::blink::Blob> blob,
     const String& content_type,
     mojom::blink::DataElementFilePtr file,
-    bool block_on_registration,
+    mojo::PendingRemote<mojom::blink::SnapshotPermissionToken>
+        snapshot_permission_token,
     RegisterBlobCallback callback) {
   const String uuid = CreateCanonicalUuidString();
   std::optional<std::vector<uint8_t>> content =
       base::ReadFileToBytes(file->path);
   Vector<uint8_t> body_bytes(content ? *content : std::vector<uint8_t>());
-  registrations.push_back(Registration{uuid, content_type, std::move(file)});
+  registrations.push_back(Registration{uuid, content_type, std::move(file),
+                                       snapshot_permission_token.is_valid()});
 
   PostCrossThreadTask(*base::ThreadPool::CreateSingleThreadTaskRunner({}),
                       FROM_HERE,

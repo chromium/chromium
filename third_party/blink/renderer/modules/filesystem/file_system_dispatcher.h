@@ -186,7 +186,8 @@ class FileSystemDispatcher : public GarbageCollected<FileSystemDispatcher>,
       const base::File::Info& file_info,
       const base::FilePath& platform_path,
       base::File::Error error_code,
-      mojo::PendingRemote<mojom::blink::ReceivedSnapshotListener> listener);
+      mojo::PendingRemote<mojom::blink::SnapshotPermissionToken>
+          snapshot_permission_token);
 
   void RemoveOperationRemote(int operation_id);
 

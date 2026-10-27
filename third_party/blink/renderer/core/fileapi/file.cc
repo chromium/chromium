@@ -64,55 +64,39 @@ static String GetContentTypeFromFileName(const StringView& name,
   return String();
 }
 
-static scoped_refptr<BlobDataHandle> CreateBlobDataHandleForFileWithType(
-    ExecutionContext* context,
-    const String& path,
-    const String& content_type) {
-  return BlobDataHandle::CreateForFile(
-      FileBackedBlobFactoryDispatcher::GetFileBackedBlobFactory(context), path,
-      /*offset=*/0, BlobData::kToEndOfFile,
-      /*expected_modification_time=*/std::nullopt, content_type);
-}
-
 static scoped_refptr<BlobDataHandle> CreateBlobDataHandleForFile(
     ExecutionContext* context,
     const String& path,
-    File::ContentTypeLookupPolicy policy) {
-  if (path.empty()) {
+    const std::optional<String>& name,
+    File::ContentTypeLookupPolicy policy,
+    mojo::PendingRemote<mojom::blink::SnapshotPermissionToken>
+        snapshot_permission_token) {
+  if (path.empty() && !name) {
     auto blob_data = std::make_unique<BlobData>();
     blob_data->SetContentType("application/octet-stream");
     return BlobDataHandle::Create(std::move(blob_data), /*size=*/0);
   }
-  return CreateBlobDataHandleForFileWithType(
-      context, path, GetContentTypeFromFileName(path, policy));
-}
-
-static scoped_refptr<BlobDataHandle> CreateBlobDataHandleForFileWithName(
-    ExecutionContext* context,
-    const String& path,
-    const String& file_system_name,
-    File::ContentTypeLookupPolicy policy) {
-  return CreateBlobDataHandleForFileWithType(
-      context, path, GetContentTypeFromFileName(file_system_name, policy));
+  return BlobDataHandle::CreateForFile(
+      FileBackedBlobFactoryDispatcher::GetFileBackedBlobFactory(context), path,
+      /*offset=*/0, BlobData::kToEndOfFile,
+      /*expected_modification_time=*/std::nullopt,
+      GetContentTypeFromFileName(name.value_or(path), policy),
+      std::move(snapshot_permission_token));
 }
 
 static scoped_refptr<BlobDataHandle> CreateBlobDataHandleForFileWithMetadata(
     ExecutionContext* context,
     const String& file_system_name,
-    const FileMetadata& metadata) {
-  // We are creating a handle for a snapshot file. The FileSystemManager may
-  // have to create a read permission needed on the browser side for this
-  // operation. As the manager might revoke this permission directly after the
-  // call, we have to ensure the permission is available while we create the
-  // handle. So we need create a handle using the synchronous version of the
-  // IPC.
+    const FileMetadata& metadata,
+    mojo::PendingRemote<mojom::blink::SnapshotPermissionToken>
+        snapshot_permission_token) {
   return BlobDataHandle::CreateForFile(
       FileBackedBlobFactoryDispatcher::GetFileBackedBlobFactory(context),
       metadata.platform_path,
       /*offset=*/0, metadata.length, metadata.modification_time,
       GetContentTypeFromFileName(file_system_name,
                                  File::kWellKnownContentTypes),
-      /*synchronous_register=*/true);
+      std::move(snapshot_permission_token));
 }
 
 // static
@@ -206,24 +190,21 @@ File* File::CreateForFileSystemFile(ExecutionContext& context,
 
 File::File(ExecutionContext* context,
            const String& path,
+           const std::optional<String>& name,
            ContentTypeLookupPolicy policy,
-           UserVisibility user_visibility)
-    : Blob(CreateBlobDataHandleForFile(context, path, policy)),
+           UserVisibility user_visibility,
+           mojo::PendingRemote<mojom::blink::SnapshotPermissionToken>
+               snapshot_permission_token)
+    : Blob(CreateBlobDataHandleForFile(context,
+                                       path,
+                                       name,
+                                       policy,
+                                       std::move(snapshot_permission_token))),
       has_backing_file_(true),
       user_visibility_(user_visibility),
       path_(path),
-      name_(FilePathToString(StringToFilePath(path).BaseName())) {}
-
-File::File(ExecutionContext* context,
-           const String& path,
-           const String& name,
-           ContentTypeLookupPolicy policy,
-           UserVisibility user_visibility)
-    : Blob(CreateBlobDataHandleForFileWithName(context, path, name, policy)),
-      has_backing_file_(true),
-      user_visibility_(user_visibility),
-      path_(path),
-      name_(name) {}
+      name_(
+          name.value_or(FilePathToString(StringToFilePath(path).BaseName()))) {}
 
 File::File(const String& path,
            const String& name,
@@ -260,8 +241,14 @@ File::File(const String& name,
 File::File(ExecutionContext* context,
            const String& name,
            const FileMetadata& metadata,
-           UserVisibility user_visibility)
-    : Blob(CreateBlobDataHandleForFileWithMetadata(context, name, metadata)),
+           UserVisibility user_visibility,
+           mojo::PendingRemote<mojom::blink::SnapshotPermissionToken>
+               snapshot_permission_token)
+    : Blob(CreateBlobDataHandleForFileWithMetadata(
+          context,
+          name,
+          metadata,
+          std::move(snapshot_permission_token))),
       has_backing_file_(true),
       user_visibility_(user_visibility),
       path_(metadata.platform_path),

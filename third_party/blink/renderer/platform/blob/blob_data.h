@@ -174,7 +174,8 @@ class PLATFORM_EXPORT BlobDataHandle
       int64_t length,
       const std::optional<base::Time>& expected_modification_time,
       const String& content_type,
-      bool synchronous_register = false);
+      mojo::PendingRemote<mojom::blink::SnapshotPermissionToken>
+          snapshot_permission_token = {});
 
   // For initial creation.
   static scoped_refptr<BlobDataHandle> Create(std::unique_ptr<BlobData> data,
@@ -243,10 +244,13 @@ class PLATFORM_EXPORT BlobDataHandle
 
   // Creates the blob in the BlobRegistry.
   void Register(Vector<mojom::blink::DataElementPtr> elements);
+  // Creates the blob in the provided FileBackedBlobFactory, falling back to
+  // BlobRegistry if that's null.
   void RegisterFile(
       mojom::blink::FileBackedBlobFactory* file_backed_blob_factory,
       mojom::blink::DataElementFilePtr file_element,
-      bool synchronous_register);
+      mojo::PendingRemote<mojom::blink::SnapshotPermissionToken>
+          snapshot_permission_token);
   void DidGetUuid(const String& uuid);
 
   // This UUID is deprecated and should not be used to reference the blob in the

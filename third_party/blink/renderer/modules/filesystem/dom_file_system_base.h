@@ -100,11 +100,14 @@ class MODULES_EXPORT DOMFileSystemBase : public ScriptWrappable {
                                  String& absolute_path);
   static bool PathPrefixToFileSystemType(const String& path_prefix,
                                          mojom::blink::FileSystemType&);
-  static File* CreateFile(ExecutionContext* context,
-                          const FileMetadata&,
-                          const KURL& file_system_url,
-                          mojom::blink::FileSystemType,
-                          const String name);
+  static File* CreateFile(
+      ExecutionContext* context,
+      const FileMetadata&,
+      const KURL& file_system_url,
+      mojom::blink::FileSystemType,
+      const String name,
+      mojo::PendingRemote<mojom::blink::SnapshotPermissionToken>
+          snapshot_permission_token = {});
 
   // Actual FileSystem API implementations. All the validity checks on virtual
   // paths are done at this level.

@@ -21,13 +21,15 @@ class FakeFileBackedBlobFactory : public mojom::blink::FileBackedBlobFactory {
   void RegisterBlob(mojo::PendingReceiver<mojom::blink::Blob> blob,
                     const String& content_type,
                     mojom::blink::DataElementFilePtr file,
-                    bool block_on_registration,
+                    mojo::PendingRemote<mojom::blink::SnapshotPermissionToken>
+                        snapshot_permission_token,
                     RegisterBlobCallback callback) override;
 
   struct Registration {
     String uuid;
     String content_type;
     mojom::blink::DataElementFilePtr file;
+    bool snapshot_permission_token_received = false;
   };
   Vector<Registration> registrations;
 };

@@ -173,11 +173,14 @@ bool DOMFileSystemBase::PathPrefixToFileSystemType(
   return false;
 }
 
-File* DOMFileSystemBase::CreateFile(ExecutionContext* context,
-                                    const FileMetadata& metadata,
-                                    const KURL& file_system_url,
-                                    mojom::blink::FileSystemType type,
-                                    const String name) {
+File* DOMFileSystemBase::CreateFile(
+    ExecutionContext* context,
+    const FileMetadata& metadata,
+    const KURL& file_system_url,
+    mojom::blink::FileSystemType type,
+    const String name,
+    mojo::PendingRemote<mojom::blink::SnapshotPermissionToken>
+        snapshot_permission_token) {
   // For regular filesystem types (temporary or persistent), we should not cache
   // file metadata as it could change File semantics.  For other filesystem
   // types (which could be platform-specific ones), there's a chance that the
@@ -190,7 +193,8 @@ File* DOMFileSystemBase::CreateFile(ExecutionContext* context,
   if (!metadata.platform_path.empty() &&
       (type == mojom::blink::FileSystemType::kTemporary ||
        type == mojom::blink::FileSystemType::kPersistent)) {
-    return File::CreateForFileSystemFile(metadata.platform_path, name);
+    return File::CreateForFileSystemFile(metadata.platform_path, name,
+                                         std::move(snapshot_permission_token));
   }
 
   const File::UserVisibility user_visibility =
@@ -202,12 +206,12 @@ File* DOMFileSystemBase::CreateFile(ExecutionContext* context,
     // If the platformPath in the returned metadata is given, we create a File
     // object for the snapshot path.
     return File::CreateForFileSystemFile(context, name, metadata,
-                                         user_visibility);
-  } else {
-    // Otherwise we create a File object for the fileSystemURL.
-    return File::CreateForFileSystemFile(*context, file_system_url, metadata,
-                                         user_visibility);
+                                         user_visibility,
+                                         std::move(snapshot_permission_token));
   }
+  // Otherwise we create a File object for the fileSystemURL.
+  return File::CreateForFileSystemFile(*context, file_system_url, metadata,
+                                       user_visibility);
 }
 
 void DOMFileSystemBase::GetMetadata(

@@ -1905,6 +1905,7 @@ TEST(V8ScriptValueSerializerTest, RoundTripFileNativeSnapshot) {
   FileBackedBlobFactoryTestHelper helper(context);
   File* file = File::CreateForFileSystemFile(context, "name", metadata,
                                              File::kIsUserVisible);
+  helper.FlushForTesting();
   v8::Local<v8::Value> wrapper =
       ToV8Traits<File>::ToV8(scope.GetScriptState(), file);
   v8::Local<v8::Value> result =
