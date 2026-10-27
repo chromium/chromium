@@ -8,6 +8,7 @@
 #include <map>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -534,8 +535,8 @@ SavedPasswordsPresenter::GetActorLoginPermissions(
 }
 
 void SavedPasswordsPresenter::RevokeActorLoginPermission(
-    const std::string& signon_realm,
-    const std::string& username) {
+    std::string_view signon_realm,
+    std::u16string_view username) {
   std::vector<CredentialUIEntry> credentials;
 #if BUILDFLAG(IS_ANDROID)
   credentials = GetSavedCredentials();
@@ -546,7 +547,7 @@ void SavedPasswordsPresenter::RevokeActorLoginPermission(
     for (const StoredCredential& stored_credential :
          GetCorrespondingStoredCredentials(credential)) {
       if (stored_credential.signon_realm == signon_realm &&
-          stored_credential.username_value == base::UTF8ToUTF16(username)) {
+          stored_credential.username_value == username) {
         StoredCredential updated_credential =
             CloneStoredCredential(stored_credential);
         updated_credential.actor_login_approved = false;

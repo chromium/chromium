@@ -10,7 +10,6 @@
 #include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/extensions/api/passwords_private/passwords_private_delegate.h"
 #include "chrome/browser/password_manager/chrome_password_change_service.h"
 #include "chrome/browser/password_manager/password_change/features.h"
@@ -228,7 +227,7 @@ void PasswordManagerUIHandler::GetActorLoginPermissions(
 void PasswordManagerUIHandler::RevokeActorLoginPermission(
     const password_manager::ActorLoginPermission& site) {
   GetSavedPasswordsPresenter()->RevokeActorLoginPermission(
-      site.domain_info.signon_realm, base::UTF16ToUTF8(site.username));
+      site.domain_info.signon_realm, site.username);
 }
 
 void PasswordManagerUIHandler::ChangePasswordManagerPin(

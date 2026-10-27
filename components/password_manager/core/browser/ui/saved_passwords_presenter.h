@@ -8,6 +8,7 @@
 #include <map>
 #include <set>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/containers/span.h"
@@ -208,9 +209,9 @@ class SavedPasswordsPresenter : public PasswordStoreInterface::Observer,
   std::vector<CredentialUIEntry> GetBlockedSites();
 
   // Revokes actor login permission for all credentials stored for the given
-  // `signon_realm`.
-  void RevokeActorLoginPermission(const std::string& signon_realm,
-                                  const std::string& username);
+  // `signon_realm` and `username`.
+  void RevokeActorLoginPermission(std::string_view signon_realm,
+                                  std::u16string_view username);
 
   // Returns StoredCredentials corresponding to |credential|.
   std::vector<StoredCredential> GetCorrespondingStoredCredentials(

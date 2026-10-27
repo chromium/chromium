@@ -14,12 +14,12 @@
 #include "base/scoped_observation.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/gmock_move_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
@@ -2110,11 +2110,15 @@ TEST_F(SavedPasswordsPresenterTest, RevokeActorLoginPermission) {
       CreateTestPasswordForm(PasswordForm::Store::kProfileStore);
   form.actor_login_approved = true;
   store().AddLogin(FromPasswordForm(form));
-  RunUntilIdle();
+  ASSERT_TRUE(base::test::RunUntil([&] {
+    return !presenter().GetActorLoginPermissions(GetSyncService()).empty();
+  }));
 
-  presenter().RevokeActorLoginPermission(
-      form.signon_realm, base::UTF16ToUTF8(form.username_value));
-  RunUntilIdle();
+  presenter().RevokeActorLoginPermission(form.signon_realm,
+                                         form.username_value);
+  ASSERT_TRUE(base::test::RunUntil([&] {
+    return presenter().GetActorLoginPermissions(GetSyncService()).empty();
+  }));
 
   form.actor_login_approved = false;
   EXPECT_THAT(GetAllLoginsSync(&store()),
@@ -2136,14 +2140,18 @@ TEST_F(SavedPasswordsPresenterTest,
   credentials.push_back(FromPasswordForm(form_1));
   credentials.push_back(FromPasswordForm(form_2));
   store().AddLogins(std::move(credentials));
-  RunUntilIdle();
+  ASSERT_TRUE(base::test::RunUntil([&] {
+    return presenter().GetActorLoginPermissions(GetSyncService()).size() == 2u;
+  }));
 
 #if !BUILDFLAG(IS_ANDROID)
   EXPECT_EQ(2u, presenter().GetActorLoginPermissions(GetSyncService()).size());
 #endif
 
-  presenter().RevokeActorLoginPermission(form_1.signon_realm, "user_1");
-  RunUntilIdle();
+  presenter().RevokeActorLoginPermission(form_1.signon_realm, u"user_1");
+  ASSERT_TRUE(base::test::RunUntil([&] {
+    return presenter().GetActorLoginPermissions(GetSyncService()).size() == 1u;
+  }));
 
   form_1.actor_login_approved = false;
   EXPECT_THAT(GetAllLoginsSync(&store()),
@@ -2161,11 +2169,19 @@ TEST_F(SavedPasswordsPresenterTest,
   form_2.password_element = u"pwd2";
   store().AddLogin(FromPasswordForm(form_1));
   store().AddLogin(FromPasswordForm(form_2));
-  RunUntilIdle();
+  ASSERT_TRUE(base::test::RunUntil([&] {
+    return presenter().GetSavedCredentials().size() == 1u &&
+           presenter()
+                   .GetCorrespondingStoredCredentials(
+                       presenter().GetSavedCredentials()[0])
+                   .size() == 2u;
+  }));
 
-  presenter().RevokeActorLoginPermission(
-      form_1.signon_realm, base::UTF16ToUTF8(form_1.username_value));
-  RunUntilIdle();
+  presenter().RevokeActorLoginPermission(form_1.signon_realm,
+                                         form_1.username_value);
+  ASSERT_TRUE(base::test::RunUntil([&] {
+    return presenter().GetActorLoginPermissions(GetSyncService()).empty();
+  }));
 
   form_1.actor_login_approved = false;
   form_2.actor_login_approved = false;
@@ -2173,6 +2189,7 @@ TEST_F(SavedPasswordsPresenterTest,
       GetAllLoginsSync(&store()),
       ElementsAre(Pair(form_1.signon_realm, ElementsAre(form_1, form_2))));
 }
+
 TEST_F(SavedPasswordsPresenterTest,
        RevokeActorLoginPermissionHandlesAndroidApps) {
   PasswordForm form_1 =
@@ -2180,16 +2197,46 @@ TEST_F(SavedPasswordsPresenterTest,
   form_1.signon_realm = "android://cert=@app.name";
   form_1.url = GURL();
   form_1.app_display_name = "App Name";
+  form_1.actor_login_approved = true;
   store().AddLogin(FromPasswordForm(form_1));
-  RunUntilIdle();
+  ASSERT_TRUE(base::test::RunUntil(
+      [&] { return !presenter().GetSavedCredentials().empty(); }));
 
-  presenter().RevokeActorLoginPermission(
-      form_1.signon_realm, base::UTF16ToUTF8(form_1.username_value));
-  RunUntilIdle();
+  presenter().RevokeActorLoginPermission(form_1.signon_realm,
+                                         form_1.username_value);
+  ASSERT_TRUE(base::test::RunUntil([&] {
+    std::vector<StoredCredential> stored_credentials =
+        presenter().GetCorrespondingStoredCredentials(
+            presenter().GetSavedCredentials()[0]);
+    return stored_credentials.size() == 1u &&
+           !stored_credentials[0].actor_login_approved;
+  }));
 
   form_1.actor_login_approved = false;
   EXPECT_THAT(GetAllLoginsSync(&store()),
               ElementsAre(Pair(form_1.signon_realm, ElementsAre(form_1))));
+}
+
+TEST_F(SavedPasswordsPresenterTest,
+       RevokeActorLoginPermissionHandlesUnicodeUsername) {
+  PasswordForm form =
+      CreateTestPasswordForm(PasswordForm::Store::kProfileStore);
+  form.actor_login_approved = true;
+  form.username_value = u"user_\u4f60\u597d";
+  store().AddLogin(FromPasswordForm(form));
+  ASSERT_TRUE(base::test::RunUntil([&] {
+    return !presenter().GetActorLoginPermissions(GetSyncService()).empty();
+  }));
+
+  presenter().RevokeActorLoginPermission(form.signon_realm,
+                                         form.username_value);
+  ASSERT_TRUE(base::test::RunUntil([&] {
+    return presenter().GetActorLoginPermissions(GetSyncService()).empty();
+  }));
+
+  form.actor_login_approved = false;
+  EXPECT_THAT(GetAllLoginsSync(&store()),
+              ElementsAre(Pair(form.signon_realm, ElementsAre(form))));
 }
 
 // Prefixes like [m, mobile, www] are considered as "same-site".

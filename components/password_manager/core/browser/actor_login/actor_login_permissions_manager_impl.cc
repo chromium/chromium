@@ -99,7 +99,8 @@ void ActorLoginPermissionsManagerImpl::RevokePermission(
     const std::string& signon_realm,
     const std::string& username,
     base::OnceCallback<void(bool)> callback) {
-  presenter_.RevokeActorLoginPermission(signon_realm, username);
+  presenter_.RevokeActorLoginPermission(signon_realm,
+                                        base::UTF8ToUTF16(username));
   // The service is constructed via a factory that returns a nullptr for
   // incognito and guest profiles. The settings page is not accessible for those
   // profiles, so we can assert that the service is valid.
