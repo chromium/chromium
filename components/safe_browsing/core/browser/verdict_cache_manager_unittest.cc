@@ -111,7 +111,7 @@ class VerdictCacheManagerTest : public ::testing::Test {
   }
 
   ChromeUserPopulation::PageLoadToken CreatePageLoadToken(
-      int token_time_msec,
+      int64_t token_time_msec,
       std::string token_value) {
     ChromeUserPopulation::PageLoadToken token;
     token.set_token_source(
@@ -419,13 +419,7 @@ TEST_F(VerdictCacheManagerTest, TestRemoveCachedVerdictOnURLsDeleted) {
               LoginReputationClientRequest::ONE_TIME_PASSWORD_FIELD_DETECTED));
 }
 
-// TODO(crbug.com/40203584): This test is flaky on device.
-#if TARGET_OS_IOS && !TARGET_OS_SIMULATOR
-#define MAYBE_TestCleanUpExpiredVerdict DISABLED_TestCleanUpExpiredVerdict
-#else
-#define MAYBE_TestCleanUpExpiredVerdict TestCleanUpExpiredVerdict
-#endif
-TEST_F(VerdictCacheManagerTest, MAYBE_TestCleanUpExpiredVerdict) {
+TEST_F(VerdictCacheManagerTest, TestCleanUpExpiredVerdict) {
   // Prepare 4 verdicts for PASSWORD_REUSE_EVENT with SIGN_IN_PASSWORD type:
   // (1) "foo.com/abc/" valid
   // (2) "foo.com/def/" expired
@@ -504,6 +498,12 @@ TEST_F(VerdictCacheManagerTest, MAYBE_TestCleanUpExpiredVerdict) {
       GURL("https://www.example1.com"),
       CreatePageLoadToken(now.InMillisecondsSinceUnixEpoch(), "token2"));
 
+  // Verdict creation times are truncated to whole seconds when cached, and
+  // IsCacheExpired() checks whether base::Time::Now() is strictly greater than
+  // creation_time + duration. Advance the clock by 1 second so verdicts with
+  // cache_duration_sec = 0 are guaranteed to be expired even when Now() starts
+  // on an exact second boundary.
+  task_environment_.AdvanceClock(base::Seconds(1));
   cache_manager_->CleanUpExpiredVerdicts();
 
   ASSERT_EQ(1u, cache_manager_->GetStoredPhishGuardVerdictCount(
