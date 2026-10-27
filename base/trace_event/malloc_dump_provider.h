@@ -45,6 +45,10 @@ class BASE_EXPORT MallocDumpProvider : public MemoryDumpProvider {
   static const char kPartitionsAllocatedObjects[];
 #endif
 
+  // Names of the system allocator dumps, reported from mallinfo(3).
+  static const char kSysMalloc[];
+  static const char kSysMallocAllocatedObjects[];
+
 #if BUILDFLAG(IS_WIN)
   // Names of the WinHeap dumps. Only reported at kDetailed level of detail.
   static const char kWinHeap[];

@@ -269,6 +269,7 @@ void ReportAppleAllocStats(size_t* total_virtual_size,
     (!PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && !BUILDFLAG(IS_WIN) &&    \
      !BUILDFLAG(IS_APPLE) && !BUILDFLAG(IS_FUCHSIA))
 void ReportMallinfoStats(ProcessMemoryDump* pmd,
+                         MemoryDumpLevelOfDetail level_of_detail,
                          size_t* total_virtual_size,
                          size_t* resident_size,
                          size_t* allocated_objects_size,
@@ -286,19 +287,59 @@ void ReportMallinfoStats(ProcessMemoryDump* pmd,
   // In case of Android's jemalloc |arena| is 0 and the outer pages size is
   // reported by |hblkhd|. In case of dlmalloc the total is given by
   // |arena| + |hblkhd|. For more details see link: http://goo.gl/fMR8lF.
-  *total_virtual_size += checked_cast<size_t>(info.arena + info.hblkhd);
-  size_t total_allocated_size = checked_cast<size_t>(info.uordblks);
-  *resident_size += total_allocated_size;
-
+  const size_t held_size = checked_cast<size_t>(info.arena + info.hblkhd);
   // Total allocated space is given by |uordblks|.
+  const size_t total_allocated_size = checked_cast<size_t>(info.uordblks);
+  *total_virtual_size += held_size;
+  // mallinfo(3) has no resident figure, and the held bytes include pages the
+  // allocator has already released with madvise(), so only the live objects
+  // are taken to be resident. This underestimates the footprint.
+  *resident_size += total_allocated_size;
   *allocated_objects_size += total_allocated_size;
 
-  if (pmd) {
-    MemoryAllocatorDump* sys_alloc_dump =
-        pmd->CreateAllocatorDump("malloc/sys_malloc");
-    sys_alloc_dump->AddScalar(MemoryAllocatorDump::kNameSize,
-                              MemoryAllocatorDump::kUnitsBytes,
-                              total_allocated_size);
+  // Held bytes not handed out to a live allocation: free lists, block headers,
+  // alignment padding and released pages. Not part of the footprint above.
+  const size_t wasted =
+      held_size >= total_allocated_size ? held_size - total_allocated_size : 0;
+
+  if (!pmd) {
+    return;
+  }
+
+  MemoryAllocatorDump* sys_malloc_dump =
+      pmd->CreateAllocatorDump(MallocDumpProvider::kSysMalloc);
+  sys_malloc_dump->AddScalar(MemoryAllocatorDump::kNameSize,
+                             MemoryAllocatorDump::kUnitsBytes,
+                             total_allocated_size);
+  sys_malloc_dump->AddScalar("virtual_size", MemoryAllocatorDump::kUnitsBytes,
+                             held_size);
+  sys_malloc_dump->AddScalar("virtual_committed_size",
+                             MemoryAllocatorDump::kUnitsBytes, held_size);
+  sys_malloc_dump->AddScalar("allocated_objects_size",
+                             MemoryAllocatorDump::kUnitsBytes,
+                             total_allocated_size);
+  sys_malloc_dump->AddScalar("wasted", MemoryAllocatorDump::kUnitsBytes,
+                             wasted);
+  sys_malloc_dump->AddScalar(
+      "fragmentation", "percent",
+      held_size == 0 ? 0 : uint64_t{100} * wasted / held_size);
+
+  MemoryAllocatorDump* sys_malloc_objects_dump =
+      pmd->CreateAllocatorDump(MallocDumpProvider::kSysMallocAllocatedObjects);
+  sys_malloc_objects_dump->AddScalar(MemoryAllocatorDump::kNameSize,
+                                     MemoryAllocatorDump::kUnitsBytes,
+                                     total_allocated_size);
+  pmd->AddSuballocation(sys_malloc_objects_dump->guid(),
+                        MallocDumpProvider::kSysMalloc);
+  if (level_of_detail == MemoryDumpLevelOfDetail::kBackground) {
+    // AddSuballocation() creates no dumps at all in background mode. Without an
+    // edge of its own the objects would be counted once here and once under
+    // malloc/sys_malloc, inflating the malloc-wide total, so own the sys_malloc
+    // dump directly instead. Each backend's objects dump owns its own backend,
+    // so this still scales to several backends, unlike a single edge out of
+    // malloc/allocated_objects.
+    pmd->AddOwnershipEdge(sys_malloc_objects_dump->guid(),
+                          sys_malloc_dump->guid());
   }
 }
 #endif
@@ -400,6 +441,9 @@ WinHeapInfo WinHeapInfo::FromHandleForTesting(void* heap) {
 
 // static
 const char MallocDumpProvider::kAllocatedObjects[] = "malloc/allocated_objects";
+const char MallocDumpProvider::kSysMalloc[] = "malloc/sys_malloc";
+const char MallocDumpProvider::kSysMallocAllocatedObjects[] =
+    "malloc/allocated_objects/sys_malloc";
 
 #if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 const char MallocDumpProvider::kPartitions[] = "malloc/partitions";
@@ -490,8 +534,9 @@ bool MallocDumpProvider::OnMemoryDump(const MemoryDumpArgs& args,
   // Even when PartitionAlloc is used, WinHeap / System malloc is still used as
   // well, report its statistics.
 #if BUILDFLAG(IS_ANDROID)
-  ReportMallinfoStats(pmd, &total_virtual_size, &resident_size,
-                      &allocated_objects_size, &allocated_objects_count);
+  ReportMallinfoStats(pmd, args.level_of_detail, &total_virtual_size,
+                      &resident_size, &allocated_objects_size,
+                      &allocated_objects_count);
 #elif BUILDFLAG(IS_WIN)
   MemoryAllocatorDump* win_heap_dump = nullptr;
   MemoryAllocatorDump* win_heap_objects_dump = nullptr;
@@ -536,8 +581,9 @@ bool MallocDumpProvider::OnMemoryDump(const MemoryDumpArgs& args,
 #elif BUILDFLAG(IS_FUCHSIA)
 // TODO(fuchsia): Port, see https://crbug.com/706592.
 #else
-  ReportMallinfoStats(/*pmd=*/nullptr, &total_virtual_size, &resident_size,
-                      &allocated_objects_size, &allocated_objects_count);
+  ReportMallinfoStats(pmd, args.level_of_detail, &total_virtual_size,
+                      &resident_size, &allocated_objects_size,
+                      &allocated_objects_count);
 #endif
 
   MemoryAllocatorDump* outer_dump = pmd->CreateAllocatorDump("malloc");
