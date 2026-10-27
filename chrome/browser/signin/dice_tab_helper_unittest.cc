@@ -4,6 +4,8 @@
 
 #include "chrome/browser/signin/dice_tab_helper.h"
 
+#include <vector>
+
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
@@ -107,6 +109,11 @@ class MockDiceWebSigninInterceptor : public DiceWebSigninInterceptor {
                bool is_new_account,
                bool is_chrome_signin,
                signin::Tribool primary_is_connected),
+              (override));
+  MOCK_METHOD(void,
+              OnDiceSigninSessionComplete,
+              (const CoreAccountId& initiator_account_id,
+               std::vector<CoreAccountId> secondary_accounts),
               (override));
 };
 }  // namespace
@@ -459,6 +466,8 @@ TEST_F(DiceTabHelperTest, SyncHeaderMetricsOnTimeoutFromLst) {
                                       /*is_chrome_signin=*/false,
                                       signin::Tribool::kFalse))
       .WillOnce(base::test::RunOnceClosure(future.GetCallback()));
+  // The Dice sign-in session is not complete, so it is not replayed.
+  EXPECT_CALL(*mock_interceptor(), OnDiceSigninSessionComplete).Times(0);
   dice_tab_helper->OnTokenExchangeSuccess(DiceTabHelper::TokenExchangeInfo{
       .account_id = GetTestAccountId(),
       .is_new_account = true,
@@ -503,6 +512,56 @@ TEST_F(DiceTabHelperTest, NoInterceptionRetryWhenNotChromeSignin) {
     return h_tester.GetBucketCount(
                kDiceSyncHeaderTimeoutHistogramNameHistogramName, true) == 1;
   }));
+}
+
+// Tests that the Dice sign-in session completion is replayed to the
+// interceptor when the interception bubble is retried, if the session completed
+// before the retry.
+TEST_F(DiceTabHelperTest, RetryInterceptionBubbleWithSecondaryAccounts) {
+  auto scoped_interception_bubble_delay =
+      DiceTabHelper::SetScopedInterceptionBubbleTimerForTesting(
+          base::Milliseconds(1));
+
+  DiceTabHelper::CreateForWebContents(web_contents());
+  DiceTabHelper* dice_tab_helper =
+      DiceTabHelper::FromWebContents(web_contents());
+  InitializeDiceTabHelper(dice_tab_helper,
+                          signin_metrics::AccessPoint::kSettings,
+                          signin_metrics::Reason::kSigninPrimaryAccount);
+
+  const std::vector<CoreAccountId> secondary_accounts = {
+      CoreAccountId::FromGaiaId(GaiaId("secondary"))};
+  base::test::TestFuture<void> future;
+  {
+    testing::InSequence sequence;
+    EXPECT_CALL(*mock_interceptor(),
+                MaybeInterceptWebSignin(web_contents(), GetTestAccountId(),
+                                        signin_metrics::AccessPoint::kWebSignin,
+                                        /*is_new_account=*/true,
+                                        /*is_chrome_signin=*/false,
+                                        signin::Tribool::kFalse));
+    EXPECT_CALL(
+        *mock_interceptor(),
+        OnDiceSigninSessionComplete(GetTestAccountId(), secondary_accounts))
+        .WillOnce(base::test::RunOnceClosure(future.GetCallback()));
+  }
+
+  // Session completion before the token exchange is ignored.
+  dice_tab_helper->OnDiceSigninSessionComplete(
+      GetTestAccountId(), {CoreAccountId::FromGaiaId(GaiaId("ignored"))});
+
+  dice_tab_helper->OnTokenExchangeSuccess(DiceTabHelper::TokenExchangeInfo{
+      .account_id = GetTestAccountId(),
+      .is_new_account = true,
+      .primary_is_connected = signin::Tribool::kFalse});
+  dice_tab_helper->OnDiceSigninSessionComplete(GetTestAccountId(),
+                                               secondary_accounts);
+  // Session completion for another initiator account is ignored.
+  dice_tab_helper->OnDiceSigninSessionComplete(
+      CoreAccountId::FromGaiaId(GaiaId("other_initiator")),
+      {CoreAccountId::FromGaiaId(GaiaId("other_secondary"))});
+
+  EXPECT_TRUE(future.Wait());
 }
 
 // Histogram test for the unlikely edge case where the Sync Header arrives and

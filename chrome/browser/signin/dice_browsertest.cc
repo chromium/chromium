@@ -23,6 +23,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/current_thread.h"
 #include "base/task/single_thread_task_runner.h"
@@ -42,6 +43,8 @@
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/extensions/api/identity/web_auth_flow.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_attributes_init_params.h"
+#include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/account_consistency_mode_manager.h"
 #include "chrome/browser/signin/account_preview_data_service_factory.h"
@@ -126,6 +129,7 @@
 #include "net/test/embedded_test_server/http_response.h"
 #include "net/test/embedded_test_server/request_handler_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/interaction/state_observer.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
@@ -1773,6 +1777,170 @@ IN_PROC_BROWSER_TEST_F(DiceBrowserSigninInterceptionWithAccountPreviewTest,
 
   SignInWithEnableSyncDuringAccountPreviewFetch();
   CompleteAccountPreviewAndExpectNoUnoBubble(histogram_tester);
+}
+
+// Observes whether the refresh token of `account_id` was removed from an
+// `IdentityManager`, e.g. when the account is moved to another profile.
+class RefreshTokenRemovedStateObserver
+    : public ui::test::ObservationStateObserver<
+          bool,
+          signin::IdentityManager,
+          signin::IdentityManager::Observer> {
+ public:
+  RefreshTokenRemovedStateObserver(signin::IdentityManager* identity_manager,
+                                   const CoreAccountId& account_id)
+      : ObservationStateObserver(identity_manager), account_id_(account_id) {}
+
+  // ui::test::ObservationStateObserver:
+  bool GetStateObserverInitialState() const override {
+    return !source()->HasAccountWithRefreshToken(account_id_);
+  }
+
+  // signin::IdentityManager::Observer:
+  void OnRefreshTokenUpdatedForAccount(
+      const CoreAccountInfo& account_info) override {
+    if (account_info.account_id == account_id_) {
+      OnStateObserverStateChanged(false);
+    }
+  }
+  void OnRefreshTokenRemovedForAccount(
+      const CoreAccountId& account_id) override {
+    if (account_id == account_id_) {
+      OnStateObserverStateChanged(true);
+    }
+  }
+  void OnIdentityManagerShutdown(
+      signin::IdentityManager* identity_manager) override {
+    OnObservationStateObserverSourceDestroyed();
+  }
+
+ private:
+  const CoreAccountId account_id_;
+};
+
+// Tests accepting the interception bubbles shown by the interception retry on a
+// Chrome sign-in tab, when the ENABLE_SYNC header waiting times out.
+//
+// On a Chrome sign-in tab, the first interception attempt is aborted, and the
+// Dice sign-in session completes right after the token exchange, while no
+// interception is in progress. Accepting a bubble shown by the retry must
+// proceed rather than wait for the session completion forever.
+// Regression test for crbug.com/577057774.
+class DiceBrowserSigninInterceptionOnRetryTest
+    : public DiceBrowserSiginInInterceptionInteractiveTest {
+ public:
+  // Adds an entry for a new profile path to the `ProfileAttributesStorage`,
+  // with the Gaia ID and email of the main account. This only adds metadata:
+  // the profile is not created or loaded, and has no account nor primary
+  // account. It is enough for the interceptor to offer to switch to that
+  // profile when the main account signs in in the current profile.
+  void AddOtherProfileEntryForMainAccount() {
+    ProfileManager* profile_manager = g_browser_process->profile_manager();
+    const base::FilePath profile_path =
+        profile_manager->GenerateNextProfileDirectoryPath();
+    ProfileAttributesInitParams params;
+    params.profile_path = profile_path;
+    params.profile_name = u"ExistingProfile";
+    params.gaia_id = signin::GetTestGaiaIdForEmail(main_email_);
+    params.user_name = base::UTF8ToUTF16(main_email_);
+    profile_manager->GetProfileAttributesStorage().AddProfile(
+        std::move(params));
+  }
+
+  // Signs in with the main account from a Chrome sign-in tab. The ENABLE_SYNC
+  // header is not received, so the interception is retried when the retry
+  // timer fires. Waits until the first interception attempt is aborted, and
+  // returns the main account.
+  CoreAccountId SigninWithMainAccountInChromeSigninTab(
+      const base::HistogramTester& histogram_tester) {
+    // Sign in from a Chrome sign-in entry point (e.g. the profile menu).
+    SigninViewController::From(browser())->ShowEnableHistorySyncTab(
+        signin_metrics::AccessPoint::kProfileMenuPrimaryButton,
+        signin_metrics::PromoAction::
+            PROMO_ACTION_NEW_ACCOUNT_NO_EXISTING_ACCOUNT,
+        /*email_hint=*/std::string());
+    // Receive the token and the account info.
+    SendRefreshTokenResponse();
+    const CoreAccountId account_id = GetMainAccountID();
+    EXPECT_TRUE(GetIdentityManager()->HasAccountWithRefreshToken(account_id));
+    UpdateAccountInfoForAccount(
+        GetIdentityManager()->FindExtendedAccountInfoByAccountId(account_id));
+
+    // The first interception attempt is aborted because this is a Chrome
+    // sign-in tab.
+    WaitForHistogramSample(
+        "Signin.Intercept.HeuristicOutcome",
+        static_cast<base::HistogramBase::Sample32>(
+            SigninInterceptionHeuristicOutcome::kAbortChromeSignin),
+        1, histogram_tester);
+    return account_id;
+  }
+
+  // Waits for the interception bubble shown by the retry, checks that its
+  // heuristic outcome is `expected_outcome`, and clicks its accept button.
+  // Then waits until `account_id` is moved out of the profile of
+  // `identity_manager`.
+  void AcceptInterceptionBubbleShownOnRetry(
+      SigninInterceptionHeuristicOutcome expected_outcome,
+      const base::HistogramTester& histogram_tester,
+      signin::IdentityManager* identity_manager,
+      const CoreAccountId& account_id) {
+    DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kBubbleWebContentsId);
+    DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(RefreshTokenRemovedStateObserver,
+                                        kAccountRemovedFromProfile);
+    const DeepQuery kAcceptButton = {"dice-web-signin-intercept-app",
+                                     "#acceptButton"};
+
+    RunTestSequence(
+        ObserveState(kAccountRemovedFromProfile,
+                     std::make_unique<RefreshTokenRemovedStateObserver>(
+                         identity_manager, account_id)),
+        // The account is in the profile before the bubble is accepted.
+        CheckState(kAccountRemovedFromProfile, false),
+        // The retry shows the interception bubble.
+        WaitForShow(DiceWebSigninInterceptionBubbleView::
+                        kDiceWebSigninInterceptionBubble),
+        CheckResult(
+            [&]() {
+              return histogram_tester.GetBucketCount(
+                  "Signin.Intercept.HeuristicOutcome", expected_outcome);
+            },
+            1),
+        // Click the accept button of the bubble.
+        InstrumentNonTabWebView(kBubbleWebContentsId,
+                                DiceWebSigninInterceptionBubbleView::
+                                    kDiceWebSigninInterceptionBubble),
+        WaitForJsResultAt(kBubbleWebContentsId, kAcceptButton,
+                          "el => !el.disabled", true,
+                          /*element_must_be_present_at_start=*/false),
+        ExecuteJsAt(kBubbleWebContentsId, kAcceptButton, "el => el.click()",
+                    ExecuteJsMode::kFireAndForget),
+        // The account is moved out of the current profile.
+        WaitForState(kAccountRemovedFromProfile, true));
+  }
+};
+
+// Tests accepting the profile switch bubble, offering to switch to another
+// profile of the main account.
+//
+// The test ends once the account is moved. The rest of the flow (moving the
+// sign-in tab to the other profile) only happens once the account is in the
+// cookies of the other profile, which never happens in this test (the fake Gaia
+// does not support adding accounts to the cookies), and is cancelled by the
+// teardown.
+IN_PROC_BROWSER_TEST_F(DiceBrowserSigninInterceptionOnRetryTest,
+                       AcceptProfileSwitchBubbleShownOnRetry) {
+  base::HistogramTester histogram_tester;
+  auto scoped_interception_bubble_delay =
+      DiceTabHelper::SetScopedInterceptionBubbleTimerForTesting(
+          base::Milliseconds(100));
+  AddOtherProfileEntryForMainAccount();
+
+  const CoreAccountId account_id =
+      SigninWithMainAccountInChromeSigninTab(histogram_tester);
+  AcceptInterceptionBubbleShownOnRetry(
+      SigninInterceptionHeuristicOutcome::kInterceptProfileSwitch,
+      histogram_tester, GetIdentityManager(), account_id);
 }
 
 // Tests that user is signed in to the browser when the Dice "add account" tab

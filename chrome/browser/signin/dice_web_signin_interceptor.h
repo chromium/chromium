@@ -149,7 +149,8 @@ class DiceWebSigninInterceptor : public KeyedService,
                                        bool is_chrome_signin,
                                        signin::Tribool primary_is_connected);
 
-  void OnDiceSigninSessionComplete(
+  // Virtual for testing.
+  virtual void OnDiceSigninSessionComplete(
       const CoreAccountId& initiator_account_id,
       std::vector<CoreAccountId> secondary_accounts);
 

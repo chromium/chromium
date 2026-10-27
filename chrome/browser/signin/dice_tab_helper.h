@@ -5,6 +5,9 @@
 #ifndef CHROME_BROWSER_SIGNIN_DICE_TAB_HELPER_H_
 #define CHROME_BROWSER_SIGNIN_DICE_TAB_HELPER_H_
 
+#include <optional>
+#include <vector>
+
 #include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -147,6 +150,13 @@ class DiceTabHelper : public content::WebContentsUserData<DiceTabHelper>,
   // completed a web sign-in. The other fields of `info` are forwarded to the
   // interceptor.
   void OnTokenExchangeSuccess(TokenExchangeInfo info);
+  // Called to notify that the Dice sign-in session initiated by
+  // `initiator_account_id` is complete. `secondary_accounts` are the other
+  // (non-initiator) accounts of the session. They are forwarded to the
+  // interceptor if the interception bubble is retried.
+  void OnDiceSigninSessionComplete(
+      const CoreAccountId& initiator_account_id,
+      std::vector<CoreAccountId> secondary_accounts);
 
   // Updates the callbacks used by the tab helper.
   void UpdateHistorySyncOptinCallback(
@@ -173,6 +183,21 @@ class DiceTabHelper : public content::WebContentsUserData<DiceTabHelper>,
   // kStarted: a Chrome sign-in flow was started and not completed.
   // kNotStarted: there is no Chrome sign-in flow in progress.
   enum class SigninFlowStatus { kNotStarted, kStarted };
+
+  // Parameters of a pending retry of the interception bubble.
+  struct InterceptionRetryParams {
+    InterceptionRetryParams();
+    explicit InterceptionRetryParams(TokenExchangeInfo token_exchange_info);
+    ~InterceptionRetryParams();
+    InterceptionRetryParams(InterceptionRetryParams&& other) noexcept;
+    InterceptionRetryParams& operator=(
+        InterceptionRetryParams&& other) noexcept;
+
+    TokenExchangeInfo token_exchange_info;
+    // Non-initiator accounts of the Dice sign-in session, set if the session
+    // completes before the retry.
+    std::optional<std::vector<CoreAccountId>> secondary_accounts;
+  };
 
   struct ResetableState {
     ResetableState();
@@ -205,6 +230,8 @@ class DiceTabHelper : public content::WebContentsUserData<DiceTabHelper>,
     // assuming that the user completed a web signin instead of a
     // browser signin.
     base::OneShotTimer retry_interception_bubble_timer;
+    // Set while `retry_interception_bubble_timer` is running.
+    std::optional<InterceptionRetryParams> interception_retry_params;
   };
 
   // content::WebContentsObserver:
@@ -226,8 +253,8 @@ class DiceTabHelper : public content::WebContentsUserData<DiceTabHelper>,
   void StartInterceptionBubbleTimer(TokenExchangeInfo info);
 
   // Called when `retry_interception_bubble_timer` fires. Retries showing the
-  // interception bubble with `info`.
-  void OnRetryInterceptionBubbleTimerFired(TokenExchangeInfo info);
+  // interception bubble with `interception_retry_params` from the `state_`.
+  void OnRetryInterceptionBubbleTimerFired();
 
   // Stops the timer and aborts the interception bubble.
   void StopInterceptionBubbleTimer();

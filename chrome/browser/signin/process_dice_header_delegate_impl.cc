@@ -260,6 +260,14 @@ void ProcessDiceHeaderDelegateImpl::HandleTokenExchangeSuccess(
 
 void ProcessDiceHeaderDelegateImpl::OnDiceSigninSessionComplete(
     std::vector<CoreAccountId> secondary_accounts) {
+  // The interception bubble may be retried after `this` is deleted. Store the
+  // session completion in the tab helper, so that it is forwarded on retry.
+  DiceTabHelper* tab_helper =
+      GetDiceTabHelperFromWebContents(web_contents_.get());
+  if (tab_helper) {
+    tab_helper->OnDiceSigninSessionComplete(initiator_account_id_,
+                                            secondary_accounts);
+  }
   auto* interceptor =
       DiceWebSigninInterceptorFactory::GetForProfile(&profile_.get());
   if (interceptor) {

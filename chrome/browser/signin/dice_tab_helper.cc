@@ -119,6 +119,17 @@ DiceTabHelper::GetShowSigninErrorCallbackForBrowser() {
 DiceTabHelper::ResetableState::ResetableState() = default;
 DiceTabHelper::ResetableState::~ResetableState() = default;
 
+DiceTabHelper::InterceptionRetryParams::InterceptionRetryParams() = default;
+DiceTabHelper::InterceptionRetryParams::InterceptionRetryParams(
+    TokenExchangeInfo token_exchange_info)
+    : token_exchange_info(std::move(token_exchange_info)) {}
+DiceTabHelper::InterceptionRetryParams::~InterceptionRetryParams() = default;
+DiceTabHelper::InterceptionRetryParams::InterceptionRetryParams(
+    InterceptionRetryParams&& other) noexcept = default;
+DiceTabHelper::InterceptionRetryParams&
+DiceTabHelper::InterceptionRetryParams::operator=(
+    InterceptionRetryParams&& other) noexcept = default;
+
 DiceTabHelper::DiceTabHelper(content::WebContents* web_contents)
     : content::WebContentsUserData<DiceTabHelper>(*web_contents),
       content::WebContentsObserver(web_contents),
@@ -218,6 +229,19 @@ void DiceTabHelper::OnTokenExchangeSuccess(TokenExchangeInfo info) {
   StartInterceptionBubbleTimer(std::move(info));
 }
 
+void DiceTabHelper::OnDiceSigninSessionComplete(
+    const CoreAccountId& initiator_account_id,
+    std::vector<CoreAccountId> secondary_accounts) {
+  // Only needed by a pending retry, for the same account.
+  if (!state_->interception_retry_params.has_value() ||
+      state_->interception_retry_params->token_exchange_info.account_id !=
+          initiator_account_id) {
+    return;
+  }
+  state_->interception_retry_params->secondary_accounts =
+      std::move(secondary_accounts);
+}
+
 void DiceTabHelper::UpdateHistorySyncOptinCallback(
     EnableHistorySyncOptinCallback history_sync_optin_callback) {
   state_->history_sync_optin_callback = std::move(history_sync_optin_callback);
@@ -269,18 +293,22 @@ DiceTabHelper::SetScopedInterceptionBubbleTimerForTesting(
 // header is later received, then `elapsed_time_since_lst_arrival_timer` is
 // stopped and recorded in the histogram `SyncHeaderArrivalTimeWindow`.
 void DiceTabHelper::StartInterceptionBubbleTimer(TokenExchangeInfo info) {
+  state_->interception_retry_params = InterceptionRetryParams(std::move(info));
   state_->elapsed_time_since_lst_arrival_timer =
       std::make_unique<base::ElapsedTimer>();
   // Unretained is safe because the timer is owned by `this`.
   state_->retry_interception_bubble_timer.Start(
       FROM_HERE, g_delay_before_interception_bubble_retry,
       base::BindOnce(&DiceTabHelper::OnRetryInterceptionBubbleTimerFired,
-                     base::Unretained(this), std::move(info)));
+                     base::Unretained(this)));
 }
 
-void DiceTabHelper::OnRetryInterceptionBubbleTimerFired(
-    TokenExchangeInfo info) {
+void DiceTabHelper::OnRetryInterceptionBubbleTimerFired() {
   RecordDiceSyncHeaderTimeout(true);
+  CHECK(state_->interception_retry_params.has_value());
+  InterceptionRetryParams params =
+      std::move(state_->interception_retry_params).value();
+  state_->interception_retry_params.reset();
 
   // No need to trigger the bubble if we are not in a Chrome sign-in tab, or if
   // we are in a WebSignin case (as this is handled by the first interception
@@ -294,13 +322,23 @@ void DiceTabHelper::OnRetryInterceptionBubbleTimerFired(
   if (!interceptor) {
     return;
   }
+
   // Try to show the interception bubble by treating this case as WebSignin on
   // any regular tab.
   // TODO(crbug.com/426555085): Remove the access_point argument.
+  const TokenExchangeInfo& info = params.token_exchange_info;
   interceptor->MaybeInterceptWebSignin(
       web_contents(), info.account_id, signin_metrics::AccessPoint::kWebSignin,
       info.is_new_account,
       /*is_chrome_signin=*/false, info.primary_is_connected);
+
+  // The interceptor has ignored the session completion because the first
+  // attempt was aborted. Replay it, otherwise accepting the bubble may hang,
+  // waiting for it.
+  if (params.secondary_accounts.has_value()) {
+    interceptor->OnDiceSigninSessionComplete(
+        info.account_id, std::move(*params.secondary_accounts));
+  }
 }
 
 void DiceTabHelper::StopInterceptionBubbleTimer() {
@@ -311,6 +349,7 @@ void DiceTabHelper::StopInterceptionBubbleTimer() {
     RecordDiceSyncHeaderTimeout(false);
   }
   state_->retry_interception_bubble_timer.Stop();
+  state_->interception_retry_params.reset();
 
   // Record metrics related to the reception of the Dice Sync header.
   if (!IsTokenExchangeDone()) {
