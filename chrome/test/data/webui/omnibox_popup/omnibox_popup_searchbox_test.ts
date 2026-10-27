@@ -6440,8 +6440,10 @@ suite('OmniboxPopupSearchboxTest', function() {
        false, /*queryZps=*/ false, /*selectAll=*/ false,
        /*showFullUrl=*/ false);
    await microtasksFinished();
-   // Blink scrolls the input back to its start on blur, and the #mirror
-   // follows on the input's (asynchronous) scroll event.
+   // The input is scrolled back to its start once unfocused (whether or not
+   // the page has system focus, without which blur() fires no blur event), and
+   // the #mirror follows on the input's scroll event, which fires before the
+   // next animation frame callbacks.
    await new Promise(resolve => requestAnimationFrame(resolve));
    assertFalse(mirror.parentElement!.matches(':focus-within'));
    assertFalse(isVisible(searchbox.$.composeButton));
