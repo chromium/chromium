@@ -1678,8 +1678,9 @@ void RenderText::EnsureLayoutTextUpdated() const {
   base::i18n::UTF16CharIterator text_iter(text_);
   internal::StyleIterator styles = GetTextStyleIterator();
   bool text_truncated = false;
+  std::vector<uint32_t> grapheme_codepoints;
   while (!text_iter.end() && !text_truncated) {
-    std::vector<uint32_t> grapheme_codepoints;
+    grapheme_codepoints.clear();
     const size_t text_grapheme_start_position = text_iter.array_pos();
     // We have not added the codepoints of the current grapheme to
     // `layout_text_` yet. The rest of the loop will either add the codepoints
