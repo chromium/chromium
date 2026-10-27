@@ -16,6 +16,22 @@ bool IsSupportedRGBFormat(media::VideoPixelFormat format) {
          format == media::PIXEL_FORMAT_ARGB;
 }
 
+const uint16_t* VisibleData16(const media::VideoFrame& frame, size_t plane) {
+  return base::subtle::reinterpret_span<const uint16_t>(
+             frame.GetVisiblePlaneData(plane))
+      .data();
+}
+
+uint16_t* WritableVisibleData16(media::VideoFrame& frame, size_t plane) {
+  return base::subtle::reinterpret_span<uint16_t>(
+             frame.GetWritableVisiblePlaneData(plane))
+      .data();
+}
+
+int Stride16(const media::VideoFrame& frame, size_t plane) {
+  return frame.stride(plane) / sizeof(uint16_t);
+}
+
 void Mask12BitMSBPlane(base::span<uint16_t> data,
                        int stride_elements,
                        int width,
@@ -191,25 +207,41 @@ bool ARGBToI444x(const VideoFrame& src_frame,
              dest_frame.visible_rect().height()) == 0;
 }
 
-bool ARGBToNV12x(const VideoFrame& src_frame,
-                 VideoFrame& dest_frame,
-                 const libyuv::ArgbConstants* matrix) {
+bool ARGBToNVxx(const VideoFrame& src_frame,
+                VideoFrame& dest_frame,
+                const libyuv::ArgbConstants* matrix) {
   DCHECK(IsSupportedRGBFormat(src_frame.format()));
   DCHECK(dest_frame.format() == PIXEL_FORMAT_NV12 ||
-         dest_frame.format() == PIXEL_FORMAT_NV12A);
+         dest_frame.format() == PIXEL_FORMAT_NV12A ||
+         dest_frame.format() == PIXEL_FORMAT_NV16 ||
+         dest_frame.format() == PIXEL_FORMAT_NV24);
 
-  if (libyuv::ARGBToNV12Matrix(
-          src_frame.visible_data(VideoFrame::Plane::kARGB),
-          src_frame.stride(VideoFrame::Plane::kARGB),
-          dest_frame.GetWritableVisibleData(VideoFrame::Plane::kY),
-          dest_frame.stride(VideoFrame::Plane::kY),
-          dest_frame.GetWritableVisibleData(VideoFrame::Plane::kUV),
-          dest_frame.stride(VideoFrame::Plane::kUV), matrix,
-          dest_frame.visible_rect().width(),
-          dest_frame.visible_rect().height()) != 0) {
+  auto convert = libyuv::ARGBToNV12Matrix;
+  switch (dest_frame.format()) {
+    case PIXEL_FORMAT_NV12:
+    case PIXEL_FORMAT_NV12A:
+      break;
+    case PIXEL_FORMAT_NV16:
+      convert = libyuv::ARGBToNV16Matrix;
+      break;
+    case PIXEL_FORMAT_NV24:
+      convert = libyuv::ARGBToNV24Matrix;
+      break;
+    default:
+      NOTREACHED();
+  }
+
+  if (convert(src_frame.visible_data(VideoFrame::Plane::kARGB),
+              src_frame.stride(VideoFrame::Plane::kARGB),
+              dest_frame.GetWritableVisibleData(VideoFrame::Plane::kY),
+              dest_frame.stride(VideoFrame::Plane::kY),
+              dest_frame.GetWritableVisibleData(VideoFrame::Plane::kUV),
+              dest_frame.stride(VideoFrame::Plane::kUV), matrix,
+              dest_frame.visible_rect().width(),
+              dest_frame.visible_rect().height()) != 0) {
     return false;
   }
-  if (dest_frame.format() == PIXEL_FORMAT_NV12) {
+  if (dest_frame.format() != PIXEL_FORMAT_NV12A) {
     return true;
   }
   return libyuv::ARGBExtractAlpha(
@@ -219,6 +251,38 @@ bool ARGBToNV12x(const VideoFrame& src_frame,
              dest_frame.stride(VideoFrame::Plane::kATriPlanar),
              dest_frame.visible_rect().width(),
              dest_frame.visible_rect().height()) == 0;
+}
+
+bool ARGBToPx10(const VideoFrame& src_frame,
+                VideoFrame& dest_frame,
+                const libyuv::ArgbConstants* matrix) {
+  DCHECK(IsSupportedRGBFormat(src_frame.format()));
+  DCHECK(dest_frame.format() == PIXEL_FORMAT_P010LE ||
+         dest_frame.format() == PIXEL_FORMAT_P210LE ||
+         dest_frame.format() == PIXEL_FORMAT_P410LE);
+
+  auto convert = libyuv::ARGBToP010Matrix;
+  switch (dest_frame.format()) {
+    case PIXEL_FORMAT_P010LE:
+      break;
+    case PIXEL_FORMAT_P210LE:
+      convert = libyuv::ARGBToP210Matrix;
+      break;
+    case PIXEL_FORMAT_P410LE:
+      convert = libyuv::ARGBToP410Matrix;
+      break;
+    default:
+      NOTREACHED();
+  }
+
+  return convert(src_frame.visible_data(VideoFrame::Plane::kARGB),
+                 src_frame.stride(VideoFrame::Plane::kARGB),
+                 WritableVisibleData16(dest_frame, VideoFrame::Plane::kY),
+                 Stride16(dest_frame, VideoFrame::Plane::kY),
+                 WritableVisibleData16(dest_frame, VideoFrame::Plane::kUV),
+                 Stride16(dest_frame, VideoFrame::Plane::kUV), matrix,
+                 dest_frame.visible_rect().width(),
+                 dest_frame.visible_rect().height()) == 0;
 }
 
 void I4xxxScale(const VideoFrame& src_frame, VideoFrame& dest_frame) {
@@ -502,10 +566,24 @@ bool NVxxScale(const VideoFrame& src_frame,
         src_frame.format() == PIXEL_FORMAT_NV12A) &&
        (dest_frame.format() == PIXEL_FORMAT_NV12 ||
         dest_frame.format() == PIXEL_FORMAT_NV12A)) ||
+      (src_frame.format() == PIXEL_FORMAT_NV16 &&
+       dest_frame.format() == PIXEL_FORMAT_NV16) ||
       (src_frame.format() == PIXEL_FORMAT_NV24 &&
        dest_frame.format() == PIXEL_FORMAT_NV24)) {
-    auto scale = src_frame.format() == PIXEL_FORMAT_NV24 ? libyuv::NV24Scale
-                                                         : libyuv::NV12Scale;
+    auto scale = libyuv::NV12Scale;
+    switch (src_frame.format()) {
+      case PIXEL_FORMAT_NV12:
+      case PIXEL_FORMAT_NV12A:
+        break;
+      case PIXEL_FORMAT_NV16:
+        scale = libyuv::NV16Scale;
+        break;
+      case PIXEL_FORMAT_NV24:
+        scale = libyuv::NV24Scale;
+        break;
+      default:
+        NOTREACHED();
+    }
     if (scale(src_frame.visible_data(VideoFrame::Plane::kY),
               src_frame.stride(VideoFrame::Plane::kY),
               src_frame.visible_data(VideoFrame::Plane::kUV),
@@ -554,6 +632,43 @@ bool NVxxScale(const VideoFrame& src_frame,
       dest_frame.visible_rect().width(), dest_frame.visible_rect().height(),
       filter);
   return true;
+}
+
+bool Px10Scale(const VideoFrame& src_frame,
+               VideoFrame& dest_frame,
+               libyuv::FilterMode filter) {
+  DCHECK_EQ(src_frame.format(), dest_frame.format());
+  DCHECK(src_frame.format() == PIXEL_FORMAT_P010LE ||
+         src_frame.format() == PIXEL_FORMAT_P210LE ||
+         src_frame.format() == PIXEL_FORMAT_P410LE);
+  if (src_frame.visible_rect().size() == dest_frame.visible_rect().size()) {
+    filter = libyuv::kFilterNone;
+  }
+  auto scale = libyuv::P010Scale;
+  switch (src_frame.format()) {
+    case PIXEL_FORMAT_P010LE:
+      break;
+    case PIXEL_FORMAT_P210LE:
+      scale = libyuv::P210Scale;
+      break;
+    case PIXEL_FORMAT_P410LE:
+      scale = libyuv::P410Scale;
+      break;
+    default:
+      NOTREACHED();
+  }
+  return scale(VisibleData16(src_frame, VideoFrame::Plane::kY),
+               Stride16(src_frame, VideoFrame::Plane::kY),
+               VisibleData16(src_frame, VideoFrame::Plane::kUV),
+               Stride16(src_frame, VideoFrame::Plane::kUV),
+               src_frame.visible_rect().width(),
+               src_frame.visible_rect().height(),
+               WritableVisibleData16(dest_frame, VideoFrame::Plane::kY),
+               Stride16(dest_frame, VideoFrame::Plane::kY),
+               WritableVisibleData16(dest_frame, VideoFrame::Plane::kUV),
+               Stride16(dest_frame, VideoFrame::Plane::kUV),
+               dest_frame.visible_rect().width(),
+               dest_frame.visible_rect().height(), filter) == 0;
 }
 
 void NVxxToI4xxx(const VideoFrame& src_frame, VideoFrame& dest_frame) {
@@ -617,6 +732,48 @@ bool NVxxToPx10(const VideoFrame& src_frame, VideoFrame& dest_frame) {
   }
 
   return true;
+}
+
+bool I4xxxToPx10(const VideoFrame& src_frame, VideoFrame& dest_frame) {
+  DCHECK(src_frame.format() == PIXEL_FORMAT_I420 ||
+         src_frame.format() == PIXEL_FORMAT_I420A ||
+         src_frame.format() == PIXEL_FORMAT_I422 ||
+         src_frame.format() == PIXEL_FORMAT_I422A ||
+         src_frame.format() == PIXEL_FORMAT_I444 ||
+         src_frame.format() == PIXEL_FORMAT_I444A);
+  DCHECK(dest_frame.format() == PIXEL_FORMAT_P010LE ||
+         dest_frame.format() == PIXEL_FORMAT_P210LE ||
+         dest_frame.format() == PIXEL_FORMAT_P410LE);
+  DCHECK_EQ(VideoPixelFormatToChromaSampling(src_frame.format()),
+            VideoPixelFormatToChromaSampling(dest_frame.format()));
+  DCHECK_EQ(src_frame.visible_rect().size(), dest_frame.visible_rect().size());
+
+  auto convert = libyuv::I420ToP010;
+  switch (dest_frame.format()) {
+    case PIXEL_FORMAT_P010LE:
+      break;
+    case PIXEL_FORMAT_P210LE:
+      convert = libyuv::I422ToP210;
+      break;
+    case PIXEL_FORMAT_P410LE:
+      convert = libyuv::I444ToP410;
+      break;
+    default:
+      NOTREACHED();
+  }
+
+  return convert(src_frame.visible_data(VideoFrame::Plane::kY),
+                 src_frame.stride(VideoFrame::Plane::kY),
+                 src_frame.visible_data(VideoFrame::Plane::kU),
+                 src_frame.stride(VideoFrame::Plane::kU),
+                 src_frame.visible_data(VideoFrame::Plane::kV),
+                 src_frame.stride(VideoFrame::Plane::kV),
+                 WritableVisibleData16(dest_frame, VideoFrame::Plane::kY),
+                 Stride16(dest_frame, VideoFrame::Plane::kY),
+                 WritableVisibleData16(dest_frame, VideoFrame::Plane::kUV),
+                 Stride16(dest_frame, VideoFrame::Plane::kUV),
+                 dest_frame.visible_rect().width(),
+                 dest_frame.visible_rect().height()) == 0;
 }
 
 bool I4xxxPxxToPx10(const VideoFrame& src_frame, VideoFrame& dest_frame) {
@@ -691,41 +848,70 @@ bool Px10ToIx10(const VideoFrame& src_frame, VideoFrame& dest_frame) {
          src_frame.format() == PIXEL_FORMAT_P410LE);
   DCHECK_EQ(src_frame.visible_rect().size(), dest_frame.visible_rect().size());
 
-  if (src_frame.format() == PIXEL_FORMAT_P010LE) {
-    DCHECK_EQ(dest_frame.format(), PIXEL_FORMAT_YUV420P10);
-  } else if (src_frame.format() == PIXEL_FORMAT_P210LE) {
-    DCHECK_EQ(dest_frame.format(), PIXEL_FORMAT_YUV422P10);
-  } else {
-    DCHECK_EQ(dest_frame.format(), PIXEL_FORMAT_YUV444P10);
+  auto convert = libyuv::P010ToI010;
+  switch (src_frame.format()) {
+    case PIXEL_FORMAT_P010LE:
+      DCHECK_EQ(dest_frame.format(), PIXEL_FORMAT_YUV420P10);
+      break;
+    case PIXEL_FORMAT_P210LE:
+      DCHECK_EQ(dest_frame.format(), PIXEL_FORMAT_YUV422P10);
+      convert = libyuv::P210ToI210;
+      break;
+    case PIXEL_FORMAT_P410LE:
+      DCHECK_EQ(dest_frame.format(), PIXEL_FORMAT_YUV444P10);
+      convert = libyuv::P410ToI410;
+      break;
+    default:
+      NOTREACHED();
   }
 
-  // Px10 formats store samples in the MSBs; planar *P10 formats store them in
-  // the LSBs.
-  constexpr int kDepth = 10;
+  return convert(VisibleData16(src_frame, VideoFrame::Plane::kY),
+                 Stride16(src_frame, VideoFrame::Plane::kY),
+                 VisibleData16(src_frame, VideoFrame::Plane::kUV),
+                 Stride16(src_frame, VideoFrame::Plane::kUV),
+                 WritableVisibleData16(dest_frame, VideoFrame::Plane::kY),
+                 Stride16(dest_frame, VideoFrame::Plane::kY),
+                 WritableVisibleData16(dest_frame, VideoFrame::Plane::kU),
+                 Stride16(dest_frame, VideoFrame::Plane::kU),
+                 WritableVisibleData16(dest_frame, VideoFrame::Plane::kV),
+                 Stride16(dest_frame, VideoFrame::Plane::kV),
+                 dest_frame.visible_rect().width(),
+                 dest_frame.visible_rect().height()) == 0;
+}
 
-  const auto src_y = base::subtle::reinterpret_span<const uint16_t>(
-      src_frame.GetVisiblePlaneData(VideoFrame::Plane::kY));
-  auto dst_y = base::subtle::reinterpret_span<uint16_t>(
-      dest_frame.GetWritableVisiblePlaneData(VideoFrame::Plane::kY));
-  libyuv::ConvertToLSBPlane_16(
-      src_y.data(), src_frame.stride(VideoFrame::Plane::kY) / 2, dst_y.data(),
-      dest_frame.stride(VideoFrame::Plane::kY) / 2,
-      dest_frame.visible_rect().width(), dest_frame.visible_rect().height(),
-      kDepth);
+bool Px10ToI420(const VideoFrame& src_frame, VideoFrame& dest_frame) {
+  DCHECK(src_frame.format() == PIXEL_FORMAT_P010LE ||
+         src_frame.format() == PIXEL_FORMAT_P210LE ||
+         src_frame.format() == PIXEL_FORMAT_P410LE);
+  DCHECK_EQ(dest_frame.format(), PIXEL_FORMAT_I420);
+  DCHECK_EQ(src_frame.visible_rect().size(), dest_frame.visible_rect().size());
 
-  const auto src_uv = base::subtle::reinterpret_span<const uint16_t>(
-      src_frame.GetVisiblePlaneData(VideoFrame::Plane::kUV));
-  auto dst_u = base::subtle::reinterpret_span<uint16_t>(
-      dest_frame.GetWritableVisiblePlaneData(VideoFrame::Plane::kU));
-  auto dst_v = base::subtle::reinterpret_span<uint16_t>(
-      dest_frame.GetWritableVisiblePlaneData(VideoFrame::Plane::kV));
-  libyuv::SplitUVPlane_16(
-      src_uv.data(), src_frame.stride(VideoFrame::Plane::kUV) / 2, dst_u.data(),
-      dest_frame.stride(VideoFrame::Plane::kU) / 2, dst_v.data(),
-      dest_frame.stride(VideoFrame::Plane::kV) / 2,
-      src_frame.GetVisibleColumns(VideoFrame::Plane::kUV),
-      src_frame.GetVisibleRows(VideoFrame::Plane::kUV), kDepth);
-  return true;
+  auto convert = libyuv::P010ToI420;
+  switch (src_frame.format()) {
+    case PIXEL_FORMAT_P010LE:
+      break;
+    case PIXEL_FORMAT_P210LE:
+      convert = libyuv::P210ToI420;
+      break;
+    case PIXEL_FORMAT_P410LE:
+      convert = libyuv::P410ToI420;
+      break;
+    default:
+      NOTREACHED();
+  }
+
+  return convert(VisibleData16(src_frame, VideoFrame::Plane::kY),
+                 Stride16(src_frame, VideoFrame::Plane::kY),
+                 VisibleData16(src_frame, VideoFrame::Plane::kUV),
+                 Stride16(src_frame, VideoFrame::Plane::kUV),
+                 dest_frame.GetWritableVisibleData(VideoFrame::Plane::kY),
+                 dest_frame.stride(VideoFrame::Plane::kY),
+                 dest_frame.GetWritableVisibleData(VideoFrame::Plane::kU),
+                 dest_frame.stride(VideoFrame::Plane::kU),
+                 dest_frame.GetWritableVisibleData(VideoFrame::Plane::kV),
+                 dest_frame.stride(VideoFrame::Plane::kV),
+                 dest_frame.visible_rect().width(),
+                 dest_frame.visible_rect().height()) == 0;
 }
 
 void Px10ToNVxx(const VideoFrame& src_frame, VideoFrame& dest_frame) {

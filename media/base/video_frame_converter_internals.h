@@ -46,9 +46,13 @@ bool ARGBToI444x(const VideoFrame& src_frame,
                  VideoFrame& dst_frame,
                  const libyuv::ArgbConstants* matrix);
 
-bool ARGBToNV12x(const VideoFrame& src_frame,
-                 VideoFrame& dst_frame,
-                 const libyuv::ArgbConstants* matrix);
+bool ARGBToNVxx(const VideoFrame& src_frame,
+                VideoFrame& dst_frame,
+                const libyuv::ArgbConstants* matrix);
+
+bool ARGBToPx10(const VideoFrame& src_frame,
+                VideoFrame& dst_frame,
+                const libyuv::ArgbConstants* matrix);
 
 // Also converts between I420, I422, I444 and vice versa.
 void I4xxxScale(const VideoFrame& src_frame, VideoFrame& dst_frame);
@@ -74,6 +78,10 @@ bool NVxxScale(const VideoFrame& src_frame,
                VideoFrame& dst_frame,
                libyuv::FilterMode filter);
 
+bool Px10Scale(const VideoFrame& src_frame,
+               VideoFrame& dst_frame,
+               libyuv::FilterMode filter);
+
 // Scaling not supported.
 void NVxxToI4xxx(const VideoFrame& src_frame, VideoFrame& dst_frame);
 
@@ -81,10 +89,16 @@ void NVxxToI4xxx(const VideoFrame& src_frame, VideoFrame& dst_frame);
 bool NVxxToPx10(const VideoFrame& src_frame, VideoFrame& dst_frame);
 
 // Scaling not supported.
+bool I4xxxToPx10(const VideoFrame& src_frame, VideoFrame& dst_frame);
+
+// Scaling not supported.
 bool I4xxxPxxToPx10(const VideoFrame& src_frame, VideoFrame& dst_frame);
 
 // Scaling not supported.
 bool Px10ToIx10(const VideoFrame& src_frame, VideoFrame& dst_frame);
+
+// Scaling not supported.
+bool Px10ToI420(const VideoFrame& src_frame, VideoFrame& dst_frame);
 
 // Scaling not supported.
 void Px10ToNVxx(const VideoFrame& src_frame, VideoFrame& dst_frame);

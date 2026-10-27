@@ -16,15 +16,19 @@ namespace {
 constexpr auto kDefaultFiltering = libyuv::kFilterBox;
 
 struct Biplanar10BitFormatFamily {
+  VideoPixelFormat planar_10bit;
   VideoPixelFormat biplanar_10bit;
   VideoPixelFormat planar_8bit;
   VideoPixelFormat biplanar_8bit;
 };
 
 constexpr Biplanar10BitFormatFamily kBiplanar10BitFormatFamilies[] = {
-    {PIXEL_FORMAT_P010LE, PIXEL_FORMAT_I420, PIXEL_FORMAT_NV12},
-    {PIXEL_FORMAT_P210LE, PIXEL_FORMAT_I422, PIXEL_FORMAT_NV16},
-    {PIXEL_FORMAT_P410LE, PIXEL_FORMAT_I444, PIXEL_FORMAT_NV24},
+    {PIXEL_FORMAT_YUV420P10, PIXEL_FORMAT_P010LE, PIXEL_FORMAT_I420,
+     PIXEL_FORMAT_NV12},
+    {PIXEL_FORMAT_YUV422P10, PIXEL_FORMAT_P210LE, PIXEL_FORMAT_I422,
+     PIXEL_FORMAT_NV16},
+    {PIXEL_FORMAT_YUV444P10, PIXEL_FORMAT_P410LE, PIXEL_FORMAT_I444,
+     PIXEL_FORMAT_NV24},
 };
 
 const Biplanar10BitFormatFamily& Biplanar10BitFormatFamilyFor(
@@ -289,56 +293,18 @@ EncoderStatus VideoFrameConverter::ConvertAndScaleRGB(
 
     case PIXEL_FORMAT_NV12:
     case PIXEL_FORMAT_NV12A:
-      return internals::ARGBToNV12x(*src_frame, dest_frame, matrix)
-                 ? OkStatus()
-                 : EncoderStatus(EncoderStatus::Codes::kFormatConversionError);
-
-    case PIXEL_FORMAT_P010LE: {
-      auto tmp_nv12_frame =
-          CreateTempFrame(PIXEL_FORMAT_NV12, dest_frame.coded_size(),
-                          dest_frame.visible_rect(), dest_frame.natural_size());
-      if (!tmp_nv12_frame ||
-          !internals::ARGBToNV12x(*src_frame, *tmp_nv12_frame, matrix)) {
-        return EncoderStatus(EncoderStatus::Codes::kFormatConversionError);
-      }
-      return internals::NVxxToPx10(*tmp_nv12_frame, dest_frame)
-                 ? OkStatus()
-                 : EncoderStatus(EncoderStatus::Codes::kFormatConversionError);
-    }
-
     case PIXEL_FORMAT_NV16:
-    case PIXEL_FORMAT_NV24: {
-      auto wrapped_frame = WrapBiplanarFrameInTriplanarFrame(dest_frame);
-      const bool converted =
-          wrapped_frame &&
-          (dest_frame.format() == PIXEL_FORMAT_NV16
-               ? internals::ARGBToI422x(*src_frame, *wrapped_frame, matrix)
-               : internals::ARGBToI444x(*src_frame, *wrapped_frame, matrix));
-      if (!converted) {
-        return EncoderStatus(EncoderStatus::Codes::kFormatConversionError);
-      }
-      internals::MergeUV(*wrapped_frame, dest_frame);
-      return OkStatus();
-    }
+    case PIXEL_FORMAT_NV24:
+      return internals::ARGBToNVxx(*src_frame, dest_frame, matrix)
+                 ? OkStatus()
+                 : EncoderStatus(EncoderStatus::Codes::kFormatConversionError);
 
+    case PIXEL_FORMAT_P010LE:
     case PIXEL_FORMAT_P210LE:
-    case PIXEL_FORMAT_P410LE: {
-      const VideoPixelFormat tmp_format =
-          dest_frame.format() == PIXEL_FORMAT_P210LE ? PIXEL_FORMAT_I422
-                                                     : PIXEL_FORMAT_I444;
-      auto conversion_frame =
-          CreateTempFrame(tmp_format, dest_frame.coded_size(),
-                          dest_frame.visible_rect(), dest_frame.natural_size());
-      const bool converted =
-          conversion_frame &&
-          (tmp_format == PIXEL_FORMAT_I422
-               ? internals::ARGBToI422x(*src_frame, *conversion_frame, matrix)
-               : internals::ARGBToI444x(*src_frame, *conversion_frame, matrix));
-      if (!converted) {
-        return EncoderStatus(EncoderStatus::Codes::kFormatConversionError);
-      }
-      return ConvertAndScaleI4xxx(conversion_frame.get(), dest_frame);
-    }
+    case PIXEL_FORMAT_P410LE:
+      return internals::ARGBToPx10(*src_frame, dest_frame, matrix)
+                 ? OkStatus()
+                 : EncoderStatus(EncoderStatus::Codes::kFormatConversionError);
 
     case PIXEL_FORMAT_YUV420P10: {
       auto tmp_i420_frame =
@@ -422,15 +388,13 @@ EncoderStatus VideoFrameConverter::ConvertAndScaleI4xxx(
     case PIXEL_FORMAT_P010LE:
     case PIXEL_FORMAT_P210LE:
     case PIXEL_FORMAT_P410LE: {
-      // Due to limited libyuv primitives the following is a bit complicated.
-      // 1. Perform scaling from I4xxx to matching 8-bit planar.
       const auto& format_family =
           Biplanar10BitFormatFamilyFor(dest_frame.format());
       scoped_refptr<VideoFrame> intermediate_frame;
       if (src_frame->visible_rect().size() !=
               dest_frame.visible_rect().size() ||
           VideoPixelFormatToChromaSampling(src_frame->format()) !=
-              VideoPixelFormatToChromaSampling(format_family.planar_8bit)) {
+              VideoPixelFormatToChromaSampling(dest_frame.format())) {
         intermediate_frame = CreateTempFrame(
             format_family.planar_8bit, dest_frame.coded_size(),
             dest_frame.visible_rect(), dest_frame.natural_size());
@@ -441,18 +405,7 @@ EncoderStatus VideoFrameConverter::ConvertAndScaleI4xxx(
         src_frame = intermediate_frame.get();
       }
 
-      // 2. Wrap Y plane from the biplanar destination plus UV scratch space
-      // into a temporary planar 10-bit frame to avoid Y plane copy.
-      auto tmp_frame = WrapBiplanarFrameInTriplanarFrame(dest_frame);
-      if (!tmp_frame) {
-        return EncoderStatus::Codes::kScalingError;
-      }
-
-      // 3. Convert 8-bit planar to 10-bit planar.
-      internals::Convert8To16Plane(*src_frame, *tmp_frame);
-
-      // 4. Convert planar 10-bit to biplanar P010 / P210 / P410.
-      return internals::I4xxxPxxToPx10(*tmp_frame, dest_frame)
+      return internals::I4xxxToPx10(*src_frame, dest_frame)
                  ? OkStatus()
                  : EncoderStatus(EncoderStatus::Codes::kFormatConversionError);
     }
@@ -680,10 +633,18 @@ EncoderStatus VideoFrameConverter::ConvertAndScalePx10(
          src_frame->format() == PIXEL_FORMAT_P210LE ||
          src_frame->format() == PIXEL_FORMAT_P410LE);
 
-  if (src_frame->format() == dest_frame.format() &&
-      src_frame->visible_rect().size() == dest_frame.visible_rect().size()) {
+  const bool same_size =
+      src_frame->visible_rect().size() == dest_frame.visible_rect().size();
+
+  if (src_frame->format() == dest_frame.format() && same_size) {
     internals::CopyVisiblePlanes(*src_frame, dest_frame);
     return OkStatus();
+  }
+
+  if (same_size && dest_frame.format() == PIXEL_FORMAT_I420) {
+    return internals::Px10ToI420(*src_frame, dest_frame)
+               ? OkStatus()
+               : EncoderStatus(EncoderStatus::Codes::kFormatConversionError);
   }
 
   const bool dest_is_biplanar_8bit = dest_frame.format() == PIXEL_FORMAT_NV12 ||
@@ -692,8 +653,7 @@ EncoderStatus VideoFrameConverter::ConvertAndScalePx10(
   const bool dest_is_planar_10bit =
       dest_frame.format() == PIXEL_FORMAT_YUV420P10 ||
       dest_frame.format() == PIXEL_FORMAT_YUV444P10;
-  if ((dest_is_biplanar_8bit || dest_is_planar_10bit) &&
-      src_frame->visible_rect().size() == dest_frame.visible_rect().size() &&
+  if ((dest_is_biplanar_8bit || dest_is_planar_10bit) && same_size &&
       VideoPixelFormatToChromaSampling(src_frame->format()) ==
           VideoPixelFormatToChromaSampling(dest_frame.format())) {
     if (dest_is_biplanar_8bit) {
@@ -705,25 +665,33 @@ EncoderStatus VideoFrameConverter::ConvertAndScalePx10(
                : EncoderStatus(EncoderStatus::Codes::kFormatConversionError);
   }
 
-  VideoPixelFormat planar_format = PIXEL_FORMAT_UNKNOWN;
-  switch (src_frame->format()) {
-    case PIXEL_FORMAT_P010LE:
-      planar_format = PIXEL_FORMAT_YUV420P10;
-      break;
-    case PIXEL_FORMAT_P210LE:
-      planar_format = PIXEL_FORMAT_YUV422P10;
-      break;
-    case PIXEL_FORMAT_P410LE:
-      planar_format = PIXEL_FORMAT_YUV444P10;
-      break;
-    default:
-      NOTREACHED();
+  if (src_frame->format() == dest_frame.format()) {
+    // The scaler processes Y and UV separately to lower peak workspace usage.
+    return internals::Px10Scale(*src_frame, dest_frame, kDefaultFiltering)
+               ? OkStatus()
+               : EncoderStatus(EncoderStatus::Codes::kScalingError);
   }
 
-  // libyuv has no general Px10 scaler; de-interleave then reuse the HBD planar
-  // path.
+  const auto& format_family = Biplanar10BitFormatFamilyFor(src_frame->format());
+  if (dest_is_biplanar_8bit) {
+    // Reduce to the output bit depth before scaling to keep the intermediate
+    // frame small and use the 8-bit Y/UV scalers. Rounding can differ from
+    // scaling before reducing the bit depth.
+    auto nv_src =
+        CreateTempFrame(format_family.biplanar_8bit, src_frame->coded_size(),
+                        src_frame->visible_rect(), src_frame->natural_size());
+    if (!nv_src) {
+      return EncoderStatus::Codes::kScalingError;
+    }
+    internals::Px10ToNVxx(*src_frame, *nv_src);
+    return internals::NVxxScale(*nv_src, dest_frame, kDefaultFiltering)
+               ? OkStatus()
+               : EncoderStatus(EncoderStatus::Codes::kScalingError);
+  }
+
+  // Other cross-format Px10 conversions still go through HBD planar frames.
   auto planar_frame =
-      CreateTempFrame(planar_format, src_frame->coded_size(),
+      CreateTempFrame(format_family.planar_10bit, src_frame->coded_size(),
                       src_frame->visible_rect(), src_frame->natural_size());
   if (!planar_frame) {
     return EncoderStatus::Codes::kScalingError;
