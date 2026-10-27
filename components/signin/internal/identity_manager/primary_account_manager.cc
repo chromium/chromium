@@ -11,6 +11,7 @@
 #include <variant>
 #include <vector>
 
+#include "base/auto_reset.h"
 #include "base/check_deref.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
@@ -692,6 +693,10 @@ void PrimaryAccountManager::RevokeSyncConsent(
   StartSignOut(signout_source_metric, RemoveAccountsOption::kKeepAllAccounts);
 }
 
+bool PrimaryAccountManager::IsCallingPrimaryAccountObservers() const {
+  return is_calling_primary_account_observers_;
+}
+
 #if BUILDFLAG(IS_IOS)
 bool PrimaryAccountManager::IsBatchOfPrimaryAccountChangesInProgress() const {
   return batch_of_primary_account_changes_in_progress_;
@@ -934,10 +939,15 @@ void PrimaryAccountManager::FirePrimaryAccountChanged(
   }
 #endif
 
-  client_->OnPrimaryAccountChanged(event_details);
+  {
+    base::AutoReset<bool> calling_primary_account_observers(
+        &is_calling_primary_account_observers_, true);
 
-  for (Observer& observer : observers_) {
-    observer.OnPrimaryAccountChanged(event_details);
+    client_->OnPrimaryAccountChanged(event_details);
+
+    for (Observer& observer : observers_) {
+      observer.OnPrimaryAccountChanged(event_details);
+    }
   }
 #if BUILDFLAG(IS_IOS)
   if (!batch_of_primary_account_changes_in_progress_) {

@@ -186,6 +186,12 @@ class PrimaryAccountManager : public ProfileOAuth2TokenServiceObserver {
   // the accounts untouched.
   void RevokeSyncConsent(signin_metrics::ProfileSignout signout_source_metric);
 
+  // Returns true while `OnPrimaryAccountChanged()` notifications are being
+  // dispatched to the `SigninClient` and observers. The primary account state
+  // must not be mutated during that time, as it would cause nested
+  // notifications and observers would see inconsistent states.
+  bool IsCallingPrimaryAccountObservers() const;
+
 #if BUILDFLAG(IS_IOS)
   // Whether a batch of primary account changes is in progress. See
   // `Observer::OnEndBatchOfPrimaryAccountChanges()`.
@@ -304,6 +310,10 @@ class PrimaryAccountManager : public ProfileOAuth2TokenServiceObserver {
   // Must be kept in sync with prefs. Use SetPrimaryAccountInternal() to change
   // this field.
   std::optional<PrimaryAccount> primary_account_;
+
+  // `true` while `OnPrimaryAccountChanged()` notifications are being
+  // dispatched. See `IsCallingPrimaryAccountObservers()`.
+  bool is_calling_primary_account_observers_ = false;
 
 #if BUILDFLAG(IS_IOS)
   // `true` if there is a batch of primary account changes (e.g. account

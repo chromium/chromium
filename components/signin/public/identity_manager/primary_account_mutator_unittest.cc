@@ -8,6 +8,7 @@
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
+#include "base/test/gtest_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
@@ -101,6 +102,27 @@ class ClearPrimaryAccountTestObserver
   base::ScopedObservation<signin::IdentityManager,
                           signin::IdentityManager::Observer>
       scoped_observation_{this};
+};
+
+class MockIdentityManagerObserver : public signin::IdentityManager::Observer {
+ public:
+  explicit MockIdentityManagerObserver(
+      signin::IdentityManager* identity_manager) {
+    observation.Observe(identity_manager);
+  }
+
+  MockIdentityManagerObserver(const MockIdentityManagerObserver&) = delete;
+  MockIdentityManagerObserver& operator=(const MockIdentityManagerObserver&) =
+      delete;
+
+  MOCK_METHOD1(OnPrimaryAccountChanged,
+               void(const signin::PrimaryAccountChangeEvent&));
+  MOCK_METHOD1(OnRefreshTokenRemovedForAccount, void(const CoreAccountId&));
+
+ private:
+  base::ScopedObservation<signin::IdentityManager,
+                          signin::IdentityManager::Observer>
+      observation{this};
 };
 
 #if !BUILDFLAG(IS_CHROMEOS)
@@ -240,27 +262,6 @@ void RunRevokeConsentTest(
   }
 }
 
-class MockIdentityManagerObserver : public signin::IdentityManager::Observer {
- public:
-  explicit MockIdentityManagerObserver(
-      signin::IdentityManager* identity_manager) {
-    observation.Observe(identity_manager);
-  }
-
-  MockIdentityManagerObserver(const MockIdentityManagerObserver&) = delete;
-  MockIdentityManagerObserver& operator=(const MockIdentityManagerObserver&) =
-      delete;
-
-  MOCK_METHOD1(OnPrimaryAccountChanged,
-               void(const signin::PrimaryAccountChangeEvent&));
-  MOCK_METHOD1(OnRefreshTokenRemovedForAccount, void(const CoreAccountId&));
-
- private:
-  base::ScopedObservation<signin::IdentityManager,
-                          signin::IdentityManager::Observer>
-      observation{this};
-};
-
 void RunClearPrimaryAccountTestForSigninOnly() {
   base::test::TaskEnvironment task_environment;
   signin::IdentityTestEnvironment environment;
@@ -389,6 +390,41 @@ TEST_F(PrimaryAccountMutatorTest, SetPrimaryAccount_Sync) {
   EXPECT_TRUE(identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync));
   EXPECT_EQ(identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSync),
             account_info.GetAccountId());
+}
+
+// Checks that the primary account can't be mutated from an
+// `OnPrimaryAccountChanged()` observer.
+TEST_F(PrimaryAccountMutatorTest,
+       SetPrimaryAccount_FromOnPrimaryAccountChangedObserver) {
+  base::test::TaskEnvironment task_environment;
+  signin::IdentityTestEnvironment environment;
+
+  signin::IdentityManager* identity_manager = environment.identity_manager();
+  signin::PrimaryAccountMutator* primary_account_mutator =
+      identity_manager->GetPrimaryAccountMutator();
+
+  // Abort the test if the current platform does not support mutation of the
+  // primary account (the returned PrimaryAccountMutator* will be null).
+  if (!primary_account_mutator) {
+    return;
+  }
+
+  AccountInfo account_info =
+      environment.MakeAccountAvailable(kPrimaryAccountEmail);
+
+  testing::NiceMock<MockIdentityManagerObserver> observer(identity_manager);
+  ON_CALL(observer, OnPrimaryAccountChanged)
+      .WillByDefault([&](const signin::PrimaryAccountChangeEvent& event) {
+        primary_account_mutator->SetPrimaryAccount(
+            account_info.GetAccountId(), signin::ConsentLevel::kSignin,
+            signin_metrics::AccessPoint::kStartPage);
+      });
+
+  EXPECT_CHECK_DEATH_WITH(
+      primary_account_mutator->SetPrimaryAccount(
+          account_info.GetAccountId(), signin::ConsentLevel::kSignin,
+          signin_metrics::AccessPoint::kStartPage),
+      "IsCallingPrimaryAccountObservers");
 }
 
 // Tests that various preconditions of SetPrimaryAccount() not being satisfied
