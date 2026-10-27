@@ -440,6 +440,14 @@ void ContextualTasksEphemeralButtonController::
     return;
   }
 
+  base::RecordAction(base::UserMetricsAction(
+      "ContextualTasks.EphemeralToolbarButton.UserAction."
+      "RemoveByContextMenu"));
+  base::UmaHistogramBoolean(
+      "ContextualTasks.EphemeralToolbarButton.UserAction."
+      "RemoveByContextMenu",
+      true);
+
   base::AutoReset<std::optional<RemovalReason>> reset_reason(
       &removal_reason_, RemovalReason::kContextMenu);
 
