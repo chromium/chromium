@@ -148,6 +148,41 @@ GURL GetProfileAvatarUrl(Profile* profile, const GURL& url) {
   return GURL();
 }
 
+bool IsLegacyOnlyContextualTasksResource(std::string_view path) {
+  static constexpr std::string_view kLegacyOnlyPaths[] = {
+      "app.css.js",
+      "app.html.js",
+      "app.js",
+      "banner_promo.css.js",
+      "banner_promo.html.js",
+      "banner_promo.js",
+      "composebox.css.js",
+      "composebox.html.js",
+      "composebox.js",
+      "composebox.mojom-webui.js",
+      "contextual_tasks.html",
+      "contextual_tasks_inner_composebox.css.js",
+      "contextual_tasks_inner_composebox.html.js",
+      "contextual_tasks_inner_composebox.js",
+      "contextual_tasks_inner_composebox_context_menu.html.js",
+      "error_dialog.css.js",
+      "error_dialog.html.js",
+      "error_dialog.js",
+      "error_page.css.js",
+      "error_page.html.js",
+      "error_page.js",
+      "info_tooltip.css.js",
+      "info_tooltip.html.js",
+      "info_tooltip.js",
+      "onboarding_tooltip.css.js",
+      "onboarding_tooltip.html.js",
+      "onboarding_tooltip.js",
+      "web_view_type.js",
+      "window_manager.js",
+  };
+  return std::ranges::contains(kLegacyOnlyPaths, path);
+}
+
 // `WebUIDataSource::SetRequestFilter` only supports a single filter callback
 // pair, so `ShouldHandleContextualTasksRequest` and
 // `HandleContextualTasksRequest` multiplex both `WebUIToolbarLayoutCssHelper`
@@ -296,7 +331,7 @@ content::WebUIDataSource* ContextualTasksUIBase::RegisterWebUIDataSource(
     std::vector<webui::ResourcePath> resources;
     resources.reserve(std::size(kContextualTasksResources));
     for (const auto& resource : kContextualTasksResources) {
-      if (std::string_view(resource.path) != "contextual_tasks.html") {
+      if (!IsLegacyOnlyContextualTasksResource(resource.path)) {
         resources.push_back(resource);
       }
     }

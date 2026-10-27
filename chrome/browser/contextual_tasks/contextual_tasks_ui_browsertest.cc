@@ -1643,3 +1643,19 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksInternalsPostRearchitectureBrowserTest,
   ui_service->OnVoiceTranscribed("test voice query");
   EXPECT_EQ(contextual_tasks::GetWebUiInterface(web_contents), nullptr);
 }
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksInternalsPostRearchitectureBrowserTest,
+                       FiltersLegacyWebUIResources) {
+  // Attempting to fetch or import legacy pre-rearchitecture modules (such as
+  // `app.js`) from a post-rearchitecture WebUI document must fail rather than
+  // executing `BrowserProxyImpl` or terminating the renderer with
+  // `RFH_INVALID_WEB_UI_CONTROLLER`.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GURL("chrome://contextual-tasks/internals")));
+  content::WebContents* web_contents =
+      TabListInterface::From(browser())->GetActiveTab()->GetContents();
+  EXPECT_EQ(false, content::EvalJs(web_contents,
+                                   "import('chrome://contextual-tasks/app.js')"
+                                   "  .then(() => true, () => false)"));
+  EXPECT_FALSE(web_contents->IsCrashed());
+}
