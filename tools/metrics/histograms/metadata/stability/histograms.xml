@@ -963,6 +963,41 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Stability.Mojo.Channel.Win.PeakOpenChannels.Renderer"
+    units="channels" expires_after="2027-04-23">
+  <owner>wfh@chromium.org</owner>
+  <owner>jeffreygour@microsoft.com</owner>
+  <summary>
+    Records a sample whenever the number of open Mojo channels reaches a new
+    maximum on a Windows renderer I/O thread, including extension and top-WebUI
+    renderers. For example, opening three channels records samples 1, 2, and 3.
+    Closing one and opening a replacement records nothing; reaching four open
+    channels records 4.
+
+    Samples are recorded as the maximum increases because renderer termination
+    can bypass shutdown hooks, losing a shutdown-only sample. This avoids
+    depending on orderly shutdown, but does not guarantee delivery after a crash
+    or forced termination.
+
+    Each thread records each value from 1 through 100 at most once, plus one
+    overflow sample if it reaches 101 open channels. Bucket 32's count divided
+    by bucket 1's count estimates the fraction of observed renderer I/O threads
+    that reach at least 32 open channels. The histogram's mean is not the
+    average final peak.
+
+    A channel is counted after successful I/O registration. Closing or releasing
+    its pipe handle removes it from the count, even if native I/O completions
+    are still retiring.
+
+    The proposed event-based I/O pump uses two completion events per Mojo
+    channel and reserves one of 64 wait slots for task wakeups. A peak of 32
+    open channels exceeds its 31-channel capacity. This metric does not measure
+    exact event-watch occupancy: it excludes channels whose handles have closed
+    or been released but whose completions are still retiring, and it excludes
+    non-Mojo registrations.
+  </summary>
+</histogram>
+
 <histogram name="Stability.RendererAbnormalTermination2.HostedContentType"
     enum="RendererHostedContentType" expires_after="2027-04-11">
   <owner>fdoray@chromium.org</owner>

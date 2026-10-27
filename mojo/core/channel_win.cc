@@ -21,6 +21,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/message_loop/message_pump_for_io.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/process/current_process.h"
 #include "base/process/process_handle.h"
 #include "base/rand_util.h"
 #include "base/synchronization/lock.h"
@@ -35,6 +36,15 @@ namespace mojo {
 namespace core {
 
 namespace {
+
+constexpr int kMaxOpenChannelSample = 101;
+
+struct OpenChannelMetrics {
+  size_t open_channels = 0;
+  int recorded_peak = 0;
+};
+
+constinit thread_local OpenChannelMetrics g_open_channel_metrics;
 
 class ChannelWinMessageQueue {
  public:
@@ -209,6 +219,19 @@ class ChannelWin : public Channel,
       return;
     }
 
+    counted_for_metrics_ = IsRendererProcessForMetrics();
+    if (counted_for_metrics_) {
+      ++g_open_channel_metrics.open_channels;
+      if (g_open_channel_metrics.recorded_peak < kMaxOpenChannelSample &&
+          g_open_channel_metrics.open_channels >
+              static_cast<size_t>(g_open_channel_metrics.recorded_peak)) {
+        ++g_open_channel_metrics.recorded_peak;
+        UMA_HISTOGRAM_EXACT_LINEAR(
+            "Stability.Mojo.Channel.Win.PeakOpenChannels.Renderer",
+            g_open_channel_metrics.recorded_peak, kMaxOpenChannelSample);
+      }
+    }
+
     // Keep this alive in case we synchronously run shutdown, via OnError(),
     // as a result of a ReadFile() failure on the channel.
     scoped_refptr<ChannelWin> keep_alive(this);
@@ -249,6 +272,11 @@ class ChannelWin : public Channel,
       std::ignore = handle_.release();
     } else {
       handle_.Close();
+    }
+
+    if (counted_for_metrics_) {
+      DCHECK_GT(g_open_channel_metrics.open_channels, 0u);
+      --g_open_channel_metrics.open_channels;
     }
 
     // Allow |this| to be destroyed as soon as no IO is pending.
@@ -420,6 +448,8 @@ class ChannelWin : public Channel,
 
   const scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_;
 
+  bool counted_for_metrics_ = false;
+
   base::MessagePumpForIO::IOContext read_context_;
   bool is_read_pending_ = false;
 
@@ -435,6 +465,15 @@ class ChannelWin : public Channel,
 };
 
 }  // namespace
+
+// static
+bool Channel::IsRendererProcessForMetrics() {
+  const auto process_type =
+      base::CurrentProcess::GetInstance().GetShortType({});
+  return process_type == base::ShortProcessType::kRenderer ||
+         process_type == base::ShortProcessType::kRendererExtension ||
+         process_type == base::ShortProcessType::kRendererTopWebUI;
+}
 
 // static
 scoped_refptr<Channel> Channel::Create(

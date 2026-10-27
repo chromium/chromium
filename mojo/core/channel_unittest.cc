@@ -4,6 +4,7 @@
 
 #include "mojo/core/channel.h"
 
+#include <algorithm>
 #include <atomic>
 #include <optional>
 #include <tuple>
@@ -31,6 +32,16 @@
 #include "mojo/public/cpp/platform/platform_channel.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+#if BUILDFLAG(IS_WIN)
+#include "base/process/current_process.h"
+#include "base/process/current_process_test.h"
+#include "base/test/metrics/histogram_tester.h"
+#include "base/test/run_until.h"
+#include "base/test/test_future.h"
+#include "base/time/time.h"
+#include "base/timer/timer.h"
+#endif
 
 #if BUILDFLAG(IS_MAC)
 #include "base/mac/process_requirement.h"
@@ -98,6 +109,164 @@ class MockChannelDelegate : public Channel::Delegate {
  private:
   base::HeapArray<char> payload_;
 };
+
+#if BUILDFLAG(IS_WIN)
+constexpr char kPeakOpenChannelsHistogram[] =
+    "Stability.Mojo.Channel.Win.PeakOpenChannels.Renderer";
+
+class ChannelWinOpenChannelsMetricsTest : public testing::Test {
+ protected:
+  void SetUp() override {
+    base::CurrentProcess::GetInstance().SetProcessType(
+        base::CurrentProcessType::PROCESS_RENDERER);
+    ASSERT_TRUE(io_thread_.StartWithOptions(
+        base::Thread::Options(base::MessagePumpType::IO, 0)));
+  }
+
+  void TearDown() override {
+    RemoveChannels(channels_.size());
+    io_thread_.Stop();
+    base::CurrentProcess::GetInstance().SetProcessType(original_process_type_);
+  }
+
+  void FlushIO(scoped_refptr<base::SingleThreadTaskRunner> runner) {
+    base::test::TestFuture<void> future;
+    ASSERT_TRUE(runner->PostTask(FROM_HERE, future.GetSequenceBoundCallback()));
+    ASSERT_TRUE(future.Wait());
+  }
+
+  void AddChannels(size_t count,
+                   scoped_refptr<base::SingleThreadTaskRunner> runner) {
+    for (size_t i = 0; i < count; ++i) {
+      PlatformChannel pipe;
+      channels_.push_back(
+          Channel::Create(nullptr, ConnectionParams(pipe.TakeLocalEndpoint()),
+                          Channel::HandlePolicy::kAcceptHandles, runner));
+      peers_.push_back(pipe.TakeRemoteEndpoint());
+      channels_.back()->Start();
+    }
+    FlushIO(std::move(runner));
+  }
+
+  void RemoveChannels(size_t count) {
+    std::vector<scoped_refptr<Channel>> removed;
+    for (size_t i = 0; i < count; ++i) {
+      removed.push_back(std::move(channels_.back()));
+      channels_.pop_back();
+      removed.back()->ShutDown();
+    }
+    WaitForCompletions(removed);
+  }
+
+  void WaitForCompletions(const std::vector<scoped_refptr<Channel>>& channels) {
+    // Native completions on the I/O threads do not wake this test's run loop.
+    base::RepeatingTimer wakeup;
+    wakeup.Start(FROM_HERE, base::Milliseconds(1), base::DoNothing());
+    EXPECT_TRUE(base::test::RunUntil([&] {
+      return std::ranges::all_of(
+          channels, [](const auto& channel) { return channel->HasOneRef(); });
+    }));
+  }
+
+  const base::CurrentProcessType original_process_type_ =
+      base::test::CurrentProcessForTest::GetType();
+  base::test::SingleThreadTaskEnvironment task_environment_;
+  base::Thread io_thread_{"Open channel metrics"};
+  base::HistogramTester histograms_;
+  std::vector<scoped_refptr<Channel>> channels_;
+  std::vector<PlatformChannelEndpoint> peers_;
+};
+
+TEST_F(ChannelWinOpenChannelsMetricsTest, CountsConcurrencyRatherThanChurn) {
+  AddChannels(32, io_thread_.task_runner());
+  histograms_.ExpectBucketCount(kPeakOpenChannelsHistogram, 1, 1);
+  histograms_.ExpectBucketCount(kPeakOpenChannelsHistogram, 31, 1);
+  histograms_.ExpectBucketCount(kPeakOpenChannelsHistogram, 32, 1);
+  histograms_.ExpectTotalCount(kPeakOpenChannelsHistogram, 32);
+
+  RemoveChannels(16);
+  AddChannels(16, io_thread_.task_runner());
+  histograms_.ExpectTotalCount(kPeakOpenChannelsHistogram, 32);
+
+  AddChannels(1, io_thread_.task_runner());
+  histograms_.ExpectBucketCount(kPeakOpenChannelsHistogram, 33, 1);
+  histograms_.ExpectTotalCount(kPeakOpenChannelsHistogram, 33);
+}
+
+TEST_F(ChannelWinOpenChannelsMetricsTest, ReadFailureCountsUntilHandleCloses) {
+  PlatformChannelEndpoint endpoint;
+  {
+    PlatformChannel pipe;
+    endpoint = pipe.TakeLocalEndpoint();
+  }
+  channels_.push_back(Channel::Create(
+      nullptr, ConnectionParams(std::move(endpoint)),
+      Channel::HandlePolicy::kAcceptHandles, io_thread_.task_runner()));
+  channels_.back()->Start();
+  FlushIO(io_thread_.task_runner());
+  histograms_.ExpectUniqueSample(kPeakOpenChannelsHistogram, 1, 1);
+
+  RemoveChannels(1);
+  AddChannels(1, io_thread_.task_runner());
+  histograms_.ExpectUniqueSample(kPeakOpenChannelsHistogram, 1, 1);
+}
+
+TEST_F(ChannelWinOpenChannelsMetricsTest,
+       ShutdownReleasesCountBeforeObjectDestruction) {
+  AddChannels(1, io_thread_.task_runner());
+  auto closed_channels = std::move(channels_);
+  channels_.clear();
+  closed_channels.front()->ShutDown();
+  FlushIO(io_thread_.task_runner());
+
+  AddChannels(1, io_thread_.task_runner());
+  histograms_.ExpectUniqueSample(kPeakOpenChannelsHistogram, 1, 1);
+  WaitForCompletions(closed_channels);
+}
+
+TEST_F(ChannelWinOpenChannelsMetricsTest, CountsIOThreadsIndependently) {
+  base::Thread other_thread("Other open channels");
+  ASSERT_TRUE(other_thread.StartWithOptions(
+      base::Thread::Options(base::MessagePumpType::IO, 0)));
+  AddChannels(16, io_thread_.task_runner());
+  AddChannels(16, other_thread.task_runner());
+  histograms_.ExpectBucketCount(kPeakOpenChannelsHistogram, 1, 2);
+  histograms_.ExpectBucketCount(kPeakOpenChannelsHistogram, 16, 2);
+  histograms_.ExpectBucketCount(kPeakOpenChannelsHistogram, 32, 0);
+  histograms_.ExpectTotalCount(kPeakOpenChannelsHistogram, 32);
+  RemoveChannels(channels_.size());
+}
+
+TEST_F(ChannelWinOpenChannelsMetricsTest, RecordsOverflowOnlyOnce) {
+  AddChannels(105, io_thread_.task_runner());
+  histograms_.ExpectBucketCount(kPeakOpenChannelsHistogram, 100, 1);
+  histograms_.ExpectBucketCount(kPeakOpenChannelsHistogram, 101, 1);
+  histograms_.ExpectTotalCount(kPeakOpenChannelsHistogram, 101);
+}
+
+class ChannelWinOpenChannelsMetricsProcessTest
+    : public ChannelWinOpenChannelsMetricsTest,
+      public testing::WithParamInterface<base::CurrentProcessType> {};
+
+TEST_P(ChannelWinOpenChannelsMetricsProcessTest, RecordsOnlyRenderers) {
+  base::CurrentProcess::GetInstance().SetProcessType(GetParam());
+  AddChannels(2, io_thread_.task_runner());
+  const bool is_renderer =
+      GetParam() == base::CurrentProcessType::PROCESS_RENDERER ||
+      GetParam() == base::CurrentProcessType::PROCESS_RENDERER_EXTENSION ||
+      GetParam() == base::CurrentProcessType::PROCESS_RENDERER_TOP_WEBUI;
+  histograms_.ExpectTotalCount(kPeakOpenChannelsHistogram, is_renderer ? 2 : 0);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    ProcessType,
+    ChannelWinOpenChannelsMetricsProcessTest,
+    testing::Values(base::CurrentProcessType::PROCESS_RENDERER,
+                    base::CurrentProcessType::PROCESS_RENDERER_EXTENSION,
+                    base::CurrentProcessType::PROCESS_RENDERER_TOP_WEBUI,
+                    base::CurrentProcessType::PROCESS_BROWSER,
+                    base::CurrentProcessType::PROCESS_UTILITY));
+#endif  // BUILDFLAG(IS_WIN)
 
 Channel::MessagePtr CreateDefaultMessage(bool legacy_message) {
   const size_t payload_size = 100;

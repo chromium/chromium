@@ -584,6 +584,10 @@ class MOJO_SYSTEM_IMPL_EXPORT Channel
  protected:
   void RecordSentMessageMetricsSubsampled(size_t payload_size);
 
+#if BUILDFLAG(IS_WIN)
+  static bool IsRendererProcessForMetrics();
+#endif
+
   // Take delayed messages with increasing message count one by one and dispatch
   // them until there is a new gap.
   bool DispatchDelayedMessages();
