@@ -199,7 +199,7 @@ def convert(
   """
 
   if benchmark and benchmark.lower().startswith('loadline'):
-    _loadline(crossbench_out_dir, out_filename, benchmark, results_label)
+    _loadline(crossbench_out_dir, out_filename, benchmark, story, results_label)
     return
 
   if benchmark and benchmark.lower().startswith(('web-power', 'web_power')):
@@ -316,6 +316,7 @@ def _loadline(
   crossbench_out_dir: pathlib.Path,
   out_filename: pathlib.Path,
   benchmark: Optional[str] = None,
+  story: Optional[str] = None,
   results_label: Optional[str] = None,
 ) -> None:
   """Converts `loadline-*` benchmarks."""
@@ -340,6 +341,9 @@ def _loadline(
   else:
     raise ValueError("Missing LoadLine probe results")
 
+  results.AddSharedDiagnosticToAllHistograms(
+    reserved_infos.STORIES.name, generic_set.GenericSet([story or 'default'])
+  )
   if benchmark:
     results.AddSharedDiagnosticToAllHistograms(
       reserved_infos.BENCHMARKS.name, generic_set.GenericSet([benchmark])

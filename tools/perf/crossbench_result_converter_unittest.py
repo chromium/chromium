@@ -15,7 +15,7 @@ tracing_dir = (
   pathlib.Path(__file__).absolute().parents[2] / 'third_party/catapult/tracing'
 )
 sys.path.append(str(tracing_dir))
-from tracing.value import histogram
+from tracing.value import histogram, histogram_set
 from tracing.value.diagnostics import reserved_infos
 
 
@@ -266,6 +266,61 @@ class CrossbenchResultConverterTest(unittest.TestCase):
       browser_diagnostic = diag.AsDict()['values']
     self.assertIsNotNone(browser_diagnostic)
     self.assertEqual(list(browser_diagnostic), ['BrowserA'])
+
+  def test_loadline2_convert(self):
+    csv_content = (
+      'Metric,BrowserA\n'
+      'TOTAL_SCORE,123.45 units\n'
+      'cnn_article,54.321 ± 0.574 units\n'
+    )
+    with tempfile.TemporaryDirectory() as temp_dir:
+      dir_path = pathlib.Path(temp_dir)
+      csv_path = dir_path / 'loadline2.csv'
+      csv_path.write_text(csv_content)
+      cb_results = {
+        'probes': {
+          'loadline2_probe': {
+            'csv': [str(csv_path)],
+          }
+        }
+      }
+      (dir_path / 'cb.results.json').write_text(json.dumps(cb_results))
+
+      out_file = dir_path / 'out.json'
+      crossbench_result_converter.convert(
+        dir_path,
+        out_file,
+        benchmark='loadline2_phone.crossbench',
+        story='default',
+        results_label='canary',
+      )
+
+      raw_dicts = json.loads(out_file.read_text())
+
+    results = self.list_to_dict(raw_dicts)
+    self.assertEqual(len(results), 2)
+    self.check_result(results, 'TOTAL_SCORE', 123.45, 'unitless_biggerIsBetter')
+    self.check_result(results, 'cnn_article', 54.321, 'unitless_biggerIsBetter')
+
+    hist_set = histogram_set.HistogramSet()
+    hist_set.ImportDicts(raw_dicts)
+    hist = hist_set.GetHistogramNamed('cnn_article')
+    self.assertEqual(
+      hist.diagnostics[reserved_infos.BENCHMARKS.name].GetOnlyElement(),
+      'loadline2_phone.crossbench',
+    )
+    self.assertEqual(
+      hist.diagnostics[reserved_infos.STORIES.name].GetOnlyElement(),
+      'default',
+    )
+    self.assertEqual(
+      hist.diagnostics[reserved_infos.LABELS.name].GetOnlyElement(),
+      'canary',
+    )
+    self.assertEqual(
+      hist.diagnostics['browser'].GetOnlyElement(),
+      'BrowserA',
+    )
 
   def test_web_power_results(self):
     csv_content = (
