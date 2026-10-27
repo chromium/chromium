@@ -15,4 +15,6 @@ found in the LICENSE file.
     <dimen name="side_panel_header_horizontal_spacing">12dp</dimen>
     <dimen name="side_panel_header_bottom_margin">6dp</dimen>
     <dimen name="side_panel_header_icon_size">24dp</dimen>
+    <!-- Icon size plus side_panel_header_horizontal_spacing on each side. -->
+    <dimen name="side_panel_header_button_width">48dp</dimen>
 </resources>

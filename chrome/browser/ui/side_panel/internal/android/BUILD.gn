@@ -260,6 +260,7 @@ android_library("javatests") {
     "//components/browser_ui/styles/android:java",
     "//components/browser_ui/widget/android:test_support_java",
     "//content/public/android:content_full_java",
+    "//content/public/test/android:content_java_test_support",
     "//net/android:net_java_test_support",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_core_core_java",

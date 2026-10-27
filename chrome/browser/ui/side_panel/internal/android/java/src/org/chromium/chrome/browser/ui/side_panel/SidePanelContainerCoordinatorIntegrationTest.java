@@ -58,7 +58,9 @@ import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.widget.RecyclerViewTestUtils;
+import org.chromium.content_public.browser.test.util.TouchCommon;
 import org.chromium.ui.base.DeviceFormFactor;
+import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.test.util.RenderTestRule;
 import org.chromium.ui.util.ColorUtils;
 
@@ -243,6 +245,30 @@ public class SidePanelContainerCoordinatorIntegrationTest {
 
         // Assert.
         mRenderTestRule.render(containerView, "side_panel_container");
+    }
+
+    @Test
+    @MediumTest
+    public void clickCloseButtonOutsideIcon_closesPanel() {
+        // Arrange.
+        var coordinator = getSidePanelContainerCoordinator();
+        showPanel(mResponsivePageStation.getTab());
+        ViewGroup containerView = waitForContainerViewOpen(coordinator);
+        View headerView = containerView.findViewById(R.id.side_panel_header);
+        View closeButton = containerView.findViewById(R.id.side_panel_close_button);
+
+        // The button fills the header's height and is wider than its 24dp icon, for a larger
+        // touch target.
+        Activity activity = mFreshCtaTransitTestRule.getActivity();
+        assertEquals(ViewUtils.dpToPx(activity, 48), closeButton.getWidth(), /* delta= */ 1);
+        assertEquals(headerView.getHeight(), closeButton.getHeight());
+
+        // Act: Click near the button's top-start corner, outside its icon.
+        int offsetPx = ViewUtils.dpToPx(activity, 2);
+        TouchCommon.singleClickView(closeButton, offsetPx, offsetPx);
+
+        // Assert.
+        waitForContainerViewClose(coordinator);
     }
 
     @Test

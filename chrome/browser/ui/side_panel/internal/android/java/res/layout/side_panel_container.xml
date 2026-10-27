@@ -36,7 +36,6 @@
             android:layout_marginBottom="@dimen/side_panel_header_bottom_margin"
             android:orientation="horizontal"
             android:paddingStart="@dimen/side_panel_header_horizontal_spacing"
-            android:paddingEnd="@dimen/side_panel_header_horizontal_spacing"
             android:gravity="center_vertical">
 
             <!-- Representative icon -->
@@ -61,16 +60,18 @@
                 android:textAppearance=
                     "@style/TextAppearance.TextLargeThick.Primary" />
 
-            <!-- Close button -->
+            <!-- Close button
+                 It fills the header's height and is wider than its icon, for
+                 a larger touch target. The icon is centered, so its spacing
+                 from the title and the header's end matches the other
+                 header elements. -->
             <ImageButton
                 android:id="@+id/side_panel_close_button"
-                android:layout_width="@dimen/side_panel_header_icon_size"
-                android:layout_height="@dimen/side_panel_header_icon_size"
-                android:layout_marginStart=
-                    "@dimen/side_panel_header_horizontal_spacing"
+                android:layout_width="@dimen/side_panel_header_button_width"
+                android:layout_height="match_parent"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:contentDescription="@string/close"
-                android:scaleType="fitCenter"
+                android:scaleType="center"
                 android:src="@drawable/material_ic_close_24dp"
                 android:tint="@macro/default_icon_color" />
 
