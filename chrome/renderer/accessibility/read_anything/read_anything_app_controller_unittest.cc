@@ -5979,14 +5979,15 @@ TEST_F(ReadAnythingAppControllerReadabilityTest,
   SetMainPageSelection(kSidebarId, 0, kSidebarId, 5);
 
   // Because the side panel cannot be redrawn while hidden, the selection
-  // stays pending while still updating its endpoints.
+  // stays pending.
   EXPECT_FALSE(controller().IsInSelectionMode());
   EXPECT_TRUE(model().requires_post_process_selection());
-  EXPECT_TRUE(model().has_selection());
+  EXPECT_FALSE(model().has_selection());
 
   controller().OnGetPresentationState(
       read_anything::mojom::ReadAnythingPresentationState::kInSidePanel);
   EXPECT_TRUE(controller().IsInSelectionMode());
+  EXPECT_TRUE(model().has_selection());
 }
 
 TEST_F(ReadAnythingAppControllerReadabilityTest,
@@ -6000,7 +6001,7 @@ TEST_F(ReadAnythingAppControllerReadabilityTest,
 
   EXPECT_FALSE(controller().IsInSelectionMode());
   EXPECT_TRUE(model().requires_post_process_selection());
-  EXPECT_TRUE(model().has_selection());
+  EXPECT_FALSE(model().has_selection());
 
   controller().OnGetPresentationState(
       read_anything::mojom::ReadAnythingPresentationState::kInImmersiveOverlay);

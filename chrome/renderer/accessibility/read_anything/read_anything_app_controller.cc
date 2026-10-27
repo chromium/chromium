@@ -1094,14 +1094,10 @@ bool ReadAnythingAppController::PostProcessSelection() {
     return false;
   }
 
-  // TODO(b/574644874): Align Readability selection / hidden lifecycle with
-  // Screen2x so `PostProcessSelection()` is not called while hidden.
-  // On pages distilled via Readability, a selection can change what the side
-  // panel shows. Update the selection endpoints, but leave the selection
-  // pending until reading mode is shown.
-  if (model_.is_readability_next_distillation_method() && IsHidden()) {
-    model_.UpdateSelectionEndpoints();
-    model_.set_requires_post_process_selection(true);
+  // Don't process the selection while reading mode is hidden, since the side
+  // panel can't be redrawn. The selection stays pending until reading mode is
+  // shown.
+  if (IsHidden()) {
     return false;
   }
 
