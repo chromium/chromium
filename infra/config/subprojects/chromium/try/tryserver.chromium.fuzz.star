@@ -5,6 +5,7 @@
 
 load("@chromium-luci//builders.star", "cpu", "os")
 load("@chromium-luci//consoles.star", "consoles")
+load("@chromium-luci//gn_args.star", "gn_args")
 load("@chromium-luci//try.star", "try_")
 load("//lib/siso.star", "siso")
 load("//lib/try_constants.star", "try_constants")
@@ -30,12 +31,14 @@ consoles.list_view(
     name = "tryserver.chromium.fuzz",
 )
 
-def _builder(mirror_of = None, **kwargs):
+def _builder(mirror_of = None, extra_gn_configs = [], **kwargs):
     if kwargs.get("os", os.LINUX_DEFAULT) == os.LINUX_DEFAULT:
         kwargs.setdefault("ssd", True)
     try_.builder(
         mirrors = [mirror_of],
-        gn_args = mirror_of,
+        gn_args = gn_args.config(
+            configs = [mirror_of] + extra_gn_configs,
+        ),
         **kwargs
     )
 
@@ -45,6 +48,20 @@ def _mirror_builder(name = None, **kwargs):
         name = name,
         mirror_of = "ci/" + name,
         contact_team_email = "chrome-fuzzing-core@google.com",
+        **kwargs
+    )
+
+def _fuzzer_upload_mirror_builder(**kwargs):
+    """Defines a trybot that mirrors a CI fuzzer upload builder."""
+    _mirror_builder(
+        executable = "recipe:chromium/fuzz",
+        # Matches the other fuzzer trybots that mirror CI fuzzer upload
+        # builders, e.g. linux-libfuzzer-asan-rel and mac-libfuzzer-asan-rel.
+        extra_gn_configs = [
+            "dcheck_always_on",
+            "no_symbols",
+            "skip_generate_fuzzer_owners",
+        ],
         **kwargs
     )
 
@@ -131,15 +148,14 @@ _mirror_builder(name = "android-desktop-x64-asan-rel")
 
 _mirror_builder(name = "android-arm64-libfuzzer-hwasan", executable = "recipe:chromium/fuzz")
 
-_mirror_builder(
+_fuzzer_upload_mirror_builder(
     name = "mac-arm64-libfuzzer-asan-rel",
-    executable = "recipe:chromium/fuzz",
     cores = None,
     os = os.MAC_DEFAULT,
     cpu = cpu.ARM64,
 )
 
-_mirror_builder(
+_fuzzer_upload_mirror_builder(
     name = "mac-arm64-centipede-asan-rel",
     cores = None,
     os = os.MAC_DEFAULT,
