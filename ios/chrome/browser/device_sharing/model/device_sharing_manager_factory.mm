@@ -6,14 +6,19 @@
 
 #import <utility>
 
+#import "base/check.h"
 #import "ios/chrome/browser/device_sharing/model/device_sharing_manager.h"
 #import "ios/chrome/browser/device_sharing/model/device_sharing_manager_impl.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 
 namespace {
+
+// Build an instance of DeviceSharingManagerImpl.
 std::unique_ptr<KeyedService> BuildDeviceSharingManager(ProfileIOS* profile) {
-  return std::make_unique<DeviceSharingManagerImpl>(profile);
+  CHECK(!profile->IsOffTheRecord());
+  return std::make_unique<DeviceSharingManagerImpl>(profile->GetPrefs());
 }
+
 }  // namespace
 
 // static

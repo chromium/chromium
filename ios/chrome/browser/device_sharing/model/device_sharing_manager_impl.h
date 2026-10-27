@@ -16,11 +16,12 @@
 
 class Browser;
 @class HandoffManager;
+class PrefService;
 class ProfileIOS;
 
 class DeviceSharingManagerImpl : public DeviceSharingManager {
  public:
-  explicit DeviceSharingManagerImpl(ProfileIOS* profile);
+  explicit DeviceSharingManagerImpl(PrefService* profile_prefs);
 
   // Not copyable or moveable.
   DeviceSharingManagerImpl(const DeviceSharingManagerImpl&) = delete;
@@ -43,7 +44,7 @@ class DeviceSharingManagerImpl : public DeviceSharingManager {
 
   bool IsActiveBrowser(Browser* browser);
 
-  raw_ptr<ProfileIOS> profile_ = nullptr;
+  raw_ptr<PrefService> profile_prefs_ = nullptr;
 
   // Registrar for pref change notifications to the active profile.
   PrefChangeRegistrar prefs_change_observer_;
