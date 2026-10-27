@@ -22,7 +22,7 @@ namespace word {
 
 Model::Model(const ModelProto& model_proto) {
   model_proto_ = &model_proto;
-  InitializePieces();
+  InitializePieces(/* use_reserved_id_map= */ true);
 }
 
 Model::~Model() {}

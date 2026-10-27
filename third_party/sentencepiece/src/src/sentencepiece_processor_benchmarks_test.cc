@@ -125,6 +125,48 @@ void BM_Encode_ShortLines(benchmark::State& state,
   state.SetBytesProcessed(state.iterations() * input.size());
 }
 
+enum class DecodeInputMode {
+  kIds = 0,
+  kPieces = 1,
+};
+
+template <DecodeInputMode kInputMode>
+void BM_Decode(benchmark::State& state, absl::string_view model_filename,
+               absl::string_view input_filename) {
+  const std::string model_fullpath =
+      util::JoinPath(testing::SrcDir(), model_filename);
+  const ModelProto model_proto = LoadModelProto(model_fullpath);
+  SentencePieceProcessor processor;
+  CHECK_OK(processor.Load(model_proto));
+
+  const std::string input_fullpath =
+      util::JoinPath(testing::SrcDir(), input_filename);
+  std::string input = LoadInput(input_fullpath);
+
+  std::vector<int> ids;
+  std::vector<std::string> pieces;
+  CHECK_OK(processor.Encode(input, &ids));
+  CHECK_OK(processor.Encode(input, &pieces));
+
+  std::string detokenized;
+  for (auto s : state) {
+    benchmark::DoNotOptimize(ids);
+    benchmark::DoNotOptimize(pieces);
+
+    absl::Status result;
+    if constexpr (kInputMode == DecodeInputMode::kIds) {
+      result = processor.Decode(ids, &detokenized);
+    } else {
+      result = processor.Decode(pieces, &detokenized);
+    }
+
+    benchmark::DoNotOptimize(result);
+    benchmark::DoNotOptimize(detokenized);
+  }
+
+  state.SetBytesProcessed(state.iterations() * input.size());
+}
+
 void BM_EncodeBotchan_Sequential(benchmark::State& state) {
   BM_Encode<BenchmarkMode::kSequential>(state, "botchan_1000_bpe.model",
                                         "botchan.txt");
@@ -167,6 +209,31 @@ void BM_OSSModel_Parallel(benchmark::State& state) {
                                       "botchan.txt");
 }
 BENCHMARK(BM_OSSModel_Parallel);
+
+void BM_DecodeBotchan_Ids(benchmark::State& state) {
+  BM_Decode<DecodeInputMode::kIds>(state, "botchan_1000_bpe.model",
+                                    "botchan.txt");
+}
+BENCHMARK(BM_DecodeBotchan_Ids);
+
+void BM_DecodeBotchan_Pieces(benchmark::State& state) {
+  BM_Decode<DecodeInputMode::kPieces>(state, "botchan_1000_bpe.model",
+                                       "botchan.txt");
+}
+BENCHMARK(BM_DecodeBotchan_Pieces);
+
+void BM_DecodeWagahaiwaNekodearu_Ids(benchmark::State& state) {
+  BM_Decode<DecodeInputMode::kIds>(
+      state, "wagahaiwa_nekodearu_2000_bpe_byte.model",
+      "wagahaiwa_nekodearu.txt");
+}
+BENCHMARK(BM_DecodeWagahaiwaNekodearu_Ids);
+
+void BM_DecodeOSSModel_Ids(benchmark::State& state) {
+  BM_Decode<DecodeInputMode::kIds>(state, "test_oss_model.model",
+                                    "botchan.txt");
+}
+BENCHMARK(BM_DecodeOSSModel_Ids);
 
 }  // namespace sentencepiece
 

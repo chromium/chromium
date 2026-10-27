@@ -321,9 +321,8 @@ template <typename T>
 void AddDPNoise(const TrainerSpec& trainer_spec, absl::BitGen* generator,
                 T* to_update) {
   if (trainer_spec.differential_privacy_noise_level() > 0) {
-    std::normal_distribution<float> dist(
-        0.0F, trainer_spec.differential_privacy_noise_level());
-    const float random_num = dist(*generator);
+    const float random_num = absl::Gaussian<float>(
+        *generator, 0.0F, trainer_spec.differential_privacy_noise_level());
     *to_update =
         std::round(std::max(0.F, random_num + static_cast<float>(*to_update)));
   }

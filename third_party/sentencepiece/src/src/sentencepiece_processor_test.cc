@@ -1416,26 +1416,6 @@ TEST(SentencePieceProcessorTest, SkipNormalizationTest) {
             pieces);
 }
 
-TEST(SentencePieceProcessorTest, ExtraOptionsUndefinedTest) {
-  ModelProto model_proto;
-  auto* sp1 = model_proto.add_pieces();
-
-  // No BOS/EOS.
-  sp1->set_type(ModelProto::SentencePiece::UNKNOWN);
-  sp1->set_piece("<unk>");
-
-  AddPiece(&model_proto, "a", 0.0);
-  AddPiece(&model_proto, "b", 0.3);
-  AddPiece(&model_proto, "c", 0.2);
-  AddPiece(&model_proto, "ab", 1.0);
-
-  SentencePieceProcessor sp;
-  EXPECT_TRUE(sp.Load(model_proto).ok());
-
-  EXPECT_FALSE(sp.SetEncodeExtraOptions("bos").ok());
-  EXPECT_FALSE(sp.SetDecodeExtraOptions("eos").ok());
-}
-
 TEST(SentencePieceProcessorTest, OverrideSpecialPieceTest) {
   ModelProto model_proto;
   auto* sp1 = model_proto.add_pieces();
@@ -1468,6 +1448,65 @@ TEST(SentencePieceProcessorTest, OverrideSpecialPieceTest) {
   EXPECT_EQ("__UNK__", sp.IdToPiece(sp.unk_id()));
   EXPECT_EQ("__BOS__", sp.IdToPiece(sp.bos_id()));
   EXPECT_EQ("__EOS__", sp.IdToPiece(sp.eos_id()));
+}
+
+TEST(SentencePieceProcessorTest, SpecialPiecesCombinationsTest) {
+  auto test_with_model = [](ModelProto::SentencePiece::Type type, bool expect_ok) {
+    ModelProto model_proto;
+    auto* sp1 = model_proto.add_pieces();
+    auto* sp2 = model_proto.add_pieces();
+    auto* sp3 = model_proto.add_pieces();
+
+    model_proto.mutable_trainer_spec()->set_unk_piece("<unk>");
+    model_proto.mutable_trainer_spec()->set_bos_piece("<s>");
+    model_proto.mutable_trainer_spec()->set_eos_piece("</s>");
+
+    sp1->set_type(ModelProto::SentencePiece::UNKNOWN);
+    sp1->set_piece("<unk>");
+
+    sp2->set_type(type);
+    sp2->set_piece("<s>");
+    sp3->set_type(type);
+    sp3->set_piece("</s>");
+
+    AddPiece(&model_proto, "a", 0.0);
+
+    SentencePieceProcessor sp;
+    EXPECT_TRUE(sp.Load(model_proto).ok());
+
+    if (expect_ok) {
+      EXPECT_TRUE(sp.SetEncodeExtraOptions("bos:eos").ok());
+      std::vector<std::string> sps;
+      EXPECT_TRUE(sp.Encode("a", &sps).ok());
+      EXPECT_EQ(std::vector<std::string>({"<s>", WS, "a", "</s>"}), sps);
+    } else {
+      EXPECT_FALSE(sp.SetEncodeExtraOptions("bos").ok());
+      EXPECT_FALSE(sp.SetEncodeExtraOptions("eos").ok());
+    }
+  };
+
+  // CONTROL should succeed
+  test_with_model(ModelProto::SentencePiece::CONTROL, true);
+  // USER_DEFINED should fail
+  test_with_model(ModelProto::SentencePiece::USER_DEFINED, false);
+  // NORMAL should fail
+  test_with_model(ModelProto::SentencePiece::NORMAL, false);
+  // UNUSED should fail
+  test_with_model(ModelProto::SentencePiece::UNUSED, false);
+
+  // Missing BOS/EOS should fail
+  {
+    ModelProto model_proto;
+    auto* sp1 = model_proto.add_pieces();
+    sp1->set_type(ModelProto::SentencePiece::UNKNOWN);
+    sp1->set_piece("<unk>");
+    AddPiece(&model_proto, "a", 0.0);
+
+    SentencePieceProcessor sp;
+    EXPECT_TRUE(sp.Load(model_proto).ok());
+    EXPECT_FALSE(sp.SetEncodeExtraOptions("bos").ok());
+    EXPECT_FALSE(sp.SetEncodeExtraOptions("eos").ok());
+  }
 }
 
 TEST(SentencePieceProcessorTest, VocabularyTest) {

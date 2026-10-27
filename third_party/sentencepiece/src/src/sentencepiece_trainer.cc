@@ -36,6 +36,32 @@
 namespace sentencepiece {
 namespace {
 static constexpr char kDefaultNormalizerName[] = "nmt_nfkc";
+static constexpr char kSerializedNormalizerSpecKey[] =
+    "_serialized_normalizer_spec";
+
+static constexpr const char* kNormalizerKeys[] = {
+    "normalization_rule_name",
+    "normalization_rule_tsv",
+    "add_dummy_prefix",
+    "escape_whitespaces",
+    "remove_extra_whitespaces",
+    "name",
+    "precompiled_charsmap",
+};
+
+bool ContainsNormalizerKeys(
+    const std::unordered_map<std::string, std::string>& kwargs,
+    std::string* conflicting_key) {
+  for (const char* key : kNormalizerKeys) {
+    if (kwargs.find(key) != kwargs.end()) {
+      if (conflicting_key) {
+        *conflicting_key = key;
+      }
+      return true;
+    }
+  }
+  return false;
+}
 }  // namespace
 
 // static
@@ -135,7 +161,31 @@ absl::Status SentencePieceTrainer::MergeSpecsFromArgs(
   RET_CHECK(normalizer_spec) << "`normalizer_spec` must not be null.";
   RET_CHECK(denormalizer_spec) << "`denormalizer_spec` must not be null.";
 
+  const auto it_spec = kwargs.find(kSerializedNormalizerSpecKey);
+  const bool has_serialized_normalizer = (it_spec != kwargs.end());
+
+  if (has_serialized_normalizer) {
+    std::string conflicting_key;
+    if (ContainsNormalizerKeys(kwargs, &conflicting_key)) {
+      return absl::InvalidArgumentError(absl::StrCat(
+          "Cannot specify both ", kSerializedNormalizerSpecKey,
+          " and normalizer-specific argument: ", conflicting_key));
+    }
+  }
+
+  // 1. Process serialized normalizer FIRST to load the base specs.
+  // This is used by the Python module to support the 'normalizer' parameter.
+  if (it_spec != kwargs.end()) {
+    sentencepiece::NormalizerSpec spec;
+    RET_CHECK(spec.ParseFromString(it_spec->second))
+        << "Failed to parse " << kSerializedNormalizerSpecKey << ".";
+    *normalizer_spec = spec;
+  }
+
   for (const auto& [key, value] : kwargs) {
+    if (key == kSerializedNormalizerSpecKey) {
+      continue;
+    }
     // Exceptions.
     if (key == "normalization_rule_name") {
       normalizer_spec->set_name(value);
@@ -294,14 +344,21 @@ SentencePieceTrainer::GetPretokenizerForTraining() {
   return g_pretokenizer;
 }
 
-SentencePieceNormalizer::SentencePieceNormalizer() {}
+SentencePieceNormalizer::SentencePieceNormalizer()
+    : normalizer_spec_(std::make_unique<NormalizerSpec>()) {}
 SentencePieceNormalizer::~SentencePieceNormalizer() {}
 
 absl::Status SentencePieceNormalizer::Load(
     std::unique_ptr<ModelProto> model_proto) {
-  model_proto_ = std::move(model_proto);
-  normalizer_ =
-      std::make_unique<normalizer::Normalizer>(model_proto_->normalizer_spec());
+  RET_CHECK(model_proto) << "model_proto is null";
+  return Load(std::make_unique<NormalizerSpec>(model_proto->normalizer_spec()));
+}
+
+absl::Status SentencePieceNormalizer::Load(
+    std::unique_ptr<NormalizerSpec> normalizer_spec) {
+  RET_CHECK(normalizer_spec) << "normalizer_spec is null";
+  normalizer_spec_ = std::move(normalizer_spec);
+  normalizer_ = std::make_unique<normalizer::Normalizer>(*normalizer_spec_);
   RET_CHECK(normalizer_);
   return normalizer_->status();
 }
@@ -319,21 +376,68 @@ absl::Status SentencePieceNormalizer::LoadFromSerializedProto(
   return Load(std::move(model_proto));
 }
 
+absl::Status SentencePieceNormalizer::LoadFromSerializedNormalizerSpec(
+    absl::string_view serialized) {
+  auto spec = std::make_unique<NormalizerSpec>();
+  RET_CHECK(spec->ParseFromArray(serialized.data(), serialized.size()));
+  return Load(std::move(spec));
+}
+
 absl::Status SentencePieceNormalizer::LoadFromRuleTSV(
     absl::string_view filename) {
-  auto model_proto = std::make_unique<ModelProto>();
-  auto* spec = model_proto->mutable_normalizer_spec();
+  auto spec = std::make_unique<NormalizerSpec>();
   spec->set_normalization_rule_tsv(filename.data(), filename.size());
-  RETURN_IF_ERROR(SentencePieceTrainer::PopulateNormalizerSpec(spec));
-  return Load(std::move(model_proto));
+  RETURN_IF_ERROR(SentencePieceTrainer::PopulateNormalizerSpec(spec.get()));
+  return Load(std::move(spec));
 }
 
 absl::Status SentencePieceNormalizer::LoadFromRuleName(absl::string_view name) {
-  auto model_proto = std::make_unique<ModelProto>();
-  auto* spec = model_proto->mutable_normalizer_spec();
+  auto spec = std::make_unique<NormalizerSpec>();
   spec->set_name(name.data(), name.size());
-  RETURN_IF_ERROR(SentencePieceTrainer::PopulateNormalizerSpec(spec));
-  return Load(std::move(model_proto));
+  RETURN_IF_ERROR(SentencePieceTrainer::PopulateNormalizerSpec(spec.get()));
+  return Load(std::move(spec));
+}
+
+absl::Status SentencePieceNormalizer::LoadFromMap(
+    absl::Span<const std::pair<std::string, std::string>> norm_map) {
+  normalizer::Builder::CharsMap chars_map;
+  for (const auto &[src, trg] : norm_map) {
+    if (!string_util::IsStructurallyValid(src)) {
+      return absl::InvalidArgumentError(
+          absl::StrCat("Invalid UTF-8 sequence in source: ", src));
+    }
+    if (!string_util::IsStructurallyValid(trg)) {
+      return absl::InvalidArgumentError(
+          absl::StrCat("Invalid UTF-8 sequence in target: ", trg));
+    }
+    auto src_uni = string_util::UTF8ToUnicodeText(src);
+    auto trg_uni = string_util::UTF8ToUnicodeText(trg);
+    if (!chars_map.emplace(std::move(src_uni), std::move(trg_uni)).second) {
+      return absl::InvalidArgumentError(
+          absl::StrCat("Duplicate source string in map: ", src));
+    }
+  }
+  std::string blob;
+  RETURN_IF_ERROR(normalizer::Builder::CompileCharsMap(chars_map, &blob));
+  auto spec = std::make_unique<NormalizerSpec>();
+  spec->set_precompiled_charsmap(blob);
+  return Load(std::move(spec));
+}
+
+absl::Status SentencePieceNormalizer::Decompile(
+    std::vector<std::pair<std::string, std::string>> *norm_map) const {
+  RET_CHECK(normalizer_spec_);
+  const auto &blob = normalizer_spec_->precompiled_charsmap();
+  RET_CHECK(!blob.empty()) << "No precompiled charsmap found in model.";
+  normalizer::Builder::CharsMap chars_map;
+  RETURN_IF_ERROR(normalizer::Builder::DecompileCharsMap(blob, &chars_map));
+  norm_map->clear();
+  for (const auto &[key, val] : chars_map) {
+    std::string src = string_util::UnicodeTextToUTF8(key);
+    std::string trg = string_util::UnicodeTextToUTF8(val);
+    norm_map->emplace_back(std::move(src), std::move(trg));
+  }
+  return absl::OkStatus();
 }
 
 absl::Status SentencePieceNormalizer::Normalize(absl::string_view input,
@@ -356,12 +460,19 @@ std::string SentencePieceNormalizer::Normalize(absl::string_view input) const {
   return normalized;
 }
 
-NormalizerSpec* SentencePieceNormalizer::mutable_normalizer_spec() const {
-  return model_proto_ ? model_proto_->mutable_normalizer_spec() : nullptr;
+NormalizerSpec* SentencePieceNormalizer::mutable_normalizer_spec() {
+  return normalizer_spec_.get();
 }
 
 std::string SentencePieceNormalizer::serialized_model_proto() const {
-  return model_proto_ ? model_proto_->SerializeAsString() : "";
+  if (!normalizer_spec_) return "";
+  ModelProto model_proto;
+  *model_proto.mutable_normalizer_spec() = *normalizer_spec_;
+  return model_proto.SerializeAsString();
+}
+
+std::string SentencePieceNormalizer::serialized_normalizer_spec() const {
+  return normalizer_spec_ ? normalizer_spec_->SerializeAsString() : "";
 }
 
 void ConvertToUnicodeAlignment(absl::string_view orig, absl::string_view norm,

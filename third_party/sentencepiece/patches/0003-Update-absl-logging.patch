@@ -1,65 +1,43 @@
-From 0c8c41870ec899f354f7c74846e785c4eb08ed9e Mon Sep 17 00:00:00 2001
+From c1ccabb4f7857fc4d81f1fa165a03e8f5150c3c9 Mon Sep 17 00:00:00 2001
 From: Nathan Memmott <memmott@chromium.org>
 Date: Wed, 17 Jun 2026 11:52:51 -0700
 Subject: [PATCH 3/7] Update absl logging
 
 ---
- third_party/sentencepiece/src/README.md       |  8 +-
- .../src/src/bpe_model_trainer.cc              | 12 +--
- .../sentencepiece/src/src/bpe_model_trainer.h |  8 +-
- third_party/sentencepiece/src/src/builder.cc  | 44 ++++-----
- third_party/sentencepiece/src/src/common.h    |  4 +-
- .../src/src/compile_charsmap_main.cc          | 10 +-
- .../sentencepiece/src/src/filesystem.cc       |  2 +-
- .../sentencepiece/src/src/model_factory.cc    |  2 +-
- .../sentencepiece/src/src/model_interface.h   | 60 ++++++------
- .../sentencepiece/src/src/normalizer.cc       |  2 +-
- .../sentencepiece/src/src/normalizer_test.cc  |  2 +-
- .../src/src/sentencepiece_processor.cc        | 16 ++--
- .../src/src/sentencepiece_processor.h         | 10 +-
+ src/bpe_model_trainer.cc                      | 12 +--
+ src/bpe_model_trainer.h                       |  8 +-
+ src/builder.cc                                | 44 ++++-----
+ src/common.h                                  |  4 +-
+ src/compile_charsmap_main.cc                  | 10 +-
+ src/filesystem.cc                             |  2 +-
+ src/model_factory.cc                          |  2 +-
+ src/model_interface.h                         | 64 ++++++-------
+ src/normalizer.cc                             |  2 +-
+ src/normalizer_test.cc                        |  2 +-
+ src/sentencepiece_processor.cc                | 16 ++--
+ src/sentencepiece_processor.h                 | 10 +-
  ...sentencepiece_processor_benchmarks_test.cc | 14 +--
- .../sentencepiece_processor_parallel_test.cc  | 50 +++++-----
- .../src/src/sentencepiece_processor_test.cc   |  4 +-
- .../src/src/sentencepiece_trainer.cc          |  6 +-
- .../src/src/sentencepiece_trainer_test.cc     |  2 +-
- .../sentencepiece/src/src/spm_decode_main.cc  | 24 ++---
- .../sentencepiece/src/src/spm_encode_main.cc  | 34 +++----
- .../src/src/spm_export_vocab_main.cc          |  6 +-
- .../src/src/spm_normalize_main.cc             | 16 ++--
- .../sentencepiece/src/src/spm_train_main.cc   | 10 +-
- .../sentencepiece/src/src/trainer_factory.cc  |  2 +-
- .../src/src/trainer_interface.cc              | 94 +++++++++----------
- .../src/src/unicode_script_test.cc            |  2 +-
- .../sentencepiece/src/src/unigram_model.cc    | 16 ++--
- .../src/src/unigram_model_trainer.cc          | 36 +++----
- .../src/src/unigram_model_trainer_test.cc     |  2 +-
- third_party/sentencepiece/src/src/util.h      |  4 +-
- .../sentencepiece/src/src/util_test.cc        |  8 +-
- 31 files changed, 255 insertions(+), 255 deletions(-)
+ src/sentencepiece_processor_parallel_test.cc  | 50 +++++-----
+ src/sentencepiece_processor_test.cc           |  4 +-
+ src/sentencepiece_trainer.cc                  |  6 +-
+ src/sentencepiece_trainer_test.cc             |  2 +-
+ src/spm_decode_main.cc                        | 24 ++---
+ src/spm_encode_main.cc                        | 34 +++----
+ src/spm_export_vocab_main.cc                  |  6 +-
+ src/spm_normalize_main.cc                     | 16 ++--
+ src/spm_train_main.cc                         | 10 +-
+ src/trainer_factory.cc                        |  2 +-
+ src/trainer_interface.cc                      | 94 +++++++++----------
+ src/unicode_script_test.cc                    |  2 +-
+ src/unigram_model.cc                          | 16 ++--
+ src/unigram_model_trainer.cc                  | 36 +++----
+ src/unigram_model_trainer_test.cc             |  2 +-
+ src/util.h                                    |  4 +-
+ src/util_test.cc                              |  8 +-
+ 30 files changed, 253 insertions(+), 253 deletions(-)
 
-diff --git a/src/README.md b/src/README.md
-index 3e47148816143..6f976a0dec704 100644
---- a/src/README.md
-+++ b/src/README.md
-@@ -253,12 +253,12 @@ Use `--extra_options` flag to decode the text in reverse order.
- 
- ```
- % spm_train --input=data/botchan.txt --model_prefix=m --vocab_size=1000
--unigram_model_trainer.cc(494) LOG(INFO) Starts training with :
-+unigram_model_trainer.cc(494) ABSL_LOG(INFO) Starts training with :
- input: "../data/botchan.txt"
- ... <snip>
--unigram_model_trainer.cc(529) LOG(INFO) EM sub_iter=1 size=1100 obj=10.4973 num_tokens=37630 num_tokens/piece=34.2091
--trainer_interface.cc(272) LOG(INFO) Saving model: m.model
--trainer_interface.cc(281) LOG(INFO) Saving vocabs: m.vocab
-+unigram_model_trainer.cc(529) ABSL_LOG(INFO) EM sub_iter=1 size=1100 obj=10.4973 num_tokens=37630 num_tokens/piece=34.2091
-+trainer_interface.cc(272) ABSL_LOG(INFO) Saving model: m.model
-+trainer_interface.cc(281) ABSL_LOG(INFO) Saving vocabs: m.vocab
- 
- % echo "I saw a girl with a telescope." | spm_encode --model=m.model
- ▁I ▁saw ▁a ▁girl ▁with ▁a ▁ te le s c o pe .
 diff --git a/src/src/bpe_model_trainer.cc b/src/src/bpe_model_trainer.cc
-index 3594a66b053d9..72515af3ebcc2 100644
+index 3594a66..72515af 100644
 --- a/src/src/bpe_model_trainer.cc
 +++ b/src/src/bpe_model_trainer.cc
 @@ -42,7 +42,7 @@ std::string Trainer::Symbol::ToString() const {
@@ -110,7 +88,7 @@ index 3594a66b053d9..72515af3ebcc2 100644
                  << " all=" << symbols_cache_.size() << " active=" << pq_.size()
                  << " piece=" << best_symbol->ToString();
 diff --git a/src/src/bpe_model_trainer.h b/src/src/bpe_model_trainer.h
-index b5ca82dd3c54d..0fa0ad153188e 100644
+index b5ca82d..0fa0ad1 100644
 --- a/src/src/bpe_model_trainer.h
 +++ b/src/src/bpe_model_trainer.h
 @@ -83,10 +83,10 @@ class Trainer : public TrainerInterface {
@@ -129,7 +107,7 @@ index b5ca82dd3c54d..0fa0ad153188e 100644
                         (static_cast<uint64_t>(l) << 16) | r;
      return n;
 diff --git a/src/src/builder.cc b/src/src/builder.cc
-index 94fa4157ff3dd..ed63b2e8f636e 100644
+index b0e828a..21e4773 100644
 --- a/src/src/builder.cc
 +++ b/src/src/builder.cc
 @@ -69,14 +69,14 @@ constexpr absl::string_view kCompileError =
@@ -183,9 +161,9 @@ index 94fa4157ff3dd..ed63b2e8f636e 100644
 -  LOG(INFO) << "Loading CharsMap of size=" << chars_map.size();
 +  ABSL_LOG(INFO) << "Loading CharsMap of size=" << chars_map.size();
  
-   // Aggregates the same target strings to save footprint.
-   std::map<Chars, int> normalized2pos;
-@@ -233,7 +233,7 @@ absl::Status Builder::CompileCharsMap(const CharsMap& chars_map,
+   for (const auto& p : chars_map) {
+     if (p.first.empty()) {
+@@ -242,7 +242,7 @@ absl::Status Builder::CompileCharsMap(const CharsMap& chars_map,
    *output = Normalizer::EncodePrecompiledCharsMap(trie_blob, normalized);
    RETURN_IF_ERROR(IsValidNormalizerData(*output));
  
@@ -194,7 +172,7 @@ index 94fa4157ff3dd..ed63b2e8f636e 100644
  
    return absl::OkStatus();
  }
-@@ -431,10 +431,10 @@ absl::Status BuildMapInternal(
+@@ -440,10 +440,10 @@ absl::Status BuildMapInternal(
  // static
  absl::Status Builder::BuildNFKCMap(CharsMap* chars_map) {
  #ifdef ENABLE_NFKC_COMPILE
@@ -207,7 +185,7 @@ index 94fa4157ff3dd..ed63b2e8f636e 100644
  #endif
  
    return absl::OkStatus();
-@@ -443,17 +443,17 @@ absl::Status Builder::BuildNFKCMap(CharsMap* chars_map) {
+@@ -452,17 +452,17 @@ absl::Status Builder::BuildNFKCMap(CharsMap* chars_map) {
  // static
  absl::Status Builder::BuildNFCMap(CharsMap* chars_map) {
  #ifdef ENABLE_NFKC_COMPILE
@@ -228,7 +206,7 @@ index 94fa4157ff3dd..ed63b2e8f636e 100644
  
    CharsMap nfkc_map;
    RETURN_IF_ERROR(BuildNFKCMap(&nfkc_map));
-@@ -462,7 +462,7 @@ absl::Status Builder::BuildNmtNFKCMap(CharsMap* chars_map) {
+@@ -471,7 +471,7 @@ absl::Status Builder::BuildNmtNFKCMap(CharsMap* chars_map) {
  
    *chars_map = std::move(nfkc_map);
  #else
@@ -237,7 +215,7 @@ index 94fa4157ff3dd..ed63b2e8f636e 100644
  #endif
  
    return absl::OkStatus();
-@@ -564,7 +564,7 @@ absl::Status Builder::BuildNFKC_CFMap(CharsMap* chars_map) {
+@@ -573,7 +573,7 @@ absl::Status Builder::BuildNFKC_CFMap(CharsMap* chars_map) {
    RETURN_IF_ERROR(Builder::MergeUnicodeCaseFoldMap(&nfkc_map));
    *chars_map = std::move(nfkc_map);
  #else
@@ -246,7 +224,7 @@ index 94fa4157ff3dd..ed63b2e8f636e 100644
  #endif
  
    return absl::OkStatus();
-@@ -578,7 +578,7 @@ absl::Status Builder::BuildNmtNFKC_CFMap(CharsMap* chars_map) {
+@@ -587,7 +587,7 @@ absl::Status Builder::BuildNmtNFKC_CFMap(CharsMap* chars_map) {
    RETURN_IF_ERROR(Builder::MergeUnicodeCaseFoldMap(&nfkc_map));
    *chars_map = std::move(nfkc_map);
  #else
@@ -255,7 +233,7 @@ index 94fa4157ff3dd..ed63b2e8f636e 100644
  #endif
  
    return absl::OkStatus();
-@@ -598,7 +598,7 @@ absl::Status Builder::BuildNFKDMap(CharsMap* chars_map) {
+@@ -607,7 +607,7 @@ absl::Status Builder::BuildNFKDMap(CharsMap* chars_map) {
      }
    }
  #else
@@ -264,7 +242,7 @@ index 94fa4157ff3dd..ed63b2e8f636e 100644
  #endif
    return absl::OkStatus();
  }
-@@ -618,7 +618,7 @@ absl::Status Builder::BuildNFDMap(CharsMap* chars_map) {
+@@ -627,7 +627,7 @@ absl::Status Builder::BuildNFDMap(CharsMap* chars_map) {
    }
  
  #else
@@ -273,7 +251,7 @@ index 94fa4157ff3dd..ed63b2e8f636e 100644
  #endif
    return absl::OkStatus();
  }
-@@ -631,7 +631,7 @@ absl::Status Builder::BuildNFKD_CFMap(CharsMap* chars_map) {
+@@ -640,7 +640,7 @@ absl::Status Builder::BuildNFKD_CFMap(CharsMap* chars_map) {
    RETURN_IF_ERROR(Builder::MergeUnicodeCaseFoldMap(&nfkd_map));
    *chars_map = std::move(nfkd_map);
  #else
@@ -282,7 +260,7 @@ index 94fa4157ff3dd..ed63b2e8f636e 100644
  #endif
    return absl::OkStatus();
  }
-@@ -644,7 +644,7 @@ absl::Status Builder::BuildNFC_CFMap(CharsMap* chars_map) {
+@@ -653,7 +653,7 @@ absl::Status Builder::BuildNFC_CFMap(CharsMap* chars_map) {
    RETURN_IF_ERROR(Builder::MergeUnicodeCaseFoldMap(&nfc_map));
    *chars_map = std::move(nfc_map);
  #else
@@ -291,7 +269,7 @@ index 94fa4157ff3dd..ed63b2e8f636e 100644
  #endif
    return absl::OkStatus();
  }
-@@ -657,7 +657,7 @@ absl::Status Builder::BuildNFD_CFMap(CharsMap* chars_map) {
+@@ -666,7 +666,7 @@ absl::Status Builder::BuildNFD_CFMap(CharsMap* chars_map) {
    RETURN_IF_ERROR(Builder::MergeUnicodeCaseFoldMap(&nfd_map));
    *chars_map = std::move(nfd_map);
  #else
@@ -300,7 +278,7 @@ index 94fa4157ff3dd..ed63b2e8f636e 100644
  #endif
    return absl::OkStatus();
  }
-@@ -665,7 +665,7 @@ absl::Status Builder::BuildNFD_CFMap(CharsMap* chars_map) {
+@@ -674,7 +674,7 @@ absl::Status Builder::BuildNFD_CFMap(CharsMap* chars_map) {
  // static
  absl::Status Builder::LoadCharsMap(absl::string_view filename,
                                     CharsMap* chars_map) {
@@ -309,7 +287,7 @@ index 94fa4157ff3dd..ed63b2e8f636e 100644
    RET_CHECK(chars_map);
  
    auto input = filesystem::NewReadableFile(filename);
-@@ -677,7 +677,7 @@ absl::Status Builder::LoadCharsMap(absl::string_view filename,
+@@ -686,7 +686,7 @@ absl::Status Builder::LoadCharsMap(absl::string_view filename,
    while (input->ReadLine(&line)) {
      std::vector<std::string> fields =
          absl::StrSplit(line, '\t', absl::AllowEmpty());
@@ -319,7 +297,7 @@ index 94fa4157ff3dd..ed63b2e8f636e 100644
        fields.emplace_back("");  // Deletion rule.
      }
 diff --git a/src/src/common.h b/src/src/common.h
-index 8a251ab8f023e..ca5f3048c8b33 100644
+index 8a251ab..ca5f304 100644
 --- a/src/src/common.h
 +++ b/src/src/common.h
 @@ -18,9 +18,9 @@
@@ -335,7 +313,7 @@ index 8a251ab8f023e..ca5f3048c8b33 100644
  #include "absl/status/status_macros.h"
  #include "absl/strings/string_view.h"
 diff --git a/src/src/compile_charsmap_main.cc b/src/src/compile_charsmap_main.cc
-index cc744ea8f2102..4c7d460614ec2 100644
+index cc744ea..4c7d460 100644
 --- a/src/src/compile_charsmap_main.cc
 +++ b/src/src/compile_charsmap_main.cc
 @@ -133,7 +133,7 @@ struct BinaryBlob {
@@ -375,7 +353,7 @@ index cc744ea8f2102..4c7d460614ec2 100644
    }
  
 diff --git a/src/src/filesystem.cc b/src/src/filesystem.cc
-index 174b6bfa14e11..3698b234195a5 100644
+index 174b6bf..3698b23 100644
 --- a/src/src/filesystem.cc
 +++ b/src/src/filesystem.cc
 @@ -58,7 +58,7 @@ class PosixReadableFile : public ReadableFile {
@@ -388,7 +366,7 @@ index 174b6bfa14e11..3698b234195a5 100644
      }
      line->assign(std::istreambuf_iterator<char>(*is_),
 diff --git a/src/src/model_factory.cc b/src/src/model_factory.cc
-index 59874450d4007..c88d6348a8fab 100644
+index 5987445..c88d634 100644
 --- a/src/src/model_factory.cc
 +++ b/src/src/model_factory.cc
 @@ -40,7 +40,7 @@ std::unique_ptr<ModelInterface> ModelFactory::Create(
@@ -401,7 +379,7 @@ index 59874450d4007..c88d6348a8fab 100644
        break;
    }
 diff --git a/src/src/model_interface.h b/src/src/model_interface.h
-index 089a9cad444fa..d093276445a26 100644
+index 337b21d..17d27c0 100644
 --- a/src/src/model_interface.h
 +++ b/src/src/model_interface.h
 @@ -88,13 +88,13 @@ class ModelInterface {
@@ -438,7 +416,7 @@ index 089a9cad444fa..d093276445a26 100644
      return 0.0;
    }
  
-@@ -148,8 +148,8 @@ class ModelInterface {
+@@ -150,8 +150,8 @@ class ModelInterface {
    // Returns the string representation of vocab with `id`.
    // id must be 0 <= id < GetPieceSize().
    [[nodiscard]] virtual const std::string& IdToPiece(int id) const {
@@ -449,7 +427,7 @@ index 089a9cad444fa..d093276445a26 100644
      return model_proto_->pieces(id).piece();
    }
  
-@@ -166,47 +166,47 @@ class ModelInterface {
+@@ -168,47 +168,47 @@ class ModelInterface {
    // Score represents a log probability of the piece.
    // We can roughly estimate the unigram frequency of the piece.
    [[nodiscard]] virtual float GetScore(int id) const {
@@ -509,7 +487,7 @@ index 089a9cad444fa..d093276445a26 100644
      return (model_proto_->pieces(id).type() == ModelProto::SentencePiece::BYTE);
    }
  
-@@ -230,42 +230,42 @@ class ModelInterface {
+@@ -237,48 +237,48 @@ class ModelInterface {
  
    // Non-virtual (inlined) implementation for faster execution.
    [[nodiscard]] float GetScoreInlined(int id) const {
@@ -564,8 +542,16 @@ index 089a9cad444fa..d093276445a26 100644
      return (model_proto_->pieces(id).type() == ModelProto::SentencePiece::BYTE);
    }
  
+   [[nodiscard]] bool IsReservedId(int id) const {
+-    DCHECK_GE(id, 0);
+-    DCHECK_LT(id, model_proto_->pieces_size());
++    ABSL_DCHECK_GE(id, 0);
++    ABSL_DCHECK_LT(id, model_proto_->pieces_size());
+     const auto& piece = model_proto_->pieces(id);
+     return (piece.type() != ModelProto::SentencePiece::NORMAL &&
+             piece.type() != ModelProto::SentencePiece::USER_DEFINED &&
 diff --git a/src/src/normalizer.cc b/src/src/normalizer.cc
-index 5a36414ae4a4c..16fa3917d0727 100644
+index 5a36414..16fa391 100644
 --- a/src/src/normalizer.cc
 +++ b/src/src/normalizer.cc
 @@ -342,7 +342,7 @@ PrefixMatcher::PrefixMatcher(const std::set<absl::string_view>& dic) {
@@ -578,7 +564,7 @@ index 5a36414ae4a4c..16fa3917d0727 100644
    }
  }
 diff --git a/src/src/normalizer_test.cc b/src/src/normalizer_test.cc
-index 32258265e56a9..5ab9226773495 100644
+index 3225826..5ab9226 100644
 --- a/src/src/normalizer_test.cc
 +++ b/src/src/normalizer_test.cc
 @@ -306,7 +306,7 @@ TEST(NormalizerTest, NormalizeFullTest) {
@@ -591,7 +577,7 @@ index 32258265e56a9..5ab9226773495 100644
      const std::vector<size_t> expected = {1,  1,  1,       // WS (3byte)
                                            1,               // I
 diff --git a/src/src/sentencepiece_processor.cc b/src/src/sentencepiece_processor.cc
-index 5d58d070a3d08..6e8d12e86f08a 100644
+index 6c398ee..e71876b 100644
 --- a/src/src/sentencepiece_processor.cc
 +++ b/src/src/sentencepiece_processor.cc
 @@ -242,7 +242,7 @@ absl::Status SentencePieceProcessor::Load(absl::string_view filename) {
@@ -603,7 +589,7 @@ index 5d58d070a3d08..6e8d12e86f08a 100644
  }
  
  absl::Status SentencePieceProcessor::Load(const ModelProto& model_proto) {
-@@ -287,13 +287,13 @@ absl::Status SentencePieceProcessor::Load(
+@@ -301,13 +301,13 @@ absl::Status SentencePieceProcessor::Load(
    }
  
    if (!errors.empty()) {
@@ -620,7 +606,7 @@ index 5d58d070a3d08..6e8d12e86f08a 100644
    }
  
    return absl::OkStatus();
-@@ -319,7 +319,7 @@ absl::Status SentencePieceProcessor::status() const {
+@@ -333,7 +333,7 @@ absl::Status SentencePieceProcessor::status() const {
  
  absl::Status SentencePieceProcessor::SetVocabulary(
      const std::vector<absl::string_view>& valid_vocab) {
@@ -629,7 +615,7 @@ index 5d58d070a3d08..6e8d12e86f08a 100644
    RETURN_IF_ERROR(status());
  
    // TODO(taku): supports vocabulary constraint in BPE model.
-@@ -350,7 +350,7 @@ absl::Status SentencePieceProcessor::SetVocabulary(
+@@ -364,7 +364,7 @@ absl::Status SentencePieceProcessor::SetVocabulary(
  }
  
  absl::Status SentencePieceProcessor::ResetVocabulary() {
@@ -638,7 +624,7 @@ index 5d58d070a3d08..6e8d12e86f08a 100644
    RETURN_IF_ERROR(status());
    for (auto& piece : *(model_proto_->mutable_pieces())) {
      if (piece.type() == ModelProto::SentencePiece::UNUSED)
-@@ -362,7 +362,7 @@ absl::Status SentencePieceProcessor::ResetVocabulary() {
+@@ -376,7 +376,7 @@ absl::Status SentencePieceProcessor::ResetVocabulary() {
  
  absl::Status SentencePieceProcessor::LoadVocabulary(absl::string_view filename,
                                                      int threshold) {
@@ -647,7 +633,7 @@ index 5d58d070a3d08..6e8d12e86f08a 100644
    auto input = filesystem::NewReadableFile(filename);
    RETURN_IF_ERROR(input->status());
  
-@@ -1420,7 +1420,7 @@ absl::Status SentencePieceProcessor::ParallelEncode(
+@@ -1351,7 +1351,7 @@ absl::Status SentencePieceProcessor::ParallelEncode(
  
  #define RET_CHECK_OR_RETURN_DEFAULT(value)                                   \
    if (!status().ok()) {                                                      \
@@ -657,7 +643,7 @@ index 5d58d070a3d08..6e8d12e86f08a 100644
    }
  
 diff --git a/src/src/sentencepiece_processor.h b/src/src/sentencepiece_processor.h
-index 388835adcc624..9ac8134b0f7ab 100644
+index 5b67188..da7e76c 100644
 --- a/src/src/sentencepiece_processor.h
 +++ b/src/src/sentencepiece_processor.h
 @@ -67,10 +67,10 @@ namespace sentencepiece {
@@ -688,7 +674,7 @@ index 388835adcc624..9ac8134b0f7ab 100644
  //   }
  //
  
-@@ -875,7 +875,7 @@ namespace io {
+@@ -906,7 +906,7 @@ namespace io {
  //  auto model_proto = absl::make_unique<ModelProto>();
  //  io::LoadModelProto("//path/spm.model", model_proto.get());
  //  SentencePieceProcessor sp;
@@ -698,7 +684,7 @@ index 388835adcc624..9ac8134b0f7ab 100644
  
  // Saves `model_proto` as `filename`.
 diff --git a/src/src/sentencepiece_processor_benchmarks_test.cc b/src/src/sentencepiece_processor_benchmarks_test.cc
-index 1f8c917f6ee1f..53f1b806263c4 100644
+index ebfdbdf..d8ec3ee 100644
 --- a/src/src/sentencepiece_processor_benchmarks_test.cc
 +++ b/src/src/sentencepiece_processor_benchmarks_test.cc
 @@ -49,19 +49,19 @@ constexpr int kNumThreads = 16;
@@ -745,7 +731,7 @@ index 1f8c917f6ee1f..53f1b806263c4 100644
    const std::string input_fullpath =
        util::JoinPath(testing::SrcDir(), input_filename);
 diff --git a/src/src/sentencepiece_processor_parallel_test.cc b/src/src/sentencepiece_processor_parallel_test.cc
-index 685388264a705..d2a3d4c831a8e 100644
+index 6853882..d2a3d4c 100644
 --- a/src/src/sentencepiece_processor_parallel_test.cc
 +++ b/src/src/sentencepiece_processor_parallel_test.cc
 @@ -52,8 +52,8 @@ class SentencePieceProcessorMaxLoops : public SentencePieceProcessor {
@@ -939,7 +925,7 @@ index 685388264a705..d2a3d4c831a8e 100644
      ExpectSptEqual(sequential_encode_spt, parallel_encode_spt);
    }
 diff --git a/src/src/sentencepiece_processor_test.cc b/src/src/sentencepiece_processor_test.cc
-index 34b573ba3b129..3246dec249a1b 100644
+index d885453..74f255e 100644
 --- a/src/src/sentencepiece_processor_test.cc
 +++ b/src/src/sentencepiece_processor_test.cc
 @@ -529,7 +529,7 @@ TEST(SentencepieceProcessorTest, SampleEncodeTest) {
@@ -961,10 +947,10 @@ index 34b573ba3b129..3246dec249a1b 100644
                  {WS, "a", "b", "<USER>", "c", "<", "u", "s", "e", "r", ">"}),
              pieces);
 diff --git a/src/src/sentencepiece_trainer.cc b/src/src/sentencepiece_trainer.cc
-index 3f62030ab52d8..56bd3c63f927f 100644
+index 65ff242..6678f87 100644
 --- a/src/src/sentencepiece_trainer.cc
 +++ b/src/src/sentencepiece_trainer.cc
-@@ -76,7 +76,7 @@ absl::Status SentencePieceTrainer::Train(
+@@ -102,7 +102,7 @@ absl::Status SentencePieceTrainer::Train(
      info += "denormalizer_spec {}";
    }
  
@@ -973,7 +959,7 @@ index 3f62030ab52d8..56bd3c63f927f 100644
  
    if (serialized_model_proto) {
      ModelProto model_proto;
-@@ -93,7 +93,7 @@ absl::Status SentencePieceTrainer::Train(
+@@ -119,7 +119,7 @@ absl::Status SentencePieceTrainer::Train(
  NormalizerSpec SentencePieceTrainer::GetNormalizerSpec(absl::string_view name) {
    NormalizerSpec spec;
    spec.set_name(name.data(), name.size());
@@ -982,7 +968,7 @@ index 3f62030ab52d8..56bd3c63f927f 100644
        spec.name(), spec.mutable_precompiled_charsmap()));
    return spec;
  }
-@@ -174,7 +174,7 @@ absl::Status SentencePieceTrainer::MergeSpecsFromArgs(
+@@ -224,7 +224,7 @@ absl::Status SentencePieceTrainer::MergeSpecsFromArgs(
  absl::Status SentencePieceTrainer::Train(absl::string_view args,
                                           SentenceIterator* sentence_iterator,
                                           std::string* serialized_model_proto) {
@@ -992,7 +978,7 @@ index 3f62030ab52d8..56bd3c63f927f 100644
    NormalizerSpec normalizer_spec;
    NormalizerSpec denormalizer_spec;
 diff --git a/src/src/sentencepiece_trainer_test.cc b/src/src/sentencepiece_trainer_test.cc
-index 901295ec8c2ae..682443233106e 100644
+index c7d0b19..6edf5f7 100644
 --- a/src/src/sentencepiece_trainer_test.cc
 +++ b/src/src/sentencepiece_trainer_test.cc
 @@ -123,7 +123,7 @@ TEST(SentencePieceTrainerTest, TrainFromIterator) {
@@ -1005,7 +991,7 @@ index 901295ec8c2ae..682443233106e 100644
      while (fs->ReadLine(&line)) sentences.emplace_back(line);
    }
 diff --git a/src/src/spm_decode_main.cc b/src/src/spm_decode_main.cc
-index 97cde9928a6b4..94914197a6833 100644
+index 97cde99..9491419 100644
 --- a/src/src/spm_decode_main.cc
 +++ b/src/src/spm_decode_main.cc
 @@ -49,15 +49,15 @@ int main(int argc, char *argv[]) {
@@ -1076,7 +1062,7 @@ index 97cde9928a6b4..94914197a6833 100644
        const auto pieces = absl::StrSplit(line, " ");
        process(pieces);
 diff --git a/src/src/spm_encode_main.cc b/src/src/spm_encode_main.cc
-index 44328f756e625..a1b73e591ef35 100644
+index 44328f7..a1b73e5 100644
 --- a/src/src/spm_encode_main.cc
 +++ b/src/src/spm_encode_main.cc
 @@ -74,20 +74,20 @@ int main(int argc, char* argv[]) {
@@ -1183,7 +1169,7 @@ index 44328f756e625..a1b73e591ef35 100644
        process(line);
      }
 diff --git a/src/src/spm_export_vocab_main.cc b/src/src/spm_export_vocab_main.cc
-index ed3c577065a7e..25db108c06c16 100644
+index ed3c577..25db108 100644
 --- a/src/src/spm_export_vocab_main.cc
 +++ b/src/src/spm_export_vocab_main.cc
 @@ -32,11 +32,11 @@ int main(int argc, char *argv[]) {
@@ -1210,7 +1196,7 @@ index ed3c577065a7e..25db108c06c16 100644
    }
  
 diff --git a/src/src/spm_normalize_main.cc b/src/src/spm_normalize_main.cc
-index e15fa324b4acc..d88705c1d327f 100644
+index e15fa32..d88705c 100644
 --- a/src/src/spm_normalize_main.cc
 +++ b/src/src/spm_normalize_main.cc
 @@ -63,17 +63,17 @@ int main(int argc, char *argv[]) {
@@ -1263,7 +1249,7 @@ index e15fa324b4acc..d88705c1d327f 100644
          output->WriteLine(normalizer.Normalize(line));
        }
 diff --git a/src/src/spm_train_main.cc b/src/src/spm_train_main.cc
-index 7218bbc8bd3b9..f315127e6cffe 100644
+index 7218bbc..f315127 100644
 --- a/src/src/spm_train_main.cc
 +++ b/src/src/spm_train_main.cc
 @@ -171,8 +171,8 @@ int main(int argc, char* argv[]) {
@@ -1300,7 +1286,7 @@ index 7218bbc8bd3b9..f315127e6cffe 100644
  
    return 0;
 diff --git a/src/src/trainer_factory.cc b/src/src/trainer_factory.cc
-index 6fe73c36e9ddd..757fec0a7c704 100644
+index 6fe73c3..757fec0 100644
 --- a/src/src/trainer_factory.cc
 +++ b/src/src/trainer_factory.cc
 @@ -43,7 +43,7 @@ std::unique_ptr<TrainerInterface> TrainerFactory::Create(
@@ -1313,7 +1299,7 @@ index 6fe73c36e9ddd..757fec0a7c704 100644
    }
  
 diff --git a/src/src/trainer_interface.cc b/src/src/trainer_interface.cc
-index 73f331b0ff758..105e43906e800 100644
+index 6570dab..0df1c3c 100644
 --- a/src/src/trainer_interface.cc
 +++ b/src/src/trainer_interface.cc
 @@ -69,17 +69,17 @@ absl::Status VerifySpec(const TrainerSpec& trainer_spec) {
@@ -1395,7 +1381,7 @@ index 73f331b0ff758..105e43906e800 100644
        return false;
      }
      if (!string_util::IsValidCodepoint(c)) {
-@@ -362,7 +362,7 @@ absl::Status TrainerInterface::LoadSentences() {
+@@ -361,7 +361,7 @@ absl::Status TrainerInterface::LoadSentences() {
  
    std::unique_ptr<SentenceIterator> sentence_iterator_impl;
    if (sentence_iterator_ == nullptr) {
@@ -1404,7 +1390,7 @@ index 73f331b0ff758..105e43906e800 100644
                   "MultiFileSentenceIterator.";
      sentence_iterator_impl =
          std::make_unique<MultiFileSentenceIterator>(std::vector<std::string>(
-@@ -391,10 +391,10 @@ absl::Status TrainerInterface::LoadSentences() {
+@@ -390,10 +390,10 @@ absl::Status TrainerInterface::LoadSentences() {
      if (static_cast<int>(sentence.size()) >
          trainer_spec_.max_sentence_length()) {
        if (too_long_lines == 0) {
@@ -1418,7 +1404,7 @@ index 73f331b0ff758..105e43906e800 100644
                          "--max_sentence_length=<size> flag.";
        }
        ++too_long_lines;
-@@ -402,7 +402,7 @@ absl::Status TrainerInterface::LoadSentences() {
+@@ -401,7 +401,7 @@ absl::Status TrainerInterface::LoadSentences() {
      }
  
      if (sentence.find(kUNKStr) != std::string::npos) {
@@ -1427,7 +1413,7 @@ index 73f331b0ff758..105e43906e800 100644
        continue;
      }
  
-@@ -420,17 +420,17 @@ END:
+@@ -419,17 +419,17 @@ END:
    selector.Finish();
  
    if (sentences_.size() == selector.total_size()) {
@@ -1449,7 +1435,7 @@ index 73f331b0ff758..105e43906e800 100644
    }
  
    // Normalize and removes empty string.
-@@ -438,12 +438,12 @@ END:
+@@ -437,12 +437,12 @@ END:
      const normalizer::Normalizer normalizer(normalizer_spec_, trainer_spec_);
      std::set<absl::string_view> meta_pieces_set;
      for (const auto& it : meta_pieces_) {
@@ -1464,7 +1450,7 @@ index 73f331b0ff758..105e43906e800 100644
      RET_CHECK(!sentences_.empty());
      {
        auto pool = std::make_unique<ThreadPool>(trainer_spec_.num_threads());
-@@ -472,17 +472,17 @@ END:
+@@ -471,17 +471,17 @@ END:
  
    // If DP is required, add the noise/clip the input.
    if (trainer_spec_.enable_differential_privacy()) {
@@ -1486,7 +1472,7 @@ index 73f331b0ff758..105e43906e800 100644
                        "infinity epsilon guarantees.";
      }
  
-@@ -514,7 +514,7 @@ END:
+@@ -513,7 +513,7 @@ END:
      const int num_erased = before_size - new_size;
      sentences_.erase(it, sentences_.end());
  
@@ -1495,7 +1481,7 @@ index 73f331b0ff758..105e43906e800 100644
                << " fraction of sentences removed.";
    }
  
-@@ -526,7 +526,7 @@ END:
+@@ -525,7 +525,7 @@ END:
         string_util::UTF8ToUnicodeText(trainer_spec_.required_chars())) {
      RET_CHECK(string_util::IsValidCodepoint(c));
      if (c == 0x0000) {
@@ -1504,7 +1490,7 @@ index 73f331b0ff758..105e43906e800 100644
                     "encoded in utf-8.";
        continue;
      }
-@@ -538,7 +538,7 @@ END:
+@@ -537,7 +537,7 @@ END:
          continue;
        }
        if (c == 0x0000) {
@@ -1513,7 +1499,7 @@ index 73f331b0ff758..105e43906e800 100644
              << "Found null character. The corpus must be encoded in utf-8.";
          continue;
        }
-@@ -553,7 +553,7 @@ END:
+@@ -552,7 +552,7 @@ END:
        all_chars_count += w.second;
      }
    }
@@ -1522,7 +1508,7 @@ index 73f331b0ff758..105e43906e800 100644
  
    // Determines required_chars which must be included in the vocabulary.
    int64_t accumulated_chars_count = 0;
-@@ -564,7 +564,7 @@ END:
+@@ -563,7 +563,7 @@ END:
      const float coverage = 1.0 * accumulated_chars_count / all_chars_count;
      if (!trainer_spec_.use_all_vocab() &&
          coverage >= trainer_spec_.character_coverage()) {
@@ -1531,7 +1517,7 @@ index 73f331b0ff758..105e43906e800 100644
        break;
      }
      accumulated_chars_count += w.second.second;
-@@ -576,8 +576,8 @@ END:
+@@ -575,8 +575,8 @@ END:
      required_chars_.emplace(w.first, w.second.second);
    }
  
@@ -1542,7 +1528,7 @@ index 73f331b0ff758..105e43906e800 100644
              << 1.0 * accumulated_chars_count / all_chars_count;
  
    RET_CHECK(!port::ContainsKey(required_chars_, kUNKChar));
-@@ -607,13 +607,13 @@ END:
+@@ -606,13 +606,13 @@ END:
          << "--character_coverage option.";
    }
  
@@ -1558,7 +1544,7 @@ index 73f331b0ff758..105e43906e800 100644
              << sentences_.size();
    absl::flat_hash_map<std::string, int64_t> tokens;
    for (const auto& s : sentences_) {
-@@ -624,7 +624,7 @@ void TrainerInterface::SplitSentencesByWhitespace() {
+@@ -623,7 +623,7 @@ void TrainerInterface::SplitSentencesByWhitespace() {
      }
    }
    sentences_ = Sorted(tokens);
@@ -1567,7 +1553,7 @@ index 73f331b0ff758..105e43906e800 100644
  }
  
  absl::Status TrainerInterface::Serialize(ModelProto* model_proto) const {
-@@ -635,7 +635,7 @@ absl::Status TrainerInterface::Serialize(ModelProto* model_proto) const {
+@@ -634,7 +634,7 @@ absl::Status TrainerInterface::Serialize(ModelProto* model_proto) const {
  
    model_proto->Clear();
  
@@ -1576,7 +1562,7 @@ index 73f331b0ff758..105e43906e800 100644
    RET_CHECK(string_util::IsStructurallyValid(piece)); \
    RET_CHECK(!piece.empty());                          \
    RET_CHECK(dup.insert(piece).second) << piece << " is already defined";
-@@ -650,13 +650,13 @@ absl::Status TrainerInterface::Serialize(ModelProto* model_proto) const {
+@@ -649,13 +649,13 @@ absl::Status TrainerInterface::Serialize(ModelProto* model_proto) const {
        sp->set_score(0.0);
        RET_CHECK_EQ(model_proto->pieces_size() - 1, it->first);
        RET_CHECK_NE(ModelProto::SentencePiece::NORMAL, sp->type());
@@ -1592,7 +1578,7 @@ index 73f331b0ff758..105e43906e800 100644
      }
    }
  
-@@ -700,7 +700,7 @@ absl::Status TrainerInterface::Serialize(ModelProto* model_proto) const {
+@@ -699,7 +699,7 @@ absl::Status TrainerInterface::Serialize(ModelProto* model_proto) const {
  }
  
  absl::Status TrainerInterface::SaveModel(absl::string_view filename) const {
@@ -1601,7 +1587,7 @@ index 73f331b0ff758..105e43906e800 100644
    ModelProto model_proto;
  
    RETURN_IF_ERROR(Serialize(&model_proto));
-@@ -712,7 +712,7 @@ absl::Status TrainerInterface::SaveModel(absl::string_view filename) const {
+@@ -711,7 +711,7 @@ absl::Status TrainerInterface::SaveModel(absl::string_view filename) const {
  }
  
  absl::Status TrainerInterface::SaveVocab(absl::string_view filename) const {
@@ -1610,7 +1596,7 @@ index 73f331b0ff758..105e43906e800 100644
    ModelProto model_proto;
    RETURN_IF_ERROR(Serialize(&model_proto));
    auto output = filesystem::NewWritableFile(filename);
-@@ -720,7 +720,7 @@ absl::Status TrainerInterface::SaveVocab(absl::string_view filename) const {
+@@ -719,7 +719,7 @@ absl::Status TrainerInterface::SaveVocab(absl::string_view filename) const {
  
    for (const auto& piece : model_proto.pieces()) {
      if (piece.piece().find_first_of(" \t\r\n") != std::string::npos) {
@@ -1620,7 +1606,7 @@ index 73f331b0ff758..105e43906e800 100644
                     << filename;
      }
 diff --git a/src/src/unicode_script_test.cc b/src/src/unicode_script_test.cc
-index 74b0e02282b2c..aece0fc5161bf 100644
+index 74b0e02..aece0fc 100644
 --- a/src/src/unicode_script_test.cc
 +++ b/src/src/unicode_script_test.cc
 @@ -23,7 +23,7 @@ namespace sentencepiece {
@@ -1633,10 +1619,10 @@ index 74b0e02282b2c..aece0fc5161bf 100644
  }
  
 diff --git a/src/src/unigram_model.cc b/src/src/unigram_model.cc
-index cd70a76e01a7c..2c0bc4141a72e 100644
+index 2cd4829..2ad0d22 100644
 --- a/src/src/unigram_model.cc
 +++ b/src/src/unigram_model.cc
-@@ -193,7 +193,7 @@ Lattice::LatticePathWithScore Lattice::Viterbi() {
+@@ -191,7 +191,7 @@ Lattice::LatticePathWithScore Lattice::Viterbi() {
          }
        }
        if (best_node == nullptr) {
@@ -1645,7 +1631,7 @@ index cd70a76e01a7c..2c0bc4141a72e 100644
          return {};
        }
        rnode->prev = best_node;
-@@ -365,7 +365,7 @@ std::vector<Lattice::LatticePathWithScore> Lattice::NBest(size_t nbest_size,
+@@ -363,7 +363,7 @@ std::vector<Lattice::LatticePathWithScore> Lattice::NBest(size_t nbest_size,
                                                            bool sample,
                                                            float inv_theta) {
    if (nbest_size < 1) {
@@ -1654,7 +1640,7 @@ index cd70a76e01a7c..2c0bc4141a72e 100644
      return {};
    }
  
-@@ -492,7 +492,7 @@ std::vector<Lattice::LatticePathWithScore> Lattice::NBest(size_t nbest_size,
+@@ -490,7 +490,7 @@ std::vector<Lattice::LatticePathWithScore> Lattice::NBest(size_t nbest_size,
      if (hypothesis_allocator.size() >= kOneBillion) {
        if (!printed_memory_warning) {
          printed_memory_warning = true;
@@ -1663,7 +1649,7 @@ index cd70a76e01a7c..2c0bc4141a72e 100644
                       << " with an example of length " << this->size();
        }
      }
-@@ -507,7 +507,7 @@ std::vector<Lattice::LatticePathWithScore> Lattice::NBest(size_t nbest_size,
+@@ -505,7 +505,7 @@ std::vector<Lattice::LatticePathWithScore> Lattice::NBest(size_t nbest_size,
          const auto elapsed =
              absl::ToInt64Milliseconds(absl::Now() - start_time);
          if (elapsed >= timeout_ms) {
@@ -1672,7 +1658,7 @@ index cd70a76e01a7c..2c0bc4141a72e 100644
                         << "Falling back to Viterbi best path.";
            return {Viterbi()};
          }
-@@ -521,7 +521,7 @@ std::vector<Lattice::LatticePathWithScore> Lattice::NBest(size_t nbest_size,
+@@ -519,7 +519,7 @@ std::vector<Lattice::LatticePathWithScore> Lattice::NBest(size_t nbest_size,
  
        const size_t size = std::min<size_t>(kMinAgendaSize, nbest_size * 10);
        shrink_count++;
@@ -1681,7 +1667,7 @@ index cd70a76e01a7c..2c0bc4141a72e 100644
                     << ". Shrinking (round " << shrink_count << ") down to "
                     << size << ".";
        for (size_t i = 0; i < size; ++i) {
-@@ -771,7 +771,7 @@ NBestEncodeResult Model::SampleEncodeAndScore(absl::string_view normalized,
+@@ -773,7 +773,7 @@ NBestEncodeResult Model::SampleEncodeAndScore(absl::string_view normalized,
  
    if (include_best) {
      if (!wor) {
@@ -1690,7 +1676,7 @@ index cd70a76e01a7c..2c0bc4141a72e 100644
        return {};
      }
      EncodeResult result;
-@@ -802,7 +802,7 @@ NBestEncodeResult Model::SampleEncodeAndScore(absl::string_view normalized,
+@@ -804,7 +804,7 @@ NBestEncodeResult Model::SampleEncodeAndScore(absl::string_view normalized,
             nbest_paths.begin());
  
        if (static_cast<size_t>(index_of_best) != nbest_samples.size()) {
@@ -1699,7 +1685,7 @@ index cd70a76e01a7c..2c0bc4141a72e 100644
          nbest_samples.erase(nbest_samples.begin() + index_of_best);
        } else {
          nbest_samples.pop_back();
-@@ -902,7 +902,7 @@ bool Model::VerifyOutputsEquivalent(absl::string_view expected,
+@@ -904,7 +904,7 @@ bool Model::VerifyOutputsEquivalent(absl::string_view expected,
    const auto actual_score =
        compute_unigram_model_score(absl::StrSplit(actual, ' '));
    if (std::abs(expected_score - actual_score) > kEpsilon) {
@@ -1709,7 +1695,7 @@ index cd70a76e01a7c..2c0bc4141a72e 100644
                   << ". Right: " << actual << ", Score: " << actual_score << ".";
      return false;
 diff --git a/src/src/unigram_model_trainer.cc b/src/src/unigram_model_trainer.cc
-index 06ed2d1765012..8673acc7c5895 100644
+index 06ed2d1..8673acc 100644
 --- a/src/src/unigram_model_trainer.cc
 +++ b/src/src/unigram_model_trainer.cc
 @@ -101,7 +101,7 @@ class BoundedPriorityQueue {
@@ -1850,7 +1836,7 @@ index 06ed2d1765012..8673acc7c5895 100644
                  << " num_tokens/piece="
                  << 1.0 * num_tokens / model.GetPieceSize();
 diff --git a/src/src/unigram_model_trainer_test.cc b/src/src/unigram_model_trainer_test.cc
-index 9093d55d25a39..d904a0180bff4 100644
+index 9093d55..d904a01 100644
 --- a/src/src/unigram_model_trainer_test.cc
 +++ b/src/src/unigram_model_trainer_test.cc
 @@ -190,7 +190,7 @@ TEST(UnigramTrainerTest, EndToEndTest) {
@@ -1863,7 +1849,7 @@ index 9093d55d25a39..d904a0180bff4 100644
        WS
        " 吾輩 《 わが はい 》 は猫である 。 名前はまだ 無 い 。 どこ で 生 れた "
 diff --git a/src/src/util.h b/src/src/util.h
-index 63b4873817a12..ecaa4ed3fc290 100644
+index 63b4873..ecaa4ed 100644
 --- a/src/src/util.h
 +++ b/src/src/util.h
 @@ -171,7 +171,7 @@ const typename Collection::value_type::second_type& FindOrDie(
@@ -1885,7 +1871,7 @@ index 63b4873817a12..ecaa4ed3fc290 100644
  
  }  // namespace port
 diff --git a/src/src/util_test.cc b/src/src/util_test.cc
-index b9014055ce000..82182bd0464fb 100644
+index b901405..82182bd 100644
 --- a/src/src/util_test.cc
 +++ b/src/src/util_test.cc
 @@ -32,12 +32,12 @@ constexpr int kMaxUnicode = 0x10FFFF;
@@ -1906,5 +1892,5 @@ index b9014055ce000..82182bd0464fb 100644
  
  TEST(UtilTest, StringViewTest) {
 -- 
-2.54.0.1189.g8c84645362-goog
+2.43.0
 

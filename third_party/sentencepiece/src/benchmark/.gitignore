@@ -1,0 +1,4 @@
+venv/
+data/
+models/
+results.json

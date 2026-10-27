@@ -15,6 +15,7 @@
 #include "unigram_model.h"
 
 #include <cmath>
+#include <limits>
 #include <map>
 #include <string>
 #include <vector>
@@ -963,6 +964,39 @@ TEST(UnigramModelTest, EncodeWithUnusedTest) {
   }
 }
 
+TEST(UnigramModelTest, ControlSymbolsNoSegmentTest) {
+  ModelProto model_proto = MakeBaseModelProto();
+
+  // For <s> (BOS)
+  AddPiece(&model_proto, "<", -1.0);  // ID 3
+  AddPiece(&model_proto, "s", -1.0);  // ID 4
+  AddPiece(&model_proto, ">", -1.0);  // ID 5
+  AddPiece(&model_proto, "<s", 0.0);  // ID 6
+
+  // For <unk> (UNKNOWN)
+  AddPiece(&model_proto, "u", -1.0);   // ID 7
+  AddPiece(&model_proto, "n", -1.0);   // ID 8
+  AddPiece(&model_proto, "k", -1.0);   // ID 9
+  AddPiece(&model_proto, "<u", 0.0);   // ID 10
+  AddPiece(&model_proto, "nk>", 0.0);  // ID 11
+
+  const Model model(model_proto);
+
+  {
+    EncodeResult result = model.Encode("<s>");
+    EXPECT_EQ(2, result.size());
+    EXPECT_EQ("<s", result[0].first);
+    EXPECT_EQ(">", result[1].first);
+  }
+
+  {
+    EncodeResult result = model.Encode("<unk>");
+    EXPECT_EQ(2, result.size());
+    EXPECT_EQ("<u", result[0].first);
+    EXPECT_EQ("nk>", result[1].first);
+  }
+}
+
 TEST(UnigramModelTest, VerifyOutputsEquivalent) {
   ModelProto model_proto = MakeBaseModelProto();
 
@@ -984,6 +1018,160 @@ TEST(UnigramModelTest, VerifyOutputsEquivalent) {
   // Inequivalent outputs.
   EXPECT_FALSE(model.VerifyOutputsEquivalent("a", "a b"));
   EXPECT_FALSE(model.VerifyOutputsEquivalent("ab", "a b"));
+}
+
+TEST(UnigramModelTest, ControlTokenMergeTest) {
+  ModelProto model_proto;
+  auto AddPieceWithType = [](ModelProto* proto, const std::string& piece,
+                             float score,
+                             ModelProto::SentencePiece::Type type) {
+    auto* sp = proto->add_pieces();
+    sp->set_piece(piece);
+    sp->set_score(score);
+    sp->set_type(type);
+  };
+
+  AddPieceWithType(&model_proto, "<unk>", 0.0,
+                   ModelProto::SentencePiece::UNKNOWN);
+  AddPieceWithType(&model_proto, "<s>", 0.0,
+                   ModelProto::SentencePiece::CONTROL);
+  AddPieceWithType(&model_proto, "</s>", 0.0,
+                   ModelProto::SentencePiece::CONTROL);
+  AddPieceWithType(&model_proto, "<", -1.0, ModelProto::SentencePiece::NORMAL);
+  AddPieceWithType(&model_proto, "s", -1.0, ModelProto::SentencePiece::NORMAL);
+  AddPieceWithType(&model_proto, ">", -1.0, ModelProto::SentencePiece::NORMAL);
+  AddPieceWithType(&model_proto, "<s", 0.0, ModelProto::SentencePiece::NORMAL);
+
+  const Model model(model_proto);
+  const auto result = model.Encode("<s>");
+
+  // Expected behavior: do NOT match CONTROL symbol <s>.
+  // Instead, it should segment into "<s" (ID 6) and ">" (ID 5).
+  EXPECT_EQ(2, result.size());
+  EXPECT_EQ("<s", result[0].first);
+  EXPECT_EQ(6, result[0].second);
+  EXPECT_EQ(">", result[1].first);
+  EXPECT_EQ(5, result[1].second);
+}
+
+TEST(UnigramModelTest, SpecialSymbolsNoSegmentTest) {
+  ModelProto model_proto = MakeBaseModelProto();
+  model_proto.mutable_trainer_spec()->set_byte_fallback(true);
+
+  // Add 256 byte pieces to satisfy InitializePieces check.
+  for (int i = 0; i < 256; ++i) {
+    auto* sp = model_proto.add_pieces();
+    sp->set_piece(ByteToPiece(i));
+    sp->set_type(ModelProto::SentencePiece::BYTE);
+  }
+
+  // Add an UNUSED piece.
+  // We use "abc" as UNUSED piece.
+  // And we add its characters so it can be split.
+  AddPiece(&model_proto, "a", -1.0);
+  AddPiece(&model_proto, "b", -1.0);
+  AddPiece(&model_proto, "c", -1.0);
+  AddPiece(&model_proto, "abc", 0.0);
+  model_proto.mutable_pieces(model_proto.pieces_size() - 1)
+      ->set_type(ModelProto::SentencePiece::UNUSED);
+
+  // Add character pieces for "<unk>" and "<s>"
+  AddPiece(&model_proto, "<", -1.0);
+  AddPiece(&model_proto, "u", -1.0);
+  AddPiece(&model_proto, "n", -1.0);
+  AddPiece(&model_proto, "k", -1.0);
+  AddPiece(&model_proto, "s", -1.0);
+  AddPiece(&model_proto, ">", -1.0);
+
+  // Add intermediate pieces that could form "<s>" and "<unk>"
+  AddPiece(&model_proto, "<s", 0.0);
+  AddPiece(&model_proto, "<u", 0.0);
+  AddPiece(&model_proto, "nk", 0.0);
+
+  // Add intermediate pieces for byte piece "<0x0A>" (newline)
+  // Byte 10 is 0x0A. ByteToPiece(10) is "<0x0A>".
+  // Characters: "<", "0", "x", "0", "A", ">"
+  AddPiece(&model_proto, "0", -1.0);
+  AddPiece(&model_proto, "x", -1.0);
+  AddPiece(&model_proto, "A", -1.0);
+  AddPiece(&model_proto, "<0", 0.0);
+  AddPiece(&model_proto, "x0", 0.0);
+  AddPiece(&model_proto, "A>", 0.0);
+
+  Model model(model_proto);
+
+  // 1. Test CONTROL symbol "<s>".
+  // Expected: split to "<s" and ">".
+  {
+    auto result = model.Encode("<s>");
+    ASSERT_EQ(2, result.size());
+    EXPECT_EQ("<s", result[0].first);
+    EXPECT_EQ(">", result[1].first);
+  }
+
+  // 2. Test UNKNOWN symbol "<unk>".
+  // Expected: split and not matched as "<unk>".
+  {
+    auto result = model.Encode("<unk>");
+    EXPECT_GT(result.size(), 1);
+    for (const auto& part : result) {
+      EXPECT_NE("<unk>", part.first);
+    }
+  }
+
+  // 3. Test UNUSED symbol "abc".
+  // Expected: split to "a", "b", "c".
+  {
+    auto result = model.Encode("abc");
+    ASSERT_EQ(3, result.size());
+    EXPECT_EQ("a", result[0].first);
+    EXPECT_EQ("b", result[1].first);
+    EXPECT_EQ("c", result[2].first);
+  }
+
+  // 4. Test BYTE symbol "<0x0A>".
+  // Expected: NOT matched as "<0x0A>".
+  {
+    std::string byte_piece = ByteToPiece(10);
+    auto result = model.Encode(byte_piece);
+    EXPECT_GT(result.size(), 1);
+    for (const auto& part : result) {
+      EXPECT_NE(byte_piece, part.first);
+    }
+  }
+}
+
+TEST(UnigramModelTest, RejectNaNAndInfScoresTest) {
+  for (float bad_score : {std::numeric_limits<float>::quiet_NaN(),
+                          std::numeric_limits<float>::infinity(),
+                          -std::numeric_limits<float>::infinity()}) {
+    ModelProto model_proto = MakeBaseModelProto();
+    AddPiece(&model_proto, "ab", bad_score);
+    Model model(model_proto);
+    EXPECT_FALSE(model.status().ok());
+  }
+}
+
+TEST(UnigramModelTest, LongTextScoreRecenteringTest) {
+  ModelProto model_proto = MakeBaseModelProto();
+  AddPiece(&model_proto, "ab", -10.0);
+  AddPiece(&model_proto, "cd", -10.0);
+  Model model(model_proto);
+  ASSERT_TRUE(model.status().ok());
+
+  // Create a long text of 30,000 "ab" pairs (60,000 characters).
+  // Each "ab" has a score of -10.0, so 30,000 pairs reach -300,000.0,
+  // triggering the score re-centering threshold (-100,000.0) multiple times.
+  std::string long_input;
+  long_input.reserve(60000);
+  for (int i = 0; i < 30000; ++i) {
+    long_input += "ab";
+  }
+  EncodeResult result = model.Encode(long_input);
+  EXPECT_EQ(30000, result.size());
+  for (const auto& pair : result) {
+    EXPECT_EQ("ab", pair.first);
+  }
 }
 
 }  // namespace unigram

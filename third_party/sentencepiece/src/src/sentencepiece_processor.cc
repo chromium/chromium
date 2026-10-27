@@ -275,6 +275,20 @@ absl::Status SentencePieceProcessor::Load(
 
   RETURN_IF_ERROR(status());
 
+  // Precomputes and caches special token IDs.
+  // Note that these IDs are not always the same as the IDs in TrainerSpec.
+  unk_id_ = PieceToId(model_->unk_piece());
+  if (!IsUnknown(unk_id_)) unk_id_ = -1;
+
+  bos_id_ = PieceToId(model_->bos_piece());
+  if (!IsControl(bos_id_)) bos_id_ = -1;
+
+  eos_id_ = PieceToId(model_->eos_piece());
+  if (!IsControl(eos_id_)) eos_id_ = -1;
+
+  pad_id_ = PieceToId(model_->pad_piece());
+  if (!IsControl(pad_id_)) pad_id_ = -1;
+
   // Running self-testing.
   std::vector<std::string> errors, sps;
   for (const auto& s : model_proto_->self_test_data().samples()) {
@@ -400,112 +414,29 @@ absl::Status SentencePieceProcessor::LoadVocabulary(absl::string_view filename,
 // Simple API.
 absl::Status SentencePieceProcessor::Encode(
     absl::string_view input, std::vector<std::string>* pieces) const {
-  RET_CHECK_STATUS_STL(pieces);
-
-  Arena arena;
-  auto* spt = Arena::Create<SentencePieceText>(&arena);
-  RETURN_IF_ERROR(Encode(input, spt));
-  for (const auto& sp : spt->pieces()) {
-    pieces->emplace_back(sp.piece());
-  }
-
-  return absl::OkStatus();
+  return EncodeOptimized(input, pieces);
 }
 
 absl::Status SentencePieceProcessor::Encode(absl::string_view input,
                                             std::vector<int>* ids) const {
-  RET_CHECK_STATUS_STL(ids);
-
-  // The following is a pared down version of PopulateSentencePieceText, that
-  // only populates the ids; skipping the surface and begin/end fields as they
-  // will be thrown away otherwise.
-  std::string normalized;
-
-  RETURN_IF_ERROR(
-      normalizer_->Normalize(input, &normalized, /*norm_to_orig=*/nullptr));
-  const EncodeResult result = model_->Encode(normalized);
-  const bool byte_fallback_enabled = model_->ByteFallbackEnabled();
-
-  bool is_prev_unk = false;
-  ids->reserve(result.size());
-
-  for (const auto& [w, id] : result) {
-    RET_CHECK(!w.empty()) << "Empty piece is not allowed.";
-    if (IsControl(id)) {
-      ids->emplace_back(id);
-      is_prev_unk = false;
-    } else {
-      const bool is_unk = IsUnknown(id);
-      if (is_unk && byte_fallback_enabled) {
-        for (size_t i = 0; i < w.size(); ++i) {
-          const auto sp_id =
-              model_->PieceToId(ByteToPiece(static_cast<uint8_t>(w[i])));
-          ids->emplace_back(sp_id);
-        }
-      } else {
-        // Merge continuous runs of unknown pieces.
-        if (!is_prev_unk || !is_unk) {
-          ids->emplace_back(id);
-        }
-      }
-      is_prev_unk = is_unk;
-    }
-  }
-
-  // Inlining ApplyExtraOptions but just the ids part.
-  for (const auto& extra_option : encode_extra_options_) {
-    switch (extra_option) {
-      case REVERSE:
-        std::reverse(ids->begin(), ids->end());
-        break;
-      case EOS:
-        ids->emplace_back(PieceToId(model_->eos_piece()));
-        break;
-      case BOS:
-        ids->insert(ids->begin(), PieceToId(model_->bos_piece()));
-        break;
-      default:
-        ids->clear();
-        return absl::InternalError("unknown extra_option type.");
-    }
-  }
-
-  return absl::OkStatus();
+  return EncodeOptimized(input, ids);
 }
 
 absl::Status SentencePieceProcessor::Decode(
     absl::Span<const std::string> pieces, std::string* detokenized) const {
   absl::FixedArray<absl::string_view, 128> views(pieces.begin(), pieces.end());
-  return Decode(views, detokenized);
+  return DecodeOptimized<absl::string_view>(views, detokenized);
 }
 
 absl::Status SentencePieceProcessor::Decode(
     absl::Span<const absl::string_view> pieces,
     std::string* detokenized) const {
-  RET_CHECK_STATUS_STL(detokenized);
-
-  // Allocate SentencePieceText on an arena to improve allocation and
-  // deallocation costs.
-  Arena arena;
-  auto* spt = Arena::Create<SentencePieceText>(&arena);
-  RETURN_IF_ERROR(Decode(pieces, spt));
-  *detokenized = std::move(*spt->mutable_text());
-
-  return absl::OkStatus();
+  return DecodeOptimized(pieces, detokenized);
 }
 
 absl::Status SentencePieceProcessor::Decode(absl::Span<const int> ids,
                                             std::string* detokenized) const {
-  RET_CHECK_STATUS_STL(detokenized);
-
-  // Allocate SentencePieceText on an arena to improve allocation and
-  // deallocation costs.
-  Arena arena;
-  auto* spt = Arena::Create<SentencePieceText>(&arena);
-  RETURN_IF_ERROR(Decode(ids, spt));
-  *detokenized = std::move(*spt->mutable_text());
-
-  return absl::OkStatus();
+  return DecodeOptimized(ids, detokenized);
 }
 
 absl::Status SentencePieceProcessor::NBestEncode(
@@ -1493,73 +1424,98 @@ bool SentencePieceProcessor::IsByte(int id) const {
   return model_->IsByte(id);
 }
 
-int SentencePieceProcessor::unk_id() const {
-  const int id = PieceToId(model_->unk_piece());
-  return IsUnknown(id) ? id : -1;
-}
+int SentencePieceProcessor::unk_id() const { return unk_id_; }
 
-int SentencePieceProcessor::bos_id() const {
-  const int id = PieceToId(model_->bos_piece());
-  return IsControl(id) ? id : -1;
-}
+int SentencePieceProcessor::bos_id() const { return bos_id_; }
 
-int SentencePieceProcessor::eos_id() const {
-  const int id = PieceToId(model_->eos_piece());
-  return IsControl(id) ? id : -1;
-}
+int SentencePieceProcessor::eos_id() const { return eos_id_; }
 
-int SentencePieceProcessor::pad_id() const {
-  const int id = PieceToId(model_->pad_piece());
-  return IsControl(id) ? id : -1;
-}
+int SentencePieceProcessor::pad_id() const { return pad_id_; }
 
-// static
+template <typename T>
 absl::Status SentencePieceProcessor::ApplyExtraOptions(
-    const std::vector<ExtraOption>& extra_options,
-    SentencePieceText* spt) const {
+    absl::Span<const ExtraOption> extra_options, T* output) const {
   for (const auto& extra_option : extra_options) {
     switch (extra_option) {
       case REVERSE:
-        std::reverse(spt->mutable_pieces()->begin(),
-                     spt->mutable_pieces()->end());
-        break;
-      case EOS: {
-        auto* piece = spt->add_pieces();
-        piece->set_id(PieceToId(model_->eos_piece()));
-        piece->set_piece(model_->eos_piece().data(),
-                         model_->eos_piece().size());
-        piece->set_begin(spt->text().size());
-        piece->set_end(spt->text().size());
-      } break;
-      case BOS: {
-        auto* array = spt->mutable_pieces();
-        array->Add();
-        for (int i = array->size() - 1; i > 0; --i) {
-          array->SwapElements(i - 1, i);
+        if constexpr (std::is_same_v<T, SentencePieceText>) {
+          std::reverse(output->mutable_pieces()->begin(),
+                       output->mutable_pieces()->end());
+        } else {
+          std::reverse(output->begin(), output->end());
         }
-        auto* piece = array->Mutable(0);
-        piece->set_id(PieceToId(model_->bos_piece()));
-        piece->set_piece(model_->bos_piece().data(),
-                         model_->bos_piece().size());
-        piece->set_begin(0);
-        piece->set_end(0);
-      } break;
-      case UNK_PIECE: {
-        for (int i = 0; i < spt->pieces_size(); ++i) {
-          auto* piece = spt->mutable_pieces(i);
-          if (IsUnknown(piece->id())) {
-            piece->set_piece(model_->unk_piece().data(),
-                             model_->unk_piece().size());
+        break;
+      case EOS:
+        if (const int id = eos_id(); id != -1) {
+          if constexpr (std::is_same_v<T, SentencePieceText>) {
+            auto* piece = output->add_pieces();
+            piece->set_id(id);
+            piece->set_piece(model_->eos_piece().data(),
+                             model_->eos_piece().size());
+            piece->set_begin(output->text().size());
+            piece->set_end(output->text().size());
+          } else {
+            using V = typename T::value_type;
+            if constexpr (std::is_same_v<V, int>) {
+              output->emplace_back(id);
+            } else {
+              output->emplace_back(model_->eos_piece());
+            }
           }
         }
-      } break;
+        break;
+      case BOS:
+        if (const int id = bos_id(); id != -1) {
+          if constexpr (std::is_same_v<T, SentencePieceText>) {
+            auto* array = output->mutable_pieces();
+            array->Add();
+            for (int i = array->size() - 1; i > 0; --i) {
+              array->SwapElements(i - 1, i);
+            }
+            auto* piece = array->Mutable(0);
+            piece->set_id(id);
+            piece->set_piece(model_->bos_piece().data(),
+                             model_->bos_piece().size());
+            piece->set_begin(0);
+            piece->set_end(0);
+          } else {
+            using V = typename T::value_type;
+            if constexpr (std::is_same_v<V, int>) {
+              output->emplace(output->begin(), id);
+            } else {
+              output->emplace(output->begin(), model_->bos_piece());
+            }
+          }
+        }
+        break;
+      case UNK_PIECE:
+        if constexpr (std::is_same_v<T, SentencePieceText>) {
+          for (int i = 0; i < output->pieces_size(); ++i) {
+            auto* piece = output->mutable_pieces(i);
+            if (IsUnknown(piece->id())) {
+              piece->set_piece(model_->unk_piece().data(),
+                               model_->unk_piece().size());
+            }
+          }
+        }
+        break;
       default:
-        spt->Clear();
+        if constexpr (std::is_same_v<T, SentencePieceText>) {
+          output->Clear();
+        } else {
+          output->clear();
+        }
         return absl::InternalError("unknown extra_option type.");
     }
   }
-
   return absl::OkStatus();
+}
+
+bool SentencePieceProcessor::HasUnkPieceOption() const {
+  for (const auto& option : encode_extra_options_) {
+    if (option == UNK_PIECE) return true;
+  }
+  return false;
 }
 
 // static
@@ -1586,11 +1542,11 @@ absl::Status SentencePieceProcessor::ParseExtraOptions(
     extra_options->push_back(it->second);
 
     if (it->second == SentencePieceProcessor::BOS) {
-      RET_CHECK(!IsUnknown(PieceToId(model_->bos_piece())))
+      RET_CHECK(bos_id() != -1)
           << "id for `" << model_->bos_piece() << "` is not defined.";
     }
     if (it->second == SentencePieceProcessor::EOS) {
-      RET_CHECK(!IsUnknown(PieceToId(model_->eos_piece())))
+      RET_CHECK(eos_id() != -1)
           << "id for `" << model_->eos_piece() << "` is not defined.";
     }
   }
@@ -1623,6 +1579,196 @@ NormalizerSpec* SentencePieceProcessor::mutable_normalizer_spec() const {
 // as this seed is reserved for initializing from
 // std::random_device.
 void SetRandomGeneratorSeed(unsigned int seed);
+
+template <typename T>
+absl::Status SentencePieceProcessor::EncodeOptimized(
+    absl::string_view input, std::vector<T>* output) const {
+  RET_CHECK_STATUS_STL(output);
+
+  if (input.empty()) {
+    output->clear();
+    return ApplyExtraOptions(encode_extra_options_, output);
+  }
+
+  std::string normalized;
+  RETURN_IF_ERROR(
+      normalizer_->Normalize(input, &normalized, /*norm_to_orig=*/nullptr));
+  const EncodeResult result = model_->Encode(normalized);
+  const bool byte_fallback_enabled = model_->ByteFallbackEnabled();
+  const bool has_unk_piece = HasUnkPieceOption();
+  bool is_prev_unk = false;
+  output->clear();
+  output->reserve(result.size());
+
+  for (const auto& piece : result) {
+    const absl::string_view w = piece.first;
+    RET_CHECK(!piece.first.empty()) << "Empty piece is not allowed.";
+    const int id = piece.second;
+    if (IsControl(id)) {
+      if constexpr (std::is_same_v<T, int>) {
+        output->emplace_back(id);
+      } else {
+        output->emplace_back(w.data(), w.size());
+      }
+      is_prev_unk = false;
+    } else {
+      const bool is_unk = IsUnknown(id);
+      if (is_unk && byte_fallback_enabled) {
+        for (size_t i = 0; i < w.size(); ++i) {
+          if constexpr (std::is_same_v<T, int>) {
+            const auto sp_id =
+                model_->PieceToId(ByteToPiece(static_cast<uint8_t>(w[i])));
+            output->emplace_back(sp_id);
+          } else {
+            output->emplace_back(ByteToPiece(static_cast<uint8_t>(w[i])));
+          }
+        }
+      } else {
+        // Merge continuous runs of unknown pieces.
+        if (!is_prev_unk || !is_unk) {
+          if constexpr (std::is_same_v<T, int>) {
+            output->emplace_back(id);
+          } else {
+            if (is_unk && has_unk_piece) {
+              output->emplace_back(model_->unk_piece());
+            } else {
+              output->emplace_back(w.data(), w.size());
+            }
+          }
+        } else {
+          if constexpr (!std::is_same_v<T, int>) {
+            if (!has_unk_piece) {
+              output->back().append(w.data(), w.size());
+            }
+          }
+        }
+      }
+      is_prev_unk = is_unk;
+    }
+  }
+
+  return ApplyExtraOptions(encode_extra_options_, output);
+}
+
+template <typename T>
+absl::Status SentencePieceProcessor::DecodeOptimized(
+    absl::Span<const T> input, std::string* detokenized) const {
+  RET_CHECK_STATUS_STL(detokenized);
+
+  if (input.empty()) {
+    return absl::OkStatus();
+  }
+
+  // active_input points to the data we will decode. By default it points to the
+  // input span (zero-copy).
+  absl::Span<const T> active_input = input;
+  // If we have extra options to apply, we must copy the input to a mutable
+  // container (work_input) to apply the modifications, as the input span is
+  // const.
+  std::vector<T> work_input;
+
+  if (!decode_extra_options_.empty()) {
+    work_input.assign(input.begin(), input.end());
+    RETURN_IF_ERROR(ApplyExtraOptions(decode_extra_options_, &work_input));
+    active_input = work_input;
+  }
+
+  absl::string_view unk_surface = kDefaultUnknownSymbol;
+  if (model_proto_ && model_proto_->trainer_spec().has_unk_surface())
+    unk_surface = model_proto_->trainer_spec().unk_surface();
+
+  std::string byte_queue;
+
+  auto ProcessByteQueue = [&]() -> absl::Status {
+    if (byte_queue.empty()) return absl::OkStatus();
+    int offset = 0;
+    const int bytes_len = byte_queue.size();
+    while (offset < bytes_len) {
+      size_t consumed;
+      const bool is_valid = string_util::IsValidDecodeUTF8(
+          absl::string_view(byte_queue).substr(offset), &consumed);
+      if (!is_valid) {
+        RET_CHECK_EQ(consumed, 1);
+        absl::StrAppend(detokenized, kReplacementCharacter);
+      } else {
+        const absl::string_view utf8 =
+            absl::string_view(byte_queue).substr(offset, consumed);
+        absl::StrAppend(detokenized, utf8);
+      }
+      offset += consumed;
+    }
+    byte_queue.clear();
+    return absl::OkStatus();
+  };
+
+  bool is_bos_ws = true;
+  for (const auto& item : active_input) {
+    int id = -1;
+    absl::string_view piece;
+    if constexpr (std::is_same_v<T, int>) {
+      id = item;
+      if (id < 0 || id >= GetPieceSize()) {
+        return absl::Status(absl::StatusCode::kOutOfRange,
+                            absl::StrCat("Invalid id: ", id));
+      }
+      piece = IdToPiece(id);
+    } else {
+      piece = item;
+      id = PieceToId(piece);
+    }
+
+    if (IsByte(id)) {
+      const int byte = PieceToByte(piece);
+      RET_CHECK_LE(0, byte);
+      byte_queue.append(1, byte);
+    } else {
+      RETURN_IF_ERROR(ProcessByteQueue());
+      if (!detokenized->empty()) {
+        is_bos_ws = false;
+      }
+
+      if (IsControl(id)) {
+        continue;
+      }
+
+      absl::string_view p = piece;
+      bool has_bos_ws = false;
+      if (is_bos_ws &&
+          (!model_proto_ ||
+           (model_proto_ &&
+            (model_proto_->normalizer_spec().add_dummy_prefix() ||
+             model_proto_->normalizer_spec().remove_extra_whitespaces())))) {
+        has_bos_ws = absl::ConsumePrefix(&p, kSpaceSymbol);
+        if (model_proto_ &&
+            model_proto_->normalizer_spec().remove_extra_whitespaces()) {
+          has_bos_ws = false;
+        }
+      }
+
+      if (IsUnknown(id)) {
+        if (IdToPiece(id) == piece) {
+          absl::StrAppend(detokenized, unk_surface);
+        } else {
+          absl::StrAppend(detokenized, piece);
+        }
+      } else {
+        absl::StrAppend(detokenized,
+                        absl::StrReplaceAll(p, {{kSpaceSymbol, " "}}));
+      }
+
+      if (has_bos_ws || !detokenized->empty()) {
+        is_bos_ws = false;
+      }
+    }
+  }
+  RETURN_IF_ERROR(ProcessByteQueue());
+
+  if (denormalizer_) {
+    *detokenized = denormalizer_->Normalize(*detokenized);
+  }
+
+  return absl::OkStatus();
+}
 
 namespace io {
 absl::Status LoadModelProto(absl::string_view filename,

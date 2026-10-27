@@ -27,9 +27,10 @@ Both methods will output `m.model` and `m.vocab` files.
 
 These options control the input/output files, the tokenization algorithm type, and general runtime settings.
 
-*   **`input`** (string, default: `""`)
+*   **`input`** (string or list of strings, default: `""`)
     *   Comma-separated list of input text files for training.
-    *   *Example*: `--input=data/corpus1.txt,data/corpus2.txt`
+    *   *Python Example*: `input=['data/corpus1.txt', 'data/corpus2.txt']`
+    *   *CLI Example*: `--input=data/corpus1.txt,data/corpus2.txt`
 *   **`input_format`** (string, default: `"text"`)
     *   Format of input files. Supported formats:
         *   `text`: Raw text files (one sentence per line).
@@ -48,13 +49,15 @@ These options control the input/output files, the tokenization algorithm type, a
 *   **`vocab_size`** (int32, default: `8000`)
     *   Desired vocabulary size (including special symbols).
 
-*   **`accept_language`** (string, default: `""`)
+*   **`accept_language`** (string or list of strings, default: `""`)
     *   Comma-separated list of ISO language codes (e.g., `ja,en`).
+    *   *Python Example*: `accept_language=['ja', 'en']`
     *   *Note*: This option is currently not used by the training logic and does not affect the model behavior. It is kept for backward compatibility and can be used to store language metadata inside the model file.
 *   **`num_threads`** (int32, default: `16`)
     *   Number of threads to use during training.
 *   **`random_seed`** (uint32, default: `4294967295` (max uint32))
     *   Seed for the random number generator. Used for EM initialization in Unigram and BPE-dropout.
+    *   *Note on Reproducibility*: SentencePiece uses [Abseil Random](https://abseil.io/docs/cpp/guides/random) (specifically `absl::BitGen`) internally. Abseil does not guarantee stability of the generated random sequence across different library versions or platforms. Therefore, passing a fixed `random_seed` does not guarantee permanent reproducibility across updates.
 *   **`minloglevel`** (int, default: `0`)
     *   Minimum logging level (0: INFO, 1: WARNING, 2: ERROR, 3: FATAL).
 
@@ -86,11 +89,11 @@ These options tune the core vocabulary learning process (primarily for Unigram a
 *   **`seed_sentencepiece_size`** (int32, default: `1000000`)
     *   *(Unigram only)* Initial size of the candidate vocabulary before EM optimization starts. SentencePiece extracts this many frequent substrings as seeds, then iteratively prunes them.
 *   **`seed_sentencepieces_file`** (string, default: `""`)
-    *   Path to a file containing pre-defined subwords (one per line, format: `piece \t frequency`) to seed the vocabulary, instead of extracting them from the corpus.
+    *   *(Unigram only)* Path to a file containing pre-defined subwords (one per line, format: `piece \t frequency`) to seed the vocabulary, instead of extracting them from the corpus.
 *   **`shrinking_factor`** (double, default: `0.75`)
     *   *(Unigram only)* The ratio by which the vocabulary is pruned in each iteration of EM training. In each step, it keeps the top pieces with respect to the loss, reducing the candidate size by `vocab_size * shrinking_factor` until it reaches `vocab_size`.
 *   **`num_sub_iterations`** (int32, default: `2`)
-    *   Number of EM optimization iterations per vocabulary pruning step.
+    *   *(Unigram only)* Number of EM optimization iterations per vocabulary pruning step.
 *   **`max_sentence_length`** (int32, default: `4192`)
     *   Maximum length (in bytes) of a sentence loaded by the trainer. Longer sentences are silently truncated or skipped to avoid performance bottlenecks.
 *   **`use_all_vocab`** (bool, default: `false`)
@@ -131,12 +134,14 @@ These options define special symbols (BOS, EOS, PAD, custom control tokens) and 
 
 *(See [Special Symbols](special_symbols.md) for details on control vs. user-defined symbols and security implications.)*
 
-*   **`control_symbols`** (string, default: `""`)
+*   **`control_symbols`** (string or list of strings, default: `""`)
     *   Comma-separated list of custom control symbols (e.g., `<system>`, `<user>`). Control symbols are never tokenized from raw text and decode to empty strings.
+    *   *Python Example*: `control_symbols=['<system>', '<user>']`
 *   **`control_symbols_file`** (string, default: `""`)
     *   Path to a file containing control symbols (one per line).
-*   **`user_defined_symbols`** (string, default: `""`)
+*   **`user_defined_symbols`** (string or list of strings, default: `""`)
     *   Comma-separated list of custom user-defined symbols (e.g., emojis, HTML tags). User-defined symbols are matched from raw text as indivisible tokens.
+    *   *Python Example*: `user_defined_symbols=['<emoji1>', '<emoji2>']`
 *   **`user_defined_symbols_file`** (string, default: `""`)
     *   Path to a file containing user-defined symbols (one per line).
 *   **`required_chars`** (string, default: `""`)

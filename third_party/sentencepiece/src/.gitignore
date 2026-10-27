@@ -81,3 +81,5 @@ python/test/m_*.vocab
 python/test/sp_*.pickle
 
 third_party/absl
+
+test_tmp

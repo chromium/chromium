@@ -1,5 +1,3 @@
-
-
 // Copyright 2016 Google Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -82,8 +80,8 @@ inline float GetUserDefinedScore(int length) { return 0.1 * (length - 1); }
 inline float Gumbel() {
   const float kEpsilon = 1e-7;
   auto *mt = random::GetRandomGenerator();
-  std::uniform_real_distribution<float> dis(0.0, 1.0);
-  float noise = -std::log(-(std::log(dis(*mt) + kEpsilon)));
+  float noise =
+      -std::log(-(std::log(absl::Uniform(*mt, 0.0f, 1.0f) + kEpsilon)));
 
   return noise;
 }
@@ -687,10 +685,14 @@ void Model::BuildTrie(std::vector<std::pair<absl::string_view, int>> *pieces) {
 Model::Model(const ModelProto &model_proto) {
   model_proto_ = &model_proto;
 
-  InitializePieces();
+  InitializePieces(/* use_reserved_id_map= */ true);
 
   min_score_ = FLT_MAX;
   for (const auto &sp : model_proto_->pieces()) {
+    if (std::isnan(sp.score()) || std::isinf(sp.score())) {
+      status_ = absl::InternalError("score is NaN or Inf.");
+      return;
+    }
     if (sp.type() == ModelProto::SentencePiece::NORMAL) {
       min_score_ = std::min(min_score_, sp.score());
     }
@@ -981,11 +983,23 @@ EncodeResult Model::EncodeOptimized(absl::string_view normalized) const {
   std::vector<BestPathNode> best_path_ends_at(size + 1);
   // Generate lattice on-the-fly (not stored) and update best_path_ends_at.
   size_t starts_at = 0;
+  const float kScoreResetThreshold = 100000.0f;
+  size_t max_frontier = 0;
   while (starts_at < size) {
     std::size_t node_pos = 0;
     std::size_t key_pos = starts_at;
-    const auto best_path_score_till_here =
+    float best_path_score_till_here =
         best_path_ends_at[starts_at].best_path_score;
+    if (best_path_score_till_here < -kScoreResetThreshold ||
+        best_path_score_till_here > kScoreResetThreshold) {
+      const float offset = best_path_score_till_here;
+      for (size_t i = starts_at; i <= max_frontier; ++i) {
+        if (i == starts_at || best_path_ends_at[i].starts_at != -1) {
+          best_path_ends_at[i].best_path_score -= offset;
+        }
+      }
+      best_path_score_till_here = 0.0f;
+    }
     bool has_single_node = false;
     const int mblen =
         std::min<int>(string_util::OneCharLen(normalized.data() + starts_at),
@@ -996,6 +1010,7 @@ EncodeResult Model::EncodeOptimized(absl::string_view normalized) const {
       if (ret == -2) break;
       if (ret >= 0 && ret < GetPieceSize()) {
         if (IsUnusedInlined(ret)) continue;
+        max_frontier = std::max(max_frontier, key_pos);
         // Update the best path node.
         auto &target_node = best_path_ends_at[key_pos];
         const auto length = (key_pos - starts_at);
@@ -1017,6 +1032,7 @@ EncodeResult Model::EncodeOptimized(absl::string_view normalized) const {
       }
     }
     if (!has_single_node) {
+      max_frontier = std::max(max_frontier, starts_at + static_cast<size_t>(mblen));
       auto &target_node = best_path_ends_at[starts_at + mblen];
       const auto candidate_best_path_score =
           unk_score + best_path_score_till_here;

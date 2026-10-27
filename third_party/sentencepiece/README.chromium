@@ -1,8 +1,8 @@
 Name: Sentencepiece
 Short Name: sentencepiece
 URL: https://github.com/google/sentencepiece
-Version: b9e2e4f6ebc73900e061044b54f68a95090e23ff
-Revision: b9e2e4f6ebc73900e061044b54f68a95090e23ff
+Version: v0.2.2
+Revision: e0cce7d37b065b5140349dbe12c6bcf6192fdd78
 Update Mechanism: Manual
 Date: 2026-06-18
 License: BSD-3-Clause, Apache-2.0, MIT

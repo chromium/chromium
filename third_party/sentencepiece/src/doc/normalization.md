@@ -130,6 +130,26 @@ normalizer_model = spm.SentencePieceNormalizer(
 
 # 3. Load normalizer directly from a custom TSV rule file
 normalizer_custom = spm.SentencePieceNormalizer(rule_tsv='path/to/custom_rules.tsv')
+
+# 4. Load normalizer directly from a Python list of mappings (norm_map)
+normalizer_map = spm.SentencePieceNormalizer(norm_map=[('foo', 'bar'), ('baz', 'qux')])
+print(normalizer_map.normalize('foobar'))  # Output: barbar
+
+# 5. Decompile normalization rules from a loaded normalizer back to a list of mappings
+# (Works with normalizers loaded from model, TSV, rule name, or norm_map)
+rules = normalizer.decompile()
+# rules is a list of tuples: [('foo', 'bar'), ...]
+
+# 6. Train a model using a custom normalizer instance
+# You can define a normalizer at runtime and pass it directly to the trainer.
+# This embeds the custom normalization rules directly into the trained model.
+custom_norm = spm.SentencePieceNormalizer(norm_map=[('foo', 'bar')], escape_whitespaces=True)
+spm.SentencePieceTrainer.train(
+    input='input.txt',
+    model_prefix='m',
+    vocab_size=8000,
+    normalizer=custom_norm
+)
 ```
 
 For more details on the Python wrapper API, see the [Python Module README](../python/README.md).

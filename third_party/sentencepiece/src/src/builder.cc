@@ -178,6 +178,15 @@ absl::Status Builder::CompileCharsMap(const CharsMap& chars_map,
 
   ABSL_LOG(INFO) << "Loading CharsMap of size=" << chars_map.size();
 
+  for (const auto& p : chars_map) {
+    if (p.first.empty()) {
+      return absl::InvalidArgumentError("Source string cannot be empty.");
+    }
+    if (p.first == p.second) {
+      return absl::InvalidArgumentError("Identity conversion is not allowed.");
+    }
+  }
+
   // Aggregates the same target strings to save footprint.
   std::map<Chars, int> normalized2pos;
   for (const auto& p : chars_map) {

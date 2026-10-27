@@ -137,12 +137,14 @@ class ModelInterface {
   }
 
   // Returns the vocab id of `piece`.
+  // both `pieces_` and `reserved_id_map_` are checked.
   // Returns UNK(0) if `piece` is unknown
   [[nodiscard]] virtual int PieceToId(absl::string_view piece) const;
 
   // Returns the vocab id of `piece`.
   // Returns UNK(0) if `piece` is unknown
-  // It does not use reserved_id_map_ for the optimization sake
+  // It does not use reserved_id_map_ for the optimization sake,
+  // e.g., BPE merges only with normal pieces.
   [[nodiscard]] int PieceToIdNoReserved(absl::string_view piece) const;
 
   // Returns the string representation of vocab with `id`.
@@ -226,7 +228,12 @@ class ModelInterface {
   }
 
  protected:
-  void InitializePieces(bool use_reserved_id_map = true);
+  // Initializes pieces_ and reserved_id_map_.
+  // Control/special symbols (type CONTROL, UNKNOWN, BYTE) are stored in
+  // `reserved_id_map_` instead of `pieces_`. This excludes them from the main
+  // vocabulary map, which in turn prevents them from being merged during BPE
+  // segmentation (since BPE merge only looks up in `pieces_`).
+  void InitializePieces(bool use_reserved_id_map);
 
   // Non-virtual (inlined) implementation for faster execution.
   [[nodiscard]] float GetScoreInlined(int id) const {
@@ -267,6 +274,15 @@ class ModelInterface {
     ABSL_DCHECK_GE(id, 0);
     ABSL_DCHECK_LT(id, model_proto_->pieces_size());
     return (model_proto_->pieces(id).type() == ModelProto::SentencePiece::BYTE);
+  }
+
+  [[nodiscard]] bool IsReservedId(int id) const {
+    ABSL_DCHECK_GE(id, 0);
+    ABSL_DCHECK_LT(id, model_proto_->pieces_size());
+    const auto& piece = model_proto_->pieces(id);
+    return (piece.type() != ModelProto::SentencePiece::NORMAL &&
+            piece.type() != ModelProto::SentencePiece::USER_DEFINED &&
+            piece.type() != ModelProto::SentencePiece::UNUSED);
   }
 
   const ModelProto* model_proto_ = nullptr;

@@ -730,6 +730,16 @@ class SentencePieceProcessor {
 
   // Returns the reserved id.
   // Returns -1 if not defined.
+  //
+  // Note: Valid IDs are returned only when they are strictly defined as
+  // CONTROL tokens (or UNKNOWN for unk_id). If they are defined as
+  // USER_DEFINED, these methods will return -1, as USER_DEFINED symbols
+  // are treated as normal symbols (protected from segmentation) rather
+  // than strict special control symbols.
+  //
+  // Consequently, encoding extra options (like "bos" / "eos") and Python
+  // wrapper flags (like add_bos=True / add_eos=True) will be IGNORED if
+  // the corresponding tokens are not strictly defined as CONTROL tokens.
 
   // Returns unknown (<unk>) id.
   [[nodiscard]] virtual int unk_id() const;
@@ -771,8 +781,19 @@ class SentencePieceProcessor {
   absl::Status ParseExtraOptions(absl::string_view extra_option,
                                  std::vector<ExtraOption>* extra_options) const;
 
-  absl::Status ApplyExtraOptions(const std::vector<ExtraOption>& extra_options,
-                                 SentencePieceText* spt) const;
+  template <typename T>
+  absl::Status ApplyExtraOptions(absl::Span<const ExtraOption> extra_options,
+                                 T* output) const;
+
+  template <typename T>
+  absl::Status EncodeOptimized(absl::string_view input,
+                               std::vector<T>* output) const;
+
+  template <typename T>
+  absl::Status DecodeOptimized(absl::Span<const T> input,
+                               std::string* detokenized) const;
+
+  bool HasUnkPieceOption() const;
 
   absl::Status PopulateSentencePieceText(
       absl::string_view input, absl::string_view normalized,
@@ -790,6 +811,16 @@ class SentencePieceProcessor {
   std::unique_ptr<ModelInterface> model_;
   std::unique_ptr<normalizer::Normalizer> normalizer_;
   std::unique_ptr<normalizer::Normalizer> denormalizer_;
+
+  // Cached IDs.
+  // Note that these IDs are not always the same as the IDs in TrainerSpec.
+  // The TrainerSpec defines the training-time configuration, while these
+  // IDs reflect the actual IDs in the loaded model, which might be different
+  // or disabled (set to -1).
+  int unk_id_ = -1;
+  int bos_id_ = -1;
+  int eos_id_ = -1;
+  int pad_id_ = -1;
 
   // Underlying model protocol buffer. The same lifetime as model_.
   std::unique_ptr<ModelProto> model_proto_;
