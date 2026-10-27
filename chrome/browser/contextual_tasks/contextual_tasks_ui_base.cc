@@ -5,8 +5,10 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_base.h"
 
 #include <algorithm>
+#include <iterator>
 #include <optional>
 #include <string_view>
+#include <vector>
 
 #include "base/functional/bind.h"
 #include "base/memory/ref_counted_memory.h"
@@ -68,6 +70,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/base/webui/resource_path.h"
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/webui/tracked_element/tracked_element_handler_document_singleton.h"
@@ -290,11 +293,14 @@ content::WebUIDataSource* ContextualTasksUIBase::RegisterWebUIDataSource(
   if (contextual_tasks::IsContextualTasksSidePanelRearchitectureEnabled()) {
     webui::SetJSModuleDefaults(source);
     webui::EnableTrustedTypesCSP(source);
+    std::vector<webui::ResourcePath> resources;
+    resources.reserve(std::size(kContextualTasksResources));
     for (const auto& resource : kContextualTasksResources) {
       if (std::string_view(resource.path) != "contextual_tasks.html") {
-        source->AddResourcePath(resource.path, resource.id);
+        resources.push_back(resource);
       }
     }
+    source->AddResourcePaths(resources);
   } else {
     webui::SetupWebUIDataSource(source, kContextualTasksResources,
                                 IDR_CONTEXTUAL_TASKS_CONTEXTUAL_TASKS_HTML);
