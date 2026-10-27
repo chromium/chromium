@@ -329,9 +329,6 @@ BASE_FEATURE(kWebGPUUseSpirv14, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kWebGPUUseHLSL2021, base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kWebGPUUseSpirvReconvergenceMode,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables the use of dedicated shared memory transfer buffers for mapped WebGPU
 // buffers. Only takes effect when explicitly enabled (e.g. via
 // --enable-features=WebGPUUseDedicatedTransferBuffer).

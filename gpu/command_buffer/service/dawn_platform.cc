@@ -333,9 +333,6 @@ bool DawnPlatform::IsFeatureEnabled(dawn::platform::Features feature) {
       return base::FeatureList::IsEnabled(features::kWebGPUUseSpirv14);
     case dawn::platform::Features::kWebGPUUseHLSL2021:
       return base::FeatureList::IsEnabled(features::kWebGPUUseHLSL2021);
-    case dawn::platform::Features::kWebGPUUseSpirvReconvergenceMode:
-      return base::FeatureList::IsEnabled(
-          features::kWebGPUUseSpirvReconvergenceMode);
     default:
       return false;
   }
