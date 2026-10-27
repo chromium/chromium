@@ -10,9 +10,8 @@ import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {getCss} from './app.css.js';
 import {getHtml} from './app.html.js';
-import type {ProfileData} from './tab_search.mojom-webui.js';
-import type {TabSearchApiProxy} from './tab_search_api_proxy.js';
-import {TabSearchApiProxyImpl} from './tab_search_api_proxy.js';
+import type {BrowserProxy, ProfileData} from './tab_search.mojom-webui.js';
+import {browserProxyFactory} from './tab_search.mojom-webui.js';
 
 export class TabSearchAppElement extends CrLitElement {
   static get is() {
@@ -33,7 +32,7 @@ export class TabSearchAppElement extends CrLitElement {
     };
   }
 
-  private apiProxy_: TabSearchApiProxy = TabSearchApiProxyImpl.getInstance();
+  private apiProxy_: BrowserProxy = browserProxyFactory.getInstance();
   private documentVisibilityChangedListener_: () => void;
   private listenerIds_: number[] = [];
   protected accessor availableHeight_: number = 0;
@@ -51,7 +50,7 @@ export class TabSearchAppElement extends CrLitElement {
     super.connectedCallback();
 
     if (loadTimeData.getBoolean('tabSearchPerformanceImprovements')) {
-      const callbackRouter = this.apiProxy_.getCallbackRouter();
+      const callbackRouter = this.apiProxy_.callbackRouter;
       this.listenerIds_.push(callbackRouter.tabsChanged.addListener(
           this.updateAvailableHeight_.bind(this)));
       if (document.visibilityState === 'visible') {
@@ -68,7 +67,7 @@ export class TabSearchAppElement extends CrLitElement {
     super.disconnectedCallback();
     if (loadTimeData.getBoolean('tabSearchPerformanceImprovements')) {
       this.listenerIds_.forEach(
-          id => this.apiProxy_.getCallbackRouter().removeListener(id));
+          id => this.apiProxy_.callbackRouter.removeListener(id));
       this.listenerIds_ = [];
     } else {
       document.removeEventListener(
@@ -78,7 +77,7 @@ export class TabSearchAppElement extends CrLitElement {
 
   private updateAvailableHeight_(profileData?: ProfileData) {
     if (!profileData) {
-      this.apiProxy_.getProfileData().then(
+      this.apiProxy_.handler.getProfileData().then(
           ({profileData}) => this.updateAvailableHeight_(profileData));
       return;
     }

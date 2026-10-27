@@ -13,14 +13,13 @@ import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_
 import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import type {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
-import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import type {PageCallbackRouter} from './access_code_cast.mojom-webui.js';
-import {AddSinkResultCode, CastDiscoveryMethod} from './access_code_cast.mojom-webui.js';
+import {AddSinkResultCode, browserProxyFactory, CastDiscoveryMethod} from './access_code_cast.mojom-webui.js';
 import {getCss} from './access_code_cast_app.css.js';
 import {getHtml} from './access_code_cast_app.html.js';
 import {BrowserProxy, DialogCloseReason} from './browser_proxy.js';
@@ -97,9 +96,7 @@ export class AccessCodeCastAppElement extends AccessCodeCastAppElementBase {
   constructor() {
     super();
 
-    const router = BrowserProxy.getInstance().callbackRouter;
-    assert(router);
-    this.router = router;
+    this.router = browserProxyFactory.getInstance().callbackRouter;
 
     // Enable dynamic colors for the dialog.
     ColorChangeUpdater.forDocument().start();
@@ -325,15 +322,13 @@ export class AccessCodeCastAppElement extends AccessCodeCastAppElementBase {
 
   private async addSink(method: CastDiscoveryMethod):
       Promise<AddSinkResultCode> {
-    const handler = BrowserProxy.getInstance().handler;
-    assert(handler);
+    const handler = browserProxyFactory.getInstance().handler;
     const addSinkResult = await handler.addSink(this.accessCode, method);
     return addSinkResult.resultCode;
   }
 
   private async cast(): Promise<RouteRequestResultCode> {
-    const handler = BrowserProxy.getInstance().handler;
-    assert(handler);
+    const handler = browserProxyFactory.getInstance().handler;
     const castResult = await handler.castToSink();
     return castResult.resultCode;
   }

@@ -37,7 +37,6 @@ build_webui("build") {
   web_component_files = [ "data_sharing_app.ts" ]
 
   ts_files = [
-    "browser_proxy.ts",
     "data_sharing_api.ts",
     "mojom_conversion_utils.ts",
   ]

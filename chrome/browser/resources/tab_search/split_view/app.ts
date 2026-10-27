@@ -16,7 +16,8 @@ import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import type {SelectableLazyListElement} from '../selectable_lazy_list.js';
 import {getDisplayHostnameForUrl, normalizeURL, TabData, TabItemType} from '../tab_data.js';
-import type {ProfileData, Tab, TabsRemovedInfo, TabUpdateInfo} from '../tab_search.mojom-webui.js';
+import type {BrowserProxy, ProfileData, Tab, TabsRemovedInfo, TabUpdateInfo} from '../tab_search.mojom-webui.js';
+import {browserProxyFactory} from '../tab_search.mojom-webui.js';
 import type {TabSearchApiProxy} from '../tab_search_api_proxy.js';
 import {TabSearchApiProxyImpl} from '../tab_search_api_proxy.js';
 import type {TabSearchItemElement} from '../tab_search_item.js';
@@ -58,7 +59,9 @@ export class SplitNewTabPageAppElement extends CrLitElement {
   protected title_: string = '';
   protected accessor webuiRoundedIconsEnabled_: boolean =
       loadTimeData.getBoolean('webuiRoundedIconsEnabled');
-  private apiProxy_: TabSearchApiProxy = TabSearchApiProxyImpl.getInstance();
+  private apiProxy_: BrowserProxy = browserProxyFactory.getInstance();
+  private tabSearchApiProxy_: TabSearchApiProxy =
+      TabSearchApiProxyImpl.getInstance();
   private initialFocusPromise_: Promise<void>|null = null;
   private listenerIds_: number[] = [];
   private visibilityChangedListener_: () => void;
@@ -73,7 +76,7 @@ export class SplitNewTabPageAppElement extends CrLitElement {
 
     this.visibilityChangedListener_ = () => {
       if (document.visibilityState === 'visible') {
-        this.apiProxy_.getProfileData().then(({profileData}) => {
+        this.apiProxy_.handler.getProfileData().then(({profileData}) => {
           this.onTabsChanged_(profileData);
         });
       }
@@ -83,13 +86,13 @@ export class SplitNewTabPageAppElement extends CrLitElement {
   override connectedCallback() {
     super.connectedCallback();
 
-    this.apiProxy_.getIsSplit().then(({isSplit}) => {
+    this.apiProxy_.handler.getIsSplit().then(({isSplit}) => {
       if (!isSplit) {
         this.redirectToNtp_();
       }
     });
 
-    const callbackRouter = this.apiProxy_.getCallbackRouter();
+    const callbackRouter = this.apiProxy_.callbackRouter;
     this.listenerIds_.push(
         callbackRouter.tabsChanged.addListener(this.onTabsChanged_.bind(this)),
         callbackRouter.tabUpdated.addListener(this.onTabUpdated_.bind(this)),
@@ -98,7 +101,7 @@ export class SplitNewTabPageAppElement extends CrLitElement {
         callbackRouter.hostWindowChanged.addListener(
             this.hostWindowChanged_.bind(this)));
 
-    this.apiProxy_.getProfileData().then(({profileData}) => {
+    this.apiProxy_.handler.getProfileData().then(({profileData}) => {
       this.onTabsChanged_(profileData);
     });
 
@@ -110,7 +113,7 @@ export class SplitNewTabPageAppElement extends CrLitElement {
     super.disconnectedCallback();
 
     this.listenerIds_.forEach(
-        id => this.apiProxy_.getCallbackRouter().removeListener(id));
+        id => this.apiProxy_.callbackRouter.removeListener(id));
     this.listenerIds_ = [];
 
     document.removeEventListener(
@@ -118,7 +121,7 @@ export class SplitNewTabPageAppElement extends CrLitElement {
   }
 
   protected onCloseClick_() {
-    this.apiProxy_.closeWebUiTab();
+    this.apiProxy_.handler.closeWebUiTab();
   }
 
   protected onCloseButtonFocus_() {
@@ -137,7 +140,8 @@ export class SplitNewTabPageAppElement extends CrLitElement {
 
   protected onTabClick_(e: Event) {
     const target = e.currentTarget as TabSearchItemElement;
-    this.apiProxy_.replaceActiveSplitTab((target.data.tab as Tab).tabId);
+    this.apiProxy_.handler.replaceActiveSplitTab(
+        (target.data.tab as Tab).tabId);
   }
 
   protected onTabFocus_(e: Event) {
@@ -265,11 +269,11 @@ export class SplitNewTabPageAppElement extends CrLitElement {
   }
 
   private redirectToNtp_() {
-    this.apiProxy_.redirectToNtp();
+    this.tabSearchApiProxy_.redirectToNtp();
   }
 
   private hostWindowChanged_() {
-    this.apiProxy_.getProfileData().then(({profileData}) => {
+    this.apiProxy_.handler.getProfileData().then(({profileData}) => {
       this.onTabsChanged_(profileData);
     });
   }

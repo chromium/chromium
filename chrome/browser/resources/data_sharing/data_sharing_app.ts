@@ -18,15 +18,15 @@ import {SHAREKIT_SDK_VERSION} from './dummy_data_sharing_sdk.js';
 import '/strings.m.js';
 
 import {ColorChangeUpdater} from '//resources/cr_components/color_change_listener/colors_css_updater.js';
+import {AbslStatusCode} from '//resources/mojo/mojo/public/mojom/base/absl_status.mojom-webui.js';
 import {assert} from 'chrome-untrusted://resources/js/assert.js';
 import {CustomElement} from 'chrome-untrusted://resources/js/custom_element.js';
 import {loadTimeData} from 'chrome-untrusted://resources/js/load_time_data.js';
 
-import {BrowserProxyImpl} from './browser_proxy.js';
-import type {BrowserProxy} from './browser_proxy.js';
-import {GroupAction, GroupActionProgress} from './data_sharing.mojom-webui.js';
+import type {BrowserProxy} from './data_sharing.mojom-webui.js';
+import {browserProxyFactory, GroupAction, GroupActionProgress} from './data_sharing.mojom-webui.js';
 import {getTemplate} from './data_sharing_app.html.js';
-import type {DataSharingSdk, DataSharingSdkGetLinkParams, DynamicMessageParams, Logger, LoggingEvent, TranslationMap} from './data_sharing_sdk_types.js';
+import type {DataSharingSdk, DataSharingSdkGetLinkParams, DataSharingSdkSitePreview, DynamicMessageParams, Logger, LoggingEvent, TranslationMap} from './data_sharing_sdk_types.js';
 import {Code, DataSharingMemberRoleEnum, DynamicMessageKey, LearnMoreUrlType, LoggingIntent, Progress, StaticMessageKey} from './data_sharing_sdk_types.js';
 
 // Param names in loaded URL. Should match those in
@@ -356,7 +356,7 @@ export class DataSharingApp extends CustomElement implements Logger {
   private initialized_: boolean = false;
   private dataSharingSdk_: DataSharingSdk =
       window.data_sharing_sdk.buildDataSharingSdk();
-  private browserProxy_: BrowserProxy = BrowserProxyImpl.getInstance();
+  private browserProxy_: BrowserProxy = browserProxyFactory.getInstance();
   private translationMap_: TranslationMap = createTranslationMap();
   private abandonJoin_: boolean = false;
   private successfullyJoined_: boolean = false;
@@ -383,7 +383,7 @@ export class DataSharingApp extends CustomElement implements Logger {
           this.dataSharingSdk_.setOauthAccessToken({accessToken});
           if (!this.initialized_) {
             this.processUrl();
-            this.browserProxy_.showUi();
+            this.browserProxy_.handler.showUI();
             this.initialized_ = true;
           }
         },
@@ -409,13 +409,13 @@ export class DataSharingApp extends CustomElement implements Logger {
     if (event.intentType === LoggingIntent.STOP_SHARING) {
       assert(this.tabGroupId_);
       if (event.progress === Progress.STARTED) {
-        this.browserProxy_.aboutToUnShareTabGroup(this.tabGroupId_);
+        this.browserProxy_.handler.aboutToUnShareTabGroup(this.tabGroupId_);
       } else if (event.progress === Progress.SUCCEEDED) {
-        this.browserProxy_.onTabGroupUnShareComplete(this.tabGroupId_);
+        this.browserProxy_.handler.onTabGroupUnShareComplete(this.tabGroupId_);
       }
     }
 
-    this.browserProxy_.onGroupAction(
+    this.browserProxy_.handler.onGroupAction(
         toMojomGroupAction(event.intentType),
         toMojomGroupActionProgress(event.progress));
   }
@@ -518,32 +518,34 @@ export class DataSharingApp extends CustomElement implements Logger {
             .runInviteFlow({
               parent,
               translatedMessages: this.translationMap_,
-              getShareLink: async(params: DataSharingSdkGetLinkParams):
-                  Promise<string> => {
-                    // If the tab group is not shared before, go through
-                    // makeTabGroupShared() Otherwise go through getShareLink().
-                    if (!this.convertedToSharedTabGroup) {
-                      const url = await this.browserProxy_.makeTabGroupShared(
+              getShareLink: async(
+                  params: DataSharingSdkGetLinkParams): Promise<string> => {
+                // If the tab group is not shared before, go through
+                // makeTabGroupShared() Otherwise go through getShareLink().
+                if (!this.convertedToSharedTabGroup) {
+                  const {url} =
+                      await this.browserProxy_.handler.makeTabGroupShared(
                           tabGroupId!, params.groupId, params.tokenSecret!);
-                      if (url === undefined) {
-                        this.browserProxy_.closeUi(Code.UNKNOWN);
-                        return '';
-                      } else {
-                        this.convertedToSharedTabGroup = true;
-                        return url;
-                      }
-                    } else {
-                      return this.browserProxy_.getShareLink(
-                          params.groupId, params.tokenSecret!);
-                    }
-                  },
+                  if (!url) {
+                    this.browserProxy_.handler.closeUI(Code.UNKNOWN);
+                    return '';
+                  } else {
+                    this.convertedToSharedTabGroup = true;
+                    return url;
+                  }
+                } else {
+                  const {url} = await this.browserProxy_.handler.getShareLink(
+                      params.groupId, params.tokenSecret!);
+                  return url;
+                }
+              },
               // TODO(crbug.com/376348102): Provide group name to share flow.
               groupName: '',
               learnMoreUrlMap,
               logger: this,
             })
             .then((res) => {
-              this.browserProxy_.closeUi(res.status);
+              this.browserProxy_.handler.closeUI(res.status);
             });
         break;
       case FlowValues.JOIN:
@@ -557,15 +559,14 @@ export class DataSharingApp extends CustomElement implements Logger {
               learnMoreUrlMap: learnMoreUrlMap,
               onJoinSuccessful: () => {
                 this.successfullyJoined_ = true;
-                this.browserProxy_.handler!.openTabGroup(groupId!);
+                this.browserProxy_.handler.openTabGroup(groupId!);
                 // No need to return this promise since we want the bubble to
                 // keep spinning until closed by the browser when new shared tab
                 // group is received.
                 return new Promise<void>(() => {});
               },
               fetchPreviewData: () => {
-                return this.browserProxy_.getTabGroupPreview(
-                    groupId!, tokenSecret!);
+                return this.getTabGroupPreview(groupId!, tokenSecret!);
               },
               logger: this,
             })
@@ -577,11 +578,11 @@ export class DataSharingApp extends CustomElement implements Logger {
               }
 
               if (this.abandonJoin_) {
-                this.browserProxy_.closeUi(res.status);
+                this.browserProxy_.handler.closeUI(res.status);
               } else {
                 // If user neither successfully joined nor abandon join, there
                 // must be an error.
-                this.browserProxy_.closeUi(Code.UNKNOWN);
+                this.browserProxy_.handler.closeUI(Code.UNKNOWN);
               }
             });
         break;
@@ -595,8 +596,9 @@ export class DataSharingApp extends CustomElement implements Logger {
               groupId: groupId!,
               getShareLink: (params: DataSharingSdkGetLinkParams):
                   Promise<string> => {
-                    return this.browserProxy_.getShareLink(
-                        params.groupId, params.tokenSecret!);
+                    return this.browserProxy_.handler
+                        .getShareLink(params.groupId, params.tokenSecret!)
+                        .then(res => res.url);
                   },
               learnMoreUrlMap,
               activityLogCallback: () => {
@@ -608,7 +610,7 @@ export class DataSharingApp extends CustomElement implements Logger {
               isSharingDisabled,
             })
             .then((res) => {
-              this.browserProxy_.closeUi(res.status);
+              this.browserProxy_.handler.closeUI(res.status);
             });
         break;
       case FlowValues.DELETE:
@@ -621,7 +623,7 @@ export class DataSharingApp extends CustomElement implements Logger {
               logger: this,
             })
             .then((res) => {
-              this.browserProxy_.closeUi(res.status);
+              this.browserProxy_.handler.closeUI(res.status);
             });
         break;
       case FlowValues.CLOSE:
@@ -634,12 +636,44 @@ export class DataSharingApp extends CustomElement implements Logger {
               logger: this,
             })
             .then((res) => {
-              this.browserProxy_.closeUi(res.status);
+              this.browserProxy_.handler.closeUI(res.status);
             });
         break;
       default:
         break;
     }
+  }
+
+  private getTabGroupPreview(groupId: string, tokenSecret: string):
+      Promise<DataSharingSdkSitePreview[]> {
+    return new Promise((resolve) => {
+      const previews: DataSharingSdkSitePreview[] = [];
+      this.browserProxy_.handler.getTabGroupPreview(groupId, tokenSecret)
+          .then((res) => {
+            if (res.groupPreview.statusCode !== AbslStatusCode.kOk) {
+              this.browserProxy_.handler.closeUI(Code.UNKNOWN);
+            }
+
+            res.groupPreview.sharedTabs.forEach((sharedTab) => {
+              previews.push({
+                url: sharedTab.displayUrl,
+                faviconUrl:
+                    this.getFaviconServiceUrl(sharedTab.faviconUrl).toString(),
+              });
+            });
+            resolve(previews);
+          });
+    });
+  }
+
+  // TODO(crbug.com/392965221): Use function from icon.ts instead.
+  private getFaviconServiceUrl(pageUrl: string): URL {
+    const url: URL = new URL('chrome-untrusted://favicon2');
+    url.searchParams.set('size', '16');
+    url.searchParams.set('scaleFactor', '1x');
+    url.searchParams.set('allowGoogleServerFallback', '1');
+    url.searchParams.set('pageUrl', pageUrl);
+    return url;
   }
 
   static setUrlForTesting(url: string) {

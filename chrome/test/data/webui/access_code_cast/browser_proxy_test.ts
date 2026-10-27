@@ -16,7 +16,7 @@ suite('BrowserProxyTest', () => {
 
   setup(() => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    BrowserProxy.setInstance(new BrowserProxy(true));
+    BrowserProxy.setInstance(new BrowserProxy());
     proxy = BrowserProxy.getInstance();
   });
 

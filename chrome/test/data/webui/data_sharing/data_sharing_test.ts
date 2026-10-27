@@ -4,53 +4,54 @@
 
 import 'chrome-untrusted://data-sharing/data_sharing_app.js';
 
-import type {BrowserProxy} from 'chrome-untrusted://data-sharing/browser_proxy.js';
-import {BrowserProxyImpl} from 'chrome-untrusted://data-sharing/browser_proxy.js';
-import type {PageRemote} from 'chrome-untrusted://data-sharing/data_sharing.mojom-webui.js';
-import {GroupAction, GroupActionProgress, PageCallbackRouter} from 'chrome-untrusted://data-sharing/data_sharing.mojom-webui.js';
+import type {GroupPreview, PageHandlerInterface, PageRemote} from 'chrome-untrusted://data-sharing/data_sharing.mojom-webui.js';
+import {browserProxyFactory, GroupAction, GroupActionProgress} from 'chrome-untrusted://data-sharing/data_sharing.mojom-webui.js';
 import {DataSharingApp} from 'chrome-untrusted://data-sharing/data_sharing_app.js';
 import {Code, LoggingIntent, Progress} from 'chrome-untrusted://data-sharing/data_sharing_sdk_types.js';
-import type {DataSharingSdkSitePreview, RunInviteFlowParams} from 'chrome-untrusted://data-sharing/data_sharing_sdk_types.js';
+import type {RunInviteFlowParams} from 'chrome-untrusted://data-sharing/data_sharing_sdk_types.js';
 import {DataSharingSdkImpl} from 'chrome-untrusted://data-sharing/dummy_data_sharing_sdk.js';
 import {loadTimeData} from 'chrome-untrusted://resources/js/load_time_data.js';
+import {AbslStatusCode} from 'chrome-untrusted://resources/mojo/mojo/public/mojom/base/absl_status.mojom-webui.js';
 import {assertDeepEquals, assertEquals} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome-untrusted://webui-test/test_browser_proxy.js';
 import {TestMock} from 'chrome-untrusted://webui-test/test_mock.js';
 import {eventToPromise, microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
-class TestDataSharingBrowserProxy extends TestBrowserProxy implements
-    BrowserProxy {
-  callbackRouter: PageCallbackRouter;
-  callbackRouterRemote: PageRemote;
-
+class TestDataSharingPageHandler extends TestBrowserProxy implements
+    PageHandlerInterface {
   constructor() {
     super([
-      'showUi',
-      'closeUi',
+      'showUI',
+      'closeUI',
+      'apiInitComplete',
       'makeTabGroupShared',
       'aboutToUnShareTabGroup',
       'onTabGroupUnShareComplete',
       'getShareLink',
       'getTabGroupPreview',
+      'openTabGroup',
       'onGroupAction',
     ]);
-    this.callbackRouter = new PageCallbackRouter();
-    this.callbackRouterRemote =
-        this.callbackRouter.$.bindNewPipeAndPassRemote();
   }
 
-  showUi() {
-    this.methodCalled('showUi');
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  showUI() {
+    this.methodCalled('showUI');
   }
 
-  closeUi(status: Code) {
-    this.methodCalled('closeUi', status);
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  closeUI(statusCode: number) {
+    this.methodCalled('closeUI', statusCode);
   }
 
-  makeTabGroupShared(tabGroupId: string, groupId: string, tokenSecret: string):
-      Promise<string> {
-    this.methodCalled('makeTabGroupShared', [tabGroupId, groupId, tokenSecret]);
-    return Promise.resolve('fake_url');
+  apiInitComplete() {
+    this.methodCalled('apiInitComplete');
+  }
+
+  makeTabGroupShared(tabGroupId: string, groupId: string, accessToken: string):
+      Promise<{url: string | null}> {
+    this.methodCalled('makeTabGroupShared', [tabGroupId, groupId, accessToken]);
+    return Promise.resolve({url: 'fake_url'});
   }
 
   aboutToUnShareTabGroup(tabGroupId: string) {
@@ -61,15 +62,25 @@ class TestDataSharingBrowserProxy extends TestBrowserProxy implements
     this.methodCalled('onTabGroupUnShareComplete', tabGroupId);
   }
 
-  getShareLink(groupId: string, tokenSecret: string): Promise<string> {
-    this.methodCalled('getShareLink', [groupId, tokenSecret]);
-    return Promise.resolve('fake_url');
+  getShareLink(groupId: string, accessToken: string): Promise<{url: string}> {
+    this.methodCalled('getShareLink', [groupId, accessToken]);
+    return Promise.resolve({url: 'fake_url'});
   }
 
-  getTabGroupPreview(groupId: string, tokenSecret: string):
-      Promise<DataSharingSdkSitePreview[]> {
-    this.methodCalled('getTabGroupPreview', [groupId, tokenSecret]);
-    return Promise.resolve([]);
+  getTabGroupPreview(groupId: string, accessToken: string):
+      Promise<{groupPreview: GroupPreview}> {
+    this.methodCalled('getTabGroupPreview', [groupId, accessToken]);
+    return Promise.resolve({
+      groupPreview: {
+        title: '',
+        sharedTabs: [],
+        statusCode: AbslStatusCode.kOk,
+      },
+    });
+  }
+
+  openTabGroup(groupId: string) {
+    this.methodCalled('openTabGroup', groupId);
   }
 
   onGroupAction(action: GroupAction, progress: GroupActionProgress) {
@@ -80,13 +91,17 @@ class TestDataSharingBrowserProxy extends TestBrowserProxy implements
 suite('Start flows', () => {
   let testDataSharingSdk: TestMock<DataSharingSdkImpl>&DataSharingSdkImpl;
   let dataSharingApp: DataSharingApp|null = null;
-  let testBrowserProxy: TestDataSharingBrowserProxy;
+  let testPageHandler: TestDataSharingPageHandler;
+  let callbackRouterRemote: PageRemote;
 
   setup(() => {
-    testBrowserProxy = new TestDataSharingBrowserProxy();
+    testPageHandler = new TestDataSharingPageHandler();
+    const {instance, remote} =
+        browserProxyFactory.createForTest(testPageHandler);
+    browserProxyFactory.setInstance(instance);
+    callbackRouterRemote = remote;
     testDataSharingSdk = TestMock.fromClass(DataSharingSdkImpl);
     DataSharingSdkImpl.setInstance(testDataSharingSdk);
-    BrowserProxyImpl.setInstance(testBrowserProxy);
     testDataSharingSdk.setResultFor(
         'runInviteFlow', Promise.resolve({status: Code.OK}));
     testDataSharingSdk.setResultFor(
@@ -103,13 +118,13 @@ suite('Start flows', () => {
     DataSharingApp.setUrlForTesting(
         'chrome-untrusted://data-sharing?flow=share&tab_group_id=fake_id');
     dataSharingApp = document.createElement('data-sharing-app');
-    testBrowserProxy.callbackRouterRemote.onAccessTokenFetched('fake_token');
+    callbackRouterRemote.onAccessTokenFetched('fake_token');
     document.body.appendChild(dataSharingApp);
     await microtasksFinished();
-    assertEquals(1, testBrowserProxy.getCallCount('showUi'));
+    assertEquals(1, testPageHandler.getCallCount('showUI'));
     assertEquals(1, testDataSharingSdk.getCallCount('runInviteFlow'));
-    assertEquals(1, testBrowserProxy.getCallCount('closeUi'));
-    assertEquals(Code.OK, testBrowserProxy.getArgs('closeUi')[0]);
+    assertEquals(1, testPageHandler.getCallCount('closeUI'));
+    assertEquals(Code.OK, testPageHandler.getArgs('closeUI')[0]);
   });
 
   test('Invite flow copy link', async () => {
@@ -128,12 +143,12 @@ suite('Start flows', () => {
     DataSharingApp.setUrlForTesting(
         'chrome-untrusted://data-sharing?flow=share&tab_group_id=fake_id');
     dataSharingApp = document.createElement('data-sharing-app');
-    testBrowserProxy.callbackRouterRemote.onAccessTokenFetched('fake_token');
+    callbackRouterRemote.onAccessTokenFetched('fake_token');
     document.body.appendChild(dataSharingApp);
     await microtasksFinished();
 
-    assertEquals(1, testBrowserProxy.getCallCount('makeTabGroupShared'));
-    assertEquals(1, testBrowserProxy.getCallCount('getShareLink'));
+    assertEquals(1, testPageHandler.getCallCount('makeTabGroupShared'));
+    assertEquals(1, testPageHandler.getCallCount('getShareLink'));
     assertEquals(1, testDataSharingSdk.getCallCount('runInviteFlow'));
   });
 
@@ -141,95 +156,95 @@ suite('Start flows', () => {
     DataSharingApp.setUrlForTesting(
         'chrome-untrusted://data-sharing?flow=manage&group_id=fake_id&is_disabled_for_policy=true&tab_group_id=fake_id');
     dataSharingApp = document.createElement('data-sharing-app');
-    testBrowserProxy.callbackRouterRemote.onAccessTokenFetched('fake_token');
+    callbackRouterRemote.onAccessTokenFetched('fake_token');
     document.body.appendChild(dataSharingApp);
     await microtasksFinished();
-    assertEquals(1, testBrowserProxy.getCallCount('showUi'));
+    assertEquals(1, testPageHandler.getCallCount('showUI'));
     assertEquals(1, testDataSharingSdk.getCallCount('runManageFlow'));
     assertEquals(
         'fake_id', testDataSharingSdk.getArgs('runManageFlow')[0].groupId);
     assertEquals(
         true, testDataSharingSdk.getArgs('runManageFlow')[0].isSharingDisabled);
-    assertEquals(1, testBrowserProxy.getCallCount('closeUi'));
-    assertEquals(Code.OK, testBrowserProxy.getArgs('closeUi')[0]);
+    assertEquals(1, testPageHandler.getCallCount('closeUI'));
+    assertEquals(Code.OK, testPageHandler.getArgs('closeUI')[0]);
   });
 
   test('Leave flow', async () => {
     DataSharingApp.setUrlForTesting(
         'chrome-untrusted://data-sharing/?flow=leave&group_id=fake_id');
     dataSharingApp = document.createElement('data-sharing-app');
-    testBrowserProxy.callbackRouterRemote.onAccessTokenFetched('fake_token');
+    callbackRouterRemote.onAccessTokenFetched('fake_token');
     document.body.appendChild(dataSharingApp);
     dataSharingApp.onEvent(
         {intentType: LoggingIntent.LEAVE_GROUP, progress: Progress.SUCCEEDED});
     await microtasksFinished();
-    assertEquals(1, testBrowserProxy.getCallCount('showUi'));
+    assertEquals(1, testPageHandler.getCallCount('showUI'));
     assertEquals(1, testDataSharingSdk.getCallCount('runManageFlow'));
     const arg = testDataSharingSdk.getArgs('runManageFlow')[0];
     assertEquals('fake_id', arg.groupId);
     assertEquals(true, arg.showLeaveDialogAtStartup);
-    assertEquals(1, testBrowserProxy.getCallCount('closeUi'));
-    assertEquals(Code.OK, testBrowserProxy.getArgs('closeUi')[0]);
+    assertEquals(1, testPageHandler.getCallCount('closeUI'));
+    assertEquals(Code.OK, testPageHandler.getArgs('closeUI')[0]);
 
-    assertEquals(1, testBrowserProxy.getCallCount('onGroupAction'));
+    assertEquals(1, testPageHandler.getCallCount('onGroupAction'));
     assertDeepEquals(
         [GroupAction.kLeaveGroup, GroupActionProgress.kSuccess],
-        testBrowserProxy.getArgs('onGroupAction')[0]);
+        testPageHandler.getArgs('onGroupAction')[0]);
   });
 
   test('Delete flow', async () => {
     DataSharingApp.setUrlForTesting(
         'chrome-untrusted://data-sharing?flow=delete&group_id=fake_id');
     dataSharingApp = document.createElement('data-sharing-app');
-    testBrowserProxy.callbackRouterRemote.onAccessTokenFetched('fake_token');
+    callbackRouterRemote.onAccessTokenFetched('fake_token');
     document.body.appendChild(dataSharingApp);
     dataSharingApp.onEvent(
         {intentType: LoggingIntent.DELETE_GROUP, progress: Progress.SUCCEEDED});
     await microtasksFinished();
-    assertEquals(1, testBrowserProxy.getCallCount('showUi'));
+    assertEquals(1, testPageHandler.getCallCount('showUI'));
     assertEquals(1, testDataSharingSdk.getCallCount('runDeleteFlow'));
     assertEquals(
         'fake_id', testDataSharingSdk.getArgs('runDeleteFlow')[0].groupId);
-    assertEquals(1, testBrowserProxy.getCallCount('closeUi'));
-    assertEquals(Code.OK, testBrowserProxy.getArgs('closeUi')[0]);
+    assertEquals(1, testPageHandler.getCallCount('closeUI'));
+    assertEquals(Code.OK, testPageHandler.getArgs('closeUI')[0]);
 
-    assertEquals(1, testBrowserProxy.getCallCount('onGroupAction'));
+    assertEquals(1, testPageHandler.getCallCount('onGroupAction'));
     assertDeepEquals(
         [GroupAction.kDeleteGroup, GroupActionProgress.kSuccess],
-        testBrowserProxy.getArgs('onGroupAction')[0]);
+        testPageHandler.getArgs('onGroupAction')[0]);
   });
 
   test('Close flow', async () => {
     DataSharingApp.setUrlForTesting(
         'chrome-untrusted://data-sharing?flow=close&group_id=fake_id');
     dataSharingApp = document.createElement('data-sharing-app');
-    testBrowserProxy.callbackRouterRemote.onAccessTokenFetched('fake_token');
+    callbackRouterRemote.onAccessTokenFetched('fake_token');
     document.body.appendChild(dataSharingApp);
     await microtasksFinished();
-    assertEquals(1, testBrowserProxy.getCallCount('showUi'));
+    assertEquals(1, testPageHandler.getCallCount('showUI'));
     assertEquals(1, testDataSharingSdk.getCallCount('runCloseFlow'));
     assertEquals(
         'fake_id', testDataSharingSdk.getArgs('runCloseFlow')[0].groupId);
-    assertEquals(1, testBrowserProxy.getCallCount('closeUi'));
-    assertEquals(Code.OK, testBrowserProxy.getArgs('closeUi')[0]);
+    assertEquals(1, testPageHandler.getCallCount('closeUI'));
+    assertEquals(Code.OK, testPageHandler.getArgs('closeUI')[0]);
   });
 
   test('Join flow', async () => {
     DataSharingApp.setUrlForTesting(
         'chrome-untrusted://data-sharing?flow=join&group_id=fake_group_id&token_secret=fake_token');
     dataSharingApp = document.createElement('data-sharing-app');
-    testBrowserProxy.callbackRouterRemote.onAccessTokenFetched('fake_token');
+    callbackRouterRemote.onAccessTokenFetched('fake_token');
     document.body.appendChild(dataSharingApp);
     dataSharingApp.setSuccessfullyJoinedForTesting();
     await microtasksFinished();
-    assertEquals(1, testBrowserProxy.getCallCount('showUi'));
+    assertEquals(1, testPageHandler.getCallCount('showUI'));
     assertEquals(1, testDataSharingSdk.getCallCount('runJoinFlow'));
     const arg = testDataSharingSdk.getArgs('runJoinFlow')[0];
     assertEquals('fake_group_id', arg.groupId);
     assertEquals('fake_token', arg.tokenSecret);
     // Do not close UI if successfully joined because it's supposed to wait
     // until the flow is complete.
-    assertEquals(0, testBrowserProxy.getCallCount('closeUi'));
+    assertEquals(0, testPageHandler.getCallCount('closeUI'));
   });
 
   test('Join flow error case', async () => {
@@ -238,11 +253,11 @@ suite('Start flows', () => {
     DataSharingApp.setUrlForTesting(
         'chrome-untrusted://data-sharing?flow=join&group_id=fake_group_id&token_secret=fake_token');
     dataSharingApp = document.createElement('data-sharing-app');
-    testBrowserProxy.callbackRouterRemote.onAccessTokenFetched('fake_token');
+    callbackRouterRemote.onAccessTokenFetched('fake_token');
     document.body.appendChild(dataSharingApp);
     await microtasksFinished();
-    assertEquals(1, testBrowserProxy.getCallCount('closeUi'));
-    assertEquals(Code.UNKNOWN, testBrowserProxy.getArgs('closeUi')[0]);
+    assertEquals(1, testPageHandler.getCallCount('closeUI'));
+    assertEquals(Code.UNKNOWN, testPageHandler.getArgs('closeUI')[0]);
   });
 
   test('Join flow abandon case', async () => {
@@ -251,13 +266,13 @@ suite('Start flows', () => {
     DataSharingApp.setUrlForTesting(
         'chrome-untrusted://data-sharing?flow=join&group_id=fake_group_id&token_secret=fake_token');
     dataSharingApp = document.createElement('data-sharing-app');
-    testBrowserProxy.callbackRouterRemote.onAccessTokenFetched('fake_token');
+    callbackRouterRemote.onAccessTokenFetched('fake_token');
     document.body.appendChild(dataSharingApp);
     dataSharingApp.onEvent(
         {intentType: LoggingIntent.ABANDON_JOIN, progress: Progress.SUCCEEDED});
     await microtasksFinished();
-    assertEquals(1, testBrowserProxy.getCallCount('closeUi'));
-    assertEquals(Code.OK, testBrowserProxy.getArgs('closeUi')[0]);
+    assertEquals(1, testPageHandler.getCallCount('closeUI'));
+    assertEquals(Code.OK, testPageHandler.getArgs('closeUI')[0]);
   });
 
   test('Metrics reporting', async () => {
@@ -267,7 +282,7 @@ suite('Start flows', () => {
     DataSharingApp.setUrlForTesting(
         'chrome-untrusted://data-sharing?flow=share&tab_group_id=fake_id');
     dataSharingApp = document.createElement('data-sharing-app');
-    testBrowserProxy.callbackRouterRemote.onAccessTokenFetched('fake_token');
+    callbackRouterRemote.onAccessTokenFetched('fake_token');
     document.body.appendChild(dataSharingApp);
     await microtasksFinished();
     assertEquals(1, testDataSharingSdk.getCallCount('updateClearcut'));

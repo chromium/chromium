@@ -19,9 +19,8 @@ import '/strings.m.js';
 
 import {loadTimeData} from 'chrome-untrusted://resources/js/load_time_data.js';
 
-import type {BrowserProxy} from './browser_proxy.js';
-import {BrowserProxyImpl} from './browser_proxy.js';
-
+import type {BrowserProxy} from './data_sharing.mojom-webui.js';
+import {browserProxyFactory} from './data_sharing.mojom-webui.js';
 import type {DataSharingSdk, ReadGroupParams} from './data_sharing_sdk_types.js';
 import type {GroupData} from './group_data.mojom-webui.js';
 import {toMojomGroupData} from './mojom_conversion_utils.js';
@@ -30,7 +29,7 @@ let initialized: boolean = false;
 const dataSharingSdk: DataSharingSdk =
     window.data_sharing_sdk.buildDataSharingSdk();
 
-const browserProxy: BrowserProxy = BrowserProxyImpl.getInstance();
+const browserProxy: BrowserProxy = browserProxyFactory.getInstance();
 
 dataSharingSdk.setClientVersionAndResetPeopleStore(
     loadTimeData.getStringF('currentClientVersion'),
@@ -41,7 +40,7 @@ browserProxy.callbackRouter.onAccessTokenFetched.addListener(
     accessToken => {
       dataSharingSdk.setOauthAccessToken({accessToken});
       if (!initialized) {
-        browserProxy.handler!.apiInitComplete();
+        browserProxy.handler.apiInitComplete();
         initialized = true;
       }
     },

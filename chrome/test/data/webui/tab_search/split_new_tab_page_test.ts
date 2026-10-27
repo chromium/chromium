@@ -4,8 +4,8 @@
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.js';
-import type {SplitNewTabPageAppElement, Tab} from 'chrome://tab-search.top-chrome/tab_search.js';
-import {TabAlertState, TabSearchApiProxyImpl} from 'chrome://tab-search.top-chrome/tab_search.js';
+import type {PageRemote, SplitNewTabPageAppElement, Tab} from 'chrome://tab-search.top-chrome/tab_search.js';
+import {browserProxyFactory, TabAlertState, TabSearchApiProxyImpl} from 'chrome://tab-search.top-chrome/tab_search.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
@@ -74,6 +74,7 @@ function createWindowData() {
 suite('SplitNewTabPageTest', () => {
   let splitNewTabPage: SplitNewTabPageAppElement;
   let testApiProxy: TestTabSearchApiProxy;
+  let callbackRouterRemote: PageRemote;
 
   async function splitNewTabPageSetup() {
     splitNewTabPage = document.createElement('split-new-tab-page-app');
@@ -94,6 +95,9 @@ suite('SplitNewTabPageTest', () => {
     testApiProxy.setProfileData(
         createProfileData({windows: createWindowData()}));
     testApiProxy.setIsSplit(true);
+    const {instance, remote} = browserProxyFactory.createForTest(testApiProxy);
+    browserProxyFactory.setInstance(instance);
+    callbackRouterRemote = remote;
     TabSearchApiProxyImpl.setInstance(testApiProxy);
   });
 
@@ -136,7 +140,7 @@ suite('SplitNewTabPageTest', () => {
           url: 'blob://data',
         }),
     );
-    testApiProxy.getCallbackRouterRemote().tabsChanged(createProfileData({
+    callbackRouterRemote.tabsChanged(createProfileData({
       windows: windowData,
     }));
     await eventToPromise('viewport-filled', splitNewTabPage.$.splitTabsList);
@@ -178,7 +182,7 @@ suite('SplitNewTabPageTest', () => {
       inHostWindow: true,
       tab: tab,
     };
-    testApiProxy.getCallbackRouterRemote().tabUpdated(tabUpdateInfo);
+    callbackRouterRemote.tabUpdated(tabUpdateInfo);
     await eventToPromise('viewport-filled', splitNewTabPage.$.splitTabsList);
 
     const updatedTabSearchItems =
@@ -203,7 +207,7 @@ suite('SplitNewTabPageTest', () => {
       inHostWindow: true,
       tab: tab,
     };
-    testApiProxy.getCallbackRouterRemote().tabUpdated(tabUpdateInfo);
+    callbackRouterRemote.tabUpdated(tabUpdateInfo);
     await eventToPromise('viewport-filled', splitNewTabPage.$.splitTabsList);
 
     const updatedTabSearchItems =
@@ -234,7 +238,7 @@ suite('SplitNewTabPageTest', () => {
       title: 'YouTube',
       url: 'https://www.youtube.com',
     }));
-    testApiProxy.getCallbackRouterRemote().tabsChanged(createProfileData({
+    callbackRouterRemote.tabsChanged(createProfileData({
       windows: windowData,
     }));
     await eventToPromise('viewport-filled', splitNewTabPage.$.splitTabsList);
@@ -250,7 +254,7 @@ suite('SplitNewTabPageTest', () => {
         3,
         splitNewTabPage.shadowRoot.querySelectorAll('tab-search-item').length);
 
-    testApiProxy.getCallbackRouterRemote().tabsRemoved({
+    callbackRouterRemote.tabsRemoved({
       tabIds: [6],
       recentlyClosedTabs: [],
     });
@@ -315,7 +319,7 @@ suite('SplitNewTabPageTest', () => {
   test('Redirects to NTP on unsplit', async () => {
     await splitNewTabPageSetup();
     assertEquals(0, testApiProxy.getCallCount('redirectToNtp'));
-    testApiProxy.getCallbackRouterRemote().tabUnsplit();
+    callbackRouterRemote.tabUnsplit();
     await testApiProxy.whenCalled('redirectToNtp');
     assertEquals(1, testApiProxy.getCallCount('redirectToNtp'));
   });

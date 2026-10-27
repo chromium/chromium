@@ -4,25 +4,30 @@
 
 import 'chrome://access-code-cast/access_code_cast_app.js';
 
-import {AddSinkResultCode, CastDiscoveryMethod} from 'chrome://access-code-cast/access_code_cast.mojom-webui.js';
+import {AddSinkResultCode, browserProxyFactory, CastDiscoveryMethod} from 'chrome://access-code-cast/access_code_cast.mojom-webui.js';
 import type {AccessCodeCastAppElement} from 'chrome://access-code-cast/access_code_cast_app.js';
 import {BrowserProxy} from 'chrome://access-code-cast/browser_proxy.js';
 import {RouteRequestResultCode} from 'chrome://access-code-cast/route_request_result_code.mojom-webui.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
-import {createTestProxy} from './test_access_code_cast_browser_proxy.js';
+import {createTestProxy, TestAccessCodeCastPageHandler} from './test_access_code_cast_browser_proxy.js';
 
 suite('AccessCodeCastAppTest', () => {
   let app: AccessCodeCastAppElement;
 
+  function setTestHandler(handler: TestAccessCodeCastPageHandler) {
+    browserProxyFactory.setInstance(
+        browserProxyFactory.createForTest(handler).instance);
+  }
+
   setup(async () => {
-    const mockProxy = createTestProxy(
+    BrowserProxy.setInstance(createTestProxy());
+    setTestHandler(new TestAccessCodeCastPageHandler(
         AddSinkResultCode.OK,
         RouteRequestResultCode.OK,
         () => {},
-    );
-    BrowserProxy.setInstance(mockProxy);
+        ));
 
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     app = document.createElement('access-code-cast-app');
@@ -55,19 +60,19 @@ suite('AccessCodeCastAppTest', () => {
   });
 
   test('addSinkAndCast sends correct accessCode to the handler', async () => {
-    const testProxy = createTestProxy(
+    const testHandler = new TestAccessCodeCastPageHandler(
         AddSinkResultCode.OK,
         RouteRequestResultCode.OK,
         () => {},
     );
-    BrowserProxy.setInstance(testProxy);
+    setTestHandler(testHandler);
 
     app.switchToCodeInput();
     app.setAccessCodeForTest('qwerty');
     await microtasksFinished();
 
     app.addSinkAndCast();
-    const result = await testProxy.handler.whenCalled('addSink') as
+    const result = await testHandler.whenCalled('addSink') as
         {accessCode: string, discoveryMethod: CastDiscoveryMethod};
     assertEquals('QWERTY', result.accessCode);
     assertEquals(CastDiscoveryMethod.INPUT_ACCESS_CODE, result.discoveryMethod);
@@ -76,19 +81,19 @@ suite('AccessCodeCastAppTest', () => {
   test(
       'addSinkAndCast sends correct discoveryMethod to the handler',
       async () => {
-        const testProxy = createTestProxy(
+        const testHandler = new TestAccessCodeCastPageHandler(
             AddSinkResultCode.OK,
             RouteRequestResultCode.OK,
             () => {},
         );
-        BrowserProxy.setInstance(testProxy);
+        setTestHandler(testHandler);
 
         app.setAccessCodeForTest('123456');
         await microtasksFinished();
         app.switchToQrInput();
 
         app.addSinkAndCast();
-        const result = await testProxy.handler.whenCalled('addSink') as
+        const result = await testHandler.whenCalled('addSink') as
             {accessCode: string, discoveryMethod: CastDiscoveryMethod};
         assertEquals('123456', result.accessCode);
         assertEquals(CastDiscoveryMethod.QR_CODE, result.discoveryMethod);
@@ -100,12 +105,12 @@ suite('AccessCodeCastAppTest', () => {
     const visitedCallback = () => {
       visited = true;
     };
-    const testProxy = createTestProxy(
+    const testHandler = new TestAccessCodeCastPageHandler(
         AddSinkResultCode.OK,
         RouteRequestResultCode.OK,
         visitedCallback,
     );
-    BrowserProxy.setInstance(testProxy);
+    setTestHandler(testHandler);
 
     assertFalse(visited);
     await app.addSinkAndCast();
@@ -120,12 +125,12 @@ suite('AccessCodeCastAppTest', () => {
         const visitedCallback = () => {
           visited = true;
         };
-        const testProxy = createTestProxy(
+        const testHandler = new TestAccessCodeCastPageHandler(
             AddSinkResultCode.UNKNOWN_ERROR,
             RouteRequestResultCode.OK,
             visitedCallback,
         );
-        BrowserProxy.setInstance(testProxy);
+        setTestHandler(testHandler);
 
         assertFalse(visited);
         await app.addSinkAndCast();
@@ -137,10 +142,10 @@ suite('AccessCodeCastAppTest', () => {
       'addSinkAndCast surfaces errors and hides errors when user starts ' +
           'editing',
       async () => {
-        let testProxy = createTestProxy(
+        let testHandler = new TestAccessCodeCastPageHandler(
             AddSinkResultCode.UNKNOWN_ERROR, RouteRequestResultCode.OK,
             () => {});
-        BrowserProxy.setInstance(testProxy);
+        setTestHandler(testHandler);
         app.setAccessCodeForTest('qwerty');
         await microtasksFinished();
 
@@ -152,10 +157,10 @@ suite('AccessCodeCastAppTest', () => {
         await microtasksFinished();
         assertEquals(0, app.$.errorMessage.getMessageCode());
 
-        testProxy = createTestProxy(
+        testHandler = new TestAccessCodeCastPageHandler(
             AddSinkResultCode.INVALID_ACCESS_CODE, RouteRequestResultCode.OK,
             () => {});
-        BrowserProxy.setInstance(testProxy);
+        setTestHandler(testHandler);
 
         app.setAccessCodeForTest('qwerty');
         await app.addSinkAndCast();
@@ -165,10 +170,10 @@ suite('AccessCodeCastAppTest', () => {
         await microtasksFinished();
         assertEquals(0, app.$.errorMessage.getMessageCode());
 
-        testProxy = createTestProxy(
+        testHandler = new TestAccessCodeCastPageHandler(
             AddSinkResultCode.SERVICE_NOT_PRESENT, RouteRequestResultCode.OK,
             () => {});
-        BrowserProxy.setInstance(testProxy);
+        setTestHandler(testHandler);
 
         app.setAccessCodeForTest('qwerty');
         await app.addSinkAndCast();
@@ -178,9 +183,9 @@ suite('AccessCodeCastAppTest', () => {
         await microtasksFinished();
         assertEquals(0, app.$.errorMessage.getMessageCode());
 
-        testProxy = createTestProxy(
+        testHandler = new TestAccessCodeCastPageHandler(
             AddSinkResultCode.AUTH_ERROR, RouteRequestResultCode.OK, () => {});
-        BrowserProxy.setInstance(testProxy);
+        setTestHandler(testHandler);
 
         app.setAccessCodeForTest('qwerty');
         await app.addSinkAndCast();
@@ -190,10 +195,10 @@ suite('AccessCodeCastAppTest', () => {
         await microtasksFinished();
         assertEquals(0, app.$.errorMessage.getMessageCode());
 
-        testProxy = createTestProxy(
+        testHandler = new TestAccessCodeCastPageHandler(
             AddSinkResultCode.TOO_MANY_REQUESTS, RouteRequestResultCode.OK,
             () => {});
-        BrowserProxy.setInstance(testProxy);
+        setTestHandler(testHandler);
 
         app.setAccessCodeForTest('qwerty');
         await app.addSinkAndCast();
@@ -203,10 +208,10 @@ suite('AccessCodeCastAppTest', () => {
   test(
       'addSinkAndCast hides errors when user removes all access code',
       async () => {
-        const testProxy = createTestProxy(
+        const testHandler = new TestAccessCodeCastPageHandler(
             AddSinkResultCode.UNKNOWN_ERROR, RouteRequestResultCode.OK,
             () => {});
-        BrowserProxy.setInstance(testProxy);
+        setTestHandler(testHandler);
         app.setAccessCodeForTest('qwerty');
         await microtasksFinished();
 
@@ -246,22 +251,22 @@ suite('AccessCodeCastAppTest', () => {
     app.setAccessCodeForTest('foobar');
     await microtasksFinished();
     assertFalse(app.$.castButton.disabled);
-    const testProxy = createTestProxy(
-      AddSinkResultCode.OK, RouteRequestResultCode.OK, () => {
+    const testHandler = new TestAccessCodeCastPageHandler(
+        AddSinkResultCode.OK, RouteRequestResultCode.OK, () => {
           assertTrue(app.$.castButton.disabled);
         });
-    BrowserProxy.setInstance(testProxy);
+    setTestHandler(testHandler);
     app.addSinkAndCast();
   });
 
   test('input is refocused after unsuccessful cast attempts', async () => {
-    const testProxy = createTestProxy(
+    const testHandler = new TestAccessCodeCastPageHandler(
         AddSinkResultCode.OK, RouteRequestResultCode.UNKNOWN_ERROR, () => {
           // Unfocus the code input during execution of addSinkAndCast.
           app.$.castButton.focus();
           assertFalse(app.$.codeInput.focused);
         });
-    BrowserProxy.setInstance(testProxy);
+    setTestHandler(testHandler);
     app.setAccessCodeForTest('foobar');
     await microtasksFinished();
     // Code input must be focused in order for addSinkAndCast to execute.

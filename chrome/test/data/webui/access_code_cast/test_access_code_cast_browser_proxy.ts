@@ -2,17 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {AddSinkResultCode, CastDiscoveryMethod} from 'chrome://access-code-cast/access_code_cast.mojom-webui.js';
-import {PageCallbackRouter} from 'chrome://access-code-cast/access_code_cast.mojom-webui.js';
+import type {AddSinkResultCode, CastDiscoveryMethod, PageHandlerInterface} from 'chrome://access-code-cast/access_code_cast.mojom-webui.js';
 import type {RouteRequestResultCode} from 'chrome://access-code-cast/route_request_result_code.mojom-webui.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
-class TestAccessCodeCastBrowserProxy extends TestBrowserProxy {
+export class TestAccessCodeCastPageHandler extends TestBrowserProxy implements
+    PageHandlerInterface {
   addResult: AddSinkResultCode;
   castResult: RouteRequestResultCode;
   castCallback: () => void;
 
-  constructor (addResult: AddSinkResultCode, castResult: RouteRequestResultCode, castCallback: () => void) {
+  constructor(
+      addResult: AddSinkResultCode, castResult: RouteRequestResultCode,
+      castCallback: () => void) {
     super([
       'addSink',
       'castToSink',
@@ -37,13 +39,8 @@ class TestAccessCodeCastBrowserProxy extends TestBrowserProxy {
   }
 }
 
-export function createTestProxy(addResult:AddSinkResultCode, castResult: RouteRequestResultCode, castCallback: () => void) {
-  const callbackRouter = new PageCallbackRouter();
+export function createTestProxy() {
   return {
-    callbackRouter,
-    callbackRouterRemote: callbackRouter.$.bindNewPipeAndPassRemote(),
-    handler:
-        new TestAccessCodeCastBrowserProxy(addResult, castResult, castCallback),
     async isQrScanningAvailable() {
       return Promise.resolve(true);
     },
