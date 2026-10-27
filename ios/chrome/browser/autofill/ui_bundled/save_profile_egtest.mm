@@ -239,10 +239,10 @@ void TypeTextInXframeField(NSString* fieldID, NSString* text) {
 
   // TODO(crbug.com/428189566): Re-enable after the test is fixed for
   // ios-fieldtrial-rel.
-  if ([self isRunningTest:@selector
-            (DISABLED_testSubmissionCountReporting_ScheduledTask)] ||
-      [self isRunningTest:@selector
-            (DISABLED_testSubmissionCountReporting_UnloadPage)]) {
+  if ([self
+          isRunningTest:
+              @selector(DISABLED_testSubmissionCountReporting_ScheduledTask)] ||
+      [self isRunningTest:@selector(testSubmissionCountReporting_UnloadPage)]) {
     config.features_enabled.push_back(kAutofillCountFormSubmissionInRenderer);
   }
 
@@ -1096,9 +1096,7 @@ TAG_SMOKE_TEST(SaveProfileEGTest, testUserData_LocalUpdate);
 }
 
 // Tests submission count reporting when unloading a page.
-// TODO(crbug.com/428189566): Re-enable after the test is fixed for
-// ios-fieldtrial-rel.
-- (void)DISABLED_testSubmissionCountReporting_UnloadPage {
+- (void)testSubmissionCountReporting_UnloadPage {
   // Load page without submitting the form.
   [self loadFullAddressFormWithParams:{.default_prevented = true,
                                        .multiple_submissions_skip_programmatic =
@@ -1113,12 +1111,14 @@ TAG_SMOKE_TEST(SaveProfileEGTest, testUserData_LocalUpdate);
   [ChromeEarlGrey reload];
   [ChromeEarlGrey waitForWebStateContainingText:"Address Form Test Page"];
 
-  // Verify that that all the submissions were reported. No need for a long
-  // timeout as the report was sent when reloading the page so all the metrics
-  // should have been recorded at this point.
+  // Verify that all the submissions were reported. Although the report is
+  // triggered when unloading the page on reload, it is sent asynchronously
+  // from the renderer's isolated world via `webkit.messageHandlers` and may
+  // be processed on the browser side more than 200ms after the reloaded page
+  // finishes loading, so wait up to `kWaitForUIElementTimeout` (4 seconds).
   GREYAssertTrue(
       base::test::ios::WaitUntilConditionOrTimeout(
-          base::Milliseconds(200),
+          base::test::ios::kWaitForUIElementTimeout,
           ^{
             // Expect 4 regular submission in total.
             NSError* error = [MetricsAppInterface
@@ -1127,6 +1127,9 @@ TAG_SMOKE_TEST(SaveProfileEGTest, testUserData_LocalUpdate);
                 forHistogram:
                     @"Autofill.iOS.FormActivity."
                     @"SubmissionDetectedBeforeProcessing.PerType.FromAll"];
+            if (error != nil) {
+              return false;
+            }
             // Expect 2  regular submissions from the instant reports. Which
             // is the maximal number allowed by the quotas. Regular submissions
             // are handled in the isolated world.
@@ -1136,6 +1139,9 @@ TAG_SMOKE_TEST(SaveProfileEGTest, testUserData_LocalUpdate);
                 forHistogram:
                     @"Autofill.iOS.FormActivity."
                     @"SubmissionDetectedBeforeProcessing.PerType.FromInstant"];
+            if (error != nil) {
+              return false;
+            }
             // Expect 2 regular submissions from the report triggered by
             // unloading the page as all the quotas were used for the 2 first
             // reports.
@@ -1145,6 +1151,9 @@ TAG_SMOKE_TEST(SaveProfileEGTest, testUserData_LocalUpdate);
                 forHistogram:@"Autofill.iOS.FormActivity."
                              @"SubmissionDetectedBeforeProcessing.PerType."
                              @"FromUnloadPage"];
+            if (error != nil) {
+              return false;
+            }
             // Expect 4 batches of reports, 2 from the instant reports (1
             // report per batch) and 1 batch with the 2 reports that were
             // reported when unloading the page.
@@ -1153,6 +1162,9 @@ TAG_SMOKE_TEST(SaveProfileEGTest, testUserData_LocalUpdate);
                    forBucket:1
                 forHistogram:@"Autofill.iOS.FormActivity."
                              @"SubmissionDetectedBeforeProcessing.BatchSize"];
+            if (error != nil) {
+              return false;
+            }
             error = [MetricsAppInterface
                  expectCount:1
                    forBucket:2
