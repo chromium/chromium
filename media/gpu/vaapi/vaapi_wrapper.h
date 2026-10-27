@@ -397,6 +397,11 @@ class MEDIA_GPU_EXPORT VaapiWrapper
   // exists, it will be attached to the newly created |va_context_id_| as well.
   [[nodiscard]] virtual bool CreateContext(const gfx::Size& size);
 
+  // Queries whether the encoding quality setting is supported and if so,
+  // attempts to configure it to its maximum value for lower consumption and
+  // maximum speed.
+  virtual void MaybeSetLowQualityEncoding(const gfx::Size& picture_size);
+
   // Returns true iff a VAContextID has been created and hasn't been destroyed.
   bool HasContext() const;
 
@@ -692,7 +697,8 @@ class MEDIA_GPU_EXPORT VaapiWrapper
   // Queries whether |va_profile_| and |va_entrypoint_| support encoding quality
   // setting and, if available, configures it to its maximum value, for lower
   // consumption and maximum speed.
-  void MaybeSetLowQualityEncoding_Locked() EXCLUSIVE_LOCKS_REQUIRED(va_lock_);
+  void MaybeSetLowQualityEncoding_Locked(const gfx::Size& picture_size)
+      EXCLUSIVE_LOCKS_REQUIRED(va_lock_);
 
   // If a protected session is active, attaches it to the decoding context.
   [[nodiscard]] bool MaybeAttachProtectedSession_Locked()

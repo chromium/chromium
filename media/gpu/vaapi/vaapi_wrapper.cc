@@ -2562,16 +2562,16 @@ bool VaapiWrapper::CreateContext(const gfx::Size& size) {
   if (va_res != VA_STATUS_SUCCESS)
     return false;
 
-  // TODO(b/200779101): Remove low resolution i965 condition. This was
-  // added to avoid a duplicated frame specific to quality 7 at ~400kbps.
-  if (IsModeEncoding(mode_) && IsLowPowerIntelProcessor() &&
-      !(GetImplementationType() == VAImplementation::kIntelI965 &&
-        picture_size.GetArea() <= gfx::Size(320, 240).GetArea())) {
-    MaybeSetLowQualityEncoding_Locked();
-  }
+  MaybeSetLowQualityEncoding_Locked(picture_size);
 
   // If we have a protected session already, attach it to this new context.
   return MaybeAttachProtectedSession_Locked();
+}
+
+void VaapiWrapper::MaybeSetLowQualityEncoding(const gfx::Size& picture_size) {
+  VAAPI_CHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  base::AutoLockMaybe auto_lock(va_lock_.get());
+  MaybeSetLowQualityEncoding_Locked(picture_size);
 }
 
 std::unique_ptr<ScopedVASurface> VaapiWrapper::CreateVASurfaceForFrameResource(
@@ -3763,10 +3763,18 @@ bool VaapiWrapper::MapAndCopy_Locked(VABufferID va_buffer_id,
   return UNSAFE_TODO(memcpy(mapping->data(), va_buffer.data, va_buffer.size));
 }
 
-void VaapiWrapper::MaybeSetLowQualityEncoding_Locked() {
+void VaapiWrapper::MaybeSetLowQualityEncoding_Locked(
+    const gfx::Size& picture_size) {
   VAAPI_CHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(IsModeEncoding(mode_));
   MAYBE_ASSERT_ACQUIRED(va_lock_);
+
+  // TODO(b/200779101): Remove low resolution i965 condition. This was
+  // added to avoid a duplicated frame specific to quality 7 at ~400kbps.
+  if (!IsModeEncoding(mode_) || !IsLowPowerIntelProcessor() ||
+      (GetImplementationType() == VAImplementation::kIntelI965 &&
+       picture_size.GetArea() <= gfx::Size(320, 240).GetArea())) {
+    return;
+  }
 
   // Query if encoding quality (VAConfigAttribEncQualityRange) is supported, and
   // if so, use the associated value for lowest quality and power consumption.

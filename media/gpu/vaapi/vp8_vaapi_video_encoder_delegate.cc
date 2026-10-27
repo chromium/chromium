@@ -700,9 +700,28 @@ bool VP8VaapiVideoEncoderDelegate::SubmitFrameParameters(
   qmatrix_buf.quantization_index_delta[4] =
       frame_header->quantization_hdr.uv_ac_delta;
 
-  return vaapi_wrapper_->SubmitBuffers(
+  const bool submitted_buffers = vaapi_wrapper_->SubmitBuffers(
       {{VAEncSequenceParameterBufferType, sizeof(seq_param), &seq_param},
        {VAEncPictureParameterBufferType, sizeof(pic_param), &pic_param},
        {VAQMatrixBufferType, sizeof(qmatrix_buf), &qmatrix_buf}});
+
+  if (submitted_buffers) {
+    // TODO(b/577156796): This call was added to work around two issues:
+    //
+    // 1) The Intel iHD driver resetting the quality level after every
+    //    VAEncSequenceParameterBufferVP8 submission.
+    //
+    // 2) The "Repak" feature in the iHD driver getting enabled as a result of
+    //    (1) which seems to be faulty because it produces corrupted bitstreams
+    //    sometimes.
+    //
+    // The VaapiWrapper::MaybeSetLowQualityEncoding_Locked() at context creation
+    // time **should** be enough, so when b/577156796 is resolved, we should be
+    // able to remove this call.
+    vaapi_wrapper_->MaybeSetLowQualityEncoding(GetCodedSize());
+    return true;
+  }
+
+  return false;
 }
 }  // namespace media
