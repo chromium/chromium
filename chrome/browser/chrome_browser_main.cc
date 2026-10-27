@@ -382,6 +382,16 @@ void DeleteAccessibilityAnnotatorDatabase(const base::FilePath& profile_path) {
   }
 }
 
+constexpr base::FilePath::CharType kHistoryEmbeddingsDatabaseName[] =
+    FILE_PATH_LITERAL("HistoryEmbeddings");
+
+void DeleteHistoryEmbeddingsDatabase(const base::FilePath& profile_path) {
+  base::FilePath db_path = profile_path.Append(kHistoryEmbeddingsDatabaseName);
+  if (base::PathExists(db_path)) {
+    sql::Database::Delete(db_path);
+  }
+}
+
 void DeleteDeprecatedPrivacySandboxData(const base::FilePath& profile_path) {
   // Delete the deprecated Privacy Sandbox databases.
   static constexpr struct {
@@ -1649,6 +1659,14 @@ void ChromeBrowserMainParts::PostProfileInit(Profile* profile,
       {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
        base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
       base::BindOnce(&DeleteDeprecatedPrivacySandboxData, profile->GetPath()));
+
+  // Delete the deprecated HistoryEmbeddings database if it still exists.
+  // TODO(crbug.com/571719847): Remove this in October 2027.
+  base::ThreadPool::PostTask(
+      FROM_HERE,
+      {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+       base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
+      base::BindOnce(&DeleteHistoryEmbeddingsDatabase, profile->GetPath()));
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)
