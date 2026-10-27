@@ -258,9 +258,9 @@ if (!is_android) {
     sources = [
       "auto_picture_in_picture_tab_helper_browsertest.cc",
       "auto_picture_in_picture_tab_strip_observer_helper_browsertest.cc",
+      "document_picture_in_picture_browsertest.cc",
       "document_picture_in_picture_pixel_browsertest.cc",
       "document_picture_in_picture_window_controller_browsertest.cc",
-      "document_pip_standalone_browsertest.cc",
       "hats/auto_picture_in_picture_hats_service_browsertest.cc",
       "picture_in_picture_metric_integration_browsertest.cc",
       "video_picture_in_picture_window_controller_browsertest.cc",
