@@ -890,97 +890,57 @@ TEST_P(QuotaDatabaseTest, LongRunningTransactionIsReopenedAfterCommit) {
   EXPECT_TRUE(IsGlobalTransactionValid(db.get()));
 }
 
-TEST_P(QuotaDatabaseTest, QuotaDatabasePathMigration) {
+// Regression test for crbug.com/575201795: Ensure legacy database files in the
+// profile root are ignored and never copied through symlinks in WebStorage
+// during initial open or in-session `RecoverOrRaze()`.
+TEST_P(QuotaDatabaseTest, DoesNotMigrateLegacyDatabaseOrFollowSymlinks) {
   const base::FilePath kLegacyFilePath =
       ProfilePath().AppendASCII(kDatabaseName);
+  const base::FilePath kLegacyJournalPath =
+      sql::Database::JournalPath(kLegacyFilePath);
+  ASSERT_TRUE(base::WriteFile(kLegacyFilePath, ""));
+  ASSERT_TRUE(base::WriteFile(kLegacyJournalPath, "planted_journal_payload"));
+
+#if BUILDFLAG(IS_POSIX)
+  const base::FilePath external_target =
+      ProfilePath().AppendASCII("external_target.txt");
+  ASSERT_TRUE(base::WriteFile(external_target, "original_content"));
+  ASSERT_TRUE(base::CreateDirectory(DbPath().DirName()));
+  ASSERT_TRUE(base::CreateSymbolicLink(
+      external_target, sql::Database::JournalPath(DbPath())));
+#endif  // BUILDFLAG(IS_POSIX)
+
   BucketInitParams params(
       StorageKey::CreateFromStringForTesting("http://google/"),
       "google_bucket");
-  // Create database, add bucket and close by leaving scope.
-  {
-    auto db = CreateDatabase(/*is_incognito=*/false);
-    ASSERT_TRUE(db->UpdateOrCreateBucket(params, 0).has_value());
-  }
-  // Move db file paths to legacy file path for path migration test setup.
-  {
-    base::Move(DbPath(), kLegacyFilePath);
-    base::Move(sql::Database::JournalPath(DbPath()),
-               sql::Database::JournalPath(kLegacyFilePath));
-  }
-  // Reopen database, check that db is migrated to new path with bucket data.
-  {
-    auto db = CreateDatabase(/*is_incognito=*/false);
-    EXPECT_TRUE(db->GetBucket(params.storage_key, params.name).has_value());
-    EXPECT_FALSE(base::PathExists(kLegacyFilePath));
-    EXPECT_TRUE(base::PathExists(DbPath()));
-  }
+  auto db = CreateDatabase(/*is_incognito=*/false);
+  ASSERT_TRUE(db->UpdateOrCreateBucket(params, 0).has_value());
+  EXPECT_TRUE(base::PathExists(DbPath()));
+  EXPECT_TRUE(base::PathExists(kLegacyFilePath));
+  EXPECT_TRUE(base::PathExists(kLegacyJournalPath));
+
+#if BUILDFLAG(IS_POSIX)
+  std::string target_contents;
+  ASSERT_TRUE(base::ReadFileToString(external_target, &target_contents));
+  EXPECT_EQ(target_contents, "original_content");
+
+  // Also test the in-session `RecoverOrRaze()` reopen path when the live
+  // database is unlinked and a journal symlink is planted.
+  ASSERT_TRUE(base::DeleteFile(DbPath()));
+  ASSERT_TRUE(base::DeleteFile(sql::Database::JournalPath(DbPath())));
+  ASSERT_TRUE(base::CreateSymbolicLink(
+      external_target, sql::Database::JournalPath(DbPath())));
+#endif  // BUILDFLAG(IS_POSIX)
+
+  EXPECT_TRUE(db->RecoverOrRaze(SQLITE_CORRUPT));
+  EXPECT_TRUE(db->UpdateOrCreateBucket(params, 0).has_value());
+  EXPECT_TRUE(base::PathExists(DbPath()));
+
+#if BUILDFLAG(IS_POSIX)
+  ASSERT_TRUE(base::ReadFileToString(external_target, &target_contents));
+  EXPECT_EQ(target_contents, "original_content");
+#endif  // BUILDFLAG(IS_POSIX)
 }
-
-// Test for crbug.com/1316581.
-TEST_P(QuotaDatabaseTest, QuotaDatabasePathBadMigration) {
-  const base::FilePath kLegacyFilePath =
-      ProfilePath().AppendASCII(kDatabaseName);
-  BucketInitParams params(
-      StorageKey::CreateFromStringForTesting("http://google/"),
-      "google_bucket");
-  // Create database, add bucket and close by leaving scope.
-  {
-    auto db = CreateDatabase(/*is_incognito=*/false);
-    ASSERT_TRUE(db->UpdateOrCreateBucket(params, 0).has_value());
-  }
-  // Copy db file paths to legacy file path to mimic bad migration state.
-  base::CopyFile(DbPath(), kLegacyFilePath);
-
-  // Reopen database, check that db is migrated and is in a good state.
-  {
-    auto db = CreateDatabase(/*is_incognito=*/false);
-    EXPECT_TRUE(db->GetBucket(params.storage_key, params.name).has_value());
-    EXPECT_TRUE(base::PathExists(DbPath()));
-  }
-}
-
-// Test for crbug.com/1322375.
-//
-// base::CreateDirectory behaves differently on Mac and allows directory
-// migration to succeed when we expect failure.
-#if !BUILDFLAG(IS_APPLE)
-TEST_P(QuotaDatabaseTest, QuotaDatabaseDirectoryMigrationError) {
-  const base::FilePath kLegacyFilePath =
-      ProfilePath().AppendASCII(kDatabaseName);
-  BucketInitParams google_params = BucketInitParams::ForDefaultBucket(
-      StorageKey::CreateFromStringForTesting("http://google/"));
-  BucketInitParams example_params = BucketInitParams::ForDefaultBucket(
-      StorageKey::CreateFromStringForTesting("http://example/"));
-  BucketId example_id;
-  // Create database, add bucket and close by leaving scope.
-  {
-    auto db = CreateDatabase(/*is_incognito=*/false);
-    // Create two buckets to check that ids are different after database reset.
-    ASSERT_TRUE(db->UpdateOrCreateBucket(google_params, 0).has_value());
-    ASSERT_OK_AND_ASSIGN(auto result,
-                         db->UpdateOrCreateBucket(example_params, 0));
-    example_id = result.id;
-  }
-  {
-    // Delete database files to force a bad migration state.
-    base::DeleteFile(DbPath());
-    base::DeleteFile(sql::Database::JournalPath(DbPath()));
-
-    // Create a directory with the database file path to force directory
-    // migration to fail.
-    base::CreateDirectory(kLegacyFilePath);
-  }
-  {
-    // Open database to trigger migration. Migration failure forces a database
-    // reset.
-    auto db = CreateDatabase(/*is_incognito=*/false);
-    ASSERT_OK_AND_ASSIGN(auto result,
-                         db->UpdateOrCreateBucket(example_params, 0));
-    // Validate database reset by checking that bucket id doesn't match.
-    EXPECT_NE(result.id, example_id);
-  }
-}
-#endif  // !BUILDFLAG(IS_APPLE)
 
 TEST_P(QuotaDatabaseTest, UpdateOrCreateBucket_CorruptedDatabase) {
   base::HistogramTester histograms;
