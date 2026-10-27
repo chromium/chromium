@@ -291,20 +291,6 @@ bool ImportantFileWriter::WriteFileAtomicallyImpl(
   base::debug::Alias(path_copy);
 #endif  // BUILDFLAG(IS_WIN) && DCHECK_IS_ON()
 
-#if BUILDFLAG(IS_CHROMEOS)
-  // On Chrome OS, chrome gets killed when it cannot finish shutdown quickly,
-  // and this function seems to be one of the slowest shutdown steps.
-  // Include some info to the report for investigation. crbug.com/418627
-  // TODO(hashimoto): Remove this.
-  struct {
-    size_t data_size;
-    char path[128];
-  } file_info;
-  file_info.data_size = data.size();
-  strlcpy(file_info.path, path.value().c_str(), std::size(file_info.path));
-  debug::Alias(&file_info);
-#endif
-
   // Write the data to a temp file then rename to avoid data loss if we crash
   // while writing the file. Ensure that the temp file is on the same volume
   // as target file, so it can be moved in one step, and that the temp file
