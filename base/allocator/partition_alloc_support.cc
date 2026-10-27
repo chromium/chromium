@@ -97,6 +97,10 @@
 #include "base/system/sys_info.h"
 #endif
 
+#if BUILDFLAG(IS_IOS)
+#include "base/ios/ios_util.h"
+#endif
+
 #if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 #include "partition_alloc/memory_reclaimer.h"
 #include "partition_alloc/shim/allocator_shim_default_dispatch_to_partition_alloc.h"
@@ -998,6 +1002,18 @@ PartitionAllocSupport::GetBrpConfiguration(std::string_view process_type) {
 #if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && \
     PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) && \
     !PA_BUILDFLAG(FORCE_DISABLE_BACKUP_REF_PTR_FEATURE)
+#if BUILDFLAG(IS_IOS)
+  // Disable BackupRefPtr on iOS < 26.5 due to a XNU memory corruption
+  // bug (crbug.com/416518940).
+  if (!base::ios::IsRunningOnOrLater(26, 5, 0)) {
+    return {
+        .enable_brp = false,
+        .extra_extras_size = 0,
+        .suppress_double_free_detected_crash = false,
+        .suppress_corruption_detected_crash = false,
+    };
+  }
+#endif  // BUILDFLAG(IS_IOS)
 
   if (base::FeatureList::IsEnabled(
           base::features::kPartitionAllocBackupRefPtr) &&

@@ -10432,24 +10432,6 @@
             ]
         }
     ],
-    "IOSPartitionAllocBackupRefPtr": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Default",
-                    "params": {
-                        "brp-suppress-corruption-detected-crash": "true"
-                    },
-                    "enable_features": [
-                        "PartitionAllocBackupRefPtr"
-                    ]
-                }
-            ]
-        }
-    ],
     "IOSPasskeyM3": [
         {
             "platforms": [

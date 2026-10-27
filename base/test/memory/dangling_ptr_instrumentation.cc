@@ -6,9 +6,8 @@
 #include <cstdint>
 #include <string_view>
 
-#include "base/allocator/partition_alloc_features.h"
+#include "base/allocator/partition_alloc_support.h"
 #include "base/check_op.h"
-#include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "partition_alloc/dangling_raw_ptr_checks.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -18,11 +17,6 @@ namespace base::test {
 // static
 base::expected<DanglingPtrInstrumentation, std::string_view>
 DanglingPtrInstrumentation::Create() {
-  if (!FeatureList::IsEnabled(features::kPartitionAllocBackupRefPtr)) {
-    return base::unexpected(
-        "DanglingPtrInstrumentation requires the feature flag "
-        "'PartitionAllocBackupRefPtr' to be on.");
-  }
   // Note: We don't need to enable the `PartitionAllocDanglingPtr` feature,
   // because this does provide an alternative "implementation", by incrementing
   // the two counters.
@@ -36,6 +30,10 @@ DanglingPtrInstrumentation::Create() {
       "DanglingPtrInstrumentation requires the binary flag "
       "'enable_dangling_raw_ptr_checks' to be on.");
 #else
+  if (!allocator::PartitionAllocSupport::GetBrpConfiguration("").enable_brp) {
+    return base::unexpected(
+        "DanglingPtrInstrumentation requires BackupRefPtr to be enabled.");
+  }
   return DanglingPtrInstrumentation();
 #endif
 }

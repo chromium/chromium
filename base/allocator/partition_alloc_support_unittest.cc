@@ -28,6 +28,10 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+#if BUILDFLAG(IS_IOS)
+#include "base/ios/ios_util.h"
+#endif
+
 namespace base::allocator {
 
 using testing::AllOf;
@@ -394,6 +398,24 @@ TEST(PartitionAllocSupportTest, GetProcessTypeIdentifierUtilitySubType) {
   cl->AppendSwitchASCII("utility-sub-type", "network.mojom.NetworkService");
   EXPECT_EQ("utility.network.mojom.NetworkService", GetProcessTypeIdentifier());
 }
+
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && \
+    PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) && \
+    !PA_BUILDFLAG(FORCE_DISABLE_BACKUP_REF_PTR_FEATURE)
+TEST(PartitionAllocSupportTest, GetBrpConfiguration) {
+  test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kPartitionAllocBackupRefPtr);
+  PartitionAllocSupport::BrpConfiguration config =
+      PartitionAllocSupport::GetBrpConfiguration("");
+#if BUILDFLAG(IS_IOS)
+  EXPECT_EQ(config.enable_brp, ios::IsRunningOnOrLater(26, 5, 0));
+#else
+  EXPECT_TRUE(config.enable_brp);
+#endif
+  EXPECT_FALSE(config.suppress_corruption_detected_crash);
+}
+#endif
 
 #if PA_BUILDFLAG(HAS_64_BIT_POINTERS) && BUILDFLAG(IS_POSIX)
 class PartitionAllocMemoryPressureTest : public testing::Test {
