@@ -865,11 +865,12 @@ class DeltaSymbol(BaseSymbol):
   to one symbol in the |before|, and then be an alias to another in |after|.
   """
 
-  __slots__ = ('before_symbol', 'after_symbol')
+  __slots__ = ('before_symbol', 'after_symbol', '_diff_status')
 
   def __init__(self, before_symbol, after_symbol):
     self.before_symbol = before_symbol
     self.after_symbol = after_symbol
+    self._diff_status = None
 
   def __repr__(self):
     before_container_name = (
@@ -907,6 +908,16 @@ class DeltaSymbol(BaseSymbol):
 
   @property
   def diff_status(self):
+    # Cached since it is queried many times per symbol (e.g. clustering,
+    # filtering, and describing), and is expensive to compute. Assumes that
+    # before_symbol and after_symbol are not modified after diffing.
+    ret = self._diff_status
+    if ret is None:
+      ret = self._ComputeDiffStatus()
+      self._diff_status = ret
+    return ret
+
+  def _ComputeDiffStatus(self):
     if self.before_symbol is None:
       return DIFF_STATUS_ADDED
     if self.after_symbol is None:
