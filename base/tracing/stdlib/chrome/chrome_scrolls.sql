@@ -613,10 +613,6 @@ FROM processed_timestamps_and_metadata;
 -- NOTE: this view of top level scrolls is based on the LatencyInfo definition
 -- of a scroll, which differs subtly from the definition based on
 -- EventLatencies.
--- TODO(b/278684408): add support for tracking scrolls across multiple Chrome/
--- WebView instances. Currently gesture_scroll_id unique within an instance, but
--- is not unique across multiple instances. Switching to an EventLatency based
--- definition of scrolls should resolve this.
 CREATE PERFETTO TABLE chrome_scrolls (
   -- The unique identifier of the scroll.
   id LONG,
