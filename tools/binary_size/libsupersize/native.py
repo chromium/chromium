@@ -845,7 +845,7 @@ def CreateSymbols(
     )
 
   raw_symbols = []
-  dwarf_source_mapper = None
+  dwarf_source_mapper_result = None
   ninja_elf_object_paths = None
   metrics_by_file = {}
   if ninja_source_mapper and native_spec.map_path:
@@ -856,13 +856,8 @@ def CreateSymbols(
       assert ninja_elf_object_paths, 'Failed to find link step for ' + elf_path
   elif native_spec.elf_path:
     logging.info('Parsing source path info via dwarfdump')
-    dwarf_source_mapper = dwarfdump.CreateAddressSourceMapper(
-      native_spec.elf_path
-    )
-    logging.info(
-      'Found %d source paths across %s ranges',
-      dwarf_source_mapper.NumberOfPaths(),
-      dwarf_source_mapper.num_ranges,
+    dwarf_source_mapper_result = parallel.ForkAndCall(
+      dwarfdump.CreateAddressSourceMapper, (native_spec.elf_path,)
     )
 
   # Start by finding elf_object_paths so that nm can run on them while the
@@ -1000,9 +995,17 @@ def CreateSymbols(
     )
   )
 
-  if ninja_source_mapper:
+  # Use the same condition as when deciding whether to start dwarfdump above.
+  if ninja_source_mapper and native_spec.map_path:
+    assert dwarf_source_mapper_result is None
     _AddSourcePathsUsingObjectPaths(ninja_source_mapper, raw_symbols)
-  elif dwarf_source_mapper:
+  elif dwarf_source_mapper_result:
+    dwarf_source_mapper = dwarf_source_mapper_result.get()
+    logging.info(
+      'Found %d source paths across %s ranges',
+      dwarf_source_mapper.NumberOfPaths(),
+      dwarf_source_mapper.num_ranges,
+    )
     _AddSourcePathsUsingAddress(dwarf_source_mapper, raw_symbols)
 
   raw_symbols.extend(other_symbols)
