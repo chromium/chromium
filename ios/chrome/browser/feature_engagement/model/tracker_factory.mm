@@ -11,14 +11,6 @@
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 
 namespace feature_engagement {
-namespace {
-
-// static
-std::unique_ptr<KeyedService> BuildServiceInstance(ProfileIOS* profile) {
-  return CreateFeatureEngagementTracker(profile);
-}
-
-}  // namespace
 
 // Use the same tracker for regular and off-the-record Profiles.
 TrackerFactory::TrackerFactory(PassKey key)
@@ -28,13 +20,13 @@ TrackerFactory::TrackerFactory(PassKey key)
           ProfileSelection::kRedirectedInIncognito) {}
 
 // static
-TrackerFactory::TestingFactory TrackerFactory::GetDefaultFactory() {
-  return base::BindOnce(&BuildServiceInstance);
+TrackerFactory::TestingFactoryByRef TrackerFactory::GetDefaultFactory() {
+  return base::BindOnce(&CreateFeatureEngagementTracker);
 }
 
 std::unique_ptr<KeyedService> TrackerFactory::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
-  return BuildServiceInstance(profile);
+    ProfileIOS& profile) const {
+  return CreateFeatureEngagementTracker(profile);
 }
 
 }  // namespace feature_engagement

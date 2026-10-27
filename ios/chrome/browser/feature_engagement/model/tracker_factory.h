@@ -18,12 +18,12 @@ class TrackerFactory final
     : public TypedProfileKeyedServiceFactoryIOS<TrackerFactory, Tracker> {
  public:
   explicit TrackerFactory(PassKey key);
-  static TestingFactory GetDefaultFactory();
+  static TestingFactoryByRef GetDefaultFactory();
 
  private:
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const final;
+      ProfileIOS& profile) const final;
 };
 
 }  // namespace feature_engagement

@@ -30,7 +30,7 @@ const base::FilePath::CharType kIOSFeatureEngagementTrackerStorageDirname[] =
 namespace feature_engagement {
 
 std::unique_ptr<KeyedService> CreateFeatureEngagementTracker(
-    ProfileIOS* profile) {
+    ProfileIOS& profile) {
   feature_engagement::FeatureActivation FETDemoModeOverride =
       tests_hook::FETDemoModeOverride();
   switch (FETDemoModeOverride.get_state()) {
@@ -45,8 +45,8 @@ std::unique_ptr<KeyedService> CreateFeatureEngagementTracker(
       base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::BEST_EFFORT});
 
-  base::FilePath storage_dir = profile->GetStatePath().Append(
-      kIOSFeatureEngagementTrackerStorageDirname);
+  base::FilePath storage_dir =
+      profile.GetStatePath().Append(kIOSFeatureEngagementTrackerStorageDirname);
 
   base::FilePath device_storage_dir;
   base::PathService::Get(ios::DIR_USER_DATA, &device_storage_dir);
@@ -54,7 +54,7 @@ std::unique_ptr<KeyedService> CreateFeatureEngagementTracker(
       device_storage_dir.Append(kIOSFeatureEngagementTrackerStorageDirname);
 
   leveldb_proto::ProtoDatabaseProvider* db_provider =
-      profile->GetProtoDatabaseProvider();
+      profile.GetProtoDatabaseProvider();
 
   auto event_exporter = std::make_unique<EventExporter>();
 

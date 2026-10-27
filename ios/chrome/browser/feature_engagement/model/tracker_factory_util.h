@@ -15,7 +15,7 @@ namespace feature_engagement {
 
 // Util method for creating a FeatureEngagementTracker.
 std::unique_ptr<KeyedService> CreateFeatureEngagementTracker(
-    ProfileIOS* profile);
+    ProfileIOS& profile);
 
 }  // namespace feature_engagement
 
