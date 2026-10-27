@@ -68,6 +68,14 @@ constexpr base::TimeDelta kTypingCoolDownPeriod = base::Milliseconds(50);
 // a few attempts.
 constexpr base::TimeDelta kWebElementTapTimeout = base::Seconds(30);
 
+// Timeout for the initial page load in a test. On a freshly booted simulator,
+// the first navigation away from the native New Tab Page must wait for
+// ExtensionKit to spawn WebKit's Networking, WebContent, and GPU helper
+// processes before `<CRWWebView>` is added to the view hierarchy, which can
+// take ~11-13 seconds and exceed both `kWaitForUIElementTimeout` (4s) and
+// `kWaitForPageLoadTimeout` (10s).
+constexpr base::TimeDelta kInitialPageLoadTimeout = base::Seconds(20);
+
 // Email value used by the tests.
 constexpr std::string_view kEmail = "missing_names@gmail.com";
 
@@ -204,14 +212,6 @@ void TypeTextInXframeField(NSString* fieldID, NSString* text) {
   [super tearDownHelper];
 }
 
-// TODO(crbug.com/391826905): Re-enable this test on simulator.
-#if TARGET_OS_SIMULATOR
-#define MAYBE_testEditBottomSheetAlertBySwipingDown \
-  FLAKY_testEditBottomSheetAlertBySwipingDown
-#else
-#define MAYBE_testEditBottomSheetAlertBySwipingDown \
-  testEditBottomSheetAlertBySwipingDown
-#endif
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
 
@@ -255,7 +255,8 @@ void TypeTextInXframeField(NSString* fieldID, NSString* text) {
 // the form to the save address profile infobar.
 - (void)fillPresidentProfileAndShowSaveInfobar {
   GREYAssertTrue(self.testServer->Start(), @"Server did not start.");
-  [ChromeEarlGrey loadURL:self.testServer->GetURL(kProfileForm)];
+  [ChromeEarlGrey loadURL:self.testServer->GetURL(kProfileForm)
+              withTimeout:kInitialPageLoadTimeout];
 
   // Ensure there are no saved profiles.
   GREYAssertEqual(0U, [AutofillAppInterface profilesCount],
@@ -275,7 +276,8 @@ void TypeTextInXframeField(NSString* fieldID, NSString* text) {
 - (void)triggerSaveInfobarViaXHRSubmission {
   // Load the xframe address form page.
   GREYAssertTrue(self.testServer->Start(), @"Server did not start.");
-  [ChromeEarlGrey loadURL:self.testServer->GetURL(kXframeFormPage)];
+  [ChromeEarlGrey loadURL:self.testServer->GetURL(kXframeFormPage)
+              withTimeout:kInitialPageLoadTimeout];
 
   // Ensure there are no saved profiles at this point - make sure we start from
   // a clean slate.
@@ -304,6 +306,9 @@ void TypeTextInXframeField(NSString* fieldID, NSString* text) {
   [[EarlGrey selectElementWithMatcher:BannerButtonMatcher()]
       performAction:grey_tap()];
   [InfobarEarlGreyUI waitUntilInfobarBannerVisibleOrTimeout:NO];
+
+  // Wait for the save/edit address modal to appear.
+  [ChromeEarlGrey waitForMatcher:ModalButtonMatcher()];
 }
 
 // Fills, submits the form and saves the address profile.
@@ -353,7 +358,7 @@ void TypeTextInXframeField(NSString* fieldID, NSString* text) {
   const GURL fullURL = baseURL.ReplaceComponents(replacements);
 
   // Load the URL and wait for its content to be loaded.
-  [ChromeEarlGrey loadURL:fullURL];
+  [ChromeEarlGrey loadURL:fullURL withTimeout:kInitialPageLoadTimeout];
   [ChromeEarlGrey waitForWebStateContainingText:"Address Form Test Page"];
   GREYAssertTrue([AutofillAppInterface waitForFormToBeCachedInMainFrame],
                  @"Forms were not parsed and cached.");
@@ -759,7 +764,7 @@ TAG_SMOKE_TEST(SaveProfileEGTest, testUserData_LocalUpdate);
 
 // Tests that the save address flow is still working correctly when the address
 // badge is removed.
-- (void)FLAKY_testSaveWithoutBadge {
+- (void)testSaveWithoutBadge {
   [SigninEarlGrey
       signinWithFakeIdentity:[FakeSystemIdentity fakeIdentityWithMissingNames]];
 
@@ -783,8 +788,12 @@ TAG_SMOKE_TEST(SaveProfileEGTest, testUserData_LocalUpdate);
       performAction:grey_tap()];
 
   // Ensure profile is saved locally.
-  GREYAssertEqual(1U, [AutofillAppInterface profilesCount],
-                  @"Profile should have been saved.");
+  GREYAssertTrue(base::test::ios::WaitUntilConditionOrTimeout(
+                     base::test::ios::kWaitForUIElementTimeout,
+                     ^{
+                       return [AutofillAppInterface profilesCount] == 1U;
+                     }),
+                 @"Profile should have been saved.");
 
   [SigninEarlGrey signOut];
 }
@@ -837,21 +846,11 @@ TAG_SMOKE_TEST(SaveProfileEGTest, testUserData_LocalUpdate);
 
 // Tests that there is an alert shown if the user tries to dismiss an alert
 // after they edited a field in the edit prompt without saving.
-// Note that this test is defined above.
-- (void)MAYBE_testEditBottomSheetAlertBySwipingDown {
+- (void)testEditBottomSheetAlertBySwipingDown {
   // TODO(crbug.com/377270834): Fix implementation on iPad.
   if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(@"Test fails on iPad currently.");
   }
-
-  // TODO(crbug.com/443713676): Re-enable the test.
-#if !TARGET_OS_SIMULATOR
-  if (base::ios::IsRunningOnIOS26OrLater()) {
-    if (![ChromeEarlGrey isIPadIdiom]) {
-      EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 26.");
-    }
-  }
-#endif
 
   // Fill and submit the form.
   [self fillPresidentProfileAndShowSaveModal];
@@ -868,22 +867,32 @@ TAG_SMOKE_TEST(SaveProfileEGTest, testUserData_LocalUpdate);
   [[EarlGrey selectElementWithMatcher:EditProfileBottomSheet()]
       performAction:grey_swipeFastInDirection(kGREYDirectionDown)];
 
-  id<GREYMatcher> keepEditingAlert = grey_text(
-      l10n_util::GetNSString(IDS_IOS_VIEW_CONTROLLER_DISMISS_CANCEL_CHANGES));
-  // Ensure the error alert is shown.
-  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:keepEditingAlert];
+  id<GREYMatcher> saveChangesAlert = grey_text(
+      l10n_util::GetNSString(IDS_IOS_VIEW_CONTROLLER_DISMISS_SAVE_CHANGES));
+  // Ensure the confirmation alert is shown.
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:saveChangesAlert];
 
-  // Keep editing.
-  [[EarlGrey selectElementWithMatcher:keepEditingAlert]
-      performAction:grey_tap()];
+  // Keep editing. On iOS 26+, `UIAlertControllerStyleActionSheet` anchored to a
+  // `barButtonItem` is presented as a popover on iPhone and hides the Cancel
+  // action ("Keep editing") in favor of tapping the `PopoverDismissRegion`.
+  if (base::ios::IsRunningOnIOS26OrLater()) {
+    [[EarlGrey
+        selectElementWithMatcher:grey_accessibilityID(@"PopoverDismissRegion")]
+        performAction:grey_tap()];
+  } else {
+    id<GREYMatcher> keepEditingAlert = grey_text(
+        l10n_util::GetNSString(IDS_IOS_VIEW_CONTROLLER_DISMISS_CANCEL_CHANGES));
+    [ChromeEarlGrey waitForUIElementToAppearWithMatcher:keepEditingAlert];
+    [[EarlGrey selectElementWithMatcher:keepEditingAlert]
+        performAction:grey_tap()];
+  }
+  [ChromeEarlGrey waitForUIElementToDisappearWithMatcher:saveChangesAlert];
 
   // Swipe down the sheet again.
   [[EarlGrey selectElementWithMatcher:EditProfileBottomSheet()]
       performAction:grey_swipeFastInDirection(kGREYDirectionDown)];
 
   // Check that the save changes button exists.
-  id<GREYMatcher> saveChangesAlert = grey_text(
-      l10n_util::GetNSString(IDS_IOS_VIEW_CONTROLLER_DISMISS_SAVE_CHANGES));
   [ChromeEarlGrey waitForUIElementToAppearWithMatcher:saveChangesAlert];
 
   [[EarlGrey selectElementWithMatcher:saveChangesAlert]
@@ -892,9 +901,7 @@ TAG_SMOKE_TEST(SaveProfileEGTest, testUserData_LocalUpdate);
 
 // Tests that the 'Save' button is only enabled when all the required fields are
 // filled.
-// TODO(crbug.com/407573862): Re-enable after the test is fixed for
-// ios-fieldtrial-rel.
-- (void)DISABLED_testSaveButtonEnabledStateDependingOnRequiredFields {
+- (void)testSaveButtonEnabledStateDependingOnRequiredFields {
   [SigninEarlGreyUI
       signinWithFakeIdentity:[FakeSystemIdentity fakeIdentityWithMissingNames]];
   [ChromeEarlGrey waitForSyncTransportStateActiveWithTimeout:base::Seconds(10)];
