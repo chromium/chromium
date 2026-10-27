@@ -23,7 +23,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
-import org.robolectric.util.ReflectionHelpers;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
@@ -54,12 +53,11 @@ public class TabbedRootUiCoordinatorUnitTest {
      * <p>After {@link TabbedRootUiCoordinator#onDestroy()}, {@code mLoadingFullscreenCoordinator}
      * and {@code mActivity} (nulled by {@link RootUiCoordinator#onDestroy()}) are both null. The
      * real constructor requires the full activity graph, so those post-destroy field states are
-     * simulated via reflection.
+     * simulated via {@link RootUiCoordinator#destroyActivityForTesting()}.
      */
     @Test
     public void testGetLoadingFullscreenCoordinatorAfterDestroy() {
-        ReflectionHelpers.setField(mCoordinator, "mActivity", null);
-        ReflectionHelpers.setField(mCoordinator, "mLoadingFullscreenCoordinator", null);
+        mCoordinator.destroyActivityForTesting();
         assertNull(mCoordinator.getLoadingFullscreenCoordinator());
     }
 
@@ -79,8 +77,7 @@ public class TabbedRootUiCoordinatorUnitTest {
         root.addView(loadingStub);
         activity.setContentView(root);
 
-        ReflectionHelpers.setField(mCoordinator, "mActivity", activity);
-        ReflectionHelpers.setField(mCoordinator, "mLoadingFullscreenCoordinator", null);
+        mCoordinator.setActivityForTesting(activity);
         doReturn(mScrimManager).when(mCoordinator).getScrimManager();
 
         LoadingFullscreenCoordinator first = mCoordinator.getLoadingFullscreenCoordinator();

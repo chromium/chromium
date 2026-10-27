@@ -3483,4 +3483,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     public @Nullable TabSearchOverlayCoordinator getTabSearchOverlayCoordinatorForTesting() {
         return mTabSearchOverlayCoordinator;
     }
+
+    void setActivityForTesting(AppCompatActivity activity) {
+        mActivity = activity;
+    }
 }
