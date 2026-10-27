@@ -16,7 +16,6 @@
 #include "chrome/browser/ui/extensions/extensions_toolbar_view_model.h"
 #include "chrome/browser/ui/webui/webui_toolbar/webui_toolbar_extensions_container_observer.h"
 #include "components/browser_apis/ui_controllers/toolbar/icon_handle.h"
-#include "content/public/browser/web_contents_observer.h"
 #include "ui/base/interaction/element_tracker.h"
 
 class BrowserWindowInterface;
@@ -25,7 +24,6 @@ class WebUIToolbarControlDelegate;
 class WebUIToolbarExtensionsContainer;
 
 namespace content {
-class Page;
 class WebContents;
 }
 
@@ -39,8 +37,7 @@ class ScopedUnownedUserData;
 // and initialization. It implements WebUIToolbarExtensionsContainer::Observer
 // to cache extensions state and notify the delegate.
 class WebUIToolbarExtensionsContainerWrapper
-    : public WebUIToolbarExtensionsContainerObserver,
-      public content::WebContentsObserver {
+    : public WebUIToolbarExtensionsContainerObserver {
  public:
   explicit WebUIToolbarExtensionsContainerWrapper(
       WebUIToolbarControlDelegate* delegate);
@@ -74,9 +71,6 @@ class WebUIToolbarExtensionsContainerWrapper
                          base::OnceClosure callback) override;
   void OnPopOutCancelled() override;
 
-  // content::WebContentsObserver:
-  void PrimaryPageChanged(content::Page& page) override;
-
  private:
   // This string is used as the extensions_bar::mojom::ExtensionActionInfo::id
   // value to indicate the extensions button (not actually an extension).
@@ -85,8 +79,6 @@ class WebUIToolbarExtensionsContainerWrapper
 
   void OnActiveTabChanged(BrowserWindowInterface* browser_interface);
   void SendExtensionsState();
-  // Returns whether any of `cached_actions_` have access to `web_contents`.
-  bool AnyActionHasCurrentSiteAccess(content::WebContents& web_contents);
   // Compute WebUI state for extensions button.
   extensions_bar::mojom::ExtensionActionInfoPtr GetExtensionsButton();
   // Update `extensions_button_state`.  Returns true if state changed.

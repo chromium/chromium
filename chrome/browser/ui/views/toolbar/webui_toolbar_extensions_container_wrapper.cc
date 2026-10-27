@@ -76,14 +76,9 @@ bool WebUIToolbarExtensionsContainerWrapper::UpdateExtensionsButtonState() {
     // Ask ExtensionsToolbarViewModel::GetButtonState() for actual state.
     content::WebContents* web_contents =
         delegate_->GetBrowser()->GetTabStripModel()->GetActiveWebContents();
-    Profile* profile = delegate_->GetBrowser()->GetProfile();
-    if (web_contents && extensions_container_ && profile) {
-      new_state = ExtensionsToolbarViewModel::GetButtonState(
-          delegate_->GetBrowser(), *web_contents,
-          ToolbarActionsModel::Get(profile),
-          base::BindOnce(&WebUIToolbarExtensionsContainerWrapper::
-                             AnyActionHasCurrentSiteAccess,
-                         base::Unretained(this)));
+    if (web_contents && extensions_container_) {
+      new_state = extensions_container_->GetToolbarViewModel()->GetButtonState(
+          *web_contents);
     }
   }
 
@@ -120,26 +115,11 @@ WebUIToolbarExtensionsContainerWrapper::GetExtensionsButton() {
   return button;
 }
 
-bool WebUIToolbarExtensionsContainerWrapper::AnyActionHasCurrentSiteAccess(
-    content::WebContents& web_contents) {
-  for (const auto& [_, action] : cached_actions_) {
-    ToolbarActionViewModel* action_model =
-        extensions_container_->GetActionForId(action->id);
-    if (action_model &&
-        action_model->GetSiteInteraction(&web_contents) ==
-            extensions::SitePermissionsHelper::SiteInteraction::kGranted) {
-      return true;
-    }
-  }
-  return false;
-}
-
 void WebUIToolbarExtensionsContainerWrapper::OnActiveTabChanged(
     BrowserWindowInterface* browser_interface) {
   if (browser_interface && browser_interface->GetTabStripModel()) {
     content::WebContents* active_contents =
         browser_interface->GetTabStripModel()->GetActiveWebContents();
-    Observe(active_contents);
     if (active_contents) {
       // No need to check whether the active tab is an extension-controlled NTP
       // here; the helper inspects the tab's visible navigation entry and
@@ -148,18 +128,6 @@ void WebUIToolbarExtensionsContainerWrapper::OnActiveTabChanged(
       extensions::MaybeShowExtensionControlledNewTabPage(browser_interface,
                                                          active_contents);
     }
-  }
-  if (extensions_container_) {
-    // State of extensions depends on what's active --- e.g. some may be
-    // disabled on some URLs.
-    extensions_container_->NotifyOfAllActions();
-  }
-}
-
-void WebUIToolbarExtensionsContainerWrapper::PrimaryPageChanged(
-    content::Page& page) {
-  if (extensions_container_) {
-    extensions_container_->NotifyOfAllActions();
   }
 }
 

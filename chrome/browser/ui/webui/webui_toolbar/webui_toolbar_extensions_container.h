@@ -12,6 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list_types.h"
 #include "base/scoped_observation.h"
+#include "chrome/browser/ui/extensions/extensions_toolbar_view_model.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
 #include "chrome/browser/ui/views/extensions/extensions_container_views.h"
 #include "chrome/browser/ui/webui/webui_toolbar/webui_toolbar_extensions_container_observer.h"
@@ -37,7 +38,8 @@ class IconTable;
 class WebUIToolbarExtensionsContainer
     : public ExtensionsContainer,
       public ExtensionsContainerViews,
-      public ToolbarActionsModel::Observer,
+      public ExtensionsToolbarViewModel::Delegate,
+      public ExtensionsToolbarViewModel::Observer,
       public extensions_bar::mojom::PageHandler,
       public views::WidgetObserver {
  public:
@@ -60,6 +62,10 @@ class WebUIToolbarExtensionsContainer
                            int32_t target_index);
   void MoveExtensionActionBy(const std::string& extension_id, int32_t delta);
   std::vector<std::string> GetOrderedActionIds() const;
+
+  ExtensionsToolbarViewModel* GetToolbarViewModel() {
+    return &toolbar_view_model_;
+  }
 
   // ExtensionsContainer:
   ToolbarActionViewModel* GetActionForId(const std::string& action_id) override;
@@ -94,12 +100,21 @@ class WebUIToolbarExtensionsContainer
 
   void CollapseConfirmation() override;
 
-  // ToolbarActionsModel::Observer:
-  void OnToolbarModelInitialized() override;
-  void OnToolbarActionAdded(const ToolbarActionsModel::ActionId& id) override;
-  void OnToolbarActionRemoved(const ToolbarActionsModel::ActionId& id) override;
-  void OnToolbarActionUpdated(const ToolbarActionsModel::ActionId& id) override;
-  void OnToolbarPinnedActionsChanged() override;
+  // ExtensionsToolbarViewModel::Delegate:
+  std::unique_ptr<ExtensionActionViewModel> CreateActionViewModel(
+      const ToolbarActionsModel::ActionId& action_id,
+      ExtensionsContainer* extensions_container) override;
+  bool CanShowToolbarActionPopupForAPICall(
+      const ToolbarActionsModel::ActionId& action_id) override;
+
+  // ExtensionsToolbarViewModel::Observer:
+  void OnActionsInitialized() override;
+  void OnActionAdded(const ToolbarActionsModel::ActionId& id) override;
+  void OnActionRemoved(const ToolbarActionsModel::ActionId& id) override;
+  void OnActionUpdated(const ToolbarActionsModel::ActionId& id) override;
+  void OnPinnedActionsChanged() override;
+  void OnActiveWebContentsChanged(bool is_same_document,
+                                  content::WebContents* web_contents) override;
 
   void Bind(mojo::PendingRemote<extensions_bar::mojom::Page> page,
             mojo::PendingReceiver<extensions_bar::mojom::PageHandler> receiver);
@@ -205,9 +220,10 @@ class WebUIToolbarExtensionsContainer
   const base::WeakPtr<content::WebContents> web_contents_;
   const bool push_icon_table_updates_;
   const raw_ptr<webui_toolbar::IconTable> icon_table_;
-  const raw_ref<ToolbarActionsModel> model_;
-  base::ScopedObservation<ToolbarActionsModel, ToolbarActionsModel::Observer>
-      observe_actions_{this};
+  ExtensionsToolbarViewModel toolbar_view_model_;
+  base::ScopedObservation<ExtensionsToolbarViewModel,
+                          ExtensionsToolbarViewModel::Observer>
+      toolbar_view_model_observation_{this};
 
   mojo::Receiver<extensions_bar::mojom::PageHandler> receiver_{this};
   mojo::Remote<extensions_bar::mojom::Page> page_;
