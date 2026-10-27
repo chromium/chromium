@@ -175,30 +175,43 @@ public class VoiceRecognitionIntentHandler {
             return;
         }
 
-        startSystemForVoiceSearch(activity, source, callback);
+        ensureAudioPermissionGranted(
+                callback, () -> launchRecognitionIntent(activity, source, callback));
     }
 
-    private void startSystemForVoiceSearch(
+    /**
+     * Launches the system speech recognizer.
+     *
+     * @param activity The activity used to identify the calling package.
+     * @param source The source of the voice search initiation, such as NTP or omnibox.
+     * @param callback The callback to receive completion or cancellation events.
+     */
+    private void launchRecognitionIntent(
             Activity activity, @VoiceInteractionSource int source, RecognitionCallback callback) {
-        ensureAudioPermissionGranted(
-                callback,
-                () -> {
-                    Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
-                    intent.putExtra(
-                            RecognizerIntent.EXTRA_LANGUAGE_MODEL,
-                            RecognizerIntent.LANGUAGE_MODEL_WEB_SEARCH);
-                    intent.putExtra(
-                            RecognizerIntent.EXTRA_CALLING_PACKAGE,
-                            activity.getComponentName().flattenToString());
-                    intent.putExtra(RecognizerIntent.EXTRA_WEB_SEARCH_ONLY, /* value= */ true);
+        recordVoiceSearchStartEvent(source);
 
-                    if (!showSpeechRecognitionIntent(intent, source, callback)) {
-                        VoiceRecognitionUtil.isRecognitionIntentPresent(
-                                /* useCachedValue= */ false);
-                        recordVoiceSearchFailureEvent(source);
-                        callback.onAvailabilityImpacted();
-                    }
-                });
+        if (!showSpeechRecognitionIntent(
+                createSystemSpeechRecognitionIntent(activity), source, callback)) {
+            VoiceRecognitionUtil.isRecognitionIntentPresent(/* useCachedValue= */ false);
+            recordVoiceSearchFailureEvent(source);
+            callback.onAvailabilityImpacted();
+        }
+    }
+
+    /**
+     * Creates the intent invoking the system speech recognizer.
+     *
+     * @param activity The activity used to identify the calling package.
+     */
+    private static Intent createSystemSpeechRecognitionIntent(Activity activity) {
+        Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+        intent.putExtra(
+                RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_WEB_SEARCH);
+        intent.putExtra(
+                RecognizerIntent.EXTRA_CALLING_PACKAGE,
+                activity.getComponentName().flattenToString());
+        intent.putExtra(RecognizerIntent.EXTRA_WEB_SEARCH_ONLY, /* value= */ true);
+        return intent;
     }
 
     /**
@@ -249,7 +262,6 @@ public class VoiceRecognitionIntentHandler {
      */
     private boolean showSpeechRecognitionIntent(
             Intent intent, @VoiceInteractionSource int source, RecognitionCallback callback) {
-        recordVoiceSearchStartEvent(source);
         IntentCallback intentCallback =
                 (resultCode, data) -> {
                     if (resultCode == Activity.RESULT_CANCELED) {
