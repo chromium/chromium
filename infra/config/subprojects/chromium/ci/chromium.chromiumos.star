@@ -534,7 +534,7 @@ ci.builder(
                     "--disable-features=WebUIOmniboxPopup,WebUIOmniboxAimPopup",
                 ],
                 swarming = targets.swarming(
-                    shards = 200,
+                    shards = 270,
                 ),
             ),
             "content_browsertests": targets.mixin(
@@ -548,7 +548,7 @@ ci.builder(
                     "--disable-features=WebUIOmniboxPopup,WebUIOmniboxAimPopup",
                 ],
                 swarming = targets.swarming(
-                    shards = 24,
+                    shards = 28,
                 ),
             ),
             "net_unittests": targets.mixin(

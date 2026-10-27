@@ -636,7 +636,7 @@ linux_memory_builder(
                 # run on ash, which means every test starts and shuts down ash, which most likely explains why it takes longer than on other platforms.
                 # crbug.com/40585695 and crbug.com/326621525
                 swarming = targets.swarming(
-                    shards = 100,
+                    shards = 150,
                 ),
             ),
             "content_unittests": targets.mixin(
@@ -657,7 +657,7 @@ linux_memory_builder(
                 # These are very slow on the Chrome OS MSAN trybot for some reason.
                 # crbug.com/865455
                 swarming = targets.swarming(
-                    shards = 8,
+                    shards = 14,
                 ),
             ),
             "net_unittests": targets.mixin(
@@ -794,7 +794,7 @@ linux_memory_builder(
                     "--disable-features=WebUIOmniboxPopup,WebUIOmniboxAimPopup",
                 ],
                 swarming = targets.swarming(
-                    shards = 43,
+                    shards = 51,
                 ),
             ),
             "services_unittests": targets.remove(
@@ -1475,7 +1475,7 @@ ci.builder(
                 # These are very slow on the ASAN trybot for some reason.
                 # crbug.com/1257927
                 swarming = targets.swarming(
-                    shards = 140,
+                    shards = 190,
                 ),
             ),
             "components_unittests": targets.mixin(
@@ -1508,7 +1508,7 @@ ci.builder(
                     "--disable-features=WebUIOmniboxPopup,WebUIOmniboxAimPopup",
                 ],
                 swarming = targets.swarming(
-                    shards = 24,
+                    shards = 35,
                 ),
             ),
             "net_unittests": targets.mixin(

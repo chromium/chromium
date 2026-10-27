@@ -745,7 +745,7 @@ ci.thin_tester(
                     "--disable-features=WebUIOmniboxPopup,WebUIOmniboxAimPopup",
                 ],
                 swarming = targets.swarming(
-                    shards = 8,
+                    shards = 11,
                 ),
             ),
             "sync_integration_tests": targets.mixin(
