@@ -112,6 +112,7 @@ import org.chromium.chrome.browser.tabmodel.TabClosureParamsUtils;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabCreatorUtil;
 import org.chromium.chrome.browser.tabmodel.TabGroupColorUtils;
+import org.chromium.chrome.browser.tabmodel.TabGroupMergeNotificationType;
 import org.chromium.chrome.browser.tabmodel.TabGroupObserver;
 import org.chromium.chrome.browser.tabmodel.TabGroupTitleUtils;
 import org.chromium.chrome.browser.tabmodel.TabGroupUtils.TabGroupCreationCallback;
@@ -5879,14 +5880,32 @@ public class StripLayoutHelper
         }
 
         // Otherwise, navigate to the link in a new tab.
+        StripLayoutView next = getLinkInsertionView(xDp);
+        int index = getLinkInsertIndex(next);
+
+        // A grouped tab is always right after its group's title or another tab of its group, so a
+        // new tab inserted right before it joins its group. Resolve the position within the group
+        // before the new tab shifts the model indices.
+        Tab nextTab =
+                next instanceof StripLayoutTab nextStripTab
+                        ? mModel.getTabById(nextStripTab.getTabId())
+                        : null;
+        Token groupId = nextTab != null ? nextTab.getTabGroupId() : null;
+        int indexInGroup =
+                nextTab != null && groupId != null ? mModel.getIndexOfTabInGroup(nextTab) : 0;
+
         // Use FROM_CHROME_UI rather than FROM_LINK, which ignores the index and opens the tab next
         // to the current tab. The tab model moves new tabs that would land among the pinned tabs to
         // right after them, since link tabs are never pinned.
-        mTabCreator.createNewTab(
-                params,
-                TabLaunchType.FROM_CHROME_UI,
-                /* parent= */ null,
-                getLinkInsertIndex(getLinkInsertionView(xDp)));
+        Tab newTab =
+                mTabCreator.createNewTab(
+                        params, TabLaunchType.FROM_CHROME_UI, /* parent= */ null, index);
+        if (newTab == null || groupId == null) return;
+        mModel.mergeListOfTabsToExistingGroup(
+                Collections.singletonList(newTab),
+                groupId,
+                indexInGroup,
+                TabGroupMergeNotificationType.DONT_NOTIFY);
     }
 
     /**
@@ -5907,7 +5926,9 @@ public class StripLayoutHelper
     /**
      * Returns the view that a new tab for a link dropped at the given position should be inserted
      * right before, which is the first view whose midpoint is past the drop. So over a tab or a
-     * group title, the leading half inserts before it and the trailing half inserts after it. Drops
+     * group title, the leading half inserts before it and the trailing half inserts after it. After
+     * an expanded title is the group's first tab, so the new tab joins the group. A collapsed
+     * group's tabs are skipped, so after a collapsed title is the next view past the group. Drops
      * over the middle half of a tab load the link into that tab instead.
      *
      * @param xDp The x-coordinate of the drop in dp.
@@ -5915,11 +5936,31 @@ public class StripLayoutHelper
      */
     @VisibleForTesting
     @Nullable StripLayoutView getLinkInsertionView(float xDp) {
-        // TODO(crbug.com/568820678): Add new tabs inserted next to a group's tabs to that group.
         for (StripLayoutView view : mStripViews) {
-            if (isLinkDropCandidate(view) && getLinkDropFraction(view, xDp) < 0.5f) return view;
+            if (!isLinkDropCandidate(view)) continue;
+            if (getLinkInsertionFraction(view, xDp) < 0.5f) return view;
         }
         return null;
+    }
+
+    /**
+     * Same as {@link #getLinkDropFraction(StripLayoutView, float)}, but only uses the part of an
+     * unpinned view that isn't hidden under the pinned tabs, which unpinned views scroll under.
+     * Views that are fully hidden there are treated as being before the drop.
+     */
+    private float getLinkInsertionFraction(StripLayoutView view, float xDp) {
+        float left = getLinkDropLeftEdge(view);
+        float right = getLinkDropRightEdge(view);
+        boolean isPinned = view instanceof StripLayoutTab tab && tab.getIsPinned();
+        if (!isPinned && getNumLivePinnedTabs() > 0) {
+            float pinnedTabsBoundary = getPinnedTabsBoundary();
+            if (LocalizationUtils.isLayoutRtl()) {
+                right = Math.min(right, pinnedTabsBoundary);
+            } else {
+                left = Math.max(left, pinnedTabsBoundary);
+            }
+        }
+        return getLinkDropFraction(left, right, xDp);
     }
 
     /**
@@ -5952,8 +5993,12 @@ public class StripLayoutHelper
      * view's width. This is negative before the view and greater than 1 after it.
      */
     private static float getLinkDropFraction(StripLayoutView view, float xDp) {
-        float left = getLinkDropLeftEdge(view);
-        float width = getLinkDropRightEdge(view) - left;
+        return getLinkDropFraction(getLinkDropLeftEdge(view), getLinkDropRightEdge(view), xDp);
+    }
+
+    /** Same as {@link #getLinkDropFraction(StripLayoutView, float)}, for the given edges. */
+    private static float getLinkDropFraction(float left, float right, float xDp) {
+        float width = right - left;
         // A view can have no width, e.g. while it's animating in or out. Treat it as being past
         // the drop, so that links are never inserted before it or loaded into it.
         if (width <= 0f) return 1f;

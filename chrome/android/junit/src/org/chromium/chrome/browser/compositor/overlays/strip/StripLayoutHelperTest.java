@@ -7473,17 +7473,28 @@ public class StripLayoutHelperTest {
     }
 
     @Test
-    public void testGetLinkInsertionView_OverGroupTitle() {
-        initializeTest(/* tabIndex= */ 0);
+    public void testGetLinkInsertionView_ExpandedGroupTitle() {
+        doTestGetLinkInsertionViewExpandedGroupTitle(/* rtl= */ false);
+    }
+
+    @Test
+    public void testGetLinkInsertionView_ExpandedGroupTitle_Rtl() {
+        doTestGetLinkInsertionViewExpandedGroupTitle(/* rtl= */ true);
+    }
+
+    private void doTestGetLinkInsertionViewExpandedGroupTitle(boolean rtl) {
+        initializeTest(rtl, /* incognito= */ false, /* tabIndex= */ 0, /* numTabs= */ 5);
         groupTabs(1, 3, TAB_GROUP_ID_1);
         resizeStripAndUpdateLayout(STRIP_WIDTH);
         // Views: tab 0, group title, tab 1, tab 2, tab 3, tab 4.
         StripLayoutView[] views = mStripLayoutHelper.getStripLayoutViewsForTesting();
         assertTrue(views[1] instanceof StripLayoutGroupTitle);
 
-        // The leading half of the title inserts before it, and the trailing half after it.
+        // The leading half of the title inserts before the group.
         assertEquals(
                 views[1], mStripLayoutHelper.getLinkInsertionView(getLinkDropX(views[1], 0.25f)));
+
+        // The trailing half of the title inserts before the group's first tab.
         assertEquals(
                 views[2], mStripLayoutHelper.getLinkInsertionView(getLinkDropX(views[1], 0.75f)));
     }
@@ -7501,6 +7512,48 @@ public class StripLayoutHelperTest {
         // A view with no width is skipped, so drops on either side of it insert after it.
         assertEquals(views[2], mStripLayoutHelper.getLinkInsertionView(title.getDrawX() - 1f));
         assertEquals(views[2], mStripLayoutHelper.getLinkInsertionView(title.getDrawX() + 1f));
+    }
+
+    @Test
+    public void testGetLinkInsertionView_CollapsedGroupTitle() {
+        initializeTest(/* tabIndex= */ 0);
+        groupTabs(1, 3, TAB_GROUP_ID_1);
+        StripLayoutView[] views = mStripLayoutHelper.getStripLayoutViewsForTesting();
+        mStripLayoutHelper.collapseTabGroupForTesting(
+                (StripLayoutGroupTitle) views[1], /* isCollapsed= */ true);
+        resizeStripAndUpdateLayout(STRIP_WIDTH);
+        // Views: tab 0, group title, collapsed tab 1, collapsed tab 2, tab 3, tab 4.
+        views = mStripLayoutHelper.getStripLayoutViewsForTesting();
+
+        // The leading half of a collapsed title inserts before the group, and the trailing half
+        // inserts after the group.
+        assertEquals(
+                views[1], mStripLayoutHelper.getLinkInsertionView(getLinkDropX(views[1], 0.25f)));
+        assertEquals(
+                views[4], mStripLayoutHelper.getLinkInsertionView(getLinkDropX(views[1], 0.75f)));
+    }
+
+    @Test
+    public void testGetLinkInsertionView_TabsScrolledUnderPinnedTabs() {
+        // Use enough tabs for the strip to scroll.
+        initializeTest(/* tabIndex= */ 0, /* numTabs= */ 20);
+        resizeStripAndUpdateLayout(STRIP_WIDTH);
+        StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
+        tabs[0].setIsPinned(true);
+        // Resize to apply the pinned tab width.
+        resizeStripAndUpdateLayout(STRIP_WIDTH_LANDSCAPE);
+
+        // Scroll the unpinned tabs so that only the trailing 40% of tab 1 is visible past the
+        // pinned tab.
+        float tab1Width = getLinkDropRightEdge(tabs[1]) - getLinkDropLeftEdge(tabs[1]);
+        float desiredTab1Left = getLinkDropRightEdge(tabs[0]) - 0.6f * tab1Width;
+        mStripLayoutHelper.setScrollOffsetForTesting(
+                desiredTab1Left - getLinkDropLeftEdge(tabs[1]));
+        assertTrue(getLinkDropLeftEdge(tabs[1]) < getLinkDropRightEdge(tabs[0]));
+
+        // A drop at the end of the pinned tab inserts before tab 1, since the middle of its visible
+        // part is past the drop, even though the middle of the whole tab is hidden before it.
+        assertEquals(tabs[1], mStripLayoutHelper.getLinkInsertionView(getLinkDropX(tabs[0], 0.9f)));
     }
 
     @Test
@@ -7601,6 +7654,66 @@ public class StripLayoutHelperTest {
 
         // The group title maps to the index of the group's first tab.
         verifyLinkDropInsertsAt(getLinkDropX(views[1], 0.25f), /* expectedIndex= */ 1);
+        verify(mModel, never()).mergeListOfTabsToExistingGroup(any(), any(), any(), anyInt());
+    }
+
+    @Test
+    public void testHandleLinkDrop_JoinsGroupAfterTitle() {
+        doTestHandleLinkDropJoinsGroup(
+                /* viewIndex= */ 1,
+                /* fraction= */ 0.75f,
+                /* expectedIndex= */ 1,
+                /* expectedIndexInGroup= */ 0);
+    }
+
+    @Test
+    public void testHandleLinkDrop_JoinsGroupBetweenGroupTabs() {
+        doTestHandleLinkDropJoinsGroup(
+                /* viewIndex= */ 2,
+                /* fraction= */ 0.9f,
+                /* expectedIndex= */ 2,
+                /* expectedIndexInGroup= */ 1);
+    }
+
+    /**
+     * Drops a link onto a strip with tabs 1 and 2 grouped, and verifies that the new tab is created
+     * at {@code expectedIndex} and joins the group at {@code expectedIndexInGroup}.
+     */
+    private void doTestHandleLinkDropJoinsGroup(
+            int viewIndex, float fraction, int expectedIndex, int expectedIndexInGroup) {
+        initializeTest(/* tabIndex= */ 0);
+        groupTabs(1, 3, TAB_GROUP_ID_1);
+        resizeStripAndUpdateLayout(STRIP_WIDTH);
+        // Views: tab 0, group title, tab 1, tab 2, tab 3, tab 4.
+        StripLayoutView[] views = mStripLayoutHelper.getStripLayoutViewsForTesting();
+        Tab newTab = mock(Tab.class);
+        when(mTabCreator.createNewTab(any(), anyInt(), any(), anyInt())).thenReturn(newTab);
+
+        mStripLayoutHelper.handleLinkDrop(
+                getLinkDropX(views[viewIndex], fraction), JUnitTestGURLs.EXAMPLE_URL);
+
+        verify(mTabCreator)
+                .createNewTab(any(), eq(TabLaunchType.FROM_CHROME_UI), isNull(), eq(expectedIndex));
+        verify(mModel)
+                .mergeListOfTabsToExistingGroup(
+                        eq(Collections.singletonList(newTab)),
+                        eq(TAB_GROUP_ID_1),
+                        eq(expectedIndexInGroup),
+                        eq(TabGroupMergeNotificationType.DONT_NOTIFY));
+    }
+
+    @Test
+    public void testHandleLinkDrop_TrailingEdgeOfGroupDoesNotJoin() {
+        initializeTest(/* tabIndex= */ 0);
+        groupTabs(1, 3, TAB_GROUP_ID_1);
+        resizeStripAndUpdateLayout(STRIP_WIDTH);
+        // Views: tab 0, group title, tab 1, tab 2, tab 3, tab 4.
+        StripLayoutView[] views = mStripLayoutHelper.getStripLayoutViewsForTesting();
+        when(mTabCreator.createNewTab(any(), anyInt(), any(), anyInt()))
+                .thenReturn(mock(Tab.class));
+
+        verifyLinkDropInsertsAt(getLinkDropX(views[3], 0.9f), /* expectedIndex= */ 3);
+        verify(mModel, never()).mergeListOfTabsToExistingGroup(any(), any(), any(), anyInt());
     }
 
     @Test
