@@ -4,12 +4,15 @@
 
 #include "chrome/browser/signin/dice_web_signin_interceptor.h"
 
+#include <algorithm>
 #include <optional>
 #include <string>
 #include <string_view>
+#include <vector>
 
 #include "base/check.h"
 #include "base/check_deref.h"
+#include "base/containers/span.h"
 #include "base/functional/callback_helpers.h"
 #include "base/hash/hash.h"
 #include "base/i18n/case_conversion.h"
@@ -508,6 +511,41 @@ void MaybeRecordSupervisedUserStateMetrics(
       CapabilityToSupervisionState(
           intercepted_account_info.GetAccountCapabilities()));
 }
+
+// Checks whether an account matches `entry` using GaiaId or email fallback.
+// - If both GaiaIds are non-empty, they must match.
+// - If either GaiaId is missing, falls back to normalized email comparison.
+// Empty parameters are never considered a match.
+bool AccountMatchesEntry(const GaiaId& gaia_id,
+                         std::string_view email,
+                         const ProfileAttributesEntry* entry) {
+  CHECK(entry);
+
+  // Exact Gaia ID match if both IDs are available.
+  if (!gaia_id.empty() && !entry->GetGAIAId().empty()) {
+    return entry->GetGAIAId() == gaia_id;
+  }
+
+  // Fallback to email matching if Gaia ID is missing on either side.
+  if (!email.empty() && !entry->GetUserName().empty()) {
+    return gaia::AreEmailsSame(email, base::UTF16ToUTF8(entry->GetUserName()));
+  }
+
+  return false;
+}
+
+// Searches `entries` for the first profile matching the account credentials.
+ProfileAttributesEntry* FindMatchingEntry(
+    base::span<ProfileAttributesEntry* const> entries,
+    const GaiaId& gaia_id,
+    std::string_view email) {
+  auto it =
+      std::ranges::find_if(entries, [&](const ProfileAttributesEntry* entry) {
+        return AccountMatchesEntry(gaia_id, email, entry);
+      });
+  return it != entries.end() ? *it : nullptr;
+}
+
 }  // namespace
 
 DiceWebSigninInterceptor::DiceWebSigninInterceptor(
@@ -838,28 +876,36 @@ DiceWebSigninInterceptor::ShouldShowProfileSwitchBubble(
     const GaiaId& intercepted_gaia_id,
     std::string_view intercepted_email_fallback,
     ProfileAttributesStorage* profile_attribute_storage) const {
+  CHECK(profile_attribute_storage);
   // TODO(crbug.com/438165525): Consider reusing parts of `CanOfferSignin()`.
   // Check if there is already an existing profile with this account.
   base::FilePath profile_path = profile_->GetPath();
   std::vector<ProfileAttributesEntry*> attributes =
       profile_attribute_storage->GetAllProfilesAttributes();
-  auto it =
-      std::find_if(attributes.begin(), attributes.end(),
-                   [&profile_path, &intercepted_email_fallback,
-                    &intercepted_gaia_id](const ProfileAttributesEntry* entry) {
-                     if (entry->GetPath() == profile_path) {
-                       // Skip the current profile.
-                       return false;
-                     }
-                     // Compare GaiaIds, but fallback to email if the GaiaId is
-                     // missing (which can happen at the heuristic step).
-                     return intercepted_gaia_id.empty()
-                                ? gaia::AreEmailsSame(
-                                      intercepted_email_fallback,
-                                      base::UTF16ToUTF8(entry->GetUserName()))
-                                : intercepted_gaia_id == entry->GetGAIAId();
-                   });
-  return it == attributes.end() ? nullptr : *it;
+
+  // Filter candidates upfront: omit current profile and omitted entries.
+  std::erase_if(attributes, [&](const ProfileAttributesEntry* entry) {
+    return entry->GetPath() == profile_path || entry->IsOmitted();
+  });
+
+  // First pass: exact `GaiaId` match takes precedence across profiles.
+  if (!intercepted_gaia_id.empty()) {
+    if (ProfileAttributesEntry* entry =
+            FindMatchingEntry(attributes, intercepted_gaia_id, /*email=*/"")) {
+      return entry;
+    }
+  }
+
+  // Second pass: fallback to email matching if `GaiaId` is missing on either
+  // side.
+  if (!intercepted_email_fallback.empty()) {
+    if (ProfileAttributesEntry* entry = FindMatchingEntry(
+            attributes, intercepted_gaia_id, intercepted_email_fallback)) {
+      return entry;
+    }
+  }
+
+  return nullptr;
 }
 
 bool DiceWebSigninInterceptor::CanApplyEnterprisePoliciesToInterceptedAccount(

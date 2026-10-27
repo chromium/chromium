@@ -2949,6 +2949,88 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorBrowserTest,
   EXPECT_EQ(source_interceptor_delegate->fre_browser(), nullptr);
 }
 
+// Tests the profile switch flow when the profile is not loaded and has an empty
+// GaiaId in storage.
+IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorBrowserTest,
+                       EnterpriseSwitchAndLoad_EmptyGaiaIdInStorage) {
+  base::HistogramTester histogram_tester;
+  // Enforce enterprise profile separation.
+  GetProfile()->GetPrefs()->SetString(prefs::kManagedAccountsSigninRestriction,
+                                      "primary_account_strict");
+  AccountInfo account_info =
+      MakeAccountInfoAvailableAndUpdate("alice@example.com", "example.com");
+
+  // Add a profile in the cache (simulate the profile on disk with empty
+  // GaiaId).
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  ProfileAttributesStorage* profile_storage =
+      &profile_manager->GetProfileAttributesStorage();
+  const base::FilePath profile_path =
+      profile_manager->GenerateNextProfileDirectoryPath();
+  ProfileAttributesInitParams params;
+  params.profile_path = profile_path;
+  params.profile_name = u"TestProfileName";
+  params.gaia_id = GaiaId();
+  params.user_name = base::UTF8ToUTF16(account_info.GetEmail());
+  profile_storage->AddProfile(std::move(params));
+  ProfileAttributesEntry* entry =
+      profile_storage->GetProfileAttributesWithPath(profile_path);
+  ASSERT_TRUE(entry);
+  ASSERT_TRUE(entry->GetGAIAId().empty());
+
+  // Add a tab.
+  GURL intercepted_url = embedded_test_server()->GetURL("/defaultresponse");
+  content::WebContents* web_contents = AddTab(intercepted_url);
+  int original_tab_count = browser()->GetTabStripModel()->count();
+
+  // Do the signin interception.
+  FakeDiceWebSigninInterceptorDelegate* source_interceptor_delegate =
+      GetInterceptorDelegate(GetProfile());
+  source_interceptor_delegate->set_expected_interception_type(
+      WebSigninInterceptor::SigninInterceptionType::kProfileSwitchForced);
+  Profile* new_profile = InterceptAndWaitProfileCreation(
+      web_contents, account_info.GetAccountId());
+  ASSERT_TRUE(new_profile);
+  EXPECT_TRUE(source_interceptor_delegate->intercept_bubble_shown());
+  signin::IdentityManager* new_identity_manager =
+      IdentityManagerFactory::GetForProfile(new_profile);
+  EXPECT_TRUE(new_identity_manager->HasAccountWithRefreshToken(
+      account_info.GetAccountId()));
+
+  // Check that the right profile was opened.
+  EXPECT_EQ(new_profile->GetPath(), profile_path);
+
+  // Add the account to the cookies (simulates the account reconcilor).
+  EXPECT_EQ(GlobalBrowserCollection::GetInstance()->GetSize(), 1u);
+  ui_test_utils::BrowserCreatedObserver browser_created_observer;
+  signin::SetCookieAccounts(
+      new_identity_manager, test_url_loader_factory(),
+      {{std::string(account_info.GetEmail()), account_info.GetGaiaId()}});
+  const BrowserWindowInterface* const added_browser =
+      browser_created_observer.Wait();
+  ASSERT_TRUE(added_browser);
+
+  // A browser has been created for the new profile and the tab was moved there.
+  ASSERT_EQ(GlobalBrowserCollection::GetInstance()->GetSize(), 2u);
+  EXPECT_EQ(added_browser->GetProfile(), new_profile);
+  EXPECT_EQ(browser()->GetTabStripModel()->count(), original_tab_count - 1);
+  EXPECT_EQ(added_browser->GetTabStripModel()
+                ->GetActiveWebContents()
+                ->GetVisibleURL(),
+            intercepted_url);
+
+  CheckHistograms(histogram_tester,
+                  SigninInterceptionHeuristicOutcome::
+                      kInterceptEnterpriseForcedProfileSwitch);
+
+  // Interception bubble was closed.
+  EXPECT_TRUE(source_interceptor_delegate->intercept_bubble_destroyed());
+
+  // First run experience was not shown.
+  EXPECT_EQ(GetInterceptorDelegate(new_profile)->fre_browser(), nullptr);
+  EXPECT_EQ(source_interceptor_delegate->fre_browser(), nullptr);
+}
+
 // Tests the complete profile switch flow when the profile is already loaded.
 IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorBrowserTest,
                        EnterpriseSwitchAlreadyOpen) {

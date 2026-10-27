@@ -424,7 +424,11 @@ TEST_F(DiceWebSigninInterceptorTest, ShouldShowProfileSwitchBubble) {
       gaia, email, profile_attributes_storage()));
 
   // Add another profile with no account.
-  CreateTestingProfile("Profile 1");
+  Profile* profile_1 = CreateTestingProfile("Profile 1");
+  ProfileAttributesEntry* entry_1 =
+      profile_attributes_storage()->GetProfileAttributesWithPath(
+          profile_1->GetPath());
+  ASSERT_NE(entry_1, nullptr);
   EXPECT_FALSE(interceptor()->ShouldShowProfileSwitchBubble(
       gaia, email, profile_attributes_storage()));
 
@@ -460,6 +464,46 @@ TEST_F(DiceWebSigninInterceptorTest, ShouldShowProfileSwitchBubble) {
   // is different.
   EXPECT_EQ(entry, interceptor()->ShouldShowProfileSwitchBubble(
                        gaia, "alice@gmail.com", profile_attributes_storage()));
+
+  // A storage entry with the account's email but no GaiaId still matches when
+  // the intercepted GaiaId is known.
+  entry->SetAuthInfo(GaiaId(), base::UTF8ToUTF16(email),
+                     /*is_consented_primary_account=*/false);
+  EXPECT_EQ(entry, interceptor()->ShouldShowProfileSwitchBubble(
+                       gaia, email, profile_attributes_storage()));
+  EXPECT_EQ(entry, interceptor()->ShouldShowProfileSwitchBubble(
+                       GaiaId(), email, profile_attributes_storage()));
+
+  // Omitted profiles are never matched. Only ephemeral profiles can be omitted.
+  entry->SetIsEphemeral(true);
+  entry->SetIsOmitted(true);
+  EXPECT_FALSE(interceptor()->ShouldShowProfileSwitchBubble(
+      gaia, email, profile_attributes_storage()));
+  EXPECT_FALSE(interceptor()->ShouldShowProfileSwitchBubble(
+      GaiaId(), email, profile_attributes_storage()));
+  entry->SetIsOmitted(false);
+  entry->SetIsEphemeral(false);
+
+  // An empty email never matches, even entries without an account.
+  entry->SetAuthInfo(GaiaId(), std::u16string(),
+                     /*is_consented_primary_account=*/false);
+  EXPECT_FALSE(interceptor()->ShouldShowProfileSwitchBubble(
+      GaiaId(), "", profile_attributes_storage()));
+
+  // An exact GaiaId match takes precedence over an email-only match. The
+  // storage iteration order is unspecified, so check both assignments.
+  entry_1->SetAuthInfo(GaiaId(), base::UTF8ToUTF16(email),
+                       /*is_consented_primary_account=*/false);
+  entry->SetAuthInfo(gaia, base::UTF8ToUTF16(email),
+                     /*is_consented_primary_account=*/false);
+  EXPECT_EQ(entry, interceptor()->ShouldShowProfileSwitchBubble(
+                       gaia, email, profile_attributes_storage()));
+  entry_1->SetAuthInfo(gaia, base::UTF8ToUTF16(email),
+                       /*is_consented_primary_account=*/false);
+  entry->SetAuthInfo(GaiaId(), base::UTF8ToUTF16(email),
+                     /*is_consented_primary_account=*/false);
+  EXPECT_EQ(entry_1, interceptor()->ShouldShowProfileSwitchBubble(
+                         gaia, email, profile_attributes_storage()));
 }
 
 TEST_F(DiceWebSigninInterceptorTest, NoBubbleWithSingleAccount) {
