@@ -37,26 +37,6 @@
 
 namespace content {
 
-// If enabled, restricts the GPU process's access to the Darwin user cache
-// directory (/var/folders/.../C/) to a set of known file names used by Metal
-// ([functions|libraries].[data|list]) as well as providing limited permissions
-// to the Darwin user temp directory (/var/.../T/) to support WebNN's use of
-// CoreML.
-//
-// A sample Metal cache directory tree:
-//   /var/folders/.../C/[bundle_id|helper_bundle_id]
-//   ├── com.apple.metal
-//   │   ├── 16777235_355 (matches regex \d+_\d+)
-//   │   │   ├── functions.data
-//   │   │   └── functions.list
-//   │   └── 32024 (matches regex \d+)
-//   │       ├── libraries.data
-//   │       └── libraries.list
-//   └── com.apple.metalfe
-//       └── modules.timestamp
-BASE_FEATURE(kMacSandboxRestrictGpuDarwinUserDirs,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // If enabled, allows the renderer process to query `process-info-pidinfo` for
 // any process rather than only itself.
 BASE_FEATURE(kMacSandboxAllowRendererPidinfo,
@@ -201,10 +181,6 @@ bool SetupGpuSandboxParameters(sandbox::SandboxSerializer* serializer,
 
   base::FilePath helper_bundle_path =
       base::apple::GetInnermostAppBundlePath(command_line.GetProgram());
-
-  CHECK(serializer->SetBooleanParameter(
-      sandbox::policy::kParamRestrictGpuDarwinUserDirs,
-      base::FeatureList::IsEnabled(kMacSandboxRestrictGpuDarwinUserDirs)));
 
   CHECK(serializer->SetBooleanParameter(
       sandbox::policy::kParamWebnnCompilerProcess,

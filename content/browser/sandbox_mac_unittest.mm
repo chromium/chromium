@@ -32,7 +32,6 @@
 #include "base/test/multiprocess_test.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_timeouts.h"
-#include "base/unguessable_token.h"
 #include "content/browser/sandbox_parameters_mac.h"
 #include "sandbox/mac/sandbox_serializer.h"
 #include "sandbox/mac/seatbelt.h"
@@ -362,49 +361,9 @@ MULTIPROCESS_TEST_MAIN(GpuMetalCacheRestrictedProcess) {
   return 0;
 }
 
-MULTIPROCESS_TEST_MAIN(GpuDarwinUserDirsUnrestrictedProcess) {
-  std::string helper_bundle_id = GetExtraDataValue();
-  CHECK(!helper_bundle_id.empty());
-
-  base::FilePath cache_dir =
-      base::GetDarwinUserDirectory(base::DarwinUserDirectory::kUserCache);
-  base::FilePath temp_dir =
-      base::GetDarwinUserDirectory(base::DarwinUserDirectory::kUserTemp);
-  base::FilePath user_dir =
-      base::GetDarwinUserDirectory(base::DarwinUserDirectory::kUser);
-  CHECK(!cache_dir.empty());
-  CHECK(!temp_dir.empty());
-  CHECK(!user_dir.empty());
-
-  CheckCreateSeatbeltServer();
-
-  base::FilePath helper_dir = cache_dir.Append(helper_bundle_id);
-
-  // Ensure arbitrary file creation in Darwin cache, temp, and user dirs
-  // succeeds without the sandbox restriction
-  base::FilePath cache_file = helper_dir.Append("unauthorized.txt");
-  base::File cache_base_file(cache_file,
-                             base::File::FLAG_CREATE | base::File::FLAG_WRITE);
-  CHECK(cache_base_file.IsValid());
-
-  base::FilePath temp_file =
-      temp_dir.Append(base::StrCat({"test_unauth_temp_", helper_bundle_id}));
-  base::File temp_base_file(temp_file,
-                            base::File::FLAG_CREATE | base::File::FLAG_WRITE);
-  CHECK(temp_base_file.IsValid());
-
-  base::FilePath user_file =
-      user_dir.Append(base::StrCat({"test_unauth_user_", helper_bundle_id}));
-  base::File user_base_file(user_file,
-                            base::File::FLAG_CREATE | base::File::FLAG_WRITE);
-  CHECK(user_base_file.IsValid());
-
-  return 0;
-}
-
-// Verifies that, when `kMacSandboxRestrictGpuDarwinUserDirs` is enabled, the
-// GPU process sandbox restricts Darwin user directory access to only known
-// Metal shader cache files and directories in the Darwin user cache dir:
+// Verifies that the GPU process sandbox restricts Darwin user directory access
+// to only known Metal shader cache files and directories in the Darwin user
+// cache dir:
 // - Allows creating allowed directories (com.apple.metalfe,
 //   com.apple.gpuarchiver, com.apple.metal, and subdirectories).
 // - Allows creating, writing, and reading allowed cache files
@@ -412,9 +371,6 @@ MULTIPROCESS_TEST_MAIN(GpuDarwinUserDirsUnrestrictedProcess) {
 // - Denies creating unauthorized directories or files in the cache directory.
 // - Denies creating unauthorized files in the Darwin temp or user directories.
 TEST_F(SandboxMacTest, GpuDarwinUserDirsRestricted) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(kMacSandboxRestrictGpuDarwinUserDirs);
-
   // Provide a ~random bundle ID to avoid collisions when running tests in
   // parallel.
   extra_data_ = base::StrCat(
@@ -433,57 +389,6 @@ TEST_F(SandboxMacTest, GpuDarwinUserDirsRestricted) {
 
   ExecuteWithParams(
       "GpuMetalCacheRestrictedProcess", sandbox::mojom::Sandbox::kGpu,
-      /*append_temp_dir_suffix=*/false,
-      base::BindOnce(
-          [](const std::string& bundle_id,
-             sandbox::SandboxSerializer* serializer) {
-            CHECK(serializer->SetParameter(
-                sandbox::policy::kParamHelperBundleId, bundle_id));
-          },
-          extra_data_));
-}
-
-// Verifies that, when `kMacSandboxRestrictGpuDarwinUserDirs` is disabled, the
-// GPU process sandbox falls back to the broad Darwin user directory rules,
-// allowing arbitrary file creation in the three Darwin user directories.
-TEST_F(SandboxMacTest, GpuDarwinUserDirsUnrestricted) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(kMacSandboxRestrictGpuDarwinUserDirs);
-
-  // Provide a ~random bundle ID to avoid collisions when running tests in
-  // parallel.
-  extra_data_ = base::StrCat(
-      {kTestHelperBundleIdPrefix, base::UnguessableToken::Create().ToString()});
-
-  base::FilePath cache_dir =
-      base::GetDarwinUserDirectory(base::DarwinUserDirectory::kUserCache);
-  base::FilePath temp_dir =
-      base::GetDarwinUserDirectory(base::DarwinUserDirectory::kUserTemp);
-  base::FilePath user_dir =
-      base::GetDarwinUserDirectory(base::DarwinUserDirectory::kUser);
-  CHECK(!cache_dir.empty());
-  CHECK(!temp_dir.empty());
-  CHECK(!user_dir.empty());
-
-  base::FilePath helper_dir = cache_dir.Append(extra_data_);
-  base::DeletePathRecursively(helper_dir);
-  ASSERT_TRUE(base::CreateDirectory(helper_dir));
-  base::ScopedClosureRunner cleanup(base::BindOnce(
-      [](const base::FilePath& path) { base::DeletePathRecursively(path); },
-      helper_dir));
-
-  base::FilePath temp_file =
-      temp_dir.Append(base::StrCat({"test_unauth_temp_", extra_data_}));
-  base::ScopedClosureRunner cleanup_temp(base::BindOnce(
-      [](const base::FilePath& path) { base::DeleteFile(path); }, temp_file));
-
-  base::FilePath user_file =
-      user_dir.Append(base::StrCat({"test_unauth_user_", extra_data_}));
-  base::ScopedClosureRunner cleanup_user(base::BindOnce(
-      [](const base::FilePath& path) { base::DeleteFile(path); }, user_file));
-
-  ExecuteWithParams(
-      "GpuDarwinUserDirsUnrestrictedProcess", sandbox::mojom::Sandbox::kGpu,
       /*append_temp_dir_suffix=*/false,
       base::BindOnce(
           [](const std::string& bundle_id,

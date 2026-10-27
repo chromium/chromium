@@ -148,53 +148,19 @@
         (regex (string-append metal-dir-regex
                               #"libraries[0-9]*\.list(\.tmp)?$"))))))
 
-; If access to the Darwin user dirs is restricted, only allow file-read/-write
-; to known file names in the Darwin user cache dir.
-; Otherwise, allow file-read and a limited set of file-writes to the Darwin user
-; dirs (https://crbug.com/41468671 (The GPU process does not need
-; file-write-xattr or file-write-mode)
-; TODO(https://crbug.com/491422244): Remove file-write-owner needed by WebNN.
-(if (param-true? restrict-gpu-darwin-user-dirs)
-  (begin
-    (allow file-read* file-write-create
-      (subpath
-        (string-append
-          (param darwin-user-temp-dir) "/com.apple.MetalPerformanceShadersGraph")))
-    (if (param-defined? bundle-id)
-      (allow-metal-shader-cache
-        (string-append (param darwin-user-cache-dir) "/" (param bundle-id))))
-    (if (param-defined? helper-bundle-id)
-      (allow-metal-shader-cache
-        (string-append (param darwin-user-cache-dir)
-                       "/" (param helper-bundle-id)))
-      (allow-metal-shader-cache (param darwin-user-cache-dir))))
-  (allow file-read*
-    file-write-data
-    file-write-create
-    file-write-owner
-    file-write-unlink
-    (subpath (param darwin-user-cache-dir))
-    (subpath (param darwin-user-dir))
-    (subpath (param darwin-user-temp-dir))))
-
-(define (allow-webnn-temp-dir)
-  (begin
-    ; Needed by NSFileManager's URLForDirectory with NSItemReplacementDirectory.
-    (allow file-read*
-      file-write-create
-      file-write-data
-      file-write-owner
-      file-write-unlink
-      (subpath
-        (string-append (param darwin-user-temp-dir) "/TemporaryItems")))
-    (if (param-true? webnn-compiler-process)
-      (allow file-read* file-write-unlink
-        (subpath
-          (string-append (param darwin-user-temp-dir) "/webnn_gpu_protected")))
-      ; Needed by MLModel's compileModelAtURL family of functions.
-      (allow file-read* file-write-create file-write-unlink
-        (subpath (param darwin-user-temp-dir))))))
-(if (param-true? restrict-gpu-darwin-user-dirs) (allow-webnn-temp-dir))
+; Allow file-read/-write to known file names in the Darwin user cache dir.
+(allow file-read* file-write-create
+  (subpath
+    (string-append
+      (param darwin-user-temp-dir) "/com.apple.MetalPerformanceShadersGraph")))
+(if (param-defined? bundle-id)
+  (allow-metal-shader-cache
+    (string-append (param darwin-user-cache-dir) "/" (param bundle-id))))
+(if (param-defined? helper-bundle-id)
+  (allow-metal-shader-cache
+    (string-append (param darwin-user-cache-dir)
+                    "/" (param helper-bundle-id)))
+  (allow-metal-shader-cache (param darwin-user-cache-dir)))
 
 ; Metal issues a sandbox extension to permit MTLCompilerService to read source
 ; files from disk. It's much broader than we'd like (see
@@ -206,6 +172,27 @@
 
 (if (not (maybe-disable-metal-shader-cache))
   (maybe-allow-metal-shader-cache-access))
+
+; Needed by NSFileManager's URLForDirectory with NSItemReplacementDirectory,
+; used by WebNN.
+(allow file-read*
+  file-write-create
+  file-write-data
+  file-write-owner
+  file-write-unlink
+  (subpath
+    (string-append (param darwin-user-temp-dir) "/TemporaryItems")))
+
+; If WebNN is configured to compile models in a dedicated process, only allow
+; access to [darwin-user-temp-dir]/webnn_gpu_protected, where it saves compiled
+; model output.
+(if (param-true? webnn-compiler-process)
+  (allow file-read* file-write-unlink
+    (subpath
+      (string-append (param darwin-user-temp-dir) "/webnn_gpu_protected")))
+  ; Needed by MLModel's compileModelAtURL family of functions.
+  (allow file-read* file-write-create file-write-unlink
+    (subpath (param darwin-user-temp-dir))))
 
 ; Needed for WebNN Core ML backend - https://crbug.com/344935458
 (if (and (>= os-version 1400) (param-defined? helper-bundle-id))

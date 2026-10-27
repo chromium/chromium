@@ -22,7 +22,6 @@ enum class Sandbox;
 
 namespace content {
 
-CONTENT_EXPORT BASE_DECLARE_FEATURE(kMacSandboxRestrictGpuDarwinUserDirs);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kMacSandboxAllowRendererPidinfo);
 
 // This populates the sandbox parameters in the client for the given

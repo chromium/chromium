@@ -28,10 +28,6 @@
 ; Sandboxed processes which use Metal may need to disable the shader cache.
 (define disable-metal-shader-cache "DISABLE_METAL_SHADER_CACHE")
 
-; Restricts the GPU process's Darwin user directory access to a subset of known
-; directories and files.
-(define restrict-gpu-darwin-user-dirs "RESTRICT_GPU_DARWIN_USER_DIRS")
-
 ; Allows the renderer process to query process-info-pidinfo for other processes.
 (define allow-renderer-pidinfo "ALLOW_RENDERER_PIDINFO")
 
