@@ -45,6 +45,7 @@
 #include "third_party/blink/renderer/core/html/parser/html_parser_idioms.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/keywords.h"
+#include "third_party/blink/renderer/platform/bindings/exception_messages.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
@@ -187,7 +188,7 @@ HTMLTableRowElement* HTMLTableElement::insertRow(
   if (index < -1) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kIndexSizeError,
-        Format("The index provided ({}) is less than -1.", index));
+        ExceptionMessages::IndexExceedsMinimumBound("index", index, -1));
     return nullptr;
   }
 
@@ -237,7 +238,7 @@ void HTMLTableElement::deleteRow(int index, ExceptionState& exception_state) {
   if (index < -1) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kIndexSizeError,
-        Format("The index provided ({}) is less than -1.", index));
+        ExceptionMessages::IndexExceedsMinimumBound("index", index, -1));
     return;
   }
 

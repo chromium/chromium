@@ -33,9 +33,9 @@
 #include "third_party/blink/renderer/core/html/html_table_rows_collection.h"
 #include "third_party/blink/renderer/core/html/html_table_section_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
+#include "third_party/blink/renderer/platform/bindings/exception_messages.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
-#include "third_party/blink/renderer/platform/wtf/text/format.h"
 
 namespace blink {
 
@@ -91,8 +91,9 @@ HTMLElement* HTMLTableRowElement::insertCell(int index,
   if (index < -1 || index > num_cells) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kIndexSizeError,
-        Format("The value provided ({}) is outside the range [-1, {}].", index,
-               num_cells));
+        ExceptionMessages::IndexOutsideRange(
+            "value", index, -1, ExceptionMessages::kInclusiveBound, num_cells,
+            ExceptionMessages::kInclusiveBound));
     return nullptr;
   }
 
@@ -114,8 +115,9 @@ void HTMLTableRowElement::deleteCell(int index,
   if (index < -1 || index >= num_cells) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kIndexSizeError,
-        Format("The value provided ({}) is outside the range [0, {}).", index,
-               num_cells));
+        ExceptionMessages::IndexOutsideRange(
+            "value", index, 0, ExceptionMessages::kInclusiveBound, num_cells,
+            ExceptionMessages::kExclusiveBound));
     return;
   }
   // 2. If index is −1, remove the last element in the cells collection

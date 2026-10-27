@@ -9,9 +9,9 @@ PASS t.tFoot is non-null.
 PASS t.tFoot = null did not throw exception.
 PASS t.tFoot is null
 PASS t.tFoot = document.body threw exception TypeError: Failed to set the 'tFoot' property on 'HTMLTableElement': Failed to convert value to 'HTMLTableSectionElement'..
-PASS t.insertRow(-2) threw exception IndexSizeError: Failed to execute 'insertRow' on 'HTMLTableElement': The index provided (-2) is less than -1..
+PASS t.insertRow(-2) threw exception IndexSizeError: Failed to execute 'insertRow' on 'HTMLTableElement': The index provided (-2) is less than the minimum bound (-1)..
 PASS t.insertRow(1) threw exception IndexSizeError: Failed to execute 'insertRow' on 'HTMLTableElement': The index provided (1) is greater than the number of rows in the table (0)..
-PASS t.deleteRow(-2) threw exception IndexSizeError: Failed to execute 'deleteRow' on 'HTMLTableElement': The index provided (-2) is less than -1..
+PASS t.deleteRow(-2) threw exception IndexSizeError: Failed to execute 'deleteRow' on 'HTMLTableElement': The index provided (-2) is less than the minimum bound (-1)..
 PASS t.deleteRow(2) threw exception IndexSizeError: Failed to execute 'deleteRow' on 'HTMLTableElement': The index provided (2) is greater than the number of rows in the table (1)..
 PASS t.deleteRow() threw exception TypeError: Failed to execute 'deleteRow' on 'HTMLTableElement': 1 argument required, but only 0 present..
 PASS successfullyParsed is true
