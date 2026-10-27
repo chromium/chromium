@@ -40,7 +40,7 @@ FooterContainer GetFooterContainerForAction(actions::ActionId action_id) {
   switch (action_id) {
     case kActionShowManagementPage:
       return FooterContainer::kBottom;
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
     case kActionOptions:
 #else
     case kActionExit:

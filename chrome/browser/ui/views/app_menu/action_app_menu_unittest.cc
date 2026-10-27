@@ -229,7 +229,7 @@ class ActionAppMenuTest : public ActionAppMenuTestBase {
     if (!footer_view) {
       return nullptr;
     }
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
     views::View* container = footer_view->right_container_for_testing();
 #else
     views::View* container = footer_view->left_container_for_testing();
@@ -1284,8 +1284,8 @@ TEST_F(ActionAppMenuTest, FooterButtonClickExecutesActionAfterMenuClosed) {
       views::AsViewClass<AppMenuFooterView>(footer_item->children()[0]);
   ASSERT_TRUE(footer_view);
 
-#if BUILDFLAG(IS_MAC)
-  // On Mac, right container child 0 is kActionOptions (Settings).
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
+  // On Mac and ChromeOS, right container child 0 is kActionOptions (Settings).
   views::View* settings_container = footer_view->right_container_for_testing();
 #else
   // Left container child 0 is kActionOptions (Settings).
@@ -1474,7 +1474,7 @@ TEST_F(ActionAppMenuTest, PopulatesFooterElements) {
   ASSERT_TRUE(left_container);
   views::View* right_container = footer_view->right_container_for_testing();
   ASSERT_TRUE(right_container);
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
   ASSERT_EQ(left_container->children().size(), 1u);  // Help
   EXPECT_TRUE(
       views::IsViewClass<AppMenuFooterButton>(left_container->children()[0]));
