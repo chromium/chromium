@@ -69,6 +69,9 @@ source_set("unit_tests") {
     "//components/prefs:test_support",
     "//services/accessibility/android:android_lib",
     "//services/accessibility/android:test_support",
+    # Contains only *_unittest.cc files (not #included by sources above); keep
+    # so those tests are linked into unit_tests.
+    "//services/accessibility/android:tests",
     "//testing/gtest",
     "//ui/aura",
     "//ui/display",
