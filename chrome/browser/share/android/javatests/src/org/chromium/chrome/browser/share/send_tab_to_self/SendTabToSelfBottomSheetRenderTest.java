@@ -33,6 +33,7 @@ import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.profiles.TestProfile;
@@ -343,6 +344,7 @@ public class SendTabToSelfBottomSheetRenderTest {
     @Test
     @MediumTest
     @Feature("RenderTest")
+    @DisabledTest(message = "crbug.com/578605388")
     public void testEnhancedTargetDevicePickerBottomSheet_landscapeMode() throws Throwable {
         setUpAccountData(TestAccounts.ACCOUNT1);
         List<RemoteDeviceInfo> devices =
