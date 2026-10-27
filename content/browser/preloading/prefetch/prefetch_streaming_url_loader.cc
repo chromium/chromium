@@ -462,7 +462,19 @@ void PrefetchStreamingURLLoader::ServiceWorkerInterceptorLoaderCallback(
     // `OnDeterminedHead()`, which is triggered by `OnComplete()` below.
     std::move(on_service_worker_state_determined_callback_)
         .Run(PrefetchServiceWorkerState::kControlled);
-    OnComplete(network::URLLoaderCompletionStatus(net::ERR_ABORTED));
+
+    // Fail the prefetch in a separate task. This method can be called
+    // synchronously inside `CreateAndStart()`, i.e. inside
+    // `PrefetchService::StartSinglePrefetch()`, when the ServiceWorker
+    // registration lookup completes synchronously (e.g. when the registration
+    // is already live and cached), but `PrefetchService` expects to be
+    // notified of the failure only after `PrefetchScheduler` marks this
+    // prefetch as active. If `this` is cancelled before the task runs,
+    // `OnComplete()` does nothing.
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(&PrefetchStreamingURLLoader::OnComplete, GetWeakPtr(),
+                       network::URLLoaderCompletionStatus(net::ERR_ABORTED)));
     return;
   }
 
