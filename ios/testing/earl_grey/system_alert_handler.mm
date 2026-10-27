@@ -12,47 +12,47 @@
 @implementation SystemAlertHandlerImpl
 
 - (void)handleSystemAlertIfVisible {
-  NSError* systemAlertFoundError = nil;
-  [[EarlGrey selectElementWithMatcher:grey_systemAlertViewShown()]
-      assertWithMatcher:grey_nil()
-                  error:&systemAlertFoundError];
-
-  if (systemAlertFoundError) {
-    NSError* alertGetTextError = nil;
-    NSString* alertText =
-        [EarlGrey SystemAlertTextWithError:&alertGetTextError];
-    GREYAssertNil(alertGetTextError, @"Error getting alert text.\n%@",
-                  alertGetTextError);
-
-    @try {
-      // Calling this method has for side-effect to throw an
-      // NSInternalInconsistencyException if the system alert is unknown to the
-      // EG2 framework.
-      // If it does throw, handle the system alert in @catch.
-      // If it doesn’t throw, accept it here.
-      // TODO(crbug.com/40127610): Style guide does not allow throwing
-      // exceptions.
-      [EarlGrey SystemAlertType];
-
-      DLOG(WARNING) << "Accepting iOS system alert: "
-                    << base::SysNSStringToUTF8(alertText);
-
-      NSError* acceptAlertError = nil;
-      [EarlGrey AcceptSystemDialogWithError:&acceptAlertError];
-      GREYAssertNil(acceptAlertError, @"Error accepting system alert.\n%@",
-                    acceptAlertError);
-
-    } @catch (NSException* exception) {
-      GREYAssert((exception.name == NSInternalInconsistencyException &&
-                  [exception.reason containsString:@"Invalid System Alert"]),
-                 @"Unknown error caught when handling unknown system alert: %@",
-                 exception.reason);
-
-      // Manually handle EG2-unsupported alerts for some known cases, otherwise
-      // fail the test.
-      [self handleSystemAlertUnsupportedByEG2:alertText];
-    }
+  // Fast path: return immediately if no system alert is currently visible.
+  // `WaitForAlertVisibility:NO` waits for non-visibility and returns `YES`
+  // immediately when no alert is shown.
+  if ([EarlGrey WaitForAlertVisibility:NO withTimeout:0.0]) {
+    return;
   }
+
+  NSError* alertGetTextError = nil;
+  NSString* alertText = [EarlGrey SystemAlertTextWithError:&alertGetTextError];
+  GREYAssertNil(alertGetTextError, @"Error getting alert text.\n%@",
+                alertGetTextError);
+
+  @try {
+    // Calling this method has for side-effect to throw an
+    // NSInternalInconsistencyException if the system alert is unknown to the
+    // EG2 framework.
+    // If it does throw, handle the system alert in @catch.
+    // If it doesn’t throw, accept it here.
+    // TODO(crbug.com/40127610): Style guide does not allow throwing
+    // exceptions.
+    [EarlGrey SystemAlertType];
+
+    DLOG(WARNING) << "Accepting iOS system alert: "
+                  << base::SysNSStringToUTF8(alertText);
+
+    NSError* acceptAlertError = nil;
+    [EarlGrey AcceptSystemDialogWithError:&acceptAlertError];
+    GREYAssertNil(acceptAlertError, @"Error accepting system alert.\n%@",
+                  acceptAlertError);
+
+  } @catch (NSException* exception) {
+    GREYAssert((exception.name == NSInternalInconsistencyException &&
+                [exception.reason containsString:@"Invalid System Alert"]),
+               @"Unknown error caught when handling unknown system alert: %@",
+               exception.reason);
+
+    // Manually handle EG2-unsupported alerts for some known cases, otherwise
+    // fail the test.
+    [self handleSystemAlertUnsupportedByEG2:alertText];
+  }
+
   // Ensures no visible alert after handling.
   [EarlGrey WaitForAlertVisibility:NO
                        withTimeout:kSystemAlertVisibilityTimeout];
