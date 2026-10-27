@@ -4,7 +4,10 @@
 
 #include "extensions/browser/extension_web_contents_observer.h"
 
+#include <utility>
+
 #include "base/check.h"
+#include "base/check_op.h"
 #include "base/feature_list.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "content/public/browser/browser_context.h"
@@ -397,6 +400,27 @@ mojom::LocalFrame* ExtensionWebContentsObserver::GetLocalFrame(
         remote.BindNewEndpointAndPassReceiver());
   }
   return remote.get();
+}
+
+mojo::AssociatedRemote<mojom::LocalFrame>
+ExtensionWebContentsObserver::SetLocalFrameForTesting(
+    content::RenderFrameHost* render_frame_host,
+    mojo::PendingAssociatedRemote<mojom::LocalFrame> remote) {
+  // Match the conditions under which `GetLocalFrame()` hands out a remote. A
+  // remote stored for a frame that isn't live would never be erased by
+  // `RenderFrameDeleted()`, and `GetLocalFrame()` would return it instead of
+  // binding a working one.
+  CHECK(render_frame_host);
+  CHECK(render_frame_host->IsRenderFrameLive());
+  CHECK_EQ(content::WebContents::FromRenderFrameHost(render_frame_host),
+           web_contents());
+
+  mojo::AssociatedRemote<mojom::LocalFrame>& entry =
+      local_frame_map_[render_frame_host];
+  mojo::AssociatedRemote<mojom::LocalFrame> previous =
+      std::exchange(entry, mojo::AssociatedRemote<mojom::LocalFrame>());
+  entry.Bind(std::move(remote));
+  return previous;
 }
 
 mojom::LocalFrame& ExtensionWebContentsObserver::GetLocalFrameChecked(

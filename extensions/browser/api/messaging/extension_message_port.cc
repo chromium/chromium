@@ -9,6 +9,7 @@
 #include <set>
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
@@ -32,10 +33,13 @@
 #include "extensions/browser/message_tracker.h"
 #include "extensions/browser/process_manager.h"
 #include "extensions/browser/process_manager_observer.h"
+#include "extensions/browser/process_map.h"
+#include "extensions/browser/script_injection_tracker.h"
 #include "extensions/browser/service_worker/service_worker_host.h"
 #include "extensions/browser/service_worker/worker_id.h"
 #include "extensions/common/api/messaging/message.h"
 #include "extensions/common/api/messaging/messaging_endpoint.h"
+#include "extensions/common/extension_features.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/manifest_handlers/background_info.h"
 #include "extensions/common/mojom/message_port.mojom-shared.h"
@@ -61,6 +65,21 @@ const char kClosedWhileResponsePendingError[] =
 const char kClosedWhenPageEntersBFCache[] =
     "The page keeping the extension port is moved into back/forward cache, so "
     "the message channel is closed.";
+
+// Returns whether `process` may host a receiver context for `extension_id`:
+// a process in `ProcessMap` for `extension_id`, or a process that has run a
+// content script or user script from `extension_id`.
+bool CanProcessReceiveMessagesForExtension(
+    content::BrowserContext* browser_context,
+    content::RenderProcessHost& process,
+    const ExtensionId& extension_id) {
+  return ProcessMap::Get(browser_context)
+             ->Contains(extension_id, process.GetID()) ||
+         ScriptInjectionTracker::DidProcessRunContentScriptFromExtension(
+             process, extension_id) ||
+         ScriptInjectionTracker::DidProcessRunUserScriptFromExtension(
+             process, extension_id);
+}
 
 }  // namespace
 
@@ -744,9 +763,25 @@ void ExtensionMessagePort::RegisterFrame(
   // ensure that we are notified of frame destruction. Without this check,
   // `pending_frames_` can contain a stale token because RenderFrameDeleted
   // is not triggered for `render_frame_host`.
-  if (render_frame_host->IsRenderFrameLive()) {
-    pending_frames_.insert(render_frame_host->GetGlobalFrameToken());
+  if (!render_frame_host->IsRenderFrameLive()) {
+    return;
   }
+
+  // Only register frames in renderer processes that can host a receiver
+  // context for `extension_id_`. Without this check, frames in unrelated
+  // processes (e.g. cross-site subframes of a tab) would get
+  // `mojom::LocalFrame::DispatchOnConnect()` along with `mojom::MessagePort`
+  // and `mojom::MessagePortHost` endpoints, letting those processes read the
+  // channel's messages and post into the channel.
+  if (base::FeatureList::IsEnabled(
+          extensions_features::
+              kRestrictMessagingReceiverFramesToExtensionProcesses) &&
+      !CanProcessReceiveMessagesForExtension(
+          browser_context_, *render_frame_host->GetProcess(), extension_id_)) {
+    return;
+  }
+
+  pending_frames_.insert(render_frame_host->GetGlobalFrameToken());
 }
 
 bool ExtensionMessagePort::UnregisterFrame(

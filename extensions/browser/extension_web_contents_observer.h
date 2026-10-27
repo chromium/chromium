@@ -17,6 +17,7 @@
 #include "extensions/browser/extension_function_dispatcher.h"
 #include "extensions/common/mojom/frame.mojom.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
+#include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-forward.h"
 #include "url/gurl.h"
 
@@ -110,6 +111,16 @@ class ExtensionWebContentsObserver : public content::WebContentsObserver {
   ExtensionFrameHost* extension_frame_host_for_testing() {
     return extension_frame_host_.get();
   }
+
+  // Replaces the `mojom::LocalFrame` remote used for `render_frame_host` with
+  // `remote` so tests can observe or stand in for the renderer side of the
+  // interface. Returns the previously bound remote (which may be unbound) so
+  // the caller can forward calls to the real renderer. `render_frame_host` must
+  // be live and belong directly to this observer's `WebContents`, the same
+  // conditions `GetLocalFrame()` requires.
+  mojo::AssociatedRemote<mojom::LocalFrame> SetLocalFrameForTesting(
+      content::RenderFrameHost* render_frame_host,
+      mojo::PendingAssociatedRemote<mojom::LocalFrame> remote);
 
  protected:
   explicit ExtensionWebContentsObserver(content::WebContents* web_contents);

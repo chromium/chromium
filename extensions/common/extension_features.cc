@@ -283,4 +283,7 @@ BASE_FEATURE(kUseSha256ForExtensionHashes, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kRestrictGeneratedPathsInWebAccessibleResources,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kRestrictMessagingReceiverFramesToExtensionProcesses,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace extensions_features
