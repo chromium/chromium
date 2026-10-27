@@ -9,6 +9,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/system/sys_info.h"
 #include "chrome/browser/ash/hats/hats_notification_controller.h"
+#include "components/account_id/account_id.h"
 
 // Used to show a Happiness Tracking Survey when the camera app sends a trigger
 // event.
@@ -23,9 +24,10 @@ class CameraAppSurveyHandler {
 
   static CameraAppSurveyHandler* GetInstance();
 
-  void MaybeTriggerSurvey();
+  void MaybeTriggerSurvey(const AccountId& account_id);
 
-  void OnHardwareInfoFetched(base::SysInfo::HardwareInfo info);
+  void OnHardwareInfoFetched(const AccountId& account_id,
+                             base::SysInfo::HardwareInfo info);
 
  private:
   friend struct base::DefaultSingletonTraits<CameraAppSurveyHandler>;

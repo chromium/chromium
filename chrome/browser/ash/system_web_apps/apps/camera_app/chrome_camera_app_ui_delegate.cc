@@ -14,6 +14,7 @@
 #include "ash/webui/camera_app_ui/pdf_builder.mojom.h"
 #include "ash/webui/camera_app_ui/url_constants.h"
 #include "ash/webui/settings/public/constants/routes.mojom.h"
+#include "base/check.h"
 #include "base/check_deref.h"
 #include "base/containers/span.h"
 #include "base/feature_list.h"
@@ -42,7 +43,6 @@
 #include "chrome/browser/pdf/pdf_service.h"
 #include "chrome/browser/policy/policy_util.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/screen_ai/public/optical_character_recognizer.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/webui/ash/internet/internet_config_dialog.h"
@@ -50,15 +50,19 @@
 #include "chrome/services/pdf/public/mojom/pdf_progressive_searchifier.mojom.h"
 #include "chrome/services/pdf/public/mojom/pdf_service.mojom.h"
 #include "chrome/services/pdf/public/mojom/pdf_thumbnailer.mojom.h"
+#include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/experiences/camera/camera_save_handler.h"
 #include "chromeos/ash/experiences/settings_ui/settings_app_manager.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/constants/devicetype.h"
 #include "chromeos/ui/base/window_properties.h"
+#include "components/account_id/account_id.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
+#include "components/session_manager/core/session.h"
+#include "components/session_manager/core/session_manager.h"
 #include "components/version_info/version_info.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
@@ -122,8 +126,15 @@ void ChromeCameraAppUIDelegate::CameraAppDialog::ShowIntent(
     ash::SystemAppLaunchParams params;
     params.url = GURL(url);
     params.launch_source = apps::LaunchSource::kFromArc;
-    ash::LaunchSystemWebAppAsync(ProfileManager::GetActiveUserProfile(),
-                                 ash::SystemWebAppType::CAMERA, params);
+    // TODO(crbug.com/278643115): Take the account_id from the callers.
+    const auto* active_session =
+        session_manager::SessionManager::Get()->GetActiveSession();
+    CHECK(active_session);
+    ash::LaunchSystemWebAppAsync(
+        Profile::FromBrowserContext(
+            ash::BrowserContextHelper::Get()->GetBrowserContextByAccountId(
+                active_session->account_id())),
+        ash::SystemWebAppType::CAMERA, params);
   }
 }
 
@@ -660,7 +671,9 @@ void ChromeCameraAppUIDelegate::MaybeTriggerSurvey() {
   if (base::Time::Now() - session_start_time_ < kMinSurveyDuration) {
     return;
   }
-  CameraAppSurveyHandler::GetInstance()->MaybeTriggerSurvey();
+  CameraAppSurveyHandler::GetInstance()->MaybeTriggerSurvey(
+      CHECK_DEREF(ash::AnnotatedAccountId::Get(
+          Profile::FromWebUI(web_ui_)->GetOriginalProfile())));
 }
 
 void ChromeCameraAppUIDelegate::StartStorageMonitor(

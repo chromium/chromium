@@ -8,7 +8,9 @@
 #include "base/logging.h"
 #include "base/memory/singleton.h"
 #include "chrome/browser/ash/hats/hats_config.h"
-#include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
+#include "components/account_id/account_id.h"
 
 using ash::HatsNotificationController;
 using ash::kHatsCameraAppSurvey;
@@ -22,15 +24,20 @@ CameraAppSurveyHandler* CameraAppSurveyHandler::GetInstance() {
   return base::Singleton<CameraAppSurveyHandler>::get();
 }
 
-void CameraAppSurveyHandler::MaybeTriggerSurvey() {
-  Profile* profile = ProfileManager::GetActiveUserProfile();
-
+void CameraAppSurveyHandler::MaybeTriggerSurvey(const AccountId& account_id) {
   if (has_triggered_) {
     return;
   }
 
   if (!base::FeatureList::IsEnabled(kHatsCameraAppSurvey.feature)) {
     VLOG(1) << "Camera App survey feature is not enabled";
+    return;
+  }
+
+  Profile* profile = Profile::FromBrowserContext(
+      ash::BrowserContextHelper::Get()->GetBrowserContextByAccountId(
+          account_id));
+  if (!profile) {
     return;
   }
 
@@ -43,12 +50,18 @@ void CameraAppSurveyHandler::MaybeTriggerSurvey() {
   has_triggered_ = true;
   base::SysInfo::GetHardwareInfo(
       base::BindOnce(&CameraAppSurveyHandler::OnHardwareInfoFetched,
-                     weak_ptr_factory_.GetWeakPtr()));
+                     weak_ptr_factory_.GetWeakPtr(), account_id));
 }
 
 void CameraAppSurveyHandler::OnHardwareInfoFetched(
+    const AccountId& account_id,
     base::SysInfo::HardwareInfo info) {
-  Profile* profile = ProfileManager::GetActiveUserProfile();
+  Profile* profile = Profile::FromBrowserContext(
+      ash::BrowserContextHelper::Get()->GetBrowserContextByAccountId(
+          account_id));
+  if (!profile) {
+    return;
+  }
   base::flat_map<std::string, std::string> survey_specific_data = {
       {"board", base::SysInfo::GetLsbReleaseBoard()}, {"model", info.model}};
   // TODO(b/237737023): Add CUJ information if we want to collect more signals.
