@@ -418,7 +418,8 @@ No modifications.
 
         ChromiumDepGraph graph = new ChromiumDepGraph(
                 projects: allProjects, logger: project.logger, skipLicenses: skipLicenses,
-                warnOnStaleDeps: pathToBuildGradle == MAIN_PROJECT_PATH)
+                warnOnStaleDeps: pathToBuildGradle == MAIN_PROJECT_PATH,
+                currentProjectPath: pathToBuildGradle)
 
         // 1. Parse the dependency data
         graph.timeIt("** Collecting all dependencies info") {
@@ -654,14 +655,15 @@ No modifications.
     }
 
     boolean ignoreForCurrentProject(ChromiumDepGraph.DependencyDescription dependency) {
+        return ignoreForCurrentProject(dependency, pathToBuildGradle)
+    }
+
+    static boolean ignoreForCurrentProject(
+            ChromiumDepGraph.DependencyDescription dependency, String currentProjectPath) {
         if (dependency.exclude || EXISTING_LIBS.containsKey(dependency.id)) {
             return true
         }
-        return !partOfCurrentProject(dependency)
-    }
-
-    boolean partOfCurrentProject(ChromiumDepGraph.DependencyDescription dependency) {
-        return dependency.projectPath == pathToBuildGradle
+        return currentProjectPath && dependency.projectPath != currentProjectPath
     }
 
     private static String reducedDependencyId(String dependencyId) {
