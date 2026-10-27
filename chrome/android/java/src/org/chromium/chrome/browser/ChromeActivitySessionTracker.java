@@ -20,6 +20,7 @@ import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.build.annotations.MonotonicNonNull;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.accessibility.settings.DeviceAccessibilitySettingsHandlerFactory;
 import org.chromium.chrome.browser.browsing_data.BrowsingDataBridge;
 import org.chromium.chrome.browser.browsing_data.BrowsingDataType;
 import org.chromium.chrome.browser.browsing_data.TimePeriod;
@@ -40,7 +41,6 @@ import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.safety_hub.SafetyHubFetchServiceFactory;
 import org.chromium.chrome.browser.translate.TranslateBridge;
 import org.chromium.chrome.browser.util.DefaultBrowserInfo;
-import org.chromium.components.browser_ui.accessibility.DeviceAccessibilitySettingsHandler;
 import org.chromium.components.browser_ui.accessibility.FontSizePrefs;
 import org.chromium.components.browser_ui.share.ShareImageFileUtils;
 import org.chromium.components.feature_engagement.EventConstants;
@@ -186,7 +186,8 @@ public class ChromeActivitySessionTracker {
                         "ChromeActivitySessionTracker.handlePerProfileForegroundSessionStart")) {
             PasswordEchoSettingHandlerFactory.getForProfile(profile).updatePasswordEchoState();
             FontSizePrefs.setFontScaleFactor(UserPrefs.get(profile));
-            DeviceAccessibilitySettingsHandler.getInstance(profile).updateFontWeightAdjustment();
+            DeviceAccessibilitySettingsHandlerFactory.getForProfile(profile)
+                    .updateFontWeightAdjustment();
             updateAcceptLanguages(profile);
             SafetyHubFetchServiceFactory.getForProfile(profile).onForegroundSessionStart();
         }

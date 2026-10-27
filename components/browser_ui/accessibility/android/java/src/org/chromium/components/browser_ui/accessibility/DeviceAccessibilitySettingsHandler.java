@@ -4,30 +4,25 @@
 
 package org.chromium.components.browser_ui.accessibility;
 
+import org.chromium.base.lifetime.Destroyable;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
-import org.chromium.components.user_prefs.UserPrefs;
-import org.chromium.content_public.browser.BrowserContextHandle;
+import org.chromium.components.prefs.PrefService;
 import org.chromium.ui.accessibility.AccessibilityState;
 import org.chromium.ui.accessibility.AccessibilityState.State;
 
 @NullMarked
-public class DeviceAccessibilitySettingsHandler implements AccessibilityState.Listener {
-    private static @Nullable DeviceAccessibilitySettingsHandler sInstance;
+public class DeviceAccessibilitySettingsHandler
+        implements AccessibilityState.Listener, Destroyable {
+    private final PrefService mPrefService;
 
-    private final BrowserContextHandle mBrowserContextHandle;
-
-    private DeviceAccessibilitySettingsHandler(BrowserContextHandle browserContextHandle) {
-        mBrowserContextHandle = browserContextHandle;
+    public DeviceAccessibilitySettingsHandler(PrefService prefService) {
+        mPrefService = prefService;
+        AccessibilityState.addListener(this);
     }
 
-    public static DeviceAccessibilitySettingsHandler getInstance(
-            BrowserContextHandle browserContextHandle) {
-        if (sInstance == null) {
-            sInstance = new DeviceAccessibilitySettingsHandler(browserContextHandle);
-            AccessibilityState.addListener(sInstance);
-        }
-        return sInstance;
+    @Override
+    public void destroy() {
+        AccessibilityState.removeListener(this);
     }
 
     @Override
@@ -37,9 +32,8 @@ public class DeviceAccessibilitySettingsHandler implements AccessibilityState.Li
     }
 
     public void updateFontWeightAdjustment() {
-        UserPrefs.get(mBrowserContextHandle)
-                .setInteger(
-                        "settings.a11y.font_weight_adjustment",
-                        AccessibilityState.getFontWeightAdjustment());
+        mPrefService.setInteger(
+                "settings.a11y.font_weight_adjustment",
+                AccessibilityState.getFontWeightAdjustment());
     }
 }

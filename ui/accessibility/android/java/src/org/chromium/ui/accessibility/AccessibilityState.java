@@ -208,6 +208,12 @@ public class AccessibilityState {
         sListeners.add(listener);
     }
 
+    /** Should be called on UI thread. */
+    public static void removeListener(Listener listener) {
+        assert ThreadUtils.runningOnUiThread();
+        sListeners.remove(listener);
+    }
+
     public static Set<Listener> getListeners() {
         return sListeners;
     }
@@ -274,13 +280,13 @@ public class AccessibilityState {
 
     /**
      * Helper method to return the value that is equivalent to the deprecated approach:
-     *     ChromeAccessibilityUtil.get().isAccessibilityEnabled()
+     * ChromeAccessibilityUtil.get().isAccessibilityEnabled()
      *
-     * Avoid calling this method at all costs. The naming of this method is misleading and its
+     * <p>Avoid calling this method at all costs. The naming of this method is misleading and its
      * usage is tricky. Use the more granular methods of this class.
      *
-     * Returns true if an accessibility service is running that uses touch exploration OR a service
-     * is running that can perform gestures.
+     * <p>Returns true if an accessibility service is running that uses touch exploration OR a
+     * service is running that can perform gestures.
      *
      * @return true when touch exploration or gesture performing services are running.
      */
