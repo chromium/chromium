@@ -173,6 +173,10 @@ class CSSMathType final {
   // https://drafts.css-houdini.org/css-typed-om-1/#apply-the-percent-hint
   void ApplyHint(BaseType hint);
 
+  // Returns the percent hint, or, if none is set, the base type that
+  // percentages are guessed to resolve against (see Category()).
+  PercentageHint GuessedPercentHint() const;
+
   // To represent "failure" in terms of the spec.
   bool is_valid_ = true;
   // https://drafts.css-houdini.org/css-typed-om-1/#cssnumericvalue-create-a-type

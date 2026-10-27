@@ -299,9 +299,33 @@ CSSMathType::CSSMathType(const CSSMathExpressionNode& node) {
       DynamicTo<CSSMathExpressionOperation>(node);
   if (operation && operation->IsArithmeticOperation()) {
     *this = operation->Type();
-  } else {
-    *this = CSSMathType(node.Category());
+    return;
   }
+  *this = CSSMathType(node.Category());
+  if (!operation || operation->GetOperands().empty() ||
+      node.Category() != kCalcNumber ||
+      !RuntimeEnabledFeatures::CSSNumberMathFunctionPercentHintEnabled()) {
+    return;
+  }
+  // A math function returning a <number> (e.g. round(), sign(), exp()) is
+  // made consistent with the type of its arguments, i.e. it keeps their
+  // percent hint [1]. There is no category for a <number> with a percent hint,
+  // so recover the hint from the arguments here. Otherwise, the percentage in
+  // e.g. round(100% / 10px) would be lost when combining the function with
+  // other values, and calc(100% / round(100% / 10px)) would be considered a
+  // plain <percentage>.
+  // [1] https://drafts.csswg.org/css-values-4/#calc-type-checking
+  const CSSMathExpressionOperation::Operands& operands =
+      operation->GetOperands();
+  CSSMathType operands_type(*operands.front());
+  for (const CSSMathExpressionNode* operand :
+       base::span(operands).subspan(1u)) {
+    operands_type = operands_type + CSSMathType(*operand);
+    if (!operands_type.IsValid()) {
+      return;
+    }
+  }
+  percentage_hint_ = operands_type.GuessedPercentHint();
 }
 
 CSSMathType::CSSMathType(bool is_valid) : is_valid_(is_valid) {}
@@ -449,6 +473,28 @@ CalculationResultCategory CSSMathType::Category() const {
 
 bool CSSMathType::IsIntermediateResult() const {
   return IsValid() && Category() == kCalcIntermediate;
+}
+
+CSSMathType::PercentageHint CSSMathType::GuessedPercentHint() const {
+  if (percentage_hint_) {
+    return percentage_hint_;
+  }
+  if (!base_type_powers_[kPercent]) {
+    return std::nullopt;
+  }
+  // Like in Category(), if percentages are combined with exactly one other
+  // base type, they are assumed to resolve against that type.
+  PercentageHint hint;
+  for (uint8_t type_index = 0u; type_index < kPercent; ++type_index) {
+    if (!base_type_powers_[type_index]) {
+      continue;
+    }
+    if (hint) {
+      return std::nullopt;
+    }
+    hint = BaseType(type_index);
+  }
+  return hint;
 }
 
 void CSSMathType::ApplyHint(BaseType hint) {
@@ -2208,8 +2254,12 @@ CSSMathExpressionNode* CSSMathExpressionOperation::CreateInvertFunction(
         kCalcIntermediate, Operands{operand}, CSSMathOperator::kInvert,
         -CSSMathType(*operand));
   }
+  // E.g. 1 / round(100% / 10px). Keep the percent hint of the operand.
   return MakeGarbageCollected<CSSMathExpressionOperation>(
-      kCalcNumber, Operands{operand}, CSSMathOperator::kInvert, CSSMathType());
+      kCalcNumber, Operands{operand}, CSSMathOperator::kInvert,
+      RuntimeEnabledFeatures::CSSNumberMathFunctionPercentHintEnabled()
+          ? -CSSMathType(*operand)
+          : CSSMathType());
 }
 
 const CSSMathExpressionNode*

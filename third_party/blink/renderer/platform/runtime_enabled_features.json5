@@ -1954,6 +1954,15 @@
       status: "stable",
     },
     {
+      // Math functions that return a <number> (e.g. round(), sign()) keep
+      // the percent hint of their arguments, so that e.g.
+      // calc(100% / round(100% / 10px)) is a <length-percentage> rather
+      // than a <percentage>.
+      // https://drafts.csswg.org/css-values-4/#calc-type-checking
+      name: "CSSNumberMathFunctionPercentHint",
+      status: "stable",
+    },
+    {
       // https://drafts.csswg.org/cssom/#dom-window-getcomputedstyle
       name: "CSSOMGetComputedStylePseudoElementRequiresColon",
       status: "experimental",
