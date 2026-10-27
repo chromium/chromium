@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include "base/files/file.h"
+#include "base/files/file_path.h"
 #include "base/files/memory_mapped_file.h"
 #include "build/build_config.h"
 #include "gin/array_buffer.h"
@@ -59,6 +60,16 @@ class GIN_EXPORT V8Initializer {
   static base::FilePath GetSnapshotFilePath(
       bool abi_32_bit,
       V8SnapshotFileType snapshot_file_type);
+#endif
+
+#if BUILDFLAG(IS_WIN)
+  // Returns the resolved path for a V8 startup data file (`file_name`),
+  // preferring `base::DIR_MODULE` over `base::DIR_ASSETS` when present.
+  static base::FilePath GetV8FilePathForTesting(const char* file_name);
+
+  // Resets the cached V8 file directory selection so tests can exercise
+  // different `base::DIR_MODULE` and `base::DIR_ASSETS` configurations.
+  static void ResetV8FilePathForTesting();
 #endif
 
 #endif  // V8_USE_EXTERNAL_STARTUP_DATA

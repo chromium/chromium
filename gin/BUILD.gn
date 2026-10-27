@@ -219,6 +219,7 @@ test("gin_unittests") {
     "shell_runner_unittest.cc",
     "test/run_all_unittests.cc",
     "time_clamper_unittest.cc",
+    "v8_initializer_unittest.cc",
     "v8_isolate_memory_dump_provider_unittest.cc",
     "v8_platform_unittest.cc",
     "v8_shared_memory_dump_provider_unittest.cc",

@@ -15,6 +15,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/base_paths.h"
 #include "base/bits.h"
 #include "base/check.h"
 #include "base/check_op.h"
@@ -25,6 +26,7 @@
 #include "base/feature_visitor.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/files/memory_mapped_file.h"
 #include "base/lazy_instance.h"
 #include "base/logging.h"
@@ -63,6 +65,9 @@ base::MemoryMappedFile* g_mapped_snapshot = nullptr;
 
 #if defined(V8_USE_EXTERNAL_STARTUP_DATA)
 std::optional<gin::V8SnapshotFileType> g_snapshot_file_type;
+#if BUILDFLAG(IS_WIN)
+std::optional<bool> g_use_module_dir_for_v8_files;
+#endif
 #endif
 
 bool GenerateEntropy(unsigned char* buffer, size_t amount) {
@@ -135,6 +140,26 @@ void GetV8FilePath(const char* file_name, base::FilePath* path_out) {
   base::FilePath data_path;
   bool r = base::PathService::Get(base::DIR_ASSETS, &data_path);
   DCHECK(r);
+
+#if BUILDFLAG(IS_WIN)
+  // When running a dynamically patched module from a subdirectory, DIR_MODULE
+  // differs from DIR_ASSETS. Prefer the snapshot bundled with the module if
+  // present, falling back to the base assets directory otherwise. Cache the
+  // decision so all V8 files in the process resolve from the same directory.
+  base::FilePath module_path;
+  if (base::PathService::Get(base::DIR_MODULE, &module_path)) {
+    if (!g_use_module_dir_for_v8_files.has_value()) {
+      g_use_module_dir_for_v8_files =
+          module_path != data_path &&
+          base::PathExists(module_path.AppendASCII(file_name));
+    }
+    if (*g_use_module_dir_for_v8_files) {
+      *path_out = module_path.AppendASCII(file_name);
+      return;
+    }
+  }
+#endif  // BUILDFLAG(IS_WIN)
+
   *path_out = data_path.AppendASCII(file_name);
 #endif
 }
@@ -676,6 +701,20 @@ base::FilePath V8Initializer::GetSnapshotFilePath(
   return path;
 }
 #endif  // BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_WIN)
+// static
+base::FilePath V8Initializer::GetV8FilePathForTesting(const char* file_name) {
+  base::FilePath path;
+  GetV8FilePath(file_name, &path);
+  return path;
+}
+
+// static
+void V8Initializer::ResetV8FilePathForTesting() {
+  g_use_module_dir_for_v8_files.reset();
+}
+#endif  // BUILDFLAG(IS_WIN)
 
 V8SnapshotFileType GetLoadedSnapshotFileType() {
   DCHECK(g_snapshot_file_type.has_value());

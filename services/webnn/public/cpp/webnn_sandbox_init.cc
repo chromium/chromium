@@ -4,6 +4,7 @@
 
 #include "services/webnn/public/cpp/webnn_sandbox_init.h"
 
+#include "base/base_paths.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/native_library.h"
@@ -51,7 +52,7 @@ void PreSandboxWebNNInitialization(bool is_gpu_process) {
 
   TRACE_EVENT("gpu,startup", "PreSandboxWebNNInitialization");
   base::FilePath library_path;
-  if (base::PathService::Get(base::DIR_MODULE, &library_path)) {
+  if (base::PathService::Get(base::DIR_ASSETS, &library_path)) {
     library_path = library_path.Append(kLibraryName);
   } else {
     library_path = base::FilePath(kLibraryName);

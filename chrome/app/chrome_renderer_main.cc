@@ -23,17 +23,22 @@
 
 #include <string>
 
+#include "base/base_paths.h"
 #include "base/check.h"
 #include "base/dcheck_is_on.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/debug/handle_hooks_win.h"
+#include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/not_fatal_until.h"
+#include "base/path_service.h"
 #include "base/win/current_module.h"
 #include "base/win/win_util.h"
 #include "chrome/app/startup_timestamps.h"
 #include "chrome/chrome_elf/chrome_elf_main.h"
 #include "chrome/common/chrome_switches.h"
+#include "chrome/install_static/get_primary_module_path.h"
 #include "chrome/install_static/initialize_from_primary_module.h"
 #include "chrome/install_static/install_details.h"
 #include "content/public/common/content_switches.h"
@@ -104,9 +109,28 @@ DLLEXPORT int __cdecl ChromeRendererMain(
   if (!expected_version.empty()) {
     CHECK(!install_static::InstallDetails::Get().VersionMismatch(
         expected_version));
+
+    // When dynamically patched, chrome_renderer.dll is loaded from a child
+    // module subdirectory, so DIR_MODULE (the default for DIR_ASSETS) points
+    // there instead of the base browser directory where shared assets
+    // (icudtl.dat, .pak files, locales) reside. Point DIR_ASSETS to the
+    // directory containing the primary module (chrome_elf.dll), which is the
+    // base version directory (or the build output directory in developer
+    // builds).
+    const base::FilePath primary_module_path =
+        install_static::GetPrimaryModulePath();
+    const bool is_valid_primary_module_path =
+        !primary_module_path.empty() && primary_module_path.IsAbsolute();
+    CHECK(is_valid_primary_module_path, base::NotFatalUntil::M161);
+    if (is_valid_primary_module_path) {
+      base::PathService::OverrideAndCreateIfNeeded(
+          base::DIR_ASSETS, primary_module_path.DirName(),
+          /*is_absolute=*/true, /*create=*/false);
+    }
   } else if (install_static::InstallDetails::Get().VersionMismatch()) {
     base::debug::DumpWithoutCrashing();
   }
+
   base::PoissonAllocationSampler::Init();
 
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
