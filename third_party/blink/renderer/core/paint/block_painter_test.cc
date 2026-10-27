@@ -54,8 +54,8 @@ TEST_P(BlockPainterTest, BlockingWheelRectsWithoutPaint) {
   auto* hit_test_data = MakeGarbageCollected<HitTestData>();
   hit_test_data->wheel_event_rects = {{gfx::Rect(0, 0, 100, 100)},
                                       {gfx::Rect(0, 0, 200, 25)}};
-  ContentPaintChunks(),
-      ElementsAre(VIEW_SCROLLING_BACKGROUND_CHUNK(1, hit_test_data));
+  EXPECT_THAT(ContentPaintChunks(),
+              ElementsAre(VIEW_SCROLLING_BACKGROUND_CHUNK(1, hit_test_data)));
 
   // Remove the blocking wheel event handler from parent and ensure no hit test
   // data are left.
@@ -328,8 +328,8 @@ TEST_P(BlockPainterTest, TouchActionRectsWithoutPaint) {
   auto* hit_test_data = MakeGarbageCollected<HitTestData>();
   hit_test_data->touch_action_rects = {{gfx::Rect(0, 0, 100, 100)},
                                        {gfx::Rect(0, 0, 200, 25)}};
-  ContentPaintChunks(),
-      ElementsAre(VIEW_SCROLLING_BACKGROUND_CHUNK(1, hit_test_data));
+  EXPECT_THAT(ContentPaintChunks(),
+              ElementsAre(VIEW_SCROLLING_BACKGROUND_CHUNK(1, hit_test_data)));
 
   // Remove the touch action from parent and ensure no hit test data are left.
   parent_element->removeAttribute(html_names::kClassAttr);
