@@ -10330,21 +10330,6 @@
             ]
         }
     ],
-    "IOSLensStrokesAPI": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_v1",
-                    "enable_features": [
-                        "LensStrokesAPIEnabled"
-                    ]
-                }
-            ]
-        }
-    ],
     "IOSLensTripleCameraWith90Zoom": [
         {
             "platforms": [
