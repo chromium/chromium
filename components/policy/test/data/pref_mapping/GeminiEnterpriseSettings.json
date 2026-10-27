@@ -1,5 +1,0 @@
-[
-  {
-    "reason_for_missing_test": "Policy is no longer supported and has no pref mapping. It will be removed once the Admin console stops referencing it (b/571531073)."
-  }
-]

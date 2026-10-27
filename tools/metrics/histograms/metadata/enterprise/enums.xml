@@ -2606,7 +2606,6 @@ chromium-metrics-reviews@google.com.
   <int value="1454" label="HttpHeaderInjection"/>
   <int value="1455" label="ChromeSuggestionsSettings"/>
   <int value="1456" label="RestrictBackgroundFetchFromServiceWorkerEnabled"/>
-  <int value="1457" label="GeminiEnterpriseSettings"/>
   <int value="1458" label="RestrictYouTubeCookiesDeletion"/>
   <int value="1459" label="AutofillSettings"/>
   <int value="1460" label="IsolateOriginsShortlist"/>

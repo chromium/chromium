@@ -31,7 +31,7 @@ source_set("geic_enabling") {
 }
 
 # Gemini Enterprise host allowlist, shared by GEiC guest URL resolution and the
-# GeminiEnterpriseUrl and GeminiEnterpriseSettings policy handlers.
+# GeminiEnterpriseUrl policy handler.
 source_set("url_allowlist") {
   sources = [
     "geic_url_allowlist.cc",
