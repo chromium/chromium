@@ -12,6 +12,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.ui.signin.fullscreen_signin.FullscreenSigninMediator;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.ui.base.WindowAndroid;
 
 /** Defines the host interface for First Run Experience pages. */
@@ -130,4 +131,7 @@ public interface FirstRunPageDelegate {
 
     /** Returns the state shared between the Safety FRE promo pages. */
     SafetyPromoFirstRunState getSafetyPromoFirstRunState();
+
+    /** Returns the {@link BottomSheetController} associated with the First Run Experience. */
+    BottomSheetController getBottomSheetController();
 }
