@@ -131,11 +131,7 @@ BeginFrameArgs::BeginFrameArgs(uint64_t source_id,
       frame_id(BeginFrameId(source_id, sequence_number)),
       type(type) {
   DCHECK_LE(kStartingFrameNumber, sequence_number);
-#if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_ANDROID)
-  // TODO(crbug.com/477242770): Re-enable on Mac. Changing the system display
-  // refresh rate on macOS causes the unthrottled_interval state to go
-  // stale, which incorrectly trips this DCHECK.
-  //
+#if !BUILDFLAG(IS_ANDROID)
   // TODO(crbug.com/477617022): Re-enable on Android.
   // ExternalBeginFrameSourceAndroid currently does not implement
   // GetMinimumFrameInterval() causing unthrottled_interval to always be

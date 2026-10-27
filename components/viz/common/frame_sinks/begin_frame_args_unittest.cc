@@ -7,7 +7,6 @@
 #include <string>
 
 #include "base/test/gtest_util.h"
-#include "build/build_config.h"
 #include "components/viz/test/begin_frame_args_test.h"
 #include "testing/gtest/include/gtest/gtest-spi.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -134,16 +133,7 @@ TEST(BeginFrameArgsTest, Location) {
 }
 #endif
 
-// TODO(crbug.com/477242770): Changing the system display refresh rate on macOS
-// causes the unthrottled_interval state to go stale, which incorrectly trips
-// the DCHECK enforced by this test. Re-enable once this is fixed.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_InvalidUnthrottledInterval DISABLED_InvalidUnthrottledInterval
-#else
-#define MAYBE_InvalidUnthrottledInterval InvalidUnthrottledInterval
-#endif
-
-TEST(BeginFrameArgsTest, MAYBE_InvalidUnthrottledInterval) {
+TEST(BeginFrameArgsTest, InvalidUnthrottledInterval) {
 #if DCHECK_IS_ON()
   EXPECT_DCHECK_DEATH(BeginFrameArgs::Create(
       BEGINFRAME_FROM_HERE, 0, BeginFrameArgs::kStartingFrameNumber,
