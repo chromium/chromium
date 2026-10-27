@@ -181,11 +181,6 @@ void LogFetchLaterMetric(const FetchLaterRendererMetricType& type) {
   base::UmaHistogramEnumeration("FetchLater.Renderer.Metrics", type);
 }
 
-void RecordBlobFetchNetErrorCode(int net_error_code) {
-  base::UmaHistogramSparse("Net.BlobFetch.ResponseNetErrorCode",
-                           net_error_code);
-}
-
 // Tells whether the FetchLater request should use BackgroundSync permission to
 // decide whether it should send out deferred requests on entering
 // BackForwardCache.
@@ -720,12 +715,6 @@ void FetchManager::Loader::DidReceiveResponse(
     const ResourceResponse& response) {
   received_response_headers_ = true;
 
-  // Record the blob fetch request status.
-  if (GetFetchRequestData() &&
-      GetFetchRequestData()->Url().ProtocolIs("blob")) {
-    RecordBlobFetchNetErrorCode(net::OK);
-  }
-
   // Verify that we're dealing with the URL we expect (which could be an
   // HTTPS-upgraded variant of `url_list_.back()`.
   DCHECK(
@@ -894,12 +883,6 @@ void FetchManager::Loader::DidFail(uint64_t identifier,
   if (GetExecutionContext()) {
     GetExecutionContext()->MaybeRecordFetchError(error.ErrorCode(),
                                                  GetFetchRequestData());
-  }
-
-  // Record the failures for blob fetch request.
-  if (GetFetchRequestData() &&
-      GetFetchRequestData()->Url().ProtocolIs("blob")) {
-    RecordBlobFetchNetErrorCode(-error.ErrorCode());
   }
 
   if (GetFetchRequestData() && GetFetchRequestData()->TrustTokenParams()) {

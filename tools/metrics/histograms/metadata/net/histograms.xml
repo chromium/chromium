@@ -1419,17 +1419,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Net.BlobFetch.ResponseNetErrorCode" enum="NetErrorCodes"
-    expires_after="2026-06-28">
-  <owner>leimy@chromium.org</owner>
-  <owner>chrome-owp-storage@google.com</owner>
-  <summary>
-    Net error code from a blob fetch request. It's recorded as the abolute value
-    of the raw error code when a blob fetch request fails, or as 0 when the
-    request receives response.
-  </summary>
-</histogram>
-
 <histogram name="Net.CachingCertVerifier.CacheHit{HostType}" enum="Boolean"
     expires_after="2027-04-11">
   <owner>nidhijaju@chromium.org</owner>
