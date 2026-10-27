@@ -78,8 +78,6 @@ class RemotingClient : public SignalStrategy::Listener,
   void SetTransportInfo(const protocol::TransportInfo& transport_info) override;
   void SetActiveDisplay(const protocol::ActiveDisplay& active_display) override;
   void ControlMicrophone(const protocol::MicrophoneControl& control) override;
-  void DeliverTerminalControl(
-      const protocol::TerminalControl& terminal_control) override;
   void InjectClipboardEvent(const protocol::ClipboardEvent& event) override;
   void SetCursorShape(const protocol::CursorShapeInfo& cursor_shape) override;
   void SetHostCursorPosition(

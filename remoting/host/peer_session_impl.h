@@ -21,7 +21,6 @@
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "base/types/expected.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -39,7 +38,7 @@
 #include "remoting/host/mojom/remote_url_opener.mojom.h"
 #include "remoting/host/mojom/webauthn_proxy.mojom.h"
 #include "remoting/host/peer_session.h"
-#include "remoting/host/terminal_error.h"
+#include "remoting/host/terminal_data_channel_manager.h"
 #include "remoting/proto/action.pb.h"
 #include "remoting/proto/control.pb.h"
 #include "remoting/proto/terminal.pb.h"
@@ -117,7 +116,10 @@ class PeerSessionImpl : public PeerSession,
              const SessionOptions& session_options) override;
 
   TerminalSessionManager* terminal_session_manager_for_tests() const {
-    return terminal_session_manager_.get();
+    return terminal_data_channel_manager_
+               ? terminal_data_channel_manager_
+                     ->terminal_session_manager_for_tests()
+               : nullptr;
   }
 
   // Returns the set of capabilities negotiated between client and host.
@@ -137,8 +139,6 @@ class PeerSessionImpl : public PeerSession,
   void ControlPeerConnection(
       const protocol::PeerConnectionParameters& parameters) override;
   void SetVideoLayout(const protocol::VideoLayout& video_layout) override;
-  void ControlTerminal(
-      const protocol::TerminalControl& terminal_control) override;
 
   // protocol::ConnectionToClient::EventHandler interface.
   void CreateMediaStreams() override;
@@ -284,16 +284,10 @@ class PeerSessionImpl : public PeerSession,
   // whenever the screen id associated with the active window changes.
   void OnActiveDisplayChanged(webrtc::ScreenId display);
 
-  // Sends the response to a create-terminal request.
-  void OnTerminalCreated(base::expected<int32_t, TerminalError> result);
-
-  void SendTerminalOutput(int32_t terminal_id, const std::string& data);
-
-  void OnTerminalExited(int32_t terminal_id);
-
-  void SendTerminalProcessInfo(int32_t terminal_id,
-                               bool is_active,
-                               std::string_view process_name);
+  // Creates an outgoing data channel for a restored terminal. Returns nullptr
+  // if the connection is not ready.
+  std::unique_ptr<protocol::MessagePipe> CreateOutgoingTerminalChannel(
+      const std::string& name);
 
   void OnPairingResponse(
       std::optional<protocol::PairingResponse> pairing_response);
@@ -418,7 +412,7 @@ class PeerSessionImpl : public PeerSession,
 
   bool cursor_visible_ = false;
 
-  std::unique_ptr<TerminalSessionManager> terminal_session_manager_;
+  std::unique_ptr<TerminalDataChannelManager> terminal_data_channel_manager_;
 
   bool pairing_request_pending_ = false;
   std::optional<protocol::PairingResponse> pending_pairing_response_;

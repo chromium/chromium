@@ -56,6 +56,9 @@ class WebrtcConnectionToClient : public ConnectionToClient,
   void Disconnect(ErrorCode error,
                   std::string_view error_details,
                   const SourceLocation& error_location) override;
+
+  std::unique_ptr<MessagePipe> CreateOutgoingDataChannel(
+      const std::string& name) override;
   std::unique_ptr<VideoStream> StartVideoStream(
       webrtc::ScreenId screen_id,
       std::unique_ptr<DesktopCapturer> desktop_capturer) override;

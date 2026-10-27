@@ -116,6 +116,10 @@ class ConnectionToClient {
   // after OnConnectionClosed().
   virtual ClientStub* client_stub() = 0;
 
+  // Creates an outgoing data channel and returns the message pipe.
+  virtual std::unique_ptr<MessagePipe> CreateOutgoingDataChannel(
+      const std::string& name) = 0;
+
   // Set the stubs which will handle messages we receive from the client. These
   // must be called in EventHandler::OnConnectionAuthenticated().
   virtual void set_clipboard_stub(ClipboardStub* clipboard_stub) = 0;

@@ -44,7 +44,6 @@ class ClientControlDispatcher : public ChannelDispatcherBase,
   void ControlPeerConnection(
       const protocol::PeerConnectionParameters& parameters) override;
   void SetVideoLayout(const VideoLayout& video_layout) override;
-  void ControlTerminal(const TerminalControl& terminal_control) override;
   // Sets the ClientStub that will be called for each incoming control
   // message. |client_stub| must outlive this object.
   void set_client_stub(ClientStub* client_stub) { client_stub_ = client_stub; }

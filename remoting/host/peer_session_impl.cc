@@ -23,16 +23,13 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/notreached.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/bind_post_task.h"
-#include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
-#include "base/types/expected.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "remoting/base/capabilities.h"
@@ -71,9 +68,7 @@
 #include "remoting/host/remote_open_url/url_forwarder_control_message_handler.h"
 #include "remoting/host/security_key/security_key_auth_handler.h"
 #include "remoting/host/security_key/security_key_data_channel_handler.h"
-#include "remoting/host/terminal_error.h"
 #include "remoting/host/terminal_session.h"
-#include "remoting/host/terminal_session_manager.h"
 #include "remoting/host/webauthn/remote_webauthn_constants.h"
 #include "remoting/host/webauthn/remote_webauthn_message_handler.h"
 #include "remoting/host/webauthn/remote_webauthn_state_change_notifier.h"
@@ -135,42 +130,6 @@ void LogVideoTrack(int index,
            << "', pos=" << track.position_x() << "," << track.position_y()
            << ", " << track.width() << "x" << track.height() << ", dpi=["
            << track.x_dpi() << "," << track.y_dpi() << "]";
-}
-
-remoting::protocol::TerminalControl::CreateTerminalResponse::Error::Reason
-ToProtoReason(remoting::TerminalError::Reason reason) {
-  using ProtoError =
-      remoting::protocol::TerminalControl::CreateTerminalResponse::Error;
-  switch (reason) {
-    case remoting::TerminalError::Reason::kInternalError:
-      return ProtoError::INTERNAL_ERROR;
-    case remoting::TerminalError::Reason::kBusy:
-      return ProtoError::BUSY;
-    case remoting::TerminalError::Reason::kPtyError:
-      return ProtoError::PTY_ERROR;
-    case remoting::TerminalError::Reason::kTmuxMissing:
-      return ProtoError::TMUX_MISSING;
-    case remoting::TerminalError::Reason::kLaunchFailed:
-      return ProtoError::LAUNCH_FAILED;
-  }
-  NOTREACHED();
-}
-
-void SetCreateTerminalError(
-    const remoting::TerminalError& error,
-    remoting::protocol::TerminalControl::CreateTerminalResponse::Error*
-        proto_error) {
-  proto_error->set_reason(ToProtoReason(error.reason));
-  if (error.system_error_code.has_value()) {
-    proto_error->set_code(*error.system_error_code);
-  }
-  // A default-constructed base::Location has no file name (and an invalid line
-  // number), so only report the location if it is valid.
-  if (const char* file_name = error.location.file_name()) {
-    proto_error->set_file_name(file_name);
-    proto_error->set_line_number(error.location.line_number());
-  }
-  proto_error->set_error_message(error.message);
 }
 
 }  // namespace
@@ -435,14 +394,17 @@ void PeerSessionImpl::SetCapabilities(
 
   if (effective_policies_.allow_terminal_mode.value_or(true) &&
       HasCapability(capabilities_, protocol::kTerminalModeCapability)) {
-    terminal_session_manager_ = std::make_unique<TerminalSessionManager>();
-    terminal_session_manager_->Start(
-        base::BindRepeating(&PeerSessionImpl::SendTerminalOutput,
-                            weak_factory_.GetWeakPtr()),
-        base::BindRepeating(&PeerSessionImpl::OnTerminalExited,
-                            weak_factory_.GetWeakPtr()),
-        base::BindRepeating(&PeerSessionImpl::SendTerminalProcessInfo,
-                            weak_factory_.GetWeakPtr()));
+    // `terminal_data_channel_manager_` is owned by this object, so the
+    // callback cannot outlive it.
+    terminal_data_channel_manager_ =
+        std::make_unique<TerminalDataChannelManager>(
+            base::BindRepeating(&PeerSessionImpl::CreateOutgoingTerminalChannel,
+                                base::Unretained(this)));
+    data_channel_manager_.RegisterCreateHandlerCallback(
+        TerminalDataChannelManager::kChannelPrefix,
+        base::BindRepeating(&TerminalDataChannelManager::OnIncomingChannel,
+                            terminal_data_channel_manager_->GetWeakPtr()));
+    terminal_data_channel_manager_->Start();
   }
 
   if (HasCapability(capabilities_, protocol::kRemoteOpenUrlCapability)) {
@@ -654,116 +616,25 @@ void PeerSessionImpl::SetVideoLayout(
   screen_controls_->SetVideoLayout(video_layout);
 }
 
-void PeerSessionImpl::ControlTerminal(
-    const protocol::TerminalControl& terminal_control) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!terminal_session_manager_) {
-    return;
-  }
-
-  if (terminal_control.has_create_request()) {
-    // Create a new terminal session. The response, containing either the ID
-    // that identifies the session in subsequent messages or an error, is sent
-    // once the session has started. Bind the callback to the weak factory to
-    // ensure that it is not called after the client session is disconnected.
-    terminal_session_manager_->CreateTerminal(base::BindOnce(
-        &PeerSessionImpl::OnTerminalCreated, weak_factory_.GetWeakPtr()));
-
-  } else if (terminal_control.has_terminal_input()) {
-    const auto& input = terminal_control.terminal_input();
-    terminal_session_manager_->WriteTerminal(input.terminal_id(),
-                                             input.input());
-
-  } else if (terminal_control.has_resize_terminal()) {
-    const auto& resize = terminal_control.resize_terminal();
-    terminal_session_manager_->ResizeTerminal(resize.terminal_id(),
-                                              resize.width(), resize.height());
-
-  } else if (terminal_control.has_remove_request()) {
-    int32_t terminal_id = terminal_control.remove_request().terminal_id();
-    terminal_session_manager_->CloseTerminal(terminal_id);
-  }
-}
-
 void PeerSessionImpl::SetAgentStatus(
     int32_t terminal_id,
     const protocol::TerminalControl::AgentInfo& agent_status,
     SetAgentStatusCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   std::move(callback).Run();
-  if (!channels_connected_ || !terminal_session_manager_) {
+  if (!channels_connected_ || !terminal_data_channel_manager_) {
     return;
   }
-
-  bool has_valid_agent_state =
-      agent_status.has_agent_state() &&
-      agent_status.agent_state() !=
-          protocol::TerminalControl::AgentInfo::UNSPECIFIED;
-  if (!has_valid_agent_state && !agent_status.has_conversation_title()) {
-    return;
-  }
-
-  if (!terminal_session_manager_->GetTerminalSession(terminal_id)) {
-    LOG(WARNING) << "Dropping SetAgentStatus for unknown terminal ID: "
-                 << terminal_id;
-    return;
-  }
-
-  protocol::TerminalControl response;
-  auto* agent_info = response.mutable_agent_info();
-  agent_info->set_terminal_id(terminal_id);
-  if (has_valid_agent_state) {
-    agent_info->set_agent_state(agent_status.agent_state());
-  }
-  if (agent_status.has_conversation_title()) {
-    agent_info->set_conversation_title(agent_status.conversation_title());
-  }
-  connection_->client_stub()->DeliverTerminalControl(response);
+  terminal_data_channel_manager_->SetAgentStatus(terminal_id, agent_status);
 }
 
-void PeerSessionImpl::OnTerminalCreated(
-    base::expected<int32_t, TerminalError> result) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  protocol::TerminalControl response;
-  auto* create_response = response.mutable_create_response();
-  if (result.has_value()) {
-    create_response->set_terminal_id(*result);
-  } else {
-    SetCreateTerminalError(result.error(), create_response->mutable_error());
-  }
-  connection_->client_stub()->DeliverTerminalControl(response);
-}
-
-void PeerSessionImpl::SendTerminalOutput(int32_t terminal_id,
-                                         const std::string& data) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  protocol::TerminalControl response;
-  auto* output = response.mutable_terminal_output();
-  output->set_terminal_id(terminal_id);
-  output->set_output(data);
-  connection_->client_stub()->DeliverTerminalControl(response);
-}
-
-void PeerSessionImpl::OnTerminalExited(int32_t terminal_id) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  protocol::TerminalControl response;
-  response.mutable_close_terminal()->set_terminal_id(terminal_id);
-  connection_->client_stub()->DeliverTerminalControl(response);
-}
-
-void PeerSessionImpl::SendTerminalProcessInfo(int32_t terminal_id,
-                                              bool is_active,
-                                              std::string_view process_name) {
+std::unique_ptr<protocol::MessagePipe>
+PeerSessionImpl::CreateOutgoingTerminalChannel(const std::string& name) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!channels_connected_) {
-    return;
+    return nullptr;
   }
-  protocol::TerminalControl response;
-  auto* process_info = response.mutable_process_info();
-  process_info->set_terminal_id(terminal_id);
-  process_info->set_is_active(is_active);
-  process_info->set_process_name(process_name);
-  connection_->client_stub()->DeliverTerminalControl(response);
+  return connection_->CreateOutgoingDataChannel(name);
 }
 
 void PeerSessionImpl::CreateMediaStreams() {
@@ -958,7 +829,7 @@ void PeerSessionImpl::OnConnectionClosed(protocol::ErrorCode error,
   input_injector_.reset();
   screen_controls_.reset();
   desktop_environment_.reset();
-  terminal_session_manager_.reset();
+  terminal_data_channel_manager_.reset();
 
   // Notify the ClientSession that this client is disconnected.
   if (event_handler_) {

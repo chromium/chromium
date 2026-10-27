@@ -198,10 +198,6 @@ class MockHostStub : public HostStub {
               SetVideoLayout,
               (const VideoLayout& video_layout),
               (override));
-  MOCK_METHOD(void,
-              ControlTerminal,
-              (const TerminalControl& terminal_control),
-              (override));
 };
 
 class MockClientStub : public ClientStub {
@@ -238,10 +234,6 @@ class MockClientStub : public ClientStub {
   MOCK_METHOD(void,
               ControlMicrophone,
               (const MicrophoneControl& control),
-              (override));
-  MOCK_METHOD(void,
-              DeliverTerminalControl,
-              (const TerminalControl& terminal_control),
               (override));
 
   // ClipboardStub mock implementation.

@@ -36,7 +36,7 @@ class TerminalSessionManagerTest : public testing::Test {
 
   void StartManager() {
     manager_.Start(output_callback_.Get(), exit_callback_.Get(),
-                   process_info_callback_.Get());
+                   process_info_callback_.Get(), restored_callback_.Get());
     base::ThreadPoolInstance::Get()->FlushForTesting();
     task_environment_.RunUntilIdle();
   }
@@ -61,6 +61,9 @@ class TerminalSessionManagerTest : public testing::Test {
   base::MockCallback<TerminalSessionManager::ExitCallback> exit_callback_;
   base::MockCallback<TerminalSessionManager::ProcessInfoCallback>
       process_info_callback_;
+  testing::NiceMock<
+      base::MockCallback<TerminalSessionManager::RestoredCallback>>
+      restored_callback_;
 };
 
 TEST_F(TerminalSessionManagerTest, CreateTerminalAndAssignsId) {
@@ -303,6 +306,11 @@ TEST_F(TerminalSessionManagerTest, DetachAllSessionsDetachesSessions) {
 
 TEST_F(TerminalSessionManagerTest, RestorePersistentTerminalsWithoutCollision) {
   FakeTerminalSession::SetPersistentTerminalIds({20, -1, 10});
+  {
+    testing::InSequence seq;
+    EXPECT_CALL(restored_callback_, Run(10));
+    EXPECT_CALL(restored_callback_, Run(20));
+  }
   StartManager();
 
   // Restored persistent terminals should exist in sorted order.
@@ -317,7 +325,7 @@ TEST_F(TerminalSessionManagerTest, RestorePersistentTerminalsWithoutCollision) {
 TEST_F(TerminalSessionManagerTest, DetachAllSessionsCancelsPendingRestoration) {
   FakeTerminalSession::SetPersistentTerminalIds({10, 20});
   manager_.Start(output_callback_.Get(), exit_callback_.Get(),
-                 process_info_callback_.Get());
+                 process_info_callback_.Get(), base::DoNothing());
 
   // Immediately disconnect the client before tasks can complete.
   manager_.DetachAllSessions();
@@ -335,7 +343,7 @@ TEST_F(TerminalSessionManagerTest, DetachAllSessionsCancelsPendingRestoration) {
 TEST_F(TerminalSessionManagerTest, CreateTerminalFailsDuringRestore) {
   FakeTerminalSession::SetPersistentTerminalIds({10, 20});
   manager_.Start(output_callback_.Get(), exit_callback_.Get(),
-                 process_info_callback_.Get());
+                 process_info_callback_.Get(), base::DoNothing());
 
   // Calling CreateTerminal while restore is in flight should return an error.
   base::expected<int32_t, TerminalError> result = CreateTerminal();

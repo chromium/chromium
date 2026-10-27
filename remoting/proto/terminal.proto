@@ -8,13 +8,10 @@ option optimize_for = LITE_RUNTIME;
 
 package remoting.protocol;
 
-// Next ID: 10
+// Next ID: 9
 message TerminalControl {
-  // Message sent by the client to the host to create a terminal.
-  message CreateTerminal {}
-
-  // Message sent by the host to the client to indicate the result of a terminal
-  // creation request.
+  // Message sent by the host to the client as the first message on a terminal
+  // channel.
   //
   // Next ID: 3
   message CreateTerminalResponse {
@@ -57,7 +54,7 @@ message TerminalControl {
     }
 
     oneof result {
-      // The id of the newly created terminal.
+      // The id of the newly created or restored terminal.
       int32 terminal_id = 1;
 
       // A human-readable error message.
@@ -65,50 +62,53 @@ message TerminalControl {
     }
   }
 
-  // Message sent by the client to the host to remove a terminal.
-  //
-  // Next ID: 2
-  message RemoveTerminal {
-    optional int32 terminal_id = 1;
-  }
+  // Message sent by the client to the host to permanently terminate a terminal
+  // session. An explicit message is used rather than relying on data channel
+  // closure so the host can distinguish deliberate terminal removal (which
+  // terminates the underlying tmux window) from connection teardown or browser
+  // tab closure (which detaches the session and preserves it across
+  // connections).
+  message RemoveTerminal {}
 
   // Message sent by the client to the host on user input.
   //
-  // Next ID: 3
+  // Next ID: 2
   message TerminalInput {
-    optional int32 terminal_id = 1;
-    optional string input = 2;
+    optional string input = 1;
+  }
+
+  // Message sent by the client to the host to resize a terminal.
+  //
+  // Next ID: 3
+  message ResizeTerminal {
+    optional uint32 width = 1;
+    optional uint32 height = 2;
   }
 
   // Message sent by the host to the client when terminal output is received, or
-  // on connection with the initial contents of the terminal. Note that the id
-  // may not match any terminal returned in a CreateTerminalResponse, as the
-  // terminal may have existed before the client was connected.
+  // on connection with the initial contents of the terminal.
   //
-  // Next ID: 6
+  // Next ID: 2
   message TerminalOutput {
-    optional int32 terminal_id = 1;
-    optional string output = 2;
+    optional string output = 1;
   }
 
-  // Next ID: 5
+  // Next ID: 4
   message ProcessInfo {
-    optional int32 terminal_id = 1;
-
     // The name of the current running process.
-    optional string process_name = 2;
+    optional string process_name = 1;
 
     // True if the process is "active", in which case the client should prompt
     // the user to confirm before destroying the terminal.
-    optional bool is_active = 3;
+    optional bool is_active = 2;
 
     // True if the process is terminated, in which case no further input will be
     // accepted.
-    optional bool is_terminated = 4;
+    optional bool is_terminated = 3;
   }
 
   // LINT.IfChange(AgentStatus)
-  // Next ID: 4
+  // Next ID: 3
   message AgentInfo {
     enum AgentState {
       UNSPECIFIED = 0;
@@ -121,44 +121,31 @@ message TerminalControl {
       ERROR = 7;
     }
 
-    optional int32 terminal_id = 1;
-
     // The current state of the AI coding agent running in this terminal, if
     // any.
-    optional AgentState agent_state = 2;
+    optional AgentState agent_state = 1;
 
     // The title for the active agent conversation. While an agent is active,
     // this value takes precedence over any title set via escape sequences.
-    optional string conversation_title = 3;
+    optional string conversation_title = 2;
   }
   // LINT.ThenChange(//remoting/host/mojom/common.mojom:AgentStatus)
 
-  // Message sent by the client to the host to resize a terminal.
-  //
-  // Next ID: 4
-  message ResizeTerminal {
-    optional int32 terminal_id = 1;
-    optional uint32 width = 2;
-    optional uint32 height = 3;
-  }
-
-  // Message sent by the client to the host (or host to client) to close a
-  // terminal.
-  //
-  // Next ID: 2
-  message CloseTerminal {
-    optional int32 terminal_id = 1;
-  }
+  // Message sent by the host when a terminal process exits. An explicit
+  // in-band message is used rather than immediately closing the data channel
+  // on the host so that any queued TerminalOutput messages are flushed in order
+  // before the client closes the channel, and so the client can distinguish
+  // terminal exit from an unexpected connection drop.
+  message CloseTerminal {}
 
   oneof control {
-    CreateTerminal create_request = 1;
-    CreateTerminalResponse create_response = 2;
-    RemoveTerminal remove_request = 3;
-    TerminalInput terminal_input = 4;
-    TerminalOutput terminal_output = 5;
-    ProcessInfo process_info = 6;
-    ResizeTerminal resize_terminal = 7;
-    CloseTerminal close_terminal = 8;
-    AgentInfo agent_info = 9;
+    CreateTerminalResponse create_response = 1;
+    RemoveTerminal remove_request = 2;
+    TerminalInput terminal_input = 3;
+    TerminalOutput terminal_output = 4;
+    ProcessInfo process_info = 5;
+    ResizeTerminal resize_terminal = 6;
+    CloseTerminal close_terminal = 7;
+    AgentInfo agent_info = 8;
   }
 }

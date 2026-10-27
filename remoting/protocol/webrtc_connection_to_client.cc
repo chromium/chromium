@@ -369,4 +369,11 @@ bool WebrtcConnectionToClient::allChannelsConnected() {
          event_dispatcher_ && event_dispatcher_->is_connected();
 }
 
+std::unique_ptr<MessagePipe>
+WebrtcConnectionToClient::CreateOutgoingDataChannel(
+    const std::string& channel_name) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  return transport_->CreateOutgoingChannel(channel_name);
+}
+
 }  // namespace remoting::protocol

@@ -7,12 +7,17 @@
 
 #include <stdint.h>
 
+#include <map>
+#include <memory>
+#include <string>
+
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "remoting/protocol/connection_to_client.h"
 #include "remoting/protocol/desktop_capturer.h"
+#include "remoting/protocol/fake_message_pipe.h"
 #include "remoting/protocol/network_settings.h"
 #include "remoting/protocol/video_stream.h"
 #include "remoting/protocol/video_stub.h"
@@ -70,6 +75,9 @@ class FakeConnectionToClient : public ConnectionToClient {
                   std::string_view error_details,
                   const SourceLocation& error_location) override;
 
+  std::unique_ptr<MessagePipe> CreateOutgoingDataChannel(
+      const std::string& name) override;
+
   Transport* transport() override;
 
   void set_clipboard_stub(ClipboardStub* clipboard_stub) override;
@@ -95,6 +103,7 @@ class FakeConnectionToClient : public ConnectionToClient {
   bool is_connected() { return is_connected_; }
   ErrorCode disconnect_error() { return disconnect_error_; }
   const NetworkSettings& network_settings() const { return network_settings_; }
+  FakeMessagePipe* GetOutgoingDataChannel(const std::string& name) const;
 
   base::WeakPtr<ConnectionToClient> GetWeakPtr() override;
   base::WeakPtr<FakeConnectionToClient> GetWeakPtrForTest();
@@ -119,6 +128,8 @@ class FakeConnectionToClient : public ConnectionToClient {
   ErrorCode disconnect_error_ = ErrorCode::OK;
   NetworkSettings network_settings_;
   std::unique_ptr<FifoBufferWriter> audio_writer_;
+  std::map<std::string, std::unique_ptr<FakeMessagePipe>>
+      outgoing_data_channels_;
 
   base::WeakPtrFactory<FakeConnectionToClient> weak_factory_{this};
 };

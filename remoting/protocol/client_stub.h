@@ -23,7 +23,6 @@ class ExtensionMessage;
 class PairingResponse;
 class TransportInfo;
 class VideoLayout;
-class TerminalControl;
 
 class ClientStub : public ClipboardStub,
                    public CursorShapeStub,
@@ -55,9 +54,6 @@ class ClientStub : public ClipboardStub,
   // Sends the host's active display to the client. This is sent whenever the
   // screen id associated with the active window changes.
   virtual void SetActiveDisplay(const ActiveDisplay& active_display) = 0;
-
-  // Delivers a terminal control message from the host to the client.
-  virtual void DeliverTerminalControl(const TerminalControl& terminal_control) = 0;
 };
 
 }  // namespace remoting::protocol

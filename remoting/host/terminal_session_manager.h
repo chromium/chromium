@@ -33,6 +33,8 @@ class TerminalSessionManager {
   using ProcessInfoCallback = base::RepeatingCallback<
       void(int32_t terminal_id, bool is_active, std::string_view process_name)>;
 
+  using RestoredCallback = base::RepeatingCallback<void(int32_t)>;
+
   using CreateTerminalCallback =
       base::OnceCallback<void(base::expected<int32_t, TerminalError>)>;
 
@@ -62,7 +64,8 @@ class TerminalSessionManager {
   //   not yet been restored, it will fail.
   void Start(OutputCallback output_callback,
              ExitCallback exit_callback,
-             ProcessInfoCallback process_info_callback);
+             ProcessInfoCallback process_info_callback,
+             RestoredCallback restored_callback);
 
   // Spawns a new terminal session using the stored output and exit callbacks.
   // `callback` is run with the ID of the new session once it has started, or
@@ -119,6 +122,7 @@ class TerminalSessionManager {
   OutputCallback output_callback_;
   ExitCallback exit_callback_;
   ProcessInfoCallback process_info_callback_;
+  RestoredCallback restored_callback_;
   std::map<int32_t, std::unique_ptr<TerminalSession>> terminal_sessions_;
   int32_t next_id_ = 1;
   bool is_restoring_ = false;

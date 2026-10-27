@@ -52,7 +52,7 @@ inline constexpr char kDefaultResizeCapability[] = "defaultResize";
 inline constexpr char kMicrophoneRemotingCapability[] = "microphoneRemoting";
 
 // Host supports remoting of terminal control.
-inline constexpr char kTerminalModeCapability[] = "terminalMode_alpha";
+inline constexpr char kTerminalModeCapability[] = "terminalMode_beta";
 
 // Host supports enabling and disabling coding agent integration.
 inline constexpr char kAgentIntegrationCapability[] = "agentIntegration";

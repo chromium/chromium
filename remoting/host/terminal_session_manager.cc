@@ -24,7 +24,9 @@ TerminalSessionManager::~TerminalSessionManager() {
 
 void TerminalSessionManager::Start(OutputCallback output_callback,
                                    ExitCallback exit_callback,
-                                   ProcessInfoCallback process_info_callback) {
+                                   ProcessInfoCallback process_info_callback,
+                                   RestoredCallback restored_callback) {
+  restored_callback_ = std::move(restored_callback);
   DCHECK(terminal_sessions_.empty());
   if (is_restoring_) {
     LOG(ERROR) << "Cannot restore persistent terminals while already restoring";
@@ -174,6 +176,8 @@ void TerminalSessionManager::OnRestoredTerminalStarted(
   if (!result.has_value()) {
     LOG(ERROR) << "Failed to restore terminal session for ID: " << terminal_id;
     RemoveSessionSoon(terminal_id);
+  } else if (restored_callback_) {
+    restored_callback_.Run(terminal_id);
   }
 }
 
