@@ -362,7 +362,9 @@ void HistoryClustersHandler::StartQueryClusters(
 
 void HistoryClustersHandler::LoadMoreClusters(const std::string& query) {
   if (query_clusters_state_) {
-    CHECK_EQ(query, query_clusters_state_->query(), base::NotFatalUntil::M162);
+    // TODO(crbug.com/578093658): CHECK-exclusion: Convert to a CHECK once we
+    // are confident it won't be triggered.
+    DCHECK_EQ(query, query_clusters_state_->query());
     query_clusters_state_->LoadNextBatchOfClusters(
         base::BindOnce(&HistoryClustersHandler::SendClustersToPage,
                        weak_ptr_factory_.GetWeakPtr()));
