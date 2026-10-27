@@ -335,6 +335,7 @@ if (enable_webui_ntp && !is_android) {
       "//components/bookmarks/test",
       "//components/contextual_search:public",
       "//components/contextual_search:test_support",
+      "//components/google/core/common",
       "//components/keyed_service/content",
       "//components/omnibox/browser",
       "//components/omnibox/common",
