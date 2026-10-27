@@ -129,6 +129,7 @@ source_set("impl") {
       "//chrome/browser/ui/android/tab_model",
       "//components/image_fetcher/core",
       "//components/offline_items_collection/core",
+      "//components/paint_preview/buildflags",
     ]
   }
 }

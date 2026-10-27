@@ -67,6 +67,7 @@ if (is_android) {
       "//chrome/common",
       "//components/feature_engagement/public",
       "//components/infobars/content",
+      "//components/paint_preview/buildflags",
       "//components/resources",
       "//components/security_state/content",
       "//components/webapps/browser",

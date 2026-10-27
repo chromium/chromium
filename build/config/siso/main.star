@@ -92,12 +92,8 @@ def init(ctx):
         # Outputs with known missing deps. They don't fail the build with
         # -missing_deps=error/fatal.
         "missing_deps": {
-            "./android_clang_arm/obj/chrome/browser/offline_pages/impl/offline_page_utils_android.o": "crbug.com/572931511",
-            "./android_clang_arm/obj/chrome/browser/webapps/android_impl/webapps_client_android.o": "crbug.com/572931511",
             "./obj/ash/quick_pair/repository/repository/device_address_map.o": "crbug.com/546524333",
             "./obj/ash/quick_pair/repository/repository/device_image_store.o": "crbug.com/546524333",
-            "./obj/chrome/browser/offline_pages/impl/offline_page_utils_android.o": "crbug.com/572931511",
-            "./obj/chrome/browser/webapps/android_impl/webapps_client_android.o": "crbug.com/572931511",
         },
         # Executables sent from Windows host to Linux workers need to set executable bit explicitly.
         # This is necessary for cross platform build actions. e.g. node binary for typescript
