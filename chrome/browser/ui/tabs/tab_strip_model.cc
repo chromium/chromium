@@ -2978,7 +2978,7 @@ void TabStripModel::ExecuteContextMenuCommand(int context_index,
           GetGroupsDestroyedFromRemovingIndices(indices);
       MarkTabGroupsForClosing(groups_to_delete);
 
-      bool pin = WillContextMenuPin(context_index);
+      bool pin = WillContextMenuPin(context_tab);
 
       // If there are groups that will be deleted by closing tabs from the
       // context menu, confirm the group deletion first, and then perform the
@@ -3012,7 +3012,7 @@ void TabStripModel::ExecuteContextMenuCommand(int context_index,
       }
 
       std::vector<int> indices = GetIndicesForCommand(context_index);
-      if (WillContextMenuGroup(context_index)) {
+      if (WillContextMenuGroup(context_tab)) {
         std::optional<tab_groups::TabGroupId> new_group_id =
             AddToNewGroup(indices);
         if (new_group_id.has_value()) {
@@ -3569,36 +3569,33 @@ bool TabStripModel::WillContextMenuMuteSites(int index) {
   return !AreAllSitesMuted(*this, GetIndicesForCommand(index));
 }
 
-bool TabStripModel::WillContextMenuPin(int index) {
-  std::vector<int> indices = GetIndicesForCommand(index);
-  // If all tabs are pinned, then we unpin, otherwise we pin.
-  bool all_pinned = true;
-  for (size_t i = 0; i < indices.size() && all_pinned; ++i) {
-    all_pinned = IsTabPinned(indices[i]);
-  }
-  return !all_pinned;
-}
-
-bool TabStripModel::WillContextMenuGroup(int index) {
-  if (!group_model_) {
+bool TabStripModel::WillContextMenuPin(tabs::TabHandle context_tab) {
+  std::vector<tabs::TabHandle> tabs = GetTabsForCommand(context_tab);
+  if (tabs.empty()) {
     return false;
   }
-
-  std::vector<int> indices = GetIndicesForCommand(index);
-  CHECK(!indices.empty(), base::NotFatalUntil::M162);
-
-  // If all tabs are in the same group, then we ungroup, otherwise we group.
-  std::optional<tab_groups::TabGroupId> group = GetTabGroupForTab(indices[0]);
-  if (!group.has_value()) {
-    return true;
-  }
-
-  for (size_t i = 1; i < indices.size(); ++i) {
-    if (GetTabGroupForTab(indices[i]) != group) {
+  // If all tabs are pinned, then we unpin, otherwise we pin.
+  for (tabs::TabHandle tab : tabs) {
+    tabs::TabInterface* tab_ptr = tab.Get();
+    if (tab_ptr && !tab_ptr->IsPinned()) {
       return true;
     }
   }
   return false;
+}
+
+bool TabStripModel::WillContextMenuGroup(tabs::TabHandle context_tab) {
+  if (!group_model_) {
+    return false;
+  }
+
+  std::vector<tabs::TabHandle> tabs = GetTabsForCommand(context_tab);
+  if (tabs.empty()) {
+    return false;
+  }
+
+  // If all tabs are in the same group, then we ungroup, otherwise we group.
+  return !GetCommonGroupForTabs(tabs).has_value();
 }
 
 std::optional<tab_groups::TabGroupId> TabStripModel::GetCommonGroupForTabs(

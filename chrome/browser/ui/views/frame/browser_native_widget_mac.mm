@@ -603,14 +603,15 @@ void BrowserNativeWidgetMac::ValidateUserInterfaceItem(
     case IDC_WINDOW_PIN_TAB: {
       TabStripModel* model = browser->tab_strip_model();
       result->new_toggle_state =
-          !model->empty() && !model->WillContextMenuPin(model->active_index());
+          !model->empty() && model->GetActiveTab() &&
+          !model->WillContextMenuPin(model->GetActiveTab()->GetHandle());
       break;
     }
     case IDC_WINDOW_GROUP_TAB: {
       TabStripModel* model = browser->tab_strip_model();
       result->new_toggle_state =
-          !model->empty() &&
-          !model->WillContextMenuGroup(model->active_index());
+          !model->empty() && model->GetActiveTab() &&
+          !model->WillContextMenuGroup(model->GetActiveTab()->GetHandle());
       break;
     }
   }

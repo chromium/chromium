@@ -846,13 +846,13 @@ class TabStripModel {
   // Sets the sound content setting for each site at the `indices`.
   void SetSitesMuted(const std::vector<int>& indices, bool mute) const;
 
-  // Returns true if 'CommandTogglePinned' will pin. `index` is the index
+  // Returns true if 'CommandTogglePinned' will pin. `context_tab` is the tab
   // supplied to `ExecuteContextMenuCommand`.
-  bool WillContextMenuPin(int index);
+  bool WillContextMenuPin(tabs::TabHandle context_tab);
 
-  // Returns true if 'CommandToggleGrouped' will group. `index` is the index
+  // Returns true if 'CommandToggleGrouped' will group. `context_tab` is the tab
   // supplied to `ExecuteContextMenuCommand`.
-  bool WillContextMenuGroup(int index);
+  bool WillContextMenuGroup(tabs::TabHandle context_tab);
 
   // Returns the group ID if all `tabs` belong to the same group,
   // or std::nullopt if they belong to different groups or any are ungrouped.

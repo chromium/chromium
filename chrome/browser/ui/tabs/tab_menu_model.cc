@@ -536,7 +536,8 @@ void TabMenuModel::Build(int index) {
                       IDS_TAB_CXMENU_DUPLICATE);
   SetElementIdentifierAt(GetItemCount() - 1, kDuplicateMenuItem);
 
-  bool will_pin = tab_strip_->WillContextMenuPin(index);
+  bool will_pin = tab_strip_->WillContextMenuPin(
+      tab_strip_->GetTabAtIndex(index)->GetHandle());
   AddItemWithStringId(
       TabStripModel::CommandTogglePinned,
       will_pin ? IDS_TAB_CXMENU_PIN_TAB : IDS_TAB_CXMENU_UNPIN_TAB);
