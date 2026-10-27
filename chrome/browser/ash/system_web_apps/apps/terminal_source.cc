@@ -27,7 +27,6 @@
 #include "chrome/browser/ash/file_system_provider/service.h"
 #include "chrome/browser/ash/guest_os/guest_os_terminal.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "chromeos/ash/components/browser_delegate/browser_controller.h"
 #include "chromeos/ash/components/browser_delegate/browser_delegate.h"
 #include "chromeos/ash/components/channel/channel_info.h"
@@ -53,9 +52,9 @@ constexpr char kDefaultMime[] = "text/html";
 class TerminalFileSystemProvider
     : public ash::file_system_provider::ExtensionProvider {
  public:
-  TerminalFileSystemProvider()
+  explicit TerminalFileSystemProvider(Profile* profile)
       : ash::file_system_provider::ExtensionProvider(
-            ProfileManager::GetPrimaryUserProfile(),
+            profile,
             ash::file_system_provider::ProviderId::CreateFromExtensionId(
                 guest_os::kTerminalSystemAppId),
             ash::file_system_provider::Capabilities{
@@ -143,7 +142,7 @@ std::unique_ptr<TerminalSource> TerminalSource::ForCrosh(Profile* profile) {
 // static
 std::unique_ptr<TerminalSource> TerminalSource::ForTerminal(Profile* profile) {
   ash::file_system_provider::Service::Get(profile)->RegisterProvider(
-      std::make_unique<TerminalFileSystemProvider>());
+      std::make_unique<TerminalFileSystemProvider>(profile));
   return base::WrapUnique(new TerminalSource(
       profile, ash::kChromeUIUntrustedTerminalURL,
       profile->GetPrefs()
