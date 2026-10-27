@@ -469,15 +469,18 @@ BrowserWindowInterface* WebAppLaunchProcess::MaybeFindBrowserForLaunch() const {
     return FindTabbedBrowser(&profile_.get(), display_id);
   }
 
+  // In the case of prevent-close, we do not want to create a new browser, but
+  // instead continue to find the existing browser window.
+  if (registrar_->IsPreventCloseEnabled(params_->app_id)) {
+    return AppBrowserController::FindForWebApp(*profile_, params_->app_id);
+  }
+
   if (params_->disposition == WindowOpenDisposition::kNewWindow) {
     return nullptr;
   }
 
-  // In the case of prevent-close, we do not want to create a new browser, but
-  // instead continue to find the existing browser window.
   if (!registrar_->IsTabbedWindowModeEnabled(params_->app_id) &&
-      GetLaunchClientMode() == LaunchHandler::ClientMode::kNavigateNew &&
-      !registrar_->IsPreventCloseEnabled(params_->app_id)) {
+      GetLaunchClientMode() == LaunchHandler::ClientMode::kNavigateNew) {
     return nullptr;
   }
 
