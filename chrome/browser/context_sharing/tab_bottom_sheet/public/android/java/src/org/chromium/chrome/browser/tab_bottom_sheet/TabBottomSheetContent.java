@@ -91,6 +91,11 @@ public abstract class TabBottomSheetContent implements BottomSheetContent {
     }
 
     @Override
+    public boolean showHandlebar() {
+        return true;
+    }
+
+    @Override
     public int getVerticalScrollOffset() {
         return 0;
     }

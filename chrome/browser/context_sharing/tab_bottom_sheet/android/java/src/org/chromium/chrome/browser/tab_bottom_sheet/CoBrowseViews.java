@@ -50,7 +50,6 @@ public class CoBrowseViews {
 
     private final TabBottomSheetWebUiContainer mWebUiContainer;
     private final ViewGroup mPeekContainer;
-    private final @Nullable View mHandleBar;
 
     private @Nullable PeekViewManager mPeekViewManager;
     private @Nullable View mPeekView;
@@ -88,7 +87,6 @@ public class CoBrowseViews {
         // Cache view lookups.
         mWebUiContainer = assertNonNull(containerView.findViewById(R.id.web_ui_container));
         mPeekContainer = assertNonNull(containerView.findViewById(R.id.peek_view_container));
-        mHandleBar = containerView.findViewById(R.id.handle_bar);
 
         mWebContentsSupplier.set(getWebContents());
         populateViewHierarchy();
@@ -277,10 +275,6 @@ public class CoBrowseViews {
 
     private void updateForContainerType() {
         if (mContainerType == CoBrowseContainerType.SIDE_PANEL) {
-            if (mHandleBar != null) {
-                mHandleBar.setVisibility(View.GONE);
-            }
-
             MarginLayoutParams layoutParams =
                     (MarginLayoutParams) mWebUiContainer.getLayoutParams();
             layoutParams.topMargin = 0;

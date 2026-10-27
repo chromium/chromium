@@ -54,14 +54,4 @@ found in the LICENSE file.
         android:visibility="gone">
     </FrameLayout>
 
-    <!-- Handle Bar: Positioned absolute last to win Z-indexing in FrameLayout -->
-    <ImageView
-        android:id="@+id/handle_bar"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal|top"
-        android:layout_marginTop="@dimen/tab_bottom_sheet_handle_margin"
-        android:src="@drawable/drag_handlebar"
-        app:tint="@macro/drag_handle_color"
-        android:importantForAccessibility="no"/>
 </FrameLayout>

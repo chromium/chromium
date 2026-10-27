@@ -16,7 +16,6 @@ found in the LICENSE file.
          contents of the peek view plus the space consumed by the drag handle bar frame.
          (12dp handle area + 52dp control min size + 8dp bottom padding) -->
     <dimen name="tab_bottom_sheet_peek_height_total">72dp</dimen>
-    <dimen name="tab_bottom_sheet_handle_margin">8dp</dimen>
     <dimen name="tab_bottom_sheet_web_ui_top_margin">18dp</dimen>
     <!-- Cumulative top overlay padding required to avoid clipping visual headers beneath
          the floating drag handle. 8dp top margin + 4dp intrinsic handle) -->

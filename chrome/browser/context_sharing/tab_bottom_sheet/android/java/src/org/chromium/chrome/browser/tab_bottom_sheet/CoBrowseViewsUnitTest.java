@@ -82,16 +82,13 @@ public class CoBrowseViewsUnitTest {
         assertNotNull(view);
 
         ViewGroup webUiContainer = view.findViewById(R.id.web_ui_container);
-        View handleBar = view.findViewById(R.id.handle_bar);
 
         assertEquals(1, webUiContainer.getChildCount());
         assertEquals(mWebUiView, webUiContainer.getChildAt(0));
-
-        assertEquals(View.VISIBLE, handleBar.getVisibility());
     }
 
     @Test
-    public void testConstructor_SidePanel_HidesHandleBarAndRemovesMargin() {
+    public void testConstructor_SidePanel_RemovesMargin() {
         // Create a new CoBrowseViews object with the desired container type (SIDE_PANEL).
         View rootView = LayoutInflater.from(mContext).inflate(R.layout.tab_bottom_sheet, null);
         CoBrowseViews coBrowseViews =
@@ -105,10 +102,8 @@ public class CoBrowseViewsUnitTest {
                         SupplierUtils.ofNull());
 
         View view = coBrowseViews.getView();
-        View handleBar = view.findViewById(R.id.handle_bar);
         ViewGroup webUiContainer = view.findViewById(R.id.web_ui_container);
 
-        assertEquals(View.GONE, handleBar.getVisibility());
         assertEquals(0, ((MarginLayoutParams) webUiContainer.getLayoutParams()).topMargin);
     }
 
