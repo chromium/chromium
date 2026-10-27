@@ -29,8 +29,6 @@
 namespace cc {
 namespace {
 
-constexpr int kDeviceFramesPerSecond = 60;
-
 // Use the linear animation to avoid flakiness in tests that control the
 // browser controls position by scrolling.
 class BrowserControlsOffsetManagerTest
@@ -156,10 +154,6 @@ class MockBrowserControlsOffsetManagerClient
     viewport_scroll_offset_ += viewport_scroll_delta;
     viewport_scroll_offset_.set_y(
         std::min(viewport_scroll_offset_.y(), max_viewport_scroll_offset_y_));
-  }
-
-  base::TimeDelta CurrentFrameInterval() const override {
-    return base::Seconds(1) / kDeviceFramesPerSecond;
   }
 
   float DeviceScaleFactor() const override { return 1.0f; }
@@ -1693,40 +1687,6 @@ TEST_F(BrowserControlsOffsetManagerTest,
   EXPECT_FLOAT_EQ(30.0f, client.ViewportScrollOffset().y());
 }
 
-TEST_F(BrowserControlsOffsetManagerTest, SmoothScrollPreventsInstantJump) {
-  constexpr float kControlsHeight = 100.0f;
-  MockBrowserControlsOffsetManagerClient client(
-      /*top_controls_height=*/kControlsHeight,
-      /*browser_controls_show_threshold=*/0.5f,
-      /*browser_controls_hide_threshold=*/0.5f);
-  BrowserControlsOffsetManager* manager = client.manager();
-
-  EXPECT_FLOAT_EQ(1.0f, manager->TopControlsShownRatio());
-
-  manager->ScrollBegin();
-  manager->ScrollBy(gfx::Vector2dF(0.0f, 2 * kControlsHeight));
-  manager->ScrollEnd();
-
-  EXPECT_FLOAT_EQ(0.0f, manager->TopControlsShownRatio());
-
-  base::test::ScopedFeatureList feature_list(
-      features::kBrowserControlsSmoothScroll);
-
-  const int kNumAnimationFrames =
-      std::ceil(1 / manager->MaximumShownRatioDeltaPerFrame(0.0f));
-  manager->ScrollBegin();
-  for (int i = 0; i < kNumAnimationFrames; i++) {
-    manager->ScrollBy(gfx::Vector2dF(0.0f, -kControlsHeight));
-    if (i < kNumAnimationFrames - 1) {
-      EXPECT_LT(manager->TopControlsShownRatio(), 1.0f) << "Frame #" << i + 1;
-    } else {
-      EXPECT_FLOAT_EQ(1.0f, manager->TopControlsShownRatio())
-          << "Frame #" << i + 1;
-    }
-  }
-  manager->ScrollEnd();
-}
-
 TEST_F(BrowserControlsOffsetManagerTest, ScrollWithLatencyCompensation) {
   constexpr float kControlsHeight = 100.0f;
   MockBrowserControlsOffsetManagerClient client(
@@ -1870,55 +1830,19 @@ TEST_F(BrowserControlsOffsetManagerTest, AnimateWithoutRootScrollNode) {
 }
 
 TEST_F(BrowserControlsOffsetManagerTest,
-       AnimateWithoutRootScrollNodeClearsUnappliedScrollDelta) {
-  base::test::ScopedFeatureList feature_list(
-      features::kBrowserControlsSmoothScroll);
+       AnimateWithoutRootScrollNodeTicksHeightChangeAnimation) {
   constexpr float kControlsHeight = 100.0f;
   MockBrowserControlsOffsetManagerClient client(kControlsHeight, 0.5f, 0.5f);
   client.SetBrowserControlsParams(
       {kControlsHeight, 0.0f, 50.0f, 50.0f, false, false});
   BrowserControlsOffsetManager* manager = client.manager();
 
-  // Scroll by a large delta in a single frame so smooth scrolling clamps the
-  // ratio delta and leaves a non-zero unapplied_scroll_delta_.
-  manager->ScrollBegin();
-  manager->ScrollBy(gfx::Vector2dF(0.0f, 2 * kControlsHeight));
-  EXPECT_GT(manager->TopControlsShownRatio(), 0.0f);
-  EXPECT_LT(manager->TopControlsShownRatio(), 1.0f);
-  EXPECT_TRUE(manager->HasAnimation());
-
-  // Losing the root scroll node while unapplied_scroll_delta_ is non-zero
-  // should clear unapplied_scroll_delta_ on the next Animate() call rather than
-  // leaving HasAnimation() stuck true.
-  client.SetHaveRootScrollNode(false);
-  base::TimeTicks time = base::TimeTicks::Now();
-  EXPECT_EQ(gfx::Vector2dF(), manager->Animate(time));
-  EXPECT_FALSE(manager->HasAnimation());
-
-  // Finishing the scroll starts a controls animation, which should still tick
-  // to completion without a root scroll node.
-  manager->ScrollEnd();
-  EXPECT_TRUE(manager->HasAnimation());
-  while (manager->HasAnimation()) {
-    time += base::Milliseconds(16);
-    EXPECT_EQ(gfx::Vector2dF(), manager->Animate(time));
-  }
-  EXPECT_FALSE(manager->HasAnimation());
-
-  // Also verify that starting a height-change animation after accumulating
-  // unapplied_scroll_delta_ clears unapplied_scroll_delta_ and ticks to
-  // completion when !HaveRootScrollNode().
-  client.SetHaveRootScrollNode(true);
-  client.SetCurrentBrowserControlsShownRatio(1.0f, 1.0f);
-  manager->ScrollBegin();
-  manager->ScrollBy(gfx::Vector2dF(0.0f, 2 * kControlsHeight));
-  EXPECT_TRUE(manager->HasAnimation());
-
   client.SetHaveRootScrollNode(false);
   client.SetBrowserControlsParams(
       {kControlsHeight, 0.0f, 100.0f, 50.0f,
        /*animate_browser_controls_height_changes=*/true, false});
   EXPECT_TRUE(manager->HasAnimation());
+  base::TimeTicks time = base::TimeTicks::Now();
   while (manager->HasAnimation()) {
     time += base::Milliseconds(16);
     EXPECT_EQ(gfx::Vector2dF(), manager->Animate(time));

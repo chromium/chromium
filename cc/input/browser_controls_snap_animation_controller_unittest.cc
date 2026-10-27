@@ -54,9 +54,6 @@ class FakeBrowserControlsOffsetManagerClient
   bool OnlyExpandTopControlsAtPageTop() const override { return false; }
   bool HaveRootScrollNode() const override { return true; }
   void SetNeedsCommit(BeginMainFrameReason reason) override {}
-  base::TimeDelta CurrentFrameInterval() const override {
-    return base::Milliseconds(16);
-  }
   float DeviceScaleFactor() const override { return kDeviceScaleFactor; }
 
   void set_top_controls_height(float height) { top_controls_height_ = height; }

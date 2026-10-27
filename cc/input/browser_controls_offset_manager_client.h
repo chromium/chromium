@@ -30,7 +30,6 @@ class CC_EXPORT BrowserControlsOffsetManagerClient {
   virtual bool HaveRootScrollNode() const = 0;
   virtual void SetNeedsCommit(
       BeginMainFrameReason reason = BeginMainFrameReason::kOther) = 0;
-  virtual base::TimeDelta CurrentFrameInterval() const = 0;
   virtual float DeviceScaleFactor() const = 0;
 
  protected:

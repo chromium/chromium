@@ -3850,10 +3850,6 @@ void LayerTreeHostImpl::SetNeedsCommit(BeginMainFrameReason reason) {
   }
 }
 
-base::TimeDelta LayerTreeHostImpl::CurrentFrameInterval() const {
-  return CurrentBeginFrameInterval();
-}
-
 ScrollNode* LayerTreeHostImpl::InnerViewportScrollNode() const {
   return active_tree_->InnerViewportScrollNode();
 }

@@ -294,8 +294,6 @@ CC_BASE_EXPORT BASE_DECLARE_FEATURE(kManualBeginFrame);
 // raster dark mode filter generation.
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kUnlockDuringGpuImageOperations);
 
-CC_BASE_EXPORT BASE_DECLARE_FEATURE(kBrowserControlsSmoothScroll);
-
 // When enabled, browser controls height changed that does not request animation
 // will cancel the ongoing animation.
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(

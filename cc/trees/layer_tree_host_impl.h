@@ -210,7 +210,6 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   bool HaveRootScrollNode() const override;
   void SetNeedsCommit(
       BeginMainFrameReason reason = BeginMainFrameReason::kOther) override;
-  base::TimeDelta CurrentFrameInterval() const override;
 
   // ImageAnimationController::Delegate implementation.
   void RequestBeginFrameForAnimatedImages() override;
