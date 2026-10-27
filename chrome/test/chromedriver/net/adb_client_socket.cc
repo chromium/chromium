@@ -7,17 +7,19 @@
 #include <stddef.h>
 
 #include <memory>
+#include <string_view>
 #include <utility>
 
-#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/numerics/byte_conversions.h"
+#include "base/numerics/safe_conversions.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/string_view_util.h"
-#include "base/strings/stringprintf.h"
 #include "net/base/address_list.h"
 #include "net/base/completion_repeating_callback.h"
 #include "net/base/ip_address.h"
@@ -33,14 +35,14 @@ namespace {
 const int kBufferSize = 16 * 1024;
 const int kBufferGrowthRate = 16 * 1024;
 const size_t kAdbDataChunkSize = 32 * 1024;
-const char kOkayResponse[] = "OKAY";
-const char kFailResponse[] = "FAIL";
-const char kHostTransportCommand[] = "host:transport:%s";
-const char kLocalAbstractCommand[] = "localabstract:%s";
-const char kSyncCommand[] = "sync:";
-const char kSendCommand[] = "SEND";
-const char kDataCommand[] = "DATA";
-const char kDoneCommand[] = "DONE";
+constexpr std::string_view kOkayResponse = "OKAY";
+constexpr std::string_view kFailResponse = "FAIL";
+constexpr std::string_view kHostTransportCommand = "host:transport:";
+constexpr std::string_view kLocalAbstractCommand = "localabstract:";
+constexpr std::string_view kSyncCommand = "sync:";
+constexpr std::string_view kSendCommand = "SEND";
+constexpr std::string_view kDataCommand = "DATA";
+constexpr std::string_view kDoneCommand = "DONE";
 const int kAdbFailure = 1;
 const int kAdbSuccess = 0;
 
@@ -48,16 +50,10 @@ typedef base::RepeatingCallback<void(int, const std::string&)> CommandCallback;
 typedef base::RepeatingCallback<void(int, net::StreamSocket*)> SocketCallback;
 typedef base::RepeatingCallback<void(const std::string&)> ParserCallback;
 
-std::string EncodeMessage(const std::string& message) {
-  size_t length = message.length();
-  CHECK_LE(length, 0xffffu);
-  std::string result;
-  result.reserve(4);
-  base::AppendHexEncodedByte(
-      UNSAFE_TODO(reinterpret_cast<const uint8_t*>(&length)[1]), result);
-  base::AppendHexEncodedByte(reinterpret_cast<const uint8_t*>(&length)[0],
-                             result);
-  return result + message;
+std::string EncodeMessage(std::string_view message) {
+  return base::StrCat({base::HexEncode(base::U16ToBigEndian(
+                           base::checked_cast<uint16_t>(message.length()))),
+                       message});
 }
 
 class AdbTransportSocket : public AdbClientSocket {
@@ -80,8 +76,7 @@ class AdbTransportSocket : public AdbClientSocket {
   void OnConnected(int result) {
     if (!CheckNetResultOrDie(result))
       return;
-    SendCommand(base::StringPrintf(kHostTransportCommand, serial_.c_str()),
-                false, true,
+    SendCommand(base::StrCat({kHostTransportCommand, serial_}), false, true,
                 base::BindRepeating(&AdbTransportSocket::SendLocalAbstract,
                                     base::Unretained(this)));
   }
@@ -89,8 +84,8 @@ class AdbTransportSocket : public AdbClientSocket {
   void SendLocalAbstract(int result, const std::string& response) {
     if (!CheckNetResultOrDie(result))
       return;
-    SendCommand(base::StringPrintf(kLocalAbstractCommand, socket_name_.c_str()),
-                false, true,
+    SendCommand(base::StrCat({kLocalAbstractCommand, socket_name_}), false,
+                true,
                 base::BindRepeating(&AdbTransportSocket::OnSocketAvailable,
                                     base::Unretained(this)));
   }
@@ -194,7 +189,7 @@ class HttpOverAdbSocket {
       return;
     }
 
-    response_ += std::string(response_buffer->data(), result);
+    response_ += base::as_string_view(response_buffer->first(result));
     int expected_length = 0;
     if (bytes_total < 0) {
       size_t content_pos = response_.find("Content-Length:");
@@ -336,7 +331,7 @@ class AdbSendFileSocket : AdbClientSocket {
         serial_(serial),
         filename_(filename),
         content_(content),
-        current_offset_(0),
+        unsent_content_(content_),
         callback_(callback) {
     Connect(base::BindOnce(&AdbSendFileSocket::SendTransport,
                            base::Unretained(this)));
@@ -348,8 +343,7 @@ class AdbSendFileSocket : AdbClientSocket {
   void SendTransport(int result) {
     if (!CheckNetResultOrDie(result))
       return;
-    SendCommand(base::StringPrintf(kHostTransportCommand, serial_.c_str()),
-                false, true,
+    SendCommand(base::StrCat({kHostTransportCommand, serial_}), false, true,
                 base::BindRepeating(&AdbSendFileSocket::SendSync,
                                     base::Unretained(this)));
   }
@@ -368,9 +362,9 @@ class AdbSendFileSocket : AdbClientSocket {
     // File mode. The following value is equivalent to S_IRUSR | S_IWUSR.
     // Can't use the symbolic names since they are not available on Windows.
     int mode = 0600;
-    std::string payload = base::StringPrintf("%s,%d", filename_.c_str(), mode);
-    SendPayload(kSendCommand, payload.length(), payload.c_str(),
-                payload.length(),
+    std::string payload =
+        base::StrCat({filename_, ",", base::NumberToString(mode)});
+    SendPayload(kSendCommand, payload.length(), payload,
                 base::BindOnce(&AdbSendFileSocket::SendContent,
                                base::Unretained(this)));
   }
@@ -378,22 +372,20 @@ class AdbSendFileSocket : AdbClientSocket {
   void SendContent(int result) {
     if (!CheckNetResultOrDie(result))
       return;
-    if (current_offset_ >= content_.length()) {
+    if (unsent_content_.empty()) {
       SendDone();
       return;
     }
-    size_t offset = current_offset_;
-    size_t length = std::min(content_.length() - offset, kAdbDataChunkSize);
-    current_offset_ += length;
-    SendPayload(kDataCommand, length, UNSAFE_TODO(content_.c_str() + offset),
-                length,
+    std::string_view chunk = unsent_content_.substr(0, kAdbDataChunkSize);
+    unsent_content_.remove_prefix(chunk.size());
+    SendPayload(kDataCommand, chunk.size(), chunk,
                 base::BindOnce(&AdbSendFileSocket::SendContent,
                                base::Unretained(this)));
   }
 
   void SendDone() {
     int data = time(nullptr);
-    SendPayload(kDoneCommand, data, nullptr, 0,
+    SendPayload(kDoneCommand, data, "",
                 base::BindOnce(&AdbSendFileSocket::ReadFinalResponse,
                                base::Unretained(this)));
   }
@@ -405,18 +397,14 @@ class AdbSendFileSocket : AdbClientSocket {
   // Send a special payload command ("SEND", "DATA", or "DONE").
   // Each command consists of a command line, followed by a 4-byte integer
   // sent in raw little-endian format, followed by an optional payload.
-  void SendPayload(const char* command,
+  void SendPayload(std::string_view command,
                    int data,
-                   const char* payload,
-                   size_t payload_length,
+                   std::string_view payload,
                    net::CompletionOnceCallback callback) {
     std::string buffer(command);
-    for (int i = 0; i < 4; i++) {
-      buffer.append(1, static_cast<char>(data & 0xff));
-      data >>= 8;
-    }
-    if (payload_length > 0)
-      buffer.append(payload, payload_length);
+    buffer.append(base::as_string_view(
+        base::U32ToLittleEndian(static_cast<uint32_t>(data))));
+    buffer.append(payload);
 
     scoped_refptr<net::StringIOBuffer> request_buffer =
         base::MakeRefCounted<net::StringIOBuffer>(std::move(buffer));
@@ -440,7 +428,8 @@ class AdbSendFileSocket : AdbClientSocket {
   std::string serial_;
   std::string filename_;
   std::string content_;
-  size_t current_offset_;
+  // The part of `content_` that has not been sent yet.
+  std::string_view unsent_content_;
   CommandCallback callback_;
 };
 
@@ -523,7 +512,7 @@ void AdbClientSocket::Connect(net::CompletionOnceCallback callback) {
     std::move(split_callback.second).Run(result);
 }
 
-void AdbClientSocket::SendCommand(const std::string& command,
+void AdbClientSocket::SendCommand(std::string_view command,
                                   bool has_output,
                                   bool has_length,
                                   const CommandCallback& response_callback) {
@@ -579,11 +568,11 @@ void AdbClientSocket::ReadStatusOutput(
   // Sometimes adb-server responds with the 8 char string "OKAY\0\0\0\0" instead
   // of the expected "OKAY".
   if (socket_result >= 4 &&
-      std::string(socket_buffer->data(), 4) == kOkayResponse) {
-    response_callback.Run(kAdbSuccess, kOkayResponse);
+      base::as_string_view(socket_buffer->first(4)) == kOkayResponse) {
+    response_callback.Run(kAdbSuccess, std::string(kOkayResponse));
     return;
   }
-  response_callback.Run(kAdbFailure, kFailResponse);
+  response_callback.Run(kAdbFailure, std::string(kFailResponse));
 }
 
 void AdbClientSocket::ReadUntilEOF(

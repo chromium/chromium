@@ -5,6 +5,9 @@
 #ifndef CHROME_TEST_CHROMEDRIVER_NET_ADB_CLIENT_SOCKET_H_
 #define CHROME_TEST_CHROMEDRIVER_NET_ADB_CLIENT_SOCKET_H_
 
+#include <string>
+#include <string_view>
+
 #include "base/functional/callback.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/io_buffer.h"
@@ -55,7 +58,7 @@ class AdbClientSocket {
  protected:
   void Connect(net::CompletionOnceCallback callback);
 
-  void SendCommand(const std::string& command,
+  void SendCommand(std::string_view command,
                    bool has_output,
                    bool has_length,
                    const CommandCallback& response_callback);
