@@ -2604,6 +2604,7 @@ TEST_F(RenderViewContextMenuMenuSimplificationTest, LinkAndSelectionLayout) {
   EXPECT_FALSE(menu.IsItemPresent(IDC_CONTENT_CONTEXT_OPEN_IN_READING_MODE));
 }
 
+#if !BUILDFLAG(IS_CHROMEOS)
 TEST_F(RenderViewContextMenuMenuSimplificationTest,
        TranslateSelectionOnlyOnce_NonEditable) {
   auto reset_ignore_missing_key = SetUpTranslateClient();
@@ -2643,6 +2644,59 @@ TEST_F(RenderViewContextMenuMenuSimplificationTest,
   // Verify that it is present exactly once.
   EXPECT_EQ(1, CountOccurrences(*menu, IDC_CONTENT_CONTEXT_PARTIAL_TRANSLATE));
 }
+
+TEST_F(RenderViewContextMenuMenuSimplificationTest,
+       PartialTranslateHiddenWhenDefaultSearchProviderNotGoogle) {
+  auto reset_ignore_missing_key = SetUpTranslateClient();
+  SetUserSelectedDefaultSearchProvider("https://www.bing.com", false);
+
+  content::ContextMenuParams params;
+  params.selection_text = u"hello world";
+  params.is_editable = false;
+
+  auto menu = std::make_unique<TestRenderViewContextMenu>(
+      *web_contents()->GetPrimaryMainFrame(), params);
+  menu->SetBrowser(GetBrowser());
+  menu->Init();
+
+  EXPECT_FALSE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_PARTIAL_TRANSLATE));
+}
+
+TEST_F(RenderViewContextMenuMenuSimplificationTest,
+       PartialTranslateHiddenWhenCanTranslateFalse) {
+  auto reset_ignore_missing_key = SetUpTranslateClient();
+  // Navigating to about:blank disables translation because the URL is not
+  // translatable.
+  NavigateAndCommit(GURL("about:blank"));
+
+  content::ContextMenuParams params;
+  params.selection_text = u"hello world";
+  params.is_editable = false;
+
+  auto menu = std::make_unique<TestRenderViewContextMenu>(
+      *web_contents()->GetPrimaryMainFrame(), params);
+  menu->SetBrowser(GetBrowser());
+  menu->Init();
+
+  EXPECT_FALSE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_PARTIAL_TRANSLATE));
+}
+#else
+TEST_F(RenderViewContextMenuMenuSimplificationTest,
+       PartialTranslateNotPresentOnChromeOS) {
+  auto reset_ignore_missing_key = SetUpTranslateClient();
+
+  content::ContextMenuParams params;
+  params.selection_text = u"hello world";
+  params.is_editable = false;
+
+  auto menu = std::make_unique<TestRenderViewContextMenu>(
+      *web_contents()->GetPrimaryMainFrame(), params);
+  menu->SetBrowser(GetBrowser());
+  menu->Init();
+
+  EXPECT_FALSE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_PARTIAL_TRANSLATE));
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 TEST_F(
     RenderViewContextMenuMenuSimplificationTest,

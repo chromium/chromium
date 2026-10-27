@@ -359,6 +359,7 @@ class RenderViewContextMenu
   void AppendPrintItem();
   void AppendPartialTranslateItem();
   void AppendTranslateItem();
+  void AppendTranslateOrPartialTranslateItem();
   void AppendMediaRouterItem();
   void AppendReadAnythingItem();
   void AppendSaveToMemoryBanksItem();

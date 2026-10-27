@@ -2839,6 +2839,19 @@ void RenderViewContextMenu::AppendTranslateItem() {
                                      ui::kColorMenuIcon, kTabMenuIconSize));
 }
 
+void RenderViewContextMenu::AppendTranslateOrPartialTranslateItem() {
+#if !BUILDFLAG(IS_CHROMEOS)
+  if (search::DefaultSearchProviderIsGoogle(GetProfile()) &&
+      CanTranslate(/*menu_logging=*/false)) {
+    if (CanPartiallyTranslateTargetLanguage()) {
+      AppendPartialTranslateItem();
+    } else {
+      AppendTranslateItem();
+    }
+  }
+#endif  // !BUILDFLAG(IS_CHROMEOS)
+}
+
 void RenderViewContextMenu::AppendMediaRouterItem() {
   if (media_router::MediaRouterEnabled(browser_context_)) {
     AddItemWithOptionalIcon(IDC_ROUTE_MEDIA, IDS_MEDIA_ROUTER_MENU_ITEM_TITLE,
@@ -3138,11 +3151,7 @@ void RenderViewContextMenu::AppendOtherEditableItems() {
       MaybeAppendOpenGlicItem(/*add_separator=*/false);
     }
     AppendPrintItem();
-    if (CanPartiallyTranslateTargetLanguage()) {
-      AppendPartialTranslateItem();
-    } else if (CanTranslate(/*menu_logging=*/false)) {
-      AppendTranslateItem();
-    }
+    AppendTranslateOrPartialTranslateItem();
   }
 
   if (!menu_model_.GetIndexOfCommandId(IDC_CONTENT_CONTEXT_OPEN_IN_READING_MODE)
@@ -6172,11 +6181,7 @@ void RenderViewContextMenu::AppendRevisedTextSelectionSection() {
     AppendSaveToMemoryBanksItem();
     AppendPrintItem();
 
-    if (CanPartiallyTranslateTargetLanguage()) {
-      AppendPartialTranslateItem();
-    } else if (CanTranslate(/*menu_logging=*/false)) {
-      AppendTranslateItem();
-    }
+    AppendTranslateOrPartialTranslateItem();
   } else {
     // Pure Selection case
     AppendCopyItem();
@@ -6195,11 +6200,7 @@ void RenderViewContextMenu::AppendRevisedTextSelectionSection() {
     AppendReadAnythingItem();
     AppendSaveToMemoryBanksItem();
 
-    if (CanPartiallyTranslateTargetLanguage()) {
-      AppendPartialTranslateItem();
-    } else if (CanTranslate(/*menu_logging=*/false)) {
-      AppendTranslateItem();
-    }
+    AppendTranslateOrPartialTranslateItem();
   }
 }
 
