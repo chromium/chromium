@@ -178,10 +178,15 @@ class VersionButton : public views::LabelButton {
     std::ranges::copy(content_corners, content_corners_);
     SetHorizontalAlignment(gfx::ALIGN_CENTER);
     SetMinSize(gfx::Size(0, kVersionButtonHeight));
+    SetEnabledTextColors(cros_tokens::kCrosSysOnSurfaceVariant);
+    label()->SetFontList(ash::TypographyProvider::Get()->ResolveTypographyToken(
+        ash::TypographyToken::kCrosBody2));
+    label()->SetBorder(views::CreateEmptyBorder(gfx::Insets::VH(0, 6)));
 
     StyleUtil::InstallRoundedCornerHighlightPathGenerator(
         this, GetVersionButtonInkDropCorners(allow_user_feedback));
     views::FocusRing::Get(this)->SetColorId(cros_tokens::kCrosSysFocusRing);
+    views::InkDrop::Get(this)->SetBaseColor(kColorAshInkDropOpaqueColor);
 
     // The button is not focusable and with no clickable effect if it's shown on
     // non-logged-in screen.
@@ -225,21 +230,7 @@ class VersionButton : public views::LabelButton {
                      flags);
   }
 
-  void OnThemeChanged() override {
-    views::LabelButton::OnThemeChanged();
-    views::InkDrop::Get(this)->SetBaseColor(
-        GetColorProvider()->GetColor(kColorAshInkDropOpaqueColor));
-    SetBackgroundAndFont();
-  }
-
  private:
-  void SetBackgroundAndFont() {
-    SetEnabledTextColors(cros_tokens::kCrosSysOnSurfaceVariant);
-    label()->SetFontList(ash::TypographyProvider::Get()->ResolveTypographyToken(
-        ash::TypographyToken::kCrosBody2));
-    label()->SetBorder(views::CreateEmptyBorder(gfx::Insets::VH(0, 6)));
-  }
-
   // Whether the user is allowed to send feedback.
   const bool allow_user_feedback_;
 
