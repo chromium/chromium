@@ -89,8 +89,7 @@ suite('AudioMenuElement', () => {
     assertFalse(audioMenu.$.menu.$.lazyMenu.get().open);
   });
 
-  // TODO(crbug.com/578217996): Flaky.
-  test.skip('opens and closes accent menu and restores focus', async () => {
+  test('opens and closes accent menu and restores focus', async () => {
     createAudioMenu();
     stubAnimationFrame();
     audioMenu.open(document.body);
@@ -106,15 +105,16 @@ suite('AudioMenuElement', () => {
         audioMenu.shadowRoot.querySelector<AccentMenuElement>('accent-menu');
     assertTrue(!!accentMenu);
 
+    const whenCloseFired = eventToPromise('close', accentMenu);
     accentMenu.$.accentMenu.close();
+    await whenCloseFired;
     await microtasksFinished();
 
     assertFalse(!!audioMenu.shadowRoot.querySelector('accent-menu'));
     assertEquals(accentButton, audioMenu.$.menu.shadowRoot.activeElement);
   });
 
-  // TODO(crbug.com/578217996): Flaky.
-  test.skip(
+  test(
       'opens and closes voice selection dialog from audio menu action item',
       async () => {
         createAudioMenu();
