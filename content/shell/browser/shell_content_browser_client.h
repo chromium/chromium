@@ -10,6 +10,7 @@
 
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
+#include "base/i18n/language_tag.h"
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "content/public/browser/content_browser_client.h"
@@ -63,7 +64,7 @@ class ShellContentBrowserClient : public ContentBrowserClient {
   void AppendExtraCommandLineSwitches(base::CommandLine* command_line,
                                       int child_process_id) override;
 #if BUILDFLAG(IS_IOS)
-  std::string GetApplicationLocale() override;
+  base::i18n::LanguageTag GetApplicationLocale() override;
 #endif
   std::string GetAcceptLangs(BrowserContext* context) override;
   std::string GetDefaultDownloadName() override;

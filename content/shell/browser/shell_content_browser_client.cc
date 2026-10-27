@@ -827,13 +827,13 @@ ShellContentBrowserClient::GetNetworkContextsParentDirectory() {
 }
 
 #if BUILDFLAG(IS_IOS)
-std::string ShellContentBrowserClient::GetApplicationLocale() {
+base::i18n::LanguageTag ShellContentBrowserClient::GetApplicationLocale() {
   if (!application_locale_storage_) {
     application_locale_storage_ = std::make_unique<ApplicationLocaleStorage>();
     application_locale_storage_->Set(l10n_util::GetLocaleOverride());
   }
 
-  return application_locale_storage_->Get();
+  return application_locale_storage_->GetTag();
 }
 
 BluetoothDelegate* ShellContentBrowserClient::GetBluetoothDelegate() {

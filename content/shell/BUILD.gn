@@ -331,6 +331,7 @@ static_library("content_shell_lib") {
     ":shell_controller_mojom",
     "//base",
     "//base:base_static",
+    "//base:i18n",
     "//components/cdm/renderer",
     "//components/custom_handlers",
     "//components/custom_handlers:test_support",
