@@ -161,6 +161,11 @@ std::optional<gfx::Point> Env::ConsumeTouchForDrag(const Window* window) {
   return env_controller_->ConsumeTouchForDrag(window);
 }
 
+bool Env::ConsumeLeftMousePressForDrag(const Window* window) {
+  return IsLeftMouseButtonDown() &&
+         env_controller_->ConsumeLeftMousePressForDrag(window);
+}
+
 void Env::SetGestureRecognizer(
     std::unique_ptr<ui::GestureRecognizer> gesture_recognizer) {
   gesture_recognizer_ = std::move(gesture_recognizer);

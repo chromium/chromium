@@ -41,6 +41,19 @@ class EnvTestHelper {
     env_->last_mouse_location_ = gfx::Point();
     env_->env_controller_->touch_ids_down_ = 0;
     env_->env_controller_->ResetActiveTouches();
+    env_->env_controller_->ResetLeftMousePress();
+  }
+
+  // Records a left mouse press as if it had been dispatched to `window`, for
+  // tests that update Env's mouse button state directly instead of dispatching
+  // events. Passing null clears the press. Does not change
+  // `mouse_button_flags_`.
+  void SetLeftMousePressTarget(Window* window) {
+    if (window) {
+      env_->env_controller_->SetLeftMousePress(window);
+    } else {
+      env_->env_controller_->ResetLeftMousePress();
+    }
   }
 
   void SetGestureRecognizer(
