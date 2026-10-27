@@ -141,6 +141,25 @@ static std::unique_ptr<DummyPageHolder> LoadDumpedPage(
 
     reporter->RegisterImportantMetric("ParseTime", "us");
     reporter->AddResult("ParseTime", parse_time);
+
+    // The same sheets again as 16-bit strings (which is what any sheet with
+    // a single non-Latin-1 character in it decodes to), parsed into
+    // throwaway StyleSheetContents. Ideally this is no slower than ParseTime.
+    base::TimeDelta parse_16bit_time;
+    for (const base::Value& sheet_json : *dict.FindList("stylesheets")) {
+      String text(*sheet_json.GetDict().FindString("text"));
+      text.Ensure16Bit();
+      auto* sheet = MakeGarbageCollected<StyleSheetContents>(
+          MakeGarbageCollected<CSSParserContext>(document));
+      base::ElapsedTimer timer;
+      for (int i = 0; i < parse_iterations; ++i) {
+        sheet->ParseString(text, /*allow_import_rules=*/true,
+                           defer_property_parsing);
+      }
+      parse_16bit_time += timer.Elapsed();
+    }
+    reporter->RegisterImportantMetric("Parse16BitTime", "us");
+    reporter->AddResult("Parse16BitTime", parse_16bit_time);
   }
 
   return page;

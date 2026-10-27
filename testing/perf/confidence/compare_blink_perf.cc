@@ -55,6 +55,8 @@ string BeautifyCategory(const string& category) {
     return "Recalc style (µs)";
   } else if (category == "BlinkStyleParseTime") {
     return "Parse (µs)";
+  } else if (category == "BlinkStyleParse16BitTime") {
+    return "Parse, 16-bit (µs)";
   } else {
     return category;
   }
