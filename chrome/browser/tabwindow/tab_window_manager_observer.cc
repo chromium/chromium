@@ -6,13 +6,14 @@
 
 #include "base/android/jni_android.h"
 #include "chrome/android/chrome_jni_headers/TabWindowManagerObserver_jni.h"
+#include "third_party/jni_zero/jni_zero.h"
 
 namespace tab_window {
 
 TabWindowManagerObserver::TabWindowManagerObserver() {
   JNIEnv* env = base::android::AttachCurrentThread();
-  java_obj_.Reset(Java_TabWindowManagerObserver_create(
-      env, reinterpret_cast<intptr_t>(this)));
+  java_obj_.Reset(
+      Java_TabWindowManagerObserver_create(env, jni_zero::MakeRaw(this)));
 }
 
 TabWindowManagerObserver::~TabWindowManagerObserver() {
