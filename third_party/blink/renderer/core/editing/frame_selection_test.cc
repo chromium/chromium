@@ -800,6 +800,36 @@ TEST_F(FrameSelectionTest, CaretInTextControl) {
   EXPECT_TRUE(Selection().IsHidden());  // Caret is now hidden.
 }
 
+TEST_F(FrameSelectionTest, SelectionInReadonlyTextControl) {
+  SetBodyContent("<input id='field' readonly value='click me'>");
+  auto* const field = To<HTMLInputElement>(GetElementById("field"));
+
+  field->Focus();
+  field->select();
+  EXPECT_TRUE(Selection().GetSelectionInDomTree().IsRange());
+  EXPECT_TRUE(Selection().SelectionHasFocus());
+  EXPECT_FALSE(Selection().IsHidden());
+
+  field->blur();  // Move focus to document body.
+  EXPECT_TRUE(Selection().GetSelectionInDomTree().IsRange());
+  EXPECT_FALSE(Selection().SelectionHasFocus());
+  EXPECT_TRUE(Selection().IsHidden());
+}
+
+TEST_F(FrameSelectionTest, SelectionOutsideTextControlKeepsFocus) {
+  SetBodyContent("<div id='text'>hello</div><input id='field' readonly>");
+  Element* const text = GetElementById("text");
+  Selection().SetSelection(
+      SelectionInDomTree::Builder().SelectAllChildren(*text).Build(),
+      SetSelectionOptions());
+
+  // A selection that is not inside any text control keeps being painted when
+  // no element is focused.
+  EXPECT_TRUE(Selection().GetSelectionInDomTree().IsRange());
+  EXPECT_TRUE(Selection().SelectionHasFocus());
+  EXPECT_FALSE(Selection().IsHidden());
+}
+
 TEST_F(FrameSelectionTest, RangeInShadowTree) {
   SetBodyContent("<p id='host'></p>");
   ShadowRoot* shadow_root = SetShadowContent("hey", "host");
