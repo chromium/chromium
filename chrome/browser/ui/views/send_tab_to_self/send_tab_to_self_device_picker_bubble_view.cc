@@ -116,14 +116,14 @@ void SendTabToSelfDevicePickerBubbleView::Init() {
       header_container->AddChildView(std::make_unique<views::Label>(
           l10n_util::GetStringUTF16(
               IDS_SEND_TAB_TO_SELF_DEVICE_PICKER_SUBTITLE),
-          views::style::CONTEXT_LABEL, views::style::STYLE_CAPTION));
+          views::style::CONTEXT_LABEL, views::style::STYLE_BODY_5));
   subtitle->SetEnabledColor(ui::kColorLabelForegroundSecondary);
   subtitle->SetHorizontalAlignment(gfx::ALIGN_LEFT);
 
   // Manage devices link.
   auto* link = header_container->AddChildView(std::make_unique<views::Link>(
       l10n_util::GetStringUTF16(IDS_SEND_TAB_TO_SELF_MANAGE_DEVICES),
-      views::style::CONTEXT_LABEL, views::style::STYLE_CAPTION));
+      views::style::CONTEXT_LABEL, views::style::STYLE_LINK_5));
   link->SetCallback(base::BindRepeating(
       &SendTabToSelfBubbleController::OnManageDevicesClicked, controller_));
   link->SetHorizontalAlignment(gfx::ALIGN_LEFT);
