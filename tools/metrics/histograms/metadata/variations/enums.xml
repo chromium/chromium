@@ -34,6 +34,22 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="Missing clean exit beacon key"/>
 </enum>
 
+<!-- LINT.IfChange(BeaconFileWriteResult) -->
+
+<enum name="BeaconFileWriteResult">
+  <int value="0" label="Failure">
+    Generic failure. Before M158, logged for all failures on all platforms, when
+    this histogram was a BooleanSuccess histogram. As of M158, only logged on
+    Windows; other platforms log the more specific failure values.
+  </int>
+  <int value="1" label="Success"/>
+  <int value="2" label="Failed to create temporary file"/>
+  <int value="3" label="Failed to write temporary file"/>
+  <int value="4" label="Failed to replace beacon file with temporary file"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/metrics/clean_exit_beacon.h:BeaconFileWriteResult) -->
+
 <enum name="FeatureNameHash">
   <int value="0" label="Dummy"/>
 </enum>

@@ -7,10 +7,13 @@
 #include <algorithm>
 #include <cmath>
 #include <memory>
+#include <string_view>
 #include <utility>
 
 #include "base/check_op.h"
 #include "base/command_line.h"
+#include "base/containers/span.h"
+#include "base/files/file.h"
 #include "base/files/file_util.h"
 #include "base/json/json_file_value_serializer.h"
 #include "base/json/json_string_value_serializer.h"
@@ -207,6 +210,43 @@ std::unique_ptr<base::Value> MaybeGetFileContents(
   }
   RecordBeaconFileState(BeaconFileState::kReadable);
   return beacon_file_contents;
+}
+
+// Writes `data` to the beacon file at `path`.
+//
+// On POSIX, writes to a new temp file and rename()s it over `path`, so that a
+// symlink planted at `path` by a compromised sandboxed process with write
+// access to the user data dir (e.g. the network service on macOS) is replaced,
+// not followed. Not done on Windows, where ReplaceFile() can fail transiently
+// (crbug.com/1099284).
+//
+// ImportantFileWriter is not used here because it calls fsync(), which is too
+// slow for the startup and shutdown paths.
+BeaconFileWriteResult WriteBeaconFileContent(const base::FilePath& path,
+                                             std::string_view data) {
+#if BUILDFLAG(IS_POSIX)
+  base::FilePath temp_path;
+  base::File temp_file = base::CreateAndOpenTemporaryFileInDir(
+      path.DirName(), &temp_path, /*additional_flags=*/0,
+      path.BaseName().value());
+  if (!temp_file.IsValid()) {
+    return BeaconFileWriteResult::kCreateTempFileFailed;
+  }
+  if (!temp_file.WriteAtCurrentPosAndCheck(base::as_byte_span(data))) {
+    temp_file.Close();
+    base::DeleteFile(temp_path);
+    return BeaconFileWriteResult::kWriteTempFileFailed;
+  }
+  temp_file.Close();
+  if (!base::ReplaceFile(temp_path, path, /*error=*/nullptr)) {
+    base::DeleteFile(temp_path);
+    return BeaconFileWriteResult::kReplaceFailed;
+  }
+  return BeaconFileWriteResult::kSuccess;
+#else
+  return base::WriteFile(path, data) ? BeaconFileWriteResult::kSuccess
+                                     : BeaconFileWriteResult::kFailure;
+#endif  // BUILDFLAG(IS_POSIX)
 }
 
 }  // namespace
@@ -440,12 +480,13 @@ void CleanExitBeacon::WriteBeaconFile(bool exited_cleanly) const {
   bool success = serializer.Serialize(dict);
   DCHECK(success);
   DCHECK(!json_string.empty());
+  BeaconFileWriteResult result;
   {
     base::ScopedAllowBlocking allow_io;
-    success = base::WriteFile(beacon_file_path_, json_string);
+    result = WriteBeaconFileContent(beacon_file_path_, json_string);
   }
-  base::UmaHistogramBoolean("Variations.ExtendedSafeMode.BeaconFileWrite",
-                            success);
+  base::UmaHistogramEnumeration("Variations.ExtendedSafeMode.BeaconFileWrite",
+                                result);
 }
 
 }  // namespace metrics

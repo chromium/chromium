@@ -343,6 +343,48 @@ TEST_F(CleanExitBeaconTest, WriteBeaconValueWhenNotExitingCleanly) {
       "Variations.ExtendedSafeMode.BeaconFileWrite", 1, 1);
 }
 
+#if BUILDFLAG(IS_POSIX)
+// Verify that writing the beacon file replaces a symlink planted at the beacon
+// file path instead of writing through it.
+TEST_F(CleanExitBeaconTest, WriteBeaconValueDoesNotFollowSymlink) {
+  base::ScopedTempDir other_dir;
+  ASSERT_TRUE(other_dir.CreateUniqueTempDir());
+  const base::FilePath target_path = other_dir.GetPath().AppendASCII("target");
+  const std::string kTargetContents = "original contents";
+  ASSERT_TRUE(base::WriteFile(target_path, kTargetContents));
+
+  const base::FilePath user_data_dir_path = user_data_dir_.GetPath();
+  const base::FilePath beacon_file_path =
+      user_data_dir_path.Append(kCleanExitBeaconFilename);
+  ASSERT_TRUE(base::CreateSymbolicLink(target_path, beacon_file_path));
+
+  TestCleanExitBeacon clean_exit_beacon(&prefs_, user_data_dir_path);
+  clean_exit_beacon.WriteBeaconValue(/*exited_cleanly=*/false,
+                                     /*is_extended_safe_mode=*/true);
+  histogram_tester_.ExpectUniqueSample(
+      "Variations.ExtendedSafeMode.BeaconFileWrite", 1, 1);
+
+  // The symlink target must be untouched.
+  std::string target_contents;
+  ASSERT_TRUE(base::ReadFileToString(target_path, &target_contents));
+  EXPECT_EQ(target_contents, kTargetContents);
+
+  // The beacon file path must now be a regular file with the beacon contents.
+  base::FilePath link_target;
+  EXPECT_FALSE(base::ReadSymbolicLink(beacon_file_path, &link_target));
+  std::string beacon_file_contents;
+  ASSERT_TRUE(base::ReadFileToString(beacon_file_path, &beacon_file_contents));
+  EXPECT_EQ(beacon_file_contents,
+            "{\"user_experience_metrics.stability.exited_cleanly\":false,"
+            "\"variations_crash_streak\":0}");
+
+  // No temporary files should be left behind in the user data directory.
+  EXPECT_FALSE(base::GetLatestTemporaryFileWithNamePrefix(
+                   user_data_dir_path, kCleanExitBeaconFilename)
+                   .has_value());
+}
+#endif  // BUILDFLAG(IS_POSIX)
+
 TEST_F(CleanExitBeaconTest, WriteBeaconValueWhenExitingCleanly) {
   const base::FilePath user_data_dir_path = user_data_dir_.GetPath();
   const base::FilePath beacon_file_path =

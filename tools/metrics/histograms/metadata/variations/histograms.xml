@@ -158,13 +158,18 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Variations.ExtendedSafeMode.BeaconFileWrite"
-    enum="BooleanSuccess" expires_after="2027-03-21">
+    enum="BeaconFileWriteResult" expires_after="2027-03-21">
   <owner>caitlinfischer@google.com</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <component>1456342</component>
   <summary>
-    Denotes whether the beacon file was successfully written. Recorded
-    immediately after Chrome tries to write the file.
+    Denotes the result of writing the beacon file. Recorded immediately after
+    Chrome tries to write the file.
+
+    Before M158, this was a BooleanSuccess histogram. Buckets 0 (failure) and 1
+    (success) are compatible with it; as of M158, bucket 0 is only logged on
+    Windows, and other platforms instead record the more specific failure
+    buckets.
 
     As of M102 for desktop and iOS and M103 for Android Chrome, any client may
     emit this metric. Prior to this, the metric was emitted by only clients in

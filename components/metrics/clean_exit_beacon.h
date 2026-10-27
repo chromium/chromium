@@ -54,6 +54,25 @@ enum class BeaconFileState {
   kMaxValue = kMissingBeacon,
 };
 
+// Denotes the result of writing the beacon file. Exposed for testing.
+//
+// Values 0 and 1 match the BooleanSuccess values that were logged before M158.
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(BeaconFileWriteResult)
+enum class BeaconFileWriteResult {
+  // Generic failure. As of M158, only logged on Windows; other platforms log
+  // the more specific failure values below.
+  kFailure = 0,
+  kSuccess = 1,
+  kCreateTempFileFailed = 2,
+  kWriteTempFileFailed = 3,
+  kReplaceFailed = 4,
+  kMaxValue = kReplaceFailed,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/variations/enums.xml:BeaconFileWriteResult)
+
 // Reads and updates a beacon used to detect whether the previous browser
 // process exited cleanly.
 class CleanExitBeacon {
