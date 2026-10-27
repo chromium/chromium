@@ -8,5 +8,9 @@ per-file features.h=file://components/safe_browsing/core/common/SAFE_BROWSING_FE
 per-file proto/csd.proto=file://components/safe_browsing/core/common/SAFE_BROWSING_FEATURE_OWNERS
 per-file safe_browsing_prefs*=file://components/safe_browsing/core/common/SAFE_BROWSING_FEATURE_OWNERS
 
+per-file client_side_detection_enums.h=nwokedi@chromium.org
+per-file client_side_detection_enums.h=jdh@chromium.org
+per-file proto/client_model.proto=nwokedi@chromium.org
+per-file proto/client_model.proto=jdh@chromium.org
 per-file visual_utils*=nwokedi@chromium.org
 per-file visual_utils*=jdh@chromium.org
