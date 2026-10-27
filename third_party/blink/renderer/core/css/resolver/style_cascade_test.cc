@@ -3489,6 +3489,83 @@ TEST_F(StyleCascadeTest, VarInInternalVisitedColorShorthand) {
   EXPECT_EQ(red, cascade.TakeStyle()->VisitedDependentColor(outline_color));
 }
 
+TEST_F(StyleCascadeTest, SubstituteAnimationTaintedInInternalVisitedProperty) {
+  TestCascade parent(GetDocument());
+  parent.Add("color:blue");
+  parent.Apply();
+
+  TestCascade cascade(GetDocument(), parent.TakeStyle());
+  cascade.Add(AnimationTaintedSet("--x", "green"));
+  cascade.Add("color:var(--x)");
+  cascade.Add("background-color:red",
+              {.link_match_type = CSSSelector::kMatchLink});
+  cascade.Add("background-color:var(--x)",
+              {.link_match_type = CSSSelector::kMatchVisited});
+
+  cascade.State().StyleBuilder().SetInsideLink(EInsideLink::kInsideVisitedLink);
+  cascade.Apply();
+
+  EXPECT_EQ("rgb(0, 128, 0)", cascade.ComputedValue("color"));
+  EXPECT_EQ("rgb(255, 0, 0)", cascade.ComputedValue("background-color"));
+
+  Color green(0, 128, 0);
+  const auto* style = cascade.TakeStyle();
+  EXPECT_EQ(green, style->VisitedDependentColor(GetCSSPropertyColor()));
+  EXPECT_EQ(green,
+            style->VisitedDependentColor(GetCSSPropertyBackgroundColor()));
+}
+
+TEST_F(StyleCascadeTest,
+       SubstituteAnimationTaintedInInternalVisitedPropertyDisabled) {
+  ScopedVisitedAnimationTaintedSubstitutionForTest scoped_feature(false);
+
+  TestCascade parent(GetDocument());
+  parent.Add("color:blue");
+  parent.Apply();
+
+  TestCascade cascade(GetDocument(), parent.TakeStyle());
+  cascade.Add(AnimationTaintedSet("--x", "green"));
+  cascade.Add("color:var(--x)");
+
+  cascade.State().StyleBuilder().SetInsideLink(EInsideLink::kInsideVisitedLink);
+  cascade.Apply();
+
+  // The visited color is invalid at computed-value time, and therefore
+  // inherits from the parent.
+  EXPECT_EQ("rgb(0, 128, 0)", cascade.ComputedValue("color"));
+  EXPECT_EQ(Color(0, 0, 255),
+            cascade.TakeStyle()->VisitedDependentColor(GetCSSPropertyColor()));
+}
+
+TEST_F(StyleCascadeTest, AnimatedCustomPropertyInInternalVisitedColor) {
+  RegisterProperty(GetDocument(), "--x", "<color>", "black", true);
+
+  AppendSheet(R"HTML(
+     @keyframes test {
+        from { --x: rgb(100, 100, 100); }
+        to { --x: rgb(200, 200, 200); }
+     }
+    )HTML");
+
+  TestCascade parent(GetDocument());
+  parent.Add("color:blue");
+  parent.Apply();
+
+  TestCascade cascade(GetDocument(), parent.TakeStyle());
+  cascade.State().StyleBuilder().SetInsideLink(EInsideLink::kInsideVisitedLink);
+  cascade.Add("--x:red");
+  cascade.Add("color:var(--x)");
+  cascade.Add("animation:test 10s -5s linear");
+  cascade.Apply();
+
+  cascade.AddInterpolations();
+  cascade.Apply();
+
+  EXPECT_EQ("rgb(150, 150, 150)", cascade.ComputedValue("color"));
+  EXPECT_EQ(Color(150, 150, 150),
+            cascade.TakeStyle()->VisitedDependentColor(GetCSSPropertyColor()));
+}
+
 TEST_F(StyleCascadeTest, ApplyWithFilter) {
   TestCascade cascade(GetDocument());
   cascade.Add("color", "blue", Origin::kAuthor);

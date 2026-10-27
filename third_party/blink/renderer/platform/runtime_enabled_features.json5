@@ -7303,6 +7303,13 @@
       name: "VisibilityCollapseColumn",
     },
     {
+      // Kill switch for https://crbug.com/569257985. Allows animation-tainted
+      // var() data to be substituted into -internal-visited-* properties
+      // whenever it may be substituted into their unvisited counterparts.
+      name: "VisitedAnimationTaintedSubstitution",
+      status: "stable",
+    },
+    {
       // Guards the removal of legacy visual rect inflation when mapping through
       // nested 2D transforms. Prevents rotated or skewed descendants from being
       // repeatedly expanded while computing visible bounds.

@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/css/properties/longhands/custom_property.h"
 #include "third_party/blink/renderer/core/css/resolver/cascade_priority.h"
 #include "third_party/blink/renderer/core/css/style_rule.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -22,6 +23,13 @@ bool CascadeResolver::AllowSubstitution(CSSVariableData* data) const {
     const CSSProperty* property = CurrentProperty();
     if (IsA<CustomProperty>(*property)) {
       return true;
+    }
+    // Internal properties are always animation-affecting, but the
+    // -internal-visited-* properties must accept the same values as
+    // their unvisited counterparts.
+    if (property->IsVisited() &&
+        RuntimeEnabledFeatures::VisitedAnimationTaintedSubstitutionEnabled()) {
+      property = property->GetUnvisitedProperty();
     }
     return !CSSAnimations::IsAnimationAffectingProperty(*property);
   }
