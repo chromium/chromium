@@ -7,7 +7,6 @@
 
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
-#include "base/run_loop.h"
 #include "base/test/test_future.h"
 #include "base/values.h"
 #include "chromeos/ash/components/dbus/shill/shill_client_unittest_base.h"
@@ -48,8 +47,6 @@ class ShillProfileClientTest : public ShillClientUnittestBase {
     // Create a client with the mock bus.
     ShillProfileClient::Initialize(mock_bus_.get());
     client_ = ShillProfileClient::Get();
-    // Run the message loop to run the signal connection result callback.
-    base::RunLoop().RunUntilIdle();
   }
 
   void TearDown() override {
