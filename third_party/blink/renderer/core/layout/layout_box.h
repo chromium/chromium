@@ -1158,7 +1158,7 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   const GCedHeapVector<NonOverflowingScrollRange>* NonOverflowingScrollRanges()
       const;
 
-  const BoxStrut& OutOfFlowInsetsForGetComputedStyle() const;
+  const PhysicalBoxStrut& InsetsForGetComputedStyle() const;
 
   Element* AccessibilityAnchor() const;
   const GCedHeapHashSet<Member<Element>>* DisplayLocksAffectedByAnchors() const;

@@ -29,7 +29,7 @@ struct SameSizeAsLayoutResult
   Member<void*> rare_data_;
   union {
     BfcOffset bfc_offset;
-    BoxStrut oof_insets_for_get_computed_style;
+    LogicalOffset oof_positioned_offset;
   };
   LayoutUnit intrinsic_block_size;
   unsigned bitfields[1];
@@ -164,15 +164,15 @@ LayoutResult::LayoutResult(const LayoutResult& other,
                      : nullptr),
       intrinsic_block_size_(other.intrinsic_block_size_),
       bitfields_(other.bitfields_) {
-  if (!bitfields_.has_oof_insets_for_get_computed_style) {
-    bfc_offset_.line_offset = bfc_line_offset;
-    bfc_offset_.block_offset = bfc_block_offset.value_or(LayoutUnit());
-    bitfields_.is_bfc_block_offset_nullopt = !bfc_block_offset.has_value();
-  } else {
+  if (bitfields_.has_oof_positioned_offset) {
     DCHECK(physical_fragment_->IsOutOfFlowPositioned());
     DCHECK_EQ(bfc_line_offset, LayoutUnit());
     DCHECK(bfc_block_offset && bfc_block_offset.value() == LayoutUnit());
-    oof_insets_for_get_computed_style_ = BoxStrut();
+    oof_positioned_offset_ = other.oof_positioned_offset_;
+  } else {
+    bfc_offset_.line_offset = bfc_line_offset;
+    bfc_offset_.block_offset = bfc_block_offset.value_or(LayoutUnit());
+    bitfields_.is_bfc_block_offset_nullopt = !bfc_block_offset.has_value();
   }
 
   ExclusionSpace new_exclusion_space = MergeExclusionSpaces(
@@ -199,12 +199,11 @@ LayoutResult::LayoutResult(const LayoutResult& other,
                      : nullptr),
       intrinsic_block_size_(other.intrinsic_block_size_),
       bitfields_(other.bitfields_) {
-  if (!bitfields_.has_oof_insets_for_get_computed_style) {
-    bfc_offset_ = other.bfc_offset_;
-  } else {
+  if (bitfields_.has_oof_positioned_offset) {
     DCHECK(physical_fragment_->IsOutOfFlowPositioned());
-    oof_insets_for_get_computed_style_ =
-        other.oof_insets_for_get_computed_style_;
+    oof_positioned_offset_ = other.oof_positioned_offset_;
+  } else {
+    bfc_offset_ = other.bfc_offset_;
   }
 
   DCHECK_EQ(physical_fragment_->Size(), other.physical_fragment_->Size());
@@ -314,14 +313,16 @@ LayoutResult::RareData* LayoutResult::EnsureRareData() {
   return rare_data_.Get();
 }
 
-void LayoutResult::CopyMutableOutOfFlowData(const LayoutResult& other) const {
-  if (bitfields_.has_oof_insets_for_get_computed_style) {
-    return;
+void LayoutResult::CopyMutableData(const LayoutResult& other) const {
+  To<PhysicalBoxFragment>(GetPhysicalFragment())
+      .GetMutableForPositioned()
+      .SetUsedPositionInsets(
+          To<PhysicalBoxFragment>(other.GetPhysicalFragment())
+              .UsedPositionInsets());
+  if (other.bitfields_.has_oof_positioned_offset) {
+    GetMutableForOutOfFlow().SetOutOfFlowPositionedOffset(
+        other.OutOfFlowPositionedOffset());
   }
-  GetMutableForOutOfFlow().SetOutOfFlowInsetsForGetComputedStyle(
-      other.OutOfFlowInsetsForGetComputedStyle());
-  GetMutableForOutOfFlow().SetOutOfFlowPositionedOffset(
-      other.OutOfFlowPositionedOffset());
   if (std::optional<PhysicalRect> imcb = other.InsetModifiedContainingBlock()) {
     GetMutableForOutOfFlow().SetInsetModifiedContainingBlock(*imcb);
   }

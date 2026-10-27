@@ -54,6 +54,7 @@ struct SameSizeAsPhysicalBoxFragment : PhysicalFragment {
   LayoutUnit baseline;
   LayoutUnit last_baseline;
   Member<void*> rare;
+  Member<void*> used_position_insets;
   InkOverflow ink_overflow;
   HeapVector<PhysicalFragmentLink> children;
 };
@@ -472,6 +473,7 @@ PhysicalBoxFragment::PhysicalBoxFragment(
       bit_field_(other.bit_field_),
       first_baseline_(other.first_baseline_),
       last_baseline_(other.last_baseline_),
+      used_position_insets_(other.used_position_insets_),
       ink_overflow_(other.InkOverflowType(), other.ink_overflow_),
       children_(other.children_) {
   SetInkOverflowType(other.InkOverflowType());
@@ -1979,6 +1981,7 @@ void PhysicalBoxFragment::AssertFragmentTreeChildren(
 void PhysicalBoxFragment::TraceAfterDispatch(Visitor* visitor) const {
   visitor->Trace(children_);
   visitor->Trace(rare_data_);
+  visitor->Trace(used_position_insets_);
   // |HasItems()| and |ConstHasRareData()| are const and set
   // in ctor so they do not cause TOCTOU.
   if (HasItems())

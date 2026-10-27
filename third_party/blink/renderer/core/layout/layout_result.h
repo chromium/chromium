@@ -171,25 +171,13 @@ class CORE_EXPORT LayoutResult final : public GarbageCollected<LayoutResult> {
   }
 
   LogicalOffset OutOfFlowPositionedOffset() const {
-    // The offset is either explicitly stored on the rare data, or impliclty
-    // stored as the start offset of |oof_insets_for_get_computed_style_|.
-    CHECK(bitfields_.has_oof_insets_for_get_computed_style);
-    return rare_data_ && rare_data_->oof_positioned_offset_is_set()
-               ? rare_data_->OutOfFlowPositionedOffset()
-               : oof_insets_for_get_computed_style_.StartOffset();
+    CHECK(bitfields_.has_oof_positioned_offset);
+    return oof_positioned_offset_;
   }
 
-  // Returns the absolutized inset property values in the parent's writing mode.
-  // Not necessarily the insets of the actual box in the container, but matches
-  // the result of the `getComputedStyle()` JavaScript API.
-  const BoxStrut& OutOfFlowInsetsForGetComputedStyle() const {
-    CHECK(bitfields_.has_oof_insets_for_get_computed_style);
-    return oof_insets_for_get_computed_style_;
-  }
-
-  // Called after subtree layout to make sure the fields for out-of-flow
-  // positioned nodes are set.
-  void CopyMutableOutOfFlowData(const LayoutResult& previous_result) const;
+  // Called after performing layout on a subtree layout root to ensure mutable
+  // fields (typically set by the parent) are copied across.
+  void CopyMutableData(const LayoutResult& previous_result) const;
 
   const GCedHeapVector<NonOverflowingScrollRange>* NonOverflowingScrollRanges()
       const {
@@ -241,7 +229,7 @@ class CORE_EXPORT LayoutResult final : public GarbageCollected<LayoutResult> {
   EStatus Status() const { return static_cast<EStatus>(bitfields_.status); }
 
   LayoutUnit BfcLineOffset() const {
-    if (bitfields_.has_oof_insets_for_get_computed_style) {
+    if (bitfields_.has_oof_positioned_offset) {
       DCHECK(physical_fragment_->IsOutOfFlowPositioned());
       return LayoutUnit();
     }
@@ -250,7 +238,7 @@ class CORE_EXPORT LayoutResult final : public GarbageCollected<LayoutResult> {
   }
 
   const std::optional<LayoutUnit> BfcBlockOffset() const {
-    if (bitfields_.has_oof_insets_for_get_computed_style) {
+    if (bitfields_.has_oof_positioned_offset) {
       DCHECK(physical_fragment_->IsOutOfFlowPositioned());
       return LayoutUnit();
     }
@@ -511,30 +499,15 @@ class CORE_EXPORT LayoutResult final : public GarbageCollected<LayoutResult> {
    protected:
     friend class OutOfFlowLayoutPart;
 
-    void SetOutOfFlowInsetsForGetComputedStyle(const BoxStrut& insets) {
+    void SetOutOfFlowPositionedOffset(const LogicalOffset& offset) {
       // OOF-positioned nodes *must* always have an initial BFC-offset.
       DCHECK(layout_result_->physical_fragment_->IsOutOfFlowPositioned());
       DCHECK_EQ(layout_result_->BfcLineOffset(), LayoutUnit());
       DCHECK_EQ(layout_result_->BfcBlockOffset().value_or(LayoutUnit()),
                 LayoutUnit());
 
-      layout_result_->bitfields_.has_oof_insets_for_get_computed_style = true;
-      layout_result_->oof_insets_for_get_computed_style_ = insets;
-    }
-
-    void SetOutOfFlowPositionedOffset(const LogicalOffset& offset) {
-      CHECK(layout_result_->bitfields_.has_oof_insets_for_get_computed_style);
-      // To minimize the chance of creating a rare data, we explicitly store
-      // |offset| on rare data only if:
-      // 1. There's already an offset stored on rare data, in which case we
-      //    simply update it regardlessly.
-      // 2. It no longer matches the start offset of the stored insets.
-      if ((layout_result_->rare_data_ &&
-           layout_result_->rare_data_->oof_positioned_offset_is_set()) ||
-          offset != layout_result_->oof_insets_for_get_computed_style_
-                        .StartOffset()) {
-        layout_result_->EnsureRareData()->SetOutOfFlowPositionedOffset(offset);
-      }
+      layout_result_->bitfields_.has_oof_positioned_offset = true;
+      layout_result_->oof_positioned_offset_ = offset;
     }
 
     void SetNeedsScrollAdjustment(bool needs_scroll_adjustment_in_x,
@@ -636,10 +609,8 @@ class CORE_EXPORT LayoutResult final : public GarbageCollected<LayoutResult> {
    public:
     using BitField = ConcurrentlyReadBitField<uint16_t>;
     using LineBoxBfcBlockOffsetIsSetFlag = BitField::DefineFirstValue<bool, 1>;
-    using OutOfFlowPositionedOffsetIsSetFlag =
-        LineBoxBfcBlockOffsetIsSetFlag::DefineNextValue<bool, 1>;
     using NeedsAnchorPositionScrollAdjustmentInXFlag =
-        OutOfFlowPositionedOffsetIsSetFlag::DefineNextValue<bool, 1>;
+        LineBoxBfcBlockOffsetIsSetFlag::DefineNextValue<bool, 1>;
     using NeedsAnchorPositionScrollAdjustmentInYFlag =
         NeedsAnchorPositionScrollAdjustmentInXFlag::DefineNextValue<bool, 1>;
     using IsBlockEndTrimmableLineFlag =
@@ -653,14 +624,6 @@ class CORE_EXPORT LayoutResult final : public GarbageCollected<LayoutResult> {
 
     void set_line_box_bfc_block_offset_is_set(bool flag) {
       return bit_field.set<LineBoxBfcBlockOffsetIsSetFlag>(flag);
-    }
-
-    bool oof_positioned_offset_is_set() const {
-      return bit_field.get<OutOfFlowPositionedOffsetIsSetFlag>();
-    }
-
-    void set_oof_positioned_offset_is_set(bool flag) {
-      return bit_field.set<OutOfFlowPositionedOffsetIsSetFlag>(flag);
     }
 
     bool needs_anchor_position_scroll_adjustment_in_x() const {
@@ -728,15 +691,6 @@ class CORE_EXPORT LayoutResult final : public GarbageCollected<LayoutResult> {
       return non_overflowing_scroll_ranges.Get();
     }
 
-    void SetOutOfFlowPositionedOffset(const LogicalOffset& offset) {
-      oof_positioned_offset = offset;
-      set_oof_positioned_offset_is_set(true);
-    }
-    LogicalOffset OutOfFlowPositionedOffset() const {
-      CHECK(oof_positioned_offset_is_set());
-      return oof_positioned_offset;
-    }
-
     void Trace(Visitor* visitor) const;
 
     Member<const EarlyBreak> early_break;
@@ -783,9 +737,6 @@ class CORE_EXPORT LayoutResult final : public GarbageCollected<LayoutResult> {
     Member<GCedHeapVector<NonOverflowingScrollRange>>
         non_overflowing_scroll_ranges;
 
-    // Only valid if oof_positioned_offset_is_set
-    LogicalOffset oof_positioned_offset;
-
     BitField bit_field;
   };
   RareData* EnsureRareData();
@@ -812,7 +763,7 @@ class CORE_EXPORT LayoutResult final : public GarbageCollected<LayoutResult> {
               bool has_descendant_that_depends_on_percentage_block_size,
               bool subtree_modified_margin_strut)
         : has_rare_data_exclusion_space(false),
-          has_oof_insets_for_get_computed_style(false),
+          has_oof_positioned_offset(false),
           is_bfc_block_offset_nullopt(false),
           has_forced_break(false),
           break_appeal(kBreakAppealPerfect),
@@ -833,7 +784,7 @@ class CORE_EXPORT LayoutResult final : public GarbageCollected<LayoutResult> {
           has_orthogonal_fallback_size_descendant(false) {}
 
     unsigned has_rare_data_exclusion_space : 1;
-    unsigned has_oof_insets_for_get_computed_style : 1;
+    unsigned has_oof_positioned_offset : 1;
     unsigned is_bfc_block_offset_nullopt : 1;
 
     unsigned has_forced_break : 1;
@@ -863,19 +814,14 @@ class CORE_EXPORT LayoutResult final : public GarbageCollected<LayoutResult> {
   const ConstraintSpace space_;
 
   Member<const PhysicalFragment> physical_fragment_;
-
-  // |rare_data_| cannot be stored in the union because it is difficult to have
-  // a const bitfield for it and it cannot be traced.
-  // Note that |bfc_offset_| and |oof_insets_for_get_computed_style_| cannot be
-  // both valid at the same time, because an OOF-positioned node's BFC offset is
-  // *always* the initial value.
   Member<RareData> rare_data_;
+
+  // Note that `bfc_offset_` and `oof_positioned_offset_` cannot be both valid
+  // at the same time, because an OOF-positioned node's BFC offset is *always*
+  // the initial value.
   union {
     BfcOffset bfc_offset_;
-    // This is the absolutized inset property values of an OOF-positioned object
-    // in its parent's writing-mode. This is set by the |OutOfFlowLayoutPart|
-    // while generating this layout result.
-    BoxStrut oof_insets_for_get_computed_style_;
+    LogicalOffset oof_positioned_offset_;
   };
 
   LayoutUnit intrinsic_block_size_;

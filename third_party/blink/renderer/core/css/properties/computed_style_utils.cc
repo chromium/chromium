@@ -812,19 +812,15 @@ CSSValue* ComputedStyleUtils::ValueForPositionOffset(
   auto& document = layout_object->GetDocument();
   const auto* box = DynamicTo<LayoutBox>(layout_object);
   if (layout_object->IsOutOfFlowPositioned()) {
-    // LayoutBox::OutOfFlowInsetsForGetComputedStyle() requires there to be
-    // layout results to get the right insets. If there are none, return early
-    // as this is considered an error case.
+    // LayoutBox::InsetsForGetComputedStyle() requires there to be physical
+    // fragments to get the right insets. If there are none, return early as
+    // this is considered an error case.
     CHECK(box);
     if (!box->PhysicalFragmentCount()) {
       return ZoomAdjustedPixelValueForLength(offset, style);
     }
 
-    // LayoutBox::OutOfFlowInsetsForGetComputedStyle() are relative to the
-    // container's writing direction. Convert it to physical.
-    const PhysicalBoxStrut& insets =
-        box->OutOfFlowInsetsForGetComputedStyle().ConvertToPhysical(
-            box->ContainingBlock()->Style().GetWritingDirection());
+    const PhysicalBoxStrut& insets = box->InsetsForGetComputedStyle();
     LayoutUnit inset;
     switch (property.PropertyID()) {
       case CSSPropertyID::kLeft:

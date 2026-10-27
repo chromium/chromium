@@ -986,9 +986,7 @@ void LayoutBox::LayoutSubtreeRoot() {
   const LayoutResult* result = BlockNode(this).Layout(space);
   GetDocument().GetFrame()->GetInputMethodController().DidLayoutSubtree(*this);
 
-  if (IsOutOfFlowPositioned()) {
-    result->CopyMutableOutOfFlowData(*previous_result);
-  }
+  result->CopyMutableData(*previous_result);
 
   // Even if we are a subtree layout root we need to mark our containing-block
   // for layout if:
@@ -4492,19 +4490,19 @@ LayoutBox::NonOverflowingScrollRanges() const {
   return layout_results.front()->NonOverflowingScrollRanges();
 }
 
-const BoxStrut& LayoutBox::OutOfFlowInsetsForGetComputedStyle() const {
+const PhysicalBoxStrut& LayoutBox::InsetsForGetComputedStyle() const {
   NOT_DESTROYED();
-  const auto& layout_results = GetLayoutResults();
   // We should call this function only after the node is laid out.
-  CHECK(layout_results.size());
+  CHECK(PhysicalFragmentCount());
   // We only need to check the first fragment, because when the box is
   // fragmented, insets are duplicated on all fragments.
 #if EXPENSIVE_DCHECKS_ARE_ON()
-  AssertSameDataOnLayoutResults(layout_results, [](const auto& result) {
-    return result->OutOfFlowInsetsForGetComputedStyle();
+  AssertSameDataOnLayoutResults(GetLayoutResults(), [](const auto& result) {
+    return To<PhysicalBoxFragment>(result->GetPhysicalFragment())
+        .UsedPositionInsets();
   });
 #endif
-  return GetLayoutResults().front()->OutOfFlowInsetsForGetComputedStyle();
+  return GetPhysicalFragment(0)->UsedPositionInsets();
 }
 
 Element* LayoutBox::AccessibilityAnchor() const {

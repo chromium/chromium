@@ -240,7 +240,7 @@ class CORE_EXPORT OutOfFlowLayoutPart {
 
    public:
     // Absolutized inset property values. Not necessarily the insets of the box.
-    BoxStrut insets_for_get_computed_style;
+    PhysicalBoxStrut insets_for_get_computed_style;
     // Offset to container's border box.
     LogicalOffset offset;
     // Inset-modified containing block relative to containing block's border

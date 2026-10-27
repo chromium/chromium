@@ -2591,7 +2591,7 @@ OutOfFlowLayoutPart::TryCalculateOffset(
                  imcb.block_end)
             .ConvertToPhysical(candidate_writing_direction));
 
-    // Calculate the absolutized insets to be stored on |LayoutResult|.
+    // Calculate the absolutized insets to be stored on |PhysicalBoxFragment|.
     // |node_dimensions.inset| doesn't include margins, but |insets| do. We add
     // margins into |used_insets| for the calculation, and then remove them at
     // the end.
@@ -2607,8 +2607,7 @@ OutOfFlowLayoutPart::TryCalculateOffset(
     insets_to_store.block_end =
         insets.block_end.value_or(used_insets.block_end);
     offset_info.insets_for_get_computed_style =
-        insets_to_store.ConvertToPhysical(candidate_writing_direction)
-            .ConvertToLogical(node_info.default_writing_direction);
+        insets_to_store.ConvertToPhysical(candidate_writing_direction);
   }
 
   bool anchor_center_x = anchor_center_position.inline_offset.has_value();
@@ -2651,7 +2650,9 @@ const LayoutResult* OutOfFlowLayoutPart::Layout(
 
   DCHECK_EQ(layout_result->Status(), LayoutResult::kSuccess);
 
-  layout_result->GetMutableForOutOfFlow().SetOutOfFlowInsetsForGetComputedStyle(
+  const auto& fragment =
+      To<PhysicalBoxFragment>(layout_result->GetPhysicalFragment());
+  fragment.GetMutableForPositioned().SetUsedPositionInsets(
       offset_info.insets_for_get_computed_style);
 
   layout_result->GetMutableForOutOfFlow().SetOutOfFlowPositionedOffset(
@@ -2675,8 +2676,6 @@ const LayoutResult* OutOfFlowLayoutPart::Layout(
         offset_info.imcb_rect);
   }
 
-  const auto& fragment =
-      To<PhysicalBoxFragment>(layout_result->GetPhysicalFragment());
   const BlockBreakToken* break_token = fragment.GetBreakToken();
   if (break_token && RuntimeEnabledFeatures::FragmentedOofInCbEnabled()) {
     // If the node is to generate more fragments, store the inline offset on the
