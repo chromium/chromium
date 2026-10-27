@@ -3,10 +3,17 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <string_view>
 
+#include "base/check.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/bind.h"
+#include "base/test/test_future.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/extension_action_runner.h"
 #include "chrome/browser/extensions/extension_apitest.h"
@@ -14,19 +21,26 @@
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/extensions/extension_action_test_helper.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_utils.h"
+#include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_util.h"
+#include "extensions/browser/network_permissions_updater.h"
+#include "extensions/browser/permissions/active_tab_permission_granter.h"
+#include "extensions/browser/permissions/scripting_permissions_modifier.h"
+#include "extensions/browser/test_event_router_observer.h"
 #include "extensions/browser/test_extension_registry_observer.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/permissions_manager_waiter.h"
 #include "extensions/test/result_catcher.h"
+#include "extensions/test/test_extension_dir.h"
 #include "net/base/filename_util.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -156,6 +170,300 @@ IN_PROC_BROWSER_TEST_F(ExtensionActiveTabTest, ActiveTabCors) {
     }
     EXPECT_TRUE(catcher.GetNextResult()) << message_;
   }
+}
+
+// Tests for the order of the activeTab grant vs other events, when the
+// network service is slow to process the activeTab-related update of
+// extension permissions.
+//
+// Note that, unlike other tests in this file, these tests intentionally do
+// *not* wait for `PermissionsManagerWaiter` - real extensions act on the
+// activeTab grant as soon as they receive the `action.onClicked` event.
+class ExtensionActiveTabWithSlowNetworkServiceTest
+    : public ExtensionActiveTabTest {
+ protected:
+  void TearDownOnMainThread() override {
+    // Don't leak a held update (or the hook that captures `this`) if a test
+    // fails before it releases the update.
+    NetworkPermissionsUpdater::HoldNextUpdateForTesting(base::NullCallback());
+    held_update_.Reset();
+    ExtensionActiveTabTest::TearDownOnMainThread();
+  }
+  // Loads an extension with an action and a service worker that runs
+  // `background_js`.  Waits until the service worker sends a "ready" message.
+  const Extension* LoadExtensionWithAction(std::string_view permissions,
+                                           std::string_view background_js) {
+    test_dir_.WriteManifest(base::StrCat({R"(
+        {
+          "name": "ExtensionActiveTabWithSlowNetworkServiceTest",
+          "version": "1.0",
+          "manifest_version": 3,
+          "background": {"service_worker": "background.js"},
+          "action": {},
+          "permissions": )",
+                                          permissions, "}"}));
+    test_dir_.WriteFile(FILE_PATH_LITERAL("background.js"),
+                        base::StrCat({background_js, R"(
+        chrome.test.sendMessage('ready');
+    )"}));
+    ExtensionTestMessageListener ready_listener("ready");
+    const Extension* extension = LoadExtension(test_dir_.UnpackedPath());
+    if (!ready_listener.WaitUntilSatisfied()) {
+      return nullptr;
+    }
+    return extension;
+  }
+
+  // Holds the next update of extension permissions in the network service
+  // (until `ReleaseHeldNetworkServiceUpdate` is called).
+  void HoldNextNetworkServiceUpdate() {
+    NetworkPermissionsUpdater::HoldNextUpdateForTesting(
+        base::BindLambdaForTesting([this](base::OnceClosure send_update) {
+          held_update_ = std::move(send_update);
+        }));
+  }
+
+  bool HasHeldNetworkServiceUpdate() const { return !held_update_.is_null(); }
+
+  void ReleaseHeldNetworkServiceUpdate() {
+    CHECK(held_update_);
+    std::move(held_update_).Run();
+  }
+
+  // Simulates the user clicking the action of `extension`, while holding the
+  // resulting update of extension permissions in the network service.  Waits
+  // for `result_listener` (e.g. for a reply from the `action.onClicked`
+  // handler of the extension).
+  void ClickActionWithSlowNetworkService(
+      const Extension& extension,
+      ExtensionTestMessageListener& result_listener) {
+    HoldNextNetworkServiceUpdate();
+    TestEventRouterObserver event_observer(EventRouter::Get(profile()));
+    ExtensionActionRunner::GetForWebContents(GetActiveWebContents())
+        ->RunAction(&extension, /*grant_tab_permissions=*/true);
+    ASSERT_TRUE(HasHeldNetworkServiceUpdate());
+
+    // If the `action.onClicked` event has already been dispatched, then keep
+    // holding the update until the extension replies (this is the problematic
+    // ordering that the tests want to cover).  Otherwise, release the update
+    // right away: the event waits for the update, so holding the update until
+    // the extension replies would never finish.
+    const bool on_clicked_dispatched_before_update =
+        event_observer.events().contains("action.onClicked");
+    if (!on_clicked_dispatched_before_update) {
+      ReleaseHeldNetworkServiceUpdate();
+    }
+    ASSERT_TRUE(result_listener.WaitUntilSatisfied());
+    if (on_clicked_dispatched_before_update) {
+      ReleaseHeldNetworkServiceUpdate();
+    }
+  }
+
+ private:
+  TestExtensionDir test_dir_;
+  base::OnceClosure held_update_;
+};
+
+// JavaScript code that defines a `fetchAndReport(url)` function.  The function
+// fetches `url` in 'cors' and in 'no-cors' mode, and sends a message that
+// describes the results (see `kExpectedFetchResults`).
+constexpr char kFetchAndReportJs[] = R"(
+    async function tryFetch(url, mode) {
+      try {
+        const response = await fetch(url, {mode});
+        const text = await response.text();
+        const hasTitle = text.includes('Title Of Awesomeness');
+        return `${mode}: type=${response.type} hasTitle=${hasTitle}`;
+      } catch (e) {
+        return `${mode}: ${e.name}`;
+      }
+    }
+
+    async function fetchAndReport(url) {
+      const results = [
+        await tryFetch(url, 'cors'),
+        await tryFetch(url, 'no-cors'),
+      ];
+      chrome.test.sendMessage(results.join('; '));
+    }
+)";
+
+// The message that `fetchAndReport` sends if the extension can read the
+// response from `title2.html`.
+constexpr char kExpectedFetchResults[] =
+    "cors: type=basic hasTitle=true; no-cors: type=basic hasTitle=true";
+
+// Tests that the `action.onClicked` handler can use the activeTab permission
+// to inject a script into the tab right away.  Regression test for
+// https://crbug.com/570354836.
+IN_PROC_BROWSER_TEST_F(ExtensionActiveTabWithSlowNetworkServiceTest,
+                       ExecuteScriptFromActionOnClicked) {
+  ASSERT_TRUE(StartEmbeddedTestServer());
+  const Extension* extension =
+      LoadExtensionWithAction(R"(["activeTab", "scripting"])", R"(
+        chrome.action.onClicked.addListener(async (tab) => {
+          try {
+            const results = await chrome.scripting.executeScript({
+              target: {tabId: tab.id},
+              func: () => document.title,
+            });
+            chrome.test.sendMessage('title: ' + results[0].result);
+          } catch (e) {
+            chrome.test.sendMessage('error: ' + e.message);
+          }
+        });
+      )");
+  ASSERT_TRUE(extension);
+  ASSERT_TRUE(
+      NavigateToURL(GetActiveWebContents(),
+                    embedded_test_server()->GetURL("a.com", "/title2.html")));
+
+  ExtensionTestMessageListener result_listener;
+  ClickActionWithSlowNetworkService(*extension, result_listener);
+  EXPECT_EQ("title: Title Of Awesomeness", result_listener.message());
+}
+
+// Tests that the `action.onClicked` handler can use the activeTab permission
+// to `fetch` from the tab's origin right away.  This requires that CORS and ORB
+// in the network service already know about the activeTab grant.
+IN_PROC_BROWSER_TEST_F(ExtensionActiveTabWithSlowNetworkServiceTest,
+                       FetchFromActionOnClicked) {
+  ASSERT_TRUE(StartEmbeddedTestServer());
+  const Extension* extension = LoadExtensionWithAction(
+      R"(["activeTab"])", base::StrCat({kFetchAndReportJs, R"(
+        chrome.action.onClicked.addListener((tab) => fetchAndReport(tab.url));
+      )"}));
+  ASSERT_TRUE(extension);
+  ASSERT_TRUE(
+      NavigateToURL(GetActiveWebContents(),
+                    embedded_test_server()->GetURL("a.com", "/title2.html")));
+
+  ExtensionTestMessageListener result_listener;
+  ClickActionWithSlowNetworkService(*extension, result_listener);
+  EXPECT_EQ(kExpectedFetchResults, result_listener.message());
+}
+
+// Tests that an action popup can use the activeTab permission to `fetch` from
+// the tab's origin right away.  Unlike `action.onClicked`, the popup doesn't
+// need to wait for the network service update of the activeTab grant: the
+// update is sent before the popup frame (and its `URLLoaderFactory`) is
+// created, and the network service processes both requests in order.  In this
+// test the update is held (i.e. sent too late), but the popup still works,
+// because `RendererStartupHelper::ActivateExtensionInProcess` sends another
+// update (which already includes the grant) before the network service
+// creates a `URLLoaderFactory` for the popup frame.
+IN_PROC_BROWSER_TEST_F(ExtensionActiveTabWithSlowNetworkServiceTest,
+                       FetchFromActionPopup) {
+  ASSERT_TRUE(StartEmbeddedTestServer());
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(R"(
+      {
+        "name": "FetchFromActionPopup",
+        "version": "1.0",
+        "manifest_version": 3,
+        "action": {"default_popup": "popup.html"},
+        "permissions": ["activeTab"]
+      } )");
+  test_dir.WriteFile(FILE_PATH_LITERAL("popup.html"),
+                     "<script src='popup.js'></script>");
+  test_dir.WriteFile(FILE_PATH_LITERAL("popup.js"),
+                     base::StrCat({kFetchAndReportJs, R"(
+      (async () => {
+        const [tab] =
+            await chrome.tabs.query({active: true, currentWindow: true});
+        await fetchAndReport(tab.url);
+      })();
+  )"}));
+  const Extension* extension = LoadExtension(test_dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+  ASSERT_TRUE(
+      NavigateToURL(GetActiveWebContents(),
+                    embedded_test_server()->GetURL("a.com", "/title2.html")));
+
+  // Hold the network service update of the activeTab grant until the popup
+  // replies.
+  HoldNextNetworkServiceUpdate();
+  ExtensionTestMessageListener result_listener;
+  ExtensionActionTestHelper::Create(browser())->Press(extension->id());
+  ASSERT_TRUE(HasHeldNetworkServiceUpdate());
+  ASSERT_TRUE(result_listener.WaitUntilSatisfied());
+  ReleaseHeldNetworkServiceUpdate();
+
+  EXPECT_EQ(kExpectedFetchResults, result_listener.message());
+}
+
+// Tests that revoking an activeTab grant also revokes it in renderers, even if
+// the revocation happens before the network service has processed the grant.
+// Regression test for https://crbug.com/513512147.
+IN_PROC_BROWSER_TEST_F(ExtensionActiveTabWithSlowNetworkServiceTest,
+                       RevokeBeforeNetworkServiceUpdate) {
+  ASSERT_TRUE(StartEmbeddedTestServer());
+
+  // The renderer decides on its own (based on its copy of the extension
+  // permissions) whether to run content scripts from the manifest.  This lets
+  // the test check renderer-side permissions.  The content script only
+  // matches `title2.html` (used for a subframe below) so that it isn't
+  // blocked in the main frame (`title1.html`).
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(R"(
+      {
+        "name": "RevokeBeforeNetworkServiceUpdate",
+        "version": "1.0",
+        "manifest_version": 3,
+        "host_permissions": ["*://a.com/*"],
+        "content_scripts": [{
+          "matches": ["*://a.com/title2.html"],
+          "all_frames": true,
+          "run_at": "document_end",
+          "js": ["content_script.js"]
+        }]
+      } )");
+  test_dir.WriteFile(FILE_PATH_LITERAL("content_script.js"),
+                     "document.documentElement.dataset.injected = 'yes';");
+  scoped_refptr<const Extension> extension =
+      LoadExtension(test_dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+  ScriptingPermissionsModifier(profile(), extension)
+      .SetWithholdHostPermissions(true);
+
+  content::WebContents* web_contents = GetActiveWebContents();
+  ASSERT_TRUE(NavigateToURL(
+      web_contents, embedded_test_server()->GetURL("a.com", "/title1.html")));
+
+  // Grant and then revoke activeTab permission, while the network service
+  // update of the grant is held.
+  HoldNextNetworkServiceUpdate();
+  auto* granter = ActiveTabPermissionGranter::FromWebContents(web_contents);
+  granter->GrantIfRequested(extension.get(), base::DoNothing());
+  ASSERT_TRUE(HasHeldNetworkServiceUpdate());
+  granter->ClearActiveExtensionAndNotify(extension->id());
+
+  // Release the held update, and wait until the network service has processed
+  // it (network service updates are processed in FIFO order).
+  ReleaseHeldNetworkServiceUpdate();
+  base::test::TestFuture<void> update_done;
+  NetworkPermissionsUpdater::UpdateExtension(
+      *profile(), *extension,
+      NetworkPermissionsUpdater::ContextSet::kAllRelatedContexts,
+      update_done.GetCallback());
+  ASSERT_TRUE(update_done.Wait());
+
+  // Add a same-origin subframe (hosted in the same renderer process), and
+  // verify that the content script didn't run there.  (The script would run
+  // if the renderer still had the revoked activeTab grant.)
+  ASSERT_TRUE(content::ExecJs(web_contents, R"(
+      new Promise(resolve => {
+        const iframe = document.createElement('iframe');
+        iframe.src = '/title2.html';
+        iframe.onload = () => resolve();
+        document.body.appendChild(iframe);
+      }) )"));
+  content::RenderFrameHost* subframe =
+      content::ChildFrameAt(web_contents->GetPrimaryMainFrame(), 0);
+  ASSERT_TRUE(subframe);
+  EXPECT_EQ(false, content::EvalJs(
+                       subframe,
+                       "document.documentElement.dataset.injected === 'yes'"));
 }
 
 // Tests the behavior of activeTab and its relation to an extension's ability to

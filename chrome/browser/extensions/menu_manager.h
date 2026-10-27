@@ -421,6 +421,14 @@ class MenuManager : public ProfileObserver,
   // items in the same group (i.e. that are adjacent in the list).
   void RadioItemSelected(MenuItem* item);
 
+  // Dispatches the events for a click on the menu item with `menu_item_id`
+  // (helper for `ExecuteCommand`).  `properties` describe the click.
+  void DispatchClickEvents(content::BrowserContext* context,
+                           content::WebContents* web_contents,
+                           content::RenderFrameHost* render_frame_host,
+                           base::DictValue properties,
+                           const MenuItem::Id& menu_item_id);
+
   // Make sure that there is only one radio item selected at once in any run.
   // If there are no radio items selected, then the first item in the run
   // will get selected. If there are multiple radio items selected, then only

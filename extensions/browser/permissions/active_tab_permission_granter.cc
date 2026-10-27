@@ -10,6 +10,7 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/task/sequenced_task_runner.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
@@ -132,8 +133,28 @@ ActiveTabPermissionGranter::ActiveTabPermissionGranter(
 
 ActiveTabPermissionGranter::~ActiveTabPermissionGranter() = default;
 
-void ActiveTabPermissionGranter::GrantIfRequested(const Extension* extension) {
+ActiveTabPermissionGranter::PendingGrant::PendingGrant() = default;
+ActiveTabPermissionGranter::PendingGrant::PendingGrant(PendingGrant&&) =
+    default;
+ActiveTabPermissionGranter::PendingGrant&
+ActiveTabPermissionGranter::PendingGrant::operator=(PendingGrant&&) = default;
+ActiveTabPermissionGranter::PendingGrant::~PendingGrant() = default;
+
+void ActiveTabPermissionGranter::GrantIfRequested(
+    const Extension* extension,
+    base::OnceClosure on_granted) {
+  content::BrowserContext* browser_context =
+      web_contents()->GetBrowserContext();
   if (IsGranted(extension)) {
+    // If the earlier grant is still on its way to the network service, then
+    // wait for it.  Otherwise, the grant has already taken effect everywhere.
+    auto it = pending_grants_.find(extension->id());
+    if (it != pending_grants_.end()) {
+      it->second.on_granted_callbacks.push_back(std::move(on_granted));
+    } else {
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE, std::move(on_granted));
+    }
     return;
   }
 
@@ -150,8 +171,6 @@ void ActiveTabPermissionGranter::GrantIfRequested(const Extension* extension) {
   // withheld, we grant it active tab-style permissions, even if it doesn't have
   // the activeTab permission in the manifest. This is necessary for the
   // runtime host permissions feature to work.
-  content::BrowserContext* browser_context =
-      web_contents()->GetBrowserContext();
   if (permissions_data->HasAPIPermission(mojom::APIPermissionID::kActiveTab) ||
       permissions_data->withheld_permissions().effective_hosts().MatchesURL(
           url)) {
@@ -182,70 +201,123 @@ void ActiveTabPermissionGranter::GrantIfRequested(const Extension* extension) {
     new_apis.insert(mojom::APIPermissionID::kTabCaptureForTab);
   }
 
-  if (!new_apis.empty() || !new_hosts.is_empty()) {
-    granted_extensions_.Insert(extension);
-    PermissionSet new_permissions(std::move(new_apis), ManifestPermissionSet(),
-                                  new_hosts.Clone(), new_hosts.Clone());
-    permissions_data->UpdateTabSpecificPermissions(tab_id_, new_permissions);
-
-    SetCorsOriginAccessList(
-        browser_context, *extension,
-        base::BindOnce(&ActiveTabPermissionGranter::NotifyGranted,
-                       weak_factory_.GetWeakPtr(),
-                       base::WrapRefCounted(extension), new_hosts.Clone()));
+  if (new_apis.empty() && new_hosts.is_empty()) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, std::move(on_granted));
+    return;
   }
+
+  granted_extensions_.Insert(extension);
+  PermissionSet new_permissions(std::move(new_apis), ManifestPermissionSet(),
+                                new_hosts.Clone(), new_hosts.Clone());
+  permissions_data->UpdateTabSpecificPermissions(tab_id_, new_permissions);
+
+  // Renderers are notified synchronously (rather than after the network
+  // service round-trip below).  This way the renderer IPC is ordered before
+  // other IPCs that the browser process sends later - e.g. before a
+  // `chrome.scripting.executeScript` request (see https://crbug.com/570354836)
+  // or before an IPC that revokes the grant (see https://crbug.com/513512147).
+  NotifyRenderers(*extension, new_hosts);
+
+  // Observers and `on_granted` are notified after the network service has been
+  // updated (see `OnNetworkServiceUpdated` and `CancelPendingGrant`).
+  PendingGrant& pending_grant = pending_grants_[extension->id()];
+  pending_grant.update_id = ++last_update_id_;
+  pending_grant.on_granted_callbacks.push_back(std::move(on_granted));
+  SetCorsOriginAccessList(
+      browser_context, *extension,
+      base::BindOnce(&ActiveTabPermissionGranter::OnNetworkServiceUpdated,
+                     weak_factory_.GetWeakPtr(),
+                     base::WrapRefCounted(extension), pending_grant.update_id));
 }
 
 bool ActiveTabPermissionGranter::IsGranted(const Extension* extension) const {
   return granted_extensions_.Contains(extension->id());
 }
 
-void ActiveTabPermissionGranter::NotifyGranted(
-    scoped_refptr<const Extension> extension,
-    URLPatternSet new_hosts) {
-  // If the grant was revoked (e.g. via navigation, explicit revocation, or
-  // unload) while the network service round-trip was in flight, do nothing.
-  if (!IsGranted(extension.get())) {
+void ActiveTabPermissionGranter::NotifyRenderers(
+    const Extension& extension,
+    const URLPatternSet& new_hosts) {
+  if (!web_contents()->GetController().GetVisibleEntry()) {
     return;
   }
 
-  content::BrowserContext* browser_context =
-      web_contents()->GetBrowserContext();
-  if (!ExtensionRegistry::Get(browser_context)
-           ->enabled_extensions()
-           .Contains(extension->id()) ||
-      !web_contents()->GetController().GetVisibleEntry()) {
-    return;
-  }
-
-  ProcessManager* process_manager = ProcessManager::Get(browser_context);
+  ProcessManager* process_manager =
+      ProcessManager::Get(web_contents()->GetBrowserContext());
   content::RenderProcessHost* process =
       web_contents()->GetPrimaryMainFrame()->GetProcess();
 
   // Notify ScriptInjectionTracker that scripts may be executed after
   // granting active tab.
   ScriptInjectionTracker::WillGrantActiveTab(
-      base::PassKey<ActiveTabPermissionGranter>(), *extension, *process);
+      base::PassKey<ActiveTabPermissionGranter>(), extension, *process);
 
   // Update all extension render views with the new tab permissions, and
   // also the tab itself.
   RendererMessageFunction update_message =
-      base::BindRepeating(&UpdateTabSpecificPermissions, extension->id(),
+      base::BindRepeating(&UpdateTabSpecificPermissions, extension.id(),
                           new_hosts.Clone(), tab_id_);
   SendRendererMessageToProcesses(
-      process_manager->GetRenderFrameHostsForExtension(extension->id()),
-      process, update_message);
+      process_manager->GetRenderFrameHostsForExtension(extension.id()), process,
+      update_message);
+}
+
+void ActiveTabPermissionGranter::OnNetworkServiceUpdated(
+    scoped_refptr<const Extension> extension,
+    int update_id) {
+  // If the grant was revoked (e.g. via navigation, explicit revocation, or
+  // unload) while the network service round-trip was in flight, then
+  // `CancelPendingGrant` has already run the `on_granted` callbacks.  (And the
+  // extension may have been granted again in the meantime - in this case
+  // `update_id` doesn't match and the newer update is still in flight.)
+  auto it = pending_grants_.find(extension->id());
+  if (it == pending_grants_.end() || it->second.update_id != update_id) {
+    return;
+  }
+  std::vector<base::OnceClosure> on_granted_callbacks =
+      std::move(it->second.on_granted_callbacks);
+  pending_grants_.erase(it);
+
+  NotifyObservers(*extension);
+  for (base::OnceClosure& on_granted : on_granted_callbacks) {
+    std::move(on_granted).Run();
+  }
+}
+
+void ActiveTabPermissionGranter::CancelPendingGrant(const ExtensionId& id) {
+  auto it = pending_grants_.find(id);
+  if (it == pending_grants_.end()) {
+    return;
+  }
+  // `on_granted` callbacks run also if the grant is revoked before it takes
+  // effect.
+  for (base::OnceClosure& on_granted : it->second.on_granted_callbacks) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, std::move(on_granted));
+  }
+  pending_grants_.erase(it);
+}
+
+void ActiveTabPermissionGranter::NotifyObservers(const Extension& extension) {
+  content::BrowserContext* browser_context =
+      web_contents()->GetBrowserContext();
+  if (!ExtensionRegistry::Get(browser_context)
+           ->enabled_extensions()
+           .Contains(extension.id()) ||
+      !web_contents()->GetController().GetVisibleEntry()) {
+    return;
+  }
 
   // It's important that this comes after the Mojo message is sent to the
-  // renderer, so that any tasks executing in the renderer occur after it
-  // has the updated permissions.
-  ExtensionsBrowserClient::Get()->OnActiveTabPermissionGranted(extension.get(),
+  // renderer (in `NotifyRenderers`), so that any tasks executing in the
+  // renderer occur after it has the updated permissions.
+  ExtensionsBrowserClient::Get()->OnActiveTabPermissionGranted(&extension,
                                                                web_contents());
 
   auto* permissions_manager =
       PermissionsManager::Get(web_contents()->GetBrowserContext());
   permissions_manager->NotifyActiveTabPermisssionGranted(web_contents(),
-                                                         tab_id_, *extension);
+                                                         tab_id_, extension);
 }
 
 void ActiveTabPermissionGranter::RevokeForTesting() {
@@ -294,13 +366,11 @@ void ActiveTabPermissionGranter::OnExtensionUnloaded(
     UnloadedExtensionReason reason) {
   // Note: don't need to clear the permissions (nor tell the renderer about it)
   // because it's being unloaded anyway.
+  CancelPendingGrant(extension->id());
   granted_extensions_.Remove(extension->id());
 }
 
 void ActiveTabPermissionGranter::ClearGrantedExtensionsAndNotify() {
-  // Invalidate any in-flight NotifyGranted() callbacks so that stale
-  // permissions from the previous document are not delivered to the new page.
-  weak_factory_.InvalidateWeakPtrs();
   ClearGrantedExtensionsAndNotify(granted_extensions_);
 }
 
@@ -365,6 +435,7 @@ void ActiveTabPermissionGranter::ClearGrantedExtensionsAndNotify(
   }
 
   for (const auto& id : extension_ids) {
+    CancelPendingGrant(id);
     granted_extensions_.Remove(id);
   }
 }

@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/extensions/api/extension_action/extension_action_api.h"
@@ -216,7 +217,7 @@ TEST_F(ExtensionActionRunnerUnitTest, GrantTabPermissions) {
   EXPECT_TRUE(RequiresUserConsent(extension));
   EXPECT_TRUE(runner()->WantsToRun(extension));
 
-  runner()->GrantTabPermissions({extension});
+  runner()->GrantTabPermissions({extension}, base::DoNothing());
   task_environment()->RunUntilIdle();
 
   EXPECT_EQ(1u, GetExecutionCountForExtension(extension->id()));
@@ -405,7 +406,8 @@ TEST_F(ExtensionActionRunnerUnitTest, ActiveScriptsUseActiveTabPermissions) {
   ASSERT_TRUE(active_tab_permission_granter);
   {
     PermissionsManagerWaiter waiter(PermissionsManager::Get(profile()));
-    active_tab_permission_granter->GrantIfRequested(extension);
+    active_tab_permission_granter->GrantIfRequested(extension,
+                                                    base::DoNothing());
     waiter.WaitForActiveTabPermissionGranted(extension->id());
   }
 
@@ -437,7 +439,8 @@ TEST_F(ExtensionActionRunnerUnitTest, ActiveScriptsUseActiveTabPermissions) {
   // Grant active tab.
   {
     PermissionsManagerWaiter waiter(PermissionsManager::Get(profile()));
-    active_tab_permission_granter->GrantIfRequested(extension);
+    active_tab_permission_granter->GrantIfRequested(extension,
+                                                    base::DoNothing());
     waiter.WaitForActiveTabPermissionGranted(extension->id());
   }
 

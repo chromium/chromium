@@ -10,6 +10,7 @@
 #include "base/containers/to_vector.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/json/json_reader.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
@@ -3061,7 +3062,7 @@ IN_PROC_BROWSER_TEST_F(OrbAndCorsExtensionBrowserTest,
   ActiveTabPermissionGranter* granter =
       ActiveTabPermissionGranter::FromWebContents(active_web_contents());
   ASSERT_TRUE(granter);
-  granter->GrantIfRequested(extension());
+  granter->GrantIfRequested(extension(), base::DoNothing());
   waiter.WaitForActiveTabPermissionGranted(extension()->id());
 
   // 3. Navigate a separate, new tab to an extension origin.

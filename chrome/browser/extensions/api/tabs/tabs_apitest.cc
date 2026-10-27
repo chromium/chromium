@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/functional/callback_helpers.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/to_string.h"
 #include "base/test/bind.h"
@@ -887,7 +888,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, CannotCaptureFeedback) {
   extensions::ActiveTabPermissionGranter* granter =
       extensions::ActiveTabPermissionGranter::FromWebContents(web_contents);
   ASSERT_TRUE(granter);
-  granter->GrantIfRequested(extension);
+  granter->GrantIfRequested(extension, base::DoNothing());
 
   extensions::ResultCatcher catcher;
   listener.Reply("");

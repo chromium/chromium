@@ -5,6 +5,7 @@
 #include <optional>
 
 #include "base/auto_reset.h"
+#include "base/functional/callback_helpers.h"
 #include "base/time/time.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
@@ -409,7 +410,8 @@ TEST_F(HostAccessRequestsHelperUnittest,
       ActiveTabPermissionGranter::FromWebContents(web_contents);
   ASSERT_TRUE(active_tab_permission_granter);
   PermissionsManagerWaiter waiter(PermissionsManager::Get(profile()));
-  active_tab_permission_granter->GrantIfRequested(extension.get());
+  active_tab_permission_granter->GrantIfRequested(extension.get(),
+                                                  base::DoNothing());
   waiter.WaitForActiveTabPermissionGranted(extension->id());
 
   // Request should be removed since extension has granted host access.

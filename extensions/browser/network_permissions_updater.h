@@ -71,6 +71,17 @@ class NetworkPermissionsUpdater {
       content::BrowserContext& browser_context,
       const Extension& extension);
 
+  // Test-only.  If set, then the next call to the static `UpdateExtension`
+  // doesn't send an update to the network service.  Instead, the update
+  // is passed to `callback` as `send_update`, and the test decides when to
+  // send it.  This lets tests simulate a slow network service (only for
+  // updates of extension permissions).  Note that a held update is computed
+  // when it is sent (i.e. it reflects the extension permissions at that
+  // time), and that it can be sent after later updates that were not held.
+  using HoldUpdateCallback =
+      base::OnceCallback<void(base::OnceClosure send_update)>;
+  static void HoldNextUpdateForTesting(HoldUpdateCallback callback);
+
  private:
   // Updates a single extension in the network layer, invoking
   // `completion_callback` when the operation is complete.

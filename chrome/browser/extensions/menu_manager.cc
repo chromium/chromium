@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <optional>
 #include <tuple>
 #include <utility>
 
@@ -30,6 +31,8 @@
 #include "components/guest_view/common/guest_view_constants.h"
 #include "content/public/browser/child_process_host.h"
 #include "content/public/browser/context_menu_params.h"
+#include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/weak_document_ptr.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_api_frame_id_map.h"
@@ -735,18 +738,105 @@ void MenuManager::ExecuteCommand(content::BrowserContext* context,
 
   properties.Set("editable", params.is_editable);
 
+  // No tab info in a platform app.
+  // Do not add tab info if not extension (i.e. Controlled Frame).
+  // Note: web_contents are null in unit tests :(
+  if (extension && !extension->is_platform_app() && web_contents) {
+    int frame_id = ExtensionApiFrameIdMap::GetFrameId(render_frame_host);
+    if (frame_id != ExtensionApiFrameIdMap::kInvalidFrameId) {
+      properties.Set("frameId", frame_id);
+    }
+  }
+
+  if (item->type() == MenuItem::CHECKBOX || item->type() == MenuItem::RADIO) {
+    bool was_checked = item->checked();
+    properties.Set("wasChecked", was_checked);
+
+    // RADIO items always get set to true when you click on them, but CHECKBOX
+    // items get their state toggled.
+    bool checked = item->type() == MenuItem::RADIO || !was_checked;
+
+    item->SetChecked(checked);
+    properties.Set("checked", item->checked());
+
+    if (extension) {
+      WriteToStorage(extension, item->id().extension_key);
+    }
+  }
+
+  // Note: web_contents are null in unit tests :(
+  ActiveTabPermissionGranter* granter =
+      extension && web_contents
+          ? ActiveTabPermissionGranter::FromWebContents(web_contents)
+          : nullptr;
+  if (!granter) {
+    DispatchClickEvents(context, web_contents, render_frame_host,
+                        std::move(properties), menu_item_id);
+    return;
+  }
+
+  // Dispatch the events only after the activeTab grant takes effect, so that
+  // the extension can use the grant right away.  Note that `render_frame_host`
+  // is null for menus that are not shown for a frame (e.g. for the menu of the
+  // extension action).
+  std::optional<content::WeakDocumentPtr> document;
+  if (render_frame_host) {
+    document = render_frame_host->GetWeakDocumentPtr();
+  }
+  granter->GrantIfRequested(
+      extension,
+      base::BindOnce(
+          [](base::WeakPtr<MenuManager> menu_manager,
+             base::WeakPtr<WebContents> web_contents,
+             std::optional<content::WeakDocumentPtr> document,
+             base::DictValue properties, const MenuItem::Id& menu_item_id) {
+            content::RenderFrameHost* render_frame_host = nullptr;
+            if (document) {
+              // Don't dispatch the events if the frame has navigated (or has
+              // been put into the back/forward cache) in the meantime -
+              // `properties` (e.g. `pageUrl` or `frameId`) describe the old
+              // document, but the `tab` argument of the events would describe
+              // the new document.
+              render_frame_host = document->AsRenderFrameHostIfValid();
+              if (!render_frame_host || !render_frame_host->IsActive()) {
+                return;
+              }
+            }
+            if (!menu_manager || !web_contents) {
+              return;
+            }
+            menu_manager->DispatchClickEvents(
+                web_contents->GetBrowserContext(), web_contents.get(),
+                render_frame_host, std::move(properties), menu_item_id);
+          },
+          weak_ptr_factory_.GetWeakPtr(), web_contents->GetWeakPtr(),
+          std::move(document), std::move(properties), menu_item_id));
+}
+
+void MenuManager::DispatchClickEvents(
+    content::BrowserContext* context,
+    WebContents* web_contents,
+    content::RenderFrameHost* render_frame_host,
+    base::DictValue properties,
+    const MenuItem::Id& menu_item_id) {
+  EventRouter* event_router = EventRouter::Get(context);
+  if (!event_router) {
+    return;
+  }
+
+  MenuItem* item = GetItemById(menu_item_id);
+  if (!item) {
+    return;
+  }
+
+  ExtensionRegistry* registry = ExtensionRegistry::Get(browser_context_);
+  const Extension* extension =
+      registry->enabled_extensions().GetByID(item->extension_id());
+
 #if BUILDFLAG(ENABLE_GUEST_VIEW)
   WebViewGuest* webview_guest =
       WebViewGuest::FromRenderFrameHost(render_frame_host);
 #endif  // BUILDFLAG(ENABLE_GUEST_VIEW)
-
-  // Note: web_contents are null in unit tests :(
-  if (extension && web_contents) {
-    if (auto* granter =
-            ActiveTabPermissionGranter::FromWebContents(web_contents)) {
-      granter->GrantIfRequested(extension);
-    }
-  }
 
   auto args = base::MakeRefCounted<EventArgs>();
   args->data.Append(std::move(properties));
@@ -757,11 +847,6 @@ void MenuManager::ExecuteCommand(content::BrowserContext* context,
   if (extension && !extension->is_platform_app()) {
     // Note: web_contents are null in unit tests :(
     if (web_contents) {
-      int frame_id = ExtensionApiFrameIdMap::GetFrameId(render_frame_host);
-      if (frame_id != ExtensionApiFrameIdMap::kInvalidFrameId) {
-        args->data[0].GetDict().Set("frameId", frame_id);
-      }
-
       // The contextMenus API is only available to privileged extension
       // contexts.
       constexpr mojom::ContextType context_type =
@@ -777,22 +862,6 @@ void MenuManager::ExecuteCommand(content::BrowserContext* context,
     }
   }
 
-  if (item->type() == MenuItem::CHECKBOX ||
-      item->type() == MenuItem::RADIO) {
-    bool was_checked = item->checked();
-    args->data[0].GetDict().Set("wasChecked", was_checked);
-
-    // RADIO items always get set to true when you click on them, but CHECKBOX
-    // items get their state toggled.
-    bool checked = item->type() == MenuItem::RADIO || !was_checked;
-
-    item->SetChecked(checked);
-    args->data[0].GetDict().Set("checked", item->checked());
-
-    if (extension) {
-      WriteToStorage(extension, item->id().extension_key);
-    }
-  }
   {
     // Dispatch to menu item's .onclick handler (this is the legacy API, from
     // before chrome.contextMenus.onClicked existed).

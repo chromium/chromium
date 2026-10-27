@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/extensions/extensions_menu_main_page_view.h"
 
 #include "base/containers/to_vector.h"
+#include "base/functional/callback_helpers.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -823,7 +824,7 @@ IN_PROC_BROWSER_TEST_F(
   {
     extensions::PermissionsManagerWaiter waiter(
         extensions::PermissionsManager::Get(browser()->GetProfile()));
-    action_runner->GrantTabPermissions({extension.get()});
+    action_runner->GrantTabPermissions({extension.get()}, base::DoNothing());
     waiter.WaitForActiveTabPermissionGranted(extension->id());
   }
   EXPECT_EQ(GetSiteInteraction(*extension, web_contents),
@@ -895,7 +896,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewBrowserTest,
       extensions::ActiveTabPermissionGranter::FromWebContents(
           browser()->GetTabStripModel()->GetActiveWebContents());
   ASSERT_TRUE(active_tab_permission_granter);
-  active_tab_permission_granter->GrantIfRequested(extension.get());
+  active_tab_permission_granter->GrantIfRequested(extension.get(),
+                                                  base::DoNothing());
   EXPECT_TRUE(menu_entry->site_permissions_button_for_testing()->GetVisible());
   EXPECT_TRUE(menu_entry->site_permissions_button_for_testing()->GetEnabled());
   EXPECT_EQ(menu_entry->site_permissions_button_for_testing()->GetText(),

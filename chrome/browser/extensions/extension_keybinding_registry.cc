@@ -7,6 +7,8 @@
 #include <memory>
 #include <utility>
 
+#include "base/functional/bind.h"
+#include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
@@ -63,6 +65,51 @@ class ExtensionKeybindingRegistryShutdownNotifierFactory
 }  // namespace
 
 namespace extensions {
+
+namespace {
+
+// Dispatches the `commands.onCommand` event for `command` to the extension
+// with `extension_id` (if the extension is still enabled).  `web_contents` is
+// the active tab (or null if there is no active tab).
+void DispatchCommandEvent(content::BrowserContext& browser_context,
+                          const ExtensionId& extension_id,
+                          const std::string& command,
+                          content::WebContents* web_contents) {
+  const Extension* extension = ExtensionRegistry::Get(&browser_context)
+                                   ->enabled_extensions()
+                                   .GetByID(extension_id);
+  if (!extension) {
+    return;
+  }
+
+  auto args = base::MakeRefCounted<EventArgs>();
+  args->data.Append(command);
+
+  base::Value tab_value;
+  if (web_contents) {
+    // The action APIs (browserAction, pageAction, action) are only available
+    // to privileged extension contexts. As such, we deterministically know
+    // that the right context type here is privileged.
+    constexpr mojom::ContextType context_type =
+        mojom::ContextType::kPrivilegedExtension;
+    ExtensionTabUtil::ScrubTabBehavior scrub_tab_behavior =
+        ExtensionTabUtil::GetScrubTabBehavior(extension, context_type,
+                                              web_contents);
+    tab_value = base::Value(ExtensionTabUtil::CreateTabObject(
+                                web_contents, scrub_tab_behavior, extension)
+                                .ToValue());
+  }
+  args->data.Append(std::move(tab_value));
+
+  auto event =
+      std::make_unique<Event>(events::COMMANDS_ON_COMMAND, kOnCommandEventName,
+                              std::move(args), &browser_context);
+  event->user_gesture = EventRouter::UserGestureState::kEnabled;
+  EventRouter::Get(&browser_context)
+      ->DispatchEventToExtension(extension_id, std::move(event));
+}
+
+}  // namespace
 
 ExtensionKeybindingRegistry::ExtensionKeybindingRegistry(
     content::BrowserContext* context,
@@ -237,48 +284,37 @@ void ExtensionKeybindingRegistry::CommandExecuted(
   if (!extension)
     return;
 
-  auto args = base::MakeRefCounted<EventArgs>();
-  args->data.Append(command);
-
-  base::Value tab_value;
+  content::WebContents* web_contents = nullptr;
   if (tab_list_interface_) {
     auto* active_tab = tab_list_interface_->GetActiveTab();
-    content::WebContents* web_contents =
-        active_tab ? active_tab->GetContents() : nullptr;
-    // Grant before sending the event so that the permission is granted before
-    // the extension acts on the command. NOTE: The Global Commands handler does
-    // not set the TabListInterface as it deals only with named commands (not
-    // page/browser actions that are associated with the current page directly).
-    ActiveTabPermissionGranter* granter =
-        web_contents ? ActiveTabPermissionGranter::FromWebContents(web_contents)
-                     : nullptr;
-    if (granter && !accelerator.IsMediaKey()) {
-      granter->GrantIfRequested(extension);
-    }
-
-    if (web_contents) {
-      // The action APIs (browserAction, pageAction, action) are only available
-      // to privileged extension contexts. As such, we deterministically know
-      // that the right context type here is privileged.
-      constexpr mojom::ContextType context_type =
-          mojom::ContextType::kPrivilegedExtension;
-      ExtensionTabUtil::ScrubTabBehavior scrub_tab_behavior =
-          ExtensionTabUtil::GetScrubTabBehavior(extension, context_type,
-                                                web_contents);
-      tab_value = base::Value(ExtensionTabUtil::CreateTabObject(
-                                  web_contents, scrub_tab_behavior, extension)
-                                  .ToValue());
-    }
+    web_contents = active_tab ? active_tab->GetContents() : nullptr;
   }
 
-  args->data.Append(std::move(tab_value));
-
-  auto event =
-      std::make_unique<Event>(events::COMMANDS_ON_COMMAND, kOnCommandEventName,
-                              std::move(args), browser_context_);
-  event->user_gesture = EventRouter::UserGestureState::kEnabled;
-  EventRouter::Get(browser_context_)
-      ->DispatchEventToExtension(extension_id, std::move(event));
+  // Grant before sending the event so that the permission is granted before
+  // the extension acts on the command. NOTE: The Global Commands handler does
+  // not set the TabListInterface as it deals only with named commands (not
+  // page/browser actions that are associated with the current page directly).
+  ActiveTabPermissionGranter* granter =
+      web_contents && !accelerator.IsMediaKey()
+          ? ActiveTabPermissionGranter::FromWebContents(web_contents)
+          : nullptr;
+  if (!granter) {
+    DispatchCommandEvent(*browser_context_, extension_id, command,
+                         web_contents);
+    return;
+  }
+  granter->GrantIfRequested(
+      extension,
+      base::BindOnce(
+          [](base::WeakPtr<content::WebContents> web_contents,
+             const ExtensionId& extension_id, const std::string& command) {
+            if (!web_contents) {
+              return;
+            }
+            DispatchCommandEvent(*web_contents->GetBrowserContext(),
+                                 extension_id, command, web_contents.get());
+          },
+          web_contents->GetWeakPtr(), extension_id, command));
 }
 
 bool ExtensionKeybindingRegistry::IsAcceleratorRegistered(

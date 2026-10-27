@@ -15,6 +15,7 @@
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/extensions/reload_page_dialog_controller.h"
 #include "content/public/browser/global_routing_id.h"
@@ -80,10 +81,14 @@ class ExtensionActionRunner : public content::WebContentsObserver,
   void RunBlockedActions(const Extension* extension);
 
   // Grants activeTab to `extensions` (this should only be done if this is
-  // through a direct user action). The permission will be applied immediately.
+  // through a direct user action). The permission will be applied immediately
+  // in the browser process and in renderers, and `on_granted` will be called
+  // after the permission also takes effect in the network service (see
+  // `ActiveTabPermissionGranter::GrantIfRequested`).
   // If any extension needs a page refresh to run, this will show a dialog as
   // well.
-  void GrantTabPermissions(const std::vector<const Extension*>& extensions);
+  void GrantTabPermissions(const std::vector<const Extension*>& extensions,
+                           base::OnceClosure on_granted);
 
   // TODO(crbug.com/424012380): Move to ReloadPageDialogController, as well as
   // the on accepted callback.
@@ -209,6 +214,10 @@ class ExtensionActionRunner : public content::WebContentsObserver,
   // granted or not.
   void RunCallbackOnPendingScript(const PendingScriptList& list, bool granted);
 
+  // Dispatches the `action.onClicked` event to the extension with
+  // `extension_id` (if the extension is still enabled).
+  void DispatchExtensionActionClicked(const ExtensionId& extension_id);
+
   // The total number of requests from the renderer on the current page,
   // including any that are pending or were immediately granted.
   // Right now, used only in tests.
@@ -241,6 +250,8 @@ class ExtensionActionRunner : public content::WebContentsObserver,
 
   base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
       extension_registry_observation_{this};
+
+  base::WeakPtrFactory<ExtensionActionRunner> weak_factory_{this};
 };
 
 }  // namespace extensions

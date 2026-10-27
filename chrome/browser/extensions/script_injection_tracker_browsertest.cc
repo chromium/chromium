@@ -10,6 +10,7 @@
 
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
+#include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
@@ -928,7 +929,7 @@ class ScriptInjectionTrackerRestrictedHostBrowserTest
   void GrantActiveTab(const Extension& extension) {
     PermissionsManagerWaiter waiter(PermissionsManager::Get(profile()));
     ActiveTabPermissionGranter::FromWebContents(GetActiveWebContents())
-        ->GrantIfRequested(&extension);
+        ->GrantIfRequested(&extension, base::DoNothing());
     waiter.WaitForActiveTabPermissionGranted(extension.id());
   }
 
@@ -2726,7 +2727,7 @@ IN_PROC_BROWSER_TEST_F(DynamicScriptsTrackerBrowserTest, ActiveTabGranted) {
   // Step 3: Grant activeTab and verify tracker runs the content script.
   PermissionsManagerWaiter waiter(PermissionsManager::Get(profile()));
   ActiveTabPermissionGranter::FromWebContents(web_contents)
-      ->GrantIfRequested(extension);
+      ->GrantIfRequested(extension, base::DoNothing());
   waiter.WaitForActiveTabPermissionGranted(extension->id());
 
   EXPECT_TRUE(ScriptInjectionTracker::DidProcessRunContentScriptFromExtension(

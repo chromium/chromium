@@ -5,6 +5,7 @@
 #include <atomic>
 
 #include "base/command_line.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
@@ -239,7 +240,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionPageCaptureApiTest,
 
   // 2. Grant activeTab permission on the main tab and capture again.
   ActiveTabPermissionGranter::FromWebContents(main_tab)->GrantIfRequested(
-      extension2);
+      extension2, base::DoNothing());
   std::string mhtml_with_active_tab = capture_tab_fn(tab_id);
   EXPECT_THAT(mhtml_with_active_tab,
               testing::Not(testing::StartsWith("ERROR:")));

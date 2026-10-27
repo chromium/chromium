@@ -6,6 +6,8 @@
 
 #include "base/barrier_closure.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/no_destructor.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/cors_origin_pattern_setter.h"
 #include "extensions/browser/extension_registry.h"
@@ -42,6 +44,12 @@ void SetCorsOriginAccessListForExtensionHelper(
   }
 }
 
+NetworkPermissionsUpdater::HoldUpdateCallback& GetHoldNextUpdateCallback() {
+  static base::NoDestructor<NetworkPermissionsUpdater::HoldUpdateCallback>
+      callback;
+  return *callback;
+}
+
 }  // namespace
 
 NetworkPermissionsUpdater::NetworkPermissionsUpdater(
@@ -61,14 +69,36 @@ void NetworkPermissionsUpdater::UpdateExtension(
     base::OnceClosure completion_callback) {
   auto updater = std::make_unique<NetworkPermissionsUpdater>(
       PassKey(), browser_context, std::move(completion_callback));
-  auto* updater_raw = updater.get();
 
-  // The callback takes ownership of `updater`, ensuring it's deleted when
-  // the update completes.
-  updater_raw->UpdateExtension(
-      extension, context_set,
-      base::BindOnce(&NetworkPermissionsUpdater::OnOriginAccessUpdated,
-                     std::move(updater)));
+  base::OnceClosure send_update = base::BindOnce(
+      [](std::unique_ptr<NetworkPermissionsUpdater> updater,
+         scoped_refptr<const Extension> extension, ContextSet context_set) {
+        auto* updater_raw = updater.get();
+
+        // The callback takes ownership of `updater`, ensuring it's deleted
+        // when the update completes.
+        updater_raw->UpdateExtension(
+            *extension, context_set,
+            base::BindOnce(&NetworkPermissionsUpdater::OnOriginAccessUpdated,
+                           std::move(updater)));
+      },
+      std::move(updater), base::WrapRefCounted(&extension), context_set);
+
+  // Tests can call `HoldNextUpdateForTesting` to postpone when the IPC is
+  // actually sent to the NetworkService process.
+  HoldUpdateCallback& hold_callback = GetHoldNextUpdateCallback();
+  if (hold_callback) {
+    std::move(hold_callback).Run(std::move(send_update));
+    return;
+  }
+
+  std::move(send_update).Run();
+}
+
+// static
+void NetworkPermissionsUpdater::HoldNextUpdateForTesting(
+    HoldUpdateCallback callback) {
+  GetHoldNextUpdateCallback() = std::move(callback);
 }
 
 // static

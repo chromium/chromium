@@ -4241,7 +4241,7 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
 
   // Querying the badge text with the activeTab access for the current tab
   // should provide the matched action count.
-  active_tab_granter->GrantIfRequested(extension_1);
+  active_tab_granter->GrantIfRequested(extension_1, base::DoNothing());
   EXPECT_EQ("1", query_badge_text(extension_1->id(), first_tab_id));
   // Revoking activeTab should cause the placeholder text to be returned again
   // since we don't have the declarativeNetRequestFeedback permission.
@@ -5232,7 +5232,7 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
   const Extension* dnr_extension = last_loaded_extension();
 
   // Grant the activeTab permission for the second tab.
-  active_tab_granter->GrantIfRequested(dnr_extension);
+  active_tab_granter->GrantIfRequested(dnr_extension, base::DoNothing());
 
   int second_tab_id = ExtensionTabUtil::GetTabId(GetActiveWebContents());
 

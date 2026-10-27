@@ -6,10 +6,13 @@
 #include <string>
 #include <utility>
 
+#include "base/check.h"
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
+#include "base/test/bind.h"
 #include "base/test/test_future.h"
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
@@ -138,6 +141,14 @@ class ActiveTabTest : public ChromeRenderViewHostTestHarness {
 #endif
   }
 
+  void TearDown() override {
+    // Don't leak a held update (or the hook that captures `this`) if a test
+    // fails before it releases the update.
+    NetworkPermissionsUpdater::HoldNextUpdateForTesting(base::NullCallback());
+    held_update_.Reset();
+    ChromeRenderViewHostTestHarness::TearDown();
+  }
+
   int tab_id() {
     return sessions::SessionTabHelper::IdForTab(web_contents()).id();
   }
@@ -147,9 +158,10 @@ class ActiveTabTest : public ChromeRenderViewHostTestHarness {
   }
 
   // Waits for any in-flight CORS origin access updates and their completion
-  // callbacks (like NotifyGranted) to complete. Because updates on the network
-  // service pipe are processed in FIFO order, queuing an update and waiting
-  // for its completion guarantees that all preceding updates have finished.
+  // callbacks (like NotifyObservers) to complete. Because updates on the
+  // network service pipe are processed in FIFO order, queuing an update and
+  // waiting for its completion guarantees that all preceding updates have
+  // finished.
   void WaitForPendingCorsUpdates(const Extension& target_extension) {
     base::test::TestFuture<void> future;
     NetworkPermissionsUpdater::UpdateExtension(
@@ -157,6 +169,22 @@ class ActiveTabTest : public ChromeRenderViewHostTestHarness {
         NetworkPermissionsUpdater::ContextSet::kAllRelatedContexts,
         future.GetCallback());
     EXPECT_TRUE(future.Wait());
+  }
+
+  // Holds the next update of extension permissions in the network service
+  // (until `ReleaseHeldNetworkServiceUpdate` is called).
+  void HoldNextNetworkServiceUpdate() {
+    NetworkPermissionsUpdater::HoldNextUpdateForTesting(
+        base::BindLambdaForTesting([this](base::OnceClosure send_update) {
+          held_update_ = std::move(send_update);
+        }));
+  }
+
+  bool HasHeldNetworkServiceUpdate() const { return !held_update_.is_null(); }
+
+  void ReleaseHeldNetworkServiceUpdate() {
+    CHECK(held_update_);
+    std::move(held_update_).Run();
   }
 
   bool IsAllowed(const scoped_refptr<const Extension>& extension_refptr,
@@ -239,6 +267,9 @@ class ActiveTabTest : public ChromeRenderViewHostTestHarness {
   // An extension with both the activeTab and tabCapture permission.
   scoped_refptr<const Extension> extension_with_tab_capture;
 #endif
+
+ private:
+  base::OnceClosure held_update_;
 };
 
 TEST_F(ActiveTabTest, GrantToSinglePage) {
@@ -254,9 +285,10 @@ TEST_F(ActiveTabTest, GrantToSinglePage) {
   EXPECT_FALSE(HasTabsPermission(another_extension));
   EXPECT_FALSE(HasTabsPermission(extension_without_active_tab));
 
-  active_tab_permission_granter()->GrantIfRequested(extension.get());
+  active_tab_permission_granter()->GrantIfRequested(extension.get(),
+                                                    base::DoNothing());
   active_tab_permission_granter()->GrantIfRequested(
-      extension_without_active_tab.get());
+      extension_without_active_tab.get(), base::DoNothing());
 
   // Granted to extension and extension_without_active_tab, but the latter
   // doesn't have the activeTab permission so not granted.
@@ -283,15 +315,24 @@ TEST_F(ActiveTabTest, GrantToSinglePage) {
   EXPECT_FALSE(HasTabsPermission(extension_without_active_tab));
 
   // And grant a few more times redundantly for good measure.
-  active_tab_permission_granter()->GrantIfRequested(extension.get());
-  active_tab_permission_granter()->GrantIfRequested(extension.get());
-  active_tab_permission_granter()->GrantIfRequested(another_extension.get());
-  active_tab_permission_granter()->GrantIfRequested(another_extension.get());
-  active_tab_permission_granter()->GrantIfRequested(another_extension.get());
-  active_tab_permission_granter()->GrantIfRequested(extension.get());
-  active_tab_permission_granter()->GrantIfRequested(extension.get());
-  active_tab_permission_granter()->GrantIfRequested(another_extension.get());
-  active_tab_permission_granter()->GrantIfRequested(another_extension.get());
+  active_tab_permission_granter()->GrantIfRequested(extension.get(),
+                                                    base::DoNothing());
+  active_tab_permission_granter()->GrantIfRequested(extension.get(),
+                                                    base::DoNothing());
+  active_tab_permission_granter()->GrantIfRequested(another_extension.get(),
+                                                    base::DoNothing());
+  active_tab_permission_granter()->GrantIfRequested(another_extension.get(),
+                                                    base::DoNothing());
+  active_tab_permission_granter()->GrantIfRequested(another_extension.get(),
+                                                    base::DoNothing());
+  active_tab_permission_granter()->GrantIfRequested(extension.get(),
+                                                    base::DoNothing());
+  active_tab_permission_granter()->GrantIfRequested(extension.get(),
+                                                    base::DoNothing());
+  active_tab_permission_granter()->GrantIfRequested(another_extension.get(),
+                                                    base::DoNothing());
+  active_tab_permission_granter()->GrantIfRequested(another_extension.get(),
+                                                    base::DoNothing());
 
   EXPECT_TRUE(IsAllowed(extension, google));
   EXPECT_TRUE(IsAllowed(another_extension, google));
@@ -315,10 +356,12 @@ TEST_F(ActiveTabTest, GrantToSinglePage) {
 
   // Should be able to grant to multiple extensions at the same time (if they
   // have the activeTab permission, of course).
-  active_tab_permission_granter()->GrantIfRequested(extension.get());
-  active_tab_permission_granter()->GrantIfRequested(another_extension.get());
+  active_tab_permission_granter()->GrantIfRequested(extension.get(),
+                                                    base::DoNothing());
+  active_tab_permission_granter()->GrantIfRequested(another_extension.get(),
+                                                    base::DoNothing());
   active_tab_permission_granter()->GrantIfRequested(
-      extension_without_active_tab.get());
+      extension_without_active_tab.get(), base::DoNothing());
 
   EXPECT_TRUE(IsBlocked(extension, google));
   EXPECT_TRUE(IsBlocked(another_extension, google));
@@ -331,10 +374,12 @@ TEST_F(ActiveTabTest, GrantToSinglePage) {
   // Should be able to go back to URLs that were previously cleared.
   NavigateAndCommit(google);
 
-  active_tab_permission_granter()->GrantIfRequested(extension.get());
-  active_tab_permission_granter()->GrantIfRequested(another_extension.get());
+  active_tab_permission_granter()->GrantIfRequested(extension.get(),
+                                                    base::DoNothing());
+  active_tab_permission_granter()->GrantIfRequested(another_extension.get(),
+                                                    base::DoNothing());
   active_tab_permission_granter()->GrantIfRequested(
-      extension_without_active_tab.get());
+      extension_without_active_tab.get(), base::DoNothing());
 
   EXPECT_TRUE(IsAllowed(extension, google));
   EXPECT_TRUE(IsAllowed(another_extension, google));
@@ -368,7 +413,8 @@ TEST_F(ActiveTabTest, CapturingPagesWithActiveTab) {
         url, tab_id(), nullptr /*error*/,
         CaptureRequirement::kActiveTabOrAllUrls));
     // Granting permission should allow page capture.
-    active_tab_permission_granter()->GrantIfRequested(extension.get());
+    active_tab_permission_granter()->GrantIfRequested(extension.get(),
+                                                      base::DoNothing());
     EXPECT_TRUE(extension->permissions_data()->CanCaptureVisiblePage(
         url, tab_id(), nullptr /*error*/,
         CaptureRequirement::kActiveTabOrAllUrls));
@@ -395,7 +441,8 @@ TEST_F(ActiveTabTest, CapturingFeedbackDisallowed) {
   // it is more of a native surface that shouldn't be accessible to (or
   // triggerable by) extensions.
   // See also https://crbug.com/477664550.
-  active_tab_permission_granter()->GrantIfRequested(extension.get());
+  active_tab_permission_granter()->GrantIfRequested(extension.get(),
+                                                    base::DoNothing());
   error.clear();
   EXPECT_FALSE(extension->permissions_data()->CanCaptureVisiblePage(
       kFeedbackUrl, tab_id(), &error, CaptureRequirement::kActiveTabOrAllUrls));
@@ -413,7 +460,8 @@ TEST_F(ActiveTabTest, CapturingFeedbackDisallowed) {
       CaptureRequirement::kActiveTabOrAllUrls));
   EXPECT_EQ(manifest_errors::kCannotAccessChromeUrl, error);
 
-  active_tab_permission_granter()->GrantIfRequested(extension.get());
+  active_tab_permission_granter()->GrantIfRequested(extension.get(),
+                                                    base::DoNothing());
   error.clear();
   EXPECT_FALSE(extension->permissions_data()->CanCaptureVisiblePage(
       kOSFeedbackUrl, tab_id(), &error,
@@ -436,7 +484,8 @@ TEST_F(ActiveTabTest, ChromeSchemeNavigationsClearActiveTab) {
   NavigateAndCommit(kVersionUrl);
 
   // Grant activeTab on chrome://version.
-  active_tab_permission_granter()->GrantIfRequested(extension.get());
+  active_tab_permission_granter()->GrantIfRequested(extension.get(),
+                                                    base::DoNothing());
   expect_has_active_tab(true, kVersionUrl);
 
   // Same-document navigations on chrome://version (such as hash changes or
@@ -462,7 +511,8 @@ TEST_F(ActiveTabTest, ChromeSchemeNavigationsClearActiveTab) {
 
   // Re-grant activeTab and test a same-origin non-same-document navigation to a
   // different query/path on a chrome-scheme page.
-  active_tab_permission_granter()->GrantIfRequested(extension.get());
+  active_tab_permission_granter()->GrantIfRequested(extension.get(),
+                                                    base::DoNothing());
   expect_has_active_tab(true, web_contents()->GetLastCommittedURL());
 
   const GURL kVersionWithQuery("chrome://version/?foo");
@@ -471,7 +521,8 @@ TEST_F(ActiveTabTest, ChromeSchemeNavigationsClearActiveTab) {
 
   // Re-grant activeTab and test a cross-host navigation between different
   // chrome-scheme pages (e.g. chrome://version to chrome://newtab).
-  active_tab_permission_granter()->GrantIfRequested(extension.get());
+  active_tab_permission_granter()->GrantIfRequested(extension.get(),
+                                                    base::DoNothing());
   expect_has_active_tab(true, web_contents()->GetLastCommittedURL());
 
   const GURL kNewTabUrl("chrome://newtab");
@@ -484,7 +535,8 @@ TEST_F(ActiveTabTest, Unloading) {
   GURL google("http://www.google.com");
   NavigateAndCommit(google);
 
-  active_tab_permission_granter()->GrantIfRequested(extension.get());
+  active_tab_permission_granter()->GrantIfRequested(extension.get(),
+                                                    base::DoNothing());
 
   EXPECT_TRUE(IsGrantedForTab(extension.get(), web_contents()));
   EXPECT_TRUE(IsAllowed(extension, google));
@@ -499,7 +551,8 @@ TEST_F(ActiveTabTest, Unloading) {
   // just ignore them from here on.
 
   // Granting the extension again should give them back.
-  active_tab_permission_granter()->GrantIfRequested(extension.get());
+  active_tab_permission_granter()->GrantIfRequested(extension.get(),
+                                                    base::DoNothing());
 
   EXPECT_TRUE(IsGrantedForTab(extension.get(), web_contents()));
   EXPECT_TRUE(IsAllowed(extension, google));
@@ -509,7 +562,8 @@ TEST_F(ActiveTabTest, OnlyActiveTab) {
   GURL google("http://www.google.com");
   NavigateAndCommit(google);
 
-  active_tab_permission_granter()->GrantIfRequested(extension.get());
+  active_tab_permission_granter()->GrantIfRequested(extension.get(),
+                                                    base::DoNothing());
 
   EXPECT_TRUE(IsAllowed(extension, google, PERMITTED_BOTH, tab_id()));
   EXPECT_TRUE(IsBlocked(extension, google, tab_id() + 1));
@@ -520,7 +574,8 @@ TEST_F(ActiveTabTest, SameDocumentNavigations) {
   GURL google("http://www.google.com");
   NavigateAndCommit(google);
 
-  active_tab_permission_granter()->GrantIfRequested(extension.get());
+  active_tab_permission_granter()->GrantIfRequested(extension.get(),
+                                                    base::DoNothing());
 
   // Perform a same-document navigation. The extension should not lose the
   // temporary permission.
@@ -537,7 +592,8 @@ TEST_F(ActiveTabTest, SameDocumentNavigations) {
   EXPECT_FALSE(IsAllowed(extension, google_h1));
   EXPECT_FALSE(IsAllowed(extension, chromium));
 
-  active_tab_permission_granter()->GrantIfRequested(extension.get());
+  active_tab_permission_granter()->GrantIfRequested(extension.get(),
+                                                    base::DoNothing());
 
   EXPECT_FALSE(IsAllowed(extension, google));
   EXPECT_FALSE(IsAllowed(extension, google_h1));
@@ -565,7 +621,7 @@ TEST_F(ActiveTabTest, ChromeUrlGrants) {
   GURL internal(chrome::kChromeUIVersionURL);
   NavigateAndCommit(internal);
   active_tab_permission_granter()->GrantIfRequested(
-      extension_with_tab_capture.get());
+      extension_with_tab_capture.get(), base::DoNothing());
   // Do not grant tabs/hosts permissions for tab.
   EXPECT_TRUE(
       IsAllowed(extension_with_tab_capture, internal, PERMITTED_CAPTURE_ONLY));
@@ -586,7 +642,8 @@ TEST_F(ActiveTabTest, ClearActiveExtensionAndNotify) {
   NavigateAndCommit(google);
 
   // Grant access to the extension.
-  active_tab_permission_granter()->GrantIfRequested(extension.get());
+  active_tab_permission_granter()->GrantIfRequested(extension.get(),
+                                                    base::DoNothing());
   ASSERT_TRUE(IsAllowed(extension, google));
   ASSERT_TRUE(HasTabsPermission(extension));
 
@@ -604,8 +661,10 @@ TEST_F(ActiveTabTest, ClearAllActiveExtensionsAndNotify) {
   NavigateAndCommit(google);
 
   // Grant access to two extensions.
-  active_tab_permission_granter()->GrantIfRequested(extension.get());
-  active_tab_permission_granter()->GrantIfRequested(another_extension.get());
+  active_tab_permission_granter()->GrantIfRequested(extension.get(),
+                                                    base::DoNothing());
+  active_tab_permission_granter()->GrantIfRequested(another_extension.get(),
+                                                    base::DoNothing());
 
   // Only the two active extensionsnow have access.
   ASSERT_TRUE(IsAllowed(extension, google));
@@ -690,7 +749,7 @@ TEST_F(ActiveTabWithServiceTest, FileURLs) {
       web_contents->GetLastCommittedURL(), tab_id, nullptr,
       CaptureRequirement::kActiveTabOrAllUrls));
 
-  permission_granter->GrantIfRequested(extension.get());
+  permission_granter->GrantIfRequested(extension.get(), base::DoNothing());
   EXPECT_FALSE(extension->permissions_data()->CanCaptureVisiblePage(
       web_contents->GetLastCommittedURL(), tab_id, nullptr,
       CaptureRequirement::kActiveTabOrAllUrls));
@@ -705,7 +764,7 @@ TEST_F(ActiveTabWithServiceTest, FileURLs) {
   EXPECT_FALSE(extension->permissions_data()->CanCaptureVisiblePage(
       web_contents->GetLastCommittedURL(), tab_id, nullptr,
       CaptureRequirement::kActiveTabOrAllUrls));
-  permission_granter->GrantIfRequested(extension.get());
+  permission_granter->GrantIfRequested(extension.get(), base::DoNothing());
   EXPECT_TRUE(extension->permissions_data()->CanCaptureVisiblePage(
       web_contents->GetLastCommittedURL(), tab_id, nullptr,
       CaptureRequirement::kActiveTabOrAllUrls));
@@ -720,7 +779,8 @@ TEST_F(ActiveTabTest, NoNotificationAfterGrantRevoked) {
   GURL google("http://www.google.com");
   NavigateAndCommit(google);
 
-  active_tab_permission_granter()->GrantIfRequested(extension.get());
+  active_tab_permission_granter()->GrantIfRequested(extension.get(),
+                                                    base::DoNothing());
   EXPECT_TRUE(active_tab_permission_granter()->IsGranted(extension.get()));
   EXPECT_EQ(0, observer.active_tab_granted_count());
 
@@ -748,7 +808,8 @@ TEST_F(ActiveTabTest, NoNotificationAfterClearActiveExtension) {
   GURL google("http://www.google.com");
   NavigateAndCommit(google);
 
-  active_tab_permission_granter()->GrantIfRequested(extension.get());
+  active_tab_permission_granter()->GrantIfRequested(extension.get(),
+                                                    base::DoNothing());
   EXPECT_TRUE(active_tab_permission_granter()->IsGranted(extension.get()));
   EXPECT_EQ(0, observer.active_tab_granted_count());
 
@@ -772,7 +833,8 @@ TEST_F(ActiveTabTest, NoStaleNotificationAfterReGrantOnNewPage) {
   NavigateAndCommit(google);
 
   // Grant on google.com (network round-trip #1 queued).
-  active_tab_permission_granter()->GrantIfRequested(extension.get());
+  active_tab_permission_granter()->GrantIfRequested(extension.get(),
+                                                    base::DoNothing());
   EXPECT_TRUE(active_tab_permission_granter()->IsGranted(extension.get()));
   EXPECT_EQ(0, observer.active_tab_granted_count());
 
@@ -783,7 +845,8 @@ TEST_F(ActiveTabTest, NoStaleNotificationAfterReGrantOnNewPage) {
   EXPECT_EQ(0, observer.active_tab_granted_count());
 
   // Re-grant on chromium.org (network round-trip #2 queued).
-  active_tab_permission_granter()->GrantIfRequested(extension.get());
+  active_tab_permission_granter()->GrantIfRequested(extension.get(),
+                                                    base::DoNothing());
   EXPECT_TRUE(active_tab_permission_granter()->IsGranted(extension.get()));
   EXPECT_EQ(0, observer.active_tab_granted_count());
 
@@ -794,6 +857,131 @@ TEST_F(ActiveTabTest, NoStaleNotificationAfterReGrantOnNewPage) {
   EXPECT_EQ(1, observer.active_tab_granted_count());
   EXPECT_TRUE(IsAllowed(extension, chromium));
   EXPECT_TRUE(IsBlocked(extension, google));
+}
+
+// Tests that `on_granted` runs only after the network service has been updated
+// (and after observers have been notified).
+TEST_F(ActiveTabTest, OnGrantedRunsAfterNetworkServiceUpdate) {
+  TestPermissionsManagerObserver observer(PermissionsManager::Get(profile()));
+  NavigateAndCommit(GURL("http://www.google.com"));
+
+  HoldNextNetworkServiceUpdate();
+  base::test::TestFuture<int> granted;
+  active_tab_permission_granter()->GrantIfRequested(
+      extension.get(), base::BindLambdaForTesting([&] {
+        granted.SetValue(observer.active_tab_granted_count());
+      }));
+  ASSERT_TRUE(HasHeldNetworkServiceUpdate());
+  // `on_granted` waits for the held update, even after the network service has
+  // processed a later update.
+  WaitForPendingCorsUpdates(*extension);
+  EXPECT_FALSE(granted.IsReady());
+
+  ReleaseHeldNetworkServiceUpdate();
+  EXPECT_EQ(1, granted.Get());
+}
+
+// Tests that `on_granted` runs (asynchronously) also if there is nothing to
+// grant.
+TEST_F(ActiveTabTest, OnGrantedRunsWhenNothingToGrant) {
+  NavigateAndCommit(GURL("http://www.google.com"));
+
+  base::test::TestFuture<void> granted;
+  active_tab_permission_granter()->GrantIfRequested(
+      extension_without_active_tab.get(), granted.GetCallback());
+  EXPECT_FALSE(granted.IsReady());
+  EXPECT_TRUE(granted.Wait());
+  EXPECT_FALSE(active_tab_permission_granter()->IsGranted(
+      extension_without_active_tab.get()));
+}
+
+// Tests that `on_granted` runs also if the grant is revoked before the network
+// service has been updated.
+TEST_F(ActiveTabTest, OnGrantedRunsAfterGrantRevoked) {
+  TestPermissionsManagerObserver observer(PermissionsManager::Get(profile()));
+  NavigateAndCommit(GURL("http://www.google.com"));
+
+  HoldNextNetworkServiceUpdate();
+  base::test::TestFuture<void> granted;
+  active_tab_permission_granter()->GrantIfRequested(extension.get(),
+                                                    granted.GetCallback());
+  ASSERT_TRUE(HasHeldNetworkServiceUpdate());
+  NavigateAndCommit(GURL("http://www.chromium.org"));
+  EXPECT_FALSE(active_tab_permission_granter()->IsGranted(extension.get()));
+
+  ReleaseHeldNetworkServiceUpdate();
+  EXPECT_TRUE(granted.Wait());
+  EXPECT_EQ(0, observer.active_tab_granted_count());
+}
+
+// Tests that a repeated grant doesn't send another update to the network
+// service, if the earlier grant has already taken effect there.
+TEST_F(ActiveTabTest, RepeatedGrantDoesNotUpdateNetworkServiceAgain) {
+  NavigateAndCommit(GURL("http://www.google.com"));
+  {
+    base::test::TestFuture<void> granted;
+    active_tab_permission_granter()->GrantIfRequested(extension.get(),
+                                                      granted.GetCallback());
+    ASSERT_TRUE(granted.Wait());
+  }
+
+  HoldNextNetworkServiceUpdate();
+  base::test::TestFuture<void> granted_again;
+  active_tab_permission_granter()->GrantIfRequested(
+      extension.get(), granted_again.GetCallback());
+  EXPECT_TRUE(granted_again.Wait());
+  EXPECT_FALSE(HasHeldNetworkServiceUpdate());
+}
+
+// Tests that `on_granted` of a repeated grant waits for the network service
+// update of the earlier grant (if the update is still in flight).
+TEST_F(ActiveTabTest, OnGrantedForRepeatedGrantWaitsForPendingUpdate) {
+  NavigateAndCommit(GURL("http://www.google.com"));
+
+  HoldNextNetworkServiceUpdate();
+  base::test::TestFuture<void> granted;
+  active_tab_permission_granter()->GrantIfRequested(extension.get(),
+                                                    granted.GetCallback());
+  ASSERT_TRUE(HasHeldNetworkServiceUpdate());
+  base::test::TestFuture<void> granted_again;
+  active_tab_permission_granter()->GrantIfRequested(
+      extension.get(), granted_again.GetCallback());
+
+  // Both callbacks wait for the held update, even after the network service
+  // has processed a later update.
+  WaitForPendingCorsUpdates(*extension);
+  EXPECT_FALSE(granted.IsReady());
+  EXPECT_FALSE(granted_again.IsReady());
+
+  ReleaseHeldNetworkServiceUpdate();
+  EXPECT_TRUE(granted.Wait());
+  EXPECT_TRUE(granted_again.Wait());
+}
+
+// Tests that observers are not notified about a grant before it takes effect
+// in the network service, even if an earlier (revoked) grant of the same
+// extension takes effect in the meantime.
+TEST_F(ActiveTabTest, NoEarlyNotificationAfterClearAndReGrant) {
+  TestPermissionsManagerObserver observer(PermissionsManager::Get(profile()));
+  NavigateAndCommit(GURL("http://www.google.com"));
+
+  active_tab_permission_granter()->GrantIfRequested(extension.get(),
+                                                    base::DoNothing());
+  active_tab_permission_granter()->ClearActiveExtensionAndNotify(
+      extension->id());
+  HoldNextNetworkServiceUpdate();
+  active_tab_permission_granter()->GrantIfRequested(extension.get(),
+                                                    base::DoNothing());
+  ASSERT_TRUE(HasHeldNetworkServiceUpdate());
+
+  // The update of the first (revoked) grant takes effect, but the update of
+  // the second grant is still held.
+  WaitForPendingCorsUpdates(*extension);
+  EXPECT_EQ(0, observer.active_tab_granted_count());
+
+  ReleaseHeldNetworkServiceUpdate();
+  WaitForPendingCorsUpdates(*extension);
+  EXPECT_EQ(1, observer.active_tab_granted_count());
 }
 
 }  // namespace

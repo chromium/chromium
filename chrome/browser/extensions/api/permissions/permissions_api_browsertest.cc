@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/auto_reset.h"
+#include "base/functional/callback_helpers.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/strings/string_number_conversions.h"
@@ -1217,7 +1218,7 @@ IN_PROC_BROWSER_TEST_F(PermissionsAPIHostAccessRequestsUnitTest,
 
   // Grant one-time host access.
   ActiveTabPermissionGranter::FromWebContents(web_contents)
-      ->GrantIfRequested(extension.get());
+      ->GrantIfRequested(extension.get(), base::DoNothing());
 
   // Add host access request for requested.com. Request is invalid because
   // extension already has host access (even if it's just one-time).

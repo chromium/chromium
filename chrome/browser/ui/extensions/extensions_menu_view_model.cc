@@ -8,6 +8,7 @@
 #include <string>
 #include <string_view>
 
+#include "base/functional/callback_helpers.h"
 #include "base/i18n/case_conversion.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
@@ -708,7 +709,7 @@ void ExtensionsMenuViewModel::GrantSiteAccess(
   extensions::ExtensionActionRunner* action_runner =
       extensions::ExtensionActionRunner::GetForWebContents(web_contents);
   if (action_runner) {
-    action_runner->GrantTabPermissions({extension});
+    action_runner->GrantTabPermissions({extension}, base::DoNothing());
   }
 }
 

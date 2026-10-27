@@ -6,6 +6,7 @@
 
 #include <string_view>
 
+#include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
 #include "chrome/browser/extensions/blocked_action_waiter.h"
 #include "chrome/browser/extensions/extension_action_runner.h"
@@ -544,7 +545,8 @@ IN_PROC_BROWSER_TEST_F(SitePermissionsHelperExecuteSciptBrowserTest,
     // Grant tab permissions to a.com. Script is injected (one time).
     ExtensionTestMessageListener script_injection_listener(
         "injection succeeded");
-    active_action_runner()->GrantTabPermissions({extension_.get()});
+    active_action_runner()->GrantTabPermissions({extension_.get()},
+                                                base::DoNothing());
     ASSERT_TRUE(WaitForReloadToFinish());
     ASSERT_TRUE(script_injection_listener.WaitUntilSatisfied());
     EXPECT_EQ(

@@ -8,6 +8,7 @@
 
 #include "base/command_line.h"
 #include "base/feature_list.h"
+#include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
@@ -181,7 +182,7 @@ IN_PROC_BROWSER_TEST_F(TabCaptureApiTest, ActiveTabPermission) {
       web_contents->GetBrowserContext())->enabled_extensions().GetByID(
           kExtensionId);
   ActiveTabPermissionGranter::FromWebContents(web_contents)
-      ->GrantIfRequested(extension);
+      ->GrantIfRequested(extension, base::DoNothing());
   before_grant_permission.Reply("");
 
   // Open a new tab and make sure capture is denied.
@@ -248,7 +249,7 @@ IN_PROC_BROWSER_TEST_F(TabCaptureApiTest, GrantForChromePages) {
       web_contents->GetBrowserContext())->enabled_extensions().GetByID(
           kExtensionId);
   ActiveTabPermissionGranter::FromWebContents(web_contents)
-      ->GrantIfRequested(extension);
+      ->GrantIfRequested(extension, base::DoNothing());
   before_open_tab.Reply("");
 
   ResultCatcher catcher;
@@ -292,7 +293,7 @@ class TabCaptureGetMediaStreamIdTest : public TabCaptureApiTest {
   void GrantCapturePermission(const Extension* extension,
                               content::WebContents* web_contents) {
     ActiveTabPermissionGranter::FromWebContents(web_contents)
-        ->GrantIfRequested(extension);
+        ->GrantIfRequested(extension, base::DoNothing());
   }
 
   std::string BuildArgs(int target_tab_id, int consumer_tab_id) {
@@ -515,7 +516,7 @@ IN_PROC_BROWSER_TEST_F(TabCaptureApiTest, MultipleExtensions) {
       ActiveTabPermissionGranter::FromWebContents(web_contents);
   // It doesn't seem to work to grant permissions for both extensions at the
   // same time. We start with extension_a.
-  perm_granter->GrantIfRequested(extension_a);
+  perm_granter->GrantIfRequested(extension_a, base::DoNothing());
 
   // Set up success listeners.
   ExtensionTestMessageListener extension_a_success("success");
@@ -528,7 +529,7 @@ IN_PROC_BROWSER_TEST_F(TabCaptureApiTest, MultipleExtensions) {
   extension_a_ready.Reset();
   ASSERT_TRUE(extension_a_ready.WaitUntilSatisfied());
 
-  perm_granter->GrantIfRequested(extension_b);
+  perm_granter->GrantIfRequested(extension_b, base::DoNothing());
 
   // To reproduce crbug.com/40869705, we have extension_b spam tab capture
   // requests until one or the other extension successfully captures the tab.
@@ -675,7 +676,7 @@ class TabCaptureApiPolicyTest : public ExtensionApiTestWithManagementPolicy {
     content::WebContents* const web_contents =
         content::WebContents::FromRenderFrameHost(main_frame);
     ActiveTabPermissionGranter::FromWebContents(web_contents)
-        ->GrantIfRequested(extension());
+        ->GrantIfRequested(extension(), base::DoNothing());
     return web_contents;
   }
 
@@ -766,7 +767,7 @@ IN_PROC_BROWSER_TEST_F(TabCaptureApiPolicyTest, FileUrlWithoutFileAccess) {
   content::WebContents* const web_contents =
       content::WebContents::FromRenderFrameHost(main_frame);
   ActiveTabPermissionGranter::FromWebContents(web_contents)
-      ->GrantIfRequested(extension());
+      ->GrantIfRequested(extension(), base::DoNothing());
 
   CaptureTab();
   EXPECT_EQ(tab_capture_errors::kCannotCapturePage, GetCaptureResult());
@@ -798,7 +799,7 @@ IN_PROC_BROWSER_TEST_F(TabCaptureApiPolicyTest,
   EXPECT_TRUE(content::WaitForLoadStop(popup_contents));
 
   ActiveTabPermissionGranter::FromWebContents(popup_contents)
-      ->GrantIfRequested(extension());
+      ->GrantIfRequested(extension(), base::DoNothing());
 
   CaptureTab();
   EXPECT_EQ(tab_capture_errors::kCannotCapturePage, GetCaptureResult());
