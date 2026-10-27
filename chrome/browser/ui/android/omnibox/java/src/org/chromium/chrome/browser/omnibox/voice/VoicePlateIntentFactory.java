@@ -14,11 +14,13 @@ import org.chromium.base.PackageManagerUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.gsa.GSAUtils;
-import org.chromium.chrome.browser.lens.LensIdentityUtils;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionIntentHandler.VoiceInteractionSource;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
+import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.components.omnibox.OmniboxFeatures;
+import org.chromium.components.signin.base.AccountInfo;
+import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.ui.util.ColorUtils;
 
 import java.lang.annotation.Retention;
@@ -73,10 +75,17 @@ class VoicePlateIntentFactory {
      */
     @Nullable Intent createIntent(
             Context context, @Nullable Profile profile, @VoiceInteractionSource int source) {
-        if (!isEligible(profile, source)) return null;
+        if (profile == null || !isEligible(profile, source)) return null;
 
-        Intent intent = buildIntent(context, LensIdentityUtils.getAccountName(profile));
+        Intent intent =
+                new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH)
+                        .setClassName(GSAUtils.GSA_PACKAGE_NAME, VOICE_PLATE_CLASS_NAME);
+        // Resolve the bare intent first: it is the cheapest check, and it fails on devices where
+        // AGA is absent, disabled, or too old to provide the Voice Plate.
         if (!PackageManagerUtils.canResolveActivity(intent)) return null;
+        if (!GSAUtils.isValidAgsaPackage()) return null;
+
+        populateExtras(intent, context, getAccountName(profile));
         return intent;
     }
 
@@ -86,16 +95,12 @@ class VoicePlateIntentFactory {
      * @param profile The profile that initiated the voice recognition.
      * @param source The voice recognition entry point.
      */
-    private static boolean isEligible(
-            @Nullable Profile profile, @VoiceInteractionSource int source) {
+    private static boolean isEligible(Profile profile, @VoiceInteractionSource int source) {
         if (!OmniboxFeatures.sOmniboxVoicePlateIntent.isEnabled()) return false;
         if (!isSupportedSource(source)) return false;
         // AGA cannot honor Chrome's Incognito state; use the in-Chrome recognizer instead.
-        if (profile == null || profile.isOffTheRecord()) return false;
-        if (!TemplateUrlServiceFactory.getForProfile(profile).isDefaultSearchEngineGoogle()) {
-            return false;
-        }
-        return GSAUtils.isValidAgsaPackage();
+        if (profile.isOffTheRecord()) return false;
+        return TemplateUrlServiceFactory.getForProfile(profile).isDefaultSearchEngineGoogle();
     }
 
     /**
@@ -113,14 +118,30 @@ class VoicePlateIntentFactory {
     }
 
     /**
-     * Builds the explicit AGA Voice Plate intent.
+     * Returns the email of the account signed in to Chrome, or null if Chrome is signed out.
      *
+     * @param profile The regular (non-Incognito) profile that initiated the voice recognition.
+     */
+    private static @Nullable String getAccountName(Profile profile) {
+        IdentityManager identityManager =
+                IdentityServicesProvider.get().getIdentityManager(profile);
+        if (identityManager == null) return null;
+        return AccountInfo.getEmailFrom(identityManager.getPrimaryAccountInfo());
+    }
+
+    /**
+     * Adds the Voice Plate extras to the explicit AGA intent.
+     *
+     * <p>AGA always runs voice search under its own primary account. The Chrome account (or the
+     * signed-out hint) only lets AGA detect a mismatch on-device and ask the user for consent
+     * before opening the microphone; it is not sent to any server.
+     *
+     * @param intent The explicit AGA Voice Plate intent to populate.
      * @param context The context used to resolve the current color scheme.
      * @param accountName The email of the account signed in to Chrome, or null if signed out.
      */
-    private static Intent buildIntent(Context context, @Nullable String accountName) {
-        Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
-        intent.setClassName(GSAUtils.GSA_PACKAGE_NAME, VOICE_PLATE_CLASS_NAME);
+    private static void populateExtras(
+            Intent intent, Context context, @Nullable String accountName) {
         intent.putExtra(EXTRA_DISABLE_STOP_BUTTON, /* value= */ true);
         intent.putExtra(
                 EXTRA_COLOR_SCHEME,
@@ -132,6 +153,5 @@ class VoicePlateIntentFactory {
         } else {
             intent.putExtra(EXTRA_SIGNED_OUT, /* value= */ true);
         }
-        return intent;
     }
 }

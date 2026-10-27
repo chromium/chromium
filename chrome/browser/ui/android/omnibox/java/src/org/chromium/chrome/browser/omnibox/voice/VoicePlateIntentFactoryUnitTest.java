@@ -9,8 +9,11 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static org.robolectric.Shadows.shadowOf;
 
 import android.content.ComponentName;
@@ -40,6 +43,7 @@ import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionIntentHandler.V
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
+import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.components.omnibox.OmniboxFeatureList;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.components.signin.identitymanager.IdentityManager;
@@ -60,6 +64,7 @@ public class VoicePlateIntentFactoryUnitTest {
     @Mock private Profile mProfile;
     @Mock private TemplateUrlService mTemplateUrlService;
     @Mock private IdentityManager mIdentityManager;
+    @Mock private ExternalAuthUtils mExternalAuthUtils;
 
     private final VoicePlateIntentFactory mFactory = new VoicePlateIntentFactory();
     private Context mContext;
@@ -175,14 +180,23 @@ public class VoicePlateIntentFactoryUnitTest {
     }
 
     @Test
-    public void createIntent_invalidAgsaPackage_returnsNull() {
+    public void createIntent_invalidAgsaPackage_skipsAccountLookup() {
         GSAUtils.setFakePassableGsaEnvironmentForTesting(false);
+        ExternalAuthUtils.setInstanceForTesting(mExternalAuthUtils);
+
         assertNull(mFactory.createIntent(mContext, mProfile, VoiceInteractionSource.OMNIBOX));
+        verify(mExternalAuthUtils).isGoogleSigned(GSAUtils.GSA_PACKAGE_NAME);
+        verify(mIdentityManager, never()).getPrimaryAccountInfo();
     }
 
     @Test
-    public void createIntent_voicePlateNotResolvable_returnsNull() {
+    public void createIntent_voicePlateNotResolvable_skipsSignatureAndAccountChecks() {
+        GSAUtils.setFakePassableGsaEnvironmentForTesting(false);
+        ExternalAuthUtils.setInstanceForTesting(mExternalAuthUtils);
         shadowOf(mContext.getPackageManager()).removeActivity(VOICE_PLATE_COMPONENT);
+
         assertNull(mFactory.createIntent(mContext, mProfile, VoiceInteractionSource.OMNIBOX));
+        verify(mExternalAuthUtils, never()).isGoogleSigned(any());
+        verify(mIdentityManager, never()).getPrimaryAccountInfo();
     }
 }
