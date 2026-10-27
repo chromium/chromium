@@ -18,7 +18,6 @@
 #include "build/build_config.h"
 #include "chrome/browser/ash/account_manager/account_manager_policy_controller_factory.h"
 #include "chrome/browser/ash/account_manager/child_account_type_changed_user_data.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/test/base/in_process_browser_test.h"

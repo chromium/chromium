@@ -24,7 +24,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
-#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_test.h"
 #include "chrome/browser/ash/arc/fileapi/arc_file_system_bridge.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"

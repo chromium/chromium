@@ -8,7 +8,6 @@
 
 #include "ash/constants/ash_pref_names.h"
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/login/login_state/scoped_test_public_session_login_state.h"

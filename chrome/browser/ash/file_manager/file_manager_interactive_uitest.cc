@@ -12,7 +12,6 @@
 #include "base/test/gtest_tags.h"
 #include "chrome/browser/apps/app_service/menu_util.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/test/base/ash/interactive/interactive_ash_test.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"

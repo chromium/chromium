@@ -37,7 +37,6 @@
 #include "chrome/browser/ash/note_taking/note_taking_controller_client.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "chromeos/ash/experiences/arc/intent_helper/arc_intent_helper_bridge.h"
 #include "chromeos/ash/experiences/arc/metrics/arc_metrics_constants.h"
 #include "chromeos/ash/experiences/arc/metrics/arc_metrics_service.h"

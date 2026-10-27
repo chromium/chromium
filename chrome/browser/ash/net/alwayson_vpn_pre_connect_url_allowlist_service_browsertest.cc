@@ -11,7 +11,6 @@
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
 #include "chrome/browser/ash/net/alwayson_vpn_pre_connect_url_allowlist_service_factory.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/test/base/in_process_browser_test.h"

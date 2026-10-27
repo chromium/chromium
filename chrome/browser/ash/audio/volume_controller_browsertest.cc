@@ -13,7 +13,6 @@
 #include "base/command_line.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "chromeos/ash/components/audio/sounds.h"

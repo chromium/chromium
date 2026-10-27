@@ -25,7 +25,6 @@
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/nearby_sharing/certificates/common.h"
 #include "chrome/browser/nearby_sharing/certificates/nearby_share_certificate_manager_impl.h"

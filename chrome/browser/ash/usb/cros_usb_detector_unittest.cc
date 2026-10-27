@@ -26,7 +26,6 @@
 #include "chrome/browser/ash/crostini/crostini_test_helper.h"
 #include "chrome/browser/ash/crostini/fake_crostini_features.h"
 #include "chrome/browser/ash/guest_os/guest_id.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/ash/components/dbus/chunneld/chunneld_client.h"
