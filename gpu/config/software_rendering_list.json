@@ -815,7 +815,7 @@
     },
     {
       "id": 122,
-      "description": "GPU rasterization should only be enabled on NVIDIA, Intel, AMD RX-R2 GPUs with DX11+, certain QC devices+drivers, LISUAN GPUs or any GPU using ANGLE's GL backend.",
+      "description": "GPU rasterization should only be enabled on NVIDIA, Intel, AMD RX-R2 GPUs with DX11+, certain QC devices+drivers or LISUAN GPUs.",
       "cr_bugs": [1047002, 1462800, 571984148],
       "os": {
         "type": "win"
@@ -826,32 +826,29 @@
       "exceptions": [
         {
           "vendor_id": "0x10de",
-          "pixel_shader_version": {
+          "d3d11_feature_level": {
             "op": ">=",
-            "value": "5.0"
-          },
-          "gl_renderer": ".*Direct3D11.*"
+            "value": "11.0"
+          }
         },
         {
           "vendor_id": "0x8086",
-          "pixel_shader_version": {
+          "d3d11_feature_level": {
             "op": ">=",
-            "value": "5.0"
-          },
-          "gl_renderer": ".*Direct3D11.*"
+            "value": "11.0"
+          }
         },
         {
           "vendor_id": "0x1002",
-          "pixel_shader_version": {
+          "d3d11_feature_level": {
             "op": ">=",
-            "value": "5.0"
+            "value": "11.0"
           },
           "driver_version": {
             "comment": "INF_version: 15.20.1006.0001; date: 02/20/2015",
             "op": ">=",
             "value": "8.17.10.1366"
-          },
-          "gl_renderer": ".*Direct3D11.*"
+          }
         },
         {
           "comment": "XBox (0xd000) handles GPU rasterization",
@@ -873,9 +870,6 @@
             "op": ">=",
             "value": "31.0.2.0"
           }
-        },
-        {
-          "gl_renderer": ".*OpenGL.*"
         },
         {
           "comment": "LISUAN GPUs handle GPU rasterization on Windows",
@@ -1361,19 +1355,6 @@
         "type": "linux"
       },
       "vendor_id": "0x15ad",
-      "features": [
-        "all"
-      ]
-    },
-    {
-      "id": 177,
-      "description": "Apple Software Renderer used under VMWare experiences synchronization issues with GPU Raster",
-      "cr_bugs": [607829, 1342540],
-      "os": {
-        "type": "macosx"
-      },
-      "gl_renderer": ".*Apple Software Renderer.*",
-      "multi_gpu_category": "any",
       "features": [
         "all"
       ]
