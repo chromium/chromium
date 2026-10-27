@@ -454,6 +454,12 @@ bool GpuControlList::Conditions::Contains(OsType target_os_type,
       candidates.push_back(gpu_info.gpu);
       break;
     case kMultiGpuCategoryActive:
+      if (!gpu_info.IsActiveGpuSpecified()) {
+        candidates = gpu_info.secondary_gpus;
+        candidates.push_back(gpu_info.gpu);
+        break;
+      }
+      [[fallthrough]];
     case kMultiGpuCategoryNone:
       // If gpu category is not specified, default to the active gpu.
       if (gpu_info.gpu.active || gpu_info.secondary_gpus.empty())
@@ -463,7 +469,7 @@ bool GpuControlList::Conditions::Contains(OsType target_os_type,
           candidates.push_back(gpu);
       }
       if (candidates.empty())
-        candidates.push_back(gpu_info.gpu);
+        candidates.push_back(gpu_info.active_gpu());
   }
 
   if (vendor_id != 0 || intel_conditions) {
@@ -587,6 +593,10 @@ bool GpuControlList::Entry::AppliesToTestGroup(
 }
 
 bool GpuControlList::Conditions::NeedsMoreInfo(const GPUInfo& gpu_info) const {
+  if (multi_gpu_category == kMultiGpuCategoryActive &&
+      !gpu_info.IsActiveGpuSpecified()) {
+    return true;
+  }
   // We only check for missing info that might be collected with a gl context.
   // If certain info is missing due to some error, say, we fail to collect
   // vendor_id/device_id, then even if we launch GPU process and create a gl

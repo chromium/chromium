@@ -172,14 +172,33 @@ GPUInfo::GPUDevice& GPUInfo::active_gpu() {
 }
 
 const GPUInfo::GPUDevice& GPUInfo::active_gpu() const {
-  if (gpu.active || secondary_gpus.empty())
+  if (gpu.active || secondary_gpus.empty()) {
     return gpu;
+  }
+  const GPUDevice* first_non_software_gpu =
+      gpu.IsSoftwareRenderer() ? nullptr : &gpu;
   for (const auto& secondary_gpu : secondary_gpus) {
-    if (secondary_gpu.active)
+    if (secondary_gpu.active) {
       return secondary_gpu;
+    }
+    if (!first_non_software_gpu && !secondary_gpu.IsSoftwareRenderer()) {
+      first_non_software_gpu = &secondary_gpu;
+    }
   }
   DVLOG(2) << "No active GPU found, returning primary GPU.";
-  return gpu;
+  return first_non_software_gpu ? *first_non_software_gpu : gpu;
+}
+
+bool GPUInfo::IsActiveGpuSpecified() const {
+  if (gpu.active || GpuCount() <= 1) {
+    return true;
+  }
+  for (const auto& secondary_gpu : secondary_gpus) {
+    if (secondary_gpu.active) {
+      return true;
+    }
+  }
+  return false;
 }
 
 bool GPUInfo::IsInitialized() const {

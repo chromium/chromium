@@ -293,6 +293,181 @@ TEST_P(GpuControlListTest, AngleVulkan) {
   EXPECT_EQ(GpuControlList::kGLTypeGLES, GetGLType("Mali-G52"));
 }
 
+TEST_P(GpuControlListTest, ActiveGpuAndIsActiveGpuSpecified) {
+  {
+    // Single GPU (active = false) -> IsActiveGpuSpecified() is true,
+    // active_gpu() returns gpu.
+    GPUInfo gpu_info;
+    gpu_info.gpu.vendor_id = kNvidiaVendorId;
+    gpu_info.gpu.device_id = 0x0640;
+    gpu_info.gpu.active = false;
+    EXPECT_EQ(1u, gpu_info.GpuCount());
+    EXPECT_TRUE(gpu_info.IsActiveGpuSpecified());
+    EXPECT_EQ(gpu_info.gpu.vendor_id, gpu_info.active_gpu().vendor_id);
+    EXPECT_EQ(gpu_info.gpu.device_id, gpu_info.active_gpu().device_id);
+  }
+  {
+    // Hardware GPU as gpu + software renderer (vendor_id = 0x1414,
+    // device_id = 0x008c) in secondary_gpus, neither active -> GpuCount() == 1,
+    // IsActiveGpuSpecified() is true, active_gpu() returns gpu.
+    GPUInfo gpu_info;
+    gpu_info.gpu.vendor_id = kNvidiaVendorId;
+    gpu_info.gpu.device_id = 0x0640;
+    gpu_info.gpu.active = false;
+    GPUInfo::GPUDevice sw_gpu;
+    sw_gpu.vendor_id = 0x1414;
+    sw_gpu.device_id = 0x008c;
+    sw_gpu.active = false;
+    gpu_info.secondary_gpus.push_back(sw_gpu);
+    EXPECT_EQ(1u, gpu_info.GpuCount());
+    EXPECT_TRUE(gpu_info.IsActiveGpuSpecified());
+    EXPECT_EQ(gpu_info.gpu.vendor_id, gpu_info.active_gpu().vendor_id);
+    EXPECT_EQ(gpu_info.gpu.device_id, gpu_info.active_gpu().device_id);
+  }
+  {
+    // Software renderer (vendor_id = 0x1414, device_id = 0x008c) as gpu +
+    // hardware GPU in secondary_gpus, neither active -> GpuCount() == 1,
+    // IsActiveGpuSpecified() is true, active_gpu() returns secondary_gpus[0].
+    GPUInfo gpu_info;
+    gpu_info.gpu.vendor_id = 0x1414;
+    gpu_info.gpu.device_id = 0x008c;
+    gpu_info.gpu.active = false;
+    GPUInfo::GPUDevice hw_gpu;
+    hw_gpu.vendor_id = kIntelVendorId;
+    hw_gpu.device_id = 0x0166;
+    hw_gpu.active = false;
+    gpu_info.secondary_gpus.push_back(hw_gpu);
+    EXPECT_EQ(1u, gpu_info.GpuCount());
+    EXPECT_TRUE(gpu_info.IsActiveGpuSpecified());
+    EXPECT_EQ(gpu_info.secondary_gpus[0].vendor_id,
+              gpu_info.active_gpu().vendor_id);
+    EXPECT_EQ(gpu_info.secondary_gpus[0].device_id,
+              gpu_info.active_gpu().device_id);
+  }
+  {
+    // Dual hardware GPUs (gpu and secondary_gpus[0]), neither active ->
+    // GpuCount() == 2, IsActiveGpuSpecified() is false, active_gpu() returns
+    // gpu.
+    GPUInfo gpu_info;
+    gpu_info.gpu.vendor_id = kNvidiaVendorId;
+    gpu_info.gpu.device_id = 0x0640;
+    gpu_info.gpu.active = false;
+    GPUInfo::GPUDevice second_gpu;
+    second_gpu.vendor_id = kIntelVendorId;
+    second_gpu.device_id = 0x0166;
+    second_gpu.active = false;
+    gpu_info.secondary_gpus.push_back(second_gpu);
+    EXPECT_EQ(2u, gpu_info.GpuCount());
+    EXPECT_FALSE(gpu_info.IsActiveGpuSpecified());
+    EXPECT_EQ(gpu_info.gpu.vendor_id, gpu_info.active_gpu().vendor_id);
+    EXPECT_EQ(gpu_info.gpu.device_id, gpu_info.active_gpu().device_id);
+
+    // Dual hardware GPUs with gpu.active = true -> IsActiveGpuSpecified() is
+    // true, active_gpu() returns gpu.
+    gpu_info.gpu.active = true;
+    gpu_info.secondary_gpus[0].active = false;
+    EXPECT_TRUE(gpu_info.IsActiveGpuSpecified());
+    EXPECT_EQ(gpu_info.gpu.vendor_id, gpu_info.active_gpu().vendor_id);
+    EXPECT_EQ(gpu_info.gpu.device_id, gpu_info.active_gpu().device_id);
+
+    // Dual hardware GPUs with secondary_gpus[0].active = true ->
+    // IsActiveGpuSpecified() is true, active_gpu() returns secondary_gpus[0].
+    gpu_info.gpu.active = false;
+    gpu_info.secondary_gpus[0].active = true;
+    EXPECT_TRUE(gpu_info.IsActiveGpuSpecified());
+    EXPECT_EQ(gpu_info.secondary_gpus[0].vendor_id,
+              gpu_info.active_gpu().vendor_id);
+    EXPECT_EQ(gpu_info.secondary_gpus[0].device_id,
+              gpu_info.active_gpu().device_id);
+  }
+}
+
+TEST_P(GpuControlListTest, NeedsMoreInfoForActiveGpu) {
+  const Entry kPrimaryEntries[1] = {
+      GetGpuControlListTestingEntries()
+          [kGpuControlListEntryDualGPUTest_ActivePrimaryGPU]};
+  std::unique_ptr<GpuControlList> primary_list = Create(kPrimaryEntries);
+
+  const Entry kSecondaryEntries[1] = {
+      GetGpuControlListTestingEntries()
+          [kGpuControlListEntryDualGPUTest_ActiveSecondaryGPU]};
+  std::unique_ptr<GpuControlList> secondary_list = Create(kSecondaryEntries);
+
+  GPUInfo gpu_info;
+  gpu_info.gpu.vendor_id = kNvidiaVendorId;
+  gpu_info.gpu.device_id = 0x0640;
+  gpu_info.gpu.active = false;
+  GPUInfo::GPUDevice second_gpu;
+  second_gpu.vendor_id = kIntelVendorId;
+  second_gpu.device_id = 0x0166;
+  second_gpu.active = false;
+  gpu_info.secondary_gpus.push_back(second_gpu);
+
+  // With dual hardware GPUs (0x10de:0x0640 primary, 0x8086:0x0166 secondary)
+  // and neither marked active: for both entries,
+  // MakeDecision(GpuControlList::kOsMacosx, kOsVersion, gpu_info, {}) returns
+  // empty features, GetActiveEntries() is empty, and
+  // control_list->needs_more_info() is true.
+  std::set<int> features = primary_list->MakeDecision(GpuControlList::kOsMacosx,
+                                                      kOsVersion, gpu_info, {});
+  EXPECT_EMPTY_SET(features);
+  EXPECT_TRUE(primary_list->needs_more_info());
+  EXPECT_EQ(0u, primary_list->GetActiveEntries().size());
+
+  features = secondary_list->MakeDecision(GpuControlList::kOsMacosx, kOsVersion,
+                                          gpu_info, {});
+  EXPECT_EMPTY_SET(features);
+  EXPECT_TRUE(secondary_list->needs_more_info());
+  EXPECT_EQ(0u, secondary_list->GetActiveEntries().size());
+
+  // When gpu.active = true: ActivePrimaryGPU returns TEST_FEATURE_0 with
+  // needs_more_info() == false; ActiveSecondaryGPU returns empty features with
+  // needs_more_info() == false.
+  gpu_info.gpu.active = true;
+  gpu_info.secondary_gpus[0].active = false;
+
+  features = primary_list->MakeDecision(GpuControlList::kOsMacosx, kOsVersion,
+                                        gpu_info, {});
+  EXPECT_SINGLE_FEATURE(features, TEST_FEATURE_0);
+  EXPECT_FALSE(primary_list->needs_more_info());
+
+  features = secondary_list->MakeDecision(GpuControlList::kOsMacosx, kOsVersion,
+                                          gpu_info, {});
+  EXPECT_EMPTY_SET(features);
+  EXPECT_FALSE(secondary_list->needs_more_info());
+
+  // When secondary_gpus[0].active = true: ActiveSecondaryGPU returns
+  // TEST_FEATURE_0 with needs_more_info() == false; ActivePrimaryGPU returns
+  // empty features with needs_more_info() == false.
+  gpu_info.gpu.active = false;
+  gpu_info.secondary_gpus[0].active = true;
+
+  features = secondary_list->MakeDecision(GpuControlList::kOsMacosx, kOsVersion,
+                                          gpu_info, {});
+  EXPECT_SINGLE_FEATURE(features, TEST_FEATURE_0);
+  EXPECT_FALSE(secondary_list->needs_more_info());
+
+  features = primary_list->MakeDecision(GpuControlList::kOsMacosx, kOsVersion,
+                                        gpu_info, {});
+  EXPECT_EMPTY_SET(features);
+  EXPECT_FALSE(primary_list->needs_more_info());
+
+  // When gpu is a software renderer (0x1414:0x008c) and secondary_gpus[0] is
+  // 0x8086:0x0166 (active = false): ActiveSecondaryGPU returns TEST_FEATURE_0
+  // with needs_more_info() == false.
+  gpu_info.gpu.vendor_id = 0x1414;
+  gpu_info.gpu.device_id = 0x008c;
+  gpu_info.gpu.active = false;
+  gpu_info.secondary_gpus[0].vendor_id = kIntelVendorId;
+  gpu_info.secondary_gpus[0].device_id = 0x0166;
+  gpu_info.secondary_gpus[0].active = false;
+
+  features = secondary_list->MakeDecision(GpuControlList::kOsMacosx, kOsVersion,
+                                          gpu_info, {});
+  EXPECT_SINGLE_FEATURE(features, TEST_FEATURE_0);
+  EXPECT_FALSE(secondary_list->needs_more_info());
+}
+
 #if BUILDFLAG(IS_WIN)
 TEST_P(GpuControlListTest, D3DFeatureLevel) {
   const Entry kEntries[1] = {

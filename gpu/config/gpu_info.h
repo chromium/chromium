@@ -294,6 +294,7 @@ struct GPU_CONFIG_EXPORT GPUInfo {
   // The currently active gpu.
   GPUDevice& active_gpu();
   const GPUDevice& active_gpu() const;
+  bool IsActiveGpuSpecified() const;
 
   bool IsInitialized() const;
 
