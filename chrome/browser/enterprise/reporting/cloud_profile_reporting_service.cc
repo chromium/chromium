@@ -26,6 +26,7 @@
 #include "components/enterprise/browser/reporting/report_scheduler.h"
 #include "components/enterprise/browser/reporting/reporting_features.h"
 #include "components/enterprise/browser/reporting/saas_usage/saas_usage_report_scheduler.h"
+#include "components/enterprise/isolated_mode/isolated_mode_features.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
 #include "components/policy/core/common/cloud/cloud_policy_core.h"
 #include "components/policy/core/common/cloud/cloud_policy_manager.h"
@@ -128,6 +129,10 @@ void CloudProfileReportingService::CreateReportScheduler() {
       base::BindRepeating(&CanUploadExtensionInfo, profile_));
 #endif
   report_scheduler_ = std::make_unique<ReportScheduler>(std::move(params));
+  if (enterprise_isolated_mode::IsCaaEnabledInIsolatedMode() &&
+      profile_->IsEnterpriseIsolatedModeProfile()) {
+    return;
+  }
 
   if (base::FeatureList::IsEnabled(kSaasUsageReporting)) {
     auto saas_usage_reporting_delegate_factory =

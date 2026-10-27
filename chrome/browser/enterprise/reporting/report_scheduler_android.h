@@ -31,6 +31,7 @@ class ReportSchedulerAndroid : public ReportScheduler::Delegate,
   void OnBrowserVersionUploaded() override;
   policy::DMToken GetProfileDMToken() override;
   std::string GetProfileClientId() override;
+  bool IsIsolatedProfile() const override;
 
   // UserSecuritySignalsService::Delegate implementation.
   void OnReportEventTriggered(SecurityReportTrigger trigger) override;

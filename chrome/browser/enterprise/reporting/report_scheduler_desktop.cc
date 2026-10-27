@@ -61,8 +61,7 @@ ReportSchedulerDesktop::ReportSchedulerDesktop(Profile* profile)
         std::make_unique<UserSecuritySignalsService>(
             prefs_, this,
             profile->GetProfilePolicyConnector()->policy_service(),
-            enterprise_isolated_mode::IsCaaEnabledInIsolatedMode() &&
-                profile->IsEnterpriseIsolatedModeProfile());
+            IsIsolatedProfile());
   }
 }
 
@@ -151,6 +150,11 @@ void ReportSchedulerDesktop::OnUpdate(const BuildState* build_state) {
   if (!trigger_report_callback_.is_null()) {
     trigger_report_callback_.Run(ReportTrigger::kTriggerUpdate);
   }
+}
+
+bool ReportSchedulerDesktop::IsIsolatedProfile() const {
+  return enterprise_isolated_mode::IsCaaEnabledInIsolatedMode() && profile_ &&
+         profile_->IsEnterpriseIsolatedModeProfile();
 }
 
 }  // namespace enterprise_reporting

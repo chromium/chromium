@@ -155,6 +155,9 @@ ReportScheduler::~ReportScheduler() {
 }
 
 bool ReportScheduler::IsReportingEnabled() const {
+  if (delegate_->IsIsolatedProfile()) {
+    return false;
+  }
   PrefService* prefs = delegate_->GetPrefService();
   if (require_policy_fetch_with_profile_id_) {
     return prefs->GetBoolean(reporting_pref_name_) &&
@@ -372,7 +375,8 @@ bool ReportScheduler::IsTriggerEnabled(ReportTrigger trigger) const {
     case ReportTrigger::kTriggerSecurity:
       return AreSecurityReportsEnabled();
     case ReportTrigger::kTriggerProfileOpened:
-      return IsReportingEnabled() || AreSecurityReportsEnabled();
+      return !delegate_->IsIsolatedProfile() &&
+             (IsReportingEnabled() || AreSecurityReportsEnabled());
     case ReportTrigger::kTriggerTimer:
     case ReportTrigger::kTriggerManual:
     case ReportTrigger::kTriggerUpdate:

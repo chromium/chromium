@@ -58,6 +58,10 @@ std::string ReportSchedulerAndroid::GetProfileClientId() {
   return reporting::GetUserClientId(profile_).value_or(std::string());
 }
 
+bool ReportSchedulerAndroid::IsIsolatedProfile() const {
+  return false;
+}
+
 void ReportSchedulerAndroid::OnReportEventTriggered(
     SecurityReportTrigger trigger) {
   if (!AreSecurityReportsEnabled()) {

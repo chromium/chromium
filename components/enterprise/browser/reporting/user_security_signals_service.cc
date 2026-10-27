@@ -77,6 +77,9 @@ bool UserSecuritySignalsService::ShouldUseCookies() {
 }
 
 void UserSecuritySignalsService::OnReportUploaded() {
+  if (!can_upload_signals_) {
+    return;
+  }
   timer_.Start(FROM_HERE, base::Time::Now() + GetSecurityUploadCadence(),
                base::BindRepeating(&UserSecuritySignalsService::TriggerReport,
                                    weak_factory_.GetWeakPtr(),

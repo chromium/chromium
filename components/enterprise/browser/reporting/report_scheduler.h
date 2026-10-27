@@ -66,10 +66,13 @@ class ReportScheduler : public ReportUploader::Listener {
     virtual std::string GetProfileClientId() = 0;
 
     // Security signals
-    virtual bool AreSecurityReportsEnabled();
-    virtual bool UseCookiesInUploads();
+    bool AreSecurityReportsEnabled();
+    bool UseCookiesInUploads();
     // Invoked when security signals was uploaded by a report.
-    virtual void OnSecuritySignalsUploaded();
+    void OnSecuritySignalsUploaded();
+
+    // Returns true if the current profile is an isolated profile.
+    virtual bool IsIsolatedProfile() const = 0;
 
    protected:
     ReportTriggerCallback trigger_report_callback_;

@@ -629,7 +629,9 @@ TEST_F(UserSecuritySignalsServiceTest,
                              /*expect_remove_observer=*/false,
                              /*is_isolated_profile=*/true);
 
-  // No report should be triggered before the first sign-in cookie is inserted.
+  // No report should be triggered before the first sign-in cookie is inserted,
+  // even if OnReportUploaded() is called externally (e.g. manual upload).
+  service_->OnReportUploaded();
   FastForwardTimeToTrigger();
   histogram_tester_.ExpectTotalCount(kReportTriggerMetricName, 0);
 

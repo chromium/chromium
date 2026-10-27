@@ -39,6 +39,7 @@ class ReportSchedulerDesktop : public ReportScheduler::Delegate,
 
   policy::DMToken GetProfileDMToken() override;
   std::string GetProfileClientId() override;
+  bool IsIsolatedProfile() const override;
 
   // UserSecuritySignalsService::Delegate implementation.
   void OnReportEventTriggered(SecurityReportTrigger trigger) override;

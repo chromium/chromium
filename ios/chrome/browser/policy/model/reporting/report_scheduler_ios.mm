@@ -99,4 +99,8 @@ std::string ReportSchedulerIOS::GetProfileClientId() {
   return manager->GetClientId().value_or(std::string());
 }
 
+bool ReportSchedulerIOS::IsIsolatedProfile() const {
+  return false;
+}
+
 }  // namespace enterprise_reporting
