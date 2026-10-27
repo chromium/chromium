@@ -2028,6 +2028,10 @@ TEST_F(ChromePasswordManagerClientAndroidTest, FocusedInputChangedWrongFrame) {
   client->FocusedInputChanged(driver.get(), FieldRendererId(123),
                               FocusedFieldType::kFillablePasswordField);
 
+  EXPECT_EQ(ManualFillingControllerImpl::FromWebContents(web_contents())
+                ->GetLastFocusedFieldId(),
+            autofill::FieldGlobalId());
+
   PasswordGenerationController* pwd_generation_controller =
       PasswordGenerationController::GetIfExisting(web_contents());
 
@@ -2163,6 +2167,7 @@ TEST_F(ChromePasswordManagerClientAndroidTest,
 
 TEST_F(ChromePasswordManagerClientAndroidTest,
        FocusedInputChangeUpdatesCredManReentryUi) {
+  FocusWebContentsOnMainFrame();
   std::unique_ptr<password_manager::ContentPasswordManagerDriver> driver =
       CreateContentPasswordManagerDriver(main_rfh());
   MockPasswordAccessoryControllerImpl* weak_mock_pwd_controller =
@@ -2696,6 +2701,7 @@ TEST_F(ChromePasswordManagerClientAndroidTest,
 
   constexpr char kUrl[] = "https://www.foo.com/login.html";
   NavigateAndCommit(GURL(kUrl));
+  FocusWebContentsOnMainFrame();
   ContentAutofillDriver* autofill_driver =
       ContentAutofillDriver::GetForRenderFrameHost(main_rfh());
   ASSERT_TRUE(autofill_driver);
@@ -2715,6 +2721,7 @@ TEST_F(ChromePasswordManagerClientAndroidTest,
 
   auto* driver =
       ContentPasswordManagerDriver::GetForRenderFrameHost(main_rfh());
+  SetUpMockPwdAccessoryForClientUse(driver);
   GetClient()->ShowKeyboardReplacingSurface(
       driver, GetFocusedFieldSuggestionRequest(form));
 
@@ -2723,6 +2730,66 @@ TEST_F(ChromePasswordManagerClientAndroidTest,
 
   // Simulate a timeout. The timer should be cancelled so TTF methods should not
   // be called.
+  AdvanceClock(base::Seconds(5));
+  base::RunLoop().RunUntilIdle();
+}
+
+// Regression test for the passkeys timer when the focus moves to another frame
+// before the original frame's blur event arrives: the late blur comes from a
+// frame that is no longer focused, but it must still cancel the pending
+// Touch-To-Fill sheet for the field that started the timer.
+TEST_F(ChromePasswordManagerClientAndroidTest,
+       DelaySuggestionsSheetPasskeysTimerCancelledByBlurFromUnfocusedFrame) {
+  webauthn::WebAuthnCredManDelegate::override_cred_man_support_for_testing(
+      webauthn::CredManSupport::DISABLED);
+  base::test::ScopedFeatureList features(
+      password_manager::features::
+          kDelaySuggestionsOnAutofocusWaitingForPasskeys);
+  CreateManualFillingController(web_contents());
+
+  auto* ttf_controller = MakeMockTouchToFillPasswordManagerController();
+  EXPECT_CALL(*ttf_controller, InitData).Times(0);
+  EXPECT_CALL(*ttf_controller, Show).Times(0);
+
+  constexpr char kUrl[] = "https://www.foo.com/login.html";
+  NavigateAndCommit(GURL(kUrl));
+  FocusWebContentsOnMainFrame();
+  ContentAutofillDriver* autofill_driver =
+      ContentAutofillDriver::GetForRenderFrameHost(main_rfh());
+  ASSERT_TRUE(autofill_driver);
+
+  std::vector<FormFieldData> fields = {CreateTestFormField(
+      "Username:", "username", "", FormControlType::kInputText, "webauthn")};
+  FormData form =
+      CreateFormDataForRenderFrameHost(*main_rfh(), std::move(fields));
+  {
+    autofill::TestAutofillManagerWaiter waiter(
+        autofill_driver->GetAutofillManager(),
+        {autofill::AutofillManagerEvent::kFormsSeen});
+    autofill_driver->renderer_events().FormsSeen(/*updated_forms=*/{form},
+                                                 /*removed_forms=*/{});
+    ASSERT_TRUE(waiter.Wait(/*num_expected_relevant_events=*/1));
+  }
+
+  // Frame A (main frame): autofocused field starts the passkeys timer.
+  auto* main_driver =
+      ContentPasswordManagerDriver::GetForRenderFrameHost(main_rfh());
+  SetUpMockPwdAccessoryForClientUse(main_driver);
+  GetClient()->ShowKeyboardReplacingSurface(
+      main_driver, GetFocusedFieldSuggestionRequest(form));
+
+  // Frame B takes browser-side focus (e.g. the user tapped non-editable
+  // content in it), so it never sends a FocusedInputChanged of its own.
+  content::RenderFrameHost* subframe =
+      content::RenderFrameHostTester::For(main_rfh())->AppendChild("subframe");
+  FocusWebContentsOnFrame(subframe);
+
+  // Frame A's blur arrives late, from a frame that is no longer focused.
+  GetClient()->FocusedInputChanged(main_driver, FieldRendererId(123),
+                                   FocusedFieldType::kUnknown);
+
+  // Simulate a timeout. The timer must have been cancelled, so TTF methods
+  // must not be called.
   AdvanceClock(base::Seconds(5));
   base::RunLoop().RunUntilIdle();
 }

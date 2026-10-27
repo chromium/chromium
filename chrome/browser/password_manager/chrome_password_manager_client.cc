@@ -479,6 +479,13 @@ void ChromePasswordManagerClient::FocusedInputChanged(
   // cancel it because the original element is no longer focused.
   wait_for_passkeys_timer_.Stop();
 
+  password_manager::ContentPasswordManagerDriver* content_driver =
+      static_cast<password_manager::ContentPasswordManagerDriver*>(driver);
+  if (!ShouldAcceptFocusEvent(web_contents(), content_driver,
+                              focused_field_type)) {
+    return;
+  }
+
   // Suppress keyboard accessory if password store is not available.
   if (GetProfilePasswordStore() == nullptr) {
     return;
@@ -486,13 +493,6 @@ void ChromePasswordManagerClient::FocusedInputChanged(
   ManualFillingController::GetOrCreate(web_contents())
       ->NotifyFocusedInputChanged(focused_field_id, focused_field_type);
   GetOrCreatePasswordAccessory()->UpdateCredManReentryUi(focused_field_type);
-
-  password_manager::ContentPasswordManagerDriver* content_driver =
-      static_cast<password_manager::ContentPasswordManagerDriver*>(driver);
-  if (!ShouldAcceptFocusEvent(web_contents(), content_driver,
-                              focused_field_type)) {
-    return;
-  }
 
   if (!content_driver->CanShowAutofillUi()) {
     return;
