@@ -52,6 +52,8 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerProxy
   using UsageAndQuotaCallback = QuotaManagerImpl::UsageAndQuotaCallback;
   using UsageAndQuotaWithBreakdownCallback =
       QuotaManagerImpl::UsageAndQuotaWithBreakdownCallback;
+  using UsageAndQuotaWithBreakdownAndOverrideFlagCallback =
+      QuotaManagerImpl::UsageAndQuotaWithBreakdownAndOverrideFlagCallback;
 
   // The caller is responsible for calling InvalidateQuotaManagerImpl() before
   // `quota_manager_impl` is destroyed. `quota_manager_impl_task_runner` must be
@@ -195,6 +197,11 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerProxy
       const blink::StorageKey& storage_key,
       scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
       UsageAndQuotaCallback callback);
+
+  void GetUsageAndQuotaForDevtools(
+      const blink::StorageKey& storage_key,
+      scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
+      UsageAndQuotaWithBreakdownAndOverrideFlagCallback callback);
 
   void GetBucketUsageAndReportedQuota(
       BucketId bucket,

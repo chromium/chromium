@@ -25,6 +25,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/string_view_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "components/services/storage/privileged/mojom/indexed_db_control.mojom.h"
 #include "components/services/storage/public/cpp/buckets/bucket_locator.h"
@@ -41,7 +42,6 @@
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/browser_context.h"
-#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/devtools_agent_host_client.h"
 #include "content/public/browser/render_process_host.h"
@@ -49,8 +49,6 @@
 #include "net/base/net_errors.h"
 #include "net/base/schemeful_site.h"
 #include "services/network/public/mojom/trust_tokens.mojom.h"
-#include "storage/browser/quota/quota_manager.h"
-#include "storage/browser/quota/quota_manager_impl.h"
 #include "storage/browser/quota/quota_manager_observer.mojom-forward.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
 #include "storage/browser/quota/quota_override_handle.h"
@@ -118,31 +116,6 @@ void ReportUsageAndQuotaDataOnUIThread(
 
   callback->sendSuccess(usage, quota, is_override_enabled,
                         std::move(usageList));
-}
-
-void GotUsageAndQuotaDataCallback(
-    std::unique_ptr<StorageHandler::GetUsageAndQuotaCallback> callback,
-    blink::mojom::QuotaStatusCode code,
-    int64_t usage,
-    int64_t quota,
-    bool is_override_enabled,
-    blink::mojom::UsageBreakdownPtr usage_breakdown) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(ReportUsageAndQuotaDataOnUIThread, std::move(callback),
-                     code, usage, quota, is_override_enabled,
-                     std::move(usage_breakdown)));
-}
-
-void GetUsageAndQuotaOnIOThread(
-    storage::QuotaManager* manager,
-    const blink::StorageKey& storage_key,
-    std::unique_ptr<StorageHandler::GetUsageAndQuotaCallback> callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  manager->GetUsageAndQuotaForDevtools(
-      storage_key,
-      base::BindOnce(&GotUsageAndQuotaDataCallback, std::move(callback)));
 }
 
 std::unique_ptr<protocol::Storage::StorageBucketInfo> BuildBucketInfo(
@@ -715,12 +688,10 @@ void StorageHandler::GetUsageAndQuota(
     return callback->sendFailure(std::move(origin.error()));
   }
 
-  storage::QuotaManager* manager = storage_partition_->GetQuotaManager();
-  GetIOThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(&GetUsageAndQuotaOnIOThread, base::RetainedRef(manager),
-                     blink::StorageKey::CreateFirstParty(*origin),
-                     std::move(callback)));
+  GetQuotaManagerProxy()->GetUsageAndQuotaForDevtools(
+      blink::StorageKey::CreateFirstParty(*origin),
+      base::SequencedTaskRunner::GetCurrentDefault(),
+      base::BindOnce(&ReportUsageAndQuotaDataOnUIThread, std::move(callback)));
 }
 
 void StorageHandler::OverrideQuotaForOrigin(
@@ -739,9 +710,7 @@ void StorageHandler::OverrideQuotaForOrigin(
   }
 
   if (!quota_override_handle_) {
-    scoped_refptr<storage::QuotaManagerProxy> manager_proxy =
-        storage_partition_->GetQuotaManager()->proxy();
-    quota_override_handle_ = manager_proxy->GetQuotaOverrideHandle();
+    quota_override_handle_ = GetQuotaManagerProxy()->GetQuotaOverrideHandle();
   }
 
   quota_override_handle_->OverrideQuotaForStorageKey(
@@ -902,8 +871,7 @@ StorageHandler::IndexedDBObserver* StorageHandler::GetIndexedDBObserver() {
 storage::QuotaManagerProxy* StorageHandler::GetQuotaManagerProxy() {
   DCHECK(storage_partition_);
 
-  return static_cast<StoragePartitionImpl*>(storage_partition_)
-      ->GetQuotaManagerProxy();
+  return storage_partition_->GetQuotaManagerProxy();
 }
 
 void StorageHandler::NotifyCacheStorageListChanged(
