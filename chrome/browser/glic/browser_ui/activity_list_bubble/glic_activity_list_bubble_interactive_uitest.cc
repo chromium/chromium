@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/test/bind.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
@@ -40,10 +41,12 @@
 #include "ui/views/interaction/interaction_test_util_views.h"
 #include "ui/views/test/widget_test.h"
 
-class ActorTaskListBubbleInteractiveUiTest
+namespace glic {
+
+class GlicActivityListBubbleInteractiveUiTest
     : public ActorUiInteractiveBrowserTest {
  public:
-  ActorTaskListBubbleInteractiveUiTest() {
+  GlicActivityListBubbleInteractiveUiTest() {
     feature_list_.InitWithFeaturesAndParameters(
         {
             {features::kGlicActor, {}},
@@ -56,11 +59,11 @@ class ActorTaskListBubbleInteractiveUiTest
   }
 
  protected:
-  glic::GlicTestEnvironment glic_test_environment_;
+  GlicTestEnvironment glic_test_environment_;
   base::test::ScopedFeatureList feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(ActorTaskListBubbleInteractiveUiTest,
+IN_PROC_BROWSER_TEST_F(GlicActivityListBubbleInteractiveUiTest,
                        ShowBubbleWithTask) {
   gfx::ScopedAnimationDurationScaleMode disable_animations(
       gfx::ScopedAnimationDurationScaleMode::ZERO_DURATION);
@@ -74,15 +77,15 @@ IN_PROC_BROWSER_TEST_F(ActorTaskListBubbleInteractiveUiTest,
       CheckView(
           kActorTaskListBubbleView,
           [](views::View* view) { return view->children().size() == 1u; }),
-      InSameContext(NameDescendantViewByType<ActorTaskListBubbleRowButton>(
+      InSameContext(NameDescendantViewByType<GlicActivityListBubbleRowButton>(
           kActorTaskListBubbleView, kFirstTaskItem, 0)),
       CheckViewProperty(
-          kFirstTaskItem, &ActorTaskListBubbleRowButton::GetSubtitleText,
+          kFirstTaskItem, &GlicActivityListBubbleRowButton::GetSubtitleText,
           l10n_util::GetStringUTF16(
               IDS_ACTOR_TASK_LIST_BUBBLE_ROW_CHECK_TASK_SUBTITLE)),
       CheckView(
           kFirstTaskItem,
-          [](ActorTaskListBubbleRowButton* button) {
+          [](GlicActivityListBubbleRowButton* button) {
             return button->GetRedirectIconForTesting()->GetTooltipText() ==
                    l10n_util::GetStringUTF16(IDS_TAB_SEARCH_A11Y_OPEN_TAB);
           }),
@@ -90,7 +93,7 @@ IN_PROC_BROWSER_TEST_F(ActorTaskListBubbleInteractiveUiTest,
       InAnyContext(WaitForHide(kActorTaskListBubbleView)));
 }
 
-IN_PROC_BROWSER_TEST_F(ActorTaskListBubbleInteractiveUiTest,
+IN_PROC_BROWSER_TEST_F(GlicActivityListBubbleInteractiveUiTest,
                        ClickingOnTaskInBubbleActuatesTab) {
   gfx::ScopedAnimationDurationScaleMode disable_animations(
       gfx::ScopedAnimationDurationScaleMode::ZERO_DURATION);
@@ -116,10 +119,10 @@ IN_PROC_BROWSER_TEST_F(ActorTaskListBubbleInteractiveUiTest,
       CheckView(
           kActorTaskListBubbleView,
           [](views::View* view) { return view->children().size() == 1u; }),
-      InSameContext(NameDescendantViewByType<ActorTaskListBubbleRowButton>(
+      InSameContext(NameDescendantViewByType<GlicActivityListBubbleRowButton>(
           kActorTaskListBubbleView, kFirstTaskItem, 0)),
       CheckViewProperty(
-          kFirstTaskItem, &ActorTaskListBubbleRowButton::GetSubtitleText,
+          kFirstTaskItem, &GlicActivityListBubbleRowButton::GetSubtitleText,
           l10n_util::GetStringUTF16(
               IDS_ACTOR_TASK_LIST_BUBBLE_ROW_CHECK_TASK_SUBTITLE)),
       PressButton(kFirstTaskItem),
@@ -131,7 +134,7 @@ IN_PROC_BROWSER_TEST_F(ActorTaskListBubbleInteractiveUiTest,
                    "Actor.Ui.TaskListBubble.Row.Click"));
 }
 
-IN_PROC_BROWSER_TEST_F(ActorTaskListBubbleInteractiveUiTest,
+IN_PROC_BROWSER_TEST_F(GlicActivityListBubbleInteractiveUiTest,
                        StopTransientTaskDoesNotShowBubble) {
   gfx::ScopedAnimationDurationScaleMode disable_animations(
       gfx::ScopedAnimationDurationScaleMode::ZERO_DURATION);
@@ -145,7 +148,7 @@ IN_PROC_BROWSER_TEST_F(ActorTaskListBubbleInteractiveUiTest,
       InAnyContext(EnsureNotPresent(kActorTaskListBubbleView)));
 }
 
-IN_PROC_BROWSER_TEST_F(ActorTaskListBubbleInteractiveUiTest,
+IN_PROC_BROWSER_TEST_F(GlicActivityListBubbleInteractiveUiTest,
                        ExperimentalTriggeringTaskShowsBubbleInActingState) {
   gfx::ScopedAnimationDurationScaleMode disable_animations(
       gfx::ScopedAnimationDurationScaleMode::ZERO_DURATION);
@@ -190,7 +193,7 @@ IN_PROC_BROWSER_TEST_F(ActorTaskListBubbleInteractiveUiTest,
       CheckView(
           kActorTaskListBubbleView,
           [](views::View* view) { return view->children().size() == 1u; }),
-      InSameContext(NameDescendantViewByType<ActorTaskListBubbleRowButton>(
+      InSameContext(NameDescendantViewByType<GlicActivityListBubbleRowButton>(
           kActorTaskListBubbleView, kFirstTaskItem, 0)),
       PressButton(kFirstTaskItem),
       InAnyContext(WaitForHide(kActorTaskListBubbleView)));
@@ -198,10 +201,10 @@ IN_PROC_BROWSER_TEST_F(ActorTaskListBubbleInteractiveUiTest,
 
 // Unlike the other tests in this file, this test suite uses the Glic actor test
 // fixture in order to test interactions with Glic instances / web clients.
-class GlicActorTaskListBubbleInteractiveUiTest
+class GlicActorActivityListBubbleInteractiveUiTest
     : public glic::test::GlicActorUiTest {
  public:
-  GlicActorTaskListBubbleInteractiveUiTest() {
+  GlicActorActivityListBubbleInteractiveUiTest() {
     feature_list_.InitAndEnableFeatureWithParameters(
         features::kGlicActorUi, {{features::kGlicActorUiTaskIconName, "true"}});
   }
@@ -210,7 +213,7 @@ class GlicActorTaskListBubbleInteractiveUiTest
   base::test::ScopedFeatureList feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(GlicActorTaskListBubbleInteractiveUiTest,
+IN_PROC_BROWSER_TEST_F(GlicActorActivityListBubbleInteractiveUiTest,
                        NotificationReceivedAfterClickingOnTaskInBubble) {
   gfx::ScopedAnimationDurationScaleMode disable_animations(
       gfx::ScopedAnimationDurationScaleMode::ZERO_DURATION);
@@ -231,10 +234,10 @@ IN_PROC_BROWSER_TEST_F(GlicActorTaskListBubbleInteractiveUiTest,
       CheckView(
           kActorTaskListBubbleView,
           [](views::View* view) { return view->children().size() == 1u; }),
-      InSameContext(NameDescendantViewByType<ActorTaskListBubbleRowButton>(
+      InSameContext(NameDescendantViewByType<GlicActivityListBubbleRowButton>(
           kActorTaskListBubbleView, kFirstTaskItem, 0)),
       CheckViewProperty(
-          kFirstTaskItem, &ActorTaskListBubbleRowButton::GetSubtitleText,
+          kFirstTaskItem, &GlicActivityListBubbleRowButton::GetSubtitleText,
           l10n_util::GetStringUTF16(
               IDS_ACTOR_TASK_LIST_BUBBLE_ROW_CHECK_TASK_SUBTITLE)),
       // Set up a promise to listen for the row clicked event.
@@ -268,3 +271,5 @@ IN_PROC_BROWSER_TEST_F(GlicActorTaskListBubbleInteractiveUiTest,
                       task_id_.value());
           })));
 }
+
+}  // namespace glic

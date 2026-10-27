@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/actor/actor_keyed_service_factory.h"
 #include "chrome/browser/actor/actor_keyed_service_fake.h"
@@ -20,6 +21,7 @@
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
+#include "chrome/browser/glic/public/service/glic_activity_manager.h"
 #include "chrome/browser/glic/public/service/legacy_glic_activity_manager.h"
 #include "chrome/browser/glic/test_support/glic_test_environment.h"
 #include "chrome/browser/glic/test_support/mock_glic_keyed_service.h"
@@ -42,24 +44,35 @@
 #include "ui/views/bubble/bubble_dialog_model_host.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/interaction/element_tracker_views.h"
+#include "ui/views/test/button_test_api.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/unique_widget_ptr.h"
 #include "ui/views/widget/widget_delegate.h"
 
+namespace glic {
+
 using ::tabs::MockTabInterface;
-class ActorTaskListBubbleTest : public ChromeViewsTestBase {
+
+class GlicActivityListBubbleTest : public ChromeViewsTestBase {
  public:
-  ActorTaskListBubbleTest() = default;
-
-  void SetUp() override {
-    ChromeViewsTestBase::SetUp();
-
+  GlicActivityListBubbleTest() : GlicActivityListBubbleTest(false) {}
+  explicit GlicActivityListBubbleTest(bool enable_activity_hub) {
     std::vector<base::test::FeatureRefAndParams> enabled_features = {
         {features::kGlicActor, {}},
         {features::kGlicActorPolicyControlExemption, {}}};
-    feature_list_.InitWithFeaturesAndParameters(std::move(enabled_features),
-                                                {});
+    std::vector<base::test::FeatureRef> disabled_features;
+    if (enable_activity_hub) {
+      enabled_features.push_back({features::kGlicActivityHub, {}});
+    } else {
+      disabled_features.push_back(features::kGlicActivityHub);
+    }
+    feature_list_.InitWithFeaturesAndParameters(enabled_features,
+                                                disabled_features);
+  }
+
+  void SetUp() override {
+    ChromeViewsTestBase::SetUp();
 
     testing_profile_manager_ = std::make_unique<TestingProfileManager>(
         TestingBrowserProcess::GetGlobal());
@@ -78,7 +91,7 @@ class ActorTaskListBubbleTest : public ChromeViewsTestBase {
             TestingProfile::TestingFactory{
                 glic::GlicKeyedServiceFactory::GetInstance(),
                 base::BindRepeating(
-                    &ActorTaskListBubbleTest::BuildMockGlicKeyedService,
+                    &GlicActivityListBubbleTest::BuildMockGlicKeyedService,
                     base::Unretained(this))}});
 
     glic_test_env_.SetupProfile(profile_);
@@ -108,7 +121,7 @@ class ActorTaskListBubbleTest : public ChromeViewsTestBase {
         std::make_unique<glic::GlicSplitButtonController>(
             browser_window_interface_.get(), mock_glic_service_);
     controller_ =
-        ActorTaskListBubbleController::From(browser_window_interface_.get());
+        GlicActivityListBubbleController::From(browser_window_interface_.get());
     ASSERT_TRUE(controller_);
   }
 
@@ -161,19 +174,22 @@ class ActorTaskListBubbleTest : public ChromeViewsTestBase {
 
   views::Widget* CreateBubbleView(
       absl::flat_hash_map<actor::TaskId, bool> task_list) {
-    bubble_ = std::make_unique<ActorTaskListBubble>(
-        profile_.get(), browser_window_interface_.get(), task_list,
-        base::BindRepeating(&ActorTaskListBubbleTest::OnTaskClicked,
-                            base::Unretained(this)));
+    std::vector<GlicActivityRowViewModel> rows =
+        GlicActivityListBubbleController::GetActorTaskRowViewModels(
+            profile_.get(), task_list,
+            base::BindRepeating(&GlicActivityListBubbleTest::OnTaskClicked,
+                                base::Unretained(this)));
+
+    bubble_ = std::make_unique<GlicActivityListBubble>(std::move(rows));
     bubble_->Show(anchor_widget_->GetContentsView());
     return bubble_->widget();
   }
 
-  views::View* GetContentViewInActorTaskListBubble(
-      views::Widget* actor_task_list_bubble) {
+  views::View* GetContentViewInGlicActivityListBubble(
+      views::Widget* activity_list_bubble) {
     const ui::ElementContext context =
         views::ElementTrackerViews::GetContextForView(
-            actor_task_list_bubble->widget_delegate()
+            activity_list_bubble->widget_delegate()
                 ->AsBubbleDialogDelegate()
                 ->GetAnchorView());
     return views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
@@ -185,7 +201,6 @@ class ActorTaskListBubbleTest : public ChromeViewsTestBase {
 
   raw_ptr<actor::ActorKeyedServiceFake> actor_service_;
 
- private:
   glic::GlicEnabling::ScopedBypassEnablementChecksForTesting
       scoped_glic_bypass_;
   raw_ptr<TestingProfile> profile_;
@@ -200,12 +215,12 @@ class ActorTaskListBubbleTest : public ChromeViewsTestBase {
   raw_ptr<glic::MockGlicKeyedService> mock_glic_service_ = nullptr;
   std::unique_ptr<glic::GlicSplitButtonController>
       glic_split_button_controller_;
-  raw_ptr<ActorTaskListBubbleController> controller_ = nullptr;
-  std::unique_ptr<ActorTaskListBubble> bubble_;
+  raw_ptr<GlicActivityListBubbleController> controller_ = nullptr;
+  std::unique_ptr<GlicActivityListBubble> bubble_;
   base::test::ScopedFeatureList feature_list_;
 };
 
-TEST_F(ActorTaskListBubbleTest, CreateAndShowBubbleWithTasks) {
+TEST_F(GlicActivityListBubbleTest, CreateAndShowBubbleWithTasks) {
   absl::flat_hash_map<actor::TaskId, bool> task_list;
   task_list[CreatePausedTask()] = true;
   task_list[CreatePausedTask()] = false;
@@ -215,20 +230,20 @@ TEST_F(ActorTaskListBubbleTest, CreateAndShowBubbleWithTasks) {
   EXPECT_TRUE(actor_task_list_bubble->IsVisible());
 
   views::View* content_view =
-      GetContentViewInActorTaskListBubble(std::move(actor_task_list_bubble));
+      GetContentViewInGlicActivityListBubble(std::move(actor_task_list_bubble));
 
   EXPECT_EQ(2u, content_view->children().size());
-  EXPECT_EQ(u"Test Task", static_cast<ActorTaskListBubbleRowButton*>(
+  EXPECT_EQ(u"Test Task", static_cast<GlicActivityListBubbleRowButton*>(
                               content_view->children().front())
                               ->GetTitleText());
-  EXPECT_EQ(u"Test Task", static_cast<ActorTaskListBubbleRowButton*>(
+  EXPECT_EQ(u"Test Task", static_cast<GlicActivityListBubbleRowButton*>(
                               content_view->children().back())
                               ->GetTitleText());
 }
 
 // TODO(crbug.com/469817191): Handle non-existent task_ids alongside completed
 // task ids.
-TEST_F(ActorTaskListBubbleTest, CreateShowBubbleWithInvalidTask) {
+TEST_F(GlicActivityListBubbleTest, CreateShowBubbleWithInvalidTask) {
   base::HistogramTester histogram_tester;
   absl::flat_hash_map<actor::TaskId, bool> task_list;
   task_list[actor::TaskId(1)] = true;
@@ -241,7 +256,7 @@ TEST_F(ActorTaskListBubbleTest, CreateShowBubbleWithInvalidTask) {
       actor::ui::ActorUiTaskIconError::kBubbleTaskDoesntExist, 1);
 }
 
-TEST_F(ActorTaskListBubbleTest, CreateAndShowBubbleWithClosedTabTask) {
+TEST_F(GlicActivityListBubbleTest, CreateAndShowBubbleWithClosedTabTask) {
   actor::TaskId id = actor_service_->CreateTaskForTesting();
   actor_service_->GetTask(id)->Pause(/*from_actor=*/true);
   absl::flat_hash_map<actor::TaskId, bool> task_list;
@@ -253,21 +268,21 @@ TEST_F(ActorTaskListBubbleTest, CreateAndShowBubbleWithClosedTabTask) {
   EXPECT_TRUE(actor_task_list_bubble->IsVisible());
 
   views::View* content_view =
-      GetContentViewInActorTaskListBubble(std::move(actor_task_list_bubble));
+      GetContentViewInGlicActivityListBubble(std::move(actor_task_list_bubble));
 
   // Check for correct subtitle
   EXPECT_EQ(1u, content_view->children().size());
-  EXPECT_EQ(u"Tab closed", static_cast<ActorTaskListBubbleRowButton*>(
+  EXPECT_EQ(u"Tab closed", static_cast<GlicActivityListBubbleRowButton*>(
                                content_view->children().front())
                                ->GetSubtitleText());
   // Check for disabled state correctly set (requires_processing is set to
   // false)
-  EXPECT_FALSE(static_cast<ActorTaskListBubbleRowButton*>(
+  EXPECT_FALSE(static_cast<GlicActivityListBubbleRowButton*>(
                    content_view->children().front())
                    ->GetEnabled());
 }
 
-TEST_F(ActorTaskListBubbleTest, CreateAndShowBubbleWithTasksInOrder) {
+TEST_F(GlicActivityListBubbleTest, CreateAndShowBubbleWithTasksInOrder) {
   actor::TaskId id_1 = CreatePausedTask();
   actor::TaskId id_2 = CreatePausedTask();
   actor::TaskId id_3 = CreatePausedTask();
@@ -298,53 +313,72 @@ TEST_F(ActorTaskListBubbleTest, CreateAndShowBubbleWithTasksInOrder) {
   EXPECT_TRUE(actor_task_list_bubble->IsVisible());
 
   views::View* content_view =
-      GetContentViewInActorTaskListBubble(std::move(actor_task_list_bubble));
+      GetContentViewInGlicActivityListBubble(std::move(actor_task_list_bubble));
 
   // Check for correct subtitles.
   EXPECT_EQ(4u, content_view->children().size());
-  EXPECT_EQ(
-      l10n_util::GetStringUTF16(
-          IDS_ACTOR_TASK_LIST_BUBBLE_ROW_CHECK_TASK_SUBTITLE),
-      static_cast<ActorTaskListBubbleRowButton*>(content_view->children().at(0))
-          ->GetSubtitleText());
-  EXPECT_EQ(
-      l10n_util::GetStringUTF16(
-          IDS_ACTOR_TASK_LIST_BUBBLE_ROW_CHECK_TASK_SUBTITLE),
-      static_cast<ActorTaskListBubbleRowButton*>(content_view->children().at(1))
-          ->GetSubtitleText());
+  EXPECT_EQ(l10n_util::GetStringUTF16(
+                IDS_ACTOR_TASK_LIST_BUBBLE_ROW_CHECK_TASK_SUBTITLE),
+            static_cast<GlicActivityListBubbleRowButton*>(
+                content_view->children().at(0))
+                ->GetSubtitleText());
+  EXPECT_EQ(l10n_util::GetStringUTF16(
+                IDS_ACTOR_TASK_LIST_BUBBLE_ROW_CHECK_TASK_SUBTITLE),
+            static_cast<GlicActivityListBubbleRowButton*>(
+                content_view->children().at(1))
+                ->GetSubtitleText());
   // Last tab is removed on Stop, so the finished task will have a tab closed
   // subtitle.
-  EXPECT_EQ(
-      l10n_util::GetStringUTF16(
-          IDS_ACTOR_TASK_LIST_BUBBLE_ROW_TAB_CLOSED_SUBTITLE),
-      static_cast<ActorTaskListBubbleRowButton*>(content_view->children().at(2))
-          ->GetSubtitleText());
-  EXPECT_EQ(
-      l10n_util::GetStringUTF16(
-          IDS_ACTOR_TASK_LIST_BUBBLE_ROW_ACTING_TASK_SUBTITLE),
-      static_cast<ActorTaskListBubbleRowButton*>(content_view->children().at(3))
-          ->GetSubtitleText());
+  EXPECT_EQ(l10n_util::GetStringUTF16(
+                IDS_ACTOR_TASK_LIST_BUBBLE_ROW_TAB_CLOSED_SUBTITLE),
+            static_cast<GlicActivityListBubbleRowButton*>(
+                content_view->children().at(2))
+                ->GetSubtitleText());
+  EXPECT_EQ(l10n_util::GetStringUTF16(
+                IDS_ACTOR_TASK_LIST_BUBBLE_ROW_ACTING_TASK_SUBTITLE),
+            static_cast<GlicActivityListBubbleRowButton*>(
+                content_view->children().at(3))
+                ->GetSubtitleText());
 }
 
-TEST_F(ActorTaskListBubbleTest, RowButtonDisplaysTitleAndSubtitle) {
-  actor::ui::ActorTaskRowData row_data{
-      .title = "Custom Task Title",
-      .state = actor::ActorTask::State::kFinished,
-      .has_tab = true,
-      .subtitle = "Custom Subtitle",
-  };
-  auto button = std::make_unique<ActorTaskListBubbleRowButton>(
-      views::Button::PressedCallback(), row_data);
+TEST_F(GlicActivityListBubbleTest, RowButtonDisplaysTitleAndSubtitle) {
+  GlicActivityRowViewModel model;
+  model.title = u"Custom Task Title";
+  model.has_tab = true;
+  model.subtitle = u"Custom Subtitle";
+  auto button = std::make_unique<GlicActivityListBubbleRowButton>(model);
 
   EXPECT_EQ(u"Custom Task Title", button->GetTitleText());
   EXPECT_EQ(u"Custom Subtitle", button->GetSubtitleText());
+}
+
+TEST_F(GlicActivityListBubbleTest,
+       ExperimentalTriggeringCompletedTaskSubtitleText) {
+  GlicActivityRowViewModel model;
+  model.title = u"title";
+  model.has_tab = true;
+  model.has_been_seen = true;
+  model.subtitle = l10n_util::GetStringUTF16(
+      IDS_EXPERIMENTAL_TRIGGERING_TASK_LIST_BUBBLE_ROW_COMPLETED_TASK_SUBTITLE);
+  auto button = std::make_unique<GlicActivityListBubbleRowButton>(model);
+  EXPECT_EQ(
+      l10n_util::GetStringUTF16(
+          IDS_EXPERIMENTAL_TRIGGERING_TASK_LIST_BUBBLE_ROW_COMPLETED_TASK_SUBTITLE),
+      button->GetSubtitleText());
+
+  model.subtitle = l10n_util::GetStringUTF16(
+      IDS_ACTOR_TASK_LIST_BUBBLE_ROW_COMPLETED_TASK_SUBTITLE);
+  button = std::make_unique<GlicActivityListBubbleRowButton>(model);
+  EXPECT_EQ(l10n_util::GetStringUTF16(
+                IDS_ACTOR_TASK_LIST_BUBBLE_ROW_COMPLETED_TASK_SUBTITLE),
+            button->GetSubtitleText());
 }
 
 // The bubble is shown activated in response to a task update. It has no dialog
 // buttons, so unless it explicitly focuses one of its rows the widget is
 // activated with nothing focused inside it, and screen readers are left with no
 // way into the bubble.
-TEST_F(ActorTaskListBubbleTest, ShowBubbleFocusesFirstRow) {
+TEST_F(GlicActivityListBubbleTest, ShowBubbleFocusesFirstRow) {
   absl::flat_hash_map<actor::TaskId, bool> task_list;
   task_list[CreatePausedTask()] = true;
   task_list[CreatePausedTask()] = false;
@@ -354,7 +388,7 @@ TEST_F(ActorTaskListBubbleTest, ShowBubbleFocusesFirstRow) {
   ASSERT_TRUE(actor_task_list_bubble);
 
   views::View* content_view =
-      GetContentViewInActorTaskListBubble(actor_task_list_bubble);
+      GetContentViewInGlicActivityListBubble(actor_task_list_bubble);
   ASSERT_EQ(2u, content_view->children().size());
 
   views::WidgetDelegate* delegate = actor_task_list_bubble->widget_delegate();
@@ -368,7 +402,7 @@ TEST_F(ActorTaskListBubbleTest, ShowBubbleFocusesFirstRow) {
 
 // Rows for tasks whose tab was closed are disabled and cannot take focus, so
 // initial focus must skip past them.
-TEST_F(ActorTaskListBubbleTest, ShowBubbleSkipsDisabledRowsForInitialFocus) {
+TEST_F(GlicActivityListBubbleTest, ShowBubbleSkipsDisabledRowsForInitialFocus) {
   // Paused task with no tab. Sorts first because it requires attention, but is
   // rendered as a disabled "Tab closed" row.
   actor::TaskId closed_tab_task = actor_service_->CreateTaskForTesting();
@@ -396,7 +430,7 @@ TEST_F(ActorTaskListBubbleTest, ShowBubbleSkipsDisabledRowsForInitialFocus) {
   ASSERT_TRUE(actor_task_list_bubble);
 
   views::View* content_view =
-      GetContentViewInActorTaskListBubble(actor_task_list_bubble);
+      GetContentViewInGlicActivityListBubble(actor_task_list_bubble);
   ASSERT_EQ(2u, content_view->children().size());
   ASSERT_FALSE(content_view->children().front()->GetEnabled());
   ASSERT_TRUE(content_view->children().back()->GetEnabled());
@@ -408,7 +442,7 @@ TEST_F(ActorTaskListBubbleTest, ShowBubbleSkipsDisabledRowsForInitialFocus) {
 
 // When nothing in the bubble can take focus, it must keep the alert dialog role
 // so that its contents are still announced when it appears.
-TEST_F(ActorTaskListBubbleTest, BubbleWithOnlyDisabledRowsKeepsAlertRole) {
+TEST_F(GlicActivityListBubbleTest, BubbleWithOnlyDisabledRowsKeepsAlertRole) {
   actor::TaskId id = actor_service_->CreateTaskForTesting();
   actor_service_->GetTask(id)->Pause(/*from_actor=*/true);
   absl::flat_hash_map<actor::TaskId, bool> task_list;
@@ -422,3 +456,74 @@ TEST_F(ActorTaskListBubbleTest, BubbleWithOnlyDisabledRowsKeepsAlertRole) {
   EXPECT_EQ(nullptr, delegate->GetInitiallyFocusedView());
   EXPECT_EQ(ax::mojom::Role::kAlertDialog, delegate->GetAccessibleWindowRole());
 }
+
+TEST_F(GlicActivityListBubbleTest, ActivityHubDisabled_OnlyActorTasksInBubble) {
+  EXPECT_EQ(nullptr, GlicActivityManager::Get(profile()));
+
+  absl::flat_hash_map<actor::TaskId, bool> task_list;
+  task_list[CreatePausedTask()] = true;
+  views::Widget* actor_task_list_bubble =
+      CreateBubbleView(std::move(task_list));
+  ASSERT_TRUE(actor_task_list_bubble);
+
+  views::View* content_view =
+      GetContentViewInGlicActivityListBubble(actor_task_list_bubble);
+  // Only the Actor task is present when Activity Hub is disabled.
+  EXPECT_EQ(1u, content_view->children().size());
+  EXPECT_EQ(u"Test Task", static_cast<GlicActivityListBubbleRowButton*>(
+                              content_view->children().front())
+                              ->GetTitleText());
+}
+
+class GlicActivityListBubbleActivityHubTest
+    : public GlicActivityListBubbleTest {
+ public:
+  GlicActivityListBubbleActivityHubTest()
+      : GlicActivityListBubbleTest(/*enable_activity_hub=*/true) {}
+};
+
+TEST_F(GlicActivityListBubbleActivityHubTest,
+       ActivityHubEnabled_HeterogeneousActivitiesInBubble) {
+  auto* activity_manager = &mock_glic_service_->activity_manager();
+  ASSERT_TRUE(activity_manager);
+  activity_manager->OnConversationActivityStateChanged(
+      "conv-1", {.state = glic::GlicActivityState::kCompleted,
+                 .title = "Gemini Chat",
+                 .preview_snippet = "Response preview"});
+  activity_manager->OnTabAddedToTask(CreatePausedTask());
+
+  bubble_ = std::make_unique<GlicActivityListBubble>(
+      controller_->CreateRowViewModels());
+  bubble_->Show(anchor_widget_->GetContentsView());
+  views::Widget* actor_task_list_bubble = bubble_->widget();
+  ASSERT_TRUE(actor_task_list_bubble);
+
+  views::View* content_view =
+      GetContentViewInGlicActivityListBubble(actor_task_list_bubble);
+  // Both Actor task and Conversation activity are present.
+  EXPECT_EQ(2u, content_view->children().size());
+
+  auto* task_button = static_cast<GlicActivityListBubbleRowButton*>(
+      content_view->children().front());
+  EXPECT_EQ(u"Test Task", task_button->GetTitleText());
+
+  auto* conv_button = static_cast<GlicActivityListBubbleRowButton*>(
+      content_view->children().back());
+  EXPECT_EQ(u"Gemini Chat", conv_button->GetTitleText());
+  EXPECT_EQ(u"Response preview", conv_button->GetSubtitleText());
+
+  // Click the conversation row.
+  ui::MouseEvent click_event(
+      ui::EventType::kMousePressed, gfx::Point(), gfx::Point(),
+      base::TimeTicks(), ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON);
+  views::test::ButtonTestApi(conv_button).NotifyClick(click_event);
+
+  // Verify activity is marked as seen.
+  glic::GlicActivityKey key{glic::GlicActivityType::kConversationResponse,
+                            "conv-1"};
+  auto it = activity_manager->activities().find(key);
+  ASSERT_TRUE(it != activity_manager->activities().end());
+  EXPECT_TRUE(it->second.has_been_seen);
+}
+
+}  // namespace glic

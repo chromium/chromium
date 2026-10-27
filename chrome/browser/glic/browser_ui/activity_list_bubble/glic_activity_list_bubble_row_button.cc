@@ -4,11 +4,10 @@
 
 #include "chrome/browser/glic/browser_ui/activity_list_bubble/glic_activity_list_bubble_row_button.h"
 
-#include "base/strings/utf_string_conversions.h"
+#include <utility>
+
+#include "base/strings/strcat.h"
 #include "chrome/app/vector_icons/vector_icons.h"
-#include "chrome/browser/actor/actor_task.h"
-#include "chrome/browser/glic/browser_ui/activity_list_bubble/glic_activity_list_bubble_controller.h"
-#include "chrome/browser/glic/public/service/legacy_glic_activity_manager.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/common/chrome_features.h"
@@ -21,7 +20,6 @@
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop.h"
-#include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/button/image_button_factory.h"
 #include "ui/views/controls/highlight_path_generator.h"
@@ -29,6 +27,8 @@
 #include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/layout/layout_types.h"
 #include "ui/views/view_class_properties.h"
+
+namespace glic {
 
 namespace {
 const int kBubbleRowIconSize = 16;
@@ -40,37 +40,14 @@ const int kLabelsContainerTopMargin = 4;
 const int kLayoutInteriorMarginTop = 4;
 const int kLayoutInteriorMarginRight = 8;
 
-const gfx::VectorIcon& GetRowIcon(actor::ActorTask::State state) {
-  if (glic::LegacyGlicActivityManager::RequiresAttention(state)) {
-    return features::IsRoundedIconsEnabled() ? kHourglassIcon
-                                             : kHourglassOldIcon;
-  }
-  if (state == actor::ActorTask::State::kFinished) {
-    return features::IsRoundedIconsEnabled() ? kTaskSparkIcon
-                                             : kTaskSparkOldIcon;
-  }
-  return kCursorSparkIcon;
-}
-
-ui::ColorId GetRowColor(bool is_enabled,
-                        bool requires_processing,
-                        bool needs_review) {
-  if (!is_enabled) {
-    return ui::kColorSysStateDisabled;
-  }
-  if (requires_processing && needs_review) {
-    return ui::kColorSysPrimary;
-  }
-  return ui::kColorMenuIcon;
-}
-
 }  // namespace
 
-ActorTaskListBubbleRowButton::ActorTaskListBubbleRowButton(
-    views::Button::PressedCallback on_row_clicked,
-    const actor::ui::ActorTaskRowData& row_data)
-    : has_tab_(row_data.has_tab) {
-  SetCallback(std::move(on_row_clicked));
+GlicActivityListBubbleRowButton::GlicActivityListBubbleRowButton(
+    const GlicActivityRowViewModel& model)
+    : has_tab_(model.has_tab) {
+  if (model.on_clicked) {
+    SetCallback(model.on_clicked);
+  }
   SetNotifyEnterExitOnChild(true);
 
   auto insets = ChromeLayoutProvider::Get()->GetInsetsMetric(
@@ -91,16 +68,15 @@ ActorTaskListBubbleRowButton::ActorTaskListBubbleRowButton(
           insets.top() - kLayoutInteriorMarginTop, insets.left(),
           insets.bottom(), insets.right() - kLayoutInteriorMarginRight));
 
-  const ui::ColorId row_color = GetRowColor(
-      row_data.is_enabled, row_data.requires_processing, row_data.needs_review);
-
-  row_icon_ = AddChildView(
-      std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
-          GetRowIcon(row_data.state), row_color, kBubbleRowIconSize)));
-  row_icon_->SetProperty(
-      views::kMarginsKey,
-      gfx::Insets::TLBR(kRowIconTopMargin, horizontal_spacing, 0,
-                        horizontal_spacing));
+  if (model.icon) {
+    row_icon_ = AddChildView(
+        std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
+            *model.icon, model.icon_and_subtitle_color, kBubbleRowIconSize)));
+    row_icon_->SetProperty(
+        views::kMarginsKey,
+        gfx::Insets::TLBR(kRowIconTopMargin, horizontal_spacing, 0,
+                          horizontal_spacing));
+  }
 
   auto* labels_container =
       AddChildView(std::make_unique<views::FlexLayoutView>());
@@ -116,21 +92,25 @@ ActorTaskListBubbleRowButton::ActorTaskListBubbleRowButton(
                         horizontal_spacing));
 
   title_ = labels_container->AddChildView(
-      std::make_unique<views::Label>(base::UTF8ToUTF16(row_data.title)));
+      std::make_unique<views::Label>(model.title));
   title_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   title_->SetTextStyle(views::style::STYLE_BODY_3_MEDIUM);
   title_->SetSubpixelRenderingEnabled(false);
 
   subtitle_ = labels_container->AddChildView(
-      std::make_unique<views::Label>(base::UTF8ToUTF16(row_data.subtitle)));
+      std::make_unique<views::Label>(model.subtitle));
   subtitle_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   subtitle_->SetTextStyle(views::style::STYLE_BODY_5);
-  subtitle_->SetEnabledColor(row_color);
+  subtitle_->SetEnabledColor(model.icon_and_subtitle_color);
   subtitle_->SetSubpixelRenderingEnabled(false);
+  if (model.subtitle.empty()) {
+    subtitle_->SetVisible(false);
+  }
 
   redirect_icon_ = AddChildView(views::CreateVectorImageButtonWithNativeTheme(
-      base::BindRepeating(&ActorTaskListBubbleRowButton::OnRedirectIconPressed,
-                          base::Unretained(this)),
+      base::BindRepeating(
+          &GlicActivityListBubbleRowButton::OnRedirectIconPressed,
+          base::Unretained(this)),
       features::IsRoundedIconsEnabled() ? vector_icons::kOpenInNewFlippableIcon
                                         : vector_icons::kLaunchOldIcon,
       kRedirectIconSize, ui::kColorMenuIcon, ui::kColorMenuIcon,
@@ -157,21 +137,22 @@ ActorTaskListBubbleRowButton::ActorTaskListBubbleRowButton(
   UpdateAccessibleName();
 
   // Update UI for "Tab closed" row after its first appearance.
-  if (!row_data.is_enabled) {
+  if (!model.is_enabled) {
     SetEnabled(false);
     title_->SetEnabledColor(ui::kColorSysStateDisabled);
     views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::OFF);
   }
 }
 
-ActorTaskListBubbleRowButton::~ActorTaskListBubbleRowButton() = default;
+GlicActivityListBubbleRowButton::~GlicActivityListBubbleRowButton() = default;
 
-void ActorTaskListBubbleRowButton::OnRedirectIconPressed(
+void GlicActivityListBubbleRowButton::OnRedirectIconPressed(
     const ui::Event& event) {
   NotifyClick(event);
 }
 
-void ActorTaskListBubbleRowButton::OnMouseEntered(const ui::MouseEvent& event) {
+void GlicActivityListBubbleRowButton::OnMouseEntered(
+    const ui::MouseEvent& event) {
   Button::OnMouseEntered(event);
   // If the tab is closed, we never want to render the redirect icon.
   if (!has_tab_) {
@@ -181,7 +162,8 @@ void ActorTaskListBubbleRowButton::OnMouseEntered(const ui::MouseEvent& event) {
   redirect_icon_->SetVisible(true);
 }
 
-void ActorTaskListBubbleRowButton::OnMouseExited(const ui::MouseEvent& event) {
+void GlicActivityListBubbleRowButton::OnMouseExited(
+    const ui::MouseEvent& event) {
   Button::OnMouseExited(event);
   // If the tab is closed, we never want to render the redirect icon.
   if (!has_tab_) {
@@ -191,15 +173,15 @@ void ActorTaskListBubbleRowButton::OnMouseExited(const ui::MouseEvent& event) {
   redirect_icon_->SetVisible(false);
 }
 
-std::u16string_view ActorTaskListBubbleRowButton::GetSubtitleText() const {
+std::u16string_view GlicActivityListBubbleRowButton::GetSubtitleText() const {
   return subtitle_ ? subtitle_->GetText() : std::u16string_view();
 }
 
-std::u16string_view ActorTaskListBubbleRowButton::GetTitleText() const {
+std::u16string_view GlicActivityListBubbleRowButton::GetTitleText() const {
   return title_ ? title_->GetText() : std::u16string_view();
 }
 
-void ActorTaskListBubbleRowButton::UpdateAccessibleName() {
+void GlicActivityListBubbleRowButton::UpdateAccessibleName() {
   std::u16string_view subtitle_text = GetSubtitleText();
   std::u16string_view title_text = GetTitleText();
 
@@ -208,5 +190,7 @@ void ActorTaskListBubbleRowButton::UpdateAccessibleName() {
                             : base::StrCat({title_text, u", ", subtitle_text}));
 }
 
-BEGIN_METADATA(ActorTaskListBubbleRowButton)
+BEGIN_METADATA(GlicActivityListBubbleRowButton)
 END_METADATA
+
+}  // namespace glic

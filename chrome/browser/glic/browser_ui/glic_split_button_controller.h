@@ -13,11 +13,11 @@
 #include "chrome/browser/glic/host/glic.mojom-shared.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
-class ActorTaskListBubbleController;
 class BrowserWindowInterface;
 
 namespace glic {
 
+class GlicActivityListBubbleController;
 class GlicActorNudgeController;
 class GlicButtonController;
 class GlicKeyedService;
@@ -56,6 +56,9 @@ class GlicSplitButtonController {
   GlicActorNudgeController* actor_nudge_controller() {
     return glic_actor_nudge_controller_.get();
   }
+  GlicActivityListBubbleController* activity_list_bubble_controller() {
+    return activity_list_bubble_controller_.get();
+  }
   void SetActorNudgeControllerForTesting(
       std::unique_ptr<GlicActorNudgeController> controller);
 
@@ -71,8 +74,8 @@ class GlicSplitButtonController {
 
   std::unique_ptr<GlicNudgeController> glic_nudge_controller_;
   std::unique_ptr<GlicButtonController> glic_button_controller_;
-  std::unique_ptr<ActorTaskListBubbleController>
-      actor_task_list_bubble_controller_;
+  std::unique_ptr<GlicActivityListBubbleController>
+      activity_list_bubble_controller_;
   std::unique_ptr<GlicActorNudgeController> glic_actor_nudge_controller_;
 
   ui::ScopedUnownedUserData<GlicSplitButtonController>

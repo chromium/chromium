@@ -54,6 +54,12 @@ class GlicActivityManager {
     return activities_;
   }
 
+  // Returns tracked activities visible for the given active tab context, sorted
+  // in canonical display priority order.
+  std::vector<const GlicActivityItem*> GetSortedActivities(
+      const std::optional<std::string>& active_tab_conv_id = std::nullopt,
+      bool is_active_tab_showing = false) const;
+
   // Called by UI controllers (e.g., GlicActivityListBubbleController)
   // immediately before rendering the activity list bubble so tab-dependent
   // fields (`has_tab`, `is_enabled`, and tab-closed subtitles) reflect whether

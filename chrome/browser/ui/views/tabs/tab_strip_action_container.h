@@ -26,8 +26,8 @@ class Insets;
 namespace glic {
 class TabStripGlicActorTaskIcon;
 class GlicSplitButtonController;
-}
-class ActorTaskListBubble;
+class GlicActivityListBubble;
+}  // namespace glic
 class BrowserWindowInterface;
 class GlicAndActorButtonsContainer;
 class ScopedTabStripModalUI;
@@ -129,9 +129,9 @@ class TabStripActionContainer : public views::View,
   void SetGlicActorNudgeLabel(const std::u16string& nudge_label) override;
   void TriggerGlicActorNudge(const std::u16string& nudge_label) override;
   void SetGlicActorNudgePressedState(bool pressed) override;
-  void ShowActorTaskListBubble() override;
-  void CloseActorTaskListBubble() override;
-  bool IsActorTaskListBubbleShowing() override;
+  void ShowActivityListBubble() override;
+  void CloseActivityListBubble() override;
+  bool IsActivityListBubbleShowing() override;
 
   views::FlexLayoutView* glic_actor_button_container();
   void ShowGlicActorNudge(const std::u16string& nudge_label);
@@ -226,7 +226,7 @@ class TabStripActionContainer : public views::View,
   std::unique_ptr<ScopedTabStripModalUI> scoped_tab_strip_modal_ui_;
 
   std::unique_ptr<TabStripNudgeAnimationSession> animation_session_;
-  std::unique_ptr<ActorTaskListBubble> actor_task_list_bubble_;
+  std::unique_ptr<glic::GlicActivityListBubble> activity_list_bubble_;
 
   // Border insets as passed down from the HorizontalTabStripRegionView, used to
   // update button view borders.

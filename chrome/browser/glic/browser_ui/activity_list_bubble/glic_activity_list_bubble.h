@@ -10,10 +10,8 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/raw_ref.h"
 #include "base/scoped_observation.h"
-#include "components/actor/core/task_id.h"
-#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
+#include "chrome/browser/glic/browser_ui/activity_list_bubble/glic_activity_row_view_model.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/views/widget/widget_observer.h"
 
@@ -25,19 +23,16 @@ class Widget;
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kActorTaskListBubbleView);
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kActorTaskListBubbleScrollView);
 
-class BrowserWindowInterface;
-class Profile;
+namespace glic {
 
-// Bubble that displays notifications about the user's ongoing tasks.
-class ActorTaskListBubble : public views::WidgetObserver {
+// Bubble that displays notifications about the user's ongoing activities and
+// tasks.
+class GlicActivityListBubble : public views::WidgetObserver {
  public:
-  using OnTaskClickedCallback = base::RepeatingCallback<void(actor::TaskId)>;
-  explicit ActorTaskListBubble(
-      Profile* profile,
-      BrowserWindowInterface* browser,
-      const absl::flat_hash_map<actor::TaskId, bool>& task_list,
-      OnTaskClickedCallback on_row_clicked);
-  ~ActorTaskListBubble() override;
+  explicit GlicActivityListBubble(
+      std::vector<GlicActivityRowViewModel> row_models,
+      base::RepeatingClosure on_destroyed = {});
+  ~GlicActivityListBubble() override;
 
   void Show(views::View* anchor_view);
   void Close();
@@ -51,14 +46,13 @@ class ActorTaskListBubble : public views::WidgetObserver {
  private:
   std::unique_ptr<views::View> CreateContentsView();
 
-  raw_ptr<Profile> profile_;
-  raw_ptr<BrowserWindowInterface> browser_;
-  // From LegacyGlicActivityManager, profile scoped.
-  raw_ref<const absl::flat_hash_map<actor::TaskId, bool>> task_list_;
-  OnTaskClickedCallback on_row_clicked_;
+  std::vector<GlicActivityRowViewModel> row_models_;
+  base::RepeatingClosure on_destroyed_;
   base::ScopedObservation<views::Widget, views::WidgetObserver>
       widget_observation_{this};
   raw_ptr<views::Widget> widget_ = nullptr;
 };
+
+}  // namespace glic
 
 #endif  // CHROME_BROWSER_GLIC_BROWSER_UI_ACTIVITY_LIST_BUBBLE_GLIC_ACTIVITY_LIST_BUBBLE_H_

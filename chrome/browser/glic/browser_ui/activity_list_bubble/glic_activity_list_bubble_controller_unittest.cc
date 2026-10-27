@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 
+#include "base/strings/string_number_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
@@ -21,6 +22,7 @@
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
+#include "chrome/browser/glic/public/service/glic_activity_manager.h"
 #include "chrome/browser/glic/public/service/legacy_glic_activity_manager.h"
 #include "chrome/browser/glic/test_support/glic_test_environment.h"
 #include "chrome/browser/glic/test_support/mock_glic_keyed_service.h"
@@ -44,28 +46,32 @@
 #include "ui/views/test/widget_test.h"
 #include "ui/views/widget/unique_widget_ptr.h"
 
+namespace glic {
+
 namespace {
 
-class MockGlicActorNudgeController : public glic::GlicActorNudgeController {
+class MockGlicActorNudgeController : public GlicActorNudgeController {
  public:
   MockGlicActorNudgeController(
       BrowserWindowInterface* browser,
-      glic::GlicSplitButtonController* split_button_controller)
-      : glic::GlicActorNudgeController(browser, split_button_controller) {}
+      GlicSplitButtonController* split_button_controller)
+      : GlicActorNudgeController(browser, split_button_controller) {}
   ~MockGlicActorNudgeController() override = default;
 
   void ShowBubble() override {}
   void CloseBubble() override {}
 };
 
-class MockGlicSplitButtonController : public glic::GlicSplitButtonController {
+class MockGlicSplitButtonController : public GlicSplitButtonController {
  public:
   MockGlicSplitButtonController(BrowserWindowInterface* browser,
-                                glic::GlicKeyedService* glic_service)
-      : glic::GlicSplitButtonController(browser, glic_service) {
-    SetActorNudgeControllerForTesting(nullptr);
-    SetActorNudgeControllerForTesting(
-        std::make_unique<MockGlicActorNudgeController>(browser, this));
+                                GlicKeyedService* glic_service)
+      : GlicSplitButtonController(browser, glic_service) {
+    if (!base::FeatureList::IsEnabled(features::kGlicActivityHub)) {
+      SetActorNudgeControllerForTesting(nullptr);
+      SetActorNudgeControllerForTesting(
+          std::make_unique<MockGlicActorNudgeController>(browser, this));
+    }
   }
   ~MockGlicSplitButtonController() override = default;
 
@@ -77,51 +83,50 @@ class MockGlicSplitButtonController : public glic::GlicSplitButtonController {
 
 class TestGlicSplitButtonDelegate : public glic::GlicSplitButtonDelegate {
  public:
-  explicit TestGlicSplitButtonDelegate(
-      BrowserWindowInterface* browser,
-      views::View* anchor_view,
-      ActorTaskListBubbleController* controller)
-      : browser_(browser), anchor_view_(anchor_view), controller_(controller) {}
+  TestGlicSplitButtonDelegate(views::View* anchor_view,
+                              GlicActivityListBubbleController* controller)
+      : anchor_view_(anchor_view), controller_(controller) {}
 
-  void ShowActorTaskListBubble() override {
+  void ShowActivityListBubble() override {
     if (bubble_) {
       bubble_->Close();
       bubble_.reset();
     }
-    Profile* profile = browser_->GetProfile();
-    auto* manager = glic::LegacyGlicActivityManager::Get(profile);
-    if (manager && controller_) {
-      bubble_ = std::make_unique<ActorTaskListBubble>(
-          profile, browser_, manager->actor_task_list_bubble_rows(),
-          base::BindRepeating(&ActorTaskListBubbleController::OnTaskRowClicked,
-                              base::Unretained(controller_)));
+    if (controller_) {
+      bubble_ = std::make_unique<GlicActivityListBubble>(
+          controller_->CreateRowViewModels(),
+          base::BindRepeating(
+              &GlicActivityListBubbleController::OnBubbleDestroyed,
+              controller_->GetWeakPtr()));
       bubble_->Show(anchor_view_);
     }
   }
 
-  void CloseActorTaskListBubble() override {
+  void CloseActivityListBubble() override {
     if (bubble_) {
       bubble_->Close();
-      bubble_.reset();
     }
   }
 
-  bool IsActorTaskListBubbleShowing() override {
+  bool IsActivityListBubbleShowing() override {
     return bubble_ && bubble_->IsShowing();
   }
 
+  views::Widget* bubble_widget() {
+    return bubble_ ? bubble_->widget() : nullptr;
+  }
+
  private:
-  raw_ptr<BrowserWindowInterface> browser_;
   raw_ptr<views::View> anchor_view_;
-  raw_ptr<ActorTaskListBubbleController> controller_;
-  std::unique_ptr<ActorTaskListBubble> bubble_;
+  raw_ptr<GlicActivityListBubbleController> controller_;
+  std::unique_ptr<GlicActivityListBubble> bubble_;
 };
 
 }  // namespace
 
-class ActorTaskListBubbleControllerTest : public ChromeViewsTestBase {
+class GlicActivityListBubbleControllerTest : public ChromeViewsTestBase {
  public:
-  ActorTaskListBubbleControllerTest() {
+  GlicActivityListBubbleControllerTest() {
     std::vector<base::test::FeatureRefAndParams> enabled_features = {
         {features::kGlicActor, {}},
         {features::kGlicActorPolicyControlExemption, {}}};
@@ -146,12 +151,12 @@ class ActorTaskListBubbleControllerTest : public ChromeViewsTestBase {
         TestingProfile::TestingFactories{
             TestingProfile::TestingFactory{
                 actor::ActorKeyedServiceFactory::GetInstance(),
-                base::BindRepeating(
-                    &ActorTaskListBubbleControllerTest::BuildActorKeyedService,
-                    base::Unretained(this))},
+                base::BindRepeating(&GlicActivityListBubbleControllerTest::
+                                        BuildActorKeyedService,
+                                    base::Unretained(this))},
             TestingProfile::TestingFactory{
-                glic::GlicKeyedServiceFactory::GetInstance(),
-                base::BindRepeating(&ActorTaskListBubbleControllerTest::
+                GlicKeyedServiceFactory::GetInstance(),
+                base::BindRepeating(&GlicActivityListBubbleControllerTest::
                                         BuildMockGlicKeyedService,
                                     base::Unretained(this))}});
 
@@ -167,12 +172,11 @@ class ActorTaskListBubbleControllerTest : public ChromeViewsTestBase {
     mock_glic_split_button_controller_ =
         std::make_unique<testing::NiceMock<MockGlicSplitButtonController>>(
             browser_window_interface_.get(), mock_glic_keyed_service_);
-    actor_task_list_bubble_controller_ =
-        ActorTaskListBubbleController::From(browser_window_interface_.get());
-    ASSERT_TRUE(actor_task_list_bubble_controller_);
+    controller_ =
+        GlicActivityListBubbleController::From(browser_window_interface_.get());
+    ASSERT_TRUE(controller_);
     test_delegate_ = std::make_unique<TestGlicSplitButtonDelegate>(
-        browser_window_interface_.get(), anchor_widget_->GetContentsView(),
-        actor_task_list_bubble_controller_);
+        anchor_widget_->GetContentsView(), controller_);
     ON_CALL(*mock_glic_split_button_controller_, GetActiveDelegate())
         .WillByDefault(testing::Return(test_delegate_.get()));
   }
@@ -190,7 +194,7 @@ class ActorTaskListBubbleControllerTest : public ChromeViewsTestBase {
       content::BrowserContext* context) {
     Profile* profile = Profile::FromBrowserContext(context);
     auto mock_service =
-        std::make_unique<testing::NiceMock<glic::MockGlicKeyedService>>(
+        std::make_unique<testing::NiceMock<MockGlicKeyedService>>(
             profile, identity_test_env_.identity_manager(),
             testing_profile_manager_->profile_manager(), &glic_profile_manager_,
             /*contextual_cueing_service=*/nullptr,
@@ -201,7 +205,7 @@ class ActorTaskListBubbleControllerTest : public ChromeViewsTestBase {
 
   void TearDown() override {
     test_delegate_.reset();
-    actor_task_list_bubble_controller_ = nullptr;
+    controller_ = nullptr;
     mock_glic_split_button_controller_.reset();
     browser_window_interface_.reset();
     mock_glic_keyed_service_ = nullptr;
@@ -234,26 +238,24 @@ class ActorTaskListBubbleControllerTest : public ChromeViewsTestBase {
         kActorTaskListBubbleView, context);
   }
 
-  glic::GlicEnabling::ScopedBypassEnablementChecksForTesting
-      scoped_glic_bypass_;
+  GlicEnabling::ScopedBypassEnablementChecksForTesting scoped_glic_bypass_;
   raw_ptr<TestingProfile> profile_;
   std::unique_ptr<TestingProfileManager> testing_profile_manager_;
   signin::IdentityTestEnvironment identity_test_env_;
-  glic::GlicProfileManager glic_profile_manager_;
-  glic::GlicUnitTestEnvironment glic_test_env_;
-  raw_ptr<glic::MockGlicKeyedService> mock_glic_keyed_service_ = nullptr;
+  GlicProfileManager glic_profile_manager_;
+  GlicUnitTestEnvironment glic_test_env_;
+  raw_ptr<MockGlicKeyedService> mock_glic_keyed_service_ = nullptr;
   std::unique_ptr<MockGlicSplitButtonController>
       mock_glic_split_button_controller_;
   std::unique_ptr<TestGlicSplitButtonDelegate> test_delegate_;
-  raw_ptr<ActorTaskListBubbleController> actor_task_list_bubble_controller_ =
-      nullptr;
+  raw_ptr<GlicActivityListBubbleController> controller_ = nullptr;
   std::unique_ptr<MockBrowserWindowInterface> browser_window_interface_;
   ui::UnownedUserDataHost user_data_host_;
   views::UniqueWidgetPtr anchor_widget_;
   base::test::ScopedFeatureList feature_list_;
 };
 
-TEST_F(ActorTaskListBubbleControllerTest, ShowBubbleRecordsHistogram) {
+TEST_F(GlicActivityListBubbleControllerTest, ShowBubbleRecordsHistogram) {
   actor::ActorKeyedService* actor_service =
       actor::ActorKeyedService::Get(profile_);
   glic::LegacyGlicActivityManager* manager =
@@ -265,7 +267,7 @@ TEST_F(ActorTaskListBubbleControllerTest, ShowBubbleRecordsHistogram) {
 
   base::HistogramTester histogram_tester;
 
-  actor_task_list_bubble_controller_->ShowBubble();
+  controller_->ShowBubble();
 
   histogram_tester.ExpectBucketCount("Actor.Ui.TaskListBubble.Rows", 1, 1);
 
@@ -274,7 +276,7 @@ TEST_F(ActorTaskListBubbleControllerTest, ShowBubbleRecordsHistogram) {
   // subsequent task mutations in the loop below would otherwise trigger
   // OnStateUpdate() -> ShowBubble() on each intermediate task while the
   // bubble is open, recording premature intermediate histogram samples.
-  actor_task_list_bubble_controller_->CloseBubble();
+  controller_->CloseBubble();
 
   // Stop previous task, Add and Pause 3 more tasks, and ensure histogram bucket
   // for 1 row stays the same while the bucket for 3 rows is incremented.
@@ -289,7 +291,7 @@ TEST_F(ActorTaskListBubbleControllerTest, ShowBubbleRecordsHistogram) {
     manager->UpdateTaskIconComponents(new_task_id);
   }
 
-  actor_task_list_bubble_controller_->ShowBubble();
+  controller_->ShowBubble();
 
   histogram_tester.ExpectBucketCount("Actor.Ui.TaskListBubble.Rows", 1, 1);
   histogram_tester.ExpectBucketCount("Actor.Ui.TaskListBubble.Rows", 4, 1);
@@ -299,7 +301,7 @@ TEST_F(ActorTaskListBubbleControllerTest, ShowBubbleRecordsHistogram) {
       histogram_tester.GetAllSamples("Actor.Ui.TaskListBubble.Rows").size());
 }
 
-TEST_F(ActorTaskListBubbleControllerTest,
+TEST_F(GlicActivityListBubbleControllerTest,
        ShowBubble_InactiveBrowserWindow_NoStartNotification) {
   // If the browser window is inactive and it is NOT a start notification,
   // ShowBubble should return early and NOT show the bubble.
@@ -318,14 +320,14 @@ TEST_F(ActorTaskListBubbleControllerTest,
   actor_service->GetTask(task_id)->Pause(true);
   manager->UpdateTaskIconComponents(task_id);
 
-  actor_task_list_bubble_controller_->ShowBubble(
+  controller_->ShowBubble(
       /*is_start_notification=*/false);
 
   // Bubble widget should not be created.
-  EXPECT_FALSE(actor_task_list_bubble_controller_->IsBubbleShowing());
+  EXPECT_FALSE(controller_->IsBubbleShowing());
 }
 
-TEST_F(ActorTaskListBubbleControllerTest,
+TEST_F(GlicActivityListBubbleControllerTest,
        ShowBubble_InactiveBrowserWindow_StartNotification_PanelNotShowing) {
   // If the browser window is inactive, and it IS a start notification,
   // but Glic panel is NOT showing, ShowBubble should return early and NOT show
@@ -345,14 +347,14 @@ TEST_F(ActorTaskListBubbleControllerTest,
   actor_service->GetTask(task_id)->Pause(true);
   manager->UpdateTaskIconComponents(task_id);
 
-  actor_task_list_bubble_controller_->ShowBubble(
+  controller_->ShowBubble(
       /*is_start_notification=*/true);
 
   // Bubble widget should not be created.
-  EXPECT_FALSE(actor_task_list_bubble_controller_->IsBubbleShowing());
+  EXPECT_FALSE(controller_->IsBubbleShowing());
 }
 
-TEST_F(ActorTaskListBubbleControllerTest,
+TEST_F(GlicActivityListBubbleControllerTest,
        ShowBubble_InactiveBrowserWindow_StartNotification_PanelShowing) {
   // If the browser window is inactive, and it IS a start notification,
   // and Glic panel IS showing, ShowBubble should show the bubble.
@@ -371,7 +373,7 @@ TEST_F(ActorTaskListBubbleControllerTest,
   actor_service->GetTask(task_id)->Pause(true);
   manager->UpdateTaskIconComponents(task_id);
 
-  actor_task_list_bubble_controller_->ShowBubble(
+  controller_->ShowBubble(
       /*is_start_notification=*/true);
 
   // Fast forward for delayed show.
@@ -379,10 +381,10 @@ TEST_F(ActorTaskListBubbleControllerTest,
       base::Milliseconds(features::kGlicActorUiTaskListBubbleDelayMs.Get()));
 
   // Bubble widget should be created and visible.
-  EXPECT_TRUE(actor_task_list_bubble_controller_->IsBubbleShowing());
+  EXPECT_TRUE(controller_->IsBubbleShowing());
 }
 
-TEST_F(ActorTaskListBubbleControllerTest, ShowBubble_DelayedWhenIconHidden) {
+TEST_F(GlicActivityListBubbleControllerTest, ShowBubble_DelayedWhenIconHidden) {
   actor::ActorKeyedService* actor_service =
       actor::ActorKeyedService::Get(profile_);
   glic::LegacyGlicActivityManager* manager =
@@ -396,21 +398,21 @@ TEST_F(ActorTaskListBubbleControllerTest, ShowBubble_DelayedWhenIconHidden) {
   views::View* anchor_view = anchor_widget_->GetContentsView();
   anchor_view->SetVisible(false);
 
-  actor_task_list_bubble_controller_->ShowBubble(
+  controller_->ShowBubble(
       /*is_start_notification=*/true);
 
   // Bubble widget should NOT be created immediately.
-  EXPECT_FALSE(actor_task_list_bubble_controller_->IsBubbleShowing());
+  EXPECT_FALSE(controller_->IsBubbleShowing());
 
   // Fast forward by delay ms.
   task_environment()->FastForwardBy(
       base::Milliseconds(features::kGlicActorUiTaskListBubbleDelayMs.Get()));
 
   // Bubble widget should now be created and visible.
-  EXPECT_TRUE(actor_task_list_bubble_controller_->IsBubbleShowing());
+  EXPECT_TRUE(controller_->IsBubbleShowing());
 }
 
-TEST_F(ActorTaskListBubbleControllerTest,
+TEST_F(GlicActivityListBubbleControllerTest,
        ShowBubble_NotDelayedWhenIconVisible) {
   actor::ActorKeyedService* actor_service =
       actor::ActorKeyedService::Get(profile_);
@@ -425,15 +427,48 @@ TEST_F(ActorTaskListBubbleControllerTest,
   views::View* anchor_view = anchor_widget_->GetContentsView();
   anchor_view->SetVisible(true);
 
-  actor_task_list_bubble_controller_->ShowBubble(
+  controller_->ShowBubble(
       /*is_start_notification=*/false);
 
   // Bubble widget should be created immediately.
-  EXPECT_TRUE(actor_task_list_bubble_controller_->IsBubbleShowing());
+  EXPECT_TRUE(controller_->IsBubbleShowing());
 }
 
-TEST_F(ActorTaskListBubbleControllerTest,
-       GetActorTaskRowsForBubble_PriorityOrder) {
+TEST_F(GlicActivityListBubbleControllerTest,
+       OnActivityAlert_InterruptionLevels) {
+  actor::ActorKeyedService* actor_service =
+      actor::ActorKeyedService::Get(profile_);
+  glic::LegacyGlicActivityManager* manager =
+      &mock_glic_keyed_service_->legacy_activity_manager();
+  actor::TaskId task_id = actor_service->CreateTask(
+      actor::TestTaskSourceInfo(), actor::NoEnterprisePolicyChecker());
+  actor_service->GetTask(task_id)->Pause(true);
+  manager->UpdateTaskIconComponents(task_id);
+
+  // 1. Silent alert does not pop open the bubble when closed.
+  controller_->OnActivityAlert(ActivityInterruptionLevel::kSilent);
+  EXPECT_FALSE(controller_->IsBubbleShowing());
+
+  // 2. Passive nudge alert does not pop open the bubble when closed.
+  controller_->OnActivityAlert(ActivityInterruptionLevel::kPassiveNudge);
+  EXPECT_FALSE(controller_->IsBubbleShowing());
+
+  // 3. Delayed task start alert shows bubble with delay.
+  controller_->OnActivityAlert(ActivityInterruptionLevel::kDelayedTaskStart);
+  EXPECT_FALSE(controller_->IsBubbleShowing());
+
+  task_environment()->FastForwardBy(
+      base::Milliseconds(features::kGlicActorUiTaskListBubbleDelayMs.Get()));
+  EXPECT_TRUE(controller_->IsBubbleShowing());
+
+  // When bubble is already showing, a passive nudge updates it without closing
+  // it.
+  controller_->OnActivityAlert(ActivityInterruptionLevel::kPassiveNudge);
+  EXPECT_TRUE(controller_->IsBubbleShowing());
+}
+
+TEST_F(GlicActivityListBubbleControllerTest,
+       GetActorTaskRowViewModels_PriorityOrder) {
   auto* fake_actor_service = static_cast<actor::ActorKeyedServiceFake*>(
       actor::ActorKeyedService::Get(profile_));
 
@@ -449,19 +484,24 @@ TEST_F(ActorTaskListBubbleControllerTest,
 
   actor::TaskId id_4 = fake_actor_service->CreateTaskForTesting();
 
-  auto rows = ActorTaskListBubbleController::GetActorTaskRowsForBubble(
+  auto rows = GlicActivityListBubbleController::GetActorTaskRowViewModels(
       profile_, {{id_1, true}, {id_2, false}, {id_3, true}, {id_4, false}});
 
   ASSERT_EQ(4u, rows.size());
-  EXPECT_EQ(id_1,
-            rows[0].task_id);  // Priority 1: Unprocessed needing attention
-  EXPECT_EQ(id_2, rows[1].task_id);  // Priority 2: Processed needing attention
-  EXPECT_EQ(id_3, rows[2].task_id);  // Priority 3: Remaining needing processing
-  EXPECT_EQ(id_4, rows[3].task_id);  // Priority 4: All other tasks
+  EXPECT_EQ(
+      id_1,
+      rows[0].task_id.value());  // Priority 1: Unprocessed needing attention
+  EXPECT_EQ(
+      id_2,
+      rows[1].task_id.value());  // Priority 2: Processed needing attention
+  EXPECT_EQ(
+      id_3,
+      rows[2].task_id.value());  // Priority 3: Remaining needing processing
+  EXPECT_EQ(id_4, rows[3].task_id.value());  // Priority 4: All other tasks
 }
 
-TEST_F(ActorTaskListBubbleControllerTest,
-       GetActorTaskRowsForBubble_TieBreakByTaskIdAndContents) {
+TEST_F(GlicActivityListBubbleControllerTest,
+       GetActorTaskRowViewModels_TieBreakByTaskIdAndContents) {
   auto* fake_actor_service = static_cast<actor::ActorKeyedServiceFake*>(
       actor::ActorKeyedService::Get(profile_));
 
@@ -478,7 +518,7 @@ TEST_F(ActorTaskListBubbleControllerTest,
 
   // id_1 and id_2 tie on priority 1; id_exp is priority 3; 99999 does not
   // exist.
-  auto rows = ActorTaskListBubbleController::GetActorTaskRowsForBubble(
+  auto rows = GlicActivityListBubbleController::GetActorTaskRowViewModels(
       profile_, {{id_2, true},
                  {id_1, true},
                  {id_exp, true},
@@ -487,40 +527,37 @@ TEST_F(ActorTaskListBubbleControllerTest,
   ASSERT_EQ(3u, rows.size());
 
   // Tie-break by task_id ascending + verify row contents.
-  EXPECT_EQ(id_1, rows[0].task_id);
-  EXPECT_EQ("Test Task", rows[0].title);
-  EXPECT_EQ(actor::ActorTask::State::kPausedByActor, rows[0].state);
-  EXPECT_TRUE(rows[0].requires_processing);
+  EXPECT_EQ(id_1, rows[0].task_id.value());
+  EXPECT_EQ(u"Test Task", rows[0].title);
+  EXPECT_FALSE(rows[0].has_been_seen);
   EXPECT_FALSE(rows[0].has_tab);
-  EXPECT_EQ(l10n_util::GetStringUTF8(
+  EXPECT_EQ(l10n_util::GetStringUTF16(
                 IDS_ACTOR_TASK_LIST_BUBBLE_ROW_TAB_CLOSED_SUBTITLE),
             rows[0].subtitle);
   EXPECT_TRUE(rows[0].is_enabled);
   EXPECT_TRUE(rows[0].needs_review);
 
   // id_2 does not have an associated tab and displays "Tab closed".
-  EXPECT_EQ(id_2, rows[1].task_id);
+  EXPECT_EQ(id_2, rows[1].task_id.value());
   EXPECT_FALSE(rows[1].has_tab);
-  EXPECT_EQ(l10n_util::GetStringUTF8(
+  EXPECT_EQ(l10n_util::GetStringUTF16(
                 IDS_ACTOR_TASK_LIST_BUBBLE_ROW_TAB_CLOSED_SUBTITLE),
             rows[1].subtitle);
 
   // Experimental triggering overrides has_tab to true.
-  EXPECT_EQ(id_exp, rows[2].task_id);
-  EXPECT_EQ(glic::mojom::FeatureMode::kExperimentalTriggering,
-            rows[2].feature_mode);
+  EXPECT_EQ(id_exp, rows[2].task_id.value());
   EXPECT_TRUE(rows[2].has_tab);
-  EXPECT_EQ(l10n_util::GetStringUTF8(
+  EXPECT_EQ(l10n_util::GetStringUTF16(
                 IDS_ACTOR_TASK_LIST_BUBBLE_ROW_ACTING_TASK_SUBTITLE),
             rows[2].subtitle);
   EXPECT_TRUE(rows[2].is_enabled);
   EXPECT_FALSE(rows[2].needs_review);
 }
 
-class ActorTaskListBubbleControllerOsNotificationTest
-    : public ActorTaskListBubbleControllerTest {
+class GlicActivityListBubbleControllerOsNotificationTest
+    : public GlicActivityListBubbleControllerTest {
  public:
-  ActorTaskListBubbleControllerOsNotificationTest() {
+  GlicActivityListBubbleControllerOsNotificationTest() {
     scoped_feature_list_.InitAndEnableFeature(
         features::kGlicExperimentalTriggeringOsNotification);
   }
@@ -529,7 +566,7 @@ class ActorTaskListBubbleControllerOsNotificationTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-TEST_F(ActorTaskListBubbleControllerOsNotificationTest,
+TEST_F(GlicActivityListBubbleControllerOsNotificationTest,
        ShowBubble_InactiveBrowserWindow_DoesNotShowBubble) {
   // If the browser window is inactive and
   // kGlicExperimentalTriggeringOsNotification is enabled, ShowBubble should
@@ -537,7 +574,7 @@ TEST_F(ActorTaskListBubbleControllerOsNotificationTest,
   EXPECT_CALL(*browser_window_interface_, IsActive())
       .WillRepeatedly(testing::Return(false));
 
-  actor_task_list_bubble_controller_->ShowBubble(
+  controller_->ShowBubble(
       /*is_start_notification=*/true);
 
   // Fast forward for delayed show.
@@ -545,5 +582,179 @@ TEST_F(ActorTaskListBubbleControllerOsNotificationTest,
       base::Milliseconds(features::kGlicActorUiTaskListBubbleDelayMs.Get()));
 
   // Bubble widget should not be created.
-  EXPECT_FALSE(actor_task_list_bubble_controller_->IsBubbleShowing());
+  EXPECT_FALSE(controller_->IsBubbleShowing());
 }
+
+TEST_F(GlicActivityListBubbleControllerTest,
+       CloseBubbleFiresOnBubbleDestroyedCallback) {
+  actor::ActorKeyedService* actor_service =
+      actor::ActorKeyedService::Get(profile_);
+  glic::LegacyGlicActivityManager* manager =
+      &mock_glic_keyed_service_->legacy_activity_manager();
+  actor::TaskId task_id = actor_service->CreateTask(
+      actor::TestTaskSourceInfo(), actor::NoEnterprisePolicyChecker());
+  actor_service->GetTask(task_id)->Pause(true);
+  manager->UpdateTaskIconComponents(task_id);
+
+  bool destroyed_called = false;
+  auto sub = controller_->RegisterBubbleDestroyedCallback(
+      base::BindRepeating([](bool* flag) { *flag = true; }, &destroyed_called));
+
+  controller_->ShowBubble();
+  ASSERT_TRUE(controller_->IsBubbleShowing());
+  views::Widget* widget = test_delegate_->bubble_widget();
+  ASSERT_TRUE(widget);
+
+  views::test::WidgetDestroyedWaiter waiter(widget);
+  controller_->CloseBubble();
+  waiter.Wait();
+
+  EXPECT_TRUE(destroyed_called);
+}
+
+class GlicActivityListBubbleControllerActivityHubTest
+    : public GlicActivityListBubbleControllerTest {
+ public:
+  GlicActivityListBubbleControllerActivityHubTest() {
+    scoped_feature_list_.InitAndEnableFeature(features::kGlicActivityHub);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(GlicActivityListBubbleControllerActivityHubTest,
+       CreateRowViewModels_ActorTasks) {
+  auto* fake_actor_service = static_cast<actor::ActorKeyedServiceFake*>(
+      actor::ActorKeyedService::Get(profile_));
+  auto* activity_manager = &mock_glic_keyed_service_->activity_manager();
+  ASSERT_TRUE(activity_manager);
+
+  actor::TaskId id_1 = fake_actor_service->CreateTaskForTesting();
+  fake_actor_service->PauseTaskForTesting(id_1, /*from_actor=*/true);
+  activity_manager->OnTabAddedToTask(id_1);
+
+  actor::TaskId id_2 = fake_actor_service->CreateTaskForTesting();
+  activity_manager->OnTabAddedToTask(id_2);
+
+  auto rows = controller_->CreateRowViewModels();
+  ASSERT_EQ(2u, rows.size());
+  EXPECT_EQ(id_1, rows[0].task_id);
+  EXPECT_TRUE(rows[0].needs_review);
+  EXPECT_FALSE(rows[0].has_been_seen);
+  EXPECT_EQ(id_2, rows[1].task_id);
+  EXPECT_FALSE(rows[1].needs_review);
+
+  // Clicking the row marks the activity as seen in GlicActivityManager.
+  ASSERT_TRUE(rows[0].on_clicked);
+  rows[0].on_clicked.Run();
+
+  GlicActivityKey key{GlicActivityType::kActorTask,
+                      base::NumberToString(id_1.value())};
+  auto it = activity_manager->activities().find(key);
+  ASSERT_NE(it, activity_manager->activities().end());
+  EXPECT_TRUE(it->second.has_been_seen);
+}
+
+TEST_F(GlicActivityListBubbleControllerActivityHubTest,
+       OnActivityAlert_InterruptionLevels) {
+  auto* activity_manager = &mock_glic_keyed_service_->activity_manager();
+  ASSERT_TRUE(activity_manager);
+
+  // Seed an in-progress conversation activity so there is a displayable row
+  // without immediately triggering an automatic bubble open on nudge update.
+  activity_manager->OnConversationActivityStateChanged(
+      "conv_1", {.state = GlicActivityState::kInProgress,
+                 .title = "Chat 1",
+                 .preview_snippet = "Working..."});
+
+  // 1. Silent alert does not pop open the bubble when closed.
+  controller_->OnActivityAlert(ActivityInterruptionLevel::kSilent);
+  EXPECT_FALSE(controller_->IsBubbleShowing());
+
+  // 2. Passive nudge alert does not pop open the bubble when closed.
+  controller_->OnActivityAlert(ActivityInterruptionLevel::kPassiveNudge);
+  EXPECT_FALSE(controller_->IsBubbleShowing());
+
+  // 3. Delayed task start alert shows bubble with delay.
+  controller_->OnActivityAlert(ActivityInterruptionLevel::kDelayedTaskStart);
+  EXPECT_FALSE(controller_->IsBubbleShowing());
+
+  task_environment()->FastForwardBy(
+      base::Milliseconds(features::kGlicActorUiTaskListBubbleDelayMs.Get()));
+  ASSERT_TRUE(controller_->IsBubbleShowing());
+  views::Widget* first_widget = test_delegate_->bubble_widget();
+  ASSERT_TRUE(first_widget);
+  EXPECT_EQ(
+      1u, GetContentViewInActorTaskListBubble(first_widget)->children().size());
+
+  // 4. When the bubble is already showing, a passive nudge (e.g., from a new
+  // conversation response) refreshes the open bubble with the updated rows.
+  views::test::WidgetDestroyedWaiter waiter(first_widget);
+  activity_manager->OnConversationActivityStateChanged(
+      "conv_2", {.state = GlicActivityState::kCompleted,
+                 .title = "Chat 2",
+                 .preview_snippet = "Response ready"});
+  waiter.Wait();
+  ASSERT_TRUE(controller_->IsBubbleShowing());
+  EXPECT_EQ(2u,
+            GetContentViewInActorTaskListBubble(test_delegate_->bubble_widget())
+                ->children()
+                .size());
+}
+
+TEST_F(GlicActivityListBubbleControllerActivityHubTest,
+       CreateRowViewModels_ConversationActivities) {
+  auto* manager = &mock_glic_keyed_service_->activity_manager();
+  ASSERT_TRUE(manager);
+
+  manager->OnConversationActivityStateChanged(
+      "conv_seen", {.state = GlicActivityState::kCompleted,
+                    .title = "Seen Topic",
+                    .preview_snippet = "Old snippet",
+                    .is_currently_visible = true});
+  manager->OnConversationActivityStateChanged(
+      "conv_test_123", {.state = GlicActivityState::kCompleted,
+                        .title = "My Research Topic",
+                        .preview_snippet = "Here is the answer"});
+  manager->OnConversationActivityStateChanged(
+      "conv_working", {.state = GlicActivityState::kInProgress, .title = ""});
+
+  auto rows = controller_->CreateRowViewModels();
+  ASSERT_EQ(3u, rows.size());
+
+  // Priority 1: Unseen completed response.
+  EXPECT_EQ("conv_test_123", rows[0].conversation_id);
+  EXPECT_EQ(u"My Research Topic", rows[0].title);
+  EXPECT_EQ(u"Here is the answer", rows[0].subtitle);
+  EXPECT_TRUE(rows[0].is_enabled);
+  EXPECT_FALSE(rows[0].has_been_seen);
+  EXPECT_EQ(ui::kColorSysPrimary, rows[0].icon_and_subtitle_color);
+
+  // Priority 2: Conversation in progress (with default Gemini title fallback).
+  EXPECT_EQ("conv_working", rows[1].conversation_id);
+  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_GLIC_ACTIVITY_TITLE_GEMINI),
+            rows[1].title);
+  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_GLIC_ACTIVITY_WORKING),
+            rows[1].subtitle);
+  EXPECT_FALSE(rows[1].has_been_seen);
+
+  // Priority 4: Seen completed conversation.
+  EXPECT_EQ("conv_seen", rows[2].conversation_id);
+  EXPECT_EQ(u"Seen Topic", rows[2].title);
+  EXPECT_EQ(u"", rows[2].subtitle);
+  EXPECT_TRUE(rows[2].has_been_seen);
+  EXPECT_EQ(ui::kColorMenuIcon, rows[2].icon_and_subtitle_color);
+
+  // Clicking a conversation row marks it as seen and invokes GlicKeyedService.
+  EXPECT_CALL(*mock_glic_keyed_service_, Invoke(testing::_)).Times(1);
+  ASSERT_TRUE(rows[0].on_clicked);
+  rows[0].on_clicked.Run();
+
+  GlicActivityKey key{GlicActivityType::kConversationResponse, "conv_test_123"};
+  auto it = manager->activities().find(key);
+  ASSERT_NE(it, manager->activities().end());
+  EXPECT_TRUE(it->second.has_been_seen);
+}
+
+}  // namespace glic

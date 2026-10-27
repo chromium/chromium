@@ -42,7 +42,8 @@ GlicActorNudgeController::GlicActorNudgeController(
     RegisterActorNudgeStateCallback();
   }
 
-  if (auto* bubble_controller = ActorTaskListBubbleController::From(browser_)) {
+  if (auto* bubble_controller =
+          GlicActivityListBubbleController::From(browser_)) {
     bubble_visibility_change_subscription_.push_back(
         bubble_controller->RegisterBubbleShownCallback(base::BindRepeating(
             &GlicActorNudgeController::OnBubbleVisibilityChange,
@@ -185,13 +186,15 @@ void GlicActorNudgeController::TriggerGlicActorNudge(
 }
 
 void GlicActorNudgeController::ShowBubble() {
-  if (auto* bubble_controller = ActorTaskListBubbleController::From(browser_)) {
+  if (auto* bubble_controller =
+          GlicActivityListBubbleController::From(browser_)) {
     bubble_controller->ShowBubble();
   }
 }
 
 void GlicActorNudgeController::CloseBubble() {
-  if (auto* bubble_controller = ActorTaskListBubbleController::From(browser_)) {
+  if (auto* bubble_controller =
+          GlicActivityListBubbleController::From(browser_)) {
     bubble_controller->CloseBubble();
   }
 }

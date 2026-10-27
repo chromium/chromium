@@ -55,14 +55,17 @@ GlicSplitButtonController::GlicSplitButtonController(
   glic_button_controller_ = std::make_unique<GlicButtonController>(
       browser->GetProfile(), *browser, this, glic_service);
 
-  if (base::FeatureList::IsEnabled(features::kGlicActor) &&
-      base::FeatureList::IsEnabled(features::kGlicActorUi) &&
-      features::kGlicActorUiTaskIcon.Get() &&
+  if (((base::FeatureList::IsEnabled(features::kGlicActor) &&
+        base::FeatureList::IsEnabled(features::kGlicActorUi) &&
+        features::kGlicActorUiTaskIcon.Get()) ||
+       base::FeatureList::IsEnabled(features::kGlicActivityHub)) &&
       browser->GetProfile()->IsRegularProfile()) {
-    actor_task_list_bubble_controller_ =
-        std::make_unique<ActorTaskListBubbleController>(browser, *this);
-    glic_actor_nudge_controller_ =
-        std::make_unique<GlicActorNudgeController>(browser, this);
+    activity_list_bubble_controller_ =
+        std::make_unique<GlicActivityListBubbleController>(browser, *this);
+    if (!base::FeatureList::IsEnabled(features::kGlicActivityHub)) {
+      glic_actor_nudge_controller_ =
+          std::make_unique<GlicActorNudgeController>(browser, this);
+    }
   }
 }
 

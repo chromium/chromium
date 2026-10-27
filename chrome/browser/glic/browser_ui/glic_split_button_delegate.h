@@ -35,7 +35,8 @@ struct NudgeParams {
 
 // Delegate interface for the UI container that houses GlicButton and
 // GlicActorTaskIcon.
-class GlicSplitButtonDelegate : public ActorTaskListBubbleControllerDelegate {
+class GlicSplitButtonDelegate
+    : public GlicActivityListBubbleControllerDelegate {
  public:
   ~GlicSplitButtonDelegate() override;
 
@@ -69,10 +70,10 @@ class GlicSplitButtonDelegate : public ActorTaskListBubbleControllerDelegate {
   // Update the nudge button "pressed state".
   virtual void SetGlicActorNudgePressedState(bool pressed);
 
-  // ActorTaskListBubbleControllerDelegate:
-  void ShowActorTaskListBubble() override;
-  void CloseActorTaskListBubble() override;
-  bool IsActorTaskListBubbleShowing() override;
+  // GlicActivityListBubbleControllerDelegate:
+  void ShowActivityListBubble() override;
+  void CloseActivityListBubble() override;
+  bool IsActivityListBubbleShowing() override;
 
   // Methods related to glic button visibility and glic panel visibility
 

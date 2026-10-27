@@ -9,8 +9,12 @@ source_set("delegate") {
 }
 
 source_set("controller") {
-  sources = [ "glic_activity_list_bubble_controller.h" ]
+  sources = [
+    "glic_activity_list_bubble_controller.h",
+    "glic_activity_row_view_model.h",
+  ]
   deps = [
+    ":delegate",
     "//base",
     "//chrome/browser/actor",
     "//chrome/browser/glic",
@@ -24,16 +28,22 @@ source_set("controller") {
     "//components/tabs:public",
     "//third_party/abseil-cpp:absl",
     "//ui/base/unowned_user_data",
+    "//ui/color",
+    "//ui/gfx",
   ]
 }
 
 source_set("controller_impl") {
-  sources = [ "glic_activity_list_bubble_controller.cc" ]
+  sources = [
+    "glic_activity_list_bubble_controller.cc",
+    "glic_activity_row_view_model.cc",
+  ]
   deps = [
     ":controller",
     ":delegate",
     "//base",
     "//chrome/app:generated_resources",
+    "//chrome/app/vector_icons",
     "//chrome/browser/actor",
     "//chrome/browser/actor/resources:grit",
     "//chrome/browser/actor/ui:metrics",
@@ -41,7 +51,10 @@ source_set("controller_impl") {
     "//chrome/browser/glic:mojo_bindings",
     "//chrome/browser/glic/browser_ui",
     "//chrome/browser/tab_list",
+    "//components/vector_icons",
     "//ui/base",
+    "//ui/color",
+    "//ui/gfx",
   ]
   if (is_android) {
     deps += [ "//chrome/browser/android:tabs_public" ]
@@ -52,6 +65,7 @@ if (!is_android) {
   source_set("ui") {
     sources = [ "glic_activity_list_bubble.h" ]
     public_deps = [
+      ":controller",
       "//base",
       "//components/actor/core:task_id",
       "//ui/views",
@@ -77,6 +91,7 @@ if (!is_android) {
       "//chrome/browser/ui/color:color_headers",
       "//chrome/browser/ui/views:layout_provider",
       "//chrome/common",
+      "//components/vector_icons",
       "//content/public/browser",
       "//ui/views",
     ]
@@ -100,6 +115,7 @@ if (!is_android) {
       "//chrome/browser/ui/views/controls",
       "//chrome/test:test_support",
       "//chrome/test/base:testing_browser_process",
+      "//components/vector_icons",
       "//testing/gtest",
     ]
   }

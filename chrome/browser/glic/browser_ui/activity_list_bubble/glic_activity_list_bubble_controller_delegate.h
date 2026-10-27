@@ -5,20 +5,24 @@
 #ifndef CHROME_BROWSER_GLIC_BROWSER_UI_ACTIVITY_LIST_BUBBLE_GLIC_ACTIVITY_LIST_BUBBLE_CONTROLLER_DELEGATE_H_
 #define CHROME_BROWSER_GLIC_BROWSER_UI_ACTIVITY_LIST_BUBBLE_GLIC_ACTIVITY_LIST_BUBBLE_CONTROLLER_DELEGATE_H_
 
-// Interface through which ActorTaskListBubbleController communicates with its
-// UI.
-class ActorTaskListBubbleControllerDelegate {
+namespace glic {
+
+// Interface through which GlicActivityListBubbleController communicates with
+// its UI.
+class GlicActivityListBubbleControllerDelegate {
  public:
-  virtual ~ActorTaskListBubbleControllerDelegate() = default;
+  virtual ~GlicActivityListBubbleControllerDelegate() = default;
 
-  // Show the task list bubble anchored to the button.
-  virtual void ShowActorTaskListBubble() = 0;
+  // Show the activity list bubble anchored to the button.
+  virtual void ShowActivityListBubble() = 0;
 
-  // Hide the task list bubble.
-  virtual void CloseActorTaskListBubble() = 0;
+  // Hide the activity list bubble.
+  virtual void CloseActivityListBubble() = 0;
 
-  // Returns true if the task list bubble is showing.
-  virtual bool IsActorTaskListBubbleShowing() = 0;
+  // Returns true if the activity list bubble is showing.
+  virtual bool IsActivityListBubbleShowing() = 0;
 };
+
+}  // namespace glic
 
 #endif  // CHROME_BROWSER_GLIC_BROWSER_UI_ACTIVITY_LIST_BUBBLE_GLIC_ACTIVITY_LIST_BUBBLE_CONTROLLER_DELEGATE_H_

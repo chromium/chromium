@@ -19743,6 +19743,23 @@ Please help our engineers fix this problem. Tell us what happened right before y
       </message>
     </if>
 
+    <!-- Glic Activity Hub Strings -->
+    <message name="IDS_GLIC_ACTIVITY_TITLE_GEMINI" desc="Default title shown in the Glic Activity Hub for a Gemini conversation.">
+      Gemini
+    </message>
+    <message name="IDS_GLIC_ACTIVITY_WORKING" desc="Status text shown in the Glic Activity Hub when Gemini is generating a response or performing a task.">
+      Working…
+    </message>
+    <message name="IDS_GLIC_ACTIVITY_RESPONSE_READY" desc="Status text shown in the Glic Activity Hub when a Gemini response is finished and ready for review.">
+      Response ready
+    </message>
+    <message name="IDS_GLIC_ACTIVITY_NEEDS_INPUT" desc="Status text shown in the Glic Activity Hub when a Gemini activity requires user input or action.">
+      Needs input
+    </message>
+    <message name="IDS_GLIC_ACTIVITY_ERROR" desc="Status text shown in the Glic Activity Hub when a Gemini activity encountered an error.">
+      Something went wrong
+    </message>
+
     <!-- Toast Strings-->
     <if expr="not is_android">
       <message name="IDS_TOAST_MENU_BUTTON_NAME" desc="Accessible name of the 3-dot button to open the menu attached to the toast.">

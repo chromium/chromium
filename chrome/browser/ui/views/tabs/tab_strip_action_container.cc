@@ -457,36 +457,33 @@ void TabStripActionContainer::SetGlicActorNudgePressedState(bool pressed) {
   glic_actor_task_icon_->SetPressedState(pressed);
 }
 
-void TabStripActionContainer::ShowActorTaskListBubble() {
+void TabStripActionContainer::ShowActivityListBubble() {
   if (!glic_actor_task_icon_) {
     return;
   }
-  if (!actor_task_list_bubble_) {
-    Profile* profile = browser_window_interface_->GetProfile();
-    auto* manager = glic::LegacyGlicActivityManager::Get(profile);
-    auto* controller =
-        ActorTaskListBubbleController::From(browser_window_interface_);
-    if (manager && controller) {
-      actor_task_list_bubble_ = std::make_unique<ActorTaskListBubble>(
-          profile, browser_window_interface_,
-          manager->actor_task_list_bubble_rows(),
-          base::BindRepeating(&ActorTaskListBubbleController::OnTaskRowClicked,
-                              base::Unretained(controller)));
-    }
+  if (activity_list_bubble_) {
+    activity_list_bubble_->Close();
+    activity_list_bubble_.reset();
   }
-  if (actor_task_list_bubble_) {
-    actor_task_list_bubble_->Show(glic_actor_task_icon_);
+  if (auto* controller = glic::GlicActivityListBubbleController::From(
+          browser_window_interface_)) {
+    activity_list_bubble_ = std::make_unique<glic::GlicActivityListBubble>(
+        controller->CreateRowViewModels(),
+        base::BindRepeating(
+            &glic::GlicActivityListBubbleController::OnBubbleDestroyed,
+            controller->GetWeakPtr()));
+    activity_list_bubble_->Show(glic_actor_task_icon_);
   }
 }
 
-void TabStripActionContainer::CloseActorTaskListBubble() {
-  if (actor_task_list_bubble_) {
-    actor_task_list_bubble_->Close();
+void TabStripActionContainer::CloseActivityListBubble() {
+  if (activity_list_bubble_) {
+    activity_list_bubble_->Close();
   }
 }
 
-bool TabStripActionContainer::IsActorTaskListBubbleShowing() {
-  return actor_task_list_bubble_ && actor_task_list_bubble_->IsShowing();
+bool TabStripActionContainer::IsActivityListBubbleShowing() {
+  return activity_list_bubble_ && activity_list_bubble_->IsShowing();
 }
 
 void TabStripActionContainer::ShowGlicActorNudge(
@@ -644,9 +641,10 @@ void TabStripActionContainer::OnGlicActorTaskIconClicked() {
   // Only show the bubble if the button is not currently pressed. Clicking on
   // the pressed button should dismiss the nudge.
   if (!glic_actor_task_icon_->GetIsPressed()) {
-    ActorTaskListBubbleController* controller =
-        ActorTaskListBubbleController::From(browser_window_interface_);
-    controller->ShowBubble(glic_actor_task_icon_);
+    if (auto* controller = glic::GlicActivityListBubbleController::From(
+            browser_window_interface_)) {
+      controller->ShowBubble();
+    }
   }
 
   auto current_task_nudge_state =

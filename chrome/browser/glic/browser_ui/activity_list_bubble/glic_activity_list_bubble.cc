@@ -5,11 +5,10 @@
 #include "chrome/browser/glic/browser_ui/activity_list_bubble/glic_activity_list_bubble.h"
 
 #include <memory>
+#include <utility>
 #include <vector>
 
-#include "chrome/browser/glic/browser_ui/activity_list_bubble/glic_activity_list_bubble_controller.h"
 #include "chrome/browser/glic/browser_ui/activity_list_bubble/glic_activity_list_bubble_row_button.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/dialog_model.h"
@@ -26,30 +25,27 @@
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kActorTaskListBubbleView);
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kActorTaskListBubbleScrollView);
 
+namespace glic {
+
 namespace {
 const int kVerticalMargin = 8;
 // Calculated as a max of 8 rows * 56 px per row. This is also inline with the
 // extensions bubble max height (448) and the downloads bubble max height (450).
 const int kMaxBubbleHeight = 448;
-
 }  // namespace
 
-ActorTaskListBubble::ActorTaskListBubble(
-    Profile* profile,
-    BrowserWindowInterface* browser,
-    const absl::flat_hash_map<actor::TaskId, bool>& task_list,
-    OnTaskClickedCallback on_row_clicked)
-    : profile_(profile),
-      browser_(browser),
-      task_list_(task_list),
-      on_row_clicked_(std::move(on_row_clicked)) {}
+GlicActivityListBubble::GlicActivityListBubble(
+    std::vector<GlicActivityRowViewModel> row_models,
+    base::RepeatingClosure on_destroyed)
+    : row_models_(std::move(row_models)),
+      on_destroyed_(std::move(on_destroyed)) {}
 
-ActorTaskListBubble::~ActorTaskListBubble() {
+GlicActivityListBubble::~GlicActivityListBubble() {
   widget_observation_.Reset();
   Close();
 }
 
-void ActorTaskListBubble::Show(views::View* anchor_view) {
+void GlicActivityListBubble::Show(views::View* anchor_view) {
   auto contents_view = CreateContentsView();
 
   // If there are no rows, don't show the bubble.
@@ -109,40 +105,38 @@ void ActorTaskListBubble::Show(views::View* anchor_view) {
   widget_observation_.Observe(widget_);
 }
 
-void ActorTaskListBubble::Close() {
+void GlicActivityListBubble::Close() {
   if (widget_) {
     widget_->Close();
     widget_ = nullptr;
   }
 }
 
-bool ActorTaskListBubble::IsShowing() const {
+bool GlicActivityListBubble::IsShowing() const {
   return widget_ && widget_->IsVisible();
 }
 
-void ActorTaskListBubble::OnWidgetDestroyed(views::Widget* widget) {
+void GlicActivityListBubble::OnWidgetDestroyed(views::Widget* widget) {
   widget_observation_.Reset();
   widget_ = nullptr;
-  if (auto* controller = ActorTaskListBubbleController::From(browser_)) {
-    controller->OnBubbleDestroyed();
+  if (on_destroyed_) {
+    on_destroyed_.Run();
   }
 }
 
-std::unique_ptr<views::View> ActorTaskListBubble::CreateContentsView() {
+std::unique_ptr<views::View> GlicActivityListBubble::CreateContentsView() {
   std::unique_ptr<views::View> contents_view =
       views::Builder<views::FlexLayoutView>()
           .SetOrientation(views::LayoutOrientation::kVertical)
           .SetProperty(views::kElementIdentifierKey, kActorTaskListBubbleView)
           .Build();
 
-  std::vector<actor::ui::ActorTaskRowData> rows =
-      ActorTaskListBubbleController::GetActorTaskRowsForBubble(profile_,
-                                                               *task_list_);
-
   // Create rows in order of priority.
-  for (const auto& row_data : rows) {
-    contents_view->AddChildView(std::make_unique<ActorTaskListBubbleRowButton>(
-        base::BindRepeating(on_row_clicked_, row_data.task_id), row_data));
+  for (const auto& model : row_models_) {
+    contents_view->AddChildView(
+        std::make_unique<GlicActivityListBubbleRowButton>(model));
   }
   return contents_view;
 }
+
+}  // namespace glic

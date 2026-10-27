@@ -5,25 +5,30 @@
 #ifndef CHROME_BROWSER_GLIC_BROWSER_UI_ACTIVITY_LIST_BUBBLE_GLIC_ACTIVITY_LIST_BUBBLE_ROW_BUTTON_H_
 #define CHROME_BROWSER_GLIC_BROWSER_UI_ACTIVITY_LIST_BUBBLE_GLIC_ACTIVITY_LIST_BUBBLE_ROW_BUTTON_H_
 
+#include <string_view>
+
+#include "base/memory/raw_ptr.h"
+#include "chrome/browser/glic/browser_ui/activity_list_bubble/glic_activity_row_view_model.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 
-namespace actor::ui {
-struct ActorTaskRowData;
-}
+namespace glic {
 
-// Button representing a task entry in the ActorTaskListBubble.
-class ActorTaskListBubbleRowButton : public views::Button {
-  METADATA_HEADER(ActorTaskListBubbleRowButton, views::Button)
+// Button representing an activity or task entry in the GlicActivityListBubble.
+class GlicActivityListBubbleRowButton : public views::Button {
+  METADATA_HEADER(GlicActivityListBubbleRowButton, views::Button)
 
  public:
-  ActorTaskListBubbleRowButton(views::Button::PressedCallback on_row_clicked,
-                               const actor::ui::ActorTaskRowData& row_data);
-  ActorTaskListBubbleRowButton(const ActorTaskListBubbleRowButton&) = delete;
-  ActorTaskListBubbleRowButton& operator=(const ActorTaskListBubbleRowButton&) =
+  explicit GlicActivityListBubbleRowButton(
+      const GlicActivityRowViewModel& model);
+  GlicActivityListBubbleRowButton(const GlicActivityListBubbleRowButton&) =
       delete;
-  ~ActorTaskListBubbleRowButton() override;
+  GlicActivityListBubbleRowButton& operator=(
+      const GlicActivityListBubbleRowButton&) = delete;
+  ~GlicActivityListBubbleRowButton() override;
 
   void OnMouseEntered(const ui::MouseEvent& event) override;
   void OnMouseExited(const ui::MouseEvent& event) override;
@@ -48,5 +53,7 @@ class ActorTaskListBubbleRowButton : public views::Button {
   raw_ptr<views::Label> title_;  // Never null.
   raw_ptr<views::Label> subtitle_ = nullptr;
 };
+
+}  // namespace glic
 
 #endif  // CHROME_BROWSER_GLIC_BROWSER_UI_ACTIVITY_LIST_BUBBLE_GLIC_ACTIVITY_LIST_BUBBLE_ROW_BUTTON_H_

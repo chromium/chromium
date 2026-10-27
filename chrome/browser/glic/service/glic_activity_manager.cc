@@ -4,10 +4,13 @@
 
 #include "chrome/browser/glic/public/service/glic_activity_manager.h"
 
+#include <algorithm>
 #include <optional>
 #include <string>
 #include <string_view>
+#include <tuple>
 #include <utility>
+#include <vector>
 
 #include "base/check.h"
 #include "base/feature_list.h"
@@ -41,6 +44,40 @@ namespace glic {
 using actor::ActorTask;
 using TaskState = actor::ActorTask::State;
 using TaskDuration = actor::ActorTask::TaskDuration;
+
+namespace {
+
+enum class ActivityPriority {
+  kUnseenNeedsAttention,
+  kSeenNeedsAttention,
+  kInProgress,
+  kUnseen,
+  kDefault,
+};
+
+ActivityPriority GetActivityPriority(const GlicActivityItem& item) {
+  if (item.type() == GlicActivityType::kConversationResponse) {
+    if (!item.has_been_seen && item.state != GlicActivityState::kInProgress) {
+      return ActivityPriority::kUnseenNeedsAttention;
+    }
+    if (item.state == GlicActivityState::kInProgress) {
+      return ActivityPriority::kInProgress;
+    }
+    return ActivityPriority::kDefault;
+  }
+
+  if (item.state == GlicActivityState::kNeedsAttention) {
+    return !item.has_been_seen ? ActivityPriority::kUnseenNeedsAttention
+                               : ActivityPriority::kSeenNeedsAttention;
+  }
+  if (item.state == GlicActivityState::kInProgress) {
+    return ActivityPriority::kInProgress;
+  }
+  return !item.has_been_seen ? ActivityPriority::kUnseen
+                             : ActivityPriority::kDefault;
+}
+
+}  // namespace
 
 // =============================================================================
 // GlicActivityManager
@@ -131,6 +168,35 @@ void GlicActivityManager::RefreshActivities() {
   for (auto& [key, item] : activities_) {
     PopulateActivityItemDetails(item);
   }
+}
+
+std::vector<const GlicActivityItem*> GlicActivityManager::GetSortedActivities(
+    const std::optional<std::string>& active_tab_conv_id,
+    bool is_active_tab_showing) const {
+  std::vector<const GlicActivityItem*> sorted_items;
+  sorted_items.reserve(activities_.size());
+  for (const auto& [key, item] : activities_) {
+    if (item.type() == GlicActivityType::kConversationResponse &&
+        active_tab_conv_id.has_value() && key.id == *active_tab_conv_id &&
+        (is_active_tab_showing ||
+         (item.has_been_seen &&
+          item.state != GlicActivityState::kInProgress))) {
+      continue;
+    }
+    sorted_items.push_back(&item);
+  }
+
+  std::sort(sorted_items.begin(), sorted_items.end(),
+            [](const GlicActivityItem* a, const GlicActivityItem* b) {
+              ActivityPriority prio_a = GetActivityPriority(*a);
+              ActivityPriority prio_b = GetActivityPriority(*b);
+              return std::tie(prio_a, a->key.type, a->task_id, a->has_been_seen,
+                              b->timestamp, a->key.id) <
+                     std::tie(prio_b, b->key.type, b->task_id, b->has_been_seen,
+                              a->timestamp, b->key.id);
+            });
+
+  return sorted_items;
 }
 
 GlicActivityNudgeState GlicActivityManager::GetCurrentActivityNudgeState()
