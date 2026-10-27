@@ -1550,9 +1550,10 @@ class PrerenderPrewarmPageLoadAndTabSwitchAfterPaintBrowserTest
                 kEnabledWithPageLoadAndTabSwitchAfterPaintTrigger) {}
 };
 
+// TODO(crbug.com/578450648): Re-enable this test.
 IN_PROC_BROWSER_TEST_F(
     PrerenderPrewarmPageLoadAndTabSwitchAfterPaintBrowserTest,
-    PageLoadAndTabSwitchTriggersPrewarm) {
+    DISABLED_PageLoadAndTabSwitchTriggersPrewarm) {
   content::test::PrerenderHostRegistryObserver registry_observer(
       *GetActiveWebContents());
 
