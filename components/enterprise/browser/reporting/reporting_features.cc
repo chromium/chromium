@@ -30,7 +30,7 @@ BASE_FEATURE(kCbcmAndroidPackageNameIdentifier,
 BASE_FEATURE(kIOSSignalSharingEnabled, base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_IOS)
 
-BASE_FEATURE(kUploadReportOnProfileOpen, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kUploadReportOnProfileOpen, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kChromeEnterpriseUMAMetricsCollection,
              base::FEATURE_DISABLED_BY_DEFAULT);
