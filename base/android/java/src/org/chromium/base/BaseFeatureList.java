@@ -50,6 +50,12 @@ public class BaseFeatureList {
     public static final MutableIntParamWithSafeDefault sMaxDeferredSharedRebindServiceConnection =
             sUseSharedRebindServiceConnection.newIntParam("max-deferred-bindings", 10);
 
+    public static final MutableFlagWithSafeDefault sSplitScreenImeInsetVisibility =
+            new MutableFlagWithSafeDefault(
+                    BaseFeatureMap.getInstance(),
+                    BaseFeatures.SPLIT_SCREEN_IME_INSET_VISIBILITY,
+                    true);
+
     public static final MutableFlagWithSafeDefault sVirtualKeyboardGeometryAndInsetFixes =
             new MutableFlagWithSafeDefault(
                     BaseFeatureMap.getInstance(),

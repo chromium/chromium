@@ -53,6 +53,7 @@ BASE_EXPORT BASE_DECLARE_FEATURE(
     kPostPowerMonitorBroadcastReceiverInitToBackground);
 BASE_EXPORT BASE_DECLARE_FEATURE(kRebindingChildServiceConnectionController);
 BASE_EXPORT BASE_DECLARE_FEATURE(kRebindServiceBatchApi);
+BASE_EXPORT BASE_DECLARE_FEATURE(kSplitScreenImeInsetVisibility);
 BASE_EXPORT BASE_DECLARE_FEATURE(kUseSharedRebindServiceConnection);
 BASE_EXPORT BASE_DECLARE_FEATURE(kVirtualKeyboardGeometryAndInsetFixes);
 

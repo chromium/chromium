@@ -171,6 +171,10 @@ BASE_FEATURE(kRebindingChildServiceConnectionController,
 // Use a batch API to rebind service connections.
 BASE_FEATURE(kRebindServiceBatchApi, FEATURE_DISABLED_BY_DEFAULT);
 
+// Kill switch for checking IME visibility directly in split-screen mode when
+// the bottom IME inset is 0.
+BASE_FEATURE(kSplitScreenImeInsetVisibility, FEATURE_ENABLED_BY_DEFAULT);
+
 // Use shared service connection to rebind a service binding to update the LRU
 // in the ProcessList of OomAdjuster.
 BASE_FEATURE(kUseSharedRebindServiceConnection, FEATURE_ENABLED_BY_DEFAULT);

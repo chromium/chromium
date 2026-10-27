@@ -20,6 +20,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &features::kPostPowerMonitorBroadcastReceiverInitToBackground,
     &features::kRebindingChildServiceConnectionController,
     &features::kRebindServiceBatchApi,
+    &features::kSplitScreenImeInsetVisibility,
     &features::kUseSharedRebindServiceConnection,
     &features::kShutdownPreNativeThreadPoolAfterStartup,
     &features::kVirtualKeyboardGeometryAndInsetFixes,
