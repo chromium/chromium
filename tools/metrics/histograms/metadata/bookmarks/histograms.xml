@@ -1252,7 +1252,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PowerBookmarks.SuggestedSaveLocation.{FeatureName}"
-    enum="SuggestedSaveLocationState" expires_after="2026-12-08">
+    enum="SuggestedSaveLocationState" expires_after="2027-10-26">
   <owner>ayman@chromium.org</owner>
   <owner>mdjones@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
