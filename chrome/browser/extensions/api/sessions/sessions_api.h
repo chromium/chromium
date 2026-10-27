@@ -30,7 +30,7 @@ class BrowserWindowInterface;
 class Profile;
 
 namespace sync_sessions {
-struct SyncedSession;
+class SyncedSession;
 }
 
 namespace extensions {

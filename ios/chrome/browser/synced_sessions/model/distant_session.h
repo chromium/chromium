@@ -16,7 +16,7 @@ class Time;
 namespace sync_sessions {
 class OpenTabsUIDelegate;
 class SessionSyncService;
-struct SyncedSession;
+class SyncedSession;
 }  // namespace sync_sessions
 
 namespace synced_sessions {

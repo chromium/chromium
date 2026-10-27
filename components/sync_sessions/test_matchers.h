@@ -15,7 +15,7 @@
 
 namespace sync_sessions {
 
-struct SyncedSession;
+class SyncedSession;
 
 testing::Matcher<const sync_pb::SessionSpecifics&> MatchesHeader(
     testing::Matcher<std::string> session_tag,

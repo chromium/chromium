@@ -29,7 +29,7 @@ struct SessionWindow;
 
 namespace sync_sessions {
 class OpenTabsUIDelegate;
-struct SyncedSession;
+class SyncedSession;
 }  // namespace sync_sessions
 
 // TODO(crbug.com/40261558): Move this class to chrome/browser/recent_tabs

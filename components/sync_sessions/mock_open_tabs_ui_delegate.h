@@ -22,7 +22,7 @@ struct SessionWindow;
 
 namespace sync_sessions {
 
-struct SyncedSession;
+class SyncedSession;
 
 class MockOpenTabsUIDelegate : public OpenTabsUIDelegate {
  public:

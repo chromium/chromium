@@ -12,7 +12,7 @@
 #include "chromeos/ash/components/phonehub/browser_tabs_model.h"
 
 namespace sync_sessions {
-struct SyncedSession;
+class SyncedSession;
 }  // namespace sync_sessions
 
 namespace ash::phonehub {
