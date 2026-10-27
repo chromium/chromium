@@ -42,7 +42,8 @@ public class LeakCanaryChecker {
     /** How long to wait for watched objects to be garbage collected before running LeakCanary. */
     @VisibleForTesting public static final long GC_POLL_TIMEOUT_MS = 2000;
 
-    private static final long GC_POLL_INTERVAL_MS = 50;
+    private static final long INITIAL_GC_POLL_INTERVAL_MS = 15;
+    private static final long MAX_GC_POLL_INTERVAL_MS = 100;
 
     /**
      * @return True if LeakCanary should run for this test class.
@@ -198,31 +199,45 @@ public class LeakCanaryChecker {
      * milliseconds, so most checks waited the full 5 seconds. Polling with short GC cycles lets
      * those checks finish early. If objects are still watched after GC_POLL_TIMEOUT_MS, LeakCanary
      * runs its usual sequence, so leak detection is unchanged.
+     *
+     * @return True if any object is still watched after polling.
      */
-    private static void waitForWatchedObjectsToBeCollected() {
+    private static boolean waitForWatchedObjectsToBeCollected() {
         RetainedObjectTracker tracker = AppWatcher.INSTANCE.getObjectWatcher();
-        if (!tracker.getHasTrackedObjects()) return;
+        if (!tracker.getHasTrackedObjects()) return false;
 
         long startMs = SystemClock.uptimeMillis();
+        long sleepMs = INITIAL_GC_POLL_INTERVAL_MS;
         boolean stillWatched = true;
-        while (stillWatched && SystemClock.uptimeMillis() - startMs < GC_POLL_TIMEOUT_MS) {
+        while (SystemClock.uptimeMillis() - startMs < GC_POLL_TIMEOUT_MS) {
             Runtime.getRuntime().gc();
             System.runFinalization();
-            Runtime.getRuntime().gc();
-            SystemClock.sleep(GC_POLL_INTERVAL_MS);
+            // ReferenceQueueDaemon enqueues cleared WeakReferences asynchronously after gc(), so
+            // check immediately as a fast path and again after sleeping.
             stillWatched = tracker.getHasTrackedObjects();
+            if (!stillWatched) break;
+            SystemClock.sleep(sleepMs);
+            stillWatched = tracker.getHasTrackedObjects();
+            if (!stillWatched) break;
+            sleepMs = Math.min(MAX_GC_POLL_INTERVAL_MS, sleepMs * 2);
         }
         Log.i(
                 TAG,
                 "Waited %dms for watched objects to be collected, still watched: %b",
                 SystemClock.uptimeMillis() - startMs,
                 stillWatched);
+        return stillWatched;
     }
 
     private static void checkLeaks() {
+        if (!waitForWatchedObjectsToBeCollected()) {
+            // Nothing is watched, so assertNoLeaks() would be a no-op; return early so LazyHolder
+            // (ServiceLoader scan + AndroidReferenceMatchers) is only initialized in processes that
+            // reach heap analysis.
+            return;
+        }
         // Ensure LazyHolder is initialized, which sets up LeakCanary.
         var _ = LazyHolder.sInstanceLeaks;
-        waitForWatchedObjectsToBeCollected();
         try {
             LeakAssertions.INSTANCE.assertNoLeaks(TAG);
         } catch (AssertionError e) {
