@@ -47,7 +47,7 @@ BASE_FEATURE(kCADisplayLinkInBrowser, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kCADisplayLinkInGpu, base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kSkipPostTaskForCallbacks, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kSkipPostTaskForCallbacks, base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
 // TODO(gildekel): A temporary flag to control whether EDID-based (vs.
