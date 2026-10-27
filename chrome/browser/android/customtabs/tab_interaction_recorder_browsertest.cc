@@ -16,7 +16,6 @@
 #include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
 #include "components/autofill/core/browser/foundations/test_autofill_manager_waiter.h"
 #include "components/back_forward_cache/back_forward_cache_disable.h"
-#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_user_data.h"
@@ -29,8 +28,6 @@
 
 const char kHistogramBackForwardCachePageWithFormStorable[] =
     "BackForwardCache.PageWithForm.Storable";
-const char kHistogramBackForwardCachePageWithFormRestoreResult[] =
-    "BackForwardCache.PageWithForm.RestoreResult";
 
 // Browser test that aim to test whether bits regarding tab interaction and form
 // seen is correctly recorded during navigation. This test is largely
@@ -63,16 +60,6 @@ class TabInteractionRecorderAndroidBrowserTest : public AndroidBrowserTest {
     histogram_tester_.ExpectBucketCount(
         kHistogramBackForwardCachePageWithFormStorable, /*kPageStored*/ 1,
         count);
-  }
-  void ExpectPageWithFormRestoredRecorded(int count) {
-    histogram_tester_.ExpectBucketCount(
-        kHistogramBackForwardCachePageWithFormRestoreResult, /*kRestored*/ 0,
-        count);
-  }
-  void ExpectPageWithFormNotRestoredRecorded(int count) {
-    histogram_tester_.ExpectBucketCount(
-        kHistogramBackForwardCachePageWithFormRestoreResult,
-        /*kNotRestored*/ 1, count);
   }
 
  protected:
@@ -156,17 +143,6 @@ IN_PROC_BROWSER_TEST_F(TabInteractionRecorderAndroidBrowserTest,
   content::FetchHistogramsFromChildProcesses();
   ExpectPageWithFormSeenRecorded(1);
   ExpectPageWithFormStoredRecorded(1);
-  ExpectPageWithFormRestoredRecorded(0);
-  ExpectPageWithFormNotRestoredRecorded(0);
-
-  // 3) Go back
-  web_contents()->GetController().GoBack();
-  EXPECT_TRUE(content::WaitForLoadStop(web_contents()));
-
-  // Page A should be restored and the histogram value is recorded.
-  content::FetchHistogramsFromChildProcesses();
-  ExpectPageWithFormRestoredRecorded(1);
-  ExpectPageWithFormNotRestoredRecorded(0);
 }
 
 IN_PROC_BROWSER_TEST_F(TabInteractionRecorderAndroidBrowserTest,
@@ -197,8 +173,6 @@ IN_PROC_BROWSER_TEST_F(TabInteractionRecorderAndroidBrowserTest,
   content::FetchHistogramsFromChildProcesses();
   ExpectPageWithFormSeenRecorded(1);
   ExpectPageWithFormStoredRecorded(1);
-  ExpectPageWithFormRestoredRecorded(0);
-  ExpectPageWithFormNotRestoredRecorded(0);
 }
 
 IN_PROC_BROWSER_TEST_F(TabInteractionRecorderAndroidBrowserTest,
@@ -220,8 +194,6 @@ IN_PROC_BROWSER_TEST_F(TabInteractionRecorderAndroidBrowserTest,
   content::FetchHistogramsFromChildProcesses();
   ExpectPageWithFormSeenRecorded(0);
   ExpectPageWithFormStoredRecorded(0);
-  ExpectPageWithFormRestoredRecorded(0);
-  ExpectPageWithFormNotRestoredRecorded(0);
 }
 
 IN_PROC_BROWSER_TEST_F(TabInteractionRecorderAndroidBrowserTest,
@@ -243,8 +215,6 @@ IN_PROC_BROWSER_TEST_F(TabInteractionRecorderAndroidBrowserTest,
   content::FetchHistogramsFromChildProcesses();
   ExpectPageWithFormSeenRecorded(1);
   ExpectPageWithFormStoredRecorded(1);
-  ExpectPageWithFormRestoredRecorded(0);
-  ExpectPageWithFormNotRestoredRecorded(0);
 }
 
 IN_PROC_BROWSER_TEST_F(TabInteractionRecorderAndroidBrowserTest,
@@ -272,44 +242,4 @@ IN_PROC_BROWSER_TEST_F(TabInteractionRecorderAndroidBrowserTest,
   content::FetchHistogramsFromChildProcesses();
   ExpectPageWithFormSeenRecorded(1);
   ExpectPageWithFormStoredRecorded(0);
-  ExpectPageWithFormRestoredRecorded(0);
-  ExpectPageWithFormNotRestoredRecorded(0);
-}
-
-IN_PROC_BROWSER_TEST_F(TabInteractionRecorderAndroidBrowserTest,
-                       PageDoNotRestoreWhenCacheFlushed) {
-  ASSERT_TRUE(embedded_test_server()->Start());
-
-  // 1) Navigate to page with test form.
-  EXPECT_TRUE(content::NavigateToURL(web_contents(), GetTestFormUrl()));
-  EXPECT_TRUE(GetAutofillManagerInMainFrame().WaitForFormsSeen(1));
-
-  content::RenderFrameHostWrapper rfh_a(current_frame_host());
-
-  // 2) Navigate to B.
-  EXPECT_TRUE(content::NavigateToURL(web_contents(), GetURLWithHost("b.com")));
-  content::RenderFrameHostWrapper rfh_b(current_frame_host());
-
-  // Page A should be seen as forms attached, stored in cache and the histogram
-  // value is recorded.
-  EXPECT_EQ(rfh_a->GetLifecycleState(),
-            content::RenderFrameHost::LifecycleState::kInBackForwardCache);
-  content::FetchHistogramsFromChildProcesses();
-  ExpectPageWithFormSeenRecorded(1);
-  ExpectPageWithFormStoredRecorded(1);
-  ExpectPageWithFormRestoredRecorded(0);
-  ExpectPageWithFormNotRestoredRecorded(0);
-
-  web_contents()->GetController().GetBackForwardCache().Flush();
-  EXPECT_TRUE(rfh_a.WaitUntilRenderFrameDeleted());
-
-  // 3) Go back. Page is not restored and histogram is recorded.
-  web_contents()->GetController().GoBack();
-  EXPECT_TRUE(content::WaitForLoadStop(web_contents()));
-
-  content::FetchHistogramsFromChildProcesses();
-  ExpectPageWithFormSeenRecorded(1);
-  ExpectPageWithFormStoredRecorded(1);
-  ExpectPageWithFormRestoredRecorded(0);
-  ExpectPageWithFormNotRestoredRecorded(1);
 }

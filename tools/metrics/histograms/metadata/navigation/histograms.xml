@@ -638,23 +638,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="BackForwardCache.PageWithForm.RestoreResult"
-    enum="BackForwardCacheHistoryNavigationOutcome" expires_after="2025-02-10">
-  <owner>wenyufu@chromium.org</owner>
-  <owner>bfcache-dev@chromium.org</owner>
-  <summary>
-    Record for a page that has form attached is about to restored from the back
-    forward cache, to understand the success rate for bfcaching a page that has
-    form / input entry attached. This is recorded for page with form attached
-    only.
-
-    Recorded during a cross-page history navigation. If a page with form is
-    restored from the cache, &quot;PageRestored&quot; will be recorded; if the
-    page is not egligible to be restored due to any reason,
-    &quot;PageNotRestored&quot; will be recorded.
-  </summary>
-</histogram>
-
 <histogram name="BackForwardCache.PageWithForm.Storable"
     enum="BackForwardCachePageWithFormStorable" expires_after="2025-02-23">
   <owner>wenyufu@chromium.org</owner>

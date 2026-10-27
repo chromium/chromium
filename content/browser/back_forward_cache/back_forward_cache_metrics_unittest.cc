@@ -31,8 +31,6 @@ namespace content {
 namespace {
 const char kBackForwardCachePageWithFormStorableHistogramName[] =
     "BackForwardCache.PageWithForm.Storable";
-const char kBackForwardCachePageWithFormRestoreResultHistogramName[] =
-    "BackForwardCache.PageWithForm.RestoreResult";
 
 class BackForwardCacheWebContentsDelegate : public WebContentsDelegate {
  public:
@@ -334,9 +332,6 @@ TEST_F(BackForwardCacheMetricsTest, PageWithFormsMetricsStoredRecorded) {
   NavigationSimulator::GoBack(contents());
   EXPECT_EQ(old_rfh->GetLifecycleState(),
             RenderFrameHost::LifecycleState::kActive);
-  histogram_tester_.ExpectBucketCount(
-      kBackForwardCachePageWithFormRestoreResultHistogramName,
-      BackForwardCacheMetrics::HistoryNavigationOutcome::kRestored, 1);
 }
 
 TEST_F(BackForwardCacheMetricsTest,
@@ -364,33 +359,6 @@ TEST_F(BackForwardCacheMetricsTest,
   histogram_tester_.ExpectBucketCount(
       kBackForwardCachePageWithFormStorableHistogramName,
       BackForwardCacheMetrics::PageWithFormStorable::kPageStored, 0);
-}
-
-TEST_F(BackForwardCacheMetricsTest, PageWithFormsMetricsNotRestoreRecorded) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeaturesAndParameters(
-      GetBasicBackForwardCacheFeatureForTesting(),
-      GetDefaultDisabledBackForwardCacheFeaturesForTesting());
-
-  const GURL url_with_form("http://foo1");
-  const GURL url_without_form("http://foo2");
-
-  // Set has form associated for the first URL.
-  NavigationSimulator::NavigateAndCommitFromDocument(url_with_form,
-                                                     main_test_rfh());
-  BackForwardCache::SetHadFormDataAssociated(main_test_rfh()->GetPage());
-
-  // Navigating into another URL and go back and page can't be restored because
-  // we flush the cache.
-  RenderFrameHostWrapper old_rfh(main_test_rfh());
-  NavigationSimulator::NavigateAndCommitFromDocument(url_without_form,
-                                                     main_test_rfh());
-  contents()->GetController().GetBackForwardCache().Flush();
-  NavigationSimulator::GoBack(contents());
-  EXPECT_TRUE(old_rfh.WaitUntilRenderFrameDeleted());
-  histogram_tester_.ExpectBucketCount(
-      kBackForwardCachePageWithFormRestoreResultHistogramName,
-      BackForwardCacheMetrics::HistoryNavigationOutcome::kNotRestored, 1);
 }
 
 TEST_F(BackForwardCacheMetricsTest,
