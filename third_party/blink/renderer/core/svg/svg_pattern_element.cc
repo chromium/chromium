@@ -119,8 +119,7 @@ void SVGPatternElement::SvgAttributeChanged(
       attr_name == svg_names::kPatternUnitsAttr ||
       attr_name == svg_names::kPatternContentUnitsAttr ||
       attr_name == svg_names::kPatternTransformAttr ||
-      SVGFitToViewBox::IsKnownAttribute(attr_name) ||
-      SVGTests::IsKnownAttribute(attr_name)) {
+      SVGFitToViewBox::IsKnownAttribute(attr_name)) {
     InvalidatePattern();
     return;
   }

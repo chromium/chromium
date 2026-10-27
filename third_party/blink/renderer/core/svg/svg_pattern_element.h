@@ -73,7 +73,9 @@ class SVGPatternElement final : public SVGElement,
     return pattern_content_units_.Get();
   }
 
-  // SVGTests mixin forwarders.
+  // SVGTests mixin forwarders (retained only for legacy IDL attributes; see
+  // https://crbug.com/701893). Conditional processing does not apply to
+  // <pattern>, so IsValid() is intentionally not overridden.
   SVGStringListTearOff* requiredExtensions();
   SVGStringListTearOff* systemLanguage();
 
@@ -86,8 +88,6 @@ class SVGPatternElement final : public SVGElement,
   void Trace(Visitor*) const override;
 
  private:
-  bool IsValid() const override { return !tests_ || tests_->IsValid(); }
-
   void SvgAttributeChanged(const SvgAttributeChangedParams&) override;
   InsertionNotificationRequest InsertedInto(ContainerNode&) final;
   void RemovedFrom(ContainerNode&) final;
@@ -117,6 +117,7 @@ class SVGPatternElement final : public SVGElement,
   Member<SVGAnimatedEnumeration<SVGUnitTypes::SVGUnitType>>
       pattern_content_units_;
   Member<IdTargetObserver> target_id_observer_;
+  // Backs the legacy SVGTests IDL attributes only; not consulted by IsValid().
   mutable Member<SVGTests> tests_;
 };
 

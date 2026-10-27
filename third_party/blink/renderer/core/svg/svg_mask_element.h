@@ -50,15 +50,15 @@ class SVGMaskElement final : public SVGElement {
     return mask_content_units_.Get();
   }
 
-  // SVGTests mixin forwarders.
+  // SVGTests mixin forwarders (retained only for legacy IDL attributes; see
+  // https://crbug.com/701893). Conditional processing does not apply to <mask>,
+  // so IsValid() is intentionally not overridden.
   SVGStringListTearOff* requiredExtensions();
   SVGStringListTearOff* systemLanguage();
 
   void Trace(Visitor*) const override;
 
  private:
-  bool IsValid() const override { return !tests_ || tests_->IsValid(); }
-
   void SvgAttributeChanged(const SvgAttributeChangedParams&) override;
   void ChildrenChanged(const ChildrenChange&) override;
 
@@ -80,6 +80,7 @@ class SVGMaskElement final : public SVGElement {
   Member<SVGAnimatedLength> height_;
   Member<SVGAnimatedEnumeration<SVGUnitTypes::SVGUnitType>> mask_units_;
   Member<SVGAnimatedEnumeration<SVGUnitTypes::SVGUnitType>> mask_content_units_;
+  // Backs the legacy SVGTests IDL attributes only; not consulted by IsValid().
   mutable Member<SVGTests> tests_;
 };
 

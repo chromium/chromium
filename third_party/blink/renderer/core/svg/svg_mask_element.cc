@@ -89,8 +89,7 @@ void SVGMaskElement::SvgAttributeChanged(
       attr_name == svg_names::kWidthAttr || attr_name == svg_names::kHeightAttr;
 
   if (is_length_attr || attr_name == svg_names::kMaskUnitsAttr ||
-      attr_name == svg_names::kMaskContentUnitsAttr ||
-      SVGTests::IsKnownAttribute(attr_name)) {
+      attr_name == svg_names::kMaskContentUnitsAttr) {
     if (is_length_attr) {
       UpdatePresentationAttributeStyle(params.property);
     }
