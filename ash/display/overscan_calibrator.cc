@@ -6,12 +6,16 @@
 
 #include <stdint.h>
 
+#include <algorithm>
 #include <limits>
 #include <memory>
 
 #include "ash/display/window_tree_host_manager.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/shell.h"
+#include "base/check.h"
+#include "base/check_op.h"
+#include "base/numerics/safe_conversions.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkPaint.h"
 #include "third_party/skia/include/core/SkPath.h"
@@ -35,6 +39,10 @@ const int kCalibrationArrowHeight = 70;
 
 // The gap between the boundary and calibration arrows.
 const int kArrowGapWidth = 0;
+
+// Small epsilon added before flooring to compensate for float division error
+// (e.g. 480 / 1.6f = 299.99998...).
+constexpr float kFloatDivisionEpsilon = 0.0005f;
 
 // Draw the arrow for the overscan calibration to |canvas|.
 void DrawTriangle(int x_offset,
@@ -116,7 +124,7 @@ gfx::Insets ConvertToHost(const display::Display& display,
 OverscanCalibrator::OverscanCalibrator(const display::Display& target_display,
                                        const gfx::Insets& initial_insets)
     : display_(target_display),
-      insets_(ConvertToDisplay(display_, initial_insets)),
+      insets_(ClampInsets(ConvertToDisplay(display_, initial_insets))),
       initial_insets_(initial_insets),
       committed_(false) {
   // Undo the overscan calibration temporarily so that the user can see
@@ -142,14 +150,12 @@ void OverscanCalibrator::Commit() {
 }
 
 void OverscanCalibrator::Reset() {
-  insets_ = ConvertToDisplay(display_, initial_insets_);
+  insets_ = ClampInsets(ConvertToDisplay(display_, initial_insets_));
   calibration_layer_->SchedulePaint(calibration_layer_->bounds());
 }
 
 void OverscanCalibrator::UpdateInsets(const gfx::Insets& insets) {
-  insets_ = gfx::Insets::TLBR(
-      std::max(insets.top(), 0), std::max(insets.left(), 0),
-      std::max(insets.bottom(), 0), std::max(insets.right(), 0));
+  insets_ = ClampInsets(insets);
   calibration_layer_->SchedulePaint(calibration_layer_->bounds());
 }
 
@@ -185,6 +191,27 @@ void OverscanCalibrator::OnDisplayMetricsChanged(
   display_ = display;
   UpdateUILayer();
   Reset();
+}
+
+gfx::Insets OverscanCalibrator::ClampInsets(const gfx::Insets& insets) const {
+  const display::ManagedDisplayInfo& info =
+      Shell::Get()->display_manager()->GetDisplayInfo(display_.id());
+  gfx::Size size_in_pixel = info.GetSizeInPixelWithPanelOrientation();
+  CHECK(!size_in_pixel.IsEmpty());
+  if (display_.rotation() == display::Display::ROTATE_90 ||
+      display_.rotation() == display::Display::ROTATE_270) {
+    size_in_pixel.Transpose();
+  }
+  const float scale = display_.device_scale_factor();
+  CHECK_GT(scale, 0.0f);
+  const int max_horizontal = base::ClampFloor(
+      (size_in_pixel.width() / 4) / scale + kFloatDivisionEpsilon);
+  const int max_vertical = base::ClampFloor(
+      (size_in_pixel.height() / 4) / scale + kFloatDivisionEpsilon);
+  return gfx::Insets::TLBR(std::clamp(insets.top(), 0, max_vertical),
+                           std::clamp(insets.left(), 0, max_horizontal),
+                           std::clamp(insets.bottom(), 0, max_vertical),
+                           std::clamp(insets.right(), 0, max_horizontal));
 }
 
 void OverscanCalibrator::UpdateUILayer() {

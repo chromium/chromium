@@ -450,17 +450,80 @@ TEST_F(CrosDisplayConfigTest, SetDisplayPropertiesOverscan) {
       display::test::DisplayManagerTestApi(display_manager())
           .GetSecondaryDisplay();
 
+  // Secondary display is 600x1000*2 (300x500 DIP), so max overscan per side is
+  // 75 DIP horizontally and 125 DIP vertically.
   DisplayConfigProperties properties;
-  properties.overscan = gfx::Insets::TLBR(199, 20, 51, 130);
+  properties.overscan = gfx::Insets::TLBR(125, 20, 51, 75);
   DisplayConfigResult result = SetDisplayProperties(secondary.id(), properties);
   EXPECT_EQ(DisplayConfigResult::kSuccess, result);
-  EXPECT_EQ(gfx::Rect(1200, 0, 150, 250), secondary.bounds());
-  const gfx::Insets overscan =
-      display_manager()->GetOverscanInsets(secondary.id());
-  EXPECT_EQ(199, overscan.top());
-  EXPECT_EQ(20, overscan.left());
-  EXPECT_EQ(51, overscan.bottom());
-  EXPECT_EQ(130, overscan.right());
+  EXPECT_EQ((gfx::Rect{1200, 0, 205, 324}), secondary.bounds());
+  EXPECT_EQ(gfx::Insets::TLBR(125, 20, 51, 75),
+            display_manager()->GetOverscanInsets(secondary.id()));
+
+  // Maximum 1/4 per side on all 4 edges succeeds and preserves 1/2 bounds.
+  properties.overscan = gfx::Insets::TLBR(125, 75, 125, 75);
+  EXPECT_EQ(DisplayConfigResult::kSuccess,
+            SetDisplayProperties(secondary.id(), properties));
+  EXPECT_EQ((gfx::Rect{1200, 0, 150, 250}), secondary.bounds());
+  EXPECT_EQ(gfx::Insets::TLBR(125, 75, 125, 75),
+            display_manager()->GetOverscanInsets(secondary.id()));
+
+  // Exceeding 1/4 on any single edge fails even if opposite edges sum <= 1/2.
+  properties.overscan = gfx::Insets::TLBR(126, 20, 10, 20);
+  EXPECT_EQ(DisplayConfigResult::kPropertyValueOutOfRangeError,
+            SetDisplayProperties(secondary.id(), properties));
+  properties.overscan = gfx::Insets::TLBR(10, 20, 10, 76);
+  EXPECT_EQ(DisplayConfigResult::kPropertyValueOutOfRangeError,
+            SetDisplayProperties(secondary.id(), properties));
+  EXPECT_EQ(gfx::Insets::TLBR(125, 75, 125, 75),
+            display_manager()->GetOverscanInsets(secondary.id()));
+
+  // Validation uses unrotated, unzoomed pixel dimensions even when the display
+  // is rotated 90 degrees or zoomed.
+  display_manager()->SetDisplayRotation(secondary.id(),
+                                        display::Display::ROTATE_90,
+                                        display::Display::RotationSource::USER);
+  display_manager()->UpdateZoomFactor(secondary.id(), 1.5f);
+  properties.overscan = gfx::Insets::TLBR(125, 75, 125, 75);
+  EXPECT_EQ(DisplayConfigResult::kSuccess,
+            SetDisplayProperties(secondary.id(), properties));
+  properties.overscan = gfx::Insets::TLBR(10, 20, 10, 76);
+  EXPECT_EQ(DisplayConfigResult::kPropertyValueOutOfRangeError,
+            SetDisplayProperties(secondary.id(), properties));
+
+  // When oversized overscan exists (e.g. from stale prefs or a mode change),
+  // GetDisplayUnitInfoList() reports the clamped DIP insets, and passing that
+  // value back to SetDisplayProperties() succeeds.
+  display_manager()->SetOverscanInsets(secondary.id(), gfx::Insets(500));
+  std::vector<DisplayUnitInfo> unit_info_list = GetDisplayUnitInfoList();
+  ASSERT_EQ(2u, unit_info_list.size());
+  EXPECT_EQ(gfx::Insets::TLBR(125, 75, 125, 75), unit_info_list[1].overscan);
+  properties.overscan = unit_info_list[1].overscan;
+  EXPECT_EQ(DisplayConfigResult::kSuccess,
+            SetDisplayProperties(secondary.id(), properties));
+
+  // Fractional DSF (1366x768*1.25): valid small DIP insets round-trip without
+  // truncation loss, and oversized DIP insets clamp to max valid DIPs
+  // (341 px -> 272 DIP horizontally, 192 px -> 153 DIP vertically).
+  UpdateDisplay("1200x600,1366x768*1.25");
+  const display::Display& fractional_secondary =
+      display::test::DisplayManagerTestApi(display_manager())
+          .GetSecondaryDisplay();
+  properties.overscan = gfx::Insets(3);
+  EXPECT_EQ(DisplayConfigResult::kSuccess,
+            SetDisplayProperties(fractional_secondary.id(), properties));
+  unit_info_list = GetDisplayUnitInfoList();
+  ASSERT_EQ(2u, unit_info_list.size());
+  EXPECT_EQ(gfx::Insets(3), unit_info_list[1].overscan);
+
+  display_manager()->SetOverscanInsets(fractional_secondary.id(),
+                                       gfx::Insets(500));
+  unit_info_list = GetDisplayUnitInfoList();
+  ASSERT_EQ(2u, unit_info_list.size());
+  EXPECT_EQ(gfx::Insets::VH(153, 272), unit_info_list[1].overscan);
+  properties.overscan = unit_info_list[1].overscan;
+  EXPECT_EQ(DisplayConfigResult::kSuccess,
+            SetDisplayProperties(fractional_secondary.id(), properties));
 }
 
 TEST_F(CrosDisplayConfigTest, SetDisplayPropertiesRotation) {

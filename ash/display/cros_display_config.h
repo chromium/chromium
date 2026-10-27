@@ -134,8 +134,8 @@ struct ASH_EXPORT DisplayConfigProperties {
   bool set_primary = false;
 
   // If provided, sets the display's overscan insets to the provided value.
-  // Note: overscan values may not be negative or larger than a half of the
-  // screen's size. Overscan cannot be changed on the internal monitor.
+  // Note: each overscan inset may not be negative or larger than a quarter of
+  // the screen's size. Overscan cannot be changed on the internal monitor.
   std::optional<gfx::Insets> overscan;
 
   // If provided, updates the display's rotation, or if the auto-rotation is

@@ -89,6 +89,7 @@ bool ValueToInsets(const base::DictValue& dict, gfx::Insets* insets) {
   std::optional<int> right = dict.FindInt(kInsetsRightKey);
   if (top && left && bottom && right) {
     *insets = gfx::Insets::TLBR(*top, *left, *bottom, *right);
+    insets->SetToMax(gfx::Insets());
     return true;
   }
   return false;

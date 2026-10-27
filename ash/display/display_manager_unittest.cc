@@ -49,6 +49,7 @@
 #include "chromeos/ui/base/window_properties.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/env.h"
+#include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -1468,6 +1469,81 @@ TEST_F(DisplayManagerTest, ZeroOverscanInsets) {
   display_manager()->SetOverscanInsets(display2_id, gfx::Insets());
   ASSERT_EQ(1u, changed().size());
   EXPECT_EQ(display2_id, changed()[0].id());
+}
+
+TEST_F(DisplayManagerTest, ClampOverscanInsets) {
+  // Regression test for b/462446075: excessive overscan on a 1920x1080*2
+  // display previously shrank height to 0 and crashed in
+  // RootWindowTargeter::FitPointToBounds on located events.
+  UpdateDisplay("1920x1080*2");
+  int64_t display_id = display::Screen::Get()->GetPrimaryDisplay().id();
+
+  display_manager()->SetOverscanInsets(display_id,
+                                       gfx::Insets::TLBR(277, 29, 277, 29));
+  EXPECT_EQ(gfx::Insets::TLBR(135, 29, 135, 29),
+            display_manager()->GetOverscanInsets(display_id));
+  EXPECT_EQ(
+      gfx::Insets::TLBR(270, 58, 270, 58),
+      display_manager()->GetDisplayInfo(display_id).GetOverscanInsetsInPixel());
+  EXPECT_EQ((gfx::Rect{902, 270}),
+            display::Screen::Get()->GetPrimaryDisplay().bounds());
+  EXPECT_EQ((gfx::Rect{902, 270}), Shell::GetPrimaryRootWindow()->bounds());
+
+  // Dispatch located mouse and touch events near and outside boundaries.
+  ui::test::EventGenerator* generator = GetEventGenerator();
+  generator->MoveMouseTo({0, 0});
+  generator->MoveMouseTo({901, 269});
+  generator->MoveMouseTo({1000, 1000});
+  generator->GestureTapAt({450, 135});
+
+  // Opposite-sign insets where top + bottom == 0 clamp negative edges to 0
+  // instead of being treated as empty, and all-negative insets clear overscan.
+  display_manager()->SetOverscanInsets(display_id,
+                                       gfx::Insets::TLBR(-5, 0, 5, 0));
+  EXPECT_EQ(gfx::Insets::TLBR(0, 0, 5, 0),
+            display_manager()->GetOverscanInsets(display_id));
+  display_manager()->SetOverscanInsets(display_id, gfx::Insets(-5));
+  EXPECT_EQ(gfx::Insets(), display_manager()->GetOverscanInsets(display_id));
+
+  // Increasing DSF via SetDisplayMode or shrinking resolution re-clamps
+  // existing overscan insets in DIP and pixels.
+  UpdateDisplay("1920x1080#1920x1080|1920x1080*2");
+  display_id = display::Screen::Get()->GetPrimaryDisplay().id();
+  display_manager()->SetOverscanInsets(display_id, gfx::Insets::VH(270, 480));
+  EXPECT_EQ(gfx::Insets::VH(270, 480),
+            display_manager()->GetOverscanInsets(display_id));
+  EXPECT_EQ((gfx::Rect{960, 540}),
+            display::Screen::Get()->GetPrimaryDisplay().bounds());
+
+  display::ManagedDisplayMode hidpi_mode({1920, 1080}, 60.0f,
+                                         /*is_interlaced=*/false,
+                                         /*native=*/false, 2.0f);
+  ASSERT_TRUE(display_manager()->SetDisplayMode(display_id, hidpi_mode));
+  EXPECT_EQ(gfx::Insets::VH(135, 240),
+            display_manager()->GetOverscanInsets(display_id));
+  EXPECT_EQ(
+      gfx::Insets::VH(135, 240),
+      display_manager()->GetDisplayInfo(display_id).overscan_insets_in_dip());
+  EXPECT_EQ(
+      gfx::Insets::VH(270, 480),
+      display_manager()->GetDisplayInfo(display_id).GetOverscanInsetsInPixel());
+  EXPECT_EQ((gfx::Rect{480, 270}),
+            display::Screen::Get()->GetPrimaryDisplay().bounds());
+
+  UpdateDisplay("1920x1080");
+  display_manager()->SetOverscanInsets(display_id, gfx::Insets::VH(270, 480));
+  UpdateDisplay("800x600");
+  EXPECT_EQ(display_id, display::Screen::Get()->GetPrimaryDisplay().id());
+  EXPECT_EQ(gfx::Insets::VH(150, 200),
+            display_manager()->GetOverscanInsets(display_id));
+  EXPECT_EQ(
+      gfx::Insets::VH(150, 200),
+      display_manager()->GetDisplayInfo(display_id).overscan_insets_in_dip());
+  EXPECT_EQ(
+      gfx::Insets::VH(150, 200),
+      display_manager()->GetDisplayInfo(display_id).GetOverscanInsetsInPixel());
+  EXPECT_EQ((gfx::Rect{400, 300}),
+            display::Screen::Get()->GetPrimaryDisplay().bounds());
 }
 
 TEST_F(DisplayManagerTest, TouchCalibrationTest) {

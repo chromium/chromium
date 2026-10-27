@@ -7,15 +7,18 @@
 #include <inttypes.h>
 #include <stdio.h>
 
+#include <algorithm>
 #include <array>
 #include <limits>
 #include <string>
 #include <string_view>
 #include <vector>
 
+#include "base/check_op.h"
 #include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/notreached.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
@@ -41,6 +44,10 @@ namespace display {
 namespace {
 
 const float kDpi96 = 96.0;
+
+// Small epsilon added before flooring to compensate for float division error
+// (e.g. 960 / 2.4f = 399.99997...).
+constexpr float kFloatDivisionEpsilon = 0.0005f;
 
 // The recommended default external display DPI, only used when an external
 // display is connected for the first time. e.g. when a 4K native mode is used
@@ -466,14 +473,17 @@ void ManagedDisplayInfo::Copy(const ManagedDisplayInfo& native_info) {
   // Rotation, color_profile and overscan are given by preference,
   // or unit tests. Don't copy if this native_info came from
   // DisplayChangeObserver.
-  if (native_info.from_native_platform())
+  if (native_info.from_native_platform()) {
+    ClampOverscanInsets();
     return;
+  }
   // Update the overscan_insets_in_dip_ either if the inset should be
   // cleared, or has non empty insets.
   if (native_info.clear_overscan_insets())
     overscan_insets_in_dip_ = gfx::Insets();
   else if (!native_info.overscan_insets_in_dip_.IsEmpty())
     overscan_insets_in_dip_ = native_info.overscan_insets_in_dip_;
+  ClampOverscanInsets();
 
   rotations_ = native_info.rotations_;
   zoom_factor_ = native_info.zoom_factor_;
@@ -560,13 +570,12 @@ gfx::Size ManagedDisplayInfo::GetSizeInPixelWithPanelOrientation() const {
 }
 
 void ManagedDisplayInfo::UpdateDisplaySize() {
+  ClampOverscanInsets();
   size_in_pixel_ = GetSizeInPixelWithPanelOrientation();
 
   if (!overscan_insets_in_dip_.IsEmpty()) {
     gfx::Insets insets_in_pixel = GetOverscanInsetsInPixel();
     size_in_pixel_.Enlarge(-insets_in_pixel.width(), -insets_in_pixel.height());
-  } else {
-    overscan_insets_in_dip_ = gfx::Insets();
   }
 
   if (GetActiveRotation() == Display::ROTATE_90 ||
@@ -577,11 +586,43 @@ void ManagedDisplayInfo::UpdateDisplaySize() {
 
 void ManagedDisplayInfo::SetOverscanInsets(const gfx::Insets& insets_in_dip) {
   overscan_insets_in_dip_ = insets_in_dip;
+  ClampOverscanInsets();
+}
+
+void ManagedDisplayInfo::ClampOverscanInsets() {
+  overscan_insets_in_dip_.SetToMax(gfx::Insets());
+  const gfx::Size size_in_pixel = GetSizeInPixelWithPanelOrientation();
+  if (size_in_pixel.IsEmpty()) {
+    return;
+  }
+  CHECK_GT(device_scale_factor_, 0.0f);
+  const int max_horizontal =
+      base::ClampFloor((size_in_pixel.width() / 4) / device_scale_factor_ +
+                       kFloatDivisionEpsilon);
+  const int max_vertical =
+      base::ClampFloor((size_in_pixel.height() / 4) / device_scale_factor_ +
+                       kFloatDivisionEpsilon);
+  overscan_insets_in_dip_ = gfx::Insets::TLBR(
+      std::min(overscan_insets_in_dip_.top(), max_vertical),
+      std::min(overscan_insets_in_dip_.left(), max_horizontal),
+      std::min(overscan_insets_in_dip_.bottom(), max_vertical),
+      std::min(overscan_insets_in_dip_.right(), max_horizontal));
 }
 
 gfx::Insets ManagedDisplayInfo::GetOverscanInsetsInPixel() const {
-  return gfx::ToFlooredInsets(gfx::ConvertInsetsToPixels(
-      overscan_insets_in_dip_, device_scale_factor_));
+  const gfx::Insets insets_in_pixel =
+      gfx::ToFlooredInsets(gfx::ConvertInsetsToPixels(overscan_insets_in_dip_,
+                                                      device_scale_factor_));
+  const gfx::Size size_in_pixel = GetSizeInPixelWithPanelOrientation();
+  if (size_in_pixel.IsEmpty()) {
+    return insets_in_pixel;
+  }
+  const int max_horizontal = size_in_pixel.width() / 4;
+  const int max_vertical = size_in_pixel.height() / 4;
+  return gfx::Insets::TLBR(std::min(insets_in_pixel.top(), max_vertical),
+                           std::min(insets_in_pixel.left(), max_horizontal),
+                           std::min(insets_in_pixel.bottom(), max_vertical),
+                           std::min(insets_in_pixel.right(), max_horizontal));
 }
 
 void ManagedDisplayInfo::SetSnapshotColorSpace(

@@ -177,4 +177,111 @@ TEST_F(DisplayInfoTest, TestToStringFormat) {
             "display_modes==(200x100@60P(N) 1)");
 }
 
+TEST_F(DisplayInfoTest, ClampOverscanInsets) {
+  // 1x display: max overscan is 1/4 of pixel dimensions (200 horizontal,
+  // 150 vertical), preserving at least 1/2 width and height.
+  ManagedDisplayInfo info =
+      ManagedDisplayInfo::CreateFromSpecWithID("800x600", 10);
+  info.SetOverscanInsets(gfx::Insets(500));
+  info.UpdateDisplaySize();
+  EXPECT_EQ(gfx::Insets::VH(150, 200), info.overscan_insets_in_dip());
+  EXPECT_EQ(gfx::Insets::VH(150, 200), info.GetOverscanInsetsInPixel());
+  EXPECT_EQ((gfx::Size{400, 300}), info.size_in_pixel());
+
+  // Negative and opposite-sign insets are clamped to >= 0 per edge.
+  info.SetOverscanInsets(gfx::Insets::TLBR(-10, -20, 5, 10));
+  info.UpdateDisplaySize();
+  EXPECT_EQ(gfx::Insets::TLBR(0, 0, 5, 10), info.overscan_insets_in_dip());
+  EXPECT_EQ(gfx::Insets::TLBR(0, 0, 5, 10), info.GetOverscanInsetsInPixel());
+  EXPECT_EQ((gfx::Size{790, 595}), info.size_in_pixel());
+
+  info.SetOverscanInsets(gfx::Insets::TLBR(-5, 0, 5, 0));
+  info.UpdateDisplaySize();
+  EXPECT_EQ(gfx::Insets::TLBR(0, 0, 5, 0), info.overscan_insets_in_dip());
+  EXPECT_EQ((gfx::Size{800, 595}), info.size_in_pixel());
+
+  info.SetOverscanInsets(gfx::Insets(-5));
+  info.UpdateDisplaySize();
+  EXPECT_EQ(gfx::Insets(), info.overscan_insets_in_dip());
+  EXPECT_EQ((gfx::Size{800, 600}), info.size_in_pixel());
+
+  // 2x display (1920x1080*2): max overscan is 480x270 px = 240x135 DIP.
+  info = ManagedDisplayInfo::CreateFromSpecWithID("1920x1080*2", 10);
+  info.SetOverscanInsets(gfx::Insets::TLBR(300, 400, 20, 30));
+  info.UpdateDisplaySize();
+  EXPECT_EQ(gfx::Insets::TLBR(135, 240, 20, 30), info.overscan_insets_in_dip());
+  EXPECT_EQ(gfx::Insets::TLBR(270, 480, 40, 60),
+            info.GetOverscanInsetsInPixel());
+  EXPECT_EQ((gfx::Size{1380, 770}), info.size_in_pixel());
+
+  // Fractional DSFs: valid small DIP insets are returned unchanged, oversized
+  // insets floor in DIP while compensating for exact-quotient float division
+  // error (e.g. 960 / 2.4f = 399.99997... -> 400 DIP).
+  info = ManagedDisplayInfo::CreateFromSpecWithID("1366x768*1.25", 10);
+  info.SetOverscanInsets(gfx::Insets(500));
+  info.UpdateDisplaySize();
+  EXPECT_EQ(gfx::Insets::VH(153, 272), info.overscan_insets_in_dip());
+
+  info = ManagedDisplayInfo::CreateFromSpecWithID("3840x2160*2.4", 10);
+  info.SetOverscanInsets(gfx::Insets(1000));
+  info.UpdateDisplaySize();
+  EXPECT_EQ(gfx::Insets::VH(225, 400), info.overscan_insets_in_dip());
+  EXPECT_EQ(gfx::Insets::VH(540, 960), info.GetOverscanInsetsInPixel());
+
+  info = ManagedDisplayInfo::CreateFromSpecWithID("3840x2160*2.66", 10);
+  info.SetOverscanInsets(gfx::Insets(3));
+  EXPECT_EQ(gfx::Insets(3), info.overscan_insets_in_dip());
+  info.SetOverscanInsets(gfx::Insets(1000));
+  info.UpdateDisplaySize();
+  EXPECT_EQ(gfx::Insets::VH(202, 360), info.overscan_insets_in_dip());
+  EXPECT_EQ(gfx::Insets::VH(538, 960), info.GetOverscanInsetsInPixel());
+  EXPECT_EQ((gfx::Size{1920, 1084}), info.size_in_pixel());
+
+  // Pre-SetBounds initialization clamps negative edges immediately and clamps
+  // DIP and pixel overscan once SetBounds() or Copy() sets native bounds.
+  ManagedDisplayInfo pre_bounds_info(20, "test", true);
+  pre_bounds_info.SetOverscanInsets(gfx::Insets::TLBR(300, -10, 20, 400));
+  EXPECT_EQ(gfx::Insets::TLBR(300, 0, 20, 400),
+            pre_bounds_info.overscan_insets_in_dip());
+  EXPECT_EQ(gfx::Insets::TLBR(300, 0, 20, 400),
+            pre_bounds_info.GetOverscanInsetsInPixel());
+  pre_bounds_info.SetBounds({800, 600});
+  EXPECT_EQ(gfx::Insets::TLBR(150, 0, 20, 200),
+            pre_bounds_info.overscan_insets_in_dip());
+  EXPECT_EQ(gfx::Insets::TLBR(150, 0, 20, 200),
+            pre_bounds_info.GetOverscanInsetsInPixel());
+  EXPECT_EQ((gfx::Size{600, 430}), pre_bounds_info.size_in_pixel());
+
+  pre_bounds_info.SetBounds({400, 300});
+  EXPECT_EQ(gfx::Insets::TLBR(75, 0, 20, 100),
+            pre_bounds_info.overscan_insets_in_dip());
+  EXPECT_EQ(gfx::Insets::TLBR(75, 0, 20, 100),
+            pre_bounds_info.GetOverscanInsetsInPixel());
+  EXPECT_EQ((gfx::Size{300, 205}), pre_bounds_info.size_in_pixel());
+
+  ManagedDisplayInfo pref_info(25, "pref", true);
+  pref_info.SetOverscanInsets(gfx::Insets::TLBR(277, 29, 277, 29));
+  ManagedDisplayInfo native_info =
+      ManagedDisplayInfo::CreateFromSpecWithID("1920x1080*2", 25);
+  native_info.set_from_native_platform(true);
+  pref_info.Copy(native_info);
+  pref_info.UpdateDisplaySize();
+  EXPECT_EQ(gfx::Insets::TLBR(135, 29, 135, 29),
+            pref_info.overscan_insets_in_dip());
+  EXPECT_EQ(gfx::Insets::TLBR(270, 58, 270, 58),
+            pref_info.GetOverscanInsetsInPixel());
+
+  // Panel orientation transposes pixel dimensions before computing 1/4 max.
+  ManagedDisplayInfo panel_oriented_info(30, "panel", true);
+  panel_oriented_info.set_panel_orientation(PanelOrientation::kLeftUp);
+  panel_oriented_info.SetBounds({800, 600});
+  panel_oriented_info.SetOverscanInsets(gfx::Insets(500));
+  panel_oriented_info.UpdateDisplaySize();
+  EXPECT_EQ(gfx::Insets::VH(200, 150),
+            panel_oriented_info.overscan_insets_in_dip());
+  EXPECT_EQ(gfx::Insets::VH(200, 150),
+            panel_oriented_info.GetOverscanInsetsInPixel());
+  EXPECT_EQ((gfx::Size{300, 400}), panel_oriented_info.size_in_pixel());
+}
+
 }  // namespace display

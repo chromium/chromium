@@ -27,7 +27,11 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/aura/env.h"
+#include "ui/aura/window_tree_host.h"
 #include "ui/base/accelerators/ash/quick_insert_event_property.h"
+#include "ui/display/manager/display_manager.h"
+#include "ui/display/screen.h"
 #include "ui/events/ash/mojom/modifier_key.mojom-shared.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event.h"
@@ -44,6 +48,7 @@
 #include "ui/events/test/test_event_rewriter_continuation.h"
 #include "ui/events/test/test_event_source.h"
 #include "ui/events/types/event_type.h"
+#include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/gfx/geometry/vector2d_f.h"
@@ -1973,6 +1978,54 @@ TEST_P(StaticShortcutActionMouseButtonRewritingTest, KeyEventRewrite) {
     test_mouse_event->flags = test_mouse_event->flags | ui::EF_COMMAND_DOWN;
   }
   EXPECT_EQ(expected_events, RunRewriter({KeyA::Typed()}, ui::EF_COMMAND_DOWN));
+}
+
+TEST_F(PeripheralCustomizationEventRewriterTest,
+       RewrittenMouseButtonLocationUsesClampedPixelOverscan) {
+  UpdateDisplay("1920x1080*2");
+  const int64_t display_id = GetPrimaryDisplay().id();
+  mouse_->settings->button_remappings.push_back(mojom::ButtonRemapping::New(
+      "",
+      mojom::Button::NewCustomizableButton(mojom::CustomizableButton::kForward),
+      mojom::RemappingAction::NewStaticShortcutAction(
+          mojom::StaticShortcutAction::kLeftClick)));
+
+  // Valid overscan on a 2x display (TLBR(10, 15, 10, 15) DIP = TLBR(20, 30,
+  // 20, 30) px): cursor at (10, 20) DIP maps to (10*2 + 30, 20*2 + 20) =
+  // (50, 60) in host pixels.
+  display_manager()->SetOverscanInsets(display_id,
+                                       gfx::Insets::TLBR(10, 15, 10, 15));
+  aura::Env::GetInstance()->SetLastMouseLocation({10, 20});
+  ASSERT_EQ(gfx::Point(10, 20), display::Screen::Get()->GetCursorScreenPoint());
+
+  ui::MouseEvent press_event = CreateMouseButtonEvent(
+      ui::EventType::kMousePressed, ui::EF_FORWARD_MOUSE_BUTTON,
+      ui::EF_FORWARD_MOUSE_BUTTON);
+  ui::SetForwardBackMouseButtonProperty(press_event, BTN_FORWARD);
+  ASSERT_FALSE(source_.Send(&press_event).dispatcher_destroyed);
+  auto rewritten_events = sink_.TakeEvents();
+  ASSERT_EQ(1u, rewritten_events.size());
+  ASSERT_TRUE(rewritten_events[0]->IsMouseEvent());
+  EXPECT_EQ(gfx::PointF(50, 60),
+            rewritten_events[0]->AsMouseEvent()->location_f());
+  gfx::Point root_dip_point = rewritten_events[0]->AsMouseEvent()->location();
+  Shell::GetPrimaryRootWindow()->GetHost()->ConvertPixelsToDIP(&root_dip_point);
+  EXPECT_EQ(gfx::Point(10, 20), root_dip_point);
+
+  // Oversized overscan (500 DIP -> clamped to 480x270 px on 1920x1080*2):
+  // cursor at (10, 20) DIP maps to (20 + 480, 40 + 270) = (500, 310) in host
+  // pixels rather than using unclamped 500.
+  display_manager()->SetOverscanInsets(display_id, gfx::Insets(500));
+  aura::Env::GetInstance()->SetLastMouseLocation({10, 20});
+  ASSERT_FALSE(source_.Send(&press_event).dispatcher_destroyed);
+  rewritten_events = sink_.TakeEvents();
+  ASSERT_EQ(1u, rewritten_events.size());
+  ASSERT_TRUE(rewritten_events[0]->IsMouseEvent());
+  EXPECT_EQ(gfx::PointF(500, 310),
+            rewritten_events[0]->AsMouseEvent()->location_f());
+  root_dip_point = rewritten_events[0]->AsMouseEvent()->location();
+  Shell::GetPrimaryRootWindow()->GetHost()->ConvertPixelsToDIP(&root_dip_point);
+  EXPECT_EQ(gfx::Point(10, 20), root_dip_point);
 }
 
 }  // namespace ash

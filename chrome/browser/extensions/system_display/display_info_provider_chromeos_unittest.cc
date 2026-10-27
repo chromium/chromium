@@ -575,6 +575,14 @@ TEST_F(DisplayInfoProviderChromeosTest, GetVisibleArea) {
   EXPECT_EQ(base::NumberToString(display_id), result[0].id);
   EXPECT_EQ("0,0 260x320", SystemInfoDisplayBoundsToString(result[0].bounds));
   EXPECT_EQ("10,20,30,40", SystemInfoDisplayInsetsToString(result[0].overscan));
+
+  // Oversized stored insets on 640x720*2 report the clamped DIP overscan
+  // (160x180 px = 80x90 DIP).
+  GetDisplayManager()->SetOverscanInsets(display_id, gfx::Insets(500));
+  result = GetAllDisplaysInfo();
+  ASSERT_EQ(2u, result.size());
+  EXPECT_EQ("0,0 160x180", SystemInfoDisplayBoundsToString(result[0].bounds));
+  EXPECT_EQ("90,80,90,80", SystemInfoDisplayInsetsToString(result[0].overscan));
 }
 
 TEST_F(DisplayInfoProviderChromeosTest, GetMirroring) {
@@ -1341,6 +1349,12 @@ TEST_F(DisplayInfoProviderChromeosTest, SetOverscanLargerThanHorizontalBounds) {
 
   EXPECT_FALSE(
       CallSetDisplayUnitInfo(base::NumberToString(secondary.id()), info));
+
+  // Exceeding 1/4 width (75 DIP) on a single edge also fails.
+  info.overscan->left = 10;
+  info.overscan->right = 76;
+  EXPECT_FALSE(
+      CallSetDisplayUnitInfo(base::NumberToString(secondary.id()), info));
 }
 
 TEST_F(DisplayInfoProviderChromeosTest, SetOverscanLargerThanVerticalBounds) {
@@ -1359,6 +1373,12 @@ TEST_F(DisplayInfoProviderChromeosTest, SetOverscanLargerThanVerticalBounds) {
 
   EXPECT_FALSE(
       CallSetDisplayUnitInfo(base::NumberToString(secondary.id()), info));
+
+  // Exceeding 1/4 height (250 DIP) on a single edge also fails.
+  info.overscan->top = 251;
+  info.overscan->bottom = 10;
+  EXPECT_FALSE(
+      CallSetDisplayUnitInfo(base::NumberToString(secondary.id()), info));
 }
 
 TEST_F(DisplayInfoProviderChromeosTest, SetOverscan) {
@@ -1370,20 +1390,20 @@ TEST_F(DisplayInfoProviderChromeosTest, SetOverscan) {
   api::system_display::DisplayProperties info;
   info.overscan.emplace();
   info.overscan->left = 20;
-  info.overscan->top = 199;
-  info.overscan->right = 130;
+  info.overscan->top = 125;
+  info.overscan->right = 75;
   info.overscan->bottom = 51;
 
   EXPECT_TRUE(
       CallSetDisplayUnitInfo(base::NumberToString(secondary.id()), info));
 
-  EXPECT_EQ("1200,0 150x250", secondary.bounds().ToString());
+  EXPECT_EQ("1200,0 205x324", secondary.bounds().ToString());
   const gfx::Insets overscan =
       GetDisplayManager()->GetOverscanInsets(secondary.id());
 
   EXPECT_EQ(20, overscan.left());
-  EXPECT_EQ(199, overscan.top());
-  EXPECT_EQ(130, overscan.right());
+  EXPECT_EQ(125, overscan.top());
+  EXPECT_EQ(75, overscan.right());
   EXPECT_EQ(51, overscan.bottom());
 }
 

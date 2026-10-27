@@ -38,6 +38,7 @@
 #include "components/user_manager/user_type.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/aura/window.h"
 #include "ui/display/display_layout_builder.h"
 #include "ui/display/display_switches.h"
 #include "ui/display/manager/display_configurator.h"
@@ -51,6 +52,7 @@
 #include "ui/display/test/display_manager_test_api.h"
 #include "ui/display/util/display_util.h"
 #include "ui/events/devices/touchscreen_device.h"
+#include "ui/events/test/event_generator.h"
 #include "ui/gfx/geometry/vector3d_f.h"
 
 namespace ash {
@@ -1850,6 +1852,67 @@ TEST_F(DisplayPrefsTest, IsDisplayAvailableInPref) {
   // Display is available in prefs after adding the display.
   UpdateDisplay("300x200");
   EXPECT_TRUE(display_prefs()->IsDisplayAvailableInPref(id));
+}
+
+TEST_F(DisplayPrefsTest, ClampOverscanFromPrefs) {
+  constexpr int64_t kDisplayId1 = 2200000101;
+  constexpr int64_t kDisplayId2 = 2200000102;
+
+  // Store oversized overscan on kDisplayId1 (reproducing b/462446075 startup
+  // crash loop) and valid overscan on kDisplayId2 before either display is
+  // connected (so bounds_in_native_ is initially empty during
+  // RegisterDisplayProperty).
+  StoreDisplayOverscan(kDisplayId1, gfx::Insets::TLBR(277, 29, 277, 29));
+  StoreDisplayOverscan(kDisplayId2, gfx::Insets::TLBR(20, 30, 20, 30));
+  LoadDisplayPreferences();
+
+  display::ManagedDisplayInfo info1 =
+      display::ManagedDisplayInfo::CreateFromSpecWithID("1920x1080*2",
+                                                        kDisplayId1);
+  info1.set_from_native_platform(true);
+  display::ManagedDisplayInfo info2 =
+      display::ManagedDisplayInfo::CreateFromSpecWithID("1280x720",
+                                                        kDisplayId2);
+  info2.set_from_native_platform(true);
+
+  display_manager()->OnNativeDisplaysChanged({info1, info2});
+
+  // kDisplayId1 overscan is clamped to 1/4 of 1920x1080 px (135 DIP / 270 px
+  // vertical), while kDisplayId2's valid overscan is preserved.
+  EXPECT_EQ(gfx::Insets::TLBR(135, 29, 135, 29),
+            display_manager()->GetOverscanInsets(kDisplayId1));
+  EXPECT_EQ(
+      gfx::Insets::TLBR(135, 29, 135, 29),
+      display_manager()->GetDisplayInfo(kDisplayId1).overscan_insets_in_dip());
+  EXPECT_EQ(gfx::Insets::TLBR(270, 58, 270, 58),
+            display_manager()
+                ->GetDisplayInfo(kDisplayId1)
+                .GetOverscanInsetsInPixel());
+  EXPECT_EQ((gfx::Rect{902, 270}),
+            display::Screen::Get()->GetPrimaryDisplay().bounds());
+  EXPECT_EQ((gfx::Rect{902, 270}), Shell::GetPrimaryRootWindow()->bounds());
+
+  EXPECT_EQ(gfx::Insets::TLBR(20, 30, 20, 30),
+            display_manager()->GetOverscanInsets(kDisplayId2));
+  const display::Display& secondary =
+      display::test::DisplayManagerTestApi(display_manager())
+          .GetSecondaryDisplay();
+  EXPECT_EQ((gfx::Size{1220, 680}), secondary.bounds().size());
+
+  // Located events on the primary root window do not crash.
+  GetEventGenerator()->MoveMouseTo({0, 0});
+  GetEventGenerator()->MoveMouseTo({901, 269});
+
+  // Opposite-sign overscan in prefs where top + bottom == 0 clamps negative
+  // edges to 0 rather than being skipped as empty.
+  StoreDisplayOverscan(kDisplayId2, gfx::Insets::TLBR(-5, 0, 15, 0));
+  constexpr int64_t kDisplayId3 = 2200000103;
+  StoreDisplayOverscan(kDisplayId3, gfx::Insets::TLBR(-10, 0, 10, 0));
+  LoadDisplayPreferences();
+  EXPECT_EQ(gfx::Insets::TLBR(0, 0, 15, 0),
+            display_manager()->GetOverscanInsets(kDisplayId2));
+  EXPECT_EQ(gfx::Insets::TLBR(0, 0, 10, 0),
+            display_manager()->GetOverscanInsets(kDisplayId3));
 }
 
 class DisplayPrefsStartupTest : public DisplayPrefsTest {

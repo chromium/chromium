@@ -56,6 +56,7 @@ class ASH_EXPORT OverscanCalibrator : public ui::LayerDelegate,
                                uint32_t changed_metrics) override;
 
  private:
+  gfx::Insets ClampInsets(const gfx::Insets& insets) const;
   void UpdateUILayer();
 
   // The target display.

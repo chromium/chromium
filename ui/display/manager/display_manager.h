@@ -265,9 +265,10 @@ class DISPLAY_MANAGER_EXPORT DisplayManager
   // Tells if the virtual resolution feature is enabled.
   bool IsDisplayUIScalingEnabled() const;
 
-  // Returns the current overscan insets for the specified |display_id|.
-  // Returns an empty insets (0, 0, 0, 0) if no insets are specified for the
-  // display.
+  // Returns the current overscan insets for the specified |display_id| in DIP,
+  // clamped so each edge does not exceed 1/4 of the display's pixel width or
+  // height. Returns an empty insets (0, 0, 0, 0) if no insets are specified for
+  // the display.
   gfx::Insets GetOverscanInsets(int64_t display_id) const;
 
   // Called when display configuration has changed. The new display

@@ -254,8 +254,8 @@ dictionary DisplayProperties {
   boolean isPrimary;
 
   // If set, sets the display's overscan insets to the provided values. Note
-  // that overscan values may not be negative or larger than a half of the
-  // screen's size. Overscan cannot be changed on the internal monitor.
+  // that each overscan inset may not be negative or larger than a quarter of
+  // the screen's size. Overscan cannot be changed on the internal monitor.
   Insets overscan;
 
   // If set, updates the display's rotation.
