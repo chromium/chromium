@@ -4,15 +4,14 @@
 
 #include "third_party/blink/renderer/core/paint/fieldset_paint_info.h"
 
-#include "third_party/blink/renderer/core/style/computed_style.h"
-
 namespace blink {
 
-FieldsetPaintInfo::FieldsetPaintInfo(const ComputedStyle& fieldset_style,
-                                     const PhysicalSize& fieldset_size,
-                                     const PhysicalBoxStrut& fieldset_borders,
-                                     const PhysicalRect& legend_border_box) {
-  if (fieldset_style.IsHorizontalWritingMode()) {
+FieldsetPaintInfo::FieldsetPaintInfo(
+    const PhysicalSize& fieldset_size,
+    const PhysicalBoxStrut& fieldset_borders,
+    const PhysicalRect& legend_border_box,
+    WritingDirectionMode fieldset_writing_direction) {
+  if (fieldset_writing_direction.IsHorizontal()) {
     // horizontal-tb
     LayoutUnit legend_size = legend_border_box.size.height;
     LayoutUnit border_size = fieldset_borders.top;
@@ -25,7 +24,7 @@ FieldsetPaintInfo::FieldsetPaintInfo(const ComputedStyle& fieldset_style,
   } else {
     LayoutUnit legend_size = legend_border_box.Width();
     LayoutUnit border_size;
-    if (fieldset_style.IsFlippedBlocksWritingMode()) {
+    if (fieldset_writing_direction.IsFlippedBlocks()) {
       // vertical-rl
       border_size = fieldset_borders.right;
       LayoutUnit legend_excess_size = legend_size - border_size;
@@ -42,7 +41,7 @@ FieldsetPaintInfo::FieldsetPaintInfo(const ComputedStyle& fieldset_style,
     legend_cutout_rect =
         PhysicalRect(LayoutUnit(), legend_border_box.offset.top,
                      legend_total_block_size, legend_border_box.size.height);
-    if (fieldset_style.IsFlippedBlocksWritingMode()) {
+    if (fieldset_writing_direction.IsFlippedBlocks()) {
       // Offset cutout to right fieldset edge for vertical-rl
       LayoutUnit clip_x = fieldset_size.width - legend_total_block_size;
       legend_cutout_rect.offset.left += clip_x;

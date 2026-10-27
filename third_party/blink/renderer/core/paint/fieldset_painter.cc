@@ -4,10 +4,8 @@
 
 #include "third_party/blink/renderer/core/paint/fieldset_painter.h"
 
-#include "third_party/blink/renderer/core/layout/geometry/writing_mode_converter.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
-#include "third_party/blink/renderer/core/layout/relative_utils.h"
 #include "third_party/blink/renderer/core/paint/border_shape_utils.h"
 #include "third_party/blink/renderer/core/paint/box_background_paint_context.h"
 #include "third_party/blink/renderer/core/paint/box_decoration_data.h"
@@ -26,51 +24,35 @@ FieldsetPaintInfo FieldsetPainter::CreateFieldsetPaintInfo() const {
   const PhysicalFragmentLink* legend = nullptr;
   if (!fieldset_.Children().empty()) {
     const auto& first_child = fieldset_.Children().front();
-    if (first_child->IsRenderedLegend())
+    if (first_child->IsRenderedLegend()) {
       legend = &first_child;
+    }
   }
-  const PhysicalSize fieldset_size(fieldset_.Size());
-  const auto& fragment = fieldset_;
-  PhysicalBoxStrut fieldset_borders = fragment.Borders();
-  const ComputedStyle& style = fieldset_.Style();
+
+  const WritingDirectionMode writing_direction =
+      fieldset_.Style().GetWritingDirection();
+
   PhysicalRect legend_border_box;
   if (legend) {
-    legend_border_box.size = (*legend)->Size();
-    // Unapply relative position of the legend.
-    // Note that legend->Offset() is the offset after applying
-    // position:relative, but the fieldset border painting needs to avoid
-    // the legend position with static position.
+    // Remove the position:relative offset of the legend. See:
+    // https://html.spec.whatwg.org/C/#the-fieldset-and-legend-elements
     //
-    // See https://html.spec.whatwg.org/C/#the-fieldset-and-legend-elements
-    // > * If the element has a rendered legend, then the border is expected to
-    // >   not be painted behind the rectangle defined as follows, using the
-    // >   writing mode of the fieldset: ...
-    // >    ... at its static position (ignoring transforms), ...
-    //
-    // The following logic produces wrong results for block direction offsets.
-    // However we don't need them.
-    const WritingDirectionMode writing_direction = style.GetWritingDirection();
-    const LogicalSize logical_fieldset_content_size =
-        ToLogicalSize(fieldset_size -
-                          PhysicalSize(fieldset_borders.HorizontalSum(),
-                                       fieldset_borders.VerticalSum()) -
-                          PhysicalSize(fragment.Padding().HorizontalSum(),
-                                       fragment.Padding().VerticalSum()),
-                      writing_direction.GetWritingMode());
-    LogicalOffset relative_offset =
-        ComputeRelativeInsets((*legend)->Style(), writing_direction,
-                              logical_fieldset_content_size)
+    // We can't use the used position-insets directly, we need to select the
+    // dominant side first.
+    const LogicalOffset relative_offset =
+        To<PhysicalBoxFragment>(**legend)
+            .UsedPositionInsets()
             .ConvertToLogical(writing_direction)
             .StartOffset();
-    LogicalOffset legend_logical_offset =
-        WritingModeConverter(writing_direction, fieldset_size)
-            .ToLogical(legend->Offset(), (*legend)->Size()) -
-        relative_offset;
-    legend_border_box.offset = legend_logical_offset.ConvertToPhysical(
-        writing_direction, fieldset_size, legend_border_box.size);
+    const PhysicalBoxStrut relative_insets =
+        BoxStrut(relative_offset.inline_offset, -relative_offset.inline_offset,
+                 relative_offset.block_offset, -relative_offset.block_offset)
+            .ConvertToPhysical(writing_direction);
+    legend_border_box = PhysicalRect(
+        legend->Offset() - relative_insets.Offset(), (*legend)->Size());
   }
-  return FieldsetPaintInfo(style, fieldset_size, fieldset_borders,
-                           legend_border_box);
+  return FieldsetPaintInfo(fieldset_.Size(), fieldset_.Borders(),
+                           legend_border_box, writing_direction);
 }
 
 // Paint the fieldset (background, other decorations, and) border, with the

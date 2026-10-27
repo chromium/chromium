@@ -10,18 +10,16 @@
 
 namespace blink {
 
-class ComputedStyle;
-
 struct FieldsetPaintInfo {
   STACK_ALLOCATED();
 
  public:
   // Calculate the fieldset block-start border offset and the cut-out rectangle
   // caused by the rendered legend.
-  FieldsetPaintInfo(const ComputedStyle& fieldset_style,
-                    const PhysicalSize& fieldset_size,
+  FieldsetPaintInfo(const PhysicalSize& fieldset_size,
                     const PhysicalBoxStrut& fieldset_borders,
-                    const PhysicalRect& legend_border_box);
+                    const PhysicalRect& legend_border_box,
+                    WritingDirectionMode fieldset_writing_direction);
 
   // Block-start border outset caused by the rendered legend.
   PhysicalBoxStrut border_outsets;
