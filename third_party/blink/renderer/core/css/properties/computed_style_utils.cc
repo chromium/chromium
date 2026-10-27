@@ -768,32 +768,20 @@ CSSValue* ComputedStyleUtils::ValueForPositionOffset(
     const CSSProperty& property,
     const LayoutObject* layout_object,
     CSSValuePhase value_phase) {
-  std::pair<const Length*, const Length*> positions;
-  bool is_horizontal_property;
-  switch (property.PropertyID()) {
-    case CSSPropertyID::kLeft:
-      positions = std::make_pair(&style.Left(), &style.Right());
-      is_horizontal_property = true;
-      break;
-    case CSSPropertyID::kRight:
-      positions = std::make_pair(&style.Right(), &style.Left());
-      is_horizontal_property = true;
-      break;
-    case CSSPropertyID::kTop:
-      positions = std::make_pair(&style.Top(), &style.Bottom());
-      is_horizontal_property = false;
-      break;
-    case CSSPropertyID::kBottom:
-      positions = std::make_pair(&style.Bottom(), &style.Top());
-      is_horizontal_property = false;
-      break;
-    default:
-      NOTREACHED();
-  }
-  DCHECK(positions.first && positions.second);
-
-  const Length& offset = *positions.first;
-  const Length& opposite = *positions.second;
+  const Length& offset = ([&]() {
+    switch (property.PropertyID()) {
+      case CSSPropertyID::kLeft:
+        return style.Left();
+      case CSSPropertyID::kRight:
+        return style.Right();
+      case CSSPropertyID::kTop:
+        return style.Top();
+      case CSSPropertyID::kBottom:
+        return style.Bottom();
+      default:
+        NOTREACHED();
+    }
+  })();
 
   // Just return the computed-value if:
   //  - We don't have a layout-object.
@@ -806,6 +794,32 @@ CSSValue* ComputedStyleUtils::ValueForPositionOffset(
 
   // Any fixed lengths can be directly resolved.
   if (offset.IsFixed()) {
+    return ZoomAdjustedPixelValueForLength(offset, style);
+  }
+
+  // Used sticky insets are stored on the sticky-constraints object.
+  if (layout_object->IsStickyPositioned()) {
+    const auto sticky_constraints =
+        To<LayoutBoxModelObject>(layout_object)->StickyConstraints();
+    const std::optional<LayoutUnit> inset = ([&]() {
+      switch (property.PropertyID()) {
+        case CSSPropertyID::kLeft:
+          return sticky_constraints.LeftInsetForGetComputedStyle();
+        case CSSPropertyID::kTop:
+          return sticky_constraints.TopInsetForGetComputedStyle();
+        case CSSPropertyID::kRight:
+          return sticky_constraints.RightInsetForGetComputedStyle();
+        case CSSPropertyID::kBottom:
+          return sticky_constraints.BottomInsetForGetComputedStyle();
+        default:
+          NOTREACHED();
+      }
+    })();
+
+    if (inset) {
+      return ZoomAdjustedPixelValue(*inset, style);
+    }
+
     return ZoomAdjustedPixelValueForLength(offset, style);
   }
 
@@ -841,32 +855,25 @@ CSSValue* ComputedStyleUtils::ValueForPositionOffset(
     return ZoomAdjustedPixelValue(inset, style);
   }
 
-  if (layout_object->IsStickyPositioned()) {
-    const auto sticky_constraints =
-        To<LayoutBoxModelObject>(layout_object)->StickyConstraints();
-    const std::optional<LayoutUnit> inset = ([&]() {
-      switch (property.PropertyID()) {
-        case CSSPropertyID::kLeft:
-          return sticky_constraints.LeftInsetForGetComputedStyle();
-        case CSSPropertyID::kTop:
-          return sticky_constraints.TopInsetForGetComputedStyle();
-        case CSSPropertyID::kRight:
-          return sticky_constraints.RightInsetForGetComputedStyle();
-        case CSSPropertyID::kBottom:
-          return sticky_constraints.BottomInsetForGetComputedStyle();
-        default:
-          NOTREACHED();
-      }
-    })();
-
-    if (inset) {
-      return ZoomAdjustedPixelValue(*inset, style);
-    }
-
-    return ZoomAdjustedPixelValueForLength(offset, style);
-  }
-
   DCHECK(layout_object->IsRelPositioned());
+
+  const bool is_horizontal_property =
+      property.PropertyID() == CSSPropertyID::kLeft ||
+      property.PropertyID() == CSSPropertyID::kRight;
+  const Length& opposite = ([&]() {
+    switch (property.PropertyID()) {
+      case CSSPropertyID::kLeft:
+        return style.Right();
+      case CSSPropertyID::kRight:
+        return style.Left();
+      case CSSPropertyID::kTop:
+        return style.Bottom();
+      case CSSPropertyID::kBottom:
+        return style.Top();
+      default:
+        NOTREACHED();
+    }
+  })();
 
   if ((offset.IsPercent() || offset.IsCalculated()) && box) {
     const LayoutUnit containing_block_size =
