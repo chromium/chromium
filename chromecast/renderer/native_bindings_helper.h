@@ -9,6 +9,7 @@
 
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/memory/weak_ptr.h"
 #include "content/public/renderer/render_frame_observer.h"
 #include "gin/function_template.h"
 #include "v8/include/v8.h"
@@ -23,8 +24,10 @@ v8::Local<v8::Object> GetOrCreateCastPlatformObject(
     v8::Isolate* isolate,
     v8::Local<v8::Object> global);
 
-// Returns parent[key], creating it as a v8::Object if necessary. This will
-// aggressively overwrite things that are not objects.
+// Returns parent[key] if it is a plain data property holding an object, and
+// (re)creates it as a v8::Object otherwise. This will aggressively overwrite
+// things that are not plain objects. Author-defined accessors and proxy traps
+// are never invoked, so no author script runs.
 v8::Local<v8::Object> EnsureObjectExists(v8::Isolate* isolate,
                                          v8::Local<v8::Object> parent,
                                          const std::string& key);
@@ -41,11 +44,15 @@ v8::Local<v8::Function> InstallBinding(v8::Isolate* isolate,
       isolate, base::BindRepeating(method, std::forward<Args>(args)...)));
   v8::Local<v8::Function> func =
       temp->GetFunction(isolate->GetCurrentContext()).ToLocalChecked();
-  v8::Maybe<bool> result = parent_object->Set(
+  // CreateDataProperty(), unlike Set(), does not invoke author-defined
+  // accessors or proxy traps, so no author script runs while bindings are
+  // being installed.
+  v8::Maybe<bool> result = parent_object->CreateDataProperty(
       isolate->GetCurrentContext(),
       gin::StringToSymbol(isolate, std::move(method_name)), func);
-  if (result.IsNothing() || !result.FromJust())
-    LOG(ERROR) << "Failed to install binging for method " << method_name;
+  if (result.IsNothing() || !result.FromJust()) {
+    LOG(ERROR) << "Failed to install binding for method " << method_name;
+  }
 
   return func;
 }
@@ -73,6 +80,9 @@ class CastBinding : public content::RenderFrameObserver {
   // the binding is updated in every call.
   virtual void Install(v8::Local<v8::Object> cast_platform,
                        v8::Isolate* isolate) = 0;
+
+ private:
+  base::WeakPtrFactory<CastBinding> weak_factory_{this};
 };
 
 }  // namespace chromecast

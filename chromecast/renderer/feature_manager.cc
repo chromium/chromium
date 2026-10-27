@@ -53,16 +53,18 @@ void FeatureManager::OnDestruct() {
 
 void FeatureManager::DidClearWindowObject() {
   can_install_bindings_ = true;
-  if (!configured_)
+  if (!configured_) {
     return;
+  }
 
   EnableBindings();
 }
 
 void FeatureManager::ConfigureFeatures(
     std::vector<chromecast::shell::mojom::FeaturePtr> features) {
-  if (configured_)
+  if (configured_) {
     return;
+  }
   configured_ = true;
   for (auto& feature : features) {
     // If we want to add enabled/disabled status to FeaturePtr, we can overlap
@@ -72,8 +74,9 @@ void FeatureManager::ConfigureFeatures(
 
   ConfigureFeaturesInternal();
 
-  if (!can_install_bindings_)
+  if (!can_install_bindings_) {
     return;
+  }
   EnableBindings();
 }
 
@@ -118,8 +121,19 @@ void FeatureManager::ConfigureFeaturesInternal() {
 
 void FeatureManager::EnableBindings() {
   LOG(INFO) << "Enabling bindings: " << *this;
-  for (auto* binding : v8_bindings_) {
+  // Snapshot the bindings set and guard with a WeakPtr in case synchronous
+  // script execution during binding installation detaches the RenderFrame.
+  // Both FeatureManager and each CastBinding are RenderFrameObservers that
+  // self-delete in OnDestruct(), so if `!weak_this` is true, the RenderFrame
+  // and all of its CastBinding instances are already being torn down and no
+  // additional cleanup is needed.
+  auto weak_this = weak_factory_.GetWeakPtr();
+  std::vector<CastBinding*> bindings(v8_bindings_.begin(), v8_bindings_.end());
+  for (auto* binding : bindings) {
     binding->TryInstall();
+    if (!weak_this) {
+      return;
+    }
   }
 }
 

@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/containers/flat_set.h"
+#include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "chromecast/common/mojom/feature_manager.mojom.h"
 #include "chromecast/renderer/native_bindings_helper.h"
@@ -86,6 +87,8 @@ class FeatureManager : public content::RenderFrameObserver,
   service_manager::BinderRegistry registry_;
 
   mojo::ReceiverSet<shell::mojom::FeatureManager> bindings_;
+
+  base::WeakPtrFactory<FeatureManager> weak_factory_{this};
 };
 
 }  // namespace chromecast

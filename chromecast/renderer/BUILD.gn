@@ -74,15 +74,18 @@ cast_source_set("renderer") {
 }
 
 test("cast_renderer_unittests") {
-  sources = []
+  sources = [ "native_bindings_helper_unittest.cc" ]
 
   deps = [
     ":renderer",
     "//base",
     "//base/test:run_all_unittests",
     "//base/test:test_support",
+    "//gin",
+    "//gin:gin_test",
     "//testing/gtest",
     "//third_party/blink/public/common",
+    "//v8",
   ]
 }
 
