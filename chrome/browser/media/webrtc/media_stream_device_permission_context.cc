@@ -140,7 +140,9 @@ void MediaStreamDevicePermissionContext::NotifyPermissionSet(
     bool persist,
     const content::PermissionResult* permission_result,
     const permissions::PermissionPromptDecision& decision) {
-  CHECK(decision.is_final, base::NotFatalUntil::M161);
+  // TODO(crbug.com/577382000): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(decision.is_final);
 
   // For Android, we need to customize the ContentSettingPermissionContextBase's
   // behavior if the permission was granted. We will:
