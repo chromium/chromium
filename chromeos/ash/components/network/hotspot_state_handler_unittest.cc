@@ -59,6 +59,9 @@ class HotspotStateHandlerTest : public ::testing::Test {
     hotspot_state_handler_->RemoveObserver(&observer_);
     hotspot_state_handler_.reset();
     EXPECT_EQ(false, power_client_->policy().system_wake_lock());
+    power_client_ = nullptr;
+    chromeos::PowerPolicyController::Shutdown();
+    chromeos::PowerManagerClient::Shutdown();
   }
 
  protected:

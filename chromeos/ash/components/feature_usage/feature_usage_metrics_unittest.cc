@@ -40,6 +40,12 @@ class FeatureUsageMetricsTest : public ::testing::Test,
         kTestFeature, this, env_.GetMockClock(), env_.GetMockTickClock());
   }
 
+  ~FeatureUsageMetricsTest() override {
+    // FeatureUsageMetrics observes the PowerMonitor, so it has to go first.
+    feature_usage_metrics_.reset();
+    base::PowerMonitor::GetInstance()->ShutdownForTesting();
+  }
+
   // FeatureUsageMetrics::Delegate:
   bool IsEligible() const override { return is_eligible_; }
   std::optional<bool> IsAccessible() const override { return is_accessible_; }

@@ -132,6 +132,8 @@ class HotspotMetricsHelperTest : public testing::Test {
     hotspot_state_handler_.reset();
     technology_state_controller_.reset();
     enterprise_managed_metadata_store_.reset();
+    chromeos::PowerPolicyController::Shutdown();
+    chromeos::PowerManagerClient::Shutdown();
     LoginState::Shutdown();
   }
 
