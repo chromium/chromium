@@ -1,0 +1,19 @@
+This is a testharness.js-based test.
+[FAIL] hidePopover() hides a showing popover=auto once its iframe is removed
+  promise_test: Unhandled rejection with value: object "InvalidStateError: Failed to execute 'hidePopover' on 'HTMLElement': Invalid for popovers within documents that are not fully active. This might have been the result of the "beforetoggle" event handler changing the state of this popover."
+[FAIL] togglePopover() hides a showing popover=auto once its iframe is removed
+  promise_test: Unhandled rejection with value: object "InvalidStateError: Failed to execute 'togglePopover' on 'HTMLElement': Invalid for popovers within documents that are not fully active. This might have been the result of the "beforetoggle" event handler changing the state of this popover."
+[FAIL] hidePopover() hides a showing popover=auto once its iframe navigates away
+  promise_test: Unhandled rejection with value: object "InvalidStateError: Failed to execute 'hidePopover' on 'HTMLElement': Invalid for popovers within documents that are not fully active. This might have been the result of the "beforetoggle" event handler changing the state of this popover."
+[FAIL] togglePopover() hides a showing popover=auto once its iframe navigates away
+  promise_test: Unhandled rejection with value: object "InvalidStateError: Failed to execute 'togglePopover' on 'HTMLElement': Invalid for popovers within documents that are not fully active. This might have been the result of the "beforetoggle" event handler changing the state of this popover."
+[FAIL] hidePopover() hides a showing popover=manual once its iframe is removed
+  promise_test: Unhandled rejection with value: object "InvalidStateError: Failed to execute 'hidePopover' on 'HTMLElement': Invalid for popovers within documents that are not fully active. This might have been the result of the "beforetoggle" event handler changing the state of this popover."
+[FAIL] togglePopover() hides a showing popover=manual once its iframe is removed
+  promise_test: Unhandled rejection with value: object "InvalidStateError: Failed to execute 'togglePopover' on 'HTMLElement': Invalid for popovers within documents that are not fully active. This might have been the result of the "beforetoggle" event handler changing the state of this popover."
+[FAIL] hidePopover() hides a showing popover=manual once its iframe navigates away
+  promise_test: Unhandled rejection with value: object "InvalidStateError: Failed to execute 'hidePopover' on 'HTMLElement': Invalid for popovers within documents that are not fully active. This might have been the result of the "beforetoggle" event handler changing the state of this popover."
+[FAIL] togglePopover() hides a showing popover=manual once its iframe navigates away
+  promise_test: Unhandled rejection with value: object "InvalidStateError: Failed to execute 'togglePopover' on 'HTMLElement': Invalid for popovers within documents that are not fully active. This might have been the result of the "beforetoggle" event handler changing the state of this popover."
+Harness: the test ran to completion.
+

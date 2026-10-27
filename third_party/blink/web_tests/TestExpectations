@@ -8632,3 +8632,4 @@ crbug.com/573469817 external/wpt/html/canvas/element/manual/imagebitmap/createIm
 # Gardener 2026-10-27
 crbug.com/578287772 [ Linux ] external/wpt/webdriver/tests/bidi/input/perform_actions/pointer_touch.py [ Failure Pass ]
 
+crbug.com/570738049 external/wpt/html/semantics/popovers/popover-move-documents-during-hide.html [ Crash Timeout ]
