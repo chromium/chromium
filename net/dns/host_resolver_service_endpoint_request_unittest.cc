@@ -222,7 +222,7 @@ class HostResolverServiceEndpointRequestTest
     : public HostResolverManagerDnsTest {
  public:
   HostResolverServiceEndpointRequestTest() {
-    feature_list_.InitAndEnableFeature(features::kHappyEyeballsV3);
+    AddScopedFeatureList().InitAndEnableFeature(features::kHappyEyeballsV3);
   }
 
   ~HostResolverServiceEndpointRequestTest() override = default;
@@ -396,12 +396,7 @@ class HostResolverServiceEndpointRequestTest
     FastForwardBy(kDefaultTtl);
   }
 
- protected:
-  base::test::ScopedFeatureList& feature_list() { return feature_list_; }
-
  private:
-  base::test::ScopedFeatureList feature_list_;
-
   bool ipv6_reachable_ = true;
   bool globally_reachable_check_is_async_ = false;
   std::optional<DnsHosts> hosts_;
@@ -2031,7 +2026,7 @@ class HostResolverServiceEndpointRequestAddressHintsTest
     : public HostResolverServiceEndpointRequestTest {
  public:
   HostResolverServiceEndpointRequestAddressHintsTest() {
-    address_hints_feature_list_.InitAndEnableFeature(
+    AddScopedFeatureList().InitAndEnableFeature(
         features::kUseDnsHttpsSvcbAddressHints);
   }
 
@@ -2059,9 +2054,6 @@ class HostResolverServiceEndpointRequestAddressHintsTest
                        /*delay=*/false);
     SetDnsRules(std::move(rules));
   }
-
- private:
-  base::test::ScopedFeatureList address_hints_feature_list_;
 };
 
 TEST_F(HostResolverServiceEndpointRequestAddressHintsTest,
@@ -2175,8 +2167,7 @@ class HostResolverServiceEndpointRequestIntermediateResultsOnlyTest
     : public HostResolverServiceEndpointRequestTest {
  public:
   HostResolverServiceEndpointRequestIntermediateResultsOnlyTest() {
-    feature_list().Reset();
-    feature_list().InitWithFeatures(
+    AddScopedFeatureList().InitWithFeatures(
         /*enabled_features=*/{features::kEnableIntermediateDnsResults},
         /*disabled_features=*/{features::kHappyEyeballsV3});
   }
@@ -2268,8 +2259,7 @@ TEST_F(HostResolverServiceEndpointRequestIntermediateResultsOnlyTest,
 
 TEST_F(HostResolverServiceEndpointRequestIntermediateResultsOnlyTest,
        SortIntermediateEndpoints_DisabledViaFeatureParam) {
-  feature_list().Reset();
-  feature_list().InitWithFeaturesAndParameters(
+  AddScopedFeatureList().InitWithFeaturesAndParameters(
       /*enabled_features=*/
       {{features::kEnableIntermediateDnsResults,
         {{"EnableIntermediateDnsResultsSortTransactionsIndividually",
