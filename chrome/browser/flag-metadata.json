@@ -8499,7 +8499,7 @@
   {
     "name": "profiles-reordering",
     "owners": ["rsult@google.com", "chrome-signin-team@google.com"],
-    "expiry_milestone": 146
+    "expiry_milestone": 170
   },
   {
     "name": "prompt-api",
