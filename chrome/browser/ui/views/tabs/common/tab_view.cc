@@ -212,11 +212,12 @@ class TabStyleViewDelegateImpl : public TabStyleViewDelegate {
     if (!tab_view_->split()) {
       return false;
     }
-    const views::View* parent = tab_view_->parent();
-    if (!parent || !views::IsViewClass<SplitTabView>(parent)) {
+    const auto* split_view =
+        views::AsViewClass<SplitTabView>(tab_view_->parent());
+    if (!split_view || !split_view->collection_node()) {
       return false;
     }
-    const auto& children = parent->children();
+    const auto children = split_view->collection_node()->GetDirectChildren();
     if (children.size() < 2) {
       return true;
     }
@@ -227,11 +228,12 @@ class TabStyleViewDelegateImpl : public TabStyleViewDelegate {
     if (!tab_view_->split()) {
       return false;
     }
-    const views::View* parent = tab_view_->parent();
-    if (!parent || !views::IsViewClass<SplitTabView>(parent)) {
+    const auto* split_view =
+        views::AsViewClass<SplitTabView>(tab_view_->parent());
+    if (!split_view || !split_view->collection_node()) {
       return false;
     }
-    const auto& children = parent->children();
+    const auto children = split_view->collection_node()->GetDirectChildren();
     if (children.size() < 2) {
       return true;
     }
@@ -1296,9 +1298,8 @@ void TabView::CloseButtonPressed(const ui::Event& event) {
   }
 
   if (split_) {
-    auto* split_view = views::AsViewClass<SplitTabView>(parent());
-    base::RecordAction(base::UserMetricsAction(this == split_view->children()[0]
-                                                   ? "CloseTab_StartTabInSplit"
+    base::RecordAction(base::UserMetricsAction(
+        tab_styling_->delegate()->IsLeftSplitTab() ? "CloseTab_StartTabInSplit"
                                                    : "CloseTab_EndTabInSplit"));
   }
 

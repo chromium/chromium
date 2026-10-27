@@ -1526,6 +1526,37 @@ IN_PROC_BROWSER_TEST_F(HorizontalTabViewTest,
   EXPECT_EQ(remaining_tab->layer(), nullptr);
 }
 
+IN_PROC_BROWSER_TEST_F(HorizontalTabViewTest,
+                       SplitTabLeftAndRightFollowViewModelOrder) {
+  AppendTab();
+  // Activate tab 1 and add tab 0 to a new split with it so that tab 0 is
+  // inserted into the split before tab 1 in the view model.
+  tab_strip_model()->ActivateTabAt(1);
+  const split_tabs::SplitTabId split_id = tab_strip_model()->AddToNewSplit(
+      {0}, {}, split_tabs::SplitTabCreatedSource::kTabContextMenu);
+
+  TabView* first_tab = GetTabView(0);
+  TabView* second_tab = GetTabView(1);
+  ASSERT_TRUE(first_tab);
+  ASSERT_TRUE(second_tab);
+
+  EXPECT_TRUE(first_tab->tab_styling()->delegate()->IsLeftSplitTab());
+  EXPECT_FALSE(first_tab->tab_styling()->delegate()->IsRightSplitTab());
+  EXPECT_FALSE(second_tab->tab_styling()->delegate()->IsLeftSplitTab());
+  EXPECT_TRUE(second_tab->tab_styling()->delegate()->IsRightSplitTab());
+
+  // Reversing the tabs in the split updates the view model order without
+  // reordering views::View::children().
+  tab_strip_model()->ReverseTabsInSplit(split_id);
+  EXPECT_EQ(GetTabView(0), second_tab);
+  EXPECT_EQ(GetTabView(1), first_tab);
+
+  EXPECT_TRUE(second_tab->tab_styling()->delegate()->IsLeftSplitTab());
+  EXPECT_FALSE(second_tab->tab_styling()->delegate()->IsRightSplitTab());
+  EXPECT_FALSE(first_tab->tab_styling()->delegate()->IsLeftSplitTab());
+  EXPECT_TRUE(first_tab->tab_styling()->delegate()->IsRightSplitTab());
+}
+
 class HorizontalTabViewPinnedStylingEnabledTest : public HorizontalTabViewTest {
  public:
   const std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures()
