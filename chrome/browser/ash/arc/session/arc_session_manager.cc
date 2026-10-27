@@ -1492,7 +1492,9 @@ void ArcSessionManager::MaybeStartTermsOfServiceNegotiation() {
   // be skipped, too. See also RequestEnableImpl().
   CHECK(!IsArcOptInVerificationDisabled(), base::NotFatalUntil::M160);
 
-  CHECK_EQ(state_, State::STOPPED, base::NotFatalUntil::M160);
+  // TODO(crbug.com/576105295): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK_EQ(state_, State::STOPPED);
   state_ = State::CHECKING_REQUIREMENTS;
 
   // TODO(hidehiko): In kArcSignedIn = true case, this method should never
