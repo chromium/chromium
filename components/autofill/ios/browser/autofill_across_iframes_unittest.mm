@@ -2,6 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import <WebKit/WebKit.h>
+#import <objc/runtime.h>
+
 #import <string>
 #import <variant>
 #import <vector>
@@ -9,6 +12,7 @@
 #import "base/containers/extend.h"
 #import "base/containers/flat_set.h"
 #import "base/containers/to_vector.h"
+#import "base/memory/raw_ptr_exclusion.h"
 #import "base/strings/strcat.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/test/ios/wait_util.h"
@@ -42,6 +46,7 @@
 #import "ios/testing/embedded_test_server_handlers.h"
 #import "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
+#import "ios/web/public/test/fakes/fake_browser_state.h"
 #import "ios/web/public/test/fakes/fake_web_client.h"
 #import "ios/web/public/test/navigation_test_util.h"
 #import "net/test/embedded_test_server/embedded_test_server.h"
@@ -53,6 +58,7 @@
 
 using ::autofill::test::NewFrameCatcher;
 using ::base::test::ios::kWaitForJSCompletionTimeout;
+using ::base::test::ios::kWaitForPageLoadTimeout;
 using ::net::test_server::EmbeddedTestServer;
 using ::testing::AllOf;
 using ::testing::AssertionFailure;
@@ -417,12 +423,107 @@ class MockRegistrarObserver : public ChildFrameRegistrarObserver {
               (override));
 };
 
+extern "C" {
+void* objc_autoreleasePoolPush(void);
+void objc_autoreleasePoolPop(void* pool);
+}
+
+}  // namespace autofill
+
+@interface WKPreferences (AutofillAcrossIframesTesting)
+- (void)_setExtensibleSSOEnabled:(BOOL)enabled;
+@end
+
+@interface WKWebViewConfiguration (AutofillAcrossIframesTesting)
+@property(nonatomic, weak, setter=_setRelatedWebView:)
+    WKWebView* _relatedWebView;
+@end
+
+namespace autofill {
+
+namespace {
+
+// Returns a persistent warm `WKWebView` whose `WebContent` process stays alive
+// and in the foreground across tests in this file. On iOS 27.0 simulators,
+// rapidly launching and terminating a new `com.apple.WebKit.WebContent`
+// ExtensionKit process per test causes BrowserEngineKit/RunningBoard to stall
+// process launch after ~10 back-to-back tests, and removing the last visible
+// `WKWebView` between tests causes `ProcessThrottler` to suspend the
+// `WebContent` and `Networking` processes once the 5-second process
+// initialization activity expires. Linking each test's `WKWebViewConfiguration`
+// to this windowed `WKWebView` via `_relatedWebView` reuses a single foreground
+// `WebContent` process throughout the test suite.
+WKWebView* GetWarmWebView(UIView* container_view) {
+  static WKWebView* warm_web_view = nil;
+  if (!warm_web_view) {
+    WKWebViewConfiguration* config = [[WKWebViewConfiguration alloc] init];
+    config.websiteDataStore = [WKWebsiteDataStore defaultDataStore];
+    if ([config.preferences
+            respondsToSelector:@selector(_setExtensibleSSOEnabled:)]) {
+      [config.preferences _setExtensibleSSOEnabled:NO];
+    }
+    warm_web_view = [[WKWebView alloc] initWithFrame:CGRectMake(0, 0, 1, 1)
+                                       configuration:config];
+    [warm_web_view loadHTMLString:@"<html></html>" baseURL:nil];
+  }
+  if (container_view && warm_web_view.superview != container_view) {
+    [container_view addSubview:warm_web_view];
+  }
+  return warm_web_view;
+}
+
+}  // namespace
+
 class AutofillAcrossIframesTest : public AutofillTestWithWebState {
  public:
   AutofillAcrossIframesTest()
       : AutofillTestWithWebState(std::make_unique<web::FakeWebClient>()) {}
 
+  std::unique_ptr<web::BrowserState> CreateBrowserState() override {
+    // Use the default `WKWebsiteDataStore` rather than creating a new
+    // persistent data store per test, as rapidly creating persistent data
+    // stores across many multi-frame tests without awaiting asynchronous store
+    // creation can stall initial `WKWebView` navigations.
+    return std::make_unique<web::FakeBrowserState>(
+        /*use_unique_storage_uuid=*/false);
+  }
+
   void SetUp() override {
+    autorelease_pool_ = objc_autoreleasePoolPush();
+    WKWebView* warm_web_view =
+        GetWarmWebView(GetWebClient()->GetWindowedContainer());
+    wk_init_method_ = class_getInstanceMethod(
+        [WKWebView class], @selector(initWithFrame:configuration:));
+    IMP original_imp = method_getImplementation(wk_init_method_);
+    orig_wk_init_imp_ = original_imp;
+    using InitFunc = id (*)(id, SEL, CGRect, WKWebViewConfiguration*);
+    id swizzle_block = ^id(id self_obj, CGRect frame,
+                           WKWebViewConfiguration* configuration) {
+      if (configuration) {
+        if (warm_web_view) {
+          [configuration
+              setValue:[warm_web_view.configuration valueForKey:@"processPool"]
+                forKey:@"processPool"];
+          configuration._relatedWebView = warm_web_view;
+        }
+        // Disable Extensible SSO (`SOAuthorizationCoordinator::tryAuthorize`)
+        // on test web views. On iOS 27.0 simulators, every frame navigation
+        // queries `akd` via XPC for native takeover URLs; after ~30 rapid
+        // multi-frame navigations, `akd` fails with `AKAuthenticationError`
+        // (-7097) and stops invoking the completion handler, hanging
+        // `WebPageProxy::decidePolicyForNavigationAction`.
+        if ([configuration.preferences
+                respondsToSelector:@selector(_setExtensibleSSOEnabled:)]) {
+          [configuration.preferences _setExtensibleSSOEnabled:NO];
+        }
+      }
+      return reinterpret_cast<InitFunc>(original_imp)(
+          self_obj, @selector(initWithFrame:configuration:), frame,
+          configuration);
+    };
+    swizzled_wk_init_imp_ = imp_implementationWithBlock(swizzle_block);
+    method_setImplementation(wk_init_method_, swizzled_wk_init_imp_);
+
     AutofillTestWithWebState::SetUp();
 
     web::FakeWebClient* web_client =
@@ -431,7 +532,8 @@ class AutofillAcrossIframesTest : public AutofillTestWithWebState {
         {AutofillJavaScriptFeature::GetInstance(),
          FormHandlersJavaScriptFeature::GetInstance()});
 
-    // We need an AutofillAgent to exist or else the form will never get parsed.
+    // We need an `AutofillAgent` to exist or else the form will never get
+    // parsed.
     prefs_ = test::PrefServiceForTesting();
     autofill_agent_ = [[AutofillAgent alloc] initWithPrefService:prefs_.get()
                                                         webState:web_state()];
@@ -448,17 +550,52 @@ class AutofillAcrossIframesTest : public AutofillTestWithWebState {
   }
 
   void TearDown() override {
+    if (wk_init_method_ && orig_wk_init_imp_) {
+      method_setImplementation(wk_init_method_, orig_wk_init_imp_);
+      imp_removeBlock(swizzled_wk_init_imp_);
+      wk_init_method_ = nullptr;
+      orig_wk_init_imp_ = nullptr;
+      swizzled_wk_init_imp_ = nullptr;
+    }
+    if (web_state()) {
+      web_state()->Stop();
+      web_state()->SetWebUsageEnabled(false);
+    }
     autofill_manager_injector_.reset();
+    autofill_client_.reset();
+    autofill_agent_ = nil;
     AutofillTestWithWebState::TearDown();
+    // Drain objects autoreleased during `SetUp()`, the test body (e.g.,
+    // `CRWWebView` autoreleased by `-[WKFrameInfo webView]` and
+    // `-[CRWWebController ensureWebViewCreated]`), and `TearDown()` before
+    // `~WebTest()` destroys `browser_state_` and `task_environment_`.
+    objc_autoreleasePoolPop(autorelease_pool_);
+    autorelease_pool_ = nullptr;
   }
 
   web::WebFrame* WaitForMainFrame() {
     __block web::WebFrame* main_frame = nullptr;
-    EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
-        kWaitForJSCompletionTimeout, ^bool {
-          main_frame = web_frames_manager()->GetMainWebFrame();
-          return main_frame != nullptr;
-        }));
+    if (!base::test::ios::WaitUntilConditionOrTimeout(
+            kWaitForJSCompletionTimeout, ^bool {
+              main_frame = web_frames_manager()->GetMainWebFrame();
+              return main_frame != nullptr;
+            })) {
+      // When many multi-frame tests create and tear down `WKWebView`s
+      // back-to-back, the newly created `WKWebView` can occasionally drop its
+      // initial navigation while WebKit's `WebContent`/`Networking` processes
+      // are recycling. Recreating the `WKWebView` and re-issuing `LoadUrl()`
+      // recovers immediately.
+      web_state()->Stop();
+      web_state()->SetWebUsageEnabled(false);
+      web_state()->SetWebUsageEnabled(true);
+      web::test::LoadUrl(web_state(), test_server_.GetURL("/testpage"));
+      web_state()->WasShown();
+      EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
+          kWaitForPageLoadTimeout, ^bool {
+            main_frame = web_frames_manager()->GetMainWebFrame();
+            return main_frame != nullptr;
+          }));
+    }
     return main_frame;
   }
 
@@ -587,6 +724,7 @@ class AutofillAcrossIframesTest : public AutofillTestWithWebState {
     GURL url = test_server_.GetURL("/testpage");
     web::test::LoadUrl(web_state(), url);
     web_state()->WasShown();
+    ASSERT_TRUE(WaitForMainFrame());
     autofill_client_->set_last_committed_primary_main_frame_url(url);
   }
 
@@ -689,6 +827,13 @@ class AutofillAcrossIframesTest : public AutofillTestWithWebState {
 
   EmbeddedTestServer test_server_;
   std::string main_frame_html_;
+  // This field is not a `raw_ptr<>` because it is an opaque token returned by
+  // `objc_autoreleasePoolPush()`.
+  RAW_PTR_EXCLUSION void* autorelease_pool_ = nullptr;
+  // Objective-C runtime method and IMP handles for swizzling `WKWebView`.
+  RAW_PTR_EXCLUSION Method wk_init_method_ = nullptr;
+  IMP orig_wk_init_imp_ = nullptr;
+  IMP swizzled_wk_init_imp_ = nullptr;
 };
 
 // If a page has no child frames, the corresponding field in the saved form
@@ -1129,7 +1274,7 @@ TEST_F(AutofillAcrossIframesTest, Fill_MultiFrameForm) {
 // Tests filling fields singularly, one by one, in a multi frame form.
 // This tests the scenario where the user fills the form with the fill data
 // from a suggestion they've selected.
-TEST_F(AutofillAcrossIframesTest, DISABLED_FillMultiFrameForm_SingleField) {
+TEST_F(AutofillAcrossIframesTest, FillMultiFrameForm_SingleField) {
   const std::u16string kNamePlaceholder = u"Name";
   const std::u16string kFakeName = u"Bob Bobbertson";
   const std::u16string kPhonePlaceholder = u"Phone";
