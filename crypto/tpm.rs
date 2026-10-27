@@ -20,22 +20,45 @@ pub const TPM_SESSION_SIZE: usize = 9;
 /// in TPM 2.0).
 pub const TPM_MAX_BUFFER_SIZE: usize = 1024;
 
-/// Object attributes for an Attestation Identity Key (AIK).
-/// fixedTPM (0x02) | fixedParent (0x10) | sensitiveDataOrigin (0x20) |
-/// userWithAuth (0x40) | noDA (0x400) | restricted (0x10000) | sign (0x40000)
-/// = 0x00050472.
+/// Bits of TPMA_OBJECT, the object attributes in a TPMT_PUBLIC. See
+/// "TPMA_OBJECT (Object Attributes)" in
+/// https://trustedcomputinggroup.org/wp-content/uploads/Trusted-Platform-Module-2.0-Library-Part-2-Structures_Version-185_pub.pdf.
+#[repr(u32)]
+enum TpmaObject {
+    /// The object can't be duplicated to another TPM.
+    FixedTpm = 1 << 1,
+    /// The object's parent can't change.
+    FixedParent = 1 << 4,
+    /// The TPM generated the sensitive data, not the caller.
+    SensitiveDataOrigin = 1 << 5,
+    /// The authValue can authorize user role actions.
+    UserWithAuth = 1 << 6,
+    /// The object is exempt from dictionary attack protection.
+    NoDa = 1 << 10,
+    /// The key only signs or decrypts TPM-generated structures.
+    Restricted = 1 << 16,
+    /// The key can decrypt.
+    Decrypt = 1 << 17,
+    /// The key can sign (for asymmetric keys) or encrypt (for symmetric keys).
+    SignEncrypt = 1 << 18,
+}
+
+/// Object attributes for an Attestation Identity Key (AIK), 0x00050472.
 ///
 /// noDA is set because the key is created with an empty authValue, so there is
 /// no secret for dictionary attack protection to guard. Without it the key
 /// would additionally be unusable whenever the TPM is in DA lockout: an object
 /// that is not DA exempt fails authorization with TPM_RC_LOCKOUT even when its
 /// authValue is empty (TPM 2.0 Part 1, Dictionary Attack Protection).
-pub const AIK_OBJECT_ATTRIBUTES: u32 = 0x00050472;
+pub const AIK_OBJECT_ATTRIBUTES: u32 = TpmaObject::FixedTpm as u32
+    | TpmaObject::FixedParent as u32
+    | TpmaObject::SensitiveDataOrigin as u32
+    | TpmaObject::UserWithAuth as u32
+    | TpmaObject::NoDa as u32
+    | TpmaObject::Restricted as u32
+    | TpmaObject::SignEncrypt as u32;
 
-/// Object attributes for the ECC Storage Root Key (SRK).
-/// fixedTPM (0x02) | fixedParent (0x10) | sensitiveDataOrigin (0x20) |
-/// userWithAuth (0x40) | noDA (0x400) | restricted (0x10000) | decrypt
-/// (0x20000) = 0x00030472.
+/// Object attributes for the ECC Storage Root Key (SRK), 0x00030472.
 ///
 /// This is the TCG reference template for an ECC storage primary key, and is
 /// also what the Windows Platform Crypto Provider persists at handle
@@ -43,7 +66,13 @@ pub const AIK_OBJECT_ATTRIBUTES: u32 = 0x00050472;
 /// deterministically from the storage seed and its template, so any difference
 /// here produces a different key, and objects wrapped under it would no longer
 /// load under the provider's own SRK.
-pub const ECC_SRK_OBJECT_ATTRIBUTES: u32 = 0x00030472;
+pub const ECC_SRK_OBJECT_ATTRIBUTES: u32 = TpmaObject::FixedTpm as u32
+    | TpmaObject::FixedParent as u32
+    | TpmaObject::SensitiveDataOrigin as u32
+    | TpmaObject::UserWithAuth as u32
+    | TpmaObject::NoDa as u32
+    | TpmaObject::Restricted as u32
+    | TpmaObject::Decrypt as u32;
 
 /// Symmetric key size of the ECC SRK's storage parameters, in bits.
 const ECC_SRK_SYM_KEY_BITS: u16 = 128;
@@ -251,6 +280,8 @@ pub mod ffi {
     #[derive(Debug, PartialEq, Eq)]
     #[repr(u16)]
     enum TpmAlgSymmetric {
+        /// TPM_ALG_NULL means no symmetric algorithm, as used by signing keys.
+        TPM_ALG_NULL = 0x0010,
         /// TPM_ALG_AES is the AES block cipher.
         TPM_ALG_AES = 0x0006,
         /// TPM_ALG_CFB is the cipher feedback mode of operation.
@@ -789,7 +820,7 @@ pub fn build_create_ecdsa_aik_command(parent_handle: u32, hash_alg: TpmAlgHash) 
     writer.write_u16(0); // authPolicy (empty TPM2B_DIGEST)
 
     // parameters (TPMS_ECC_PARMS)
-    writer.write_u16(TpmAlgSigScheme::TPM_ALG_NULL.repr); // symmetric
+    writer.write_u16(TpmAlgSymmetric::TPM_ALG_NULL.repr); // symmetric
     writer.write_u16(TpmAlgSigScheme::TPM_ALG_ECDSA.repr); // scheme
     writer.write_u16(hash_alg.repr);
     writer.write_u16(curve.repr);
