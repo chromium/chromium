@@ -219,6 +219,11 @@ class TestPasswordManagerClient : public StubPasswordManagerClient {
     return identity_test_env_;
   }
 
+  using PasswordManagerClient::IsFillingEnabled;
+  MOCK_METHOD(bool,
+              IsFillingEnabled,
+              (const url::Origin&, base::optional_ref<const GURL>),
+              (const, override));
   MOCK_METHOD(void, GeneratePassword, (PasswordGenerationType), (override));
   MOCK_METHOD(favicon::FaviconService*, GetFaviconService, (), (override));
   MOCK_METHOD(void,
@@ -378,6 +383,7 @@ class PasswordAutofillManagerTest : public testing::Test {
     testing::Mock::VerifyAndClearExpectations(client);
     // Suppress the warnings in the tests.
     EXPECT_CALL(*client, GetFaviconService()).WillRepeatedly(Return(nullptr));
+    ON_CALL(*client, IsFillingEnabled).WillByDefault(Return(true));
 
     webauthn_credentials_delegate_ =
         std::make_unique<MockWebAuthnCredentialsDelegate>();
@@ -2327,6 +2333,49 @@ TEST_F(PasswordAutofillManagerTest, ManualFallback_FlowResetOnNavigation) {
   password_autofill_manager_->DidNavigateFrame();
 
   EXPECT_FALSE(password_autofill_manager_->manual_fallback_flow());
+}
+
+TEST_F(PasswordAutofillManagerTest,
+       ManualFallback_FillingDisabled_NoManualFallback) {
+  base::test::ScopedFeatureList feature_list{
+      features::kPasswordManualFallbackSkipOpaqueOrigins};
+  TestPasswordManagerClient client;
+  InitializePasswordAutofillManager(&client,
+                                    /*autofill_client=*/nullptr);
+
+  EXPECT_CALL(client,
+              IsFillingEnabled(
+                  client.mock_driver()->GetLastCommittedOrigin(),
+                  testing::Eq(client.mock_driver()->GetLastCommittedURL())))
+      .WillOnce(Return(false));
+  EXPECT_CALL(manual_fallback_flow(), RunFlow).Times(0);
+  autofill::TriggeringField field = kTriggeringField;
+  field.trigger_source =
+      autofill::AutofillSuggestionTriggerSource::kManualFallbackPasswords;
+  field.bounds = gfx::RectF(1, 1, 2, 2);
+  field.text_direction = base::i18n::LEFT_TO_RIGHT;
+  password_autofill_manager_->ShowSuggestions(field);
+}
+
+TEST_F(PasswordAutofillManagerTest,
+       ManualFallback_FillingDisabled_FeatureDisabled_InvokesFlow) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      features::kPasswordManualFallbackSkipOpaqueOrigins);
+  TestPasswordManagerClient client;
+  InitializePasswordAutofillManager(&client,
+                                    /*autofill_client=*/nullptr);
+
+  EXPECT_CALL(client, IsFillingEnabled).Times(0);
+  autofill::TriggeringField field = kTriggeringField;
+  field.trigger_source =
+      autofill::AutofillSuggestionTriggerSource::kManualFallbackPasswords;
+  field.bounds = gfx::RectF(1, 1, 2, 2);
+  field.text_direction = base::i18n::LEFT_TO_RIGHT;
+  EXPECT_CALL(
+      manual_fallback_flow(),
+      RunFlow(kTriggeringField.element_id, field.bounds, field.text_direction));
+  password_autofill_manager_->ShowSuggestions(field);
 }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 

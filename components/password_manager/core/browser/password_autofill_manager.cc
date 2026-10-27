@@ -1081,6 +1081,16 @@ bool PasswordAutofillManager::MaybeTriggerPasswordManualFallback(
       return true;
     }
   }
+
+  if (base::FeatureList::IsEnabled(
+          features::kPasswordManualFallbackSkipOpaqueOrigins)) {
+    if (!password_client_->IsFillingEnabled(
+            password_manager_driver_->GetLastCommittedOrigin(),
+            password_manager_driver_->GetLastCommittedURL())) {
+      // Skip manual filling for opaque origins.
+      return true;
+    }
+  }
   if (!manual_fallback_flow_) {
     manual_fallback_flow_ = std::make_unique<PasswordManualFallbackFlow>(
         password_manager_driver_, autofill_client_, password_client_,

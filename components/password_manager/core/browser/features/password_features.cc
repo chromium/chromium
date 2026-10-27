@@ -169,6 +169,9 @@ BASE_FEATURE(kPasswordManagerOnDeviceEncryptionMetricsReporter,
 BASE_FEATURE(kPasswordManualFallbackSecurityChecks,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kPasswordManualFallbackSkipOpaqueOrigins,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 BASE_FEATURE(kPasswordSaveInContextErrorResolution,
              base::FEATURE_DISABLED_BY_DEFAULT);
 

@@ -177,6 +177,10 @@ BASE_DECLARE_FEATURE(kPasswordManagerOnDeviceEncryptionMetricsReporter);
 // the "Select password" entry to the context menu.
 BASE_DECLARE_FEATURE(kPasswordManualFallbackSecurityChecks);
 
+// Doesn't trigger the password manual fallback flow for opaque origins.
+// TODO(crbug.com/562276485): Clean up when launched.
+BASE_DECLARE_FEATURE(kPasswordManualFallbackSkipOpaqueOrigins);
+
 // When enabled, the user can resolve actionable errors in context during a
 // password save flow.
 BASE_DECLARE_FEATURE(kPasswordSaveInContextErrorResolution);
