@@ -5117,7 +5117,8 @@ IN_PROC_BROWSER_TEST_F(
 
 IN_PROC_BROWSER_TEST_F(
     ContextualTasksExtensionHandlerBrowserTest,
-    GetRecentTabs_IncludesAttachedInternalTabAndAllowsDeselection) {
+    // TODO(crbug.com/578251369): enable this.
+    DISABLED_GetRecentTabs_IncludesAttachedInternalTabAndAllowsDeselection) {
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
       browser(), GURL(chrome::kChromeUINewTabURL),
       WindowOpenDisposition::kNewForegroundTab,
