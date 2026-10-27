@@ -138,25 +138,21 @@ export class ReadAloudHighlighter {
       return this.audioBrowserProxy_.getSentenceHighlighting();
     }
 
-    // Until ts_model_impl supports phrase highlighting, always fallback to
-    // sentence highlighting.
-
     const currentSpeechRate: number = getCurrentSpeechRate();
 
-    if (!this.audioBrowserProxy_.isPhraseHighlightingEnabled()) {
+    if (!this.audioBrowserProxy_.isPhraseHighlightingEnabled() ||
+        !this.isPhraseHighlightingSupportedForLanguage_()) {
       // Choose sentence highlighting for fast voices.
       if (currentSpeechRate > 1.2 &&
           highlight === this.audioBrowserProxy_.getAutoHighlighting()) {
         return this.audioBrowserProxy_.getSentenceHighlighting();
       }
 
-      // In other cases where phrase highilghting is off, choose word
-      // highlighting.
+      // In other cases where phrase highlighting is off or unsupported for the
+      // speech language, choose word highlighting.
       return this.audioBrowserProxy_.getWordHighlighting();
     }
 
-    // TODO: crbug.com/364327601 - Check that the language of the page should
-    // be English for phrase highlighting.
     if (highlight === this.audioBrowserProxy_.getAutoHighlighting()) {
       if (currentSpeechRate <= 0.8) {
         return this.audioBrowserProxy_.getWordHighlighting();
@@ -169,6 +165,12 @@ export class ReadAloudHighlighter {
 
     // In other cases, return what the user selected (i.e. word/phrase).
     return highlight;
+  }
+
+  // The phrase segmentation model is only trained on English text.
+  private isPhraseHighlightingSupportedForLanguage_(): boolean {
+    return this.audioBrowserProxy_.getBaseLanguageForSpeech().toLowerCase() ===
+        'en';
   }
 
   private highlightCurrentWordOrPhrase_(highlightPhrases: boolean): Segment[] {

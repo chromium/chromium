@@ -83,6 +83,8 @@ export class AudioMenuElement extends AudioMenuElementBase implements
       title: loadTimeData.getString('wordHighlightTitle'),
       data: this.audioBrowserProxy_.getWordHighlighting(),
     },
+    // TODO: b/444029483 - Don't show the phrase highlighting option on
+    // non-English pages, since phrase highlighting only supports English.
     ...(this.audioBrowserProxy_.isPhraseHighlightingEnabled()?[{
       title: loadTimeData.getString('phraseHighlightTitle'),
       data: this.audioBrowserProxy_.getPhraseHighlighting(),

@@ -3,9 +3,9 @@
 // found in the LICENSE file.
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
-import type {NodeStore, ReadAloudHighlighter, VoiceLanguageController, WordBoundaries} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import type {NodeStore, ReadAloudHighlighter, Segment, VoiceLanguageController, WordBoundaries} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {previousReadHighlightClass, ReadAloudNode} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {assertEquals, assertFalse, assertStringContains, assertStringExcludes, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertStringContains, assertStringExcludes, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
 import {createSpeechSynthesisVoice, setupTestEnvironment} from './common.js';
 import type {TestAudioBrowserProxy} from './test_audio_browser_proxy.js';
@@ -40,6 +40,44 @@ suite('Highlighter', () => {
   function assertHtmlExcludes(partialHtml: string, id: number) {
     assertStringExcludes(
         (nodeStore.getDomNode(id) as Element).innerHTML, partialHtml);
+  }
+
+  const firstWordNodeId = 10;
+  const firstWordSentence = 'Hans Holbein goes around the world';
+
+  // Highlights the first word of firstWordSentence and returns the result of
+  // highlightCurrentGranularity, which is the word segments when word
+  // highlighting is used and null otherwise. The engine length (4) is shorter
+  // than the segment length (5), so a word highlight excludes the trailing
+  // space while a phrase highlight includes it.
+  function highlightFirstWord(): Segment[]|null {
+    wordBoundaries.updateBoundary(0, 4);
+    const sentence = document.createElement('p');
+    sentence.appendChild(document.createTextNode(firstWordSentence));
+    nodeStore.setDomNode(sentence, firstWordNodeId);
+    const node = ReadAloudNode.create(sentence)!;
+    readAloudModel.setHighlightForCurrentSegmentIndex(
+        [{node, start: 0, length: 5}]);
+    const segments = [{node, start: 0, length: firstWordSentence.length}];
+    readAloudModel.setCurrentTextSegments(segments);
+    return highlighter.highlightCurrentGranularity(
+        segments,
+        /*scrollIntoView=*/ false,
+        /*shouldUpdateSentenceHighlight=*/ true);
+  }
+
+  function assertWordHighlightUsed(wordSegments: Segment[]|null) {
+    assertTrue(!!wordSegments);
+    assertDeepEquals(
+        [[0, false]],
+        readAloudModel.getArgs('getHighlightForCurrentSegmentIndex'));
+  }
+
+  function assertPhraseHighlightUsed(wordSegments: Segment[]|null) {
+    assertEquals(null, wordSegments);
+    assertDeepEquals(
+        [[0, true]],
+        readAloudModel.getArgs('getHighlightForCurrentSegmentIndex'));
   }
 
   setup(() => {
@@ -484,6 +522,7 @@ suite('Highlighter', () => {
 
   test('phrase highlight', () => {
     audioBrowserProxy.isPhraseHighlightingEnabledFlag = true;
+    audioBrowserProxy.baseLanguageForSpeech = 'en';
     audioBrowserProxy.highlightGranularity = audioBrowserProxy.autoHighlighting;
     wordBoundaries.updateBoundary(0);
     const id = 10;
@@ -511,6 +550,7 @@ suite('Highlighter', () => {
 
   test('phrase highlight with engine length, ignores engine length', () => {
     audioBrowserProxy.isPhraseHighlightingEnabledFlag = true;
+    audioBrowserProxy.baseLanguageForSpeech = 'en';
     audioBrowserProxy.highlightGranularity = audioBrowserProxy.autoHighlighting;
     wordBoundaries.updateBoundary(0, 1);
     const id = 10;
@@ -535,11 +575,88 @@ suite('Highlighter', () => {
         id);
   });
 
+  test('phrase highlight falls back to word highlight for non-English', () => {
+    audioBrowserProxy.isPhraseHighlightingEnabledFlag = true;
+    audioBrowserProxy.baseLanguageForSpeech = 'es';
+    audioBrowserProxy.highlightGranularity =
+        audioBrowserProxy.phraseHighlighting;
+
+    const wordSegments = highlightFirstWord();
+
+    assertWordHighlightUsed(wordSegments);
+    assertTrue(highlighter.hasCurrentGranularity());
+    assertHtml(
+        '<span class="current-read-highlight">Hans</span> Holbein goes around' +
+            ' the world',
+        firstWordNodeId);
+  });
+
+  test('auto highlight at rate 1 uses word highlight for non-English', () => {
+    audioBrowserProxy.isPhraseHighlightingEnabledFlag = true;
+    audioBrowserProxy.baseLanguageForSpeech = 'es';
+    audioBrowserProxy.highlightGranularity = audioBrowserProxy.autoHighlighting;
+    audioBrowserProxy.speechRate = 1;
+
+    assertWordHighlightUsed(highlightFirstWord());
+  });
+
+  test(
+      'auto highlight at rate 1.5 uses sentence highlight for non-English',
+      () => {
+        audioBrowserProxy.isPhraseHighlightingEnabledFlag = true;
+        audioBrowserProxy.baseLanguageForSpeech = 'es';
+        audioBrowserProxy.highlightGranularity =
+            audioBrowserProxy.autoHighlighting;
+        audioBrowserProxy.speechRate = 1.5;
+
+        const wordSegments = highlightFirstWord();
+
+        assertEquals(null, wordSegments);
+        assertEquals(
+            0,
+            readAloudModel.getCallCount('getHighlightForCurrentSegmentIndex'));
+        assertFullNodeIsHighlighted(firstWordNodeId, firstWordSentence);
+      });
+
+  test('auto highlight at rate 1.5 uses phrase highlight for English', () => {
+    audioBrowserProxy.isPhraseHighlightingEnabledFlag = true;
+    audioBrowserProxy.baseLanguageForSpeech = 'en';
+    audioBrowserProxy.highlightGranularity = audioBrowserProxy.autoHighlighting;
+    audioBrowserProxy.speechRate = 1.5;
+
+    assertPhraseHighlightUsed(highlightFirstWord());
+  });
+
+  // The base language may not be lowercase if it came from the page's lang
+  // attribute.
+  [{lang: 'en', usesPhrases: true},
+   {lang: 'EN', usesPhrases: true},
+   {lang: 'enm', usesPhrases: false},
+   {lang: 'es', usesPhrases: false},
+   {lang: '', usesPhrases: false},
+  ].forEach(({lang, usesPhrases}) => {
+    test(`phrase highlight with base language "${lang}"`, () => {
+      audioBrowserProxy.isPhraseHighlightingEnabledFlag = true;
+      audioBrowserProxy.baseLanguageForSpeech = lang;
+      audioBrowserProxy.highlightGranularity =
+          audioBrowserProxy.phraseHighlighting;
+
+      const wordSegments = highlightFirstWord();
+
+      if (usesPhrases) {
+        assertPhraseHighlightUsed(wordSegments);
+      } else {
+        assertWordHighlightUsed(wordSegments);
+      }
+    });
+  });
+
   test(
       'onWillMoveToNextGranularity with phrase highlighting highlights the ' +
           'rest of the sentence',
       () => {
         audioBrowserProxy.isPhraseHighlightingEnabledFlag = true;
+        audioBrowserProxy.baseLanguageForSpeech = 'en';
         audioBrowserProxy.highlightGranularity =
             audioBrowserProxy.autoHighlighting;
         wordBoundaries.updateBoundary(0);
@@ -575,6 +692,7 @@ suite('Highlighter', () => {
 
   test('phrase highlight across multiple nodes', () => {
     audioBrowserProxy.isPhraseHighlightingEnabledFlag = true;
+    audioBrowserProxy.baseLanguageForSpeech = 'en';
     audioBrowserProxy.highlightGranularity = audioBrowserProxy.autoHighlighting;
     // speechUtteranceLength should extend across multiple nodes.
     wordBoundaries.updateBoundary(0, 4);

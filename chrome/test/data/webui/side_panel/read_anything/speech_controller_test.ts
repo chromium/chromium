@@ -1370,6 +1370,7 @@ suite('SpeechController', () => {
       'word boundary with phrase highlighting notifies listeners with words',
       () => {
         audioBrowserProxy.isPhraseHighlightingEnabledFlag = true;
+        audioBrowserProxy.baseLanguageForSpeech = 'en';
         audioBrowserProxy.highlightGranularity =
             audioBrowserProxy.phraseHighlighting;
         const {spoken} = playWithWordHighlight('Phrases are not words');
