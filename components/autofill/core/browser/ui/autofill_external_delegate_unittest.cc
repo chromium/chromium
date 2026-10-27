@@ -21,6 +21,7 @@
 #include "base/test/gmock_move_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/with_feature_override.h"
@@ -33,7 +34,10 @@
 #endif
 #include "components/autofill/core/browser/autofill_trigger_source.h"
 #include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
-#include "components/autofill/core/browser/data_manager/autofill_ai/in_memory_entity_suppression_manager.h"
+#include "components/autofill/core/browser/data_manager/autofill_ai/entity_suppression_manager.h"
+#include "components/autofill/core/browser/data_manager/autofill_ai/entity_suppression_manager_impl.h"
+#include "components/autofill/core/browser/data_manager/autofill_ai/entity_suppression_sync_bridge.h"
+#include "components/autofill/core/browser/data_manager/autofill_ai/entity_suppression_sync_bridge_test_util.h"
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
 #include "components/autofill/core/browser/data_manager/personal_data_manager_observer.h"
 #include "components/autofill/core/browser/data_manager/test_personal_data_manager.h"
@@ -494,7 +498,13 @@ class AutofillExternalDelegateTest : public testing::Test,
             personal_context::PersonalContextEligibilityState::kEligible));
     autofill_client().set_personal_context_eligibility_service(
         mock_personal_context_service_.get());
-    autofill_client().set_entity_suppression_manager(&suppression_manager_);
+    std::unique_ptr<EntitySuppressionSyncBridge> bridge =
+        CreateTestEntitySuppressionSyncBridge();
+    ASSERT_TRUE(base::test::RunUntil([&]() { return bridge->IsLoaded(); }));
+    suppression_manager_ =
+        std::make_unique<EntitySuppressionManagerImpl>(std::move(bridge));
+    autofill_client().set_entity_suppression_manager(
+        suppression_manager_.get());
     autofill_client().GetPrefs()->registry()->RegisterIntegerPref(
         optimization_guide::prefs::kGeminiSettings,
         std::to_underlying(
@@ -714,7 +724,7 @@ class AutofillExternalDelegateTest : public testing::Test,
       personal_context::MockPersonalContextEligibilityService>>
       mock_personal_context_service_;
 
-  InMemoryEntitySuppressionManager suppression_manager_;
+  std::unique_ptr<EntitySuppressionManager> suppression_manager_;
   // Form containing the triggering field that initialized the external delegate
   // `OnQuery`.
   FormData queried_form_;

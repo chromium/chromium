@@ -67,8 +67,7 @@ class EntitySuppressionManager : public KeyedService {
                                                  base::Time end) const = 0;
 
   // Returns the delegate for Chrome Sync.
-  // TODO(crbug.com/501036619): Once the sync bridge rollout is complete and
-  // InMemoryEntitySuppressionManager is removed, drop this interface and merge
+  // TODO(crbug.com/501036619): Drop this interface and merge
   // EntitySuppressionManagerImpl directly into a concrete
   // EntitySuppressionManager class.
   virtual base::WeakPtr<syncer::DataTypeControllerDelegate>

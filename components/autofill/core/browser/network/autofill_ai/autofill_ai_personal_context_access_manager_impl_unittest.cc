@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 #include <string_view>
+#include <utility>
 #include <vector>
 
 #include "base/scoped_observation.h"
@@ -14,11 +15,15 @@
 #include "base/test/gmock_callback_support.h"
 #include "base/test/gmock_move_support.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
-#include "components/autofill/core/browser/data_manager/autofill_ai/in_memory_entity_suppression_manager.h"
+#include "components/autofill/core/browser/data_manager/autofill_ai/entity_suppression_manager.h"
+#include "components/autofill/core/browser/data_manager/autofill_ai/entity_suppression_manager_impl.h"
+#include "components/autofill/core/browser/data_manager/autofill_ai/entity_suppression_sync_bridge.h"
+#include "components/autofill/core/browser/data_manager/autofill_ai/entity_suppression_sync_bridge_test_util.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type_names.h"
 #include "components/autofill/core/browser/data_model/data_model_util.h"
@@ -193,11 +198,16 @@ class AutofillAiPersonalContextAccessManagerImplTest : public testing::Test {
         {{features::kAutofillAmbientAutofillSupportedEntityTypes.name,
           kSupportedEntityTypes}});
     personal_context::prefs::RegisterProfilePrefs(pref_service_.registry());
+    std::unique_ptr<EntitySuppressionSyncBridge> bridge =
+        CreateTestEntitySuppressionSyncBridge();
+    EXPECT_TRUE(base::test::RunUntil([&]() { return bridge->IsLoaded(); }));
+    suppression_manager_ =
+        std::make_unique<EntitySuppressionManagerImpl>(std::move(bridge));
     access_manager_ =
         std::make_unique<AutofillAiPersonalContextAccessManagerImpl>(
             &mock_personal_context_service_, &mock_eligibility_service_,
             &pref_service_, &fake_device_info_sync_service_,
-            &suppression_manager_);
+            suppression_manager_.get());
     ON_CALL(mock_eligibility_service_, GetEligibilityState)
         .WillByDefault(Return(
             personal_context::PersonalContextEligibilityState::kEligible));
@@ -213,7 +223,7 @@ class AutofillAiPersonalContextAccessManagerImplTest : public testing::Test {
   }
 
   EntitySuppressionManager& suppression_manager() {
-    return suppression_manager_;
+    return *suppression_manager_;
   }
 
   syncer::FakeDeviceInfoSyncService& fake_device_info_sync_service() {
@@ -352,7 +362,7 @@ class AutofillAiPersonalContextAccessManagerImplTest : public testing::Test {
   MockPersonalContextService mock_personal_context_service_;
   MockPersonalContextEligibilityService mock_eligibility_service_;
   syncer::FakeDeviceInfoSyncService fake_device_info_sync_service_;
-  InMemoryEntitySuppressionManager suppression_manager_;
+  std::unique_ptr<EntitySuppressionManager> suppression_manager_;
   std::unique_ptr<AutofillAiPersonalContextAccessManagerImpl> access_manager_;
   MockAutofillAiPersonalContextAccessManagerObserver mock_observer_;
   base::ScopedObservation<AutofillAiPersonalContextAccessManagerImpl,

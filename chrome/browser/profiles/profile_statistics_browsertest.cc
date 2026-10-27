@@ -27,7 +27,9 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
 #include "components/autofill/core/browser/data_manager/autofill_ai/entity_suppression_manager.h"
-#include "components/autofill/core/browser/data_manager/autofill_ai/in_memory_entity_suppression_manager.h"
+#include "components/autofill/core/browser/data_manager/autofill_ai/entity_suppression_manager_impl.h"
+#include "components/autofill/core/browser/data_manager/autofill_ai/entity_suppression_sync_bridge.h"
+#include "components/autofill/core/browser/data_manager/autofill_ai/entity_suppression_sync_bridge_test_util.h"
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
 #include "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #include "components/autofill/core/browser/data_manager/personal_data_manager_test_util.h"
@@ -187,10 +189,9 @@ class ProfileStatisticsBrowserTest : public InProcessBrowserTest {
                                    &password_manager::BuildPasswordStore<
                                        content::BrowserContext,
                                        password_manager::TestPasswordStore>));
-                  // The production EntitySuppressionManager requires a loaded
-                  // sync bridge that is tracking metadata to record
-                  // suppressions, which is not available in this test. Use the
-                  // in-memory implementation instead.
+                  // The default EntitySuppressionManager can't record
+                  // suppressions without Sync. The test bridge finishes loading
+                  // during browser startup, before the test body runs.
                   autofill::EntitySuppressionManagerFactory::GetInstance()
                       ->SetTestingFactory(
                           context,
@@ -198,7 +199,9 @@ class ProfileStatisticsBrowserTest : public InProcessBrowserTest {
                                                   -> std::unique_ptr<
                                                       KeyedService> {
                             return std::make_unique<
-                                autofill::InMemoryEntitySuppressionManager>();
+                                autofill::EntitySuppressionManagerImpl>(
+                                autofill::
+                                    CreateTestEntitySuppressionSyncBridge());
                           }));
                 }));
   }

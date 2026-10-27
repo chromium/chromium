@@ -20,6 +20,7 @@
 #include "base/time/time.h"
 #include "base/uuid.h"
 #include "chrome/browser/autofill/autofill_entity_data_manager_factory.h"
+#include "chrome/browser/autofill/entity_suppression_manager_factory.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -29,7 +30,10 @@
 #include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
 #include "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
 #include "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager_test_util.h"
-#include "components/autofill/core/browser/data_manager/autofill_ai/in_memory_entity_suppression_manager.h"
+#include "components/autofill/core/browser/data_manager/autofill_ai/entity_suppression_manager.h"
+#include "components/autofill/core/browser/data_manager/autofill_ai/entity_suppression_manager_impl.h"
+#include "components/autofill/core/browser/data_manager/autofill_ai/entity_suppression_sync_bridge.h"
+#include "components/autofill/core/browser/data_manager/autofill_ai/entity_suppression_sync_bridge_test_util.h"
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
 #include "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #include "components/autofill/core/browser/data_manager/personal_data_manager_test_util.h"
@@ -44,6 +48,7 @@
 #include "components/browsing_data/core/browsing_data_utils.h"
 #include "components/browsing_data/core/counters/browsing_data_counter.h"
 #include "components/browsing_data/core/pref_names.h"
+#include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
 
@@ -61,6 +66,21 @@ class AutofillCounterTest : public InProcessBrowserTest {
   AutofillCounterTest& operator=(const AutofillCounterTest&) = delete;
 
   ~AutofillCounterTest() override = default;
+
+  void SetUpBrowserContextKeyedServices(
+      content::BrowserContext* context) override {
+    InProcessBrowserTest::SetUpBrowserContextKeyedServices(context);
+    // The default `EntitySuppressionManager` can't record suppressions without
+    // Sync. The test bridge finishes loading during browser startup, before the
+    // test body runs.
+    autofill::EntitySuppressionManagerFactory::GetInstance()->SetTestingFactory(
+        context,
+        base::BindRepeating(
+            [](content::BrowserContext*) -> std::unique_ptr<KeyedService> {
+              return std::make_unique<autofill::EntitySuppressionManagerImpl>(
+                  autofill::CreateTestEntitySuppressionSyncBridge());
+            }));
+  }
 
   void SetUpOnMainThread() override {
     personal_data_manager_ =
@@ -82,7 +102,7 @@ class AutofillCounterTest : public InProcessBrowserTest {
 
   browsing_data::AutofillCounter GetCounter() {
     return {GetPersonalDataManager(), GetWebDataService(),
-            GetEntityDataManager(), &entity_suppression_manager_,
+            GetEntityDataManager(), GetEntitySuppressionManager(),
             /*sync_service=*/nullptr};
   }
 
@@ -188,8 +208,9 @@ class AutofillCounterTest : public InProcessBrowserTest {
         browser()->GetProfile());
   }
 
-  autofill::EntitySuppressionManager& GetEntitySuppressionManager() {
-    return entity_suppression_manager_;
+  autofill::EntitySuppressionManager* GetEntitySuppressionManager() {
+    return autofill::EntitySuppressionManagerFactory::GetForProfile(
+        browser()->GetProfile());
   }
 
   autofill::PersonalDataManager* GetPersonalDataManager() {
@@ -257,11 +278,6 @@ class AutofillCounterTest : public InProcessBrowserTest {
 
   raw_ptr<autofill::PersonalDataManager> personal_data_manager_;
   scoped_refptr<autofill::AutofillWebDataService> web_data_service_;
-  // The production `EntitySuppressionManagerImpl` requires a loaded sync
-  // bridge that is tracking metadata, which is not available in this test.
-  // Since the counter only depends on the `EntitySuppressionManager`
-  // interface, an in-memory implementation is injected instead.
-  autofill::InMemoryEntitySuppressionManager entity_suppression_manager_;
 
   browsing_data::BrowsingDataCounter::ResultInt counter_value_;
   browsing_data::BrowsingDataCounter::ResultInt num_suggestions_;
@@ -349,7 +365,7 @@ IN_PROC_BROWSER_TEST_F(AutofillCounterTest, EntitySuppressions) {
   EXPECT_EQ(0, GetNumSuppressions());
 
   const base::Time suppression_time = base::Time::Now();
-  ASSERT_TRUE(GetEntitySuppressionManager().SuppressEntity(
+  ASSERT_TRUE(GetEntitySuppressionManager()->SuppressEntity(
       autofill::test::GetPassportEntityInstance()));
   counter.Restart();
   WaitForResult();
@@ -362,7 +378,7 @@ IN_PROC_BROWSER_TEST_F(AutofillCounterTest, EntitySuppressions) {
   const browsing_data::BrowsingDataCounter::ResultInt num_passport_entries =
       GetNumSuppressions();
 
-  ASSERT_TRUE(GetEntitySuppressionManager().SuppressEntity(
+  ASSERT_TRUE(GetEntitySuppressionManager()->SuppressEntity(
       autofill::test::GetVehicleEntityInstance()));
   counter.Restart();
   WaitForResult();
@@ -377,7 +393,7 @@ IN_PROC_BROWSER_TEST_F(AutofillCounterTest, EntitySuppressions) {
 
   // Once the suppressions are cleared, nothing is counted anymore.
   counter.SetPeriodStartForTesting(base::Time());
-  ASSERT_TRUE(GetEntitySuppressionManager().ClearSuppressions(
+  ASSERT_TRUE(GetEntitySuppressionManager()->ClearSuppressions(
       base::Time(), base::Time::Max()));
   counter.Restart();
   WaitForResult();

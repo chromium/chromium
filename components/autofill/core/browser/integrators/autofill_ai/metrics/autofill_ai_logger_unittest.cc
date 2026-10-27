@@ -16,12 +16,16 @@
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/autofill_trigger_source.h"
 #include "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
-#include "components/autofill/core/browser/data_manager/autofill_ai/in_memory_entity_suppression_manager.h"
+#include "components/autofill/core/browser/data_manager/autofill_ai/entity_suppression_manager.h"
+#include "components/autofill/core/browser/data_manager/autofill_ai/entity_suppression_manager_impl.h"
+#include "components/autofill/core/browser/data_manager/autofill_ai/entity_suppression_sync_bridge.h"
+#include "components/autofill/core/browser/data_manager/autofill_ai/entity_suppression_sync_bridge_test_util.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type_names.h"
@@ -912,8 +916,13 @@ TEST_F(BaseAutofillAiTest, KeyMetrics_PerRecordType) {
 class AutofillAiPersonalContextSuppressionTest : public BaseAutofillAiTest {
  public:
   AutofillAiPersonalContextSuppressionTest() {
+    std::unique_ptr<EntitySuppressionSyncBridge> bridge =
+        CreateTestEntitySuppressionSyncBridge();
+    EXPECT_TRUE(base::test::RunUntil([&]() { return bridge->IsLoaded(); }));
+    suppression_manager_ =
+        std::make_unique<EntitySuppressionManagerImpl>(std::move(bridge));
     ON_CALL(autofill_client(), GetEntitySuppressionManager)
-        .WillByDefault(Return(&suppression_manager_));
+        .WillByDefault(Return(suppression_manager_.get()));
 
     // Recreate `AutofillAiManager` instance because its `AutofillAiLogger`
     // member caches the current `EntitySuppressionManager` of `AutofillClient`
@@ -959,12 +968,12 @@ class AutofillAiPersonalContextSuppressionTest : public BaseAutofillAiTest {
         {GetSuggestion(passport1), GetSuggestion(passport2),
          GetSuggestion(drivers_license)},
         /*ukm_source_id=*/{}, /*update_suggestions_callback=*/{});
-    suppression_manager_.SuppressEntity(passport1);
+    suppression_manager_->SuppressEntity(passport1);
     return form;
   }
 
  private:
-  InMemoryEntitySuppressionManager suppression_manager_;
+  std::unique_ptr<EntitySuppressionManager> suppression_manager_;
 };
 
 // Tests that, at form submission, one suppression sample is emitted per unique
