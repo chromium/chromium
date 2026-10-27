@@ -2081,4 +2081,93 @@ TEST_F(GeminiContainerMediatorTest,
   [multi_tab_mediator disconnect];
 }
 
+// Tests that changing the page content sharing preference updates the partial
+// page context attachment state and propagates it to shared tabs.
+TEST_F(GeminiContainerMediatorTest, TestOnPageContentPrefChanged) {
+  @autoreleasepool {
+    web::FakeWebState* web_state =
+        static_cast<web::FakeWebState*>(AppendActiveWebState());
+    web_state->WasShown();
+    web_state->SetCurrentURL(GURL("https://example.com"));
+    web_state->SetContentsMimeType("text/html");
+
+    id mock_wrapper_class = OCMClassMock([PageContextWrapper class]);
+    MediatorFakePageContextWrapper* fake_wrapper =
+        [[MediatorFakePageContextWrapper alloc]
+              initWithWebState:web_state
+            completionCallback:base::DoNothing()];
+    OCMStub([mock_wrapper_class alloc]).andReturn(fake_wrapper);
+
+    [mediator_ connect];
+
+    // Preference defaults to true in tests.
+    EXPECT_TRUE(
+        profile_->GetPrefs()->GetBoolean(prefs::kIOSBWGPageContentSetting));
+    EXPECT_EQ(ios::provider::GeminiPageContextAttachmentState::kAttached,
+              shared_tabs_delegate_.last_saved_active_page_context_
+                  .geminiPageContextAttachmentState);
+
+    int call_count = shared_tabs_delegate_.save_active_page_context_call_count_;
+
+    // Toggle page content preference to false.
+    profile_->GetPrefs()->SetBoolean(prefs::kIOSBWGPageContentSetting, false);
+
+    EXPECT_GT(shared_tabs_delegate_.save_active_page_context_call_count_,
+              call_count);
+    EXPECT_EQ(ios::provider::GeminiPageContextAttachmentState::kUserDisabled,
+              shared_tabs_delegate_.last_saved_active_page_context_
+                  .geminiPageContextAttachmentState);
+
+    call_count = shared_tabs_delegate_.save_active_page_context_call_count_;
+
+    // Toggle page content preference back to true.
+    profile_->GetPrefs()->SetBoolean(prefs::kIOSBWGPageContentSetting, true);
+
+    EXPECT_GT(shared_tabs_delegate_.save_active_page_context_call_count_,
+              call_count);
+    EXPECT_EQ(ios::provider::GeminiPageContextAttachmentState::kAttached,
+              shared_tabs_delegate_.last_saved_active_page_context_
+                  .geminiPageContextAttachmentState);
+
+    [mock_wrapper_class stopMocking];
+  }
+}
+
+// Tests that changing the page content sharing preference while in Gemini Live
+// transcribing mode does not update partial page context.
+TEST_F(GeminiContainerMediatorTest,
+       TestOnPageContentPrefChangedIgnoredInLiveTranscribing) {
+  AppendActiveWebState();
+  [mediator_ connect];
+
+  [mediator_ didSwitchToMode:ios::provider::GeminiViewMode::kLive];
+  [mediator_
+      didUpdateProcessingStatus:ios::provider::GeminiClientMode::kTranscribing
+                      sessionID:@"test_session"
+                 conversationID:@"test_convo"];
+
+  int call_count = shared_tabs_delegate_.save_active_page_context_call_count_;
+
+  // Toggle page content preference to false.
+  profile_->GetPrefs()->SetBoolean(prefs::kIOSBWGPageContentSetting, false);
+
+  // Partial page context should not be updated while transcribing.
+  EXPECT_EQ(call_count,
+            shared_tabs_delegate_.save_active_page_context_call_count_);
+}
+
+// Tests that preference changes are not observed after mediator disconnects.
+TEST_F(GeminiContainerMediatorTest, TestPrefChangesIgnoredAfterDisconnect) {
+  AppendActiveWebState();
+  [mediator_ connect];
+  [mediator_ disconnect];
+
+  int call_count = shared_tabs_delegate_.save_active_page_context_call_count_;
+
+  profile_->GetPrefs()->SetBoolean(prefs::kIOSBWGPageContentSetting, false);
+
+  EXPECT_EQ(call_count,
+            shared_tabs_delegate_.save_active_page_context_call_count_);
+}
+
 }  // namespace
