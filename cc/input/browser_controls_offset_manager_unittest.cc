@@ -2193,26 +2193,30 @@ class BrowserControlsOffsetManagerSnapAnimationTest : public testing::Test {
     return did_animate;
   }
 
+  const BrowserControlsSnapAnimationController& snap_controller() {
+    return client_.manager()->snap_controller_for_testing();
+  }
+
   float MinimumTopCanHideRegionHeight() {
-    return client_.manager()->SnapAnimationCanHideRegionHeights(0.0f).first;
+    return snap_controller().CanHideRegionHeights(0.0f).first;
   }
 
   float MaximumTopCanHideRegionHeight() {
-    return client_.manager()->SnapAnimationCanHideRegionHeights(1.0f).first;
+    return snap_controller().CanHideRegionHeights(1.0f).first;
   }
 
   float MinimumBottomCanHideRegionHeight() {
-    return client_.manager()->SnapAnimationCanHideRegionHeights(0.0f).second;
+    return snap_controller().CanHideRegionHeights(0.0f).second;
   }
 
   float MaximumBottomCanHideRegionHeight() {
-    return client_.manager()->SnapAnimationCanHideRegionHeights(1.0f).second;
+    return snap_controller().CanHideRegionHeights(1.0f).second;
   }
 
   // Returns a large scroll delta that is guaranteed to trigger the snap
   // animation when the top of the page is in the can-hide region.
   float LargeScrollDelta() {
-    return client_.manager()->SnapAnimationThreshold(/*slowness=*/1.0f);
+    return snap_controller().TriggerThreshold(/*slowness=*/1.0f);
   }
 
   constexpr static float kControlsHeight = 100.0f;
@@ -2530,8 +2534,6 @@ TEST_F(BrowserControlsOffsetManagerSnapAnimationTest,
 
 TEST_F(BrowserControlsOffsetManagerSnapAnimationTest,
        ControlsShowInAlwaysShownRegion) {
-  BrowserControlsOffsetManager* manager = client_.manager();
-
   client_.SetViewportScrollOffset(
       0.0f, MaximumTopCanHideRegionHeight() + LargeScrollDelta());
   {
@@ -2542,9 +2544,9 @@ TEST_F(BrowserControlsOffsetManagerSnapAnimationTest,
 
   // Scroll up in discrete scrolls until the top of the page is just outside the
   // always-shown region, lest the scroll-end processing should trigger the show
-  // animation..
+  // animation.
   while (client_.ViewportScrollOffset().y() >
-         manager->SnapAnimationAlwaysShownRegionHeight() + 1.0f) {
+         snap_controller().AlwaysShownRegionHeight() + 1.0f) {
     ScrollSequence scroll_sequence(this);
     EXPECT_TRUE(ScrollDidNotAnimate(-1.0f));
   }
@@ -2808,8 +2810,8 @@ TEST_F(BrowserControlsOffsetManagerExtraHideGesturesSnapTest,
        ExplicitHideWithBottomControlsOnlyStaysHiddenAtPageTop) {
   BrowserControlsOffsetManager* manager = client_.manager();
 
-  // Bottom toolbar: there are no top controls, so the always-shown region has
-  // zero height and the page top still satisfies the re-show condition.
+  // Bottom toolbar: there are no top controls, so there is no always-shown
+  // region even at the page top.
   BrowserControlsParams params;
   params.bottom_controls_height = kControlsHeight;
   client_.SetBrowserControlsParams(params);

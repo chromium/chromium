@@ -15,8 +15,9 @@
 #include "base/time/time.h"
 #include "base/types/optional_ref.h"
 #include "cc/input/browser_controls_offset_tag_modifications.h"
+#include "cc/input/browser_controls_snap_animation_controller.h"
+#include "cc/input/browser_controls_snap_hint.h"
 #include "cc/input/browser_controls_state.h"
-#include "cc/input/scroll_velocity_tracker.h"
 #include "cc/layers/layer_impl.h"
 #include "cc/trees/browser_controls_params.h"
 #include "cc/trees/render_frame_metadata.h"
@@ -175,28 +176,10 @@ class CC_EXPORT BrowserControlsOffsetManager {
 
   float MaximumShownRatioDeltaPerFrame(float min_ratio) const;
 
-  // Returns the viewport Y-offset above which the toolbar will always be shown
-  // when snap animation is enabled.
-  float SnapAnimationAlwaysShownRegionHeight() const;
-
-  // Returns a pair of floats representing the can-hide region heights from the
-  // top and bottom of the page respectively.
-  //
-  // `slowness` is a multiplier that controls how much the height of the
-  // can-hide region changes relative to the height of the controls, where a
-  // higher value means a larger region and a lower value means a smaller
-  // region. The value should be between 0 and 1.
-  std::pair<float, float> SnapAnimationCanHideRegionHeights(
-      float slowness) const;
-
-  // Returns the magnitude of scroll delta in a single scroll sequence required
-  // to trigger the snap animation.
-  //
-  // `slowness` is a multiplier that controls how much the trigger threshold
-  // changes relative to the reference threshold, where a higher value means
-  // a larger threshold and a lower value means a smaller threshold. The value
-  // should be between 0 and 1.
-  float SnapAnimationThreshold(float slowness) const;
+  const BrowserControlsSnapAnimationController& snap_controller_for_testing()
+      const {
+    return snap_controller_.value();
+  }
 
  protected:
   BrowserControlsOffsetManager(BrowserControlsOffsetManagerClient* client,
@@ -211,15 +194,13 @@ class CC_EXPORT BrowserControlsOffsetManager {
                       int64_t duration_ms,
                       gfx::Tween::Type tween_type = gfx::Tween::LINEAR);
 
-  // Sets up the snap animation in the given direction based on the given scroll
-  // delta.
-  //
-  // `use_minimum_can_hide_region` indicates whether to use the smallest
-  // possible value for the can-hide region height when deciding whether to
-  // trigger the snap animation.
-  void SetupSnapAnimation(AnimationDirection direction,
-                          const gfx::Vector2dF& scroll_delta,
-                          bool use_minimum_can_hide_region);
+  // Starts a show or hide snap animation corresponding to `hint` if no
+  // animation is currently running and the controls are not already at the
+  // target state. During an active touch scroll
+  // (`!hint->is_scroll_end_or_inertial`), a hide hint is ignored if the
+  // controls have already hidden once during the current scroll sequence.
+  void ApplySnapHint(std::optional<BrowserControlsSnapHint> hint);
+
   void StartAnimationIfNecessary();
   void ResetBaseline();
   float OldTopControlsMinShownRatio();
@@ -234,10 +215,6 @@ class CC_EXPORT BrowserControlsOffsetManager {
   void MaybeRecordHasExistingAnimationHistogram();
 
   gfx::Vector2dF ScrollByPrecise(const gfx::Vector2dF& pending_delta);
-  void ScrollBySnap(const gfx::Vector2dF& pending_delta, bool is_inertial);
-  float ControlsAnimatedHeight() const;
-  float TopControlsAnimatedHeight() const;
-  float BottomControlsAnimatedHeight() const;
 
   // The client manages the lifecycle of this.
   raw_ptr<BrowserControlsOffsetManagerClient> client_;
@@ -308,9 +285,6 @@ class CC_EXPORT BrowserControlsOffsetManager {
   // |extra_hide_gestures_enabled_| is true.
   bool is_snap_animation_ = false;
 
-  // If set to true, browser controls will snap to fully show or hide on scroll
-  // instead of moving in pixel-perfect sync with the scroll.
-  const bool use_snap_animation_ = false;
   // If set to true, an explicit hide (e.g. from a toolbar swipe) that completes
   // in the always-shown region is not undone by a snap animation to show.
   const bool extra_hide_gestures_enabled_ = false;
@@ -384,7 +358,7 @@ class CC_EXPORT BrowserControlsOffsetManager {
   Animation top_controls_animation_;
   Animation bottom_controls_animation_;
 
-  ScrollVelocityTracker scroll_velocity_tracker_;
+  std::optional<BrowserControlsSnapAnimationController> snap_controller_;
 };
 
 }  // namespace cc
