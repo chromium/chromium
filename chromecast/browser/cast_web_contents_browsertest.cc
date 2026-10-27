@@ -5,6 +5,7 @@
 #include <algorithm>
 #include <memory>
 #include <string>
+#include <tuple>
 
 #include "base/check_op.h"
 #include "base/command_line.h"
@@ -21,6 +22,7 @@
 #include "chromecast/base/chromecast_switches.h"
 #include "chromecast/base/metrics/cast_metrics_helper.h"
 #include "chromecast/browser/cast_browser_context.h"
+#include "chromecast/browser/cast_browser_interface_binders.h"
 #include "chromecast/browser/cast_browser_process.h"
 #include "chromecast/browser/cast_content_window.h"
 #include "chromecast/browser/cast_web_contents_impl.h"
@@ -32,12 +34,14 @@
 #include "chromecast/browser/test_interfaces.test-mojom.h"
 #include "chromecast/common/feature_constants.h"
 #include "chromecast/common/mojom/activity_window.mojom.h"
+#include "chromecast/common/mojom/assistant_messenger.mojom.h"
 #include "chromecast/common/mojom/cast_demo.mojom.h"
 #include "chromecast/common/mojom/gesture.mojom.h"
 #include "chromecast/common/mojom/settings_ui.mojom.h"
 #include "chromecast/mojo/interface_bundle.h"
 #include "components/input/native_web_keyboard_event.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -989,19 +993,18 @@ IN_PROC_BROWSER_TEST_F(CastWebContentsBrowserTest,
   MockApiBindings mock_api_bindings;
   EXPECT_CALL(mock_api_bindings, GetAll(_))
       .Times(1)
-      .WillOnce(
-          WithArgs<0>([](MockApiBindings::GetAllCallback callback) {
-            std::vector<chromecast::mojom::ApiBindingPtr> bindings_vector;
-            bindings_vector.emplace_back(
-                chromecast::mojom::ApiBinding::New("let res = 0;"));
-            bindings_vector.emplace_back(
-                chromecast::mojom::ApiBinding::New("res += 1;"));
-            bindings_vector.emplace_back(
-                chromecast::mojom::ApiBinding::New("res += 2;"));
-            bindings_vector.emplace_back(
-                chromecast::mojom::ApiBinding::New("res += 3;"));
-            std::move(callback).Run(std::move(bindings_vector));
-          }));
+      .WillOnce(WithArgs<0>([](MockApiBindings::GetAllCallback callback) {
+        std::vector<chromecast::mojom::ApiBindingPtr> bindings_vector;
+        bindings_vector.emplace_back(
+            chromecast::mojom::ApiBinding::New("let res = 0;"));
+        bindings_vector.emplace_back(
+            chromecast::mojom::ApiBinding::New("res += 1;"));
+        bindings_vector.emplace_back(
+            chromecast::mojom::ApiBinding::New("res += 2;"));
+        bindings_vector.emplace_back(
+            chromecast::mojom::ApiBinding::New("res += 3;"));
+        std::move(callback).Run(std::move(bindings_vector));
+      }));
 
   // Binds mocked |mojom::ApiBindings|.
   cast_web_contents_->ConnectToBindingsService(
@@ -1380,10 +1383,9 @@ IN_PROC_BROWSER_TEST_F(CastWebContentsBrowserTest,
   // Wait for the canary rather than for the gated binds themselves. Waiting
   // for four binds could be satisfied by the first batch alone if the gate were
   // broken, letting the assertions below run before the second batch arrives.
-  ASSERT_TRUE(ExecJs(
-      web_contents_.get(),
-      "Mojo.bindInterface('chromecast.mojom.TestAdder', "
-      "Mojo.createMessagePipe().handle0);"));
+  ASSERT_TRUE(ExecJs(web_contents_.get(),
+                     "Mojo.bindInterface('chromecast.mojom.TestAdder', "
+                     "Mojo.createMessagePipe().handle0);"));
   canary_loop.Run();
 
   // Exactly one bind per interface: the gated request was dropped, the enabled
@@ -1603,6 +1605,99 @@ IN_PROC_BROWSER_TEST_F(CastWebContentsBrowserTest,
   stop_loop->Run();
   EXPECT_TRUE(destroy_waiter.destroyed());
   EXPECT_EQ(web_view->window(), nullptr);
+}
+
+// Helper for the test below. Tracks whether CreateMessagePipe reaches the
+// backend.
+class FakeAssistantMessageService : public mojom::AssistantMessageService {
+ public:
+  FakeAssistantMessageService() = default;
+  ~FakeAssistantMessageService() override = default;
+
+  bool received() const { return received_; }
+
+  void WaitForCreateMessagePipe() {
+    if (received_) {
+      return;
+    }
+    base::RunLoop run_loop;
+    quit_closure_ = run_loop.QuitClosure();
+    run_loop.Run();
+  }
+
+  // mojom::AssistantMessageService:
+  void CreateMessagePipe(
+      mojo::PendingRemote<mojom::AssistantMessageClient> client,
+      mojo::PendingReceiver<mojom::AssistantMessagePipe> pipe) override {
+    received_ = true;
+    if (quit_closure_) {
+      std::move(quit_closure_).Run();
+    }
+  }
+
+ private:
+  bool received_ = false;
+  base::OnceClosure quit_closure_;
+};
+
+IN_PROC_BROWSER_TEST_F(CastWebContentsBrowserTest,
+                       AssistantMessageServiceUsesBrowserAppId) {
+  // The browser knows the authoritative app ID for a CastWebContents and only
+  // forwards AssistantMessageService requests when a valid app ID has been
+  // configured on the WebContents.
+  constexpr char kAppId[] = "ABCD1234";
+
+  FakeAssistantMessageService backend;
+  InterfaceBundle bundle;
+  bundle.AddInterface<mojom::AssistantMessageService>(&backend);
+  cast_web_contents_->SetInterfacesForRenderer(bundle.CreateRemote());
+
+  run_loop_ = std::make_unique<base::RunLoop>();
+  {
+    InSequence seq;
+    EXPECT_CALL(mock_cast_wc_observer_, PageStateChanged(PageState::LOADING));
+    EXPECT_CALL(mock_cast_wc_observer_, PageStateChanged(PageState::LOADED))
+        .WillOnce(testing::InvokeWithoutArgs([&]() { QuitRunLoop(); }));
+  }
+  cast_web_contents_->LoadUrl(GURL(url::kAboutBlankURL));
+  run_loop_->Run();
+
+  // Route a request through the per-frame binder map exactly as
+  // BrowserInterfaceBroker does for a renderer-initiated bind.
+  content::RenderFrameHost* main_frame = web_contents_->GetPrimaryMainFrame();
+  ASSERT_TRUE(main_frame);
+  mojo::BinderMapWithContext<content::RenderFrameHost*> binder_map;
+  shell::PopulateCastFrameBinders(main_frame, &binder_map);
+
+  // Without SetAppProperties, binding AssistantMessageService is rejected.
+  {
+    mojo::Remote<mojom::AssistantMessageService> unverified_service;
+    mojo::GenericPendingReceiver receiver(
+        unverified_service.BindNewPipeAndPassReceiver());
+    base::RunLoop disconnect_loop;
+    unverified_service.set_disconnect_handler(disconnect_loop.QuitClosure());
+    ASSERT_TRUE(binder_map.TryBind(main_frame, &receiver));
+    disconnect_loop.Run();
+    EXPECT_FALSE(backend.received());
+  }
+
+  cast_web_contents_->SetAppProperties(
+      kAppId, /*session_id=*/"test-session", /*is_audio_app=*/false,
+      /*app_web_url=*/GURL(), /*enforce_feature_permissions=*/false,
+      /*feature_permissions=*/{}, /*additional_feature_permission_origins=*/{});
+
+  mojo::Remote<mojom::AssistantMessageService> service;
+  mojo::GenericPendingReceiver receiver(service.BindNewPipeAndPassReceiver());
+  ASSERT_TRUE(binder_map.TryBind(main_frame, &receiver));
+
+  mojo::PendingRemote<mojom::AssistantMessageClient> client;
+  std::ignore = client.InitWithNewPipeAndPassReceiver();
+  mojo::PendingRemote<mojom::AssistantMessagePipe> pipe;
+  service->CreateMessagePipe(std::move(client),
+                             pipe.InitWithNewPipeAndPassReceiver());
+  backend.WaitForCreateMessagePipe();
+
+  EXPECT_TRUE(backend.received());
 }
 
 }  // namespace chromecast

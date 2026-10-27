@@ -41,9 +41,7 @@ interface AssistantMessageClient {
 interface AssistantMessageService {
   // Request a handle to the Assistant message API. |client|'s OnMessage will be
   // called to alert the client of this interface of messages and other events.
-  // For JS clients, |client_id| is the Cast App ID.
   CreateMessagePipe(
-      string client_id,
       pending_remote<AssistantMessageClient> client,
       pending_receiver<AssistantMessagePipe> pipe);
 };

@@ -5,12 +5,15 @@
 #include "chromecast/browser/cast_browser_interface_binders.h"
 
 #include <string_view>
+#include <utility>
 
 #include "base/functional/bind.h"
+#include "base/memory/self_deleting.h"
 #include "chromecast/browser/application_media_capabilities.h"
 #include "chromecast/browser/application_media_info_manager.h"
 #include "chromecast/browser/audio_socket_broker.h"
 #include "chromecast/browser/cast_navigation_ui_data.h"
+#include "chromecast/browser/cast_permission_user_data.h"
 #include "chromecast/browser/cast_web_contents.h"
 #include "chromecast/common/feature_constants.h"
 #include "chromecast/common/mojom/activity_window.mojom.h"
@@ -22,10 +25,14 @@
 #include "chromecast/common/mojom/settings_ui.mojom.h"
 #include "components/network_hints/browser/simple_network_hints_handler_impl.h"
 #include "components/network_hints/common/network_hints.mojom.h"
+#include "content/public/browser/document_service.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "media/mojo/mojom/cast_application_media_info_manager.mojom.h"
 #include "media/mojo/mojom/remoting.mojom.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/remote.h"
 
 namespace chromecast {
 namespace shell {
@@ -58,6 +65,63 @@ void BindFromCastWebContents(content::RenderFrameHost* frame_host,
   mojo::GenericPendingReceiver generic_receiver(std::move(receiver));
   cast_web_contents->TryBindReceiver(generic_receiver);
 }
+
+// Forwards AssistantMessageService requests to the Cast Service backend only
+// when the frame belongs to a WebContents with a valid browser-verified Cast
+// App ID.
+class AssistantMessageServiceProxy final
+    : public content::DocumentService<
+          ::chromecast::mojom::AssistantMessageService> {
+ public:
+  static void Create(
+      content::RenderFrameHost* frame_host,
+      mojo::PendingReceiver<::chromecast::mojom::AssistantMessageService>
+          receiver) {
+    auto* web_contents = content::WebContents::FromRenderFrameHost(frame_host);
+    if (!web_contents) {
+      return;
+    }
+    auto* cast_web_contents = CastWebContents::FromWebContents(web_contents);
+    if (!cast_web_contents) {
+      return;
+    }
+    auto* permission_data =
+        CastPermissionUserData::FromWebContents(web_contents);
+    if (!permission_data || permission_data->GetAppId().empty()) {
+      return;
+    }
+    base::MakeSelfDeleting<AssistantMessageServiceProxy>(
+        *frame_host, std::move(receiver), cast_web_contents);
+  }
+
+  AssistantMessageServiceProxy(
+      content::RenderFrameHost& frame_host,
+      mojo::PendingReceiver<::chromecast::mojom::AssistantMessageService>
+          receiver,
+      CastWebContents* cast_web_contents,
+      base::SelfDeletingPassKey key)
+      : DocumentService(frame_host, std::move(receiver), key) {
+    mojo::GenericPendingReceiver backend_receiver(
+        backend_.BindNewPipeAndPassReceiver());
+    backend_.set_disconnect_handler(
+        base::BindOnce(&AssistantMessageServiceProxy::ResetAndDeleteThis,
+                       base::Unretained(this)));
+    cast_web_contents->TryBindReceiver(backend_receiver);
+  }
+
+ private:
+  ~AssistantMessageServiceProxy() override = default;
+
+  // chromecast::mojom::AssistantMessageService:
+  void CreateMessagePipe(
+      mojo::PendingRemote<::chromecast::mojom::AssistantMessageClient> client,
+      mojo::PendingReceiver<::chromecast::mojom::AssistantMessagePipe> pipe)
+      override {
+    backend_->CreateMessagePipe(std::move(client), std::move(pipe));
+  }
+
+  mojo::Remote<::chromecast::mojom::AssistantMessageService> backend_;
+};
 
 // Similar to BindFromCastWebContents() above, but only routes the receiver if
 // |feature_name| is enabled in the CastWebContents' renderer features.
@@ -152,9 +216,8 @@ void PopulateCastFrameBinders(
   binder_map->Add<::chromecast::mojom::ActivityWindow>(base::BindRepeating(
       &BindFromCastWebContentsWithFeature<::chromecast::mojom::ActivityWindow>,
       feature::kEnableWindowControls));
-  binder_map->Add<
-      ::chromecast::mojom::AssistantMessageService>(base::BindRepeating(
-      &BindFromCastWebContents<::chromecast::mojom::AssistantMessageService>));
+  binder_map->Add<::chromecast::mojom::AssistantMessageService>(
+      base::BindRepeating(&AssistantMessageServiceProxy::Create));
   binder_map->Add<::chromecast::mojom::GestureSource>(base::BindRepeating(
       &BindFromCastWebContentsWithFeature<::chromecast::mojom::GestureSource>,
       feature::kEnableSystemGestures));
