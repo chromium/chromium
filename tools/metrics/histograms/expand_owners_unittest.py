@@ -4,6 +4,7 @@
 
 import os
 import shutil
+import sys
 import tempfile
 import unittest
 import xml.etree.ElementTree as ET
@@ -87,6 +88,35 @@ class ExpandOwnersTest(unittest.TestCase):
   def tearDown(self):
     super(ExpandOwnersTest, self).tearDown()
     shutil.rmtree(self.temp_dir)
+
+  @unittest.skipIf(sys.platform == 'win32', 'Fake dirmd is a shell script.')
+  def testExtractComponentViaDirmdWithLargeOutput(self):
+    """Checks that dirmd output larger than the OS pipe buffer is handled."""
+    fake_src = os.path.join(self.temp_dir, 'src')
+    depot_tools = os.path.join(fake_src, 'third_party', 'depot_tools')
+    os.makedirs(depot_tools)
+    fake_dirmd = os.path.join(depot_tools, 'dirmd')
+    # Prints ~200 KB of JSON, well above the default pipe buffer size.
+    with open(fake_dirmd, 'w') as f:
+      f.write(
+        '\n'.join(
+          [
+            '#!/bin/sh',
+            'printf \'{"dirs": {"large": {"buganizerPublic": '
+            '{"componentId": "12345"}}}, "padding": "\'',
+            "head -c 200000 /dev/zero | tr '\\0' x",
+            "printf '\"}\\n'",
+            '',
+          ]
+        )
+      )
+    os.chmod(fake_dirmd, 0o755)
+
+    with mock.patch.object(path_util, 'CHROMIUM_SRC_PATH', Path(fake_src)):
+      self.assertEqual(
+        expand_owners.ExtractComponentViaDirmd(os.path.join(fake_src, 'large')),
+        '12345',
+      )
 
   def testExpandOwnersUsesMetadataOverOwners(self):
     """Checks that DIR_METADATA is used if available"""
