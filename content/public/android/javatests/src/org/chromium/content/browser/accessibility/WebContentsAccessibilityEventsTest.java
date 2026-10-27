@@ -213,6 +213,7 @@ public class WebContentsAccessibilityEventsTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "crbug.com/578209512")
     public void test_addAlertContent() {
         performTest(
                 "add-alert-content.html",
@@ -789,6 +790,7 @@ public class WebContentsAccessibilityEventsTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "crbug.com/578209512")
     public void test_ariaTreeCollapse() {
         performTest(
                 "aria-tree-collapse.html",
@@ -1056,6 +1058,7 @@ public class WebContentsAccessibilityEventsTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "crbug.com/578209512")
     public void test_popoverExpandedChanged() {
         performTest(
                 "popover-expanded-changed.html",
@@ -1074,6 +1077,7 @@ public class WebContentsAccessibilityEventsTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "crbug.com/578209512")
     public void test_focusListboxMultiselect() {
         performTest(
                 "focus-listbox-multiselect.html",
@@ -1282,6 +1286,7 @@ public class WebContentsAccessibilityEventsTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "crbug.com/578209512")
     public void test_liveRegionElemReparent() {
         performTest(
                 "live-region-elem-reparent.html",
