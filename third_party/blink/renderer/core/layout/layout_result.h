@@ -170,11 +170,6 @@ class CORE_EXPORT LayoutResult final : public GarbageCollected<LayoutResult> {
     return rare_data_ ? rare_data_->block_end_annotation_space : LayoutUnit();
   }
 
-  LogicalOffset OutOfFlowPositionedOffset() const {
-    CHECK(bitfields_.has_oof_positioned_offset);
-    return oof_positioned_offset_;
-  }
-
   // Called after performing layout on a subtree layout root to ensure mutable
   // fields (typically set by the parent) are copied across.
   void CopyMutableData(const LayoutResult& previous_result) const;
@@ -228,21 +223,9 @@ class CORE_EXPORT LayoutResult final : public GarbageCollected<LayoutResult> {
 
   EStatus Status() const { return static_cast<EStatus>(bitfields_.status); }
 
-  LayoutUnit BfcLineOffset() const {
-    if (bitfields_.has_oof_positioned_offset) {
-      DCHECK(physical_fragment_->IsOutOfFlowPositioned());
-      return LayoutUnit();
-    }
-
-    return bfc_offset_.line_offset;
-  }
+  LayoutUnit BfcLineOffset() const { return bfc_offset_.line_offset; }
 
   const std::optional<LayoutUnit> BfcBlockOffset() const {
-    if (bitfields_.has_oof_positioned_offset) {
-      DCHECK(physical_fragment_->IsOutOfFlowPositioned());
-      return LayoutUnit();
-    }
-
     if (bitfields_.is_bfc_block_offset_nullopt)
       return std::nullopt;
 
@@ -499,17 +482,6 @@ class CORE_EXPORT LayoutResult final : public GarbageCollected<LayoutResult> {
    protected:
     friend class OutOfFlowLayoutPart;
 
-    void SetOutOfFlowPositionedOffset(const LogicalOffset& offset) {
-      // OOF-positioned nodes *must* always have an initial BFC-offset.
-      DCHECK(layout_result_->physical_fragment_->IsOutOfFlowPositioned());
-      DCHECK_EQ(layout_result_->BfcLineOffset(), LayoutUnit());
-      DCHECK_EQ(layout_result_->BfcBlockOffset().value_or(LayoutUnit()),
-                LayoutUnit());
-
-      layout_result_->bitfields_.has_oof_positioned_offset = true;
-      layout_result_->oof_positioned_offset_ = offset;
-    }
-
     void SetNeedsScrollAdjustment(bool needs_scroll_adjustment_in_x,
                                   bool needs_scroll_adjustment_in_y) {
       if (!needs_scroll_adjustment_in_x && !needs_scroll_adjustment_in_y) {
@@ -763,7 +735,6 @@ class CORE_EXPORT LayoutResult final : public GarbageCollected<LayoutResult> {
               bool has_descendant_that_depends_on_percentage_block_size,
               bool subtree_modified_margin_strut)
         : has_rare_data_exclusion_space(false),
-          has_oof_positioned_offset(false),
           is_bfc_block_offset_nullopt(false),
           has_forced_break(false),
           break_appeal(kBreakAppealPerfect),
@@ -784,7 +755,6 @@ class CORE_EXPORT LayoutResult final : public GarbageCollected<LayoutResult> {
           has_orthogonal_fallback_size_descendant(false) {}
 
     unsigned has_rare_data_exclusion_space : 1;
-    unsigned has_oof_positioned_offset : 1;
     unsigned is_bfc_block_offset_nullopt : 1;
 
     unsigned has_forced_break : 1;
@@ -816,14 +786,7 @@ class CORE_EXPORT LayoutResult final : public GarbageCollected<LayoutResult> {
   Member<const PhysicalFragment> physical_fragment_;
   Member<RareData> rare_data_;
 
-  // Note that `bfc_offset_` and `oof_positioned_offset_` cannot be both valid
-  // at the same time, because an OOF-positioned node's BFC offset is *always*
-  // the initial value.
-  union {
-    BfcOffset bfc_offset_;
-    LogicalOffset oof_positioned_offset_;
-  };
-
+  BfcOffset bfc_offset_;
   LayoutUnit intrinsic_block_size_;
   Bitfields bitfields_;
 };

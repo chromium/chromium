@@ -59,8 +59,9 @@ const LayoutResult* SimplifiedOofLayoutAlgorithm::Layout() {
 }
 
 void SimplifiedOofLayoutAlgorithm::AppendOutOfFlowResult(
-    const LayoutResult* result) {
-  container_builder_.AddResult(*result, result->OutOfFlowPositionedOffset());
+    const LayoutResult* result,
+    LogicalOffset offset) {
+  container_builder_.AddResult(*result, offset);
 }
 
 }  // namespace blink

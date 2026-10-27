@@ -1173,7 +1173,7 @@ void OutOfFlowLayoutPart::LayoutCandidates(
     BoxStrut margins = physical_margins.ConvertToLogical(
         container_builder_.GetWritingDirection());
     container_builder_.AddResult(
-        *result, result->OutOfFlowPositionedOffset(), margins,
+        *result, node_to_layout.offset_info.offset, margins,
         /* relative_insets */ std::nullopt, &candidate.InlineContainerInfo());
     container_builder_.SetHasOutOfFlowFragmentChild(true);
     if (GetConstraintSpace().IsInitialColumnBalancingPass()) {
@@ -2655,9 +2655,6 @@ const LayoutResult* OutOfFlowLayoutPart::Layout(
   fragment.GetMutableForPositioned().SetUsedPositionInsets(
       offset_info.insets_for_get_computed_style);
 
-  layout_result->GetMutableForOutOfFlow().SetOutOfFlowPositionedOffset(
-      offset_info.offset);
-
   layout_result->GetMutableForOutOfFlow().SetNeedsScrollAdjustment(
       offset_info.needs_scroll_adjustment_in_x,
       offset_info.needs_scroll_adjustment_in_y);
@@ -2994,7 +2991,7 @@ void OutOfFlowLayoutPart::AddOOFToFragmentainer(
   DCHECK_EQ(result->Status(), LayoutResult::kSuccess);
 
   // Apply the relative positioned offset now that fragmentation is complete.
-  LogicalOffset oof_offset = result->OutOfFlowPositionedOffset();
+  LogicalOffset oof_offset = descendant.offset_info.offset;
   LogicalOffset relative_offset =
       descendant.node_info.base_container_info.relative_offset;
   LogicalOffset adjusted_offset = oof_offset + relative_offset;
@@ -3005,9 +3002,6 @@ void OutOfFlowLayoutPart::AddOOFToFragmentainer(
   // it's the offset relative to the current builder rather than the offset such
   // that all fragmentainers are stacked on top of each other.
   LogicalOffset offset_adjustment = fragmentainer_offset;
-
-  result->GetMutableForOutOfFlow().SetOutOfFlowPositionedOffset(
-      adjusted_offset);
 
   LogicalOffset additional_fixedpos_offset;
   if (descendant.node_info.fixedpos_containing_block.Fragment()) {
@@ -3102,7 +3096,7 @@ void OutOfFlowLayoutPart::AddOOFToFragmentainer(
         &descendant.node_info.fixedpos_inline_container,
         additional_fixedpos_offset);
   }
-  algorithm->AppendOutOfFlowResult(result);
+  algorithm->AppendOutOfFlowResult(result, adjusted_offset);
 }
 
 ConstraintSpace OutOfFlowLayoutPart::GetFragmentainerConstraintSpace(

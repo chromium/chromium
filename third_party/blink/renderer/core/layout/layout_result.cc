@@ -164,16 +164,9 @@ LayoutResult::LayoutResult(const LayoutResult& other,
                      : nullptr),
       intrinsic_block_size_(other.intrinsic_block_size_),
       bitfields_(other.bitfields_) {
-  if (bitfields_.has_oof_positioned_offset) {
-    DCHECK(physical_fragment_->IsOutOfFlowPositioned());
-    DCHECK_EQ(bfc_line_offset, LayoutUnit());
-    DCHECK(bfc_block_offset && bfc_block_offset.value() == LayoutUnit());
-    oof_positioned_offset_ = other.oof_positioned_offset_;
-  } else {
-    bfc_offset_.line_offset = bfc_line_offset;
-    bfc_offset_.block_offset = bfc_block_offset.value_or(LayoutUnit());
-    bitfields_.is_bfc_block_offset_nullopt = !bfc_block_offset.has_value();
-  }
+  bfc_offset_.line_offset = bfc_line_offset;
+  bfc_offset_.block_offset = bfc_block_offset.value_or(LayoutUnit());
+  bitfields_.is_bfc_block_offset_nullopt = !bfc_block_offset.has_value();
 
   ExclusionSpace new_exclusion_space = MergeExclusionSpaces(
       other, space_.GetExclusionSpace(), bfc_line_offset, block_offset_delta);
@@ -197,15 +190,9 @@ LayoutResult::LayoutResult(const LayoutResult& other,
       rare_data_(other.rare_data_
                      ? MakeGarbageCollected<RareData>(*other.rare_data_)
                      : nullptr),
+      bfc_offset_(other.bfc_offset_),
       intrinsic_block_size_(other.intrinsic_block_size_),
       bitfields_(other.bitfields_) {
-  if (bitfields_.has_oof_positioned_offset) {
-    DCHECK(physical_fragment_->IsOutOfFlowPositioned());
-    oof_positioned_offset_ = other.oof_positioned_offset_;
-  } else {
-    bfc_offset_ = other.bfc_offset_;
-  }
-
   DCHECK_EQ(physical_fragment_->Size(), other.physical_fragment_->Size());
 }
 
@@ -319,10 +306,6 @@ void LayoutResult::CopyMutableData(const LayoutResult& other) const {
       .SetUsedPositionInsets(
           To<PhysicalBoxFragment>(other.GetPhysicalFragment())
               .UsedPositionInsets());
-  if (other.bitfields_.has_oof_positioned_offset) {
-    GetMutableForOutOfFlow().SetOutOfFlowPositionedOffset(
-        other.OutOfFlowPositionedOffset());
-  }
   if (std::optional<PhysicalRect> imcb = other.InsetModifiedContainingBlock()) {
     GetMutableForOutOfFlow().SetInsetModifiedContainingBlock(*imcb);
   }
