@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/app_menu/app_menu_search_bar_view.h"
 
+#include <algorithm>
 #include <memory>
 #include <utility>
 
@@ -27,6 +28,7 @@
 #include "ui/views/controls/button/image_button_factory.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/image_view.h"
+#include "ui/views/controls/separator.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/controls/textfield/textfield_controller.h"
 #include "ui/views/layout/box_layout.h"
@@ -46,6 +48,8 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AppMenuSearchBarView,
                                       kSearchIconElementId);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AppMenuSearchBarView,
                                       kBackButtonElementId);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AppMenuSearchBarView,
+                                      kSeparatorElementId);
 
 class AppMenuSearchBarView::SearchField : public views::Textfield,
                                           public views::TextfieldController {
@@ -63,6 +67,8 @@ class AppMenuSearchBarView::SearchField : public views::Textfield,
       base::RepeatingClosure callback);
 
   // views::Textfield:
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
   void Layout(PassKey) override;
 
   // views::TextfieldController:
@@ -134,6 +140,16 @@ AppMenuSearchBarView::SearchField::SearchField() {
 
 AppMenuSearchBarView::SearchField::~SearchField() = default;
 
+gfx::Size AppMenuSearchBarView::SearchField::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
+  gfx::Size size = views::Textfield::CalculatePreferredSize(available_size);
+  const int icon_size = ChromeLayoutProvider::Get()->GetDistanceMetric(
+      DISTANCE_ACTION_APP_MENU_DEFAULT_ICON_SIZE);
+  size.set_height(std::max(icon_size, GetFontList().GetHeight()) +
+                  GetInsets().height());
+  return size;
+}
+
 void AppMenuSearchBarView::SearchField::Layout(PassKey) {
   LayoutSuperclass<views::Textfield>(this);
   const int icon_size = ChromeLayoutProvider::Get()->GetDistanceMetric(
@@ -183,14 +199,28 @@ BEGIN_METADATA(AppMenuSearchBarView, SearchField)
 END_METADATA
 
 AppMenuSearchBarView::AppMenuSearchBarView() {
+  const auto* provider = ChromeLayoutProvider::Get();
   SetOrientation(views::BoxLayout::Orientation::kVertical);
 
   search_field_ = AddChildView(std::make_unique<SearchField>());
   search_field_->SetProperty(views::kElementIdentifierKey,
                              kSearchFieldElementId);
-  search_field_->SetProperty(views::kMarginsKey,
-                             ChromeLayoutProvider::Get()->GetInsetsMetric(
-                                 INSETS_ACTION_APP_MENU_SEARCH_BAR_MARGIN));
+  search_field_->SetProperty(
+      views::kMarginsKey,
+      provider->GetInsetsMetric(INSETS_ACTION_APP_MENU_SEARCH_BAR_MARGIN));
+
+  // The separator spans the full width of the menu.
+  auto* separator = AddChildView(std::make_unique<views::Separator>());
+  separator->SetProperty(views::kElementIdentifierKey, kSeparatorElementId);
+  separator->SetOrientation(views::Separator::Orientation::kHorizontal);
+  separator->SetColorId(ui::kColorMenuSeparator);
+  separator->SetProperty(
+      views::kMarginsKey,
+      gfx::Insets::TLBR(
+          0, 0,
+          provider->GetDistanceMetric(
+              DISTANCE_ACTION_APP_MENU_SEARCH_SEPARATOR_BOTTOM_MARGIN),
+          0));
 }
 
 AppMenuSearchBarView::~AppMenuSearchBarView() = default;

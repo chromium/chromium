@@ -64,7 +64,7 @@ Dynamic submenus are used for user data (such as bookmarks, history, tab groups,
 * **`AppMenuBlockView` / `AppMenuBlockButton`**: Horizontal row of equal-width rectangular buttons at the top of the menu.
 * **`AppMenuFooterView` / `AppMenuFooterButton`**: Bottom bar with pill-shaped buttons (Settings, Help, Exit) and an optional full-width management row.
 * **`AppMenuZoomView`**: Custom inline controls (`-`, zoom percentage, `+`, Fullscreen) embedded in the `kActionZoomSubmenu` row.
-* **`AppMenuSearchBarView`**: Top search `views::Textfield` with custom focus and event routing inside the menu popup.
+* **`AppMenuSearchBarView`**: Top search row containing a `views::Textfield` with custom focus and event routing inside the menu popup, above a full-width separator.
 * **`AppMenuChipView` & `AppMenuMinorTextView`**: Helper views attached to standard `MenuItemView` rows for status chips (e.g., sign-in state) and non-accelerator minor text.
 
 ---

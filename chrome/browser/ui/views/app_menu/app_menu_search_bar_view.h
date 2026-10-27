@@ -13,7 +13,8 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/layout/box_layout_view.h"
 
-// Search bar placed at the top of the Block Style ChroMenu.
+// Search bar placed at the top of the Block Style ChroMenu: a search field
+// above a full-width separator.
 class AppMenuSearchBarView : public views::BoxLayoutView {
   METADATA_HEADER(AppMenuSearchBarView, views::BoxLayoutView)
 
@@ -24,6 +25,7 @@ class AppMenuSearchBarView : public views::BoxLayoutView {
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kSearchFieldElementId);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kSearchIconElementId);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kBackButtonElementId);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kSeparatorElementId);
 
   AppMenuSearchBarView();
   AppMenuSearchBarView(const AppMenuSearchBarView&) = delete;

@@ -1010,7 +1010,13 @@ void ActionAppMenu::PopulateBlockSection(
   const auto* provider = ChromeLayoutProvider::Get();
   gfx::Insets margins =
       provider->GetInsetsMetric(INSETS_ACTION_APP_MENU_BLOCK_MARGIN);
-  if (has_notification_header_ && !search_bar_) {
+  if (search_bar_) {
+    // The separator's bottom margin is also the gap above search results,
+    // which the spec puts closer to the separator than the block buttons.
+    margins.set_top(margins.top() +
+                    provider->GetDistanceMetric(
+                        DISTANCE_ACTION_APP_MENU_SEARCH_BLOCK_MARGIN));
+  } else if (has_notification_header_) {
     margins.set_top(margins.top() +
                     provider->GetDistanceMetric(
                         DISTANCE_ACTION_APP_MENU_NOTIFICATION_MARGIN));

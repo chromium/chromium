@@ -29,7 +29,7 @@ enum ChromeInsetsMetric {
   INSETS_PAGE_INFO_FOOTER_BUTTON,
   // Border insets for Action App Menu items.
   INSETS_ACTION_APP_MENU_ITEM,
-  // Margins for the search bar in the Action App Menu.
+  // Margins around the search field in the Action App Menu search bar.
   INSETS_ACTION_APP_MENU_SEARCH_BAR_MARGIN,
   // Margins for the block actions section in the Action App Menu.
   INSETS_ACTION_APP_MENU_BLOCK_MARGIN,
@@ -238,6 +238,11 @@ enum ChromeDistanceMetric {
   // Bottom margin for the separator in the Action App Menu
   // footer.
   DISTANCE_ACTION_APP_MENU_FOOTER_SEPARATOR_BOTTOM_MARGIN,
+  // Bottom margin for the separator in the Action App Menu search bar.
+  DISTANCE_ACTION_APP_MENU_SEARCH_SEPARATOR_BOTTOM_MARGIN,
+  // Extra top margin for the block section when it follows the Action App Menu
+  // search bar.
+  DISTANCE_ACTION_APP_MENU_SEARCH_BLOCK_MARGIN,
   // Vertical margin for section headers in the Action App Menu.
   DISTANCE_ACTION_APP_MENU_HEADER_VERTICAL_MARGIN,
   // Spacing between buttons in a block action row.

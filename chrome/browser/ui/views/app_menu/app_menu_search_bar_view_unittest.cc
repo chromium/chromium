@@ -75,6 +75,7 @@ TEST_F(AppMenuSearchBarViewTest, InitialProperties) {
   int left_inset = icon_padding + icon_size + icon_text_spacing;
   EXPECT_EQ(search_field->GetBorder()->GetInsets(),
             gfx::Insets::TLBR(6, left_inset, 6, 12));
+  EXPECT_EQ(search_field->GetPreferredSize().height(), 28);
   EXPECT_EQ(search_field->GetBackgroundColor(), SK_ColorTRANSPARENT);
 
   // Verify inkdrop is enabled.

@@ -94,7 +94,7 @@ gfx::Insets ChromeLayoutProvider::GetInsetsMetric(int metric) const {
     case INSETS_ACTION_APP_MENU_ITEM:
       return gfx::Insets::VH(0, 24);
     case INSETS_ACTION_APP_MENU_SEARCH_BAR_MARGIN:
-      return gfx::Insets::TLBR(0, 12, 12, 12);
+      return gfx::Insets::TLBR(2, 12, 10, 12);
     case INSETS_ACTION_APP_MENU_BLOCK_MARGIN:
       return gfx::Insets::TLBR(0, 12, 8, 12);
     case INSETS_ACTION_APP_MENU_HEADER:
@@ -295,6 +295,8 @@ int ChromeLayoutProvider::GetDistanceMetric(int metric) const {
     case DISTANCE_ACTION_APP_MENU_FOOTER_BUTTON_BETWEEN_CHILD_SPACING:
     case DISTANCE_ACTION_APP_MENU_HEADER_VERTICAL_MARGIN:
     case DISTANCE_ACTION_APP_MENU_BLOCK_ROW_SPACING:
+    case DISTANCE_ACTION_APP_MENU_SEARCH_SEPARATOR_BOTTOM_MARGIN:
+    case DISTANCE_ACTION_APP_MENU_SEARCH_BLOCK_MARGIN:
       return 8;
     case DISTANCE_ACTION_APP_MENU_BLOCK_ENTRY_BETWEEN_CHILD_SPACING:
       return 1;

@@ -269,6 +269,11 @@ class ActionAppMenuTest : public ActionAppMenuTestBase {
     return data.GetStringAttribute(ax::mojom::StringAttribute::kKeyShortcuts);
   }
 
+  static views::Separator* GetSeparator(AppMenuSearchBarView* search_bar) {
+    return views::AsViewClass<views::Separator>(search_bar->GetViewByElementId(
+        AppMenuSearchBarView::kSeparatorElementId));
+  }
+
   std::unique_ptr<views::Widget> widget_;
   raw_ptr<views::MenuButton> button_ = nullptr;
 };
@@ -1943,6 +1948,18 @@ class ActionAppMenuWithSearchTest : public ActionAppMenuTest {
     controller->OnWillDispatchKeyEvent(&enter_event);
   }
 
+  AppMenuBlockView* GetBlockView(views::MenuItemView* root) {
+    for (views::MenuItemView* row : root->GetSubmenu()->GetMenuItems()) {
+      if (!row->children().empty()) {
+        if (auto* block_view =
+                views::AsViewClass<AppMenuBlockView>(row->children().front())) {
+          return block_view;
+        }
+      }
+    }
+    return nullptr;
+  }
+
  private:
   base::test::ScopedFeatureList feature_list_;
 };
@@ -1977,9 +1994,36 @@ TEST_F(ActionAppMenuWithSearchTest, SearchBarEnabledWithFeatureFlag) {
   EXPECT_EQ(
       *search_field_margins,
       provider->GetInsetsMetric(INSETS_ACTION_APP_MENU_SEARCH_BAR_MARGIN));
-  EXPECT_EQ(*search_field_margins, gfx::Insets::TLBR(0, 12, 12, 12));
+  EXPECT_EQ(*search_field_margins, gfx::Insets::TLBR(2, 12, 10, 12));
+  EXPECT_EQ(search_field->height(), 28);
 
-  // The block section item follows the search bar and has 0dp top margin.
+  // The separator below the search field spans the full width of the menu,
+  // while the search field is inset by its horizontal margins.
+  views::Separator* separator = GetSeparator(search_bar);
+  ASSERT_TRUE(separator);
+  EXPECT_EQ(separator->GetOrientation(),
+            views::Separator::Orientation::kHorizontal);
+  EXPECT_EQ(separator->GetColorId(), ui::kColorMenuSeparator);
+  const gfx::Insets* separator_margins =
+      separator->GetProperty(views::kMarginsKey);
+  ASSERT_TRUE(separator_margins);
+  EXPECT_EQ(*separator_margins,
+            gfx::Insets::TLBR(
+                0, 0,
+                provider->GetDistanceMetric(
+                    DISTANCE_ACTION_APP_MENU_SEARCH_SEPARATOR_BOTTOM_MARGIN),
+                0));
+  EXPECT_EQ(*separator_margins, gfx::Insets::TLBR(0, 0, 8, 0));
+  const int menu_width = root->GetSubmenu()->width();
+  EXPECT_GT(menu_width, 0);
+  EXPECT_EQ(separator->width(), menu_width);
+  EXPECT_EQ(search_field->width(), menu_width - search_field_margins->width());
+  EXPECT_EQ(separator->y() - search_field->bounds().bottom(),
+            search_field_margins->bottom());
+  EXPECT_EQ(separator->y(), 40);
+
+  // The block section item follows the search bar and has 0dp top margin. Its
+  // block view adds a top margin so that it sits 16dp below the separator.
   views::MenuItemView* block_item = root->GetSubmenu()->GetMenuItemAt(1);
   ASSERT_NE(block_item, nullptr);
   EXPECT_EQ(block_item->GetInsets(), gfx::Insets());
@@ -1991,9 +2035,17 @@ TEST_F(ActionAppMenuWithSearchTest, SearchBarEnabledWithFeatureFlag) {
   const gfx::Insets* block_margins =
       block_view->GetProperty(views::kMarginsKey);
   ASSERT_TRUE(block_margins);
-  EXPECT_EQ(*block_margins,
-            provider->GetInsetsMetric(INSETS_ACTION_APP_MENU_BLOCK_MARGIN));
-  EXPECT_EQ(*block_margins, gfx::Insets::TLBR(0, 12, 8, 12));
+  gfx::Insets expected_block_margins =
+      provider->GetInsetsMetric(INSETS_ACTION_APP_MENU_BLOCK_MARGIN);
+  expected_block_margins.set_top(
+      expected_block_margins.top() +
+      provider->GetDistanceMetric(
+          DISTANCE_ACTION_APP_MENU_SEARCH_BLOCK_MARGIN));
+  EXPECT_EQ(*block_margins, expected_block_margins);
+  EXPECT_EQ(*block_margins, gfx::Insets::TLBR(8, 12, 8, 12));
+  EXPECT_EQ(block_view->GetBoundsInScreen().y() -
+                separator->GetBoundsInScreen().bottom(),
+            16);
 
   // Check initial empty state.
   views::View* icon = GetSearchIcon(search_bar);
@@ -2360,6 +2412,14 @@ TEST_F(ActionAppMenuWithSearchTest, BackButtonRestoresNormalMenu) {
   EXPECT_EQ(submenu->children().size(), row_count_at_open);
   EXPECT_NE(root->GetMenuItemByID(kActionPrint), nullptr);
 
+  views::Separator* separator = GetSeparator(search_bar);
+  ASSERT_TRUE(separator);
+  AppMenuBlockView* block_view = GetBlockView(root);
+  ASSERT_TRUE(block_view);
+  EXPECT_EQ(block_view->GetBoundsInScreen().y() -
+                separator->GetBoundsInScreen().bottom(),
+            16);
+
   EXPECT_CALL(on_menu_closed, Run()).Times(1);
   menu.CloseMenu();
 }
@@ -2398,6 +2458,14 @@ TEST_F(ActionAppMenuWithSearchTest,
       header->GetIndexOf(search_row);
   ASSERT_GT(search_row_index_at_open, header->GetIndexOf(upgrade_item));
   const size_t row_count_at_open = submenu->children().size();
+
+  views::Separator* separator = GetSeparator(search_bar);
+  ASSERT_TRUE(separator);
+  AppMenuBlockView* block_view = GetBlockView(root);
+  ASSERT_TRUE(block_view);
+  EXPECT_EQ(block_view->GetBoundsInScreen().y() -
+                separator->GetBoundsInScreen().bottom(),
+            16);
 
   // The same notification row stays above the search bar while the results
   // are shown.
@@ -4356,6 +4424,12 @@ TEST_F(ActionAppMenuTest, AppMenuSearchQueryNoResults) {
   EXPECT_EQ(no_results_item->title(),
             l10n_util::GetStringUTF16(IDS_SEARCH_NO_RESULTS));
   EXPECT_FALSE(no_results_item->GetEnabled());
+
+  const views::Separator* separator = GetSeparator(search_bar);
+  ASSERT_TRUE(separator);
+  EXPECT_EQ(no_results_item->GetBoundsInScreen().y() -
+                separator->GetBoundsInScreen().bottom(),
+            8);
 
   EXPECT_CALL(on_menu_closed, Run()).Times(1);
   menu.CloseMenu();
