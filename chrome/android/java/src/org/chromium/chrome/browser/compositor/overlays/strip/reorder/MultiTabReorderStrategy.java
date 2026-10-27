@@ -373,7 +373,7 @@ public class MultiTabReorderStrategy extends ReorderStrategyBase {
         TabModelUtils.setIndex(mModel, mModel.indexOf(primaryTab));
         List<Tab> selectedTabs = getSortedSelectedTabs(stripTabs);
         setupReorderState(stripTabs, selectedTabs);
-        gatherBlock(primaryTab, selectedTabs);
+        gatherBlock(primaryTab);
         return true;
     }
 
@@ -410,7 +410,8 @@ public class MultiTabReorderStrategy extends ReorderStrategyBase {
         mLastScrollOffset = 0f;
     }
 
-    private void gatherBlock(Tab primaryTab, List<Tab> selectedTabs) {
+    private void gatherBlock(Tab primaryTab) {
+        boolean isPrimaryPinned = mIsPrimaryPinned == TriState.TRUE;
         Token destinationGroupId = primaryTab.getTabGroupId();
         boolean notAllTabsInPrimaryGroupAreSelected = false;
         List<Tab> tabsInGroup = mModel.getTabsInGroup(destinationGroupId);
@@ -428,47 +429,46 @@ public class MultiTabReorderStrategy extends ReorderStrategyBase {
                     destinationGroupId,
                     /* indexInGroup= */ primaryTabIndexInGroup,
                     /* notify= */ TabGroupMergeNotificationType.DONT_NOTIFY);
-            if (mHasMixedPinState == TriState.TRUE) {
-                for (StripLayoutTab tab : mPinnedTabs) {
-                    mModel.moveTab(tab.getTabId(), mModel.findFirstNonPinnedTabIndex() - 1);
-                }
-            }
         } else {
             ungroupInteractingBlock();
-            int primaryTabModelIndex = mModel.indexOf(primaryTab);
-            int primaryTabIndexInSelection = selectedTabs.indexOf(primaryTab);
-            if (mIsPrimaryPinned == TriState.TRUE) {
-                primaryTabIndexInSelection = mPinnedTabs.indexOf(mPrimaryInteractingStripTab);
-            } else {
-                primaryTabIndexInSelection = mUnpinnedTabs.indexOf(mPrimaryInteractingStripTab);
+            List<StripLayoutTab> primaryPartition = isPrimaryPinned ? mPinnedTabs : mUnpinnedTabs;
+            int primaryIndexInPartition = primaryPartition.indexOf(mPrimaryInteractingStripTab);
+            int leftEdgeIndex = mModel.indexOf(primaryTab);
+            int rightEdgeIndex = leftEdgeIndex;
+
+            // Gather tabs before the primary tab (iterating right-to-left).
+            for (int i = primaryIndexInPartition - 1; i >= 0; i--) {
+                Tab tab = assumeNonNull(mModel.getTabById(primaryPartition.get(i).getTabId()));
+                if (mModel.indexOf(tab) < leftEdgeIndex - 1) {
+                    mModel.moveTab(tab.getId(), leftEdgeIndex - 1);
+                }
+                leftEdgeIndex--;
             }
 
-            int targetGatherIndex = primaryTabModelIndex - primaryTabIndexInSelection;
-            int firstUnpinnedIndex = mModel.findFirstNonPinnedTabIndex();
-            for (int i = 0; i <= selectedTabs.size() - 1; i++) {
-                Tab tab = selectedTabs.get(i);
-                if (tab.getIsPinned() == (mIsPrimaryPinned == TriState.TRUE)) {
-                    // Gather as normal if has the same pin state.
-                    int currentTabModelIndex = mModel.indexOf(tab);
-                    if (currentTabModelIndex > targetGatherIndex) {
-                        targetGatherIndex++;
-                    } else if (currentTabModelIndex == targetGatherIndex) {
-                        continue;
-                    }
-                    mModel.moveTab(tab.getId(), targetGatherIndex);
-                } else {
-                    // Tabs whose pin state differs from the primary can move only to the last
-                    // pinned or first unpinned slot, any remaining distance is carried by
-                    // `offsetX`.
-                    if (tab.getIsPinned()) {
-                        mModel.moveTab(tab.getId(), mModel.findFirstNonPinnedTabIndex() - 1);
-                    } else {
-                        mModel.moveTab(tab.getId(), firstUnpinnedIndex++);
-                    }
+            // Gather tabs after the primary tab (iterating left-to-right).
+            for (int i = primaryIndexInPartition + 1; i < primaryPartition.size(); i++) {
+                Tab tab = assumeNonNull(mModel.getTabById(primaryPartition.get(i).getTabId()));
+                if (mModel.indexOf(tab) > rightEdgeIndex + 1) {
+                    mModel.moveTab(tab.getId(), rightEdgeIndex + 1);
                 }
+                rightEdgeIndex++;
             }
         }
-        setOffsetXForNonReorderedPartition(mIsPrimaryPinned == TriState.TRUE);
+
+        if (mHasMixedPinState == TriState.TRUE) {
+            if (isPrimaryPinned) {
+                int firstUnpinnedIndex = mModel.findFirstNonPinnedTabIndex();
+                for (StripLayoutTab tab : mUnpinnedTabs) {
+                    mModel.moveTab(tab.getTabId(), firstUnpinnedIndex++);
+                }
+            } else {
+                int lastPinnedIndex = mModel.findFirstNonPinnedTabIndex() - 1;
+                for (int i = mPinnedTabs.size() - 1; i >= 0; i--) {
+                    mModel.moveTab(mPinnedTabs.get(i).getTabId(), lastPinnedIndex--);
+                }
+            }
+            setOffsetXForNonReorderedPartition(isPrimaryPinned);
+        }
     }
 
     /**

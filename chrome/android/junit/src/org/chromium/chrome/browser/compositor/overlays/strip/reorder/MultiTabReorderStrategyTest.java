@@ -221,15 +221,15 @@ public class MultiTabReorderStrategyTest extends ReorderStrategyTestBase {
     @Test
     @SuppressWarnings("DirectInvocationOnMock")
     public void testStartReorder_ungroupAndGather_ungroupedPrimaryTab() {
-        // Select a grouped tab and an ungrouped tab
-        selectTabs(mGroupedTab1, mUngroupedTab2);
+        // Select an ungrouped tab, a grouped tab, and a later ungrouped primary tab.
+        selectTabs(mUngroupedTab1, mGroupedTab1, mUngroupedTab2);
 
-        // Start reorder on the grouped tab
+        // Start reorder on the later ungrouped tab.
         startReorder(mUngroupedTab2);
 
         verify(mModel).setIndex(eq(4), anyInt());
 
-        // Verify ungroup is called for the selected tabs
+        // Verify ungroup is called only for the grouped tab.
         verify(mModel.getTabUngrouper())
                 .ungroupTabs(mTabListCaptor.capture(), anyBoolean(), anyBoolean(), any());
         assertEquals("Should ungroup 1 tabs.", 1, mTabListCaptor.getValue().size());
@@ -238,9 +238,12 @@ public class MultiTabReorderStrategyTest extends ReorderStrategyTestBase {
                 mGroupedTab1.getTabId(),
                 mTabListCaptor.getValue().get(0).getId());
 
-        // Verify tabs are gathered. After ungrouping, mGroupedTab1 (model index 1) should move
-        // next to mUngroupedTab2 (model index 4), so to index 4.
-        verify(mModel).moveTab(mUngroupedTab2.getTabId(), 4);
+        // Verify tabs before the primary tab are gathered right-to-left adjacent to mUngroupedTab2
+        // (model index 4): mGroupedTab1 (index 1) moves to index 3, then mUngroupedTab1 (index 0)
+        // moves to index 2, and the primary tab itself is not moved.
+        verify(mModel).moveTab(mGroupedTab1.getTabId(), 3);
+        verify(mModel).moveTab(mUngroupedTab1.getTabId(), 2);
+        verify(mModel, never()).moveTab(eq(mUngroupedTab2.getTabId()), anyInt());
     }
 
     @Test
