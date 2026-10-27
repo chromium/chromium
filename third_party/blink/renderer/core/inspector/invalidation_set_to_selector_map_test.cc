@@ -22,6 +22,8 @@
 #include "third_party/blink/renderer/core/html/html_template_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/inspector/identifiers_factory.h"
+#include "third_party/blink/renderer/core/page/focus_controller.h"
+#include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/platform/wtf/text/format.h"
 
@@ -1356,6 +1358,49 @@ TEST_F(InvalidationSetToSelectorMapTest, PartSelector) {
       ASSERT_NE(selector_list, nullptr);
       EXPECT_EQ(selector_list->size(), 1u);
       EXPECT_EQ(SelectorAtIndex(selector_list, 0), ".a ::part(b)");
+      found_event_count++;
+    }
+  }
+  EXPECT_EQ(found_event_count, 1u);
+}
+
+TEST_F(InvalidationSetToSelectorMapTest, FocusedSelector) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      .a :focus { color: green; }
+    </style>
+    <div id="parent" class="a">
+      <div></div>
+      <div id="focusable" tabindex="0">Focusable</div>
+    </div>
+  )HTML");
+  GetDocument().GetPage()->GetFocusController().SetActive(true);
+  GetDocument().GetPage()->GetFocusController().SetFocused(true);
+  Element* parent = GetElementById("parent");
+  GetElementById("focusable")->Focus();
+  UpdateAllLifecyclePhasesForTest();
+
+  // Tracing starts after the stylesheet was parsed, so the mapping is built
+  // by revisiting the existing invalidation sets.
+  StartTracing();
+  parent->removeAttribute(html_names::kClassAttr);
+  UpdateAllLifecyclePhasesForTest();
+  auto analyzer = StopTracing();
+
+  trace_analyzer::TraceEventVector invalidation_events;
+  analyzer->FindEvents(trace_analyzer::Query::EventNameIs(
+                           "StyleInvalidatorInvalidationTracking"),
+                       &invalidation_events);
+  size_t found_event_count = 0;
+  for (auto event : invalidation_events) {
+    ASSERT_TRUE(event->HasDictArg("data"));
+    base::DictValue data_dict = event->GetKnownArgAsDict("data");
+    std::string* reason = data_dict.FindString("reason");
+    if (reason != nullptr && *reason == "Invalidation set matched focused") {
+      base::ListValue* selector_list = data_dict.FindList("selectors");
+      ASSERT_NE(selector_list, nullptr);
+      EXPECT_EQ(selector_list->size(), 1u);
+      EXPECT_EQ(SelectorAtIndex(selector_list, 0), ".a :focus");
       found_event_count++;
     }
   }

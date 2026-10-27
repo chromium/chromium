@@ -1479,6 +1479,134 @@ TEST_F(StyleEngineTest, ScheduleInvalidationAfterSubtreeRecalc) {
   EXPECT_FALSE(t2->NeedsStyleRecalc());
 }
 
+TEST_F(StyleEngineTest, FocusedInvalidationSetFeature) {
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
+    <style>
+      .a :focus { color: green }
+      .b :is(:focus, .other) { color: blue }
+      .c :focus { color: red }
+      .d ~ :focus { color: purple }
+    </style>
+    <div id=outer>
+      <div><div><div><div></div></div></div></div>
+      <div><div id=other class=other></div></div>
+      <div id=parent>
+        <div id=focusable tabindex=0></div>
+        <div id=focusable2 tabindex=0></div>
+      </div>
+    </div>
+    <div>
+      <div id=sibling></div>
+      <div id=sibling_focusable tabindex=0></div>
+      <div></div>
+    </div>
+  )HTML");
+  GetDocument().GetPage()->GetFocusController().SetActive(true);
+  GetDocument().GetPage()->GetFocusController().SetFocused(true);
+  UpdateAllLifecyclePhases();
+
+  Element* outer = GetDocument().getElementById(AtomicString("outer"));
+  Element* other = GetDocument().getElementById(AtomicString("other"));
+  Element* focusable = GetDocument().getElementById(AtomicString("focusable"));
+  Element* focusable2 =
+      GetDocument().getElementById(AtomicString("focusable2"));
+  Element* sibling = GetDocument().getElementById(AtomicString("sibling"));
+  Element* sibling_focusable =
+      GetDocument().getElementById(AtomicString("sibling_focusable"));
+  ASSERT_TRUE(outer && other && focusable && focusable2 && sibling &&
+              sibling_focusable);
+
+  auto color_of = [](Element* element) {
+    return element->ComputedStyleRef().VisitedDependentColor(
+        GetCSSPropertyColor());
+  };
+
+  focusable->Focus();
+  UpdateAllLifecyclePhases();
+  ASSERT_TRUE(focusable->IsFocused());
+
+  // Adding .a to #outer only needs to recalculate the focused descendant, not
+  // the whole subtree.
+  unsigned start_count = GetStyleEngine().StyleForElementCount();
+  outer->classList().Add(AtomicString("a"));
+  UpdateAllLifecyclePhases();
+  EXPECT_EQ(1u, GetStyleEngine().StyleForElementCount() - start_count);
+  EXPECT_EQ(Color::FromRGB(0, 128, 0), color_of(focusable));
+
+  start_count = GetStyleEngine().StyleForElementCount();
+  outer->classList().Remove(AtomicString("a"));
+  UpdateAllLifecyclePhases();
+  EXPECT_EQ(1u, GetStyleEngine().StyleForElementCount() - start_count);
+  EXPECT_EQ(Color::FromRGB(0, 0, 0), color_of(focusable));
+
+  // Moving focus to a descendant which was not recalculated when .a was added
+  // still applies the rule, since focus changes always recalculate the
+  // elements losing and gaining focus.
+  outer->classList().Add(AtomicString("a"));
+  UpdateAllLifecyclePhases();
+  focusable2->Focus();
+  UpdateAllLifecyclePhases();
+  EXPECT_EQ(Color::FromRGB(0, 0, 0), color_of(focusable));
+  EXPECT_EQ(Color::FromRGB(0, 128, 0), color_of(focusable2));
+
+  // :is(:focus, .other) combines the feature with the class feature.
+  start_count = GetStyleEngine().StyleForElementCount();
+  outer->classList().Add(AtomicString("b"));
+  UpdateAllLifecyclePhases();
+  EXPECT_EQ(2u, GetStyleEngine().StyleForElementCount() - start_count);
+  EXPECT_EQ(Color::FromRGB(0, 0, 255), color_of(focusable2));
+  EXPECT_EQ(Color::FromRGB(0, 0, 255), color_of(other));
+
+  // Sibling invalidation: adding .d to #sibling only recalculates the focused
+  // following sibling.
+  sibling_focusable->Focus();
+  UpdateAllLifecyclePhases();
+  start_count = GetStyleEngine().StyleForElementCount();
+  sibling->classList().Add(AtomicString("d"));
+  UpdateAllLifecyclePhases();
+  EXPECT_EQ(1u, GetStyleEngine().StyleForElementCount() - start_count);
+  EXPECT_EQ(Color::FromRGB(128, 0, 128), color_of(sibling_focusable));
+
+  // Without a focused descendant, nothing needs to be recalculated.
+  sibling_focusable->blur();
+  UpdateAllLifecyclePhases();
+  start_count = GetStyleEngine().StyleForElementCount();
+  outer->classList().Add(AtomicString("c"));
+  UpdateAllLifecyclePhases();
+  EXPECT_EQ(0u, GetStyleEngine().StyleForElementCount() - start_count);
+}
+
+TEST_F(StyleEngineTest, FocusedInvalidationSetFeatureDisabled) {
+  ScopedInvalidationSetFocusFeatureForTest disabled(false);
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
+    <style>
+      .a :focus { color: green }
+    </style>
+    <div id=outer>
+      <div><div><div><div></div></div></div></div>
+      <div id=focusable tabindex=0></div>
+    </div>
+  )HTML");
+  GetDocument().GetPage()->GetFocusController().SetActive(true);
+  GetDocument().GetPage()->GetFocusController().SetFocused(true);
+  UpdateAllLifecyclePhases();
+
+  Element* outer = GetDocument().getElementById(AtomicString("outer"));
+  Element* focusable = GetDocument().getElementById(AtomicString("focusable"));
+  ASSERT_TRUE(outer && focusable);
+  focusable->Focus();
+  UpdateAllLifecyclePhases();
+
+  // Without the feature, .a :focus makes the whole subtree of #outer invalid.
+  unsigned start_count = GetStyleEngine().StyleForElementCount();
+  outer->classList().Add(AtomicString("a"));
+  UpdateAllLifecyclePhases();
+  EXPECT_EQ(6u, GetStyleEngine().StyleForElementCount() - start_count);
+  EXPECT_EQ(Color::FromRGB(0, 128, 0),
+            focusable->ComputedStyleRef().VisitedDependentColor(
+                GetCSSPropertyColor()));
+}
+
 TEST_F(StyleEngineTest, EmptyHttpEquivDefaultStyle) {
   GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(
       "<style>div { color:pink }</style><div id=container></div>");

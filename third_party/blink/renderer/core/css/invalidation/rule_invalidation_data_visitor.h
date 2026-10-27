@@ -122,7 +122,7 @@ class RuleInvalidationDataVisitor {
       ids.push_back(id);
     }
     void NarrowToTag(const AtomicString& tag_name) {
-      if (Size() == 1) {
+      if (Size() == 1 && !invalidates_focused) {
         return;
       }
       ClearFeatures();
@@ -136,6 +136,15 @@ class RuleInvalidationDataVisitor {
       ClearFeatures();
       custom_pseudo_names.push_back(custom_pseudo_name);
     }
+    // "Is focused" is the weakest feature: it is only used if the compound
+    // has no other feature, and dropped by NarrowTo*() when one is found.
+    // Alternatives in a selector list can also combine it with other
+    // features, as in :is(:focus, .b); see NarrowToFeatures().
+    void NarrowToFocused() {
+      if (Size() == 0) {
+        invalidates_focused = true;
+      }
+    }
     void NarrowToFeatures(const InvalidationSetFeatures&);
     void ClearFeatures() {
       classes.clear();
@@ -144,11 +153,12 @@ class RuleInvalidationDataVisitor {
       tag_names.clear();
       emitted_tag_names.clear();
       custom_pseudo_names.clear();
+      invalidates_focused = false;
     }
     unsigned Size() const {
       return classes.size() + attributes.size() + ids.size() +
              tag_names.size() + emitted_tag_names.size() +
-             custom_pseudo_names.size();
+             custom_pseudo_names.size() + invalidates_focused;
     }
 
     Vector<AtomicString, 4> classes;
@@ -157,6 +167,7 @@ class RuleInvalidationDataVisitor {
     Vector<AtomicString, 4> tag_names;
     Vector<AtomicString, 4> emitted_tag_names;
     Vector<AtomicString, 4> custom_pseudo_names;
+    bool invalidates_focused = false;
     unsigned max_direct_adjacent_selectors = 0;
 
     // descendant_features_depth is used while adding features for logical

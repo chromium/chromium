@@ -24,6 +24,7 @@
 #include "third_party/blink/renderer/core/html/html_html_element.h"
 #include "third_party/blink/renderer/core/testing/null_execution_context.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
@@ -635,6 +636,36 @@ class RuleFeatureSetTest : public testing::Test {
     return AssertionSuccess();
   }
 
+  // Checks that the set invalidates the focused element and has no other
+  // features (and is not whole-subtree invalid).
+  AssertionResult HasOnlyFocusedInvalidation(
+      const InvalidationSet& invalidation_set) {
+    if (invalidation_set.WholeSubtreeInvalid()) {
+      return AssertionFailure() << "should not invalidate whole subtree";
+    }
+    if (!invalidation_set.InvalidatesFocused()) {
+      return AssertionFailure() << "should invalidate focused";
+    }
+    if (!ClassSet(invalidation_set).empty() ||
+        !IdSet(invalidation_set).empty() ||
+        !TagNameSet(invalidation_set).empty() ||
+        !AttributeSet(invalidation_set).empty() ||
+        !CustomPseudoNameSet(invalidation_set).empty()) {
+      return AssertionFailure() << "should have no other features: "
+                                << invalidation_set.ToString();
+    }
+    return AssertionSuccess();
+  }
+
+  AssertionResult HasOnlyFocusedInvalidation(
+      InvalidationSetVector& invalidation_sets) {
+    if (invalidation_sets.size() != 1u) {
+      return AssertionFailure() << "has " << invalidation_sets.size()
+                                << " invalidation set(s), should have 1";
+    }
+    return HasOnlyFocusedInvalidation(*invalidation_sets[0]);
+  }
+
   AssertionResult HasPartsInvalidation(
       InvalidationSetVector& invalidation_sets) {
     if (invalidation_sets.size() != 1u) {
@@ -814,6 +845,269 @@ TEST_F(RuleFeatureSetTest, interleavedDescendantSibling6) {
   CollectInvalidationSetsForClass(invalidation_lists, "k");
   EXPECT_TRUE(HasClassInvalidation("p", invalidation_lists.descendants));
   EXPECT_TRUE(HasNoInvalidation(invalidation_lists.siblings));
+}
+
+TEST_F(RuleFeatureSetTest, FocusedDescendantFeature) {
+  const char* selectors[] = {".a :focus",
+                             ".a :focus-visible",
+                             ".a > :focus",
+                             ".a :focus:focus-visible",
+                             ".a :is(:focus, :focus-visible)",
+                             ".a :focus:not(.b)",
+                             ".a :focus:not(.b, .c .d)",
+                             ".a :focus::before",
+                             ".a :hover .b :focus",
+                             ".a :focus:hover",
+                             ".a :hover:focus"};
+  for (const char* selector : selectors) {
+    SCOPED_TRACE(selector);
+    ClearFeatures();
+    EXPECT_EQ(SelectorPreMatch::kMayMatch, CollectFeatures(selector));
+
+    InvalidationLists invalidation_lists;
+    CollectInvalidationSetsForClass(invalidation_lists, "a");
+    EXPECT_TRUE(HasOnlyFocusedInvalidation(invalidation_lists.descendants));
+    EXPECT_TRUE(HasNoSelfInvalidation(invalidation_lists.descendants));
+    EXPECT_TRUE(HasNoInvalidation(invalidation_lists.siblings));
+  }
+}
+
+TEST_F(RuleFeatureSetTest, OtherUserActionPseudoClassesNotFeatures) {
+  // Only focus changes unconditionally recalculate the style of the elements
+  // involved. Hover, active and focus-within changes rely on the AffectedBy*
+  // flags of the current style, which might not have been set if a non-matching
+  // rule was rejected by the bloom filter, so they can not be used as features.
+  const char* selectors[] = {".a :hover",
+                             ".a :active",
+                             ".a :focus-within",
+                             ".a :hover:active",
+                             ".a :is(:focus, :hover)",
+                             ".a :is(:hover, :focus-within)"};
+  for (const char* selector : selectors) {
+    SCOPED_TRACE(selector);
+    ClearFeatures();
+    EXPECT_EQ(SelectorPreMatch::kMayMatch, CollectFeatures(selector));
+    InvalidationLists invalidation_lists;
+    CollectInvalidationSetsForClass(invalidation_lists, "a");
+    EXPECT_TRUE(HasWholeSubtreeInvalidation(invalidation_lists.descendants));
+  }
+}
+
+TEST_F(RuleFeatureSetTest, FocusedFeatureNarrowedByOtherFeatures) {
+  // The focused feature is only used when the rightmost compound has no other
+  // feature.
+  const char* class_selectors[] = {".a .b:focus",          ".a :focus.b",
+                                   ".a :is(:focus).b",     ".a :is(.b):focus",
+                                   ".a :focus:is(.b, .c)", ".a :focus.b:hover"};
+  for (const char* selector : class_selectors) {
+    SCOPED_TRACE(selector);
+    ClearFeatures();
+    EXPECT_EQ(SelectorPreMatch::kMayMatch, CollectFeatures(selector));
+    InvalidationLists invalidation_lists;
+    CollectInvalidationSetsForClass(invalidation_lists, "a");
+    ASSERT_EQ(1u, invalidation_lists.descendants.size());
+    EXPECT_FALSE(invalidation_lists.descendants[0]->InvalidatesFocused());
+    EXPECT_FALSE(invalidation_lists.descendants[0]->WholeSubtreeInvalid());
+    EXPECT_TRUE(ClassSet(*invalidation_lists.descendants[0])
+                    .Contains(AtomicString("b")));
+  }
+
+  ClearFeatures();
+  EXPECT_EQ(SelectorPreMatch::kMayMatch, CollectFeatures(".a div:focus"));
+  InvalidationLists invalidation_lists;
+  CollectInvalidationSetsForClass(invalidation_lists, "a");
+  EXPECT_TRUE(HasTagNameInvalidation("div", invalidation_lists.descendants));
+  EXPECT_FALSE(invalidation_lists.descendants[0]->InvalidatesFocused());
+}
+
+TEST_F(RuleFeatureSetTest, FocusedFeatureInIsNarrowedByLaterFeatures) {
+  // Features relying on the focused state (from :is(:focus, .b)) are weaker
+  // than a plain class or id, even when combined with one.
+  struct {
+    const char* selector;
+    const char* expected_class;
+  } test_cases[] = {
+      {".a :is(:focus, .b).c", "c"},
+      {".a :is(:focus, .b):is(.c)", "c"},
+      {".a :is(:focus, .b):is(.c, .d)", "c"},
+      {".a .c:is(:focus, .b)", "c"},
+      {".a :is(.c, .d):is(:focus, .b)", "c"},
+  };
+  for (const auto& test_case : test_cases) {
+    SCOPED_TRACE(test_case.selector);
+    ClearFeatures();
+    EXPECT_EQ(SelectorPreMatch::kMayMatch, CollectFeatures(test_case.selector));
+    InvalidationLists invalidation_lists;
+    CollectInvalidationSetsForClass(invalidation_lists, "a");
+    ASSERT_EQ(1u, invalidation_lists.descendants.size());
+    const InvalidationSet& set = *invalidation_lists.descendants[0];
+    EXPECT_FALSE(set.InvalidatesFocused());
+    EXPECT_FALSE(set.WholeSubtreeInvalid());
+    EXPECT_TRUE(ClassSet(set).Contains(AtomicString(test_case.expected_class)));
+    EXPECT_FALSE(ClassSet(set).Contains(AtomicString("b")));
+  }
+
+  ClearFeatures();
+  EXPECT_EQ(SelectorPreMatch::kMayMatch,
+            CollectFeatures(".a :is(:focus, .b)#i"));
+  InvalidationLists invalidation_lists;
+  CollectInvalidationSetsForClass(invalidation_lists, "a");
+  EXPECT_TRUE(HasIdInvalidation("i", invalidation_lists.descendants));
+  EXPECT_FALSE(invalidation_lists.descendants[0]->InvalidatesFocused());
+}
+
+TEST_F(RuleFeatureSetTest, FocusedFeatureWithIsAndNot) {
+  // :is() with a mix of features: all of them are needed.
+  EXPECT_EQ(SelectorPreMatch::kMayMatch, CollectFeatures(".a :is(:focus, .b)"));
+  {
+    InvalidationLists invalidation_lists;
+    CollectInvalidationSetsForClass(invalidation_lists, "a");
+    EXPECT_TRUE(HasClassInvalidation("b", invalidation_lists.descendants));
+    EXPECT_TRUE(invalidation_lists.descendants[0]->InvalidatesFocused());
+  }
+
+  // Negation or a universal alternative still needs the whole subtree.
+  const char* whole_subtree_selectors[] = {
+      ".a :not(:focus)", ".a :is(:focus, *)", ".a :where(:focus, :not(.b))"};
+  for (const char* selector : whole_subtree_selectors) {
+    SCOPED_TRACE(selector);
+    ClearFeatures();
+    EXPECT_EQ(SelectorPreMatch::kMayMatch, CollectFeatures(selector));
+    InvalidationLists invalidation_lists;
+    CollectInvalidationSetsForClass(invalidation_lists, "a");
+    EXPECT_TRUE(HasWholeSubtreeInvalidation(invalidation_lists.descendants));
+  }
+}
+
+TEST_F(RuleFeatureSetTest, FocusedFeatureAfterPseudoElement) {
+  // A pseudo-class after a pseudo-element describes the state of the
+  // pseudo-element, not of the originating element, so it can not be used as
+  // a feature for invalidating the originating element. This includes logical
+  // combinations after the pseudo-element.
+  const char* whole_subtree_selectors[] = {
+      ".a ::scroll-marker:focus", ".a ::scroll-marker:focus-visible",
+      ".a ::scroll-marker:is(:focus)",
+      ".a ::scroll-marker:where(:is(:focus-visible))",
+      ".a ::scroll-marker:where(:is(:focus, :focus-visible))"};
+  for (const char* selector : whole_subtree_selectors) {
+    SCOPED_TRACE(selector);
+    ClearFeatures();
+    EXPECT_EQ(SelectorPreMatch::kMayMatch, CollectFeatures(selector));
+    InvalidationLists invalidation_lists;
+    CollectInvalidationSetsForClass(invalidation_lists, "a");
+    EXPECT_TRUE(HasWholeSubtreeInvalidation(invalidation_lists.descendants));
+  }
+
+  // Before the pseudo-element, the pseudo-class applies to the originating
+  // element.
+  const char* originating_element_selectors[] = {
+      ".a :focus::scroll-marker", ".a :is(:focus)::scroll-marker",
+      ".a :where(:is(:focus))::scroll-marker"};
+  for (const char* selector : originating_element_selectors) {
+    SCOPED_TRACE(selector);
+    ClearFeatures();
+    EXPECT_EQ(SelectorPreMatch::kMayMatch, CollectFeatures(selector));
+    InvalidationLists invalidation_lists;
+    CollectInvalidationSetsForClass(invalidation_lists, "a");
+    EXPECT_TRUE(HasOnlyFocusedInvalidation(invalidation_lists.descendants));
+  }
+
+  // ::part() is matched against the part element itself, which is found via
+  // the part feature regardless of its state.
+  ClearFeatures();
+  EXPECT_EQ(SelectorPreMatch::kMayMatch, CollectFeatures(".a ::part(p):focus"));
+  {
+    InvalidationLists invalidation_lists;
+    CollectInvalidationSetsForClass(invalidation_lists, "a");
+    EXPECT_TRUE(HasPartsInvalidation(invalidation_lists.descendants));
+    EXPECT_FALSE(invalidation_lists.descendants[0]->InvalidatesFocused());
+  }
+
+  // The argument of ::slotted() describes the slotted element, which is what
+  // the features are matched against.
+  const char* slotted_selectors[] = {".a ::slotted(:focus)",
+                                     ".a ::slotted(:is(:focus))"};
+  for (const char* selector : slotted_selectors) {
+    SCOPED_TRACE(selector);
+    ClearFeatures();
+    EXPECT_EQ(SelectorPreMatch::kMayMatch, CollectFeatures(selector));
+    InvalidationLists invalidation_lists;
+    CollectInvalidationSetsForClass(invalidation_lists, "a");
+    ASSERT_EQ(1u, invalidation_lists.descendants.size());
+    EXPECT_TRUE(invalidation_lists.descendants[0]->InvalidatesSlotted());
+    EXPECT_TRUE(HasOnlyFocusedInvalidation(invalidation_lists.descendants));
+  }
+}
+
+TEST_F(RuleFeatureSetTest, FocusedSiblingFeature) {
+  EXPECT_EQ(SelectorPreMatch::kMayMatch, CollectFeatures(".a ~ :focus"));
+  {
+    InvalidationLists invalidation_lists;
+    CollectInvalidationSetsForClass(invalidation_lists, "a");
+    EXPECT_TRUE(HasNoInvalidation(invalidation_lists.descendants));
+    ASSERT_EQ(1u, invalidation_lists.siblings.size());
+    const auto& sibling_set =
+        To<SiblingInvalidationSet>(*invalidation_lists.siblings[0]);
+    EXPECT_TRUE(HasOnlyFocusedInvalidation(sibling_set));
+    EXPECT_TRUE(sibling_set.InvalidatesSelf());
+    EXPECT_FALSE(sibling_set.SiblingDescendants());
+    EXPECT_EQ(SiblingInvalidationSet::kDirectAdjacentMax,
+              sibling_set.MaxDirectAdjacentSelectors());
+  }
+
+  ClearFeatures();
+  EXPECT_EQ(SelectorPreMatch::kMayMatch, CollectFeatures(".a + .b :focus"));
+  {
+    InvalidationLists invalidation_lists;
+    CollectInvalidationSetsForClass(invalidation_lists, "a");
+    EXPECT_TRUE(HasNoInvalidation(invalidation_lists.descendants));
+    ASSERT_EQ(1u, invalidation_lists.siblings.size());
+    const auto& sibling_set =
+        To<SiblingInvalidationSet>(*invalidation_lists.siblings[0]);
+    EXPECT_TRUE(HasClassInvalidation("b", invalidation_lists.siblings));
+    EXPECT_FALSE(sibling_set.InvalidatesSelf());
+    ASSERT_TRUE(sibling_set.SiblingDescendants());
+    EXPECT_TRUE(HasOnlyFocusedInvalidation(*sibling_set.SiblingDescendants()));
+  }
+
+  ClearFeatures();
+  EXPECT_EQ(SelectorPreMatch::kMayMatch, CollectFeatures(".a + :focus .b"));
+  {
+    InvalidationLists invalidation_lists;
+    CollectInvalidationSetsForClass(invalidation_lists, "a");
+    ASSERT_EQ(1u, invalidation_lists.siblings.size());
+    const auto& sibling_set =
+        To<SiblingInvalidationSet>(*invalidation_lists.siblings[0]);
+    EXPECT_TRUE(HasOnlyFocusedInvalidation(sibling_set));
+    EXPECT_FALSE(sibling_set.InvalidatesSelf());
+    ASSERT_TRUE(sibling_set.SiblingDescendants());
+    EXPECT_FALSE(sibling_set.SiblingDescendants()->WholeSubtreeInvalid());
+    EXPECT_FALSE(sibling_set.SiblingDescendants()->InvalidatesFocused());
+    EXPECT_TRUE(ClassSet(*sibling_set.SiblingDescendants())
+                    .Contains(AtomicString("b")));
+  }
+}
+
+TEST_F(RuleFeatureSetTest, FocusKeyedInvalidationUnchanged) {
+  // The invalidation sets *keyed* by :focus, used when the focus itself
+  // changes, are not affected by the focused feature.
+  EXPECT_EQ(SelectorPreMatch::kMayMatch, CollectFeatures(".a :focus"));
+  EXPECT_EQ(SelectorPreMatch::kMayMatch, CollectFeatures(":focus .b"));
+  InvalidationLists invalidation_lists;
+  CollectInvalidationSetsForPseudoClass(invalidation_lists,
+                                        CSSSelector::kPseudoFocus);
+  EXPECT_TRUE(HasSelfInvalidation(invalidation_lists.descendants));
+  EXPECT_TRUE(HasClassInvalidation("b", invalidation_lists.descendants));
+  EXPECT_FALSE(invalidation_lists.descendants[0]->InvalidatesFocused());
+  EXPECT_TRUE(HasNoInvalidation(invalidation_lists.siblings));
+}
+
+TEST_F(RuleFeatureSetTest, FocusedFeatureDisabled) {
+  ScopedInvalidationSetFocusFeatureForTest disabled(false);
+  EXPECT_EQ(SelectorPreMatch::kMayMatch, CollectFeatures(".a :focus"));
+  InvalidationLists invalidation_lists;
+  CollectInvalidationSetsForClass(invalidation_lists, "a");
+  EXPECT_TRUE(HasWholeSubtreeInvalidation(invalidation_lists.descendants));
 }
 
 TEST_F(RuleFeatureSetTest, anySibling) {

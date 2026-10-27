@@ -403,5 +403,65 @@ TEST(InvalidationSetTest, SelfInvalidationSet_Combine) {
   EXPECT_TRUE(set->InvalidatesSelf());
 }
 
+TEST(InvalidationSetTest, InvalidatesFocused) {
+  test::TaskEnvironment task_environment;
+  auto dummy_page_holder =
+      std::make_unique<DummyPageHolder>(gfx::Size(800, 600));
+  auto& document = dummy_page_holder->GetDocument();
+  document.body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
+    <div id=outer>
+      <div id=inner tabindex=0></div>
+    </div>
+    <div id=other></div>
+  )HTML");
+  document.View()->UpdateAllLifecyclePhasesForTest();
+  Element* outer = document.getElementById(AtomicString("outer"));
+  Element* inner = document.getElementById(AtomicString("inner"));
+  Element* other = document.getElementById(AtomicString("other"));
+  ASSERT_TRUE(outer && inner && other);
+
+  scoped_refptr<InvalidationSet> set = DescendantInvalidationSet::Create();
+  ASSERT_TRUE(set->IsEmpty());
+  set->SetInvalidatesFocused();
+  EXPECT_TRUE(set->InvalidatesFocused());
+  EXPECT_FALSE(set->IsEmpty());
+  EXPECT_EQ("{ F }", set->ToString());
+
+  for (Element* element : {outer, inner, other}) {
+    EXPECT_FALSE(set->InvalidatesElement(*element));
+  }
+
+  inner->Focus();
+  ASSERT_TRUE(inner->IsFocused());
+  EXPECT_TRUE(set->InvalidatesElement(*inner));
+  EXPECT_FALSE(set->InvalidatesElement(*outer));
+  EXPECT_FALSE(set->InvalidatesElement(*other));
+
+  inner->blur();
+  EXPECT_FALSE(set->InvalidatesElement(*inner));
+}
+
+TEST(InvalidationSetTest, InvalidatesFocused_CombineAndEquality) {
+  scoped_refptr<InvalidationSet> set1 = DescendantInvalidationSet::Create();
+  scoped_refptr<InvalidationSet> set2 = DescendantInvalidationSet::Create();
+  set1->AddClass(AtomicString("a"));
+  set2->AddClass(AtomicString("a"));
+  EXPECT_EQ(*set1, *set2);
+
+  set1->SetInvalidatesFocused();
+  EXPECT_NE(*set1, *set2);
+  EXPECT_EQ("{ .a F }", set1->ToString());
+
+  set2->Combine(*set1);
+  EXPECT_TRUE(set2->InvalidatesFocused());
+  EXPECT_EQ(*set1, *set2);
+
+  // The feature is dropped along with the other features when the whole
+  // subtree becomes invalid.
+  set1->SetWholeSubtreeInvalid();
+  EXPECT_FALSE(set1->InvalidatesFocused());
+  EXPECT_TRUE(set1->IsEmpty());
+}
+
 }  // namespace
 }  // namespace blink

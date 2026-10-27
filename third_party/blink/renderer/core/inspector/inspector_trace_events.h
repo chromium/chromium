@@ -231,6 +231,7 @@ extern const char kInvalidationSetMatchedClass[];
 extern const char kInvalidationSetMatchedId[];
 extern const char kInvalidationSetMatchedTagName[];
 extern const char kInvalidationSetMatchedPart[];
+extern const char kInvalidationSetMatchedFocused[];
 extern const char kInvalidationSetInvalidatesTreeCounting[];
 extern const char kInvalidationSetMatchedCustomPseudoName[];
 

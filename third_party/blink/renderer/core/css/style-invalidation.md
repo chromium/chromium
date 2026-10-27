@@ -66,6 +66,22 @@ At this point,
 we apply all the pending invalidations
 and then recalculate style for all of the invalidated elements.
 
+The criteria an invalidation set can match against are
+ids, classes, tag names, attribute names,
+and whether the element is focused (`:focus`, `:focus-visible`).
+The latter is a fallback feature when a compound has nothing better:
+for `.c1 :focus`, adding class `c1` to an element
+only invalidates its focused descendant
+instead of the whole subtree.
+Selector-list alternatives can combine it with other features,
+as in `.c1 :is(:focus, .c2)`.
+A later focus change is handled by the invalidation sets keyed by `:focus`,
+and by the unconditional style recalc of the elements losing and gaining focus.
+The same is not possible for `:hover`, `:active` and `:focus-within`,
+whose state changes only recalculate elements with the `AffectedBy*` flags
+on `ComputedStyle`, and non-matching rules might not have set those flags
+if the rule was rejected by the bloom filter.
+
 For more details see the original [invalidation sets design doc](https://goo.gl/3ane6s)
 and the [sibling invalidation design doc](https://goo.gl/z0Z9gn).
 

@@ -45,7 +45,7 @@ test(function() {
     assert_equals(getComputedStyle(r3).backgroundColor, "rgba(0, 0, 0, 0)", "Background color should initially be transparent");
 
     t3.className = "t3";
-    assert_equals(internals.updateStyleAndReturnAffectedElementCount(), 2, "Subtree style recalc");
+    assert_equals(internals.updateStyleAndReturnAffectedElementCount(), 1, "Only the focused descendant is recalculated");
     assert_equals(getComputedStyle(r3).backgroundColor, "rgb(0, 128, 0)", "Background color is green after class change");
 }, ":-webkit-any() with universal :focus selector");
 </script>

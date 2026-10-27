@@ -4,11 +4,14 @@
 
 #include "third_party/blink/renderer/core/css/invalidation/rule_invalidation_data_visitor.h"
 
+#include <utility>
+
 #include "base/auto_reset.h"
 #include "base/memory/stack_allocated.h"
 #include "third_party/blink/renderer/core/css/css_selector_list.h"
 #include "third_party/blink/renderer/core/css/style_scope.h"
 #include "third_party/blink/renderer/core/inspector/invalidation_set_to_selector_map.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -311,6 +314,7 @@ void RuleInvalidationDataVisitor<VisitorType>::InvalidationSetFeatures::Merge(
   max_direct_adjacent_selectors = std::max(max_direct_adjacent_selectors,
                                            other.max_direct_adjacent_selectors);
   invalidation_flags.Merge(other.invalidation_flags);
+  invalidates_focused |= other.invalidates_focused;
   content_pseudo_crossing |= other.content_pseudo_crossing;
   has_nth_pseudo |= other.has_nth_pseudo;
 }
@@ -320,7 +324,8 @@ bool RuleInvalidationDataVisitor<
     VisitorType>::InvalidationSetFeatures::HasFeatures() const {
   return !classes.empty() || !attributes.empty() || !ids.empty() ||
          !tag_names.empty() || !emitted_tag_names.empty() ||
-         !custom_pseudo_names.empty() || invalidation_flags.InvalidatesParts();
+         !custom_pseudo_names.empty() || invalidates_focused ||
+         invalidation_flags.InvalidatesParts();
 }
 
 template <RuleInvalidationDataVisitorType VisitorType>
@@ -334,7 +339,12 @@ void RuleInvalidationDataVisitor<VisitorType>::InvalidationSetFeatures::
     NarrowToFeatures(const InvalidationSetFeatures& other) {
   unsigned size = Size();
   unsigned other_size = other.Size();
-  if (size == 0 || (1 <= other_size && other_size < size)) {
+  // `invalidates_focused` is a fallback feature when no id, class, attribute
+  // or tag is present (see NarrowToFocused()), so prefer sets without it first,
+  // then fewer features.
+  if (size == 0 || (1 <= other_size &&
+                    std::make_pair(other.invalidates_focused, other_size) <
+                        std::make_pair(invalidates_focused, size))) {
     ClearFeatures();
     Merge(other);
   }
@@ -702,6 +712,12 @@ void RuleInvalidationDataVisitor<VisitorType>::
       features.invalidation_flags.SetInvalidatesParts(true);
       features.invalidation_flags.SetTreeBoundaryCrossing(true);
       return;
+    case CSSSelector::kPseudoFocus:
+    case CSSSelector::kPseudoFocusVisible:
+      if (RuntimeEnabledFeatures::InvalidationSetFocusFeatureEnabled()) {
+        features.NarrowToFocused();
+      }
+      return;
     default:
       return;
   }
@@ -723,9 +739,12 @@ const CSSSelector* RuleInvalidationDataVisitor<VisitorType>::
         bool in_nth_child) {
   // NOTE: Due to the check at the bottom of the loop, this loop stops
   // once we are at the end of the compound, ie., we see a relation that
-  // is not a sub-selector. So for e.g. .a .b.c#d, we will see #d, .c, .b
-  // and then stop, returning a pointer to .b.
+  // is not a sub-selector. Simple selectors within a compound are stored in
+  // source order (see CSSSelectorParser::ConsumeComplexSelector()), so for
+  // e.g. .a .b.c#d, we will see .b, .c, #d and then stop, returning a pointer
+  // to #d.
   const CSSSelector* simple_selector = &compound;
+  bool after_pseudo_element = false;
   for (;; simple_selector = simple_selector->NextSimpleSelector()) {
     // Fall back to use subtree invalidations, even for features in the
     // rightmost compound selector. Returning nullptr here will make
@@ -736,8 +755,16 @@ const CSSSelector* RuleInvalidationDataVisitor<VisitorType>::
       return nullptr;
     }
 
+    // Simple selectors after a pseudo-element (e.g. ::scroll-marker:focus)
+    // apply to the pseudo-element, so do not extract their features. We still
+    // continue the loop to initialize self-invalidation sets and return the
+    // last simple selector of the compound.
+    InvalidationSetFeatures ignored_features;
+    InvalidationSetFeatures& compound_features =
+        after_pseudo_element ? ignored_features : features;
+
     ExtractInvalidationSetFeaturesFromSimpleSelector(*simple_selector,
-                                                     features);
+                                                     compound_features);
 
     // Initialize the entry in the invalidation set map for self-
     // invalidation, if supported.
@@ -760,7 +787,7 @@ const CSSSelector* RuleInvalidationDataVisitor<VisitorType>::
     }
 
     ExtractInvalidationSetFeaturesFromSelectorList(
-        *simple_selector, in_nth_child, features, position);
+        *simple_selector, in_nth_child, compound_features, position);
 
     if constexpr (is_builder()) {
       if (features.invalidation_flags.InvalidatesParts()) {
@@ -781,6 +808,9 @@ const CSSSelector* RuleInvalidationDataVisitor<VisitorType>::
       AddFeaturesToInvalidationSetsForHasPseudoClass(
           *simple_selector, &compound, nullptr, features, in_nth_child);
     }
+
+    after_pseudo_element |=
+        simple_selector->Match() == CSSSelector::kPseudoElement;
 
     if (!simple_selector->NextSimpleSelector() ||
         (simple_selector->Relation() != CSSSelector::kSubSelector)) {
@@ -1912,6 +1942,15 @@ void RuleInvalidationDataVisitor<VisitorType>::AddFeaturesToInvalidationSet(
         invalidation_set,
         InvalidationSetToSelectorMap::SelectorFeatureType::kAttribute,
         attribute);
+  }
+  if (features.invalidates_focused) {
+    if constexpr (is_builder()) {
+      invalidation_set->SetInvalidatesFocused();
+    }
+    InvalidationSetToSelectorMap::RecordInvalidationSetEntry(
+        invalidation_set,
+        InvalidationSetToSelectorMap::SelectorFeatureType::kFocused,
+        g_empty_atom);
   }
 }
 

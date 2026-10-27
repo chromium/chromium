@@ -55,6 +55,7 @@ class CORE_EXPORT InvalidationSetToSelectorMap final
     kCustomPseudoName,
     kAttribute,
     kPart,
+    kFocused,
     kWholeSubtree
   };
 

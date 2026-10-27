@@ -4081,6 +4081,13 @@
       status: "stable",
     },
     {
+      // Lets invalidation sets use "is focused" as a feature, so that a
+      // selector like `.a :focus` only invalidates the focused descendant of
+      // `.a` instead of its whole subtree. Kill switch.
+      name: "InvalidationSetFocusFeature",
+      status: "stable",
+    },
+    {
       name: "InvertedColors",
       status: "experimental",
     },

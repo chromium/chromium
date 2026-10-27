@@ -35,11 +35,13 @@
 
 #include "base/memory/values_equivalent.h"
 #include "third_party/blink/renderer/core/css/container_query_evaluator.h"
+#include "third_party/blink/renderer/core/css/css_selector.h"
 #include "third_party/blink/renderer/core/css/invalidation/invalidation_tracing_flag.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/inspector/inspector_trace_events.h"
 #include "third_party/blink/renderer/core/inspector/invalidation_set_to_selector_map.h"
+#include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/traced_value.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
@@ -61,6 +63,16 @@ bool BackingEqual(const InvalidationSet::BackingFlags& a_flags,
     }
   }
   return true;
+}
+
+bool IsFocused(Element& element) {
+  if (element.IsFocused()) {
+    return true;
+  }
+  bool forced = false;
+  probe::ForcePseudoState(&element, CSSSelector::kPseudoFocus, &forced);
+  probe::ForcePseudoState(&element, CSSSelector::kPseudoFocusVisible, &forced);
+  return forced;
 }
 
 }  // namespace
@@ -97,7 +109,8 @@ bool InvalidationSet::operator==(const InvalidationSet& other) const {
   if (invalidation_flags_ != other.invalidation_flags_) {
     return false;
   }
-  if (invalidates_self_ != other.invalidates_self_) {
+  if (invalidates_self_ != other.invalidates_self_ ||
+      invalidates_focused_ != other.invalidates_focused_) {
     return false;
   }
 
@@ -115,7 +128,8 @@ bool InvalidationSet::operator==(const InvalidationSet& other) const {
 InvalidationSet::InvalidationSet(InvalidationType type)
     : type_(static_cast<unsigned>(type)),
       invalidates_self_(false),
-      invalidates_nth_(false) {}
+      invalidates_nth_(false),
+      invalidates_focused_(false) {}
 
 bool InvalidationSet::InvalidatesElement(Element& element) const {
   if (invalidation_flags_.WholeSubtreeInvalid()) {
@@ -168,6 +182,12 @@ bool InvalidationSet::InvalidatesElement(Element& element) const {
   if (element.HasPart() && invalidation_flags_.InvalidatesParts()) {
     TRACE_STYLE_INVALIDATOR_INVALIDATION_SELECTORPART_IF_ENABLED(
         element, kInvalidationSetMatchedPart, *this, g_empty_atom);
+    return true;
+  }
+
+  if (invalidates_focused_ && IsFocused(element)) {
+    TRACE_STYLE_INVALIDATOR_INVALIDATION_SELECTORPART_IF_ENABLED(
+        element, kInvalidationSetMatchedFocused, *this, g_empty_atom);
     return true;
   }
 
@@ -266,6 +286,10 @@ void InvalidationSet::Combine(const InvalidationSet& other) {
 
   if (other.InvalidatesTreeCounting()) {
     SetInvalidatesTreeCounting();
+  }
+
+  if (other.InvalidatesFocused()) {
+    SetInvalidatesFocused();
   }
 
   for (const auto& class_name : other.Classes()) {
@@ -403,6 +427,7 @@ void InvalidationSet::SetWholeSubtreeInvalid() {
   invalidation_flags_.SetInvalidatesSlotted(false);
   invalidation_flags_.SetInvalidatesParts(false);
   invalidation_flags_.SetInvalidatesTreeCounting(false);
+  invalidates_focused_ = false;
   ClearAllBackings();
 }
 
@@ -468,6 +493,9 @@ void InvalidationSet::WriteIntoTrace(perfetto::TracedValue context) const {
   }
   if (invalidation_flags_.InvalidatesTreeCounting()) {
     dict.Add("invalidatesTreeCounting", true);
+  }
+  if (invalidates_focused_) {
+    dict.Add("invalidatesFocused", true);
   }
 
   if (HasIds()) {
@@ -559,6 +587,7 @@ String InvalidationSet::ToString() const {
   metadata.Append(invalidation_flags_.InvalidatesSlotted() ? "S" : "");
   metadata.Append(invalidation_flags_.InvalidatesParts() ? "P" : "");
   metadata.Append(invalidation_flags_.InvalidatesTreeCounting() ? "t" : "");
+  metadata.Append(invalidates_focused_ ? "F" : "");
   metadata.Append(format_max_direct_adjancent(this));
 
   StringBuilder main;
