@@ -92,7 +92,6 @@ public final class KeyboardUtils {
 
     /**
      * Calculates the keyboard height based on the bottom margin it causes for the given rootView.
-     * It is used to determine whether the keyboard is visible.
      *
      * @param rootView A {@link View}.
      * @return The size of the bottom margin which most likely is exactly the keyboard size.
@@ -118,16 +117,22 @@ public final class KeyboardUtils {
     }
 
     /**
-     * Detects whether or not the keyboard is showing. This is a best guess based on the height of
-     * the keyboard as there is no standardized/foolproof way to do this. This template method
-     * simplifies mocking and the access to the soft keyboard in subclasses.
+     * Detects whether or not the keyboard is showing based on window insets IME visibility. This
+     * template method simplifies mocking and the access to the soft keyboard in subclasses.
      *
      * @param view A {@link View}.
      * @return Whether or not the software keyboard is visible.
      */
     public static boolean isAndroidSoftKeyboardShowing(View view) {
         View rootView = view.getRootView();
-        return rootView != null && calculateKeyboardHeightFromWindowInsets(rootView) > 0;
+        if (rootView == null) return false;
+        if (!BaseFeatureList.sSplitScreenImeInsetVisibility.isEnabled()) {
+            return calculateKeyboardHeightFromWindowInsets(rootView) > 0;
+        }
+        if (rootView.getRootWindowInsets() == null) return false;
+        WindowInsetsCompat windowInsetsCompat =
+                WindowInsetsCompat.toWindowInsetsCompat(rootView.getRootWindowInsets(), rootView);
+        return windowInsetsCompat.isVisible(WindowInsetsCompat.Type.ime());
     }
 
     /** Detects whether there is a hardware keyboard connected. */
