@@ -41,6 +41,7 @@ constexpr char kCollectionSuccessSizeHistogramFormat[] =
 constexpr char kCollectionSpecificFailureHistogramFormat[] =
     "Enterprise.DeviceSignals.Collection.Failure.%sLevelError";
 
+// LINT.IfChange(EnterpriseSignals)
 std::string GetHistogramVariant(SignalName signal_name) {
   switch (signal_name) {
     case SignalName::kAntiVirus:
@@ -63,6 +64,7 @@ std::string GetHistogramVariant(SignalName signal_name) {
       return "VerifyApps";
   }
 }
+// LINT.ThenChange(//tools/metrics/histograms/metadata/enterprise/histograms.xml:EnterpriseSignals)
 
 std::string GetErrorHistogramVariant(SignalName signal_name,
                                      bool is_top_level_error) {

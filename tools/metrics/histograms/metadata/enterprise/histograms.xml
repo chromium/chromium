@@ -378,6 +378,8 @@ chromium-metrics-reviews@google.com.
       summary="URL filtering interstitial events"/>
 </variants>
 
+<!-- LINT.IfChange(EnterpriseSignals) -->
+
 <variants name="EnterpriseSignals">
   <variant name="Agent" summary="agent"/>
   <variant name="AntiVirus" summary="antivirus"/>
@@ -389,6 +391,8 @@ chromium-metrics-reviews@google.com.
   <variant name="SystemSettings" summary="system settings"/>
   <variant name="VerifyApps" summary="verify apps"/>
 </variants>
+
+<!-- LINT.ThenChange(//components/device_signals/core/browser/metrics_utils.cc:EnterpriseSignals) -->
 
 <variants name="FileUploadEvent">
   <variant name="OnFileAttach" summary="File upload event"/>
