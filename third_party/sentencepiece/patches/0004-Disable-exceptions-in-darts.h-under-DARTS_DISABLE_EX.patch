@@ -8,10 +8,10 @@ Subject: [PATCH 4/7] Disable exceptions in darts.h under
  .../src/third_party/darts_clone/darts.h       | 20 +++++++++++++++++++
  1 file changed, 20 insertions(+)
 
-diff --git a/third_party/sentencepiece/src/third_party/darts_clone/darts.h b/third_party/sentencepiece/src/third_party/darts_clone/darts.h
+diff --git a/src/third_party/darts_clone/darts.h b/src/third_party/darts_clone/darts.h
 index aeb5115662c41..fad75422bd280 100644
---- a/third_party/sentencepiece/src/third_party/darts_clone/darts.h
-+++ b/third_party/sentencepiece/src/third_party/darts_clone/darts.h
+--- a/src/third_party/darts_clone/darts.h
++++ b/src/third_party/darts_clone/darts.h
 @@ -6,6 +6,10 @@
  #include <exception>
  #include <new>

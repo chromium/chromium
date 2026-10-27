@@ -7,10 +7,10 @@ Subject: [PATCH 5/7] Resolve macro collision with MediaPipe's RET_CHECK
  third_party/sentencepiece/src/src/util.h | 10 +++++-----
  1 file changed, 5 insertions(+), 5 deletions(-)
 
-diff --git a/third_party/sentencepiece/src/src/util.h b/third_party/sentencepiece/src/src/util.h
+diff --git a/src/src/util.h b/src/src/util.h
 index ecaa4ed3fc290..f0af43af82344 100644
---- a/third_party/sentencepiece/src/src/util.h
-+++ b/third_party/sentencepiece/src/src/util.h
+--- a/src/src/util.h
++++ b/src/src/util.h
 @@ -281,11 +281,11 @@ std::vector<std::string> StrSplitAsCSV(absl::string_view text);
  std::wstring Utf8ToWide(const absl::string_view input);
  #endif

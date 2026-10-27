@@ -7,10 +7,10 @@ Subject: [PATCH 6/7] Remove internal absl/base/internal/endian.h dependency
  third_party/sentencepiece/src/src/util.h | 10 +++++++---
  1 file changed, 7 insertions(+), 3 deletions(-)
 
-diff --git a/third_party/sentencepiece/src/src/util.h b/third_party/sentencepiece/src/src/util.h
+diff --git a/src/src/util.h b/src/src/util.h
 index f0af43af82344..f92936703594f 100644
---- a/third_party/sentencepiece/src/src/util.h
-+++ b/third_party/sentencepiece/src/src/util.h
+--- a/src/src/util.h
++++ b/src/src/util.h
 @@ -32,7 +32,7 @@
  #include "common.h"
  #include "config.h"

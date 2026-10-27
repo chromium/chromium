@@ -1,0 +1,15 @@
+upstream {
+  commit: "b9e2e4f6ebc73900e061044b54f68a95090e23ff"
+  artifacts {
+    git {
+      repository: "https://github.com/google/sentencepiece"
+      commit: "b9e2e4f6ebc73900e061044b54f68a95090e23ff"
+    }
+  }
+}
+stages {
+  input {
+    patch { copybara {} }
+  }
+  publish { git {} }
+}

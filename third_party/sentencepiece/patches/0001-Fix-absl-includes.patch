@@ -72,10 +72,10 @@ Subject: [PATCH 1/7] Fix absl includes
  .../src/src/word_model_trainer_test.cc        |  4 +--
  66 files changed, 224 insertions(+), 224 deletions(-)
 
-diff --git a/third_party/sentencepiece/src/cmake/modify_headers.cmake b/third_party/sentencepiece/src/cmake/modify_headers.cmake
+diff --git a/src/cmake/modify_headers.cmake b/src/cmake/modify_headers.cmake
 index 1ca6077956bd1..93eeda58e54c1 100644
---- a/third_party/sentencepiece/src/cmake/modify_headers.cmake
-+++ b/third_party/sentencepiece/src/cmake/modify_headers.cmake
+--- a/src/cmake/modify_headers.cmake
++++ b/src/cmake/modify_headers.cmake
 @@ -1,11 +1,11 @@
  # CMake script to modify headers for installation
 -# Replaces #include "third_party/absl/..." with #include <absl/...>
@@ -90,10 +90,10 @@ index 1ca6077956bd1..93eeda58e54c1 100644
 +# Replace #include "absl/..."" with #include <absl/...>
  string(REGEX REPLACE "#include \"third_party/(absl/[^\"]+)\"" "#include <\\1>" content "${content}")
  file(WRITE "${OUTPUT_FILE}" "${content}")
-diff --git a/third_party/sentencepiece/src/src/bpe_model.cc b/third_party/sentencepiece/src/src/bpe_model.cc
+diff --git a/src/src/bpe_model.cc b/src/src/bpe_model.cc
 index bc9d23de55608..8d03204151e70 100644
---- a/third_party/sentencepiece/src/src/bpe_model.cc
-+++ b/third_party/sentencepiece/src/src/bpe_model.cc
+--- a/src/src/bpe_model.cc
++++ b/src/src/bpe_model.cc
 @@ -25,10 +25,10 @@
  #include "freelist.h"
  #include "model_interface.h"
@@ -109,10 +109,10 @@ index bc9d23de55608..8d03204151e70 100644
  #include "util.h"
  
  namespace sentencepiece {
-diff --git a/third_party/sentencepiece/src/src/bpe_model.h b/third_party/sentencepiece/src/src/bpe_model.h
+diff --git a/src/src/bpe_model.h b/src/src/bpe_model.h
 index 11df76c3f8515..2385548314ee6 100644
---- a/third_party/sentencepiece/src/src/bpe_model.h
-+++ b/third_party/sentencepiece/src/src/bpe_model.h
+--- a/src/src/bpe_model.h
++++ b/src/src/bpe_model.h
 @@ -17,7 +17,7 @@
  
  #include "model_interface.h"
@@ -122,10 +122,10 @@ index 11df76c3f8515..2385548314ee6 100644
  
  namespace sentencepiece {
  namespace bpe {
-diff --git a/third_party/sentencepiece/src/src/bpe_model_trainer.cc b/third_party/sentencepiece/src/src/bpe_model_trainer.cc
+diff --git a/src/src/bpe_model_trainer.cc b/src/src/bpe_model_trainer.cc
 index 57715d0fd2436..3594a66b053d9 100644
---- a/third_party/sentencepiece/src/src/bpe_model_trainer.cc
-+++ b/third_party/sentencepiece/src/src/bpe_model_trainer.cc
+--- a/src/src/bpe_model_trainer.cc
++++ b/src/src/bpe_model_trainer.cc
 @@ -20,13 +20,13 @@
  #include <vector>
  
@@ -147,10 +147,10 @@ index 57715d0fd2436..3594a66b053d9 100644
  #include "util.h"
  
  #ifdef SPM_NLCODEC_BPE
-diff --git a/third_party/sentencepiece/src/src/bpe_model_trainer.h b/third_party/sentencepiece/src/src/bpe_model_trainer.h
+diff --git a/src/src/bpe_model_trainer.h b/src/src/bpe_model_trainer.h
 index f01edbb54d5fd..b5ca82dd3c54d 100644
---- a/third_party/sentencepiece/src/src/bpe_model_trainer.h
-+++ b/third_party/sentencepiece/src/src/bpe_model_trainer.h
+--- a/src/src/bpe_model_trainer.h
++++ b/src/src/bpe_model_trainer.h
 @@ -23,9 +23,9 @@
  #include <vector>
  
@@ -164,10 +164,10 @@ index f01edbb54d5fd..b5ca82dd3c54d 100644
  #include "trainer_interface.h"
  
  namespace sentencepiece::bpe {
-diff --git a/third_party/sentencepiece/src/src/bpe_model_trainer_test.cc b/third_party/sentencepiece/src/src/bpe_model_trainer_test.cc
+diff --git a/src/src/bpe_model_trainer_test.cc b/src/src/bpe_model_trainer_test.cc
 index b811adf5adb16..9dea38eabdde3 100644
---- a/third_party/sentencepiece/src/src/bpe_model_trainer_test.cc
-+++ b/third_party/sentencepiece/src/src/bpe_model_trainer_test.cc
+--- a/src/src/bpe_model_trainer_test.cc
++++ b/src/src/bpe_model_trainer_test.cc
 @@ -21,8 +21,8 @@
  #include "sentencepiece_processor.h"
  #include "sentencepiece_trainer.h"
@@ -179,10 +179,10 @@ index b811adf5adb16..9dea38eabdde3 100644
  #include "util.h"
  
  namespace sentencepiece {
-diff --git a/third_party/sentencepiece/src/src/builder.cc b/third_party/sentencepiece/src/src/builder.cc
+diff --git a/src/src/builder.cc b/src/src/builder.cc
 index e8824867d3990..94fa4157ff3dd 100644
---- a/third_party/sentencepiece/src/src/builder.cc
-+++ b/third_party/sentencepiece/src/src/builder.cc
+--- a/src/src/builder.cc
++++ b/src/src/builder.cc
 @@ -19,15 +19,15 @@
  #include <utility>
  
@@ -208,10 +208,10 @@ index e8824867d3990..94fa4157ff3dd 100644
  
  #ifdef ENABLE_NFKC_COMPILE
  #include <unicode/errorcode.h>
-diff --git a/third_party/sentencepiece/src/src/builder.h b/third_party/sentencepiece/src/src/builder.h
+diff --git a/src/src/builder.h b/src/src/builder.h
 index 9206f092092c3..8959e3e5f300e 100644
---- a/third_party/sentencepiece/src/src/builder.h
-+++ b/third_party/sentencepiece/src/src/builder.h
+--- a/src/src/builder.h
++++ b/src/src/builder.h
 @@ -22,8 +22,8 @@
  #include "common.h"
  #include "sentencepiece_model.pb.h"
@@ -223,10 +223,10 @@ index 9206f092092c3..8959e3e5f300e 100644
  
  namespace sentencepiece::normalizer {
  
-diff --git a/third_party/sentencepiece/src/src/builder_test.cc b/third_party/sentencepiece/src/src/builder_test.cc
+diff --git a/src/src/builder_test.cc b/src/src/builder_test.cc
 index 8b785727e6f64..776eb211e0ff2 100644
---- a/third_party/sentencepiece/src/src/builder_test.cc
-+++ b/third_party/sentencepiece/src/src/builder_test.cc
+--- a/src/src/builder_test.cc
++++ b/src/src/builder_test.cc
 @@ -19,8 +19,8 @@
  #include "normalizer.h"
  #include "sentencepiece_trainer.h"
@@ -238,10 +238,10 @@ index 8b785727e6f64..776eb211e0ff2 100644
  #include "util.h"
  
  namespace sentencepiece {
-diff --git a/third_party/sentencepiece/src/src/char_model.cc b/third_party/sentencepiece/src/src/char_model.cc
+diff --git a/src/src/char_model.cc b/src/src/char_model.cc
 index 3cf3d07ec6640..9aea69c0d795b 100644
---- a/third_party/sentencepiece/src/src/char_model.cc
-+++ b/third_party/sentencepiece/src/src/char_model.cc
+--- a/src/src/char_model.cc
++++ b/src/src/char_model.cc
 @@ -14,7 +14,7 @@
  
  #include "char_model.h"
@@ -251,10 +251,10 @@ index 3cf3d07ec6640..9aea69c0d795b 100644
  #include "util.h"
  
  namespace sentencepiece {
-diff --git a/third_party/sentencepiece/src/src/char_model.h b/third_party/sentencepiece/src/src/char_model.h
+diff --git a/src/src/char_model.h b/src/src/char_model.h
 index 0af17d8c311f2..5fe22b5fd672d 100644
---- a/third_party/sentencepiece/src/src/char_model.h
-+++ b/third_party/sentencepiece/src/src/char_model.h
+--- a/src/src/char_model.h
++++ b/src/src/char_model.h
 @@ -17,7 +17,7 @@
  
  #include "model_interface.h"
@@ -264,10 +264,10 @@ index 0af17d8c311f2..5fe22b5fd672d 100644
  
  namespace sentencepiece {
  namespace character {
-diff --git a/third_party/sentencepiece/src/src/char_model_trainer.cc b/third_party/sentencepiece/src/src/char_model_trainer.cc
+diff --git a/src/src/char_model_trainer.cc b/src/src/char_model_trainer.cc
 index c35c05980aab3..f11be3645b42c 100644
---- a/third_party/sentencepiece/src/src/char_model_trainer.cc
-+++ b/third_party/sentencepiece/src/src/char_model_trainer.cc
+--- a/src/src/char_model_trainer.cc
++++ b/src/src/char_model_trainer.cc
 @@ -17,7 +17,7 @@
  #include <cmath>
  
@@ -277,10 +277,10 @@ index c35c05980aab3..f11be3645b42c 100644
  #include "util.h"
  
  namespace sentencepiece {
-diff --git a/third_party/sentencepiece/src/src/char_model_trainer.h b/third_party/sentencepiece/src/src/char_model_trainer.h
+diff --git a/src/src/char_model_trainer.h b/src/src/char_model_trainer.h
 index 01c59fc0e9ea8..119aba822ef0a 100644
---- a/third_party/sentencepiece/src/src/char_model_trainer.h
-+++ b/third_party/sentencepiece/src/src/char_model_trainer.h
+--- a/src/src/char_model_trainer.h
++++ b/src/src/char_model_trainer.h
 @@ -16,7 +16,7 @@
  #define CHAR_MODEL_TRAINER_H_
  
@@ -290,10 +290,10 @@ index 01c59fc0e9ea8..119aba822ef0a 100644
  #include "trainer_interface.h"
  
  namespace sentencepiece {
-diff --git a/third_party/sentencepiece/src/src/char_model_trainer_test.cc b/third_party/sentencepiece/src/src/char_model_trainer_test.cc
+diff --git a/src/src/char_model_trainer_test.cc b/src/src/char_model_trainer_test.cc
 index 2cc949e1c6d35..21b9d6b2aeed1 100644
---- a/third_party/sentencepiece/src/src/char_model_trainer_test.cc
-+++ b/third_party/sentencepiece/src/src/char_model_trainer_test.cc
+--- a/src/src/char_model_trainer_test.cc
++++ b/src/src/char_model_trainer_test.cc
 @@ -20,8 +20,8 @@
  #include "filesystem.h"
  #include "sentencepiece_processor.h"
@@ -305,10 +305,10 @@ index 2cc949e1c6d35..21b9d6b2aeed1 100644
  #include "util.h"
  
  namespace sentencepiece {
-diff --git a/third_party/sentencepiece/src/src/common.h b/third_party/sentencepiece/src/src/common.h
+diff --git a/src/src/common.h b/src/src/common.h
 index ba8286043688d..8a251ab8f023e 100644
---- a/third_party/sentencepiece/src/src/common.h
-+++ b/third_party/sentencepiece/src/src/common.h
+--- a/src/src/common.h
++++ b/src/src/common.h
 @@ -18,12 +18,12 @@
  #include <cstdint>
  #include <iostream>
@@ -328,10 +328,10 @@ index ba8286043688d..8a251ab8f023e 100644
  
  #if defined(_WIN32) && !defined(__CYGWIN__)
  #define OS_WIN
-diff --git a/third_party/sentencepiece/src/src/compile_charsmap_main.cc b/third_party/sentencepiece/src/src/compile_charsmap_main.cc
+diff --git a/src/src/compile_charsmap_main.cc b/src/src/compile_charsmap_main.cc
 index a79bc6d2f8bec..cc744ea8f2102 100644
---- a/third_party/sentencepiece/src/src/compile_charsmap_main.cc
-+++ b/third_party/sentencepiece/src/src/compile_charsmap_main.cc
+--- a/src/src/compile_charsmap_main.cc
++++ b/src/src/compile_charsmap_main.cc
 @@ -22,10 +22,10 @@
  #include "filesystem.h"
  #include "init.h"
@@ -347,10 +347,10 @@ index a79bc6d2f8bec..cc744ea8f2102 100644
  
  using sentencepiece::normalizer::Builder;
  
-diff --git a/third_party/sentencepiece/src/src/filesystem.cc b/third_party/sentencepiece/src/src/filesystem.cc
+diff --git a/src/src/filesystem.cc b/src/src/filesystem.cc
 index 08c2656268aa4..174b6bfa14e11 100644
---- a/third_party/sentencepiece/src/src/filesystem.cc
-+++ b/third_party/sentencepiece/src/src/filesystem.cc
+--- a/src/src/filesystem.cc
++++ b/src/src/filesystem.cc
 @@ -18,8 +18,8 @@
  #include <iostream>
  #include <memory>
@@ -362,10 +362,10 @@ index 08c2656268aa4..174b6bfa14e11 100644
  #include "util.h"
  
  #if defined(OS_WIN) && defined(UNICODE) && defined(_UNICODE)
-diff --git a/third_party/sentencepiece/src/src/filesystem.h b/third_party/sentencepiece/src/src/filesystem.h
+diff --git a/src/src/filesystem.h b/src/src/filesystem.h
 index 35f4639696da3..54949c2792e59 100644
---- a/third_party/sentencepiece/src/src/filesystem.h
-+++ b/third_party/sentencepiece/src/src/filesystem.h
+--- a/src/src/filesystem.h
++++ b/src/src/filesystem.h
 @@ -23,8 +23,8 @@
  
  #include "common.h"
@@ -377,10 +377,10 @@ index 35f4639696da3..54949c2792e59 100644
  
  namespace sentencepiece {
  namespace filesystem {
-diff --git a/third_party/sentencepiece/src/src/filesystem_test.cc b/third_party/sentencepiece/src/src/filesystem_test.cc
+diff --git a/src/src/filesystem_test.cc b/src/src/filesystem_test.cc
 index 423a2019f27de..0825cc3800acb 100644
---- a/third_party/sentencepiece/src/src/filesystem_test.cc
-+++ b/third_party/sentencepiece/src/src/filesystem_test.cc
+--- a/src/src/filesystem_test.cc
++++ b/src/src/filesystem_test.cc
 @@ -15,7 +15,7 @@
  #include "filesystem.h"
  
@@ -390,10 +390,10 @@ index 423a2019f27de..0825cc3800acb 100644
  #include "util.h"
  
  namespace sentencepiece {
-diff --git a/third_party/sentencepiece/src/src/init.cc b/third_party/sentencepiece/src/src/init.cc
+diff --git a/src/src/init.cc b/src/src/init.cc
 index c2c651e20f7e7..641d9710d7396 100644
---- a/third_party/sentencepiece/src/src/init.cc
-+++ b/third_party/sentencepiece/src/src/init.cc
+--- a/src/src/init.cc
++++ b/src/src/init.cc
 @@ -16,12 +16,12 @@
  
  #include "common.h"
@@ -413,10 +413,10 @@ index c2c651e20f7e7..641d9710d7396 100644
  #include "util.h"
  
  #ifdef _USE_EXTERNAL_PROTOBUF
-diff --git a/third_party/sentencepiece/src/src/invalid_model_test.cc b/third_party/sentencepiece/src/src/invalid_model_test.cc
+diff --git a/src/src/invalid_model_test.cc b/src/src/invalid_model_test.cc
 index c8dc78e9b862e..9f3f55d9d0c4d 100644
---- a/third_party/sentencepiece/src/src/invalid_model_test.cc
-+++ b/third_party/sentencepiece/src/src/invalid_model_test.cc
+--- a/src/src/invalid_model_test.cc
++++ b/src/src/invalid_model_test.cc
 @@ -21,9 +21,9 @@
  #include <memory>
  
@@ -430,10 +430,10 @@ index c8dc78e9b862e..9f3f55d9d0c4d 100644
  #include "third_party/darts_clone/darts.h"
  #include "sentencepiece_model.pb.h"
  #include "sentencepiece_processor.h"
-diff --git a/third_party/sentencepiece/src/src/model_interface.cc b/third_party/sentencepiece/src/src/model_interface.cc
+diff --git a/src/src/model_interface.cc b/src/src/model_interface.cc
 index 63eccee1f8712..f68320617d127 100644
---- a/third_party/sentencepiece/src/src/model_interface.cc
-+++ b/third_party/sentencepiece/src/src/model_interface.cc
+--- a/src/src/model_interface.cc
++++ b/src/src/model_interface.cc
 @@ -17,9 +17,9 @@
  #include <algorithm>
  
@@ -447,10 +447,10 @@ index 63eccee1f8712..f68320617d127 100644
  #include "util.h"
  
  namespace sentencepiece {
-diff --git a/third_party/sentencepiece/src/src/model_interface.h b/third_party/sentencepiece/src/src/model_interface.h
+diff --git a/src/src/model_interface.h b/src/src/model_interface.h
 index 5e08182ac0042..089a9cad444fa 100644
---- a/third_party/sentencepiece/src/src/model_interface.h
-+++ b/third_party/sentencepiece/src/src/model_interface.h
+--- a/src/src/model_interface.h
++++ b/src/src/model_interface.h
 @@ -25,9 +25,9 @@
  #include "normalizer.h"
  #include "sentencepiece_model.pb.h"
@@ -464,10 +464,10 @@ index 5e08182ac0042..089a9cad444fa 100644
  #include "third_party/darts_clone/darts.h"
  #include "util.h"
  
-diff --git a/third_party/sentencepiece/src/src/model_interface_test.cc b/third_party/sentencepiece/src/src/model_interface_test.cc
+diff --git a/src/src/model_interface_test.cc b/src/src/model_interface_test.cc
 index c3ca26f52eb4a..c4baa1fdca732 100644
---- a/third_party/sentencepiece/src/src/model_interface_test.cc
-+++ b/third_party/sentencepiece/src/src/model_interface_test.cc
+--- a/src/src/model_interface_test.cc
++++ b/src/src/model_interface_test.cc
 @@ -16,7 +16,7 @@
  
  #include "model_factory.h"
@@ -477,10 +477,10 @@ index c3ca26f52eb4a..c4baa1fdca732 100644
  #include "util.h"
  
  namespace sentencepiece {
-diff --git a/third_party/sentencepiece/src/src/normalizer.cc b/third_party/sentencepiece/src/src/normalizer.cc
+diff --git a/src/src/normalizer.cc b/src/src/normalizer.cc
 index 05a4931104a05..5a36414ae4a4c 100644
---- a/third_party/sentencepiece/src/src/normalizer.cc
-+++ b/third_party/sentencepiece/src/src/normalizer.cc
+--- a/src/src/normalizer.cc
++++ b/src/src/normalizer.cc
 @@ -19,10 +19,10 @@
  #include <vector>
  
@@ -496,10 +496,10 @@ index 05a4931104a05..5a36414ae4a4c 100644
  #include "third_party/darts_clone/darts.h"
  #include "util.h"
  
-diff --git a/third_party/sentencepiece/src/src/normalizer.h b/third_party/sentencepiece/src/src/normalizer.h
+diff --git a/src/src/normalizer.h b/src/src/normalizer.h
 index 67a430b66e85e..197fbdc92a83d 100644
---- a/third_party/sentencepiece/src/src/normalizer.h
-+++ b/third_party/sentencepiece/src/src/normalizer.h
+--- a/src/src/normalizer.h
++++ b/src/src/normalizer.h
 @@ -24,8 +24,8 @@
  #include "common.h"
  #include "sentencepiece_model.pb.h"
@@ -511,10 +511,10 @@ index 67a430b66e85e..197fbdc92a83d 100644
  #include "third_party/darts_clone/darts.h"
  
  namespace sentencepiece::normalizer {
-diff --git a/third_party/sentencepiece/src/src/normalizer_test.cc b/third_party/sentencepiece/src/src/normalizer_test.cc
+diff --git a/src/src/normalizer_test.cc b/src/src/normalizer_test.cc
 index 94f6b3488d0cf..32258265e56a9 100644
---- a/third_party/sentencepiece/src/src/normalizer_test.cc
-+++ b/third_party/sentencepiece/src/src/normalizer_test.cc
+--- a/src/src/normalizer_test.cc
++++ b/src/src/normalizer_test.cc
 @@ -21,8 +21,8 @@
  #include "builder.h"
  #include "sentencepiece_trainer.h"
@@ -526,10 +526,10 @@ index 94f6b3488d0cf..32258265e56a9 100644
  #include "third_party/darts_clone/darts.h"
  #include "util.h"
  
-diff --git a/third_party/sentencepiece/src/src/pretokenizer_for_training.cc b/third_party/sentencepiece/src/src/pretokenizer_for_training.cc
+diff --git a/src/src/pretokenizer_for_training.cc b/src/src/pretokenizer_for_training.cc
 index 06debb228d5de..f1da565c2e531 100644
---- a/third_party/sentencepiece/src/src/pretokenizer_for_training.cc
-+++ b/third_party/sentencepiece/src/src/pretokenizer_for_training.cc
+--- a/src/src/pretokenizer_for_training.cc
++++ b/src/src/pretokenizer_for_training.cc
 @@ -15,8 +15,8 @@
  
  #include <string>
@@ -541,10 +541,10 @@ index 06debb228d5de..f1da565c2e531 100644
  
  namespace sentencepiece {
  namespace pretokenizer {
-diff --git a/third_party/sentencepiece/src/src/pretokenizer_for_training.h b/third_party/sentencepiece/src/src/pretokenizer_for_training.h
+diff --git a/src/src/pretokenizer_for_training.h b/src/src/pretokenizer_for_training.h
 index caa8d3bfd66a2..20d6924518395 100644
---- a/third_party/sentencepiece/src/src/pretokenizer_for_training.h
-+++ b/third_party/sentencepiece/src/src/pretokenizer_for_training.h
+--- a/src/src/pretokenizer_for_training.h
++++ b/src/src/pretokenizer_for_training.h
 @@ -21,8 +21,8 @@
  #include "common.h"
  #include "sentencepiece.pb.h"
@@ -556,10 +556,10 @@ index caa8d3bfd66a2..20d6924518395 100644
  
  namespace sentencepiece::pretokenizer {
  
-diff --git a/third_party/sentencepiece/src/src/pretokenizer_for_training_test.cc b/third_party/sentencepiece/src/src/pretokenizer_for_training_test.cc
+diff --git a/src/src/pretokenizer_for_training_test.cc b/src/src/pretokenizer_for_training_test.cc
 index 57c392593693b..a5b8e3019bee8 100644
---- a/third_party/sentencepiece/src/src/pretokenizer_for_training_test.cc
-+++ b/third_party/sentencepiece/src/src/pretokenizer_for_training_test.cc
+--- a/src/src/pretokenizer_for_training_test.cc
++++ b/src/src/pretokenizer_for_training_test.cc
 @@ -14,11 +14,11 @@
  #include "pretokenizer_for_training.h"
  
@@ -577,10 +577,10 @@ index 57c392593693b..a5b8e3019bee8 100644
  #include "trainer_interface.h"
  
  namespace sentencepiece {
-diff --git a/third_party/sentencepiece/src/src/sentencepiece_processor.cc b/third_party/sentencepiece/src/src/sentencepiece_processor.cc
+diff --git a/src/src/sentencepiece_processor.cc b/src/src/sentencepiece_processor.cc
 index d60514dedad84..5d58d070a3d08 100644
---- a/third_party/sentencepiece/src/src/sentencepiece_processor.cc
-+++ b/third_party/sentencepiece/src/src/sentencepiece_processor.cc
+--- a/src/src/sentencepiece_processor.cc
++++ b/src/src/sentencepiece_processor.cc
 @@ -30,20 +30,20 @@
  #include "model_interface.h"
  #include "normalizer.h"
@@ -616,10 +616,10 @@ index d60514dedad84..5d58d070a3d08 100644
  #include "unigram_model.h"
  #include "util.h"
  
-diff --git a/third_party/sentencepiece/src/src/sentencepiece_processor.h b/third_party/sentencepiece/src/src/sentencepiece_processor.h
+diff --git a/src/src/sentencepiece_processor.h b/src/src/sentencepiece_processor.h
 index 2231dbc6a7669..388835adcc624 100644
---- a/third_party/sentencepiece/src/src/sentencepiece_processor.h
-+++ b/third_party/sentencepiece/src/src/sentencepiece_processor.h
+--- a/src/src/sentencepiece_processor.h
++++ b/src/src/sentencepiece_processor.h
 @@ -24,13 +24,13 @@
  #include <utility>
  #include <vector>
@@ -637,10 +637,10 @@ index 2231dbc6a7669..388835adcc624 100644
  
  namespace sentencepiece {
  
-diff --git a/third_party/sentencepiece/src/src/sentencepiece_processor_benchmarks_test.cc b/third_party/sentencepiece/src/src/sentencepiece_processor_benchmarks_test.cc
+diff --git a/src/src/sentencepiece_processor_benchmarks_test.cc b/src/src/sentencepiece_processor_benchmarks_test.cc
 index a8c87a3b1311b..1f8c917f6ee1f 100644
---- a/third_party/sentencepiece/src/src/sentencepiece_processor_benchmarks_test.cc
-+++ b/third_party/sentencepiece/src/src/sentencepiece_processor_benchmarks_test.cc
+--- a/src/src/sentencepiece_processor_benchmarks_test.cc
++++ b/src/src/sentencepiece_processor_benchmarks_test.cc
 @@ -23,11 +23,11 @@
  #include "sentencepiece.pb.h"
  #include "sentencepiece_processor.h"
@@ -658,10 +658,10 @@ index a8c87a3b1311b..1f8c917f6ee1f 100644
  #include "third_party/benchmark/include/benchmark/benchmark.h"
  #include "util.h"
  
-diff --git a/third_party/sentencepiece/src/src/sentencepiece_processor_parallel_test.cc b/third_party/sentencepiece/src/src/sentencepiece_processor_parallel_test.cc
+diff --git a/src/src/sentencepiece_processor_parallel_test.cc b/src/src/sentencepiece_processor_parallel_test.cc
 index c0afcce3f2f88..685388264a705 100644
---- a/third_party/sentencepiece/src/src/sentencepiece_processor_parallel_test.cc
-+++ b/third_party/sentencepiece/src/src/sentencepiece_processor_parallel_test.cc
+--- a/src/src/sentencepiece_processor_parallel_test.cc
++++ b/src/src/sentencepiece_processor_parallel_test.cc
 @@ -20,8 +20,8 @@
  #include "sentencepiece_model.pb.h"
  #include "sentencepiece_processor.h"
@@ -673,10 +673,10 @@ index c0afcce3f2f88..685388264a705 100644
  #include "util.h"
  
  namespace sentencepiece {
-diff --git a/third_party/sentencepiece/src/src/sentencepiece_processor_test.cc b/third_party/sentencepiece/src/src/sentencepiece_processor_test.cc
+diff --git a/src/src/sentencepiece_processor_test.cc b/src/src/sentencepiece_processor_test.cc
 index d3c861b1a2fcf..34b573ba3b129 100644
---- a/third_party/sentencepiece/src/src/sentencepiece_processor_test.cc
-+++ b/third_party/sentencepiece/src/src/sentencepiece_processor_test.cc
+--- a/src/src/sentencepiece_processor_test.cc
++++ b/src/src/sentencepiece_processor_test.cc
 @@ -24,10 +24,10 @@
  #include "sentencepiece_model.pb.h"
  #include "sentencepiece_trainer.h"
@@ -692,10 +692,10 @@ index d3c861b1a2fcf..34b573ba3b129 100644
  #include "util.h"
  
  namespace sentencepiece {
-diff --git a/third_party/sentencepiece/src/src/sentencepiece_trainer.cc b/third_party/sentencepiece/src/src/sentencepiece_trainer.cc
+diff --git a/src/src/sentencepiece_trainer.cc b/src/src/sentencepiece_trainer.cc
 index fd86f35fd7fb1..3f62030ab52d8 100644
---- a/third_party/sentencepiece/src/src/sentencepiece_trainer.cc
-+++ b/third_party/sentencepiece/src/src/sentencepiece_trainer.cc
+--- a/src/src/sentencepiece_trainer.cc
++++ b/src/src/sentencepiece_trainer.cc
 @@ -23,13 +23,13 @@
  #include "sentencepiece.pb.h"
  #include "sentencepiece_model.pb.h"
@@ -717,10 +717,10 @@ index fd86f35fd7fb1..3f62030ab52d8 100644
  #include "trainer_factory.h"
  #include "util.h"
  
-diff --git a/third_party/sentencepiece/src/src/sentencepiece_trainer.h b/third_party/sentencepiece/src/src/sentencepiece_trainer.h
+diff --git a/src/src/sentencepiece_trainer.h b/src/src/sentencepiece_trainer.h
 index 5f2a49b63c526..611c2f5d0d35c 100644
---- a/third_party/sentencepiece/src/src/sentencepiece_trainer.h
-+++ b/third_party/sentencepiece/src/src/sentencepiece_trainer.h
+--- a/src/src/sentencepiece_trainer.h
++++ b/src/src/sentencepiece_trainer.h
 @@ -20,9 +20,9 @@
  #include <vector>
  
@@ -734,10 +734,10 @@ index 5f2a49b63c526..611c2f5d0d35c 100644
  
  namespace sentencepiece {
  
-diff --git a/third_party/sentencepiece/src/src/sentencepiece_trainer_test.cc b/third_party/sentencepiece/src/src/sentencepiece_trainer_test.cc
+diff --git a/src/src/sentencepiece_trainer_test.cc b/src/src/sentencepiece_trainer_test.cc
 index 2055a72a138a0..901295ec8c2ae 100644
---- a/third_party/sentencepiece/src/src/sentencepiece_trainer_test.cc
-+++ b/third_party/sentencepiece/src/src/sentencepiece_trainer_test.cc
+--- a/src/src/sentencepiece_trainer_test.cc
++++ b/src/src/sentencepiece_trainer_test.cc
 @@ -17,9 +17,9 @@
  #include "filesystem.h"
  #include "sentencepiece_model.pb.h"
@@ -751,10 +751,10 @@ index 2055a72a138a0..901295ec8c2ae 100644
  #include "util.h"
  
  namespace sentencepiece {
-diff --git a/third_party/sentencepiece/src/src/spec_parser.h b/third_party/sentencepiece/src/src/spec_parser.h
+diff --git a/src/src/spec_parser.h b/src/src/spec_parser.h
 index 41fb5733a4c5f..f5e48b0ad32e7 100644
---- a/third_party/sentencepiece/src/src/spec_parser.h
-+++ b/third_party/sentencepiece/src/src/spec_parser.h
+--- a/src/src/spec_parser.h
++++ b/src/src/spec_parser.h
 @@ -19,12 +19,12 @@
  #include <vector>
  
@@ -774,10 +774,10 @@ index 41fb5733a4c5f..f5e48b0ad32e7 100644
  #include "util.h"
  
  namespace sentencepiece {
-diff --git a/third_party/sentencepiece/src/src/spm_decode_main.cc b/third_party/sentencepiece/src/src/spm_decode_main.cc
+diff --git a/src/src/spm_decode_main.cc b/src/src/spm_decode_main.cc
 index dc5ca5cffaf80..97cde9928a6b4 100644
---- a/third_party/sentencepiece/src/src/spm_decode_main.cc
-+++ b/third_party/sentencepiece/src/src/spm_decode_main.cc
+--- a/src/src/spm_decode_main.cc
++++ b/src/src/spm_decode_main.cc
 @@ -21,8 +21,8 @@
  #include "init.h"
  #include "sentencepiece.pb.h"
@@ -789,10 +789,10 @@ index dc5ca5cffaf80..97cde9928a6b4 100644
  #include "util.h"
  
  ABSL_FLAG(std::string, model, "", "model file name");
-diff --git a/third_party/sentencepiece/src/src/spm_encode_main.cc b/third_party/sentencepiece/src/src/spm_encode_main.cc
+diff --git a/src/src/spm_encode_main.cc b/src/src/spm_encode_main.cc
 index b05724af12e4d..44328f756e625 100644
---- a/third_party/sentencepiece/src/src/spm_encode_main.cc
-+++ b/third_party/sentencepiece/src/src/spm_encode_main.cc
+--- a/src/src/spm_encode_main.cc
++++ b/src/src/spm_encode_main.cc
 @@ -22,11 +22,11 @@
  #include "init.h"
  #include "sentencepiece.pb.h"
@@ -810,10 +810,10 @@ index b05724af12e4d..44328f756e625 100644
  #include "trainer_interface.h"
  
  ABSL_FLAG(std::string, model, "", "model file name");
-diff --git a/third_party/sentencepiece/src/src/spm_export_vocab_main.cc b/third_party/sentencepiece/src/src/spm_export_vocab_main.cc
+diff --git a/src/src/spm_export_vocab_main.cc b/src/src/spm_export_vocab_main.cc
 index f68baa467941f..ed3c577065a7e 100644
---- a/third_party/sentencepiece/src/src/spm_export_vocab_main.cc
-+++ b/third_party/sentencepiece/src/src/spm_export_vocab_main.cc
+--- a/src/src/spm_export_vocab_main.cc
++++ b/src/src/spm_export_vocab_main.cc
 @@ -19,7 +19,7 @@
  #include "init.h"
  #include "sentencepiece_model.pb.h"
@@ -823,10 +823,10 @@ index f68baa467941f..ed3c577065a7e 100644
  
  ABSL_FLAG(std::string, output, "", "Output filename");
  ABSL_FLAG(std::string, model, "", "input model file name");
-diff --git a/third_party/sentencepiece/src/src/spm_normalize_main.cc b/third_party/sentencepiece/src/src/spm_normalize_main.cc
+diff --git a/src/src/spm_normalize_main.cc b/src/src/spm_normalize_main.cc
 index c004189b88e1e..e15fa324b4acc 100644
---- a/third_party/sentencepiece/src/src/spm_normalize_main.cc
-+++ b/third_party/sentencepiece/src/src/spm_normalize_main.cc
+--- a/src/src/spm_normalize_main.cc
++++ b/src/src/spm_normalize_main.cc
 @@ -21,7 +21,7 @@
  #include "sentencepiece_model.pb.h"
  #include "sentencepiece_processor.h"
@@ -836,10 +836,10 @@ index c004189b88e1e..e15fa324b4acc 100644
  
  ABSL_FLAG(std::string, model, "", "Model file name");
  ABSL_FLAG(bool, use_internal_normalization, false,
-diff --git a/third_party/sentencepiece/src/src/spm_train_main.cc b/third_party/sentencepiece/src/src/spm_train_main.cc
+diff --git a/src/src/spm_train_main.cc b/src/src/spm_train_main.cc
 index f42218ef62baa..7218bbc8bd3b9 100644
---- a/third_party/sentencepiece/src/src/spm_train_main.cc
-+++ b/third_party/sentencepiece/src/src/spm_train_main.cc
+--- a/src/src/spm_train_main.cc
++++ b/src/src/spm_train_main.cc
 @@ -18,11 +18,11 @@
  #include "init.h"
  #include "sentencepiece_model.pb.h"
@@ -857,10 +857,10 @@ index f42218ef62baa..7218bbc8bd3b9 100644
  #include "util.h"
  
  using sentencepiece::NormalizerSpec;
-diff --git a/third_party/sentencepiece/src/src/testharness.cc b/third_party/sentencepiece/src/src/testharness.cc
+diff --git a/src/src/testharness.cc b/src/src/testharness.cc
 index c8cd4c2c2475c..0ad01dc0e1104 100644
---- a/third_party/sentencepiece/src/src/testharness.cc
-+++ b/third_party/sentencepiece/src/src/testharness.cc
+--- a/src/src/testharness.cc
++++ b/src/src/testharness.cc
 @@ -26,7 +26,7 @@
  #include <vector>
  
@@ -870,10 +870,10 @@ index c8cd4c2c2475c..0ad01dc0e1104 100644
  #include "util.h"
  
  namespace sentencepiece {
-diff --git a/third_party/sentencepiece/src/src/testharness.h b/third_party/sentencepiece/src/src/testharness.h
+diff --git a/src/src/testharness.h b/src/src/testharness.h
 index c573db30cf6d7..2c53f5e4798ef 100644
---- a/third_party/sentencepiece/src/src/testharness.h
-+++ b/third_party/sentencepiece/src/src/testharness.h
+--- a/src/src/testharness.h
++++ b/src/src/testharness.h
 @@ -21,9 +21,9 @@
  #include <string>
  
@@ -887,10 +887,10 @@ index c573db30cf6d7..2c53f5e4798ef 100644
  
  ABSL_DECLARE_FLAG(std::string, test_tmpdir);
  ABSL_DECLARE_FLAG(std::string, test_srcdir);
-diff --git a/third_party/sentencepiece/src/src/trainer_interface.cc b/third_party/sentencepiece/src/src/trainer_interface.cc
+diff --git a/src/src/trainer_interface.cc b/src/src/trainer_interface.cc
 index 5555016433bca..73f331b0ff758 100644
---- a/third_party/sentencepiece/src/src/trainer_interface.cc
-+++ b/third_party/sentencepiece/src/src/trainer_interface.cc
+--- a/src/src/trainer_interface.cc
++++ b/src/src/trainer_interface.cc
 @@ -29,17 +29,17 @@
  #include "normalizer.h"
  #include "sentencepiece_processor.h"
@@ -920,10 +920,10 @@ index 5555016433bca..73f331b0ff758 100644
  #include "unicode_script.h"
  #include "util.h"
  
-diff --git a/third_party/sentencepiece/src/src/trainer_interface.h b/third_party/sentencepiece/src/src/trainer_interface.h
+diff --git a/src/src/trainer_interface.h b/src/src/trainer_interface.h
 index 9b84a8c4e5aba..78115aa2a9915 100644
---- a/third_party/sentencepiece/src/src/trainer_interface.h
-+++ b/third_party/sentencepiece/src/src/trainer_interface.h
+--- a/src/src/trainer_interface.h
++++ b/src/src/trainer_interface.h
 @@ -27,9 +27,9 @@
  #include "sentencepiece_model.pb.h"
  #include "sentencepiece_processor.h"
@@ -937,10 +937,10 @@ index 9b84a8c4e5aba..78115aa2a9915 100644
  #include "util.h"
  
  namespace sentencepiece {
-diff --git a/third_party/sentencepiece/src/src/trainer_interface_test.cc b/third_party/sentencepiece/src/src/trainer_interface_test.cc
+diff --git a/src/src/trainer_interface_test.cc b/src/src/trainer_interface_test.cc
 index 029290579dfdb..51103fd8add95 100644
---- a/third_party/sentencepiece/src/src/trainer_interface_test.cc
-+++ b/third_party/sentencepiece/src/src/trainer_interface_test.cc
+--- a/src/src/trainer_interface_test.cc
++++ b/src/src/trainer_interface_test.cc
 @@ -18,9 +18,9 @@
  
  #include "filesystem.h"
@@ -954,10 +954,10 @@ index 029290579dfdb..51103fd8add95 100644
  #include "util.h"
  
  namespace sentencepiece {
-diff --git a/third_party/sentencepiece/src/src/unicode_script.cc b/third_party/sentencepiece/src/src/unicode_script.cc
+diff --git a/src/src/unicode_script.cc b/src/src/unicode_script.cc
 index c013b4ae76cb5..5e2b645dc6384 100644
---- a/third_party/sentencepiece/src/src/unicode_script.cc
-+++ b/third_party/sentencepiece/src/src/unicode_script.cc
+--- a/src/src/unicode_script.cc
++++ b/src/src/unicode_script.cc
 @@ -14,7 +14,7 @@
  
  #include "unicode_script.h"
@@ -967,10 +967,10 @@ index c013b4ae76cb5..5e2b645dc6384 100644
  #include "unicode_script_map.h"
  #include "util.h"
  
-diff --git a/third_party/sentencepiece/src/src/unicode_script_map.h b/third_party/sentencepiece/src/src/unicode_script_map.h
+diff --git a/src/src/unicode_script_map.h b/src/src/unicode_script_map.h
 index a9cf471f3da85..2abb706e77710 100644
---- a/third_party/sentencepiece/src/src/unicode_script_map.h
-+++ b/third_party/sentencepiece/src/src/unicode_script_map.h
+--- a/src/src/unicode_script_map.h
++++ b/src/src/unicode_script_map.h
 @@ -14,7 +14,7 @@
  
  #ifndef UNICODE_SCRIPT_DATA_H_
@@ -980,10 +980,10 @@ index a9cf471f3da85..2abb706e77710 100644
  namespace sentencepiece {
  namespace unicode_script {
  namespace {
-diff --git a/third_party/sentencepiece/src/src/unicode_script_test.cc b/third_party/sentencepiece/src/src/unicode_script_test.cc
+diff --git a/src/src/unicode_script_test.cc b/src/src/unicode_script_test.cc
 index e193a7249f87f..74b0e02282b2c 100644
---- a/third_party/sentencepiece/src/src/unicode_script_test.cc
-+++ b/third_party/sentencepiece/src/src/unicode_script_test.cc
+--- a/src/src/unicode_script_test.cc
++++ b/src/src/unicode_script_test.cc
 @@ -16,7 +16,7 @@
  
  #include "common.h"
@@ -993,10 +993,10 @@ index e193a7249f87f..74b0e02282b2c 100644
  #include "util.h"
  
  namespace sentencepiece {
-diff --git a/third_party/sentencepiece/src/src/unigram_model.cc b/third_party/sentencepiece/src/src/unigram_model.cc
+diff --git a/src/src/unigram_model.cc b/src/src/unigram_model.cc
 index 498a1d351d996..cd70a76e01a7c 100644
---- a/third_party/sentencepiece/src/src/unigram_model.cc
-+++ b/third_party/sentencepiece/src/src/unigram_model.cc
+--- a/src/src/unigram_model.cc
++++ b/src/src/unigram_model.cc
 @@ -26,12 +26,12 @@
  #include <utility>
  #include <vector>
@@ -1016,10 +1016,10 @@ index 498a1d351d996..cd70a76e01a7c 100644
  #include "util.h"
  
  namespace sentencepiece {
-diff --git a/third_party/sentencepiece/src/src/unigram_model.h b/third_party/sentencepiece/src/src/unigram_model.h
+diff --git a/src/src/unigram_model.h b/src/src/unigram_model.h
 index 027b468813838..5204bda00e215 100644
---- a/third_party/sentencepiece/src/src/unigram_model.h
-+++ b/third_party/sentencepiece/src/src/unigram_model.h
+--- a/src/src/unigram_model.h
++++ b/src/src/unigram_model.h
 @@ -24,7 +24,7 @@
  #include "freelist.h"
  #include "model_interface.h"
@@ -1029,10 +1029,10 @@ index 027b468813838..5204bda00e215 100644
  #include "third_party/darts_clone/darts.h"
  
  namespace sentencepiece {
-diff --git a/third_party/sentencepiece/src/src/unigram_model_test.cc b/third_party/sentencepiece/src/src/unigram_model_test.cc
+diff --git a/src/src/unigram_model_test.cc b/src/src/unigram_model_test.cc
 index b1492fccc7cf7..db66019587b43 100644
---- a/third_party/sentencepiece/src/src/unigram_model_test.cc
-+++ b/third_party/sentencepiece/src/src/unigram_model_test.cc
+--- a/src/src/unigram_model_test.cc
++++ b/src/src/unigram_model_test.cc
 @@ -22,9 +22,9 @@
  #include "sentencepiece_model.pb.h"
  #include "sentencepiece_processor.h"
@@ -1046,10 +1046,10 @@ index b1492fccc7cf7..db66019587b43 100644
  #include "util.h"
  
  namespace sentencepiece {
-diff --git a/third_party/sentencepiece/src/src/unigram_model_trainer.cc b/third_party/sentencepiece/src/src/unigram_model_trainer.cc
+diff --git a/src/src/unigram_model_trainer.cc b/src/src/unigram_model_trainer.cc
 index 13a637e752519..06ed2d1765012 100644
---- a/third_party/sentencepiece/src/src/unigram_model_trainer.cc
-+++ b/third_party/sentencepiece/src/src/unigram_model_trainer.cc
+--- a/src/src/unigram_model_trainer.cc
++++ b/src/src/unigram_model_trainer.cc
 @@ -28,12 +28,12 @@
  #include "normalizer.h"
  #include "pretokenizer_for_training.h"
@@ -1069,10 +1069,10 @@ index 13a637e752519..06ed2d1765012 100644
  #include "third_party/esaxx/esa.hxx"  // Suffix array library.
  #include "trainer_interface.h"
  #include "unicode_script.h"
-diff --git a/third_party/sentencepiece/src/src/unigram_model_trainer.h b/third_party/sentencepiece/src/src/unigram_model_trainer.h
+diff --git a/src/src/unigram_model_trainer.h b/src/src/unigram_model_trainer.h
 index 9c3b589ca2cd9..cee64f98b2c1b 100644
---- a/third_party/sentencepiece/src/src/unigram_model_trainer.h
-+++ b/third_party/sentencepiece/src/src/unigram_model_trainer.h
+--- a/src/src/unigram_model_trainer.h
++++ b/src/src/unigram_model_trainer.h
 @@ -21,8 +21,8 @@
  #include <vector>
  
@@ -1084,10 +1084,10 @@ index 9c3b589ca2cd9..cee64f98b2c1b 100644
  #include "trainer_interface.h"
  #include "unigram_model.h"
  #include "util.h"
-diff --git a/third_party/sentencepiece/src/src/unigram_model_trainer_test.cc b/third_party/sentencepiece/src/src/unigram_model_trainer_test.cc
+diff --git a/src/src/unigram_model_trainer_test.cc b/src/src/unigram_model_trainer_test.cc
 index 4705c623da611..9093d55d25a39 100644
---- a/third_party/sentencepiece/src/src/unigram_model_trainer_test.cc
-+++ b/third_party/sentencepiece/src/src/unigram_model_trainer_test.cc
+--- a/src/src/unigram_model_trainer_test.cc
++++ b/src/src/unigram_model_trainer_test.cc
 @@ -22,8 +22,8 @@
  #include "sentencepiece_processor.h"
  #include "sentencepiece_trainer.h"
@@ -1099,10 +1099,10 @@ index 4705c623da611..9093d55d25a39 100644
  #include "util.h"
  
  namespace sentencepiece {
-diff --git a/third_party/sentencepiece/src/src/util.cc b/third_party/sentencepiece/src/src/util.cc
+diff --git a/src/src/util.cc b/src/src/util.cc
 index bd5ea1a16ca21..d5f5532a33a8c 100644
---- a/third_party/sentencepiece/src/src/util.cc
-+++ b/third_party/sentencepiece/src/src/util.cc
+--- a/src/src/util.cc
++++ b/src/src/util.cc
 @@ -18,11 +18,11 @@
  #include <cstddef>
  #include <memory>
@@ -1120,10 +1120,10 @@ index bd5ea1a16ca21..d5f5532a33a8c 100644
  
  namespace sentencepiece {
  
-diff --git a/third_party/sentencepiece/src/src/util.h b/third_party/sentencepiece/src/src/util.h
+diff --git a/src/src/util.h b/src/src/util.h
 index 07d9f37e3f240..63b4873817a12 100644
---- a/third_party/sentencepiece/src/src/util.h
-+++ b/third_party/sentencepiece/src/src/util.h
+--- a/src/src/util.h
++++ b/src/src/util.h
 @@ -32,21 +32,21 @@
  #include "common.h"
  #include "config.h"
@@ -1161,10 +1161,10 @@ index 07d9f37e3f240..63b4873817a12 100644
  
  static constexpr uint32_t kUnicodeError = 0xFFFD;
  
-diff --git a/third_party/sentencepiece/src/src/util_test.cc b/third_party/sentencepiece/src/src/util_test.cc
+diff --git a/src/src/util_test.cc b/src/src/util_test.cc
 index 48695f566a504..b9014055ce000 100644
---- a/third_party/sentencepiece/src/src/util_test.cc
-+++ b/third_party/sentencepiece/src/src/util_test.cc
+--- a/src/src/util_test.cc
++++ b/src/src/util_test.cc
 @@ -18,11 +18,11 @@
  
  #include "filesystem.h"
@@ -1182,10 +1182,10 @@ index 48695f566a504..b9014055ce000 100644
  
  namespace sentencepiece {
  namespace {
-diff --git a/third_party/sentencepiece/src/src/word_model.cc b/third_party/sentencepiece/src/src/word_model.cc
+diff --git a/src/src/word_model.cc b/src/src/word_model.cc
 index 3f5c79923494f..a09bcf5df2586 100644
---- a/third_party/sentencepiece/src/src/word_model.cc
-+++ b/third_party/sentencepiece/src/src/word_model.cc
+--- a/src/src/word_model.cc
++++ b/src/src/word_model.cc
 @@ -14,7 +14,7 @@
  
  #include "word_model.h"
@@ -1195,10 +1195,10 @@ index 3f5c79923494f..a09bcf5df2586 100644
  #include "util.h"
  
  namespace sentencepiece {
-diff --git a/third_party/sentencepiece/src/src/word_model.h b/third_party/sentencepiece/src/src/word_model.h
+diff --git a/src/src/word_model.h b/src/src/word_model.h
 index be1d0348b434a..7ea554cb933eb 100644
---- a/third_party/sentencepiece/src/src/word_model.h
-+++ b/third_party/sentencepiece/src/src/word_model.h
+--- a/src/src/word_model.h
++++ b/src/src/word_model.h
 @@ -17,7 +17,7 @@
  
  #include "model_interface.h"
@@ -1208,10 +1208,10 @@ index be1d0348b434a..7ea554cb933eb 100644
  
  namespace sentencepiece {
  namespace word {
-diff --git a/third_party/sentencepiece/src/src/word_model_trainer.cc b/third_party/sentencepiece/src/src/word_model_trainer.cc
+diff --git a/src/src/word_model_trainer.cc b/src/src/word_model_trainer.cc
 index 4bea35e48776c..005a1620077d5 100644
---- a/third_party/sentencepiece/src/src/word_model_trainer.cc
-+++ b/third_party/sentencepiece/src/src/word_model_trainer.cc
+--- a/src/src/word_model_trainer.cc
++++ b/src/src/word_model_trainer.cc
 @@ -17,9 +17,9 @@
  #include <cmath>
  #include <string>
@@ -1225,10 +1225,10 @@ index 4bea35e48776c..005a1620077d5 100644
  #include "util.h"
  #include "word_model.h"
  
-diff --git a/third_party/sentencepiece/src/src/word_model_trainer.h b/third_party/sentencepiece/src/src/word_model_trainer.h
+diff --git a/src/src/word_model_trainer.h b/src/src/word_model_trainer.h
 index 77f2457cfe038..19ff9f53317ae 100644
---- a/third_party/sentencepiece/src/src/word_model_trainer.h
-+++ b/third_party/sentencepiece/src/src/word_model_trainer.h
+--- a/src/src/word_model_trainer.h
++++ b/src/src/word_model_trainer.h
 @@ -16,7 +16,7 @@
  #define WORD_MODEL_TRAINER_H_
  
@@ -1238,10 +1238,10 @@ index 77f2457cfe038..19ff9f53317ae 100644
  #include "trainer_interface.h"
  
  namespace sentencepiece {
-diff --git a/third_party/sentencepiece/src/src/word_model_trainer_test.cc b/third_party/sentencepiece/src/src/word_model_trainer_test.cc
+diff --git a/src/src/word_model_trainer_test.cc b/src/src/word_model_trainer_test.cc
 index 6491299213624..e8abf32f5108f 100644
---- a/third_party/sentencepiece/src/src/word_model_trainer_test.cc
-+++ b/third_party/sentencepiece/src/src/word_model_trainer_test.cc
+--- a/src/src/word_model_trainer_test.cc
++++ b/src/src/word_model_trainer_test.cc
 @@ -20,8 +20,8 @@
  #include "filesystem.h"
  #include "sentencepiece_processor.h"

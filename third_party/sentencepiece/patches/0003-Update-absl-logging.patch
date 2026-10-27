@@ -37,10 +37,10 @@ Subject: [PATCH 3/7] Update absl logging
  .../sentencepiece/src/src/util_test.cc        |  8 +-
  31 files changed, 255 insertions(+), 255 deletions(-)
 
-diff --git a/third_party/sentencepiece/src/README.md b/third_party/sentencepiece/src/README.md
+diff --git a/src/README.md b/src/README.md
 index 3e47148816143..6f976a0dec704 100644
---- a/third_party/sentencepiece/src/README.md
-+++ b/third_party/sentencepiece/src/README.md
+--- a/src/README.md
++++ b/src/README.md
 @@ -253,12 +253,12 @@ Use `--extra_options` flag to decode the text in reverse order.
  
  ```
@@ -58,10 +58,10 @@ index 3e47148816143..6f976a0dec704 100644
  
  % echo "I saw a girl with a telescope." | spm_encode --model=m.model
  ▁I ▁saw ▁a ▁girl ▁with ▁a ▁ te le s c o pe .
-diff --git a/third_party/sentencepiece/src/src/bpe_model_trainer.cc b/third_party/sentencepiece/src/src/bpe_model_trainer.cc
+diff --git a/src/src/bpe_model_trainer.cc b/src/src/bpe_model_trainer.cc
 index 3594a66b053d9..72515af3ebcc2 100644
---- a/third_party/sentencepiece/src/src/bpe_model_trainer.cc
-+++ b/third_party/sentencepiece/src/src/bpe_model_trainer.cc
+--- a/src/src/bpe_model_trainer.cc
++++ b/src/src/bpe_model_trainer.cc
 @@ -42,7 +42,7 @@ std::string Trainer::Symbol::ToString() const {
  
  Trainer::Symbol* Trainer::GetCharSymbol(char32_t c) {
@@ -109,10 +109,10 @@ index 3594a66b053d9..72515af3ebcc2 100644
                  << " size=" << final_pieces_.size()
                  << " all=" << symbols_cache_.size() << " active=" << pq_.size()
                  << " piece=" << best_symbol->ToString();
-diff --git a/third_party/sentencepiece/src/src/bpe_model_trainer.h b/third_party/sentencepiece/src/src/bpe_model_trainer.h
+diff --git a/src/src/bpe_model_trainer.h b/src/src/bpe_model_trainer.h
 index b5ca82dd3c54d..0fa0ad153188e 100644
---- a/third_party/sentencepiece/src/src/bpe_model_trainer.h
-+++ b/third_party/sentencepiece/src/src/bpe_model_trainer.h
+--- a/src/src/bpe_model_trainer.h
++++ b/src/src/bpe_model_trainer.h
 @@ -83,10 +83,10 @@ class Trainer : public TrainerInterface {
    // Encodes sid, left and right bigram index into uint64_t.
    // Encoded value keeps the order of sid, left and right.
@@ -128,10 +128,10 @@ index b5ca82dd3c54d..0fa0ad153188e 100644
      const uint64_t n = (static_cast<uint64_t>(sid) << 32) |
                         (static_cast<uint64_t>(l) << 16) | r;
      return n;
-diff --git a/third_party/sentencepiece/src/src/builder.cc b/third_party/sentencepiece/src/src/builder.cc
+diff --git a/src/src/builder.cc b/src/src/builder.cc
 index 94fa4157ff3dd..ed63b2e8f636e 100644
---- a/third_party/sentencepiece/src/src/builder.cc
-+++ b/third_party/sentencepiece/src/src/builder.cc
+--- a/src/src/builder.cc
++++ b/src/src/builder.cc
 @@ -69,14 +69,14 @@ constexpr absl::string_view kCompileError =
  Builder::Chars UnicodeNormalize(UNormalizationMode mode,
                                  const Builder::Chars& input) {
@@ -318,10 +318,10 @@ index 94fa4157ff3dd..ed63b2e8f636e 100644
      if (fields.size() == 1) {
        fields.emplace_back("");  // Deletion rule.
      }
-diff --git a/third_party/sentencepiece/src/src/common.h b/third_party/sentencepiece/src/src/common.h
+diff --git a/src/src/common.h b/src/src/common.h
 index 8a251ab8f023e..ca5f3048c8b33 100644
---- a/third_party/sentencepiece/src/src/common.h
-+++ b/third_party/sentencepiece/src/src/common.h
+--- a/src/src/common.h
++++ b/src/src/common.h
 @@ -18,9 +18,9 @@
  #include <cstdint>
  #include <iostream>
@@ -334,10 +334,10 @@ index 8a251ab8f023e..ca5f3048c8b33 100644
  #include "absl/status/status.h"
  #include "absl/status/status_macros.h"
  #include "absl/strings/string_view.h"
-diff --git a/third_party/sentencepiece/src/src/compile_charsmap_main.cc b/third_party/sentencepiece/src/src/compile_charsmap_main.cc
+diff --git a/src/src/compile_charsmap_main.cc b/src/src/compile_charsmap_main.cc
 index cc744ea8f2102..4c7d460614ec2 100644
---- a/third_party/sentencepiece/src/src/compile_charsmap_main.cc
-+++ b/third_party/sentencepiece/src/src/compile_charsmap_main.cc
+--- a/src/src/compile_charsmap_main.cc
++++ b/src/src/compile_charsmap_main.cc
 @@ -133,7 +133,7 @@ struct BinaryBlob {
          "{\n";
    std::vector<size_t> offset;
@@ -374,10 +374,10 @@ index cc744ea8f2102..4c7d460614ec2 100644
      output->Write(sentencepiece::MakeHeader(data));
    }
  
-diff --git a/third_party/sentencepiece/src/src/filesystem.cc b/third_party/sentencepiece/src/src/filesystem.cc
+diff --git a/src/src/filesystem.cc b/src/src/filesystem.cc
 index 174b6bfa14e11..3698b234195a5 100644
---- a/third_party/sentencepiece/src/src/filesystem.cc
-+++ b/third_party/sentencepiece/src/src/filesystem.cc
+--- a/src/src/filesystem.cc
++++ b/src/src/filesystem.cc
 @@ -58,7 +58,7 @@ class PosixReadableFile : public ReadableFile {
  
    bool ReadAll(std::string* line) override {
@@ -387,10 +387,10 @@ index 174b6bfa14e11..3698b234195a5 100644
        return false;
      }
      line->assign(std::istreambuf_iterator<char>(*is_),
-diff --git a/third_party/sentencepiece/src/src/model_factory.cc b/third_party/sentencepiece/src/src/model_factory.cc
+diff --git a/src/src/model_factory.cc b/src/src/model_factory.cc
 index 59874450d4007..c88d6348a8fab 100644
---- a/third_party/sentencepiece/src/src/model_factory.cc
-+++ b/third_party/sentencepiece/src/src/model_factory.cc
+--- a/src/src/model_factory.cc
++++ b/src/src/model_factory.cc
 @@ -40,7 +40,7 @@ std::unique_ptr<ModelInterface> ModelFactory::Create(
        return std::make_unique<character::Model>(model_proto);
        break;
@@ -400,10 +400,10 @@ index 59874450d4007..c88d6348a8fab 100644
        return nullptr;
        break;
    }
-diff --git a/third_party/sentencepiece/src/src/model_interface.h b/third_party/sentencepiece/src/src/model_interface.h
+diff --git a/src/src/model_interface.h b/src/src/model_interface.h
 index 089a9cad444fa..d093276445a26 100644
---- a/third_party/sentencepiece/src/src/model_interface.h
-+++ b/third_party/sentencepiece/src/src/model_interface.h
+--- a/src/src/model_interface.h
++++ b/src/src/model_interface.h
 @@ -88,13 +88,13 @@ class ModelInterface {
    // The same as above, but returns nbest result with score.
    [[nodiscard]] virtual NBestEncodeResult NBestEncode(
@@ -564,10 +564,10 @@ index 089a9cad444fa..d093276445a26 100644
      return (model_proto_->pieces(id).type() == ModelProto::SentencePiece::BYTE);
    }
  
-diff --git a/third_party/sentencepiece/src/src/normalizer.cc b/third_party/sentencepiece/src/src/normalizer.cc
+diff --git a/src/src/normalizer.cc b/src/src/normalizer.cc
 index 5a36414ae4a4c..16fa3917d0727 100644
---- a/third_party/sentencepiece/src/src/normalizer.cc
-+++ b/third_party/sentencepiece/src/src/normalizer.cc
+--- a/src/src/normalizer.cc
++++ b/src/src/normalizer.cc
 @@ -342,7 +342,7 @@ PrefixMatcher::PrefixMatcher(const std::set<absl::string_view>& dic) {
    trie_ = std::make_unique<Darts::DoubleArray>();
    if (trie_->build(key.size(), const_cast<char**>(key.data()),
@@ -577,10 +577,10 @@ index 5a36414ae4a4c..16fa3917d0727 100644
      trie_.reset();
    }
  }
-diff --git a/third_party/sentencepiece/src/src/normalizer_test.cc b/third_party/sentencepiece/src/src/normalizer_test.cc
+diff --git a/src/src/normalizer_test.cc b/src/src/normalizer_test.cc
 index 32258265e56a9..5ab9226773495 100644
---- a/third_party/sentencepiece/src/src/normalizer_test.cc
-+++ b/third_party/sentencepiece/src/src/normalizer_test.cc
+--- a/src/src/normalizer_test.cc
++++ b/src/src/normalizer_test.cc
 @@ -306,7 +306,7 @@ TEST(NormalizerTest, NormalizeFullTest) {
    {
      const std::string input = " I   saw a　 　girl　　";
@@ -590,10 +590,10 @@ index 32258265e56a9..5ab9226773495 100644
      EXPECT_EQ(WS "I" WS "saw" WS "a" WS "girl", output);
      const std::vector<size_t> expected = {1,  1,  1,       // WS (3byte)
                                            1,               // I
-diff --git a/third_party/sentencepiece/src/src/sentencepiece_processor.cc b/third_party/sentencepiece/src/src/sentencepiece_processor.cc
+diff --git a/src/src/sentencepiece_processor.cc b/src/src/sentencepiece_processor.cc
 index 5d58d070a3d08..6e8d12e86f08a 100644
---- a/third_party/sentencepiece/src/src/sentencepiece_processor.cc
-+++ b/third_party/sentencepiece/src/src/sentencepiece_processor.cc
+--- a/src/src/sentencepiece_processor.cc
++++ b/src/src/sentencepiece_processor.cc
 @@ -242,7 +242,7 @@ absl::Status SentencePieceProcessor::Load(absl::string_view filename) {
  }
  
@@ -656,10 +656,10 @@ index 5d58d070a3d08..6e8d12e86f08a 100644
      return value;                                                            \
    }
  
-diff --git a/third_party/sentencepiece/src/src/sentencepiece_processor.h b/third_party/sentencepiece/src/src/sentencepiece_processor.h
+diff --git a/src/src/sentencepiece_processor.h b/src/src/sentencepiece_processor.h
 index 388835adcc624..9ac8134b0f7ab 100644
---- a/third_party/sentencepiece/src/src/sentencepiece_processor.h
-+++ b/third_party/sentencepiece/src/src/sentencepiece_processor.h
+--- a/src/src/sentencepiece_processor.h
++++ b/src/src/sentencepiece_processor.h
 @@ -67,10 +67,10 @@ namespace sentencepiece {
  //
  //   string detok;
@@ -697,10 +697,10 @@ index 388835adcc624..9ac8134b0f7ab 100644
  absl::Status LoadModelProto(absl::string_view, ModelProto* model_proto);
  
  // Saves `model_proto` as `filename`.
-diff --git a/third_party/sentencepiece/src/src/sentencepiece_processor_benchmarks_test.cc b/third_party/sentencepiece/src/src/sentencepiece_processor_benchmarks_test.cc
+diff --git a/src/src/sentencepiece_processor_benchmarks_test.cc b/src/src/sentencepiece_processor_benchmarks_test.cc
 index 1f8c917f6ee1f..53f1b806263c4 100644
---- a/third_party/sentencepiece/src/src/sentencepiece_processor_benchmarks_test.cc
-+++ b/third_party/sentencepiece/src/src/sentencepiece_processor_benchmarks_test.cc
+--- a/src/src/sentencepiece_processor_benchmarks_test.cc
++++ b/src/src/sentencepiece_processor_benchmarks_test.cc
 @@ -49,19 +49,19 @@ constexpr int kNumThreads = 16;
  
  ModelProto LoadModelProto(absl::string_view filename) {
@@ -744,10 +744,10 @@ index 1f8c917f6ee1f..53f1b806263c4 100644
  
    const std::string input_fullpath =
        util::JoinPath(testing::SrcDir(), input_filename);
-diff --git a/third_party/sentencepiece/src/src/sentencepiece_processor_parallel_test.cc b/third_party/sentencepiece/src/src/sentencepiece_processor_parallel_test.cc
+diff --git a/src/src/sentencepiece_processor_parallel_test.cc b/src/src/sentencepiece_processor_parallel_test.cc
 index 685388264a705..d2a3d4c831a8e 100644
---- a/third_party/sentencepiece/src/src/sentencepiece_processor_parallel_test.cc
-+++ b/third_party/sentencepiece/src/src/sentencepiece_processor_parallel_test.cc
+--- a/src/src/sentencepiece_processor_parallel_test.cc
++++ b/src/src/sentencepiece_processor_parallel_test.cc
 @@ -52,8 +52,8 @@ class SentencePieceProcessorMaxLoops : public SentencePieceProcessor {
  std::string LoadTestData(const std::string& filename, int num_lines) {
    auto fs = filesystem::NewReadableFile(
@@ -938,10 +938,10 @@ index 685388264a705..d2a3d4c831a8e 100644
                                 &parallel_encode_spt));
      ExpectSptEqual(sequential_encode_spt, parallel_encode_spt);
    }
-diff --git a/third_party/sentencepiece/src/src/sentencepiece_processor_test.cc b/third_party/sentencepiece/src/src/sentencepiece_processor_test.cc
+diff --git a/src/src/sentencepiece_processor_test.cc b/src/src/sentencepiece_processor_test.cc
 index 34b573ba3b129..3246dec249a1b 100644
---- a/third_party/sentencepiece/src/src/sentencepiece_processor_test.cc
-+++ b/third_party/sentencepiece/src/src/sentencepiece_processor_test.cc
+--- a/src/src/sentencepiece_processor_test.cc
++++ b/src/src/sentencepiece_processor_test.cc
 @@ -529,7 +529,7 @@ TEST(SentencepieceProcessorTest, SampleEncodeTest) {
      else if (GetSpVec(nbest_result[1].first) == output)
        freq[1]++;
@@ -960,10 +960,10 @@ index 34b573ba3b129..3246dec249a1b 100644
    EXPECT_EQ(std::vector<std::string>(
                  {WS, "a", "b", "<USER>", "c", "<", "u", "s", "e", "r", ">"}),
              pieces);
-diff --git a/third_party/sentencepiece/src/src/sentencepiece_trainer.cc b/third_party/sentencepiece/src/src/sentencepiece_trainer.cc
+diff --git a/src/src/sentencepiece_trainer.cc b/src/src/sentencepiece_trainer.cc
 index 3f62030ab52d8..56bd3c63f927f 100644
---- a/third_party/sentencepiece/src/src/sentencepiece_trainer.cc
-+++ b/third_party/sentencepiece/src/src/sentencepiece_trainer.cc
+--- a/src/src/sentencepiece_trainer.cc
++++ b/src/src/sentencepiece_trainer.cc
 @@ -76,7 +76,7 @@ absl::Status SentencePieceTrainer::Train(
      info += "denormalizer_spec {}";
    }
@@ -991,10 +991,10 @@ index 3f62030ab52d8..56bd3c63f927f 100644
    TrainerSpec trainer_spec;
    NormalizerSpec normalizer_spec;
    NormalizerSpec denormalizer_spec;
-diff --git a/third_party/sentencepiece/src/src/sentencepiece_trainer_test.cc b/third_party/sentencepiece/src/src/sentencepiece_trainer_test.cc
+diff --git a/src/src/sentencepiece_trainer_test.cc b/src/src/sentencepiece_trainer_test.cc
 index 901295ec8c2ae..682443233106e 100644
---- a/third_party/sentencepiece/src/src/sentencepiece_trainer_test.cc
-+++ b/third_party/sentencepiece/src/src/sentencepiece_trainer_test.cc
+--- a/src/src/sentencepiece_trainer_test.cc
++++ b/src/src/sentencepiece_trainer_test.cc
 @@ -123,7 +123,7 @@ TEST(SentencePieceTrainerTest, TrainFromIterator) {
    std::vector<std::string> sentences;
    {
@@ -1004,10 +1004,10 @@ index 901295ec8c2ae..682443233106e 100644
      std::string line;
      while (fs->ReadLine(&line)) sentences.emplace_back(line);
    }
-diff --git a/third_party/sentencepiece/src/src/spm_decode_main.cc b/third_party/sentencepiece/src/src/spm_decode_main.cc
+diff --git a/src/src/spm_decode_main.cc b/src/src/spm_decode_main.cc
 index 97cde9928a6b4..94914197a6833 100644
---- a/third_party/sentencepiece/src/src/spm_decode_main.cc
-+++ b/third_party/sentencepiece/src/src/spm_decode_main.cc
+--- a/src/src/spm_decode_main.cc
++++ b/src/src/spm_decode_main.cc
 @@ -49,15 +49,15 @@ int main(int argc, char *argv[]) {
    if (rest_args.empty())
      rest_args.push_back("");  // empty means that reading from stdin.
@@ -1075,10 +1075,10 @@ index 97cde9928a6b4..94914197a6833 100644
      while (input->ReadLine(&line)) {
        const auto pieces = absl::StrSplit(line, " ");
        process(pieces);
-diff --git a/third_party/sentencepiece/src/src/spm_encode_main.cc b/third_party/sentencepiece/src/src/spm_encode_main.cc
+diff --git a/src/src/spm_encode_main.cc b/src/src/spm_encode_main.cc
 index 44328f756e625..a1b73e591ef35 100644
---- a/third_party/sentencepiece/src/src/spm_encode_main.cc
-+++ b/third_party/sentencepiece/src/src/spm_encode_main.cc
+--- a/src/src/spm_encode_main.cc
++++ b/src/src/spm_encode_main.cc
 @@ -74,20 +74,20 @@ int main(int argc, char* argv[]) {
    if (rest_args.empty())
      rest_args.push_back("");  // empty means that reading from stdin.
@@ -1182,10 +1182,10 @@ index 44328f756e625..a1b73e591ef35 100644
      while (input->ReadLine(&line)) {
        process(line);
      }
-diff --git a/third_party/sentencepiece/src/src/spm_export_vocab_main.cc b/third_party/sentencepiece/src/src/spm_export_vocab_main.cc
+diff --git a/src/src/spm_export_vocab_main.cc b/src/src/spm_export_vocab_main.cc
 index ed3c577065a7e..25db108c06c16 100644
---- a/third_party/sentencepiece/src/src/spm_export_vocab_main.cc
-+++ b/third_party/sentencepiece/src/src/spm_export_vocab_main.cc
+--- a/src/src/spm_export_vocab_main.cc
++++ b/src/src/spm_export_vocab_main.cc
 @@ -32,11 +32,11 @@ int main(int argc, char *argv[]) {
    sentencepiece::ParseCommandLineFlags(argv[0], &argc, &argv, true);
  
@@ -1209,10 +1209,10 @@ index ed3c577065a7e..25db108c06c16 100644
                 << absl::GetFlag(FLAGS_output_format);
    }
  
-diff --git a/third_party/sentencepiece/src/src/spm_normalize_main.cc b/third_party/sentencepiece/src/src/spm_normalize_main.cc
+diff --git a/src/src/spm_normalize_main.cc b/src/src/spm_normalize_main.cc
 index e15fa324b4acc..d88705c1d327f 100644
---- a/third_party/sentencepiece/src/src/spm_normalize_main.cc
-+++ b/third_party/sentencepiece/src/src/spm_normalize_main.cc
+--- a/src/src/spm_normalize_main.cc
++++ b/src/src/spm_normalize_main.cc
 @@ -63,17 +63,17 @@ int main(int argc, char *argv[]) {
    if (!absl::GetFlag(FLAGS_model).empty()) {
      ModelProto model_proto;
@@ -1262,10 +1262,10 @@ index e15fa324b4acc..d88705c1d327f 100644
        while (input->ReadLine(&line)) {
          output->WriteLine(normalizer.Normalize(line));
        }
-diff --git a/third_party/sentencepiece/src/src/spm_train_main.cc b/third_party/sentencepiece/src/src/spm_train_main.cc
+diff --git a/src/src/spm_train_main.cc b/src/src/spm_train_main.cc
 index 7218bbc8bd3b9..f315127e6cffe 100644
---- a/third_party/sentencepiece/src/src/spm_train_main.cc
-+++ b/third_party/sentencepiece/src/src/spm_train_main.cc
+--- a/src/src/spm_train_main.cc
++++ b/src/src/spm_train_main.cc
 @@ -171,8 +171,8 @@ int main(int argc, char* argv[]) {
    sentencepiece::NormalizerSpec normalizer_spec;
    NormalizerSpec denormalizer_spec;
@@ -1299,10 +1299,10 @@ index 7218bbc8bd3b9..f315127e6cffe 100644
        trainer_spec, normalizer_spec, denormalizer_spec));
  
    return 0;
-diff --git a/third_party/sentencepiece/src/src/trainer_factory.cc b/third_party/sentencepiece/src/src/trainer_factory.cc
+diff --git a/src/src/trainer_factory.cc b/src/src/trainer_factory.cc
 index 6fe73c36e9ddd..757fec0a7c704 100644
---- a/third_party/sentencepiece/src/src/trainer_factory.cc
-+++ b/third_party/sentencepiece/src/src/trainer_factory.cc
+--- a/src/src/trainer_factory.cc
++++ b/src/src/trainer_factory.cc
 @@ -43,7 +43,7 @@ std::unique_ptr<TrainerInterface> TrainerFactory::Create(
                                                    denormalizer_spec);
        break;
@@ -1312,10 +1312,10 @@ index 6fe73c36e9ddd..757fec0a7c704 100644
        break;
    }
  
-diff --git a/third_party/sentencepiece/src/src/trainer_interface.cc b/third_party/sentencepiece/src/src/trainer_interface.cc
+diff --git a/src/src/trainer_interface.cc b/src/src/trainer_interface.cc
 index 73f331b0ff758..105e43906e800 100644
---- a/third_party/sentencepiece/src/src/trainer_interface.cc
-+++ b/third_party/sentencepiece/src/src/trainer_interface.cc
+--- a/src/src/trainer_interface.cc
++++ b/src/src/trainer_interface.cc
 @@ -69,17 +69,17 @@ absl::Status VerifySpec(const TrainerSpec& trainer_spec) {
          << "seed_sentencepieces_file is only supported for UNIGRAM model.";
    }
@@ -1619,10 +1619,10 @@ index 73f331b0ff758..105e43906e800 100644
                     << "] contains escaped characters that break the format of "
                     << filename;
      }
-diff --git a/third_party/sentencepiece/src/src/unicode_script_test.cc b/third_party/sentencepiece/src/src/unicode_script_test.cc
+diff --git a/src/src/unicode_script_test.cc b/src/src/unicode_script_test.cc
 index 74b0e02282b2c..aece0fc5161bf 100644
---- a/third_party/sentencepiece/src/src/unicode_script_test.cc
-+++ b/third_party/sentencepiece/src/src/unicode_script_test.cc
+--- a/src/src/unicode_script_test.cc
++++ b/src/src/unicode_script_test.cc
 @@ -23,7 +23,7 @@ namespace sentencepiece {
  namespace unicode_script {
  ScriptType GetScriptType(absl::string_view s) {
@@ -1632,10 +1632,10 @@ index 74b0e02282b2c..aece0fc5161bf 100644
    return GetScript(ut[0]);
  }
  
-diff --git a/third_party/sentencepiece/src/src/unigram_model.cc b/third_party/sentencepiece/src/src/unigram_model.cc
+diff --git a/src/src/unigram_model.cc b/src/src/unigram_model.cc
 index cd70a76e01a7c..2c0bc4141a72e 100644
---- a/third_party/sentencepiece/src/src/unigram_model.cc
-+++ b/third_party/sentencepiece/src/src/unigram_model.cc
+--- a/src/src/unigram_model.cc
++++ b/src/src/unigram_model.cc
 @@ -193,7 +193,7 @@ Lattice::LatticePathWithScore Lattice::Viterbi() {
          }
        }
@@ -1708,10 +1708,10 @@ index cd70a76e01a7c..2c0bc4141a72e 100644
                   << expected << ", Score: " << expected_score
                   << ". Right: " << actual << ", Score: " << actual_score << ".";
      return false;
-diff --git a/third_party/sentencepiece/src/src/unigram_model_trainer.cc b/third_party/sentencepiece/src/src/unigram_model_trainer.cc
+diff --git a/src/src/unigram_model_trainer.cc b/src/src/unigram_model_trainer.cc
 index 06ed2d1765012..8673acc7c5895 100644
---- a/third_party/sentencepiece/src/src/unigram_model_trainer.cc
-+++ b/third_party/sentencepiece/src/src/unigram_model_trainer.cc
+--- a/src/src/unigram_model_trainer.cc
++++ b/src/src/unigram_model_trainer.cc
 @@ -101,7 +101,7 @@ class BoundedPriorityQueue {
  
   private:
@@ -1849,10 +1849,10 @@ index 06ed2d1765012..8673acc7c5895 100644
                  << " obj=" << objective << " num_tokens=" << num_tokens
                  << " num_tokens/piece="
                  << 1.0 * num_tokens / model.GetPieceSize();
-diff --git a/third_party/sentencepiece/src/src/unigram_model_trainer_test.cc b/third_party/sentencepiece/src/src/unigram_model_trainer_test.cc
+diff --git a/src/src/unigram_model_trainer_test.cc b/src/src/unigram_model_trainer_test.cc
 index 9093d55d25a39..d904a0180bff4 100644
---- a/third_party/sentencepiece/src/src/unigram_model_trainer_test.cc
-+++ b/third_party/sentencepiece/src/src/unigram_model_trainer_test.cc
+--- a/src/src/unigram_model_trainer_test.cc
++++ b/src/src/unigram_model_trainer_test.cc
 @@ -190,7 +190,7 @@ TEST(UnigramTrainerTest, EndToEndTest) {
                    .ok());
    // TODO(taku): Temporally disable this test on Windows.
@@ -1862,10 +1862,10 @@ index 9093d55d25a39..d904a0180bff4 100644
    EXPECT_EQ(
        WS
        " 吾輩 《 わが はい 》 は猫である 。 名前はまだ 無 い 。 どこ で 生 れた "
-diff --git a/third_party/sentencepiece/src/src/util.h b/third_party/sentencepiece/src/src/util.h
+diff --git a/src/src/util.h b/src/src/util.h
 index 63b4873817a12..ecaa4ed3fc290 100644
---- a/third_party/sentencepiece/src/src/util.h
-+++ b/third_party/sentencepiece/src/src/util.h
+--- a/src/src/util.h
++++ b/src/src/util.h
 @@ -171,7 +171,7 @@ const typename Collection::value_type::second_type& FindOrDie(
      const typename Collection::value_type::first_type& key) {
    const auto it = collection.find(key);
@@ -1884,10 +1884,10 @@ index 63b4873817a12..ecaa4ed3fc290 100644
  }
  
  }  // namespace port
-diff --git a/third_party/sentencepiece/src/src/util_test.cc b/third_party/sentencepiece/src/src/util_test.cc
+diff --git a/src/src/util_test.cc b/src/src/util_test.cc
 index b9014055ce000..82182bd0464fb 100644
---- a/third_party/sentencepiece/src/src/util_test.cc
-+++ b/third_party/sentencepiece/src/src/util_test.cc
+--- a/src/src/util_test.cc
++++ b/src/src/util_test.cc
 @@ -32,12 +32,12 @@ constexpr int kMaxUnicode = 0x10FFFF;
  TEST(UtilTest, Hex) {
    for (char32_t a = 0; a < 100000; ++a) {

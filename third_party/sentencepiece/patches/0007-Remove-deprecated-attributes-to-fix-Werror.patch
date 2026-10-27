@@ -7,10 +7,10 @@ Subject: [PATCH 7/7] Remove deprecated attributes to fix -Werror
  .../src/src/sentencepiece_processor.h         | 65 ++-----------------
  1 file changed, 6 insertions(+), 59 deletions(-)
 
-diff --git a/third_party/sentencepiece/src/src/sentencepiece_processor.h b/third_party/sentencepiece/src/src/sentencepiece_processor.h
+diff --git a/src/src/sentencepiece_processor.h b/src/src/sentencepiece_processor.h
 index 9ac8134b0f7ab..487a342c03327 100644
---- a/third_party/sentencepiece/src/src/sentencepiece_processor.h
-+++ b/third_party/sentencepiece/src/src/sentencepiece_processor.h
+--- a/src/src/sentencepiece_processor.h
++++ b/src/src/sentencepiece_processor.h
 @@ -273,24 +273,15 @@ class SentencePieceProcessor {
  
    // Restricts the vocabulary set.

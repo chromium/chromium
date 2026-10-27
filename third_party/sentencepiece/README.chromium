@@ -22,7 +22,8 @@ not depend on language-specific pre/postprocessing.
 
 Making new patches:
 1. git commit changes, be sure to write a helpful commit message
-2. Run `git format-patch -o third_party/sentencepiece/patches/ origin/main third_party/sentencepiece/src/`
+2. Run `git format-patch --relative=third_party/sentencepiece -o third_party/sentencepiece/patches/ origin/main third_party/sentencepiece/src/`
+3. Add the new patch to patch.apply in copy.bara.sky
 
 Patches:
 * 0001-Fix-absl-includes.patch - Rewrites absl includes from third_party/absl to
@@ -40,6 +41,7 @@ In addition the unused data, python, third_party/absl, and
 third_party/protobuf-lite directories were removed.
 
 Rolling:
-* Run roll.sh /tmp/sentencepiece to roll to head.
+* Update commit hashes in crowbar.txtpb, then run from this directory:
+  crowbar build --no-dry-run ./
 * If patching fails, you may need to update the patch files.
 * Test changes by attempting to build it.

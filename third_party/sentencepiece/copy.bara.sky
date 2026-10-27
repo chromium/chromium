@@ -1,0 +1,37 @@
+load("//crowbar", "crowbar_workflow")
+
+crowbar_workflow(
+    # Copy only the files we need.
+    origin_files = glob(
+        ["**"],
+        exclude = [
+            "contrib/docker/**",
+            "contrib/nlcodec/**",
+            "data/**",
+            "**/data/**",
+            "python/**",
+            "**/python/**",
+            "third_party/absl/**",
+            "third_party/protobuf-lite/**",
+            ".github/**",
+            "**/.github/**",
+            "**/.bazelrc",
+            "**/.travis.yml",
+            "**/BUILD",
+            "**/WORKSPACE",
+        ],
+    ),
+    transformations = [
+        patch.apply(
+            patches = [
+            "patches/0001-Fix-absl-includes.patch",
+            "patches/0002-Remove-unused-absl-flags.patch",
+            "patches/0003-Update-absl-logging.patch",
+            "patches/0004-Disable-exceptions-in-darts.h-under-DARTS_DISABLE_EX.patch",
+            "patches/0005-Resolve-macro-collision-with-MediaPipe-s-RET_CHECK.patch",
+            "patches/0006-Remove-internal-absl-base-internal-endian.h-dependen.patch",
+            "patches/0007-Remove-deprecated-attributes-to-fix-Werror.patch",
+            ],
+        ),
+    ],
+)

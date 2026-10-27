@@ -8,10 +8,10 @@ Subject: [PATCH 2/7] Remove unused absl flags
  third_party/sentencepiece/src/src/init.h  |  3 --
  2 files changed, 39 deletions(-)
 
-diff --git a/third_party/sentencepiece/src/src/init.cc b/third_party/sentencepiece/src/src/init.cc
+diff --git a/src/src/init.cc b/src/src/init.cc
 index 641d9710d7396..fc7cc2d4bc6b1 100644
---- a/third_party/sentencepiece/src/src/init.cc
-+++ b/third_party/sentencepiece/src/src/init.cc
+--- a/src/src/init.cc
++++ b/src/src/init.cc
 @@ -15,13 +15,6 @@
  #include "init.h"
  
@@ -63,10 +63,10 @@ index 641d9710d7396..fc7cc2d4bc6b1 100644
  
  void ShutdownLibrary() { google::protobuf::ShutdownProtobufLibrary(); }
  
-diff --git a/third_party/sentencepiece/src/src/init.h b/third_party/sentencepiece/src/src/init.h
+diff --git a/src/src/init.h b/src/src/init.h
 index 7357121e196a2..7c35f4cd8c971 100644
---- a/third_party/sentencepiece/src/src/init.h
-+++ b/third_party/sentencepiece/src/src/init.h
+--- a/src/src/init.h
++++ b/src/src/init.h
 @@ -19,9 +19,6 @@
  
  namespace sentencepiece {
