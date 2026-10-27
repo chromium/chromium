@@ -14,7 +14,6 @@
 #include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"
 #include "components/optimization_guide/core/hints/hints_fetcher.h"
 #include "components/optimization_guide/core/hints/hints_processing_util.h"
-#include "components/optimization_guide/core/optimization_guide_enums.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/proto/hints.pb.h"
 #include "content/public/browser/browser_thread.h"

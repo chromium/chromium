@@ -46,7 +46,6 @@
 #include "components/network_session_configurator/common/network_switches.h"
 #include "components/optimization_guide/core/delivery/model_info.h"
 #include "components/optimization_guide/core/inference/execution_status.h"
-#include "components/optimization_guide/core/optimization_guide_enums.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_proto_util.h"
 #include "components/optimization_guide/proto/page_entities_metadata.pb.h"

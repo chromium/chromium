@@ -9,7 +9,6 @@
 #include "base/test/test.pb.h"
 #include "base/test/test_future.h"
 #include "components/optimization_guide/core/model_execution/multimodal_message.h"
-#include "components/optimization_guide/core/optimization_guide_enums.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/proto/features/compose.pb.h"
 #include "components/optimization_guide/proto/features/history_answer.pb.h"

@@ -25,7 +25,6 @@
 #include "components/optimization_guide/core/feature_registry/feature_keys.h"
 #include "components/optimization_guide/core/feature_registry/mqls_feature_registry.h"
 #include "components/optimization_guide/core/model_execution/on_device_features.h"
-#include "components/optimization_guide/core/optimization_guide_enums.h"
 #include "components/optimization_guide/proto/common_types.pb.h"
 #include "components/variations/hashing.h"
 #include "google_apis/gaia/gaia_constants.h"
