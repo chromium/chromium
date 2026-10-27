@@ -23,7 +23,10 @@ import androidx.activity.ComponentDialog;
 import org.jni_zero.CalledByNative;
 import org.jni_zero.CalledByNativeForTesting;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniPtr;
+import org.jni_zero.JniRawPtr;
 import org.jni_zero.JniType;
+import org.jni_zero.JniTypeToken;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.version_info.VersionInfo;
@@ -54,7 +57,10 @@ import org.chromium.ui.widget.ChromeImageButton;
 @JNINamespace("glic")
 @NullMarked
 public class GlicExperimentalOptInUiCoordinator {
-    private long mNativePtr;
+    @JniType("::glic::GlicExperimentalOptInUIHostAndroid")
+    interface NativeGlicExperimentalOptInUIHostAndroid extends JniTypeToken {}
+
+    private @Nullable JniRawPtr<NativeGlicExperimentalOptInUIHostAndroid> mNativePtr;
     private final Activity mActivity;
     private final WindowAndroid mWindowAndroid;
     private final ModalDialogManager mModalDialogManager;
@@ -95,32 +101,42 @@ public class GlicExperimentalOptInUiCoordinator {
 
     @CalledByNative
     public static @Nullable GlicExperimentalOptInUiCoordinator show(
-            long nativePtr,
+            JniRawPtr<NativeGlicExperimentalOptInUIHostAndroid> nativePtr,
             @JniType("ui::WindowAndroid*") WindowAndroid windowAndroid,
             @JniType("content::WebContents*") WebContents webContents) {
-        if (windowAndroid.getActivity() == null) {
-            return null;
-        }
-        Activity activity = windowAndroid.getActivity().get();
-        if (activity == null || activity.isFinishing() || activity.isDestroyed()) {
-            return null;
-        }
-        ModalDialogManager modalDialogManager = windowAndroid.getModalDialogManager();
-        if (modalDialogManager == null) {
-            return null;
-        }
+        JniRawPtr<NativeGlicExperimentalOptInUIHostAndroid> ptrToRelease = nativePtr;
+        try {
+            if (windowAndroid.getActivity() == null) {
+                return null;
+            }
+            Activity activity = windowAndroid.getActivity().get();
+            if (activity == null || activity.isFinishing() || activity.isDestroyed()) {
+                return null;
+            }
+            ModalDialogManager modalDialogManager = windowAndroid.getModalDialogManager();
+            if (modalDialogManager == null) {
+                return null;
+            }
 
-        GlicExperimentalOptInUiCoordinator coordinator =
-                new GlicExperimentalOptInUiCoordinator(
-                        nativePtr, activity, windowAndroid, modalDialogManager, webContents);
-        if (!coordinator.showInternal()) {
-            return null;
+            GlicExperimentalOptInUiCoordinator coordinator =
+                    new GlicExperimentalOptInUiCoordinator(
+                            nativePtr, activity, windowAndroid, modalDialogManager, webContents);
+            if (!coordinator.showInternal()) {
+                ptrToRelease = null;
+                coordinator.destroy();
+                return null;
+            }
+            ptrToRelease = null;
+            return coordinator;
+        } finally {
+            if (ptrToRelease != null) {
+                ptrToRelease.release();
+            }
         }
-        return coordinator;
     }
 
     private GlicExperimentalOptInUiCoordinator(
-            long nativePtr,
+            JniRawPtr<NativeGlicExperimentalOptInUIHostAndroid> nativePtr,
             Activity activity,
             WindowAndroid windowAndroid,
             ModalDialogManager modalDialogManager,
@@ -263,14 +279,17 @@ public class GlicExperimentalOptInUiCoordinator {
     }
 
     private void onDialogDismissed() {
-        if (mNativePtr != 0) {
+        if (mNativePtr != null) {
             GlicExperimentalOptInUiCoordinatorJni.get().onDismissed(mNativePtr);
         }
         destroy();
     }
 
     private void destroy() {
-        mNativePtr = 0;
+        if (mNativePtr != null) {
+            mNativePtr.release();
+            mNativePtr = null;
+        }
         mModalDialogManager.removeObserver(mDialogObserver);
         if (mThinWebView != null) {
             mThinWebView.destroy();
@@ -285,7 +304,10 @@ public class GlicExperimentalOptInUiCoordinator {
     void onNativeDestroyed() {
         // Must clear before dismiss(): onDismiss() runs synchronously, so
         // onDialogDismissed() would otherwise call back into a destructing host.
-        mNativePtr = 0;
+        if (mNativePtr != null) {
+            mNativePtr.release();
+            mNativePtr = null;
+        }
         dismiss();
     }
 
@@ -312,6 +334,6 @@ public class GlicExperimentalOptInUiCoordinator {
 
     @NativeMethods
     interface Natives {
-        void onDismissed(long nativeGlicExperimentalOptInUIHostAndroid);
+        void onDismissed(JniPtr<NativeGlicExperimentalOptInUIHostAndroid> self);
     }
 }

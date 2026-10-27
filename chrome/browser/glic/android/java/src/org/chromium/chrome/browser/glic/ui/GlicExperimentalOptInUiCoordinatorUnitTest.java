@@ -24,6 +24,7 @@ import android.widget.FrameLayout;
 import androidx.activity.ComponentDialog;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
+import org.jni_zero.JniRawPtr;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -104,11 +105,16 @@ public class GlicExperimentalOptInUiCoordinatorUnitTest {
 
     private TestActivity mActivity;
     private TestWindowAndroid mWindowAndroid;
+    private JniRawPtr<
+                    GlicExperimentalOptInUiCoordinator
+                            .NativeGlicExperimentalOptInUIHostAndroid>
+            mNativePtr;
 
     @Before
     public void setUp() {
         GlicExperimentalOptInUiCoordinatorJni.setInstanceForTesting(mNativeMock);
         ThinWebViewFactory.setInstanceForTesting(mThinWebView);
+        mNativePtr = JniRawPtr.createForTesting(NATIVE_PTR);
 
         mActivityScenarioRule
                 .getScenario()
@@ -128,13 +134,14 @@ public class GlicExperimentalOptInUiCoordinatorUnitTest {
 
     @After
     public void tearDown() {
+        mNativePtr.release();
         mWindowAndroid.destroy();
     }
 
     @Test
     public void testShow_Success() {
         GlicExperimentalOptInUiCoordinator coordinator =
-                GlicExperimentalOptInUiCoordinator.show(NATIVE_PTR, mWindowAndroid, mWebContents);
+                GlicExperimentalOptInUiCoordinator.show(mNativePtr, mWindowAndroid, mWebContents);
 
         assertNotNull("Coordinator should not be null", coordinator);
         verify(mThinWebView).attachWebContents(eq(mWebContents), any(), any());
@@ -154,7 +161,7 @@ public class GlicExperimentalOptInUiCoordinatorUnitTest {
         mWindowAndroid.mActivityRef = new WeakReference<>(null);
 
         GlicExperimentalOptInUiCoordinator coordinator =
-                GlicExperimentalOptInUiCoordinator.show(NATIVE_PTR, mWindowAndroid, mWebContents);
+                GlicExperimentalOptInUiCoordinator.show(mNativePtr, mWindowAndroid, mWebContents);
 
         assertNull("Coordinator should be null when activity is null", coordinator);
         verify(mModalDialogManager, never()).showDialog(any(), any(Integer.class));
@@ -165,7 +172,7 @@ public class GlicExperimentalOptInUiCoordinatorUnitTest {
         mWindowAndroid.mDialogManager = null;
 
         GlicExperimentalOptInUiCoordinator coordinator =
-                GlicExperimentalOptInUiCoordinator.show(NATIVE_PTR, mWindowAndroid, mWebContents);
+                GlicExperimentalOptInUiCoordinator.show(mNativePtr, mWindowAndroid, mWebContents);
 
         assertNull("Coordinator should be null when ModalDialogManager is null", coordinator);
         verify(mModalDialogManager, never()).showDialog(any(), any(Integer.class));
@@ -174,7 +181,7 @@ public class GlicExperimentalOptInUiCoordinatorUnitTest {
     @Test
     public void testOnDismiss_FromModalDialogManager() {
         GlicExperimentalOptInUiCoordinator coordinator =
-                GlicExperimentalOptInUiCoordinator.show(NATIVE_PTR, mWindowAndroid, mWebContents);
+                GlicExperimentalOptInUiCoordinator.show(mNativePtr, mWindowAndroid, mWebContents);
         assertNotNull(coordinator);
         PropertyModel model = coordinator.getPropertyModelForTesting();
         assertNotNull(model);
@@ -183,14 +190,14 @@ public class GlicExperimentalOptInUiCoordinatorUnitTest {
         assertNotNull("Controller should not be null", controller);
         controller.onDismiss(model, DialogDismissalCause.NAVIGATE_BACK_OR_TOUCH_OUTSIDE);
 
-        verify(mNativeMock).onDismissed(NATIVE_PTR);
+        verify(mNativeMock).onDismissed(mNativePtr);
         verify(mThinWebView).destroy();
     }
 
     @Test
     public void testOnNativeDestroyed() {
         GlicExperimentalOptInUiCoordinator coordinator =
-                GlicExperimentalOptInUiCoordinator.show(NATIVE_PTR, mWindowAndroid, mWebContents);
+                GlicExperimentalOptInUiCoordinator.show(mNativePtr, mWindowAndroid, mWebContents);
         assertNotNull(coordinator);
         PropertyModel model = coordinator.getPropertyModelForTesting();
         assertNotNull(model);
@@ -206,13 +213,13 @@ public class GlicExperimentalOptInUiCoordinatorUnitTest {
 
         verify(mThinWebView).destroy();
         // Regression guard: native destruction must not call back into native.
-        verify(mNativeMock, never()).onDismissed(any(Long.class));
+        verify(mNativeMock, never()).onDismissed(any());
     }
 
     @Test
     public void testCloseButton_ClicksAndDismissesDialog() {
         GlicExperimentalOptInUiCoordinator coordinator =
-                GlicExperimentalOptInUiCoordinator.show(NATIVE_PTR, mWindowAndroid, mWebContents);
+                GlicExperimentalOptInUiCoordinator.show(mNativePtr, mWindowAndroid, mWebContents);
         assertNotNull(coordinator);
         PropertyModel model = coordinator.getPropertyModelForTesting();
         assertNotNull(model);
@@ -238,7 +245,7 @@ public class GlicExperimentalOptInUiCoordinatorUnitTest {
     @Config(qualifiers = "w1000dp-h1000dp")
     public void testShow_FlagDisabled_UsesDefaultSize() {
         GlicExperimentalOptInUiCoordinator coordinator =
-                GlicExperimentalOptInUiCoordinator.show(NATIVE_PTR, mWindowAndroid, mWebContents);
+                GlicExperimentalOptInUiCoordinator.show(mNativePtr, mWindowAndroid, mWebContents);
         assertNotNull(coordinator);
 
         // The dialog offers 1000x1000dp, more than the card needs, so the card uses its full
@@ -260,7 +267,7 @@ public class GlicExperimentalOptInUiCoordinatorUnitTest {
     @EnableFeatures(ChromeFeatureList.GLIC_EXPERIMENTAL_OPT_IN_DIALOG_NON_SCROLLABLE)
     public void testShow_FlagEnabled_UsesNonScrollableHeight() {
         GlicExperimentalOptInUiCoordinator coordinator =
-                GlicExperimentalOptInUiCoordinator.show(NATIVE_PTR, mWindowAndroid, mWebContents);
+                GlicExperimentalOptInUiCoordinator.show(mNativePtr, mWindowAndroid, mWebContents);
         assertNotNull(coordinator);
 
         // Same as the default size, but the flag switches the height to the non-scrollable
@@ -277,7 +284,7 @@ public class GlicExperimentalOptInUiCoordinatorUnitTest {
     @Config(qualifiers = "w1000dp-h500dp-land")
     public void testShow_Landscape_UsesLandscapeSize() {
         GlicExperimentalOptInUiCoordinator coordinator =
-                GlicExperimentalOptInUiCoordinator.show(NATIVE_PTR, mWindowAndroid, mWebContents);
+                GlicExperimentalOptInUiCoordinator.show(mNativePtr, mWindowAndroid, mWebContents);
         assertNotNull(coordinator);
 
         // In landscape, values-land/dimens.xml overrides the size to 600x310dp. The dialog
@@ -294,7 +301,7 @@ public class GlicExperimentalOptInUiCoordinatorUnitTest {
     @Config(qualifiers = "w1000dp-h1000dp")
     public void testShow_CardCappedToAvailableSpace() {
         GlicExperimentalOptInUiCoordinator coordinator =
-                GlicExperimentalOptInUiCoordinator.show(NATIVE_PTR, mWindowAndroid, mWebContents);
+                GlicExperimentalOptInUiCoordinator.show(mNativePtr, mWindowAndroid, mWebContents);
         assertNotNull(coordinator);
 
         // The dialog offers only 300x400dp, less than the 380x567dp target, so the card shrinks
@@ -307,7 +314,7 @@ public class GlicExperimentalOptInUiCoordinatorUnitTest {
     @Test
     public void testShow_ClearsWindowBackgroundAndRoundsCard() {
         GlicExperimentalOptInUiCoordinator coordinator =
-                GlicExperimentalOptInUiCoordinator.show(NATIVE_PTR, mWindowAndroid, mWebContents);
+                GlicExperimentalOptInUiCoordinator.show(mNativePtr, mWindowAndroid, mWebContents);
         assertNotNull(coordinator);
         PropertyModel model = coordinator.getPropertyModelForTesting();
         assertTrue(model.get(ModalDialogProperties.CUSTOM_VIEW).getClipToOutline());
