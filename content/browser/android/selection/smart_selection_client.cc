@@ -52,14 +52,21 @@ static int64_t JNI_SmartSelectionClient_Init(JNIEnv* env,
 }
 
 SmartSelectionClient::SmartSelectionClient(WebContents* web_contents)
-    : web_contents_(web_contents) {
-  CHECK(!web_contents_->GetUserData(kSmartSelectionClientUDKey),
+    : WebContentsObserver(web_contents) {
+  CHECK(!web_contents->GetUserData(kSmartSelectionClientUDKey),
         base::NotFatalUntil::M159);
-  web_contents_->SetUserData(kSmartSelectionClientUDKey,
-                             std::make_unique<UserData>(this));
+  web_contents->SetUserData(kSmartSelectionClientUDKey,
+                            std::make_unique<UserData>(this));
 }
 
-SmartSelectionClient::~SmartSelectionClient() {
+SmartSelectionClient::~SmartSelectionClient() = default;
+
+void SmartSelectionClient::WebContentsDestroyed() {
+  // Notify Java here rather than in the destructor. This client is owned by
+  // the WebContents' user data, which is destroyed after the WebContentsAndroid
+  // has been cleared. Looking up the Java object from the destructor would
+  // re-create a WebContentsAndroid (and its Java peer) for a WebContents that
+  // is already being destroyed, and nothing would ever free it.
   JNIEnv* env = base::android::AttachCurrentThread();
   ScopedJavaLocalRef<jobject> j_obj = GetJavaObject(env);
   if (!j_obj.is_null()) {
@@ -72,7 +79,8 @@ void SmartSelectionClient::RequestSurroundingText(
     JNIEnv* env,
     int num_extra_characters,
     int callback_data) {
-  RenderFrameHost* focused_frame = web_contents_->GetFocusedFrame();
+  RenderFrameHost* focused_frame =
+      web_contents() ? web_contents()->GetFocusedFrame() : nullptr;
   if (!focused_frame) {
     OnSurroundingTextReceived(callback_data, std::u16string(), 0, 0);
     return;
@@ -103,7 +111,10 @@ void SmartSelectionClient::OnSurroundingTextReceived(int callback_data,
 
 base::android::ScopedJavaLocalRef<jobject> SmartSelectionClient::GetJavaObject(
     JNIEnv* env) {
-  return Java_SmartSelectionClient_getFromWebContents(env, web_contents_);
+  if (!web_contents()) {
+    return ScopedJavaLocalRef<jobject>();
+  }
+  return Java_SmartSelectionClient_getFromWebContents(env, web_contents());
 }
 
 }  // namespace content
