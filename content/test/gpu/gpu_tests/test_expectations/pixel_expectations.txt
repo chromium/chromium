@@ -455,6 +455,13 @@ crbug.com/514645136 [ angle-metal asan mac ] Pixel_Video_MP4_Rounded_Corner [ Fa
 crbug.com/402171652 [ win11 amd-0x7480 ] Pixel_DirectComposition_Video_VP9_YUY2 [ Failure ]
 crbug.com/402171652 [ win11 amd-0x7480 ] Pixel_DirectComposition_Video_VP9_BGRA [ Failure ]
 crbug.com/402429382 [ win11 amd-0x7480 ] Pixel_ReflectedDiv [ Failure ]
+crbug.com/577963606 [ win11 amd-0x7480 ] Pixel_DirectComposition_Video_VP9 [ Failure ]
+crbug.com/577963606 [ win11 amd-0x7480 ] Pixel_DirectComposition_Video_VP9_Fullsize [ Failure ]
+crbug.com/577963606 [ win11 amd-0x7480 ] Pixel_DirectComposition_Video_VP9_NV12 [ Failure ]
+crbug.com/577963606 [ win11 amd-0x7480 ] Pixel_DirectComposition_Video_VP9_VP_SCALING [ Failure ]
+crbug.com/577963606 [ win11 amd-0x7480 ] Pixel_Video_AV1 [ Failure ]
+crbug.com/577963606 [ win11 amd-0x7480 ] Pixel_Video_Context_Loss_VP9 [ Failure ]
+crbug.com/577963606 [ win11 amd-0x7480 ] Pixel_Video_VP9 [ Failure ]
 
 # Win/AMD RX 9070 XT failures
 crbug.com/515133241 [ win11 amd-0x7550 ] Pixel_DirectComposition_Video_VP9_YUY2 [ Failure ]
