@@ -732,8 +732,12 @@ void PerformanceManagerTabHelper::SurfaceEmbedChildWebContentsDetached(
   auto* page = helper->page_node_.get();
   CHECK(page);
 
-  CHECK(page->embedder_frame_node());
-  page->ClearEmbedderFrameNode();
+  // The embedder frame node may already have left the graph (e.g. the
+  // embedder's renderer process died), in which case the embedding
+  // relationship was already severed.
+  if (page->embedder_frame_node()) {
+    page->ClearEmbedderFrameNode();
+  }
 }
 
 void PerformanceManagerTabHelper::WebContentsDestroyed() {

@@ -4,8 +4,10 @@
 
 #include "components/performance_manager/public/performance_manager.h"
 
+#include <memory>
 #include <utility>
 
+#include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "components/performance_manager/embedder/performance_manager_registry.h"
@@ -16,11 +18,14 @@
 #include "components/performance_manager/public/graph/page_node.h"
 #include "components/performance_manager/public/render_frame_host_proxy.h"
 #include "components/performance_manager/test_support/performance_manager_browsertest_harness.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/surface_embed_connector.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/url_loader_interceptor.h"
 #include "content/shell/browser/shell.h"
@@ -28,6 +33,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
+#include "url/gurl.h"
 #include "url/origin.h"
 
 namespace performance_manager {
@@ -266,6 +272,38 @@ IN_PROC_BROWSER_TEST_F(PerformanceManagerBrowserTest,
 
   // The embedder frame node should be null after detaching.
   EXPECT_FALSE(page_node->GetEmbedderFrameNode());
+}
+
+// The embedder frame node can leave the graph while a SurfaceEmbed child is
+// still attached, e.g. when the embedder's renderer process dies. Destroying
+// the child afterwards, which detaches it, must not crash.
+IN_PROC_BROWSER_TEST_F(PerformanceManagerBrowserTest,
+                       DestroySurfaceEmbedChildAfterEmbedderProcessDied) {
+  content::WebContents* parent_contents = shell()->web_contents();
+  ASSERT_TRUE(NavigateToURL(shell(), GURL("about:blank")));
+
+  content::WebContents::CreateParams create_params(
+      parent_contents->GetBrowserContext());
+  std::unique_ptr<content::WebContents> child_contents =
+      content::WebContents::Create(create_params);
+
+  content::SurfaceEmbedConnector::Attach(
+      child_contents.get(), parent_contents->GetPrimaryMainFrame(), nullptr);
+
+  base::WeakPtr<PageNode> page_node =
+      PerformanceManager::GetPrimaryPageNodeForWebContents(
+          child_contents.get());
+  ASSERT_TRUE(page_node);
+  ASSERT_TRUE(page_node->GetEmbedderFrameNode());
+
+  // Removing the embedder's main frame node from the graph severs the
+  // embedding relationship.
+  content::CrashTab(parent_contents);
+  ASSERT_TRUE(page_node);
+  EXPECT_FALSE(page_node->GetEmbedderFrameNode());
+
+  child_contents.reset();
+  EXPECT_FALSE(page_node);
 }
 
 }  // namespace performance_manager
