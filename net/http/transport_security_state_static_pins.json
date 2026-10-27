@@ -31,7 +31,7 @@
 // the 'static_spki_hashes' and 'bad_static_spki_hashes' fields in 'pinsets'
 // refer to, and the timestamp at which the pins list was last updated.
 //
-// Last updated: 2026-10-23 14:02 UTC
+// Last updated: 2026-10-26 19:16 UTC
 //
 {
   "pinsets": [
@@ -92,82 +92,7 @@
       "pins": "google"
     },
     {
-      "name": "mail.google.com",
-      "include_subdomains": true,
-      "pins": "google"
-    },
-    {
-      "name": "partner.android.com",
-      "include_subdomains": true,
-      "pins": "google"
-    },
-    {
-      "name": "plus.sandbox.google.com",
-      "include_subdomains": true,
-      "pins": "google"
-    },
-    {
-      "name": "remotedesktop.corp.google.com",
-      "include_subdomains": true,
-      "pins": "google"
-    },
-    {
       "name": "corp.goog",
-      "include_subdomains": true,
-      "pins": "google"
-    },
-    {
-      "name": "accounts.google.com",
-      "include_subdomains": true,
-      "pins": "google"
-    },
-    {
-      "name": "admin.google.com",
-      "include_subdomains": true,
-      "pins": "google"
-    },
-    {
-      "name": "apis.google.com",
-      "include_subdomains": true,
-      "pins": "google"
-    },
-    {
-      "name": "appengine.google.com",
-      "include_subdomains": true,
-      "pins": "google"
-    },
-    {
-      "name": "calendar.google.com",
-      "include_subdomains": true,
-      "pins": "google"
-    },
-    {
-      "name": "checkout.google.com",
-      "include_subdomains": true,
-      "pins": "google"
-    },
-    {
-      "name": "chrome.google.com",
-      "include_subdomains": true,
-      "pins": "google"
-    },
-    {
-      "name": "classroom.google.com",
-      "include_subdomains": true,
-      "pins": "google"
-    },
-    {
-      "name": "cloud.google.com",
-      "include_subdomains": true,
-      "pins": "google"
-    },
-    {
-      "name": "code.google.com",
-      "include_subdomains": true,
-      "pins": "google"
-    },
-    {
-      "name": "contributor.google.com",
       "include_subdomains": true,
       "pins": "google"
     },
@@ -177,182 +102,7 @@
       "pins": "google"
     },
     {
-      "name": "datastudio.google.com",
-      "include_subdomains": true,
-      "pins": "google"
-    },
-    {
-      "name": "dl.google.com",
-      "include_subdomains": true,
-      "pins": "google"
-    },
-    {
-      "name": "docs.google.com",
-      "include_subdomains": true,
-      "pins": "google"
-    },
-    {
-      "name": "domains.google.com",
-      "include_subdomains": true,
-      "pins": "google"
-    },
-    {
-      "name": "drive.google.com",
-      "include_subdomains": true,
-      "pins": "google"
-    },
-    {
-      "name": "encrypted.google.com",
-      "include_subdomains": true,
-      "pins": "google"
-    },
-    {
-      "name": "fi.google.com",
-      "include_subdomains": true,
-      "pins": "google"
-    },
-    {
-      "name": "glass.google.com",
-      "include_subdomains": true,
-      "pins": "google"
-    },
-    {
-      "name": "goto.google.com",
-      "include_subdomains": true,
-      "pins": "google"
-    },
-    {
-      "name": "groups.google.com",
-      "include_subdomains": true,
-      "pins": "google"
-    },
-    {
-      "name": "hangouts.google.com",
-      "include_subdomains": true,
-      "pins": "google"
-    },
-    {
-      "name": "history.google.com",
-      "include_subdomains": true,
-      "pins": "google"
-    },
-    {
-      "name": "hostedtalkgadget.google.com",
-      "include_subdomains": true,
-      "pins": "google"
-    },
-    {
-      "name": "inbox.google.com",
-      "include_subdomains": true,
-      "pins": "google"
-    },
-    {
-      "name": "lens.google.com",
-      "include_subdomains": true,
-      "pins": "google"
-    },
-    {
-      "name": "login.corp.google.com",
-      "include_subdomains": true,
-      "pins": "google"
-    },
-    {
-      "name": "mail-settings.google.com",
-      "include_subdomains": true,
-      "pins": "google"
-    },
-    {
-      "name": "meet.google.com",
-      "include_subdomains": true,
-      "pins": "google"
-    },
-    {
       "name": "mfg-inspector.com",
-      "include_subdomains": true,
-      "pins": "google"
-    },
-    {
-      "name": "myaccount.google.com",
-      "include_subdomains": true,
-      "pins": "google"
-    },
-    {
-      "name": "myactivity.google.com",
-      "include_subdomains": true,
-      "pins": "google"
-    },
-    {
-      "name": "passwords.google.com",
-      "include_subdomains": true,
-      "pins": "google"
-    },
-    {
-      "name": "pixel.google.com",
-      "include_subdomains": true,
-      "pins": "google"
-    },
-    {
-      "name": "play.google.com",
-      "include_subdomains": true,
-      "pins": "google"
-    },
-    {
-      "name": "plus.google.com",
-      "include_subdomains": true,
-      "pins": "google"
-    },
-    {
-      "name": "profiles.google.com",
-      "include_subdomains": true,
-      "pins": "google"
-    },
-    {
-      "name": "script.google.com",
-      "include_subdomains": true,
-      "pins": "google"
-    },
-    {
-      "name": "security.google.com",
-      "include_subdomains": true,
-      "pins": "google"
-    },
-    {
-      "name": "sites.google.com",
-      "include_subdomains": true,
-      "pins": "google"
-    },
-    {
-      "name": "spreadsheets.google.com",
-      "include_subdomains": true,
-      "pins": "google"
-    },
-    {
-      "name": "talkgadget.google.com",
-      "include_subdomains": true,
-      "pins": "google"
-    },
-    {
-      "name": "talk.google.com",
-      "include_subdomains": true,
-      "pins": "google"
-    },
-    {
-      "name": "wallet.google.com",
-      "include_subdomains": true,
-      "pins": "google"
-    },
-    {
-      "name": "payments.google.com",
-      "include_subdomains": true,
-      "pins": "google"
-    },
-    {
-      "name": "xn--7xa.google.com",
-      "include_subdomains": true,
-      "pins": "google"
-    },
-    {
-      "name": "dns.google.com",
       "include_subdomains": true,
       "pins": "google"
     },
@@ -373,26 +123,6 @@
     },
     {
       "name": "chrome.com",
-      "include_subdomains": true,
-      "pins": "google"
-    },
-    {
-      "name": "chrome-devtools-frontend.appspot.com",
-      "include_subdomains": true,
-      "pins": "google"
-    },
-    {
-      "name": "chromereporting-pa.googleapis.com",
-      "include_subdomains": true,
-      "pins": "google"
-    },
-    {
-      "name": "chromiumcodereview.appspot.com",
-      "include_subdomains": true,
-      "pins": "google"
-    },
-    {
-      "name": "codereview.appspot.com",
       "include_subdomains": true,
       "pins": "google"
     },
@@ -477,31 +207,6 @@
       "pins": "google"
     },
     {
-      "name": "developer.android.com",
-      "include_subdomains": true,
-      "pins": "google"
-    },
-    {
-      "name": "market.android.com",
-      "include_subdomains": true,
-      "pins": "google"
-    },
-    {
-      "name": "oauthaccountmanager.googleapis.com",
-      "include_subdomains": true,
-      "pins": "google"
-    },
-    {
-      "name": "passwordsleakcheck-pa.googleapis.com",
-      "include_subdomains": true,
-      "pins": "google"
-    },
-    {
-      "name": "translate.googleapis.com",
-      "include_subdomains": true,
-      "pins": "google"
-    },
-    {
       "name": "tunnel.googlezip.net",
       "include_subdomains": true,
       "pins": "google"
@@ -537,97 +242,12 @@
       "pins": "google"
     },
     {
-      "name": "stats.g.doubleclick.net",
-      "include_subdomains": true,
-      "pins": "google"
-    },
-    {
-      "name": "chromiumbugs.appspot.com",
-      "include_subdomains": true,
-      "pins": "google"
-    },
-    {
       "name": "youtube.com",
       "include_subdomains": true,
       "pins": "google"
     },
     {
       "name": "ua5v.com",
-      "include_subdomains": true,
-      "pins": "google"
-    },
-    {
-      "name": "webfilings.appspot.com",
-      "include_subdomains": true,
-      "pins": "google"
-    },
-    {
-      "name": "webfilings-eu.appspot.com",
-      "include_subdomains": true,
-      "pins": "google"
-    },
-    {
-      "name": "webfilings-eu-mirror.appspot.com",
-      "include_subdomains": true,
-      "pins": "google"
-    },
-    {
-      "name": "webfilings-mirror-hrd.appspot.com",
-      "include_subdomains": true,
-      "pins": "google"
-    },
-    {
-      "name": "wf-bigsky-master.appspot.com",
-      "include_subdomains": true,
-      "pins": "google"
-    },
-    {
-      "name": "wf-demo-eu.appspot.com",
-      "include_subdomains": true,
-      "pins": "google"
-    },
-    {
-      "name": "wf-demo-hrd.appspot.com",
-      "include_subdomains": true,
-      "pins": "google"
-    },
-    {
-      "name": "wf-dogfood-hrd.appspot.com",
-      "include_subdomains": true,
-      "pins": "google"
-    },
-    {
-      "name": "wf-pentest.appspot.com",
-      "include_subdomains": true,
-      "pins": "google"
-    },
-    {
-      "name": "wf-staging-hr.appspot.com",
-      "include_subdomains": true,
-      "pins": "google"
-    },
-    {
-      "name": "wf-training-hrd.appspot.com",
-      "include_subdomains": true,
-      "pins": "google"
-    },
-    {
-      "name": "wf-training-master.appspot.com",
-      "include_subdomains": true,
-      "pins": "google"
-    },
-    {
-      "name": "wf-trial-hrd.appspot.com",
-      "include_subdomains": true,
-      "pins": "google"
-    },
-    {
-      "name": "w-spotlight.appspot.com",
-      "include_subdomains": true,
-      "pins": "google"
-    },
-    {
-      "name": "xbrlsuccess.appspot.com",
       "include_subdomains": true,
       "pins": "google"
     },
@@ -1858,11 +1478,6 @@
     },
     {
       "name": "urchin.com",
-      "include_subdomains": true,
-      "pins": "google"
-    },
-    {
-      "name": "www.googlegroups.com",
       "include_subdomains": true,
       "pins": "google"
     },
