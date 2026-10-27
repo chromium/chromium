@@ -25,6 +25,7 @@ public class CastOptionsProvider implements OptionsProvider {
                 .setEnableReconnectionService(false)
                 .setLaunchOptions(new LaunchOptions.Builder().setRelaunchIfRunning(true).build())
                 .setResumeSavedSession(false)
+                .setSessionTransferEnabled(false)
                 .setStopReceiverApplicationWhenEndingSession(true)
                 .build();
     }
