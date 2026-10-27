@@ -34,7 +34,7 @@ def _write_tsconfig_json(gen_dir, tsconfig, tsconfig_file):
     os.makedirs(gen_dir)
 
   with open(
-    os.path.join(gen_dir, tsconfig_file), 'w', encoding='utf-8'
+    os.path.join(gen_dir, tsconfig_file), 'w', encoding='utf-8', newline='\n'
   ) as generated_tsconfig:
     json.dump(tsconfig, generated_tsconfig, indent=2)
   return
@@ -72,8 +72,8 @@ def main(argv):
   parser.add_argument('--output_suffix', required=True)
   args = parser.parse_args(argv)
 
-  root_dir = os.path.relpath(args.root_dir, args.gen_dir)
-  out_dir = os.path.relpath(args.out_dir, args.gen_dir)
+  root_dir = os.path.relpath(args.root_dir, args.gen_dir).replace('\\', '/')
+  out_dir = os.path.relpath(args.out_dir, args.gen_dir).replace('\\', '/')
 
   is_root_dir_valid, error = validateRootDir(
     args.root_dir, args.gen_dir, args.root_gen_dir, args.platform == 'ios'
@@ -86,9 +86,9 @@ def main(argv):
   tsconfig = collections.OrderedDict()
 
   tsconfig['extends'] = (
-    args.tsconfig_base
+    args.tsconfig_base.replace('\\', '/')
     if args.tsconfig_base is not None
-    else os.path.relpath(TSCONFIG_BASE_PATH, args.gen_dir)
+    else os.path.relpath(TSCONFIG_BASE_PATH, args.gen_dir).replace('\\', '/')
   )
 
   tsconfig_base_file = os.path.normpath(
@@ -208,7 +208,9 @@ def main(argv):
   tsconfig['files'] = []
   if args.in_files is not None:
     # Source .ts files are always resolved as being relative to |root_dir|.
-    tsconfig['files'].extend([os.path.join(root_dir, f) for f in args.in_files])
+    tsconfig['files'].extend(
+      [os.path.join(root_dir, f).replace('\\', '/') for f in args.in_files]
+    )
 
   has_local_definitions = False
   if args.definitions is not None:
@@ -220,7 +222,7 @@ def main(argv):
 
     SHARED_DEFINITIONS_FOLDER = os.path.join(
       args.root_src_dir, 'tools/typescript/definitions'
-    )
+    ).replace('\\', '/')
     local_definitions = list(
       filter(
         lambda d: not d.startswith(SHARED_DEFINITIONS_FOLDER), args.definitions
@@ -253,12 +255,16 @@ def main(argv):
   if args.path_mappings is not None:
     for m in args.path_mappings:
       mapping = m.split('|')
-      mapping_path = os.path.relpath(mapping[1], args.root_src_dir)
+      mapping_path = os.path.relpath(mapping[1], args.root_src_dir).replace(
+        '\\', '/'
+      )
       assert isMappingAllowed(is_ash_target, target_path, mapping_path), (
         f'Cannot use mapping to Ash-specific folder {mapping_path} from '
         f'non-Ash target {target_path}'
       )
-      path_mappings[mapping[0]].append(os.path.join('./', mapping[1]))
+      path_mappings[mapping[0]].append(
+        os.path.join('./', mapping[1]).replace('\\', '/')
+      )
 
   tsconfig['compilerOptions']['paths'] = path_mappings
 
@@ -348,7 +354,9 @@ def main(argv):
     manifest_path = os.path.join(
       args.gen_dir, f'{args.output_suffix}_manifest.json'
     )
-    with open(manifest_path, 'w', encoding='utf-8') as manifest_file:
+    with open(
+      manifest_path, 'w', encoding='utf-8', newline='\n'
+    ) as manifest_file:
       manifest_data = {}
       manifest_data['base_dir'] = args.out_dir
       manifest_files = args.in_files

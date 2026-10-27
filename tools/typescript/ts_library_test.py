@@ -94,6 +94,12 @@ class TsLibraryTest(unittest.TestCase):
       os.path.exists(os.path.join(gen_dir, tsbuildinfo)), tsbuildinfo
     )
 
+    # Check that generated tsconfig files always use LF line endings and
+    # forward-slash path separators for cross-OS remote build determinism.
+    contents = self._read_file(gen_dir, 'tsconfig_build_ts.json')
+    self.assertNotIn('\r', contents)
+    self.assertNotIn('\\', contents)
+
   # Builds project2 which depends on files from project1 and project3, project6,
   # both via relative URLs, as well as via absolute chrome:// and
   # chrome://resources/ URLs.
