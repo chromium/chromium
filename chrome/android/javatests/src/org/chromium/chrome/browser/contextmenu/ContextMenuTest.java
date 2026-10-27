@@ -292,6 +292,14 @@ public class ContextMenuTest {
     @MediumTest
     @Feature({"Browser"})
     public void testCopyImageLinkCopiesLinkURL() throws Throwable {
+        doAnswer(sCopyIsAllowedByPolicy)
+                .when(mDataProtectionBridgeMock)
+                .verifyCopyUrlIsAllowedByPolicy(anyString(), any(), any());
+
+        // Clear the clipboard so the assertion below cannot be satisfied by a
+        // previous test (e.g. testCopyLinkURL) that already copied the link.
+        Clipboard.getInstance().setText("");
+
         Tab tab = mActivityTestRule.getActivityTab();
         // Allow DiskWrites temporarily in main thread to avoid
         // violation during copying under emulator environment.
