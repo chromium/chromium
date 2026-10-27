@@ -202,6 +202,65 @@ TEST_F(ShadowWithHighlightBorderTest, CombinedGeometryAndLayerBounds) {
   EXPECT_EQ(gfx::Rect(12, 12, 276, 276), details->occlusion_rect);
 }
 
+// Pill-shaped content renders both shadow and highlight border without
+// exceeding the nine-patch layer bounds or violating its occlusion invariant.
+TEST_F(ShadowWithHighlightBorderTest, PillShapedGeometry) {
+  gfx::ScopedAnimationDurationScaleMode zero_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::ZERO_DURATION);
+
+  auto decoration = Decoration::CreateShadowWithHighlightBorder(
+      std::make_unique<Shadow>(/*elevation=*/12),
+      std::make_unique<HighlightBorder>(kHighlightColor, kBorderColor,
+                                        kThickness));
+
+  auto get_border_rect = [](const ui::LayerNinePatch* nine_patch) {
+    const gfx::Rect& border = nine_patch->border();
+    const gfx::Rect& bounds = nine_patch->bounds();
+    return gfx::Rect(border.x(), border.y(), bounds.width() - border.width(),
+                     bounds.height() - border.height());
+  };
+
+  // Even-height full pill (height == 2 * corner_radius): rounded corners
+  // consume the entire height, leaving an empty occlusion rect.
+  const gfx::Rect content_bounds(10, 20, 180, 36);
+  const gfx::RoundedCornersF corners(18);
+  decoration->SetRoundedCorners(corners);
+  decoration->SetContentBounds(content_bounds);
+
+  auto* source = decoration->GetSourceAs<ShadowWithHighlightBorder>();
+  ASSERT_TRUE(source);
+  const std::optional<ShadowWithHighlightBorderValue> spec =
+      source->GetSpec(content_bounds, corners);
+  ASSERT_TRUE(spec.has_value());
+  ASSERT_TRUE(spec->Get<gfx::ShadowValues>().has_value());
+  ASSERT_TRUE(spec->Get<HighlightBorderValue>().has_value());
+  EXPECT_TRUE(spec->Get<gfx::ShadowValues>()->front().is_pill_shaped());
+  EXPECT_TRUE(spec->Get<HighlightBorderValue>()->is_pill_shaped());
+
+  ui::LayerNinePatch* nine_patch = decoration->decoration_layer_for_testing();
+  EXPECT_TRUE(nine_patch->visible());
+  EXPECT_LE(nine_patch->border().width(), nine_patch->bounds().width());
+  EXPECT_LE(nine_patch->border().height(), nine_patch->bounds().height());
+  EXPECT_TRUE(nine_patch->occlusion().IsEmpty());
+
+  // Odd-height pill and partial pill leave a non-empty center that must be
+  // covered by `nine_patch->occlusion()` (matching cc::NinePatchGenerator's
+  // `border_rect` check).
+  decoration->SetRoundedCorners(gfx::RoundedCornersF(18.5f));
+  decoration->SetContentBounds(gfx::Rect(10, 20, 180, 37));
+  EXPECT_LE(nine_patch->border().width(), nine_patch->bounds().width());
+  EXPECT_LE(nine_patch->border().height(), nine_patch->bounds().height());
+  EXPECT_FALSE(nine_patch->occlusion().IsEmpty());
+  EXPECT_TRUE(nine_patch->occlusion().Contains(get_border_rect(nine_patch)));
+
+  decoration->SetRoundedCorners(gfx::RoundedCornersF(25, 25, 0, 0));
+  decoration->SetContentBounds(gfx::Rect(10, 20, 200, 50));
+  EXPECT_LE(nine_patch->border().width(), nine_patch->bounds().width());
+  EXPECT_LE(nine_patch->border().height(), nine_patch->bounds().height());
+  EXPECT_FALSE(nine_patch->occlusion().IsEmpty());
+  EXPECT_TRUE(nine_patch->occlusion().Contains(get_border_rect(nine_patch)));
+}
+
 // Setting or clearing the optional Shadow and HighlightBorder dynamically
 // updates the decoration layer accordingly.
 TEST_F(ShadowWithHighlightBorderTest, SetAndClearPartsDynamically) {

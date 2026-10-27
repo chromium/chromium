@@ -103,6 +103,71 @@ TEST(HighlightBorderTest, ThicknessAdjustedToFitContent) {
   EXPECT_EQ(3, border.thickness());
 }
 
+TEST(HighlightBorderTest, PillShapedContent) {
+  HighlightBorder border(kHighlight, kBorder);
+  const gfx::RoundedCornersF pill_radii(18);
+
+  // Horizontal pill (200x36, radius 18) and circular pill (36x36, radius 18).
+  for (const gfx::Rect& bounds : {gfx::Rect(200, 36), gfx::Rect(36, 36)}) {
+    const std::optional<DecorationSource::Details> details =
+        border.GetDetails(bounds, pill_radii);
+    ASSERT_TRUE(details.has_value());
+    EXPECT_EQ(gfx::Outsets(), details->appearance.margins);
+    EXPECT_EQ(gfx::Insets(18), details->appearance.aperture_insets);
+    EXPECT_EQ(gfx::Size(37, 37), details->appearance.nine_patch_image.size());
+    EXPECT_TRUE(details->occlusion_rect.IsEmpty());
+  }
+
+  // Half-pill (left cap semicircular, right edge square).
+  const std::optional<DecorationSource::Details> half_pill =
+      border.GetDetails(gfx::Rect(200, 36), gfx::RoundedCornersF(18, 0, 0, 18));
+  ASSERT_TRUE(half_pill.has_value());
+  EXPECT_EQ(gfx::Insets::TLBR(18, 18, 18, 2),
+            half_pill->appearance.aperture_insets);
+  EXPECT_TRUE(half_pill->occlusion_rect.IsEmpty());
+
+  // Variable rounded corners where a corner reaches half the smaller dimension
+  // also use pill-shaped clamping (including diagonal leaf shapes), matching
+  // Shadow::GetSpec.
+  const std::optional<DecorationSource::Details> top_pill =
+      border.GetDetails(gfx::Rect(200, 50), gfx::RoundedCornersF(25, 25, 0, 0));
+  ASSERT_TRUE(top_pill.has_value());
+  EXPECT_EQ(gfx::Insets::TLBR(25, 25, 2, 25),
+            top_pill->appearance.aperture_insets);
+  EXPECT_EQ(gfx::Rect(25, 25, 150, 23), top_pill->occlusion_rect);
+
+  const std::optional<DecorationSource::Details> leaf =
+      border.GetDetails(gfx::Rect(50, 50), gfx::RoundedCornersF(25, 0, 25, 0));
+  ASSERT_TRUE(leaf.has_value());
+  EXPECT_EQ(gfx::Insets(25), leaf->appearance.aperture_insets);
+  EXPECT_TRUE(leaf->occlusion_rect.IsEmpty());
+
+  // Radii strictly below half the smaller dimension are not pill-shaped and
+  // keep the full two-thickness inset past the corners.
+  const std::optional<DecorationSource::Details> non_pill =
+      border.GetDetails(gfx::Rect(200, 50), gfx::RoundedCornersF(20, 20, 0, 0));
+  ASSERT_TRUE(non_pill.has_value());
+  EXPECT_EQ(gfx::Insets::TLBR(22, 22, 2, 22),
+            non_pill->appearance.aperture_insets);
+  EXPECT_EQ(gfx::Rect(22, 22, 156, 26), non_pill->occlusion_rect);
+
+  // Thick borders on small pills clamp down to fit and drop below 4 DIP.
+  HighlightBorder thick_border(kHighlight, kBorder, /*thickness=*/3);
+  std::optional<HighlightBorderValue> spec =
+      thick_border.GetSpec(gfx::Rect(8, 20), gfx::RoundedCornersF(4));
+  ASSERT_TRUE(spec.has_value());
+  EXPECT_EQ(2, spec->thickness());
+  EXPECT_TRUE(spec->is_pill_shaped());
+
+  spec = thick_border.GetSpec(gfx::Rect(4, 20), gfx::RoundedCornersF(2));
+  ASSERT_TRUE(spec.has_value());
+  EXPECT_EQ(1, spec->thickness());
+  EXPECT_TRUE(spec->is_pill_shaped());
+
+  EXPECT_FALSE(thick_border.GetSpec(gfx::Rect(3, 20), gfx::RoundedCornersF(1))
+                   .has_value());
+}
+
 TEST(HighlightBorderTest, SettersNotifyOnlyOnChange) {
   HighlightBorder border(kHighlight, kBorder);
   int notifications = 0;
@@ -225,6 +290,19 @@ TEST_F(HighlightBorderDecorationTest, SetThicknessUpdatesGeometry) {
   EXPECT_EQ(gfx::Rect(12, 12, 1, 1), decoration_layer()->aperture());
   EXPECT_EQ(gfx::Rect(12, 12, 24, 24), decoration_layer()->border());
   EXPECT_EQ(gfx::Rect(12, 12, 176, 176), decoration_layer()->occlusion());
+}
+
+TEST_F(HighlightBorderDecorationTest, PillShapedLayerGeometry) {
+  // Odd height with half-height float radius exercises ClampRadiiToBounds
+  // together with pill-shaped ninebox geometry.
+  decoration().SetRoundedCorners(gfx::RoundedCornersF(18.5f));
+  decoration().SetContentBounds(gfx::Rect(10, 20, 200, 37));
+
+  EXPECT_TRUE(decoration_layer()->visible());
+  EXPECT_EQ(gfx::Rect(10, 20, 200, 37), decoration().layer()->bounds());
+  EXPECT_EQ(gfx::Rect(18, 18, 1, 1), decoration_layer()->aperture());
+  EXPECT_EQ(gfx::Rect(18, 18, 36, 36), decoration_layer()->border());
+  EXPECT_EQ(gfx::Rect(18, 18, 164, 1), decoration_layer()->occlusion());
 }
 
 }  // namespace

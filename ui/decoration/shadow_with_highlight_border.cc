@@ -98,14 +98,13 @@ std::optional<DecorationSource::Details> ShadowWithHighlightBorder::GetDetails(
       ShadowWithHighlightBorderDetails::Get(rounded_corners, *value);
 
   // The highlight border's two rings sit inside the content, so only the
-  // content inside them (and inside the rounded corners) is guaranteed to be
-  // covered.
+  // content inside the border patches is guaranteed to be covered.
   const auto& highlight_border = value->Get<HighlightBorderValue>();
-  const int border_inset =
-      highlight_border.has_value() ? 2 * highlight_border->thickness() : 0;
   gfx::Rect occlusion_rect(content_bounds.size());
-  occlusion_rect.Inset(gfx::Insets(border_inset) +
-                       GetInsetsForRoundedCorners(rounded_corners));
+  occlusion_rect.Inset(highlight_border.has_value()
+                           ? HighlightBorderGenerator::GetNineboxApertureInsets(
+                                 *highlight_border, rounded_corners)
+                           : GetInsetsForRoundedCorners(rounded_corners));
 
   return Details{
       .appearance =

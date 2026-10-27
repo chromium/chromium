@@ -22,10 +22,12 @@ class HighlightBorderValue {
  public:
   constexpr HighlightBorderValue(SkColor highlight_color,
                                  SkColor border_color,
-                                 int thickness = 1)
+                                 int thickness = 1,
+                                 bool is_pill_shaped = false)
       : highlight_color_(highlight_color),
         border_color_(border_color),
-        thickness_(thickness) {}
+        thickness_(thickness),
+        is_pill_shaped_(is_pill_shaped) {}
 
   // Color of the inner ring.
   constexpr SkColor highlight_color() const { return highlight_color_; }
@@ -39,20 +41,25 @@ class HighlightBorderValue {
   // outside the content and the ninebox insets) treats it as DIPs.
   constexpr int thickness() const { return thickness_; }
 
+  constexpr bool is_pill_shaped() const { return is_pill_shaped_; }
+
   friend constexpr bool operator==(const HighlightBorderValue&,
                                    const HighlightBorderValue&) = default;
 
   // Strict weak ordering so that the value can be used as a cache key.
   friend constexpr bool operator<(const HighlightBorderValue& lhs,
                                   const HighlightBorderValue& rhs) {
-    return std::tie(lhs.highlight_color_, lhs.border_color_, lhs.thickness_) <
-           std::tie(rhs.highlight_color_, rhs.border_color_, rhs.thickness_);
+    return std::tie(lhs.highlight_color_, lhs.border_color_, lhs.thickness_,
+                    lhs.is_pill_shaped_) <
+           std::tie(rhs.highlight_color_, rhs.border_color_, rhs.thickness_,
+                    rhs.is_pill_shaped_);
   }
 
  private:
   SkColor highlight_color_;
   SkColor border_color_;
   int thickness_;
+  bool is_pill_shaped_ = false;
 };
 
 }  // namespace ui::decoration

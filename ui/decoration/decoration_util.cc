@@ -167,9 +167,22 @@ gfx::Insets HighlightBorderGenerator::GetNineboxApertureInsets(
     const gfx::RoundedCornersF& rounded_corners) {
   DCHECK_GT(value.thickness(), 0);
 
-  // Both rings' corner arcs end within two thicknesses plus the radius.
-  return gfx::Insets(2 * value.thickness()) +
-         GetInsetsForRoundedCorners(rounded_corners);
+  const gfx::Insets ring_insets(2 * value.thickness());
+  const gfx::Insets corner_insets = GetInsetsForRoundedCorners(rounded_corners);
+  if (!value.is_pill_shaped()) {
+    // Both rings' corner arcs end within two thicknesses plus the radius.
+    return ring_insets + corner_insets;
+  }
+
+  // For pill-shaped content, instead of allocating space separately for the
+  // rings and rounded corners, both rings can be drawn within the space already
+  // occupied by the corner's curvature so the patches do not overlap in
+  // NinePatchLayer.
+  return gfx::Insets::TLBR(
+      std::max(ring_insets.top(), corner_insets.top()),
+      std::max(ring_insets.left(), corner_insets.left()),
+      std::max(ring_insets.bottom(), corner_insets.bottom()),
+      std::max(ring_insets.right(), corner_insets.right()));
 }
 
 // static
