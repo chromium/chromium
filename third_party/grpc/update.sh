@@ -18,16 +18,16 @@ version="$(grep -oP 'Revision: \K[0-9a-f]+' third_party/grpc/README.chromium)"
 echo "Downloading grpc ${version}..."
 curl -s -L "https://github.com/grpc/grpc/archive/${version}.tar.gz" | tar xz --strip=1 -C /tmp/grpc
 
-echo 'Replacing third_party/grpc/source...'
-rm -rf third_party/grpc/source
-mkdir third_party/grpc/source
+echo 'Replacing third_party/grpc/src...'
+rm -rf third_party/grpc/src
+mkdir third_party/grpc/src
 mv /tmp/grpc/src /tmp/grpc/include /tmp/grpc/third_party \
-  third_party/grpc/source
-find third_party/grpc/source \
+  third_party/grpc/src
+find third_party/grpc/src \
   -type f ! \( -name '*.h' -o -name '*.c' -o -name '*.cc' -o -name '*.hpp' \
   -o -name '*.inc' \) -delete
 # Keep the top-level LICENSE because it's used by README.chromium.
-mv /tmp/grpc/LICENSE third_party/grpc/source/
+mv /tmp/grpc/LICENSE third_party/grpc/src/
 
 # No quotes here on purpose.
 for patch in $(ls third_party/grpc/patches/) ; do

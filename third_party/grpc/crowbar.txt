@@ -1,0 +1,10 @@
+How to update grpc:
+
+1. From the Chromium src/ directory, update Revision, Version, and CPEPrefix in
+   third_party/grpc/README.chromium to the target upstream commit.
+2. Run ./third_party/grpc/update.sh to fetch upstream and apply patches.
+3. Ensure python3-mako is installed, then update third_party/grpc/BUILD.gn
+   (using ./third_party/grpc/generate_gn.sh) and sync
+   third_party/grpc/plugin_registry/grpc_plugin_registry.cc with
+   third_party/grpc/src/src/core/plugin_registry/grpc_plugin_registry.cc, then
+   build //third_party/grpc:grpc++.

@@ -23,9 +23,9 @@
 #include <grpc/grpc.h>
 #include <grpc/support/port_platform.h>
 
-#include "third_party/grpc/source/src/core/config/core_configuration.h"
-#include "third_party/grpc/source/src/core/handshaker/http_connect/http_connect_handshaker.h"
-#include "third_party/grpc/source/src/core/handshaker/tcp_connect/tcp_connect_handshaker.h"
+#include "third_party/grpc/src/src/core/config/core_configuration.h"
+#include "third_party/grpc/src/src/core/handshaker/http_connect/http_connect_handshaker.h"
+#include "third_party/grpc/src/src/core/handshaker/tcp_connect/tcp_connect_handshaker.h"
 
 namespace grpc_event_engine {
 namespace experimental {

@@ -12,10 +12,10 @@ Wherever it is used, replace with the default flag value.
  .../grpc/source/src/core/config/load_config.h | 10 ++-
  3 files changed, 21 insertions(+), 76 deletions(-)
 
-diff --git a/third_party/grpc/source/src/core/config/config_vars.cc b/third_party/grpc/source/src/core/config/config_vars.cc
+diff --git a/third_party/grpc/src/src/core/config/config_vars.cc b/third_party/grpc/src/src/core/config/config_vars.cc
 index a163b919859f7..963b4030df4d2 100644
---- a/third_party/grpc/source/src/core/config/config_vars.cc
-+++ b/third_party/grpc/source/src/core/config/config_vars.cc
+--- a/third_party/grpc/src/src/core/config/config_vars.cc
++++ b/third_party/grpc/src/src/core/config/config_vars.cc
 @@ -20,9 +20,9 @@
 
  #include <grpc/support/port_platform.h>
@@ -138,10 +138,10 @@ index a163b919859f7..963b4030df4d2 100644
                      "GRPC_DEFAULT_SSL_ROOTS_FILE_PATH",
                      override_default_ssl_roots_file_path_, "");
  }
-diff --git a/third_party/grpc/source/src/core/config/load_config.cc b/third_party/grpc/source/src/core/config/load_config.cc
+diff --git a/third_party/grpc/src/src/core/config/load_config.cc b/third_party/grpc/src/src/core/config/load_config.cc
 index f78c0ccdc212b..e1ddf301d8f76 100644
---- a/third_party/grpc/source/src/core/config/load_config.cc
-+++ b/third_party/grpc/source/src/core/config/load_config.cc
+--- a/third_party/grpc/src/src/core/config/load_config.cc
++++ b/third_party/grpc/src/src/core/config/load_config.cc
 @@ -19,7 +19,6 @@
 
  #include <optional>
@@ -177,10 +177,10 @@ index f78c0ccdc212b..e1ddf301d8f76 100644
    if (!from_flag.empty()) return absl::StrJoin(from_flag, ",");
    return LoadConfigFromEnv(environment_variable, default_value);
  }
-diff --git a/third_party/grpc/source/src/core/config/load_config.h b/third_party/grpc/source/src/core/config/load_config.h
+diff --git a/third_party/grpc/src/src/core/config/load_config.h b/third_party/grpc/src/src/core/config/load_config.h
 index 03a9e4bc283e4..e0ee9dd154909 100644
---- a/third_party/grpc/source/src/core/config/load_config.h
-+++ b/third_party/grpc/source/src/core/config/load_config.h
+--- a/third_party/grpc/src/src/core/config/load_config.h
++++ b/third_party/grpc/src/src/core/config/load_config.h
 @@ -22,7 +22,6 @@
  #include <string>
  #include <vector>

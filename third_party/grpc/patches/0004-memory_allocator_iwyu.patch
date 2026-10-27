@@ -1,7 +1,7 @@
-diff --git a/third_party/grpc/source/include/grpc/event_engine/memory_allocator.h b/third_party/grpc/source/include/grpc/event_engine/memory_allocator.h
+diff --git a/third_party/grpc/src/include/grpc/event_engine/memory_allocator.h b/third_party/grpc/src/include/grpc/event_engine/memory_allocator.h
 index d50404c71abc9..07396a0c4771d 100644
---- a/third_party/grpc/source/include/grpc/event_engine/memory_allocator.h
-+++ b/third_party/grpc/source/include/grpc/event_engine/memory_allocator.h
+--- a/third_party/grpc/src/include/grpc/event_engine/memory_allocator.h
++++ b/third_party/grpc/src/include/grpc/event_engine/memory_allocator.h
 @@ -22,6 +22,7 @@
  #include <algorithm>
  #include <memory>

@@ -2,7 +2,7 @@ Name: grpc
 URL: https://github.com/grpc/grpc
 License: BSD-3-Clause, Apache-2.0, MPL-2.0
 License Android Compatible: yes
-License File: source/LICENSE
+License File: src/LICENSE
 Version: v1.71.0-dev
 Revision: ff8d12a129eedc58f9602c9fa9d1c01a2a270d62
 Update Mechanism: Manual
@@ -27,5 +27,5 @@ Steps to upgrade to a new version of GRPC, all relative to //third_party/grpc:
 
 Note: Please also remember to check if `plugin_registry/grpc_plugin_registry.cc`
 needs update! Upstream sometimes introduces new plugins in
-`/source/src/core/plugin_registry/grpc_plugin_registry.cc` and we may need to update
+`/src/src/core/plugin_registry/grpc_plugin_registry.cc` and we may need to update
 our custom `grpc_plugin_registry.cc`.
