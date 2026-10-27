@@ -42,7 +42,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/notreached.h"
-#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -2242,16 +2241,13 @@ void BrowserAutofillManager::OnFocusOnFormFieldImpl(
   }
   autofill_field->set_was_focused(true);
 
+  const bool same_origin = autofill_field->origin() == form.main_frame_origin();
   for (const FieldType type : autofill_field->Type().GetTypes()) {
-    static constexpr std::string_view kMetricName =
-        "Autofill.FocusedField.FieldType";
-    const bool same_origin =
-        autofill_field->origin() == form.main_frame_origin();
-    base::UmaHistogramExactLinear(base::StrCat({kMetricName}), type,
+    base::UmaHistogramExactLinear("Autofill.FocusedField.FieldType", type,
                                   MAX_VALID_FIELD_TYPE);
     base::UmaHistogramExactLinear(
-        base::StrCat(
-            {kMetricName, ".", same_origin ? "Same" : "Cross", "Origin"}),
+        same_origin ? "Autofill.FocusedField.FieldType.SameOrigin"
+                    : "Autofill.FocusedField.FieldType.CrossOrigin",
         type, MAX_VALID_FIELD_TYPE);
   }
 }
