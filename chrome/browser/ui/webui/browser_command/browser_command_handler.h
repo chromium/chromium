@@ -46,8 +46,6 @@ struct FeedbackCommandSettings {
 class BrowserCommandHandler : public CommandUpdaterDelegate,
                               public browser_command::mojom::CommandHandler {
  public:
-  static const char kPromoBrowserCommandHistogramName[];
-
   BrowserCommandHandler(
       mojo::PendingReceiver<browser_command::mojom::CommandHandler>
           pending_page_handler,

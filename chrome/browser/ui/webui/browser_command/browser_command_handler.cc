@@ -64,10 +64,6 @@ using browser_command::mojom::ClickInfoPtr;
 using browser_command::mojom::Command;
 using browser_command::mojom::CommandHandler;
 
-// static
-const char BrowserCommandHandler::kPromoBrowserCommandHistogramName[] =
-    "NewTabPage.Promos.PromoBrowserCommand";
-
 BrowserCommandHandler::BrowserCommandHandler(
     mojo::PendingReceiver<CommandHandler> pending_page_handler,
     Profile* profile,
@@ -185,7 +181,6 @@ void BrowserCommandHandler::HandleCommandWithDisposition(
     WindowOpenDisposition disposition,
     base::TimeTicks time_stamp) {
   const auto command = static_cast<Command>(id);
-  base::UmaHistogramEnumeration(kPromoBrowserCommandHistogramName, command);
 
   switch (command) {
     case Command::kUnknownCommand:

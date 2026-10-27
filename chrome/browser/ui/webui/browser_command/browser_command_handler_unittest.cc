@@ -319,22 +319,18 @@ class BrowserCommandHandlerTest : public testing::Test {
 };
 
 TEST_F(BrowserCommandHandlerTest, SupportedCommands) {
-  base::HistogramTester histogram_tester;
-
   // Mock out the command updater to test enabling and disabling commands.
   command_handler_->SetCommandUpdater(
       std::make_unique<MockCommandUpdater>(command_handler_.get()));
 
-  // Unsupported commands do not get executed and no histogram is logged.
+  // Unsupported commands do not get executed.
   EXPECT_CALL(*mock_command_updater(),
               SupportsCommand(static_cast<int>(Command::kUnknownCommand)))
       .WillOnce(testing::Return(false));
 
   EXPECT_FALSE(ExecuteCommand(Command::kUnknownCommand, ClickInfo::New()));
-  histogram_tester.ExpectTotalCount(
-      BrowserCommandHandler::kPromoBrowserCommandHistogramName, 0);
 
-  // Disabled commands do not get executed and no histogram is logged.
+  // Disabled commands do not get executed.
   EXPECT_CALL(*mock_command_updater(),
               SupportsCommand(static_cast<int>(Command::kUnknownCommand)))
       .WillOnce(testing::Return(true));
@@ -343,11 +339,8 @@ TEST_F(BrowserCommandHandlerTest, SupportedCommands) {
       .WillOnce(testing::Return(false));
 
   EXPECT_FALSE(ExecuteCommand(Command::kUnknownCommand, ClickInfo::New()));
-  histogram_tester.ExpectTotalCount(
-      BrowserCommandHandler::kPromoBrowserCommandHistogramName, 0);
 
-  // Only supported and enabled commands get executed for which a histogram is
-  // logged.
+  // Only supported and enabled commands get executed.
   EXPECT_CALL(*mock_command_updater(),
               SupportsCommand(static_cast<int>(Command::kUnknownCommand)))
       .WillOnce(testing::Return(true));
@@ -356,8 +349,6 @@ TEST_F(BrowserCommandHandlerTest, SupportedCommands) {
       .WillOnce(testing::Return(true));
 
   EXPECT_TRUE(ExecuteCommand(Command::kUnknownCommand, ClickInfo::New()));
-  histogram_tester.ExpectBucketCount(
-      BrowserCommandHandler::kPromoBrowserCommandHistogramName, 0, 1);
 }
 
 TEST_F(BrowserCommandHandlerTest, CanExecuteCommand_OpenSafetyCheck) {

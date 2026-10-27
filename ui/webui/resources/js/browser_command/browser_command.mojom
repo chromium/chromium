@@ -11,9 +11,7 @@ module browser_command.mojom;
 // to handle and which ones to ignore depending on the platform or the
 // milestone. Note that the implementations of these commands must be
 // side-effect-free.
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-// LINT.IfChange(Command)
+// Entries should not be renumbered and numeric values should never be reused.
 enum Command {
   kUnknownCommand = 0,
   kOpenSafetyCheck = 1,
@@ -38,7 +36,6 @@ enum Command {
   // kOpenAutofillSettings = 20, - deprecated
   kEnableVerticalTabs = 21,
 };
-// LINT.ThenChange(//tools/metrics/histograms/metadata/new_tab_page/enums.xml:PromoBrowserCommandEnum)
 
 // Click information needed to determine user's desired window disposition using
 // ui::DispositionFromClick().

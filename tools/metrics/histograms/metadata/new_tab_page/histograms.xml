@@ -2301,18 +2301,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="NewTabPage.Promos.PromoBrowserCommand"
-    enum="PromoBrowserCommandEnum" expires_after="2026-09-06">
-  <owner>mahmadi@chromium.org</owner>
-  <owner>tiborg@chromium.org</owner>
-  <owner>chrome-desktop-ntp@google.com</owner>
-  <summary>
-    Logs how many times various promo browser commands are executed. Triggered
-    when a supported and enabled promo browser commandis executed by the
-    BrowserCommandHandler.
-  </summary>
-</histogram>
-
 <histogram
     name="NewTabPage.Promos.RequestLatency2{NewTabPage_Promos_RequestLatency2}"
     units="ms" expires_after="2025-01-05">
