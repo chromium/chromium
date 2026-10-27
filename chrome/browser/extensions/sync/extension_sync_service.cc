@@ -165,14 +165,17 @@ base::flat_set<int> GetLocalDisableReasons(
 }  // namespace
 
 struct ExtensionSyncService::PendingUpdate {
-  PendingUpdate() : grant_permissions_and_reenable(false) {}
+  PendingUpdate() = default;
   PendingUpdate(const base::Version& version,
-                bool grant_permissions_and_reenable)
+                bool grant_permissions_and_reenable,
+                std::optional<bool> withhold_permissions)
       : version(version),
-        grant_permissions_and_reenable(grant_permissions_and_reenable) {}
+        grant_permissions_and_reenable(grant_permissions_and_reenable),
+        withhold_permissions(withhold_permissions) {}
 
   base::Version version;
-  bool grant_permissions_and_reenable;
+  bool grant_permissions_and_reenable = false;
+  std::optional<bool> withhold_permissions;
 };
 
 ExtensionSyncService::ExtensionSyncService(Profile* profile)
@@ -383,6 +386,11 @@ ExtensionSyncData ExtensionSyncService::CreateSyncData(
     if (it->second.grant_permissions_and_reenable) {
       result.set_enabled(true);
     }
+    if (base::FeatureList::IsEnabled(
+            extensions_features::kExtensionInstallSiteAccessOptions) &&
+        it->second.withhold_permissions.has_value()) {
+      result.set_withhold_permissions(*it->second.withhold_permissions);
+    }
   }
   return result;
 }
@@ -571,24 +579,55 @@ void ExtensionSyncService::ApplySyncData(
   // If `withhold_permissions` is not set (e.g. from an older client or when the
   // feature flag was disabled on the committing device), preserve the local
   // state (which defaults to false for newly installed extensions).
-  // TODO(crbug.com/577174336): When `state == INSTALLED_OUTDATED` and
-  // `withhold_permissions` is false, defer granting host permissions until the
-  // extension finishes updating to the synced version (similar to
-  // `PendingUpdate::grant_permissions`), so an older local version with broader
-  // host permissions is not granted access prematurely.
+  std::optional<bool> pending_withhold_permissions;
   if (base::FeatureList::IsEnabled(
           extensions_features::kExtensionInstallSiteAccessOptions) &&
-      extension_sync_data.withhold_permissions().has_value() &&
-      state != INSTALLED_NEWER) {
-    bool should_withhold = *extension_sync_data.withhold_permissions();
-    if (extension) {
-      if (extensions::PermissionsManager::Get(profile_)->CanAffectExtension(
-              *extension)) {
-        extensions::ScriptingPermissionsModifier(profile_, extension)
-            .SetWithholdHostPermissions(should_withhold);
-      }
-    } else {
-      extension_prefs->SetWithholdingPermissions(id, should_withhold);
+      extension_sync_data.withhold_permissions().has_value()) {
+    const bool should_withhold = *extension_sync_data.withhold_permissions();
+    // Only allow granting host permissions if the synced version's permissions
+    // are approved.
+    const bool can_grant_permissions =
+        extension_sync_data.supports_disable_reasons() &&
+        !disable_reasons.contains(
+            extensions::disable_reason::DISABLE_PERMISSIONS_INCREASE) &&
+        !disable_reasons.contains(
+            extensions::disable_reason::DISABLE_REMOTE_INSTALL);
+    switch (state) {
+      case NOT_INSTALLED:
+        extension_prefs->SetWithholdingPermissions(id, should_withhold);
+        break;
+      case INSTALLED_MATCHING:
+        if ((should_withhold || can_grant_permissions) &&
+            extensions::PermissionsManager::Get(profile_)->CanAffectExtension(
+                *extension)) {
+          extensions::ScriptingPermissionsModifier(profile_, extension)
+              .SetWithholdHostPermissions(should_withhold);
+        }
+        break;
+      case INSTALLED_OUTDATED:
+        if (should_withhold) {
+          if (extensions::PermissionsManager::Get(profile_)->CanAffectExtension(
+                  *extension)) {
+            extensions::ScriptingPermissionsModifier(profile_, extension)
+                .SetWithholdHostPermissions(true);
+          } else {
+            // The outdated local version may not have host permissions even
+            // though the incoming synced version does. Pre-set the pref so that
+            // when the new version is installed,
+            // PermissionsUpdater::InitializePermissions immediately withholds
+            // its host permissions.
+            extension_prefs->SetWithholdingPermissions(id, true);
+          }
+          pending_withhold_permissions = true;
+        } else if (can_grant_permissions) {
+          // Defer granting host permissions until the extension finishes
+          // updating to the synced version so an older local version with
+          // broader host permissions is not granted access prematurely.
+          pending_withhold_permissions = false;
+        }
+        break;
+      case INSTALLED_NEWER:
+        break;
     }
   }
 
@@ -691,11 +730,26 @@ void ExtensionSyncService::ApplySyncData(
 #endif
 
   // Finally, trigger installation/update as required.
+  if (state != INSTALLED_OUTDATED) {
+    pending_updates_.erase(id);
+  }
+
   bool check_for_updates = false;
   if (state == INSTALLED_OUTDATED) {
     // If the extension is installed but outdated, store the new version.
+    // Preserve any previously queued `withhold_permissions` value if the
+    // incoming sync data omitted `withhold_permissions`.
+    if (base::FeatureList::IsEnabled(
+            extensions_features::kExtensionInstallSiteAccessOptions) &&
+        !pending_withhold_permissions.has_value() &&
+        !extension_sync_data.withhold_permissions().has_value()) {
+      if (auto it = pending_updates_.find(id); it != pending_updates_.end()) {
+        pending_withhold_permissions = it->second.withhold_permissions;
+      }
+    }
     pending_updates_[id] =
-        PendingUpdate(extension_sync_data.version(), reenable_after_update);
+        PendingUpdate(extension_sync_data.version(), reenable_after_update,
+                      pending_withhold_permissions);
     check_for_updates = true;
   } else if (state == NOT_INSTALLED) {
     if (IsMigratingPreinstalledWebApp(id)) {
@@ -767,15 +821,40 @@ void ExtensionSyncService::OnExtensionInstalled(
   auto it = pending_updates_.find(extension->id());
   if (it != pending_updates_.end()) {
     int compare_result = extension->version().CompareTo(it->second.version);
-    if (compare_result == 0 && it->second.grant_permissions_and_reenable) {
+    if (compare_result >= 0) {
       // The call to SyncExtensionChangeIfNeeded below will take care of syncing
       // changes to this extension, so we don't want to trigger sync activity
-      // from the call to GrantPermissionsAndEnableExtension.
+      // from applying the pending update state.
       base::AutoReset<bool> ignore_updates(&ignore_updates_, true);
-      extensions::ExtensionRegistrar::Get(profile_)
-          ->GrantPermissionsAndEnableExtension(*extension);
-    }
-    if (compare_result >= 0) {
+      // Apply `withhold_permissions` before
+      // `GrantPermissionsAndEnableExtension` so `GrantActivePermissions` only
+      // grants non-withheld active permissions.
+      if (base::FeatureList::IsEnabled(
+              extensions_features::kExtensionInstallSiteAccessOptions) &&
+          it->second.withhold_permissions.has_value()) {
+        const bool should_withhold = *it->second.withhold_permissions;
+        const bool can_grant_permissions =
+            !ExtensionPrefs::Get(profile_)->HasDisableReason(
+                extension->id(),
+                extensions::disable_reason::DISABLE_PERMISSIONS_INCREASE) &&
+            !ExtensionPrefs::Get(profile_)->HasDisableReason(
+                extension->id(),
+                extensions::disable_reason::DISABLE_REMOTE_INSTALL);
+        if (should_withhold || can_grant_permissions) {
+          if (extensions::PermissionsManager::Get(profile_)->CanAffectExtension(
+                  *extension)) {
+            extensions::ScriptingPermissionsModifier(profile_, extension)
+                .SetWithholdHostPermissions(should_withhold);
+          } else {
+            ExtensionPrefs::Get(profile_)->SetWithholdingPermissions(
+                extension->id(), should_withhold);
+          }
+        }
+      }
+      if (compare_result == 0 && it->second.grant_permissions_and_reenable) {
+        extensions::ExtensionRegistrar::Get(profile_)
+            ->GrantPermissionsAndEnableExtension(*extension);
+      }
       pending_updates_.erase(it);
     }
   }
@@ -865,10 +944,23 @@ void ExtensionSyncService::OnExtensionWithholdingPermissionsChanged(
           extensions_features::kExtensionInstallSiteAccessOptions)) {
     return;
   }
+  if (!ignore_updates_) {
+    // A local change to the withholding preference overrides any pending
+    // synced `withhold_permissions` value.
+    if (auto it = pending_updates_.find(extension_id);
+        it != pending_updates_.end()) {
+      it->second.withhold_permissions.reset();
+    }
+  }
   ExtensionRegistry* registry = ExtensionRegistry::Get(profile_);
   const Extension* extension = registry->GetInstalledExtension(extension_id);
   if (extension) {
     SyncExtensionChangeIfNeeded(*extension);
+  } else if (!ignore_updates_) {
+    // Mark as needing sync if the preference changed before the extension is
+    // loaded in ExtensionRegistry (similar to
+    // OnExtensionDisableReasonsChanged).
+    ExtensionPrefs::Get(profile_)->SetNeedsSync(extension_id, true);
   }
 }
 

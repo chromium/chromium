@@ -98,6 +98,9 @@ class ExtensionSyncData {
   std::optional<bool> withhold_permissions() const {
     return withhold_permissions_;
   }
+  void set_withhold_permissions(std::optional<bool> withhold_permissions) {
+    withhold_permissions_ = withhold_permissions;
+  }
 
   // Version-dependent properties (i.e., should be used only when the
   // version of the currently-installed extension matches `version`).

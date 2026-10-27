@@ -194,10 +194,11 @@ class ExtensionSyncService : public syncer::SyncableService,
   extensions::SyncBundle app_sync_bundle_;
   extensions::SyncBundle extension_sync_bundle_;
 
-  // Map from extension id to pending update data. Used for two things:
-  // - To send the new version back to the sync server while we're waiting for
-  //   an extension to update.
-  // - For re-enables, to defer granting permissions until the version matches.
+  // Map from extension id to pending update data. Used for:
+  // - Sending the new version (and pending state) back to the sync server while
+  //   we're waiting for an extension to update.
+  // - Deferring granting permissions (for re-enables or `withhold_permissions`)
+  //   until the local version catches up to the synced version.
   struct PendingUpdate;
   std::map<std::string, PendingUpdate> pending_updates_;
 

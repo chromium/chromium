@@ -75,6 +75,8 @@
 #include "extensions/common/manifest_handlers/manifest_url_handlers.h"
 #include "extensions/common/mojom/manifest.mojom-shared.h"
 #include "extensions/common/permissions/permission_set.h"
+#include "extensions/common/permissions/permissions_data.h"
+#include "extensions/test/test_extension_dir.h"
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/themes/test/theme_service_changed_waiter.h"
@@ -2599,6 +2601,14 @@ class ExtensionSyncServiceWithholdPermissionsTest
   ExtensionSyncServiceWithholdPermissionsTest()
       : base::test::WithFeatureOverride(
             extensions_features::kExtensionInstallSiteAccessOptions) {}
+
+  base::FilePath pem_path() const { return data_dir().AppendASCII("good.pem"); }
+
+  void SetUpTestExtensionService() {
+    InitializeEmptyExtensionService();
+    service()->Init();
+    ASSERT_TRUE(extension_system()->is_ready());
+  }
 };
 
 TEST_P(ExtensionSyncServiceWithholdPermissionsTest, SyncWithholdPermissions) {
@@ -2728,7 +2738,14 @@ TEST_P(ExtensionSyncServiceWithholdPermissionsTest, SyncWithholdPermissions) {
     EXPECT_EQ(
         IsParamFeatureEnabled(),
         ExtensionPrefs::Get(profile())->GetWithholdingPermissions(kGood0));
+    EXPECT_FALSE(ExtensionPrefs::Get(profile())->NeedsSync(kGood0));
   }
+
+  // Local withholding pref change for an extension not currently loaded in
+  // ExtensionRegistry marks NeedsSync iff the feature is enabled.
+  ExtensionPrefs::Get(profile())->SetWithholdingPermissions(kGood2, true);
+  EXPECT_EQ(IsParamFeatureEnabled(),
+            ExtensionPrefs::Get(profile())->NeedsSync(kGood2));
 }
 
 TEST_P(ExtensionSyncServiceWithholdPermissionsTest,
@@ -2778,6 +2795,374 @@ TEST_P(ExtensionSyncServiceWithholdPermissionsTest,
   EXPECT_EQ(id, data->id());
   EXPECT_EQ(IsParamFeatureEnabled() ? std::optional<bool>(true) : std::nullopt,
             data->withhold_permissions());
+}
+
+// Tests that when `withhold_permissions = false` arrives for a newer version
+// v2 while local v1 has broader host permissions (`<all_urls>`), granting host
+// permissions is deferred until v2 is installed.
+TEST_P(ExtensionSyncServiceWithholdPermissionsTest,
+       SyncWithholdPermissionsDeferredGrantOnUpdate) {
+  SetUpTestExtensionService();
+
+  extensions::TestExtensionDir dir_v1;
+  dir_v1.WriteManifest(R"({
+    "name": "Test Extension",
+    "version": "1.0",
+    "manifest_version": 3,
+    "host_permissions": ["<all_urls>"]
+  })");
+  extensions::TestExtensionDir dir_v2;
+  dir_v2.WriteManifest(R"({
+    "name": "Test Extension",
+    "version": "2.0",
+    "manifest_version": 3,
+    "host_permissions": ["https://example.com/*"]
+  })");
+
+  base::ScopedTempDir crx_dir;
+  ASSERT_TRUE(crx_dir.CreateUniqueTempDir());
+  const base::FilePath crx_v1 = crx_dir.GetPath().AppendASCII("v1.crx");
+  PackCRX(dir_v1.UnpackedPath(), pem_path(), crx_v1);
+
+  std::string id;
+  {
+    const Extension* extension =
+        InstallCRX(crx_v1, ManifestLocation::kInternal, INSTALL_NEW,
+                   Extension::WITHHOLD_PERMISSIONS);
+    ASSERT_TRUE(extension);
+    id = extension->id();
+  }
+
+  auto* permissions_manager = extensions::PermissionsManager::Get(profile());
+  EXPECT_TRUE(permissions_manager->HasWithheldHostPermissions(
+      *registry()->GetInstalledExtension(id)));
+  ExtensionPrefs::Get(profile())->SetNeedsSync(id, false);
+
+  // Start sync with v2 server data that sets `withhold_permissions = false`.
+  sync_pb::EntitySpecifics specifics;
+  sync_pb::ExtensionSpecifics* ext_specifics = specifics.mutable_extension();
+  ext_specifics->set_id(id);
+  ext_specifics->set_version("2.0");
+  ext_specifics->set_update_url(extension_urls::GetWebstoreUpdateUrl().spec());
+  ext_specifics->set_enabled(true);
+  ext_specifics->set_disable_reasons(extensions::disable_reason::DISABLE_NONE);
+  ext_specifics->set_withhold_permissions(false);
+
+  syncer::SyncDataList initial_sync_data;
+  initial_sync_data.push_back(syncer::SyncData::CreateRemoteData(
+      specifics, syncer::ClientTagHash::FromUnhashed(syncer::EXTENSIONS, id)));
+
+  auto processor = std::make_unique<syncer::FakeSyncChangeProcessor>();
+  syncer::FakeSyncChangeProcessor* processor_raw = processor.get();
+  extension_sync_service()->MergeDataAndStartSyncing(
+      syncer::EXTENSIONS, initial_sync_data, std::move(processor));
+
+  // While still on v1, `<all_urls>` must remain withheld.
+  {
+    const Extension* ext_v1 = registry()->GetInstalledExtension(id);
+    ASSERT_TRUE(ext_v1);
+    EXPECT_EQ("1.0", ext_v1->VersionString());
+    EXPECT_TRUE(permissions_manager->HasWithheldHostPermissions(*ext_v1));
+    EXPECT_FALSE(ext_v1->permissions_data()
+                     ->active_permissions()
+                     .HasEffectiveAccessToAllHosts());
+  }
+
+  // MergeDataAndStartSyncing should report the pending v2 state back to sync
+  // rather than overwriting sync with v1's `withhold_permissions = true`.
+  ASSERT_EQ(1u, processor_raw->changes().size());
+  {
+    std::unique_ptr<ExtensionSyncData> data =
+        ExtensionSyncData::CreateFromSyncData(
+            processor_raw->changes()[0].sync_data());
+    ASSERT_TRUE(data);
+    EXPECT_EQ(base::Version("2.0"), data->version());
+    EXPECT_EQ(
+        IsParamFeatureEnabled() ? std::optional<bool>(false) : std::nullopt,
+        data->withhold_permissions());
+  }
+  processor_raw->changes().clear();
+
+  // A subsequent sync update for v2 without `withhold_permissions` (e.g. from a
+  // client with the flag disabled) should preserve the pending
+  // `withhold_permissions = false`.
+  ext_specifics->clear_withhold_permissions();
+  extension_sync_service()->ProcessSyncChanges(
+      FROM_HERE, MakeSyncChangeList(id, specifics, SyncChange::ACTION_UPDATE));
+
+  // Now update the local extension to v2. The deferred `withhold_permissions =
+  // false` should be applied to v2 (iff the feature is enabled), and only a
+  // single sync change should be emitted from OnExtensionInstalled.
+  PackCRXAndUpdateExtension(id, dir_v2.UnpackedPath(), pem_path(), ENABLED);
+  {
+    const Extension* ext_v2 = registry()->GetInstalledExtension(id);
+    ASSERT_TRUE(ext_v2);
+    EXPECT_EQ("2.0", ext_v2->VersionString());
+    EXPECT_EQ(!IsParamFeatureEnabled(),
+              permissions_manager->HasWithheldHostPermissions(*ext_v2));
+  }
+  ASSERT_EQ(1u, processor_raw->changes().size());
+}
+
+// Tests that when `withhold_permissions = true` arrives for a newer version,
+// an outdated extension that currently has host permissions granted has its
+// host permissions withheld immediately before the update finishes installing.
+TEST_P(ExtensionSyncServiceWithholdPermissionsTest,
+       SyncWithholdPermissionsImmediateWithholdOnOutdatedExtension) {
+  SetUpTestExtensionService();
+
+  extensions::TestExtensionDir dir_v1;
+  dir_v1.WriteManifest(R"({
+    "name": "Test Extension",
+    "version": "1.0",
+    "manifest_version": 3,
+    "host_permissions": ["https://example.com/*"]
+  })");
+
+  base::ScopedTempDir crx_dir;
+  ASSERT_TRUE(crx_dir.CreateUniqueTempDir());
+  const base::FilePath crx_v1 = crx_dir.GetPath().AppendASCII("v1.crx");
+  PackCRX(dir_v1.UnpackedPath(), pem_path(), crx_v1);
+
+  std::string id;
+  {
+    const Extension* extension = InstallCRX(crx_v1, INSTALL_NEW);
+    ASSERT_TRUE(extension);
+    id = extension->id();
+  }
+  StartSyncing(syncer::EXTENSIONS);
+
+  auto* permissions_manager = extensions::PermissionsManager::Get(profile());
+  EXPECT_FALSE(permissions_manager->HasWithheldHostPermissions(
+      *registry()->GetInstalledExtension(id)));
+
+  // Incoming sync data for v2 sets `withhold_permissions = true`.
+  sync_pb::EntitySpecifics specifics;
+  sync_pb::ExtensionSpecifics* ext_specifics = specifics.mutable_extension();
+  ext_specifics->set_id(id);
+  ext_specifics->set_version("2.0");
+  ext_specifics->set_update_url(extension_urls::GetWebstoreUpdateUrl().spec());
+  ext_specifics->set_enabled(true);
+  ext_specifics->set_disable_reasons(extensions::disable_reason::DISABLE_NONE);
+  ext_specifics->set_withhold_permissions(true);
+
+  extension_sync_service()->ProcessSyncChanges(
+      FROM_HERE, MakeSyncChangeList(id, specifics, SyncChange::ACTION_UPDATE));
+
+  // Host permissions on v1 must be withheld immediately (iff feature enabled).
+  const Extension* ext_v1 = registry()->GetInstalledExtension(id);
+  ASSERT_TRUE(ext_v1);
+  EXPECT_EQ(IsParamFeatureEnabled(),
+            permissions_manager->HasWithheldHostPermissions(*ext_v1));
+}
+
+// Tests that when `withhold_permissions = true` arrives for a newer version v2
+// when the currently installed v1 had no host permissions, ExtensionPrefs
+// pre-sets the withholding preference so that v2 withholds host permissions
+// upon installation.
+TEST_P(ExtensionSyncServiceWithholdPermissionsTest,
+       SyncWithholdPermissionsPresetOnOutdatedExtensionWithoutHostPermissions) {
+  SetUpTestExtensionService();
+
+  extensions::TestExtensionDir dir_v1_no_hosts;
+  dir_v1_no_hosts.WriteManifest(R"({
+    "name": "Test Extension",
+    "version": "1.0",
+    "manifest_version": 3
+  })");
+  extensions::TestExtensionDir dir_v2;
+  dir_v2.WriteManifest(R"({
+    "name": "Test Extension",
+    "version": "2.0",
+    "manifest_version": 3,
+    "host_permissions": ["https://example.com/*"]
+  })");
+
+  base::ScopedTempDir crx_dir;
+  ASSERT_TRUE(crx_dir.CreateUniqueTempDir());
+  const base::FilePath crx_v1 = crx_dir.GetPath().AppendASCII("v1.crx");
+  PackCRX(dir_v1_no_hosts.UnpackedPath(), pem_path(), crx_v1);
+
+  std::string id;
+  {
+    const Extension* extension = InstallCRX(crx_v1, INSTALL_NEW);
+    ASSERT_TRUE(extension);
+    id = extension->id();
+  }
+  StartSyncing(syncer::EXTENSIONS);
+
+  // Incoming sync data for v2 sets `withhold_permissions = true`.
+  sync_pb::EntitySpecifics specifics;
+  sync_pb::ExtensionSpecifics* ext_specifics = specifics.mutable_extension();
+  ext_specifics->set_id(id);
+  ext_specifics->set_version("2.0");
+  ext_specifics->set_update_url(extension_urls::GetWebstoreUpdateUrl().spec());
+  ext_specifics->set_enabled(true);
+  ext_specifics->set_disable_reasons(extensions::disable_reason::DISABLE_NONE);
+  ext_specifics->set_withhold_permissions(true);
+
+  extension_sync_service()->ProcessSyncChanges(
+      FROM_HERE, MakeSyncChangeList(id, specifics, SyncChange::ACTION_UPDATE));
+
+  // While still on v1 (which has no host permissions), CreateSyncData should
+  // report the pending `withhold_permissions = true`.
+  {
+    syncer::SyncDataList sync_data_list =
+        extension_sync_service()->GetAllSyncDataForTesting(syncer::EXTENSIONS);
+    ASSERT_EQ(1u, sync_data_list.size());
+    std::unique_ptr<ExtensionSyncData> data =
+        ExtensionSyncData::CreateFromSyncData(sync_data_list[0]);
+    ASSERT_TRUE(data);
+    EXPECT_EQ(
+        IsParamFeatureEnabled() ? std::optional<bool>(true) : std::nullopt,
+        data->withhold_permissions());
+  }
+
+  PackCRXAndUpdateExtension(id, dir_v2.UnpackedPath(), pem_path(),
+                            IsParamFeatureEnabled() ? ENABLED : DISABLED);
+  const Extension* ext_v2 = registry()->GetInstalledExtension(id);
+  ASSERT_TRUE(ext_v2);
+  EXPECT_EQ("2.0", ext_v2->VersionString());
+  EXPECT_EQ(IsParamFeatureEnabled(),
+            extensions::PermissionsManager::Get(profile())
+                ->HasWithheldHostPermissions(*ext_v2));
+}
+
+// Tests that when `withhold_permissions = false` was queued from incoming sync
+// data for v2, and the extension updates directly to v3 (skipping v2, so
+// version > pending version), the user's "On all sites" choice is applied to
+// v3 rather than being dropped.
+TEST_P(
+    ExtensionSyncServiceWithholdPermissionsTest,
+    SyncWithholdPermissionsDeferredGrantAppliedWhenUpdatingPastSyncedVersion) {
+  SetUpTestExtensionService();
+
+  extensions::TestExtensionDir dir_v1;
+  dir_v1.WriteManifest(R"({
+    "name": "Test Extension",
+    "version": "1.0",
+    "manifest_version": 3,
+    "host_permissions": ["<all_urls>"]
+  })");
+  extensions::TestExtensionDir dir_v3;
+  dir_v3.WriteManifest(R"({
+    "name": "Test Extension",
+    "version": "3.0",
+    "manifest_version": 3,
+    "host_permissions": ["https://example.com/*"]
+  })");
+
+  base::ScopedTempDir crx_dir;
+  ASSERT_TRUE(crx_dir.CreateUniqueTempDir());
+  const base::FilePath crx_v1 = crx_dir.GetPath().AppendASCII("v1.crx");
+  PackCRX(dir_v1.UnpackedPath(), pem_path(), crx_v1);
+
+  std::string id;
+  {
+    const Extension* extension =
+        InstallCRX(crx_v1, ManifestLocation::kInternal, INSTALL_NEW,
+                   Extension::WITHHOLD_PERMISSIONS);
+    ASSERT_TRUE(extension);
+    id = extension->id();
+  }
+  StartSyncing(syncer::EXTENSIONS);
+
+  auto* permissions_manager = extensions::PermissionsManager::Get(profile());
+  EXPECT_TRUE(permissions_manager->HasWithheldHostPermissions(
+      *registry()->GetInstalledExtension(id)));
+
+  // Incoming sync data for v2 sets `withhold_permissions = false`.
+  sync_pb::EntitySpecifics specifics;
+  sync_pb::ExtensionSpecifics* ext_specifics = specifics.mutable_extension();
+  ext_specifics->set_id(id);
+  ext_specifics->set_version("2.0");
+  ext_specifics->set_update_url(extension_urls::GetWebstoreUpdateUrl().spec());
+  ext_specifics->set_enabled(true);
+  ext_specifics->set_disable_reasons(extensions::disable_reason::DISABLE_NONE);
+  ext_specifics->set_withhold_permissions(false);
+
+  extension_sync_service()->ProcessSyncChanges(
+      FROM_HERE, MakeSyncChangeList(id, specifics, SyncChange::ACTION_UPDATE));
+
+  // The local extension updates directly to v3 (3.0 > 2.0). The queued
+  // `withhold_permissions = false` should be applied to v3.
+  PackCRXAndUpdateExtension(id, dir_v3.UnpackedPath(), pem_path(), ENABLED);
+  const Extension* ext_v3 = registry()->GetInstalledExtension(id);
+  ASSERT_TRUE(ext_v3);
+  EXPECT_EQ("3.0", ext_v3->VersionString());
+  EXPECT_EQ(!IsParamFeatureEnabled(),
+            permissions_manager->HasWithheldHostPermissions(*ext_v3));
+}
+
+// Tests that if an extension has withheld permissions, and incoming sync data
+// has `withhold_permissions = false` BUT is disabled for
+// `DISABLE_PERMISSIONS_INCREASE`, the unapproved permission grant is not
+// applied when the extension updates.
+TEST_P(ExtensionSyncServiceWithholdPermissionsTest,
+       SyncWithholdPermissionsDeferredGrantIgnoredOnPermissionsIncrease) {
+  SetUpTestExtensionService();
+
+  extensions::TestExtensionDir dir_v1;
+  dir_v1.WriteManifest(R"({
+    "name": "Test Extension",
+    "version": "1.0",
+    "manifest_version": 3,
+    "host_permissions": ["https://example.com/*"]
+  })");
+  extensions::TestExtensionDir dir_v2;
+  dir_v2.WriteManifest(R"({
+    "name": "Test Extension",
+    "version": "2.0",
+    "manifest_version": 3,
+    "host_permissions": ["<all_urls>"]
+  })");
+
+  base::ScopedTempDir crx_dir;
+  ASSERT_TRUE(crx_dir.CreateUniqueTempDir());
+  const base::FilePath crx_v1 = crx_dir.GetPath().AppendASCII("v1.crx");
+  PackCRX(dir_v1.UnpackedPath(), pem_path(), crx_v1);
+
+  std::string id;
+  {
+    const Extension* extension =
+        InstallCRX(crx_v1, ManifestLocation::kInternal, INSTALL_NEW,
+                   Extension::WITHHOLD_PERMISSIONS);
+    ASSERT_TRUE(extension);
+    id = extension->id();
+  }
+  StartSyncing(syncer::EXTENSIONS);
+
+  auto* permissions_manager = extensions::PermissionsManager::Get(profile());
+  EXPECT_TRUE(permissions_manager->HasWithheldHostPermissions(
+      *registry()->GetInstalledExtension(id)));
+
+  // Incoming sync data for v2 has `withhold_permissions = false` but is
+  // disabled for `DISABLE_PERMISSIONS_INCREASE`.
+  sync_pb::EntitySpecifics specifics;
+  sync_pb::ExtensionSpecifics* ext_specifics = specifics.mutable_extension();
+  ext_specifics->set_id(id);
+  ext_specifics->set_version("2.0");
+  ext_specifics->set_update_url(extension_urls::GetWebstoreUpdateUrl().spec());
+  ext_specifics->set_enabled(false);
+  ext_specifics->set_disable_reasons(
+      extensions::disable_reason::DISABLE_PERMISSIONS_INCREASE);
+  ext_specifics->set_withhold_permissions(false);
+
+  extension_sync_service()->ProcessSyncChanges(
+      FROM_HERE, MakeSyncChangeList(id, specifics, SyncChange::ACTION_UPDATE));
+
+  // Because `withhold_permissions` remains true locally, v2's `<all_urls>` is
+  // withheld on update (so CheckPermissionsIncrease re-enables v2 with
+  // withheld permissions), and OnExtensionInstalled must not grant
+  // `<all_urls>`.
+  PackCRXAndUpdateExtension(id, dir_v2.UnpackedPath(), pem_path(), ENABLED);
+  const Extension* ext_v2 = registry()->GetInstalledExtension(id);
+  ASSERT_TRUE(ext_v2);
+  EXPECT_EQ("2.0", ext_v2->VersionString());
+  EXPECT_TRUE(permissions_manager->HasWithheldHostPermissions(*ext_v2));
+  EXPECT_FALSE(ext_v2->permissions_data()
+                   ->active_permissions()
+                   .HasEffectiveAccessToAllHosts());
 }
 
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
