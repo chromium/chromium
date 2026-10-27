@@ -1370,9 +1370,9 @@ public abstract class AppMenuPropertiesDelegateImpl implements AppMenuProperties
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.SUBMENUS_IN_APP_MENU)) {
             return true;
         }
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.SUBMENUS_IN_APP_MENU_LFF)
-                && DeviceFormFactor.isNonMultiDisplayContextOnTablet(context)
-                && !DeviceInfo.isFoldable()) {
+        if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(context)
+                && !DeviceInfo.isFoldable()
+                && ChromeFeatureList.isEnabled(ChromeFeatureList.SUBMENUS_IN_APP_MENU_LFF)) {
             return true;
         }
         return false;
