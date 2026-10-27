@@ -176,6 +176,8 @@ source_set("glic") {
       "glic_selection_observer.h",
       "host/context/glic_focused_tab_manager.h",
       "public/widget/glic_side_panel_coordinator_impl.h",
+      "widget/glic_loading_placeholder_controller.h",
+      "widget/glic_loading_placeholder_view.h",
       "widget/glic_view.h",
       "widget/glic_widget.h",
     ]
@@ -691,6 +693,8 @@ source_set("impl") {
       "widget/glic_floating_ui.h",
       "widget/glic_inactive_side_panel_ui.cc",
       "widget/glic_inactive_side_panel_ui.h",
+      "widget/glic_loading_placeholder_controller.cc",
+      "widget/glic_loading_placeholder_view.cc",
       "widget/glic_side_panel_coordinator_impl.cc",
       "widget/glic_side_panel_ui.cc",
       "widget/glic_side_panel_ui.h",
@@ -733,6 +737,8 @@ source_set("impl") {
       "//chrome/browser/ui/views/tabs/glic",
       "//chrome/browser/ui/webui/ai_overlay_dialog",
       "//components/password_manager/core/browser/actor_login:common",
+      "//components/strings",
+      "//components/vector_icons",
       "//components/web_modal",
       "//extensions/browser",
     ]
@@ -978,9 +984,12 @@ source_set("unit_tests") {
       "//components/skills:features",
       "//components/skills/public",
       "//components/skills/public:metrics",
+      "//components/viz/common",
       "//components/web_modal:test_support",
       "//content/test:test_support",
       "//ui/base",
+      "//ui/compositor",
+      "//ui/compositor:test_support",
     ]
   } else {
     sources += [

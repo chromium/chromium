@@ -35,6 +35,7 @@
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/views/background.h"
 #include "ui/views/event_monitor.h"
+#include "ui/views/focus/focus_manager.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
@@ -56,6 +57,7 @@ GlicView::GlicView(Profile* profile,
 }
 
 GlicView::~GlicView() {
+  loading_placeholder_controller_.ResetCapturer();
   SetWebContentsDelegate(web_contents(), /*delegate=*/nullptr,
                          /*expected_delegate=*/this);
 }
@@ -113,6 +115,7 @@ void GlicView::ContentsZoomChange(bool zoom_in) {
 }
 
 void GlicView::SetWebContents(content::WebContents* new_web_contents) {
+  loading_placeholder_controller_.ResetCapturer();
   // Clear the delegate on the old WebContents if this view is currently the
   // delegate. Passing `/*expected_delegate=*/this` avoids clearing the delegate
   // if another view has already taken over (e.g. during transitions between
@@ -124,10 +127,26 @@ void GlicView::SetWebContents(content::WebContents* new_web_contents) {
   SetWebContentsDelegate(new_web_contents, /*delegate=*/this);
 
   UpdateWebContentsSize();
+  loading_placeholder_controller_.OnWebContentsAttached(new_web_contents);
+}
+
+void GlicView::RequestFocus() {
+  if (loading_placeholder_controller_.MaybeRequestFocus()) {
+    return;
+  }
+  views::WebView::RequestFocus();
+}
+
+views::View::FocusBehavior GlicView::GetFocusBehavior() const {
+  if (loading_placeholder_controller_.is_showing()) {
+    return FocusBehavior::NEVER;
+  }
+  return views::WebView::GetFocusBehavior();
 }
 
 void GlicView::RenderFrameCreated(content::RenderFrameHost* render_frame_host) {
   views::WebView::RenderFrameCreated(render_frame_host);
+  loading_placeholder_controller_.SyncFocusAccessibilityState();
   if (web_contents() &&
       render_frame_host == web_contents()->GetPrimaryMainFrame()) {
     UpdateWebContentsSize();
@@ -137,6 +156,7 @@ void GlicView::RenderFrameCreated(content::RenderFrameHost* render_frame_host) {
 void GlicView::RenderFrameHostChanged(content::RenderFrameHost* old_host,
                                       content::RenderFrameHost* new_host) {
   views::WebView::RenderFrameHostChanged(old_host, new_host);
+  loading_placeholder_controller_.SyncFocusAccessibilityState();
   if (web_contents() && new_host == web_contents()->GetPrimaryMainFrame()) {
     UpdateWebContentsSize();
   }
@@ -144,6 +164,7 @@ void GlicView::RenderFrameHostChanged(content::RenderFrameHost* old_host,
 
 void GlicView::OnBoundsChanged(const gfx::Rect& previous_bounds) {
   views::WebView::OnBoundsChanged(previous_bounds);
+  loading_placeholder_controller_.UpdateBounds();
   UpdateWebContentsSize();
 }
 
@@ -181,6 +202,9 @@ bool GlicView::HandleWindowCreation(
 }
 
 bool GlicView::IsPointWithinDraggableRegion(const gfx::Point& point) {
+  if (loading_placeholder_controller_.is_showing()) {
+    return loading_placeholder_controller_.IsPointWithinDraggableRegion(point);
+  }
   // Draggable region of webview takes precedence.
   return webview_draggable_region_.contains(point.x(), point.y()) ||
          draggable_region_.contains(point.x(), point.y());
@@ -217,7 +241,33 @@ void GlicView::SetBackgroundRoundedCorners(const gfx::RoundedCornersF& radii) {
   }
 
   background_radii_ = radii;
+  loading_placeholder_controller_.SetBackgroundRoundedCorners(radii);
   UpdateBackgroundColor();
+}
+
+void GlicView::ConfigureLoadingPlaceholder(
+    GlicLoadingPlaceholderView::Mode mode,
+    base::RepeatingClosure close_callback) {
+  loading_placeholder_controller_.Configure(mode, std::move(close_callback));
+}
+
+void GlicView::SetShowingLoadingPlaceholder(bool showing) {
+  loading_placeholder_controller_.SetShowing(showing);
+}
+
+bool GlicView::IsShowingLoadingPlaceholder() const {
+  return loading_placeholder_controller_.is_showing();
+}
+
+bool GlicView::HasFocusInHierarchy() const {
+  const views::FocusManager* focus_manager = GetFocusManager();
+  const views::View* focused_view =
+      focus_manager ? focus_manager->GetFocusedView() : nullptr;
+  return focused_view && Contains(focused_view);
+}
+
+GlicLoadingPlaceholderView* GlicView::loading_placeholder_view_for_testing() {
+  return loading_placeholder_controller_.placeholder_view();
 }
 
 bool GlicView::AcceleratorPressed(const ui::Accelerator& accelerator) {

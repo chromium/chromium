@@ -8,8 +8,9 @@
 #include <optional>
 
 #include "base/functional/callback.h"
-#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
+#include "chrome/browser/glic/widget/glic_loading_placeholder_controller.h"
+#include "chrome/browser/glic/widget/glic_loading_placeholder_view.h"
 #include "chrome/browser/pwc/privileged_web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "third_party/skia/include/core/SkRegion.h"
@@ -81,6 +82,8 @@ class GlicView : public views::WebView,
                               content::RenderFrameHost* new_host) override;
 
   // views::View:
+  void RequestFocus() override;
+  FocusBehavior GetFocusBehavior() const override;
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
   void OnThemeChanged() override;
 
@@ -94,6 +97,13 @@ class GlicView : public views::WebView,
   const gfx::RoundedCornersF& background_rounded_corners() const {
     return background_radii_;
   }
+
+  void ConfigureLoadingPlaceholder(GlicLoadingPlaceholderView::Mode mode,
+                                   base::RepeatingClosure close_callback);
+  void SetShowingLoadingPlaceholder(bool showing);
+  bool IsShowingLoadingPlaceholder() const;
+  bool HasFocusInHierarchy() const;
+  GlicLoadingPlaceholderView* loading_placeholder_view_for_testing();
 
   bool AcceleratorPressed(const ui::Accelerator& accelerator) override;
 
@@ -111,6 +121,7 @@ class GlicView : public views::WebView,
 
   base::WeakPtr<ui::AcceleratorTarget> accelerator_delegate_;
   gfx::RoundedCornersF background_radii_;
+  GlicLoadingPlaceholderController loading_placeholder_controller_{this};
 
   // Defines the region of the view from which it can be dragged.
   SkRegion draggable_region_;
