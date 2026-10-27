@@ -32,6 +32,8 @@
 #include "base/functional/callback_helpers.h"
 #include "base/i18n/base_i18n_switches.h"
 #include "base/i18n/character_encoding.h"
+#include "base/i18n/language_tag.h"
+#include "base/i18n/tag_converters.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/self_deleting.h"
@@ -3369,11 +3371,12 @@ ChromeContentBrowserClient::GetQuarantineConnectionCallback() {
       &ChromeDownloadManagerDelegate::ConnectToQuarantineService);
 }
 
-std::string ChromeContentBrowserClient::GetApplicationLocale() {
-  if (BrowserThread::CurrentlyOn(BrowserThread::IO)) {
-    return GetIOThreadApplicationLocale();
-  }
-  return g_browser_process->GetApplicationLocale();
+base::i18n::LanguageTag ChromeContentBrowserClient::GetApplicationLocale() {
+  const std::string& locale = BrowserThread::CurrentlyOn(BrowserThread::IO)
+                                  ? GetIOThreadApplicationLocale()
+                                  : g_browser_process->GetApplicationLocale();
+  return base::i18n::GetLanguageTagFromString(locale).value_or(
+      ContentBrowserClient::GetApplicationLocale());
 }
 
 std::string ChromeContentBrowserClient::GetAcceptLangs(
@@ -7255,7 +7258,8 @@ void ChromeContentBrowserClient::ConfigureNetworkContextParams(
   } else {
     // Set default params.
     network_context_params->user_agent = GetUserAgent();
-    network_context_params->accept_language = GetApplicationLocale();
+    network_context_params->accept_language =
+        std::string(GetApplicationLocale().tag_string());
   }
 }
 

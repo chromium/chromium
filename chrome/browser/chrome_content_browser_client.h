@@ -346,7 +346,7 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   std::string GetApplicationClientGUIDForQuarantineCheck() override;
   download::QuarantineConnectionCallback GetQuarantineConnectionCallback()
       override;
-  std::string GetApplicationLocale() override;
+  base::i18n::LanguageTag GetApplicationLocale() override;
   std::string GetAcceptLangs(content::BrowserContext* context) override;
   gfx::ImageSkia GetDefaultFavicon() override;
   bool IsDataSaverEnabled(content::BrowserContext* context) override;

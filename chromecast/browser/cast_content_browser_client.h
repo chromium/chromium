@@ -175,7 +175,7 @@ class CastContentBrowserClient
   void OverrideWebPreferences(content::WebContents* web_contents,
                               content::SiteInstance& main_frame_site,
                               blink::web_pref::WebPreferences* prefs) override;
-  std::string GetApplicationLocale() override;
+  base::i18n::LanguageTag GetApplicationLocale() override;
   void AllowCertificateError(
       content::WebContents* web_contents,
       int cert_error,

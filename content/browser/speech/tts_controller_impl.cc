@@ -7,12 +7,14 @@
 #include <stddef.h>
 
 #include <algorithm>
+#include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/containers/queue.h"
 #include "base/functional/bind.h"
-#include "base/i18n/legacy_language_tag_helpers.h"
+#include "base/i18n/language_tag.h"
 #include "base/i18n/tag_converters.h"
 #include "base/json/json_reader.h"
 #include "base/metrics/histogram_macros.h"
@@ -70,29 +72,6 @@ bool IsUtteranceSpokenByRemoteEngine(TtsUtterance* utterance) {
   return false;
 }
 
-struct ParsedLocale {
-  std::string language;
-  std::string country;
-};
-
-// Parses a locale tag into lowercased primary language and country subtags.
-// Returns empty subtags if the locale string cannot be parsed or lacks them.
-ParsedLocale ParseLocale(std::string_view locale_str) {
-  if (locale_str.empty()) {
-    return {};
-  }
-
-  std::optional<base::i18n::LanguageTag> tag =
-      base::i18n::GetLanguageTagFromString(locale_str);
-  std::string language =
-      tag ? base::ToLowerASCII(tag->language_subtag())
-          : base::ToLowerASCII(
-                base::i18n::GetLanguageSubtagUsingLanguageTag(locale_str));
-  std::string country = tag ? base::ToLowerASCII(tag->region_subtag()) : "";
-
-  return {std::move(language), std::move(country)};
-}
-
 enum class LocaleMatchLevel {
   kNone = 0,
   kPrefix = 1,
@@ -114,19 +93,23 @@ enum class LocaleMatchLevel {
 //   "it-IT").
 // - kPrefix: The voice language matches the target language, but both specify
 //   differing country subtags (e.g. "it-CH" vs "it-IT").
-// - kNone: The primary language subtags do not match or either tag is empty.
-LocaleMatchLevel GetLocaleMatchLevel(const ParsedLocale& voice_locale,
-                                     const ParsedLocale& target_locale) {
-  if (voice_locale.language.empty() || target_locale.language.empty() ||
-      voice_locale.language != target_locale.language) {
+// - kNone: The primary language subtags do not match or either locale could
+//   not be parsed.
+LocaleMatchLevel GetLocaleMatchLevel(
+    const std::optional<base::i18n::LanguageTag>& voice_locale,
+    const std::optional<base::i18n::LanguageTag>& target_locale) {
+  if (!voice_locale || !target_locale ||
+      voice_locale->language_subtag() != target_locale->language_subtag()) {
     return LocaleMatchLevel::kNone;
   }
 
-  if (!target_locale.country.empty()) {
-    if (voice_locale.country == target_locale.country) {
+  const std::string_view target_region = target_locale->region_subtag();
+  if (!target_region.empty()) {
+    const std::string_view voice_region = voice_locale->region_subtag();
+    if (voice_region == target_region) {
       return LocaleMatchLevel::kExact;
     }
-    if (voice_locale.country.empty()) {
+    if (voice_region.empty()) {
       return LocaleMatchLevel::kRegional;
     }
     return LocaleMatchLevel::kPrefix;
@@ -880,10 +863,10 @@ void TtsControllerImpl::PopulateParsedText(std::string* parsed_text,
 
 int TtsControllerImpl::GetMatchingVoice(TtsUtterance* utterance,
                                         const std::vector<VoiceData>& voices) {
-  const std::string app_lang =
+  const std::optional<base::i18n::LanguageTag> utterance_locale =
+      base::i18n::GetLanguageTagFromString(utterance->GetLang());
+  const std::optional<base::i18n::LanguageTag> app_locale =
       GetContentClient()->browser()->GetApplicationLocale();
-  const ParsedLocale utterance_locale = ParseLocale(utterance->GetLang());
-  const ParsedLocale app_locale = ParseLocale(app_lang);
 
   // Start with a best score of -1, that way even if none of the criteria
   // match, something will be returned if there are any voices.
@@ -909,7 +892,8 @@ int TtsControllerImpl::GetMatchingVoice(TtsUtterance* utterance,
         voice.name != utterance->GetVoiceName())
       continue;
 
-    const ParsedLocale voice_locale = ParseLocale(voice.lang);
+    const std::optional<base::i18n::LanguageTag> voice_locale =
+        base::i18n::GetLanguageTagFromString(voice.lang);
 
     // Prefer the utterance language. Scoring weights are powers of two to
     // enforce a strict priority hierarchy where each criterion decisively

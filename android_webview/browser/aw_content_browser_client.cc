@@ -65,6 +65,7 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/i18n/android_locale.h"
+#include "base/i18n/language_tag.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
@@ -507,8 +508,8 @@ void AwContentBrowserClient::AppendExtraCommandLineSwitches(
   }
 }
 
-std::string AwContentBrowserClient::GetApplicationLocale() {
-  return std::string(base::i18n::GetAndroidDefaultLocale().tag_string());
+base::i18n::LanguageTag AwContentBrowserClient::GetApplicationLocale() {
+  return base::i18n::GetAndroidDefaultLocale();
 }
 
 std::string AwContentBrowserClient::GetAcceptLangs(

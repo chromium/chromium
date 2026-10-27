@@ -15,6 +15,8 @@
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/i18n/icubridge/default_icu_locale.h"
+#include "base/i18n/language_tag.h"
 #include "base/i18n/rtl.h"
 #include "base/path_service.h"
 #include "base/strings/string_number_conversions.h"
@@ -349,8 +351,8 @@ void HeadlessContentBrowserClient::AppendExtraCommandLineSwitches(
   }
 }
 
-std::string HeadlessContentBrowserClient::GetApplicationLocale() {
-  return base::i18n::GetConfiguredLocale();
+base::i18n::LanguageTag HeadlessContentBrowserClient::GetApplicationLocale() {
+  return base::i18n::GetDefaultIcuLocale();
 }
 
 std::string HeadlessContentBrowserClient::GetAcceptLangs(

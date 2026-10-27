@@ -5,9 +5,11 @@
 #ifndef CONTENT_PUBLIC_TEST_TEST_CONTENT_BROWSER_CLIENT_H_
 #define CONTENT_PUBLIC_TEST_TEST_CONTENT_BROWSER_CLIENT_H_
 
+#include <optional>
 #include <string>
 
 #include "base/files/scoped_temp_dir.h"
+#include "base/i18n/language_tag.h"
 #include "build/build_config.h"
 #include "content/public/browser/content_browser_client.h"
 
@@ -26,7 +28,7 @@ class TestContentBrowserClient : public ContentBrowserClient {
 
   static TestContentBrowserClient* GetInstance();
 
-  void set_application_locale(const std::string& locale) {
+  void set_application_locale(const base::i18n::LanguageTag& locale) {
     application_locale_ = locale;
   }
 
@@ -35,7 +37,7 @@ class TestContentBrowserClient : public ContentBrowserClient {
   GeneratedCodeCacheSettings GetGeneratedCodeCacheSettings(
       content::BrowserContext* context) override;
   std::string GetUserAgent() override;
-  std::string GetApplicationLocale() override;
+  base::i18n::LanguageTag GetApplicationLocale() override;
 #if BUILDFLAG(IS_ANDROID)
   void GetAdditionalMappedFilesForChildProcess(
       const base::CommandLine& command_line,
@@ -46,7 +48,7 @@ class TestContentBrowserClient : public ContentBrowserClient {
  private:
   // Temporary directory for GetDefaultDownloadDirectory.
   base::ScopedTempDir download_dir_;
-  std::string application_locale_;
+  std::optional<base::i18n::LanguageTag> application_locale_;
   static TestContentBrowserClient* instance_;
 };
 

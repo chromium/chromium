@@ -15,6 +15,8 @@
 #include "base/files/scoped_file.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/i18n/icubridge/default_icu_locale.h"
+#include "base/i18n/language_tag.h"
 #include "base/i18n/rtl.h"
 #include "base/logging.h"
 #include "base/message_loop/message_pump_type.h"
@@ -505,9 +507,12 @@ void CastContentBrowserClient::OverrideWebPreferences(
   }
 }
 
-std::string CastContentBrowserClient::GetApplicationLocale() {
-  const std::string locale(base::i18n::GetConfiguredLocale());
-  return locale.empty() ? "en-US" : locale;
+base::i18n::LanguageTag CastContentBrowserClient::GetApplicationLocale() {
+  const base::i18n::LanguageTag locale = base::i18n::GetDefaultIcuLocale();
+  if (locale == base::i18n::GetKnownLanguageTag("und")) {
+    return base::i18n::GetKnownLanguageTag("en-US");
+  }
+  return locale;
 }
 
 void CastContentBrowserClient::AllowCertificateError(

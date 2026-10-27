@@ -14,6 +14,7 @@
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback_helpers.h"
+#include "base/i18n/language_tag.h"
 #include "base/memory/safe_ref.h"
 #include "base/no_destructor.h"
 #include "base/notimplemented.h"
@@ -478,8 +479,8 @@ ContentBrowserClient::GetQuarantineConnectionCallback() {
   return base::NullCallback();
 }
 
-std::string ContentBrowserClient::GetApplicationLocale() {
-  return "en-US";
+base::i18n::LanguageTag ContentBrowserClient::GetApplicationLocale() {
+  return base::i18n::GetKnownLanguageTag("en-US");
 }
 
 std::string ContentBrowserClient::GetAcceptLangs(BrowserContext* context) {

@@ -19,6 +19,7 @@
 #include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/i18n/language_tag.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/strings/string_util.h"
@@ -435,9 +436,10 @@ void WebUIDataSourceImpl::EnsureLoadTimeDataDefaultsAdded() {
     return;
 
   add_load_time_data_defaults_ = false;
-  std::string locale = GetContentClient()->browser()->GetApplicationLocale();
+  const base::i18n::LanguageTag locale =
+      GetContentClient()->browser()->GetApplicationLocale();
   base::DictValue defaults;
-  webui::SetLoadTimeDataDefaults(locale, &defaults);
+  webui::SetLoadTimeDataDefaults(std::string(locale.tag_string()), &defaults);
   AddLocalizedStrings(defaults);
 }
 

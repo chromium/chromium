@@ -6,6 +6,7 @@
 
 #include "base/check.h"
 #include "base/files/file_path.h"
+#include "base/i18n/language_tag.h"
 #include "build/build_config.h"
 #include "content/public/browser/browser_context.h"
 
@@ -54,10 +55,9 @@ std::string TestContentBrowserClient::GetUserAgent() {
   return std::string("TestContentClient");
 }
 
-std::string TestContentBrowserClient::GetApplicationLocale() {
-  return application_locale_.empty()
-             ? ContentBrowserClient::GetApplicationLocale()
-             : application_locale_;
+base::i18n::LanguageTag TestContentBrowserClient::GetApplicationLocale() {
+  return application_locale_.value_or(
+      ContentBrowserClient::GetApplicationLocale());
 }
 
 #if BUILDFLAG(IS_ANDROID)

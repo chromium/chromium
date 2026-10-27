@@ -15,6 +15,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/i18n/base_i18n_switches.h"
+#include "base/i18n/language_tag.h"
 #include "base/logging.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
@@ -390,8 +391,9 @@ bool UtilityProcessHost::StartProcess() {
   // Specify the type of utility process for debugging/profiling purposes.
   cmd_line->AppendSwitchASCII(switches::kUtilitySubType,
                               options_.metrics_name_);
-  std::string locale = GetContentClient()->browser()->GetApplicationLocale();
-  cmd_line->AppendSwitchASCII(switches::kLang, locale);
+  const base::i18n::LanguageTag locale =
+      GetContentClient()->browser()->GetApplicationLocale();
+  cmd_line->AppendSwitchASCII(switches::kLang, locale.tag_string());
 
 #if BUILDFLAG(IS_WIN)
   cmd_line->AppendArgNative(

@@ -4,6 +4,9 @@
 
 // Unit tests for the TTS Controller.
 
+#include <optional>
+
+#include "base/i18n/language_tag.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/values.h"
@@ -267,7 +270,7 @@ class TtsControllerTest : public testing::Test {
 
   void TearDown() override {
     TestContentBrowserClient::GetInstance()->set_application_locale(
-        original_locale_);
+        *original_locale_);
     if (controller())
       controller()->RemoveVoicesChangedDelegate(&voices_changed_);
   }
@@ -315,7 +318,7 @@ class TtsControllerTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   RenderViewHostTestEnabler rvh_enabler_;
 
-  std::string original_locale_;
+  std::optional<base::i18n::LanguageTag> original_locale_;
   std::unique_ptr<TestTtsControllerImpl> controller_;
   std::unique_ptr<MockTtsPlatformImpl> platform_impl_;
   std::unique_ptr<TestBrowserContext> browser_context_;
@@ -387,7 +390,8 @@ TEST_F(TtsControllerTest, TestTtsControllerUtteranceDefaults) {
 #endif
 
 TEST_F(TtsControllerTest, TestGetMatchingVoice) {
-  TestContentBrowserClient::GetInstance()->set_application_locale("en");
+  TestContentBrowserClient::GetInstance()->set_application_locale(
+      base::i18n::GetKnownLanguageTag("en"));
 
   {
     // Calling GetMatchingVoice with no voices returns -1.
@@ -520,7 +524,8 @@ TEST_F(TtsControllerTest, TestGetMatchingVoice) {
     std::unique_ptr<TtsUtterance> utterance(TtsUtterance::Create());
 
     // No matching voice for engine_id is set. Returns -1.
-    TestContentBrowserClient::GetInstance()->set_application_locale("en-US");
+    TestContentBrowserClient::GetInstance()->set_application_locale(
+        base::i18n::GetKnownLanguageTag("en-US"));
     utterance->SetLang("en-US");
     utterance->SetEngineId("test_engine");
     EXPECT_EQ(-1, controller()->GetMatchingVoice(utterance.get(), voices));
@@ -542,20 +547,23 @@ TEST_F(TtsControllerTest, TestGetMatchingVoice) {
     std::unique_ptr<TtsUtterance> utterance(TtsUtterance::Create());
 
     // voice1 is matched against the exact default system language.
-    TestContentBrowserClient::GetInstance()->set_application_locale("en-US");
+    TestContentBrowserClient::GetInstance()->set_application_locale(
+        base::i18n::GetKnownLanguageTag("en-US"));
     utterance->SetLang("");
     EXPECT_EQ(1, controller()->GetMatchingVoice(utterance.get(), voices));
 
 #if BUILDFLAG(IS_CHROMEOS)
     // voice0 is matched against the system language which has no region piece.
-    TestContentBrowserClient::GetInstance()->set_application_locale("en");
+    TestContentBrowserClient::GetInstance()->set_application_locale(
+        base::i18n::GetKnownLanguageTag("en"));
     EXPECT_EQ(0, controller()->GetMatchingVoice(utterance.get(), voices));
 
     TtsControllerDelegate::PreferredVoiceIds preferred_voice_ids2;
     preferred_voice_ids2.locale_voice_id.emplace("voice0", "id0");
     delegate()->SetPreferredVoiceIds(preferred_voice_ids2);
     // voice0 is matched against the pref over the system language.
-    TestContentBrowserClient::GetInstance()->set_application_locale("en-US");
+    TestContentBrowserClient::GetInstance()->set_application_locale(
+        base::i18n::GetKnownLanguageTag("en-US"));
     EXPECT_EQ(0, controller()->GetMatchingVoice(utterance.get(), voices));
 #endif
   }
@@ -613,7 +621,8 @@ TEST_F(TtsControllerTest,
   // (e.g. "it") are available, the regional voice is prioritized over the
   // fallback engine regardless of candidate vector ordering (even when the
   // fallback voice appears first at index 0).
-  TestContentBrowserClient::GetInstance()->set_application_locale("it");
+  TestContentBrowserClient::GetInstance()->set_application_locale(
+      base::i18n::GetKnownLanguageTag("it"));
 
   std::vector<VoiceData> voices;
   VoiceData espeak_voice;
@@ -640,7 +649,8 @@ TEST_F(TtsControllerTest,
   // utterance language (e.g. app locale "en-US" vs utterance "it"), a regional
   // primary voice (e.g. "it-IT") is prioritized over a generic fallback voice
   // ("it") regardless of candidate vector ordering.
-  TestContentBrowserClient::GetInstance()->set_application_locale("en-US");
+  TestContentBrowserClient::GetInstance()->set_application_locale(
+      base::i18n::GetKnownLanguageTag("en-US"));
 
   std::vector<VoiceData> voices;
   VoiceData espeak_voice;
@@ -667,7 +677,8 @@ TEST_F(TtsControllerTest,
   // regional dialect voice (e.g. "en-US") as a primary match rather than
   // defaulting to a generic fallback voice, even when the fallback voice
   // appears first in the candidate list.
-  TestContentBrowserClient::GetInstance()->set_application_locale("en-US");
+  TestContentBrowserClient::GetInstance()->set_application_locale(
+      base::i18n::GetKnownLanguageTag("en-US"));
 
   std::vector<VoiceData> voices;
   VoiceData espeak_voice;
@@ -695,7 +706,8 @@ TEST_F(
   // a fallback engine in the requested language (e.g. Greek "el") is strictly
   // chosen over primary high-quality voices in different languages ("en-US"
   // or "it-IT").
-  TestContentBrowserClient::GetInstance()->set_application_locale("it");
+  TestContentBrowserClient::GetInstance()->set_application_locale(
+      base::i18n::GetKnownLanguageTag("it"));
 
   std::vector<VoiceData> voices;
   VoiceData english_voice;
@@ -728,7 +740,8 @@ TEST_F(TtsControllerTest,
   // (e.g. both "it"), the non-fallback engine is prioritized over the fallback
   // engine regardless of candidate vector ordering (even when the fallback
   // voice is encountered first at index 0).
-  TestContentBrowserClient::GetInstance()->set_application_locale("it");
+  TestContentBrowserClient::GetInstance()->set_application_locale(
+      base::i18n::GetKnownLanguageTag("it"));
 
   std::vector<VoiceData> voices;
   VoiceData espeak_voice;
@@ -755,7 +768,8 @@ TEST_F(TtsControllerTest,
   // Verifies that when two candidate voices have identical regional locale tags
   // (e.g. both "it-IT"), the non-fallback engine is prioritized over the
   // fallback engine even when the fallback voice appears first in the list.
-  TestContentBrowserClient::GetInstance()->set_application_locale("it");
+  TestContentBrowserClient::GetInstance()->set_application_locale(
+      base::i18n::GetKnownLanguageTag("it"));
 
   std::vector<VoiceData> voices;
   VoiceData espeak_voice;
@@ -782,7 +796,8 @@ TEST_F(TtsControllerTest,
   // Verifies that when a user explicitly configures a preference for a fallback
   // engine voice in settings, their explicit selection takes precedence over
   // automatic voice ordering and regional matching.
-  TestContentBrowserClient::GetInstance()->set_application_locale("it");
+  TestContentBrowserClient::GetInstance()->set_application_locale(
+      base::i18n::GetKnownLanguageTag("it"));
 
   std::vector<VoiceData> voices;
   VoiceData google_voice;
@@ -843,7 +858,8 @@ TEST_F(TtsControllerTest,
   // (e.g. "it-IT"), an exact dialect match ("it-IT") scores higher and beats
   // a generic language-only match ("it") even when both candidates are primary
   // non-fallback engines, and regardless of candidate vector ordering.
-  TestContentBrowserClient::GetInstance()->set_application_locale("en-US");
+  TestContentBrowserClient::GetInstance()->set_application_locale(
+      base::i18n::GetKnownLanguageTag("en-US"));
 
   std::vector<VoiceData> voices;
   VoiceData generic_primary_voice;
@@ -877,7 +893,8 @@ TEST_F(TtsControllerTest,
   // Verifies that when matching against the system application locale (e.g.
   // "it-IT") without an utterance language, an exact dialect match ("it-IT")
   // receives a higher match score than a language-only match ("it").
-  TestContentBrowserClient::GetInstance()->set_application_locale("it-IT");
+  TestContentBrowserClient::GetInstance()->set_application_locale(
+      base::i18n::GetKnownLanguageTag("it-IT"));
 
   std::vector<VoiceData> voices;
   VoiceData generic_primary_voice;

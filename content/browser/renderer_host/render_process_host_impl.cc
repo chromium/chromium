@@ -33,6 +33,7 @@
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/i18n/language_tag.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
@@ -3839,9 +3840,9 @@ void RenderProcessHostImpl::AppendRendererCommandLine(
   PropagateBrowserCommandLineToRenderer(browser_command_line, command_line);
 
   // Pass on the browser locale.
-  const std::string locale =
+  const base::i18n::LanguageTag locale =
       GetContentClient()->browser()->GetApplicationLocale();
-  command_line->AppendSwitchASCII(switches::kLang, locale);
+  command_line->AppendSwitchASCII(switches::kLang, locale.tag_string());
 
   // A non-empty RendererCmdPrefix implies that Zygote is disabled.
   if (!base::CommandLine::ForCurrentProcess()
@@ -5256,9 +5257,9 @@ void RenderProcessHost::SetRunRendererInProcess(bool value) {
     if (!command_line->HasSwitch(switches::kLang)) {
       // Modify the current process' command line to include the browser
       // locale, as the renderer expects this flag to be set.
-      const std::string locale =
+      const base::i18n::LanguageTag locale =
           GetContentClient()->browser()->GetApplicationLocale();
-      command_line->AppendSwitchASCII(switches::kLang, locale);
+      command_line->AppendSwitchASCII(switches::kLang, locale.tag_string());
     }
     // TODO(piman): we should really send configuration through bools rather
     // than by parsing strings, i.e. sending an IPC rather than command line

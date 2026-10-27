@@ -10,6 +10,8 @@
 
 #include "base/command_line.h"
 #include "base/functional/callback.h"
+#include "base/i18n/icubridge/default_icu_locale.h"
+#include "base/i18n/language_tag.h"
 #include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_split.h"
@@ -302,9 +304,9 @@ void WebEngineContentBrowserClient::AppendExtraCommandLineSwitches(
   }
 }
 
-std::string WebEngineContentBrowserClient::GetApplicationLocale() {
+base::i18n::LanguageTag WebEngineContentBrowserClient::GetApplicationLocale() {
   // ICU is configured with the system locale by WebEngineBrowserMainParts.
-  return base::i18n::GetConfiguredLocale();
+  return base::i18n::GetDefaultIcuLocale();
 }
 
 std::string WebEngineContentBrowserClient::GetAcceptLangs(

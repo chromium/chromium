@@ -97,7 +97,7 @@ class AwContentBrowserClient : public content::ContentBrowserClient {
   bool ForceSniffingFileUrlsForHtml() override;
   void AppendExtraCommandLineSwitches(base::CommandLine* command_line,
                                       int child_process_id) override;
-  std::string GetApplicationLocale() override;
+  base::i18n::LanguageTag GetApplicationLocale() override;
   std::string GetAcceptLangs(content::BrowserContext* context) override;
   gfx::ImageSkia GetDefaultFavicon() override;
   content::GeneratedCodeCacheSettings GetGeneratedCodeCacheSettings(

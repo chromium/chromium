@@ -128,6 +128,10 @@ class ScopedClosureRunner;
 class Uuid;
 }  // namespace base
 
+namespace base::i18n {
+class LanguageTag;
+}  // namespace base::i18n
+
 namespace blink {
 namespace mojom {
 class DeviceAPIService;
@@ -915,7 +919,7 @@ class CONTENT_EXPORT ContentBrowserClient {
 
   // Returns the locale used by the application.
   // This is called on the UI and IO threads.
-  virtual std::string GetApplicationLocale();
+  virtual base::i18n::LanguageTag GetApplicationLocale();
 
   // Returns a comma-separate list of language codes, in order of preference.
   // The legacy "accept-language" header is not affected by this setting (see
