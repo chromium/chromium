@@ -11,6 +11,7 @@
 #import "base/metrics/histogram_macros.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/app/startup/app_launch_metrics.h"
+#import "ios/chrome/app/startup/app_startup_utils.h"
 #import "ios/chrome/app/task_request_url_context_private.h"
 #import "ios/chrome/common/app_group/app_group_constants.h"
 
@@ -18,11 +19,7 @@ namespace {
 
 // Returns the command dispatch time from the shared defaults.
 NSDate* ExtractCommandTimeFromSharedDefaults(UIOpenURLContext* URLContext) {
-  NSString* action = [URLContext.URL path];
-  if (![action isEqualToString:
-                   [NSString stringWithFormat:
-                                 @"/%s",
-                                 app_group::kChromeAppGroupXCallbackCommand]]) {
+  if (!IsXCallbackAppGroupCommandPath([URLContext.URL path])) {
     return nil;
   }
   NSUserDefaults* sharedDefaults = app_group::GetGroupUserDefaults();
@@ -58,10 +55,7 @@ NSDate* ExtractCommandTimeFromSharedDefaults(UIOpenURLContext* URLContext) {
   base::UmaHistogramEnumeration(kAppLaunchSource, AppLaunchSource::X_CALLBACK);
 
   NSString* action = [self.URLContext.URL path];
-  if ([action isEqualToString:
-                  [NSString stringWithFormat:
-                                @"/%s",
-                                app_group::kChromeAppGroupXCallbackCommand]]) {
+  if (IsXCallbackAppGroupCommandPath(action)) {
     UMA_HISTOGRAM_ENUMERATION(kUMAMobileSessionStartActionHistogram,
                               START_ACTION_XCALLBACK_APPGROUP_COMMAND,
                               MOBILE_SESSION_START_ACTION_COUNT);
@@ -70,7 +64,7 @@ NSDate* ExtractCommandTimeFromSharedDefaults(UIOpenURLContext* URLContext) {
           [[NSDate date] timeIntervalSinceDate:self.commandTime];
       UMA_HISTOGRAM_COUNTS_100("Startup.ApplicationGroupCommandDelay", delay);
     }
-  } else if ([action isEqualToString:@"/open"]) {
+  } else if (IsXCallbackOpenCommandPath(action)) {
     UMA_HISTOGRAM_ENUMERATION(kUMAMobileSessionStartActionHistogram,
                               START_ACTION_XCALLBACK_OPEN,
                               MOBILE_SESSION_START_ACTION_COUNT);

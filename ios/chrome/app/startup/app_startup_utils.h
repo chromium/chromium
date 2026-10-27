@@ -35,4 +35,11 @@ bool IsAppSwitcherAISummarizationTestingExternalURLEnabled();
 // NSUserDefaults.
 void SaveFieldTrialValuesForGroupApp();
 
+// Returns true if `path` matches the X-Callback App Group command path
+// (`/app-group-command`).
+bool IsXCallbackAppGroupCommandPath(NSString* path);
+
+// Returns true if `path` matches the X-Callback open command path (`/open`).
+bool IsXCallbackOpenCommandPath(NSString* path);
+
 #endif  // IOS_CHROME_APP_STARTUP_APP_STARTUP_UTILS_H_

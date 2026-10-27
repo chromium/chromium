@@ -13,6 +13,9 @@
 
 namespace {
 
+// Action path for the X-Callback open command.
+NSString* const kXCallbackOpenCommandPath = @"/open";
+
 enum CallerApp {
   kGoogleSearch = 0,
   kGmail = 1,
@@ -214,4 +217,14 @@ void SaveFieldTrialValuesForGroupApp() {
 
   [shared_defaults setObject:capabilities
                       forKey:app_group::kChromeCapabilitiesPreference];
+}
+
+bool IsXCallbackAppGroupCommandPath(NSString* path) {
+  NSString* expected_path = [NSString
+      stringWithFormat:@"/%s", app_group::kChromeAppGroupXCallbackCommand];
+  return [path isEqualToString:expected_path];
+}
+
+bool IsXCallbackOpenCommandPath(NSString* path) {
+  return [path isEqualToString:kXCallbackOpenCommandPath];
 }

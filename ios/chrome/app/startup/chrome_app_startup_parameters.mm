@@ -191,11 +191,7 @@ TabOpeningPostOpeningAction XCallbackPoaToPostOpeningAction(
     // TODO(crbug.com/41004788): Temporary fix.
     NSString* action = [completeURL path];
     // Currently only "open" and "app-group-command" are supported.
-    if ([action
-            isEqualToString:
-                [NSString
-                    stringWithFormat:
-                        @"/%s", app_group::kChromeAppGroupXCallbackCommand]]) {
+    if (IsXCallbackAppGroupCommandPath(action)) {
       UMA_HISTOGRAM_ENUMERATION(kUMAMobileSessionStartActionHistogram,
                                 START_ACTION_XCALLBACK_APPGROUP_COMMAND,
                                 MOBILE_SESSION_START_ACTION_COUNT);
@@ -205,7 +201,7 @@ TabOpeningPostOpeningAction XCallbackPoaToPostOpeningAction(
                                  forceApplicationMode:forceApplicationMode];
     }
 
-    if (![action isEqualToString:@"/open"]) {
+    if (!IsXCallbackOpenCommandPath(action)) {
       UMA_HISTOGRAM_ENUMERATION(kUMAMobileSessionStartActionHistogram,
                                 START_ACTION_XCALLBACK_OTHER,
                                 MOBILE_SESSION_START_ACTION_COUNT);
