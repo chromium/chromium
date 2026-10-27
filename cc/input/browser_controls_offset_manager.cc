@@ -1085,8 +1085,12 @@ void BrowserControlsOffsetManager::PinchEnd() {
 
 gfx::Vector2dF BrowserControlsOffsetManager::Animate(
     base::TimeTicks monotonic_time) {
-  if (!HasAnimation() || !client_->HaveRootScrollNode())
+  if (!client_->HaveRootScrollNode()) {
+    unapplied_scroll_delta_ = 0.0f;
+  }
+  if (!HasAnimation()) {
     return gfx::Vector2dF();
+  }
 
   if (unapplied_scroll_delta_ != 0.0f) {
     float unapplied_scroll_delta = unapplied_scroll_delta_;
@@ -1173,6 +1177,10 @@ gfx::Vector2dF BrowserControlsOffsetManager::Animate(
     if (!bottom_min_height_change_in_progress_) {
       bottom_controls_min_height_offset_ = BottomControlsMinHeight();
     }
+  }
+
+  if (!client_->HaveRootScrollNode()) {
+    return gfx::Vector2dF();
   }
 
   gfx::Vector2dF scroll_delta(0.0f, top_offset_delta);
@@ -1315,6 +1323,7 @@ void BrowserControlsOffsetManager::InitAnimationForHeightChange(
   animation->Initialize(direction, start_ratio, stop_ratio,
                         kHeightChangeDurationMs, /*jump_to_end_on_reset=*/true,
                         gfx::Tween::LINEAR);
+  unapplied_scroll_delta_ = 0.0f;
 }
 
 float BrowserControlsOffsetManager::OldTopControlsMinShownRatio() {
