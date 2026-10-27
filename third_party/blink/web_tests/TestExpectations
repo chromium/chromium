@@ -5566,10 +5566,6 @@ crbug.com/343257585 external/wpt/css/css-gaps/grid-lanes/row-gap-decorations-spa
 crbug.com/362536387 external/wpt/html/semantics/forms/the-select-element/select-many-options.tentative.html [ Failure ]
 crbug.com/362536387 external/wpt/html/semantics/forms/the-select-element/select-popover-position-with-zoom.tentative.html [ Failure ]
 
-# Interesting issue with max-block-size: stretch
-crbug.com/382679385 external/wpt/html/semantics/forms/the-select-element/customizable-select/select-appearance-fallback-bottom-left.html [ Failure ]
-crbug.com/382679385 external/wpt/html/semantics/forms/the-select-element/customizable-select/select-appearance-fallback-bottom-right.html [ Failure ]
-
 # Temp disable MST transfer tests until Browser feature can be enabled in tests
 crbug.com/1288839 external/wpt/mediacapture-streams/MediaStreamTrack-iframe-transfer.https.html [ Failure Skip ]
 crbug.com/1288839 external/wpt/mediacapture-streams/MediaStreamTrack-iframe-audio-transfer.https.html [ Failure Skip ]

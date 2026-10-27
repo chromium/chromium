@@ -1910,9 +1910,11 @@ const LayoutResult* OutOfFlowLayoutPart::LayoutOOFNode(
   // Since out-of-flow positioning sets up a constraint space with fixed
   // inline-size, the regular layout code (|BlockNode::Layout()|) cannot
   // re-layout if it discovers that a scrollbar was added or removed. Handle
-  // that situation here. The assumption is that if intrinsic logical widths are
-  // dirty after layout, AND its inline-size depends on the intrinsic logical
-  // widths, it means that scrollbars appeared or disappeared.
+  // that situation here. E.g. when scrollbars appear on descendants, or this
+  // is the first layout because block-sizes were computed without layout. The
+  // assumption is that if intrinsic logical widths are dirty after layout, AND
+  // its inline-size depends on the intrinsic logical widths, it means that
+  // scrollbars appeared or disappeared.
   if (node_info.node.GetLayoutBox()->IntrinsicLogicalWidthsDirty() &&
       offset_info.inline_size_depends_on_min_max_sizes) {
     WritingDirectionMode writing_mode_direction =
@@ -2495,16 +2497,51 @@ OutOfFlowLayoutPart::TryCalculateOffset(
   OffsetInfo offset_info;
   offset_info.has_default_anchor = has_default_anchor;
   LogicalOofDimensions& node_dimensions = offset_info.node_dimensions;
-  offset_info.inline_size_depends_on_min_max_sizes = ComputeOofInlineDimensions(
-      node_info.node, node_info.break_token, candidate_style, space, imcb,
-      anchor_center_position, alignment, border_padding, replaced_size,
-      overflow_limit_insets, inline_auto_size_behavior,
-      block_auto_size_behavior, container_writing_direction, &node_dimensions);
-  offset_info.initial_layout_result = ComputeOofBlockDimensions(
-      node_info.node, node_info.break_token, candidate_style, space, imcb,
-      anchor_center_position, alignment, border_padding, replaced_size,
-      overflow_limit_insets, block_auto_size_behavior,
-      container_writing_direction, &node_dimensions);
+  auto compute_dimensions = [&]() {
+    offset_info.inline_size_depends_on_min_max_sizes =
+        ComputeOofInlineDimensions(
+            node_info.node, node_info.break_token, candidate_style, space, imcb,
+            anchor_center_position, alignment, border_padding, replaced_size,
+            overflow_limit_insets, inline_auto_size_behavior,
+            block_auto_size_behavior, container_writing_direction,
+            &node_dimensions);
+    offset_info.initial_layout_result = ComputeOofBlockDimensions(
+        node_info.node, node_info.break_token, candidate_style, space, imcb,
+        anchor_center_position, alignment, border_padding, replaced_size,
+        overflow_limit_insets, block_auto_size_behavior,
+        container_writing_direction, &node_dimensions);
+  };
+
+  BoxStrut scrollbars_before = ComputeScrollbarsForNonAnonymous(node_info.node);
+  compute_dimensions();
+
+  // Computing the block-size may perform a layout. That may add or remove
+  // scrollbars, including ones left behind by a previous position-try
+  // candidate, which would change the size of the node. Freeze any scrollbars
+  // that have changed and recompute until they are stable. This is a similar
+  // pattern to |LayoutOOFNode()|.
+  if (RuntimeEnabledFeatures::PositionTryFreezeScrollbarsEnabled() &&
+      !IsBreakInside(node_info.break_token)) {
+    // If we're in a measure pass, freeze both scrollbars right away, to avoid
+    // quadratic time complexity for deeply nested flexboxes.
+    bool freeze_horizontal =
+        GetConstraintSpace().CacheSlot() == LayoutResultCacheSlot::kMeasure;
+    bool freeze_vertical = freeze_horizontal;
+    BoxStrut scrollbars_after =
+        ComputeScrollbarsForNonAnonymous(node_info.node);
+    while (scrollbars_after != scrollbars_before) {
+      AddScrollbarFreeze(scrollbars_before, scrollbars_after,
+                         candidate_writing_direction, &freeze_horizontal,
+                         &freeze_vertical);
+      scrollbars_before = scrollbars_after;
+      PaintLayerScrollableArea::FreezeScrollbarsRootScope freezer(
+          *node_info.node.GetLayoutBox(), freeze_horizontal, freeze_vertical);
+      compute_dimensions();
+      scrollbars_after = ComputeScrollbarsForNonAnonymous(node_info.node);
+      DCHECK(!freeze_horizontal || !freeze_vertical ||
+             scrollbars_after == scrollbars_before);
+    }
+  }
 
   if (try_fit_available_space) {
     const PhysicalToLogicalGetter has_non_auto_inset(
