@@ -394,13 +394,7 @@ TEST_F(MemoryDumpManagerTest, MultipleDumpers) {
 
 // Checks that the dump provider invocations depend only on the current
 // registration state and not on previous registrations and dumps.
-// Flaky on iOS, see crbug.com/706874
-#if BUILDFLAG(IS_IOS)
-#define MAYBE_RegistrationConsistency DISABLED_RegistrationConsistency
-#else
-#define MAYBE_RegistrationConsistency RegistrationConsistency
-#endif
-TEST_F(MemoryDumpManagerTest, MAYBE_RegistrationConsistency) {
+TEST_F(MemoryDumpManagerTest, RegistrationConsistency) {
   MockMemoryDumpProvider mdp;
 
   RegisterDumpProvider(&mdp, SingleThreadTaskRunner::GetCurrentDefault());
