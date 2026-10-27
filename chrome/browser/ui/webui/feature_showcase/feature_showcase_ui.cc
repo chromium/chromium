@@ -51,26 +51,24 @@ namespace {
 
 void AddDefaultBrowserStepResources(content::WebUIDataSource* source) {
   source->AddLocalizedStrings({
-      {"refreshDefaultBrowserTitle", IDS_FRE_REFRESH_DEFAULT_BROWSER_TITLE},
-      {"refreshDefaultBrowserSubtitle",
-       IDS_FRE_REFRESH_DEFAULT_BROWSER_SUBTITLE},
-      {"refreshDefaultBrowserSetAsDefault",
+      {"defaultBrowserTitle", IDS_FRE_REFRESH_DEFAULT_BROWSER_TITLE},
+      {"defaultBrowserSubtitle", IDS_FRE_REFRESH_DEFAULT_BROWSER_SUBTITLE},
+      {"defaultBrowserSetAsDefault",
        IDS_FRE_REFRESH_DEFAULT_BROWSER_SET_AS_DEFAULT},
-      {"refreshDefaultBrowserNoThanks",
-       IDS_FRE_REFRESH_DEFAULT_BROWSER_NO_THANKS},
+      {"defaultBrowserNoThanks", IDS_FRE_REFRESH_DEFAULT_BROWSER_NO_THANKS},
   });
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  source->AddResourcePath("images/refresh_showcase_illustration.png",
+  source->AddResourcePath("images/default_browser_illustration.png",
                           IDR_DEFAULT_BROWSER_SHOWCASE_CHROME);
 #else
   source->AddResourcePath(
-      "images/refresh_showcase_illustration.png",
+      "images/default_browser_illustration.png",
       IDR_INTRO_IMAGES_REFRESH_SHOWCASE_ILLUSTRATION_CHROMIUM_PNG);
 #endif
 }
 
-void AddGoogleLensStepResources(content::WebUIDataSource* source) {
+void AddLensStepResources(content::WebUIDataSource* source) {
   source->AddLocalizedStrings({
       {"lensTitle", IDS_FEATURE_SHOWCASE_LENS_OVERLAY_TITLE},
       {"lensSubtitle", IDS_FEATURE_SHOWCASE_LENS_OVERLAY_SUBTITLE},
@@ -80,9 +78,9 @@ void AddGoogleLensStepResources(content::WebUIDataSource* source) {
   });
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  source->AddResourcePath("images/lens_overlay_illustration_light.png",
+  source->AddResourcePath("images/lens_illustration_light.png",
                           IDR_FEATURE_SHOWCASE_GOOGLE_LENS_ILLUSTRATION_LIGHT);
-  source->AddResourcePath("images/lens_overlay_illustration_dark.png",
+  source->AddResourcePath("images/lens_illustration_dark.png",
                           IDR_FEATURE_SHOWCASE_GOOGLE_LENS_ILLUSTRATION_DARK);
 #endif
 }
@@ -125,10 +123,11 @@ void AddPasswordManagerStepResources(content::WebUIDataSource* source) {
 
 void AddThemesAndCustomizationStepResources(content::WebUIDataSource* source) {
   source->AddLocalizedStrings({
-      {"themesTitle", IDS_FEATURE_SHOWCASE_THEMES_TITLE},
-      {"themesSubtitle", IDS_FEATURE_SHOWCASE_THEMES_SUBTITLE},
-      {"themesApplyTheme", IDS_FEATURE_SHOWCASE_THEMES_APPLY_THEME},
-      {"themesNoThanks", IDS_FEATURE_SHOWCASE_THEMES_NO_THANKS},
+      {"themesAndCustomizationTitle", IDS_FEATURE_SHOWCASE_THEMES_TITLE},
+      {"themesAndCustomizationSubtitle", IDS_FEATURE_SHOWCASE_THEMES_SUBTITLE},
+      {"themesAndCustomizationApplyTheme",
+       IDS_FEATURE_SHOWCASE_THEMES_APPLY_THEME},
+      {"themesAndCustomizationNoThanks", IDS_FEATURE_SHOWCASE_THEMES_NO_THANKS},
       // cr-theme-color-picker strings:
       {"close", IDS_CLOSE},
       {"colorPickerLabel", IDS_NTP_CUSTOMIZE_COLOR_PICKER_LABEL},
@@ -196,7 +195,7 @@ FeatureShowcaseUI::FeatureShowcaseUI(content::WebUI* web_ui)
   AddDefaultBrowserStepResources(source);
   AddGeminiStepResources(source, glic::GlicEnabling::IsEnterpriseAccount(
                                      Profile::FromWebUI(web_ui)));
-  AddGoogleLensStepResources(source);
+  AddLensStepResources(source);
   AddPasswordManagerStepResources(source);
   AddThemesAndCustomizationStepResources(source);
 }
@@ -214,16 +213,16 @@ void FeatureShowcaseUI::SetNextStepShownCallback(
 
 void FeatureShowcaseUI::SetCanPinToTaskbar(bool can_pin) {
   can_pin_ = can_pin;
-  if (default_browser_page_handler_) {
-    default_browser_page_handler_->SetCanPin(can_pin);
+  if (default_browser_handler_) {
+    default_browser_handler_->SetCanPin(can_pin);
   }
 
   if (can_pin) {
     base::DictValue update;
     update.Set(
-        "refreshDefaultBrowserTitle",
+        "defaultBrowserTitle",
         l10n_util::GetStringUTF16(IDS_FRE_DEFAULT_BROWSER_AND_PINNING_TITLE));
-    update.Set("refreshDefaultBrowserSubtitle",
+    update.Set("defaultBrowserSubtitle",
                l10n_util::GetStringUTF16(
                    IDS_FRE_DEFAULT_BROWSER_AND_PINNING_SUBTITLE));
     content::WebUIDataSource::Update(Profile::FromWebUI(web_ui()),
@@ -235,15 +234,15 @@ void FeatureShowcaseUI::SetCanPinToTaskbar(bool can_pin) {
 void FeatureShowcaseUI::BindInterface(
     mojo::PendingReceiver<
         feature_showcase::mojom::FeatureShowcasePageHandlerFactory> receiver) {
-  page_factory_receiver_.reset();
-  page_factory_receiver_.Bind(std::move(receiver));
+  feature_showcase_factory_receiver_.reset();
+  feature_showcase_factory_receiver_.Bind(std::move(receiver));
 }
 
 void FeatureShowcaseUI::BindInterface(
     mojo::PendingReceiver<
         feature_showcase::mojom::DefaultBrowserPageHandlerFactory> receiver) {
-  default_browser_page_factory_receiver_.reset();
-  default_browser_page_factory_receiver_.Bind(std::move(receiver));
+  default_browser_factory_receiver_.reset();
+  default_browser_factory_receiver_.Bind(std::move(receiver));
 }
 
 void FeatureShowcaseUI::BindInterface(
@@ -294,7 +293,7 @@ void FeatureShowcaseUI::BindInterface(
 void FeatureShowcaseUI::CreatePageHandler(
     mojo::PendingReceiver<feature_showcase::mojom::FeatureShowcasePageHandler>
         handler) {
-  page_handler_ = std::make_unique<FeatureShowcaseHandler>(
+  feature_showcase_handler_ = std::make_unique<FeatureShowcaseHandler>(
       std::move(handler),
       base::BindOnce(&FeatureShowcaseUI::OnShowcaseFinished,
                      base::Unretained(this)),
@@ -305,33 +304,33 @@ void FeatureShowcaseUI::CreatePageHandler(
 void FeatureShowcaseUI::CreatePageHandler(
     mojo::PendingReceiver<feature_showcase::mojom::DefaultBrowserPageHandler>
         handler) {
-  default_browser_page_handler_ =
+  default_browser_handler_ =
       std::make_unique<DefaultBrowserHandler>(std::move(handler));
-  default_browser_page_handler_->SetCanPin(can_pin_);
+  default_browser_handler_->SetCanPin(can_pin_);
 }
 
-void FeatureShowcaseUI::CreateGeminiPageHandler(
+void FeatureShowcaseUI::CreatePageHandler(
     mojo::PendingReceiver<feature_showcase::mojom::GeminiPageHandler> handler) {
   gemini_handler_ = std::make_unique<GeminiHandler>(
       std::move(handler),
       glic::GlicKeyedService::Get(Profile::FromWebUI(web_ui())));
 }
 
-void FeatureShowcaseUI::CreateGoogleLensPageHandler(
+void FeatureShowcaseUI::CreatePageHandler(
     mojo::PendingReceiver<feature_showcase::mojom::GoogleLensPageHandler>
         handler) {
   google_lens_handler_ = std::make_unique<GoogleLensHandler>(
       std::move(handler), Profile::FromWebUI(web_ui()));
 }
 
-void FeatureShowcaseUI::CreatePasswordManagerPageHandler(
+void FeatureShowcaseUI::CreatePageHandler(
     mojo::PendingReceiver<feature_showcase::mojom::PasswordManagerPageHandler>
         handler) {
   password_manager_handler_ = std::make_unique<PasswordManagerHandler>(
       std::move(handler), Profile::FromWebUI(web_ui()));
 }
 
-void FeatureShowcaseUI::CreateThemesAndCustomizationPageHandler(
+void FeatureShowcaseUI::CreatePageHandler(
     mojo::PendingReceiver<
         feature_showcase::mojom::ThemesAndCustomizationPageHandler> handler) {
   themes_and_customization_handler_ =

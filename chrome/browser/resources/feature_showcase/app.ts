@@ -127,7 +127,7 @@ export class FeatureShowcaseAppElement extends CrLitElement {
     this.activeStepIndex++;
 
     if (this.activeStepIndex < this.steps.length) {
-      this.tryPlayingTransitionAnimations();
+      this.tryPlayingTransitionAnimations_();
       const step = this.steps[this.activeStepIndex]!;
       this.$.viewManager.switchView(step).then(() => {
         this.areButtonsDisabled_ = false;
@@ -149,7 +149,7 @@ export class FeatureShowcaseAppElement extends CrLitElement {
     browserProxyFactory.getInstance().handler.nextStepShown();
   }
 
-  private tryPlayingTransitionAnimations() {
+  private tryPlayingTransitionAnimations_() {
     assert(this.activeStepIndex > 0, 'Step index should be greater than 0.');
     const startFrame = (this.activeStepIndex - 1) * 120;
     const endFrame = startFrame + 120;

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/profiles/feature_showcase/password_manager_feature_showcase_eligibility_checker.h"
+#include "chrome/browser/ui/views/profiles/feature_showcase/password_manager_step_eligibility_checker.h"
 
 #include "base/test/test_future.h"
 #include "chrome/browser/sync/sync_service_factory.h"
@@ -20,11 +20,10 @@
 
 namespace {
 
-class PasswordManagerFeatureShowcaseEligibilityCheckerTest
-    : public testing::Test {
+class PasswordManagerStepEligibilityCheckerTest : public testing::Test {
  public:
-  PasswordManagerFeatureShowcaseEligibilityCheckerTest() = default;
-  ~PasswordManagerFeatureShowcaseEligibilityCheckerTest() override = default;
+  PasswordManagerStepEligibilityCheckerTest() = default;
+  ~PasswordManagerStepEligibilityCheckerTest() override = default;
 
   void SetUp() override {
     testing::Test::SetUp();
@@ -58,9 +57,9 @@ class PasswordManagerFeatureShowcaseEligibilityCheckerTest
   std::unique_ptr<TestingProfile> profile_;
 };
 
-TEST_F(PasswordManagerFeatureShowcaseEligibilityCheckerTest,
+TEST_F(PasswordManagerStepEligibilityCheckerTest,
        EligibleWhenEnabledAndNotPinnedAndSyncDisabled) {
-  PasswordManagerFeatureShowcaseEligibilityChecker checker;
+  PasswordManagerStepEligibilityChecker checker;
   profile().GetPrefs()->SetBoolean(
       password_manager::prefs::kCredentialsEnableService, true);
 
@@ -71,9 +70,8 @@ TEST_F(PasswordManagerFeatureShowcaseEligibilityCheckerTest,
   EXPECT_TRUE(future.Get());
 }
 
-TEST_F(PasswordManagerFeatureShowcaseEligibilityCheckerTest,
-       WaitsForSyncToInitialize) {
-  PasswordManagerFeatureShowcaseEligibilityChecker checker;
+TEST_F(PasswordManagerStepEligibilityCheckerTest, WaitsForSyncToInitialize) {
+  PasswordManagerStepEligibilityChecker checker;
   profile().GetPrefs()->SetBoolean(
       password_manager::prefs::kCredentialsEnableService, true);
 
@@ -93,9 +91,8 @@ TEST_F(PasswordManagerFeatureShowcaseEligibilityCheckerTest,
   EXPECT_TRUE(future.Get());
 }
 
-TEST_F(PasswordManagerFeatureShowcaseEligibilityCheckerTest,
-       IneligibleWhenPinned) {
-  PasswordManagerFeatureShowcaseEligibilityChecker checker;
+TEST_F(PasswordManagerStepEligibilityCheckerTest, IneligibleWhenPinned) {
+  PasswordManagerStepEligibilityChecker checker;
   profile().GetPrefs()->SetBoolean(
       password_manager::prefs::kCredentialsEnableService, true);
 
@@ -111,9 +108,8 @@ TEST_F(PasswordManagerFeatureShowcaseEligibilityCheckerTest,
   EXPECT_FALSE(future.Get());
 }
 
-TEST_F(PasswordManagerFeatureShowcaseEligibilityCheckerTest,
-       IneligibleWhenDisabled) {
-  PasswordManagerFeatureShowcaseEligibilityChecker checker;
+TEST_F(PasswordManagerStepEligibilityCheckerTest, IneligibleWhenDisabled) {
+  PasswordManagerStepEligibilityChecker checker;
   profile().GetPrefs()->SetBoolean(
       password_manager::prefs::kCredentialsEnableService, false);
 
@@ -125,9 +121,8 @@ TEST_F(PasswordManagerFeatureShowcaseEligibilityCheckerTest,
   EXPECT_FALSE(future.Get());
 }
 
-TEST_F(PasswordManagerFeatureShowcaseEligibilityCheckerTest,
-       ReturnsEligibleOnTimeout) {
-  PasswordManagerFeatureShowcaseEligibilityChecker checker;
+TEST_F(PasswordManagerStepEligibilityCheckerTest, ReturnsEligibleOnTimeout) {
+  PasswordManagerStepEligibilityChecker checker;
   profile().GetPrefs()->SetBoolean(
       password_manager::prefs::kCredentialsEnableService, true);
 

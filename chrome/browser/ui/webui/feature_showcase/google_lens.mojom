@@ -16,5 +16,5 @@ interface GoogleLensPageHandler {
 // Used by the WebUI to bootstrap WebUI->Browser communication for Google Lens.
 interface GoogleLensPageHandlerFactory {
   // The WebUI calls this method when the page is first initialized.
-  CreateGoogleLensPageHandler(pending_receiver<GoogleLensPageHandler> handler);
+  CreatePageHandler(pending_receiver<GoogleLensPageHandler> handler);
 };

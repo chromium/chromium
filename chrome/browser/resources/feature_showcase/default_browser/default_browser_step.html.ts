@@ -12,24 +12,22 @@ export function getHtml(this: FeatureShowcaseDefaultBrowserStepElement) {
 <feature-showcase-step>
   <slot name="stepper" slot="stepper"></slot>
   <img slot="illustration" id="illustration" alt="">
-  <span slot="title">$i18n{refreshDefaultBrowserTitle}</span>
-  <span slot="description">$i18n{refreshDefaultBrowserSubtitle}</span>
+  <span slot="title">$i18n{defaultBrowserTitle}</span>
+  <span slot="description">$i18n{defaultBrowserSubtitle}</span>
 <if expr="is_win">
   <cr-button slot="button" id="confirm-button" class="action-button"
-      @click="${this.onConfirmButtonClick_}"
-      ?disabled="${this.buttonsDisabled}">
-    $i18n{refreshDefaultBrowserSetAsDefault}
+      @click="${this.onConfirmClick_}" ?disabled="${this.buttonsDisabled}">
+    $i18n{defaultBrowserSetAsDefault}
   </cr-button>
 </if>
-  <cr-button slot="button" id="skip-button" @click="${this.onSkipButtonClick_}"
+  <cr-button slot="button" id="skip-button" @click="${this.onSkipClick_}"
       ?disabled="${this.buttonsDisabled}">
-    $i18n{refreshDefaultBrowserNoThanks}
+    $i18n{defaultBrowserNoThanks}
   </cr-button>
 <if expr="not is_win">
   <cr-button slot="button" id="confirm-button" class="action-button"
-      @click="${this.onConfirmButtonClick_}"
-      ?disabled="${this.buttonsDisabled}">
-    $i18n{refreshDefaultBrowserSetAsDefault}
+      @click="${this.onConfirmClick_}" ?disabled="${this.buttonsDisabled}">
+    $i18n{defaultBrowserSetAsDefault}
   </cr-button>
 </if>
 </feature-showcase-step>

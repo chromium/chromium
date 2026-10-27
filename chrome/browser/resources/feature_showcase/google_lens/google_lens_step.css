@@ -17,11 +17,11 @@ feature-showcase-step {
 }
 
 #illustration {
-  content: url('images/lens_overlay_illustration_light.png');
+  content: url('images/lens_illustration_light.png');
 }
 
 @media (prefers-color-scheme: dark) {
   #illustration {
-    content: url('images/lens_overlay_illustration_dark.png');
+    content: url('images/lens_illustration_dark.png');
   }
 }

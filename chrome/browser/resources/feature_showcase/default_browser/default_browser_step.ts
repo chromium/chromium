@@ -34,13 +34,13 @@ export class FeatureShowcaseDefaultBrowserStepElement extends CrLitElement {
 
   accessor buttonsDisabled: boolean = false;
 
-  protected onConfirmButtonClick_() {
+  protected onConfirmClick_() {
     this.buttonsDisabled = true;
     browserProxyFactory.getInstance().handler.setAsDefaultBrowser();
     this.fire('step-completed');
   }
 
-  protected onSkipButtonClick_() {
+  protected onSkipClick_() {
     this.buttonsDisabled = true;
     browserProxyFactory.getInstance().handler.skipSetAsDefaultBrowser();
     this.fire('step-completed');

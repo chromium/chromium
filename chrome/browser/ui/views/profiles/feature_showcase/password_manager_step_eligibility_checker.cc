@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/profiles/feature_showcase/password_manager_feature_showcase_eligibility_checker.h"
+#include "chrome/browser/ui/views/profiles/feature_showcase/password_manager_step_eligibility_checker.h"
 
 #include <utility>
 
@@ -18,13 +18,13 @@
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_user_settings.h"
 
-PasswordManagerFeatureShowcaseEligibilityChecker::
-    PasswordManagerFeatureShowcaseEligibilityChecker() = default;
+PasswordManagerStepEligibilityChecker::PasswordManagerStepEligibilityChecker() =
+    default;
 
-PasswordManagerFeatureShowcaseEligibilityChecker::
-    ~PasswordManagerFeatureShowcaseEligibilityChecker() = default;
+PasswordManagerStepEligibilityChecker::
+    ~PasswordManagerStepEligibilityChecker() = default;
 
-void PasswordManagerFeatureShowcaseEligibilityChecker::CheckEligibility(
+void PasswordManagerStepEligibilityChecker::CheckEligibility(
     Profile& profile,
     base::OnceCallback<void(bool)> callback) {
   if (!profile.GetPrefs()->GetBoolean(
@@ -54,12 +54,11 @@ void PasswordManagerFeatureShowcaseEligibilityChecker::CheckEligibility(
   sync_service_observation_.Observe(sync_service);
 }
 
-std::string
-PasswordManagerFeatureShowcaseEligibilityChecker::GetStepIdentifier() const {
+std::string PasswordManagerStepEligibilityChecker::GetStepIdentifier() const {
   return kFeatureShowcasePasswordManagerStepIdentifier;
 }
 
-bool PasswordManagerFeatureShowcaseEligibilityChecker::OnTimeout() {
+bool PasswordManagerStepEligibilityChecker::OnTimeout() {
   sync_service_observation_.Reset();
   callback_.Reset();
 
@@ -72,7 +71,7 @@ bool PasswordManagerFeatureShowcaseEligibilityChecker::OnTimeout() {
   return !pinned_actions_model.Contains(kActionShowPasswordsBubbleOrPage);
 }
 
-void PasswordManagerFeatureShowcaseEligibilityChecker::OnStateChanged(
+void PasswordManagerStepEligibilityChecker::OnStateChanged(
     syncer::SyncService* sync) {
   if (sync->GetActiveDataTypes().Has(syncer::PREFERENCES) ||
       sync->GetTransportState() ==
@@ -85,13 +84,12 @@ void PasswordManagerFeatureShowcaseEligibilityChecker::OnStateChanged(
   }
 }
 
-void PasswordManagerFeatureShowcaseEligibilityChecker::OnSyncShutdown(
+void PasswordManagerStepEligibilityChecker::OnSyncShutdown(
     syncer::SyncService* sync) {
   RunCallbackAndStopObserving();
 }
 
-void PasswordManagerFeatureShowcaseEligibilityChecker::
-    RunCallbackAndStopObserving() {
+void PasswordManagerStepEligibilityChecker::RunCallbackAndStopObserving() {
   sync_service_observation_.Reset();
 
   if (callback_) {

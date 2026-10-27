@@ -253,18 +253,18 @@ suite('FeatureShowcaseStepperTest', function() {
     animation.dispatchEvent(new CustomEvent('cr-lottie-completed'));
     await microtasksFinished();
 
-    const icon_completed = steps[0]?.querySelector('cr-icon');
-    assertTrue(!!icon_completed);
-    assertEquals('cr:check', icon_completed.icon);
+    const iconCompleted = steps[0]?.querySelector('cr-icon');
+    assertTrue(!!iconCompleted);
+    assertEquals('cr:check', iconCompleted.icon);
 
     // Current step
-    const img_active = steps[1]?.querySelector('img');
-    assertTrue(!!img_active);
-    assertTrue(img_active.src.includes('product-logo.svg'));
+    const imgActive = steps[1]?.querySelector('img');
+    assertTrue(!!imgActive);
+    assertTrue(imgActive.src.includes('product-logo.svg'));
 
     // Upcoming step
-    const dot_upcoming = steps[2]?.querySelector('.dot');
-    assertTrue(!!dot_upcoming);
+    const dotUpcoming = steps[2]?.querySelector('.dot');
+    assertTrue(!!dotUpcoming);
   });
 
   test('swaps the animation for a static icon', async function() {

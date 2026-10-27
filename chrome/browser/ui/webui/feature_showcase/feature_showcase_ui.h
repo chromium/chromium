@@ -135,22 +135,22 @@ class FeatureShowcaseUI
           handler) override;
 
   // feature_showcase::mojom::GeminiPageHandlerFactory:
-  void CreateGeminiPageHandler(
+  void CreatePageHandler(
       mojo::PendingReceiver<feature_showcase::mojom::GeminiPageHandler> handler)
       override;
 
   // feature_showcase::mojom::GoogleLensPageHandlerFactory:
-  void CreateGoogleLensPageHandler(
+  void CreatePageHandler(
       mojo::PendingReceiver<feature_showcase::mojom::GoogleLensPageHandler>
           handler) override;
 
   // feature_showcase::mojom::PasswordManagerPageHandlerFactory:
-  void CreatePasswordManagerPageHandler(
+  void CreatePageHandler(
       mojo::PendingReceiver<feature_showcase::mojom::PasswordManagerPageHandler>
           handler) override;
 
   // feature_showcase::mojom::ThemesAndCustomizationPageHandlerFactory:
-  void CreateThemesAndCustomizationPageHandler(
+  void CreatePageHandler(
       mojo::PendingReceiver<
           feature_showcase::mojom::ThemesAndCustomizationPageHandler> handler)
       override;
@@ -177,8 +177,8 @@ class FeatureShowcaseUI
   bool can_pin_ = false;
   base::OnceClosure finish_callback_;
   base::RepeatingClosure next_step_shown_callback_;
-  std::unique_ptr<FeatureShowcaseHandler> page_handler_;
-  std::unique_ptr<DefaultBrowserHandler> default_browser_page_handler_;
+  std::unique_ptr<FeatureShowcaseHandler> feature_showcase_handler_;
+  std::unique_ptr<DefaultBrowserHandler> default_browser_handler_;
   std::unique_ptr<GeminiHandler> gemini_handler_;
   std::unique_ptr<GoogleLensHandler> google_lens_handler_;
   std::unique_ptr<PasswordManagerHandler> password_manager_handler_;
@@ -189,9 +189,9 @@ class FeatureShowcaseUI
   std::unique_ptr<ThemeColorPickerHandler> theme_color_picker_handler_;
 
   mojo::Receiver<feature_showcase::mojom::FeatureShowcasePageHandlerFactory>
-      page_factory_receiver_{this};
+      feature_showcase_factory_receiver_{this};
   mojo::Receiver<feature_showcase::mojom::DefaultBrowserPageHandlerFactory>
-      default_browser_page_factory_receiver_{this};
+      default_browser_factory_receiver_{this};
   mojo::Receiver<feature_showcase::mojom::GeminiPageHandlerFactory>
       gemini_factory_receiver_{this};
   mojo::Receiver<feature_showcase::mojom::GoogleLensPageHandlerFactory>

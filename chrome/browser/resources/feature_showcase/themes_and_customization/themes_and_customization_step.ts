@@ -43,14 +43,14 @@ export class FeatureShowcaseThemesAndCustomizationStepElement extends
   }
 
   protected onConfirmClick_() {
-    browserProxyFactory.getInstance().handler.acceptTheme();
     this.buttonsDisabled = true;
+    browserProxyFactory.getInstance().handler.acceptTheme();
     this.fire('step-completed');
   }
 
   protected onSkipClick_() {
-    browserProxyFactory.getInstance().handler.revertTheme();
     this.buttonsDisabled = true;
+    browserProxyFactory.getInstance().handler.revertTheme();
     this.fire('step-completed');
   }
 }

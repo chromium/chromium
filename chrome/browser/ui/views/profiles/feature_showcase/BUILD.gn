@@ -30,8 +30,8 @@ if (enable_dice_support) {
       "gemini_step_eligibility_checker.h",
       "google_lens_step_eligibility_checker.cc",
       "google_lens_step_eligibility_checker.h",
-      "password_manager_feature_showcase_eligibility_checker.cc",
-      "password_manager_feature_showcase_eligibility_checker.h",
+      "password_manager_step_eligibility_checker.cc",
+      "password_manager_step_eligibility_checker.h",
       "themes_and_customization_step_eligibility_checker.cc",
       "themes_and_customization_step_eligibility_checker.h",
     ]
@@ -68,7 +68,7 @@ if (enable_dice_support) {
       "feature_showcase_eligibility_tracker_unittest.cc",
       "gemini_step_eligibility_checker_unittest.cc",
       "google_lens_step_eligibility_checker_unittest.cc",
-      "password_manager_feature_showcase_eligibility_checker_unittest.cc",
+      "password_manager_step_eligibility_checker_unittest.cc",
       "themes_and_customization_step_eligibility_checker_unittest.cc",
     ]
 

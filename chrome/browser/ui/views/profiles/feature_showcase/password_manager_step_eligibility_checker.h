@@ -2,25 +2,31 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_PROFILES_FEATURE_SHOWCASE_PASSWORD_MANAGER_FEATURE_SHOWCASE_ELIGIBILITY_CHECKER_H_
-#define CHROME_BROWSER_UI_VIEWS_PROFILES_FEATURE_SHOWCASE_PASSWORD_MANAGER_FEATURE_SHOWCASE_ELIGIBILITY_CHECKER_H_
+#ifndef CHROME_BROWSER_UI_VIEWS_PROFILES_FEATURE_SHOWCASE_PASSWORD_MANAGER_STEP_ELIGIBILITY_CHECKER_H_
+#define CHROME_BROWSER_UI_VIEWS_PROFILES_FEATURE_SHOWCASE_PASSWORD_MANAGER_STEP_ELIGIBILITY_CHECKER_H_
 
+#include <string>
+
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/views/profiles/feature_showcase/feature_showcase_step_eligibility_checker.h"
-#include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_service_observer.h"
 
-class PasswordManagerFeatureShowcaseEligibilityChecker
+namespace syncer {
+class SyncService;
+}  // namespace syncer
+
+class PasswordManagerStepEligibilityChecker
     : public FeatureShowcaseStepEligibilityChecker,
       public syncer::SyncServiceObserver {
  public:
-  PasswordManagerFeatureShowcaseEligibilityChecker();
-  PasswordManagerFeatureShowcaseEligibilityChecker(
-      const PasswordManagerFeatureShowcaseEligibilityChecker&) = delete;
-  PasswordManagerFeatureShowcaseEligibilityChecker& operator=(
-      const PasswordManagerFeatureShowcaseEligibilityChecker&) = delete;
-  ~PasswordManagerFeatureShowcaseEligibilityChecker() override;
+  PasswordManagerStepEligibilityChecker();
+  PasswordManagerStepEligibilityChecker(
+      const PasswordManagerStepEligibilityChecker&) = delete;
+  PasswordManagerStepEligibilityChecker& operator=(
+      const PasswordManagerStepEligibilityChecker&) = delete;
+  ~PasswordManagerStepEligibilityChecker() override;
 
   // FeatureShowcaseStepEligibilityChecker:
   void CheckEligibility(Profile& profile,
@@ -41,4 +47,4 @@ class PasswordManagerFeatureShowcaseEligibilityChecker
       sync_service_observation_{this};
 };
 
-#endif  // CHROME_BROWSER_UI_VIEWS_PROFILES_FEATURE_SHOWCASE_PASSWORD_MANAGER_FEATURE_SHOWCASE_ELIGIBILITY_CHECKER_H_
+#endif  // CHROME_BROWSER_UI_VIEWS_PROFILES_FEATURE_SHOWCASE_PASSWORD_MANAGER_STEP_ELIGIBILITY_CHECKER_H_

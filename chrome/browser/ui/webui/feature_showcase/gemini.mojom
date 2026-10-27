@@ -16,5 +16,5 @@ interface GeminiPageHandler {
 // Used by the WebUI to bootstrap WebUI->Browser communication for Gemini.
 interface GeminiPageHandlerFactory {
   // The WebUI calls this method when the page is first initialized.
-  CreateGeminiPageHandler(pending_receiver<GeminiPageHandler> handler);
+  CreatePageHandler(pending_receiver<GeminiPageHandler> handler);
 };

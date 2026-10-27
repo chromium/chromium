@@ -46,7 +46,7 @@
 #include "chrome/browser/ui/views/profiles/feature_showcase/feature_showcase_step_eligibility_checker.h"
 #include "chrome/browser/ui/views/profiles/feature_showcase/gemini_step_eligibility_checker.h"
 #include "chrome/browser/ui/views/profiles/feature_showcase/google_lens_step_eligibility_checker.h"
-#include "chrome/browser/ui/views/profiles/feature_showcase/password_manager_feature_showcase_eligibility_checker.h"
+#include "chrome/browser/ui/views/profiles/feature_showcase/password_manager_step_eligibility_checker.h"
 #include "chrome/browser/ui/views/profiles/feature_showcase/themes_and_customization_step_eligibility_checker.h"
 #include "chrome/browser/ui/views/profiles/profile_management_flow_controller_impl.h"
 #include "chrome/browser/ui/views/profiles/profile_management_step_controller.h"
@@ -668,7 +668,7 @@ class FeatureShowcaseStepController : public ProfileManagementStepController {
     }
     checkers.push_back(std::make_unique<GoogleLensStepEligibilityChecker>());
     checkers.push_back(
-        std::make_unique<PasswordManagerFeatureShowcaseEligibilityChecker>());
+        std::make_unique<PasswordManagerStepEligibilityChecker>());
     checkers.push_back(
         std::make_unique<ThemesAndCustomizationStepEligibilityChecker>());
 

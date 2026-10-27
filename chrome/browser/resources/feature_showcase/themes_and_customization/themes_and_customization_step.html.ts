@@ -18,22 +18,22 @@ export function getHtml(
       <cr-theme-color-picker columns="4"></cr-theme-color-picker>
     </div>
   </div>
-  <span slot="title">$i18n{themesTitle}</span>
-  <span slot="description">$i18n{themesSubtitle}</span>
+  <span slot="title">$i18n{themesAndCustomizationTitle}</span>
+  <span slot="description">$i18n{themesAndCustomizationSubtitle}</span>
 <if expr="is_win">
   <cr-button slot="button" id="confirm-button" class="action-button"
       @click="${this.onConfirmClick_}" ?disabled="${this.buttonsDisabled}">
-    $i18n{themesApplyTheme}
+    $i18n{themesAndCustomizationApplyTheme}
   </cr-button>
 </if>
   <cr-button slot="button" id="skip-button" @click="${this.onSkipClick_}"
       ?disabled="${this.buttonsDisabled}">
-    $i18n{themesNoThanks}
+    $i18n{themesAndCustomizationNoThanks}
   </cr-button>
 <if expr="not is_win">
   <cr-button slot="button" id="confirm-button" class="action-button"
       @click="${this.onConfirmClick_}" ?disabled="${this.buttonsDisabled}">
-    $i18n{themesApplyTheme}
+    $i18n{themesAndCustomizationApplyTheme}
   </cr-button>
 </if>
 </feature-showcase-step>

@@ -21,6 +21,6 @@ interface ThemesAndCustomizationPageHandler {
 // Themes and Customization.
 interface ThemesAndCustomizationPageHandlerFactory {
   // The WebUI calls this method when the page is first initialized.
-  CreateThemesAndCustomizationPageHandler(
+  CreatePageHandler(
       pending_receiver<ThemesAndCustomizationPageHandler> handler);
 };
