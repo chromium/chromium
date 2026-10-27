@@ -155,8 +155,7 @@ class MostVisitedTilesMediatorTest : public PlatformTest {
          URLLoadingBrowserAgent:url_loader_
           accountManagerService:nullptr
               engagementTracker:tracker_.get()
-              layoutGuideCenter:nil
-          aimEligibilityService:nullptr];
+              layoutGuideCenter:nil];
 
     mediator_.actionFactory = mock_action_factory();
     delegate_ = OCMProtocolMock(@protocol(NewTabPageActionsDelegate));

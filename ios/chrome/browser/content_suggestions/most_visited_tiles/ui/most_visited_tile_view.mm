@@ -134,7 +134,8 @@ constexpr CGFloat kAimIconSize = 20.0;
   }
   _aimIconView.hidden = NO;
   if (!self.titleLabel.text) {
-    self.titleLabel.text = l10n_util::GetNSString(IDS_NTP_TILES_AI_MODE_TITLE);
+    self.titleLabel.text =
+        l10n_util::GetNSString(IDS_IOS_NTP_QUICK_ACTIONS_AIM);
   }
   self.accessibilityLabel = self.titleLabel.text;
 }
@@ -179,13 +180,9 @@ constexpr CGFloat kAimIconSize = 20.0;
                                                             fromView:self]
            : @[];
   if (item) {
-    if ([item isAIMTile]) {
-      [self configureAsAIMTile];
-    } else {
-      _faviconView.hidden = NO;
-      _aimIconView.hidden = YES;
-      [_faviconView configureWithAttributes:item.attributes];
-    }
+    _faviconView.hidden = NO;
+    _aimIconView.hidden = YES;
+    [_faviconView configureWithAttributes:item.attributes];
     if (!hasPreviousItem) {
       [self addInteraction:[[UIContextMenuInteraction alloc]
                                initWithDelegate:self]];
@@ -258,39 +255,35 @@ constexpr CGFloat kAimIconSize = 20.0;
       [self.traitCollection objectForNewTabPageTrait];
   // Favicon monogram will only be applied if defaultBackgroundColor is set.
   MostVisitedItem* configuration = [self mostVisitedItem];
-  if ([configuration isAIMTile]) {
-    _aimIconView.tintColor = [UIColor colorNamed:kTextPrimaryColor];
-  } else {
-    if (configuration.attributes.defaultBackgroundColor) {
-      if (colorPalette) {
-        // If a color palette is available, apply its tint and background
-        // colors to the attributes while preserving the other attributes.
-        configuration.attributes = [FaviconAttributesWithPayload
-            attributesWithMonogram:configuration.attributes.monogramString
-                         textColor:colorPalette.secondaryCellColor
-                   backgroundColor:colorPalette.monogramColor
-            defaultBackgroundColor:configuration.attributes
-                                       .defaultBackgroundColor];
-      } else {
-        // If no color palette is available, fall back to default icon style
-        // colors.
-        std::unique_ptr<favicon_base::FallbackIconStyle> default_icon_style =
-            std::make_unique<favicon_base::FallbackIconStyle>();
+  if (configuration.attributes.defaultBackgroundColor) {
+    if (colorPalette) {
+      // If a color palette is available, apply its tint and background
+      // colors to the attributes while preserving the other attributes.
+      configuration.attributes = [FaviconAttributesWithPayload
+          attributesWithMonogram:configuration.attributes.monogramString
+                       textColor:colorPalette.secondaryCellColor
+                 backgroundColor:colorPalette.monogramColor
+          defaultBackgroundColor:configuration.attributes
+                                     .defaultBackgroundColor];
+    } else {
+      // If no color palette is available, fall back to default icon style
+      // colors.
+      std::unique_ptr<favicon_base::FallbackIconStyle> default_icon_style =
+          std::make_unique<favicon_base::FallbackIconStyle>();
 
-        configuration.attributes = [FaviconAttributesWithPayload
-            attributesWithMonogram:configuration.attributes.monogramString
-                         textColor:skia::UIColorFromSkColor(
-                                       default_icon_style->text_color)
-                   backgroundColor:skia::UIColorFromSkColor(
-                                       default_icon_style->background_color)
-            defaultBackgroundColor:default_icon_style->
-                                   is_default_background_color];
-      }
+      configuration.attributes = [FaviconAttributesWithPayload
+          attributesWithMonogram:configuration.attributes.monogramString
+                       textColor:skia::UIColorFromSkColor(
+                                     default_icon_style->text_color)
+                 backgroundColor:skia::UIColorFromSkColor(
+                                     default_icon_style->background_color)
+          defaultBackgroundColor:default_icon_style->
+                                 is_default_background_color];
     }
-
-    // Update the favicon view with the new attributes.
-    [self.faviconView configureWithAttributes:configuration.attributes];
   }
+
+  // Update the favicon view with the new attributes.
+  [self.faviconView configureWithAttributes:configuration.attributes];
 
   if (colorPalette) {
     self.imageContainerView.backgroundColor = IsNewTabPageUICleanupEnabled()

@@ -21,8 +21,6 @@
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "components/search/ntp_features.h"
-#include "components/strings/grit/components_strings.h"
-#include "ui/base/l10n/l10n_util.h"
 
 namespace ntp_tiles {
 
@@ -36,7 +34,6 @@ CustomLinksManagerImpl::CustomLinksManagerImpl(const Options& options)
           base::FeatureList::IsEnabled(ntp_features::kNtpShortcutsRedesign)
               ? ntp_features::GetMaxShortcutsInExpandedState()
               : options.max_links),
-      enable_ai_mode_tile_(options.enable_ai_mode_tile),
       store_(options.prefs, options.scope) {
   DCHECK(prefs_);
   if (options.history_service) {
@@ -44,14 +41,6 @@ CustomLinksManagerImpl::CustomLinksManagerImpl(const Options& options)
   }
   if (IsInitialized()) {
     current_links_ = store_.RetrieveLinks();
-    if (enable_ai_mode_tile_) {
-      InsertAiModeLinkIfNeeded(current_links_);
-    } else {
-      GURL ai_mode_url(kAiModeTileUrl);
-      std::erase_if(current_links_, [&ai_mode_url](const Link& link) {
-        return link.url == ai_mode_url;
-      });
-    }
     RemoveCustomLinksForPreinstalledApps();
   }
 
@@ -72,9 +61,6 @@ bool CustomLinksManagerImpl::Initialize(const NTPTilesVector& tiles) {
 
   for (const NTPTile& tile : tiles) {
     current_links_.emplace_back(Link{tile.url, tile.title, true});
-  }
-  if (enable_ai_mode_tile_) {
-    InsertAiModeLinkIfNeeded(current_links_);
   }
 
   {
@@ -104,14 +90,6 @@ const std::vector<CustomLinksManager::Link>& CustomLinksManagerImpl::GetLinks()
 
 size_t CustomLinksManagerImpl::GetMaxLinks() const {
   return max_links_;
-}
-
-int CustomLinksManagerImpl::GetAiModeTileIndex() const {
-  return prefs_->GetInteger(prefs::kCustomLinksAiModeTileIndex);
-}
-
-void CustomLinksManagerImpl::SetAiModeTileIndex(int index) {
-  prefs_->SetInteger(prefs::kCustomLinksAiModeTileIndex, index);
 }
 
 bool CustomLinksManagerImpl::AddLinkTo(const GURL& url,
@@ -153,11 +131,6 @@ bool CustomLinksManagerImpl::UpdateLink(const GURL& url,
       (!new_url.is_valid() ||
        custom_links_util::FindLinkWithUrl<Link>(current_links_, new_url) !=
            current_links_.end())) {
-    return false;
-  }
-
-  // The virtual AI Mode link cannot be modified.
-  if (url == GURL(kAiModeTileUrl)) {
     return false;
   }
 
@@ -205,10 +178,6 @@ bool CustomLinksManagerImpl::DeleteLink(const GURL& url) {
     return false;
   }
 
-  if (enable_ai_mode_tile_ && url == GURL(kAiModeTileUrl)) {
-    SetAiModeTileIndex(-1);
-  }
-
   previous_links_ = current_links_;
   current_links_.erase(it);
   StoreLinks();
@@ -228,32 +197,6 @@ bool CustomLinksManagerImpl::UndoAction() {
   return true;
 }
 
-void CustomLinksManagerImpl::InsertAiModeLinkIfNeeded(
-    std::vector<Link>& links) {
-  if (!enable_ai_mode_tile_) {
-    return;
-  }
-
-  int index = GetAiModeTileIndex();
-  if (index < 0) {
-    return;
-  }
-
-  GURL ai_mode_url(kAiModeTileUrl);
-  auto it = std::find_if(
-      links.begin(), links.end(),
-      [&ai_mode_url](const Link& link) { return link.url == ai_mode_url; });
-  if (it != links.end()) {
-    return;
-  }
-
-  size_t insert_pos = std::min(static_cast<size_t>(index), links.size());
-  links.insert(
-      links.begin() + insert_pos,
-      Link{ai_mode_url, l10n_util::GetStringUTF16(IDS_NTP_TILES_AI_MODE_TITLE),
-           /*is_most_visited=*/false});
-}
-
 void CustomLinksManagerImpl::ClearLinks() {
   {
     base::AutoReset<bool> auto_reset(&updating_preferences_, true);
@@ -265,18 +208,7 @@ void CustomLinksManagerImpl::ClearLinks() {
 
 void CustomLinksManagerImpl::StoreLinks() {
   base::AutoReset<bool> auto_reset(&updating_preferences_, true);
-  std::vector<Link> links_to_store = current_links_;
-  GURL ai_mode_url(kAiModeTileUrl);
-  auto it = std::find_if(
-      links_to_store.begin(), links_to_store.end(),
-      [&ai_mode_url](const Link& link) { return link.url == ai_mode_url; });
-  if (it != links_to_store.end()) {
-    if (enable_ai_mode_tile_) {
-      SetAiModeTileIndex(std::distance(links_to_store.begin(), it));
-    }
-    links_to_store.erase(it);
-  }
-  store_.StoreLinks(links_to_store);
+  store_.StoreLinks(current_links_);
 }
 
 void CustomLinksManagerImpl::RemoveCustomLinksForPreinstalledApps() {
@@ -346,13 +278,6 @@ void CustomLinksManagerImpl::OnPreferenceChanged() {
 
   if (IsInitialized()) {
     current_links_ = store_.RetrieveLinks();
-    if (enable_ai_mode_tile_) {
-      InsertAiModeLinkIfNeeded(current_links_);
-    } else {
-      std::erase_if(current_links_, [](const Link& link) {
-        return link.url == GURL(kAiModeTileUrl);
-      });
-    }
   } else {
     current_links_.clear();
   }
@@ -373,7 +298,6 @@ void CustomLinksManagerImpl::RegisterProfilePrefs(
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
   user_prefs->RegisterBooleanPref(prefs::kCustomLinksForPreinstalledAppsRemoved,
                                   false);
-  user_prefs->RegisterIntegerPref(prefs::kCustomLinksAiModeTileIndex, 0);
   CustomLinksStore::RegisterProfilePrefs(user_prefs);
 }
 
