@@ -15,7 +15,6 @@
 #include "ash/system/unified/quick_settings_view.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/system/unified/unified_system_tray_bubble.h"
-#include "base/run_loop.h"
 #include "chrome/browser/policy/policy_test_utils.h"
 #include "components/policy/policy_constants.h"
 #include "content/public/test/browser_test.h"
@@ -57,7 +56,6 @@ class FocusModePolicyTest : public policy::PolicyTest {
     views::Button* tile = static_cast<views::Button*>(
         panel->GetViewByID(VIEW_ID_FEATURE_TILE_FOCUS_MODE));
     tile->button_controller()->NotifyClick();
-    base::RunLoop().RunUntilIdle();
   }
 
   QuickSettingsView* OpenQuickSettings() {
