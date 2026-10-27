@@ -249,11 +249,6 @@ inline constexpr char kArcSerialNumberSalt[] = "arc.serialno_salt";
 // A preferece to keep ARC snapshot related info in dictionary.
 inline constexpr char kArcSnapshotInfo[] = "arc.snapshot";
 
-// A time pref indicating the time in microseconds when ARCVM success executed
-// vmm swap out. If it never swapped out, the pref holds the default value
-// base::Time().
-inline constexpr char kArcVmmSwapOutTime[] = "arc_vmm_swap_out_time";
-
 // Indicates that the user has requested that ARC APK Sideloading be enabled.
 inline constexpr char kEnableAdbSideloadingRequested[] =
     "EnableAdbSideloadingRequested";

@@ -29,7 +29,6 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   RegisterDailyMetricsPrefs(registry);
   registry->RegisterStringPref(kArcSerialNumberSalt, std::string());
   registry->RegisterDictionaryPref(kArcSnapshotInfo);
-  registry->RegisterTimePref(kArcVmmSwapOutTime, base::Time());
   registry->RegisterDictionaryPref(kStabilityMetrics);
 
   registry->RegisterIntegerPref(kAnrPendingCount, 0);

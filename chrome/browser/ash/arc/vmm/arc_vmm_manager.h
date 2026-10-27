@@ -11,9 +11,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
-#include "chrome/browser/ash/arc/vmm/arc_system_state_observation.h"
-#include "chrome/browser/ash/arc/vmm/arc_vmm_swap_scheduler.h"
 #include "chrome/browser/ash/arc/vmm/arcvm_working_set_trim_executor.h"
+#include "chromeos/ash/components/dbus/concierge/concierge_client.h"
 #include "chromeos/ash/components/dbus/vm_concierge/concierge_service.pb.h"
 #include "chromeos/ash/experiences/arc/mojom/app.mojom.h"
 #include "chromeos/ash/experiences/arc/session/connection_holder.h"
@@ -116,8 +115,6 @@ class ArcVmmManager : public KeyedService,
       bool enable,
       base::OnceClosure success_callback);
 
-  void PostWithSwapDelay(base::OnceClosure callback);
-
   // Called by `SendSwapRequest` and should not be called by other caller.
   // Enable aggressive balloon and reclaim ARCVM guest memory.
   // Shrink memory before enable swap. The function send enable swap request
@@ -144,16 +141,8 @@ class ArcVmmManager : public KeyedService,
   // aggressive balloon, send enable vmm swap dbus request) once an hour.
   base::OneShotTimer enabled_state_heartbeat_timer_;
 
-  // The default delay from swap enabled and swap out. Basically it's used for
-  // keyboard swap. In finch, it will be replaced by the flag parameter.
-  base::TimeDelta swap_out_delay_ = base::Seconds(3);
-
   // Accelerator for experimental usage. Always behind the feature flag.
   std::unique_ptr<AcceleratorTarget> accelerator_;
-
-  // Swap request scheduler for experimental usage. Always behind the feature
-  // flag and parameters.
-  std::unique_ptr<ArcVmmSwapScheduler> scheduler_;
 
   bool arc_connected_ = false;
 

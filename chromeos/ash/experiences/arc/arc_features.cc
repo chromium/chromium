@@ -305,29 +305,6 @@ BASE_FEATURE(kVmmSwapPolicy,
              "ArcVmmSwapPolicy",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Controls the time interval between create staging memory and swap out. The
-// default value is 10 seconds.
-BASE_FEATURE_PARAM(int,
-                   kVmmSwapOutDelaySecond,
-                   &kVmmSwapPolicy,
-                   "delay_sec",
-                   10);
-
-// Controls the time interval between two swap out. The default value is 12
-// hours.
-BASE_FEATURE_PARAM(int,
-                   kVmmSwapOutTimeIntervalSecond,
-                   &kVmmSwapPolicy,
-                   "swapout_interval_sec",
-                   60 * 60 * 12);
-
-// Controls the time interval of ARC silence. The default value is 15 minutes.
-BASE_FEATURE_PARAM(int,
-                   kVmmSwapArcSilenceIntervalSecond,
-                   &kVmmSwapPolicy,
-                   "arc_silence_interval_sec",
-                   60 * 15);
-
 // Controls the interval for swap trimming maintenance.
 BASE_FEATURE_PARAM(base::TimeDelta,
                    kVmmSwapTrimInterval,
