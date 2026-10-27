@@ -524,7 +524,11 @@ public class QuickActionSearchWidgetProviderDelegate {
     private PendingIntent createPendingIntentForAction(
             Context context, SearchActivityClient client, @SearchType int searchType) {
         return createPendingIntent(
-                context, client.newIntentBuilder().setSearchType(searchType).build());
+                context,
+                client.newIntentBuilder()
+                        .setSearchType(searchType)
+                        .setMayLaunchChildActivities(true)
+                        .build());
     }
 
     /**
