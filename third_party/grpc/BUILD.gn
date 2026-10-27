@@ -742,8 +742,6 @@ source_set("grpc++_h") {
     "source/src/core/ext/upb-gen/google/api/httpbody.upb_minitable.h",
     "source/src/core/ext/upb-gen/google/protobuf/any.upb.h",
     "source/src/core/ext/upb-gen/google/protobuf/any.upb_minitable.h",
-    "source/src/core/ext/upb-gen/google/protobuf/descriptor.upb.h",
-    "source/src/core/ext/upb-gen/google/protobuf/descriptor.upb_minitable.h",
     "source/src/core/ext/upb-gen/google/protobuf/duration.upb.h",
     "source/src/core/ext/upb-gen/google/protobuf/duration.upb_minitable.h",
     "source/src/core/ext/upb-gen/google/protobuf/empty.upb.h",
@@ -1514,7 +1512,6 @@ source_set("grpc++_h") {
     "source/src/cpp/server/secure_server_credentials.h",
     "source/src/cpp/server/thread_pool_interface.h",
     "source/src/cpp/thread_manager/thread_manager.h",
-    "source/third_party/upb/upb/generated_code_support.h",
     "source/third_party/xxhash/xxhash.h",
   ]
 
@@ -1539,7 +1536,10 @@ source_set("grpc++_h") {
     "//third_party/re2",
     "//third_party/zlib",
   ]
-  allow_circular_includes_from = [ ":upb_reflection_internal_lib" ]
+  public_deps = [
+    ":upb_descriptor_upb_proto_lib",
+    ":upb_generated_code_support_lib",
+  ]
   public_configs = [ ":grpc_config" ]
   configs += [ ":grpc_config_private" ]
   include_dirs = [
@@ -1746,7 +1746,6 @@ source_set("grpc++_cc") {
     "source/src/core/ext/upb-gen/google/api/expr/v1alpha1/syntax.upb_minitable.c",
     "source/src/core/ext/upb-gen/google/api/httpbody.upb_minitable.c",
     "source/src/core/ext/upb-gen/google/protobuf/any.upb_minitable.c",
-    "source/src/core/ext/upb-gen/google/protobuf/descriptor.upb_minitable.c",
     "source/src/core/ext/upb-gen/google/protobuf/duration.upb_minitable.c",
     "source/src/core/ext/upb-gen/google/protobuf/empty.upb_minitable.c",
     "source/src/core/ext/upb-gen/google/protobuf/timestamp.upb_minitable.c",
@@ -2674,6 +2673,44 @@ source_set("upb_base_lib") {
   }
 }
 
+source_set("upb_descriptor_upb_proto_lib") {
+  sources = [
+    "source/src/core/ext/upb-gen/google/protobuf/descriptor.upb.h",
+    "source/src/core/ext/upb-gen/google/protobuf/descriptor.upb_minitable.c",
+    "source/src/core/ext/upb-gen/google/protobuf/descriptor.upb_minitable.h",
+  ]
+  deps = [
+    ":upb_generated_code_support_lib",
+    ":upb_port_lib",
+  ]
+  public_configs = [ ":grpc_config" ]
+  configs += [ ":grpc_config_private" ]
+  visibility = [ "./*" ]
+  if (!grpc_use_static_linking) {
+    configs -= [ "//build/config/gcc:symbol_visibility_hidden" ]
+    configs += [ "//build/config/gcc:symbol_visibility_default" ]
+  }
+}
+
+source_set("upb_generated_code_support_lib") {
+  sources = [ "source/third_party/upb/upb/generated_code_support.h" ]
+  deps = [
+    ":upb_base_lib",
+    ":upb_message_internal_lib",
+    ":upb_message_lib",
+    ":upb_mini_descriptor_lib",
+    ":upb_mini_table_lib",
+    ":upb_wire_lib",
+  ]
+  public_configs = [ ":grpc_config" ]
+  configs += [ ":grpc_config_private" ]
+  visibility = [ "./*" ]
+  if (!grpc_use_static_linking) {
+    configs -= [ "//build/config/gcc:symbol_visibility_hidden" ]
+    configs += [ "//build/config/gcc:symbol_visibility_default" ]
+  }
+}
+
 source_set("upb_hash_lib") {
   sources = [
     "source/third_party/upb/upb/hash/common.c",
@@ -3171,6 +3208,7 @@ source_set("upb_reflection_internal_lib") {
   ]
   deps = [
     ":upb_base_lib",
+    ":upb_descriptor_upb_proto_lib",
     ":upb_hash_lib",
     ":upb_mem_lib",
     ":upb_message_copy_lib",

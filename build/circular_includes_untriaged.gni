@@ -258,7 +258,6 @@ allow_circular_includes_from_untriaged = [
   "//third_party/dav1d:dav1d_arm",
   "//third_party/dav1d:dav1d_riscv",
   "//third_party/dav1d:dav1d_x86",
-  "//third_party/grpc:grpc++_h",
   "//third_party/pdfium/core/fpdfapi/page:page",
   "//third_party/pdfium/core/fpdfapi/parser:parser",
   "//third_party/pdfium/fpdfsdk:fpdfsdk",
