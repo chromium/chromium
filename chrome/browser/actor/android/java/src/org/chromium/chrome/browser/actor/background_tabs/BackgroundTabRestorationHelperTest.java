@@ -131,7 +131,7 @@ public class BackgroundTabRestorationHelperTest {
     @EnableFeatures(ChromeFeatureList.GLIC_BACKGROUND_ACTUATION)
     public void testShouldIntercept_notificationsDisabled() {
         NotificationProxyUtils.setNotificationEnabledForTest(false);
-        assertFalse(
+        assertTrue(
                 BackgroundTabRestorationHelper.shouldIntercept(
                         TabOrchestratorType.TABBED,
                         /* isIncognito= */ false,
@@ -414,6 +414,10 @@ public class BackgroundTabRestorationHelperTest {
         TabState tabState = new TabState();
         tabState.contentsState = mWebContentsState;
 
+        when(mBackgroundTabPool.loadTabByPlaceholderId(TAB_ID)).thenReturn(mBackgroundPoolTab);
+        when(mBackgroundPoolTab.attachTab(eq(mNormalTabModel), eq(DESTINATION_INDEX), eq(tabState)))
+                .thenReturn(mTab);
+
         Tab restoredTab =
                 BackgroundTabRestorationHelper.maybeRestoreBackgroundTab(
                         TabOrchestratorType.TABBED,
@@ -423,9 +427,10 @@ public class BackgroundTabRestorationHelperTest {
                         tabState,
                         /* isAuthoritativeStore= */ true);
 
-        assertNull(restoredTab);
-        verify(mBackgroundTabPool, never()).loadTabByPlaceholderId(anyInt());
-        verify(mWebContentsState, never()).destroy();
+        assertEquals(mTab, restoredTab);
+        verify(mBackgroundTabPool).loadTabByPlaceholderId(TAB_ID);
+        verify(mBackgroundPoolTab).prepareForForeground(mTabModelSelector);
+        verify(mWebContentsState).destroy();
     }
 
     @Test

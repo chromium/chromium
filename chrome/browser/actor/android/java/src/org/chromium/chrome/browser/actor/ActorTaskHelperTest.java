@@ -489,6 +489,29 @@ public class ActorTaskHelperTest {
 
     @Test
     @DisableFeatures(ChromeFeatureList.GLIC_BACKGROUND_ACTUATION)
+    public void testIsBackgroundActuationFeatureEnabled_Disabled() {
+        assertFalse(ActorUtils.isBackgroundActuationFeatureEnabled());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.GLIC_BACKGROUND_ACTUATION)
+    public void testIsBackgroundActuationFeatureEnabled_Enabled() {
+        assertTrue(ActorUtils.isBackgroundActuationFeatureEnabled());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.GLIC_BACKGROUND_ACTUATION)
+    public void testIsBackgroundActuationFeatureEnabled_Desktop() {
+        try {
+            DeviceInfo.setIsDesktopForTesting(true);
+            assertFalse(ActorUtils.isBackgroundActuationFeatureEnabled());
+        } finally {
+            DeviceInfo.resetIsDesktopForTesting();
+        }
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.GLIC_BACKGROUND_ACTUATION)
     public void testBackgroundActuation_BaseFeatureDisabled_AlwaysReturnsFalse() {
         setNotificationsEnabled(true);
         ChromeFeatureList.sGlicBackgroundActuationRequireNotifications.setForTesting(true);

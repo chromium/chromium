@@ -49,7 +49,7 @@ public final class BackgroundTabRestorationHelper {
             boolean isAuthoritativeStore) {
         return isAuthoritativeStore
                 && orchestratorType == TabOrchestratorType.TABBED
-                && ActorUtils.isBackgroundActuationEnabled()
+                && ActorUtils.isBackgroundActuationFeatureEnabled()
                 && !isIncognito;
     }
 
@@ -65,6 +65,9 @@ public final class BackgroundTabRestorationHelper {
         if (selector == null) return null;
 
         TabModel model = selector.getModel(/* incognito= */ false);
+        if (model == null) {
+            return BackgroundTabPoolManager.restorePoolIfTokenExists();
+        }
         Profile profile = model.getProfile();
         if (profile != null) {
             if (profile.isOffTheRecord() || model.getTabModelType() == TabModelType.EMPTY) {
