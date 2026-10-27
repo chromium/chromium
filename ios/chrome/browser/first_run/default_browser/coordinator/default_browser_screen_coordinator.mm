@@ -231,7 +231,9 @@
       !identityManager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
     return NO;
   }
-  return first_run::IsAndroidSwitcherDefaultBrowserPromoInFREEnabled();
+  return first_run::GetAndroidSwitcherDefaultBrowserPromoInFREVariationType() !=
+         first_run::AndroidSwitcherDefaultBrowserPromoInFREVariationType::
+             kDisabled;
 }
 
 // Creates and configures the promo view controller to present.

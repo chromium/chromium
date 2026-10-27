@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import "base/strings/strcat.h"
 #import "ios/chrome/browser/authentication/test/signin_earl_grey.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
 #import "ios/chrome/browser/first_run/public/features.h"
@@ -82,15 +83,20 @@ id<GREYMatcher> DefaultPromoSubtitle() {
   // screen's view that cause the test to fail.
   config.additional_args.push_back(
       "--disable-features=UpdatedFirstRunSequence");
-  // GCRGemini crashes on nil identity in this sign-in setup.
-  config.additional_args.push_back("--enable-features=GeminiKillSwitch");
   config.features_disabled.push_back(
       first_run::kSkipDefaultBrowserPromoInFirstRun);
 
   if ([self isRunningTest:@selector(testAndroidSwitcherPromoDisplayed)]) {
-    config.features_enabled.push_back(
-        first_run::kAndroidSwitcherDefaultBrowserPromoInFRE);
+    // GCRGemini crashes on nil identity in this sign-in setup.
+    config.additional_args.push_back(base::StrCat(
+        {"--enable-features=GeminiKillSwitch,",
+         first_run::kAndroidSwitcherDefaultBrowserPromoInFRE.name, ":",
+         first_run::kAndroidSwitcherDefaultBrowserPromoInFREParam, "/",
+         first_run::
+             kAndroidSwitcherDefaultBrowserPromoInFREParamSegmentationSignal}));
   } else {
+    // GCRGemini crashes on nil identity in this sign-in setup.
+    config.additional_args.push_back("--enable-features=GeminiKillSwitch");
     config.features_disabled.push_back(
         first_run::kAndroidSwitcherDefaultBrowserPromoInFRE);
   }

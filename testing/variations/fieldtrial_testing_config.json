@@ -14982,21 +14982,6 @@
             ]
         }
     ],
-    "QueryDeviceSwitcherSignalsInFirstRun": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "QueryDeviceSwitcherSignalsInFirstRun"
-                    ]
-                }
-            ]
-        }
-    ],
     "QuicSocketSendBufferSize": [
         {
             "platforms": [

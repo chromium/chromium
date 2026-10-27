@@ -137,9 +137,12 @@ TEST_F(DefaultBrowserScreenCoordinatorTest,
 // flag is enabled and the user is signed in.
 TEST_F(DefaultBrowserScreenCoordinatorTest,
        PresentsAndroidSwitcherPromoWhenFlagEnabledAndSignedIn) {
-  scoped_feature_list_.InitWithFeatures(
-      /*enabled_features=*/{first_run::
-                                kAndroidSwitcherDefaultBrowserPromoInFRE},
+  scoped_feature_list_.InitWithFeaturesAndParameters(
+      /*enabled_features=*/
+      {{first_run::kAndroidSwitcherDefaultBrowserPromoInFRE,
+        {{first_run::kAndroidSwitcherDefaultBrowserPromoInFREParam,
+          first_run::
+              kAndroidSwitcherDefaultBrowserPromoInFREParamSegmentationSignal}}}},
       /*disabled_features=*/{first_run::kAnimatedDefaultBrowserPromoInFRE});
   SignIn();
 

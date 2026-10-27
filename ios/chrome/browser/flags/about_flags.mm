@@ -685,6 +685,24 @@ constexpr FeatureEntry::FeatureVariation
         {" - with Show Me How", kAnimatedDBPInFREWithShowMeHow, nullptr},
         {" - with Instructions", kAnimatedDBPInFREWithInstructions, nullptr}};
 
+constexpr FeatureEntry::FeatureParam
+    kAndroidSwitcherDBPInFRESegmentationSignal[] = {
+        {first_run::kAndroidSwitcherDefaultBrowserPromoInFREParam,
+         first_run::
+             kAndroidSwitcherDefaultBrowserPromoInFREParamSegmentationSignal}};
+constexpr FeatureEntry::FeatureParam
+    kAndroidSwitcherDBPInFRESwitcherInfoSignal[] = {
+        {first_run::kAndroidSwitcherDefaultBrowserPromoInFREParam,
+         first_run::
+             kAndroidSwitcherDefaultBrowserPromoInFREParamSwitcherInfoSignal}};
+
+constexpr FeatureEntry::FeatureVariation
+    kAndroidSwitcherDefaultBrowserPromoInFREVariations[] = {
+        {" - Segmentation Signal", kAndroidSwitcherDBPInFRESegmentationSignal,
+         nullptr},
+        {" - Switcher Info Signal", kAndroidSwitcherDBPInFRESwitcherInfoSignal,
+         nullptr}};
+
 constexpr FeatureEntry::FeatureParam kBestFeaturesScreenInFirstRunArm2[] = {
     {first_run::kBestFeaturesScreenInFirstRunParam, "2"}};
 constexpr FeatureEntry::FeatureParam kBestFeaturesScreenInFirstRunArm3[] = {
@@ -3090,7 +3108,10 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      flag_descriptions::kAndroidSwitcherDefaultBrowserPromoInFREName,
      flag_descriptions::kAndroidSwitcherDefaultBrowserPromoInFREDescription,
      flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(first_run::kAndroidSwitcherDefaultBrowserPromoInFRE)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         first_run::kAndroidSwitcherDefaultBrowserPromoInFRE,
+         kAndroidSwitcherDefaultBrowserPromoInFREVariations,
+         "AndroidSwitcherDefaultBrowserPromoInFRE")},
     {"magic-stack-ntp-theme-tip-ios",
      flag_descriptions::kMagicStackNTPThemeTipIosName,
      flag_descriptions::kMagicStackNTPThemeTipIosDescription, flags_ui::kOsIos,
