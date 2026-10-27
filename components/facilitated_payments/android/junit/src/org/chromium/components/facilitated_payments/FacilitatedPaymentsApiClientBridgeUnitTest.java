@@ -8,6 +8,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 
+import org.jni_zero.JniRawPtr;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -26,11 +27,14 @@ import java.util.List;
 /** Tests for the native bridge of the facilitated payment API client. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class FacilitatedPaymentsApiClientBridgeUnitTest {
-    private static final long NATIVE_FACILITATED_PAYMENTS_API_CLIENT_ANDROID = 0x12345678;
     private static final byte[] ACTION_TOKEN = new byte[] {'A', 'c', 't', 'i', 'o', 'n'};
     private static final List<SecureData> SECURE_DATA = Arrays.asList(new SecureData(1, "value_1"));
 
     @Mock private FacilitatedPaymentsApiClientBridge.Natives mBridgeNatives;
+
+    @Mock
+    private JniRawPtr<FacilitatedPaymentsApiClientBridge.NativeFacilitatedPaymentsApiClientAndroid>
+            mNativeFacilitatedPaymentsApiClientAndroid;
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -48,21 +52,19 @@ public class FacilitatedPaymentsApiClientBridgeUnitTest {
     public void apiIsNotAvailableByDefault() throws Exception {
         FacilitatedPaymentsApiClientBridge bridge =
                 new FacilitatedPaymentsApiClientBridge(
-                        NATIVE_FACILITATED_PAYMENTS_API_CLIENT_ANDROID,
-                        /* renderFrameHost= */ null);
+                        mNativeFacilitatedPaymentsApiClientAndroid, /* renderFrameHost= */ null);
 
         bridge.isAvailable();
 
         verify(mBridgeNatives)
-                .onIsAvailable(eq(NATIVE_FACILITATED_PAYMENTS_API_CLIENT_ANDROID), eq(false));
+                .onIsAvailable(eq(mNativeFacilitatedPaymentsApiClientAndroid), eq(false));
     }
 
     @Test
     public void apiIsNotAvailableByDefaultSyncCheck() throws Exception {
         FacilitatedPaymentsApiClientBridge bridge =
                 new FacilitatedPaymentsApiClientBridge(
-                        NATIVE_FACILITATED_PAYMENTS_API_CLIENT_ANDROID,
-                        /* renderFrameHost= */ null);
+                        mNativeFacilitatedPaymentsApiClientAndroid, /* renderFrameHost= */ null);
 
         Assert.assertFalse(bridge.isAvailableSync());
     }
@@ -71,28 +73,26 @@ public class FacilitatedPaymentsApiClientBridgeUnitTest {
     public void cannotRetrieveClientTokenByDefault() throws Exception {
         FacilitatedPaymentsApiClientBridge bridge =
                 new FacilitatedPaymentsApiClientBridge(
-                        NATIVE_FACILITATED_PAYMENTS_API_CLIENT_ANDROID,
-                        /* renderFrameHost= */ null);
+                        mNativeFacilitatedPaymentsApiClientAndroid, /* renderFrameHost= */ null);
 
         bridge.getClientToken();
 
         verify(mBridgeNatives)
-                .onGetClientToken(eq(NATIVE_FACILITATED_PAYMENTS_API_CLIENT_ANDROID), eq(null));
+                .onGetClientToken(eq(mNativeFacilitatedPaymentsApiClientAndroid), eq(null));
     }
 
     @Test
     public void purchaseActionFailsByDefault() throws Exception {
         FacilitatedPaymentsApiClientBridge bridge =
                 new FacilitatedPaymentsApiClientBridge(
-                        NATIVE_FACILITATED_PAYMENTS_API_CLIENT_ANDROID,
-                        /* renderFrameHost= */ null);
+                        mNativeFacilitatedPaymentsApiClientAndroid, /* renderFrameHost= */ null);
 
         bridge.invokePurchaseAction(
                 /* primaryAccount= */ null, SecurePayload.create(ACTION_TOKEN, SECURE_DATA));
 
         verify(mBridgeNatives)
                 .onPurchaseActionResultEnum(
-                        eq(NATIVE_FACILITATED_PAYMENTS_API_CLIENT_ANDROID),
+                        eq(mNativeFacilitatedPaymentsApiClientAndroid),
                         eq(PurchaseActionResult.COULD_NOT_INVOKE));
     }
 
@@ -100,8 +100,7 @@ public class FacilitatedPaymentsApiClientBridgeUnitTest {
     public void cannotCheckApiAvailabilityAfterNativePointerReset() throws Exception {
         FacilitatedPaymentsApiClientBridge bridge =
                 new FacilitatedPaymentsApiClientBridge(
-                        NATIVE_FACILITATED_PAYMENTS_API_CLIENT_ANDROID,
-                        /* renderFrameHost= */ null);
+                        mNativeFacilitatedPaymentsApiClientAndroid, /* renderFrameHost= */ null);
         bridge.resetNativePointer();
 
         bridge.isAvailable();
@@ -113,8 +112,7 @@ public class FacilitatedPaymentsApiClientBridgeUnitTest {
     public void cannotRetrieveClientTokenAfterNativePointerReset() throws Exception {
         FacilitatedPaymentsApiClientBridge bridge =
                 new FacilitatedPaymentsApiClientBridge(
-                        NATIVE_FACILITATED_PAYMENTS_API_CLIENT_ANDROID,
-                        /* renderFrameHost= */ null);
+                        mNativeFacilitatedPaymentsApiClientAndroid, /* renderFrameHost= */ null);
         bridge.resetNativePointer();
 
         bridge.getClientToken();
@@ -126,8 +124,7 @@ public class FacilitatedPaymentsApiClientBridgeUnitTest {
     public void cannotInvokePurchaseActionAfterNativePointerReset() throws Exception {
         FacilitatedPaymentsApiClientBridge bridge =
                 new FacilitatedPaymentsApiClientBridge(
-                        NATIVE_FACILITATED_PAYMENTS_API_CLIENT_ANDROID,
-                        /* renderFrameHost= */ null);
+                        mNativeFacilitatedPaymentsApiClientAndroid, /* renderFrameHost= */ null);
         bridge.resetNativePointer();
 
         bridge.invokePurchaseAction(
@@ -149,11 +146,10 @@ public class FacilitatedPaymentsApiClientBridgeUnitTest {
 
         FacilitatedPaymentsApiClientBridge bridge =
                 new FacilitatedPaymentsApiClientBridge(
-                        NATIVE_FACILITATED_PAYMENTS_API_CLIENT_ANDROID,
-                        /* renderFrameHost= */ null);
+                        mNativeFacilitatedPaymentsApiClientAndroid, /* renderFrameHost= */ null);
         bridge.isAvailable();
 
         verify(mBridgeNatives)
-                .onIsAvailable(eq(NATIVE_FACILITATED_PAYMENTS_API_CLIENT_ANDROID), eq(false));
+                .onIsAvailable(eq(mNativeFacilitatedPaymentsApiClientAndroid), eq(false));
     }
 }

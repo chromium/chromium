@@ -6,7 +6,10 @@ package org.chromium.components.facilitated_payments;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniPtr;
+import org.jni_zero.JniRawPtr;
 import org.jni_zero.JniType;
+import org.jni_zero.JniTypeToken;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.build.annotations.NullMarked;
@@ -18,8 +21,12 @@ import org.chromium.content_public.browser.RenderFrameHost;
 @JNINamespace("payments::facilitated")
 @NullMarked
 public class FacilitatedPaymentsApiClientBridge implements FacilitatedPaymentsApiClient.Delegate {
+    @JniType("::payments::facilitated::FacilitatedPaymentsApiClientAndroid")
+    interface NativeFacilitatedPaymentsApiClientAndroid extends JniTypeToken {}
+
     private final FacilitatedPaymentsApiClient mApiClient;
-    private long mNativeFacilitatedPaymentsApiClientAndroid;
+    private @Nullable JniRawPtr<NativeFacilitatedPaymentsApiClientAndroid>
+            mNativeFacilitatedPaymentsApiClientAndroid;
 
     /**
      * Constructs an instance of the bridge for invoking the facilitated payments API.
@@ -30,7 +37,9 @@ public class FacilitatedPaymentsApiClientBridge implements FacilitatedPaymentsAp
      */
     @CalledByNative
     public FacilitatedPaymentsApiClientBridge(
-            long nativeFacilitatedPaymentsApiClientAndroid, RenderFrameHost renderFrameHost) {
+            JniRawPtr<NativeFacilitatedPaymentsApiClientAndroid>
+                    nativeFacilitatedPaymentsApiClientAndroid,
+            RenderFrameHost renderFrameHost) {
         mNativeFacilitatedPaymentsApiClientAndroid = nativeFacilitatedPaymentsApiClientAndroid;
         mApiClient = FacilitatedPaymentsApiClient.create(renderFrameHost, /* delegate= */ this);
         assert mApiClient != null;
@@ -42,7 +51,10 @@ public class FacilitatedPaymentsApiClientBridge implements FacilitatedPaymentsAp
      */
     @CalledByNative
     public void resetNativePointer() {
-        mNativeFacilitatedPaymentsApiClientAndroid = 0;
+        if (mNativeFacilitatedPaymentsApiClientAndroid != null) {
+            mNativeFacilitatedPaymentsApiClientAndroid.release();
+            mNativeFacilitatedPaymentsApiClientAndroid = null;
+        }
     }
 
     /**
@@ -103,7 +115,7 @@ public class FacilitatedPaymentsApiClientBridge implements FacilitatedPaymentsAp
     // FacilitatedPaymentsApiClient.Delegate implementation:
     @Override
     public void onIsAvailable(boolean isAvailable) {
-        if (mNativeFacilitatedPaymentsApiClientAndroid == 0) return;
+        if (mNativeFacilitatedPaymentsApiClientAndroid == null) return;
         FacilitatedPaymentsApiClientBridgeJni.get()
                 .onIsAvailable(mNativeFacilitatedPaymentsApiClientAndroid, isAvailable);
     }
@@ -111,7 +123,7 @@ public class FacilitatedPaymentsApiClientBridge implements FacilitatedPaymentsAp
     // FacilitatedPaymentsApiClient.Delegate implementation:
     @Override
     public void onGetClientToken(byte @Nullable [] clientToken) {
-        if (mNativeFacilitatedPaymentsApiClientAndroid == 0) return;
+        if (mNativeFacilitatedPaymentsApiClientAndroid == null) return;
         FacilitatedPaymentsApiClientBridgeJni.get()
                 .onGetClientToken(mNativeFacilitatedPaymentsApiClientAndroid, clientToken);
     }
@@ -119,15 +131,16 @@ public class FacilitatedPaymentsApiClientBridge implements FacilitatedPaymentsAp
     // FacilitatedPaymentsApiClient.Delegate implementation:
     @Override
     public void onPurchaseActionResultEnum(@PurchaseActionResult int purchaseActionResult) {
-        if (mNativeFacilitatedPaymentsApiClientAndroid == 0) return;
-        FacilitatedPaymentsApiClientBridgeJni.get().onPurchaseActionResultEnum(
-                mNativeFacilitatedPaymentsApiClientAndroid, purchaseActionResult);
+        if (mNativeFacilitatedPaymentsApiClientAndroid == null) return;
+        FacilitatedPaymentsApiClientBridgeJni.get()
+                .onPurchaseActionResultEnum(
+                        mNativeFacilitatedPaymentsApiClientAndroid, purchaseActionResult);
     }
 
     // FacilitatedPaymentsApiClient.Delegate implementation:
     @Override
     public void onInvokeInstrumentManagerResult(AccountLinkingResult result) {
-        if (mNativeFacilitatedPaymentsApiClientAndroid == 0) return;
+        if (mNativeFacilitatedPaymentsApiClientAndroid == null) return;
         FacilitatedPaymentsApiClientBridgeJni.get()
                 .onInvokeInstrumentManagerResult(
                         mNativeFacilitatedPaymentsApiClientAndroid, result);
@@ -135,16 +148,19 @@ public class FacilitatedPaymentsApiClientBridge implements FacilitatedPaymentsAp
 
     @NativeMethods
     interface Natives {
-        void onIsAvailable(long nativeFacilitatedPaymentsApiClientAndroid, boolean isAvailable);
+        void onIsAvailable(
+                JniPtr<NativeFacilitatedPaymentsApiClientAndroid> self, boolean isAvailable);
 
         void onGetClientToken(
-                long nativeFacilitatedPaymentsApiClientAndroid, byte @Nullable [] clientToken);
+                JniPtr<NativeFacilitatedPaymentsApiClientAndroid> self,
+                byte @Nullable [] clientToken);
 
         void onPurchaseActionResultEnum(
-                long nativeFacilitatedPaymentsApiClientAndroid,
+                JniPtr<NativeFacilitatedPaymentsApiClientAndroid> self,
                 @PurchaseActionResult int purchaseActionResult);
 
         void onInvokeInstrumentManagerResult(
-                long nativeFacilitatedPaymentsApiClientAndroid, AccountLinkingResult result);
+                JniPtr<NativeFacilitatedPaymentsApiClientAndroid> self,
+                AccountLinkingResult result);
     }
 }

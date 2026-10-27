@@ -18,6 +18,7 @@
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/jni_zero/jni_zero.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "components/facilitated_payments/android/java/jni_headers/AccountLinkingResult_jni.h"
@@ -67,7 +68,7 @@ FacilitatedPaymentsApiClientAndroid::FacilitatedPaymentsApiClientAndroid(
       render_frame_host_id_(render_frame_host->GetGlobalId()),
       java_bridge_(Java_FacilitatedPaymentsApiClientBridge_Constructor(
           base::android::AttachCurrentThread(),
-          reinterpret_cast<intptr_t>(this),
+          jni_zero::MakeRaw(this),
           render_frame_host->GetJavaRenderFrameHost())) {}
 
 FacilitatedPaymentsApiClientAndroid::~FacilitatedPaymentsApiClientAndroid() {
@@ -131,8 +132,7 @@ void FacilitatedPaymentsApiClientAndroid::InvokeInstrumentManager(
                                                                java_bridge_);
     render_frame_host_id_ = current_rfh->GetGlobalId();
     java_bridge_ = Java_FacilitatedPaymentsApiClientBridge_Constructor(
-        env, reinterpret_cast<intptr_t>(this),
-        current_rfh->GetJavaRenderFrameHost());
+        env, jni_zero::MakeRaw(this), current_rfh->GetJavaRenderFrameHost());
   }
   Java_FacilitatedPaymentsApiClientBridge_invokeInstrumentManager(
       env, java_bridge_, primary_account,
