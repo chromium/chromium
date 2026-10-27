@@ -654,12 +654,10 @@ AX_TEST_F(
     });
 
 // Tests that gestures can be used in the tutorial to navigate.
-// TODO(crbug.com/1332510): Failing on ChromeOS.
-AX_TEST_F('ChromeVoxTutorialTest', 'DISABLED_Gestures', async function() {
+AX_TEST_F('ChromeVoxTutorialTest', 'Gestures', async function() {
   const mockFeedback = this.createMockFeedback();
   const root = await this.runWithLoadedTree(this.simpleDoc);
   await this.launchAndWaitForTutorial();
-  const tutorial = this.getTutorial();
   mockFeedback.expectSpeech('ChromeVox tutorial')
       .call(doGesture(Gesture.SWIPE_RIGHT1))
       .expectSpeech('Quick orientation', 'Link')
