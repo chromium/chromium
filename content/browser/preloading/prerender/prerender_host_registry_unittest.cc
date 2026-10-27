@@ -34,9 +34,9 @@
 #include "content/test/navigation_simulator_impl.h"
 #include "content/test/test_render_view_host.h"
 #include "content/test/test_web_contents.h"
-#include "net/base/load_flags.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/loader/mixed_content.mojom.h"
+#include "third_party/blink/public/mojom/navigation/navigation_params.mojom.h"
 #include "third_party/blink/public/mojom/speculation_rules/speculation_rules.mojom.h"
 
 namespace content {
@@ -1702,29 +1702,34 @@ TEST_F(PrerenderHostRegistryTest, PurposeHeaderIsIgnoredForParamMatching) {
 
 TEST_F(PrerenderHostRegistryTest,
        CompareInitialAndActivationBeginParams_LoadFlags) {
-  EXPECT_FALSE(CheckIsActivatedForParams(
-      base::BindLambdaForTesting([](NavigationSimulatorImpl* navigation) {
-        navigation->set_load_flags(net::LOAD_ONLY_FROM_CACHE);
-      })));
-  ExpectUniqueSampleOfActivationNavigationParamsMatch(
-      PrerenderHost::ActivationNavigationParamsMatch::kLoadFlags);
-
+  // Load flags for renderer-initiated navigations are derived by the browser
+  // from the navigation type, so set that rather than the flags directly.
+  //
   // If the potential activation request requires validation or bypass of the
   // browser cache, the prerendered page should not be activated.
+  //
+  // Note that there's no navigation type that results in
+  // net::LOAD_DISABLE_CACHE, so that case can't be tested.
+  //
+  // Also, the only navigation types that result in load flags that differ from
+  // those of the initial prerender navigation but aren't in prerender's
+  // kCacheLoadFlags set (resulting in
+  // ActivationNavigationParamsMatch::kLoadFlags) are history and restore
+  // navigations, which are browser-initiated, so would fail the
+  // kInitiatorFrameToken check first. So the kCacheLoadFlags also isn't tested.
   EXPECT_FALSE(CheckIsActivatedForParams(
       base::BindLambdaForTesting([](NavigationSimulatorImpl* navigation) {
-        navigation->set_load_flags(net::LOAD_VALIDATE_CACHE);
+        // Results in net::LOAD_VALIDATE_CACHE.
+        navigation->set_navigation_type(blink::mojom::NavigationType::RELOAD);
       })));
   EXPECT_FALSE(CheckIsActivatedForParams(
       base::BindLambdaForTesting([](NavigationSimulatorImpl* navigation) {
-        navigation->set_load_flags(net::LOAD_BYPASS_CACHE);
+        // Results in net::LOAD_BYPASS_CACHE.
+        navigation->set_navigation_type(
+            blink::mojom::NavigationType::RELOAD_BYPASSING_CACHE);
       })));
-  EXPECT_FALSE(CheckIsActivatedForParams(
-      base::BindLambdaForTesting([](NavigationSimulatorImpl* navigation) {
-        navigation->set_load_flags(net::LOAD_DISABLE_CACHE);
-      })));
-  ExpectBucketCountOfActivationNavigationParamsMatch(
-      PrerenderHost::ActivationNavigationParamsMatch::kCacheLoadFlags, 3);
+  ExpectUniqueSampleOfActivationNavigationParamsMatch(
+      PrerenderHost::ActivationNavigationParamsMatch::kCacheLoadFlags, 2);
 }
 
 TEST_F(PrerenderHostRegistryTest,

@@ -1464,7 +1464,7 @@ bool NavigationSimulatorImpl::SimulateRendererInitiatedStart() {
               ? std::make_optional(initiator_frame_host_->GetFrameToken())
               : std::nullopt,
           initiator_state_token, initiator_document_token, headers_,
-          load_flags_, skip_service_worker_, request_context_type_,
+          net::LOAD_NORMAL, skip_service_worker_, request_context_type_,
           mixed_content_context_type_, is_form_submission_,
           false /* was_initiated_by_link_click */,
           blink::mojom::ForceHistoryPush::kNo, searchable_form_url_,
@@ -1489,10 +1489,10 @@ bool NavigationSimulatorImpl::SimulateRendererInitiatedStart() {
   common_params->post_data = resource_request_body_;
   common_params->referrer = referrer_.Clone();
   common_params->transition = transition_;
-  common_params->navigation_type =
+  common_params->navigation_type = navigation_type_.value_or(
       PageTransitionCoreTypeIs(transition_, ui::PAGE_TRANSITION_RELOAD)
           ? blink::mojom::NavigationType::RELOAD
-          : blink::mojom::NavigationType::DIFFERENT_DOCUMENT;
+          : blink::mojom::NavigationType::DIFFERENT_DOCUMENT);
   common_params->has_possibly_filtered_user_gesture = has_user_gesture_;
   common_params->should_check_main_world_csp = should_check_main_world_csp_;
   common_params->should_replace_current_entry = should_replace_current_entry_;
