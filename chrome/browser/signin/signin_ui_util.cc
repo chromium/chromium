@@ -327,7 +327,9 @@ void EnableHistorySyncFromMultiAccountPromo(
   }
 
   CHECK(!account.account_id.empty(), base::NotFatalUntil::M162);
-  CHECK(!account.email.empty(), base::NotFatalUntil::M162);
+  // TODO(crbug.com/577861241): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(!account.email.empty());
   CHECK(AccountConsistencyModeManager::IsDiceEnabledForProfile(profile) ||
             AccountConsistencyModeManager::IsMirrorEnabledForProfile(profile),
         base::NotFatalUntil::M162);
