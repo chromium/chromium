@@ -340,8 +340,9 @@ TEST_F(SpotlightRemotingClientManagerImplTest,
   EXPECT_TRUE(frame_received_future.Wait());
 
   EXPECT_CALL(*remoting_client_io_proxy_, StopCrdClient).Times(0);
+  // Advance four seconds from the frame to stay below the five-second timeout.
+  // FastForwardBy also runs tasks due in that interval.
   task_environment_.FastForwardBy(base::Seconds(4));
-  task_environment_.RunUntilIdle();
 }
 
 TEST_F(SpotlightRemotingClientManagerImplTest, AudioPacketReceived) {
