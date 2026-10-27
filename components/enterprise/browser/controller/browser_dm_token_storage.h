@@ -130,6 +130,10 @@ class BrowserDMTokenStorage {
   // is called the first time the BrowserDMTokenStorage is interacted with.
   void InitIfNeeded();
 
+  // Initializes the enrollment token from the delegate, falling back to a
+  // fake token when configured for testing.
+  std::string InitEnrollmentToken();
+
   // Saves the DM token.
   void SaveDMToken(const std::string& token);
   // Deletes the DM token.

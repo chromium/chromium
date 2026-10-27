@@ -74,6 +74,16 @@ and automatically enable cloud management:
 ./out/Default/chrome --use-fake-dmserver
 ```
 
+To enroll the browser in Chrome Browser Cloud Management (CBCM) without
+configuring an OS-level `CloudManagementEnrollmentToken`, use:
+
+```bash
+./out/Default/chrome --use-fake-dmserver=always-enroll
+```
+
+This supplies a dummy enrollment token when no token is provided by the
+operating system, allowing machine-level enrollment to proceed immediately.
+
 Alternatively, or for Google Chrome builds where `--use-fake-dmserver` is not
 available, specify the parameters manually:
 
@@ -83,6 +93,8 @@ available, specify the parameters manually:
   --enable-chrome-browser-cloud-management \
   --device-management-url=http://127.0.0.1:6112/device_management
 ```
+
+Note that some features only work with `--use-fake-dmserver`.
 
 ### Step 4: Test Your Feature
 

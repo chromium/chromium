@@ -4,10 +4,14 @@
 
 #include "components/enterprise/browser/controller/browser_dm_token_storage.h"
 
+#include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/test/scoped_command_line.h"
 #include "base/test/task_environment.h"
+#include "build/branding_buildflags.h"
 #include "components/enterprise/browser/controller/fake_browser_dm_token_storage.h"
+#include "components/policy/core/common/policy_switches.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -198,5 +202,38 @@ TEST_F(BrowserDMTokenStorageTest, ClientIdTooLong) {
   newStorage.SetClientId(kClientIdTooLong);
   EXPECT_EQ(newStorage.RetrieveClientId(), "");
 }
+
+#if !BUILDFLAG(GOOGLE_CHROME_BRANDING)
+constexpr char kAlwaysEnroll[] = "always-enroll";
+constexpr char kFakeEnrollmentToken[] = "fake-enrollment-token";
+
+TEST_F(BrowserDMTokenStorageTest,
+       RetrieveEnrollmentTokenWithFakeDmserverAlwaysEnroll) {
+  base::test::ScopedCommandLine scoped_command_line;
+  scoped_command_line.GetProcessCommandLine()->AppendSwitchASCII(
+      policy::switches::kUseFakeDmserver, kAlwaysEnroll);
+  FakeBrowserDMTokenStorage storage(kClientId1, "", kDMToken1, false);
+  EXPECT_EQ(kFakeEnrollmentToken, storage.RetrieveEnrollmentToken());
+}
+
+TEST_F(BrowserDMTokenStorageTest,
+       RetrieveEnrollmentTokenWithFakeDmserverAlwaysEnrollAndExistingToken) {
+  base::test::ScopedCommandLine scoped_command_line;
+  scoped_command_line.GetProcessCommandLine()->AppendSwitchASCII(
+      policy::switches::kUseFakeDmserver, kAlwaysEnroll);
+  FakeBrowserDMTokenStorage storage(kClientId1, kEnrollmentToken1, kDMToken1,
+                                    false);
+  EXPECT_EQ(kEnrollmentToken1, storage.RetrieveEnrollmentToken());
+}
+
+TEST_F(BrowserDMTokenStorageTest,
+       RetrieveEnrollmentTokenWithPlainFakeDmserver) {
+  base::test::ScopedCommandLine scoped_command_line;
+  scoped_command_line.GetProcessCommandLine()->AppendSwitch(
+      policy::switches::kUseFakeDmserver);
+  FakeBrowserDMTokenStorage storage(kClientId1, "", kDMToken1, false);
+  EXPECT_EQ("", storage.RetrieveEnrollmentToken());
+}
+#endif
 
 }  // namespace policy

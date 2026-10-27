@@ -12,6 +12,7 @@
 #include <utility>
 
 #include "base/base64.h"
+#include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
@@ -20,13 +21,20 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/syslog_logging.h"
+#include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "components/enterprise/browser/controller/chrome_browser_cloud_management_controller.h"
 #include "components/policy/core/common/policy_logger.h"
+#include "components/policy/core/common/policy_switches.h"
 
 namespace policy {
 
 namespace {
+
+#if !BUILDFLAG(GOOGLE_CHROME_BRANDING)
+constexpr char kAlwaysEnroll[] = "always-enroll";
+constexpr char kFakeEnrollmentToken[] = "fake-enrollment-token";
+#endif
 
 constexpr char kInvalidTokenValue[] = "INVALID_DM_TOKEN";
 
@@ -50,8 +58,9 @@ DMToken CreateEmptyToken() {
 BrowserDMTokenStorage* BrowserDMTokenStorage::storage_for_testing_ = nullptr;
 
 BrowserDMTokenStorage* BrowserDMTokenStorage::Get() {
-  if (storage_for_testing_)
+  if (storage_for_testing_) {
     return storage_for_testing_;
+  }
 
   static base::NoDestructor<BrowserDMTokenStorage> storage;
   return storage.get();
@@ -133,8 +142,9 @@ void BrowserDMTokenStorage::OnDMTokenStored(bool success) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(store_callback_);
 
-  if (!store_callback_.is_null())
+  if (!store_callback_.is_null()) {
     std::move(store_callback_).Run(success);
+  }
 }
 
 bool BrowserDMTokenStorage::ShouldDisplayErrorMessageOnFailure() {
@@ -157,7 +167,7 @@ void BrowserDMTokenStorage::InitIfNeeded() {
     // a better solution in the future.
     if (is_init_enrollment_token_skipped_) {
       is_init_enrollment_token_skipped_ = !delegate_->CanInitEnrollmentToken();
-      enrollment_token_ = delegate_->InitEnrollmentToken();
+      enrollment_token_ = InitEnrollmentToken();
     }
     return;
   }
@@ -209,7 +219,7 @@ void BrowserDMTokenStorage::InitIfNeeded() {
     return;
   }
 
-  enrollment_token_ = delegate_->InitEnrollmentToken();
+  enrollment_token_ = InitEnrollmentToken();
   DVLOG(1) << "Enrollment token = " << enrollment_token_;
 
   std::string init_dm_token = delegate_->InitDMToken();
@@ -228,6 +238,19 @@ void BrowserDMTokenStorage::InitIfNeeded() {
       delegate_->InitEnrollmentErrorOption();
 
   delegate_->OnTokenInitialized();
+}
+
+std::string BrowserDMTokenStorage::InitEnrollmentToken() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  std::string enrollment_token = delegate_->InitEnrollmentToken();
+#if !BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  if (enrollment_token.empty() &&
+      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+          policy::switches::kUseFakeDmserver) == kAlwaysEnroll) {
+    return kFakeEnrollmentToken;
+  }
+#endif
+  return enrollment_token;
 }
 
 void BrowserDMTokenStorage::SaveDMToken(const std::string& token) {
