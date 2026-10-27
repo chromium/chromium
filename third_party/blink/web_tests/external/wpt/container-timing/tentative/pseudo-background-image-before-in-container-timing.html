@@ -17,7 +17,6 @@ body {
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/container-timing/resources/container-timing-helpers.js"></script>
-<script src="/element-timing/resources/element-timing-helpers.js"></script>
 <script>
   async_test(function (t) {
     let beforeRender;
@@ -27,7 +26,7 @@ body {
         assert_equals(entryList.getEntries().length, 1);
         const entry = entryList.getEntries()[0];
         checkContainerEntry(entry, 'ct', 'hbp_id', beforeRender);
-        checkRect(entry, [0, 120, 0, 120])
+        checkContainerIntersectionRect(entry, [0, 120, 0, 120])
         checkContainerSize(entry, 14400);
       })
     );
