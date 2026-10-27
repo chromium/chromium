@@ -4416,6 +4416,18 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_MENU_CREATE_NEW_TAB_GROUP" desc="Menu item for creating a new tab group. [CHAR_LIMIT=27]">
         Create new tab group
       </message>
+      <message name="IDS_OPEN_GROUP_MENU_ITEM" desc="Menu item for opening or focusing a tab group in the current window. [CHAR_LIMIT=27]">
+        Open group
+      </message>
+      <message name="IDS_OPEN_GROUP_IN_NEW_WINDOW_MENU_ITEM" desc="Menu item for opening a tab group in a new window. [CHAR_LIMIT=35]">
+        Open group in new window
+      </message>
+      <message name="IDS_DELETE_GROUP_MENU_ITEM" desc="Menu item for deleting a tab group. [CHAR_LIMIT=27]">
+        Delete group
+      </message>
+      <message name="IDS_TABS_IN_GROUP_SECTION_HEADER" desc="Section header in the app menu for listing the tabs contained inside a tab group. [CHAR_LIMIT=27]">
+        Tabs in group
+      </message>
       <message name="IDS_MENU_RECENT_TABS" desc="Menu item for opening the 'Recent tabs' page that shows recently closed tabs and pages the user has opened on his/her other devices. [CHAR_LIMIT=27]">
         Recent tabs
       </message>

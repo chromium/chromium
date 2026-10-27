@@ -307,10 +307,14 @@ found in the LICENSE file.
     <item type="id" name="share_menu_id" />
     <item type="id" name="show_reading_list_menu_id" />
     <item type="id" name="submenu_header_menu_id" />
+    <item type="id" name="tab_group_delete_group_menu_id" />
     <item type="id" name="tab_group_menu_item_id" />
+    <item type="id" name="tab_group_open_group_menu_id" />
+    <item type="id" name="tab_group_open_in_new_window_menu_id" />
     <item type="id" name="tab_group_tab_menu_item" />
     <item type="id" name="tab_groups_header_menu_id" />
     <item type="id" name="tab_groups_parent_menu_id" />
+    <item type="id" name="tabs_in_group_header_menu_id" />
     <item type="id" name="toggle_bookmarks_bar_menu_id" />
     <item type="id" name="toggle_tab_layout_menu_id" />
     <item type="id" name="translate_id" />

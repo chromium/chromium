@@ -46,6 +46,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.app.appmenu.AppMenuItemTheme;
 import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabList;
@@ -147,6 +148,7 @@ public class TabGroupItemBuilderUnitTest {
 
     private Tab setUpMockTabGroup(TabModel tabModel, boolean isIncognito, boolean hasGroupId) {
         Token token1 = new Token(1L, 1L);
+        when(tabModel.getCount()).thenReturn(2);
         when(tabModel.getTabGroupCount()).thenReturn(1);
         when(tabModel.getAllTabGroupIds()).thenReturn(Set.of(token1));
         when(tabModel.getTabGroupTitle(token1)).thenReturn("Group 1");
@@ -1586,6 +1588,332 @@ public class TabGroupItemBuilderUnitTest {
         when(mTabGroupSyncService.getGroup("remote_sync_null_group")).thenReturn(null);
         List<ListItem> submenuItems = getGroupSubmenuItems(groupItem);
         assertTrue(submenuItems.isEmpty());
+    }
+
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.TAB_GROUP_ACTIONS_SUBMENUS,
+        ChromeFeatureList.CROSS_WINDOW_TAB_GROUP_OPERATIONS + ":remote_group_operations/true"
+    })
+    public void testBuildSubmenuForSpecificGroup_withActions() {
+        MultiWindowUtils.setMultiInstanceApi31EnabledForTesting(true);
+        Token token = new Token(1L, 1L);
+        setUpMockTabGroup(mTabModel, /* isIncognito= */ false, /* hasGroupId= */ true);
+        when(mTab.getUrl()).thenReturn(JUnitTestGURLs.EXAMPLE_URL);
+
+        SavedTabGroup group =
+                createLocalSavedTabGroup(
+                        "sync_1",
+                        token,
+                        "Group 1",
+                        TabGroupColorId.BLUE,
+                        100L,
+                        List.of(new SavedTabGroupTab()));
+
+        when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[] {"sync_1"});
+        when(mTabGroupSyncService.getGroup("sync_1")).thenReturn(group);
+
+        TabGroupItemBuilder builder = createBuilder();
+        ListItem parentItem = builder.buildTabGroupsParentItem(mTab);
+        assertNotNull(parentItem);
+        List<ListItem> parentSubmenuItems = getGroupSubmenuItems(parentItem);
+        ListItem groupItem = findItemById(parentSubmenuItems, R.id.tab_group_menu_item_id);
+        assertNotNull(groupItem);
+        List<ListItem> items = getGroupSubmenuItems(groupItem);
+
+        ListItem openItem = findItemById(items, R.id.tab_group_open_group_menu_id);
+        assertNotNull(openItem);
+        assertFalse(openItem.model.get(AppMenuItemProperties.ENABLED));
+        assertEquals(token, openItem.model.get(AppMenuTabGroupItemProperties.TAB_GROUP_ID));
+        assertEquals("sync_1", openItem.model.get(AppMenuTabGroupItemProperties.SYNC_GROUP_ID));
+
+        ListItem openInNewWindowItem =
+                findItemById(items, R.id.tab_group_open_in_new_window_menu_id);
+        assertNotNull(openInNewWindowItem);
+        assertTrue(openInNewWindowItem.model.get(AppMenuItemProperties.ENABLED));
+        assertEquals(
+                token, openInNewWindowItem.model.get(AppMenuTabGroupItemProperties.TAB_GROUP_ID));
+        assertEquals(
+                "sync_1",
+                openInNewWindowItem.model.get(AppMenuTabGroupItemProperties.SYNC_GROUP_ID));
+
+        ListItem deleteItem = findItemById(items, R.id.tab_group_delete_group_menu_id);
+        assertNotNull(deleteItem);
+        assertTrue(deleteItem.model.get(AppMenuItemProperties.ENABLED));
+        assertEquals(token, deleteItem.model.get(AppMenuTabGroupItemProperties.TAB_GROUP_ID));
+        assertEquals("sync_1", deleteItem.model.get(AppMenuTabGroupItemProperties.SYNC_GROUP_ID));
+
+        assertNotNull(findItemById(items, R.id.divider_line_id));
+        assertNotNull(findItemById(items, R.id.tabs_in_group_header_menu_id));
+        assertNotNull(findItemById(items, R.id.tab_group_tab_menu_item));
+    }
+
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.TAB_GROUP_ACTIONS_SUBMENUS,
+        ChromeFeatureList.CROSS_WINDOW_TAB_GROUP_OPERATIONS + ":remote_group_operations/true"
+    })
+    public void
+            testBuildSubmenuForSpecificGroup_openInNewWindowOmittedWhenMultiInstanceNotSupported() {
+        MultiWindowUtils.setMultiInstanceApi31EnabledForTesting(false);
+        Token token = new Token(1L, 1L);
+        setUpMockTabGroup(mTabModel, /* isIncognito= */ false, /* hasGroupId= */ true);
+        when(mTab.getUrl()).thenReturn(JUnitTestGURLs.EXAMPLE_URL);
+
+        SavedTabGroup group =
+                createLocalSavedTabGroup(
+                        "sync_1",
+                        token,
+                        "Group 1",
+                        TabGroupColorId.BLUE,
+                        100L,
+                        List.of(new SavedTabGroupTab()));
+
+        when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[] {"sync_1"});
+        when(mTabGroupSyncService.getGroup("sync_1")).thenReturn(group);
+
+        TabGroupItemBuilder builder = createBuilder();
+        ListItem parentItem = builder.buildTabGroupsParentItem(mTab);
+        assertNotNull(parentItem);
+        ListItem groupItem =
+                findItemById(getGroupSubmenuItems(parentItem), R.id.tab_group_menu_item_id);
+        assertNotNull(groupItem);
+        List<ListItem> items = getGroupSubmenuItems(groupItem);
+
+        assertNull(findItemById(items, R.id.tab_group_open_in_new_window_menu_id));
+    }
+
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.TAB_GROUP_ACTIONS_SUBMENUS,
+        ChromeFeatureList.CROSS_WINDOW_TAB_GROUP_OPERATIONS + ":remote_group_operations/true"
+    })
+    public void testBuildSubmenuForSpecificGroup_openInNewWindowDisabledWhenGroupContainsAllTabs() {
+        MultiWindowUtils.setMultiInstanceApi31EnabledForTesting(true);
+        Token token = new Token(1L, 1L);
+        setUpMockTabGroup(mTabModel, /* isIncognito= */ false, /* hasGroupId= */ true);
+        when(mTabModel.getCount()).thenReturn(1);
+        when(mTab.getUrl()).thenReturn(JUnitTestGURLs.EXAMPLE_URL);
+
+        SavedTabGroup group =
+                createLocalSavedTabGroup(
+                        "sync_1",
+                        token,
+                        "Group 1",
+                        TabGroupColorId.BLUE,
+                        100L,
+                        List.of(new SavedTabGroupTab()));
+
+        when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[] {"sync_1"});
+        when(mTabGroupSyncService.getGroup("sync_1")).thenReturn(group);
+
+        TabGroupItemBuilder builder = createBuilder();
+        ListItem parentItem = builder.buildTabGroupsParentItem(mTab);
+        assertNotNull(parentItem);
+        List<ListItem> parentSubmenuItems = getGroupSubmenuItems(parentItem);
+        ListItem groupItem = findItemById(parentSubmenuItems, R.id.tab_group_menu_item_id);
+        assertNotNull(groupItem);
+        List<ListItem> items = getGroupSubmenuItems(groupItem);
+
+        ListItem openInNewWindowItem =
+                findItemById(items, R.id.tab_group_open_in_new_window_menu_id);
+        assertNotNull(openInNewWindowItem);
+        assertFalse(openInNewWindowItem.model.get(AppMenuItemProperties.ENABLED));
+    }
+
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.TAB_GROUP_ACTIONS_SUBMENUS,
+        ChromeFeatureList.CROSS_WINDOW_TAB_GROUP_OPERATIONS + ":remote_group_operations/true"
+    })
+    public void testBuildSubmenuForSpecificGroup_collaborationGroup_deleteOmitted() {
+        MultiWindowUtils.setMultiInstanceApi31EnabledForTesting(true);
+        Token token = new Token(1L, 1L);
+        setUpMockTabGroup(mTabModel, /* isIncognito= */ false, /* hasGroupId= */ true);
+        when(mTab.getUrl()).thenReturn(JUnitTestGURLs.EXAMPLE_URL);
+
+        SavedTabGroup group =
+                createLocalSavedTabGroup(
+                        "sync_1",
+                        token,
+                        "Group 1",
+                        TabGroupColorId.BLUE,
+                        100L,
+                        List.of(new SavedTabGroupTab()));
+        group.collaborationId = "collab_1";
+
+        when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[] {"sync_1"});
+        when(mTabGroupSyncService.getGroup("sync_1")).thenReturn(group);
+
+        TabGroupItemBuilder builder = createBuilder();
+        ListItem parentItem = builder.buildTabGroupsParentItem(mTab);
+        assertNotNull(parentItem);
+        List<ListItem> parentSubmenuItems = getGroupSubmenuItems(parentItem);
+        ListItem groupItem = findItemById(parentSubmenuItems, R.id.tab_group_menu_item_id);
+        assertNotNull(groupItem);
+        List<ListItem> items = getGroupSubmenuItems(groupItem);
+
+        assertNull(findItemById(items, R.id.tab_group_delete_group_menu_id));
+    }
+
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.TAB_GROUP_ACTIONS_SUBMENUS,
+        ChromeFeatureList.CROSS_WINDOW_TAB_GROUP_OPERATIONS + ":remote_group_operations/true"
+    })
+    public void testBuildSubmenuForSpecificGroup_openGroupEnabled_hidden() {
+        MultiWindowUtils.setMultiInstanceApi31EnabledForTesting(true);
+        when(mTab.getUrl()).thenReturn(JUnitTestGURLs.EXAMPLE_URL);
+
+        SavedTabGroup hiddenGroup =
+                createRemoteSavedTabGroup(
+                        "sync_hidden",
+                        "Hidden Group",
+                        TabGroupColorId.RED,
+                        200L,
+                        List.of(
+                                createSavedTab(
+                                        "sync_hidden_tab",
+                                        "Hidden Tab",
+                                        JUnitTestGURLs.URL_2,
+                                        null)));
+
+        when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[] {"sync_hidden"});
+        when(mTabGroupSyncService.getGroup("sync_hidden")).thenReturn(hiddenGroup);
+
+        TabGroupItemBuilder builder = createBuilder();
+        ListItem parentItem = builder.buildTabGroupsParentItem(mTab);
+        assertNotNull(parentItem);
+        List<ListItem> parentSubmenuItems = getGroupSubmenuItems(parentItem);
+        ListItem groupItem = findItemById(parentSubmenuItems, R.id.tab_group_menu_item_id);
+        assertNotNull(groupItem);
+        List<ListItem> items = getGroupSubmenuItems(groupItem);
+
+        ListItem openItem = findItemById(items, R.id.tab_group_open_group_menu_id);
+        assertNotNull(openItem);
+        assertTrue(openItem.model.get(AppMenuItemProperties.ENABLED));
+    }
+
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.TAB_GROUP_ACTIONS_SUBMENUS,
+        ChromeFeatureList.CROSS_WINDOW_TAB_GROUP_OPERATIONS + ":remote_group_operations/true"
+    })
+    public void testBuildSubmenuForSpecificGroup_openGroupEnabled_inAnother() {
+        MultiWindowUtils.setMultiInstanceApi31EnabledForTesting(true);
+        Token tokenWindow2 = new Token(2L, 2L);
+        when(mTab.getUrl()).thenReturn(JUnitTestGURLs.EXAMPLE_URL);
+
+        Tab tabWindow2 =
+                createMockTab(201, "Another Tab", JUnitTestGURLs.URL_2, tokenWindow2, false);
+        TabWindowManagerSingleton.setTabWindowManagerForTesting(mTabWindowManager);
+        when(mTabWindowManager.findWindowIdForTabGroup(tokenWindow2)).thenReturn(2);
+        when(mTabWindowManager.findWindowIdForTabGroup(eq(tokenWindow2), anyBoolean()))
+                .thenReturn(2);
+        when(mTabWindowManager.getTabModelSelectorById(2)).thenReturn(mSelectorWindow2);
+        when(mSelectorWindow2.getModel(false)).thenReturn(mModelWindow2);
+        when(mModelWindow2.isIncognito()).thenReturn(false);
+        when(mModelWindow2.containsTabGroup(tokenWindow2)).thenReturn(true);
+        when(mModelWindow2.getTabsInGroup(tokenWindow2)).thenReturn(List.of(tabWindow2));
+
+        SavedTabGroup anotherGroup =
+                createLocalSavedTabGroup(
+                        "sync_another",
+                        tokenWindow2,
+                        "Another Group",
+                        TabGroupColorId.RED,
+                        200L,
+                        List.of(
+                                createSavedTab(
+                                        "sync_another_tab",
+                                        "Another Tab",
+                                        JUnitTestGURLs.URL_2,
+                                        201)));
+
+        when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[] {"sync_another"});
+        when(mTabGroupSyncService.getGroup("sync_another")).thenReturn(anotherGroup);
+
+        TabGroupItemBuilder builder = createBuilder();
+        ListItem parentItem = builder.buildTabGroupsParentItem(mTab);
+        assertNotNull(parentItem);
+        List<ListItem> parentSubmenuItems = getGroupSubmenuItems(parentItem);
+        ListItem groupItem = findItemById(parentSubmenuItems, R.id.tab_group_menu_item_id);
+        assertNotNull(groupItem);
+        List<ListItem> items = getGroupSubmenuItems(groupItem);
+
+        ListItem openItem = findItemById(items, R.id.tab_group_open_group_menu_id);
+        assertNotNull(openItem);
+        assertTrue(openItem.model.get(AppMenuItemProperties.ENABLED));
+    }
+
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.TAB_GROUP_ACTIONS_SUBMENUS,
+        ChromeFeatureList.CROSS_WINDOW_TAB_GROUP_OPERATIONS
+    })
+    public void testBuildSubmenuForSpecificGroup_incognito() {
+        MultiWindowUtils.setMultiInstanceApi31EnabledForTesting(true);
+        when(mTabModelSelector.isIncognitoSelected()).thenReturn(true);
+        when(mTabModelSelector.getCurrentModel()).thenReturn(mIncognitoTabModel);
+        setUpMockTabGroup(mIncognitoTabModel, /* isIncognito= */ true, /* hasGroupId= */ true);
+        when(mTab.isIncognito()).thenReturn(true);
+
+        ListItem tabGroupsParent = mTabGroupItemBuilder.buildTabGroupsParentItem(mTab);
+        ListItem groupItem =
+                findItemById(getGroupSubmenuItems(tabGroupsParent), R.id.tab_group_menu_item_id);
+        assertNotNull(groupItem);
+        List<ListItem> items = getGroupSubmenuItems(groupItem);
+
+        assertNotNull(findItemById(items, R.id.tab_group_open_group_menu_id));
+        assertNotNull(findItemById(items, R.id.tab_group_open_in_new_window_menu_id));
+        assertNull(findItemById(items, R.id.tab_group_delete_group_menu_id));
+        assertNotNull(findItemById(items, R.id.divider_line_id));
+        assertNotNull(findItemById(items, R.id.tabs_in_group_header_menu_id));
+        assertNotNull(findItemById(items, R.id.tab_group_tab_menu_item));
+    }
+
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.TAB_GROUP_ACTIONS_SUBMENUS,
+        ChromeFeatureList.CROSS_WINDOW_TAB_GROUP_OPERATIONS
+    })
+    public void testBuildSubmenuForSpecificGroup_nullSyncService() {
+        MultiWindowUtils.setMultiInstanceApi31EnabledForTesting(true);
+        setUpMockTabGroup(mTabModel, /* isIncognito= */ false, /* hasGroupId= */ true);
+        when(mTab.getUrl()).thenReturn(JUnitTestGURLs.EXAMPLE_URL);
+
+        ListItem tabGroupsParent = mTabGroupItemBuilder.buildTabGroupsParentItem(mTab);
+        ListItem groupItem =
+                findItemById(getGroupSubmenuItems(tabGroupsParent), R.id.tab_group_menu_item_id);
+        assertNotNull(groupItem);
+        List<ListItem> items = getGroupSubmenuItems(groupItem);
+
+        assertNotNull(findItemById(items, R.id.tab_group_open_group_menu_id));
+        assertNotNull(findItemById(items, R.id.tab_group_open_in_new_window_menu_id));
+        assertNull(findItemById(items, R.id.tab_group_delete_group_menu_id));
+        assertNotNull(findItemById(items, R.id.divider_line_id));
+        assertNotNull(findItemById(items, R.id.tabs_in_group_header_menu_id));
+        assertNotNull(findItemById(items, R.id.tab_group_tab_menu_item));
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.TAB_GROUP_ACTIONS_SUBMENUS)
+    public void testBuildSubmenuForSpecificGroup_featureDisabled() {
+        MultiWindowUtils.setMultiInstanceApi31EnabledForTesting(true);
+        setUpMockTabGroup(mTabModel, /* isIncognito= */ false, /* hasGroupId= */ true);
+
+        ListItem tabGroupsParent = mTabGroupItemBuilder.buildTabGroupsParentItem(mTab);
+        ListItem groupItem =
+                findItemById(getGroupSubmenuItems(tabGroupsParent), R.id.tab_group_menu_item_id);
+        assertNotNull(groupItem);
+        List<ListItem> items = getGroupSubmenuItems(groupItem);
+
+        assertNull(findItemById(items, R.id.tab_group_open_group_menu_id));
+        assertNull(findItemById(items, R.id.tab_group_open_in_new_window_menu_id));
+        assertNull(findItemById(items, R.id.tab_group_delete_group_menu_id));
+        assertNull(findItemById(items, R.id.tabs_in_group_header_menu_id));
+        assertNull(findItemById(items, R.id.divider_line_id));
+        assertNotNull(findItemById(items, R.id.tab_group_tab_menu_item));
     }
 
     private TabGroupItemBuilder createBuilder() {
