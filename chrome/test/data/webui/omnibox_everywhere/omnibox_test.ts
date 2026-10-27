@@ -685,9 +685,15 @@ suite('OmniboxEverywhereOmniboxTest', () => {
     const composeButton =
         omnibox.shadowRoot.querySelector<HTMLElement>('#composeButton');
     assertTrue(!!composeButton);
+    const profileIcon = omnibox.$.profileIcon;
 
     // When dropdown is closed, omnibox renders as a 1-line pill with inline
-    // voice/lens controls and no compose/plus buttons.
+    // voice/lens controls and no compose/plus buttons, with no initial-mount
+    // animations running.
+    assertFalse(omnibox.hasAttribute('has-expanded'));
+    assertEquals(0, omnibox.shadowRoot.getAnimations().length);
+    assertEquals('none', window.getComputedStyle(bottomControls).animationName);
+
     const collapsedWrapperStyle = window.getComputedStyle(inputWrapper);
     assertEquals('24px', collapsedWrapperStyle.borderRadius);
     assertEquals('48px', collapsedWrapperStyle.height);
@@ -695,27 +701,63 @@ suite('OmniboxEverywhereOmniboxTest', () => {
     assertEquals('0px', collapsedWrapperStyle.paddingTop);
     assertEquals('none', window.getComputedStyle(composeButton).display);
     assertEquals('10px', window.getComputedStyle(bottomControls).top);
+    assertEquals('10px', window.getComputedStyle(profileIcon).top);
+    const collapsedProfileTop = profileIcon.getBoundingClientRect().top;
 
     // When dropdown is visible, bottomControls and composeButton are shown.
     omnibox.dropdownIsVisible = true;
     await microtasksFinished();
 
+    assertTrue(omnibox.hasAttribute('has-expanded'));
+    assertTrue(inputWrapper.getAnimations().length > 0);
+    assertEquals(0, profileIcon.getAnimations().length);
+
+    const bottomControlsStyle = window.getComputedStyle(bottomControls);
+    assertEquals(
+        'loomniboxBottomControlsExpand', bottomControlsStyle.animationName);
+    assertEquals('block', window.getComputedStyle(omnibox.$.matches).display);
+    assertEquals(
+        'loomniboxDropdownExpand',
+        window.getComputedStyle(omnibox.$.matches).animationName);
+    assertEquals(
+        'loomniboxTopControlsEnter',
+        window.getComputedStyle(composeButton).animationName);
+
+    omnibox.shadowRoot.getAnimations().forEach(a => a.finish());
     const wrapperStyle = window.getComputedStyle(inputWrapper);
     assertEquals('16px', wrapperStyle.borderRadius);
     assertEquals('0px', wrapperStyle.marginTop);
     assertEquals('6px', wrapperStyle.paddingTop);
-
-    const bottomControlsStyle = window.getComputedStyle(bottomControls);
     assertEquals('4px', bottomControlsStyle.paddingTop);
     assertEquals('12px', bottomControlsStyle.paddingBottom);
     assertEquals('12px', bottomControlsStyle.paddingInlineStart);
     assertEquals('16px', bottomControlsStyle.paddingInlineEnd);
-
     assertEquals(
         '36px', window.getComputedStyle(composeButton).marginInlineEnd);
-
-    const profileIcon = omnibox.$.profileIcon;
     assertEquals('16px', window.getComputedStyle(profileIcon).top);
+    assertEquals(collapsedProfileTop, profileIcon.getBoundingClientRect().top);
+
+    // Collapsing back from expanded to 1-line pill transitions #inputWrapper
+    // and animates #bottomControls while keeping #profileIcon stationary.
+    omnibox.dropdownIsVisible = false;
+    await microtasksFinished();
+    assertTrue(omnibox.hasAttribute('has-expanded'));
+    assertEquals('none', window.getComputedStyle(omnibox.$.matches).display);
+    assertTrue(inputWrapper.getAnimations().length > 0);
+    assertEquals(0, profileIcon.getAnimations().length);
+    assertEquals(
+        'loomniboxTopControlsEnter',
+        window.getComputedStyle(bottomControls).animationName);
+    omnibox.shadowRoot.getAnimations().forEach(a => a.finish());
+    assertEquals('24px', window.getComputedStyle(inputWrapper).borderRadius);
+    assertEquals('10px', window.getComputedStyle(profileIcon).top);
+    assertEquals(collapsedProfileTop, profileIcon.getBoundingClientRect().top);
+
+    // Once the collapse animation ends on #bottomControls, has-expanded is
+    // cleared so subsequent collapsed re-shows do not replay the animation.
+    bottomControls.dispatchEvent(new AnimationEvent('animationend'));
+    assertFalse(omnibox.hasAttribute('has-expanded'));
+    assertEquals('none', window.getComputedStyle(bottomControls).animationName);
 
     // When dropdown is hidden while user input is present (e.g. in multiline
     // mode), the expanded layout and plus menu remain visible.
@@ -725,11 +767,38 @@ suite('OmniboxEverywhereOmniboxTest', () => {
     omnibox.setInputText('multiline query');
     omnibox.dropdownIsVisible = false;
     await microtasksFinished();
+    omnibox.shadowRoot.getAnimations().forEach(a => a.finish());
 
+    assertTrue(omnibox.hasAttribute('has-expanded'));
     assertEquals('16px', window.getComputedStyle(inputWrapper).borderRadius);
     assertNotEquals('none', window.getComputedStyle(composeButton).display);
     assertNotEquals(
         'none', window.getComputedStyle(contextualEntrypoint).display);
+
+    // Entering voice search mode clears has-expanded so exiting voice search
+    // back to a collapsed pill does not replay the collapse animation.
+    omnibox.setInputText('');
+    omnibox.inVoiceSearchMode = true;
+    await microtasksFinished();
+    assertFalse(omnibox.hasAttribute('has-expanded'));
+    omnibox.inVoiceSearchMode = false;
+    await microtasksFinished();
+    assertFalse(omnibox.hasAttribute('has-expanded'));
+
+    // Expanding again after has-expanded was removed re-adds has-expanded and
+    // replays the expand and collapse animations.
+    omnibox.dropdownIsVisible = true;
+    await microtasksFinished();
+    assertTrue(omnibox.hasAttribute('has-expanded'));
+    assertEquals(
+        'loomniboxBottomControlsExpand',
+        window.getComputedStyle(bottomControls).animationName);
+    omnibox.dropdownIsVisible = false;
+    await microtasksFinished();
+    assertTrue(omnibox.hasAttribute('has-expanded'));
+    assertEquals(
+        'loomniboxTopControlsEnter',
+        window.getComputedStyle(bottomControls).animationName);
   });
 
   test(
