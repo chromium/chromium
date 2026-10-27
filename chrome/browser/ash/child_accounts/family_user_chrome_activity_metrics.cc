@@ -46,7 +46,9 @@ FamilyUserChromeActivityMetrics::FamilyUserChromeActivityMetrics(
 }
 
 FamilyUserChromeActivityMetrics::~FamilyUserChromeActivityMetrics() {
-  CHECK_EQ(base::Time(), active_duration_start_, base::NotFatalUntil::M160);
+  // TODO(crbug.com/577682498): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK_EQ(base::Time(), active_duration_start_);
   app_service_wrapper_.RemoveObserver(this);
   UsageTimeStateNotifier::GetInstance()->RemoveObserver(this);
 }
