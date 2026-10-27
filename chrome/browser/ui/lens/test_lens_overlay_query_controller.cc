@@ -7,6 +7,7 @@
 #include "base/base64.h"
 #include "base/base64url.h"
 #include "base/containers/span.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/protobuf_matchers.h"
 #include "components/lens/lens_features.h"
@@ -358,6 +359,17 @@ TestLensOverlayQueryController::CreateEndpointFetcher(
 
   sent_fetch_url_ = fetch_url;
   sent_request_headers_ = request_headers;
+  sent_request_headers_history_.push_back(request_headers);
+  bool has_auth_header = false;
+  for (size_t i = 0; i + 1 < request_headers.size(); i += 2) {
+    if (base::EqualsCaseInsensitiveASCII(request_headers[i], "Authorization")) {
+      has_auth_header = true;
+      break;
+    }
+  }
+  if (reject_requests_with_auth_header_with_401_ && has_auth_header) {
+    fake_server_response_code = google_apis::ApiErrorCode::HTTP_UNAUTHORIZED;
+  }
   if (lens::features::UseIdentityDelegationForLensComposeboxRequests()) {
     sent_request_headers_.push_back("X-Goog-Encode-Response-If-Executable");
     sent_request_headers_.push_back("base64");
@@ -458,5 +470,16 @@ void TestLensOverlayQueryController::RunSuggestInputsCallback() {
          "you call RunSuggestInputsCallback() after updating the request id?";
 
   LensOverlayQueryController::RunSuggestInputsCallback();
+}
+
+std::unique_ptr<signin::PrimaryAccountAccessTokenFetcher>
+TestLensOverlayQueryController::CreateOAuthHeadersAndContinue(
+    OAuthHeadersCreatedCallback callback) {
+  if (fake_identity_delegation_headers_.has_value()) {
+    std::move(callback).Run(*fake_identity_delegation_headers_);
+    return nullptr;
+  }
+  return LensOverlayQueryController::CreateOAuthHeadersAndContinue(
+      std::move(callback));
 }
 }  // namespace lens

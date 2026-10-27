@@ -5491,4 +5491,75 @@ TEST_F(LensOverlayQueryControllerTest, ClusterInfoMetricsRecordedOnParseError) {
   histogram_tester.ExpectTotalCount("Lens.Overlay.ClusterInfo.ResponseTime", 1);
 }
 
+TEST_F(LensOverlayQueryControllerTest,
+       IdentityDelegation_RetriesWithoutAuthorizationOn401) {
+  base::HistogramTester histogram_tester;
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      lens::features::kLensComposeboxIdentityDelegation);
+
+  base::test::TestFuture<std::vector<lens::mojom::OverlayObjectPtr>,
+                         lens::mojom::TextPtr, bool>
+      full_image_response_future;
+  base::test::TestFuture<lens::proto::LensOverlayUrlResponse>
+      url_response_future;
+  TestLensOverlayQueryController query_controller(
+      full_image_response_future.GetRepeatingCallback(),
+      url_response_future.GetRepeatingCallback(), base::NullCallback(),
+      base::NullCallback(), base::NullCallback(), fake_variations_client_.get(),
+      IdentityManagerFactory::GetForProfile(profile()), profile(),
+      lens::LensOverlayInvocationSource::kAppMenu,
+      /*use_dark_mode=*/false, GetGen204Controller());
+
+  query_controller.set_fake_identity_delegation_headers(
+      std::vector<std::string>{"Origin", "https://www.google.com",
+                               "Authorization", "SAPISIDHASH 123_fake",
+                               "X-Goog-AuthUser", "0"});
+  query_controller.set_reject_requests_with_auth_header_with_401(true);
+
+  lens::LensOverlayServerClusterInfoResponse fake_cluster_info_response;
+  fake_cluster_info_response.set_server_session_id(kTestServerSessionId);
+  fake_cluster_info_response.set_search_session_id(kTestSearchSessionId);
+  query_controller.set_fake_cluster_info_response(fake_cluster_info_response);
+
+  lens::LensOverlayObjectsResponse fake_objects_response;
+  fake_objects_response.mutable_cluster_info()->set_server_session_id(
+      kTestServerSessionId);
+  query_controller.set_fake_objects_response(fake_objects_response);
+
+  SkBitmap bitmap = CreateNonEmptyBitmap(100, 100);
+  query_controller.StartQueryFlow(
+      bitmap, bitmap, GURL(kTestPageUrl),
+      std::make_optional<std::string>(kTestPageTitle),
+      std::vector<lens::mojom::CenterRotatedBoxPtr>(),
+      /*underlying_page_contents=*/{},
+      /*primary_content_type=*/lens::MimeType::kUnknown,
+      /*pdf_current_page=*/std::nullopt, 0, base::TimeTicks::Now());
+
+  ASSERT_TRUE(full_image_response_future.Wait());
+  EXPECT_FALSE(std::get<2>(full_image_response_future.Get()));
+  EXPECT_EQ(query_controller.num_cluster_info_fetch_requests_sent(), 2);
+  EXPECT_EQ(query_controller.num_full_image_requests_sent(), 2);
+
+  ASSERT_EQ(query_controller.sent_request_headers_history().size(), 4u);
+  EXPECT_THAT(query_controller.sent_request_headers_history()[0],
+              testing::Contains("Authorization"));
+  EXPECT_THAT(query_controller.sent_request_headers_history()[1],
+              testing::Not(testing::Contains("Authorization")));
+  EXPECT_THAT(query_controller.sent_request_headers_history()[1],
+              testing::Contains("Origin"));
+  EXPECT_THAT(query_controller.sent_request_headers_history()[2],
+              testing::Contains("Authorization"));
+  EXPECT_THAT(query_controller.sent_request_headers_history()[3],
+              testing::Not(testing::Contains("Authorization")));
+  EXPECT_THAT(query_controller.sent_request_headers_history()[3],
+              testing::Contains("Origin"));
+
+  histogram_tester.ExpectUniqueSample(
+      "Lens.Overlay.ClusterInfo.Status",
+      lens::LensOverlayClusterInfoStatus::kSuccess, 1);
+
+  query_controller.EndQuery();
+}
+
 }  // namespace lens

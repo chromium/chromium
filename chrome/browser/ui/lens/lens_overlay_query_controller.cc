@@ -815,8 +815,9 @@ void LensOverlayQueryController::PerformClusterInfoFetchRequest(
   cluster_info_access_token_fetcher_.reset();
 
   // Add protobuf content type to the request headers.
-  request_headers.push_back(kContentTypeKey);
-  request_headers.push_back(kContentType);
+  std::vector<std::string> fetch_headers = request_headers;
+  fetch_headers.push_back(kContentTypeKey);
+  fetch_headers.push_back(kContentType);
 
   // Get client experiment variations to include in the request.
   std::vector<std::string> cors_exempt_headers =
@@ -845,13 +846,14 @@ void LensOverlayQueryController::PerformClusterInfoFetchRequest(
   cluster_info_endpoint_fetcher_ = CreateEndpointFetcher(
       std::move(request_string), fetch_url, request_method,
       base::Milliseconds(lens::features::GetLensOverlayServerRequestTimeout()),
-      request_headers, cors_exempt_headers, base::DoNothing());
+      fetch_headers, cors_exempt_headers, base::DoNothing());
 
   // Finally, perform the request.
   cluster_info_endpoint_fetcher_->PerformRequest(
       base::BindOnce(
           &LensOverlayQueryController::ClusterInfoFetchResponseHandler,
-          weak_ptr_factory_.GetWeakPtr(), query_start_time),
+          weak_ptr_factory_.GetWeakPtr(), query_start_time,
+          std::move(request_headers)),
       google_apis::GetAPIKey().c_str());
 
   SendInitialLatencyGen204IfNotAlreadySent(
@@ -862,8 +864,20 @@ void LensOverlayQueryController::PerformClusterInfoFetchRequest(
 
 void LensOverlayQueryController::ClusterInfoFetchResponseHandler(
     base::TimeTicks query_start_time,
+    std::vector<std::string> request_headers,
     std::unique_ptr<EndpointResponse> response) {
   cluster_info_endpoint_fetcher_.reset();
+  if (IsOff()) {
+    return;
+  }
+
+  if (lens::ShouldRetryRequestWithoutAuthOn401(response.get(),
+                                               request_headers)) {
+    PerformClusterInfoFetchRequest(query_start_time,
+                                   std::move(request_headers));
+    return;
+  }
+
   query_controller_state_ = QueryControllerState::kReceivedClusterInfoResponse;
 
   const base::TimeDelta elapsed_time =
@@ -1156,7 +1170,7 @@ void LensOverlayQueryController::PerformFullImageRequest() {
       latest_full_image_request_data_->request_.get(),
       latest_full_image_request_data_->request_headers_.get(),
       base::Milliseconds(lens::features::GetLensOverlayServerRequestTimeout()),
-      base::BindOnce(
+      base::BindRepeating(
           &LensOverlayQueryController::OnFullImageEndpointFetcherCreated,
           weak_ptr_factory_.GetWeakPtr(),
           *latest_full_image_request_data_->request_id_.get()),
@@ -1398,7 +1412,7 @@ void LensOverlayQueryController::PerformPageContentRequest(
       &request, &headers,
       base::Milliseconds(
           lens::features::GetLensOverlayPageContentRequestTimeoutMs()),
-      base::BindOnce(
+      base::BindRepeating(
           &LensOverlayQueryController::OnPageContentEndpointFetcherCreated,
           weak_ptr_factory_.GetWeakPtr(),
           request.objects_request().request_context().request_id()),
@@ -1496,7 +1510,7 @@ void LensOverlayQueryController::UploadChunk(
       std::move(request_string), &pending_upload_chunk_headers_,
       base::Milliseconds(
           lens::features::GetLensOverlayUploadChunkRequestTimeoutMs()),
-      base::BindOnce(
+      base::BindRepeating(
           &LensOverlayQueryController::OnChunkUploadEndpointFetcherCreated,
           weak_ptr_factory_.GetWeakPtr(),
           request.request_context().request_id()),
@@ -1619,10 +1633,11 @@ void LensOverlayQueryController::PerformPartialPageContentRequest(
       &request, &headers,
       base::Milliseconds(
           lens::features::GetLensOverlayPageContentRequestTimeoutMs()),
-      base::BindOnce(&LensOverlayQueryController::
-                         OnPartialPageContentEndpointFetcherCreated,
-                     weak_ptr_factory_.GetWeakPtr(),
-                     request.objects_request().request_context().request_id()),
+      base::BindRepeating(
+          &LensOverlayQueryController::
+              OnPartialPageContentEndpointFetcherCreated,
+          weak_ptr_factory_.GetWeakPtr(),
+          request.objects_request().request_context().request_id()),
       base::BindOnce(
           &LensOverlayQueryController::PartialPageContentResponseHandler,
           weak_ptr_factory_.GetWeakPtr(),
@@ -1877,7 +1892,7 @@ void LensOverlayQueryController::PerformInteractionRequest() {
       latest_interaction_request_data_->request_.get(),
       latest_interaction_request_data_->request_headers_.get(),
       base::Milliseconds(lens::features::GetLensOverlayServerRequestTimeout()),
-      base::BindOnce(
+      base::BindRepeating(
           &LensOverlayQueryController::OnInteractionEndpointFetcherCreated,
           weak_ptr_factory_.GetWeakPtr(),
           *latest_interaction_request_data_->request_id_.get()),
@@ -2054,7 +2069,7 @@ void LensOverlayQueryController::PerformFetchRequest(
     lens::LensOverlayServerRequest* request,
     std::vector<std::string>* request_headers,
     base::TimeDelta timeout,
-    base::OnceCallback<void(std::unique_ptr<EndpointFetcher>)>
+    base::RepeatingCallback<void(std::unique_ptr<EndpointFetcher>)>
         fetcher_created_callback,
     EndpointFetcherCallback response_received_callback,
     UploadProgressCallback upload_progress_callback) {
@@ -2072,7 +2087,7 @@ void LensOverlayQueryController::PerformFetchRequest(
     std::string request_string,
     std::vector<std::string>* request_headers,
     base::TimeDelta timeout,
-    base::OnceCallback<void(std::unique_ptr<EndpointFetcher>)>
+    base::RepeatingCallback<void(std::unique_ptr<EndpointFetcher>)>
         fetcher_created_callback,
     EndpointFetcherCallback response_received_callback,
     UploadProgressCallback upload_progress_callback,
@@ -2092,23 +2107,61 @@ void LensOverlayQueryController::PerformFetchRequest(
         cluster_info_->server_session_id());
   }
 
+  std::vector<std::string> headers = *request_headers;
+
   // Create the EndpointFetcher, responsible for making the request using our
   // given params.
   std::unique_ptr<EndpointFetcher> endpoint_fetcher = CreateEndpointFetcher(
-      std::move(request_string), fetch_url, HttpMethod::kPost, timeout,
-      *request_headers, cors_exempt_headers,
-      std::move(upload_progress_callback));
+      request_string, fetch_url, HttpMethod::kPost, timeout, headers,
+      cors_exempt_headers, upload_progress_callback);
   EndpointFetcher* fetcher = endpoint_fetcher.get();
 
   // Run callback that the fetcher was created. This is used to keep the
   // endpoint_fetcher alive while the request is made.
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(fetcher_created_callback),
-                                std::move(endpoint_fetcher)));
+      FROM_HERE,
+      base::BindOnce(fetcher_created_callback, std::move(endpoint_fetcher)));
 
   // Finally, perform the request.
-  fetcher->PerformRequest(std::move(response_received_callback),
-                          google_apis::GetAPIKey().c_str());
+  fetcher->PerformRequest(
+      base::BindOnce(&LensOverlayQueryController::OnFetchResponseReceived,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(request_string),
+                     std::move(headers), std::move(cors_exempt_headers),
+                     fetch_url, timeout, std::move(fetcher_created_callback),
+                     std::move(response_received_callback),
+                     std::move(upload_progress_callback)),
+      google_apis::GetAPIKey().c_str());
+}
+
+void LensOverlayQueryController::OnFetchResponseReceived(
+    std::string request_string,
+    std::vector<std::string> request_headers,
+    std::vector<std::string> cors_exempt_headers,
+    GURL fetch_url,
+    base::TimeDelta timeout,
+    base::RepeatingCallback<void(std::unique_ptr<EndpointFetcher>)>
+        fetcher_created_callback,
+    EndpointFetcherCallback response_received_callback,
+    UploadProgressCallback upload_progress_callback,
+    std::unique_ptr<EndpointResponse> response) {
+  if (IsOff()) {
+    return;
+  }
+  if (lens::ShouldRetryRequestWithoutAuthOn401(response.get(),
+                                               request_headers)) {
+    std::unique_ptr<EndpointFetcher> endpoint_fetcher = CreateEndpointFetcher(
+        std::move(request_string), fetch_url, HttpMethod::kPost, timeout,
+        request_headers, cors_exempt_headers,
+        std::move(upload_progress_callback));
+    EndpointFetcher* fetcher = endpoint_fetcher.get();
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(fetcher_created_callback),
+                                  std::move(endpoint_fetcher)));
+    fetcher->PerformRequest(std::move(response_received_callback),
+                            google_apis::GetAPIKey().c_str());
+    return;
+  }
+  std::move(response_received_callback).Run(std::move(response));
 }
 
 lens::LensOverlayClientContext
