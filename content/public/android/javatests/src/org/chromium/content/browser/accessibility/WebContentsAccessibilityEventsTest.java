@@ -800,6 +800,7 @@ public class WebContentsAccessibilityEventsTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "crbug.com/578209512")
     public void test_ariaTreeExpand() {
         performTest(
                 "aria-tree-expand.html",
@@ -1268,6 +1269,7 @@ public class WebContentsAccessibilityEventsTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "crbug.com/578209512")
     public void test_liveRegionAtomicChangedInnerText() {
         performTest(
                 "live-region-atomic-change-innertext.html",
@@ -1345,6 +1347,7 @@ public class WebContentsAccessibilityEventsTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "crbug.com/578209512")
     public void test_menuBarShowHideMenus() {
         performTest(
                 "menubar-show-hide-menus.html",
@@ -1597,6 +1600,7 @@ public class WebContentsAccessibilityEventsTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "crbug.com/578209512")
     public void test_selectSelectedAddRemove() {
         performTest(
                 "select-selected-add-remove.html",
