@@ -1760,6 +1760,7 @@ void ChildProcessSecurityPolicyImpl::GrantCommitOrigin(
   if (IsRustEnabled(GetRustPolicy(CpspRustFeature::kProcessState))) {
     rust::child_process_security_policy::grant_commit_origin(
         ChildProcessId::FromUnsafeValue(child_id),
+        // Make a copy for Rust to own.
         std::make_unique<url::Origin>(origin));
   }
 
@@ -1789,6 +1790,7 @@ void ChildProcessSecurityPolicyImpl::GrantRequestOrigin(
   if (IsRustEnabled(GetRustPolicy(CpspRustFeature::kProcessState))) {
     rust::child_process_security_policy::grant_request_origin(
         ChildProcessId::FromUnsafeValue(child_id),
+        // Make a copy for Rust to own.
         std::make_unique<url::Origin>(origin));
   }
 
@@ -1890,7 +1892,9 @@ void ChildProcessSecurityPolicyImpl::GrantOriginCheckExemptionForWebView(
   RUST_CPP_PROCESS_STATE_VOID_FUNCTION(
       rust::child_process_security_policy::
           grant_origin_check_exemption_for_webview(
-              child_id, std::make_unique<url::Origin>(origin)),
+              child_id,
+              // Make a copy for Rust to own.
+              std::make_unique<url::Origin>(origin)),
       GrantOriginCheckExemptionForWebView_Cpp(child_id, origin));
 }
 
@@ -1910,7 +1914,9 @@ bool ChildProcessSecurityPolicyImpl::HasOriginCheckExemptionForWebView(
   RUST_CPP_PROCESS_STATE_RETURN_FUNCTION(
       rust::child_process_security_policy::
           has_origin_check_exemption_for_webview(
-              child_id, std::make_unique<url::Origin>(origin)),
+              child_id,
+              // Make a copy for Rust to own.
+              std::make_unique<url::Origin>(origin)),
       HasOriginCheckExemptionForWebView_Cpp(child_id, origin));
 }
 
@@ -4240,6 +4246,7 @@ void ChildProcessSecurityPolicyImpl::RemoveIsolatedOriginForTesting(
     const url::Origin& origin) {
   RUST_CPP_VOID_FUNCTION(
       rust::child_process_security_policy::remove_isolated_origin_for_testing(
+          // Make a copy for Rust to own.
           std::make_unique<url::Origin>(origin)),
       RemoveIsolatedOriginForTesting_Cpp(origin));
 }
@@ -4273,6 +4280,7 @@ int ChildProcessSecurityPolicyImpl::GetIsolatedOriginEntryCountForTesting(
     const url::Origin& origin) {
   RUST_CPP_RETURN_FUNCTION(rust::child_process_security_policy::
                                get_isolated_origin_entry_count_for_testing(
+                                   // Make a copy for Rust to own.
                                    std::make_unique<url::Origin>(origin)),
                            GetIsolatedOriginEntryCountForTesting_Cpp(origin));
 }
