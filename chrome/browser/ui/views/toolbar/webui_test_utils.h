@@ -19,6 +19,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/point.h"
+#include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/views/controls/button/button.h"
 
@@ -33,11 +34,17 @@ class ElementIdentifier;
 class TrackedElement;
 }  // namespace ui
 
+namespace base {
+class FilePath;
+}  // namespace base
+
 namespace content {
+struct DropData;
 class WebContents;
-}
+}  // namespace content
 
 namespace views {
+class View;
 class WebView;
 class Widget;
 }  // namespace views
@@ -204,6 +211,76 @@ class NavigationCounter : public content::WebContentsObserver {
 
  private:
   size_t navigation_count_ = 0;
+};
+
+// Drops data on the WebUI toolbar through the same sequence of calls that
+// `WebContentsViewAura` makes for a real drag, so that both the drag
+// provenance tracked by `PreHandleDragUpdate` and the data the WebUI receives
+// match production.
+//
+// Shared by the drop tests of the individual toolbar controls, which only
+// differ in where the drop lands and in what they expect to happen.
+class WebUIToolbarDropSimulator {
+ public:
+  enum class DragOrigin {
+    // Dragged out of a web page rendered by a renderer process.
+    kWebPage,
+    // Dragged in from outside the browser (a text editor, a file manager...).
+    kOs,
+  };
+
+  // `toolbar_view` anchors the client coordinates of the drop point in screen
+  // space. `toolbar_web_contents` hosts the WebUI toolbar receiving the drop.
+  // Both must outlive this object.
+  WebUIToolbarDropSimulator(views::View* toolbar_view,
+                            content::WebContents* toolbar_web_contents);
+  WebUIToolbarDropSimulator(const WebUIToolbarDropSimulator&) = delete;
+  WebUIToolbarDropSimulator& operator=(const WebUIToolbarDropSimulator&) =
+      delete;
+  ~WebUIToolbarDropSimulator();
+
+  // Sets where drops land, in the toolbar WebContents' client coordinates.
+  void set_drop_point(const gfx::PointF& drop_point) {
+    drop_point_ = drop_point;
+  }
+  const gfx::PointF& drop_point() const { return drop_point_; }
+
+  // Runs a full drag-enter, drag-over, drop sequence at the drop point.
+  // Returns whether the toolbar accepted the drag. A refused drag receives no
+  // drop, as the platform does not deliver one after the target rejects every
+  // drag operation.
+  //
+  // When `drag_exited_before_drop` is true, the toolbar is told that the drag
+  // left it after the last drag update, as happens when the drag leaves the
+  // toolbar area before the drop lands.
+  bool PerformDrop(content::DropData drop_data,
+                   bool drag_exited_before_drop = false);
+
+  // Drop of a link, i.e. `text/uri-list` only. Expects the drag to be
+  // accepted.
+  void SimulateLinkDrop(const std::string& url, DragOrigin origin);
+
+  // Drop of selected text, i.e. `text/plain`. The drop data is built through
+  // `ui::OSExchangeData`, matching `WebContentsViewAura::PrepareDropData`, so
+  // platforms that synthesize a URL from URL-like plain text (Windows,
+  // ChromeOS, Wayland, macOS) also add `text/uri-list`, while X11 does not.
+  // Expects the drag to be accepted. Returns whether a URL was synthesized.
+  bool SimulateTextDrop(const std::string& text, DragOrigin origin);
+
+  // Drop carrying `url` in both `text/uri-list` and `text/plain`. Expects the
+  // drag to be accepted.
+  void SimulateLinkWithTextDrop(const std::string& url, DragOrigin origin);
+
+  // Drop of an OS file, i.e. `Files` plus `DropData::filenames`. Returns
+  // whether the toolbar accepted the drag.
+  bool SimulateFileDrop(const base::FilePath& path,
+                        DragOrigin origin,
+                        bool drag_exited_before_drop = false);
+
+ private:
+  raw_ptr<views::View> toolbar_view_;
+  raw_ptr<content::WebContents> toolbar_web_contents_;
+  gfx::PointF drop_point_;
 };
 
 class AvatarButtonUpdateWaiter : public AvatarToolbarButtonInterface::Observer {

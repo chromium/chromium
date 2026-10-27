@@ -11,15 +11,14 @@
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/ui/views/toolbar/webui_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
-#include "ui/gfx/geometry/point.h"
 #include "url/gurl.h"
 
 class NavigationCounter;
 class WebUIToolbarWebView;
 
 namespace content {
-struct DropData;
 class WebContents;
 }
 
@@ -33,12 +32,7 @@ class WebUIHomeControlTestBase : public InProcessBrowserTest {
   void TearDownOnMainThread() override;
 
  protected:
-  enum class DragOrigin {
-    // Dragged out of a web page rendered by a renderer process.
-    kWebPage,
-    // Dragged in from outside the browser (a text editor, a file manager...).
-    kOs,
-  };
+  using DragOrigin = WebUIToolbarDropSimulator::DragOrigin;
 
   GURL GetHomeURL();
 
@@ -50,20 +44,11 @@ class WebUIHomeControlTestBase : public InProcessBrowserTest {
   // any Simulate*Drop()/Expect*() call.
   void SetUpHomeButtonDropTest();
 
-  // Drop of a link, i.e. `text/uri-list` only.
+  // Drops on the home button's center point. See `WebUIToolbarDropSimulator`
+  // for the kinds of drop data.
   void SimulateLinkDrop(const std::string& url, DragOrigin origin);
-
-  // Drop of selected text, i.e. `text/plain`. The drop data is built through
-  // `ui::OSExchangeData`, matching `WebContentsViewAura::PrepareDropData`, so
-  // platforms that synthesize a URL from URL-like plain text (Windows,
-  // ChromeOS, Wayland) also add `text/uri-list`, while X11 does not. Returns
-  // whether a URL was synthesized.
   bool SimulateTextDrop(const std::string& text, DragOrigin origin);
-
-  // Drop carrying `url` in both `text/uri-list` and `text/plain`.
   void SimulateLinkWithTextDrop(const std::string& url, DragOrigin origin);
-
-  // Drop of an OS file, i.e. `Files` plus `DropData::filenames`.
   void SimulateFileDrop(const base::FilePath& path, DragOrigin origin);
 
   // The home page pref was set to `expected` and the undo bubble is showing.
@@ -85,10 +70,6 @@ class WebUIHomeControlTestBase : public InProcessBrowserTest {
   content::WebContents* active_web_contents();
 
  private:
-  // Runs a full drag-enter, drag-over, drop sequence against the toolbar's
-  // RenderWidgetHost at the home button's center point.
-  void PerformDropOnHomeButton(content::DropData drop_data);
-
   // Spins until the set-home-page bubble is showing.
   void WaitForUndoBubble();
 
@@ -99,8 +80,8 @@ class WebUIHomeControlTestBase : public InProcessBrowserTest {
   base::test::ScopedFeatureList feature_list_;
 
   raw_ptr<WebUIToolbarWebView> webui_toolbar_view_ = nullptr;
-  // Center of the home button, in the toolbar WebView's client coordinates.
-  gfx::Point home_button_client_point_;
+  // Drops on the center of the home button.
+  std::unique_ptr<WebUIToolbarDropSimulator> drop_simulator_;
   std::string initial_home_page_;
   bool initial_home_page_is_ntp_ = false;
   GURL initial_tab_url_;

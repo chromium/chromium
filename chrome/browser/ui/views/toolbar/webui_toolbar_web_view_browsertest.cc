@@ -71,7 +71,6 @@
 #include "chrome/browser/ui/side_panel/side_panel_entry.h"
 #include "chrome/browser/ui/side_panel/side_panel_enums.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
-#include "chrome/browser/ui/tab_contents/chrome_web_contents_view_handle_drop.h"
 #include "chrome/browser/ui/tabs/split_tab_metrics.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
@@ -176,8 +175,6 @@
 #include "ui/accessibility/platform/ax_platform_node_delegate.h"
 #include "ui/accessibility/platform/inspect/ax_event_recorder.h"
 #include "ui/actions/actions.h"
-#include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
-#include "ui/base/dragdrop/os_exchange_data.h"
 #include "ui/base/interaction/element_test_util.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -3708,10 +3705,8 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewTouchBrowserTest, VerifyLayout) {
       content::EvalJs(web_contents, get_indicator_bottom_js).ExtractString());
 }
 
-// Drops data on an empty area of the WebUI toolbar through the same sequence of
-// calls that `WebContentsViewAura` makes for a real drag, so that both the drag
-// provenance tracked by `PreHandleDragUpdate` and the data the WebUI receives
-// match production.
+// Drops data on an empty area of the WebUI toolbar through
+// `WebUIToolbarDropSimulator`.
 class WebUIToolbarDropBrowserTest : public WebUIToolbarWebViewBrowserTest {
  public:
   WebUIToolbarDropBrowserTest()
@@ -3720,16 +3715,12 @@ class WebUIToolbarDropBrowserTest : public WebUIToolbarWebViewBrowserTest {
              features::kWebUIReloadButton},
             {}) {}
 
-  enum class DragOrigin {
-    // Dragged out of a web page rendered by a renderer process.
-    kWebPage,
-    // Dragged in from outside the browser (a text editor, a file manager...).
-    kOs,
-  };
+  using DragOrigin = WebUIToolbarDropSimulator::DragOrigin;
 
   void TearDownOnMainThread() override {
     navigation_counter_.reset();
     navigation_observer_.reset();
+    drop_simulator_.reset();
     toolbar_web_contents_ = nullptr;
     WebUIToolbarWebViewBrowserTest::TearDownOnMainThread();
   }
@@ -3758,6 +3749,7 @@ class WebUIToolbarDropBrowserTest : public WebUIToolbarWebViewBrowserTest {
     // Hit-test the toolbar for a point that resolves to the toolbar-app itself,
     // i.e. the empty space between controls. Drops there are handled by the
     // toolbar-app rather than by a specific control.
+    gfx::PointF drop_point;
     ASSERT_TRUE(base::test::RunUntil([&]() {
       const std::string probe = content::EvalJs(toolbar_web_contents_, R"(
         (() => {
@@ -3788,9 +3780,12 @@ class WebUIToolbarDropBrowserTest : public WebUIToolbarWebViewBrowserTest {
           !base::StringToInt(coords[1], &y)) {
         return false;
       }
-      drop_point_ = gfx::PointF(x, y);
+      drop_point = gfx::PointF(x, y);
       return true;
     }));
+    drop_simulator_ = std::make_unique<WebUIToolbarDropSimulator>(
+        GetWebUIToolbar(), toolbar_web_contents_);
+    drop_simulator_->set_drop_point(drop_point);
 
     initial_tab_url_ = active_web_contents()->GetLastCommittedURL();
     navigation_counter_ =
@@ -3799,130 +3794,22 @@ class WebUIToolbarDropBrowserTest : public WebUIToolbarWebViewBrowserTest {
         active_web_contents());
   }
 
-  // Returns whether the toolbar accepted the drag. A refused drag receives no
-  // drop, as the platform does not deliver one after the target rejects every
-  // drag operation.
-  //
-  // When `drag_exited_before_drop` is true, the toolbar is told that the drag
-  // left it after the last drag update, as happens when the drag leaves the
-  // toolbar area before the drop lands.
-  bool PerformDropOnToolbar(content::DropData drop_data,
-                            bool drag_exited_before_drop = false) {
-    views::View* toolbar_view = GetWebUIToolbar();
-    const gfx::PointF screen_pt(
-        drop_point_ + toolbar_view->GetBoundsInScreen().OffsetFromOrigin());
-
-    content::RenderWidgetHost* rwh =
-        toolbar_web_contents_->GetPrimaryMainFrame()->GetRenderWidgetHost();
-    EXPECT_TRUE(rwh);
-    if (!rwh) {
-      return false;
-    }
-
-    // Filter the drop data via `RenderWidgetHost::FilterDropData` before
-    // sending `DragTargetDragEnter`, matching
-    // `WebContentsViewAura::DragEnteredCallback`.
-    content::DropData filtered_drop_data = drop_data;
-    rwh->FilterDropData(&filtered_drop_data);
-    rwh->DragTargetDragEnter(filtered_drop_data, drop_point_, screen_pt,
-                             blink::kDragOperationEvery, /*key_modifiers=*/0,
-                             base::DoNothing());
-
-    // Pass the unfiltered drop data to `PreHandleDragUpdate` before sending
-    // `DragTargetDragOver`, matching
-    // `WebContentsViewAura::DragUpdatedCallback`.
-    toolbar_web_contents_->GetDelegate()->PreHandleDragUpdate(drop_data,
-                                                              drop_point_);
-    base::test::TestFuture<ui::mojom::DragOperation, bool> drag_over_future;
-    rwh->DragTargetDragOver(drop_point_, screen_pt, blink::kDragOperationEvery,
-                            /*key_modifiers=*/0,
-                            drag_over_future.GetCallback());
-    const bool drag_over_replied = drag_over_future.Wait();
-    EXPECT_TRUE(drag_over_replied);
-    if (!drag_over_replied) {
-      return false;
-    }
-    if (drag_over_future.Get<0>() == ui::mojom::DragOperation::kNone) {
-      rwh->DragTargetDragLeave(drop_point_, screen_pt);
-      toolbar_web_contents_->GetDelegate()->PreHandleDragExit();
-      return false;
-    }
-    EXPECT_TRUE(drag_over_future.Get<1>());
-
-    if (drag_exited_before_drop) {
-      toolbar_web_contents_->GetDelegate()->PreHandleDragExit();
-    }
-
-    // Pass the filtered drop data through `HandleOnPerformingDrop` before
-    // sending `DragTargetDrop`, matching
-    // `WebContentsViewAura::PerformDropCallback`.
-    filtered_drop_data.document_is_handling_drag = drag_over_future.Get<1>();
-    base::test::TestFuture<std::optional<content::DropData>>
-        performing_drop_future;
-    HandleOnPerformingDrop(toolbar_web_contents_, std::move(filtered_drop_data),
-                           performing_drop_future.GetCallback());
-    std::optional<content::DropData> final_drop_data =
-        performing_drop_future.Take();
-    EXPECT_TRUE(final_drop_data.has_value());
-    if (!final_drop_data.has_value()) {
-      return true;
-    }
-
-    base::test::TestFuture<void> drop_future;
-    rwh->DragTargetDrop(*final_drop_data, drop_point_, screen_pt,
-                        /*key_modifiers=*/0, drop_future.GetCallback());
-    EXPECT_TRUE(drop_future.Wait());
-    return true;
-  }
-
-  // Drop of a link, i.e. `text/uri-list` only.
+  // Drops on the empty toolbar area. See `WebUIToolbarDropSimulator` for the
+  // kinds of drop data.
   void SimulateLinkDrop(const std::string& url, DragOrigin origin) {
-    content::DropData drop_data;
-    drop_data.did_originate_from_renderer = origin == DragOrigin::kWebPage;
-    drop_data.url_infos.emplace_back(GURL(url), std::u16string());
-    EXPECT_TRUE(PerformDropOnToolbar(drop_data));
+    drop_simulator_->SimulateLinkDrop(url, origin);
   }
-
-  // Drop of selected text, i.e. `text/plain`. The drop data is built through
-  // `ui::OSExchangeData`, matching `WebContentsViewAura::PrepareDropData`, so
-  // platforms that synthesize a URL from URL-like plain text (Windows,
-  // ChromeOS, Wayland) also add `text/uri-list`, while X11 does not. Returns
-  // whether a URL was synthesized.
   bool SimulateTextDrop(const std::string& text, DragOrigin origin) {
-    ui::OSExchangeData data;
-    if (origin == DragOrigin::kWebPage) {
-      data.MarkRendererTaintedFromOrigin(url::Origin());
-    }
-    data.SetString(base::UTF8ToUTF16(text));
-
-    content::DropData drop_data;
-    drop_data.did_originate_from_renderer = origin == DragOrigin::kWebPage;
-    drop_data.text = data.GetString();
-    drop_data.url_infos =
-        data.GetURLs(ui::FilenameToURLPolicy::DO_NOT_CONVERT_FILENAMES);
-    const bool has_synthesized_url = !drop_data.url_infos.empty();
-    EXPECT_TRUE(PerformDropOnToolbar(drop_data));
-    return has_synthesized_url;
+    return drop_simulator_->SimulateTextDrop(text, origin);
   }
-
-  // Drop carrying `url` in both `text/uri-list` and `text/plain`.
   void SimulateLinkWithTextDrop(const std::string& url, DragOrigin origin) {
-    content::DropData drop_data;
-    drop_data.did_originate_from_renderer = origin == DragOrigin::kWebPage;
-    drop_data.url_infos.emplace_back(GURL(url), std::u16string());
-    drop_data.text = base::UTF8ToUTF16(url);
-    EXPECT_TRUE(PerformDropOnToolbar(drop_data));
+    drop_simulator_->SimulateLinkWithTextDrop(url, origin);
   }
-
-  // Drop of an OS file, i.e. `Files` plus `DropData::filenames`. Returns
-  // whether the toolbar accepted the drag.
   bool SimulateFileDrop(const base::FilePath& path,
                         DragOrigin origin,
                         bool drag_exited_before_drop = false) {
-    content::DropData drop_data;
-    drop_data.did_originate_from_renderer = origin == DragOrigin::kWebPage;
-    drop_data.filenames.emplace_back(path, path.BaseName());
-    return PerformDropOnToolbar(drop_data, drag_exited_before_drop);
+    return drop_simulator_->SimulateFileDrop(path, origin,
+                                             drag_exited_before_drop);
   }
 
   // The active tab navigated to `expected`.
@@ -3966,7 +3853,7 @@ class WebUIToolbarDropBrowserTest : public WebUIToolbarWebViewBrowserTest {
 
  private:
   raw_ptr<content::WebContents> toolbar_web_contents_ = nullptr;
-  gfx::PointF drop_point_;
+  std::unique_ptr<WebUIToolbarDropSimulator> drop_simulator_;
   GURL initial_tab_url_;
   std::unique_ptr<NavigationCounter> navigation_counter_;
   std::unique_ptr<content::TestNavigationObserver> navigation_observer_;
