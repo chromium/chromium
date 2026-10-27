@@ -241,7 +241,23 @@ VideoFrameAcceleratedSnapshotPool::DoExternalOverdrawAndSnapshot(
     FlushRecording(
         provider_->recorder_for_external_draws_->ReleaseMainRecording());
   }
-  return provider_->Snapshot(orientation);
+
+  if (!IsValid()) {
+    return nullptr;
+  }
+
+  if (!provider_->cached_snapshot_) {
+    provider_->cached_snapshot_ = provider_->resource_->Bitmap();
+
+    if (provider_->cached_snapshot_) {
+      provider_->cached_content_id_ =
+          provider_->cached_snapshot_->PaintImageForCurrentFrame()
+              .GetContentIdForFrame(0u);
+    }
+  }
+
+  DCHECK(provider_->cached_snapshot_);
+  return provider_->cached_snapshot_;
 }
 
 scoped_refptr<StaticBitmapImage> DrawAndSnapshotToImage(
