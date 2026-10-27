@@ -608,6 +608,13 @@
   animation: none;
 }
 
+:host([glow-mode='none']) .background,
+:host([glow-mode='none']) .background::before {
+  animation: none;
+  border-width: 0;
+  filter: none;
+}
+
 :host([animation-state='dragging']) .background::before {
   animation: none;
   /* Frosted glass color; overlays the actual composebox background: */
