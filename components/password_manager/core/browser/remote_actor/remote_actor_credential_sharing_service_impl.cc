@@ -2,16 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/password_manager/remote_actor/remote_actor_credential_sharing_service_impl.h"
+#include "components/password_manager/core/browser/remote_actor/remote_actor_credential_sharing_service_impl.h"
 
 #include <utility>
 
 #include "base/check.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/task/sequenced_task_runner.h"
-#include "chrome/browser/password_manager/remote_actor/remote_actor_credential_permission_client.h"
-#include "chrome/browser/password_manager/remote_actor/remote_actor_credential_store_client.h"
+#include "components/password_manager/core/browser/remote_actor/remote_actor_credential_permission_client.h"
+#include "components/password_manager/core/browser/remote_actor/remote_actor_credential_store_client.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/password_manager/remote_actor/remote_actor_request_helper.h"
+#include "components/password_manager/core/browser/remote_actor/remote_actor_request_helper.h"
 
 #include <memory>
 #include <string>

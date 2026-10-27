@@ -4,10 +4,10 @@
 
 #include "chrome/browser/password_manager/remote_actor/remote_actor_credential_sharing_service_factory.h"
 
-#include "chrome/browser/password_manager/remote_actor/remote_actor_credential_sharing_service_impl.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_selections.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "components/password_manager/core/browser/remote_actor/remote_actor_credential_sharing_service_impl.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "content/public/browser/storage_partition.h"
 

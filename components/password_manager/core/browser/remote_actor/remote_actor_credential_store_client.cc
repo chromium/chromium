@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/password_manager/remote_actor/remote_actor_credential_store_client.h"
+#include "components/password_manager/core/browser/remote_actor/remote_actor_credential_store_client.h"
 
 #include <optional>
 #include <string>
@@ -22,10 +22,10 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/values.h"
-#include "chrome/browser/password_manager/remote_actor/protos/remote_actor_list_affiliated_passwords_result.pb.h"
-#include "chrome/browser/password_manager/remote_actor/remote_actor_request_helper.h"
-#include "chrome/browser/password_manager/remote_actor/remote_actor_switches.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
+#include "components/password_manager/core/browser/remote_actor/protos/remote_actor_list_affiliated_passwords_result.pb.h"
+#include "components/password_manager/core/browser/remote_actor/remote_actor_request_helper.h"
+#include "components/password_manager/core/browser/remote_actor/remote_actor_switches.h"
 #include "components/password_manager/core/browser/sync/password_proto_utils.h"
 #include "components/signin/public/base/oauth_consumer_id.h"
 #include "components/signin/public/identity_manager/identity_manager.h"

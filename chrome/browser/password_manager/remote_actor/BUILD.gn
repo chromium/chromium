@@ -6,21 +6,10 @@ assert(!is_android)
 
 source_set("remote_actor") {
   sources = [
-    "remote_actor_credential_permission_client.cc",
-    "remote_actor_credential_permission_client.h",
     "remote_actor_credential_sharing_impl.cc",
     "remote_actor_credential_sharing_impl.h",
-    "remote_actor_credential_sharing_service.h",
     "remote_actor_credential_sharing_service_factory.cc",
     "remote_actor_credential_sharing_service_factory.h",
-    "remote_actor_credential_sharing_service_impl.cc",
-    "remote_actor_credential_sharing_service_impl.h",
-    "remote_actor_credential_store_client.cc",
-    "remote_actor_credential_store_client.h",
-    "remote_actor_request_helper.cc",
-    "remote_actor_request_helper.h",
-    "remote_actor_switches.cc",
-    "remote_actor_switches.h",
   ]
 
   deps = [
@@ -28,7 +17,6 @@ source_set("remote_actor") {
     "//chrome/browser/glic",
     "//chrome/browser/password_manager",
     "//chrome/browser/password_manager/factories",
-    "//chrome/browser/password_manager/remote_actor/protos",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/signin",
     "//chrome/browser/sync:factories",
@@ -39,18 +27,15 @@ source_set("remote_actor") {
     "//components/password_manager/core/browser",
     "//components/password_manager/core/browser/actor_login:actor_login_service_impl",
     "//components/password_manager/core/browser/features:password_features",
+    "//components/password_manager/core/browser/remote_actor",
     "//components/password_manager/core/browser/sync",
     "//components/password_manager/core/common:features",
     "//components/prefs",
     "//components/signin/public/base",
     "//components/signin/public/identity_manager",
-    "//components/sync/base",
     "//components/sync/protocol",
     "//content/public/browser",
     "//google_apis",
-    "//google_apis/common",
-    "//net",
-    "//services/network/public/cpp",
     "//url",
   ]
 }
@@ -58,11 +43,8 @@ source_set("remote_actor") {
 source_set("unit_tests") {
   testonly = true
   sources = [
-    "remote_actor_credential_permission_client_unittest.cc",
     "remote_actor_credential_sharing_impl_unittest.cc",
-    "remote_actor_credential_sharing_service_impl_unittest.cc",
-    "remote_actor_credential_store_client_unittest.cc",
-    "remote_actor_request_helper_unittest.cc",
+    "remote_actor_credential_sharing_service_factory_unittest.cc",
   ]
   deps = [
     ":remote_actor",
@@ -71,7 +53,6 @@ source_set("unit_tests") {
     "//chrome/browser/password_manager",
     "//chrome/browser/password_manager:test_support",
     "//chrome/browser/password_manager/factories",
-    "//chrome/browser/password_manager/remote_actor/protos",
     "//chrome/browser/signin:test_support",
     "//chrome/browser/sync:factories",
     "//chrome/browser/ui/autofill",
@@ -83,6 +64,7 @@ source_set("unit_tests") {
     "//components/password_manager/core/browser:test_support",
     "//components/password_manager/core/browser/actor_login:actor_login_service_impl",
     "//components/password_manager/core/browser/features:password_features",
+    "//components/password_manager/core/browser/remote_actor",
     "//components/password_manager/core/common:features",
     "//components/signin/public/identity_manager:test_support",
     "//components/strings:components_strings",
