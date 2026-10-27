@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_PRIVATE_AI_FEATURES_H_
 #define COMPONENTS_PRIVATE_AI_FEATURES_H_
 
+#include <string>
+
 #include "base/features.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/time/time.h"
@@ -22,6 +24,9 @@ BASE_DECLARE_FEATURE(kPrivateAiUseTokenAttestation);
 
 // Feature flag to enable client metadata collection.
 BASE_DECLARE_FEATURE(kPrivateAiSendClientMetadata);
+
+// Feature flag to enable Oak TLS-based sessions instead of Oak Noise.
+BASE_DECLARE_FEATURE(kPrivateAiUseTlsSession);
 
 // The API key for Private AI. Uses Chrome's default API key when not set.
 extern const base::FeatureParam<std::string> kPrivateAiApiKey;
@@ -70,6 +75,30 @@ extern const base::FeatureParam<double> kPrivateAiBackoffJitter;
 // The unused timeout for a Private AI connection after creation.
 extern const base::FeatureParam<base::TimeDelta>
     kPrivateAiUnusedConnectionTimeout;
+
+// Endpoint for Private AI TLS session.
+extern const base::FeatureParam<std::string> kPrivateAiTlsUrl;
+
+// Expected server name for TLS SNI and server certificate hostname
+// verification.
+extern const base::FeatureParam<std::string> kPrivateAiExpectedServerName;
+
+// URL to fetch the TCA root certificate.
+extern const base::FeatureParam<std::string> kPrivateAiTcaRootUrl;
+
+// URL to fetch the OakCT certificate.
+extern const base::FeatureParam<std::string> kPrivateAiOakCtCertUrl;
+
+// Base domain for OakCT hostname verification.
+extern const base::FeatureParam<std::string> kPrivateAiOakCtBaseDomain;
+
+// Namespace for OakCT hostname verification.
+extern const base::FeatureParam<std::string> kPrivateAiOakCtNamespace;
+
+// Returns the Private AI service URL for the active session protocol:
+// kPrivateAiTlsUrl when kPrivateAiUseTlsSession is enabled, kPrivateAiUrl
+// otherwise.
+std::string GetPrivateAiServiceUrl();
 
 }  // namespace private_ai
 

@@ -4,6 +4,8 @@
 
 #include "components/private_ai/features.h"
 
+#include <string>
+
 #include "base/feature.h"
 #include "base/feature_list.h"
 
@@ -16,6 +18,8 @@ BASE_FEATURE(kPrivateAiServerAttestation, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kPrivateAiUseTokenAttestation, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kPrivateAiSendClientMetadata, base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kPrivateAiUseTlsSession, base::FEATURE_DISABLED_BY_DEFAULT);
 
 const base::FeatureParam<std::string> kPrivateAiApiKey{
     &kPrivateAi, /*name=*/"api-key", /*default_value=*/""};
@@ -73,5 +77,44 @@ const base::FeatureParam<double> kPrivateAiBackoffJitter{
 const base::FeatureParam<base::TimeDelta> kPrivateAiUnusedConnectionTimeout{
     &kPrivateAi, /*name=*/"unused-connection-timeout",
     /*default_value=*/base::Minutes(1)};
+
+const base::FeatureParam<std::string> kPrivateAiTlsUrl{
+    &kPrivateAiUseTlsSession, /*name=*/"tls-url",
+    /*default_value=*/
+    "privatearatea.pa.googleapis.com/ws/"
+    "mdi.privatearatea.PrivateTlsService.TlsSession"};
+
+const base::FeatureParam<std::string> kPrivateAiExpectedServerName{
+    &kPrivateAiUseTlsSession, /*name=*/"expected-server-name",
+    /*default_value=*/
+    "pa-frontend.prod.google.com.prod.google.com.tca.pcit.goog"};
+
+const base::FeatureParam<std::string> kPrivateAiTcaRootUrl{
+    &kPrivateAiUseTlsSession, /*name=*/"tca-root-url",
+    /*default_value=*/
+    "https://www.gstatic.com/oakct.transparentrelease.goog/tca/"
+    "prod_tca_root_certificate.pem/prod_tca_root_certificate.pem"};
+
+// The ".pem.pem" suffix is intentional: the OakCT certificate chain for
+// `<cert>.pem` is published at `<cert>.pem/<cert>.pem.pem`.
+const base::FeatureParam<std::string> kPrivateAiOakCtCertUrl{
+    &kPrivateAiUseTlsSession, /*name=*/"oakct-cert-url",
+    /*default_value=*/
+    "https://www.gstatic.com/oakct.transparentrelease.goog/tca/"
+    "prod_tca_root_certificate.pem/prod_tca_root_certificate.pem.pem"};
+
+const base::FeatureParam<std::string> kPrivateAiOakCtBaseDomain{
+    &kPrivateAiUseTlsSession, /*name=*/"oakct-base-domain",
+    /*default_value=*/"oakct.transparentrelease.goog"};
+
+const base::FeatureParam<std::string> kPrivateAiOakCtNamespace{
+    &kPrivateAiUseTlsSession, /*name=*/"oakct-namespace",
+    /*default_value=*/"tca"};
+
+std::string GetPrivateAiServiceUrl() {
+  return base::FeatureList::IsEnabled(kPrivateAiUseTlsSession)
+             ? kPrivateAiTlsUrl.Get()
+             : kPrivateAiUrl.Get();
+}
 
 }  // namespace private_ai
