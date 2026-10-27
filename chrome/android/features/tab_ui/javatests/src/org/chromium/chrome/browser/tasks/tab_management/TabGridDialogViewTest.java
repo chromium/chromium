@@ -45,7 +45,6 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -631,14 +630,11 @@ public class TabGridDialogViewTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "crbug.com/578130472")
     public void testAnimationSourceRect_AtClipTopAndClippedAtBottom() {
         int sourceTop = CLIP_TOP;
         RectF rect = setupDialogAnimationFromSource(sourceTop, sourceTop + SOURCE_HEIGHT - 50);
 
-        // Same as ClippedAtBottom. Fails because the card touching the clip bound is taken as
-        // clipped at the top, so the top padding is dropped (or reduced by the bottom clip, if
-        // that is smaller than the padding).
+        // Not taken as clipped at the top just because it touches the clip bound.
         assertSourceRect(rect, sourceTop + mCardPadding);
     }
 
