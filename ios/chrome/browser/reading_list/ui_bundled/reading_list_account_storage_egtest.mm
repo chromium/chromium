@@ -31,7 +31,6 @@
 #import "net/test/embedded_test_server/embedded_test_server.h"
 #import "ui/base/l10n/l10n_util.h"
 
-using chrome_test_util::DeleteButton;
 using chrome_test_util::IdentityCellMatcherForEmail;
 using chrome_test_util::PrimarySignInButton;
 using chrome_test_util::ReadingListMarkAsReadButton;
@@ -553,8 +552,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 // Test that after sign-in with the Reading List promo, if two items are added
 // and one is removed, then after a sign-out and a new sign-in with the Reading
 // List sign-in promo with the same account, the removed item is not visible.
-// TODO(crbug.com/474063690): Re-enable this test once it has been fixed.
-- (void)FLAKY_testRemoveItemAfterSignInThenRefreshSignin {
+- (void)testRemoveItemAfterSignInThenRefreshSignin {
   // Sign-in with the Reading List Promo.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
@@ -566,6 +564,9 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   // Dismiss the sign-in snackbar.
   [[EarlGrey selectElementWithMatcher:SignedInSnackbar(fakeIdentity.userEmail)]
       performAction:grey_tap()];
+  [ChromeEarlGrey
+      waitForUIElementToDisappearWithMatcher:SignedInSnackbar(
+                                                 fakeIdentity.userEmail)];
 
   [ChromeEarlGrey
       waitForSyncTransportStateActiveWithTimeout:kSyncActiveTimeout];
@@ -579,19 +580,69 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
                                          fakeIdentity.userEmail);
   AddURLToReadingListWithSnackbarDismiss(self.testServer->GetURL(kPage2URL),
                                          fakeIdentity.userEmail);
+  // Wait for sync to upload both reading list items to the fake sync server
+  // before removing Page 1.
+  [ChromeEarlGrey
+      waitForSyncServerEntitiesWithType:syncer::READING_LIST
+                                   name:self.testServer->GetURL(kPage1URL)
+                                            .spec()
+                                  count:1
+                                timeout:kSyncActiveTimeout];
+  [ChromeEarlGrey
+      waitForSyncServerEntitiesWithType:syncer::READING_LIST
+                                   name:self.testServer->GetURL(kPage2URL)
+                                            .spec()
+                                  count:1
+                                timeout:kSyncActiveTimeout];
+
   // Remove Page 1 from the Reading List.
   OpenReadingList();
-  // TODO(crbug.com/446889046): Investigate if there is a better solution to fix
-  // flakiness on iOS26.
-  base::test::ios::SpinRunLoopWithMinDelay(base::Seconds(1));
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(
+                                   grey_accessibilityID(
+                                       kReadingListNavigationBarSelectButtonID),
+                                   grey_sufficientlyVisible(), nil)]
+      performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:VisibleReadingListItem(kPage1Title)]
-      performAction:grey_longPressWithDuration(kLongPressDuration)];
-  [[EarlGrey selectElementWithMatcher:DeleteButton()] performAction:grey_tap()];
+      performAction:grey_tap()];
+  [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:
+                      grey_accessibilityID(kReadingListToolbarDeleteButtonID)];
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(
+                                   grey_accessibilityID(
+                                       kReadingListToolbarDeleteButtonID),
+                                   grey_sufficientlyVisible(), nil)]
+      performAction:grey_tap()];
   // Verify that only Page 2 is in the Reading List.
+  [ChromeEarlGrey waitForUIElementToDisappearWithMatcher:VisibleReadingListItem(
+                                                             kPage1Title)];
   [ChromeEarlGrey
       waitForUIElementToAppearWithMatcher:VisibleReadingListItem(kPage2Title)];
-  [[EarlGrey selectElementWithMatcher:VisibleReadingListItem(kPage1Title)]
-      assertWithMatcher:grey_nil()];
+  ConditionBlock initialWaitCondition = ^{
+    return [ReadingListAppInterface readEntriesCount] == 0 &&
+           [ReadingListAppInterface unreadEntriesCount] == 1;
+  };
+  GREYAssertTrue(
+      base::test::ios::WaitUntilConditionOrTimeout(
+          base::test::ios::kWaitForUIElementTimeout, initialWaitCondition),
+      @"Reading list entries count did not match expected counts (0 read, 1 "
+      @"unread).");
+
+  // Wait for sync to commit the removal of Page 1 to the fake sync server
+  // before signing out.
+  [ChromeEarlGrey
+      waitForSyncServerEntitiesWithType:syncer::READING_LIST
+                                   name:self.testServer->GetURL(kPage1URL)
+                                            .spec()
+                                  count:0
+                                timeout:kSyncActiveTimeout];
+  [ChromeEarlGrey
+      waitForSyncServerEntitiesWithType:syncer::READING_LIST
+                                   name:self.testServer->GetURL(kPage2URL)
+                                            .spec()
+                                  count:1
+                                timeout:kSyncActiveTimeout];
+
   // Sign-out and sign-in with the same account.
   [SigninEarlGrey signOut];
   [[EarlGrey
@@ -601,10 +652,23 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   // Dismiss the sign-in snackbar.
   [[EarlGrey selectElementWithMatcher:SignedInSnackbar(fakeIdentity.userEmail)]
       performAction:grey_tap()];
+  [ChromeEarlGrey
+      waitForUIElementToDisappearWithMatcher:SignedInSnackbar(
+                                                 fakeIdentity.userEmail)];
 
   [ChromeEarlGrey
       waitForSyncTransportStateActiveWithTimeout:kSyncActiveTimeout];
-  // Verify that only the page 2 is still in the Reading list.
+  // Verify that only Page 2 is still in the Reading List.
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:VisibleReadingListItem(kPage2Title)];
+  ConditionBlock waitCondition = ^{
+    return [ReadingListAppInterface readEntriesCount] == 0 &&
+           [ReadingListAppInterface unreadEntriesCount] == 1;
+  };
+  GREYAssertTrue(base::test::ios::WaitUntilConditionOrTimeout(
+                     base::test::ios::kWaitForUIElementTimeout, waitCondition),
+                 @"Reading list entries count did not match expected counts (0 "
+                 @"read, 1 unread).");
   [[EarlGrey selectElementWithMatcher:VisibleReadingListItem(kPage1Title)]
       assertWithMatcher:grey_nil()];
   [[EarlGrey selectElementWithMatcher:VisibleReadingListItem(kPage2Title)]
