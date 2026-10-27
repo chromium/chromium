@@ -18,6 +18,7 @@
 #include "base/containers/span.h"
 #include "base/environment.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
@@ -750,6 +751,25 @@ GtkIconTheme* GetDefaultIconTheme() {
   return GtkCheckVersion(4)
              ? gtk_icon_theme_get_for_display(gdk_display_get_default())
              : gtk_icon_theme_get_default();
+}
+
+base::ScopedClosureRunner PrependIconThemeSearchPathForTesting(
+    const base::FilePath& path) {
+  if (GtkCheckVersion(4)) {
+    return base::ScopedClosureRunner();
+  }
+  GtkIconTheme* theme = GetDefaultIconTheme();
+  gchar** search_path = nullptr;
+  gint n_elements = 0;
+  gtk_icon_theme_get_search_path(theme, &search_path, &n_elements);
+  gtk_icon_theme_prepend_search_path(theme, path.value().c_str());
+  return base::ScopedClosureRunner(base::BindOnce(
+      [](GtkIconTheme* theme, gchar** search_path, gint n_elements) {
+        gtk_icon_theme_set_search_path(
+            theme, const_cast<const gchar**>(search_path), n_elements);
+        g_strfreev(search_path);
+      },
+      theme, search_path, n_elements));
 }
 
 void GtkWindowDestroy(GtkWidget* widget) {

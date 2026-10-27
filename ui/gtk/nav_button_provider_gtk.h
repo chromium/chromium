@@ -8,7 +8,9 @@
 #include <map>
 #include <optional>
 
+#include "base/component_export.h"
 #include "base/containers/flat_map.h"
+#include "base/feature_list.h"
 #include "ui/base/glib/scoped_gsignal.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/geometry/insets.h"
@@ -20,10 +22,18 @@ typedef struct _GtkSettings GtkSettings;
 
 namespace gtk {
 
-class NavButtonProviderGtk : public ui::NavButtonProvider {
+// On GTK3, sizes window-control buttons without decoding their scalable
+// symbolic icons, and prefetches the icons that the first browser window paints
+// off the UI thread.
+COMPONENT_EXPORT(GTK) BASE_DECLARE_FEATURE(kGtkPrefetchNavButtonIcons);
+
+class COMPONENT_EXPORT(GTK) NavButtonProviderGtk
+    : public ui::NavButtonProvider {
  public:
   explicit NavButtonProviderGtk(ui::FrameType frame_type);
   ~NavButtonProviderGtk() override;
+
+  static void WaitForPrefetchForTesting();
 
   // ui::NavButtonProvider:
   void RedrawImages(int top_area_height, bool maximized, bool active) override;
