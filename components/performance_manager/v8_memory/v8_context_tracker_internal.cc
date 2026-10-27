@@ -24,7 +24,6 @@ ExecutionContextData::ExecutionContextData(
       process_data_(process_data) {}
 
 ExecutionContextData::~ExecutionContextData() {
-  DCHECK(!IsTracked());
   DCHECK(ShouldDestroy());
   DCHECK_EQ(0u, main_nondetached_v8_context_count_);
 }
@@ -103,8 +102,6 @@ RemoteFrameData::RemoteFrameData(ProcessData* process_data,
 }
 
 RemoteFrameData::~RemoteFrameData() {
-  DCHECK(!IsTracked());
-
   // If this is the last reference keeping alive a tracked ExecutionContextData,
   // then clean it up as well. Untracked ExecutionContextDatas will go out of
   // scope on their own.
@@ -144,8 +141,6 @@ V8ContextData::V8ContextData(ProcessData* process_data,
 }
 
 V8ContextData::~V8ContextData() {
-  DCHECK(!IsTracked());
-
   // Mark as detached if necessary so that main world counts are appropriately
   // updated even during tear down code paths.
   MarkDetachedImpl();
@@ -221,11 +216,7 @@ bool V8ContextData::MarkDetachedImpl() {
 ProcessData::ProcessData(const ProcessNodeImpl* process_node)
     : data_store_(GetDataStore(process_node)) {}
 
-ProcessData::~ProcessData() {
-  DCHECK(execution_context_datas_.empty());
-  DCHECK(remote_frame_datas_.empty());
-  DCHECK(v8_context_datas_.empty());
-}
+ProcessData::~ProcessData() = default;
 
 void ProcessData::TearDown() {
   // First, remove any RemoteFrameData references owned by this ProcessData
