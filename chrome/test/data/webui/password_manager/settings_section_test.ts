@@ -11,7 +11,7 @@ import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {TestOpenWindowProxy} from 'chrome://webui-test/test_open_window_proxy.js';
-import {$$, eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
+import {$$, eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import type {ActorLoginPermission} from './password_manager.mojom-webui.js';
 import {TestPasswordManagerProxy} from './test_password_manager_proxy.js';
@@ -158,7 +158,7 @@ suite('SettingsSectionTest', function() {
 
     assertTrue(settings.$.passwordToggle.checked);
     settings.$.passwordToggle.click();
-    assertFalse(!!settings.$.passwordToggle.shadowRoot!.querySelector(
+    assertFalse(!!settings.$.passwordToggle.shadowRoot.querySelector(
         'extension-controlled-indicator'));
   });
 
@@ -169,6 +169,7 @@ suite('SettingsSectionTest', function() {
 
     assertTrue(settings.$.autosigninToggle.checked);
     prefService.setPrefValue('credentials_enable_autosignin', false);
+    await microtasksFinished();
 
     assertFalse(settings.$.autosigninToggle.checked);
   });

@@ -6,7 +6,7 @@ import 'chrome://password-manager/password_manager.js';
 
 import type {SiteFaviconElement} from 'chrome://password-manager/password_manager.js';
 import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 suite('SiteFaviconTest', function() {
   let icon: SiteFaviconElement;
@@ -44,6 +44,7 @@ suite('SiteFaviconTest', function() {
     assertFalse(isVisible(icon.$.favicon));
 
     icon.url = '';
+    await microtasksFinished();
     assertFalse(isVisible(icon.$.downloadedFavicon));
     assertTrue(isVisible(icon.$.favicon));
   });

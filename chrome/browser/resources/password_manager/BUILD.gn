@@ -114,15 +114,17 @@ build_webui("build") {
 
   # Files that are passed as input to css_to_wrapper().
   css_files = [
-    "cr_actionable_row_style.css",
     "cr_input_style.css",
     "cr_nav_menu_item_style.css",
     "cr_page_host_style.css",
     "cr_scrollable.css",
     "cr_spinner_style.css",
     "credential_details/credential_details_card.css",
+    "prefs/pref_toggle_button.css",
     "shared_style.css",
+    "shared_style_lit.css",
     "shared_vars.css",
+    "site_favicon.css",
   ]
 
   icons_html_files = [ "icons.html" ]
@@ -141,6 +143,7 @@ build_webui("build") {
 
   ts_deps = [
     "//chrome/browser/resources/settings_shared:build_ts",
+    "//third_party/lit/v3_0:build_ts",
     "//third_party/polymer/v3_0:library",
     "//ui/webui/resources/cr_components/color_change_listener:build_ts",
     "//ui/webui/resources/cr_components/help_bubble:build_ts",

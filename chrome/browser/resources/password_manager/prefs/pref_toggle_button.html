@@ -1,59 +1,30 @@
-<style include="cr-actionable-row-style cr-shared-style shared-style">
-  :host {
-    --cr-icon-button-margin-end: 20px;
-    padding: 0 var(--cr-section-padding);
-  }
-
-  #outerRow {
-    align-items: center;
-    display: flex;
-    min-height: var(--two-line-section-min-height);
-    width: 100%;
-  }
-
-  #outerRow[noSubLabel] {
-    min-height: var(--section-min-height);
-  }
-
-  #labelWrapper {
-    flex: 1;
-    margin-inline-end: var(--control-label-spacing);
-    padding: var(--cr-section-vertical-padding) 0;
-  }
-
-  cr-policy-pref-indicator {
-    margin-inline-end: var(--cr-controlled-by-spacing);
-  }
-
-  a {
-    color: var(--cr-link-color);
-  }
-</style>
-<div id="outerRow" noSubLabel$="[[!hasSubLabel_(subLabel, subLabelWithLink)]]">
+<div id="outerRow" ?noSubLabel="${!this.hasSubLabel_()}">
   <div id="labelWrapper">
-    <div class="label" aria-hidden="true">[[label]]</div>
+    <div class="label" aria-hidden="true">${this.label}</div>
     <div class="cr-secondary-text label" id="sub-label"
-        hidden="[[!hasSubLabel_(subLabel, subLabelWithLink)]]">
-      <template is="dom-if" if="[[subLabel]]">
+        ?hidden="${!this.hasSubLabel_()}">
+      ${this.subLabel ? html`
         <span id="sub-label-text" aria-hidden="true">
-          [[subLabel]]
+          ${this.subLabel}
         </span>
-      </template>
-      <template is="dom-if" if="[[subLabelWithLink]]">
+      ` : ''}
+      ${this.subLabelWithLink ? html`
         <div id="sub-label-text-with-link"
-            inner-h-t-m-l="[[getSubLabelWithLinkContent_(subLabelWithLink)]]"
-            on-click="onSubLabelTextWithLinkClick_">
+            .innerHTML="${this.getSubLabelWithLinkContent_()}"
+            @click="${this.onSubLabelTextWithLinkClick_}">
         </div>
-      </template>
+      ` : ''}
     </div>
   </div>
-  <template is="dom-if" if="[[hasPrefPolicyIndicator_(pref.*)]]">
-    <cr-policy-pref-indicator pref="[[pref]]" icon-aria-label="[[label]]">
+  ${this.hasPrefPolicyIndicator_() ? html`
+    <cr-policy-pref-indicator .pref="${this.pref}"
+        icon-aria-label="${this.label}">
     </cr-policy-pref-indicator>
-  </template>
-  <cr-toggle id="control" checked="{{checked}}"
-      disabled="[[controlDisabled_(pref.*, disabled)]]"
-      on-change="onToggleClick_"
-      aria-label$="[[getAriaLabel_(label, subLabel, ariaLabel)]]">
+  ` : ''}
+  <cr-toggle id="control" ?checked="${this.checked}"
+      @checked-changed="${this.onCheckedChanged_}"
+      ?disabled="${this.controlDisabled_()}"
+      @change="${this.onToggleChange_}"
+      aria-label="${this.getAriaLabel_()}">
   </cr-toggle>
 </div>

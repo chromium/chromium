@@ -8,12 +8,13 @@
  * will be used as a fallback to obtain the favicon from cache.
  */
 import 'chrome://resources/cr_elements/cr_auto_img/cr_auto_img.js';
-import 'chrome://resources/cr_elements/cr_hidden_style.css.js';
 
 import {getFavicon, getFaviconForPageURL} from 'chrome://resources/js/icon.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import {getTemplate} from './site_favicon.html.js';
+import {getCss} from './site_favicon.css.js';
+import {getHtml} from './site_favicon.html.js';
 
 export interface SiteFaviconElement {
   $: {
@@ -31,36 +32,42 @@ function ensureUrlHasScheme(url: string): string {
   return url.includes('://') ? url : 'http://' + url;
 }
 
-export class SiteFaviconElement extends PolymerElement {
+export class SiteFaviconElement extends CrLitElement {
   static get is() {
     return 'site-favicon';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
-    return {
-      domain: String,
-      url: {
-        type: String,
-        observer: 'onUrlChanged_',
-      },
+  override render() {
+    return getHtml.bind(this)();
+  }
 
-      showDownloadedIcon_: {
-        type: Boolean,
-        value: false,
-      },
+  static override get properties() {
+    return {
+      domain: {type: String},
+      url: {type: String},
+      showDownloadedIcon_: {type: Boolean},
     };
   }
 
-  declare domain: string;
-  declare url: string;
-  declare private showDownloadedIcon_: boolean;
+  accessor domain: string = '';
+  accessor url: string = '';
+  protected accessor showDownloadedIcon_: boolean = false;
 
-  override ready() {
-    super.ready();
+  override willUpdate(changedProperties: PropertyValues<this>) {
+    super.willUpdate(changedProperties);
+
+    if (changedProperties.has('url')) {
+      this.showDownloadedIcon_ = false;
+    }
+  }
+
+  override firstUpdated(changedProperties: PropertyValues<this>) {
+    super.firstUpdated(changedProperties);
+
     // Set a timeout to handle a case when image takes too long to load.
     setTimeout(() => {
       if (!this.$.downloadedFavicon.complete) {
@@ -70,7 +77,7 @@ export class SiteFaviconElement extends PolymerElement {
     }, 1000);
   }
 
-  private getBackgroundImage_() {
+  protected getBackgroundImage_() {
     if (this.domain) {
       const url = ensureUrlHasScheme(this.domain);
       return getFaviconForPageURL(url || '', false);
@@ -78,20 +85,14 @@ export class SiteFaviconElement extends PolymerElement {
     return getFavicon('');
   }
 
-  private onLoadSuccess_() {
+  protected onLoad_() {
     this.showDownloadedIcon_ = true;
-    this.dispatchEvent(new CustomEvent(
-        'site-favicon-loaded', {bubbles: true, composed: true}));
+    this.fire('site-favicon-loaded');
   }
 
-  private onLoadError_() {
+  protected onLoadError_() {
     this.showDownloadedIcon_ = false;
-    this.dispatchEvent(
-        new CustomEvent('site-favicon-error', {bubbles: true, composed: true}));
-  }
-
-  private onUrlChanged_() {
-    this.showDownloadedIcon_ = false;
+    this.fire('site-favicon-error');
   }
 }
 

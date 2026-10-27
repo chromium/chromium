@@ -3,32 +3,39 @@
 // found in the LICENSE file.
 
 import {quoteString} from 'chrome://resources/js/util.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-export class SearchableLabelElement extends PolymerElement {
+export class SearchableLabelElement extends CrLitElement {
   static get is() {
     return 'searchable-label';
   }
 
-  static get template() {
-    return null;
-  }
-
-  static get properties() {
+  static override get properties() {
     return {
       // The text to show in this label.
-      title: String,
+      title: {type: String},
 
       // The search term to bold within the title.
-      searchTerm: String,
+      searchTerm: {type: String},
     };
   }
 
-  declare title: string;
-  declare searchTerm: string;
+  override accessor title: string = '';
+  accessor searchTerm: string = '';
 
-  static get observers() {
-    return ['setSearchedTextToBold_(title, searchTerm)'];
+  // Do not attach a shadowRoot so that nodes appended to the light DOM in
+  // `setSearchedTextToBold_()` are actually visible.
+  override createRenderRoot() {
+    return this;
+  }
+
+  override updated(changedProperties: PropertyValues<this>) {
+    super.updated(changedProperties);
+
+    if (changedProperties.has('title') || changedProperties.has('searchTerm')) {
+      this.setSearchedTextToBold_();
+    }
   }
 
   /**
@@ -36,10 +43,6 @@ export class SearchableLabelElement extends PolymerElement {
    * occurrences of the search term in bold.
    */
   private setSearchedTextToBold_() {
-    if (this.title === undefined) {
-      return;
-    }
-
     const titleText = this.title;
 
     if (!this.searchTerm) {
