@@ -57,6 +57,17 @@ bool TabContextState::operator==(const TabContextState& other) const {
          deselected == other.deselected;
 }
 
+bool TabContextState::ContainsTab(SessionID tab_id) const {
+  if (!tab_id.is_valid()) {
+    return false;
+  }
+  const auto has_tab_id = [tab_id](const TabInfo& tab) {
+    return tab.tab_id == tab_id.id();
+  };
+  return std::ranges::any_of(attached, has_tab_id) ||
+         std::ranges::any_of(restored, has_tab_id);
+}
+
 namespace {
 
 std::vector<FileInfo> TokensToFileInfos(

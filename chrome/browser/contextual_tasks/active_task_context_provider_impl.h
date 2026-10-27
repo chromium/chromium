@@ -6,7 +6,10 @@
 #define CHROME_BROWSER_CONTEXTUAL_TASKS_ACTIVE_TASK_CONTEXT_PROVIDER_IMPL_H_
 
 #include <map>
+#include <memory>
+#include <optional>
 #include <set>
+#include <string>
 
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
@@ -20,6 +23,7 @@
 #include "components/contextual_tasks/public/contextual_tasks_service.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "url/gurl.h"
 
 class BrowserWindowInterface;
 
@@ -71,9 +75,28 @@ class ActiveTaskContextProviderImpl : public ActiveTaskContextProvider,
   void PrimaryPageChanged(content::Page& page) override;
 
  private:
+  class TabNavigationObserver;
+
   // TabListInterfaceObserver overrides:
+  void OnTabAdded(TabListInterface& tab_list,
+                  tabs::TabInterface* tab,
+                  int index) override;
   void OnActiveTabChanged(TabListInterface& tab_list,
                           tabs::TabInterface* tab) override;
+  void OnTabRemoved(TabListInterface& tab_list,
+                    tabs::TabInterface* tab,
+                    TabRemovedReason removed_reason) override;
+  void OnWebContentsReplaced(TabListInterface& tab_list,
+                             tabs::TabInterface* tab,
+                             content::WebContents* old_contents,
+                             content::WebContents* new_contents) override;
+  void OnTabListDestroyed(TabListInterface& tab_list) override;
+
+  void ObserveTab(tabs::TabInterface* tab);
+  void OnTabNavigated(tabs::TabInterface* tab, const GURL& previous_url);
+  bool NotifyTabClosedOrNavigated(SessionID tab_session_id,
+                                  std::optional<GURL> current_url,
+                                  std::optional<std::string> current_title);
 
   // Callback for when GetContextForTask() completes.
   void OnGetContextForTask(int callback_id,
@@ -89,6 +112,8 @@ class ActiveTaskContextProviderImpl : public ActiveTaskContextProvider,
   std::set<tabs::TabHandle> backend_context_tabs_;
   base::WeakPtr<contextual_search::ContextualSearchSessionHandle>
       session_handle_;
+  std::map<raw_ptr<tabs::TabInterface>, std::unique_ptr<TabNavigationObserver>>
+      tab_navigation_observers_;
 
   // The task associated with the currently active tab.
   std::optional<base::Uuid> active_task_id_;
