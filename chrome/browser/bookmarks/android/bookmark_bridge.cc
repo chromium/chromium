@@ -776,7 +776,9 @@ void BookmarkBridge::GetChildIds(JNIEnv* env,
                                  int32_t type,
                                  const JavaRef<jobject>& j_result_obj) {
   CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
-  CHECK(IsLoaded(), base::NotFatalUntil::M161);
+  // TODO(crbug.com/577650105): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(IsLoaded());
 
   const BookmarkNode* parent = GetNodeByID(id, type);
   if (!parent->is_folder() || !IsReachable(parent))
