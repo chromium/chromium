@@ -487,16 +487,14 @@ ImageBitmapRenderingContext::GetResourceForPushFrame(
 
   cc::PaintFlags paint_flags;
   paint_flags.setBlendMode(SkBlendMode::kSrc);
-  scoped_refptr<CanvasResource> resource =
+  scoped_refptr<ExportedCanvasResource> resource =
       resource_provider_for_offscreen_canvas_
           ->DoExternalOverdrawAndProduceResource([&](cc::PaintCanvas& canvas) {
             canvas.drawImage(image->PaintImageForCurrentFrame(), 0, 0,
                              SkSamplingOptions(), &paint_flags);
           });
   should_call_push_frame = true;
-  return resource
-             ? base::MakeRefCounted<ExportedCanvasResource>(std::move(resource))
-             : nullptr;
+  return resource;
 }
 
 V8RenderingContext* ImageBitmapRenderingContext::AsV8RenderingContext() {

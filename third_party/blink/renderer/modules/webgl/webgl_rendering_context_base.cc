@@ -2205,10 +2205,7 @@ WebGLRenderingContextBase::PaintRenderingResultsToResource(
 
   if (!must_paint_to_canvas_ && !cleared_content && resource_provider_.get()) {
     // `resource_provider_` already has the current contents.
-    auto resource = resource_provider_->ProduceCanvasResource();
-    return resource ? base::MakeRefCounted<ExportedCanvasResource>(
-                          std::move(resource))
-                    : nullptr;
+    return resource_provider_->ProduceCanvasResource();
   }
 
   return CopyRenderingResultsFromDrawingBufferToResource(source_buffer);
@@ -2308,7 +2305,7 @@ WebGLRenderingContextBase::CopyRenderingResultsFromDrawingBufferToResource(
   }
 
   bool copy_succeeded = false;
-  scoped_refptr<CanvasResource> resource;
+  scoped_refptr<ExportedCanvasResource> resource;
   if (!resource_provider->IsSoftware()) {
     copy_succeeded = CopyRenderingResultsFromDrawingBufferAccelerated(
         resource_provider, source_buffer);
@@ -2337,9 +2334,7 @@ WebGLRenderingContextBase::CopyRenderingResultsFromDrawingBufferToResource(
 
   // We successfully painted the contents to the resource provider.
   must_paint_to_canvas_ = false;
-  return resource
-             ? base::MakeRefCounted<ExportedCanvasResource>(std::move(resource))
-             : nullptr;
+  return resource;
 }
 
 bool WebGLRenderingContextBase::

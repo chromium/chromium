@@ -69,10 +69,8 @@ class CanvasResourceDispatcherTest
       public ::testing::WithParamInterface<TestParams> {
  public:
   void DispatchOneFrame() {
-    scoped_refptr<CanvasResource> canvas_resource =
+    scoped_refptr<ExportedCanvasResource> exported_resource =
         resource_provider_->ProduceCanvasResource();
-    auto exported_resource = base::MakeRefCounted<ExportedCanvasResource>(
-        std::move(canvas_resource));
     dispatcher_->DispatchFrame(std::move(exported_resource), gfx::Rect(),
                                /*is_opaque=*/false);
   }

@@ -109,8 +109,8 @@ class CanvasNon2DResourceProviderTest : public testing::Test {
   void TearDown() override { SharedGpuContext::Reset(); }
 
  protected:
-  const gpu::SyncToken& GetSyncToken(const CanvasResource* resource) {
-    return resource->sync_token();
+  const gpu::SyncToken& GetSyncToken(const ExportedCanvasResource* resource) {
+    return resource->GetResourceForTesting()->sync_token();
   }
 
   test::TaskEnvironment task_environment_{

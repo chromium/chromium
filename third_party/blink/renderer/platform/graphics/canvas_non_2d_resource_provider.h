@@ -26,6 +26,7 @@
 #include "third_party/blink/renderer/platform/graphics/canvas_2d_color_params.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_snapshot_info.h"
+#include "third_party/blink/renderer/platform/graphics/exported_canvas_resource.h"
 #include "third_party/blink/renderer/platform/graphics/flush_for_image_listener.h"
 #include "third_party/blink/renderer/platform/graphics/image_orientation.h"
 #include "third_party/blink/renderer/platform/graphics/memory_managed_paint_recorder.h"
@@ -167,13 +168,13 @@ class PLATFORM_EXPORT CanvasNon2DResourceProvider
 
   base::ByteSize EstimatedSizeInBytes() const;
 
-  scoped_refptr<CanvasResource> ProduceCanvasResource();
+  scoped_refptr<ExportedCanvasResource> ProduceCanvasResource();
 
   bool IsValid() const;
   scoped_refptr<StaticBitmapImage> Snapshot(
       ImageOrientation = ImageOrientationEnum::kDefault);
 
-  scoped_refptr<CanvasResource> DoExternalOverdrawAndProduceResource(
+  scoped_refptr<ExportedCanvasResource> DoExternalOverdrawAndProduceResource(
       base::FunctionRef<void(cc::PaintCanvas&)> draw_callback);
 
   scoped_refptr<StaticBitmapImage> DoExternalOverdrawAndSnapshot(
