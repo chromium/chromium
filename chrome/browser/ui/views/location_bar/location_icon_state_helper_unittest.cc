@@ -4,19 +4,31 @@
 
 #include "chrome/browser/ui/views/location_bar/location_icon_state_helper.h"
 
+#include <memory>
+#include <optional>
+#include <string>
+#include <string_view>
+
+#include "base/time/time.h"
 #include "build/branding_buildflags.h"
+#include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/omnibox/browser/autocomplete_controller.h"
 #include "components/omnibox/browser/test_location_bar_model.h"
+#include "components/omnibox/browser/test_omnibox_client.h"
 #include "components/omnibox/browser/vector_icons.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/test/browser_task_environment.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/vector_icon_types.h"
+#include "url/gurl.h"
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)  // nocheck
 #include "chrome/grit/theme_resources.h"
@@ -24,11 +36,13 @@
 #include "ui/base/resource/resource_bundle.h"
 #endif
 
+using location_bar::ExecutePasteAndGo;
 using location_bar::GetSecurityChipAccessibilityState;
 using location_bar::GetSecurityChipText;
 using location_bar::GetSecurityChipTooltipText;
 using location_bar::ShouldAnimateSecurityChipTextChange;
 using location_bar::ShouldShowSecurityChipText;
+using ::testing::_;
 
 class SecurityChipStateHelperTest : public testing::Test {
  public:
@@ -159,3 +173,93 @@ TEST_F(SecurityChipStateHelperTest, MaybeGetGradientGoogleSuperGIcon) {
             location_bar::MaybeGetGradientGoogleSuperGIcon(gradient_icon_20));
 }
 #endif
+
+struct ExecutePasteAndGoTestCase {
+  std::string_view test_name;
+  std::u16string_view pasted_text;
+  std::optional<std::string_view> expected_destination_url;
+};
+
+class ExecutePasteAndGoSchemeTest
+    : public SecurityChipStateHelperTest,
+      public testing::WithParamInterface<ExecutePasteAndGoTestCase> {};
+
+TEST_P(ExecutePasteAndGoSchemeTest, FiltersClipboardSchemes) {
+  OmniboxController omnibox_controller(std::make_unique<TestOmniboxClient>());
+  TestOmniboxClient* const client =
+      static_cast<TestOmniboxClient*>(omnibox_controller.client());
+  const ExecutePasteAndGoTestCase& test_case = GetParam();
+
+  if (test_case.expected_destination_url.has_value()) {
+    EXPECT_CALL(*client,
+                OnAutocompleteAccept(GURL(*test_case.expected_destination_url),
+                                     _, _, _, _, _, _, _, _, _, _));
+  } else {
+    EXPECT_CALL(*client, OnAutocompleteAccept(_, _, _, _, _, _, _, _, _, _, _))
+        .Times(0);
+  }
+
+  ExecutePasteAndGo(omnibox_controller, client->autocomplete_classifier(),
+                    std::u16string(test_case.pasted_text),
+                    base::TimeTicks::Now());
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    ExecutePasteAndGoSchemeTest,
+    testing::Values(
+        ExecutePasteAndGoTestCase{"Http", u"http://example.com/",
+                                  "http://example.com/"},
+        ExecutePasteAndGoTestCase{"Https", u"https://example.com/",
+                                  "https://example.com/"},
+        ExecutePasteAndGoTestCase{"Ftp", u"ftp://example.com/", std::nullopt},
+        ExecutePasteAndGoTestCase{"File", u"file:///etc/passwd", std::nullopt},
+        ExecutePasteAndGoTestCase{"ChromeUI", u"chrome://version",
+                                  std::nullopt},
+        ExecutePasteAndGoTestCase{
+            "Filesystem", u"filesystem:https://example.com/temporary/test.html",
+            std::nullopt},
+        ExecutePasteAndGoTestCase{
+            "Blob",
+            u"blob:https://example.com/550e8400-e29b-41d4-a716-446655440000",
+            std::nullopt},
+        ExecutePasteAndGoTestCase{
+            "JavascriptFilesystem",
+            u"javascript:filesystem:https://example.com/temporary/test.html",
+            std::nullopt},
+        ExecutePasteAndGoTestCase{"JavascriptEmpty", u"javascript:",
+                                  std::nullopt},
+        ExecutePasteAndGoTestCase{"AboutBlank", u"about:blank", std::nullopt},
+        ExecutePasteAndGoTestCase{
+            "ViewSource", u"view-source:https://example.com/", std::nullopt},
+        ExecutePasteAndGoTestCase{"Ws", u"ws://example.com/socket",
+                                  std::nullopt},
+        ExecutePasteAndGoTestCase{"Wss", u"wss://example.com/socket",
+                                  std::nullopt},
+        ExecutePasteAndGoTestCase{"DevTools",
+                                  u"devtools://devtools/bundled/inspector.html",
+                                  std::nullopt},
+        ExecutePasteAndGoTestCase{"Whitespace", u"   ", std::nullopt}),
+    [](const testing::TestParamInfo<ExecutePasteAndGoTestCase>& info) {
+      return std::string(info.param.test_name);
+    });
+
+TEST_F(SecurityChipStateHelperTest,
+       ExecutePasteAndGoUsesClientPageClassification) {
+  OmniboxController omnibox_controller(std::make_unique<TestOmniboxClient>());
+  TestOmniboxClient* const client =
+      static_cast<TestOmniboxClient*>(omnibox_controller.client());
+  client->location_bar_model()->set_page_classification(
+      metrics::OmniboxEventProto::INSTANT_NTP_WITH_OMNIBOX_AS_STARTING_FOCUS);
+
+  ExecutePasteAndGo(omnibox_controller, client->autocomplete_classifier(),
+                    u"filesystem:https://example.com/temporary/test.html",
+                    base::TimeTicks::Now());
+
+  EXPECT_EQ(
+      metrics::OmniboxEventProto::INSTANT_NTP_WITH_OMNIBOX_AS_STARTING_FOCUS,
+      client->autocomplete_classifier()
+          ->autocomplete_controller()
+          ->input()
+          .current_page_classification());
+}

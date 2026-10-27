@@ -4,12 +4,17 @@
 
 #include "chrome/browser/ui/browser_commands.h"
 
+#include <string>
+#include <string_view>
+
 #include "base/path_service.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/task/current_thread.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/branding_buildflags.h"
+#include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/lifetime/browser_shutdown.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
@@ -47,10 +52,13 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "net/dns/mock_host_resolver.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/clipboard/clipboard.h"
+#include "ui/base/clipboard/clipboard_buffer.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/ui_base_features.h"
+#include "url/gurl.h"
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING) && !BUILDFLAG(IS_CHROMEOS)
 #include "chrome/test/base/scoped_channel_override.h"
@@ -870,42 +878,17 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 #if BUILDFLAG(IS_LINUX)
-// Tests that unsafe schemes are not allowed when opening new tabs from a
-// clipboard URL.
-IN_PROC_BROWSER_TEST_F(BrowserCommandsTest,
-                       NewTabFromClipboardURLBlocksUnsafeSchemes) {
-  if (!ui::Clipboard::IsSupportedClipboardBuffer(
+IN_PROC_BROWSER_TEST_F(BrowserCommandsTest, NewTabFromClipboardURL) {
+  content::BrowserTestClipboardScope clipboard_scope;
+  if (!ui::Clipboard::IsMiddleClickPasteEnabled() ||
+      !ui::Clipboard::IsSupportedClipboardBuffer(
           ui::ClipboardBuffer::kSelection)) {
     return;
   }
 
-  TabStripModel* tab_strip_model = browser()->tab_strip_model();
-  int initial_tab_count = tab_strip_model->count();
-
-  // Try file:// URL. Note: ui::Clipboard::ReadText is asynchronous on Linux, so
-  // we must pump the runloop to allow the callback to run and be rejected.
-  {
-    ui::ScopedClipboardWriter writer(ui::ClipboardBuffer::kSelection);
-    writer.WriteText(u"file:///etc/passwd");
-  }
-
-  chrome::NewTabFromClipboardURL(browser());
-  base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(initial_tab_count, tab_strip_model->count());
-
-  // Try chrome:// URL.
-  {
-    ui::ScopedClipboardWriter writer(ui::ClipboardBuffer::kSelection);
-    writer.WriteText(u"chrome://version");
-  }
-
-  chrome::NewTabFromClipboardURL(browser());
-  base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(initial_tab_count, tab_strip_model->count());
-
-  // Try a safe URL (http). We explicitly observe both the new tab addition and
-  // the navigation completion instead of guessing runloop cycles.
-  GURL safe_url = https_server_.GetURL("a.test", "/title1.html");
+  TabStripModel* const tab_strip_model = browser()->tab_strip_model();
+  const int initial_tab_count = tab_strip_model->count();
+  const GURL safe_url = https_server_.GetURL("a.test", "/title1.html");
   {
     ui::ScopedClipboardWriter writer(ui::ClipboardBuffer::kSelection);
     writer.WriteText(base::UTF8ToUTF16(safe_url.spec()));
@@ -923,6 +906,74 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandsTest,
   EXPECT_EQ(safe_url,
             tab_strip_model->GetActiveWebContents()->GetLastCommittedURL());
 }
+
+struct BlockedClipboardUrlTestCase {
+  std::string_view test_name;
+  std::u16string_view clipboard_text;
+};
+
+class BrowserCommandsBlockedClipboardUrlTest
+    : public BrowserCommandsTest,
+      public testing::WithParamInterface<BlockedClipboardUrlTestCase> {};
+
+// Tests that non-HTTP(S) schemes (including web-safe schemes such as
+// filesystem:, blob:, data:, chrome-extension:, and ws:) are not allowed when
+// opening new tabs from a clipboard URL.
+IN_PROC_BROWSER_TEST_P(BrowserCommandsBlockedClipboardUrlTest,
+                       NewTabFromClipboardURLBlocksUnsafeScheme) {
+  content::BrowserTestClipboardScope clipboard_scope;
+  if (!ui::Clipboard::IsMiddleClickPasteEnabled() ||
+      !ui::Clipboard::IsSupportedClipboardBuffer(
+          ui::ClipboardBuffer::kSelection)) {
+    return;
+  }
+
+  TabStripModel* const tab_strip_model = browser()->tab_strip_model();
+  const int initial_tab_count = tab_strip_model->count();
+  {
+    ui::ScopedClipboardWriter writer(ui::ClipboardBuffer::kSelection);
+    writer.WriteText(GetParam().clipboard_text);
+  }
+
+  chrome::NewTabFromClipboardURL(browser());
+  EXPECT_EQ(initial_tab_count, tab_strip_model->count());
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    BrowserCommandsBlockedClipboardUrlTest,
+    testing::Values(
+        BlockedClipboardUrlTestCase{"File", u"file:///etc/passwd"},
+        BlockedClipboardUrlTestCase{"ChromeUI", u"chrome://version"},
+        BlockedClipboardUrlTestCase{"ChromeUntrusted",
+                                    u"chrome-untrusted://terminal"},
+        BlockedClipboardUrlTestCase{
+            "ChromeExtension",
+            u"chrome-extension://aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/"
+            u"manifest.json"},
+        BlockedClipboardUrlTestCase{
+            "ChromeSearch", u"chrome-search://local-ntp/local-ntp.html"},
+        BlockedClipboardUrlTestCase{
+            "Filesystem", u"filesystem:https://a.test/temporary/test.html"},
+        BlockedClipboardUrlTestCase{
+            "Blob",
+            u"blob:https://a.test/550e8400-e29b-41d4-a716-446655440000"},
+        BlockedClipboardUrlTestCase{"Data", u"data:text/html,<h1>hi</h1>"},
+        BlockedClipboardUrlTestCase{
+            "JavascriptFilesystem",
+            u"javascript:filesystem:https://a.test/temporary/test.html"},
+        BlockedClipboardUrlTestCase{"JavascriptEmpty", u"javascript:"},
+        BlockedClipboardUrlTestCase{"AboutBlank", u"about:blank"},
+        BlockedClipboardUrlTestCase{"ViewSource",
+                                    u"view-source:https://a.test/title1.html"},
+        BlockedClipboardUrlTestCase{"Ws", u"ws://a.test/socket"},
+        BlockedClipboardUrlTestCase{"Wss", u"wss://a.test/socket"},
+        BlockedClipboardUrlTestCase{
+            "DevTools", u"devtools://devtools/bundled/inspector.html"},
+        BlockedClipboardUrlTestCase{"Whitespace", u"   "}),
+    [](const testing::TestParamInfo<BlockedClipboardUrlTestCase>& info) {
+      return std::string(info.param.test_name);
+    });
 #endif
 
 IN_PROC_BROWSER_TEST_F(BrowserCommandsTest, NewIncognitoWindowMetrics) {

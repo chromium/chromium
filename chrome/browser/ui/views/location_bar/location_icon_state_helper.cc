@@ -15,16 +15,18 @@
 #include "components/omnibox/browser/autocomplete_classifier.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/location_bar_model.h"
+#include "components/omnibox/browser/omnibox_client.h"
 #include "components/omnibox/browser/omnibox_text_util.h"
 #include "components/strings/grit/components_strings.h"
-#include "content/public/browser/child_process_security_policy.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/url_constants.h"
 #include "extensions/common/constants.h"
+#include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
+#include "url/gurl.h"
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)              // nocheck
 #include "chrome/grit/theme_resources.h"
@@ -181,7 +183,7 @@ void ExecutePasteAndGo(OmniboxController& omnibox_controller,
                        AutocompleteClassifier* autocomplete_classifier,
                        const std::u16string& text,
                        base::TimeTicks event_timestamp) {
-  std::u16string sanitized_text = omnibox::SanitizeTextForPaste(text);
+  const std::u16string sanitized_text = omnibox::SanitizeTextForPaste(text);
 
   if (!autocomplete_classifier) {
     return;
@@ -191,12 +193,15 @@ void ExecutePasteAndGo(OmniboxController& omnibox_controller,
     return;
   }
 
+  const metrics::OmniboxEventProto::PageClassification page_classification =
+      omnibox_controller.client()->GetPageClassification(
+          /*is_prefetch=*/false);
   AutocompleteMatch match;
-  autocomplete_classifier->Classify(sanitized_text, false, false,
-                                    metrics::OmniboxEventProto::BLANK, &match,
-                                    nullptr);
-  if (!content::ChildProcessSecurityPolicy::GetInstance()->IsWebSafeScheme(
-          std::string(match.destination_url.scheme()))) {
+  autocomplete_classifier->Classify(sanitized_text, /*in_keyword_mode=*/false,
+                                    /*allow_exact_keyword_match=*/false,
+                                    page_classification, &match, nullptr);
+  if (!match.destination_url.is_valid() ||
+      !match.destination_url.SchemeIsHTTPOrHTTPS()) {
     return;
   }
 

@@ -5,6 +5,8 @@
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 
 #include <algorithm>
+#include <string>
+#include <string_view>
 
 #include "base/auto_reset.h"
 #include "base/functional/bind.h"
@@ -68,10 +70,12 @@
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "services/device/public/cpp/test/scoped_geolocation_overrider.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/page/page_zoom.h"
 #include "ui/actions/actions.h"
 #include "ui/base/clipboard/clipboard.h"
+#include "ui/base/clipboard/clipboard_buffer.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/pointer/touch_ui_controller.h"
@@ -82,6 +86,7 @@
 #include "ui/views/background.h"
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/test/views_test_utils.h"
+#include "url/gurl.h"
 
 #if BUILDFLAG(IS_OZONE)
 #include "ui/ozone/public/ozone_platform.h"
@@ -785,9 +790,25 @@ IN_PROC_BROWSER_TEST_F(LocationBarViewAddContextButtonBrowserTest,
       [&]() { return location_bar_view->ShouldShowAddContextButton(); }));
 }
 
-// Tests that unsafe schemes are not allowed to be opened from middle clicks.
-IN_PROC_BROWSER_TEST_F(LocationBarViewBrowserTest,
-                       MiddleClickPasteAndGoBlocksUnsafeSchemes) {
+namespace {
+
+struct BlockedClipboardUrlTestCase {
+  std::string_view test_name;
+  std::u16string_view clipboard_text;
+};
+
+}  // namespace
+
+class LocationBarViewBlockedClipboardUrlBrowserTest
+    : public LocationBarViewBrowserTest,
+      public testing::WithParamInterface<BlockedClipboardUrlTestCase> {};
+
+// Tests that non-HTTP(S) schemes (including web-safe schemes such as
+// filesystem:, blob:, data:, chrome-extension:, and ws:) are not allowed to be
+// opened from middle clicks.
+IN_PROC_BROWSER_TEST_P(LocationBarViewBlockedClipboardUrlBrowserTest,
+                       MiddleClickPasteAndGoBlocksUnsafeScheme) {
+  content::BrowserTestClipboardScope clipboard_scope;
   if (!ui::Clipboard::IsMiddleClickPasteEnabled() ||
       !ui::Clipboard::IsSupportedClipboardBuffer(
           ui::ClipboardBuffer::kSelection)) {
@@ -795,46 +816,63 @@ IN_PROC_BROWSER_TEST_F(LocationBarViewBrowserTest,
   }
 
   ASSERT_TRUE(embedded_test_server()->Start());
-  GURL start_url = embedded_test_server()->GetURL("/title1.html");
+  const GURL start_url = embedded_test_server()->GetURL("/title1.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), start_url));
 
-  LocationBarView* location_bar_view = GetLocationBarView();
-  LocationIconView* location_icon_view =
-      location_bar_view->location_icon_view();
-
-  // Try file:// URL. Note: ui::Clipboard::ReadText is asynchronous on Linux, so
-  // we must pump the runloop to allow the callback to run and be rejected.
   {
     ui::ScopedClipboardWriter writer(ui::ClipboardBuffer::kSelection);
-    writer.WriteText(u"file:///etc/passwd");
+    writer.WriteText(GetParam().clipboard_text);
   }
 
-  ui::MouseEvent middle_click_event(ui::EventType::kMousePressed, gfx::Point(),
-                                    gfx::Point(), base::TimeTicks::Now(),
-                                    ui::EF_MIDDLE_MOUSE_BUTTON,
-                                    ui::EF_MIDDLE_MOUSE_BUTTON);
-  location_icon_view->OnMousePressed(middle_click_event);
-  base::RunLoop().RunUntilIdle();
+  const ui::MouseEvent middle_click_event(
+      ui::EventType::kMousePressed, gfx::Point(), gfx::Point(),
+      base::TimeTicks::Now(), ui::EF_MIDDLE_MOUSE_BUTTON,
+      ui::EF_MIDDLE_MOUSE_BUTTON);
+  GetLocationBarView()->location_icon_view()->OnMousePressed(
+      middle_click_event);
 
-  EXPECT_EQ(start_url, browser()
-                           ->GetTabStripModel()
-                           ->GetActiveWebContents()
-                           ->GetLastCommittedURL());
-
-  // Try chrome:// URL.
-  {
-    ui::ScopedClipboardWriter writer(ui::ClipboardBuffer::kSelection);
-    writer.WriteText(u"chrome://version");
-  }
-
-  location_icon_view->OnMousePressed(middle_click_event);
-  base::RunLoop().RunUntilIdle();
-
-  EXPECT_EQ(start_url, browser()
-                           ->GetTabStripModel()
-                           ->GetActiveWebContents()
-                           ->GetLastCommittedURL());
+  content::WebContents* const web_contents =
+      browser()->GetTabStripModel()->GetActiveWebContents();
+  EXPECT_EQ(nullptr, web_contents->GetController().GetPendingEntry());
+  EXPECT_EQ(start_url, web_contents->GetVisibleURL());
+  EXPECT_EQ(start_url, web_contents->GetLastCommittedURL());
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    LocationBarViewBlockedClipboardUrlBrowserTest,
+    testing::Values(
+        BlockedClipboardUrlTestCase{"File", u"file:///etc/passwd"},
+        BlockedClipboardUrlTestCase{"ChromeUI", u"chrome://version"},
+        BlockedClipboardUrlTestCase{"ChromeUntrusted",
+                                    u"chrome-untrusted://terminal"},
+        BlockedClipboardUrlTestCase{
+            "ChromeExtension",
+            u"chrome-extension://aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/"
+            u"manifest.json"},
+        BlockedClipboardUrlTestCase{
+            "ChromeSearch", u"chrome-search://local-ntp/local-ntp.html"},
+        BlockedClipboardUrlTestCase{
+            "Filesystem", u"filesystem:http://127.0.0.1/temporary/test.html"},
+        BlockedClipboardUrlTestCase{
+            "Blob",
+            u"blob:http://127.0.0.1/550e8400-e29b-41d4-a716-446655440000"},
+        BlockedClipboardUrlTestCase{"Data", u"data:text/html,<h1>hi</h1>"},
+        BlockedClipboardUrlTestCase{
+            "JavascriptFilesystem",
+            u"javascript:filesystem:http://127.0.0.1/temporary/test.html"},
+        BlockedClipboardUrlTestCase{"JavascriptEmpty", u"javascript:"},
+        BlockedClipboardUrlTestCase{"AboutBlank", u"about:blank"},
+        BlockedClipboardUrlTestCase{
+            "ViewSource", u"view-source:http://127.0.0.1/title1.html"},
+        BlockedClipboardUrlTestCase{"Ws", u"ws://127.0.0.1/socket"},
+        BlockedClipboardUrlTestCase{"Wss", u"wss://127.0.0.1/socket"},
+        BlockedClipboardUrlTestCase{
+            "DevTools", u"devtools://devtools/bundled/inspector.html"},
+        BlockedClipboardUrlTestCase{"Whitespace", u"   "}),
+    [](const testing::TestParamInfo<BlockedClipboardUrlTestCase>& info) {
+      return std::string(info.param.test_name);
+    });
 
 class LocationBarViewElevatedToolbarBrowserTest
     : public LocationBarViewBrowserTest {
