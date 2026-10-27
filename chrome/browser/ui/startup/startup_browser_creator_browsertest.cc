@@ -8,15 +8,21 @@
 
 #include <algorithm>
 #include <memory>
+#include <optional>
+#include <set>
 #include <string>
 #include <string_view>
+#include <tuple>
+#include <utility>
+#include <vector>
 
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
-#include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/scoped_observation.h"
 #include "base/strings/string_util.h"
@@ -30,13 +36,13 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
+#include "base/values.h"
 #include "base/version_info/version_info.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/buildflags.h"
 #include "chrome/browser/chrome_browser_main.h"
 #include "chrome/browser/chrome_browser_main_extra_parts.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
@@ -60,13 +66,11 @@
 #include "chrome/browser/sessions/session_restore_test_helper.h"
 #include "chrome/browser/sessions/session_restore_test_utils.h"
 #include "chrome/browser/sessions/session_service_factory.h"
-#include "chrome/browser/signin/signin_promo.h"
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_init_state.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/browser_window/public/create_browser_window.h"
@@ -74,7 +78,6 @@
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/profiles/profile_ui_test_utils.h"
 #include "chrome/browser/ui/search/ntp_test_utils.h"
-#include "chrome/browser/ui/startup/launch_mode_recorder.h"
 #include "chrome/browser/ui/startup/profile_launch_observer.h"
 #include "chrome/browser/ui/startup/startup_browser_creator_impl.h"
 #include "chrome/browser/ui/startup/startup_types.h"
@@ -108,12 +111,12 @@
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
+#include "components/policy/core/common/policy_types.h"
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
-#include "components/signin/public/base/signin_switches.h"
 #include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
-#include "content/public/browser/navigation_controller.h"
+#include "content/public/browser/browser_main_parts.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
@@ -123,38 +126,46 @@
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/test_management_policy.h"
+#include "extensions/common/constants.h"
+#include "extensions/common/extension.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "net/base/features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/strings/ascii.h"
+#include "ui/base/ozone_buildflags.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/views/controls/webview/webview.h"
 #include "url/gurl.h"
+#include "url/url_constants.h"
 
 #if !BUILDFLAG(IS_CHROMEOS)
-#include "base/functional/callback.h"
+#include "base/check.h"
 #include "base/json/values_util.h"
+#include "base/logging.h"
 #include "base/run_loop.h"
-#include "base/values.h"
 #include "chrome/browser/first_run/scoped_relaunch_chrome_browser_override.h"
+#include "chrome/browser/first_run/upgrade_util.h"
 #include "chrome/browser/ui/profiles/profile_picker.h"
+#include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/webui/signin/profile_picker_handler.h"
 #include "chrome/browser/ui/webui/signin/profile_picker_ui.h"
-#include "components/policy/core/common/external_data_fetcher.h"
+#include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
+#include "chrome/common/webui_url_constants.h"
 #include "components/policy/core/common/policy_map.h"
-#include "components/policy/core/common/policy_types.h"
+#include "components/webapps/common/web_app_id.h"
+#include "extensions/browser/extension_system.h"
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-#include "base/json/json_string_value_serializer.h"
 #include "chrome/browser/ui/views/web_apps/protocol_handler_launch_dialog_view.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
-#include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
+#include "components/services/app_service/public/cpp/file_handler.h"
+#include "components/services/app_service/public/cpp/protocol_handler_info.h"
 #include "third_party/blink/public/common/features.h"
 #include "ui/views/widget/any_widget_observer.h"
 #include "ui/views/widget/widget.h"
@@ -164,8 +175,18 @@ using testing::Return;
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_LINUX)
+#include "base/functional/callback_helpers.h"
 #include "base/nix/xdg_util.h"
-#endif
+#include "base/strings/string_view_util.h"
+#if BUILDFLAG(SUPPORTS_OZONE_X11)
+#include "ui/aura/window.h"
+#include "ui/aura/window_tree_host.h"
+#include "ui/gfx/x/atom_cache.h"
+#include "ui/gfx/x/connection.h"
+#include "ui/gfx/x/xproto.h"
+#include "ui/ozone/public/ozone_platform.h"
+#endif  // BUILDFLAG(SUPPORTS_OZONE_X11)
+#endif  // BUILDFLAG(IS_LINUX)
 
 #if BUILDFLAG(IS_MAC)
 #include "chrome/browser/apps/app_shim/app_shim_manager_mac.h"
@@ -231,6 +252,33 @@ struct StartupBrowserCreatorFlagTypeValue {
 };
 
 #endif  // !BUILDFLAG(IS_CHROMEOS)
+
+#if BUILDFLAG(IS_LINUX)
+void ExpectNewWindowActivationToken(BrowserWindowInterface* browser,
+                                    std::string_view expected_token) {
+  ASSERT_TRUE(base::test::RunUntil(
+      [browser] { return browser->GetWindow()->IsVisible(); }));
+  EXPECT_EQ(BrowserInitState::From(browser)->create_params().startup_id,
+            expected_token);
+
+#if BUILDFLAG(SUPPORTS_OZONE_X11)
+  if (ui::OzonePlatform::RunningOnX11ForTest()) {
+    // X11 activation can overwrite the native startup ID.
+    auto* host = browser->GetWindow()->GetNativeWindow()->GetHost();
+    ASSERT_TRUE(host);
+    const auto xwindow = static_cast<x11::Window>(host->GetAcceleratedWidget());
+    std::vector<char> token_bytes;
+    x11::Atom property_type = x11::Atom::None;
+    ASSERT_TRUE(x11::Connection::Get()->GetArrayProperty(
+        xwindow, x11::GetAtom("_NET_STARTUP_ID"), &token_bytes,
+        &property_type));
+    EXPECT_EQ(property_type, x11::GetAtom("UTF8_STRING"));
+    EXPECT_EQ(base::as_string_view(token_bytes), expected_token);
+  }
+#endif
+  EXPECT_FALSE(base::nix::TakeXdgActivationToken().has_value());
+}
+#endif  // BUILDFLAG(IS_LINUX)
 
 typedef std::optional<policy::PolicyLevel> PolicyVariant;
 
@@ -2135,6 +2183,83 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest,
             "cold-start-token-456");
   EXPECT_FALSE(base::nix::TakeXdgActivationToken().has_value());
 }
+
+IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest,
+                       RemoteActivationTokenOverridesBackgroundToken) {
+  base::ScopedClosureRunner clear_token(
+      base::BindOnce(base::IgnoreResult(&base::nix::TakeXdgActivationToken)));
+  ASSERT_TRUE(browser()->GetWindow()->IsVisible());
+
+  TabStripModel* const tab_strip = browser()->GetTabStripModel();
+  const int initial_tab_count = tab_strip->count();
+  const int initial_active_index = tab_strip->active_index();
+  StartupProfilePathInfo path_info = {browser()->GetProfile()->GetPath(),
+                                      StartupProfileMode::kBrowserWindow};
+  // OpenTabsInBrowser() stores the token for the window it reuses, and
+  // ShowInactive() skips the Activate() that would consume it.
+  base::CommandLine background_launch(base::CommandLine::NO_PROGRAM);
+  background_launch.AppendSwitch(switches::kOpenInBackground);
+  background_launch.AppendSwitchASCII(base::nix::kXdgActivationTokenSwitch,
+                                      "background-token");
+  background_launch.AppendArg(url::kAboutBlankURL);
+  StartupBrowserCreator::ProcessCommandLineAlreadyRunning(background_launch, {},
+                                                          path_info);
+  ASSERT_EQ(1u, ProfileBrowserCollection::GetForProfile(browser()->GetProfile())
+                    ->GetSize());
+  ASSERT_EQ(initial_tab_count + 1, tab_strip->count());
+  ASSERT_EQ(initial_active_index, tab_strip->active_index());
+
+  base::CommandLine new_window_launch(base::CommandLine::NO_PROGRAM);
+  new_window_launch.AppendSwitch(switches::kOpenInNewWindow);
+  new_window_launch.AppendSwitchASCII(base::nix::kXdgActivationTokenSwitch,
+                                      "new-window-token");
+  new_window_launch.AppendArg(url::kAboutBlankURL);
+  ui_test_utils::BrowserCreatedObserver observer;
+  StartupBrowserCreator::ProcessCommandLineAlreadyRunning(new_window_launch, {},
+                                                          path_info);
+
+  BrowserWindowInterface* new_browser = observer.Wait();
+  ASSERT_NE(new_browser, browser());
+  ASSERT_NO_FATAL_FAILURE(
+      ExpectNewWindowActivationToken(new_browser, "new-window-token"));
+}
+
+class StartupBrowserCreatorActivationTokenTest
+    : public StartupBrowserCreatorTest,
+      public testing::WithParamInterface<std::string_view> {};
+
+IN_PROC_BROWSER_TEST_P(StartupBrowserCreatorActivationTokenTest,
+                       CommandLineTokenOverridesStoredToken) {
+  base::ScopedClosureRunner clear_token(
+      base::BindOnce(base::IgnoreResult(&base::nix::TakeXdgActivationToken)));
+
+  base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
+  command_line.AppendSwitch(switches::kOpenInNewWindow);
+  command_line.AppendSwitchASCII(GetParam(), "launch-token");
+  command_line.AppendArg(url::kAboutBlankURL);
+  StartupProfilePathInfo path_info = {browser()->GetProfile()->GetPath(),
+                                      StartupProfileMode::kBrowserWindow};
+  ui_test_utils::BrowserCreatedObserver observer;
+  base::nix::SetActivationToken("stored-token");
+  StartupBrowserCreator::ProcessCommandLineAlreadyRunning(command_line, {},
+                                                          path_info);
+
+  BrowserWindowInterface* new_browser = observer.Wait();
+  ASSERT_NE(new_browser, browser());
+  ASSERT_NO_FATAL_FAILURE(
+      ExpectNewWindowActivationToken(new_browser, "launch-token"));
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    StartupBrowserCreatorActivationTokenTest,
+    testing::Values(base::nix::kXdgActivationTokenSwitch,
+                    base::nix::kDesktopStartupIdSwitch),
+    [](const testing::TestParamInfo<std::string_view>& info) {
+      return info.param == base::nix::kXdgActivationTokenSwitch
+                 ? "Xdg"
+                 : "DesktopStartupId";
+    });
 #endif  // BUILDFLAG(IS_LINUX)
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)

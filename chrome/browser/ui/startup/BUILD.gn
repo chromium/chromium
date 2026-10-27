@@ -4,6 +4,7 @@
 
 import("//build/buildflag_header.gni")
 import("//build/config/chrome_build.gni")
+import("//build/config/ozone.gni")
 import("//build/config/ui.gni")
 import("//components/signin/features.gni")
 import("//extensions/buildflags/buildflags.gni")
@@ -544,10 +545,20 @@ if (!is_android) {
       "//third_party/abseil-cpp:absl",
       "//third_party/blink/public/common:headers",
       "//ui/base",
+      "//ui/base:ozone_buildflags",
       "//ui/views",
       "//ui/views/controls/webview",
       "//url",
     ]
+    if (use_ozone) {
+      deps += [ "//ui/ozone" ]
+    }
+    if (ozone_platform_x11) {
+      deps += [
+        "//ui/aura",
+        "//ui/gfx/x",
+      ]
+    }
     if (is_win) {
       sources += [
         "credential_provider_signin_dialog_win_browsertest.cc",
