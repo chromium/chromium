@@ -122,8 +122,8 @@ class MockHost(MockSystemHost):
                     },
                 },
                 'mac-rel': {
-                    'port_name': 'mac-mac15',
-                    'specifiers': ['Mac15', 'Release'],
+                    'port_name': 'mac-mac26-arm64',
+                    'specifiers': ['Mac26-arm64', 'Release'],
                     'is_try_builder': True,
                     'steps': {
                         'blink_web_tests': {},

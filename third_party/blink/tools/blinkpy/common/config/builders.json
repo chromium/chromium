@@ -237,8 +237,8 @@
     },
     "mac-rel": {
         "main": "tryserver.chromium.mac",
-        "port_name": "mac-mac15",
-        "specifiers": ["Mac15", "Release"],
+        "port_name": "mac-mac26-arm64",
+        "specifiers": ["Mac26-arm64", "Release"],
         "steps": {
             "blink_web_tests": {},
             "blink_wpt_tests": {},
