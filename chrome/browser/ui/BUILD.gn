@@ -624,6 +624,7 @@ if (!is_android) {
       ":chrome_pages",
       "//base",
       "//chrome/browser:browser_process",
+      "//chrome/browser/actor",
       "//chrome/browser/devtools",
       "//chrome/browser/download",
       "//chrome/browser/lifetime",

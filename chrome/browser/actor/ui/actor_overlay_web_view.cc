@@ -72,6 +72,8 @@ void ActorOverlayWebView::CloseUI() {
     // Re-enable mouse, keyboard, and a11y input events to the underlying web
     // contents by resetting the ScopedIgnoreInputEvents object.
     scoped_ignore_input_events_.reset();
+    // Clear the embedding tab context when the overlay closes.
+    webui::SetTabInterface(web_contents(), nullptr);
     web_contents()->WasHidden();
   }
 }

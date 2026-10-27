@@ -6,15 +6,22 @@
 
 #import <Cocoa/Cocoa.h>
 
+#include "base/functional/callback_helpers.h"
 #include "base/test/run_until.h"
+#include "base/test/scoped_feature_list.h"
+#include "chrome/browser/actor/ui/actor_task_unload_handler.h"
 #import "chrome/browser/app_controller_mac.h"
+#include "chrome/browser/lifetime/application_lifetime_desktop.h"
 #include "chrome/browser/lifetime/browser_shutdown.h"
 #include "chrome/browser/ui/browser_window.h"
 #import "chrome/browser/ui/cocoa/confirm_quit.h"
+#include "chrome/browser/ui/unload_controller.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/views/widget/widget.h"
+#include "ui/views/window/dialog_delegate.h"
 
 namespace {
 
@@ -375,6 +382,71 @@ IN_PROC_BROWSER_TEST_F(ConfirmQuitControllerPanelInteractiveUITest,
   // Wait for the panel to fade out and close, which should trigger the
   // callback.
   EXPECT_TRUE(base::test::RunUntil([&] { return callback_invoked; }));
+}
+
+class ConfirmQuitControllerPanelActorInteractiveUITest
+    : public ConfirmQuitControllerPanelInteractiveUITest {
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      features::kGlicConfirmTabClose};
+};
+
+// Verifies that when the macOS quit confirmation hides browser windows,
+// cancelling an Actor confirmation dialog during CloseAllBrowsersAndQuit()
+// restores the hidden browser windows to full opacity.
+IN_PROC_BROWSER_TEST_F(ConfirmQuitControllerPanelActorInteractiveUITest,
+                       ActorConfirmationCancelRestoresHiddenWindows) {
+  UnloadController* unload_controller = UnloadController::From(browser());
+  ASSERT_TRUE(unload_controller);
+  if (!unload_controller->HasTabUnloadHandlers()) {
+    unload_controller->AddTabUnloadHandler(
+        std::make_unique<actor::ActorTaskUnloadHandler>());
+  }
+  actor::ActorTaskTabCloseConfirmDialog::SetShowAlwaysReturnsTrueForTesting(
+      true);
+  base::ScopedClosureRunner reset_hook(base::BindOnce([]() {
+    actor::ActorTaskTabCloseConfirmDialog::SetShowAlwaysReturnsTrueForTesting(
+        false);
+  }));
+
+  AppController* appController = AppController.sharedController;
+  NSWindow* browserWindow =
+      browser()->GetWindow()->GetNativeWindow().GetNativeNSWindow();
+  ConfirmQuitPanelController* controller =
+      appController.confirmQuitPanelControllerForTesting;
+
+  base::TimeTicks startTime = base::TimeTicks::Now();
+  ConfirmQuitPanelController.isKeyDownForKeyCodeMock =
+      ^(unsigned short keyCode) {
+        return (BOOL)((base::TimeTicks::Now() - startTime) <
+                      confirm_quit::kShowDuration);
+      };
+  BOOL shouldQuit = [controller runConfirmQuitLoopWithEvent:cmd_q_event_
+                                          dismissedCallback:nil];
+  EXPECT_TRUE(shouldQuit);
+  EXPECT_FLOAT_EQ(browserWindow.alphaValue, 0.0);
+
+  chrome::CloseAllBrowsersAndQuit();
+  EXPECT_TRUE(browser_shutdown::IsTryingToQuit());
+
+  views::Widget* dialog = nullptr;
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    for (const auto& h : unload_controller->tab_unload_handlers_for_testing()) {
+      if (auto* handler =
+              static_cast<actor::ActorTaskUnloadHandler*>(h.get())) {
+        if ((dialog = handler->GetActiveDialogWidgetForTesting()) != nullptr) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }));
+
+  dialog->widget_delegate()->AsDialogDelegate()->CancelDialog();
+
+  EXPECT_FALSE(browser_shutdown::IsTryingToQuit());
+  EXPECT_TRUE(
+      base::test::RunUntil([&]() { return browserWindow.alphaValue == 1.0; }));
 }
 
 }  // namespace

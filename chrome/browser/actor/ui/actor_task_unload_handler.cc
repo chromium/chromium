@@ -7,10 +7,12 @@
 #include <memory>
 
 #include "base/command_line.h"
+#include "base/functional/callback_helpers.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_tab_close_skip_beforeunload_user_data.h"
 #include "chrome/browser/actor/ui/actor_ui_tab_controller.h"
+#include "chrome/browser/lifetime/browser_shutdown.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -76,6 +78,17 @@ class ActorTaskTabCloseConfirmDialogDelegate
 bool g_always_show_for_testing = false;
 bool g_suppress_for_testing = false;
 
+void ActivateTabIfInactive(base::WeakPtr<tabs::TabInterface> tab) {
+  if (!tab || !tab->GetBrowserWindowInterface()) {
+    return;
+  }
+  TabStripModel* tab_strip_model =
+      tab->GetBrowserWindowInterface()->GetTabStripModel();
+  if (tab_strip_model && tab_strip_model->GetActiveTab() != tab.get()) {
+    tab_strip_model->ActivateTab(tab.get());
+  }
+}
+
 }  // namespace
 
 // static
@@ -103,7 +116,8 @@ bool ActorTaskTabCloseConfirmDialog::ShouldSuppressForTesting() {
 // static
 bool ActorTaskTabCloseConfirmDialog::ShouldShow(
     content::WebContents* web_contents) {
-  if (g_suppress_for_testing) {
+  // Do not create new Actor confirmation dialogs after shutdown has started.
+  if (g_suppress_for_testing || browser_shutdown::HasShutdownStarted()) {
     return false;
   }
   if (!base::FeatureList::IsEnabled(features::kGlicConfirmTabClose)) {
@@ -182,23 +196,16 @@ ActorTaskTabCloseConfirmDialog::CreateDelegateIfActuating(
     }
   }
 
-  // If the tab is not active in the browser, activate it to show the prompt.
-  if (tab->GetBrowserWindowInterface()) {
+  // Activate the target tab so the dialog anchors to it. Posted because
+  // activating during a TabStripModel close fails its re-entrancy check.
+  // TODO(crbug.com/573292574): Remove task posting and redesign unload handler
+  // functionality to meet Actor requirements without bypassing TabStripModel
+  // re-entrancy checks.
+  TabStripModel* tab_strip_model =
+      tab->GetBrowserWindowInterface()->GetTabStripModel();
+  if (tab_strip_model && tab_strip_model->GetActiveTab() != tab) {
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(
-            [](base::WeakPtr<tabs::TabInterface> weak_tab) {
-              if (weak_tab && weak_tab->GetBrowserWindowInterface() &&
-                  weak_tab->GetContents()) {
-                TabStripModel* tsm =
-                    weak_tab->GetBrowserWindowInterface()->GetTabStripModel();
-                int idx = tsm->GetIndexOfWebContents(weak_tab->GetContents());
-                if (idx != TabStripModel::kNoTab) {
-                  tsm->ActivateTabAt(idx);
-                }
-              }
-            },
-            tab->GetWeakPtr()));
+        FROM_HERE, base::BindOnce(&ActivateTabIfInactive, tab->GetWeakPtr()));
   }
 
   auto stop_task_and_run_callback = base::BindOnce(
@@ -266,19 +273,25 @@ ActorTaskUnloadHandler::ActorTaskUnloadHandler() = default;
 ActorTaskUnloadHandler::~ActorTaskUnloadHandler() = default;
 
 bool ActorTaskUnloadHandler::ShouldSkipBeforeUnload(
-    content::WebContents* contents) {
+    content::WebContents* contents) const {
   return actor::ActorTabCloseSkipBeforeUnloadUserData::FromWebContents(
              contents) != nullptr;
 }
 
 bool ActorTaskUnloadHandler::ShouldShowCustomConfirmation(
-    content::WebContents* contents) {
+    content::WebContents* contents) const {
   return ActorTaskTabCloseConfirmDialog::ShouldShow(contents);
 }
 
 bool ActorTaskUnloadHandler::ShowCustomConfirmation(
     content::WebContents* contents,
     base::OnceCallback<void(bool)> on_closed) {
+  // Show and activate the existing confirmation dialog.
+  if (active_widget_ && !active_widget_->IsClosed()) {
+    active_widget_->Show();
+    active_widget_->Activate();
+    return true;
+  }
   auto stop_and_create_tag_callback = base::BindOnce(
       [](base::WeakPtr<ActorTaskUnloadHandler> handler,
          base::WeakPtr<content::WebContents> contents,
@@ -289,14 +302,11 @@ bool ActorTaskUnloadHandler::ShowCustomConfirmation(
           actor::ActorTabCloseSkipBeforeUnloadUserData::CreateForWebContents(
               contents.get());
         }
-        base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-            FROM_HERE, base::BindOnce(
-                           [](base::WeakPtr<ActorTaskUnloadHandler> handler) {
-                             if (handler) {
-                               handler->owned_widget_.reset();
-                             }
-                           },
-                           handler));
+        if (handler && handler->owned_widget_) {
+          base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+              FROM_HERE,
+              base::DoNothingWithBoundArgs(std::move(handler->owned_widget_)));
+        }
         std::move(on_closed).Run(confirmed);
       },
       weak_factory_.GetWeakPtr(), contents ? contents->GetWeakPtr() : nullptr,
@@ -318,16 +328,10 @@ bool ActorTaskUnloadHandler::ShowCustomConfirmation(
     owned_widget_->MakeCloseSynchronous(base::BindOnce(
         [](base::WeakPtr<ActorTaskUnloadHandler> handler,
            views::Widget::ClosedReason reason) {
-          if (handler) {
+          if (handler && handler->owned_widget_) {
             base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-                FROM_HERE,
-                base::BindOnce(
-                    [](base::WeakPtr<ActorTaskUnloadHandler> handler) {
-                      if (handler) {
-                        handler->owned_widget_.reset();
-                      }
-                    },
-                    handler));
+                FROM_HERE, base::DoNothingWithBoundArgs(
+                               std::move(handler->owned_widget_)));
           }
         },
         weak_factory_.GetWeakPtr()));
