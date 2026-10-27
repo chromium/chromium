@@ -299,9 +299,9 @@ void AXEventGenerator::UnregisterEventOnNode(Event event_type,
   if (it == registered_event_to_node_ids_.end()) {
     return;
   }
-  registered_event_to_node_ids_[event_type].erase(node_id);
-  if (registered_event_to_node_ids_[event_type].empty()) {
-    registered_event_to_node_ids_.erase(event_type);
+  it->second.erase(node_id);
+  if (it->second.empty()) {
+    registered_event_to_node_ids_.erase(it);
   }
 }
 

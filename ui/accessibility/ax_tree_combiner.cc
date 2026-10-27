@@ -46,19 +46,19 @@ bool AXTreeCombiner::Combine() {
   std::map<AXTreeID, AXTreeUpdate*> tree_id_map;
   for (auto& tree : trees_) {
     AXTreeID tree_id = tree.tree_data.tree_id;
-    if (tree_id_map.find(tree_id) != tree_id_map.end()) {
+    if (!tree_id_map.try_emplace(tree_id, &tree).second) {
       return false;
     }
-    tree_id_map[tree.tree_data.tree_id] = &tree;
   }
 
   // Make sure the root tree ID is in the map, otherwise fail.
-  if (tree_id_map.find(root_tree_id_) == tree_id_map.end()) {
+  auto root_it = tree_id_map.find(root_tree_id_);
+  if (root_it == tree_id_map.end()) {
     return false;
   }
 
   // Process the nodes recursively, starting with the root tree.
-  AXTreeUpdate* root = tree_id_map.find(root_tree_id_)->second;
+  AXTreeUpdate* root = root_it->second;
   ProcessTree(root, tree_id_map);
 
   // Set the root id.
@@ -70,8 +70,9 @@ bool AXTreeCombiner::Combine() {
   combined_->tree_data = root->tree_data;
   AXTreeID focused_tree_id = root->tree_data.focused_tree_id;
   const AXTreeUpdate* focused_tree = root;
-  if (tree_id_map.find(focused_tree_id) != tree_id_map.end()) {
-    focused_tree = tree_id_map[focused_tree_id];
+  auto focused_tree_it = tree_id_map.find(focused_tree_id);
+  if (focused_tree_it != tree_id_map.end()) {
+    focused_tree = focused_tree_it->second;
   }
   combined_->tree_data.focus_id =
       MapId(focused_tree_id, focused_tree->tree_data.focus_id);
@@ -95,10 +96,11 @@ bool AXTreeCombiner::Combine() {
 }
 
 AXNodeID AXTreeCombiner::MapId(AXTreeID tree_id, AXNodeID node_id) {
-  auto tree_id_node_id = std::make_pair(tree_id, node_id);
-  if (tree_id_node_id_map_[tree_id_node_id] == 0)
-    tree_id_node_id_map_[tree_id_node_id] = next_id_++;
-  return tree_id_node_id_map_[tree_id_node_id];
+  auto& mapped_id = tree_id_node_id_map_[std::make_pair(tree_id, node_id)];
+  if (mapped_id == 0) {
+    mapped_id = next_id_++;
+  }
+  return mapped_id;
 }
 
 void AXTreeCombiner::ProcessTree(
@@ -150,8 +152,9 @@ void AXTreeCombiner::ProcessTree(
     // See if this node has a child tree. As a confidence check, make sure the
     // child tree lists this tree as its parent tree id.
     AXTreeUpdate* child_tree = nullptr;
-    if (tree_id_map.find(child_tree_id) != tree_id_map.end()) {
-      child_tree = tree_id_map.find(child_tree_id)->second;
+    auto child_tree_it = tree_id_map.find(child_tree_id);
+    if (child_tree_it != tree_id_map.end()) {
+      child_tree = child_tree_it->second;
       if (child_tree->tree_data.parent_tree_id != tree_id) {
         child_tree = nullptr;
       }
