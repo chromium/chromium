@@ -5,6 +5,7 @@
 # found in the LICENSE file.
 
 import collections
+import concurrent.futures
 import functools
 import itertools
 import logging
@@ -15,6 +16,7 @@ import platform
 import re
 import shlex
 import shutil
+import subprocess
 import sys
 import time
 import zipfile
@@ -41,6 +43,18 @@ _JAVAC_EXTRACTOR = os.path.join(
 _JAVAC_GRAALVM_PATH = os.path.join(
     build_utils.JAVA_HOME, 'bin', 'javac-graalvm'
 )
+
+# Large compiles are split across multiple javac processes. Each process has
+# a fixed cost (mostly loading the classpath), so this is a balance between
+# wall time and CPU time. More than 8 shards is only slightly faster on an idle
+# machine, and no faster during full builds.
+_JAVAC_SHARD_TARGET_SIZE = 2 * 1024 * 1024
+_MAX_JAVAC_SHARDS = 8
+# Targets with fewer files than this are not sharded, which avoids stat()ing
+# files of small targets. It is the number of files needed to reach the
+# smallest total size that round()s to 2 shards, assuming an average file size
+# of at most 256KB (the largest averages are from generated protos).
+_MIN_FILES_TO_SHARD = (_JAVAC_SHARD_TARGET_SIZE * 3 // 2) // (256 * 1024)
 
 # These warnings cannot be suppressed even for third party code. Deprecation
 # warnings especially do not help since we must support older android version.
@@ -69,6 +83,110 @@ def ProcessJavacOutput(output, target_name):
         output = re.sub(r'\d+ warnings?\n', '', output)
 
     return javac_output_processor.Process(target_name, output)
+
+
+@functools.cache
+def _GetFileSize(path):
+    return os.path.getsize(path)
+
+
+def _ComputeNumShards(java_files):
+    """Returns how many javac processes to split |java_files| across.
+
+    Must depend only on the inputs (and not on e.g. the number of CPUs), since
+    the shard boundaries affect the output (javac adds bridge methods when a
+    superclass comes from a header jar rather than from source). Partial javac
+    already compiles against the header jar, so has the same effect.
+    """
+    if len(java_files) < _MIN_FILES_TO_SHARD:
+        return 1
+    total_size = sum(_GetFileSize(p) for p in java_files)
+    return max(
+        1, min(_MAX_JAVAC_SHARDS, round(total_size / _JAVAC_SHARD_TARGET_SIZE))
+    )
+
+
+def _ShardJavaFiles(java_files, num_shards):
+    """Splits |java_files| into |num_shards| lists of similar total size.
+
+    Files are kept in sorted order so that files within the same package
+    (which are most likely to reference one another) end up in the same shard.
+    """
+    sizes = [(p, _GetFileSize(p)) for p in sorted(java_files)]
+    total_size = sum(s for _, s in sizes) or 1
+    shards = [[] for _ in range(num_shards)]
+    cumulative_size = 0
+    for path, size in sizes:
+        # Assign each file to the shard that contains its midpoint.
+        idx = (cumulative_size + size // 2) * num_shards // total_size
+        shards[min(idx, num_shards - 1)].append(path)
+        cumulative_size += size
+    return [s for s in shards if s]
+
+
+def _RunShardedJavac(
+    cmd,
+    java_files,
+    num_shards,
+    java_files_rsp_path,
+    options,
+    output_filter,
+    before_join_callback,
+):
+    """Runs |cmd| as multiple concurrent javac processes.
+
+    Each process compiles a subset of |java_files|, and finds classes from the
+    other subsets via the target's header jar (which is on the classpath). All
+    processes write to the same output directory.
+    """
+    assert cmd[-1] == '@' + java_files_rsp_path
+    shard_cmds = []
+    for i, shard in enumerate(_ShardJavaFiles(java_files, num_shards)):
+        shard_rsp_path = f'{java_files_rsp_path}.shard{i}'
+        with open(shard_rsp_path, 'w', encoding='utf-8') as f:
+            f.write(' '.join(shard))
+        shard_cmds.append(cmd[:-1] + ['@' + shard_rsp_path])
+
+    # Concurrency does not affect the output, so can depend on the machine.
+    max_workers = min(len(shard_cmds), os.cpu_count() or 1)
+    logging.info(
+        'Running javac as %d shards (%d at a time)',
+        len(shard_cmds),
+        max_workers,
+    )
+
+    def run_shard(shard_cmd):
+        return subprocess.run(
+            shard_cmd,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            encoding='utf-8',
+            check=False,
+        )
+
+    with concurrent.futures.ThreadPoolExecutor(max_workers) as executor:
+        futures = [executor.submit(run_shard, c) for c in shard_cmds]
+        if before_join_callback:
+            before_join_callback()
+        results = [f.result() for f in futures]
+
+    # Combine output in shard order so that it is deterministic. Filter it all
+    # at once so that hints (e.g. for missing deps) are not repeated per shard.
+    stdout = output_filter(''.join(r.stdout for r in results))
+    stderr = output_filter(''.join(r.stderr for r in results))
+    for shard_cmd, result in zip(shard_cmds, results):
+        if result.returncode:
+            raise build_utils.CalledProcessError(
+                os.getcwd(), shard_cmd, stdout + stderr
+            )
+
+    build_utils.HandleCommandOutput(
+        cmd,
+        stdout,
+        stderr,
+        print_stdout=options.chromium_code,
+        fail_on_output=options.warnings_as_errors,
+    )
 
 
 def CreateJarFile(
@@ -347,6 +465,14 @@ def _OnStaleMd5(
         # when running Error Prone.
         jar_info_path = options.jar_path + '.info'
 
+    # Sharding with the JVM javac is not worthwhile since each process needs to
+    # warm up its JIT. Annotation processors might need to see all sources.
+    allow_sharding = (
+        javac_cmd[0] == _JAVAC_GRAALVM_PATH
+        and not options.processorpath
+        and options.header_jar in options.classpath
+    )
+
     # Compiles with Error Prone take twice as long to run as pure javac. Thus GN
     # rules run both in parallel, with Error Prone only used for checks.
     try:
@@ -361,6 +487,7 @@ def _OnStaleMd5(
             jar_info_path=jar_info_path,
             intermediates_out_dir=intermediates_out_dir,
             enable_partial_javac=True,
+            allow_sharding=allow_sharding,
         )
     except build_utils.CalledProcessError as e:
         # Do not output stacktrace as it takes up space on gerrit UI, forcing
@@ -383,6 +510,7 @@ def _RunCompiler(
     jar_info_path=None,
     intermediates_out_dir=None,
     enable_partial_javac=False,
+    allow_sharding=False,
 ):
     """Runs java compiler.
 
@@ -402,6 +530,8 @@ def _RunCompiler(
           useful for large GN targets.
           Not supported if compiling generates outputs other than |jar_path| and
           |jar_info_path|.
+      allow_sharding: Allows splitting large compiles across multiple javac
+          processes. Requires the target's header jar to be on the classpath.
     """
     logging.info('Starting _RunCompiler')
 
@@ -522,14 +652,28 @@ def _RunCompiler(
                 print(shlex.join(cmd))
                 return
 
-            build_utils.CheckOutput(
-                cmd,
-                print_stdout=options.chromium_code,
-                stdout_filter=process_javac_output_partial,
-                stderr_filter=process_javac_output_partial,
-                fail_on_output=options.warnings_as_errors,
-                before_join_callback=before_join_callback,
-            )
+            num_shards = 1
+            if allow_sharding:
+                num_shards = _ComputeNumShards(java_files)
+            if num_shards > 1:
+                _RunShardedJavac(
+                    cmd,
+                    java_files,
+                    num_shards,
+                    java_files_rsp_path,
+                    options,
+                    process_javac_output_partial,
+                    before_join_callback,
+                )
+            else:
+                build_utils.CheckOutput(
+                    cmd,
+                    print_stdout=options.chromium_code,
+                    stdout_filter=process_javac_output_partial,
+                    stderr_filter=process_javac_output_partial,
+                    fail_on_output=options.warnings_as_errors,
+                    before_join_callback=before_join_callback,
+                )
             end = time.time() - start
             logging.info('Java compilation took %ss', end)
         elif parse_java_files:

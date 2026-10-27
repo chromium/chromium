@@ -246,6 +246,34 @@ def CheckOutput(
     if fail_func and fail_func(child.returncode, stderr):
         raise CalledProcessError(cwd, args, stdout + stderr)
 
+    HandleCommandOutput(
+        args,
+        stdout,
+        stderr,
+        cwd=cwd,
+        print_stdout=print_stdout,
+        print_stderr=print_stderr,
+        fail_on_output=fail_on_output,
+    )
+    return stdout
+
+
+def HandleCommandOutput(
+    args,
+    stdout,
+    stderr,
+    cwd=None,
+    print_stdout=False,
+    print_stderr=True,
+    fail_on_output=True,
+):
+    """Prints the output of a successful command, as CheckOutput() does.
+
+    Raises a CalledProcessError if fail_on_output and output was printed.
+    """
+    if not cwd:
+        cwd = os.getcwd()
+
     if print_stdout:
         sys.stdout.write(stdout)
     if print_stderr:
@@ -273,8 +301,6 @@ failure (useful when developing locally).
         sys.stderr.write(
             f'\nThe above {stream_name} output was from: {short_cmd}\n'
         )
-
-    return stdout
 
 
 def GetModifiedTime(path):
