@@ -1,2 +1,0 @@
-reviver/coverage-runner
-reviver/runner
