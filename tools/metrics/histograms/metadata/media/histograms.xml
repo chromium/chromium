@@ -1589,7 +1589,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Audio.Capture.Win.Glitches2" units="glitches"
-    expires_after="2026-11-15">
+    expires_after="2027-10-23">
   <owner>olka@chromium.org</owner>
   <owner>henrika@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
@@ -1699,68 +1699,80 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Audio.CrasInputStreamNotifyStreamError"
-    units="errorcode" expires_after="2026-05-17">
+    units="errorcode" expires_after="2027-10-23">
   <owner>peah@chromium.org</owner>
   <owner>hychao@chromium.org</owner>
   <owner>olka@chromium.org</owner>
   <owner>webrtc-audio-uma@google.com</owner>
   <summary>
     Error codes reported by the NotifyStreamError function in CrasInputStream.
+    Warning: this histogram was expired from 2026-05-17 to 2026-10-23; data may
+    be missing.
   </summary>
 </histogram>
 
 <histogram name="Media.Audio.CrasInputStreamOpenSuccess"
-    enum="CrasInputStreamOpenSuccess" expires_after="2026-06-21">
+    enum="CrasInputStreamOpenSuccess" expires_after="2027-10-23">
   <owner>peah@chromium.org</owner>
   <owner>hychao@chromium.org</owner>
   <owner>olka@chromium.org</owner>
   <owner>webrtc-audio-uma@google.com</owner>
   <summary>
     Logged at each call to CrasInputStream::Open to indicate any errors.
+    Warning: this histogram was expired from 2026-06-21 to 2026-10-23; data may
+    be missing.
   </summary>
 </histogram>
 
 <histogram name="Media.Audio.CrasInputStreamStartSuccess"
-    enum="CrasInputStreamStartSuccess" expires_after="2025-04-28">
+    enum="CrasInputStreamStartSuccess" expires_after="2027-10-23">
   <owner>peah@chromium.org</owner>
   <owner>hychao@chromium.org</owner>
   <owner>olka@chromium.org</owner>
   <owner>webrtc-audio-uma@google.com</owner>
   <summary>
     Logged at each call to CrasInputStream::Start to indicate any errors.
+    Warning: this histogram was expired from 2025-04-28 to 2026-10-23; data may
+    be missing.
   </summary>
 </histogram>
 
 <histogram name="Media.Audio.CrasUnifiedStreamNotifyStreamError"
-    units="errorcode" expires_after="2026-05-11">
+    units="errorcode" expires_after="2027-10-23">
   <owner>peah@chromium.org</owner>
   <owner>hychao@chromium.org</owner>
   <owner>olka@chromium.org</owner>
   <owner>webrtc-audio-uma@google.com</owner>
   <summary>
     Error codes reported by the NotifyStreamError function in CrasUnifiedStream.
+    Warning: this histogram was expired from 2026-05-11 to 2026-10-23; data may
+    be missing.
   </summary>
 </histogram>
 
 <histogram name="Media.Audio.CrasUnifiedStreamOpenSuccess"
-    enum="CrasUnifiedStreamOpenSuccess" expires_after="2026-04-05">
+    enum="CrasUnifiedStreamOpenSuccess" expires_after="2027-10-23">
   <owner>peah@chromium.org</owner>
   <owner>hychao@chromium.org</owner>
   <owner>olka@chromium.org</owner>
   <owner>webrtc-audio-uma@google.com</owner>
   <summary>
     Logged at each call to CrasUnifiedStream::Open to indicate any errors.
+    Warning: this histogram was expired from 2026-04-05 to 2026-10-23; data may
+    be missing.
   </summary>
 </histogram>
 
 <histogram name="Media.Audio.CrasUnifiedStreamStartSuccess"
-    enum="CrasUnifiedStreamStartSuccess" expires_after="2026-05-11">
+    enum="CrasUnifiedStreamStartSuccess" expires_after="2027-10-23">
   <owner>peah@chromium.org</owner>
   <owner>hychao@chromium.org</owner>
   <owner>olka@chromium.org</owner>
   <owner>webrtc-audio-uma@google.com</owner>
   <summary>
     Logged at each call to CrasUnifiedStream::Start to indicate any errors.
+    Warning: this histogram was expired from 2026-05-11 to 2026-10-23; data may
+    be missing.
   </summary>
 </histogram>
 
@@ -2171,7 +2183,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Audio.OutputDeviceMixer.StreamStatus"
-    enum="AudioOutputDeviceMixerStreamStatus" expires_after="2026-11-15">
+    enum="AudioOutputDeviceMixerStreamStatus" expires_after="2027-10-23">
   <owner>olka@chromium.org</owner>
   <owner>tguilbert@chromium.org</owner>
   <owner>webrtc-audio-uma@google.com</owner>
@@ -2860,7 +2872,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.AudioOutputController.ProxyStreamCreationResult"
-    enum="AudioOutputStreamCreationResult" expires_after="2026-09-13">
+    enum="AudioOutputStreamCreationResult" expires_after="2027-10-23">
   <owner>guidou@chromium.org</owner>
   <owner>olka@chromium.org</owner>
   <owner>webrtc-audio-uma@google.com</owner>
@@ -2869,12 +2881,14 @@ chromium-metrics-reviews@google.com.
     stream proxy after receiving a default device change event. Note: in
     September 2021 this histogram unintentionally swapped its meaning with
     Media.AudioOutputController.ProxyStreamCreationResultForDeviceChange.
+    Warning: this histogram was expired from 2026-09-13 to 2026-10-23; data may
+    be missing.
   </summary>
 </histogram>
 
 <histogram
     name="Media.AudioOutputController.ProxyStreamCreationResultForDeviceChange"
-    enum="AudioOutputStreamCreationResult" expires_after="2026-07-12">
+    enum="AudioOutputStreamCreationResult" expires_after="2027-10-23">
   <owner>guidou@chromium.org</owner>
   <owner>olka@chromium.org</owner>
   <owner>webrtc-audio-uma@google.com</owner>
@@ -2884,7 +2898,8 @@ chromium-metrics-reviews@google.com.
     due to device change events are logged in the
     Media.AudioOutputController.ProxyStreamCreationResult histogram. Note: in
     September 2021 this histogram unintentionally swapped its meaning with
-    Media.AudioOutputController.ProxyStreamCreationResult.
+    Media.AudioOutputController.ProxyStreamCreationResult. Warning: this
+    histogram was expired from 2026-07-12 to 2026-10-23; data may be missing.
   </summary>
 </histogram>
 
@@ -6784,7 +6799,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.OutputStreamDuration" units="ms"
-    expires_after="2026-10-11">
+    expires_after="2027-10-23">
   <owner>guidou@chromium.org</owner>
   <owner>olka@chromium.org</owner>
   <owner>webrtc-audio-uma@google.com</owner>
