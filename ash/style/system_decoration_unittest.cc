@@ -79,7 +79,7 @@ class SystemDecorationColorTest
   // Creates a certain type of SystemDecoration instance according to the test
   // parameter.
   std::unique_ptr<SystemDecoration> MakeDecorationAccordingToParam(
-      std::optional<SystemDecoration::ShadowType> shadow_type,
+      SystemDecoration::ShadowType shadow_type,
       SystemDecoration::HighlightBorderMode border_mode =
           SystemDecoration::HighlightBorderMode::kNone) {
     switch (GetParam()) {
@@ -174,7 +174,8 @@ TEST_P(SystemDecorationColorTest, HighlightBorderAndShadow) {
   EXPECT_FALSE(decoration->HasHighlightBorder());
   EXPECT_FALSE(decoration->GetHighlightBorderValueForTesting().has_value());
 
-  decoration->SetHighlightBorder();
+  decoration->SetHighlightBorder(
+      SystemDecoration::HighlightBorderMode::kHighlightBorder);
   EXPECT_TRUE(decoration->HasHighlightBorder());
 
   DarkLightModeController::Get()->SetDarkModeEnabledForTest(false);
@@ -196,7 +197,7 @@ TEST_P(SystemDecorationColorTest, HighlightBorderAndShadow) {
 
   // Clear shadow: the highlight border automatically switches to
   // kHighlightBorderNoShadow.
-  decoration->ClearShadow();
+  decoration->SetShadow(SystemDecoration::ShadowType::kNone);
   EXPECT_FALSE(decoration->HasShadow());
   border_value = decoration->GetHighlightBorderValueForTesting();
   ASSERT_TRUE(border_value.has_value());
@@ -216,7 +217,7 @@ TEST_P(SystemDecorationColorTest, HighlightBorderAndShadow) {
   EXPECT_EQ(GetColor(ui::kColorCrosSystemHighlightBorder1),
             border_value->border_color());
 
-  decoration->ClearHighlightBorder();
+  decoration->SetHighlightBorder(SystemDecoration::HighlightBorderMode::kNone);
   EXPECT_FALSE(decoration->HasHighlightBorder());
   EXPECT_FALSE(decoration->GetHighlightBorderValueForTesting().has_value());
 }
@@ -224,7 +225,7 @@ TEST_P(SystemDecorationColorTest, HighlightBorderAndShadow) {
 // Tests creating a highlight-border-only decoration via the factory methods.
 TEST_P(SystemDecorationColorTest, CreateHighlightBorder) {
   auto decoration = MakeDecorationAccordingToParam(
-      /*shadow_type=*/std::nullopt,
+      SystemDecoration::ShadowType::kNone,
       SystemDecoration::HighlightBorderMode::kHighlightBorder);
   EXPECT_FALSE(decoration->HasShadow());
   EXPECT_TRUE(decoration->HasHighlightBorder());
@@ -301,12 +302,13 @@ TEST_F(SystemDecorationTest, WindowDecorationLayerStacking) {
   EXPECT_NE(window->layer()->children().back(), decoration_layer);
 
   // After setting highlight border, decoration layer is stacked at the top.
-  decoration->SetHighlightBorder();
+  decoration->SetHighlightBorder(
+      SystemDecoration::HighlightBorderMode::kHighlightBorder);
   EXPECT_EQ(window->layer()->children().back(), decoration_layer);
   EXPECT_NE(window->layer()->children().front(), decoration_layer);
 
   // After clearing highlight border, decoration layer returns to the bottom.
-  decoration->ClearHighlightBorder();
+  decoration->SetHighlightBorder(SystemDecoration::HighlightBorderMode::kNone);
   EXPECT_EQ(window->layer()->children().front(), decoration_layer);
   EXPECT_NE(window->layer()->children().back(), decoration_layer);
 
@@ -342,7 +344,8 @@ TEST_F(SystemDecorationTest, ViewDecorationLayerStacking) {
 
   // After setting highlight border, decoration layer moves to
   // LayerRegion::kAbove.
-  decoration->SetHighlightBorder();
+  decoration->SetHighlightBorder(
+      SystemDecoration::HighlightBorderMode::kHighlightBorder);
   layers = contents_view->GetLayersInOrder();
   ASSERT_EQ(layers.size(), 2u);
   EXPECT_EQ(layers[0], view_layer);
@@ -350,7 +353,7 @@ TEST_F(SystemDecorationTest, ViewDecorationLayerStacking) {
 
   // After clearing highlight border, decoration layer returns to
   // LayerRegion::kBelow.
-  decoration->ClearHighlightBorder();
+  decoration->SetHighlightBorder(SystemDecoration::HighlightBorderMode::kNone);
   layers = contents_view->GetLayersInOrder();
   ASSERT_EQ(layers.size(), 2u);
   EXPECT_EQ(layers[0], decoration_layer);

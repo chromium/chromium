@@ -177,16 +177,11 @@ class SystemWindowDecoration : public SystemDecoration,
       window_observation_{this};
 };
 
-void ConfigureDecoration(
-    SystemDecoration* decoration,
-    std::optional<SystemDecoration::ShadowType> shadow_type,
-    SystemDecoration::HighlightBorderMode border_mode) {
-  if (shadow_type.has_value()) {
-    decoration->SetShadow(*shadow_type);
-  }
-  if (border_mode == SystemDecoration::HighlightBorderMode::kHighlightBorder) {
-    decoration->SetHighlightBorder();
-  }
+void ConfigureDecoration(SystemDecoration* decoration,
+                         SystemDecoration::ShadowType shadow_type,
+                         SystemDecoration::HighlightBorderMode border_mode) {
+  decoration->SetShadow(shadow_type);
+  decoration->SetHighlightBorder(border_mode);
 }
 
 }  // namespace
@@ -200,7 +195,7 @@ SystemDecoration::~SystemDecoration() = default;
 
 // static
 std::unique_ptr<SystemDecoration> SystemDecoration::Create(
-    std::optional<ShadowType> shadow_type,
+    ShadowType shadow_type,
     HighlightBorderMode border_mode) {
   auto decoration = base::WrapUnique(new SystemDecoration());
   ConfigureDecoration(decoration.get(), shadow_type, border_mode);
@@ -210,7 +205,7 @@ std::unique_ptr<SystemDecoration> SystemDecoration::Create(
 // static
 std::unique_ptr<SystemDecoration> SystemDecoration::CreateForView(
     views::View* view,
-    std::optional<ShadowType> shadow_type,
+    ShadowType shadow_type,
     HighlightBorderMode border_mode) {
   DCHECK(view);
   auto decoration = base::WrapUnique(new SystemViewDecoration(view));
@@ -221,7 +216,7 @@ std::unique_ptr<SystemDecoration> SystemDecoration::CreateForView(
 // static
 std::unique_ptr<SystemDecoration> SystemDecoration::CreateForWindow(
     aura::Window* window,
-    std::optional<ShadowType> shadow_type,
+    ShadowType shadow_type,
     HighlightBorderMode border_mode) {
   DCHECK(window);
   auto decoration = base::WrapUnique(new SystemWindowDecoration(window));
@@ -232,6 +227,8 @@ std::unique_ptr<SystemDecoration> SystemDecoration::CreateForWindow(
 // static
 int SystemDecoration::GetElevationFromType(ShadowType type) {
   switch (type) {
+    case ShadowType::kNone:
+      return 0;
     case ShadowType::kElevation4:
       return 4;
     case ShadowType::kElevation12:
@@ -242,6 +239,15 @@ int SystemDecoration::GetElevationFromType(ShadowType type) {
 }
 
 void SystemDecoration::SetShadow(ShadowType type) {
+  if (type == ShadowType::kNone) {
+    if (!HasShadow()) {
+      return;
+    }
+    source_->SetShadow(nullptr);
+    UpdateHighlightBorder();
+    return;
+  }
+
   const int elevation = GetElevationFromType(type);
   if (auto* existing_shadow = source_->shadow()) {
     existing_shadow->SetElevation(elevation);
@@ -258,31 +264,29 @@ void SystemDecoration::SetShadow(ShadowType type) {
   UpdateHighlightBorder();
 }
 
-void SystemDecoration::ClearShadow() {
-  source_->SetShadow(nullptr);
-  UpdateHighlightBorder();
-}
-
 bool SystemDecoration::HasShadow() const {
   return source_->shadow() != nullptr;
 }
 
-void SystemDecoration::SetHighlightBorder() {
-  if (has_highlight_border_) {
-    return;
+void SystemDecoration::SetHighlightBorder(HighlightBorderMode mode) {
+  switch (mode) {
+    case HighlightBorderMode::kNone:
+      if (!has_highlight_border_) {
+        return;
+      }
+      has_highlight_border_ = false;
+      source_->SetHighlightBorder(nullptr);
+      OnHighlightBorderChanged();
+      return;
+    case HighlightBorderMode::kHighlightBorder:
+      if (has_highlight_border_) {
+        return;
+      }
+      has_highlight_border_ = true;
+      OnHighlightBorderChanged();
+      UpdateHighlightBorder();
+      return;
   }
-  has_highlight_border_ = true;
-  OnHighlightBorderChanged();
-  UpdateHighlightBorder();
-}
-
-void SystemDecoration::ClearHighlightBorder() {
-  if (!has_highlight_border_) {
-    return;
-  }
-  has_highlight_border_ = false;
-  source_->SetHighlightBorder(nullptr);
-  OnHighlightBorderChanged();
 }
 
 bool SystemDecoration::HasHighlightBorder() const {
@@ -350,7 +354,6 @@ void SystemDecoration::ApplyHighlightBorder(SkColor highlight_color,
   }
   source_->SetHighlightBorder(std::make_unique<ui::decoration::HighlightBorder>(
       highlight_color, border_color, views::kHighlightBorderThickness));
-  OnHighlightBorderChanged();
 }
 
 void SystemDecoration::UpdateShadowColors(

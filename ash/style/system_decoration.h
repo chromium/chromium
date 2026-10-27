@@ -46,6 +46,7 @@ class ASH_EXPORT SystemDecoration : public ui::ColorProviderSourceObserver {
   // Shadow types of system UI components. The shadows with different elevations
   // have different appearance.
   enum class ShadowType {
+    kNone,         // no shadow.
     kElevation4,   // corresponds to cros.sys.system-elevation1.
     kElevation12,  // corresponds to cros.sys.system-elevation3.
     kElevation24,  // corresponds to cros.sys.system-elevation5.
@@ -66,7 +67,7 @@ class ASH_EXPORT SystemDecoration : public ui::ColorProviderSourceObserver {
   // shadow and/or highlight border. The caller is responsible for parenting
   // `GetLayer()` and updating `SetContentBounds()`.
   static std::unique_ptr<SystemDecoration> Create(
-      std::optional<ShadowType> shadow_type,
+      ShadowType shadow_type,
       HighlightBorderMode border_mode = HighlightBorderMode::kNone);
 
   // Creates a system decoration for `view` with an optional drop shadow and/or
@@ -77,7 +78,7 @@ class ASH_EXPORT SystemDecoration : public ui::ColorProviderSourceObserver {
   // bounds; use `Create()` instead).
   static std::unique_ptr<SystemDecoration> CreateForView(
       views::View* view,
-      std::optional<ShadowType> shadow_type,
+      ShadowType shadow_type,
       HighlightBorderMode border_mode = HighlightBorderMode::kNone);
 
   // Creates a system decoration for `window` with an optional drop shadow
@@ -87,20 +88,18 @@ class ASH_EXPORT SystemDecoration : public ui::ColorProviderSourceObserver {
   // `OverviewItem` for wide and tall windows; use `Create()` instead).
   static std::unique_ptr<SystemDecoration> CreateForWindow(
       aura::Window* window,
-      std::optional<ShadowType> shadow_type,
+      ShadowType shadow_type,
       HighlightBorderMode border_mode = HighlightBorderMode::kNone);
 
   // Get shadow elevation according to the given type.
   static int GetElevationFromType(ShadowType type);
 
-  // Configures or clears the drop shadow.
+  // Configures or clears (`ShadowType::kNone`) the drop shadow.
   void SetShadow(ShadowType type);
-  void ClearShadow();
   bool HasShadow() const;
 
-  // Configures or clears the highlight border.
-  void SetHighlightBorder();
-  void ClearHighlightBorder();
+  // Configures or clears (`HighlightBorderMode::kNone`) the highlight border.
+  void SetHighlightBorder(HighlightBorderMode mode);
   bool HasHighlightBorder() const;
 
   void SetContentBounds(const gfx::Rect& bounds);
