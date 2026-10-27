@@ -18989,6 +18989,24 @@
             ]
         }
     ],
+    "WebHidOnDesktopAndroidServiceWorkers": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "form_factors": [
+                "desktop"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "WebHidOnDesktopAndroidServiceWorkers"
+                    ]
+                }
+            ]
+        }
+    ],
     "WebHistoryUseNewApi": [
         {
             "platforms": [
