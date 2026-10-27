@@ -107,8 +107,14 @@ void ChromeBrowserPolicyConnector::Init(
       GetEncryptedReportingUrl());
   auto device_management_service =
       std::make_unique<DeviceManagementService>(std::move(configuration));
-  device_management_service->ScheduleInitialization(
-      kServiceInitializationStartupDelay);
+  // Production delays initialization by 5 seconds to avoid slowing initial UI
+  // startup. Skip the delay in browser tests so tests that upload reports or
+  // fetch policies don't stall waiting for the service to start.
+  const int64_t delay_milliseconds =
+      base::CommandLine::ForCurrentProcess()->HasSwitch(switches::kTestType)
+          ? 0
+          : kServiceInitializationStartupDelay;
+  device_management_service->ScheduleInitialization(delay_milliseconds);
 
 #if BUILDFLAG(IS_ANDROID)
   policy_cache_updater_ = std::make_unique<android::PolicyCacheUpdater>(
