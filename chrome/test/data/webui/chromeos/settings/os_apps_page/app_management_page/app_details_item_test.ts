@@ -10,9 +10,10 @@ import type {CrDialogElement} from 'chrome://resources/ash/common/cr_elements/cr
 import type {App} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import {AppType, InstallReason, InstallSource} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {assertEquals, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {assertEquals, assertFalse, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
-import {eventToPromise} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
 
 import type {FakePageHandler} from '../../app_management/fake_page_handler.js';
 import type {TestAppManagementStore} from '../../app_management/test_store.js';
@@ -735,4 +736,95 @@ suite('<app-management-app-details-item>', () => {
     assertEquals('Check for updates', checkUpdateButton.innerText.trim());
     assertEquals(checkUpdateButton, appDetailsItem.shadowRoot!.activeElement);
   });
+
+  test(
+      'IWA update flow keeps version, button, and storage rows stationary',
+      async () => {
+        loadTimeData.overrideValues({isIwaInlineUpdateEnabled: true});
+        await addApp({
+          type: AppType.kWeb,
+          publisherId: 'isolated-app://pt2igw6.../',
+          version: '1.0.0',
+          title: 'Kitchen Sink IWA',
+          appSize: '2,014 KB',
+          dataSize: '100 B',
+        });
+
+        const updateInfo =
+            appDetailsItem.shadowRoot!.querySelector<HTMLElement>(
+                '.update-info');
+        const checkUpdateButton =
+            appDetailsItem.shadowRoot!.querySelector<HTMLElement>(
+                '#checkUpdateButton');
+        const storageTitle =
+            appDetailsItem.shadowRoot!.querySelector<HTMLElement>(
+                '#storageTitle');
+        assertTrue(!!updateInfo);
+        assertTrue(!!checkUpdateButton);
+        assertTrue(!!storageTitle);
+
+        const idleVersionTop = updateInfo.getBoundingClientRect().top;
+        const idleButtonTop = checkUpdateButton.getBoundingClientRect().top;
+        const idleStorageTop = storageTitle.getBoundingClientRect().top;
+
+        const assertStationary = () => {
+          assertEquals(idleVersionTop, updateInfo.getBoundingClientRect().top);
+          assertEquals(
+              idleButtonTop, checkUpdateButton.getBoundingClientRect().top);
+          assertEquals(
+              idleStorageTop, storageTitle.getBoundingClientRect().top);
+        };
+
+        fakeHandler.updateVersion = {components: [1, 2, 0]};
+        fakeHandler.numWindowsForApp = 0;
+
+        // 1. IDLE -> CHECKING
+        checkUpdateButton.click();
+        flush();
+        assertTrue(isVisible(
+            appDetailsItem.shadowRoot!.querySelector('paper-spinner-lite')));
+        assertStationary();
+
+        // 2. CHECKING -> UPDATE_AVAILABLE
+        await fakeHandler.whenCalled('checkForIsolatedWebAppUpdate');
+        await fakeHandler.whenCalled('getNumWindowsForApp');
+        await fakeHandler.flushPipesForTesting();
+        await flushTasks();
+        assertFalse(isVisible(
+            appDetailsItem.shadowRoot!.querySelector('paper-spinner-lite')));
+        assertStationary();
+
+        // 3. UPDATE_AVAILABLE -> APPLYING
+        const updateFoundDialog =
+            appDetailsItem.shadowRoot!.querySelector<HTMLElement>(
+                '#updateFoundDialog');
+        assertTrue(!!updateFoundDialog);
+        const confirmFoundButton =
+            updateFoundDialog.querySelector<HTMLElement>('#confirmFound');
+        assertTrue(!!confirmFoundButton);
+
+        fakeHandler.applyUpdateSuccess = true;
+        confirmFoundButton.click();
+        flush();
+        assertTrue(isVisible(
+            appDetailsItem.shadowRoot!.querySelector('paper-spinner-lite')));
+        assertStationary();
+
+        // 4. APPLYING -> IDLE (completed)
+        await fakeHandler.whenCalled('applyIsolatedWebAppUpdate');
+        await fakeHandler.flushPipesForTesting();
+        await flushTasks();
+        assertFalse(isVisible(
+            appDetailsItem.shadowRoot!.querySelector('paper-spinner-lite')));
+        assertStationary();
+
+        // 5. IDLE -> UP_TO_DATE (no update found)
+        fakeHandler.resetResolver('checkForIsolatedWebAppUpdate');
+        fakeHandler.updateVersion = null;
+        checkUpdateButton.click();
+        await fakeHandler.whenCalled('checkForIsolatedWebAppUpdate');
+        await fakeHandler.flushPipesForTesting();
+        await flushTasks();
+        assertStationary();
+      });
 });
