@@ -4822,11 +4822,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.MagicStack.ShopCard.{Type}.Impression" units="index"
-    expires_after="2026-09-06">
+    expires_after="2027-10-26">
   <owner>davidjm@chromium.org</owner>
   <owner>thegreenfrog@google.com</owner>
   <owner>gloriafang@google.com</owner>
   <summary>
+    Warning: this histogram was expired from 2026-09-06 to 2026-10-26; data may
+    be missing.
+
     Records impressions for different variations of the ShopCard module in the
     magic stack. In this instance, {Type}.
   </summary>
@@ -4841,10 +4844,13 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.MagicStack.ShopCard.{Type}.ImpressionLimitStorageSize"
-    units="KB" expires_after="2026-08-09">
+    units="KB" expires_after="2027-10-26">
   <owner>davidjm@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
   <summary>
+    Warning: this histogram was expired from 2026-08-09 to 2026-10-26; data may
+    be missing.
+
     The size of the storage in user preferences regarding impression counts for
     various cards in the Magic Stack. This storage enables auto dismissing cards
     after 3 impressions. This instance is for the {Type} card.
