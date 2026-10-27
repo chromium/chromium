@@ -6,6 +6,7 @@
 
 #import <Foundation/Foundation.h>
 
+#import "base/apple/foundation_util.h"
 #import "base/functional/bind.h"
 #import "base/functional/callback_helpers.h"
 #import "base/ios/ios_util.h"
@@ -35,6 +36,58 @@ typedef void (^DataTaskWithRequestCompletionHandler)(
     NSData* _Nullable data,
     NSURLResponse* _Nullable response,
     NSError* _Nullable error);
+
+// Wraps a real NSURLSessionDataTask to forward internal CFNetwork selectors
+// (such as those called by -[NSHTTPCookieStorage storeCookies:forTask:]) while
+// intercepting -resume and -cancel so that no real network request is started.
+@interface FakeNSURLSessionDataTask : NSObject
+@property(nonatomic, readonly) BOOL cancelCalled;
+- (instancetype)initWithURL:(NSURL*)url;
+- (void)setResumeCallback:(base::OnceClosure)callback;
+- (void)resume;
+- (void)cancel;
+@end
+
+@implementation FakeNSURLSessionDataTask {
+  NSURLSessionDataTask* _task;
+  base::OnceClosure _resumeCallback;
+}
+
+- (instancetype)initWithURL:(NSURL*)url {
+  if ((self = [super init])) {
+    _task = [[NSURLSession sharedSession] dataTaskWithURL:url];
+  }
+  return self;
+}
+
+- (void)setResumeCallback:(base::OnceClosure)callback {
+  _resumeCallback = std::move(callback);
+}
+
+- (void)resume {
+  if (_resumeCallback) {
+    std::move(_resumeCallback).Run();
+  }
+}
+
+- (void)cancel {
+  _cancelCalled = YES;
+}
+
+- (id)forwardingTargetForSelector:(SEL)aSelector {
+  return _task;
+}
+
+- (BOOL)respondsToSelector:(SEL)aSelector {
+  return [super respondsToSelector:aSelector] ||
+         [_task respondsToSelector:aSelector];
+}
+
+- (BOOL)isKindOfClass:(Class)aClass {
+  return [super isKindOfClass:aClass] || [_task isKindOfClass:aClass];
+}
+
+@end
 
 class GaiaAuthFetcherIOSNSURLSessionBridgeTest;
 
@@ -169,12 +222,9 @@ class GaiaAuthFetcherIOSNSURLSessionBridgeTest : public PlatformTest {
   id<NSURLSessionTaskDelegate> url_session_delegate_;
 
   NSURLSession* url_session_mock_;
-  NSURLSessionDataTask* url_session_data_task_;
+  FakeNSURLSessionDataTask* url_session_data_task_;
   NSURLSessionConfiguration* url_session_configuration_;
   DataTaskWithRequestCompletionHandler completion_handler_;
-
- private:
-  base::OnceClosure quit_closure_;
 };
 
 #pragma mark - TestGaiaAuthFetcherIOSNSURLSessionBridge
@@ -214,14 +264,8 @@ void GaiaAuthFetcherIOSNSURLSessionBridgeTest::SetUp() {
   url_session_mock_ = OCMStrictClassMock([NSURLSession class]);
   OCMStub([url_session_mock_ configuration])
       .andReturn(url_session_configuration_);
-  url_session_data_task_ = [[NSURLSession sharedSession]
-        dataTaskWithURL:net::NSURLWithGURL(GetFetchGURL())
-      completionHandler:^(NSData* data, NSURLResponse* response,
-                          NSError* error) {
-        // Asynchronously returns from FetchURL() call after
-        // NSURLSessionDataTask:resume.
-        std::move(quit_closure_).Run();
-      }];
+  url_session_data_task_ = [[FakeNSURLSessionDataTask alloc]
+      initWithURL:net::NSURLWithGURL(GetFetchGURL())];
   completion_handler_ = nil;
 }
 
@@ -375,7 +419,7 @@ GaiaAuthFetcherIOSNSURLSessionBridgeTest::GetHeaderFieldsWithCookies(
 bool GaiaAuthFetcherIOSNSURLSessionBridgeTest::FetchURL(const GURL& url) {
   DCHECK(url_session_data_task_);
   base::RunLoop run_loop;
-  quit_closure_ = run_loop.QuitClosure();
+  [url_session_data_task_ setResumeCallback:run_loop.QuitClosure()];
   ns_url_session_bridge_->Fetch(url, "", "", false);
   run_loop.Run();
   return true;
@@ -385,9 +429,7 @@ bool GaiaAuthFetcherIOSNSURLSessionBridgeTest::FetchURL(const GURL& url) {
 
 // Tests to send a request with no cookies set in the cookie store and receive
 // multiples cookies from the request.
-// TODO(crbug.com/506117253): Fix flakiness.
-TEST_F(GaiaAuthFetcherIOSNSURLSessionBridgeTest,
-       DISABLED_FetchWithEmptyCookieStore) {
+TEST_F(GaiaAuthFetcherIOSNSURLSessionBridgeTest, FetchWithEmptyCookieStore) {
   ASSERT_FALSE(url_session_configuration_.HTTPCookieStorage.cookies.count);
   ASSERT_TRUE(FetchURL(GetFetchGURL()));
   ASSERT_TRUE(completion_handler_);
@@ -406,9 +448,7 @@ TEST_F(GaiaAuthFetcherIOSNSURLSessionBridgeTest,
 
 // Tests to send a request with one cookie set in the cookie store and receive
 // another cookies from the request.
-// TODO(crbug.com/506117253): Fix flakiness.
-TEST_F(GaiaAuthFetcherIOSNSURLSessionBridgeTest,
-       DISABLED_FetchWithCookieStore) {
+TEST_F(GaiaAuthFetcherIOSNSURLSessionBridgeTest, FetchWithCookieStore) {
   NSHTTPCookie* cookie_to_send = GetCookie1();
   ASSERT_TRUE(SetCookiesInCookieManager(@[ cookie_to_send ]));
 
@@ -435,8 +475,7 @@ TEST_F(GaiaAuthFetcherIOSNSURLSessionBridgeTest,
 
 // Tests to a request with a redirect. One cookie is received by the first
 // request, and a second one by the redirected request.
-// TODO(crbug.com/506117253): Fix flakiness.
-TEST_F(GaiaAuthFetcherIOSNSURLSessionBridgeTest, DISABLED_FetchWithRedirect) {
+TEST_F(GaiaAuthFetcherIOSNSURLSessionBridgeTest, FetchWithRedirect) {
   ASSERT_TRUE(FetchURL(GetFetchGURL()));
   ASSERT_FALSE(url_session_configuration_.HTTPCookieStorage.cookies.count);
   ASSERT_TRUE(completion_handler_);
@@ -450,8 +489,10 @@ TEST_F(GaiaAuthFetcherIOSNSURLSessionBridgeTest, DISABLED_FetchWithRedirect) {
   };
   NSHTTPURLResponse* redirected_url_response =
       CreateHTTPURLResponse(301, @[ GetCookie1() ]);
+  NSURLSessionDataTask* task =
+      base::apple::ObjCCastStrict<NSURLSessionDataTask>(url_session_data_task_);
   [url_session_delegate_ URLSession:url_session_mock_
-                               task:url_session_data_task_
+                               task:task
          willPerformHTTPRedirection:redirected_url_response
                          newRequest:redirected_url_request
                   completionHandler:completion_handler];
@@ -475,6 +516,7 @@ TEST_F(GaiaAuthFetcherIOSNSURLSessionBridgeTest, FetchWithCancel) {
   ASSERT_TRUE(completion_handler_);
 
   ns_url_session_bridge_->Cancel();
+  EXPECT_TRUE(url_session_data_task_.cancelCalled);
   EXPECT_TRUE(delegate_->GetFetchCompleteCalled());
   EXPECT_EQ(delegate_->GetURL(), GetFetchGURL());
   EXPECT_EQ(delegate_->GetNetError(), net::ERR_ABORTED);
