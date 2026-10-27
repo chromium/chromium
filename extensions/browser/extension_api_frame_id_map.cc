@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/sequenced_task_runner.h"
@@ -22,6 +23,8 @@
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/extensions_browser_client.h"
 #include "extensions/common/constants.h"
+#include "extensions/common/extension_features.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 
 namespace extensions {
 
@@ -151,6 +154,10 @@ content::RenderFrameHost* ExtensionApiFrameIdMap::GetRenderFrameHostById(
 content::RenderFrameHost*
 ExtensionApiFrameIdMap::GetRenderFrameHostByDocumentId(
     const DocumentId& document_id) {
+  // TODO(crbug.com/576815295): When `kApiRuntimeGetDocumentId` is enabled, the
+  // renderer can return a `DocumentId` before `ExtensionDocumentUserData` has
+  // been lazily created for that frame on the browser side. Ensure all frames
+  // can be resolved by `DocumentId` before enabling the feature by default.
   auto iter = document_id_map_.find(document_id);
   if (iter == document_id_map_.end()) {
     return nullptr;
@@ -248,8 +255,16 @@ ExtensionApiFrameIdMap::DocumentId ExtensionApiFrameIdMap::GetDocumentId(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   // This check allows callers to pass in the result from
   // GetParentOrOuterDocument() without needing to check whether the resulting
-  // frame exists.
-  if (!render_frame_host) {
+  // frame exists. When kApiRuntimeGetDocumentId is enabled,
+  // ExtensionDocumentUserData queries RenderFrameHost::GetDocumentToken(),
+  // which CHECKs that the frame is not speculative or pending commit (where
+  // GetDocumentLifecycle() is kNone), so return an empty DocumentId in that
+  // state.
+  if (!render_frame_host ||
+      (base::FeatureList::IsEnabled(
+           extensions_features::kApiRuntimeGetDocumentId) &&
+       GetDocumentLifecycle(render_frame_host) ==
+           api::extension_types::DocumentLifecycle::kNone)) {
     return DocumentId();
   }
   return ExtensionDocumentUserData::GetOrCreateForCurrentDocument(
@@ -259,12 +274,15 @@ ExtensionApiFrameIdMap::DocumentId ExtensionApiFrameIdMap::GetDocumentId(
 
 ExtensionApiFrameIdMap::DocumentId ExtensionApiFrameIdMap::GetDocumentId(
     content::NavigationHandle* navigation_handle) {
-  // We can only access NavigationHandle::GetRenderFrameHost if the navigation
-  // handle has committed or is waiting to commit. This is fine because
-  // otherwise the documentId is useless as it will point at the old
-  // document.
-  if (navigation_handle->IsWaitingToCommit() ||
-      navigation_handle->HasCommitted()) {
+  // When kApiRuntimeGetDocumentId is enabled, ExtensionDocumentUserData queries
+  // RenderFrameHost::GetDocumentToken(), which is disallowed while the target
+  // RenderFrameHost is in kPendingCommit (including while IsWaitingToCommit()
+  // is true before commit), so only access GetRenderFrameHost() once the
+  // navigation has committed.
+  if (navigation_handle->HasCommitted() ||
+      (!base::FeatureList::IsEnabled(
+           extensions_features::kApiRuntimeGetDocumentId) &&
+       navigation_handle->IsWaitingToCommit())) {
     return GetDocumentId(navigation_handle->GetRenderFrameHost());
   }
   return DocumentId();
@@ -273,6 +291,18 @@ ExtensionApiFrameIdMap::DocumentId ExtensionApiFrameIdMap::GetDocumentId(
 // static
 base::Uuid ExtensionApiFrameIdMap::GetContextId(
     content::RenderFrameHost* render_frame_host) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  // Similar to GetDocumentId(), when kApiRuntimeGetDocumentId is enabled, avoid
+  // creating ExtensionDocumentUserData for speculative or pending-commit frames
+  // (where GetDocumentLifecycle() is kNone), as ExtensionDocumentUserData's
+  // constructor queries GetDocumentToken().
+  if (!render_frame_host ||
+      (base::FeatureList::IsEnabled(
+           extensions_features::kApiRuntimeGetDocumentId) &&
+       GetDocumentLifecycle(render_frame_host) ==
+           api::extension_types::DocumentLifecycle::kNone)) {
+    return base::Uuid();
+  }
   return ExtensionDocumentUserData::GetOrCreateForCurrentDocument(
              render_frame_host)
       ->context_id();
@@ -368,8 +398,15 @@ void ExtensionApiFrameIdMap::OnRenderFrameDeleted(
 ExtensionApiFrameIdMap::ExtensionDocumentUserData::ExtensionDocumentUserData(
     content::RenderFrameHost* render_frame_host)
     : content::DocumentUserData<ExtensionDocumentUserData>(render_frame_host),
-      document_id_(DocumentId::Create()),
       context_id_(base::Uuid::GenerateRandomV4()) {
+  if (base::FeatureList::IsEnabled(
+          extensions_features::kApiRuntimeGetDocumentId)) {
+    CHECK_NE(GetDocumentLifecycle(render_frame_host),
+             api::extension_types::DocumentLifecycle::kNone);
+    document_id_ = render_frame_host->GetDocumentToken().value();
+  } else {
+    document_id_ = DocumentId::Create();
+  }
   Get()->document_id_map_[document_id_] = this;
 }
 

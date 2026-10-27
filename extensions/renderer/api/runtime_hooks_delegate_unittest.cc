@@ -222,6 +222,25 @@ TEST_F(RuntimeHooksDelegateTest, GetURL) {
           GURL(extension()->url().spec() + "https://www.google.com"));
 }
 
+TEST_F(RuntimeHooksDelegateTest, GetDocumentIdInvalidTargets) {
+  base::test::ScopedFeatureList feature_list{
+      extensions_features::kApiRuntimeGetDocumentId};
+  v8::HandleScope handle_scope(isolate());
+  v8::Local<v8::Context> context = MainContext();
+
+  v8::Local<v8::Value> get_document_id =
+      V8ValueFromScriptSource(context, "chrome.runtime.getDocumentId");
+  ASSERT_FALSE(get_document_id.IsEmpty());
+  ASSERT_TRUE(get_document_id->IsFunction());
+
+  CallAPIAndExpectError(context, "getDocumentId", "");
+  CallAPIAndExpectError(context, "getDocumentId", "null");
+  CallAPIAndExpectError(context, "getDocumentId", "undefined");
+  CallAPIAndExpectError(context, "getDocumentId", "123");
+  CallAPIAndExpectError(context, "getDocumentId", "'not_a_target'");
+  CallAPIAndExpectError(context, "getDocumentId", "true");
+}
+
 TEST_F(RuntimeHooksDelegateTest, Connect) {
   v8::HandleScope handle_scope(isolate());
   v8::Local<v8::Context> context = MainContext();

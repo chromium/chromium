@@ -633,23 +633,13 @@ class CONTENT_EXPORT RenderFrameHostImpl
   const network::CrossOriginEmbedderPolicy& GetCrossOriginEmbedderPolicy()
       const override;
   const network::ConnectionAllowlists& GetConnectionAllowlists() const override;
+  const blink::DocumentToken& GetDocumentToken() const override;
 
   // Additional non-override const version of GetMainFrame.
   const RenderFrameHostImpl* GetMainFrame() const;
 
   // Additional non-override const version of GetPage.
   const PageImpl& GetPage() const;
-
-  // Returns the token for the document currently associated with this frame.
-  // This can change over time if a `RenderFrameHost` is reused when navigating
-  // to a new document.
-  //
-  // Retrieving the document token is disallowed if:
-  // - the RenderFrameHost is pending commit, e.g. waiting for the renderer to
-  //   acknowledge the commit, since the DocumentToken will change as soon as
-  //   the navigation actually commits.
-  // - the RenderFrameHost is speculative
-  const blink::DocumentToken& GetDocumentToken() const;
 
   const blink::InitiatorStateToken& current_initiator_state_token() const {
     return current_initiator_state_token_;

@@ -189,6 +189,10 @@ class BLINK_EXPORT WebFrame {
   // the given node is not a frame, iframe or if the frame is empty.
   static WebFrame* FromFrameOwnerElement(const WebNode&);
 
+  // Returns the frame associated with a window or window proxy object. Returns
+  // nullptr if the given value is not a window or if the frame has detached.
+  static WebFrame* FromWindow(v8::Isolate* isolate, v8::Local<v8::Value> value);
+
   // Whether the owner element of this frame is in the document tree or the
   // shadow tree, per https://w3c.github.io/webcomponents/spec/shadow/.
   mojom::TreeScopeType GetTreeScopeType() const { return scope_; }

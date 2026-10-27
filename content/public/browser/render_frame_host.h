@@ -245,6 +245,12 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener {
   // Returns the frame token for this frame.
   virtual const blink::LocalFrameToken& GetFrameToken() const = 0;
 
+  // Returns the document token for the current document in this frame.
+  // This can change over time if a RenderFrameHost is reused when navigating
+  // to a new document. Must not be called for speculative or
+  // LifecycleState::kPendingCommit frames before committing a document.
+  virtual const blink::DocumentToken& GetDocumentToken() const = 0;
+
   // Returns a tracing track to use as a grouping parent. Do not emit directly
   // events to this track.
   virtual const perfetto::Track& GetTracingTrack() const = 0;

@@ -677,6 +677,16 @@
     "min_manifest_version": 3,
     "contexts": ["privileged_extension"]
   },
+  "runtime.getDocumentId": {
+    "contexts": [
+      "privileged_extension",
+      "offscreen_extension",
+      "unprivileged_extension",
+      "content_script"
+    ],
+    "disallow_for_service_workers": true,
+    "feature_flag": "ApiRuntimeGetDocumentId"
+  },
   "runtime.getURL": {
     "contexts": [
       "privileged_extension",

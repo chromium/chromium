@@ -419,6 +419,24 @@
         }
       },
       {
+        "name": "getDocumentId",
+        "type": "function",
+        "nocompile": true,
+        "nodoc": true,
+        "description": "Returns the document ID of the specified window or frame element.",
+        "parameters": [
+          {
+            "name": "target",
+            "type": "any",
+            "description": "A WindowProxy or frame element (iframe, frame, embed, or object) for the target frame."
+          }
+        ],
+        "returns": {
+          "type": "string",
+          "description": "The document ID of the target."
+        }
+      },
+      {
         "name": "markListenerRegistrationComplete",
         "type": "function",
         "nodoc": true,
