@@ -1197,9 +1197,6 @@ BASE_FEATURE(kOobeInputMethods, base::FEATURE_DISABLED_BY_DEFAULT);
 // If enabled, SplitModifierKeyboardInfoScreen will be shown in OOBE.
 BASE_FEATURE(kOobeSplitModifierKeyboardInfo, base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables OOBE Jelly features.
-BASE_FEATURE(kOobeJelly, base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables OOBE perks discovery feature.
 BASE_FEATURE(kOobePerksDiscovery, base::FEATURE_ENABLED_BY_DEFAULT);
 
@@ -2446,10 +2443,6 @@ bool AreOngoingProcessesEnabled() {
 
 bool IsOemAppsMustUpdateFromWebstoreEnabled() {
   return base::FeatureList::IsEnabled(kOemAppsMustUpdateFromWebstore);
-}
-
-bool IsOobeJellyEnabled() {
-  return base::FeatureList::IsEnabled(kOobeJelly);
 }
 
 bool IsModifierSplitEnabled() {
