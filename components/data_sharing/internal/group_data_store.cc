@@ -29,8 +29,13 @@ namespace data_sharing {
 
 namespace {
 
+// Uses `USER_VISIBLE` rather than `BEST_EFFORT` because the collaboration join
+// flow waits, with a short timeout, for
+// `DataSharingService::IsGroupDataModelLoaded()`, which requires this store to
+// be loaded. On a busy device `BEST_EFFORT` tasks may be starved long enough
+// for that timeout to expire. Writes share the sequence but are small.
 constexpr base::TaskTraits kDBTaskTraits = {
-    base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+    base::MayBlock(), base::TaskPriority::USER_VISIBLE,
     base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN};
 
 constexpr char kGroupEntitiesTableName[] = "group_data_entities";
