@@ -13,6 +13,7 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/system/sys_info.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "remoting/base/cpu_utils.h"
 #include "remoting/base/util.h"
@@ -183,11 +184,6 @@ std::unique_ptr<WebrtcVideoEncoder> WebrtcVideoEncoderVpx::CreateForVP9() {
 
 WebrtcVideoEncoderVpx::~WebrtcVideoEncoderVpx() = default;
 
-void WebrtcVideoEncoderVpx::SetTickClockForTests(
-    const base::TickClock* tick_clock) {
-  clock_ = tick_clock;
-}
-
 void WebrtcVideoEncoderVpx::SetLosslessColor(bool want_lossless) {
   if (!use_vp9_) {
     return;
@@ -332,7 +328,6 @@ void WebrtcVideoEncoderVpx::Encode(std::unique_ptr<webrtc::DesktopFrame> frame,
 WebrtcVideoEncoderVpx::WebrtcVideoEncoderVpx(bool use_vp9)
     : use_vp9_(use_vp9),
       image_(nullptr, vpx_img_free),
-      clock_(base::DefaultTickClock::GetInstance()),
       bitrate_filter_(kVp8MinimumTargetBitrateKbpsPerMegapixel) {
   // Indicates config is still uninitialized.
   config_.g_timebase.den = 0;
