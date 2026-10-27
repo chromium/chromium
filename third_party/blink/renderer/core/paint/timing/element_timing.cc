@@ -340,7 +340,9 @@ void ElementTiming::FlushTimingsOnFramePresented(
   }
 
   if (!container_timings->empty()) {
-    EnsureContainerTiming();
+    // The info was queued at paint, where container timing was enabled for
+    // this window, and an enabled feature is never disabled for a window.
+    CHECK(EnsureContainerTiming());
     for (ContainerTimingInfo* info : *container_timings) {
       container_timing_->OnElementPainted(paint_timing_info, info->element,
                                           info->intersection_rect);
