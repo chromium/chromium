@@ -839,17 +839,22 @@ class Symbol(BaseSymbol):
     self.template_name = full_name if template_name is None else template_name
     self.name = full_name if name is None else name
 
+  # The pss properties are hot, so avoid calling other properties.
   @property
   def pss(self):
-    return float(self.size) / self.num_aliases
+    aliases = self.aliases
+    return self.size / len(aliases) if aliases else float(self.size)
 
   @property
   def pss_without_padding(self):
-    return float(self.size_without_padding) / self.num_aliases
+    aliases = self.aliases
+    size = self.size - self.padding
+    return size / len(aliases) if aliases else float(size)
 
   @property
   def padding_pss(self):
-    return float(self.padding) / self.num_aliases
+    aliases = self.aliases
+    return self.padding / len(aliases) if aliases else float(self.padding)
 
 
 class DeltaSymbol(BaseSymbol):
@@ -967,53 +972,55 @@ class DeltaSymbol(BaseSymbol):
 
   @property
   def padding_pss(self):
-    if self.after_symbol is None:
-      return -self.before_symbol.padding_pss
-    if self.before_symbol is None:
-      return self.after_symbol.padding_pss
+    before = self.before_symbol
+    after = self.after_symbol
+    if after is None:
+      return -before.padding_pss
+    if before is None:
+      return after.padding_pss
     # Padding tracked in aggregate, except for padding-only symbols.
-    if self.before_symbol.size_without_padding == 0:
-      return self.after_symbol.padding_pss - self.before_symbol.padding_pss
+    if before.size == before.padding:
+      return after.padding_pss - before.padding_pss
     return 0
 
   @property
   def padding(self):
-    if self.after_symbol is None:
-      return -self.before_symbol.padding
-    if self.before_symbol is None:
-      return self.after_symbol.padding
+    before = self.before_symbol
+    after = self.after_symbol
+    if after is None:
+      return -before.padding
+    if before is None:
+      return after.padding
     # Padding tracked in aggregate, except for padding-only symbols.
-    if self.before_symbol.size_without_padding == 0:
-      return self.after_symbol.padding - self.before_symbol.padding
+    if before.size == before.padding:
+      return after.padding - before.padding
     return 0
 
   @property
   def pss(self):
-    if self.after_symbol is None:
-      return -self.before_symbol.pss
-    if self.before_symbol is None:
-      return self.after_symbol.pss
+    before = self.before_symbol
+    after = self.after_symbol
+    if after is None:
+      return -before.pss
+    if before is None:
+      return after.pss
     # Padding tracked in aggregate, except for padding-only symbols.
-    if self.before_symbol.size_without_padding == 0:
-      return self.after_symbol.pss - self.before_symbol.pss
-    return (
-      self.after_symbol.pss_without_padding
-      - self.before_symbol.pss_without_padding
-    )
+    if before.size == before.padding:
+      return after.pss - before.pss
+    return after.pss_without_padding - before.pss_without_padding
 
   @property
   def size(self):
-    if self.after_symbol is None:
-      return -self.before_symbol.size
-    if self.before_symbol is None:
-      return self.after_symbol.size
+    before = self.before_symbol
+    after = self.after_symbol
+    if after is None:
+      return -before.size
+    if before is None:
+      return after.size
     # Padding tracked in aggregate, except for padding-only symbols.
-    if self.before_symbol.size_without_padding == 0:
-      return self.after_symbol.padding - self.before_symbol.padding
-    return (
-      self.after_symbol.size_without_padding
-      - self.before_symbol.size_without_padding
-    )
+    if before.size == before.padding:
+      return after.padding - before.padding
+    return (after.size - after.padding) - (before.size - before.padding)
 
   @property
   def pss_without_padding(self):
