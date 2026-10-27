@@ -204,16 +204,23 @@ void PixAccountLinkingManager::DoOnAccepted() {
 }
 
 void PixAccountLinkingManager::OnUiScreenEvent(UiEvent ui_event_type) {
+  // UI events from the bottom sheet are delivered asynchronously. The account
+  // linking UI may already have been dismissed by Chrome (e.g.
+  // `DismissPrompt()` sets `ui_state_` to `kHidden` before the bottom sheet
+  // finishes closing), so late events for a hidden UI are expected and are
+  // ignored.
+  if (ui_state_ == UiState::kHidden) {
+    return;
+  }
+
   switch (ui_event_type) {
     case UiEvent::kNewScreenShown: {
-      CHECK(ui_state_ != UiState::kHidden);
       if (ui_state_ == UiState::kPrompt) {
         LogPixAccountLinkingPromptShown();
       }
       break;
     }
     case UiEvent::kScreenCouldNotBeShown: {
-      CHECK(ui_state_ != UiState::kHidden);
       if (ui_state_ == UiState::kPrompt) {
         LogAccountLinkingFlowExitedReason(
             kPixFopSuffix, AccountLinkingFlowExitedReason::kScreenNotShown);
@@ -231,7 +238,6 @@ void PixAccountLinkingManager::OnUiScreenEvent(UiEvent ui_event_type) {
       break;
     }
     case UiEvent::kScreenClosedByUser: {
-      CHECK(ui_state_ != UiState::kHidden);
       if (ui_state_ == UiState::kPrompt) {
         LogAccountLinkingFlowExitedReason(
             kPixFopSuffix, AccountLinkingFlowExitedReason::kScreenClosedByUser);
