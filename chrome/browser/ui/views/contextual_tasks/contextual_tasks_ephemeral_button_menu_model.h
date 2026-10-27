@@ -33,8 +33,9 @@ class ContextualTasksEphemeralButtonMenuModel
       const ContextualTasksEphemeralButtonMenuModel&) = delete;
   ~ContextualTasksEphemeralButtonMenuModel() override;
 
-  // Rebuilds the items if the pinning eligibility changed since they were last
-  // built. Called before the menu is shown and when the eligibility changes.
+  // Rebuilds the items based on whether the side panel is closed, the pin
+  // button is not pinned, and whether the profile is eligible for pinning.
+  // Called before the menu is shown and when the eligibility changes.
   void UpdateItems();
 
   // ui::SimpleMenuModel::Delegate:
@@ -43,6 +44,7 @@ class ContextualTasksEphemeralButtonMenuModel
   void ExecuteCommand(int command_id, int event_flags) override;
 
  private:
+  bool ShouldShowCloseSidePanel() const;
   bool IsPinningEligible() const;
 
   const raw_ptr<BrowserWindowInterface> browser_window_interface_;

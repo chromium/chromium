@@ -161,6 +161,7 @@ ContextualTasksEphemeralButtonController::
                     views::kElementIdentifierKey,
                     ContextualTasksEphemeralButtonMenuModel::
                         kRemoveForTaskMenuItem)
+                .SetVisible(false)
                 .SetEnabled(false)
                 .Build());
       }
@@ -689,9 +690,12 @@ void ContextualTasksEphemeralButtonController::
   }
   const bool should_show = ShouldShowPinnedButtonActiveIndicator();
   if (close_side_panel_action_item_) {
-    close_side_panel_action_item_->SetEnabled(
-        should_show ||
-        (contextual_task_observation_.IsObserving() && IsPanelOpen()));
+    const bool is_pinned = contextual_tasks::GetEffectivePinState(
+        browser_window_interface_->GetProfile());
+    const bool should_show_close_side_panel =
+        should_show && !is_pinned && !IsPanelOpen();
+    close_side_panel_action_item_->SetVisible(should_show_close_side_panel);
+    close_side_panel_action_item_->SetEnabled(should_show_close_side_panel);
   }
   BrowserActions* const browser_actions =
       BrowserActions::From(browser_window_interface_);

@@ -392,7 +392,8 @@ void ContextualTasksButton::OnShouldUpdatePosition() {
 
 bool ContextualTasksButton::ShouldShowMenu() {
   UpdateContextMenu();
-  return ToolbarButton::ShouldShowMenu();
+  return menu_model() && menu_model()->GetItemCount() > 0 &&
+         ToolbarButton::ShouldShowMenu();
 }
 
 void ContextualTasksButton::UpdateColorsAndInsets() {
@@ -612,6 +613,7 @@ void ContextualTasksButton::MaybeUpdateVisibility() {
   UpdateStatusIndicator();
   UpdateHighlight();
   UpdateTooltipText();
+  UpdateContextMenu();
 }
 
 void ContextualTasksButton::UpdateHighlight() {
