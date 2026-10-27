@@ -20,16 +20,6 @@ using SyncPresenterCompletionCallback = ProceduralBlock;
 // Protocol used to display sync-related UI.
 @protocol SyncPresenterCommands
 
-// Asks the presenter to display the reauthenticate the primary account.
-// The primary should be available.
-- (void)showPrimaryAccountReauth;
-
-// Asks the presenter to display the reauthenticate the primary account.
-// The primary should be available.
-// `completion` is executed after the UI is dismissed.
-- (void)showPrimaryAccountReauthWithDismissalCompletion:
-    (SyncPresenterCompletionCallback)completion;
-
 // Asks the presenter to display the sync encryption passphrase UI.
 - (void)showSyncPassphraseSettings;
 

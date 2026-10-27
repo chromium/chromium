@@ -22,6 +22,7 @@
 #import "ios/chrome/browser/settings/model/sync/utils/test/mock_sync_error_infobar_delegate.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/browser/shared/public/commands/primary_account_reauth_commands.h"
 #import "ios/chrome/browser/shared/public/commands/sync_presenter_commands.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/sync/model/test_sync_service_utils.h"
@@ -50,10 +51,12 @@ class SyncErrorInfobarBannerOverlayMediatorTest : public PlatformTest {
 
     // Create an InfoBarIOS with a MockSyncErrorInfobarDelegate.
     presenter_ = OCMStrictProtocolMock(@protocol(SyncPresenterCommands));
+    primary_account_reauth_handler_ =
+        OCMStrictProtocolMock(@protocol(PrimaryAccountReauthCommands));
     std::unique_ptr<MockSyncErrorInfoBarDelegate> delegate =
         std::make_unique<MockSyncErrorInfoBarDelegate>(
-            profile_.get(), presenter_, kTitleText, kMessageText,
-            kButtonLabelText,
+            profile_.get(), presenter_, primary_account_reauth_handler_,
+            kTitleText, kMessageText, kButtonLabelText,
             /*use_icon_background_tint=*/true);
     // Create an InfoBarIOS with a MockSyncErrorInfoBarDelegate.
     delegate_ = delegate.get();
@@ -71,6 +74,7 @@ class SyncErrorInfobarBannerOverlayMediatorTest : public PlatformTest {
 
   ~SyncErrorInfobarBannerOverlayMediatorTest() override {
     EXPECT_OCMOCK_VERIFY((id)presenter_);
+    EXPECT_OCMOCK_VERIFY((id)primary_account_reauth_handler_);
     EXPECT_OCMOCK_VERIFY((id)consumer_mock_);
     // Force the mediator to be deallocated before the
     // request is destroyed to avoid undefined behaviour.
@@ -81,6 +85,7 @@ class SyncErrorInfobarBannerOverlayMediatorTest : public PlatformTest {
 
  protected:
   id<SyncPresenterCommands> presenter_;
+  id<PrimaryAccountReauthCommands> primary_account_reauth_handler_;
   raw_ptr<MockSyncErrorInfoBarDelegate, DanglingUntriaged> delegate_ = nil;
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;

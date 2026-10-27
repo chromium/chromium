@@ -69,6 +69,7 @@ source_set("commands") {
     "policy_change_commands.h",
     "popup_menu_commands.h",
     "price_tracked_items_commands.h",
+    "primary_account_reauth_commands.h",
     "promos_manager_commands.h",
     "qr_generation_commands.h",
     "qr_scanner_commands.h",

@@ -15,6 +15,7 @@ source_set("utils") {
     ":identity_error_util",
     "//base",
     "//components/infobars/core",
+    "//components/signin/public/base",
     "//components/strings",
     "//components/sync/service",
     "//ios/chrome/app/strings",

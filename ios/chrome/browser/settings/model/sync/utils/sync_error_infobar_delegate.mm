@@ -15,6 +15,7 @@
 #import "components/infobars/core/infobar_manager.h"
 #import "components/prefs/pref_service.h"
 #import "components/signin/public/base/consent_level.h"
+#import "components/signin/public/base/signin_metrics.h"
 #import "components/signin/public/base/signin_switches.h"
 #import "components/sync/service/sync_service.h"
 #import "components/sync/service/sync_service_utils.h"
@@ -24,6 +25,7 @@
 #import "ios/chrome/browser/settings/model/sync/utils/sync_util.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/shared/public/commands/primary_account_reauth_commands.h"
 #import "ios/chrome/browser/shared/public/commands/sync_presenter_commands.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
@@ -71,6 +73,7 @@ bool SyncErrorInfoBarDelegate::Create(
     infobars::InfoBarManager* infobar_manager,
     ProfileIOS* profile,
     id<SyncPresenterCommands> sync_presenter_handler,
+    id<PrimaryAccountReauthCommands> primary_account_reauth_handler,
     SyncErrorInfoBarTrigger trigger) {
   if (SyncErrorNotificationsPaused(profile)) {
     return false;
@@ -78,7 +81,8 @@ bool SyncErrorInfoBarDelegate::Create(
 
   CHECK(infobar_manager);
   std::unique_ptr<SyncErrorInfoBarDelegate> delegate(
-      new SyncErrorInfoBarDelegate(profile, sync_presenter_handler, trigger));
+      new SyncErrorInfoBarDelegate(profile, sync_presenter_handler,
+                                   primary_account_reauth_handler, trigger));
   std::unique_ptr<InfoBarIOS> infobar = std::make_unique<InfoBarIOS>(
       InfobarType::kInfobarTypeSyncError, std::move(delegate));
   return !!infobar_manager->AddInfoBar(std::move(infobar));
@@ -87,9 +91,11 @@ bool SyncErrorInfoBarDelegate::Create(
 SyncErrorInfoBarDelegate::SyncErrorInfoBarDelegate(
     ProfileIOS* profile,
     id<SyncPresenterCommands> sync_presenter_handler,
+    id<PrimaryAccountReauthCommands> primary_account_reauth_handler,
     SyncErrorInfoBarTrigger trigger)
     : profile_(profile),
       sync_presenter_handler_(sync_presenter_handler),
+      primary_account_reauth_handler_(primary_account_reauth_handler),
       trigger_(trigger) {
   CHECK(!profile->IsOffTheRecord());
   syncer::SyncService* sync_service =
@@ -142,7 +148,12 @@ bool SyncErrorInfoBarDelegate::Accept() {
   }
   switch (error_state_) {
     case syncer::SyncService::UserActionableError::kSignInNeedsUpdate:
-      [sync_presenter_handler_ showPrimaryAccountReauth];
+      [primary_account_reauth_handler_
+          showPrimaryAccountReauthWithAccessPoint:signin_metrics::AccessPoint::
+                                                      kReauthInfoBar
+                                reauthAccessPoint:signin_metrics::
+                                                      ReauthAccessPoint::
+                                                          kReauthInfoBar];
       break;
 
     case syncer::SyncService::UserActionableError::kDeviceManagementError: {
@@ -239,6 +250,7 @@ void SyncErrorInfoBarDelegate::OnStateChanged(syncer::SyncService* sync) {
     if (infobar_manager) {
       std::unique_ptr<ConfirmInfoBarDelegate> new_infobar_delegate(
           new SyncErrorInfoBarDelegate(profile_, sync_presenter_handler_,
+                                       primary_account_reauth_handler_,
                                        trigger_));
       infobar_manager->ReplaceInfoBar(
           infobar, CreateConfirmInfoBar(std::move(new_infobar_delegate)));

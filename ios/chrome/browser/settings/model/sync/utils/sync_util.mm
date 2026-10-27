@@ -365,10 +365,12 @@ bool ShouldShowSyncSettings(syncer::SyncService::UserActionableError error) {
   }
 }
 
-bool DisplaySyncErrors(ProfileIOS* profile,
-                       web::WebState* web_state,
-                       id<SyncPresenterCommands> sync_presenter_handler,
-                       SyncErrorInfoBarTrigger trigger) {
+bool DisplaySyncErrors(
+    ProfileIOS* profile,
+    web::WebState* web_state,
+    id<SyncPresenterCommands> sync_presenter_handler,
+    id<PrimaryAccountReauthCommands> primary_account_reauth_handler,
+    SyncErrorInfoBarTrigger trigger) {
   // Avoid displaying sync errors on incognito tabs.
   if (profile->IsOffTheRecord()) {
     return false;
@@ -410,7 +412,8 @@ bool DisplaySyncErrors(ProfileIOS* profile,
       InfoBarManagerImpl::FromWebState(web_state);
   DCHECK(infoBarManager);
   bool infobar_displayed = SyncErrorInfoBarDelegate::Create(
-      infoBarManager, profile, sync_presenter_handler, trigger);
+      infoBarManager, profile, sync_presenter_handler,
+      primary_account_reauth_handler, trigger);
   if (infobar_displayed) {
     // Logs when an infobar is shown to user. See crbug.com/265352.
     base::UmaHistogramEnumeration(kSyncErrorInfobarDisplayedHistogramName,

@@ -15,6 +15,7 @@
 #import "ui/base/models/image_model.h"
 
 class ProfileIOS;
+@protocol PrimaryAccountReauthCommands;
 @protocol SyncPresenterCommands;
 
 // Mock version of SyncErrorInfoBarDelegate.
@@ -23,6 +24,7 @@ class MockSyncErrorInfoBarDelegate : public SyncErrorInfoBarDelegate {
   MockSyncErrorInfoBarDelegate(
       ProfileIOS* profile,
       id<SyncPresenterCommands> sync_presenter_handler,
+      id<PrimaryAccountReauthCommands> primary_account_reauth_handler,
       std::u16string title_text = u"",
       std::u16string message_text = u"",
       std::u16string button_label_text = u"",

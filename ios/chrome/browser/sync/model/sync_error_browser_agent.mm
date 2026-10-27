@@ -18,6 +18,7 @@
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/primary_account_reauth_commands.h"
 #import "ios/chrome/browser/shared/public/commands/sync_presenter_commands.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
@@ -161,6 +162,8 @@ void SyncErrorBrowserAgent::OnPasswordFormParsed(
     DisplaySyncErrors(profile, active_web_state,
                       HandlerForProtocol(browser_->GetCommandDispatcher(),
                                          SyncPresenterCommands),
+                      HandlerForProtocol(browser_->GetCommandDispatcher(),
+                                         PrimaryAccountReauthCommands),
                       SyncErrorInfoBarTrigger::kPasswordFormParsed);
   }
 }
@@ -180,7 +183,9 @@ void SyncErrorBrowserAgent::CreateReSignInInfoBarDelegate(
   CHECK(web_state->IsRealized());
   if (!resignin_presenter_provider_ ||
       ![browser_->GetCommandDispatcher()
-          dispatchingForProtocol:@protocol(SyncPresenterCommands)]) {
+          dispatchingForProtocol:@protocol(SyncPresenterCommands)] ||
+      ![browser_->GetCommandDispatcher()
+          dispatchingForProtocol:@protocol(PrimaryAccountReauthCommands)]) {
     return;
   }
 
@@ -204,5 +209,7 @@ void SyncErrorBrowserAgent::CreateReSignInInfoBarDelegate(
   DisplaySyncErrors(profile, web_state,
                     HandlerForProtocol(browser_->GetCommandDispatcher(),
                                        SyncPresenterCommands),
+                    HandlerForProtocol(browser_->GetCommandDispatcher(),
+                                       PrimaryAccountReauthCommands),
                     SyncErrorInfoBarTrigger::kNewTabOpened);
 }

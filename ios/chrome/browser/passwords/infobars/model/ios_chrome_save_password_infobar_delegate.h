@@ -18,6 +18,7 @@
 #import "ios/chrome/browser/passwords/infobars/public/ios_chrome_password_infobar_metrics_recorder.h"
 #import "services/metrics/public/cpp/ukm_source_id.h"
 
+@protocol PrimaryAccountReauthCommands;
 @protocol SyncPresenterCommands;
 @protocol SettingsCommands;
 
@@ -43,6 +44,7 @@ class IOSChromeSavePasswordInfoBarDelegate : public ConfirmInfoBarDelegate {
       ukm::SourceId ukm_source_id,
       bool is_replacement,
       id<SyncPresenterCommands> sync_presenter_handler,
+      id<PrimaryAccountReauthCommands> primary_account_reauth_handler,
       id<SettingsCommands> settings_commands_handler,
       password_manager::PasswordStoreInterface* profile_store,
       password_manager::PasswordStoreInterface* account_store,
@@ -139,6 +141,9 @@ class IOSChromeSavePasswordInfoBarDelegate : public ConfirmInfoBarDelegate {
 
   // Handler for sync presenter commands.
   __weak id<SyncPresenterCommands> sync_presenter_handler_ = nil;
+
+  // Handler for primary account reauth commands.
+  __weak id<PrimaryAccountReauthCommands> primary_account_reauth_handler_ = nil;
 
   // Handler for settings commands.
   __weak id<SettingsCommands> settings_commands_handler_ = nil;

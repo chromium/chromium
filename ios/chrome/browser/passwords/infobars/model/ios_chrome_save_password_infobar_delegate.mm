@@ -32,11 +32,13 @@
 #import "components/password_manager/core/browser/password_sync_util.h"
 #import "components/password_manager/core/browser/password_ui_utils.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
+#import "components/signin/public/base/signin_metrics.h"
 #import "components/strings/grit/components_strings.h"
 #import "components/trusted_vault/trusted_vault_client.h"
 #import "ios/chrome/browser/infobars/model/infobar_ios.h"
 #import "ios/chrome/browser/passwords/infobars/model/ios_chrome_password_saved_infobar_delegate.h"
 #import "ios/chrome/browser/passwords/model/features.h"
+#import "ios/chrome/browser/shared/public/commands/primary_account_reauth_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/commands/sync_presenter_commands.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
@@ -250,12 +252,14 @@ IOSChromeSavePasswordInfoBarDelegate::IOSChromeSavePasswordInfoBarDelegate(
     ukm::SourceId ukm_source_id,
     bool is_replacement,
     id<SyncPresenterCommands> sync_presenter_handler,
+    id<PrimaryAccountReauthCommands> primary_account_reauth_handler,
     id<SettingsCommands> settings_commands_handler,
     password_manager::PasswordStoreInterface* profile_store,
     password_manager::PasswordStoreInterface* account_store,
     const syncer::SyncService* sync_service)
     : ukm_source_id_(ukm_source_id),
       sync_presenter_handler_(sync_presenter_handler),
+      primary_account_reauth_handler_(primary_account_reauth_handler),
       settings_commands_handler_(settings_commands_handler),
       form_to_save_(std::move(form_to_save)),
       infobar_type_(password_update
@@ -502,7 +506,7 @@ bool IOSChromeSavePasswordInfoBarDelegate::IsPresenting() const {
 }
 
 bool IOSChromeSavePasswordInfoBarDelegate::MaybeHandlePasswordError() {
-  if (!sync_presenter_handler_) {
+  if (!sync_presenter_handler_ || !primary_account_reauth_handler_) {
     return false;
   }
 
@@ -526,8 +530,13 @@ bool IOSChromeSavePasswordInfoBarDelegate::MaybeHandlePasswordError() {
           showSyncPassphraseSettingsWithDismissalCompletion:completion];
       break;
     case password_manager::ActionableError::kSignInNeeded:
-      [sync_presenter_handler_
-          showPrimaryAccountReauthWithDismissalCompletion:completion];
+      [primary_account_reauth_handler_
+          showPrimaryAccountReauthWithAccessPoint:signin_metrics::AccessPoint::
+                                                      kReauthInfoBar
+                                reauthAccessPoint:signin_metrics::
+                                                      ReauthAccessPoint::
+                                                          kReauthInfoBar
+                              dismissalCompletion:completion];
       break;
     case password_manager::ActionableError::kTrustedVaultKeyNeeded:
       [sync_presenter_handler_
@@ -589,8 +598,8 @@ void IOSChromeSavePasswordInfoBarDelegate::OnPasswordErrorFlowCompleted(
     auto new_delegate = std::make_unique<IOSChromeSavePasswordInfoBarDelegate>(
         password_update_, std::move(form_to_save_), ukm_source_id_,
         /*is_replacement=*/true, sync_presenter_handler_,
-        settings_commands_handler_, profile_store_.get(), account_store_.get(),
-        sync_service_);
+        primary_account_reauth_handler_, settings_commands_handler_,
+        profile_store_.get(), account_store_.get(), sync_service_);
     InfobarType type = IsPasswordUpdate()
                            ? InfobarType::kInfobarTypePasswordUpdate
                            : InfobarType::kInfobarTypePasswordSave;

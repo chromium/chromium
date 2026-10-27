@@ -19,6 +19,7 @@
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/primary_account_reauth_commands.h"
 #import "ios/chrome/browser/shared/public/commands/sync_presenter_commands.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/sync/model/test_sync_service_utils.h"
@@ -71,10 +72,16 @@ class SyncErrorBrowserAgentTest : public PlatformTest {
     [browser_->GetCommandDispatcher()
         startDispatchingToTarget:mock_sync_presenter_
                      forProtocol:@protocol(SyncPresenterCommands)];
+    mock_primary_account_reauth_handler_ =
+        OCMStrictProtocolMock(@protocol(PrimaryAccountReauthCommands));
+    [browser_->GetCommandDispatcher()
+        startDispatchingToTarget:mock_primary_account_reauth_handler_
+                     forProtocol:@protocol(PrimaryAccountReauthCommands)];
   }
 
   void TearDown() override {
     EXPECT_OCMOCK_VERIFY(mock_sync_presenter_);
+    EXPECT_OCMOCK_VERIFY(mock_primary_account_reauth_handler_);
     PlatformTest::TearDown();
   }
 
@@ -86,6 +93,7 @@ class SyncErrorBrowserAgentTest : public PlatformTest {
   std::unique_ptr<Browser> browser_;
   raw_ptr<syncer::TestSyncService> sync_service_;
   id mock_sync_presenter_;
+  id mock_primary_account_reauth_handler_;
 };
 
 TEST_F(SyncErrorBrowserAgentTest,

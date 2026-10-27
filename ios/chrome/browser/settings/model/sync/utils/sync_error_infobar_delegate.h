@@ -17,6 +17,7 @@
 
 class ProfileIOS;
 enum class SyncErrorInfoBarTrigger;
+@protocol PrimaryAccountReauthCommands;
 @protocol SyncPresenterCommands;
 
 namespace infobars {
@@ -32,9 +33,11 @@ class SyncErrorInfoBarDelegate : public ConfirmInfoBarDelegate,
                                  public signin::IdentityManager::Observer,
                                  public syncer::SyncServiceObserver {
  public:
-  SyncErrorInfoBarDelegate(ProfileIOS* profile,
-                           id<SyncPresenterCommands> sync_presenter_handler,
-                           SyncErrorInfoBarTrigger trigger);
+  SyncErrorInfoBarDelegate(
+      ProfileIOS* profile,
+      id<SyncPresenterCommands> sync_presenter_handler,
+      id<PrimaryAccountReauthCommands> primary_account_reauth_handler,
+      SyncErrorInfoBarTrigger trigger);
 
   SyncErrorInfoBarDelegate(const SyncErrorInfoBarDelegate&) = delete;
   SyncErrorInfoBarDelegate& operator=(const SyncErrorInfoBarDelegate&) = delete;
@@ -42,10 +45,12 @@ class SyncErrorInfoBarDelegate : public ConfirmInfoBarDelegate,
   ~SyncErrorInfoBarDelegate() override;
 
   // Creates a sync error infobar and adds it to `infobar_manager`.
-  static bool Create(infobars::InfoBarManager* infobar_manager,
-                     ProfileIOS* profile,
-                     id<SyncPresenterCommands> sync_presenter_handler,
-                     SyncErrorInfoBarTrigger trigger);
+  static bool Create(
+      infobars::InfoBarManager* infobar_manager,
+      ProfileIOS* profile,
+      id<SyncPresenterCommands> sync_presenter_handler,
+      id<PrimaryAccountReauthCommands> primary_account_reauth_handler,
+      SyncErrorInfoBarTrigger trigger);
 
   // InfoBarDelegate implementation.
   InfoBarIdentifier GetIdentifier() const override;
@@ -83,6 +88,7 @@ class SyncErrorInfoBarDelegate : public ConfirmInfoBarDelegate,
                           signin::IdentityManager::Observer>
       identity_manager_observation_{this};
   const id<SyncPresenterCommands> sync_presenter_handler_;
+  const id<PrimaryAccountReauthCommands> primary_account_reauth_handler_;
   const SyncErrorInfoBarTrigger trigger_;
   syncer::SyncService::UserActionableError error_state_;
   std::u16string title_;

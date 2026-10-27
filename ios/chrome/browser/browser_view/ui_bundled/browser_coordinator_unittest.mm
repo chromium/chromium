@@ -64,6 +64,7 @@
 #import "ios/chrome/browser/shared/public/commands/find_in_page_commands.h"
 #import "ios/chrome/browser/shared/public/commands/gemini_commands.h"
 #import "ios/chrome/browser/shared/public/commands/help_commands.h"
+#import "ios/chrome/browser/shared/public/commands/primary_account_reauth_commands.h"
 #import "ios/chrome/browser/shared/public/commands/promos_manager_commands.h"
 #import "ios/chrome/browser/shared/public/commands/reader_mode_options_commands.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
@@ -383,8 +384,10 @@ TEST_F(BrowserCoordinatorTest, NoCrashOnHideFindUIWithNoActiveWebState) {
 }
 
 // Tests that the completion callback for
-// `showPrimaryAccountReauthWithDismissalCompletion:` is called correctly when
-// `kMigrateToSigninReauthCoordinator` is disabled.
+// `showPrimaryAccountReauthWithAccessPoint:
+//                        reauthAccessPoint:
+//                      dismissalCompletion:`
+// is called correctly when `kMigrateToSigninReauthCoordinator` is disabled.
 TEST_F(BrowserCoordinatorTest,
        TestPrimaryAccountReauthCompletionMigrationDisabled) {
   base::test::ScopedFeatureList feature_list;
@@ -392,8 +395,8 @@ TEST_F(BrowserCoordinatorTest,
       switches::kMigrateToSigninReauthCoordinator);
   BrowserCoordinator* browser_coordinator = GetBrowserCoordinator();
   [browser_coordinator start];
-  id<SyncPresenterCommands> handler = HandlerForProtocol(
-      browser_->GetCommandDispatcher(), SyncPresenterCommands);
+  id<PrimaryAccountReauthCommands> handler = HandlerForProtocol(
+      browser_->GetCommandDispatcher(), PrimaryAccountReauthCommands);
   SigninCoordinator* signin_mock =
       OCMStrictClassMock([SigninCoordinator class]);
   OCMExpect(
@@ -425,9 +428,14 @@ TEST_F(BrowserCoordinatorTest,
   OCMExpect([signin_mock start]);
 
   __block bool completion_was_called = false;
-  [handler showPrimaryAccountReauthWithDismissalCompletion:^() {
-    completion_was_called = true;
-  }];
+  [handler showPrimaryAccountReauthWithAccessPoint:signin_metrics::AccessPoint::
+                                                       kReauthInfoBar
+                                 reauthAccessPoint:signin_metrics::
+                                                       ReauthAccessPoint::
+                                                           kReauthInfoBar
+                               dismissalCompletion:^() {
+                                 completion_was_called = true;
+                               }];
 
   EXPECT_OCMOCK_VERIFY((id)signin_mock);
 
@@ -442,8 +450,10 @@ TEST_F(BrowserCoordinatorTest,
 }
 
 // Tests that the completion callback for
-// `showPrimaryAccountReauthWithDismissalCompletion:` is called correctly when
-// `kMigrateToSigninReauthCoordinator` is enabled.
+// `showPrimaryAccountReauthWithAccessPoint:
+//                        reauthAccessPoint:
+//    dismissalCompletion:`
+// is called correctly when `kMigrateToSigninReauthCoordinator` is enabled.
 TEST_F(BrowserCoordinatorTest,
        TestPrimaryAccountReauthCompletionMigrationEnabled) {
   base::test::ScopedFeatureList feature_list;
@@ -451,8 +461,8 @@ TEST_F(BrowserCoordinatorTest,
       switches::kMigrateToSigninReauthCoordinator);
   BrowserCoordinator* browser_coordinator = GetBrowserCoordinator();
   [browser_coordinator start];
-  id<SyncPresenterCommands> handler = HandlerForProtocol(
-      browser_->GetCommandDispatcher(), SyncPresenterCommands);
+  id<PrimaryAccountReauthCommands> handler = HandlerForProtocol(
+      browser_->GetCommandDispatcher(), PrimaryAccountReauthCommands);
   FakeSystemIdentity* identity = [FakeSystemIdentity fakeIdentity1];
   FakeSystemIdentityManager* system_identity_manager =
       FakeSystemIdentityManager::FromSystemIdentityManager(
@@ -480,9 +490,14 @@ TEST_F(BrowserCoordinatorTest,
   OCMExpect([reauth_mock start]);
 
   __block bool completion_was_called = false;
-  [handler showPrimaryAccountReauthWithDismissalCompletion:^() {
-    completion_was_called = true;
-  }];
+  [handler showPrimaryAccountReauthWithAccessPoint:signin_metrics::AccessPoint::
+                                                       kReauthInfoBar
+                                 reauthAccessPoint:signin_metrics::
+                                                       ReauthAccessPoint::
+                                                           kReauthInfoBar
+                               dismissalCompletion:^() {
+                                 completion_was_called = true;
+                               }];
 
   EXPECT_OCMOCK_VERIFY((id)reauth_mock);
 
@@ -497,8 +512,11 @@ TEST_F(BrowserCoordinatorTest,
 }
 
 // Tests that the completion callback for
-// `showPrimaryAccountReauthWithDismissalCompletion:` is called immediately
-// without starting `SigninReauthCoordinator` when there is no primary account.
+// `showPrimaryAccountReauthWithAccessPoint:
+//                        reauthAccessPoint:
+//                      dismissalCompletion:`
+// is called immediately without starting `SigninReauthCoordinator` when there
+// is no primary account.
 TEST_F(BrowserCoordinatorTest,
        TestPrimaryAccountReauthCompletionSignedOutMigrationEnabled) {
   base::test::ScopedFeatureList feature_list;
@@ -506,16 +524,21 @@ TEST_F(BrowserCoordinatorTest,
       switches::kMigrateToSigninReauthCoordinator);
   BrowserCoordinator* browser_coordinator = GetBrowserCoordinator();
   [browser_coordinator start];
-  id<SyncPresenterCommands> handler = HandlerForProtocol(
-      browser_->GetCommandDispatcher(), SyncPresenterCommands);
+  id<PrimaryAccountReauthCommands> handler = HandlerForProtocol(
+      browser_->GetCommandDispatcher(), PrimaryAccountReauthCommands);
   SigninReauthCoordinator* reauth_mock =
       OCMStrictClassMock([SigninReauthCoordinator class]);
   OCMReject([((id)reauth_mock) alloc]);
 
   __block bool completion_was_called = false;
-  [handler showPrimaryAccountReauthWithDismissalCompletion:^() {
-    completion_was_called = true;
-  }];
+  [handler showPrimaryAccountReauthWithAccessPoint:signin_metrics::AccessPoint::
+                                                       kReauthInfoBar
+                                 reauthAccessPoint:signin_metrics::
+                                                       ReauthAccessPoint::
+                                                           kReauthInfoBar
+                               dismissalCompletion:^() {
+                                 completion_was_called = true;
+                               }];
   EXPECT_TRUE(completion_was_called);
 
   [browser_coordinator stop];

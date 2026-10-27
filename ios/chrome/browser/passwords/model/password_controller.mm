@@ -76,6 +76,7 @@
 #import "ios/chrome/browser/shared/public/commands/password_breach_commands.h"
 #import "ios/chrome/browser/shared/public/commands/password_protection_commands.h"
 #import "ios/chrome/browser/shared/public/commands/password_suggestion_commands.h"
+#import "ios/chrome/browser/shared/public/commands/primary_account_reauth_commands.h"
 #import "ios/chrome/browser/shared/public/commands/promos_manager_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/commands/sync_presenter_commands.h"
@@ -488,6 +489,8 @@ constexpr int kNotifyAutoSigninDuration = 3;  // seconds
       SyncServiceFactory::GetForProfile(self.profile);
   id<SyncPresenterCommands> syncPresenterHandler =
       HandlerForProtocol(self.dispatcher, SyncPresenterCommands);
+  id<PrimaryAccountReauthCommands> primaryAccountReauthHandler =
+      HandlerForProtocol(self.dispatcher, PrimaryAccountReauthCommands);
   id<SettingsCommands> settingsCommands =
       HandlerForProtocol(self.dispatcher, SettingsCommands);
   infobars::InfoBarManager* infoBarManager =
@@ -504,8 +507,9 @@ constexpr int kNotifyAutoSigninDuration = 3;  // seconds
 
       auto delegate = std::make_unique<IOSChromeSavePasswordInfoBarDelegate>(
           /*password_update=*/false, std::move(form), self.ukmSourceId,
-          /*is_replacement=*/false, syncPresenterHandler, settingsCommands,
-          profileStore.get(), accountStore.get(), syncService);
+          /*is_replacement=*/false, syncPresenterHandler,
+          primaryAccountReauthHandler, settingsCommands, profileStore.get(),
+          accountStore.get(), syncService);
       std::unique_ptr<InfoBarIOS> infobar = std::make_unique<InfoBarIOS>(
           InfobarType::kInfobarTypePasswordSave, std::move(delegate),
           /*skip_banner=*/manual);
@@ -523,8 +527,9 @@ constexpr int kNotifyAutoSigninDuration = 3;  // seconds
 
       auto delegate = std::make_unique<IOSChromeSavePasswordInfoBarDelegate>(
           /*password_update=*/true, std::move(form), self.ukmSourceId,
-          /*is_replacement=*/false, syncPresenterHandler, settingsCommands,
-          profileStore.get(), accountStore.get(), syncService);
+          /*is_replacement=*/false, syncPresenterHandler,
+          primaryAccountReauthHandler, settingsCommands, profileStore.get(),
+          accountStore.get(), syncService);
       std::unique_ptr<InfoBarIOS> infobar = std::make_unique<InfoBarIOS>(
           InfobarType::kInfobarTypePasswordUpdate, std::move(delegate),
           /*skip_banner=*/manual);

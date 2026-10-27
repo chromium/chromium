@@ -205,6 +205,7 @@
 #import "ios/chrome/browser/shared/public/commands/omnibox_commands.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/public/commands/popup_menu_commands.h"
+#import "ios/chrome/browser/shared/public/commands/primary_account_reauth_commands.h"
 #import "ios/chrome/browser/shared/public/commands/qr_generation_commands.h"
 #import "ios/chrome/browser/shared/public/commands/quick_delete_commands.h"
 #import "ios/chrome/browser/shared/public/commands/reader_mode_chip_commands.h"
@@ -322,6 +323,7 @@ constexpr CGFloat kSnackbarFloatingBottomMargin = 10.0;
     OverscrollActionsControllerDelegate,
     PasswordControllerDelegate,
     PrerenderBrowserAgentDelegate,
+    PrimaryAccountReauthCommands,
     ReSigninPresenter,
     ReaderModeBrowserAgentDelegate,
     ReaderModeCommands,
@@ -978,6 +980,7 @@ constexpr CGFloat kSnackbarFloatingBottomMargin = 10.0;
     @protocol(FindInPageCommands),
     @protocol(ReaderModeCommands),
     @protocol(NewTabPageCommands),
+    @protocol(PrimaryAccountReauthCommands),
     @protocol(SyncPresenterCommands),
     @protocol(TextZoomCommands),
   ];
@@ -2578,14 +2581,24 @@ constexpr CGFloat kSnackbarFloatingBottomMargin = 10.0;
   return self.browserContentCoordinator.viewController.view;
 }
 
-#pragma mark - SyncPresenterCommands
+#pragma mark - PrimaryAccountReauthCommands
 
-- (void)showPrimaryAccountReauth {
-  [self showPrimaryAccountReauthWithDismissalCompletion:nil];
+- (void)showPrimaryAccountReauthWithAccessPoint:
+            (signin_metrics::AccessPoint)accessPoint
+                              reauthAccessPoint:
+                                  (signin_metrics::ReauthAccessPoint)
+                                      reauthAccessPoint {
+  [self showPrimaryAccountReauthWithAccessPoint:accessPoint
+                              reauthAccessPoint:reauthAccessPoint
+                            dismissalCompletion:nil];
 }
 
-- (void)showPrimaryAccountReauthWithDismissalCompletion:
-    (SyncPresenterCompletionCallback)completion {
+- (void)showPrimaryAccountReauthWithAccessPoint:
+            (signin_metrics::AccessPoint)accessPoint
+                              reauthAccessPoint:
+                                  (signin_metrics::ReauthAccessPoint)
+                                      reauthAccessPoint
+                            dismissalCompletion:(ProceduralBlock)completion {
   if (_signinCoordinator.viewWillPersist ||
       _reauthCoordinator.viewWillPersist) {
     return;
@@ -2612,8 +2625,7 @@ constexpr CGFloat kSnackbarFloatingBottomMargin = 10.0;
         initWithBaseViewController:self.viewController
                            browser:regularBrowser
                            account:account
-                 reauthAccessPoint:signin_metrics::ReauthAccessPoint::
-                                       kReauthInfoBar];
+                 reauthAccessPoint:reauthAccessPoint];
     _reauthCoordinator.delegate = self;
     _reauthCoordinatorCompletion = completion;
     [_reauthCoordinator start];
@@ -2624,8 +2636,6 @@ constexpr CGFloat kSnackbarFloatingBottomMargin = 10.0;
   // is launched.
   signin_metrics::PromoAction promoAction =
       signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO;
-  signin_metrics::AccessPoint accessPoint =
-      signin_metrics::AccessPoint::kReauthInfoBar;
   SigninContextStyle style = SigninContextStyle::kDefault;
   Browser* regularBrowser = signin::GetRegularBrowser(self.browser);
   _signinCoordinator = [SigninCoordinator
@@ -2649,6 +2659,8 @@ constexpr CGFloat kSnackbarFloatingBottomMargin = 10.0;
       };
   [_signinCoordinator start];
 }
+
+#pragma mark - SyncPresenterCommands
 
 - (void)showSyncPassphraseSettings {
   [self showSyncPassphraseSettingsWithDismissalCompletion:nil];

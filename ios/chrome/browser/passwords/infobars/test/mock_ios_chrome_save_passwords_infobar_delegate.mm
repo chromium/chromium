@@ -75,6 +75,7 @@ MockIOSChromeSavePasswordInfoBarDelegate::
           ukm::kInvalidSourceId,
           /*is_replacement=*/false,
           /*sync_presenter_handler=*/nil,
+          /*primary_account_reauth_handler=*/nil,
           /*settings_commands_handler=*/nil,
           /*profile_store=*/nullptr,
           /*account_store=*/nullptr,
