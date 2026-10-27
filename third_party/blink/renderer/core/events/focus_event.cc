@@ -72,7 +72,7 @@ void FocusEvent::Trace(Visitor* visitor) const {
 }
 
 DispatchEventResult FocusEvent::DispatchEvent(EventDispatcher& dispatcher) {
-  ClearCrossOriginRelatedTarget(dispatcher.GetNode(), related_target_);
+  CheckCrossOriginRelatedTarget(dispatcher.GetNode(), related_target_);
   GetEventPath().AdjustForRelatedTarget(dispatcher.GetNode(), relatedTarget());
   return dispatcher.Dispatch();
 }

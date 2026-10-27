@@ -193,7 +193,7 @@ DispatchEventResult PointerEvent::DispatchEvent(EventDispatcher& dispatcher) {
 
   DCHECK(!RawTarget() || RawTarget() != relatedTarget());
 
-  ClearCrossOriginRelatedTarget(dispatcher.GetNode(), related_target_);
+  CheckCrossOriginRelatedTarget(dispatcher.GetNode(), related_target_);
   GetEventPath().AdjustForRelatedTarget(dispatcher.GetNode(), relatedTarget());
 
   return dispatcher.Dispatch();
