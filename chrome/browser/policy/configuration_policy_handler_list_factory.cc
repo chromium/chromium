@@ -2428,9 +2428,6 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kCreateThemesSettings,
     optimization_guide::prefs::kWallpaperSearchEnterprisePolicyAllowed,
     base::Value::Type::INTEGER},
-  { key::kHistorySearchSettings,
-    optimization_guide::prefs::kHistorySearchEnterprisePolicyAllowed,
-    base::Value::Type::INTEGER},
 #endif // !BUILDFLAG(IS_ANDROID)
   { key::kTabCompareSettings,
     optimization_guide::prefs::kProductSpecificationsEnterprisePolicyAllowed,
@@ -3619,9 +3616,6 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
       optimization_guide::prefs::kWallpaperSearchEnterprisePolicyAllowed);
   gen_ai_default_policies.emplace_back(key::kDevToolsGenAiSettings,
                                        prefs::kDevToolsGenAiSettings);
-  gen_ai_default_policies.emplace_back(
-      key::kHistorySearchSettings,
-      optimization_guide::prefs::kHistorySearchEnterprisePolicyAllowed);
   gen_ai_default_policies.emplace_back(
       key::kTabCompareSettings,
       optimization_guide::prefs::kProductSpecificationsEnterprisePolicyAllowed);

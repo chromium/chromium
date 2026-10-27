@@ -1,6 +1,8 @@
 caption: Settings for AI-powered History Search
-
+deprecated: true
 desc: |-
+  This policy is deprecated in M157 since the AI History Search feature has been removed.
+
   AI History Search is a feature that allows users to search their browsing history and receive generated answers based on page contents and not just the page title and URL.
 
   0 = Allow the feature to be used, while allowing Google to use relevant data to improve its AI models. Relevant data may include prompts, inputs, outputs, source materials, and written feedback, depending on the feature. It may also be reviewed by humans to improve AI models. 0 is the default value, except when noted below.
@@ -39,7 +41,7 @@ schema:
 tags:
 - google-sharing
 supported_on:
-- chrome.*:128-
-- chrome_os:128-
+- chrome.*:128-156
+- chrome_os:128-156
 tags: []
 type: int-enum
