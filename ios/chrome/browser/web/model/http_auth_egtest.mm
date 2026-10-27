@@ -27,11 +27,14 @@ using base::test::ios::WaitUntilConditionOrTimeout;
 
 namespace {
 
-// Returns matcher for HTTP Authentication dialog.
+// Returns matcher for the HTTP Authentication dialog title label. Labels inside
+// buttons are excluded because the dialog's OK button and the NTP identity disc
+// button also contain a "Sign in" label.
 id<GREYMatcher> HttpAuthDialog() {
   NSString* title = l10n_util::GetNSStringWithFixup(IDS_LOGIN_DIALOG_TITLE);
   return grey_allOf(chrome_test_util::StaticTextWithAccessibilityLabel(title),
-                    grey_ancestor(grey_kindOfClass(UIButton.class)), nil);
+                    grey_not(grey_ancestor(grey_kindOfClass(UIButton.class))),
+                    nil);
 }
 
 // Returns matcher for Username text field.
@@ -46,10 +49,21 @@ id<GREYMatcher> PasswordField() {
       IDS_IOS_HTTP_LOGIN_DIALOG_PASSWORD_PLACEHOLDER));
 }
 
-// Returns matcher for Login button.
-id<GREYMatcher> LoginButton() {
-  return chrome_test_util::ButtonWithAccessibilityLabelId(
-      IDS_LOGIN_DIALOG_OK_BUTTON_LABEL);
+// Returns matcher for the Login button once it is enabled. Alert buttons are
+// initially disabled, see crbug.com/341353783.
+id<GREYMatcher> EnabledLoginButton() {
+  return grey_allOf(
+      chrome_test_util::ButtonWithAccessibilityLabelId(
+          IDS_LOGIN_DIALOG_OK_BUTTON_LABEL),
+      grey_not(grey_accessibilityTrait(UIAccessibilityTraitNotEnabled)), nil);
+}
+
+// Returns matcher for the Cancel button once it is enabled. Alert buttons are
+// initially disabled, see crbug.com/341353783.
+id<GREYMatcher> EnabledCancelButton() {
+  return grey_allOf(
+      chrome_test_util::CancelButton(),
+      grey_not(grey_accessibilityTrait(UIAccessibilityTraitNotEnabled)), nil);
 }
 
 // Waits until static text with IDS_LOGIN_DIALOG_TITLE label is displayed.
@@ -114,6 +128,10 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
 
 - (void)setUp {
   [super setUp];
+  // Each test relaunches the app, then starts the HTTP authentication load
+  // without waiting for the startup New Tab Page load to finish. Wait for it
+  // first, otherwise the authentication dialog is sometimes never shown.
+  [ChromeEarlGrey waitForPageToFinishLoading];
   self.testServer->RegisterRequestHandler(base::BindRepeating(&HandleRequest));
   GREYAssertTrue(self.testServer->Start(),
                  @"EmbeddedTestServer failed to start.");
@@ -121,13 +139,6 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
 
 // Tests Basic HTTP Authentication with correct username and password.
 - (void)testSuccessfullBasicAuth {
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    // EG does not allow interactions with HTTP Dialog when loading spinner is
-    // animated. TODO(crbug.com/41294580): Enable this test on iPad when
-    // EarlGrey allows tapping dialog buttons with active page load spinner.
-    EARL_GREY_TEST_DISABLED(@"Tab Title not displayed on handset.");
-  }
-
   // EG synchronization disabled block.
   {
     // EG synchronizes with WKWebView. Disable synchronization for EG interation
@@ -148,7 +159,8 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
         performAction:grey_replaceText(@"gooduser")];
     [[EarlGrey selectElementWithMatcher:PasswordField()]
         performAction:grey_replaceText(@"goodpass")];
-    [[EarlGrey selectElementWithMatcher:LoginButton()]
+    [ChromeEarlGrey waitForUIElementToAppearWithMatcher:EnabledLoginButton()];
+    [[EarlGrey selectElementWithMatcher:EnabledLoginButton()]
         performAction:grey_tap()];
   }  // EG synchronization disabled block.
 
@@ -157,13 +169,6 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
 
 // Tests Basic HTTP Authentication with incorrect username and password.
 - (void)testUnsuccessfullBasicAuth {
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    // EG does not allow interactions with HTTP Dialog when loading spinner is
-    // animated. TODO(crbug.com/41294580): Enable this test on iPad when
-    // EarlGrey allows tapping dialog buttons with active page load spinner.
-    EARL_GREY_TEST_DISABLED(@"Tab Title not displayed on handset.");
-  }
-
   // EG synchronization disabled block.
   {
     // EG synchronizes with WKWebView. Disable synchronization for EG interation
@@ -178,14 +183,16 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
         performAction:grey_replaceText(@"gooduser")];
     [[EarlGrey selectElementWithMatcher:PasswordField()]
         performAction:grey_replaceText(@"goodpass")];
-    [[EarlGrey selectElementWithMatcher:LoginButton()]
+    [ChromeEarlGrey waitForUIElementToAppearWithMatcher:EnabledLoginButton()];
+    [[EarlGrey selectElementWithMatcher:EnabledLoginButton()]
         performAction:grey_tap()];
 
     // Ensure first dialog is dismissed before waiting for the second one.
     base::PlatformThread::Sleep(base::Seconds(1));
     // Verifies that authentication was requested again.
     WaitForHttpAuthDialog();
-    [[EarlGrey selectElementWithMatcher:chrome_test_util::CancelButton()]
+    [ChromeEarlGrey waitForUIElementToAppearWithMatcher:EnabledCancelButton()];
+    [[EarlGrey selectElementWithMatcher:EnabledCancelButton()]
         performAction:grey_tap()];
   }  // EG synchronization disabled block.
 
@@ -195,13 +202,6 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
 
 // Tests Cancelling Basic HTTP Authentication.
 - (void)testCancellingBasicAuth {
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    // EG does not allow interactions with HTTP Dialog when loading spinner is
-    // animated. TODO(crbug.com/41294580): Enable this test on iPad when
-    // EarlGrey allows tapping dialog buttons with active page load spinner.
-    EARL_GREY_TEST_DISABLED(@"Tab Title not displayed on handset.");
-  }
-
   // EG synchronization disabled block.
   {
     // EG synchronizes with WKWebView. Disable synchronization for EG interation
@@ -211,14 +211,9 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
     [ChromeEarlGrey loadURL:URL waitForCompletion:NO];
     WaitForHttpAuthDialog();
 
-    id<GREYMatcher> cancelButtonMatcher = grey_allOf(
-        chrome_test_util::CancelButton(),
-        grey_not(grey_accessibilityTrait(UIAccessibilityTraitNotEnabled)), nil);
-    // Wait for element to become enabled because auth dialog buttons are
-    // initially disabled. See crbug.com/341353783
-    [ChromeEarlGrey waitForUIElementToAppearWithMatcher:cancelButtonMatcher];
+    [ChromeEarlGrey waitForUIElementToAppearWithMatcher:EnabledCancelButton()];
 
-    [[EarlGrey selectElementWithMatcher:cancelButtonMatcher]
+    [[EarlGrey selectElementWithMatcher:EnabledCancelButton()]
         performAction:grey_tap()];
 
   }  // EG synchronization disabled block.
