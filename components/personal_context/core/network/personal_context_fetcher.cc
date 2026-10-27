@@ -57,6 +57,7 @@ net::NetworkTrafficAnnotationTag GetNetworkTrafficAnnotation(
             trigger:
               "User interacts with a form field that supports ambient autofill."
             destination: GOOGLE_OWNED_SERVICE
+            api_service_name: "contextmemoryservice.pa.googleapis.com"
             data:
               "The domain of the current webpage and the requested entity "
               "types."
