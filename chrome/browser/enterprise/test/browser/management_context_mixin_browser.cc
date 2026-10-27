@@ -91,11 +91,23 @@ void ManagementContextMixinBrowser::SetUpDefaultCommandLine(
 void ManagementContextMixinBrowser::SetCloudMachinePolicies(
     base::flat_map<std::string, std::optional<base::Value>> policy_entries) {
   CHECK(management_context_.is_cloud_machine_managed);
+  SetMachinePolicies(std::move(policy_entries), policy::POLICY_SOURCE_CLOUD);
+}
+
+void ManagementContextMixinBrowser::SetPlatformPolicies(
+    base::flat_map<std::string, std::optional<base::Value>> policy_entries) {
+  CHECK(management_context_.is_platform_managed);
+  SetMachinePolicies(std::move(policy_entries), policy::POLICY_SOURCE_PLATFORM);
+}
+
+void ManagementContextMixinBrowser::SetMachinePolicies(
+    base::flat_map<std::string, std::optional<base::Value>> policy_entries,
+    policy::PolicySource source) {
   policy::PolicyMap policy_map;
 
   for (auto& policy_entry : policy_entries) {
     policy_map.Set(policy_entry.first, policy::POLICY_LEVEL_MANDATORY,
-                   policy::POLICY_SCOPE_MACHINE, policy::POLICY_SOURCE_CLOUD,
+                   policy::POLICY_SCOPE_MACHINE, source,
                    std::move(policy_entry.second), nullptr);
   }
 

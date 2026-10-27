@@ -138,6 +138,7 @@ class EnterpriseProxyBrowserTestBase : public MixinBasedPlatformBrowserTest {
       const net::test_server::HttpRequest& request);
 
   base::test::ScopedFeatureList scoped_feature_list_;
+  const bool is_platform_managed_ = false;
   std::unique_ptr<ManagementContextMixin> management_context_mixin_;
   net::EmbeddedTestServer https_server_{net::EmbeddedTestServer::TYPE_HTTPS};
   net::RecordingNetLogObserver net_log_observer_;

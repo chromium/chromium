@@ -81,7 +81,8 @@ const std::vector<std::string>& GetTestCertHostnames() {
 }  // namespace
 
 EnterpriseProxyBrowserTestBase::EnterpriseProxyBrowserTestBase(
-    const ManagementContext& context) {
+    const ManagementContext& context)
+    : is_platform_managed_(context.is_platform_managed) {
   scoped_feature_list_.InitWithFeatures(
       /*enabled_features=*/{enterprise_net::kEnableDynamicRouteFetching,
                             enterprise_net::kEnterpriseProxyErrorHandling},
@@ -180,7 +181,11 @@ void EnterpriseProxyBrowserTestBase::SetEnableForAllUsers(bool enable) {
   base::flat_map<std::string, std::optional<base::Value>> policies;
   policies.emplace(policy::key::kEnableProxyOverrideRulesForAllUsers,
                    base::Value(enable ? 1 : 0));
-  management_context_mixin_->SetCloudMachinePolicies(std::move(policies));
+  if (is_platform_managed_) {
+    management_context_mixin_->SetPlatformPolicies(std::move(policies));
+  } else {
+    management_context_mixin_->SetCloudMachinePolicies(std::move(policies));
+  }
 }
 #endif
 

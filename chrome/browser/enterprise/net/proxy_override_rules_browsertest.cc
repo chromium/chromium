@@ -33,7 +33,8 @@ constexpr int kUnreachablePort = 12345;
 
 class ProxyOverrideRulesTestBase : public MixinBasedPlatformBrowserTest {
  public:
-  explicit ProxyOverrideRulesTestBase(const ManagementContext& context) {
+  explicit ProxyOverrideRulesTestBase(const ManagementContext& context)
+      : is_platform_managed_(context.is_platform_managed) {
     scoped_feature_list_.InitAndEnableFeature(kEnableProxyOverrideRules);
     management_context_mixin_ =
         ManagementContextMixin::Create(&mixin_host_, this, context);
@@ -92,12 +93,17 @@ class ProxyOverrideRulesTestBase : public MixinBasedPlatformBrowserTest {
     base::flat_map<std::string, std::optional<base::Value>> policies;
     policies.emplace(policy::key::kEnableProxyOverrideRulesForAllUsers,
                      base::Value(enable ? 1 : 0));
-    management_context_mixin_->SetCloudMachinePolicies(std::move(policies));
+    if (is_platform_managed_) {
+      management_context_mixin_->SetPlatformPolicies(std::move(policies));
+    } else {
+      management_context_mixin_->SetCloudMachinePolicies(std::move(policies));
+    }
   }
 #endif
 
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
+  const bool is_platform_managed_ = false;
   std::unique_ptr<ManagementContextMixin> management_context_mixin_;
 };
 

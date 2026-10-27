@@ -10,6 +10,10 @@
     "simple_policy_pref_mapping_test": {
       "pref_name": "proxy_override_rules",
       "default_value": [],
+      "policy_settings": {
+        "scope": "machine",
+        "source": "cloud"
+      },
       "values_to_test": [
         [
           {
@@ -63,6 +67,12 @@
         "policies": {
           "ProxyOverrideRules": 12
         },
+        "policies_settings": {
+          "ProxyOverrideRules": {
+            "scope": "machine",
+            "source": "cloud"
+          }
+        },
         "prefs": {
           "proxy_override_rules": {
             "default_value": []
@@ -72,6 +82,12 @@
       {
         "policies": {
           "ProxyOverrideRules": "some string"
+        },
+        "policies_settings": {
+          "ProxyOverrideRules": {
+            "scope": "machine",
+            "source": "cloud"
+          }
         },
         "prefs": {
           "proxy_override_rules": {
@@ -83,9 +99,67 @@
         "policies": {
           "ProxyOverrideRules": false
         },
+        "policies_settings": {
+          "ProxyOverrideRules": {
+            "scope": "machine",
+            "source": "cloud"
+          }
+        },
         "prefs": {
           "proxy_override_rules": {
             "default_value": []
+          }
+        }
+      }
+    ]
+  },
+  {
+    "note": "User-scoped policy applies when EnableProxyOverrideRulesForAllUsers is enabled at machine scope.",
+    "os": [
+      "linux",
+      "win",
+      "android",
+      "mac"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "EnableProxyOverrideRulesForAllUsers": 1,
+          "ProxyOverrideRules": [
+            {
+              "DestinationMatchers": [
+                "https://app1.com",
+                "https://app2.com"
+              ],
+              "ProxyList": [
+                "HTTPS proxy.app:443"
+              ]
+            }
+          ]
+        },
+        "policies_settings": {
+          "EnableProxyOverrideRulesForAllUsers": {
+            "scope": "machine",
+            "source": "cloud"
+          },
+          "ProxyOverrideRules": {
+            "scope": "user",
+            "source": "cloud"
+          }
+        },
+        "prefs": {
+          "proxy_override_rules": {
+            "value": [
+              {
+                "DestinationMatchers": [
+                  "https://app1.com",
+                  "https://app2.com"
+                ],
+                "ProxyList": [
+                  "HTTPS proxy.app:443"
+                ]
+              }
+            ]
           }
         }
       }
@@ -103,6 +177,7 @@
       {
         "policies_settings": {
           "ProxyOverrideRules": {
+            "scope": "machine",
             "source": "platform"
           }
         },

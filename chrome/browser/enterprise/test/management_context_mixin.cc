@@ -11,6 +11,9 @@
 #include "build/build_config.h"
 #include "chrome/browser/enterprise/test/test_constants.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
+#include "components/policy/core/common/management/management_service.h"
+#include "components/policy/core/common/management/platform_management_service.h"
+#include "components/policy/core/common/management/scoped_management_service_override_for_testing.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_namespace.h"
 #include "components/policy/core/common/policy_types.h"
@@ -49,6 +52,12 @@ ManagementContextMixin::ManagementContextMixin(
       /*is_first_policy_load_complete_return=*/true);
   policy::BrowserPolicyConnector::SetPolicyProviderForTesting(
       &user_policy_provider_);
+  scoped_management_service_override_ =
+      std::make_unique<policy::ScopedManagementServiceOverrideForTesting>(
+          policy::PlatformManagementService::GetInstance(),
+          management_context_.is_platform_managed
+              ? policy::EnterpriseManagementAuthority::CLOUD
+              : policy::EnterpriseManagementAuthority::NONE);
 }
 
 ManagementContextMixin::~ManagementContextMixin() = default;

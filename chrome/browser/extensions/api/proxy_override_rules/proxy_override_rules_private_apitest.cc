@@ -123,6 +123,7 @@ class ProxyOverrideRulesPrivateApiTest : public extensions::ExtensionApiTest {
                  policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
                  policy::POLICY_SOURCE_CLOUD, base::Value(rules.Clone()),
                  nullptr);
+    policies.SetDeviceAffiliationIds({kAffiliationId});
     policies.SetUserAffiliationIds({kAffiliationId});
     provider_.UpdateChromePolicy(policies);
     ASSERT_TRUE(base::test::RunUntil([&]() {

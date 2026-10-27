@@ -11,6 +11,7 @@
 #include "chrome/browser/enterprise/test/management_context_mixin.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "components/enterprise/browser/controller/fake_browser_dm_token_storage.h"
+#include "components/policy/core/common/policy_types.h"
 
 namespace policy {
 class FakeBrowserDMTokenStorage;
@@ -45,8 +46,15 @@ class ManagementContextMixinBrowser : public ManagementContextMixin {
   void SetCloudMachinePolicies(
       base::flat_map<std::string, std::optional<base::Value>> policy_entries)
       override;
+  void SetPlatformPolicies(
+      base::flat_map<std::string, std::optional<base::Value>> policy_entries)
+      override;
 
  private:
+  void SetMachinePolicies(
+      base::flat_map<std::string, std::optional<base::Value>> policy_entries,
+      policy::PolicySource source);
+
   policy::FakeBrowserDMTokenStorage browser_dm_token_storage_;
 };
 
