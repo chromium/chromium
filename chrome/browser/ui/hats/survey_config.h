@@ -57,8 +57,6 @@ inline constexpr char kHatsSurveyTriggerDownloadWarningPageHeed[] =
     "download-warning-page-heed";
 inline constexpr char kHatsSurveyTriggerDownloadWarningPageIgnore[] =
     "download-warning-page-ignore";
-inline constexpr char kHatsSurveyTriggerHistoryEmbeddings[] =
-    "history-embeddings";
 inline constexpr char kHatsSurveyTriggerHistoryPageExperiment[] =
     "history-page-experiment";
 inline constexpr char kHatsSurveyTriggerHistoryPageControl[] =

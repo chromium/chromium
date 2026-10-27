@@ -18,10 +18,6 @@
 #include "chrome/browser/page_content_annotations/page_content_annotations_service_factory.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
-#include "chrome/browser/ui/hats/hats_service_factory.h"
-#include "chrome/browser/ui/hats/mock_hats_service.h"
-#include "chrome/browser/ui/hats/survey_config.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
@@ -135,10 +131,6 @@ class HistoryEmbeddingsHandlerTest : public ChromeRenderViewHostTestHarness {
 
     web_ui_.set_web_contents(web_contents());
 
-    mock_hats_service_ = static_cast<MockHatsService*>(
-        HatsServiceFactory::GetInstance()->SetTestingFactoryAndUse(
-            profile(), base::BindRepeating(&BuildMockHatsService)));
-
     // Mock tabs and associate with WebContents.
     mock_tab_interface_ = std::make_unique<tabs::MockTabInterface>();
     tabs::TabLookupFromWebContents::CreateForWebContents(
@@ -156,7 +148,6 @@ class HistoryEmbeddingsHandlerTest : public ChromeRenderViewHostTestHarness {
   }
 
   void TearDown() override {
-    mock_hats_service_ = nullptr;
     handler_.reset();
     profile_manager_.reset();
     ChromeRenderViewHostTestHarness::TearDown();
@@ -172,7 +163,6 @@ class HistoryEmbeddingsHandlerTest : public ChromeRenderViewHostTestHarness {
   passage_embeddings::TestEnvironment passage_embeddings_test_env_;
   std::unique_ptr<HistoryEmbeddingsHandler> handler_;
   testing::NiceMock<MockPage> page_;
-  raw_ptr<MockHatsService> mock_hats_service_;
   base::HistogramTester histogram_tester_;
   std::unique_ptr<tabs::MockTabInterface> mock_tab_interface_;
   testing::NiceMock<MockBrowserWindowInterface> mock_browser_window_;
@@ -307,34 +297,4 @@ TEST_F(HistoryEmbeddingsHandlerTest, RecordsMetrics) {
   histogram_tester().ExpectBucketCount(
       "History.Embeddings.UserActions.HistoryPage",
       HistoryEmbeddingsUserActions::kOtherHistoryResultClicked, 1);
-}
-
-TEST_F(HistoryEmbeddingsHandlerTest, LaunchesDelayedHaTSSurvey) {
-  base::test::ScopedFeatureList features;
-  features.InitWithFeatures(
-      {features::kHappinessTrackingSurveysForHistoryEmbeddings}, {});
-
-  bool non_empty_results = true;
-  bool user_clicked_results = true;
-  bool answer_shown = true;
-  bool answer_citation_clicked = false;
-  bool other_history_result_clicked = false;
-  const SurveyBitsData survey_bits_data = {
-      {"non empty results", non_empty_results},
-      {"best matches result clicked", user_clicked_results},
-      {"result clicked", other_history_result_clicked},
-      {"answer shown", answer_shown},
-      {"answer citation clicked", answer_citation_clicked},
-  };
-  int query_word_count = 2;
-  const SurveyStringData product_specific_string_data = {
-      {"query word count", base::NumberToString(query_word_count)}};
-  EXPECT_CALL(
-      *mock_hats_service_,
-      LaunchDelayedSurvey(kHatsSurveyTriggerHistoryEmbeddings, testing::_,
-                          survey_bits_data, product_specific_string_data))
-      .Times(1);
-  handler_->RecordSearchResultsMetrics(
-      non_empty_results, user_clicked_results, answer_shown,
-      answer_citation_clicked, other_history_result_clicked, query_word_count);
 }

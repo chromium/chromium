@@ -1165,15 +1165,6 @@ BASE_FEATURE(kHappinessTrackingSurveysForDesktopNtpModules,
 BASE_FEATURE(kHappinessTrackingSurveysForDesktopNextPanel,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables or disables the Happiness Tracking System for History Embeddings.
-BASE_FEATURE(kHappinessTrackingSurveysForHistoryEmbeddings,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-const base::FeatureParam<base::TimeDelta>
-    kHappinessTrackingSurveysForHistoryEmbeddingsDelayTime(
-        &kHappinessTrackingSurveysForHistoryEmbeddings,
-        "HappinessTrackingSurveysForHistoryEmbeddingsDelayTime",
-        base::Seconds(20));
-
 BASE_FEATURE(kHappinessTrackingSurveysForNtpPhotosOptOut,
              "HappinessTrackingSurveysForrNtpPhotosOptOut",
              base::FEATURE_DISABLED_BY_DEFAULT);

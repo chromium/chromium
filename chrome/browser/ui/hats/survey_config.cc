@@ -176,16 +176,6 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
                                "ContextualTasksEnableLensInContextualTasks",
                                "ContextualTasksTabAutoSuggestionChipEnabled"});
 
-  // History embeddings survey.
-  survey_configs.emplace_back(
-      &features::kHappinessTrackingSurveysForHistoryEmbeddings,
-      kHatsSurveyTriggerHistoryEmbeddings,
-      /*presupplied_trigger_id=*/std::nullopt,
-      std::vector<std::string>{"non empty results",
-                               "best matches result clicked", "result clicked",
-                               "answer shown", "answer citation clicked"},
-      std::vector<std::string>{"query word count"});
-
   // NTP Photos module opt-out survey.
   survey_configs.emplace_back(
       &features::kHappinessTrackingSurveysForNtpPhotosOptOut,
