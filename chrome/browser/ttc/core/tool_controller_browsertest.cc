@@ -67,6 +67,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/search_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/actor/core/actor_features.h"
 #include "components/actor/core/safety_list_manager.h"
 #include "components/actor/core/task_id.h"
 #include "components/actor/core/task_source_info.h"
@@ -1068,6 +1069,96 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest,
 
   EXPECT_FALSE(future.Take().Ok());
   EXPECT_EQ(false, content::EvalJs(web_contents(), "button_clicked"));
+}
+
+// Runs with navigation gating confirming navigations to new origins, which is
+// the default.
+class ToolControllerNavigationGatingBrowserTest
+    : public ToolControllerBrowserTest {
+ public:
+  ToolControllerNavigationGatingBrowserTest() {
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        actor::kGlicCrossOriginNavigationGating,
+        {{"confirm_navigation_to_new_origins", "true"},
+         {"confirm_navigation_to_new_origins_dark_launch", "false"}});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Ensures that clicking a link to an origin the task hasn't visited, such as a
+// search result, navigates to it rather than being blocked by navigation
+// gating.
+IN_PROC_BROWSER_TEST_F(ToolControllerNavigationGatingBrowserTest,
+                       ClickElementNavigatesToNewOrigin) {
+  ttc_service().StartSession();
+  auto* session_controller = ttc_service().session_controller();
+  ASSERT_TRUE(session_controller);
+
+  const GURL start_url =
+      embedded_https_test_server().GetURL("example.com", "/actor/link.html");
+  const GURL new_origin_url =
+      embedded_https_test_server().GetURL("foo.com", "/actor/blank.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), start_url));
+  ASSERT_TRUE(content::ExecJs(
+      web_contents(), content::JsReplace("setLink($1);", new_origin_url)));
+
+  std::optional<int> link_id =
+      content::GetDOMNodeId(*web_contents()->GetPrimaryMainFrame(), "#link");
+  ASSERT_TRUE(link_id);
+  std::string document_id =
+      optimization_guide::DocumentIdentifierUserData::
+          GetOrCreateForCurrentDocument(web_contents()->GetPrimaryMainFrame())
+              ->serialized_token();
+
+  base::test::TestFuture<ToolResponse> future;
+  ToolRequest tool_request;
+  tool_request.name = "click_element";
+  tool_request.arguments.Set("node_id", base::DictValue()
+                                            .Set("document_id", document_id)
+                                            .Set("dom_node_id", *link_id));
+  session_controller->ProcessToolCall(std::move(tool_request),
+                                      future.GetCallback());
+
+  // Without a navigation confirmation, this fails with
+  // kTriggeredNavigationBlocked.
+  EXPECT_TRUE(future.Take().Ok());
+  EXPECT_EQ(web_contents()->GetLastCommittedURL(), new_origin_url);
+}
+
+// Ensures that `open_url` follows a redirect to an origin other than the one
+// it was asked to open (e.g. https://google.com -> https://www.google.com).
+// `open_url` implicitly grants the origin of its URL, but not the origin it
+// redirects to.
+IN_PROC_BROWSER_TEST_F(ToolControllerNavigationGatingBrowserTest,
+                       OpenUrlFollowsRedirectToNewOrigin) {
+  ASSERT_TRUE(content::NavigateToURL(
+      web_contents(),
+      embedded_https_test_server().GetURL("example.com", "/title1.html")));
+
+  ttc_service().StartSession();
+  auto* session_controller = ttc_service().session_controller();
+  ASSERT_TRUE(session_controller);
+
+  const GURL redirect_url = embedded_https_test_server().GetURL(
+      "bar.com", "/cross-site/foo.com/actor/blank.html");
+  const GURL new_origin_url =
+      embedded_https_test_server().GetURL("foo.com", "/actor/blank.html");
+
+  base::test::TestFuture<ToolResponse> future;
+  ToolRequest tool_request;
+  tool_request.name = std::string(actor::OpenUrlToolRequest::kModelFacingName);
+  tool_request.arguments.Set(actor::OpenUrlToolRequest::kUrlParam,
+                             redirect_url.spec());
+  tool_request.arguments.Set(actor::OpenUrlToolRequest::kNewTabParam, false);
+  session_controller->ProcessToolCall(std::move(tool_request),
+                                      future.GetCallback());
+
+  // Without a navigation confirmation, this fails with
+  // kTriggeredNavigationBlocked.
+  EXPECT_TRUE(future.Take().Ok());
+  EXPECT_EQ(web_contents()->GetLastCommittedURL(), new_origin_url);
 }
 
 IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, SetText) {

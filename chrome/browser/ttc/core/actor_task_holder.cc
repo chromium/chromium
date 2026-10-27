@@ -59,11 +59,10 @@ actor::TaskId ActorTaskHolder::EnsureTaskCreated() {
   TtcKeyedService* ttc_service = TtcKeyedService::Get(GetProfile());
   CHECK(ttc_service);
 
-  // TODO(b/544821996): Provide an ActorTaskDelegate.
   task_id_ = actor_service->CreateTaskWithOptions(
       actor::TaskSourceInfo(actor::TaskSourceInfo::Client::kTtc, "ttc"),
       actor::GetNullEnterprisePolicyChecker(), /*options=*/nullptr,
-      /*delegate=*/nullptr, &ttc_service->actor_ui_state_manager(),
+      task_delegate_.GetWeakPtr(), &ttc_service->actor_ui_state_manager(),
       /*initial_invocation_source=*/std::nullopt,
       actor::ActorKeyedService::AllowedSchemes::kRequireHttpsOrHttpOrNtp);
 

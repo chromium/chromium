@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_TTC_CORE_ACTOR_TASK_HOLDER_H_
 
 #include "base/memory/raw_ref.h"
+#include "chrome/browser/ttc/core/ttc_actor_task_delegate.h"
 #include "components/actor/core/task_id.h"
 
 class Profile;
@@ -33,6 +34,10 @@ class ActorTaskHolder {
 
   // Owns this object.
   const raw_ref<SessionControllerImpl> session_controller_;
+
+  // The delegate of every task this object creates, including replacements.
+  // Tasks hold it by WeakPtr, since the actor service owns them.
+  TtcActorTaskDelegate task_delegate_;
 
   // The task can be stopped outside of this class, e.g. when the user closes a
   // tab it acted on (see EnsureTaskCreated()), in which case it's replaced by a
