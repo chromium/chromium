@@ -6,6 +6,8 @@ package org.chromium.google_apis.gaia;
 
 import static org.chromium.build.NullUtil.assertNonNull;
 
+import com.google.errorprone.annotations.DoNotMock;
+
 import org.jni_zero.CalledByNative;
 import org.jni_zero.NativeMethods;
 
@@ -17,6 +19,7 @@ import org.chromium.build.annotations.Nullable;
  * google_apis/gaia/google_service_auth_error.h.
  */
 @NullMarked
+@DoNotMock("This is a simple value object.")
 public class GoogleServiceAuthError {
     private final @GoogleServiceAuthErrorState int mState;
     private final @Nullable DeviceManagementErrorDetails mDeviceManagementErrorDetails;
