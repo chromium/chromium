@@ -16,9 +16,10 @@
 
 FARPROC WINAPI HandleDelayLoadFailureCommon(unsigned reason,
                                             DelayLoadInfo* dll_info) {
-  // ERROR_COMMITMENT_LIMIT means that there is no memory. Convert this into a
-  // more suitable crash rather than just CHECKing in this function.
-  if (dll_info->dwLastError == ERROR_COMMITMENT_LIMIT) {
+  // ERROR_COMMITMENT_LIMIT and ERROR_NOT_ENOUGH_MEMORY each mean that there is
+  // no memory. Report these as OOM crashes rather than a `NOTREACHED`.
+  if (dll_info->dwLastError == ERROR_COMMITMENT_LIMIT ||
+      dll_info->dwLastError == ERROR_NOT_ENOUGH_MEMORY) {
     base::TerminateBecauseOutOfMemory(0);
   }
 
