@@ -33,8 +33,6 @@ export interface SettingsAntiAbusePageElement {
   };
 }
 
-export type AntiAbusePageElement = SettingsAntiAbusePageElement;
-
 const ANTI_ABUSE_PREF_KEY = 'synthetic.settings.site_settings.anti_abuse';
 
 const AntiAbuseElementBase = SettingsViewMixinLit(

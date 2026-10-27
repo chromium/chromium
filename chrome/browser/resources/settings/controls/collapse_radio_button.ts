@@ -27,8 +27,6 @@ export interface SettingsCollapseRadioButtonElement {
 const SettingsCollapseRadioButtonElementBase =
     PrefKeyObserverMixinLit(CrRippleMixin(CrRadioButtonMixinLit(CrLitElement)));
 
-export type CollapseRadioButtonElement = SettingsCollapseRadioButtonElement;
-
 export class SettingsCollapseRadioButtonElement extends
     SettingsCollapseRadioButtonElementBase {
   static get is() {

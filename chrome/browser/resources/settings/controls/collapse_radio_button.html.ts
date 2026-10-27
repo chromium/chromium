@@ -1,3 +1,13 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import {html} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+
+import type {SettingsCollapseRadioButtonElement} from './collapse_radio_button.js';
+
+export function getHtml(this: SettingsCollapseRadioButtonElement) {
+  return html`<!--_html_template_start_-->
     <div id="radioCollapse">
       <div aria-checked="${this.getAriaChecked()}"
           aria-disabled="${this.getAriaDisabled()}"
@@ -45,3 +55,5 @@
       <slot name="collapse"></slot>
       <slot name="noSelectionCollapse"></slot>
     </cr-collapse>
+<!--_html_template_end_-->`;
+}

@@ -52,8 +52,6 @@ const SettingsPrivacyPageElementBase =
     PrivacyGuideAvailabilityMixinLit(SettingsViewMixinLit(
         I18nMixinLit(PrefServiceObserverMixinLit(CrLitElement))));
 
-export type PrivacyPageElement = SettingsPrivacyPageElement;
-
 export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
   static get is() {
     return 'settings-privacy-page';

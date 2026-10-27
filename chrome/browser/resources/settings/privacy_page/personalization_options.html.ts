@@ -1,10 +1,18 @@
-<!-- #html_wrapper_imports_start
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import {html} from '//resources/lit/v3_0/lit.rollup.js';
+
 // <if expr="not is_chromeos">
 import {ChromeSigninUserChoice} from '/shared/settings/people_page/sync_browser_proxy.js';
 import {RestartType} from '../relaunch_mixin_lit.js';
 // </if>
-#html_wrapper_imports_end -->
 
+import type {SettingsPersonalizationOptionsElement} from './personalization_options.js';
+
+export function getHtml(this: SettingsPersonalizationOptionsElement) {
+  return html`<!--_html_template_start_-->
 <if expr="not is_chromeos">
     <div id="chromeSigninUserChoiceSetting" class="hr cr-row" role="group"
         ?hidden="${!this.chromeSigninUserChoiceInfo_?.shouldShowSettings}"
@@ -169,3 +177,5 @@ import {RestartType} from '../relaunch_mixin_lit.js';
       <div>$i18n{chromeSigninChoiceToast}</div>
     </cr-toast>
 </if>
+<!--_html_template_end_-->`;
+}

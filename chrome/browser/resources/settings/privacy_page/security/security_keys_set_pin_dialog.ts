@@ -505,9 +505,6 @@ declare global {
   }
 }
 
-export type SecurityKeysSetPinDialogElement =
-    SettingsSecurityKeysSetPinDialogElement;
-
 customElements.define(
     SettingsSecurityKeysSetPinDialogElement.is,
     SettingsSecurityKeysSetPinDialogElement);

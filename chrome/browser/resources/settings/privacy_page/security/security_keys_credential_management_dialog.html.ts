@@ -1,3 +1,13 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import {html} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+
+import type {SettingsSecurityKeysCredentialManagementDialogElement} from './security_keys_credential_management_dialog.js';
+
+export function getHtml(this: SettingsSecurityKeysCredentialManagementDialogElement) {
+  return html`<!--_html_template_start_-->
     <cr-dialog id="dialog" close-text="$i18n{cancel}" ignore-popstate
         @close="${this.onDialogClose_}">
       <div id="title" slot="title">${this.dialogTitle_}</div>
@@ -110,3 +120,5 @@
         </cr-button>
       </div>
     </cr-dialog>
+<!--_html_template_end_-->`;
+}

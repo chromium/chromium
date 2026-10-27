@@ -77,9 +77,6 @@ const SettingsPersonalizationOptionsElementBase =
 const ANONYMIZED_URL_COLLECTION_ID =
     'kAnonymizedUrlCollectionPersonalizationSettingId';
 
-export type PersonalizationOptionsElement =
-    SettingsPersonalizationOptionsElement;
-
 export class SettingsPersonalizationOptionsElement extends
     SettingsPersonalizationOptionsElementBase {
   static get is() {

@@ -88,8 +88,6 @@ const SettingsSecurityPageElementBase =
     HelpBubbleMixinLit(SettingsViewMixinLit(WebUiListenerMixinLit(
         I18nMixinLit(PrefServiceObserverMixinLit(CrLitElement)))));
 
-export type SecurityPageElement = SettingsSecurityPageElement;
-
 export class SettingsSecurityPageElement extends
     SettingsSecurityPageElementBase {
   static get is() {

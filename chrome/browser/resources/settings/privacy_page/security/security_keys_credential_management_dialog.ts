@@ -447,9 +447,6 @@ declare global {
   }
 }
 
-export type SecurityKeysCredentialManagementDialogElement =
-    SettingsSecurityKeysCredentialManagementDialogElement;
-
 customElements.define(
     SettingsSecurityKeysCredentialManagementDialogElement.is,
     SettingsSecurityKeysCredentialManagementDialogElement);

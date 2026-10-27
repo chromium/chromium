@@ -226,8 +226,6 @@ declare global {
   }
 }
 
-export type SecurityKeysPinFieldElement = SettingsSecurityKeysPinFieldElement;
-
 customElements.define(
     SettingsSecurityKeysPinFieldElement.is,
     SettingsSecurityKeysPinFieldElement);

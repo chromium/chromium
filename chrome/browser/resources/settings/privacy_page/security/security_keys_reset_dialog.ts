@@ -177,9 +177,6 @@ declare global {
   }
 }
 
-export type SecurityKeysResetDialogElement =
-    SettingsSecurityKeysResetDialogElement;
-
 customElements.define(
     SettingsSecurityKeysResetDialogElement.is,
     SettingsSecurityKeysResetDialogElement);

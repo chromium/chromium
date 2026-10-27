@@ -1,3 +1,13 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import {html} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+
+import type {ZoomLevelsElement} from './zoom_levels.js';
+
+export function getHtml(this: ZoomLevelsElement) {
+  return html`<!--_html_template_start_-->
 <settings-subpage page-title="$i18n{siteSettingsCategoryZoomLevels}"
     route-path="${this.routePath}">
   <div class="content-settings-header secondary">
@@ -25,3 +35,5 @@
     </div>
   </div>
 </settings-subpage>
+<!--_html_template_end_-->`;
+}

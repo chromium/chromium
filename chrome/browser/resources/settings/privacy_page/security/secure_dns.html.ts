@@ -1,7 +1,14 @@
-<!-- #html_wrapper_imports_start
-import {SecureDnsResolverType} from './secure_dns.js';
-#html_wrapper_imports_end -->
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
 
+import {html} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+
+import {SecureDnsResolverType} from './secure_dns.js';
+import type {SettingsSecureDnsElement} from './secure_dns.js';
+
+export function getHtml(this: SettingsSecureDnsElement) {
+  return html`<!--_html_template_start_-->
     <settings-toggle-button
         id="secureDnsToggle"
         class="hr"
@@ -48,3 +55,5 @@ import {SecureDnsResolverType} from './secure_dns.js';
         </secure-dns-input>
       </div>
     </cr-collapse>
+<!--_html_template_end_-->`;
+}

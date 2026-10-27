@@ -1,8 +1,16 @@
-<!-- #html_wrapper_imports_start
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import {html} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+
 import {ContentSetting, ContentSettingsTypes} from '../site_settings/constants.js';
 import {ThirdPartyCookieBlockingSetting} from '../site_settings/site_settings_browser_proxy.js';
-#html_wrapper_imports_end -->
 
+import type {SettingsCookiesPageElement} from './cookies_page.js';
+
+export function getHtml(this: SettingsCookiesPageElement) {
+  return html`<!--_html_template_start_-->
   <settings-subpage page-title="${this.pageTitle_}"
       learn-more-url="$i18n{cookiesSettingsHelpCenterURL}"
       search-label="$i18n{siteSettingsAllSitesFilter}"
@@ -175,3 +183,5 @@ import {ThirdPartyCookieBlockingSetting} from '../site_settings/site_settings_br
         cookies-exception-type="third-party">
     </site-list>
   </settings-subpage>
+<!--_html_template_end_-->`;
+}

@@ -1,3 +1,13 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import {html} from '//resources/lit/v3_0/lit.rollup.js';
+
+import type {ControlledRadioButtonElement} from './controlled_radio_button.js';
+
+export function getHtml(this: ControlledRadioButtonElement) {
+  return html`<!--_html_template_start_-->
 <div
     aria-checked="${this.getAriaChecked()}"
     aria-describedby="slotted-content"
@@ -28,3 +38,5 @@ ${this.showIndicator_() ? html`
       @click="${this.onIndicatorClick_}" icon-aria-label="${this.label}">
   </cr-policy-pref-indicator>
 ` : ''}
+<!--_html_template_end_-->`;
+}

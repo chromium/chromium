@@ -453,9 +453,6 @@ declare global {
   }
 }
 
-export type SecurityKeysBioEnrollDialogElement =
-    SettingsSecurityKeysBioEnrollDialogElement;
-
 customElements.define(
     SettingsSecurityKeysBioEnrollDialogElement.is,
     SettingsSecurityKeysBioEnrollDialogElement);

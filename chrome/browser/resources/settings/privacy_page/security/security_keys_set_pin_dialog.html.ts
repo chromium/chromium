@@ -1,3 +1,13 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import {html} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+
+import type {SettingsSecurityKeysSetPinDialogElement} from './security_keys_set_pin_dialog.js';
+
+export function getHtml(this: SettingsSecurityKeysSetPinDialogElement) {
+  return html`<!--_html_template_start_-->
     <cr-dialog id="dialog" close-text="$i18n{close}" ignore-popstate
         @close="${this.onDialogClose_}">
       <div slot="title">${this.title_}</div>
@@ -106,3 +116,5 @@
         </cr-button>
       </div>
     </cr-dialog>
+<!--_html_template_end_-->`;
+}

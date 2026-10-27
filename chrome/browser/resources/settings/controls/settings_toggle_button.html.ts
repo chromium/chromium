@@ -1,3 +1,13 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import {html} from '//resources/lit/v3_0/lit.rollup.js';
+
+import type {SettingsToggleButtonElement} from './settings_toggle_button.js';
+
+export function getHtml(this: SettingsToggleButtonElement) {
+  return html`<!--_html_template_start_-->
 <div id="outerRow" ?no-sub-label="${!this.subLabel}">
   ${this.icon ? html`
     <span id="icon" aria-hidden="true">
@@ -50,3 +60,5 @@
   </cr-toggle>
   <slot name="more-actions-after"></slot>
 </div>
+<!--_html_template_end_-->`;
+}

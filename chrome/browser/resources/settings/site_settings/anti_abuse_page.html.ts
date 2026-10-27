@@ -1,3 +1,13 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import {html} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+
+import type {SettingsAntiAbusePageElement} from './anti_abuse_page.js';
+
+export function getHtml(this: SettingsAntiAbusePageElement) {
+  return html`<!--_html_template_start_-->
 <settings-subpage page-title="$i18n{siteSettingsAntiAbuse}"
     route-path="${this.routePath}">
   <settings-toggle-button
@@ -38,3 +48,5 @@
     </div>
   </div>
 </settings-subpage>
+<!--_html_template_end_-->`;
+}

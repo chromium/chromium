@@ -1,8 +1,15 @@
-<!-- #html_wrapper_imports_start
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import {html} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+
 import {SafeBrowsingSetting} from './safe_browsing_types.js';
 import {HttpsFirstModeSetting} from './security_page.js';
-#html_wrapper_imports_end -->
+import type {SettingsSecurityPageElement} from './security_page.js';
 
+export function getHtml(this: SettingsSecurityPageElement) {
+  return html`<!--_html_template_start_-->
   <settings-subpage page-title="$i18n{securityPageTitle}"
       learn-more-url="$i18n{safeBrowsingHelpCenterURL}"
       route-path="${this.routePath}">
@@ -228,3 +235,5 @@ import {HttpsFirstModeSetting} from './security_page.js';
       </settings-simple-confirmation-dialog>
     ` : ''}
   </settings-subpage>
+<!--_html_template_end_-->`;
+}

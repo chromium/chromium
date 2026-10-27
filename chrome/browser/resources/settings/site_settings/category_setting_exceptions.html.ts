@@ -1,7 +1,14 @@
-<!-- #html_wrapper_imports_start
-import {ContentSetting} from './constants.js';
-#html_wrapper_imports_end -->
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
 
+import {html} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+
+import {ContentSetting} from './constants.js';
+import type {CategorySettingExceptionsElement} from './category_setting_exceptions.js';
+
+export function getHtml(this: CategorySettingExceptionsElement) {
+  return html`<!--_html_template_start_-->
     <div id="exceptionHeader">
       <h2>$i18n{siteSettingsCustomizedBehaviors}</h2>
       <div id="exceptionHeaderSubLabel" class="secondary">
@@ -32,3 +39,5 @@ import {ContentSetting} from './constants.js';
           ?hidden="${!this.shouldShowAllowSiteList_()}">
       </site-list>
     ` : ''}
+<!--_html_template_end_-->`;
+}

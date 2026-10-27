@@ -23,9 +23,6 @@ export interface SettingsSimpleConfirmationDialogElement {
   };
 }
 
-export type SimpleConfirmationDialogElement =
-    SettingsSimpleConfirmationDialogElement;
-
 export class SettingsSimpleConfirmationDialogElement extends CrLitElement {
   static get is() {
     return 'settings-simple-confirmation-dialog';

@@ -58,8 +58,6 @@ export enum SecureDnsResolverType {
   CUSTOM = 'custom',
 }
 
-export type SecureDnsElement = SettingsSecureDnsElement;
-
 const SECURE_DNS_TOGGLE_PREF_KEY =
     'synthetic.settings.dns_over_https.secure_dns_toggle';
 

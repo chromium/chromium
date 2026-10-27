@@ -45,8 +45,6 @@ import {getHtml} from './cookies_page.html.js';
 const SettingsCookiesPageElementBase =
     SettingsViewMixinLit(WebUiListenerMixinLit(I18nMixinLit(CrLitElement)));
 
-export type CookiesPageElement = SettingsCookiesPageElement;
-
 export class SettingsCookiesPageElement extends SettingsCookiesPageElementBase {
   static get is() {
     return 'settings-cookies-page';

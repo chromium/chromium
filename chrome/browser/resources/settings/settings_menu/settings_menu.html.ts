@@ -1,3 +1,13 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import {html} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+
+import type {SettingsMenuElement} from './settings_menu.js';
+
+export function getHtml(this: SettingsMenuElement) {
+  return html`<!--_html_template_start_-->
     <div role="navigation">
       <cr-menu-selector id="menu" selectable="a:not(#extensionsLink)"
           attr-for-selected="href" @iron-activate="${this.onIronActivate_}"
@@ -163,3 +173,5 @@
       </cr-menu-selector>
     </div>
 
+<!--_html_template_end_-->`;
+}

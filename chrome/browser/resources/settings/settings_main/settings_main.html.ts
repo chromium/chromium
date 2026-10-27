@@ -1,6 +1,13 @@
-<!-- #html_wrapper_imports_start
-import {cache} from '//resources/lit/v3_0/lit.rollup.js';
-#html_wrapper_imports_end -->
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import {cache, html} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+
+import type {SettingsMainElement} from './settings_main.js';
+
+export function getHtml(this: SettingsMainElement) {
+  return html`<!--_html_template_start_-->
 <div id="noSearchResults" ?hidden="${!this.showNoResultsFound_}">
   <div>$i18n{searchNoResults}</div>
   <div>$i18nRaw{searchNoResultsHelp}</div>
@@ -167,3 +174,5 @@ ${this.showResetProfileBanner_ ? html`
     ` : '')}
   </div>
 </cr-view-manager>
+<!--_html_template_end_-->`;
+}

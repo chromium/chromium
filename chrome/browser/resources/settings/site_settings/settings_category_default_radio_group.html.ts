@@ -1,7 +1,14 @@
-<!-- #html_wrapper_imports_start
-import {ContentSetting} from './constants.js';
-#html_wrapper_imports_end -->
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
 
+import {html} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+
+import {ContentSetting} from './constants.js';
+import type {SettingsCategoryDefaultRadioGroupElement} from './settings_category_default_radio_group.js';
+
+export function getHtml(this: SettingsCategoryDefaultRadioGroupElement) {
+  return html`<!--_html_template_start_-->
 <div id="radioSection">
   <h2>${this.header}</h2>
   <div id="radioGroupSubLabel" class="secondary">
@@ -51,3 +58,5 @@ import {ContentSetting} from './constants.js';
     </settings-collapse-radio-button>
   </settings-radio-group>
 </div>
+<!--_html_template_end_-->`;
+}
