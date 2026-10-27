@@ -11,6 +11,7 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.android_webview.common.Lifetime;
 import org.chromium.base.ChildBindingState;
+import org.chromium.base.ThreadUtils;
 import org.chromium.build.annotations.NullMarked;
 
 /**
@@ -26,6 +27,9 @@ public final class AwRenderProcess extends AwSupportLibIsomorphic {
     private AwRenderProcess() {}
 
     public boolean terminate() {
+        if (!ThreadUtils.runningOnUiThread()) {
+            return ThreadUtils.runOnUiThreadBlocking(this::terminate);
+        }
         if (mNativeRenderProcess == 0) return false;
 
         return AwRenderProcessJni.get().terminateChildProcess(mNativeRenderProcess);
