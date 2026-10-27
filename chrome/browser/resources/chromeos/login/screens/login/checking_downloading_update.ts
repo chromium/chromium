@@ -169,8 +169,25 @@ export class CheckingDownloadingUpdate extends CheckingDownloadingUpdateBase {
   declare private estimatedTimeLeftMsg: string;
   declare private progressMessage: string;
 
+  // Whether this element is shown. The element is instantiated together with
+  // the login WebUI even if it is never displayed, so the animation must only
+  // run while it is shown.
+  private isShown = false;
+
   static get observers(): string[] {
     return ['playAnimation(checkingForUpdate)'];
+  }
+
+  override onBeforeShow(): void {
+    super.onBeforeShow();
+    this.isShown = true;
+    this.playAnimation(this.checkingForUpdate);
+  }
+
+  override onBeforeHide(): void {
+    super.onBeforeHide();
+    this.isShown = false;
+    this.playAnimation(this.checkingForUpdate);
   }
 
   private computeProgressMessage(hasEstimate: boolean,
@@ -223,7 +240,7 @@ export class CheckingDownloadingUpdate extends CheckingDownloadingUpdateBase {
   private playAnimation(checkingForUpdate: boolean) {
     const animation = this.shadowRoot?.querySelector('#checkingAnimation');
     if (animation instanceof OobeCrLottie) {
-      animation.playing = checkingForUpdate;
+      animation.playing = this.isShown && checkingForUpdate;
     }
   }
 }

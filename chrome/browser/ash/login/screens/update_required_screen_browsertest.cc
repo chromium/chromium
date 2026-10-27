@@ -95,6 +95,8 @@ const test::UIPath kCheckingForUpdatesMessage = {
     "update-required", "downloadingUpdate", "checkingForUpdatesMsg"};
 const test::UIPath kUpdatingProgress = {"update-required", "downloadingUpdate",
                                         "updating-progress"};
+const test::UIPath kCheckingAnimation = {"update-required", "downloadingUpdate",
+                                         "checkingAnimation"};
 
 constexpr char kWifiServicePath[] = "/service/wifi2";
 constexpr char kCellularServicePath[] = "/service/cellular1";
@@ -498,6 +500,9 @@ IN_PROC_BROWSER_TEST_F(UpdateRequiredScreenTest, TestUpdateProcess) {
   // Wifi is connected, show update required screen.
   ShowUpdateRequiredScreen();
   test::OobeJS().ExpectVisiblePath(kUpdateRequiredStep);
+  // The update process step is hidden, so its animation must not play.
+  test::OobeJS().ExpectHiddenPath(kUpdateProcessStep);
+  test::OobeJS().ExpectAttributeEQ("playing", kCheckingAnimation, false);
 
   // Click to start update process.
   test::OobeJS().ClickOnPath(kUpdateNowButton);
@@ -513,11 +518,13 @@ IN_PROC_BROWSER_TEST_F(UpdateRequiredScreenTest, TestUpdateProcess) {
   test::OobeJS().ExpectVisiblePath(kUpdateProcessCheckingStep);
   test::OobeJS().ExpectHiddenPath(kUpdateProcessUpdatingStep);
   test::OobeJS().ExpectHiddenPath(kUpdateProcessCompleteStep);
+  test::OobeJS().ExpectAttributeEQ("playing", kCheckingAnimation, true);
 
   SetUpdateEngineStatus(update_engine::Operation::DOWNLOADING);
   // Wait for the content of the dialog to be rendered.
   test::OobeJS().CreateDisplayedWaiter(true, kUpdatingProgress)->Wait();
   test::OobeJS().ExpectHiddenPath(kUpdateProcessCheckingStep);
+  test::OobeJS().ExpectAttributeEQ("playing", kCheckingAnimation, false);
 
   SetUpdateEngineStatus(update_engine::Operation::UPDATED_NEED_REBOOT);
   test::OobeJS()

@@ -12,6 +12,7 @@ import '../../components/oobe_icons.html.js';
 import '../../components/common_styles/oobe_common_styles.css.js';
 import '../../components/common_styles/oobe_dialog_host_styles.css.js';
 import '../../components/dialogs/oobe_adaptive_dialog.js';
+import './checking_downloading_update.js';
 
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {sanitizeInnerHtml} from '//resources/js/parse_html_subset.js';
@@ -24,7 +25,6 @@ import {LoginScreenMixin} from '../../components/mixins/login_screen_mixin.js';
 import {MultiStepMixin} from '../../components/mixins/multi_step_mixin.js';
 import {OobeI18nMixin} from '../../components/mixins/oobe_i18n_mixin.js';
 
-import {CheckingDownloadingUpdate} from './checking_downloading_update.js';
 import {getTemplate} from './update_required_card.html.js';
 
 
@@ -159,14 +159,6 @@ export class UpdateRequired extends UpdateRequiredBase {
 
   override get UI_STEPS() {
     return UpdateRequiredUiState;
-  }
-
-  override onBeforeShow(): void {
-    super.onBeforeShow();
-    const elem = this.shadowRoot?.querySelector('#downloadingUpdate');
-    if (elem instanceof CheckingDownloadingUpdate) {
-      elem.onBeforeShow();
-    }
   }
 
   /** Called after resources are updated. */
