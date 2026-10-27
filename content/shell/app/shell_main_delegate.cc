@@ -14,6 +14,7 @@
 #include "base/base_switches.h"
 #include "base/command_line.h"
 #include "base/cpu.h"
+#include "base/dcheck_is_on.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
@@ -459,9 +460,20 @@ std::optional<int> ShellMainDelegate::PostEarlyInitialization(
   // TODO(crbug.com/40062835): Clarify which users of
   // PoissonAllocationSampler we have in the ContentShell. Do we really need to
   // enforce it?
+  const auto poisson_sampler_inclusion =
+      (EXPENSIVE_TEST_LOGIC_IS_ON() ||
+#if !BUILDFLAG(IS_ANDROID)
+       switches::IsRunWebTestsSwitchPresent()
+#else
+       false
+#endif
+           )
+          ? memory_system::DispatcherParameters::
+                PoissonAllocationSamplerInclusion::kEnforce
+          : memory_system::DispatcherParameters::
+                PoissonAllocationSamplerInclusion::kDynamic;
   memory_system::Initializer()
-      .SetDispatcherParameters(memory_system::DispatcherParameters::
-                                   PoissonAllocationSamplerInclusion::kEnforce,
+      .SetDispatcherParameters(poisson_sampler_inclusion,
                                memory_system::DispatcherParameters::
                                    AllocationTraceRecorderInclusion::kIgnore,
                                process_type)

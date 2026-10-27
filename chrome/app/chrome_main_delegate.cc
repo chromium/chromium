@@ -2030,12 +2030,20 @@ void ChromeMainDelegate::InitializeMemorySystem() {
                              : memory_system::DispatcherParameters::
                                    AllocationTraceRecorderInclusion::kIgnore;
 
-  memory_system::Initializer()
-      .SetGwpAsanParameters(gwp_asan_boost_sampling, process_type)
+  memory_system::Initializer initializer;
+  if (EXPENSIVE_TEST_LOGIC_IS_ON()) {
+    initializer.SetGwpAsanParameters(gwp_asan_boost_sampling, process_type);
+  }
+  const auto poisson_sampler_inclusion =
+      EXPENSIVE_TEST_LOGIC_IS_ON()
+          ? memory_system::DispatcherParameters::
+                PoissonAllocationSamplerInclusion::kEnforce
+          : memory_system::DispatcherParameters::
+                PoissonAllocationSamplerInclusion::kDynamic;
+  initializer
       .SetProfilingClientParameters(chrome::GetChannel(),
                                     GetProfilerProcessType(*command_line))
-      .SetDispatcherParameters(memory_system::DispatcherParameters::
-                                   PoissonAllocationSamplerInclusion::kEnforce,
+      .SetDispatcherParameters(poisson_sampler_inclusion,
                                allocation_recorder_inclusion, process_type)
       .Initialize(memory_system_);
 }
