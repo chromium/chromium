@@ -846,6 +846,18 @@ HEADLESS_PROTOCOL_TEST(RangeMouseEventAfterNodeRemoval,
 HEADLESS_PROTOCOL_TEST(GetCanvasContextWebGL,
                        "shared/get-canvas-context-webgl.js")
 
+#if !BUILDFLAG(IS_FUCHSIA)
+HEADLESS_PROTOCOL_TEST(WebGLAndWebGPUEnabledWithSwiftShader,
+                       "shared/webgl-and-webgpu-enabled-with-swiftshader.js")
+
+HEADLESS_PROTOCOL_TEST(WebGLAndWebGPUDisabledByDefault,
+                       "shared/webgl-and-webgpu-disabled-by-default.js")
+
+HEADLESS_PROTOCOL_TEST(
+    WebGLAndWebGPUDisabledWithoutSwiftShader,
+    "shared/webgl-and-webgpu-disabled-without-swiftshader.js")
+#endif  // !BUILDFLAG(IS_FUCHSIA)
+
 HEADLESS_PROTOCOL_TEST(GetBrowserContexts, "shared/get-browser-contexts.js")
 
 class HeadlessProtocolBrowserTestWithDownload

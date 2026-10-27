@@ -69,6 +69,9 @@ GPU_CONFIG_EXPORT bool CollectD3D11FeatureInfo(
 // Collect the hardware overlay support flags.
 GPU_CONFIG_EXPORT void CollectHardwareOverlayInfo(OverlayInfo* overlay_info);
 
+// Query the LUID of ANGLE's active D3D11 adapter.
+GPU_CONFIG_EXPORT bool GetActiveAdapterLuid(LUID* luid);
+
 // Identify the active GPU based on LUIDs.
 bool IdentifyActiveGPUWithLuid(GPUInfo* gpu_info);
 #endif  // BUILDFLAG(IS_WIN)

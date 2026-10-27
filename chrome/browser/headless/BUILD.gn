@@ -43,6 +43,7 @@ source_set("initializer") {
 
   if (is_linux) {
     deps += [
+      "//components/headless/gpu_util",
       "//ui/gl",
       "//ui/ozone",
     ]

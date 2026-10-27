@@ -29,6 +29,7 @@
 #include "components/crash/core/common/crash_key.h"
 #include "components/crash/core/common/crash_keys.h"
 #include "components/devtools/devtools_pipe/devtools_pipe.h"
+#include "components/headless/gpu_util/headless_gpu_util.h"
 #include "components/viz/common/switches.h"
 #include "content/public/browser/browser_main_runner.h"
 #include "content/public/common/content_switches.h"
@@ -261,10 +262,7 @@ std::optional<int> HeadlessContentMainDelegate::BasicStartupComplete() {
   if (!command_line->HasSwitch(::switches::kUseGL) &&
       !command_line->HasSwitch(::switches::kUseANGLE) &&
       !command_line->HasSwitch(switches::kEnableGPU)) {
-    command_line->AppendSwitchASCII(::switches::kUseGL,
-                                    gl::kGLImplementationANGLEName);
-    command_line->AppendSwitchASCII(
-        ::switches::kUseANGLE, gl::kANGLEImplementationSwiftShaderForWebGLName);
+    ConfigureHeadlessSwiftShaderCommandLine(*command_line);
   }
 #if BUILDFLAG(IS_OZONE)
   // The headless backend is automatically chosen for a headless build, but also

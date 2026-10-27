@@ -25,8 +25,9 @@
 #include "content/public/common/content_switches.h"
 
 #if BUILDFLAG(IS_LINUX)
-#include "ui/gl/gl_switches.h"               // nogncheck
-#include "ui/ozone/public/ozone_switches.h"  // nogncheck
+#include "components/headless/gpu_util/headless_gpu_util.h"  // nogncheck
+#include "ui/gl/gl_switches.h"                               // nogncheck
+#include "ui/ozone/public/ozone_switches.h"                  // nogncheck
 #endif
 
 #if BUILDFLAG(IS_WIN)
@@ -108,8 +109,7 @@ class HeadlessModeHandleImpl : public HeadlessModeHandle {
     if (!command_line.HasSwitch(switches::kUseGL) &&
         !command_line.HasSwitch(switches::kUseANGLE) &&
         !command_line.HasSwitch(switches::kEnableGPU)) {
-      command_line.AppendSwitchASCII(
-          switches::kUseANGLE, gl::kANGLEImplementationSwiftShaderForWebGLName);
+      ConfigureHeadlessSwiftShaderCommandLine(command_line);
     }
 #endif  // BUILDFLAG(IS_LINUX)
 

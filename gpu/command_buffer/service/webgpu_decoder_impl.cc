@@ -74,7 +74,8 @@
 #if BUILDFLAG(IS_WIN)
 #include <dawn/native/D3D11Backend.h>
 #include <dawn/native/D3D12Backend.h>
-#include "ui/gl/gl_angle_util_win.h"
+
+#include "gpu/config/gpu_info_collector.h"
 #endif
 
 namespace gpu {
@@ -1754,31 +1755,17 @@ wgpu::Adapter WebGPUDecoderImpl::CreatePreferredAdapter(
   ChainStruct(adapter_options, &dawn_adapter_toggles);
 
 #if BUILDFLAG(IS_WIN)
-  // On Windows, query the LUID of ANGLE's adapter.
-  Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device =
-      gl::QueryD3D11DeviceObjectFromANGLE();
-  if (!d3d11_device) {
-    LOG(ERROR) << "Failed to query ID3D11Device from ANGLE.";
-    return nullptr;
-  }
-
-  Microsoft::WRL::ComPtr<IDXGIDevice> dxgi_device;
-  HRESULT hr = d3d11_device.As(&dxgi_device);
-  CHECK_EQ(hr, S_OK);
-  Microsoft::WRL::ComPtr<IDXGIAdapter> dxgi_adapter;
-  hr = dxgi_device->GetAdapter(&dxgi_adapter);
-  CHECK_EQ(hr, S_OK);
-
-  DXGI_ADAPTER_DESC adapter_desc;
-  if (!SUCCEEDED(dxgi_adapter->GetDesc(&adapter_desc))) {
-    LOG(ERROR) << "Failed to get DXGI_ADAPTER_DESC from ANGLE.";
-    return nullptr;
-  }
-
-  // Chain the LUID from ANGLE.
   dawn::native::d3d::RequestAdapterOptionsLUID adapter_options_luid = {};
-  adapter_options_luid.adapterLUID = adapter_desc.AdapterLuid;
-  ChainStruct(adapter_options, &adapter_options_luid);
+  if (!force_fallback) {
+    // On Windows, query the LUID of ANGLE's adapter.
+    if (!GetActiveAdapterLuid(&adapter_options_luid.adapterLUID)) {
+      LOG(ERROR) << "Failed to query ID3D11Device from ANGLE.";
+      return nullptr;
+    }
+
+    // Chain the LUID from ANGLE.
+    ChainStruct(adapter_options, &adapter_options_luid);
+  }
 #endif
 
 #if BUILDFLAG(USE_DAWN) && BUILDFLAG(DAWN_ENABLE_BACKEND_OPENGLES)

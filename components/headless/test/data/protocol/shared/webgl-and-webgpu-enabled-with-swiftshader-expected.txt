@@ -1,0 +1,3 @@
+Tests that WebGL and WebGPU are enabled with --enable-unsafe-swiftshader and --enable-unsafe-webgpu.
+WebGL context: WebGLRenderingContext
+WebGPU adapter: GPUAdapter

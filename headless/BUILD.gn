@@ -796,6 +796,7 @@ component("headless_shell_lib") {
     "//components/embedder_support",
     "//components/embedder_support/origin_trials",
     "//components/headless/command_handler",
+    "//components/headless/gpu_util",
     "//components/policy/content",
     "//components/security_state/content",
     "//content/public/app",

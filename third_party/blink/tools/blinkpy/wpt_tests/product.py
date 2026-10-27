@@ -184,6 +184,7 @@ class HeadlessShell(DesktopProduct):
             "--canvas-2d-layers",
             '--enable-bfcache',
             '--enable-field-trial-config',
+            '--enable-unsafe-swiftshader',
             '--force-reporting-destination-attested',
             # `headless_shell` doesn't send the `Accept-Language` header by
             # default, so set an arbitrary one that some tests expect.

@@ -134,6 +134,8 @@ OverlaySupport FlagsToOverlaySupport(bool overlays_supported, UINT flags) {
   return OverlaySupport::kNone;
 }
 
+}  // namespace
+
 bool GetActiveAdapterLuid(LUID* luid) {
   Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device =
       gl::QueryD3D11DeviceObjectFromANGLE();
@@ -158,8 +160,6 @@ bool GetActiveAdapterLuid(LUID* luid) {
   *luid = desc.AdapterLuid;
   return true;
 }
-
-}  // namespace
 
 // This has to be called after a context is created, active GPU is identified,
 // and GPU driver bug workarounds are computed again. Otherwise the workaround

@@ -90,9 +90,9 @@ void HeadlessModeProtocolBrowserTest::SetUpCommandLine(
     base::CommandLine* command_line) {
   command_line->AppendSwitchASCII(::network::switches::kHostResolverRules,
                                   "MAP *.test 127.0.0.1");
-  HeadlessModeDevTooledBrowserTest::SetUpCommandLine(command_line);
-
   feature_list_ = test_meta_info_.ProcessCommandLineSwitches(*command_line);
+
+  HeadlessModeDevTooledBrowserTest::SetUpCommandLine(command_line);
 }
 
 base::DictValue HeadlessModeProtocolBrowserTest::GetPageUrlExtraParams() {
@@ -509,6 +509,21 @@ HEADLESS_MODE_PROTOCOL_TEST(RangeMouseEventAfterNodeRemoval,
 
 HEADLESS_MODE_PROTOCOL_TEST(GetCanvasContextWebGL,
                             "shared/get-canvas-context-webgl.js")
+
+HEADLESS_MODE_PROTOCOL_TEST(
+    WebGLAndWebGPUEnabledWithSwiftShader,
+    "shared/webgl-and-webgpu-enabled-with-swiftshader.js")
+
+// Headless Mode only disables GPU by default on Linux (where Ozone/Headless is
+// used).
+#if BUILDFLAG(IS_LINUX)
+HEADLESS_MODE_PROTOCOL_TEST(WebGLAndWebGPUDisabledByDefault,
+                            "shared/webgl-and-webgpu-disabled-by-default.js")
+
+HEADLESS_MODE_PROTOCOL_TEST(
+    WebGLAndWebGPUDisabledWithoutSwiftShader,
+    "shared/webgl-and-webgpu-disabled-without-swiftshader.js")
+#endif  // BUILDFLAG(IS_LINUX)
 
 HEADLESS_MODE_PROTOCOL_TEST(PopupWindowHasOpener,
                             "shared/popup-window-has-opener.js")
