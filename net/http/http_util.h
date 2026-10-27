@@ -254,7 +254,7 @@ class NET_EXPORT HttpUtil {
   // of them as having q=1.0 and pick one of them even though it may not
   // be at the beginning of the list (see http://crbug.com/5899).
   static std::string GenerateAcceptLanguageHeader(
-      const std::string& raw_language_list);
+      std::string_view raw_language_list);
 
   // Returns true if the parameters describe a response with a strong etag or
   // last-modified header.  See section 13.3.3 of RFC 2616.

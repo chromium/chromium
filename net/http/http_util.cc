@@ -13,8 +13,10 @@
 #include <optional>
 #include <string>
 #include <string_view>
+#include <utility>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
@@ -55,35 +57,42 @@ void TrimLWSImplementation(ConstIterator* begin, ConstIterator* end) {
 // Duplicates are removed.
 class AcceptLanguageBuilder {
  public:
+  AcceptLanguageBuilder() = default;
+
+  AcceptLanguageBuilder(const AcceptLanguageBuilder&) = delete;
+  AcceptLanguageBuilder& operator=(const AcceptLanguageBuilder&) = delete;
+
   // Adds a language to the string.
   // Duplicates are ignored.
-  void AddLanguageCode(std::string_view language) {
+  void AddLanguageCode(std::string_view language LIFETIME_CAPTURE_BY_THIS) {
     // No Q score supported, only supports ASCII.
     DCHECK_EQ(std::string_view::npos, language.find_first_of("; \0"));
     DCHECK(base::IsStringASCII(language));
-    if (!seen_.contains(language)) {
+
+    auto [_, inserted] = seen_.insert(language);
+    if (inserted) {
       if (str_.empty()) {
         str_.assign(language);
       } else {
         base::StrAppend(&str_, {",", language});
       }
-      seen_.emplace(language);
     }
   }
 
-  // Returns the string constructed up to this point.
-  std::string GetString() const { return str_; }
+  // Returns the final string.
+  std::string TakeString() && { return std::move(str_); }
 
  private:
   // The string that contains the list of languages, comma-separated.
   std::string str_;
-  // Set the remove duplicates.
-  absl::flat_hash_set<std::string> seen_;
+  // Set to remove duplicates.
+  absl::flat_hash_set<std::string_view> seen_;
 };
 
 // Extract the base language code from a language code.
 // If there is no '-' in the code, the original code is returned.
-std::string_view GetBaseLanguageCode(std::string_view language_code) {
+std::string_view GetBaseLanguageCode(
+    std::string_view language_code LIFETIME_BOUND) {
   size_t pos = language_code.find('-');
   if (pos != std::string_view::npos) {
     language_code = language_code.substr(0, pos);
@@ -876,7 +885,7 @@ std::string HttpUtil::ExpandLanguageList(std::string_view language_prefs) {
     }
   }
 
-  return builder.GetString();
+  return std::move(builder).TakeString();
 }
 
 // TODO(jungshik): This function assumes that the input is a comma separated
@@ -884,23 +893,22 @@ std::string HttpUtil::ExpandLanguageList(std::string_view language_prefs) {
 // a user does not manually edit the preference file, it's the case. Still,
 // we may have to make it more robust.
 std::string HttpUtil::GenerateAcceptLanguageHeader(
-    const std::string& raw_language_list) {
+    std::string_view raw_language_list) {
   // We use integers for qvalue and qvalue decrement that are 10 times
   // larger than actual values to avoid a problem with comparing
   // two floating point numbers.
   const unsigned int kQvalueDecrement10 = 1;
   unsigned int qvalue10 = 10;
-  base::StringTokenizer t(raw_language_list, ",");
+  base::StringViewTokenizer t(raw_language_list, ",");
   std::string lang_list_with_q;
   while (t.GetNext()) {
-    std::string language = t.token();
+    std::string_view language = t.token_piece();
     if (qvalue10 == 10) {
       // q=1.0 is implicit.
       lang_list_with_q = language;
     } else {
       DCHECK_LT(qvalue10, 10U);
-      base::StringAppendF(&lang_list_with_q, ",%s;q=0.%d", language.c_str(),
-                          qvalue10);
+      base::StringAppendF(&lang_list_with_q, ",%s;q=0.%d", language, qvalue10);
     }
     // It does not make sense to have 'q=0'.
     if (qvalue10 > kQvalueDecrement10)
