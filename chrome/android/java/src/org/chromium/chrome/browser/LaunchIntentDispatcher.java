@@ -133,6 +133,38 @@ public class LaunchIntentDispatcher {
         }
     }
 
+    // These values are persisted to logs. Entries should not be renumbered and
+    // numeric values should never be reused.
+    @IntDef({
+        ExternalTriggerDispatchResult.STARTED_BACKGROUND_SERVICE,
+        ExternalTriggerDispatchResult.OPENED_FOREGROUND_TAB,
+        ExternalTriggerDispatchResult.ROUTED_TASK_INTERRUPT,
+        ExternalTriggerDispatchResult.REJECTED_NOT_GOOGLE_SIGNED,
+        ExternalTriggerDispatchResult.REJECTED_GLIC_DISABLED_FOR_PROFILE,
+        ExternalTriggerDispatchResult.TASK_INTERRUPT_TASK_NOT_FOUND,
+        ExternalTriggerDispatchResult.TASK_INTERRUPT_INTENT_CREATION_FAILED,
+        ExternalTriggerDispatchResult.NUM_ENTRIES
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface ExternalTriggerDispatchResult {
+        int STARTED_BACKGROUND_SERVICE = 0;
+        int OPENED_FOREGROUND_TAB = 1;
+        int ROUTED_TASK_INTERRUPT = 2;
+        int REJECTED_NOT_GOOGLE_SIGNED = 3;
+        int REJECTED_GLIC_DISABLED_FOR_PROFILE = 4;
+        int TASK_INTERRUPT_TASK_NOT_FOUND = 5;
+        int TASK_INTERRUPT_INTENT_CREATION_FAILED = 6;
+        int NUM_ENTRIES = 7;
+    }
+
+    private static void recordExternalTriggerDispatchResult(
+            @ExternalTriggerDispatchResult int result) {
+        RecordHistogram.recordEnumeratedHistogram(
+                "Glic.Android.ExternalTriggerIntent.DispatchResult",
+                result,
+                ExternalTriggerDispatchResult.NUM_ENTRIES);
+    }
+
     /**
      * Dispatches the intent to start ActorForegroundService securely for Glic triggering.
      * Synchronously loads native to check the explicit opt-in state before routing.
@@ -156,6 +188,8 @@ public class LaunchIntentDispatcher {
 
             if (!GlicEnabling.isEnabledForProfile(profile)) {
                 currentActivity.setResult(Activity.RESULT_CANCELED);
+                recordExternalTriggerDispatchResult(
+                        ExternalTriggerDispatchResult.REJECTED_GLIC_DISABLED_FOR_PROFILE);
                 return Action.FINISH_ACTIVITY;
             }
 
@@ -183,6 +217,8 @@ public class LaunchIntentDispatcher {
                     // TODO(b/548905982): Ensure foreground service started before finishing
                     // activity.
                     currentActivity.setResult(Activity.RESULT_OK);
+                    recordExternalTriggerDispatchResult(
+                            ExternalTriggerDispatchResult.STARTED_BACKGROUND_SERVICE);
                     return Action.FINISH_ACTIVITY;
                 }
             }
@@ -192,9 +228,13 @@ public class LaunchIntentDispatcher {
                             currentActivity, /* incognito= */ false);
             newTabIntent.putExtra(GlicIntentConstants.EXTRA_GLIC_PENDING_ACTOR_TASK, true);
             currentActivity.setResult(Activity.RESULT_OK);
+            recordExternalTriggerDispatchResult(
+                    ExternalTriggerDispatchResult.OPENED_FOREGROUND_TAB);
             return dispatchToTabbedActivity(currentActivity, newTabIntent);
         } else {
             currentActivity.setResult(Activity.RESULT_CANCELED);
+            recordExternalTriggerDispatchResult(
+                    ExternalTriggerDispatchResult.REJECTED_NOT_GOOGLE_SIGNED);
             return Action.FINISH_ACTIVITY;
         }
     }
@@ -211,6 +251,8 @@ public class LaunchIntentDispatcher {
                 actorService == null ? null : actorService.getTaskByConversationId(conversationId);
         if (task == null) {
             currentActivity.setResult(Activity.RESULT_CANCELED);
+            recordExternalTriggerDispatchResult(
+                    ExternalTriggerDispatchResult.TASK_INTERRUPT_TASK_NOT_FOUND);
             return Action.FINISH_ACTIVITY;
         }
 
@@ -218,6 +260,8 @@ public class LaunchIntentDispatcher {
                 ActorForegroundServiceController.get().createTrustedBringTabToFrontIntent(task);
         if (bringToFrontIntent == null) {
             currentActivity.setResult(Activity.RESULT_CANCELED);
+            recordExternalTriggerDispatchResult(
+                    ExternalTriggerDispatchResult.TASK_INTERRUPT_INTENT_CREATION_FAILED);
             return Action.FINISH_ACTIVITY;
         }
 
@@ -226,6 +270,8 @@ public class LaunchIntentDispatcher {
             bringToFrontIntent.putExtra(IntentHandler.EXTRA_WINDOW_ID, targetWindowId);
             if (MultiWindowUtils.launchIntentInInstance(bringToFrontIntent, targetWindowId)) {
                 currentActivity.setResult(Activity.RESULT_OK);
+                recordExternalTriggerDispatchResult(
+                        ExternalTriggerDispatchResult.ROUTED_TASK_INTERRUPT);
                 return Action.FINISH_ACTIVITY;
             }
             // Without this the launch below targets whichever task is on top rather than the
@@ -236,6 +282,8 @@ public class LaunchIntentDispatcher {
         @Action int action = dispatchToTabbedActivity(currentActivity, bringToFrontIntent);
         if (action != Action.CONTINUE) {
             currentActivity.setResult(Activity.RESULT_OK);
+            recordExternalTriggerDispatchResult(
+                    ExternalTriggerDispatchResult.ROUTED_TASK_INTERRUPT);
         }
         return action;
     }
