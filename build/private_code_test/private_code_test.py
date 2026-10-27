@@ -66,9 +66,9 @@ def _find_private_paths(linker_inputs, private_paths, root_out_dir):
 
 
 def _read_private_paths(path):
-    text = pathlib.Path(path).read_text()
+    text = pathlib.Path(path).read_text(encoding='utf-8')
 
-    # Check if .gclient_entries was not valid.  https://crbug.com/1427829
+    # Check if DEPS was not valid.  https://crbug.com/1427829
     if text.startswith('# ERROR: '):
         sys.stderr.write(text)
         sys.exit(1)
