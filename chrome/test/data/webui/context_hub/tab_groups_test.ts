@@ -298,4 +298,130 @@ suite('TabGroups', () => {
     await click('#ungroup-all-confirmed-groups-button');
     assertEquals(1, handler.getCallCount('removeAllConfirmedTabGroups'));
   });
+
+  // Lands on the suggestions view with "Work" (TAB_1, TAB_2), "Solo" (TAB_4)
+  // and TAB_3 left ungrouped.
+  async function checkNowWithTwoGroups() {
+    handler.setResultFor(
+        'retrieveAndGroupTabs',
+        Promise.resolve(groupingResult(
+            [createGroup('Work', TAB_1, TAB_2), createGroup('Solo', TAB_4)],
+            [TAB_3])));
+    await createView();
+    await click('#check-now-button');
+  }
+
+  function groupTabTitles(groupIndex: number): string[] {
+    return Array
+        .from(
+            $all('#suggestions-card .group-card')[groupIndex]!.querySelectorAll(
+                '.tab-title'))
+        .map(el => el.textContent.trim());
+  }
+
+  async function drag(sourceSelector: string, targetSelector: string) {
+    const source = $(sourceSelector)!;
+    const target = $(targetSelector)!;
+    const dataTransfer = new DataTransfer();
+    source.dispatchEvent(
+        new DragEvent('dragstart', {bubbles: true, dataTransfer}));
+    target.dispatchEvent(new DragEvent(
+        'dragover', {bubbles: true, cancelable: true, dataTransfer}));
+    await microtasksFinished();
+    assertTrue(target.classList.contains('drop-target'));
+    target.dispatchEvent(
+        new DragEvent('drop', {bubbles: true, cancelable: true, dataTransfer}));
+    source.dispatchEvent(
+        new DragEvent('dragend', {bubbles: true, dataTransfer}));
+    await microtasksFinished();
+    assertFalse(target.classList.contains('drop-target'));
+  }
+
+  test('dragging a tab to another group moves it', async () => {
+    await checkNowWithTwoGroups();
+    await drag('.tab-item[data-id="1"]', '.group-card[data-group="1"]');
+    assertDeepEquals(['Tab 2'], groupTabTitles(0));
+    assertDeepEquals(['Tab 4', 'Tab 1'], groupTabTitles(1));
+    assertEquals(1, handler.getCallCount('replaceTabGroups'));
+
+    await click('#undo-button');
+    assertDeepEquals(['Tab 1', 'Tab 2'], groupTabTitles(0));
+    assertDeepEquals(['Tab 4'], groupTabTitles(1));
+  });
+
+  test('moving the last tab out removes its group', async () => {
+    await checkNowWithTwoGroups();
+    await drag('.tab-item[data-id="4"]', '#ungrouped-card');
+    assertDeepEquals(['Work'], groupLabels());
+    assertEquals(
+        'Not grouped (2)',
+        $('#ungrouped-card .card-title')!.textContent.trim());
+  });
+
+  test('dropping a tab on its own group is a no-op', async () => {
+    await checkNowWithTwoGroups();
+    await drag('.tab-item[data-id="1"]', '.group-card[data-group="0"]');
+    assertDeepEquals(['Tab 1', 'Tab 2'], groupTabTitles(0));
+    assertEquals(0, handler.getCallCount('replaceTabGroups'));
+    assertTrue($<CrButtonElement>('#undo-button')!.disabled);
+  });
+
+  test('dragging a group header reorders the groups', async () => {
+    await checkNowWithTwoGroups();
+    await drag('.group-header[data-group="1"]', '.group-card[data-group="0"]');
+    assertDeepEquals(['Solo', 'Work'], groupLabels());
+    assertDeepEquals(
+        ['Solo', 'Work'],
+        handler.getArgs('replaceTabGroups')[0].map((g: TabGroup) => g.label));
+  });
+
+  test('group header is not draggable while renaming', async () => {
+    await checkNowWithTwoGroups();
+    const firstHeader = $('.group-header[data-group="0"]')!;
+    const secondHeader = $('.group-header[data-group="1"]')!;
+    assertEquals('true', firstHeader.getAttribute('draggable'));
+
+    await click('.edit-group-btn[data-index="0"]');
+    assertEquals('false', firstHeader.getAttribute('draggable'));
+    assertEquals('true', secondHeader.getAttribute('draggable'));
+
+    const input = $<CrInputElement>('#rename-input')!;
+    input.dispatchEvent(new KeyboardEvent('keydown', {key: 'Escape'}));
+    await microtasksFinished();
+    assertEquals('true', firstHeader.getAttribute('draggable'));
+  });
+
+  test('ungrouped move button hides when no groups remain', async () => {
+    await checkNow();
+    assertTrue(!!$('#ungrouped-card .move-tab-btn'));
+
+    await click('#ungrouped-card .move-tab-btn');
+    assertTrue(view.$.moveMenu.open);
+    assertDeepEquals(
+        ['Work'],
+        $all('#moveMenu .dropdown-item').map(el => el.textContent.trim()));
+    view.$.moveMenu.close();
+    await microtasksFinished();
+
+    await click('.dismiss-group-btn');
+    assertEquals(0, $all('#suggestions-card .group-card').length);
+    assertFalse(!!$('#ungrouped-card .move-tab-btn'));
+  });
+
+  test('move menu offers the other destinations', async () => {
+    await checkNowWithTwoGroups();
+    await click('.tab-item[data-id="1"] .move-tab-btn');
+    assertTrue(view.$.moveMenu.open);
+    const items = $all('#moveMenu .dropdown-item');
+    assertDeepEquals(
+        ['Solo', 'Not grouped'], items.map(el => el.textContent.trim()));
+
+    items[1]!.click();
+    await microtasksFinished();
+    assertFalse(view.$.moveMenu.open);
+    assertDeepEquals(['Tab 2'], groupTabTitles(0));
+    assertEquals(
+        'Not grouped (2)',
+        $('#ungrouped-card .card-title')!.textContent.trim());
+  });
 });

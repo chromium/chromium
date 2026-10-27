@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import '//resources/cr_elements/cr_collapse/cr_collapse.js';
 import '//resources/cr_elements/cr_expand_button/cr_expand_button.js';
 import '//resources/cr_elements/cr_button/cr_button.js';
@@ -12,6 +13,7 @@ import '//resources/cr_elements/cr_textarea/cr_textarea.js';
 import '//resources/cr_elements/icons.html.js';
 import '/strings.m.js';
 
+import type {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import type {CrInputElement} from '//resources/cr_elements/cr_input/cr_input.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
@@ -53,6 +55,25 @@ interface SuggestionSnapshot {
   responseText: string;
 }
 
+// Index of the "Not grouped" list when used as a move source or target.
+export const UNGROUPED_INDEX = -1;
+
+// What is currently being dragged, or which tab the "Move to" menu is for.
+type MoveSource = {
+  kind: 'tab',
+  groupIndex: number,
+  tabId: bigint,
+}|{
+  kind: 'group',
+  groupIndex: number,
+};
+
+export interface TabGroupsElement {
+  $: {
+    moveMenu: CrActionMenuElement,
+  };
+}
+
 export class TabGroupsElement extends CrLitElement {
   static get is() {
     return 'tab-groups';
@@ -82,6 +103,8 @@ export class TabGroupsElement extends CrLitElement {
       canUndo_: {type: Boolean},
       editingGroupIndex_: {type: Number},
       editingLabel_: {type: String},
+      dropTargetIndex_: {type: Number},
+      moveMenuSource_: {type: Object},
       ungroupedExpanded_: {type: Boolean},
       confirmedExpanded_: {type: Boolean},
       canvasFeedbackLiked_: {type: Boolean},
@@ -117,6 +140,8 @@ export class TabGroupsElement extends CrLitElement {
   protected accessor canUndo_: boolean = false;
   protected accessor editingGroupIndex_: number = -1;
   protected accessor editingLabel_: string = '';
+  protected accessor dropTargetIndex_: number|null = null;
+  protected accessor moveMenuSource_: MoveSource|null = null;
   protected accessor ungroupedExpanded_: boolean = false;
   protected accessor confirmedExpanded_: boolean = false;
   protected accessor canvasFeedbackLiked_: boolean|null = null;
@@ -129,6 +154,7 @@ export class TabGroupsElement extends CrLitElement {
   protected accessor copiedRowSuccess_: boolean = false;
   protected lastGroupPrompt_: string = 'Default';
   private undoStack_: SuggestionSnapshot[] = [];
+  private dragSource_: MoveSource|null = null;
 
   private trimChatHistory_(history: ChatMessage[]): ChatMessage[] {
     if (this.maxTabGroupChatHistoryTurns_ > 0 &&
@@ -453,6 +479,151 @@ export class TabGroupsElement extends CrLitElement {
     await this.applySuggestions_(
         this.groups_.filter((_, i) => i !== index),
         [...this.ungroupedTabs_, ...group.tabs]);
+  }
+
+  // Moves `tabId` from group `fromGroup` to group `toGroup`, where
+  // UNGROUPED_INDEX stands for the "Not grouped" list. A group left without
+  // tabs is removed.
+  private async moveTab_(tabId: bigint, fromGroup: number, toGroup: number) {
+    if (fromGroup === toGroup) {
+      return;
+    }
+    const source = fromGroup === UNGROUPED_INDEX ?
+        this.ungroupedTabs_ :
+        this.groups_[fromGroup]?.tabs;
+    const tab = source?.find(t => t.id === tabId);
+    if (!tab || (toGroup !== UNGROUPED_INDEX && !this.groups_[toGroup])) {
+      return;
+    }
+    this.pushUndoSnapshot_();
+    const groups = this.groups_.map((g, i) => {
+      if (i === fromGroup) {
+        return {...g, tabs: g.tabs.filter(t => t.id !== tabId)};
+      }
+      if (i === toGroup) {
+        return {...g, tabs: [...g.tabs, tab]};
+      }
+      return g;
+    });
+    let ungrouped = this.ungroupedTabs_.filter(t => t.id !== tabId);
+    if (toGroup === UNGROUPED_INDEX) {
+      ungrouped = [...ungrouped, tab];
+    }
+    await this.applySuggestions_(
+        groups.filter(g => g.tabs.length > 0), ungrouped);
+  }
+
+  private async moveGroup_(fromGroup: number, toGroup: number) {
+    if (fromGroup === toGroup || !this.groups_[fromGroup] ||
+        !this.groups_[toGroup]) {
+      return;
+    }
+    this.pushUndoSnapshot_();
+    const groups = [...this.groups_];
+    const [moved] = groups.splice(fromGroup, 1);
+    groups.splice(toGroup, 0, moved!);
+    await this.applySuggestions_(groups, this.ungroupedTabs_);
+  }
+
+  private getGroupIndex_(e: Event): number {
+    return Number((e.currentTarget as HTMLElement).dataset['group']);
+  }
+
+  protected onTabDragstart_(e: DragEvent) {
+    const target = e.currentTarget as HTMLElement;
+    this.dragSource_ = {
+      kind: 'tab',
+      groupIndex: this.getGroupIndex_(e),
+      tabId: BigInt(target.dataset['id'] || '0'),
+    };
+    e.dataTransfer!.effectAllowed = 'move';
+  }
+
+  protected onGroupDragstart_(e: DragEvent) {
+    this.dragSource_ = {kind: 'group', groupIndex: this.getGroupIndex_(e)};
+    e.dataTransfer!.effectAllowed = 'move';
+  }
+
+  protected onDragend_() {
+    this.dragSource_ = null;
+    this.dropTargetIndex_ = null;
+  }
+
+  protected onCardDragover_(e: DragEvent) {
+    if (!this.dragSource_) {
+      return;
+    }
+    const target = this.getGroupIndex_(e);
+    if (this.dragSource_.kind === 'group' && target === UNGROUPED_INDEX) {
+      return;
+    }
+    e.preventDefault();
+    e.dataTransfer!.dropEffect = 'move';
+    this.dropTargetIndex_ = target;
+  }
+
+  protected onCardDragleave_(e: DragEvent) {
+    const card = e.currentTarget as HTMLElement;
+    if (e.relatedTarget instanceof Node && card.contains(e.relatedTarget)) {
+      return;
+    }
+    this.dropTargetIndex_ = null;
+  }
+
+  protected onCardDrop_(e: DragEvent) {
+    e.preventDefault();
+    const source = this.dragSource_;
+    const target = this.getGroupIndex_(e);
+    this.onDragend_();
+    if (!source) {
+      return;
+    }
+    if (source.kind === 'tab') {
+      this.moveTab_(source.tabId, source.groupIndex, target);
+    } else {
+      this.moveGroup_(source.groupIndex, target);
+    }
+  }
+
+  // Keyboard-accessible equivalent of dragging a tab.
+  protected async onMoveTabClick_(e: Event) {
+    const target = e.currentTarget as HTMLElement;
+    this.moveMenuSource_ = {
+      kind: 'tab',
+      groupIndex: this.getGroupIndex_(e),
+      tabId: BigInt(target.dataset['id'] || '0'),
+    };
+    if (this.getMoveTargets_().length === 0) {
+      return;
+    }
+    await this.updateComplete;
+    this.$.moveMenu.showAt(target);
+  }
+
+  // Destinations offered by the "Move to" menu: every other group, then
+  // "Not grouped".
+  protected getMoveTargets_(): Array<{index: number, label: string}> {
+    const from = this.moveMenuSource_?.groupIndex;
+    const targets = this.groups_.map((g, index) => ({index, label: g.label}))
+                        .filter(t => t.index !== from);
+    if (from !== UNGROUPED_INDEX) {
+      targets.push({index: UNGROUPED_INDEX, label: 'Not grouped'});
+    }
+    return targets;
+  }
+
+  protected onMoveToClick_(e: Event) {
+    const source = this.moveMenuSource_;
+    this.$.moveMenu.close();
+    if (source?.kind === 'tab') {
+      this.moveTab_(source.tabId, source.groupIndex, this.getGroupIndex_(e));
+    }
+  }
+
+  // Fires however the menu closes (destination chosen, Escape, click
+  // outside), so the source never outlives the menu.
+  protected onMoveMenuClose_() {
+    this.moveMenuSource_ = null;
   }
 
   protected onTabClick_(e: Event) {

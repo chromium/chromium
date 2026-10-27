@@ -140,12 +140,21 @@
   overflow: hidden;
 }
 
+.drop-target {
+  outline: 2px solid var(--google-blue-600);
+  outline-offset: -2px;
+}
+
 .group-header {
   align-items: center;
   display: flex;
   gap: 8px;
   min-height: 40px;
   padding: 4px 12px;
+}
+
+.group-header[draggable='true'] {
+  cursor: grab;
 }
 
 .group-color-dot {
@@ -193,6 +202,16 @@
   padding: 4px 0;
 }
 
+.tab-item {
+  align-items: center;
+  display: flex;
+  padding-inline-end: 4px;
+}
+
+.tab-item:hover {
+  background-color: var(--cr-hover-background-color);
+}
+
 .tab-row {
   align-items: center;
   background: none;
@@ -200,21 +219,30 @@
   color: var(--cr-primary-text-color);
   cursor: pointer;
   display: flex;
+  flex: 1;
   font: inherit;
   font-size: 13px;
   gap: 8px;
+  min-width: 0;
   padding: 6px 12px;
   text-align: start;
-  width: 100%;
-}
-
-.tab-row:hover {
-  background-color: var(--cr-hover-background-color);
 }
 
 .tab-row:focus-visible {
   outline: 2px solid var(--cr-focus-outline-color);
   outline-offset: -2px;
+}
+
+.move-tab-btn {
+  --cr-icon-button-size: 28px;
+  --cr-icon-button-icon-size: 16px;
+  --cr-icon-button-fill-color: var(--cr-secondary-text-color);
+  margin: 0;
+}
+
+cr-action-menu .dropdown-item {
+  font-size: 13px;
+  min-height: 32px;
 }
 
 .favicon {
