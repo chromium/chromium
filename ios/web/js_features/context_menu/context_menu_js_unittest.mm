@@ -875,9 +875,7 @@ TEST_F(ContextMenuJsFindElementAtPointTest, TextAreaStopsProximity) {
 
 // Tests that `findElementAtPoint` reports "never" as the referrer
 // policy for pages that have an unsupported policy in a meta tag.
-// TODO(crbug.com/351951385): Fix the flakiness in this test and re-enable.
-TEST_F(ContextMenuJsFindElementAtPointTest,
-       DISABLED_UnsupportedReferrerPolicy) {
+TEST_F(ContextMenuJsFindElementAtPointTest, UnsupportedReferrerPolicy) {
   // A page with an unsupported referrer meta tag and an image.
   NSString* const head =
       @"<meta name=\"referrer\" content=\"unsupported-value\">";
@@ -885,17 +883,21 @@ TEST_F(ContextMenuJsFindElementAtPointTest,
 
   ASSERT_TRUE(LoadHtml(html));
 
-  base::DictValue result = FindElementAtPoint(FindPointFromElement(@"image"));
-  auto* policy = result.FindString(kContextMenuElementReferrerPolicy);
-  ASSERT_TRUE(policy);
-  EXPECT_STREQ("never", policy->c_str());
+  auto expected_value = base::DictValue()
+                            .Set(kContextMenuElementRequestId, kRequestId)
+                            .Set(kContextMenuElementSource, kImageSource)
+                            .Set(kContextMenuElementAlt, kImageAlt)
+                            .Set(kContextMenuElementReferrerPolicy, "never")
+                            .Set(kContextMenuElementTagName, "img")
+                            .Set(kContextMenuElementFrameIdName,
+                                 base::SysNSStringToUTF8(GetMainFrameId()));
+
+  CheckElementResult(@"image", expected_value);
 }
 
 // Tests that `findElementAtPoint` finds an element at the bottom of a
 // very long page.
-// TODO(crbug.com/40772520): Fix on iOS 15 and reenable. This test appears to
-// fail flakily if the webview is not in the view hierarchy.
-TEST_F(ContextMenuJsFindElementAtPointTest, DISABLED_LinkOfTextFromTallPage) {
+TEST_F(ContextMenuJsFindElementAtPointTest, LinkOfTextFromTallPage) {
   const char link[] = "http://destination/";
   NSString* body = @"<div style='height:4000px'></div>";
   body = [body stringByAppendingString:GetHtmlForLink(link, @"link")];
@@ -903,10 +905,12 @@ TEST_F(ContextMenuJsFindElementAtPointTest, DISABLED_LinkOfTextFromTallPage) {
   ASSERT_TRUE(web::test::LoadHtml(
       web_view(), GetHtmlForPage(/*head=*/nil, body), GetTestURL()));
 
-  // Force layout to ensure `content_height` below is correct.
-  EXPECT_TRUE(web::test::WaitForInjectedScripts(web_view()));
-  web::test::ExecuteJavaScriptInWebView(web_view(),
-                                        @"document.getElementsByTagName('p')");
+  // `zoomScale` starts at 1.0 before being set to its final value when the
+  // initial layer tree is committed. Wait until it has its final value so
+  // `content_height` is accurate and `contentOffset` is not reset.
+  ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^{
+    return web_view().scrollView.zoomScale != 1.0;
+  }));
 
   // Scroll the webView to the bottom to make the link accessible.
   CGFloat content_height = GetWebViewContentSize().height;
