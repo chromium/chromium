@@ -258,8 +258,13 @@ void AppLauncherBrowserAgent::TabHelperDelegate::ShowAppLaunchAlert(
   request->GetCallbackManager()->AddCompletionCallback(
       base::BindOnce(&AppLauncherOverlayCallback, std::move(completion),
                      RequestCauseFromActionCause(cause)));
-  GetQueueForAppLaunchDialog(tab_helper->web_state())
-      ->AddRequest(std::move(request));
+  OverlayRequestQueue* queue =
+      GetQueueForAppLaunchDialog(tab_helper->web_state());
+  if (cause == AppLauncherAlertCause::kAppLaunchFailed) {
+    queue->InsertRequest(0, std::move(request));
+  } else {
+    queue->AddRequest(std::move(request));
+  }
 }
 
 #pragma mark Private

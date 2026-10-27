@@ -569,3 +569,29 @@ TEST_F(AppLauncherBrowserAgentTest, CompletionCalledOnCompletionOnFailure) {
   scene_state_.activationLevel = SceneActivationLevelForegroundActive;
   EXPECT_FALSE(back_to_app_called);
 }
+
+// Tests that an app launch failure alert is inserted at the front of the
+// OverlayRequestQueue ahead of any other queued overlay requests.
+TEST_F(AppLauncherBrowserAgentTest, AppLaunchFailedInsertedAtFrontOfQueue) {
+  web::WebState* web_state =
+      AddWebState(/*opener=*/nullptr, /*nav_item_count=*/1);
+  AppLauncherTabHelperDelegate* delegate = GetTabHelperDelegate(web_state);
+  OverlayRequestQueue* queue = OverlayRequestQueue::FromWebState(
+      web_state, OverlayModality::kWebContentArea);
+
+  // Queue an existing overlay request.
+  queue->AddRequest(
+      OverlayRequest::CreateWithConfig<AppLaunchConfirmationRequest>(
+          app_launcher_overlays::AppLaunchConfirmationRequestCause::kOther));
+  ASSERT_EQ(1U, queue->size());
+
+  // Show an app launch failure alert and verify it is inserted at index 0.
+  delegate->ShowAppLaunchAlert(AppLauncherTabHelper::FromWebState(web_state),
+                               AppLauncherAlertCause::kAppLaunchFailed,
+                               base::BindOnce(^(bool){
+                               }));
+  ASSERT_EQ(2U, queue->size());
+  EXPECT_TRUE(IsShowingDialog(
+      web_state, app_launcher_overlays::AppLaunchConfirmationRequestCause::
+                     kAppLaunchFailed));
+}
