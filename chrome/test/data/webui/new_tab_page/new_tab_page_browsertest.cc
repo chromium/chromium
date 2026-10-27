@@ -338,11 +338,6 @@ IN_PROC_BROWSER_TEST_F(NewTabPageAppTest, V2Modules) {
           "runMochaSuite('NewTabPageAppTest V2Modules')");
 }
 
-IN_PROC_BROWSER_TEST_F(NewTabPageAppTest, CounterfactualModules) {
-  RunTest("new_tab_page/app_test.js",
-          "runMochaSuite('NewTabPageAppTest CounterfactualModules')");
-}
-
 IN_PROC_BROWSER_TEST_F(NewTabPageAppTest, CustomizeChromeSidePanel) {
   RunTest("new_tab_page/app_test.js",
           "runMochaSuite('NewTabPageAppTest CustomizeChromeSidePanel')");

@@ -4,7 +4,7 @@
 
 import {ActionChipsApiProxyImpl, VoiceSearchAction} from 'chrome://new-tab-page/lazy_load.js';
 import type {ActionChipClickDetail, ComposeboxFuseboxActionRequest, Module} from 'chrome://new-tab-page/lazy_load.js';
-import {ActionChipsRetrievalState, ComposeboxProxyImpl, counterfactualLoad, ModuleDescriptor, ModuleRegistry, NtpComposeboxElement} from 'chrome://new-tab-page/lazy_load.js';
+import {ActionChipsRetrievalState, ComposeboxProxyImpl, ModuleRegistry, NtpComposeboxElement} from 'chrome://new-tab-page/lazy_load.js';
 import {ActionChipsHandlerRemote, ActionChipsPageCallbackRouter, IconType, InputSource, QueryActionOverride, SearchboxOverride} from 'chrome://new-tab-page/new_tab_page.js';
 import type {ActionChipsPageRemote, CustomizeButtonsDocumentRemote, FuseboxAction, TabInfo} from 'chrome://new-tab-page/new_tab_page.js';
 import {$$, BackgroundManager, BrowserCommandProxy, CONTEXTUAL_ENTRYPOINT_ELEMENT_ID, CUSTOMIZE_CHROME_BUTTON_ELEMENT_ID, CustomizeButtonsDocumentCallbackRouter, CustomizeButtonsHandlerRemote, CustomizeButtonsProxy, CustomizeChromeSection, CustomizeDialogPage, GlifAnimationState, NewTabPageProxy, NtpCustomizeChromeEntryPoint, NtpElement, SearchboxBrowserProxy, SidePanelOpenTrigger, VoiceAction, WindowProxy} from 'chrome://new-tab-page/new_tab_page.js';
@@ -874,41 +874,6 @@ suite('NewTabPageAppTest', () => {
     });
 
     modulesCommonTests('ntp-modules');
-  });
-
-  suite('CounterfactualModules', () => {
-    suiteSetup(() => {
-      loadTimeData.overrideValues({
-        modulesEnabled: false,
-        modulesLoadEnabled: true,
-      });
-    });
-
-    test('modules loaded but not rendered if counterfactual', async () => {
-      // Act.
-      const fooElement = document.createElement('div');
-      const barElement = document.createElement('div');
-      moduleResolver.resolve([
-        {
-          descriptor:
-              new ModuleDescriptor('foo', () => Promise.resolve(fooElement)),
-          elements: [fooElement],
-        },
-        {
-          descriptor:
-              new ModuleDescriptor('bar', () => Promise.resolve(barElement)),
-          elements: [barElement],
-        },
-      ]);
-      await counterfactualLoad();
-      await microtasksFinished();
-
-      // Assert.
-      assertTrue(moduleRegistry.getCallCount('initializeModules') > 0);
-      assertEquals(1, handler.getCallCount('onModulesLoadedWithData'));
-      assertEquals(
-          0, app.shadowRoot.querySelectorAll('ntp-module-wrapper').length);
-    });
   });
 
   suite('CustomizeChromeSidePanel', () => {
