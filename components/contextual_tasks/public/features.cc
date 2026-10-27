@@ -97,6 +97,11 @@ bool ShouldShowCloseSidePanelInPinnedButtonContextMenu() {
          kContextualTasksPinnedButtonContextMenuCloseSidePanel.Get();
 }
 
+const base::FeatureParam<bool>
+    kContextualTasksPinnedButtonActiveIndicatorCircleHighlight(
+        &kContextualTasksPinnedButtonActiveIndicator,
+        "ContextualTasksPinnedButtonActiveIndicatorCircleHighlight",
+        false);
 // Keeps the ephemeral contextual tasks button visible even when the permanent
 // button is pinned in the toolbar.
 BASE_FEATURE(kEphemeralPinningVisibleWhenPermanentlyPinned,
@@ -902,6 +907,11 @@ bool IsContextualTasksPinningV2Enabled() {
 bool IsContextualTasksPinnedButtonActiveIndicatorEnabled() {
   return base::FeatureList::IsEnabled(
       kContextualTasksPinnedButtonActiveIndicator);
+}
+
+bool IsContextualTasksPinnedButtonActiveIndicatorCircleHighlightEnabled() {
+  return IsContextualTasksPinnedButtonActiveIndicatorEnabled() &&
+         kContextualTasksPinnedButtonActiveIndicatorCircleHighlight.Get();
 }
 
 bool IsContextualTasksPinButtonOnSrpEnabled() {

@@ -246,6 +246,9 @@ void WebUIPinnedToolbarActions::OnActionsChanged() {
         IsActionHighlighted(id) || (menu_runner_ && menu_runner_->IsRunning() &&
                                     active_context_menu_action_ == id);
     state->enabled = item->GetEnabled();
+    // TODO(crbug.com/578143713): Also plumb
+    // `kActionItemEngagedIndicatorStyleKey` through `PinnedToolbarActionState`
+    // to support `kCircleHighlight` in WebUI.
     state->activated = item->GetProperty(kActionItemUnderlineIndicatorKey);
     state->tooltip = item->GetTooltipText();
     state->accessibility_text = item->GetAccessibleName();

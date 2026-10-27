@@ -23,6 +23,19 @@
 class BrowserWindowInterface;
 class PinnedToolbarActionsContainer;
 
+// Visual style used to indicate that a pinned toolbar action is engaged.
+enum class ActionItemEngagedIndicatorStyle {
+  // Colors the button icon with `kColorToolbarActionItemEngaged` and shows an
+  // underline indicator below the icon.
+  kUnderline,
+  // Shows a circular background highlight (`kColorAvatarButtonHighlightDefault`)
+  // behind the button when not active. Note: When the button overflows into the
+  // toolbar overflow menu, it intentionally falls back to the `kUnderline`
+  // styling (engaged icon color + underline indicator) because overflow menu
+  // items are rendered as icon+text rows rather than circular toolbar buttons.
+  kCircleHighlight,
+};
+
 class PinnedActionToolbarButton : public ToolbarButton {
   METADATA_HEADER(PinnedActionToolbarButton, ToolbarButton)
 
@@ -52,6 +65,7 @@ class PinnedActionToolbarButton : public ToolbarButton {
   void SetShouldShowEphemerallyInToolbar(bool should_show_in_toolbar) {
     should_show_in_toolbar_ = should_show_in_toolbar;
   }
+  void SetEngagedIndicatorStyle(ActionItemEngagedIndicatorStyle style);
   void SetActionEngaged(bool action_engaged);
   void UpdateIcon() override;
   bool ShouldShowEphemerallyInToolbar();
@@ -97,6 +111,8 @@ class PinnedActionToolbarButton : public ToolbarButton {
   bool permanent_ = false;
   bool is_icon_visible_ = true;
   bool action_engaged_ = false;
+  ActionItemEngagedIndicatorStyle engaged_indicator_style_ =
+      ActionItemEngagedIndicatorStyle::kUnderline;
   // Set when the action is currently showing an associated bubble.
   bool is_action_showing_bubble_ = false;
   bool skip_execution_ = false;

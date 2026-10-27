@@ -2795,3 +2795,288 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksPinnedIconChangedPromoInteractiveTest,
           feature_engagement::kIPHContextualTasksPinnedIconChangedFeature,
           false));
 }
+
+class ContextualTasksPinnedButtonActiveIndicatorCircleHighlightInteractiveTest
+    : public ContextualTasksEphemeralButtonPinningV2InteractiveTest {
+ public:
+  std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures() override {
+    std::vector<base::test::FeatureRefAndParams> enabled_features =
+        ContextualTasksEphemeralButtonPinningV2InteractiveTest::
+            GetEnabledFeatures();
+    enabled_features.push_back(
+        {contextual_tasks::kContextualTasksPinnedButtonActiveIndicator,
+         {{"ContextualTasksPinnedButtonActiveIndicatorCircleHighlight",
+           "true"}}});
+    return enabled_features;
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(
+    ContextualTasksPinnedButtonActiveIndicatorCircleHighlightInteractiveTest,
+    ShowsCircleHighlightOnlyWhenPanelClosedAndRefreshesOnHighlight) {
+  raw_ptr<PinnedActionToolbarButton> pinned_button = nullptr;
+
+  auto VerifyCircleHighlight = [&](bool expected_active) {
+    ASSERT_NE(pinned_button, nullptr);
+    actions::ActionItem* const action_item =
+        actions::ActionManager::Get().FindAction(
+            kActionSidePanelShowContextualTasks,
+            BrowserActions::From(browser())->root_action_item());
+    ASSERT_NE(action_item, nullptr);
+    EXPECT_EQ(action_item->GetProperty(kActionItemEngagedIndicatorStyleKey),
+              ActionItemEngagedIndicatorStyle::kCircleHighlight);
+    EXPECT_EQ(action_item->GetProperty(kActionItemUnderlineIndicatorKey),
+              expected_active);
+    ASSERT_NE(pinned_button->GetStatusIndicatorForTesting(), nullptr);
+    EXPECT_FALSE(pinned_button->GetStatusIndicatorForTesting()->GetVisible());
+    EXPECT_EQ(pinned_button->GetBackground() != nullptr, expected_active);
+  };
+
+  RunTestSequence(
+      SignIntoEligibleAccount(), InstrumentTab(kFirstTab),
+      AddInstrumentedTab(kSecondTab, GetTestURL()),
+      SelectTab(kTabStripElementId, 0),
+      Do([&]() {
+        PinnedToolbarActionsModel::Get(browser()->GetProfile())
+            ->UpdatePinnedState(kActionSidePanelShowContextualTasks, true);
+      }),
+      WaitForShow(kPinnedToolbarActionShowSidePanelContextualTasksElementId),
+      CheckView(kPinnedToolbarActionShowSidePanelContextualTasksElementId,
+                [&pinned_button](PinnedActionToolbarButton* b) {
+                  pinned_button = b;
+                  return true;
+                }),
+      // Zero state: no circle highlight, and close side panel action is not
+      // registered.
+      Do([&]() {
+        VerifyCircleHighlight(false);
+        EXPECT_EQ(actions::ActionManager::Get().FindAction(
+                      kActionContextualTasksCloseSidePanel,
+                      BrowserActions::From(browser())->root_action_item()),
+                  nullptr);
+      }),
+      // Create an ongoing task on Tab 0 and open/close the side panel: while
+      // the side panel is open, `ShouldShowPinnedButtonActiveIndicator()`
+      // returns false in circle highlight mode; closing the side panel shows
+      // the circle highlight and hides the underline.
+      CreateTaskForTab(0),
+      SimulateOpeningContextualTaskSidePanel(),
+      Do([&]() { VerifyCircleHighlight(false); }),
+      SimulateClosingContextualTaskSidePanel(),
+      Do([&]() { VerifyCircleHighlight(true); }),
+      // Dynamically switching the engaged indicator style updates the status
+      // indicator and background immediately.
+      Do([&]() {
+        pinned_button->SetEngagedIndicatorStyle(
+            ActionItemEngagedIndicatorStyle::kUnderline);
+        EXPECT_TRUE(
+            pinned_button->GetStatusIndicatorForTesting()->GetVisible());
+        EXPECT_EQ(pinned_button->GetBackground(), nullptr);
+        pinned_button->SetEngagedIndicatorStyle(
+            ActionItemEngagedIndicatorStyle::kCircleHighlight);
+        EXPECT_FALSE(
+            pinned_button->GetStatusIndicatorForTesting()->GetVisible());
+        EXPECT_NE(pinned_button->GetBackground(), nullptr);
+      }),
+      // Highlighting the button hides the circle background; resetting restores
+      // it.
+      Do([&]() {
+        pinned_button->AddHighlight();
+        EXPECT_EQ(pinned_button->GetBackground(), nullptr);
+        pinned_button->ResetHighlight();
+        EXPECT_NE(pinned_button->GetBackground(), nullptr);
+      }),
+      // Switching to Tab 1 (no ongoing task) clears the circle highlight.
+      SelectTab(kTabStripElementId, 1),
+      Do([&]() { VerifyCircleHighlight(false); }),
+      // Switching back to Tab 0 restores the circle highlight.
+      SelectTab(kTabStripElementId, 0),
+      Do([&]() { VerifyCircleHighlight(true); }),
+      // Disassociating the task clears the circle highlight.
+      RemoveTaskFromTab(0),
+      Do([&]() { VerifyCircleHighlight(false); }));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ContextualTasksPinnedButtonActiveIndicatorCircleHighlightInteractiveTest,
+    OtherPinnedActionKeepsUnderlineIndicator) {
+  RunTestSequence(
+      SignIntoEligibleAccount(), InstrumentTab(kFirstTab),
+      Do([&]() {
+        auto* const model =
+            PinnedToolbarActionsModel::Get(browser()->GetProfile());
+        model->UpdatePinnedState(kActionSidePanelShowContextualTasks, true);
+        model->UpdatePinnedState(kActionSidePanelShowBookmarks, true);
+      }),
+      WaitForShow(kPinnedToolbarActionShowSidePanelContextualTasksElementId),
+      WaitForShow(kPinnedToolbarActionShowSidePanelBookmarksElementId),
+      CreateTaskForTab(0), SimulateOpeningContextualTaskSidePanel(),
+      SimulateClosingContextualTaskSidePanel(),
+      Do([&]() {
+        actions::ActionItem* const bookmarks_action =
+            actions::ActionManager::Get().FindAction(
+                kActionSidePanelShowBookmarks,
+                BrowserActions::From(browser())->root_action_item());
+        ASSERT_NE(bookmarks_action, nullptr);
+        bookmarks_action->SetProperty(kActionItemUnderlineIndicatorKey, true);
+      }),
+      CheckView(
+          kPinnedToolbarActionShowSidePanelBookmarksElementId,
+          [](PinnedActionToolbarButton* bookmarks_button) {
+            return bookmarks_button->GetStatusIndicatorForTesting() !=
+                       nullptr &&
+                   bookmarks_button->GetStatusIndicatorForTesting()
+                       ->GetVisible() &&
+                   bookmarks_button->GetBackground() == nullptr;
+          },
+          true),
+      CheckView(
+          kPinnedToolbarActionShowSidePanelContextualTasksElementId,
+          [](PinnedActionToolbarButton* contextual_tasks_button) {
+            return contextual_tasks_button->GetStatusIndicatorForTesting() !=
+                       nullptr &&
+                   !contextual_tasks_button->GetStatusIndicatorForTesting()
+                        ->GetVisible() &&
+                   contextual_tasks_button->GetBackground() != nullptr;
+          },
+          true));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ContextualTasksPinnedButtonActiveIndicatorCircleHighlightInteractiveTest,
+    EphemeralButtonShowsCircleHighlightOnlyWhenPanelClosed) {
+  raw_ptr<ContextualTasksButton> ephemeral_button = nullptr;
+  RunTestSequence(
+      SignIntoEligibleAccount(), InstrumentTab(kFirstTab),
+      Do([&]() {
+        PinnedToolbarActionsModel::Get(browser()->GetProfile())
+            ->UpdatePinnedState(kActionSidePanelShowContextualTasks, false);
+      }),
+      CreateTaskForTab(0), SimulateOpeningContextualTaskSidePanel(),
+      WaitForShow(kContextualTasksEphemeralToolbarButtonElementId),
+      CheckView(
+          kContextualTasksEphemeralToolbarButtonElementId,
+          [&ephemeral_button](ContextualTasksButton* button) {
+            ephemeral_button = button;
+            return button->GetStatusIndicatorForTesting() != nullptr &&
+                   !button->GetStatusIndicatorForTesting()->GetVisible() &&
+                   !button->ShouldShowCircleHighlight() &&
+                   button->GetBackground() == nullptr &&
+                   button->GetDropShadowLayerForTesting() == nullptr;
+          },
+          true),
+      SimulateClosingContextualTaskSidePanel(),
+      WaitForShow(kContextualTasksEphemeralToolbarButtonElementId),
+      CheckView(
+          kContextualTasksEphemeralToolbarButtonElementId,
+          [](ContextualTasksButton* button) {
+            return button->GetStatusIndicatorForTesting() != nullptr &&
+                   !button->GetStatusIndicatorForTesting()->GetVisible() &&
+                   button->ShouldShowCircleHighlight() &&
+                   button->GetBackground() != nullptr &&
+                   button->GetDropShadowLayerForTesting() == nullptr;
+          },
+          true),
+      RemoveTaskFromTab(0),
+      WaitForHide(kContextualTasksEphemeralToolbarButtonElementId),
+      Do([&]() {
+        ASSERT_NE(ephemeral_button, nullptr);
+        EXPECT_FALSE(ephemeral_button->ShouldShowCircleHighlight());
+      }));
+}
+
+class ContextualTasksNonBrandedEntryPointCircleHighlightInteractiveTest
+    : public ContextualTasksEphemeralButtonInteractiveTest {
+ public:
+  std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures() override {
+    return {
+        {contextual_tasks::kContextualTasks,
+         {{"ContextualTasksExpandButtonOptions", "toolbar-close-button"}}},
+        {contextual_tasks::kContextualTasksHideCloseButtonInVerticalTabs, {}},
+        {contextual_tasks::kEnableContextualTasksPinButtonInToolbar, {}},
+        {contextual_tasks::kContextualTasksPinnedButtonActiveIndicator,
+         {{"ContextualTasksPinnedButtonActiveIndicatorCircleHighlight",
+           "true"}}}};
+  }
+
+  std::vector<base::test::FeatureRef> GetDisabledFeatures() override {
+    return {contextual_tasks::kContextualTasksEphemeralBrandedEntryPoint};
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(
+    ContextualTasksNonBrandedEntryPointCircleHighlightInteractiveTest,
+    TracksPanelOpenStateAndUpdatesActiveIndicator) {
+  raw_ptr<PinnedActionToolbarButton> pinned_button = nullptr;
+
+  RunTestSequence(
+      SignIntoEligibleAccount(), InstrumentTab(kFirstTab),
+      Do([&]() {
+        PinnedToolbarActionsModel::Get(browser()->GetProfile())
+            ->UpdatePinnedState(kActionSidePanelShowContextualTasks, true);
+      }),
+      WaitForShow(kPinnedToolbarActionShowSidePanelContextualTasksElementId),
+      CheckView(kPinnedToolbarActionShowSidePanelContextualTasksElementId,
+                [&pinned_button](PinnedActionToolbarButton* b) {
+                  pinned_button = b;
+                  return true;
+                }),
+      CreateTaskForTab(0), SimulateOpeningContextualTaskSidePanel(),
+      Do([&]() {
+        auto* const controller =
+            ContextualTasksEphemeralButtonController::From(browser());
+        ASSERT_NE(controller, nullptr);
+        actions::ActionItem* const action_item =
+            actions::ActionManager::Get().FindAction(
+                kActionSidePanelShowContextualTasks,
+                BrowserActions::From(browser())->root_action_item());
+        ASSERT_NE(action_item, nullptr);
+
+        // Panel is initially open after SimulateOpeningContextualTaskSidePanel:
+        // circle highlight is hidden while open.
+        EXPECT_FALSE(
+            action_item->GetProperty(kActionItemUnderlineIndicatorKey));
+        EXPECT_EQ(pinned_button->GetBackground(), nullptr);
+
+        // OnEntryWillHide: panel is hiding with results, marking the tab
+        // eligible and showing the circle highlight.
+        pinned_button->ResetHighlight();
+        controller->OnEntryWillHide(
+            /*entry=*/nullptr, SidePanelEntryHideReason::kSidePanelClosed);
+        EXPECT_TRUE(
+            action_item->GetProperty(kActionItemUnderlineIndicatorKey));
+        EXPECT_NE(pinned_button->GetBackground(), nullptr);
+
+        // OnEntryShown: panel is open, circle highlight is hidden.
+        controller->OnEntryShown(/*entry=*/nullptr);
+        EXPECT_FALSE(
+            action_item->GetProperty(kActionItemUnderlineIndicatorKey));
+        EXPECT_EQ(pinned_button->GetBackground(), nullptr);
+
+        // OnEntryWillHide: panel is hiding, circle highlight is shown.
+        controller->OnEntryWillHide(
+            /*entry=*/nullptr, SidePanelEntryHideReason::kSidePanelClosed);
+        EXPECT_TRUE(
+            action_item->GetProperty(kActionItemUnderlineIndicatorKey));
+        EXPECT_NE(pinned_button->GetBackground(), nullptr);
+
+        // OnEntryHideCancelled: panel remains open, circle highlight is hidden.
+        controller->OnEntryHideCancelled(/*entry=*/nullptr);
+        EXPECT_FALSE(
+            action_item->GetProperty(kActionItemUnderlineIndicatorKey));
+        EXPECT_EQ(pinned_button->GetBackground(), nullptr);
+
+        // OnEntryWillHide (backgrounded) followed by OnEntryHidden: circle
+        // highlight is shown.
+        controller->OnEntryWillHide(/*entry=*/nullptr,
+                                    SidePanelEntryHideReason::kBackgrounded);
+        EXPECT_TRUE(
+            action_item->GetProperty(kActionItemUnderlineIndicatorKey));
+        EXPECT_NE(pinned_button->GetBackground(), nullptr);
+
+        controller->OnEntryHidden(/*entry=*/nullptr);
+        EXPECT_TRUE(
+            action_item->GetProperty(kActionItemUnderlineIndicatorKey));
+        EXPECT_NE(pinned_button->GetBackground(), nullptr);
+      }));
+}
