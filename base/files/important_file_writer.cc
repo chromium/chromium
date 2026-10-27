@@ -38,6 +38,7 @@
 #include "base/threading/thread.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
+#include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
 
@@ -277,6 +278,9 @@ bool ImportantFileWriter::WriteFileAtomicallyImpl(
     std::string_view histogram_suffix,
     bool from_instance,
     ReplaceFileCallback replace_file_callback) {
+  TRACE_EVENT("base", "ImportantFileWriter::WriteFileAtomicallyImpl",
+              "histogram_suffix", histogram_suffix, "path",
+              path.BaseName().AsUTF8Unsafe());
   const TimeTicks write_start = TimeTicks::Now();
   if (!from_instance) {
     ImportantFileWriterCleaner::AddDirectory(path.DirName());
@@ -515,6 +519,10 @@ void ImportantFileWriter::ScheduleWriteWithBackgroundDataSerializer(
 }
 
 void ImportantFileWriter::DoScheduledWrite() {
+  TRACE_EVENT("base", "ImportantFileWriter::DoScheduledWrite",
+              "histogram_suffix", histogram_suffix_, "path",
+              path_.BaseName().AsUTF8Unsafe());
+
   // One of the serializers should be set.
   DCHECK(!std::holds_alternative<std::monostate>(serializer_));
 
