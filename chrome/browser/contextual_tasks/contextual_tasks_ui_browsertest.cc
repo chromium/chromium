@@ -1616,10 +1616,30 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksInternalsPostRearchitectureBrowserTest,
 
   // Navigating to the root legacy WebUI path after registering the data source
   // must fail with an error document rather than instantiating
-  // ContextualTasksUIPostRearchitecture with <contextual-tasks-app>.
+  // `ContextualTasksUIPostRearchitecture` with `<contextual-tasks-app>`.
   (void)ui_test_utils::NavigateToURL(browser(),
                                      GURL("chrome://contextual-tasks/"));
   EXPECT_FALSE(web_contents->IsCrashed());
   EXPECT_TRUE(web_contents->GetPrimaryMainFrame()->IsErrorDocument());
   EXPECT_EQ(web_contents->GetWebUI(), nullptr);
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksInternalsPostRearchitectureBrowserTest,
+                       OnVoiceTranscribedSafelyNoOps) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GURL("chrome://contextual-tasks/internals")));
+  content::WebContents* web_contents =
+      TabListInterface::From(browser())->GetActiveTab()->GetContents();
+  ASSERT_NE(web_contents->GetWebUI(), nullptr);
+
+  // Invoking `OnVoiceTranscribed()` when the active WebUI controller is
+  // `ContextualTasksUIPostRearchitecture` must safely no-op without downcasting
+  // to `ContextualTasksUI`.
+  auto* ui_service =
+      contextual_tasks::ContextualTasksUiServiceFactory::GetForBrowserContext(
+          browser()->GetProfile());
+  ASSERT_NE(ui_service, nullptr);
+  ui_service->StartPlatformVoiceRecognition(browser(), web_contents);
+  ui_service->OnVoiceTranscribed("test voice query");
+  EXPECT_EQ(contextual_tasks::GetWebUiInterface(web_contents), nullptr);
 }

@@ -3096,19 +3096,8 @@ void ContextualTasksUiService::OnVoiceTranscribed(const std::string& query) {
     return;
   }
 
-  content::WebUI* web_ui = web_contents->GetWebUI();
-  if (!web_ui) {
-    LOG(WARNING) << "WebUI is null.";
-    return;
-  }
-
-  auto* controller = web_ui->GetController();
-  if (!controller) {
-    LOG(WARNING) << "WebUI controller is null.";
-    return;
-  }
-
-  auto* contextual_tasks_ui = static_cast<ContextualTasksUI*>(controller);
+  ContextualTasksUIInterface* contextual_tasks_ui =
+      GetWebUiInterface(web_contents.get());
   if (!contextual_tasks_ui) {
     LOG(WARNING) << "ContextualTasksUi is null.";
     return;
