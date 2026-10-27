@@ -46,6 +46,11 @@ class ReadAnythingEntryPointController {
                      ReadAnythingOpenTrigger open_trigger,
                      Presentation presentation = Presentation::kPreferred);
 
+  // Closes Reading Mode in the active tab if it's showing. `reason` is passed
+  // to Reading Mode's lifecycle observers.
+  static void CloseUI(BrowserWindowInterface* bwi,
+                      ReadAnythingCloseReason reason);
+
   // Shows or hides the omnibox entry point and the IPH for it.
   // show_promo_callback is called with the result of whether the IPH was shown.
   static void UpdatePageActionVisibility(

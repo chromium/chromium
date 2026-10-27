@@ -33,11 +33,8 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/read_anything/read_anything_controller.h"
+#include "chrome/browser/ui/read_anything/read_anything_entry_point_controller.h"
 #include "chrome/browser/ui/read_anything/read_anything_lifecycle_observer.h"
-#include "chrome/browser/ui/side_panel/side_panel_entry_id.h"   // nogncheck
-#include "chrome/browser/ui/side_panel/side_panel_entry_key.h"  // nogncheck
-#include "chrome/browser/ui/side_panel/side_panel_enums.h"      // nogncheck
-#include "chrome/browser/ui/side_panel/side_panel_ui.h"         // nogncheck
 #include "chrome/browser/ui/translate/translate_bubble_factory.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/common/content_switches.h"
@@ -127,17 +124,6 @@ bool IsAutomaticTranslationType(translate::TranslationType type) {
 
 }  // namespace
 
-SidePanelUI* ChromeTranslateClient::GetSidePanelUIFromTab(
-    tabs::TabInterface* tab) const {
-#if !BUILDFLAG(IS_ANDROID)
-  BrowserWindowInterface* browser =
-      tab ? tab->GetBrowserWindowInterface() : nullptr;
-  return browser ? SidePanelUI::From(browser) : nullptr;
-#else
-  return nullptr;
-#endif
-}
-
 #if !BUILDFLAG(IS_ANDROID)
 class ChromeTranslateClient::ReadAnythingObserver
     : public ReadAnythingLifecycleObserver {
@@ -195,12 +181,11 @@ void ChromeTranslateClient::TriggerPdfTranslation() {
       controller->AddObserver(read_anything_observer_.get());
     }
   }
-  SidePanelUI* side_panel_ui = GetSidePanelUIFromTab(tab);
-  if (side_panel_ui) {
-    side_panel_ui->Show(
-        SidePanelEntryId::kReadAnything,
-        SidePanelOpenTrigger::kPdfTranslation);
-  }
+  read_anything::ReadAnythingEntryPointController::ShowUI(
+      tab ? tab->GetBrowserWindowInterface() : nullptr,
+      ReadAnythingOpenTrigger::kPdfTranslation,
+      read_anything::ReadAnythingEntryPointController::Presentation::
+          kSidePanel);
 #endif
 }
 
@@ -210,12 +195,9 @@ void ChromeTranslateClient::RevertPdfTranslation() {
     opened_side_panel_for_pdf_translation_ = false;
     tabs::TabInterface* tab =
         tabs::TabInterface::MaybeGetFromContents(web_contents());
-    SidePanelUI* side_panel_ui = GetSidePanelUIFromTab(tab);
-    if (side_panel_ui &&
-        side_panel_ui->IsSidePanelEntryShowing(
-            SidePanelEntryKey(SidePanelEntryId::kReadAnything))) {
-      side_panel_ui->Close();
-    }
+    read_anything::ReadAnythingEntryPointController::CloseUI(
+        tab ? tab->GetBrowserWindowInterface() : nullptr,
+        ReadAnythingCloseReason::kClosedByPdfTranslation);
   }
 #endif
 }
@@ -248,21 +230,11 @@ bool ChromeTranslateClient::IsReadingModeOpen() const {
 #if !BUILDFLAG(IS_ANDROID)
   tabs::TabInterface* tab =
       tabs::TabInterface::MaybeGetFromContents(web_contents());
-  SidePanelUI* side_panel_ui = GetSidePanelUIFromTab(tab);
-  if (side_panel_ui) {
-    if (side_panel_ui->IsSidePanelEntryShowing(
-            SidePanelEntryKey(SidePanelEntryId::kReadAnything))) {
-      return true;
-    }
-  }
-  if (auto* controller = ReadAnythingController::From(tab)) {
-    if (controller->GetPresentationState() ==
-        ReadAnythingController::PresentationState::kInImmersiveOverlay) {
-      return true;
-    }
-  }
-#endif
+  return read_anything::ReadAnythingEntryPointController::IsUIShowing(
+      tab ? tab->GetBrowserWindowInterface() : nullptr);
+#else
   return false;
+#endif
 }
 
 ChromeTranslateClient::ChromeTranslateClient(content::WebContents* web_contents)
@@ -522,8 +494,8 @@ void ChromeTranslateClient::PrimaryPageChanged(content::Page& page) {
     auto_translate_snackbar_controller_->NativeDismissSnackbar();
   }
 #else
-  // If the Reading Mode side panel was opened specifically to translate the
-  // PDF, close it when navigating to a new page.
+  // If Reading Mode was opened specifically to translate the PDF, close it
+  // when navigating to a new page.
   if (!opened_side_panel_for_pdf_translation_) {
     return;
   }
@@ -540,11 +512,9 @@ void ChromeTranslateClient::PrimaryPageChanged(content::Page& page) {
     }
   }
 
-  SidePanelUI* side_panel_ui = GetSidePanelUIFromTab(tab);
-  if (side_panel_ui && side_panel_ui->IsSidePanelEntryShowing(SidePanelEntryKey(
-                           SidePanelEntryId::kReadAnything))) {
-    side_panel_ui->Close();
-  }
+  read_anything::ReadAnythingEntryPointController::CloseUI(
+      tab ? tab->GetBrowserWindowInterface() : nullptr,
+      ReadAnythingCloseReason::kClosedByPdfTranslation);
 #endif  // BUILDFLAG(IS_ANDROID)
 }
 

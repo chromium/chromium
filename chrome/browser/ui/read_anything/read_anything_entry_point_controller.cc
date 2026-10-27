@@ -286,6 +286,20 @@ void ReadAnythingEntryPointController::ShowUI(
 }
 
 // static
+void ReadAnythingEntryPointController::CloseUI(BrowserWindowInterface* bwi,
+                                               ReadAnythingCloseReason reason) {
+  if (!bwi) {
+    return;
+  }
+  if (tabs::TabInterface* tab = bwi->GetActiveTabInterface()) {
+    auto* controller = ReadAnythingController::From(tab);
+    CHECK(controller);
+    controller->CloseUI(base::PassKey<ReadAnythingEntryPointController>(),
+                        reason);
+  }
+}
+
+// static
 void ReadAnythingEntryPointController::ToggleUI(
     BrowserWindowInterface* bwi,
     ReadAnythingOpenTrigger open_trigger) {

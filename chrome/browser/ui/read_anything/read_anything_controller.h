@@ -166,6 +166,10 @@ class ReadAnythingController : public tabs::ContentsObservingTabFeature {
       base::PassKey<read_anything::ReadAnythingEntryPointController>,
       ReadAnythingOpenTrigger trigger);
 
+  // Closes Reading Mode in whichever presentation it's showing in.
+  void CloseUI(base::PassKey<read_anything::ReadAnythingEntryPointController>,
+               ReadAnythingCloseReason reason);
+
   // Toggles the Reading Mode UI.
   void ToggleUI(base::PassKey<read_anything::ReadAnythingEntryPointController>,
                 ReadAnythingOpenTrigger trigger);

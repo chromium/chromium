@@ -20,7 +20,9 @@ enum class ReadAnythingCloseReason {
   kControllerDestroyed = 5,
   kPageChangedSoftNavigation = 6,  // When Single Page Application "soft
                                    // navigation" page change is detected
-  kMaxValue = kPageChangedSoftNavigation,
+  kClosedByPdfTranslation = 7,     // When PDF translation closes Reading Mode
+                                   // that it opened
+  kMaxValue = kClosedByPdfTranslation,
 };
 
 // These values are persisted to logs. Entries should not be renumbered and

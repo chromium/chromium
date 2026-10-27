@@ -78,7 +78,6 @@ source_set("impl") {
       "//chrome/browser/ui:browser_window_header",
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/read_anything",
-      "//chrome/browser/ui/side_panel",
       "//chrome/browser/ui/tabs:tab_strip",
       "//chrome/browser/ui/toasts",
       "//chrome/browser/ui/toasts/api:toasts",

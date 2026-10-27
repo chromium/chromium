@@ -31,11 +31,6 @@ class WebContents;
 }  // namespace content
 
 class PrefService;
-class SidePanelUI;
-
-namespace tabs {
-class TabInterface;
-}  // namespace tabs
 
 namespace language {
 class AcceptLanguagesService;
@@ -157,10 +152,6 @@ class ChromeTranslateClient
   // content::WebContentsObserver implementation.
   void WebContentsDestroyed() override;
 
-  // Returns the SidePanelUI instance associated with the tab, or nullptr if
-  // there is no such instance.
-  SidePanelUI* GetSidePanelUIFromTab(tabs::TabInterface* tab) const;
-
 #if !BUILDFLAG(IS_ANDROID)
   // Shows the Full Page Translate bubble.
   ShowTranslateBubbleResult ShowBubble(translate::TranslateStep step,
@@ -190,8 +181,8 @@ class ChromeTranslateClient
 #endif
 
   // content::WebContentsObserver implementation. On Android, dismisses the
-  // auto-translate Snackbar. On desktop, closes the Reading Mode side panel if
-  // it was opened for PDF translation.
+  // auto-translate Snackbar. On desktop, closes Reading Mode if it was opened
+  // for PDF translation.
   void PrimaryPageChanged(content::Page& page) override;
 
   bool opened_side_panel_for_pdf_translation_ = false;
