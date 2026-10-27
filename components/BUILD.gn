@@ -60,11 +60,8 @@ if (is_ios) {
           [ "//components/dom_distiller/core:dom_distiller_viewer_js" ]
       sources = [
         "$root_gen_dir/components/dom_distiller/core/javascript/dom_distiller_viewer.js",
-        "//third_party/dom_distiller_js/dist/test/data/out/domdistillerjstest.js",
-        "//third_party/dom_distiller_js/dist/test/data/war/test.html",
         "//third_party/node/node_modules/chai/index.js",
         "//third_party/node/node_modules/mocha/mocha.js",
-        "dom_distiller/core/javascript/domdistiller.js",
         "dom_distiller/core/javascript/extract_features.js",
         "dom_distiller/core/javascript/readability_distiller.js",
         "dom_distiller/core/javascript/readability_triggering.js",
@@ -1135,7 +1132,6 @@ if (use_blink) {
       "dom_distiller/content/browser/distillable_page_utils_browsertest.cc",
       "dom_distiller/content/browser/distiller_page_web_contents_browsertest.cc",
       "dom_distiller/content/browser/test/distilled_page_js_browsertest.cc",
-      "dom_distiller/content/browser/test/dom_distiller_js_browsertest.cc",
       "dom_distiller/content/browser/test/test_util.cc",
       "dom_distiller/content/browser/test/test_util.h",
       "dom_distiller/content/browser/test/viewer_js_browsertest.cc",
@@ -1163,7 +1159,6 @@ if (use_blink) {
       "security_state/content/testdata/",
       "//content/test/data/",
       "//third_party/node/node_modules/chai",
-      "//third_party/dom_distiller_js/dist/test/data/",
       "//third_party/node/node_modules/mocha/mocha.js",
     ]
 

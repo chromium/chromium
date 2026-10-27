@@ -168,7 +168,6 @@ per-file third_party/depot_tools=*
 per-file third_party/devtools-frontend/src=*
 per-file third_party/disarm/src=*
 per-file third_party/domato/src=*
-per-file third_party/dom_distiller_js/dist=*
 per-file third_party/ds_store/src=*
 per-file third_party/dragonbox/src=*
 per-file third_party/eigen3/src=*

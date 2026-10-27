@@ -172,9 +172,6 @@
 [submodule "third_party/devtools-frontend/src"]
 	path = third_party/devtools-frontend/src
 	url = https://chromium.googlesource.com/devtools/devtools-frontend
-[submodule "third_party/dom_distiller_js/dist"]
-	path = third_party/dom_distiller_js/dist
-	url = https://chromium.googlesource.com/chromium/dom-distiller/dist
 [submodule "third_party/ds_store/src"]
 	path = third_party/ds_store/src
 	url = https://chromium.googlesource.com/external/github.com/dmgbuild/ds_store
