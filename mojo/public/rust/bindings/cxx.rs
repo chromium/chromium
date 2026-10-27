@@ -20,5 +20,12 @@ pub mod ffi {
 
         /// Returns the number of ticks since base::TimeTicks().
         pub fn CurrentTimeTicksInMicroseconds() -> i64;
+
+        /// Validates the header of the serialized message in `data`.
+        ///
+        /// `data` must contain the entire message (header and payload).
+        ///
+        /// Failures are not reported to the sender; that's up to the caller.
+        pub fn ValidateMessageHeader(data: &[u8]) -> bool;
     }
 }

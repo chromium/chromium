@@ -67,7 +67,10 @@ source_set("cpp_router_handle_cc") {
 
 source_set("cxx_shim") {
   sources = [ "cxx_shim.h" ]
-  deps = [ "//base" ]
+  deps = [
+    "//base",
+    "//mojo/public/cpp/bindings",
+  ]
 
   visibility = [ ":*" ]
 }

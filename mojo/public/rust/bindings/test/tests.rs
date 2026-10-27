@@ -913,12 +913,7 @@ fn test_associated_disconnect() {
 #[gtest(RustBindingsAPI, TestBadControlMessage)]
 fn test_bad_control_message() {
     let _task_env = task_environment::ffi::CreateTaskEnvironment();
-
-    let bad_message_flag = Arc::new(Mutex::new(None::<String>));
-    let bad_message_flag_clone = bad_message_flag.clone();
-    test_util::set_default_process_error_handler(move |msg: &str| {
-        *bad_message_flag_clone.lock().unwrap() = Some(msg.to_string());
-    });
+    let bad_message_flag = capture_bad_messages();
 
     let (handle0, handle1) = system::message_pipe::MessageEndpoint::create_pipe().unwrap();
 
@@ -1024,12 +1019,7 @@ fn test_bogus_peer_closed_notification_reports_bad_message() {
 #[gtest(RustBindingsAPI, TestBadMessageToCppAssociatedReceiver)]
 fn test_bad_message_to_cpp_associated_receiver() {
     let _task_env = task_environment::ffi::CreateTaskEnvironment();
-
-    let bad_message_flag = Arc::new(Mutex::new(None::<String>));
-    let bad_message_flag_clone = bad_message_flag.clone();
-    test_util::set_default_process_error_handler(move |msg: &str| {
-        *bad_message_flag_clone.lock().unwrap() = Some(msg.to_string());
-    });
+    let bad_message_flag = capture_bad_messages();
 
     {
         let (pending_remote, pending_receiver) =
@@ -1072,12 +1062,7 @@ fn test_bad_message_to_cpp_associated_receiver() {
 #[gtest(RustBindingsAPI, TestBadMessageToRustAssociatedReceiver)]
 fn test_bad_message_to_rust_associated_receiver() {
     let _task_env = task_environment::ffi::CreateTaskEnvironment();
-
-    let bad_message_flag = Arc::new(Mutex::new(None::<String>));
-    let bad_message_flag_clone = bad_message_flag.clone();
-    test_util::set_default_process_error_handler(move |msg: &str| {
-        *bad_message_flag_clone.lock().unwrap() = Some(msg.to_string());
-    });
+    let bad_message_flag = capture_bad_messages();
 
     {
         ffi::TestBadMessageToRustReceiver();
@@ -1161,6 +1146,46 @@ fn test_request_missing_expects_response_flag() {
         reported.lock().unwrap().take(),
         Some("Message flags do not match the method signature".to_string())
     );
+}
+
+/// Tests that we reject a message whose serialized interface ID array claims
+/// to hold more IDs than the message has room for.
+#[gtest(RustBindingsAPI, TestMalformedInterfaceIdArrayRejected)]
+fn test_malformed_interface_id_array_rejected() {
+    let _task_env = task_environment::ffi::CreateTaskEnvironment();
+    let bad_message_flag = capture_bad_messages();
+
+    let (handle0, handle1) = system::message_pipe::MessageEndpoint::create_pipe().unwrap();
+
+    let pending_receiver = PendingReceiver::<dyn MathService>::new(handle0);
+    let _receiver = pending_receiver.bind(WrappingMathService {});
+
+    // We have to construct and send the message manually
+    // since we have too many checks in the regular machinery.
+
+    // An empty struct, followed by an interface ID array header claiming 2^24
+    // elements.
+    let num_elements: u32 = 1 << 24;
+    let num_bytes: u32 = 8 + 4 * num_elements;
+    let mut payload = vec![8u8, 0, 0, 0, 0, 0, 0, 0];
+    payload.extend(num_bytes.to_le_bytes());
+    payload.extend(num_elements.to_le_bytes());
+
+    // The ID array starts 8 bytes into the payload, just after the struct.
+    let header = MessageHeader::new(0, 0, MessageHeaderFlags::default(), 0, 8);
+    let msg = MojomMessage { header, payload, handles: vec![], raw_message_handle: None };
+    let (serialized, handles) = msg.into_data();
+    let raw_msg =
+        system::message::WritableMessage::new_with_data(&serialized, handles).unwrap().into();
+    handle1.write(raw_msg).unwrap();
+
+    let run_loop = RunLoop::new();
+    run_loop.run_until_idle();
+
+    let reported = bad_message_flag.lock().unwrap().take();
+    expect_true!(reported.is_some());
+    expect_eq!(reported.unwrap(), "Malformed message header");
+    test_util::set_default_process_error_handler(|msg: &str| panic!("Got a bad message: {}", msg));
 }
 
 // These types and functions provide us a way to set a disconnect handler for
@@ -1794,12 +1819,7 @@ fn test_duplicate_interface_id_rejected() {
 #[gtest(RustBindingsAPI, TestDuplicateInterfaceIdReportsBadMessage)]
 fn test_duplicate_interface_id_reports_bad_message() {
     let _task_env = task_environment::ffi::CreateTaskEnvironment();
-
-    let bad_message_flag = Arc::new(Mutex::new(None::<String>));
-    let bad_message_flag_clone = bad_message_flag.clone();
-    test_util::set_default_process_error_handler(move |msg: &str| {
-        *bad_message_flag_clone.lock().unwrap() = Some(msg.to_string());
-    });
+    let bad_message_flag = capture_bad_messages();
 
     // Create a message with interface IDs, that we'll send multiple times
     let message_bytes = {

@@ -10,9 +10,11 @@
 chromium::import! {
     "//mojo/public/rust/mojom_value_parser";
     "//mojo/public/rust/system";
+    "//mojo/public/rust/bindings:helper_functions_cxx";
 }
 
 use crate::message_header::*;
+use helper_functions_cxx::ffi as cxx_helpers;
 pub use system::message::{
     BadMessageError, ReadableBytesOnlyMessage, ReadableWithHandlesMessage, SendableMessage,
     WritableMessage,
@@ -32,8 +34,8 @@ pub struct MojomMessage {
     pub header: MessageHeader,
     pub payload: Vec<u8>,
     pub handles: Vec<UntypedHandle>,
-    // we keep the original message handle around so we can report a bad message later if
-    // necessary.
+    // We keep the original message handle around so we can
+    // report a bad message later if necessary.
     pub raw_message_handle: Option<ReadableBytesOnlyMessage>,
 }
 
@@ -46,6 +48,15 @@ impl MojomMessage {
         let (handles, mut msg_bytes_only) = msg.read_data().unwrap();
 
         let raw_bytes = msg_bytes_only.read_bytes().unwrap();
+
+        // Run the C++ message validation. Rust doesn't need this except to fail
+        // early, but C++ requires it since it reads from the message
+        // using raw pointers.
+        if !cxx_helpers::ValidateMessageHeader(raw_bytes) {
+            let _ = msg_bytes_only.report_bad_message("Malformed message header");
+            return None;
+        }
+
         let (remaining_bytes, header) = match MessageHeader::deserialize(raw_bytes) {
             Ok(data) => data,
             Err(err) => {
