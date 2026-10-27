@@ -102,6 +102,7 @@ constexpr int64_t kDefaultServerStopTimeoutMs = 100;
 struct PolicyTypeEntry {
   const char* policy_type;
   const char* config_key;
+  const char* recommended_config_key;
 };
 
 const PolicyTypeEntry kPolicyTypeMapping[] = {
@@ -109,9 +110,12 @@ const PolicyTypeEntry kPolicyTypeMapping[] = {
     // interested. It uses ChromeDeviceSettingsProto, which is a completely
     // different schema. Use manual_device_policy_proto_map.yaml for this.
     //
-    // {policy::dm_protocol::kChromeDevicePolicyType, "device"},
-    {policy::dm_protocol::kChromeMachineLevelUserCloudPolicyType, "machine"},
-    {policy::dm_protocol::GetChromeUserPolicyType(), "user"},
+    // {policy::dm_protocol::kChromeDevicePolicyType, "device",
+    //  "recommended_device"},
+    {policy::dm_protocol::kChromeMachineLevelUserCloudPolicyType, "machine",
+     "recommended_machine"},
+    {policy::dm_protocol::GetChromeUserPolicyType(), "user",
+     "recommended_user"},
 };
 
 const PolicyTypeEntry kExtensionInstallPolicyTypeMapping[] = {
@@ -425,6 +429,7 @@ template <typename Access, typename T, typename UnwrapMethod>
 bool TrySetCloudPolicySettings(const Access& access,
                                const base::Value& value,
                                UnwrapMethod unwrap,
+                               em::PolicyOptions::PolicyMode mode,
                                em::CloudPolicySettings& policy_settings) {
   auto unwrapped = std::invoke(unwrap, value);
   if (!unwrapped) {
@@ -435,7 +440,7 @@ bool TrySetCloudPolicySettings(const Access& access,
   }
   auto* proto = access.get_proto_mutable(policy_settings);
   CHECK(proto);
-  proto->mutable_policy_options()->set_mode(em::PolicyOptions::MANDATORY);
+  proto->mutable_policy_options()->set_mode(mode);
   proto->set_value(*unwrapped);
   return true;
 }
@@ -444,18 +449,19 @@ bool TrySetCloudPolicySettings(const Access& access,
 // `policy_settings` if it is.
 bool ValidateAndSetPolicyValue(std::string_view policy_name,
                                const base::Value& value,
+                               em::PolicyOptions::PolicyMode mode,
                                em::CloudPolicySettings& policy_settings) {
   for (const auto& access : policy::test::kBooleanPolicyAccess) {
     if (policy_name == access.policy_key) {
       return TrySetCloudPolicySettings<decltype(access), bool>(
-          access, value, &base::Value::GetIfBool, policy_settings);
+          access, value, &base::Value::GetIfBool, mode, policy_settings);
     }
   }
 
   for (const auto& access : policy::test::kIntegerPolicyAccess) {
     if (policy_name == access.policy_key) {
       return TrySetCloudPolicySettings<decltype(access), int>(
-          access, value, &base::Value::GetIfInt, policy_settings);
+          access, value, &base::Value::GetIfInt, mode, policy_settings);
     }
   }
 
@@ -470,7 +476,7 @@ bool ValidateAndSetPolicyValue(std::string_view policy_name,
             access, value,
             static_cast<const std::string* (base::Value::*)() const>(
                 &base::Value::GetIfString),
-            policy_settings);
+            mode, policy_settings);
 
       case policy::test::StringPolicyType::JSON: {
         // JSON values are converted to JSON, then encoded the same as
@@ -484,7 +490,7 @@ bool ValidateAndSetPolicyValue(std::string_view policy_name,
         CHECK(base::JSONWriter::Write(value, &json));
         auto* proto = access.get_proto_mutable(policy_settings);
         CHECK(proto);
-        proto->mutable_policy_options()->set_mode(em::PolicyOptions::MANDATORY);
+        proto->mutable_policy_options()->set_mode(mode);
         proto->set_value(json);
         return true;
       }
@@ -509,7 +515,7 @@ bool ValidateAndSetPolicyValue(std::string_view policy_name,
     }
     auto* proto = access.get_proto_mutable(policy_settings);
     CHECK(proto);
-    proto->mutable_policy_options()->set_mode(em::PolicyOptions::MANDATORY);
+    proto->mutable_policy_options()->set_mode(mode);
     std::vector<std::string> string_list;
     for (const auto& entry : value.GetList()) {
       if (!entry.is_string()) {
@@ -1117,23 +1123,29 @@ bool FakeDMServer::ParsePoliciesJson(const base::DictValue* dict) {
   //   "AllowDinosaurEasterEgg": true,
   //   "HomepageLocation": "http://example.com/"
   // }
-  em::CloudPolicySettings cloud_policy_settings;
   for (const auto& entry : kPolicyTypeMapping) {
-    const base::Value* policies = dict->Find(entry.config_key);
-    if (!policies) {
-      continue;
-    }
-    if (!policies->is_dict()) {
-      LOG(WARNING) << "Policy for '" << entry.config_key << "' is not a dict.";
-      return false;
-    }
+    em::CloudPolicySettings cloud_policy_settings;
     bool any_policy_set_for_type = false;
-    for (const auto [policy_name, value] : policies->GetDict()) {
-      if (!ValidateAndSetPolicyValue(policy_name, value,
-                                     cloud_policy_settings)) {
+    const std::pair<const char*, em::PolicyOptions::PolicyMode> kModes[] = {
+        {entry.config_key, em::PolicyOptions::MANDATORY},
+        {entry.recommended_config_key, em::PolicyOptions::RECOMMENDED},
+    };
+    for (const auto& [config_key, mode] : kModes) {
+      const base::Value* policies = dict->Find(config_key);
+      if (!policies) {
         continue;
       }
-      any_policy_set_for_type = true;
+      if (!policies->is_dict()) {
+        LOG(ERROR) << "Policy for '" << config_key << "' is not a dict.";
+        return false;
+      }
+      for (const auto [policy_name, value] : policies->GetDict()) {
+        if (!ValidateAndSetPolicyValue(policy_name, value, mode,
+                                       cloud_policy_settings)) {
+          continue;
+        }
+        any_policy_set_for_type = true;
+      }
     }
     if (any_policy_set_for_type) {
       std::string serialized_proto;

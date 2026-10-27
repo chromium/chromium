@@ -114,7 +114,9 @@ define the actual policies to be applied.
 ### Configuration Parameters
 
 *   `machine` or `user`: (Object) A dictionary where keys are user policy names
-    and values are the policy values.
+    and values are the mandatory policy values.
+*   `recommended_machine` or `recommended_user`: (Object) A dictionary where
+    keys are user policy names and values are the recommended policy values.
 *   `machine-extension-install`, `user-extension-install`: (Object) A dictionary
     where keys are "extension_id@version" extensions and values are objects:
     * `action`: (String enum) `"allow"` or `"block"`
@@ -160,6 +162,9 @@ More complete example showcasing some of `fake_dmserver`'s features:
   "user": {
     "AllowDinosaurEasterEgg": true
   },
+  "recommended_user": {
+    "ShowHomeButton": false
+  },
   "machine": {
     "ShowHomeButton": true,
     "HomepageLocation": "https://www.google.com",
@@ -168,6 +173,9 @@ More complete example showcasing some of `fake_dmserver`'s features:
       "example.com",
       "unwanted-site.org"
     ]
+  },
+  "recommended_machine": {
+    "BookmarkBarEnabled": true
   },
   "machine-extension-install": {
     "abcdefghijklmnopabcdefghijklmnop@1.0.0": {

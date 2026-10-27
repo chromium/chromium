@@ -15,6 +15,7 @@
 
 #include "base/base64.h"
 #include "base/check.h"
+#include "base/containers/flat_map.h"
 #include "base/files/file.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
@@ -1257,7 +1258,7 @@ TEST_F(FakeDMServerTest, HandlePolicyRequestWithJsonFormatSucceeds) {
   ASSERT_NO_FATAL_FAILURE(response.AssertValidProto());
   EXPECT_EQ(response.proto().policy_response().responses_size(), 2);
 
-  std::map<std::string, em::PolicyFetchResponse> responses;
+  base::flat_map<std::string, em::PolicyFetchResponse> responses;
   for (const auto& r : response.proto().policy_response().responses()) {
     em::PolicyData policy_data;
     ASSERT_TRUE(policy_data.ParseFromString(r.policy_data()));
@@ -1294,6 +1295,121 @@ TEST_F(FakeDMServerTest, HandlePolicyRequestWithJsonFormatSucceeds) {
               R"([{"name":"Google","url":"google.com"}])");
     EXPECT_EQ(settings.managedbookmarks().policy_options().mode(),
               em::PolicyOptions::MANDATORY);
+  }
+}
+
+TEST_F(FakeDMServerTest, HandlePolicyRequestWithRecommendedJsonFormatSucceeds) {
+  FakeDMServer fake_dmserver(policy_blob_path_.MaybeAsASCII(),
+                             client_state_path_.MaybeAsASCII(),
+                             grpc_unix_socket_uri_);
+  EXPECT_TRUE(fake_dmserver.Start());
+
+  ASSERT_TRUE(base::WriteFile(policy_blob_path_, R"(
+    {
+      "policy_user" : "tast-user@managedchrome.com",
+      "machine": {
+        "AllowDinosaurEasterEgg": true
+      },
+      "recommended_machine": {
+        "ShowHomeButton": false,
+        "RestoreOnStartup": 4
+      },
+      "user": {
+        "ShowHomeButton": true
+      },
+      "recommended_user": {
+        "BookmarkBarEnabled": true
+      }
+    }
+  )"));
+  ASSERT_TRUE(base::WriteFile(
+      client_state_path_,
+      base::StringPrintf(
+          R"(
+    {
+      "fake_device_id" : {
+        "device_id" : "fake_device_id",
+        "device_token" : "fake_device_token",
+        "machine_name" : "fake_machine_name",
+        "username" : "tast-user@managedchrome.com",
+        "state_keys" : [ "fake_state_key" ],
+        "allowed_policy_types" : [
+          "%s",
+          "%s"
+        ]
+      }
+    }
+  )",
+          policy::dm_protocol::kChromeMachineLevelUserCloudPolicyType,
+          policy::dm_protocol::GetChromeUserPolicyType())));
+
+  em::DeviceManagementRequest request_proto;
+  request_proto.mutable_policy_request()->add_requests()->set_policy_type(
+      policy::dm_protocol::kChromeMachineLevelUserCloudPolicyType);
+  request_proto.mutable_policy_request()->add_requests()->set_policy_type(
+      policy::dm_protocol::GetChromeUserPolicyType());
+
+  Response response =
+      SendRequest(fake_dmserver.GetServiceURL(),
+                  "/?apptype=Chrome&deviceid=fake_device_id&devicetype=2&"
+                  "oauth_token=fake_policy_token&request=policy",
+                  std::move(request_proto));
+  EXPECT_EQ(response.status, net::HTTP_OK);
+  ASSERT_NO_FATAL_FAILURE(response.AssertValidProto());
+  EXPECT_EQ(response.proto().policy_response().responses_size(), 2);
+
+  base::flat_map<std::string, em::PolicyFetchResponse> responses;
+  for (const auto& r : response.proto().policy_response().responses()) {
+    em::PolicyData policy_data;
+    ASSERT_TRUE(policy_data.ParseFromString(r.policy_data()));
+    responses[policy_data.policy_type()] = r;
+  }
+
+  {
+    em::PolicyData policy_data;
+    ASSERT_TRUE(policy_data.ParseFromString(
+        responses[policy::dm_protocol::kChromeMachineLevelUserCloudPolicyType]
+            .policy_data()));
+    em::CloudPolicySettings settings;
+    ASSERT_TRUE(settings.ParseFromString(policy_data.policy_value()));
+
+    EXPECT_TRUE(settings.has_allowdinosaureasteregg());
+    EXPECT_TRUE(settings.allowdinosaureasteregg().value());
+    EXPECT_EQ(settings.allowdinosaureasteregg().policy_options().mode(),
+              em::PolicyOptions::MANDATORY);
+
+    EXPECT_TRUE(settings.has_showhomebutton());
+    EXPECT_FALSE(settings.showhomebutton().value());
+    EXPECT_EQ(settings.showhomebutton().policy_options().mode(),
+              em::PolicyOptions::RECOMMENDED);
+
+    EXPECT_TRUE(settings.has_restoreonstartup());
+    EXPECT_EQ(settings.restoreonstartup().value(), 4);
+    EXPECT_EQ(settings.restoreonstartup().policy_options().mode(),
+              em::PolicyOptions::RECOMMENDED);
+  }
+
+  {
+    em::PolicyData policy_data;
+    ASSERT_TRUE(policy_data.ParseFromString(
+        responses[policy::dm_protocol::GetChromeUserPolicyType()]
+            .policy_data()));
+    em::CloudPolicySettings settings;
+    ASSERT_TRUE(settings.ParseFromString(policy_data.policy_value()));
+
+    // Verify machine policies did not leak into user policies.
+    EXPECT_FALSE(settings.has_allowdinosaureasteregg());
+    EXPECT_FALSE(settings.has_restoreonstartup());
+
+    EXPECT_TRUE(settings.has_showhomebutton());
+    EXPECT_TRUE(settings.showhomebutton().value());
+    EXPECT_EQ(settings.showhomebutton().policy_options().mode(),
+              em::PolicyOptions::MANDATORY);
+
+    EXPECT_TRUE(settings.has_bookmarkbarenabled());
+    EXPECT_TRUE(settings.bookmarkbarenabled().value());
+    EXPECT_EQ(settings.bookmarkbarenabled().policy_options().mode(),
+              em::PolicyOptions::RECOMMENDED);
   }
 }
 
