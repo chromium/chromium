@@ -175,7 +175,7 @@ void OfflineAudioDestinationHandler::SetSharedRenderTarget(
     AudioBuffer* render_target) {
   DCHECK(IsMainThread());
   CHECK(render_target);
-  DCHECK(!is_rendering_started_);
+  CHECK(!is_rendering_started_);
   // `DoOfflineRendering()` walks the target's channels while indexing into
   // `render_bus_`, so the two must always agree.
   CHECK_EQ(render_target->numberOfChannels(), number_of_channels_);

@@ -369,7 +369,8 @@ ScriptPromise<AudioBuffer> OfflineAudioContext::startOfflineRendering(
   start_rendering_resolvers_.push_back(resolver);
   pending_render_targets_.push_back(render_target);
 
-  if (pending_render_targets_.size() == 1) {
+  if (pending_render_targets_.size() == 1u) {
+    CHECK_EQ(start_rendering_resolvers_.size(), 1u);
     DestinationHandler().EnsureOfflineRenderThreadInitialized();
     is_rendering_started_ = true;
     SetContextState(V8AudioContextState::Enum::kRunning);
@@ -381,7 +382,8 @@ ScriptPromise<AudioBuffer> OfflineAudioContext::startOfflineRendering(
 
 void OfflineAudioContext::StartNextRender() {
   DCHECK(IsMainThread());
-  DCHECK(!pending_render_targets_.empty());
+  CHECK(!pending_render_targets_.empty());
+  CHECK_EQ(start_rendering_resolvers_.size(), pending_render_targets_.size());
 
   AudioBuffer* render_target = pending_render_targets_.front().Get();
 
@@ -567,15 +569,29 @@ void OfflineAudioContext::OnChunkRendered() {
   }
 
   CHECK(GetExecutionContext());
-  DCHECK(!start_rendering_resolvers_.empty());
-  DCHECK(!pending_render_targets_.empty());
+  CHECK(!start_rendering_resolvers_.empty());
+  CHECK(!pending_render_targets_.empty());
+  CHECK_EQ(start_rendering_resolvers_.size(), pending_render_targets_.size());
 
   Member<ScriptPromiseResolver<AudioBuffer>> resolver =
       start_rendering_resolvers_.TakeFirst();
-  Member<AudioBuffer> rendered_buffer = pending_render_targets_.TakeFirst();
+  Member<AudioBuffer> rendered_buffer = pending_render_targets_.front();
 
   CHECK(rendered_buffer);
+  // Keep the target queued across `Resolve()` so synchronous thenable getters
+  // can enqueue more chunks without starting a duplicate render.
   resolver->Resolve(rendered_buffer.Get());
+
+  if (IsContextCleared() ||
+      ContextState() == V8AudioContextState::Enum::kClosed) {
+    // close() or teardown ran inside Resolve(), so OnRenderStopped() or
+    // Uninitialize() finishes the cleanup and no complete event is fired.
+    return;
+  }
+
+  CHECK(!pending_render_targets_.empty());
+  CHECK_EQ(pending_render_targets_.front(), rendered_buffer);
+  pending_render_targets_.TakeFirst();
 
   if (IsRenderComplete()) {
     CloseInternal();
@@ -610,6 +626,13 @@ bool OfflineAudioContext::IsRenderComplete() const {
 void OfflineAudioContext::CloseInternal() {
   DCHECK(IsMainThread());
 
+  // Stop the render thread before tearing down tail processing or marking
+  // the context closed: once closed, `AudioNode::Dispose()` stops deferring
+  // handler deletion. Callers only reach here after the render sequence is
+  // idle; in AudioWorklet mode this merely drops the task runner.
+  DestinationHandler().StopRenderThread();
+  is_rendering_started_ = false;
+
   // Context is finished, so remove any tail processing nodes; there's nowhere
   // for the output to go.
   GetDeferredTaskHandler().FinishTailProcessing();
@@ -617,8 +640,6 @@ void OfflineAudioContext::CloseInternal() {
   // We set the state to closed here so that the oncomplete event handler sees
   // that the context has been closed.
   SetContextState(V8AudioContextState::Enum::kClosed);
-  DestinationHandler().StopRenderThread();
-  is_rendering_started_ = false;
 }
 
 void OfflineAudioContext::FireCompletionEvent(AudioBuffer* rendered_buffer) {
