@@ -111,6 +111,7 @@ import org.chromium.ui.modaldialog.ModalDialogManagerHolder;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.test.util.modaldialog.FakeModalDialogManager;
+import org.chromium.ui.widget.ToastManager;
 import org.chromium.url.GURL;
 import org.chromium.url.Origin;
 
@@ -180,6 +181,8 @@ public class PdfCoordinatorUnitTest {
 
     @After
     public void tearDown() {
+        ShadowToast.reset();
+        ToastManager.resetForTesting();
         ChromeFileProvider.setGeneratedUriForTesting(null);
         PdfContentProvider.cleanUpForTesting();
         PostTask.setPrenativeThreadPoolExecutorForTesting(null);
@@ -2811,9 +2814,12 @@ public class PdfCoordinatorUnitTest {
 
         ShadowLooper.idleMainLooper();
 
-        // It should still disable edit mode and close handles
+        // It should still disable edit mode, close handles, and show a failure toast
         assertFalse(shadowFragment.getEditModeEnabled());
         assertTrue(fakeHandle.mClosed);
+        assertTrue(
+                ShadowToast.showedCustomToast(
+                        mActivity.getString(R.string.pdf_apply_edits_failed), R.id.toast_text));
         pfd.close();
     }
 
@@ -3076,9 +3082,12 @@ public class PdfCoordinatorUnitTest {
         // Run posted tasks on UI thread (finishExitingEditMode is posted)
         ShadowLooper.idleMainLooper();
 
-        // Even with RuntimeException, it should close handles and disable edit mode
+        // Even with RuntimeException, it should close handles, disable edit mode, and show toast
         assertTrue(fakeHandle.mClosed);
         assertFalse(shadowFragment.getEditModeEnabled());
+        assertTrue(
+                ShadowToast.showedCustomToast(
+                        mActivity.getString(R.string.pdf_apply_edits_failed), R.id.toast_text));
 
         // Also check if destination pfd is closed.
         boolean pfdClosed = false;
@@ -3123,8 +3132,9 @@ public class PdfCoordinatorUnitTest {
 
         mPdfCoordinator.download();
 
-        assertEquals(
-                mActivity.getString(R.string.pdf_downloading), ShadowToast.getTextOfLatestToast());
+        assertTrue(
+                ShadowToast.showedCustomToast(
+                        mActivity.getString(R.string.pdf_downloading), R.id.toast_text));
     }
 
     @Test
@@ -3136,7 +3146,7 @@ public class PdfCoordinatorUnitTest {
         mPdfCoordinator.download();
 
         verify(mNativePageHost).downloadUrl(PDF_DOWNLOAD_URL);
-        assertNull(ShadowToast.getTextOfLatestToast());
+        assertNull(ShadowToast.getLatestToast());
     }
 
     @Test
@@ -3157,7 +3167,7 @@ public class PdfCoordinatorUnitTest {
         mPdfCoordinator.download();
 
         verify(mNativePageHost, never()).downloadUrl(any());
-        assertNull(ShadowToast.getTextOfLatestToast());
+        assertNull(ShadowToast.getLatestToast());
     }
 
     @Test
@@ -3180,7 +3190,7 @@ public class PdfCoordinatorUnitTest {
         mPdfCoordinator.download();
 
         verify(mNativePageHost).downloadUrl(blobUrl);
-        assertNull(ShadowToast.getTextOfLatestToast());
+        assertNull(ShadowToast.getLatestToast());
     }
 
     @Test
@@ -3203,7 +3213,7 @@ public class PdfCoordinatorUnitTest {
         mPdfCoordinator.download();
 
         verify(mNativePageHost).downloadUrl(dataUrl);
-        assertNull(ShadowToast.getTextOfLatestToast());
+        assertNull(ShadowToast.getLatestToast());
     }
 
     @Test
@@ -3226,7 +3236,7 @@ public class PdfCoordinatorUnitTest {
         mPdfCoordinator.download();
 
         verify(mNativePageHost, never()).downloadUrl(any());
-        assertNull(ShadowToast.getTextOfLatestToast());
+        assertNull(ShadowToast.getLatestToast());
     }
 
     @Test
@@ -3248,8 +3258,9 @@ public class PdfCoordinatorUnitTest {
         mPdfCoordinator.download();
 
         verify(mNativePageHost, never()).downloadUrl(any());
-        assertEquals(
-                mActivity.getString(R.string.pdf_downloading), ShadowToast.getTextOfLatestToast());
+        assertTrue(
+                ShadowToast.showedCustomToast(
+                        mActivity.getString(R.string.pdf_downloading), R.id.toast_text));
     }
 
     @Test
@@ -3262,7 +3273,7 @@ public class PdfCoordinatorUnitTest {
         mPdfCoordinator.download();
 
         verify(mNativePageHost).downloadUrl(PDF_DOWNLOAD_URL);
-        assertNull(ShadowToast.getTextOfLatestToast());
+        assertNull(ShadowToast.getLatestToast());
     }
 
     @Test
@@ -3297,8 +3308,9 @@ public class PdfCoordinatorUnitTest {
         assertTrue(onDoneCalled.get());
         assertTrue(mPdfCoordinator.hasChanges());
         assertFalse(mPdfCoordinator.hasUnsavedChanges());
-        assertEquals(
-                mActivity.getString(R.string.pdf_downloading), ShadowToast.getTextOfLatestToast());
+        assertTrue(
+                ShadowToast.showedCustomToast(
+                        mActivity.getString(R.string.pdf_downloading), R.id.toast_text));
     }
 
     @Test
@@ -3321,16 +3333,70 @@ public class PdfCoordinatorUnitTest {
         mPdfCoordinator.download();
         assertTrue(shadowFragment.wasApplyDraftEditsCalled());
 
+        ShadowToast.reset();
+        ToastManager.resetForTesting();
         mPdfCoordinator.onPdfEditsSaveFailed();
+        assertTrue(
+                ShadowToast.showedCustomToast(
+                        mActivity.getString(R.string.pdf_apply_edits_failed), R.id.toast_text));
 
         // Subsequent save without download flag should not trigger download toast
         File tempFile = File.createTempFile("test_saved_pdf2", ".pdf");
         tempFile.deleteOnExit();
         ShadowToast.reset();
+        ToastManager.resetForTesting();
 
         mPdfCoordinator.onPdfEditsSaved(tempFile, /* pfd= */ null, () -> {});
         ShadowLooper.idleMainLooper();
         assertNull(ShadowToast.getLatestToast());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.INLINE_PDF_V2)
+    @Config(shadows = {ShadowEditablePdfViewerFragment.class})
+    public void testOnPdfEditsSaveFailed_DoesNotShowToastWhenDestroyedOrFinishing() {
+        createPdfCoordinator();
+        mPdfCoordinator.onDownloadComplete(mFilePath, PDF_TITLE);
+        ShadowToast.reset();
+        ToastManager.resetForTesting();
+
+        mPdfCoordinator.destroy();
+        mPdfCoordinator.onPdfEditsSaveFailed();
+        assertNull(ShadowToast.getLatestToast());
+
+        createPdfCoordinator();
+        mPdfCoordinator.onDownloadComplete(mFilePath, PDF_TITLE);
+        mActivity.finish();
+        mPdfCoordinator.onPdfEditsSaveFailed();
+        assertNull(ShadowToast.getLatestToast());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.INLINE_PDF_V2)
+    @Config(shadows = {ShadowEditablePdfViewerFragment.class})
+    public void testOnApplyEditsFailed_DisablesEditModeAndShowsToast() {
+        createPdfCoordinator();
+        mPdfCoordinator.onDownloadComplete(mFilePath, PDF_TITLE);
+
+        mActivity
+                .getSupportFragmentManager()
+                .beginTransaction()
+                .add(mPdfCoordinator.mChromePdfViewerFragment, "test_pdf_tag")
+                .commitNow();
+
+        ShadowEditablePdfViewerFragment shadowFragment =
+                Shadow.extract(mPdfCoordinator.mChromePdfViewerFragment);
+        shadowFragment.setEditModeEnabled(true);
+        ShadowToast.reset();
+        ToastManager.resetForTesting();
+
+        mPdfCoordinator.mChromePdfViewerFragment.onApplyEditsFailed(
+                new RuntimeException("Test apply edits failed"));
+
+        assertFalse(shadowFragment.getEditModeEnabled());
+        assertTrue(
+                ShadowToast.showedCustomToast(
+                        mActivity.getString(R.string.pdf_apply_edits_failed), R.id.toast_text));
     }
 
     @Test
@@ -3402,12 +3468,14 @@ public class PdfCoordinatorUnitTest {
                 Shadow.extract(mPdfCoordinator.mChromePdfViewerFragment);
         shadowFragment.setHasUnsavedChanges(true);
         ShadowToast.reset();
+        ToastManager.resetForTesting();
 
         assertFalse(mPdfCoordinator.findInPage());
         assertFalse(shadowFragment.isTextSearchActive());
-        assertEquals(
-                mActivity.getString(R.string.pdf_find_in_page_disabled_unsaved_changes),
-                ShadowToast.getTextOfLatestToast());
+        assertTrue(
+                ShadowToast.showedCustomToast(
+                        mActivity.getString(R.string.pdf_find_in_page_disabled_unsaved_changes),
+                        R.id.toast_text));
     }
 
     @Test

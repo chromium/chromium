@@ -31,7 +31,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
@@ -90,6 +89,7 @@ import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
 import org.chromium.ui.modaldialog.ModalDialogManagerHolder;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.widget.Toast;
 import org.chromium.url.GURL;
 import org.chromium.url.Origin;
 
@@ -940,11 +940,11 @@ public class PdfCoordinator
                                                 if (finalTempFile != null) {
                                                     finalTempFile.delete();
                                                 }
-                                                if (mDelegate != null) {
-                                                    mDelegate.onPdfEditsSaveFailed();
-                                                }
                                                 ThreadUtils.postOnUiThread(
                                                         () -> {
+                                                            if (mDelegate != null) {
+                                                                mDelegate.onPdfEditsSaveFailed();
+                                                            }
                                                             finishExitingEditMode();
                                                         });
                                             }
@@ -1013,13 +1013,12 @@ public class PdfCoordinator
         }
 
         @Override
-        // TODO(crbug.com/527937210): Handle this error in a user-friendly way.
         public void onApplyEditsFailed(Throwable error) {
             Log.e(TAG, "Failed to apply PDF edits", error);
-            setEditModeEnabled(false);
             if (mDelegate != null) {
                 mDelegate.onPdfEditsSaveFailed();
             }
+            setEditModeEnabled(false);
         }
 
         @Override
@@ -2400,7 +2399,14 @@ public class PdfCoordinator
 
     @Override
     public void onPdfEditsSaveFailed() {
+        ThreadUtils.assertOnUiThread();
         mDownloadAfterSave = false;
+        if (mChromePdfViewerFragment == null
+                || mActivity.isFinishing()
+                || mActivity.isDestroyed()) {
+            return;
+        }
+        Toast.makeText(mActivity, R.string.pdf_apply_edits_failed, Toast.LENGTH_SHORT).show();
     }
 
     @Override
