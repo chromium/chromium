@@ -61,6 +61,7 @@
 #include "chrome/browser/ui/views/toolbar/webui_split_tabs_control.h"
 #include "chrome/browser/ui/views/toolbar/webui_toolbar_extensions_container_wrapper.h"
 #include "chrome/browser/ui/waap/initial_web_ui_manager.h"
+#include "chrome/browser/ui/waap/initial_webui_metrics_dispatcher.h"
 #include "chrome/browser/ui/waap/initial_webui_window_metrics_manager.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/browser/ui/webui/webui_toolbar/adapters/browser_controls_adapter_impl.h"
@@ -411,10 +412,6 @@ WebUIToolbarWebView::WebUIToolbarWebView(
   last_queued_state_.glic_button_state =
       toolbar_ui_api::mojom::GlicButtonState::New();
 
-  if (auto* manager = InitialWebUIWindowMetricsManager::From(browser_)) {
-    manager->OnReloadButtonCreated();
-  }
-
   SetLayoutManager(std::make_unique<views::FillLayout>());
 
   auto web_view = std::make_unique<WebUIToolbarInternalWebView>(
@@ -468,6 +465,13 @@ WebUIToolbarWebView::WebUIToolbarWebView(
         content::BrowserAccessibilityState::GetInstance()
             ->CreateScopedModeForWebContents(
                 web_contents, ui::AXMode::kNativeAdaptedWebContents);
+    // The BrowserWindowInterface is already attached to `web_contents` here
+    // (either by `InitialWebUIManager` or `ConfigureToolbarWebContents()`), so
+    // the dispatcher can resolve this window's metrics manager.
+    // TODO(crbug.com/548363252): Align `IsWebUIToolbarEnabled()` and
+    // `IsWebUIReloadButtonEnabled()` metrics gating with `ToolbarView`.
+    InitialWebUIMetricsDispatcher::GetOrCreateForWebContents(web_contents)
+        ->OnCreated();
   }
 
   // We must save the pointer to the WebView so we can load the URL after the

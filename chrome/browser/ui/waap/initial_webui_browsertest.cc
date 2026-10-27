@@ -35,6 +35,7 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/toolbar/webui_toolbar_web_view.h"
+#include "chrome/browser/ui/waap/initial_webui_metrics_dispatcher.h"
 #include "chrome/browser/ui/waap/initial_webui_profile_service.h"
 #include "chrome/browser/ui/waap/initial_webui_profile_service_factory.h"
 #include "chrome/browser/ui/waap/initial_webui_window_metrics_manager.h"
@@ -625,7 +626,7 @@ IN_PROC_BROWSER_TEST_F(InitialWebUINavigationBrowserTest,
 
     base::TimeTicks t1 = base::TimeTicks::Now();
     manager->OnBrowserWindowFirstPresentation(t1);
-    manager->OnReloadButtonFirstPaint(t1 + base::Milliseconds(50));
+    manager->GetMetricsDispatcher()->OnFirstPaint(t1 + base::Milliseconds(50));
   }
 
   AddBlankTabAndShow(new_browser);
@@ -639,6 +640,25 @@ IN_PROC_BROWSER_TEST_F(InitialWebUINavigationBrowserTest,
       "InitialWebUI.NewWindow.NewEmptyWindow.WithExistingWindow."
       "BrowserWindowToReloadButton.FirstPaintGap2",
       1);
+}
+
+// Verifies that the WebUI toolbar records the reload button creation exactly
+// once for a new normal browser window.
+IN_PROC_BROWSER_TEST_F(InitialWebUINavigationBrowserTest,
+                       RecordsReloadButtonCreationForNewWindow) {
+  ASSERT_TRUE(features::IsWebUIReloadButtonEnabled());
+  base::HistogramTester histogram_tester;
+
+  BrowserWindowCreateParams params(browser()->GetProfile(),
+                                   /*from_user_gesture=*/true);
+  BrowserWindowInterface* new_browser = CreateBrowserWindow(std::move(params));
+  ASSERT_TRUE(InitialWebUIWindowMetricsManager::From(new_browser));
+  AddBlankTabAndShow(new_browser);
+
+  // The same histogram also records the browser window creation (bucket 0);
+  // bucket 1 corresponds to `InitialWebUIView::kReloadButton`.
+  histogram_tester.ExpectBucketCount("InitialWebUI.View.Creation",
+                                     /*sample=*/1, 1);
 }
 
 // Verifies the `NewWindowCreationSource` that each window creation entry point
@@ -1031,7 +1051,7 @@ IN_PROC_BROWSER_TEST_F(InitialWebUIMinimizedWindowBrowserTest,
   if (auto* manager = InitialWebUIWindowMetricsManager::From(new_browser)) {
     base::TimeTicks t1 = base::TimeTicks::Now();
     manager->OnBrowserWindowFirstPresentation(t1);
-    manager->OnReloadButtonFirstPaint(t1 + base::Milliseconds(50));
+    manager->GetMetricsDispatcher()->OnFirstPaint(t1 + base::Milliseconds(50));
   }
 
   // Verify ShowRequestedToFirstPaint was not recorded.
@@ -1092,7 +1112,7 @@ IN_PROC_BROWSER_TEST_F(InitialWebUIMinimizedWindowBrowserTest,
           InitialWebUIWindowMetricsManager::From(restored_browser)) {
     base::TimeTicks t1 = base::TimeTicks::Now();
     manager->OnBrowserWindowFirstPresentation(t1);
-    manager->OnReloadButtonFirstPaint(t1 + base::Milliseconds(50));
+    manager->GetMetricsDispatcher()->OnFirstPaint(t1 + base::Milliseconds(50));
   }
 
   // Verify no metrics were recorded, since it is treated as startup as we
@@ -1106,6 +1126,9 @@ IN_PROC_BROWSER_TEST_F(InitialWebUIMinimizedWindowBrowserTest,
       "InitialWebUI.Startup.SessionRestore.BrowserWindowToReloadButton."
       "FirstPaintGap",
       0);
+
+  histogram_tester.ExpectTotalCount(
+      "InitialWebUI.Startup.SessionRestore.ReloadButton.FirstPaint", 0);
 
   keep_alive.reset();
   profile_keep_alive.reset();
@@ -1182,7 +1205,8 @@ IN_PROC_BROWSER_TEST_F(InitialWebUISameStartupPopupBrowserTest,
   normal_manager->OnBrowserWindowShowRequested(t0);
   normal_manager->OnBrowserWindowFirstPresentation(t0 +
                                                    base::Milliseconds(100));
-  normal_manager->OnReloadButtonFirstPaint(t0 + base::Milliseconds(150));
+  normal_manager->GetMetricsDispatcher()->OnFirstPaint(t0 +
+                                                       base::Milliseconds(150));
 
   // Verify histograms.
   // We expect all startup metrics to be recorded from the normal window.

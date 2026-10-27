@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/waap/initial_webui_metrics_dispatcher.h"
 #include "chrome/browser/ui/waap/waap_ui_metrics_service.h"
 #include "third_party/blink/public/common/features.h"
 #include "ui/base/base_window.h"
@@ -31,10 +32,18 @@ InitialWebUIWindowMetricsManager::InitialWebUIWindowMetricsManager(
     BrowserWindowInterface* browser)
     : waap_service_(WaapUIMetricsService::Get(browser->GetProfile())),
       browser_(browser),
+      metrics_dispatcher_(
+          std::make_unique<InitialWebUINativeMetricsDispatcher>(waap_service_,
+                                                                this)),
       scoped_data_holder_(browser->GetUnownedUserDataHost(), *this),
       was_created_with_existing_windows_(
           ProfileBrowserCollection::GetForProfile(browser->GetProfile())
               ->GetSize() > 0) {}
+
+InitialWebUIMetricsDispatcher*
+InitialWebUIWindowMetricsManager::GetMetricsDispatcher() {
+  return metrics_dispatcher_.get();
+}
 
 InitialWebUIWindowMetricsManager::~InitialWebUIWindowMetricsManager() {
   CHECK(waap_service_);
@@ -227,11 +236,6 @@ void InitialWebUIWindowMetricsManager::OnBrowserWindowCreated() {
   waap_service_->OnBrowserWindowCreated();
 }
 
-void InitialWebUIWindowMetricsManager::OnReloadButtonCreated() {
-  CHECK(waap_service_);
-  waap_service_->OnReloadButtonCreated();
-}
-
 void InitialWebUIWindowMetricsManager::OnReloadButtonFirstPaint(
     base::TimeTicks timestamp,
     bool is_startup) {
@@ -269,10 +273,6 @@ void InitialWebUIWindowMetricsManager::OnReloadButtonFirstPaint(
 
   if (is_startup) {
     is_new_window_reload_button_first_paint_recorded_ = true;
-  } else if (!WaapUIMetricsService::IsStartupFirstPaintRecorded() &&
-             !skip_startup_metrics_for_testing_) {
-    is_new_window_reload_button_first_paint_recorded_ = true;
-    waap_service_->OnFirstPaint(timestamp);
   } else if (!is_new_window_reload_button_first_paint_recorded_ &&
              new_window_start_time_.has_value()) {
     is_new_window_reload_button_first_paint_recorded_ = true;
@@ -292,10 +292,6 @@ void InitialWebUIWindowMetricsManager::OnReloadButtonFirstContentfulPaint(
 
   if (is_startup) {
     is_new_window_reload_button_first_contentful_paint_recorded_ = true;
-  } else if (!WaapUIMetricsService::IsStartupFirstContentfulPaintRecorded() &&
-             !skip_startup_metrics_for_testing_) {
-    is_new_window_reload_button_first_contentful_paint_recorded_ = true;
-    waap_service_->OnFirstContentfulPaint(timestamp);
   } else if (!is_new_window_reload_button_first_contentful_paint_recorded_ &&
              new_window_start_time_.has_value()) {
     is_new_window_reload_button_first_contentful_paint_recorded_ = true;

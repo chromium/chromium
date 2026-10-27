@@ -24,7 +24,16 @@ InitialWebUIMetricsDispatcher::InitialWebUIMetricsDispatcher() = default;
 
 InitialWebUIMetricsDispatcher::~InitialWebUIMetricsDispatcher() = default;
 
-void InitialWebUIMetricsDispatcher::OnCreated() {}
+void InitialWebUIMetricsDispatcher::OnCreated() {
+  // Like the paint metrics, only record creation for windows that track
+  // InitialWebUI metrics (e.g. not popups, which have no manager).
+  if (!GetWindowMetricsManager()) {
+    return;
+  }
+  WaapUIMetricsService* service = GetService();
+  CHECK(service);
+  service->OnReloadButtonCreated();
+}
 
 void InitialWebUIMetricsDispatcher::OnCommit(base::TimeTicks init_time,
                                              base::TimeTicks launched_time) {

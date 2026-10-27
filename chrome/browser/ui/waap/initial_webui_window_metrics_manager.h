@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WAAP_INITIAL_WEBUI_WINDOW_METRICS_MANAGER_H_
 #define CHROME_BROWSER_UI_WAAP_INITIAL_WEBUI_WINDOW_METRICS_MANAGER_H_
 
+#include <memory>
 #include <optional>
 
 #include "base/memory/raw_ptr.h"
@@ -16,6 +17,8 @@
 
 class WaapUIMetricsService;
 class BrowserWindowInterface;
+class InitialWebUIMetricsDispatcher;
+class InitialWebUINativeMetricsDispatcher;
 
 // Manages the recording of InitialWebUI latency metrics related to the
 // creation and first paint of browser windows and its UI elements, e.g.
@@ -47,6 +50,10 @@ class InitialWebUIWindowMetricsManager {
   static InitialWebUIWindowMetricsManager* From(
       BrowserWindowInterface* browser_window_interface);
 
+  // Returns the metrics dispatcher used by native views (e.g. the Views
+  // ReloadButton) in this window. Never null.
+  InitialWebUIMetricsDispatcher* GetMetricsDispatcher();
+
   // Sets the window creation info. This should be called immediately after the
   // `Browser` object is created.
   void SetWindowCreationInfo(waap::NewWindowCreationSource source,
@@ -63,18 +70,16 @@ class InitialWebUIWindowMetricsManager {
   // Called when the browser window is created.
   void OnBrowserWindowCreated();
 
-  // Called when the ReloadButton is created.
-  void OnReloadButtonCreated();
+  // Called by `InitialWebUIMetricsDispatcher` when the ReloadButton paints its
+  // first frame. This handles reload button paint delta and new window metrics.
+  // `is_startup` is decided by the dispatcher; when true, the startup metric
+  // has already been recorded and only per-window state is updated.
+  void OnReloadButtonFirstPaint(base::TimeTicks timestamp, bool is_startup);
 
-  // Called when the ReloadButton paints its first frame.
-  // This handles reload button paint delta and new window metrics.
-  void OnReloadButtonFirstPaint(base::TimeTicks timestamp,
-                                bool is_startup = false);
-
-  // Called when the ReloadButton paints its first contentful paint.
-  // This handles reload button new window metrics.
+  // Called by `InitialWebUIMetricsDispatcher` when the ReloadButton paints its
+  // first contentful paint. This handles reload button new window metrics.
   void OnReloadButtonFirstContentfulPaint(base::TimeTicks timestamp,
-                                          bool is_startup = false);
+                                          bool is_startup);
 
   // Called when the reload button renderer process terminates or crashes.
   void OnReloadButtonRenderProcessGone();
@@ -138,6 +143,9 @@ class InitialWebUIWindowMetricsManager {
   const raw_ptr<WaapUIMetricsService> waap_service_;
 
   const raw_ptr<BrowserWindowInterface> browser_;
+
+  const std::unique_ptr<InitialWebUINativeMetricsDispatcher>
+      metrics_dispatcher_;
 
   ui::ScopedUnownedUserData<InitialWebUIWindowMetricsManager>
       scoped_data_holder_;

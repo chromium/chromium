@@ -11,8 +11,11 @@
 #include "base/time/time.h"
 #include "chrome/browser/command_updater.h"
 #include "chrome/browser/command_updater_impl.h"
+#include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
+#include "chrome/browser/ui/waap/initial_webui_window_metrics_manager.h"
 #include "chrome/browser/ui/waap/waap_ui_metrics_service.h"
 #include "chrome/browser/ui/waap/waap_ui_metrics_service_factory.h"
+#include "chrome/browser/ui/waap/waap_utils.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
@@ -20,8 +23,10 @@
 #include "chrome/test/views/chrome_test_views_delegate.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "content/public/test/test_renderer_host.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/unowned_user_data/unowned_user_data_host.h"
 #include "ui/compositor/compositor.h"
 #include "ui/events/event_utils.h"
 #include "ui/events/keycodes/dom/dom_code.h"
@@ -82,9 +87,9 @@ class ReloadButtonTest : public ChromeViewsTestBase,
   void SetUp() override {
     ChromeViewsTestBase::SetUp();
     profile_ = std::make_unique<TestingProfile>();
-    reload_ = std::make_unique<ReloadButton>(
-        profile_.get(), /*command_updater=*/nullptr,
-        /*window_metrics_manager=*/nullptr);
+    reload_ = std::make_unique<ReloadButton>(profile_.get(),
+                                             /*command_updater=*/nullptr,
+                                             /*metrics_dispatcher=*/nullptr);
     SetupReloadButtonTimers(reload_.get());
   }
 
@@ -301,7 +306,7 @@ class ReloadButtonMetricsTest : public ChromeViewsTestBase,
 
     auto button =
         std::make_unique<ReloadButton>(profile_.get(), command_updater_.get(),
-                                       /*window_metrics_manager=*/nullptr);
+                                       /*metrics_dispatcher=*/nullptr);
     reload_ = widget_->SetContentsView(std::move(button));
     SetupReloadButtonTimers(reload_);
   }
@@ -468,7 +473,7 @@ using ReloadButtonWithoutProfileTest = ChromeViewsTestBase;
 TEST_F(ReloadButtonWithoutProfileTest, ClickRecordsNoMetrics) {
   base::HistogramTester histogram_tester;
   ReloadButton button(/*profile=*/nullptr, /*command_updater=*/nullptr,
-                      /*window_metrics_manager=*/nullptr);
+                      /*metrics_dispatcher=*/nullptr);
 
   ui::MouseEvent click_event(ui::EventType::kMouseReleased, gfx::Point(),
                              gfx::Point(), ui::EventTimeForNow(),
@@ -479,4 +484,78 @@ TEST_F(ReloadButtonWithoutProfileTest, ClickRecordsNoMetrics) {
   histogram_tester.ExpectTotalCount("InitialWebUI.ReloadButton.InputCount", 0);
   histogram_tester.ExpectTotalCount(
       "InitialWebUI.ReloadButton.InteractionToReload", 0);
+}
+
+// Covers a native ReloadButton hosted in a browser window: creation and paints
+// are reported through the window's `InitialWebUIWindowMetricsManager`
+// dispatcher.
+class ReloadButtonWindowMetricsTest : public ChromeViewsTestBase {
+ public:
+  void SetUp() override {
+    ChromeViewsTestBase::SetUp();
+    InitialWebUIWindowMetricsManager::ResetForTesting();
+    profile_ = std::make_unique<TestingProfile>();
+    WaapUIMetricsServiceFactory::GetForProfile(profile_.get());
+
+    EXPECT_CALL(browser_window_, GetProfile())
+        .WillRepeatedly(testing::Return(profile_.get()));
+    EXPECT_CALL(testing::Const(browser_window_), GetProfile())
+        .WillRepeatedly(testing::Return(profile_.get()));
+    EXPECT_CALL(browser_window_, GetUnownedUserDataHost())
+        .WillRepeatedly(testing::ReturnRef(unowned_user_data_host_));
+    manager_ =
+        std::make_unique<InitialWebUIWindowMetricsManager>(&browser_window_);
+  }
+
+  void TearDown() override {
+    manager_.reset();
+    profile_.reset();
+    ChromeViewsTestBase::TearDown();
+  }
+
+ protected:
+  void SimulatePresentation(ReloadButton& button, base::TimeTicks timestamp) {
+    viz::FrameTimingDetails frame_timing_details;
+    frame_timing_details.presentation_feedback.timestamp = timestamp;
+    button.OnNextPresentation(frame_timing_details);
+  }
+
+  std::unique_ptr<TestingProfile> profile_;
+  MockBrowserWindowInterface browser_window_;
+  ui::UnownedUserDataHost unowned_user_data_host_;
+  std::unique_ptr<InitialWebUIWindowMetricsManager> manager_;
+};
+
+TEST_F(ReloadButtonWindowMetricsTest, RecordsCreationThroughDispatcher) {
+  base::HistogramTester histogram_tester;
+
+  ReloadButton button(profile_.get(), /*command_updater=*/nullptr,
+                      manager_->GetMetricsDispatcher());
+
+  histogram_tester.ExpectUniqueSample("InitialWebUI.View.Creation",
+                                      /*sample=*/1, 1);
+}
+
+TEST_F(ReloadButtonWindowMetricsTest, RecordsNewWindowPaintsThroughDispatcher) {
+  base::HistogramTester histogram_tester;
+  manager_->SkipStartupForTesting();
+  const base::TimeTicks start_time = base::TimeTicks::Now();
+  manager_->SetWindowCreationInfo(
+      waap::NewWindowCreationSource::kNewEmptyWindow, start_time);
+  ReloadButton button(profile_.get(), /*command_updater=*/nullptr,
+                      manager_->GetMetricsDispatcher());
+
+  const base::TimeDelta latency = base::Milliseconds(100);
+  SimulatePresentation(button, start_time + latency);
+  // Later presentations must not record again.
+  SimulatePresentation(button, start_time + 2 * latency);
+
+  histogram_tester.ExpectUniqueTimeSample(
+      "InitialWebUI.NewWindow.AllSources.WithoutExistingWindow."
+      "ReloadButton.FirstPaint.FromConstructor2",
+      latency, 1);
+  histogram_tester.ExpectUniqueTimeSample(
+      "InitialWebUI.NewWindow.AllSources.WithoutExistingWindow."
+      "ReloadButton.FirstContentfulPaint.FromConstructor2",
+      latency, 1);
 }

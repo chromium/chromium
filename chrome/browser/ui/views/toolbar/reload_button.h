@@ -20,7 +20,7 @@
 #include "ui/views/metadata/view_factory.h"
 
 class CommandUpdater;
-class InitialWebUIWindowMetricsManager;
+class InitialWebUIMetricsDispatcher;
 class Profile;
 class WaapUIMetricsRecorder;
 
@@ -43,7 +43,7 @@ class ReloadButton : public ToolbarButton, public ReloadControl {
   // metrics are recorded in that case.
   ReloadButton(Profile* profile,
                CommandUpdater* command_updater,
-               InitialWebUIWindowMetricsManager* window_metrics_manager);
+               InitialWebUIMetricsDispatcher* metrics_dispatcher);
   ReloadButton(const ReloadButton&) = delete;
   ReloadButton& operator=(const ReloadButton&) = delete;
   ~ReloadButton() override;
@@ -89,6 +89,7 @@ class ReloadButton : public ToolbarButton, public ReloadControl {
  private:
   friend class ReloadButtonMetricsTest;
   friend class ReloadButtonTestBase;
+  friend class ReloadButtonWindowMetricsTest;
   FRIEND_TEST_ALL_PREFIXES(ReloadButtonTest, TooltipText);
   FRIEND_TEST_ALL_PREFIXES(ReloadButtonTest, TooltipTextAccessibility);
 
@@ -146,9 +147,9 @@ class ReloadButton : public ToolbarButton, public ReloadControl {
   // test code can tell whether we did so (as there may be no |browser_|).
   int testing_reload_count_ = 0;
 
-  // The initial WebUI metrics manager for the window this button is in.
+  // The initial WebUI metrics dispatcher for the window this button is in.
   // Not owned and might be null.
-  const raw_ptr<InitialWebUIWindowMetricsManager> window_metrics_manager_;
+  const raw_ptr<InitialWebUIMetricsDispatcher> metrics_dispatcher_;
 
   // Must be the last member.
   base::WeakPtrFactory<ReloadButton> weak_ptr_factory_{this};
