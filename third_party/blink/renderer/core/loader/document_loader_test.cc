@@ -27,18 +27,24 @@
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
+#include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/core/dom/visited_link_state.h"
 #include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 #include "third_party/blink/renderer/core/html/html_iframe_element.h"
+#include "third_party/blink/renderer/core/html/html_object_element.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
+#include "third_party/blink/renderer/core/loader/frame_loader.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/page/scoped_page_pauser.h"
 #include "third_party/blink/renderer/core/testing/mock_policy_container_host.h"
 #include "third_party/blink/renderer/core/testing/scoped_fake_plugin_registry.h"
+#include "third_party/blink/renderer/core/testing/sim/sim_compositor.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
+#include "third_party/blink/renderer/platform/loader/fetch/resource_response.h"
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/url_loader_client.h"
 #include "third_party/blink/renderer/platform/loader/static_data_navigation_body_loader.h"
 #include "third_party/blink/renderer/platform/network/blink_schemeful_site.h"
@@ -47,6 +53,8 @@
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/url_loader_mock_factory.h"
 #include "third_party/blink/renderer/platform/testing/url_test_helpers.h"
+#include "third_party/blink/renderer/platform/weborigin/kurl.h"
+#include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "third_party/blink/renderer/platform/wtf/deque.h"
 
 namespace blink {
@@ -540,6 +548,34 @@ TEST_F(DocumentLoaderSimTest, DocumentOpenUpdatesUrl) {
   EXPECT_EQ(KURL("https://example.com"), child_document->Url());
   // Similarly, the URL of the DocumentLoader should also match.
   EXPECT_EQ(KURL("https://example.com"), child_document->Loader()->Url());
+}
+
+TEST_F(DocumentLoaderSimTest, ObjectElementStaticDataHttpUrl) {
+  SimRequest main_resource("https://example.com", "text/html");
+  LoadURL("https://example.com");
+  main_resource.Write("<object id='target' data='about:blank'></object>");
+  Compositor().BeginFrame();
+  test::RunPendingTasks();
+
+  main_resource.Complete(
+      "<script>"
+      "const doc = document.getElementById('target').contentDocument;"
+      "doc.open();"
+      "doc.close();"
+      "</script>");
+
+  auto* object_frame = To<WebLocalFrameImpl>(MainFrame().FirstChild());
+  ASSERT_TRUE(object_frame);
+  LocalFrame* child = object_frame->GetFrame();
+  ASSERT_TRUE(IsA<HTMLObjectElement>(child->Owner()));
+  ASSERT_EQ(KURL("https://example.com"), child->GetDocument()->Url());
+  ASSERT_EQ(
+      0, child->Loader().GetDocumentLoader()->GetResponse().HttpStatusCode());
+
+  child->LoadJavaScriptURL(url_test_helpers::ToKURL("javascript:'<p>ok</p>'"));
+  Element* body = child->GetDocument()->body();
+  ASSERT_TRUE(body);
+  EXPECT_EQ("ok", body->textContent());
 }
 
 // A same-origin commit from an initial empty document keeps the window, so
