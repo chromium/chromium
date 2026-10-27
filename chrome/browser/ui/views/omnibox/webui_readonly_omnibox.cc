@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/feature_list.h"
-#include "base/notimplemented.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/supports_user_data.h"
@@ -184,6 +183,7 @@ void WebUIReadOnlyOmnibox::Update() {
     // If the text is unchanged, we still need to re-emphasize the text, as the
     // security state may be different from before the Update.
     EmphasizeURLComponents();
+    RequestUpdateWebUI();
   }
 }
 
@@ -312,7 +312,7 @@ bool WebUIReadOnlyOmnibox::AimButtonVisible() const {
 }
 
 void WebUIReadOnlyOmnibox::ApplyCaretVisibility() {
-  NOTIMPLEMENTED();
+  RequestUpdateWebUI();
 }
 
 void WebUIReadOnlyOmnibox::SetAccessibilityLabel(

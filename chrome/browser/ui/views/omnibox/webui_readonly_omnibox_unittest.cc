@@ -928,4 +928,27 @@ TEST_F(WebUIReadOnlyOmniboxTest, IgnoresFocusClaimWithoutViewsFocus) {
             omnibox_controller_->edit_model()->focus_state());
 }
 
+TEST_F(WebUIReadOnlyOmniboxTest,
+       UpdateWithoutDisplayTextChangePropagatesState) {
+  const std::u16string url = u"https://www.example.org/";
+  location_bar_model()->set_url(GURL(url));
+  omnibox_view_->Update();
+  auto mojo_state = update_propagator_.TakeState();
+  ASSERT_TRUE(mojo_state);
+
+  // Calling Update() when ResetDisplayTexts() returns false should still
+  // propagate an update to the WebUI so placeholder and security state are
+  // refreshed.
+  EXPECT_FALSE(omnibox_controller_->edit_model()->ResetDisplayTexts());
+  omnibox_view_->Update();
+  mojo_state = update_propagator_.TakeState();
+  EXPECT_TRUE(mojo_state);
+}
+
+TEST_F(WebUIReadOnlyOmniboxTest, ApplyCaretVisibilityPropagatesState) {
+  omnibox_view_->ApplyCaretVisibility();
+  auto mojo_state = update_propagator_.TakeState();
+  EXPECT_TRUE(mojo_state);
+}
+
 }  // namespace

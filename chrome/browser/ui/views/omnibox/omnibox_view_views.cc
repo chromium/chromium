@@ -451,6 +451,7 @@ void OmniboxViewViews::Update() {
     // If the text is unchanged, we still need to re-emphasize the text, as the
     // security state may be different from before the Update.
     EmphasizeURLComponents();
+    InstallPlaceholderText();
   }
 }
 
