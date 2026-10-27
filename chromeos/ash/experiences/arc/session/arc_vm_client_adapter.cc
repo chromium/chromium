@@ -171,14 +171,24 @@ std::vector<std::string> GenerateUpgradeProps(
       base::StringPrintf("%s.skip_tts_cache=%d", prefix.c_str(),
                          upgrade_params.skip_tts_cache),
   };
-  // Conditionally sets more properties based on |upgrade_params|.
+  // Conditionally sets more properties based on |upgrade_params|. Strip
+  // newlines so values cannot inject extra lines when joined by '\n'.
   if (!upgrade_params.locale.empty()) {
-    result.push_back(base::StringPrintf("%s.locale=%s", prefix.c_str(),
-                                        upgrade_params.locale.c_str()));
+    std::string locale;
+    base::RemoveChars(upgrade_params.locale, "\r\n", &locale);
+    result.push_back(
+        base::StringPrintf("%s.locale=%s", prefix.c_str(), locale.c_str()));
     if (!upgrade_params.preferred_languages.empty()) {
+      std::vector<std::string> preferred_languages;
+      preferred_languages.reserve(upgrade_params.preferred_languages.size());
+      for (const std::string& lang : upgrade_params.preferred_languages) {
+        std::string sanitized_lang;
+        base::RemoveChars(lang, "\r\n", &sanitized_lang);
+        preferred_languages.push_back(std::move(sanitized_lang));
+      }
       result.push_back(base::StringPrintf(
           "%s.preferred_languages=%s", prefix.c_str(),
-          base::JoinString(upgrade_params.preferred_languages, ",").c_str()));
+          base::JoinString(preferred_languages, ",").c_str()));
     }
   }
 
