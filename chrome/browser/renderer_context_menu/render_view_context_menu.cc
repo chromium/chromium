@@ -1355,12 +1355,21 @@ void RenderViewContextMenu::InitMenu() {
       AppendLensGeminiSection();
     }
   } else {
+    const bool glic_below_search =
+        base::FeatureList::IsEnabled(features::kGlicContextMenuBelowSearch);
+    if (!glic_below_search &&
+        content_type_->SupportsGroup(
+            ContextMenuContentType::ITEM_GROUP_GLICSHAREIMAGE)) {
+      AppendGlicShareImageItem();
+    }
+
     if (content_type_->SupportsGroup(
             ContextMenuContentType::ITEM_GROUP_SEARCHWEBFORIMAGE)) {
       AppendSearchWebForImageItems();
     }
 
-    if (content_type_->SupportsGroup(
+    if (glic_below_search &&
+        content_type_->SupportsGroup(
             ContextMenuContentType::ITEM_GROUP_GLICSHAREIMAGE)) {
       AppendGlicShareImageItem();
     }
@@ -2433,7 +2442,7 @@ void RenderViewContextMenu::AppendGlicShareImageItem() {
   if (tab) {
     menu_model_.AddItemWithIcon(
         IDC_CONTENT_CONTEXT_GLICSHAREIMAGE,
-        l10n_util::GetStringUTF16(IDS_CONTENT_CONTEXT_GLICSHAREIMAGE),
+        l10n_util::GetStringUTF16(IDS_GLIC_BUTTON_ENTRYPOINT_ASK_GEMINI_LABEL),
         ui::ImageModel::FromVectorIcon(
             glic::GlicVectorIconManager::GetVectorIcon(
                 IDR_GLIC_BUTTON_VECTOR_ICON),
@@ -6271,7 +6280,8 @@ bool RenderViewContextMenu::CanAppendRegionSearchItem() const {
 }
 
 bool RenderViewContextMenu::CanAppendGlicShareImageItem() const {
-  if (!IsNormalBrowser()) {
+  if (!IsNormalBrowser() || glic_item_shown_ ||
+      !params_.selection_text.empty()) {
     return false;
   }
 
@@ -6334,13 +6344,18 @@ void RenderViewContextMenu::AppendLensGeminiSection() {
 
   menu_model_.AddSeparator(ui::NORMAL_SEPARATOR);
 
+  const bool glic_below_search =
+      base::FeatureList::IsEnabled(features::kGlicContextMenuBelowSearch);
+  if (!glic_below_search && can_glic) {
+    AppendGlicShareImageItem();
+  }
   if (can_region) {
     AppendRegionSearchItem();
   }
   if (can_image_search) {
     AppendSearchWebForImageItems();
   }
-  if (can_glic) {
+  if (glic_below_search && can_glic) {
     AppendGlicShareImageItem();
   }
   if (can_indigo) {

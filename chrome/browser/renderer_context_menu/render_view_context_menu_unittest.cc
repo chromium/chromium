@@ -1538,15 +1538,61 @@ TEST_F(RenderViewContextMenuPrefsTest, GlicShareImageEligibility) {
   }
 
   {
-    // Case 3: Helper returns eligible -> visible.
+    // Case 3: Helper returns eligible -> visible with "Ask Gemini" label,
+    // preceding image search by default.
     EXPECT_CALL(*mock_helper, IsPageContextEligible())
         .WillRepeatedly(testing::Return(
             optimization_guide::PageContextEligibilityStatus::kEligible));
+    SetUserSelectedDefaultSearchProvider("https://www.google.com",
+                                         /*supports_image_search=*/true);
     TestRenderViewContextMenu menu(*web_contents()->GetPrimaryMainFrame(),
                                    params);
     menu.SetBrowser(GetBrowser());
     menu.Init();
     EXPECT_TRUE(menu.IsItemPresent(IDC_CONTENT_CONTEXT_GLICSHAREIMAGE));
+    auto glic_index =
+        menu.GetMenuModelAndItemIndex(IDC_CONTENT_CONTEXT_GLICSHAREIMAGE);
+    ASSERT_TRUE(glic_index.has_value());
+    EXPECT_EQ(
+        glic_index->first->GetLabelAt(glic_index->second),
+        l10n_util::GetStringUTF16(IDS_GLIC_BUTTON_ENTRYPOINT_ASK_GEMINI_LABEL));
+    auto search_index =
+        menu.GetMenuModelAndItemIndex(IDC_CONTENT_CONTEXT_SEARCHLENSFORIMAGE);
+    ASSERT_TRUE(search_index.has_value());
+    EXPECT_EQ(glic_index->first, search_index->first);
+    EXPECT_LT(glic_index->second, search_index->second);
+  }
+
+  {
+    // Case 4: When kGlicContextMenuBelowSearch is enabled, the item follows
+    // image search.
+    base::test::ScopedFeatureList below_search_feature;
+    below_search_feature.InitAndEnableFeature(
+        features::kGlicContextMenuBelowSearch);
+    TestRenderViewContextMenu menu(*web_contents()->GetPrimaryMainFrame(),
+                                   params);
+    menu.SetBrowser(GetBrowser());
+    menu.Init();
+    auto glic_index =
+        menu.GetMenuModelAndItemIndex(IDC_CONTENT_CONTEXT_GLICSHAREIMAGE);
+    auto search_index =
+        menu.GetMenuModelAndItemIndex(IDC_CONTENT_CONTEXT_SEARCHLENSFORIMAGE);
+    ASSERT_TRUE(glic_index.has_value());
+    ASSERT_TRUE(search_index.has_value());
+    EXPECT_EQ(glic_index->first, search_index->first);
+    EXPECT_GT(glic_index->second, search_index->second);
+  }
+
+  {
+    // Case 5: When text is also selected, IDC_CONTENT_CONTEXT_GLICSHAREIMAGE is
+    // omitted so it does not duplicate IDC_CONTENT_CONTEXT_GLIC.
+    content::ContextMenuParams selection_image_params = params;
+    selection_image_params.selection_text = u"selected text";
+    TestRenderViewContextMenu menu(*web_contents()->GetPrimaryMainFrame(),
+                                   selection_image_params);
+    menu.SetBrowser(GetBrowser());
+    menu.Init();
+    EXPECT_FALSE(menu.IsItemPresent(IDC_CONTENT_CONTEXT_GLICSHAREIMAGE));
   }
 }
 

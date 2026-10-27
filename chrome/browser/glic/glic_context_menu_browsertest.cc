@@ -166,6 +166,7 @@ IN_PROC_BROWSER_TEST_F(GlicContextMenuShareImageDisabledBrowserTest,
   menu->Init();
 
   EXPECT_FALSE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_GLIC));
+  EXPECT_FALSE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_GLICSHAREIMAGE));
 }
 
 IN_PROC_BROWSER_TEST_F(GlicContextMenuBrowserTest,
@@ -204,6 +205,7 @@ IN_PROC_BROWSER_TEST_F(GlicContextMenuBrowserTest,
   menu->Init();
 
   EXPECT_TRUE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_GLIC));
+  EXPECT_FALSE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_GLICSHAREIMAGE));
 }
 
 IN_PROC_BROWSER_TEST_F(GlicContextMenuBrowserTest,

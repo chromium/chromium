@@ -11174,7 +11174,7 @@ const FeatureEntry kFeatureEntries[] = {
                                     kGlicOSIconVariantVariations,
                                     "GlicOSIconVariant")},
     {"glic-share-image", flag_descriptions::kGlicShareImageName,
-     flag_descriptions::kGlicShareImageDescription, kOsDesktop,
+     flag_descriptions::kGlicShareImageDescription, kOsDesktop | kOsAndroid,
      FEATURE_VALUE_TYPE(features::kGlicShareImage)},
     {"glic-default-tab-context-setting",
      flag_descriptions::kGlicDefaultTabContextSettingName,
