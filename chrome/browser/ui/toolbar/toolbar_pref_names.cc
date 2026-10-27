@@ -6,7 +6,6 @@
 
 #include "chrome/browser/ttc/core/features.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "ui/actions/actions.h"
@@ -22,16 +21,6 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   // value.
   if (chrome_labs_action.has_value()) {
     default_pinned_actions.Append(chrome_labs_action.value());
-  }
-
-  if (base::FeatureList::IsEnabled(
-          features::kTabsFromOtherDevicesSidePanelPinnedByDefault)) {
-    const std::optional<std::string>& tabs_from_other_devices_action =
-        actions::ActionIdMap::ActionIdToString(
-            kActionSidePanelShowTabsFromOtherDevices);
-    if (tabs_from_other_devices_action.has_value()) {
-      default_pinned_actions.Append(tabs_from_other_devices_action.value());
-    }
   }
 
   if (base::FeatureList::IsEnabled(ttc::kTtc)) {
@@ -54,8 +43,6 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterBooleanPref(
       prefs::kPinnedCastMigrationComplete, false,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
-  registry->RegisterBooleanPref(prefs::kTabsFromOtherDevicesAutoPinnedMigration,
-                                false);
   registry->RegisterBooleanPref(
       prefs::kTtcAutoPinnedMigration, false,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);

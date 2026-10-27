@@ -1189,6 +1189,10 @@ inline constexpr char kDeprecatedGrayscaleThemeEnabledDoNotUse[] =
 inline constexpr char kDeprecatedNtpCustomBackgroundDictDoNotUse[] =
     "ntp.custom_background_dict";
 
+// Deprecated 10/2026.
+inline constexpr char kTabsFromOtherDevicesAutoPinnedMigration[] =
+    "toolbar.tabs_from_other_devices_auto_pinned_migration";
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -1700,6 +1704,10 @@ void RegisterProfilePrefsForMigration(
   registry->RegisterBooleanPref(kDeprecatedGrayscaleThemeEnabledDoNotUse,
                                 false);
   registry->RegisterDictionaryPref(kDeprecatedNtpCustomBackgroundDictDoNotUse);
+
+  // Deprecated 10/2026.
+  registry->RegisterBooleanPref(kTabsFromOtherDevicesAutoPinnedMigration,
+                                false);
 }
 
 }  // namespace
@@ -3158,6 +3166,9 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
   profile_prefs->ClearPref(kDeprecatedBrowserColorVariantDoNotUse);
   profile_prefs->ClearPref(kDeprecatedGrayscaleThemeEnabledDoNotUse);
   profile_prefs->ClearPref(kDeprecatedNtpCustomBackgroundDictDoNotUse);
+
+  // Added 10/2026.
+  profile_prefs->ClearPref(kTabsFromOtherDevicesAutoPinnedMigration);
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS
