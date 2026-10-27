@@ -76,7 +76,7 @@ BASE_FEATURE(kNotifyCompositorOfSpaceVisibilityOnMacOs,
 
 // When enabled, tell the browser compositor when the window is fully occluded
 // (covered by other windows), to allow it to reclaim resources. The occlusion
-// state comes from `WebContentsOcclusionCheckerMac`, so this only applies to
+// state comes from `WindowOcclusionCheckerMac`, so this only applies to
 // top-level windows that contain web contents. Becoming occluded is debounced;
 // becoming visible again takes effect immediately.
 BASE_FEATURE(kNotifyCompositorOfWindowOcclusionOnMacOs,

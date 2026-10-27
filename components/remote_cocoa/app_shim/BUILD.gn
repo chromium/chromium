@@ -71,6 +71,8 @@ component("app_shim") {
     "views_scrollbar_bridge.mm",
     "window_move_loop.h",
     "window_move_loop.mm",
+    "window_occlusion_checker_mac.h",
+    "window_occlusion_checker_mac.mm",
     "window_touch_bar_delegate.h",
   ]
   defines = [ "REMOTE_COCOA_APP_SHIM_IMPLEMENTATION" ]

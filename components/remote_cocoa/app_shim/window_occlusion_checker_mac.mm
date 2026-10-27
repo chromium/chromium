@@ -2,13 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "content/app_shim_remote_cocoa/web_contents_occlusion_checker_mac.h"
+#import "components/remote_cocoa/app_shim/window_occlusion_checker_mac.h"
 
+#import <objc/runtime.h>
+
+#include <atomic>
 #include <memory>
 
 #import "base/apple/foundation_util.h"
 #import "base/apple/scoped_objc_class_swizzler.h"
 #include "base/auto_reset.h"
+#include "base/command_line.h"
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/feature.h"
@@ -18,10 +22,26 @@
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #import "components/remote_cocoa/app_shim/native_widget_ns_window_bridge.h"
-#include "content/public/browser/content_browser_client.h"
-#include "content/public/common/content_client.h"
 
 namespace {
+
+// Stored as `std::atomic` because `+setWindowPredicate:...` is called from
+// `+[WebContentsViewCocoa initialize]`, which can be triggered on a non-main
+// thread (see crbug.com/349984532), while occlusion updates read these
+// stateless function pointers on the main thread.
+std::atomic<BOOL (*)(NSWindow*)> g_window_predicate{nullptr};
+std::atomic<BOOL (*)()> g_can_perform_updates_predicate{nullptr};
+
+BOOL WindowHasTrackedContent(NSWindow* window) {
+  auto* predicate = g_window_predicate.load(std::memory_order_relaxed);
+  return predicate ? predicate(window) : NO;
+}
+
+BOOL CanPerformOcclusionUpdates() {
+  auto* predicate =
+      g_can_perform_updates_predicate.load(std::memory_order_relaxed);
+  return predicate ? predicate() : NO;
+}
 
 NSString* const kWindowDidChangePositionInWindowList =
     @"ChromeWindowDidChangePositionInWindowList";
@@ -90,16 +110,16 @@ bool WindowHasOpaqueFrameBackgroundView(NSView* view) {
 
 }  // namespace
 
-@interface WebContentsOcclusionCheckerMac ()
+@interface WindowOcclusionCheckerMac ()
 
 // Returns a pointer to the shared instance that can be cleared during tests.
-+ (WebContentsOcclusionCheckerMac* __strong*)sharedOcclusionChecker;
++ (WindowOcclusionCheckerMac* __strong*)sharedOcclusionChecker;
 
 - (base::apple::ScopedObjCClassSwizzler*)windowClassSwizzler;
 
 @end
 
-@implementation WebContentsOcclusionCheckerMac {
+@implementation WindowOcclusionCheckerMac {
   NSWindow* __weak _windowResizingOrMoving;
   NSWindow* __weak _windowReceivingFullscreenTransitionNotifications;
   BOOL _displaysAreAsleep;
@@ -108,13 +128,13 @@ bool WindowHasOpaqueFrameBackgroundView(NSView* view) {
   std::unique_ptr<base::apple::ScopedObjCClassSwizzler> _windowClassSwizzler;
 }
 
-+ (WebContentsOcclusionCheckerMac* __strong*)sharedOcclusionChecker {
-  static WebContentsOcclusionCheckerMac* sharedOcclusionChecker;
++ (WindowOcclusionCheckerMac* __strong*)sharedOcclusionChecker {
+  static WindowOcclusionCheckerMac* sharedOcclusionChecker;
   return &sharedOcclusionChecker;
 }
 
 + (instancetype)sharedInstance {
-  WebContentsOcclusionCheckerMac* __strong* sharedInstance =
+  WindowOcclusionCheckerMac* __strong* sharedInstance =
       [self sharedOcclusionChecker];
 
   // It seems a utility process can trigger a call to
@@ -146,6 +166,13 @@ bool WindowHasOpaqueFrameBackgroundView(NSView* view) {
                    base::mac::MacOSVersion()];
 }
 
++ (void)setWindowPredicate:(BOOL (*)(NSWindow*))windowPredicate
+    canPerformUpdatesPredicate:(BOOL (*)())canPerformUpdatesPredicate {
+  g_window_predicate.store(windowPredicate, std::memory_order_relaxed);
+  g_can_perform_updates_predicate.store(canPerformUpdatesPredicate,
+                                        std::memory_order_relaxed);
+}
+
 + (void)resetSharedInstanceForTesting {
   *[self sharedOcclusionChecker] = nil;
 }
@@ -166,17 +193,18 @@ bool WindowHasOpaqueFrameBackgroundView(NSView* view) {
   // list. Swizzle -orderWindow:relativeTo:, allowing the checker to initiate
   // occlusion checks on window ordering changes.
   _windowClassSwizzler = std::make_unique<base::apple::ScopedObjCClassSwizzler>(
-      [NSWindow class], [WebContentsOcclusionCheckerMac class],
+      [NSWindow class], [WindowOcclusionCheckerMac class],
       @selector(orderWindow:relativeTo:));
 
   return self;
 }
 
 - (void)dealloc {
-  [NSObject cancelPreviousPerformRequestsWithTarget:self
-                                           selector:@selector
-                                           (performOcclusionStateUpdates)
-                                             object:nil];
+  [NSObject
+      cancelPreviousPerformRequestsWithTarget:self
+                                     selector:@selector(
+                                                  performOcclusionStateUpdates)
+                                       object:nil];
   [[NSNotificationCenter defaultCenter] removeObserver:self];
   [[[NSWorkspace sharedWorkspace] notificationCenter] removeObserver:self];
   _windowClassSwizzler.reset();
@@ -187,7 +215,7 @@ bool WindowHasOpaqueFrameBackgroundView(NSView* view) {
 }
 
 - (BOOL)isManualOcclusionDetectionEnabled {
-  return [WebContentsOcclusionCheckerMac
+  return [WindowOcclusionCheckerMac
       manualOcclusionDetectionSupportedForCurrentMacOSVersion];
 }
 
@@ -197,11 +225,11 @@ bool WindowHasOpaqueFrameBackgroundView(NSView* view) {
 - (void)orderWindow:(NSWindowOrderingMode)orderingMode
          relativeTo:(NSInteger)otherWindowNumber {
   // Super.
-  [[WebContentsOcclusionCheckerMac sharedInstance] windowClassSwizzler]
+  [[WindowOcclusionCheckerMac sharedInstance] windowClassSwizzler]
       ->InvokeOriginal<void, NSWindowOrderingMode, NSInteger>(
           self, _cmd, orderingMode, otherWindowNumber);
 
-  if (![[WebContentsOcclusionCheckerMac sharedInstance]
+  if (![[WindowOcclusionCheckerMac sharedInstance]
           isManualOcclusionDetectionEnabled]) {
     return;
   }
@@ -301,7 +329,7 @@ bool WindowHasOpaqueFrameBackgroundView(NSView* view) {
   // so they can update their visibility state. Therefore, we ignore windows
   // that don't have a web contents (they essentially don't exist for our manual
   // occlusion calculations).
-  if (![window containsWebContentsViewCocoa]) {
+  if (!WindowHasTrackedContent(window)) {
     // As with child windows below, `window` may have been marked occluded while
     // it still contained a web contents. Clear that state before ignoring the
     // notification so it cannot get stuck if no other window triggers an update
@@ -314,8 +342,9 @@ bool WindowHasOpaqueFrameBackgroundView(NSView* view) {
   // occlusion checks. Child windows don't appear in this list, so don't
   // trigger an occlusion check unless `window` is a parent window
   // (i.e. is not the child of another window).
-  if ([window parentWindow] == nil)
+  if ([window parentWindow] == nil) {
     return YES;
+  }
 
   // `window` is a child window but that wasn't always the case. When it was
   // created and resized it was a "parent" window. If it came through this
@@ -339,14 +368,16 @@ bool WindowHasOpaqueFrameBackgroundView(NSView* view) {
   // webcontentses in windows it covered in the occluded state. To avoid this,
   // we'll perform an occlusion update if the window isn't a child window.
   // See http://crbug.com/1356622 .
-  if ([theWindow parentWindow] == nil)
+  if ([theWindow parentWindow] == nil) {
     [self scheduleOcclusionStateUpdates];
+  }
 }
 
 - (void)windowWillMove:(NSNotification*)notification {
   NSWindow* theWindow = [notification object];
-  if (![self windowCanTriggerOcclusionUpdates:theWindow])
+  if (![self windowCanTriggerOcclusionUpdates:theWindow]) {
     return;
+  }
 
   _windowResizingOrMoving = theWindow;
 
@@ -359,27 +390,31 @@ bool WindowHasOpaqueFrameBackgroundView(NSView* view) {
   // called, so _windowResizingOrMoving never gets set.
   _windowResizingOrMoving = nil;
 
-  if ([self windowCanTriggerOcclusionUpdates:[notification object]])
+  if ([self windowCanTriggerOcclusionUpdates:[notification object]]) {
     [self scheduleOcclusionStateUpdates];
+  }
 }
 
 - (void)windowDidChangePositionInWindowList:(NSNotification*)notification {
-  if ([self windowCanTriggerOcclusionUpdates:[notification object]])
+  if ([self windowCanTriggerOcclusionUpdates:[notification object]]) {
     [self scheduleOcclusionStateUpdates];
+  }
 }
 
 - (void)windowWillStartLiveResize:(NSNotification*)notification {
   NSWindow* theWindow = [notification object];
-  if (![self windowCanTriggerOcclusionUpdates:theWindow])
+  if (![self windowCanTriggerOcclusionUpdates:theWindow]) {
     return;
+  }
 
   _windowResizingOrMoving = theWindow;
   [self scheduleOcclusionStateUpdates];
 }
 
 - (void)windowWillEndLiveResize:(NSNotification*)notification {
-  if (_windowResizingOrMoving == nil)
+  if (_windowResizingOrMoving == nil) {
     return;
+  }
 
   _windowResizingOrMoving = nil;
 
@@ -390,11 +425,13 @@ bool WindowHasOpaqueFrameBackgroundView(NSView* view) {
   // Ignore the occlusion notifications we generate.
   NSDictionary* userInfo = [notification userInfo];
   NSString* occlusionCheckerKey = [self className];
-  if (userInfo[occlusionCheckerKey] != nil)
+  if (userInfo[occlusionCheckerKey] != nil) {
     return;
+  }
 
-  if ([self windowCanTriggerOcclusionUpdates:[notification object]])
+  if ([self windowCanTriggerOcclusionUpdates:[notification object]]) {
     [self scheduleOcclusionStateUpdates];
+  }
 }
 
 - (void)displaysDidSleep:(NSNotification*)notification {
@@ -437,8 +474,9 @@ bool WindowHasOpaqueFrameBackgroundView(NSView* view) {
 // update occur away from the notification, we can avoid the reentrancy
 // problems with visibility observers.
 - (void)scheduleOcclusionStateUpdates {
-  if (_occlusionStateUpdatesAreScheduled)
+  if (_occlusionStateUpdatesAreScheduled) {
     return;
+  }
 
   _occlusionStateUpdatesAreScheduled = YES;
 
@@ -450,12 +488,7 @@ bool WindowHasOpaqueFrameBackgroundView(NSView* view) {
 - (void)performOcclusionStateUpdates {
   _occlusionStateUpdatesAreScheduled = NO;
 
-  auto* content_client = content::GetContentClient();
-  if (!content_client) {
-    return;
-  }
-  auto* browser = content_client->browser();
-  if (browser && browser->IsShuttingDown()) {
+  if (!CanPerformOcclusionUpdates()) {
     return;
   }
 
@@ -479,7 +512,7 @@ bool WindowHasOpaqueFrameBackgroundView(NSView* view) {
     // state so that observers (e.g. the browser compositor) are not left
     // thinking it is occluded. The window has no webcontents to update; one
     // added back later starts out visible until the next update pass.
-    if (![window containsWebContentsViewCocoa]) {
+    if (!WindowHasTrackedContent(window)) {
       [window setOccluded:NO];
       continue;
     }
@@ -631,7 +664,7 @@ bool WindowHasOpaqueFrameBackgroundView(NSView* view) {
 
 @end
 
-@implementation NSWindow (WebContentsOcclusionCheckerMac)
+@implementation NSWindow (WindowOcclusionCheckerMac)
 
 - (BOOL)isOccluded {
   return objc_getAssociatedObject(self, kWindowIsOccludedKey) != nil;
@@ -646,7 +679,7 @@ bool WindowHasOpaqueFrameBackgroundView(NSView* view) {
     objc_setAssociatedObject(self, kWindowIsOccludedKey, flag ? @YES : nil,
                              OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 
-    NSString* occlusionCheckerKey = [WebContentsOcclusionCheckerMac className];
+    NSString* occlusionCheckerKey = [WindowOcclusionCheckerMac className];
     [[NSNotificationCenter defaultCenter]
         postNotificationName:NSWindowDidChangeOcclusionStateNotification
                       object:self

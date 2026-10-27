@@ -2,28 +2,38 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_APP_SHIM_REMOTE_COCOA_WEB_CONTENTS_OCCLUSION_CHECKER_MAC_H_
-#define CONTENT_APP_SHIM_REMOTE_COCOA_WEB_CONTENTS_OCCLUSION_CHECKER_MAC_H_
+#ifndef COMPONENTS_REMOTE_COCOA_APP_SHIM_WINDOW_OCCLUSION_CHECKER_MAC_H_
+#define COMPONENTS_REMOTE_COCOA_APP_SHIM_WINDOW_OCCLUSION_CHECKER_MAC_H_
 
 #import <AppKit/AppKit.h>
 
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
-#import "content/app_shim_remote_cocoa/web_contents_view_cocoa.h"
+#include "components/remote_cocoa/app_shim/remote_cocoa_app_shim_export.h"
 
-// The WebContentsOcclusionCheckerMac performs window occlusion checks
+// The WindowOcclusionCheckerMac performs window occlusion checks
 // for browser windows of similar size, a case macOS's occlusion
-// detection system cannot handle (see crbug.com/883031). It initiates
+// detection system cannot handle (see crbug.com/40593221). It initiates
 // these checks on window state change events (ordering, closing, etc.).
 //
 // The checker makes it easy to learn of window occlusion events from
 // both macOS and from its own occlusion checks. Interested parties should
 // watch for NSWindowDidChangeOcclusionStateNotification notifications
 // where the object is the affected window and the userInfo contains the
-// key "WebContentsOcclusionCheckerMac".
-@interface WebContentsOcclusionCheckerMac : NSObject
+// key "WindowOcclusionCheckerMac".
+REMOTE_COCOA_APP_SHIM_EXPORT
+@interface WindowOcclusionCheckerMac : NSObject
 
 + (instancetype)sharedInstance;
+
+// Configures the embedder predicates used to determine whether `window`
+// contains tracked content and whether occlusion updates may run (e.g. not
+// during browser shutdown).
+// TODO(crbug.com/505314004): Remove this temporary predicate registration in
+// favor of explicit window tracking (-addTrackedWindow: /
+// -removeTrackedWindow:).
++ (void)setWindowPredicate:(BOOL (*)(NSWindow*))windowPredicate
+    canPerformUpdatesPredicate:(BOOL (*)())canPerformUpdatesPredicate;
 
 // API exposed for testing.
 
@@ -37,7 +47,7 @@
 // Resets the state of `sharedInstance` during tests.
 + (void)resetSharedInstanceForTesting;
 
-// Schedules an occlusion state update for all windows with web contentses.
+// Schedules an occlusion state update for all windows with web contentses.
 - (void)scheduleOcclusionStateUpdates;
 
 // Updates the occlusion states of all windows with web contentses.
@@ -48,8 +58,8 @@
 
 @end
 
-@interface NSWindow (WebContentsOcclusionCheckerMac)
+@interface NSWindow (WindowOcclusionCheckerMac)
 @property(nonatomic, assign, getter=isOccluded) BOOL occluded;
 @end
 
-#endif  // CONTENT_APP_SHIM_REMOTE_COCOA_WEB_CONTENTS_OCCLUSION_CHECKER_MAC_H_
+#endif  // COMPONENTS_REMOTE_COCOA_APP_SHIM_WINDOW_OCCLUSION_CHECKER_MAC_H_

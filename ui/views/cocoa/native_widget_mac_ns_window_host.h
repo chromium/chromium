@@ -642,7 +642,7 @@ class VIEWS_EXPORT NativeWidgetMacNSWindowHost
   // Number of active video capture locks.
   uint32_t video_capture_count_ = 0;
 
-  // Debounced occlusion state, as reported by WebContentsOcclusionCheckerMac.
+  // Debounced occlusion state, as reported by WindowOcclusionCheckerMac.
   // Only affects compositor visibility (behind
   // `features::kNotifyCompositorOfWindowOcclusionOnMacOs`), not
   // IsVisibleOnScreen().

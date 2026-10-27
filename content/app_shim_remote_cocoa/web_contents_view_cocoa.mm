@@ -11,7 +11,7 @@
 #import "base/mac/mac_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/threading/thread_restrictions.h"
-#import "content/app_shim_remote_cocoa/web_contents_occlusion_checker_mac.h"
+#import "components/remote_cocoa/app_shim/window_occlusion_checker_mac.h"
 #import "content/app_shim_remote_cocoa/web_drag_source_mac.h"
 #import "content/browser/web_contents/web_contents_view_mac.h"
 #import "content/browser/web_contents/web_drag_dest_mac.h"
@@ -137,8 +137,19 @@ gfx::PointF GetSanitizedFlippedPoint(NSPoint point, CGFloat height) {
 }
 
 + (void)initialize {
-  // Create the WebContentsOcclusionCheckerMac shared instance.
-  [WebContentsOcclusionCheckerMac sharedInstance];
+  [WindowOcclusionCheckerMac setWindowPredicate:[](NSWindow* window) -> BOOL {
+    return [window containsWebContentsViewCocoa];
+  }
+      canPerformUpdatesPredicate:[]() -> BOOL {
+        auto* content_client = content::GetContentClient();
+        if (!content_client) {
+          return NO;
+        }
+        auto* browser = content_client->browser();
+        return !(browser && browser->IsShuttingDown());
+      }];
+  // Create the WindowOcclusionCheckerMac shared instance.
+  [WindowOcclusionCheckerMac sharedInstance];
 }
 
 - (instancetype)initWithViewsHostableView:(ui::ViewsHostableView*)v {
@@ -573,7 +584,7 @@ gfx::PointF GetSanitizedFlippedPoint(NSPoint point, CGFloat height) {
       // If removing this view leaves `oldWindow` without any web contents, an
       // update pass will clear its occluded state (whereas a synchronous tab
       // switch will attach the replacement before the pass runs).
-      [[WebContentsOcclusionCheckerMac sharedInstance]
+      [[WindowOcclusionCheckerMac sharedInstance]
           scheduleOcclusionStateUpdates];
     }
   }
@@ -589,7 +600,7 @@ gfx::PointF GetSanitizedFlippedPoint(NSPoint point, CGFloat height) {
 - (void)windowChangedOcclusionState:(NSNotification*)aNotification {
   // Only respond to occlusion notifications sent by the occlusion checker.
   NSDictionary* userInfo = [aNotification userInfo];
-  NSString* occlusionCheckerKey = [WebContentsOcclusionCheckerMac className];
+  NSString* occlusionCheckerKey = [WindowOcclusionCheckerMac className];
   if (userInfo[occlusionCheckerKey] != nil)
     [self updateWebContentsVisibility];
 }

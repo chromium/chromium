@@ -2011,7 +2011,7 @@ void NativeWidgetNSWindowBridge::SetCALayerParams(
     // inform observers that the window's occlusion state has changed. AppKit
     // does not post notifications when `alphaValue` changes, so without this
     // notification, manual occlusion detection (e.g.
-    // WebContentsOcclusionCheckerMac) could miss that this window can now
+    // WindowOcclusionCheckerMac) could miss that this window can now
     // occlude other windows beneath it which is needed for glass frame.
     [[NSNotificationCenter defaultCenter]
         postNotificationName:NSWindowDidChangeOcclusionStateNotification

@@ -1245,7 +1245,7 @@ TEST_F(NativeWidgetMacTest, CompositorVisibilityOnSpaceChange) {
 
 // Tests for compositor visibility driven by window occlusion
 // (`features::kNotifyCompositorOfWindowOcclusionOnMacOs`). Occlusion is
-// injected through the bridge, as WebContentsOcclusionCheckerMac would.
+// injected through the bridge, as WindowOcclusionCheckerMac would.
 class NativeWidgetMacOcclusionTest : public NativeWidgetMacTest {
  public:
   NativeWidgetMacOcclusionTest()

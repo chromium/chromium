@@ -1268,8 +1268,8 @@ void NativeWidgetMacNSWindowHost::OnVisibilityChanged(bool window_visible) {
   // On hide, cancel a pending hide; occluded reports are ignored while hidden
   // (see OnWindowOcclusionChanged()), while an already-applied state is kept.
   // Becoming visible (show, restore from minimize) invalidates any occlusion
-  // state computed while the window was hidden; WebContentsOcclusionCheckerMac
-  // will report the current state on its next update pass.
+  // state computed while the window was hidden; WindowOcclusionCheckerMac will
+  // report the current state on its next update pass.
   occlusion_hide_timer_.Stop();
   if (window_visible) {
     ResetOcclusion(/*update_compositor=*/false);
@@ -1308,9 +1308,9 @@ void NativeWidgetMacNSWindowHost::OnSpaceActivationChanged(
 }
 
 void NativeWidgetMacNSWindowHost::OnWindowOcclusionChanged(bool occluded) {
-  // Note: WebContentsOcclusionCheckerMac sends `occluded = true` on every
-  // update pass while the window is occluded, so redundant `true` calls are
-  // expected here.
+  // Note: WindowOcclusionCheckerMac sends `occluded = true` on every update
+  // pass while the window is occluded, so redundant `true` calls are expected
+  // here.
   if (!base::FeatureList::IsEnabled(
           views::features::kNotifyCompositorOfWindowOcclusionOnMacOs)) {
     return;
