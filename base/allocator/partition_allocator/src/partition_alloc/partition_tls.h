@@ -18,6 +18,7 @@
 #include "partition_alloc/partition_alloc_check.h"
 #include "partition_alloc/partition_alloc_config.h"
 #include "partition_alloc/partition_lock.h"
+#include "partition_alloc/partition_stats.h"
 
 #if PA_BUILDFLAG(IS_POSIX) || PA_BUILDFLAG(IS_FUCHSIA)
 #include <pthread.h>
@@ -44,6 +45,9 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionTlsRegistry {
   void Register(PartitionTls* tls);
   void Unregister(PartitionTls* tls);
 
+  // Prints/accumulates statistics for all PartitionTls, or this thread's only.
+  void DumpStats(bool my_thread_only, ThreadCacheStats* stats);
+
   static internal::Lock& GetLock() { return Instance().lock_; }
 
   bool IsRegisteredForTesting(PartitionTls* tls);
@@ -65,18 +69,59 @@ constexpr inline size_t kMaxThreadCacheIndex = 1;
 constexpr inline uintptr_t kTombstone = 1;
 constexpr inline uintptr_t kTombstoneMask = ~kTombstone;
 
+// Byte size reserved per `ThreadCache` slot inside `PartitionTls`.
+//
+// `PartitionTls` embeds raw storage for `ThreadCache` by value to avoid an
+// extra pointer indirection on allocation fast paths, while keeping this header
+// standalone (`ThreadCache` is incomplete here because
+// `thread_cache_internal.h` includes `partition_tls.h`).
+// `kThreadCacheStorageSize` must therefore match `sizeof(ThreadCache)` for the
+// active build configuration:
+// - Base size (1400 B on 64-bit, 800 B on 32-bit): `ThreadCache` fields,
+//   `buckets_` (72 * 16 B on 64-bit, 80 * 8 B on 32-bit), and embedded
+//   `SchedulerLoopQuarantineBranch` (160 B on 64-bit, 104 B on 32-bit; 32-bit
+//   x86 POSIX uses 4-byte `uint64_t` struct alignment and is 4-8 B smaller).
+// - `ENABLE_PARTITION_LOCK_PRIORITY_INHERITANCE` (+8 B on 64-bit): PI futex
+//   fields in `SpinningMutex` inside `SchedulerLoopQuarantineBranch::lock_`.
+// - `DCHECKS_ARE_ON` (+8 B): `SchedulerLoopQuarantineBranch::being_destructed_`
+//   (and `ThreadCache::is_in_thread_cache_` on 32-bit).
+// - `EXPENSIVE_DCHECKS_ARE_ON` / `ENABLE_PARTITION_LOCK_REENTRANCY_CHECK`
+//   (+8 B on 64-bit): `Lock::owning_thread_ref_` inside
+//   `SchedulerLoopQuarantineBranch::lock_` (fits in existing padding on
+//   32-bit).
+//
+// Two-way `static_assert`s in `ThreadCache::Create()` (`thread_cache.cc`)
+// enforce both `sizeof(ThreadCache) <= kThreadCacheStorageSize` and
+// `kThreadCacheStorageSize - sizeof(ThreadCache) <= 8`, so any change to
+// `sizeof(ThreadCache)` triggers a compile-time failure pointing here.
 #if PA_BUILDFLAG(HAS_64_BIT_POINTERS)
 constexpr inline size_t kThreadCacheStorageSize =
-    1512 + (PA_CONFIG(THREAD_CACHE_ALLOC_STATS) ? 896 : 0) +
-    ((PA_BUILDFLAG(DCHECKS_ARE_ON) ||
+    1400 + (PA_BUILDFLAG(ENABLE_PARTITION_LOCK_PRIORITY_INHERITANCE) ? 8 : 0) +
+    (PA_BUILDFLAG(DCHECKS_ARE_ON) ? 8 : 0) +
+    ((PA_BUILDFLAG(EXPENSIVE_DCHECKS_ARE_ON) ||
       PA_BUILDFLAG(ENABLE_PARTITION_LOCK_REENTRANCY_CHECK))
          ? 8
          : 0);
 #else
 constexpr inline size_t kThreadCacheStorageSize =
-    960 + (PA_CONFIG(THREAD_CACHE_ALLOC_STATS) ? 960 : 0);
+    800 + (PA_BUILDFLAG(DCHECKS_ARE_ON) ? 8 : 0);
 #endif
 
+// Per-thread state allocated as a single block in the internal partition:
+//
+//   +---------------------------------------------------------------+
+//   | next_, prev_, is_registered (+ padding to 8-byte alignment)   |
+//   +---------------------------------------------------------------+
+//   | thread_cache_storage[0 .. kMaxThreadCacheIndex - 1]           |
+//   |   Each slot is `kThreadCacheStorageSize` zero-initialized     |
+//   |   bytes where `ThreadCache::Create()` constructs a            |
+//   |   `ThreadCache` in-place via placement new (and `IsValid()`   |
+//   |   checks whether `root_` is non-null).                        |
+//   +---------------------------------------------------------------+
+//   | thread_cache_stats                                            |
+//   +---------------------------------------------------------------+
+//   | disallow_allocations (optional)                               |
+//   +---------------------------------------------------------------+
 struct PartitionTls {
   // Pointers for PartitionTlsRegistry's intrusive doubly-linked list.
   PartitionTls* next_ PA_GUARDED_BY(PartitionTlsRegistry::GetLock()) = nullptr;
@@ -85,6 +130,7 @@ struct PartitionTls {
 
   alignas(uint64_t) std::array<std::array<uint8_t, kThreadCacheStorageSize>,
                                kMaxThreadCacheIndex> thread_cache_storage = {};
+  ThreadCacheStats thread_cache_stats = {};
 #if PA_CONFIG(HAS_ALLOCATION_GUARD)
   bool disallow_allocations = false;
 #endif
@@ -93,8 +139,13 @@ struct PartitionTls {
     return reinterpret_cast<ThreadCache*>(&thread_cache_storage[index]);
   }
 
+  PA_ALWAYS_INLINE ThreadCacheStats* GetThreadCacheStats() {
+    return &thread_cache_stats;
+  }
+
   PA_ALWAYS_INLINE void ClearThreadCache(size_t index) {
     thread_cache_storage[index].fill(0);
+    thread_cache_stats = {};
   }
 };
 

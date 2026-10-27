@@ -9,6 +9,7 @@
 #include <cstdint>
 
 #include "partition_alloc/buildflags.h"
+#include "partition_alloc/partition_alloc_base/compiler_specific.h"
 #include "partition_alloc/partition_alloc_base/component_export.h"
 #include "partition_alloc/partition_alloc_config.h"
 
@@ -43,6 +44,27 @@ struct ThreadCacheStats {
 #if PA_CONFIG(THREAD_CACHE_ALLOC_STATS)
   std::array<uint64_t, BucketIndexLookup::kNumBuckets + 1> allocs_per_bucket_;
 #endif  // PA_CONFIG(THREAD_CACHE_ALLOC_STATS)
+
+  PA_ALWAYS_INLINE void Accumulate(const ThreadCacheStats& other) {
+    alloc_count += other.alloc_count;
+    alloc_hits += other.alloc_hits;
+    alloc_misses += other.alloc_misses;
+
+    alloc_miss_empty += other.alloc_miss_empty;
+    alloc_miss_too_large += other.alloc_miss_too_large;
+
+    cache_fill_count += other.cache_fill_count;
+    cache_fill_hits += other.cache_fill_hits;
+    cache_fill_misses += other.cache_fill_misses;
+
+    batch_fill_count += other.batch_fill_count;
+
+#if PA_CONFIG(THREAD_CACHE_ALLOC_STATS)
+    for (size_t i = 0; i < BucketIndexLookup::kNumBuckets + 1; i++) {
+      allocs_per_bucket_[i] += other.allocs_per_bucket_[i];
+    }
+#endif
+  }
 };
 
 // Per-thread allocation statistics. Only covers allocations made through the

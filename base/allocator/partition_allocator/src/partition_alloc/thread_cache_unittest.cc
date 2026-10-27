@@ -729,8 +729,8 @@ class ThreadDelegateForMultipleThreadCachesAccounting
               stats.metadata_overhead - wqthread_stats_.metadata_overhead);
 
     ThreadCacheStats this_thread_cache_stats{};
-    root_->thread_cache_for_testing()->AccumulateStats(
-        &this_thread_cache_stats);
+    this_thread_cache_stats.Accumulate(
+        root_->thread_cache_for_testing()->stats_for_testing());
     EXPECT_EQ(alloc_count_ + this_thread_cache_stats.alloc_count,
               stats.alloc_count - wqthread_stats_.alloc_count);
   }

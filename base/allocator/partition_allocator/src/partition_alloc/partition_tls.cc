@@ -57,6 +57,24 @@ bool PartitionTlsRegistry::IsRegisteredForTesting(PartitionTls* tls) {
   return false;
 }
 
+void PartitionTlsRegistry::DumpStats(bool my_thread_only,
+                                     ThreadCacheStats* stats) {
+  *stats = {};
+  if (my_thread_only) {
+    auto* tls = internal::GetTls();
+    if (tls) {
+      stats->Accumulate(tls->thread_cache_stats);
+    }
+  } else {
+    internal::ScopedGuard scoped_locker(GetLock());
+    PartitionTls* tls = list_head_;
+    while (tls) {
+      stats->Accumulate(tls->thread_cache_stats);
+      tls = tls->next_;
+    }
+  }
+}
+
 void PartitionTlsRegistry::ResetForTesting() {
   internal::ScopedGuard scoped_locker(GetLock());
   list_head_ = nullptr;

@@ -310,7 +310,6 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) ThreadCache {
   void Purge();
   // Amount of cached memory for this thread's cache, in bytes.
   size_t CachedMemory() const;
-  void AccumulateStats(ThreadCacheStats* stats) const;
 
   const ThreadAllocStats& thread_alloc_stats() const {
     return thread_alloc_stats_;
@@ -364,7 +363,9 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) ThreadCache {
     return next_;
   }
 
-  ThreadCacheStats& stats_for_testing() { return stats_; }
+  ThreadCacheStats& stats_for_testing() {
+    return GetEnclosingTls()->thread_cache_stats;
+  }
 
   PartitionRoot* GetRoot();
 
@@ -395,6 +396,32 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) ThreadCache {
 
   static void* operator new(size_t count);
   static void operator delete(void* ptr);
+
+  // Returns the `PartitionTls` of the thread this `ThreadCache` belongs to.
+  //
+  // Every live `ThreadCache` is constructed in-place via placement new inside
+  // `PartitionTls::thread_cache_storage[index]` (see `ThreadCache::Create()`
+  // and the layout comment on `PartitionTls` in `partition_tls.h`). When
+  // `kMaxThreadCacheIndex == 1`, `this` is always
+  // `&tls->thread_cache_storage[0]`, which sits at fixed offset
+  // `offsetof(PartitionTls, thread_cache_storage)` inside `PartitionTls`.
+  // Subtracting that offset recovers `tls` via compile-time pointer arithmetic
+  // without calling `GetTls()` (which performs an OS TLS lookup on most
+  // platforms). Since `offsetof(PartitionTls, thread_cache_stats)` is also a
+  // compile-time constant, `GetEnclosingTls()->thread_cache_stats.foo` folds
+  // into a single memory operand with a constant displacement from `this`.
+  PA_RETURNS_NONNULL PA_ALWAYS_INLINE PartitionTls* GetEnclosingTls() {
+    PA_DCHECK(IsValid(this));
+    if constexpr (internal::kMaxThreadCacheIndex == 1) {
+      return reinterpret_cast<PartitionTls*>(
+          reinterpret_cast<uintptr_t>(this) -
+          offsetof(PartitionTls, thread_cache_storage));
+    } else {
+      // With multiple slots, `this` is `&tls->thread_cache_storage[i]` for an
+      // `i` not stored in `ThreadCache`, so fall back to the TLS lookup.
+      return internal::GetTls();
+    }
+  }
 
   void PurgeInternal();
 
@@ -435,7 +462,6 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) ThreadCache {
 #if PA_BUILDFLAG(HAS_64_BIT_POINTERS)
   const internal::PoolOffsetLookup offset_lookup_;
 #endif  // PA_BUILDFLAG(HAS_64_BIT_POINTERS)
-  ThreadCacheStats stats_;
   ThreadAllocStats thread_alloc_stats_;
 
   // Buckets are quite big, though each is only 2 pointers.
@@ -467,10 +493,11 @@ PA_ALWAYS_INLINE std::optional<size_t> ThreadCache::MaybePutInCache(
     UntaggedSlotStart slot_start,
     size_t bucket_index) {
   PA_REENTRANCY_GUARD(is_in_thread_cache_);
-  PA_INCREMENT_COUNTER(stats_.cache_fill_count);
+  PA_INCREMENT_COUNTER(GetEnclosingTls()->thread_cache_stats.cache_fill_count);
 
   if (bucket_index >= active_bucket_count_) [[unlikely]] {
-    PA_INCREMENT_COUNTER(stats_.cache_fill_misses);
+    PA_INCREMENT_COUNTER(
+        GetEnclosingTls()->thread_cache_stats.cache_fill_misses);
     return std::nullopt;
   }
 
@@ -480,7 +507,7 @@ PA_ALWAYS_INLINE std::optional<size_t> ThreadCache::MaybePutInCache(
 
   PutInBucket(bucket, slot_start);
   cached_memory_ += bucket.slot_size;
-  PA_INCREMENT_COUNTER(stats_.cache_fill_hits);
+  PA_INCREMENT_COUNTER(GetEnclosingTls()->thread_cache_stats.cache_fill_hits);
 
   // Relaxed ordering: we don't care about having an up-to-date or consistent
   // value, just want it to not change while we are using it, hence using
@@ -502,25 +529,28 @@ PA_ALWAYS_INLINE std::optional<size_t> ThreadCache::MaybePutInCache(
 PA_ALWAYS_INLINE std::optional<SlotAddressAndSize> ThreadCache::GetFromCache(
     size_t bucket_index) {
 #if PA_CONFIG(THREAD_CACHE_ALLOC_STATS)
-  stats_.allocs_per_bucket_[bucket_index]++;
+  PA_INCREMENT_COUNTER(
+      GetEnclosingTls()->thread_cache_stats.allocs_per_bucket_[bucket_index]);
 #endif
 
   PA_REENTRANCY_GUARD(is_in_thread_cache_);
-  PA_INCREMENT_COUNTER(stats_.alloc_count);
+  PA_INCREMENT_COUNTER(GetEnclosingTls()->thread_cache_stats.alloc_count);
   // Only handle "small" allocations.
   if (bucket_index >= active_bucket_count_) [[unlikely]] {
-    PA_INCREMENT_COUNTER(stats_.alloc_miss_too_large);
-    PA_INCREMENT_COUNTER(stats_.alloc_misses);
+    PA_INCREMENT_COUNTER(GetEnclosingTls()->thread_cache_stats.alloc_misses);
+    PA_INCREMENT_COUNTER(
+        GetEnclosingTls()->thread_cache_stats.alloc_miss_too_large);
     return std::nullopt;
   }
 
   auto& bucket = buckets_[bucket_index];
   if (bucket.freelist_head) [[likely]] {
-    PA_INCREMENT_COUNTER(stats_.alloc_hits);
+    PA_INCREMENT_COUNTER(GetEnclosingTls()->thread_cache_stats.alloc_hits);
   } else {
     PA_DCHECK(bucket.count == 0);
-    PA_INCREMENT_COUNTER(stats_.alloc_miss_empty);
-    PA_INCREMENT_COUNTER(stats_.alloc_misses);
+    PA_INCREMENT_COUNTER(GetEnclosingTls()->thread_cache_stats.alloc_misses);
+    PA_INCREMENT_COUNTER(
+        GetEnclosingTls()->thread_cache_stats.alloc_miss_empty);
 
     FillBucket(bucket_index);
 

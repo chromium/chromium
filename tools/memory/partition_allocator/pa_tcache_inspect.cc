@@ -143,6 +143,10 @@ class ThreadCacheInspector {
     return thread_caches_;
   }
 
+  const std::vector<ThreadCacheStats>& thread_cache_stats() const {
+    return thread_cache_stats_;
+  }
+
   static bool should_purge(const RawBuffer<internal::ThreadCache>& tcache) {
     return tcache.get()->should_purge_;
   }
@@ -158,6 +162,7 @@ class ThreadCacheInspector {
   RemoteProcessMemoryReader reader_;
   RawBuffer<internal::ThreadCacheRegistry> registry_;
   std::vector<RawBuffer<internal::ThreadCache>> thread_caches_;
+  std::vector<ThreadCacheStats> thread_cache_stats_;
 };
 
 class PartitionRootInspector {
@@ -199,6 +204,7 @@ ThreadCacheInspector::ThreadCacheInspector(uintptr_t registry_addr, pid_t pid)
 // really thread-safe.
 bool ThreadCacheInspector::GetAllThreadCaches() NO_THREAD_SAFETY_ANALYSIS {
   thread_caches_.clear();
+  thread_cache_stats_.clear();
 
   // This is going to take a while, make sure that the metadata don't change.
   ScopedSigStopper stopper{pid_};
@@ -218,7 +224,18 @@ bool ThreadCacheInspector::GetAllThreadCaches() NO_THREAD_SAFETY_ANALYSIS {
       LOG(WARNING) << "Failed to read a ThreadCache";
       return false;
     }
+    uintptr_t stats_addr =
+        reinterpret_cast<uintptr_t>(head) -
+        offsetof(internal::PartitionTls, thread_cache_storage) +
+        offsetof(internal::PartitionTls, thread_cache_stats);
+    auto stats =
+        RawBuffer<ThreadCacheStats>::ReadFromProcessMemory(reader_, stats_addr);
+    if (!stats.has_value()) {
+      LOG(WARNING) << "Failed to read ThreadCacheStats";
+      return false;
+    }
     thread_caches_.push_back(tcache.value());
+    thread_cache_stats_.push_back(*stats->get());
     head = tcache->get()->next_;
   }
   return true;
@@ -373,11 +390,14 @@ void DisplayPerThreadData(
             << "Thread Name         Size\tPurge\n"
             << std::string(80, '-') << "\n";
   ThreadCacheStats all_threads_stats = {0};
-  for (const auto& tcache : inspector.thread_caches()) {
-    ThreadCacheStats stats = {0};
-    // No alloc stats, they reach into tcache->root_, which is not valid.
-    tcache.get()->AccumulateStats(&stats);
-    tcache.get()->AccumulateStats(&all_threads_stats);
+  for (size_t i = 0; i < inspector.thread_caches().size(); i++) {
+    const auto& tcache = inspector.thread_caches()[i];
+    ThreadCacheStats stats = inspector.thread_cache_stats()[i];
+    stats.bucket_total_memory += tcache.get()->CachedMemory();
+    stats.metadata_overhead += sizeof(internal::ThreadCache);
+    all_threads_stats.Accumulate(stats);
+    all_threads_stats.bucket_total_memory += stats.bucket_total_memory;
+    all_threads_stats.metadata_overhead += stats.metadata_overhead;
     uint64_t count = stats.alloc_count;
     uint64_t hit_rate = count ? (100 * stats.alloc_hits) / count : 0;
     uint64_t too_large = count ? (100 * stats.alloc_miss_too_large) / count : 0;

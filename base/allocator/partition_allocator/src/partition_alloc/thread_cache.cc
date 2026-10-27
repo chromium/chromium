@@ -122,8 +122,7 @@ void ThreadCacheRegistry::DumpStats(bool my_thread_only,
                                     ThreadCacheStats* stats,
                                     size_t index) {
   ThreadCache::EnsureThreadSpecificDataInitialized();
-  PA_UNSAFE_TODO(
-      memset(reinterpret_cast<void*>(stats), 0, sizeof(ThreadCacheStats)));
+  PartitionTlsRegistry::Instance().DumpStats(my_thread_only, stats);
 
   internal::ScopedGuard scoped_locker(GetLock());
   if (my_thread_only) {
@@ -131,18 +130,16 @@ void ThreadCacheRegistry::DumpStats(bool my_thread_only,
     if (!ThreadCache::IsValid(tcache)) {
       return;
     }
-    tcache->AccumulateStats(stats);
+    stats->bucket_total_memory += tcache->CachedMemory();
+    stats->metadata_overhead += sizeof(ThreadCache);
   } else {
     ThreadCache* tcache = list_head_;
     while (tcache) {
       if (tcache->root_->settings_.thread_cache_index != index) {
         continue;
       }
-      // Racy, as other threads are still allocating. This is not an issue,
-      // since we are only interested in statistics. However, this means that
-      // count is not necessarily equal to hits + misses for the various types
-      // of events.
-      tcache->AccumulateStats(stats);
+      stats->bucket_total_memory += tcache->CachedMemory();
+      stats->metadata_overhead += sizeof(ThreadCache);
       tcache = tcache->next_;
     }
   }
@@ -506,7 +503,13 @@ ThreadCache* ThreadCache::Create(PartitionRoot* root, size_t index) {
     return nullptr;
   }
 
-  static_assert(sizeof(ThreadCache) <= internal::kThreadCacheStorageSize);
+  static_assert(alignof(ThreadCache) <= alignof(uint64_t));
+  static_assert(sizeof(ThreadCache) <= internal::kThreadCacheStorageSize,
+                "ThreadCache is larger than kThreadCacheStorageSize; update "
+                "kThreadCacheStorageSize in partition_tls.h.");
+  static_assert(internal::kThreadCacheStorageSize - sizeof(ThreadCache) <= 8,
+                "kThreadCacheStorageSize is too large for ThreadCache; update "
+                "kThreadCacheStorageSize in partition_tls.h.");
   auto* tcache = tls->GetThreadCache(index);
   ::new (tcache) ThreadCache(root);
 
@@ -539,8 +542,6 @@ ThreadCache::ThreadCache(PartitionRoot* root)
       prev_(nullptr),
       scheduler_loop_quarantine_branch_(root, this) {
   ThreadCacheRegistry::Instance().RegisterThreadCache(this);
-
-  PA_UNSAFE_TODO(memset(&stats_, 0, sizeof(stats_)));
 
   for (int index = 0; index < kBucketCount; index++) {
     const auto& root_bucket = PA_UNSAFE_TODO(root->buckets_[index]);
@@ -627,7 +628,7 @@ void ThreadCache::FillBucket(size_t bucket_index) {
   // clearing which would greatly increase calls to the central allocator. (3)
   // tries to keep memory usage low. So clearing half of the bucket, and filling
   // a quarter of it are sensible defaults.
-  PA_INCREMENT_COUNTER(stats_.batch_fill_count);
+  PA_INCREMENT_COUNTER(GetEnclosingTls()->thread_cache_stats.batch_fill_count);
 
   Bucket& bucket = buckets_[bucket_index];
   // Some buckets_ may have a limit lower than |kBatchFillRatio|, but we still
@@ -768,21 +769,7 @@ void ThreadCache::FreeAfter(internal::FreelistEntry* head, size_t slot_size) {
 }
 
 void ThreadCache::ResetForTesting() {
-  stats_.alloc_count = 0;
-  stats_.alloc_hits = 0;
-  stats_.alloc_misses = 0;
-
-  stats_.alloc_miss_empty = 0;
-  stats_.alloc_miss_too_large = 0;
-
-  stats_.cache_fill_count = 0;
-  stats_.cache_fill_hits = 0;
-  stats_.cache_fill_misses = 0;
-
-  stats_.batch_fill_count = 0;
-
-  stats_.bucket_total_memory = 0;
-  stats_.metadata_overhead = 0;
+  GetEnclosingTls()->thread_cache_stats = {};
 
   Purge();
   PA_CHECK(cached_memory_ == 0u);
@@ -796,34 +783,6 @@ size_t ThreadCache::CachedMemory() const {
   }
 
   return total;
-}
-
-void ThreadCache::AccumulateStats(ThreadCacheStats* stats) const {
-  stats->alloc_count += stats_.alloc_count;
-  stats->alloc_hits += stats_.alloc_hits;
-  stats->alloc_misses += stats_.alloc_misses;
-
-  stats->alloc_miss_empty += stats_.alloc_miss_empty;
-  stats->alloc_miss_too_large += stats_.alloc_miss_too_large;
-
-  stats->cache_fill_count += stats_.cache_fill_count;
-  stats->cache_fill_hits += stats_.cache_fill_hits;
-  stats->cache_fill_misses += stats_.cache_fill_misses;
-
-  stats->batch_fill_count += stats_.batch_fill_count;
-
-#if PA_CONFIG(THREAD_CACHE_ALLOC_STATS)
-  for (size_t i = 0; i < BucketIndexLookup::kNumBuckets + 1; i++) {
-    stats->allocs_per_bucket_[i] += stats_.allocs_per_bucket_[i];
-  }
-#endif  // PA_CONFIG(THREAD_CACHE_ALLOC_STATS)
-
-  // cached_memory_ is not necessarily equal to |CachedMemory()| here, since
-  // this function can be called racily from another thread, to collect
-  // statistics. Hence no DCHECK_EQ(CachedMemory(), cached_memory_).
-  stats->bucket_total_memory += cached_memory_;
-
-  stats->metadata_overhead += sizeof(*this);
 }
 
 void ThreadCache::SetShouldPurge() {
