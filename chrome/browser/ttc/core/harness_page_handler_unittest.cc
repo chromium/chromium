@@ -40,6 +40,8 @@ class FakeConversation : public Conversation {
       const std::string& title,
       const optimization_guide::proto::AnnotatedPageContent& apc) override {}
   void OnPageContextInvalidated() override {}
+  void SetMicMuted(bool muted) override {}
+  bool IsMicMuted() const override { return false; }
 
  private:
   std::unique_ptr<AudioController> audio_controller_;

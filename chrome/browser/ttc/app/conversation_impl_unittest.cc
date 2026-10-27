@@ -478,4 +478,43 @@ TEST_F(ConversationImplTest, SessionGoesLiveOnlyOnceBackendInitialized) {
   EXPECT_EQ(session_controller_.session_initialized_count(), 1);
 }
 
+TEST_F(ConversationImplTest, MuteStopsAndResumesCapture) {
+  ConversationImpl& conversation = CreateConversation();
+  conversation.Start();
+  conversation.OnBackendInitialized();
+  EXPECT_TRUE(audio_controller().is_capturing());
+  EXPECT_FALSE(conversation.IsMicMuted());
+
+  conversation.SetMicMuted(true);
+  EXPECT_TRUE(conversation.IsMicMuted());
+  EXPECT_FALSE(audio_controller().is_capturing());
+
+  conversation.SetMicMuted(false);
+  EXPECT_FALSE(conversation.IsMicMuted());
+  EXPECT_TRUE(audio_controller().is_capturing());
+}
+
+TEST_F(ConversationImplTest, AudioCapturedBeforeMuteIsNotSent) {
+  ConversationImpl& conversation = CreateConversation();
+  conversation.Start();
+  conversation.OnBackendInitialized();
+
+  // A full chunk is captured and posted to the main thread...
+  auto bus = media::AudioBus::Create(1, 1600);
+  std::ranges::fill(bus->channel(0), 0.25f);
+  audio_controller().Capture(bus.get(), base::TimeTicks::Now(), {}, 1.0);
+
+  // ...but the user mutes before it arrives.
+  EXPECT_CALL(backend(), SendAudioChunk(testing::_)).Times(0);
+  conversation.SetMicMuted(true);
+  // Runs the tasks posted so far, including the one delivering the chunk.
+  base::RunLoop run_loop;
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, run_loop.QuitClosure());
+  run_loop.Run();
+
+  ASSERT_TRUE(session_controller_.last_audio_level().has_value());
+  EXPECT_FLOAT_EQ(*session_controller_.last_audio_level(), 0.0f);
+}
+
 }  // namespace ttc

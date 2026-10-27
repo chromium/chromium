@@ -83,6 +83,15 @@ class SessionControllerImpl : public SessionController,
 
   actor::TaskId GetActorTaskId() const;
 
+  // Mutes or unmutes the user's microphone. While muted, no audio is captured
+  // or sent to the model. Only a live session can be muted, and it goes live
+  // unmuted. Returns whether the state changed: false unless the session is
+  // live, or if the microphone already was in that state.
+  bool SetMicMuted(bool muted);
+  // Whether the microphone of the live session is muted. False if the session
+  // isn't live.
+  bool IsMicMuted() const;
+
   SessionView& session_view() { return CHECK_DEREF(session_view_.get()); }
   Conversation& conversation() { return CHECK_DEREF(conversation_.get()); }
 

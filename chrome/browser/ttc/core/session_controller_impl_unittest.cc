@@ -267,4 +267,46 @@ TEST_F(TtcSessionControllerImplTest,
 }
 #endif  // BUILDFLAG(ENABLE_TTC_WEBUI)
 
+TEST_F(TtcSessionControllerImplTest, SetMicMuted) {
+  SessionControllerImpl controller(*service_);
+  controller.SetSessionLifecycle(SessionLifecycle::kLive);
+  bool muted = false;
+  ON_CALL(*mock_conversation_, IsMicMuted()).WillByDefault([&muted] {
+    return muted;
+  });
+  EXPECT_CALL(*mock_conversation_, SetMicMuted(true))
+      .WillOnce([&muted](bool value) { muted = value; });
+  EXPECT_CALL(*mock_conversation_, SetMicMuted(false))
+      .WillOnce([&muted](bool value) { muted = value; });
+
+  EXPECT_TRUE(controller.SetMicMuted(true));
+  EXPECT_TRUE(controller.IsMicMuted());
+  // Already muted: nothing to do.
+  EXPECT_FALSE(controller.SetMicMuted(true));
+  EXPECT_TRUE(controller.SetMicMuted(false));
+  EXPECT_FALSE(controller.IsMicMuted());
+}
+
+TEST_F(TtcSessionControllerImplTest, MicCanOnlyBeMutedOnceLive) {
+  SessionControllerImpl controller(*service_);
+  ON_CALL(*mock_conversation_, IsMicMuted())
+      .WillByDefault(testing::Return(true));
+
+  // Capture hasn't started yet, but that isn't muting.
+  EXPECT_FALSE(controller.IsMicMuted());
+  EXPECT_CALL(*mock_conversation_, SetMicMuted(testing::_)).Times(0);
+  EXPECT_FALSE(controller.SetMicMuted(true));
+}
+
+TEST_F(TtcSessionControllerImplTest, FinishedSessionIgnoresMicMute) {
+  SessionControllerImpl controller(*service_);
+
+  // A fatal error ends the session.
+  controller.OnError(ErrorCode::kInternalBackendError);
+  ASSERT_EQ(controller.GetSessionLifecycle(), SessionLifecycle::kFinished);
+
+  EXPECT_CALL(*mock_conversation_, SetMicMuted(testing::_)).Times(0);
+  EXPECT_FALSE(controller.SetMicMuted(true));
+}
+
 }  // namespace ttc

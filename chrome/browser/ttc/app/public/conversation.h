@@ -43,6 +43,11 @@ class Conversation {
   // Invoked when the page the session is operating on has changed, and so the
   // conversation's page context may be stale.
   virtual void OnPageContextInvalidated() = 0;
+
+  // Mutes or unmutes the user's microphone. While muted no audio is captured
+  // or sent to the model; the model can still finish a reply in progress.
+  virtual void SetMicMuted(bool muted) = 0;
+  virtual bool IsMicMuted() const = 0;
 };
 
 }  // namespace ttc

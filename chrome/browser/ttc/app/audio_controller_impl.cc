@@ -224,10 +224,7 @@ AudioControllerImpl::AudioControllerImpl(
   // Initialize the FIFO with the delivery chunk size. AudioPushFifo requires
   // Reset() to be called at least once before Push().
   capture_fifo_->Reset(kBackendInputSamplesPerChunk);
-  capture_callback_runner_ = base::BindPostTask(
-      main_task_runner_,
-      base::BindRepeating(&AudioControllerImpl::OnCapturedAudioOnMainThread,
-                          weak_factory_.GetWeakPtr()));
+  ResetCaptureCallbackRunner();
   render_callback_runner_ = base::BindPostTask(
       main_task_runner_,
       base::BindRepeating(&AudioControllerImpl::OnAudioRenderedOnMainThread,
@@ -325,6 +322,7 @@ void AudioControllerImpl::OnInputDeviceParametersReceived(
 }
 
 void AudioControllerImpl::StopCapture() {
+  bool was_capturing = capture_requested_;
   capture_requested_ = false;
   capture_device_id_.clear();
   if (audio_capturer_source_) {
@@ -334,6 +332,20 @@ void AudioControllerImpl::StopCapture() {
     audio_capturer_source_ = nullptr;
   }
   capture_converter_.reset();
+  // Drops audio captured before this that's still on its way to the main
+  // thread.
+  ResetCaptureCallbackRunner();
+  if (was_capturing) {
+    observers_.Notify(&Observer::OnCaptureStopped);
+  }
+}
+
+void AudioControllerImpl::ResetCaptureCallbackRunner() {
+  capture_weak_factory_.InvalidateWeakPtrs();
+  capture_callback_runner_ = base::BindPostTask(
+      main_task_runner_,
+      base::BindRepeating(&AudioControllerImpl::OnCapturedAudioOnMainThread,
+                          capture_weak_factory_.GetWeakPtr()));
 }
 
 bool AudioControllerImpl::is_capturing() const {

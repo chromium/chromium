@@ -39,6 +39,9 @@ public class TtcKeyedService {
          * session is ended by the native side shortly after.
          */
         default void onError(int errorCode) {}
+
+        /** The session's microphone was muted or unmuted. */
+        default void onMicMutedChanged(boolean muted) {}
     }
 
     private long mNativePtr;
@@ -94,6 +97,26 @@ public class TtcKeyedService {
         ThreadUtils.assertOnUiThread();
         if (mNativePtr == 0) return;
         TtcKeyedServiceJni.get().endSession(mNativePtr);
+    }
+
+    /**
+     * Mutes or unmutes the microphone of the active session. While muted, no audio is captured or
+     * sent to the model. No-op unless the session is live; it goes live unmuted.
+     */
+    public void setMicMuted(boolean muted) {
+        ThreadUtils.assertOnUiThread();
+        if (mNativePtr == 0) return;
+        if (!TtcKeyedServiceJni.get().setMicMuted(mNativePtr, muted)) return;
+        for (Observer observer : mObservers) {
+            observer.onMicMutedChanged(muted);
+        }
+    }
+
+    /** Returns whether the active session's microphone is muted. */
+    public boolean isMicMuted() {
+        ThreadUtils.assertOnUiThread();
+        if (mNativePtr == 0) return false;
+        return TtcKeyedServiceJni.get().isMicMuted(mNativePtr);
     }
 
     public void addObserver(Observer observer) {
@@ -156,5 +179,9 @@ public class TtcKeyedService {
         void startSession(long nativeTtcKeyedServiceAndroid);
 
         void endSession(long nativeTtcKeyedServiceAndroid);
+
+        boolean setMicMuted(long nativeTtcKeyedServiceAndroid, boolean muted);
+
+        boolean isMicMuted(long nativeTtcKeyedServiceAndroid);
     }
 }

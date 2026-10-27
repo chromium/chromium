@@ -44,6 +44,10 @@ class TtcKeyedServiceAndroid : public base::SupportsUserData::Data {
   int32_t GetSessionLifecycle(JNIEnv* env);
   void StartSession(JNIEnv* env);
   void EndSession(JNIEnv* env);
+  // Returns whether the mute state changed: false if there's no live session,
+  // or the microphone already was in that state.
+  bool SetMicMuted(JNIEnv* env, bool muted);
+  bool IsMicMuted(JNIEnv* env);
 
   // Called by SessionViewAndroid to surface session events in the Java UI.
   void OnAudioLevelChanged(float audio_level);

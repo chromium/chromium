@@ -34,6 +34,10 @@ class AudioController {
                                  const media::AudioParameters& params,
                                  float energy) {}
 
+    // Called when capture stops (see StopCapture()). No more captured audio is
+    // delivered after this, so the microphone's level is silence.
+    virtual void OnCaptureStopped() {}
+
     // Called when acoustic envelope and lookahead segments are extracted for a
     // queued playback chunk.
     virtual void OnModelAudioEnvelopeReady(const AudioEnvelope& envelope) {}
@@ -56,7 +60,10 @@ class AudioController {
   // The device's parameters are queried asynchronously, so the capture stream
   // is only opened once they have been received.
   virtual void StartCapture(std::string_view device_id) = 0;
+  // Stops capturing. Audio captured before this but not yet delivered to
+  // observers is dropped.
   virtual void StopCapture() = 0;
+  // Whether capture has been started and not stopped since.
   virtual bool is_capturing() const = 0;
 
   // --- Audio Playback (Speaker Output) ---

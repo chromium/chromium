@@ -31,6 +31,18 @@ TtcKeyedService::TtcKeyedService(Profile* profile,
 
 TtcKeyedService::~TtcKeyedService() = default;
 
+SessionController* TtcKeyedService::session_controller() {
+  return session_controller_.get();
+}
+
+bool TtcKeyedService::SetMicMuted(bool muted) {
+  return session_controller_ && session_controller_->SetMicMuted(muted);
+}
+
+bool TtcKeyedService::IsMicMuted() const {
+  return session_controller_ && session_controller_->IsMicMuted();
+}
+
 void TtcKeyedService::Shutdown() {
   EndSession();
   // Drop platform bridges (e.g. the Android JNI counterpart) now, during

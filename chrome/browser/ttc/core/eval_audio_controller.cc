@@ -18,7 +18,11 @@ void EvalAudioController::StartCapture(std::string_view device_id) {
 }
 
 void EvalAudioController::StopCapture() {
+  if (!is_capturing_) {
+    return;
+  }
   is_capturing_ = false;
+  observers_.Notify(&Observer::OnCaptureStopped);
 }
 
 bool EvalAudioController::is_capturing() const {

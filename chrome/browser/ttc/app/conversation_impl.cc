@@ -63,11 +63,28 @@ void ConversationImpl::OnPageContextInvalidated() {
   NOTIMPLEMENTED();
 }
 
+void ConversationImpl::SetMicMuted(bool muted) {
+  if (muted) {
+    audio_controller_->StopCapture();
+  } else {
+    audio_controller_->StartCapture(/*device_id=*/"");
+  }
+}
+
+bool ConversationImpl::IsMicMuted() const {
+  return !audio_controller_->is_capturing();
+}
+
 void ConversationImpl::OnCapturedAudio(base::span<const int16_t> pcm_data,
                                        const media::AudioParameters& params,
                                        float energy) {
   backend_->SendAudioChunk(pcm_data);
   session_controller_->UserAudioLevelUpdate(energy);
+}
+
+void ConversationImpl::OnCaptureStopped() {
+  // No more audio levels arrive, so settle the UI at silence.
+  session_controller_->UserAudioLevelUpdate(0.0f);
 }
 
 void ConversationImpl::OnModelAudioEnvelopeReady(

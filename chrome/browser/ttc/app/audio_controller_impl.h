@@ -123,6 +123,9 @@ class AudioControllerImpl : public AudioController,
       const std::optional<media::AudioParameters>& device_params);
   // Called on the realtime capture thread, from `capture_fifo_`.
   void DeliverCapturedAudio(const media::AudioBus& audio_bus, int frame_delay);
+  // (Re)creates `capture_callback_runner_`, dropping the captured audio that
+  // the previous one has posted but not yet delivered.
+  void ResetCaptureCallbackRunner();
   void OnCapturedAudioOnMainThread(std::vector<int16_t> pcm_data,
                                    media::AudioParameters params,
                                    float energy);
@@ -165,6 +168,9 @@ class AudioControllerImpl : public AudioController,
       GUARDED_BY(playback_lock_);
   AudioEnvelopeExtractor audio_envelope_extractor_;
 
+  // Only for `capture_callback_runner_`, so that StopCapture() can drop the
+  // audio it has posted.
+  base::WeakPtrFactory<AudioControllerImpl> capture_weak_factory_{this};
   base::WeakPtrFactory<AudioControllerImpl> weak_factory_{this};
 };
 

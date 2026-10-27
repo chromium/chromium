@@ -59,11 +59,14 @@ class ConversationImpl : public Conversation,
       const std::string& title,
       const optimization_guide::proto::AnnotatedPageContent& apc) override;
   void OnPageContextInvalidated() override;
+  void SetMicMuted(bool muted) override;
+  bool IsMicMuted() const override;
 
   // AudioController::Observer implementation:
   void OnCapturedAudio(base::span<const int16_t> pcm_data,
                        const media::AudioParameters& params,
                        float energy) override;
+  void OnCaptureStopped() override;
   void OnModelAudioEnvelopeReady(const AudioEnvelope& envelope) override;
   void OnPlaybackCompleted(int64_t sequence_number) override;
   void OnAudioError(ErrorCode error) override;

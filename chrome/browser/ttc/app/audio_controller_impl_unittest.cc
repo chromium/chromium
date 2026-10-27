@@ -11,6 +11,7 @@
 
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
@@ -48,6 +49,7 @@ class MockAudioControllerObserver : public AudioController::Observer {
                const media::AudioParameters& params,
                float energy),
               (override));
+  MOCK_METHOD(void, OnCaptureStopped, (), (override));
   MOCK_METHOD(void,
               OnModelAudioEnvelopeReady,
               (const AudioEnvelope& envelope),
@@ -343,6 +345,36 @@ TEST_F(AudioControllerImplTest, StartAndStopCaptureWithFakeBinder) {
 
   controller.StopCapture();
   EXPECT_FALSE(controller.is_capturing());
+}
+
+TEST_F(AudioControllerImplTest, StopCaptureNotifiesObservers) {
+  AudioControllerImpl controller(base::DoNothing(), GetAudioSystemFactory());
+  controller.AddObserver(&observer_);
+  controller.StartCapture(/*device_id=*/"");
+
+  EXPECT_CALL(observer_, OnCaptureStopped).Times(1);
+  controller.StopCapture();
+  // Already stopped.
+  controller.StopCapture();
+}
+
+TEST_F(AudioControllerImplTest, StopCaptureDropsUndeliveredAudio) {
+  AudioControllerImpl controller;
+  controller.AddObserver(&observer_);
+
+  // A full chunk is captured and posted to the main thread, but capture stops
+  // before it's delivered.
+  auto bus = media::AudioBus::Create(1, 1600);
+  bus->Zero();
+  controller.Capture(bus.get(), base::TimeTicks::Now(), {}, 1.0);
+  controller.StopCapture();
+
+  EXPECT_CALL(observer_, OnCapturedAudio).Times(0);
+  // Runs the tasks posted so far, including the one delivering the chunk.
+  base::RunLoop run_loop;
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, run_loop.QuitClosure());
+  run_loop.Run();
 }
 
 TEST_F(AudioControllerImplTest,

@@ -253,6 +253,23 @@ void SessionControllerImpl::OnModelAudioEnvelopeReady(
     observer.OnModelAudioEnvelopeReady(envelope);
   }
 }
+
+bool SessionControllerImpl::SetMicMuted(bool muted) {
+  // Capture only starts once the session is live.
+  if (session_lifecycle_ != SessionLifecycle::kLive ||
+      conversation_->IsMicMuted() == muted) {
+    return false;
+  }
+  GetJournal().Log("TtcMicMuted",
+                   actor::JournalDetailsBuilder().Add("muted", muted).Build());
+  conversation_->SetMicMuted(muted);
+  return true;
+}
+
+bool SessionControllerImpl::IsMicMuted() const {
+  return session_lifecycle_ == SessionLifecycle::kLive &&
+         conversation_->IsMicMuted();
+}
 void SessionControllerImpl::EndSessionAsync() {
   SetSessionLifecycle(SessionLifecycle::kFinished);
 

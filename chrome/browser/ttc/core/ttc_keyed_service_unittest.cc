@@ -50,6 +50,8 @@ class FakeConversation : public Conversation {
       const std::string& title,
       const optimization_guide::proto::AnnotatedPageContent& apc) override {}
   void OnPageContextInvalidated() override {}
+  void SetMicMuted(bool muted) override {}
+  bool IsMicMuted() const override { return false; }
 
   bool is_started() const { return is_started_; }
 
@@ -106,6 +108,16 @@ class TtcKeyedServiceUnitTest : public testing::Test {
 TEST_F(TtcKeyedServiceUnitTest, EndSessionDoesNotCrash) {
   ASSERT_EQ(service_->session_controller(), nullptr);
   service_->EndSession();
+}
+
+TEST_F(TtcKeyedServiceUnitTest, MicMuteNeedsLiveSession) {
+  EXPECT_FALSE(service_->SetMicMuted(true));
+  EXPECT_FALSE(service_->IsMicMuted());
+
+  // A session that isn't live yet can't be muted either.
+  service_->StartSession();
+  EXPECT_FALSE(service_->SetMicMuted(true));
+  EXPECT_FALSE(service_->IsMicMuted());
 }
 
 TEST_F(TtcKeyedServiceUnitTest, StartSession) {

@@ -109,6 +109,14 @@ void TtcKeyedServiceAndroid::EndSession(JNIEnv* env) {
   service_->EndSession();
 }
 
+bool TtcKeyedServiceAndroid::SetMicMuted(JNIEnv* env, bool muted) {
+  return service_->SetMicMuted(muted);
+}
+
+bool TtcKeyedServiceAndroid::IsMicMuted(JNIEnv* env) {
+  return service_->IsMicMuted();
+}
+
 void TtcKeyedServiceAndroid::OnAudioLevelChanged(float audio_level) {
   JNIEnv* env = AttachCurrentThread();
   Java_TtcKeyedService_onAudioLevelChanged(env, java_obj_, audio_level);

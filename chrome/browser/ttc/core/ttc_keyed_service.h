@@ -79,7 +79,17 @@ class TtcKeyedService : public KeyedService, public base::SupportsUserData {
       SessionController& session_controller,
       std::unique_ptr<AudioController> audio_controller = nullptr);
 
-  SessionController* session_controller() { return session_controller_.get(); }
+  // The active session's controller, or null if there's none.
+  SessionController* session_controller();
+
+  // Mutes or unmutes the active session's microphone (see
+  // SessionControllerImpl::SetMicMuted()). Returns whether the state changed:
+  // false if there's no live session, or the microphone already was in that
+  // state.
+  bool SetMicMuted(bool muted);
+  // Whether the active session's microphone is muted. False if there's no live
+  // session.
+  bool IsMicMuted() const;
 
   // The ActorUiStateManagerInterface implementation used by actor tasks created
   // for TTC sessions.
@@ -93,7 +103,7 @@ class TtcKeyedService : public KeyedService, public base::SupportsUserData {
   // Must outlive `session_controller_`, which indirectly holds a reference to
   // it, as do the actor tasks created during a session.
   std::unique_ptr<TtcActorUiStateManager> actor_ui_state_manager_;
-  std::unique_ptr<SessionController> session_controller_;
+  std::unique_ptr<SessionControllerImpl> session_controller_;
 
   base::RepeatingCallbackList<void(ServiceState)> state_changed_callbacks_;
 
