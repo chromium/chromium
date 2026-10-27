@@ -119,12 +119,13 @@ class GlicInstanceImpl : public GlicInstance,
 
     virtual bool IsInvoking(const GlicInstanceImpl* instance) const = 0;
     virtual void CancelInvoke(GlicInstanceImpl* instance) = 0;
-    // Ends the in-flight invocations on `instance` that only show the UI
-    // (see GlicInvokeHandler::requires_client_invoke()) with `error`.
-    // Invocations that will send something to the web client are left
-    // running, as the client may still act on them.
-    virtual void CancelShowOnlyInvokes(GlicInstanceImpl* instance,
-                                       GlicInvokeError error) = 0;
+    // Ends the in-flight invocations on `instance` that cannot proceed once
+    // the panel is closed (show-only invocations while the client is still
+    // loading, or any invocation still waiting on FRE completion in the panel)
+    // with `error`. Invocations that will send something to a consented web
+    // client are left running, as the client may still act on them.
+    virtual void CancelInvokesOnPanelClose(GlicInstanceImpl* instance,
+                                           GlicInvokeError error) = 0;
 
     // TODO(crbug.com/545714879): Remove OnInvoked, OnUserInputSubmitted,
     // and OnFreOptInShown from InstanceCoordinatorDelegate when onboarding

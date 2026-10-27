@@ -594,4 +594,18 @@ std::optional<GlicTaskType> GlicInvokeHandler::GetLastActiveTaskType() const {
   return main_task_->GetLastActiveTaskType();
 }
 
+bool GlicInvokeHandler::NeedsFreCompletion() const {
+  if (GlicEnabling::HasConsentedForProfile(instance_->profile())) {
+    return false;
+  }
+  if (options_.fre_override != mojom::FreOverride::kTrustFirstClick &&
+      options_.fre_override != mojom::FreOverride::kUnspecified) {
+    return false;
+  }
+  return options_.fre_completion_wait_mode == FreCompletionWaitMode::kAlways ||
+         (options_.fre_completion_wait_mode ==
+              FreCompletionWaitMode::kDefault &&
+          requires_client_invoke_);
+}
+
 }  // namespace glic
