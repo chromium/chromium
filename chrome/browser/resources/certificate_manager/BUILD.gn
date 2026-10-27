@@ -37,7 +37,6 @@ build_webui("build") {
     "certificate_password_dialog.ts",
     "certificate_subpage.html.ts",
     "certificate_subpage.ts",
-    "certificates_browser_proxy.ts",
     "crs_section.html.ts",
     "crs_section.ts",
     "local_certs_section.html.ts",

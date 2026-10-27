@@ -23,8 +23,8 @@ import {PluralStringProxyImpl} from '//resources/js/plural_string_proxy.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 
+import {browserProxyFactory} from './certificate_manager.mojom-webui.js';
 import type {CertManagementMetadata} from './certificate_manager.mojom-webui.js';
-import {CertificatesBrowserProxy} from './certificates_browser_proxy.js';
 import {getCss} from './local_certs_section.css.js';
 import {getHtml} from './local_certs_section.html.js';
 import {Page, Router} from './navigation.js';
@@ -79,13 +79,13 @@ export class LocalCertsSectionElement extends CrLitElement {
   override firstUpdated(changedProperties: PropertyValues<this>) {
     super.firstUpdated(changedProperties);
     this.onMetadataRefresh_();
-    const proxy = CertificatesBrowserProxy.getInstance();
+    const proxy = browserProxyFactory.getInstance();
     proxy.callbackRouter.triggerMetadataUpdate.addListener(
         this.onMetadataRefresh_.bind(this));
   }
 
   private onMetadataRefresh_() {
-    const proxy = CertificatesBrowserProxy.getInstance();
+    const proxy = browserProxyFactory.getInstance();
     proxy.handler.getCertManagementMetadata().then(
         (results: {metadata: CertManagementMetadata}) => {
           this.certManagementMetadata_ = results.metadata;
@@ -202,14 +202,14 @@ export class LocalCertsSectionElement extends CrLitElement {
 
   // <if expr="is_win or is_macosx">
   protected onManageCertsExternalClick_() {
-    const proxy = CertificatesBrowserProxy.getInstance();
+    const proxy = browserProxyFactory.getInstance();
     proxy.handler.showNativeManageCertificates();
   }
   // </if>
 
   // <if expr="not is_chromeos">
   protected onOsCertsToggleChange_(e: CustomEvent<boolean>) {
-    const proxy = CertificatesBrowserProxy.getInstance();
+    const proxy = browserProxyFactory.getInstance();
     proxy.handler.setIncludeSystemTrustStore(e.detail);
   }
   // </if>

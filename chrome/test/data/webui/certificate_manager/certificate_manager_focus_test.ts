@@ -9,25 +9,25 @@
 import 'chrome://certificate-manager/certificate_manager.js';
 
 import type {CertificateManagerElement} from 'chrome://certificate-manager/certificate_manager.js';
-import {CertificateSource} from 'chrome://certificate-manager/certificate_manager.mojom-webui.js';
+import {browserProxyFactory, CertificateSource} from 'chrome://certificate-manager/certificate_manager.mojom-webui.js';
 import type {CertManagementMetadata} from 'chrome://certificate-manager/certificate_manager.mojom-webui.js';
-import {CertificatesBrowserProxy} from 'chrome://certificate-manager/certificates_browser_proxy.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
-import {TestCertificateManagerProxy} from './certificate_manager_test_support.js';
+import {FakePageHandler} from './certificate_manager_test_support.js';
 
 suite('CertificateManagerV2FocusTest', () => {
   let certManager: CertificateManagerElement;
-  let testProxy: TestCertificateManagerProxy;
+  let testHandler: FakePageHandler;
 
   setup(async () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     await navigator.clipboard.writeText('');
-    testProxy = new TestCertificateManagerProxy();
-    CertificatesBrowserProxy.setInstance(testProxy);
+    testHandler = new FakePageHandler();
+    const {instance} = browserProxyFactory.createForTest(testHandler);
+    browserProxyFactory.setInstance(instance);
   });
 
   function initializeElement() {
@@ -37,7 +37,7 @@ suite('CertificateManagerV2FocusTest', () => {
 
   test('Copy CRS hash', async () => {
     const getCertificatesResolver = new PromiseResolver<void>();
-    testProxy.handler.setCertificatesCallback((source: CertificateSource) => {
+    testHandler.setCertificatesCallback((source: CertificateSource) => {
       if (source === CertificateSource.kChromeRootStore) {
         getCertificatesResolver.resolve();
         return {
@@ -70,7 +70,7 @@ suite('CertificateManagerV2FocusTest', () => {
 
   test('Copy platform client certs hash', async () => {
     const getCertificatesResolver = new PromiseResolver<void>();
-    testProxy.handler.setCertificatesCallback((source: CertificateSource) => {
+    testHandler.setCertificatesCallback((source: CertificateSource) => {
       if (source === CertificateSource.kPlatformClientCert) {
         getCertificatesResolver.resolve();
         return {
@@ -111,7 +111,7 @@ suite('CertificateManagerV2FocusTest', () => {
   // <if expr="is_win or is_macosx or is_linux">
   test('Copy provisioned client certs hash', async () => {
     const getCertificatesResolver = new PromiseResolver<void>();
-    testProxy.handler.setCertificatesCallback((source: CertificateSource) => {
+    testHandler.setCertificatesCallback((source: CertificateSource) => {
       if (source === CertificateSource.kProvisionedClientCert) {
         getCertificatesResolver.resolve();
         return {
@@ -147,7 +147,7 @@ suite('CertificateManagerV2FocusTest', () => {
   // <if expr="is_chromeos">
   test('Copy extensions client certs hash', async () => {
     const getCertificatesResolver = new PromiseResolver<void>();
-    testProxy.handler.setCertificatesCallback((source: CertificateSource) => {
+    testHandler.setCertificatesCallback((source: CertificateSource) => {
       if (source === CertificateSource.kExtensionsClientCert) {
         getCertificatesResolver.resolve();
         return {
@@ -190,7 +190,7 @@ suite('CertificateManagerV2FocusTest', () => {
       numUserCerts: 0,
       showUserCertsUi: false,
     };
-    testProxy.handler.setCertManagementMetadata(metadata);
+    testHandler.setCertManagementMetadata(metadata);
     initializeElement();
     await microtasksFinished();
     certManager.$.localCertSection.$.viewOsImportedCerts.click();
@@ -228,7 +228,7 @@ suite('CertificateManagerV2FocusTest', () => {
       numUserCerts: 0,
       showUserCertsUi: true,
     };
-    testProxy.handler.setCertManagementMetadata(metadata);
+    testHandler.setCertManagementMetadata(metadata);
     initializeElement();
     await microtasksFinished();
     const rowToClick =

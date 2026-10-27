@@ -21,9 +21,8 @@ import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
 import {getCss} from './certificate_entry.css.js';
 import {getHtml} from './certificate_entry.html.js';
-import {CertificateSource} from './certificate_manager.mojom-webui.js';
+import {browserProxyFactory, CertificateSource} from './certificate_manager.mojom-webui.js';
 import type {ActionResult} from './certificate_manager.mojom-webui.js';
-import {CertificatesBrowserProxy} from './certificates_browser_proxy.js';
 
 export interface CertificateEntryElement {
   $: {
@@ -81,13 +80,13 @@ export class CertificateEntryElement extends CertificateEntryElementBase {
   }
 
   protected onViewClick_() {
-    CertificatesBrowserProxy.getInstance().handler.viewCertificate(
+    browserProxyFactory.getInstance().handler.viewCertificate(
         this.certSource, this.sha256hashHex);
   }
 
   protected onDeleteClick_() {
     assert(this.isDeletable);
-    CertificatesBrowserProxy.getInstance()
+    browserProxyFactory.getInstance()
         .handler
         .deleteCertificate(
             this.certSource, this.displayName, this.sha256hashHex)

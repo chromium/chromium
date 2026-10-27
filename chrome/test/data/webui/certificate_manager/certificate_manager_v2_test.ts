@@ -7,9 +7,9 @@
 import 'chrome://certificate-manager/certificate_manager.js';
 
 import type {CertificateManagerElement} from 'chrome://certificate-manager/certificate_manager.js';
-import type {CertManagementMetadata} from 'chrome://certificate-manager/certificate_manager.mojom-webui.js';
+import {browserProxyFactory} from 'chrome://certificate-manager/certificate_manager.mojom-webui.js';
+import type {CertificateManagerPageRemote, CertManagementMetadata} from 'chrome://certificate-manager/certificate_manager.mojom-webui.js';
 import type {CertificatePasswordDialogElement} from 'chrome://certificate-manager/certificate_password_dialog.js';
-import {CertificatesBrowserProxy} from 'chrome://certificate-manager/certificates_browser_proxy.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
@@ -17,17 +17,20 @@ import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
 // </if>
 
-import {TestCertificateManagerProxy} from './certificate_manager_test_support.js';
+import {FakePageHandler} from './certificate_manager_test_support.js';
 
 
 suite('CertificateManagerV2Test', () => {
   let certManager: CertificateManagerElement;
-  let testProxy: TestCertificateManagerProxy;
+  let testHandler: FakePageHandler;
+  let callbackRouterRemote: CertificateManagerPageRemote;
 
   setup(() => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    testProxy = new TestCertificateManagerProxy();
-    CertificatesBrowserProxy.setInstance(testProxy);
+    testHandler = new FakePageHandler();
+    const {instance, remote} = browserProxyFactory.createForTest(testHandler);
+    browserProxyFactory.setInstance(instance);
+    callbackRouterRemote = remote;
   });
 
   function initializeElement() {
@@ -59,7 +62,7 @@ suite('CertificateManagerV2Test', () => {
         isVisible(certManager.$.manageOsImportedClientCerts),
         'imported os certs external link visibility wrong');
     certManager.$.manageOsImportedClientCerts.click();
-    await testProxy.handler.whenCalled('showNativeManageCertificates');
+    await testHandler.whenCalled('showNativeManageCertificates');
   });
   // </if>
 
@@ -75,10 +78,10 @@ suite('CertificateManagerV2Test', () => {
       numUserCerts: 0,
       showUserCertsUi: false,
     };
-    testProxy.handler.setCertManagementMetadata(metadata);
+    testHandler.setCertManagementMetadata(metadata);
     initializeElement();
 
-    await testProxy.handler.whenCalled('getCertManagementMetadata');
+    await testHandler.whenCalled('getCertManagementMetadata');
     await microtasksFinished();
     const customSection =
         certManager.$.localCertSection.shadowRoot.querySelector(
@@ -101,10 +104,10 @@ suite('CertificateManagerV2Test', () => {
       showUserCertsUi: false,
 
     };
-    testProxy.handler.setCertManagementMetadata(metadata);
+    testHandler.setCertManagementMetadata(metadata);
     initializeElement();
 
-    await testProxy.handler.whenCalled('getCertManagementMetadata');
+    await testHandler.whenCalled('getCertManagementMetadata');
     await microtasksFinished();
     const customSection =
         certManager.$.localCertSection.shadowRoot.querySelector(
@@ -205,7 +208,7 @@ suite('CertificateManagerV2Test', () => {
       numUserCerts: 1,
       showUserCertsUi: true,
     };
-    testProxy.handler.setCertManagementMetadata(metadata);
+    testHandler.setCertManagementMetadata(metadata);
     initializeElement();
     await microtasksFinished();
     assertFalse(certManager.$.userCertsSection.classList.contains('selected'));
@@ -228,7 +231,7 @@ suite('CertificateManagerV2Test', () => {
       numUserCerts: 1,
       showUserCertsUi: true,
     };
-    testProxy.handler.setCertManagementMetadata(metadata);
+    testHandler.setCertManagementMetadata(metadata);
     initializeElement();
     await microtasksFinished();
     const userSection = certManager.$.localCertSection.shadowRoot.querySelector(
@@ -254,7 +257,7 @@ suite('CertificateManagerV2Test', () => {
       // The password dialog should not be present in the DOM initially.
       assertNull(certManager.shadowRoot.querySelector('#passwordDialog'));
 
-      const promise = testProxy.callbackRouterRemote.askForImportPassword();
+      const promise = callbackRouterRemote.askForImportPassword();
       await microtasksFinished();
 
       const passwordDialog =
@@ -291,7 +294,7 @@ suite('CertificateManagerV2Test', () => {
     assertNull(certManager.shadowRoot.querySelector('#passwordDialog'));
 
     {
-      const promise = testProxy.callbackRouterRemote.askForImportPassword();
+      const promise = callbackRouterRemote.askForImportPassword();
       await microtasksFinished();
 
       const passwordDialog =
@@ -314,7 +317,7 @@ suite('CertificateManagerV2Test', () => {
     // and the password field should be cleared (not still containing the value
     // previously entered).
     {
-      const promise = testProxy.callbackRouterRemote.askForImportPassword();
+      const promise = callbackRouterRemote.askForImportPassword();
       await microtasksFinished();
 
       const passwordDialog =

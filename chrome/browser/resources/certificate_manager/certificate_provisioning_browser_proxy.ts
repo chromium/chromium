@@ -9,9 +9,7 @@
 
 /**
  * The 'certificate-provisioning-processes-changed' event will have an array of
- * CertificateProvisioningProcesses as its argument. This typedef is currently
- * declared here to be consistent with certificates_browser_proxy.js, but it is
- * not specific to CertificateProvisioningBrowserProxy.
+ * CertificateProvisioningProcesses as its argument.
  *
  * @see chrome/browser/ui/webui/settings/certificates_handler.cc
  */

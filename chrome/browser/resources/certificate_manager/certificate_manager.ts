@@ -44,10 +44,9 @@ import type {CertificateListElement} from './certificate_list.js';
 import {getCss} from './certificate_manager.css.js';
 import {getHtml} from './certificate_manager.html.js';
 import type {ActionResult, SummaryCertInfo} from './certificate_manager.mojom-webui.js';
-import {CertificateSource} from './certificate_manager.mojom-webui.js';
+import {browserProxyFactory, CertificateSource} from './certificate_manager.mojom-webui.js';
 import type {CertificatePasswordDialogElement} from './certificate_password_dialog.js';
 import type {CertificateSubpageElement, SubpageCertificateList} from './certificate_subpage.js';
-import {CertificatesBrowserProxy} from './certificates_browser_proxy.js';
 import type {CrsSectionElement} from './crs_section.js';
 import type {LocalCertsSectionElement} from './local_certs_section.js';
 import type {Route} from './navigation.js';
@@ -260,7 +259,7 @@ export class CertificateManagerElement extends CertificateManagerElementBase {
   }
 
   override firstUpdated() {
-    const proxy = CertificatesBrowserProxy.getInstance();
+    const proxy = browserProxyFactory.getInstance();
     proxy.callbackRouter.askForImportPassword.addListener(
         this.onAskForImportPassword_.bind(this));
     proxy.callbackRouter.askForConfirmation.addListener(
@@ -277,7 +276,7 @@ export class CertificateManagerElement extends CertificateManagerElementBase {
   }
 
   private getClientCertCount_() {
-    CertificatesBrowserProxy.getInstance()
+    browserProxyFactory.getInstance()
         .handler.getCertificates(CertificateSource.kPlatformClientCert)
         .then((results: {certs: SummaryCertInfo[]}) => {
           PluralStringProxyImpl.getInstance()
@@ -461,7 +460,7 @@ export class CertificateManagerElement extends CertificateManagerElementBase {
 
   // <if expr="is_win or is_macosx">
   protected onManageCertsExternalClick_() {
-    const proxy = CertificatesBrowserProxy.getInstance();
+    const proxy = browserProxyFactory.getInstance();
     proxy.handler.showNativeManageCertificates();
   }
   // </if>

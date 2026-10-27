@@ -5,21 +5,21 @@
 import 'chrome://certificate-manager/certificate_list.js';
 
 import type {CertificateListElement} from 'chrome://certificate-manager/certificate_list.js';
-import {CertificateSource} from 'chrome://certificate-manager/certificate_manager.mojom-webui.js';
-import {CertificatesBrowserProxy} from 'chrome://certificate-manager/certificates_browser_proxy.js';
+import {browserProxyFactory, CertificateSource} from 'chrome://certificate-manager/certificate_manager.mojom-webui.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
-import {TestCertificateManagerProxy} from './certificate_manager_test_support.js';
+import {FakePageHandler} from './certificate_manager_test_support.js';
 
 suite('CertificateListV2Test', () => {
   let certList: CertificateListElement;
-  let testProxy: TestCertificateManagerProxy;
+  let testHandler: FakePageHandler;
 
   setup(() => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    testProxy = new TestCertificateManagerProxy();
-    CertificatesBrowserProxy.setInstance(testProxy);
+    testHandler = new FakePageHandler();
+    const {instance} = browserProxyFactory.createForTest(testHandler);
+    browserProxyFactory.setInstance(instance);
   });
 
   function initializeElement() {
@@ -29,7 +29,7 @@ suite('CertificateListV2Test', () => {
   }
 
   test('element check', async () => {
-    testProxy.handler.setCertificatesCallback(() => {
+    testHandler.setCertificatesCallback(() => {
       return {
         certs: [
           {
@@ -50,7 +50,7 @@ suite('CertificateListV2Test', () => {
 
     assertEquals(
         CertificateSource.kChromeRootStore,
-        await testProxy.handler.whenCalled('getCertificates'),
+        await testHandler.whenCalled('getCertificates'),
         'getCertificates called with wrong source');
     await microtasksFinished();
 
@@ -66,7 +66,7 @@ suite('CertificateListV2Test', () => {
   });
 
   test('collapse hidden', async () => {
-    testProxy.handler.setCertificatesCallback(() => {
+    testHandler.setCertificatesCallback(() => {
       return {
         certs: [
           {
@@ -90,7 +90,7 @@ suite('CertificateListV2Test', () => {
 
     assertEquals(
         CertificateSource.kChromeRootStore,
-        await testProxy.handler.whenCalled('getCertificates'),
+        await testHandler.whenCalled('getCertificates'),
         'getCertificates called with wrong source');
     await microtasksFinished();
 
@@ -102,7 +102,7 @@ suite('CertificateListV2Test', () => {
   });
 
   test('export', async () => {
-    testProxy.handler.setCertificatesCallback(() => {
+    testHandler.setCertificatesCallback(() => {
       return {
         certs: [
           {
@@ -120,7 +120,7 @@ suite('CertificateListV2Test', () => {
     });
     initializeElement();
 
-    await testProxy.handler.whenCalled('getCertificates');
+    await testHandler.whenCalled('getCertificates');
     await microtasksFinished();
 
     assertTrue(isVisible(certList.$.exportCerts));
@@ -129,12 +129,12 @@ suite('CertificateListV2Test', () => {
 
     assertEquals(
         CertificateSource.kChromeRootStore,
-        await testProxy.handler.whenCalled('exportCertificates'),
+        await testHandler.whenCalled('exportCertificates'),
         'export click provided wrong source');
   });
 
   test('export click propagation', async () => {
-    testProxy.handler.setCertificatesCallback(() => {
+    testHandler.setCertificatesCallback(() => {
       return {
         certs: [
           {
@@ -152,7 +152,7 @@ suite('CertificateListV2Test', () => {
     });
     initializeElement();
 
-    await testProxy.handler.whenCalled('getCertificates');
+    await testHandler.whenCalled('getCertificates');
     await microtasksFinished();
 
     assertTrue(certList.$.certs.opened, 'list not opened');
@@ -162,7 +162,7 @@ suite('CertificateListV2Test', () => {
 
     assertEquals(
         CertificateSource.kChromeRootStore,
-        await testProxy.handler.whenCalled('exportCertificates'),
+        await testHandler.whenCalled('exportCertificates'),
         'export click provided wrong source');
 
     await microtasksFinished();
@@ -177,14 +177,14 @@ suite('CertificateListV2Test', () => {
     certList.hideExport = true;
     document.body.appendChild(certList);
 
-    await testProxy.handler.whenCalled('getCertificates');
+    await testHandler.whenCalled('getCertificates');
     await microtasksFinished();
 
     assertFalse(isVisible(certList.$.exportCerts));
   });
 
   test('import click', async () => {
-    testProxy.handler.setCertificatesCallback(() => {
+    testHandler.setCertificatesCallback(() => {
       return {
         certs: [
           {
@@ -201,7 +201,7 @@ suite('CertificateListV2Test', () => {
     certList.showImport = true;
     document.body.appendChild(certList);
 
-    await testProxy.handler.whenCalled('getCertificates');
+    await testHandler.whenCalled('getCertificates');
     await microtasksFinished();
 
     assertTrue(certList.$.certs.opened, 'list not opened');
@@ -212,7 +212,7 @@ suite('CertificateListV2Test', () => {
 
     assertEquals(
         CertificateSource.kChromeRootStore,
-        await testProxy.handler.whenCalled('importCertificate'),
+        await testHandler.whenCalled('importCertificate'),
         'import click provided wrong source');
 
     await microtasksFinished();
@@ -221,7 +221,7 @@ suite('CertificateListV2Test', () => {
   });
 
   test('importAndBind click', async () => {
-    testProxy.handler.setCertificatesCallback(() => {
+    testHandler.setCertificatesCallback(() => {
       return {
         certs: [
           {
@@ -238,7 +238,7 @@ suite('CertificateListV2Test', () => {
     certList.showImportAndBind = true;
     document.body.appendChild(certList);
 
-    await testProxy.handler.whenCalled('getCertificates');
+    await testHandler.whenCalled('getCertificates');
     await microtasksFinished();
 
     assertTrue(certList.$.certs.opened, 'list not opened');
@@ -249,7 +249,7 @@ suite('CertificateListV2Test', () => {
 
     assertEquals(
         CertificateSource.kChromeRootStore,
-        await testProxy.handler.whenCalled('importAndBindCertificate'),
+        await testHandler.whenCalled('importAndBindCertificate'),
         'import click provided wrong source');
 
     await microtasksFinished();
@@ -260,7 +260,7 @@ suite('CertificateListV2Test', () => {
   test('import hidden', async () => {
     initializeElement();
 
-    await testProxy.handler.whenCalled('getCertificates');
+    await testHandler.whenCalled('getCertificates');
     await microtasksFinished();
 
     assertFalse(isVisible(certList.$.importCert));
@@ -272,7 +272,7 @@ suite('CertificateListV2Test', () => {
     certList.certSource = CertificateSource.kChromeRootStore;
     document.body.appendChild(certList);
 
-    await testProxy.handler.whenCalled('getCertificates');
+    await testHandler.whenCalled('getCertificates');
     await microtasksFinished();
 
     assertFalse(isVisible(certList.$.exportCerts));
@@ -287,7 +287,7 @@ suite('CertificateListV2Test', () => {
     certList.certSource = CertificateSource.kChromeRootStore;
     document.body.appendChild(certList);
 
-    await testProxy.handler.whenCalled('getCertificates');
+    await testHandler.whenCalled('getCertificates');
     await microtasksFinished();
 
     assertFalse(isVisible(certList.$.certs));
@@ -295,7 +295,7 @@ suite('CertificateListV2Test', () => {
   });
 
   test('hideIfEmpty with certs, no hiding', async () => {
-    testProxy.handler.setCertificatesCallback(() => {
+    testHandler.setCertificatesCallback(() => {
       return {
         certs: [
           {
@@ -322,7 +322,7 @@ suite('CertificateListV2Test', () => {
 
     assertEquals(
         CertificateSource.kChromeRootStore,
-        await testProxy.handler.whenCalled('getCertificates'),
+        await testHandler.whenCalled('getCertificates'),
         'getCertificates called with wrong source');
     await microtasksFinished();
 
@@ -345,7 +345,7 @@ suite('CertificateListV2Test', () => {
     certList.certSource = CertificateSource.kChromeRootStore;
     document.body.appendChild(certList);
 
-    await testProxy.handler.whenCalled('getCertificates');
+    await testHandler.whenCalled('getCertificates');
     await microtasksFinished();
 
     assertTrue(isVisible(certList.$.certs));

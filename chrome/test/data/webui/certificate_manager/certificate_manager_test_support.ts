@@ -2,11 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {ActionResult, CertificateManagerPageHandlerInterface, CertificateManagerPageRemote, CertificateSource, CertManagementMetadata, SummaryCertInfo} from 'chrome://certificate-manager/certificate_manager.mojom-webui.js';
-import {CertificateManagerPageCallbackRouter} from 'chrome://certificate-manager/certificate_manager.mojom-webui.js';
+import type {ActionResult, CertificateManagerPageHandlerInterface, CertificateSource, CertManagementMetadata, SummaryCertInfo} from 'chrome://certificate-manager/certificate_manager.mojom-webui.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
-class FakePageHandler extends TestBrowserProxy implements
+export class FakePageHandler extends TestBrowserProxy implements
     CertificateManagerPageHandlerInterface {
   // TODO(hchao): try to mess with structure so the auto formatter makes this
   // less confusing. See:
@@ -128,19 +127,4 @@ class FakePageHandler extends TestBrowserProxy implements
     this.methodCalled('setIncludeSystemTrustStore', include);
   }
   // </if>
-}
-
-export class TestCertificateManagerProxy {
-  callbackRouter: CertificateManagerPageCallbackRouter;
-  callbackRouterRemote: CertificateManagerPageRemote;
-  handler: FakePageHandler;
-
-  constructor() {
-    this.callbackRouter = new CertificateManagerPageCallbackRouter();
-
-    this.callbackRouterRemote =
-        this.callbackRouter.$.bindNewPipeAndPassRemote();
-
-    this.handler = new FakePageHandler();
-  }
 }

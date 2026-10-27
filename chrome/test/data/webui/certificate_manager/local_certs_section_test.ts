@@ -7,8 +7,8 @@
 import 'chrome://certificate-manager/local_certs_section.js';
 
 import {PluralStringProxyImpl} from '//resources/js/plural_string_proxy.js';
+import {browserProxyFactory} from 'chrome://certificate-manager/certificate_manager.mojom-webui.js';
 import type {CertManagementMetadata} from 'chrome://certificate-manager/certificate_manager.mojom-webui.js';
-import {CertificatesBrowserProxy} from 'chrome://certificate-manager/certificates_browser_proxy.js';
 import type {LocalCertsSectionElement} from 'chrome://certificate-manager/local_certs_section.js';
 import {assertEquals, assertNull} from 'chrome://webui-test/chai_assert.js';
 import {TestPluralStringProxy} from 'chrome://webui-test/test_plural_string_proxy.js';
@@ -19,7 +19,7 @@ import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
 // </if>
 
-import {TestCertificateManagerProxy} from './certificate_manager_test_support.js';
+import {FakePageHandler} from './certificate_manager_test_support.js';
 
 class CertManagerTestPluralStringProxy extends TestPluralStringProxy {
   override text: string = '';
@@ -34,12 +34,13 @@ class CertManagerTestPluralStringProxy extends TestPluralStringProxy {
 
 suite('LocalCertsSectionV2Test', () => {
   let localCertsSection: LocalCertsSectionElement;
-  let testProxy: TestCertificateManagerProxy;
+  let testHandler: FakePageHandler;
 
   setup(() => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    testProxy = new TestCertificateManagerProxy();
-    CertificatesBrowserProxy.setInstance(testProxy);
+    testHandler = new FakePageHandler();
+    const {instance} = browserProxyFactory.createForTest(testHandler);
+    browserProxyFactory.setInstance(instance);
   });
 
   function initializeElement() {
@@ -60,10 +61,10 @@ suite('LocalCertsSectionV2Test', () => {
       numUserCerts: 0,
       showUserCertsUi: false,
     };
-    testProxy.handler.setCertManagementMetadata(metadata);
+    testHandler.setCertManagementMetadata(metadata);
     initializeElement();
 
-    await testProxy.handler.whenCalled('getCertManagementMetadata');
+    await testHandler.whenCalled('getCertManagementMetadata');
     await pluralStringProxy.whenCalled('getPluralString');
     await microtasksFinished();
 
@@ -84,10 +85,10 @@ suite('LocalCertsSectionV2Test', () => {
       numUserCerts: 0,
       showUserCertsUi: false,
     };
-    testProxy.handler.setCertManagementMetadata(metadata);
+    testHandler.setCertManagementMetadata(metadata);
     initializeElement();
 
-    await testProxy.handler.whenCalled('getCertManagementMetadata');
+    await testHandler.whenCalled('getCertManagementMetadata');
     await microtasksFinished();
 
     assertTrue(
@@ -114,10 +115,10 @@ suite('LocalCertsSectionV2Test', () => {
       numUserCerts: 0,
       showUserCertsUi: false,
     };
-    testProxy.handler.setCertManagementMetadata(metadata);
+    testHandler.setCertManagementMetadata(metadata);
     initializeElement();
 
-    await testProxy.handler.whenCalled('getCertManagementMetadata');
+    await testHandler.whenCalled('getCertManagementMetadata');
     await microtasksFinished();
 
     assertTrue(
@@ -145,10 +146,10 @@ suite('LocalCertsSectionV2Test', () => {
       numUserCerts: 0,
       showUserCertsUi: false,
     };
-    testProxy.handler.setCertManagementMetadata(metadata);
+    testHandler.setCertManagementMetadata(metadata);
     initializeElement();
 
-    await testProxy.handler.whenCalled('getCertManagementMetadata');
+    await testHandler.whenCalled('getCertManagementMetadata');
     await microtasksFinished();
 
     assertFalse(
@@ -177,10 +178,10 @@ suite('LocalCertsSectionV2Test', () => {
       numUserCerts: 0,
       showUserCertsUi: false,
     };
-    testProxy.handler.setCertManagementMetadata(metadata);
+    testHandler.setCertManagementMetadata(metadata);
     initializeElement();
 
-    await testProxy.handler.whenCalled('getCertManagementMetadata');
+    await testHandler.whenCalled('getCertManagementMetadata');
     await microtasksFinished();
 
     assertFalse(
@@ -209,10 +210,10 @@ suite('LocalCertsSectionV2Test', () => {
       numUserCerts: 0,
       showUserCertsUi: false,
     };
-    testProxy.handler.setCertManagementMetadata(metadata);
+    testHandler.setCertManagementMetadata(metadata);
     initializeElement();
 
-    await testProxy.handler.whenCalled('getCertManagementMetadata');
+    await testHandler.whenCalled('getCertManagementMetadata');
     await microtasksFinished();
 
     assertFalse(
@@ -231,16 +232,16 @@ suite('LocalCertsSectionV2Test', () => {
       numUserCerts: 0,
       showUserCertsUi: false,
     };
-    testProxy.handler.setCertManagementMetadata(metadata);
+    testHandler.setCertManagementMetadata(metadata);
     initializeElement();
 
-    await testProxy.handler.whenCalled('getCertManagementMetadata');
+    await testHandler.whenCalled('getCertManagementMetadata');
     await microtasksFinished();
     assertTrue(
         isVisible(localCertsSection.$.manageOsImportedCerts),
         'imported os certs external link visibility wrong');
     localCertsSection.$.manageOsImportedCerts.click();
-    await testProxy.handler.whenCalled('showNativeManageCertificates');
+    await testHandler.whenCalled('showNativeManageCertificates');
   });
   // </if>
 
@@ -255,10 +256,10 @@ suite('LocalCertsSectionV2Test', () => {
       numUserCerts: 0,
       showUserCertsUi: true,
     };
-    testProxy.handler.setCertManagementMetadata(metadata);
+    testHandler.setCertManagementMetadata(metadata);
     initializeElement();
 
-    await testProxy.handler.whenCalled('getCertManagementMetadata');
+    await testHandler.whenCalled('getCertManagementMetadata');
     await microtasksFinished();
     const customSection =
         localCertsSection.shadowRoot.querySelector('#customCertsSection');
@@ -281,10 +282,10 @@ suite('LocalCertsSectionV2Test', () => {
       numUserCerts: 0,
       showUserCertsUi: false,
     };
-    testProxy.handler.setCertManagementMetadata(metadata);
+    testHandler.setCertManagementMetadata(metadata);
     initializeElement();
 
-    await testProxy.handler.whenCalled('getCertManagementMetadata');
+    await testHandler.whenCalled('getCertManagementMetadata');
     await pluralStringProxy.whenCalled('getPluralString');
     await microtasksFinished();
     const customSection =
@@ -303,10 +304,10 @@ suite('LocalCertsSectionV2Test', () => {
       numUserCerts: 0,
       showUserCertsUi: false,
     };
-    testProxy.handler.setCertManagementMetadata(metadata);
+    testHandler.setCertManagementMetadata(metadata);
     initializeElement();
 
-    await testProxy.handler.whenCalled('getCertManagementMetadata');
+    await testHandler.whenCalled('getCertManagementMetadata');
     await microtasksFinished();
     assertTrue(localCertsSection.$.importOsCerts.disabled);
   });
@@ -320,10 +321,10 @@ suite('LocalCertsSectionV2Test', () => {
       numUserCerts: 0,
       showUserCertsUi: false,
     };
-    testProxy.handler.setCertManagementMetadata(metadata);
+    testHandler.setCertManagementMetadata(metadata);
     initializeElement();
 
-    await testProxy.handler.whenCalled('getCertManagementMetadata');
+    await testHandler.whenCalled('getCertManagementMetadata');
     await microtasksFinished();
     assertFalse(localCertsSection.$.importOsCerts.disabled);
   });
@@ -339,15 +340,15 @@ suite('LocalCertsSectionV2Test', () => {
       numUserCerts: 0,
       showUserCertsUi: false,
     };
-    testProxy.handler.setCertManagementMetadata(metadata);
+    testHandler.setCertManagementMetadata(metadata);
     initializeElement();
 
-    await testProxy.handler.whenCalled('getCertManagementMetadata');
+    await testHandler.whenCalled('getCertManagementMetadata');
     await microtasksFinished();
 
     localCertsSection.$.importOsCerts.click();
-    await testProxy.handler.whenCalled('setIncludeSystemTrustStore');
-    assertFalse(testProxy.handler.getArgs('setIncludeSystemTrustStore')[0]);
+    await testHandler.whenCalled('setIncludeSystemTrustStore');
+    assertFalse(testHandler.getArgs('setIncludeSystemTrustStore')[0]);
   });
 
   test('import OS certs toggle enable', async () => {
@@ -359,15 +360,15 @@ suite('LocalCertsSectionV2Test', () => {
       numUserCerts: 0,
       showUserCertsUi: false,
     };
-    testProxy.handler.setCertManagementMetadata(metadata);
+    testHandler.setCertManagementMetadata(metadata);
     initializeElement();
 
-    await testProxy.handler.whenCalled('getCertManagementMetadata');
+    await testHandler.whenCalled('getCertManagementMetadata');
     await microtasksFinished();
 
     localCertsSection.$.importOsCerts.click();
-    await testProxy.handler.whenCalled('setIncludeSystemTrustStore');
-    assertTrue(testProxy.handler.getArgs('setIncludeSystemTrustStore')[0]);
+    await testHandler.whenCalled('setIncludeSystemTrustStore');
+    assertTrue(testHandler.getArgs('setIncludeSystemTrustStore')[0]);
   });
   // </if>
 
@@ -385,10 +386,10 @@ suite('LocalCertsSectionV2Test', () => {
       numUserCerts: 5,
       showUserCertsUi: true,
     };
-    testProxy.handler.setCertManagementMetadata(metadata);
+    testHandler.setCertManagementMetadata(metadata);
     initializeElement();
 
-    await testProxy.handler.whenCalled('getCertManagementMetadata');
+    await testHandler.whenCalled('getCertManagementMetadata');
     await microtasksFinished();
     const customSection =
         localCertsSection.shadowRoot.querySelector('#customCertsSection');
@@ -408,10 +409,10 @@ suite('LocalCertsSectionV2Test', () => {
       numUserCerts: 0,
       showUserCertsUi: false,
     };
-    testProxy.handler.setCertManagementMetadata(metadata);
+    testHandler.setCertManagementMetadata(metadata);
     initializeElement();
 
-    await testProxy.handler.whenCalled('getCertManagementMetadata');
+    await testHandler.whenCalled('getCertManagementMetadata');
     await microtasksFinished();
     const customSection =
         localCertsSection.shadowRoot.querySelector('#customCertsSection');
@@ -433,10 +434,10 @@ suite('LocalCertsSectionV2Test', () => {
           numUserCerts: 0,
           showUserCertsUi: false,
         };
-        testProxy.handler.setCertManagementMetadata(metadata);
+        testHandler.setCertManagementMetadata(metadata);
         initializeElement();
 
-        await testProxy.handler.whenCalled('getCertManagementMetadata');
+        await testHandler.whenCalled('getCertManagementMetadata');
         await microtasksFinished();
         const customSection =
             localCertsSection.shadowRoot.querySelector('#customCertsSection');

@@ -4,22 +4,22 @@
 
 import 'chrome://certificate-manager/certificate_subpage.js';
 
-import {CertificateSource} from 'chrome://certificate-manager/certificate_manager.mojom-webui.js';
+import {browserProxyFactory, CertificateSource} from 'chrome://certificate-manager/certificate_manager.mojom-webui.js';
 import type {CertificateSubpageElement, SubpageCertificateList} from 'chrome://certificate-manager/certificate_subpage.js';
-import {CertificatesBrowserProxy} from 'chrome://certificate-manager/certificates_browser_proxy.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
-import {TestCertificateManagerProxy} from './certificate_manager_test_support.js';
+import {FakePageHandler} from './certificate_manager_test_support.js';
 
 suite('CertificateSubpageV2Test', () => {
   let certSubpage: CertificateSubpageElement;
-  let testProxy: TestCertificateManagerProxy;
+  let testHandler: FakePageHandler;
 
   setup(() => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    testProxy = new TestCertificateManagerProxy();
-    CertificatesBrowserProxy.setInstance(testProxy);
+    testHandler = new FakePageHandler();
+    const {instance} = browserProxyFactory.createForTest(testHandler);
+    browserProxyFactory.setInstance(instance);
   });
 
   function initializeElement() {
@@ -52,7 +52,7 @@ suite('CertificateSubpageV2Test', () => {
   }
 
   test('element check', async () => {
-    testProxy.handler.setCertificatesCallback(() => {
+    testHandler.setCertificatesCallback(() => {
       return {
         certs: [
           {
@@ -73,7 +73,7 @@ suite('CertificateSubpageV2Test', () => {
 
     await microtasksFinished();
     assertEquals(
-        2, testProxy.handler.getCallCount('getCertificates'),
+        2, testHandler.getCallCount('getCertificates'),
         'getCertificates called incorrect amount of times');
 
     const lists = certSubpage.shadowRoot.querySelectorAll('certificate-list');

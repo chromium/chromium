@@ -12,11 +12,10 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import {DisclaimerState} from './aim_eligibility.mojom-webui.js';
-import type {DriveStatus, EligibilityState} from './aim_eligibility.mojom-webui.js';
+import {browserProxyFactory, DisclaimerState} from './aim_eligibility.mojom-webui.js';
+import type {BrowserProxy, DriveStatus, EligibilityState} from './aim_eligibility.mojom-webui.js';
 import {getCss} from './app.css.js';
 import {getHtml} from './app.html.js';
-import {BrowserProxy} from './browser_proxy.js';
 
 // Input states.
 enum InputState {
@@ -70,10 +69,9 @@ export class AimEligibilityAppElement extends CrLitElement {
   protected accessor showFooter_: boolean =
       loadTimeData.getBoolean('showAimEligibilityFooter');
 
-  private callbackRouter_ = BrowserProxy.getInstance().getCallbackRouter();
+  private proxy_: BrowserProxy = browserProxyFactory.getInstance();
   private listenerIds_: number[] = [];
   private openWindowProxy_ = OpenWindowProxyImpl.getInstance();
-  private pageHandler_ = BrowserProxy.getInstance().getPageHandler();
 
   override connectedCallback() {
     super.connectedCallback();
@@ -83,13 +81,13 @@ export class AimEligibilityAppElement extends CrLitElement {
     // </if>
 
     this.listenerIds_.push(
-        this.callbackRouter_.onEligibilityStateChanged.addListener(
+        this.proxy_.callbackRouter.onEligibilityStateChanged.addListener(
             this.onEligibilityStateChanged_.bind(this)));
     this.listenerIds_.push(
-        this.callbackRouter_.onDriveStatusChanged.addListener(
+        this.proxy_.callbackRouter.onDriveStatusChanged.addListener(
             this.onDriveStatusChanged_.bind(this)));
 
-    this.pageHandler_.getEligibilityState().then(
+    this.proxy_.handler.getEligibilityState().then(
         ({state}) => this.onEligibilityStateChanged_(state));
   }
 
@@ -97,7 +95,7 @@ export class AimEligibilityAppElement extends CrLitElement {
     super.disconnectedCallback();
 
     for (const listenerId of this.listenerIds_) {
-      this.callbackRouter_.removeListener(listenerId);
+      this.proxy_.callbackRouter.removeListener(listenerId);
     }
     this.listenerIds_ = [];
   }
@@ -111,7 +109,7 @@ export class AimEligibilityAppElement extends CrLitElement {
   }
 
   protected onServerRequestClick_() {
-    this.pageHandler_.requestServerEligibilityForDebugging();
+    this.proxy_.handler.requestServerEligibilityForDebugging();
   }
 
   protected onViewResponseClick_() {
@@ -124,7 +122,7 @@ export class AimEligibilityAppElement extends CrLitElement {
   }
 
   protected async onSaveResponseClick_() {
-    const result = await this.pageHandler_.setEligibilityResponseForDebugging(
+    const result = await this.proxy_.handler.setEligibilityResponseForDebugging(
         this.eligibilityState_.eligibilityResponseBase64Encoded);
     this.inputState_ = result.success ? InputState.NONE : InputState.FAIL;
   }

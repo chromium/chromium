@@ -5,9 +5,10 @@
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {Time} from '//resources/mojo/mojo/public/mojom/base/time.mojom-webui.js';
 
+import {browserProxyFactory} from './logs.mojom-webui.js';
+import type {BrowserProxy} from './logs.mojom-webui.js';
 import {getCss} from './logs_app.css.js';
 import {getHtml} from './logs_app.html.js';
-import {BrowserProxy} from './logs_browser_proxy.js';
 
 /**
  * Converts a mojo time to a JS time.
@@ -144,7 +145,7 @@ export class LogsAppElement extends CrLitElement {
   }
 
 
-  private proxy_: BrowserProxy = BrowserProxy.getInstance();
+  private proxy_: BrowserProxy = browserProxyFactory.getInstance();
   private listenerIds_: number[] = [];
 
   private onWindowClick_ = (e: Event) => {
@@ -173,7 +174,7 @@ export class LogsAppElement extends CrLitElement {
   override connectedCallback() {
     super.connectedCallback();
     this.listenerIds_ =
-        [this.proxy_.getCallbackRouter().onLogMessageAdded.addListener(
+        [this.proxy_.callbackRouter.onLogMessageAdded.addListener(
             this.onLogMessageAdded_.bind(this))];
     window.addEventListener('click', this.onWindowClick_);
   }
@@ -181,7 +182,7 @@ export class LogsAppElement extends CrLitElement {
   override disconnectedCallback() {
     super.disconnectedCallback();
     this.listenerIds_.forEach(
-        id => this.proxy_.getCallbackRouter().removeListener(id));
+        id => this.proxy_.callbackRouter.removeListener(id));
     this.listenerIds_ = [];
     window.removeEventListener('click', this.onWindowClick_);
   }

@@ -25,9 +25,8 @@ import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 
 import {getCss} from './certificate_list.css.js';
 import {getHtml} from './certificate_list.html.js';
-import {CertificateSource} from './certificate_manager.mojom-webui.js';
+import {browserProxyFactory, CertificateSource} from './certificate_manager.mojom-webui.js';
 import type {ActionResult, SummaryCertInfo} from './certificate_manager.mojom-webui.js';
-import {CertificatesBrowserProxy} from './certificates_browser_proxy.js';
 
 const CertificateListElementBase = I18nMixinLit(CrLitElement);
 
@@ -103,7 +102,7 @@ export class CertificateListElement extends CertificateListElementBase {
 
     this.refreshCertificates_();
 
-    const proxy = CertificatesBrowserProxy.getInstance();
+    const proxy = browserProxyFactory.getInstance();
     proxy.callbackRouter.triggerReload.addListener(
         this.onRefreshRequested_.bind(this));
   }
@@ -115,7 +114,7 @@ export class CertificateListElement extends CertificateListElementBase {
   }
 
   protected refreshCertificates_() {
-    CertificatesBrowserProxy.getInstance()
+    browserProxyFactory.getInstance()
         .handler.getCertificates(this.certSource)
         .then((results: {certs: SummaryCertInfo[]}) => {
           this.certificates_ = results.certs;
@@ -125,14 +124,14 @@ export class CertificateListElement extends CertificateListElementBase {
   protected onExportCertsClick_(e: Event) {
     // Export button click shouldn't collapse the list as well.
     e.stopPropagation();
-    CertificatesBrowserProxy.getInstance().handler.exportCertificates(
+    browserProxyFactory.getInstance().handler.exportCertificates(
         this.certSource);
   }
 
   protected onImportCertClick_(e: Event) {
     // Import button click shouldn't collapse the list as well.
     e.stopPropagation();
-    CertificatesBrowserProxy.getInstance()
+    browserProxyFactory.getInstance()
         .handler.importCertificate(this.certSource)
         .then(this.handleImportResult.bind(this));
   }
@@ -140,7 +139,7 @@ export class CertificateListElement extends CertificateListElementBase {
   protected onImportAndBindCertClick_(e: Event) {
     // Import button click shouldn't collapse the list as well.
     e.stopPropagation();
-    CertificatesBrowserProxy.getInstance()
+    browserProxyFactory.getInstance()
         .handler.importAndBindCertificate(this.certSource)
         .then(this.handleImportResult.bind(this));
   }
