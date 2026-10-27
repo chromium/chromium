@@ -150,25 +150,32 @@ def _format_export(exp):
     return exp if '=' in exp else f'{exp}=ALL-UNNAMED'
 
 
-def extract_jdk_sources(dest_dir, prefix='java.base/java/util/'):
+def extract_jdk_sources(
+    dest_dir, prefix='java.base/java/util/', recursive=False
+):
     """Extracts .java files from GraalVM's src.zip (e.g. for PGO workloads).
 
     Args:
       dest_dir: Directory to extract to.
-      prefix: Path prefix within src.zip of files to extract (non-recursive).
+      prefix: Path prefix (or tuple of prefixes) within src.zip of files to
+          extract.
+      recursive: Whether to also extract files in subdirectories of prefix.
     Returns:
       Sorted list of absolute paths to the extracted files.
     """
+    prefixes = (prefix,) if isinstance(prefix, str) else tuple(prefix)
     src_zip = os.path.join(ensure_graalvm(), 'lib', 'src.zip')
     ret = []
     with zipfile.ZipFile(src_zip) as z:
         for name in z.namelist():
-            if (
-                name.startswith(prefix)
-                and name.endswith('.java')
-                and '/' not in name[len(prefix) :]
-            ):
-                ret.append(os.path.abspath(z.extract(name, dest_dir)))
+            if not name.endswith('.java'):
+                continue
+            for p in prefixes:
+                if name.startswith(p) and (
+                    recursive or '/' not in name[len(p) :]
+                ):
+                    ret.append(os.path.abspath(z.extract(name, dest_dir)))
+                    break
     return sorted(ret)
 
 
@@ -226,11 +233,13 @@ def build_native_image(
     main_class=None,
     extra_cp=None,
     add_exports=None,
+    add_opens=None,
     tracing_args_list=None,
     extra_reachability_metadata=None,
     extra_native_image_args=None,
     pgo_args_list=None,
     java_home_relative_to_executable=None,
+    check_workloads=False,
 ):
     """Builds a GraalVM native-image binary from a jar file.
 
@@ -241,6 +250,8 @@ def build_native_image(
       main_class: Main class name. If None, read from MANIFEST.MF.
       extra_cp: Optional list of .jar paths to prepend to the classpath.
       add_exports: Optional list of module/package strings for --add-exports.
+      add_opens: Optional list of module/package strings for --add-opens (for
+          packages that are accessed reflectively at runtime).
       tracing_args_list: Optional list of argv lists to run under the GraalVM
           tracing agent (-agentlib:native-image-agent) before compiling.
       extra_reachability_metadata: Optional dict with 'reflection' and/or
@@ -255,6 +266,7 @@ def build_native_image(
       java_home_relative_to_executable: When set, java.home defaults to this
           path relative to the directory containing the executable (rather
           than to $JAVA_HOME or "."), like the JDK's own launchers do.
+      check_workloads: Whether to fail if tracing or PGO runs exit non-zero.
     """
     graal_home = ensure_graalvm()
     java_bin = os.path.join(graal_home, 'bin', 'java')
@@ -277,6 +289,11 @@ def build_native_image(
         formatted = _format_export(exp)
         if formatted not in all_exports:
             all_exports.append(formatted)
+    all_opens = []
+    for x in add_opens or []:
+        formatted = _format_export(x)
+        if formatted not in all_opens:
+            all_opens.append(formatted)
 
     cp_entries = [os.path.abspath(p) for p in (extra_cp or [])]
     if jar_path:
@@ -297,12 +314,14 @@ def build_native_image(
             agent_cmd = [java_bin, agent_flag]
             for exp in all_exports:
                 agent_cmd.append(f'--add-exports={exp}')
+            for x in all_opens:
+                agent_cmd.append(f'--add-opens={x}')
             if classpath:
                 agent_cmd.extend(['-cp', classpath])
             agent_cmd.append(main_class)
             agent_cmd.extend(tracing_args)
             # Tracing runs may intentionally exit non-zero (e.g. checkstyle).
-            common.run_cmd(agent_cmd, check=False)
+            common.run_cmd(agent_cmd, check=check_workloads)
 
         if tracing_args_list and not os.listdir(config_dir):
             raise RuntimeError(
@@ -364,6 +383,9 @@ def build_native_image(
             ]
             for exp in all_exports:
                 ni_cmd.append(f'-J--add-exports={exp}')
+            # Also applies at runtime (e.g. for setAccessible()).
+            for x in all_opens:
+                ni_cmd.append(f'--add-opens={x}')
             # native-image defaults to -march=x86-64-v3 (AVX2), which fails to
             # start on older hosts. Some intrinsics still use AVX and AVX2 when
             # available via -H:RuntimeCheckedCPUFeatures (default: AVX,AVX2).
@@ -396,7 +418,7 @@ def build_native_image(
                         f'-Djava.home={graal_home}',
                     ]
                     + pgo_args,
-                    check=False,
+                    check=check_workloads,
                 )
                 if not os.path.exists(profile):
                     raise RuntimeError(

@@ -79,21 +79,22 @@ def _detect_latest(maven_url, package):
     return latest
 
 
-def _install(
-    output_prefix,
-    deps_prefix,
-    maven_url,
-    package,
-    version,
-    jar_name=None,
-    post_process_func=None,
-):
-    # Runs in a docker container.
-    group_id, artifact_id = package.split(':')
-    if not jar_name:
-        jar_name = f'{artifact_id}.jar'
+def latest_version(maven_url, package):
+    """Returns the latest version of |package| (e.g. some.package:some-thing)."""
+    return _detect_latest(maven_url, package)
 
-    pathlib.Path('pom.xml').write_text(
+
+def build_jar_with_dependencies(maven_url, package, version, work_dir='.'):
+    """Builds a .jar containing |package| and its dependencies.
+
+    Must be called from within a 3pp checkout (it uses third_party/jdk).
+
+    Returns:
+      Path to the built .jar.
+    """
+    group_id, artifact_id = package.split(':')
+    os.makedirs(work_dir, exist_ok=True)
+    pathlib.Path(work_dir, 'pom.xml').write_text(
         _POM_TEMPLATE.format(
             version=version,
             group_id=group_id,
@@ -117,9 +118,28 @@ def _install(
         ['mvn', 'clean', 'assembly:single', '-f', 'pom.xml'],
         check=True,
         env=env,
+        cwd=work_dir,
+    )
+    return os.path.join(
+        work_dir, 'target', 'artifact-1-jar-with-dependencies.jar'
     )
 
-    src_jar_path = 'target/artifact-1-jar-with-dependencies.jar'
+
+def _install(
+    output_prefix,
+    deps_prefix,
+    maven_url,
+    package,
+    version,
+    jar_name=None,
+    post_process_func=None,
+):
+    # Runs in a docker container.
+    artifact_id = package.split(':')[1]
+    if not jar_name:
+        jar_name = f'{artifact_id}.jar'
+
+    src_jar_path = build_jar_with_dependencies(maven_url, package, version)
     dst_jar_path = os.path.join(output_prefix, jar_name)
     if post_process_func:
         post_process_func(src_jar_path, dst_jar_path)
