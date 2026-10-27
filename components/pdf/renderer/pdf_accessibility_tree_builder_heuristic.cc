@@ -128,6 +128,11 @@ constexpr int kSmallestHeadingLevel = 6;
 // heading.
 constexpr int kSemiBoldWeight = 600;
 
+// Minimum number of uppercase letters required for a standalone text run to be
+// considered all-uppercase, filtering out single-letter labels or codes (e.g.
+// "(A)", "P", "8B", "R1").
+constexpr size_t kMinUppercaseLetterCount = 2;
+
 // Min page height needed to label headers and footers. Page bounds are
 // reported in CSS pixels at 96 DPI, so this is just over an inch. A page
 // shorter than this is too small for a margin band to mean anything.
@@ -454,18 +459,21 @@ size_t NormalizeTextRunIndex(uint32_t object_end_text_run_index,
       current_text_run_index ? current_text_run_index - 1 : 0);
 }
 
-bool IsAllUppercase(base::span<const chrome_pdf::AccessibilityCharInfo> chars) {
-  bool has_cased_letter = false;
+// Returns the number of uppercase letters in `chars` if `chars` contains no
+// lowercase letters, or 0 otherwise.
+size_t CountAllUppercaseLetters(
+    base::span<const chrome_pdf::AccessibilityCharInfo> chars) {
+  size_t uppercase_count = 0;
   for (const auto& char_info : chars) {
     UChar32 c = static_cast<UChar32>(char_info.unicode_character);
     if (u_islower(c)) {
-      return false;
+      return 0;
     }
     if (u_isupper(c)) {
-      has_cased_letter = true;
+      ++uppercase_count;
     }
   }
-  return has_cased_letter;
+  return uppercase_count;
 }
 
 bool ContainsAlphanumeric(std::string_view text) {
@@ -1276,15 +1284,20 @@ HeadingClassifier GetHeadingClassifier(
 
   // Handle styled text that is the same size as the normal body text with more
   // caution so that stylized body text isn't mistaken as a heading.
-  bool is_run_all_uppercase = IsAllUppercase(run_context.chars);
+  size_t uppercase_count = CountAllUppercaseLetters(run_context.chars);
+  bool is_run_all_uppercase =
+      uppercase_count >= kMinUppercaseLetterCount ||
+      (uppercase_count > 0 && is_same_line &&
+       CountAllUppercaseLetters(run_context.next_chars) > 0);
   if (style.font_size == page_properties.median_font_size) {
     // If this is the last run of the page, label this body text.
     if (!next_run) {
       return HeadingClassifier::kNone;
     }
 
-    // Inline all-caps text (e.g. acronyms on the same line) is body text.
-    if (is_run_all_uppercase && is_same_line) {
+    // Inline uppercase tokens followed by more text on the same line (e.g.
+    // acronyms or labels like "A.1") are body text.
+    if (uppercase_count > 0 && is_same_line) {
       return HeadingClassifier::kNone;
     }
 

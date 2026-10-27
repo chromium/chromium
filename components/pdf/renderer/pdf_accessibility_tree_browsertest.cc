@@ -2260,6 +2260,126 @@ TEST_F(PdfAccessibilityTreeTest,
   EXPECT_EQ(ax::mojom::Role::kHeading, block1->GetRole());
 }
 
+TEST_F(PdfAccessibilityTreeTest, HeuristicSingleUppercaseLetterNotHeading) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {::features::kPdfAccessibilityHeuristicEnhancements},
+      {chrome_pdf::features::kPdfTags});
+
+  chrome_pdf::AccessibilityTextStyleInfo normal_style = CreateNormalStyle();
+
+  SetUpHeuristicAccessibilityTreeDetailed(
+      /*font_sizes=*/{10.0f, 10.0f, 10.0f, 10.0f},
+      {normal_style, normal_style, normal_style, normal_style},
+      MakeCharVector({"1A", "body1", "body2", "end"}));
+
+  const ui::AXNode* pdf_root = pdf_accessibility_tree_->GetRoot();
+  ASSERT_GT(pdf_root->GetChildCount(), 1u);
+  const ui::AXNode* page = pdf_root->GetChildAtIndex(1u);
+  ASSERT_NE(nullptr, page);
+
+  // A standalone line with a single uppercase letter should remain a paragraph
+  // rather than being promoted to a heading.
+  const ui::AXNode* block1 = page->GetChildAtIndex(0u);
+  ASSERT_NE(nullptr, block1);
+  EXPECT_EQ(ax::mojom::Role::kParagraph, block1->GetRole());
+}
+
+TEST_F(PdfAccessibilityTreeTest, HeuristicSmallCapsHeadingSameLinePromoted) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {::features::kPdfAccessibilityHeuristicEnhancements},
+      {chrome_pdf::features::kPdfTags});
+
+  chrome_pdf::AccessibilityTextStyleInfo normal_style = CreateNormalStyle();
+
+  // A larger initial capital followed on the same line by the rest of the
+  // all-caps heading, then body text on later lines.
+  SetUpHeuristicAccessibilityTreeDetailed(
+      /*font_sizes=*/{11.5f, 10.0f, 10.0f, 10.0f, 10.0f},
+      {normal_style, normal_style, normal_style, normal_style, normal_style},
+      MakeCharVector({"S", "MALL CAPS HEADING", "body1", "body2", "end"}),
+      {gfx::RectF(0.0f, 0.0f, 10.0f, 10.0f),
+       gfx::RectF(10.0f, 0.0f, 170.0f, 10.0f),
+       gfx::RectF(0.0f, 30.0f, 50.0f, 10.0f),
+       gfx::RectF(0.0f, 60.0f, 50.0f, 10.0f),
+       gfx::RectF(0.0f, 90.0f, 50.0f, 10.0f)});
+
+  const ui::AXNode* pdf_root = pdf_accessibility_tree_->GetRoot();
+  ASSERT_GT(pdf_root->GetChildCount(), 1u);
+  const ui::AXNode* page = pdf_root->GetChildAtIndex(1u);
+  ASSERT_NE(nullptr, page);
+
+  // The single uppercase initial counts as all-caps because the next run on
+  // the same line is all-caps, so both runs form one heading.
+  const ui::AXNode* block1 = page->GetChildAtIndex(0u);
+  ASSERT_NE(nullptr, block1);
+  EXPECT_EQ(ax::mojom::Role::kHeading, block1->GetRole());
+  EXPECT_EQ("SMALL CAPS HEADING",
+            block1->GetStringAttribute(ax::mojom::StringAttribute::kName));
+}
+
+TEST_F(PdfAccessibilityTreeTest,
+       HeuristicSingleUppercaseFollowedByNonUppercaseSameLineNotHeading) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {::features::kPdfAccessibilityHeuristicEnhancements},
+      {chrome_pdf::features::kPdfTags});
+
+  chrome_pdf::AccessibilityTextStyleInfo normal_style = CreateNormalStyle();
+
+  // A sub-threshold table row ("8B" followed by a number on the same line),
+  // then body text on later lines.
+  SetUpHeuristicAccessibilityTreeDetailed(
+      /*font_sizes=*/{11.5f, 11.5f, 10.0f, 10.0f, 10.0f},
+      {normal_style, normal_style, normal_style, normal_style, normal_style},
+      MakeCharVector({"8B", "0.0550", "body1", "body2", "end"}),
+      {gfx::RectF(0.0f, 0.0f, 20.0f, 10.0f),
+       gfx::RectF(30.0f, 0.0f, 60.0f, 10.0f),
+       gfx::RectF(0.0f, 30.0f, 50.0f, 10.0f),
+       gfx::RectF(0.0f, 60.0f, 50.0f, 10.0f),
+       gfx::RectF(0.0f, 90.0f, 50.0f, 10.0f)});
+
+  const ui::AXNode* pdf_root = pdf_accessibility_tree_->GetRoot();
+  ASSERT_GT(pdf_root->GetChildCount(), 1u);
+  const ui::AXNode* page = pdf_root->GetChildAtIndex(1u);
+  ASSERT_NE(nullptr, page);
+
+  const ui::AXNode* block1 = page->GetChildAtIndex(0u);
+  ASSERT_NE(nullptr, block1);
+  EXPECT_EQ(ax::mojom::Role::kParagraph, block1->GetRole());
+}
+
+TEST_F(PdfAccessibilityTreeTest,
+       HeuristicBoldLabelFollowedByTextSameLineNotHeading) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {::features::kPdfAccessibilityHeuristicEnhancements},
+      {chrome_pdf::features::kPdfTags});
+
+  chrome_pdf::AccessibilityTextStyleInfo bold_style = CreateBoldStyle();
+  chrome_pdf::AccessibilityTextStyleInfo normal_style = CreateNormalStyle();
+
+  // A median-size bold paragraph starting with a label run ("A.1 ") followed
+  // by bold text on the same line, then normal text on the next line.
+  SetUpHeuristicAccessibilityTreeDetailed(
+      /*font_sizes=*/{10.0f, 10.0f, 10.0f},
+      {bold_style, bold_style, normal_style},
+      MakeCharVector({"A.1 ", "Bold paragraph text", "more body text"}),
+      {gfx::RectF(0.0f, 0.0f, 40.0f, 10.0f),
+       gfx::RectF(40.0f, 0.0f, 190.0f, 10.0f),
+       gfx::RectF(0.0f, 30.0f, 140.0f, 10.0f)});
+
+  const ui::AXNode* pdf_root = pdf_accessibility_tree_->GetRoot();
+  ASSERT_GT(pdf_root->GetChildCount(), 1u);
+  const ui::AXNode* page = pdf_root->GetChildAtIndex(1u);
+  ASSERT_NE(nullptr, page);
+
+  const ui::AXNode* block1 = page->GetChildAtIndex(0u);
+  ASSERT_NE(nullptr, block1);
+  EXPECT_EQ(ax::mojom::Role::kParagraph, block1->GetRole());
+}
+
 TEST_F(PdfAccessibilityTreeTest,
        HeuristicAllCapsFollowedByNonAllCapsSameLineNotHeading) {
   base::test::ScopedFeatureList feature_list;
