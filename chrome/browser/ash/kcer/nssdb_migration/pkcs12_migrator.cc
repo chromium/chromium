@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "ash/constants/ash_features.h"
+#include "base/check_deref.h"
 #include "base/containers/span.h"
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
@@ -23,8 +24,10 @@
 #include "chrome/browser/net/nss_service.h"
 #include "chrome/browser/net/nss_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/kcer/cert_cache.h"
 #include "chromeos/ash/components/network/certificate_helper.h"
+#include "components/user_manager/user.h"
 #include "content/public/browser/browser_thread.h"
 #include "net/cert/nss_cert_database.h"
 #include "net/cert/x509_util_nss.h"
@@ -269,7 +272,8 @@ void Pkcs12Migrator::ExportedOneCert(net::ScopedCERTCertificateList certs,
                                  weak_factory_.GetWeakPtr(), std::move(certs));
   // Set the flag that some certs now exist in both NSS public slot and Chaps.
   // It might be needed for the rollback.
-  kcer::KcerFactoryAsh::RecordPkcs12CertDualWritten();
+  kcer::KcerFactoryAsh::RecordPkcs12CertDualWritten(CHECK_DEREF(
+      ash::BrowserContextHelper::Get()->GetUserByBrowserContext(context_)));
   kcer->ImportPkcs12Cert(Token::kUser, std::move(pkcs12),
                          /*password=*/std::string(),
                          /*hardware_backed=*/false, /*mark_as_migrated=*/true,

@@ -8,6 +8,7 @@
 #include "ash/constants/ash_switches.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
+#include "base/check_deref.h"
 #include "base/check_is_test.h"
 #include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
@@ -27,7 +28,6 @@
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user.h"
-#include "components/user_manager/user_manager.h"
 #include "content/public/browser/browser_thread.h"
 #include "net/cert/nss_cert_database.h"
 
@@ -158,8 +158,8 @@ bool KcerFactoryAsh::IsHighLevelChapsClientInitialized() {
 }
 
 // static
-void KcerFactoryAsh::RecordPkcs12CertDualWritten() {
-  GetInstance()->RecordPkcs12CertDualWrittenImpl();
+void KcerFactoryAsh::RecordPkcs12CertDualWritten(user_manager::User& user) {
+  GetInstance()->RecordPkcs12CertDualWrittenImpl(user);
 }
 
 // static
@@ -249,20 +249,9 @@ base::WeakPtr<Kcer> KcerFactoryAsh::GetKcerImpl(Profile* profile) {
   return service->kcer->GetWeakPtr();
 }
 
-void KcerFactoryAsh::RecordPkcs12CertDualWrittenImpl() {
-  user_manager::UserManager* manager = user_manager::UserManager::Get();
-  if (!manager) {
-    return;
-  }
-  user_manager::User* user = manager->GetActiveUser();
-  if (!user) {
-    return;
-  }
-  PrefService* prefs = user->GetProfilePrefs();
-  if (!prefs) {
-    return;
-  }
-  prefs->SetBoolean(ash::prefs::kNssChapsDualWrittenCertsExist, true);
+void KcerFactoryAsh::RecordPkcs12CertDualWrittenImpl(user_manager::User& user) {
+  CHECK_DEREF(user.GetProfilePrefs())
+      .SetBoolean(ash::prefs::kNssChapsDualWrittenCertsExist, true);
 }
 
 void KcerFactoryAsh::ClearNssTokenMapForTestingImpl() {

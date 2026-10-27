@@ -66,11 +66,13 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_features.h"
+#include "base/check_deref.h"
 #include "chrome/browser/ash/certificate_provider/certificate_provider_service.h"
 #include "chrome/browser/ash/certificate_provider/certificate_provider_service_factory.h"
 #include "chrome/browser/ash/kcer/kcer_factory_ash.h"
 #include "chrome/browser/ash/net/client_cert_store_kcer.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/kcer/kcer.h"
 #include "chromeos/components/certificate_provider/certificate_provider.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -790,7 +792,9 @@ class WritableClientCertSource
         base::WeakPtr<kcer::Kcer> kcer =
             kcer::KcerFactoryAsh::GetKcer(profile_);
         if (kcer) {
-          kcer::KcerFactoryAsh::RecordPkcs12CertDualWritten();
+          kcer::KcerFactoryAsh::RecordPkcs12CertDualWritten(CHECK_DEREF(
+              ash::BrowserContextHelper::Get()->GetUserByBrowserContext(
+                  profile_)));
           return kcer->ImportPkcs12Cert(
               kcer::Token::kUser, kcer::Pkcs12Blob(std::move(file_bytes)),
               std::move(password),

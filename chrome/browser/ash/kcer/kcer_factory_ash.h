@@ -21,6 +21,9 @@ class NSSCertDatabase;
 namespace kcer::internal {
 class KcerImpl;
 }  // namespace kcer::internal
+namespace user_manager {
+class User;
+}
 namespace user_prefs {
 class PrefRegistrySyncable;
 }
@@ -64,10 +67,9 @@ class KcerFactoryAsh : public ProfileKeyedServiceFactory {
   // needed just for testing.
   static bool IsHighLevelChapsClientInitialized();
 
-  // Creates an entry in user preferences in Ash that a PKCS#12 file was
-  // dual-written. This will be used in case a rollback for the related
-  // experiment is needed.
-  static void RecordPkcs12CertDualWritten();
+  // Records in the preferences of `user` that a PKCS#12 file was dual-written.
+  // This will be used in case a rollback for the related experiment is needed.
+  static void RecordPkcs12CertDualWritten(user_manager::User& user);
 
   // Clears cached NSS state. Useful for unittests using Kcer with a test NSS
   // database, the test should clear the Kcer state when finished to avoid
@@ -153,7 +155,7 @@ class KcerFactoryAsh : public ProfileKeyedServiceFactory {
       base::WeakPtr<internal::KcerToken> device_token);
 
   base::WeakPtr<Kcer> GetKcerImpl(Profile* profile);
-  void RecordPkcs12CertDualWrittenImpl();
+  void RecordPkcs12CertDualWrittenImpl(user_manager::User& user);
   void ClearNssTokenMapForTestingImpl();
 
   // Used by `high_level_chaps_client_` and must outlive it.

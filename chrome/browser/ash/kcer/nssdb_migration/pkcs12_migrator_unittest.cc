@@ -6,21 +6,28 @@
 
 #include <memory>
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/ash/kcer/kcer_factory_ash.h"
-#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/ash/login/test/chrome_user_session_test_environment_delegate.h"
 #include "chrome/browser/net/fake_nss_service.h"
-#include "chrome/test/base/testing_profile.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/test/base/testing_browser_process.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/kcer/chaps/mock_high_level_chaps_client.h"
 #include "chromeos/ash/components/kcer/kcer.h"
 #include "chromeos/ash/components/kcer/kcer_impl.h"
 #include "chromeos/ash/components/kcer/kcer_nss/test_utils.h"
+#include "components/account_id/account_id_literal.h"
 #include "components/prefs/pref_service.h"
-#include "components/user_manager/scoped_user_manager.h"
+#include "components/session_manager/test/user_session_test_environment.h"
+#include "content/public/browser/browser_thread.h"
 #include "content/public/test/browser_task_environment.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "net/cert/scoped_nss_types.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -31,6 +38,10 @@ using base::test::RunOnceCallbackRepeatedly;
 
 namespace kcer {
 namespace {
+
+constexpr AccountId::Literal kAccountId =
+    AccountId::Literal::FromUserEmailGaiaId("test@example.com",
+                                            GaiaId::Literal("123456"));
 
 enum class NssSlot {
   kPublic,
@@ -61,33 +72,46 @@ std::unique_ptr<KeyedService> CreateKcer(
 
 class KcerPkcs12MigratorTest : public testing::Test {
  public:
-  KcerPkcs12MigratorTest()
-      : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME,
-                          base::test::TaskEnvironment::MainThreadType::UI),
-        fake_user_manager_(std::make_unique<ash::FakeChromeUserManager>()) {}
+  KcerPkcs12MigratorTest() {
+    // The logged-in user's profile is primary, so Pkcs12MigratorFactory would
+    // start a second migrator alongside the one under test.
+    feature_list_.InitAndDisableFeature(
+        ash::features::kCopyClientKeysCertsToChaps);
+  }
 
   void SetUp() override {
-    profile_ = TestingProfile::Builder().Build();
-    auto account = AccountId::FromUserEmail("test@example.com");
-    fake_user_manager_->AddUserWithAffiliationAndTypeAndProfile(
-        account, false, user_manager::UserType::kRegular, profile_.get());
-    // TODO(crbug.com/40225390): Use ProfileUserManagerController.
-    fake_user_manager_->OnUserProfileCreated(account, profile_->GetPrefs());
-    fake_user_manager_->LoginUser(account);
+    auto* browser_process = TestingBrowserProcess::GetGlobal();
+    user_session_test_environment_ = std::make_unique<
+        ash::test::UserSessionTestEnvironment>(
+        browser_process->local_state(),
+        std::make_unique<ash::test::ChromeUserSessionTestEnvironmentDelegate>(
+            browser_process));
+    ASSERT_TRUE(user_session_test_environment_->AddRegularUser(kAccountId));
+    user_session_test_environment_->LogIn(kAccountId);
+    profile_ = Profile::FromBrowserContext(
+        ash::BrowserContextHelper::Get()->GetBrowserContextByAccountId(
+            kAccountId));
+    ASSERT_TRUE(profile_);
 
-    migrator_ = std::make_unique<Pkcs12Migrator>(profile_.get());
+    migrator_ = std::make_unique<Pkcs12Migrator>(profile_);
 
     nss_service_ = FakeNssService::InitializeForBrowserContext(
-        profile_.get(),
+        profile_,
         /*enable_system_slot=*/false);
 
-    InitKcer(profile_.get());
+    InitKcer(profile_);
 
     // Sanity check that by default the flag is false for all tests.
     ASSERT_FALSE(GetDualWrittenFlag());
   }
 
-  void TearDown() override { nss_service_ = nullptr; }
+  void TearDown() override {
+    kcer_token_.reset();
+    nss_service_ = nullptr;
+    migrator_.reset();
+    profile_ = nullptr;
+    user_session_test_environment_.reset();
+  }
 
   void InitKcer(Profile* profile) {
     kcer_token_ =
@@ -136,21 +160,22 @@ class KcerPkcs12MigratorTest : public testing::Test {
   }
 
   bool GetDualWrittenFlag() {
-    return user_manager::UserManager::Get()
-        ->GetActiveUser()
-        ->GetProfilePrefs()
-        ->GetBoolean(ash::prefs::kNssChapsDualWrittenCertsExist);
+    return profile_->GetPrefs()->GetBoolean(
+        ash::prefs::kNssChapsDualWrittenCertsExist);
   }
 
  protected:
-  content::BrowserTaskEnvironment task_environment_;
-  std::unique_ptr<TestingProfile> profile_;
-  user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
-      fake_user_manager_;
-  std::unique_ptr<internal::KcerToken> kcer_token_;
+  base::test::ScopedFeatureList feature_list_;
+  content::BrowserTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME,
+      base::test::TaskEnvironment::MainThreadType::UI};
+  std::unique_ptr<ash::test::UserSessionTestEnvironment>
+      user_session_test_environment_;
+  raw_ptr<Profile> profile_ = nullptr;
   std::unique_ptr<Pkcs12Migrator> migrator_;
-  MockHighLevelChapsClient chaps_client_;
   raw_ptr<FakeNssService> nss_service_;
+  MockHighLevelChapsClient chaps_client_;
+  std::unique_ptr<internal::KcerToken> kcer_token_;
   base::HistogramTester histogram_tester_;
 };
 
