@@ -853,7 +853,7 @@ BASE_FEATURE(kGlicWarming, base::FEATURE_DISABLED_BY_DEFAULT);
 // Controls the amount of time from the GlicButtonController scheduling
 // preload to the start of preloading (if preloading is possible).
 const base::FeatureParam<int> kGlicWarmingDelayMs{
-    &kGlicWarming, "glic-warming-delay-ms", 20 * 1000};
+    &kGlicWarming, "glic-warming-delay-ms", 300000};
 
 // Blocks prewarming if the device has less than this amount of physical memory.
 // If 0, memory is not checked.
