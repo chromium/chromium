@@ -76,6 +76,11 @@ bool LockScreenCaptivePortalDialog::IsRunning() const {
   return is_running_;
 }
 
+captive_portal::CaptivePortalWindowType
+LockScreenCaptivePortalDialog::GetCaptivePortalWindowType() const {
+  return captive_portal::CaptivePortalWindowType::kPopup;
+}
+
 bool LockScreenCaptivePortalDialog::IsDialogClosedForTesting(
     base::OnceClosure callback) {
   if (!is_running_) {

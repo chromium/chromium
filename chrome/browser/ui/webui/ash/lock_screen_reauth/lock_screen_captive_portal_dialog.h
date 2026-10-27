@@ -10,6 +10,7 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
 #include "chrome/browser/ui/webui/ash/lock_screen_reauth/base_lock_dialog.h"
+#include "components/captive_portal/core/captive_portal_types.h"
 #include "ui/views/widget/widget.h"
 
 class Profile;
@@ -26,6 +27,10 @@ class LockScreenCaptivePortalDialog : public BaseLockDialog {
   void Dismiss();
   void OnDialogClosed(const std::string& json_retval) override;
   bool IsRunning() const;
+
+  // SystemWebDialogDelegate:
+  captive_portal::CaptivePortalWindowType GetCaptivePortalWindowType()
+      const override;
 
   // Used for waiting for the dialog to be closed or shown in tests.
   bool IsDialogClosedForTesting(base::OnceClosure callback);

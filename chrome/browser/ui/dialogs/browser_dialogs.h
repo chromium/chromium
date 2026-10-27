@@ -15,6 +15,7 @@
 #include "chrome/browser/task_manager/task_manager_metrics_recorder.h"
 #include "chrome/browser/ui/bookmarks/bookmark_editor.h"
 #include "components/autofill/core/common/unique_ids.h"
+#include "components/captive_portal/core/captive_portal_types.h"
 #include "components/compose/buildflags.h"
 #include "components/compose/core/browser/compose_client.h"
 #include "extensions/buildflags/buildflags.h"
@@ -117,11 +118,18 @@ void ShowTabModal(std::unique_ptr<ui::DialogModel> dialog_model,
 // Make sure to use the returned window only when you know it is safe
 // to do so, i.e. before OnDialogClosed() is called on the delegate.
 //
+// `captive_portal_window_type` marks the dialog's WebContents as a captive
+// portal sign-in surface, as NavigateParams::captive_portal_window_type does
+// for a browser window.
+//
 // Please use tabs::TabDialogManager for showing dialogs on desktop platforms.
-gfx::NativeWindow ShowWebDialog(gfx::NativeView parent,
-                                content::BrowserContext* context,
-                                ui::WebDialogDelegate* delegate,
-                                bool show = true);
+gfx::NativeWindow ShowWebDialog(
+    gfx::NativeView parent,
+    content::BrowserContext* context,
+    ui::WebDialogDelegate* delegate,
+    bool show = true,
+    captive_portal::CaptivePortalWindowType captive_portal_window_type =
+        captive_portal::CaptivePortalWindowType::kNone);
 
 #if BUILDFLAG(IS_MAC)
 

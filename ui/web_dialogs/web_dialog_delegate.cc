@@ -196,10 +196,6 @@ void WebDialogDelegate::SetAccessibleTitleChangedCallback(
   accessible_title_changed_callback_ = std::move(callback);
 }
 
-bool WebDialogDelegate::ShouldDisableHttpsUpgrades() const {
-  return false;
-}
-
 base::WeakPtr<WebDialogDelegate> WebDialogDelegate::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();
 }

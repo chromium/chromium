@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/chrome_web_dialog_view.h"
 
 #include <memory>
+#include <utility>
 
 #include "build/build_config.h"
 #include "chrome/browser/ui/webui/chrome_web_contents_handler.h"
@@ -44,11 +45,14 @@ gfx::NativeWindow CreateWebDialogWidget(views::Widget::InitParams params,
 }  // namespace
 
 // Declared in browser_dialogs.h so that others don't need to depend on our .h.
-gfx::NativeWindow ShowWebDialog(gfx::NativeView parent,
-                                content::BrowserContext* context,
-                                ui::WebDialogDelegate* delegate,
-                                bool show) {
-  return ShowWebDialogWithParams(parent, context, delegate, std::nullopt, show);
+gfx::NativeWindow ShowWebDialog(
+    gfx::NativeView parent,
+    content::BrowserContext* context,
+    ui::WebDialogDelegate* delegate,
+    bool show,
+    captive_portal::CaptivePortalWindowType captive_portal_window_type) {
+  return ShowWebDialogWithParams(parent, context, delegate, std::nullopt, show,
+                                 captive_portal_window_type);
 }
 
 gfx::NativeWindow ShowWebDialogWithParams(
@@ -56,14 +60,15 @@ gfx::NativeWindow ShowWebDialogWithParams(
     content::BrowserContext* context,
     ui::WebDialogDelegate* delegate,
     std::optional<views::Widget::InitParams> extra_params,
-    bool show) {
+    bool show,
+    captive_portal::CaptivePortalWindowType captive_portal_window_type) {
+  auto handler =
+      std::make_unique<ChromeWebContentsHandler>(captive_portal_window_type);
   views::WebDialogView* view = nullptr;
 #if BUILDFLAG(IS_CHROMEOS)
-  view = new ash::SystemWebDialogView(
-      context, delegate, std::make_unique<ChromeWebContentsHandler>());
+  view = new ash::SystemWebDialogView(context, delegate, std::move(handler));
 #else
-  view = new views::WebDialogView(context, delegate,
-                                  std::make_unique<ChromeWebContentsHandler>());
+  view = new views::WebDialogView(context, delegate, std::move(handler));
 #endif
 
   // If the corner radius is specified, set it to |views::DialogDelegate|.

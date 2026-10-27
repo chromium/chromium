@@ -443,11 +443,12 @@ void WebDialogView::InitDialog() {
   // the comment above WebDialogUI in its header file for why.
   WebDialogUI::SetDelegate(web_contents, delegate_);
 
+  // Must precede the initial load so that anything the embedder attaches here
+  // sees the dialog's first navigation.
+  OnDialogWebContentsCreated(web_contents);
+
   if (!disable_url_load_for_test_) {
-    auto policy = (delegate_ && delegate_->ShouldDisableHttpsUpgrades())
-                      ? views::WebView::HttpsUpgradePolicy::kNoUpgrade
-                      : views::WebView::HttpsUpgradePolicy::kAllowUpgrade;
-    web_view_->LoadInitialURL(delegate_->GetDialogContentURL(), policy);
+    web_view_->LoadInitialURL(delegate_->GetDialogContentURL());
   }
 }
 

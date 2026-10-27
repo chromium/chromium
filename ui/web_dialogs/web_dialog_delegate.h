@@ -310,11 +310,6 @@ class WEB_DIALOGS_EXPORT WebDialogDelegate {
 
   void set_dialog_frame_kind(FrameKind frame_kind) { frame_kind_ = frame_kind; }
 
-  // Returns true if HTTPS upgrades should be disabled for the initial load.
-  // This exception is restricted to captive portals or specific dialogs
-  // with explicit security exemptions.
-  virtual bool ShouldDisableHttpsUpgrades() const;
-
   base::WeakPtr<WebDialogDelegate> GetWeakPtr();
 
  private:

@@ -7,6 +7,7 @@
 
 #include <optional>
 
+#include "components/captive_portal/core/captive_portal_types.h"
 #include "ui/gfx/native_ui_types.h"
 #include "ui/views/widget/widget.h"
 
@@ -26,7 +27,9 @@ gfx::NativeWindow ShowWebDialogWithParams(
     content::BrowserContext* context,
     ui::WebDialogDelegate* delegate,
     std::optional<views::Widget::InitParams> extra_params,
-    bool show = true);
+    bool show = true,
+    captive_portal::CaptivePortalWindowType captive_portal_window_type =
+        captive_portal::CaptivePortalWindowType::kNone);
 
 }  // namespace chrome
 

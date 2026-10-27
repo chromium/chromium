@@ -12,6 +12,8 @@ static_library("system_web_dialog") {
     "system_web_dialog_view.h",
   ]
 
+  public_deps = [ "//components/captive_portal/core" ]
+
   deps = [
     "//ash/public/cpp",
     "//base",

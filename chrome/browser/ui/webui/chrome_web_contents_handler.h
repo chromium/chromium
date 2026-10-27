@@ -5,12 +5,17 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_CHROME_WEB_CONTENTS_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_CHROME_WEB_CONTENTS_HANDLER_H_
 
+#include "components/captive_portal/core/captive_portal_types.h"
 #include "ui/web_dialogs/web_dialog_web_contents_delegate.h"
 
 class ChromeWebContentsHandler
     : public ui::WebDialogWebContentsDelegate::WebContentsHandler {
  public:
-  ChromeWebContentsHandler();
+  // Unless `captive_portal_window_type` is kNone, a CaptivePortalTabHelper of
+  // that type is attached to the dialog's WebContents when it is created.
+  explicit ChromeWebContentsHandler(
+      captive_portal::CaptivePortalWindowType captive_portal_window_type =
+          captive_portal::CaptivePortalWindowType::kNone);
 
   ChromeWebContentsHandler(const ChromeWebContentsHandler&) = delete;
   ChromeWebContentsHandler& operator=(const ChromeWebContentsHandler&) = delete;
@@ -34,6 +39,10 @@ class ChromeWebContentsHandler
   void RunFileChooser(content::RenderFrameHost* render_frame_host,
                       scoped_refptr<content::FileSelectListener> listener,
                       const blink::mojom::FileChooserParams& params) override;
+  void OnDialogWebContentsCreated(content::WebContents* web_contents) override;
+
+ private:
+  const captive_portal::CaptivePortalWindowType captive_portal_window_type_;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_CHROME_WEB_CONTENTS_HANDLER_H_

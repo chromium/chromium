@@ -67,4 +67,10 @@ void WebDialogWebContentsDelegate::RunFileChooser(
     const blink::mojom::FileChooserParams& params) {
   handler_->RunFileChooser(render_frame_host, listener, params);
 }
+
+void WebDialogWebContentsDelegate::OnDialogWebContentsCreated(
+    content::WebContents* web_contents) {
+  handler_->OnDialogWebContentsCreated(web_contents);
+}
+
 }  // namespace ui

@@ -335,11 +335,13 @@ if (!is_android) {
       "//chrome/test:test_support_ui",
       "//chrome/test/base:test_launcher_utils",
       "//components/captive_portal/content",
+      "//components/captive_portal/core",
       "//components/embedder_support",
       "//components/error_page/content/browser",
       "//components/safe_browsing/content/browser/password_protection",
       "//components/safe_browsing/content/browser/password_protection:test_support",
       "//components/security_interstitials/content:proto_gen",
+      "//components/tabs:public",
       "//content/test:browsertest_support",
       "//content/test:test_support",
       "//crypto:test_support",
@@ -348,10 +350,16 @@ if (!is_android) {
       "//services/network/public/cpp:ip_address_space_overrides_test_utils",
       "//services/network/public/proto:sct_audit_report_proto_gen",
       "//testing/gtest",
+      "//ui/views",
+      "//ui/web_dialogs:test_support",
     ]
 
     if (enable_captive_portal_detection) {
-      sources += [ "captive_portal_blocking_page_browsertest.cc" ]
+      sources += [
+        "captive_portal_blocking_page_browsertest.cc",
+        "https_upgrades_web_dialog_browsertest.cc",
+      ]
+      deps += [ "//chrome/browser/ui/dialogs:browser_dialogs" ]
     }
 
     if (safe_browsing_mode == 1) {

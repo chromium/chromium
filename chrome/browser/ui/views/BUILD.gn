@@ -1193,6 +1193,7 @@ source_set("chrome_web_dialog_view") {
   public = [ "chrome_web_dialog_view.h" ]
   public_deps = [
     "//base",
+    "//components/captive_portal/core",
     "//ui/gfx/geometry",
     "//ui/views/controls/webview",
   ]

@@ -206,6 +206,11 @@ void SystemWebDialogDelegate::OnDialogShown(content::WebUI* webui) {
                                   blink::ZoomFactorToZoomLevel(1.0));
 }
 
+captive_portal::CaptivePortalWindowType
+SystemWebDialogDelegate::GetCaptivePortalWindowType() const {
+  return captive_portal::CaptivePortalWindowType::kNone;
+}
+
 void SystemWebDialogDelegate::ShowSystemDialogForBrowserContext(
     content::BrowserContext* browser_context,
     gfx::NativeWindow parent) {
@@ -219,7 +224,8 @@ void SystemWebDialogDelegate::ShowSystemDialogForBrowserContext(
   AdjustWidgetInitParams(&extra_params);
   dialog_window_ = chrome::ShowWebDialogWithParams(
       parent, browser_context, this,
-      std::make_optional<views::Widget::InitParams>(std::move(extra_params)));
+      std::make_optional<views::Widget::InitParams>(std::move(extra_params)),
+      /*show=*/true, GetCaptivePortalWindowType());
 }
 
 void SystemWebDialogDelegate::ShowSystemDialog(gfx::NativeWindow parent) {

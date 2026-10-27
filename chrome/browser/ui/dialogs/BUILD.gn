@@ -42,6 +42,7 @@ source_set("browser_dialogs") {
 
   public_deps = [
     "//base",
+    "//components/captive_portal/core",
     "//ui/base",
     "//ui/gfx",
   ]

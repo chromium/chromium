@@ -213,33 +213,79 @@ HttpsUpgradesInterceptor::HttpsUpgradesInterceptor(
 
 HttpsUpgradesInterceptor::~HttpsUpgradesInterceptor() = default;
 
-bool ShouldExcludeNavigationFromUpgrades(
+namespace {
+
+// Whether a navigation is excluded from HTTPS upgrades, and if so whether its
+// host should also be added to the persistent HTTP allowlist.
+enum class UpgradeExclusion {
+  // Not excluded; the navigation may be upgraded.
+  kNone,
+  // Exempt, and allowlist the host in the HTTP allowlist: the exclusion
+  // follows from a user action naming this host. Also covers the first
+  // main-frame load of a captive portal popup opened through Navigate(),
+  // because LoadURLParamsFromNavigateParams() sets force_no_https_upgrade
+  // whenever captive_portal_window_type is not kNone.
+  kExemptAndAllowlist,
+  // Exempt with no persistent state, for hosts chosen by the portal rather
+  // than named by the user: the renderer-initiated hops, redirects and
+  // subframe loads inside a sign-in window. Such a window is not always on a
+  // throwaway profile --
+  // ChromeSecurityBlockingPageFactory opens one on the user's regular profile
+  // when secure DNS is on -- so an entry written here could outlive the
+  // sign-in flow.
+  kExemptWithoutAllowlist,
+};
+
+UpgradeExclusion GetNavigationUpgradeExclusion(
     content::NavigationUIData* navigation_ui_data,
     content::WebContents* contents) {
-  // If the URL was typed with an explicit http:// URL or is captive portal
-  // login URL, it is opted-out from upgrades.
-  ChromeNavigationUIData* chrome_navigation_ui_data =
-      static_cast<ChromeNavigationUIData*>(navigation_ui_data);
-  if (!chrome_navigation_ui_data) {
-    return false;
-  }
-  if (!chrome_navigation_ui_data->force_no_https_upgrade()) {
-    return false;
-  }
-  NavigationRequestSecurityLevel level =
-      NavigationRequestSecurityLevel::kExplicitHttpScheme;
 #if BUILDFLAG(ENABLE_CAPTIVE_PORTAL_DETECTION)
+  // Null unless something attached one: TabHelpers::AttachTabHelpers() covers
+  // every tab, but a WebContents not hosted in a tab (a WebDialog) does not.
   captive_portal::CaptivePortalTabHelper* captive_portal_tab_helper =
       captive_portal::CaptivePortalTabHelper::FromWebContents(contents);
-  if (captive_portal_tab_helper->is_captive_portal_tab() ||
-      captive_portal_tab_helper->is_captive_portal_window()) {
-    level = NavigationRequestSecurityLevel::kCaptivePortalLogin;
-  }
 #endif
 
-  RecordNavigationRequestSecurityLevel(level);
-  return true;
+  // Marked as not-to-be-upgraded when the navigation started: the user typed
+  // an explicit http:// URL, or the surface opted its initial load out.
+  ChromeNavigationUIData* chrome_navigation_ui_data =
+      static_cast<ChromeNavigationUIData*>(navigation_ui_data);
+  if (chrome_navigation_ui_data &&
+      chrome_navigation_ui_data->force_no_https_upgrade()) {
+    NavigationRequestSecurityLevel level =
+        NavigationRequestSecurityLevel::kExplicitHttpScheme;
+#if BUILDFLAG(ENABLE_CAPTIVE_PORTAL_DETECTION)
+    if (captive_portal_tab_helper &&
+        (captive_portal_tab_helper->is_captive_portal_tab() ||
+         captive_portal_tab_helper->is_captive_portal_window())) {
+      level = NavigationRequestSecurityLevel::kCaptivePortalLogin;
+    }
+#endif
+    RecordNavigationRequestSecurityLevel(level);
+    return UpgradeExclusion::kExemptAndAllowlist;
+  }
+
+#if BUILDFLAG(ENABLE_CAPTIVE_PORTAL_DETECTION)
+  // A sign-in window is exempt however the navigation was started. Portals
+  // routinely serve a page that immediately redirects onward, and those
+  // renderer-initiated navigations carry no ChromeNavigationUIData, so keying
+  // off the navigation alone would only cover the first hop.
+  //
+  // Deliberately not is_captive_portal_tab(): a login *tab* has an omnibox and
+  // can show the usual HTTPS-First Mode UI. Gating on the window type also
+  // matches the existing captive portal secure DNS suppression.
+  if (captive_portal_tab_helper &&
+      captive_portal_tab_helper->is_captive_portal_window()) {
+    RecordNavigationRequestSecurityLevel(
+        NavigationRequestSecurityLevel::kCaptivePortalLogin);
+    return UpgradeExclusion::kExemptWithoutAllowlist;
+  }
+#endif  // BUILDFLAG(ENABLE_CAPTIVE_PORTAL_DETECTION)
+
+  return UpgradeExclusion::kNone;
 }
+
+}  // namespace
 
 void HttpsUpgradesInterceptor::MaybeCreateLoader(
     const network::ResourceRequest& tentative_resource_request,
@@ -362,18 +408,21 @@ void HttpsUpgradesInterceptor::MaybeCreateLoader(
   // allowlist those http:// connections instead.
   // TODO(crbug.com/363205521): Consider whether we want to allowlist captive
   // portal hostnames.
-  if (!IsStrictInterstitialEnabled(*interstitial_state_) &&
-      ShouldExcludeNavigationFromUpgrades(navigation_ui_data_, web_contents)) {
-    // Only allowlist the initial host of the navigation. Server-side redirect
-    // targets are not chosen by the user and shouldn't be persistently
-    // allowlisted.
-    if (state &&
-        tentative_resource_request.navigation_redirect_chain.size() <= 1) {
-      state->AllowHttpForHost(tentative_resource_request.url.GetHost(),
-                              storage_partition);
+  if (!IsStrictInterstitialEnabled(*interstitial_state_)) {
+    const UpgradeExclusion exclusion =
+        GetNavigationUpgradeExclusion(navigation_ui_data_, web_contents);
+    if (exclusion != UpgradeExclusion::kNone) {
+      // Only allowlist the initial host of the navigation. Server-side
+      // redirect targets are not chosen by the user and shouldn't be
+      // persistently allowlisted.
+      if (exclusion == UpgradeExclusion::kExemptAndAllowlist && state &&
+          tentative_resource_request.navigation_redirect_chain.size() <= 1) {
+        state->AllowHttpForHost(tentative_resource_request.url.GetHost(),
+                                storage_partition);
+      }
+      std::move(callback).Run({});
+      return;
     }
-    std::move(callback).Run({});
-    return;
   }
 
   // Check whether this host would be upgraded to HTTPS by HSTS. This requires a

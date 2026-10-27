@@ -63,6 +63,11 @@ class WEB_DIALOGS_EXPORT WebDialogWebContentsDelegate
         content::RenderFrameHost* render_frame_host,
         scoped_refptr<content::FileSelectListener> listener,
         const blink::mojom::FileChooserParams& params) = 0;
+    // Called after the dialog's WebContents is created and before its initial
+    // navigation, so that the embedder can attach WebContentsObservers and
+    // other per-WebContents state that must see that navigation.
+    virtual void OnDialogWebContentsCreated(
+        content::WebContents* web_contents) {}
   };
 
   // |context| and |handler| must be non-NULL.
@@ -102,6 +107,10 @@ class WEB_DIALOGS_EXPORT WebDialogWebContentsDelegate
   void RunFileChooser(content::RenderFrameHost* render_frame_host,
                       scoped_refptr<content::FileSelectListener> listener,
                       const blink::mojom::FileChooserParams& params) override;
+
+  // Called by the view hosting the dialog's WebContents; see
+  // WebContentsHandler::OnDialogWebContentsCreated().
+  void OnDialogWebContentsCreated(content::WebContents* web_contents);
 
  private:
   // Weak pointer.  Always an original profile.
