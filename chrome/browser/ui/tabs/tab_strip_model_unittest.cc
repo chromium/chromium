@@ -73,6 +73,7 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/models/list_selection_model.h"
 #include "ui/base/page_transition_types.h"
+#include "ui/base/test/mock_base_window.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "base/auto_reset.h"
@@ -8839,4 +8840,62 @@ TEST_F(TabStripModelTest, CloseWebContents) {
   EXPECT_EQ(2, tabstrip()->count());
   EXPECT_EQ(TabStripModel::kNoTab,
             tabstrip()->GetIndexOfWebContents(contents_to_close));
+}
+
+TEST_F(TabStripModelTest, ContextMenuCommandWindowActivation) {
+  testing::NiceMock<MockBrowserWindowInterface> bwi;
+  testing::NiceMock<ui::MockBaseWindow> base_window;
+  ON_CALL(bwi, GetWindow()).WillByDefault(::testing::Return(&base_window));
+  ON_CALL(bwi, GetTabStripModel()).WillByDefault(::testing::Return(tabstrip()));
+  delegate()->SetBrowserWindowInterface(&bwi);
+
+  PrepareTabstripForSelectionTest(tabstrip(), /*tab_count=*/5,
+                                  /*pinned_count=*/0,
+                                  /*selected_tabs=*/{0});
+
+  // Executing a non-close context menu command on an inactive window should
+  // activate it.
+  ON_CALL(base_window, IsActive()).WillByDefault(::testing::Return(false));
+  EXPECT_CALL(base_window, Activate()).Times(1);
+  tabstrip()->ExecuteContextMenuCommand(0, TabStripModel::CommandNewTabToRight);
+  testing::Mock::VerifyAndClearExpectations(&base_window);
+
+  // Executing a context menu command when the window is already active should
+  // not call Activate() again.
+  ON_CALL(base_window, IsActive()).WillByDefault(::testing::Return(true));
+  EXPECT_CALL(base_window, Activate()).Times(0);
+  tabstrip()->ExecuteContextMenuCommand(0, TabStripModel::CommandTogglePinned);
+  testing::Mock::VerifyAndClearExpectations(&base_window);
+
+  // Unpinning while inactive should activate the window.
+  ON_CALL(base_window, IsActive()).WillByDefault(::testing::Return(false));
+  EXPECT_CALL(base_window, Activate()).Times(1);
+  tabstrip()->ExecuteContextMenuCommand(0, TabStripModel::CommandTogglePinned);
+  testing::Mock::VerifyAndClearExpectations(&base_window);
+
+  // Submenu commands should also activate an inactive window.
+  const tab_groups::TabGroupId group_id = tabstrip()->AddToNewGroup({0});
+  ON_CALL(base_window, IsActive()).WillByDefault(::testing::Return(false));
+  EXPECT_CALL(base_window, Activate()).Times(1);
+  tabstrip()->ExecuteAddToExistingGroupCommand(1, group_id);
+  testing::Mock::VerifyAndClearExpectations(&base_window);
+
+  ON_CALL(base_window, IsActive()).WillByDefault(::testing::Return(false));
+  EXPECT_CALL(base_window, Activate()).Times(1);
+  tabstrip()->ExecuteAddToNewSplitCommand(
+      1, split_tabs::SplitTabLayout::kSideBySide);
+  testing::Mock::VerifyAndClearExpectations(&base_window);
+
+  // Close commands should not activate an inactive window.
+  ON_CALL(base_window, IsActive()).WillByDefault(::testing::Return(false));
+  EXPECT_CALL(base_window, Activate()).Times(0);
+  tabstrip()->ExecuteContextMenuCommand(4, TabStripModel::CommandCloseTab);
+  tabstrip()->ExecuteContextMenuCommand(2,
+                                        TabStripModel::CommandCloseTabsToRight);
+  tabstrip()->ExecuteContextMenuCommand(0,
+                                        TabStripModel::CommandCloseOtherTabs);
+  testing::Mock::VerifyAndClearExpectations(&base_window);
+
+  delegate()->SetBrowserWindowInterface(nullptr);
+  tabstrip()->CloseAllTabs();
 }

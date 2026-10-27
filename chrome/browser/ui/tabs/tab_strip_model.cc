@@ -195,6 +195,58 @@ void RecordToggleFocusGroupMetrics(bool is_unfocus,
   }
 }
 
+bool ShouldActivateWindowForContextMenuCommand(
+    TabStripModel::ContextMenuCommand command_id) {
+  switch (command_id) {
+    case TabStripModel::CommandCloseTab:
+    case TabStripModel::CommandCloseOtherTabs:
+    case TabStripModel::CommandCloseTabsToRight:
+    case TabStripModel::CommandCloseAllTabs:
+      return false;
+    case TabStripModel::CommandNewTabToRight:
+    case TabStripModel::CommandReload:
+    case TabStripModel::CommandDuplicate:
+    case TabStripModel::CommandTogglePinned:
+    case TabStripModel::CommandToggleGrouped:
+    case TabStripModel::CommandToggleSiteMuted:
+    case TabStripModel::CommandSendTabToSelf:
+    case TabStripModel::CommandAddToReadLater:
+    case TabStripModel::CommandAddToNewGroup:
+    case TabStripModel::CommandAddToExistingGroup:
+    case TabStripModel::CommandAddToNewGroupFromMenuItem:
+    case TabStripModel::CommandAddToSplit:
+    case TabStripModel::CommandSwapWithActiveSplit:
+    case TabStripModel::CommandArrangeSplit:
+    case TabStripModel::CommandRemoveFromGroup:
+    case TabStripModel::CommandMoveToExistingWindow:
+    case TabStripModel::CommandMoveTabsToNewWindow:
+    case TabStripModel::CommandCopyURL:
+    case TabStripModel::CommandGoBack:
+    case TabStripModel::CommandToggleVertical:
+    case TabStripModel::CommandGlicShare:
+    case TabStripModel::CommandGlicCreateNewChat:
+    case TabStripModel::CommandGlicSwitchToRecentConversation:
+    case TabStripModel::CommandGlicUnshare:
+    case TabStripModel::CommandAiModeShare:
+    case TabStripModel::CommandAiModeCreateNewThread:
+    case TabStripModel::CommandAiModeUnshare:
+    case TabStripModel::CommandToggleFocusGroup:
+      return true;
+  }
+}
+
+void MaybeActivateBrowserWindow(TabStripModelDelegate* delegate) {
+  BrowserWindowInterface* const browser = delegate->GetBrowserWindowInterface();
+  if (!browser) {
+    return;
+  }
+
+  ui::BaseWindow* const window = browser->GetWindow();
+  if (window && !window->IsActive()) {
+    window->Activate();
+  }
+}
+
 }  // namespace
 
 TabGroupModelFactory::TabGroupModelFactory() {
@@ -2860,6 +2912,9 @@ void TabStripModel::ExecuteContextMenuCommand(int context_index,
   if (!ContainsIndex(context_index)) {
     return;
   }
+  if (ShouldActivateWindowForContextMenuCommand(command_id)) {
+    MaybeActivateBrowserWindow(delegate());
+  }
   tabs::TabHandle context_tab = GetTabAtIndex(context_index)->GetHandle();
   switch (command_id) {
     case CommandNewTabToRight: {
@@ -3366,6 +3421,7 @@ void TabStripModel::ExecuteAddToExistingGroupCommand(
   if (!ContainsIndex(context_index)) {
     return;
   }
+  MaybeActivateBrowserWindow(delegate());
 
   std::vector<int> indices = GetIndicesForCommand(context_index);
   CHECK(!indices.empty());
@@ -3422,6 +3478,7 @@ void TabStripModel::ExecuteAddToExistingWindowCommand(int context_index,
 void TabStripModel::ExecuteAddToNewSplitCommand(
     int context_index,
     split_tabs::SplitTabLayout layout) {
+  MaybeActivateBrowserWindow(delegate());
   base::UmaHistogramCounts1000("Tab.ContextMenu.AddToSplit.SelectedTabsCount",
                                selection_model_.size());
 

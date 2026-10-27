@@ -59,6 +59,8 @@
 #include "components/omnibox/browser/autocomplete_match_type.h"
 #include "components/omnibox/browser/omnibox_client.h"
 #include "components/omnibox/common/omnibox_features.h"
+#include "components/split_tabs/split_tab_visual_data.h"
+#include "components/tab_groups/tab_group_id.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_view_host.h"
@@ -367,12 +369,104 @@ IN_PROC_BROWSER_TEST_F(BrowserFocusTest,
   EXPECT_TRUE(browser2->GetWindow()->IsActive());
 
   // Adding a foreground tab to the inactive window should activate it.
-  ui_test_utils::BrowserActivationWaiter activation_waiter(browser());
-  chrome::AddTabAt(browser(), GURL(chrome::kChromeUINewTabURL), -1,
-                   /*foreground=*/true, std::nullopt, /*pinned=*/false,
-                   NavigateParams::WindowAction::kShowWindow);
-  activation_waiter.WaitForActivation();
-  EXPECT_TRUE(browser()->GetWindow()->IsActive());
+  {
+    ui_test_utils::BrowserActivationWaiter activation_waiter(browser());
+    chrome::AddTabAt(browser(), GURL(chrome::kChromeUINewTabURL), -1,
+                     /*foreground=*/true, std::nullopt, /*pinned=*/false,
+                     NavigateParams::WindowAction::kShowWindow);
+    activation_waiter.WaitForActivation();
+    EXPECT_TRUE(browser()->GetWindow()->IsActive());
+  }
+
+  ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser2));
+  EXPECT_TRUE(browser2->GetWindow()->IsActive());
+  EXPECT_FALSE(browser()->GetWindow()->IsActive());
+
+  // Opening a new tab to the right in the inactive window should activate it.
+  {
+    ui_test_utils::BrowserActivationWaiter activation_waiter(browser());
+    chrome::NewTabToRight(browser());
+    activation_waiter.WaitForActivation();
+    EXPECT_TRUE(browser()->GetWindow()->IsActive());
+  }
+
+  ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser2));
+  EXPECT_TRUE(browser2->GetWindow()->IsActive());
+  EXPECT_FALSE(browser()->GetWindow()->IsActive());
+
+  // Pinning a tab via the tab context menu in the inactive window should
+  // activate it.
+  {
+    ui_test_utils::BrowserActivationWaiter activation_waiter(browser());
+    browser()->GetTabStripModel()->ExecuteContextMenuCommand(
+        0, TabStripModel::CommandTogglePinned);
+    activation_waiter.WaitForActivation();
+    EXPECT_TRUE(browser()->GetWindow()->IsActive());
+  }
+
+  ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser2));
+  EXPECT_TRUE(browser2->GetWindow()->IsActive());
+  EXPECT_FALSE(browser()->GetWindow()->IsActive());
+
+  // Adding a tab to a split view via the tab context menu in the inactive
+  // window should activate it.
+  {
+    ui_test_utils::BrowserActivationWaiter activation_waiter(browser());
+    browser()->GetTabStripModel()->ExecuteContextMenuCommand(
+        browser()->GetTabStripModel()->active_index(),
+        TabStripModel::CommandAddToSplit);
+    activation_waiter.WaitForActivation();
+    EXPECT_TRUE(browser()->GetWindow()->IsActive());
+  }
+
+  // Unpin tab 0 and create a group on tab 0 so we can test adding tab 1 to an
+  // existing group and adding a tab to a new split from the submenu
+  // entrypoints.
+  browser()->GetTabStripModel()->SetTabPinned(0, false);
+  const tab_groups::TabGroupId group_id =
+      browser()->GetTabStripModel()->AddToNewGroup({0});
+  browser()->GetTabStripModel()->ActivateTabAt(1);
+
+  ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser2));
+  EXPECT_TRUE(browser2->GetWindow()->IsActive());
+  EXPECT_FALSE(browser()->GetWindow()->IsActive());
+
+  // Adding a tab to an existing group via the tab context menu submenu in the
+  // inactive window should activate it.
+  {
+    ui_test_utils::BrowserActivationWaiter activation_waiter(browser());
+    browser()->GetTabStripModel()->ExecuteAddToExistingGroupCommand(1,
+                                                                    group_id);
+    activation_waiter.WaitForActivation();
+    EXPECT_TRUE(browser()->GetWindow()->IsActive());
+  }
+
+  ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser2));
+  EXPECT_TRUE(browser2->GetWindow()->IsActive());
+  EXPECT_FALSE(browser()->GetWindow()->IsActive());
+
+  // Adding a tab to a new split via the tab context menu submenu in the
+  // inactive window should activate it.
+  {
+    ui_test_utils::BrowserActivationWaiter activation_waiter(browser());
+    browser()->GetTabStripModel()->ExecuteAddToNewSplitCommand(
+        1, split_tabs::SplitTabLayout::kSideBySide);
+    activation_waiter.WaitForActivation();
+    EXPECT_TRUE(browser()->GetWindow()->IsActive());
+  }
+
+  ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser2));
+  EXPECT_TRUE(browser2->GetWindow()->IsActive());
+  EXPECT_FALSE(browser()->GetWindow()->IsActive());
+
+  // Closing a tab via the tab context menu in the inactive window should not
+  // activate it.
+  const int initial_tab_count = browser()->GetTabStripModel()->count();
+  browser()->GetTabStripModel()->ExecuteContextMenuCommand(
+      0, TabStripModel::CommandCloseTab);
+  EXPECT_EQ(initial_tab_count - 1, browser()->GetTabStripModel()->count());
+  EXPECT_FALSE(browser()->GetWindow()->IsActive());
+  EXPECT_TRUE(browser2->GetWindow()->IsActive());
 }
 
 IN_PROC_BROWSER_TEST_F(BrowserFocusTest, ClickingMovesFocus) {
