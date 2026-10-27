@@ -43,8 +43,6 @@ source_set("core") {
     "provisioning_domain_refresh_helper.h",
     "realtime_reporting_client_base.cc",
     "realtime_reporting_client_base.h",
-    "reporting/process_extractor.cc",
-    "reporting/process_extractor.h",
     "reporting_event_router.cc",
     "reporting_event_router.h",
     "reporting_service_settings.cc",
@@ -54,6 +52,13 @@ source_set("core") {
     "service_provider_config.cc",
     "service_provider_config.h",
   ]
+
+  if (enterprise_cdp_attribution) {
+    sources += [
+      "process_extractor.cc",
+      "process_extractor.h",
+    ]
+  }
 
   public_deps = [
     ":constants",
@@ -289,11 +294,14 @@ source_set("unit_tests") {
     "network_request_service_settings_unittest.cc",
     "provisioning_domain_refresh_helper_unittest.cc",
     "realtime_reporting_client_base_unittest.cc",
-    "reporting/process_extractor_unittest.cc",
     "reporting_service_settings_unittest.cc",
     "reporting_utils_unittest.cc",
     "service_provider_config_unittest.cc",
   ]
+
+  if (enterprise_cdp_attribution) {
+    sources += [ "process_extractor_unittest.cc" ]
+  }
 
   public_deps = [ ":core" ]
 

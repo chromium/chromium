@@ -17,5 +17,6 @@ buildflag_header("buildflags") {
     "ENTERPRISE_SCREENSHOT_PROTECTION=$enterprise_screenshot_protection",
     "ENTERPRISE_CACHE_ENCRYPTION=$enterprise_cache_encryption",
     "ENTERPRISE_PROXY=$enterprise_proxy",
+    "ENTERPRISE_CDP_ATTRIBUTION=$enterprise_cdp_attribution",
   ]
 }

@@ -2,11 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_ENTERPRISE_CONNECTORS_CORE_REPORTING_PROCESS_EXTRACTOR_H_
-#define COMPONENTS_ENTERPRISE_CONNECTORS_CORE_REPORTING_PROCESS_EXTRACTOR_H_
+#ifndef COMPONENTS_ENTERPRISE_CONNECTORS_CORE_PROCESS_EXTRACTOR_H_
+#define COMPONENTS_ENTERPRISE_CONNECTORS_CORE_PROCESS_EXTRACTOR_H_
 
 #include <cstddef>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/process/process_handle.h"
@@ -53,6 +54,18 @@ struct ProcessTree {
   std::vector<ProcessNode> process_nodes;
 };
 
+// Sanitizes a raw process or script path for telemetry reporting:
+// - Replaces the current user's home directory prefix (from `base::DIR_HOME`)
+//   with `<home_parent>/<USER>` (e.g. `/Users/<USER>`). Fails closed (returns
+//   an empty string) if `base::DIR_HOME` cannot be resolved.
+// - If the path exceeds `kMaxProcessPathLength` (1024 bytes), drops the
+//   beginning of the string and keeps the trailing bytes starting on a valid
+//   UTF-8 character boundary.
+std::string SanitizeProcessPath(std::string_view raw_path);
+
+// Sanitizes both `executable_path` and `script_path` on `node`.
+void SanitizeProcessNodePaths(ProcessNode& node);
+
 }  // namespace enterprise_connectors
 
-#endif  // COMPONENTS_ENTERPRISE_CONNECTORS_CORE_REPORTING_PROCESS_EXTRACTOR_H_
+#endif  // COMPONENTS_ENTERPRISE_CONNECTORS_CORE_PROCESS_EXTRACTOR_H_

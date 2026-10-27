@@ -33,6 +33,10 @@ declare_args() {
   # Indicates support for Enterprise Proxy policy and service.
   enterprise_proxy =
       is_win || is_mac || is_linux || is_chromeos || is_android || is_ios
+
+  # Indicates support for external CDP process attribution in enterprise
+  # security event reporting.
+  enterprise_cdp_attribution = is_mac
 }
 
 declare_args() {
