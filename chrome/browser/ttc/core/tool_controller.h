@@ -20,6 +20,7 @@
 #include "chrome/browser/actor/actor_surface_handle.h"
 #include "components/tabs/public/tab_interface.h"
 #include "components/ttc/app/public/tool_types.h"
+#include "content/public/browser/web_contents_observer.h"
 
 class Profile;
 
@@ -42,10 +43,10 @@ namespace ttc {
 class SessionControllerImpl;
 
 // Executes the session's tool calls in an actor task.
-class ToolController {
+class ToolController : public content::WebContentsObserver {
  public:
   explicit ToolController(SessionControllerImpl& session_controller);
-  ~ToolController();
+  ~ToolController() override;
 
   void ProcessToolCall(const ToolRequest& tool_request,
                        ToolResponseCallback callback);
@@ -86,6 +87,7 @@ class ToolController {
   void PromptGeminiPanel(const base::DictValue& arguments,
                          ToolResponseCallback callback);
   void ReloadPage(ToolResponseCallback callback);
+  void FinishCrashedTabReload();
   void ScrollPage(const base::DictValue& arguments,
                   ToolResponseCallback callback);
   void SeekToTimestamp(const base::DictValue& arguments,
@@ -125,6 +127,13 @@ class ToolController {
   bool is_capturing_screenshot_ = false;
   std::unique_ptr<page_content_annotations::PageContextFetcher>
       screenshot_fetcher_;
+
+  // content::WebContentsObserver, for ReloadPage() on a crashed tab:
+  void DidFinishNavigation(
+      content::NavigationHandle* navigation_handle) override;
+
+  // Set while ReloadPage() waits for the reload of a crashed tab to finish.
+  ToolResponseCallback crashed_tab_reload_callback_;
 
   base::WeakPtrFactory<ToolController> weak_factory_{this};
 };
