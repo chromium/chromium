@@ -9543,6 +9543,12 @@ Handoff must also be enabled in the General section of Settings, and your device
       <message name="IDS_IOS_VOICE_SEARCH_SETTINGS_DEFAULT_LOCALE" desc="The label for the default locale option in the voice search settings [iOS only]">
         Default - <ph name="DEFAULT_LOCALE">$1<ex>English (United States)</ex></ph>
       </message>
+      <message name="IDS_IOS_VOICE_SEARCH_SETTING_AUTO_SUBMIT" desc="The label for the setting switch enabling automatic submission of voice search queries when the user stops speaking [iOS only]">
+        Auto submit
+      </message>
+      <message name="IDS_IOS_VOICE_SEARCH_SETTING_AUTO_SUBMIT_SUBTITLE" desc="The subtitle explaining the setting switch that enables automatic submission of voice search queries when the user stops speaking [iOS only]">
+        Submits your search automatically when you stop speaking
+      </message>
       <message name="IDS_IOS_VOICE_SEARCH_SETTING_TITLE" desc="The title for Voice Search setting [Length: 29em] [iOS only]">
         Voice search
       </message>

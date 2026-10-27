@@ -16,6 +16,7 @@
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_text_item.h"
+#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_link_header_footer_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_switch_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/voice/model/speech_input_locale_config.h"
@@ -27,12 +28,15 @@
 namespace {
 
 typedef NS_ENUM(NSInteger, SectionIdentifier) {
-  SectionIdentifierTTS = kSectionIdentifierEnumZero,
+  SectionIdentifierAutoSubmit = kSectionIdentifierEnumZero,
+  SectionIdentifierTTS,
   SectionIdentifierLanguages,
 };
 
 typedef NS_ENUM(NSInteger, ItemType) {
-  ItemTypeTTSEnabled = kItemTypeEnumZero,
+  ItemTypeAutoSubmitEnabled = kItemTypeEnumZero,
+  ItemTypeAutoSubmitFooter,
+  ItemTypeTTSEnabled,
   ItemTypeLanguagesLanguageOption,
 };
 
@@ -42,6 +46,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   raw_ptr<PrefService> _prefs;  // weak
   StringPrefMember _selectedLanguage;
   BooleanPrefMember _ttsEnabled;
+  BooleanPrefMember _autoSubmitEnabled;
 
   // Pref observer to track changes to the voice search locale pref.
   std::unique_ptr<PrefObserverBridge> _prefObserverBridge;
@@ -76,6 +81,11 @@ typedef NS_ENUM(NSInteger, ItemType) {
                                                      &_prefChangeRegistrar);
     _prefObserverBridge->ObserveChangesForPreference(prefs::kVoiceSearchTTS,
                                                      &_prefChangeRegistrar);
+    if (IsVoiceSearchEvolutionPhase1Enabled()) {
+      _autoSubmitEnabled.Init(prefs::kVoiceSearchAutoSubmit, _prefs);
+      _prefObserverBridge->ObserveChangesForPreference(
+          prefs::kVoiceSearchAutoSubmit, &_prefChangeRegistrar);
+    }
   }
   return self;
 }
@@ -94,6 +104,28 @@ typedef NS_ENUM(NSInteger, ItemType) {
 - (void)loadModel {
   [super loadModel];
   TableViewModel* model = self.tableViewModel;
+
+  // Auto-submit section.
+  if (IsVoiceSearchEvolutionPhase1Enabled()) {
+    [model addSectionWithIdentifier:SectionIdentifierAutoSubmit];
+    TableViewSwitchItem* autoSubmit =
+        [[TableViewSwitchItem alloc] initWithType:ItemTypeAutoSubmitEnabled];
+    autoSubmit.text =
+        l10n_util::GetNSString(IDS_IOS_VOICE_SEARCH_SETTING_AUTO_SUBMIT);
+    autoSubmit.on = _autoSubmitEnabled.GetValue();
+    autoSubmit.target = self;
+    autoSubmit.selector = @selector(autoSubmitSwitchToggled:);
+    [model addItem:autoSubmit
+        toSectionWithIdentifier:SectionIdentifierAutoSubmit];
+
+    TableViewLinkHeaderFooterItem* autoSubmitFooter =
+        [[TableViewLinkHeaderFooterItem alloc]
+            initWithType:ItemTypeAutoSubmitFooter];
+    autoSubmitFooter.text = l10n_util::GetNSString(
+        IDS_IOS_VOICE_SEARCH_SETTING_AUTO_SUBMIT_SUBTITLE);
+    [model setFooter:autoSubmitFooter
+        forSectionWithIdentifier:SectionIdentifierAutoSubmit];
+  }
 
   // TTS section.
   [model addSectionWithIdentifier:SectionIdentifierTTS];
@@ -185,6 +217,19 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 #pragma mark - Actions
 
+- (void)autoSubmitSwitchToggled:(UISwitch*)sender {
+  NSIndexPath* switchPath =
+      [self.tableViewModel indexPathForItemType:ItemTypeAutoSubmitEnabled
+                              sectionIdentifier:SectionIdentifierAutoSubmit];
+
+  TableViewSwitchItem* switchItem =
+      base::apple::ObjCCastStrict<TableViewSwitchItem>(
+          [self.tableViewModel itemAtIndexPath:switchPath]);
+  BOOL isOn = sender.isOn;
+  switchItem.on = isOn;
+  _autoSubmitEnabled.SetValue(isOn);
+}
+
 - (void)TTSSwitchToggled:(UISwitch*)sender {
   NSIndexPath* switchPath =
       [self.tableViewModel indexPathForItemType:ItemTypeTTSEnabled
@@ -201,6 +246,11 @@ typedef NS_ENUM(NSInteger, ItemType) {
 #pragma mark - PrefObserverDelegate
 
 - (void)onPreferenceChanged:(const std::string&)preferenceName {
+  if (preferenceName == prefs::kVoiceSearchAutoSubmit) {
+    [self updateAutoSubmitSwitchState];
+    return;
+  }
+
   if (preferenceName == prefs::kVoiceSearchTTS) {
     [self updateTTSSwitchState];
     return;
@@ -237,12 +287,26 @@ typedef NS_ENUM(NSInteger, ItemType) {
   _prefObserverBridge.reset();
   _selectedLanguage.Destroy();
   _ttsEnabled.Destroy();
+  _autoSubmitEnabled.Destroy();
   _prefChangeRegistrar.RemoveAll();
   _prefs = nullptr;
   _settingsAreDismissed = YES;
 }
 
 #pragma mark - Private methods
+
+// Updates the auto-submit switch when the underlying preference changes.
+- (void)updateAutoSubmitSwitchState {
+  NSIndexPath* switchPath =
+      [self.tableViewModel indexPathForItemType:ItemTypeAutoSubmitEnabled
+                              sectionIdentifier:SectionIdentifierAutoSubmit];
+  TableViewSwitchItem* switchItem =
+      base::apple::ObjCCastStrict<TableViewSwitchItem>(
+          [self.tableViewModel itemAtIndexPath:switchPath]);
+  switchItem.on = _autoSubmitEnabled.GetValue();
+
+  [self reconfigureCellsForItems:@[ switchItem ]];
+}
 
 - (void)markAsCheckedLanguageAtIndex:(NSUInteger)index {
   // Update the collection view model with the new selected language.

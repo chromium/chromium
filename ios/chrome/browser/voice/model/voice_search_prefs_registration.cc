@@ -13,4 +13,5 @@ void RegisterVoiceSearchBrowserStatePrefs(
   registry->RegisterStringPref(prefs::kVoiceSearchLocale, std::string(),
                                user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
   registry->RegisterBooleanPref(prefs::kVoiceSearchTTS, true);
+  registry->RegisterBooleanPref(prefs::kVoiceSearchAutoSubmit, true);
 }

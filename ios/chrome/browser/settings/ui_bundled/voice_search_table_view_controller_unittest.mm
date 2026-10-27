@@ -8,15 +8,18 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/files/file_path.h"
+#import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
 #import "components/prefs/pref_member.h"
 #import "components/prefs/pref_registry_simple.h"
 #import "components/prefs/testing_pref_service.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_text_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_switch_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_controller_test.h"
 #import "ios/chrome/browser/voice/model/speech_input_locale_config_impl.h"
 #import "ios/chrome/browser/voice/model/voice_search_prefs.h"
+#import "ios/chrome/grit/ios_strings.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
@@ -28,7 +31,9 @@ class VoiceSearchTableViewControllerTest
     : public LegacyChromeTableViewControllerTest {
  protected:
   VoiceSearchTableViewControllerTest()
-      : task_environment_(base::test::TaskEnvironment::MainThreadType::UI) {}
+      : task_environment_(base::test::TaskEnvironment::MainThreadType::UI) {
+    feature_list_.InitAndDisableFeature(kVoiceSearchEvolutionPhase1);
+  }
 
   void SetUp() override {
     LegacyChromeTableViewControllerTest::SetUp();
@@ -44,11 +49,13 @@ class VoiceSearchTableViewControllerTest
     TestingPrefServiceSimple* prefs = new TestingPrefServiceSimple();
     PrefRegistrySimple* registry = prefs->registry();
     registry->RegisterBooleanPref(prefs::kVoiceSearchTTS, false);
+    registry->RegisterBooleanPref(prefs::kVoiceSearchAutoSubmit, true);
     registry->RegisterStringPref(prefs::kVoiceSearchLocale, "en-US");
     return std::unique_ptr<PrefService>(prefs);
   }
 
   base::test::TaskEnvironment task_environment_;
+  base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<PrefService> pref_service_;
 };
 
@@ -202,6 +209,40 @@ TEST_F(VoiceSearchTableViewControllerTest, LanguagePrefChanged) {
   selectedLanguage.SetValue("af-ZA");
   EXPECT_FALSE(switchItem.isOn);
   EXPECT_FALSE(switchItem.isEnabled);
+}
+
+// Tests that the auto-submit section is shown at the top and reflects the
+// preference state when `kVoiceSearchEvolutionPhase1` is enabled.
+TEST_F(VoiceSearchTableViewControllerTest, AutoSubmitPrefToggled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kVoiceSearchEvolutionPhase1);
+
+  BooleanPrefMember autoSubmitEnabled;
+  autoSubmitEnabled.Init(prefs::kVoiceSearchAutoSubmit, pref_service_.get());
+  autoSubmitEnabled.SetValue(true);
+
+  CreateController();
+  EXPECT_EQ(3, NumberOfSections());
+  EXPECT_EQ(1, NumberOfItemsInSection(0));
+  EXPECT_EQ(1, NumberOfItemsInSection(1));
+
+  TableViewSwitchItem* switchItem = GetTableViewItem(0, 0);
+  EXPECT_TRUE(switchItem.isOn);
+  EXPECT_TRUE(switchItem.isEnabled);
+  CheckSwitchCellStateAndTextWithId(
+      YES, IDS_IOS_VOICE_SEARCH_SETTING_AUTO_SUBMIT, 0, 0);
+  CheckSectionFooterWithId(IDS_IOS_VOICE_SEARCH_SETTING_AUTO_SUBMIT_SUBTITLE,
+                           0);
+
+  // Disable the auto-submit setting.
+  autoSubmitEnabled.SetValue(false);
+  EXPECT_FALSE(switchItem.isOn);
+  EXPECT_TRUE(switchItem.isEnabled);
+
+  // Re-enable the auto-submit setting.
+  autoSubmitEnabled.SetValue(true);
+  EXPECT_TRUE(switchItem.isOn);
+  EXPECT_TRUE(switchItem.isEnabled);
 }
 
 }  // namespace

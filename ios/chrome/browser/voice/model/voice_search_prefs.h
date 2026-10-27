@@ -14,6 +14,11 @@ inline constexpr char kVoiceSearchLocale[] =
 // Boolean which indicates if TTS after voice search is enabled.
 inline constexpr char kVoiceSearchTTS[] = "ios.speechinput.voicesearch_tts";
 
+// Boolean which indicates if voice search queries are automatically submitted
+// when the user stops speaking.
+inline constexpr char kVoiceSearchAutoSubmit[] =
+    "ios.speechinput.voicesearch_auto_submit";
+
 }  // namespace prefs
 
 #endif  // IOS_CHROME_BROWSER_VOICE_MODEL_VOICE_SEARCH_PREFS_H_
