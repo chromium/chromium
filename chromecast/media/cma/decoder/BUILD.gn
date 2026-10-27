@@ -5,11 +5,7 @@
 import("//chromecast/chromecast.gni")
 
 cast_source_set("decoder") {
-  sources = [
-    "cast_audio_decoder.cc",
-    "external_audio_decoder_wrapper.cc",
-    "external_audio_decoder_wrapper.h",
-  ]
+  sources = [ "cast_audio_decoder.cc" ]
 
   deps = [
     "//base",

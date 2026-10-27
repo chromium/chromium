@@ -23,7 +23,6 @@
 #include "chromecast/media/api/decoder_buffer_base.h"
 #include "chromecast/media/cma/base/decoder_buffer_adapter.h"
 #include "chromecast/media/cma/base/decoder_config_adapter.h"
-#include "chromecast/media/cma/decoder/external_audio_decoder_wrapper.h"
 #include "chromecast/media/common/base/decoder_config_logging.h"
 #include "media/base/audio_buffer.h"
 #include "media/base/audio_bus.h"
@@ -347,15 +346,6 @@ std::unique_ptr<CastAudioDecoder> CastAudioDecoder::Create(
     scoped_refptr<base::SingleThreadTaskRunner> task_runner,
     const media::AudioConfig& config,
     OutputFormat output_format) {
-  if (ExternalAudioDecoderWrapper::IsSupportedConfig(config)) {
-    auto external_decoder = std::make_unique<ExternalAudioDecoderWrapper>(
-        std::move(task_runner), config, output_format);
-    if (!external_decoder->initialized()) {
-      return nullptr;
-    }
-    return external_decoder;
-  }
-
   return std::make_unique<CastAudioDecoderImpl>(std::move(task_runner), config,
                                                 output_format);
 }
