@@ -22,8 +22,7 @@ TEST(TransportSessionRegistryImplTest, GetSession) {
 
   EXPECT_EQ(registry.GetSession("session_1"), nullptr);
 
-  TransportSessionImpl* created_session =
-      registry.GetOrCreateSession("session_1");
+  TransportSessionImpl* created_session = registry.CreateSession("session_1");
   EXPECT_EQ(registry.GetSession("session_1"), created_session);
 }
 
@@ -33,8 +32,8 @@ TEST(TransportSessionRegistryImplTest, GetAllSessionImpls) {
 
   EXPECT_TRUE(registry.GetAllSessionImpls().empty());
 
-  TransportSessionImpl* session1 = registry.GetOrCreateSession("session_1");
-  TransportSessionImpl* session2 = registry.GetOrCreateSession("session_2");
+  TransportSessionImpl* session1 = registry.CreateSession("session_1");
+  TransportSessionImpl* session2 = registry.CreateSession("session_2");
 
   std::vector<TransportSessionImpl*> active_sessions =
       registry.GetAllSessionImpls();
@@ -57,24 +56,23 @@ TEST(TransportSessionRegistryImplTest, GetSessionImpl) {
 
   EXPECT_EQ(registry.GetSessionImpl("session_1"), nullptr);
 
-  TransportSessionImpl* created_session =
-      registry.GetOrCreateSession("session_1");
+  TransportSessionImpl* created_session = registry.CreateSession("session_1");
   EXPECT_EQ(registry.GetSessionImpl("session_1"), created_session);
 }
 
-TEST(TransportSessionRegistryImplTest, GetOrCreateSession) {
+TEST(TransportSessionRegistryImplTest, CreateSession) {
   MockTransportChannel channel;
   TransportSessionRegistryImpl registry(channel.GetWeakPtr());
 
-  TransportSessionImpl* session1 = registry.GetOrCreateSession("session_1");
+  TransportSessionImpl* session1 = registry.CreateSession("session_1");
   ASSERT_NE(session1, nullptr);
   EXPECT_EQ(session1->GetSessionId(), "session_1");
 
-  TransportSessionImpl* session1_again =
-      registry.GetOrCreateSession("session_1");
-  EXPECT_EQ(session1, session1_again);
+  TransportSessionImpl* session1_again = registry.CreateSession("session_1");
+  EXPECT_EQ(session1_again, nullptr);
+  EXPECT_EQ(registry.GetSessionImpl("session_1"), session1);
 
-  TransportSessionImpl* session2 = registry.GetOrCreateSession("session_2");
+  TransportSessionImpl* session2 = registry.CreateSession("session_2");
   ASSERT_NE(session2, nullptr);
   EXPECT_NE(session1, session2);
 }
@@ -83,7 +81,7 @@ TEST(TransportSessionRegistryImplTest, DestroySession) {
   MockTransportChannel channel;
   TransportSessionRegistryImpl registry(channel.GetWeakPtr());
 
-  TransportSessionImpl* session = registry.GetOrCreateSession("session_1");
+  TransportSessionImpl* session = registry.CreateSession("session_1");
   ASSERT_NE(session, nullptr);
 
   registry.DestroySession("session_1");
@@ -94,8 +92,8 @@ TEST(TransportSessionRegistryImplTest, Clear) {
   MockTransportChannel channel;
   TransportSessionRegistryImpl registry(channel.GetWeakPtr());
 
-  registry.GetOrCreateSession("session_1");
-  registry.GetOrCreateSession("session_2");
+  registry.CreateSession("session_1");
+  registry.CreateSession("session_2");
 
   registry.Clear();
   EXPECT_EQ(registry.GetSession("session_1"), nullptr);
@@ -120,22 +118,21 @@ TEST(TransportSessionRegistryImplTest, EnforcesMaxConcurrentSessions) {
                                         /*max_concurrent_sessions=*/2);
   EXPECT_EQ(registry.max_concurrent_sessions(), 2u);
 
-  TransportSessionImpl* session1 = registry.GetOrCreateSession("session_1");
+  TransportSessionImpl* session1 = registry.CreateSession("session_1");
   ASSERT_NE(session1, nullptr);
-  TransportSessionImpl* session2 = registry.GetOrCreateSession("session_2");
+  TransportSessionImpl* session2 = registry.CreateSession("session_2");
   ASSERT_NE(session2, nullptr);
 
   // 3rd session exceeds the limit of 2 and should be rejected.
-  TransportSessionImpl* session3 = registry.GetOrCreateSession("session_3");
+  TransportSessionImpl* session3 = registry.CreateSession("session_3");
   EXPECT_EQ(session3, nullptr);
 
   // Existing sessions can still be retrieved without error.
-  EXPECT_EQ(registry.GetOrCreateSession("session_1"), session1);
+  EXPECT_EQ(registry.GetSessionImpl("session_1"), session1);
 
   // Destroying a session frees up capacity.
   registry.DestroySession("session_1");
-  TransportSessionImpl* session3_retry =
-      registry.GetOrCreateSession("session_3");
+  TransportSessionImpl* session3_retry = registry.CreateSession("session_3");
   ASSERT_NE(session3_retry, nullptr);
   EXPECT_EQ(session3_retry->GetSessionId(), "session_3");
 }
@@ -155,14 +152,14 @@ TEST(TransportSessionRegistryImplTest,
       "Browser.Actuator.Transport.SessionRegistry.ExistingSessionsCount", 0);
 
   // 1st session creation: registry has 0 existing sessions.
-  registry.GetOrCreateSession("session_1");
+  registry.CreateSession("session_1");
   histogram_tester.ExpectUniqueSample(
       "Browser.Actuator.Transport.SessionRegistry.ExistingSessionsCount",
       /*sample=*/0,
       /*expected_count=*/1);
 
   // 2nd session creation: registry has 1 existing session.
-  registry.GetOrCreateSession("session_2");
+  registry.CreateSession("session_2");
   histogram_tester.ExpectBucketCount(
       "Browser.Actuator.Transport.SessionRegistry.ExistingSessionsCount",
       /*sample=*/1,
@@ -182,12 +179,12 @@ TEST(TransportSessionRegistryImplTest,
                                         /*max_concurrent_sessions=*/2);
 
   // Fill up registry to the max capacity (2 sessions).
-  registry.GetOrCreateSession("session_1");
-  registry.GetOrCreateSession("session_2");
+  registry.CreateSession("session_1");
+  registry.CreateSession("session_2");
 
   // Attempting to create a 3rd session exceeds the limit and is rejected.
   // The histogram should still record that 2 sessions currently exist.
-  EXPECT_EQ(registry.GetOrCreateSession("session_3"), nullptr);
+  EXPECT_EQ(registry.CreateSession("session_3"), nullptr);
   histogram_tester.ExpectBucketCount(
       "Browser.Actuator.Transport.SessionRegistry.ExistingSessionsCount",
       /*sample=*/2,
@@ -211,20 +208,20 @@ TEST(TransportSessionRegistryImplTest,
       "Browser.Actuator.Transport.SessionRegistry.SessionLimitReached", 0);
 
   // 1st and 2nd session creations succeed (limit not reached -> false).
-  registry.GetOrCreateSession("session_1");
+  registry.CreateSession("session_1");
   histogram_tester.ExpectBucketCount(
       "Browser.Actuator.Transport.SessionRegistry.SessionLimitReached",
       /*sample=*/false,
       /*expected_count=*/1);
 
-  registry.GetOrCreateSession("session_2");
+  registry.CreateSession("session_2");
   histogram_tester.ExpectBucketCount(
       "Browser.Actuator.Transport.SessionRegistry.SessionLimitReached",
       /*sample=*/false,
       /*expected_count=*/2);
 
   // 3rd session creation is rejected (limit reached -> true).
-  EXPECT_EQ(registry.GetOrCreateSession("session_3"), nullptr);
+  EXPECT_EQ(registry.CreateSession("session_3"), nullptr);
   histogram_tester.ExpectBucketCount(
       "Browser.Actuator.Transport.SessionRegistry.SessionLimitReached",
       /*sample=*/true,
@@ -233,9 +230,9 @@ TEST(TransportSessionRegistryImplTest,
       "Browser.Actuator.Transport.SessionRegistry.SessionLimitReached", 3);
 }
 
-// Verifies that looking up or retrieving an existing session from the registry
-// does not record any new samples to either histogram, since no new session
-// creation was attempted.
+// Verifies that looking up an existing session or attempting to create a
+// duplicate session in the registry does not record any new samples to either
+// histogram.
 TEST(TransportSessionRegistryImplTest,
      Histograms_NotRecordedWhenRetrievingExistingSession) {
   base::HistogramTester histogram_tester;
@@ -244,15 +241,16 @@ TEST(TransportSessionRegistryImplTest,
                                         /*max_concurrent_sessions=*/2);
 
   // Create initial session.
-  registry.GetOrCreateSession("session_1");
+  registry.CreateSession("session_1");
   histogram_tester.ExpectTotalCount(
       "Browser.Actuator.Transport.SessionRegistry.ExistingSessionsCount", 1);
   histogram_tester.ExpectTotalCount(
       "Browser.Actuator.Transport.SessionRegistry.SessionLimitReached", 1);
 
-  // Requesting the existing session again should retrieve it without recording
-  // new histogram samples.
-  TransportSessionImpl* session1 = registry.GetOrCreateSession("session_1");
+  // Attempting to create the existing session again or retrieving it should not
+  // record new histogram samples.
+  EXPECT_EQ(registry.CreateSession("session_1"), nullptr);
+  TransportSessionImpl* session1 = registry.GetSessionImpl("session_1");
   ASSERT_NE(session1, nullptr);
   EXPECT_EQ(session1->GetSessionId(), "session_1");
 
@@ -273,8 +271,8 @@ TEST(TransportSessionRegistryImplTest,
                                         /*max_concurrent_sessions=*/2);
 
   // Fill registry to capacity.
-  registry.GetOrCreateSession("session_1");
-  registry.GetOrCreateSession("session_2");
+  registry.CreateSession("session_1");
+  registry.CreateSession("session_2");
 
   // Destroying session_1 reduces active sessions from 2 to 1.
   registry.DestroySession("session_1");
@@ -282,7 +280,7 @@ TEST(TransportSessionRegistryImplTest,
   // Creating session_3 should now succeed:
   // - ExistingSessionsCount records 1 (1 active session remained).
   // - SessionLimitReached records false.
-  TransportSessionImpl* session3 = registry.GetOrCreateSession("session_3");
+  TransportSessionImpl* session3 = registry.CreateSession("session_3");
   ASSERT_NE(session3, nullptr);
   EXPECT_EQ(session3->GetSessionId(), "session_3");
 
@@ -322,7 +320,7 @@ TEST(TransportSessionRegistryImplTest, NotifiesObserversOnSessionRegistered) {
   EXPECT_CALL(observer, OnSessionRegistered)
       .WillOnce(testing::SaveArg<0>(&created_session));
 
-  TransportSessionImpl* session1 = registry.GetOrCreateSession("session_1");
+  TransportSessionImpl* session1 = registry.CreateSession("session_1");
 
   EXPECT_EQ(created_session, session1);
 }
@@ -334,7 +332,7 @@ TEST(TransportSessionRegistryImplTest, NotifiesObserversOnSessionRemoved) {
   registry.AddObserver(&observer);
 
   EXPECT_CALL(observer, OnSessionRegistered).Times(1);
-  ASSERT_NE(registry.GetOrCreateSession("session_1"), nullptr);
+  ASSERT_NE(registry.CreateSession("session_1"), nullptr);
 
   EXPECT_CALL(observer, OnSessionRemoved(std::string_view("session_1")))
       .Times(1);
@@ -346,42 +344,17 @@ TEST(TransportSessionRegistryImplTest, NotifiesObserversOnSessionRemoved) {
 }
 
 TEST(TransportSessionRegistryImplTest,
-     GetOrCreateSessionDoesNotResurrectDestroyedSessionUntilCleared) {
-  MockTransportChannel channel;
-  TransportSessionRegistryImpl registry(channel.GetWeakPtr());
-  MockSessionRegistryObserver observer;
-  registry.AddObserver(&observer);
-
-  EXPECT_CALL(observer, OnSessionRegistered).Times(1);
-  ASSERT_NE(registry.GetOrCreateSession("session_1"), nullptr);
-
-  EXPECT_CALL(observer, OnSessionRemoved(std::string_view("session_1")))
-      .Times(1);
-  registry.DestroySession("session_1");
-  EXPECT_EQ(registry.GetSession("session_1"), nullptr);
-
-  // Subsequent GetOrCreateSession for the destroyed ID must return nullptr and
-  // not notify OnSessionRegistered.
-  EXPECT_CALL(observer, OnSessionRegistered).Times(0);
-  EXPECT_EQ(registry.GetOrCreateSession("session_1"), nullptr);
-
-  // After Clear(), the closed history is reset.
-  registry.Clear();
-  EXPECT_CALL(observer, OnSessionRegistered).Times(1);
-  EXPECT_NE(registry.GetOrCreateSession("session_1"), nullptr);
-}
-
-TEST(TransportSessionRegistryImplTest,
      DoesNotNotifyObserversWhenGettingExistingSession) {
   MockTransportChannel channel;
   TransportSessionRegistryImpl registry(channel.GetWeakPtr());
   MockSessionRegistryObserver observer;
   registry.AddObserver(&observer);
-  TransportSessionImpl* session1 = registry.GetOrCreateSession("session_1");
+  TransportSessionImpl* session1 = registry.CreateSession("session_1");
 
   EXPECT_CALL(observer, OnSessionRegistered).Times(0);
+  EXPECT_EQ(registry.CreateSession("session_1"), nullptr);
   TransportSessionImpl* retrieved_session =
-      registry.GetOrCreateSession("session_1");
+      registry.GetSessionImpl("session_1");
 
   EXPECT_EQ(retrieved_session, session1);
 }
@@ -394,7 +367,7 @@ TEST(TransportSessionRegistryImplTest, DoesNotNotifyRemovedObservers) {
   registry.RemoveObserver(&observer);
 
   EXPECT_CALL(observer, OnSessionRegistered).Times(0);
-  registry.GetOrCreateSession("session_1");
+  registry.CreateSession("session_1");
 }
 
 }  // namespace

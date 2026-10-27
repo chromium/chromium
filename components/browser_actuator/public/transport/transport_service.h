@@ -36,9 +36,9 @@ class TransportService : public KeyedService {
   // `kBrowserActuatorChannelEnabled`.
   virtual TransportChannel* GetChannel() = 0;
 
-  // Returns the session for `session_id`, creating it if it does not exist.
-  // Returns nullptr if there is no channel or the session cannot be created.
-  virtual TransportSession* GetOrCreateSession(std::string_view session_id) = 0;
+  // Creates a new session for `session_id`. Returns nullptr if there is no
+  // channel, the session already exists, or the session cannot be created.
+  virtual TransportSession* CreateSession(std::string_view session_id) = 0;
 
   // Returns the session for `session_id`, or nullptr if there is none.
   virtual TransportSession* GetSession(std::string_view session_id) = 0;

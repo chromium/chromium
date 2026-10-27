@@ -150,8 +150,10 @@ void TransportChannelImpl::OnStreamMessage(const std::string& message) {
   }
 
   TransportSessionImpl* session =
-      session_registry_->GetOrCreateSession(downstream->session_id());
+      session_registry_->GetSessionImpl(downstream->session_id());
   if (!session) {
+    DVLOG(1) << "Ignoring downstream message for unknown or closed session: "
+             << downstream->session_id();
     return;
   }
 

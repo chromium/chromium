@@ -1,4 +1,5 @@
 include_rules = [
+  "+components/browser_actuator/internal/transport/proto/transport_messages.pb.h",
   "+components/browser_actuator/public",
 ]
 

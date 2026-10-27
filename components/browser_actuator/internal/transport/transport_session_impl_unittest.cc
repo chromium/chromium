@@ -1201,7 +1201,7 @@ TEST(TransportSessionImplTest, CloseSendsCloseSessionAndDestroysSession) {
   EXPECT_CALL(channel, GetSessionRegistry())
       .WillRepeatedly(testing::Return(&session_registry));
 
-  TransportSession* session = session_registry.GetOrCreateSession("s1");
+  TransportSession* session = session_registry.CreateSession("s1");
   ASSERT_NE(session, nullptr);
   EXPECT_NE(session_registry.GetSession("s1"), nullptr);
 

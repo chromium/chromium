@@ -123,7 +123,7 @@ TEST_F(
       service->GetStreamRecorderFactory();
   ASSERT_NE(recorder_factory, nullptr);
 
-  TransportSession* session = service->GetOrCreateSession("s1");
+  TransportSession* session = service->CreateSession("s1");
   ASSERT_NE(session, nullptr);
   std::unique_ptr<TransportHandler> handler =
       recorder_factory->OnNewSession(session);

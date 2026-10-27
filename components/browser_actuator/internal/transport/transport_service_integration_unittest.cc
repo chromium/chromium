@@ -233,8 +233,7 @@ TEST_F(TransportServiceIntegrationTest,
   FakeProtoStreamServer stream_server(&test_url_loader_factory_,
                                       GURL(kTestWatchSessionsEndpoint));
 
-  TransportSession* session =
-      service_->GetOrCreateSession("session-handshake-1");
+  TransportSession* session = service_->CreateSession("session-handshake-1");
   ASSERT_NE(session, nullptr);
 
   stream_server.WaitForConnection();
@@ -305,7 +304,7 @@ TEST_F(
   FakeProtoStreamServer stream_server(&test_url_loader_factory_,
                                       GURL(kTestWatchSessionsEndpoint));
 
-  TransportSession* session = service_->GetOrCreateSession("session-feature-1");
+  TransportSession* session = service_->CreateSession("session-feature-1");
   ASSERT_NE(session, nullptr);
   stream_server.WaitForConnection();
 
@@ -339,7 +338,7 @@ TEST_F(TransportServiceIntegrationTest, DownstreamCloseSessionDestroysSession) {
   FakeProtoStreamServer stream_server(&test_url_loader_factory_,
                                       GURL(kTestWatchSessionsEndpoint));
 
-  ASSERT_NE(service_->GetOrCreateSession("session-to-close"), nullptr);
+  ASSERT_NE(service_->CreateSession("session-to-close"), nullptr);
   stream_server.WaitForConnection();
 
   ControlCommand close_cmd;
@@ -368,7 +367,7 @@ TEST_F(TransportServiceIntegrationTest,
   FakeProtoStreamServer stream_server(&test_url_loader_factory_,
                                       GURL(kTestWatchSessionsEndpoint));
 
-  ASSERT_NE(service_->GetOrCreateSession("session-channel-close"), nullptr);
+  ASSERT_NE(service_->CreateSession("session-channel-close"), nullptr);
   stream_server.WaitForConnection();
   ASSERT_TRUE(WaitFor([&]() {
     return channel_impl()->downstream_connection_state() ==
@@ -400,7 +399,7 @@ TEST_F(TransportServiceIntegrationTest,
   FakeProtoStreamServer stream_server(&test_url_loader_factory_,
                                       GURL(kTestWatchSessionsEndpoint));
 
-  ASSERT_NE(service_->GetOrCreateSession("session-resume"), nullptr);
+  ASSERT_NE(service_->CreateSession("session-resume"), nullptr);
   stream_server.WaitForConnection();
   EXPECT_EQ(stream_server.connection_count(), 1);
   EXPECT_EQ(stream_server.last_watch_request()
@@ -439,7 +438,7 @@ TEST_F(TransportServiceIntegrationTest,
   FakeProtoStreamServer stream_server(&test_url_loader_factory_,
                                       GURL(kTestWatchSessionsEndpoint));
 
-  ASSERT_NE(service_->GetOrCreateSession("session-status-finish"), nullptr);
+  ASSERT_NE(service_->CreateSession("session-status-finish"), nullptr);
   stream_server.WaitForConnection();
   ASSERT_TRUE(WaitFor([&]() {
     return channel_impl()->downstream_connection_state() ==
@@ -473,7 +472,7 @@ TEST_F(
   FakeProtoStreamServer stream_server(&test_url_loader_factory_,
                                       GURL(kTestWatchSessionsEndpoint));
 
-  ASSERT_NE(service_->GetOrCreateSession("session-unknown-type"), nullptr);
+  ASSERT_NE(service_->CreateSession("session-unknown-type"), nullptr);
   stream_server.WaitForConnection();
 
   // 1. Push a downstream message carrying an unknown / future payload type
@@ -514,7 +513,7 @@ TEST_F(TransportServiceIntegrationTest,
   FakeProtoStreamServer stream_server(&test_url_loader_factory_,
                                       GURL(kTestWatchSessionsEndpoint));
 
-  ASSERT_NE(service_->GetOrCreateSession("session-reordered"), nullptr);
+  ASSERT_NE(service_->CreateSession("session-reordered"), nullptr);
   stream_server.WaitForConnection();
 
   components_sharing_message::GlicExperimentalTriggering payload_2;

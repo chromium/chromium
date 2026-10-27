@@ -83,7 +83,7 @@ class BrowserActuatorInternalsUIMojoImplTest : public testing::Test {
     ASSERT_NE(transport_service, nullptr);
 
     transport::TransportSession* session =
-        transport_service->GetOrCreateSession(session_id);
+        transport_service->CreateSession(session_id);
     ASSERT_NE(session, nullptr);
 
     ControlCommand command;

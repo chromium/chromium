@@ -15,6 +15,7 @@ source_set("browser_actuator") {
   deps = [
     "//chrome/browser/browser_actuator/transport",
     "//chrome/browser/profiles:profile",
+    "//components/browser_actuator/internal/transport/proto",
     "//components/browser_actuator/public:feature_list",
     "//components/browser_actuator/public/transport:payload_type_mapping",
     "//components/browser_actuator/public/transport:service",

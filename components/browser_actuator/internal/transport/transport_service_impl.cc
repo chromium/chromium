@@ -174,12 +174,12 @@ SessionStreamRecorderFactory* TransportServiceImpl::GetStreamRecorderFactory() {
   return session_stream_recorder_factory_.get();
 }
 
-TransportSession* TransportServiceImpl::GetOrCreateSession(
+TransportSession* TransportServiceImpl::CreateSession(
     std::string_view session_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   TransportChannel* channel = GetChannel();
   if (channel && channel->GetSessionRegistry()) {
-    return channel->GetSessionRegistry()->GetOrCreateSession(session_id);
+    return channel->GetSessionRegistry()->CreateSession(session_id);
   }
   return nullptr;
 }

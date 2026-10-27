@@ -173,7 +173,7 @@ TEST_F(ChromeActuationTransportHandlerFactoryTest,
             browser_actuator::transport::FactoryId::kActuation);
 
   browser_actuator::transport::TransportSession* session =
-      transport_service->GetOrCreateSession("enabled_session_1");
+      transport_service->CreateSession("enabled_session_1");
   ASSERT_TRUE(session);
   proto::ServerToBrowserPayload downstream;
   downstream.set_request_id("req_enabled_start");

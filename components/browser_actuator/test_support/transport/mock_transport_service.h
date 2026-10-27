@@ -19,7 +19,7 @@ class MockTransportService : public TransportService {
 
   MOCK_METHOD(TransportChannel*, GetChannel, (), (override));
   MOCK_METHOD(TransportSession*,
-              GetOrCreateSession,
+              CreateSession,
               (std::string_view session_id),
               (override));
   MOCK_METHOD(TransportSession*,
