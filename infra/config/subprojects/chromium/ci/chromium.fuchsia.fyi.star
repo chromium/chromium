@@ -224,6 +224,11 @@ ci.builder(
                     "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.lsan.base_unittests.filter",
                 ],
             ),
+            "blink_unittests": targets.mixin(
+                swarming = targets.swarming(
+                    shards = 4,
+                ),
+            ),
             "chrome_wpt_tests": targets.remove(
                 reason = "Wptrunner does not work on Fuchsia",
             ),
@@ -232,6 +237,11 @@ ci.builder(
             ),
             "content_browsertests": targets.remove(
                 reason = "TODO(crbug.com/40241445): Enable on Fuchsia asan/clang builders",
+            ),
+            "content_unittests": targets.mixin(
+                swarming = targets.swarming(
+                    shards = 4,
+                ),
             ),
             "gin_unittests": targets.mixin(
                 args = [
