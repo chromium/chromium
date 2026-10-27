@@ -423,19 +423,8 @@ IN_PROC_BROWSER_TEST_P(DOMStorageBrowserTest, MAYBE_SanityCheckIncognito) {
 IN_PROC_BROWSER_TEST_P(DOMStorageBrowserTest, PRE_DataPersists) {
   SimpleTest(GetTestUrl("dom_storage", "store_data.html"), kNotIncognito);
 
-  // Browser shutdown can always race with async work on non-shutdown-blocking
-  // task runners. This includes the local storage implementation. If opening
-  // the database takes too long, by the time it finishes the IO thread may be
-  // shut down and the Local Storage implementation may be unable to commit its
-  // pending operations.
-  //
-  // Since the point of this test is to verify that committed data is actually
-  // retrievable by a subsequent browser session, wait for the database to be
-  // ready.
-  base::RunLoop loop;
-  context_wrapper()->GetLocalStorageUsage(base::BindLambdaForTesting(
-      [&](const std::vector<StorageUsageInfo>&) { loop.Quit(); }));
-  loop.Run();
+  // Wait for the write to commit before shutdown.
+  CommitLocalStorage();
 }
 
 IN_PROC_BROWSER_TEST_P(DOMStorageBrowserTest, MAYBE_DataPersists) {
