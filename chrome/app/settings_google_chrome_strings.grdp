@@ -439,4 +439,9 @@
   <message name="IDS_SETTINGS_DICTATION_SHORTCUT_SUBLABEL" translateable="false" desc="Sublabel for the keyboard shortcut setting in Dictation settings page.">
     Open talk to type with a keyboard shortcut
   </message>
+
+  <!-- Appearance Page -->
+  <message name="IDS_SETTINGS_SIDE_PANEL_ALIGNMENT_CONTEXTUAL_TASKS_IN_CHROME" desc="Label for configuring Google Search side panel alignment.">
+    Google Search in Chrome
+  </message>
 </grit-part>

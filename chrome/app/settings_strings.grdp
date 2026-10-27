@@ -393,9 +393,6 @@
     <message name="IDS_SETTINGS_SIDE_PANEL_ALIGNMENT_CONTEXTUAL_TASKS_IN_SIDE_PANEL" desc="Label for configuring Google Search side panel alignment.">
       Google Search in side panel
     </message>
-    <message name="IDS_SETTINGS_SIDE_PANEL_ALIGNMENT_CONTEXTUAL_TASKS_IN_CHROME" desc="Label for configuring Google Search side panel alignment.">
-      Google Search in Chrome
-    </message>
     <message name="IDS_SETTINGS_SIDE_PANEL_ALIGNMENT_CONTEXTUAL_TASKS_PANEL" desc="Label for configuring Google Search side panel alignment.">
       Google Search panel
     </message>
