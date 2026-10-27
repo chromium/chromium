@@ -228,8 +228,6 @@ void VideoFrameAcceleratedSnapshotPool::FlushRecording(
 scoped_refptr<StaticBitmapImage>
 VideoFrameAcceleratedSnapshotPool::DoExternalOverdrawAndSnapshot(
     base::FunctionRef<void(cc::PaintCanvas&)> draw_callback) {
-  provider_->cached_snapshot_.reset();
-
   if (!IsValid()) {
     return nullptr;
   }
@@ -244,18 +242,13 @@ VideoFrameAcceleratedSnapshotPool::DoExternalOverdrawAndSnapshot(
     return nullptr;
   }
 
-  if (!provider_->cached_snapshot_) {
-    provider_->cached_snapshot_ = provider_->resource_->Bitmap();
-
-    if (provider_->cached_snapshot_) {
-      provider_->cached_content_id_ =
-          provider_->cached_snapshot_->PaintImageForCurrentFrame()
-              .GetContentIdForFrame(0u);
-    }
+  scoped_refptr<StaticBitmapImage> snapshot = provider_->resource_->Bitmap();
+  if (snapshot) {
+    provider_->cached_content_id_ =
+        snapshot->PaintImageForCurrentFrame().GetContentIdForFrame(0u);
   }
-
-  DCHECK(provider_->cached_snapshot_);
-  return provider_->cached_snapshot_;
+  DCHECK(snapshot);
+  return snapshot;
 }
 
 scoped_refptr<StaticBitmapImage> DrawAndSnapshotToImage(
