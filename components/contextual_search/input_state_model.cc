@@ -132,6 +132,10 @@ void MaybePopulateDriveInputTypeRule(omnibox::SearchboxConfig* config) {
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 }
 
+// AI Mode URL params; never sent together (see `GetAdditionalQueryParams()`).
+constexpr char kUdmParamKey[] = "udm";
+constexpr char kNemParamKey[] = "nem";
+
 std::optional<omnibox::ModelMode> GetActiveModelFromUrl(
     const GURL& active_url,
     const std::vector<omnibox::ModelConfig>& model_configs,
@@ -184,6 +188,9 @@ std::optional<omnibox::ToolMode> GetActiveToolFromUrl(
 
   std::optional<omnibox::ToolMode> best_tool = std::nullopt;
   size_t max_matched_params = 0;
+  // `GetAdditionalQueryParams()` drops a tool's `udm` when a model sets `nem`.
+  const bool url_has_nem =
+      net::GetValueForKeyInQuery(active_url, kNemParamKey, nullptr);
 
   for (const auto& tool_config : tool_configs) {
     if (!std::ranges::contains(allowed_tools, tool_config.tool())) {
@@ -195,6 +202,12 @@ std::optional<omnibox::ToolMode> GetActiveToolFromUrl(
     bool all_params_match = true;
     size_t matched_count = tool_config.aim_url_params().size();
     for (const auto& url_param : tool_config.aim_url_params()) {
+      // `nem` replaces `udm` in the URL, so don't require `udm` unless it's
+      // the tool's only param.
+      if (url_has_nem && url_param.param_key() == kUdmParamKey &&
+          matched_count > 1) {
+        continue;
+      }
       std::string value;
       bool found =
           net::GetValueForKeyInQuery(active_url, url_param.param_key(), &value);
@@ -989,7 +1002,11 @@ std::map<std::string, std::string> InputStateModel::GetAdditionalQueryParams() {
   } else {
     // If no model is selected, add a default param to indicate that the query
     // is an AIM query.
-    additional_params["udm"] = "50";
+    additional_params[kUdmParamKey] = "50";
+  }
+  // `nem` (from a model) takes priority over `udm` (e.g. from a tool).
+  if (additional_params.contains(kNemParamKey)) {
+    additional_params.erase(kUdmParamKey);
   }
   return additional_params;
 }
