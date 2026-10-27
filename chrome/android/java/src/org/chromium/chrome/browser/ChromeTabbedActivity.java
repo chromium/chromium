@@ -4586,25 +4586,13 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
             if (currentTab == null) return true;
 
             Profile profile = assertNonNull(mTabModelProfileSupplier.get());
-            TabModel tabModel = mTabModelSelector.getCurrentModel();
             if (id == R.id.add_to_group_menu_id) {
                 TrackerFactory.getTrackerForProfile(profile)
                         .notifyEvent("menu_add_to_group_clicked");
             }
 
-            var modalDialogManager = assertNonNull(getModalDialogManager());
-            var bottomSheetController =
-                    assertNonNull(mRootUiCoordinator.getBottomSheetController());
-            TabGroupMenuActionHandler tabGroupMenuActionHandler =
-                    new TabGroupMenuActionHandler(
-                            this,
-                            tabModel,
-                            bottomSheetController,
-                            modalDialogManager,
-                            getTabGroupUiActionHandler(),
-                            profile);
             boolean existingGroupsPresent =
-                    tabGroupMenuActionHandler.handleAddToGroupAction(currentTab);
+                    createTabGroupMenuActionHandler().handleAddToGroupAction(currentTab);
             if (id == R.id.add_to_group_menu_id) {
                 RecordUserAction.record(
                         existingGroupsPresent ? "MobileMenuAddToGroup" : "MobileMenuAddToNewGroup");
@@ -4631,19 +4619,34 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                 return false;
             }
 
-            Profile profile = assertNonNull(mTabModelProfileSupplier.get());
-            var modalDialogManager = assertNonNull(getModalDialogManager());
-            var bottomSheetController =
-                    assertNonNull(mRootUiCoordinator.getBottomSheetController());
-            TabModel tabModel = mTabModelSelector.getCurrentModel();
-            return new TabGroupMenuActionHandler(
-                            this,
-                            tabModel,
-                            bottomSheetController,
-                            modalDialogManager,
-                            getTabGroupUiActionHandler(),
-                            profile)
+            return createTabGroupMenuActionHandler()
                     .handleAddToExistingGroupAction(currentTab, groupId, syncGroupId);
+        } else if (id == R.id.tab_group_open_group_menu_id
+                || id == R.id.tab_group_open_in_new_window_menu_id
+                || id == R.id.tab_group_delete_group_menu_id) {
+            if (menuItemData == null) {
+                return false;
+            }
+            if (!ChromeFeatureList.sTabGroupActionsSubmenus.isEnabled()
+                    || !mTabModelSelector.isTabStateInitialized()) {
+                return false;
+            }
+
+            Bundle groupBundle =
+                    menuItemData.getBundle(AppMenuPropertiesDelegateImpl.TAB_GROUP_ID_BUNDLE_KEY);
+            Token groupId = Token.maybeCreateFromBundle(groupBundle);
+            String syncGroupId =
+                    menuItemData.getString(AppMenuPropertiesDelegateImpl.SYNC_GROUP_ID_BUNDLE_KEY);
+
+            TabGroupMenuActionHandler handler = createTabGroupMenuActionHandler();
+            if (id == R.id.tab_group_open_group_menu_id) {
+                return handler.handleOpenGroupAction(syncGroupId);
+            } else if (id == R.id.tab_group_open_in_new_window_menu_id) {
+                return handler.handleOpenGroupInNewWindowAction(
+                        groupId, syncGroupId, mMultiInstanceManager);
+            } else {
+                return handler.handleDeleteGroupAction(groupId, syncGroupId);
+            }
         } else if (id == R.id.create_new_tab_group_menu_id) {
             RecordUserAction.record("MobileMenuCreateTabGroup");
             return handleCreateNewTabGroupAction(currentTab);
@@ -5109,6 +5112,20 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
             manager.showDialog(groupId, tabModel);
         }
         return true;
+    }
+
+    private TabGroupMenuActionHandler createTabGroupMenuActionHandler() {
+        Profile profile = assertNonNull(mTabModelProfileSupplier.get());
+        var modalDialogManager = assertNonNull(getModalDialogManager());
+        var bottomSheetController = assertNonNull(mRootUiCoordinator.getBottomSheetController());
+        TabModel tabModel = mTabModelSelector.getCurrentModel();
+        return new TabGroupMenuActionHandler(
+                this,
+                tabModel,
+                bottomSheetController,
+                modalDialogManager,
+                getTabGroupUiActionHandler(),
+                profile);
     }
 
     private @Nullable TabGroupUiActionHandler getTabGroupUiActionHandler() {
