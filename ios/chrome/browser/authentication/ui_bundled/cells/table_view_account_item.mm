@@ -107,9 +107,9 @@ constexpr CGFloat kEnterpriseIconPointSize = 20;
   BOOL isManaged = self.detailImage == TableViewAccountDetailImage::kManaged;
 
   // When not set, the screen readers will read this cell as "text, detailText".
-  // Add a custom accessibility label for managed accounts to append "managed by
-  // your organization" so that the screen readers read this cell as "text,
-  // detailText, managed by your organization".
+  // Add a custom accessibility label for managed accounts or accounts with an
+  // AI tier ring to append "managed by your organization" or "Google
+  // membership".
   if (isManaged) {
     cell.accessibilityLabel =
         self.text && self.detailText
@@ -119,6 +119,17 @@ constexpr CGFloat kEnterpriseIconPointSize = 20;
                   base::SysNSStringToUTF16(self.detailText))
             : l10n_util::GetNSStringF(
                   IDS_IOS_SIGNIN_ACCOUNT_PICKER_CHOOSE_ACCOUNT_ITEM_DESCRIPTION_WITH_EMAIL_MANAGED,
+                  base::SysNSStringToUTF16(self.text ? self.text
+                                                     : self.detailText));
+  } else if (showsAITierRing) {
+    cell.accessibilityLabel =
+        self.text && self.detailText
+            ? l10n_util::GetNSStringF(
+                  IDS_IOS_ACCOUNT_TABLE_VIEW_ITEM_WITH_NAME_AND_EMAIL_GOOGLE_MEMBERSHIP,
+                  base::SysNSStringToUTF16(self.text),
+                  base::SysNSStringToUTF16(self.detailText))
+            : l10n_util::GetNSStringF(
+                  IDS_IOS_ACCOUNT_TABLE_VIEW_ITEM_WITH_EMAIL_GOOGLE_MEMBERSHIP,
                   base::SysNSStringToUTF16(self.text ? self.text
                                                      : self.detailText));
   } else {

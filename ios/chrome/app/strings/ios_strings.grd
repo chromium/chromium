@@ -272,6 +272,12 @@
       <message name="IDS_IOS_ACCOUNT_TABLE_ERROR_VERIFY_ITS_YOU_BUTTON" desc="Label for the button to show the trusted vault reauthentication dialog. [iOS only]">
         Verify it's you…
       </message>
+      <message name="IDS_IOS_ACCOUNT_TABLE_VIEW_ITEM_WITH_EMAIL_GOOGLE_MEMBERSHIP" is_accessibility_with_no_ui="true" desc="The accessibility label for the account item when the user has a Google membership and the user's name is not available. [iOS only]">
+        <ph name="EMAIL">$1<ex>john.doe@example.com</ex></ph>, Google membership.
+      </message>
+      <message name="IDS_IOS_ACCOUNT_TABLE_VIEW_ITEM_WITH_NAME_AND_EMAIL_GOOGLE_MEMBERSHIP" is_accessibility_with_no_ui="true" desc="The accessibility label for the account item when the user has a Google membership. [iOS only]">
+        <ph name="NAME">$1<ex>John Doe</ex></ph>, <ph name="EMAIL">$2<ex>john.doe@example.com</ex></ph>, Google membership.
+      </message>
       <message name="IDS_IOS_ACCOUNT_UNIFIED_CONSENT_ADD_ACCOUNT" desc="Title of the button to add an account [Length: 15m] [iOS only]">
         Add account
       </message>
