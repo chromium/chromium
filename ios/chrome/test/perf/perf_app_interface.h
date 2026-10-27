@@ -42,6 +42,23 @@
                          unit:(NSString*)unit
                     benchmark:(NSString*)benchmark [[nodiscard]];
 
+// Opens `count` regular tabs in the background via `SceneCommands` without
+// waiting for navigation, used to populate the Tab Grid for scroll benchmarks.
++ (void)openBackgroundNewTabs:(int)count;
+
+// Schedules a repeating `NSTimer` on the main runloop in `NSRunLoopCommonModes`
+// that sleeps the main thread for `durationMs` every `intervalMs`.
++ (void)startMainThreadStallWithIntervalMs:(int)intervalMs
+                                durationMs:(int)durationMs;
+
+// Schedules a `CADisplayLink` on the main runloop in `NSRunLoopCommonModes`
+// that sleeps the main thread for `durationMs` every `stride` frames.
++ (void)startCADisplayLinkStallWithStride:(int)stride
+                               durationMs:(int)durationMs;
+
+// Invalidates and clears any active main-thread stall timer or display link.
++ (void)stopMainThreadStall;
+
 @end
 
 #endif  // IOS_CHROME_TEST_PERF_PERF_APP_INTERFACE_H_

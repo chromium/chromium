@@ -9,6 +9,28 @@ bundle_data_from_filelist("speedometer_bundle_data") {
   filelist_name = "speedometer_bundle_data.filelist"
 }
 
+source_set("scroll_jank_metrics_util") {
+  testonly = true
+
+  sources = [
+    "scroll_jank_metrics_util.cc",
+    "scroll_jank_metrics_util.h",
+  ]
+
+  public_deps = [ "//base" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "scroll_jank_metrics_util_unittest.cc" ]
+
+  deps = [
+    ":scroll_jank_metrics_util",
+    "//testing/gtest",
+  ]
+}
+
 source_set("eg_app_support+eg2") {
   configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
@@ -22,8 +44,11 @@ source_set("eg_app_support+eg2") {
     "//base",
     "//ios/chrome/app:app_internal",
     "//ios/chrome/app/application_delegate:startup_information",
+    "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/test/app:test_support",
   ]
+
+  frameworks = [ "QuartzCore.framework" ]
 }
 
 source_set("eg_test_support+eg2") {
@@ -46,6 +71,7 @@ source_set("eg2_tests") {
 
   deps = [
     ":eg_test_support+eg2",
+    ":scroll_jank_metrics_util",
     ":speedometer_bundle_data",
     "//base",
     "//base/test:test_support",

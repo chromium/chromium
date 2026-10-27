@@ -4,16 +4,29 @@
 
 #import "ios/chrome/test/perf/perf_app_interface.h"
 
+#import <QuartzCore/QuartzCore.h>
 #import <mach/mach.h>
 
+#import <algorithm>
 #import <optional>
 
 #import "base/process/process_metrics.h"
+#import "base/threading/platform_thread.h"
 #import "base/time/time.h"
 #import "base/timer/elapsed_timer.h"
 #import "ios/chrome/app/application_delegate/startup_information.h"
 #import "ios/chrome/app/main_controller.h"
+#import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
+#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
+
+namespace {
+NSTimer* g_stall_timer = nil;
+CADisplayLink* g_stall_display_link = nil;
+int g_stall_duration_ms = 0;
+int g_display_link_stride = 1;
+int g_display_link_counter = 0;
+}  // namespace
 
 @implementation PerfAppInterface
 
@@ -177,6 +190,60 @@
 
   [outputData writeToFile:samplesPath options:NSDataWritingAtomic error:&error];
   return error;
+}
+
++ (void)openBackgroundNewTabs:(int)count {
+  id<SceneCommands> handler = chrome_test_util::HandlerForActiveBrowser();
+  for (int i = 0; i < count; ++i) {
+    OpenNewTabCommand* command =
+        [[OpenNewTabCommand alloc] initInIncognito:NO inBackground:YES];
+    [handler openURLInNewTab:command];
+  }
+}
+
++ (void)startMainThreadStallWithIntervalMs:(int)intervalMs
+                                durationMs:(int)durationMs {
+  [self stopMainThreadStall];
+  g_stall_duration_ms = durationMs;
+  g_stall_timer =
+      [NSTimer timerWithTimeInterval:intervalMs / 1000.0
+                             repeats:YES
+                               block:^(NSTimer* timer) {
+                                 base::PlatformThread::Sleep(
+                                     base::Milliseconds(g_stall_duration_ms));
+                               }];
+  [[NSRunLoop mainRunLoop] addTimer:g_stall_timer forMode:NSRunLoopCommonModes];
+}
+
++ (void)startCADisplayLinkStallWithStride:(int)stride
+                               durationMs:(int)durationMs {
+  [self stopMainThreadStall];
+  g_stall_duration_ms = durationMs;
+  g_display_link_stride = std::max(1, stride);
+  g_display_link_counter = 0;
+  g_stall_display_link =
+      [CADisplayLink displayLinkWithTarget:[PerfAppInterface class]
+                                  selector:@selector(handleDisplayLinkStall:)];
+  [g_stall_display_link addToRunLoop:[NSRunLoop mainRunLoop]
+                             forMode:NSRunLoopCommonModes];
+}
+
++ (void)handleDisplayLinkStall:(CADisplayLink*)displayLink {
+  if (++g_display_link_counter % g_display_link_stride == 0) {
+    base::PlatformThread::Sleep(base::Milliseconds(g_stall_duration_ms));
+  }
+}
+
++ (void)stopMainThreadStall {
+  if (g_stall_timer) {
+    [g_stall_timer invalidate];
+    g_stall_timer = nil;
+  }
+  if (g_stall_display_link) {
+    [g_stall_display_link invalidate];
+    g_stall_display_link = nil;
+  }
+  g_stall_duration_ms = 0;
 }
 
 @end
