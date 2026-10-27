@@ -87,7 +87,7 @@ std::optional<AttributeType> GetStaticAttributeType(FieldType ft) {
 
   // This lookup table is the inverse of AttributeType::field_type(), except
   // for the `kDynamicFieldTypes`.
-  static auto kTable = []() {
+  static constexpr auto kTable = []() {
     std::array<std::optional<AttributeType>, MAX_VALID_FIELD_TYPE> arr{};
     for (AttributeType at : DenseSet<AttributeType>::all()) {
       if (std::optional<FieldType> field_type = at.field_type()) {
