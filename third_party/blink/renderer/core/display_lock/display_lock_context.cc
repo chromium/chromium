@@ -40,6 +40,7 @@
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/pre_paint_tree_walk.h"
 #include "third_party/blink/renderer/core/speculation_rules/document_speculation_rules.h"
+#include "third_party/blink/renderer/core/svg/svg_element.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition_utils.h"
 #include "third_party/blink/renderer/platform/graphics/compositing/paint_artifact_compositor.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -1069,6 +1070,14 @@ const char* DisplayLockContext::ShouldForceUnlock() const {
   if (!style->ContainsStyle() || !style->ContainsLayout())
     return rejection_names::kContainmentNotSatisfied;
 
+  // Per https://www.w3.org/TR/css-contain-1/#containment-layout, layout
+  // containment has no effect on SVG elements other than outermost <svg>.
+  if (const auto* svg_element = DynamicTo<SVGElement>(*element_)) {
+    return svg_element->IsOutermostSVGSVGElement()
+               ? nullptr
+               : rejection_names::kContainmentNotSatisfied;
+  }
+
   // We allow replaced elements without fallback content to be locked. This
   // check is similar to the check in DefinitelyNewFormattingContext() in
   // element.cc, but in this case we allow object element to get locked.
@@ -1079,8 +1088,7 @@ const char* DisplayLockContext::ShouldForceUnlock() const {
              IsA<HTMLCanvasElement>(*element_) ||
              (element_->IsFormControlElement() &&
               !element_->IsOutputElement()) ||
-             element_->IsMediaElement() || element_->IsFrameOwnerElement() ||
-             element_->IsSVGElement()) {
+             element_->IsMediaElement() || element_->IsFrameOwnerElement()) {
     return nullptr;
   }
 
