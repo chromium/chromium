@@ -112,10 +112,10 @@ bool SetStreamFormat(int channels,
 void MaybeMapRearSurroundChannelToSurroundChannel(
     const AudioUnit& audio_unit,
     AudioChannelLayout* audio_layout) {
+  const auto audio_descriptions = GetDescriptions(*audio_layout);
   bool maybe_need_mapping = false;
-  for (UInt32 i = 0; i < audio_layout->mNumberChannelDescriptions; i++) {
-    AudioChannelLabel label =
-        UNSAFE_TODO(audio_layout->mChannelDescriptions[i]).mChannelLabel;
+  for (const AudioChannelDescription& description : audio_descriptions) {
+    const AudioChannelLabel label = description.mChannelLabel;
     // If audio already has Ls or Rs channel, skip.
     if (label == kAudioChannelLabel_LeftSurround ||
         label == kAudioChannelLabel_RightSurround) {
@@ -137,13 +137,13 @@ void MaybeMapRearSurroundChannelToSurroundChannel(
   if (!scoped_device_layout) {
     return;
   }
-  AudioChannelLayout* device_layout = scoped_device_layout->layout();
+  const AudioChannelLayout* device_layout = scoped_device_layout->layout();
 
   // If device has Rls or Rrs channel, skip. Since we only do mapping when
   // Rls or Rrs channel do not exist.
-  for (UInt32 i = 0; i < device_layout->mNumberChannelDescriptions; ++i) {
-    AudioChannelLabel label =
-        UNSAFE_TODO(device_layout->mChannelDescriptions[i]).mChannelLabel;
+  for (const AudioChannelDescription& description :
+       GetDescriptions(*device_layout)) {
+    const AudioChannelLabel label = description.mChannelLabel;
     if (label == kAudioChannelLabel_RearSurroundLeft ||
         label == kAudioChannelLabel_RearSurroundRight) {
       return;
@@ -151,15 +151,12 @@ void MaybeMapRearSurroundChannelToSurroundChannel(
   }
 
   // Map Rls to Ls, Rrs to Rs.
-  for (UInt32 i = 0; i < audio_layout->mNumberChannelDescriptions; i++) {
-    AudioChannelLabel label =
-        UNSAFE_TODO(audio_layout->mChannelDescriptions[i]).mChannelLabel;
+  for (AudioChannelDescription& description : audio_descriptions) {
+    const AudioChannelLabel label = description.mChannelLabel;
     if (label == kAudioChannelLabel_RearSurroundLeft) {
-      UNSAFE_TODO(audio_layout->mChannelDescriptions[i]).mChannelLabel =
-          kAudioChannelLabel_LeftSurround;
+      description.mChannelLabel = kAudioChannelLabel_LeftSurround;
     } else if (label == kAudioChannelLabel_RearSurroundRight) {
-      UNSAFE_TODO(audio_layout->mChannelDescriptions[i]).mChannelLabel =
-          kAudioChannelLabel_RightSurround;
+      description.mChannelLabel = kAudioChannelLabel_RightSurround;
     }
   }
 }
