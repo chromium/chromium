@@ -12,6 +12,7 @@
 
 #include "base/check.h"
 #include "base/strings/strcat.h"
+#include "chrome/browser/actor/actor_surface.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/tools/tool_delegate.h"
 #include "chrome/browser/actor/tools/type_tool_request.h"
@@ -68,11 +69,11 @@ std::optional<DomNode> FindSearchInputNode(
 
 SiteBasedSearchTool::SiteBasedSearchTool(TaskId task_id,
                                          ToolDelegate& tool_delegate,
-                                         tabs::TabHandle tab_handle,
+                                         ActorSurface& actor_surface,
                                          std::string query,
                                          std::string document_identifier)
     : Tool(task_id, tool_delegate),
-      tab_handle_(tab_handle),
+      actor_surface_handle_(actor_surface.GetHandle()),
       query_(std::move(query)),
       document_identifier_(std::move(document_identifier)) {}
 
@@ -82,8 +83,8 @@ void SiteBasedSearchTool::Validate(ToolCallback callback) {
   CHECK(!query_.empty());
   CHECK(!document_identifier_.empty());
 
-  tabs::TabInterface* tab = tab_handle_.Get();
-  if (!tab || !tab->GetContents()) {
+  ActorSurface* actor_surface = actor_surface_handle_.Get();
+  if (!actor_surface) {
     PostResponseTask(std::move(callback),
                      MakeResult(mojom::ActionResultCode::kTabWentAway));
     return;
@@ -99,7 +100,7 @@ void SiteBasedSearchTool::Validate(ToolCallback callback) {
               GetForProfile(&tool_delegate().GetProfile())) {
     extracted_content =
         extraction_service->GetExtractedPageContentAndEligibilityForPage(
-            tab->GetContents()->GetPrimaryPage());
+            actor_surface->GetWebContents()->GetPrimaryPage());
     if (extracted_content.has_value() && extracted_content->page_content) {
       apc = &extracted_content->page_content->data;
     }
@@ -141,8 +142,7 @@ void SiteBasedSearchTool::Validate(ToolCallback callback) {
 }
 
 void SiteBasedSearchTool::Invoke(ToolCallback callback) {
-  tabs::TabInterface* tab = tab_handle_.Get();
-  if (!tab || !tab->GetContents()) {
+  if (!actor_surface_handle_.Get()) {
     PostResponseTask(std::move(callback),
                      MakeResult(mojom::ActionResultCode::kTabWentAway));
     return;
@@ -150,8 +150,7 @@ void SiteBasedSearchTool::Invoke(ToolCallback callback) {
 
   CHECK(resolved_dom_node_.has_value());
   tool_delegate().EnqueueFollowupAction(std::make_unique<TypeToolRequest>(
-      ActorSurfaceHandle::From(tab_handle_), PageTarget(*resolved_dom_node_),
-      query_,
+      actor_surface_handle_, PageTarget(*resolved_dom_node_), query_,
       /*follow_by_enter=*/true, TypeToolRequest::Mode::kReplace));
 
   PostResponseTask(std::move(callback), MakeOkResult());
@@ -166,9 +165,8 @@ std::string SiteBasedSearchTool::JournalEvent() const {
 }
 
 GURL SiteBasedSearchTool::JournalURL() const {
-  tabs::TabInterface* tab = tab_handle_.Get();
-  if (tab && tab->GetContents()) {
-    return tab->GetContents()->GetLastCommittedURL();
+  if (ActorSurface* actor_surface = actor_surface_handle_.Get()) {
+    return actor_surface->GetWebContents()->GetLastCommittedURL();
   }
   return GURL();
 }
@@ -181,11 +179,12 @@ SiteBasedSearchTool::GetObservationDelayer(
 
 void SiteBasedSearchTool::UpdateTaskBeforeInvoke(ActorTask& task,
                                                  ToolCallback callback) const {
-  task.AddTab(tab_handle_, /*stop_task_on_detach=*/true, std::move(callback));
+  task.AddActorSurface(actor_surface_handle_, /*stop_task_on_detach=*/true,
+                       std::move(callback));
 }
 
 ActorSurfaceHandle SiteBasedSearchTool::GetTargetActorSurface() const {
-  return ActorSurfaceHandle::From(tab_handle_);
+  return actor_surface_handle_;
 }
 
 }  // namespace actor

@@ -16,7 +16,6 @@
 #include "chrome/common/chrome_features.h"
 #include "components/actor/public/mojom/actor_types.mojom.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
-#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
@@ -26,7 +25,6 @@ namespace actor {
 using content::RenderFrameHost;
 using content::WebContents;
 using optimization_guide::DocumentIdentifierUserData;
-using tabs::TabHandle;
 
 namespace {
 constexpr absl::Overload ToMojoFn{

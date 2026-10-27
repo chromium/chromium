@@ -13,8 +13,11 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/test_timeouts.h"
 #include "base/time/time.h"
+#include "chrome/browser/actor/actor_surface.h"
+#include "chrome/browser/actor/actor_surface_handle.h"
 #include "chrome/browser/actor/tools/observation_delay_controller.h"
 #include "chrome/test/base/chrome_test_utils.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test_utils.h"
 #include "net/test/embedded_test_server/controllable_http_response.h"
@@ -137,6 +140,13 @@ ObservationDelayTest::~ObservationDelayTest() = default;
 
 tabs::TabInterface* ObservationDelayTest::active_tab() {
   return chrome_test_utils::GetActiveTab(this);
+}
+
+ActorSurface& ObservationDelayTest::active_surface() {
+  ActorSurface* actor_surface =
+      ActorSurfaceHandle::From(active_tab()->GetHandle()).Get();
+  CHECK(actor_surface);
+  return *actor_surface;
 }
 
 ObservationDelayController::PageStabilityConfig

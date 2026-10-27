@@ -32,6 +32,8 @@ class TabInterface;
 
 namespace actor {
 
+class ActorSurface;
+
 // Helper to start a navigation in the main frame to a page that reaches
 // DOMContentLoaded in the main frame but doesn't reach the load event until
 // `RunToLoadEvent` is called. It does this by deferring a subframe navigation.
@@ -80,6 +82,8 @@ class ObservationDelayTest : public PageStabilityTest {
   ~ObservationDelayTest() override;
 
   tabs::TabInterface* active_tab();
+  // The surface backing the active tab.
+  ActorSurface& active_surface();
 
   actor::AggregatedJournal& journal() { return journal_; }
 

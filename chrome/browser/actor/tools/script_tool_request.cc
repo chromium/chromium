@@ -45,7 +45,6 @@ constexpr std::string_view kInputArgumentsParamDescription =
 
 }  // namespace
 
-using ::tabs::TabHandle;
 
 ScriptToolRequest::ScriptToolRequest(
     ActorSurfaceHandle actor_surface_handle,

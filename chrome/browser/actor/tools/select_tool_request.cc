@@ -32,7 +32,6 @@ constexpr std::string_view kValueParamDescription =
 
 }  // namespace
 
-using ::tabs::TabHandle;
 
 SelectToolRequest::SelectToolRequest(ActorSurfaceHandle actor_surface_handle,
                                      const PageTarget& target,

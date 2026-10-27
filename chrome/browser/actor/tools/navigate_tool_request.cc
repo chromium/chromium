@@ -32,7 +32,6 @@ constexpr std::string_view kUrlParamDescription =
 
 }  // namespace
 
-using ::tabs::TabHandle;
 
 NavigateToolRequest::NavigateToolRequest(
     ActorSurfaceHandle actor_surface_handle,

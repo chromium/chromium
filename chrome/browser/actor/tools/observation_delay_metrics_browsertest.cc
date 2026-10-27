@@ -58,7 +58,7 @@ IN_PROC_BROWSER_TEST_F(ObservationDelayMetricsTest, CompleteWithoutLoading) {
                                             journal(), PageStabilityConfig());
 
   TestFuture<ObservationDelayController::Result> result;
-  controller.Wait(*active_tab(), result.GetCallback());
+  controller.Wait(active_surface(), result.GetCallback());
 
   ASSERT_TRUE(result.Wait());
 
@@ -104,7 +104,7 @@ IN_PROC_BROWSER_TEST_P(ObservationDelayMetricsNavigateTest,
   ASSERT_TRUE(InitiateFetchRequest());
 
   TestFuture<ObservationDelayController::Result> result;
-  controller.Wait(*active_tab(), result.GetCallback());
+  controller.Wait(active_surface(), result.GetCallback());
 
   ASSERT_TRUE(DoesReachSteadyState(controller, State::kWaitForPageStability));
   ASSERT_FALSE(result.IsReady());
@@ -169,7 +169,7 @@ IN_PROC_BROWSER_TEST_F(ObservationDelayMetricsTest, TimeoutOnPageStability) {
   ASSERT_TRUE(InitiateFetchRequest());
 
   TestFuture<ObservationDelayController::Result> result;
-  controller.Wait(*active_tab(), result.GetCallback());
+  controller.Wait(active_surface(), result.GetCallback());
 
   ASSERT_TRUE(result.Wait());
 
@@ -206,7 +206,7 @@ IN_PROC_BROWSER_TEST_P(ObservationDelayMetricsNavigateTest,
   // Start waiting, since a fetch is in progress we should be waiting for page
   // stability.
   TestFuture<ObservationDelayController::Result> result;
-  controller.Wait(*active_tab(), result.GetCallback());
+  controller.Wait(active_surface(), result.GetCallback());
 
   ASSERT_TRUE(DoesReachSteadyState(controller, State::kWaitForPageStability));
   EXPECT_FALSE(result.IsReady());
@@ -289,7 +289,7 @@ IN_PROC_BROWSER_TEST_F(ObservationDelayMetricsLcpDelayTest, LcpDelayNeeded) {
                                             journal(), PageStabilityConfig());
 
   TestFuture<ObservationDelayController::Result> result;
-  controller.Wait(*active_tab(), result.GetCallback());
+  controller.Wait(active_surface(), result.GetCallback());
 
   ASSERT_TRUE(controller.WaitForState(State::kDelayForLcp));
   ASSERT_TRUE(result.Wait());
@@ -329,7 +329,7 @@ IN_PROC_BROWSER_TEST_F(ObservationDelayMetricsFederatedLoginDelayTest,
                                             journal(), PageStabilityConfig());
 
   TestFuture<ObservationDelayController::Result> result;
-  controller.Wait(*active_tab(), result.GetCallback());
+  controller.Wait(active_surface(), result.GetCallback());
   ASSERT_TRUE(controller.WaitForState(State::kWaitForFederatedLogin));
 
   content::webid::FederatedEmbedderLoginRequest::Get(web_contents())

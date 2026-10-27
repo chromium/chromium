@@ -14,10 +14,10 @@
 #include "chrome/browser/actor/tools/tool.h"
 #include "chrome/browser/actor/tools/tool_callbacks.h"
 #include "components/actor/core/shared_types.h"
-#include "components/tabs/public/tab_interface.h"
 
 namespace actor {
 
+class ActorSurface;
 class ActorTask;
 class ToolDelegate;
 
@@ -28,7 +28,7 @@ class SiteBasedSearchTool : public Tool {
  public:
   SiteBasedSearchTool(TaskId task_id,
                       ToolDelegate& tool_delegate,
-                      tabs::TabHandle tab_handle,
+                      ActorSurface& actor_surface,
                       std::string query,
                       std::string document_identifier);
   ~SiteBasedSearchTool() override;
@@ -47,7 +47,7 @@ class SiteBasedSearchTool : public Tool {
   ActorSurfaceHandle GetTargetActorSurface() const override;
 
  private:
-  tabs::TabHandle tab_handle_;
+  ActorSurfaceHandle actor_surface_handle_;
   std::string query_;
   std::string document_identifier_;
   std::optional<DomNode> resolved_dom_node_;

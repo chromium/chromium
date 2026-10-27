@@ -18,7 +18,6 @@
 #include "components/actor/core/task_id.h"
 #include "components/page_content_annotations/content/browser/page_settled_monitor.h"
 #include "components/page_content_annotations/content/mojom/page_stability.mojom.h"
-#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents_observer.h"
 
@@ -66,13 +65,12 @@ class ObservationDelayController : public content::WebContentsObserver {
 
   // Note: Callback will always be executed asynchronously. It may be run after
   // this object is deleted so must manage its own lifetime.
-  // Note: If a RenderFrame was provided in the constructor, `target_tab` should
-  // contain it.
+  // Note: If a RenderFrameHost was passed to the constructor, it must belong to
+  // `target_actor_surface`'s WebContents.
   //
-  // `target_tab`: The tab on which to wait. The WebContents of this tab will be
-  // observed by this controller, overwriting any previously observed
+  // `target_actor_surface`: The surface on which to wait. Its WebContents will
+  // be observed by this controller, overwriting any previously observed
   // WebContents.
-  void Wait(tabs::TabInterface& target_tab, ReadyCallback callback);
   void Wait(ActorSurface& target_actor_surface, ReadyCallback callback);
 
   // content::WebContentsObserver:

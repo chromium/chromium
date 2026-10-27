@@ -43,7 +43,6 @@ constexpr std::string_view kFollowByEnterParamDescription =
 
 }  // namespace
 
-using ::tabs::TabHandle;
 
 TypeToolRequest::TypeToolRequest(ActorSurfaceHandle actor_surface_handle,
                                  const PageTarget& target,

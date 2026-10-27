@@ -30,7 +30,6 @@ constexpr std::string_view kDomNodeIdParamDescription =
 
 }  // namespace
 
-using ::tabs::TabHandle;
 
 ClickToolRequest::ClickToolRequest(
     ActorSurfaceHandle actor_surface_handle,

@@ -28,7 +28,6 @@ constexpr std::string_view kDomNodeIdParamDescription =
 
 }  // namespace
 
-using ::tabs::TabHandle;
 
 MoveMouseToolRequest::MoveMouseToolRequest(
     ActorSurfaceHandle actor_surface_handle,

@@ -13,6 +13,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/types/expected.h"
+#include "chrome/browser/actor/actor_surface.h"
 #include "chrome/browser/actor/tools/navigate_tool_request.h"
 #include "chrome/browser/actor/tools/registry/tool_definition.h"
 #include "chrome/browser/actor/tools/registry/tool_definition_builder.h"
@@ -27,7 +28,7 @@
 #include "components/actor/public/mojom/actor_types.mojom.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
-#include "components/tabs/public/tab_interface.h"
+#include "content/public/browser/web_contents.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -95,8 +96,6 @@ base::expected<GURL, mojom::ActionResultPtr> ResolveSearchUrl(
 
 }  // namespace
 
-using ::tabs::TabHandle;
-
 PerformSearchToolRequest::PerformSearchToolRequest(
     ActorSurfaceHandle actor_surface_handle,
     std::string query)
@@ -138,13 +137,16 @@ ToolRequest::CreateToolResult PerformSearchToolRequest::CreateTool(
 
 std::optional<url::Origin> PerformSearchToolRequest::AssociatedOriginGrant()
     const {
-  const tabs::TabInterface* tab = GetActorSurfaceHandle().GetTabHandle().Get();
-  if (!tab || !tab->GetProfile()) {
+  const ActorSurface* actor_surface = GetActorSurfaceHandle().Get();
+  if (!actor_surface) {
     return std::nullopt;
   }
 
   const base::expected<GURL, mojom::ActionResultPtr> search_url =
-      ResolveSearchUrl(*tab->GetProfile(), query_);
+      ResolveSearchUrl(
+          *Profile::FromBrowserContext(
+              actor_surface->GetWebContents()->GetBrowserContext()),
+          query_);
   if (!search_url.has_value()) {
     return std::nullopt;
   }

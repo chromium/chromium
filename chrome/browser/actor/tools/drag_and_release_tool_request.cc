@@ -38,7 +38,6 @@ constexpr std::string_view kToDomNodeIdParamDescription =
 
 }  // namespace
 
-using ::tabs::TabHandle;
 
 DragAndReleaseToolRequest::DragAndReleaseToolRequest(
     ActorSurfaceHandle actor_surface_handle,

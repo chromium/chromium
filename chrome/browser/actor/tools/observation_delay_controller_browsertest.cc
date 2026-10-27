@@ -91,7 +91,7 @@ IN_PROC_BROWSER_TEST_P(ObservationDelayControllerNavigateTest,
 
   // Start waiting on the controller. It should be blocked in page stability.
   TestFuture<ObservationDelayController::Result> result;
-  controller.Wait(*active_tab(), result.GetCallback());
+  controller.Wait(active_surface(), result.GetCallback());
   ASSERT_TRUE(DoesReachSteadyState(controller, State::kWaitForPageStability));
 
   const GURL url = embedded_test_server()->GetURL("/actor/blank.html");
@@ -133,7 +133,7 @@ IN_PROC_BROWSER_TEST_P(ObservationDelayControllerNavigateTest,
 
   // Start waiting on the controller. It should be blocked in page stability.
   TestFuture<ObservationDelayController::Result> result;
-  controller.Wait(*active_tab(), result.GetCallback());
+  controller.Wait(active_surface(), result.GetCallback());
   ASSERT_TRUE(DoesReachSteadyState(controller, State::kWaitForPageStability));
 
   const GURL url = embedded_test_server()->GetURL("/actor/blank.html");
@@ -169,7 +169,7 @@ IN_PROC_BROWSER_TEST_F(ObservationDelayControllerTest,
 
   // Start waiting on the controller. It should be blocked in page stability.
   TestFuture<ObservationDelayController::Result> result;
-  controller.Wait(*active_tab(), result.GetCallback());
+  controller.Wait(active_surface(), result.GetCallback());
 
   ASSERT_TRUE(DoesReachSteadyState(controller, State::kWaitForPageStability));
   EXPECT_FALSE(result.IsReady());
@@ -197,7 +197,7 @@ IN_PROC_BROWSER_TEST_P(ObservationDelayControllerNavigateTest,
   // Start waiting, since a fetch is in progress we should be waiting for page
   // stability.
   TestFuture<ObservationDelayController::Result> result;
-  controller.Wait(*active_tab(), result.GetCallback());
+  controller.Wait(active_surface(), result.GetCallback());
 
   ASSERT_TRUE(DoesReachSteadyState(controller, State::kWaitForPageStability));
   EXPECT_FALSE(result.IsReady());
@@ -248,7 +248,7 @@ IN_PROC_BROWSER_TEST_F(ObservationDelayControllerTest,
   // Start waiting, since a fetch is in progress we should be waiting for page
   // stability.
   TestFuture<ObservationDelayController::Result> result;
-  controller.Wait(*active_tab(), result.GetCallback());
+  controller.Wait(active_surface(), result.GetCallback());
   ASSERT_TRUE(DoesReachSteadyState(controller, State::kWaitForPageStability));
   EXPECT_FALSE(result.IsReady());
 
@@ -282,7 +282,7 @@ IN_PROC_BROWSER_TEST_F(ObservationDelayControllerTest, PdfFlow) {
                                             journal(), PageStabilityConfig());
 
   TestFuture<ObservationDelayController::Result> result;
-  controller.Wait(*active_tab(), result.GetCallback());
+  controller.Wait(active_surface(), result.GetCallback());
 
 #if BUILDFLAG(ENABLE_PDF)
   // PDF should transition through WaitForPdfLoadCompletion if enabled.
@@ -343,7 +343,7 @@ IN_PROC_BROWSER_TEST_F(ObservationDelayControllerLcpTest, NoDelayWhenLcpReady) {
 
   base::ElapsedTimer timer;
   TestFuture<ObservationDelayController::Result> result;
-  controller.Wait(*active_tab(), result.GetCallback());
+  controller.Wait(active_surface(), result.GetCallback());
 
   ASSERT_TRUE(controller.WaitForState(State::kMaybeDelayForLcp));
   ASSERT_TRUE(result.Wait());
@@ -368,7 +368,7 @@ IN_PROC_BROWSER_TEST_F(ObservationDelayControllerLcpTest,
 
   base::ElapsedTimer timer;
   TestFuture<ObservationDelayController::Result> result;
-  controller.Wait(*active_tab(), result.GetCallback());
+  controller.Wait(active_surface(), result.GetCallback());
 
   ASSERT_TRUE(controller.WaitForState(State::kMaybeDelayForLcp));
   ASSERT_TRUE(controller.WaitForState(State::kDelayForLcp));
@@ -423,7 +423,7 @@ IN_PROC_BROWSER_TEST_P(ObservationDelayControllerExcludeAdRequestsTest,
   ASSERT_FALSE(web_contents()->IsLoadingExcludingAdSubframes());
 
   TestFuture<ObservationDelayController::Result> result;
-  controller.Wait(*active_tab(), result.GetCallback());
+  controller.Wait(active_surface(), result.GetCallback());
 
   // Regardless of the feature status, the controller should move to wait for
   // load completion state after the wait starts.
@@ -532,7 +532,7 @@ IN_PROC_BROWSER_TEST_P(ObservationDelayControllerAutofillTest,
 
   base::ElapsedTimer timer;
   TestFuture<ObservationDelayController::Result> result;
-  controller.Wait(*active_tab(), result.GetCallback());
+  controller.Wait(active_surface(), result.GetCallback());
 
   ASSERT_TRUE(controller.WaitForState(State::kWaitForAutofillPredictions));
   // The state machine advances to done once the callback from the tracker is

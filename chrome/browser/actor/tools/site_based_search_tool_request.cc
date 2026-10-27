@@ -11,6 +11,7 @@
 
 #include "base/check.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/actor/actor_surface.h"
 #include "chrome/browser/actor/tools/navigate_tool_request.h"
 #include "chrome/browser/actor/tools/site_based_search_tool.h"
 #include "chrome/browser/actor/tools/tool.h"
@@ -25,7 +26,6 @@
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
-#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "url/gurl.h"
@@ -54,12 +54,14 @@ bool SiteBasedSearchToolRequest::RequiresUrlCheckInCurrentTab() const {
 ToolRequest::CreateToolResult SiteBasedSearchToolRequest::CreateTool(
     TaskId task_id,
     ToolDelegate& tool_delegate) const {
-  tabs::TabInterface* tab = GetActorSurfaceHandle().GetTabHandle().Get();
-  if (!tab || !tab->GetContents()) {
-    return {/*tool=*/nullptr, MakeResult(mojom::ActionResultCode::kTabWentAway,
-                                         /*requires_page_stabilization=*/false,
-                                         "The tab is no longer present.")};
+  ActorSurface* actor_surface = GetActorSurfaceHandle().Get();
+  if (!actor_surface) {
+    return {/*tool=*/nullptr,
+            MakeResult(mojom::ActionResultCode::kTabWentAway,
+                       /*requires_page_stabilization=*/false,
+                       "The target surface is no longer present.")};
   }
+  content::WebContents* web_contents = actor_surface->GetWebContents();
 
   if (query_.empty()) {
     return {/*tool=*/nullptr,
@@ -75,8 +77,7 @@ ToolRequest::CreateToolResult SiteBasedSearchToolRequest::CreateTool(
                        "Document identifier is empty.")};
   }
 
-  content::RenderFrameHost* main_frame =
-      tab->GetContents()->GetPrimaryMainFrame();
+  content::RenderFrameHost* main_frame = web_contents->GetPrimaryMainFrame();
   CHECK(main_frame);
 
   const std::string current_doc_id =
@@ -101,7 +102,7 @@ ToolRequest::CreateToolResult SiteBasedSearchToolRequest::CreateTool(
 
   // If a search URL with replaceable search terms exists, then this is now a
   // navigation action.
-  const GURL& current_url = tab->GetContents()->GetLastCommittedURL();
+  const GURL& current_url = web_contents->GetLastCommittedURL();
   if (current_url.is_valid() && current_url.SchemeIsHTTPOrHTTPS()) {
     const std::u16string keyword = TemplateURL::GenerateKeyword(current_url);
     const TemplateURL* turl =
@@ -134,10 +135,10 @@ ToolRequest::CreateToolResult SiteBasedSearchToolRequest::CreateTool(
     }
   }
 
-  return {std::make_unique<SiteBasedSearchTool>(
-              task_id, tool_delegate, GetActorSurfaceHandle().GetTabHandle(),
-              query_, document_identifier_),
-          MakeOkResult()};
+  return {
+      std::make_unique<SiteBasedSearchTool>(
+          task_id, tool_delegate, *actor_surface, query_, document_identifier_),
+      MakeOkResult()};
 }
 
 void SiteBasedSearchToolRequest::Apply(ToolRequestVisitorFunctor& f) const {

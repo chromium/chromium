@@ -70,7 +70,6 @@ blink::mojom::ScrollDirectionPhysical ToMojoDirection(
 
 }  // namespace
 
-using ::tabs::TabHandle;
 
 ScrollToolRequest::ScrollToolRequest(ActorSurfaceHandle actor_surface_handle,
                                      const PageTarget& target,

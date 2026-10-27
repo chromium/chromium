@@ -36,8 +36,6 @@
 #include "components/page_load_metrics/browser/metrics_web_contents_observer.h"
 #include "components/page_load_metrics/browser/observers/core/largest_contentful_paint_handler.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer_delegate.h"
-#include "components/tabs/public/tab_handle_factory.h"
-#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -187,11 +185,6 @@ ObservationDelayController::ObservationDelayController(
 }
 
 ObservationDelayController::~ObservationDelayController() = default;
-
-void ObservationDelayController::Wait(tabs::TabInterface& target_tab,
-                                      ReadyCallback callback) {
-  WaitOnWebContents(target_tab.GetContents(), std::move(callback));
-}
 
 void ObservationDelayController::Wait(ActorSurface& target_actor_surface,
                                       ReadyCallback callback) {

@@ -27,7 +27,6 @@ constexpr std::string_view kDomNodeIdParamDescription =
 
 }  // namespace
 
-using ::tabs::TabHandle;
 
 ScrollToToolRequest::ScrollToToolRequest(
     ActorSurfaceHandle actor_surface_handle,
