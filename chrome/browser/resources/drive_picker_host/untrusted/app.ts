@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import '//resources/cr_elements/cr_button/cr_button.js';
+
 import {I18nMixinLit} from '//resources/cr_elements/i18n_mixin_lit.js';
 import {assert} from '//resources/js/assert.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
@@ -10,8 +11,9 @@ import type {ProtoWrapper} from '//resources/mojo/mojo/public/mojom/base/proto_w
 
 import {getCss} from './app.css.js';
 import {getHtml} from './app.html.js';
-import {BrowserProxyImpl} from './browser_proxy.js';
 import {DrivePickerApiProxyImpl} from './drive_picker_api_proxy.js';
+import {browserProxyFactory} from './drive_picker_host_untrusted.mojom-webui.js';
+import type {BrowserProxy} from './drive_picker_host_untrusted.mojom-webui.js';
 import {DrivePickerError} from './drive_picker_result_handler.mojom-webui.js';
 import type {DriveFile, DrivePickerResultHandlerRemote} from './drive_picker_result_handler.mojom-webui.js';
 
@@ -43,7 +45,7 @@ export class DrivePickerHostUntrustedAppElement extends
     };
   }
 
-  private browserProxy_ = BrowserProxyImpl.getInstance();
+  private browserProxy_: BrowserProxy = browserProxyFactory.getInstance();
   private drivePickerApiProxy_ = DrivePickerApiProxyImpl.getInstance();
   private resultHandler_: DrivePickerResultHandlerRemote|null = null;
   private listenerIds_: number[] = [];

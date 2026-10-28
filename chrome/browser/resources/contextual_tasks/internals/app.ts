@@ -13,12 +13,12 @@ import type {CrSliderElement} from '//resources/cr_elements/cr_slider/cr_slider.
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {Time} from '//resources/mojo/mojo/public/mojom/base/time.mojom-webui.js';
 
-import type {EligibilityState, Tab} from '../contextual_tasks_internals.mojom-webui.js';
+import {browserProxyFactory} from '../contextual_tasks_internals.mojom-webui.js';
+import type {BrowserProxy, EligibilityState, Tab} from '../contextual_tasks_internals.mojom-webui.js';
 import {TabSelectionMode} from '../contextual_tasks_types.mojom-webui.js';
 
 import {getCss} from './app.css.js';
 import {getHtml} from './app.html.js';
-import {BrowserProxy} from './browser_proxy.js';
 
 /**
  * Converts a mojo time to a JS time.
@@ -121,7 +121,7 @@ export class ContextualTasksInternalsAppElement extends CrLitElement {
   protected accessor currentHost_: string = '';
   protected accessor eligibilityState_: EligibilityState|null = null;
 
-  private proxy_: BrowserProxy = BrowserProxy.getInstance();
+  private proxy_: BrowserProxy = browserProxyFactory.getInstance();
 
   override connectedCallback() {
     super.connectedCallback();

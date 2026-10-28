@@ -9,10 +9,7 @@ build_webui("build") {
 
   static_files = [ "history_clusters_internals.html" ]
 
-  ts_files = [
-    "history_clusters_internals.ts",
-    "history_clusters_internals_browser_proxy.ts",
-  ]
+  ts_files = [ "history_clusters_internals.ts" ]
 
   mojo_files_deps = [ "//components/history_clusters/history_clusters_internals/webui:mojo_bindings_ts__generator" ]
   mojo_files = [ "$root_gen_dir/components/history_clusters/history_clusters_internals/webui/history_clusters_internals.mojom-webui.ts" ]

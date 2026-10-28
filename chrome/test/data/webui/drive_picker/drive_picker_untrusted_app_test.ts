@@ -8,9 +8,8 @@ import 'chrome-untrusted://drive-picker-host/app.js';
 import type {ProtoWrapper} from '//resources/mojo/mojo/public/mojom/base/proto_wrapper.mojom-webui.js';
 import {HANDSHAKE_TIMEOUT_MS} from 'chrome-untrusted://drive-picker-host/app.js';
 import type {DrivePickerHostUntrustedAppElement} from 'chrome-untrusted://drive-picker-host/app.js';
-import {BrowserProxyImpl} from 'chrome-untrusted://drive-picker-host/browser_proxy.js';
-import {PageCallbackRouter} from 'chrome-untrusted://drive-picker-host/drive_picker_host_untrusted.mojom-webui.js';
-import type {PageHandlerInterface, PageHandlerRemote, PageRemote} from 'chrome-untrusted://drive-picker-host/drive_picker_host_untrusted.mojom-webui.js';
+import {browserProxyFactory} from 'chrome-untrusted://drive-picker-host/drive_picker_host_untrusted.mojom-webui.js';
+import type {PageHandlerInterface, PageRemote} from 'chrome-untrusted://drive-picker-host/drive_picker_host_untrusted.mojom-webui.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {MockTimer} from 'chrome-untrusted://webui-test/mock_timer.js';
 import {TestBrowserProxy} from 'chrome-untrusted://webui-test/test_browser_proxy.js';
@@ -51,6 +50,7 @@ class TestPageHandler extends TestBrowserProxy implements PageHandlerInterface {
 suite('DrivePickerHostUntrustedAppTest', function() {
   let app: DrivePickerHostUntrustedAppElement;
   let handler: TestPageHandler;
+  let callbackRouterRemote: PageRemote;
   let mockTimer: MockTimer|null = null;
 
   setup(async function() {
@@ -60,10 +60,9 @@ suite('DrivePickerHostUntrustedAppTest', function() {
       document.body.innerHTML = '';
     }
     handler = new TestPageHandler();
-    BrowserProxyImpl.setInstance({
-      handler: handler as unknown as PageHandlerRemote,
-      callbackRouter: new PageCallbackRouter(),
-    });
+    const {instance, remote} = browserProxyFactory.createForTest(handler);
+    browserProxyFactory.setInstance(instance);
+    callbackRouterRemote = remote;
     app = document.createElement('drive-picker-host-untrusted-app');
     document.body.appendChild(app);
     await microtasksFinished();
@@ -80,10 +79,6 @@ suite('DrivePickerHostUntrustedAppTest', function() {
 
   test('LoadsConsentKitUrlIframe', async function() {
     const testUrl = 'https://consent.google.com/primitive?hl=en';
-
-    const browserProxy = BrowserProxyImpl.getInstance();
-    const callbackRouterRemote: PageRemote =
-        browserProxy.callbackRouter.$.bindNewPipeAndPassRemote();
 
     callbackRouterRemote.loadConsentKitUrl(testUrl);
     await callbackRouterRemote.$.flushForTesting();
@@ -107,9 +102,6 @@ suite('DrivePickerHostUntrustedAppTest', function() {
     const testUrl = 'https://consent.google.com/primitive?hl=en';
     mockTimer = new MockTimer();
     mockTimer.install();
-    const callbackRouterRemote: PageRemote =
-        BrowserProxyImpl.getInstance()
-            .callbackRouter.$.bindNewPipeAndPassRemote();
     callbackRouterRemote.loadConsentKitUrl(testUrl);
     await callbackRouterRemote.$.flushForTesting();
 
