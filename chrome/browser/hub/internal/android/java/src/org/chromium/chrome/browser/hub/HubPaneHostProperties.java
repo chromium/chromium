@@ -14,6 +14,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.hub.HubPaneHostView.PaneViewProvider;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
+import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
 /** Responsible for holding properties of hub pane host views. */
@@ -29,6 +30,11 @@ class HubPaneHostProperties {
     public static final WritableBooleanPropertyKey SLIDE_ANIMATE_LEFT_TO_RIGHT =
             new WritableBooleanPropertyKey();
 
+    /** The {@link PaneId}s that a slide to {@link #PANE_ROOT_VIEW} moves between. */
+    public static final WritableIntPropertyKey SLIDE_FROM_PANE_ID = new WritableIntPropertyKey();
+
+    public static final WritableIntPropertyKey SLIDE_TO_PANE_ID = new WritableIntPropertyKey();
+
     public static final WritableObjectPropertyKey<Callback<ViewGroup>> SNACKBAR_CONTAINER_CALLBACK =
             new WritableObjectPropertyKey<>();
 
@@ -43,6 +49,8 @@ class HubPaneHostProperties {
         COLOR_MIXER,
         SNACKBAR_CONTAINER_CALLBACK,
         SLIDE_ANIMATE_LEFT_TO_RIGHT,
+        SLIDE_FROM_PANE_ID,
+        SLIDE_TO_PANE_ID,
         INTERACTIVE_ELEMENT_CHECKER,
         PANE_VIEW_PROVIDER
     };

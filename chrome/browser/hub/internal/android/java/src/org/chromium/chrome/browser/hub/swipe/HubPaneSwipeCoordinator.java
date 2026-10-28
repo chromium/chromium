@@ -14,6 +14,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.hub.HubPaneHostView.InteractiveElementChecker;
 import org.chromium.chrome.browser.hub.HubPaneHostView.PaneViewProvider;
+import org.chromium.chrome.browser.hub.PaneId;
 import org.chromium.chrome.browser.hub.swipe.HubPaneSwipeGestureHandler.SwipeGestureDelegate;
 
 import java.util.Objects;
@@ -84,8 +85,14 @@ public class HubPaneSwipeCoordinator implements SwipeGestureDelegate {
      *
      * @param newRootView The new root view, or null to clear.
      * @param isSlideAnimationLeftToRight Whether programmatic transition slides left-to-right.
+     * @param fromPaneId The pane that a programmatic transition starts from.
+     * @param toPaneId The pane that a programmatic transition ends on.
      */
-    public void setRootView(@Nullable View newRootView, boolean isSlideAnimationLeftToRight) {
+    public void setRootView(
+            @Nullable View newRootView,
+            boolean isSlideAnimationLeftToRight,
+            @PaneId int fromPaneId,
+            @PaneId int toPaneId) {
         if (mIsInteractiveSwitchInProgress) {
             mCurrentViewRoot = newRootView;
             mPaneFrame.removeAllViews();
@@ -112,7 +119,8 @@ public class HubPaneSwipeCoordinator implements SwipeGestureDelegate {
                         isSlideAnimationLeftToRight,
                         (progress, isSwipeLeft) -> {
                             if (mPaneViewProvider != null) {
-                                mPaneViewProvider.onSlideTransitionProgress(progress, isSwipeLeft);
+                                mPaneViewProvider.onSlideTransitionProgress(
+                                        fromPaneId, toPaneId, progress, isSwipeLeft);
                             }
                         },
                         () -> {

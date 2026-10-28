@@ -7,6 +7,8 @@ package org.chromium.chrome.browser.hub;
 import static org.chromium.chrome.browser.hub.HubPaneHostProperties.INTERACTIVE_ELEMENT_CHECKER;
 import static org.chromium.chrome.browser.hub.HubPaneHostProperties.PANE_ROOT_VIEW;
 import static org.chromium.chrome.browser.hub.HubPaneHostProperties.SLIDE_ANIMATE_LEFT_TO_RIGHT;
+import static org.chromium.chrome.browser.hub.HubPaneHostProperties.SLIDE_FROM_PANE_ID;
+import static org.chromium.chrome.browser.hub.HubPaneHostProperties.SLIDE_TO_PANE_ID;
 import static org.chromium.chrome.browser.hub.HubPaneHostProperties.SNACKBAR_CONTAINER_CALLBACK;
 
 import android.view.View;
@@ -84,6 +86,8 @@ public class HubPaneHostMediator {
             // slide from right to left in the hub host view.
             slideLeftToRight = newIndex < currentIndex;
         }
+        mPropertyModel.set(SLIDE_FROM_PANE_ID, mCurrentPaneId);
+        mPropertyModel.set(SLIDE_TO_PANE_ID, newPaneId);
         mCurrentPaneId = newPaneId;
 
         mPropertyModel.set(SLIDE_ANIMATE_LEFT_TO_RIGHT, slideLeftToRight);

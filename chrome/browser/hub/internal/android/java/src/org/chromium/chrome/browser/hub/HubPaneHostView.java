@@ -47,10 +47,15 @@ public class HubPaneHostView extends FrameLayout {
 
         /**
          * Notifies of slide animation progress (fraction from 0.0 to 1.0) during programmatic pane
-         * switch transitions. {@code isSwipeLeft} is true when the panes move left, i.e. the
-         * incoming pane enters from the right as it would for a left swipe.
+         * switch transitions from {@code fromPaneId} to {@code toPaneId}. {@code isSwipeLeft} is
+         * true when the panes move left, i.e. the incoming pane enters from the right as it would
+         * for a left swipe.
          */
-        default void onSlideTransitionProgress(float progress, boolean isSwipeLeft) {}
+        default void onSlideTransitionProgress(
+                @PaneId int fromPaneId,
+                @PaneId int toPaneId,
+                float progress,
+                boolean isSwipeLeft) {}
 
         /**
          * Notifies that the programmatic slide transition has ended. Called exactly once per slide.
@@ -137,10 +142,17 @@ public class HubPaneHostView extends FrameLayout {
      * @param newRootView The new root view to display.
      * @param isSlideAnimationLeftToRight Whether the animation should slide from left-to-right
      *     (true) or right-to-left (false), only when slide animation is enabled.
+     * @param fromPaneId The pane that the slide starts from.
+     * @param toPaneId The pane that the slide ends on.
      */
-    void setRootView(@Nullable View newRootView, boolean isSlideAnimationLeftToRight) {
+    void setRootView(
+            @Nullable View newRootView,
+            boolean isSlideAnimationLeftToRight,
+            @PaneId int fromPaneId,
+            @PaneId int toPaneId) {
         assert mSwipeCoordinator != null;
-        mSwipeCoordinator.setRootView(newRootView, isSlideAnimationLeftToRight);
+        mSwipeCoordinator.setRootView(
+                newRootView, isSlideAnimationLeftToRight, fromPaneId, toPaneId);
     }
 
     void setColorMixer(HubColorMixer mixer) {
