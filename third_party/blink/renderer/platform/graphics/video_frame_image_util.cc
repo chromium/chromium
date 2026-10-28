@@ -208,20 +208,37 @@ void VideoFrameAcceleratedSnapshotPool::FlushRecording(
 
     const bool needs_clear = !provider_->is_cleared_;
     provider_->is_cleared_ = true;
-    auto* image_provider = provider_->GetOrCreateImageProvider();
+
+    // Create an ImageDecodeCache for half float images only if the canvas is
+    // using half float back storage.
+    cc::ImageDecodeCache* cache_f16 = nullptr;
+    if (provider_->GetSharedImageFormat() == viz::SinglePlaneFormat::kRGBA_F16) {
+      cache_f16 =
+          provider_->context_provider_wrapper_->ContextProvider()
+              .ImageDecodeCache(kRGBA_F16_SkColorType);
+    }
+
+    cc::ImageDecodeCache* cache_rgba8 =
+        provider_->context_provider_wrapper_->ContextProvider()
+            .ImageDecodeCache(kN32_SkColorType);
+
+    CanvasImageProvider image_provider(
+        cache_rgba8, cache_f16, provider_->GetColorSpace(),
+        provider_->GetSharedImageFormat(),
+        cc::PlaybackImageProvider::RasterMode::kGpu,
+        provider_->context_provider_wrapper_);
 
     gpu::SyncToken sync_token = provider_->RasterInterface()->RasterSharedImage(
         provider_->resource()->GetSharedImage(),
         provider_->resource()->acquire_sync_token(), std::move(last_recording),
-        image_provider, needs_clear);
+        &image_provider, needs_clear);
     provider_->resource()->SetReleaseSyncToken(sync_token);
-  }
 
-  // Images are locked for the duration of the rasterization, in case they get
-  // used multiple times. We can unlock them once the rasterization is complete.
-  if (provider_->canvas_image_provider_) {
-    provider_->canvas_image_provider_->ReleaseLockedImages();
-    provider_->canvas_image_provider_->UnbindTextureBackedImages();
+    // Images are locked for the duration of the rasterization, in case they get
+    // used multiple times. We can unlock them once the rasterization is
+    // complete.
+    image_provider.ReleaseLockedImages();
+    image_provider.UnbindTextureBackedImages();
   }
 }
 
