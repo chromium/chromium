@@ -130,7 +130,9 @@ bool WaylandToplevelWindow::CreateXdgToplevel() {
 void WaylandToplevelWindow::DispatchHostWindowDragMovement(
     int hittest,
     const gfx::Point& pointer_location_in_px) {
-  DCHECK(xdg_toplevel_);
+  if (!xdg_toplevel_) {
+    return;
+  }
 
   if (hittest == HTCAPTION) {
     xdg_toplevel_->SurfaceMove(connection());

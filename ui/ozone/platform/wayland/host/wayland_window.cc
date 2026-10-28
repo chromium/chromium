@@ -584,8 +584,17 @@ bool WaylandWindow::IsVisible() const {
 void WaylandWindow::PrepareForShutdown() {
   shutting_down_ = true;
   if (drag_finished_callback_) {
+    auto alive = AsWeakPtr();
     OnDragSessionClose(DragOperation::kNone);
+    if (!alive) {
+      return;
+    }
   }
+  // Destruction of `this` may be deferred after `PrepareForShutdown()`, so
+  // prevent in-flight events from being dispatched directly or rerouted by
+  // another window to `this` during shutdown.
+  PlatformEventSource::GetInstance()->RemovePlatformEventDispatcher(this);
+  ReleaseCapture();
 }
 
 void WaylandWindow::SetBoundsInPixels(const gfx::Rect& bounds_px) {

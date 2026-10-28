@@ -44,6 +44,7 @@
 #include "ui/events/event.h"
 #include "ui/events/types/event_type.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/transform.h"
@@ -3115,6 +3116,103 @@ TEST_P(WaylandWindowTest, DispatchWindowResize) {
                                                              gfx::Point());
     }
   }
+}
+
+// Regression test for crbug.com/482979605: an in-flight wl_pointer.button
+// press arriving after a toplevel window is hidden must not crash when the
+// delegate triggers an interactive resize or move while `xdg_toplevel_` is
+// null.
+TEST_P(WaylandWindowTest, DispatchWindowResizeAfterHide) {
+  PostToServerAndWait([](wl::TestWaylandServerThread* server) {
+    wl_seat_send_capabilities(server->seat()->resource(),
+                              WL_SEAT_CAPABILITY_POINTER);
+  });
+  ASSERT_TRUE(connection_->seat()->pointer());
+
+  PostToServerAndWait([id = surface_id_](wl::TestWaylandServerThread* server) {
+    wl::MockSurface* surface = server->GetObject<wl::MockSurface>(id);
+    auto* pointer_resource = server->seat()->pointer()->resource();
+    wl_pointer_send_enter(pointer_resource, server->GetNextSerial(),
+                          surface->resource(), wl_fixed_from_int(10),
+                          wl_fixed_from_int(10));
+    wl_pointer_send_frame(pointer_resource);
+  });
+
+  int mouse_press_count = 0;
+  EXPECT_CALL(delegate_, DispatchEvent(_))
+      .Times(::testing::AnyNumber())
+      .WillRepeatedly([&](Event* event) {
+        if (event->type() == EventType::kMousePressed) {
+          ++mouse_press_count;
+          ui::GetWmMoveResizeHandler(*window_)->DispatchHostWindowDragMovement(
+              mouse_press_count == 1 ? HTTOPRIGHT : HTCAPTION, gfx::Point());
+        }
+      });
+
+  connection_->RoundTripQueue();
+  server_.Post(
+      base::BindLambdaForTesting([](wl::TestWaylandServerThread* server) {
+        auto* pointer_resource = server->seat()->pointer()->resource();
+        for (int i = 0; i < 2; ++i) {
+          wl_pointer_send_button(pointer_resource, server->GetNextSerial(),
+                                 server->GetNextTime(), BTN_LEFT,
+                                 WL_POINTER_BUTTON_STATE_PRESSED);
+          wl_pointer_send_frame(pointer_resource);
+          wl_pointer_send_button(pointer_resource, server->GetNextSerial(),
+                                 server->GetNextTime(), BTN_LEFT,
+                                 WL_POINTER_BUTTON_STATE_RELEASED);
+          wl_pointer_send_frame(pointer_resource);
+        }
+      }));
+  server_.FlushForTesting();
+
+  window_->Hide();
+  SyncDisplay();
+  EXPECT_EQ(mouse_press_count, 2);
+}
+
+// Regression test for crbug.com/482979605: during asynchronous Widget::Close()
+// (PrepareForShutdown() + Hide()), capture must be released and in-flight
+// pointer events must not be dispatched to the closing window's delegate.
+TEST_P(WaylandWindowTest, PrepareForShutdownStopsEventDispatch) {
+  PostToServerAndWait([](wl::TestWaylandServerThread* server) {
+    wl_seat_send_capabilities(server->seat()->resource(),
+                              WL_SEAT_CAPABILITY_POINTER);
+  });
+  ASSERT_TRUE(connection_->seat()->pointer());
+
+  PostToServerAndWait([id = surface_id_](wl::TestWaylandServerThread* server) {
+    wl::MockSurface* surface = server->GetObject<wl::MockSurface>(id);
+    auto* pointer_resource = server->seat()->pointer()->resource();
+    wl_pointer_send_enter(pointer_resource, server->GetNextSerial(),
+                          surface->resource(), wl_fixed_from_int(10),
+                          wl_fixed_from_int(10));
+    wl_pointer_send_frame(pointer_resource);
+  });
+  window_->SetCapture();
+  ASSERT_TRUE(window_->HasCapture());
+
+  connection_->RoundTripQueue();
+  server_.Post(
+      base::BindLambdaForTesting([](wl::TestWaylandServerThread* server) {
+        auto* pointer_resource = server->seat()->pointer()->resource();
+        wl_pointer_send_button(pointer_resource, server->GetNextSerial(),
+                               server->GetNextTime(), BTN_LEFT,
+                               WL_POINTER_BUTTON_STATE_PRESSED);
+        wl_pointer_send_frame(pointer_resource);
+        wl_pointer_send_button(pointer_resource, server->GetNextSerial(),
+                               server->GetNextTime(), BTN_LEFT,
+                               WL_POINTER_BUTTON_STATE_RELEASED);
+        wl_pointer_send_frame(pointer_resource);
+      }));
+  server_.FlushForTesting();
+
+  EXPECT_CALL(delegate_, OnLostCapture());
+  EXPECT_CALL(delegate_, DispatchEvent(_)).Times(0);
+  window_->PrepareForShutdown();
+  EXPECT_FALSE(window_->HasCapture());
+  window_->Hide();
+  SyncDisplay();
 }
 
 class WaylandWindowTestNoFractionalScale : public WaylandWindowTest {
