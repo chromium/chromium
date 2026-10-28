@@ -34,6 +34,8 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Balanced"/>
   <int value="3" label="Creative"/>
   <int value="4" label="MostCreative"/>
+  <int value="5" label="SlightlyPredictable"/>
+  <int value="6" label="SlightlyCreative"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/ai/ai_language_model.mojom:AILanguageModelSamplingMode) -->

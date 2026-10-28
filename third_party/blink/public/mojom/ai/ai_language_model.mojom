@@ -78,6 +78,7 @@ enum AILanguageModelPromptType {
 
 // Categorical sampling modes for ongoing parameter control explorations.
 // See LanguageModelSamplingMode in IDL.
+// LINT.IfChange(AILanguageModelSamplingMode)
 enum AILanguageModelSamplingMode {
   kMostPredictable = 0,
   kPredictable = 1,
@@ -87,6 +88,7 @@ enum AILanguageModelSamplingMode {
   kSlightlyPredictable = 5,
   kSlightlyCreative = 6,
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/ai/enums.xml:AILanguageModelSamplingMode)
 
 // The expected data type and languages specified with session creation.
 // See LanguageModelExpected in IDL.
