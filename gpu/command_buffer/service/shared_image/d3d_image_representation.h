@@ -159,13 +159,15 @@ class D3D11VideoImageCopyRepresentation : public VideoImageRepresentation {
       ID3D11Device* d3d_device,
       D3D11TextureAndArrayIndex src_texture,
       std::string_view debug_label,
-      ID3D11Device* texture_device);
+      ID3D11Device* src_texture_device);
 
   D3D11VideoImageCopyRepresentation(
       SharedImageManager* manager,
       SharedImageBacking* backing,
       MemoryTypeTracker* tracker,
-      Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture);
+      D3D11TextureAndArrayIndex src_texture,
+      Microsoft::WRL::ComPtr<ID3D11Device> src_texture_device,
+      Microsoft::WRL::ComPtr<ID3D11Texture2D> dest_texture);
   ~D3D11VideoImageCopyRepresentation() override;
 
  private:
@@ -175,7 +177,9 @@ class D3D11VideoImageCopyRepresentation : public VideoImageRepresentation {
   void EndReadAccess() override;
   D3D11TextureAndArrayIndex GetD3D11Texture() const override;
 
-  Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture_;
+  D3D11TextureAndArrayIndex src_texture_;
+  Microsoft::WRL::ComPtr<ID3D11Device> src_texture_device_;
+  Microsoft::WRL::ComPtr<ID3D11Texture2D> dest_texture_;
 };
 
 class D3DSkiaGraphiteDawnImageRepresentation

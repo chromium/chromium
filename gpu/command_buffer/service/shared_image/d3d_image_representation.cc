@@ -9,7 +9,6 @@
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/shared_image/d3d11_image_same_adapter_copy_strategy.h"
 #include "gpu/command_buffer/service/shared_image/d3d_image_backing.h"
-#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 
 namespace {
 
@@ -295,11 +294,6 @@ D3D11TextureAndArrayIndex D3DVideoImageRepresentation::GetD3D11Texture() const {
   return d3d11_texture_;
 }
 
-// TODO(crbug.com/578060455): Copying the source texture eagerly during
-// ProduceVideo() instead of BeginReadAccess() returns stale or uninitialized
-// pixels if the backing is modified after ProduceVideo() is called or if the
-// representation is reused across multiple read accesses. Move the copy into
-// BeginReadAccess().
 std::unique_ptr<D3D11VideoImageCopyRepresentation>
 D3D11VideoImageCopyRepresentation::CreateFromD3D(
     SharedImageManager* manager,
@@ -308,19 +302,7 @@ D3D11VideoImageCopyRepresentation::CreateFromD3D(
     ID3D11Device* d3d_device,
     D3D11TextureAndArrayIndex src_texture,
     std::string_view debug_label,
-    ID3D11Device* texture_device) {
-  auto* d3d_backing = static_cast<D3DImageBacking*>(backing);
-  Microsoft::WRL::ComPtr<ID3D11Device> texture_access_device(texture_device);
-  if (!d3d_backing->BeginAccessD3D(texture_access_device,
-                                   /*write_access=*/false,
-                                   /*is_overlay_access=*/false)) {
-    return nullptr;
-  }
-  absl::Cleanup end_access = [&] {
-    d3d_backing->EndAccessD3D(texture_access_device,
-                              /*is_overlay_access=*/false);
-  };
-
+    ID3D11Device* src_texture_device) {
   D3D11_TEXTURE2D_DESC source_desc;
   src_texture.texture->GetDesc(&source_desc);
 
@@ -341,23 +323,23 @@ D3D11VideoImageCopyRepresentation::CreateFromD3D(
                                updated_debug_label.length(),
                                updated_debug_label.c_str());
 
-  if (!D3D11ImageSameAdapterCopyStrategy::CopyD3D11TextureOnSameAdapter(
-          src_texture, dest_texture.Get())) {
-    LOG(ERROR) << "Failed to copy texture for video";
-    return nullptr;
-  }
-
   return std::make_unique<D3D11VideoImageCopyRepresentation>(
-      manager, backing, tracker, std::move(dest_texture));
+      manager, backing, tracker, std::move(src_texture),
+      Microsoft::WRL::ComPtr<ID3D11Device>(src_texture_device),
+      std::move(dest_texture));
 }
 
 D3D11VideoImageCopyRepresentation::D3D11VideoImageCopyRepresentation(
     SharedImageManager* manager,
     SharedImageBacking* backing,
     MemoryTypeTracker* tracker,
-    Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture)
+    D3D11TextureAndArrayIndex src_texture,
+    Microsoft::WRL::ComPtr<ID3D11Device> src_texture_device,
+    Microsoft::WRL::ComPtr<ID3D11Texture2D> dest_texture)
     : VideoImageRepresentation(manager, backing, tracker),
-      d3d11_texture_(std::move(d3d11_texture)) {}
+      src_texture_(std::move(src_texture)),
+      src_texture_device_(std::move(src_texture_device)),
+      dest_texture_(std::move(dest_texture)) {}
 
 D3D11VideoImageCopyRepresentation::~D3D11VideoImageCopyRepresentation() =
     default;
@@ -370,17 +352,32 @@ bool D3D11VideoImageCopyRepresentation::BeginWriteAccess() {
 void D3D11VideoImageCopyRepresentation::EndWriteAccess() {}
 
 bool D3D11VideoImageCopyRepresentation::BeginReadAccess() {
-  // This representation and underlying texture was created exclusively
-  // for a particular caller.  No synchronization is required because
-  // only the caller has this representation.
+  auto* d3d_backing = static_cast<D3DImageBacking*>(backing());
+  if (!d3d_backing->BeginAccessD3D(src_texture_device_,
+                                   /*write_access=*/false,
+                                   /*is_overlay_access=*/false)) {
+    return false;
+  }
+
+  if (!D3D11ImageSameAdapterCopyStrategy::CopyD3D11TextureOnSameAdapter(
+          src_texture_, dest_texture_.Get())) {
+    LOG(ERROR) << "Failed to copy texture for video";
+    d3d_backing->EndAccessD3D(src_texture_device_,
+                              /*is_overlay_access=*/false);
+    return false;
+  }
+
   return true;
 }
 
-void D3D11VideoImageCopyRepresentation::EndReadAccess() {}
+void D3D11VideoImageCopyRepresentation::EndReadAccess() {
+  auto* d3d_backing = static_cast<D3DImageBacking*>(backing());
+  d3d_backing->EndAccessD3D(src_texture_device_, /*is_overlay_access=*/false);
+}
 
 D3D11TextureAndArrayIndex D3D11VideoImageCopyRepresentation::GetD3D11Texture()
     const {
-  return D3D11TextureAndArrayIndex(d3d11_texture_, /*array_index=*/0);
+  return D3D11TextureAndArrayIndex(dest_texture_, /*array_index=*/0);
 }
 
 // D3DSkiaGraphiteDawnImageRepresentation

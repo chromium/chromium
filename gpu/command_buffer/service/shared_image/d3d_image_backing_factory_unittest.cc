@@ -2599,6 +2599,120 @@ TEST_P(D3DImageBackingFactoryTest, CanProduceVideoForExternalDevice) {
   EXPECT_EQ(input_texture.array_index, 0u);
 }
 
+TEST_P(D3DImageBackingFactoryTest,
+       ProduceVideoForExternalDeviceReadsUpdatedPixels) {
+  // TODO(crbug.com/544806581): Enable once CPU upload/readback is supported for
+  // the Graphite-Dawn D3D12 backend.
+  if (context_state_->IsGraphiteDawnD3D12()) {
+    GTEST_SKIP() << "CPU upload/readback of a D3D11On12 texture is under "
+                    "development";
+  }
+
+  constexpr gfx::Size size(4, 4);
+  constexpr SkAlphaType alpha_type = kPremul_SkAlphaType;
+  constexpr gfx::ColorSpace color_space;
+  constexpr gpu::SharedImageUsageSet usage =
+      gpu::SHARED_IMAGE_USAGE_RASTER_READ |
+      gpu::SHARED_IMAGE_USAGE_RASTER_WRITE |
+      gpu::SHARED_IMAGE_USAGE_DISPLAY_READ | gpu::SHARED_IMAGE_USAGE_CPU_UPLOAD;
+  constexpr auto format = viz::SinglePlaneFormat::kRGBA_8888;
+  const gpu::Mailbox mailbox = gpu::Mailbox::Generate();
+
+  auto owned_backing = shared_image_factory_->CreateSharedImage(
+      mailbox,
+      {format, size, color_space, kTopLeft_GrSurfaceOrigin, alpha_type, usage,
+       "TestLabel"},
+      kNullSurfaceHandle, /*is_thread_safe=*/false);
+  ASSERT_NE(owned_backing, nullptr);
+
+  SharedImageBacking* backing_ptr = owned_backing.get();
+  std::unique_ptr<SharedImageRepresentationFactoryRef> shared_image_ref =
+      shared_image_manager_.Register(std::move(owned_backing),
+                                     memory_type_tracker_.get());
+  ASSERT_TRUE(shared_image_ref);
+
+  // Create an external D3D11 device on the same adapter.
+  Microsoft::WRL::ComPtr<IDXGIDevice> dxgi_device;
+  ASSERT_HRESULT_SUCCEEDED(context_state_->GetD3D11Device().As(&dxgi_device));
+  Microsoft::WRL::ComPtr<IDXGIAdapter> dxgi_adapter;
+  ASSERT_HRESULT_SUCCEEDED(dxgi_device->GetAdapter(&dxgi_adapter));
+
+  Microsoft::WRL::ComPtr<ID3D11Device> external_d3d11_device;
+  UINT creation_flags = D3D11_CREATE_DEVICE_BGRA_SUPPORT;
+  static const D3D_FEATURE_LEVEL feature_levels[] = {D3D_FEATURE_LEVEL_11_1,
+                                                     D3D_FEATURE_LEVEL_11_0};
+  HRESULT hr = D3D11CreateDevice(dxgi_adapter.Get(), D3D_DRIVER_TYPE_UNKNOWN, 0,
+                                 creation_flags, feature_levels,
+                                 std::size(feature_levels), D3D11_SDK_VERSION,
+                                 &external_d3d11_device, nullptr, nullptr);
+  if (FAILED(hr)) {
+    GTEST_SKIP()
+        << " cannot produce a d3d video representation on this platform";
+  }
+
+  // Call ProduceVideo() before the backing has been populated with green
+  // pixels.
+  auto representation = shared_image_manager_.ProduceVideo(
+      external_d3d11_device, mailbox, memory_type_tracker_.get());
+  ASSERT_NE(representation, nullptr);
+
+  // Upload solid green (RGBA = {0, 255, 0, 255}) to the backing before
+  // BeginScopedReadAccess().
+  std::vector<uint8_t> green_pixels(size.width() * size.height() * 4);
+  for (size_t i = 0; i < green_pixels.size(); i += 4) {
+    green_pixels[i + 0] = 0;
+    green_pixels[i + 1] = 255;
+    green_pixels[i + 2] = 0;
+    green_pixels[i + 3] = 255;
+  }
+  SkImageInfo info =
+      SkImageInfo::Make(size.width(), size.height(), kRGBA_8888_SkColorType,
+                        alpha_type, color_space.ToSkColorSpace());
+  SkPixmap pixmap(info, green_pixels.data(), info.minRowBytes());
+  ASSERT_TRUE(backing_ptr->UploadFromMemory({pixmap}));
+  shared_image_ref->SetCleared();
+
+  auto read_access = representation->BeginScopedReadAccess();
+  ASSERT_NE(read_access, nullptr);
+  D3D11TextureAndArrayIndex input_texture = read_access->GetD3D11Texture();
+  ASSERT_NE(input_texture.texture, nullptr);
+  EXPECT_EQ(input_texture.array_index, 0u);
+
+  // Read back from `input_texture.texture` on `external_d3d11_device`.
+  D3D11_TEXTURE2D_DESC staging_desc = {};
+  input_texture.texture->GetDesc(&staging_desc);
+  staging_desc.Usage = D3D11_USAGE_STAGING;
+  staging_desc.BindFlags = 0;
+  staging_desc.CPUAccessFlags = D3D11_CPU_ACCESS_READ;
+  staging_desc.MiscFlags = 0;
+
+  Microsoft::WRL::ComPtr<ID3D11Texture2D> staging_texture;
+  ASSERT_HRESULT_SUCCEEDED(external_d3d11_device->CreateTexture2D(
+      &staging_desc, nullptr, &staging_texture));
+
+  Microsoft::WRL::ComPtr<IDXGIKeyedMutex> keyed_mutex;
+  ASSERT_HRESULT_SUCCEEDED(input_texture.texture.As(&keyed_mutex));
+  ASSERT_HRESULT_SUCCEEDED(keyed_mutex->AcquireSync(0, INFINITE));
+
+  Microsoft::WRL::ComPtr<ID3D11DeviceContext> device_context;
+  external_d3d11_device->GetImmediateContext(&device_context);
+  device_context->CopySubresourceRegion(staging_texture.Get(), 0, 0, 0, 0,
+                                        input_texture.texture.Get(),
+                                        input_texture.array_index, nullptr);
+  keyed_mutex->ReleaseSync(0);
+
+  D3D11_MAPPED_SUBRESOURCE mapped = {};
+  ASSERT_HRESULT_SUCCEEDED(device_context->Map(staging_texture.Get(), 0,
+                                               D3D11_MAP_READ, 0, &mapped));
+  // SAFETY: `mapped.pData` points to at least 4 bytes for the first RGBA8
+  // pixel.
+  auto first_pixel =
+      UNSAFE_BUFFERS(base::span(static_cast<const uint8_t*>(mapped.pData), 4u));
+  const std::array<uint8_t, 4> expected_green = {0, 255, 0, 255};
+  EXPECT_EQ(first_pixel, base::span(expected_green));
+  device_context->Unmap(staging_texture.Get(), 0);
+}
+
 INSTANTIATE_TEST_SUITE_P(
     All,
     D3DImageBackingFactoryTest,
