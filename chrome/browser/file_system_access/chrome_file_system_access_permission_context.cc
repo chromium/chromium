@@ -484,6 +484,25 @@ GenerateBlockPaths(bool should_normalize_file_path) {
                                 BlockType::kBlockAllChildren),
       BlockPath::CreateRelative(base::DIR_HOME, FILE_PATH_LITERAL(".zlogin"),
                                 BlockType::kBlockAllChildren),
+      // Vim startup directories and files in the home directory, including the
+      // ones read by Git for Windows' bundled Vim and native Windows Vim, see
+      // crbug.com/578510310.
+      BlockPath::CreateRelative(base::DIR_HOME, FILE_PATH_LITERAL(".vim"),
+                                BlockType::kBlockAllChildren),
+      BlockPath::CreateRelative(base::DIR_HOME, FILE_PATH_LITERAL("vimfiles"),
+                                BlockType::kBlockAllChildren),
+      BlockPath::CreateRelative(base::DIR_HOME, FILE_PATH_LITERAL(".vimrc"),
+                                BlockType::kBlockAllChildren),
+      BlockPath::CreateRelative(base::DIR_HOME, FILE_PATH_LITERAL("_vimrc"),
+                                BlockType::kBlockAllChildren),
+      BlockPath::CreateRelative(base::DIR_HOME, FILE_PATH_LITERAL(".gvimrc"),
+                                BlockType::kBlockAllChildren),
+      BlockPath::CreateRelative(base::DIR_HOME, FILE_PATH_LITERAL("_gvimrc"),
+                                BlockType::kBlockAllChildren),
+      BlockPath::CreateRelative(base::DIR_HOME, FILE_PATH_LITERAL(".exrc"),
+                                BlockType::kBlockAllChildren),
+      BlockPath::CreateRelative(base::DIR_HOME, FILE_PATH_LITERAL("_exrc"),
+                                BlockType::kBlockAllChildren),
       // Block write access to */.git/hooks, see crbug.com/465668234 and
       // crbug.com/553115714.
       BlockPath::CreateSuffix(FILE_PATH_LITERAL(".git/hooks"),
