@@ -35,10 +35,23 @@ std::string HashSpecifics(const sync_pb::EntitySpecifics& specifics) {
       base::SHA1HashString(specifics.SerializeAsString()));
 }
 
+bool IsValidPendingUpload(
+    const sync_pb::EntityMetadata::AttachmentMetadata::PendingUpload&
+        pending_upload) {
+  return !pending_upload.file_path().empty();
+}
+
 }  // namespace
 
 // static
 bool ProcessorEntityMetadata::IsValid(const sync_pb::EntityMetadata& metadata) {
+  // Reject corrupted metadata where `pending_upload` is present without a local
+  // staging `file_path`, so `ProcessorEntityMetadata` can guarantee a non-empty
+  // path whenever `HasPendingAttachmentUpload()` is true.
+  if (metadata.attachment_metadata().has_pending_upload() &&
+      !IsValidPendingUpload(metadata.attachment_metadata().pending_upload())) {
+    return false;
+  }
   return !metadata.client_tag_hash().empty() && metadata.has_creation_time() &&
          metadata.sequence_number() >= metadata.acked_sequence_number();
 }
@@ -345,7 +358,7 @@ void ProcessorEntityMetadata::RecordAttachmentUploadQueued(
   pending_upload->set_file_path(file_path.AsUTF8Unsafe());
 }
 
-void ProcessorEntityMetadata::RecordAttachmentUploadStarted(
+void ProcessorEntityMetadata::RecordAttachmentUploadResumeUrlReceived(
     const GURL& upload_url) {
   CHECK(!IsDeleted());
   CHECK(HasPendingAttachmentUpload());

@@ -4,6 +4,7 @@
 
 static_library("model") {
   sources = [
+    "attachment_uploader.h",
     "blocking_data_type_store.h",
     "blocking_data_type_store_impl.cc",
     "blocking_data_type_store_impl.h",

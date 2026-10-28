@@ -68,6 +68,15 @@ TEST(ProcessorEntityMetadataTest,
   EXPECT_FALSE(ProcessorEntityMetadata::IsValid(metadata));
 }
 
+// Verifies that `IsValid()` rejects metadata whose `pending_upload` has an
+// empty `file_path`.
+TEST(ProcessorEntityMetadataTest,
+     ShouldBeInvalidIfPendingUploadFilePathIsEmpty) {
+  sync_pb::EntityMetadata metadata = CreateValidMetadataProto();
+  metadata.mutable_attachment_metadata()->mutable_pending_upload();
+  EXPECT_FALSE(ProcessorEntityMetadata::IsValid(metadata));
+}
+
 TEST(ProcessorEntityMetadataTest,
      ShouldBeUnsyncedAfterIncrementSequenceNumber) {
   ProcessorEntityMetadata metadata = ProcessorEntityMetadata::CreateNew(
@@ -230,10 +239,11 @@ TEST(ProcessorEntityMetadataTest, ShouldRecordLocalDeletion) {
 }
 
 // Verifies that `RecordAttachmentUploadQueued()` and
-// `RecordAttachmentUploadStarted()` mark the entity as having a pending
-// attachment upload and record `file_path` and the session `upload_url` under
-// `pending_upload`.
-TEST(ProcessorEntityMetadataTest, ShouldRecordAttachmentUploadStarted) {
+// `RecordAttachmentUploadResumeUrlReceived()` mark the entity as having a
+// pending attachment upload and record `file_path` and the session `upload_url`
+// under `pending_upload`.
+TEST(ProcessorEntityMetadataTest,
+     ShouldRecordAttachmentUploadResumeUrlReceived) {
   ProcessorEntityMetadata metadata = ProcessorEntityMetadata::CreateNew(
       ClientTagHash::FromHashed(kHash), kServerId, base::Time::Now());
   metadata.IncrementSequenceNumber();
@@ -246,7 +256,7 @@ TEST(ProcessorEntityMetadataTest, ShouldRecordAttachmentUploadStarted) {
   EXPECT_FALSE(
       metadata.proto().attachment_metadata().pending_upload().has_upload_url());
 
-  metadata.RecordAttachmentUploadStarted(GURL(kUploadUrl));
+  metadata.RecordAttachmentUploadResumeUrlReceived(GURL(kUploadUrl));
   EXPECT_TRUE(metadata.HasPendingAttachmentUpload());
   EXPECT_EQ(metadata.proto().attachment_metadata().pending_upload().file_path(),
             kFilePath);
@@ -263,7 +273,7 @@ TEST(ProcessorEntityMetadataTest, ShouldRecordAttachmentUploadCompleted) {
   metadata.IncrementSequenceNumber();
   metadata.RecordAttachmentUploadQueued(
       base::FilePath::FromUTF8Unsafe(kFilePath));
-  metadata.RecordAttachmentUploadStarted(GURL(kUploadUrl));
+  metadata.RecordAttachmentUploadResumeUrlReceived(GURL(kUploadUrl));
 
   metadata.RecordAttachmentUploadCompleted(kTemporaryBlobId);
 
@@ -282,7 +292,7 @@ TEST(ProcessorEntityMetadataTest, ShouldRecordAttachmentUploadCancelled) {
   metadata.IncrementSequenceNumber();
   metadata.RecordAttachmentUploadQueued(
       base::FilePath::FromUTF8Unsafe(kFilePath));
-  metadata.RecordAttachmentUploadStarted(GURL(kUploadUrl));
+  metadata.RecordAttachmentUploadResumeUrlReceived(GURL(kUploadUrl));
 
   metadata.RecordAttachmentUploadCancelled();
 

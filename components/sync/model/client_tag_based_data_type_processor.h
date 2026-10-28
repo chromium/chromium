@@ -13,6 +13,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
+#include "base/types/expected.h"
+#include "base/types/optional_ref.h"
 #include "components/sync/base/client_tag_hash.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/base/sync_stop_metadata_fate.h"
@@ -29,6 +31,12 @@
 #include "google_apis/gaia/gaia_id.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
+class GURL;
+
+namespace base {
+class FilePath;
+}  // namespace base
+
 namespace sync_pb {
 class DataTypeState;
 class DataTypeState_Invalidation;
@@ -36,6 +44,8 @@ class DataTypeState_Invalidation;
 
 namespace syncer {
 
+class AttachmentUploader;
+enum class AttachmentUploadError;
 class CommitQueue;
 
 // A sync component embedded on the data type's sequence that tracks entity
@@ -149,6 +159,23 @@ class ClientTagBasedDataTypeProcessor : public DataTypeProcessor,
   bool IsTrackingEntityForTest(const std::string& storage_key) const;
 
   bool IsModelReadyToSyncForTest() const;
+
+  // TODO(crbug.com/568634932): Pass `AttachmentUploader` via
+  // `DataTypeActivationRequest`.
+  void SetAttachmentUploaderForTest(
+      std::unique_ptr<AttachmentUploader> attachment_uploader);
+
+  // Records a local entity creation or update that includes a new or modified
+  // attachment at `attachment_file_path` to be uploaded before commit.
+  // Increments the entity's sequence number and takes ownership of the staging
+  // file at `attachment_file_path` unconditionally (which Sync is responsible
+  // for deleting once the upload completes or the entity is deleted/untracked,
+  // or immediately if the change is ignored, e.g. because initial download has
+  // not completed).
+  void PutWithAttachment(const std::string& storage_key,
+                         std::unique_ptr<EntityData> entity_data,
+                         const base::FilePath& attachment_file_path,
+                         MetadataChangeList* metadata_change_list);
 
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused. Public for tests.
@@ -283,6 +310,32 @@ class ClientTagBasedDataTypeProcessor : public DataTypeProcessor,
       UpdateResponseDataList updates,
       sync_pb::GarbageCollectionDirective gc_directive);
 
+  // Implementation of `Put()` and `PutWithAttachment()`.
+  void PutImpl(const std::string& storage_key,
+               std::unique_ptr<EntityData> data,
+               base::optional_ref<const base::FilePath> attachment_file_path,
+               MetadataChangeList* metadata_change_list);
+
+  // Starts or resumes attachment uploads for all tracked entities that have a
+  // pending attachment upload.
+  void StartOrResumePendingAttachmentUploads();
+
+  // Starts or resumes the attachment upload for `entity`.
+  void StartOrResumeAttachmentUpload(ProcessorEntity& entity);
+
+  // Persists the session `upload_url` returned by the upload handshake.
+  void OnAttachmentUploadResumeUrlReceived(const std::string& storage_key,
+                                           const GURL& upload_url);
+
+  // Handles completion of an entity's attachment upload, persisting the
+  // returned `temporary_blob_id` and nudging the worker for commit.
+  void OnAttachmentUploadCompleted(
+      const std::string& storage_key,
+      base::expected<std::string, AttachmentUploadError> result);
+
+  // Persists updated `EntityMetadata` for `entity` via the bridge.
+  void PersistSingleEntityMetadata(const ProcessorEntity& entity);
+
   /////////////////////
   // Processor state //
   /////////////////////
@@ -332,6 +385,9 @@ class ClientTagBasedDataTypeProcessor : public DataTypeProcessor,
   // proxy object to the actual CommitQueue implementation (aka the worker),
   // which lives on the sync sequence.
   std::unique_ptr<CommitQueue> worker_;
+
+  // Optional uploader used to coordinate blob attachment uploads.
+  std::unique_ptr<AttachmentUploader> attachment_uploader_;
 
   //////////////////
   // Entity state //

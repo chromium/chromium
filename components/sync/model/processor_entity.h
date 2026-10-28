@@ -12,6 +12,7 @@
 #include <string>
 #include <utility>
 
+#include "base/functional/callback.h"
 #include "base/time/time.h"
 #include "components/sync/base/client_tag_hash.h"
 #include "components/sync/base/deletion_origin.h"
@@ -56,6 +57,10 @@ class ProcessorEntity {
   static std::unique_ptr<ProcessorEntity> CreateFromMetadata(
       const std::string& storage_key,
       sync_pb::EntityMetadata metadata);
+
+  // Schedules asynchronous deletion of the attachment staging file at
+  // `file_path` on a background thread.
+  static void DeleteAttachmentFileAsync(const base::FilePath& file_path);
 
   ~ProcessorEntity();
 
@@ -175,9 +180,36 @@ class ProcessorEntity {
   // base_specifics_hash if the entity was not already unsynced.
   void IncrementSequenceNumber(base::Time modification_time);
 
+  // Outgoing attachment upload states:
+  // - Queued-but-not-started (`RecordAttachmentUploadQueued()`): Tracks the
+  //   staging file on disk and holds the entity back from Sync commits before
+  //   the network upload starts.
+  // - Started-but-not-resumable (`RecordAttachmentUploadStarted()`): The
+  //   network upload is in flight (with a registered cancellation callback),
+  //   but the resumable session `upload_url` has not been determined yet.
+  // - Started-and-resumable (`RecordAttachmentUploadResumeUrlReceived()`, or
+  //   `RecordAttachmentUploadStarted()` when resuming): The network upload is
+  //   in flight and the resumable session `upload_url` is persisted in
+  //   metadata.
+  // - Queued-but-not-resumed (`CreateFromMetadata()` on browser startup):
+  //   `pending_upload` (with or without `upload_url`) is loaded from persisted
+  //   metadata, awaiting `RecordAttachmentUploadStarted()`.
+  // - Completed (`RecordAttachmentUploadCompleted()`): Stores the uploaded
+  //   `temporary_blob_id`, deletes the staging file, and unblocks the entity
+  //   for commit.
+  // - Failed / Cancelled (`RecordAttachmentUploadFailed()` /
+  //   `RecordAttachmentUploadCancelled()`): Clears `pending_upload` from
+  //   metadata, deletes the staging file, and unblocks the entity for commit
+  //   without the attachment (`RecordAttachmentUploadCancelled()` also aborts
+  //   any in-flight network request).
+  //
   // Returns true if an outgoing attachment upload is queued or in progress for
   // this entity and has not yet produced a `temporary_blob_id`.
   bool HasPendingAttachmentUpload() const;
+
+  // Returns true if a network attachment upload is currently in flight for this
+  // entity (i.e. a cancellation callback is registered).
+  bool HasAttachmentUploadInProgress() const;
 
   // Marks that a local attachment upload for `file_path` is queued for this
   // entity before the asynchronous upload handshake completes, holding back the
@@ -190,20 +222,32 @@ class ProcessorEntity {
   // upload is cancelled and its file is deleted.
   void RecordAttachmentUploadQueued(const base::FilePath& file_path);
 
+  // Records that the network attachment upload has started (or resumed) and
+  // registers `cancel_attachment_upload_callback` to abort the active network
+  // upload if the upload is cancelled or replaced.
+  void RecordAttachmentUploadStarted(
+      base::OnceClosure cancel_attachment_upload_callback);
+
+  // Records that the in-flight network attachment upload failed, clearing the
+  // registered cancellation callback, clearing `pending_upload` from metadata,
+  // scheduling deletion of the staging file on disk, and unblocking the entity
+  // for commit without the attachment.
+  void RecordAttachmentUploadFailed();
+
   // Records that the asynchronous upload handshake completed and returned the
   // resumable session `upload_url`.
-  void RecordAttachmentUploadStarted(const GURL& upload_url);
+  void RecordAttachmentUploadResumeUrlReceived(const GURL& upload_url);
 
   // Records that the outgoing attachment upload finished and returned
   // `temporary_blob_id`, clearing `pending_upload` from metadata, scheduling
   // deletion of the staging file on disk, and unblocking the entity for commit.
   void RecordAttachmentUploadCompleted(const std::string& temporary_blob_id);
 
-  // Cancels any pending attachment upload for this entity, clearing
-  // `pending_upload` from metadata and scheduling deletion of the staging file
-  // on disk. Also called automatically on local deletion, forced remote
-  // update, and when a new attachment upload replaces an existing pending
-  // upload.
+  // Cancels any pending attachment upload for this entity, running the
+  // registered cancellation callback, clearing `pending_upload` from metadata,
+  // and scheduling deletion of the staging file on disk. Also called
+  // automatically on local deletion, forced remote update, and when a new
+  // attachment upload replaces an existing pending upload.
   void RecordAttachmentUploadCancelled();
 
   // Returns the estimate of dynamically allocated memory in bytes.
@@ -231,6 +275,9 @@ class ProcessorEntity {
 
   // The sequence number of the last item sent to the sync thread.
   int64_t commit_requested_sequence_number_;
+
+  // Optional callback to abort an in-flight network attachment upload.
+  base::OnceClosure cancel_attachment_upload_callback_;
 };
 
 }  // namespace syncer

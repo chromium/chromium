@@ -5,6 +5,7 @@
 #include "components/sync/model/client_tag_based_data_type_processor.h"
 
 #include <optional>
+#include <tuple>
 #include <utility>
 #include <vector>
 
@@ -12,7 +13,9 @@
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/debug/alias.h"
+#include "base/files/file_path.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
@@ -23,6 +26,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/trace_event/memory_usage_estimator.h"
 #include "base/trace_event/trace_event.h"
+#include "base/types/expected.h"
 #include "components/sync/base/client_tag_hash.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/base/data_type_histogram.h"
@@ -32,6 +36,7 @@
 #include "components/sync/engine/data_type_activation_response.h"
 #include "components/sync/engine/data_type_processor_metrics.h"
 #include "components/sync/engine/data_type_processor_proxy.h"
+#include "components/sync/model/attachment_uploader.h"
 #include "components/sync/model/client_tag_based_remote_update_handler.h"
 #include "components/sync/model/data_type_activation_request.h"
 #include "components/sync/model/data_type_local_change_processor.h"
@@ -47,6 +52,7 @@
 #include "components/sync/protocol/unique_position.pb.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
+#include "url/gurl.h"
 
 namespace syncer {
 namespace {
@@ -268,6 +274,10 @@ void ClientTagBasedDataTypeProcessor::ConnectIfReady() {
 
   if (entity_tracker_) {
     activation_response->data_type_state = entity_tracker_->data_type_state();
+    // Safe to call synchronously even when `ConnectIfReady()` is reached from
+    // `ModelReadyToSync()`: `AttachmentUploader` guarantees that its callbacks
+    // are never invoked synchronously, so this never re-enters `bridge_`.
+    StartOrResumePendingAttachmentUploads();
   }
 
   CHECK_EQ(activation_response->data_type_state.cache_guid(),
@@ -502,6 +512,25 @@ void ClientTagBasedDataTypeProcessor::Put(
     const std::string& storage_key,
     std::unique_ptr<EntityData> data,
     MetadataChangeList* metadata_change_list) {
+  PutImpl(storage_key, std::move(data), /*attachment_file_path=*/std::nullopt,
+          metadata_change_list);
+}
+
+void ClientTagBasedDataTypeProcessor::PutWithAttachment(
+    const std::string& storage_key,
+    std::unique_ptr<EntityData> data,
+    const base::FilePath& attachment_file_path,
+    MetadataChangeList* metadata_change_list) {
+  CHECK(!attachment_file_path.empty()) << DataTypeToDebugString(type_);
+  PutImpl(storage_key, std::move(data), attachment_file_path,
+          metadata_change_list);
+}
+
+void ClientTagBasedDataTypeProcessor::PutImpl(
+    const std::string& storage_key,
+    std::unique_ptr<EntityData> data,
+    base::optional_ref<const base::FilePath> attachment_file_path,
+    MetadataChangeList* metadata_change_list) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(IsAllowingChanges()) << DataTypeToDebugString(type_);
   // Writes are only supported for data types with incremental updates. See
@@ -522,8 +551,15 @@ void ClientTagBasedDataTypeProcessor::Put(
         << DataTypeToDebugString(type_);
   }
 
+  base::ScopedClosureRunner attachment_file_deleter;
+  if (attachment_file_path.has_value()) {
+    attachment_file_deleter.ReplaceClosure(base::BindOnce(
+        &ProcessorEntity::DeleteAttachmentFileAsync, *attachment_file_path));
+  }
+
   if (!entity_tracker_) {
-    // Ignore changes before the initial sync is done.
+    // Ignore changes before the initial sync is done; `attachment_file_deleter`
+    // deletes any staging file whose ownership was transferred.
     return;
   }
 
@@ -598,12 +634,22 @@ void ClientTagBasedDataTypeProcessor::Put(
                                                  std::move(trimmed_specifics),
                                                  std::move(unique_position));
     }
-  } else if (entity->MatchesData(*data)) {
-    // Ignore changes that don't actually change anything.
+  } else if (!attachment_file_path.has_value() && entity->MatchesData(*data)) {
+    // Ignore changes that don't actually change anything, i.e. when no new
+    // attachment is provided and `data` matches the tracked specifics.
     return;
   } else {
     entity->RecordLocalUpdate(std::move(data), std::move(trimmed_specifics),
                               std::move(unique_position));
+  }
+
+  if (attachment_file_path.has_value()) {
+    // Disarm the early-return cleanup guard now that `entity` takes ownership
+    // of the staging file's lifecycle (deleting it once the upload completes
+    // or is cancelled).
+    std::ignore = attachment_file_deleter.Release();
+    entity->RecordAttachmentUploadQueued(*attachment_file_path);
+    StartOrResumeAttachmentUpload(*entity);
   }
 
   CHECK(entity->IsUnsynced());
@@ -1338,6 +1384,13 @@ bool ClientTagBasedDataTypeProcessor::IsModelReadyToSyncForTest() const {
   return model_ready_to_sync_;
 }
 
+void ClientTagBasedDataTypeProcessor::SetAttachmentUploaderForTest(
+    std::unique_ptr<AttachmentUploader> attachment_uploader) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  attachment_uploader_ = std::move(attachment_uploader);
+  StartOrResumePendingAttachmentUploads();
+}
+
 void ClientTagBasedDataTypeProcessor::ExpireAllEntries(
     MetadataChangeList* metadata_changes) {
   CHECK(metadata_changes);
@@ -1853,6 +1906,136 @@ void ClientTagBasedDataTypeProcessor::
                                      update.response_version - 1);
     }
   }
+}
+
+void ClientTagBasedDataTypeProcessor::StartOrResumePendingAttachmentUploads() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!entity_tracker_ || !attachment_uploader_) {
+    return;
+  }
+
+  for (const std::string& storage_key : entity_tracker_->GetAllStorageKeys()) {
+    ProcessorEntity* entity =
+        entity_tracker_->GetEntityForStorageKey(storage_key);
+    if (entity && entity->HasPendingAttachmentUpload() &&
+        !entity->HasAttachmentUploadInProgress()) {
+      StartOrResumeAttachmentUpload(*entity);
+    }
+  }
+}
+
+void ClientTagBasedDataTypeProcessor::StartOrResumeAttachmentUpload(
+    ProcessorEntity& entity) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(entity.HasPendingAttachmentUpload());
+  CHECK(!entity.HasAttachmentUploadInProgress());
+  CHECK(!entity.storage_key().empty());
+  if (!attachment_uploader_) {
+    return;
+  }
+
+  const std::string storage_key = entity.storage_key();
+
+  // `ProcessorEntityMetadata` guarantees a non-empty `file_path` whenever
+  // `HasPendingAttachmentUpload()` is true (validated on disk load by
+  // `ProcessorEntityMetadata::IsValid()` and on local queue by
+  // `RecordAttachmentUploadQueued()`).
+  const base::FilePath file_path = base::FilePath::FromUTF8Unsafe(
+      entity.metadata().attachment_metadata().pending_upload().file_path());
+  CHECK(!file_path.empty());
+
+  const GURL existing_upload_url(
+      entity.metadata().attachment_metadata().pending_upload().upload_url());
+
+  AttachmentUploader::CompletionCallback completion_callback = base::BindOnce(
+      &ClientTagBasedDataTypeProcessor::OnAttachmentUploadCompleted,
+      weak_ptr_factory_for_controller_.GetWeakPtr(), storage_key);
+
+  base::OnceClosure cancel_attachment_upload_callback;
+  if (existing_upload_url.is_empty()) {
+    AttachmentUploader::UploadUrlCallback upload_url_callback = base::BindOnce(
+        &ClientTagBasedDataTypeProcessor::OnAttachmentUploadResumeUrlReceived,
+        weak_ptr_factory_for_controller_.GetWeakPtr(), storage_key);
+    cancel_attachment_upload_callback = attachment_uploader_->StartUpload(
+        file_path, std::move(upload_url_callback),
+        std::move(completion_callback));
+  } else {
+    cancel_attachment_upload_callback = attachment_uploader_->ResumeUpload(
+        file_path, existing_upload_url, std::move(completion_callback));
+  }
+
+  entity.RecordAttachmentUploadStarted(
+      std::move(cancel_attachment_upload_callback));
+}
+
+void ClientTagBasedDataTypeProcessor::OnAttachmentUploadResumeUrlReceived(
+    const std::string& storage_key,
+    const GURL& upload_url) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // `AttachmentUploader`'s contract guarantees that `upload_url` is valid.
+  CHECK(upload_url.is_valid());
+  // Ignore late callbacks if a model error occurred or tracked metadata was
+  // cleared while the upload was in flight.
+  if (model_error_.has_value() || !entity_tracker_) {
+    return;
+  }
+
+  // Ignore late callbacks if the entity was untracked or its pending upload
+  // was cancelled (e.g. by a local deletion or conflict resolution) while the
+  // upload was in flight.
+  ProcessorEntity* entity =
+      entity_tracker_->GetEntityForStorageKey(storage_key);
+  if (!entity || !entity->HasPendingAttachmentUpload()) {
+    return;
+  }
+
+  entity->RecordAttachmentUploadResumeUrlReceived(upload_url);
+  PersistSingleEntityMetadata(*entity);
+}
+
+void ClientTagBasedDataTypeProcessor::OnAttachmentUploadCompleted(
+    const std::string& storage_key,
+    base::expected<std::string, AttachmentUploadError> result) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // Ignore late callbacks if a model error occurred or tracked metadata was
+  // cleared while the upload was in flight.
+  if (model_error_.has_value() || !entity_tracker_) {
+    return;
+  }
+
+  // Ignore late callbacks if the entity was untracked or its pending upload
+  // was cancelled (e.g. by a local deletion or conflict resolution) while the
+  // upload was in flight.
+  ProcessorEntity* entity =
+      entity_tracker_->GetEntityForStorageKey(storage_key);
+  if (!entity || !entity->HasPendingAttachmentUpload()) {
+    return;
+  }
+
+  if (!result.has_value()) {
+    // TODO(crbug.com/568634932): Distinguish permanent errors from transient
+    // errors and retain `pending_upload` on transient failures.
+    entity->RecordAttachmentUploadFailed();
+  } else {
+    entity->RecordAttachmentUploadCompleted(*result);
+  }
+
+  PersistSingleEntityMetadata(*entity);
+  if (!model_error_.has_value()) {
+    NudgeForCommitIfNeeded();
+  }
+}
+
+void ClientTagBasedDataTypeProcessor::PersistSingleEntityMetadata(
+    const ProcessorEntity& entity) {
+  CHECK(!model_error_);
+  CHECK(!entity.storage_key().empty());
+  std::unique_ptr<MetadataChangeList> metadata_changes =
+      bridge_->CreateMetadataChangeList();
+  metadata_changes->UpdateMetadata(entity.storage_key(), entity.metadata());
+  ReportIfError(bridge_->ApplyIncrementalSyncChanges(
+                    std::move(metadata_changes), EntityChangeList()),
+                ErrorSite::kApplyUpdatesOnCommitResponse);
 }
 
 }  // namespace syncer
