@@ -1523,43 +1523,12 @@ TaskQueueImpl::CreateQueueEnabledVoter() {
 }
 
 void TaskQueueImpl::RemoveCancelledTasks() {
-  // TODO(crbug.com/394266102): Remove these crash keys after the bug is
-  // understood and fixed.
-  //
-  // Note: This method is only called from the renderer main thread, so it's
-  // acceptable not to have synchronization around the calls to set these crash
-  // keys (and since this code only exists temporarily to diagnose a bug, it's
-  // not worthwhile to add such synchronization).
-  static auto* pre_remove_cancelled_tasks_immediate_incoming_queue_size =
-      debug::AllocateCrashKeyString("pre_rct_immediate_incoming_queue_size",
-                                    debug::CrashKeySize::Size32);
-  static auto* pre_remove_cancelled_tasks_immediate_work_queue_size =
-      debug::AllocateCrashKeyString("pre_rct_immediate_work_queue_size",
-                                    debug::CrashKeySize::Size32);
-  static auto* pre_remove_cancelled_tasks_delayed_work_queue_size =
-      debug::AllocateCrashKeyString("pre_rct_delayed_work_queue_size",
-                                    debug::CrashKeySize::Size32);
-  static auto* post_remove_cancelled_tasks_immediate_incoming_queue_size =
-      debug::AllocateCrashKeyString("post_rct_immediate_incoming_queue_size",
-                                    debug::CrashKeySize::Size32);
-  static auto* post_remove_cancelled_tasks_immediate_work_queue_size =
-      debug::AllocateCrashKeyString("post_rct_immediate_work_queue_size",
-                                    debug::CrashKeySize::Size32);
-  static auto* post_remove_cancelled_tasks_delayed_work_queue_size =
-      debug::AllocateCrashKeyString("post_rct_delayed_work_queue_size",
-                                    debug::CrashKeySize::Size32);
-
   // Because callback destructors could have a side-effect of posting new tasks,
   // move cancelled callbacks into a temporary container before deleting them.
   // This prevents lock reentrancy or modifying a container while traversing it.
   absl::InlinedVector<base::OnceClosure, 8> tasks_to_delete;
   {
     base::internal::CheckedAutoLock lock(any_thread_lock_);
-
-    debug::SetCrashKeyString(
-        pre_remove_cancelled_tasks_immediate_incoming_queue_size,
-        NumberToString(any_thread_.immediate_incoming_queue.size()));
-
     for (auto& task : any_thread_.immediate_incoming_queue) {
       if (task.task.IsCancelled()) {
         tasks_to_delete.push_back(std::move(task.task));
@@ -1567,33 +1536,12 @@ void TaskQueueImpl::RemoveCancelledTasks() {
     }
     std::erase_if(any_thread_.immediate_incoming_queue,
                   [](const Task& task) { return task.task.is_null(); });
-
-    debug::SetCrashKeyString(
-        post_remove_cancelled_tasks_immediate_incoming_queue_size,
-        NumberToString(any_thread_.immediate_incoming_queue.size()));
   }
-
-  debug::SetCrashKeyString(
-      pre_remove_cancelled_tasks_immediate_work_queue_size,
-      NumberToString(main_thread_only_.immediate_work_queue->Size()));
 
   main_thread_only_.immediate_work_queue->RemoveCancelledTasks(
       WorkQueue::RemoveCancelledTasksPolicy::kAll);
-
-  debug::SetCrashKeyString(
-      post_remove_cancelled_tasks_immediate_work_queue_size,
-      NumberToString(main_thread_only_.immediate_work_queue->Size()));
-
-  debug::SetCrashKeyString(
-      pre_remove_cancelled_tasks_delayed_work_queue_size,
-      NumberToString(main_thread_only_.delayed_work_queue->Size()));
-
   main_thread_only_.delayed_work_queue->RemoveCancelledTasks(
       WorkQueue::RemoveCancelledTasksPolicy::kAll);
-
-  debug::SetCrashKeyString(
-      post_remove_cancelled_tasks_delayed_work_queue_size,
-      NumberToString(main_thread_only_.delayed_work_queue->Size()));
 }
 
 bool TaskQueueImpl::IsBlockedByScopedExecutionFences() {
