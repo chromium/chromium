@@ -112,8 +112,7 @@ void SafeBrowsingBlockingPageTestHelper::MaybeWaitForAsyncChecksToComplete(
     bool wait_for_load_stop) {
   AsyncCheckTracker* tracker =
       safe_browsing::AsyncCheckTracker::GetOrCreateForWebContents(
-          web_contents, std::move(ui_manager),
-          /*should_sync_checker_check_allowlist=*/false);
+          web_contents, std::move(ui_manager));
   // If all pending async checks are already resolved or were never created,
   // don't wait for the tracker to say the checkers size reached 0, because
   // that will never occur.

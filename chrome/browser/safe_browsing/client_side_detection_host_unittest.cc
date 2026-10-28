@@ -4093,10 +4093,8 @@ class ClientSideDetectionRTLookupResponseForceRequestTest
           std::move(callback).Run("fake_access_token");
         });
 
-    AsyncCheckTracker::CreateForWebContents(
-        web_contents(),
-        /*ui_manager=*/nullptr,
-        /*should_sync_checker_check_allowlist=*/false);
+    AsyncCheckTracker::CreateForWebContents(web_contents(),
+                                            /*ui_manager=*/nullptr);
     csd_host_->RegisterAsyncCheckTracker();
   }
 
@@ -4125,8 +4123,7 @@ class ClientSideDetectionRTLookupResponseForceRequestTest
 
   void CompleteAsyncCheck() {
     auto* tracker = AsyncCheckTracker::GetOrCreateForWebContents(
-        web_contents(), /*ui_manager=*/nullptr,
-        /*should_sync_checker_check_allowlist=*/false);
+        web_contents(), /*ui_manager=*/nullptr);
     auto checker = std::make_unique<UrlCheckerHolder>(
         /*delegate_getter=*/base::NullCallback(), content::FrameTreeNodeId(),
         /*navigation_id=*/0,

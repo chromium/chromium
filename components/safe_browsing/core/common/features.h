@@ -519,13 +519,6 @@ BASE_DECLARE_FEATURE(kSafeBrowsingRustDmgParser);
 // Skips Safe Browsing Real-Time URL lookups when the device is offline.
 BASE_DECLARE_FEATURE(kSafeBrowsingSkipRealTimeLookupIfOffline);
 
-#if BUILDFLAG(IS_ANDROID)
-// Enables sync checker to check allowlist first on Chrome on Android. This is
-// an optimization to improve the speed of Safe Browsing checks.
-// See go/skip-sync-hpd-allowlist-android for details.
-BASE_DECLARE_FEATURE(kSafeBrowsingSyncCheckerCheckAllowlist);
-#endif
-
 // Allows Safe Browsing Real-Time URL lookups to wait for DNS resolution of the
 // main frame URL.
 BASE_DECLARE_FEATURE(kSafeBrowsingWaitForDnsForRealTimeLookup);

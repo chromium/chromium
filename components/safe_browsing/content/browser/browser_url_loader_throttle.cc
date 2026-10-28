@@ -254,8 +254,7 @@ void BrowserURLLoaderThrottle::WillStartRequest(
         /*hash_realtime_selection=*/
         hash_realtime_utils::HashRealTimeSelection::kNone,
         /*is_async_check=*/false,
-        /*check_allowlist_before_hash_database=*/
-        async_check_tracker_->should_sync_checker_check_allowlist(),
+        /*check_allowlist_before_hash_database=*/false,
         /*tab_id=*/SessionID::InvalidValue(), referring_app_info_,
         v5_get_hash_protocol_manager_,
         /*prioritize_navigation_callbacks=*/

@@ -8,7 +8,6 @@
 #include "build/build_config.h"
 #include "components/safe_browsing/content/browser/base_ui_manager.h"
 #include "components/safe_browsing/content/browser/content_unsafe_resource_util.h"
-#include "components/safe_browsing/core/common/features.h"
 #include "components/security_interstitials/core/unsafe_resource_locator.h"
 #include "content/public/browser/browser_thread.h"
 
@@ -74,26 +73,13 @@ AsyncCheckTracker::GetBlockedPageCommittedTimestamp(
   return std::nullopt;
 }
 
-// static
-bool AsyncCheckTracker::IsPlatformEligibleForSyncCheckerCheckAllowlist() {
-#if BUILDFLAG(IS_ANDROID)
-  // Allowlist check is much faster than blocklist check on Android, so we are
-  // enabling this on Android only.
-  return base::FeatureList::IsEnabled(kSafeBrowsingSyncCheckerCheckAllowlist);
-#else
-  return false;
-#endif
-}
-
 AsyncCheckTracker::AsyncCheckTracker(content::WebContents* web_contents,
-                                     scoped_refptr<BaseUIManager> ui_manager,
-                                     bool should_sync_checker_check_allowlist)
+                                     scoped_refptr<BaseUIManager> ui_manager)
     : content::WebContentsUserData<AsyncCheckTracker>(*web_contents),
       content::WebContentsObserver(web_contents),
       ui_manager_(std::move(ui_manager)),
-      navigation_timestamps_size_threshold_(kNavigationTimestampsSizeThreshold),
-      should_sync_checker_check_allowlist_(
-          should_sync_checker_check_allowlist) {}
+      navigation_timestamps_size_threshold_(
+          kNavigationTimestampsSizeThreshold) {}
 
 AsyncCheckTracker::~AsyncCheckTracker() {
   DeletePendingCheckers(/*excluded_navigation_id=*/std::nullopt);

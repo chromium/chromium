@@ -7917,9 +7917,7 @@ ChromeContentBrowserClient::GetAsyncCheckTracker(
     return nullptr;
   }
   return safe_browsing::AsyncCheckTracker::GetOrCreateForWebContents(
-      contents, safe_browsing_service_->ui_manager().get(),
-      safe_browsing::AsyncCheckTracker::
-          IsPlatformEligibleForSyncCheckerCheckAllowlist());
+      contents, safe_browsing_service_->ui_manager().get());
 #else
   return nullptr;
 #endif

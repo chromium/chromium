@@ -1217,9 +1217,7 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
   if (g_browser_process->safe_browsing_service()) {
     safe_browsing::AsyncCheckTracker::CreateForWebContents(
         tab.GetContents(),
-        g_browser_process->safe_browsing_service()->ui_manager(),
-        safe_browsing::AsyncCheckTracker::
-            IsPlatformEligibleForSyncCheckerCheckAllowlist());
+        g_browser_process->safe_browsing_service()->ui_manager());
   }
   if (autofill::ContentAutofillClient::FromWebContents(tab.GetContents())) {
     ChromePasswordReuseDetectionManagerClient::CreateForWebContents(
@@ -1909,9 +1907,7 @@ void TabFeatures::WillDiscardContents(tabs::TabInterface* tab,
       enterprise_connectors::IsReferrerChainNeededForEnterprise(profile));
   if (g_browser_process->safe_browsing_service()) {
     safe_browsing::AsyncCheckTracker::CreateForWebContents(
-        new_contents, g_browser_process->safe_browsing_service()->ui_manager(),
-        safe_browsing::AsyncCheckTracker::
-            IsPlatformEligibleForSyncCheckerCheckAllowlist());
+        new_contents, g_browser_process->safe_browsing_service()->ui_manager());
   }
   safe_browsing_tab_observer_.reset();
   if (autofill::ContentAutofillClient::FromWebContents(new_contents)) {

@@ -6524,12 +6524,6 @@ inline constexpr char kReengagementNotificationDescription[] =
     "Enables Chrome to use the in-product help system to decide when "
     "to show re-engagement notifications.";
 
-inline constexpr char kSafeBrowsingSyncCheckerCheckAllowlistName[] =
-    "Safe Browsing Sync Checker Check Allowlist";
-inline constexpr char kSafeBrowsingSyncCheckerCheckAllowlistDescription[] =
-    "Enables Safe Browsing sync checker to check the allowlist before checking "
-    "the blocklist.";
-
 inline constexpr char kSegmentationPlatformAndroidHomeModuleRankerV2Name[] =
     "Segmentation platform Android home module ranker V2";
 inline constexpr char

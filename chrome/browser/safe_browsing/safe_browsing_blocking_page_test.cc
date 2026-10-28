@@ -3145,8 +3145,7 @@ class SafeBrowsingBlockingPageAsyncChecksTimingTestBase
     AsyncCheckTracker* tracker =
         safe_browsing::AsyncCheckTracker::GetOrCreateForWebContents(
             browser()->tab_strip_model()->GetActiveWebContents(),
-            factory_.test_safe_browsing_service()->ui_manager().get(),
-            /*should_sync_checker_check_allowlist=*/false);
+            factory_.test_safe_browsing_service()->ui_manager().get());
     EXPECT_EQ(tracker->PendingCheckersSizeForTesting(), 1u);
 
     GURL interstitial_url;
@@ -3209,8 +3208,7 @@ class SafeBrowsingBlockingPageAsyncChecksTimingTestBase
     AsyncCheckTracker* tracker =
         safe_browsing::AsyncCheckTracker::GetOrCreateForWebContents(
             browser()->tab_strip_model()->GetActiveWebContents(),
-            factory_.test_safe_browsing_service()->ui_manager().get(),
-            /*should_sync_checker_check_allowlist=*/false);
+            factory_.test_safe_browsing_service()->ui_manager().get());
     EXPECT_EQ(tracker->PendingCheckersSizeForTesting(), 1u);
 
     for (const auto& url_and_server_redirect : url_and_server_redirects) {

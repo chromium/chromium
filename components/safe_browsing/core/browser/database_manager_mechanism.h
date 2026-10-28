@@ -70,6 +70,8 @@ class DatabaseManagerMechanism : public SafeBrowsingLookupMechanism,
 
   SEQUENCE_CHECKER(sequence_checker_);
 
+  // TODO(crbug.com/394329657): Remove check_allowlist_ as the
+  // safe-browsing-sync-checker-check-allowlist flag has been removed.
   // If the allowlist should be checked first before checking the blocklist.
   const bool check_allowlist_;
 

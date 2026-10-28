@@ -503,9 +503,7 @@ TabFeatures::TabFeatures(content::WebContents* web_contents, Profile* profile) {
       enterprise_connectors::IsReferrerChainNeededForEnterprise(profile));
   if (g_browser_process->safe_browsing_service()) {
     safe_browsing::AsyncCheckTracker::CreateForWebContents(
-        web_contents, g_browser_process->safe_browsing_service()->ui_manager(),
-        safe_browsing::AsyncCheckTracker::
-            IsPlatformEligibleForSyncCheckerCheckAllowlist());
+        web_contents, g_browser_process->safe_browsing_service()->ui_manager());
   }
   if (autofill::ContentAutofillClient::FromWebContents(web_contents)) {
     // Attach password reuse detection client when Autofill is present.

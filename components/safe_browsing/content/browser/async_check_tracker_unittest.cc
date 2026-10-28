@@ -7,13 +7,11 @@
 #include "base/functional/callback_helpers.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
-#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "components/safe_browsing/content/browser/base_ui_manager.h"
 #include "components/safe_browsing/content/browser/url_checker_holder.h"
 #include "components/safe_browsing/core/browser/db/sb_protocol_manager_util.h"
 #include "components/safe_browsing/core/browser/safe_browsing_url_checker_impl.h"
-#include "components/safe_browsing/core/common/features.h"
 #include "components/security_interstitials/core/unsafe_resource.h"
 #include "components/security_interstitials/core/unsafe_resource_locator.h"
 #include "content/public/test/mock_navigation_handle.h"
@@ -62,13 +60,7 @@ class AsyncCheckTrackerTest : public content::RenderViewHostTestHarness {
   AsyncCheckTrackerTest()
       : RenderViewHostTestHarness(
             content::BrowserTaskEnvironment::REAL_IO_THREAD,
-            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
-    std::vector<base::test::FeatureRef> enabled = {};
-#if BUILDFLAG(IS_ANDROID)
-    enabled.push_back(kSafeBrowsingSyncCheckerCheckAllowlist);
-#endif
-    feature_list_.InitWithFeatures(enabled, {});
-  }
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
 
   void SetUp() override {
     content::RenderViewHostTestHarness::SetUp();
@@ -77,9 +69,8 @@ class AsyncCheckTrackerTest : public content::RenderViewHostTestHarness {
     EXPECT_CALL(mock_web_contents_getter_, Run())
         .WillRepeatedly(testing::Return(nullptr));
     ui_manager_ = base::MakeRefCounted<MockUIManager>();
-    tracker_ = AsyncCheckTracker::GetOrCreateForWebContents(
-        web_contents(), ui_manager_.get(),
-        /*should_sync_checker_check_allowlist=*/false);
+    tracker_ = AsyncCheckTracker::GetOrCreateForWebContents(web_contents(),
+                                                            ui_manager_.get());
   }
 
   void TearDown() override {
@@ -138,7 +129,6 @@ class AsyncCheckTrackerTest : public content::RenderViewHostTestHarness {
     tracker_->TransferUrlChecker(std::move(checker));
   }
 
-  base::test::ScopedFeatureList feature_list_;
   GURL url_;
   base::MockCallback<base::RepeatingCallback<content::WebContents*()>>
       mock_web_contents_getter_;
@@ -441,24 +431,6 @@ TEST_F(
       safe_browsing::ThreatSource::UNKNOWN));
 }
 
-TEST_F(AsyncCheckTrackerTest, IsPlatformEligibleForSyncCheckerCheckAllowlist) {
-#if BUILDFLAG(IS_ANDROID)
-  EXPECT_TRUE(
-      AsyncCheckTracker::IsPlatformEligibleForSyncCheckerCheckAllowlist());
-#else
-  EXPECT_FALSE(
-      AsyncCheckTracker::IsPlatformEligibleForSyncCheckerCheckAllowlist());
-#endif
-}
-
-TEST_F(AsyncCheckTrackerTest, GetShouldSyncCheckerCheckAllowlist) {
-  std::unique_ptr<content::WebContents> web_contents = CreateTestWebContents();
-  auto* tracker = AsyncCheckTracker::GetOrCreateForWebContents(
-      web_contents.get(), ui_manager_.get(),
-      /*should_sync_checker_check_allowlist=*/true);
-  EXPECT_TRUE(tracker->should_sync_checker_check_allowlist());
-}
-
 TEST_F(AsyncCheckTrackerTest, GetBlockedPageCommittedTimestamp) {
   content::MockNavigationHandle handle(web_contents());
   UnsafeResource resource;
@@ -617,8 +589,7 @@ TEST_F(AsyncCheckTrackerObserverTest, OnAsyncSafeBrowsingCheckCompleted) {
 TEST_F(AsyncCheckTrackerObserverTest, AsyncCheckTrackerDeletedWhileObserving) {
   std::unique_ptr<content::WebContents> web_contents = CreateTestWebContents();
   auto* tracker = AsyncCheckTracker::GetOrCreateForWebContents(
-      web_contents.get(), ui_manager_.get(),
-      /*should_sync_checker_check_allowlist=*/false);
+      web_contents.get(), ui_manager_.get());
   tracker->AddObserver(&observer_);
   EXPECT_TRUE(observer_.IsInObserverList());
 
@@ -627,25 +598,5 @@ TEST_F(AsyncCheckTrackerObserverTest, AsyncCheckTrackerDeletedWhileObserving) {
   EXPECT_FALSE(observer_.IsInObserverList());
   EXPECT_EQ(observer_.TrackerDestructedTimes(), 1);
 }
-
-#if BUILDFLAG(IS_ANDROID)
-class AsyncCheckTrackerSyncCheckerCheckAllowlistDisabledTest
-    : public AsyncCheckTrackerTest {
- protected:
-  AsyncCheckTrackerSyncCheckerCheckAllowlistDisabledTest()
-      : AsyncCheckTrackerTest() {
-    feature_list_.InitAndDisableFeature(kSafeBrowsingSyncCheckerCheckAllowlist);
-  }
-
-  base::test::ScopedFeatureList feature_list_;
-};
-
-TEST_F(AsyncCheckTrackerSyncCheckerCheckAllowlistDisabledTest,
-       IsPlatformEligibleForSyncCheckerCheckAllowlist) {
-  EXPECT_FALSE(
-      AsyncCheckTracker::IsPlatformEligibleForSyncCheckerCheckAllowlist());
-}
-
-#endif
 
 }  // namespace safe_browsing

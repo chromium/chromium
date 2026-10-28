@@ -296,7 +296,6 @@ struct WillStartRequestOptionalArgs {
 
 struct SetUpTestOptionalArgs {
   bool url_real_time_lookup_enabled = false;
-  bool should_sync_checker_check_allowlist = false;
 };
 
 }  // namespace
@@ -322,12 +321,10 @@ class SBBrowserUrlLoaderThrottleTestBase : public ::testing::Test {
     EXPECT_CALL(mock_web_contents_getter_, Run())
         .WillRepeatedly(::testing::Return(web_contents_));
     ui_manager_ = base::MakeRefCounted<BaseUIManager>();
-    async_check_tracker_ =
-        async_check_enabled
-            ? base::WrapUnique(new AsyncCheckTracker(
-                  web_contents_, ui_manager_.get(),
-                  optional_args.should_sync_checker_check_allowlist))
-            : nullptr;
+    async_check_tracker_ = async_check_enabled
+                               ? base::WrapUnique(new AsyncCheckTracker(
+                                     web_contents_, ui_manager_.get()))
+                               : nullptr;
     std::optional<int64_t> navigation_id =
         async_check_enabled ? std::optional<int64_t>(1u) : std::nullopt;
 
@@ -1041,21 +1038,6 @@ TEST_F(SBBrowserUrlLoaderThrottleAsyncCheckTest, VerifyCheckerParams) {
   EXPECT_TRUE(
       throttle_->GetAsyncSBCheckerForTesting()->IsAsyncCheckForTesting());
   EXPECT_FALSE(throttle_->GetSyncSBCheckerForTesting()
-                   ->IsCheckAllowlistBeforeHashDatabaseForTesting());
-}
-
-TEST_F(SBBrowserUrlLoaderThrottleAsyncCheckTest,
-       VerifyCheckerParams_WithSyncCheckerCheckAllowlistEnabled) {
-  SetUpTest(/*optional_args=*/{.should_sync_checker_check_allowlist = true});
-  EXPECT_EQ(throttle_->GetSyncSBCheckerForTesting(), nullptr);
-  EXPECT_EQ(throttle_->GetAsyncSBCheckerForTesting(), nullptr);
-  AddCallbackInfo(/*should_proceed=*/true,
-                  /*should_show_interstitial=*/false,
-                  /*should_delay_callback=*/false);
-  CallWillStartRequest();
-  EXPECT_TRUE(throttle_->GetSyncSBCheckerForTesting()
-                  ->IsCheckAllowlistBeforeHashDatabaseForTesting());
-  EXPECT_FALSE(throttle_->GetAsyncSBCheckerForTesting()
                    ->IsCheckAllowlistBeforeHashDatabaseForTesting());
 }
 

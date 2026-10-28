@@ -339,6 +339,8 @@ class SafeBrowsingUrlCheckerImpl : public mojom::SafeBrowsingUrlChecker {
   // If this check allows navigation to commit before it completes.
   const bool is_async_check_;
 
+  // TODO(crbug.com/394329657): Remove check_allowlist_before_hash_database_
+  // as the safe-browsing-sync-checker-check-allowlist flag has been removed.
   // If the allowlist should be checked before the hash database check. This
   // is useful to speed up the check if the allowlist check is faster than the
   // hash database check. Callers should only set this value to true if they
