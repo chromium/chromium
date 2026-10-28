@@ -99,6 +99,7 @@ void MeasureTpmOperationsInternal(UnexportableKeyProvider::Config config) {
   std::unique_ptr<UnexportableKeyProvider> provider =
       GetUnexportableKeyProvider(std::move(config));
   if (!provider) {
+    base::UmaHistogramEnumeration("Crypto.TPMSupport2", supported_algo);
     return;
   }
 

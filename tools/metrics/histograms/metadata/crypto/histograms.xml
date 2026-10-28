@@ -294,6 +294,9 @@ chromium-metrics-reviews@google.com.
 
     Starting in M157, collected with a 45-second delay after startup and
     subsampled on Stable.
+
+    Starting in M159, also records kNone when there is no unexportable key
+    provider at all, e.g. on Macs without a Secure Enclave.
   </summary>
 </histogram>
 

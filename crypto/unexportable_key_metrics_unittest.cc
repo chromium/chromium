@@ -18,6 +18,7 @@
 #include "base/containers/transparent_hash.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
+#include "crypto/scoped_fake_unexportable_key_provider.h"
 #include "crypto/unexportable_key.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
@@ -227,6 +228,19 @@ TEST_F(UnexportableKeyMetricTest, GatherAllMetrics) {
   EXPECT_THAT(histogram_tester.GetAllSamples(
                   "Crypto.TPMOperation.WrappedAttestationKeyCreationECDSA"),
               BucketsAre(base::Bucket(true, 1)));
+}
+
+TEST(UnexportableKeyMetricNoProviderTest, RecordsNoSupport) {
+  ScopedNullUnexportableKeyProvider null_provider;
+  base::HistogramTester histogram_tester;
+
+  internal::MeasureTpmOperationsInternalForTesting();
+
+  EXPECT_THAT(histogram_tester.GetAllSamples("Crypto.TPMSupport2"),
+              BucketsAre(base::Bucket(internal::TPMSupport::kNone, 1)));
+  histogram_tester.ExpectTotalCount("Crypto.TPMDuration.NewKeyCreationECDSA",
+                                    0);
+  histogram_tester.ExpectTotalCount("Crypto.TPMOperation.NewKeyCreation", 0);
 }
 
 #if BUILDFLAG(IS_MAC)
