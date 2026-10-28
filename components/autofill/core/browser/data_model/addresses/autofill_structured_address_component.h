@@ -443,12 +443,6 @@ class AddressComponent {
   // Clears all parsed and formatted values.
   void ClearAllParsedAndFormattedValues();
 
-  // Consumes an additional token into the most appropriate subcomponent.
-  // Can be implemented by the specific node types.
-  // The fall-back solution uses the first empty node.
-  // If no empty node is available, it appends the value to the first node.
-  virtual void ConsumeAdditionalToken(const std::u16string& token_value);
-
   // Returns a reference to the root node of the tree.
   AddressComponent& GetRootNode();
 
