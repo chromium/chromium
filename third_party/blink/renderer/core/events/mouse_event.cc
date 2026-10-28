@@ -389,7 +389,7 @@ void MouseEvent::Trace(Visitor* visitor) const {
 }
 
 DispatchEventResult MouseEvent::DispatchEvent(EventDispatcher& dispatcher) {
-  ClearCrossOriginRelatedTarget(dispatcher.GetNode(), related_target_);
+  CheckCrossOriginRelatedTarget(dispatcher.GetNode(), related_target_);
   // TODO(mustaq): Move click-specific code to `PointerEvent::DispatchEvent`.
   GetEventPath().AdjustForRelatedTarget(dispatcher.GetNode(), relatedTarget());
 
