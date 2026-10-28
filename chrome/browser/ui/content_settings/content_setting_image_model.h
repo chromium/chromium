@@ -8,6 +8,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "base/containers/span.h"
@@ -17,6 +18,7 @@
 #include "chrome/browser/ui/content_settings/content_setting_bubble_model_delegate.h"
 #include "components/browser_apis/ui_controllers/toolbar/toolbar_ui_api_data_model.mojom-shared.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/user_education/common/feature_promo/feature_promo_controller.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/gfx/image/image.h"
@@ -63,7 +65,7 @@ class ContentSettingImageModel {
   ContentSettingImageModel(const ContentSettingImageModel&) = delete;
   ContentSettingImageModel& operator=(const ContentSettingImageModel&) = delete;
 
-  virtual ~ContentSettingImageModel() = default;
+  virtual ~ContentSettingImageModel();
 
   // Generates a vector of all image models to be used within one window.
   static std::vector<std::unique_ptr<ContentSettingImageModel>>
@@ -114,6 +116,12 @@ class ContentSettingImageModel {
   // Remembers that the bubble was auto-opened for the given |web_contents|,
   // so that we do not auto-open it again when the parent view is updated.
   void SetBubbleWasAutoOpened(content::WebContents* contents);
+
+  // Returns and clears the in-product help promo parameters to show for this
+  // icon in the given `contents`, recording that the promo was requested so it
+  // is not returned again until the icon is hidden.
+  std::optional<user_education::FeaturePromoParams> TakePromoParams(
+      content::WebContents* contents);
 
   bool is_visible() const { return is_visible_; }
 
@@ -186,6 +194,12 @@ class ContentSettingImageModel {
   void set_should_keep_label_expanded(bool keep_expanded) {
     should_keep_label_expanded_ = keep_expanded;
   }
+  // Note: Currently only consumed by `ContentSettingImageView` (not WebUI
+  // location bar controls).
+  void set_promo_params(
+      std::optional<user_education::FeaturePromoParams> promo_params) {
+    promo_params_ = std::move(promo_params);
+  }
   void set_blocked_on_system_level(const bool blocked_on_system_level) {
     blocked_on_system_level_ = blocked_on_system_level;
   }
@@ -212,6 +226,7 @@ class ContentSettingImageModel {
   const bool image_type_should_notify_accessibility_;
   bool should_auto_open_bubble_ = false;
   bool should_keep_label_expanded_ = false;
+  std::optional<user_education::FeaturePromoParams> promo_params_;
   bool blocked_on_system_level_ = false;
   std::optional<int> icon_size_;
 };

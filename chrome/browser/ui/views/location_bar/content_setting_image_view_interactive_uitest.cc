@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/location_bar/content_setting_image_view.h"
 
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/content_settings/content_setting_image_model.h"
 #include "chrome/browser/ui/interaction/browser_elements.h"
@@ -87,13 +88,13 @@ class LocationBarViewQuietNotificationInteractiveUITest
 
   net::EmbeddedTestServer* https_server() { return https_server_.get(); }
 
-  void SetCannedUiDecision() {
+  void SetCannedUiDecision(
+      permissions::PermissionUiSelector::QuietUiReason reason =
+          permissions::PermissionUiSelector::QuietUiReason::kEnabledInPrefs) {
     test_api_->manager()->set_permission_ui_selector_for_testing(
         std::make_unique<MockPermissionUiSelector>(
             permissions::PermissionUiSelector::Decision::UseQuietUi(
-                permissions::PermissionUiSelector::QuietUiReason::
-                    kEnabledInPrefs,
-                std::nullopt)));
+                reason, std::nullopt)));
   }
 
  private:
@@ -118,6 +119,47 @@ IN_PROC_BROWSER_TEST_F(LocationBarViewQuietNotificationInteractiveUITest,
   SetCannedUiDecision();
   RunTestSequenceInContext(
       GetAppWindowElementContext(), InstrumentTab(kContentsWebViewsElementId),
+      ExecuteJs(kContentsWebViewsElementId, "requestNotification"),
+      WaitForPromo(feature_engagement::kIPHPwaQuietNotificationFeature),
+      // Only the icon is shown in the titlebar, without an explanatory label.
+      CheckView(kNotificationContentSettingImageView,
+                [](ContentSettingImageView* view) {
+                  return view->GetVisible() && !view->ShouldShowLabel();
+                }));
+}
+
+// Quiet UI reasons that suppress the animation should show the icon without
+// the promo.
+IN_PROC_BROWSER_TEST_F(LocationBarViewQuietNotificationInteractiveUITest,
+                       NoQuietNotificationIPHWhenAnimationSuppressed) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kContentsWebViewsElementId);
+  InstallAndLaunchWebApp();
+  SetCannedUiDecision(permissions::PermissionUiSelector::QuietUiReason::
+                          kTriggeredDueToAbusiveRequests);
+  RunTestSequenceInContext(
+      GetAppWindowElementContext(), InstrumentTab(kContentsWebViewsElementId),
+      ExecuteJs(kContentsWebViewsElementId, "requestNotification"),
+      WaitForShow(kNotificationContentSettingImageView),
+      CheckView(kNotificationContentSettingImageView,
+                [](ContentSettingImageView* view) {
+                  return !view->ShouldShowLabel();
+                }),
+      CheckPromoRequested(feature_engagement::kIPHPwaQuietNotificationFeature,
+                          /*requested=*/false));
+}
+
+// Navigating out-of-scope inside a PWA window still shows the quiet
+// notification promo keyed to the PWA window's app ID.
+IN_PROC_BROWSER_TEST_F(LocationBarViewQuietNotificationInteractiveUITest,
+                       QuietNotificationIPHOutOfScopeNavigation) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kContentsWebViewsElementId);
+  InstallAndLaunchWebApp();
+  SetCannedUiDecision();
+  const GURL out_of_scope_url =
+      https_server()->GetURL("b.test", "/permissions/requests.html");
+  RunTestSequenceInContext(
+      GetAppWindowElementContext(), InstrumentTab(kContentsWebViewsElementId),
+      NavigateWebContents(kContentsWebViewsElementId, out_of_scope_url),
       ExecuteJs(kContentsWebViewsElementId, "requestNotification"),
       WaitForPromo(feature_engagement::kIPHPwaQuietNotificationFeature));
 }

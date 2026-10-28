@@ -759,6 +759,8 @@ TEST_F(ContentSettingImageModelTest, NotificationsIconSystemPermission) {
   EXPECT_FALSE(content_setting_image_model->should_auto_open_bubble());
   EXPECT_TRUE(content_setting_image_model->should_keep_label_expanded());
   EXPECT_TRUE(content_setting_image_model->blocked_on_system_level());
+  // The quiet notification promo is not shown for system level blocks.
+  EXPECT_FALSE(content_setting_image_model->TakePromoParams(web_contents()));
 
   // Granting system permission should remove the indicator.
   AppShimRegistry::Get()->SaveNotificationPermissionStatusForApp(
@@ -814,6 +816,8 @@ TEST_F(ContentSettingImageModelTest,
   EXPECT_TRUE(content_setting_image_model->should_auto_open_bubble());
   EXPECT_TRUE(content_setting_image_model->should_keep_label_expanded());
   EXPECT_TRUE(content_setting_image_model->blocked_on_system_level());
+  // The quiet notification promo is not shown for system level blocks.
+  EXPECT_FALSE(content_setting_image_model->TakePromoParams(web_contents()));
   EXPECT_EQ(1, user_action_tester.GetActionCount(
                    "ContentSettings.Notifications.SystemPermissionIconShown"));
 

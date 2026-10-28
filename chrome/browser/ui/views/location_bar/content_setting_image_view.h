@@ -132,6 +132,9 @@ class ContentSettingImageView : public IconLabelBubbleView,
 
   void UpdateElementIdentifier();
 
+  // Shows the in-product help promo associated with this icon, if any.
+  void MaybeShowPromo(content::WebContents* web_contents);
+
   // Stops keeping the label expanded and collapses it, optionally animated.
   void CollapseKeptExpandedLabel(bool animate);
 

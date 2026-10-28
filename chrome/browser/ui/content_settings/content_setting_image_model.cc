@@ -26,7 +26,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/blocked_content/framebust_block_tab_helper.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
-#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/content_settings/content_setting_bubble_model.h"
 #include "chrome/browser/ui/content_settings/content_setting_image_model_states.h"
 #include "chrome/browser/ui/layout_constants.h"
@@ -40,6 +40,7 @@
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/common/features.h"
+#include "components/feature_engagement/public/feature_constants.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"
 #include "components/permissions/features.h"
 #include "components/permissions/permission_request_manager.h"
@@ -726,6 +727,7 @@ ContentSettingImageModel::CreateForContentType(ImageType image_type) {
 }
 
 void ContentSettingImageModel::Update(content::WebContents* contents) {
+  promo_params_.reset();
   bool new_visibility = contents ? UpdateAndGetVisibility(contents) : false;
   is_visible_ = new_visibility;
   if (contents && !is_visible_) {
@@ -740,6 +742,8 @@ void ContentSettingImageModel::Update(content::WebContents* contents) {
           image_type(), false);
     }
     ContentSettingImageModelStates::Get(contents)->SetIconShownRecorded(
+        image_type(), false);
+    ContentSettingImageModelStates::Get(contents)->SetPromoWasShown(
         image_type(), false);
   }
 }
@@ -783,6 +787,19 @@ void ContentSettingImageModel::SetBubbleWasAutoOpened(
     content::WebContents* contents) {
   ContentSettingImageModelStates::Get(contents)->SetBubbleWasAutoOpened(
       image_type(), true);
+}
+
+std::optional<user_education::FeaturePromoParams>
+ContentSettingImageModel::TakePromoParams(content::WebContents* contents) {
+  CHECK(contents, base::NotFatalUntil::M162);
+  if (!promo_params_ ||
+      ContentSettingImageModelStates::Get(contents)->PromoWasShown(
+          image_type())) {
+    return std::nullopt;
+  }
+  ContentSettingImageModelStates::Get(contents)->SetPromoWasShown(image_type(),
+                                                                  true);
+  return std::exchange(promo_params_, std::nullopt);
 }
 
 void ContentSettingImageModel::SetIcon(ContentSettingsType type, bool blocked) {
@@ -1510,15 +1527,19 @@ bool ContentSettingNotificationsImageModel::UpdateAndGetVisibility(
   // We shouldn't show the icon unless we're a PWA.
   // TODO(crbug.com/40186737): Allow PermissionRequestManager to identify the
   // correct UI style of a permission prompt.
-  const bool quiet_icon_allowed = web_app::AppBrowserController::IsWebApp(
-      GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(web_contents));
+  const tabs::TabInterface* const tab =
+      tabs::TabInterface::MaybeGetFromContents(web_contents);
+  const BrowserWindowInterface* const browser =
+      tab ? tab->GetBrowserWindowInterface() : nullptr;
+  const web_app::AppBrowserController* const app_controller =
+      browser ? web_app::AppBrowserController::From(browser) : nullptr;
 
-  if (!quiet_icon_allowed || !manager ||
+  // |manager| may be null in tests.
+  if (!app_controller || !manager ||
       !manager->ShouldCurrentRequestUseQuietUI()) {
     return false;
   }
 
-  // |manager| may be null in tests.
   SetIcon(ContentSettingsType::NOTIFICATIONS, /*blocked=*/false);
   if (permissions::PermissionUiSelector::ShouldSuppressAnimation(
           manager->ReasonForUsingQuietUi())) {
@@ -1526,6 +1547,9 @@ bool ContentSettingNotificationsImageModel::UpdateAndGetVisibility(
     set_explanatory_string_id(0);
   } else {
     set_explanatory_string_id(IDS_NOTIFICATIONS_OFF_EXPLANATORY_TEXT);
+    set_promo_params(user_education::FeaturePromoParams(
+        feature_engagement::kIPHPwaQuietNotificationFeature,
+        app_controller->app_id()));
   }
   return true;
 }
@@ -1616,6 +1640,8 @@ ContentSettingImageModel::ContentSettingImageModel(
       image_type_(image_type),
       image_type_should_notify_accessibility_(
           image_type_should_notify_accessibility) {}
+
+ContentSettingImageModel::~ContentSettingImageModel() = default;
 
 std::unique_ptr<ContentSettingBubbleModel>
 ContentSettingImageModel::CreateBubbleModel(
