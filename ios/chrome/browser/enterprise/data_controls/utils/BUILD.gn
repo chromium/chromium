@@ -32,7 +32,10 @@ source_set("unit_tests") {
   deps = [
     ":utils",
     "//components/enterprise/connectors/core",
+    "//components/enterprise/data_controls/core/browser",
     "//components/keyed_service/core",
+    "//components/policy/core/common:common_constants",
+    "//components/prefs",
     "//ios/chrome/browser/enterprise/common/test",
     "//ios/chrome/browser/enterprise/connectors/reporting",
     "//ios/chrome/browser/enterprise/data_controls/model:ios_rules_service",

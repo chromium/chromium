@@ -21,12 +21,15 @@ class IOSClipboardContext : public ClipboardContext {
                       ProfileIOS* destination_profile,
                       ui::ClipboardMetadata metadata);
 
-  // Construct a CopiedTextSource based on `source_url`, `source_profile` and
-  // `destination_profile`.
+  // Constructs a `CopiedTextSource` based on `source_url`, `source_profile`,
+  // `destination_profile`. `scope_pref` stores the policy's management
+  // scope (machine vs. user level); `CopiedTextSource::url` may be left empty
+  // depending on the policy's scope.
   static enterprise_connectors::ContentMetaData::CopiedTextSource
   GetCopiedTextSource(const GURL& source_url,
                       ProfileIOS* source_profile,
-                      ProfileIOS* destination_profile);
+                      ProfileIOS* destination_profile,
+                      const char* scope_pref);
 
   // ClipboardContext override:
   GURL source_url() const override;

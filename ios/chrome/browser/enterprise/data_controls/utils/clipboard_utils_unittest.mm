@@ -4,15 +4,20 @@
 
 #import "ios/chrome/browser/enterprise/data_controls/utils/clipboard_utils.h"
 
+#import "components/enterprise/connectors/core/connectors_prefs.h"
 #import "components/enterprise/connectors/core/reporting_event_router.h"
+#import "components/enterprise/data_controls/core/browser/prefs.h"
 #import "components/enterprise/data_controls/core/browser/verdict.h"
 #import "components/keyed_service/core/keyed_service.h"
+#import "components/policy/core/common/policy_types.h"
+#import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/enterprise/common/test/mock_reporting_event_router.h"
 #import "ios/chrome/browser/enterprise/connectors/reporting/ios_realtime_reporting_client.h"
 #import "ios/chrome/browser/enterprise/connectors/reporting/ios_realtime_reporting_client_factory.h"
 #import "ios/chrome/browser/enterprise/connectors/reporting/ios_reporting_event_router_factory.h"
 #import "ios/chrome/browser/enterprise/data_controls/model/ios_rules_service.h"
 #import "ios/chrome/browser/enterprise/data_controls/model/ios_rules_service_factory.h"
+#import "ios/chrome/browser/enterprise/data_controls/utils/ios_clipboard_context.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
@@ -348,6 +353,43 @@ TEST_F(ClipboardUtilsTest, IsSearchWithAllowedByPolicy_Warn) {
 
   Verdict verdict = IsSearchWithAllowedByPolicy(source_url, profile_.get());
   EXPECT_EQ(verdict.level(), Rule::Level::kWarn);
+}
+
+// Tests that `GetCopiedTextSource` excludes the source URL when pasting across
+// profiles and the policy is applied at user scope.
+TEST_F(ClipboardUtilsTest, GetCopiedTextSource_OtherProfile_UserScope) {
+  GURL source_url(kSourceUrl);
+  profile_->GetPrefs()->SetInteger(
+      enterprise_connectors::kOnBulkDataEntryScopePref,
+      policy::POLICY_SCOPE_USER);
+
+  enterprise_connectors::ContentMetaData::CopiedTextSource copied_text_source =
+      IOSClipboardContext::GetCopiedTextSource(
+          source_url, profile2_.get(), profile_.get(),
+          enterprise_connectors::kOnBulkDataEntryScopePref);
+  EXPECT_EQ(
+      copied_text_source.context(),
+      enterprise_connectors::ContentMetaData::CopiedTextSource::OTHER_PROFILE);
+  EXPECT_FALSE(copied_text_source.has_url());
+}
+
+// Tests that `GetCopiedTextSource` includes the source URL when pasting across
+// profiles and the policy is applied at machine scope.
+TEST_F(ClipboardUtilsTest, GetCopiedTextSource_OtherProfile_MachineScope) {
+  GURL source_url(kSourceUrl);
+  profile_->GetPrefs()->SetInteger(
+      enterprise_connectors::kOnBulkDataEntryScopePref,
+      policy::POLICY_SCOPE_MACHINE);
+
+  enterprise_connectors::ContentMetaData::CopiedTextSource copied_text_source =
+      IOSClipboardContext::GetCopiedTextSource(
+          source_url, profile2_.get(), profile_.get(),
+          enterprise_connectors::kOnBulkDataEntryScopePref);
+  EXPECT_EQ(
+      copied_text_source.context(),
+      enterprise_connectors::ContentMetaData::CopiedTextSource::OTHER_PROFILE);
+  EXPECT_TRUE(copied_text_source.has_url());
+  EXPECT_EQ(copied_text_source.url(), source_url.spec());
 }
 
 }  // namespace data_controls

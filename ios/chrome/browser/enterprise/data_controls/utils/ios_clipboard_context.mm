@@ -34,8 +34,8 @@ GURL IOSClipboardContext::destination_url() const {
 
 enterprise_connectors::ContentMetaData::CopiedTextSource
 IOSClipboardContext::data_controls_copied_text_source() const {
-  return GetCopiedTextSource(source_url_, source_profile_,
-                             destination_profile_);
+  return GetCopiedTextSource(source_url_, source_profile_, destination_profile_,
+                             kDataControlsRulesScopePref);
 }
 
 ui::ClipboardFormatType IOSClipboardContext::format_type() const {
@@ -74,8 +74,10 @@ std::string IOSClipboardContext::destination_active_user() const {
 enterprise_connectors::ContentMetaData::CopiedTextSource
 IOSClipboardContext::GetCopiedTextSource(const GURL& source_url,
                                          ProfileIOS* source_profile,
-                                         ProfileIOS* destination_profile) {
+                                         ProfileIOS* destination_profile,
+                                         const char* scope_pref) {
   CHECK(destination_profile);
+  CHECK(scope_pref);
   using SourceType = enterprise_connectors::ContentMetaData::CopiedTextSource;
 
   SourceType copied_text_source;
@@ -108,8 +110,8 @@ IOSClipboardContext::GetCopiedTextSource(const GURL& source_url,
     case SourceType::OTHER_PROFILE:
       // Only add a source URL if the other profile is getting the policy
       // applied at the machine scope, not the user scope.
-      if (destination_profile->GetPrefs()->GetInteger(
-              kDataControlsRulesScopePref) == policy::POLICY_SCOPE_USER) {
+      if (destination_profile->GetPrefs()->GetInteger(scope_pref) ==
+          policy::POLICY_SCOPE_USER) {
         break;
       }
       [[fallthrough]];

@@ -12,6 +12,7 @@
 #import "base/strings/utf_string_conversions.h"
 #import "components/enterprise/common/proto/connectors.pb.h"
 #import "components/enterprise/connectors/core/analysis_settings.h"
+#import "components/enterprise/connectors/core/connectors_prefs.h"
 #import "components/enterprise/data_controls/core/browser/features.h"
 #import "components/enterprise/data_controls/core/browser/prefs.h"
 #import "components/enterprise/data_controls/core/browser/rule.h"
@@ -294,8 +295,9 @@ void DataControlsTabHelper::PasteIfNonBlockingAnalysis(
     base::WeakPtr<ProfileIOS> destination_profile,
     base::OnceCallback<void(bool)> callback) {
   ContentMetaData::CopiedTextSource copy_source =
-      IOSClipboardContext::GetCopiedTextSource(source_url, source_profile.get(),
-                                               destination_profile.get());
+      IOSClipboardContext::GetCopiedTextSource(
+          source_url, source_profile.get(), destination_profile.get(),
+          enterprise_connectors::kOnBulkDataEntryScopePref);
 
   std::optional<AnalysisSettings> settings;
 
