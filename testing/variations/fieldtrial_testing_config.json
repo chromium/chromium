@@ -4666,6 +4666,29 @@
             ]
         }
     ],
+    "ClientSideDetectionServerModelMultimodal": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "EnabledIncludingLowEndDevices",
+                    "params": {
+                        "ExcludeLowEndDevices": "false"
+                    },
+                    "enable_features": [
+                        "ClientSideDetectionServerModelMultimodal"
+                    ]
+                }
+            ]
+        }
+    ],
     "ClientSideDetectionTrickToBill": [
         {
             "platforms": [
