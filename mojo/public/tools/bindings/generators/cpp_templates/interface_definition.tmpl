@@ -474,27 +474,17 @@ void {{class_name}}_{{method.name}}_ProxyToResponder::Run(
                                  parameter_group="async_response_parameters",
                                  dereference_parameters=False)}}
 #endif
-{{interface_macros.build_message_flags(True, "is_sync_", "true", "false",
-                                       "false", "kFlags")}}
 {{interface_macros.build_serialized_message(
     message_name, method, "in_%s", response_params_struct,
-    response_params_description, "kFlags", "message", method.send_validation)}}
+    response_params_description, "response_flags_", "message",
+    method.send_validation)}}
 
 #if defined(ENABLE_IPC_FUZZER)
   message.set_interface_name({{class_name}}::Name_);
   message.set_method_name("{{method.name}}");
 #endif
 
-  message.set_request_id(request_id_);
-  message.set_trace_nonce(trace_nonce_);
-  ::mojo::internal::SendMojoMessage(*responder_, message);
-  // SendMojoMessage() fails silently if the responder connection is closed,
-  // or if the message is malformed.
-  //
-  // TODO(darin): If Accept() returns false due to a malformed message, that
-  // may be good reason to close the connection. However, we don't have a
-  // way to do that from here. We should add a way.
-  responder_ = nullptr;
+  SendResponse(message);
 }
 {%-   endif -%}
 

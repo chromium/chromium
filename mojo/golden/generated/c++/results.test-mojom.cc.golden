@@ -631,15 +631,10 @@ void ResultInterface_Method_ProxyToResponder::Run(
    });
 #endif
 
-  const uint32_t kFlags = mojo::Message::kFlagIsResponse |
-      ((is_sync_) ? mojo::Message::kFlagIsSync : 0) |
-      ((true) ? 0 : mojo::Message::kFlagNoInterrupt) |
-      ((false) ? mojo::Message::kFlagIsUrgent : 0);
-
   const size_t estimated_payload_size =
     0;
   mojo::Message message(
-      std::to_underlying(messages::ResultInterface::kMethod), kFlags, estimated_payload_size);
+      std::to_underlying(messages::ResultInterface::kMethod), response_flags_, estimated_payload_size);
   mojo::internal::MessageFragment<
       ::golden::internal::ResultInterface_Method_ResponseParams_Data> params(
           message);
@@ -665,16 +660,7 @@ void ResultInterface_Method_ProxyToResponder::Run(
   message.set_method_name("Method");
 #endif
 
-  message.set_request_id(request_id_);
-  message.set_trace_nonce(trace_nonce_);
-  ::mojo::internal::SendMojoMessage(*responder_, message);
-  // SendMojoMessage() fails silently if the responder connection is closed,
-  // or if the message is malformed.
-  //
-  // TODO(darin): If Accept() returns false due to a malformed message, that
-  // may be good reason to close the connection. However, we don't have a
-  // way to do that from here. We should add a way.
-  responder_ = nullptr;
+  SendResponse(message);
 }
 class ResultInterface_SyncMethod_ProxyToResponder : public ::mojo::internal::ProxyToResponder {
  public:
@@ -781,15 +767,10 @@ void ResultInterface_SyncMethod_ProxyToResponder::Run(
    });
 #endif
 
-  const uint32_t kFlags = mojo::Message::kFlagIsResponse |
-      ((is_sync_) ? mojo::Message::kFlagIsSync : 0) |
-      ((true) ? 0 : mojo::Message::kFlagNoInterrupt) |
-      ((false) ? mojo::Message::kFlagIsUrgent : 0);
-
   const size_t estimated_payload_size =
     0;
   mojo::Message message(
-      std::to_underlying(messages::ResultInterface::kSyncMethod), kFlags, estimated_payload_size);
+      std::to_underlying(messages::ResultInterface::kSyncMethod), response_flags_, estimated_payload_size);
   mojo::internal::MessageFragment<
       ::golden::internal::ResultInterface_SyncMethod_ResponseParams_Data> params(
           message);
@@ -815,16 +796,7 @@ void ResultInterface_SyncMethod_ProxyToResponder::Run(
   message.set_method_name("SyncMethod");
 #endif
 
-  message.set_request_id(request_id_);
-  message.set_trace_nonce(trace_nonce_);
-  ::mojo::internal::SendMojoMessage(*responder_, message);
-  // SendMojoMessage() fails silently if the responder connection is closed,
-  // or if the message is malformed.
-  //
-  // TODO(darin): If Accept() returns false due to a malformed message, that
-  // may be good reason to close the connection. However, we don't have a
-  // way to do that from here. We should add a way.
-  responder_ = nullptr;
+  SendResponse(message);
 }
 bool ResultInterface_SyncMethod_HandleSyncResponse::Accept(
     mojo::Message* message) {
