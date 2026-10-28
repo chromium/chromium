@@ -1201,7 +1201,9 @@ suite('ContextualTasksComposeboxForkAutoTabTest', () => {
           assertEquals(1, innerComposebox.files.size);
           assertTrue(hasFileWithTabId(1));
         });
+  });
 
+  suite('AskGDeletionSemantics', () => {
     test(
         'page action without ask-G in the side panel keeps the default ' +
             'semantics',

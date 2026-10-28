@@ -3685,7 +3685,9 @@ function createVoiceResults(transcripts: string[]): SpeechRecognitionEvent {
                   assertTrue(animatedGlow.hasAttribute(
                       'showing-only-carousel-on-top-of-input'));
                 });
+          });
 
+          suite('CoherenceCarouselAndToolChips', () => {
             test(
                 'toolchip and image added, then removed in voice search',
                 async () => {

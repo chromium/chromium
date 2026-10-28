@@ -167,6 +167,11 @@ export interface CtComposeboxAppParts {
  */
 export async function createCtComposeboxApp(): Promise<CtComposeboxAppParts> {
   const app = document.createElement('contextual-tasks-app');
+  // Suppress the initial `<webview>` guest navigation in composebox-only
+  // unit tests so each mount does not pay guest-process creation and
+  // navigation abort overhead.
+  (app as unknown as {maybeLoadPendingUrl_: () => void}).maybeLoadPendingUrl_ =
+      () => {};
   document.body.appendChild(app);
   await microtasksFinished();
   const wrapper = app.$.composebox;

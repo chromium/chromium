@@ -230,19 +230,18 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksBrowserTest,
           "ChipCreationAndMismatch')");
 }
 
-// TODO(crbug.com/556296442): Flaky on Linux.
-#if BUILDFLAG(IS_LINUX)
-#define MAYBE_Composebox_AutoTab_DeletionSemantics \
-  DISABLED_Composebox_AutoTab_DeletionSemantics
-#else
-#define MAYBE_Composebox_AutoTab_DeletionSemantics \
-  Composebox_AutoTab_DeletionSemantics
-#endif
 IN_PROC_BROWSER_TEST_F(ContextualTasksBrowserTest,
-                       MAYBE_Composebox_AutoTab_DeletionSemantics) {
+                       Composebox_AutoTab_DeletionSemantics) {
   RunTest("contextual_tasks/composebox_files_test.js",
           "runMochaSuite('ContextualTasksComposeboxForkAutoTabTest "
           "DeletionSemantics')");
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksBrowserTest,
+                       Composebox_AutoTab_AskGDeletionSemantics) {
+  RunTest("contextual_tasks/composebox_files_test.js",
+          "runMochaSuite('ContextualTasksComposeboxForkAutoTabTest "
+          "AskGDeletionSemantics')");
 }
 
 IN_PROC_BROWSER_TEST_F(ContextualTasksBrowserTest,
@@ -666,6 +665,13 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksBrowserTest,
   RunTest("contextual_tasks/composebox_test.js",
           "runMochaSuite('ContextualTasksComposeboxForkVoiceTest "
           "\\\\(coherence = true\\\\) CoherenceControlsFilesAndLifecycle')");
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksBrowserTest,
+                       Composebox_Voice_CoherenceCarouselAndToolChips) {
+  RunTest("contextual_tasks/composebox_test.js",
+          "runMochaSuite('ContextualTasksComposeboxForkVoiceTest "
+          "\\\\(coherence = true\\\\) CoherenceCarouselAndToolChips')");
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
