@@ -102,6 +102,11 @@ BASE_FEATURE(kRetrieveDisplayNamesForHistoryDownloads,
 
 BASE_FEATURE(kDeferredDownloadHistoryLoading,
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+#if BUILDFLAG(IS_WIN)
+BASE_FEATURE(kEnableDownloadOpenWithContextMenu,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_WIN)
 }  // namespace features
 
 }  // namespace download

@@ -104,6 +104,13 @@ COMPONENTS_DOWNLOAD_EXPORT BASE_DECLARE_FEATURE(
 // Whether to defer download history loading until first use.
 COMPONENTS_DOWNLOAD_EXPORT BASE_DECLARE_FEATURE(
     kDeferredDownloadHistoryLoading);
+
+#if BUILDFLAG(IS_WIN)
+// Whether to enable the "Open with..." context menu option for finished
+// downloads on Windows.
+COMPONENTS_DOWNLOAD_EXPORT BASE_DECLARE_FEATURE(
+    kEnableDownloadOpenWithContextMenu);
+#endif  // BUILDFLAG(IS_WIN)
 }  // namespace features
 
 }  // namespace download

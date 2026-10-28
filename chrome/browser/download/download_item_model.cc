@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/byte_size.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/i18n/number_formatting.h"
 #include "base/i18n/rtl.h"
@@ -40,6 +41,7 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/download/public/common/download_danger_type.h"
+#include "components/download/public/common/download_features.h"
 #include "components/download/public/common/download_interrupt_reasons.h"
 #include "components/download/public/common/download_item.h"
 #include "components/download/public/common/download_item_rename_handler.h"
@@ -678,7 +680,9 @@ bool DownloadItemModel::IsCommandEnabled(
     case DownloadCommands::OPEN_WITH:
 #if BUILDFLAG(IS_WIN)
       return download_->IsDone() && download_->CanShowInFolder() &&
-             !IsExtensionDownload();
+             !IsExtensionDownload() &&
+             base::FeatureList::IsEnabled(
+                 download::features::kEnableDownloadOpenWithContextMenu);
 #else
       return false;
 #endif

@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "build/build_config.h"
 #include "chrome/browser/download/chrome_download_manager_delegate.h"
@@ -13,6 +14,7 @@
 #include "chrome/browser/download/download_stats.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/download/public/common/download_danger_type.h"
+#include "components/download/public/common/download_features.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/common/content_features.h"
 #include "extensions/common/extension.h"
@@ -310,9 +312,12 @@ ui::SimpleMenuModel* DownloadUiContextMenu::GetFinishedMenuModel(
 
   if (is_download) {
 #if BUILDFLAG(IS_WIN)
-    finished_download_menu_model_->AddItem(
-        DownloadCommands::OPEN_WITH,
-        GetLabelForCommandId(DownloadCommands::OPEN_WITH));
+    if (base::FeatureList::IsEnabled(
+            download::features::kEnableDownloadOpenWithContextMenu)) {
+      finished_download_menu_model_->AddItem(
+          DownloadCommands::OPEN_WITH,
+          GetLabelForCommandId(DownloadCommands::OPEN_WITH));
+    }
 #endif
     AddAutoOpenToMenu(finished_download_menu_model_.get());
   }
