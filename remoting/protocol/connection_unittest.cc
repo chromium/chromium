@@ -252,11 +252,12 @@ class FakeAudioPlayer : public AudioStub {
         UNSAFE_TODO(reinterpret_cast<const int16_t*>(data_.data()));
     int num_samples = data_.size() / kAudioChannels / sizeof(int16_t);
 
-    // Skip the first 200 ms as these samples are more likely to be affected by
-    // concealment which causes the zero-crossing frequency estimation to fail.
-    // This is even more likely for ASAN builds.
+    // Skip the first 300 ms as these samples are more likely to be affected by
+    // initial NetEq jitter-buffer adaptation and concealment, which can extend
+    // slightly past 200 ms on heavily loaded bots (such as ASan and debug
+    // builds) and skew zero-crossing frequency estimation.
     constexpr int kSkippedSamples =
-        200 * kAudioSampleRate / base::Time::kMillisecondsPerSecond;
+        300 * kAudioSampleRate / base::Time::kMillisecondsPerSecond;
     ASSERT_GT(num_samples, kSkippedSamples);
 
     // Estimate signal frequency by counting how often it crosses 0.
@@ -656,10 +657,10 @@ TEST_F(ConnectionTest, Audio) {
   std::unique_ptr<AudioStream> audio_stream =
       host_connection_->StartAudioStream(std::make_unique<TestAudioSource>());
 
-  // Wait for 500 ms worth of stereo audio samples (after skipping the initial
-  // 200 ms warmup window in Verify(), 300 ms provides 900 left-channel and 600
-  // right-channel cycles for zero-crossing frequency estimation).
-  client_audio_player_.WaitForSamples(kAudioSampleRate / 2);
+  // Wait for 1 second worth of stereo audio samples (after skipping the initial
+  // 300 ms warmup window in Verify(), 700 ms provides 2,100 left-channel and
+  // 1,400 right-channel cycles for zero-crossing frequency estimation).
+  client_audio_player_.WaitForSamples(kAudioSampleRate);
   client_audio_player_.Verify();
 }
 
