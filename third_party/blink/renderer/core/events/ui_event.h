@@ -95,8 +95,8 @@ class CORE_EXPORT UIEvent : public Event {
  protected:
   // Defense in depth: an event must never hand an EventTarget of a
   // cross-origin ExecutionContext to the target's context via `relatedTarget`.
-  void ClearCrossOriginRelatedTarget(const Node& target,
-                                     Member<EventTarget>& related_target);
+  void CheckCrossOriginRelatedTarget(const Node& target,
+                                     EventTarget* related_target);
 
  private:
   Member<AbstractView> view_;
