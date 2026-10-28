@@ -4145,13 +4145,23 @@ TEST_F(ContextualTasksUiTest,
   MockBrowserUserEducationInterface mock_user_education(&mock_browser_window);
 
   testing::NiceMock<MockContextualTasksPanelController> mock_panel_controller;
+  ContextualTask task_with_tab(base::Uuid::GenerateRandomV4());
+  task_with_tab.AddUrlResource(
+      UrlResource(GURL("https://example.com"), ResourceType::kWebpage));
+  ON_CALL(mock_panel_controller, GetCurrentTask())
+      .WillByDefault(Return(task_with_tab));
+  ON_CALL(mock_panel_controller, GetActiveWebContents())
+      .WillByDefault(Return(embedded_web_contents_.get()));
+  const GURL kAiUrlWithMstk(
+      "https://www.google.com/search?udm=50&q=test&mstk=123");
+  content::WebContentsTester::For(embedded_web_contents_.get())
+      ->NavigateAndCommit(kAiUrlWithMstk);
   content::TestWebUI web_ui;
   web_ui.set_web_contents(embedded_web_contents_.get());
   TestContextualTasksUI controller(&web_ui);
   controller.set_panel_controller(&mock_panel_controller);
   controller.set_browser_window(&mock_browser_window);
-  controller.set_inner_frame_url(
-      GURL("https://www.google.com/search?udm=50&q=test"));
+  controller.set_inner_frame_url(kAiUrlWithMstk);
   controller.ContextualTasksUIBase::SetIsAiPage(true);
 
   EXPECT_CALL(mock_panel_controller, IsPanelOpenForContextualTask())
