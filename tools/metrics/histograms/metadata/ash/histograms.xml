@@ -5397,12 +5397,15 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.NotifierFramework.Nudge.{PrimaryOrSecondary}ButtonPressed"
-    enum="NudgeCatalogName" expires_after="2025-01-15">
-  <owner>kradtke@google.com</owner>
+    enum="NudgeCatalogName" expires_after="2027-10-25">
+  <owner>newcomer@chromium.org</owner>
   <owner>cros-status-area-eng@google.com</owner>
   <summary>
     Records the nudge catalog name when a user presses one of the nudge's
     buttons.
+
+    Warning: this histogram was expired from 2025-01-15 to 2026-10-25; data may
+    be missing.
   </summary>
   <token key="PrimaryOrSecondary">
     <variant name="Primary"/>
@@ -5437,13 +5440,16 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.NotifierFramework.Toast.Dismissed.{TimeRange}"
-    enum="ToastCatalogName" expires_after="2025-01-15">
-  <owner>kradtke@google.com</owner>
+    enum="ToastCatalogName" expires_after="2027-10-25">
+  <owner>newcomer@chromium.org</owner>
   <owner>cros-status-area-eng@google.com</owner>
   <summary>
     Tracks the time a specific toast spends on screen before being dismissed by
     the user or system. Records the toast catalog name in one of the time
     buckets available when toast is dismissed either manually or by time out.
+
+    Warning: this histogram was expired from 2025-01-15 to 2026-10-25; data may
+    be missing.
   </summary>
   <token key="TimeRange">
     <variant name="After7s"/>
@@ -5463,11 +5469,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.NotifierFramework.Toast.TimeInQueue" units="ms"
-    expires_after="2025-05-19">
-  <owner>kradtke@chromium.org</owner>
+    expires_after="2027-10-25">
+  <owner>newcomer@chromium.org</owner>
   <owner>cros-status-area-eng@google.com</owner>
   <summary>
     Records the time a toast spends in queue before it's shown on screen.
+
+    Warning: this histogram was expired from 2025-05-19 to 2026-10-25; data may
+    be missing.
   </summary>
 </histogram>
 
