@@ -5,11 +5,15 @@
 #import "ios/chrome/app/task_request_user_activity.h"
 
 #import <CoreSpotlight/CoreSpotlight.h>
+#import <Intents/Intents.h>
 
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
 #import "components/handoff/handoff_utility.h"
+#import "components/search_engines/template_url.h"
+#import "components/search_engines/template_url_data.h"
+#import "components/search_engines/template_url_service.h"
 #import "ios/chrome/app/app_startup_parameters.h"
 #import "ios/chrome/app/application_delegate/tab_opening.h"
 #import "ios/chrome/app/application_mode.h"
@@ -17,6 +21,8 @@
 #import "ios/chrome/app/spotlight/actions_spotlight_manager.h"
 #import "ios/chrome/app/spotlight/spotlight_util.h"
 #import "ios/chrome/app/startup/app_launch_metrics.h"
+#import "ios/chrome/browser/intents/model/intents_constants.h"
+#import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_controller.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/test/fake_scene_state.h"
@@ -25,11 +31,20 @@
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
+#import "ios/chrome/common/intents/SearchInChromeIntent.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
+
+namespace {
+
+// URL template of the default search engine used in tests.
+constexpr char kTestSearchURL[] =
+    "https://www.example.com/search?q={searchTerms}";
+
+}  // namespace
 
 // Forward declarations.
 @class URLOpenerParams;
@@ -40,6 +55,8 @@
 @property(nonatomic, assign) ApplicationModeForTabOpening targetMode;
 @property(nonatomic, assign) BOOL dismissOmnibox;
 @property(nonatomic, assign) TabOpeningPostOpeningAction recordedAction;
+// Whether a completion block was passed when opening the tab.
+@property(nonatomic, assign) BOOL hasCompletion;
 @end
 
 @implementation TestTabOpener
@@ -51,6 +68,7 @@
   _urlLoadParams = urlLoadParams;
   _targetMode = targetMode;
   _dismissOmnibox = dismissOmnibox;
+  _hasCompletion = completion != nil;
 }
 
 - (ProceduralBlock)completionBlockForTriggeringAction:
@@ -91,7 +109,12 @@ class TaskRequestForUserActivityTest : public PlatformTest {
     scoped_feature_list_.InitAndEnableFeature(kEnableNewStartupFlow);
     SaveEnableNewStartupFlowForNextStart();
 
-    profile_ = TestProfileIOS::Builder().Build();
+    TestProfileIOS::Builder builder;
+    builder.AddTestingFactory(
+        ios::TemplateURLServiceFactory::GetInstance(),
+        ios::TemplateURLServiceFactory::GetDefaultFactory());
+    profile_ = std::move(builder).Build();
+    SetUpDefaultSearchEngine();
 
     profile_state_ = [[ProfileState alloc] initWithAppState:nil];
     profile_state_.profile = profile_.get();
@@ -148,6 +171,39 @@ class TaskRequestForUserActivityTest : public PlatformTest {
     histogram_tester.ExpectUniqueSample(kAppLaunchSource,
                                         AppLaunchSource::SPOTLIGHT_CHROME, 1);
     histogram_tester.ExpectTotalCount(spotlight::kSpotlightActionsHistogram, 1);
+  }
+
+  // Sets a default search engine so that search URLs can be generated.
+  void SetUpDefaultSearchEngine() {
+    TemplateURLService* template_url_service =
+        ios::TemplateURLServiceFactory::GetForProfile(profile_.get());
+    template_url_service->Load();
+    TemplateURLData data;
+    data.SetShortName(u"Test");
+    data.SetKeyword(u"test");
+    data.SetURL(kTestSearchURL);
+    TemplateURL* template_url =
+        template_url_service->Add(std::make_unique<TemplateURL>(data));
+    template_url_service->SetUserSelectedDefaultSearchProvider(template_url);
+  }
+
+  // Executes a `SearchInChromeIntent` with `search_phrase`.
+  void ExecuteSearchInChromeIntent(NSString* search_phrase) {
+    SearchInChromeIntent* intent = [[SearchInChromeIntent alloc] init];
+    intent.searchPhrase = search_phrase;
+    INInteraction* interaction = [[INInteraction alloc] initWithIntent:intent
+                                                              response:nil];
+    id user_activity = OCMClassMock([NSUserActivity class]);
+    OCMStub([(NSUserActivity*)user_activity activityType])
+        .andReturn(kSiriShortcutSearchInChrome);
+    OCMStub([(NSUserActivity*)user_activity interaction])
+        .andReturn(interaction);
+
+    TaskRequestForUserActivity* request =
+        [TaskRequestForUserActivity taskRequestWithUserActivity:user_activity
+                                                     sceneState:scene_state_
+                                                    isColdStart:NO];
+    [request execute];
   }
 };
 
@@ -257,4 +313,37 @@ TEST_F(TaskRequestForUserActivityTest,
 
   histogram_tester.ExpectUniqueSample(kAppLaunchSource,
                                       AppLaunchSource::HANDOFF, 1);
+}
+
+// Tests that a `SearchInChromeIntent` with a search phrase opens the default
+// search engine results page.
+TEST_F(TaskRequestForUserActivityTest, SearchInChromeWithPhraseOpensResults) {
+  ExecuteSearchInChromeIntent(@"chromium");
+
+  EXPECT_EQ(test_tab_opener_.targetMode, ApplicationModeForTabOpening::NORMAL);
+  EXPECT_EQ(test_tab_opener_.urlLoadParams.web_params.url,
+            GURL("https://www.example.com/search?q=chromium"));
+  EXPECT_FALSE(test_tab_opener_.hasCompletion);
+}
+
+// Tests that a `SearchInChromeIntent` without a search phrase opens the NTP
+// and focuses the omnibox.
+TEST_F(TaskRequestForUserActivityTest,
+       SearchInChromeWithEmptyPhraseFocusesOmnibox) {
+  ExecuteSearchInChromeIntent(nil);
+
+  EXPECT_EQ(test_tab_opener_.urlLoadParams.web_params.url,
+            GURL(kChromeUINewTabURL));
+  EXPECT_TRUE(test_tab_opener_.hasCompletion);
+}
+
+// Tests that a `SearchInChromeIntent` with a whitespace-only search phrase, as
+// donated by older Chrome versions, opens the NTP and focuses the omnibox.
+TEST_F(TaskRequestForUserActivityTest,
+       SearchInChromeWithWhitespacePhraseFocusesOmnibox) {
+  ExecuteSearchInChromeIntent(@" ");
+
+  EXPECT_EQ(test_tab_opener_.urlLoadParams.web_params.url,
+            GURL(kChromeUINewTabURL));
+  EXPECT_TRUE(test_tab_opener_.hasCompletion);
 }

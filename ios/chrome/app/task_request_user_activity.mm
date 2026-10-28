@@ -615,15 +615,20 @@ URLAndCallback GetURLAndCallbackFromSearchInChromeIntent(
     return {url_to_open, {}};
   }
 
+  // Whitespace-only phrases are treated as empty. Shortcuts donated by older
+  // Chrome versions carry a single space as `searchPhrase`, because SiriKit
+  // used to reject donations with an empty parameter.
   NSString* search_phrase = intent.searchPhrase;
-  if (search_phrase.length > 0) {
-    GURL generated_url =
-        GenerateResultGURLFromSearchQuery(search_phrase, profile);
-    if (generated_url.is_valid()) {
-      url_to_open = generated_url;
-    }
-  } else {
+  NSString* trimmed_search_phrase = [search_phrase
+      stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+  if (trimmed_search_phrase.length == 0) {
     return {url_to_open, base::BindOnce(&FocusOmniboxWithBrowser)};
+  }
+
+  GURL generated_url =
+      GenerateResultGURLFromSearchQuery(search_phrase, profile);
+  if (generated_url.is_valid()) {
+    url_to_open = generated_url;
   }
   return {url_to_open, {}};
 }
