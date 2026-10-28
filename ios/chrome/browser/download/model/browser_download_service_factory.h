@@ -17,12 +17,12 @@ class BrowserDownloadServiceFactory final
   explicit BrowserDownloadServiceFactory(PassKey key);
 
   // Returns a default testing factory.
-  static TestingFactory GetDefaultFactory();
+  static TestingFactoryByRef GetDefaultFactory();
 
  private:
   // ProfileKeyedServiceFactoryIOS overrides:
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const final;
+      ProfileIOS& profile) const final;
 };
 
 #endif  // IOS_CHROME_BROWSER_DOWNLOAD_MODEL_BROWSER_DOWNLOAD_SERVICE_FACTORY_H_
