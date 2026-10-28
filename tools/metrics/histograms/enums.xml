@@ -14623,6 +14623,8 @@ from previous Chrome versions.
   <int value="-120267301" label="SupervisedUserBlockInterstitialV3:disabled"/>
   <int value="-120091289" label="CrostiniAppSearch:enabled"/>
   <int value="-119841719" label="ThreadingOptimizationsOnIo:disabled"/>
+  <int value="-119363682"
+      label="TrustedVaultSharedRecoveryFactorsAndEncryption:enabled"/>
   <int value="-119283387" label="NtpAlphaBackgroundCollections:disabled"/>
   <int value="-119055644" label="GenericSensor:enabled"/>
   <int value="-118993417" label="TLS13HardeningForLocalAnchors:disabled"/>
@@ -19739,6 +19741,8 @@ from previous Chrome versions.
       label="AutofillSkipAndroidBottomSheetForIban:disabled"/>
   <int value="1413158119" label="WebRtcRemoteEventLog:disabled"/>
   <int value="1413334779" label="WebPaymentsMinimalUI:enabled"/>
+  <int value="1413943782"
+      label="TrustedVaultSharedRecoveryFactorsAndEncryption:disabled"/>
   <int value="1413948819" label="NupPrinting:enabled"/>
   <int value="1414004676" label="TabStripLayoutTransitionDebounceFix:enabled"/>
   <int value="1414652547" label="LinkCapturingAutoDisplayIntentPicker:enabled"/>

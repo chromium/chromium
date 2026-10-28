@@ -6738,6 +6738,13 @@ inline constexpr char kToolbarSnapshotRefactorName[] =
 inline constexpr char kToolbarSnapshotRefactorDescription[] =
     "Updates the margin and snapshotting of the Toolbar on Android.";
 
+inline constexpr char kTrustedVaultSharedRecoveryFactorsAndEncryptionName[] =
+    "Trusted Vault shared recovery factors and encryption";
+inline constexpr char
+    kTrustedVaultSharedRecoveryFactorsAndEncryptionDescription[] =
+        "Enables sharing recovery factors across security domains and "
+        "encrypting local storage using OSCrypt for Trusted Vault.";
+
 inline constexpr char kTrustedWebActivityContactsDelegationName[] =
     "TWA contact picker delegation";
 inline constexpr char kTrustedWebActivityContactsDelegationDescription[] =

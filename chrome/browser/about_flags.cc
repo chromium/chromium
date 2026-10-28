@@ -14364,6 +14364,14 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(blink::features::kSmartCardContextRelease)},
 #endif  // BUILDFLAG(ENABLE_SMART_CARD)
 
+    {"trusted-vault-shared-recovery-factors-and-encryption",
+     flag_descriptions::kTrustedVaultSharedRecoveryFactorsAndEncryptionName,
+     flag_descriptions::
+         kTrustedVaultSharedRecoveryFactorsAndEncryptionDescription,
+     kOsDesktop,
+     FEATURE_VALUE_TYPE(
+         trusted_vault::kTrustedVaultSharedRecoveryFactorsAndEncryption)},
+
     // Add new entries above this line.
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag

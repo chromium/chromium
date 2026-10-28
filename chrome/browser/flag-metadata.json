@@ -9783,6 +9783,14 @@
     "expiry_milestone": 160
   },
   {
+    "name": "trusted-vault-shared-recovery-factors-and-encryption",
+    "owners": [
+      "thomasth@google.com",
+      "//components/trusted_vault/OWNERS"
+    ],
+    "expiry_milestone": 166
+  },
+  {
     "name": "trusted-web-activity-contacts-delegation",
     "owners": [
       "yixie@chromium.org"
