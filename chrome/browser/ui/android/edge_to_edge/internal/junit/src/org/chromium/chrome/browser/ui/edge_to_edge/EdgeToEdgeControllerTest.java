@@ -2126,6 +2126,101 @@ public class EdgeToEdgeControllerTest {
 
     @Test
     @EnableFeatures(ChromeFeatureList.EDGE_TO_EDGE_TOP_INSET)
+    public void testTopEdgeToEdge_WebPage_ViewportFitChanged() {
+        when(mLayoutManager.getActiveLayoutType()).thenReturn(LayoutType.BROWSING);
+        when(mTab.isNativePage()).thenReturn(false);
+        mTabProvider.set(mTab);
+        assertFalse(mEdgeToEdgeControllerImpl.isDrawingToTopEdge());
+        clearInvocations(mInsetObserver, mTopInsetObserver, mChangeObserver);
+
+        mEdgeToEdgeControllerImpl.getWebContentsObserver().viewportFitChanged(ViewportFit.COVER);
+        assertTrue(mEdgeToEdgeControllerImpl.isDrawingToTopEdge());
+        verify(mInsetObserver).retriggerOnApplyWindowInsets();
+        verify(mTopInsetObserver, atLeastOnce()).onToEdgeChange(eq(TOP_INSET), eq(true), anyInt());
+        verify(mChangeObserver, atLeastOnce())
+                .onToEdgeChange(eq(BOTTOM_INSET), anyBoolean(), anyBoolean());
+        clearInvocations(mInsetObserver, mTopInsetObserver, mChangeObserver);
+
+        // Showing and hiding the status indicator should temporarily disable and then restore
+        // top edge-to-edge without losing mIsPageOptedIntoTopEdgeToEdge.
+        mEdgeToEdgeControllerImpl.setStatusIndicatorVisible(true);
+        assertFalse(mEdgeToEdgeControllerImpl.isDrawingToTopEdge());
+        verify(mChangeObserver, atLeastOnce())
+                .onToEdgeChange(eq(BOTTOM_INSET), anyBoolean(), anyBoolean());
+        clearInvocations(mChangeObserver);
+        mEdgeToEdgeControllerImpl.setStatusIndicatorVisible(false);
+        assertTrue(mEdgeToEdgeControllerImpl.isDrawingToTopEdge());
+        verify(mChangeObserver, atLeastOnce())
+                .onToEdgeChange(eq(BOTTOM_INSET), anyBoolean(), anyBoolean());
+        clearInvocations(mInsetObserver, mTopInsetObserver, mChangeObserver);
+
+        mEdgeToEdgeControllerImpl.getWebContentsObserver().viewportFitChanged(ViewportFit.AUTO);
+        assertFalse(mEdgeToEdgeControllerImpl.isDrawingToTopEdge());
+        verify(mInsetObserver).retriggerOnApplyWindowInsets();
+        verify(mTopInsetObserver, atLeastOnce()).onToEdgeChange(eq(TOP_INSET), eq(false), anyInt());
+        verify(mChangeObserver, atLeastOnce())
+                .onToEdgeChange(eq(BOTTOM_INSET), anyBoolean(), anyBoolean());
+        clearInvocations(mInsetObserver, mTopInsetObserver, mChangeObserver);
+
+        mEdgeToEdgeControllerImpl
+                .getWebContentsObserver()
+                .viewportFitChanged(ViewportFit.COVER_FORCED_BY_USER_AGENT);
+        assertTrue(mEdgeToEdgeControllerImpl.isDrawingToTopEdge());
+        verify(mInsetObserver).retriggerOnApplyWindowInsets();
+        verify(mTopInsetObserver, atLeastOnce()).onToEdgeChange(eq(TOP_INSET), eq(true), anyInt());
+        verify(mChangeObserver, atLeastOnce())
+                .onToEdgeChange(eq(BOTTOM_INSET), anyBoolean(), anyBoolean());
+        clearInvocations(mInsetObserver, mTopInsetObserver, mChangeObserver);
+
+        mEdgeToEdgeControllerImpl.getWebContentsObserver().viewportFitChanged(ViewportFit.CONTAIN);
+        assertFalse(mEdgeToEdgeControllerImpl.isDrawingToTopEdge());
+        verify(mInsetObserver).retriggerOnApplyWindowInsets();
+        verify(mTopInsetObserver, atLeastOnce()).onToEdgeChange(eq(TOP_INSET), eq(false), anyInt());
+        verify(mChangeObserver, atLeastOnce())
+                .onToEdgeChange(eq(BOTTOM_INSET), anyBoolean(), anyBoolean());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.EDGE_TO_EDGE_TOP_INSET)
+    public void testTopEdgeToEdge_WebPage_AlwaysDrawWebEdgeToEdgeForTesting() {
+        EdgeToEdgeUtils.setAlwaysDrawWebEdgeToEdgeForTesting(true);
+        when(mTab.isNativePage()).thenReturn(false);
+        mTabProvider.set(mTab);
+        assertTrue(mEdgeToEdgeControllerImpl.isDrawingToTopEdge());
+    }
+
+    @Test
+    @EnableFeatures(EDGE_TO_EDGE_TOP_INSET_REFACTOR_ONLY)
+    public void testTopEdgeToEdge_RefactorOnly_WebPageDoesNotDrawToTopEdge() {
+        when(mTab.isNativePage()).thenReturn(false);
+        mTabProvider.set(mTab);
+        assertFalse(mEdgeToEdgeControllerImpl.isDrawingToTopEdge());
+        clearInvocations(mInsetObserver);
+
+        mEdgeToEdgeControllerImpl.getWebContentsObserver().viewportFitChanged(ViewportFit.COVER);
+        assertFalse(mEdgeToEdgeControllerImpl.isDrawingToTopEdge());
+        verify(mInsetObserver, never()).retriggerOnApplyWindowInsets();
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.EDGE_TO_EDGE_TOP_INSET)
+    public void testTopEdgeToEdge_WebPage_ThreeButtonNav_DrawsTopEdge() {
+        EdgeToEdgeUtils.setHas3ButtonNavBarForTesting(true);
+        when(mTab.isNativePage()).thenReturn(false);
+        mTabProvider.set(mTab);
+        assertFalse(mEdgeToEdgeControllerImpl.isDrawingToTopEdge());
+        clearInvocations(mTopInsetObserver, mChangeObserver);
+
+        mEdgeToEdgeControllerImpl.getWebContentsObserver().viewportFitChanged(ViewportFit.COVER);
+        assertTrue(mEdgeToEdgeControllerImpl.isDrawingToTopEdge());
+        assertFalse(mEdgeToEdgeControllerImpl.isDrawingToEdge());
+        verify(mTopInsetObserver, atLeastOnce()).onToEdgeChange(eq(TOP_INSET), eq(true), anyInt());
+        verify(mChangeObserver, atLeastOnce())
+                .onToEdgeChange(eq(BOTTOM_INSET), eq(false), eq(false));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.EDGE_TO_EDGE_TOP_INSET)
     public void testTopInset_SwitchingBetweenWebPages_DoesNotRetriggerInsets() {
         // Web page 1: Does not consume top insets.
         Tab tab1 =
@@ -2465,6 +2560,34 @@ public class EdgeToEdgeControllerTest {
                         /* supportsTopEdgeToEdge= */ true);
         mTabProvider.set(customNtpTab);
         assertTrue(mEdgeToEdgeControllerImpl.tabShouldDrawFullTopEdgeToEdge());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.EDGE_TO_EDGE_TOP_INSET)
+    public void testTabShouldDrawFullTopEdgeToEdge_SwitchBetweenCustomNtpAndOptedInWebTab() {
+        EdgeToEdgeUtils.setAlwaysDrawWebEdgeToEdgeForTesting(true);
+        Tab customNtpTab =
+                createMockTab(
+                        JUnitTestGURLs.NTP_URL,
+                        /* isNativePage= */ true,
+                        /* supportsTopEdgeToEdge= */ true);
+        mEdgeToEdgeControllerImpl.onTabSwitched(customNtpTab);
+        assertTrue(mEdgeToEdgeControllerImpl.isDrawingToTopEdge());
+        assertTrue(mEdgeToEdgeControllerImpl.tabShouldDrawFullTopEdgeToEdge());
+        clearInvocations(mInsetObserver, mTopInsetObserver, mChangeObserver);
+
+        Tab webTab =
+                createMockTab(
+                        JUnitTestGURLs.HTTP_URL,
+                        /* isNativePage= */ false,
+                        /* supportsTopEdgeToEdge= */ true);
+        mEdgeToEdgeControllerImpl.onTabSwitched(webTab);
+        assertTrue(mEdgeToEdgeControllerImpl.isDrawingToTopEdge());
+        assertFalse(mEdgeToEdgeControllerImpl.tabShouldDrawFullTopEdgeToEdge());
+        verify(mInsetObserver).retriggerOnApplyWindowInsets();
+        verify(mTopInsetObserver, atLeastOnce()).onToEdgeChange(eq(TOP_INSET), eq(true), anyInt());
+        verify(mChangeObserver, atLeastOnce())
+                .onToEdgeChange(eq(BOTTOM_INSET), anyBoolean(), anyBoolean());
     }
 
     @Test

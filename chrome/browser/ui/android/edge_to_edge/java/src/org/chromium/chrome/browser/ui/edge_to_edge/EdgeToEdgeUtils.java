@@ -714,12 +714,9 @@ public class EdgeToEdgeUtils {
      * Returns whether the given Tab supports drawing top edge to edge.
      *
      * @param tab The Tab to check.
-     * @return True if the tab is a native page that supports top edge to edge, false otherwise.
+     * @return True if the tab supports top edge to edge, false otherwise.
      */
     public static boolean tabSupportsTopEdgeToEdge(@Nullable Tab tab) {
-        // TODO(crbug.com/573617460): Currently top edge-to-edge is only supported on native pages.
-        // Support for web pages (e.g. viewport-fit=cover) will be added in future iterations and
-        // will check isTopEdgeToEdgeEnabled().
         if (!isEdgeToEdgeRefactorEnabled() || tab == null) {
             return false;
         }
@@ -728,7 +725,43 @@ public class EdgeToEdgeUtils {
             return isNativeTabDrawingToTopEdge(tab);
         }
 
-        return false;
+        if (!isTopEdgeToEdgeEnabled()) {
+            return false;
+        }
+
+        if (sAlwaysDrawWebEdgeToEdgeForTesting) {
+            return true;
+        }
+
+        return getWasViewportFitCover(tab);
+    }
+
+    /**
+     * Returns whether the given Tab supports drawing top edge to edge based on the given new
+     * viewport-fit value.
+     *
+     * @param tab The Tab to check.
+     * @param value The new viewport-fit value of the root frame.
+     */
+    static boolean tabSupportsTopEdgeToEdge(
+            @Nullable Tab tab, @WebContentsObserver.ViewportFitType int value) {
+        if (!isEdgeToEdgeRefactorEnabled() || tab == null) {
+            return false;
+        }
+
+        if (tab.isNativePage()) {
+            return isNativeTabDrawingToTopEdge(tab);
+        }
+
+        if (!isTopEdgeToEdgeEnabled()) {
+            return false;
+        }
+
+        if (sAlwaysDrawWebEdgeToEdgeForTesting) {
+            return true;
+        }
+
+        return value == ViewportFit.COVER || value == ViewportFit.COVER_FORCED_BY_USER_AGENT;
     }
 
     /**

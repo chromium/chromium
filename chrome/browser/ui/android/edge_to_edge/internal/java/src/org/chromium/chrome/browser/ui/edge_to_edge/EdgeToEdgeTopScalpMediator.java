@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.ui.edge_to_edge;
 import static org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeTopScalpProperties.COLOR;
 import static org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeTopScalpProperties.HEIGHT;
 import static org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeTopScalpProperties.IS_VISIBLE;
+import static org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeTopScalpProperties.OFFSET_TAG;
 import static org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeTopScalpProperties.Y_OFFSET;
 
 import androidx.annotation.ColorInt;
@@ -47,6 +48,7 @@ class EdgeToEdgeTopScalpMediator
     private final FullscreenManager mFullscreenManager;
     private final TopUiThemeColorProvider mTopUiThemeColorProvider;
     private boolean mCanShow;
+    private boolean mIsDrawingToTopEdge;
 
     /**
      * Creates an {@link EdgeToEdgeTopScalpMediator}.
@@ -76,7 +78,8 @@ class EdgeToEdgeTopScalpMediator
         mTopControlsStacker.addControl(this);
 
         // Observe EdgeToEdgeController via ChangeObserver. EdgeToEdgeControllerImpl
-        // notifies mEdgeChangeObservers whenever top edge-to-edge state or window insets change.
+        // notifies mBottomEdgeChangeObservers whenever top edge-to-edge state or window insets
+        // change.
         mEdgeToEdgeController.registerObserver(this);
         mLayoutManager.addObserver(this);
         mFullscreenManager.addObserver(this);
@@ -105,9 +108,9 @@ class EdgeToEdgeTopScalpMediator
         // Check isTopEdgeToEdgeEnabled() rather than isEdgeToEdgeRefactorEnabled() because
         // isEdgeToEdgeRefactorEnabled only unifies edgeless native page inset consumption without
         // using the top scalp UI. Under isTopEdgeToEdgeEnabled(), the top scalp is always used
-        // (except in fullscreen), and EdgeToEdgeController#isDrawingToTopEdge() will determine how
-        // the top scalp behaves (LayoutManager layout-type and isDrawingToTopEdge() behavior will
-        // be added in a follow-up crbug.com/505803562).
+        // (except in fullscreen), and EdgeToEdgeController#isDrawingToTopEdge() determines whether
+        // the top scalp is scrollable (LayoutManager layout-type behavior will be added in a
+        // follow-up crbug.com/505803562).
         boolean isTopE2eEnabled = EdgeToEdgeUtils.isTopEdgeToEdgeEnabled();
         boolean isFullscreen = mFullscreenManager.getPersistentFullscreenMode();
         boolean isFullTopEdgeToEdge = mEdgeToEdgeController.tabShouldDrawFullTopEdgeToEdge();
@@ -116,9 +119,12 @@ class EdgeToEdgeTopScalpMediator
                         ? mEdgeToEdgeController.getSystemTopInsetPx()
                         : 0;
         boolean newCanShow = !isFullTopEdgeToEdge && newHeight > 0;
+        boolean newIsDrawingToTopEdge =
+                isTopE2eEnabled && mEdgeToEdgeController.isDrawingToTopEdge();
 
         boolean heightChanged = mModel.get(HEIGHT) != newHeight;
         boolean visibilityChanged = mCanShow != newCanShow;
+        boolean isDrawingToTopEdgeChanged = mIsDrawingToTopEdge != newIsDrawingToTopEdge;
 
         if (heightChanged) {
             mModel.set(HEIGHT, newHeight);
@@ -126,10 +132,13 @@ class EdgeToEdgeTopScalpMediator
         if (visibilityChanged) {
             mCanShow = newCanShow;
         }
+        if (isDrawingToTopEdgeChanged) {
+            mIsDrawingToTopEdge = newIsDrawingToTopEdge;
+        }
         // TODO(crbug.com/505803562): Handle Y_OFFSET updates on height and visibility changes.
         mModel.set(IS_VISIBLE, isVisible());
 
-        if (heightChanged || visibilityChanged) {
+        if (heightChanged || visibilityChanged || isDrawingToTopEdgeChanged) {
             mTopControlsStacker.requestLayerUpdatePost(/* requireAnimate= */ false);
         }
     }
@@ -170,8 +179,9 @@ class EdgeToEdgeTopScalpMediator
 
     @Override
     public @ScrollBehavior int getScrollBehavior() {
-        // TODO(crbug.com/505803562): Support dynamic scrollability in a follow-up CL.
-        return ScrollBehavior.NEVER_SCROLLABLE;
+        return mIsDrawingToTopEdge
+                ? ScrollBehavior.DEFAULT_SCROLLABLE
+                : ScrollBehavior.NEVER_SCROLLABLE;
     }
 
     @Override
@@ -182,14 +192,16 @@ class EdgeToEdgeTopScalpMediator
 
     @Override
     public void updateOffsetTag(@Nullable BrowserControlsOffsetTagsInfo offsetTagsInfo) {
-        // TODO(crbug.com/505803562): Implement in follow-up CL when scrollable top scalp is
-        // supported.
+        mModel.set(
+                OFFSET_TAG,
+                offsetTagsInfo != null ? offsetTagsInfo.getTopControlsOffsetTag() : null);
     }
 
     @Override
     public void prepForHeightAdjustmentAnimation(int latestYOffset) {
-        // TODO(crbug.com/505803562): Implement in follow-up CL when scrollable top scalp is
-        // supported.
+        mModel.set(OFFSET_TAG, null);
+        mModel.set(Y_OFFSET, latestYOffset);
+        mModel.set(IS_VISIBLE, isVisible());
     }
 
     private boolean isVisible() {
