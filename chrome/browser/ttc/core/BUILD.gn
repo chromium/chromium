@@ -284,6 +284,7 @@ source_set("browser_tests") {
   testonly = true
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
   sources = [
+    "page_context_monitor_browsertest.cc",
     "session_journal_impl_browsertest.cc",
     "tool_controller_browsertest.cc",
     "ttc_keyed_service_browsertest.cc",
@@ -299,6 +300,7 @@ source_set("browser_tests") {
     "//chrome/browser/actor/tools/registry",
     "//chrome/browser/actor/ui",
     "//chrome/browser/bookmarks",
+    "//chrome/browser/page_content_annotations:extraction_service",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/search_engines",
     "//chrome/browser/tab_list",
@@ -317,6 +319,9 @@ source_set("browser_tests") {
     "//components/bookmarks/browser",
     "//components/bookmarks/test",
     "//components/optimization_guide/content/browser",
+    "//components/optimization_guide/proto:optimization_guide_proto",
+    "//components/page_content_annotations/content",
+    "//components/page_content_annotations/core",
     "//components/search_engines",
     "//components/tabs:public",
     "//components/translate/content/browser:test_support",
@@ -331,14 +336,12 @@ source_set("browser_tests") {
     "//skia",
     "//testing/gmock",
     "//testing/gtest",
+    "//ui/base",
     "//ui/gfx/codec",
     "//url",
   ]
   if (!is_android) {
-    sources += [
-      "page_context_monitor_browsertest.cc",
-      "voice_focused_contents_tracker_browsertest.cc",
-    ]
+    sources += [ "voice_focused_contents_tracker_browsertest.cc" ]
     deps += [
       "//chrome/browser/glic",
       "//chrome/browser/glic/test_support",
@@ -347,10 +350,7 @@ source_set("browser_tests") {
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/tabs:tab_strip",
       "//components/keep_alive_registry",
-      "//components/optimization_guide/proto:optimization_guide_proto",
-      "//components/page_content_annotations/content",
       "//third_party/blink/public/common",
-      "//ui/base",
     ]
   }
   if (use_ozone) {

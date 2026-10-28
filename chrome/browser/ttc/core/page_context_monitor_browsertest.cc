@@ -8,27 +8,30 @@
 #include <string>
 #include <vector>
 
+#include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/run_until.h"
 #include "base/test/test_future.h"
+#include "build/build_config.h"
 #include "chrome/browser/page_content_annotations/page_content_extraction_service_factory.h"
+#include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/ttc/core/page_context_util.h"
 #include "chrome/browser/ttc/core/session_controller.h"
 #include "chrome/browser/ttc/core/test_utils.h"
 #include "chrome/browser/ttc/core/ttc_core_browser_test_base.h"
 #include "chrome/browser/ttc/core/ttc_keyed_service.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/test/base/ui_test_utils.h"
 #include "components/actor/core/safety_list_manager.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/page_content_annotations/content/page_content_extraction_service.h"
 #include "components/page_content_annotations/core/page_content_extraction_types.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/content_switches.h"
 #include "content/public/common/referrer.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -36,10 +39,16 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/base/base_window.h"
 #include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
 #include "url/origin.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/test/base/ui_test_utils.h"
+#include "ui/base/base_window.h"
+#endif
 
 namespace ttc {
 namespace {
@@ -88,6 +97,18 @@ class PageContextMonitorBrowserTest : public TtcCoreBrowserTestBase {
   ~PageContextMonitorBrowserTest() override = default;
 
   // TtcCoreBrowserTestBase:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    TtcCoreBrowserTestBase::SetUpCommandLine(command_line);
+#if BUILDFLAG(IS_ANDROID)
+    // Test devices are often offline. The offline status indicator that appears
+    // a few seconds after startup resizes the top controls, which asserts if
+    // the controls are not fully shown at that moment (e.g. during a tab
+    // switch). See crbug.com/574927722.
+    command_line->AppendSwitch(
+        switches::kForceOnlineConnectionStateForIndicator);
+#endif
+  }
+
   void SetUpOnMainThread() override {
     // Serves /cross-site/<host>/<path>. Must be set up before the base class
     // starts the server.
@@ -111,6 +132,26 @@ class PageContextMonitorBrowserTest : public TtcCoreBrowserTestBase {
   }
 
  protected:
+  tabs::TabInterface* active_tab() {
+    return tabs::TabInterface::GetFromContents(web_contents());
+  }
+
+  TabListInterface* tab_list() {
+    return TabListInterface::From(active_tab()->GetBrowserWindowInterface());
+  }
+
+  void OpenForegroundTab(const GURL& url) {
+    // Open in the background and activate explicitly: on Android, a foreground
+    // open runs the new-tab animation, which can re-select the new tab
+    // asynchronously after a subsequent tab switch.
+    tabs::TabInterface* tab =
+        tab_list()->OpenTab(url, /*index=*/-1, /*foreground=*/false);
+    ASSERT_TRUE(tab);
+    ASSERT_TRUE(content::WaitForLoadStop(tab->GetContents()));
+    tab_list()->ActivateTab(tab->GetHandle());
+    ASSERT_TRUE(base::test::RunUntil([tab]() { return tab->IsActivated(); }));
+  }
+
   // Starts a session and waits for the initial notification, leaving no
   // expectations set on the conversation.
   void StartSession() {
@@ -175,6 +216,11 @@ IN_PROC_BROWSER_TEST_F(PageContextMonitorBrowserTest, InitialPageChange) {
 // Navigating the monitored page must notify the conversation that the page
 // context it has is stale before the load event is fired.
 IN_PROC_BROWSER_TEST_F(PageContextMonitorBrowserTest, PrimaryPageNavigated) {
+  // Start from a fully loaded page. On Android the initial about:blank load
+  // can still be committing when the test body starts, and its commit would
+  // otherwise be reported as an additional page change below.
+  ASSERT_TRUE(content::NavigateToURL(
+      web_contents(), embedded_test_server()->GetURL("/simple.html")));
   StartSession();
 
   auto navigated = ExpectPageChange();
@@ -190,12 +236,17 @@ IN_PROC_BROWSER_TEST_F(PageContextMonitorBrowserTest, PrimaryPageNavigated) {
 IN_PROC_BROWSER_TEST_F(PageContextMonitorBrowserTest, ActiveTabChanged) {
   const GURL first_url = embedded_test_server()->GetURL("/title2.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), first_url));
+  tabs::TabInterface* first_tab = active_tab();
+  ASSERT_TRUE(first_tab);
 
   // Open a second, fully loaded tab and leave it active, so that activating
   // the original tab below is the only thing that can signal a page change.
   const GURL second_url = embedded_test_server()->GetURL("/simple.html");
-  ASSERT_TRUE(AddTabAtIndex(1, second_url, ui::PAGE_TRANSITION_TYPED));
-  ASSERT_EQ(browser()->tab_strip_model()->active_index(), 1);
+  ASSERT_NO_FATAL_FAILURE(OpenForegroundTab(second_url));
+  tabs::TabInterface* second_tab = active_tab();
+  ASSERT_TRUE(second_tab);
+  ASSERT_NE(second_tab, first_tab);
+  ASSERT_EQ(tab_list()->GetActiveIndex(), 1);
 
   StartSession();
   {
@@ -212,9 +263,10 @@ IN_PROC_BROWSER_TEST_F(PageContextMonitorBrowserTest, ActiveTabChanged) {
   EXPECT_CALL(*conversation(),
               SendContextUpdate(first_url, "Title Of Awesomeness", testing::_))
       .WillOnce(base::test::RunOnceClosure(first_tab_sent.GetCallback()));
-  browser()->tab_strip_model()->ActivateTabAt(0);
+  tab_list()->ActivateTab(first_tab->GetHandle());
   EXPECT_TRUE(tab_changed.Wait());
   EXPECT_TRUE(first_tab_sent.Wait());
+  ASSERT_EQ(web_contents(), first_tab->GetContents());
   EXPECT_TRUE(testing::Mock::VerifyAndClearExpectations(conversation()));
 
   // Navigating the newly active tab must also trigger a page change
@@ -228,11 +280,12 @@ IN_PROC_BROWSER_TEST_F(PageContextMonitorBrowserTest, ActiveTabChanged) {
   base::test::TestFuture<void> second_tab_sent;
   EXPECT_CALL(*conversation(), SendContextUpdate(second_url, "OK", testing::_))
       .WillOnce(base::test::RunOnceClosure(second_tab_sent.GetCallback()));
-  browser()->tab_strip_model()->ActivateTabAt(1);
+  tab_list()->ActivateTab(second_tab->GetHandle());
   EXPECT_TRUE(switched_back.Wait());
   EXPECT_TRUE(second_tab_sent.Wait());
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 // Activating a different browser window of the same profile must switch
 // monitoring to the newly active window's active tab, and closing all browser
 // windows of the profile must invalidate the page context.
@@ -289,6 +342,7 @@ IN_PROC_BROWSER_TEST_F(PageContextMonitorBrowserTest,
   // profile and browser.
   SetBrowser(CreateBrowser(test_profile));
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 // A session on a page whose URL is not supported (e.g. non-NTP chrome:// pages,
 // data: and about: URLs) must never send page context to the conversation,
