@@ -162,10 +162,6 @@ public class SettingsPageFragmentDelegateImpl
             String initialUrl,
             Function<View, @Nullable EdgeToEdgePadAdjuster> padAdjusterGenerator,
             boolean attachToContainer) {
-        if (!initialUrl.isEmpty()) {
-            mPendingUrl = initialUrl;
-        }
-
         FragmentManager fragmentManager =
                 ((FragmentActivity) mActivity).getSupportFragmentManager();
 
@@ -275,9 +271,23 @@ public class SettingsPageFragmentDelegateImpl
             mSettingsNavigationDelegate = new SettingsInTabNavigationDelegate(mTab);
         }
 
+        // A host fragment that the FragmentManager restored across an activity recreation (e.g. a
+        // theme change) has saved state but no save callback yet; one still bound to a live
+        // SettingsPage in this activity has a callback.
+        SettingsHostFragment existingHostFragment =
+                (SettingsHostFragment) fragmentManager.findFragmentByTag(mFragmentTag);
+        boolean isRestoredHostFragment =
+                existingHostFragment != null
+                        && existingHostFragment.getSavedInstanceState() != null
+                        && !existingHostFragment.hasSaveInstanceStateCallback();
+
         mSettingsHostFragment =
                 createOrReuseHostFragment(
-                        fragmentManager, fragmentContainer, attachToContainer, dependencyProvider);
+                        fragmentManager,
+                        existingHostFragment,
+                        fragmentContainer,
+                        attachToContainer,
+                        dependencyProvider);
         mSettingsHostFragment.setSaveInstanceStateCallback(this::onSaveInstanceState);
         if (mSettingsHostFragment.isAttachedToActivity()) {
             attachEdgeToEdgeAdjusters(mSettingsHostFragment.getHostFragmentManager());
@@ -293,16 +303,15 @@ public class SettingsPageFragmentDelegateImpl
             fragmentContainer.addView(hostView, layoutParams);
         }
 
-        if (ChromeFeatureList.sSettingsInTabUrlNav.isEnabled()) {
-            if (mTab.getUrl() != null && !mTab.getUrl().isEmpty()) {
-                String restoredUrl = mTab.getUrl().getSpec();
-                if (restoredUrl != null && !restoredUrl.isEmpty()) {
-                    // Capture and apply the restored tab URL (e.g. "chrome://settings/appearance")
-                    // during tab initialization or session restore to synchronize the displayed
-                    // settings fragment with the restored WebContents URL.
-                    updateForUrl(restoredUrl);
-                }
-            }
+        // The restored fragments are the source of truth for a restored host: pages opened from
+        // search do not change the tab URL, so re-applying it would close search and reset them.
+        // https://crbug.com/578622279
+        if (ChromeFeatureList.sSettingsInTabUrlNav.isEnabled() && !isRestoredHostFragment) {
+            // Prefer the URL being loaded: Tab.loadUrl() shows the native page before the
+            // navigation commits, so the tab may still report the previous URL.
+            String url = initialUrl;
+            if (url.isEmpty() && mTab.getUrl() != null) url = mTab.getUrl().getSpec();
+            if (!url.isEmpty()) updateForUrl(url);
         }
 
         if (mSettingsHostFragment.isAdded()) {
@@ -370,11 +379,10 @@ public class SettingsPageFragmentDelegateImpl
      */
     private SettingsHostFragment createOrReuseHostFragment(
             FragmentManager fragmentManager,
+            @Nullable SettingsHostFragment existingHostFragment,
             ViewGroup fragmentContainer,
             boolean attachToContainer,
             FragmentDependencyProvider dependencyProvider) {
-        SettingsHostFragment existingHostFragment =
-                (SettingsHostFragment) fragmentManager.findFragmentByTag(mFragmentTag);
         if (existingHostFragment != null) {
             attachHostDependencies(existingHostFragment, dependencyProvider);
             return existingHostFragment;

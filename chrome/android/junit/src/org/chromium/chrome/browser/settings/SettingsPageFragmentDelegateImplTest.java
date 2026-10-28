@@ -81,6 +81,7 @@ import org.chromium.ui.base.ActivityResultTracker;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.edge_to_edge.EdgeToEdgePadAdjuster;
 import org.chromium.ui.modaldialog.ModalDialogManager;
+import org.chromium.url.GURL;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -1020,6 +1021,44 @@ public class SettingsPageFragmentDelegateImplTest {
         InOrder inOrder = inOrder(mockSearchCoordinator, mMockSettingsHostFragment);
         inOrder.verify(mockSearchCoordinator).exitSearchIfOpen();
         inOrder.verify(mMockSettingsHostFragment)
+                .showFragment(any(Fragment.class), eq(false), eq((String) null));
+    }
+
+    /** Regression test for crbug.com/578622279. */
+    @Test
+    @EnableFeatures(ChromeFeatureList.SETTINGS_IN_TAB_URL_NAV)
+    public void testInitSettings_RestoredHostFragment_KeepsRestoredFragments() {
+        when(mTab.getUrl()).thenReturn(new GURL(UrlConstants.SETTINGS_URL));
+        when(mMockSettingsHostFragment.getSavedInstanceState()).thenReturn(new Bundle());
+        when(mMockSettingsHostFragment.isAttachedToActivity()).thenReturn(true);
+        when(mMockSettingsHostFragment.getActiveFragment()).thenReturn(mMultiColumnSettings);
+        when(mMultiColumnSettings.getView()).thenReturn(mFragmentView);
+
+        mDelegate.initSettings(mContainerView, UrlConstants.SETTINGS_URL, mPadAdjusterGenerator);
+
+        verify(mMockSettingsHostFragment, never()).showFragment(any(), anyBoolean(), any());
+
+        // Later navigations still apply.
+        mDelegate.updateForUrl("chrome://settings/appearance");
+        verify(mMockSettingsHostFragment)
+                .showFragment(any(Fragment.class), eq(false), eq((String) null));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.SETTINGS_IN_TAB_URL_NAV)
+    public void testInitSettings_LiveHostFragment_AppliesInitialUrl() {
+        // A host adopted from a live page in the same activity still has its save callback.
+        when(mTab.getUrl()).thenReturn(new GURL("about:blank"));
+        when(mMockSettingsHostFragment.getSavedInstanceState()).thenReturn(new Bundle());
+        when(mMockSettingsHostFragment.hasSaveInstanceStateCallback()).thenReturn(true);
+        when(mMockSettingsHostFragment.isAttachedToActivity()).thenReturn(true);
+        when(mMockSettingsHostFragment.getActiveFragment()).thenReturn(mMultiColumnSettings);
+        when(mMultiColumnSettings.getView()).thenReturn(mFragmentView);
+
+        mDelegate.initSettings(
+                mContainerView, "chrome://settings/appearance", mPadAdjusterGenerator);
+
+        verify(mMockSettingsHostFragment)
                 .showFragment(any(Fragment.class), eq(false), eq((String) null));
     }
 

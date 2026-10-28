@@ -89,6 +89,8 @@ import org.chromium.chrome.browser.autofill.settings.AutofillProfilesFragment;
 import org.chromium.chrome.browser.autofill.settings.options.AutofillOptionsFragment;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.night_mode.ChromeNightModeTestUtils;
+import org.chromium.chrome.browser.night_mode.GlobalNightModeStateProviderHolder;
 import org.chromium.chrome.browser.privacy.settings.PrivacySettings;
 import org.chromium.chrome.browser.settings.search.SearchResultsPreferenceFragment;
 import org.chromium.chrome.browser.tab.Tab;
@@ -391,6 +393,77 @@ public class SettingsPageTest {
                 .check(matches(isDisplayed()));
         onViewWaiting(allOf(withText("Microsoft Bing"), isDisplayed()))
                 .check(matches(isDisplayed()));
+    }
+
+    /**
+     * Clicks the view with the given ID and waits for the activity it recreates, as a theme radio
+     * button on the Theme page does. Unlike {@link #recreateActivityForThemeChange()}, the new
+     * activity really has a new configuration.
+     */
+    private void clickAndWaitForRecreate(int viewId) {
+        ChromeTabbedActivity newActivity =
+                ApplicationTestUtils.waitForActivityWithClass(
+                        ChromeTabbedActivity.class,
+                        Stage.RESUMED,
+                        /* uiThreadTrigger= */ null,
+                        /* backgroundThreadTrigger= */ () ->
+                                onView(allOf(withId(viewId), isDisplayed())).perform(click()));
+        mActivityTestRule.setActivity(newActivity);
+        waitForSettingsPageInTab("Settings page should reattach after the theme change.");
+    }
+
+    /**
+     * Regression test for crbug.com/578622279: pages opened from settings search do not change the
+     * tab URL, so a theme change must restore them from fragment state rather than from the URL.
+     */
+    @Test
+    @MediumTest
+    @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
+    @EnableFeatures(ChromeFeatureList.SETTINGS_IN_TAB_URL_NAV)
+    public void testThemeChangeFromSearchKeepsThemePage_urlNav() {
+        int dark = org.chromium.chrome.browser.night_mode.R.id.dark;
+        int light = org.chromium.chrome.browser.night_mode.R.id.light;
+        try {
+            mActivityTestRule.loadUrl("chrome-native://settings/");
+            onViewWaiting(withText(R.string.search_engine_settings)).check(matches(isDisplayed()));
+
+            // Search for "Appearance", open it from the results, then open Theme.
+            onViewWaiting(withId(R.id.search_box)).perform(click());
+            onViewWaiting(withId(R.id.search_query))
+                    .perform(replaceText("Appearance"), closeSoftKeyboard());
+            onViewWaiting(
+                            allOf(
+                                    withId(android.R.id.title),
+                                    withText(R.string.appearance_settings),
+                                    isDescendantOfA(withId(R.id.preferences_detail))))
+                    .perform(click());
+            onViewWaiting(allOf(withText(R.string.theme_settings), isDisplayed())).perform(click());
+            onViewWaiting(allOf(withId(dark), isDisplayed()));
+
+            // Switch to dark and back to light. The Theme page should survive both recreations.
+            clickAndWaitForRecreate(dark);
+            onViewWaiting(allOf(withId(light), isDisplayed()));
+            clickAndWaitForRecreate(light);
+            onViewWaiting(allOf(withId(dark), isDisplayed()));
+
+            // Back should go to Appearance, i.e. the search's back stack was restored too.
+            Espresso.pressBack();
+            onViewWaiting(allOf(withText(R.string.theme_settings), isDisplayed()));
+        } finally {
+            // Leave the batch in light mode even if the test failed while dark.
+            if (ThreadUtils.runOnUiThreadBlocking(
+                    () -> GlobalNightModeStateProviderHolder.getInstance().isInNightMode())) {
+                mActivityTestRule.setActivity(
+                        ApplicationTestUtils.waitForActivityWithClass(
+                                ChromeTabbedActivity.class,
+                                Stage.RESUMED,
+                                () ->
+                                        ChromeNightModeTestUtils.setUpNightModeForChromeActivity(
+                                                false)));
+            }
+            ThreadUtils.runOnUiThreadBlocking(
+                    ChromeNightModeTestUtils::tearDownNightModeAfterChromeActivityDestroyed);
+        }
     }
 
     /**
@@ -1040,12 +1113,7 @@ public class SettingsPageTest {
         tapSearchBoxAndAssertQueryAlignment(searchBoxBounds, "after navigating back");
     }
 
-    /**
-     * Regression test for https://crbug.com/549509308, with URL navigation.
-     *
-     * <p>Search is not part of the URL, so it does not survive activity recreation: the page is
-     * rebuilt from the committed URL, chrome://settings.
-     */
+    /** Regression test for https://crbug.com/549509308, with URL navigation. */
     @Test
     @MediumTest
     @Restriction({
@@ -1060,11 +1128,13 @@ public class SettingsPageTest {
         // Simulate theme switch / activity recreation.
         mActivityTestRule.recreateActivity();
 
-        // Search is closed, leaving MainSettings.
-        onViewWaiting(withId(R.id.search_box)).check(matches(isDisplayed()));
-        onView(withId(R.id.search_query_container)).check(matches(not(isDisplayed())));
+        // Navigate back from ThemeSettings to search results.
+        Espresso.pressBack();
 
-        tapSearchBoxAndAssertQueryAlignment(searchBoxBounds, "after activity recreation");
+        // Exit search state back to MainSettings.
+        Espresso.pressBack();
+
+        tapSearchBoxAndAssertQueryAlignment(searchBoxBounds, "after navigating back");
     }
 
     /**

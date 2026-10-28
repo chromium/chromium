@@ -314,6 +314,11 @@ public class SettingsHostFragment extends Fragment
         mSaveInstanceStateCallback = callback;
     }
 
+    /** Returns whether a save-instance-state callback is currently registered on this host. */
+    boolean hasSaveInstanceStateCallback() {
+        return mSaveInstanceStateCallback != null;
+    }
+
     @Override
     public View onCreateView(
             LayoutInflater inflater,

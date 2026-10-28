@@ -20,6 +20,7 @@ import org.chromium.components.browser_ui.widget.gesture.BackPressHandlerRegistr
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.ui.edge_to_edge.EdgeToEdgePadAdjuster;
 
+import java.util.Objects;
 import java.util.function.Function;
 
 /** A native page holding the Chrome settings UI in a tab. */
@@ -57,6 +58,7 @@ public class SettingsPage extends BasicNativePage {
     private final String mTitle;
     private final FrameLayout mContentView;
     private final FragmentDelegate mFragmentDelegate;
+    private boolean mIgnoreInitialUrlUpdate = true;
 
     /**
      * Create a new instance of the settings page with back press handling, and an initial URL.
@@ -88,7 +90,7 @@ public class SettingsPage extends BasicNativePage {
 
         initWithView(mContentView);
         setBackPressHandler(backPressHandler, backPressHandlerRegistry);
-        updateForUrl(url);
+        super.updateForUrl(url);
     }
 
     @Override
@@ -103,8 +105,13 @@ public class SettingsPage extends BasicNativePage {
 
     @Override
     public void updateForUrl(String url) {
+        // NativePageFactory calls this with the construction URL right after construction. That
+        // URL was already given to initSettings(), and re-applying it would reset a settings page
+        // restored across an activity recreation. https://crbug.com/578622279
+        boolean redundant = mIgnoreInitialUrlUpdate && Objects.equals(getUrl(), url);
+        mIgnoreInitialUrlUpdate = false;
         super.updateForUrl(url);
-        mFragmentDelegate.updateForUrl(url);
+        if (!redundant) mFragmentDelegate.updateForUrl(url);
     }
 
     @Override

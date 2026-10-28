@@ -11,6 +11,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -169,6 +170,18 @@ public class SettingsPageUnitTest {
         mSettingsPage.reload();
 
         verify(mFragmentDelegate).updateForUrl(url);
+    }
+
+    @Test
+    public void testUpdateForUrl_SkipsOnlyTheRedundantCallAfterConstruction() {
+        // The constructor passed the URL to initSettings(), and NativePageFactory repeats it right
+        // after construction. Neither should reach the delegate (crbug.com/578622279), but later
+        // navigations to the same URL should.
+        mSettingsPage.updateForUrl(UrlConstants.SETTINGS_URL);
+        verify(mFragmentDelegate, never()).updateForUrl(any());
+
+        mSettingsPage.updateForUrl(UrlConstants.SETTINGS_URL);
+        verify(mFragmentDelegate).updateForUrl(UrlConstants.SETTINGS_URL);
     }
 
     @Test
