@@ -45,10 +45,8 @@ FullscreenJavaScriptFeature::GetScriptMessageHandlerName() const {
 void FullscreenJavaScriptFeature::ScriptMessageReceived(
     WebState* web_state,
     const ScriptMessage& script_message) {
-  const base::DictValue* script_dict =
-      script_message.legacy_body() ? script_message.legacy_body()->GetIfDict()
-                                   : nullptr;
-  if (!script_dict) {
+  const ScriptMessageValue& body = script_message.body();
+  if (body.type() != base::Value::Type::DICT) {
     return;
   }
 
@@ -56,7 +54,8 @@ void FullscreenJavaScriptFeature::ScriptMessageReceived(
     return;
   }
 
-  const std::string* frame_id = script_dict->FindString("frame_id");
+  const ScriptMessageDictValue& script_dict = body.GetDict();
+  std::optional<std::string> frame_id = script_dict.FindString("frame_id");
   if (!frame_id) {
     return;
   }
@@ -68,7 +67,7 @@ void FullscreenJavaScriptFeature::ScriptMessageReceived(
     // update the incorrect navigation item.
     return;
   }
-  auto cover = script_dict->FindBool(kScriptMessageViewportFitCoverKey);
+  auto cover = script_dict.FindBool(kScriptMessageViewportFitCoverKey);
   if (cover.has_value()) {
     CRWWebController* web_controller =
         WebStateImpl::FromWebState(web_state)->GetWebController();
