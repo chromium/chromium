@@ -112,14 +112,10 @@ bool NormalIconIsResource(views::LabelButton* button, int resource_id) {
 IN_PROC_BROWSER_TEST_F(GlicButtonTest, NormalIconIsGlicIcon) {
   ASSERT_TRUE(glic_button());
   EXPECT_TRUE(NormalIconIsResource(glic_button(), IDR_GLIC_BUTTON_ALT_ICON));
-  auto* service = glic::GlicKeyedService::Get(browser()->GetProfile());
-  ASSERT_TRUE(service);
-  EXPECT_EQ(service->provider_spec().GetSettingsSection(),
-            glic::GlicSettingsSection::kGemini);
-  EXPECT_EQ(service->provider_spec().GetSettingsSubpage(),
-            chrome::kGlicSettingsSubpage);
-  EXPECT_EQ(service->provider_spec().GetEntryPointIconId(),
-            IDR_GLIC_BUTTON_ALT_ICON);
+  const auto& spec = glic::GetGlicProviderSpec(browser()->GetProfile());
+  EXPECT_EQ(spec.GetSettingsSection(), glic::GlicSettingsSection::kGemini);
+  EXPECT_EQ(spec.GetSettingsSubpage(), chrome::kGlicSettingsSubpage);
+  EXPECT_EQ(spec.GetEntryPointIconId(), IDR_GLIC_BUTTON_ALT_ICON);
 }
 
 // With Gemini Enterprise enabled for the profile, the button shows the GEiC
@@ -139,14 +135,11 @@ class GlicButtonGeicIconTest : public GlicButtonTest {
 IN_PROC_BROWSER_TEST_F(GlicButtonGeicIconTest, NormalIconIsGeicIcon) {
   ASSERT_TRUE(glic_button());
   EXPECT_TRUE(NormalIconIsResource(glic_button(), IDR_GEIC_BUTTON_ICON));
-  auto* service = glic::GlicKeyedService::Get(browser()->GetProfile());
-  ASSERT_TRUE(service);
-  EXPECT_EQ(service->provider_spec().GetSettingsSection(),
+  const auto& spec = glic::GetGlicProviderSpec(browser()->GetProfile());
+  EXPECT_EQ(spec.GetSettingsSection(),
             glic::GlicSettingsSection::kGeminiEnterprise);
-  EXPECT_EQ(service->provider_spec().GetSettingsSubpage(),
-            chrome::kGlicEnterpriseSettingsSubpage);
-  EXPECT_EQ(service->provider_spec().GetEntryPointIconId(),
-            IDR_GEIC_BUTTON_ICON);
+  EXPECT_EQ(spec.GetSettingsSubpage(), chrome::kGlicEnterpriseSettingsSubpage);
+  EXPECT_EQ(spec.GetEntryPointIconId(), IDR_GEIC_BUTTON_ICON);
 }
 
 IN_PROC_BROWSER_TEST_F(GlicButtonTest, ContextMenuPinned) {

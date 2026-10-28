@@ -19,11 +19,12 @@ class BrowserContext;
 // consulted directly by feature code. It only answers "how is GEiC
 // configured?", not "should this profile run in GEiC mode?". The latter is
 // owned by GLiC's enablement utilities (see
-// GlicKeyedService::provider_spec() / GlicProviderSpec), which layer profile
-// eligibility on top of these helpers. The per-profile answer is resolved
-// once, when the profile's keyed services are created, and latched by
-// `GlicProviderLatch`. In particular, GEiC is unavailable whenever GLiC itself
-// is disabled or ineligible for the profile, and that is not reflected here.
+// GetGlicProviderSpec() / GlicKeyedService::provider_spec() /
+// GlicProviderSpec), which layer profile eligibility on top of these helpers.
+// The per-profile answer is resolved once, when the profile's keyed services
+// are created, and latched by `GlicProviderLatch`. In particular, GEiC is
+// unavailable whenever GLiC itself is disabled or ineligible for the profile,
+// and that is not reflected here.
 //
 // Including this header is restricted to an allowlist in
 // chrome/browser/glic/DEPS so that callers go through GLiC's enablement

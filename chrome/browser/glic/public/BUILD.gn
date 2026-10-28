@@ -25,7 +25,8 @@ source_set("request_headers") {
 # that low-level helpers can read the latched provider. The latch is populated
 # by GlicProviderLatchFactory in //chrome/browser/glic:impl.
 source_set("provider") {
-  # Feature code outside Glic should use GlicKeyedService::provider_spec().
+  # Feature code outside Glic should use GetGlicProviderSpec(profile) or
+  # GlicKeyedService::provider_spec().
   visibility = [ "//chrome/browser/glic/*" ]
   sources = [
     "glic_feature.h",

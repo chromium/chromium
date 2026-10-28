@@ -55,7 +55,6 @@
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_fre_store.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
-#include "chrome/browser/glic/public/glic_provider_latch.h"
 #include "chrome/browser/glic/public/glic_provider_spec.h"
 #include "chrome/browser/glic/public/service/glic_activity_manager.h"
 #include "chrome/browser/glic/public/service/legacy_glic_activity_manager.h"
