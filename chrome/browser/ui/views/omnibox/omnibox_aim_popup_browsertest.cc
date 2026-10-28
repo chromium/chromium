@@ -1491,3 +1491,50 @@ IN_PROC_BROWSER_TEST_F(OmniboxAimPopupOnDemandCreationBrowserTest,
       << ", presenter shown: "
       << location_bar()->GetOmniboxPopupAimPresenter()->IsShown();
 }
+
+// Tests `omnibox::kOmniboxAimPopupCreateOnFirstPresentation` set to false:
+// the AIM content is created only when something needs it.
+class OmniboxAimPopupCreateOnDemandBrowserTest
+    : public OmniboxAimPopupBrowserTest {
+ public:
+  OmniboxAimPopupCreateOnDemandBrowserTest() {
+    feature_list_.InitAndEnableFeatureWithParameters(
+        omnibox::kOmniboxAimPopupDeferCreation,
+        {{omnibox::kOmniboxAimPopupCreateOnFirstPresentation.name, "false"}});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+  // Follow the deferral feature rather than the on-demand creation that
+  // `InProcessBrowserTest` sets up.
+  base::AutoReset<bool> create_popup_webui_on_demand_ =
+      omnibox::SetCreatePopupWebUIOnDemandForTesting(false);
+};
+
+// Presenting the browser window does not create the AIM content.
+IN_PROC_BROWSER_TEST_F(OmniboxAimPopupCreateOnDemandBrowserTest,
+                       WindowPresentationDoesNotCreateContent) {
+  auto* presenter = location_bar()->GetOmniboxPopupAimPresenter();
+  ASSERT_TRUE(presenter);
+  views::Widget* widget =
+      BrowserView::GetBrowserViewForBrowser(browser())->GetWidget();
+  ASSERT_TRUE(PaintAndWaitForPresentation(widget));
+  // A creation task posted by the first presentation would run while waiting
+  // for the second one.
+  ASSERT_TRUE(PaintAndWaitForPresentation(widget));
+  EXPECT_FALSE(presenter->GetWebUIContent());
+  EXPECT_FALSE(presenter->GetWidget());
+}
+
+// Showing the popup creates the content and its widget.
+IN_PROC_BROWSER_TEST_F(OmniboxAimPopupCreateOnDemandBrowserTest,
+                       CreatesContentOnShow) {
+  auto* presenter = location_bar()->GetOmniboxPopupAimPresenter();
+  ASSERT_TRUE(presenter);
+  ASSERT_FALSE(presenter->GetWebUIContent());
+
+  auto* content = ShowPopupAndGetWebUIContent();
+  ASSERT_TRUE(content);
+  EXPECT_TRUE(presenter->IsShown());
+  EXPECT_TRUE(content::WaitForLoadStop(content->GetWrappedWebContents()));
+}

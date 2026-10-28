@@ -239,7 +239,7 @@ BASE_FEATURE(kOmniboxAimDeferShowUntilVisualStateReadyWithFullWebUI, DISABLED);
 // its WebContents and renderer) while the browser window is built. It creates
 // it after the browser window's first presentation, or earlier if the popup is
 // shown or another caller needs the AIM WebContents. See
-// `OmniboxPopupAimPresenter`.
+// `OmniboxPopupAimPresenter` and `kOmniboxAimPopupCreateOnFirstPresentation`.
 BASE_FEATURE(kOmniboxAimPopupDeferCreation, DISABLED);
 // When enabled, the WebUI omnibox popup that shows suggestions does not create
 // its WebUI content (and so its WebContents and renderer) while the browser
