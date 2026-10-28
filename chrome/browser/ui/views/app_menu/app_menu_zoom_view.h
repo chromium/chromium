@@ -10,6 +10,7 @@
 
 #include "base/callback_list.h"
 #include "base/containers/flat_map.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/actions/actions.h"
@@ -17,7 +18,6 @@
 #include "ui/color/color_id.h"
 #include "ui/views/layout/box_layout_view.h"
 
-class ActionAppMenuMetrics;
 class BrowserWindowInterface;
 
 namespace content {
@@ -35,12 +35,15 @@ class AppMenuZoomView : public views::BoxLayoutView {
   METADATA_HEADER(AppMenuZoomView, views::BoxLayoutView)
 
  public:
+  using ExecuteCommandCallback =
+      base::RepeatingCallback<void(actions::ActionId, int)>;
+
   AppMenuZoomView(
       BrowserWindowInterface* browser_window_interface,
       views::ActionViewController* action_view_controller,
       base::flat_map<int, raw_ptr<actions::BaseAction>>& command_to_action_map,
       actions::BaseAction* zoom_row_action_item,
-      ActionAppMenuMetrics& metrics);
+      ExecuteCommandCallback execute_command_callback);
 
   AppMenuZoomView(const AppMenuZoomView&) = delete;
   AppMenuZoomView& operator=(const AppMenuZoomView&) = delete;
@@ -64,7 +67,8 @@ class AppMenuZoomView : public views::BoxLayoutView {
   void BuildZoomChildControls(
       actions::BaseAction* zoom_row_action_item,
       views::ActionViewController* action_view_controller,
-      base::flat_map<int, raw_ptr<actions::BaseAction>>& command_to_action_map);
+      base::flat_map<int, raw_ptr<actions::BaseAction>>& command_to_action_map,
+      ExecuteCommandCallback execute_command_callback);
 
   // Helper function that creates and returns a button for the zoom menu item
   // with the appropriate stylings.
@@ -75,7 +79,6 @@ class AppMenuZoomView : public views::BoxLayoutView {
   content::WebContents* GetActiveWebContents() const;
 
   raw_ptr<BrowserWindowInterface> browser_window_interface_;
-  raw_ptr<ActionAppMenuMetrics> metrics_;
   raw_ptr<views::Label> zoom_label_ = nullptr;
   raw_ptr<views::ImageButton> zoom_minus_button_ = nullptr;
   raw_ptr<views::ImageButton> zoom_plus_button_ = nullptr;

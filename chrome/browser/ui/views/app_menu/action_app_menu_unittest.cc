@@ -3786,6 +3786,69 @@ TEST_F(ActionAppMenuTest, ZoomAndBlockButtonMetrics) {
   histogram_tester.ExpectTotalCount("WrenchMenu.TimeToAction", 1);
 }
 
+// Regression test for b/576555601: invoking a zoom row button action (such as
+// fullscreen) can synchronously close and destroy ActionAppMenu while
+// MenuController is still on the stack and defers MenuRunnerImpl and
+// AppMenuZoomView destruction.
+TEST_F(ActionAppMenuTest, ZoomButtonDestroyingMenuDuringEventDispatch) {
+  widget_->Show();
+  base::MockCallback<base::RepeatingClosure> on_menu_closed;
+  auto menu = std::make_unique<ActionAppMenu>(&mock_window_interface_,
+                                              on_menu_closed.Get());
+  menu->RunMenu(button_->button_controller(), views::MenuRunner::NO_FLAGS);
+  ASSERT_TRUE(menu->IsShowing());
+
+  views::MenuItemView* root = menu->root_menu_item_for_testing();
+  ASSERT_TRUE(root);
+  views::MenuItemView* zoom_item = root->GetMenuItemByID(kActionZoomSubmenu);
+  ASSERT_TRUE(zoom_item);
+  zoom_item->ScrollViewToVisible();
+  auto* zoom_view =
+      views::AsViewClass<AppMenuZoomView>(zoom_item->children()[0]);
+  ASSERT_TRUE(zoom_view);
+  views::ImageButton* plus_button = zoom_view->zoom_plus_button_for_testing();
+  ASSERT_TRUE(plus_button);
+
+  views::Widget* menu_widget = zoom_view->GetWidget();
+  ASSERT_TRUE(menu_widget);
+  menu_widget->LayoutRootViewIfNecessary();
+
+  EXPECT_CALL(on_menu_closed, Run()).Times(1);
+  EXPECT_CALL(mock_action_invoked_,
+              Call(kActionZoomPlus, testing::_, testing::_))
+      .Times(1)
+      .WillOnce([&](actions::ActionId, actions::ActionItem*,
+                    actions::ActionInvocationContext) {
+        // Synchronously close and destroy ActionAppMenu (matching
+        // AppMenuButton::CloseMenu()) while MenuController is handling the
+        // mouse release event, deferring MenuRunnerImpl and AppMenuZoomView
+        // destruction until OnMouseReleased() unwinds.
+        menu->CloseMenu();
+        menu.reset();
+        // Clicking the still-alive button while ActionAppMenu is destroyed must
+        // be a safe no-op rather than dereferencing freed ActionAppMenu state.
+        views::test::ButtonTestApi(plus_button).NotifyDefaultMouseClick();
+      });
+
+  const gfx::Point point_in_screen =
+      plus_button->GetBoundsInScreen().CenterPoint();
+  gfx::Point point_in_menu = point_in_screen;
+  views::View::ConvertPointFromScreen(menu_widget->GetRootView(),
+                                      &point_in_menu);
+
+  ui::MouseEvent press_event(
+      ui::EventType::kMousePressed, point_in_menu, point_in_screen,
+      base::TimeTicks(), ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON);
+  menu_widget->OnMouseEvent(&press_event);
+
+  ui::MouseEvent release_event(
+      ui::EventType::kMouseReleased, point_in_menu, point_in_screen,
+      base::TimeTicks(), ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON);
+  menu_widget->OnMouseEvent(&release_event);
+
+  EXPECT_EQ(menu, nullptr);
+}
+
 TEST_F(ActionAppMenuTest, SafetyHubNotificationMetrics) {
   SafetyHubMenuNotificationServiceFactory::GetInstance()->SetTestingFactory(
       profile_.get(), base::BindRepeating([](content::BrowserContext* context)

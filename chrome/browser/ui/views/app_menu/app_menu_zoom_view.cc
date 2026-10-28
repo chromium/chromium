@@ -11,13 +11,13 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/functional/bind.h"
 #include "base/i18n/number_formatting.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
-#include "chrome/browser/ui/views/app_menu/action_app_menu_metrics.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/tabs/public/tab_interface.h"
 #include "components/zoom/page_zoom.h"
@@ -29,6 +29,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/color/color_id.h"
+#include "ui/events/event.h"
 #include "ui/gfx/text_utils.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/actions/action_view_controller.h"
@@ -59,16 +60,18 @@ AppMenuZoomView::AppMenuZoomView(
     views::ActionViewController* action_view_controller,
     base::flat_map<int, raw_ptr<actions::BaseAction>>& command_to_action_map,
     actions::BaseAction* zoom_row_action_item,
-    ActionAppMenuMetrics& metrics)
-    : browser_window_interface_(browser_window_interface), metrics_(&metrics) {
+    ExecuteCommandCallback execute_command_callback)
+    : browser_window_interface_(browser_window_interface) {
   CHECK(browser_window_interface_);
+  CHECK(execute_command_callback);
   GetViewAccessibility().SetRole(ax::mojom::Role::kMenu);
   SetOrientation(views::BoxLayout::Orientation::kHorizontal);
   SetMainAxisAlignment(views::BoxLayout::MainAxisAlignment::kStart);
   SetCrossAxisAlignment(views::BoxLayout::CrossAxisAlignment::kCenter);
 
   BuildZoomChildControls(zoom_row_action_item, action_view_controller,
-                         command_to_action_map);
+                         command_to_action_map,
+                         std::move(execute_command_callback));
 
   SetBetweenChildSpacing(kZoomButtonHorizontalInset);
 }
@@ -108,7 +111,8 @@ int AppMenuZoomView::GetZoomLabelMaxWidth() const {
 void AppMenuZoomView::BuildZoomChildControls(
     actions::BaseAction* zoom_row_action_item,
     views::ActionViewController* action_view_controller,
-    base::flat_map<int, raw_ptr<actions::BaseAction>>& command_to_action_map) {
+    base::flat_map<int, raw_ptr<actions::BaseAction>>& command_to_action_map,
+    ExecuteCommandCallback execute_command_callback) {
   for (auto& zoom_child_holder :
        zoom_row_action_item->GetChildren().children()) {
     actions::ActionItem* zoom_child = zoom_child_holder->GetActionItem();
@@ -161,11 +165,9 @@ void AppMenuZoomView::BuildZoomChildControls(
       action_view_controller->CreateActionViewRelationship(
           zoom_child_button, zoom_child->GetAsWeakPtr());
       zoom_child_button->SetCallback(base::BindRepeating(
-          [](AppMenuZoomView* zoom_view, actions::BaseAction* base_action) {
-            zoom_view->metrics_->LogMenuAction(base_action);
-            base_action->GetActionItem()->InvokeAction();
-          },
-          base::Unretained(this), zoom_child_holder.get()));
+          [](const ExecuteCommandCallback& callback, actions::ActionId id,
+             const ui::Event& event) { callback.Run(id, event.flags()); },
+          execute_command_callback, zoom_action_id));
 
       if (zoom_action_id == kActionZoomPlus) {
         auto separator = std::make_unique<views::Separator>();

@@ -6,6 +6,7 @@
 
 #include <vector>
 
+#include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
@@ -1037,7 +1038,9 @@ void ActionAppMenu::PopulateCustomRow(views::MenuItemView* view_parent,
     case kActionZoomSubmenu:
       view_parent->AddChildView(std::make_unique<AppMenuZoomView>(
           browser_window_interface_, &action_view_controller_,
-          command_to_action_map_, custom_action_item, metrics_));
+          command_to_action_map_, custom_action_item,
+          base::BindRepeating(&ActionAppMenu::ExecuteCommand,
+                              weak_ptr_factory_.GetWeakPtr())));
       break;
 
     default:
