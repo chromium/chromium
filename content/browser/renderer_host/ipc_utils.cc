@@ -341,11 +341,19 @@ bool VerifyBeginNavigationCommonParams(
     return false;
   }
 
-  // Verify |transition| is webby.
+  // Verify |transition| is webby and does not contain renderer-disallowed
+  // qualifiers. Note that PageTransitionIsWebTriggerable() strips qualifiers
+  // and only checks the core transition type.
   if (!PageTransitionIsWebTriggerable(
           ui::PageTransitionFromInt(common_params->transition))) {
     bad_message::ReceivedBadMessage(
         process, bad_message::RFHI_BEGIN_NAVIGATION_NON_WEBBY_TRANSITION);
+    return false;
+  }
+  if ((common_params->transition &
+       ui::PAGE_TRANSITION_RENDERER_DISALLOWED_QUALIFIERS_MASK) != 0) {
+    bad_message::ReceivedBadMessage(
+        process, bad_message::RFHI_BEGIN_NAVIGATION_DISALLOWED_QUALIFIER);
     return false;
   }
 
