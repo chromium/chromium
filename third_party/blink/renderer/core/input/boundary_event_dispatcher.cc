@@ -91,6 +91,10 @@ void BoundaryEventDispatcher::SendBoundaryEvents(
     EventTarget* exited_target,
     bool original_exited_target_removed,
     EventTarget* entered_target) {
+  if (exited_target == entered_target && !original_exited_target_removed) {
+    return;
+  }
+
   // An EventTarget must never be exposed to a cross-origin ExecutionContext
   // through `relatedTarget` (e.g. the touch pointer stream is owned by the
   // local-root frame's PointerEventManager, which hit-tests through every
@@ -106,25 +110,34 @@ void BoundaryEventDispatcher::SendBoundaryEvents(
         exited_target->GetExecutionContext();
     const ExecutionContext* entered_context =
         entered_target->GetExecutionContext();
-    if (exited_context && entered_context &&
-        exited_context != entered_context) {
-      const SecurityOrigin* exited_origin = exited_context->GetSecurityOrigin();
-      const SecurityOrigin* entered_origin =
-          entered_context->GetSecurityOrigin();
-      if (!exited_origin->CanAccess(entered_origin) ||
-          !entered_origin->CanAccess(exited_origin)) {
-        EventTarget* exited_related_target =
-            FindFrameOwnerIfNested(*exited_context, *entered_context);
-        EventTarget* entered_related_target =
-            FindFrameOwnerIfNested(*entered_context, *exited_context);
-        SendBoundaryEventsSameOrigin(exited_target,
-                                     original_exited_target_removed,
-                                     exited_related_target);
-        SendBoundaryEventsSameOrigin(entered_related_target,
-                                     /*original_exited_target_removed=*/false,
-                                     entered_target);
-        return;
+    bool is_same_origin = false;
+    if (exited_context && entered_context) {
+      if (exited_context == entered_context) {
+        is_same_origin = true;
+      } else {
+        const SecurityOrigin* exited_origin =
+            exited_context->GetSecurityOrigin();
+        const SecurityOrigin* entered_origin =
+            entered_context->GetSecurityOrigin();
+        is_same_origin = exited_origin->CanAccess(entered_origin) &&
+                         entered_origin->CanAccess(exited_origin);
       }
+    }
+    if (!is_same_origin) {
+      EventTarget* exited_related_target =
+          (exited_context && entered_context)
+              ? FindFrameOwnerIfNested(*exited_context, *entered_context)
+              : nullptr;
+      EventTarget* entered_related_target =
+          (exited_context && entered_context)
+              ? FindFrameOwnerIfNested(*entered_context, *exited_context)
+              : nullptr;
+      SendBoundaryEventsSameOrigin(
+          exited_target, original_exited_target_removed, exited_related_target);
+      SendBoundaryEventsSameOrigin(entered_related_target,
+                                   /*original_exited_target_removed=*/false,
+                                   entered_target);
+      return;
     }
   }
 
