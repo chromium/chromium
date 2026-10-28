@@ -35,7 +35,8 @@ CallerApp CallerAppFromAppID(NSString* caller_app_id) {
   if ([caller_app_id isEqualToString:@"com.google.GoogleMobile"]) {
     return kGoogleSearch;
   }
-  if ([caller_app_id isEqualToString:@"com.google.Gmail"]) {
+  if ([caller_app_id isEqualToString:@"com.google.Gmail"] ||
+      [caller_app_id hasPrefix:@"com.google.Gmail."]) {
     return kGmail;
   }
   if ([caller_app_id isEqualToString:@"com.google.GooglePlus"]) {
