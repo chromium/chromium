@@ -16,6 +16,7 @@
 #include "chrome/browser/apps/platform_apps/app_browsertest_util.h"
 #include "chrome/browser/apps/platform_apps/app_window_interactive_uitest_base.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/apps/chrome_app_window_client.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chromeos/ash/components/login/login_state/scoped_test_public_session_login_state.h"
@@ -25,7 +26,9 @@
 #include "components/user_manager/test_helper.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/app_window/app_window.h"
+#include "extensions/browser/app_window/app_window_client.h"
 #include "extensions/test/extension_test_message_listener.h"
+#include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
 #include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/base/ui_base_types.h"
@@ -62,6 +65,34 @@ class ViewBoundsChangeWaiter : public views::ViewObserver {
   base::RunLoop run_loop_;
 
   base::ScopedObservation<views::View, views::ViewObserver> observation_{this};
+};
+
+class ClosingOnExitFullscreenWindow : public ChromeNativeAppWindowViewsAuraAsh {
+ public:
+  ClosingOnExitFullscreenWindow() = default;
+  ~ClosingOnExitFullscreenWindow() override = default;
+
+  void SetFullscreen(int fullscreen_types) override {
+    if (fullscreen_types == extensions::AppWindow::FULLSCREEN_TYPE_NONE) {
+      // Simulate synchronous window closure when exiting fullscreen via
+      // AppWindow::Restore().
+      widget()->CloseNow();
+    }
+  }
+};
+
+class ClosingOnExitFullscreenAppWindowClient : public ChromeAppWindowClient {
+ public:
+  ClosingOnExitFullscreenAppWindowClient() = default;
+  ~ClosingOnExitFullscreenAppWindowClient() override = default;
+
+  std::unique_ptr<extensions::NativeAppWindow> CreateNativeAppWindow(
+      extensions::AppWindow* window,
+      extensions::AppWindow::CreateParams* params) override {
+    auto native_window = std::make_unique<ClosingOnExitFullscreenWindow>();
+    native_window->Init(window, *params);
+    return native_window;
+  }
 };
 
 }  // namespace
@@ -510,4 +541,36 @@ IN_PROC_BROWSER_TEST_F(ChromeNativeAppWindowViewsAuraAshBrowserTest,
       CreateAppWindowFromParams(browser()->GetProfile(), extension, params);
   ASSERT_EQ(app2_window->GetNativeWindow(),
             split_view_test_api.GetSecondaryWindow());
+}
+
+// Regression test for crbug.com/569650568: when `aura::client::kShowStateKey`
+// changes on a fullscreen `AppWindow`,
+// `ChromeNativeAppWindowViewsAuraAsh::OnWindowPropertyChanged()` calls
+// `app_window()->Restore()`. If `Restore()` synchronously closes the native
+// window and deletes `AppWindow` (and `ChromeNativeAppWindowViewsAuraAsh`),
+// `OnWindowPropertyChanged()` must not continue accessing the destroyed window.
+IN_PROC_BROWSER_TEST_F(ChromeNativeAppWindowViewsAuraAshBrowserTest,
+                       UafInOnWindowPropertyChangedRestore) {
+  ClosingOnExitFullscreenAppWindowClient test_client;
+  extensions::AppWindowClient::Set(nullptr);
+  extensions::AppWindowClient::Set(&test_client);
+
+  extensions::AppWindow* app_window = CreateTestAppWindow("{}");
+  ASSERT_TRUE(app_window);
+
+  app_window->Fullscreen();
+  ASSERT_TRUE(app_window->IsFullscreen());
+
+  // Notify `OnWindowPropertyChanged()` that `kShowStateKey` transitioned out of
+  // fullscreen. Calling `OnWindowPropertyChanged()` directly avoids
+  // `aura::Window::AfterPropertyChange()`'s `ScopedDeleteBlocker` while
+  // exercising `app_window->Restore()` synchronously closing and destroying
+  // `app_window`.
+  static_cast<aura::WindowObserver*>(window())->OnWindowPropertyChanged(
+      app_window->GetNativeWindow(), aura::client::kShowStateKey,
+      static_cast<intptr_t>(ui::mojom::WindowShowState::kFullscreen));
+  EXPECT_EQ(0u, GetAppWindowCount());
+
+  extensions::AppWindowClient::Set(nullptr);
+  extensions::AppWindowClient::Set(ChromeAppWindowClient::GetInstance());
 }

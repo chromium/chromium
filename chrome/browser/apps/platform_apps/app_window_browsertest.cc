@@ -494,6 +494,42 @@ IN_PROC_BROWSER_TEST_F(AppWindowAPITest,
   extensions::AppWindowClient::Set(ChromeAppWindowClient::GetInstance());
 }
 
+// Regression test for crbug.com/569650568: when `chrome.app.window.create()`
+// is called for a visible window, `AppWindow::Init()` calls `Show()`. If
+// `Show()` synchronously closes the native window and deletes `AppWindow`,
+// `Init()` and `AppWindowCreateFunction::Run()` must not continue accessing
+// the destroyed `AppWindow`.
+IN_PROC_BROWSER_TEST_F(AppWindowAPITest, UafInAppWindowInitShow) {
+  const extensions::Extension* extension = LoadExtension(
+      test_data_dir_.AppendASCII("platform_apps").AppendASCII("window_api"));
+  ASSERT_TRUE(extension);
+
+  ClosingOnShowAppWindowClient test_client;
+  extensions::AppWindowClient::Set(nullptr);
+  extensions::AppWindowClient::Set(&test_client);
+
+  extensions::ProcessManager* process_manager =
+      extensions::ProcessManager::Get(browser()->GetProfile());
+  extensions::ExtensionHost* background_host =
+      process_manager->GetBackgroundHostForExtension(extension->id());
+  ASSERT_TRUE(background_host);
+
+  EXPECT_EQ("App window is closed before ready to commit first navigation.",
+            content::EvalJs(background_host->host_contents(), R"(
+              new Promise(resolve => {
+                chrome.app.window.create('test.html', {}, () => {
+                  resolve(chrome.runtime.lastError
+                              ? chrome.runtime.lastError.message
+                              : 'ok');
+                });
+              })
+            )"));
+  EXPECT_EQ(0u, GetAppWindowCount());
+
+  extensions::AppWindowClient::Set(nullptr);
+  extensions::AppWindowClient::Set(ChromeAppWindowClient::GetInstance());
+}
+
 IN_PROC_BROWSER_TEST_F(AppWindowAPITest,
                        RendererInitiatedCrossProcessNavigationBlocked) {
   ASSERT_TRUE(StartEmbeddedTestServer());
