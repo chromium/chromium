@@ -1960,6 +1960,44 @@ if (_is_default_toolchain) {
     is_bundle_module = true
   }
 
+  # Trimmed locale .pak set for test APKs (e.g. chrome_public_test_apk and
+  # android_browsertests). Reuses outputs from :chrome_apk_paks rather than
+  # packaging all shipping Chrome locale .pak files (~53 MB uncompressed).
+  android_assets("chrome_test_apk_locale_pak_assets") {
+    testonly = true
+    disable_compression = true
+    renaming_sources = []
+    renaming_destinations = []
+
+    foreach(_locale, chrome_test_apk_locales) {
+      foreach(_gender_suffix, gender_suffixes) {
+        renaming_sources += [ "$target_gen_dir/chrome_apk_paks/locales/${_locale}${_gender_suffix}.pak" ]
+        renaming_destinations += [ "locales/${_locale}${_gender_suffix}.pak" ]
+      }
+    }
+    treat_as_locale_paks = true
+
+    deps = [ ":chrome_apk_paks" ]
+  }
+
+  android_assets("chrome_test_apk_pak_assets") {
+    testonly = true
+    sources = [
+      "$target_gen_dir/chrome_apk_paks/chrome_100_percent.pak",
+      "$target_gen_dir/chrome_apk_paks/resources.pak",
+    ]
+    disable_compression = true
+
+    if (enable_hidpi) {
+      sources += [ "$target_gen_dir/chrome_apk_paks/chrome_200_percent.pak" ]
+    }
+
+    deps = [
+      ":chrome_apk_paks",
+      ":chrome_test_apk_locale_pak_assets",
+    ]
+  }
+
   # Exists separately from chrome_public_base_module_java_for_test to allow
   # downstream to depend on test support packages without needing to depend on
   # delegate_public_impl_java.

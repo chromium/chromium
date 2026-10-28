@@ -34,6 +34,31 @@ declare_args() {
 
 chrome_public_test_manifest_package = "org.chromium.chrome.tests"
 
+# Representative locales packaged in test APKs (covering RTL, CJK, Indic,
+# Cyrillic/@TestLocale("ru-RU"), Swahili, European, and pseudolocales) rather
+# than all 83 platform locales. If a test needs another locale, add it here.
+chrome_test_apk_locales = [
+  "ar",
+  "de",
+  "en-GB",
+  "en-US",
+  "es",
+  "es-419",
+  "fr",
+  "he",
+  "hi",
+  "ja",
+  "ko",
+  "pt-BR",
+  "ru",
+  "sw",
+  "zh-CN",
+  "zh-TW",
+]
+if (enable_pseudolocales) {
+  chrome_test_apk_locales += pseudolocales
+}
+
 default_chrome_public_jinja_variables = [
   "channel=$android_channel",
   "enable_cardboard=$enable_cardboard",
@@ -105,7 +130,8 @@ template("split_manifest_template") {
 # or Chrome application, either as an APK, or an app bundle module.
 #
 # Variables:
-#   target_type: Either 'android_apk' or 'android_app_bundle_module'.
+#   target_type: Either 'android_apk', 'android_app_bundle_module', or
+#     'instrumentation_test_apk'.
 #   apk_name: For APK target types, the final APK name without a suffix.
 #   shared_libraries: List of native shared libraries targets to include in
 #     the final target (e.g. [ ":libchrome" ]).
@@ -251,7 +277,11 @@ template("chrome_common_apk_or_module_tmpl") {
     }
 
     # Include resource strings files only for supported locales.
-    aapt_locale_allowlist = platform_pak_locales
+    if (_is_test) {
+      aapt_locale_allowlist = chrome_test_apk_locales
+    } else {
+      aapt_locale_allowlist = platform_pak_locales
+    }
 
     resource_exclusion_regex = common_resource_exclusion_regex
     resource_exclusion_exceptions = common_resource_exclusion_exceptions
@@ -379,6 +409,8 @@ template("chrome_common_apk_or_module_tmpl") {
 
     if (_is_bundle) {
       asset_deps += [ "//chrome/android:chrome_bundle_module_pak_assets" ]
+    } else if (_is_test) {
+      asset_deps += [ "//chrome/android:chrome_test_apk_pak_assets" ]
     } else {
       asset_deps += [ "//chrome/android:chrome_apk_pak_assets" ]
     }
