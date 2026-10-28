@@ -13,6 +13,7 @@ static_library("watchdog") {
   deps = [
     "//ash/constants",
     "//components/prefs",
+    "//extensions/common",
   ]
 }
 
