@@ -12,6 +12,7 @@
 
 #include "base/at_exit.h"
 #include "base/command_line.h"
+#include "base/containers/map_util.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -237,13 +238,13 @@ void DeviceDataManagerX11::UpdateDeviceList(x11::Connection* connection) {
     }
 
     // Skip devices that don't use any valuator
-    if (!valuator_count_.contains(deviceid)) {
+    const int* count = base::FindOrNull(valuator_count_, deviceid);
+    if (!count) {
       continue;
     }
 
     valuator_lookup_[deviceid].resize(DT_LAST_ENTRY);
-    data_type_lookup_[deviceid].resize(valuator_count_[deviceid],
-                                       DT_LAST_ENTRY);
+    data_type_lookup_[deviceid].resize(*count, DT_LAST_ENTRY);
     for (const auto& device_class : info.classes) {
       if (device_class.valuator.has_value()) {
         auto dt = UpdateValuatorClassDevice(*device_class.valuator,
@@ -282,14 +283,20 @@ void DeviceDataManagerX11::GetEventRawData(const x11::Event& x11_event,
     return;
 
   auto sourceid = xiev->sourceid;
-  if (!valuator_count_.contains(sourceid)) {
+  const int* count = base::FindOrNull(valuator_count_, sourceid);
+  if (!count) {
+    return;
+  }
+  const std::vector<int>* data_types =
+      base::FindOrNull(data_type_lookup_, sourceid);
+  if (!data_types) {
     return;
   }
   data->clear();
   auto valuators_iter = xiev->axisvalues.begin();
-  for (int i = 0; i <= valuator_count_[sourceid]; ++i) {
+  for (int i = 0; i <= *count; ++i) {
     if (IsXinputMaskSet(base::as_byte_span(xiev->valuator_mask), i)) {
-      int type = data_type_lookup_[sourceid][i];
+      int type = (*data_types)[i];
       if (type != DT_LAST_ENTRY) {
         double valuator = Fp3232ToDouble(*valuators_iter);
         (*data)[type] = valuator;
@@ -317,7 +324,8 @@ bool DeviceDataManagerX11::GetEventData(const x11::Event& x11_event,
     return false;
 
   auto sourceid = xiev->sourceid;
-  if (!valuator_lookup_.contains(sourceid)) {
+  const auto* valuator_info = base::FindOrNull(valuator_lookup_, sourceid);
+  if (!valuator_info || type >= valuator_info->size()) {
     return false;
   }
 
@@ -334,7 +342,7 @@ bool DeviceDataManagerX11::GetEventData(const x11::Event& x11_event,
     return true;
   }
 
-  int val_index = valuator_lookup_[sourceid][type].number;
+  int val_index = (*valuator_info)[type].number;
   int slot = 0;
   if (val_index >= 0) {
     if (IsXinputMaskSet(base::as_byte_span(xiev->valuator_mask), val_index)) {
@@ -358,9 +366,11 @@ bool DeviceDataManagerX11::GetEventData(const x11::Event& x11_event,
       return true;
     } else if (IsTouchDataType(type)) {
       if (GetSlotNumber(*xiev, &slot) && slot >= 0) {
-        if (last_seen_valuator_.contains(sourceid) &&
-            last_seen_valuator_.at(sourceid).contains(slot)) {
-          *value = last_seen_valuator_.at(sourceid).at(slot)[type];
+        if (const auto* slot_map =
+                base::FindOrNull(last_seen_valuator_, sourceid)) {
+          if (const auto* slot_valuators = base::FindOrNull(*slot_map, slot)) {
+            *value = (*slot_valuators)[type];
+          }
         }
       }
     }
@@ -405,11 +415,12 @@ int DeviceDataManagerX11::GetScrollClassEventDetail(
   if (!xievent)
     return SCROLL_TYPE_NO_SCROLL;
   auto sourceid = xievent->sourceid;
-  if (!scroll_data_.contains(sourceid)) {
+  const ScrollInfo* scroll_info = base::FindOrNull(scroll_data_, sourceid);
+  if (!scroll_info) {
     return SCROLL_TYPE_NO_SCROLL;
   }
-  int horizontal_id = scroll_data_.at(sourceid).horizontal.number;
-  int vertical_id = scroll_data_.at(sourceid).vertical.number;
+  int horizontal_id = scroll_info->horizontal.number;
+  int vertical_id = scroll_info->vertical.number;
   return (horizontal_id != -1 &&
                   IsXinputMaskSet(base::as_byte_span(xievent->valuator_mask),
                                   horizontal_id)
@@ -429,12 +440,12 @@ int DeviceDataManagerX11::GetScrollClassDeviceDetail(
     return SCROLL_TYPE_NO_SCROLL;
 
   auto sourceid = xiev->sourceid;
-  if (!scroll_data_.contains(sourceid)) {
+  const ScrollInfo* device_data = base::FindOrNull(scroll_data_, sourceid);
+  if (!device_data) {
     return SCROLL_TYPE_NO_SCROLL;
   }
-  const ScrollInfo& device_data = scroll_data_.at(sourceid);
-  return (device_data.vertical.number >= 0 ? SCROLL_TYPE_VERTICAL : 0) |
-         (device_data.horizontal.number >= 0 ? SCROLL_TYPE_HORIZONTAL : 0);
+  return (device_data->vertical.number >= 0 ? SCROLL_TYPE_VERTICAL : 0) |
+         (device_data->horizontal.number >= 0 ? SCROLL_TYPE_HORIZONTAL : 0);
 }
 
 bool DeviceDataManagerX11::IsCMTGestureEvent(const x11::Event& xev) const {
@@ -447,13 +458,11 @@ bool DeviceDataManagerX11::HasEventData(const x11::Event& xev,
   if (!xiev)
     return false;
   auto sourceid = xiev->sourceid;
-  if (!valuator_lookup_.contains(sourceid)) {
+  const auto* valuators = base::FindOrNull(valuator_lookup_, sourceid);
+  if (!valuators || type >= valuators->size()) {
     return false;
   }
-  if (type >= valuator_lookup_.at(sourceid).size()) {
-    return false;
-  }
-  const int idx = valuator_lookup_.at(sourceid)[type].number;
+  const int idx = (*valuators)[type].number;
   return (idx >= 0) &&
          IsXinputMaskSet(base::as_byte_span(xiev->valuator_mask), idx);
 }
@@ -508,16 +517,21 @@ void DeviceDataManagerX11::GetScrollOffsets(const x11::Event& xev,
   EventData data;
   GetEventRawData(xev, &data);
 
-  if (data.find(DT_CMT_SCROLL_X) != data.end())
-    *x_offset = data[DT_CMT_SCROLL_X];
-  if (data.find(DT_CMT_SCROLL_Y) != data.end())
-    *y_offset = data[DT_CMT_SCROLL_Y];
-  if (data.find(DT_CMT_ORDINAL_X) != data.end())
-    *x_offset_ordinal = data[DT_CMT_ORDINAL_X];
-  if (data.find(DT_CMT_ORDINAL_Y) != data.end())
-    *y_offset_ordinal = data[DT_CMT_ORDINAL_Y];
-  if (data.find(DT_CMT_FINGER_COUNT) != data.end())
-    *finger_count = static_cast<int>(data[DT_CMT_FINGER_COUNT]);
+  if (const double* val = base::FindOrNull(data, DT_CMT_SCROLL_X)) {
+    *x_offset = *val;
+  }
+  if (const double* val = base::FindOrNull(data, DT_CMT_SCROLL_Y)) {
+    *y_offset = *val;
+  }
+  if (const double* val = base::FindOrNull(data, DT_CMT_ORDINAL_X)) {
+    *x_offset_ordinal = *val;
+  }
+  if (const double* val = base::FindOrNull(data, DT_CMT_ORDINAL_Y)) {
+    *y_offset_ordinal = *val;
+  }
+  if (const double* val = base::FindOrNull(data, DT_CMT_FINGER_COUNT)) {
+    *finger_count = static_cast<int>(*val);
+  }
 }
 
 void DeviceDataManagerX11::GetScrollClassOffsets(const x11::Event& x11_event,
@@ -533,17 +547,20 @@ void DeviceDataManagerX11::GetScrollClassOffsets(const x11::Event& x11_event,
     return;
 
   auto sourceid = xiev->sourceid;
-  if (!scroll_data_.contains(sourceid)) {
+  ScrollInfo* info = base::FindOrNull(scroll_data_, sourceid);
+  if (!info) {
+    return;
+  }
+  const int* count = base::FindOrNull(valuator_count_, sourceid);
+  if (!count) {
     return;
   }
   auto valuators_iter = xiev->axisvalues.begin();
 
-  ScrollInfo* info = &scroll_data_[sourceid];
-
   const int horizontal_number = info->horizontal.number;
   const int vertical_number = info->vertical.number;
 
-  for (int i = 0; i <= valuator_count_[sourceid]; ++i) {
+  for (int i = 0; i <= *count; ++i) {
     if (!IsXinputMaskSet(base::as_byte_span(xiev->valuator_mask), i)) {
       continue;
     }
@@ -564,9 +581,9 @@ void DeviceDataManagerX11::InvalidateScrollClasses(
       i.second.vertical.seen = false;
     }
   } else {
-    if (scroll_data_.contains(device_id)) {
-      scroll_data_[device_id].horizontal.seen = false;
-      scroll_data_[device_id].vertical.seen = false;
+    if (ScrollInfo* info = base::FindOrNull(scroll_data_, device_id)) {
+      info->horizontal.seen = false;
+      info->vertical.seen = false;
     }
   }
 }
@@ -586,16 +603,21 @@ void DeviceDataManagerX11::GetFlingData(const x11::Event& xev,
   EventData data;
   GetEventRawData(xev, &data);
 
-  if (data.find(DT_CMT_FLING_X) != data.end())
-    *vx = data[DT_CMT_FLING_X];
-  if (data.find(DT_CMT_FLING_Y) != data.end())
-    *vy = data[DT_CMT_FLING_Y];
-  if (data.find(DT_CMT_FLING_STATE) != data.end())
-    *is_cancel = !!static_cast<unsigned int>(data[DT_CMT_FLING_STATE]);
-  if (data.find(DT_CMT_ORDINAL_X) != data.end())
-    *vx_ordinal = data[DT_CMT_ORDINAL_X];
-  if (data.find(DT_CMT_ORDINAL_Y) != data.end())
-    *vy_ordinal = data[DT_CMT_ORDINAL_Y];
+  if (const double* val = base::FindOrNull(data, DT_CMT_FLING_X)) {
+    *vx = *val;
+  }
+  if (const double* val = base::FindOrNull(data, DT_CMT_FLING_Y)) {
+    *vy = *val;
+  }
+  if (const double* val = base::FindOrNull(data, DT_CMT_FLING_STATE)) {
+    *is_cancel = !!static_cast<unsigned int>(*val);
+  }
+  if (const double* val = base::FindOrNull(data, DT_CMT_ORDINAL_X)) {
+    *vx_ordinal = *val;
+  }
+  if (const double* val = base::FindOrNull(data, DT_CMT_ORDINAL_Y)) {
+    *vy_ordinal = *val;
+  }
 }
 
 void DeviceDataManagerX11::GetMetricsData(const x11::Event& xev,
@@ -609,17 +631,16 @@ void DeviceDataManagerX11::GetMetricsData(const x11::Event& xev,
   EventData data;
   GetEventRawData(xev, &data);
 
-  if (data.find(DT_CMT_METRICS_TYPE) != data.end()) {
-    int val = static_cast<int>(data[DT_CMT_METRICS_TYPE]);
-    if (val == 0)
-      *type = kGestureMetricsTypeNoisyGround;
-    else
-      *type = kGestureMetricsTypeUnknown;
+  if (const double* val = base::FindOrNull(data, DT_CMT_METRICS_TYPE)) {
+    *type = static_cast<int>(*val) == 0 ? kGestureMetricsTypeNoisyGround
+                                        : kGestureMetricsTypeUnknown;
   }
-  if (data.find(DT_CMT_METRICS_DATA1) != data.end())
-    *data1 = data[DT_CMT_METRICS_DATA1];
-  if (data.find(DT_CMT_METRICS_DATA2) != data.end())
-    *data2 = data[DT_CMT_METRICS_DATA2];
+  if (const double* val = base::FindOrNull(data, DT_CMT_METRICS_DATA1)) {
+    *data1 = *val;
+  }
+  if (const double* val = base::FindOrNull(data, DT_CMT_METRICS_DATA2)) {
+    *data2 = *val;
+  }
 }
 
 int DeviceDataManagerX11::GetMappedButton(int button) {
@@ -642,10 +663,12 @@ void DeviceDataManagerX11::GetGestureTimes(const x11::Event& xev,
   EventData data;
   GetEventRawData(xev, &data);
 
-  if (data.find(DT_CMT_START_TIME) != data.end())
-    *start_time = data[DT_CMT_START_TIME];
-  if (data.find(DT_CMT_END_TIME) != data.end())
-    *end_time = data[DT_CMT_END_TIME];
+  if (const double* val = base::FindOrNull(data, DT_CMT_START_TIME)) {
+    *start_time = *val;
+  }
+  if (const double* val = base::FindOrNull(data, DT_CMT_END_TIME)) {
+    *end_time = *val;
+  }
 }
 
 bool DeviceDataManagerX11::NormalizeData(x11::Input::DeviceId deviceid,
@@ -665,12 +688,14 @@ bool DeviceDataManagerX11::GetDataRange(x11::Input::DeviceId deviceid,
                                         const DataType type,
                                         double* min,
                                         double* max) {
-  if (!valuator_lookup_.contains(deviceid)) {
+  const auto* valuator_info = base::FindOrNull(valuator_lookup_, deviceid);
+  if (!valuator_info || type >= valuator_info->size()) {
     return false;
   }
-  if (valuator_lookup_[deviceid][type].number >= 0) {
-    *min = valuator_lookup_[deviceid][type].min;
-    *max = valuator_lookup_[deviceid][type].max;
+  const auto& info = (*valuator_info)[type];
+  if (info.number >= 0) {
+    *min = info.min;
+    *max = info.max;
     return true;
   }
   return false;
