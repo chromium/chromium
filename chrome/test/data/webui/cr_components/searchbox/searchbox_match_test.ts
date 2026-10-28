@@ -600,4 +600,40 @@ suite('CrComponentsRealboxMatchTest', () => {
     assertEquals(
         'rgb(0, 128, 0)', getComputedStyle(matchEl.$.secondaryText).color);
   });
+
+  test('TypedPrefixColorOnlyReplacesDefaultTextColor', async () => {
+    matchEl.style.setProperty(
+        '--color-searchbox-results-foreground', 'rgb(1, 2, 3)');
+    matchEl.style.setProperty(
+        '--color-searchbox-results-url', 'rgb(0, 0, 255)');
+    // Plain text followed by non-bold text with a color, like the path of a
+    // URL row without a title.
+    const match = createAutocompleteMatch();
+    match.suggestTemplate.primaryText = createFormattedString('plain colored', [
+      createFormattedStringFragment(
+          {startIndex: 0, color: ColorType.kSuggestQueryText}),
+      createFormattedStringFragment(
+          {startIndex: 6, color: ColorType.kSuggestActionHigh}),
+    ]);
+    matchEl.match = match;
+    await microtasksFinished();
+
+    const spans = matchEl.$.primaryText.querySelectorAll('span');
+    assertEquals(2, spans.length);
+    // Without a typed prefix color, each fragment keeps its own color.
+    assertEquals('rgb(1, 2, 3)', getComputedStyle(spans[0]!).color);
+    assertEquals('rgb(0, 0, 255)', getComputedStyle(spans[1]!).color);
+
+    // A typed prefix color only replaces the default text color.
+    matchEl.style.setProperty(
+        '--color-searchbox-results-typed-prefix', 'rgb(0, 128, 0)');
+    assertEquals('rgb(0, 128, 0)', getComputedStyle(spans[0]!).color);
+    assertEquals('rgb(0, 0, 255)', getComputedStyle(spans[1]!).color);
+
+    // Zero prefix matches keep the colors too.
+    matchEl.style.removeProperty('--color-searchbox-results-typed-prefix');
+    matchEl.setAttribute('has-empty-input', '');
+    assertEquals('rgb(1, 2, 3)', getComputedStyle(spans[0]!).color);
+    assertEquals('rgb(0, 0, 255)', getComputedStyle(spans[1]!).color);
+  });
 });
