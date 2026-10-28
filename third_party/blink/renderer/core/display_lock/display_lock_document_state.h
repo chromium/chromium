@@ -68,17 +68,26 @@ class CORE_EXPORT DisplayLockDocumentState final
     STACK_ALLOCATED();
 
    public:
+    ScopedForceActivatableDisplayLocks();
     ScopedForceActivatableDisplayLocks(ScopedForceActivatableDisplayLocks&&);
+    ScopedForceActivatableDisplayLocks& operator=(
+        ScopedForceActivatableDisplayLocks&&) = delete;
     ~ScopedForceActivatableDisplayLocks();
 
-    ScopedForceActivatableDisplayLocks& operator=(
-        ScopedForceActivatableDisplayLocks&&);
+    // Transfers the locks held by `other` into this scope, leaving `other`
+    // empty.
+    void Add(ScopedForceActivatableDisplayLocks&& other);
 
    private:
     friend DisplayLockDocumentState;
     explicit ScopedForceActivatableDisplayLocks(DisplayLockDocumentState*);
 
-    DisplayLockDocumentState* state_;
+    // Inline capacity 1 handles the common single-document case on the stack,
+    // while multi-frame callers can merge additional states via `Add()`.
+    // Elements use `Member` so Oilpan traces the backing buffer if the vector
+    // spills to the heap (while the scope itself stays `STACK_ALLOCATED()` for
+    // deterministic RAII destruction).
+    HeapVector<Member<DisplayLockDocumentState>, 1> states_;
   };
 
   ScopedForceActivatableDisplayLocks GetScopedForceActivatableLocks();

@@ -2637,26 +2637,24 @@ mojom::blink::AIPageContentPtr AIPageContentAgent::ContentBuilder::Build(
   //
   // TODO(crbug.com/387355768): Consider limiting the lock to nodes with
   // activation reason of FindInPage.
-  std::vector<DisplayLockDocumentState::ScopedForceActivatableDisplayLocks>
+  DisplayLockDocumentState::ScopedForceActivatableDisplayLocks
       forced_activatable_locks;
 
   // If we're doing this extraction as a part of the document lifecycle, we
   // can't invalidate style/layout.
   if (!document.InvalidationDisallowed()) {
-    forced_activatable_locks.emplace_back(
-        document.GetDisplayLockDocumentState()
-            .GetScopedForceActivatableLocks());
+    forced_activatable_locks.Add(document.GetDisplayLockDocumentState()
+                                     .GetScopedForceActivatableLocks());
     document.View()->ForAllChildLocalFrameViews(
         [&](LocalFrameView& frame_view) {
           if (!frame_view.GetFrame().GetDocument()) {
             return;
           }
 
-          forced_activatable_locks.emplace_back(
-              frame_view.GetFrame()
-                  .GetDocument()
-                  ->GetDisplayLockDocumentState()
-                  .GetScopedForceActivatableLocks());
+          forced_activatable_locks.Add(frame_view.GetFrame()
+                                           .GetDocument()
+                                           ->GetDisplayLockDocumentState()
+                                           .GetScopedForceActivatableLocks());
         });
   }
 

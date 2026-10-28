@@ -8,6 +8,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/memory/ptr_util.h"
 #include "cc/base/features.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -46,6 +47,9 @@
 #include "third_party/blink/renderer/core/timing/soft_navigation_heuristics.h"
 #include "third_party/blink/renderer/core/timing/soft_navigation_heuristics_test_util.h"
 #include "third_party/blink/renderer/core/timing/soft_navigation_paint_attribution_tracker.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/persistent.h"
+#include "third_party/blink/renderer/platform/heap/thread_state.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
@@ -4429,6 +4433,106 @@ TEST_F(DisplayLockContextRenderingTest, VisualOverflowUpdateAfterUnlock) {
 
   EXPECT_EQ(layer->GetLayoutObject().VisualOverflowRect(),
             PhysicalRect(0, 0, 120, 120));
+}
+
+namespace {
+
+// Creates the states in a separate stack frame so no raw pointer to them
+// remains on the caller's stack during conservative stack scanning.
+NOINLINE void AddUnreferencedStatesToScope(
+    Document* document,
+    DisplayLockDocumentState::ScopedForceActivatableDisplayLocks& scope,
+    WeakPersistent<DisplayLockDocumentState>& weak_state1,
+    WeakPersistent<DisplayLockDocumentState>& weak_state2) {
+  auto* state1 = MakeGarbageCollected<DisplayLockDocumentState>(document);
+  auto* state2 = MakeGarbageCollected<DisplayLockDocumentState>(document);
+  weak_state1 = state1;
+  weak_state2 = state2;
+  scope.Add(state1->GetScopedForceActivatableLocks());
+  scope.Add(state2->GetScopedForceActivatableLocks());
+}
+
+}  // namespace
+
+TEST_F(DisplayLockContextTest, ScopedForceActivatableDisplayLocks) {
+  DisplayLockDocumentState& state1 =
+      GetDocument().GetDisplayLockDocumentState();
+  auto* state2 = MakeGarbageCollected<DisplayLockDocumentState>(&GetDocument());
+
+  EXPECT_FALSE(state1.ActivatableDisplayLocksForced());
+  EXPECT_FALSE(state2->ActivatableDisplayLocksForced());
+
+  // Default-constructed scope holds no states and destructs cleanly.
+  {
+    DisplayLockDocumentState::ScopedForceActivatableDisplayLocks empty_scope;
+    EXPECT_FALSE(state1.ActivatableDisplayLocksForced());
+  }
+
+  {
+    DisplayLockDocumentState::ScopedForceActivatableDisplayLocks combined_scope;
+    {
+      auto initial_scope = state1.GetScopedForceActivatableLocks();
+      EXPECT_TRUE(state1.ActivatableDisplayLocksForced());
+
+      // Move construction transfers ownership without decrementing.
+      DisplayLockDocumentState::ScopedForceActivatableDisplayLocks moved_scope(
+          std::move(initial_scope));
+      EXPECT_TRUE(state1.ActivatableDisplayLocksForced());
+
+      combined_scope.Add(std::move(moved_scope));
+    }
+    // `initial_scope` and `moved_scope` have been destroyed, but
+    // `combined_scope` still holds the lock on `state1`.
+    EXPECT_TRUE(state1.ActivatableDisplayLocksForced());
+
+    // Destroy a second lock on `state1` in an inner scope to verify that
+    // decrementing from 2 to 1 leaves `state1` forced.
+    {
+      auto inner_scope = state1.GetScopedForceActivatableLocks();
+      EXPECT_TRUE(state1.ActivatableDisplayLocksForced());
+    }
+    EXPECT_TRUE(state1.ActivatableDisplayLocksForced());
+
+    // Add a duplicate lock on `state1` and a lock on `state2` (growing beyond
+    // the inline capacity of 1).
+    combined_scope.Add(state1.GetScopedForceActivatableLocks());
+    combined_scope.Add(state2->GetScopedForceActivatableLocks());
+    EXPECT_TRUE(state1.ActivatableDisplayLocksForced());
+    EXPECT_TRUE(state2->ActivatableDisplayLocksForced());
+  }
+  EXPECT_FALSE(state1.ActivatableDisplayLocksForced());
+  EXPECT_FALSE(state2->ActivatableDisplayLocksForced());
+}
+
+TEST_F(DisplayLockContextTest,
+       ScopedForceActivatableDisplayLocksKeepsStatesAliveAcrossGC) {
+  WeakPersistent<DisplayLockDocumentState> weak_state1;
+  WeakPersistent<DisplayLockDocumentState> weak_state2;
+  {
+    DisplayLockDocumentState::ScopedForceActivatableDisplayLocks scope;
+    AddUnreferencedStatesToScope(&GetDocument(), scope, weak_state1,
+                                 weak_state2);
+    ASSERT_TRUE(weak_state1);
+    ASSERT_TRUE(weak_state2);
+    EXPECT_TRUE(weak_state1->ActivatableDisplayLocksForced());
+    EXPECT_TRUE(weak_state2->ActivatableDisplayLocksForced());
+
+    ThreadState::Current()->CollectAllGarbageForTesting(
+        ThreadState::StackState::kMayContainHeapPointers);
+
+    ASSERT_TRUE(weak_state1);
+    ASSERT_TRUE(weak_state2);
+    EXPECT_TRUE(weak_state1->ActivatableDisplayLocksForced());
+    EXPECT_TRUE(weak_state2->ActivatableDisplayLocksForced());
+  }
+
+  EXPECT_FALSE(weak_state1->ActivatableDisplayLocksForced());
+  EXPECT_FALSE(weak_state2->ActivatableDisplayLocksForced());
+
+  ThreadState::Current()->CollectAllGarbageForTesting(
+      ThreadState::StackState::kNoHeapPointers);
+  EXPECT_FALSE(weak_state1);
+  EXPECT_FALSE(weak_state2);
 }
 
 }  // namespace blink
