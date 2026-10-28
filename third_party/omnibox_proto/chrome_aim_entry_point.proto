@@ -130,4 +130,8 @@ enum ChromeAimEntryPoint {
   // AIM is entered from the Chrome A->B->A onramp IPH or promo bubble (e.g.
   // Copy-Text Journeys).
   DESKTOP_CHROME_ABA_ONRAMP_IPH = 228;
+
+  // AIM is entered from the "Search With" edit menu option on Chrome iOS to
+  // enter cobrowsing.
+  IOS_CHROME_COBROWSE_SEARCH_WITH = 234;
 }

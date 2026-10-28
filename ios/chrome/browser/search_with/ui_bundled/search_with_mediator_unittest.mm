@@ -6,14 +6,17 @@
 
 #import "base/memory/raw_ptr.h"
 #import "base/test/scoped_feature_list.h"
+#import "components/contextual_search/contextual_search_service.h"
 #import "components/contextual_search/pref_names.h"
 #import "components/prefs/pref_service.h"
 #import "components/search_engines/template_url_data.h"
 #import "components/search_engines/template_url_service.h"
+#import "components/variations/scoped_variations_ids_provider.h"
 #import "ios/chrome/browser/aim/model/ios_chrome_aim_eligibility_service_factory.h"
 #import "ios/chrome/browser/aim/model/mock_ios_chrome_aim_eligibility_service.h"
 #import "ios/chrome/browser/cobrowse/model/cobrowse_browser_agent.h"
 #import "ios/chrome/browser/cobrowse/model/cobrowse_context.h"
+#import "ios/chrome/browser/composebox/model/ios_contextual_search_service_factory.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
@@ -96,6 +99,8 @@ class SearchWithMediatorTest : public PlatformTest {
 
  protected:
   web::WebTaskEnvironment task_environment_;
+  variations::test::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
+      variations::VariationsIdsProvider::Mode::kUseSignedInState};
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<TestProfileIOS> profile_;
   SceneState* scene_state_;
@@ -111,10 +116,13 @@ TEST_F(SearchWithMediatorTest, ExecutesSearchWithCobrowseWhenEligible) {
       CobrowseBrowserAgent::FromBrowser(browser_.get());
   AimEligibilityService* aim_eligibility_service =
       IOSChromeAimEligibilityServiceFactory::GetForProfile(profile_.get());
+  contextual_search::ContextualSearchService* contextual_search_service =
+      ContextualSearchServiceFactory::GetForProfile(profile_.get());
   SearchWithMediator* mediator = [[SearchWithMediator alloc]
       initWithTemplateURLService:template_url_service_
            aimEligibilityService:aim_eligibility_service
             cobrowseBrowserAgent:agent
+         contextualSearchService:contextual_search_service
                      prefService:profile_->GetPrefs()
                        incognito:NO];
   mediator.sceneHandler = mock_scene_handler_;
@@ -129,10 +137,14 @@ TEST_F(SearchWithMediatorTest, ExecutesSearchWithCobrowseWhenEligible) {
   EXPECT_TRUE(agent->IsSessionActive());
   CobrowseContext* context = agent->GetCobrowseContext();
   ASSERT_NE(context, nil);
+  EXPECT_TRUE(context.hasContextualSearchSession);
   EXPECT_NSEQ(context.searchQuery, @"hello world");
-  std::string udmValue;
-  EXPECT_TRUE(net::GetValueForKeyInQuery(context.url, "udm", &udmValue));
-  EXPECT_EQ(udmValue, "50");
+  std::string udm_value;
+  EXPECT_TRUE(net::GetValueForKeyInQuery(context.url, "udm", &udm_value));
+  EXPECT_EQ(udm_value, "50");
+  std::string aep_value;
+  EXPECT_TRUE(net::GetValueForKeyInQuery(context.url, "aep", &aep_value));
+  EXPECT_EQ(aep_value, "234");
 
   [mediator shutdown];
 }
@@ -145,10 +157,13 @@ TEST_F(SearchWithMediatorTest, ExecutesSearchWithStandardNewTabWhenNonGoogle) {
       CobrowseBrowserAgent::FromBrowser(browser_.get());
   AimEligibilityService* aim_eligibility_service =
       IOSChromeAimEligibilityServiceFactory::GetForProfile(profile_.get());
+  contextual_search::ContextualSearchService* contextual_search_service =
+      ContextualSearchServiceFactory::GetForProfile(profile_.get());
   SearchWithMediator* mediator = [[SearchWithMediator alloc]
       initWithTemplateURLService:template_url_service_
            aimEligibilityService:aim_eligibility_service
             cobrowseBrowserAgent:agent
+         contextualSearchService:contextual_search_service
                      prefService:profile_->GetPrefs()
                        incognito:NO];
   mediator.sceneHandler = mock_scene_handler_;
@@ -171,10 +186,13 @@ TEST_F(SearchWithMediatorTest, ExecutesSearchWithStandardNewTabWhenIncognito) {
       CobrowseBrowserAgent::FromBrowser(browser_.get());
   AimEligibilityService* aim_eligibility_service =
       IOSChromeAimEligibilityServiceFactory::GetForProfile(profile_.get());
+  contextual_search::ContextualSearchService* contextual_search_service =
+      ContextualSearchServiceFactory::GetForProfile(profile_.get());
   SearchWithMediator* mediator = [[SearchWithMediator alloc]
       initWithTemplateURLService:template_url_service_
            aimEligibilityService:aim_eligibility_service
             cobrowseBrowserAgent:agent
+         contextualSearchService:contextual_search_service
                      prefService:profile_->GetPrefs()
                        incognito:YES];
   mediator.sceneHandler = mock_scene_handler_;
@@ -202,10 +220,13 @@ TEST_F(SearchWithMediatorTest,
       CobrowseBrowserAgent::FromBrowser(browser_.get());
   AimEligibilityService* aim_eligibility_service =
       IOSChromeAimEligibilityServiceFactory::GetForProfile(profile_.get());
+  contextual_search::ContextualSearchService* contextual_search_service =
+      ContextualSearchServiceFactory::GetForProfile(profile_.get());
   SearchWithMediator* mediator = [[SearchWithMediator alloc]
       initWithTemplateURLService:template_url_service_
            aimEligibilityService:aim_eligibility_service
             cobrowseBrowserAgent:agent
+         contextualSearchService:contextual_search_service
                      prefService:profile_->GetPrefs()
                        incognito:NO];
   mediator.sceneHandler = mock_scene_handler_;
@@ -222,7 +243,7 @@ TEST_F(SearchWithMediatorTest,
   [mediator shutdown];
 }
 
-// Test that when `kSearchContentSharingSettings` policy is disabled, search
+// Tests that when `kSearchContentSharingSettings` policy is disabled, search
 // with opens a standard new tab instead of triggering Cobrowse.
 TEST_F(SearchWithMediatorTest,
        ExecutesSearchWithStandardNewTabWhenSearchContentSharingDisabled) {
@@ -235,10 +256,13 @@ TEST_F(SearchWithMediatorTest,
       CobrowseBrowserAgent::FromBrowser(browser_.get());
   AimEligibilityService* aim_eligibility_service =
       IOSChromeAimEligibilityServiceFactory::GetForProfile(profile_.get());
+  contextual_search::ContextualSearchService* contextual_search_service =
+      ContextualSearchServiceFactory::GetForProfile(profile_.get());
   SearchWithMediator* mediator = [[SearchWithMediator alloc]
       initWithTemplateURLService:template_url_service_
            aimEligibilityService:aim_eligibility_service
             cobrowseBrowserAgent:agent
+         contextualSearchService:contextual_search_service
                      prefService:profile_->GetPrefs()
                        incognito:NO];
   mediator.sceneHandler = mock_scene_handler_;
