@@ -703,9 +703,6 @@ bool WriteToBlinkCondition(
               Request::kTextDestination:
             request.destination = network::mojom::RequestDestination::kText;
             break;
-          case ServiceWorkerRegistrationData::RouterRules::RuleV1::Condition::
-              Request::kSharedStorageWorkletDestination:
-            break;
         }
       }
       out_request = request;
