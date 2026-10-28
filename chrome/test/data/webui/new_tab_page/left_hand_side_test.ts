@@ -64,6 +64,23 @@ suite('NewTabPageLeftHandSideTest', () => {
     return leftHandSide.shadowRoot.querySelector<IframeElement>('#expanded');
   }
 
+  test('updates color-scheme on isDark changes', async () => {
+    await createLeftHandSide();
+
+    const iframe = getExpandedIframe()!;
+    assertEquals('light', getComputedStyle(iframe).colorScheme);
+
+    leftHandSide.isDark = true;
+    await microtasksFinished();
+    assertTrue(leftHandSide.hasAttribute('is-dark'));
+    assertEquals('dark', getComputedStyle(iframe).colorScheme);
+
+    leftHandSide.isDark = false;
+    await microtasksFinished();
+    assertFalse(leftHandSide.hasAttribute('is-dark'));
+    assertEquals('light', getComputedStyle(iframe).colorScheme);
+  });
+
   test('renders folded rail when hybrid is enabled', async () => {
     loadTimeData.overrideValues({enableThreadsRailHybrid: true});
     await createLeftHandSide();
