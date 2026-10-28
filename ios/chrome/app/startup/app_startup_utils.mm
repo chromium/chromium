@@ -72,6 +72,11 @@ CallerApp CallerAppFromAppID(NSString* caller_app_id) {
 
 }  // namespace
 
+const char kXCallbackOpenCommandURLParameter[] = "url";
+const char kPostOpeningActionParameter[] = "poa";
+const char kPostOpeningActionDefaultBrowserSettings[] =
+    "default-browser-settings";
+
 MobileSessionCallerApp GetCallerApp(NSString* source_app_id,
                                     NSString* secure_source_app_id,
                                     const GURL& complete_url) {

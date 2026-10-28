@@ -11,6 +11,16 @@
 
 class GURL;
 
+// Query parameter of the X-Callback `/open` command holding the URL to open.
+extern const char kXCallbackOpenCommandURLParameter[];
+
+// Query parameter holding the action to trigger once the URL is opened.
+extern const char kPostOpeningActionParameter[];
+
+// `kPostOpeningActionParameter` value requesting to show the default browser
+// settings once the URL is opened.
+extern const char kPostOpeningActionDefaultBrowserSettings[];
+
 // Returns the MobileSessionCallerApp for the specified `source_app_id`,
 // `secure_source_app_id`, and `complete_url`.
 MobileSessionCallerApp GetCallerApp(NSString* source_app_id,

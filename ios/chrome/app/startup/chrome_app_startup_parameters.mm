@@ -67,7 +67,7 @@ void LogWidgetKitAction(WidgetKitExtensionAction action) {
 // Contact fedegermi for additional information or support.
 TabOpeningPostOpeningAction XCallbackPoaToPostOpeningAction(
     const std::string& poa_param) {
-  if (poa_param == "default-browser-settings") {
+  if (poa_param == kPostOpeningActionDefaultBrowserSettings) {
     return SHOW_DEFAULT_BROWSER_SETTINGS;
   }
   return NO_ACTION;
@@ -215,14 +215,15 @@ TabOpeningPostOpeningAction XCallbackPoaToPostOpeningAction(
 
     std::map<std::string, std::string> parameters =
         ExtractQueryParametersFromXCallbackURL(parsedURL);
-    GURL URLQueryParam = GURL(parameters["url"]);
+    GURL URLQueryParam = GURL(parameters[kXCallbackOpenCommandURLParameter]);
     if (!URLQueryParam.is_valid() ||
         (!URLQueryParam.SchemeIs(url::kHttpScheme) &&
          !URLQueryParam.SchemeIs(url::kHttpsScheme))) {
       return nil;
     }
     TabOpeningPostOpeningAction postOpeningAction =
-        XCallbackPoaToPostOpeningAction(parameters["poa"]);
+        XCallbackPoaToPostOpeningAction(
+            parameters[kPostOpeningActionParameter]);
 
     ChromeAppStartupParameters* startupParameters =
         [[ChromeAppStartupParameters alloc]

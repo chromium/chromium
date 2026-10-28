@@ -83,9 +83,13 @@ first_run::ExternalLaunch GetLaunchSource(MobileSessionCallerApp caller_app,
 bool IsShowDefaultBrowserSettings(NSURL* url) {
   NSURLComponents* components = [NSURLComponents componentsWithURL:url
                                            resolvingAgainstBaseURL:NO];
+  NSString* postOpeningActionParameter =
+      base::SysUTF8ToNSString(kPostOpeningActionParameter);
+  NSString* defaultBrowserSettingsAction =
+      base::SysUTF8ToNSString(kPostOpeningActionDefaultBrowserSettings);
   for (NSURLQueryItem* item in components.queryItems) {
-    if ([item.name isEqualToString:@"poa"] &&
-        [item.value isEqualToString:@"default-browser-settings"]) {
+    if ([item.name isEqualToString:postOpeningActionParameter] &&
+        [item.value isEqualToString:defaultBrowserSettingsAction]) {
       return true;
     }
   }
