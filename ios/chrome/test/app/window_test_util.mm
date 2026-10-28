@@ -48,12 +48,6 @@ id<BrowserProviderInterface> GetInterfaceProviderForWindowWithNumber(
       .browserProviderInterface;
 }
 
-// Returns the browser for the current mode.
-Browser* GetCurrentBrowserForWindowWithNumber(int windowNumber) {
-  return GetInterfaceProviderForWindowWithNumber(windowNumber)
-      .currentBrowserProvider.browser;
-}
-
 // Returns the WebStateList for the current mode. Or nullptr of there is no
 // browser.
 WebStateList* GetCurrentWebStateListForWindowWithNumber(int windowNumber) {
@@ -62,6 +56,11 @@ WebStateList* GetCurrentWebStateListForWindowWithNumber(int windowNumber) {
 }
 
 }  // namespace
+
+Browser* GetCurrentBrowserForWindowWithNumber(int windowNumber) {
+  return GetInterfaceProviderForWindowWithNumber(windowNumber)
+      .currentBrowserProvider.browser;
+}
 
 web::WebState* GetCurrentWebStateForWindowWithNumber(int windowNumber) {
   WebStateList* web_state_list =

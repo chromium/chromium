@@ -21,7 +21,9 @@ class SystemIdentityManager;
 class TabGroupService;
 class TrustedVaultClientBackend;
 @class UIImage;
+@class UIViewController;
 @class UIWindow;
+@protocol ChromeLensViewFinderController;
 @protocol ReauthenticationProtocol;
 
 namespace contextual_search {
@@ -277,6 +279,11 @@ void InjectFakeTabsInBrowser(Browser* browser);
 
 // Returns a fake reauthentication module to be used in tests.
 id<ReauthenticationProtocol> GetFakeReauthenticationModule();
+
+// Returns a fake Lens View Finder controller to be used in tests, or nil to
+// use the provider.
+UIViewController<ChromeLensViewFinderController>*
+GetOverriddenLensViewFinderController();
 
 // Returns true if application startup should pause at the background stage
 // (AppInitStage::kBrowserObjectsForBackgroundHandlers) and suppress scene

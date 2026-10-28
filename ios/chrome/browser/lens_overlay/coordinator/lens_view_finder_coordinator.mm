@@ -17,6 +17,7 @@
 #import "components/segmentation_platform/embedder/home_modules/tips_manager/signal_constants.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/profile/profile_state.h"
+#import "ios/chrome/app/tests_hook.h"
 #import "ios/chrome/browser/device_orientation/ui_bundled/scoped_force_portrait_orientation.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/first_run/public/best_features_item.h"
@@ -279,8 +280,11 @@ LensViewFinderTransition TransitionFromPresentationStyle(
       initWithLVFTransitionType:TransitionFromPresentationStyle(
                                     command.presentationStyle)];
 
-  _lensViewController =
-      ios::provider::NewChromeLensViewFinderController(configuration);
+  _lensViewController = tests_hook::GetOverriddenLensViewFinderController();
+  if (!_lensViewController) {
+    _lensViewController =
+        ios::provider::NewChromeLensViewFinderController(configuration);
+  }
 
   _lensViewController.transitioningDelegate = _transitionManager;
   _lensViewController.modalPresentationStyle =

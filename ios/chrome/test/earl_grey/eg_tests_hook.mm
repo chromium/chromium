@@ -72,8 +72,34 @@
 #import "ios/chrome/test/app/signin_test_util.h"
 #import "ios/chrome/test/earl_grey/test_switches.h"
 #import "ios/chrome/test/providers/signin/fake_trusted_vault_client_backend.h"
+#import "ios/public/provider/chrome/browser/lens/lens_api.h"
 #import "testing/gmock/include/gmock/gmock.h"
 #import "ui/base/test/ios/ui_image_test_utils.h"
+
+// Fake ChromeLensViewFinderController used when `kEnableFakeLensViewFinder` is
+// passed.
+@interface FakeChromeLensViewFinderController
+    : UIViewController <ChromeLensViewFinderController>
+@end
+
+@implementation FakeChromeLensViewFinderController
+
+- (void)setLensViewFinderDelegate:(id<ChromeLensViewFinderDelegate>)delegate {
+}
+
+- (void)buildCaptureInfrastructureForSelection {
+}
+
+- (void)buildCaptureInfrastructureForTranslate {
+}
+
+- (void)tearDownCaptureInfrastructure {
+}
+
+- (void)tearDownCaptureInfrastructureWithPlaceholder:(BOOL)showPlaceholder {
+}
+
+@end
 
 namespace {
 
@@ -508,6 +534,15 @@ void InjectFakeTabsInBrowser(Browser* browser) {
 
 id<ReauthenticationProtocol> GetFakeReauthenticationModule() {
   return [[FakeReauthenticationModule alloc] init];
+}
+
+UIViewController<ChromeLensViewFinderController>*
+GetOverriddenLensViewFinderController() {
+  if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
+          test_switches::kEnableFakeLensViewFinder)) {
+    return nil;
+  }
+  return [[FakeChromeLensViewFinderController alloc] init];
 }
 
 namespace {

@@ -7,11 +7,16 @@
 
 #import <Foundation/Foundation.h>
 
+class Browser;
+
 namespace web {
 class WebState;
 }
 
 namespace chrome_test_util {
+
+// Gets current Browser, in window with given number.
+Browser* GetCurrentBrowserForWindowWithNumber(int windowNumber);
 
 // Gets current active WebState, in window with given number.
 web::WebState* GetCurrentWebStateForWindowWithNumber(int windowNumber);

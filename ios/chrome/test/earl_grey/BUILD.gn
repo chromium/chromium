@@ -90,6 +90,7 @@ source_set("hooks") {
     "//ios/chrome/common/ui/reauthentication:fake_reauthentication_module",
     "//ios/chrome/test/app:test_support",
     "//ios/chrome/test/providers/signin:trusted_vault",
+    "//ios/public/provider/chrome/browser/lens:lens_api",
     "//ui/base:test_support",
   ]
 }
@@ -207,6 +208,7 @@ source_set("eg_app_support+eg2") {
     "//ios/chrome/browser/intelligence/features",
     "//ios/chrome/browser/intelligence/proto_wrappers:eg_app_support+eg2",
     "//ios/chrome/browser/intents/model:constants",
+    "//ios/chrome/browser/lens_overlay/test:eg_app_support+eg2",
     "//ios/chrome/browser/location_bar/ui_bundled",
     "//ios/chrome/browser/location_bar/ui_bundled:constants",
     "//ios/chrome/browser/main/model",

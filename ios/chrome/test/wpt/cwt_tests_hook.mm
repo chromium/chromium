@@ -187,6 +187,11 @@ id<ReauthenticationProtocol> GetFakeReauthenticationModule() {
   return nil;
 }
 
+UIViewController<ChromeLensViewFinderController>*
+GetOverriddenLensViewFinderController() {
+  return nil;
+}
+
 bool ShouldPauseStartupAtBackgroundStage() {
   return false;
 }

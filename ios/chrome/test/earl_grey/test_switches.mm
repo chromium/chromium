@@ -23,6 +23,9 @@ const char kEnableFakeTabGroupSyncService[] =
 // Enables FakeExtensionService.
 const char kEnableFakeExtensionService[] = "enable-fake-extension-service";
 
+// Enables FakeChromeLensViewFinderController.
+const char kEnableFakeLensViewFinder[] = "enable-fake-lens-view-finder";
+
 // Status of the Google Family fetch API call for the user.
 const char kFamilyStatus[] = "family-status";
 

@@ -28,6 +28,9 @@ extern const char kEnableFakeTabGroupSyncService[];
 // Switch used to enable FakeExtensionService for testing.
 extern const char kEnableFakeExtensionService[];
 
+// Switch used to enable FakeChromeLensViewFinderController for testing.
+extern const char kEnableFakeLensViewFinder[];
+
 // Switch used to force the status of fetching the Google Family for the user in
 // Earl Grey tests. If not specified, unknown status is retuned for all tests.
 extern const char kFamilyStatus[];
