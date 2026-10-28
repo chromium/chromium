@@ -29,7 +29,6 @@
 #include "third_party/blink/renderer/platform/weborigin/security_policy.h"
 
 #include <memory>
-#include <optional>
 
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
@@ -118,14 +117,14 @@ Referrer SecurityPolicy::GenerateReferrer(
   // a referrer, with the origin-only flag set to true.
   // Creating referrerOrigin can be an expensive operation so we use a lambda
   // to create it dynamically only for the cases where it is used.
-  std::optional<KURL> referrer_origin;
+  KURL referrer_origin;
   auto get_referrer_origin = [&]() -> const KURL& {
-    if (!referrer_origin) {
-      referrer_origin.emplace(referrer_url);
-      referrer_origin->SetPath(String());
-      referrer_origin->SetQuery(String());
+    if (referrer_origin.IsNull()) {
+      referrer_origin = referrer_url;
+      referrer_origin.SetPath(String());
+      referrer_origin.SetQuery(String());
     }
-    return *referrer_origin;
+    return referrer_origin;
   };
 
   // 6. If the result of serializing referrerURL is a string whose length is
