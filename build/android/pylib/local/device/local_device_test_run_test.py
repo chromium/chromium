@@ -7,18 +7,20 @@
 import argparse
 import os
 import random
-import unittest
-
 import sys
+import threading
+import unittest
 
 sys.path.append(
     os.path.abspath(os.path.join(os.path.dirname(__file__), '../../..'))
 )
 
 from pylib.base import base_test_result
+from pylib.base import test_collection
 from pylib.base import test_exception
 from pylib.local.device import local_device_environment
 from pylib.local.device import local_device_test_run
+from devil.android import device_errors
 
 import mock
 
@@ -612,6 +614,308 @@ class LocalDeviceTestRunTest(unittest.TestCase):
         # Test2 must NOT be started on the still-locked device.
         self.assertEqual(test_run._RunTest.call_count, 1)
         self.assertEqual(len(results.GetTimeout()), 1)
+
+    def testRunTestsOnDevice_commandTimeout_deviceOffline(self):
+        test_run = TestLocalDeviceTestRun()
+        dev = mock.MagicMock()
+        dev.build_version_sdk = 34
+        dev.IsOnline.return_value = False
+
+        tests = test_collection.TestCollection(
+            [['PRE_PRE_Test1', 'PRE_Test1', 'Test1'], ['Test2']]
+        )
+        results = base_test_result.TestRunResults()
+        results.AddResults(
+            base_test_result.BaseTestResult(
+                t, base_test_result.ResultType.NOTRUN
+            )
+            for t in ('PRE_PRE_Test1', 'PRE_Test1', 'Test1', 'Test2')
+        )
+        timeout_error = device_errors.CommandTimeoutError(
+            'adb logcat -c timed out'
+        )
+
+        with (
+            mock.patch.object(
+                test_run,
+                '_RunTest',
+                side_effect=timeout_error,
+            ) as mock_run_test,
+            mock.patch.object(
+                local_device_test_run, 'WaitUntilDeviceReady'
+            ) as mock_wait_ready,
+            mock.patch.object(
+                local_device_test_run.exception_recorder, 'register'
+            ) as mock_register,
+        ):
+            test_run._RunTestsOnDevice(dev, tests, results, threading.Event())
+
+        self.assertEqual(set(), results.GetTimeout())
+        self.assertEqual(
+            {
+                'PRE_PRE_Test1': base_test_result.ResultType.NOTRUN,
+                'PRE_Test1': base_test_result.ResultType.NOTRUN,
+                'Test1': base_test_result.ResultType.NOTRUN,
+                'Test2': base_test_result.ResultType.NOTRUN,
+            },
+            {r.GetName(): r.GetType() for r in results.GetAll()},
+        )
+        mock_run_test.assert_called_once_with(
+            dev, ['PRE_PRE_Test1', 'PRE_Test1', 'Test1']
+        )
+        dev.IsOnline.assert_called_once_with(timeout=10, retries=0)
+        mock_wait_ready.assert_not_called()
+        self.assertEqual(1, len(tests))
+        mock_register.assert_called_once()
+        registered_exc = mock_register.call_args[0][0]
+        self.assertIsInstance(
+            registered_exc, device_errors.DeviceUnreachableError
+        )
+        self.assertIs(registered_exc.__cause__, timeout_error)
+
+    def testRunTestsOnDevice_commandTimeout_deviceOnline(self):
+        test_run = TestLocalDeviceTestRun()
+        dev = mock.MagicMock()
+        dev.build_version_sdk = 34
+        dev.IsOnline.return_value = True
+
+        tests = test_collection.TestCollection(
+            [['PRE_PRE_Test1', 'PRE_Test1', 'Test1'], ['Test2']]
+        )
+        results = base_test_result.TestRunResults()
+        results.AddResults(
+            base_test_result.BaseTestResult(
+                t, base_test_result.ResultType.NOTRUN
+            )
+            for t in ('PRE_PRE_Test1', 'PRE_Test1', 'Test1', 'Test2')
+        )
+        timeout_error = device_errors.CommandTimeoutError('test timed out')
+
+        with (
+            mock.patch.object(
+                test_run,
+                '_RunTest',
+                side_effect=[
+                    timeout_error,
+                    (
+                        [
+                            base_test_result.BaseTestResult(
+                                'Test2', base_test_result.ResultType.PASS
+                            )
+                        ],
+                        None,
+                    ),
+                ],
+            ) as mock_run_test,
+            mock.patch.object(
+                local_device_test_run, 'WaitUntilDeviceReady'
+            ) as mock_wait_ready,
+            mock.patch.object(
+                local_device_test_run.exception_recorder, 'register'
+            ) as mock_register,
+        ):
+            test_run._RunTestsOnDevice(dev, tests, results, threading.Event())
+
+        self.assertEqual(
+            {'PRE_PRE_Test1', 'PRE_Test1', 'Test1'},
+            {r.GetName() for r in results.GetTimeout()},
+        )
+        self.assertEqual({'Test2'}, {r.GetName() for r in results.GetPass()})
+        self.assertEqual(2, mock_run_test.call_count)
+        dev.IsOnline.assert_called_once_with(timeout=10, retries=0)
+        mock_wait_ready.assert_called_once_with(
+            dev,
+            force_main_user=test_run._env.force_main_user,
+            packages=[],
+        )
+        self.assertEqual(0, len(tests))
+        mock_register.assert_called_once_with(timeout_error)
+
+    def testRunTestsOnDevice_commandTimeout_isOnlineTimesOut(self):
+        test_run = TestLocalDeviceTestRun()
+        dev = mock.MagicMock()
+        dev.build_version_sdk = 34
+        dev.IsOnline.side_effect = device_errors.CommandTimeoutError(
+            'adb get-state timed out'
+        )
+
+        tests = test_collection.TestCollection(
+            [['PRE_PRE_Test1', 'PRE_Test1', 'Test1'], ['Test2']]
+        )
+        results = base_test_result.TestRunResults()
+        results.AddResults(
+            base_test_result.BaseTestResult(
+                t, base_test_result.ResultType.NOTRUN
+            )
+            for t in ('PRE_PRE_Test1', 'PRE_Test1', 'Test1', 'Test2')
+        )
+        timeout_error = device_errors.CommandTimeoutError(
+            'adb logcat -c timed out'
+        )
+
+        with (
+            mock.patch.object(
+                test_run,
+                '_RunTest',
+                side_effect=timeout_error,
+            ) as mock_run_test,
+            mock.patch.object(
+                local_device_test_run, 'WaitUntilDeviceReady'
+            ) as mock_wait_ready,
+            mock.patch.object(
+                local_device_test_run.exception_recorder, 'register'
+            ) as mock_register,
+        ):
+            test_run._RunTestsOnDevice(dev, tests, results, threading.Event())
+
+        self.assertEqual(set(), results.GetTimeout())
+        self.assertEqual(
+            {
+                'PRE_PRE_Test1': base_test_result.ResultType.NOTRUN,
+                'PRE_Test1': base_test_result.ResultType.NOTRUN,
+                'Test1': base_test_result.ResultType.NOTRUN,
+                'Test2': base_test_result.ResultType.NOTRUN,
+            },
+            {r.GetName(): r.GetType() for r in results.GetAll()},
+        )
+        mock_run_test.assert_called_once_with(
+            dev, ['PRE_PRE_Test1', 'PRE_Test1', 'Test1']
+        )
+        dev.IsOnline.assert_called_once_with(timeout=10, retries=0)
+        mock_wait_ready.assert_not_called()
+        self.assertEqual(1, len(tests))
+        mock_register.assert_called_once()
+        registered_exc = mock_register.call_args[0][0]
+        self.assertIsInstance(
+            registered_exc, device_errors.DeviceUnreachableError
+        )
+        self.assertIs(registered_exc.__cause__, timeout_error)
+
+    def testRunTestsOnDevice_deviceUnreachable_emulatorNoRetries(self):
+        test_run = TestLocalDeviceTestRun()
+        dev = mock.MagicMock()
+        dev.build_version_sdk = 34
+        dev.adb = mock.MagicMock(
+            spec=local_device_test_run.adb_wrapper.AdbWrapper,
+            is_emulator=True,
+        )
+
+        tests = test_collection.TestCollection(
+            [['PRE_PRE_Test1', 'PRE_Test1', 'Test1'], ['Test2']]
+        )
+        results = base_test_result.TestRunResults()
+        results.AddResults(
+            base_test_result.BaseTestResult(
+                t, base_test_result.ResultType.NOTRUN
+            )
+            for t in ('PRE_PRE_Test1', 'PRE_Test1', 'Test1', 'Test2')
+        )
+        unreachable_error = device_errors.DeviceUnreachableError(
+            'device offline'
+        )
+
+        with (
+            mock.patch.object(
+                test_run,
+                '_RunTest',
+                side_effect=unreachable_error,
+            ) as mock_run_test,
+            mock.patch.object(dev, 'WaitUntilFullyBooted') as mock_wait_booted,
+            mock.patch.object(
+                local_device_test_run.exception_recorder, 'register'
+            ) as mock_register,
+        ):
+            test_run._RunTestsOnDevice(dev, tests, results, threading.Event())
+
+        mock_run_test.assert_called_once_with(
+            dev, ['PRE_PRE_Test1', 'PRE_Test1', 'Test1']
+        )
+        mock_wait_booted.assert_not_called()
+        self.assertEqual(
+            {
+                'PRE_PRE_Test1': base_test_result.ResultType.NOTRUN,
+                'PRE_Test1': base_test_result.ResultType.NOTRUN,
+                'Test1': base_test_result.ResultType.NOTRUN,
+                'Test2': base_test_result.ResultType.NOTRUN,
+            },
+            {r.GetName(): r.GetType() for r in results.GetAll()},
+        )
+        self.assertEqual(1, len(tests))
+        mock_register.assert_called_once_with(unreachable_error)
+
+    def testIsEmulator(self):
+        with self.subTest('adb_wrapper_emulator'):
+            dev = mock.MagicMock()
+            dev.adb = local_device_test_run.adb_wrapper.AdbWrapper(
+                'emulator-5554'
+            )
+            self.assertTrue(local_device_test_run._IsEmulator(dev))
+
+        with self.subTest('device_utils_cuttlefish'):
+            dev = mock.MagicMock(
+                spec=local_device_test_run.device_utils.DeviceUtils
+            )
+            dev.adb = local_device_test_run.adb_wrapper.AdbWrapper(
+                '127.0.0.1:6520'
+            )
+            dev.is_emulator = True
+            self.assertTrue(local_device_test_run._IsEmulator(dev))
+
+        with self.subTest('device_utils_physical'):
+            dev = mock.MagicMock(
+                spec=local_device_test_run.device_utils.DeviceUtils
+            )
+            dev.adb = local_device_test_run.adb_wrapper.AdbWrapper(
+                '0123456789ABCDEF'
+            )
+            dev.is_emulator = None
+            self.assertFalse(local_device_test_run._IsEmulator(dev))
+
+        with self.subTest('device_utils_base_error'):
+            dev = mock.MagicMock(
+                spec=local_device_test_run.device_utils.DeviceUtils
+            )
+            dev.adb = local_device_test_run.adb_wrapper.AdbWrapper(
+                '127.0.0.1:6520'
+            )
+            type(dev).is_emulator = mock.PropertyMock(
+                side_effect=local_device_test_run.base_error.BaseError(
+                    'offline'
+                )
+            )
+            self.assertFalse(local_device_test_run._IsEmulator(dev))
+
+        with self.subTest('unspec_magic_mock_retries_three_times'):
+            dev = mock.MagicMock()
+            dev.build_version_sdk = 34
+            self.assertFalse(local_device_test_run._IsEmulator(dev))
+
+            test_run = TestLocalDeviceTestRun()
+            tests = test_collection.TestCollection([['Test1']])
+            results = base_test_result.TestRunResults()
+            with (
+                mock.patch.object(
+                    test_run,
+                    '_RunTest',
+                    return_value=(
+                        [
+                            base_test_result.BaseTestResult(
+                                'Test1', base_test_result.ResultType.PASS
+                            )
+                        ],
+                        None,
+                    ),
+                ),
+                mock.patch.object(
+                    local_device_test_run.crash_handler,
+                    'RetryOnSystemCrash',
+                    wraps=local_device_test_run.crash_handler.RetryOnSystemCrash,
+                ) as mock_retry,
+            ):
+                test_run._RunTestsOnDevice(
+                    dev, tests, results, threading.Event()
+                )
+            mock_retry.assert_called_once_with(mock.ANY, device=dev, retries=3)
 
 
 if __name__ == '__main__':

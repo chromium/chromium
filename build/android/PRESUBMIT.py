@@ -77,6 +77,7 @@ def GetScopedUnitTests(input_api, build_android_dir, *, is_upload):
         J('convert_dex_profile_tests.py'),
         J('list_class_verification_failures_test.py'),
         J('test_runner_test.py'),
+        J('tombstones_test.py'),
     ]
     # Build server tests are flaky on bots.
     # Tracking bug: crbug.com/559199069

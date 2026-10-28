@@ -19,7 +19,6 @@ import time
 
 from devil import base_error
 from devil.android import apk_helper
-from devil.android import crash_handler
 from devil.android import device_errors
 from devil.android import device_temp_file
 from devil.android import flag_changer
@@ -837,7 +836,7 @@ class LocalDeviceInstrumentationTestRun(
             ]
 
             def bind_crash_handler(step, dev):
-                return lambda: crash_handler.RetryOnSystemCrash(step, dev)
+                return lambda: self._RetryOnSystemCrash(step, dev)
 
             install_steps = [
                 bind_crash_handler(s, device) for s in install_steps
@@ -2011,7 +2010,7 @@ class LocalDeviceInstrumentationTestRun(
                     test_list_run_output
                 )
 
-            return crash_handler.RetryOnSystemCrash(_run, d)
+            return self._RetryOnSystemCrash(_run, d)
 
         raw_test_lists = self._env.parallel_devices.pMap(list_tests).pGet(None)
 

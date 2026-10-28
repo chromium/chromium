@@ -354,6 +354,43 @@ class LocalDeviceGtestRunTest(unittest.TestCase):
                     expected_cmd, shell=True, check_return=True
                 )
 
+    def test_SetUp_emulatorUnreachable_noRetries(self):
+        mock_env = mock.MagicMock(
+            spec=local_device_environment.LocalDeviceEnvironment
+        )
+        mock_env.concurrent_adb = False
+        mock_env.force_main_user = False
+        mock_ti = mock.MagicMock(spec=gtest_test_instance.GtestTestInstance)
+        mock_ti.use_existing_test_data = True
+        mock_ti.deploy_mock_openxr_runtime = False
+        mock_ti.GetDataDependencies.return_value = [[]]
+
+        device = mock.MagicMock()
+        device.serial = 'emulator-5554'
+        device.adb = (
+            local_device_gtest_run.local_device_test_run.adb_wrapper.AdbWrapper(
+                'emulator-5554'
+            )
+        )
+        device.RunShellCommand.side_effect = (
+            local_device_gtest_run.device_errors.DeviceUnreachableError(
+                'device offline'
+            )
+        )
+        mock_env.parallel_devices.pMap.side_effect = lambda f, args: [
+            f(device, args[0])
+        ]
+
+        run = local_device_gtest_run.LocalDeviceGtestRun(mock_env, mock_ti)
+        run._delegate = mock.MagicMock()
+        run.SetUp()
+
+        device.RunShellCommand.assert_called_once()
+        device.WaitUntilFullyBooted.assert_not_called()
+        mock_env.DenylistDevice.assert_called_once_with(
+            device, 'individual_device_set_up'
+        )
+
     def test_SetUp_push_test_data_drops_caches_in_force_main_user(self):
         device = mock.MagicMock()
         device.ResolveSpecialPath.return_value = (

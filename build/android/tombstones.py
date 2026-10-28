@@ -30,14 +30,20 @@ from pylib.symbols import stack_symbolizer
 _TZ_UTC = {'TZ': 'UTC'}
 
 
-def _ListTombstones(device):
+def _ListTombstones(device, raise_on_unreachable=False):
     """List the tombstone files on the device.
 
     Args:
       device: An instance of DeviceUtils.
+      raise_on_unreachable: Whether to re-raise DeviceUnreachableError if the
+        device cannot be reached.
 
     Yields:
       Tuples of (tombstone filename, date time of file on device).
+
+    Raises:
+      device_errors.DeviceUnreachableError: If the device is unreachable and
+        |raise_on_unreachable| is True.
     """
     try:
         if not device.PathExists('/data/tombstones', as_root=True):
@@ -52,6 +58,8 @@ def _ListTombstones(device):
     except device_errors.CommandFailedError:
         logging.exception('Could not retrieve tombstones.')
     except device_errors.DeviceUnreachableError:
+        if raise_on_unreachable:
+            raise
         logging.exception('Device unreachable retrieving tombstones.')
     except device_errors.CommandTimeoutError:
         logging.exception('Timed out retrieving tombstones.')
@@ -211,8 +219,11 @@ def ClearAllTombstones(device):
 
     Args:
       device: An instance of DeviceUtils.
+
+    Raises:
+      device_errors.DeviceUnreachableError: If the device is unreachable.
     """
-    all_tombstones = list(_ListTombstones(device))
+    all_tombstones = list(_ListTombstones(device, raise_on_unreachable=True))
     if not all_tombstones:
         logging.warning('No tombstones to clear.')
 

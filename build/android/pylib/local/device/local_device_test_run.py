@@ -17,6 +17,8 @@ import threading
 from devil import base_error
 from devil.android import crash_handler
 from devil.android import device_errors
+from devil.android import device_utils
+from devil.android.sdk import adb_wrapper
 from devil.android.sdk import version_codes
 from devil.android.tools import device_recovery
 from devil.utils import signal_handler
@@ -61,12 +63,40 @@ SHARDING_STRATEGY_BOUNDED_LOAD = 'bounded-load'
 SHARDING_STRATEGIES = (SHARDING_STRATEGY_HASH, SHARDING_STRATEGY_BOUNDED_LOAD)
 
 
+def _IsEmulator(dev):
+    """Returns whether |dev| is an emulator.
+
+    Checks AdbWrapper.is_emulator before DeviceUtils.is_emulator despite
+    AdbWrapper.is_emulator's deprecation note: AdbWrapper.is_emulator matches
+    emulator-* serials on the host with zero adb I/O even when the emulator is
+    already offline and DeviceUtils._cache is cold or cleared, while
+    dev.is_emulator covers TCP-connected Cuttlefish (vsoc_*) instances via
+    cached ro.product.device.
+    """
+    if (
+        isinstance(getattr(dev, 'adb', None), adb_wrapper.AdbWrapper)
+        and dev.adb.is_emulator
+    ):
+        return True
+    if isinstance(dev, device_utils.DeviceUtils):
+        try:
+            return bool(dev.is_emulator)
+        except base_error.BaseError:
+            return False
+    return False
+
+
 class LocalDeviceTestRun(test_run.TestRun):
     def __init__(self, env, test_instance):
         super().__init__(env, test_instance)
         # This is intended to be filled by a child class.
         self._installed_packages = []
         env.SetPreferredAbis(test_instance.GetPreferredAbis())
+
+    def _RetryOnSystemCrash(self, fn, dev):
+        return crash_handler.RetryOnSystemCrash(
+            fn, device=dev, retries=0 if _IsEmulator(dev) else 3
+        )
 
     @local_device_environment.handle_shard_failures
     def _RunTestsOnDevice(self, dev, tests, results, exit_now, num_tests=0):
@@ -87,8 +117,8 @@ class LocalDeviceTestRun(test_run.TestRun):
             result = None
             rerun = None
             try:
-                result, rerun = crash_handler.RetryOnSystemCrash(
-                    lambda d, t=test: self._RunTest(d, t), device=dev
+                result, rerun = self._RetryOnSystemCrash(
+                    lambda d, t=test: self._RunTest(d, t), dev
                 )
                 consecutive_device_errors = 0
                 if isinstance(result, base_test_result.BaseTestResult):
@@ -103,6 +133,20 @@ class LocalDeviceTestRun(test_run.TestRun):
                 exception_recorder.register(e)
                 raise
             except device_errors.CommandTimeoutError as e:
+                try:
+                    is_online = dev.IsOnline(timeout=10, retries=0)
+                except device_errors.CommandTimeoutError:
+                    is_online = False
+                if not is_online:
+                    try:
+                        raise device_errors.DeviceUnreachableError(
+                            str(dev)
+                        ) from e
+                    except (
+                        device_errors.DeviceUnreachableError
+                    ) as unreachable_e:
+                        exception_recorder.register(unreachable_e)
+                        raise
                 exception_recorder.register(e)
                 # Test timeouts don't count as device errors for the purpose
                 # of bad device detection.

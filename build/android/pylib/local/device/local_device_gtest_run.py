@@ -16,7 +16,6 @@ import sys
 import threading
 import time
 from devil import base_error
-from devil.android import crash_handler
 from devil.android import device_errors
 from devil.android import device_temp_file
 from devil.android import logcat_monitor
@@ -672,7 +671,7 @@ class LocalDeviceGtestRun(local_device_test_run.LocalDeviceTestRun):
                 commit_sync()
 
             def bind_crash_handler(step, dev):
-                return lambda: crash_handler.RetryOnSystemCrash(step, dev)
+                return lambda: self._RetryOnSystemCrash(step, dev)
 
             steps = [install_apk, disable_system_animations]
             if not self._test_instance.use_existing_test_data:
@@ -858,11 +857,11 @@ class LocalDeviceGtestRun(local_device_test_run.LocalDeviceTestRun):
                     logging.info('  %s', f)
 
                 with self._ArchiveLogcat(dev, 'list_tests'):
-                    raw_test_list = crash_handler.RetryOnSystemCrash(
+                    raw_test_list = self._RetryOnSystemCrash(
                         lambda d: self._delegate.Run(
                             None, d, flags=flags, timeout=timeout
                         ),
-                        device=dev,
+                        dev,
                     )
 
                 tests = gtest_test_instance.ParseGTestListTests(raw_test_list)
