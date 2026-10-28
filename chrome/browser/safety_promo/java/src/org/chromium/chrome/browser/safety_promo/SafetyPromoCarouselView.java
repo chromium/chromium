@@ -141,18 +141,22 @@ public class SafetyPromoCarouselView extends RelativeLayout {
         eventCopy.recycle();
     }
 
+    /** Sets the click listener of the "Continue" button. */
     public void setContinueButtonOnClickListener(OnClickListener listener) {
         mContinueButton.setOnClickListener(listener);
     }
 
+    /** Sets the title text of the active page. */
     public void setTitleText(@StringRes int stringResId) {
         mTitleView.setText(stringResId);
     }
 
+    /** Sets the subtitle text of the active page. */
     public void setSubtitleText(@StringRes int stringResId) {
         mSubtitleView.setText(stringResId);
     }
 
+    /** Sets the number of pages shown by the page indicator. */
     public void setPageIndicatorCount(int count) {
         mPageIndicatorView.setPageCount(count);
     }
