@@ -10373,6 +10373,25 @@ should be able to be added at any place in this file.
 </action>
 
 <action
+    name="ContextualTasks.EphemeralToolbarButton.UserAction.OpenContextMenu{CloseSidePanelOptionState}">
+  <owner>dianaou@chromium.org</owner>
+  <owner>chrome-contextual-tasks-eng@google.com</owner>
+  <description>
+    Recorded when the user opens the context menu on the ephemeral contextual
+    tasks toolbar button. {CloseSidePanelOptionState}
+  </description>
+  <token key="CloseSidePanelOptionState">
+    <variant name="" summary="Recorded for all context menu opens combined."/>
+    <variant name=".CloseSidePanelOptionHidden"
+        summary="Recorded when the Close/Hide side panel (or Remove) option
+                 is not visible in the context menu."/>
+    <variant name=".CloseSidePanelOptionVisible"
+        summary="Recorded when the Close/Hide side panel (or Remove) option
+                 is visible in the context menu."/>
+  </token>
+</action>
+
+<action
     name="ContextualTasks.EphemeralToolbarButton.UserAction.PinByContextMenu">
   <owner>dianaou@chromium.org</owner>
   <owner>chrome-contextual-tasks-eng@google.com</owner>

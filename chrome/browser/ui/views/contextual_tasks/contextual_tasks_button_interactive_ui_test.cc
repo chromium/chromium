@@ -574,6 +574,26 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksEphemeralButtonInteractiveTest,
       WaitForHide(kContextualTasksEphemeralToolbarButtonElementId), Do([&]() {
         EXPECT_EQ(1, user_action_tester.GetActionCount(
                          "ContextualTasks.EphemeralToolbarButton.UserAction."
+                         "OpenContextMenu"));
+        histogram_tester.ExpectUniqueSample(
+            "ContextualTasks.EphemeralToolbarButton.UserAction.OpenContextMenu",
+            true, 1);
+        EXPECT_EQ(1, user_action_tester.GetActionCount(
+                         "ContextualTasks.EphemeralToolbarButton.UserAction."
+                         "OpenContextMenu.CloseSidePanelOptionVisible"));
+        histogram_tester.ExpectUniqueSample(
+            "ContextualTasks.EphemeralToolbarButton.UserAction."
+            "OpenContextMenu.CloseSidePanelOptionVisible",
+            true, 1);
+        EXPECT_EQ(0, user_action_tester.GetActionCount(
+                         "ContextualTasks.EphemeralToolbarButton.UserAction."
+                         "OpenContextMenu.CloseSidePanelOptionHidden"));
+        histogram_tester.ExpectTotalCount(
+            "ContextualTasks.EphemeralToolbarButton.UserAction."
+            "OpenContextMenu.CloseSidePanelOptionHidden",
+            0);
+        EXPECT_EQ(1, user_action_tester.GetActionCount(
+                         "ContextualTasks.EphemeralToolbarButton.UserAction."
                          "RemoveByContextMenu"));
         histogram_tester.ExpectUniqueSample(
             "ContextualTasks.EphemeralToolbarButton.UserAction."
@@ -2772,6 +2792,9 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(
     ContextualTasksEphemeralButtonPinningV2InteractiveTest,
     CloseSidePanelOptionOnlyShownWhenSidePanelClosedAndNotPinned) {
+  base::UserActionTester user_action_tester;
+  base::HistogramTester histogram_tester;
+
   RunTestSequence(
       SignIntoEligibleAccount(), InstrumentTab(kFirstTab), Do([&]() {
         PinnedToolbarActionsModel::Get(browser()->GetProfile())
@@ -2802,6 +2825,28 @@ IN_PROC_BROWSER_TEST_F(
       WaitForShow(kPinnedActionToolbarCustomizeElementId),
       EnsureNotPresent(
           ContextualTasksEphemeralButtonMenuModel::kRemoveForTaskMenuItem),
+      Do([&]() {
+        EXPECT_EQ(1, user_action_tester.GetActionCount(
+                         "ContextualTasks.EphemeralToolbarButton.UserAction."
+                         "OpenContextMenu"));
+        histogram_tester.ExpectUniqueSample(
+            "ContextualTasks.EphemeralToolbarButton.UserAction.OpenContextMenu",
+            true, 1);
+        EXPECT_EQ(1, user_action_tester.GetActionCount(
+                         "ContextualTasks.EphemeralToolbarButton.UserAction."
+                         "OpenContextMenu.CloseSidePanelOptionHidden"));
+        histogram_tester.ExpectUniqueSample(
+            "ContextualTasks.EphemeralToolbarButton.UserAction."
+            "OpenContextMenu.CloseSidePanelOptionHidden",
+            true, 1);
+        EXPECT_EQ(0, user_action_tester.GetActionCount(
+                         "ContextualTasks.EphemeralToolbarButton.UserAction."
+                         "OpenContextMenu.CloseSidePanelOptionVisible"));
+        histogram_tester.ExpectTotalCount(
+            "ContextualTasks.EphemeralToolbarButton.UserAction."
+            "OpenContextMenu.CloseSidePanelOptionVisible",
+            0);
+      }),
       // Close the context menu and close the side panel.
       SelectMenuItem(kPinnedActionToolbarCustomizeElementId),
       WaitForHide(kPinnedActionToolbarPinElementId),
@@ -2830,15 +2875,35 @@ IN_PROC_BROWSER_TEST_F(
       WaitForShow(
           ContextualTasksEphemeralButtonMenuModel::kRemoveForTaskMenuItem),
       WaitForShow(kPinnedActionToolbarPinElementId),
-      WaitForShow(kPinnedActionToolbarCustomizeElementId));
+      WaitForShow(kPinnedActionToolbarCustomizeElementId), Do([&]() {
+        EXPECT_EQ(2, user_action_tester.GetActionCount(
+                         "ContextualTasks.EphemeralToolbarButton.UserAction."
+                         "OpenContextMenu"));
+        histogram_tester.ExpectUniqueSample(
+            "ContextualTasks.EphemeralToolbarButton.UserAction.OpenContextMenu",
+            true, 2);
+        EXPECT_EQ(1, user_action_tester.GetActionCount(
+                         "ContextualTasks.EphemeralToolbarButton.UserAction."
+                         "OpenContextMenu.CloseSidePanelOptionHidden"));
+        histogram_tester.ExpectUniqueSample(
+            "ContextualTasks.EphemeralToolbarButton.UserAction."
+            "OpenContextMenu.CloseSidePanelOptionHidden",
+            true, 1);
+        EXPECT_EQ(1, user_action_tester.GetActionCount(
+                         "ContextualTasks.EphemeralToolbarButton.UserAction."
+                         "OpenContextMenu.CloseSidePanelOptionVisible"));
+        histogram_tester.ExpectUniqueSample(
+            "ContextualTasks.EphemeralToolbarButton.UserAction."
+            "OpenContextMenu.CloseSidePanelOptionVisible",
+            true, 1);
+      }));
 }
 
 IN_PROC_BROWSER_TEST_F(
     ContextualTasksPinnedButtonActiveIndicatorInteractiveTest,
     EphemeralButtonShowsActiveIndicatorWithoutDropShadow) {
   RunTestSequence(
-      SignIntoEligibleAccount(), InstrumentTab(kFirstTab),
-      Do([&]() {
+      SignIntoEligibleAccount(), InstrumentTab(kFirstTab), Do([&]() {
         PinnedToolbarActionsModel::Get(browser()->GetProfile())
             ->UpdatePinnedState(kActionSidePanelShowContextualTasks, false);
       }),
