@@ -5206,6 +5206,13 @@
       status: "stable",
     },
     {
+      // Kill switch for https://crbug.com/382679385 which recomputes the
+      // dimensions of an out-of-flow positioned box when computing dimensions
+      // changes its scrollbars.
+      name: "PositionTryFreezeScrollbars",
+      status: "stable",
+    },
+    {
       // Kill switch for https://crbug.com/448173938 which changes position
       // visibility to ignore non-clipping ancestors.
       name: "PositionVisibilityIgnoreNonClipAncestors",
