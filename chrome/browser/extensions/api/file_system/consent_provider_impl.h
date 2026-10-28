@@ -54,13 +54,6 @@ class ConsentProviderImpl : public ConsentProvider {
                             bool writable,
                             ShowDialogCallback callback) = 0;
 
-    // Shows a notification about permissions automatically granted access.
-    virtual void ShowNotification(const extensions::ExtensionId& extension_id,
-                                  const std::string& extension_name,
-                                  const std::string& volume_id,
-                                  const std::string& volume_label,
-                                  bool writable) = 0;
-
     // Checks if the extension was launched in auto-launch kiosk mode.
     virtual bool IsAutoLaunched(const Extension& extension) = 0;
 
@@ -121,11 +114,6 @@ class ConsentProviderDelegate : public ConsentProviderImpl::DelegateInterface,
                   const std::string& volume_label,
                   bool writable,
                   ConsentProviderImpl::ShowDialogCallback callback) override;
-  void ShowNotification(const extensions::ExtensionId& extension_id,
-                        const std::string& extension_name,
-                        const std::string& volume_id,
-                        const std::string& volume_label,
-                        bool writable) override;
   bool IsAutoLaunched(const Extension& extension) override;
   bool IsAllowlistedComponent(const Extension& extension) override;
 

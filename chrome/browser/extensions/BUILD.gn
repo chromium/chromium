@@ -1233,8 +1233,6 @@ source_set("extensions") {
       "api/certificate_provider/certificate_provider_api.h",
       "api/file_system/consent_provider_impl.cc",
       "api/file_system/consent_provider_impl.h",
-      "api/file_system/request_file_system_notification.cc",
-      "api/file_system/request_file_system_notification.h",
       "api/platform_keys_core/platform_keys_utils.cc",
       "api/platform_keys_core/platform_keys_utils.h",
 
