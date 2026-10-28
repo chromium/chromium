@@ -1478,9 +1478,6 @@ class MODULES_EXPORT WebGLRenderingContextWebGPUBase
   Member<WebGLBuffer> transform_feedback_buffer_binding_;
   Member<WebGLBuffer> uniform_buffer_binding_;
 
-  // TODO(413078308): This reference should live in the VAO instead.
-  Member<WebGLBuffer> element_array_buffer_binding_;
-
   Member<WebGLProgram> program_binding_;
 
   // WebGL-specific pixel store parameters, set with pixelStorei. The standard
@@ -1488,6 +1485,10 @@ class MODULES_EXPORT WebGLRenderingContextWebGPUBase
   bool unpack_flip_y_ = false;
   bool unpack_premultiply_alpha_ = false;
   GLenum unpack_colorspace_conversion_ = GC3D_BROWSER_DEFAULT_WEBGL;
+
+  GLint max_vertex_attribs_ = 0;
+  Member<WebGLVertexArrayObject> default_vertex_array_object_;
+  Member<WebGLVertexArrayObject> bound_vertex_array_object_;
 };
 
 }  // namespace blink

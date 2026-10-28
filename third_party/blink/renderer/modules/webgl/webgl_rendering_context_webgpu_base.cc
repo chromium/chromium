@@ -733,7 +733,7 @@ void WebGLRenderingContextWebGPUBase::bindBuffer(GLenum target,
       copy_write_buffer_binding_ = buffer;
       break;
     case GL_ELEMENT_ARRAY_BUFFER:
-      element_array_buffer_binding_ = buffer;
+      bound_vertex_array_object_->SetElementArrayBuffer(buffer);
       break;
     case GL_PIXEL_PACK_BUFFER:
       pixel_pack_buffer_binding_ = buffer;
@@ -1037,7 +1037,6 @@ void WebGLRenderingContextWebGPUBase::deleteBuffer(WebGLBuffer* buffer) {
            &array_buffer_binding_,
            &copy_read_buffer_binding_,
            &copy_write_buffer_binding_,
-           &element_array_buffer_binding_,
            &pixel_pack_buffer_binding_,
            &pixel_unpack_buffer_binding_,
            &transform_feedback_buffer_binding_,
@@ -1047,10 +1046,10 @@ void WebGLRenderingContextWebGPUBase::deleteBuffer(WebGLBuffer* buffer) {
       *binding = nullptr;
     }
   }
-  // TODO(413078308): With VAOs and transform feedback objects, call their
+  bound_vertex_array_object_->UnbindBuffer(buffer);
+  // TODO(413078308): With transform feedback objects, call their
   // UnbindBuffer(). It releases their attachment to the buffer, otherwise the
-  // GL buffer is never deleted. For VAOs, this replaces
-  // element_array_buffer_binding_. Also clear the indexed bindings once
+  // GL buffer is never deleted. Also clear the indexed bindings once
   // implemented.
 }
 
@@ -1479,7 +1478,8 @@ ScriptValue WebGLRenderingContextWebGPUBase::getParameter(
       return WebGLAny(script_state, array_buffer_binding_.Get());
 
     case GL_ELEMENT_ARRAY_BUFFER_BINDING:
-      return WebGLAny(script_state, element_array_buffer_binding_.Get());
+      return WebGLAny(script_state,
+                      bound_vertex_array_object_->BoundElementArrayBuffer());
 
     // WebGLFramebuffer:
     case GL_FRAMEBUFFER_BINDING:  // Also GL_DRAW_FRAMEBUFFER_BINDING.
@@ -2658,12 +2658,16 @@ void WebGLRenderingContextWebGPUBase::vertexAttribPointer(GLuint index,
     return;
   }
 
-  GLFN(driver_, glVertexAttribPointer)(
+  RETURN_IF_GL_ERROR(GLFN(driver_, glVertexAttribPointer)(
       index, size, type, normalized, stride,
-      reinterpret_cast<void*>(static_cast<intptr_t>(offset)));
+      reinterpret_cast<void*>(static_cast<intptr_t>(offset))));
 
-  // TODO(413078308): Update the tracked buffer in the current VAO if there was
-  // no GL error.
+  // Track the JS wrapper on the VAO. This keeps the WebGLBuffer alive while it
+  // is attached (otherwise garbage collecting it would delete the GL buffer),
+  // and is needed to return the wrapper for
+  // getVertexAttrib(VERTEX_ATTRIB_ARRAY_BUFFER_BINDING).
+  bound_vertex_array_object_->SetArrayBufferForAttrib(
+      index, array_buffer_binding_.Get());
 }
 
 void WebGLRenderingContextWebGPUBase::viewport(GLint x,
@@ -4151,13 +4155,19 @@ void WebGLRenderingContextWebGPUBase::uniformBlockBinding(
 }
 
 WebGLVertexArrayObject* WebGLRenderingContextWebGPUBase::createVertexArray() {
-  NOTIMPLEMENTED();
-  return nullptr;
+  return MakeGarbageCollected<WebGLVertexArrayObject>(
+      this, WebGLVertexArrayObjectBase::kVaoTypeUser, max_vertex_attribs_);
 }
 
 void WebGLRenderingContextWebGPUBase::deleteVertexArray(
     WebGLVertexArrayObject* vertex_array) {
-  NOTIMPLEMENTED();
+  if (!DeleteObject(vertex_array)) {
+    return;
+  }
+
+  if (vertex_array == bound_vertex_array_object_) {
+    bound_vertex_array_object_ = default_vertex_array_object_;
+  }
 }
 
 bool WebGLRenderingContextWebGPUBase::isVertexArray(
@@ -4167,7 +4177,14 @@ bool WebGLRenderingContextWebGPUBase::isVertexArray(
 
 void WebGLRenderingContextWebGPUBase::bindVertexArray(
     WebGLVertexArrayObject* vertex_array) {
-  NOTIMPLEMENTED();
+  if (!ValidateNullableObject("bindVertexArray", vertex_array)) {
+    return;
+  }
+
+  RETURN_IF_GL_ERROR(
+      GLFN(driver_, glBindVertexArrayOES)(ObjectOrZero(vertex_array)));
+  bound_vertex_array_object_ =
+      vertex_array ? vertex_array : default_vertex_array_object_.Get();
 }
 
 void WebGLRenderingContextWebGPUBase::readPixels(GLint x,
@@ -4469,9 +4486,10 @@ void WebGLRenderingContextWebGPUBase::Trace(Visitor* visitor) const {
   visitor->Trace(pixel_unpack_buffer_binding_);
   visitor->Trace(transform_feedback_buffer_binding_);
   visitor->Trace(uniform_buffer_binding_);
-  visitor->Trace(element_array_buffer_binding_);
 
   visitor->Trace(program_binding_);
+  visitor->Trace(bound_vertex_array_object_);
+  visitor->Trace(default_vertex_array_object_);
 
   for (size_t texture_type_idx = 0; texture_type_idx < bound_textures_.size();
        texture_type_idx++) {
@@ -4717,6 +4735,11 @@ void WebGLRenderingContextWebGPUBase::InitializeContext() {
   // the gl::DriverGL.
   gles2_for_objects_ = std::make_unique<PartialGLES2ForObjects>(&driver_);
   WebGLContextObjectSupport::OnContextRestored(gles2_for_objects_.get());
+
+  GLFN(driver_, glGetIntegerv)(GL_MAX_VERTEX_ATTRIBS, &max_vertex_attribs_);
+  default_vertex_array_object_ = MakeGarbageCollected<WebGLVertexArrayObject>(
+      this, WebGLVertexArrayObjectBase::kVaoTypeDefault, max_vertex_attribs_);
+  bound_vertex_array_object_ = default_vertex_array_object_;
 
   // The separate read and draw framebuffer bindings require ES3 or framebuffer
   // blit extensions
