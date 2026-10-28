@@ -14,7 +14,9 @@ import itertools
 import json
 import logging
 import os
+import queue
 import sys
+import threading
 
 import models
 import parallel
@@ -648,6 +650,56 @@ def _OpenGzipForWrite(path, file_obj=None):
         yield fz
 
 
+class _BackgroundWriter:
+  """Buffers writes and forwards them in large chunks to a background thread.
+
+  Allows serialization to happen in parallel with compression (zlib releases
+  the GIL).
+  """
+
+  _CHUNK_SIZE = 1 << 20
+
+  def __init__(self, file_obj):
+    self._file_obj = file_obj
+    self._buf = io.BytesIO()
+    self._pos = 0
+    self._exception = None
+    self._queue = queue.Queue(maxsize=16)
+    self._thread = threading.Thread(target=self._ThreadMain, daemon=True)
+    self._thread.start()
+
+  def _ThreadMain(self):
+    while (chunk := self._queue.get()) is not None:
+      if self._exception is None:
+        try:
+          self._file_obj.write(chunk)
+        except Exception as e:  # pylint: disable=broad-except
+          self._exception = e
+
+  def _SendBuffer(self):
+    self._queue.put(self._buf.getvalue())
+    self._buf = io.BytesIO()
+
+  def write(self, b):
+    self._buf.write(b)
+    self._pos += len(b)
+    if self._buf.tell() >= self._CHUNK_SIZE:
+      self._SendBuffer()
+
+  def flush(self):
+    pass
+
+  def tell(self):
+    return self._pos
+
+  def close(self):
+    self._SendBuffer()
+    self._queue.put(None)
+    self._thread.join()
+    if self._exception is not None:
+      raise self._exception
+
+
 def _SaveCompressedStringList(string_list, file_obj):
   with _OpenGzipForWrite('', file_obj=file_obj) as f:
     w = _Writer(f)
@@ -673,14 +725,14 @@ def SaveSizeInfo(size_info, path, file_obj=None):
     with _OpenGzipForWrite(path, file_obj=file_obj) as f:
       _SaveSizeInfoToFile(size_info, f)
   else:
-    # Doing serizliation and Gzip separately.
-    # This turns out to be faster. On Python 3: 40s -> 14s.
-    bytesio = io.BytesIO()
-    _SaveSizeInfoToFile(size_info, bytesio)
-
-    logging.debug('Serialization complete. Gzipping...')
+    # Serialize on this thread while gzipping (in large chunks) on a background
+    # thread. Gzipping in large chunks is faster. On Python 3: 40s -> 14s.
     with _OpenGzipForWrite(path, file_obj=file_obj) as f:
-      f.write(bytesio.getvalue())
+      writer = _BackgroundWriter(f)
+      try:
+        _SaveSizeInfoToFile(size_info, writer)
+      finally:
+        writer.close()
 
 
 def LoadSizeInfo(filename, file_obj=None, is_sparse=False):
