@@ -106,7 +106,6 @@ template("system_webview_apk_or_module_tmpl") {
                                ])
 
     _is_bundle_module = _target_type == "android_app_bundle_module"
-    _omit_dex = defined(invoker.omit_dex) && invoker.omit_dex
 
     if (defined(expected_android_manifest)) {
       if (android_64bit_target_cpu) {
@@ -212,7 +211,7 @@ template("system_webview_apk_or_module_tmpl") {
       command_line_flags_file = "webview-command-line"
     }
 
-    if (!_omit_dex && !is_java_debug) {
+    if (!is_java_debug) {
       proguard_enabled = true
       if (!_is_bundle_module) {
         repackage_classes = "WV"
@@ -225,7 +224,7 @@ template("system_webview_apk_or_module_tmpl") {
           [ "//android_webview/nonembedded/java/proguard.flags" ]
     }
 
-    if (enable_silent_java_assert_reporting && !_omit_dex) {
+    if (enable_silent_java_assert_reporting) {
       custom_assertion_handler = crash_reporting_assertion_handler
     }
 

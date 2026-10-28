@@ -959,9 +959,7 @@ def main():
             main_config['version_code'] = params['version_code']
             main_config['version_name'] = params['version_name']
 
-        # TrichromeLibrary has no dex.
-        if final_dex_path := params.get('final_dex_path'):
-            main_config['final_dex_path'] = final_dex_path
+        main_config['final_dex_path'] = params['final_dex_path']
 
         library_paths = params.native_libraries()
         secondary_abi_libraries = params.secondary_abi_native_libraries()
