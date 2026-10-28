@@ -28,6 +28,7 @@
 #import "ios/chrome/browser/crash_report/model/crash_report_helper.h"
 #import "ios/chrome/browser/history/model/history_tab_helper.h"
 #import "ios/chrome/browser/itunes_urls/model/itunes_urls_handler_tab_helper.h"
+#import "ios/chrome/browser/policy/model/reporting/saas_usage/saas_usage_tab_helper.h"
 #import "ios/chrome/browser/prerender/model/prerender_browser_agent_delegate.h"
 #import "ios/chrome/browser/prerender/model/prerender_tab_helper.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -500,10 +501,16 @@ bool PrerenderBrowserAgent::ValidatePrerender(const GURL& url,
   PrerenderTabHelper::RemoveFromWebState(new_web_state.get());
 
   // The WebState will be converted to a proper tab. Record navigations that
-  // happened during pre-rendering to the HistoryService.
+  // happened during pre-rendering to the HistoryService and
+  // SaasUsageReportingController.
   if (HistoryTabHelper* tab_helper =
           HistoryTabHelper::FromWebState(new_web_state.get())) {
     tab_helper->SetDelayHistoryServiceNotification(false);
+  }
+  if (auto* saas_tab_helper =
+          enterprise_reporting::SaasUsageTabHelper::FromWebState(
+              new_web_state.get())) {
+    saas_tab_helper->SetDelayNavigationRecording(false);
   }
 
   {
@@ -714,6 +721,10 @@ void PrerenderBrowserAgent::StartPendingRequest() {
   if (HistoryTabHelper* tab_helper =
           HistoryTabHelper::FromWebState(web_state)) {
     tab_helper->SetDelayHistoryServiceNotification(true);
+  }
+  if (auto* saas_tab_helper =
+          enterprise_reporting::SaasUsageTabHelper::FromWebState(web_state)) {
+    saas_tab_helper->SetDelayNavigationRecording(true);
   }
 
   web_state->SetWebUsageEnabled(true);

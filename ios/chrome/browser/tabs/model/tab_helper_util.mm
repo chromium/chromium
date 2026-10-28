@@ -307,7 +307,8 @@ void AttachTabHelpers(web::WebState* web_state, TabHelperFilter filter_flags) {
   attacher.Create<TailoredSecurityTabHelper>(
       TailoredSecurityServiceFactory::GetForProfile(profile));
   attacher.Create<PolicyUrlBlockingTabHelper>();
-  if (base::FeatureList::IsEnabled(enterprise_reporting::kSaasUsageReporting)) {
+  if (attacher.IsForStandardNavigation() &&
+      base::FeatureList::IsEnabled(enterprise_reporting::kSaasUsageReporting)) {
     if (auto* controller = enterprise_reporting::
             SaasUsageReportingControllerFactoryIOS::GetForProfile(profile)) {
       attacher.Create<enterprise_reporting::SaasUsageTabHelper>(controller);

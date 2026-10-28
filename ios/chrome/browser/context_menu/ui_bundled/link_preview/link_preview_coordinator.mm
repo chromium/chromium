@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/context_menu/ui_bundled/link_preview/link_preview_view_controller.h"
 #import "ios/chrome/browser/history/model/history_tab_helper.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
+#import "ios/chrome/browser/policy/model/reporting/saas_usage/saas_usage_tab_helper.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
@@ -78,9 +79,14 @@
   DCHECK(_previewWebState);
 
   // The WebState will be converted to a proper tab. Record navigations to the
-  // HistoryService.
+  // HistoryService and SaasUsageReportingController.
   HistoryTabHelper::FromWebState(_previewWebState.get())
       ->SetDelayHistoryServiceNotification(false);
+  if (auto* saas_tab_helper =
+          enterprise_reporting::SaasUsageTabHelper::FromWebState(
+              _previewWebState.get())) {
+    saas_tab_helper->SetDelayNavigationRecording(false);
+  }
 
   // Reset auto layout for preview before expanding it to a tab.
   [self.viewController resetAutoLayoutForPreview];
@@ -108,10 +114,15 @@
   AttachTabHelpers(_previewWebState.get(), TabHelperFilter::kPrerender);
   _previewWebState->SetWebUsageEnabled(true);
 
-  // Delay the history record when showing the preview. (The history entry will
-  // be added when the user tapping on the preview.)
+  // Delay the history and SaaS usage records when showing the preview. (The
+  // entries will be added when the user taps on the preview.)
   HistoryTabHelper::FromWebState(_previewWebState.get())
       ->SetDelayHistoryServiceNotification(true);
+  if (auto* saas_tab_helper =
+          enterprise_reporting::SaasUsageTabHelper::FromWebState(
+              _previewWebState.get())) {
+    saas_tab_helper->SetDelayNavigationRecording(true);
+  }
 }
 
 @end

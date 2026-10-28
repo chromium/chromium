@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/tabs/model/tab_helper_util.h"
 
 #import "base/test/scoped_feature_list.h"
+#import "components/enterprise/browser/reporting/reporting_features.h"
 #import "components/sync/test/test_sync_service.h"
 #import "ios/chrome/browser/cobrowse/model/cobrowse_tab_helper.h"
 #import "ios/chrome/browser/enterprise/connectors/device_trust/features.h"
@@ -14,6 +15,7 @@
 #import "ios/chrome/browser/lens/model/lens_tab_helper.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_modality.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_request_queue.h"
+#import "ios/chrome/browser/policy/model/reporting/saas_usage/saas_usage_tab_helper.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
@@ -189,6 +191,31 @@ TEST_P(TabHelperUtilTest, ITunesUrlsHandlerTabHelper) {
     case TabHelperFilter::kLensOverlay:
     case TabHelperFilter::kGeminiWebModal:
       EXPECT_FALSE(ITunesUrlsHandlerTabHelper::FromWebState(&web_state_));
+      break;
+  }
+}
+
+// Validate that SaasUsageTabHelper is created for WebStates that serve a
+// standard navigation and suppressed for embedded WebStates.
+TEST_P(TabHelperUtilTest, SaasUsageTabHelper) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      enterprise_reporting::kSaasUsageReporting);
+
+  AttachTabHelpers(&web_state_, tab_helper_filter());
+
+  switch (tab_helper_filter()) {
+    case TabHelperFilter::kEmpty:
+    case TabHelperFilter::kPrerender:
+      ASSERT_TRUE(
+          enterprise_reporting::SaasUsageTabHelper::FromWebState(&web_state_));
+      break;
+    case TabHelperFilter::kReaderMode:
+    case TabHelperFilter::kLensOverlay:
+    case TabHelperFilter::kAssistantAim:
+    case TabHelperFilter::kGeminiWebModal:
+      ASSERT_FALSE(
+          enterprise_reporting::SaasUsageTabHelper::FromWebState(&web_state_));
       break;
   }
 }

@@ -5,10 +5,13 @@
 #ifndef IOS_CHROME_BROWSER_POLICY_MODEL_REPORTING_SAAS_USAGE_SAAS_USAGE_TAB_HELPER_H_
 #define IOS_CHROME_BROWSER_POLICY_MODEL_REPORTING_SAAS_USAGE_SAAS_USAGE_TAB_HELPER_H_
 
+#include <vector>
+
 #import "base/memory/raw_ref.h"
 #import "base/scoped_observation.h"
 #import "ios/web/public/web_state_observer.h"
 #import "ios/web/public/web_state_user_data.h"
+#include "url/gurl.h"
 
 namespace enterprise_reporting {
 
@@ -24,6 +27,10 @@ class SaasUsageTabHelper : public web::WebStateObserver,
 
   ~SaasUsageTabHelper() override;
 
+  // Sets whether navigations should be sent to `SaasUsageReportingController`
+  // immediately or saved for later (for example while pre-rendering).
+  void SetDelayNavigationRecording(bool delay_recording);
+
   // web::WebStateObserver:
   void DidFinishNavigation(web::WebState* web_state,
                            web::NavigationContext* navigation_context) override;
@@ -35,9 +42,13 @@ class SaasUsageTabHelper : public web::WebStateObserver,
   SaasUsageTabHelper(web::WebState* web_state,
                      SaasUsageReportingController* controller);
 
+  void RecordUrl(const GURL& url);
+
   base::ScopedObservation<web::WebState, web::WebStateObserver> observation_{
       this};
   const raw_ref<SaasUsageReportingController> controller_;
+  std::vector<GURL> recorded_urls_;
+  bool delay_recording_ = false;
 };
 
 }  // namespace enterprise_reporting
