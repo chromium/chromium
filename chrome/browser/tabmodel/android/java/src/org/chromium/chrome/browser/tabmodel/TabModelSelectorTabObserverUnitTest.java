@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.tabmodel;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -32,6 +33,7 @@ import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tab.TabTestUtils;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel;
+import org.chromium.ui.base.WindowAndroid;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -217,6 +219,52 @@ public class TabModelSelectorTabObserverUnitTest {
         assertFalse(observer.mRegisteredTabs.contains(removedTab));
         assertTrue(observer.mRegisteredTabs.contains(lastTab));
         assertTrue(observer.mUnregisteredTabs.isEmpty());
+    }
+
+    /**
+     * Verifies that re-adding a removed tab before the deferred unregister task runs keeps the
+     * {@link TabObserver} attached so a subsequent cross-window detach and close removes the tab
+     * instead of stranding a destroyed tab in the model.
+     */
+    @Test
+    public void testRemoveAndReAddTabBeforeDeferredUnregisterRuns() {
+        TabModel model = mTabModelSelector.getModel(/* incognito= */ false);
+        MockTab tab = MockTab.createAndInitialize(1, mProfile);
+        addTabs(tab);
+
+        TabModelSelectorTabObserver observer =
+                new TabModelSelectorTabObserver(mTabModelSelector) {
+                    @Override
+                    public void onActivityAttachmentChanged(
+                            Tab tab, @Nullable WindowAndroid window) {
+                        if (window == null) {
+                            mTabModelSelector
+                                    .getModel(tab.isIncognito())
+                                    .getTabRemover()
+                                    .removeTab(tab, /* allowDialog= */ false);
+                        }
+                    }
+                };
+        ShadowLooper.runUiThreadTasks();
+        assertTrue(tabHasObserver(tab, observer));
+
+        // 1. Detach (Window A -> Window B): removes tab and posts deferred performUnregister.
+        tab.updateAttachment(/* window= */ null, /* tabDelegateFactory= */ null);
+        assertEquals(0, model.getCount());
+
+        // 2. Synchronous return (Window B -> Window A) before deferred performUnregister runs.
+        addTabs(tab);
+        ShadowLooper.runUiThreadTasks();
+        assertEquals(1, model.getCount());
+        assertTrue(tabHasObserver(tab, observer));
+
+        // 3. Second detach (Window A -> Window B) and close in Window B: must remove tab from A's
+        // model instead of leaving model.getCount() == 1 with model.getTabAt(0).isDestroyed().
+        tab.updateAttachment(/* window= */ null, /* tabDelegateFactory= */ null);
+        tab.destroy();
+        assertEquals(0, model.getCount());
+
+        observer.destroy();
     }
 
     private void addTabs(Tab... tabs) {

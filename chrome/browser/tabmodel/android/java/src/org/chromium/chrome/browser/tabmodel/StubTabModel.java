@@ -113,6 +113,11 @@ public class StubTabModel extends EmptyTabModel {
     }
 
     @Override
+    public void detachTabForReparenting(Tab tab) {
+        throw error();
+    }
+
+    @Override
     public @Nullable Tab duplicateTab(Tab tab) {
         throw error();
     }

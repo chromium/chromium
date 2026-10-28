@@ -371,4 +371,13 @@ TEST_F(TabCollectionStorageTest,
   EXPECT_EQ(tab.GetParentCollection(), nullptr);
 }
 
+TEST_F(TabCollectionStorageTest, AddTabRejectsAlreadyParentedTab) {
+  NonOwningTestTab tab;
+  auto collection_a = std::make_unique<PinnedTabCollection>();
+  auto collection_b = std::make_unique<PinnedTabCollection>();
+  collection_a->AddTab(ScopedTab(&tab), 0);
+
+  EXPECT_CHECK_DEATH(collection_b->AddTab(ScopedTab(&tab), 0));
+}
+
 }  // namespace tabs

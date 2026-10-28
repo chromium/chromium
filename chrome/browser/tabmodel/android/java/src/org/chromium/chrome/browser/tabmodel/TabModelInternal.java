@@ -44,6 +44,17 @@ public interface TabModelInternal extends TabModel {
     void removeTab(Tab tab);
 
     /**
+     * Silently detaches a tab being reparented across Activity recreation from this model and its
+     * native collection before insertion into the destination model, without destroying the tab,
+     * firing removal observers, deleting group visual data, or destroying incognito profiles. Only
+     * models backed by a native {@code TabCollection} need to override this (along with wrappers
+     * such as {@link IncognitoTabModelImpl} that delegate to one).
+     *
+     * @param tab The tab to detach for reparenting.
+     */
+    default void detachTabForReparenting(Tab tab) {}
+
+    /**
      * Set when tab model become active and inactive.
      *
      * @param active Whether the tab model is active.

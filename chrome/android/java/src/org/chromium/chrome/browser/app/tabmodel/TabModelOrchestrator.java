@@ -138,12 +138,13 @@ public class TabModelOrchestrator {
      * details.
      */
     public void destroyTabPersistentStore() {
+        if (mIsDestroyed) return;
         if (mShadowTabPersistentStore != null) {
             mShadowTabPersistentStore.destroy();
             mShadowTabPersistentStore = null;
         }
 
-        if (mTabPersistentStore != null) {
+        if (mTabPersistentStore != null && !mTabPersistentStoreDestroyedEarly) {
             mTabPersistentStore.destroy();
             mTabPersistentStoreDestroyedEarly = true;
         }

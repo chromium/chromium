@@ -281,6 +281,19 @@ public class TabModelOrchestratorUnitTest {
     }
 
     @Test
+    public void testDestroyTabPersistentStore_Idempotent() {
+        mTabModelOrchestrator.destroyTabPersistentStore();
+        mTabModelOrchestrator.destroyTabPersistentStore();
+        verify(mMockTabPersistentStore).destroy();
+        verify(mMockShadowPersistentStore).destroy();
+
+        mTabModelOrchestrator.destroy();
+        mTabModelOrchestrator.destroyTabPersistentStore();
+        verify(mMockTabPersistentStore).destroy();
+        verify(mMockShadowPersistentStore).destroy();
+    }
+
+    @Test
     public void testDestroyAfterDestroyTabPersistentStore() {
         mTabModelOrchestrator.destroyTabPersistentStore();
         verify(mMockTabPersistentStore).destroy();

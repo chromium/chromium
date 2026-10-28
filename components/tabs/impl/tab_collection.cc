@@ -531,6 +531,7 @@ void TabCollection::DispatchPendingNotifications() {
 TabInterface* TabCollection::AddTab(ScopedTab tab, size_t index) {
   CHECK(tab);
   CHECK(supports_tabs_);
+  CHECK(!tab->GetParentCollection());
 
   TabInterface* inserted_tab = impl_->AddTab(std::move(tab), index);
   inserted_tab->OnReparented(this, GetPassKey());

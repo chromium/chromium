@@ -124,6 +124,11 @@ public final class TabModelSelectorTabRegistrationObserver {
         }
     }
 
+    /** Returns whether {@code tab} is currently registered in a managed tab model. */
+    boolean isTabRegistered(Tab tab) {
+        return mRegisteredTabs.contains(tab);
+    }
+
     /**
      * Called when a tab is registered to a tab model this selector is managing.
      *

@@ -98,6 +98,7 @@ public class TabModelSelectorTabObserver implements TabObserver {
             }
 
             private void performUnregister(Tab tab) {
+                if (mTabRegistrationObserver.isTabRegistered(tab)) return;
                 tab.removeObserver(TabModelSelectorTabObserver.this);
             }
         };

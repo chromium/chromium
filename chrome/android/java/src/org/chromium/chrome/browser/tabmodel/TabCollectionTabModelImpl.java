@@ -865,6 +865,25 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
     }
 
     @Override
+    public void detachTabForReparenting(Tab tab) {
+        assertOnUiThread();
+        // The native model may already be destroyed, or the tab may already have been removed.
+        if (mNativeTabCollectionTabModelImplPtr == 0 || mTabIdToTabs.indexOfKey(tab.getId()) < 0) {
+            return;
+        }
+        TabCollectionTabModelImplJni.get()
+                .removeTabRecursive(mNativeTabCollectionTabModelImplPtr, tab);
+        tab.onRemovedFromTabModel(mCurrentTabSupplier, DetachReason.INSERT_INTO_OTHER_WINDOW);
+        mTabIdToTabs.remove(tab.getId());
+        mMultiSelectedTabs.remove(tab.getId());
+        invalidateCache();
+        if (mCurrentTabSupplier.get() == tab) {
+            mCurrentTabSupplier.set(null);
+        }
+        mTabCountSupplier.set(getCount());
+    }
+
+    @Override
     public void setActive(boolean active) {
         if (mActive == active) return;
         mActive = active;

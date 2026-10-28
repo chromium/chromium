@@ -2397,7 +2397,9 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
         }
         mTabReparentingControllerSupplier.set(
                 new TabReparentingController(
-                        this::getTabModelSelector, AsyncTabParamsManagerSingleton.getInstance()));
+                        this::getTabModelSelector,
+                        AsyncTabParamsManagerSingleton.getInstance(),
+                        () -> mTabModelOrchestrator.destroyTabPersistentStore()));
 
         // This must be initialized after initialization of tab reparenting controller.
         var windowAndroid = getWindowAndroid();

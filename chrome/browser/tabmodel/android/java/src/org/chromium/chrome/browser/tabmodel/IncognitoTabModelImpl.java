@@ -399,6 +399,12 @@ class IncognitoTabModelImpl implements IncognitoTabModelInternal {
     }
 
     @Override
+    public void detachTabForReparenting(Tab tab) {
+        ThreadUtils.assertOnUiThread();
+        mDelegateModel.detachTabForReparenting(tab);
+    }
+
+    @Override
     public void openMostRecentlyClosedEntry() {}
 
     @Override

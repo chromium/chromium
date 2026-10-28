@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.tabmodel;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -807,6 +808,60 @@ public class TabCollectionTabModelImplUnitTest {
         assertTrue(mTabModel.isClosingAllTabs());
     }
 
+    @Test
+    public void testDetachTabForReparenting_BeforeDestroyPreservesTab() {
+        when(mTabModelDelegate.isReparentingInProgress()).thenReturn(true);
+
+        long newCollectionPtr = TAB_COLLECTION_TAB_MODEL_IMPL_PTR + 1;
+        List<Tab> newTabs = new ArrayList<>();
+        when(mTabCollectionTabModelImplJni.init(eq(mProfile))).thenReturn(newCollectionPtr);
+        when(mTabCollectionTabModelImplJni.getAllTabs(eq(newCollectionPtr))).thenReturn(newTabs);
+        when(mTabCollectionTabModelImplJni.addTabRecursive(
+                        eq(newCollectionPtr),
+                        any(Tab.class),
+                        anyInt(),
+                        any(),
+                        anyBoolean(),
+                        anyBoolean()))
+                .thenAnswer(
+                        invocation -> {
+                            Tab addedTab = invocation.getArgument(1);
+                            int index = invocation.getArgument(2);
+                            newTabs.add(index, addedTab);
+                            return index;
+                        });
+        TabCollectionTabModelImpl newTabModel =
+                getModel(mProfile, mTabModelDelegate, mScopedStorageBatch);
+
+        MockTab tab = createMockTab(1, mProfile);
+        mTabModel.addTab(tab, 0, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
+        verifyBatchedAndReset();
+        mTabModel.setTabsMultiSelected(Collections.singleton(1), /* isSelected= */ true);
+
+        mTabModel.addObserver(mTabModelObserver);
+        mTabModel.detachTabForReparenting(tab);
+
+        assertEquals(0, mTabModel.getCount());
+        assertNull(mTabModel.getTabById(1));
+        assertNull(mTabModel.getCurrentTabSupplier().get());
+        assertFalse(mTabModel.isTabMultiSelected(1));
+        verify(mTabCollectionTabModelImplJni)
+                .removeTabRecursive(TAB_COLLECTION_TAB_MODEL_IMPL_PTR, tab);
+        verify(mTabModelObserver, never()).tabRemoved(any());
+        verify(mTabModelObserver, never()).willCloseTab(any(), anyBoolean());
+
+        // Restore the tab into the recreated Activity's model, remove its AsyncTabParams, and run
+        // OldActivity.onDestroy(). The tab in newTabModel must remain live (not destroyed).
+        newTabModel.addTab(tab, 0, TabLaunchType.FROM_RESTORE, TabCreationState.FROZEN_ON_RESTORE);
+        when(mAsyncTabParamsManager.hasParamsForTabId(1)).thenReturn(false);
+        mTabModel.destroy();
+        assertEquals(1, newTabModel.getCount());
+        assertEquals(tab, newTabModel.getTabAt(0));
+        assertFalse(newTabModel.getTabAt(0).isDestroyed());
+
+        newTabModel.destroy();
+    }
+
     private void verifyBatchedAndReset() {
         verify(mScopedStorageBatch).close();
         reset(mScopedStorageBatch);
@@ -827,11 +882,11 @@ public class TabCollectionTabModelImplUnitTest {
                 TabModelType.STANDARD,
                 null,
                 null,
-                null,
+                mOrderController,
                 null,
                 null,
                 tabModelDelegate,
-                null,
+                mAsyncTabParamsManager,
                 null,
                 /* isIncognitoBranded= */ false,
                 mTabUngrouperFactory,

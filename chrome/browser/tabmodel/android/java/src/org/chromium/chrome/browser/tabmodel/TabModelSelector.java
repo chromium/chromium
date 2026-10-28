@@ -187,9 +187,19 @@ public interface TabModelSelector {
     boolean isReparentingInProgress();
 
     /**
+     * Silently detaches a tab being reparented across Activity recreation from its model before
+     * insertion into the destination Activity's model. {@link #enterReparentingMode()} must have
+     * been called beforehand.
+     *
+     * @param tab The tab to detach for reparenting.
+     */
+    void detachTabForReparenting(Tab tab);
+
+    /**
      * Subscribe an {@link IncognitoTabModelObserver} to events that the {@link IncognitoTabModel}
-     * in this selector emits.  The model could be observed directly, but observing the
-     * selector allows an observer to subscribe itself before the model is created.
+     * in this selector emits. The model could be observed directly, but observing the selector
+     * allows an observer to subscribe itself before the model is created.
+     *
      * @param incognitoObserver The observer to subscribe.
      */
     void addIncognitoTabModelObserver(IncognitoTabModelObserver incognitoObserver);

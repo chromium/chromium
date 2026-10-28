@@ -678,14 +678,14 @@ public class ChromeTabCreator implements TabCreator, NeedsTabModel, NeedsTabMode
         boolean selectTab =
                 mOrderController.willOpenInForeground(TabLaunchType.FROM_RESTORE, mIncognito);
         boolean isReparenting = isReparenting(id);
-        AsyncTabParams asyncParams = mAsyncTabParamsManager.remove(id);
+        AsyncTabParams asyncParams = mAsyncTabParamsManager.getAsyncTabParams().get(id);
         Tab tab = null;
         @TabLaunchType int launchType = TabLaunchType.FROM_RESTORE;
         @TabCreationState int creationState = TabCreationState.FROZEN_ON_RESTORE;
         if (isReparenting) {
             creationState = TabCreationState.LIVE_IN_BACKGROUND;
 
-            TabReparentingParams params = (TabReparentingParams) asyncParams;
+            TabReparentingParams params = (TabReparentingParams) assumeNonNull(asyncParams);
             tab = params.getTabToReparent();
             if (tab.isIncognito() != mIncognito) {
                 throw new IllegalStateException(
@@ -725,6 +725,7 @@ public class ChromeTabCreator implements TabCreator, NeedsTabModel, NeedsTabMode
         }
 
         mTabModel.addTab(tab, index, launchType, creationState);
+        mAsyncTabParamsManager.remove(id);
         return tab;
     }
 

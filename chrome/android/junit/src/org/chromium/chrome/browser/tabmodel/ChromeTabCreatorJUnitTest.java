@@ -136,6 +136,49 @@ public class ChromeTabCreatorJUnitTest {
         runTestAsyncParamsRemovedAfterAddTab(/* incognito= */ false);
     }
 
+    @Test
+    public void testCreateFrozenTab_ReparentingDetachesBeforeAddAndRemovesParamsAfter() {
+        Activity activity = Robolectric.buildActivity(Activity.class).setup().get();
+        ChromeTabCreator tabCreator = createTabCreator(activity, /* incognito= */ false);
+        TabModel tabModel = mock(TabModel.class);
+        TabModelOrderController orderController = mock(TabModelOrderController.class);
+        tabCreator.setTabModel(tabModel);
+        tabCreator.setTabModelOrderController(orderController);
+
+        int tabId = 456;
+        Tab mockTab = mock(Tab.class);
+        when(mockTab.getId()).thenReturn(tabId);
+        when(mockTab.isIncognito()).thenReturn(false);
+        when(mockTab.getUrl()).thenReturn(GURL.emptyGURL());
+        when(mockTab.getUserDataHost()).thenReturn(new UserDataHost());
+
+        boolean[] finalizeRan = new boolean[1];
+        TabReparentingParams params =
+                new TabReparentingParams(mockTab, () -> finalizeRan[0] = true);
+        AsyncTabParamsManagerSingleton.getInstance().add(tabId, params);
+
+        doAnswer(
+                        invocation -> {
+                            assertTrue(
+                                    "Finalize callback must detach from old model before addTab",
+                                    finalizeRan[0]);
+                            assertTrue(
+                                    "AsyncTabParams must remain in manager during addTab",
+                                    AsyncTabParamsManagerSingleton.getInstance()
+                                            .hasParamsForTabId(tabId));
+                            return null;
+                        })
+                .when(tabModel)
+                .addTab(any(Tab.class), anyInt(), anyInt(), anyInt());
+
+        tabCreator.createFrozenTab(/* state= */ null, tabId, /* index= */ 0);
+
+        assertFalse(
+                "AsyncTabParams must be removed after createFrozenTab",
+                AsyncTabParamsManagerSingleton.getInstance().hasParamsForTabId(tabId));
+        verify(tabModel).addTab(eq(mockTab), eq(0), eq(TabLaunchType.FROM_RESTORE), anyInt());
+    }
+
     private ChromeTabCreator createTabCreator(Activity activity, boolean incognito) {
         Profile profile = mock(Profile.class);
         when(profile.isOffTheRecord()).thenReturn(incognito);

@@ -430,6 +430,14 @@ public abstract class TabModelSelectorBase
     }
 
     @Override
+    public void detachTabForReparenting(Tab tab) {
+        assert mReparentingInProgress;
+        int index = getModelIndex(tab.isIncognito());
+        if (index == MODEL_NOT_FOUND) return;
+        mTabModelInternals.get(index).detachTabForReparenting(tab);
+    }
+
+    @Override
     public void addIncognitoTabModelObserver(IncognitoTabModelObserver incognitoObserver) {
         mIncognitoObservers.addObserver(incognitoObserver);
     }
