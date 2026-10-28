@@ -149,23 +149,33 @@ def main():
             )
 
         if use_orchestrate:
-            target_cmd = [
-                os.path.join(
-                    os.path.dirname(__file__), 'run_executable_test.py'
-                ),
-                '--test-name',
-                runner_args.test_type,
-                '--out-dir',
-                runner_args.out_dir,
-            ]
+            if os.path.isfile(
+                os.path.join(os.path.dirname(__file__), runner_args.test_type)
+            ):
+                target_cmd = [
+                    os.path.join(
+                        os.path.dirname(__file__), runner_args.test_type
+                    ),
+                    '--mypid',
+                    str(os.getpid()),
+                ]
+                packages = runner_args.packages or []
+            else:
+                target_cmd = [
+                    os.path.join(
+                        os.path.dirname(__file__), 'run_executable_test.py'
+                    ),
+                    '--test-name',
+                    runner_args.test_type,
+                ]
+                packages = read_package_paths(
+                    runner_args.out_dir, runner_args.test_type
+                )
+            target_cmd.extend(['--out-dir', runner_args.out_dir])
             if runner_args.logs_dir:
                 target_cmd.extend(['--logs-dir', runner_args.logs_dir])
             if test_args:
                 target_cmd.extend(test_args)
-
-            packages = read_package_paths(
-                runner_args.out_dir, runner_args.test_type
-            )
             logging.info(
                 'Resolving package archives for \'%s\': %s',
                 runner_args.test_type,

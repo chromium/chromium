@@ -19,6 +19,7 @@ Killing the process running the setup_env() function would tear down the
 test environment."""
 
 import argparse
+import json
 import os
 import sys
 import time
@@ -47,7 +48,10 @@ class _Blocker(TestRunner):
         self.pid_file = pid_file
 
     def run_test(self) -> CompletedProcess:
-        open(self.pid_file, 'w').close()
+        tmp_file = self.pid_file + '.tmp'
+        with open(tmp_file, 'w') as f:
+            json.dump(dict(os.environ), f)
+        os.replace(tmp_file, self.pid_file)
         try:
             wait_for_sigterm()
             return CompletedProcess(args='', returncode=0)
@@ -86,6 +90,24 @@ def setup_env(mypid: int = 0) -> int:
     return run_test.main()
 
 
+def expose_env(logs_dir: str, mypid: int = 0) -> int:
+    """Exposes the environment to the pid file and blocks until sigterm is
+    received."""
+    if mypid == 0:
+        mypid = os.getpid()
+
+    return (
+        _Blocker(
+            None,
+            None,
+            [],
+            os.path.join(logs_dir, 'test_env_setup.' + str(mypid) + '.pid'),
+        )
+        .run_test()
+        .returncode
+    )
+
+
 def wait_for_env_setup(proc: Popen, logs_dir: str) -> bool:
     """Waits for the test_env_setup.py process to be ready, returns false if
     the process terminated unexpected."""
@@ -97,6 +119,8 @@ def wait_for_env_setup(proc: Popen, logs_dir: str) -> bool:
         if proc.returncode:
             return False
         time.sleep(1)
+    with open(pid_file, 'r') as f:
+        os.environ.update(json.load(f))
     return True
 
 

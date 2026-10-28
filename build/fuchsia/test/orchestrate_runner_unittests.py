@@ -19,6 +19,9 @@ class OrchestrateRunnerTest(unittest.TestCase):
             orchestrate_runner.support_orchestrate('base_unittests')
         )
         self.assertTrue(
+            orchestrate_runner.support_orchestrate('test_env_expose.py')
+        )
+        self.assertTrue(
             orchestrate_runner.support_orchestrate('web_engine_unittests')
         )
         self.assertFalse(orchestrate_runner.support_orchestrate('unknown_test'))
@@ -29,14 +32,13 @@ class OrchestrateRunnerTest(unittest.TestCase):
                 out_dir='', packages=[], target_cmd=['target']
             )
 
-    @mock.patch('subprocess.run')
+    @mock.patch('subprocess.Popen')
     @mock.patch('common.get_host_arch', return_value='x64')
     def test_run_tests_with_orchestrate_x64(
-        self, _, mock_run: mock.MagicMock
+        self, _, mock_popen: mock.MagicMock
     ) -> None:
-        mock_proc = mock.MagicMock()
-        mock_proc.returncode = 0
-        mock_run.return_value = mock_proc
+        mock_proc = mock_popen.return_value.__enter__.return_value
+        mock_proc.wait.return_value = 0
 
         packages = [
             'gen/base/base_unittests/base_unittests.far',
@@ -51,8 +53,8 @@ class OrchestrateRunnerTest(unittest.TestCase):
             logs_dir=logs_dir,
         )
         self.assertEqual(ret, 0)
-        mock_run.assert_called_once()
-        cmd = mock_run.call_args[0][0]
+        mock_popen.assert_called_once()
+        cmd = mock_popen.call_args[0][0]
         self.assertIn('orchestrate', cmd[0])
         self.assertEqual(cmd[1], 'run')
         self.assertEqual(cmd[2], '-input')
@@ -67,18 +69,17 @@ class OrchestrateRunnerTest(unittest.TestCase):
         self.assertEqual(cmd[6], '--')
         self.assertEqual(cmd[7:], target_cmd)
 
-        env = mock_run.call_args[1]['env']
+        env = mock_popen.call_args[1]['env']
         self.assertEqual(env['TEST_UNDECLARED_OUTPUTS_DIR'], logs_dir)
-        self.assertEqual(mock_run.call_args[1]['cwd'], 'out/Release')
+        self.assertEqual(mock_popen.call_args[1]['cwd'], 'out/Release')
 
-    @mock.patch('subprocess.run')
+    @mock.patch('subprocess.Popen')
     @mock.patch('common.get_host_arch', return_value='arm64')
     def test_run_tests_with_orchestrate_arm64(
-        self, _, mock_run: mock.MagicMock
+        self, _, mock_popen: mock.MagicMock
     ) -> None:
-        mock_proc = mock.MagicMock()
-        mock_proc.returncode = 0
-        mock_run.return_value = mock_proc
+        mock_proc = mock_popen.return_value.__enter__.return_value
+        mock_proc.wait.return_value = 0
 
         packages = ['gen/base/base_unittests/base_unittests.far']
         target_cmd = ['run_executable_test.py']
@@ -89,22 +90,40 @@ class OrchestrateRunnerTest(unittest.TestCase):
             target_cmd=target_cmd,
         )
         self.assertEqual(ret, 0)
-        mock_run.assert_called_once()
-        cmd = mock_run.call_args[0][0]
+        mock_popen.assert_called_once()
+        cmd = mock_popen.call_args[0][0]
         self.assertTrue(cmd[3].endswith('orchestrate_arm64.json'))
 
-    @mock.patch('subprocess.run')
+    @mock.patch('subprocess.Popen')
     @mock.patch('common.get_host_arch', return_value='x64')
     def test_run_tests_with_orchestrate_keyboard_interrupt(
-        self, _, mock_run: mock.MagicMock
+        self, _, mock_popen: mock.MagicMock
     ) -> None:
-        mock_run.side_effect = KeyboardInterrupt()
+        mock_proc = mock_popen.return_value.__enter__.return_value
+        mock_proc.wait.side_effect = KeyboardInterrupt()
         ret = orchestrate_runner.run_tests_with_orchestrate(
             out_dir='out/Release',
             packages=[],
             target_cmd=['target'],
         )
         self.assertEqual(ret, 130)
+        mock_proc.terminate.assert_called_once()
+
+    @mock.patch('subprocess.Popen')
+    @mock.patch('common.get_host_arch', return_value='x64')
+    def test_run_tests_with_orchestrate_system_exit(
+        self, _, mock_popen: mock.MagicMock
+    ) -> None:
+        mock_proc = mock_popen.return_value.__enter__.return_value
+        mock_proc.wait.side_effect = [SystemExit(0), 0]
+        ret = orchestrate_runner.run_tests_with_orchestrate(
+            out_dir='out/Release',
+            packages=[],
+            target_cmd=['target'],
+        )
+        self.assertEqual(ret, 0)
+        mock_proc.terminate.assert_called_once()
+        self.assertEqual(mock_proc.wait.call_count, 2)
 
 
 if __name__ == '__main__':
