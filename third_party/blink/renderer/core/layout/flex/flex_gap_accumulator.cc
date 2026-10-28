@@ -7,7 +7,7 @@
 #include "third_party/blink/renderer/core/layout/box_fragment_builder.h"
 #include "third_party/blink/renderer/core/layout/flex/flex_line.h"
 #include "third_party/blink/renderer/core/layout/gap/cross_gap.h"
-#include "third_party/blink/renderer/core/layout/gap/gap_geometry.h"
+#include "third_party/blink/renderer/core/layout/gap/flex_gap_geometry.h"
 #include "third_party/blink/renderer/core/layout/gap/main_gap.h"
 
 namespace blink {
@@ -24,8 +24,7 @@ FlexGapAccumulator::FlexGapAccumulator(
     : gap_between_items_(gap_between_items),
       effective_gap_between_lines_(effective_gap_between_lines),
       is_column_(is_column),
-      gap_geometry_(
-          MakeGarbageCollected<GapGeometry>(GapGeometry::ContainerType::kFlex)),
+      gap_geometry_(MakeGarbageCollected<FlexGapGeometry>()),
       border_scrollbar_padding_block_start_(
           border_scrollbar_padding_block_start),
       border_scrollbar_padding_inline_start_(

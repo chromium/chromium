@@ -17,6 +17,7 @@ namespace blink {
 
 class BoxFragmentBuilder;
 class GapGeometry;
+class MulticolGapGeometry;
 
 // Accumulates gap-decoration state (main gaps, cross gaps, segment metadata)
 // for a multicol container. Instantiated only when the style has a gap rule.
@@ -62,7 +63,7 @@ class CORE_EXPORT ColumnGapAccumulator {
   wtf_size_t specified_column_count_;
   bool has_auto_column_count_;
 
-  GapGeometry* gap_geometry_ = nullptr;
+  MulticolGapGeometry* gap_geometry_ = nullptr;
   std::optional<LogicalOffset> first_column_offset_;
   wtf_size_t max_columns_in_row_ = 0;
   Vector<wtf_size_t> columns_per_row_;

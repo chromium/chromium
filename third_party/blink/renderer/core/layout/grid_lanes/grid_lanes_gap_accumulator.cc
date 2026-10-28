@@ -4,7 +4,7 @@
 
 #include "third_party/blink/renderer/core/layout/grid_lanes/grid_lanes_gap_accumulator.h"
 
-#include "third_party/blink/renderer/core/layout/gap/gap_geometry.h"
+#include "third_party/blink/renderer/core/layout/gap/grid_lanes_gap_geometry.h"
 #include "third_party/blink/renderer/core/layout/grid/grid_layout_utils.h"
 #include "third_party/blink/renderer/core/layout/grid/grid_track_collection.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
@@ -91,8 +91,7 @@ void AppendEmptyOpening(const TrackOpeningCoordinates& opening,
 }  // namespace
 
 GridLanesGapAccumulator::GridLanesGapAccumulator(const ComputedStyle& style)
-    : gap_geometry_(MakeGarbageCollected<GapGeometry>(
-          GapGeometry::ContainerType::kGridLanes)) {
+    : gap_geometry_(MakeGarbageCollected<GridLanesGapGeometry>()) {
   const bool is_reverse_track_direction =
       style.IsReverseGridLanesTrackDirection();
   const bool is_reverse_fill_direction =

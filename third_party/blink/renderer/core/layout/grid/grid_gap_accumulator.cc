@@ -4,7 +4,7 @@
 
 #include "third_party/blink/renderer/core/layout/grid/grid_gap_accumulator.h"
 
-#include "third_party/blink/renderer/core/layout/gap/gap_geometry.h"
+#include "third_party/blink/renderer/core/layout/gap/grid_gap_geometry.h"
 #include "third_party/blink/renderer/core/layout/grid/grid_data.h"
 #include "third_party/blink/renderer/core/layout/grid/grid_item.h"
 #include "third_party/blink/renderer/core/layout/grid/grid_track_collection.h"
@@ -12,8 +12,7 @@
 namespace blink {
 
 GridGapAccumulator::GridGapAccumulator()
-    : gap_geometry_(MakeGarbageCollected<GapGeometry>(
-          GapGeometry::ContainerType::kGrid)) {}
+    : gap_geometry_(MakeGarbageCollected<GridGapGeometry>()) {}
 
 void GridGapAccumulator::BuildMainGaps(const GridLayoutData& layout_data) {
   const auto& rows = layout_data.Rows();
@@ -100,7 +99,7 @@ Vector<wtf_size_t> GridGapAccumulator::GetRowGapToSetIndicesMap(
   return gap_idx_to_set_idx;
 }
 
-const GapGeometry* GridGapAccumulator::FinalizeGapGeometry(
+const GridGapGeometry* GridGapAccumulator::FinalizeGapGeometry(
     const GridLayoutTrackCollection& rows,
     const GridLayoutTrackCollection& columns) {
   // `GapGeometry` requires both row(main) and column(cross) gaps to be valid.

@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/core/layout/constraint_space_builder.h"
 #include "third_party/blink/renderer/core/layout/disable_layout_side_effects_scope.h"
 #include "third_party/blink/renderer/core/layout/fragmentation_utils.h"
+#include "third_party/blink/renderer/core/layout/gap/grid_gap_geometry.h"
 #include "third_party/blink/renderer/core/layout/grid/grid_baseline_accumulator.h"
 #include "third_party/blink/renderer/core/layout/grid/grid_break_token_data.h"
 #include "third_party/blink/renderer/core/layout/grid/grid_gap_accumulator.h"
@@ -104,7 +105,7 @@ const LayoutResult* GridLayoutAlgorithm::LayoutInternal() {
   Vector<EBreakBetween> row_break_between;
   // Holds the gap geometry for the unfragmented grid pass before fragmentation
   // is applied, if applicable.
-  const GapGeometry* full_gap_geometry = nullptr;
+  const GridGapGeometry* full_gap_geometry = nullptr;
   Vector<wtf_size_t> track_idx_to_set_idx;
   Vector<wtf_size_t> column_gaps_segment_ranges_start_indices;
   LayoutUnit cumulative_gap_offset_adjustment = LayoutUnit();
@@ -1546,7 +1547,7 @@ void GridLayoutAlgorithm::PlaceGridItems(
     const GridLayoutSubtree& layout_subtree,
     Vector<EBreakBetween>* out_row_break_between,
     Vector<GridItemPlacementData>* out_grid_items_placement_data,
-    const GapGeometry** out_unfragmented_gap_geometry,
+    const GridGapGeometry** out_unfragmented_gap_geometry,
     Vector<wtf_size_t>* out_track_idx_to_set_idx) {
   DCHECK(out_row_break_between);
 
@@ -1724,7 +1725,7 @@ void GridLayoutAlgorithm::PlaceGridItemsForFragmentation(
     const GridItems& grid_items,
     const GridLayoutSubtree& layout_subtree,
     const Vector<EBreakBetween>& row_break_between,
-    const GapGeometry* full_gap_geometry,
+    const GridGapGeometry* full_gap_geometry,
     const Vector<wtf_size_t>* track_idx_to_set_idx,
     Vector<wtf_size_t>* column_gaps_segment_ranges_start_indices,
     Vector<GridItemPlacementData>* grid_items_placement_data,
@@ -2270,9 +2271,10 @@ void GridLayoutAlgorithm::PlaceGridItemsForFragmentation(
         fragment_block_end = max_item_block_end;
       }
 
-      GapGeometry* fragment_gap_geometry = MakeGarbageCollected<GapGeometry>(
-          *full_gap_geometry, std::move(fragment_main_gaps),
-          fragment_block_start, fragment_block_end);
+      GridGapGeometry* fragment_gap_geometry =
+          MakeGarbageCollected<GridGapGeometry>(
+              *full_gap_geometry, std::move(fragment_main_gaps),
+              fragment_block_start, fragment_block_end);
 
       fragment_gap_geometry->AdjustCrossGapsRangesForFragmentation(
           initial_unprocessed_row_gap_idx, *first_unprocessed_row_gap_idx,

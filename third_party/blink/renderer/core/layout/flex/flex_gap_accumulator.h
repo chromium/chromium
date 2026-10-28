@@ -17,6 +17,7 @@
 namespace blink {
 
 class BoxFragmentBuilder;
+class FlexGapGeometry;
 struct LogicalOffset;
 struct FlexLine;
 
@@ -295,7 +296,7 @@ class CORE_EXPORT FlexGapAccumulator {
 
   bool is_column_ = false;
 
-  GapGeometry* gap_geometry_ = nullptr;
+  FlexGapGeometry* gap_geometry_ = nullptr;
 
   LayoutUnit border_scrollbar_padding_block_start_;
   LayoutUnit border_scrollbar_padding_inline_start_;

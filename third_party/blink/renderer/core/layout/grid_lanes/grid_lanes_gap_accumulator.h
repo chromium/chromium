@@ -17,6 +17,7 @@ namespace blink {
 
 class ComputedStyle;
 class GapGeometry;
+class GridLanesGapGeometry;
 class GridLanesRunningPositions;
 class GridLayoutTrackCollection;
 
@@ -107,7 +108,7 @@ class CORE_EXPORT GridLanesGapAccumulator {
   void BuildCrossGaps(const GridLanesDataVector& grid_lanes,
                       const GridLanesGapGeometryState& state);
 
-  GapGeometry* gap_geometry_;
+  GridLanesGapGeometry* gap_geometry_;
 
   // The track collection owns this sorted list and outlives this stack-local
   // accumulator.

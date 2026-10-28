@@ -12,7 +12,7 @@
 
 namespace blink {
 
-class GapGeometry;
+class GridGapGeometry;
 class GridLayoutData;
 class GridLayoutTrackCollection;
 struct GridItemData;
@@ -49,7 +49,7 @@ class CORE_EXPORT GridGapAccumulator {
   Vector<wtf_size_t> GetRowGapToSetIndicesMap(
       const GridLayoutData& layout_data);
 
-  const GapGeometry* FinalizeGapGeometry(
+  const GridGapGeometry* FinalizeGapGeometry(
       const GridLayoutTrackCollection& rows,
       const GridLayoutTrackCollection& columns);
 
@@ -69,7 +69,7 @@ class CORE_EXPORT GridGapAccumulator {
   void FinalizeMainGapRanges(const GridLayoutTrackCollection& rows);
   void FinalizeCrossGapRanges(const GridLayoutTrackCollection& columns);
 
-  GapGeometry* gap_geometry_ = nullptr;
+  GridGapGeometry* gap_geometry_ = nullptr;
 
   GridTrackGapData row_gap_data_;
   GridTrackGapData column_gap_data_;

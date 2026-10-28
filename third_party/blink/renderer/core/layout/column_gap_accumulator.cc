@@ -5,7 +5,7 @@
 #include "third_party/blink/renderer/core/layout/column_gap_accumulator.h"
 
 #include "third_party/blink/renderer/core/layout/box_fragment_builder.h"
-#include "third_party/blink/renderer/core/layout/gap/gap_geometry.h"
+#include "third_party/blink/renderer/core/layout/gap/multicol_gap_geometry.h"
 
 namespace blink {
 
@@ -17,8 +17,7 @@ ColumnGapAccumulator::ColumnGapAccumulator(LayoutUnit column_gap_size,
       row_gap_size_(row_gap_size),
       specified_column_count_(specified_column_count),
       has_auto_column_count_(has_auto_column_count),
-      gap_geometry_(MakeGarbageCollected<GapGeometry>(
-          GapGeometry::ContainerType::kMultiColumn)) {}
+      gap_geometry_(MakeGarbageCollected<MulticolGapGeometry>()) {}
 
 void ColumnGapAccumulator::AddMainGap(LayoutUnit block_offset,
                                       SpannerMainGapType gap_type) {
