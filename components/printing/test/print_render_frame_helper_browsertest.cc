@@ -3963,6 +3963,61 @@ INSTANTIATE_TEST_SUITE_P(All,
                          PrintRenderFrameHelperTaggedPreviewTest,
                          testing::Bool());
 
+TEST_F(PrintRenderFrameHelperPreviewTest,
+       PrintWithParamsBlocksConcurrentPrintPreviewAndScriptedPrint) {
+  LoadHTML(R"HTML(
+    <script>
+      window.addEventListener('beforeprint', () => window.print());
+      window.matchMedia('print').addEventListener('change', () => {
+        window.print();
+      });
+      window.addEventListener('afterprint', () => window.print());
+    </script>
+    <div style="height: 10000px">Hello</div>
+    <img loading="lazy" src="data:image/gif;base64,R0lGODlhAQABAAAAACw=">
+  )HTML");
+
+  auto settings = mojom::PrintPagesParams::New();
+  settings->params = printer()->GetDefaultPrintSettings();
+
+  bool callback_called = false;
+  bool print_succeeded = false;
+  GetPrintRenderFrameHelper()->PrintWithParams(
+      std::move(settings),
+      base::BindLambdaForTesting(
+          [&](base::expected<mojom::PrintWithParamsResultDataPtr,
+                             mojom::PrintFailureReason> result) {
+            callback_called = true;
+            print_succeeded = result.has_value();
+          }));
+
+  // `PrintWithParams()` should be deferred waiting for the lazy-loaded image.
+  EXPECT_FALSE(callback_called);
+  VerifyPreviewRequest(false);
+
+  // Calling `window.print()`, `InitiatePrintPreview()`, or `PrintPreview()`
+  // while `PrintWithParams()` is pending must be blocked.
+  ExecuteJavaScriptForTests("window.print();");
+  VerifyPreviewRequest(false);
+
+  print_manager()->set_job_settings(print_settings());
+  GetPrintRenderFrameHelper()->InitiatePrintPreview(
+#if BUILDFLAG(IS_CHROMEOS)
+      mojo::NullAssociatedRemote(),
+#endif
+      /*has_selection=*/false);
+  GetPrintRenderFrameHelper()->PrintPreview(print_settings().Clone());
+  VerifyPrintPreviewGenerated(false);
+
+  // Finish loading for printing; `OnPrintWithParamsFinished()` should complete
+  // with `ScopedIPC` and `print_in_progress_` active, blocking `window.print()`
+  // in the `matchMedia('print')` and `afterprint` listeners.
+  GetPrintRenderFrameHelper()->DidFinishLoadForPrinting();
+  EXPECT_TRUE(callback_called);
+  EXPECT_TRUE(print_succeeded);
+  VerifyPreviewRequest(false);
+}
+
 #endif  // BUILDFLAG(ENABLE_PRINT_PREVIEW)
 
 #endif  // !BUILDFLAG(IS_CHROMEOS)

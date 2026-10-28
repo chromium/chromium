@@ -160,6 +160,9 @@ class PrintRenderFrameHelper
   friend class PrintRenderFrameHelperTestBase;
   FRIEND_TEST_ALL_PREFIXES(PrintRenderFrameHelperPreviewTest,
                            BlockScriptInitiatedPrinting);
+  FRIEND_TEST_ALL_PREFIXES(
+      PrintRenderFrameHelperPreviewTest,
+      PrintWithParamsBlocksConcurrentPrintPreviewAndScriptedPrint);
   FRIEND_TEST_ALL_PREFIXES(MAYBE_PrintRenderFrameHelperTest,
                            PrintRequestedPages);
   FRIEND_TEST_ALL_PREFIXES(MAYBE_PrintRenderFrameHelperTest,
@@ -421,7 +424,8 @@ class PrintRenderFrameHelper
   // `page_index` is 0-based.
   // `metafile` is the rendered page and should be valid.
   // Returns true if print preview should continue, false on failure.
-  bool PreviewPageRendered(uint32_t page_index,
+  bool PreviewPageRendered(const mojom::PrintParams& print_params,
+                           uint32_t page_index,
                            std::unique_ptr<MetafileSkia> metafile);
 
   // Called when the connection with the |preview_ui_| goes away.
@@ -682,7 +686,9 @@ class PrintRenderFrameHelper
   //   parameters so that it can be invoked after DidStopLoading.
   base::OnceClosure on_stop_loading_closure_;
 
-  // This is used to report PrintWithParams() call result.
+  // This is used to report the `PrintWithParams()` call result, and also
+  // serves as a flag indicating that `PrintWithParams()` is in progress to
+  // prevent concurrent print operations.
   PrintWithParamsCallback print_with_params_callback_;
 
   // Stores the quit closures of Mojo responses.

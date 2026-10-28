@@ -234,6 +234,26 @@ IN_PROC_BROWSER_TEST_P(PrintToPdfProtocolTest, PrintToPdfPrintMediaSlowImage) {
   EXPECT_NE(GetPixelRGB(50, 50), 0xffffffu);
 }
 
+IN_PROC_BROWSER_TEST_P(PrintToPdfProtocolTest,
+                       PrintToPdfPrintMediaSlowImageWithWindowPrint) {
+  NavigateToURLBlockUntilNavigationsComplete(
+      "/print_to_pdf/media_print_slow_image.html");
+
+  ASSERT_TRUE(content::ExecJs(
+      web_contents(),
+      "window.addEventListener('beforeprint', () => window.print());"
+      "window.matchMedia('print').addEventListener('change', () => "
+      "window.print());"
+      "window.addEventListener('afterprint', () => window.print());"));
+
+  Attach();
+
+  PrintOnePageWithDefaultSettings();
+
+  EXPECT_NE(GetPixelRGB(0, 0), 0xffffffu);
+  EXPECT_NE(GetPixelRGB(50, 50), 0xffffffu);
+}
+
 IN_PROC_BROWSER_TEST_P(PrintToPdfProtocolTest, PrintToPdfMargins) {
   NavigateToURLBlockUntilNavigationsComplete("/print_to_pdf/basic.html");
 
