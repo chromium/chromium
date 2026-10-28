@@ -15,7 +15,7 @@ android_library("benchmark_java") {
   sources = [ "java/src/org/jni_zero/benchmark/Benchmark.java" ]
 
   deps = [
-    ":benchmark_header_java",
+    ":benchmark_jni_java",
     "//base:base_java",
     "//third_party/jni_zero:jni_zero_java",
   ]

@@ -10,33 +10,22 @@
 
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
+#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/timer/elapsed_timer.h"
+#include "base/types/fixed_array.h"
 #include "third_party/google_benchmark/src/include/benchmark/benchmark.h"
 #include "third_party/jni_zero/benchmarks/benchmark_jni/Benchmark_jni.h"
 #include "third_party/jni_zero/benchmarks/system_jni/Integer_jni.h"
+#include "third_party/jni_zero/default_conversions.h"
 #include "third_party/jni_zero/jni_zero.h"
 
 using benchmark::DoNotOptimize;
 using jni_zero::JavaRef;
 using jni_zero::ScopedJavaLocalRef;
-
-template <>
-std::int32_t jni_zero::FromJniType<std::int32_t>(
-    JNIEnv* env,
-    const jni_zero::JavaRef<jobject>& j_integer) {
-  return static_cast<std::int32_t>(
-      JNI_Integer::Java_Integer_intValue(env, j_integer));
-}
-template <>
-jni_zero::ScopedJavaLocalRef<jobject> jni_zero::ToJniType<std::int32_t>(
-    JNIEnv* env,
-    const std::int32_t& input) {
-  return JNI_Integer::Java_Integer_valueOf__int(env, static_cast<jint>(input));
-}
 
 const int kUsToNs = 1000;
 
@@ -82,12 +71,12 @@ static std::string JNI_Benchmark_RunGeneratedClassesBenchmark(JNIEnv* env) {
   static const char kMethodName[] = "callMe";
   static const char kMethodSignature[] = "()V";
   const int kNumClasses = 1000;
-  std::string class_names[kNumClasses];
+  base::FixedArray<std::string> class_names(kNumClasses + 1);
   for (int i = 1; i <= kNumClasses; i++) {
     class_names[i] = base::StrCat({kClassPrefix, base::NumberToString(i)});
   }
 
-  jclass clazzes[kNumClasses];
+  base::FixedArray<jclass> clazzes(kNumClasses + 1);
   base::ElapsedTimer timer;
   for (int i = 1; i <= kNumClasses; i++) {
     clazzes[i] = LookupClass(env, class_names[i].data());
@@ -182,7 +171,7 @@ static std::string JNI_Benchmark_RunAttachCurrentThreadBenchmark(
 static std::string JNI_Benchmark_RunIntegerBoxingBenchmark(JNIEnv* env) {
   std::stringstream benchmark_log;
   const int kNumTries = 10000;
-  ScopedJavaLocalRef<jobject> j_integerArray[kNumTries];
+  base::FixedArray<ScopedJavaLocalRef<jobject>> j_integerArray(kNumTries);
   base::ElapsedTimer timer;
   for (int i = 0; i < kNumTries; i++) {
     j_integerArray[i] = JNI_Integer::Java_Integer_valueOf__int(env, i);
@@ -312,7 +301,10 @@ static void JNI_Benchmark_SendLargeIntArray(
   size_t array_size = static_cast<size_t>(env->GetArrayLength(j_array.obj()));
   jint* array = env->GetIntArrayElements(j_array.obj(), nullptr);
   for (size_t i = 0; i < array_size; i++) {
-    DoNotOptimize(array[i]);
+    // SAFETY: `array` points to `array_size` elements returned by
+    // GetIntArrayElements(), with length queried from `j_array` via
+    // GetArrayLength().
+    DoNotOptimize(UNSAFE_BUFFERS(array[i]));
   }
   env->ReleaseIntArrayElements(j_array.obj(), array, 0);
 }
@@ -320,8 +312,8 @@ static void JNI_Benchmark_SendLargeIntArray(
 static void JNI_Benchmark_SendLargeIntArrayConverted(
     JNIEnv* env,
     const std::vector<int32_t>& array) {
-  for (size_t i = 0; i < array.size(); i++) {
-    DoNotOptimize(array[i]);
+  for (int32_t elem : array) {
+    DoNotOptimize(elem);
   }
 }
 
@@ -341,7 +333,8 @@ static void JNI_Benchmark_SendLargeObjectArray(
   size_t array_size = static_cast<size_t>(env->GetArrayLength(j_array.obj()));
   for (size_t i = 0; i < array_size; i++) {
     DoNotOptimize(JNI_Integer::Java_Integer_intValue(
-        env, JavaRef(env, env->GetObjectArrayElement(j_array.obj(), i))));
+        env, ScopedJavaLocalRef<jobject>::Adopt(
+                 env, env->GetObjectArrayElement(j_array.obj(), i))));
   }
 }
 
@@ -434,7 +427,106 @@ static void JNI_Benchmark_SendListObject(JNIEnv* env,
   }
 }
 
+static std::string JNI_Benchmark_RunNativeToJavaSafePointersBenchmark(
+    JNIEnv* env) {
+  std::stringstream benchmark_log;
+  const int kNumTries = 10000;
+  static NativeBenchmarkObject* borrowed_obj = new NativeBenchmarkObject();
+
+  base::ElapsedTimer timer;
+  for (int i = 0; i < kNumTries; i++) {
+    Java_Benchmark_receiveRawLong(env, reinterpret_cast<int64_t>(borrowed_obj));
+  }
+  double elapsed_us = timer.Elapsed().InMicrosecondsF();
+  benchmark_log << "Sending raw long pointer [Native -> Java] (" << kNumTries
+                << " times): Elapsed time = " << elapsed_us << " us\n";
+  double average_us = elapsed_us / kNumTries;
+  benchmark_log << "Average per call = " << average_us * kUsToNs << " ns\n";
+
+  elapsed_us = 0;
+  timer = {};
+  for (int i = 0; i < kNumTries; i++) {
+    Java_Benchmark_receiveJniPtr(env, borrowed_obj);
+  }
+  elapsed_us = timer.Elapsed().InMicrosecondsF();
+  benchmark_log << "Sending JniPtr [Native -> Java] (" << kNumTries
+                << " times): Elapsed time = " << elapsed_us << " us\n";
+  average_us = elapsed_us / kNumTries;
+  benchmark_log << "Average per call = " << average_us * kUsToNs << " ns\n";
+
+  elapsed_us = 0;
+  timer = {};
+  for (int i = 0; i < kNumTries; i++) {
+    Java_Benchmark_receiveJniRawPtr(env, jni_zero::MakeRaw(borrowed_obj));
+  }
+  elapsed_us = timer.Elapsed().InMicrosecondsF();
+  benchmark_log << "Sending and releasing JniRawPtr [Native -> Java] ("
+                << kNumTries << " times): Elapsed time = " << elapsed_us
+                << " us\n";
+  average_us = elapsed_us / kNumTries;
+  benchmark_log << "Average per call = " << average_us * kUsToNs << " ns\n";
+
+  elapsed_us = 0;
+  timer = {};
+  for (int i = 0; i < kNumTries; i++) {
+    Java_Benchmark_receiveAndDestroyRawLong(
+        env, reinterpret_cast<int64_t>(new NativeBenchmarkObject()));
+  }
+  elapsed_us = timer.Elapsed().InMicrosecondsF();
+  benchmark_log
+      << "Sending and destroying raw long pointer [Native -> Java] ("
+      << kNumTries << " times): Elapsed time = " << elapsed_us << " us\n";
+  average_us = elapsed_us / kNumTries;
+  benchmark_log << "Average per call = " << average_us * kUsToNs << " ns\n";
+
+  elapsed_us = 0;
+  timer = {};
+  for (int i = 0; i < kNumTries; i++) {
+    Java_Benchmark_receiveJniUniquePtr(
+        env, jni_zero::MakeUnique<NativeBenchmarkObject>());
+  }
+  elapsed_us = timer.Elapsed().InMicrosecondsF();
+  benchmark_log << "Sending and destroying JniUniquePtr [Native -> Java] ("
+                << kNumTries << " times): Elapsed time = " << elapsed_us
+                << " us\n";
+  average_us = elapsed_us / kNumTries;
+  benchmark_log << "Average per call = " << average_us * kUsToNs << " ns\n";
+  return benchmark_log.str();
+}
+
+static int64_t JNI_Benchmark_CreateRawLong(JNIEnv* env) {
+  return reinterpret_cast<int64_t>(new NativeBenchmarkObject());
+}
+
+static void JNI_Benchmark_DestroyRawLong(JNIEnv* env, int64_t ptr) {
+  delete reinterpret_cast<NativeBenchmarkObject*>(ptr);
+}
+
+static int64_t JNI_Benchmark_BorrowRawLong(JNIEnv* env) {
+  static NativeBenchmarkObject* obj = new NativeBenchmarkObject();
+  return reinterpret_cast<int64_t>(obj);
+}
+
+static void JNI_Benchmark_SendRawLong(JNIEnv* env, int64_t ptr) {
+  auto* obj = reinterpret_cast<NativeBenchmarkObject*>(ptr);
+  DoNotOptimize(obj);
+}
+
+static jni_zero::JniUniquePtr<NativeBenchmarkObject>
+JNI_Benchmark_CreateUniquePtr(JNIEnv* env) {
+  return jni_zero::MakeUnique<NativeBenchmarkObject>();
+}
+
+static jni_zero::JniRawPtr<NativeBenchmarkObject> JNI_Benchmark_BorrowRawPtr(
+    JNIEnv* env) {
+  static NativeBenchmarkObject* obj = new NativeBenchmarkObject();
+  return jni_zero::MakeRaw(obj);
+}
+
+static void JNI_Benchmark_SendJniPtr(JNIEnv* env, NativeBenchmarkObject* ptr) {
+  DoNotOptimize(ptr);
+}
+
 }  // namespace jni_zero::benchmark
 
 DEFINE_JNI(Benchmark)
-DEFINE_JNI(Integer)

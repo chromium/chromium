@@ -8,7 +8,11 @@ import android.os.Environment;
 import org.jni_zero.AccessedByNative;
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniPtr;
+import org.jni_zero.JniRawPtr;
 import org.jni_zero.JniType;
+import org.jni_zero.JniTypeToken;
+import org.jni_zero.JniUniquePtr;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Log;
@@ -28,6 +32,9 @@ public class Benchmark {
 
     // So it is not optimized away.
     @AccessedByNative private static long count = 0;
+
+    @JniType("::jni_zero::benchmark::NativeBenchmarkObject")
+    interface NativeBenchmarkObject extends JniTypeToken {}
 
     public static void runBenchmark() {
         Log.i(TAG, "===============Start of Benchmarks===============");
@@ -52,6 +59,9 @@ public class Benchmark {
         sb.append("# Strings Benchmark\n");
         sb.append(runJavaToNativeStringBenchmark()).append('\n');
         sb.append(BenchmarkJni.get().runNativeToJavaStringsBenchmark()).append('\n');
+        sb.append("# Safe Pointers Benchmark\n");
+        sb.append(runJavaToNativeSafePointersBenchmark()).append('\n');
+        sb.append(BenchmarkJni.get().runNativeToJavaSafePointersBenchmark()).append('\n');
 
         File basedir =
                 Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
@@ -67,6 +77,35 @@ public class Benchmark {
 
     @CalledByNative
     static void callMe() {}
+
+    @CalledByNative
+    static void receiveRawLong(long ptr) {
+        if (ptr != 0) {
+            count++;
+        }
+    }
+
+    @CalledByNative
+    static void receiveJniPtr(JniPtr<NativeBenchmarkObject> ptr) {
+        if (ptr != null) {
+            count++;
+        }
+    }
+
+    @CalledByNative
+    static void receiveJniRawPtr(JniRawPtr<NativeBenchmarkObject> ptr) {
+        ptr.release();
+    }
+
+    @CalledByNative
+    static void receiveAndDestroyRawLong(long ptr) {
+        BenchmarkJni.get().destroyRawLong(ptr);
+    }
+
+    @CalledByNative
+    static void receiveJniUniquePtr(JniUniquePtr<NativeBenchmarkObject> ptr) {
+        ptr.destroy();
+    }
 
     @CalledByNative
     static void receiveU8String(@JniType("std::string") String s) {}
@@ -451,6 +490,102 @@ public class Benchmark {
         return sb.toString();
     }
 
+    public static String runJavaToNativeSafePointersBenchmark() {
+        StringBuilder sb = new StringBuilder();
+        int NUM_TRIES = 10000;
+
+        long rawPtr = BenchmarkJni.get().borrowRawLong();
+        long startTimeUs = System.nanoTime() / US_TO_NANO;
+        for (int i = 0; i < NUM_TRIES; i++) {
+            BenchmarkJni.get().sendRawLong(rawPtr);
+        }
+        long elapsedTimeUs = System.nanoTime() / US_TO_NANO - startTimeUs;
+        sb.append(
+                "Sending raw long pointer [Java -> Native] ("
+                        + NUM_TRIES
+                        + " times). Elapsed Time = "
+                        + elapsedTimeUs
+                        + " us\n");
+        double averageUs = (elapsedTimeUs * 1.0) / NUM_TRIES;
+        sb.append("Average per call = " + averageUs * US_TO_NANO + " ns\n");
+
+        JniRawPtr<NativeBenchmarkObject> jniRawPtr = BenchmarkJni.get().borrowRawPtr();
+        startTimeUs = System.nanoTime() / US_TO_NANO;
+        for (int i = 0; i < NUM_TRIES; i++) {
+            BenchmarkJni.get().sendJniPtr(jniRawPtr);
+        }
+        elapsedTimeUs = System.nanoTime() / US_TO_NANO - startTimeUs;
+        jniRawPtr.release();
+        sb.append(
+                "Sending JniPtr [Java -> Native] ("
+                        + NUM_TRIES
+                        + " times). Elapsed Time = "
+                        + elapsedTimeUs
+                        + " us\n");
+        averageUs = (elapsedTimeUs * 1.0) / NUM_TRIES;
+        sb.append("Average per call = " + averageUs * US_TO_NANO + " ns\n");
+
+        startTimeUs = System.nanoTime() / US_TO_NANO;
+        for (int i = 0; i < NUM_TRIES; i++) {
+            count += BenchmarkJni.get().borrowRawLong();
+        }
+        elapsedTimeUs = System.nanoTime() / US_TO_NANO - startTimeUs;
+        sb.append(
+                "Borrowing raw long pointer [Java -> Native] ("
+                        + NUM_TRIES
+                        + " times). Elapsed Time = "
+                        + elapsedTimeUs
+                        + " us\n");
+        averageUs = (elapsedTimeUs * 1.0) / NUM_TRIES;
+        sb.append("Average per call = " + averageUs * US_TO_NANO + " ns\n");
+
+        startTimeUs = System.nanoTime() / US_TO_NANO;
+        for (int i = 0; i < NUM_TRIES; i++) {
+            JniRawPtr<NativeBenchmarkObject> ptr = BenchmarkJni.get().borrowRawPtr();
+            ptr.release();
+        }
+        elapsedTimeUs = System.nanoTime() / US_TO_NANO - startTimeUs;
+        sb.append(
+                "Borrowing and releasing JniRawPtr [Java -> Native] ("
+                        + NUM_TRIES
+                        + " times). Elapsed Time = "
+                        + elapsedTimeUs
+                        + " us\n");
+        averageUs = (elapsedTimeUs * 1.0) / NUM_TRIES;
+        sb.append("Average per call = " + averageUs * US_TO_NANO + " ns\n");
+
+        startTimeUs = System.nanoTime() / US_TO_NANO;
+        for (int i = 0; i < NUM_TRIES; i++) {
+            long ptr = BenchmarkJni.get().createRawLong();
+            BenchmarkJni.get().destroyRawLong(ptr);
+        }
+        elapsedTimeUs = System.nanoTime() / US_TO_NANO - startTimeUs;
+        sb.append(
+                "Creating and destroying raw long pointer [Java -> Native] ("
+                        + NUM_TRIES
+                        + " times). Elapsed Time = "
+                        + elapsedTimeUs
+                        + " us\n");
+        averageUs = (elapsedTimeUs * 1.0) / NUM_TRIES;
+        sb.append("Average per call = " + averageUs * US_TO_NANO + " ns\n");
+
+        startTimeUs = System.nanoTime() / US_TO_NANO;
+        for (int i = 0; i < NUM_TRIES; i++) {
+            JniUniquePtr<NativeBenchmarkObject> ptr = BenchmarkJni.get().createUniquePtr();
+            ptr.destroy();
+        }
+        elapsedTimeUs = System.nanoTime() / US_TO_NANO - startTimeUs;
+        sb.append(
+                "Creating and destroying JniUniquePtr [Java -> Native] ("
+                        + NUM_TRIES
+                        + " times). Elapsed Time = "
+                        + elapsedTimeUs
+                        + " us\n");
+        averageUs = (elapsedTimeUs * 1.0) / NUM_TRIES;
+        sb.append("Average per call = " + averageUs * US_TO_NANO + " ns\n");
+        return sb.toString();
+    }
+
     @NativeMethods
     interface Natives {
         @JniType("std::string")
@@ -473,6 +608,9 @@ public class Benchmark {
 
         @JniType("std::string")
         String runNativeToJavaStringsBenchmark();
+
+        @JniType("std::string")
+        String runNativeToJavaSafePointersBenchmark();
 
         void sendLargeIntArray(int[] array);
 
@@ -511,10 +649,24 @@ public class Benchmark {
 
         void sendNonAsciiStringConvertedToU16(@JniType("std::u16string") String s);
 
-        void sendListObject(List l);
+        void sendListObject(List<String> l);
 
-        void sendListConverted(@JniType("std::vector") List l);
+        void sendListConverted(@JniType("std::vector") List<String> l);
 
         void callMe();
+
+        long createRawLong();
+
+        void destroyRawLong(long ptr);
+
+        long borrowRawLong();
+
+        void sendRawLong(long ptr);
+
+        JniUniquePtr<NativeBenchmarkObject> createUniquePtr();
+
+        JniRawPtr<NativeBenchmarkObject> borrowRawPtr();
+
+        void sendJniPtr(JniPtr<NativeBenchmarkObject> ptr);
     }
 }

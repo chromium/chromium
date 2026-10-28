@@ -7,14 +7,14 @@
 
 #include "third_party/jni_zero/jni_zero.h"
 
-template <>
-std::int32_t jni_zero::FromJniType<std::int32_t>(
-    JNIEnv* env,
-    const jni_zero::JavaRef<jobject>& j_integer);
+namespace jni_zero::benchmark {
 
-template <>
-jni_zero::ScopedJavaLocalRef<jobject> jni_zero::ToJniType<std::int32_t>(
-    JNIEnv* env,
-    const std::int32_t& input);
+class NativeBenchmarkObject {
+ public:
+  NativeBenchmarkObject() = default;
+  ~NativeBenchmarkObject() = default;
+};
+
+}  // namespace jni_zero::benchmark
 
 #endif  // JNI_ZERO_BENCHMARK_H_
