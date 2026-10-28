@@ -998,10 +998,18 @@ void ContextualTasksUIBase::OnChipMousePressed(
     toolbar_ui_api::mojom::LhsChipIdentifier identifier) {}
 
 void ContextualTasksUIBase::OnChipPointerEntered(
-    toolbar_ui_api::mojom::LhsChipIdentifier identifier) {}
+    toolbar_ui_api::mojom::LhsChipIdentifier identifier) {
+  if (ContextualTasksPermissionController* controller = GetActiveController()) {
+    controller->OnChipPointerEntered(identifier);
+  }
+}
 
 void ContextualTasksUIBase::OnChipPointerExited(
-    toolbar_ui_api::mojom::LhsChipIdentifier identifier) {}
+    toolbar_ui_api::mojom::LhsChipIdentifier identifier) {
+  if (ContextualTasksPermissionController* controller = GetActiveController()) {
+    controller->OnChipPointerExited(identifier);
+  }
+}
 
 void ContextualTasksUIBase::NotifyAiPageStatusChanged(bool is_ai_page) {
   if (auto* toolbar_page = GetToolbarPageRemote()) {

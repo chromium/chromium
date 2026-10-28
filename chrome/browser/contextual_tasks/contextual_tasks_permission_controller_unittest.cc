@@ -164,6 +164,15 @@ TEST_F(ContextualTasksPermissionControllerTest, ForwardsChipInteractions) {
 
   EXPECT_TRUE(pressed_callback_ran);
   EXPECT_TRUE(pressed_with_pointer);
+
+  EXPECT_FALSE(request_chip->IsMouseHovered());
+  controller()->OnChipPointerEntered(
+      toolbar_ui_api::mojom::LhsChipIdentifier::kPermissionRequest);
+  EXPECT_TRUE(request_chip->IsMouseHovered());
+
+  controller()->OnChipPointerExited(
+      toolbar_ui_api::mojom::LhsChipIdentifier::kPermissionRequest);
+  EXPECT_FALSE(request_chip->IsMouseHovered());
 }
 
 // Switching the active task invalidates the chips' tokens even if their
