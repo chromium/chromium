@@ -192,8 +192,12 @@ class IsolatedBrowserSupportTestBase : public ::testing::Test {
   }
 
  protected:
-  content::BrowserTaskEnvironment env_;
+  // `prefs_` must be declared before `env_` so that it outlives any objects
+  // torn down during `BrowserTaskEnvironment` destruction (such as providers
+  // owned by `TestingBrowserProcess` that hold a `raw_ptr<PrefService>` to
+  // `prefs_`).
   TestingPrefServiceSimple prefs_;
+  content::BrowserTaskEnvironment env_;
 
  private:
   registry_util::RegistryOverrideManager rom_;
