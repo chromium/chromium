@@ -375,8 +375,10 @@ bool AwWebContentsDelegate::ShouldAllowPartialParamMismatchOfPrerender2(
   // TODO(https://crbug.com/340416082): Relax initiator check for all platforms.
 
   // `ui::PAGE_TRANSITION_FROM_API` bit distinguishes that the activation
-  // navigation is triggered by `WebView.loadUrl()`.
-  return navigation_handle.GetPageTransition() & ui::PAGE_TRANSITION_FROM_API;
+  // navigation is triggered by `WebView.loadUrl()`, which is always
+  // browser-initiated.
+  return !navigation_handle.IsRendererInitiated() &&
+         (navigation_handle.GetPageTransition() & ui::PAGE_TRANSITION_FROM_API);
 }
 
 bool AwWebContentsDelegate::isModalContextMenu() const {
