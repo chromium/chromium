@@ -422,11 +422,85 @@ TEST_F(DataTransferDlpControllerTest, DropFile_Allowed) {
                                           testing::NotNull(),
                                           base::test::IsNotNullCallback()))
       .WillOnce(base::test::RunOnceCallback<2>(true));
+  EXPECT_CALL(*rules_manager_, IsRestrictedDestination)
+      .WillOnce(testing::Return(DlpRulesManager::Level::kAllow));
 
   ::testing::StrictMock<base::MockOnceClosure> drop_callback;
   EXPECT_CALL(drop_callback, Run);
   dlp_controller_->DropIfAllowed({*drag_data.GetSource()}, {data_dst},
                                  drag_data.GetFilenames(), drop_callback.Get());
+}
+
+TEST_F(DataTransferDlpControllerTest, DropFile_Allowed_TextBlocked) {
+  const base::FilePath path("file1.txt");
+
+  auto drag_data = ui::OSExchangeData();
+  drag_data.SetFilename(path);
+  drag_data.SetString(u"restricted text");
+  drag_data.SetSource(
+      std::make_unique<ui::DataTransferEndpoint>(GURL(kExample1Url)));
+  ui::DataTransferEndpoint data_dst{GURL(kExample2Url)};
+
+  MockFilesController files_controller(*rules_manager_);
+  std::optional<std::vector<ui::FileInfo>> file_names =
+      drag_data.GetFilenames();
+  ASSERT_TRUE(file_names.has_value());
+
+  EXPECT_CALL(*rules_manager_, GetDlpFilesController)
+      .WillOnce(testing::Return(&files_controller));
+  EXPECT_CALL(files_controller,
+              CheckIfPasteOrDropIsAllowed(std::vector<base::FilePath>{path},
+                                          testing::NotNull(),
+                                          base::test::IsNotNullCallback()))
+      .WillOnce(base::test::RunOnceCallback<2>(true));
+  EXPECT_CALL(*rules_manager_, IsRestrictedDestination)
+      .WillOnce(testing::Return(DlpRulesManager::Level::kBlock));
+  EXPECT_CALL(*dlp_controller_, NotifyBlockedDrop);
+
+  ::testing::StrictMock<base::MockOnceClosure> drop_callback;
+  dlp_controller_->DropIfAllowed({*drag_data.GetSource()}, {data_dst},
+                                 std::move(file_names), drop_callback.Get());
+
+  histogram_tester_.ExpectUniqueSample(
+      data_controls::GetDlpHistogramPrefix() +
+          data_controls::dlp::kDragDropBlockedUMA,
+      true, 1);
+}
+
+TEST_F(DataTransferDlpControllerTest, DropFile_Allowed_TextWarn) {
+  const base::FilePath path("file1.txt");
+
+  auto drag_data = ui::OSExchangeData();
+  drag_data.SetFilename(path);
+  drag_data.SetString(u"restricted text");
+  drag_data.SetSource(
+      std::make_unique<ui::DataTransferEndpoint>(GURL(kExample1Url)));
+  ui::DataTransferEndpoint data_dst{GURL(kExample2Url)};
+
+  MockFilesController files_controller(*rules_manager_);
+  std::optional<std::vector<ui::FileInfo>> file_names =
+      drag_data.GetFilenames();
+  ASSERT_TRUE(file_names.has_value());
+
+  EXPECT_CALL(*rules_manager_, GetDlpFilesController)
+      .WillOnce(testing::Return(&files_controller));
+  EXPECT_CALL(files_controller,
+              CheckIfPasteOrDropIsAllowed(std::vector<base::FilePath>{path},
+                                          testing::NotNull(),
+                                          base::test::IsNotNullCallback()))
+      .WillOnce(base::test::RunOnceCallback<2>(true));
+  EXPECT_CALL(*rules_manager_, IsRestrictedDestination)
+      .WillOnce(testing::Return(DlpRulesManager::Level::kWarn));
+  EXPECT_CALL(*dlp_controller_, WarnOnDrop);
+
+  ::testing::StrictMock<base::MockOnceClosure> drop_callback;
+  dlp_controller_->DropIfAllowed({*drag_data.GetSource()}, {data_dst},
+                                 std::move(file_names), drop_callback.Get());
+
+  histogram_tester_.ExpectUniqueSample(
+      data_controls::GetDlpHistogramPrefix() +
+          data_controls::dlp::kDragDropBlockedUMA,
+      true, 1);
 }
 
 TEST_F(DataTransferDlpControllerTest, PasteFile_Blocked) {

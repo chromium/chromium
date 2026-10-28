@@ -355,16 +355,23 @@ void DataTransferDlpController::DropIfAllowed(
       files_controller->CheckIfPasteOrDropIsAllowed(
           GetFilePathsFromFileInfos(filenames.value()), &destination.value(),
           base::BindOnce(
-              [](base::OnceClosure drop_cb, bool is_allowed) {
-                if (is_allowed) {
-                  std::move(drop_cb).Run();
+              [](base::WeakPtr<DataTransferDlpController> controller,
+                 std::optional<ui::DataTransferEndpoint> source,
+                 std::optional<ui::DataTransferEndpoint> destination,
+                 base::OnceClosure drop_cb, bool is_allowed) {
+                if (is_allowed && controller) {
+                  controller->ContinueDropIfAllowed(std::move(source),
+                                                    std::move(destination),
+                                                    std::move(drop_cb));
                 }
               },
+              weak_ptr_factory_.GetWeakPtr(), source, destination,
               std::move(drop_cb)));
       return;
     }
   }
-  ContinueDropIfAllowed(source, destination, std::move(drop_cb));
+  ContinueDropIfAllowed(std::move(source), std::move(destination),
+                        std::move(drop_cb));
 }
 
 DataTransferDlpController::DataTransferDlpController(
