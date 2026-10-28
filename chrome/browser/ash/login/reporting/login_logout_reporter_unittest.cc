@@ -5,28 +5,30 @@
 #include <memory>
 #include <string_view>
 
+#include "base/check.h"
 #include "base/memory/raw_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/simple_test_clock.h"
 #include "chrome/browser/ash/login/reporting/login_logout_reporter_test_delegate.h"
 #include "chrome/browser/ash/login/session/user_session_manager.h"
-#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/ash/login/test/chrome_user_session_test_environment_delegate.h"
 #include "chrome/browser/ash/policy/reporting/user_event_reporter_helper_testing.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
 #include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
 #include "chrome/browser/global_features.h"
 #include "chrome/test/base/testing_browser_process.h"
-#include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
 #include "chromeos/ash/components/login/auth/public/auth_failure.h"
 #include "chromeos/ash/components/login/session/session_termination_manager.h"
 #include "chromeos/ash/components/policy/device_local_account/device_local_account_type.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
+#include "components/account_id/account_id.h"
 #include "components/reporting/client/mock_report_queue.h"
-#include "components/user_manager/scoped_user_manager.h"
+#include "components/session_manager/test/user_session_test_environment.h"
+#include "components/user_manager/user.h"
 #include "components/user_manager/user_names.h"
 #include "content/public/test/browser_task_environment.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
@@ -41,6 +43,7 @@ namespace ash {
 namespace reporting {
 
 constexpr char user_email[] = "user@managed.com";
+constexpr char user_gaia_id[] = "1234";
 
 class LoginLogoutTestHelper {
  public:
@@ -57,7 +60,12 @@ class LoginLogoutTestHelper {
         test_url_loader_factory_.GetSafeWeakWrapper());
     session_termination_manager_ =
         std::make_unique<SessionTerminationManager>();
-    fake_user_manager_.Reset(std::make_unique<ash::FakeChromeUserManager>());
+    auto* browser_process = TestingBrowserProcess::GetGlobal();
+    user_session_test_environment_ =
+        std::make_unique<test::UserSessionTestEnvironment>(
+            browser_process->local_state(),
+            std::make_unique<test::ChromeUserSessionTestEnvironmentDelegate>(
+                browser_process));
     user_session_manager_ = std::make_unique<ash::UserSessionManager>(
         TestingBrowserProcess::GetGlobal()->local_state(),
         TestingBrowserProcess::GetGlobal()
@@ -75,70 +83,58 @@ class LoginLogoutTestHelper {
   void Shutdown() {
     user_session_manager_->Shutdown();
     user_session_manager_.reset();
-    fake_user_manager_.Reset();
+    user_session_test_environment_.reset();
     session_termination_manager_.reset();
     TestingBrowserProcess::GetGlobal()->SetSharedURLLoaderFactory(nullptr);
     chromeos::PowerManagerClient::Shutdown();
   }
 
-  std::unique_ptr<TestingProfile> CreateProfile(user_manager::User* user) {
-    TestingProfile::Builder profile_builder;
-    profile_builder.SetProfileName(user->GetAccountId().GetUserEmail());
-    auto profile = profile_builder.Build();
-    ProfileHelper::Get()->SetUserToProfileMappingForTesting(user,
-                                                            profile.get());
-    fake_user_manager_->LoginUser(user->GetAccountId(), true);
-    return profile;
+  // Logs in `user`, which creates its profile, and returns it.
+  const user_manager::User& LogIn(const user_manager::User* user) {
+    CHECK(user);
+    user_session_test_environment_->LogIn(user->GetAccountId());
+    return *user;
   }
 
-  std::unique_ptr<TestingProfile> CreateRegularUserProfile() {
-    AccountId account_id = AccountId::FromUserEmail(user_email);
-    auto* const user = fake_user_manager_->AddUser(account_id);
-    return CreateProfile(user);
+  const user_manager::User& LogInRegularUser() {
+    return LogIn(user_session_test_environment_->AddRegularUser(
+        AccountId::FromUserEmailGaiaId(user_email, GaiaId(user_gaia_id))));
   }
 
-  std::unique_ptr<TestingProfile> CreatePublicAccountProfile() {
-    AccountId account_id =
-        AccountId::FromUserEmail(GenerateDeviceLocalAccountUserId(
-            "managed_guest", policy::DeviceLocalAccountType::kPublicSession));
-    auto* const user = fake_user_manager_->AddPublicAccountUser(account_id);
-    return CreateProfile(user);
+  const user_manager::User& LogInPublicAccount() {
+    return LogIn(user_session_test_environment_->AddPublicAccountUser(
+        GenerateDeviceLocalAccountUserId(
+            "managed_guest", policy::DeviceLocalAccountType::kPublicSession)));
   }
 
-  std::unique_ptr<TestingProfile> CreateGuestProfile() {
-    auto* const user = fake_user_manager_->AddGuestUser();
-    return CreateProfile(user);
+  const user_manager::User& LogInGuest() {
+    return LogIn(user_session_test_environment_->AddGuestUser());
   }
 
-  std::unique_ptr<TestingProfile> CreateKioskAppProfile() {
-    AccountId account_id =
-        AccountId::FromUserEmail(GenerateDeviceLocalAccountUserId(
-            "kiosk", policy::DeviceLocalAccountType::kKioskApp));
-    auto* const user = fake_user_manager_->AddKioskChromeAppUser(account_id);
-    return CreateProfile(user);
+  const user_manager::User& LogInKioskApp() {
+    return LogIn(user_session_test_environment_->AddKioskChromeAppUser(
+        GenerateDeviceLocalAccountUserId(
+            "kiosk", policy::DeviceLocalAccountType::kKioskApp)));
   }
 
-  std::unique_ptr<TestingProfile> CreateWebKioskAppProfile() {
-    AccountId account_id =
-        AccountId::FromUserEmail(GenerateDeviceLocalAccountUserId(
-            "webkiosk", policy::DeviceLocalAccountType::kWebKioskApp));
-    auto* const user = fake_user_manager_->AddKioskWebAppUser(account_id);
-    return CreateProfile(user);
+  const user_manager::User& LogInWebKioskApp() {
+    return LogIn(user_session_test_environment_->AddKioskWebAppUser(
+        GenerateDeviceLocalAccountUserId(
+            "webkiosk", policy::DeviceLocalAccountType::kWebKioskApp)));
   }
 
-  std::unique_ptr<TestingProfile> CreateProfileByType(
-      user_manager::UserType user_type) {
+  const user_manager::User& LogInByType(user_manager::UserType user_type) {
     switch (user_type) {
       case user_manager::UserType::kRegular:
-        return CreateRegularUserProfile();
+        return LogInRegularUser();
       case user_manager::UserType::kGuest:
-        return CreateGuestProfile();
+        return LogInGuest();
       case user_manager::UserType::kPublicAccount:
-        return CreatePublicAccountProfile();
+        return LogInPublicAccount();
       case user_manager::UserType::kKioskChromeApp:
-        return CreateKioskAppProfile();
+        return LogInKioskApp();
       case user_manager::UserType::kKioskWebApp:
-        return CreateWebKioskAppProfile();
+        return LogInWebKioskApp();
       default:
         NOTREACHED();
     }
@@ -188,8 +184,8 @@ class LoginLogoutTestHelper {
   ScopedTestingCrosSettings scoped_testing_cros_settings_;
   ScopedStubInstallAttributes scoped_stub_install_attributes_;
 
-  user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
-      fake_user_manager_;
+  std::unique_ptr<test::UserSessionTestEnvironment>
+      user_session_test_environment_;
   std::unique_ptr<ash::UserSessionManager> user_session_manager_;
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<SessionTerminationManager> session_termination_manager_;
@@ -227,9 +223,8 @@ TEST_F(LoginLogoutReporterTest, ReportAffiliatedLogin) {
       std::make_unique<LoginLogoutReporterTestDelegate>(),
       &managed_session_service);
 
-  auto profile = test_helper_.CreateRegularUserProfile();
-  auto* const user = ProfileHelper::Get()->GetUserByProfile(profile.get());
-  managed_session_service.OnUserProfileLoaded(user->GetAccountId());
+  const user_manager::User& user = test_helper_.LogInRegularUser();
+  managed_session_service.OnUserProfileLoaded(user.GetAccountId());
   const LoginLogoutRecord& record = test_helper_.GetRecord();
 
   ASSERT_THAT(test_helper_.GetReportCount(), Eq(1));
@@ -263,9 +258,9 @@ TEST_P(LoginLogoutReporterTest, ReportUnaffiliatedLogin) {
       std::make_unique<LoginLogoutReporterTestDelegate>(),
       &managed_session_service);
 
-  auto profile = test_helper_.CreateProfileByType(test_case.user_type);
-  auto* const user = ProfileHelper::Get()->GetUserByProfile(profile.get());
-  managed_session_service.OnUserProfileLoaded(user->GetAccountId());
+  const user_manager::User& user =
+      test_helper_.LogInByType(test_case.user_type);
+  managed_session_service.OnUserProfileLoaded(user.GetAccountId());
   const LoginLogoutRecord& record = test_helper_.GetRecord();
 
   ASSERT_THAT(test_helper_.GetReportCount(), Eq(1));
@@ -296,7 +291,7 @@ TEST_F(LoginLogoutReporterTest, ReportAffiliatedLogout) {
       std::make_unique<LoginLogoutReporterTestDelegate>(),
       &managed_session_service);
 
-  auto profile = test_helper_.CreateRegularUserProfile();
+  test_helper_.LogInRegularUser();
   managed_session_service.OnSessionWillBeTerminated();
   const LoginLogoutRecord& record = test_helper_.GetRecord();
 
@@ -330,7 +325,7 @@ TEST_P(LoginLogoutReporterTest, ReportUnaffiliatedLogout) {
       std::make_unique<LoginLogoutReporterTestDelegate>(),
       &managed_session_service);
 
-  auto profile = test_helper_.CreateProfileByType(test_case.user_type);
+  test_helper_.LogInByType(test_case.user_type);
   managed_session_service.OnSessionWillBeTerminated();
   const LoginLogoutRecord& record = test_helper_.GetRecord();
 
@@ -362,9 +357,9 @@ TEST_P(LoginLogoutReporterTest, ReportLoginLogoutDisabled) {
       std::make_unique<LoginLogoutReporterTestDelegate>(),
       &managed_session_service);
 
-  auto profile = test_helper_.CreateProfileByType(test_case.user_type);
-  auto* const user = ProfileHelper::Get()->GetUserByProfile(profile.get());
-  managed_session_service.OnUserProfileLoaded(user->GetAccountId());
+  const user_manager::User& user =
+      test_helper_.LogInByType(test_case.user_type);
+  managed_session_service.OnUserProfileLoaded(user.GetAccountId());
   managed_session_service.OnSessionWillBeTerminated();
 
   ASSERT_THAT(test_helper_.GetReportCount(), Eq(0));
