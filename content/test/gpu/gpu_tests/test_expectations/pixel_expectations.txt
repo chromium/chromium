@@ -562,6 +562,11 @@ crbug.com/417782068 [ win nvidia-0x2184 target-cpu-32 ] Pixel_MediaFoundationCle
 crbug.com/563391402 [ linux nvidia-0x2783 display-server-wayland ] Pixel_OffscreenCanvasUnaccelerated2DGPUCompositing [ Failure ]
 crbug.com/563391402 [ linux nvidia-0x2783 display-server-wayland ] Pixel_OffscreenCanvasUnaccelerated2DGPUCompositingWorker [ Failure ]
 
+# Samsung S23/A23/A13 Pixel_Video_Context_Loss_VP9 failures after Crashpad roll
+crbug.com/579027409 [ android android-sm-a137f no-passthrough ] Pixel_Video_Context_Loss_VP9 [ Failure ]
+crbug.com/579027409 [ android android-sm-a236b no-passthrough ] Pixel_Video_Context_Loss_VP9 [ Failure ]
+crbug.com/579027409 [ android android-sm-s911u1 no-passthrough ] Pixel_Video_Context_Loss_VP9 [ Failure ]
+
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
 #######################################################################
