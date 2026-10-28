@@ -5,7 +5,7 @@
 #include "include/core/SkSpan.h"
 
 template <typename T>
-void init9(SkSpan<T> array) {
+void init9(SkSpan<T, 9> array) {
   for (int i = 0; i < 9; i++) {
     array[i] = T();
   }

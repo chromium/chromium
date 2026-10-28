@@ -77,7 +77,6 @@ class SkiaProject : public Project {
     return IsExcludedFromSubmodule(filename, "third_party/skia/",
                                    "tools/clang/spanify/tests/skia/");
   }
-  bool SupportsStaticExtent() const override { return false; }
 };
 
 #endif  // TOOLS_CLANG_SPANIFY_SKIA_PROJECT_H_
