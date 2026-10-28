@@ -238,14 +238,6 @@ CanvasSnapshotInfo VideoFrameAcceleratedSnapshotPool::GetInfo() const {
 
 bool VideoFrameAcceleratedSnapshotPool::ShouldReplaceTargetBuffer(
     PaintImage::ContentId content_id) {
-  // If the canvas is single buffered, concurrent read/writes to the resource
-  // are allowed. Note that we ignore the resource lost case as well since
-  // that only indicates that we did not get a sync token for read/write
-  // synchronization which is not a requirement for single buffered canvas.
-  if (provider_->IsSingleBuffered()) {
-    return false;
-  }
-
   // If the resource was lost, we can not use it for writes again.
   if (provider_->resource()->IsLost()) {
     return true;
@@ -267,12 +259,6 @@ bool VideoFrameAcceleratedSnapshotPool::ShouldReplaceTargetBuffer(
 
 void VideoFrameAcceleratedSnapshotPool::EnsureResourceReadyForDraw() {
   DCHECK(provider_->resource_);
-
-  // Since the resource will be updated, the cached snapshot is no longer valid.
-  // Note that this is valid for single buffered mode also, since while the
-  // resource/mailbox remains the same, the snapshot needs an updated sync token
-  // for these writes.
-  provider_->cached_snapshot_.reset();
 
   // Determine if a new resource is needed.
   if (ShouldReplaceTargetBuffer(provider_->cached_content_id_)) {
