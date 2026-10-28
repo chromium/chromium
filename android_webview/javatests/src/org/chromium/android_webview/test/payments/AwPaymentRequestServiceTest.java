@@ -4,6 +4,17 @@
 
 package org.chromium.android_webview.test.payments;
 
+import static org.chromium.components.payments.MockAndroidIntentLauncher.COUNTRY_CODE;
+import static org.chromium.components.payments.MockAndroidIntentLauncher.DETAILS;
+import static org.chromium.components.payments.MockAndroidIntentLauncher.PAYER_EMAIL;
+import static org.chromium.components.payments.MockAndroidIntentLauncher.PAYER_NAME;
+import static org.chromium.components.payments.MockAndroidIntentLauncher.PAYER_PHONE;
+import static org.chromium.components.payments.PaymentRequestTestWebPageContents.CHECK_CAN_MAKE_PAYMENT_BUTTON_ID;
+import static org.chromium.components.payments.PaymentRequestTestWebPageContents.CHECK_HAS_ENROLLED_INSTRUMENT_BUTTON_ID;
+import static org.chromium.components.payments.PaymentRequestTestWebPageContents.CHECK_PAYMENT_REQUEST_DEFINED_BUTTON_ID;
+import static org.chromium.components.payments.PaymentRequestTestWebPageContents.LAUNCH_PAYMENT_APP_BUTTON_ID;
+import static org.chromium.components.payments.PaymentRequestTestWebPageContents.RETRY_PAYMENT_BUTTON_ID;
+
 import androidx.test.filters.SmallTest;
 
 import org.junit.After;
@@ -91,7 +102,7 @@ public class AwPaymentRequestServiceTest extends AwParameterizedTest {
         loadMerchantCheckoutPage(mPageContents.addMethod(PAYMENT_METHOD_NAME).build());
 
         JSUtils.clickNodeWithUserGesture(
-                mAwContents.getWebContents(), "checkPaymentRequestDefined");
+                mAwContents.getWebContents(), CHECK_PAYMENT_REQUEST_DEFINED_BUTTON_ID);
 
         Assert.assertEquals(
                 "PaymentRequest is not defined.",
@@ -109,7 +120,7 @@ public class AwPaymentRequestServiceTest extends AwParameterizedTest {
         loadMerchantCheckoutPage(mPageContents.addMethod(PAYMENT_METHOD_NAME).build());
 
         JSUtils.clickNodeWithUserGesture(
-                mAwContents.getWebContents(), "checkPaymentRequestDefined");
+                mAwContents.getWebContents(), CHECK_PAYMENT_REQUEST_DEFINED_BUTTON_ID);
 
         Assert.assertEquals(
                 "PaymentRequest is defined.",
@@ -126,7 +137,8 @@ public class AwPaymentRequestServiceTest extends AwParameterizedTest {
     public void testPaymentRequestCannotMakePaymentWithoutApps() throws Exception {
         loadMerchantCheckoutPage(mPageContents.addMethod(PAYMENT_METHOD_NAME).build());
 
-        JSUtils.clickNodeWithUserGesture(mAwContents.getWebContents(), "checkCanMakePayment");
+        JSUtils.clickNodeWithUserGesture(
+                mAwContents.getWebContents(), CHECK_CAN_MAKE_PAYMENT_BUTTON_ID);
 
         Assert.assertEquals(
                 "PaymentRequest cannot make payments.",
@@ -144,7 +156,7 @@ public class AwPaymentRequestServiceTest extends AwParameterizedTest {
         loadMerchantCheckoutPage(mPageContents.addMethod(PAYMENT_METHOD_NAME).build());
 
         JSUtils.clickNodeWithUserGesture(
-                mAwContents.getWebContents(), "checkHasEnrolledInstrument");
+                mAwContents.getWebContents(), CHECK_HAS_ENROLLED_INSTRUMENT_BUTTON_ID);
 
         Assert.assertEquals(
                 "PaymentRequest does not have enrolled instrument.",
@@ -161,10 +173,12 @@ public class AwPaymentRequestServiceTest extends AwParameterizedTest {
     public void testPaymentRequestCannotLaunchAppsWithoutApps() throws Exception {
         loadMerchantCheckoutPage(mPageContents.addMethod(PAYMENT_METHOD_NAME).build());
 
-        JSUtils.clickNodeWithUserGesture(mAwContents.getWebContents(), "launchPaymentApp");
+        JSUtils.clickNodeWithUserGesture(
+                mAwContents.getWebContents(), LAUNCH_PAYMENT_APP_BUTTON_ID);
 
         Assert.assertEquals(
-                String.format("NotSupportedError: The payment method \"%s\" is not supported.",
+                String.format(
+                        "NotSupportedError: The payment method \"%s\" is not supported.",
                         PAYMENT_METHOD_NAME),
                 mWebMessageListener.waitForOnPostMessage().getAsString());
     }
@@ -177,7 +191,8 @@ public class AwPaymentRequestServiceTest extends AwParameterizedTest {
         mMockPaymentAppInstaller.addApp(createPaymentApp()).install();
         loadMerchantCheckoutPage(mPageContents.addMethod(PAYMENT_METHOD_NAME).build());
 
-        JSUtils.clickNodeWithUserGesture(mAwContents.getWebContents(), "checkCanMakePayment");
+        JSUtils.clickNodeWithUserGesture(
+                mAwContents.getWebContents(), CHECK_CAN_MAKE_PAYMENT_BUTTON_ID);
 
         Assert.assertEquals(
                 "PaymentRequest can make payments.",
@@ -195,7 +210,7 @@ public class AwPaymentRequestServiceTest extends AwParameterizedTest {
         loadMerchantCheckoutPage(mPageContents.addMethod(PAYMENT_METHOD_NAME).build());
 
         JSUtils.clickNodeWithUserGesture(
-                mAwContents.getWebContents(), "checkHasEnrolledInstrument");
+                mAwContents.getWebContents(), CHECK_HAS_ENROLLED_INSTRUMENT_BUTTON_ID);
 
         Assert.assertEquals(
                 "PaymentRequest has enrolled instrument.",
@@ -210,13 +225,13 @@ public class AwPaymentRequestServiceTest extends AwParameterizedTest {
         mMockPaymentAppInstaller.addApp(createPaymentApp()).install();
         loadMerchantCheckoutPage(mPageContents.addMethod(PAYMENT_METHOD_NAME).build());
 
-        JSUtils.clickNodeWithUserGesture(mAwContents.getWebContents(), "launchPaymentApp");
+        JSUtils.clickNodeWithUserGesture(
+                mAwContents.getWebContents(), LAUNCH_PAYMENT_APP_BUTTON_ID);
 
         String response = mWebMessageListener.waitForOnPostMessage().getAsString();
         Assert.assertTrue(
-                response.contains(
-                        String.format("\"methodName\":\"%s\"", PAYMENT_METHOD_NAME)));
-        Assert.assertTrue(response.contains(String.format("\"details\":{\"key\":\"value\"}")));
+                response.contains(String.format("\"methodName\":\"%s\"", PAYMENT_METHOD_NAME)));
+        Assert.assertTrue(response.contains(String.format("\"details\":%s", DETAILS)));
     }
 
     /**
@@ -236,7 +251,8 @@ public class AwPaymentRequestServiceTest extends AwParameterizedTest {
                         .addMethod(OTHER_PAYMENT_METHOD_NAME)
                         .build());
 
-        JSUtils.clickNodeWithUserGesture(mAwContents.getWebContents(), "checkCanMakePayment");
+        JSUtils.clickNodeWithUserGesture(
+                mAwContents.getWebContents(), CHECK_CAN_MAKE_PAYMENT_BUTTON_ID);
 
         Assert.assertEquals(
                 "PaymentRequest can make payments.",
@@ -262,7 +278,7 @@ public class AwPaymentRequestServiceTest extends AwParameterizedTest {
                         .build());
 
         JSUtils.clickNodeWithUserGesture(
-                mAwContents.getWebContents(), "checkHasEnrolledInstrument");
+                mAwContents.getWebContents(), CHECK_HAS_ENROLLED_INSTRUMENT_BUTTON_ID);
 
         Assert.assertEquals(
                 "PaymentRequest has enrolled instrument.",
@@ -286,13 +302,13 @@ public class AwPaymentRequestServiceTest extends AwParameterizedTest {
                         .addMethod(OTHER_PAYMENT_METHOD_NAME)
                         .build());
 
-        JSUtils.clickNodeWithUserGesture(mAwContents.getWebContents(), "launchPaymentApp");
+        JSUtils.clickNodeWithUserGesture(
+                mAwContents.getWebContents(), LAUNCH_PAYMENT_APP_BUTTON_ID);
 
         String response = mWebMessageListener.waitForOnPostMessage().getAsString();
         Assert.assertTrue(
-                response.contains(
-                        String.format("\"methodName\":\"%s\"", PAYMENT_METHOD_NAME)));
-        Assert.assertTrue(response.contains(String.format("\"details\":{\"key\":\"value\"}")));
+                response.contains(String.format("\"methodName\":\"%s\"", PAYMENT_METHOD_NAME)));
+        Assert.assertTrue(response.contains(String.format("\"details\":%s", DETAILS)));
     }
 
     /**
@@ -315,7 +331,8 @@ public class AwPaymentRequestServiceTest extends AwParameterizedTest {
                         .addMethod(OTHER_PAYMENT_METHOD_NAME)
                         .build());
 
-        JSUtils.clickNodeWithUserGesture(mAwContents.getWebContents(), "checkCanMakePayment");
+        JSUtils.clickNodeWithUserGesture(
+                mAwContents.getWebContents(), CHECK_CAN_MAKE_PAYMENT_BUTTON_ID);
 
         Assert.assertEquals(
                 "PaymentRequest cannot make payments.",
@@ -344,7 +361,7 @@ public class AwPaymentRequestServiceTest extends AwParameterizedTest {
                         .build());
 
         JSUtils.clickNodeWithUserGesture(
-                mAwContents.getWebContents(), "checkHasEnrolledInstrument");
+                mAwContents.getWebContents(), CHECK_HAS_ENROLLED_INSTRUMENT_BUTTON_ID);
 
         Assert.assertEquals(
                 "PaymentRequest does not have enrolled instrument.",
@@ -371,7 +388,8 @@ public class AwPaymentRequestServiceTest extends AwParameterizedTest {
                         .addMethod(OTHER_PAYMENT_METHOD_NAME)
                         .build());
 
-        JSUtils.clickNodeWithUserGesture(mAwContents.getWebContents(), "launchPaymentApp");
+        JSUtils.clickNodeWithUserGesture(
+                mAwContents.getWebContents(), LAUNCH_PAYMENT_APP_BUTTON_ID);
 
         Assert.assertEquals(
                 "NotSupportedError: WebView supports launching only one payment app at a time.",
@@ -386,7 +404,7 @@ public class AwPaymentRequestServiceTest extends AwParameterizedTest {
         mMockPaymentAppInstaller.addApp(createPaymentApp()).install();
         loadMerchantCheckoutPage(mPageContents.addMethod(PAYMENT_METHOD_NAME).build());
 
-        JSUtils.clickNodeWithUserGesture(mAwContents.getWebContents(), "retryPayment");
+        JSUtils.clickNodeWithUserGesture(mAwContents.getWebContents(), RETRY_PAYMENT_BUTTON_ID);
 
         Assert.assertEquals(
                 "NotSupportedError: PaymentResponse.retry() is disabled in WebView.",
@@ -405,7 +423,8 @@ public class AwPaymentRequestServiceTest extends AwParameterizedTest {
         loadMerchantCheckoutPage(
                 mPageContents.addMethod(PAYMENT_METHOD_NAME).requestShippingAddress().build());
 
-        JSUtils.clickNodeWithUserGesture(mAwContents.getWebContents(), "checkCanMakePayment");
+        JSUtils.clickNodeWithUserGesture(
+                mAwContents.getWebContents(), CHECK_CAN_MAKE_PAYMENT_BUTTON_ID);
 
         Assert.assertEquals(
                 "PaymentRequest cannot make payments.",
@@ -426,7 +445,8 @@ public class AwPaymentRequestServiceTest extends AwParameterizedTest {
         loadMerchantCheckoutPage(
                 mPageContents.addMethod(PAYMENT_METHOD_NAME).requestContactInformation().build());
 
-        JSUtils.clickNodeWithUserGesture(mAwContents.getWebContents(), "checkCanMakePayment");
+        JSUtils.clickNodeWithUserGesture(
+                mAwContents.getWebContents(), CHECK_CAN_MAKE_PAYMENT_BUTTON_ID);
 
         Assert.assertEquals(
                 "PaymentRequest cannot make payments.",
@@ -445,7 +465,8 @@ public class AwPaymentRequestServiceTest extends AwParameterizedTest {
         loadMerchantCheckoutPage(
                 mPageContents.addMethod(PAYMENT_METHOD_NAME).requestShippingAddress().build());
 
-        JSUtils.clickNodeWithUserGesture(mAwContents.getWebContents(), "checkCanMakePayment");
+        JSUtils.clickNodeWithUserGesture(
+                mAwContents.getWebContents(), CHECK_CAN_MAKE_PAYMENT_BUTTON_ID);
 
         Assert.assertEquals(
                 "PaymentRequest can make payments.",
@@ -466,7 +487,8 @@ public class AwPaymentRequestServiceTest extends AwParameterizedTest {
         loadMerchantCheckoutPage(
                 mPageContents.addMethod(PAYMENT_METHOD_NAME).requestContactInformation().build());
 
-        JSUtils.clickNodeWithUserGesture(mAwContents.getWebContents(), "checkCanMakePayment");
+        JSUtils.clickNodeWithUserGesture(
+                mAwContents.getWebContents(), CHECK_CAN_MAKE_PAYMENT_BUTTON_ID);
 
         Assert.assertEquals(
                 "PaymentRequest can make payments.",
@@ -494,7 +516,8 @@ public class AwPaymentRequestServiceTest extends AwParameterizedTest {
                         .requestContactInformation()
                         .build());
 
-        JSUtils.clickNodeWithUserGesture(mAwContents.getWebContents(), "checkCanMakePayment");
+        JSUtils.clickNodeWithUserGesture(
+                mAwContents.getWebContents(), CHECK_CAN_MAKE_PAYMENT_BUTTON_ID);
 
         Assert.assertEquals(
                 "PaymentRequest can make payments.",
@@ -515,7 +538,7 @@ public class AwPaymentRequestServiceTest extends AwParameterizedTest {
                 mPageContents.addMethod(PAYMENT_METHOD_NAME).requestShippingAddress().build());
 
         JSUtils.clickNodeWithUserGesture(
-                mAwContents.getWebContents(), "checkHasEnrolledInstrument");
+                mAwContents.getWebContents(), CHECK_HAS_ENROLLED_INSTRUMENT_BUTTON_ID);
 
         Assert.assertEquals(
                 "PaymentRequest does not have enrolled instrument.",
@@ -536,7 +559,7 @@ public class AwPaymentRequestServiceTest extends AwParameterizedTest {
                 mPageContents.addMethod(PAYMENT_METHOD_NAME).requestContactInformation().build());
 
         JSUtils.clickNodeWithUserGesture(
-                mAwContents.getWebContents(), "checkHasEnrolledInstrument");
+                mAwContents.getWebContents(), CHECK_HAS_ENROLLED_INSTRUMENT_BUTTON_ID);
 
         Assert.assertEquals(
                 "PaymentRequest does not have enrolled instrument.",
@@ -556,7 +579,7 @@ public class AwPaymentRequestServiceTest extends AwParameterizedTest {
                 mPageContents.addMethod(PAYMENT_METHOD_NAME).requestShippingAddress().build());
 
         JSUtils.clickNodeWithUserGesture(
-                mAwContents.getWebContents(), "checkHasEnrolledInstrument");
+                mAwContents.getWebContents(), CHECK_HAS_ENROLLED_INSTRUMENT_BUTTON_ID);
 
         Assert.assertEquals(
                 "PaymentRequest has enrolled instrument.",
@@ -579,7 +602,7 @@ public class AwPaymentRequestServiceTest extends AwParameterizedTest {
                 mPageContents.addMethod(PAYMENT_METHOD_NAME).requestContactInformation().build());
 
         JSUtils.clickNodeWithUserGesture(
-                mAwContents.getWebContents(), "checkHasEnrolledInstrument");
+                mAwContents.getWebContents(), CHECK_HAS_ENROLLED_INSTRUMENT_BUTTON_ID);
 
         Assert.assertEquals(
                 "PaymentRequest has enrolled instrument.",
@@ -609,7 +632,7 @@ public class AwPaymentRequestServiceTest extends AwParameterizedTest {
                         .build());
 
         JSUtils.clickNodeWithUserGesture(
-                mAwContents.getWebContents(), "checkHasEnrolledInstrument");
+                mAwContents.getWebContents(), CHECK_HAS_ENROLLED_INSTRUMENT_BUTTON_ID);
 
         Assert.assertEquals(
                 "PaymentRequest has enrolled instrument.",
@@ -630,7 +653,8 @@ public class AwPaymentRequestServiceTest extends AwParameterizedTest {
         loadMerchantCheckoutPage(
                 mPageContents.addMethod(PAYMENT_METHOD_NAME).requestShippingAddress().build());
 
-        JSUtils.clickNodeWithUserGesture(mAwContents.getWebContents(), "launchPaymentApp");
+        JSUtils.clickNodeWithUserGesture(
+                mAwContents.getWebContents(), LAUNCH_PAYMENT_APP_BUTTON_ID);
 
         Assert.assertEquals(
                 String.format(
@@ -653,7 +677,8 @@ public class AwPaymentRequestServiceTest extends AwParameterizedTest {
         loadMerchantCheckoutPage(
                 mPageContents.addMethod(PAYMENT_METHOD_NAME).requestContactInformation().build());
 
-        JSUtils.clickNodeWithUserGesture(mAwContents.getWebContents(), "launchPaymentApp");
+        JSUtils.clickNodeWithUserGesture(
+                mAwContents.getWebContents(), LAUNCH_PAYMENT_APP_BUTTON_ID);
 
         Assert.assertEquals(
                 String.format(
@@ -674,18 +699,19 @@ public class AwPaymentRequestServiceTest extends AwParameterizedTest {
         loadMerchantCheckoutPage(
                 mPageContents.addMethod(PAYMENT_METHOD_NAME).requestShippingAddress().build());
 
-        JSUtils.clickNodeWithUserGesture(mAwContents.getWebContents(), "launchPaymentApp");
+        JSUtils.clickNodeWithUserGesture(
+                mAwContents.getWebContents(), LAUNCH_PAYMENT_APP_BUTTON_ID);
 
         String response = mWebMessageListener.waitForOnPostMessage().getAsString();
         Assert.assertTrue(
                 response.contains(String.format("\"methodName\":\"%s\"", PAYMENT_METHOD_NAME)));
-        Assert.assertTrue(response.contains(String.format("\"details\":{\"key\":\"value\"}")));
+        Assert.assertTrue(response.contains(String.format("\"details\":%s", DETAILS)));
         Assert.assertTrue(
                 "Shipping address should be in " + response,
                 response.contains(String.format("\"shippingAddress\":{")));
         Assert.assertTrue(
                 "Shipping address country code should be in " + response,
-                response.contains(String.format("\"country\":\"CA\"")));
+                response.contains(String.format("\"country\":\"%s\"", COUNTRY_CODE)));
     }
 
     /**
@@ -702,21 +728,22 @@ public class AwPaymentRequestServiceTest extends AwParameterizedTest {
         loadMerchantCheckoutPage(
                 mPageContents.addMethod(PAYMENT_METHOD_NAME).requestContactInformation().build());
 
-        JSUtils.clickNodeWithUserGesture(mAwContents.getWebContents(), "launchPaymentApp");
+        JSUtils.clickNodeWithUserGesture(
+                mAwContents.getWebContents(), LAUNCH_PAYMENT_APP_BUTTON_ID);
 
         String response = mWebMessageListener.waitForOnPostMessage().getAsString();
         Assert.assertTrue(
                 response.contains(String.format("\"methodName\":\"%s\"", PAYMENT_METHOD_NAME)));
-        Assert.assertTrue(response.contains(String.format("\"details\":{\"key\":\"value\"}")));
+        Assert.assertTrue(response.contains(String.format("\"details\":%s", DETAILS)));
         Assert.assertTrue(
                 "Payer name should be in " + response,
-                response.contains(String.format("\"payerName\":\"John Smith\"")));
+                response.contains(String.format("\"payerName\":\"%s\"", PAYER_NAME)));
         Assert.assertTrue(
                 "Payer phone should be in " + response,
-                response.contains(String.format("\"payerPhone\":\"+15555555555\"")));
+                response.contains(String.format("\"payerPhone\":\"%s\"", PAYER_PHONE)));
         Assert.assertTrue(
                 "Payer email should be in " + response,
-                response.contains(String.format("\"payerEmail\":\"John.Smith@gmail.com\"")));
+                response.contains(String.format("\"payerEmail\":\"%s\"", PAYER_EMAIL)));
     }
 
     /**
@@ -740,27 +767,28 @@ public class AwPaymentRequestServiceTest extends AwParameterizedTest {
                         .requestContactInformation()
                         .build());
 
-        JSUtils.clickNodeWithUserGesture(mAwContents.getWebContents(), "launchPaymentApp");
+        JSUtils.clickNodeWithUserGesture(
+                mAwContents.getWebContents(), LAUNCH_PAYMENT_APP_BUTTON_ID);
 
         String response = mWebMessageListener.waitForOnPostMessage().getAsString();
         Assert.assertTrue(
                 response.contains(String.format("\"methodName\":\"%s\"", PAYMENT_METHOD_NAME)));
-        Assert.assertTrue(response.contains(String.format("\"details\":{\"key\":\"value\"}")));
+        Assert.assertTrue(response.contains(String.format("\"details\":%s", DETAILS)));
         Assert.assertTrue(
                 "Shipping address should be in " + response,
                 response.contains(String.format("\"shippingAddress\":{")));
         Assert.assertTrue(
                 "Shipping address country code should be in " + response,
-                response.contains(String.format("\"country\":\"CA\"")));
+                response.contains(String.format("\"country\":\"%s\"", COUNTRY_CODE)));
         Assert.assertTrue(
                 "Payer name should be in " + response,
-                response.contains(String.format("\"payerName\":\"John Smith\"")));
+                response.contains(String.format("\"payerName\":\"%s\"", PAYER_NAME)));
         Assert.assertTrue(
                 "Payer phone should be in " + response,
-                response.contains(String.format("\"payerPhone\":\"+15555555555\"")));
+                response.contains(String.format("\"payerPhone\":\"%s\"", PAYER_PHONE)));
         Assert.assertTrue(
                 "Payer email should be in " + response,
-                response.contains(String.format("\"payerEmail\":\"John.Smith@gmail.com\"")));
+                response.contains(String.format("\"payerEmail\":\"%s\"", PAYER_EMAIL)));
     }
 
     /**
@@ -782,18 +810,19 @@ public class AwPaymentRequestServiceTest extends AwParameterizedTest {
         loadMerchantCheckoutPage(
                 mPageContents.addMethod(PAYMENT_METHOD_NAME).requestShippingAddress().build());
 
-        JSUtils.clickNodeWithUserGesture(mAwContents.getWebContents(), "launchPaymentApp");
+        JSUtils.clickNodeWithUserGesture(
+                mAwContents.getWebContents(), LAUNCH_PAYMENT_APP_BUTTON_ID);
 
         String response = mWebMessageListener.waitForOnPostMessage().getAsString();
         Assert.assertTrue(
                 response.contains(String.format("\"methodName\":\"%s\"", PAYMENT_METHOD_NAME)));
-        Assert.assertTrue(response.contains(String.format("\"details\":{\"key\":\"value\"}")));
+        Assert.assertTrue(response.contains(String.format("\"details\":%s", DETAILS)));
         Assert.assertTrue(
                 "Shipping address should be in " + response,
                 response.contains(String.format("\"shippingAddress\":{")));
         Assert.assertTrue(
                 "Shipping address country code should be in " + response,
-                response.contains(String.format("\"country\":\"CA\"")));
+                response.contains(String.format("\"country\":\"%s\"", COUNTRY_CODE)));
     }
 
     /**
@@ -817,19 +846,20 @@ public class AwPaymentRequestServiceTest extends AwParameterizedTest {
                         .requestShippingAddress()
                         .build());
 
-        JSUtils.clickNodeWithUserGesture(mAwContents.getWebContents(), "launchPaymentApp");
+        JSUtils.clickNodeWithUserGesture(
+                mAwContents.getWebContents(), LAUNCH_PAYMENT_APP_BUTTON_ID);
 
         String response = mWebMessageListener.waitForOnPostMessage().getAsString();
         Assert.assertTrue(
                 response.contains(
                         String.format("\"methodName\":\"%s\"", OTHER_PAYMENT_METHOD_NAME)));
-        Assert.assertTrue(response.contains(String.format("\"details\":{\"key\":\"value\"}")));
+        Assert.assertTrue(response.contains(String.format("\"details\":%s", DETAILS)));
         Assert.assertTrue(
                 "Shipping address should be in " + response,
                 response.contains(String.format("\"shippingAddress\":{")));
         Assert.assertTrue(
                 "Shipping address country code should be in " + response,
-                response.contains(String.format("\"country\":\"CA\"")));
+                response.contains(String.format("\"country\":\"%s\"", COUNTRY_CODE)));
     }
 
     /**
@@ -854,21 +884,22 @@ public class AwPaymentRequestServiceTest extends AwParameterizedTest {
                         .requestContactInformation()
                         .build());
 
-        JSUtils.clickNodeWithUserGesture(mAwContents.getWebContents(), "launchPaymentApp");
+        JSUtils.clickNodeWithUserGesture(
+                mAwContents.getWebContents(), LAUNCH_PAYMENT_APP_BUTTON_ID);
 
         String response = mWebMessageListener.waitForOnPostMessage().getAsString();
         Assert.assertTrue(
                 response.contains(String.format("\"methodName\":\"%s\"", PAYMENT_METHOD_NAME)));
-        Assert.assertTrue(response.contains(String.format("\"details\":{\"key\":\"value\"}")));
+        Assert.assertTrue(response.contains(String.format("\"details\":%s", DETAILS)));
         Assert.assertTrue(
                 "Payer name should be in " + response,
-                response.contains(String.format("\"payerName\":\"John Smith\"")));
+                response.contains(String.format("\"payerName\":\"%s\"", PAYER_NAME)));
         Assert.assertTrue(
                 "Payer phone should be in " + response,
-                response.contains(String.format("\"payerPhone\":\"+15555555555\"")));
+                response.contains(String.format("\"payerPhone\":\"%s\"", PAYER_PHONE)));
         Assert.assertTrue(
                 "Payer email should be in " + response,
-                response.contains(String.format("\"payerEmail\":\"John.Smith@gmail.com\"")));
+                response.contains(String.format("\"payerEmail\":\"%s\"", PAYER_EMAIL)));
     }
 
     /**

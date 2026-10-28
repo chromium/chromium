@@ -4,6 +4,12 @@
 
 package org.chromium.android_webview.test.payments;
 
+import static org.chromium.components.payments.MockAndroidIntentLauncher.DETAILS;
+import static org.chromium.components.payments.PaymentRequestTestWebPageContents.CHECK_CAN_MAKE_PAYMENT_BUTTON_ID;
+import static org.chromium.components.payments.PaymentRequestTestWebPageContents.CHECK_HAS_ENROLLED_INSTRUMENT_BUTTON_ID;
+import static org.chromium.components.payments.PaymentRequestTestWebPageContents.CHECK_PAYMENT_REQUEST_DEFINED_BUTTON_ID;
+import static org.chromium.components.payments.PaymentRequestTestWebPageContents.LAUNCH_PAYMENT_APP_BUTTON_ID;
+
 import androidx.test.filters.SmallTest;
 
 import org.junit.After;
@@ -100,7 +106,7 @@ public class AwPaymentRequestSettingsTest extends AwParameterizedTest {
         loadPage();
 
         JSUtils.clickNodeWithUserGesture(
-                mAwContents.getWebContents(), "checkPaymentRequestDefined");
+                mAwContents.getWebContents(), CHECK_PAYMENT_REQUEST_DEFINED_BUTTON_ID);
 
         Assert.assertEquals(
                 "PaymentRequest is not defined.",
@@ -119,7 +125,7 @@ public class AwPaymentRequestSettingsTest extends AwParameterizedTest {
         loadPage();
 
         JSUtils.clickNodeWithUserGesture(
-                mAwContents.getWebContents(), "checkPaymentRequestDefined");
+                mAwContents.getWebContents(), CHECK_PAYMENT_REQUEST_DEFINED_BUTTON_ID);
 
         Assert.assertEquals(
                 "PaymentRequest is defined.",
@@ -138,7 +144,7 @@ public class AwPaymentRequestSettingsTest extends AwParameterizedTest {
         loadPage();
 
         JSUtils.clickNodeWithUserGesture(
-                mAwContents.getWebContents(), "checkPaymentRequestDefined");
+                mAwContents.getWebContents(), CHECK_PAYMENT_REQUEST_DEFINED_BUTTON_ID);
 
         Assert.assertEquals(
                 "PaymentRequest is not defined.",
@@ -152,7 +158,8 @@ public class AwPaymentRequestSettingsTest extends AwParameterizedTest {
         mAwContents.getSettings().setPaymentRequestEnabled(true);
         loadPage();
 
-        JSUtils.clickNodeWithUserGesture(mAwContents.getWebContents(), "checkCanMakePayment");
+        JSUtils.clickNodeWithUserGesture(
+                mAwContents.getWebContents(), CHECK_CAN_MAKE_PAYMENT_BUTTON_ID);
 
         Assert.assertEquals(
                 "PaymentRequest can make payments.",
@@ -172,7 +179,7 @@ public class AwPaymentRequestSettingsTest extends AwParameterizedTest {
         loadPage();
 
         JSUtils.clickNodeWithUserGesture(
-                mAwContents.getWebContents(), "checkHasEnrolledInstrument");
+                mAwContents.getWebContents(), CHECK_HAS_ENROLLED_INSTRUMENT_BUTTON_ID);
 
         Assert.assertEquals(
                 "PaymentRequest has enrolled instrument.",
@@ -188,7 +195,7 @@ public class AwPaymentRequestSettingsTest extends AwParameterizedTest {
         loadPage();
 
         JSUtils.clickNodeWithUserGesture(
-                mAwContents.getWebContents(), "checkHasEnrolledInstrument");
+                mAwContents.getWebContents(), CHECK_HAS_ENROLLED_INSTRUMENT_BUTTON_ID);
 
         Assert.assertEquals(
                 "PaymentRequest has enrolled instrument.",
@@ -204,7 +211,7 @@ public class AwPaymentRequestSettingsTest extends AwParameterizedTest {
         loadPage();
 
         JSUtils.clickNodeWithUserGesture(
-                mAwContents.getWebContents(), "checkHasEnrolledInstrument");
+                mAwContents.getWebContents(), CHECK_HAS_ENROLLED_INSTRUMENT_BUTTON_ID);
 
         Assert.assertEquals(
                 "PaymentRequest does not have enrolled instrument.",
@@ -218,12 +225,13 @@ public class AwPaymentRequestSettingsTest extends AwParameterizedTest {
         mAwContents.getSettings().setPaymentRequestEnabled(true);
         loadPage();
 
-        JSUtils.clickNodeWithUserGesture(mAwContents.getWebContents(), "launchPaymentApp");
+        JSUtils.clickNodeWithUserGesture(
+                mAwContents.getWebContents(), LAUNCH_PAYMENT_APP_BUTTON_ID);
 
         String response = mWebMessageListener.waitForOnPostMessage().getAsString();
         Assert.assertTrue(
                 response.contains(String.format("\"methodName\":\"%s\"", PAYMENT_METHOD_NAME)));
-        Assert.assertTrue(response.contains(String.format("\"details\":{\"key\":\"value\"}")));
+        Assert.assertTrue(response.contains(String.format("\"details\":%s", DETAILS)));
     }
 
     private void loadPage() throws Exception {

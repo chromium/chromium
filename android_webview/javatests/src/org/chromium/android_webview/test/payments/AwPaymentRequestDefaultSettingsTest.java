@@ -4,6 +4,8 @@
 
 package org.chromium.android_webview.test.payments;
 
+import static org.chromium.components.payments.PaymentRequestTestWebPageContents.CHECK_PAYMENT_REQUEST_DEFINED_BUTTON_ID;
+
 import androidx.test.filters.SmallTest;
 
 import org.junit.After;
@@ -91,7 +93,7 @@ public class AwPaymentRequestDefaultSettingsTest {
         loadPage();
 
         JSUtils.clickNodeWithUserGesture(
-                mAwContents.getWebContents(), "checkPaymentRequestDefined");
+                mAwContents.getWebContents(), CHECK_PAYMENT_REQUEST_DEFINED_BUTTON_ID);
 
         Assert.assertEquals(
                 "PaymentRequest is not defined.",
@@ -110,7 +112,7 @@ public class AwPaymentRequestDefaultSettingsTest {
         loadPage();
 
         JSUtils.clickNodeWithUserGesture(
-                mAwContents.getWebContents(), "checkPaymentRequestDefined");
+                mAwContents.getWebContents(), CHECK_PAYMENT_REQUEST_DEFINED_BUTTON_ID);
 
         Assert.assertEquals(
                 "PaymentRequest is not defined.",

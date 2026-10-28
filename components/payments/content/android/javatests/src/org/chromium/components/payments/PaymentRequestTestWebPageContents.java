@@ -24,6 +24,14 @@ import java.util.stream.Collectors;
  * </pre>
  */
 public class PaymentRequestTestWebPageContents {
+    public static final String CHECK_PAYMENT_REQUEST_DEFINED_BUTTON_ID =
+            "checkPaymentRequestDefined";
+    public static final String CHECK_CAN_MAKE_PAYMENT_BUTTON_ID = "checkCanMakePayment";
+    public static final String CHECK_HAS_ENROLLED_INSTRUMENT_BUTTON_ID =
+            "checkHasEnrolledInstrument";
+    public static final String LAUNCH_PAYMENT_APP_BUTTON_ID = "launchPaymentApp";
+    public static final String RETRY_PAYMENT_BUTTON_ID = "retryPayment";
+
     private final List<String> mMethods = new ArrayList<>();
     private boolean mRequestShippingAddress;
     private boolean mRequestContactInformation;
@@ -83,91 +91,99 @@ public class PaymentRequestTestWebPageContents {
 
         String checkoutPageHtmlFormat =
                 """
-            <!doctype html>
-            <button id="checkPaymentRequestDefined">Check defined</button>
-            <button id="checkCanMakePayment">Check can make payment</button>
-            <button id="checkHasEnrolledInstrument">Check has enrolled instrument</button>
-            <button id="launchPaymentApp">Launch payment app</button>
-            <button id="retryPayment">Retry payment</button>
+                <!doctype html>
+                <button id="%3$s">Check defined</button>
+                <button id="%4$s">Check can make payment</button>
+                <button id="%5$s">Check has enrolled instrument</button>
+                <button id="%6$s">Launch payment app</button>
+                <button id="%7$s">Retry payment</button>
 
-            <script>
-              function createPaymentRequest() {
-                const total = {label: 'Total', amount: {value: '0.01', currency: 'USD'}};
-                return new PaymentRequest([%s], {total}, %s);
-              }
-
-              function checkPaymentRequestDefined() {
-                if (!window.PaymentRequest) {
-                  resultListener.postMessage('PaymentRequest is not defined.');
-                } else {
-                  resultListener.postMessage('PaymentRequest is defined.');
-                }
-              }
-
-              async function checkCanMakePayment() {
-                try {
-                  const request = createPaymentRequest();
-                  if (await request.canMakePayment()) {
-                    resultListener.postMessage('PaymentRequest can make payments.');
-                  } else {
-                    resultListener.postMessage('PaymentRequest cannot make payments.');
+                <script>
+                  function createPaymentRequest() {
+                    const total = {label: 'Total', amount: {value: '0.01', currency: 'USD'}};
+                    return new PaymentRequest([%1$s], {total}, %2$s);
                   }
-                } catch (e) {
-                  resultListener.postMessage(e.toString());
-                }
-              }
 
-              async function checkHasEnrolledInstrument() {
-                try {
-                  const request = createPaymentRequest();
-                  if (await request.hasEnrolledInstrument()) {
-                    resultListener.postMessage('PaymentRequest has enrolled instrument.');
-                  } else {
-                    resultListener.postMessage('PaymentRequest does not have enrolled instrument.');
+                  function checkPaymentRequestDefined() {
+                    if (!window.PaymentRequest) {
+                      resultListener.postMessage('PaymentRequest is not defined.');
+                    } else {
+                      resultListener.postMessage('PaymentRequest is defined.');
+                    }
                   }
-                } catch (e) {
-                  resultListener.postMessage(e.toString());
-                }
-              }
 
-              async function launchPaymentApp() {
-                try {
-                  const request = createPaymentRequest();
-                  const response = await request.show();
-                  await response.complete('success');
-                  resultListener.postMessage(JSON.stringify(response));
-                } catch (e) {
-                  resultListener.postMessage(e.toString());
-                }
-              }
+                  async function checkCanMakePayment() {
+                    try {
+                      const request = createPaymentRequest();
+                      if (await request.canMakePayment()) {
+                        resultListener.postMessage('PaymentRequest can make payments.');
+                      } else {
+                        resultListener.postMessage('PaymentRequest cannot make payments.');
+                      }
+                    } catch (e) {
+                      resultListener.postMessage(e.toString());
+                    }
+                  }
 
-              async function retryPayment() {
-                try {
-                  const request = createPaymentRequest();
-                  let response = await request.show();
-                  response = await response.retry();
-                  await response.complete('success');
-                  resultListener.postMessage(JSON.stringify(response));
-                } catch (e) {
-                  resultListener.postMessage(e.toString());
-                }
-              }
+                  async function checkHasEnrolledInstrument() {
+                    try {
+                      const request = createPaymentRequest();
+                      if (await request.hasEnrolledInstrument()) {
+                        resultListener.postMessage('PaymentRequest has enrolled instrument.');
+                      } else {
+                        resultListener.postMessage('PaymentRequest does not have enrolled instrument.');
+                      }
+                    } catch (e) {
+                      resultListener.postMessage(e.toString());
+                    }
+                  }
 
-              document.getElementById('checkPaymentRequestDefined')
-                  .addEventListener('click', checkPaymentRequestDefined);
-              document.getElementById('checkCanMakePayment')
-                  .addEventListener('click', checkCanMakePayment);
-              document.getElementById('checkHasEnrolledInstrument')
-                  .addEventListener('click', checkHasEnrolledInstrument);
-              document.getElementById('launchPaymentApp')
-                  .addEventListener('click', launchPaymentApp);
-              document.getElementById('retryPayment')
-                  .addEventListener('click', retryPayment);
+                  async function launchPaymentApp() {
+                    try {
+                      const request = createPaymentRequest();
+                      const response = await request.show();
+                      await response.complete('success');
+                      resultListener.postMessage(JSON.stringify(response));
+                    } catch (e) {
+                      resultListener.postMessage(e.toString());
+                    }
+                  }
 
-              resultListener.postMessage('Page loaded.');
-            </script>
-            """;
+                  async function retryPayment() {
+                    try {
+                      const request = createPaymentRequest();
+                      let response = await request.show();
+                      response = await response.retry();
+                      await response.complete('success');
+                      resultListener.postMessage(JSON.stringify(response));
+                    } catch (e) {
+                      resultListener.postMessage(e.toString());
+                    }
+                  }
 
-        return String.format(checkoutPageHtmlFormat, supportedMethods, options);
+                  document.getElementById('%3$s')
+                      .addEventListener('click', checkPaymentRequestDefined);
+                  document.getElementById('%4$s')
+                      .addEventListener('click', checkCanMakePayment);
+                  document.getElementById('%5$s')
+                      .addEventListener('click', checkHasEnrolledInstrument);
+                  document.getElementById('%6$s')
+                      .addEventListener('click', launchPaymentApp);
+                  document.getElementById('%7$s')
+                      .addEventListener('click', retryPayment);
+
+                  resultListener.postMessage('Page loaded.');
+                </script>
+                """;
+
+        return String.format(
+                checkoutPageHtmlFormat,
+                supportedMethods,
+                options,
+                CHECK_PAYMENT_REQUEST_DEFINED_BUTTON_ID,
+                CHECK_CAN_MAKE_PAYMENT_BUTTON_ID,
+                CHECK_HAS_ENROLLED_INSTRUMENT_BUTTON_ID,
+                LAUNCH_PAYMENT_APP_BUTTON_ID,
+                RETRY_PAYMENT_BUTTON_ID);
     }
 }

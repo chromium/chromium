@@ -27,6 +27,18 @@ import java.util.Map;
  * </pre>
  */
 public class MockAndroidIntentLauncher implements AndroidIntentLauncher {
+    // Compact JSON without spaces to match JSON.stringify() output in tests.
+    public static final String DETAILS = "{\"key\":\"value\"}";
+    public static final String COUNTRY_CODE = "CA";
+    public static final String ADDRESS_LINE = "111 Richmond Street West";
+    public static final String REGION = "Ontario";
+    public static final String CITY = "Toronto";
+    public static final String POSTAL_CODE = "M5H2G4";
+    public static final String SHIPPING_OPTION_ID = "expressShipping";
+    public static final String PAYER_NAME = "John Smith";
+    public static final String PAYER_EMAIL = "John.Smith@gmail.com";
+    public static final String PAYER_PHONE = "+15555555555";
+
     // A mapping of payment method name (e.g., "https://payments.test/web-pay") to the corresponding
     // mock payment app.
     Map<String, MockPaymentApp> mApps = new HashMap<>();
@@ -64,25 +76,25 @@ public class MockAndroidIntentLauncher implements AndroidIntentLauncher {
 
         Bundle extras = new Bundle();
         extras.putString("methodName", paymentMethodName);
-        extras.putString("details", "{\"key\": \"value\"}");
+        extras.putString("details", DETAILS);
 
         if (app.getHandlesShippingAddress()) {
             Bundle address = new Bundle();
-            address.putString("countryCode", "CA");
-            address.putStringArray("addressLines", new String[] {"111 Richmond Street West"});
-            address.putString("region", "Ontario");
-            address.putString("city", "Toronto");
-            address.putString("postalCode", "M5H2G4");
-            address.putString("recipient", "John Smith");
-            address.putString("phone", "+15555555555");
+            address.putString("countryCode", COUNTRY_CODE);
+            address.putStringArray("addressLines", new String[] {ADDRESS_LINE});
+            address.putString("region", REGION);
+            address.putString("city", CITY);
+            address.putString("postalCode", POSTAL_CODE);
+            address.putString("recipient", PAYER_NAME);
+            address.putString("phone", PAYER_PHONE);
             extras.putBundle("shippingAddress", address);
-            extras.putString("shippingOptionId", "expressShipping");
+            extras.putString("shippingOptionId", SHIPPING_OPTION_ID);
         }
 
         if (app.getHandlesContactInformation()) {
-            extras.putString("payerName", "John Smith");
-            extras.putString("payerEmail", "John.Smith@gmail.com");
-            extras.putString("payerPhone", "+15555555555");
+            extras.putString("payerName", PAYER_NAME);
+            extras.putString("payerEmail", PAYER_EMAIL);
+            extras.putString("payerPhone", PAYER_PHONE);
         }
 
         Intent response = new Intent();
