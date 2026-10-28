@@ -10,7 +10,6 @@ source_set("sharing_hub") {
   public = [
     "preview_view.h",
     "screenshot/screenshot_captured_bubble.h",
-    "sharing_hub_bubble_util.h",
   ]
   public_deps = [
     "//base",
@@ -34,7 +33,6 @@ source_set("impl") {
   sources = [
     "preview_view.cc",
     "screenshot/screenshot_captured_bubble.cc",
-    "sharing_hub_bubble_util.cc",
   ]
   deps = [
     ":sharing_hub",

@@ -42,7 +42,6 @@ class QRCodeGeneratorBubble : public LocationBarBubbleDelegateView,
   QRCodeGeneratorBubble(views::BubbleAnchor anchor,
                         base::WeakPtr<content::WebContents> web_contents,
                         base::OnceClosure on_closing,
-                        base::OnceClosure on_back_button_pressed,
                         const GURL& url);
   QRCodeGeneratorBubble(const QRCodeGeneratorBubble&) = delete;
   QRCodeGeneratorBubble& operator=(const QRCodeGeneratorBubble&) = delete;
@@ -88,7 +87,6 @@ class QRCodeGeneratorBubble : public LocationBarBubbleDelegateView,
 
   // views::BubbleDialogDelegateView:
   void Init() override;
-  void AddedToWidget() override;
 
   // TextfieldController:
   void ContentsChanged(views::Textfield* sender,
@@ -103,8 +101,6 @@ class QRCodeGeneratorBubble : public LocationBarBubbleDelegateView,
   void CopyButtonPressed();
 
   void DownloadButtonPressed();
-
-  void BackButtonPressed();
 
   // Unit tests can set `qr_code_error_override_` to inject QR code
   // generation errors.
@@ -127,7 +123,6 @@ class QRCodeGeneratorBubble : public LocationBarBubbleDelegateView,
   raw_ptr<views::Label> bottom_error_label_ = nullptr;
 
   base::OnceClosure on_closing_;
-  base::OnceClosure on_back_button_pressed_;
   base::WeakPtr<content::WebContents> web_contents_;
 };
 

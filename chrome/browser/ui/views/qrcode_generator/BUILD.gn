@@ -26,7 +26,6 @@ source_set("qrcode_generator") {
     "//chrome/browser/ui/color:color_headers",
     "//chrome/browser/ui/dialogs:browser_dialogs",
     "//chrome/browser/ui/views:layout_provider",
-    "//chrome/browser/ui/views/sharing_hub",
     "//components/qr_code_generator",
     "//components/sharing_message",
     "//components/url_formatter",

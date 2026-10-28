@@ -22,7 +22,6 @@ source_set("impl") {
     "//chrome/browser:browser_process",
     "//chrome/browser/ui/actions:actions_headers",
     "//chrome/browser/ui/browser_window",
-    "//chrome/browser/ui/sharing_hub",
     "//chrome/browser/ui/views/frame:toolbar_button_provider",
     "//chrome/browser/ui/views/qrcode_generator",
     "//chrome/common:constants",

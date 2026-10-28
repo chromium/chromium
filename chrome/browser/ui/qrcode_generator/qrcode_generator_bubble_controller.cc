@@ -11,7 +11,6 @@
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
-#include "chrome/browser/ui/sharing_hub/sharing_hub_bubble_controller.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/qrcode_generator/qrcode_generator_bubble.h"
 #include "chrome/common/pref_names.h"
@@ -64,8 +63,7 @@ QRCodeGeneratorBubbleController* QRCodeGeneratorBubbleController::Get(
   return controller;
 }
 
-void QRCodeGeneratorBubbleController::ShowBubble(const GURL& url,
-                                                 bool show_back_button) {
+void QRCodeGeneratorBubbleController::ShowBubble(const GURL& url) {
   // Ignore subsequent calls to open the dialog if it already is open.
   if (bubble_shown_) {
     return;
@@ -86,16 +84,11 @@ void QRCodeGeneratorBubbleController::ShowBubble(const GURL& url,
   bubble_shown_ = true;
   if (auto* toolbar_button_provider = ToolbarButtonProvider::From(browser)) {
     base::OnceClosure on_closing = GetOnBubbleClosedCallback();
-    base::OnceClosure on_back_button_pressed;
-    if (show_back_button) {
-      on_back_button_pressed = GetOnBackButtonPressedCallback();
-    }
 
     auto anchor =
         toolbar_button_provider->GetBubbleAnchor(kActionQrCodeGenerator);
     auto bubble = std::make_unique<QRCodeGeneratorBubble>(
-        anchor, GetWebContents().GetWeakPtr(), std::move(on_closing),
-        std::move(on_back_button_pressed), url);
+        anchor, GetWebContents().GetWeakPtr(), std::move(on_closing), url);
     qrcode_generator_bubble_ = bubble.get();
 
     views::BubbleDialogDelegateView::CreateBubble(std::move(bubble));
@@ -128,25 +121,12 @@ base::OnceClosure QRCodeGeneratorBubbleController::GetOnBubbleClosedCallback() {
                         weak_ptr_factory_.GetWeakPtr());
 }
 
-base::OnceClosure
-QRCodeGeneratorBubbleController::GetOnBackButtonPressedCallback() {
-  return base::BindOnce(&QRCodeGeneratorBubbleController::OnBackButtonPressed,
-                        weak_ptr_factory_.GetWeakPtr());
-}
-
 void QRCodeGeneratorBubbleController::OnBubbleClosed() {
   bubble_shown_ = false;
   qrcode_generator_bubble_ = nullptr;
 
   // Stop listening for policy pref changes.
   pref_change_registrar_ = nullptr;
-}
-
-void QRCodeGeneratorBubbleController::OnBackButtonPressed() {
-  sharing_hub::SharingHubBubbleController* controller =
-      sharing_hub::SharingHubBubbleController::CreateOrGetFromWebContents(
-          &GetWebContents());
-  controller->ShowBubble(share::ShareAttempt(&GetWebContents()));
 }
 
 void QRCodeGeneratorBubbleController::OnPolicyPrefChanged() {
