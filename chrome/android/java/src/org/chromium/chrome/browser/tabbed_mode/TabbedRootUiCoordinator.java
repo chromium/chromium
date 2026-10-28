@@ -3116,7 +3116,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                             mBookmarkModelSupplier,
                             mActivity,
                             mActivity.getComponentName(),
-                            mMultiInstanceManager);
+                            mMultiInstanceManager,
+                            mActivityTabProvider);
         }
 
         if (mBookmarkBarCoordinator == null) {

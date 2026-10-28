@@ -82,7 +82,8 @@ public class BookmarkActivity extends SnackbarActivity {
                         () -> BookmarkModel.getForProfile(profile),
                         /* context= */ this,
                         /* componentName= */ parentComponent,
-                        /* multiInstanceManager= */ null);
+                        /* multiInstanceManager= */ null,
+                        /* currentTabSupplier= */ null);
 
         ScrimManager scrimManager =
                 new ScrimManager(this, getContentView(), ScrimClient.BOOKMARK_ACTIVITY);

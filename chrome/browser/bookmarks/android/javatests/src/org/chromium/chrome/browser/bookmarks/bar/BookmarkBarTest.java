@@ -31,6 +31,8 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
@@ -247,6 +249,39 @@ public class BookmarkBarTest {
                     Criteria.checkThat(currentTab, notNullValue());
                     Criteria.checkThat(currentTab.getUrl(), notNullValue());
                     Criteria.checkThat(currentTab.getUrl(), is(url));
+                });
+    }
+
+    @Test
+    @MediumTest
+    public void testOnBookmarkItemClick_JavascriptBookmarklet() throws ExecutionException {
+        final GURL pageUrl = getTestServerUrl("/chrome/test/data/android/google.html");
+        mCtaTestRule.loadUrl(pageUrl);
+        final Tab originalTab = getCurrentTab();
+        final int initialTabCount = mCtaTestRule.tabsCount(/* incognito= */ false);
+
+        final String title = "Bookmarklet";
+        final GURL jsUrl = new GURL("javascript:void(document.title='BookmarkletRan')");
+        mItemIds = List.of(addBookmark(/* index= */ 0, title, jsUrl));
+
+        // Ctrl+click is a no-op since bookmarklets cannot open in new tabs.
+        onViewWaiting(bookmarkBarItemWithText(title)).perform(clickWith(META_CTRL_ON));
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    assertEquals(initialTabCount, mCtaTestRule.tabsCount(/* incognito= */ false));
+                    assertEquals(originalTab, getCurrentTab());
+                    assertNotEquals("BookmarkletRan", originalTab.getTitle());
+                });
+
+        onViewWaiting(bookmarkBarItemWithText(title)).perform(click());
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    final Tab currentTab = getCurrentTab();
+                    Criteria.checkThat(
+                            mCtaTestRule.tabsCount(/* incognito= */ false), is(initialTabCount));
+                    Criteria.checkThat(currentTab, is(originalTab));
+                    Criteria.checkThat(currentTab.getUrl(), is(pageUrl));
+                    Criteria.checkThat(currentTab.getTitle(), is("BookmarkletRan"));
                 });
     }
 

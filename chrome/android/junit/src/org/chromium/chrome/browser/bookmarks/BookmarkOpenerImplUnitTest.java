@@ -7,7 +7,11 @@ package org.chromium.chrome.browser.bookmarks;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.robolectric.Shadows.shadowOf;
 
@@ -21,6 +25,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -29,10 +35,13 @@ import org.robolectric.Robolectric;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkItem;
 import org.chromium.components.bookmarks.BookmarkType;
+import org.chromium.content_public.browser.LoadUrlParams;
+import org.chromium.ui.base.PageTransition;
 import org.chromium.url.GURL;
 
 import java.util.Arrays;
@@ -46,8 +55,11 @@ public class BookmarkOpenerImplUnitTest {
 
     @Mock private BookmarkModel mBookmarkModel;
     @Mock private MultiInstanceManager mMultiInstanceManager;
+    @Mock private Tab mTab;
+    @Captor private ArgumentCaptor<LoadUrlParams> mLoadUrlParamsCaptor;
 
     private Activity mActivity;
+    private Tab mCurrentTab;
     private BookmarkOpenerImpl mOpener;
     private BookmarkId mBookmarkId1;
     private BookmarkItem mBookmarkItem1;
@@ -55,6 +67,8 @@ public class BookmarkOpenerImplUnitTest {
     private BookmarkItem mBookmarkItem2;
     private BookmarkId mBookmarkId3;
     private BookmarkItem mBookmarkItem3;
+    private BookmarkId mJavascriptBookmarkId;
+    private BookmarkItem mJavascriptBookmarkItem;
     private BookmarkId mFolderId;
     private BookmarkId mNestedFolderId;
     private BookmarkItem mNestedFolderItem;
@@ -124,20 +138,39 @@ public class BookmarkOpenerImplUnitTest {
                         /* dateLastOpened= */ 0,
                         /* isAccountBookmark= */ false);
 
+        mJavascriptBookmarkId = new BookmarkId(6, BookmarkType.NORMAL);
+        mJavascriptBookmarkItem =
+                new BookmarkItem(
+                        mJavascriptBookmarkId,
+                        "Bookmarklet",
+                        new GURL("javascript:void(document.title='Updated')"),
+                        /* isFolder= */ false,
+                        /* parentId= */ null,
+                        /* isEditable= */ true,
+                        /* isManaged= */ false,
+                        /* dateAdded= */ 0,
+                        /* read= */ false,
+                        /* dateLastOpened= */ 0,
+                        /* isAccountBookmark= */ false);
+
         when(mBookmarkModel.getBookmarkById(mBookmarkId1)).thenReturn(mBookmarkItem1);
         when(mBookmarkModel.getBookmarkById(mBookmarkId2)).thenReturn(mBookmarkItem2);
         when(mBookmarkModel.getBookmarkById(mBookmarkId3)).thenReturn(mBookmarkItem3);
+        when(mBookmarkModel.getBookmarkById(mJavascriptBookmarkId))
+                .thenReturn(mJavascriptBookmarkItem);
         when(mBookmarkModel.getBookmarkById(mNestedFolderId)).thenReturn(mNestedFolderItem);
         when(mBookmarkModel.getChildIds(mFolderId))
                 .thenReturn(
                         Arrays.asList(mBookmarkId1, mBookmarkId2, mNestedFolderId, mBookmarkId3));
 
+        mCurrentTab = mTab;
         mOpener =
                 new BookmarkOpenerImpl(
                         () -> mBookmarkModel,
                         mActivity,
                         new ComponentName(mActivity, "TestActivity"),
-                        mMultiInstanceManager);
+                        mMultiInstanceManager,
+                        () -> mCurrentTab);
     }
 
     @Test
@@ -354,5 +387,59 @@ public class BookmarkOpenerImplUnitTest {
         assertEquals(mBookmarkId1, children.get(0));
         assertEquals(mBookmarkId2, children.get(1));
         assertEquals(mBookmarkId3, children.get(2));
+    }
+
+    @Test
+    public void testOpenBookmarkInCurrentTab_JavascriptBookmarklet() {
+        mCurrentTab = null;
+        assertFalse(
+                mOpener.openBookmarkInCurrentTab(mJavascriptBookmarkId, /* incognito= */ false));
+        mCurrentTab = mTab;
+
+        when(mTab.isNativePage()).thenReturn(true);
+        assertFalse(
+                mOpener.openBookmarkInCurrentTab(mJavascriptBookmarkId, /* incognito= */ false));
+        when(mTab.isNativePage()).thenReturn(false);
+
+        when(mTab.isDestroyed()).thenReturn(true);
+        assertFalse(
+                mOpener.openBookmarkInCurrentTab(mJavascriptBookmarkId, /* incognito= */ false));
+        when(mTab.isDestroyed()).thenReturn(false);
+
+        assertFalse(mOpener.openBookmarkInCurrentTab(mJavascriptBookmarkId, /* incognito= */ true));
+        verify(mTab, never()).loadUrl(any());
+
+        assertTrue(mOpener.openBookmarkInCurrentTab(mJavascriptBookmarkId, /* incognito= */ false));
+        assertNull(shadowOf(mActivity).getNextStartedActivity());
+        verify(mTab).loadUrl(mLoadUrlParamsCaptor.capture());
+        assertEquals(
+                mJavascriptBookmarkItem.getUrl().getSpec(),
+                mLoadUrlParamsCaptor.getValue().getUrl());
+        assertEquals(
+                PageTransition.AUTO_BOOKMARK, mLoadUrlParamsCaptor.getValue().getTransitionType());
+    }
+
+    @Test
+    public void testBatchOpenSkipsJavascriptBookmarks() {
+        assertFalse(
+                mOpener.openBookmarksInNewTabs(
+                        Collections.singletonList(mJavascriptBookmarkId), /* incognito= */ false));
+        assertNull(shadowOf(mActivity).getNextStartedActivity());
+
+        // Skipping a leading bookmarklet promotes the first web URL to the primary Intent data URI.
+        when(mBookmarkModel.getChildIds(mFolderId))
+                .thenReturn(Arrays.asList(mJavascriptBookmarkId, mBookmarkId1, mBookmarkId2));
+        assertTrue(
+                mOpener.openFolderBookmarksInNewTabs(
+                        mFolderId,
+                        /* incognito= */ false,
+                        TabLaunchType.FROM_BOOKMARK_BAR_BACKGROUND));
+
+        Intent startedIntent = shadowOf(mActivity).getNextStartedActivity();
+        assertNotNull(startedIntent);
+        assertEquals(mBookmarkItem1.getUrl().getSpec(), startedIntent.getDataString());
+        List<String> additionalUrls =
+                startedIntent.getStringArrayListExtra(IntentHandler.EXTRA_ADDITIONAL_URLS);
+        assertEquals(Collections.singletonList(mBookmarkItem2.getUrl().getSpec()), additionalUrls);
     }
 }

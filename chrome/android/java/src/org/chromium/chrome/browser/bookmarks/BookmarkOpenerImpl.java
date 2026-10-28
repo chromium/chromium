@@ -28,23 +28,27 @@ import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkItem;
 import org.chromium.components.bookmarks.BookmarkType;
+import org.chromium.components.embedder_support.util.UrlConstants;
+import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.PageTransition;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
 
-/** Implementation of {@link BookmarkOpener} which relies on intents. */
+/** Opens bookmarks via intents, or executes {@code javascript:} bookmarklets on the current tab. */
 @NullMarked
 public class BookmarkOpenerImpl implements BookmarkOpener {
     private final Supplier<@Nullable BookmarkModel> mBookmarkModelSupplier;
     private final Context mContext;
     private final @Nullable ComponentName mComponentName;
     private final @Nullable MultiInstanceManager mMultiInstanceManager;
+    private final @Nullable Supplier<@Nullable Tab> mCurrentTabSupplier;
 
     /**
      * @param bookmarkModelSupplier Supplies the bookmark model, used to query for bookmark urls and
@@ -52,23 +56,29 @@ public class BookmarkOpenerImpl implements BookmarkOpener {
      * @param context The android activity context, used to build the intent to open bookmarks.
      * @param componentName The name of the parent component, can be null on tablets.
      * @param multiInstanceManager The multi instance manager.
+     * @param currentTabSupplier Supplies the active tab for bookmarklet execution, if available.
      */
     public BookmarkOpenerImpl(
             Supplier<@Nullable BookmarkModel> bookmarkModelSupplier,
             Context context,
             @Nullable ComponentName componentName,
-            @Nullable MultiInstanceManager multiInstanceManager) {
+            @Nullable MultiInstanceManager multiInstanceManager,
+            @Nullable Supplier<@Nullable Tab> currentTabSupplier) {
         mBookmarkModelSupplier = bookmarkModelSupplier;
         mContext = context;
         mComponentName = componentName;
         mMultiInstanceManager = multiInstanceManager;
+        mCurrentTabSupplier = currentTabSupplier;
     }
 
     @Override
     public boolean openBookmarkInCurrentTab(BookmarkId id, boolean incognito) {
         if (id == null) return false;
         BookmarkItem item = assumeNonNull(mBookmarkModelSupplier.get()).getBookmarkById(id);
-        if (item == null) return false;
+        if (item == null || item.isFolder()) return false;
+        if (isJavascriptBookmark(item)) {
+            return openJavascriptBookmarkInCurrentTab(item, incognito);
+        }
         maybeMarkReadingListItemAsRead(item);
         recordMetricsForOpenBookmarkInCurrentTab(item);
 
@@ -76,6 +86,26 @@ public class BookmarkOpenerImpl implements BookmarkOpener {
         launchIntent(intent);
 
         return true;
+    }
+
+    private boolean openJavascriptBookmarkInCurrentTab(BookmarkItem item, boolean incognito) {
+        // Run in-process on a live web tab since IntentHandler drops javascript: URIs across IPC.
+        Tab currentTab = mCurrentTabSupplier == null ? null : mCurrentTabSupplier.get();
+        if (currentTab == null
+                || currentTab.isDestroyed()
+                || currentTab.isNativePage()
+                || currentTab.isFrozen()
+                || currentTab.isOffTheRecord() != incognito) {
+            return false;
+        }
+        recordMetricsForOpenBookmarkInCurrentTab(item);
+        currentTab.loadUrl(
+                new LoadUrlParams(item.getUrl().getSpec(), PageTransition.AUTO_BOOKMARK));
+        return true;
+    }
+
+    private static boolean isJavascriptBookmark(BookmarkItem item) {
+        return UrlConstants.JAVASCRIPT_SCHEME.equals(item.getUrl().getScheme());
     }
 
     @Override
@@ -152,7 +182,10 @@ public class BookmarkOpenerImpl implements BookmarkOpener {
         List<BookmarkItem> bookmarksToOpen = new ArrayList<>();
         for (BookmarkId id : bookmarkIds) {
             BookmarkItem item = bookmarkModel.getBookmarkById(id);
-            if (item == null || item.isFolder()) continue;
+            // Bookmarklets require an active page context and cannot open in new tabs or windows.
+            if (item == null || item.isFolder() || isJavascriptBookmark(item)) {
+                continue;
+            }
             maybeMarkReadingListItemAsRead(item);
             bookmarksToOpen.add(item);
         }
