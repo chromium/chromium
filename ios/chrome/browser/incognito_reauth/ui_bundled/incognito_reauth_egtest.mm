@@ -234,8 +234,10 @@ using chrome_test_util::TabGroupCreationView;
   [[EarlGrey
       selectElementWithMatcher:chrome_test_util::TabGridOpenTabsPanelButton()]
       performAction:grey_tap()];
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::RegularTabGrid()]
-      assertWithMatcher:grey_sufficientlyVisible()];
+  // The tab grid scrolls to the regular panel with an animation, so wait for
+  // the regular tab grid to be visible instead of asserting immediately.
+  [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:
+                      chrome_test_util::RegularTabGrid()];
 }
 
 @end
