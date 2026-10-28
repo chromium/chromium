@@ -147,4 +147,16 @@ bool PLATFORM_EXPORT UseH264AcceleratedEncoderForWebRTC() {
 #endif
 }
 
+base::TimeDelta RtpTimestampToTimeDelta::Convert(uint32_t rtp_timestamp) {
+  constexpr int64_t kVideoRtpClockRateHz = 90000;
+  const int64_t unwrapped_rtp_timestamp = unwrapper_.Unwrap(rtp_timestamp);
+  if (!first_unwrapped_rtp_timestamp_.has_value()) {
+    first_unwrapped_rtp_timestamp_ = unwrapped_rtp_timestamp;
+    return base::TimeDelta();
+  }
+  const int64_t delta_ticks =
+      unwrapped_rtp_timestamp - *first_unwrapped_rtp_timestamp_;
+  return base::Seconds(delta_ticks) / kVideoRtpClockRateHz;
+}
+
 }  // namespace blink

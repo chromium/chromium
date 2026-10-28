@@ -417,13 +417,17 @@ class RTCVideoDecoderAdapterTest : public ::testing::Test {
   }
 
   void FinishDecode(uint32_t timestamp) {
+    FinishDecode(base::Seconds(timestamp) / 90000);
+  }
+
+  void FinishDecode(base::TimeDelta timestamp) {
     media_thread_.task_runner()->PostTask(
         FROM_HERE,
         base::BindOnce(&RTCVideoDecoderAdapterTest::FinishDecodeOnMediaThread,
                        base::Unretained(this), timestamp));
   }
 
-  void FinishDecodeOnMediaThread(uint32_t timestamp) {
+  void FinishDecodeOnMediaThread(base::TimeDelta timestamp) {
     DCHECK(media_thread_.task_runner()->BelongsToCurrentThread());
     auto si_size = gfx::Size(640, 360);
     gpu::SharedImageMetadata metadata;
@@ -438,7 +442,7 @@ class RTCVideoDecoderAdapterTest : public ::testing::Test {
     scoped_refptr<media::VideoFrame> frame = media::VideoFrame::WrapSharedImage(
         media::PIXEL_FORMAT_ABGR, shared_image, gpu::SyncToken(),
         media::VideoFrame::ReleaseMailboxCB(), gfx::Rect(si_size), si_size,
-        base::Microseconds(timestamp));
+        timestamp);
     output_cb_.Run(std::move(frame));
   }
 
@@ -578,6 +582,61 @@ TEST_F(RTCVideoDecoderAdapterTest, Decode) {
   EXPECT_CALL(decoded_cb_, Run(_));
   FinishDecode(0);
   media_thread_.FlushForTesting();
+}
+
+TEST_F(RTCVideoDecoderAdapterTest, Decode_UnwrapsAndScalesRtpTimestamp) {
+  ASSERT_TRUE(BasicSetup());
+
+  // Start near the 32-bit wraparound boundary with a non-zero initial offset.
+  constexpr uint32_t kRtpTimestamp1 = 0xFFFFFFFF - 1500;
+  // Advance by 3000 ticks (1/30 s at 90 kHz = 33333 us), wrapping around 2^32.
+  constexpr uint32_t kRtpTimestamp2 = kRtpTimestamp1 + 3000;
+  // Advance by another 3000 ticks (2/30 s at 90 kHz = 66666 us).
+  constexpr uint32_t kRtpTimestamp3 = kRtpTimestamp2 + 3000;
+
+  scoped_refptr<media::DecoderBuffer> decoder_buffer;
+  EXPECT_CALL(*video_decoder_, Decode_(_, _))
+      .WillRepeatedly(DoAll(SaveArg<0>(&decoder_buffer),
+                            base::test::RunOnceCallbackRepeatedly<1>(
+                                media::DecoderStatus::Codes::kOk)));
+
+  // First frame: media timestamp should be zero, and output frame should
+  // preserve the exact initial RTP timestamp.
+  ASSERT_EQ(Decode(kRtpTimestamp1, /*keyframe=*/true), WEBRTC_VIDEO_CODEC_OK);
+  media_thread_.FlushForTesting();
+  ASSERT_TRUE(decoder_buffer);
+  EXPECT_EQ(decoder_buffer->timestamp(), base::Microseconds(0));
+
+  uint32_t decoded_rtp_timestamp = 0;
+  EXPECT_CALL(decoded_cb_, Run(_))
+      .WillRepeatedly([&](const webrtc::VideoFrame& frame) {
+        decoded_rtp_timestamp = frame.rtp_timestamp();
+      });
+  FinishDecode(decoder_buffer->timestamp());
+  media_thread_.FlushForTesting();
+  EXPECT_EQ(decoded_rtp_timestamp, kRtpTimestamp1);
+
+  // Second frame (wraps around 32-bit uint32_t): media timestamp should be
+  // scaled from the unwrapped delta (3000 ticks / 90 kHz = 33333 us), and
+  // output frame should preserve the wrapped 32-bit RTP timestamp.
+  ASSERT_EQ(Decode(kRtpTimestamp2, /*keyframe=*/false), WEBRTC_VIDEO_CODEC_OK);
+  media_thread_.FlushForTesting();
+  ASSERT_TRUE(decoder_buffer);
+  EXPECT_EQ(decoder_buffer->timestamp(), base::Microseconds(33333));
+
+  FinishDecode(decoder_buffer->timestamp());
+  media_thread_.FlushForTesting();
+  EXPECT_EQ(decoded_rtp_timestamp, kRtpTimestamp2);
+
+  // Third frame: media timestamp should be 6000 ticks / 90 kHz = 66666 us.
+  ASSERT_EQ(Decode(kRtpTimestamp3, /*keyframe=*/false), WEBRTC_VIDEO_CODEC_OK);
+  media_thread_.FlushForTesting();
+  ASSERT_TRUE(decoder_buffer);
+  EXPECT_EQ(decoder_buffer->timestamp(), base::Microseconds(66666));
+
+  FinishDecode(decoder_buffer->timestamp());
+  media_thread_.FlushForTesting();
+  EXPECT_EQ(decoded_rtp_timestamp, kRtpTimestamp3);
 }
 
 TEST_F(RTCVideoDecoderAdapterTest, Decode_Error) {

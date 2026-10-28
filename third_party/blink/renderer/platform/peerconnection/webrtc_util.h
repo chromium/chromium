@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_PEERCONNECTION_WEBRTC_UTIL_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_PEERCONNECTION_WEBRTC_UTIL_H_
 
+#include <cstdint>
 #include <map>
 #include <optional>
 #include <string>
@@ -14,6 +15,7 @@
 #include "third_party/blink/renderer/platform/network/parsed_content_type.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_view.h"
+#include "third_party/webrtc/api/numerics/sequence_number_unwrapper.h"
 #include "third_party/webrtc/api/units/time_delta.h"
 #include "third_party/webrtc/api/units/timestamp.h"
 #include "third_party/webrtc/api/video_codecs/sdp_video_format.h"
@@ -52,6 +54,24 @@ IsH264ConstrainedBaselineProfileAvailableForAcceleratedEncoder();
 
 // Checks whether the accelerated H.264 encoder can be used in WebRTC.
 bool PLATFORM_EXPORT UseH264AcceleratedEncoderForWebRTC();
+
+// Unwraps 90 kHz video RTP timestamps and converts them into a
+// `base::TimeDelta` relative to the first RTP timestamp passed to `Convert()`.
+class PLATFORM_EXPORT RtpTimestampToTimeDelta {
+ public:
+  RtpTimestampToTimeDelta() = default;
+  RtpTimestampToTimeDelta(const RtpTimestampToTimeDelta&) = delete;
+  RtpTimestampToTimeDelta& operator=(const RtpTimestampToTimeDelta&) = delete;
+  ~RtpTimestampToTimeDelta() = default;
+
+  // Returns zero on the first call, and a `base::TimeDelta` proportional to the
+  // unwrapped RTP timestamp delta (at 90 kHz) on subsequent calls.
+  base::TimeDelta Convert(uint32_t rtp_timestamp);
+
+ private:
+  webrtc::RtpTimestampUnwrapper unwrapper_;
+  std::optional<int64_t> first_unwrapped_rtp_timestamp_;
+};
 
 }  // namespace blink
 

@@ -19,6 +19,7 @@
 #include "media/base/decoder.h"
 #include "media/base/video_decoder_config.h"
 #include "third_party/blink/renderer/platform/peerconnection/resolution_monitor.h"
+#include "third_party/blink/renderer/platform/peerconnection/webrtc_util.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/webrtc/api/video/encoded_image.h"
 #include "third_party/webrtc/api/video_codecs/sdp_video_format.h"
@@ -149,6 +150,9 @@ class PLATFORM_EXPORT RTCVideoDecoderAdapter : public webrtc::VideoDecoder {
 
   media::VideoDecoderType decoder_type_ GUARDED_BY_CONTEXT(
       decoding_sequence_checker_){media::VideoDecoderType::kUnknown};
+
+  RtpTimestampToTimeDelta rtp_timestamp_to_time_delta_
+      GUARDED_BY_CONTEXT(decoding_sequence_checker_);
 
   // The `Initialize` method synchronously wraps an async Impl::Initialize
   // implementation, and blocks with a timeout until it is completed. Because
