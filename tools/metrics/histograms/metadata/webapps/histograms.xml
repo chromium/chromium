@@ -2082,6 +2082,26 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="WebApp.Manifest.InvariantViolation"
+    enum="ManifestInvariantError" expires_after="2027-10-01">
+  <owner>dmurph@chromium.org</owner>
+  <owner>pwa-team@google.com</owner>
+  <summary>
+    Records the specific intrinsic invariant rule violated by a Web App Manifest
+    when deserialized from Mojo IPC in the browser process.
+  </summary>
+</histogram>
+
+<histogram name="WebApp.Manifest.InvariantViolation.PolicyOverride"
+    enum="ManifestInvariantError" expires_after="2027-10-01">
+  <owner>dmurph@chromium.org</owner>
+  <owner>pwa-team@google.com</owner>
+  <summary>
+    Records the specific intrinsic invariant rule violated when applying a
+    policy override to a Web App Manifest in the browser process.
+  </summary>
+</histogram>
+
 <histogram name="WebApp.ManifestIconDownloader.ChromeUrl.Result"
     enum="ManifestIconDownloaderResult" expires_after="2027-04-05">
   <owner>dibyapal@chromium.org</owner>

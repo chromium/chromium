@@ -33,6 +33,7 @@ struct Manifest {
     kRTL,
   };
 
+  // LINT.IfChange(ManifestFields)
   // The URL this manifest was loaded from. This can be an empty URL if this is
   // an automatically generated "default" manifest.
   url.mojom.Url manifest_url;
@@ -163,6 +164,13 @@ struct Manifest {
       description_localized;
   map<mojo_base.mojom.LanguageTag, array<ManifestImageResource>>?
       icons_localized;
+  // LINT.ThenChange(
+  //   //third_party/blink/public/common/manifest/manifest.h:ManifestFields,
+  //   //third_party/blink/public/common/manifest/manifest.h:ManifestBuilderFields,
+  //   //third_party/blink/common/manifest/manifest.cc:ManifestEquality,
+  //   //third_party/blink/common/manifest/manifest.cc:ManifestToBuilder,
+  //   //third_party/blink/common/manifest/manifest.cc:ManifestBuilderBuild
+  // )
 };
 
 struct ManifestLocalizedTextObject {

@@ -28,6 +28,8 @@ BLINK_COMMON_EXPORT bool IsDefaultManifest(const mojom::Manifest& manifest,
                                            const GURL& document_url);
 BLINK_COMMON_EXPORT bool IsDefaultManifest(const mojom::ManifestPtr& manifest,
                                            const GURL& document_url);
+BLINK_COMMON_EXPORT bool IsDefaultManifest(const Manifest& manifest,
+                                           const GURL& document_url);
 
 // Returns the blink::mojom::Manifest_TextDirection which matches |dir|.
 // |dir| should be one of

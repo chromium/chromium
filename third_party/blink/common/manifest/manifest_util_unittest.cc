@@ -7,7 +7,9 @@
 #include <string>
 
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
+#include "url/gurl.h"
 
 namespace blink {
 
@@ -97,6 +99,43 @@ TEST(ManifestUtilTest, LaunchHandlerClientModeFromString) {
 
   // Unknown value.
   EXPECT_EQ(std::nullopt, ClientModeFromString("unknown-value"));
+}
+
+TEST(ManifestUtilTest, IsDefaultManifest) {
+  GURL document_url("https://example.com/app/index.html");
+  auto default_manifest = Manifest::CreateDefault(document_url);
+  ASSERT_TRUE(default_manifest.has_value());
+
+  // An unmodified default manifest is recognized as default.
+  EXPECT_TRUE(IsDefaultManifest(*default_manifest, document_url));
+
+  // Mismatched document URL returns false.
+  EXPECT_FALSE(IsDefaultManifest(*default_manifest,
+                                 GURL("https://example.com/other/index.html")));
+
+  // Specifying has_custom_id makes it non-default.
+  auto custom_id_builder = default_manifest->ToBuilder();
+  custom_id_builder.SetHasCustomId(true);
+  Manifest custom_id_manifest = std::move(custom_id_builder).BuildChecked();
+  EXPECT_FALSE(IsDefaultManifest(custom_id_manifest, document_url));
+
+  // Specifying has_valid_specified_start_url makes it non-default.
+  auto specified_start_url_builder = default_manifest->ToBuilder();
+  specified_start_url_builder.SetHasValidSpecifiedStartUrl(true);
+  Manifest specified_start_url_manifest =
+      std::move(specified_start_url_builder).BuildChecked();
+  EXPECT_FALSE(IsDefaultManifest(specified_start_url_manifest, document_url));
+
+  // Setting a name makes it non-default.
+  auto named_builder = default_manifest->ToBuilder();
+  named_builder.SetName(u"App Name");
+  Manifest named_manifest = std::move(named_builder).BuildChecked();
+  EXPECT_FALSE(IsDefaultManifest(named_manifest, document_url));
+
+  // Calling with an invalid or opaque document URL returns false.
+  EXPECT_FALSE(IsDefaultManifest(*default_manifest, GURL()));
+  EXPECT_FALSE(
+      IsDefaultManifest(*default_manifest, GURL("data:text/html,Hello")));
 }
 
 }  // namespace blink

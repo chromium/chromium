@@ -8,6 +8,7 @@
 
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/blink/public/platform/web_url.h"
 #include "third_party/blink/public/web/web_settings.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -66,6 +67,10 @@ class ManifestManagerTest : public PageTestBase {
 
   void ContextDestroyed(ManifestManager* manager) {
     manager->ContextDestroyed();
+  }
+
+  mojom::blink::ManifestPtr GetDefaultManifest(ManifestManager* manager) {
+    return manager->DefaultManifest();
   }
 
   std::string base_url_;
@@ -132,8 +137,9 @@ class OverrideManifestChangeNotifierClient
     : public frame_test_helpers::TestWebFrameClient {
  public:
   void DidCreateDocumentElement() override {
-    if (!frame_)
+    if (!frame_) {
       return;
+    }
     notifier_ =
         MakeGarbageCollected<MockManifestChangeNotifier>(*frame_->DomWindow());
     ManifestManager::From(*frame_->DomWindow())
@@ -263,6 +269,36 @@ TEST_F(ManifestManagerTest, RequestManifest_UnexpectedFailure) {
   ContextDestroyed(GetManifestManager());
   EXPECT_TRUE(callback_called);
   EXPECT_TRUE(debug_callback_called);
+}
+
+TEST_F(ManifestManagerTest, DefaultManifestParity) {
+  const char* test_urls[] = {
+      "http://example.com/path/index.html",
+      "https://example.com/path/index.html",
+      "https://example.com/app/",
+      "https://example.com/nested/path/to/page.html#section",
+  };
+
+  for (const char* url_str : test_urls) {
+    NavigateTo(KURL(url_str));
+    mojom::blink::ManifestPtr renderer_default =
+        GetDefaultManifest(GetManifestManager());
+    ASSERT_TRUE(renderer_default);
+
+    std::optional<Manifest> common_default =
+        Manifest::CreateDefault(GURL(url_str));
+    ASSERT_TRUE(common_default.has_value());
+
+    EXPECT_EQ(KURL(common_default->start_url()), renderer_default->start_url);
+    EXPECT_EQ(KURL(common_default->id()), renderer_default->id);
+    EXPECT_EQ(KURL(common_default->scope()), renderer_default->scope);
+    EXPECT_EQ(static_cast<mojom::blink::DisplayMode>(common_default->display()),
+              renderer_default->display);
+    EXPECT_EQ(common_default->has_custom_id(), renderer_default->has_custom_id);
+    EXPECT_EQ(common_default->has_valid_specified_start_url(),
+              renderer_default->has_valid_specified_start_url);
+    EXPECT_TRUE(renderer_default->manifest_url.IsEmpty());
+  }
 }
 
 }  // namespace blink

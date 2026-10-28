@@ -411,6 +411,46 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Image download successful"/>
 </enum>
 
+<!-- LINT.IfChange(ManifestInvariantError) -->
+
+<enum name="ManifestInvariantError">
+  <int value="0" label="Start URL is invalid"/>
+  <int value="1" label="ID is invalid"/>
+  <int value="2" label="Scope is invalid"/>
+  <int value="3" label="Start URL origin is opaque"/>
+  <int value="4" label="ID is cross-origin with start URL"/>
+  <int value="5" label="Scope is cross-origin with start URL"/>
+  <int value="6" label="Share target action is cross-origin"/>
+  <int value="7" label="File handler action is cross-origin"/>
+  <int value="8" label="File handler MIME type is invalid"/>
+  <int value="9" label="File handler extension list is empty"/>
+  <int value="10" label="File handler extension is invalid"/>
+  <int value="11"
+      label="File handler extension contains control or format characters"/>
+  <int value="12" label="Protocol handler URL is cross-origin"/>
+  <int value="13" label="Protocol handler protocol scheme is invalid"/>
+  <int value="14" label="Note taking URL is cross-origin"/>
+  <int value="15" label="Lock screen start URL is cross-origin"/>
+  <int value="16" label="Migrate from ID is invalid"/>
+  <int value="17" label="Migrate from ID is cross-site"/>
+  <int value="18" label="Migrate from install URL is invalid"/>
+  <int value="19" label="Migrate from install URL is cross-site"/>
+  <int value="20" label="Migrate from install URL is cross-origin with ID"/>
+  <int value="21" label="Migrate to ID is invalid"/>
+  <int value="22" label="Migrate to ID is cross-site"/>
+  <int value="23" label="Migrate to install URL is invalid"/>
+  <int value="24" label="Migrate to install URL is cross-site"/>
+  <int value="25" label="Migrate to install URL is cross-origin with ID"/>
+  <int value="26" label="Shortcut URL is invalid"/>
+  <int value="27" label="Shortcut URL is out of scope"/>
+  <int value="28" label="Scope extension origin is opaque"/>
+  <int value="29" label="Scope extension scheme is not HTTPS"/>
+  <int value="30" label="Icon src is invalid"/>
+  <int value="31" label="Icon src scheme is invalid"/>
+</enum>
+
+<!-- LINT.ThenChange(//third_party/blink/public/common/manifest/manifest_invariants.h:ManifestInvariantError) -->
+
 <enum name="NavigationCapturingDisplayMode">
   <int value="0"
       label="Opened in standalone window when display mode was standalone"/>

@@ -20,8 +20,9 @@ namespace blink {
 bool IsEmptyManifest(const mojom::Manifest& manifest) {
   static base::NoDestructor<mojom::ManifestPtr> empty_manifest_ptr_storage;
   mojom::ManifestPtr& empty_manifest = *empty_manifest_ptr_storage;
-  if (!empty_manifest)
+  if (!empty_manifest) {
     empty_manifest = mojom::Manifest::New();
+  }
   return manifest == *empty_manifest;
 }
 
@@ -41,6 +42,11 @@ bool IsDefaultManifest(const mojom::Manifest& manifest,
 bool IsDefaultManifest(const mojom::ManifestPtr& manifest,
                        const GURL& document_url) {
   return manifest && IsDefaultManifest(*manifest, document_url);
+}
+
+bool IsDefaultManifest(const Manifest& manifest, const GURL& document_url) {
+  auto default_manifest = Manifest::CreateDefault(document_url);
+  return default_manifest.has_value() && manifest == *default_manifest;
 }
 
 std::optional<blink::mojom::Manifest_TextDirection> TextDirectionFromString(
@@ -96,18 +102,24 @@ std::string DisplayModeToString(blink::mojom::DisplayMode display) {
 }
 
 blink::mojom::DisplayMode DisplayModeFromString(const std::string& display) {
-  if (base::EqualsCaseInsensitiveASCII(display, "browser"))
+  if (base::EqualsCaseInsensitiveASCII(display, "browser")) {
     return blink::mojom::DisplayMode::kBrowser;
-  if (base::EqualsCaseInsensitiveASCII(display, "minimal-ui"))
+  }
+  if (base::EqualsCaseInsensitiveASCII(display, "minimal-ui")) {
     return blink::mojom::DisplayMode::kMinimalUi;
-  if (base::EqualsCaseInsensitiveASCII(display, "standalone"))
+  }
+  if (base::EqualsCaseInsensitiveASCII(display, "standalone")) {
     return blink::mojom::DisplayMode::kStandalone;
-  if (base::EqualsCaseInsensitiveASCII(display, "fullscreen"))
+  }
+  if (base::EqualsCaseInsensitiveASCII(display, "fullscreen")) {
     return blink::mojom::DisplayMode::kFullscreen;
-  if (base::EqualsCaseInsensitiveASCII(display, "window-controls-overlay"))
+  }
+  if (base::EqualsCaseInsensitiveASCII(display, "window-controls-overlay")) {
     return blink::mojom::DisplayMode::kWindowControlsOverlay;
-  if (base::EqualsCaseInsensitiveASCII(display, "tabbed"))
+  }
+  if (base::EqualsCaseInsensitiveASCII(display, "tabbed")) {
     return blink::mojom::DisplayMode::kTabbed;
+  }
   if (base::EqualsCaseInsensitiveASCII(display, "unframed")) {
     return blink::mojom::DisplayMode::kUnframed;
   }
@@ -155,36 +167,48 @@ std::string WebScreenOrientationLockTypeToString(
 
 device::mojom::ScreenOrientationLockType WebScreenOrientationLockTypeFromString(
     const std::string& orientation) {
-  if (base::EqualsCaseInsensitiveASCII(orientation, "portrait-primary"))
+  if (base::EqualsCaseInsensitiveASCII(orientation, "portrait-primary")) {
     return device::mojom::ScreenOrientationLockType::PORTRAIT_PRIMARY;
-  if (base::EqualsCaseInsensitiveASCII(orientation, "portrait-secondary"))
+  }
+  if (base::EqualsCaseInsensitiveASCII(orientation, "portrait-secondary")) {
     return device::mojom::ScreenOrientationLockType::PORTRAIT_SECONDARY;
-  if (base::EqualsCaseInsensitiveASCII(orientation, "landscape-primary"))
+  }
+  if (base::EqualsCaseInsensitiveASCII(orientation, "landscape-primary")) {
     return device::mojom::ScreenOrientationLockType::LANDSCAPE_PRIMARY;
-  if (base::EqualsCaseInsensitiveASCII(orientation, "landscape-secondary"))
+  }
+  if (base::EqualsCaseInsensitiveASCII(orientation, "landscape-secondary")) {
     return device::mojom::ScreenOrientationLockType::LANDSCAPE_SECONDARY;
-  if (base::EqualsCaseInsensitiveASCII(orientation, "any"))
+  }
+  if (base::EqualsCaseInsensitiveASCII(orientation, "any")) {
     return device::mojom::ScreenOrientationLockType::ANY;
-  if (base::EqualsCaseInsensitiveASCII(orientation, "landscape"))
+  }
+  if (base::EqualsCaseInsensitiveASCII(orientation, "landscape")) {
     return device::mojom::ScreenOrientationLockType::LANDSCAPE;
-  if (base::EqualsCaseInsensitiveASCII(orientation, "portrait"))
+  }
+  if (base::EqualsCaseInsensitiveASCII(orientation, "portrait")) {
     return device::mojom::ScreenOrientationLockType::PORTRAIT;
-  if (base::EqualsCaseInsensitiveASCII(orientation, "natural"))
+  }
+  if (base::EqualsCaseInsensitiveASCII(orientation, "natural")) {
     return device::mojom::ScreenOrientationLockType::NATURAL;
+  }
   return device::mojom::ScreenOrientationLockType::DEFAULT;
 }
 
 std::optional<mojom::ManifestLaunchHandler::ClientMode> ClientModeFromString(
     const std::string& client_mode) {
   using ClientMode = Manifest::LaunchHandler::ClientMode;
-  if (base::EqualsCaseInsensitiveASCII(client_mode, "auto"))
+  if (base::EqualsCaseInsensitiveASCII(client_mode, "auto")) {
     return ClientMode::kAuto;
-  if (base::EqualsCaseInsensitiveASCII(client_mode, "navigate-new"))
+  }
+  if (base::EqualsCaseInsensitiveASCII(client_mode, "navigate-new")) {
     return ClientMode::kNavigateNew;
-  if (base::EqualsCaseInsensitiveASCII(client_mode, "navigate-existing"))
+  }
+  if (base::EqualsCaseInsensitiveASCII(client_mode, "navigate-existing")) {
     return ClientMode::kNavigateExisting;
-  if (base::EqualsCaseInsensitiveASCII(client_mode, "focus-existing"))
+  }
+  if (base::EqualsCaseInsensitiveASCII(client_mode, "focus-existing")) {
     return ClientMode::kFocusExisting;
+  }
   return std::nullopt;
 }
 

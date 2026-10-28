@@ -208,6 +208,7 @@ source_set("headers") {
     "logging/logging_utils.h",
     "manifest/manifest.h",
     "manifest/manifest_icon_selector.h",
+    "manifest/manifest_invariants.h",
     "manifest/manifest_util.h",
     "mediastream/media_device_id.h",
     "mediastream/media_devices.h",
