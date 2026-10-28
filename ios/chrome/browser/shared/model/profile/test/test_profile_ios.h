@@ -211,6 +211,11 @@ class TestProfileIOS final : public ProfileIOS {
     // Sets the Webkit storage identifier for test.
     Builder& SetWebkitStorageId(const base::Uuid& webkit_storage_id);
 
+    // Sets a SharedURLLoaderFactory for test.
+    Builder& SetSharedURLLoaderFactory(
+        scoped_refptr<network::SharedURLLoaderFactory>
+            shared_url_loader_factory);
+
     // Creates the TestProfileIOS using previously-set settings.
     std::unique_ptr<TestProfileIOS> Build() &&;
 
@@ -232,20 +237,22 @@ class TestProfileIOS final : public ProfileIOS {
 
     std::unique_ptr<policy::UserCloudPolicyManager> user_cloud_policy_manager_;
     std::unique_ptr<ProfilePolicyConnector> policy_connector_;
+    scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory_;
 
     TestingFactories testing_factories_;
   };
 
   // Used to create the principal TestProfileIOS.
-  TestProfileIOS(base::PassKey<Builder> pass_key,
-                 const base::FilePath& state_path,
-                 std::string_view profile_name,
-                 base::Uuid webkit_storage_id,
-                 std::unique_ptr<sync_preferences::PrefServiceSyncable> prefs,
-                 TestingFactories testing_factories,
-                 std::unique_ptr<ProfilePolicyConnector> policy_connector,
-                 std::unique_ptr<policy::UserCloudPolicyManager>
-                     user_cloud_policy_manager);
+  TestProfileIOS(
+      base::PassKey<Builder> pass_key,
+      const base::FilePath& state_path,
+      std::string_view profile_name,
+      base::Uuid webkit_storage_id,
+      std::unique_ptr<sync_preferences::PrefServiceSyncable> prefs,
+      TestingFactories testing_factories,
+      std::unique_ptr<ProfilePolicyConnector> policy_connector,
+      std::unique_ptr<policy::UserCloudPolicyManager> user_cloud_policy_manager,
+      scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory);
 
   // Used to create the incognito TestProfileIOS.
   TestProfileIOS(base::PassKey<TestProfileIOS> pass_key,

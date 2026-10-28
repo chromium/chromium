@@ -127,7 +127,8 @@ TestProfileIOS::TestProfileIOS(
     std::unique_ptr<sync_preferences::PrefServiceSyncable> prefs,
     TestingFactories testing_factories,
     std::unique_ptr<ProfilePolicyConnector> policy_connector,
-    std::unique_ptr<policy::UserCloudPolicyManager> user_cloud_policy_manager)
+    std::unique_ptr<policy::UserCloudPolicyManager> user_cloud_policy_manager,
+    scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory)
     : ProfileIOS(
           state_path,
           profile_name,
@@ -138,6 +139,7 @@ TestProfileIOS::TestProfileIOS(
       webkit_storage_id_(std::move(webkit_storage_id)),
       user_cloud_policy_manager_(std::move(user_cloud_policy_manager)),
       policy_connector_(std::move(policy_connector)),
+      test_shared_url_loader_factory_(shared_url_loader_factory),
       otr_profile_(nullptr),
       original_profile_(nullptr) {
   DCHECK(!profile_name.empty());
@@ -402,6 +404,12 @@ TestProfileIOS::Builder& TestProfileIOS::Builder::SetWebkitStorageId(
   return *this;
 }
 
+TestProfileIOS::Builder& TestProfileIOS::Builder::SetSharedURLLoaderFactory(
+    scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory) {
+  shared_url_loader_factory_ = shared_url_loader_factory;
+  return *this;
+}
+
 std::unique_ptr<TestProfileIOS> TestProfileIOS::Builder::Build() && {
   return std::move(*this).Build(base::CreateUniqueTempDirectoryScopedToTest());
 }
@@ -421,5 +429,6 @@ std::unique_ptr<TestProfileIOS> TestProfileIOS::Builder::Build(
       base::PassKey<Builder>{}, data_dir.Append(profile_name), profile_name,
       std::move(webkit_storage_id_), std::move(pref_service_),
       std::move(testing_factories_), std::move(policy_connector_),
-      std::move(user_cloud_policy_manager_));
+      std::move(user_cloud_policy_manager_),
+      std::move(shared_url_loader_factory_));
 }
