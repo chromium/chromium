@@ -206,6 +206,14 @@ void MerchantPromoCodeManager::DidShowSuggestions() {
       autofill_metrics::PromoCodeFormEvent::kPromoCodeSuggestionsShown);
 }
 
+void MerchantPromoCodeManager::LogManageOffersSelectedMetrics() {
+  if (!page_metrics_.has_logged_manage_offers_clicked) {
+    page_metrics_.has_logged_manage_offers_clicked = true;
+    autofill_metrics::LogPromoCodeFormEvent(
+        autofill_metrics::PromoCodeFormEvent::kManageOffersClicked);
+  }
+}
+
 void MerchantPromoCodeManager::Reset() {
   page_metrics_ = {};
   promo_code_form_global_ids_.clear();

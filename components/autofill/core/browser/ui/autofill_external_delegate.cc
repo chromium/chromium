@@ -77,6 +77,7 @@
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/payments_util.h"
 #include "components/autofill/core/browser/payments/save_and_fill_manager.h"
+#include "components/autofill/core/browser/single_field_fillers/payments/merchant_promo_code_manager.h"
 #include "components/autofill/core/browser/studies/hats_surveys_util.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/browser/suggestions/suggestion_hiding_reason.h"
@@ -1832,6 +1833,14 @@ void AutofillExternalDelegate::LogSuggestionAcceptedMetrics(
       autofill_field->Type().GetAddressType() == EMAIL_ADDRESS) {
     autofill_metrics::LogMergedEmailAcceptedSuggestionType(
         suggestion.type, shown_suggestion_types_);
+  }
+  if (suggestion.type == SuggestionType::kManageOffers) {
+    if (MerchantPromoCodeManager* promo_code_manager =
+            manager_->client()
+                .GetPaymentsAutofillClient()
+                ->GetMerchantPromoCodeManager()) {
+      promo_code_manager->LogManageOffersSelectedMetrics();
+    }
   }
 }
 

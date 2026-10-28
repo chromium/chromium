@@ -456,6 +456,41 @@ TEST_F(MerchantPromoCodeManagerTest,
 }
 
 TEST_F(MerchantPromoCodeManagerTest,
+       LogManageOffersSelectedMetrics_LogsOncePerPageLoad) {
+  base::HistogramTester histogram_tester;
+
+  // Selecting "Manage offers" logs the funnel event.
+  promo_manager().LogManageOffersSelectedMetrics();
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.FormEvents.PromoCode",
+      autofill_metrics::PromoCodeFormEvent::kManageOffersClicked, 1);
+
+  // Selecting "Manage offers" again on the same page does not log again.
+  promo_manager().LogManageOffersSelectedMetrics();
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.FormEvents.PromoCode",
+      autofill_metrics::PromoCodeFormEvent::kManageOffersClicked, 1);
+}
+
+TEST_F(MerchantPromoCodeManagerTest,
+       LogManageOffersSelectedMetrics_Reset_AllowsSubsequentLogging) {
+  base::HistogramTester histogram_tester;
+
+  promo_manager().LogManageOffersSelectedMetrics();
+  histogram_tester.ExpectBucketCount(
+      "Autofill.FormEvents.PromoCode",
+      autofill_metrics::PromoCodeFormEvent::kManageOffersClicked, 1);
+
+  // Resetting page load metrics allows the event to be logged again on the next
+  // click.
+  promo_manager().Reset();
+  promo_manager().LogManageOffersSelectedMetrics();
+  histogram_tester.ExpectBucketCount(
+      "Autofill.FormEvents.PromoCode",
+      autofill_metrics::PromoCodeFormEvent::kManageOffersClicked, 2);
+}
+
+TEST_F(MerchantPromoCodeManagerTest,
        OnSingleFieldSuggestionSelected_PromoSuggestion_LogsOncePerPageLoad) {
   base::HistogramTester histogram_tester;
 

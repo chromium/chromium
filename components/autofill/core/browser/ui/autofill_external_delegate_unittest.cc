@@ -2566,11 +2566,15 @@ TEST_F(AutofillExternalDelegateTest, AcceptManageLoyaltyCards) {
                                           {.multi_index = {0}});
 }
 
+// Tests that accepting "Manage offers" opens the settings page and notifies the
+// promo code manager to log metrics.
 TEST_F(AutofillExternalDelegateTest, AcceptManageOffers) {
   Suggestion manage_suggestion =
       Suggestion(u"Manage offers", SuggestionType::kManageOffers);
   EXPECT_CALL(autofill_client(),
               ShowAutofillSettings(SuggestionType::kManageOffers));
+  EXPECT_CALL(*payments_autofill_client().GetMerchantPromoCodeManager(),
+              LogManageOffersSelectedMetrics);
   external_delegate().DidAcceptSuggestion(manage_suggestion,
                                           {.multi_index = {0}});
 }

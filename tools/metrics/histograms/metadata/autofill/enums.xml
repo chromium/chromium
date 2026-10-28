@@ -4241,6 +4241,9 @@ Called by update_autofill_enums.py.-->
       label="Form submitted and promo code field contained a value (once).
              This can be compared with the autofilled metric to see how often
              users manually enter a promo code in the field"/>
+  <int value="8"
+      label="Manage offers footer in the promo code suggestions dropdown
+             clicked (once)"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/autofill/core/browser/metrics/payments/promo_code_metrics.h:AutofillPromoCodeFormEvent) -->

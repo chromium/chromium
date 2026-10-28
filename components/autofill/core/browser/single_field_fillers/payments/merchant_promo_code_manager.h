@@ -61,6 +61,10 @@ class MerchantPromoCodeManager : public AutofillManager::Observer {
   // load).
   virtual void DidShowSuggestions();
 
+  // Logs the "Manage offers" clicked funnel event when the user accepts the
+  // "Manage offers" (`kManageOffers`) suggestion (at most once per page load).
+  virtual void LogManageOffersSelectedMetrics();
+
   // Resets page-scoped metrics state. Called on navigation since
   // `MerchantPromoCodeManager` is per-tab.
   virtual void Reset();
@@ -79,6 +83,10 @@ class MerchantPromoCodeManager : public AutofillManager::Observer {
     // Indicates whether promo code suggestion filled metric has already been
     // logged for the current page load.
     bool has_logged_suggestion_filled = false;
+
+    // Indicates whether the "Manage offers" clicked metric has already been
+    // logged for the current page load.
+    bool has_logged_manage_offers_clicked = false;
 
     // Indicates whether form submitted metric has already been logged for the
     // current page load.

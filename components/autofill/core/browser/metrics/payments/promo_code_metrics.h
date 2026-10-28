@@ -55,7 +55,11 @@ enum class PromoCodeFormEvent {
   // enter a promo code in the field.
   kFormSubmittedWithPromoCodeFieldContainingValue = 7,
 
-  kMaxValue = kFormSubmittedWithPromoCodeFieldContainingValue,
+  // The "Manage offers" footer in the promo code suggestions dropdown was
+  // clicked.
+  kManageOffersClicked = 8,
+
+  kMaxValue = kManageOffersClicked,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/autofill/enums.xml:AutofillPromoCodeFormEvent)
 

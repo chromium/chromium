@@ -30,6 +30,7 @@ class MockMerchantPromoCodeManager : public MerchantPromoCodeManager {
               (const Suggestion& suggestion),
               (override));
   MOCK_METHOD(void, DidShowSuggestions, (), (override));
+  MOCK_METHOD(void, LogManageOffersSelectedMetrics, (), (override));
   MOCK_METHOD(void, Reset, (), (override));
 };
 
