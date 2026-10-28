@@ -121,6 +121,7 @@ class WrappedGraphiteTextureBacking : public ClearTrackingSharedImageBacking {
   scoped_refptr<SharedContextState> context_state_;
   std::vector<scoped_refptr<SkiaImageRepresentation::GraphiteTextureHolder>>
       texture_holders_;
+  const bool enforce_exclusive_access_;
   bool is_write_in_progress_ GUARDED_BY(lock_) = false;
   uint32_t reads_in_progress_ GUARDED_BY(lock_) = 0;
 

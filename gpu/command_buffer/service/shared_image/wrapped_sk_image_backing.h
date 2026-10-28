@@ -98,6 +98,7 @@ class WrappedSkImageBacking : public ClearTrackingSharedImageBacking {
 
   std::vector<TextureHolder> textures_;
   int surface_msaa_count_ = 0;
+  const bool enforce_exclusive_access_;
   bool is_write_in_progress_ GUARDED_BY(lock_) = false;
   uint32_t reads_in_progress_ GUARDED_BY(lock_) = 0;
 

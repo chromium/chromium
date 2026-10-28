@@ -38,6 +38,12 @@
 
 namespace gpu {
 namespace {
+
+// Kill switch for enforcing exclusive write access. Remove after M159 hits
+// stable.
+BASE_FEATURE(kWrappedGraphiteTextureBackingExclusiveAccess,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 using GraphiteTextureHolder = SkiaImageRepresentation::GraphiteTextureHolder;
 
 struct ReadPixelsContext {
@@ -159,7 +165,9 @@ WrappedGraphiteTextureBacking::WrappedGraphiteTextureBacking(
           si_info,
           si_info.format.EstimatedSizeInBytes(si_info.size),
           thread_safe),
-      context_state_(std::move(context_state)) {
+      context_state_(std::move(context_state)),
+      enforce_exclusive_access_(base::FeatureList::IsEnabled(
+          kWrappedGraphiteTextureBackingExclusiveAccess)) {
   CHECK(context_state_);
   CHECK(context_state_->graphite_shared_context());
 
@@ -452,6 +460,10 @@ WrappedGraphiteTextureBacking::GetWrappedGraphiteTextureHolders() {
 }
 
 bool WrappedGraphiteTextureBacking::BeginAccess(bool readonly) {
+  if (!enforce_exclusive_access_) {
+    return true;
+  }
+
   AutoLock auto_lock(this);
   if (is_write_in_progress_) {
     LOG(ERROR) << "Unable to begin " << (readonly ? "read" : "write")
@@ -472,6 +484,10 @@ bool WrappedGraphiteTextureBacking::BeginAccess(bool readonly) {
 }
 
 void WrappedGraphiteTextureBacking::EndAccess(bool readonly) {
+  if (!enforce_exclusive_access_) {
+    return;
+  }
+
   AutoLock auto_lock(this);
   if (readonly) {
     CHECK_GT(reads_in_progress_, 0u);
