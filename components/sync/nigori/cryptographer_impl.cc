@@ -115,9 +115,8 @@ std::string CryptographerImpl::RotateDefaultKeyByDerivation(
     const std::string& passphrase,
     const KeyDerivationParams& derivation_params) {
   std::string key_name = key_bag_.AddKey(derivation_params, passphrase);
-  if (!key_name.empty()) {
-    SelectDefaultEncryptionKey(key_name);
-  }
+  CHECK(!key_name.empty());
+  SelectDefaultEncryptionKey(key_name);
   return key_name;
 }
 

@@ -65,11 +65,9 @@ class CryptographerImpl : public Cryptographer {
 
   // Creates and registers a new key after deriving Nigori keys, and sets it as
   // the default encryption key (which causes `CanEncrypt()` to return true and
-  // re-enables the default key if it was previously invalidated). Returns the
-  // name of the key, or an empty string in case of error (in which case the
-  // default encryption key remains unchanged). Note that deriving an
-  // already-known key is not considered an error (it simply selects that key as
-  // the default encryption key).
+  // re-enables the default key if it was previously invalidated). Guaranteed to
+  // succeed and return a non-empty key name. Note that deriving an
+  // already-known key simply selects that key as the default encryption key.
   std::string RotateDefaultKeyByDerivation(
       const std::string& passphrase,
       const KeyDerivationParams& derivation_params);

@@ -7,8 +7,9 @@
 #include <utility>
 #include <vector>
 
+#include "base/check.h"
+#include "base/check_op.h"
 #include "base/logging.h"
-#include "base/notreached.h"
 #include "components/sync/model/crypto/nigori.h"
 #include "components/sync/protocol/nigori_local_data.pb.h"
 #include "components/sync/protocol/nigori_specifics.pb.h"
@@ -101,9 +102,7 @@ std::string NigoriKeyBag::AddKey(std::unique_ptr<Nigori> nigori) {
     return std::string();
   }
   const std::string key_name = nigori->GetKeyName();
-  if (key_name.empty()) {
-    NOTREACHED();
-  }
+  CHECK(!key_name.empty());
   nigori_map_.emplace(key_name, std::move(nigori));
   return key_name;
 }

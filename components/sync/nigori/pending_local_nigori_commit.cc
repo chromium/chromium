@@ -85,14 +85,8 @@ class CustomPassphraseSetter : public PendingLocalNigoriCommit {
         break;
     }
 
-    const std::string default_key_name =
-        state.cryptographer->RotateDefaultKeyByDerivation(
-            passphrase_, key_derivation_params_);
-    if (default_key_name.empty()) {
-      DLOG(ERROR) << "Failed to set encryption passphrase";
-      return false;
-    }
-
+    state.cryptographer->RotateDefaultKeyByDerivation(passphrase_,
+                                                      key_derivation_params_);
     state.pending_keystore_decryptor_token.reset();
     state.passphrase_type = NigoriSpecifics::CUSTOM_PASSPHRASE;
     state.custom_passphrase_key_derivation_params = key_derivation_params_;

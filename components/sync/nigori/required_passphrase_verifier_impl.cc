@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/check.h"
 #include "components/sync/base/custom_passphrase_bootstrap_token.h"
 #include "components/sync/model/crypto/nigori.h"
 #include "components/sync/protocol/nigori_specifics.pb.h"
@@ -28,9 +29,8 @@ bool RequiredPassphraseVerifierImpl::IsValidDecryptionPassphrase(
   }
   std::unique_ptr<Nigori> nigori = Nigori::CreateByDerivation(
       NigoriPassKey(), derivation_params_, passphrase);
-  if (!nigori) {
-    return false;
-  }
+  CHECK(nigori);
+
   std::string plaintext;
   return nigori->Decrypt(pending_keys_.blob(), &plaintext);
 }
