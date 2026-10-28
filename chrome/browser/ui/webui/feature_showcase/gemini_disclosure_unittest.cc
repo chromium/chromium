@@ -17,11 +17,11 @@ TEST(GeminiDisclosureTest, UsRegion) {
       disclosure,
       AllOf(
           Field(&GeminiDisclosure::first_paragraph,
-                u"Chats are reviewed and used to improve Google AI. Gemini is "
-                u"AI and can make mistakes. Some content may not be suitable "
-                u"for everyone. You can <a "
+                u"Chats are reviewed and used to train generative AI models. "
+                u"Gemini is AI and can make mistakes. Some content may not be "
+                u"suitable for everyone. You can <a "
                 u"href=\"https://myactivity.google.com/product/gemini\" "
-                u"target=\"_blank\">manage your activity</a>, including info "
+                u"target=\"_blank\">manage your history</a>, including info "
                 u"about your location. <a "
                 u"href=\"https://support.google.com/gemini/"
                 u"?p=activity_settings\" target=\"_blank\">Learn more about "
@@ -45,7 +45,7 @@ TEST(GeminiDisclosureTest, UsRegionManaged) {
               u"href=\"https://knowledge.workspace.google.com/admin/"
               u"generative-ai/generative-ai-in-google-workspace-privacy-hub\" "
               u"target=\"_blank\">Google Workspace data</a> will be reviewed "
-              u"or used to improve generative AI models. Gemini is AI and "
+              u"or used to train generative AI models. Gemini is AI and "
               u"can make mistakes. Some content may not be suitable for "
               u"everyone."),
           Field(&GeminiDisclosure::second_paragraph,
@@ -62,10 +62,10 @@ TEST(GeminiDisclosureTest, KrRegion) {
       disclosure,
       AllOf(
           Field(&GeminiDisclosure::first_paragraph,
-                u"Chats are reviewed and used to improve Google AI. Gemini is "
-                u"AI and can make mistakes. You can <a "
+                u"Chats are reviewed and used to train generative AI models. "
+                u"Gemini is AI and can make mistakes. You can <a "
                 u"href=\"https://myactivity.google.com/product/gemini\" "
-                u"target=\"_blank\">manage your activity</a>, including info "
+                u"target=\"_blank\">manage your history</a>, including info "
                 u"about your location. <a "
                 u"href=\"https://support.google.com/gemini/"
                 u"?p=activity_settings\" target=\"_blank\">Learn more about "
@@ -92,7 +92,7 @@ TEST(GeminiDisclosureTest, KrRegionManaged) {
               u"href=\"https://knowledge.workspace.google.com/admin/"
               u"generative-ai/generative-ai-in-google-workspace-privacy-hub\" "
               u"target=\"_blank\">Google Workspace data</a> will be reviewed "
-              u"or used to improve generative AI models. Gemini is AI and "
+              u"or used to train generative AI models. Gemini is AI and "
               u"can make mistakes."),
           Field(
               &GeminiDisclosure::second_paragraph,
@@ -111,10 +111,10 @@ TEST(GeminiDisclosureTest, RowRegion) {
       disclosure,
       AllOf(
           Field(&GeminiDisclosure::first_paragraph,
-                u"Chats are reviewed and used to improve Google AI. Gemini is "
-                u"AI and can make mistakes. You can <a "
+                u"Chats are reviewed and used to train generative AI models. "
+                u"Gemini is AI and can make mistakes. You can <a "
                 u"href=\"https://myactivity.google.com/product/gemini\" "
-                u"target=\"_blank\">manage your activity</a>, including info "
+                u"target=\"_blank\">manage your history</a>, including info "
                 u"about your location. <a "
                 u"href=\"https://support.google.com/gemini/"
                 u"?p=activity_settings\" target=\"_blank\">Learn more about "
@@ -138,7 +138,7 @@ TEST(GeminiDisclosureTest, RowRegionManaged) {
               u"href=\"https://knowledge.workspace.google.com/admin/"
               u"generative-ai/generative-ai-in-google-workspace-privacy-hub\" "
               u"target=\"_blank\">Google Workspace data</a> will be reviewed "
-              u"or used to improve generative AI models. Gemini is AI and "
+              u"or used to train generative AI models. Gemini is AI and "
               u"can make mistakes."),
           Field(&GeminiDisclosure::second_paragraph,
                 u"<a href=\"https://policies.google.com/terms\" "

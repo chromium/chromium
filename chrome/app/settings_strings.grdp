@@ -1048,11 +1048,11 @@
     <message name="IDS_SETTINGS_CLEAR_BROWSING_DATA_MORE" desc="Label of the 'More' chip in the time picker in the 'Delete browsing data' dialog. Clicking on this chip will show a menu with more time period options for deleting browsing data.">
       More
     </message>
-    <message name="IDS_SETTINGS_MANAGE_IN_YOUR_GEMINI_APPS_ACTIVITY" desc="Description for the Gemini Apps Activity linkout.">
-      Manage your Gemini Apps activity
+    <message name="IDS_SETTINGS_MANAGE_IN_YOUR_GEMINI_APPS_ACTIVITY" desc="Description for the Gemini history linkout.">
+      Manage your Gemini history
   </message>
-  <message name="IDS_SETTINGS_GEMINI_APPS_ACTIVITY" desc="Title for the Gemini Apps Activity section in Other Data.">
-      Gemini Apps activity
+  <message name="IDS_SETTINGS_GEMINI_APPS_ACTIVITY" desc="Title for the Gemini history section in Other Data.">
+      Gemini history
   </message>
     <message name="IDS_SETTINGS_DELETE_DATA_FROM_DEVICE" desc="This is the label for the primary button on the 'Delete browsing data' dialog. Clicking on this will trigger the deletion. This is the label shown when account data cannot be cleared, for example: the user is signed out. It indicates that the deletion will only affect data stored on this device and will not affect synced data.">
       Delete from this device
