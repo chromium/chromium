@@ -13,6 +13,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "base/types/optional_ref.h"
+#include "cc/input/browser_controls_animation.h"
 #include "cc/input/browser_controls_offset_tag_modifications.h"
 #include "cc/input/browser_controls_snap_animation_controller.h"
 #include "cc/input/browser_controls_snap_hint.h"
@@ -32,12 +33,6 @@ class BrowserControlsOffsetManagerClient;
 // Manages the position of the browser controls.
 class CC_EXPORT BrowserControlsOffsetManager {
  public:
-  enum class AnimationDirection {
-    kNoAnimation,
-    kShowingControls,
-    kHidingControls
-  };
-
   static std::unique_ptr<BrowserControlsOffsetManager> Create(
       BrowserControlsOffsetManagerClient* client,
       float controls_show_threshold,
@@ -104,8 +99,8 @@ class CC_EXPORT BrowserControlsOffsetManager {
   bool HasAnimation();
   bool IsAnimatingToShowControls() const {
     return top_controls_animation_.IsInitialized() &&
-           top_controls_animation_.Direction() ==
-               AnimationDirection::kShowingControls;
+           top_controls_animation_.direction() ==
+               BrowserControlsAnimation::Direction::kShowingControls;
   }
 
   // See UpdateBrowserControlsState in
@@ -185,9 +180,7 @@ class CC_EXPORT BrowserControlsOffsetManager {
                                bool in_viz_process = false);
 
  private:
-  class Animation;
-
-  void SetupAnimation(AnimationDirection direction,
+  void SetupAnimation(BrowserControlsAnimation::Direction direction,
                       int64_t duration_ms,
                       gfx::Tween::Type tween_type = gfx::Tween::LINEAR);
 
@@ -203,7 +196,7 @@ class CC_EXPORT BrowserControlsOffsetManager {
   float OldTopControlsMinShownRatio();
   float OldBottomControlsMinShownRatio();
   void UpdateOldBrowserControlsParams();
-  void InitAnimationForHeightChange(Animation* animation,
+  void InitAnimationForHeightChange(BrowserControlsAnimation* animation,
                                     float start_ratio,
                                     float stop_ratio);
   void SetTopMinHeightOffsetAnimationRange(float from, float to);
@@ -284,71 +277,8 @@ class CC_EXPORT BrowserControlsOffsetManager {
 
   BrowserControlsOffsetTagModifications offset_tag_modifications_;
 
-  // Class that holds and manages the state of the controls animations.
-  class Animation {
-   public:
-    Animation();
-
-    // Whether the animation is initialized with a direction and start and stop
-    // values.
-    bool IsInitialized() const { return initialized_; }
-    AnimationDirection Direction() const { return direction_; }
-    void Initialize(AnimationDirection direction,
-                    float start_value,
-                    float stop_value,
-                    int64_t duration,
-                    bool jump_to_end_on_reset,
-                    gfx::Tween::Type tween_type);
-    // Returns the animated value for the given monotonic time tick if the
-    // animation is initialized. Otherwise, returns |std::nullopt|.
-    std::optional<float> Tick(base::TimeTicks monotonic_time);
-    // Set the minimum and maximum values the animation can have.
-    void SetBounds(float min, float max);
-    // Reset the properties. If |skip_to_end_on_reset_| is false, this function
-    // will return |std::nullopt|. Otherwise, it will return the end value
-    // (clamped to min-max).
-    std::optional<float> Reset();
-
-    // Returns the value the animation will end on. This will be the stop_value
-    // passed to the constructor clamped by the currently configured bounds.
-    float FinalValue();
-
-    // Return the bounds.
-    float min_value() { return min_value_; }
-    float max_value() { return max_value_; }
-
-    bool jump_to_end_on_reset() { return jump_to_end_on_reset_; }
-
-   private:
-    bool IsComplete(float value);
-
-    // Whether the animation is running.
-    bool started_ = false;
-    // Whether the animation is initialized by setting start and stop time and
-    // values.
-    bool initialized_ = false;
-    AnimationDirection direction_ = AnimationDirection::kNoAnimation;
-    // Monotonic start and stop times.
-    base::TimeTicks start_time_;
-    base::TimeTicks stop_time_;
-    // Animation duration.
-    base::TimeDelta duration_;
-    // Start and stop values.
-    float start_value_ = 0.0f;
-    float stop_value_ = 0.0f;
-    // Minimum and maximum values the animation can have, used to decide if the
-    // animation is complete.
-    float min_value_ = 0.0f;
-    float max_value_ = 1.0f;
-    // Whether to fast-forward to end when reset. It is still BCOM's
-    // responsibility to actually set the shown ratios using the value returned
-    // by ::Reset().
-    bool jump_to_end_on_reset_ = false;
-    gfx::Tween::Type tween_type_ = gfx::Tween::LINEAR;
-  };
-
-  Animation top_controls_animation_;
-  Animation bottom_controls_animation_;
+  BrowserControlsAnimation top_controls_animation_;
+  BrowserControlsAnimation bottom_controls_animation_;
 
   std::optional<BrowserControlsSnapAnimationController> snap_controller_;
 };
