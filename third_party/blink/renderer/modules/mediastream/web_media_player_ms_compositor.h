@@ -53,6 +53,21 @@ class WebMediaPlayerMS;
 MODULES_EXPORT BASE_DECLARE_FEATURE(
     kWebRtcUseRtpTimestampForPreferredRenderInterval);
 
+// When enabled, |total_frame_count_| (reported as totalVideoFrames) is
+// incremented under |current_frame_lock_| at the point where a frame's fate is
+// decided, i.e. when it becomes |current_frame_| on the compositor thread or
+// when it is discarded without being shown (on whichever thread resets the
+// rendering buffer), instead of when it is enqueued on the media thread. A
+// main-thread reader that observes a larger count then also observes the newer
+// frame. The flag also changes the buffer-reset path in EnqueueFrame(), which
+// both enqueues the frame in the rendering buffer and posts it to the
+// compositor thread: the posted task ignores the frame if the algorithm has
+// presented or discarded it in the meantime, instead of re-presenting it over a
+// newer frame (and counting it twice). Frames delivered while no algorithm is
+// in use are presented as before, including a frame the source delivers twice.
+// TODO(b/567266879): Remove in M161 if no regressions are reported.
+MODULES_EXPORT BASE_DECLARE_FEATURE(kMediaStreamCountFramesWhenPresented);
+
 // This class is designed to handle the work load on compositor thread for
 // WebMediaPlayerMS. It will be instantiated on the main thread, but destroyed
 // on the thread holding the last reference.
@@ -231,10 +246,24 @@ class MODULES_EXPORT WebMediaPlayerMSCompositor
 
   // The use of std::vector here is OK because this method is bound into a
   // base::OnceCallback instance, and passed to media::VideoRendererAlgorithm
-  // ctor.
+  // ctor. Every call into |rendering_frame_buffer_| that can invoke it holds
+  // |current_frame_lock_|.
   bool MapTimestampsToRenderTimeTicks(
       const std::vector<base::TimeDelta>& timestamps,
-      std::vector<base::TimeTicks>* wall_clock_times);
+      std::vector<base::TimeTicks>* wall_clock_times)
+      EXCLUSIVE_LOCKS_REQUIRED(current_frame_lock_);
+
+  // Adds |frame| to |total_frame_count_| and remembers its id as the most
+  // recently presented frame. Called right before the frame becomes
+  // |current_frame_|, so that every SetCurrentFrame() of a source frame adds
+  // one to the total (keeping total >= dropped).
+  void CountPresentedFrame(const media::VideoFrame& frame)
+      EXCLUSIVE_LOCKS_REQUIRED(current_frame_lock_);
+
+  // Clears |pending_frames_info_| and adds the entries that were never
+  // presented to |total_frame_count_|. Returns that number. Called wherever
+  // |rendering_frame_buffer_| is reset or destroyed with frames still queued.
+  size_t DiscardPendingFrames() EXCLUSIVE_LOCKS_REQUIRED(current_frame_lock_);
 
   // For algorithm enabled case only: given the render interval, call
   // SetCurrentFrame() if a new frame is available.
@@ -245,12 +274,17 @@ class MODULES_EXPORT WebMediaPlayerMSCompositor
 
   // For algorithm disabled case only: call SetCurrentFrame() with the current
   // frame immediately. |video_frame_provider_client_| gets notified about the
-  // new frame with a DidReceiveFrame() call.
+  // new frame with a DidReceiveFrame() call. |queued_in_buffer| is true when
+  // EnqueueFrame() also enqueued |frame| in |rendering_frame_buffer_| (the
+  // buffer-reset path); the posted task then skips the frame if the algorithm
+  // has presented or discarded it in the meantime.
   void RenderWithoutAlgorithm(scoped_refptr<media::VideoFrame> frame,
-                              bool is_copy);
+                              bool is_copy,
+                              bool queued_in_buffer);
   void RenderWithoutAlgorithmOnCompositor(
       scoped_refptr<media::VideoFrame> frame,
-      bool is_copy);
+      bool is_copy,
+      bool queued_in_buffer);
 
   // Update |current_frame_| and |dropped_frame_count_|
   void SetCurrentFrame(
@@ -308,7 +342,8 @@ class MODULES_EXPORT WebMediaPlayerMSCompositor
   // reference but media::VideoFrame is a thread-safe ref-pointer. It is
   // however read on the compositor and main thread so locking is required
   // around all modifications and all reads on the any thread.
-  scoped_refptr<media::VideoFrame> current_frame_;
+  scoped_refptr<media::VideoFrame> current_frame_
+      GUARDED_BY(current_frame_lock_);
 
   // |current_metadata_| is the pipeline metadata extracted from the
   // |current_frame_|.
@@ -332,8 +367,20 @@ class MODULES_EXPORT WebMediaPlayerMSCompositor
   base::TimeDelta last_render_length_ GUARDED_BY(current_frame_lock_);
   base::TimeTicks last_deadline_min_ GUARDED_BY(current_frame_lock_);
 
-  size_t total_frame_count_;
-  size_t dropped_frame_count_;
+  // Counters behind HTMLVideoElement.getVideoPlaybackQuality(). With
+  // kMediaStreamCountFramesWhenPresented, a frame is added to
+  // |total_frame_count_| exactly once: when it becomes |current_frame_|, or
+  // when it is discarded without ever becoming current. Without the feature,
+  // every frame is counted in EnqueueFrame().
+  size_t total_frame_count_ GUARDED_BY(current_frame_lock_);
+  size_t dropped_frame_count_ GUARDED_BY(current_frame_lock_);
+
+  // The unique id of the frame most recently counted as presented by
+  // CountPresentedFrame(). Not updated by OnContextLost(), whose black frame
+  // is not counted, nor by ReplaceCurrentFrameWithACopy(), so it stays
+  // comparable with the ids in |pending_frames_info_|.
+  std::optional<media::VideoFrame::ID> last_presented_frame_id_
+      GUARDED_BY(current_frame_lock_);
 
   // Used to compute harmonic FPS for UMA metrics.
   HarmonicFramerateEstimator harmonic_framerate_estimator_;
@@ -391,7 +438,8 @@ class MODULES_EXPORT WebMediaPlayerMSCompositor
   cc::UpdateSubmissionStateCB update_submission_state_callback_;
 
   // |current_frame_lock_| protects |current_frame_|, |rendering_frame_buffer_|,
-  // |dropped_frame_count_|, |current_metadata_| and |render_started_|.
+  // |pending_frames_info_|, |total_frame_count_|, |dropped_frame_count_|,
+  // |last_presented_frame_id_|, |current_metadata_| and |render_started_|.
   base::Lock current_frame_lock_;
 
   base::WeakPtr<WebMediaPlayerMSCompositor> weak_this_;

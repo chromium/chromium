@@ -10,6 +10,7 @@
 #include <memory>
 #include <numeric>
 #include <optional>
+#include <utility>
 #include <vector>
 
 #include "base/functional/callback_forward.h"
@@ -22,6 +23,8 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "cc/layers/video_frame_provider.h"
+#include "gpu/command_buffer/client/client_shared_image.h"
+#include "gpu/command_buffer/client/test_shared_image_interface.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_transformation.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -45,6 +48,7 @@ using ::testing::_;
 using ::testing::ElementsAre;
 using ::testing::IsEmpty;
 using ::testing::Not;
+using ::testing::Pair;
 using ::testing::Return;
 
 constexpr double ComputeHarmonicFrameRate(
@@ -524,6 +528,378 @@ TEST_F(WebMediaPlayerMSCompositorSubmitterTest,
   auto metadata = compositor_->GetLastPresentedFrameMetadata();
   ASSERT_NE(metadata, nullptr);
   EXPECT_EQ(metadata->expected_display_time, adaptive_time);
+}
+
+// Tests for total_frame_count() / dropped_frame_count(), which back
+// HTMLVideoElement.getVideoPlaybackQuality(). With
+// kMediaStreamCountFramesWhenPresented the total must never be observable
+// before GetCurrentFrame() returns the frame that was counted.
+//
+// The feature is enabled through a base class listed first so that the
+// FeatureList is swapped before the fixture's task environment and platform
+// support start any threads; a thread that starts while the swap happens can
+// crash in FeatureList::IsEnabled().
+class WithCountFramesWhenPresented {};
+
+class WebMediaPlayerMSCompositorFrameCountTest
+    : public WithCountFramesWhenPresented,
+      public WebMediaPlayerMSCompositorSubmitterTest {
+ public:
+  static constexpr base::TimeDelta kStep = base::Milliseconds(16);
+
+  void Drain() {
+    base::RunLoop drain;
+    main_thread_->PostTask(FROM_HERE, drain.QuitClosure());
+    drain.Run();
+  }
+
+  // Frames enqueued into the rendering algorithm need distinct timestamps (it
+  // drops frames less than 1 ms apart) and a reference_time.
+  scoped_refptr<media::VideoFrame> CreateAlgorithmFrame(
+      base::TimeTicks reference_time,
+      int index) {
+    auto frame = media::VideoFrame::CreateBlackFrame(gfx::Size(8, 8));
+    frame->set_timestamp(kStep * index);
+    frame->metadata().reference_time = reference_time;
+    return frame;
+  }
+
+  // Starts rendering with the algorithm enabled and primes the deadline state
+  // so that the next EnqueueFrame() does not take the update-overdue reset
+  // path. Returns the primed "now".
+  base::TimeTicks StartAlgorithmRendering() {
+    Initialize(/*render_with_algorithm=*/true);
+    compositor_->StartRendering();
+    const base::TimeTicks now = base::TimeTicks::Now();
+    EXPECT_TRUE(PollUntilFrameNeedsPaint(now, now + kStep));
+    return now;
+  }
+
+  // (total_frame_count, dropped_frame_count), for EXPECT_THAT(..., Pair()).
+  std::pair<size_t, size_t> Counts() {
+    return {compositor_->total_frame_count(),
+            compositor_->dropped_frame_count()};
+  }
+
+ private:
+  base::test::ScopedFeatureList features_{kMediaStreamCountFramesWhenPresented};
+};
+
+TEST_F(WebMediaPlayerMSCompositorFrameCountTest,
+       NoAlgorithmCountsFrameWhenItBecomesCurrent) {
+  Initialize(/*render_with_algorithm=*/false);
+  compositor_->StartRendering();
+  Drain();
+
+  auto frame = CreateTestFrame();
+  compositor_->EnqueueFrame(frame, /*is_copy=*/false);
+  // The frame is posted to the compositor task runner but not yet current.
+  EXPECT_THAT(Counts(), Pair(0u, 0u));
+  EXPECT_EQ(compositor_->GetCurrentFrame(), nullptr);
+
+  Drain();
+  EXPECT_THAT(Counts(), Pair(1u, 0u));
+  EXPECT_EQ(compositor_->GetCurrentFrame(), frame);
+}
+
+// Without an algorithm every delivered frame is presented, also one the source
+// delivers twice (a canvas capture refresh frame is the same VideoFrame as the
+// previous one). Each presentation adds one to the total.
+TEST_F(WebMediaPlayerMSCompositorFrameCountTest,
+       NoAlgorithmPresentsRedeliveredFrame) {
+  Initialize(/*render_with_algorithm=*/false);
+  compositor_->StartRendering();
+  Drain();
+
+  auto frame = CreateTestFrame();
+  compositor_->EnqueueFrame(frame, /*is_copy=*/false);
+  Drain();
+  EXPECT_THAT(Counts(), Pair(1u, 0u));
+  compositor_->PutCurrentFrame();
+
+  compositor_->EnqueueFrame(frame, /*is_copy=*/false);
+  Drain();
+  EXPECT_THAT(Counts(), Pair(2u, 0u));
+  EXPECT_EQ(compositor_->GetCurrentFrame(), frame);
+  EXPECT_EQ(compositor_->GetLastPresentedFrameMetadata()->presented_frames, 2u);
+}
+
+TEST_F(WebMediaPlayerMSCompositorFrameCountTest,
+       AlgorithmCountsFrameWhenRendered) {
+  const base::TimeTicks now = StartAlgorithmRendering();
+
+  auto frame1 = CreateAlgorithmFrame(now + kStep, 1);
+  auto frame2 = CreateAlgorithmFrame(now + kStep * 2, 2);
+  compositor_->EnqueueFrame(frame1, /*is_copy=*/false);
+  compositor_->EnqueueFrame(frame2, /*is_copy=*/false);
+  EXPECT_THAT(Counts(), Pair(0u, 0u));
+  EXPECT_EQ(compositor_->GetCurrentFrame(), nullptr);
+
+  compositor_->UpdateCurrentFrame(now + kStep, now + kStep * 2);
+  EXPECT_THAT(Counts(), Pair(1u, 0u));
+  EXPECT_EQ(compositor_->GetCurrentFrame(), frame1);
+  // Mark the frame as painted so that replacing it does not count as a drop.
+  compositor_->PutCurrentFrame();
+
+  compositor_->UpdateCurrentFrame(now + kStep * 2, now + kStep * 3);
+  EXPECT_THAT(Counts(), Pair(2u, 0u));
+  EXPECT_EQ(compositor_->GetCurrentFrame(), frame2);
+  compositor_->PutCurrentFrame();
+
+  // Rendering again with no new frame changes nothing.
+  compositor_->UpdateCurrentFrame(now + kStep * 3, now + kStep * 4);
+  EXPECT_THAT(Counts(), Pair(2u, 0u));
+}
+
+TEST_F(WebMediaPlayerMSCompositorFrameCountTest,
+       AlgorithmCountsSkippedFramesInTotal) {
+  const base::TimeTicks now = StartAlgorithmRendering();
+
+  constexpr int kFrames = 4;
+  for (int i = 1; i <= kFrames; ++i) {
+    compositor_->EnqueueFrame(CreateAlgorithmFrame(now + kStep * i, i),
+                              /*is_copy=*/false);
+  }
+  EXPECT_THAT(Counts(), Pair(0u, 0u));
+
+  // Render far enough ahead that the algorithm skips to the last frame.
+  // Whatever it reports as dropped, every frame ends up in the total once.
+  for (int i = kFrames; i <= kFrames + 6; ++i) {
+    compositor_->UpdateCurrentFrame(now + kStep * i, now + kStep * (i + 1));
+  }
+  EXPECT_EQ(compositor_->total_frame_count(), static_cast<size_t>(kFrames));
+  EXPECT_GE(compositor_->total_frame_count(),
+            compositor_->dropped_frame_count());
+}
+
+TEST_F(WebMediaPlayerMSCompositorFrameCountTest,
+       BufferResetCountsDiscardedFramesInTotal) {
+  const base::TimeTicks now = StartAlgorithmRendering();
+
+  for (int i = 1; i <= 3; ++i) {
+    compositor_->EnqueueFrame(CreateAlgorithmFrame(now + kStep * i, i),
+                              /*is_copy=*/false);
+  }
+  EXPECT_THAT(Counts(), Pair(0u, 0u));
+
+  // Let the last deadline fall into the past; the next enqueue resets the
+  // buffer. None of the three queued frames was ever current, so all three are
+  // discarded.
+  task_environment_.FastForwardBy(base::Seconds(1));
+  auto frame4 = CreateAlgorithmFrame(base::TimeTicks::Now(), 4);
+  compositor_->EnqueueFrame(frame4, /*is_copy=*/false);
+  EXPECT_THAT(Counts(), Pair(3u, 3u));
+  EXPECT_EQ(compositor_->GetCurrentFrame(), nullptr);
+
+  // The reset path presents |frame4| without the algorithm.
+  Drain();
+  EXPECT_THAT(Counts(), Pair(4u, 3u));
+  EXPECT_EQ(compositor_->GetCurrentFrame(), frame4);
+
+  // |frame4| was also enqueued into the algorithm; rendering it again must not
+  // count it twice.
+  const base::TimeTicks later = base::TimeTicks::Now();
+  compositor_->UpdateCurrentFrame(later, later + kStep);
+  EXPECT_THAT(Counts(), Pair(4u, 3u));
+  EXPECT_EQ(compositor_->GetCurrentFrame(), frame4);
+}
+
+// A second buffer reset discards the frame the first reset posted to the
+// compositor thread before that task runs. The posted task must not count or
+// show it.
+TEST_F(WebMediaPlayerMSCompositorFrameCountTest,
+       SecondBufferResetBeforePostedFrameIsShown) {
+  const base::TimeTicks now = StartAlgorithmRendering();
+
+  for (int i = 1; i <= 3; ++i) {
+    compositor_->EnqueueFrame(CreateAlgorithmFrame(now + kStep * i, i),
+                              /*is_copy=*/false);
+  }
+  task_environment_.FastForwardBy(base::Seconds(1));
+  auto frame4 = CreateAlgorithmFrame(base::TimeTicks::Now(), 4);
+  compositor_->EnqueueFrame(frame4, /*is_copy=*/false);
+  EXPECT_THAT(Counts(), Pair(3u, 3u));
+
+  // |frame4| is now queued and posted. An out-of-order enqueue (older
+  // timestamp) resets the buffer again and discards it. (Not another
+  // FastForwardBy(), which would run the posted task.)
+  auto frame5 = CreateAlgorithmFrame(base::TimeTicks::Now(), 1);
+  compositor_->EnqueueFrame(frame5, /*is_copy=*/false);
+  EXPECT_THAT(Counts(), Pair(4u, 4u));
+
+  // Both posted tasks run; only |frame5| is shown and counted.
+  Drain();
+  EXPECT_THAT(Counts(), Pair(5u, 4u));
+  EXPECT_EQ(compositor_->GetCurrentFrame(), frame5);
+}
+
+// The algorithm presents the posted frame and then a newer one before the
+// posted task runs. The posted task must not count the frame again or replace
+// the newer frame with it.
+TEST_F(WebMediaPlayerMSCompositorFrameCountTest,
+       AlgorithmMovesPastPostedFrameBeforeItIsShown) {
+  const base::TimeTicks now = StartAlgorithmRendering();
+
+  for (int i = 1; i <= 3; ++i) {
+    compositor_->EnqueueFrame(CreateAlgorithmFrame(now + kStep * i, i),
+                              /*is_copy=*/false);
+  }
+  task_environment_.FastForwardBy(base::Seconds(1));
+  const base::TimeTicks later = base::TimeTicks::Now();
+  auto frame4 = CreateAlgorithmFrame(later, 4);
+  compositor_->EnqueueFrame(frame4, /*is_copy=*/false);
+  EXPECT_THAT(Counts(), Pair(3u, 3u));
+
+  // Render |frame4| through the algorithm before its posted task runs, then
+  // a newer frame.
+  compositor_->UpdateCurrentFrame(later, later + kStep);
+  EXPECT_THAT(Counts(), Pair(4u, 3u));
+  EXPECT_EQ(compositor_->GetCurrentFrame(), frame4);
+  compositor_->PutCurrentFrame();
+  auto frame5 = CreateAlgorithmFrame(later + kStep, 5);
+  compositor_->EnqueueFrame(frame5, /*is_copy=*/false);
+  compositor_->UpdateCurrentFrame(later + kStep, later + kStep * 2);
+  EXPECT_THAT(Counts(), Pair(5u, 3u));
+  EXPECT_EQ(compositor_->GetCurrentFrame(), frame5);
+  compositor_->PutCurrentFrame();
+
+  // The posted task for |frame4| finally runs.
+  Drain();
+  EXPECT_THAT(Counts(), Pair(5u, 3u));
+  EXPECT_EQ(compositor_->GetCurrentFrame(), frame5);
+}
+
+// An end-of-stream frame drops the rendering buffer and discards the frame the
+// previous reset posted to the compositor thread, before that task runs. The
+// discard counts the frame; the posted task must not count or show it.
+TEST_F(WebMediaPlayerMSCompositorFrameCountTest,
+       EndOfStreamAfterBufferResetDoesNotRecountPostedFrame) {
+  const base::TimeTicks now = StartAlgorithmRendering();
+
+  for (int i = 1; i <= 3; ++i) {
+    compositor_->EnqueueFrame(CreateAlgorithmFrame(now + kStep * i, i),
+                              /*is_copy=*/false);
+  }
+  task_environment_.FastForwardBy(base::Seconds(1));
+  auto frame4 = CreateAlgorithmFrame(base::TimeTicks::Now(), 4);
+  compositor_->EnqueueFrame(frame4, /*is_copy=*/false);
+  EXPECT_THAT(Counts(), Pair(3u, 3u));
+
+  auto end_of_stream = CreateAlgorithmFrame(base::TimeTicks::Now(), 5);
+  end_of_stream->metadata().end_of_stream = true;
+  compositor_->EnqueueFrame(end_of_stream, /*is_copy=*/false);
+  EXPECT_THAT(Counts(), Pair(4u, 3u));
+
+  // Both posted tasks run; only the end-of-stream frame is shown and counted.
+  Drain();
+  EXPECT_THAT(Counts(), Pair(5u, 3u));
+  EXPECT_EQ(compositor_->GetCurrentFrame(), end_of_stream);
+}
+
+// Frames still queued when rendering stops are never shown but still count
+// towards the total, as they did when counted at enqueue.
+TEST_F(WebMediaPlayerMSCompositorFrameCountTest,
+       StopRenderingCountsQueuedFrames) {
+  const base::TimeTicks now = StartAlgorithmRendering();
+
+  for (int i = 1; i <= 3; ++i) {
+    compositor_->EnqueueFrame(CreateAlgorithmFrame(now + kStep * i, i),
+                              /*is_copy=*/false);
+  }
+  compositor_->UpdateCurrentFrame(now + kStep, now + kStep * 2);
+  EXPECT_THAT(Counts(), Pair(1u, 0u));
+  compositor_->PutCurrentFrame();
+
+  compositor_->StopRendering();
+  Drain();
+  EXPECT_THAT(Counts(), Pair(3u, 0u));
+}
+
+TEST_F(WebMediaPlayerMSCompositorFrameCountTest,
+       PauseAndResumeDoesNotCountStaleEntries) {
+  const base::TimeTicks now = StartAlgorithmRendering();
+
+  auto frame1 = CreateAlgorithmFrame(now + kStep, 1);
+  compositor_->EnqueueFrame(frame1, /*is_copy=*/false);
+  compositor_->UpdateCurrentFrame(now + kStep, now + kStep * 2);
+  EXPECT_THAT(Counts(), Pair(1u, 0u));
+  EXPECT_EQ(compositor_->GetCurrentFrame(), frame1);
+  compositor_->PutCurrentFrame();
+
+  compositor_->StopRendering();
+  Drain();
+  compositor_->StartRendering();
+  Drain();
+  const base::TimeTicks resumed = base::TimeTicks::Now();
+  // Prime the deadline state again; nothing new is pending, so the return
+  // value is false.
+  compositor_->UpdateCurrentFrame(resumed, resumed + kStep);
+
+  auto frame2 = CreateAlgorithmFrame(resumed + kStep, 2);
+  compositor_->EnqueueFrame(frame2, /*is_copy=*/false);
+  EXPECT_THAT(Counts(), Pair(1u, 0u));
+  compositor_->UpdateCurrentFrame(resumed + kStep, resumed + kStep * 2);
+  EXPECT_THAT(Counts(), Pair(2u, 0u));
+  EXPECT_EQ(compositor_->GetCurrentFrame(), frame2);
+}
+
+TEST_F(WebMediaPlayerMSCompositorFrameCountTest,
+       AlgorithmCountsFrameDroppedAtEnqueue) {
+  const base::TimeTicks now = StartAlgorithmRendering();
+
+  auto frame1 = CreateAlgorithmFrame(now + kStep, 1);
+  compositor_->EnqueueFrame(frame1, /*is_copy=*/false);
+  // Same timestamp as |frame1|: VideoRendererAlgorithm::EnqueueFrame() drops
+  // it and reports it in the next Render().
+  compositor_->EnqueueFrame(CreateAlgorithmFrame(now + kStep, 1),
+                            /*is_copy=*/false);
+  EXPECT_THAT(Counts(), Pair(1u, 0u));
+
+  compositor_->UpdateCurrentFrame(now + kStep, now + kStep * 2);
+  EXPECT_THAT(Counts(), Pair(2u, 1u));
+  EXPECT_EQ(compositor_->GetCurrentFrame(), frame1);
+}
+
+TEST_F(WebMediaPlayerMSCompositorFrameCountTest,
+       ContextLostDoesNotCountBlackFrameOrRecountPrevious) {
+  const base::TimeTicks now = StartAlgorithmRendering();
+
+  // OnContextLost() only replaces frames backed by a shared image.
+  auto test_sii = base::MakeRefCounted<gpu::TestSharedImageInterface>();
+  const gfx::Size frame_size(8, 8);
+  auto create_gpu_frame = [&](int index) {
+    auto shared_image = test_sii->CreateSharedImage(
+        {viz::MultiPlaneFormat::kNV12, frame_size, gfx::ColorSpace(),
+         gpu::SharedImageUsageSet(gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY |
+                                  gpu::SHARED_IMAGE_USAGE_DISPLAY_READ),
+         "WebMediaPlayerMSCompositorTest"},
+        gpu::kNullSurfaceHandle, gfx::BufferUsage::GPU_READ);
+    auto frame = media::VideoFrame::WrapMappableSharedImage(
+        std::move(shared_image), test_sii->GenVerifiedSyncToken(),
+        base::NullCallback(), gfx::Rect(frame_size), frame_size, kStep * index);
+    frame->metadata().reference_time = now + kStep * index;
+    return frame;
+  };
+
+  auto frame1 = create_gpu_frame(1);
+  auto frame2 = create_gpu_frame(2);
+  compositor_->EnqueueFrame(frame1, /*is_copy=*/false);
+  compositor_->EnqueueFrame(frame2, /*is_copy=*/false);
+  compositor_->UpdateCurrentFrame(now + kStep, now + kStep * 2);
+  EXPECT_THAT(Counts(), Pair(1u, 0u));
+  EXPECT_EQ(compositor_->GetCurrentFrame(), frame1);
+  compositor_->PutCurrentFrame();
+
+  compositor_->OnContextLost();
+  EXPECT_NE(compositor_->GetCurrentFrame(), frame1);
+  EXPECT_THAT(Counts(), Pair(1u, 0u));
+  compositor_->PutCurrentFrame();
+
+  // |frame1| leaves the algorithm when |frame2| is rendered; it was already
+  // counted and must not be counted again as discarded.
+  compositor_->UpdateCurrentFrame(now + kStep * 2, now + kStep * 3);
+  EXPECT_THAT(Counts(), Pair(2u, 0u));
+  EXPECT_EQ(compositor_->GetCurrentFrame(), frame2);
 }
 
 class WebMediaPlayerMSCompositorPreferredIntervalTest : public testing::Test {

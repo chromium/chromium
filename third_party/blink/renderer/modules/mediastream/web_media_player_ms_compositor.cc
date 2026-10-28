@@ -52,7 +52,14 @@ namespace blink {
 BASE_FEATURE(kWebRtcUseRtpTimestampForPreferredRenderInterval,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kMediaStreamCountFramesWhenPresented,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 namespace {
+
+bool CountFramesWhenPresented() {
+  return base::FeatureList::IsEnabled(kMediaStreamCountFramesWhenPresented);
+}
 
 // 90 kHz is the standard RTP clock frequency for all current codecs in WebRTC.
 constexpr size_t kRtpFrequencyKilohertz = 90;
@@ -545,7 +552,14 @@ void WebMediaPlayerMSCompositor::EnqueueFrame(
   base::AutoLock auto_lock(current_frame_lock_);
   TRACE_EVENT_INSTANT("media", "WebMediaPlayerMSCompositor::EnqueueFrame",
                       "Timestamp", frame->timestamp().InMicroseconds());
-  ++total_frame_count_;
+  // With kMediaStreamCountFramesWhenPresented the frame is counted when it
+  // becomes |current_frame_| (CountPresentedFrame()) or when it is discarded
+  // without ever becoming current, so that a main-thread reader of
+  // total_frame_count() never sees the count advance before GetCurrentFrame()
+  // returns the new frame.
+  if (!CountFramesWhenPresented()) {
+    ++total_frame_count_;
+  }
 
   if (rtp_render_interval_estimator_ &&
       frame->metadata().rtp_timestamp.has_value()) {
@@ -556,14 +570,17 @@ void WebMediaPlayerMSCompositor::EnqueueFrame(
 
   // With algorithm off, just let |current_frame_| hold the incoming |frame|.
   if (!rendering_frame_buffer_) {
-    RenderWithoutAlgorithm(std::move(frame), is_copy);
+    RenderWithoutAlgorithm(std::move(frame), is_copy,
+                           /*queued_in_buffer=*/false);
     return;
   }
 
   // This is a signal frame saying that the stream is stopped.
   if (frame->metadata().end_of_stream) {
     rendering_frame_buffer_.reset();
-    RenderWithoutAlgorithm(std::move(frame), is_copy);
+    DiscardPendingFrames();
+    RenderWithoutAlgorithm(std::move(frame), is_copy,
+                           /*queued_in_buffer=*/false);
     return;
   }
 
@@ -581,8 +598,9 @@ void WebMediaPlayerMSCompositor::EnqueueFrame(
     DLOG(WARNING) << "Incoming VideoFrames have no reference_time, "
                      "switching off super sophisticated rendering algorithm";
     rendering_frame_buffer_.reset();
-    pending_frames_info_.clear();
-    RenderWithoutAlgorithm(std::move(frame), is_copy);
+    DiscardPendingFrames();
+    RenderWithoutAlgorithm(std::move(frame), is_copy,
+                           /*queued_in_buffer=*/false);
     return;
   }
   base::TimeTicks render_time =
@@ -615,18 +633,24 @@ void WebMediaPlayerMSCompositor::EnqueueFrame(
         UmaPrefix() + ".ReasonToClearRenderBuffer",
         is_out_of_order ? ReasonToClearRenderBuffer::kOutOfOrder
                         : ReasonToClearRenderBuffer::kUpdateOverdue);
-    // Note: the frame in |rendering_frame_buffer_| with lowest index is the
-    // same as |current_frame_|. Function SetCurrentFrame() handles whether
-    // to increase |dropped_frame_count_| for that frame, so here we should
-    // increase |dropped_frame_count_| by the count of all other frames.
-    //
-    // Use std::max to prevent |dropped_frame_count_| from integer underflow
-    // when frames_queued() is 0.
-    dropped_frame_count_ +=
-        std::max<size_t>(rendering_frame_buffer_->frames_queued(), 1u) - 1;
+    // The queued frames are discarded. SetCurrentFrame() decides whether the
+    // one that is |current_frame_| counts as dropped, so only the others are
+    // added to |dropped_frame_count_| here.
+    size_t discarded_frames;
+    if (CountFramesWhenPresented()) {
+      discarded_frames = DiscardPendingFrames();
+    } else {
+      // Legacy estimate: assumes the frame with the lowest index in the buffer
+      // is |current_frame_|, which is wrong by one before the first Render()
+      // and right after a Reset(). Use std::max to prevent integer underflow
+      // when frames_queued() is 0.
+      discarded_frames =
+          std::max<size_t>(rendering_frame_buffer_->frames_queued(), 1u) - 1;
+      pending_frames_info_.clear();
+    }
+    dropped_frame_count_ += discarded_frames;
     rendering_frame_buffer_->Reset();
-    pending_frames_info_.clear();
-    RenderWithoutAlgorithm(frame, is_copy);
+    RenderWithoutAlgorithm(frame, is_copy, /*queued_in_buffer=*/true);
   }
 
   pending_frames_info_.emplace_back(frame->unique_id(), frame->timestamp(),
@@ -647,6 +671,11 @@ void WebMediaPlayerMSCompositor::EnqueueFrame(
     while (pending_frames_info_.size() >
            rendering_frame_buffer_->frames_queued()) {
       pending_frames_info_.pop_back();
+      // The next Render() reports this frame in |frames_dropped|, so it has to
+      // enter the total here to keep total >= dropped.
+      if (CountFramesWhenPresented()) {
+        ++total_frame_count_;
+      }
     }
     DCHECK_EQ(pending_frames_info_.size(),
               rendering_frame_buffer_->frames_queued());
@@ -795,6 +824,7 @@ void WebMediaPlayerMSCompositor::StopRendering() {
 bool WebMediaPlayerMSCompositor::MapTimestampsToRenderTimeTicks(
     const std::vector<base::TimeDelta>& timestamps,
     std::vector<base::TimeTicks>* wall_clock_times) {
+  current_frame_lock_.AssertAcquired();
 #if DCHECK_IS_ON()
   DCHECK(video_frame_compositor_task_runner_->BelongsToCurrentThread() ||
          thread_checker_.CalledOnValidThread() ||
@@ -844,6 +874,21 @@ void WebMediaPlayerMSCompositor::RenderUsingAlgorithm(
       deadline_min, deadline_max, &frames_dropped);
   dropped_frame_count_ += frames_dropped;
 
+  // Erase frames no longer held by the rendering buffer. Both algorithms keep
+  // the frame they return in frames_queued() until the next Render(), so the
+  // popped entries are frames that were never presented, plus the previously
+  // presented one. Render() erases some of them without reporting them in
+  // |frames_dropped| (frames the cadence estimator expected to skip), which is
+  // why the popped entries, not |frames_dropped|, feed |total_frame_count_|.
+  while (pending_frames_info_.size() !=
+         rendering_frame_buffer_->frames_queued()) {
+    if (CountFramesWhenPresented() &&
+        pending_frames_info_.front().unique_id != last_presented_frame_id_) {
+      ++total_frame_count_;
+    }
+    pending_frames_info_.pop_front();
+  }
+
   // There is a chance we get a null |frame| here:
   // When the player gets paused, we reset |rendering_frame_buffer_|;
   // When the player gets resumed, it is possible that render gets called before
@@ -860,58 +905,99 @@ void WebMediaPlayerMSCompositor::RenderUsingAlgorithm(
     }
   }
 
-  // Erase frames no longer held by the rendering buffer. Note: The algorithm
-  // will continue to hold the current rendered frame until the next Render().
-  while (pending_frames_info_.size() !=
-         rendering_frame_buffer_->frames_queued()) {
-    pending_frames_info_.pop_front();
-  }
-
   const base::TimeTicks expected_display_time =
       submitter_ ? submitter_->GetExpectedDisplayTime().value_or(deadline_min)
                  : deadline_min;
+  CountPresentedFrame(*frame);
   SetCurrentFrame(std::move(frame), is_copy, expected_display_time);
 }
 
 void WebMediaPlayerMSCompositor::RenderWithoutAlgorithm(
     scoped_refptr<media::VideoFrame> frame,
-    bool is_copy) {
+    bool is_copy,
+    bool queued_in_buffer) {
   DCHECK(video_task_runner_->RunsTasksInCurrentSequence());
   PostCrossThreadTask(
       *video_frame_compositor_task_runner_, FROM_HERE,
       CrossThreadBindOnce(
           &WebMediaPlayerMSCompositor::RenderWithoutAlgorithmOnCompositor,
-          weak_this_, std::move(frame), is_copy));
+          weak_this_, std::move(frame), is_copy, queued_in_buffer));
 }
 
 void WebMediaPlayerMSCompositor::RenderWithoutAlgorithmOnCompositor(
     scoped_refptr<media::VideoFrame> frame,
-    bool is_copy) {
+    bool is_copy,
+    bool queued_in_buffer) {
   DCHECK(video_frame_compositor_task_runner_->BelongsToCurrentThread());
   {
     base::AutoLock auto_lock(current_frame_lock_);
-    // Last timestamp in the stream might not have timestamp.
-    if (current_frame_ && !frame->timestamp().is_zero() &&
-        frame->timestamp() > current_frame_->timestamp()) {
-      last_render_length_ = frame->timestamp() - current_frame_->timestamp();
-    }
+    // The buffer-reset path in EnqueueFrame() both posts |frame| here and
+    // enqueues it in |rendering_frame_buffer_|. By the time this task runs the
+    // algorithm may already have presented it (and possibly a newer frame), or
+    // a later reset may have discarded it. In both cases |frame| has been
+    // counted, and showing it now would replace a newer frame with an older
+    // one. A frame that was only posted is always shown, including one the
+    // source delivers twice.
+    const bool already_handled =
+        queued_in_buffer && CountFramesWhenPresented() &&
+        (frame == current_frame_ ||
+         last_presented_frame_id_ == frame->unique_id() ||
+         !std::ranges::any_of(pending_frames_info_,
+                              [&frame](const PendingFrameInfo& info) {
+                                return info.unique_id == frame->unique_id();
+                              }));
+    if (!already_handled) {
+      CountPresentedFrame(*frame);
+      // Last timestamp in the stream might not have timestamp.
+      if (current_frame_ && !frame->timestamp().is_zero() &&
+          frame->timestamp() > current_frame_->timestamp()) {
+        last_render_length_ = frame->timestamp() - current_frame_->timestamp();
+      }
 
-    // Trace events to help with debugging frame presentation times.
-    const base::TimeTicks now = base::TimeTicks::Now();
-    base::TimeDelta diff_from_deadline_min = now - last_deadline_min_;
-    base::TimeDelta diff_from_deadline_max = now - last_deadline_max_;
-    TRACE_EVENT_INSTANT("media",
-                        "RenderWithoutAlgorithm Difference From Deadline",
-                        "diff_from_deadline_min", diff_from_deadline_min,
-                        "diff_from_deadline_max", diff_from_deadline_max);
-    const base::TimeTicks expected_display_time =
-        submitter_
-            ? submitter_->GetExpectedDisplayTime().value_or(last_deadline_max_)
-            : last_deadline_max_;
-    SetCurrentFrame(std::move(frame), is_copy, expected_display_time);
+      // Trace events to help with debugging frame presentation times.
+      const base::TimeTicks now = base::TimeTicks::Now();
+      base::TimeDelta diff_from_deadline_min = now - last_deadline_min_;
+      base::TimeDelta diff_from_deadline_max = now - last_deadline_max_;
+      TRACE_EVENT_INSTANT("media",
+                          "RenderWithoutAlgorithm Difference From Deadline",
+                          "diff_from_deadline_min", diff_from_deadline_min,
+                          "diff_from_deadline_max", diff_from_deadline_max);
+      const base::TimeTicks expected_display_time =
+          submitter_ ? submitter_->GetExpectedDisplayTime().value_or(
+                           last_deadline_max_)
+                     : last_deadline_max_;
+      SetCurrentFrame(std::move(frame), is_copy, expected_display_time);
+    }
   }
   if (video_frame_provider_client_)
     video_frame_provider_client_->DidReceiveFrame();
+}
+
+void WebMediaPlayerMSCompositor::CountPresentedFrame(
+    const media::VideoFrame& frame) {
+  DCHECK(video_frame_compositor_task_runner_->BelongsToCurrentThread());
+  current_frame_lock_.AssertAcquired();
+  last_presented_frame_id_ = frame.unique_id();
+  if (CountFramesWhenPresented()) {
+    ++total_frame_count_;
+  }
+}
+
+size_t WebMediaPlayerMSCompositor::DiscardPendingFrames() {
+  current_frame_lock_.AssertAcquired();
+  // Entries that were presented have been counted already. (Copied out because
+  // the thread safety analysis does not follow lock state into the lambda.)
+  const std::optional<media::VideoFrame::ID> presented_id =
+      last_presented_frame_id_;
+  const size_t discarded = static_cast<size_t>(std::ranges::count_if(
+      pending_frames_info_, [presented_id](const PendingFrameInfo& info) {
+        return info.unique_id != presented_id;
+      }));
+  pending_frames_info_.clear();
+  if (CountFramesWhenPresented()) {
+    total_frame_count_ += discarded;
+  }
+  return discarded;
 }
 
 void WebMediaPlayerMSCompositor::OnFramePresented(
@@ -1223,8 +1309,14 @@ void WebMediaPlayerMSCompositor::StopRenderingInternal() {
   // frame selection.
   {
     base::AutoLock auto_lock(current_frame_lock_);
-    if (rendering_frame_buffer_)
+    if (rendering_frame_buffer_) {
       rendering_frame_buffer_->Reset();
+      // The queued frames will never be shown. Count them and keep
+      // |pending_frames_info_| in step with the now-empty buffer; otherwise
+      // the first EnqueueFrame() after resume pops the entry it just pushed
+      // instead of the stale ones.
+      DiscardPendingFrames();
+    }
   }
 
   if (video_frame_provider_client_)
