@@ -16,13 +16,13 @@
 
 namespace {
 // Creates a ChildAccountService instance.
-std::unique_ptr<KeyedService> CreateChildAccountService(ProfileIOS* profile) {
+std::unique_ptr<KeyedService> CreateChildAccountService(ProfileIOS& profile) {
   supervised_user::FamilyLinkSettingsService& family_link_settings_service =
       CHECK_DEREF(
           supervised_user::FamilyLinkSettingsServiceFactory::GetForProfile(
               profile));
   return std::make_unique<supervised_user::ChildAccountService>(
-      CHECK_DEREF(profile->GetPrefs()),
+      CHECK_DEREF(profile.GetPrefs()),
       IdentityManagerFactory::GetForProfile(profile),
       family_link_settings_service,
       // Callback relevant only for Chrome OS.
@@ -42,12 +42,12 @@ ChildAccountServiceFactory::ChildAccountServiceFactory(PassKey key)
 }
 
 std::unique_ptr<KeyedService>
-ChildAccountServiceFactory::BuildServiceInstanceFor(ProfileIOS* profile) const {
+ChildAccountServiceFactory::BuildServiceInstanceFor(ProfileIOS& profile) const {
   return CreateChildAccountService(profile);
 }
 
 // static
-ChildAccountServiceFactory::TestingFactory
+ChildAccountServiceFactory::TestingFactoryByRef
 ChildAccountServiceFactory::GetDefaultFactory() {
   return base::BindOnce(&CreateChildAccountService);
 }

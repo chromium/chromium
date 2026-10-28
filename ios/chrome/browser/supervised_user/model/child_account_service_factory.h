@@ -16,12 +16,12 @@ class ChildAccountServiceFactory final
           supervised_user::ChildAccountService> {
  public:
   explicit ChildAccountServiceFactory(PassKey key);
-  static TestingFactory GetDefaultFactory();
+  static TestingFactoryByRef GetDefaultFactory();
 
  private:
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const final;
+      ProfileIOS& profile) const final;
 };
 
 #endif  // IOS_CHROME_BROWSER_SUPERVISED_USER_MODEL_CHILD_ACCOUNT_SERVICE_FACTORY_H_
