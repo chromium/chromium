@@ -10023,6 +10023,49 @@ IN_PROC_BROWSER_TEST_F(InitialEmptyDocumentInsecureRequestStateBrowserTest,
   ExpectSameInsecureRequestState(subframe_rfh, popup_rfh);
 }
 
+// Regression test for https://crbug.com/574394862.
+//
+// Scenario:
+// 1. A document with "upgrade-insecure-requests" opens an about:blank popup.
+// 2. The popup replaces its document by navigating to a javascript: URL.
+// 3. The new document performs a same-document navigation.
+//
+// The same-document commit must be accepted and the renderer process must not
+// be killed.
+IN_PROC_BROWSER_TEST_F(
+    RenderFrameHostImplBrowserTest,
+    JavaScriptUrlReplacementInPopupPreservesInsecureNavigationsSet) {
+  GURL opener_url(embedded_test_server()->GetURL(
+      "a.com",
+      "/set-header?Content-Security-Policy: upgrade-insecure-requests; "
+      "block-all-mixed-content"));
+  ASSERT_TRUE(NavigateToURL(shell(), opener_url));
+
+  ShellAddedObserver new_shell_observer;
+  ASSERT_TRUE(ExecJs(shell(), "window.open('about:blank');"));
+  Shell* popup = new_shell_observer.GetShell();
+  WebContentsImpl* popup_contents =
+      static_cast<WebContentsImpl*>(popup->web_contents());
+  ASSERT_TRUE(WaitForLoadStop(popup_contents));
+
+  RenderFrameHostImpl* popup_rfh = popup_contents->GetPrimaryMainFrame();
+  ASSERT_TRUE(ExecJs(popup_rfh, R"(
+    location.href = "javascript:'<script>" +
+        "history.pushState({}, \"\", \"about:blank#same-doc\");" +
+        "</script>replaced'";
+  )"));
+
+  // Wait until the browser has either accepted the same-document commit or
+  // killed the renderer.
+  const GURL same_doc_url("about:blank#same-doc");
+  ASSERT_TRUE(base::test::RunUntil([&] {
+    return popup_rfh->GetLastCommittedURL() == same_doc_url ||
+           !popup_rfh->IsRenderFrameLive();
+  }));
+  EXPECT_EQ(same_doc_url, popup_rfh->GetLastCommittedURL());
+  EXPECT_TRUE(popup_rfh->IsRenderFrameLive());
+}
+
 // Tests that paint holding is not used when an opener-created popup that is
 // still on its initial empty document navigates cross-origin without user
 // activation. Similar to the test above, but checks the case where the opener
