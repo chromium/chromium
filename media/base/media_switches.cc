@@ -1179,6 +1179,13 @@ const base::FeatureParam<int> kWebRtcVoiceIsolationProcessingFifoSize{
 
 #endif  // BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
 
+#if BUILDFLAG(ENABLE_DAV2D_DECODER)
+// Controls whether the Dav2dVideoDecoder is used for AV2 video decoding.
+// Owner: tmathmeyer@chromium.org
+// Expiry: When enabled by default (crbug.com/576731818).
+BASE_FEATURE(kDav2dVideoDecoder, base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(ENABLE_DAV2D_DECODER)
+
 #if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
 // Enables HEVC MediaRecorder muxer support.
 BASE_FEATURE(kMediaRecorderHEVCSupport, base::FEATURE_ENABLED_BY_DEFAULT);

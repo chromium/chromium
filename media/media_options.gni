@@ -111,6 +111,9 @@ declare_args() {
 
   enable_dav1d_decoder = use_blink
 
+  # set to `use_blink` when feature experimentation is ready.
+  enable_dav2d_decoder = false
+
   # Enable browser managed persistent metadata storage for EME persistent
   # session.
   enable_media_drm_storage = is_android || is_castos
