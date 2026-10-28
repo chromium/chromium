@@ -294,13 +294,18 @@ TEST_F(DevToolsAgentHostImplTest, TestExternalProxy) {
 
 class CustomMetadataDevToolsClientHost : public TestDevToolsClientHost {
  public:
-  explicit CustomMetadataDevToolsClientHost(PeerMetadata peer_metadata)
-      : peer_metadata_(std::move(peer_metadata)) {}
+  explicit CustomMetadataDevToolsClientHost(
+      PeerMetadata peer_metadata,
+      std::string type_for_metrics = "RemoteDebugger")
+      : peer_metadata_(std::move(peer_metadata)),
+        type_for_metrics_(std::move(type_for_metrics)) {}
 
+  std::string GetTypeForMetrics() override { return type_for_metrics_; }
   PeerMetadata GetPeerMetadata() override { return peer_metadata_; }
 
  private:
   PeerMetadata peer_metadata_;
+  std::string type_for_metrics_;
 };
 
 TEST_F(DevToolsAgentHostImplTest,
@@ -314,7 +319,8 @@ TEST_F(DevToolsAgentHostImplTest,
   CustomMetadataDevToolsClientHost root_client(
       {.transport_type =
            DevToolsAgentHostClient::PeerMetadata::TransportType::kWebSocket,
-       .peer_address = kPeerAddress});
+       .peer_address = kPeerAddress},
+      "RemoteDebugger");
   root_client.InspectAgentHost(browser_host.get());
   ASSERT_NE(RecordingDevToolsManagerDelegate::last_instance, nullptr);
 
@@ -332,6 +338,7 @@ TEST_F(DevToolsAgentHostImplTest,
       RecordingDevToolsManagerDelegate::last_instance->last_attached_client();
   ASSERT_NE(child_client, nullptr);
   EXPECT_NE(child_client, &root_client);
+  EXPECT_EQ(child_client->GetTypeForMetrics(), "RemoteDebugger");
   DevToolsAgentHostClient::PeerMetadata child_metadata =
       child_client->GetPeerMetadata();
   EXPECT_EQ(child_metadata.transport_type,
@@ -351,7 +358,8 @@ TEST_F(DevToolsAgentHostImplTest,
   CustomMetadataDevToolsClientHost root_client(
       {.transport_type =
            DevToolsAgentHostClient::PeerMetadata::TransportType::kPipe,
-       .peer_address = std::nullopt});
+       .peer_address = std::nullopt},
+      "RemoteDebugger");
   root_client.InspectAgentHost(browser_host.get());
   ASSERT_NE(RecordingDevToolsManagerDelegate::last_instance, nullptr);
 
@@ -369,10 +377,51 @@ TEST_F(DevToolsAgentHostImplTest,
       RecordingDevToolsManagerDelegate::last_instance->last_attached_client();
   ASSERT_NE(child_client, nullptr);
   EXPECT_NE(child_client, &root_client);
+  EXPECT_EQ(child_client->GetTypeForMetrics(), "RemoteDebugger");
   DevToolsAgentHostClient::PeerMetadata child_metadata =
       child_client->GetPeerMetadata();
   EXPECT_EQ(child_metadata.transport_type,
             DevToolsAgentHostClient::PeerMetadata::TransportType::kPipe);
+  EXPECT_EQ(child_metadata.peer_address, std::nullopt);
+
+  root_client.Close();
+}
+
+TEST_F(DevToolsAgentHostImplTest,
+       TargetHandlerSessionDelegatesExtensionTypeViaSetAutoAttach) {
+  scoped_refptr<DevToolsAgentHost> page_host =
+      DevToolsAgentHost::GetOrCreateFor(web_contents());
+  scoped_refptr<DevToolsAgentHost> browser_host =
+      DevToolsAgentHost::CreateForDiscovery();
+
+  CustomMetadataDevToolsClientHost root_client(
+      {.transport_type =
+           DevToolsAgentHostClient::PeerMetadata::TransportType::kUnknown,
+       .peer_address = std::nullopt},
+      "Extension");
+  root_client.InspectAgentHost(browser_host.get());
+  ASSERT_NE(RecordingDevToolsManagerDelegate::last_instance, nullptr);
+
+  constexpr char kAutoAttachCmd[] =
+      "{\"id\":1,\"method\":\"Target.setAutoAttach\","
+      "\"params\":{\"autoAttach\":true,\"waitForDebuggerOnStart\":false,"
+      "\"flatten\":true}}";
+  browser_host->DispatchProtocolMessage(
+      &root_client, base::byte_span_from_cstring(kAutoAttachCmd));
+
+  EXPECT_EQ(
+      RecordingDevToolsManagerDelegate::last_instance->last_attached_host(),
+      page_host.get());
+  DevToolsAgentHostClient* child_client =
+      RecordingDevToolsManagerDelegate::last_instance->last_attached_client();
+  ASSERT_NE(child_client, nullptr);
+  EXPECT_NE(child_client, &root_client);
+  EXPECT_EQ(child_client->GetTypeForMetrics(), "Extension");
+  EXPECT_NE(child_client->GetTypeForMetrics(), "DevTools");
+  DevToolsAgentHostClient::PeerMetadata child_metadata =
+      child_client->GetPeerMetadata();
+  EXPECT_EQ(child_metadata.transport_type,
+            DevToolsAgentHostClient::PeerMetadata::TransportType::kUnknown);
   EXPECT_EQ(child_metadata.peer_address, std::nullopt);
 
   root_client.Close();

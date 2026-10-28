@@ -527,7 +527,9 @@ class TargetHandler::Session : public DevToolsAgentHostClient {
     agent_host_->DetachClient(this);
   }
 
-  std::string GetTypeForMetrics() override { return "DevTools"; }
+  std::string GetTypeForMetrics() override {
+    return GetRootClient()->GetTypeForMetrics();
+  }
   PeerMetadata GetPeerMetadata() override {
     return GetRootClient()->GetPeerMetadata();
   }
