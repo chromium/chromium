@@ -59,6 +59,10 @@ id<GREYMatcher> ContextualPanelEntrypointImageViewMatcher() {
 
   bool started = self.testServer->Start();
   GREYAssertTrue(started, @"Test server failed to start.");
+
+  if ([ChromeEarlGrey mainTabCount] == 0) {
+    [ChromeEarlGrey openNewTab];
+  }
 }
 
 - (void)tearDownHelper {
@@ -87,12 +91,9 @@ id<GREYMatcher> ContextualPanelEntrypointImageViewMatcher() {
   return config;
 }
 
-// TODO(crbug.com/523259471): Fix this flaky test.
-// Tests that the contextual panel opens correctly.
+// Tests that the contextual panel opens when tapping its entrypoint and can
+// then be closed.
 - (void)testOpenContextualPanel {
-#if TARGET_IPHONE_SIMULATOR
-  EARL_GREY_TEST_DISABLED(@"Flaky on iOS 18 simulator, crbug.com/523259471");
-#endif
 
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/defaultresponse")];
 
@@ -114,13 +115,9 @@ id<GREYMatcher> ContextualPanelEntrypointImageViewMatcher() {
       performAction:grey_tap()];
 }
 
-// TODO(crbug.com/523259471): Fix this flaky test.
-// Tests that the contextual panel opens correctly from an IPH.
+// Tests that the contextual panel opens correctly when tapping on its
+// in-product help (IPH) bubble.
 - (void)testOpenContextualPanelFromIPH {
-#if TARGET_IPHONE_SIMULATOR
-  EARL_GREY_TEST_DISABLED(@"Flaky on iOS 18 simulator, crbug.com/523259471");
-#endif
-
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/defaultresponse")];
 
   // Check that the IPH has appeared.
@@ -143,14 +140,9 @@ id<GREYMatcher> ContextualPanelEntrypointImageViewMatcher() {
       performAction:grey_tap()];
 }
 
-// TODO(crbug.com/523259471): Fix this flaky test.
-// Test that the Contextual Panel can still be closed after rotating to
-// landscape.
+// Tests that the contextual panel can still be closed after rotating the device
+// to landscape orientation.
 - (void)testContextualPanelLandscape {
-#if TARGET_IPHONE_SIMULATOR
-  EARL_GREY_TEST_DISABLED(@"Flaky on iOS 18 simulator, crbug.com/523259471");
-#endif
-
   // This test is not relevant on iPads as iPads aren't compact height in
   // landscape.
   if ([ChromeEarlGrey isIPadIdiom]) {
@@ -183,13 +175,9 @@ id<GREYMatcher> ContextualPanelEntrypointImageViewMatcher() {
       performAction:grey_tap()];
 }
 
-// TODO(crbug.com/523259471): Fix this flaky test.
-// Tests that closing the last tab with the panel open doesn't crash.
+// Tests that closing the last tab while the contextual panel is open does not
+// crash.
 - (void)testCloseLastTabWithPanelOpen {
-#if TARGET_IPHONE_SIMULATOR
-  EARL_GREY_TEST_DISABLED(@"Flaky on iOS 18 simulator, crbug.com/523259471");
-#endif
-
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/defaultresponse")];
 
   [ChromeEarlGrey waitForUIElementToAppearWithMatcher:
@@ -206,32 +194,42 @@ id<GREYMatcher> ContextualPanelEntrypointImageViewMatcher() {
 
   // Close the tab.
   [ChromeEarlGrey closeTabAtIndex:0];
+  [ChromeEarlGrey waitForMainTabCount:0];
+
+  // Re-open a tab via the Tab Grid new tab button to leave the browser in a
+  // clean state with an active web state.
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:
+                      chrome_test_util::TabGridNewTabButton()];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridNewTabButton()]
+      performAction:grey_tap()];
+  [ChromeEarlGrey waitForMainTabCount:1];
+  [ChromeEarlGrey loadURL:self.testServer->GetURL("/defaultresponse")];
 }
 
-// TODO(crbug.com/523259471): Fix this flaky test.
-// Tests that closing the last tab before the large entrypoint callback is run
-// doesn't crash.
+// Tests that closing the last tab before the large entrypoint badge callback
+// executes does not crash.
 - (void)testCloseLastTabBeforeLargeEntrypointAppears {
-#if TARGET_IPHONE_SIMULATOR
-  EARL_GREY_TEST_DISABLED(@"Flaky on iOS 18 simulator, crbug.com/523259471");
-#endif
-
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/defaultresponse")];
 
   // Close the tab.
   [ChromeEarlGrey closeTabAtIndex:0];
+  [ChromeEarlGrey waitForMainTabCount:0];
+
+  // Re-open a tab via the Tab Grid new tab button to leave the browser in a
+  // clean state with an active web state.
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:
+                      chrome_test_util::TabGridNewTabButton()];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridNewTabButton()]
+      performAction:grey_tap()];
+  [ChromeEarlGrey waitForMainTabCount:1];
+  [ChromeEarlGrey loadURL:self.testServer->GetURL("/defaultresponse")];
 }
 
-// TODO(crbug.com/523259471): Fix this flaky test.
-// Tests that the contextual panel transitions neatly between iOS sheet
-// controller (full iPad layout) and the panel's custom sheet component (other
-// window open/iPhone-style layout).
+// Tests that the contextual panel transitions cleanly between the iPad sheet
+// controller layout and the custom compact layout when multi-window states
+// change.
 - (void)testContexutalPaneliPadMultiwindow {
-  if (!@available(iOS 26.0, *)) {
-#if TARGET_IPHONE_SIMULATOR
-    EARL_GREY_TEST_DISABLED(@"Flaky on iOS 18 simulator, crbug.com/523259471");
-#endif
-  } else {
+  if (@available(iOS 26.0, *)) {
     // TODO(crbug.com/427699033): Re-enable test on iOS 26.
     // Fails because it assumes a window will be compact after creating a new
     // window.
@@ -280,17 +278,12 @@ id<GREYMatcher> ContextualPanelEntrypointImageViewMatcher() {
       performAction:grey_tap()];
 }
 
-// TODO(crbug.com/523259471): Fix this flaky test.
-// Tests that fullscreen is disabled when the omnibox switches to bottom
-// position.
+// Tests that fullscreen mode is disabled when the omnibox switches to the
+// bottom position while the contextual panel is open.
 - (void)testBottomOmniboxDisablesFullscreen {
-#if TARGET_IPHONE_SIMULATOR
-    EARL_GREY_TEST_DISABLED(@"Flaky on iOS 18 simulator, crbug.com/523259471");
-#endif
-
-    if (![ChromeEarlGrey isBottomOmniboxAvailable]) {
-      EARL_GREY_TEST_SKIPPED(@"Test requires bottom omnibox");
-    }
+  if (![ChromeEarlGrey isBottomOmniboxAvailable]) {
+    EARL_GREY_TEST_SKIPPED(@"Test requires bottom omnibox");
+  }
 
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/long-fullscreen")];
 
@@ -323,14 +316,9 @@ id<GREYMatcher> ContextualPanelEntrypointImageViewMatcher() {
       performAction:grey_tap()];
 }
 
-// TODO(crbug.com/523259471): Fix this flaky test.
-// Test that the Contextual Panel entrypoint's large chip can be dismissed via
-// swipe.
+// Tests that the contextual panel entrypoint's expanded large chip can be
+// dismissed via a horizontal swipe gesture.
 - (void)testContextualPanelEntrypointLargeChipDismissable {
-#if TARGET_IPHONE_SIMULATOR
-  EARL_GREY_TEST_DISABLED(@"Flaky on iOS 18 simulator, crbug.com/523259471");
-#endif
-
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/defaultresponse")];
 
   NSString* entryPointLabel = kLocationBarBadgeLabelIdentifier;
@@ -349,14 +337,9 @@ id<GREYMatcher> ContextualPanelEntrypointImageViewMatcher() {
       assertWithMatcher:grey_notVisible()];
 }
 
-// TODO(crbug.com/523259471): Fix this flaky test.
-// Test that the Contextual Panel entrypoint IPH is dismissed when the device
-// orientation changes.
+// Tests that the contextual panel entrypoint in-product help (IPH) bubble is
+// automatically dismissed when the device orientation changes.
 - (void)testOrientationChangeDismissesIPH {
-#if TARGET_IPHONE_SIMULATOR
-  EARL_GREY_TEST_DISABLED(@"Flaky on iOS 18 simulator, crbug.com/523259471");
-#endif
-
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/defaultresponse")];
 
   // Check that the IPH has appeared.
@@ -376,14 +359,9 @@ id<GREYMatcher> ContextualPanelEntrypointImageViewMatcher() {
                                                  @"BubbleViewLabelIdentifier")];
 }
 
-// TODO(crbug.com/523259471): Fix this flaky test.
-// Tests that opening the keyboard on iPhone closes the panel. On iPad, the
-// panel is presented modally, so the panel wouldn't close.
+// Tests that opening the software keyboard closes the contextual panel on
+// iPhone.
 - (void)testKeyboardOpenClosesPanelOniPhone {
-#if TARGET_IPHONE_SIMULATOR
-  EARL_GREY_TEST_DISABLED(@"Flaky on iOS 18 simulator, crbug.com/523259471");
-#endif
-
   if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(@"Test conditions don't happen on iPad.");
   }
