@@ -118,7 +118,6 @@ export function getHtml(this: ComposeboxElement) {
                     id="carousel"
                     class="${this.carouselOnTop_ ? 'top' : ''}"
                     .files="${this.getFilteredCarouselFiles()}"
-                    ?enable-scrolling="${this.enableCarouselScrolling}"
                     @delete-file="${this.onDeleteFile}">
                   </cr-composebox-file-carousel> ` : ''}
                   ${this.searchboxLayoutMode === 'Compact' && !this.isOmniboxInCompactMode_ && this.hasTabs() ? html`

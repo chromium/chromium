@@ -26,7 +26,7 @@ import {TabAttachmentSource} from '//resources/mojo/components/omnibox/browser/s
 import type {FileAttachment, PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote, SearchContext, TabAttachment, TabInfo} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import type {UnguessableToken} from '//resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
 
-import {ComposeboxFile, GlifAnimationState, mapUploadErrorToProcessFilesError, ProcessFilesError, recordBoolean, recordContextAdditionMethod, recordUserAction} from './common.js';
+import {ComposeboxFile, mapUploadErrorToProcessFilesError, ProcessFilesError, recordBoolean, recordContextAdditionMethod, recordUserAction} from './common.js';
 import type {TabUpload} from './common.js';
 import {getCss} from './composebox.css.js';
 import {getHtml} from './composebox.html.js';
@@ -109,20 +109,12 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
       // Embedders can opt out of public composebox resize events when they do
       // not use them.
       observeResize: {type: Boolean},
-      enableCarouselScrolling: {type: Boolean},
       isOmniboxInCompactMode_: {
         type: Boolean,
         reflect: true,
       },
       isFollowupQuery: {type: Boolean},
-      isZeroState: {
-        type: Boolean,
-        reflect: true,
-      },
-      disableFallbackGlifAnimation: {type: Boolean},
       enableFileHint: {type: Boolean},
-      // TODO(crbug.com/486707842): Move to the Contextual Tasks embedder.
-      glifAnimationState: {type: String, reflect: true},
       isSidePanel: {type: Boolean},
       inputPlaceholderOverride: {type: String},
       // Must be property so can pass it down to children.
@@ -135,16 +127,11 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
   }
 
   accessor isSidePanel: boolean = false;
-  accessor isZeroState: boolean = false;
-  accessor glifAnimationState: GlifAnimationState =
-      GlifAnimationState.INELIGIBLE;
-  accessor disableFallbackGlifAnimation: boolean = false;
   accessor isFollowupQuery: boolean = false;
   accessor enableFileHint: boolean = false;
   accessor inputPlaceholderOverride: string = '';
   accessor disableComposeboxAnimation: boolean = false;
   accessor observeResize: boolean = true;
-  accessor enableCarouselScrolling: boolean = false;
   accessor lensButtonTriggersOverlay: boolean = false;
   accessor showLensButton: boolean = true;
   accessor ntpRealboxNextEnabled: boolean = false;
@@ -724,11 +711,6 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
     this.pendingAutomaticActiveTabTitle = '';
     this.$.composeboxInput.resetHeight();
     super.clearAllInputs(querySubmitted, shouldBlockAutoSuggestedTabs);
-  }
-
-  override shouldDisableFileInputs() {
-    return super.shouldDisableFileInputs() ||
-        this.entrypointName === 'ContextualTasks';
   }
 
   // TODO(crbug.com/486707998): Move this to omnibox composebox.
