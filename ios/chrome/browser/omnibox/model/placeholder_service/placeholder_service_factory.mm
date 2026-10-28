@@ -18,7 +18,7 @@
 namespace ios {
 namespace {
 
-std::unique_ptr<KeyedService> BuildPlaceholderService(ProfileIOS* profile) {
+std::unique_ptr<KeyedService> BuildPlaceholderService(ProfileIOS& profile) {
   return std::make_unique<PlaceholderService>(
       IOSChromeFaviconLoaderFactory::GetForProfile(profile),
       ios::TemplateURLServiceFactory::GetForProfile(profile));
@@ -27,7 +27,7 @@ std::unique_ptr<KeyedService> BuildPlaceholderService(ProfileIOS* profile) {
 }  // namespace
 
 // static
-PlaceholderServiceFactory::TestingFactory
+PlaceholderServiceFactory::TestingFactoryByRef
 PlaceholderServiceFactory::GetDefaultFactory() {
   return base::BindOnce(&BuildPlaceholderService);
 }
@@ -43,7 +43,7 @@ PlaceholderServiceFactory::PlaceholderServiceFactory(PassKey key)
 }
 
 std::unique_ptr<KeyedService>
-PlaceholderServiceFactory::BuildServiceInstanceFor(ProfileIOS* profile) const {
+PlaceholderServiceFactory::BuildServiceInstanceFor(ProfileIOS& profile) const {
   return BuildPlaceholderService(profile);
 }
 
