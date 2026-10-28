@@ -7,15 +7,23 @@
 #include <algorithm>
 #include <vector>
 
+#include "base/cancelable_callback.h"
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "chrome/browser/content_settings/page_specific_content_settings_delegate.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/accelerator_table.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/exclusive_access/exclusive_access_context.h"
+#include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/views/exclusive_access/exclusive_access_bubble_views.h"
+#include "chrome/browser/ui/views/exclusive_access/exclusive_access_bubble_views_context.h"
 #include "chrome/browser/ui/views/picture_in_picture/document_pip_contents_view.h"
 #include "chrome/browser/ui/views/picture_in_picture/document_pip_dialog_manager_delegate.h"
 #include "chrome/browser/ui/views/picture_in_picture/document_pip_frame_view.h"
@@ -36,10 +44,14 @@
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom.h"
+#include "ui/base/accelerators/accelerator.h"
 #include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/base/window_open_disposition.h"
+#include "ui/events/event.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/views/view.h"
+#include "ui/views/view_class_properties.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/non_client_view.h"
@@ -117,6 +129,120 @@ WEB_CONTENTS_USER_DATA_KEY_IMPL(DocumentPipHostBackPointer);
 }  // namespace
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(DocumentPipHost);
+
+class DocumentPipHost::ExclusiveAccessContextImpl
+    : public ExclusiveAccessContext,
+      public ExclusiveAccessBubbleViewsContext,
+      public ui::AcceleratorProvider {
+ public:
+  explicit ExclusiveAccessContextImpl(DocumentPipHost& host) : host_(host) {}
+  ExclusiveAccessContextImpl(const ExclusiveAccessContextImpl&) = delete;
+  ExclusiveAccessContextImpl& operator=(const ExclusiveAccessContextImpl&) =
+      delete;
+  ~ExclusiveAccessContextImpl() override = default;
+
+  void RepositionBubble() {
+    if (exclusive_access_bubble_) {
+      exclusive_access_bubble_->RepositionIfVisible();
+    }
+  }
+
+  // ExclusiveAccessContext:
+  Profile* GetProfile() override { return host_->GetProfile(); }
+  bool IsFullscreen() const override { return false; }
+  void EnterFullscreen(const url::Origin&,
+                       ExclusiveAccessBubbleType,
+                       FullscreenTabParams) override {}
+  void ExitFullscreen() override {}
+  void UpdateExclusiveAccessBubble(
+      const ExclusiveAccessBubbleParams& params,
+      ExclusiveAccessBubbleHideCallback first_hide_callback) override {
+    if (params.type == EXCLUSIVE_ACCESS_BUBBLE_TYPE_NONE &&
+        !params.has_download) {
+      if (exclusive_access_bubble_ && destroy_bubble_.IsCancelled()) {
+        // The bubble's presentation watchdog can call back here. Defer deletion
+        // until its stack unwinds, as BrowserView does. The closure is
+        // cancelled when this context is destroyed.
+        destroy_bubble_.Reset(base::BindOnce(
+            &ExclusiveAccessContextImpl::DestroyAnyExclusiveAccessBubble,
+            base::Unretained(this)));
+        base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+            FROM_HERE, destroy_bubble_.callback());
+        exclusive_access_bubble_->HideImmediately();
+      }
+      // Either callback can synchronously close the host and destroy this
+      // context, so do not access members after hiding the bubble.
+      if (first_hide_callback) {
+        std::move(first_hide_callback)
+            .Run(ExclusiveAccessBubbleHideReason::kNotShown);
+      }
+      return;
+    }
+
+    const bool was_closing = !destroy_bubble_.IsCancelled();
+    destroy_bubble_.Cancel();
+    if (exclusive_access_bubble_) {
+      auto updated_params = params;
+      // A fading-out bubble is still visible, but must restart its animation
+      // and hide callback even when the lock type and origin are unchanged.
+      updated_params.force_update |= was_closing;
+      exclusive_access_bubble_->Update(updated_params,
+                                       std::move(first_hide_callback));
+    } else {
+      exclusive_access_bubble_ = std::make_unique<ExclusiveAccessBubbleViews>(
+          this, params, std::move(first_hide_callback));
+      // The bubble animates its own opacity; its native popup must not start a
+      // second visibility animation when the window-owned bubble is destroyed.
+      exclusive_access_bubble_->GetView()
+          ->GetWidget()
+          ->SetVisibilityChangedAnimationsEnabled(false);
+    }
+  }
+  bool IsExclusiveAccessBubbleDisplayed() const override {
+    return exclusive_access_bubble_ && (exclusive_access_bubble_->IsShowing() ||
+                                        exclusive_access_bubble_->IsVisible());
+  }
+  void OnExclusiveAccessUserInput() override {
+    if (exclusive_access_bubble_) {
+      exclusive_access_bubble_->OnUserInput();
+    }
+  }
+  content::WebContents* GetWebContentsForExclusiveAccess() override {
+    return host_->GetChildWebContents();
+  }
+  bool CanUserEnterFullscreen() const override { return false; }
+  bool CanUserExitFullscreen() const override { return true; }
+
+  // ExclusiveAccessBubbleViewsContext:
+  ExclusiveAccessManager* GetExclusiveAccessManager() override {
+    return &exclusive_access_manager_;
+  }
+  ui::AcceleratorProvider* GetAcceleratorProvider() override { return this; }
+  gfx::NativeView GetBubbleParentView() const override {
+    return host_->GetWidget()->GetNativeView();
+  }
+  gfx::Rect GetClientAreaBoundsInScreen() const override {
+    return host_->GetWidget()->GetClientAreaBoundsInScreen();
+  }
+  bool IsImmersiveModeEnabled() const override { return false; }
+  gfx::Rect GetTopContainerBoundsInScreen() override { return {}; }
+  void DestroyAnyExclusiveAccessBubble() override {
+    destroy_bubble_.Cancel();
+    exclusive_access_bubble_.reset();
+  }
+
+  // ui::AcceleratorProvider:
+  bool GetAcceleratorForCommandId(int command_id,
+                                  ui::Accelerator* accelerator) const override {
+    return ::GetAcceleratorForCommandId(command_id, accelerator);
+  }
+
+ private:
+  const raw_ref<DocumentPipHost> host_;
+  ExclusiveAccessManager exclusive_access_manager_{this};
+  std::unique_ptr<ExclusiveAccessBubbleViews> exclusive_access_bubble_;
+  base::CancelableOnceClosure destroy_bubble_;
+};
 
 DocumentPipHost::DocumentPipHost(content::WebContents* opener_web_contents)
     : content::WebContentsUserData<DocumentPipHost>(*opener_web_contents),
@@ -219,6 +345,9 @@ void DocumentPipHost::CreateAndShowPipWindow(
   // is initialized because the dialog manager anchors to it.
   CreateChildWebContentsHelpers(GetChildWebContents());
 
+  exclusive_access_context_ =
+      std::make_unique<ExclusiveAccessContextImpl>(*this);
+
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   window_controller_ =
       std::make_unique<extensions::DocumentPipWindowController>(
@@ -265,6 +394,12 @@ content::WebContents* DocumentPipHost::GetChildWebContents() {
 
 views::Widget* DocumentPipHost::GetWidget() {
   return widget_.get();
+}
+
+ExclusiveAccessManager* DocumentPipHost::GetExclusiveAccessManager() {
+  return exclusive_access_context_
+             ? exclusive_access_context_->GetExclusiveAccessManager()
+             : nullptr;
 }
 
 const blink::mojom::PictureInPictureWindowOptions&
@@ -392,17 +527,18 @@ void DocumentPipHost::UpdateTargetURL(content::WebContents* source,
 
 void DocumentPipHost::ContentsMouseEvent(content::WebContents* source,
                                          const ui::Event& event) {
-  // No status bar in PiP - intentional no-op.
+  if (event.type() != ui::EventType::kMouseEntered &&
+      event.type() != ui::EventType::kMouseExited && !event.IsSynthesized()) {
+    GetExclusiveAccessManager()->OnUserInput();
+  }
 }
 
 content::KeyboardEventProcessingResult DocumentPipHost::PreHandleKeyboardEvent(
     content::WebContents* source,
     const input::NativeWebKeyboardEvent& event) {
-  // Standalone PiP has no ExclusiveAccessManager (which in Browser intercepts
-  // Esc to exit fullscreen, pointer lock, and keyboard lock). Fullscreen is
-  // blocked for PiP windows; pointer/keyboard lock work via the renderer but
-  // the browser-side "Press Esc to exit" bubble is missing.
-  // Let the widget's NativeWidget handle OS accelerators.
+  if (GetExclusiveAccessManager()->HandleUserKeyEvent(event)) {
+    return content::KeyboardEventProcessingResult::HANDLED;
+  }
   return content::KeyboardEventProcessingResult::NOT_HANDLED;
 }
 
@@ -417,6 +553,32 @@ bool DocumentPipHost::HandleKeyboardEvent(
 bool DocumentPipHost::TakeFocus(content::WebContents* source, bool reverse) {
   // PiP has a single content area - nothing else to focus.
   return false;
+}
+
+void DocumentPipHost::RequestPointerLock(content::WebContents* web_contents,
+                                         bool user_gesture,
+                                         bool last_unlocked_by_target) {
+  GetExclusiveAccessManager()->pointer_lock_controller()->RequestToLockPointer(
+      web_contents, user_gesture, last_unlocked_by_target);
+}
+
+void DocumentPipHost::LostPointerLock() {
+  GetExclusiveAccessManager()
+      ->pointer_lock_controller()
+      ->ExitExclusiveAccessToPreviousState();
+}
+
+void DocumentPipHost::RequestKeyboardLock(content::WebContents* web_contents,
+                                          bool esc_key_locked) {
+  GetExclusiveAccessManager()->keyboard_lock_controller()->RequestKeyboardLock(
+      web_contents, esc_key_locked);
+}
+
+void DocumentPipHost::CancelKeyboardLockRequest(
+    content::WebContents* web_contents) {
+  GetExclusiveAccessManager()
+      ->keyboard_lock_controller()
+      ->CancelKeyboardLockRequest(web_contents);
 }
 
 // =============================================================================
@@ -733,7 +895,13 @@ void DocumentPipHost::PrepareForWidgetDestruction() {
   child_dialog_observer_helper_.reset();
 
   // Clear the child's delegate before tearing down, since the host set itself
-  // as delegate in CreateAndShowPipWindow().
+  // as delegate in CreateAndShowPipWindow(). This must happen before
+  // OnTabClosing() below: exiting pointer lock there can synchronously call
+  // back into WebContentsDelegate::LostPointerLock(), which (while we're
+  // still the delegate) re-enters this host and can drive a bubble hide
+  // callback that synchronously calls Close(). That reentrant ClosePipWindow()
+  // would destroy widget_/child out from under this still-running function.
+  // Clearing the delegate first makes that reentrant path a no-op.
   content::WebContents* child = GetChildWebContents();
   if (child) {
     if (auto* dialog_manager =
@@ -741,6 +909,15 @@ void DocumentPipHost::PrepareForWidgetDestruction() {
       dialog_manager->SetDelegate(nullptr);
     }
     child->SetDelegate(nullptr);
+  }
+  // Take local ownership before calling OnTabClosing(), since a reentrant
+  // ClosePipWindow() (see above) could otherwise reset
+  // exclusive_access_context_ out from under this function while it's still in
+  // use.
+  std::unique_ptr<ExclusiveAccessContextImpl> exclusive_access_context =
+      std::move(exclusive_access_context_);
+  if (child && exclusive_access_context) {
+    exclusive_access_context->GetExclusiveAccessManager()->OnTabClosing(child);
   }
 
 #if !BUILDFLAG(IS_WIN)
@@ -816,6 +993,13 @@ gfx::Size DocumentPipHost::ComputeDialogPadding() const {
 }
 
 void DocumentPipHost::PositionChildDialog(views::Widget* child_dialog) {
+  // The exit-instruction popup positions itself relative to the PiP window.
+  if (child_dialog->GetContentsView()->GetProperty(
+          views::kElementIdentifierKey) ==
+      kExclusiveAccessBubbleViewElementId) {
+    return;
+  }
+
   gfx::Rect dialog_bounds = child_dialog->GetWindowBoundsInScreen();
   if (dialog_bounds.IsEmpty()) {
     return;
@@ -933,6 +1117,9 @@ void DocumentPipHost::OnWidgetBoundsChanged(views::Widget* widget,
     window_controller_->NotifyWindowBoundsChanged();
   }
 #endif
+  if (exclusive_access_context_) {
+    exclusive_access_context_->RepositionBubble();
+  }
   NotifyPositionRequiresUpdate();
 }
 

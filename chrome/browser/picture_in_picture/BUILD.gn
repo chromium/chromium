@@ -345,16 +345,31 @@ if (!is_android) {
 
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
-    sources =
-        [ "auto_picture_in_picture_window_occlusion_interactive_uitest.cc" ]
+    sources = [
+      "auto_picture_in_picture_window_occlusion_interactive_uitest.cc",
+      "document_pip_exclusive_access_interactive_uitest.cc",
+    ]
 
     deps = [
       ":picture_in_picture",
       ":test_support_ui",
+      "//base",
       "//base/test:test_support",
+      "//chrome/browser/content_settings:content_settings_factory",
       "//chrome/browser/ui:browser_window_header",
       "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/exclusive_access",
+      "//chrome/browser/ui/views/exclusive_access",
+      "//chrome/browser/ui/views/picture_in_picture",
+      "//chrome/test:test_support",
+      "//components/content_settings/core/browser",
+      "//components/input",
+      "//content/public/browser",
+      "//content/test:test_support",
+      "//net:test_support",
       "//testing/gtest",
+      "//third_party/blink/public/common:headers",
+      "//ui/views:test_support",
     ]
   }
 

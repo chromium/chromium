@@ -10,7 +10,16 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "base/test/bind.h"
+#include "base/test/run_until.h"
+#include "base/test/test_future.h"
+#include "build/build_config.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/exclusive_access/exclusive_access_bubble.h"
+#include "chrome/browser/ui/exclusive_access/exclusive_access_context.h"
+#include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
+#include "chrome/browser/ui/views/exclusive_access/exclusive_access_bubble_views.h"
 #include "chrome/browser/ui/views/picture_in_picture/document_pip_contents_view.h"
 #include "chrome/browser/ui/views/picture_in_picture/document_pip_widget_delegate.h"
 #include "chrome/test/base/testing_profile.h"
@@ -37,10 +46,14 @@
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/display/screen.h"
+#include "ui/events/event.h"
+#include "ui/gfx/animation/animation_test_api.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/focus/focus_manager.h"
+#include "ui/views/test/widget_test.h"
 #include "ui/views/view.h"
+#include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
 #include "ui/views/window/non_client_view.h"
@@ -1170,6 +1183,233 @@ TEST_F(DocumentPipHostTest, PreHandleKeyboardEvent_ReturnsNotHandled) {
                                       base::TimeTicks::Now());
   EXPECT_EQ(content::KeyboardEventProcessingResult::NOT_HANDLED,
             host->PreHandleKeyboardEvent(host->GetChildWebContents(), event));
+}
+
+class DocumentPipExclusiveAccessTest : public DocumentPipHostTest {
+ public:
+  void SetUp() override {
+    DocumentPipHostTest::SetUp();
+    ExclusiveAccessBubbleViews::set_skip_presentation_delay_for_testing(true);
+  }
+
+  void TearDown() override {
+    DocumentPipHostTest::TearDown();
+    ExclusiveAccessBubbleViews::set_skip_presentation_delay_for_testing(false);
+  }
+
+  void ShowBubble(
+      DocumentPipHost* host,
+      ExclusiveAccessBubbleHideCallback callback = base::NullCallback()) {
+    host->GetExclusiveAccessManagerForTesting()
+        ->context()
+        ->UpdateExclusiveAccessBubble(
+            {.origin = url::Origin::Create(GURL("https://example.test")),
+             .type = EXCLUSIVE_ACCESS_BUBBLE_TYPE_POINTERLOCK_EXIT_INSTRUCTION},
+            std::move(callback));
+  }
+
+  views::Widget* GetBubbleWidget() {
+    for (views::Widget* widget : views::test::WidgetTest::GetAllWidgets()) {
+      if (widget->GetContentsView()->GetProperty(
+              views::kElementIdentifierKey) ==
+          kExclusiveAccessBubbleViewElementId) {
+        return widget;
+      }
+    }
+    return nullptr;
+  }
+
+ private:
+  gfx::AnimationTestApi::RenderModeResetter rich_animation_mode_ =
+      gfx::AnimationTestApi::SetRichAnimationRenderMode(
+          gfx::Animation::RichAnimationRenderMode::FORCE_ENABLED);
+};
+
+TEST_F(DocumentPipExclusiveAccessTest, ContextDoesNotAllowFullscreen) {
+  auto* host = CreateHostAndOpenPipWindow();
+  auto* context = host->GetExclusiveAccessManagerForTesting()->context();
+  EXPECT_EQ(host->GetProfile(), context->GetProfile());
+  EXPECT_EQ(host->GetChildWebContents(),
+            context->GetWebContentsForExclusiveAccess());
+  EXPECT_FALSE(context->IsFullscreen());
+  EXPECT_FALSE(context->CanUserEnterFullscreen());
+  EXPECT_FALSE(host->GetWidget()->widget_delegate()->CanFullscreen());
+  EXPECT_FALSE(context->IsExclusiveAccessBubbleDisplayed());
+}
+
+TEST_F(DocumentPipExclusiveAccessTest, FullscreenCallbacksAreNoOps) {
+  auto* host = CreateHostAndOpenPipWindow();
+  auto* context = host->GetExclusiveAccessManagerForTesting()->context();
+  const gfx::Rect initial_bounds = host->GetWidget()->GetWindowBoundsInScreen();
+
+  context->EnterFullscreen(
+      url::Origin::Create(GURL("https://example.test")),
+      EXCLUSIVE_ACCESS_BUBBLE_TYPE_FULLSCREEN_EXIT_INSTRUCTION, {});
+  EXPECT_FALSE(context->IsFullscreen());
+  EXPECT_FALSE(host->GetWidget()->IsFullscreen());
+  EXPECT_FALSE(context->IsExclusiveAccessBubbleDisplayed());
+  EXPECT_EQ(initial_bounds, host->GetWidget()->GetWindowBoundsInScreen());
+
+  context->ExitFullscreen();
+  EXPECT_FALSE(context->IsFullscreen());
+  EXPECT_FALSE(host->GetWidget()->IsFullscreen());
+  EXPECT_FALSE(context->IsExclusiveAccessBubbleDisplayed());
+  EXPECT_EQ(initial_bounds, host->GetWidget()->GetWindowBoundsInScreen());
+}
+
+TEST_F(DocumentPipExclusiveAccessTest, BubbleIsNotPositionedAsChildDialog) {
+  auto* host = CreateHostAndOpenPipWindow();
+  ShowBubble(host);
+  task_environment()->FastForwardBy(base::Milliseconds(400));
+  auto* bubble = GetBubbleWidget();
+  ASSERT_TRUE(bubble);
+  ASSERT_TRUE(bubble->IsVisible());
+  const gfx::Rect bubble_bounds = bubble->GetWindowBoundsInScreen();
+  const gfx::Rect window_bounds = host->GetWidget()->GetWindowBoundsInScreen();
+
+  auto* delegate = static_cast<PipChildDialogObserverHelper::Delegate*>(host);
+  delegate->PositionChildDialog(bubble);
+
+  EXPECT_EQ(bubble_bounds, bubble->GetWindowBoundsInScreen());
+  EXPECT_EQ(window_bounds, host->GetWidget()->GetWindowBoundsInScreen());
+}
+
+TEST_F(DocumentPipExclusiveAccessTest, BubbleFollowsWindowBounds) {
+  auto* host = CreateHostAndOpenPipWindow();
+  ShowBubble(host);
+  task_environment()->FastForwardBy(base::Milliseconds(400));
+  auto* bubble = GetBubbleWidget();
+  ASSERT_TRUE(bubble);
+  ASSERT_TRUE(bubble->IsVisible());
+  const gfx::Rect old_bubble_bounds = bubble->GetWindowBoundsInScreen();
+  const gfx::Point old_client_origin =
+      host->GetWidget()->GetClientAreaBoundsInScreen().origin();
+
+  gfx::Rect bounds = host->GetWidget()->GetWindowBoundsInScreen();
+  bounds.Offset(50, 60);
+  host->GetWidget()->SetBounds(bounds);
+
+  EXPECT_EQ(
+      host->GetWidget()->GetClientAreaBoundsInScreen().origin() -
+          old_client_origin,
+      bubble->GetWindowBoundsInScreen().origin() - old_bubble_bounds.origin());
+}
+
+TEST_F(DocumentPipExclusiveAccessTest, ReshowCancelsPendingBubbleDestruction) {
+  auto* host = CreateHostAndOpenPipWindow();
+  auto* context = host->GetExclusiveAccessManagerForTesting()->context();
+  base::test::TestFuture<ExclusiveAccessBubbleHideReason> hidden;
+  ShowBubble(host, hidden.GetCallback());
+  task_environment()->FastForwardBy(base::Milliseconds(400));
+  ASSERT_TRUE(context->IsExclusiveAccessBubbleDisplayed());
+
+  base::test::TestFuture<ExclusiveAccessBubbleHideReason> not_shown;
+  context->UpdateExclusiveAccessBubble(
+      {.type = EXCLUSIVE_ACCESS_BUBBLE_TYPE_NONE}, not_shown.GetCallback());
+  EXPECT_EQ(ExclusiveAccessBubbleHideReason::kNotShown, not_shown.Get());
+  EXPECT_EQ(ExclusiveAccessBubbleHideReason::kInterrupted, hidden.Get());
+
+  base::test::TestFuture<ExclusiveAccessBubbleHideReason> reshown_hidden;
+  ShowBubble(host, reshown_hidden.GetCallback());
+  task_environment()->FastForwardBy(base::Milliseconds(400));
+  EXPECT_TRUE(context->IsExclusiveAccessBubbleDisplayed());
+  EXPECT_FALSE(reshown_hidden.IsReady());
+  task_environment()->FastForwardBy(ExclusiveAccessBubble::kShowTime);
+  EXPECT_EQ(ExclusiveAccessBubbleHideReason::kTimeout, reshown_hidden.Get());
+}
+
+TEST_F(DocumentPipExclusiveAccessTest, NotShownCallbackCanCloseWindow) {
+  auto* host = CreateHostAndOpenPipWindow();
+  ShowBubble(host);
+  host->GetExclusiveAccessManagerForTesting()
+      ->context()
+      ->UpdateExclusiveAccessBubble(
+          {.type = EXCLUSIVE_ACCESS_BUBBLE_TYPE_NONE},
+          base::BindLambdaForTesting(
+              [host](ExclusiveAccessBubbleHideReason reason) {
+                EXPECT_EQ(ExclusiveAccessBubbleHideReason::kNotShown, reason);
+                host->Close();
+              }));
+  EXPECT_FALSE(host->GetExclusiveAccessManagerForTesting());
+  EXPECT_FALSE(host->GetWidget());
+  EXPECT_TRUE(base::test::RunUntil([this] { return !GetBubbleWidget(); }));
+}
+
+TEST_F(DocumentPipExclusiveAccessTest, OnlyUserMouseInputReshowsBubble) {
+  auto* host = CreateHostAndOpenPipWindow();
+  auto* context = host->GetExclusiveAccessManagerForTesting()->context();
+  ShowBubble(host);
+  task_environment()->FastForwardBy(ExclusiveAccessBubble::kSnoozeTime +
+                                    base::Seconds(1));
+  ASSERT_FALSE(context->IsExclusiveAccessBubbleDisplayed());
+
+  for (auto type : {ui::EventType::kMouseEntered, ui::EventType::kMouseExited,
+                    ui::EventType::kMouseMoved}) {
+    const int flags =
+        type == ui::EventType::kMouseMoved ? ui::EF_IS_SYNTHESIZED : 0;
+    ui::MouseEvent event(type, gfx::PointF(), gfx::PointF(),
+                         base::TimeTicks::Now(), flags, 0);
+    host->ContentsMouseEvent(host->GetChildWebContents(), event);
+    EXPECT_FALSE(context->IsExclusiveAccessBubbleDisplayed());
+  }
+
+  ui::MouseEvent event(ui::EventType::kMouseMoved, gfx::PointF(), gfx::PointF(),
+                       base::TimeTicks::Now(), 0, 0);
+  host->ContentsMouseEvent(host->GetChildWebContents(), event);
+  EXPECT_TRUE(context->IsExclusiveAccessBubbleDisplayed());
+}
+
+TEST_F(DocumentPipExclusiveAccessTest, NativeBubbleCloseClearsOwner) {
+  auto* host = CreateHostAndOpenPipWindow();
+  ShowBubble(host);
+  auto* bubble = GetBubbleWidget();
+  ASSERT_TRUE(bubble);
+  bubble->CloseNow();
+  EXPECT_FALSE(host->GetExclusiveAccessManagerForTesting()
+                   ->context()
+                   ->IsExclusiveAccessBubbleDisplayed());
+}
+
+TEST_F(DocumentPipExclusiveAccessTest,
+       CloseAndReopenWithPendingBubbleDeletion) {
+  auto* host = CreateHostAndOpenPipWindow();
+  ShowBubble(host);
+  host->GetExclusiveAccessManagerForTesting()
+      ->context()
+      ->UpdateExclusiveAccessBubble({.type = EXCLUSIVE_ACCESS_BUBBLE_TYPE_NONE},
+                                    base::NullCallback());
+  host->Close();
+  EXPECT_FALSE(host->GetExclusiveAccessManagerForTesting());
+
+  EXPECT_EQ(host, CreateHostAndOpenPipWindow());
+  ShowBubble(host);
+  task_environment()->FastForwardBy(base::Milliseconds(400));
+  EXPECT_TRUE(host->GetExclusiveAccessManagerForTesting()
+                  ->context()
+                  ->IsExclusiveAccessBubbleDisplayed());
+}
+
+TEST_F(DocumentPipExclusiveAccessTest, HideCallbackDefersBubbleDeletion) {
+  auto* host = CreateHostAndOpenPipWindow();
+  auto* context = host->GetExclusiveAccessManagerForTesting()->context();
+  base::test::TestFuture<ExclusiveAccessBubbleHideReason> hidden;
+  ShowBubble(host, base::BindLambdaForTesting(
+                       [this, context, callback = hidden.GetCallback()](
+                           ExclusiveAccessBubbleHideReason reason) mutable {
+                         context->UpdateExclusiveAccessBubble(
+                             {.type = EXCLUSIVE_ACCESS_BUBBLE_TYPE_NONE},
+                             base::NullCallback());
+                         // The bubble must survive until its callback unwinds.
+                         EXPECT_TRUE(GetBubbleWidget());
+                         std::move(callback).Run(reason);
+                       }));
+
+  task_environment()->FastForwardBy(ExclusiveAccessBubble::kShowTime +
+                                    base::Milliseconds(400));
+
+  ASSERT_TRUE(hidden.IsReady());
+  EXPECT_EQ(ExclusiveAccessBubbleHideReason::kTimeout, hidden.Get());
+  EXPECT_FALSE(context->IsExclusiveAccessBubbleDisplayed());
 }
 
 // AddNewContents forwards the popup to the opener's delegate (the success
