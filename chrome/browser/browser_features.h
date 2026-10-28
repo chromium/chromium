@@ -86,8 +86,6 @@ BASE_DECLARE_FEATURE(kSandboxExternalProtocolBlockedWarning);
 BASE_DECLARE_FEATURE(kSecretPortalKeyProviderUseForEncryption);
 #endif
 
-BASE_DECLARE_FEATURE(kTriggerNetworkDataMigration);
-
 BASE_DECLARE_FEATURE(kWebUsbDeviceDetection);
 
 #if BUILDFLAG(IS_WIN)

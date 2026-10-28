@@ -1306,6 +1306,16 @@ BASE_FEATURE(kTrackEmptyRendererProcessesForReuse,
 #endif
 );
 
+// Enables migration of the network context data from `unsandboxed_data_path` to
+// `data_path`. See the explanation in network_context.mojom.
+BASE_FEATURE(kTriggerNetworkDataMigration,
+#if BUILDFLAG(IS_WIN)
+             base::FEATURE_ENABLED_BY_DEFAULT
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+);
+
 // This feature is for a reverse Origin Trial, enabling SharedArrayBuffer for
 // sites as they migrate towards requiring cross-origin isolation for these
 // features.

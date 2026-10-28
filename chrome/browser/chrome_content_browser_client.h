@@ -784,6 +784,8 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
       cert_verifier::mojom::CertVerifierCreationParams*
           cert_verifier_creation_params) override;
   std::vector<base::FilePath> GetNetworkContextsParentDirectory() override;
+  std::optional<base::FilePath> GetNetworkContextsDataDirectory() override;
+  std::optional<base::FilePath> GetNetworkContextsCacheDirectory() override;
   base::DictValue GetNetLogConstants() override;
   bool AllowRenderingMhtmlOverHttp(
       content::NavigationUIData* navigation_ui_data) override;
@@ -1438,8 +1440,11 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   std::unique_ptr<vr::ChromeXrIntegrationClient> xr_integration_client_;
 #endif
 
-  // Returned from GetNetworkContextsParentDirectory() but created on the UI
-  // thread because it needs to access the Local State prefs.
+  // Returned from GetNetworkContextsParentDirectory(),
+  // GetNetworkContextsDataDirectory(), and GetNetworkContextsCacheDirectory()
+  // but created on the UI thread because it needs to access Local State prefs.
+  base::FilePath network_contexts_data_directory_;
+  base::FilePath network_contexts_cache_directory_;
   std::vector<base::FilePath> network_contexts_parent_directory_;
 
   // Handles web-browser implementation of the http auth feature.

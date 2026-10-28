@@ -1227,6 +1227,16 @@ ContentBrowserClient::GetNetworkContextsParentDirectory() {
   return {};
 }
 
+std::optional<base::FilePath>
+ContentBrowserClient::GetNetworkContextsDataDirectory() {
+  return std::nullopt;
+}
+
+std::optional<base::FilePath>
+ContentBrowserClient::GetNetworkContextsCacheDirectory() {
+  return std::nullopt;
+}
+
 base::DictValue ContentBrowserClient::GetNetLogConstants() {
   return base::DictValue();
 }

@@ -5961,29 +5961,36 @@ void ChromeContentBrowserClient::InitOnUIThread() {
   safe_browsing_service_ = g_browser_process->safe_browsing_service();
 #endif
 
-  // Initialize `network_contexts_parent_directory_`.
-  base::FilePath user_data_dir;
-  base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir);
-  DCHECK(!user_data_dir.empty());
-  network_contexts_parent_directory_.push_back(user_data_dir);
+  // Initialize `network_contexts_parent_directory_`,
+  // `network_contexts_data_directory_`, and
+  // `network_contexts_cache_directory_`.
+  std::optional<base::FilePath> data_dir = GetNetworkContextsDataDirectory();
+  if (data_dir.has_value()) {
+    network_contexts_parent_directory_.push_back(*data_dir);
+  }
 
-  base::FilePath cache_dir;
-  chrome::GetUserCacheDirectory(user_data_dir, &cache_dir);
-  DCHECK(!cache_dir.empty());
+  std::optional<base::FilePath> cache_dir = GetNetworkContextsCacheDirectory();
   // On some platforms, the cache is a child of the user_data_dir so only
   // return the one path.
-  if (cache_dir != user_data_dir && !user_data_dir.IsParent(cache_dir)) {
-    network_contexts_parent_directory_.push_back(cache_dir);
+  if (cache_dir.has_value() && *cache_dir != network_contexts_data_directory_ &&
+      !network_contexts_data_directory_.IsParent(*cache_dir)) {
+    network_contexts_parent_directory_.push_back(*cache_dir);
   }
 
   // If the cache location has been overridden by a switch or policy to a
   // directory outside `user_data_dir` and `cache_dir`, include that as well.
   const base::FilePath pref_cache_dir =
       chrome_browser_net::GetDiskCacheDir(g_browser_process->local_state());
-  if (!pref_cache_dir.empty() && pref_cache_dir != user_data_dir &&
-      !user_data_dir.IsParent(pref_cache_dir) && pref_cache_dir != cache_dir &&
-      !cache_dir.IsParent(pref_cache_dir)) {
-    network_contexts_parent_directory_.push_back(pref_cache_dir);
+  if (!pref_cache_dir.empty()) {
+    const bool is_inside_existing_dirs =
+        pref_cache_dir == network_contexts_data_directory_ ||
+        network_contexts_data_directory_.IsParent(pref_cache_dir) ||
+        (cache_dir.has_value() &&
+         (pref_cache_dir == *cache_dir || cache_dir->IsParent(pref_cache_dir)));
+    if (!is_inside_existing_dirs) {
+      network_contexts_cache_directory_ = pref_cache_dir;
+      network_contexts_parent_directory_.push_back(pref_cache_dir);
+    }
   }
 }
 
@@ -7267,6 +7274,37 @@ std::vector<base::FilePath>
 ChromeContentBrowserClient::GetNetworkContextsParentDirectory() {
   DCHECK(!network_contexts_parent_directory_.empty());
   return network_contexts_parent_directory_;
+}
+
+std::optional<base::FilePath>
+ChromeContentBrowserClient::GetNetworkContextsDataDirectory() {
+  if (network_contexts_data_directory_.empty()) {
+    base::PathService::Get(chrome::DIR_USER_DATA,
+                           &network_contexts_data_directory_);
+    DCHECK(!network_contexts_data_directory_.empty());
+  }
+  if (network_contexts_data_directory_.empty()) {
+    return std::nullopt;
+  }
+  return network_contexts_data_directory_;
+}
+
+std::optional<base::FilePath>
+ChromeContentBrowserClient::GetNetworkContextsCacheDirectory() {
+  if (network_contexts_cache_directory_.empty()) {
+    std::optional<base::FilePath> network_data_dir =
+        GetNetworkContextsDataDirectory();
+    if (!network_data_dir.has_value()) {
+      return std::nullopt;
+    }
+    chrome::GetUserCacheDirectory(*network_data_dir,
+                                  &network_contexts_cache_directory_);
+    DCHECK(!network_contexts_cache_directory_.empty());
+  }
+  if (network_contexts_cache_directory_.empty()) {
+    return std::nullopt;
+  }
+  return network_contexts_cache_directory_;
 }
 
 base::DictValue ChromeContentBrowserClient::GetNetLogConstants() {

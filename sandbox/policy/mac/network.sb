@@ -10,13 +10,27 @@
 (define network-service-test-certs-dir "NETWORK_SERVICE_TEST_CERTS_DIR")
 
 ; Allow access to the [0,N) storage location paths.
-(let ((count (string->number (param network-service-storage-paths-count))))
-  (let loop ((i 0))
-    (if (< i count)
-      (begin
-        (allow file* (subpath
-          (param (string-append network-service-storage-path-n (number->string i)))))
-        (loop (+ i 1))))))
+; TODO(https://crbug.com/567101748) remove this once we have fully rolled out
+; the TriggerNetworkDataMigration feature to macOS.
+(if (param-defined? network-service-storage-paths-count)
+  (let ((count (string->number (param network-service-storage-paths-count))))
+    (let loop ((i 0))
+      (if (< i count)
+        (begin
+          (allow file* (subpath
+              (param (string-append network-service-storage-path-n (number->string i)))))
+          (loop (+ i 1)))))))
+
+; If a user-data-dir is provided explicitly, scope our file access to known
+; subdirectories (https://crbug.com/567101748)
+(if (param-defined? user-data-dir)
+  (allow file*
+    (regex
+      (string-append "^"
+        (regex-quote (param user-data-dir))
+        #"(/[^/]+)?/(Network|Safe Browsing Network|Shared Dictionary)(/.*)?$"))))
+(if (param-defined? user-cache-dir)
+  (allow file* (subpath (param user-cache-dir))))
 
 ; DNS configuration watcher entries. This is a nesty mess of symlinks.
 (allow file-read*

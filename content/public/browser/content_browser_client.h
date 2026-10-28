@@ -2227,6 +2227,14 @@ class CONTENT_EXPORT ContentBrowserClient {
   // persistent storage location differs from the cache storage location.
   virtual std::vector<base::FilePath> GetNetworkContextsParentDirectory();
 
+  // Returns the directory containing persistent data for network contexts (e.g.
+  // user data directory), or std::nullopt if not applicable.
+  virtual std::optional<base::FilePath> GetNetworkContextsDataDirectory();
+
+  // Returns the cache directory for network contexts, or std::nullopt if not
+  // applicable.
+  virtual std::optional<base::FilePath> GetNetworkContextsCacheDirectory();
+
   // Called once during initialization of NetworkService to provide constants
   // to NetLog.  (Though it may be called multiples times if NetworkService
   // crashes and needs to be reinitialized).  The return value is merged with
