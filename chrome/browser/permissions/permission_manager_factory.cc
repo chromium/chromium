@@ -23,7 +23,6 @@
 #include "chrome/browser/storage/persistent_storage_permission_context.h"
 #include "chrome/browser/storage_access_api/storage_access_grant_permission_context.h"
 #include "chrome/browser/tab_contents/tab_util.h"
-#include "chrome/browser/top_level_storage_access_api/top_level_storage_access_permission_context.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
@@ -180,9 +179,6 @@ permissions::PermissionManager::PermissionContextMap CreatePermissionContexts(
 
   permission_contexts[ContentSettingsType::STORAGE_ACCESS] =
       std::make_unique<StorageAccessGrantPermissionContext>(profile);
-
-  permission_contexts[ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS] =
-      std::make_unique<TopLevelStorageAccessPermissionContext>(profile);
 
   permission_contexts[ContentSettingsType::WINDOW_MANAGEMENT] =
       std::make_unique<permissions::WindowManagementPermissionContext>(profile);

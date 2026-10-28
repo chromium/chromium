@@ -147,18 +147,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="API.TopLevelStorageAccess.RequestOutcome"
-    enum="TopLevelStorageAccessRequestOutcome" expires_after="2027-01-17">
-  <owner>cfredric@chromium.org</owner>
-  <owner>mreichhoff@chromium.org</owner>
-  <summary>
-    Records the outcome of a particular Top-Level Storage Access API permission
-    request.
-
-    Recorded at the time of the request, for every request.
-  </summary>
-</histogram>
-
 <histogram name="Clipboard.Read" enum="ClipboardFormatRead"
     expires_after="2026-12-27">
   <owner>huangdarwin@chromium.org</owner>

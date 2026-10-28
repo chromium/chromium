@@ -133,7 +133,7 @@ Called by update_bad_message_reasons.py.-->
   <int value="11" label="RFH_INVALID_WEB_FRAME_URL"/>
   <int value="12" label="OBSOLETE_PVM_PRINT_FENCED_FRAME"/>
   <int value="13" label="SAGPC_INVALID_PERMISSION_REQUEST_CONTEXT"/>
-  <int value="14" label="TLSAPC_INVALID_PERMISSION_REQUEST_CONTEXT"/>
+  <int value="14" label="OBSOLETE_TLSAPC_INVALID_PERMISSION_REQUEST_CONTEXT"/>
   <int value="15" label="CCBC_GOOGLE_CHROME_SCHEME"/>
   <int value="16" label="PWC_BRIDGE_UNQUALIFIED_FRAME"/>
 </enum>

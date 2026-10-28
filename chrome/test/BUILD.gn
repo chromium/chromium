@@ -2661,7 +2661,6 @@ test("unit_tests") {
     "//chrome/browser/sync:unit_tests",
     "//chrome/browser/tab_group_sync:unit_tests",
     "//chrome/browser/tips/core:unit_tests",
-    "//chrome/browser/top_level_storage_access_api:unit_tests",
     "//chrome/browser/tracing:unit_tests",
     "//chrome/browser/translate:unit_tests",
     "//chrome/browser/trusted_vault:unit_tests",
