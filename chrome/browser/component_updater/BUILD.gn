@@ -154,7 +154,6 @@ source_set("impl") {
     "//chrome/browser/accessibility",
     "//chrome/browser/actor:impl",
     "//chrome/browser/ai",
-    "//chrome/browser/history_embeddings",
     "//chrome/browser/media",
     "//chrome/browser/net",
     "//chrome/browser/net:key_pinning_proto",

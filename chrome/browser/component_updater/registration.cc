@@ -31,7 +31,6 @@
 #include "chrome/browser/component_updater/ssl_error_assistant_component_installer.h"
 #include "chrome/browser/component_updater/subresource_filter_component_installer.h"
 #include "chrome/browser/component_updater/trust_token_key_commitments_component_installer.h"
-#include "chrome/browser/history_embeddings/history_embeddings_utils.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
@@ -39,7 +38,6 @@
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/component_updater/component_updater_service.h"
 #include "components/component_updater/installer_policies/actor_safety_lists_component_installer.h"
-#include "components/component_updater/installer_policies/history_search_strings_component_installer.h"
 #include "components/component_updater/installer_policies/on_device_head_suggest_component_installer.h"
 #include "components/component_updater/installer_policies/optimization_hints_component_installer.h"
 #include "components/component_updater/installer_policies/safety_tips_component_installer.h"
@@ -73,7 +71,6 @@
 #include "chrome/browser/component_updater/dictation_connector_component_installer.h"
 #include "chrome/browser/component_updater/iwa_key_distribution_component_installer.h"
 #include "chrome/browser/component_updater/zxcvbn_data_component_installer.h"
-#include "chrome/browser/resource_coordinator/tab_manager.h"
 #include "media/base/media_switches.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
 
@@ -127,6 +124,7 @@ void DeleteOldComponents(const base::FilePath& user_data_dir) {
            FILE_PATH_LITERAL(
                "Fingerprinting Protection Filter"),    // Remove in M156+
            FILE_PATH_LITERAL("PlusAddressBlocklist"),  // Remove in M158+
+           FILE_PATH_LITERAL("HistorySearch"),         // Remove in M160+
 #if BUILDFLAG(IS_CHROMEOS)
            FILE_PATH_LITERAL("AppProvisioning"),
            // TODO(crbug.com/380780352): Remove these after the stepping stone.
@@ -161,9 +159,6 @@ void RegisterComponentsForUpdate() {
   RegisterPrivateVerificationTokensComponentIfEnabled(cus);
   RegisterPrivacySandboxAttestationsComponent(cus);
   RegisterActorSafetyListsComponent(cus, base::OnceClosure());
-  if (history_embeddings::IsHistoryEmbeddingsFeatureEnabled()) {
-    RegisterHistorySearchStringsComponent(cus);
-  }
   RegisterSSLErrorAssistantComponent(cus);
 
   RegisterIndigoComponent(cus);
@@ -246,10 +241,6 @@ void RegisterComponentsForUpdate() {
   if (base::PathService::Get(chrome::DIR_USER_DATA, &path)) {
     ManageAIEmbeddingsComponentRegistration(cus,
                                             g_browser_process->local_state());
-
-    if (!history_embeddings::IsHistoryEmbeddingsFeatureEnabled()) {
-      DeleteHistorySearchStringsComponent(path);
-    }
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
     ManageComponentExtensionRegistrations(cus);
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)

@@ -52,8 +52,6 @@ static_library("installer_policies_no_content_deps") {
 
 static_library("installer_policies_with_content_deps") {
   sources = [
-    "history_search_strings_component_installer.cc",
-    "history_search_strings_component_installer.h",
     "on_device_head_suggest_component_installer.cc",
     "on_device_head_suggest_component_installer.h",
     "optimization_hints_component_installer.cc",
@@ -65,7 +63,6 @@ static_library("installer_policies_with_content_deps") {
   deps = [
     "//base",
     "//components/component_updater",
-    "//components/history_embeddings/core",
     "//components/omnibox/browser",
     "//components/omnibox/common",
     "//components/optimization_guide/core",
@@ -92,7 +89,6 @@ source_set("unit_tests") {
     "actor_safety_lists_component_installer_policy_unittest.cc",
     "amount_extraction_heuristic_regexes_component_installer_unittest.cc",
     "first_party_sets_component_installer_policy_unittest.cc",
-    "history_search_strings_component_installer_unittest.cc",
     "optimization_hints_component_installer_unittest.cc",
     "prediction_model_component_installer_unittest.cc",
     "private_verification_tokens_installer_policy_unittest.cc",
@@ -106,7 +102,6 @@ source_set("unit_tests") {
     "//components/autofill/core/browser:amount_extraction_heuristic_regexes_proto",
     "//components/autofill/core/browser:test_support",
     "//components/component_updater:test_support",
-    "//components/history_embeddings/core",
     "//components/optimization_guide/core",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/private_verification_tokens/common:private_verification_tokens_issuer_config",
