@@ -125,7 +125,6 @@ const char* const kNonembeddedLowEntropySourceDenylist[] = {
     "ScrollJankV4MetricFastScrollContinuityRequiresSameDirection",
     "ScrollPredictorEnhancements",
     "SimpleCachePrefetchExperiment2",
-    "SkipDisabledGLContextOnDrDC",
     "TextClassifierTimeout",
     "ThreeDSecureTelemetry",
     "UMA-Uniformity-Trial-0.5-Percent-1",
