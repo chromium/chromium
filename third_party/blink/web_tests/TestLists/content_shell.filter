@@ -403,7 +403,7 @@ external/wpt/pointerevents/crashtests/longpress-crash.html
 external/wpt/css/css-break/grid/grid-lanes/grid-lanes-fragmentation-003.html
 external/wpt/css/css-overflow/keyboard-scroll.html
 external/wpt/css/css-page/*
-external/wpt/css/printing/*
+external/wpt/css/printing/input-file-print.html
 virtual/fragmented-oof-in-cb/*
 
 # Print tests that don't run reliably on headless, see bugs linked from
