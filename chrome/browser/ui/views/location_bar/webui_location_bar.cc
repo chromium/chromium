@@ -1211,7 +1211,8 @@ void WebUILocationBar::OnPopupStateChanged(OmniboxPopupState old_state,
       break;
     case OmniboxPopupState::kNone:
       if (using_full_popup_) {
-        omnibox_controller_->edit_model()->OnKillFocus();
+        omnibox_popup_view_->OnBlur();
+        GetOmniboxController()->edit_model()->OnKillFocus();
       }
       break;
   }

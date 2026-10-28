@@ -1919,10 +1919,6 @@ IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest, ClickMatch) {
 // Stage 3: Clear user input / revert to active page URL (kClearUserInput)
 // Stage 4: Clear focus / blur Omnibox (kBlur)
 IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest, EscapeStagedUnwinding) {
-  if (IsWebUIToolbarEnabled()) {
-    GTEST_SKIP() << "TODO(b/568378107): With the WebUI toolbar, the "
-                    "omnibox keeps focus after the full popup closes.";
-  }
   base::HistogramTester histogram_tester;
 
   RunTestSequence(
@@ -1984,10 +1980,6 @@ IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest, EscapeStagedUnwinding) {
 // the permanent URL is empty (on NTP) and input is empty.
 IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
                        EscapeStagedUnwinding_EmptyPermanentUrl) {
-  if (IsWebUIToolbarEnabled()) {
-    GTEST_SKIP() << "TODO(b/568378107): With the WebUI toolbar, the "
-                    "omnibox keeps focus after the full popup closes.";
-  }
   base::HistogramTester histogram_tester;
 
   RunTestSequence(
@@ -2168,10 +2160,6 @@ IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest, NewTabKeepsPopup) {
 // and focused dismisses the popup and navigates to the bookmarked URL.
 IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
                        ClickBookmarksBarWhenOmniboxFocused) {
-  if (IsWebUIToolbarEnabled()) {
-    GTEST_SKIP() << "TODO(b/568378107): With the WebUI toolbar, the "
-                    "omnibox keeps focus after the full popup closes.";
-  }
   // Disable slide animations and ensure the bookmarks bar is always visible.
   BookmarkBarView::DisableAnimationsForTesting(true);
   browser()->GetProfile()->GetPrefs()->SetBoolean(
@@ -3368,10 +3356,6 @@ IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
 // window and resets the original window's omnibox popup state to steady state.
 IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
                        ShiftEnterOpensNewWindowAndResetsOmnibox) {
-  if (IsWebUIToolbarEnabled()) {
-    GTEST_SKIP() << "TODO(b/568378107): With the WebUI toolbar, the "
-                    "omnibox keeps focus after the full popup closes.";
-  }
   RunTestSequence(
       // 1. Open Tab 1 at chrome://version/ and focus Omnibox.
       OpenInitialTabAndFocusOmnibox(kTab1, GURL("chrome://version/")),
@@ -3539,10 +3523,6 @@ IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
 // submits the verbatim URL (reloads/navigates) and closes the popup.
 IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
                        EnterSubmitsVerbatimUrlOnOpenPage) {
-  if (IsWebUIToolbarEnabled()) {
-    GTEST_SKIP() << "TODO(b/568378107): With the WebUI toolbar, the "
-                    "omnibox keeps focus after the full popup closes.";
-  }
   RunTestSequence(
       OpenInitialTabAndFocusOmnibox(kTab1, GURL("chrome://version/")),
       WaitForWebUIInputValue("chrome://version"),
