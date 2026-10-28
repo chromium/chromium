@@ -69,9 +69,11 @@ bool HasTerminatingControlCommand(const ActuatorDownstreamMessage& message) {
 
 TransportSessionImpl::TransportSessionImpl(
     std::string_view session_id,
-    base::WeakPtr<TransportChannel> channel)
+    base::WeakPtr<TransportChannel> channel,
+    DownstreamMessageCallback on_downstream_message)
     : session_id_(session_id),
       channel_(std::move(channel)),
+      on_downstream_message_(std::move(on_downstream_message)),
       start_time_(base::TimeTicks::Now()) {
   DCHECK(channel_);
 }
@@ -109,6 +111,31 @@ void TransportSessionImpl::OnMessage(PayloadType payload_type,
   // ensures synchronous control replies (e.g. `StartSessionAck`) populate
   // `responding_to_sequence_number = 0`.
   base::WeakPtr<TransportSessionImpl> weak_this = GetWeakPtr();
+  if (on_downstream_message_) {
+    // `BrowserActuatorMessageHandler` unpacks bundled FCM messages and calls
+    // `OnMessage()` one payload at a time, so report each call to observers as
+    // a single-payload envelope.
+    ActuatorDownstreamMessage envelope;
+    envelope.set_session_id(session_id_);
+    envelope.set_sequence_number(0);
+    ActuatorDownstreamTypedPayload* typed_payload =
+        envelope.add_typed_payloads();
+    if (payload_type == PayloadType::kUnspecified) {
+      typed_payload->set_payload_type(
+          ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_UNSPECIFIED);
+    } else {
+      typed_payload->set_payload_type(
+          ToDownstreamProtoPayloadType(payload_type));
+      typed_payload->mutable_proto_payload()->set_type_url(
+          std::string(ExpectedTypeUrl(payload_type)));
+    }
+    typed_payload->mutable_proto_payload()->set_value(
+        std::string(serialized_payload));
+    on_downstream_message_.Run(envelope.session_id(), envelope);
+    if (!weak_this) {
+      return;
+    }
+  }
   dispatching_sequence_number_ = 0;
   base::expected<void, ProcessPayloadError> result =
       ProcessPayload(payload_type, serialized_payload);
@@ -303,6 +330,12 @@ TransportSessionImpl::ProcessDownstreamMessage(
   for (const auto& ready_message : deliverable) {
     if (!weak_this) {
       break;
+    }
+    if (on_downstream_message_) {
+      on_downstream_message_.Run(ready_message.session_id(), ready_message);
+      if (!weak_this) {
+        break;
+      }
     }
     last_seen_sequence_number_ = ready_message.sequence_number();
     dispatching_sequence_number_ = ready_message.sequence_number();

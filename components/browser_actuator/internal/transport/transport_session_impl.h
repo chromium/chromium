@@ -14,6 +14,7 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
+#include "base/functional/callback.h"
 #include "base/functional/function_ref.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -53,8 +54,18 @@ class TransportSessionImpl : public TransportSession,
     kSessionNotFound,
   };
 
+  // Runs right before a downstream message reaches any handler: once per
+  // envelope on the stream path, and once per payload on the FCM wake-up path
+  // (as a single-payload envelope with `sequence_number` 0). `session_id`
+  // points into `message`. The callback must not keep either argument.
+  using DownstreamMessageCallback =
+      base::RepeatingCallback<void(std::string_view session_id,
+                                   const ActuatorDownstreamMessage& message)>;
+
   TransportSessionImpl(std::string_view session_id,
-                       base::WeakPtr<TransportChannel> channel);
+                       base::WeakPtr<TransportChannel> channel,
+                       DownstreamMessageCallback on_downstream_message =
+                           DownstreamMessageCallback());
   ~TransportSessionImpl() override;
 
   TransportSessionImpl(const TransportSessionImpl&) = delete;
@@ -149,6 +160,7 @@ class TransportSessionImpl : public TransportSession,
   SEQUENCE_CHECKER(sequence_checker_);
   const std::string session_id_;
   base::WeakPtr<TransportChannel> channel_;
+  const DownstreamMessageCallback on_downstream_message_;
 
   const base::TimeTicks start_time_;
   DownstreamMessageSequencer sequencer_ GUARDED_BY_CONTEXT(sequence_checker_);

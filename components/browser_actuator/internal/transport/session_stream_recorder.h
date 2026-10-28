@@ -193,6 +193,10 @@ class SessionStreamRecorderFactory : public TransportHandlerFactory,
       TransportSession* session) override;
 
   // TransportMessageObserver implementation:
+  // Downstream messages still reach recorders through `TransportHandler`.
+  // TODO(crbug.com/565078376): Record them here instead.
+  void OnDownstreamMessage(std::string_view session_id,
+                           const ActuatorDownstreamMessage& message) override;
   void OnUpstreamMessage(std::string_view session_id,
                          const ActuatorUpstreamMessage& message) override;
 

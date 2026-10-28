@@ -22,6 +22,10 @@
 #include "components/browser_actuator/public/transport/transport_channel.h"
 #include "components/browser_actuator/public/transport/transport_session_registry.h"
 
+namespace browser_actuator {
+class ActuatorDownstreamMessage;
+}  // namespace browser_actuator
+
 namespace browser_actuator::transport {
 
 class ControlTransportHandlerFactory;
@@ -115,6 +119,11 @@ class TransportChannelImpl : public TransportChannel,
   // Disconnects (if connected) and reconnects the underlying stream so a
   // fresh WatchSessionsRequest is sent with current session resume positions.
   void ReconnectStream();
+
+  // Forwards a downstream envelope that a session is about to dispatch to
+  // every TransportMessageObserver.
+  void NotifyDownstreamMessage(std::string_view session_id,
+                               const ActuatorDownstreamMessage& message);
 
   // Serializes a WatchSessionsRequest describing every session with a known
   // resume position, plus a fresh idempotency id. Handed to the resume

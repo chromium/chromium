@@ -869,13 +869,44 @@ TEST_F(TransportChannelImplTestWithMockTime, SendUpstreamMessageHTTPError) {
 
 class RecordingMessageObserver : public TransportMessageObserver {
  public:
+  void OnDownstreamMessage(std::string_view session_id,
+                           const ActuatorDownstreamMessage& message) override {
+    received_downstream.emplace_back(std::string(session_id), message);
+  }
+
   void OnUpstreamMessage(std::string_view session_id,
                          const ActuatorUpstreamMessage& message) override {
     received.emplace_back(std::string(session_id), message);
   }
 
+  std::vector<std::pair<std::string, ActuatorDownstreamMessage>>
+      received_downstream;
   std::vector<std::pair<std::string, ActuatorUpstreamMessage>> received;
 };
+
+TEST_F(TransportChannelImplTest,
+       NotifiesObserversOnDownstreamMessageWithByteIdenticalEnvelope) {
+  RecordingMessageObserver observer;
+  base::ScopedObservation<TransportChannelImpl, TransportMessageObserver>
+      observation(&observer);
+  observation.Observe(channel_.get());
+
+  GetSessionRegistryImpl()->CreateSession("s1");
+
+  WatchSessionsResponse response;
+  ASSERT_TRUE(response.ParseFromString(SerializedDownstream("s1", 1)));
+  fake_client_->Dispatch(SerializedDownstream("s1", 1));
+
+  ASSERT_EQ(observer.received_downstream.size(), 1u);
+  EXPECT_EQ(observer.received_downstream[0].first, "s1");
+  EXPECT_EQ(observer.received_downstream[0].second.SerializeAsString(),
+            response.actuator_downstream_message().SerializeAsString());
+  EXPECT_TRUE(observer.received.empty());
+
+  // A duplicate is dropped by the session before dispatch and not reported.
+  fake_client_->Dispatch(SerializedDownstream("s1", 1));
+  EXPECT_EQ(observer.received_downstream.size(), 1u);
+}
 
 TEST_F(TransportChannelImplTest,
        NotifiesObserversOnUpstreamMessageWithByteIdenticalEnvelope) {

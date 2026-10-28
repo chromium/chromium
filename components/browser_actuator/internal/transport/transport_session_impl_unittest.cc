@@ -16,6 +16,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "base/test/bind.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
@@ -820,6 +821,209 @@ TEST(TransportSessionImplTest, OnMessageHandlesSessionDestructionSafely) {
 
   session_ptr->OnMessage(PayloadType::kControl, "close-bytes");
   EXPECT_EQ(session, nullptr);
+}
+
+TEST(TransportSessionImplTest, OnMessageReportsWakeEnvelopeBeforeDispatch) {
+  MockTransportChannel channel;
+  TransportHandlerFactoryRegistryImpl registry;
+  EXPECT_CALL(channel, GetHandlerFactoryRegistry())
+      .WillRepeatedly(testing::Return(&registry));
+
+  std::vector<ActuatorDownstreamMessage> reported;
+  TransportSessionImpl session(
+      "test_session", channel.GetWeakPtr(),
+      base::BindLambdaForTesting([&](std::string_view session_id,
+                                     const ActuatorDownstreamMessage& message) {
+        EXPECT_EQ(session_id, "test_session");
+        reported.push_back(message);
+      }));
+
+  MockTransportHandlerFactory factory({PayloadType::kControl});
+  registry.RegisterFactory(&factory);
+  auto handler = std::make_unique<MockTransportHandler>();
+  MockTransportHandler* handler_ptr = handler.get();
+  EXPECT_CALL(factory, OnNewSession(&session))
+      .WillOnce(testing::Return(std::move(handler)));
+
+  ControlCommand start_cmd;
+  start_cmd.mutable_start_session();
+  const std::string serialized_start = start_cmd.SerializeAsString();
+
+  // Observers see the wake-up before any handler, so a reply sent from the
+  // handler is reported after it.
+  EXPECT_CALL(*handler_ptr, OnMessage(PayloadType::kControl, serialized_start))
+      .WillOnce([&](PayloadType, std::string_view) {
+        EXPECT_EQ(reported.size(), 1u);
+      });
+
+  session.OnMessage(PayloadType::kControl, serialized_start);
+
+  ASSERT_EQ(reported.size(), 1u);
+  const ActuatorDownstreamMessage& envelope = reported[0];
+  EXPECT_EQ(envelope.session_id(), "test_session");
+  EXPECT_EQ(envelope.sequence_number(), 0);
+  ASSERT_EQ(envelope.typed_payloads_size(), 1);
+  EXPECT_EQ(envelope.typed_payloads(0).payload_type(),
+            ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_CONTROL_COMMAND);
+  EXPECT_EQ(envelope.typed_payloads(0).proto_payload().type_url(),
+            ExpectedTypeUrl(PayloadType::kControl));
+  EXPECT_EQ(envelope.typed_payloads(0).proto_payload().value(),
+            serialized_start);
+}
+
+TEST(TransportSessionImplTest, OnMessageReportsEnvelopeWithoutHandlers) {
+  MockTransportChannel channel;
+  TransportHandlerFactoryRegistryImpl registry;
+  EXPECT_CALL(channel, GetHandlerFactoryRegistry())
+      .WillRepeatedly(testing::Return(&registry));
+
+  size_t report_count = 0;
+  TransportSessionImpl session(
+      "test_session", channel.GetWeakPtr(),
+      base::BindLambdaForTesting(
+          [&](std::string_view, const ActuatorDownstreamMessage&) {
+            ++report_count;
+          }));
+
+  // No handler is registered for the payload, but the wake-up is still
+  // reported.
+  session.OnMessage(PayloadType::kActuation, kTestPayload);
+  EXPECT_EQ(report_count, 1u);
+}
+
+TEST(TransportSessionImplTest, OnMessageStopsIfObserverDestroysSession) {
+  MockTransportChannel channel;
+  TransportHandlerFactoryRegistryImpl registry;
+  EXPECT_CALL(channel, GetHandlerFactoryRegistry())
+      .WillRepeatedly(testing::Return(&registry));
+
+  std::unique_ptr<TransportSessionImpl> session;
+  session = std::make_unique<TransportSessionImpl>(
+      "test_session", channel.GetWeakPtr(),
+      base::BindLambdaForTesting(
+          [&](std::string_view, const ActuatorDownstreamMessage&) {
+            session.reset();
+          }));
+
+  MockTransportHandlerFactory factory({PayloadType::kControl});
+  registry.RegisterFactory(&factory);
+  EXPECT_CALL(factory, OnNewSession).Times(0);
+
+  session->OnMessage(PayloadType::kControl, kTestPayload);
+  EXPECT_EQ(session, nullptr);
+}
+
+TEST(TransportSessionImplTest, OnMessageReportsUnspecifiedPayloadType) {
+  MockTransportChannel channel;
+  TransportHandlerFactoryRegistryImpl registry;
+  EXPECT_CALL(channel, GetHandlerFactoryRegistry())
+      .WillRepeatedly(testing::Return(&registry));
+
+  std::vector<ActuatorDownstreamMessage> reported;
+  TransportSessionImpl session(
+      "test_session", channel.GetWeakPtr(),
+      base::BindLambdaForTesting(
+          [&](std::string_view, const ActuatorDownstreamMessage& message) {
+            reported.push_back(message);
+          }));
+
+  session.OnMessage(PayloadType::kUnspecified, kTestPayload);
+
+  ASSERT_EQ(reported.size(), 1u);
+  ASSERT_EQ(reported[0].typed_payloads_size(), 1);
+  EXPECT_EQ(reported[0].typed_payloads(0).payload_type(),
+            ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_UNSPECIFIED);
+  EXPECT_TRUE(reported[0].typed_payloads(0).proto_payload().type_url().empty());
+  EXPECT_EQ(reported[0].typed_payloads(0).proto_payload().value(),
+            kTestPayload);
+}
+
+TEST(TransportSessionImplTest,
+     ProcessDownstreamMessageStopsIfObserverDestroysSession) {
+  MockTransportChannel channel;
+  TransportHandlerFactoryRegistryImpl registry;
+  EXPECT_CALL(channel, GetHandlerFactoryRegistry())
+      .WillRepeatedly(testing::Return(&registry));
+
+  std::unique_ptr<TransportSessionImpl> session;
+  session = std::make_unique<TransportSessionImpl>(
+      "test_session", channel.GetWeakPtr(),
+      base::BindLambdaForTesting(
+          [&](std::string_view, const ActuatorDownstreamMessage&) {
+            session.reset();
+          }));
+
+  MockTransportHandlerFactory factory({PayloadType::kControl});
+  registry.RegisterFactory(&factory);
+  EXPECT_CALL(factory, OnNewSession).Times(0);
+
+  EXPECT_OK(session->ProcessDownstreamMessage(
+      MakeDownstreamMessage(ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_CONTROL_COMMAND,
+                            ExpectedTypeUrl(PayloadType::kControl),
+                            kTestPayload, /*sequence_number=*/1)));
+  EXPECT_EQ(session, nullptr);
+}
+
+TEST(TransportSessionImplTest,
+     ProcessDownstreamMessageReportsDeliveredEnvelopesInOrder) {
+  MockTransportChannel channel;
+  std::vector<int64_t> reported_sequence_numbers;
+  TransportSessionImpl session(
+      "test_session", channel.GetWeakPtr(),
+      base::BindLambdaForTesting(
+          [&](std::string_view, const ActuatorDownstreamMessage& message) {
+            reported_sequence_numbers.push_back(message.sequence_number());
+          }));
+
+  // Sequence 2 arrives first and waits in the reorder buffer, so it is not
+  // reported yet.
+  EXPECT_OK(session.ProcessDownstreamMessage(MakeSequenceOnlyMessage(2)));
+  EXPECT_TRUE(reported_sequence_numbers.empty());
+
+  // Sequence 1 fills the gap; both are reported in delivery order.
+  EXPECT_OK(session.ProcessDownstreamMessage(MakeSequenceOnlyMessage(1)));
+  EXPECT_THAT(reported_sequence_numbers, testing::ElementsAre(1, 2));
+
+  // Duplicates are dropped by the sequencer and not reported again.
+  EXPECT_OK(session.ProcessDownstreamMessage(MakeSequenceOnlyMessage(1)));
+  EXPECT_THAT(reported_sequence_numbers, testing::ElementsAre(1, 2));
+}
+
+TEST(TransportSessionImplTest,
+     ProcessDownstreamMessageReportsEnvelopeBeforeDispatch) {
+  MockTransportChannel channel;
+  TransportHandlerFactoryRegistryImpl registry;
+  EXPECT_CALL(channel, GetHandlerFactoryRegistry())
+      .WillRepeatedly(testing::Return(&registry));
+
+  std::vector<ActuatorDownstreamMessage> reported;
+  TransportSessionImpl session(
+      "test_session", channel.GetWeakPtr(),
+      base::BindLambdaForTesting(
+          [&](std::string_view, const ActuatorDownstreamMessage& message) {
+            reported.push_back(message);
+          }));
+
+  MockTransportHandlerFactory factory({PayloadType::kControl});
+  registry.RegisterFactory(&factory);
+  auto handler = std::make_unique<MockTransportHandler>();
+  MockTransportHandler* handler_ptr = handler.get();
+  EXPECT_CALL(factory, OnNewSession(&session))
+      .WillOnce(testing::Return(std::move(handler)));
+  EXPECT_CALL(*handler_ptr, OnMessage(PayloadType::kControl, kTestPayload))
+      .WillOnce([&](PayloadType, std::string_view) {
+        EXPECT_EQ(reported.size(), 1u);
+      });
+
+  ActuatorDownstreamMessage message =
+      MakeDownstreamMessage(ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_CONTROL_COMMAND,
+                            ExpectedTypeUrl(PayloadType::kControl),
+                            kTestPayload, /*sequence_number=*/1);
+  EXPECT_OK(session.ProcessDownstreamMessage(message));
+
+  // The envelope is reported as received, not rebuilt per payload.
+  ASSERT_EQ(reported.size(), 1u);
+  EXPECT_EQ(reported[0].SerializeAsString(), message.SerializeAsString());
 }
 
 TEST(TransportSessionImplTest, StartTimeReturnsCreationTimestamp) {

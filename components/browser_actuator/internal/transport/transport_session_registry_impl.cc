@@ -26,15 +26,19 @@ size_t GetMaxConcurrentSessionsLimit() {
 }  // namespace
 
 TransportSessionRegistryImpl::TransportSessionRegistryImpl(
-    base::WeakPtr<TransportChannel> channel)
+    base::WeakPtr<TransportChannel> channel,
+    TransportSessionImpl::DownstreamMessageCallback on_downstream_message)
     : TransportSessionRegistryImpl(std::move(channel),
-                                   GetMaxConcurrentSessionsLimit()) {}
+                                   GetMaxConcurrentSessionsLimit(),
+                                   std::move(on_downstream_message)) {}
 
 TransportSessionRegistryImpl::TransportSessionRegistryImpl(
     base::WeakPtr<TransportChannel> channel,
-    size_t max_concurrent_sessions)
+    size_t max_concurrent_sessions,
+    TransportSessionImpl::DownstreamMessageCallback on_downstream_message)
     : channel_(std::move(channel)),
-      max_concurrent_sessions_(max_concurrent_sessions) {
+      max_concurrent_sessions_(max_concurrent_sessions),
+      on_downstream_message_(std::move(on_downstream_message)) {
   DCHECK(channel_);
 }
 
@@ -114,7 +118,8 @@ TransportSessionImpl* TransportSessionRegistryImpl::CreateSession(
     return nullptr;
   }
   std::unique_ptr<TransportSessionImpl> session =
-      std::make_unique<TransportSessionImpl>(session_id, channel_);
+      std::make_unique<TransportSessionImpl>(session_id, channel_,
+                                             on_downstream_message_);
   TransportSessionImpl* session_ptr = session.get();
   sessions_.emplace(std::string(session_id), std::move(session));
   for (auto& observer : observers_) {

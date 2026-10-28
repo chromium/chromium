@@ -34,7 +34,9 @@ TransportChannelImpl::TransportChannelImpl(
   CHECK(upstream_message_client_);
   handler_registry_ = std::make_unique<TransportHandlerFactoryRegistryImpl>();
   session_registry_ = std::make_unique<TransportSessionRegistryImpl>(
-      weak_ptr_factory_.GetWeakPtr());
+      weak_ptr_factory_.GetWeakPtr(),
+      base::BindRepeating(&TransportChannelImpl::NotifyDownstreamMessage,
+                          weak_ptr_factory_.GetWeakPtr()));
   session_registry_->AddObserver(this);
 
   control_handler_factory_ = std::make_unique<ControlTransportHandlerFactory>(
@@ -244,6 +246,14 @@ void TransportChannelImpl::SendUpstreamMessage(
 
   observers_.Notify(&TransportMessageObserver::OnUpstreamMessage,
                     std::string_view(upstream.session_id()), upstream);
+}
+
+void TransportChannelImpl::NotifyDownstreamMessage(
+    std::string_view session_id,
+    const ActuatorDownstreamMessage& message) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  observers_.Notify(&TransportMessageObserver::OnDownstreamMessage, session_id,
+                    message);
 }
 
 std::string TransportChannelImpl::BuildWatchSessionsRequestBody() {

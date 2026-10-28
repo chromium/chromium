@@ -27,10 +27,17 @@ class TransportChannel;
 // TransportChannel.
 class TransportSessionRegistryImpl : public TransportSessionRegistry {
  public:
+  // `on_downstream_message` is handed to every session this registry creates.
+  // See TransportSessionImpl::DownstreamMessageCallback.
   explicit TransportSessionRegistryImpl(
-      base::WeakPtr<TransportChannel> channel);
-  TransportSessionRegistryImpl(base::WeakPtr<TransportChannel> channel,
-                               size_t max_concurrent_sessions);
+      base::WeakPtr<TransportChannel> channel,
+      TransportSessionImpl::DownstreamMessageCallback on_downstream_message =
+          TransportSessionImpl::DownstreamMessageCallback());
+  TransportSessionRegistryImpl(
+      base::WeakPtr<TransportChannel> channel,
+      size_t max_concurrent_sessions,
+      TransportSessionImpl::DownstreamMessageCallback on_downstream_message =
+          TransportSessionImpl::DownstreamMessageCallback());
   ~TransportSessionRegistryImpl() override;
 
   TransportSessionRegistryImpl(const TransportSessionRegistryImpl&) = delete;
@@ -60,6 +67,7 @@ class TransportSessionRegistryImpl : public TransportSessionRegistry {
 
   base::WeakPtr<TransportChannel> channel_;
   const size_t max_concurrent_sessions_;
+  const TransportSessionImpl::DownstreamMessageCallback on_downstream_message_;
 
   base::ObserverList<Observer> observers_ GUARDED_BY_CONTEXT(sequence_checker_);
 

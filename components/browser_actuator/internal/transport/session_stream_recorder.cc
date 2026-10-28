@@ -328,6 +328,10 @@ std::unique_ptr<TransportHandler> SessionStreamRecorderFactory::OnNewSession(
   return recorder;
 }
 
+void SessionStreamRecorderFactory::OnDownstreamMessage(
+    std::string_view session_id,
+    const ActuatorDownstreamMessage& message) {}
+
 void SessionStreamRecorderFactory::OnUpstreamMessage(
     std::string_view session_id,
     const ActuatorUpstreamMessage& message) {
