@@ -7580,6 +7580,15 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_OMNIBOX_EVERYWHERE_SWITCH_PROFILE" desc="Label for the button in the Omnibox Everywhere profile menu that opens the Chrome profile switcher.">
         Switch Profile
       </message>
+      <message name="IDS_OMNIBOX_EVERYWHERE_PLACEHOLDER_LENS" desc="Placeholder text shown in the Omnibox Everywhere searchbox prompting the user to ask about their screen with Google Lens.">
+        Ask about your screen with Google Lens
+      </message>
+      <message name="IDS_OMNIBOX_EVERYWHERE_PLACEHOLDER_FILE_OR_IMAGE" desc="Placeholder text shown in the Omnibox Everywhere searchbox prompting the user to ask about a file or image.">
+        Ask about a file or image
+      </message>
+      <message name="IDS_OMNIBOX_EVERYWHERE_PLACEHOLDER_DRAG_AND_DROP" desc="Placeholder text shown in the Omnibox Everywhere searchbox prompting the user to drag and drop files into the searchbox.">
+        Drag and drop files here
+      </message>
 
       <!-- Contextual Search -->
       <if expr="use_titlecase">

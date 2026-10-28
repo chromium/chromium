@@ -306,6 +306,11 @@ OmniboxEverywhereUI::OmniboxEverywhereUI(content::WebUI* web_ui)
       {"screenshotRegionLabel", IDS_OMNIBOX_EVERYWHERE_REGION},
       {"screenshotWindowLabel", IDS_OMNIBOX_EVERYWHERE_WINDOW},
       {"searchBoxHintAskOrType", IDS_NTP_SEARCH_BOX_PLACEHOLDER_ASK_OR_TYPE},
+      {"searchBoxHintDragAndDrop",
+       IDS_OMNIBOX_EVERYWHERE_PLACEHOLDER_DRAG_AND_DROP},
+      {"searchBoxHintFileOrImage",
+       IDS_OMNIBOX_EVERYWHERE_PLACEHOLDER_FILE_OR_IMAGE},
+      {"searchBoxHintLens", IDS_OMNIBOX_EVERYWHERE_PLACEHOLDER_LENS},
       {"shareScreenshotLabel", IDS_OMNIBOX_EVERYWHERE_SHARE_SCREENSHOT},
       {"switchProfileLabel", IDS_OMNIBOX_EVERYWHERE_SWITCH_PROFILE},
   };
