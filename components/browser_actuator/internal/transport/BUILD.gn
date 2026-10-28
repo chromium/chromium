@@ -55,6 +55,7 @@ source_set("session_stream_recorder") {
   visibility = [
     ":*",
     "//chrome/browser/browser_actuator/internals:*",
+    "//chrome/browser/sharing/browser_actuator:unit_tests",
   ]
 
   sources = [

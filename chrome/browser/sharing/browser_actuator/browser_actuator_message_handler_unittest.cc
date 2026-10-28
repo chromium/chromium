@@ -5,6 +5,7 @@
 #include "chrome/browser/sharing/browser_actuator/browser_actuator_message_handler.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <utility>
@@ -20,6 +21,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/browser_actuator/internal/transport/features.h"
 #include "components/browser_actuator/internal/transport/proto/transport_messages.pb.h"
+#include "components/browser_actuator/internal/transport/session_stream_recorder.h"
 #include "components/browser_actuator/internal/transport/test_support/fake_proto_stream_server.h"
 #include "components/browser_actuator/internal/transport/test_support/wait_for.h"
 #include "components/browser_actuator/public/features.h"
@@ -422,6 +424,25 @@ class BrowserActuatorFcmIntegrationTest : public testing::Test {
     return parsed;
   }
 
+  // Returns the session that chrome://browser-actuator-internals recorded for
+  // `session_id`, or `std::nullopt` if there is none.
+  std::optional<browser_actuator::transport::SessionSnapshot>
+  GetRecordedSession(std::string_view session_id) {
+    browser_actuator::transport::TransportService* service =
+        browser_actuator::transport::TransportServiceFactory::GetForProfile(
+            profile_.get());
+    if (!service || !service->GetStreamRecorderFactory()) {
+      return std::nullopt;
+    }
+    for (auto& session : service->GetStreamRecorderFactory()->GetAllSessions(
+             /*max_events=*/10, /*max_message_bytes=*/8 * 1024)) {
+      if (session.session_id == session_id) {
+        return std::move(session);
+      }
+    }
+    return std::nullopt;
+  }
+
   content::BrowserTaskEnvironment task_environment_;
   base::test::ScopedFeatureList feature_list_;
   network::TestURLLoaderFactory test_url_loader_factory_;
@@ -484,7 +505,21 @@ TEST_F(BrowserActuatorFcmIntegrationTest,
       browser_actuator::transport::TransportServiceFactory::GetForProfile(
           profile_.get());
   ASSERT_NE(service, nullptr);
-  EXPECT_NE(service->GetStreamRecorderFactory(), nullptr);
+
+  // chrome://browser-actuator-internals records the session from the FCM
+  // wake-up on: the `StartSession` it carried, then the `StartSessionAck`.
+  std::optional<browser_actuator::transport::SessionSnapshot> recorded =
+      GetRecordedSession("fcm-session-1");
+  ASSERT_TRUE(recorded.has_value());
+  EXPECT_EQ(recorded->total_downstream_messages, 1u);
+  EXPECT_EQ(recorded->total_upstream_messages, 1u);
+  ASSERT_EQ(recorded->events.size(), 2u);
+  EXPECT_TRUE(recorded->events[0].is_downstream);
+  EXPECT_THAT(recorded->events[0].payload_types,
+              testing::ElementsAre("Control"));
+  EXPECT_FALSE(recorded->events[1].is_downstream);
+  EXPECT_THAT(recorded->events[1].payload_types,
+              testing::ElementsAre("Control"));
 
   // 3. Verify the started stream delivers subsequent downstream CloseSession.
   browser_actuator::ActuatorDownstreamMessage close_msg;
@@ -622,6 +657,27 @@ TEST_F(BrowserActuatorFcmIntegrationTest,
   ASSERT_TRUE(reply.ParseFromString(
       upstream_msg.typed_payloads(0).proto_payload().value()));
   EXPECT_EQ(reply.context_id(), "ack:glic-fcm-session-1");
+
+  // chrome://browser-actuator-internals records the FCM wake-up before the
+  // reply that it triggered.
+  std::optional<browser_actuator::transport::SessionSnapshot> recorded =
+      GetRecordedSession("glic-fcm-session-1");
+  ASSERT_TRUE(recorded.has_value());
+  EXPECT_EQ(recorded->total_downstream_messages, 2u);
+  EXPECT_EQ(recorded->total_upstream_messages, 2u);
+  ASSERT_EQ(recorded->events.size(), 4u);
+  EXPECT_TRUE(recorded->events[0].is_downstream);
+  EXPECT_THAT(recorded->events[0].payload_types,
+              testing::ElementsAre("Control"));
+  EXPECT_FALSE(recorded->events[1].is_downstream);
+  EXPECT_THAT(recorded->events[1].payload_types,
+              testing::ElementsAre("Control"));
+  EXPECT_TRUE(recorded->events[2].is_downstream);
+  EXPECT_THAT(recorded->events[2].payload_types,
+              testing::ElementsAre("ExperimentalTriggering"));
+  EXPECT_FALSE(recorded->events[3].is_downstream);
+  EXPECT_THAT(recorded->events[3].payload_types,
+              testing::ElementsAre("ExperimentalTriggering"));
 }
 
 }  // namespace
