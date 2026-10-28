@@ -241,10 +241,11 @@ ShouldUpdateHistoryResult ShouldUpdateHistory(
   return ShouldUpdateHistoryResult::NO_UPDATE;
 }
 
-// Counts how many times a target file path exists in |rows| and stores
-// the result into |file_path_count|.
-void CountFilePathOccurences(const std::vector<history::DownloadRow>& rows,
-                             std::map<std::string, int>* file_path_count) {
+// Counts how many times a target file path exists in `rows` and stores
+// the result into `file_path_count`.
+void CountFilePathOccurences(
+    const std::vector<history::DownloadRow>& rows,
+    absl::flat_hash_map<base::FilePath::StringViewType, int>* file_path_count) {
   CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
   if (!base::FeatureList::IsEnabled(
@@ -252,20 +253,19 @@ void CountFilePathOccurences(const std::vector<history::DownloadRow>& rows,
     return;
   }
 
+  file_path_count->reserve(rows.size());
   for (const history::DownloadRow& row : rows) {
     if (row.state != DownloadState::COMPLETE || row.target_path.empty())
       continue;
-    std::string file_path = row.target_path.AsUTF8Unsafe();
-    if (file_path.empty())
-      continue;
-    ++(*file_path_count)[file_path];
+    ++(*file_path_count)[row.target_path.value()];
   }
 }
 
 // Checks whether a particular download row should be skipped from loading given
-// the number of times the same target file path appears in |file_path_count|.
-bool ShouldSkipLoadingDownload(const history::DownloadRow& row,
-                               std::map<std::string, int>* file_path_count) {
+// the number of times the same target file path appears in `file_path_count`.
+bool ShouldSkipLoadingDownload(
+    const history::DownloadRow& row,
+    absl::flat_hash_map<base::FilePath::StringViewType, int>* file_path_count) {
   CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
   if (!base::FeatureList::IsEnabled(
@@ -275,10 +275,7 @@ bool ShouldSkipLoadingDownload(const history::DownloadRow& row,
 
   if (row.state != DownloadState::COMPLETE || row.target_path.empty())
     return false;
-  const std::string file_path = row.target_path.AsUTF8Unsafe();
-  if (file_path.empty())
-    return false;
-  auto iter = file_path_count->find(file_path);
+  auto iter = file_path_count->find(row.target_path.value());
   CHECK(iter != file_path_count->end());
   --iter->second;
   if (iter->second < 1)
@@ -536,7 +533,7 @@ void DownloadHistory::LoadHistoryDownloads(
     return;
   }
 
-  std::map<std::string, int> file_name_count;
+  absl::flat_hash_map<base::FilePath::StringViewType, int> file_name_count;
   CountFilePathOccurences(rows, &file_name_count);
 
   // Number of downloads loaded, in total and started in the last 30/90 days.
