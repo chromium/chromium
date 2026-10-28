@@ -95,6 +95,10 @@ class IconTable {
   // since icon IDs are never reused.
   std::vector<toolbar_ui_api::mojom::IconUpdatePtr> TakePendingUpdates();
 
+  // Returns true if there are unconsumed icon updates waiting for
+  // TakePendingUpdates().
+  bool HasPendingUpdates() const;
+
   // Inform IconTable that the theme has changed. This may necessitate
   // icon updates to update icon colors.
   void OnThemeChanged();

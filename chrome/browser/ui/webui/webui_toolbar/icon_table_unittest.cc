@@ -547,6 +547,72 @@ TEST_F(IconTableTest, PinnedToolbarActionIconsAreMapped) {
 #endif
 }
 
+TEST_F(IconTableTest, HasPendingUpdates) {
+  EXPECT_FALSE(icon_table_.HasPendingUpdates());
+
+  // Theme change with no registered icons should not queue updates.
+  icon_table_.OnThemeChanged();
+  EXPECT_FALSE(icon_table_.HasPendingUpdates());
+
+  toolbar_ui_api::IconHandle handle =
+      icon_table_.RegisterImageModel(ui::ImageModel::FromVectorIcon(
+          vector_icons::kPasswordManagerIcon, ui::kColorIcon));
+  ASSERT_FALSE(handle.is_null());
+  EXPECT_TRUE(icon_table_.HasPendingUpdates());
+
+  auto expected_blue = toolbar_ui_api::mojom::IconUpdate::New(
+      1u, "webui-toolbar:password_manager", IconType::kIconSet,
+      /*color=*/SK_ColorBLUE);
+  EXPECT_THAT(icon_table_.TakePendingUpdates(),
+              testing::UnorderedElementsAre(
+                  MatchesIconUpdate(std::ref(expected_blue))));
+  EXPECT_FALSE(icon_table_.HasPendingUpdates());
+
+  // Theme change marks live icons dirty until TakePendingUpdates() drains them.
+  color_provider_.SetColorForTesting(ui::kColorIcon, SK_ColorRED);
+  icon_table_.OnThemeChanged();
+  EXPECT_TRUE(icon_table_.HasPendingUpdates());
+  auto expected_red = toolbar_ui_api::mojom::IconUpdate::New(
+      1u, "webui-toolbar:password_manager", IconType::kIconSet,
+      /*color=*/SK_ColorRED);
+  EXPECT_THAT(
+      icon_table_.TakePendingUpdates(),
+      testing::UnorderedElementsAre(MatchesIconUpdate(std::ref(expected_red))));
+  EXPECT_FALSE(icon_table_.HasPendingUpdates());
+
+  // Changing scale factor with only mapped vector icons does not queue updates.
+  scale_factor_ = 2.0f;
+  EXPECT_FALSE(icon_table_.HasPendingUpdates());
+
+  // Releasing the handle queues a deletion update.
+  handle = toolbar_ui_api::IconHandle();
+  EXPECT_TRUE(icon_table_.HasPendingUpdates());
+  auto expected_delete = toolbar_ui_api::mojom::IconUpdate::New(
+      1u, std::nullopt, IconType::kMaskUrl, /*color=*/std::nullopt);
+  EXPECT_THAT(icon_table_.TakePendingUpdates(),
+              testing::UnorderedElementsAre(
+                  MatchesIconUpdate(std::ref(expected_delete))));
+  EXPECT_FALSE(icon_table_.HasPendingUpdates());
+
+  // Rasterized icons depend on scale factor and require updates when it
+  // changes.
+  ASSERT_FALSE(
+      icon_table_.RegisterVectorIcon(vector_icons::kCardboardFilledIcon)
+          .has_value());
+  toolbar_ui_api::IconHandle raster_handle = icon_table_.RegisterImageModel(
+      ui::ImageModel::FromVectorIcon(vector_icons::kCardboardFilledIcon));
+  ASSERT_FALSE(raster_handle.is_null());
+  EXPECT_THAT(icon_table_.TakePendingUpdates(),
+              testing::UnorderedElementsAre(MatchesBitmapIconUpdate(2u)));
+  EXPECT_FALSE(icon_table_.HasPendingUpdates());
+
+  scale_factor_ = 3.0f;
+  EXPECT_TRUE(icon_table_.HasPendingUpdates());
+  EXPECT_THAT(icon_table_.TakePendingUpdates(),
+              testing::UnorderedElementsAre(MatchesBitmapIconUpdate(2u)));
+  EXPECT_FALSE(icon_table_.HasPendingUpdates());
+}
+
 }  // namespace
 
 }  // namespace webui_toolbar

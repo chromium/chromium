@@ -638,6 +638,92 @@ IN_PROC_BROWSER_TEST_F(WebUILocationBarBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(WebUILocationBarBrowserTest,
+                       UnstarredPageActionIconColorUpdatesOnThemeChange) {
+  // Pin location-icon ColorIds across theme changes so `UpdateLhsChipsState()`
+  // reuses its existing `IconHandleId` and does not mask missing `IconTable`
+  // flushes when only logical-ColorId icons (`kColorOmniboxActionIcon`) change.
+  ui::ColorProviderManager::Get().AppendColorProviderInitializer(
+      base::BindRepeating(
+          [](ui::ColorProvider* provider, const ui::ColorProviderKey& key) {
+            ui::ColorMixer& mixer = provider->AddMixer();
+            mixer[kColorOmniboxIconBackground] = {SK_ColorWHITE};
+            mixer[kColorOmniboxText] = {SK_ColorBLACK};
+            if (key.user_color == SK_ColorMAGENTA) {
+              mixer[kColorOmniboxActionIcon] = {SK_ColorMAGENTA};
+            }
+          }));
+  BrowserView::GetBrowserViewForBrowser(browser())
+      ->browser_widget()
+      ->SetUserColorOverride(SK_ColorBLUE);
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL url = embedded_test_server()->GetURL("/title1.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  WaitForInitialWebUIToolbar(browser());
+  ASSERT_TRUE(FlushWebUIToolbarPipes(browser()));
+
+  constexpr int kBookmarkMojomId = std::to_underlying(
+      toolbar_ui_api::mojom::PageActionId::kActionBookmarkThisTab);
+  const std::string get_bookmark_icon_color_script = content::JsReplace(
+      R"(
+      (async () => {
+        const app = document.querySelector('toolbar-app');
+        if (app?.updateComplete) {
+          await app.updateComplete;
+        }
+        const locationBar = app?.shadowRoot?.querySelector('location-bar');
+        if (locationBar?.updateComplete) {
+          await locationBar.updateComplete;
+        }
+        const pageActions =
+            locationBar?.shadowRoot?.querySelector('page-action-icons');
+        if (pageActions?.updateComplete) {
+          await pageActions.updateComplete;
+        }
+        const bookmarkIcon = Array.from(
+            pageActions?.shadowRoot?.querySelectorAll('page-action-icon') || []
+        ).find(icon => icon.state?.pageActionId === $1);
+        if (bookmarkIcon?.updateComplete) {
+          await bookmarkIcon.updateComplete;
+        }
+        const iconFromTable =
+            bookmarkIcon?.shadowRoot?.querySelector('icon-from-table');
+        if (iconFromTable?.updateComplete) {
+          await iconFromTable.updateComplete;
+        }
+        const container =
+            iconFromTable?.shadowRoot?.querySelector('#container');
+        return container ? getComputedStyle(container).color : '';
+      })()
+  )",
+      kBookmarkMojomId);
+
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return !content::EvalJs(GetWebUIToolbarWebContents(),
+                            get_bookmark_icon_color_script)
+                .ExtractString()
+                .empty();
+  }));
+  ASSERT_NE("rgb(255, 0, 255)", content::EvalJs(GetWebUIToolbarWebContents(),
+                                                get_bookmark_icon_color_script)
+                                    .ExtractString());
+
+  // Trigger a real Widget theme change (`ColorProviderKey::user_color` changes
+  // from `SK_ColorBLUE` to `SK_ColorMAGENTA`).
+  BrowserView::GetBrowserViewForBrowser(browser())
+      ->browser_widget()
+      ->SetUserColorOverride(SK_ColorMAGENTA);
+  ASSERT_TRUE(FlushWebUIToolbarPipes(browser()));
+
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return content::EvalJs(GetWebUIToolbarWebContents(),
+                           get_bookmark_icon_color_script)
+               .ExtractString() == "rgb(255, 0, 255)";
+  }));
+}
+
+IN_PROC_BROWSER_TEST_F(WebUILocationBarBrowserTest,
                        ContentSettingIconNoReanimateOnBookmarkClick) {
   WaitForInitialWebUIToolbar(browser());
   content::WebContents* web_contents =

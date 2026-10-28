@@ -663,6 +663,12 @@ IconTable::TakePendingUpdates() {
   return updates;
 }
 
+bool IconTable::HasPendingUpdates() const {
+  return !pending_updates_.empty() ||
+         (!possibly_scale_dependent_.empty() &&
+          delegate_->GetScaleFactor() != scale_factor_of_last_update_);
+}
+
 void IconTable::OnThemeChanged() {
   // In the rare event of a theme change, update all icons as their colors
   // likely changed.

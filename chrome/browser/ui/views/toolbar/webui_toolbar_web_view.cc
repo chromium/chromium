@@ -625,6 +625,9 @@ void WebUIToolbarWebView::OnThemeChanged() {
   }
   extensions_container_.OnThemeChanged();
   icon_table_.OnThemeChanged();
+  if (icon_table_.HasPendingUpdates()) {
+    PostPushToolbarState();
+  }
 }
 
 gfx::Size WebUIToolbarWebView::GetMinimumSize() const {
