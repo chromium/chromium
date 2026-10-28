@@ -8,15 +8,19 @@
 #include <utility>
 #include <vector>
 
-#include "android_webview/browser/aw_print_manager.h"
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/files/scoped_file.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "content/public/browser/browser_thread.h"
+#include "printing/buildflags/buildflags.h"
+
+#if BUILDFLAG(ENABLE_PRINTING)
+#include "android_webview/browser/aw_print_manager.h"
 #include "printing/print_settings.h"
 #include "printing/units.h"
+#endif
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "android_webview/browser_jni_headers/AwPdfExporter_jni.h"
@@ -26,6 +30,7 @@ using base::android::ScopedJavaLocalRef;
 
 namespace android_webview {
 
+#if BUILDFLAG(ENABLE_PRINTING)
 namespace {
 
 static void JNI_AwPdfExporter_GetPageRanges(
@@ -43,6 +48,7 @@ static void JNI_AwPdfExporter_GetPageRanges(
 }
 
 }  // namespace
+#endif  // BUILDFLAG(ENABLE_PRINTING)
 
 AwPdfExporter::AwPdfExporter(JNIEnv* env,
                              const JavaRef<jobject>& obj,
@@ -77,6 +83,7 @@ void AwPdfExporter::ExportToPdf(JNIEnv* env,
   // code assumes it did.
   CHECK(scoped_fd.is_valid());
 
+#if BUILDFLAG(ENABLE_PRINTING)
   printing::PageRanges page_ranges;
   JNI_AwPdfExporter_GetPageRanges(env, pages, &page_ranges);
 
@@ -97,8 +104,12 @@ void AwPdfExporter::ExportToPdf(JNIEnv* env,
   if (!print_manager->PrintNow()) {
     DidExportPdf(0);
   }
+#else
+  DidExportPdf(0);
+#endif  // BUILDFLAG(ENABLE_PRINTING)
 }
 
+#if BUILDFLAG(ENABLE_PRINTING)
 namespace {
 
 // Converts from 1/1000 of inches to device units using DPI.
@@ -154,6 +165,7 @@ std::unique_ptr<printing::PrintSettings> AwPdfExporter::CreatePdfSettings(
   settings->set_should_print_backgrounds(true);
   return settings;
 }
+#endif  // BUILDFLAG(ENABLE_PRINTING)
 
 void AwPdfExporter::DidExportPdf(int page_count) {
   JNIEnv* env = base::android::AttachCurrentThread();

@@ -21,14 +21,14 @@ import org.chromium.ui.widget.Toast;
 
 /** Helper class for triggering print flow for a Tab. */
 @NullMarked
-public class PrintHelper {
+class PrintHelper {
     /**
      * Triggers printing for the specified tab.
      *
      * @param tab The tab to print.
      * @return true if printing was successfully started, false otherwise.
      */
-    public static boolean printTab(@Nullable Tab tab) {
+    static boolean printTab(@Nullable Tab tab) {
         if (tab == null || !tab.isInitialized()) {
             return false;
         }

@@ -13,12 +13,12 @@ import android.graphics.drawable.Icon;
 import android.net.Uri;
 import android.os.Build;
 
-import org.chromium.base.Callback;
 import org.chromium.base.TriState;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.printing.PrintingDelegate;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ChromeCustomShareAction;
 import org.chromium.chrome.browser.share.ChromeProvidedSharingOptionsProviderBase;
@@ -80,7 +80,7 @@ class AndroidCustomActionProvider extends ChromeProvidedSharingOptionsProviderBa
      * @param tabProvider Supplier for the current activity tab.
      * @param bottomSheetController The {@link BottomSheetController} for the current activity.
      * @param shareParams The {@link ShareParams} for the current share.
-     * @param printTab A {@link Callback} that will print a given Tab.
+     * @param printingDelegate Prints tabs, or null if printing is unavailable.
      * @param tabGroupSharingController Controller for handling tab group sharing action.
      * @param isIncognito Whether incognito mode is enabled.
      * @param chromeOptionShareCallback A ChromeOptionShareCallback that can be used by
@@ -104,7 +104,7 @@ class AndroidCustomActionProvider extends ChromeProvidedSharingOptionsProviderBa
             Supplier<@Nullable Tab> tabProvider,
             BottomSheetController bottomSheetController,
             ShareParams shareParams,
-            Callback<Tab> printTab,
+            @Nullable PrintingDelegate printingDelegate,
             TabGroupSharingController tabGroupSharingController,
             boolean isIncognito,
             ChromeOptionShareCallback chromeOptionShareCallback,
@@ -126,7 +126,7 @@ class AndroidCustomActionProvider extends ChromeProvidedSharingOptionsProviderBa
                 tabProvider,
                 bottomSheetController,
                 shareParams,
-                printTab,
+                printingDelegate,
                 isIncognito,
                 chromeOptionShareCallback,
                 featureEngagementTracker,

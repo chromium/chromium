@@ -166,7 +166,8 @@ public class PreviewTabTest {
                                     ephemeralTabCoordinatorSupplier,
                                     () -> {},
                                     snackbarManagerSupplier,
-                                    bottomSheetControllerSupplier);
+                                    bottomSheetControllerSupplier,
+                                    /* printingDelegate= */ null);
                     ephemeralTabCoordinatorSupplier
                             .get()
                             .addObserver(

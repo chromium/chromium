@@ -58,11 +58,10 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.HistogramWatcher;
-import org.chromium.base.test.util.PayloadCallbackHelper;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.enterprise.util.DataProtectionBridge;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
-import org.chromium.chrome.browser.preferences.Pref;
+import org.chromium.chrome.browser.printing.PrintingDelegate;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ChromeShareExtras;
 import org.chromium.chrome.browser.share.ChromeShareExtras.DetailedContentType;
@@ -132,10 +131,10 @@ public class AndroidShareSheetControllerUnitTest {
     @Mock ActivityResultTracker mActivityResultTracker;
     @Mock ModalDialogManager mModalDialogManager;
     @Mock SnackbarManager mSnackbarManager;
+    @Mock PrintingDelegate mPrintingDelegate;
 
     private TestActivity mActivity;
     private WindowAndroid mWindow;
-    private PayloadCallbackHelper<Tab> mPrintCallback;
     private AndroidShareSheetController mController;
     private Bitmap mTestWebFavicon;
     private final SettableMonotonicObservableSupplier<ModalDialogManager>
@@ -154,7 +153,7 @@ public class AndroidShareSheetControllerUnitTest {
         UserPrefsJni.setInstanceForTesting(mMockUserPrefsJni);
         PrefService service = mock(PrefService.class);
         doReturn(service).when(mMockUserPrefsJni).get(mProfile);
-        doReturn(true).when(service).getBoolean(Pref.PRINTING_ENABLED);
+        doReturn(true).when(mPrintingDelegate).isPrintingEnabled(service);
         // Set up favicon helper.
         FaviconHelperJni.setInstanceForTesting(mMockFaviconHelperJni);
         doReturn(1L).when(mMockFaviconHelperJni).init();
@@ -187,7 +186,6 @@ public class AndroidShareSheetControllerUnitTest {
                         IntentRequestTracker.createFromActivity(mActivity),
                         mInsetObserver,
                         /* occlusionTrackingAllowed= */ true);
-        mPrintCallback = new PayloadCallbackHelper<>();
         // Set up mock tab
         doReturn(mWindow).when(mTab).getWindowAndroid();
         doReturn(ContextUtils.getApplicationContext()).when(mTab).getContext();
@@ -198,7 +196,7 @@ public class AndroidShareSheetControllerUnitTest {
                         () -> mTab,
                         () -> mTabModelSelector,
                         mProfile,
-                        mPrintCallback::notifyCalled,
+                        mPrintingDelegate,
                         mTabGroupSharingController,
                         null,
                         mSigninAndHistorySyncActivityLauncher,
@@ -297,7 +295,7 @@ public class AndroidShareSheetControllerUnitTest {
                 () -> mTab,
                 () -> mTabModelSelector,
                 mProfile,
-                mPrintCallback::notifyCalled,
+                mPrintingDelegate,
                 mTabGroupSharingController,
                 mDeviceLockActivityLauncher,
                 mSigninAndHistorySyncActivityLauncher,
@@ -307,7 +305,7 @@ public class AndroidShareSheetControllerUnitTest {
 
         Intent intent = Shadows.shadowOf((Activity) mActivity).peekNextStartedActivity();
         chooseCustomAction(intent, R.string.print_share_activity_title, ShareCustomAction.PRINT);
-        Assert.assertEquals("Print callback is not called.", 1, mPrintCallback.getCallCount());
+        verify(mPrintingDelegate).print(mTab);
         Assert.assertEquals(
                 "TargetChosenCallback is not called.", 1, callbackHelper.getCallCount());
     }
@@ -560,7 +558,7 @@ public class AndroidShareSheetControllerUnitTest {
                 () -> mTab,
                 () -> mTabModelSelector,
                 mProfile,
-                mPrintCallback::notifyCalled,
+                mPrintingDelegate,
                 mTabGroupSharingController,
                 mDeviceLockActivityLauncher,
                 mSigninAndHistorySyncActivityLauncher,
@@ -614,7 +612,7 @@ public class AndroidShareSheetControllerUnitTest {
                 () -> mTab,
                 () -> mTabModelSelector,
                 mProfile,
-                mPrintCallback::notifyCalled,
+                mPrintingDelegate,
                 mTabGroupSharingController,
                 mDeviceLockActivityLauncher,
                 mSigninAndHistorySyncActivityLauncher,
@@ -652,7 +650,7 @@ public class AndroidShareSheetControllerUnitTest {
                 () -> mTab,
                 () -> mTabModelSelector,
                 mProfile,
-                mPrintCallback::notifyCalled,
+                mPrintingDelegate,
                 mTabGroupSharingController,
                 mDeviceLockActivityLauncher,
                 mSigninAndHistorySyncActivityLauncher,

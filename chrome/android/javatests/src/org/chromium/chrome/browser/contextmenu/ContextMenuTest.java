@@ -50,6 +50,7 @@ import org.mockito.stubbing.Answer;
 
 import org.chromium.base.Callback;
 import org.chromium.base.DeviceInfo;
+import org.chromium.base.ServiceLoaderUtil;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.TriState;
 import org.chromium.base.supplier.SupplierUtils;
@@ -82,6 +83,7 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.glic.GlicEnabling;
 import org.chromium.chrome.browser.gsa.GSAUtils;
 import org.chromium.chrome.browser.media.PictureInPicture;
+import org.chromium.chrome.browser.printing.PrintingDelegate;
 import org.chromium.chrome.browser.share.ChromeShareExtras;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.share.ShareDelegate.ShareOrigin;
@@ -107,8 +109,6 @@ import org.chromium.content_public.browser.test.util.DOMUtils;
 import org.chromium.content_public.browser.test.util.TestTouchUtils;
 import org.chromium.content_public.common.ContentFeatures;
 import org.chromium.net.test.EmbeddedTestServer;
-import org.chromium.printing.Printable;
-import org.chromium.printing.PrintingControllerImpl;
 import org.chromium.ui.base.Clipboard;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.DeviceInput;
@@ -145,7 +145,7 @@ public class ContextMenuTest {
 
     @Mock private TabContextMenuItemDelegate mItemDelegate;
     @Mock private ShareDelegate mShareDelegate;
-    @Mock private PrintingControllerImpl mPrintingController;
+    @Mock private PrintingDelegate mPrintingDelegate;
     @Mock private DataProtectionBridge.Natives mDataProtectionBridgeMock;
     @Mock private MenuModelBridge mMenuModelBridge;
 
@@ -200,6 +200,8 @@ public class ContextMenuTest {
     @Before
     public void setUp() {
         ThreadUtils.runOnUiThreadBlocking(() -> FirstRunStatus.setFirstRunFlowComplete(true));
+        // Tabs get their PrintingDelegate when they are created, so install the mock first.
+        ServiceLoaderUtil.setInstanceForTesting(PrintingDelegate.class, mPrintingDelegate);
 
         mActivityTestRule.startOnBlankPage();
         mDownloadTestRule.attach(mActivityTestRule.getActivity());
@@ -1296,13 +1298,7 @@ public class ContextMenuTest {
         DeviceInput.setSupportsPrecisionPointerForTesting(true);
         Tab tab = mActivityTestRule.getActivityTab();
         switchToDesktopUserAgent(tab);
-        ThreadUtils.runOnUiThreadBlocking(
-                // Set printing controller to use the mock instance.
-                () -> {
-                    PrintingControllerImpl.setPrintingControllerForTesting(
-                            mActivityTestRule.getActivity().getWindowAndroid(),
-                            mPrintingController);
-                });
+        when(mPrintingDelegate.isPrintingEnabled(any())).thenReturn(true);
 
         ContextMenuUtils.selectContextMenuItem(
                 InstrumentationRegistry.getInstrumentation(),
@@ -1311,10 +1307,7 @@ public class ContextMenuTest {
                 "testEmptySpace",
                 R.id.contextmenu_print_page);
 
-        // Check that the started print job has the same title as the current tab.
-        ArgumentCaptor<Printable> printableCaptor = ArgumentCaptor.forClass(Printable.class);
-        verify(mPrintingController).startPrint(printableCaptor.capture(), any());
-        Assert.assertEquals(tab.getTitle(), printableCaptor.getValue().getTitle());
+        verify(mPrintingDelegate).print(tab);
     }
 
     @Test
@@ -1341,13 +1334,7 @@ public class ContextMenuTest {
     public void testPrintPageRightClick() throws Exception {
         DeviceInput.setSupportsPrecisionPointerForTesting(true);
         Tab tab = mActivityTestRule.getActivityTab();
-        ThreadUtils.runOnUiThreadBlocking(
-                // Set printing controller to use the mock instance.
-                () -> {
-                    PrintingControllerImpl.setPrintingControllerForTesting(
-                            mActivityTestRule.getActivity().getWindowAndroid(),
-                            mPrintingController);
-                });
+        when(mPrintingDelegate.isPrintingEnabled(any())).thenReturn(true);
 
         ContextMenuUtils.selectContextMenuItemFromRightClick(
                 InstrumentationRegistry.getInstrumentation(),
@@ -1356,10 +1343,7 @@ public class ContextMenuTest {
                 "testEmptySpace",
                 R.id.contextmenu_print_page);
 
-        // Check that the started print job has the same title as the current tab.
-        ArgumentCaptor<Printable> printableCaptor = ArgumentCaptor.forClass(Printable.class);
-        verify(mPrintingController).startPrint(printableCaptor.capture(), any());
-        Assert.assertEquals(tab.getTitle(), printableCaptor.getValue().getTitle());
+        verify(mPrintingDelegate).print(tab);
     }
 
     private void switchToDesktopUserAgent(Tab tab) {

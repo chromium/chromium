@@ -122,8 +122,6 @@ source_set("browser") {
     "aw_policy_blocklist_service_factory.h",
     "aw_preconnector.cc",
     "aw_preconnector.h",
-    "aw_print_manager.cc",
-    "aw_print_manager.h",
     "aw_proxy_controller.cc",
     "aw_quota_manager_bridge.cc",
     "aw_quota_manager_bridge.h",
@@ -393,6 +391,7 @@ source_set("browser") {
     "//mojo/public/cpp/base:protobuf_support",
     "//mojo/public/cpp/bindings",
     "//net/third_party/quiche:blind_sign_auth",
+    "//printing/buildflags",
     "//services/cert_verifier/public/mojom",
     "//services/data_decoder/public/cpp",
     "//services/network/public/cpp",
@@ -416,6 +415,10 @@ source_set("browser") {
   ]
 
   if (enable_printing) {
+    sources += [
+      "aw_print_manager.cc",
+      "aw_print_manager.h",
+    ]
     deps += [
       "//components/printing/browser",
       "//components/printing/common",

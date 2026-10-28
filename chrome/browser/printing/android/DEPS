@@ -1,0 +1,4 @@
+include_rules = [
+  "+chrome/browser/tab/java",
+  "+components/prefs/android",
+]

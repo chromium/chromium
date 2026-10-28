@@ -4,7 +4,6 @@
 
 #include "android_webview/browser/aw_browser_context.h"
 #include "android_webview/browser/aw_content_browser_client.h"
-#include "android_webview/browser/aw_print_manager.h"
 #include "android_webview/browser/renderer_host/aw_render_view_host_ext.h"
 #include "android_webview/common/aw_features.h"
 #include "android_webview/common/mojom/render_message_filter.mojom.h"
@@ -28,12 +27,17 @@
 #include "media/mojo/buildflags.h"
 #include "mojo/public/cpp/bindings/binder_map.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
+#include "printing/buildflags/buildflags.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "services/service_manager/public/cpp/binder_registry.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
 #include "third_party/blink/public/mojom/payments/payment_request.mojom.h"
 #include "third_party/blink/public/mojom/webview/webview_media_integrity.mojom.h"
+
+#if BUILDFLAG(ENABLE_PRINTING)
+#include "android_webview/browser/aw_print_manager.h"
+#endif
 
 #if BUILDFLAG(ENABLE_SPELLCHECK)
 #include "components/spellcheck/browser/spell_check_host_impl.h"
@@ -193,6 +197,7 @@ void AwContentBrowserClient::
                 std::move(receiver), render_frame_host);
           },
           &render_frame_host));
+#if BUILDFLAG(ENABLE_PRINTING)
   associated_registry.AddInterface<printing::mojom::PrintManagerHost>(
       base::BindRepeating(
           [](content::RenderFrameHost* render_frame_host,
@@ -202,6 +207,7 @@ void AwContentBrowserClient::
                                                  render_frame_host);
           },
           &render_frame_host));
+#endif  // BUILDFLAG(ENABLE_PRINTING)
   associated_registry.AddInterface<
       security_interstitials::mojom::InterstitialCommands>(base::BindRepeating(
       [](content::RenderFrameHost* render_frame_host,

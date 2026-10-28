@@ -18,7 +18,7 @@ import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.preferences.Pref;
+import org.chromium.chrome.browser.printing.PrintingDelegate;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.screenshot_protection.ScreenshotProtectionController;
 import org.chromium.chrome.browser.share.ChromeShareExtras.DetailedContentType;
@@ -71,7 +71,7 @@ public abstract class ChromeProvidedSharingOptionsProviderBase {
     protected final Supplier<@Nullable Tab> mTabProvider;
     protected final BottomSheetController mBottomSheetController;
     protected final ShareParams mShareParams;
-    protected final Callback<Tab> mPrintTabCallback;
+    protected final @Nullable PrintingDelegate mPrintingDelegate;
     protected final boolean mIsIncognito;
     protected final List<FirstPartyOption> mOrderedFirstPartyOptions;
     protected final ChromeOptionShareCallback mChromeOptionShareCallback;
@@ -92,7 +92,7 @@ public abstract class ChromeProvidedSharingOptionsProviderBase {
      * @param tabProvider Supplier for the current activity tab.
      * @param bottomSheetController The {@link BottomSheetController} for the current activity.
      * @param shareParams The {@link ShareParams} for the current share.
-     * @param printTab A {@link Callback} that will print a given Tab.
+     * @param printingDelegate Prints tabs, or null if printing is unavailable.
      * @param isIncognito Whether incognito mode is enabled.
      * @param chromeOptionShareCallback A ChromeOptionShareCallback that can be used by
      *     Chrome-provided sharing options.
@@ -111,7 +111,7 @@ public abstract class ChromeProvidedSharingOptionsProviderBase {
             Supplier<@Nullable Tab> tabProvider,
             BottomSheetController bottomSheetController,
             ShareParams shareParams,
-            Callback<Tab> printTab,
+            @Nullable PrintingDelegate printingDelegate,
             boolean isIncognito,
             ChromeOptionShareCallback chromeOptionShareCallback,
             Tracker featureEngagementTracker,
@@ -127,7 +127,7 @@ public abstract class ChromeProvidedSharingOptionsProviderBase {
         mTabProvider = tabProvider;
         mBottomSheetController = bottomSheetController;
         mShareParams = shareParams;
-        mPrintTabCallback = printTab;
+        mPrintingDelegate = printingDelegate;
         mIsIncognito = isIncognito;
         mFeatureEngagementTracker = featureEngagementTracker;
         mChromeOptionShareCallback = chromeOptionShareCallback;
@@ -348,7 +348,8 @@ public abstract class ChromeProvidedSharingOptionsProviderBase {
         // For the desktop case, the Print action will be showed in the main menu.
         if (!DeviceInfo.isDesktop()
                 && mTabProvider.get() != null
-                && UserPrefs.get(mProfile).getBoolean(Pref.PRINTING_ENABLED)) {
+                && mPrintingDelegate != null
+                && mPrintingDelegate.isPrintingEnabled(UserPrefs.get(mProfile))) {
             mOrderedFirstPartyOptions.add(createPrintingFirstPartyOption());
         }
     }
@@ -497,7 +498,8 @@ public abstract class ChromeProvidedSharingOptionsProviderBase {
                 .setFeatureNameForMetrics(USER_ACTION_PRINT_SELECTED)
                 .setOnClickCallback(
                         (view) -> {
-                            mPrintTabCallback.onResult(assertNonNull(mTabProvider.get()));
+                            assertNonNull(mPrintingDelegate)
+                                    .print(assertNonNull(mTabProvider.get()));
                         })
                 .build();
     }

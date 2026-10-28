@@ -38,9 +38,8 @@ import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceOrchestratorFactory;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
-import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.price_tracking.PriceDropNotificationManagerFactory;
-import org.chromium.chrome.browser.printing.TabPrinter;
+import org.chromium.chrome.browser.printing.PrintingDelegate;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
@@ -52,12 +51,8 @@ import org.chromium.content_public.browser.AdditionalNavigationParams;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.common.Referrer;
-import org.chromium.printing.PrintManagerDelegateImpl;
-import org.chromium.printing.PrintingController;
-import org.chromium.printing.PrintingControllerImpl;
 import org.chromium.ui.base.Clipboard;
 import org.chromium.ui.base.PageTransition;
-import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
 
 import java.util.function.Supplier;
@@ -75,6 +70,7 @@ public class TabContextMenuItemDelegate implements ContextMenuItemDelegate {
     private final Runnable mContextMenuCopyLinkObserver;
     private final Supplier<SnackbarManager> mSnackbarManagerSupplier;
     private final Supplier<@Nullable BottomSheetController> mBottomSheetControllerSupplier;
+    private final @Nullable PrintingDelegate mPrintingDelegate;
 
     /** Builds a {@link TabContextMenuItemDelegate} instance. */
     public TabContextMenuItemDelegate(
@@ -85,7 +81,8 @@ public class TabContextMenuItemDelegate implements ContextMenuItemDelegate {
             Supplier<@Nullable EphemeralTabCoordinator> ephemeralTabCoordinatorSupplier,
             Runnable contextMenuCopyLinkObserver,
             Supplier<SnackbarManager> snackbarManagerSupplier,
-            Supplier<@Nullable BottomSheetController> bottomSheetControllerSupplier) {
+            Supplier<@Nullable BottomSheetController> bottomSheetControllerSupplier,
+            @Nullable PrintingDelegate printingDelegate) {
         mActivity = activity;
         mActivityType = activityType;
         mTab = (TabImpl) tab;
@@ -94,6 +91,7 @@ public class TabContextMenuItemDelegate implements ContextMenuItemDelegate {
         mContextMenuCopyLinkObserver = contextMenuCopyLinkObserver;
         mSnackbarManagerSupplier = snackbarManagerSupplier;
         mBottomSheetControllerSupplier = bottomSheetControllerSupplier;
+        mPrintingDelegate = printingDelegate;
     }
 
     @Override
@@ -150,11 +148,11 @@ public class TabContextMenuItemDelegate implements ContextMenuItemDelegate {
 
     @Override
     public boolean isPrintSupported() {
-        if (mTab == null) return false;
+        if (mTab == null || mPrintingDelegate == null) return false;
         if (ContextualTasksUtils.isContextualTasksUrl(mTab.getUrl())) {
             return false;
         }
-        return UserPrefs.get(mTab.getProfile()).getBoolean(Pref.PRINTING_ENABLED);
+        return mPrintingDelegate.isPrintingEnabled(UserPrefs.get(mTab.getProfile()));
     }
 
     @Override
@@ -176,12 +174,8 @@ public class TabContextMenuItemDelegate implements ContextMenuItemDelegate {
     @Override
     public void startPrint() {
         if (mActivity.isFinishing() || mActivity.isDestroyed()) return;
-        WindowAndroid windowAndroid = mTab.getWindowAndroid();
-        if (windowAndroid != null) {
-            PrintingController printingController =
-                    PrintingControllerImpl.getInstance(windowAndroid);
-            printingController.startPrint(
-                    new TabPrinter(mTab), new PrintManagerDelegateImpl(mActivity));
+        if (mPrintingDelegate != null) {
+            mPrintingDelegate.print(mTab);
         }
     }
 

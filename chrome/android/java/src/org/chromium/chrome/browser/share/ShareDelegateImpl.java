@@ -30,7 +30,7 @@ import org.chromium.chrome.browser.history_clusters.HistoryClustersTabHelper;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.offlinepages.OfflinePageUtils;
 import org.chromium.chrome.browser.pdf.PdfUtils;
-import org.chromium.chrome.browser.printing.PrintHelper;
+import org.chromium.chrome.browser.printing.PrintingDelegate;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ShareContentTypeHelper.ContentType;
 import org.chromium.chrome.browser.share.android_share_sheet.AndroidShareSheetController;
@@ -150,7 +150,7 @@ public class ShareDelegateImpl implements ShareDelegate {
                             mTabProvider,
                             mTabModelSelectorProvider,
                             assertNonNull(mProfileSupplier.get()),
-                            this::printTab,
+                            PrintingDelegate.getInstance(),
                             new TabGroupSharingControllerImpl(mDataSharingTabManager),
                             shareOrigin,
                             mShareStartTime,
@@ -300,10 +300,6 @@ public class ShareDelegateImpl implements ShareDelegate {
         return visibleUrl.getSpec();
     }
 
-    private void printTab(Tab tab) {
-        PrintHelper.printTab(tab);
-    }
-
     @Override
     public boolean isSharingHubEnabled() {
         if (DeviceInfo.isAutomotive() && !AutomotiveUtils.doesDeviceSupportOsShareSheet(mContext)) {
@@ -369,7 +365,7 @@ public class ShareDelegateImpl implements ShareDelegate {
                 Supplier<@Nullable Tab> tabProvider,
                 Supplier<@Nullable TabModelSelector> tabModelSelectorSupplier,
                 Profile profile,
-                Callback<Tab> printCallback,
+                @Nullable PrintingDelegate printingDelegate,
                 TabGroupSharingController tabGroupSharingController,
                 @ShareOrigin int shareOrigin,
                 long shareStartTime,
@@ -403,7 +399,7 @@ public class ShareDelegateImpl implements ShareDelegate {
                                     controller,
                                     lifecycleDispatcher,
                                     tabProvider,
-                                    printCallback,
+                                    printingDelegate,
                                     new LargeIconBridge(profile),
                                     isIncognito,
                                     TrackerFactory.getTrackerForProfile(profile),
@@ -430,7 +426,7 @@ public class ShareDelegateImpl implements ShareDelegate {
                             tabProvider,
                             tabModelSelectorSupplier,
                             profile,
-                            printCallback,
+                            printingDelegate,
                             tabGroupSharingController,
                             DeviceLockActivityLauncherImpl.get(),
                             signinAndHistorySyncActivityLauncher,

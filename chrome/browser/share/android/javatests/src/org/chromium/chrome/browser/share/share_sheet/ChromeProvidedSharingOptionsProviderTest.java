@@ -42,6 +42,7 @@ import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.enterprise.util.DataProtectionBridge;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
+import org.chromium.chrome.browser.printing.PrintingDelegate;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ChromeShareExtras.DetailedContentType;
 import org.chromium.chrome.browser.share.ShareContentTypeHelper;
@@ -93,6 +94,7 @@ public class ChromeProvidedSharingOptionsProviderTest {
     @Mock private SendTabToSelfAndroidBridge.Natives mSendTabToSelfAndroidBridgeNatives;
     @Mock private Profile mProfile;
     @Mock private PrefService mPrefService;
+    @Mock private PrintingDelegate mPrintingDelegate;
     @Mock private ShareSheetCoordinator mShareSheetCoordinator;
     @Mock private Tab mTab;
     @Mock private NativePage mNativePage;
@@ -519,6 +521,7 @@ public class ChromeProvidedSharingOptionsProviderTest {
             @LinkGeneration int linkGenerationStatus,
             boolean isScreenshotProtected) {
         when(mPrefService.getBoolean(anyString())).thenReturn(printingEnabled);
+        when(mPrintingDelegate.isPrintingEnabled(mPrefService)).thenReturn(printingEnabled);
         when(mTab.isIncognito()).thenReturn(isIncognito);
         when(mDataProtectionBridgeNatives.isScreenshotAllowed(mTab))
                 .thenReturn(!isScreenshotProtected);
@@ -537,7 +540,7 @@ public class ChromeProvidedSharingOptionsProviderTest {
                         new ShareSheetBottomSheetContent(
                                 mActivity, null, mShareSheetCoordinator, /* params= */ shareParams),
                         shareParams,
-                        /* printTab= */ null,
+                        mPrintingDelegate,
                         isIncognito,
                         /* shareStartTime= */ 0,
                         mShareSheetCoordinator,

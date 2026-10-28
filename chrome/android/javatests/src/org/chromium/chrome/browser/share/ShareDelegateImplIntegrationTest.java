@@ -12,7 +12,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.test.util.Batch;
@@ -20,6 +19,7 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
+import org.chromium.chrome.browser.printing.PrintingDelegate;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ShareDelegateImpl.ShareSheetDelegate;
 import org.chromium.chrome.browser.share.android_share_sheet.TabGroupSharingController;
@@ -90,7 +90,7 @@ public class ShareDelegateImplIntegrationTest {
                                         Supplier<Tab> tabProvider,
                                         Supplier<TabModelSelector> tabModelSelectorProvider,
                                         Profile profileSupplier,
-                                        Callback<Tab> printCallback,
+                                        PrintingDelegate printingDelegate,
                                         TabGroupSharingController tabGroupSharingController,
                                         int shareOrigin,
                                         long shareStartTime,

@@ -471,6 +471,7 @@ if (_is_default_toolchain) {
       "//chrome/browser/preferences:pref_service_java",
       "//chrome/browser/prefetch/android:java",
       "//chrome/browser/preloading/android:java",
+      "//chrome/browser/printing/android:java",
       "//chrome/browser/privacy:java",
       "//chrome/browser/privacy:privacy_settings_java",
       "//chrome/browser/privacy_guide/android:java",
@@ -921,6 +922,7 @@ if (_is_default_toolchain) {
       sources += [
         "java/src/org/chromium/chrome/browser/printing/ChromeThinWebViewPrintingController.java",
         "java/src/org/chromium/chrome/browser/printing/PrintHelper.java",
+        "java/src/org/chromium/chrome/browser/printing/PrintingDelegateImpl.java",
         "java/src/org/chromium/chrome/browser/printing/TabPrinter.java",
         "java/src/org/chromium/chrome/browser/printing/WebContentsPrinter.java",
       ]
@@ -2893,8 +2895,6 @@ if (_is_default_toolchain) {
       "java/src/org/chromium/chrome/browser/permissions/PermissionUpdateRequester.java",
       "java/src/org/chromium/chrome/browser/policy/PolicyAuditor.java",
       "java/src/org/chromium/chrome/browser/policy/PolicyAuditorBridge.java",
-      "java/src/org/chromium/chrome/browser/printing/TabPrinter.java",
-      "java/src/org/chromium/chrome/browser/printing/WebContentsPrinter.java",
       "java/src/org/chromium/chrome/browser/privacy/settings/PrivacyPreferencesManagerImpl.java",
       "java/src/org/chromium/chrome/browser/push_messaging/PushMessagingServiceObserver.java",
       "java/src/org/chromium/chrome/browser/recent_tabs/RecentTabsPagePrefs.java",
@@ -2942,6 +2942,13 @@ if (_is_default_toolchain) {
       "java/src/org/chromium/chrome/browser/webapps/WebappRegistry.java",
       "java/src/org/chromium/chrome/browser/xr/scenecore/XrModuleBridge.java",
     ]
+
+    if (enable_printing) {
+      sources += [
+        "java/src/org/chromium/chrome/browser/printing/TabPrinter.java",
+        "java/src/org/chromium/chrome/browser/printing/WebContentsPrinter.java",
+      ]
+    }
 
     if (enable_screen_capture) {
       sources += [

@@ -8,8 +8,11 @@
 #include "base/android/jni_weak_ref.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/raw_ptr.h"
+#include "printing/buildflags/buildflags.h"
 
+#if BUILDFLAG(ENABLE_PRINTING)
 #include "printing/page_range.h"
+#endif
 
 namespace content {
 class WebContents;
@@ -48,10 +51,12 @@ class AwPdfExporter {
                    const base::android::JavaRef<jobject>& cancel_signal);
 
  private:
+#if BUILDFLAG(ENABLE_PRINTING)
   std::unique_ptr<printing::PrintSettings> CreatePdfSettings(
       JNIEnv* env,
       const base::android::JavaRef<jobject>& obj,
       const printing::PageRanges& page_ranges);
+#endif
   void DidExportPdf(int page_count);
 
   JavaObjectWeakGlobalRef java_ref_;

@@ -293,7 +293,8 @@ public class TabContextMenuItemDelegateTest {
                                     ephemeralTabCoordinatorSupplier,
                                     mContextMenuCopyLinkObserver,
                                     snackbarManagerSupplier,
-                                    bottomSheetControllerSupplier);
+                                    bottomSheetControllerSupplier,
+                                    /* printingDelegate= */ null);
                 });
         assertNotNull(mContextMenuDelegate);
     }

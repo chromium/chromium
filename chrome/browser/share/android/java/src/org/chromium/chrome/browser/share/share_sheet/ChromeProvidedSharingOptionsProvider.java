@@ -12,11 +12,11 @@ import android.graphics.drawable.Drawable;
 
 import androidx.appcompat.content.res.AppCompatResources;
 
-import org.chromium.base.Callback;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.printing.PrintingDelegate;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ChromeProvidedSharingOptionsProviderBase;
 import org.chromium.chrome.browser.share.ChromeShareExtras.DetailedContentType;
@@ -65,7 +65,7 @@ public class ChromeProvidedSharingOptionsProvider extends ChromeProvidedSharingO
      * @param bottomSheetController The {@link BottomSheetController} for the current activity.
      * @param bottomSheetContent The {@link ShareSheetBottomSheetContent} for the current activity.
      * @param shareParams The {@link ShareParams} for the current share.
-     * @param printTab A {@link Callback} that will print a given Tab.
+     * @param printingDelegate Prints tabs, or null if printing is unavailable.
      * @param isIncognito Whether incognito mode is enabled.
      * @param shareStartTime The start time of the current share.
      * @param chromeOptionShareCallback A ChromeOptionShareCallback that can be used by
@@ -91,7 +91,7 @@ public class ChromeProvidedSharingOptionsProvider extends ChromeProvidedSharingO
             BottomSheetController bottomSheetController,
             ShareSheetBottomSheetContent bottomSheetContent,
             ShareParams shareParams,
-            Callback<Tab> printTab,
+            @Nullable PrintingDelegate printingDelegate,
             boolean isIncognito,
             long shareStartTime,
             ChromeOptionShareCallback chromeOptionShareCallback,
@@ -111,7 +111,7 @@ public class ChromeProvidedSharingOptionsProvider extends ChromeProvidedSharingO
                 tabProvider,
                 bottomSheetController,
                 shareParams,
-                printTab,
+                printingDelegate,
                 isIncognito,
                 chromeOptionShareCallback,
                 featureEngagementTracker,

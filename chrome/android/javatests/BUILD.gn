@@ -154,6 +154,7 @@ android_library("chrome_test_java_helper") {
     "//chrome/browser/preferences:pref_service_java",
     "//chrome/browser/prefetch/android:java",
     "//chrome/browser/preloading/android:java",
+    "//chrome/browser/printing/android:java",
     "//chrome/browser/privacy_guide/android:java",
     "//chrome/browser/privacy_sandbox/android:java",
     "//chrome/browser/privacy_sandbox/android:test_support_java",
@@ -1836,7 +1837,6 @@ android_library("chrome_test_java_various") {
     "src/org/chromium/chrome/browser/popups/PopupMultiwindowPTTest.java",
     "src/org/chromium/chrome/browser/popups/testhtmls/PopupLauncherPageStation.java",
     "src/org/chromium/chrome/browser/previewtab/PreviewTabTest.java",
-    "src/org/chromium/chrome/browser/printing/PrintingControllerTest.java",
     "src/org/chromium/chrome/browser/push_messaging/PushMessagingTest.java",
     "src/org/chromium/chrome/browser/read_later/ReadLaterContextMenuTest.java",
     "src/org/chromium/chrome/browser/reengagement/ReengagementNotificationControllerIntegrationTest.java",
@@ -1880,6 +1880,12 @@ android_library("chrome_test_java_various") {
     "src/org/chromium/chrome/test/memory_leaks/LeakCanaryCheckerLeakDetectionTest.java",
     "src/org/chromium/chrome/test/memory_leaks/PublicTransitLeakTest.java",
   ]
+
+  if (enable_printing) {
+    sources += [
+      "src/org/chromium/chrome/browser/printing/PrintingControllerTest.java",
+    ]
+  }
 
   data = [ "//chrome/test/data/click.html" ]
 

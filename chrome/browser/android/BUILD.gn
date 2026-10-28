@@ -649,7 +649,6 @@ if (is_android) {
       "usage_stats/usage_stats_database.cc",
       "usage_stats/usage_stats_database.h",
       "warmup_manager.cc",
-      "web_contents_printer.cc",
       "webapk/webapk_install_service.cc",
       "webapk/webapk_install_service_factory.cc",
       "webapk/webapk_install_service_factory.h",
@@ -1100,6 +1099,7 @@ if (is_android) {
     ]
 
     if (enable_printing) {
+      sources += [ "web_contents_printer.cc" ]
       deps += [
         "//chrome/browser/printing",
         "//components/printing/browser",

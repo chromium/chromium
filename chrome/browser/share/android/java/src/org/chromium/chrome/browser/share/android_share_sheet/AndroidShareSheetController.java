@@ -26,6 +26,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
+import org.chromium.chrome.browser.printing.PrintingDelegate;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ChromeCustomShareAction;
 import org.chromium.chrome.browser.share.ChromeShareExtras;
@@ -62,7 +63,7 @@ public class AndroidShareSheetController implements ChromeOptionShareCallback {
     private final Supplier<@Nullable Tab> mTabProvider;
     private final Supplier<@Nullable TabModelSelector> mTabModelSelectorSupplier;
     private final Profile mProfile;
-    private final Callback<Tab> mPrintCallback;
+    private final @Nullable PrintingDelegate mPrintingDelegate;
     private final TabGroupSharingController mTabGroupSharingController;
     private final SigninAndHistorySyncActivityLauncher mSigninAndHistorySyncActivityLauncher;
     private final ActivityResultTracker mActivityResultTracker;
@@ -83,7 +84,7 @@ public class AndroidShareSheetController implements ChromeOptionShareCallback {
      * @param tabModelSelectorSupplier Supplier for the {@link TabModelSelector}. Used to determine
      *     whether incognito mode is selected or not.
      * @param profile The current profile of the User.
-     * @param printCallback The callback used to trigger print action.
+     * @param printingDelegate Prints tabs, or null if printing is unavailable.
      * @param tabGroupSharingController Controller for handling tab group sharing action.
      * @param deviceLockActivityLauncher The launcher to start up the device lock page.
      * @param signinAndHistorySyncActivityLauncher The launcher for sign-in and history sync.
@@ -98,7 +99,7 @@ public class AndroidShareSheetController implements ChromeOptionShareCallback {
             Supplier<@Nullable Tab> tabProvider,
             Supplier<@Nullable TabModelSelector> tabModelSelectorSupplier,
             Profile profile,
-            Callback<Tab> printCallback,
+            @Nullable PrintingDelegate printingDelegate,
             TabGroupSharingController tabGroupSharingController,
             DeviceLockActivityLauncher deviceLockActivityLauncher,
             SigninAndHistorySyncActivityLauncher signinAndHistorySyncActivityLauncher,
@@ -115,7 +116,7 @@ public class AndroidShareSheetController implements ChromeOptionShareCallback {
                         tabProvider,
                         tabModelSelectorSupplier,
                         profile,
-                        printCallback,
+                        printingDelegate,
                         tabGroupSharingController,
                         deviceLockActivityLauncher,
                         signinAndHistorySyncActivityLauncher,
@@ -142,7 +143,7 @@ public class AndroidShareSheetController implements ChromeOptionShareCallback {
      * @param tabModelSelectorSupplier Supplier for the {@link TabModelSelector}. Used to determine
      *     whether incognito mode is selected or not.
      * @param profile The current profile of the User.
-     * @param printCallback The callback used to trigger print action.
+     * @param printingDelegate Prints tabs, or null if printing is unavailable.
      * @param tabGroupSharingController Controller for handling tab group sharing action.
      * @param deviceLockActivityLauncher The launcher to start up the device lock page.
      * @param signinAndHistorySyncActivityLauncher The launcher for sign-in and history sync.
@@ -156,7 +157,7 @@ public class AndroidShareSheetController implements ChromeOptionShareCallback {
             Supplier<@Nullable Tab> tabProvider,
             Supplier<@Nullable TabModelSelector> tabModelSelectorSupplier,
             Profile profile,
-            Callback<Tab> printCallback,
+            @Nullable PrintingDelegate printingDelegate,
             TabGroupSharingController tabGroupSharingController,
             DeviceLockActivityLauncher deviceLockActivityLauncher,
             SigninAndHistorySyncActivityLauncher signinAndHistorySyncActivityLauncher,
@@ -167,7 +168,7 @@ public class AndroidShareSheetController implements ChromeOptionShareCallback {
         mTabProvider = tabProvider;
         mTabModelSelectorSupplier = tabModelSelectorSupplier;
         mProfile = profile;
-        mPrintCallback = printCallback;
+        mPrintingDelegate = printingDelegate;
         mTabGroupSharingController = tabGroupSharingController;
         mDeviceLockActivityLauncher = deviceLockActivityLauncher;
         mSigninAndHistorySyncActivityLauncher = signinAndHistorySyncActivityLauncher;
@@ -218,7 +219,7 @@ public class AndroidShareSheetController implements ChromeOptionShareCallback {
                             mTabProvider,
                             mController,
                             params,
-                            mPrintCallback,
+                            mPrintingDelegate,
                             mTabGroupSharingController,
                             isIncognito,
                             this,

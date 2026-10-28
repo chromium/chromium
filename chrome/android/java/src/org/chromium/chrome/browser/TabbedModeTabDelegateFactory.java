@@ -28,6 +28,7 @@ import org.chromium.chrome.browser.magic_stack.ModuleRegistry;
 import org.chromium.chrome.browser.metrics.StartupMetricsTracker;
 import org.chromium.chrome.browser.native_page.NativePageFactory;
 import org.chromium.chrome.browser.pdf.PdfInfo;
+import org.chromium.chrome.browser.printing.PrintingDelegate;
 import org.chromium.chrome.browser.recent_tabs.RecentlyClosedEntriesManager;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.tab.Tab;
@@ -192,7 +193,8 @@ public class TabbedModeTabDelegateFactory implements TabDelegateFactory {
                         mEphemeralTabCoordinatorSupplier,
                         mContextMenuCopyLinkObserver,
                         mSnackbarManagerSupplier,
-                        () -> mBottomSheetController),
+                        () -> mBottomSheetController,
+                        PrintingDelegate.getInstance()),
                 mShareDelegateSupplier,
                 ChromeContextMenuPopulator.ContextMenuMode.NORMAL,
                 /* customContentActions= */ List.of());
