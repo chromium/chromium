@@ -19,7 +19,6 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/audio/dbus-constants.h"
-#include "ui/message_center/message_center.h"
 
 namespace ash::audio_config {
 
@@ -153,7 +152,6 @@ class CrosAudioConfigImplTest : public testing::Test {
   ~CrosAudioConfigImplTest() override = default;
 
   void SetUp() override {
-    message_center::MessageCenter::Initialize();
     CrasAudioClient::InitializeFake();
     fake_cras_audio_client_ = FakeCrasAudioClient::Get();
     CrasAudioHandler::InitializeForTesting();
@@ -181,7 +179,6 @@ class CrosAudioConfigImplTest : public testing::Test {
     CrasAudioHandler::Shutdown();
     CrasAudioClient::Shutdown();
     audio_pref_handler_ = nullptr;
-    message_center::MessageCenter::Shutdown();
   }
 
  protected:

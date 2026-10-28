@@ -7530,6 +7530,11 @@ inline constexpr char kAshSplitKeyboardRefactorName[] =
 inline constexpr char kAshSplitKeyboardRefactorDescription[] =
     "Enable split keyboard refactor on ChromeOS.";
 
+inline constexpr char kAudioSelectionImprovementName[] =
+    "Enable audio selection improvement algorithm";
+inline constexpr char kAudioSelectionImprovementDescription[] =
+    "Enable set-based audio selection improvement algorithm.";
+
 inline constexpr char kAutoFramingOverrideName[] =
     "Auto-framing control override";
 inline constexpr char kAutoFramingOverrideDescription[] =

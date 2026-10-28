@@ -5,6 +5,8 @@
 // Generated test cases from cl/633262013 with a new handler:
 // simple_env_with_exception.py. DO NOT EDIT."
 
+#include "ash/constants/ash_features.h"
+#include "base/test/scoped_feature_list.h"
 #include "chromeos/ash/components/audio/audio_device_selection_test_base.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/message_center/message_center.h"
@@ -23,10 +25,15 @@ class AudioDeviceSelectionWithNotificationGeneratedTest
     AudioDeviceSelectionTestBase::TearDown();
     message_center::MessageCenter::Shutdown();
   }
+
+ protected:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(AudioDeviceSelectionWithNotificationGeneratedTest,
        BandDocScenario1Input) {
+  scoped_feature_list_.InitAndEnableFeature(
+      ash::features::kAudioSelectionImprovement);
   AudioNode internal1 = NewInputNode("INTERNAL_MIC");
   AudioNode usb2 = NewInputNode("USB");
   AudioNode usb3 = NewInputNode("USB");
@@ -85,6 +92,8 @@ TEST_F(AudioDeviceSelectionWithNotificationGeneratedTest,
 
 TEST_F(AudioDeviceSelectionWithNotificationGeneratedTest,
        BandDocScenario1Output) {
+  scoped_feature_list_.InitAndEnableFeature(
+      ash::features::kAudioSelectionImprovement);
   AudioNode internal1 = NewOutputNode("INTERNAL_SPEAKER");
   AudioNode usb2 = NewOutputNode("USB");
   AudioNode usb3 = NewOutputNode("USB");
@@ -143,6 +152,8 @@ TEST_F(AudioDeviceSelectionWithNotificationGeneratedTest,
 
 TEST_F(AudioDeviceSelectionWithNotificationGeneratedTest,
        BandDocScenario2Input) {
+  scoped_feature_list_.InitAndEnableFeature(
+      ash::features::kAudioSelectionImprovement);
   AudioNode internal1 = NewInputNode("INTERNAL_MIC");
   AudioNode usb2 = NewInputNode("USB");
   AudioNode usb3 = NewInputNode("USB");
@@ -203,6 +214,8 @@ TEST_F(AudioDeviceSelectionWithNotificationGeneratedTest,
 
 TEST_F(AudioDeviceSelectionWithNotificationGeneratedTest,
        BandDocScenario2Output) {
+  scoped_feature_list_.InitAndEnableFeature(
+      ash::features::kAudioSelectionImprovement);
   AudioNode internal1 = NewOutputNode("INTERNAL_SPEAKER");
   AudioNode usb2 = NewOutputNode("USB");
   AudioNode usb3 = NewOutputNode("USB");
@@ -263,6 +276,8 @@ TEST_F(AudioDeviceSelectionWithNotificationGeneratedTest,
 
 TEST_F(AudioDeviceSelectionWithNotificationGeneratedTest,
        BandDocScenario3Input) {
+  scoped_feature_list_.InitAndEnableFeature(
+      ash::features::kAudioSelectionImprovement);
   AudioNode internal1 = NewInputNode("INTERNAL_MIC");
   AudioNode usb2 = NewInputNode("USB");
   AudioNode usb3 = NewInputNode("USB");
@@ -343,6 +358,8 @@ TEST_F(AudioDeviceSelectionWithNotificationGeneratedTest,
 
 TEST_F(AudioDeviceSelectionWithNotificationGeneratedTest,
        BandDocScenario3Output) {
+  scoped_feature_list_.InitAndEnableFeature(
+      ash::features::kAudioSelectionImprovement);
   AudioNode internal1 = NewOutputNode("INTERNAL_SPEAKER");
   AudioNode usb2 = NewOutputNode("USB");
   AudioNode usb3 = NewOutputNode("USB");
@@ -423,6 +440,8 @@ TEST_F(AudioDeviceSelectionWithNotificationGeneratedTest,
 
 TEST_F(AudioDeviceSelectionWithNotificationGeneratedTest,
        BandDocScenario4Input) {
+  scoped_feature_list_.InitAndEnableFeature(
+      ash::features::kAudioSelectionImprovement);
   AudioNode internal1 = NewInputNode("INTERNAL_MIC");
   AudioNode usb2 = NewInputNode("USB");
   AudioNode usb3 = NewInputNode("USB");
@@ -503,6 +522,8 @@ TEST_F(AudioDeviceSelectionWithNotificationGeneratedTest,
 
 TEST_F(AudioDeviceSelectionWithNotificationGeneratedTest,
        BandDocScenario4Output) {
+  scoped_feature_list_.InitAndEnableFeature(
+      ash::features::kAudioSelectionImprovement);
   AudioNode internal1 = NewOutputNode("INTERNAL_SPEAKER");
   AudioNode usb2 = NewOutputNode("USB");
   AudioNode usb3 = NewOutputNode("USB");
@@ -583,6 +604,8 @@ TEST_F(AudioDeviceSelectionWithNotificationGeneratedTest,
 
 TEST_F(AudioDeviceSelectionWithNotificationGeneratedTest,
        BandDocScenario5Input) {
+  scoped_feature_list_.InitAndEnableFeature(
+      ash::features::kAudioSelectionImprovement);
   AudioNode internal1 = NewInputNode("INTERNAL_MIC");
   AudioNode usb2 = NewInputNode("USB");
   AudioNode usb3 = NewInputNode("USB");
@@ -663,6 +686,8 @@ TEST_F(AudioDeviceSelectionWithNotificationGeneratedTest,
 
 TEST_F(AudioDeviceSelectionWithNotificationGeneratedTest,
        BandDocScenario5Output) {
+  scoped_feature_list_.InitAndEnableFeature(
+      ash::features::kAudioSelectionImprovement);
   AudioNode internal1 = NewOutputNode("INTERNAL_SPEAKER");
   AudioNode usb2 = NewOutputNode("USB");
   AudioNode usb3 = NewOutputNode("USB");
@@ -743,6 +768,8 @@ TEST_F(AudioDeviceSelectionWithNotificationGeneratedTest,
 
 TEST_F(AudioDeviceSelectionWithNotificationGeneratedTest,
        BandDocScenario6Input) {
+  scoped_feature_list_.InitAndEnableFeature(
+      ash::features::kAudioSelectionImprovement);
   AudioNode internal1 = NewInputNode("INTERNAL_MIC");
   AudioNode usb2 = NewInputNode("USB");
   AudioNode usb3 = NewInputNode("USB");
@@ -863,6 +890,8 @@ TEST_F(AudioDeviceSelectionWithNotificationGeneratedTest,
 
 TEST_F(AudioDeviceSelectionWithNotificationGeneratedTest,
        BandDocScenario6Output) {
+  scoped_feature_list_.InitAndEnableFeature(
+      ash::features::kAudioSelectionImprovement);
   AudioNode internal1 = NewOutputNode("INTERNAL_SPEAKER");
   AudioNode usb2 = NewOutputNode("USB");
   AudioNode usb3 = NewOutputNode("USB");
@@ -983,6 +1012,8 @@ TEST_F(AudioDeviceSelectionWithNotificationGeneratedTest,
 
 TEST_F(AudioDeviceSelectionWithNotificationGeneratedTest,
        BandDocScenario7Output) {
+  scoped_feature_list_.InitAndEnableFeature(
+      ash::features::kAudioSelectionImprovement);
   AudioNode internal1 = NewOutputNode("INTERNAL_SPEAKER");
   AudioNode hdmi2 = NewOutputNode("HDMI");
   AudioNode usb3 = NewOutputNode("USB");
@@ -1043,6 +1074,8 @@ TEST_F(AudioDeviceSelectionWithNotificationGeneratedTest,
 }
 
 TEST_F(AudioDeviceSelectionWithNotificationGeneratedTest, DdDd11Output) {
+  scoped_feature_list_.InitAndEnableFeature(
+      ash::features::kAudioSelectionImprovement);
   AudioNode internal1 = NewOutputNode("INTERNAL_SPEAKER");
   AudioNode headphone2 = NewOutputNode("HEADPHONE");
   AudioNode hdmi3 = NewOutputNode("HDMI");
@@ -1126,6 +1159,8 @@ TEST_F(AudioDeviceSelectionWithNotificationGeneratedTest, DdDd11Output) {
 }
 
 TEST_F(AudioDeviceSelectionWithNotificationGeneratedTest, DdDd12Output) {
+  scoped_feature_list_.InitAndEnableFeature(
+      ash::features::kAudioSelectionImprovement);
   AudioNode hdmi1 = NewOutputNode("HDMI");
   AudioNode hdmi2 = NewOutputNode("HDMI");
   AudioNode headphone3 = NewOutputNode("HEADPHONE");
@@ -1318,6 +1353,8 @@ TEST_F(AudioDeviceSelectionWithNotificationGeneratedTest, DdDd12Output) {
 }
 
 TEST_F(AudioDeviceSelectionWithNotificationGeneratedTest, DdDd21Output) {
+  scoped_feature_list_.InitAndEnableFeature(
+      ash::features::kAudioSelectionImprovement);
   AudioNode internal1 = NewOutputNode("INTERNAL_SPEAKER");
   AudioNode hdmi2 = NewOutputNode("HDMI");
   AudioNode headphone3 = NewOutputNode("HEADPHONE");
@@ -1357,6 +1394,8 @@ TEST_F(AudioDeviceSelectionWithNotificationGeneratedTest, DdDd21Output) {
 }
 
 TEST_F(AudioDeviceSelectionWithNotificationGeneratedTest, DdDd22Output) {
+  scoped_feature_list_.InitAndEnableFeature(
+      ash::features::kAudioSelectionImprovement);
   AudioNode internal1 = NewOutputNode("INTERNAL_SPEAKER");
   AudioNode hdmi2 = NewOutputNode("HDMI");
   AudioNode headphone3 = NewOutputNode("HEADPHONE");
@@ -1427,6 +1466,8 @@ TEST_F(AudioDeviceSelectionWithNotificationGeneratedTest, DdDd22Output) {
 }
 
 TEST_F(AudioDeviceSelectionWithNotificationGeneratedTest, DdDd23Output) {
+  scoped_feature_list_.InitAndEnableFeature(
+      ash::features::kAudioSelectionImprovement);
   AudioNode internal1 = NewOutputNode("INTERNAL_SPEAKER");
   AudioNode hdmi2 = NewOutputNode("HDMI");
   AudioNode headphone3 = NewOutputNode("HEADPHONE");
@@ -1532,6 +1573,8 @@ TEST_F(AudioDeviceSelectionWithNotificationGeneratedTest, DdDd23Output) {
 }
 
 TEST_F(AudioDeviceSelectionWithNotificationGeneratedTest, DdDd24Output) {
+  scoped_feature_list_.InitAndEnableFeature(
+      ash::features::kAudioSelectionImprovement);
   AudioNode internal1 = NewOutputNode("INTERNAL_SPEAKER");
   AudioNode hdmi2 = NewOutputNode("HDMI");
   AudioNode hdmi3 = NewOutputNode("HDMI");
@@ -1606,6 +1649,8 @@ TEST_F(AudioDeviceSelectionWithNotificationGeneratedTest, DdDd24Output) {
 
 TEST_F(AudioDeviceSelectionWithNotificationGeneratedTest,
        DiscussionIssue1Output) {
+  scoped_feature_list_.InitAndEnableFeature(
+      ash::features::kAudioSelectionImprovement);
   AudioNode internal1 = NewOutputNode("INTERNAL_SPEAKER");
   AudioNode usb2 = NewOutputNode("USB");
   AudioNode hdmi3 = NewOutputNode("HDMI");
@@ -1684,6 +1729,8 @@ TEST_F(AudioDeviceSelectionWithNotificationGeneratedTest,
 
 TEST_F(AudioDeviceSelectionWithNotificationGeneratedTest,
        DiscussionIssue2Output) {
+  scoped_feature_list_.InitAndEnableFeature(
+      ash::features::kAudioSelectionImprovement);
   AudioNode internal1 = NewOutputNode("INTERNAL_SPEAKER");
   AudioNode hdmi2 = NewOutputNode("HDMI");
   AudioNode usb3 = NewOutputNode("USB");
@@ -1759,6 +1806,8 @@ TEST_F(AudioDeviceSelectionWithNotificationGeneratedTest,
 
 TEST_F(AudioDeviceSelectionWithNotificationGeneratedTest,
        ExceptionalRulesRule1Input) {
+  scoped_feature_list_.InitAndEnableFeature(
+      ash::features::kAudioSelectionImprovement);
   AudioNode internal1 = NewInputNode("INTERNAL_MIC");
   AudioNode mic2 = NewInputNode("MIC");
   AudioNode bluetooth3 = NewInputNode("BLUETOOTH");
@@ -1790,6 +1839,8 @@ TEST_F(AudioDeviceSelectionWithNotificationGeneratedTest,
 
 TEST_F(AudioDeviceSelectionWithNotificationGeneratedTest,
        ExceptionalRulesRule1Output) {
+  scoped_feature_list_.InitAndEnableFeature(
+      ash::features::kAudioSelectionImprovement);
   AudioNode internal1 = NewOutputNode("INTERNAL_SPEAKER");
   AudioNode headphone2 = NewOutputNode("HEADPHONE");
   AudioNode bluetooth3 = NewOutputNode("BLUETOOTH");
@@ -1821,6 +1872,8 @@ TEST_F(AudioDeviceSelectionWithNotificationGeneratedTest,
 
 TEST_F(AudioDeviceSelectionWithNotificationGeneratedTest,
        ExceptionalRulesRule2Input) {
+  scoped_feature_list_.InitAndEnableFeature(
+      ash::features::kAudioSelectionImprovement);
   AudioNode internal1 = NewInputNode("INTERNAL_MIC");
   AudioNode usb2 = NewInputNode("USB");
   AudioNode usb3 = NewInputNode("USB");
@@ -1870,6 +1923,8 @@ TEST_F(AudioDeviceSelectionWithNotificationGeneratedTest,
 
 TEST_F(AudioDeviceSelectionWithNotificationGeneratedTest,
        ExceptionalRulesRule2Output) {
+  scoped_feature_list_.InitAndEnableFeature(
+      ash::features::kAudioSelectionImprovement);
   AudioNode internal1 = NewOutputNode("INTERNAL_SPEAKER");
   AudioNode usb2 = NewOutputNode("USB");
   AudioNode usb3 = NewOutputNode("USB");
@@ -1919,6 +1974,8 @@ TEST_F(AudioDeviceSelectionWithNotificationGeneratedTest,
 
 TEST_F(AudioDeviceSelectionWithNotificationGeneratedTest,
        ExceptionalRulesRule3Input) {
+  scoped_feature_list_.InitAndEnableFeature(
+      ash::features::kAudioSelectionImprovement);
   AudioNode internal1 = NewInputNode("INTERNAL_MIC");
   AudioNode usb2 = NewInputNode("USB");
   AudioNode usb3 = NewInputNode("USB");
@@ -1977,6 +2034,8 @@ TEST_F(AudioDeviceSelectionWithNotificationGeneratedTest,
 
 TEST_F(AudioDeviceSelectionWithNotificationGeneratedTest,
        ExceptionalRulesRule3Output) {
+  scoped_feature_list_.InitAndEnableFeature(
+      ash::features::kAudioSelectionImprovement);
   AudioNode internal1 = NewOutputNode("INTERNAL_SPEAKER");
   AudioNode usb2 = NewOutputNode("USB");
   AudioNode usb3 = NewOutputNode("USB");
@@ -2035,6 +2094,8 @@ TEST_F(AudioDeviceSelectionWithNotificationGeneratedTest,
 
 TEST_F(AudioDeviceSelectionWithNotificationGeneratedTest,
        ExceptionalRulesRule4Input) {
+  scoped_feature_list_.InitAndEnableFeature(
+      ash::features::kAudioSelectionImprovement);
   AudioNode internal1 = NewInputNode("INTERNAL_MIC");
   AudioNode usb2 = NewInputNode("USB");
   AudioNode usb3 = NewInputNode("USB");
@@ -2085,6 +2146,8 @@ TEST_F(AudioDeviceSelectionWithNotificationGeneratedTest,
 
 TEST_F(AudioDeviceSelectionWithNotificationGeneratedTest,
        ExceptionalRulesRule4Output) {
+  scoped_feature_list_.InitAndEnableFeature(
+      ash::features::kAudioSelectionImprovement);
   AudioNode internal1 = NewOutputNode("INTERNAL_SPEAKER");
   AudioNode usb2 = NewOutputNode("USB");
   AudioNode usb3 = NewOutputNode("USB");
@@ -2135,6 +2198,8 @@ TEST_F(AudioDeviceSelectionWithNotificationGeneratedTest,
 
 TEST_F(AudioDeviceSelectionWithNotificationGeneratedTest,
        FeedbackComment10Output) {
+  scoped_feature_list_.InitAndEnableFeature(
+      ash::features::kAudioSelectionImprovement);
   AudioNode internal1 = NewOutputNode("INTERNAL_SPEAKER");
   AudioNode hdmi2 = NewOutputNode("HDMI");
   AudioNode hdmi3 = NewOutputNode("HDMI");
@@ -2196,6 +2261,8 @@ TEST_F(AudioDeviceSelectionWithNotificationGeneratedTest,
 
 TEST_F(AudioDeviceSelectionWithNotificationGeneratedTest,
        FeedbackComment3Output) {
+  scoped_feature_list_.InitAndEnableFeature(
+      ash::features::kAudioSelectionImprovement);
   AudioNode internal1 = NewOutputNode("INTERNAL_SPEAKER");
   AudioNode hdmi2 = NewOutputNode("HDMI");
   AudioNode hdmi3 = NewOutputNode("HDMI");
@@ -2319,6 +2386,8 @@ TEST_F(AudioDeviceSelectionWithNotificationGeneratedTest,
 
 TEST_F(AudioDeviceSelectionWithNotificationGeneratedTest,
        FeedbackComment5Output) {
+  scoped_feature_list_.InitAndEnableFeature(
+      ash::features::kAudioSelectionImprovement);
   AudioNode internal1 = NewOutputNode("INTERNAL_SPEAKER");
   AudioNode hdmi2 = NewOutputNode("HDMI");
   AudioNode hdmi3 = NewOutputNode("HDMI");
@@ -2399,6 +2468,8 @@ TEST_F(AudioDeviceSelectionWithNotificationGeneratedTest,
 
 TEST_F(AudioDeviceSelectionWithNotificationGeneratedTest,
        FeedbackComment8Output) {
+  scoped_feature_list_.InitAndEnableFeature(
+      ash::features::kAudioSelectionImprovement);
   AudioNode internal1 = NewOutputNode("INTERNAL_SPEAKER");
   AudioNode hdmi2 = NewOutputNode("HDMI");
   AudioNode headphone3 = NewOutputNode("HEADPHONE");
@@ -2438,6 +2509,8 @@ TEST_F(AudioDeviceSelectionWithNotificationGeneratedTest,
 }
 
 TEST_F(AudioDeviceSelectionWithNotificationGeneratedTest, GreendocH4Output) {
+  scoped_feature_list_.InitAndEnableFeature(
+      ash::features::kAudioSelectionImprovement);
   AudioNode internal1 = NewOutputNode("INTERNAL_SPEAKER");
   AudioNode hdmi2 = NewOutputNode("HDMI");
 
@@ -2474,6 +2547,8 @@ TEST_F(AudioDeviceSelectionWithNotificationGeneratedTest, GreendocH4Output) {
 }
 
 TEST_F(AudioDeviceSelectionWithNotificationGeneratedTest, GreendocH7Output) {
+  scoped_feature_list_.InitAndEnableFeature(
+      ash::features::kAudioSelectionImprovement);
   AudioNode internal1 = NewOutputNode("INTERNAL_SPEAKER");
   AudioNode hdmi2 = NewOutputNode("HDMI");
   AudioNode headphone3 = NewOutputNode("HEADPHONE");
@@ -2513,6 +2588,8 @@ TEST_F(AudioDeviceSelectionWithNotificationGeneratedTest, GreendocH7Output) {
 }
 
 TEST_F(AudioDeviceSelectionWithNotificationGeneratedTest, GreendocM1Output) {
+  scoped_feature_list_.InitAndEnableFeature(
+      ash::features::kAudioSelectionImprovement);
   AudioNode internal1 = NewOutputNode("INTERNAL_SPEAKER");
   AudioNode hdmi2 = NewOutputNode("HDMI");
   AudioNode hdmi3 = NewOutputNode("HDMI");
@@ -2543,6 +2620,8 @@ TEST_F(AudioDeviceSelectionWithNotificationGeneratedTest, GreendocM1Output) {
 }
 
 TEST_F(AudioDeviceSelectionWithNotificationGeneratedTest, GreendocM3Output) {
+  scoped_feature_list_.InitAndEnableFeature(
+      ash::features::kAudioSelectionImprovement);
   AudioNode internal1 = NewOutputNode("INTERNAL_SPEAKER");
   AudioNode hdmi2 = NewOutputNode("HDMI");
   AudioNode hdmi3 = NewOutputNode("HDMI");
@@ -2603,6 +2682,8 @@ TEST_F(AudioDeviceSelectionWithNotificationGeneratedTest, GreendocM3Output) {
 }
 
 TEST_F(AudioDeviceSelectionWithNotificationGeneratedTest, GreendocM4Output) {
+  scoped_feature_list_.InitAndEnableFeature(
+      ash::features::kAudioSelectionImprovement);
   AudioNode internal1 = NewOutputNode("INTERNAL_SPEAKER");
   AudioNode hdmi2 = NewOutputNode("HDMI");
   AudioNode hdmi3 = NewOutputNode("HDMI");
@@ -2668,6 +2749,8 @@ TEST_F(AudioDeviceSelectionWithNotificationGeneratedTest, GreendocM4Output) {
 }
 
 TEST_F(AudioDeviceSelectionWithNotificationGeneratedTest, GreendocM5Output) {
+  scoped_feature_list_.InitAndEnableFeature(
+      ash::features::kAudioSelectionImprovement);
   AudioNode internal1 = NewOutputNode("INTERNAL_SPEAKER");
   AudioNode hdmi2 = NewOutputNode("HDMI");
   AudioNode headphone3 = NewOutputNode("HEADPHONE");
@@ -2724,6 +2807,8 @@ TEST_F(AudioDeviceSelectionWithNotificationGeneratedTest, GreendocM5Output) {
 }
 
 TEST_F(AudioDeviceSelectionWithNotificationGeneratedTest, HdmiReplugUsbOutput) {
+  scoped_feature_list_.InitAndEnableFeature(
+      ash::features::kAudioSelectionImprovement);
   AudioNode usb1 = NewOutputNode("USB");
   AudioNode hdmi2 = NewOutputNode("HDMI");
 
@@ -2771,6 +2856,8 @@ TEST_F(AudioDeviceSelectionWithNotificationGeneratedTest, HdmiReplugUsbOutput) {
 
 TEST_F(AudioDeviceSelectionWithNotificationGeneratedTest,
        InternalReplugUsbInput) {
+  scoped_feature_list_.InitAndEnableFeature(
+      ash::features::kAudioSelectionImprovement);
   AudioNode internal1 = NewInputNode("INTERNAL_MIC");
   AudioNode usb2 = NewInputNode("USB");
 
@@ -2808,6 +2895,8 @@ TEST_F(AudioDeviceSelectionWithNotificationGeneratedTest,
 
 TEST_F(AudioDeviceSelectionWithNotificationGeneratedTest,
        InternalReplugUsbOutput) {
+  scoped_feature_list_.InitAndEnableFeature(
+      ash::features::kAudioSelectionImprovement);
   AudioNode internal1 = NewOutputNode("INTERNAL_SPEAKER");
   AudioNode usb2 = NewOutputNode("USB");
 
@@ -2844,6 +2933,8 @@ TEST_F(AudioDeviceSelectionWithNotificationGeneratedTest,
 }
 
 TEST_F(AudioDeviceSelectionWithNotificationGeneratedTest, SimpleInput) {
+  scoped_feature_list_.InitAndEnableFeature(
+      ash::features::kAudioSelectionImprovement);
   AudioNode usb1 = NewInputNode("USB");
   AudioNode usb2 = NewInputNode("USB");
   AudioNode usb3 = NewInputNode("USB");
@@ -2900,6 +2991,8 @@ TEST_F(AudioDeviceSelectionWithNotificationGeneratedTest, SimpleInput) {
 }
 
 TEST_F(AudioDeviceSelectionWithNotificationGeneratedTest, SimpleOutput) {
+  scoped_feature_list_.InitAndEnableFeature(
+      ash::features::kAudioSelectionImprovement);
   AudioNode usb1 = NewOutputNode("USB");
   AudioNode usb2 = NewOutputNode("USB");
   AudioNode usb3 = NewOutputNode("USB");
@@ -2957,6 +3050,8 @@ TEST_F(AudioDeviceSelectionWithNotificationGeneratedTest, SimpleOutput) {
 
 TEST_F(AudioDeviceSelectionWithNotificationGeneratedTest,
        PersistActiveUsbHeadphoneAcrossRebootUsbComeLater) {
+  scoped_feature_list_.InitAndEnableFeature(
+      ash::features::kAudioSelectionImprovement);
   AudioNode internal1 = NewOutputNode("INTERNAL_SPEAKER");
   AudioNode usb2 = NewOutputNode("USB");
   AudioNode headphone3 = NewOutputNode("HEADPHONE");

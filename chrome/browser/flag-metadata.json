@@ -962,6 +962,11 @@
     "expiry_milestone": 175
   },
   {
+    "name": "audio-selection-improvement",
+    "owners": [ "zhangwenyu@google.com", "cros-device-enablement@google.com" ],
+    "expiry_milestone": 151
+  },
+  {
     "name": "auto-framing-override",
     "owners": [ "kamesan@chromium.org", "chromeos-camera-eng@google.com" ],
     "expiry_milestone": 116
