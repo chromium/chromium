@@ -1114,7 +1114,17 @@ source_set("unit_tests") {
   }
 
   if (is_win) {
+    # `PrivacyOverlayWin` loads localized strings, icons, and the disconnect
+    # dialog template (`IDS_PRODUCT_NAME`, `IDI_CHROME_REMOTE_DESKTOP`,
+    # `IDD_DISCONNECT`) from `CURRENT_MODULE()`, so `core.rc` must be linked
+    # into the unit test binary on Windows.
+    if (!defined(defines)) {
+      defines = []
+    }
+    defines += host_predefines + [ "REMOTING_HOST_BINARY=BINARY_CORE" ]
+
     sources += [
+      "$root_gen_dir/remoting/core.rc",
       "certificate_broker_impl_unittest.cc",
       "clipboard_win_unittest.cc",
       "pairing_registry_delegate_win_unittest.cc",
@@ -1123,7 +1133,10 @@ source_set("unit_tests") {
       "remote_ssl_private_key_unittest.cc",
       "touch_injector_win_unittest.cc",
     ]
-    deps += [ "//remoting/host/win:unit_tests" ]
+    deps += [
+      "//remoting/host/win:remoting_windows_resources",
+      "//remoting/host/win:unit_tests",
+    ]
   }
 
   if (!is_ios) {
