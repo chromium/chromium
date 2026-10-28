@@ -1076,9 +1076,15 @@ void BluetoothAdapterBlueZ::DisplayPasskey(const dbus::ObjectPath& device_path,
   if (!pairing)
     return;
 
-  if (entered == 0)
+  if (entered == 0) {
+    // DisplayPasskey() notifies the pairing delegate, which may cancel pairing
+    // and destroy `pairing` before returning.
+    base::WeakPtr<BluetoothPairingBlueZ> weak_pairing = pairing->GetWeakPtr();
     pairing->DisplayPasskey(passkey);
-
+    if (!weak_pairing) {
+      return;
+    }
+  }
   pairing->KeysEntered(entered);
 }
 

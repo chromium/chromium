@@ -65,7 +65,13 @@ void BluetoothPairingBlueZ::SetPinCode(const std::string& pincode) {
 void BluetoothPairingBlueZ::DisplayPinCode(const std::string& pincode) {
   ResetCallbacks();
   pairing_delegate_used_ = true;
+
+  base::WeakPtr<BluetoothPairingBlueZ> weak_this =
+      weak_ptr_factory_.GetWeakPtr();
   pairing_delegate_->DisplayPinCode(device_, pincode);
+  if (!weak_this) {
+    return;
+  }
 
   // If this is not an outgoing connection to the device, the pairing context
   // needs to be cleaned up again as there's no reliable indication of
@@ -108,7 +114,13 @@ void BluetoothPairingBlueZ::DisplayPasskey(uint32_t passkey) {
 
 void BluetoothPairingBlueZ::KeysEntered(uint16_t entered) {
   pairing_delegate_used_ = true;
+
+  base::WeakPtr<BluetoothPairingBlueZ> weak_this =
+      weak_ptr_factory_.GetWeakPtr();
   pairing_delegate_->KeysEntered(device_, entered);
+  if (!weak_this) {
+    return;
+  }
 
   // If this is not an outgoing connection to the device, the pairing context
   // needs to be cleaned up again as there's no reliable indication of
@@ -167,6 +179,10 @@ bool BluetoothPairingBlueZ::CancelPairing() {
 BluetoothDevice::PairingDelegate* BluetoothPairingBlueZ::GetPairingDelegate()
     const {
   return pairing_delegate_;
+}
+
+base::WeakPtr<BluetoothPairingBlueZ> BluetoothPairingBlueZ::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
 }
 
 void BluetoothPairingBlueZ::ResetCallbacks() {

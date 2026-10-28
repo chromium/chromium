@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "device/bluetooth/bluetooth_device.h"
 #include "device/bluetooth/dbus/bluetooth_agent_service_provider.h"
 
@@ -114,6 +115,8 @@ class BluetoothPairingBlueZ {
   // Returns the pairing delegate being used by this pairing object.
   device::BluetoothDevice::PairingDelegate* GetPairingDelegate() const;
 
+  base::WeakPtr<BluetoothPairingBlueZ> GetWeakPtr();
+
  private:
   // Internal method to run the current set of callbacks with canceled state
   // because a new request has arrived that supersedes them.
@@ -146,6 +149,8 @@ class BluetoothPairingBlueZ {
       passkey_callback_;
   bluez::BluetoothAgentServiceProvider::Delegate::ConfirmationCallback
       confirmation_callback_;
+
+  base::WeakPtrFactory<BluetoothPairingBlueZ> weak_ptr_factory_{this};
 };
 
 }  // namespace bluez
