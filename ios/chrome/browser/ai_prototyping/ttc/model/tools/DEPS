@@ -7,7 +7,9 @@ include_rules = [
   "+ios/chrome/browser/intelligence/actor/model",
   "+ios/chrome/browser/intelligence/actor/public",
   "+ios/chrome/browser/intelligence/actor/tools/public",
+  "+ios/chrome/browser/intelligence/actor/tools/utils",
   "+ios/chrome/browser/intelligence/features",
+  "+ios/chrome/browser/shared/model/profile",
   "+ios/chrome/browser/shared/model/web_state_list",
   "+ios/web/public",
   # keep-sorted end
@@ -19,7 +21,6 @@ specific_include_rules = {
     "+ios/chrome/browser/shared/model/browser",
     "+ios/chrome/browser/shared/model/browser/test",
     "+ios/chrome/browser/shared/model/profile/test",
-    "+ios/chrome/browser/shared/model/web_state_list/test",
     "+ios/chrome/browser/url_loading/model",
     "+ios/web/public/test",
   ],

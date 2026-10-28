@@ -23,7 +23,9 @@ source_set("tools") {
     "//ios/chrome/browser/intelligence/actor/model",
     "//ios/chrome/browser/intelligence/actor/public:actor_task_ui_protocols",
     "//ios/chrome/browser/intelligence/actor/tools/public",
-    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/intelligence/actor/tools/utils:actor_browser_utils",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/web_state_list:utils",
     "//ios/web/public",
     "//url",
   ]
@@ -47,7 +49,6 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//components/actor/public/mojom:mojo_bindings",
     "//components/optimization_guide/proto:optimization_guide_proto",
-    "//components/sessions:session_id",
     "//components/ttc/app/public",
     "//ios/chrome/browser/intelligence/actor/model",
     "//ios/chrome/browser/intelligence/actor/public:actor_types",
