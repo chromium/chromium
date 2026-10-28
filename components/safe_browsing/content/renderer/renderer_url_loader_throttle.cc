@@ -37,21 +37,13 @@ bool KnownSafeUrl(const GURL& url) {
 
 }  // namespace
 
-RendererURLLoaderThrottle::RendererURLLoaderThrottle(
-    mojom::SafeBrowsing* safe_browsing,
-    base::optional_ref<const blink::LocalFrameToken> local_frame_token)
-    : safe_browsing_(safe_browsing),
-      frame_token_(local_frame_token.CopyAsOptional()) {}
+RendererURLLoaderThrottle::RendererURLLoaderThrottle() = default;
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 RendererURLLoaderThrottle::RendererURLLoaderThrottle(
-    mojom::SafeBrowsing* safe_browsing,
-    base::optional_ref<const blink::LocalFrameToken> local_frame_token,
     mojo::PendingRemote<mojom::ExtensionWebRequestReporter>
         extension_web_request_reporter)
-    : safe_browsing_(safe_browsing),
-      frame_token_(local_frame_token.CopyAsOptional()),
-      extension_web_request_reporter_(
+    : extension_web_request_reporter_(
           std::move(extension_web_request_reporter)) {}
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
@@ -64,12 +56,6 @@ RendererURLLoaderThrottle::~RendererURLLoaderThrottle() {
 }
 
 void RendererURLLoaderThrottle::DetachFromCurrentSequence() {
-  // Create a new pipe to the SafeBrowsing interface that can be bound to a
-  // different sequence.
-  safe_browsing_->Clone(
-      safe_browsing_pending_remote_.InitWithNewPipeAndPassReceiver());
-  safe_browsing_ = nullptr;
-
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   // Pass the pipe to the ExtensionWebRequestReporter interface to be bound to
   // a different sequence.

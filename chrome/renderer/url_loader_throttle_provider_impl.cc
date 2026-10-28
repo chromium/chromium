@@ -108,8 +108,6 @@ URLLoaderThrottleProviderImpl::Create(
     blink::URLLoaderThrottleProviderType type,
     ChromeContentRendererClient* chrome_content_renderer_client,
     blink::ThreadSafeBrowserInterfaceBrokerProxy* broker) {
-  mojo::PendingRemote<safe_browsing::mojom::SafeBrowsing> pending_safe_browsing;
-  broker->GetInterface(pending_safe_browsing.InitWithNewPipeAndPassReceiver());
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   mojo::PendingRemote<safe_browsing::mojom::ExtensionWebRequestReporter>
       pending_extension_web_request_reporter;
@@ -118,7 +116,7 @@ URLLoaderThrottleProviderImpl::Create(
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
   return std::make_unique<URLLoaderThrottleProviderImpl>(
-      type, chrome_content_renderer_client, std::move(pending_safe_browsing),
+      type, chrome_content_renderer_client,
 #if BUILDFLAG(ENABLE_EXTENSIONS)
       std::move(pending_extension_web_request_reporter),
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
@@ -132,8 +130,6 @@ URLLoaderThrottleProviderImpl::Create(
 URLLoaderThrottleProviderImpl::URLLoaderThrottleProviderImpl(
     blink::URLLoaderThrottleProviderType type,
     ChromeContentRendererClient* chrome_content_renderer_client,
-    mojo::PendingRemote<safe_browsing::mojom::SafeBrowsing>
-        pending_safe_browsing,
 #if BUILDFLAG(ENABLE_EXTENSIONS)
     mojo::PendingRemote<safe_browsing::mojom::ExtensionWebRequestReporter>
         pending_extension_web_request_reporter,
@@ -142,7 +138,6 @@ URLLoaderThrottleProviderImpl::URLLoaderThrottleProviderImpl(
     base::PassKey<URLLoaderThrottleProviderImpl>)
     : type_(type),
       chrome_content_renderer_client_(chrome_content_renderer_client),
-      pending_safe_browsing_(std::move(pending_safe_browsing)),
 #if BUILDFLAG(ENABLE_EXTENSIONS)
       pending_extension_web_request_reporter_(
           std::move(pending_extension_web_request_reporter)),
@@ -159,7 +154,7 @@ std::unique_ptr<blink::URLLoaderThrottleProvider>
 URLLoaderThrottleProviderImpl::Clone() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return std::make_unique<URLLoaderThrottleProviderImpl>(
-      type_, chrome_content_renderer_client_, CloneSafeBrowsingPendingRemote(),
+      type_, chrome_content_renderer_client_,
 #if BUILDFLAG(ENABLE_EXTENSIONS)
       CloneExtensionWebRequestReporterPendingRemote(),
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
@@ -194,16 +189,12 @@ URLLoaderThrottleProviderImpl::CreateThrottles(
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   if (!is_frame_resource) {
-    if (pending_safe_browsing_) {
-      safe_browsing_.Bind(std::move(pending_safe_browsing_));
-    }
 #if BUILDFLAG(ENABLE_EXTENSIONS)
     auto throttle = std::make_unique<safe_browsing::RendererURLLoaderThrottle>(
-        safe_browsing_.get(), local_frame_token,
         CloneExtensionWebRequestReporterPendingRemote());
 #else
-    auto throttle = std::make_unique<safe_browsing::RendererURLLoaderThrottle>(
-        safe_browsing_.get(), local_frame_token);
+    auto throttle =
+        std::make_unique<safe_browsing::RendererURLLoaderThrottle>();
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
     throttles.emplace_back(std::move(throttle));
   }
@@ -313,21 +304,6 @@ void URLLoaderThrottleProviderImpl::SetOnline(bool is_online) {
     extension_throttle_manager_->SetOnline(is_online);
   }
 #endif
-}
-
-mojo::PendingRemote<safe_browsing::mojom::SafeBrowsing>
-URLLoaderThrottleProviderImpl::CloneSafeBrowsingPendingRemote() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  mojo::PendingRemote<safe_browsing::mojom::SafeBrowsing>
-      new_pending_safe_browsing;
-  if (pending_safe_browsing_) {
-    safe_browsing_.Bind(std::move(pending_safe_browsing_));
-  }
-  if (safe_browsing_) {
-    safe_browsing_->Clone(
-        new_pending_safe_browsing.InitWithNewPipeAndPassReceiver());
-  }
-  return new_pending_safe_browsing;
 }
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)

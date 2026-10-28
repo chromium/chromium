@@ -23,15 +23,6 @@
 
 namespace safe_browsing {
 
-class FakeSafeBrowsing : public mojom::SafeBrowsing {
- public:
-  FakeSafeBrowsing() = default;
-
-  void Clone(mojo::PendingReceiver<mojom::SafeBrowsing> receiver) override {
-    NOTREACHED();
-  }
-};
-
 class MockThrottleDelegate : public blink::URLLoaderThrottle::Delegate {
  public:
   ~MockThrottleDelegate() override = default;
@@ -43,11 +34,9 @@ class MockThrottleDelegate : public blink::URLLoaderThrottle::Delegate {
 
 class SBRendererUrlLoaderThrottleTest : public ::testing::Test {
  protected:
-  SBRendererUrlLoaderThrottleTest() : mojo_receiver_(&safe_browsing_) {
-    mojo_receiver_.Bind(safe_browsing_remote_.BindNewPipeAndPassReceiver());
+  SBRendererUrlLoaderThrottleTest() {
     throttle_delegate_ = std::make_unique<MockThrottleDelegate>();
-    throttle_ = std::make_unique<RendererURLLoaderThrottle>(
-        safe_browsing_remote_.get(), std::nullopt);
+    throttle_ = std::make_unique<RendererURLLoaderThrottle>();
     throttle_->set_delegate(throttle_delegate_.get());
   }
 
@@ -62,9 +51,6 @@ class SBRendererUrlLoaderThrottleTest : public ::testing::Test {
 
   base::test::TaskEnvironment message_loop_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  FakeSafeBrowsing safe_browsing_;
-  mojo::Receiver<mojom::SafeBrowsing> mojo_receiver_;
-  mojo::Remote<mojom::SafeBrowsing> safe_browsing_remote_;
   // Must outlive `throttle_`.
   std::unique_ptr<MockThrottleDelegate> throttle_delegate_;
   std::unique_ptr<RendererURLLoaderThrottle> throttle_;
@@ -154,8 +140,8 @@ TEST_F(SBRendererUrlLoaderThrottleTest,
   mojo::PendingRemote<mojom::ExtensionWebRequestReporter> pending_remote;
   remote->Clone(pending_remote.InitWithNewPipeAndPassReceiver());
 
-  throttle_ = std::make_unique<RendererURLLoaderThrottle>(
-      safe_browsing_remote_.get(), std::nullopt, std::move(pending_remote));
+  throttle_ =
+      std::make_unique<RendererURLLoaderThrottle>(std::move(pending_remote));
   throttle_->set_delegate(throttle_delegate_.get());
 
   GURL url("http://example.com/");

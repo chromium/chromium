@@ -17,29 +17,23 @@
 
 namespace android_webview {
 
+// TODO(crbug.com/324108312): Remove the unused `broker` parameter.
 AwURLLoaderThrottleProvider::AwURLLoaderThrottleProvider(
     blink::ThreadSafeBrowserInterfaceBrokerProxy* broker,
     blink::URLLoaderThrottleProviderType type)
     : type_(type) {
   DETACH_FROM_SEQUENCE(sequence_checker_);
-  broker->GetInterface(safe_browsing_remote_.InitWithNewPipeAndPassReceiver());
 }
 
 AwURLLoaderThrottleProvider::AwURLLoaderThrottleProvider(
     const AwURLLoaderThrottleProvider& other)
     : type_(other.type_) {
   DETACH_FROM_SEQUENCE(sequence_checker_);
-  if (other.safe_browsing_) {
-    other.safe_browsing_->Clone(
-        safe_browsing_remote_.InitWithNewPipeAndPassReceiver());
-  }
 }
 
 std::unique_ptr<blink::URLLoaderThrottleProvider>
 AwURLLoaderThrottleProvider::Clone() {
   DETACH_FROM_SEQUENCE(sequence_checker_);
-  if (safe_browsing_remote_)
-    safe_browsing_.Bind(std::move(safe_browsing_remote_));
   return base::WrapUnique(new AwURLLoaderThrottleProvider(*this));
 }
 
@@ -64,11 +58,8 @@ AwURLLoaderThrottleProvider::CreateThrottles(
          type_ == blink::URLLoaderThrottleProviderType::kFrame);
 
   if (!is_frame_resource) {
-    if (safe_browsing_remote_)
-      safe_browsing_.Bind(std::move(safe_browsing_remote_));
     throttles.emplace_back(
-        std::make_unique<safe_browsing::RendererURLLoaderThrottle>(
-            safe_browsing_.get(), local_frame_token));
+        std::make_unique<safe_browsing::RendererURLLoaderThrottle>());
   }
 
   return throttles;

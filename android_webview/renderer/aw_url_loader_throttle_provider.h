@@ -6,9 +6,6 @@
 #define ANDROID_WEBVIEW_RENDERER_AW_URL_LOADER_THROTTLE_PROVIDER_H_
 
 #include "base/sequence_checker.h"
-#include "components/safe_browsing/content/common/safe_browsing.mojom.h"
-#include "mojo/public/cpp/bindings/pending_remote.h"
-#include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/url_loader_throttle_provider.h"
 
@@ -41,9 +38,6 @@ class AwURLLoaderThrottleProvider : public blink::URLLoaderThrottleProvider {
   AwURLLoaderThrottleProvider(const AwURLLoaderThrottleProvider& other);
 
   blink::URLLoaderThrottleProviderType type_;
-
-  mojo::PendingRemote<safe_browsing::mojom::SafeBrowsing> safe_browsing_remote_;
-  mojo::Remote<safe_browsing::mojom::SafeBrowsing> safe_browsing_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

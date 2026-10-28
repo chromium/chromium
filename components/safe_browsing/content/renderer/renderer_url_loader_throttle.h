@@ -6,42 +6,34 @@
 #define COMPONENTS_SAFE_BROWSING_CONTENT_RENDERER_RENDERER_URL_LOADER_THROTTLE_H_
 
 #include <memory>
-#include <optional>
 
 #include "base/gtest_prod_util.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
-#include "base/types/optional_ref.h"
 #include "components/safe_browsing/content/common/safe_browsing.mojom.h"
 #include "components/safe_browsing/core/common/safe_browsing_url_checker.mojom.h"
 #include "extensions/buildflags/buildflags.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
-#include "third_party/blink/public/common/tokens/tokens.h"
 #include "url/gurl.h"
 
 namespace safe_browsing {
 
-// RendererURLLoaderThrottle is used in renderer processes to query
-// SafeBrowsing and determine whether a URL and its redirect URLs are safe to
-// load. It defers response processing until all URL checks are completed;
-// cancels the load if any URLs turn out to be bad.
+// RendererURLLoaderThrottle is used in renderer processes to send extension web
+// request data to the browser process for extension telemetry.
 class RendererURLLoaderThrottle : public blink::URLLoaderThrottle {
  public:
-  // |safe_browsing| must stay alive until WillStartRequest() (if it is called)
-  // or the end of this object.
-  // |local_frame_token| is used for displaying SafeBrowsing UI when necessary.
-  RendererURLLoaderThrottle(
-      mojom::SafeBrowsing* safe_browsing,
-      base::optional_ref<const blink::LocalFrameToken> local_frame_token);
+  // TODO(crbug.com/324108312): Remove this default constructor once
+  // `RendererURLLoaderThrottle` creation in
+  // `URLLoaderThrottleProviderImpl::CreateThrottles()` and
+  // `AwURLLoaderThrottleProvider::CreateThrottles()` is gated on
+  // `BUILDFLAG(ENABLE_EXTENSIONS)`.
+  RendererURLLoaderThrottle();
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   // |extension_web_request_reporter| is used for sending
   // extension web requests to the browser.
-  RendererURLLoaderThrottle(
-      mojom::SafeBrowsing* safe_browsing,
-      base::optional_ref<const blink::LocalFrameToken> local_frame_token,
+  explicit RendererURLLoaderThrottle(
       mojo::PendingRemote<mojom::ExtensionWebRequestReporter>
           extension_web_request_reporter);
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
@@ -78,16 +70,6 @@ class RendererURLLoaderThrottle : public blink::URLLoaderThrottle {
       bool showed_interstitial);
 
   void OnMojoDisconnect();
-
-  // TODO(crbug.com/324108312): Remove `safe_browsing_`, `frame_token_`,
-  // `safe_browsing_pending_remote_`, `safe_browsing_remote_` that are unused.
-  raw_ptr<mojom::SafeBrowsing, DanglingUntriaged> safe_browsing_;
-  const std::optional<blink::LocalFrameToken> frame_token_;
-
-  // These fields hold the connection to this instance's private connection to
-  // the Safe Browsing service if DetachFromCurrentThread has been called.
-  mojo::PendingRemote<mojom::SafeBrowsing> safe_browsing_pending_remote_;
-  mojo::Remote<mojom::SafeBrowsing> safe_browsing_remote_;
 
   mojo::Remote<mojom::SafeBrowsingUrlChecker> url_checker_;
 

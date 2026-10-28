@@ -41,8 +41,6 @@ class URLLoaderThrottleProviderImpl : public blink::URLLoaderThrottleProvider {
   URLLoaderThrottleProviderImpl(
       blink::URLLoaderThrottleProviderType type,
       ChromeContentRendererClient* chrome_content_renderer_client,
-      mojo::PendingRemote<safe_browsing::mojom::SafeBrowsing>
-          pending_safe_browsing,
 #if BUILDFLAG(ENABLE_EXTENSIONS)
       mojo::PendingRemote<safe_browsing::mojom::ExtensionWebRequestReporter>
           pending_extension_web_request_reporter,
@@ -63,8 +61,6 @@ class URLLoaderThrottleProviderImpl : public blink::URLLoaderThrottleProvider {
   void SetOnline(bool is_online) override;
 
  private:
-  mojo::PendingRemote<safe_browsing::mojom::SafeBrowsing>
-  CloneSafeBrowsingPendingRemote();
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   mojo::PendingRemote<safe_browsing::mojom::ExtensionWebRequestReporter>
   CloneExtensionWebRequestReporterPendingRemote();
@@ -72,10 +68,6 @@ class URLLoaderThrottleProviderImpl : public blink::URLLoaderThrottleProvider {
 
   blink::URLLoaderThrottleProviderType type_;
   const raw_ptr<ChromeContentRendererClient> chrome_content_renderer_client_;
-
-  mojo::PendingRemote<safe_browsing::mojom::SafeBrowsing>
-      pending_safe_browsing_;
-  mojo::Remote<safe_browsing::mojom::SafeBrowsing> safe_browsing_;
 
 // TODO(crbug.com/513231260): Convert to ENABLE_EXTENSIONS_CORE when safe
 // browsing supports extensions on desktop Android.
