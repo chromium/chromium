@@ -4,6 +4,7 @@
 
 import '//resources/cr_elements/cr_icon/cr_icon.js';
 import '/tab_group_shared/tab_group_dot.js';
+import '../icons.html.js';
 import '../organizer_list_section_item.js';
 
 import {CrUrlListItemSize} from '//resources/cr_elements/cr_url_list_item/cr_url_list_item.js';
@@ -62,7 +63,7 @@ export class TabGroupsDelegate implements
     const item: OrganizerListSectionItem<unknown> = {
       title: [loadTimeData.getString('createTabGroup')],
       prefixIcon: {
-        element: html`<cr-icon icon="cr:add"
+        element: html`<cr-icon icon="organizer-panel:library-add"
             style="--iron-icon-height: 20px; --iron-icon-width: 20px;">
         </cr-icon>`,
       },

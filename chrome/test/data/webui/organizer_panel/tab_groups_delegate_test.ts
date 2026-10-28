@@ -258,7 +258,7 @@ suite('TabGroupsDelegateTest', () => {
         render(icon, iconContainer);
         const crIcon = iconContainer.querySelector<CrIconElement>('cr-icon');
         assertTrue(!!crIcon);
-        assertEquals('cr:add', crIcon.icon);
+        assertEquals('organizer-panel:library-add', crIcon.icon);
 
         item.click();
         assertEquals(1, mockHandler.getCallCount('createNewTabGroup'));
