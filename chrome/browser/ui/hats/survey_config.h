@@ -214,6 +214,12 @@ inline constexpr char
 inline constexpr char
     kHatsSurveyTriggerAutofillPersonalizationAndTrustAtMemoryDismissed[] =
         "autofill-personalization-and-trust-at-memory-dismissed";
+inline constexpr char
+    kHatsSurveyTriggerAutofillPersonalizationAndTrustFedCmAccepted[] =
+        "autofill-personalization-and-trust-fedcm-accepted";
+inline constexpr char
+    kHatsSurveyTriggerAutofillPersonalizationAndTrustFedCmDismissed[] =
+        "autofill-personalization-and-trust-fedcm-dismissed";
 inline constexpr char kHatsSurveyTriggerPermissionsPrompt[] =
     "permissions-prompt";
 inline constexpr char kHatsSurveyTriggerOnFocusZpsSuggestionsHappiness[] =

@@ -964,6 +964,8 @@ BASE_FEATURE(kAutofillPersonalizationAndTrustAutofillAiSurvey,
              base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kAutofillPersonalizationAndTrustCreditCardSurvey,
              base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kAutofillPersonalizationAndTrustFedCmSurvey,
+             base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kAutofillPersonalizationAndTrustOneTimePasswordSurvey,
              base::FEATURE_DISABLED_BY_DEFAULT);
 

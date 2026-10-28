@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "build/build_config.h"
@@ -16,6 +17,9 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/segmentation_platform/segmentation_platform_service_factory.h"
+#include "chrome/browser/ui/hats/hats_service.h"
+#include "chrome/browser/ui/hats/hats_service_factory.h"
+#include "chrome/browser/ui/hats/survey_config.h"
 #include "chrome/browser/ui/webid/account_selection_view.h"
 #include "chrome/browser/webid/identity_provider_permission_request.h"
 #include "components/favicon/content/content_favicon_driver.h"
@@ -43,11 +47,36 @@
 
 using content::webid::FederatedLoginResult;
 
+namespace {
+
+// Triggers HaT survey about the personalization experience with FedCM. Only
+// shows the survey when the user did not close or switch the tab and the user
+// is eligible according to the HaTS guidelines.
+void MaybeTriggerPersonalizationAndTrustHatsSurvey(
+    content::WebContents* web_contents,
+    const std::string& trigger) {
+  if (!web_contents) {
+    return;
+  }
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents->GetBrowserContext());
+  if (HatsService* hats_service = HatsServiceFactory::GetForProfile(
+          profile, /*create_if_necessary=*/true)) {
+    // Launch survey with delay of 0ms in order to avoid running it
+    // synchronously which might disrupt tear-down on dismissal surveys.
+    hats_service->LaunchDelayedSurveyForWebContents(trigger, web_contents,
+                                                    /*timeout_ms=*/0);
+  }
+}
+
+}  // namespace
+
 IdentityDialogController::IdentityDialogController(
     content::WebContents* rp_web_contents,
     segmentation_platform::SegmentationPlatformService* service,
     optimization_guide::OptimizationGuideDecider* decider)
-    : rp_web_contents_(rp_web_contents),
+    : content::WebContentsObserver(rp_web_contents),
+      rp_web_contents_(rp_web_contents),
       segmentation_platform_service_(service),
       optimization_guide_decider_(decider) {
   Profile* profile = Profile::FromBrowserContext(
@@ -509,6 +538,7 @@ void IdentityDialogController::OnAccountSelected(
   }
   CHECK(on_account_selection_);
 
+  was_account_explicitly_selected_ = true;
   CollectTrainingData(UserAction::kSuccess);
 
   // We only allow dismiss after account selection on active modes and not on
@@ -536,11 +566,20 @@ void IdentityDialogController::OnDismiss(DismissReason dismiss_reason) {
     if (dismiss_reason == DismissReason::kCloseButton ||
         dismiss_reason == DismissReason::kSwipe) {
       CollectTrainingData(UserAction::kClosed);
+      if (on_account_selection_) {
+        // Only trigger if the user dismissed the account selection dialog
+        // without selecting an account (excludes error/failure dialogs and
+        // post-selection cancellation in active mode).
+        MaybeTriggerPersonalizationAndTrustHatsSurvey(
+            web_contents(),
+            kHatsSurveyTriggerAutofillPersonalizationAndTrustFedCmDismissed);
+      }
     } else {
       CollectTrainingData(UserAction::kIgnored);
     }
   }
 
+  was_account_explicitly_selected_ = false;
   on_account_selection_.Reset();
   on_native_result_.Reset();
   std::move(on_dismiss_).Run(dismiss_reason);
@@ -563,6 +602,15 @@ gfx::NativeView IdentityDialogController::GetNativeView() {
 
 content::WebContents* IdentityDialogController::GetWebContents() {
   return rp_web_contents_;
+}
+
+void IdentityDialogController::OnFedCmFederatedLogin(bool success) {
+  if (success && was_account_explicitly_selected_) {
+    MaybeTriggerPersonalizationAndTrustHatsSurvey(
+        web_contents(),
+        kHatsSurveyTriggerAutofillPersonalizationAndTrustFedCmAccepted);
+  }
+  was_account_explicitly_selected_ = false;
 }
 
 void IdentityDialogController::ShowUrl(LinkType type, const GURL& url) {
