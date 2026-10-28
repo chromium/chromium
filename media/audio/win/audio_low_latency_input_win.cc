@@ -101,6 +101,7 @@ std::string ErrorToString(HRESULT hresult) {
 // Errors when initializing the audio client related to the audio format. Split
 // by whether we're using format conversion or not. Used for reporting stats -
 // do not renumber entries.
+// LINT.IfChange(FormatRelatedInitError)
 enum FormatRelatedInitError {
   kUnsupportedFormat = 0,
   kUnsupportedFormatWithFormatConversion = 1,
@@ -108,6 +109,7 @@ enum FormatRelatedInitError {
   kInvalidArgumentWithFormatConversion = 3,
   kCount
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/media/enums.xml:AudioStreamFormatRelatedInitError)
 
 bool IsSupportedFormatForConversion(WAVEFORMATEXTENSIBLE* format_ex) {
   WAVEFORMATEX* format = &format_ex->Format;

@@ -105,12 +105,14 @@ class MEDIA_EXPORT AudioInputDevice : public AudioCapturerSource,
   // This enum is used for UMA, so the only allowed operation on this definition
   // is to add new states to the bottom, update kMaxValue, and update the
   // histogram "Media.Audio.Capture.StreamCallbackError2".
+  // LINT.IfChange(Error)
   enum Error {
     kNoError = 0,
     kErrorDuringCreation = 1,
     kErrorDuringCapture = 2,
     kMaxValue = kErrorDuringCapture
   };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/media/enums.xml:AudioCaptureDeviceError)
 
   // AudioInputIPCDelegate implementation.
   void OnStreamCreated(base::UnsafeSharedMemoryRegion shared_memory_region,

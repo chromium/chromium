@@ -40,6 +40,7 @@ class MEDIA_EXPORT AudioThreadHangMonitor final {
 
   // These values are histogrammed over time; do not change their ordinal
   // values.
+  // LINT.IfChange(ThreadStatus)
   enum class ThreadStatus {
     // kNone = 0, obsolete.
     kStarted = 1,
@@ -47,6 +48,7 @@ class MEDIA_EXPORT AudioThreadHangMonitor final {
     kRecovered,
     kMaxValue = kRecovered
   };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/media/enums.xml:AudioThreadStatus)
 
   enum class HangAction {
     // Do nothing. (UMA logging is always done.)

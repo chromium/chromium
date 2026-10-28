@@ -177,11 +177,15 @@ chromium-metrics-reviews@google.com.
   <int value="8" label="UnsupportedPlatform"/>
 </enum>
 
+<!-- LINT.IfChange(AudioCaptureDeviceError) -->
+
 <enum name="AudioCaptureDeviceError">
   <int value="0" label="No error"/>
   <int value="1" label="Error during stream creation"/>
   <int value="2" label="Error during active capture"/>
 </enum>
+
+<!-- LINT.ThenChange(//media/audio/audio_input_device.h:Error) -->
 
 <enum name="AudioCapturePermissionCheckerInteractions">
   <int value="0" label="kDisabled"/>
@@ -254,6 +258,8 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="Error during mixed playback"/>
 </enum>
 
+<!-- LINT.IfChange(AudioOutputProxyStreamFormat) -->
+
 <enum name="AudioOutputProxyStreamFormat">
   <int value="0" label="Bitstream"/>
   <int value="1" label="Linear PCM"/>
@@ -261,6 +267,10 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Low latency PCM fall back to Fake"/>
   <int value="4" label="Fake"/>
 </enum>
+
+<!-- LINT.ThenChange(//media/audio/audio_manager_base.cc:StreamFormat) -->
+
+<!-- LINT.IfChange(AudioOutputResamplerLowLatencyOpenStreamResult) -->
 
 <enum name="AudioOutputResamplerLowLatencyOpenStreamResult">
   <int value="0" label="Creation of low latency stream failed"/>
@@ -278,11 +288,15 @@ chromium-metrics-reviews@google.com.
       label="Creation of low latency stream in offload mode succeeded"/>
 </enum>
 
+<!-- LINT.ThenChange(//media/audio/audio_output_resampler.cc:OpenStreamResult) -->
+
 <enum name="AudioOutputStreamCreationResult">
   <int value="0" label="OK"/>
   <int value="1" label="Failed to create stream"/>
   <int value="2" label="Failed to open stream"/>
 </enum>
+
+<!-- LINT.IfChange(AudioRenderDeviceError) -->
 
 <enum name="AudioRenderDeviceError">
   <int value="0" label="No error"/>
@@ -290,12 +304,20 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Error during active rendering"/>
 </enum>
 
+<!-- LINT.ThenChange(//media/audio/audio_output_device.h:Error) -->
+
+<!-- LINT.IfChange(AudioStreamFormatRelatedInitError) -->
+
 <enum name="AudioStreamFormatRelatedInitError">
   <int value="0" label="Unsupported format"/>
   <int value="1" label="Unsupported format when conversion was used"/>
   <int value="2" label="Invalid argument"/>
   <int value="3" label="Invalid argument when conversion was used"/>
 </enum>
+
+<!-- LINT.ThenChange(//media/audio/win/audio_low_latency_input_win.cc:FormatRelatedInitError) -->
+
+<!-- LINT.IfChange(AudioStreamOpenResult) -->
 
 <enum name="AudioStreamOpenResult">
   <int value="0" label="OK"/>
@@ -315,12 +337,18 @@ chromium-metrics-reviews@google.com.
   <int value="14" label="OK_WITH_RESAMPLING"/>
 </enum>
 
+<!-- LINT.ThenChange(//media/audio/win/audio_low_latency_input_win.h:StreamOpenResult) -->
+
+<!-- LINT.IfChange(AudioThreadStatus) -->
+
 <enum name="AudioThreadStatus">
   <int value="0" label="None"/>
   <int value="1" label="Started"/>
   <int value="2" label="Hung"/>
   <int value="3" label="Recovered"/>
 </enum>
+
+<!-- LINT.ThenChange(//media/audio/audio_thread_hang_monitor.h:ThreadStatus) -->
 
 <!-- LINT.IfChange(AutoPictureInPictureSafeBrowsingCheckResult) -->
 
@@ -457,6 +485,8 @@ chromium-metrics-reviews@google.com.
   <int value="8" label="Hardware AV1 encoder"/>
 </enum>
 
+<!-- LINT.IfChange(CatapAudioInputStreamHostTimeStatus) -->
+
 <enum name="CatapAudioInputStreamHostTimeStatus">
   <int value="0" label="kNoMissingHostTime"/>
   <int value="1" label="kSometimesMissingHostTimeNoRecover"/>
@@ -464,12 +494,20 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="kAlwaysMissingHostTime"/>
 </enum>
 
+<!-- LINT.ThenChange(//media/audio/mac/catap_audio_input_stream.mm:HostTimeStatus) -->
+
+<!-- LINT.IfChange(CatapAudioInputStreamStatusClose) -->
+
 <enum name="CatapAudioInputStreamStatusClose">
   <int value="0" label="kOk"/>
   <int value="1" label="kErrorDestroyingIOProcID"/>
   <int value="2" label="kErrorDestroyingAggregateDevice"/>
   <int value="3" label="kErrorDestroyingProcessTap"/>
 </enum>
+
+<!-- LINT.ThenChange(//media/audio/mac/catap_audio_input_stream.h:CloseStatus) -->
+
+<!-- LINT.IfChange(CatapAudioInputStreamStatusOpen) -->
 
 <enum name="CatapAudioInputStreamStatusOpen">
   <int value="0" label="kOk"/>
@@ -485,6 +523,8 @@ chromium-metrics-reviews@google.com.
   <int value="10" label="kGetDefaultDeviceUidEmpty"/>
   <int value="11" label="kCreateIoProcIdTimeout"/>
 </enum>
+
+<!-- LINT.ThenChange(//media/audio/mac/catap_audio_input_stream.h:OpenStatus) -->
 
 <enum name="CdmCapabilityQueryStatus">
   <int value="0" label="Success"/>
@@ -590,6 +630,8 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="CreateWindowEx failed"/>
 </enum>
 
+<!-- LINT.IfChange(CrasInputStreamOpenSuccess) -->
+
 <enum name="CrasInputStreamOpenSuccess">
   <int value="0" label="Success: Stream opened as indented."/>
   <int value="1" label="Error: Stream already opened."/>
@@ -602,6 +644,10 @@ chromium-metrics-reviews@google.com.
   <int value="8" label="Error: Cannot find loopback device."/>
 </enum>
 
+<!-- LINT.ThenChange(//media/audio/cras/cras_input.cc:StreamOpenResult) -->
+
+<!-- LINT.IfChange(CrasInputStreamStartSuccess) -->
+
 <enum name="CrasInputStreamStartSuccess">
   <int value="0" label="Success: Stream started as indented."/>
   <int value="1" label="Error: Creating stream parameters failed."/>
@@ -609,6 +655,10 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Error: Setting up channel layout failed."/>
   <int value="4" label="Error: Adding stream failed."/>
 </enum>
+
+<!-- LINT.ThenChange(//media/audio/cras/cras_input.cc:StreamStartResult) -->
+
+<!-- LINT.IfChange(CrasUnifiedStreamOpenSuccess) -->
 
 <enum name="CrasUnifiedStreamOpenSuccess">
   <int value="0" label="Success: Stream opened as indented."/>
@@ -618,6 +668,10 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="Error: Cannot run CRAS client."/>
 </enum>
 
+<!-- LINT.ThenChange(//media/audio/cras/cras_unified.cc:StreamOpenResult) -->
+
+<!-- LINT.IfChange(CrasUnifiedStreamStartSuccess) -->
+
 <enum name="CrasUnifiedStreamStartSuccess">
   <int value="0" label="Success: Stream started as indented."/>
   <int value="1" label="Error: Creating of stream parameters failed."/>
@@ -625,6 +679,8 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Error: Setting up channel layout failed."/>
   <int value="4" label="Error: Adding stream failed."/>
 </enum>
+
+<!-- LINT.ThenChange(//media/audio/cras/cras_unified.cc:StreamStartResult) -->
 
 <enum name="CreateCdmStatus">
   <int value="0" label="Succeeded."/>
@@ -1414,6 +1470,8 @@ chromium-metrics-reviews@google.com.
   <int value="7" label="Plugin; third-party non-extension"/>
 </enum>
 
+<!-- LINT.IfChange(MakeAudioStreamStatus) -->
+
 <enum name="MakeAudioStreamStatus">
   <int value="0" label="Success"/>
   <int value="1" label="Error: Had switch fail-audio-stream-creation"/>
@@ -1421,6 +1479,8 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Error: Excessive input/output streams"/>
   <int value="4" label="Error: Failed to create a stream object"/>
 </enum>
+
+<!-- LINT.ThenChange(//media/audio/audio_manager_base.cc:MakeAudioStreamResult) -->
 
 <!-- LINT.IfChange(MediaAutoPictureInPictureHappinessTrackingSurveyTriggerResult) -->
 

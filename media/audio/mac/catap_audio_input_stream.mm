@@ -283,6 +283,7 @@ void ReportGetProcessAudioDeviceIdsFromBundleIdDuration(
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+// LINT.IfChange(HostTimeStatus)
 enum class HostTimeStatus {
   kNoMissingHostTime = 0,
   kSometimesMissingHostTimeNoRecover = 1,
@@ -290,6 +291,7 @@ enum class HostTimeStatus {
   kAlwaysMissingHostTime = 3,
   kMaxValue = kAlwaysMissingHostTime
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/media/enums.xml:CatapAudioInputStreamHostTimeStatus)
 
 HostTimeStatus GetHostTimeStatus(int total_callbacks,
                                  int callbacks_with_missing_host_time,

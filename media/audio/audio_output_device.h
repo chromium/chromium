@@ -147,12 +147,14 @@ class MEDIA_EXPORT AudioOutputDevice : public AudioRendererSink,
   // This enum is used for UMA, so the only allowed operation on this definition
   // is to add new states to the bottom, update kMaxValue, and update the
   // histogram "Media.Audio.Render.StreamCallbackError2".
+  // LINT.IfChange(Error)
   enum Error {
     kNoError = 0,
     kErrorDuringCreation = 1,
     kErrorDuringRendering = 2,
     kMaxValue = kErrorDuringRendering
   };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/media/enums.xml:AudioRenderDeviceError)
 
   // Methods called on IO thread ----------------------------------------------
   // The following methods are tasks posted on the IO thread that need to

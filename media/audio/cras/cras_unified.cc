@@ -30,6 +30,7 @@ namespace media {
 namespace {
 
 // Used to log errors in `CrasUnifiedStream::Open`.
+// LINT.IfChange(StreamOpenResult)
 enum class StreamOpenResult {
   kCallbackOpenSuccess = 0,
   kCallbackOpenUnsupportedAudioFrequency = 1,
@@ -38,8 +39,10 @@ enum class StreamOpenResult {
   kCallbackOpenCannotRunCrasClient = 4,
   kMaxValue = kCallbackOpenCannotRunCrasClient
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/media/enums.xml:CrasUnifiedStreamOpenSuccess)
 
 // Used to log errors in `CrasUnifiedStream::Start`.
+// LINT.IfChange(StreamStartResult)
 enum class StreamStartResult {
   kCallbackStartSuccess = 0,
   kCallbackStartCreatingStreamParamsFailed = 1,
@@ -48,6 +51,7 @@ enum class StreamStartResult {
   kCallbackStartAddingStreamFailed = 4,
   kMaxValue = kCallbackStartAddingStreamFailed
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/media/enums.xml:CrasUnifiedStreamStartSuccess)
 
 void ReportStreamOpenResult(StreamOpenResult result) {
   base::UmaHistogramEnumeration("Media.Audio.CrasUnifiedStreamOpenSuccess",
