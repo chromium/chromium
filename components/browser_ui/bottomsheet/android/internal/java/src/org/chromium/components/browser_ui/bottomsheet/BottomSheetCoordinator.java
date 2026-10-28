@@ -167,9 +167,6 @@ class BottomSheetCoordinator
     /** Whether or not always use the full width of the container. */
     private boolean mAlwaysFullWidth;
 
-    /** Whether the device is on a platform that supports a large form factor. */
-    private boolean mIsLargeFormFactor;
-
     /** The window for the bottom sheet. */
     private @MonotonicNonNull Window mWindow;
 
@@ -313,7 +310,7 @@ class BottomSheetCoordinator
         mContainerWidth = mSheetContainer.getWidth();
         mContainerHeight = mSheetContainer.getHeight();
         mAlwaysFullWidth = alwaysFullWidth;
-        mIsLargeFormFactor = isLargeFormFactor;
+        mMediator.setIsLargeFormFactor(isLargeFormFactor);
 
         sizeAndPositionSheetInParent();
 
@@ -1103,11 +1100,6 @@ class BottomSheetCoordinator
         updateContainerClipping(isPopup);
     }
 
-    private boolean isLargeFormFactorFallbackUiEnabled() {
-        BottomSheetContent content = getCurrentSheetContent();
-        return mIsLargeFormFactor && content != null && !content.supportsLargeFormFactor();
-    }
-
     /**
      * Set the current state of the bottom sheet. This is for internal use to notify observers of
      * state change events.
@@ -1209,8 +1201,7 @@ class BottomSheetCoordinator
     @Override
     @VisibleForTesting
     public boolean isLargeFormFactorUiEnabled() {
-        BottomSheetContent content = getCurrentSheetContent();
-        return mIsLargeFormFactor && content != null && content.supportsLargeFormFactor();
+        return mMediator.isLargeFormFactorUiEnabled();
     }
 
     /** Toggles the sheet state between its open states when the handlebar is clicked. */
@@ -1409,20 +1400,10 @@ class BottomSheetCoordinator
     }
 
     private void configureSheetAppearanceForContent(@Nullable BottomSheetContent content) {
-        updateSheetLayoutMode(resolveSheetLayoutMode());
+        updateSheetLayoutMode(mMediator.resolveSheetLayoutMode());
         boolean showHandlebar = content != null && content.showHandlebar();
         mMediator.setHandlebarVisible(showHandlebar);
         sizeAndPositionSheetInParent();
-    }
-
-    private @SheetLayoutMode int resolveSheetLayoutMode() {
-        if (isLargeFormFactorUiEnabled()) {
-            return SheetLayoutMode.DESKTOP_POPUP;
-        }
-        if (isLargeFormFactorFallbackUiEnabled()) {
-            return SheetLayoutMode.DESKTOP_FALLBACK;
-        }
-        return SheetLayoutMode.STANDARD;
     }
 
     private void configureWrapContentLayout(@Nullable BottomSheetContent content) {

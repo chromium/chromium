@@ -1251,4 +1251,30 @@ public class BottomSheetMediatorUnitTest {
         mMediator.setInternalCurrentState(SheetState.SCROLLING);
         assertEquals(0, mMediator.getEffectiveEdgeToEdgeBottomInset(48));
     }
+
+    @Test
+    public void testLargeFormFactorAndLayoutMode() {
+        assertFalse(mMediator.isLargeFormFactorUiEnabled());
+        assertFalse(mMediator.isLargeFormFactorFallbackUiEnabled());
+        assertEquals(BottomSheetView.SheetLayoutMode.STANDARD, mMediator.resolveSheetLayoutMode());
+
+        mMediator.setIsLargeFormFactor(true);
+        assertFalse(mMediator.isLargeFormFactorUiEnabled());
+        assertFalse(mMediator.isLargeFormFactorFallbackUiEnabled());
+        assertEquals(BottomSheetView.SheetLayoutMode.STANDARD, mMediator.resolveSheetLayoutMode());
+
+        when(mContent.supportsLargeFormFactor()).thenReturn(true);
+        mMediator.setSheetContent(mContent);
+        assertTrue(mMediator.isLargeFormFactorUiEnabled());
+        assertFalse(mMediator.isLargeFormFactorFallbackUiEnabled());
+        assertEquals(
+                BottomSheetView.SheetLayoutMode.DESKTOP_POPUP, mMediator.resolveSheetLayoutMode());
+
+        when(mContent.supportsLargeFormFactor()).thenReturn(false);
+        assertFalse(mMediator.isLargeFormFactorUiEnabled());
+        assertTrue(mMediator.isLargeFormFactorFallbackUiEnabled());
+        assertEquals(
+                BottomSheetView.SheetLayoutMode.DESKTOP_FALLBACK,
+                mMediator.resolveSheetLayoutMode());
+    }
 }
