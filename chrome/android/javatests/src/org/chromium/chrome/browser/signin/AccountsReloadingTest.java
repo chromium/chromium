@@ -12,21 +12,18 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnit;
-import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
-import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
-import org.chromium.chrome.test.util.browser.signin.SigninTestUtil;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.test.util.TestAccounts;
@@ -47,7 +44,7 @@ import java.util.Set;
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@DoNotBatch(reason = "Integration test suite that changes the list of accounts")
+@Batch(Batch.PER_CLASS)
 public class AccountsReloadingTest {
     private static class Observer implements IdentityManager.Observer {
         private final Set<CoreAccountInfo> mAccounts = new HashSet<>();
@@ -72,13 +69,12 @@ public class AccountsReloadingTest {
         }
     }
 
-    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule(order = 0)
+    public final SigninTestRule mSigninTestRule = SigninTestRule.createWithCleanups();
 
-    @Rule public final SigninTestRule mSigninTestRule = new SigninTestRule();
-
-    @Rule
-    public final FreshCtaTransitTestRule mActivityTestRule =
-            ChromeTransitTestRules.freshChromeTabbedActivityRule();
+    @Rule(order = 1)
+    public final AutoResetCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.fastAutoResetCtaActivityRule();
 
     private final Observer mObserver = new Observer();
 
@@ -124,7 +120,7 @@ public class AccountsReloadingTest {
                 new HashSet<>(Arrays.asList(TestAccounts.ACCOUNT1, TestAccounts.ACCOUNT2)),
                 mObserver.mAccounts);
 
-        SigninTestUtil.signin(TestAccounts.ACCOUNT1);
+        mSigninTestRule.signin(TestAccounts.ACCOUNT1);
 
         CriteriaHelper.pollUiThread(
                 () -> mObserver.mTokenUpdatedCallCount == 3,
