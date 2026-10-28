@@ -102,6 +102,7 @@ source_set("searchbox_impl") {
     "//components/omnibox/browser:vector_icons",
     "//components/omnibox/common:features",
     "//components/search",
+    "//components/search_engines",
     "//components/security_state/core",
     "//components/sessions",
     "//components/vector_icons",

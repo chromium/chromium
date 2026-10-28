@@ -4259,6 +4259,39 @@ TEST_F(ContextualSearchboxHandlerTestTabsTest, GetRecentTabs) {
 }
 
 TEST_F(ContextualSearchboxHandlerTestTabsTest,
+       GetRecentTabs_FiltersAiModeTabs) {
+  auto* regular_search_tab =
+      AddTab(GURL("https://www.google.com/search?q=test"));
+  auto* aim_search_tab =
+      AddTab(GURL("https://www.google.com/search?q=test&udm=50"));
+  AddTab(GURL("https://www.google.com/?udm=50"));
+  AddTab(GURL("https://www.google.com/search?udm=50"));
+
+  // Verify that when an AI Mode search tab is active, it is filtered out and
+  // only the regular Google search tab is returned.
+  ON_CALL(*tab_list(), GetActiveTab())
+      .WillByDefault(testing::Return(aim_search_tab));
+  {
+    base::test::TestFuture<std::vector<searchbox::mojom::TabInfoPtr>> future;
+    handler().GetRecentTabs(future.GetCallback());
+    auto tabs = future.Take();
+    ASSERT_EQ(tabs.size(), 1u);
+    EXPECT_EQ(tabs[0]->tab_id, regular_search_tab->GetHandle().raw_value());
+  }
+
+  // Verify that when AI Mode tabs are inactive, they remain filtered out.
+  ON_CALL(*tab_list(), GetActiveTab())
+      .WillByDefault(testing::Return(regular_search_tab));
+  {
+    base::test::TestFuture<std::vector<searchbox::mojom::TabInfoPtr>> future;
+    handler().GetRecentTabs(future.GetCallback());
+    auto tabs = future.Take();
+    ASSERT_EQ(tabs.size(), 1u);
+    EXPECT_EQ(tabs[0]->tab_id, regular_search_tab->GetHandle().raw_value());
+  }
+}
+
+TEST_F(ContextualSearchboxHandlerTestTabsTest,
        GetRecentTabs_ActiveTabPrioritizedOverNewerBackgroundTab) {
   auto* active_tab = AddTab(GURL("https://www.example.com"));
   // Simulate opening a duplicate URL tab in the background (e.g., via
