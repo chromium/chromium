@@ -54,6 +54,9 @@ struct ListLevel {
   raw_ptr<ui::AXNodeData> last_item;
   // The x-coordinate, in page pixels, where `last_item`'s text starts.
   float item_text_x = 0.0f;
+  // The value of the most recent item if this is an ordered list; unset for an
+  // unordered list.
+  std::optional<int> last_ordered_value;
 };
 
 // Heuristic-based accessibility tree building for untagged PDFs.
@@ -198,7 +201,8 @@ class PdfAccessibilityTreeBuilderHeuristic {
   struct BlockLevelNodeResult;
 
   BlockLevelNodeResult CreateBlockLevelNode(
-      const TextRunContext& run_context,
+      const PageLayoutData& layout,
+      size_t text_run_index,
       const HeuristicPageProperties& page_properties,
       const chrome_pdf::AccessibilityFormGraphicInfo* graphic);
 
