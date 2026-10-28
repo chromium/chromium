@@ -22,10 +22,15 @@ import org.robolectric.RuntimeEnvironment;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.components.device_signals.DeviceSignalsUtils.StorageEncryptionStatusBucket;
 
 /** Tests for {@link DeviceSignalsUtils}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public final class DeviceSignalsUtilsTest {
+    private static final String HISTOGRAM_NAME =
+            "Enterprise.DeviceSignals.StorageEncryption.Status";
+
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private DevicePolicyManager mDevicePolicyManager;
@@ -52,42 +57,67 @@ public final class DeviceSignalsUtilsTest {
         when(mDevicePolicyManager.getStorageEncryptionStatus()).thenReturn(status);
     }
 
+    // Checks both the returned signal value and the recorded histogram sample for `status`.
+    private void assertDiskEncryption(
+            int status,
+            @SettingValue int expectedDiskEncryption,
+            @StorageEncryptionStatusBucket int expectedBucket) {
+        setStorageEncryptionStatus(status);
+        HistogramWatcher watcher =
+                HistogramWatcher.newSingleRecordWatcher(HISTOGRAM_NAME, expectedBucket);
+
+        assertEquals(expectedDiskEncryption, DeviceSignalsUtils.getDiskEncryption());
+        watcher.assertExpected();
+    }
+
     @Test
     public void testGetDiskEncryption_encrypted() {
-        setStorageEncryptionStatus(DevicePolicyManager.ENCRYPTION_STATUS_ACTIVE);
-        assertEquals(SettingValue.ENABLED, DeviceSignalsUtils.getDiskEncryption());
-
-        setStorageEncryptionStatus(DevicePolicyManager.ENCRYPTION_STATUS_ACTIVE_DEFAULT_KEY);
-        assertEquals(SettingValue.ENABLED, DeviceSignalsUtils.getDiskEncryption());
-
-        setStorageEncryptionStatus(DevicePolicyManager.ENCRYPTION_STATUS_ACTIVE_PER_USER);
-        assertEquals(SettingValue.ENABLED, DeviceSignalsUtils.getDiskEncryption());
+        assertDiskEncryption(
+                DevicePolicyManager.ENCRYPTION_STATUS_ACTIVE,
+                SettingValue.ENABLED,
+                StorageEncryptionStatusBucket.ACTIVE);
+        assertDiskEncryption(
+                DevicePolicyManager.ENCRYPTION_STATUS_ACTIVE_DEFAULT_KEY,
+                SettingValue.ENABLED,
+                StorageEncryptionStatusBucket.ACTIVE_DEFAULT_KEY);
+        assertDiskEncryption(
+                DevicePolicyManager.ENCRYPTION_STATUS_ACTIVE_PER_USER,
+                SettingValue.ENABLED,
+                StorageEncryptionStatusBucket.ACTIVE_PER_USER);
     }
 
     @Test
     public void testGetDiskEncryption_notEncrypted() {
-        setStorageEncryptionStatus(DevicePolicyManager.ENCRYPTION_STATUS_INACTIVE);
-        assertEquals(SettingValue.DISABLED, DeviceSignalsUtils.getDiskEncryption());
-
-        setStorageEncryptionStatus(DevicePolicyManager.ENCRYPTION_STATUS_ACTIVATING);
-        assertEquals(SettingValue.DISABLED, DeviceSignalsUtils.getDiskEncryption());
+        assertDiskEncryption(
+                DevicePolicyManager.ENCRYPTION_STATUS_INACTIVE,
+                SettingValue.DISABLED,
+                StorageEncryptionStatusBucket.INACTIVE);
+        assertDiskEncryption(
+                DevicePolicyManager.ENCRYPTION_STATUS_ACTIVATING,
+                SettingValue.DISABLED,
+                StorageEncryptionStatusBucket.ACTIVATING);
     }
 
     @Test
     public void testGetDiskEncryption_unsupported() {
-        setStorageEncryptionStatus(DevicePolicyManager.ENCRYPTION_STATUS_UNSUPPORTED);
-        assertEquals(SettingValue.UNKNOWN, DeviceSignalsUtils.getDiskEncryption());
+        assertDiskEncryption(
+                DevicePolicyManager.ENCRYPTION_STATUS_UNSUPPORTED,
+                SettingValue.UNKNOWN,
+                StorageEncryptionStatusBucket.UNSUPPORTED);
     }
 
     @Test
     public void testGetDiskEncryption_unrecognizedStatus() {
-        setStorageEncryptionStatus(99);
-        assertEquals(SettingValue.UNKNOWN, DeviceSignalsUtils.getDiskEncryption());
+        assertDiskEncryption(99, SettingValue.UNKNOWN, StorageEncryptionStatusBucket.UNRECOGNIZED);
     }
 
     @Test
     public void testGetDiskEncryption_noDevicePolicyManager() {
         mDevicePolicyManagerToReturn = null;
+        HistogramWatcher watcher =
+                HistogramWatcher.newBuilder().expectNoRecords(HISTOGRAM_NAME).build();
+
         assertEquals(SettingValue.UNKNOWN, DeviceSignalsUtils.getDiskEncryption());
+        watcher.assertExpected();
     }
 }

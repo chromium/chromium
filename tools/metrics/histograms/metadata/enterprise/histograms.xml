@@ -1897,6 +1897,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Enterprise.DeviceSignals.StorageEncryption.Status"
+    enum="DeviceSignalsStorageEncryptionStatus" expires_after="2027-10-27">
+  <owner>mwalachowski@google.com</owner>
+  <owner>cbe-device-trust-eng@google.com</owner>
+  <summary>
+    Records the storage encryption status reported by Android's
+    DevicePolicyManager.getStorageEncryptionStatus(). Recorded each time the
+    disk encryption device signal is collected on Android.
+  </summary>
+</histogram>
+
 <histogram
     name="Enterprise.DeviceSignals.SystemSignalsService.Disconnect.ItemsCount"
     units="items" expires_after="2027-09-14">
