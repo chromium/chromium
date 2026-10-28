@@ -539,7 +539,7 @@
   {
     "name": "android-pdf-reuse-fragment",
     "owners": [ "jinsukkim@google.com", "shuyng@chromium.org"  ],
-    "expiry_milestone": 160
+    "expiry_milestone": 162
   },
   {
     "name": "android-progress-bar-visual-update",
@@ -6354,12 +6354,12 @@
   {
     "name": "inline-pdf-v2",
     "owners": [ "rathomas@google.com", "clank-large-form-factors@google.com" ],
-    "expiry_milestone": 158
+    "expiry_milestone": 162
   },
   {
     "name": "inline-pdf-v2-incognito",
     "owners": [ "rathomas@google.com", "clank-large-form-factors@google.com" ],
-    "expiry_milestone": 158
+    "expiry_milestone": 162
   },
   {
     "name": "input-cursor-anchor-info-migration",
@@ -8222,7 +8222,7 @@
       "rathomas@google.com",
       "shuyng@google.com"
     ],
-    "expiry_milestone": 160
+    "expiry_milestone": 162
   },
   {
     "name": "pdf-oopif",
