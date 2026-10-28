@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/base64.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
@@ -38,6 +39,7 @@
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "services/network/test/test_utils.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -271,8 +273,8 @@ TEST_F(TransportServiceIntegrationTest,
   EXPECT_TRUE(ack_cmd.has_start_session_ack());
 
   // Verify chrome://browser-actuator-internals SessionStreamRecorderFactory
-  // records both the downstream StartSession message (via TransportHandler)
-  // and the upstream StartSessionAck message (via TransportMessageObserver).
+  // records the downstream `StartSession` envelope before the upstream
+  // `StartSessionAck` it triggered.
   SessionStreamRecorderFactory* recorder_factory =
       service_->GetStreamRecorderFactory();
   ASSERT_NE(recorder_factory, nullptr);
@@ -286,6 +288,19 @@ TEST_F(TransportServiceIntegrationTest,
   EXPECT_EQ(session_dict->FindBool("is_active"), true);
   EXPECT_EQ(session_dict->FindInt("total_downstream_messages"), 1);
   EXPECT_EQ(session_dict->FindInt("total_upstream_messages"), 1);
+  const base::ListValue* events = session_dict->FindList("events");
+  ASSERT_NE(events, nullptr);
+  ASSERT_EQ(events->size(), 2u);
+  const base::DictValue* first_event = (*events)[0].GetIfDict();
+  ASSERT_NE(first_event, nullptr);
+  EXPECT_THAT(first_event->FindString("direction"),
+              testing::Pointee(testing::Eq("Downstream")));
+  EXPECT_THAT(first_event->FindStringByDottedPath("message.sequence_number"),
+              testing::Pointee(testing::Eq("1")));
+  const base::DictValue* second_event = (*events)[1].GetIfDict();
+  ASSERT_NE(second_event, nullptr);
+  EXPECT_THAT(second_event->FindString("direction"),
+              testing::Pointee(testing::Eq("Upstream")));
 }
 
 TEST_F(
@@ -360,6 +375,82 @@ TEST_F(TransportServiceIntegrationTest, DownstreamCloseSessionDestroysSession) {
   ASSERT_NE(session_dict, nullptr);
   EXPECT_EQ(*session_dict->FindString("session_id"), "session-to-close");
   EXPECT_EQ(session_dict->FindBool("is_active"), false);
+  EXPECT_EQ(session_dict->FindInt("total_downstream_messages"), 1);
+  const base::ListValue* events = session_dict->FindList("events");
+  ASSERT_NE(events, nullptr);
+  ASSERT_EQ(events->size(), 1u);
+  const base::DictValue* e0 = (*events)[0].GetIfDict();
+  ASSERT_NE(e0, nullptr);
+  EXPECT_EQ(*e0->FindString("direction"), "Downstream");
+}
+
+TEST_F(TransportServiceIntegrationTest,
+       ClientCloseSessionRecordsUpstreamCloseSessionInHistory) {
+  FakeProtoStreamServer stream_server(&test_url_loader_factory_,
+                                      GURL(kTestWatchSessionsEndpoint));
+
+  TransportSession* session = service_->CreateSession("session-client-close");
+  ASSERT_NE(session, nullptr);
+  stream_server.WaitForConnection();
+
+  session->Close();
+
+  EXPECT_EQ(service_->GetSession("session-client-close"), nullptr);
+
+  // The wire request carries a single `CloseSession` control command.
+  SendSessionMessageRequest upstream_req = WaitForUpstreamRequest();
+  const ActuatorUpstreamMessage& upstream_msg =
+      upstream_req.actuator_upstream_message();
+  EXPECT_EQ(upstream_msg.session_id(), "session-client-close");
+  ASSERT_EQ(upstream_msg.typed_payloads_size(), 1);
+  EXPECT_EQ(upstream_msg.typed_payloads(0).payload_type(),
+            ACTUATOR_UPSTREAM_PAYLOAD_TYPE_CONTROL_COMMAND);
+  const std::string& sent_payload =
+      upstream_msg.typed_payloads(0).proto_payload().value();
+  ControlCommand sent_cmd;
+  ASSERT_TRUE(sent_cmd.ParseFromString(sent_payload));
+  EXPECT_TRUE(sent_cmd.has_close_session());
+
+  SessionStreamRecorderFactory* recorder_factory =
+      service_->GetStreamRecorderFactory();
+  ASSERT_NE(recorder_factory, nullptr);
+  base::DictValue dump = recorder_factory->ExportAllSessionsAsValue();
+  const base::ListValue* sessions = dump.FindList("sessions");
+  ASSERT_NE(sessions, nullptr);
+  ASSERT_EQ(sessions->size(), 1u);
+  const base::DictValue* session_dict = (*sessions)[0].GetIfDict();
+  ASSERT_NE(session_dict, nullptr);
+  EXPECT_EQ(*session_dict->FindString("session_id"), "session-client-close");
+  EXPECT_EQ(session_dict->FindBool("is_active"), false);
+  EXPECT_EQ(session_dict->FindInt("total_upstream_messages"), 1);
+  const base::ListValue* events = session_dict->FindList("events");
+  ASSERT_NE(events, nullptr);
+  ASSERT_EQ(events->size(), 1u);
+  const base::DictValue* e0 = (*events)[0].GetIfDict();
+  ASSERT_NE(e0, nullptr);
+  EXPECT_EQ(*e0->FindString("direction"), "Upstream");
+
+  // The recorded event is that same `CloseSession` command, byte for byte.
+  const base::ListValue* recorded_payloads =
+      e0->FindListByDottedPath("message.typed_payloads");
+  ASSERT_NE(recorded_payloads, nullptr);
+  ASSERT_EQ(recorded_payloads->size(), 1u);
+  const base::DictValue* recorded_payload = (*recorded_payloads)[0].GetIfDict();
+  ASSERT_NE(recorded_payload, nullptr);
+  const base::DictValue* recorded_proto_payload =
+      recorded_payload->FindDict("proto_payload");
+  ASSERT_NE(recorded_proto_payload, nullptr);
+  EXPECT_EQ(*recorded_proto_payload->FindString("type_url"),
+            ExpectedTypeUrl(PayloadType::kControl));
+  const std::string* recorded_value =
+      recorded_proto_payload->FindString("value");
+  ASSERT_NE(recorded_value, nullptr);
+  EXPECT_EQ(*recorded_value, base::Base64Encode(sent_payload));
+  std::string decoded;
+  ASSERT_TRUE(base::Base64Decode(*recorded_value, &decoded));
+  ControlCommand recorded_cmd;
+  ASSERT_TRUE(recorded_cmd.ParseFromString(decoded));
+  EXPECT_TRUE(recorded_cmd.has_close_session());
 }
 
 TEST_F(TransportServiceIntegrationTest,
@@ -383,6 +474,23 @@ TEST_F(TransportServiceIntegrationTest,
     return channel_impl()->downstream_connection_state() ==
            DownstreamConnectionState::kDisconnected;
   }));
+
+  SessionStreamRecorderFactory* recorder_factory =
+      service_->GetStreamRecorderFactory();
+  ASSERT_NE(recorder_factory, nullptr);
+  base::DictValue dump = recorder_factory->ExportAllSessionsAsValue();
+  const base::ListValue* sessions = dump.FindList("sessions");
+  ASSERT_NE(sessions, nullptr);
+  ASSERT_EQ(sessions->size(), 1u);
+  const base::DictValue* session_dict = (*sessions)[0].GetIfDict();
+  ASSERT_NE(session_dict, nullptr);
+  EXPECT_EQ(session_dict->FindInt("total_downstream_messages"), 1);
+  const base::ListValue* events = session_dict->FindList("events");
+  ASSERT_NE(events, nullptr);
+  ASSERT_EQ(events->size(), 1u);
+  const base::DictValue* e0 = (*events)[0].GetIfDict();
+  ASSERT_NE(e0, nullptr);
+  EXPECT_EQ(*e0->FindString("direction"), "Downstream");
 }
 
 TEST_F(TransportServiceIntegrationTest,

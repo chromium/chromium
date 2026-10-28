@@ -155,16 +155,16 @@ TEST_F(BrowserActuatorInternalsUIMojoImplTest,
   EXPECT_EQ(sessions[0].total_upstream_messages, 1u);
   EXPECT_EQ(sessions[0].total_events, 2u);
   ASSERT_EQ(sessions[0].events.size(), 2u);
-  // ControlTransportHandler responds synchronously with StartSessionAck during
-  // OnMessage dispatch, recording the upstream ack before the downstream entry.
+  // The downstream `StartSession` is recorded before the `StartSessionAck` that
+  // `ControlTransportHandler` sends synchronously while handling it.
   EXPECT_FALSE(sessions[0].events[0].timestamp.is_null());
-  EXPECT_FALSE(sessions[0].events[0].is_downstream);
+  EXPECT_TRUE(sessions[0].events[0].is_downstream);
   ASSERT_EQ(sessions[0].events[0].payload_types.size(), 1u);
   EXPECT_EQ(sessions[0].events[0].payload_types[0], "Control");
   EXPECT_FALSE(sessions[0].events[0].message_truncated);
   EXPECT_FALSE(sessions[0].events[0].message.empty());
   EXPECT_FALSE(sessions[0].events[1].timestamp.is_null());
-  EXPECT_TRUE(sessions[0].events[1].is_downstream);
+  EXPECT_FALSE(sessions[0].events[1].is_downstream);
   ASSERT_EQ(sessions[0].events[1].payload_types.size(), 1u);
   EXPECT_EQ(sessions[0].events[1].payload_types[0], "Control");
   EXPECT_FALSE(sessions[0].events[1].message_truncated);

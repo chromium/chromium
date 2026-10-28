@@ -5,6 +5,7 @@
 #include "components/browser_actuator/internal/transport/transport_service_impl.h"
 
 #include <memory>
+#include <vector>
 
 #include "base/memory/scoped_refptr.h"
 #include "base/test/scoped_feature_list.h"
@@ -14,8 +15,8 @@
 #include "components/browser_actuator/internal/transport/session_stream_recorder.h"
 #include "components/browser_actuator/public/transport/common.h"
 #include "components/browser_actuator/public/transport/transport_channel.h"
-#include "components/browser_actuator/public/transport/transport_handler.h"
 #include "components/browser_actuator/public/transport/transport_handler_factory_registry.h"
+#include "components/browser_actuator/public/transport/transport_session_registry.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
@@ -70,8 +71,7 @@ TEST_F(TransportServiceImplTest, GetChannelReturnsNullIfChannelDisabled) {
   EXPECT_EQ(service->GetChannel(), nullptr);
 }
 
-TEST_F(TransportServiceImplTest,
-       RecorderFactoryIsRegisteredWithChannelWhenRecordingSessions) {
+TEST_F(TransportServiceImplTest, RecorderStartsRecordingWhenSessionIsCreated) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(kBrowserActuatorChannelEnabled);
 
@@ -82,11 +82,26 @@ TEST_F(TransportServiceImplTest,
       service->GetStreamRecorderFactory();
   ASSERT_NE(recorder_factory, nullptr);
   ASSERT_NE(service->GetChannel(), nullptr);
-  ASSERT_NE(service->GetChannel()->GetHandlerFactoryRegistry(), nullptr);
-  const auto& factories =
-      service->GetChannel()->GetHandlerFactoryRegistry()->GetFactories(
-          PayloadType::kControl);
-  EXPECT_THAT(factories, testing::Contains(recorder_factory));
+  EXPECT_EQ(recorder_factory->GetActiveRecordersCountForTesting(), 0u);
+
+  // Creating the session is enough; no payload has been dispatched yet.
+  ASSERT_NE(service->CreateSession("s1"), nullptr);
+  EXPECT_EQ(recorder_factory->GetActiveRecordersCountForTesting(), 1u);
+
+  // The recorder is not a handler factory, so it does not take part in
+  // payload routing.
+  EXPECT_THAT(service->GetChannel()->GetHandlerFactoryRegistry()->GetFactories(
+                  PayloadType::kActuation),
+              testing::IsEmpty());
+
+  // Removing the session retires its recorder.
+  service->GetChannel()->GetSessionRegistry()->DestroySession("s1");
+  EXPECT_EQ(recorder_factory->GetActiveRecordersCountForTesting(), 0u);
+  std::vector<SessionSnapshot> sessions =
+      recorder_factory->GetAllSessions(/*max_events=*/10,
+                                       /*max_message_bytes=*/1024);
+  ASSERT_EQ(sessions.size(), 1u);
+  EXPECT_TRUE(sessions[0].end_wall_time.has_value());
 }
 
 TEST_F(TransportServiceImplTest,
@@ -123,11 +138,7 @@ TEST_F(
       service->GetStreamRecorderFactory();
   ASSERT_NE(recorder_factory, nullptr);
 
-  TransportSession* session = service->CreateSession("s1");
-  ASSERT_NE(session, nullptr);
-  std::unique_ptr<TransportHandler> handler =
-      recorder_factory->OnNewSession(session);
-  ASSERT_NE(handler, nullptr);
+  ASSERT_NE(service->CreateSession("s1"), nullptr);
   EXPECT_EQ(recorder_factory->GetActiveRecordersCountForTesting(), 1u);
 
   ControlCommand command;

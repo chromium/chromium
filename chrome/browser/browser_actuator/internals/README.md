@@ -23,7 +23,9 @@ No external hardware or additional user actions are required; navigating to the 
 - **Flags**: Launch Chrome with
   `--enable-features=BrowserActuator,EnableBrowserActuatorForGlicExperimentalTriggering,BrowserActuatorInternals`.
 - Open `chrome://browser-actuator-internals`. Reload to see new data.
-- A session is recorded when it receives its first downstream message.
+- A session is recorded from the moment it is created, which is usually its
+  first FCM wake-up message. Each downstream message is recorded before the
+  upstream replies it triggers.
 - Not available in Incognito / off-the-record profiles.
 - Payload bodies show as base64 for now.
 

@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/base64.h"
-#include "base/functional/bind.h"
 #include "base/json/json_reader.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/task_environment.h"
@@ -201,66 +200,6 @@ TEST(SessionStreamRecorderTest, ObserverDefaultMethodsDoNothing) {
   recorder.RemoveObserver(&observer);
 }
 
-TEST(SessionStreamRecorderTest, RecordsIncomingMessagesViaOnMessage) {
-  SessionStreamRecorder recorder("session_123");
-
-  // A control payload is recorded as a downstream message carrying the payload
-  // type it was dispatched under, with its bytes stored verbatim.
-  ControlCommand command;
-  command.mutable_close_session();
-  recorder.OnMessage(PayloadType::kControl, command.SerializeAsString());
-
-  EXPECT_EQ(recorder.metadata().total_downstream_messages, 1u);
-  EXPECT_EQ(recorder.metadata().total_upstream_messages, 0u);
-  ASSERT_EQ(recorder.entries().size(), 1u);
-
-  const auto& entry = recorder.entries()[0];
-  ASSERT_TRUE(std::holds_alternative<ActuatorDownstreamMessage>(entry.message));
-  const auto& downstream = std::get<ActuatorDownstreamMessage>(entry.message);
-  EXPECT_EQ(downstream.session_id(), "session_123");
-  ASSERT_EQ(downstream.typed_payloads_size(), 1);
-  EXPECT_EQ(downstream.typed_payloads(0).payload_type(),
-            ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_CONTROL_COMMAND);
-
-  ControlCommand parsed_command;
-  ASSERT_TRUE(parsed_command.ParseFromString(
-      downstream.typed_payloads(0).proto_payload().value()));
-  EXPECT_TRUE(parsed_command.has_close_session());
-
-  // An experimental triggering payload is distinguished by its payload type
-  // rather than by inspecting the bytes.
-  recorder.OnMessage(PayloadType::kExperimentalTriggering, "payload-bytes");
-
-  ASSERT_EQ(recorder.entries().size(), 2u);
-  const auto& triggering_entry =
-      std::get<ActuatorDownstreamMessage>(recorder.entries()[1].message);
-  ASSERT_EQ(triggering_entry.typed_payloads_size(), 1);
-  EXPECT_EQ(triggering_entry.typed_payloads(0).payload_type(),
-            ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_EXPERIMENTAL_TRIGGERING);
-  EXPECT_EQ(triggering_entry.typed_payloads(0).proto_payload().value(),
-            "payload-bytes");
-
-  // An unspecified payload type is recorded as such. The recorder never
-  // discards a payload: an entry the internals page cannot classify is still
-  // more useful than a gap in the log.
-  recorder.OnMessage(PayloadType::kUnspecified, "");
-
-  EXPECT_EQ(recorder.metadata().total_downstream_messages, 3u);
-  EXPECT_EQ(recorder.metadata().total_upstream_messages, 0u);
-  ASSERT_EQ(recorder.entries().size(), 3u);
-  EXPECT_EQ(std::get<ActuatorDownstreamMessage>(recorder.entries()[2].message)
-                .typed_payloads(0)
-                .payload_type(),
-            ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_UNSPECIFIED);
-}
-
-TEST(SessionStreamRecorderTest, GetWeakPtr) {
-  SessionStreamRecorder recorder("session_123");
-  auto weak_ptr = recorder.GetWeakPtr();
-  EXPECT_TRUE(weak_ptr);
-  EXPECT_EQ(weak_ptr.get(), &recorder);
-}
-
 TEST(SessionStreamRecorderTest, MarkSessionClosed) {
   SessionStreamRecorder recorder("session_123");
   EXPECT_TRUE(recorder.metadata().is_active);
@@ -276,70 +215,151 @@ TEST(SessionStreamRecorderTest, MarkSessionClosed) {
   EXPECT_EQ(*recorder.metadata().end_time, first_end_time);
 }
 
-TEST(SessionStreamRecorderTest, InvokesDestructionCallback) {
-  bool callback_invoked = false;
-  SessionMetadata saved_metadata;
-  std::vector<SessionStreamRecorder::Entry> saved_entries;
-
-  {
-    SessionStreamRecorder recorder("session_123");
-    recorder.SetDestructionCallback(base::BindOnce(
-        [](bool* invoked, SessionMetadata* saved_meta,
-           std::vector<SessionStreamRecorder::Entry>* saved_ents,
-           const SessionMetadata& metadata,
-           std::vector<SessionStreamRecorder::Entry> entries) {
-          *invoked = true;
-          *saved_meta = metadata;
-          *saved_ents = std::move(entries);
-        },
-        base::Unretained(&callback_invoked), base::Unretained(&saved_metadata),
-        base::Unretained(&saved_entries)));
-
-    ActuatorDownstreamMessage downstream;
-    downstream.set_session_id("session_123");
-    downstream.set_sequence_number(7);
-    recorder.RecordDownstreamMessage(downstream);
-  }
-
-  EXPECT_TRUE(callback_invoked);
-  EXPECT_EQ(saved_metadata.session_id, "session_123");
-  EXPECT_FALSE(saved_metadata.is_active);
-  EXPECT_TRUE(saved_metadata.end_time.has_value());
-  EXPECT_EQ(saved_metadata.total_downstream_messages, 1u);
-  EXPECT_EQ(saved_metadata.total_upstream_messages, 0u);
-  ASSERT_EQ(saved_entries.size(), 1u);
-  EXPECT_EQ(std::get<ActuatorDownstreamMessage>(saved_entries[0].message)
-                .sequence_number(),
-            7);
-}
-
-TEST(SessionStreamRecorderFactoryTest, FactoryIdAndPayloadTypes) {
-  SessionStreamRecorderFactory factory;
-
-  EXPECT_EQ(factory.GetFactoryId(), FactoryId::kSessionStreamRecorder);
-  EXPECT_THAT(factory.GetSupportedPayloadTypes(),
-              ::testing::UnorderedElementsAre(
-                  PayloadType::kControl, PayloadType::kExperimentalTriggering,
-                  PayloadType::kActuation));
-}
-
-TEST(SessionStreamRecorderFactoryTest, CreatesRecorderOnNewSession) {
+TEST(SessionStreamRecorderFactoryTest,
+     CreatesEmptyRecorderOnSessionRegistered) {
   SessionStreamRecorderFactory factory;
   FakeTransportSession session("session_xyz");
 
-  std::unique_ptr<TransportHandler> handler = factory.OnNewSession(&session);
-  ASSERT_NE(handler, nullptr);
+  factory.OnSessionRegistered(&session);
 
-  auto* recorder = static_cast<SessionStreamRecorder*>(handler.get());
+  SessionStreamRecorder* recorder =
+      factory.GetActiveRecorderForTesting(session.GetSessionId());
+  ASSERT_NE(recorder, nullptr);
   EXPECT_EQ(recorder->session_id(), "session_xyz");
   EXPECT_TRUE(recorder->metadata().is_active);
+  EXPECT_TRUE(recorder->entries().empty());
   EXPECT_EQ(factory.GetActiveRecordersCountForTesting(), 1u);
 }
 
-TEST(SessionStreamRecorderFactoryTest, ReturnsNullptrOnNullSession) {
+TEST(SessionStreamRecorderFactoryTest, IgnoresNullSession) {
   SessionStreamRecorderFactory factory;
-  EXPECT_EQ(factory.OnNewSession(nullptr), nullptr);
+  factory.OnSessionRegistered(nullptr);
   EXPECT_EQ(factory.GetActiveRecordersCountForTesting(), 0u);
+}
+
+TEST(SessionStreamRecorderFactoryTest, RecordsEnvelopesInArrivalOrder) {
+  SessionStreamRecorderFactory factory;
+  FakeTransportSession session("session_1");
+  factory.OnSessionRegistered(&session);
+
+  // A downstream envelope and the reply a handler sends while handling it.
+  ActuatorDownstreamMessage wake;
+  wake.set_session_id("session_1");
+  wake.set_sequence_number(0);
+  wake.add_typed_payloads()->set_payload_type(
+      ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_CONTROL_COMMAND);
+  wake.add_typed_payloads()->set_payload_type(
+      ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_EXPERIMENTAL_TRIGGERING);
+  factory.OnDownstreamMessage("session_1", wake);
+
+  ActuatorUpstreamMessage ack;
+  ack.set_session_id("session_1");
+  ack.set_client_sequence_number(1);
+  ack.set_responding_to_sequence_number(0);
+  factory.OnUpstreamMessage("session_1", ack);
+
+  SessionStreamRecorder* recorder =
+      factory.GetActiveRecorderForTesting("session_1");
+  ASSERT_NE(recorder, nullptr);
+  EXPECT_EQ(recorder->metadata().total_downstream_messages, 1u);
+  EXPECT_EQ(recorder->metadata().total_upstream_messages, 1u);
+  ASSERT_EQ(recorder->entries().size(), 2u);
+
+  // The whole envelope is kept, including its sequence number and every
+  // typed payload.
+  ASSERT_TRUE(std::holds_alternative<ActuatorDownstreamMessage>(
+      recorder->entries()[0].message));
+  const auto& recorded_wake =
+      std::get<ActuatorDownstreamMessage>(recorder->entries()[0].message);
+  EXPECT_EQ(recorded_wake.sequence_number(), 0);
+  EXPECT_EQ(recorded_wake.typed_payloads_size(), 2);
+
+  ASSERT_TRUE(std::holds_alternative<ActuatorUpstreamMessage>(
+      recorder->entries()[1].message));
+  EXPECT_EQ(std::get<ActuatorUpstreamMessage>(recorder->entries()[1].message)
+                .responding_to_sequence_number(),
+            0);
+}
+
+TEST(SessionStreamRecorderFactoryTest,
+     DropsDownstreamMessageForUnknownOrClosedSession) {
+  SessionStreamRecorderFactory factory;
+  FakeTransportSession session("session_1");
+
+  ActuatorDownstreamMessage message;
+  message.set_session_id("session_1");
+  factory.OnDownstreamMessage("session_1", message);
+  EXPECT_TRUE(factory.ExportAllSessionsAsValue().FindList("sessions")->empty());
+
+  factory.OnSessionRegistered(&session);
+  factory.OnSessionRemoved("session_1");
+  factory.OnDownstreamMessage("session_1", message);
+
+  std::vector<SessionSnapshot> sessions =
+      factory.GetAllSessions(/*max_events=*/10, /*max_message_bytes=*/1024);
+  ASSERT_EQ(sessions.size(), 1u);
+  EXPECT_EQ(sessions[0].total_downstream_messages, 0u);
+  EXPECT_TRUE(sessions[0].end_wall_time.has_value());
+}
+
+TEST(SessionStreamRecorderFactoryTest,
+     ReRegisteringSessionIdKeepsPriorHistory) {
+  SessionStreamRecorderFactory factory;
+  FakeTransportSession session("session_1");
+
+  factory.OnSessionRegistered(&session);
+  ActuatorDownstreamMessage message;
+  message.set_session_id("session_1");
+  factory.OnDownstreamMessage("session_1", message);
+  factory.OnSessionRemoved("session_1");
+
+  factory.OnSessionRegistered(&session);
+
+  SessionStreamRecorder* active =
+      factory.GetActiveRecorderForTesting("session_1");
+  ASSERT_NE(active, nullptr);
+  EXPECT_TRUE(active->entries().empty());
+
+  std::vector<SessionSnapshot> sessions =
+      factory.GetAllSessions(/*max_events=*/10, /*max_message_bytes=*/1024);
+  ASSERT_EQ(sessions.size(), 2u);
+  size_t closed_count = 0;
+  for (const auto& snapshot : sessions) {
+    EXPECT_EQ(snapshot.session_id, "session_1");
+    if (snapshot.end_wall_time.has_value()) {
+      ++closed_count;
+      EXPECT_EQ(snapshot.total_downstream_messages, 1u);
+    }
+  }
+  EXPECT_EQ(closed_count, 1u);
+}
+
+TEST(SessionStreamRecorderFactoryTest, DropsOldestRetainedSessionsPastCap) {
+  SessionStreamRecorderFactory factory;
+  const size_t total = SessionStreamRecorderFactory::kMaxRetainedSessions + 2;
+  for (size_t i = 0; i < total; ++i) {
+    FakeTransportSession session("session_" + base::NumberToString(i));
+    factory.OnSessionRegistered(&session);
+    factory.OnSessionRemoved(session.GetSessionId());
+  }
+
+  base::DictValue dump = factory.ExportAllSessionsAsValue();
+  const base::ListValue* sessions = dump.FindList("sessions");
+  ASSERT_NE(sessions, nullptr);
+  ASSERT_EQ(sessions->size(),
+            SessionStreamRecorderFactory::kMaxRetainedSessions);
+  // Retained sessions are oldest first, so the first two were dropped.
+  EXPECT_THAT((*sessions)[0].GetDict().FindString("session_id"),
+              testing::Pointee(testing::Eq("session_2")));
+}
+
+TEST(SessionStreamRecorderFactoryTest, OnSessionRemovedIgnoresUnknownSession) {
+  SessionStreamRecorderFactory factory;
+  factory.OnSessionRemoved("unknown_session");
+  EXPECT_TRUE(factory
+                  .GetAllSessions(/*max_events=*/10,
+                                  /*max_message_bytes=*/1024)
+                  .empty());
 }
 
 TEST(SessionStreamRecorderFactoryTest, ExportAllSessionsAsJson) {
@@ -347,11 +367,15 @@ TEST(SessionStreamRecorderFactoryTest, ExportAllSessionsAsJson) {
   FakeTransportSession session1("session_1");
   FakeTransportSession session2("session_2");
 
-  std::unique_ptr<TransportHandler> h1 = factory.OnNewSession(&session1);
-  std::unique_ptr<TransportHandler> h2 = factory.OnNewSession(&session2);
+  factory.OnSessionRegistered(&session1);
+  factory.OnSessionRegistered(&session2);
 
-  auto* r1 = static_cast<SessionStreamRecorder*>(h1.get());
-  auto* r2 = static_cast<SessionStreamRecorder*>(h2.get());
+  SessionStreamRecorder* r1 =
+      factory.GetActiveRecorderForTesting(session1.GetSessionId());
+  ASSERT_NE(r1, nullptr);
+  SessionStreamRecorder* r2 =
+      factory.GetActiveRecorderForTesting(session2.GetSessionId());
+  ASSERT_NE(r2, nullptr);
 
   ActuatorDownstreamMessage d1;
   d1.set_session_id("session_1");
@@ -461,9 +485,10 @@ TEST(SessionStreamRecorderFactoryTest,
   FakeTransportSession session1("session_1");
   FakeTransportSession session2("session_2");
 
-  std::unique_ptr<TransportHandler> h1 = factory.OnNewSession(&session1);
-  std::unique_ptr<TransportHandler> h2 = factory.OnNewSession(&session2);
-  h2.reset();  // Moves session_2 to retained_sessions_.
+  factory.OnSessionRegistered(&session1);
+  factory.OnSessionRegistered(&session2);
+  // Moves session_2 to the retained recorders.
+  factory.OnSessionRemoved(session2.GetSessionId());
 
   const std::vector<std::string> filter_ids = {"session_2"};
   std::string json_str = factory.ExportSessionsAsJson(filter_ids);
@@ -482,19 +507,16 @@ TEST(SessionStreamRecorderFactoryTest,
   EXPECT_EQ(*s2_dict->FindString("session_id"), "session_2");
 }
 
-TEST(SessionStreamRecorderFactoryTest, RetainsDestroyedSessionsForDump) {
+TEST(SessionStreamRecorderFactoryTest, RetainsRemovedSessionsForDump) {
   SessionStreamRecorderFactory factory;
   FakeTransportSession session("session_temp");
 
-  {
-    std::unique_ptr<TransportHandler> handler = factory.OnNewSession(&session);
-    auto* recorder = static_cast<SessionStreamRecorder*>(handler.get());
-    ActuatorDownstreamMessage downstream;
-    downstream.set_session_id("session_temp");
-    downstream.set_sequence_number(42);
-    recorder->RecordDownstreamMessage(downstream);
-    // Handler destroyed at end of scope
-  }
+  factory.OnSessionRegistered(&session);
+  ActuatorDownstreamMessage downstream;
+  downstream.set_session_id("session_temp");
+  downstream.set_sequence_number(42);
+  factory.OnDownstreamMessage("session_temp", downstream);
+  factory.OnSessionRemoved("session_temp");
 
   EXPECT_EQ(factory.GetActiveRecordersCountForTesting(), 0u);
 
@@ -528,8 +550,10 @@ TEST(SessionStreamRecorderFactoryTest, RetainsDestroyedSessionsForDump) {
 TEST(SessionStreamRecorderFactoryTest, ExportIncludesAllProtoFields) {
   SessionStreamRecorderFactory factory;
   FakeTransportSession session("session_1");
-  std::unique_ptr<TransportHandler> handler = factory.OnNewSession(&session);
-  auto* recorder = static_cast<SessionStreamRecorder*>(handler.get());
+  factory.OnSessionRegistered(&session);
+  SessionStreamRecorder* recorder =
+      factory.GetActiveRecorderForTesting(session.GetSessionId());
+  ASSERT_NE(recorder, nullptr);
 
   ActuatorUpstreamMessage upstream;
   upstream.set_session_id("session_1");
@@ -593,12 +617,14 @@ TEST(SessionStreamRecorderFactoryTest, RoutesUpstreamMessageBySessionId) {
   FakeTransportSession session1("session_1");
   FakeTransportSession session2("session_2");
 
-  std::unique_ptr<TransportHandler> h1 = factory.OnNewSession(&session1);
-  std::unique_ptr<TransportHandler> h2 = factory.OnNewSession(&session2);
-  ASSERT_NE(h1, nullptr);
-  ASSERT_NE(h2, nullptr);
-  auto* r1 = static_cast<SessionStreamRecorder*>(h1.get());
-  auto* r2 = static_cast<SessionStreamRecorder*>(h2.get());
+  factory.OnSessionRegistered(&session1);
+  factory.OnSessionRegistered(&session2);
+  SessionStreamRecorder* r1 =
+      factory.GetActiveRecorderForTesting(session1.GetSessionId());
+  ASSERT_NE(r1, nullptr);
+  SessionStreamRecorder* r2 =
+      factory.GetActiveRecorderForTesting(session2.GetSessionId());
+  ASSERT_NE(r2, nullptr);
 
   ActuatorUpstreamMessage u2;
   u2.set_session_id("session_2");
@@ -637,10 +663,9 @@ TEST(SessionStreamRecorderFactoryTest,
   u_unknown.set_client_sequence_number(1);
   factory.OnUpstreamMessage("unknown_session", u_unknown);
 
-  {
-    std::unique_ptr<TransportHandler> h1 = factory.OnNewSession(&session1);
-    // Destroy h1 so session_1 closes and moves to retained_sessions_.
-  }
+  // Removing session_1 closes it and moves it to the retained recorders.
+  factory.OnSessionRegistered(&session1);
+  factory.OnSessionRemoved("session_1");
 
   ActuatorUpstreamMessage u_closed;
   u_closed.set_session_id("session_1");
@@ -674,13 +699,12 @@ TEST(SessionStreamRecorderFactoryTest,
   SessionStreamRecorderFactory factory;
 
   FakeTransportSession session_active("session_active");
-  std::unique_ptr<TransportHandler> active_handler =
-      factory.OnNewSession(&session_active);
+  factory.OnSessionRegistered(&session_active);
 
   FakeTransportSession session_retained("session_retained");
-  std::unique_ptr<TransportHandler> retained_handler =
-      factory.OnNewSession(&session_retained);
-  retained_handler.reset();  // Moves session to retained_sessions_
+  factory.OnSessionRegistered(&session_retained);
+  // Moves the session to the retained recorders.
+  factory.OnSessionRemoved(session_retained.GetSessionId());
 
   std::vector<SessionSnapshot> sessions =
       factory.GetAllSessions(/*max_events=*/10, /*max_message_bytes=*/1024);
@@ -704,8 +728,10 @@ TEST(SessionStreamRecorderFactoryTest,
 TEST(SessionStreamRecorderFactoryTest, GetAllSessionsCapsEvents) {
   SessionStreamRecorderFactory factory;
   FakeTransportSession session("session_1");
-  std::unique_ptr<TransportHandler> handler = factory.OnNewSession(&session);
-  auto* recorder = static_cast<SessionStreamRecorder*>(handler.get());
+  factory.OnSessionRegistered(&session);
+  SessionStreamRecorder* recorder =
+      factory.GetActiveRecorderForTesting(session.GetSessionId());
+  ASSERT_NE(recorder, nullptr);
 
   for (int i = 0; i < 10; ++i) {
     ActuatorDownstreamMessage msg;
@@ -724,8 +750,10 @@ TEST(SessionStreamRecorderFactoryTest, GetAllSessionsCapsEvents) {
 TEST(SessionStreamRecorderFactoryTest, GetAllSessionsKeepsNewestEvents) {
   SessionStreamRecorderFactory factory;
   FakeTransportSession session("session_1");
-  std::unique_ptr<TransportHandler> handler = factory.OnNewSession(&session);
-  auto* recorder = static_cast<SessionStreamRecorder*>(handler.get());
+  factory.OnSessionRegistered(&session);
+  SessionStreamRecorder* recorder =
+      factory.GetActiveRecorderForTesting(session.GetSessionId());
+  ASSERT_NE(recorder, nullptr);
 
   for (int i = 0; i < 10; ++i) {
     ActuatorDownstreamMessage msg;
@@ -754,8 +782,10 @@ TEST(SessionStreamRecorderFactoryTest, GetAllSessionsKeepsNewestEvents) {
 TEST(SessionStreamRecorderFactoryTest, GetAllSessionsTruncatesLargeMessages) {
   SessionStreamRecorderFactory factory;
   FakeTransportSession session("session_1");
-  std::unique_ptr<TransportHandler> handler = factory.OnNewSession(&session);
-  auto* recorder = static_cast<SessionStreamRecorder*>(handler.get());
+  factory.OnSessionRegistered(&session);
+  SessionStreamRecorder* recorder =
+      factory.GetActiveRecorderForTesting(session.GetSessionId());
+  ASSERT_NE(recorder, nullptr);
 
   ActuatorDownstreamMessage msg;
   msg.set_session_id("session_1");
@@ -780,14 +810,12 @@ TEST(SessionStreamRecorderFactoryTest, GetAllSessionsSortsNewestFirst) {
   SessionStreamRecorderFactory factory;
 
   FakeTransportSession session_older("session_older");
-  std::unique_ptr<TransportHandler> older_handler =
-      factory.OnNewSession(&session_older);
+  factory.OnSessionRegistered(&session_older);
 
   task_environment.FastForwardBy(base::Seconds(10));
 
   FakeTransportSession session_newer("session_newer");
-  std::unique_ptr<TransportHandler> newer_handler =
-      factory.OnNewSession(&session_newer);
+  factory.OnSessionRegistered(&session_newer);
 
   std::vector<SessionSnapshot> sessions =
       factory.GetAllSessions(/*max_events=*/10, /*max_message_bytes=*/1024);
@@ -804,8 +832,10 @@ TEST(SessionStreamRecorderFactoryTest,
 
   SessionStreamRecorderFactory factory;
   FakeTransportSession session("session_1");
-  std::unique_ptr<TransportHandler> handler = factory.OnNewSession(&session);
-  auto* recorder = static_cast<SessionStreamRecorder*>(handler.get());
+  factory.OnSessionRegistered(&session);
+  SessionStreamRecorder* recorder =
+      factory.GetActiveRecorderForTesting(session.GetSessionId());
+  ASSERT_NE(recorder, nullptr);
 
   task_environment.FastForwardBy(base::Seconds(5));
 
@@ -814,7 +844,7 @@ TEST(SessionStreamRecorderFactoryTest,
   recorder->RecordDownstreamMessage(std::move(msg));
 
   task_environment.FastForwardBy(base::Seconds(5));
-  handler.reset();  // closes the session
+  factory.OnSessionRemoved(session.GetSessionId());  // Closes the session.
 
   std::vector<SessionSnapshot> sessions =
       factory.GetAllSessions(/*max_events=*/10, /*max_message_bytes=*/1024);
@@ -830,8 +860,10 @@ TEST(SessionStreamRecorderFactoryTest,
 TEST(SessionStreamRecorderFactoryTest, GetAllSessionsReportsPayloadTypes) {
   SessionStreamRecorderFactory factory;
   FakeTransportSession session("session_1");
-  std::unique_ptr<TransportHandler> handler = factory.OnNewSession(&session);
-  auto* recorder = static_cast<SessionStreamRecorder*>(handler.get());
+  factory.OnSessionRegistered(&session);
+  SessionStreamRecorder* recorder =
+      factory.GetActiveRecorderForTesting(session.GetSessionId());
+  ASSERT_NE(recorder, nullptr);
 
   ActuatorDownstreamMessage downstream;
   downstream.set_session_id("session_1");
@@ -877,7 +909,7 @@ TEST(SessionStreamRecorderFactoryTest, GetAllSessionsReportsPayloadTypes) {
 TEST(SessionStreamRecorderFactoryTest, GetAllSessionsIncludesUpstreamEvents) {
   SessionStreamRecorderFactory factory;
   FakeTransportSession session("session_1");
-  std::unique_ptr<TransportHandler> handler = factory.OnNewSession(&session);
+  factory.OnSessionRegistered(&session);
 
   ActuatorUpstreamMessage upstream;
   upstream.set_session_id("session_1");

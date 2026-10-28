@@ -20,7 +20,6 @@
 #include "components/browser_actuator/internal/transport/stream_connection_delegate.h"
 #include "components/browser_actuator/internal/transport/transport_channel_impl.h"
 #include "components/browser_actuator/internal/transport/upstream_message_client/upstream_message_client.h"
-#include "components/browser_actuator/public/transport/transport_handler_factory_registry.h"
 #include "components/browser_actuator/public/transport/transport_session_registry.h"
 #include "components/signin/public/base/oauth_consumer_id.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -137,12 +136,12 @@ TransportServiceImpl::TransportServiceImpl(
   }
 
   // The channel is only created when the channel feature is on. When it is off
-  // the recorder factory is still owned here, but there is nothing to register
-  // with.
+  // the recorder factory is still owned here, but there is nothing to observe.
+  // The recorder observes the session registry so it starts recording as soon
+  // as a session exists.
   if (session_stream_recorder_factory_ && channel_) {
-    if (TransportHandlerFactoryRegistry* registry =
-            channel_->GetHandlerFactoryRegistry()) {
-      registry->RegisterFactory(session_stream_recorder_factory_.get());
+    if (TransportSessionRegistry* registry = channel_->GetSessionRegistry()) {
+      registry->AddObserver(session_stream_recorder_factory_.get());
     }
     channel_->AddObserver(session_stream_recorder_factory_.get());
   }
@@ -153,12 +152,11 @@ TransportServiceImpl::~TransportServiceImpl() {
   if (!channel_) {
     return;
   }
-  // Unregister before anything is destroyed. The registry and channel store
-  // raw pointers and do not own the factory.
+  // Stop observing before anything is destroyed. The registry and channel
+  // store raw pointers and do not own the recorder factory.
   if (session_stream_recorder_factory_) {
-    if (TransportHandlerFactoryRegistry* registry =
-            channel_->GetHandlerFactoryRegistry()) {
-      registry->UnregisterFactory(session_stream_recorder_factory_.get());
+    if (TransportSessionRegistry* registry = channel_->GetSessionRegistry()) {
+      registry->RemoveObserver(session_stream_recorder_factory_.get());
     }
     channel_->RemoveObserver(session_stream_recorder_factory_.get());
   }

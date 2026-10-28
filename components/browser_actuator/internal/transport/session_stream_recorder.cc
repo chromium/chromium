@@ -15,8 +15,6 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
-#include "base/functional/bind.h"
-#include "base/functional/callback.h"
 #include "base/json/json_writer.h"
 #include "base/json/values_util.h"
 #include "base/numerics/safe_conversions.h"
@@ -193,28 +191,6 @@ SessionStreamRecorder::SessionStreamRecorder(std::string_view session_id)
 
 SessionStreamRecorder::~SessionStreamRecorder() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  MarkSessionClosed();
-  weak_ptr_factory_.InvalidateWeakPtrs();
-  if (destruction_callback_) {
-    std::move(destruction_callback_).Run(metadata_, std::move(entries_));
-  }
-}
-
-void SessionStreamRecorder::OnMessage(PayloadType payload_type,
-                                      std::string_view serialized_payload) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  // Rebuild the single-payload message that the entry list records.
-  ActuatorDownstreamMessage downstream;
-  downstream.set_session_id(session_id_);
-  auto* typed_payload = downstream.add_typed_payloads();
-  typed_payload->set_payload_type(
-      payload_type == PayloadType::kUnspecified
-          ? ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_UNSPECIFIED
-          : ToDownstreamProtoPayloadType(payload_type));
-  typed_payload->mutable_proto_payload()->set_value(
-      std::string(serialized_payload));
-  RecordDownstreamMessage(std::move(downstream));
 }
 
 void SessionStreamRecorder::RecordDownstreamMessage(
@@ -283,91 +259,84 @@ void SessionStreamRecorder::MarkSessionClosed() {
   }
 }
 
-void SessionStreamRecorder::SetDestructionCallback(
-    DestructionCallback callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  destruction_callback_ = std::move(callback);
-}
-
-base::WeakPtr<SessionStreamRecorder> SessionStreamRecorder::GetWeakPtr() {
-  return weak_ptr_factory_.GetWeakPtr();
-}
-
 SessionStreamRecorderFactory::SessionStreamRecorderFactory() = default;
 
 SessionStreamRecorderFactory::~SessionStreamRecorderFactory() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
-FactoryId SessionStreamRecorderFactory::GetFactoryId() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return FactoryId::kSessionStreamRecorder;
-}
-
-// LINT.IfChange(RecorderPayloadTypes)
-std::vector<PayloadType>
-SessionStreamRecorderFactory::GetSupportedPayloadTypes() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return {PayloadType::kControl, PayloadType::kExperimentalTriggering,
-          PayloadType::kActuation};
-}
-// LINT.ThenChange(//components/browser_actuator/public/transport/common.h:PayloadType)
-
-std::unique_ptr<TransportHandler> SessionStreamRecorderFactory::OnNewSession(
+void SessionStreamRecorderFactory::OnSessionRegistered(
     TransportSession* session) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!session) {
-    return nullptr;
+    return;
   }
-  auto recorder =
-      std::make_unique<SessionStreamRecorder>(session->GetSessionId());
-  recorder->SetDestructionCallback(
-      base::BindOnce(&SessionStreamRecorderFactory::OnRecorderDestroyed,
-                     weak_ptr_factory_.GetWeakPtr(), recorder.get()));
-  active_recorders_.push_back(recorder->GetWeakPtr());
-  return recorder;
+  std::string_view session_id = session->GetSessionId();
+  // The registry never registers an ID that is still active, but retire any
+  // leftover recorder so its history is not lost.
+  RetireRecorder(session_id);
+  active_recorders_.push_back(
+      std::make_unique<SessionStreamRecorder>(session_id));
+}
+
+void SessionStreamRecorderFactory::OnSessionRemoved(
+    std::string_view session_id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  RetireRecorder(session_id);
 }
 
 void SessionStreamRecorderFactory::OnDownstreamMessage(
     std::string_view session_id,
-    const ActuatorDownstreamMessage& message) {}
+    const ActuatorDownstreamMessage& message) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (SessionStreamRecorder* recorder = FindActiveRecorder(session_id)) {
+    recorder->RecordDownstreamMessage(message);
+  }
+  // No active recorder for this session (unknown or already closed). Drop it.
+}
 
 void SessionStreamRecorderFactory::OnUpstreamMessage(
     std::string_view session_id,
     const ActuatorUpstreamMessage& message) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  for (const auto& weak_recorder : active_recorders_) {
-    if (weak_recorder && weak_recorder->session_id() == session_id) {
-      weak_recorder->RecordUpstreamMessage(message);
-      return;
-    }
+  if (SessionStreamRecorder* recorder = FindActiveRecorder(session_id)) {
+    recorder->RecordUpstreamMessage(message);
   }
   // No active recorder for this session (unknown or already closed). Drop it.
 }
 
-void SessionStreamRecorderFactory::OnRecorderDestroyed(
-    SessionStreamRecorder* recorder,
-    const SessionMetadata& metadata,
-    std::vector<SessionStreamRecorder::Entry> entries) {
+SessionStreamRecorder* SessionStreamRecorderFactory::FindActiveRecorder(
+    std::string_view session_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  std::erase_if(active_recorders_, [recorder](const auto& ptr) {
-    return !ptr || ptr.get() == recorder;
-  });
-  retained_sessions_.push_back(RetainedSessionHistory{
-      .metadata = metadata,
-      .entries = std::move(entries),
-  });
+  auto it = std::ranges::find(active_recorders_, session_id,
+                              &SessionStreamRecorder::session_id);
+  return it == active_recorders_.end() ? nullptr : it->get();
+}
+
+void SessionStreamRecorderFactory::RetireRecorder(std::string_view session_id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  auto it = std::ranges::find(active_recorders_, session_id,
+                              &SessionStreamRecorder::session_id);
+  if (it == active_recorders_.end()) {
+    return;
+  }
+  (*it)->MarkSessionClosed();
+  retained_recorders_.push_back(std::move(*it));
+  active_recorders_.erase(it);
+  if (retained_recorders_.size() > kMaxRetainedSessions) {
+    retained_recorders_.erase(retained_recorders_.begin());
+  }
 }
 
 size_t SessionStreamRecorderFactory::GetActiveRecordersCountForTesting() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  size_t count = 0;
-  for (const auto& ptr : active_recorders_) {
-    if (ptr) {
-      count++;
-    }
-  }
-  return count;
+  return active_recorders_.size();
+}
+
+SessionStreamRecorder*
+SessionStreamRecorderFactory::GetActiveRecorderForTesting(
+    std::string_view session_id) {
+  return FindActiveRecorder(session_id);
 }
 
 base::DictValue SessionStreamRecorderFactory::ExportAllSessionsAsValue() const {
@@ -380,34 +349,27 @@ base::DictValue SessionStreamRecorderFactory::ExportSessionsAsValue(
   base::DictValue root_dict;
   base::ListValue sessions_list;
 
-  auto should_include = [&session_ids](std::string_view id) {
-    return !session_ids.has_value() || std::ranges::contains(*session_ids, id);
-  };
-
-  auto append_session =
-      [&sessions_list](
-          const SessionMetadata& metadata,
-          const std::vector<SessionStreamRecorder::Entry>& entries) {
-        base::DictValue session_dict = metadata.ToValue();
-        base::ListValue events_list;
-        for (const auto& entry : entries) {
-          events_list.Append(entry.ToValue());
+  auto append_sessions =
+      [&sessions_list,
+       &session_ids](const std::vector<std::unique_ptr<SessionStreamRecorder>>&
+                         recorders) {
+        for (const auto& recorder : recorders) {
+          if (session_ids.has_value() &&
+              !std::ranges::contains(*session_ids, recorder->session_id())) {
+            continue;
+          }
+          base::DictValue session_dict = recorder->metadata().ToValue();
+          base::ListValue events_list;
+          for (const auto& entry : recorder->entries()) {
+            events_list.Append(entry.ToValue());
+          }
+          session_dict.Set("events", std::move(events_list));
+          sessions_list.Append(std::move(session_dict));
         }
-        session_dict.Set("events", std::move(events_list));
-        sessions_list.Append(std::move(session_dict));
       };
 
-  for (const auto& weak_recorder : active_recorders_) {
-    if (weak_recorder && should_include(weak_recorder->session_id())) {
-      append_session(weak_recorder->metadata(), weak_recorder->entries());
-    }
-  }
-
-  for (const auto& retained : retained_sessions_) {
-    if (should_include(retained.metadata.session_id)) {
-      append_session(retained.metadata, retained.entries);
-    }
-  }
+  append_sessions(active_recorders_);
+  append_sessions(retained_recorders_);
 
   root_dict.Set("sessions", std::move(sessions_list));
   return root_dict;
@@ -418,18 +380,14 @@ std::vector<SessionSnapshot> SessionStreamRecorderFactory::GetAllSessions(
     size_t max_message_bytes) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   std::vector<SessionSnapshot> sessions;
+  sessions.reserve(active_recorders_.size() + retained_recorders_.size());
 
-  for (const auto& weak_recorder : active_recorders_) {
-    if (weak_recorder) {
-      sessions.push_back(BuildSessionSnapshot(weak_recorder->metadata(),
-                                              weak_recorder->entries(),
-                                              max_events, max_message_bytes));
+  for (const auto* recorders : {&active_recorders_, &retained_recorders_}) {
+    for (const auto& recorder : *recorders) {
+      sessions.push_back(BuildSessionSnapshot(recorder->metadata(),
+                                              recorder->entries(), max_events,
+                                              max_message_bytes));
     }
-  }
-
-  for (const auto& retained : retained_sessions_) {
-    sessions.push_back(BuildSessionSnapshot(retained.metadata, retained.entries,
-                                            max_events, max_message_bytes));
   }
 
   std::sort(sessions.begin(), sessions.end(),

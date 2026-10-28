@@ -16,8 +16,6 @@
 #include <vector>
 
 #include "base/containers/span.h"
-#include "base/functional/callback.h"
-#include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/sequence_checker.h"
@@ -25,9 +23,7 @@
 #include "base/time/time.h"
 #include "components/browser_actuator/internal/transport/proto/transport_messages.pb.h"
 #include "components/browser_actuator/internal/transport/transport_message_observer.h"
-#include "components/browser_actuator/public/transport/common.h"
-#include "components/browser_actuator/public/transport/transport_handler.h"
-#include "components/browser_actuator/public/transport/transport_handler_factory.h"
+#include "components/browser_actuator/public/transport/transport_session_registry.h"
 #include "components/sharing_message/proto/actuator_downstream_message.pb.h"
 
 namespace base {
@@ -104,7 +100,7 @@ struct SessionSnapshot {
 // Records canonical protobuf messages (ActuatorDownstreamMessage and
 // ActuatorUpstreamMessage) for a single TransportSession using an unbounded
 // std::vector. Observers can subscribe to receive live messages as they occur.
-class SessionStreamRecorder : public TransportHandler {
+class SessionStreamRecorder {
  public:
   // Stored entry pairing timestamp with canonical protobuf message.
   struct Entry {
@@ -117,9 +113,6 @@ class SessionStreamRecorder : public TransportHandler {
     base::DictValue ToValue() const;
   };
 
-  using DestructionCallback =
-      base::OnceCallback<void(const SessionMetadata&, std::vector<Entry>)>;
-
   // Direct proto observer interface for real-time streaming.
   class Observer : public base::CheckedObserver {
    public:
@@ -131,14 +124,10 @@ class SessionStreamRecorder : public TransportHandler {
   };
 
   explicit SessionStreamRecorder(std::string_view session_id);
-  ~SessionStreamRecorder() override;
+  ~SessionStreamRecorder();
 
   SessionStreamRecorder(const SessionStreamRecorder&) = delete;
   SessionStreamRecorder& operator=(const SessionStreamRecorder&) = delete;
-
-  // TransportHandler implementation:
-  void OnMessage(PayloadType payload_type,
-                 std::string_view serialized_payload) override;
 
   // Direct recording methods:
   void RecordDownstreamMessage(ActuatorDownstreamMessage message);
@@ -155,11 +144,6 @@ class SessionStreamRecorder : public TransportHandler {
   // Marks the session as closed.
   void MarkSessionClosed();
 
-  // Sets a callback invoked on destruction to retain history for dumps.
-  void SetDestructionCallback(DestructionCallback callback);
-
-  base::WeakPtr<SessionStreamRecorder> GetWeakPtr();
-
  private:
   SEQUENCE_CHECKER(sequence_checker_);
 
@@ -167,18 +151,22 @@ class SessionStreamRecorder : public TransportHandler {
   SessionMetadata metadata_ GUARDED_BY_CONTEXT(sequence_checker_);
   std::vector<Entry> entries_ GUARDED_BY_CONTEXT(sequence_checker_);
   base::ObserverList<Observer> observers_ GUARDED_BY_CONTEXT(sequence_checker_);
-
-  DestructionCallback destruction_callback_
-      GUARDED_BY_CONTEXT(sequence_checker_);
-
-  base::WeakPtrFactory<SessionStreamRecorder> weak_ptr_factory_{this};
 };
 
-// Factory that creates and tracks SessionStreamRecorder instances.
+// Creates a `SessionStreamRecorder` for every transport session and feeds it
+// whole message envelopes. It follows the session lifecycle through
+// `TransportSessionRegistry::Observer`, so a session is recorded from the
+// moment it is created (for example by the first FCM wake-up message), before
+// any `TransportHandler` runs. Downstream and upstream envelopes arrive through
+// `TransportMessageObserver` in the order the transport handles them.
 // Provides export functionality to dump all sessions' history as JSON.
-class SessionStreamRecorderFactory : public TransportHandlerFactory,
+class SessionStreamRecorderFactory : public TransportSessionRegistry::Observer,
                                      public TransportMessageObserver {
  public:
+  // Closed sessions kept for dumps. Older ones are dropped first so a stream of
+  // short sessions cannot grow memory without bound.
+  static constexpr size_t kMaxRetainedSessions = 100;
+
   SessionStreamRecorderFactory();
   ~SessionStreamRecorderFactory() override;
 
@@ -186,15 +174,11 @@ class SessionStreamRecorderFactory : public TransportHandlerFactory,
   SessionStreamRecorderFactory& operator=(const SessionStreamRecorderFactory&) =
       delete;
 
-  // TransportHandlerFactory implementation:
-  FactoryId GetFactoryId() const override;
-  std::vector<PayloadType> GetSupportedPayloadTypes() const override;
-  std::unique_ptr<TransportHandler> OnNewSession(
-      TransportSession* session) override;
+  // TransportSessionRegistry::Observer implementation:
+  void OnSessionRegistered(TransportSession* session) override;
+  void OnSessionRemoved(std::string_view session_id) override;
 
   // TransportMessageObserver implementation:
-  // Downstream messages still reach recorders through `TransportHandler`.
-  // TODO(crbug.com/565078376): Record them here instead.
   void OnDownstreamMessage(std::string_view session_id,
                            const ActuatorDownstreamMessage& message) override;
   void OnUpstreamMessage(std::string_view session_id,
@@ -233,27 +217,29 @@ class SessionStreamRecorderFactory : public TransportHandlerFactory,
   // For testing: returns the number of tracked active session recorders.
   size_t GetActiveRecordersCountForTesting() const;
 
- private:
-  struct RetainedSessionHistory {
-    SessionMetadata metadata;
-    std::vector<SessionStreamRecorder::Entry> entries;
-  };
+  // For testing: returns the active recorder for `session_id`, or nullptr.
+  SessionStreamRecorder* GetActiveRecorderForTesting(
+      std::string_view session_id);
 
-  void OnRecorderDestroyed(SessionStreamRecorder* recorder,
-                           const SessionMetadata& metadata,
-                           std::vector<SessionStreamRecorder::Entry> entries);
+ private:
+  // Returns the active recorder for `session_id`, or nullptr.
+  SessionStreamRecorder* FindActiveRecorder(std::string_view session_id);
+
+  // Marks the active recorder for `session_id` closed and moves it to the
+  // retained recorders. Does nothing if there is no such recorder.
+  void RetireRecorder(std::string_view session_id);
 
   SEQUENCE_CHECKER(sequence_checker_);
 
-  // Active session recorders tracked via WeakPtr.
-  std::vector<base::WeakPtr<SessionStreamRecorder>> active_recorders_
+  // Recorders for sessions that are still registered, oldest first. The
+  // transport caps concurrent sessions at a small number, so lookups scan.
+  std::vector<std::unique_ptr<SessionStreamRecorder>> active_recorders_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
-  // Retained history for closed/destroyed sessions.
-  std::vector<RetainedSessionHistory> retained_sessions_
+  // Closed recorders, oldest first, kept so their history stays available for
+  // dumps. Capped at `kMaxRetainedSessions`.
+  std::vector<std::unique_ptr<SessionStreamRecorder>> retained_recorders_
       GUARDED_BY_CONTEXT(sequence_checker_);
-
-  base::WeakPtrFactory<SessionStreamRecorderFactory> weak_ptr_factory_{this};
 };
 
 }  // namespace browser_actuator::transport

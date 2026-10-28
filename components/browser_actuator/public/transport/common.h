@@ -20,8 +20,7 @@ enum class PayloadType {
 };
 // LINT.ThenChange(
 //     //components/browser_actuator/internal/transport/metrics_utils.h:PayloadTypeToMetricSuffix,
-//     //tools/metrics/histograms/metadata/browser_actuator/histograms.xml:BrowserActuatorTransportPayloadType,
-//     //components/browser_actuator/internal/transport/session_stream_recorder.cc:RecorderPayloadTypes)
+//     //tools/metrics/histograms/metadata/browser_actuator/histograms.xml:BrowserActuatorTransportPayloadType)
 
 // Identifies the feature factory instance, to ensure we do not re-register
 // factories of the same type.
