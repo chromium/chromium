@@ -4,16 +4,21 @@
 
 #import "ios/chrome/browser/enterprise/data_protection/coordinator/data_protection_scene_agent.h"
 
+#import "base/test/scoped_feature_list.h"
 #import "base/values.h"
 #import "components/enterprise/connectors/core/connectors_prefs.h"
 #import "components/enterprise/data_controls/core/browser/prefs.h"
 #import "components/enterprise/data_controls/core/browser/test_utils.h"
 #import "components/prefs/pref_registry_simple.h"
+#import "components/prefs/scoped_user_pref_update.h"
 #import "components/sync_preferences/testing_pref_service_syncable.h"
 #import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/app/profile/profile_state_test_utils.h"
 #import "ios/chrome/browser/enterprise/data_controls/model/ios_rules_service_factory.h"
 #import "ios/chrome/browser/enterprise/data_protection/model/data_protection_tab_helper.h"
+#import "ios/chrome/browser/enterprise/data_protection/public/features.h"
+#import "ios/chrome/browser/enterprise/data_protection/public/pref_names.h"
+#import "ios/chrome/browser/enterprise/data_protection/ui/watermark_view.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/state/incognito_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/state/tab_grid_state.h"
@@ -170,6 +175,27 @@ class DataProtectionSceneAgentTestBase : public PlatformTest {
         std::move(web_state),
         WebStateList::InsertionParams::AtIndex(0).Activate());
     return web_state_ptr;
+  }
+
+  // Returns the single WatermarkView attached to the scene's window, or nil.
+  // Asserts that at most one watermark view exists.
+  WatermarkView* GetWatermarkView() {
+    WatermarkView* watermark_view = nil;
+    for (UIView* subview in scene_state_.window.subviews) {
+      if ([subview isKindOfClass:[WatermarkView class]]) {
+        EXPECT_EQ(watermark_view, nil);
+        watermark_view = static_cast<WatermarkView*>(subview);
+      }
+    }
+    return watermark_view;
+  }
+
+  // Sets a watermark entry in preferences for the given tab ID.
+  void SetWatermarkPref(web::WebStateID tab_id, std::string text) {
+    ScopedDictPrefUpdate update(
+        profile_->GetTestingPrefService(),
+        enterprise_data_protection::kDataProtectionWatermarkedTabs);
+    update->Set(base::NumberToString(tab_id.identifier()), std::move(text));
   }
 
   web::WebTaskEnvironment task_environment_;
@@ -778,4 +804,311 @@ TEST_F(DataProtectionSceneAgentTransitionTest, NewWindowProtection) {
   [[NSNotificationCenter defaultCenter]
       postNotificationName:UIWindowDidBecomeVisibleNotification
                     object:new_window];
+}
+
+#pragma mark - Watermarking Tests
+
+// Tests that the watermark view is applied to the window when entering the Tab
+// Grid if an open tab is watermarked, and is removed when exiting the Tab Grid.
+TEST_F(DataProtectionSceneAgentTransitionTest, WatermarkViewAddedAndRemoved) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kEnableEnterpriseWatermarkingIOS);
+  SetRealTimeUrlCheckModePolicy(1);
+  scene_state_.tabGridState.tabGridVisible = NO;
+  scene_state_.incognitoState.incognitoContentVisible = NO;
+
+  web::FakeWebState* web_state = AddActiveWebState();
+  SetWatermarkPref(web_state->GetUniqueIdentifier(), "Test Watermark");
+
+  scene_state_.tabGridState.tabGridVisible = YES;
+  WatermarkView* watermark_view = GetWatermarkView();
+  ASSERT_NE(watermark_view, nil);
+  EXPECT_NSEQ(watermark_view.text, @"Test Watermark");
+
+  scene_state_.tabGridState.tabGridVisible = NO;
+  EXPECT_EQ(GetWatermarkView(), nil);
+}
+
+// Tests that the watermark is not displayed on the Incognito Tab Grid even if a
+// regular tab is watermarked, and is properly restored when returning to the
+// regular Tab Grid.
+TEST_F(DataProtectionSceneAgentTransitionTest, WatermarkNotAppliedInIncognito) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kEnableEnterpriseWatermarkingIOS);
+  SetRealTimeUrlCheckModePolicy(1);
+  scene_state_.tabGridState.tabGridVisible = NO;
+  scene_state_.incognitoState.incognitoContentVisible = NO;
+
+  web::FakeWebState* web_state = AddActiveWebState();
+  SetWatermarkPref(web_state->GetUniqueIdentifier(), "Test Watermark");
+
+  scene_state_.tabGridState.tabGridVisible = YES;
+  WatermarkView* watermark_view = GetWatermarkView();
+  ASSERT_NE(watermark_view, nil);
+  EXPECT_NSEQ(watermark_view.text, @"Test Watermark");
+
+  // Switch to incognito. Watermark must be removed immediately.
+  scene_state_.incognitoState.incognitoContentVisible = YES;
+  EXPECT_EQ(GetWatermarkView(), nil);
+
+  // Switch back to regular tab grid. Watermark should be restored.
+  scene_state_.incognitoState.incognitoContentVisible = NO;
+  watermark_view = GetWatermarkView();
+  ASSERT_NE(watermark_view, nil);
+  EXPECT_NSEQ(watermark_view.text, @"Test Watermark");
+}
+
+// Tests that closing the only watermarked tab in the Tab Grid dynamically
+// removes the watermark view.
+TEST_F(DataProtectionSceneAgentTransitionTest, WatermarkRemovedWhenTabClosed) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kEnableEnterpriseWatermarkingIOS);
+  SetRealTimeUrlCheckModePolicy(1);
+  scene_state_.tabGridState.tabGridVisible = NO;
+  scene_state_.incognitoState.incognitoContentVisible = NO;
+
+  web::FakeWebState* web_state = AddActiveWebState();
+  SetWatermarkPref(web_state->GetUniqueIdentifier(), "Test Watermark");
+
+  scene_state_.tabGridState.tabGridVisible = YES;
+  ASSERT_NE(GetWatermarkView(), nil);
+
+  // Close the tab from the browser while in the tab grid.
+  Browser* browser = BrowserProviderForMode(scene_state_, false).browser;
+  browser->GetWebStateList()->CloseWebStateAt(
+      0, WebStateList::ClosingReason::kUserAction);
+
+  EXPECT_EQ(GetWatermarkView(), nil);
+}
+
+// Tests that a watermarked tab belonging to another window does not trigger
+// watermarking on this window's Tab Grid.
+TEST_F(DataProtectionSceneAgentTransitionTest,
+       WatermarkNotAppliedForOtherWindowTab) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kEnableEnterpriseWatermarkingIOS);
+  SetRealTimeUrlCheckModePolicy(1);
+  scene_state_.tabGridState.tabGridVisible = NO;
+  scene_state_.incognitoState.incognitoContentVisible = NO;
+
+  // Add an unwatermarked tab to this window.
+  AddActiveWebState();
+
+  // Add a watermarked tab ID from another window (a valid WebStateID not in
+  // this window's WebStateList) into the profile prefs.
+  web::WebStateID foreign_tab_id = web::WebStateID::NewUnique();
+  SetWatermarkPref(foreign_tab_id, "Foreign Watermark");
+
+  scene_state_.tabGridState.tabGridVisible = YES;
+  EXPECT_EQ(GetWatermarkView(), nil);
+}
+
+// Tests that inserting a watermarked tab while in the Tab Grid immediately
+// applies the watermark view.
+TEST_F(DataProtectionSceneAgentTransitionTest,
+       WatermarkAppliedWhenTabInsertedInGrid) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kEnableEnterpriseWatermarkingIOS);
+  SetRealTimeUrlCheckModePolicy(1);
+  scene_state_.incognitoState.incognitoContentVisible = NO;
+  scene_state_.tabGridState.tabGridVisible = YES;
+  EXPECT_EQ(GetWatermarkView(), nil);
+
+  auto web_state = std::make_unique<web::FakeWebState>();
+  SetWatermarkPref(web_state->GetUniqueIdentifier(), "Inserted Watermark");
+
+  Browser* browser = BrowserProviderForMode(scene_state_, false).browser;
+  browser->GetWebStateList()->InsertWebState(
+      std::move(web_state), WebStateList::InsertionParams::AtIndex(0));
+
+  WatermarkView* watermark_view = GetWatermarkView();
+  ASSERT_NE(watermark_view, nil);
+  EXPECT_NSEQ(watermark_view.text, @"Inserted Watermark");
+}
+
+// Tests that closing all tabs in a batch operation while in the Tab Grid
+// removes the watermark view.
+TEST_F(DataProtectionSceneAgentTransitionTest,
+       WatermarkRemovedOnBatchCloseInGrid) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kEnableEnterpriseWatermarkingIOS);
+  SetRealTimeUrlCheckModePolicy(1);
+  scene_state_.tabGridState.tabGridVisible = NO;
+  scene_state_.incognitoState.incognitoContentVisible = NO;
+
+  web::FakeWebState* web_state = AddActiveWebState();
+  SetWatermarkPref(web_state->GetUniqueIdentifier(), "Test Watermark");
+
+  scene_state_.tabGridState.tabGridVisible = YES;
+  ASSERT_NE(GetWatermarkView(), nil);
+
+  Browser* browser = BrowserProviderForMode(scene_state_, false).browser;
+  CloseAllWebStates(*browser->GetWebStateList(),
+                    WebStateList::ClosingReason::kUserAction);
+
+  EXPECT_EQ(GetWatermarkView(), nil);
+}
+
+// Tests that the watermark remains on screen when transitioning to background
+// while in the Tab Grid, ensuring the app switcher snapshot is protected.
+TEST_F(DataProtectionSceneAgentTransitionTest,
+       WatermarkPreservedOnBackgroundTransition) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kEnableEnterpriseWatermarkingIOS);
+  SetRealTimeUrlCheckModePolicy(1);
+  scene_state_.tabGridState.tabGridVisible = NO;
+  scene_state_.incognitoState.incognitoContentVisible = NO;
+
+  web::FakeWebState* web_state = AddActiveWebState();
+  SetWatermarkPref(web_state->GetUniqueIdentifier(), "Test Watermark");
+
+  scene_state_.tabGridState.tabGridVisible = YES;
+  ASSERT_NE(GetWatermarkView(), nil);
+
+  scene_state_.activationLevel = SceneActivationLevelBackground;
+  EXPECT_NE(GetWatermarkView(), nil);
+}
+
+// Tests that the watermark is not applied to the Tab Grid if
+// kEnableEnterpriseWatermarkingIOS is disabled.
+TEST_F(DataProtectionSceneAgentTransitionTest,
+       WatermarkNotAppliedWhenFeatureDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(kEnableEnterpriseWatermarkingIOS);
+  SetRealTimeUrlCheckModePolicy(1);
+
+  scene_state_.tabGridState.tabGridVisible = NO;
+  scene_state_.incognitoState.incognitoContentVisible = NO;
+
+  web::FakeWebState* web_state = AddActiveWebState();
+  std::string tab_id =
+      base::NumberToString(web_state->GetUniqueIdentifier().identifier());
+
+  {
+    ScopedDictPrefUpdate update(
+        profile_->GetTestingPrefService(),
+        enterprise_data_protection::kDataProtectionWatermarkedTabs);
+    update->Set(tab_id, "Test Watermark");
+  }
+
+  scene_state_.tabGridState.tabGridVisible = YES;
+  bool found_watermark = false;
+  for (UIView* subview in scene_state_.window.subviews) {
+    if ([subview isKindOfClass:[WatermarkView class]]) {
+      found_watermark = true;
+      break;
+    }
+  }
+  EXPECT_FALSE(found_watermark);
+}
+
+// Tests that the watermark is not applied to the Tab Grid if enterprise
+// lookups are disabled.
+TEST_F(DataProtectionSceneAgentTransitionTest,
+       WatermarkNotAppliedWhenEnterpriseLookupsDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kEnableEnterpriseWatermarkingIOS);
+  // 0 = REAL_TIME_CHECK_DISABLED
+  SetRealTimeUrlCheckModePolicy(0);
+
+  scene_state_.tabGridState.tabGridVisible = NO;
+  scene_state_.incognitoState.incognitoContentVisible = NO;
+
+  web::FakeWebState* web_state = AddActiveWebState();
+  SetWatermarkPref(web_state->GetUniqueIdentifier(), "Test Watermark");
+
+  scene_state_.tabGridState.tabGridVisible = YES;
+  EXPECT_EQ(GetWatermarkView(), nil);
+}
+
+// Tests that when the number of tabs exceeds `kMaxTabsToCheckForWatermark`, the
+// Tab Grid is watermarked if there are entries in the watermarked tabs pref.
+TEST_F(DataProtectionSceneAgentTransitionTest,
+       WatermarkAppliedWhenMoreThanMaxTabsToCheck) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kEnableEnterpriseWatermarkingIOS);
+  SetRealTimeUrlCheckModePolicy(1);
+  scene_state_.tabGridState.tabGridVisible = NO;
+  scene_state_.incognitoState.incognitoContentVisible = NO;
+
+  Browser* browser = BrowserProviderForMode(scene_state_, false).browser;
+  WebStateList* web_state_list = browser->GetWebStateList();
+  {
+    auto batch = web_state_list->StartBatchOperation();
+    for (int i = 0; i < kMaxTabsToCheckForWatermark + 1; ++i) {
+      auto web_state = std::make_unique<web::FakeWebState>();
+      web_state->SetBrowserState(profile_.get());
+      web_state_list->InsertWebState(std::move(web_state),
+                                     WebStateList::InsertionParams::AtIndex(i));
+    }
+  }
+
+  web::WebState* first_web_state = web_state_list->GetWebStateAt(0);
+  SetWatermarkPref(first_web_state->GetUniqueIdentifier(),
+                   "Over Limit Watermark");
+
+  scene_state_.tabGridState.tabGridVisible = YES;
+  WatermarkView* watermark_view = GetWatermarkView();
+  ASSERT_NE(watermark_view, nil);
+  EXPECT_NSEQ(watermark_view.text, @"Over Limit Watermark");
+}
+
+// Tests that when the number of tabs exceeds `kMaxTabsToCheckForWatermark`, no
+// watermark is applied if there are no entries in the watermarked tabs pref.
+TEST_F(DataProtectionSceneAgentTransitionTest,
+       WatermarkNotAppliedWhenMoreThanMaxTabsToCheckAndNoWatermarkedTabs) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kEnableEnterpriseWatermarkingIOS);
+  SetRealTimeUrlCheckModePolicy(1);
+  scene_state_.tabGridState.tabGridVisible = NO;
+  scene_state_.incognitoState.incognitoContentVisible = NO;
+
+  Browser* browser = BrowserProviderForMode(scene_state_, false).browser;
+  WebStateList* web_state_list = browser->GetWebStateList();
+  {
+    auto batch = web_state_list->StartBatchOperation();
+    for (int i = 0; i < kMaxTabsToCheckForWatermark + 1; ++i) {
+      auto web_state = std::make_unique<web::FakeWebState>();
+      web_state->SetBrowserState(profile_.get());
+      web_state_list->InsertWebState(std::move(web_state),
+                                     WebStateList::InsertionParams::AtIndex(i));
+    }
+  }
+
+  scene_state_.tabGridState.tabGridVisible = YES;
+  EXPECT_EQ(GetWatermarkView(), nil);
+}
+
+// Tests that when the number of tabs is exactly `kMaxTabsToCheckForWatermark`
+// (at the inspection limit), all tabs are inspected and a watermark on the last
+// tab is detected.
+TEST_F(DataProtectionSceneAgentTransitionTest,
+       WatermarkAppliedWhenLastTabAtLimitIsWatermarked) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kEnableEnterpriseWatermarkingIOS);
+  SetRealTimeUrlCheckModePolicy(1);
+  scene_state_.tabGridState.tabGridVisible = NO;
+  scene_state_.incognitoState.incognitoContentVisible = NO;
+
+  Browser* browser = BrowserProviderForMode(scene_state_, false).browser;
+  WebStateList* web_state_list = browser->GetWebStateList();
+  {
+    auto batch = web_state_list->StartBatchOperation();
+    for (int i = 0; i < kMaxTabsToCheckForWatermark; ++i) {
+      auto web_state = std::make_unique<web::FakeWebState>();
+      web_state->SetBrowserState(profile_.get());
+      web_state_list->InsertWebState(std::move(web_state),
+                                     WebStateList::InsertionParams::AtIndex(i));
+    }
+  }
+
+  // Watermark only the last tab.
+  web::WebState* last_web_state =
+      web_state_list->GetWebStateAt(kMaxTabsToCheckForWatermark - 1);
+  SetWatermarkPref(last_web_state->GetUniqueIdentifier(), "Last Tab Watermark");
+
+  scene_state_.tabGridState.tabGridVisible = YES;
+  WatermarkView* watermark_view = GetWatermarkView();
+  ASSERT_NE(watermark_view, nil);
+  EXPECT_NSEQ(watermark_view.text, @"Last Tab Watermark");
 }

@@ -7,6 +7,12 @@
 
 #import "ios/chrome/browser/shared/coordinator/scene/observing_scene_state_agent.h"
 
+// Maximum number of tabs in the WebStateList to inspect individually when
+// checking if any tab requires watermarking in the Tab Grid. 99.9% of users
+// have fewer than 300 active tabs, so set 600 as the limit to avoid
+// performance degradation.
+inline constexpr int kMaxTabsToCheckForWatermark = 600;
+
 // Scene agent that manages screenshot protection for the scene's window.
 // It obfuscates the window when the Tab Grid is visible and screenshot
 // protection policies are enabled, or when the active tab requires protection.

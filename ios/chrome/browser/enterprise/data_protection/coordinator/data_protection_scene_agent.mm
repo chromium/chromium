@@ -4,7 +4,11 @@
 
 #import "ios/chrome/browser/enterprise/data_protection/coordinator/data_protection_scene_agent.h"
 
+#import <algorithm>
+
 #import "base/scoped_observation.h"
+#import "base/strings/string_number_conversions.h"
+#import "base/strings/sys_string_conversions.h"
 #import "base/values.h"
 #import "components/enterprise/connectors/core/connectors_prefs.h"
 #import "components/enterprise/data_controls/core/browser/prefs.h"
@@ -18,8 +22,12 @@
 #import "ios/chrome/browser/enterprise/data_controls/model/ios_rules_service.h"
 #import "ios/chrome/browser/enterprise/data_controls/model/ios_rules_service_factory.h"
 #import "ios/chrome/browser/enterprise/data_controls/model/rules_service_observer_bridge.h"
+#import "ios/chrome/browser/enterprise/data_protection/coordinator/watermark_style_utils.h"
 #import "ios/chrome/browser/enterprise/data_protection/model/data_protection_tab_helper.h"
 #import "ios/chrome/browser/enterprise/data_protection/model/data_protection_tab_helper_observer_bridge.h"
+#import "ios/chrome/browser/enterprise/data_protection/public/features.h"
+#import "ios/chrome/browser/enterprise/data_protection/public/pref_names.h"
+#import "ios/chrome/browser/enterprise/data_protection/ui/watermark_view.h"
 #import "ios/chrome/browser/shared/coordinator/scene/state/incognito_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/state/tab_grid_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -28,7 +36,9 @@
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
 #import "ios/chrome/browser/tabs/model/tabs_dependency_installer_bridge.h"
+#import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/public/provider/chrome/browser/screenshot_protection/screenshot_protection_api.h"
 
 namespace {
@@ -69,7 +79,8 @@ bool AreEnterpriseLookupsEnabled(const ProfileIOS& profile) {
                                         ProfileStateObserver,
                                         RulesServiceObserving,
                                         TabGridStateObserving,
-                                        TabsDependencyInstalling>
+                                        TabsDependencyInstalling,
+                                        WebStateListObserving>
 @end
 
 @implementation DataProtectionSceneAgent {
@@ -96,9 +107,17 @@ bool AreEnterpriseLookupsEnabled(const ProfileIOS& profile) {
   // Observes active WebState changes in the current Browser.
   std::unique_ptr<TabsDependencyInstallerBridge> _tabDependencyInstallerBridge;
 
+  // Bridge to observe WebStateList events in the current Browser.
+  std::unique_ptr<WebStateListObserverBridge> _webStateListObserverBridge;
+  std::unique_ptr<base::ScopedObservation<WebStateList, WebStateListObserver>>
+      _webStateListObservation;
+
   // Bridge to observe the protection state of the currently active WebState.
   std::unique_ptr<DataProtectionTabHelperObserverBridge>
       _tabHelperObserverBridge;
+
+  // The view used to display the watermark over the tab grid.
+  WatermarkView* _tabGridWatermarkView;
 }
 
 - (instancetype)init {
@@ -126,6 +145,7 @@ bool AreEnterpriseLookupsEnabled(const ProfileIOS& profile) {
   [self startObservingWindows];
 
   [self updateScreenshotProtection];
+  [self updateTabGridWatermarking];
 }
 
 #pragma mark - SceneStateObserver
@@ -133,11 +153,13 @@ bool AreEnterpriseLookupsEnabled(const ProfileIOS& profile) {
 - (void)sceneState:(SceneState*)sceneState
     transitionedToActivationLevel:(SceneActivationLevel)level {
   [self updateScreenshotProtection];
+  [self updateTabGridWatermarking];
 }
 
 - (void)sceneStateDidEnableUI:(SceneState*)sceneState {
   [self observeCurrentBrowser];
   [self updateScreenshotProtection];
+  [self updateTabGridWatermarking];
 }
 
 - (void)sceneStateDidDisableUI:(SceneState*)sceneState {
@@ -148,6 +170,7 @@ bool AreEnterpriseLookupsEnabled(const ProfileIOS& profile) {
   }
 
   [self stopObservingWindows];
+  [self removeTabGridWatermark];
 
   [sceneState.profileState removeObserver:self];
   [sceneState.incognitoState removeObserver:self];
@@ -166,16 +189,19 @@ bool AreEnterpriseLookupsEnabled(const ProfileIOS& profile) {
   // Profile might be loaded now.
   [self startObservingPrefs];
   [self updateScreenshotProtection];
+  [self updateTabGridWatermarking];
 }
 
 #pragma mark - TabGridStateObserving
 
 - (void)willEnterTabGrid {
   [self updateScreenshotProtection];
+  [self updateTabGridWatermarking];
 }
 
 - (void)willExitTabGrid {
   [self updateScreenshotProtection];
+  [self removeTabGridWatermark];
 }
 
 #pragma mark - IncognitoStateObserver
@@ -184,12 +210,14 @@ bool AreEnterpriseLookupsEnabled(const ProfileIOS& profile) {
   // Monitor protection changes in the inconito browser.
   [self observeCurrentBrowser];
   [self updateScreenshotProtection];
+  [self updateTabGridWatermarking];
 }
 
 - (void)willExitIncognitoForState:(IncognitoState*)incognitoState {
   // Monitor protection changes in the regular browser.
   [self observeCurrentBrowser];
   [self updateScreenshotProtection];
+  [self updateTabGridWatermarking];
 }
 
 #pragma mark - TabsDependencyInstalling
@@ -211,6 +239,23 @@ bool AreEnterpriseLookupsEnabled(const ProfileIOS& profile) {
 
 - (void)webStateDeleted:(web::WebState*)webState {
   // No-op.
+}
+
+#pragma mark - WebStateListObserving
+
+- (void)didChangeWebStateList:(WebStateList*)webStateList
+                       change:(const WebStateListChange&)change
+                       status:(const WebStateListStatus&)status {
+  // Do nothing if it's a batch operation since it will be handled in
+  // `webStateListBatchOperationEnded`.
+  if (webStateList->IsBatchInProgress()) {
+    return;
+  }
+  [self updateTabGridWatermarking];
+}
+
+- (void)webStateListBatchOperationEnded:(WebStateList*)webStateList {
+  [self updateTabGridWatermarking];
 }
 
 #pragma mark - DataProtectionTabHelperObserving
@@ -305,11 +350,20 @@ bool AreEnterpriseLookupsEnabled(const ProfileIOS& profile) {
   _tabDependencyInstallerBridge =
       std::make_unique<TabsDependencyInstallerBridge>();
   _tabDependencyInstallerBridge->StartObserving(self, browser);
+
+  _webStateListObserverBridge =
+      std::make_unique<WebStateListObserverBridge>(self);
+  _webStateListObservation = std::make_unique<
+      base::ScopedObservation<WebStateList, WebStateListObserver>>(
+      _webStateListObserverBridge.get());
+  _webStateListObservation->Observe(browser->GetWebStateList());
 }
 
 // Cleans up Browser and WebState layer observers.
 - (void)teardownBrowserObservers {
   _tabHelperObserverBridge.reset();
+  _webStateListObservation.reset();
+  _webStateListObserverBridge.reset();
   _browserObserverBridge.reset();
   if (_tabDependencyInstallerBridge) {
     _tabDependencyInstallerBridge->StopObserving();
@@ -492,6 +546,94 @@ bool AreEnterpriseLookupsEnabled(const ProfileIOS& profile) {
   options.obfuscate_screenshots = isProtected;
   options.obfuscate_screen_recordings = isProtected;
   ios::provider::SetScreenshotProtection(window, options);
+}
+
+// Returns the watermark text to be displayed over the Tab Grid if any tab in
+// the current window's active Browser requires watermarking.
+- (NSString*)watermarkTextForTabGrid {
+  ProfileIOS* profile = [self currentProfile];
+  if (!profile || !AreEnterpriseLookupsEnabled(*profile)) {
+    return nil;
+  }
+
+  Browser* browser = [self currentBrowser];
+  if (!browser || !browser->GetWebStateList()) {
+    return nil;
+  }
+
+  const base::DictValue& watermarkedTabs = profile->GetPrefs()->GetDict(
+      enterprise_data_protection::kDataProtectionWatermarkedTabs);
+  if (watermarkedTabs.empty()) {
+    return nil;
+  }
+
+  WebStateList* webStateList = browser->GetWebStateList();
+  // Always watermark the tab grid if the total tabs more than the
+  // `kMaxTabsToCheckForWatermark`, and there are recorded entries in the
+  // `kDataProtectionWatermarkedTabs` prefs map.
+  if (webStateList->count() > kMaxTabsToCheckForWatermark) {
+    auto it = watermarkedTabs.begin();
+    return base::SysUTF8ToNSString(it->second.GetString());
+  }
+
+  for (int i = 0; i < webStateList->count(); ++i) {
+    web::WebState* webState = webStateList->GetWebStateAt(i);
+    std::string webStateID =
+        base::NumberToString(webState->GetUniqueIdentifier().identifier());
+    const std::string* text = watermarkedTabs.FindString(webStateID);
+    if (text && !text->empty()) {
+      return base::SysUTF8ToNSString(*text);
+    }
+  }
+
+  return nil;
+}
+
+// Updates the watermark view for the Tab Grid window based on the current
+// scene state and the watermarking status of open tabs in this window.
+- (void)updateTabGridWatermarking {
+  // If the scene is not ready (in the background or still initializing), do
+  // nothing.
+  if (![self isSceneStateReadyForProtection]) {
+    return;
+  }
+
+  if (!IsEnableEnterpriseWatermarkingIOS() ||
+      !self.sceneState.tabGridState.tabGridVisible) {
+    [self removeTabGridWatermark];
+    return;
+  }
+
+  NSString* watermarkText = [self watermarkTextForTabGrid];
+  if (!watermarkText.length) {
+    [self removeTabGridWatermark];
+    return;
+  }
+
+  UIWindow* window = self.sceneState.window;
+  if (!window) {
+    return;
+  }
+
+  if (!_tabGridWatermarkView) {
+    _tabGridWatermarkView = [[WatermarkView alloc] initWithFrame:CGRectZero];
+    _tabGridWatermarkView.translatesAutoresizingMaskIntoConstraints = NO;
+  }
+
+  ProfileIOS* profile = [self currentProfile];
+  WatermarkStyle style = GetWatermarkStyleFromPrefs(profile->GetPrefs());
+  [_tabGridWatermarkView updateWithText:watermarkText style:style];
+
+  if (_tabGridWatermarkView.superview != window) {
+    [window addSubview:_tabGridWatermarkView];
+    AddSameConstraints(_tabGridWatermarkView, window);
+  }
+}
+
+// Removes the watermark view from the window.
+- (void)removeTabGridWatermark {
+  [_tabGridWatermarkView removeFromSuperview];
+  _tabGridWatermarkView = nil;
 }
 
 // Observes screenshot protection changes for the active WebState.
