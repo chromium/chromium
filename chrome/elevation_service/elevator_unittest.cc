@@ -94,7 +94,7 @@ TEST_F(ElevatorTest, GenerateIsolatedCommandLine) {
     const base::CommandLine result = generate_and_parse(
         L"\"C:\\untrusted\\path.exe\" --disable-component-update "
         L"--profile-directory=\"Profile 1\" --no-startup-window "
-        L"--source-shortcut-location=taskbar");
+        L"--source-shortcut-location=taskbar --source-single-argument");
 
     EXPECT_EQ(kTrustedProgram, result.GetProgram());
     EXPECT_TRUE(result.HasSwitch(::switches::kIsolated));
@@ -104,6 +104,7 @@ TEST_F(ElevatorTest, GenerateIsolatedCommandLine) {
     EXPECT_EQ("taskbar",
               result.GetSwitchValueASCII(::switches::kSourceShortcutLocation));
     EXPECT_FALSE(result.HasSwitch(::switches::kDisableComponentUpdate));
+    EXPECT_FALSE(result.HasSwitch(::switches::kSourceSingleArgument));
     EXPECT_TRUE(result.GetArgs().empty());
   }
 
@@ -119,9 +120,36 @@ TEST_F(ElevatorTest, GenerateIsolatedCommandLine) {
     EXPECT_TRUE(result.HasSwitch(::switches::kIsolated));
     EXPECT_TRUE(result.HasSwitch(::switches::kRestart));
     EXPECT_FALSE(result.HasSwitch(::switches::kDisableComponentUpdate));
+    EXPECT_FALSE(result.HasSwitch(::switches::kSourceSingleArgument));
     const base::CommandLine::StringVector expected_args = {
         L"arg1", L"arg 2", L"/disable-component-update",
         L"--disable-component-update"};
+    EXPECT_EQ(expected_args, result.GetArgs());
+  }
+
+  {
+    // Verify that a `--single-argument` shell launch is converted to
+    // `--source-single-argument` with the single argument safely quoted after
+    // `--`, and that switch-like tokens inside the single argument cannot be
+    // smuggled as switches into the isolated browser process.
+    const base::CommandLine result = generate_and_parse(
+        L"untrusted.exe --profile-directory=\"Profile 1\" "
+        L"--single-argument https://example.com/path with spaces "
+        L"--user-data-dir=C:\\evil --profile-directory=Smuggled "
+        L"-- --disable-component-update");
+
+    EXPECT_EQ(kTrustedProgram, result.GetProgram());
+    EXPECT_TRUE(result.HasSwitch(::switches::kIsolated));
+    EXPECT_TRUE(result.HasSwitch(::switches::kSourceSingleArgument));
+    EXPECT_FALSE(result.HasSingleArgumentSwitch());
+    EXPECT_EQ("Profile 1",
+              result.GetSwitchValueASCII(::switches::kProfileDirectory));
+    EXPECT_FALSE(result.HasSwitch(::switches::kUserDataDir));
+    EXPECT_FALSE(result.HasSwitch(::switches::kDisableComponentUpdate));
+    const base::CommandLine::StringVector expected_args = {
+        L"https://example.com/path with spaces "
+        L"--user-data-dir=C:\\evil --profile-directory=Smuggled "
+        L"-- --disable-component-update"};
     EXPECT_EQ(expected_args, result.GetArgs());
   }
 }

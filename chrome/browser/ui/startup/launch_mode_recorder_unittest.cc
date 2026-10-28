@@ -99,6 +99,13 @@ TEST_F(LaunchModeRecorderTest, SlowModeChrome) {
       base::StrCat({L"program --single-argument ", L"http://www.google.com"}));
   ComputeLaunchModeAndVerify(single_arg_cl, LaunchMode::kProtocolHandler);
 
+  // Isolated browser launch from shell registration with a URL, where
+  // `--single-argument` was replaced by `--source-single-argument` and `--`.
+  base::CommandLine isolated_single_arg_url_cl = base::CommandLine::FromString(
+      L"program --isolated --source-single-argument -- http://www.google.com");
+  ComputeLaunchModeAndVerify(isolated_single_arg_url_cl,
+                             LaunchMode::kProtocolHandler);
+
   // Normal launch with a file.
   base::CommandLine cmd_line_file(base::CommandLine::NO_PROGRAM);
   base::ScopedTempDir test_dir;
@@ -113,6 +120,16 @@ TEST_F(LaunchModeRecorderTest, SlowModeChrome) {
   single_arg_cl = base::CommandLine::FromString(
       base::StrCat({L"program --single-argument ", test_file.value()}));
   ComputeLaunchModeAndVerify(single_arg_cl, LaunchMode::kFileTypeHandler);
+
+  // Isolated browser launch from shell registration with a file, where
+  // `--single-argument` was replaced by `--source-single-argument` and `--`.
+  base::CommandLine isolated_single_arg_file_cl(base::CommandLine::NO_PROGRAM);
+  isolated_single_arg_file_cl.AppendSwitch(switches::kIsolated);
+  isolated_single_arg_file_cl.AppendSwitch(switches::kSourceSingleArgument);
+  isolated_single_arg_file_cl.AppendArgNative(L"--");
+  isolated_single_arg_file_cl.AppendArgPath(test_file);
+  ComputeLaunchModeAndVerify(isolated_single_arg_file_cl,
+                             LaunchMode::kFileTypeHandler);
 }
 
 TEST_F(LaunchModeRecorderTest, SlowModeWebApp) {

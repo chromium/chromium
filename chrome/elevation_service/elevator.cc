@@ -471,6 +471,15 @@ std::wstring Elevator::GenerateIsolatedCommandLine(
 
   trusted_command_line.AppendSwitch(::switches::kIsolated);
 
+  // If the untrusted command line was launched via a Windows shell handler
+  // with `--single-argument`, record that fact using `--source-single-argument`
+  // so the isolated browser can still report accurate `Launch.Mode2` metrics
+  // (`kProtocolHandler` and `kFileTypeHandler`). The single argument itself is
+  // placed after `--` below so that it is quoted for `CommandLineToArgvW`.
+  if (untrusted_command_line.HasSingleArgumentSwitch()) {
+    trusted_command_line.AppendSwitch(::switches::kSourceSingleArgument);
+  }
+
   if (!untrusted_command_line.GetArgs().empty()) {
     // Additional arguments can come after a `--` to distinguish them from
     // switches. The base::CommandLine argument parser already handles this

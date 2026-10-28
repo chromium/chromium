@@ -187,10 +187,13 @@ std::optional<LaunchMode> GetLaunchModeSlow(
       return is_app_launch ? LaunchMode::kWebAppOther : LaunchMode::kOther;
     }
     auto arg_type = GetArgType(args[0]);
-    bool single_argument_switch = command_line.HasSingleArgumentSwitch();
-    // Single argument switch means we were registered with the shell as a
-    // handler for a file extension or a protocol/url. Then, determine if
-    // Chrome or a web app is handling the argument.
+    // Single argument switch (or `--source-single-argument` when re-serialized
+    // across the process isolation boundary) means Chrome was registered with
+    // the shell as a handler for a file extension or a protocol/url. Then,
+    // determine if Chrome or a web app is handling the argument.
+    const bool single_argument_switch =
+        command_line.HasSingleArgumentSwitch() ||
+        command_line.HasSwitch(switches::kSourceSingleArgument);
     if (!is_app_launch) {
       if (arg_type == ArgType::kFile) {
         return single_argument_switch ? LaunchMode::kFileTypeHandler

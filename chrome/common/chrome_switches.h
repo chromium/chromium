@@ -1026,6 +1026,12 @@ inline constexpr char kSourceShortcutLocationDesktop[] = "desktop";
 inline constexpr char kSourceShortcutLocationStartMenu[] = "start-menu";
 inline constexpr char kSourceShortcutLocationTaskbar[] = "taskbar";
 
+// Indicates that the browser was originally launched with the
+// `--single-argument` switch before crossing the process isolation boundary,
+// where positional arguments are re-serialized after `--` to prevent
+// command-line switch smuggling. Used to record launch metrics.
+inline constexpr char kSourceSingleArgument[] = "source-single-argument";
+
 // Identifies Chrome instances that start in foreground mode at startup to
 // record related metrics.
 inline constexpr char kStartupForegroundLaunch[] = "startup-foreground-launch";
