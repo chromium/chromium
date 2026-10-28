@@ -382,6 +382,9 @@ if (toolkit_views) {
     if (use_ozone) {
       deps += [ "//ui/ozone" ]
     }
+    if (is_mac) {
+      deps += [ "//chrome/browser/apps/app_shim" ]
+    }
   }
 
   # interactive_ui_tests doesn't build on ChromeOS devices.

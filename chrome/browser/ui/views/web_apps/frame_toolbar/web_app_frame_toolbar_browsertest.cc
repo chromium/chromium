@@ -191,7 +191,9 @@
 #endif
 
 #if BUILDFLAG(IS_MAC)
-#include "chrome/browser/web_applications/os_integration/mac/app_shim_registry.h"
+#include "chrome/browser/apps/app_shim/app_shim_host_mac.h"
+#include "chrome/browser/apps/app_shim/app_shim_manager_mac.h"
+#include "chrome/services/mac_notifications/public/mojom/mac_notifications.mojom.h"
 #endif
 
 #if defined(USE_AURA)
@@ -403,8 +405,11 @@ IN_PROC_BROWSER_TEST_F(
 
   // Simulate system-level notification permission being denied and the web app
   // requesting notification permission.
-  AppShimRegistry::Get()->SaveNotificationPermissionStatusForApp(
-      app_id, AppShimRegistry::NotificationPermissionStatus::kImplicitlyDenied);
+  AppShimHost* app_shim_host =
+      apps::AppShimManager::Get()->FindHost(browser()->GetProfile(), app_id);
+  ASSERT_TRUE(app_shim_host);
+  app_shim_host->SetNotificationPermissionStatusForTesting(
+      mac_notifications::mojom::PermissionStatus::kDenied);
   content_settings::PageSpecificContentSettings::GetForFrame(
       web_contents->GetPrimaryMainFrame())
       ->SetNotificationsWasDeniedBecauseOfSystemPermission();
@@ -419,9 +424,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(notification_view->is_label_kept_expanded_for_testing());
 
   // Once the label has finished animating in, it stays expanded while the
-  // bubble is open. The animation is stepped manually rather than by spinning
-  // the run loop, since the real app shim may connect and overwrite the faked
-  // system permission status in the meantime.
+  // bubble is open.
   gfx::AnimationTestApi label_animation(
       &notification_view->slide_animation_for_testing());
   base::TimeTicks start_time = base::TimeTicks::Now();
@@ -454,16 +457,19 @@ IN_PROC_BROWSER_TEST_F(
 
   // Granting system notification permission hides the icon and resets the
   // label animation.
-  AppShimRegistry::Get()->SaveNotificationPermissionStatusForApp(
-      app_id, AppShimRegistry::NotificationPermissionStatus::kGranted);
+  app_shim_host->SetNotificationPermissionStatusForTesting(
+      mac_notifications::mojom::PermissionStatus::kGranted);
   views::test::RunScheduledLayout(helper()->browser_view());
   EXPECT_FALSE(notification_view->GetVisible());
   EXPECT_FALSE(notification_view->ShouldShowLabel());
 
-  // Denying system notification permission again re-shows the icon and
+  // Implicitly denying system notification permission again (e.g. after the
+  // permission status is reset to not determined) re-shows the icon and
   // re-runs the label animation, this time without auto-opening the bubble.
-  AppShimRegistry::Get()->SaveNotificationPermissionStatusForApp(
-      app_id, AppShimRegistry::NotificationPermissionStatus::kImplicitlyDenied);
+  app_shim_host->SetNotificationPermissionStatusForTesting(
+      mac_notifications::mojom::PermissionStatus::kNotDetermined);
+  app_shim_host->SetNotificationPermissionStatusForTesting(
+      mac_notifications::mojom::PermissionStatus::kDenied);
   views::test::RunScheduledLayout(helper()->browser_view());
   EXPECT_TRUE(notification_view->GetVisible());
   EXPECT_TRUE(notification_view->ShouldShowLabel());

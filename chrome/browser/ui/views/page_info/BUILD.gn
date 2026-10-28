@@ -217,6 +217,10 @@ source_set("browser_tests") {
     sources += [ "suspicious_site_bubble_view_browsertest.cc" ]
     deps += [ "//components/safe_browsing/core/browser:suspicious_site_warning_allowlist" ]
   }
+
+  if (is_mac) {
+    deps += [ "//chrome/browser/apps/app_shim" ]
+  }
 }
 
 source_set("interactive_ui_tests") {

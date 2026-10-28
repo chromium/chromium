@@ -153,6 +153,12 @@ class AppShimManager
   // none.
   AppShimHost* FindHost(Profile* profile, const webapps::AppId& app_id);
 
+  // Similar to `FindHost()`, except that if no host exists yet, a new
+  // (unlaunched) `AppShimHost` is created and returned. Returns null if app
+  // shim creation is disabled for tests.
+  AppShimHost* FindOrCreateHostForTesting(Profile* profile,
+                                          const webapps::AppId& app_id);
+
   // If the specified |browser| should be using RemoteCocoa (because it is a
   // bookmark app), then get or create an AppShimHost for it, and return
   // it. If an AppShimHost had to be created (e.g, because the app process is

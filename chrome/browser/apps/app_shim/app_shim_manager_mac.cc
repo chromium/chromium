@@ -515,6 +515,16 @@ AppShimHost* AppShimManager::FindHost(Profile* profile,
   return profile_state->GetHost();
 }
 
+AppShimHost* AppShimManager::FindOrCreateHostForTesting(
+    Profile* profile,
+    const webapps::AppId& app_id) {
+  if (AppShimHost* host = FindHost(profile, app_id)) {
+    return host;
+  }
+  ProfileState* profile_state = GetOrCreateProfileState(profile, app_id);
+  return profile_state ? profile_state->GetHost() : nullptr;
+}
+
 bool AppShimManager::HasNonBookmarkAppWindowsOpen() {
   return delegate_->HasNonBookmarkAppWindowsOpen();
 }
@@ -590,6 +600,9 @@ AppShimManager::LaunchNotificationProvider(const webapps::AppId& app_id) {
   CHECK(app_state->IsMultiProfile());
   AppShimHost* shim = app_state->multi_profile_host.get();
   std::move(bind_provider).Run(/*existing_app=*/true, shim);
+  // Ensure the shim process is launched in case the host was pre-created
+  // without launching (e.g. via `FindOrCreateHostForTesting()`).
+  shim->LaunchShim(web_app::ShimLaunchMode::kBackground);
   return remote;
 }
 
@@ -638,7 +651,11 @@ void AppShimManager::ShowNotificationPermissionRequest(
 
   AppState* app_state = found_app->second.get();
   CHECK(app_state->IsMultiProfile());
-  std::move(request_permission).Run(app_state->multi_profile_host.get());
+  AppShimHost* shim = app_state->multi_profile_host.get();
+  std::move(request_permission).Run(shim);
+  // Ensure the shim process is launched in case the host was pre-created
+  // without launching (e.g. via `FindOrCreateHostForTesting()`).
+  shim->LaunchShim(web_app::ShimLaunchMode::kBackground);
 }
 
 Profile* AppShimManager::ProfileForBackgroundShimLaunch(
