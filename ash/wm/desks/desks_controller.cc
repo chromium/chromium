@@ -988,6 +988,9 @@ void DesksController::NotifyAllDeskWindowMovedToNewRoot(aura::Window* window) {
   for (auto& desk : desks_) {
     desk->AllDeskWindowMovedToNewRoot(window);
   }
+  if (temporary_removed_desk_) {
+    temporary_removed_desk_->desk()->AllDeskWindowMovedToNewRoot(window);
+  }
 }
 
 void DesksController::NotifyAllDesksForContentChanged() {
@@ -2164,12 +2167,19 @@ void DesksController::TrackWindowOnAllDesks(aura::Window* window) {
   for (auto& desk : desks_) {
     desk->TrackAllDeskWindow(window);
   }
+  if (temporary_removed_desk_) {
+    temporary_removed_desk_->desk()->TrackAllDeskWindow(window);
+  }
 }
 
 void DesksController::UntrackWindowFromAllDesks(aura::Window* window) {
   for (auto& desk : desks_) {
     desk->UntrackAllDeskWindow(window,
                                /*recent_root=*/window->GetRootWindow());
+  }
+  if (temporary_removed_desk_) {
+    temporary_removed_desk_->desk()->UntrackAllDeskWindow(
+        window, window->GetRootWindow());
   }
 }
 
