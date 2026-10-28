@@ -28,7 +28,7 @@ namespace {
 // data.
 constexpr int kMaxSyncedNewTabPageDisplays = 5;
 
-std::unique_ptr<KeyedService> BuildHistoryService(ProfileIOS* profile) {
+std::unique_ptr<KeyedService> BuildHistoryService(ProfileIOS& profile) {
   syncer::DeviceInfoSyncService* device_info_sync_service =
       DeviceInfoSyncServiceFactory::GetForProfile(profile);
   syncer::DeviceInfoTracker* device_info_tracker = nullptr;
@@ -45,10 +45,10 @@ std::unique_ptr<KeyedService> BuildHistoryService(ProfileIOS* profile) {
       /*visit_delegate=*/nullptr, device_info_tracker,
       local_device_info_provider);
   history_service->Init(history::HistoryDatabaseParamsForPath(
-      profile->GetStatePath(), GetChannel()));
+      profile.GetStatePath(), GetChannel()));
 
   if (device_info_sync_service) {
-    PrefService* pref_service = profile->GetPrefs();
+    PrefService* pref_service = profile.GetPrefs();
 
     const int display_count =
         pref_service->GetInteger(prefs::kIosSyncSegmentsNewTabPageDisplayCount);
@@ -63,7 +63,7 @@ std::unique_ptr<KeyedService> BuildHistoryService(ProfileIOS* profile) {
 }  // namespace
 
 // static
-HistoryServiceFactory::TestingFactory
+HistoryServiceFactory::TestingFactoryByRef
 HistoryServiceFactory::GetDefaultFactory() {
   return base::BindOnce(&BuildHistoryService);
 }
@@ -79,7 +79,7 @@ HistoryServiceFactory::HistoryServiceFactory(PassKey key)
 }
 
 std::unique_ptr<KeyedService> HistoryServiceFactory::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
+    ProfileIOS& profile) const {
   return BuildHistoryService(profile);
 }
 
