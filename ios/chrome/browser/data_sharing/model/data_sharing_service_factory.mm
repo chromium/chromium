@@ -24,14 +24,14 @@ namespace data_sharing {
 
 namespace {
 
-std::unique_ptr<KeyedService> BuildDataSharingService(ProfileIOS* profile) {
+std::unique_ptr<KeyedService> BuildDataSharingService(ProfileIOS& profile) {
   if (!features::IsDataSharingFunctionalityEnabled() ||
-      profile->IsOffTheRecord()) {
+      profile.IsOffTheRecord()) {
     return std::make_unique<EmptyDataSharingService>();
   }
 
   auto data_sharing_service = std::make_unique<DataSharingServiceImpl>(
-      profile->GetStatePath(), profile->GetSharedURLLoaderFactory(),
+      profile.GetStatePath(), profile.GetSharedURLLoaderFactory(),
       IdentityManagerFactory::GetForProfile(profile),
       DataTypeStoreServiceFactory::GetForProfile(profile)->GetStoreFactory(),
       ::GetChannel(), /* sdk_delegate = */ nullptr,
@@ -54,13 +54,13 @@ DataSharingServiceFactory::DataSharingServiceFactory(PassKey key)
 }
 
 // static
-DataSharingServiceFactory::TestingFactory
+DataSharingServiceFactory::TestingFactoryByRef
 DataSharingServiceFactory::GetDefaultFactory() {
   return base::BindOnce(&BuildDataSharingService);
 }
 
 std::unique_ptr<KeyedService>
-DataSharingServiceFactory::BuildServiceInstanceFor(ProfileIOS* profile) const {
+DataSharingServiceFactory::BuildServiceInstanceFor(ProfileIOS& profile) const {
   return BuildDataSharingService(profile);
 }
 
