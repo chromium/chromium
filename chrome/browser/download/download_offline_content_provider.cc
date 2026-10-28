@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
@@ -63,6 +64,10 @@ using OfflineItemVisuals = offline_items_collection::OfflineItemVisuals;
 using UpdateDelta = offline_items_collection::UpdateDelta;
 
 namespace {
+
+// When enabled, DownloadOfflineContentProvider::RunGetAllItemsCallback()
+// pre-reserves the OfflineItem vector to avoid repeated reallocations.
+BASE_FEATURE(kPreReserveOfflineItemVector, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Thumbnail size used for generating thumbnails for image files.
 const int kThumbnailSizeInDP = 64;
@@ -635,6 +640,9 @@ void DownloadOfflineContentProvider::RunGetAllItemsCallback(
   GetAllDownloads(&all_items);
 
   std::vector<OfflineItem> items;
+  if (base::FeatureList::IsEnabled(kPreReserveOfflineItemVector)) {
+    items.reserve(all_items.size());
+  }
   for (download::DownloadItem* item : all_items) {
     if (!ShouldShowDownloadItem(item))
       continue;
