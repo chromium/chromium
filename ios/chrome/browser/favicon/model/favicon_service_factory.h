@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/shared/model/profile/typed_profile_keyed_service_factory_ios.h"
 
 namespace ios {
+
 // Singleton that owns all FaviconServices and associates them with
 // ProfileIOS.
 class FaviconServiceFactory final : public TypedProfileKeyedServiceFactoryIOS<
@@ -18,14 +19,15 @@ class FaviconServiceFactory final : public TypedProfileKeyedServiceFactoryIOS<
                                         RejectImplicitAccessIfIncognito> {
  public:
   explicit FaviconServiceFactory(PassKey key);
+
   // Returns the default factory used to build FaviconService. Can be
   // registered with AddTestingFactory to use real instances during testing.
-  static TestingFactory GetDefaultFactory();
+  static TestingFactoryByRef GetDefaultFactory();
 
  private:
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const final;
+      ProfileIOS& profile) const final;
 };
 
 }  // namespace ios

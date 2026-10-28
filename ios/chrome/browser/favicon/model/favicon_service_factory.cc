@@ -14,7 +14,7 @@
 
 namespace {
 
-std::unique_ptr<KeyedService> BuildFaviconService(ProfileIOS* profile) {
+std::unique_ptr<KeyedService> BuildFaviconService(ProfileIOS& profile) {
   return std::make_unique<favicon::FaviconServiceImpl>(
       std::make_unique<FaviconClientImpl>(),
       ios::HistoryServiceFactory::GetForProfile(profile));
@@ -25,7 +25,7 @@ std::unique_ptr<KeyedService> BuildFaviconService(ProfileIOS* profile) {
 namespace ios {
 
 // static
-FaviconServiceFactory::TestingFactory
+FaviconServiceFactory::TestingFactoryByRef
 FaviconServiceFactory::GetDefaultFactory() {
   return base::BindOnce(&BuildFaviconService);
 }
@@ -40,7 +40,7 @@ FaviconServiceFactory::FaviconServiceFactory(PassKey key)
 }
 
 std::unique_ptr<KeyedService> FaviconServiceFactory::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
+    ProfileIOS& profile) const {
   return BuildFaviconService(profile);
 }
 
