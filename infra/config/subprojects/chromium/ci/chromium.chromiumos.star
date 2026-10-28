@@ -316,6 +316,7 @@ ci.thin_tester(
         ],
         mixins = [
             "chromeos-generic-vm",
+            "no_ssd",
         ],
     ),
     targets_settings = targets.settings(
@@ -521,6 +522,7 @@ ci.builder(
         mixins = [
             "x86-64",
             "linux-jammy",
+            "no_ssd",
         ],
         per_test_modifications = {
             "angle_unittests": targets.mixin(
@@ -692,6 +694,8 @@ ci.builder(
                     shards = 2,
                 ),
             ),
+            # TODO(crbug.com/579035594): Remove once e4 failures are fixed.
+            "wayland_client_perftests": "e2-standard-8",
         },
     ),
     # See crbug.com/1345687. This builder need higher memory.

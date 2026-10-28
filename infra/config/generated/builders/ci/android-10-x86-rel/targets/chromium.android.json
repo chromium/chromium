@@ -4180,6 +4180,7 @@
           "dimensions": {
             "cores": "8",
             "cpu": "x86-64",
+            "machine_type": "e2-standard-8",
             "os": "Ubuntu-22.04",
             "pool": "chromium.tests"
           },

@@ -458,6 +458,17 @@ targets.mixin(
     ),
 )
 
+# Used to pin tests that exhibit timing sensitivities on faster machine types
+# (e.g. e4-standard-8) to e2-standard-8.
+targets.mixin(
+    name = "e2-standard-8",
+    swarming = targets.swarming(
+        dimensions = {
+            "machine_type": "e2-standard-8",
+        },
+    ),
+)
+
 targets.mixin(
     name = "emulator-4-cores",
     swarming = targets.swarming(
@@ -1828,6 +1839,17 @@ targets.mixin(
     swarming = targets.swarming(
         dimensions = {
             "gpu": "none",
+        },
+    ),
+)
+
+# Used to pin tests with large CAS inputs to non-SSD GCE bots (which have
+# 300 GB disks) rather than SSD-backed e4 bots (which have 50 GB disks).
+targets.mixin(
+    name = "no_ssd",
+    swarming = targets.swarming(
+        dimensions = {
+            "ssd": "0",
         },
     ),
 )

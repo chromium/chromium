@@ -212,7 +212,8 @@
         "name": "browser_tests",
         "swarming": {
           "dimensions": {
-            "os": "Ubuntu-22.04"
+            "os": "Ubuntu-22.04",
+            "ssd": "0"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 152
@@ -1657,7 +1658,8 @@
         },
         "swarming": {
           "dimensions": {
-            "os": "Ubuntu-22.04"
+            "os": "Ubuntu-22.04",
+            "ssd": "0"
           },
           "idempotent": false,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",

@@ -2463,6 +2463,8 @@ ci.builder(
                 ],
                 ci_only = True,
             ),
+            # TODO(crbug.com/579036143): Remove once e4 failures are fixed.
+            "ui_junit_tests": "e2-standard-8",
             # If you change this, make similar changes in android-x86-code-coverage
             "webview_instrumentation_test_apk_multiple_process_mode": targets.mixin(
                 swarming = targets.swarming(
@@ -2680,6 +2682,8 @@ ci.builder(
                 ],
                 ci_only = True,
             ),
+            # TODO(crbug.com/579036143): Remove once e4 failures are fixed.
+            "ui_junit_tests": "e2-standard-8",
             "webview_instrumentation_test_apk_multiple_process_mode": targets.mixin(
                 args = [
                     "--disable-field-trial-config",

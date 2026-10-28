@@ -168,13 +168,17 @@ linux_memory_builder(
                     "--gtest_filter=-AXPlatformNodeAuraLinuxTest.AtkComponentScrollTo:AtkUtilAuraLinuxTest.*",
                 ],
             ),
-            "blink_unittests": targets.mixin(
-                # These are very slow on the ASAN trybot for some reason.
-                # crbug.com/1257927
-                swarming = targets.swarming(
-                    shards = 5,
+            "blink_unittests": [
+                targets.mixin(
+                    # These are very slow on the ASAN trybot for some reason.
+                    # crbug.com/1257927
+                    swarming = targets.swarming(
+                        shards = 5,
+                    ),
                 ),
-            ),
+                # TODO(crbug.com/579036960): Remove once e4 failures are fixed.
+                "e2-standard-8",
+            ],
             "browser_tests": targets.mixin(
                 args = [
                     "--test-launcher-filter-file=../../testing/buildbot/filters/linux.asan.browser_tests.filter",
