@@ -24,6 +24,10 @@ struct GpuPreferences;
 
 namespace gpu_init_internal {
 
+bool EnableWarpIfNeeded(base::CommandLine* command_line,
+                        const GpuFeatureInfo& gpu_feature_info,
+                        bool disable_software_rasterizer,
+                        bool blocklist_needs_more_info);
 bool PreloadDLLs(const base::CommandLine* command_line,
                  const GpuPreferences& gpu_preferences);
 void InitializeDirectComposition(DawnContextProvider* dawn_context_provider);

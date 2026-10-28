@@ -6,6 +6,7 @@
 
 #include "base/base_paths.h"
 #include "base/check.h"
+#include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/native_library.h"
 #include "base/path_service.h"
@@ -23,7 +24,9 @@
 #include "ui/gl/gl_angle_util_win.h"
 #include "ui/gl/gl_display.h"
 #include "ui/gl/gl_features.h"
+#include "ui/gl/gl_implementation.h"
 #include "ui/gl/gl_surface_egl.h"
+#include "ui/gl/gl_switches.h"
 #include "ui/gl/gl_utils.h"
 #include "ui/gl/init/gl_factory.h"
 
@@ -69,6 +72,39 @@ const GPUInfo::GPUDevice* GetDefaultGPU(
 }
 
 }  // namespace
+
+bool EnableWarpIfNeeded(base::CommandLine* command_line,
+                        const GpuFeatureInfo& gpu_feature_info,
+                        bool disable_software_rasterizer,
+                        bool blocklist_needs_more_info) {
+  if (gpu_feature_info.IsWorkaroundEnabled(FORCE_PHYSICAL_GPU_FOR_TESTING)) {
+    return false;
+  }
+  if (disable_software_rasterizer || blocklist_needs_more_info) {
+    return false;
+  }
+  if (!features::IsWARPAllowed(command_line)) {
+    return false;
+  }
+  // Don't overwrite user preference.
+  if (gl::GetRequestedGLImplementationFromCommandLine(command_line)
+          .has_value()) {
+    return false;
+  }
+  if (gpu_feature_info.status_values[GPU_FEATURE_TYPE_ACCELERATED_WEBGL] !=
+          kGpuFeatureStatusEnabled ||
+      gpu_feature_info.status_values[GPU_FEATURE_TYPE_ACCELERATED_GL] !=
+          kGpuFeatureStatusEnabled) {
+    command_line->RemoveSwitch(switches::kUseGL);
+    command_line->RemoveSwitch(switches::kUseANGLE);
+    command_line->AppendSwitchASCII(switches::kUseGL,
+                                    gl::kGLImplementationANGLEName);
+    command_line->AppendSwitchASCII(
+        switches::kUseANGLE, gl::kANGLEImplementationD3D11WarpForWebGLName);
+    return true;
+  }
+  return false;
+}
 
 bool PreloadDLLs(const base::CommandLine* command_line,
                  const GpuPreferences& gpu_preferences) {

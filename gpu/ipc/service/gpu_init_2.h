@@ -10,6 +10,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "build/build_config.h"
 #include "gpu/config/device_perf_info.h"
 #include "gpu/config/gpu_driver_bug_workarounds.h"
 #include "gpu/config/gpu_feature_info.h"
@@ -84,22 +85,23 @@ class GPU_IPC_SERVICE_EXPORT GpuInit2 : public GpuInit {
   void RunPreSandboxStartup(InitState& state);
   // Starts the sandbox and records the result in `gpu_info_`.
   void StartSandbox(InitState& state);
+#if BUILDFLAG(IS_WIN)
   // Saves the hardware GPU info, then shuts down GL and initializes it again
-  // with SwiftShader. Returns false if GL initialization fails.
-  bool ReinitializeGLWithSwiftShader(InitState& state);
-
+  // with WARP. Returns false if GL initialization fails.
+  bool ReinitializeGLWithWarp(InitState& state);
+  void SaveHardwareGpuInfoAndGpuFeatureInfo();
+  void AdjustInfoToWarp();
+  void MaybeFallbackToWarpEarly(InitState& state);
+#endif  // BUILDFLAG(IS_WIN)
   bool InitializeDawn();
   bool InitializeVulkan();
   void SetSkiaBackendType();
   void RecordUMA();
-  void SaveHardwareGpuInfoAndGpuFeatureInfo();
-  void AdjustInfoToSwiftShader();
 
   // InitializeAndStartSandbox steps helper functions.
   void RecordStartupCrashKeys(InitState& state);
   bool CollectBasicInfoAndComputeFeatures(InitState& state);
   void ConfigureGpuSelection();
-  void MaybeFallbackToSwiftShaderEarly(InitState& state);
   void StartWatchdogAndMaybeSandboxEarly(InitState& state);
   bool InitializeGLBindingsAndDisplay(InitState& state);
   void SelectCommandDecoder(InitState& state);
@@ -112,7 +114,9 @@ class GPU_IPC_SERVICE_EXPORT GpuInit2 : public GpuInit {
   bool InitializeSkiaBackend();
 
   raw_ptr<GpuSandboxHelper> sandbox_helper_ = nullptr;
-  bool gl_use_swiftshader_ = false;
+#if BUILDFLAG(IS_WIN)
+  bool gl_use_warp_ = false;
+#endif  // BUILDFLAG(IS_WIN)
   std::unique_ptr<GpuWatchdogThread> watchdog_thread_;
 
 #if BUILDFLAG(SKIA_USE_DAWN)
@@ -126,7 +130,7 @@ class GPU_IPC_SERVICE_EXPORT GpuInit2 : public GpuInit {
   bool init_successful_ = false;
 
   // The following data are collected from hardware GPU and saved before
-  // switching to SwiftShader.
+  // switching to software GL / WARP.
   std::optional<GPUInfo> gpu_info_for_hardware_gpu_;
   std::optional<GpuFeatureInfo> gpu_feature_info_for_hardware_gpu_;
 
