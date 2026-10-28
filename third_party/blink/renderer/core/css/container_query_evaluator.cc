@@ -935,10 +935,11 @@ StyleRecalcChange ContainerQueryEvaluator::ApplyScrollStateAndStyleChanges(
       break;
   }
 
-  if (!style_changed && !DependsOnTreeCounting()) {
-    // If some query depends on a tree-counting function (e.g. sibling-index()),
-    // we must re-evaluate the queries even if the style didn't change. This is
-    // because the sibling-index/count isn't stored on ComputedStyle.
+  if (!style_changed && !DependsOnTreeCounting() && !DependsOnAttr()) {
+    // If some query depends on a tree-counting function (e.g. sibling-index())
+    // or attr(), we must re-evaluate the queries even if the style didn't
+    // change. This is because the sibling-index/count and attributes aren't
+    // stored on ComputedStyle.
     return recalc_change;
   }
 
@@ -995,6 +996,7 @@ StyleRecalcChange ContainerQueryEvaluator::ApplyScrollStateAndStyleChanges(
     }
   }
   if (invalidate_for_relative_units || DependsOnTreeCounting() ||
+      DependsOnAttr() ||
       old_style.InheritedVariables() != new_style.InheritedVariables() ||
       old_style.NonInheritedVariables() != new_style.NonInheritedVariables() ||
       old_style.InitialData() != new_style.InitialData()) {

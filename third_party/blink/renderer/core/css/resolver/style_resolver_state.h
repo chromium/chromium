@@ -279,6 +279,12 @@ class CORE_EXPORT StyleResolverState {
   void SetHasTreeScopedReference() { has_tree_scoped_reference_ = true; }
   bool HasTreeScopedReference() const { return has_tree_scoped_reference_; }
 
+  void SetHasAttrFunction() {
+    has_attr_function_ = true;
+    StyleBuilder().SetHasAttrFunction();
+  }
+  bool HasAttrFunction() const { return has_attr_function_; }
+
   void SetHasUnsupportedGuaranteedInvalid() {
     has_unsupported_guaranteed_invalid_ = true;
   }
@@ -404,6 +410,9 @@ class CORE_EXPORT StyleResolverState {
 
   // True if the resolved ComputedStyle depends on tree-scoped references.
   bool has_tree_scoped_reference_ = false;
+
+  // True if the resolved style or value used the attr() function.
+  bool has_attr_function_ = false;
 
   // Tried to apply a guaranteed-invalid value to a custom property that doesn't
   // support it.

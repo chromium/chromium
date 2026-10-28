@@ -1959,6 +1959,12 @@ bool HasAttributeDependentStyle(const Element& element) {
   if (style && style->HasAttrFunction()) {
     return true;
   }
+  if (ContainerQueryEvaluator* evaluator =
+          element.GetContainerQueryEvaluator()) {
+    if (evaluator->DependsOnAttr()) {
+      return true;
+    }
+  }
   return element.PseudoElementStylesDependOnAttr();
 }
 

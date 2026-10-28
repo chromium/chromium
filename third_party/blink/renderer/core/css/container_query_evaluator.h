@@ -60,8 +60,11 @@ class CORE_EXPORT ContainerQueryEvaluator final
   std::optional<double> Width() const;
   std::optional<double> Height() const;
   void SetReferencedByUnit() { referenced_by_unit_ = true; }
-  bool DependsOnTreeCounting() {
+  bool DependsOnTreeCounting() const {
     return (unit_flags_ & MediaQueryExpValue::UnitFlags::kTreeCounting) != 0;
+  }
+  bool DependsOnAttr() const {
+    return (unit_flags_ & MediaQueryExpValue::UnitFlags::kAttr) != 0;
   }
   bool DependsOnStyle() const { return depends_on_style_; }
   bool DependsOnStuck() const { return depends_on_stuck_; }

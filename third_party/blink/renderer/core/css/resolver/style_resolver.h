@@ -230,7 +230,8 @@ class CORE_EXPORT StyleResolver final : public GarbageCollected<StyleResolver> {
                                       const CSSPropertyName&,
                                       const CSSValue&,
                                       CSSToLengthConversionData::Flags&,
-                                      bool& has_random);
+                                      bool& has_random,
+                                      bool& has_attr);
   static const CSSValue* ComputeValue(Element*,
                                       const CSSPropertyName&,
                                       const CSSValue&,
