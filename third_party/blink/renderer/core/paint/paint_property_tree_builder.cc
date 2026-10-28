@@ -2078,8 +2078,11 @@ static void PopulateCanvasDrawablePaintState(
   const LayoutReplaced* replaced = To<LayoutReplaced>(canvas->GetLayoutBox());
   const ComputedStyle& style = replaced->Style();
 
-  paint_state.canvas_content_size =
-      gfx::SizeF(replaced->ReplacedContentRect().size);
+  PhysicalRect replaced_content_rect = replaced->ReplacedContentRect();
+  paint_state.canvas_content_offset =
+      gfx::Vector2dF(replaced_content_rect.offset.left.ToFloat(),
+                     replaced_content_rect.offset.top.ToFloat());
+  paint_state.canvas_content_size = gfx::SizeF(replaced_content_rect.size);
   paint_state.canvas_device_pixel_content_box =
       ResizeObserverUtilities::ComputeSnappedDevicePixelContentBox(
           ToLogicalSize(replaced->PhysicalContentBoxRect().size,

@@ -13,6 +13,7 @@ bool CanvasDrawablePaintState::operator==(
     const CanvasDrawablePaintState& other) const {
   return effective_zoom == other.effective_zoom && box_size == other.box_size &&
          reference_box_offset == other.reference_box_offset &&
+         canvas_content_offset == other.canvas_content_offset &&
          canvas_content_size == other.canvas_content_size &&
          canvas_device_pixel_content_box ==
              other.canvas_device_pixel_content_box &&
@@ -40,6 +41,9 @@ gfx::Transform GetElementTransform(const CanvasDrawablePaintState& paint_state,
   css_transform.Scale(canvas_grid_to_css_x, canvas_grid_to_css_y);
   css_transform.PreConcat(draw_transform);
   css_transform.Scale(1.0f / canvas_grid_to_css_x, 1.0f / canvas_grid_to_css_y);
+
+  // Finally, account for the canvas_grid not filling the CSS box
+  css_transform.Translate(paint_state.canvas_content_offset);
 
   return css_transform;
 }

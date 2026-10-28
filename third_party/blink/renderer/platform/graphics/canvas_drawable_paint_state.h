@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/size_f.h"
+#include "ui/gfx/geometry/vector2d.h"
 
 namespace gfx {
 class Transform;
@@ -27,6 +28,8 @@ struct PLATFORM_EXPORT CanvasDrawablePaintState {
   gfx::Vector2dF reference_box_offset;  // Physical pixels
 
   // Canvas state.
+  // Offset of the canvas bitmap within the layout box, physical pixels
+  gfx::Vector2dF canvas_content_offset;
   gfx::SizeF canvas_content_size;             // Physical pixels
   gfx::Size canvas_device_pixel_content_box;  // Snapped physical pixels
   DOMNodeId canvas_node_id = kInvalidDOMNodeId;
