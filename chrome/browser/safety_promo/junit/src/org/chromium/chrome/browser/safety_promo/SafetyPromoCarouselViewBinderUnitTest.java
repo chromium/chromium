@@ -32,6 +32,7 @@ public class SafetyPromoCarouselViewBinderUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private View.OnClickListener mOnClickListener;
+    @Mock private View.OnClickListener mOnShowMeHowClickListener;
 
     private Context mContext;
     private SafetyPromoCarouselView mView;
@@ -50,6 +51,9 @@ public class SafetyPromoCarouselViewBinderUnitTest {
         mModel =
                 new PropertyModel.Builder(SafetyPromoCarouselProperties.ALL_KEYS)
                         .with(SafetyPromoCarouselProperties.ON_CONTINUE_CLICKED, mOnClickListener)
+                        .with(
+                                SafetyPromoCarouselProperties.ON_SHOW_ME_HOW_CLICKED,
+                                mOnShowMeHowClickListener)
                         .build();
         PropertyModelChangeProcessor.create(mModel, mView, SafetyPromoCarouselViewBinder::bind);
     }
@@ -76,5 +80,9 @@ public class SafetyPromoCarouselViewBinderUnitTest {
         View continueButton = mView.findViewById(R.id.fre_continue_button);
         continueButton.performClick();
         verify(mOnClickListener).onClick(continueButton);
+
+        View showMeHowButton = mView.findViewById(R.id.fre_show_me_how_button);
+        showMeHowButton.performClick();
+        verify(mOnShowMeHowClickListener).onClick(showMeHowButton);
     }
 }

@@ -44,6 +44,7 @@ public class SafetyPromoCarouselFirstRunFragment extends Fragment implements Fir
                         shouldUseLandscapeLayout(),
                         pageDelegate.getSafetyPromoFirstRunState().getSelectedItemSupplier(),
                         pageDelegate::advanceToNextPage,
+                        pageDelegate.getBottomSheetController(),
                         FirstRunUtils.getItemsForSafetyFrePromoArm(
                                 ChromeFeatureList.sSafetyFrePromoArm.getValue()));
         attachCarouselView();

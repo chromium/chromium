@@ -14,19 +14,29 @@ import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
 /** Properties defined for Safety Promo Carousel. */
 @NullMarked
 public class SafetyPromoCarouselProperties {
-    public static final WritableIntPropertyKey TITLE_RES_ID = new WritableIntPropertyKey();
-
-    public static final WritableIntPropertyKey SUBTITLE_RES_ID = new WritableIntPropertyKey();
+    public static final WritableIntPropertyKey ACTIVE_PAGE_INDEX = new WritableIntPropertyKey();
 
     public static final ReadableObjectPropertyKey<OnClickListener> ON_CONTINUE_CLICKED =
             new ReadableObjectPropertyKey<>();
 
+    public static final ReadableObjectPropertyKey<OnClickListener> ON_SHOW_ME_HOW_CLICKED =
+            new ReadableObjectPropertyKey<>();
+
     public static final WritableIntPropertyKey PAGE_COUNT = new WritableIntPropertyKey();
 
-    public static final WritableIntPropertyKey ACTIVE_PAGE_INDEX = new WritableIntPropertyKey();
+    public static final WritableIntPropertyKey SUBTITLE_RES_ID = new WritableIntPropertyKey();
+
+    public static final WritableIntPropertyKey TITLE_RES_ID = new WritableIntPropertyKey();
 
     public static final PropertyKey[] ALL_KEYS =
             new PropertyKey[] {
-                TITLE_RES_ID, SUBTITLE_RES_ID, ON_CONTINUE_CLICKED, PAGE_COUNT, ACTIVE_PAGE_INDEX
+                // go/keep-sorted start
+                ACTIVE_PAGE_INDEX,
+                ON_CONTINUE_CLICKED,
+                ON_SHOW_ME_HOW_CLICKED,
+                PAGE_COUNT,
+                SUBTITLE_RES_ID,
+                TITLE_RES_ID,
+                // go/keep-sorted end
             };
 }
