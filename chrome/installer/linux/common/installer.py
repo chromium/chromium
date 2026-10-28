@@ -595,6 +595,13 @@ class InstallerConfig:
                 is_optional=True,
             ),
             Artifact(
+                "libchromecompaneros.so.stripped",
+                "libchromecompaneros.so",
+                ArtifactType.BINARY,
+                self.shlib_perms,
+                is_optional=True,
+            ),
+            Artifact(
                 "libLiteRtWebGpuAccelerator.so.stripped",
                 "libLiteRtWebGpuAccelerator.so",
                 ArtifactType.BINARY,
