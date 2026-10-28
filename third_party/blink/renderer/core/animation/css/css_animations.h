@@ -97,6 +97,7 @@ class CORE_EXPORT CSSAnimations final {
                                        Element& animating_element,
                                        Element&,
                                        const ComputedStyleBuilder&,
+                                       const ComputedStyle* old_style,
                                        const ComputedStyle* parent_style,
                                        StyleResolver*,
                                        bool can_trigger_animations);
@@ -105,6 +106,7 @@ class CORE_EXPORT CSSAnimations final {
       Element& animating_element,
       Element&,
       const ComputedStyle&,
+      const ComputedStyle* old_style,
       const ComputedStyle* parent_style,
       bool was_viewport_changed,
       bool force_update);

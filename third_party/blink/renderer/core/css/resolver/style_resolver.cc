@@ -2836,7 +2836,7 @@ bool StyleResolver::ApplyAnimatedStyle(
 
   CSSAnimations::CalculateAnimationUpdate(
       state.AnimationUpdate(), *animating_element, element,
-      state.StyleBuilder(), state.ParentStyle(), this,
+      state.StyleBuilder(), state.OldStyle(), state.ParentStyle(), this,
       state.CanTriggerAnimations());
   CSSAnimations::CalculateTransitionUpdate(
       state.AnimationUpdate(), *animating_element, state.StyleBuilder(),
@@ -2893,8 +2893,9 @@ bool StyleResolver::ApplyAnimatedStyle(
   }
   CSSAnimations::CalculateCompositorAnimationUpdate(
       state.AnimationUpdate(), *animating_element, element,
-      *state.StyleBuilder().GetBaseComputedStyle(), state.ParentStyle(),
-      WasViewportResized(), state.AffectsCompositorSnapshots());
+      *state.StyleBuilder().GetBaseComputedStyle(), state.OldStyle(),
+      state.ParentStyle(), WasViewportResized(),
+      state.AffectsCompositorSnapshots());
   CSSAnimations::SnapshotCompositorKeyframes(
       *animating_element, state.AnimationUpdate(),
       *state.StyleBuilder().GetBaseComputedStyle(), state.ParentStyle());

@@ -1809,6 +1809,7 @@ void CSSAnimations::CalculateCompositorAnimationUpdate(
     Element& animating_element,
     Element& element,
     const ComputedStyle& style,
+    const ComputedStyle* old_style,
     const ComputedStyle* parent_style,
     bool was_viewport_resized,
     bool force_update) {
@@ -1819,10 +1820,10 @@ void CSSAnimations::CalculateCompositorAnimationUpdate(
   // do not need to update the compositor-side animations. The compositor is
   // already changing the same properties and as such this update would provide
   // no new information.
-  if (!element_animations || element_animations->IsAnimationStyleChange())
+  if (!element_animations || element_animations->IsAnimationStyleChange()) {
     return;
+  }
 
-  const ComputedStyle* old_style = animating_element.GetComputedStyle();
   if (!old_style || old_style->IsEnsuredInDisplayNone() ||
       (!old_style->HasCurrentCompositableAnimation() &&
        !element_animations->HasCompositedPaintWorkletAnimation())) {
@@ -1893,6 +1894,7 @@ void CSSAnimations::CalculateAnimationUpdate(
     Element& animating_element,
     Element& element,
     const ComputedStyleBuilder& style_builder,
+    const ComputedStyle* old_style,
     const ComputedStyle* parent_style,
     StyleResolver* resolver,
     bool can_trigger_animations) {
@@ -1918,7 +1920,6 @@ void CSSAnimations::CalculateAnimationUpdate(
 
   // Rebuild the keyframe model for a CSS animation if it may have been
   // invalidated by a change to the text direction or writing mode.
-  const ComputedStyle* old_style = animating_element.GetComputedStyle();
   bool logical_property_mapping_change =
       !old_style || old_style->GetWritingDirection() != writing_direction;
 
@@ -2102,7 +2103,10 @@ void CSSAnimations::CalculateAnimationUpdate(
           if (toggle_pause_state)
             update.ToggleAnimationIndexPaused(existing_animation_index);
         }
-      } else {
+      } else if (style_builder.Display() != EDisplay::kNone ||
+                 (old_style &&
+                  old_style->GetBaseComputedStyleOrThis()->Display() !=
+                      EDisplay::kNone)) {
         DCHECK(!is_animation_style_change);
         AnimationTimeline* timeline =
             ComputeTimeline(&animating_element, style_timeline, update,
