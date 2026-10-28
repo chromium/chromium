@@ -115,14 +115,20 @@ class PKIMetadataComponentInstallerService final {
   void RemoveObserver(Observer* observer);
 
  private:
-  // Updates the network service CT list with the component delivered data.
-  // |ct_config_bytes| should be a serialized CTLogList proto message.
-  void UpdateNetworkServiceCTListOnUI(const std::string& ct_config_bytes);
+  // Updates the network service and cert verifier service CT list with the
+  // component delivered data. `ct_config_bytes` should be a serialized
+  // CTConfig proto message.
+  // TODO(crbug.com/41392053): remove network service from comment once it is
+  // only sent to the cert verifier service.
+  void UpdateCTLogListOnUI(const std::string& ct_config_bytes);
 
 #if BUILDFLAG(CHROME_KEY_PINNING_SUPPORTED)
-  // Updates the network service pins list with the component delivered data.
-  // |kp_config_bytes| should be a serialized KPConfig proto message.
-  void UpdateNetworkServiceKPListOnUI(const std::string& kp_config_bytes);
+  // Updates the network service and cert verifier service pins list with the
+  // component delivered data. `kp_config_bytes` should be a serialized
+  // PinList proto message.
+  // TODO(crbug.com/497882860): remove network service from comment once it is
+  // only sent to the cert verifier service.
+  void UpdateKeyPinsListOnUI(const std::string& kp_config_bytes);
 
   // Notifies all observers that the key pinning list data has been processed.
   void NotifyKeyPinsListProcessed();
