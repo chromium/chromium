@@ -630,6 +630,10 @@ TEST_F(DownloadHistoryTest, DownloadHistoryTest_DownloadCountHistogram) {
 // Test that Download.History.DownloadCount.PostRemoval* histograms are emitted
 // with the number of downloads loaded, excluding removed rows.
 TEST_F(DownloadHistoryTest, DownloadCountPostRemovalHistograms) {
+  // Loading `old` requires kRemoveOldDownloadsFromHistory to be disabled.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      download::features::kRemoveOldDownloadsFromHistory);
   base::HistogramTester histogram_tester;
   const base::Time now = base::Time::Now();
 
@@ -1287,6 +1291,79 @@ TEST_F(DownloadHistoryTest,
 
   EXPECT_TRUE(DownloadHistory::IsPersisted(&item(0)));
   EXPECT_TRUE(DownloadHistory::IsPersisted(&item(1)));
+}
+
+class DownloadHistoryRemoveOldDownloadsTest
+    : public DownloadHistoryTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  DownloadHistoryRemoveOldDownloadsTest() {
+    feature_list_.InitWithFeatureState(
+        download::features::kRemoveOldDownloadsFromHistory, GetParam());
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         DownloadHistoryRemoveOldDownloadsTest,
+                         testing::Bool());
+
+// Tests that completed downloads started more than 90 days ago are removed from
+// history instead of being loaded iff kRemoveOldDownloadsFromHistory is
+// enabled, and that other downloads are loaded either way.
+TEST_P(DownloadHistoryRemoveOldDownloadsTest, LoadHistory) {
+  const bool enabled = GetParam();
+  base::HistogramTester histogram_tester;
+  const base::Time now = base::Time::Now();
+
+  history::DownloadRow recent, completed_89_days_ago, interrupted_old,
+      completed_old;
+  InitBasicItem(FILE_PATH_LITERAL("/foo/recent.pdf"),
+                "http://example.com/recent.pdf",
+                "http://example.com/referrer.html",
+                download::DownloadItem::COMPLETE, &recent);
+  InitBasicItem(FILE_PATH_LITERAL("/foo/completed_89_days_ago.pdf"),
+                "http://example.com/completed_89_days_ago.pdf",
+                "http://example.com/referrer.html",
+                download::DownloadItem::COMPLETE, &completed_89_days_ago);
+  completed_89_days_ago.start_time = now - base::Days(89);
+  // Old interrupted downloads are left to DownloadManager to clear.
+  InitBasicItem(FILE_PATH_LITERAL("/foo/interrupted_old.pdf"),
+                "http://example.com/interrupted_old.pdf",
+                "http://example.com/referrer.html",
+                download::DownloadItem::INTERRUPTED, &interrupted_old);
+  interrupted_old.start_time = now - base::Days(200);
+  if (enabled) {
+    InitDownloadRow(FILE_PATH_LITERAL("/foo/completed_old.pdf"),
+                    "http://example.com/completed_old.pdf",
+                    "http://example.com/referrer.html",
+                    download::DownloadItem::COMPLETE, &completed_old);
+  } else {
+    InitBasicItem(FILE_PATH_LITERAL("/foo/completed_old.pdf"),
+                  "http://example.com/completed_old.pdf",
+                  "http://example.com/referrer.html",
+                  download::DownloadItem::COMPLETE, &completed_old);
+  }
+  completed_old.start_time = now - base::Days(91);
+
+  CreateDownloadHistory(
+      {CreateDownloadHistoryEntry(recent),
+       CreateDownloadHistoryEntry(completed_89_days_ago),
+       CreateDownloadHistoryEntry(interrupted_old),
+       CreateDownloadHistoryEntry(
+           completed_old, enabled ? LoadDownloadRowResult::kSkipCreation
+                                  : LoadDownloadRowResult::kCreateDownload)});
+
+  if (enabled) {
+    ExpectDownloadsRemoved({completed_old.id});
+  } else {
+    ExpectNoDownloadsRemoved();
+  }
+  histogram_tester.ExpectUniqueSample("Download.History.DownloadCount", 4, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Download.History.DownloadCount.PostRemoval", enabled ? 3 : 4, 1);
 }
 
 #if BUILDFLAG(IS_ANDROID)

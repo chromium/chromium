@@ -67,6 +67,12 @@ BASE_FEATURE(kUseParallelRequestsForQUIC, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kDeleteOverwrittenDownloads, base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kRemoveOldDownloadsFromHistory, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE_PARAM(base::TimeDelta,
+                   kRemoveOldDownloadsFromHistoryMinAge,
+                   &kRemoveOldDownloadsFromHistory,
+                   base::Days(90));
+
 BASE_FEATURE(kAllowFileBufferSizeControl, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAllowedMixedContentInlinePdf, base::FEATURE_ENABLED_BY_DEFAULT);

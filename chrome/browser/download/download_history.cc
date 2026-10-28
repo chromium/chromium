@@ -553,8 +553,28 @@ void DownloadHistory::LoadHistoryDownloads(
     loaded_rows.reserve(rows.size());
   }
 
+  // Completed downloads started before this time are removed from history
+  // instead of being loaded.
+  std::optional<base::Time> remove_completed_downloads_started_before;
+  if (base::FeatureList::IsEnabled(
+          download::features::kRemoveOldDownloadsFromHistory)) {
+    remove_completed_downloads_started_before =
+        now - download::features::kRemoveOldDownloadsFromHistoryMinAge.Get();
+  }
+
   for (const history::DownloadRow& row : rows) {
     if (ShouldSkipLoadingDownload(row, &file_name_count)) {
+      ScheduleRemoveDownload(row.id);
+      continue;
+    }
+
+    // Checked after ShouldSkipLoadingDownload(), which must see every row to
+    // keep `file_name_count` accurate. Only completed downloads are removed
+    // here: DownloadManager already clears old cancelled and interrupted
+    // downloads, and deletes their partial files.
+    if (remove_completed_downloads_started_before.has_value() &&
+        row.state == DownloadState::COMPLETE &&
+        row.start_time < *remove_completed_downloads_started_before) {
       ScheduleRemoveDownload(row.id);
       continue;
     }

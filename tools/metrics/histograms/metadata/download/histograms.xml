@@ -435,7 +435,8 @@ chromium-metrics-reviews@google.com.
     (in DownloadHistory::LoadHistoryDownloads), {Window}. Unlike
     Download.History.DownloadCount, this excludes rows that are removed instead
     of being loaded (e.g. overwritten downloads removed by
-    kDeleteOverwrittenDownloads). Used to evaluate the impact of limiting the
+    kDeleteOverwrittenDownloads, or old completed downloads removed by
+    kRemoveOldDownloadsFromHistory). Used to evaluate the impact of limiting the
     number and age of downloads kept in history.
   </summary>
   <token key="Window" variants="DownloadHistoryWindow"/>
