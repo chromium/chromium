@@ -4,10 +4,13 @@
 
 #include "extensions/browser/api/declarative_net_request/ruleset_source.h"
 
+#include <algorithm>
 #include <utility>
 
 #include "base/containers/span.h"
+#include "components/url_pattern_index/flat/url_pattern_index_generated.h"
 #include "extensions/browser/api/declarative_net_request/constants.h"
+#include "extensions/browser/api/declarative_net_request/flat/extension_ruleset_generated.h"
 #include "extensions/browser/api/declarative_net_request/flat_ruleset_indexer.h"
 #include "extensions/browser/api/declarative_net_request/indexed_rule.h"
 #include "extensions/browser/api/declarative_net_request/parse_info.h"
@@ -19,6 +22,68 @@
 #include "url/gurl.h"
 
 namespace extensions::declarative_net_request {
+
+namespace {
+
+namespace flat_rule = url_pattern_index::flat;
+
+// Returns whether `rule`'s nested `embedder_conditions` buffer, if any, is a
+// valid `flat::EmbedderConditions` Flatbuffer.
+bool HasValidEmbedderConditions(const flat_rule::UrlRule* rule) {
+  const flatbuffers::Vector<uint8_t>* conditions = rule->embedder_conditions();
+  if (!conditions) {
+    return true;
+  }
+  flatbuffers::Verifier verifier(conditions->Data(), conditions->size());
+  return verifier.VerifyBuffer<flat::EmbedderConditions>(
+      kEmbedderConditionsBufferIdentifier);
+}
+
+// Returns whether all rules in `ruleset` have valid nested `embedder_conditions`
+// buffers. Verifying `ruleset` itself only bounds-checks these byte vectors.
+bool AreEmbedderConditionsValid(const flat::ExtensionIndexedRuleset& ruleset) {
+  auto all_valid = [](const auto* rules) {
+    return !rules || std::ranges::all_of(*rules, &HasValidEmbedderConditions);
+  };
+
+  for (const auto* index_list : {ruleset.before_request_index_list(),
+                                 ruleset.headers_received_index_list()}) {
+    if (!index_list) {
+      continue;
+    }
+    for (const flat_rule::UrlPatternIndex* index : *index_list) {
+      if (!all_valid(index->fallback_rules())) {
+        return false;
+      }
+      if (!index->ngram_index()) {
+        continue;
+      }
+      for (const flat_rule::NGramToRules* ngram_to_rules :
+           *index->ngram_index()) {
+        if (!all_valid(ngram_to_rules->rule_list())) {
+          return false;
+        }
+      }
+    }
+  }
+
+  for (const auto* regex_rules : {ruleset.before_request_regex_rules(),
+                                  ruleset.headers_received_regex_rules()}) {
+    if (!regex_rules) {
+      continue;
+    }
+    for (const flat::RegexRule* regex_rule : *regex_rules) {
+      if (regex_rule->url_rule() &&
+          !HasValidEmbedderConditions(regex_rule->url_rule())) {
+        return false;
+      }
+    }
+  }
+
+  return true;
+}
+
+}  // namespace
 
 RulesetSource::RulesetSource(RulesetID id,
                              size_t rule_count_limit,
@@ -136,6 +201,13 @@ LoadRulesetResult RulesetSource::CreateVerifiedMatcher(
   // not a checksum mismatch.
   // This guarantees that no memory access will end up outside the buffer.
   if (!flat::VerifyExtensionIndexedRulesetBuffer(verifier)) {
+    return LoadRulesetResult::kErrorChecksumMismatch;
+  }
+
+  // The verification above treats nested `embedder_conditions` buffers as
+  // opaque byte vectors, so verify them separately.
+  if (!AreEmbedderConditionsValid(
+          *flat::GetExtensionIndexedRuleset(data.data()))) {
     return LoadRulesetResult::kErrorChecksumMismatch;
   }
 

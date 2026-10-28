@@ -268,6 +268,12 @@ class SandboxedUnpackerTest : public ExtensionsTest {
     base::FilePath crx_path = GetCrxFullPath(crx_name);
     ASSERT_TRUE(zip::Unzip(crx_path, temp_dir.GetPath()));
 
+    SetupUnpackerWithUnzippedDirectory(crx_name, temp_dir.Take());
+  }
+
+  // Unpacks the already unzipped extension in `directory`.
+  void SetupUnpackerWithUnzippedDirectory(const std::string& crx_name,
+                                          const base::FilePath& directory) {
     std::string fake_id = crx_file::id_util::GenerateId(crx_name);
     std::string fake_public_key = base::Base64Encode(std::string(2048, 'k'));
 
@@ -277,7 +283,7 @@ class SandboxedUnpackerTest : public ExtensionsTest {
     unpacker_task_runner_->PostTask(
         FROM_HERE, base::BindOnce(&SandboxedUnpacker::StartWithDirectory,
                                   sandboxed_unpacker_, fake_id, fake_public_key,
-                                  temp_dir.Take()));
+                                  directory));
 
     // Wait for unpack
     run_loop.Run();
@@ -570,6 +576,26 @@ TEST_F(SandboxedUnpackerTest, TestRewriteManifestUnlinksExistingFile) {
   EXPECT_EQ(expected_contents, actual_contents);
 }
 #endif  // BUILDFLAG(IS_POSIX)
+
+// Tests that a `_metadata/generated_indexed_rulesets` directory shipped with an
+// extension is removed during unpacking.
+TEST_F(SandboxedUnpackerTest, RemovesPreExistingIndexedRulesetsDirectory) {
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  ASSERT_TRUE(zip::Unzip(GetCrxFullPath("no_l10n.crx"), temp_dir.GetPath()));
+
+  base::FilePath preplanted_ruleset =
+      temp_dir.GetPath().Append(file_util::GetIndexedRulesetRelativePath(1));
+  ASSERT_TRUE(base::CreateDirectory(preplanted_ruleset.DirName()));
+  ASSERT_TRUE(base::WriteFile(preplanted_ruleset, "preplanted ruleset"));
+
+  SetupUnpackerWithUnzippedDirectory("no_l10n.crx", temp_dir.Take());
+
+  EXPECT_TRUE(InstallSucceeded());
+  EXPECT_EQ(CrxInstallErrorType::NONE, GetInstallErrorType());
+  EXPECT_FALSE(base::PathExists(GetInstallPath().Append(
+      file_util::GetIndexedRulesetDirectoryRelativePath())));
+}
 
 TEST_F(SandboxedUnpackerTest, InvalidMessagesFile) {
   SetupUnpackerWithDirectory("invalid_messages_file.crx");

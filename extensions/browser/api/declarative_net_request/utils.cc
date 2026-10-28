@@ -174,8 +174,15 @@ bool PersistIndexedRuleset(const base::FilePath& path,
   // static rulesets). Also the file persisting logic here is simpler than for
   // dynamic rules where we need to persist both the JSON and indexed rulesets
   // and keep them in sync.
-  base::File ruleset_file(
-      path, base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE);
+  // Unlink any existing file first so that a new inode is created and a process
+  // still holding a file descriptor to the old file cannot modify the newly
+  // written ruleset.
+  if (!base::DeleteFile(path)) {
+    return false;
+  }
+
+  base::File ruleset_file(path,
+                          base::File::FLAG_CREATE | base::File::FLAG_WRITE);
   if (!ruleset_file.IsValid()) {
     return false;
   }

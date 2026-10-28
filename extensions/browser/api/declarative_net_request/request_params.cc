@@ -153,15 +153,9 @@ bool DoEmbedderConditionsMatch(
     scoped_refptr<const net::HttpResponseHeaders> response_headers,
     const flatbuffers::Vector<uint8_t>& conditions_buffer) {
 #if DCHECK_IS_ON()
-  // Verify that `conditions_buffer` corresponds to a valid Flatbuffer with
-  // `flat::EmbedderConditions` as the root. Note: this is a sanity check and
-  // not a security check. Consider the two cases:
-  //  - For a file backed ruleset, we already verify the file checksum on
-  //    ruleset load. So the nested flatbuffer shouldn't be corrupted. On-disk
-  //    modification of stored artifacts is outside Chrome's security model
-  //    anyway.
-  //  - For a non-file backed (session-scoped) ruleset, the ruleset is only
-  //    maintained in memory. Hence there shouldn't be corruption risk.
+  // Sanity check that `conditions_buffer` is a valid `flat::EmbedderConditions`
+  // Flatbuffer. Nested buffers are verified when the ruleset is loaded, see
+  // RulesetSource::CreateVerifiedMatcher().
   flatbuffers::Verifier verifier(conditions_buffer.Data(),
                                  conditions_buffer.size());
   CHECK(verifier.VerifyBuffer<flat::EmbedderConditions>(

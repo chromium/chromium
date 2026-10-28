@@ -11,12 +11,15 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/containers/span.h"
+#include "base/files/file.h"
 #include "base/files/file_util.h"
 #include "base/format_macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "components/url_pattern_index/flat/url_pattern_index_generated.h"
 #include "components/version_info/channel.h"
 #include "content/public/browser/render_process_host.h"
@@ -231,6 +234,47 @@ TEST_F(RulesetMatcherTest, FailedVerification) {
   EXPECT_EQ(LoadRulesetResult::kErrorChecksumMismatch,
             source.CreateVerifiedMatcher(expected_checksum, &matcher));
 }
+
+#if BUILDFLAG(IS_POSIX)
+// Tests that PersistIndexedRuleset() unlinks any existing file so that a
+// retained file descriptor cannot modify the persisted ruleset in place.
+// POSIX-only: on Windows, deleting an open file fails instead.
+TEST_F(RulesetMatcherTest, PersistIndexedRulesetUnlinksExistingFile) {
+  FileBackedRulesetSource source = CreateTemporarySource();
+
+  // `CreateTemporarySource()` already created the indexed ruleset file.
+  base::File retained_file(source.indexed_path(),
+                           base::File::FLAG_OPEN | base::File::FLAG_READ |
+                               base::File::FLAG_WRITE);
+  ASSERT_TRUE(retained_file.IsValid());
+  ASSERT_TRUE(retained_file.WriteAtCurrentPosAndCheck(
+      base::byte_span_from_cstring("pre-existing content")));
+
+  TestRule rule = CreateGenericRule();
+  rule.condition->url_filter = std::string("google.com");
+
+  std::unique_ptr<RulesetMatcher> matcher;
+  int expected_checksum = 0;
+  ASSERT_TRUE(
+      CreateVerifiedMatcher({rule}, source, &matcher, &expected_checksum));
+
+  std::string expected_contents;
+  ASSERT_TRUE(base::ReadFileToString(source.indexed_path(), &expected_contents));
+
+  // Writing through the retained file descriptor must not affect the ruleset
+  // file on disk.
+  ASSERT_EQ(0, retained_file.Seek(base::File::FROM_BEGIN, 0));
+  ASSERT_TRUE(retained_file.WriteAtCurrentPosAndCheck(
+      base::byte_span_from_cstring("tampered ruleset content")));
+  retained_file.Close();
+
+  std::string actual_contents;
+  ASSERT_TRUE(base::ReadFileToString(source.indexed_path(), &actual_contents));
+  EXPECT_EQ(expected_contents, actual_contents);
+  EXPECT_EQ(LoadRulesetResult::kSuccess,
+            source.CreateVerifiedMatcher(expected_checksum, &matcher));
+}
+#endif  // BUILDFLAG(IS_POSIX)
 
 TEST_F(RulesetMatcherTest, ModifyHeaders_IsExtraHeaderMatcher) {
   TestRule rule = CreateGenericRule();
@@ -2337,6 +2381,37 @@ TEST_F(RulesetMatcherResponseHeadersTest,
   EXPECT_EQ(CreateRequestActionForTesting(
                 RequestAction::Type::ALLOW_ALL_REQUESTS, *rule.id),
             matcher->GetAllowlistedFrameActionForTesting(main_frame));
+}
+
+// Tests that a ruleset containing a rule with a corrupted nested
+// `flat::EmbedderConditions` buffer fails verification on load.
+TEST_F(RulesetMatcherResponseHeadersTest, InvalidEmbedderConditionsBuffer) {
+  TestRule rule = CreateGenericRule(kMinValidID);
+  rule.condition->url_filter = std::string("google.com");
+  rule.condition->response_headers =
+      std::vector<TestHeaderCondition>({TestHeaderCondition("key1", {}, {})});
+
+  FileBackedRulesetSource source = CreateTemporarySource();
+  std::unique_ptr<RulesetMatcher> matcher;
+  ASSERT_TRUE(CreateVerifiedMatcher({rule}, source, &matcher));
+
+  // Corrupt the nested buffer's file identifier and update the checksum to
+  // match, so that only the nested buffer verification can fail.
+  std::string contents;
+  ASSERT_TRUE(base::ReadFileToString(source.indexed_path(), &contents));
+  const std::string_view identifier(kEmbedderConditionsBufferIdentifier);
+  size_t pos = contents.find(identifier);
+  ASSERT_NE(std::string::npos, pos);
+  contents.replace(pos, identifier.size(), identifier.size(), 'X');
+
+  const std::string version_header = GetVersionHeaderForTesting();
+  ASSERT_TRUE(base::StartsWith(contents, version_header));
+  int corrupted_checksum =
+      GetChecksum(base::as_byte_span(contents).subspan(version_header.size()));
+  ASSERT_TRUE(base::WriteFile(source.indexed_path(), contents));
+
+  EXPECT_EQ(LoadRulesetResult::kErrorChecksumMismatch,
+            source.CreateVerifiedMatcher(corrupted_checksum, &matcher));
 }
 
 }  // namespace

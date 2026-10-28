@@ -720,6 +720,17 @@ void SandboxedUnpacker::IndexAndPersistJSONRulesetsIfNeeded() {
   DCHECK(unpacker_io_task_runner_->RunsTasksInCurrentSequence());
   DCHECK(extension_);
 
+  // Remove any `_metadata/generated_indexed_rulesets` directory shipped with
+  // the extension so that only browser-generated ruleset files exist there.
+  if (!base::DeletePathRecursively(extension_root_.Append(
+          file_util::GetIndexedRulesetDirectoryRelativePath()))) {
+    ReportFailure(
+        SandboxedUnpackerFailureReason::ERROR_INDEXING_DNR_RULESET,
+        l10n_util::GetStringFUTF16(IDS_EXTENSION_PACKAGE_INSTALL_ERROR,
+                                   u"ERROR_INDEXING_DNR_RULESET"));
+    return;
+  }
+
   // Defer ruleset indexing for disabled rulesets to speed up extension
   // installation.
   auto ruleset_filter = declarative_net_request::FileBackedRulesetSource::

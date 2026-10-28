@@ -92,7 +92,7 @@ table ModifyHeaderInfo {
   regex_options: RegexFilterOptions;
 }
 table HeaderCondition {
-  header: string;
+  header: string (required);
   values: [string];
   excluded_values: [string];
 }
