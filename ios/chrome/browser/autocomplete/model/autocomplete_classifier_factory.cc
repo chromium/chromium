@@ -21,10 +21,10 @@
 namespace ios {
 namespace {
 
-std::unique_ptr<KeyedService> BuildAutocompleteClassifier(ProfileIOS* profile) {
+std::unique_ptr<KeyedService> BuildAutocompleteClassifier(ProfileIOS& profile) {
   return std::make_unique<AutocompleteClassifier>(
       std::make_unique<AutocompleteController>(
-          std::make_unique<AutocompleteProviderClientImpl>(profile),
+          std::make_unique<AutocompleteProviderClientImpl>(&profile),
           AutocompleteControllerConfig{
               .provider_types =
                   AutocompleteClassifier::DefaultOmniboxProviders()}),
@@ -34,7 +34,7 @@ std::unique_ptr<KeyedService> BuildAutocompleteClassifier(ProfileIOS* profile) {
 }  // namespace
 
 // static
-AutocompleteClassifierFactory::TestingFactory
+AutocompleteClassifierFactory::TestingFactoryByRef
 AutocompleteClassifierFactory::GetDefaultFactory() {
   return base::BindOnce(&BuildAutocompleteClassifier);
 }
@@ -52,7 +52,7 @@ AutocompleteClassifierFactory::AutocompleteClassifierFactory(PassKey key)
 
 std::unique_ptr<KeyedService>
 AutocompleteClassifierFactory::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
+    ProfileIOS& profile) const {
   return BuildAutocompleteClassifier(profile);
 }
 
