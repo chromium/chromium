@@ -774,17 +774,26 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
           safe_browsing::kReportType, safe_browsing::kTimeWarningVisible,
           safe_browsing::kUserAction, safe_browsing::kUserActivityWithUrls});
 
+#endif  // #if !BUILDFLAG(IS_ANDROID)
+
   // Suspicious Site Warning surveys.
   survey_configs.emplace_back(
       &safe_browsing::kSuspiciousSiteWarningSurvey,
       kHatsSurveyTriggerSuspiciousSiteWarning,
       safe_browsing::kSuspiciousSiteWarningSurveyTriggerId.Get(),
-      std::vector<std::string>{"did_proceed", "learn_more_clicked",
-                               "repeat_visit"},
-      std::vector<std::string>{"site_origin", "user_choice",
-                               "time_prompt_visible", "referrer_origin",
-                               "referring_app"});
-#endif  // #if !BUILDFLAG(IS_ANDROID)
+      std::vector<std::string>{"Did proceed", "Learn more clicked",
+                               "Repeat visit"},
+      std::vector<std::string>{
+          // TODO(crbug.com/516759212): Coarsen site origin and referrer origin
+          // to eTLD+1.
+          "Site origin",
+          "User choice",
+          "Time prompt visible",
+          "Referrer origin",
+#if BUILDFLAG(IS_ANDROID)
+          "Referring app",
+#endif
+      });
 
   auto with_client_context_psd_fields = [](std::vector<std::string> fields) {
     fields.insert(

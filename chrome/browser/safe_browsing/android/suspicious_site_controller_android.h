@@ -42,14 +42,7 @@ class SuspiciousSiteControllerAndroid
  public:
   using WarningOutcome = safe_browsing::SuspiciousSiteWarningOutcome;
   using UserInteraction = safe_browsing::SuspiciousSiteWarningUserInteraction;
-
-  // Represents user interaction choices for the suspicious site warning HaTS.
-  enum class UserChoice {
-    kMarkAsSafe,
-    kBackToSafety,
-    kDismiss,
-    kManualNavigation,
-  };
+  using UserChoice = safe_browsing::SuspiciousSiteWarningUserChoice;
 
   SuspiciousSiteControllerAndroid(const SuspiciousSiteControllerAndroid&) =
       delete;
@@ -114,25 +107,8 @@ class SuspiciousSiteControllerAndroid
   // Timestamp when the warning dialog was shown.
   base::TimeTicks dialog_shown_time_;
 
-  // Encapsulates user interaction state and metadata specific to a single
-  // warning dialog presentation. This state is naturally cleared when the
-  // controller is destroyed (e.g., when the user navigates away or bypasses).
-  struct DialogState {
-    // Tracks if the user clicked the "Learn More" help center link.
-    bool learn_more_clicked = false;
-
-    // Tracks if user has visited the suspicious site host previously.
-    bool repeat_visit = false;
-
-    // Tracks if a history query has already been dispatched for this
-    // navigation.
-    bool has_fetched_history = false;
-
-    // Tracks accumulated prompt visible time across tab switches.
-    base::TimeDelta accumulated_visible_time;
-  };
-
-  DialogState dialog_state_;
+  // Survey state for the current warning presentation.
+  SuspiciousSiteWarningSurveyState survey_state_;
 
   // Tracker for async history queries.
   base::CancelableTaskTracker history_task_tracker_;

@@ -207,13 +207,21 @@ void SuspiciousSiteBubbleView::OnVisibilityChanged(
 
 void SuspiciousSiteBubbleView::OnWidgetDestroying(views::Widget* widget) {
   UnblockWebContents();
-  if (!is_closing_for_tab_switch_) {
-    if (web_contents()) {
-      if (auto* controller =
-              safe_browsing::SuspiciousSiteControllerDesktop::FromWebContents(
-                  web_contents())) {
-        controller->OnBubbleDismissed();
-      }
+  if (!is_closing_for_tab_switch_ && web_contents()) {
+    switch (widget->closed_reason()) {
+      case views::Widget::ClosedReason::kUnspecified:
+      case views::Widget::ClosedReason::kLostFocus:
+      case views::Widget::ClosedReason::kAcceptButtonClicked:
+        break;
+      case views::Widget::ClosedReason::kEscKeyPressed:
+      case views::Widget::ClosedReason::kCloseButtonClicked:
+      case views::Widget::ClosedReason::kCancelButtonClicked:
+        if (auto* controller =
+                safe_browsing::SuspiciousSiteControllerDesktop::FromWebContents(
+                    web_contents())) {
+          controller->OnBubbleDismissed();
+        }
+        break;
     }
   }
   PageInfoBubbleViewBase::OnWidgetDestroying(widget);

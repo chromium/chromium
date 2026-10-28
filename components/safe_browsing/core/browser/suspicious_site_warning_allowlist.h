@@ -43,6 +43,36 @@ enum class SuspiciousSiteWarningUserInteraction {
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/safe_browsing/enums.xml:SuspiciousSiteWarningUserInteraction)
 
+// Represents user interaction choices for the suspicious site warning HaTS.
+enum class SuspiciousSiteWarningUserChoice {
+  kMarkAsSafe,
+  kBackToSafety,
+  kDismiss,
+  kManualNavigation,
+};
+
+const char* SuspiciousSiteWarningUserChoiceToString(
+    SuspiciousSiteWarningUserChoice choice);
+
+// Encapsulates user interaction state and metadata specific to a single
+// suspicious site warning presentation for HaTS surveys.
+struct SuspiciousSiteWarningSurveyState {
+  // Tracks if the user clicked the "Learn More" help center link.
+  bool learn_more_clicked = false;
+
+  // Tracks if the user has visited the suspicious site host previously.
+  bool repeat_visit = false;
+
+  // Tracks if a history query has already been dispatched for this navigation.
+  bool has_fetched_history = false;
+
+  // Tracks if the HaTS survey has already been triggered for this warning.
+  bool has_triggered_survey = false;
+
+  // Tracks accumulated prompt visible time across tab switches.
+  base::TimeDelta accumulated_visible_time;
+};
+
 // Stores local allowlist decisions for Suspicious Site Warnings (SSW).
 // When a user clicks "Mark as Safe" (or "Continue anyway") on an SSW warning,
 // the host is added to this local allowlist for a 30-day TTL.

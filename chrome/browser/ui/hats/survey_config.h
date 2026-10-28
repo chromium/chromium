@@ -175,10 +175,10 @@ inline constexpr char kHatsSurveyTriggerSigninNtpAccountAvatarTap[] =
 inline constexpr char kHatsSurveyTriggerSigninNtpPromo[] = "signin-ntp-promo";
 inline constexpr char kHatsSurveyTriggerSigninBookmarkPromo[] =
     "signin-bookmark-promo";
-inline constexpr char kHatsSurveyTriggerSuspiciousSiteWarning[] =
-    "suspicious-site-warning";
 #endif  // #if !BUILDFLAG(IS_ANDROID)
 
+inline constexpr char kHatsSurveyTriggerSuspiciousSiteWarning[] =
+    "suspicious-site-warning";
 inline constexpr char
     kHatsSurveyTriggerAutofillPersonalizationAndTrustAddressFilled[] =
         "autofill-personalization-and-trust-address-filled";

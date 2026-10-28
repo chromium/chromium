@@ -11,7 +11,9 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "base/task/cancelable_task_tracker.h"
 #include "base/time/time.h"
+#include "components/history/core/browser/history_service.h"
 #include "components/safe_browsing/content/browser/async_check_tracker.h"
 #include "components/safe_browsing/core/browser/suspicious_site_warning_allowlist.h"
 #include "components/security_interstitials/core/unsafe_resource.h"
@@ -38,6 +40,7 @@ class SuspiciousSiteControllerDesktop
  public:
   using WarningOutcome = safe_browsing::SuspiciousSiteWarningOutcome;
   using UserInteraction = safe_browsing::SuspiciousSiteWarningUserInteraction;
+  using UserChoice = safe_browsing::SuspiciousSiteWarningUserChoice;
 
   SuspiciousSiteControllerDesktop(const SuspiciousSiteControllerDesktop&) =
       delete;
@@ -85,6 +88,22 @@ class SuspiciousSiteControllerDesktop
   // Validates all preconditions and triggers ShowBubble if all gates pass.
   void MaybeShowBubble();
 
+  // Triggers HaTS survey for suspicious site warnings if feature enabled.
+  void MaybeTriggerHatsSurvey(UserChoice user_choice);
+
+  // Queries HistoryService to check if user has visited the host before.
+  void FetchRepeatVisitCount();
+  void OnGetVisibleVisitCount(history::VisibleVisitCountToHostResult result);
+
+  // Timestamp when the warning bubble was shown.
+  base::TimeTicks bubble_shown_time_;
+
+  // Survey state for the current warning presentation.
+  SuspiciousSiteWarningSurveyState survey_state_;
+
+  // Tracker for async history queries.
+  base::CancelableTaskTracker history_task_tracker_;
+
   // The UnsafeResource that triggered the suspicious site warning. This is
   // std::nullopt when the controller is first created, before
   // ShowForWebContents() is called for a specific navigation.
@@ -118,6 +137,11 @@ class SuspiciousSiteControllerDesktop
 
   // The suspicious URL currently added to the allowlist for this warning.
   GURL current_suspicious_url_;
+
+  // The referrer URL for the suspicious navigation when the bubble was shown.
+  GURL current_referrer_url_;
+
+  base::WeakPtrFactory<SuspiciousSiteControllerDesktop> weak_ptr_factory_{this};
 };
 
 }  // namespace safe_browsing
