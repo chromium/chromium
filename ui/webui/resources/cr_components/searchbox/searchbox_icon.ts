@@ -425,7 +425,9 @@ export class SearchboxIconElement extends CrLitElement {
              SecondaryTextPlacement.kBelowPrimaryText ||
          this.match.isEnterpriseSearchAggregatorPeopleType ||
          this.isTopChromeSearchbox_ || !this.inSearchbox)) {
-      return `url(${this.match.iconPath})`;
+      if (this.match.iconPath) {
+        return `url(${this.match.iconPath})`;
+      }
     }
 
     if (this.inSearchbox) {

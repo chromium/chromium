@@ -153,6 +153,7 @@ class SearchboxHandler : public searchbox::mojom::PageHandler,
 
   // Maps all icons returned from either `AutocompleteMatch::GetVectorIcon()` or
   // `OmniboxAction::GetIconImage()` to svg resource strings.
+  static std::string VectorIconToResourceName(const gfx::VectorIcon& icon);
   virtual std::string AutocompleteIconToResourceName(
       const gfx::VectorIcon& icon) const;
 

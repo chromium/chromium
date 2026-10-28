@@ -638,5 +638,30 @@ suite('CrComponentsSearchboxIconTest', () => {
           assertTrue(window.getComputedStyle(icon.$.icon)
                          .webkitMaskImage.includes('search_cr23.svg'));
         });
+
+    test(
+        'falls back to default icon when match iconPath is empty', async () => {
+          loadTimeData.overrideValues({
+            isTopChromeSearchbox: true,
+          });
+          document.body.innerHTML = window.trustedTypes!.emptyHTML;
+          icon = document.createElement('cr-searchbox-icon');
+          icon.defaultIcon =
+              '//resources/cr_components/searchbox/icons/search_cr23.svg';
+          const match = createAutocompleteMatch();
+          match.isSearchType = true;
+          match.type = 'search-suggest-infinite';
+          match.iconPath = '';
+          icon.match = match;
+          icon.inSearchbox = true;
+          document.body.appendChild(icon);
+
+          await microtasksFinished();
+
+          assertFalse(isVisible(icon.$.faviconImage));
+          assertTrue(isVisible(icon.$.icon));
+          assertTrue(window.getComputedStyle(icon.$.icon)
+                         .webkitMaskImage.includes('search_cr23.svg'));
+        });
   });
 });

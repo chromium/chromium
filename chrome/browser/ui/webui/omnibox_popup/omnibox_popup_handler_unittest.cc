@@ -770,6 +770,7 @@ TEST_F(OmniboxPopupHandlerTest, SetInputStatePopulatesCurrentMatch) {
   ASSERT_TRUE(captured_state->current_match->suggest_template->primary_text);
   EXPECT_FALSE(captured_state->current_match->suggest_template->primary_text
                    ->text.empty());
+  EXPECT_FALSE(captured_state->current_match->icon_path.empty());
 }
 
 }  // namespace

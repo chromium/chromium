@@ -49,6 +49,7 @@ if (!is_android) {
       "//chrome/browser/ui/webui/top_chrome",
       "//chrome/browser/ui/webui/webui_toolbar:layout_css_helper",
       "//chrome/common",
+      "//components/bookmarks/browser",
       "//components/contextual_search:public",
       "//components/feature_engagement/public",
       "//components/lens",
