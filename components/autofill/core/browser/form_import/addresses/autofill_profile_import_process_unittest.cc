@@ -1552,6 +1552,91 @@ TEST_F(AutofillProfileImportProcessTest,
       "Autofill.ProfileImport.SilentUpdateFieldMergeCategoryBitmask", 0);
 }
 
+// Tests that when an observed profile differs from an existing profile only in
+// whitespace/formatting that is normalized away by `GetEnvelopeStyleAddress()`,
+// the import is classified as a silent update rather than a confirmable merge
+// (which would show an empty update prompt).
+TEST_F(AutofillProfileImportProcessTest,
+       WhitespaceOnlyAddressDifferenceIsSilentlyUpdated) {
+  AutofillProfile existing_profile = test::StandardProfile();
+  address_data_manager().AddProfile(existing_profile);
+
+  AutofillProfile observed_profile = test::StandardProfile();
+  observed_profile.SetRawInfoWithVerificationStatus(
+      ADDRESS_HOME_STREET_ADDRESS, u"123  Mainstreet",
+      VerificationStatus::kObserved);
+  observed_profile.usage_history().set_use_date(base::Time::Now() +
+                                                base::Days(1));
+  observed_profile.FinalizeAfterImport();
+
+  // With the kill switch disabled, the raw string discrepancy causes a
+  // confirmable merge despite having no UI-visible differences.
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndDisableFeature(
+        features::kAutofillGuardEmptyUpdatePrompts);
+    ProfileImportProcess import_data = CreateProfileImportProcess(
+        observed_profile, /*allow_only_silent_updates=*/false);
+    EXPECT_EQ(import_data.import_type(),
+              AutofillProfileImportType::kConfirmableMerge);
+  }
+
+  // With `kAutofillGuardEmptyUpdatePrompts` enabled (default), the import is
+  // classified as a silent update.
+  ProfileImportProcess import_data = CreateProfileImportProcess(
+      observed_profile, /*allow_only_silent_updates=*/false);
+  EXPECT_EQ(import_data.import_type(),
+            AutofillProfileImportType::kSilentUpdate);
+  EXPECT_FALSE(import_data.merge_candidate().has_value());
+  EXPECT_EQ(import_data.silently_updated_profiles().size(), 1u);
+
+  import_data.AcceptWithoutPrompt();
+  EXPECT_TRUE(import_data.ProfilesChanged());
+
+  AutofillProfile expected_profile = observed_profile;
+  test::CopyGUID(existing_profile, &expected_profile);
+  EXPECT_THAT(ApplyImportAndGetProfiles(import_data),
+              testing::UnorderedElementsAre(expected_profile));
+}
+
+// Tests that a whitespace-only address difference on a `kAccountHome` profile
+// is treated as a silent update in place rather than `kHomeAndWorkSuperset`
+// (which would replace and remove the `kAccountHome` profile).
+TEST_F(AutofillProfileImportProcessTest,
+       WhitespaceOnlyAddressDifferenceOnHomeProfileIsSilentlyUpdated) {
+  address_data_manager().SetIsEligibleForAddressAccountStorage(true);
+
+  AutofillProfile home_profile = test::StandardProfile();
+  test_api(home_profile)
+      .set_record_type(AutofillProfile::RecordType::kAccountHome);
+  address_data_manager().AddProfile(home_profile);
+
+  AutofillProfile observed_profile = test::StandardProfile();
+  observed_profile.SetRawInfoWithVerificationStatus(
+      ADDRESS_HOME_STREET_ADDRESS, u"123  Mainstreet",
+      VerificationStatus::kObserved);
+  observed_profile.usage_history().set_use_date(base::Time::Now() +
+                                                base::Days(1));
+  observed_profile.FinalizeAfterImport();
+
+  ProfileImportProcess import_data = CreateProfileImportProcess(
+      observed_profile, /*allow_only_silent_updates=*/false);
+  EXPECT_EQ(import_data.import_type(),
+            AutofillProfileImportType::kSilentUpdate);
+  EXPECT_FALSE(import_data.merge_candidate().has_value());
+
+  import_data.AcceptWithoutPrompt();
+  EXPECT_TRUE(import_data.ProfilesChanged());
+
+  AutofillProfile expected_profile = observed_profile;
+  test::CopyGUID(home_profile, &expected_profile);
+  test_api(expected_profile)
+      .set_record_type(AutofillProfile::RecordType::kAccountHome);
+  EXPECT_THAT(
+      ApplyImportAndGetProfiles(import_data),
+      testing::UnorderedPointwise(CompareWithRecordType(), {expected_profile}));
+}
+
 }  // namespace
 
 }  // namespace autofill

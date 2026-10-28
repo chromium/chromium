@@ -841,6 +841,12 @@ BASE_FEATURE(kAutofillGmailOtpPreLaunchMetrics,
 // When enabled, Greek regexes are used for parsing in branded builds.
 BASE_FEATURE(kAutofillGreekRegexes, base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Kill switch for guarding against offering an address update prompt when there
+// are no UI-visible differences (e.g. only whitespace or formatting changes
+// normalized away by `GetEnvelopeStyleAddress()`).
+BASE_FEATURE(kAutofillGuardEmptyUpdatePrompts,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // When enabled, `BrowserAutofillManager` hides suggestions as soon as the
 // renderer reports that the focus moved away from the field the suggestions
 // were shown for (FocusOnFormField() for a different field or

@@ -13,6 +13,7 @@
 #include "components/autofill/core/browser/data_model/addresses/autofill_i18n_api.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/geo/address_i18n.h"
+#include "components/autofill/core/browser/geo/country_data.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_util.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -349,6 +350,43 @@ TEST_F(AddressFormattingTest, GetEnvelopeStyleAddressWithPartialAddress) {
                               /*include_country=*/true);
 
   EXPECT_EQ(address, u"742 Evergreen Terrace\nSpringfield\nUnited States");
+}
+
+// Tests that `GetProfileDifferenceForUi()` detects changes for every field type
+// in `AutofillProfile::GetUserVisibleTypes()` across all countries.
+// `ProfileImportProcess` relies on `GetProfileDifferenceForUi()` to detect
+// whether a settings-visible profile merge has any user-visible differences to
+// show in an update prompt.
+TEST_F(AddressFormattingTest,
+       GetProfileDifferenceForUiCoversAllUserVisibleTypes) {
+  for (const std::string& country_code :
+       CountryDataMap::GetInstance()->country_codes()) {
+    SCOPED_TRACE(country_code);
+    const AddressCountryCode address_country_code(country_code);
+    const AutofillProfile profile1(address_country_code);
+    for (FieldType type : profile1.GetUserVisibleTypes()) {
+      SCOPED_TRACE(FieldTypeToStringView(type));
+      AutofillProfile profile2 = profile1;
+      switch (type) {
+        case PHONE_HOME_WHOLE_NUMBER:
+          profile2.SetRawInfo(type, u"+16502111111");
+          break;
+        case ALTERNATIVE_FULL_NAME:
+          profile2.SetRawInfo(type, u"やまもと あおい");
+          break;
+        case ADDRESS_HOME_COUNTRY:
+          profile2.SetRawInfo(type, country_code == "US" ? u"DE" : u"US");
+          break;
+        default:
+          profile2.SetRawInfo(type, u"Test Value");
+          break;
+      }
+      ASSERT_NE(profile1.GetInfo(type, "en-US"),
+                profile2.GetInfo(type, "en-US"));
+      EXPECT_FALSE(
+          GetProfileDifferenceForUi(profile1, profile2, "en-US").empty());
+    }
+  }
 }
 
 }  // namespace autofill

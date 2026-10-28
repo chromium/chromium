@@ -28,7 +28,9 @@
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/metrics/profile_import_metrics.h"
+#include "components/autofill/core/browser/ui/addresses/autofill_address_util.h"
 #include "components/autofill/core/common/autofill_debug_features.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "url/gurl.h"
@@ -357,16 +359,30 @@ ProfileImportProcess::GetImportCandidates(
     const ProfileMergeResult merge_result =
         merged_profile.MergeDataFrom(observed_profile, app_locale_);
     switch (merge_result) {
-      case ProfileMergeResult::kMergeSucceededWithModification:
-        result.push_back(ImportCandidate{
-            .change = AutofillProfileComparator::
-                              ProfilesHaveDifferentSettingsVisibleValues(
-                                  *candidate, merged_profile, app_locale_)
-                          ? Change::kSettingVisibleChange
-                          : Change::kNonSettingVisibleChange,
-            .existing_profile = *candidate,
-            .merged_profile = std::move(merged_profile)});
+      case ProfileMergeResult::kMergeSucceededWithModification: {
+        // `ProfilesHaveDifferentSettingsVisibleValues()` compares raw field
+        // strings without collapsing whitespace, whereas the update prompt UI
+        // computes diffs using `GetProfileDifferenceForUi()` (which normalizes
+        // whitespace and formatting via `GetEnvelopeStyleAddress()`). Require
+        // both to detect a difference so that whitespace/formatting-only
+        // updates are applied silently.
+        const bool raw_values_differ = AutofillProfileComparator::
+            ProfilesHaveDifferentSettingsVisibleValues(
+                *candidate, merged_profile, app_locale_);
+        const bool has_setting_visible_change =
+            raw_values_differ &&
+            (!base::FeatureList::IsEnabled(
+                 features::kAutofillGuardEmptyUpdatePrompts) ||
+             !GetProfileDifferenceForUi(merged_profile, *candidate, app_locale_)
+                  .empty());
+        result.push_back(
+            ImportCandidate{.change = has_setting_visible_change
+                                          ? Change::kSettingVisibleChange
+                                          : Change::kNonSettingVisibleChange,
+                            .existing_profile = *candidate,
+                            .merged_profile = std::move(merged_profile)});
         break;
+      }
       case ProfileMergeResult::kMergeSucceededWithoutModification:
         result.push_back(
             ImportCandidate{.change = Change::kNoChange,
