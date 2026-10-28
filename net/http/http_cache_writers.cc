@@ -398,6 +398,18 @@ HttpCache::Writers::WaitingForRead::WaitingForRead(
 HttpCache::Writers::WaitingForRead::~WaitingForRead() = default;
 HttpCache::Writers::WaitingForRead::WaitingForRead(WaitingForRead&&) = default;
 
+PartialData* HttpCache::Writers::GetPartial() const {
+  // The active transaction must be alive if this is a partial request, as
+  // partial requests are exclusive and hence will always be the active
+  // transaction.
+  // TODO(shivanisha): When partial requests support parallel writing, this
+  // assumption will not be true.
+  if (active_transaction_) {
+    return all_writers_.find(active_transaction_)->second.partial;
+  }
+  return nullptr;
+}
+
 int HttpCache::Writers::DoLoop(int result) {
   DCHECK_NE(State::UNSET, next_state_);
   DCHECK_NE(State::NONE, next_state_);
@@ -480,6 +492,11 @@ int HttpCache::Writers::DoNetworkRead() {
 }
 
 int HttpCache::Writers::DoNetworkReadComplete(int result) {
+  PartialData* partial = GetPartial();
+  if (result > 0 && partial && !partial->IsNetworkReadOK(result)) {
+    result = ERR_CONTENT_LENGTH_MISMATCH;
+  }
+
   if (result < 0) {
     next_state_ = State::NONE;
     OnNetworkReadFailure(result);
@@ -521,15 +538,7 @@ int HttpCache::Writers::DoCacheWriteData(int num_bytes) {
 
   int rv = 0;
 
-  PartialData* partial = nullptr;
-  // The active transaction must be alive if this is a partial request, as
-  // partial requests are exclusive and hence will always be the active
-  // transaction.
-  // TODO(shivanisha): When partial requests support parallel writing, this
-  // assumption will not be true.
-  if (active_transaction_) {
-    partial = all_writers_.find(active_transaction_)->second.partial;
-  }
+  PartialData* partial = GetPartial();
 
   if (!partial) {
     last_disk_cache_access_start_time_ = base::TimeTicks::Now();
