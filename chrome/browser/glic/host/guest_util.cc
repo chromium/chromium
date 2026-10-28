@@ -6,12 +6,15 @@
 
 #include <algorithm>
 #include <optional>
+#include <utility>
 
 #include "base/command_line.h"
 #include "base/feature_list.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/strings/pattern.h"
@@ -20,6 +23,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/supports_user_data.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/version_info/version_info.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
@@ -52,6 +56,7 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/enterprise/buildflags/buildflags.h"
 #include "components/google/core/common/google_util.h"
 #include "components/guest_view/browser/guest_view_base.h"
 #include "components/guest_view/browser/guest_view_manager.h"
@@ -61,6 +66,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/skills/features.h"
 #include "components/tabs/public/tab_interface.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/clipboard_types.h"
 #include "content/public/browser/host_zoom_map.h"
 #include "content/public/browser/media_session.h"
@@ -112,6 +118,17 @@
 #if BUILDFLAG(ENABLE_PDF)
 #include "components/page_content_annotations/content/page_context_fetcher.h"
 #endif
+
+#if BUILDFLAG(ENTERPRISE_DATA_CONTROLS)
+#include "chrome/browser/enterprise/data_controls/data_controls_dialog_factory.h"
+#include "components/enterprise/data_controls/content/browser/last_replaced_clipboard_data.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/enterprise/data_controls/android_data_controls_dialog_factory.h"
+#else
+#include "chrome/browser/enterprise/data_controls/desktop_data_controls_dialog_factory.h"
+#endif  // BUILDFLAG(IS_ANDROID)
+#endif  // BUILDFLAG(ENTERPRISE_DATA_CONTROLS)
 
 namespace glic {
 
@@ -963,70 +980,184 @@ void LogPasteAttempt(const content::ClipboardEndpoint& source,
 }
 
 // Tracks the copy eligibility of the last clipboard write. It listens to
-// clipboard changes to safely grab the newly generated sequence number after
-// a copy completes, and compares against this sequence number at paste time.
+// clipboard changes while a copy is pending to grab the newly generated
+// sequence number after a copy completes, and compares against this sequence
+// number at paste time.
 class GlicClipboardEligibilityMonitor : public ui::ClipboardObserver {
  public:
+  static constexpr base::TimeDelta kPendingCopyExpiration = base::Seconds(10);
+
   static GlicClipboardEligibilityMonitor* GetInstance() {
     static base::NoDestructor<GlicClipboardEligibilityMonitor> instance;
     return instance.get();
   }
 
-  GlicClipboardEligibilityMonitor() {
-    ui::ClipboardMonitor::GetInstance()->AddObserver(this);
-  }
+  GlicClipboardEligibilityMonitor() = default;
 
-  ~GlicClipboardEligibilityMonitor() override {
-    ui::ClipboardMonitor::GetInstance()->RemoveObserver(this);
-  }
+  ~GlicClipboardEligibilityMonitor() override { StopObserving(); }
 
-  void OnCopyAttempted(bool is_eligible) { pending_eligibility_ = is_eligible; }
-
-  void OnClipboardDataChanged() override {
-    if (pending_eligibility_.has_value()) {
-      last_seqno_ = ui::Clipboard::GetForCurrentThread()->GetSequenceNumber(
-          ui::ClipboardBuffer::kCopyPaste);
-      last_eligibility_ = *pending_eligibility_;
-      pending_eligibility_.reset();
+  void StageCopyEligibility(std::optional<bool> is_eligible,
+                            bool clear_at_end_of_task) {
+    if (!is_eligible.has_value()) {
+      ClearPending();
+      return;
+    }
+    ++pending_generation_;
+    finalize_task_posted_ = false;
+    pending_eligibility_ = *is_eligible;
+    if (auto* clipboard = ui::Clipboard::GetForCurrentThread()) {
+      pending_baseline_seqno_ =
+          clipboard->GetSequenceNumber(ui::ClipboardBuffer::kCopyPaste);
+    } else {
+      pending_baseline_seqno_.reset();
+    }
+    StartObserving();
+    if (clear_at_end_of_task) {
+      ScheduleFinalizePendingCopy();
+    } else if (base::SingleThreadTaskRunner::HasCurrentDefault()) {
+      const uint64_t generation = pending_generation_;
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+          FROM_HERE,
+          base::BindOnce(&GlicClipboardEligibilityMonitor::FinalizePendingCopy,
+                         base::Unretained(this), generation),
+          kPendingCopyExpiration);
     }
   }
 
+  void SetEligibilityForSeqno(ui::ClipboardSequenceNumberToken seqno,
+                              bool is_eligible) {
+    last_seqno_ = seqno;
+    last_eligibility_ = is_eligible;
+    ClearPending();
+  }
+
+  void OnClipboardDataChanged() override {
+    if (!pending_eligibility_.has_value()) {
+      return;
+    }
+    auto* clipboard = ui::Clipboard::GetForCurrentThread();
+    if (!clipboard) {
+      return;
+    }
+    last_seqno_ = clipboard->GetSequenceNumber(ui::ClipboardBuffer::kCopyPaste);
+    last_eligibility_ = *pending_eligibility_;
+    ScheduleFinalizePendingCopy();
+  }
+
   std::optional<bool> GetEligibility(
-      const ui::ClipboardSequenceNumberToken& seqno) const {
+      const ui::ClipboardSequenceNumberToken& seqno) {
+    // Handle platforms or clipboard backends where the sequence number advances
+    // synchronously inside ScopedClipboardWriter destruction before
+    // OnClipboardDataChanged() or FinalizePendingCopy() runs (e.g., macOS
+    // pasteboard polling timer, Windows WM_CLIPBOARDUPDATE, or trailing
+    // WebSmartPaste writes on TestClipboard).
+    if (pending_eligibility_.has_value()) {
+      if (auto* clipboard = ui::Clipboard::GetForCurrentThread()) {
+        const ui::ClipboardSequenceNumberToken current_seqno =
+            clipboard->GetSequenceNumber(ui::ClipboardBuffer::kCopyPaste);
+        if (current_seqno == seqno &&
+            (!pending_baseline_seqno_.has_value() ||
+             current_seqno != *pending_baseline_seqno_)) {
+          SetEligibilityForSeqno(current_seqno, *pending_eligibility_);
+        }
+      }
+    }
     if (last_seqno_ && *last_seqno_ == seqno) {
       return last_eligibility_;
     }
     return std::nullopt;
   }
 
+  bool HasPendingForTesting() const { return pending_eligibility_.has_value(); }
+
   void SetSeqnoForTesting(ui::ClipboardSequenceNumberToken seqno) {
     if (pending_eligibility_.has_value()) {
-      last_seqno_ = seqno;
-      last_eligibility_ = *pending_eligibility_;
-      pending_eligibility_.reset();
+      SetEligibilityForSeqno(seqno, *pending_eligibility_);
     }
   }
 
+  void ResetForTesting() {
+    ClearPending();
+    last_seqno_.reset();
+    last_eligibility_.reset();
+  }
+
  private:
+  void ScheduleFinalizePendingCopy() {
+    if (base::SingleThreadTaskRunner::HasCurrentDefault() &&
+        !finalize_task_posted_) {
+      finalize_task_posted_ = true;
+      const uint64_t generation = pending_generation_;
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE,
+          base::BindOnce(&GlicClipboardEligibilityMonitor::FinalizePendingCopy,
+                         base::Unretained(this), generation));
+    }
+  }
+
+  void FinalizePendingCopy(uint64_t generation) {
+    if (generation != pending_generation_ ||
+        !pending_eligibility_.has_value()) {
+      return;
+    }
+    if (auto* clipboard = ui::Clipboard::GetForCurrentThread()) {
+      const ui::ClipboardSequenceNumberToken current_seqno =
+          clipboard->GetSequenceNumber(ui::ClipboardBuffer::kCopyPaste);
+      if (!pending_baseline_seqno_.has_value() ||
+          current_seqno != *pending_baseline_seqno_) {
+        last_seqno_ = current_seqno;
+        last_eligibility_ = *pending_eligibility_;
+      }
+    }
+    ClearPending();
+  }
+
+  void StartObserving() {
+    if (!observing_) {
+      ui::ClipboardMonitor::GetInstance()->AddObserver(this);
+      observing_ = true;
+    }
+  }
+
+  void StopObserving() {
+    if (observing_) {
+      ui::ClipboardMonitor::GetInstance()->RemoveObserver(this);
+      observing_ = false;
+    }
+  }
+
+  void ClearPending() {
+    ++pending_generation_;
+    pending_eligibility_.reset();
+    pending_baseline_seqno_.reset();
+    finalize_task_posted_ = false;
+    StopObserving();
+  }
+
+  uint64_t pending_generation_ = 0;
+  bool observing_ = false;
+  bool finalize_task_posted_ = false;
   std::optional<bool> pending_eligibility_;
+  std::optional<ui::ClipboardSequenceNumberToken> pending_baseline_seqno_;
   std::optional<ui::ClipboardSequenceNumberToken> last_seqno_;
   std::optional<bool> last_eligibility_;
 };
 
-void OnBeforeClipboardCopy(const content::ClipboardEndpoint& source) {
+std::optional<bool> GetClipboardCopyEligibility(
+    const content::ClipboardEndpoint& source) {
   if (!base::FeatureList::IsEnabled(features::kGlicPasteEligibilityCheck) ||
       !base::FeatureList::IsEnabled(features::kGlicWebPasteEligibilityCheck)) {
-    return;
+    return std::nullopt;
   }
 
   // We only track copy eligibility if it originated from a web page frame.
   content::RenderFrameHost* rfh = source.render_frame_host();
   if (!rfh) {
-    return;
+    return std::nullopt;
   }
   content::WebContents* web_contents = source.web_contents();
   if (!web_contents) {
-    return;
+    return std::nullopt;
   }
 
   // Page context eligibility is tied to tabs. Copies from non-tab contexts
@@ -1034,28 +1165,190 @@ void OnBeforeClipboardCopy(const content::ClipboardEndpoint& source) {
   tabs::TabInterface* source_tab =
       tabs::TabInterface::MaybeGetFromContents(web_contents);
   if (!source_tab) {
-    return;
+    return std::nullopt;
   }
   auto* helper = tabs::PageContextEligibilityHelper::From(source_tab);
   if (!helper) {
-    return;
+    return std::nullopt;
   }
 
   // Evaluate the page's eligibility at the moment of the copy.
   optimization_guide::PageContextEligibilityStatus status =
       helper->IsPageContextEligible();
-  bool is_eligible =
-      (status == optimization_guide::PageContextEligibilityStatus::kEligible);
+  return status == optimization_guide::PageContextEligibilityStatus::kEligible;
+}
 
-  // Stash the eligibility status in our global monitor. When the OS clipboard
-  // actually finishes updating, the monitor will tie this status to the new
-  // clipboard sequence number.
-  GlicClipboardEligibilityMonitor::GetInstance()->OnCopyAttempted(is_eligible);
+void StageClipboardCopyEligibility(std::optional<bool> is_eligible,
+                                   bool clear_at_end_of_task) {
+  GlicClipboardEligibilityMonitor::GetInstance()->StageCopyEligibility(
+      is_eligible, clear_at_end_of_task);
+}
+
+bool HasPendingClipboardCopyEligibilityForTesting() {
+  return GlicClipboardEligibilityMonitor::GetInstance()
+      ->HasPendingForTesting();  // IN-TEST
+}
+
+void SetClipboardEligibilityForSeqno(ui::ClipboardSequenceNumberToken seqno,
+                                     bool is_eligible) {
+  GlicClipboardEligibilityMonitor::GetInstance()->SetEligibilityForSeqno(
+      seqno, is_eligible);
+}
+
+void OnBeforeClipboardCopy(const content::ClipboardEndpoint& source) {
+  if (!base::FeatureList::IsEnabled(features::kGlicPasteEligibilityCheck) ||
+      !base::FeatureList::IsEnabled(features::kGlicWebPasteEligibilityCheck)) {
+    return;
+  }
+
+  // Stash (or clear, for non-tab/OS sources) the copy-time eligibility status
+  // in the global monitor so it binds to the resulting clipboard sequence
+  // number without leaking stale pending state across unrelated copies.
+  StageClipboardCopyEligibility(GetClipboardCopyEligibility(source));
+}
+
+namespace {
+
+class PendingClipboardCopyCleanup {
+ public:
+  explicit PendingClipboardCopyCleanup(bool armed) : armed_(armed) {}
+  PendingClipboardCopyCleanup(PendingClipboardCopyCleanup&& other)
+      : armed_(std::exchange(other.armed_, false)) {}
+  PendingClipboardCopyCleanup& operator=(PendingClipboardCopyCleanup&& other) {
+    if (this != &other) {
+      DisarmAndClearIfNeeded();
+      armed_ = std::exchange(other.armed_, false);
+    }
+    return *this;
+  }
+  ~PendingClipboardCopyCleanup() { DisarmAndClearIfNeeded(); }
+
+  void Disarm() { armed_ = false; }
+
+ private:
+  void DisarmAndClearIfNeeded() {
+    if (std::exchange(armed_, false)) {
+      StageClipboardCopyEligibility(std::nullopt);
+    }
+  }
+
+  bool armed_ = false;
+};
+
+#if BUILDFLAG(ENTERPRISE_DATA_CONTROLS)
+void ShowPasteBlockDialogIfNeeded(content::WebContents* web_contents) {
+  data_controls::DataControlsDialogFactory* factory =
+#if BUILDFLAG(IS_ANDROID)
+      data_controls::AndroidDataControlsDialogFactory::GetInstance();
+#else
+      data_controls::DesktopDataControlsDialogFactory::GetInstance();
+#endif
+  if (factory) {
+    factory->ShowDialogIfNeeded(
+        web_contents,
+        data_controls::DataControlsDialog::Type::kClipboardPasteBlock);
+  }
+}
+
+bool ShouldBlockPasteForRestrictedCopyImpl(
+    bool has_source_browser_context,
+    content::WebContents* destination_web_contents,
+    const ui::ClipboardSequenceNumberToken& seqno) {
+  if (!destination_web_contents || !IsGlicGuest(destination_web_contents) ||
+      seqno != data_controls::GetLastReplacedClipboardData().seqno) {
+    return false;
+  }
+
+  switch (data_controls::GetLastReplacedClipboardData().restriction_level) {
+    case data_controls::CopyRestrictionLevel::kBlocked:
+      ShowPasteBlockDialogIfNeeded(destination_web_contents);
+      return true;
+    case data_controls::CopyRestrictionLevel::kOngoingScan:
+      return true;
+    case data_controls::CopyRestrictionLevel::kKeptInManagedChrome:
+      if (!has_source_browser_context) {
+        ShowPasteBlockDialogIfNeeded(destination_web_contents);
+        return true;
+      }
+      return false;
+    case data_controls::CopyRestrictionLevel::kNone:
+      return false;
+  }
+}
+#endif  // BUILDFLAG(ENTERPRISE_DATA_CONTROLS)
+
+}  // namespace
+
+content::ContentBrowserClient::IsClipboardCopyAllowedCallback
+WrapClipboardCopyAllowedCallback(
+    const content::ClipboardEndpoint& source,
+    const content::ClipboardPasteData& data,
+    content::ContentBrowserClient::IsClipboardCopyAllowedCallback callback) {
+  if (!base::FeatureList::IsEnabled(features::kGlicPasteEligibilityCheck) ||
+      !base::FeatureList::IsEnabled(features::kGlicWebPasteEligibilityCheck)) {
+    return callback;
+  }
+
+  std::optional<bool> copy_eligibility = GetClipboardCopyEligibility(source);
+  // Clear any previously staged pending eligibility immediately so non-tab
+  // copies, blocked copies, and in-flight copy warning/scanning dialogs never
+  // leave stale pending state armed.
+  StageClipboardCopyEligibility(std::nullopt);
+  if (!copy_eligibility.has_value()) {
+    return callback;
+  }
+
+  return base::BindOnce(
+      [](bool is_eligible, bool input_was_empty,
+         PendingClipboardCopyCleanup cleanup,
+         content::ContentBrowserClient::IsClipboardCopyAllowedCallback
+             inner_callback,
+         const ui::ClipboardFormatType& format_type,
+         const content::ClipboardPasteData& allowed_data,
+         std::optional<std::u16string> replacement_data) {
+        cleanup.Disarm();
+        if (inner_callback.IsCancelled()) {
+          StageClipboardCopyEligibility(std::nullopt);
+          return;
+        }
+        if (format_type != ui::ClipboardFormatType::WebCustomFormatMap() &&
+            !input_was_empty && allowed_data.empty() &&
+            !replacement_data.has_value()) {
+          StageClipboardCopyEligibility(std::nullopt);
+          std::move(inner_callback)
+              .Run(format_type, allowed_data, std::move(replacement_data));
+          return;
+        }
+
+        std::optional<ui::ClipboardSequenceNumberToken> seqno_before;
+        if (auto* clipboard = ui::Clipboard::GetForCurrentThread()) {
+          seqno_before =
+              clipboard->GetSequenceNumber(ui::ClipboardBuffer::kCopyPaste);
+        }
+        StageClipboardCopyEligibility(is_eligible,
+                                      /*clear_at_end_of_task=*/false);
+        std::move(inner_callback)
+            .Run(format_type, allowed_data, std::move(replacement_data));
+        if (auto* clipboard = ui::Clipboard::GetForCurrentThread()) {
+          const ui::ClipboardSequenceNumberToken seqno_after =
+              clipboard->GetSequenceNumber(ui::ClipboardBuffer::kCopyPaste);
+          if (!seqno_before.has_value() || seqno_after != *seqno_before) {
+            SetClipboardEligibilityForSeqno(seqno_after, is_eligible);
+          }
+        }
+      },
+      *copy_eligibility, data.empty(),
+      PendingClipboardCopyCleanup(/*armed=*/true), std::move(callback));
 }
 
 void SetClipboardEligibilitySeqnoForTesting(
     ui::ClipboardSequenceNumberToken seqno) {
-  GlicClipboardEligibilityMonitor::GetInstance()->SetSeqnoForTesting(seqno);
+  auto* monitor = GlicClipboardEligibilityMonitor::GetInstance();
+  monitor->SetSeqnoForTesting(seqno);  // IN-TEST
+}
+
+void ResetClipboardEligibilityMonitorForTesting() {
+  GlicClipboardEligibilityMonitor::GetInstance()->ResetForTesting();  // IN-TEST
 }
 
 bool IsClipboardPasteAllowed(const content::ClipboardEndpoint& source,
@@ -1090,6 +1383,14 @@ bool IsClipboardPasteAllowed(const content::ClipboardEndpoint& source,
     return false;
   }
 
+#if BUILDFLAG(ENTERPRISE_DATA_CONTROLS)
+  if (metadata.seqno == data_controls::GetLastReplacedClipboardData().seqno &&
+      data_controls::GetLastReplacedClipboardData().restriction_level ==
+          data_controls::CopyRestrictionLevel::kOngoingScan) {
+    return false;
+  }
+#endif  // BUILDFLAG(ENTERPRISE_DATA_CONTROLS)
+
   std::optional<bool> was_eligible =
       GlicClipboardEligibilityMonitor::GetInstance()->GetEligibility(
           metadata.seqno);
@@ -1110,6 +1411,59 @@ bool IsClipboardPasteAllowed(const content::ClipboardEndpoint& source,
       base::StrCat({"Glic.Paste.FailedEligibilityReason.", source_suffix}),
       GlicPasteFailedEligibilityReason::kPageContextInvalidated);
   return false;
+}
+
+bool MaybeBlockPasteForRestrictedCopy(
+    const content::ClipboardEndpoint& source,
+    const content::ClipboardEndpoint& destination,
+    const ui::ClipboardMetadata& metadata) {
+#if BUILDFLAG(ENTERPRISE_DATA_CONTROLS)
+  return ShouldBlockPasteForRestrictedCopyImpl(
+      /*has_source_browser_context=*/source.browser_context() != nullptr,
+      destination.web_contents(), metadata.seqno);
+#else
+  return false;
+#endif  // BUILDFLAG(ENTERPRISE_DATA_CONTROLS)
+}
+
+content::ContentBrowserClient::IsClipboardPasteAllowedCallback
+WrapClipboardPasteAllowedCallback(
+    const content::ClipboardEndpoint& source,
+    const content::ClipboardEndpoint& destination,
+    const ui::ClipboardMetadata& metadata,
+    content::ContentBrowserClient::IsClipboardPasteAllowedCallback callback) {
+#if BUILDFLAG(ENTERPRISE_DATA_CONTROLS)
+  if (!destination.web_contents() || !IsGlicGuest(destination.web_contents())) {
+    return callback;
+  }
+
+  base::WeakPtr<content::BrowserContext> source_browser_context =
+      source.browser_context() ? source.browser_context()->GetWeakPtr()
+                               : nullptr;
+  base::WeakPtr<content::WebContents> destination_web_contents =
+      destination.web_contents()->GetWeakPtr();
+  return base::BindOnce(
+      [](base::WeakPtr<content::BrowserContext> source_browser_context,
+         base::WeakPtr<content::WebContents> destination_web_contents,
+         ui::ClipboardSequenceNumberToken seqno,
+         content::ContentBrowserClient::IsClipboardPasteAllowedCallback
+             inner_callback,
+         std::optional<content::ClipboardPasteData> allowed_data) {
+        if (allowed_data.has_value() &&
+            ShouldBlockPasteForRestrictedCopyImpl(
+                /*has_source_browser_context=*/static_cast<bool>(
+                    source_browser_context),
+                destination_web_contents.get(), seqno)) {
+          std::move(inner_callback).Run(std::nullopt);
+          return;
+        }
+        std::move(inner_callback).Run(std::move(allowed_data));
+      },
+      std::move(source_browser_context), std::move(destination_web_contents),
+      metadata.seqno, std::move(callback));
+#else
+  return callback;
+#endif  // BUILDFLAG(ENTERPRISE_DATA_CONTROLS)
 }
 
 }  // namespace glic

@@ -11,6 +11,7 @@
 #include "base/feature_list.h"
 #include "base/time/time.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
+#include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/storage_partition_config.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "third_party/blink/public/mojom/window_features/window_features.mojom-forward.h"
@@ -155,9 +156,44 @@ void PopulateGlobalClientInitialState(mojom::WebClientInitialState* state,
 // Returns the Glic zoom factor calculated from the zoom level pref.
 double GetZoomFactor(PrefService* pref_service);
 
+// Evaluates the copy-time page context eligibility for `source`. Returns
+// `std::nullopt` if paste eligibility checks are disabled or `source` does not
+// correspond to a tab frame.
+std::optional<bool> GetClipboardCopyEligibility(
+    const content::ClipboardEndpoint& source);
+
+// Stages `is_eligible` to be bound to the next clipboard sequence number
+// produced by an upcoming copy, or clears any pending staged eligibility when
+// `is_eligible` is `std::nullopt`. When `clear_at_end_of_task` is true, any
+// unconsumed pending state is automatically cleared at the end of the current
+// task turn if no clipboard write occurred; otherwise unconsumed pending state
+// expires after a bounded timeout so abandoned writes never stay armed
+// indefinitely.
+void StageClipboardCopyEligibility(std::optional<bool> is_eligible,
+                                   bool clear_at_end_of_task = false);
+
+// Returns true if copy eligibility is currently staged awaiting a clipboard
+// write.
+bool HasPendingClipboardCopyEligibilityForTesting();
+
+// Directly binds `is_eligible` to `seqno` and clears any pending staged copy
+// eligibility.
+void SetClipboardEligibilityForSeqno(ui::ClipboardSequenceNumberToken seqno,
+                                     bool is_eligible);
+
 // Called before the OS clipboard writes the sequence number. Checks and stashes
 // the eligibility for the upcoming copy event.
 void OnBeforeClipboardCopy(const content::ClipboardEndpoint& source);
+
+// Captures copy-time Glic page-context eligibility for `source` before
+// asynchronous copy policy checks run and wraps `callback` so the captured
+// eligibility is staged only when the copy is allowed (or replaced with an
+// enterprise warning string).
+content::ContentBrowserClient::IsClipboardCopyAllowedCallback
+WrapClipboardCopyAllowedCallback(
+    const content::ClipboardEndpoint& source,
+    const content::ClipboardPasteData& data,
+    content::ContentBrowserClient::IsClipboardCopyAllowedCallback callback);
 
 // Applies the pending copy eligibility to the given sequence number.
 // This is used in browser tests where we don't actually trigger an OS clipboard
@@ -165,11 +201,34 @@ void OnBeforeClipboardCopy(const content::ClipboardEndpoint& source);
 void SetClipboardEligibilitySeqnoForTesting(
     ui::ClipboardSequenceNumberToken seqno);
 
+// Resets cached and pending clipboard eligibility state for tests.
+void ResetClipboardEligibilityMonitorForTesting();
+
 // Returns true if pasting data into Glic is allowed by policy (based on the
 // source tab's page context eligibility).
 bool IsClipboardPasteAllowed(const content::ClipboardEndpoint& source,
                              const content::ClipboardEndpoint& destination,
                              const ui::ClipboardMetadata& metadata);
+
+// Returns true if pasting into Glic must be blocked because `metadata.seqno`
+// came from a blocked or still-scanning enterprise copy, or from a
+// Chrome-only copy whose source `BrowserContext` is gone. Surfaces a
+// paste-block dialog over Glic unless a copy scan is still in flight.
+bool MaybeBlockPasteForRestrictedCopy(
+    const content::ClipboardEndpoint& source,
+    const content::ClipboardEndpoint& destination,
+    const ui::ClipboardMetadata& metadata);
+
+// Wraps `callback` so asynchronous paste policy completions (e.g., after a
+// warning bypass) still block restricted copies if the source
+// `BrowserContext` disappeared or a copy restriction completed in the
+// meantime.
+content::ContentBrowserClient::IsClipboardPasteAllowedCallback
+WrapClipboardPasteAllowedCallback(
+    const content::ClipboardEndpoint& source,
+    const content::ClipboardEndpoint& destination,
+    const ui::ClipboardMetadata& metadata,
+    content::ContentBrowserClient::IsClipboardPasteAllowedCallback callback);
 
 // Logs the format of the clipboard data being pasted into Glic.
 void LogPasteAttempt(const content::ClipboardEndpoint& source,

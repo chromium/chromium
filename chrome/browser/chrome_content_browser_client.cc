@@ -8292,10 +8292,13 @@ void ChromeContentBrowserClient::IsClipboardPasteAllowedByPolicy(
   if (destination.web_contents() &&
       glic::IsGlicGuest(destination.web_contents())) {
     glic::LogPasteAttempt(source, metadata);
-    if (!glic::IsClipboardPasteAllowed(source, destination, metadata)) {
+    if (!glic::IsClipboardPasteAllowed(source, destination, metadata) ||
+        glic::MaybeBlockPasteForRestrictedCopy(source, destination, metadata)) {
       std::move(callback).Run(std::nullopt);
       return;
     }
+    callback = glic::WrapClipboardPasteAllowedCallback(
+        source, destination, metadata, std::move(callback));
   }
 
 // TODO(b/352728209): Add Android-specific hook for Data Controls.
@@ -8320,7 +8323,8 @@ void ChromeContentBrowserClient::IsClipboardCopyAllowedByPolicy(
     const ui::ClipboardMetadata& metadata,
     const ClipboardPasteData& data,
     IsClipboardCopyAllowedCallback callback) {
-  glic::OnBeforeClipboardCopy(source);
+  callback =
+      glic::WrapClipboardCopyAllowedCallback(source, data, std::move(callback));
 
 #if BUILDFLAG(ENTERPRISE_DATA_CONTROLS)
   enterprise_data_protection::IsClipboardCopyAllowedByPolicy(
