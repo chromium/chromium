@@ -209,15 +209,18 @@ See [here](/docs/dependencies.md#adding-dependencies).
 
 ## Checking in the code directly
 
-If you are checking in a snapshot, you should follow the [standard directory structure](#standard-dep-structure).
-For security reasons, please retrieve the code as securely as you can, using
-HTTPS and GPG signatures if available.
-If retrieving a tarball, please do not check the tarball itself into the tree,
-but do list the source and the SHA-512 hash (for verification) in the
-README.chromium and Change List. The SHA-512 hash can be computed via
-`sha512sum` or `openssl dgst -sha512`.  If retrieving from a git
-repository, please list the upstream URL and revision that the code was pulled
-from.
+If you are checking in a snapshot, you should follow the
+[standard directory structure](#standard-dep-structure), and write a
+[Crowbar workflow](https://source.chromium.org/chromium/chromium/src/+/main:docs/managing-third-party/crowbar-workflow.md)
+to retrieve and vendor the code.
+
+For security reasons, please choose the most secure method available (e.g.
+HTTPS) to obtain the source code.
+
+For archive files, please do not check in the archive file directly. Instead,
+specify the archive URL and its hash (SHA-256 or better). For git repositories,
+please specify the full URL and commit hash. Then trigger Crowbar workflow with
+Crowbar CLI to download, verify and vendor the code.
 
 If you are checking the files in directly, you do not need an entry in DEPS
 and do not need to modify `//third_party/.gitignore`.
