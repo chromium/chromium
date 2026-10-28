@@ -880,6 +880,13 @@ void AddGeicStrings(content::WebUIDataSource* html_source) {
       {"geicSectionTitle", IDS_SETTINGS_GEIC_SECTION_TITLE},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
+
+  html_source->AddString(
+      "geicDefaultTabAccessToggleLearnMoreUrl",
+      google_util::AppendGoogleLocaleParam(
+          GURL(features::kGeicDefaultTabAccessToggleLearnMoreURL.Get()),
+          g_browser_process->GetApplicationLocale())
+          .spec());
 }
 
 void AddGlicStrings(content::WebUIDataSource* html_source, Profile* profile) {

@@ -581,6 +581,33 @@ IN_PROC_BROWSER_TEST_F(SettingsGlicSubpageLearnMoreTest,
           "runMochaSuite('GlicSubpage LearnMoreEnabled')");
 }
 
+IN_PROC_BROWSER_TEST_F(SettingsTest, GeicSubpage) {
+  RunTest("settings/geic_subpage_test.js",
+          "runMochaSuite('GeicSubpage Default')");
+}
+
+class SettingsGeicSubpageLearnMoreTest : public SettingsBrowserTest {
+ public:
+  SettingsGeicSubpageLearnMoreTest() {
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{features::kGlicLearnMoreURLConfig,
+          {
+              {"geic-default-tab-access-toggle-learn-more-url",
+               "https://google.com/"},
+          }}},
+        /*disabled_features=*/{});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(SettingsGeicSubpageLearnMoreTest,
+                       GeicSettingsLearnMoreEnabled) {
+  RunTest("settings/geic_subpage_test.js",
+          "runMochaSuite('GeicSubpage LearnMoreEnabled')");
+}
+
 class SettingsGlicPageHeaderLearnMoreTest : public SettingsBrowserTest {
  public:
   SettingsGlicPageHeaderLearnMoreTest() {

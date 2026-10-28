@@ -67,10 +67,9 @@ export class SettingsGeicSubpageElement extends SettingsGeicSubpageElementBase {
         .toString();
   }
 
-  // TODO(crbug.com/564532074): Update the learn more link.
   protected onDefaultTabAccessToggleSubLabelLinkClicked_() {
     OpenWindowProxyImpl.getInstance().openUrl(
-        this.i18n('glicDefaultTabAccessToggleLearnMoreUrlDataProtected'));
+        this.i18n('geicDefaultTabAccessToggleLearnMoreUrl'));
   }
 
   // SettingsViewMixin implementation.

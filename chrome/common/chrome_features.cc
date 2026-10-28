@@ -722,6 +722,12 @@ BASE_FEATURE_PARAM(
     &kGlicLearnMoreURLConfig,
     "glic-default-tab-access-toggle-learn-more-url-data-protected",
     "https://support.google.com/a/answer/15706919");
+BASE_FEATURE_PARAM(
+    std::string,
+    kGeicDefaultTabAccessToggleLearnMoreURL,
+    &kGlicLearnMoreURLConfig,
+    "geic-default-tab-access-toggle-learn-more-url",
+    "https://docs.cloud.google.com/gemini/enterprise/docs/get-started");
 BASE_FEATURE_PARAM(std::string,
                    kGlicSettingsPageLearnMoreURL,
                    &kGlicLearnMoreURLConfig,

@@ -474,6 +474,11 @@ extern const base::FeatureParam<std::string>
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::FeatureParam<std::string>
     kGlicDefaultTabAccessToggleLearnMoreURLDataProtected;
+// The Learn More URL for the default tab access toggle in the GEiC settings
+// subpage.
+COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::FeatureParam<std::string>
+    kGeicDefaultTabAccessToggleLearnMoreURL;
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::FeatureParam<std::string> kGlicExtensionsManagementUrl;
 COMPONENT_EXPORT(CHROME_FEATURES)
