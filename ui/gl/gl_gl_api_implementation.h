@@ -58,6 +58,8 @@ class GL_EXPORT RealGLApi : public GLApiBase {
   const GLubyte* glGetStringFn(GLenum name) override;
   const GLubyte* glGetStringiFn(GLenum name, GLuint index) override;
 
+  void glGenTexturesFn(GLsizei n, GLuint* textures) override;
+
   void glTexImage2DFn(GLenum target,
                       GLint level,
                       GLint internalformat,
