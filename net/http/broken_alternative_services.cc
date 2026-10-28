@@ -5,6 +5,7 @@
 #include "net/http/broken_alternative_services.h"
 
 #include <ranges>
+#include <utility>
 
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -233,8 +234,9 @@ void BrokenAlternativeServices::Confirm(
 
 bool BrokenAlternativeServices::OnDefaultNetworkChanged() {
   bool changed = !broken_alternative_services_on_default_network_.empty();
-  while (!broken_alternative_services_on_default_network_.empty()) {
-    Confirm(*broken_alternative_services_on_default_network_.begin());
+  for (const auto& broken_alternative_service :
+       std::exchange(broken_alternative_services_on_default_network_, {})) {
+    Confirm(broken_alternative_service);
   }
   return changed;
 }

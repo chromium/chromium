@@ -1234,7 +1234,7 @@ void HttpServerProperties::RemoveAltSvcCanonicalHost(
   if (canonical == canonical_alt_svc_map_.end())
     return;
 
-  canonical_alt_svc_map_.erase(canonical->first);
+  canonical_alt_svc_map_.erase(canonical);
 }
 
 void HttpServerProperties::UpdateCanonicalServerInfoMap(
