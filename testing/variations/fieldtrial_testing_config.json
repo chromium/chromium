@@ -5161,6 +5161,25 @@
             ]
         }
     ],
+    "ContextualTasksTabAndClickBehavior": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ContextualTasksClobberActiveTab",
+                        "ContextualTasksSidePanelTabState"
+                    ]
+                }
+            ]
+        }
+    ],
     "ContextualTasksUploadChunking": [
         {
             "platforms": [
