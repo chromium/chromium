@@ -33,6 +33,7 @@ class SaveCardBottomSheetViewControllerTest : public PlatformTest {
     mutator_ = OCMStrictProtocolMock(@protocol(SaveCardBottomSheetMutator));
     view_controller_ = [[SaveCardBottomSheetViewController alloc] init];
     view_controller_.dataSource = dataSource_;
+    view_controller_.mutator = mutator_;
   }
 
   ~SaveCardBottomSheetViewControllerTest() override {
@@ -59,14 +60,14 @@ class SaveCardBottomSheetViewControllerTest : public PlatformTest {
   SaveCardBottomSheetViewController* view_controller_;
 };
 
-// TODO(crbug.com/422437418): re-enable.
-TEST_F(SaveCardBottomSheetViewControllerTest, DISABLED_BottomSheetAccepted) {
+TEST_F(SaveCardBottomSheetViewControllerTest, BottomSheetAccepted) {
+  ViewSetup();
   OCMExpect([mutator_ didAccept]);
   [view_controller_.actionHandler confirmationAlertPrimaryAction];
 }
 
-// TODO(crbug.com/422437418): re-enable.
-TEST_F(SaveCardBottomSheetViewControllerTest, DISABLED_BottomSheetCancelled) {
+TEST_F(SaveCardBottomSheetViewControllerTest, BottomSheetCancelled) {
+  ViewSetup();
   OCMExpect([mutator_ didCancel]);
   [view_controller_.actionHandler confirmationAlertSecondaryAction];
 }
