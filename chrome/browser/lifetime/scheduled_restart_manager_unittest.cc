@@ -4,6 +4,8 @@
 
 #include "chrome/browser/lifetime/scheduled_restart_manager.h"
 
+#include <algorithm>
+#include <memory>
 #include <string_view>
 #include <vector>
 
@@ -11,7 +13,9 @@
 #include "base/check_op.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/power_monitor_test.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
@@ -23,12 +27,16 @@
 #include "chrome/browser/upgrade_detector/upgrade_detector.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"
+#include "chrome/test/base/testing_profile_manager.h"
 #include "components/policy/core/common/management/management_service.h"
 #include "components/policy/core/common/management/scoped_management_service_override_for_testing.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/testing_pref_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/idle/idle_polling_service.h"
+#include "ui/base/idle/idle_time_provider.h"
+#include "ui/base/test/idle_test_utils.h"
 
 #if BUILDFLAG(IS_LINUX) && BUILDFLAG(USE_DBUS)
 #include "components/dbus/thread_linux/dbus_thread_linux.h"
@@ -501,6 +509,264 @@ TEST_F(ScheduledRestartManagerTest, IsAppMenuItemEnabled) {
     EXPECT_FALSE(ScheduledRestartManager::AreScheduledRestartsEnabled());
     EXPECT_FALSE(ScheduledRestartManager::IsAppMenuItemEnabled());
   }
+}
+
+// Exercises the idle relaunch path end to end. MaybeExecuteRestart() reads
+// the loaded profiles through g_browser_process, so a TestingProfileManager
+// is required.
+//
+// Time is advanced with AdvanceClock() and SuspendedAdvanceClock() rather
+// than FastForwardBy(). While a restart is scheduled the manager observes the
+// real IdlePollingService, whose repeating poll timer would fire under
+// FastForwardBy() and would inject extra zero-idle polls between steps.
+// AdvanceClock() moves base::Time, base::TimeTicks, and base::LiveTicks
+// together, as on a running machine; SuspendedAdvanceClock() leaves
+// base::LiveTicks behind, as across a system suspend.
+class ScheduledRestartManagerIdleRelaunchTest
+    : public ScheduledRestartManagerTest {
+ public:
+  ScheduledRestartManagerIdleRelaunchTest()
+      : profile_manager_(TestingBrowserProcess::GetGlobal()) {}
+
+  void SetUp() override {
+    ScheduledRestartManagerTest::SetUp();
+    ASSERT_TRUE(profile_manager_.SetUp());
+    fake_upgrade_detector_.SetUpgradeAvailable();
+    manager_ =
+        std::make_unique<ScheduledRestartManager>(fake_upgrade_detector_);
+    manager_->set_relaunch_callback_for_testing(
+        base::BindLambdaForTesting([this]() { ++relaunch_count_; }));
+  }
+
+  void TearDown() override {
+    manager_.reset();
+    ScheduledRestartManagerTest::TearDown();
+  }
+
+ protected:
+  class TestIdleTimeProvider : public ui::IdleTimeProvider {
+   public:
+    base::TimeDelta CalculateIdleTime() override { return base::Seconds(0); }
+    bool CheckIdleStateIsLocked() override { return false; }
+  };
+
+  // Drives the observer entry point directly, as the browser tests do.
+  void InjectIdle(base::TimeDelta idle_time) {
+    manager_->OnIdleStateChange(
+        ui::IdlePollingService::State{.locked = false, .idle_time = idle_time});
+  }
+
+  // Simulates the user staying away from a running machine for `duration`:
+  // advances the clock one poll interval at a time and injects an idle state
+  // after each step, with the reported idle time growing from `idle_time`.
+  void StayIdleFor(base::TimeDelta duration, base::TimeDelta idle_time) {
+    base::TimeDelta elapsed;
+    while (elapsed < duration) {
+      const base::TimeDelta step =
+          std::min(ui::IdlePollingService::kPollInterval, duration - elapsed);
+      task_environment_.AdvanceClock(step);
+      elapsed += step;
+      InjectIdle(idle_time + elapsed);
+    }
+  }
+
+  // Verifies that a scheduled restart remains deferred for `threshold_ - 1s`
+  // of awake idle polling and executes once the full `threshold_` has elapsed.
+  void ExpectRelaunchAfterAwakeWindow(base::TimeDelta initial_idle_time) {
+    StayIdleFor(threshold_ - base::Seconds(1), initial_idle_time);
+    EXPECT_EQ(relaunch_count_, 0);
+    EXPECT_TRUE(manager_->is_scheduled());
+
+    task_environment_.AdvanceClock(base::Seconds(1));
+    InjectIdle(initial_idle_time + threshold_);
+    EXPECT_EQ(relaunch_count_, 1);
+    EXPECT_FALSE(manager_->is_scheduled());
+  }
+
+  const base::TimeDelta threshold_ =
+      ScheduledRestartManager::GetIdleThreshold();
+  base::test::ScopedPowerMonitorTestSource power_monitor_source_;
+  ui::test::ScopedIdleProviderForTest scoped_idle_provider_{
+      std::make_unique<TestIdleTimeProvider>()};
+  TestingProfileManager profile_manager_;
+  std::unique_ptr<ScheduledRestartManager> manager_;
+  int relaunch_count_ = 0;
+};
+
+TEST_F(ScheduledRestartManagerIdleRelaunchTest,
+       RelaunchesWhenIdleWithoutSleep) {
+  base::HistogramTester histogram_tester;
+
+  // The system suspends while the manager exists but before the user
+  // schedules a restart. The clock references are taken when monitoring
+  // starts, so that suspend is not attributed to the schedule.
+  task_environment_.SuspendedAdvanceClock(base::Hours(8));
+
+  manager_->ScheduleRestartOnIdle();
+  ExpectRelaunchAfterAwakeWindow(base::TimeDelta());
+
+  histogram_tester.ExpectTotalCount(
+      "Session.ScheduledRestart.BlockerEncountered", 0);
+}
+
+TEST_F(ScheduledRestartManagerIdleRelaunchTest,
+       IgnoresStaleSuspendedStateWhenScheduling) {
+  // PowerMonitor missed a resume and still reports the system as suspended.
+  // Scheduling happens on an awake system, so the restart is not deferred.
+  power_monitor_source_.GenerateSuspendEvent();
+
+  manager_->ScheduleRestartOnIdle();
+  ExpectRelaunchAfterAwakeWindow(base::TimeDelta());
+}
+
+TEST_F(ScheduledRestartManagerIdleRelaunchTest, DefersRelaunchAfterSystemWake) {
+  base::HistogramTester histogram_tester;
+  manager_->ScheduleRestartOnIdle();
+
+  // Lid closed for 8 hours; no polls run while suspended.
+  task_environment_.SuspendedAdvanceClock(base::Hours(8));
+
+  // First poll after wake reports idle time that includes the sleep.
+  InjectIdle(base::Hours(8));
+  EXPECT_EQ(relaunch_count_, 0);
+  EXPECT_TRUE(manager_->is_scheduled());
+
+  ExpectRelaunchAfterAwakeWindow(base::Hours(8));
+
+  // The deferral is reported once as a blocker on schedule completion.
+  histogram_tester.ExpectBucketCount(
+      "Session.ScheduledRestart.BlockerEncountered",
+      ScheduledRestartBlocker::kRecentSystemWake, 1);
+  histogram_tester.ExpectTotalCount(
+      "Session.ScheduledRestart.BlockerEncountered", 1);
+  histogram_tester.ExpectUniqueSample(
+      "Session.ScheduledRestart.ExecutionOutcome",
+      ScheduledRestartExecutionOutcome::kSuccessOnIdle, 1);
+}
+
+TEST_F(ScheduledRestartManagerIdleRelaunchTest,
+       InputAfterWakeRestartsIdleCount) {
+  base::HistogramTester histogram_tester;
+  manager_->ScheduleRestartOnIdle();
+  InjectIdle(base::Seconds(10));
+
+  task_environment_.SuspendedAdvanceClock(base::Hours(8));
+
+  // User interacts right at wake, so no poll inside the window ever reaches
+  // the threshold and the window never holds back a restart.
+  InjectIdle(base::Seconds(0));
+  EXPECT_EQ(relaunch_count_, 0);
+
+  ExpectRelaunchAfterAwakeWindow(base::TimeDelta());
+
+  histogram_tester.ExpectTotalCount(
+      "Session.ScheduledRestart.BlockerEncountered", 0);
+}
+
+TEST_F(ScheduledRestartManagerIdleRelaunchTest,
+       ClockSkewWithinToleranceDoesNotDeferRelaunch) {
+  manager_->ScheduleRestartOnIdle();
+  InjectIdle(base::Seconds(10));
+
+  // Advancing the wall clock without base::LiveTicks by kMinDetectedSuspend
+  // (e.g. a minor NTP adjustment) is within tolerance and does not defer the
+  // restart.
+  task_environment_.SuspendedAdvanceClock(
+      ScheduledRestartManager::kMinDetectedSuspend);
+  InjectIdle(threshold_);
+  EXPECT_EQ(relaunch_count_, 1);
+}
+
+TEST_F(ScheduledRestartManagerIdleRelaunchTest,
+       LatePollsWhileAwakeDoNotDeferRelaunch) {
+  manager_->ScheduleRestartOnIdle();
+  InjectIdle(base::Seconds(10));
+
+  // A large gap between polls on an awake machine (e.g. timer throttling or UI
+  // jank) advances both clocks equally (0 skew) and does not defer the restart.
+  task_environment_.AdvanceClock(10 * ui::IdlePollingService::kPollInterval);
+  InjectIdle(threshold_);
+  EXPECT_EQ(relaunch_count_, 1);
+}
+
+TEST_F(ScheduledRestartManagerIdleRelaunchTest,
+       PreSleepIdleDoesNotShortenPostWakeDeferral) {
+  manager_->ScheduleRestartOnIdle();
+  const base::TimeDelta idle_before_sleep = threshold_ - base::Seconds(30);
+  InjectIdle(idle_before_sleep);
+
+  task_environment_.SuspendedAdvanceClock(base::Hours(8));
+
+  // Idle clocks that exclude sleep (macOS, X11) resume from the idle time
+  // accumulated before it, so the threshold is reached 30 seconds after the
+  // wake. The restart still waits for a full threshold of running time.
+  InjectIdle(idle_before_sleep);
+  EXPECT_EQ(relaunch_count_, 0);
+
+  ExpectRelaunchAfterAwakeWindow(idle_before_sleep);
+}
+
+TEST_F(ScheduledRestartManagerIdleRelaunchTest,
+       DefersRelaunchOnPowerSuspendAndResume) {
+  base::HistogramTester histogram_tester;
+  manager_->ScheduleRestartOnIdle();
+  InjectIdle(base::Seconds(10));
+
+  power_monitor_source_.GenerateSuspendEvent();
+
+  // Modern Standby: base::LiveTicks can continue advancing while the system is
+  // in standby, so skew remains 0.
+  task_environment_.AdvanceClock(threshold_);
+
+  // A poll arrives before OnResume() while is_system_suspended_ is true. Even
+  // though reported idle time exceeds the threshold, the restart is deferred
+  // and recorded as a recent wake blocker.
+  InjectIdle(threshold_ + base::Seconds(10));
+  EXPECT_EQ(relaunch_count_, 0);
+  EXPECT_TRUE(manager_->is_scheduled());
+
+  task_environment_.SuspendedAdvanceClock(base::Hours(8));
+  power_monitor_source_.GenerateResumeEvent();
+
+  ExpectRelaunchAfterAwakeWindow(base::Hours(8));
+
+  histogram_tester.ExpectBucketCount(
+      "Session.ScheduledRestart.BlockerEncountered",
+      ScheduledRestartBlocker::kRecentSystemWake, 1);
+}
+
+TEST_F(ScheduledRestartManagerIdleRelaunchTest,
+       MissedResumeClearedBySleepSkew) {
+  manager_->ScheduleRestartOnIdle();
+  InjectIdle(base::Seconds(10));
+
+  // OnSuspend() is delivered but OnResume() never arrives. The skew on the
+  // first poll after wake stands in for the missed resume.
+  power_monitor_source_.GenerateSuspendEvent();
+  task_environment_.SuspendedAdvanceClock(base::Hours(8));
+  InjectIdle(base::Hours(8));
+  EXPECT_EQ(relaunch_count_, 0);
+
+  ExpectRelaunchAfterAwakeWindow(base::Hours(8));
+}
+
+TEST_F(ScheduledRestartManagerIdleRelaunchTest,
+       MissedResumeClearedByUserInput) {
+  manager_->ScheduleRestartOnIdle();
+  InjectIdle(base::Seconds(10));
+
+  // OnSuspend() is delivered but OnResume() never arrives, and the clocks show
+  // no skew (e.g. Modern Standby). The restart stays deferred until user input
+  // after the suspend shows that the system is awake.
+  power_monitor_source_.GenerateSuspendEvent();
+  task_environment_.AdvanceClock(threshold_);
+  InjectIdle(threshold_ + base::Seconds(10));
+  EXPECT_EQ(relaunch_count_, 0);
+
+  task_environment_.AdvanceClock(ui::IdlePollingService::kPollInterval);
+  InjectIdle(base::TimeDelta());
+
+  ExpectRelaunchAfterAwakeWindow(base::TimeDelta());
 }
 
 }  // namespace scheduled_restart

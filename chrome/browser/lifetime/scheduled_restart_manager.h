@@ -19,6 +19,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ref.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/power_monitor/power_observer.h"
 #include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
@@ -74,7 +75,8 @@ enum class ScheduledRestartBlocker {
   kAudibleTab = 2,
   kVideoCapture = 3,
   kAudioCapture = 4,
-  kMaxValue = kAudioCapture,
+  kRecentSystemWake = 5,
+  kMaxValue = kRecentSystemWake,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/session/enums.xml:ScheduledRestartBlocker)
 
@@ -90,8 +92,16 @@ enum class ScheduledRestartBlocker {
 // managed by `GlobalFeatures`. It can be accessed via
 // `g_browser_process->GetFeatures()->scheduled_restart_manager()`.
 class ScheduledRestartManager : public UpgradeObserver,
-                                public ui::IdlePollingService::Observer {
+                                public ui::IdlePollingService::Observer,
+                                public base::PowerSuspendObserver {
  public:
+  // Wall-clock vs. base::LiveTicks skew between consecutive idle polls must
+  // exceed this threshold to be treated as a system suspend. Kept above zero
+  // to ignore minor NTP or manual clock adjustments while still catching
+  // brief suspends. Also used as a safety margin in the user-input check,
+  // because `state.idle_time` is rounded down to whole seconds.
+  static constexpr base::TimeDelta kMinDetectedSuspend = base::Seconds(5);
+
   explicit ScheduledRestartManager(UpgradeDetector& upgrade_detector);
   ScheduledRestartManager(const ScheduledRestartManager&) = delete;
   ScheduledRestartManager& operator=(const ScheduledRestartManager&) = delete;
@@ -148,6 +158,10 @@ class ScheduledRestartManager : public UpgradeObserver,
 
   // ui::IdlePollingService::Observer:
   void OnIdleStateChange(const ui::IdlePollingService::State& state) override;
+
+  // base::PowerSuspendObserver:
+  void OnSuspend() override;
+  void OnResume() override;
 
   // Registers Local State preferences used by ScheduledRestartManager.
   static void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
@@ -221,6 +235,22 @@ class ScheduledRestartManager : public UpgradeObserver,
   // system suspend duration across all desktop platforms when measuring
   // TimeToUpdateAfterScheduled.
   base::Time schedule_start_time_ GUARDED_BY_CONTEXT(sequence_checker_);
+  // Wall-clock and awake-clock readings from the previous idle poll (seeded
+  // when monitoring starts), used to detect suspend skew across polls.
+  base::Time last_idle_poll_time_ GUARDED_BY_CONTEXT(sequence_checker_);
+  base::LiveTicks last_idle_poll_live_ticks_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+  // Awake-clock timestamp of the most recent system wake (from OnResume() or
+  // suspend skew). Restarts are deferred until GetIdleThreshold() of
+  // base::LiveTicks has elapsed since this point.
+  base::LiveTicks last_wake_live_ticks_ GUARDED_BY_CONTEXT(sequence_checker_);
+  // Set by OnSuspend(). Cleared by OnResume(), or by OnIdleStateChange() when
+  // clock skew or user input shows that the system is awake, since OnResume()
+  // is best-effort and may never arrive.
+  bool is_system_suspended_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
+  // Awake-clock timestamp of the most recent OnSuspend(), used to detect user
+  // input that happened after it.
+  base::LiveTicks suspend_live_ticks_ GUARDED_BY_CONTEXT(sequence_checker_);
   bool is_executing_restart_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
   // Tracks unique blocker types encountered while waiting for an idle restart
   // to execute. Emitted to UMA once upon schedule completion (success or
