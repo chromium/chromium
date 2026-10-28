@@ -48,6 +48,14 @@
 - (instancetype)initWithCoder:(NSCoder*)coder NS_UNAVAILABLE;
 - (instancetype)init NS_UNAVAILABLE;
 
+// Returns the preferred content height of the sheet, combining the navigation
+// bar height, table view content height, and bottom margin.
+- (CGFloat)preferredHeightForContent;
+
+// Returns a custom sheet presentation detent sized to
+// `-preferredHeightForContent` and capped at the maximum detent height.
+- (UISheetPresentationControllerDetent*)preferredHeightDetent;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_AUTOFILL_AUTOFILL_AI_UI_AUTOFILL_AI_SOURCES_VIEW_CONTROLLER_H_

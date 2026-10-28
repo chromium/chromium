@@ -697,11 +697,10 @@ void UndoInSessionSuppressedEntity(
   UISheetPresentationController* sheetPresentationController =
       _sourcesNavigationController.sheetPresentationController;
   if (sheetPresentationController) {
-    sheetPresentationController.detents = @[
-      [UISheetPresentationControllerDetent mediumDetent],
-      [UISheetPresentationControllerDetent largeDetent],
-    ];
-    sheetPresentationController.prefersGrabberVisible = NO;
+    sheetPresentationController.detents =
+        @[ [sourcesViewController preferredHeightDetent] ];
+    sheetPresentationController.prefersGrabberVisible = YES;
+    sheetPresentationController.prefersEdgeAttachedInCompactHeight = YES;
   }
 
   UIViewController* presenter = self.baseViewController;
