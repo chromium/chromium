@@ -94,6 +94,8 @@ id<GREYMatcher> DefaultPromoSubtitle() {
          first_run::kAndroidSwitcherDefaultBrowserPromoInFREParam, "/",
          first_run::
              kAndroidSwitcherDefaultBrowserPromoInFREParamSegmentationSignal}));
+    config.additional_args.push_back(
+        "-force-device-switcher-experience=AndroidPhone");
   } else {
     // GCRGemini crashes on nil identity in this sign-in setup.
     config.additional_args.push_back("--enable-features=GeminiKillSwitch");

@@ -4,12 +4,9 @@
 
 #import "ios/chrome/browser/first_run/default_browser/coordinator/default_browser_screen_coordinator.h"
 
-#import "base/feature_list.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/feature_engagement/public/tracker.h"
-#import "components/signin/public/base/consent_level.h"
-#import "components/signin/public/identity_manager/identity_manager.h"
 #import "ios/chrome/browser/default_browser/model/default_browser_interest_signals.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
@@ -27,6 +24,7 @@
 #import "ios/chrome/browser/first_run/tos/coordinator/tos_coordinator.h"
 #import "ios/chrome/browser/first_run/uma/coordinator/uma_coordinator.h"
 #import "ios/chrome/browser/instructions_bottom_sheet/ui/instructions_bottom_sheet_coordinator.h"
+#import "ios/chrome/browser/segmentation_platform/model/segmentation_platform_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -35,8 +33,10 @@
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 
-@interface DefaultBrowserScreenCoordinator () <TOSCoordinatorDelegate,
-                                               UMACoordinatorDelegate>
+@interface DefaultBrowserScreenCoordinator () <
+    DefaultBrowserScreenMediatorDelegate,
+    TOSCoordinatorDelegate,
+    UMACoordinatorDelegate>
 @end
 
 @implementation DefaultBrowserScreenCoordinator {
@@ -47,6 +47,7 @@
   TOSCoordinator* _TOSCoordinator;
   UMACoordinator* _UMACoordinator;
   raw_ptr<ProfileIOS> _profile;
+  UIView* _transparentView;
 }
 @synthesize baseNavigationController = _baseNavigationController;
 
@@ -67,6 +68,7 @@
   CHECK(!_instructionsCoordinator, base::NotFatalUntil::M155);
   CHECK(!_mediator, base::NotFatalUntil::M155);
   CHECK(!_viewController, base::NotFatalUntil::M155);
+  CHECK(!_transparentView);
 }
 
 #pragma mark - ChromeCoordinator
@@ -75,37 +77,42 @@
   [super start];
 
   _profile = self.profile->GetOriginalProfile();
-  base::UmaHistogramEnumeration(first_run::kFirstRunStageHistogram,
-                                first_run::kDefaultBrowserScreenStart);
-  default_browser::NotifyDefaultBrowserFREPromoShown(
-      feature_engagement::TrackerFactory::GetForProfile(_profile));
-
-  _viewController = [self createViewController];
-  _viewController.delegate = self;
-  _viewController.modalInPresentation = YES;
-
-  if (!first_run::IsAnimatedDefaultBrowserPromoInFREEnabled() &&
-      base::FeatureList::IsEnabled(first_run::kUpdatedFirstRunSequence)) {
-    _mediator = [[DefaultBrowserScreenMediator alloc] init];
-    _mediator.consumer = _viewController;
+  _mediator = [[DefaultBrowserScreenMediator alloc]
+             initWithIdentityManager:IdentityManagerFactory::GetForProfile(
+                                         _profile)
+      deviceSwitcherResultDispatcher:segmentation_platform::
+                                         SegmentationPlatformServiceFactory::
+                                             GetDispatcherForProfile(_profile)];
+  _mediator.delegate = self;
+  [_mediator startPromoEvaluation];
+  if (!_viewController) {
+    [self showTransparentOverlay];
   }
-
-  BOOL animated = self.baseNavigationController.topViewController != nil;
-  [self.baseNavigationController setViewControllers:@[ _viewController ]
-                                           animated:animated];
 }
 
 - (void)stop {
+  [_transparentView removeFromSuperview];
+  _transparentView = nil;
   _viewController.delegate = nil;
   _viewController = nil;
   _delegate = nil;
   _mediator.consumer = nil;
+  _mediator.delegate = nil;
   [_mediator disconnect];
   _mediator = nil;
   _instructionsCoordinator = nil;
   [self stopTOSCoordinator];
+  _profile = nullptr;
 
   [super stop];
+}
+
+#pragma mark - DefaultBrowserScreenMediatorDelegate
+
+- (void)defaultBrowserScreenMediator:(DefaultBrowserScreenMediator*)mediator
+    didFinishEvaluationWithAndroidSwitcherPromo:(BOOL)showAndroidSwitcherPromo {
+  CHECK_EQ(_mediator, mediator);
+  [self presentScreenWithAndroidSwitcherPromo:showAndroidSwitcherPromo];
 }
 
 #pragma mark - PromoStyleViewControllerDelegate
@@ -203,6 +210,27 @@
 
 #pragma mark - Private
 
+// Presents the Default Browser promo screen.
+- (void)presentScreenWithAndroidSwitcherPromo:(BOOL)showAndroidSwitcherPromo {
+  [_transparentView removeFromSuperview];
+  _transparentView = nil;
+
+  base::UmaHistogramEnumeration(first_run::kFirstRunStageHistogram,
+                                first_run::kDefaultBrowserScreenStart);
+  default_browser::NotifyDefaultBrowserFREPromoShown(
+      feature_engagement::TrackerFactory::GetForProfile(_profile));
+
+  _viewController = [self
+      createViewControllerWithAndroidSwitcherPromo:showAndroidSwitcherPromo];
+  _viewController.delegate = self;
+  _viewController.modalInPresentation = YES;
+  _mediator.consumer = _viewController;
+
+  BOOL animated = self.baseNavigationController.topViewController != nil;
+  [self.baseNavigationController setViewControllers:@[ _viewController ]
+                                           animated:animated];
+}
+
 - (void)stopTOSCoordinator {
   [_TOSCoordinator stop];
   _TOSCoordinator.delegate = nil;
@@ -220,32 +248,28 @@
   [_TOSCoordinator start];
 }
 
-// Returns YES if the Android Switcher Default Browser promo should be
-// displayed.
-- (BOOL)shouldDisplayAndroidSwitcherPromo {
-  // TODO(crbug.com/573558105): Update the triggering criteria from the
-  // signed-in status to the actual Android switcher signal.
-  signin::IdentityManager* identityManager =
-      IdentityManagerFactory::GetForProfile(_profile);
-  if (!identityManager ||
-      !identityManager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
-    return NO;
-  }
-  return first_run::GetAndroidSwitcherDefaultBrowserPromoInFREVariationType() !=
-         first_run::AndroidSwitcherDefaultBrowserPromoInFREVariationType::
-             kDisabled;
+// Shows a transparent overlay on `baseViewController` to block user interaction
+// while waiting for the device switcher signal.
+- (void)showTransparentOverlay {
+  _transparentView =
+      [[UIView alloc] initWithFrame:self.baseViewController.view.bounds];
+  _transparentView.autoresizingMask =
+      UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+  _transparentView.backgroundColor = [UIColor clearColor];
+  [self.baseViewController.view addSubview:_transparentView];
 }
 
 // Creates and configures the promo view controller to present.
 - (PromoStyleViewController<DefaultBrowserScreenConsumer>*)
-    createViewController {
+    createViewControllerWithAndroidSwitcherPromo:
+        (BOOL)showAndroidSwitcherPromo {
   if (first_run::IsAnimatedDefaultBrowserPromoInFREEnabled()) {
     DefaultBrowserAnimatedScreenViewController* viewController =
         [[DefaultBrowserAnimatedScreenViewController alloc] init];
     viewController.shouldHideBanner = YES;
     return viewController;
   }
-  if ([self shouldDisplayAndroidSwitcherPromo]) {
+  if (showAndroidSwitcherPromo) {
     return [[DefaultBrowserAndroidSwitcherScreenViewController alloc] init];
   }
   return [[DefaultBrowserScreenViewController alloc] init];
