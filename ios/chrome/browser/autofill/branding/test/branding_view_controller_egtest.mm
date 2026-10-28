@@ -58,6 +58,18 @@ void DisableManualFillButtonsInProfileStore() {
 
 // Taps a form field to bring up the system keyboard.
 void BringUpKeyboard() {
+  [ChromeEarlGrey
+      evaluateJavaScriptForSideEffect:
+          [NSString
+              stringWithFormat:@"document.getElementById('%s').scrollIntoView("
+                               @"{block: 'center'});",
+                               kFormElementUsername]];
+  // `TapWebElementWithId` computes the element's screen coordinates when
+  // constructing the action, before `performAction:` synchronizes with the UI
+  // thread. Wait for in-flight viewport/inset animations to idle first so
+  // `GetBoundingRectOfElement` reads settled `contentInset` and `zoomScale`.
+  GREYWaitForAppToIdle(
+      @"App failed to idle before computing element tap point");
   [[EarlGrey selectElementWithMatcher:WebViewMatcher()]
       performAction:TapWebElementWithId(kFormElementUsername)];
   [ChromeEarlGrey waitForKeyboardToAppear];
