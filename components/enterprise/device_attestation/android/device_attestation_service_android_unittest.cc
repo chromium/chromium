@@ -224,7 +224,7 @@ TEST_F(DeviceAttestationServiceAndroidTest,
 }
 
 // Tests that a successful blob generation records the success result, blob
-// size, and latency even when a placeholder error message (e.g. "No error") is
+// size, and latency even when a placeholder error message (e.g. "some_error") is
 // populated.
 TEST_F(DeviceAttestationServiceAndroidTest,
        GetAttestationResponse_RecordsMetricsOnSuccessWithErrorMessage) {
@@ -234,7 +234,7 @@ TEST_F(DeviceAttestationServiceAndroidTest,
               GenerateAttestationBlob(testing::_, testing::_, testing::_,
                                       testing::_, testing::_))
       .WillOnce(base::test::RunOnceCallback<4>(BlobGenerationResult{
-          .attestation_blob = kFakeBlob, .error_message = "No error"}));
+          .attestation_blob = kFakeBlob, .error_message = "some_error"}));
 
   base::test::TestFuture<const AttestationResult&> test_future;
   service_->GetAttestationResponse("flow_name", report, "legacy_payload",
