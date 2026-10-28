@@ -20,14 +20,14 @@ class GeminiService;
 
 namespace {
 
-std::unique_ptr<KeyedService> BuildGeminiService(ProfileIOS* profile) {
-  CHECK(!profile->IsOffTheRecord());
+std::unique_ptr<KeyedService> BuildGeminiService(ProfileIOS& profile) {
+  CHECK(!profile.IsOffTheRecord());
   if (!IsPageActionMenuEnabled()) {
     return nullptr;
   }
   return std::make_unique<GeminiServiceImpl>(
       AuthenticationServiceFactory::GetForProfile(profile),
-      IdentityManagerFactory::GetForProfile(profile), profile->GetPrefs(),
+      IdentityManagerFactory::GetForProfile(profile), profile.GetPrefs(),
       OptimizationGuideServiceFactory::GetForProfile(profile));
 }
 
@@ -41,6 +41,6 @@ GeminiServiceFactory::GeminiServiceFactory(PassKey key)
 }
 
 std::unique_ptr<KeyedService> GeminiServiceFactory::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
+    ProfileIOS& profile) const {
   return BuildGeminiService(profile);
 }
