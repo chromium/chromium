@@ -101,6 +101,13 @@ enum class BookmarkStorageType;
 // Returns the number of times a Promo has been seen.
 + (int)numberOfTimesPromoAlreadySeen;
 
+// Clears `_pendingSelectionIndexPath` on any `UITableView` in the connected
+// window scenes. This is needed after presenting or dismissing a context menu
+// via an EarlGrey long press on a `UITableViewCell`, which detaches the cell
+// before `UITouchPhaseEnded` is delivered and leaves the table view's pending
+// selection set to the long-pressed row.
++ (void)cancelBookmarksTableViewTouches;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_BOOKMARKS_TEST_BOOKMARK_EARL_GREY_APP_INTERFACE_H_

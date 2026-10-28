@@ -4,8 +4,11 @@
 
 #import "ios/chrome/browser/bookmarks/test/bookmark_earl_grey_app_interface.h"
 
+#import <UIKit/UIKit.h>
+
 #import <vector>
 
+#import "base/apple/foundation_util.h"
 #import "base/format_macros.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
@@ -31,6 +34,25 @@
 #import "url/gurl.h"
 
 namespace {
+
+// Recursively clears `_pendingSelectionIndexPath` on any `UITableView` in
+// `view`'s hierarchy. When EarlGrey injects a long press on a `UITableViewCell`
+// to present a context menu, `UIScrollViewDelayedTouchesBeganGestureRecognizer`
+// calls `-[UITableView touchesBegan:withEvent:]` (setting
+// `_pendingSelectionIndexPath` to the long-pressed row), and presenting
+// `_UIContextMenuContainerView` detaches the cell before `GREYTouchInjector`
+// delivers `UITouchPhaseEnded`. Because `UITableView` never receives
+// `touchesEnded` or `touchesCancelled`, `_pendingSelectionIndexPath` remains
+// set, which would cause a subsequent tap (such as dismissing the context menu
+// or tapping another row) to unexpectedly select the long-pressed row.
+void CancelTableViewTouchesInView(UIView* view) {
+  if ([view isKindOfClass:[UITableView class]]) {
+    [view setValue:nil forKey:@"_pendingSelectionIndexPath"];
+  }
+  for (UIView* subview in view.subviews) {
+    CancelTableViewTouchesInView(subview);
+  }
+}
 
 bookmarks::BookmarkModel* GetBookmarkModel() {
   return ios::BookmarkModelFactory::GetForProfile(
@@ -419,6 +441,15 @@ const bookmarks::BookmarkNode* GetMobileNodeWithType(
 + (int)numberOfTimesPromoAlreadySeen {
   PrefService* prefs = chrome_test_util::GetOriginalProfile()->GetPrefs();
   return prefs->GetInteger(prefs::kIosBookmarkSigninPromoDisplayedCount);
+}
+
++ (void)cancelBookmarksTableViewTouches {
+  for (UIScene* scene in UIApplication.sharedApplication.connectedScenes) {
+    UIWindowScene* windowScene = base::apple::ObjCCast<UIWindowScene>(scene);
+    for (UIWindow* window in windowScene.windows) {
+      CancelTableViewTouchesInView(window);
+    }
+  }
 }
 
 @end
