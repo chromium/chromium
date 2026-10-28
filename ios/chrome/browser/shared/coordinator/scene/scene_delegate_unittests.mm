@@ -8,6 +8,7 @@
 
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/main_application_delegate.h"
+#import "ios/chrome/browser/shared/coordinator/scene/chrome_connection_options.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
@@ -110,6 +111,32 @@ TEST_F(SceneDelegateTest, TestInitialConnectionWithShortcutSetsIntent) {
   [coldStartDelegate scene:mock_scene_
       willConnectToSession:OCMClassMock([UISceneSession class])
                    options:mock_options];
+
+  EXPECT_TRUE(coldStartDelegate.sceneState.startupHadExternalIntent);
+  [coldStartDelegate sceneDidDisconnect:mock_scene_];
+}
+
+// Tests that connecting with `ChromeConnectionOptions` containing a user
+// activity sets `startupHadExternalIntent`.
+TEST_F(SceneDelegateTest, TestInitialConnectionWithChromeOptionsSetsIntent) {
+  SceneDelegate* coldStartDelegate = [[SceneDelegate alloc] init];
+
+  NSUserActivity* activity =
+      [[NSUserActivity alloc] initWithActivityType:@"test"];
+  NSSet<NSUserActivity*>* activities = [NSSet setWithObject:activity];
+  ChromeConnectionOptions* chrome_options =
+      [[ChromeConnectionOptions alloc] initWithUserActivities:activities
+                                                  URLContexts:nil
+                                                 shortcutItem:nil];
+
+  EXPECT_FALSE(coldStartDelegate.sceneState.startupHadExternalIntent);
+
+  UIWindow* window = coldStartDelegate.window;
+  window.windowScene = mock_scene_;
+
+  [coldStartDelegate scene:mock_scene_
+      willConnectToSession:OCMClassMock([UISceneSession class])
+             chromeOptions:chrome_options];
 
   EXPECT_TRUE(coldStartDelegate.sceneState.startupHadExternalIntent);
   [coldStartDelegate sceneDidDisconnect:mock_scene_];

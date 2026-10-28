@@ -120,6 +120,7 @@
 #import "ios/chrome/browser/sessions/model/session_restoration_service_factory.h"
 #import "ios/chrome/browser/sessions/model/session_util.h"
 #import "ios/chrome/browser/share_extension/model/share_extension_controller.h"
+#import "ios/chrome/browser/shared/coordinator/scene/chrome_connection_options.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_delegate.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
@@ -323,7 +324,7 @@ std::string GetProfileNameFromTask(SceneState* scene_state,
 std::string GetProfileNameForChoice(ProfileChoice choice,
                                     std::string_view scene_state_id,
                                     SceneState* scene_state,
-                                    UISceneConnectionOptions* options,
+                                    ChromeConnectionOptions* options,
                                     TaskOrchestrator* orchestrator,
                                     ProfileManagerIOS* manager,
                                     ProfileAttributesStorageIOS* storage,
@@ -1732,13 +1733,13 @@ std::string GetProfileNameForChoice(ProfileChoice choice,
 
     // Pretend the scene has been disconnected, then reconnect it.
     const SceneActivationLevel savedLevel = sceneState.activationLevel;
-    UISceneConnectionOptions* savedOptions = sceneState.connectionOptions;
+    ChromeConnectionOptions* savedOptions = sceneState.connectionOptions;
 
     // Destroy the old SceneState and recreate it.
     [sceneDelegate sceneDidDisconnect:scene];
     [sceneDelegate scene:scene
         willConnectToSession:scene.session
-                     options:savedOptions];
+               chromeOptions:savedOptions];
 
     sceneState = sceneDelegate.sceneState;
     DCHECK(sceneState);

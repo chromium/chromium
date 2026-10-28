@@ -28,6 +28,8 @@ source_set("scene_activation_level") {
 
 source_set("scene_state_header") {
   sources = [
+    "chrome_connection_options.h",
+    "chrome_connection_options.mm",
     "connection_information.h",
     "scene_agent.h",
     "scene_controller.h",

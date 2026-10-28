@@ -16,6 +16,7 @@
 
 @class AppState;
 @protocol BrowserProviderInterface;
+@class ChromeConnectionOptions;
 @class IncognitoState;
 @class LensOverlayStateNotifier;
 @class ProfileState;
@@ -60,7 +61,7 @@ class SigninInProgress;
 // Connection options of `scene`, if any, from when the scene was connected.
 // TODO(crbug.com/462018636): Remove this property once `kEnableNewStartupFlow`
 // is enabled by default.
-@property(nonatomic, strong) UISceneConnectionOptions* connectionOptions;
+@property(nonatomic, strong) ChromeConnectionOptions* connectionOptions;
 
 // The interface provider associated with this scene.
 @property(nonatomic, strong, readonly) id<BrowserProviderInterface>

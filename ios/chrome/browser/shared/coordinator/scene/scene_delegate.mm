@@ -19,6 +19,7 @@
 #import "ios/chrome/app/task_request.h"
 #import "ios/chrome/app/tests_hook.h"
 #import "ios/chrome/browser/appearance/ui_bundled/appearance_customization.h"
+#import "ios/chrome/browser/shared/coordinator/scene/chrome_connection_options.h"
 #import "ios/chrome/browser/shared/model/paths/paths.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/chrome_overlay_window/chrome_overlay_window.h"
@@ -93,6 +94,14 @@ void SyncBreadcrumbsLog() {
 - (void)scene:(UIScene*)scene
     willConnectToSession:(UISceneSession*)session
                  options:(UISceneConnectionOptions*)connectionOptions {
+  ChromeConnectionOptions* chromeOptions = [[ChromeConnectionOptions alloc]
+      initWithConnectionOptions:connectionOptions];
+  [self scene:scene willConnectToSession:session chromeOptions:chromeOptions];
+}
+
+- (void)scene:(UIScene*)scene
+    willConnectToSession:(UISceneSession*)session
+           chromeOptions:(ChromeConnectionOptions*)options {
   CHECK(_window);
   CHECK(!_sceneState);
   MainApplicationDelegate* appDelegate =
@@ -104,34 +113,32 @@ void SyncBreadcrumbsLog() {
 
   _sceneState.window = _window;
   _sceneState.scene = base::apple::ObjCCastStrict<UIWindowScene>(scene);
-  _sceneState.currentOrigin = [self originFromSession:session
-                                              options:connectionOptions];
+  _sceneState.currentOrigin = [self originFromSession:session options:options];
   _sceneState.activationLevel = SceneActivationLevelBackground;
   _sceneState.multipleScenesAvailable =
       [self multipleScenesAvailableForScene:_sceneState.scene];
   if (IsEnableNewStartupFlowEnabled()) {
-    if (connectionOptions.shortcutItem) {
-      [self addTaskRequestForShortcutItem:connectionOptions.shortcutItem
+    if (options.shortcutItem) {
+      [self addTaskRequestForShortcutItem:options.shortcutItem
                               isColdStart:YES
                                   handler:nil];
     }
-    if (connectionOptions.URLContexts.count != 0) {
-      for (UIOpenURLContext* URLContext in connectionOptions.URLContexts) {
+    if (options.URLContexts.count != 0) {
+      for (UIOpenURLContext* URLContext in options.URLContexts) {
         [self addTaskRequestForURLContext:URLContext isColdStart:YES];
       }
     }
-    if (connectionOptions.userActivities.count != 0) {
-      for (NSUserActivity* userActivity in connectionOptions.userActivities) {
+    if (options.userActivities.count != 0) {
+      for (NSUserActivity* userActivity in options.userActivities) {
         [self addTaskRequestForUserActivity:userActivity isColdStart:YES];
       }
     }
   } else {
-    _sceneState.connectionOptions = connectionOptions;
+    _sceneState.connectionOptions = options;
   }
 
-  if (connectionOptions.shortcutItem != nil ||
-      connectionOptions.URLContexts.count != 0 ||
-      connectionOptions.userActivities.count != 0) {
+  if (options.shortcutItem != nil || options.URLContexts.count != 0 ||
+      options.userActivities.count != 0) {
     _sceneState.startupHadExternalIntent = YES;
   }
 
@@ -161,7 +168,7 @@ void SyncBreadcrumbsLog() {
 #pragma mark - private
 
 - (WindowActivityOrigin)originFromSession:(UISceneSession*)session
-                                  options:(UISceneConnectionOptions*)options {
+                                  options:(ChromeConnectionOptions*)options {
   WindowActivityOrigin origin = WindowActivityUnknownOrigin;
 
   // When restoring the session, the origin is set to restore to avoid

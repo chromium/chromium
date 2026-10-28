@@ -10,6 +10,8 @@
 #import "ios/chrome/browser/shared/coordinator/scene/scene_controller.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 
+@class ChromeConnectionOptions;
+
 // An object acting as a scene delegate for UIKit. Updates the scene state.
 @interface SceneDelegate : NSObject <UIWindowSceneDelegate>
 
@@ -20,6 +22,11 @@
 
 // The controller created and owned by this object.
 @property(nonatomic, readonly) SceneController* sceneController;
+
+// Connects `scene` to `session` using `options`.
+- (void)scene:(UIScene*)scene
+    willConnectToSession:(UISceneSession*)session
+           chromeOptions:(ChromeConnectionOptions*)options;
 
 @end
 
