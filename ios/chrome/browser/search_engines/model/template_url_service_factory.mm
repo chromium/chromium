@@ -40,9 +40,9 @@ base::RepeatingClosure GetDefaultSearchProviderChangedCallback() {
 #endif
 }
 
-std::unique_ptr<KeyedService> BuildTemplateURLService(ProfileIOS* profile) {
+std::unique_ptr<KeyedService> BuildTemplateURLService(ProfileIOS& profile) {
   return std::make_unique<TemplateURLService>(
-      CHECK_DEREF(profile->GetPrefs()),
+      CHECK_DEREF(profile.GetPrefs()),
       CHECK_DEREF(
           ios::SearchEngineChoiceServiceFactory::GetForProfile(profile)),
       CHECK_DEREF(ios::TemplateURLPrepopulateDataResolverFactory::GetForProfile(
@@ -52,7 +52,7 @@ std::unique_ptr<KeyedService> BuildTemplateURLService(ProfileIOS* profile) {
       CHECK_DEREF(IOSProfileMetricsServiceFactory::GetForProfile(profile)),
       std::make_unique<ios::UIThreadSearchTermsData>(),
       ios::WebDataServiceFactory::GetKeywordWebDataForProfile(
-          profile, ServiceAccessType::EXPLICIT_ACCESS),
+          &profile, ServiceAccessType::EXPLICIT_ACCESS),
       std::make_unique<ios::TemplateURLServiceClientImpl>(
           ios::HistoryServiceFactory::GetForProfile(profile)),
       GetDefaultSearchProviderChangedCallback());
@@ -61,7 +61,7 @@ std::unique_ptr<KeyedService> BuildTemplateURLService(ProfileIOS* profile) {
 }  // namespace
 
 // static
-TemplateURLServiceFactory::TestingFactory
+TemplateURLServiceFactory::TestingFactoryByRef
 TemplateURLServiceFactory::GetDefaultFactory() {
   return base::BindOnce(&BuildTemplateURLService);
 }
@@ -87,7 +87,7 @@ void TemplateURLServiceFactory::RegisterProfilePrefs(
 }
 
 std::unique_ptr<KeyedService>
-TemplateURLServiceFactory::BuildServiceInstanceFor(ProfileIOS* profile) const {
+TemplateURLServiceFactory::BuildServiceInstanceFor(ProfileIOS& profile) const {
   return BuildTemplateURLService(profile);
 }
 
