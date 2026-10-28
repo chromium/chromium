@@ -11,9 +11,14 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 
 class GURL;
+
+namespace base {
+class FilePath;
+}  // namespace base
 
 namespace re2 {
 class RE2;
@@ -26,9 +31,7 @@ inline constexpr size_t kMaxCustomFormControlScriptSizeBytes = 64 * 1024;
 
 // Maps HTTP/HTTPS page URLs to custom form control scripts. There is one index
 // per browser process, owned by the embedder. The entries come from a local
-// directory given on the command line: the files are read and parsed on a
-// background sequence, and the result is passed to `SetEntries()` on the UI
-// sequence.
+// directory given on the command line (see `InitializeFromDirectory()`).
 //
 // The index isn't synchronized: it must be created and used on the same
 // sequence (the browser UI sequence).
@@ -51,6 +54,31 @@ class CustomFormControlScriptIndex final {
   CustomFormControlScriptIndex& operator=(const CustomFormControlScriptIndex&) =
       delete;
   ~CustomFormControlScriptIndex();
+
+  // Asynchronously replaces the entries with the ones listed in
+  // `directory`/index.json, a JSON list of objects of the form:
+  //
+  //   [{"host": "example.com", "url_filter": "/checkout",
+  //     "script_path": "example_com.js"}]
+  //
+  // `host` and `url_filter` are as in `Entry`; `url_filter` is optional.
+  // `script_path` is the path of the script file, relative to `directory`.
+  //
+  // The files are read on a background sequence, and the entries are then
+  // passed to `SetEntries()`. If index.json can't be read or isn't a JSON list,
+  // the current entries are kept. Either way, `is_initialized()` returns true
+  // afterwards. Items with missing or non-string fields, or with a
+  // `script_path` that is absolute or contains `..`, are skipped, as are
+  // scripts that can't be read or exceed
+  // `kMaxCustomFormControlScriptSizeBytes`.
+  void InitializeFromDirectory(const base::FilePath& directory);
+
+  // Returns true once the most recent `InitializeFromDirectory()` call has
+  // finished reading the directory, whether or not it succeeded.
+  bool is_initialized() const {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    return is_initialized_;
+  }
 
   // Validates, compiles, and replaces the current entries. Entries with an
   // uncanonicalizable or public-suffix-only host, an invalid `url_filter`
@@ -77,7 +105,9 @@ class CustomFormControlScriptIndex final {
   };
 
   std::vector<CompiledEntry> entries_;
+  bool is_initialized_ = false;
   SEQUENCE_CHECKER(sequence_checker_);
+  base::WeakPtrFactory<CustomFormControlScriptIndex> weak_ptr_factory_{this};
 };
 
 }  // namespace autofill
