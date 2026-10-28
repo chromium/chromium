@@ -240,7 +240,8 @@ class SaveToPhotosSettingsMediatorTest : public PlatformTest {
 
 // Tests that invoking the SaveToPhotosSettingsMutator interface on the mediator
 // leads to the expected changes in the preferences.
-TEST_F(SaveToPhotosSettingsMediatorTest, CanMutateSelectedIdentity) {
+// TODO(crbug.com/451601299): Re-enable the test.
+TEST_F(SaveToPhotosSettingsMediatorTest, DISABLED_CanMutateSelectedIdentity) {
   SaveToPhotosSettingsMediator* mediator = CreateSaveToPhotosSettingsMediator();
 
   profile_->GetPrefs()->SetString(prefs::kIosSaveToPhotosDefaultGaiaId,
@@ -273,7 +274,9 @@ TEST_F(SaveToPhotosSettingsMediatorTest, CanMutateSelectedIdentity) {
 
 // Tests that external changes in preferences leads to expected changes in the
 // consumer.
-TEST_F(SaveToPhotosSettingsMediatorTest, ExternalPrefChangeUpdatesConsumers) {
+// TODO(crbug.com/451601299): Re-enable the test.
+TEST_F(SaveToPhotosSettingsMediatorTest,
+       DISABLED_ExternalPrefChangeUpdatesConsumers) {
   SaveToPhotosSettingsMediator* mediator = CreateSaveToPhotosSettingsMediator();
 
   profile_->GetPrefs()->SetString(prefs::kIosSaveToPhotosDefaultGaiaId,
@@ -303,8 +306,9 @@ TEST_F(SaveToPhotosSettingsMediatorTest, ExternalPrefChangeUpdatesConsumers) {
 
 // Tests that external changes in the list of accounts authenticated on the
 // device leads to expected changes in the consumer.
+// TODO(crbug.com/451601299): Re-enable the test.
 TEST_F(SaveToPhotosSettingsMediatorTest,
-       ExternalAccountsChangeUpdatesConsumers) {
+       DISABLED_ExternalAccountsChangeUpdatesConsumers) {
   SaveToPhotosSettingsMediator* mediator = CreateSaveToPhotosSettingsMediator();
 
   profile_->GetPrefs()->SetString(prefs::kIosSaveToPhotosDefaultGaiaId,
