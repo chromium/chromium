@@ -953,9 +953,17 @@ linux_memory_builder(
         ),
     ),
     gn_args = gn_args.config(
+        args = {
+            # UBSan test binary links are too large to run many concurrently.
+            "concurrent_links": 4,
+        },
         configs = [
             "ubsan_no_recover",
             "fail_on_san_warnings",
+            # Sanitizer builds set enable_fuzztest_fuzz by default, which adds
+            # coverage instrumentation to all code. CI never uses --fuzz, so
+            # disable it to reduce test runtime.
+            "no_fuzztest_fuzz",
             "release_builder",
             "remoteexec",
             "linux",

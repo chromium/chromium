@@ -1055,6 +1055,13 @@ gn_args.config(
 )
 
 gn_args.config(
+    name = "no_fuzztest_fuzz",
+    args = {
+        "enable_fuzztest_fuzz": False,
+    },
+)
+
+gn_args.config(
     name = "no_lld",
     args = {
         "use_lld": False,
