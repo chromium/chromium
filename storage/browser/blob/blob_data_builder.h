@@ -11,6 +11,7 @@
 
 #include <ostream>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/component_export.h"
@@ -54,7 +55,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobDataBuilder {
   const std::string& uuid() const { return uuid_; }
 
   // Copies the given data into the blob.
-  void AppendData(const std::string& data) {
+  void AppendData(std::string_view data) {
     AppendData(base::as_byte_span(data));
   }
 
