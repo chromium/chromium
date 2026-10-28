@@ -51,14 +51,16 @@ bool IsPendingNavigation(web::WebState* web_state, int64_t navigation_id) {
 // challenged URL is the navigation's URL. Challenges for subresources and for
 // requests made after commit are left unattributed, as on desktop where only
 // main-frame requests get auth UI. The fragment is ignored because it is never
-// sent with the request.
+// sent with the request. An invalid URL, e.g. from a challenge without a
+// failure response, is never attributed.
 int64_t GetNavigationIdForChallenge(web::WebState* web_state,
                                     const GURL& destination_url) {
   EnterpriseProxyTabHelper* tab_helper =
       EnterpriseProxyTabHelper::FromWebState(web_state);
   if (!tab_helper || !tab_helper->pending_navigation_id().has_value() ||
-      destination_url.GetWithoutRef() !=
-          tab_helper->pending_navigation_url().GetWithoutRef()) {
+      !destination_url.is_valid() ||
+      !destination_url.EqualsIgnoringRef(
+          tab_helper->pending_navigation_url())) {
     return kUnknownNavigationId;
   }
   return *tab_helper->pending_navigation_id();
@@ -156,8 +158,10 @@ bool ProxyServiceController::MaybeHandleProxyAuthChallenge(
     return false;
   }
 
-  // `enterprise_proxy_error_service_` is the one running the callback, so it
-  // is alive whenever the callback runs.
+  // `base::Unretained()` is safe because `enterprise_proxy_error_service_` runs
+  // the callback itself, synchronously or from a continuation weakly bound to
+  // itself, and must never post it. The callback can't be weakly bound instead:
+  // it must always run, as WebKit requires its completion handler to be called.
   enterprise_proxy_error_service_->ResolveProxyAuthChallenge(
       *std::move(interception),
       base::BindOnce(&RunProxyAuthCallback,

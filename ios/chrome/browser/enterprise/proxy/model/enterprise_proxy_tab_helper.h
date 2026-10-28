@@ -8,7 +8,7 @@
 #import <cstdint>
 #import <optional>
 
-#import "base/memory/raw_ptr.h"
+#import "base/memory/raw_ref.h"
 #import "base/scoped_observation.h"
 #import "ios/web/public/web_state_observer.h"
 #import "ios/web/public/web_state_user_data.h"
@@ -27,8 +27,8 @@ class WebState;
 // navigation for Enterprise Proxy authentication challenges. It records the
 // navigation ID and URL when the navigation starts, follows server redirects,
 // and drops both once that navigation finishes. When any navigation finishes,
-// it also drops the enterprise proxy error recorded for it, if left unused, as
-// it does for the pending navigation when the helper is destroyed.
+// it also drops the disguised error recorded for it, if left unused, as it does
+// for the pending navigation when the helper is destroyed.
 class EnterpriseProxyTabHelper
     : public web::WebStateObserver,
       public web::WebStateUserData<EnterpriseProxyTabHelper> {
@@ -69,8 +69,8 @@ class EnterpriseProxyTabHelper
   // Returns whether `navigation_context` is the pending navigation.
   bool IsPendingNavigation(web::NavigationContext* navigation_context) const;
 
-  // Drops errors recorded for finished navigations.
-  raw_ptr<enterprise_net::EnterpriseProxyErrorService> error_service_ = nullptr;
+  // Service that holds the disguised errors recorded for navigations.
+  const raw_ref<enterprise_net::EnterpriseProxyErrorService> error_service_;
   std::optional<int64_t> pending_navigation_id_;
   GURL pending_navigation_url_;
 

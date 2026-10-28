@@ -525,6 +525,26 @@ TEST_F(ProxyServiceControllerTest, PendingNavigationChallengeRecordsError) {
                   .has_value());
 }
 
+// Test that a challenge for the pending navigation that is resolved after an
+// access token fetch, while the navigation is still pending, records the error
+// for that navigation.
+TEST_F(ProxyServiceControllerTest, ResolvedWhilePendingRecordsError) {
+  proxy_service_->SetDecision(Decision::kNeedsCredentials);
+  proxy_service_->SetFetchResult(CredentialFetchOutcome::kSignInRequired);
+  proxy_service_->DeferReply();
+  std::unique_ptr<web::FakeNavigationContext> context =
+      StartNavigation(GURL(base::SysNSStringToUTF8(kDestinationURL)));
+
+  ASSERT_TRUE(HandleDefaultChallenge());
+  EXPECT_FALSE(credentials_future_.IsReady());
+  proxy_service_->RunDeferredReply();
+
+  ASSERT_TRUE(credentials_future_.IsReady());
+  EXPECT_NSEQ(nil, credentials_future_.Get<2>());
+  EXPECT_TRUE(error_service_->TakeDisguisedError(context->GetNavigationId())
+                  .has_value());
+}
+
 // Test that the fragment of the pending navigation's URL is ignored when
 // attributing a challenge.
 TEST_F(ProxyServiceControllerTest, AttributionIgnoresFragment) {
@@ -558,11 +578,25 @@ TEST_F(ProxyServiceControllerTest, ChallengeAfterCommitIsNotAttributed) {
   proxy_service_->SetDecision(Decision::kDisguisedError);
   std::unique_ptr<web::FakeNavigationContext> context =
       StartNavigation(GURL(base::SysNSStringToUTF8(kDestinationURL)));
+  context->SetHasCommitted(true);
   web_state_.OnNavigationFinished(context.get());
 
   EXPECT_TRUE(HandleDefaultChallenge());
   ASSERT_TRUE(credentials_future_.IsReady());
   EXPECT_NSEQ(nil, credentials_future_.Get<2>());
+  EXPECT_FALSE(error_service_->TakeDisguisedError(context->GetNavigationId())
+                   .has_value());
+}
+
+// Test that a challenge without a failure response, so without a URL, is not
+// attributed, even to a pending navigation without a URL.
+TEST_F(ProxyServiceControllerTest, ChallengeWithoutURLIsNotAttributed) {
+  proxy_service_->SetDecision(Decision::kDisguisedError);
+  std::unique_ptr<web::FakeNavigationContext> context = StartNavigation(GURL());
+
+  EXPECT_TRUE(HandleChallenge(MakeProxyProtectionSpace(),
+                              /*failure_response=*/nil));
+  ASSERT_TRUE(credentials_future_.IsReady());
   EXPECT_FALSE(error_service_->TakeDisguisedError(context->GetNavigationId())
                    .has_value());
 }
@@ -603,6 +637,36 @@ TEST_F(ProxyServiceControllerTest, ResolvedAfterNavigationReplacedDropsError) {
   ASSERT_TRUE(credentials_future_.IsReady());
   EXPECT_NSEQ(nil, credentials_future_.Get<2>());
   EXPECT_FALSE(error_service_->TakeDisguisedError(context->GetNavigationId())
+                   .has_value());
+  EXPECT_FALSE(
+      error_service_->TakeDisguisedError(new_context->GetNavigationId())
+          .has_value());
+}
+
+// Test that a challenge resolved after its WebState was destroyed drops the
+// error recorded for the WebState's navigation.
+TEST_F(ProxyServiceControllerTest, ResolvedAfterWebStateDestroyedDropsError) {
+  proxy_service_->SetDecision(Decision::kNeedsCredentials);
+  proxy_service_->SetFetchResult(CredentialFetchOutcome::kSignInRequired);
+  proxy_service_->DeferReply();
+  std::unique_ptr<web::FakeWebState> web_state =
+      std::make_unique<web::FakeWebState>();
+  EnterpriseProxyTabHelper::CreateForWebState(web_state.get(),
+                                              error_service_.get());
+  web::FakeNavigationContext context;
+  context.SetUrl(GURL(base::SysNSStringToUTF8(kDestinationURL)));
+  context.SetIsSameDocument(false);
+  web_state->OnNavigationStarted(&context);
+
+  ASSERT_TRUE(controller_->MaybeHandleProxyAuthChallenge(
+      web_state.get(), MakeProxyProtectionSpace(), /*proposed_credential=*/nil,
+      Make407Response(), credentials_future_.GetCallback()));
+  web_state.reset();
+  proxy_service_->RunDeferredReply();
+
+  ASSERT_TRUE(credentials_future_.IsReady());
+  EXPECT_NSEQ(nil, credentials_future_.Get<2>());
+  EXPECT_FALSE(error_service_->TakeDisguisedError(context.GetNavigationId())
                    .has_value());
 }
 

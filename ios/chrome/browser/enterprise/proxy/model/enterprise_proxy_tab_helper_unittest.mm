@@ -130,8 +130,8 @@ TEST_F(EnterpriseProxyTabHelperTest, IgnoresStaleNavigationEvents) {
   EXPECT_EQ(tab_helper_->pending_navigation_url(), GURL(kOtherURL));
 }
 
-// Test that finishing a navigation drops the disguised error recorded for it,
-// including a navigation that was replaced by a newer one.
+// Test that finishing a navigation drops only the disguised error recorded for
+// it, including a navigation that was replaced by a newer one.
 TEST_F(EnterpriseProxyTabHelperTest, RemovesRecordedErrorOnFinish) {
   std::unique_ptr<web::FakeNavigationContext> first_context =
       CreateNavigationContext(GURL(kStartURL));
@@ -143,11 +143,18 @@ TEST_F(EnterpriseProxyTabHelperTest, RemovesRecordedErrorOnFinish) {
   RecordDisguisedError(second_context->GetNavigationId());
 
   web_state_.OnNavigationFinished(first_context.get());
-  web_state_.OnNavigationFinished(second_context.get());
 
   EXPECT_FALSE(
       error_service_.TakeDisguisedError(first_context->GetNavigationId())
           .has_value());
+  EXPECT_TRUE(
+      error_service_.TakeDisguisedError(second_context->GetNavigationId())
+          .has_value());
+
+  // Taking the error above removed it, so it is recorded again.
+  RecordDisguisedError(second_context->GetNavigationId());
+  web_state_.OnNavigationFinished(second_context.get());
+
   EXPECT_FALSE(
       error_service_.TakeDisguisedError(second_context->GetNavigationId())
           .has_value());
