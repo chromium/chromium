@@ -186,7 +186,6 @@ class EditorMediator : public EditorContext::Observer,
   const raw_ref<manta::MantaService> manta_service_;
 
   EditorPanelManagerImpl panel_manager_;
-  std::unique_ptr<EditorGeolocationProvider> editor_geolocation_provider_;
   MakoBubbleCoordinator mako_bubble_coordinator_;
   EditorContext editor_context_;
 

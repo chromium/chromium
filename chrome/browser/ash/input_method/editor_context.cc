@@ -4,8 +4,12 @@
 
 #include "chrome/browser/ash/input_method/editor_context.h"
 
+#include <memory>
 #include <optional>
+#include <utility>
 
+#include "base/check.h"
+#include "chrome/browser/ash/input_method/editor_geolocation_provider.h"
 #include "chrome/browser/ash/input_method/text_field_contextual_info_fetcher.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "ui/base/ime/text_input_type.h"
@@ -13,12 +17,15 @@
 
 namespace ash::input_method {
 
-EditorContext::EditorContext(Observer* observer,
-                             System* system,
-                             EditorGeolocationProvider* geolocation_provider)
+EditorContext::EditorContext(
+    Observer* observer,
+    System* system,
+    std::unique_ptr<EditorGeolocationProvider> geolocation_provider)
     : observer_(observer),
       system_(system),
-      geolocation_provider_(geolocation_provider) {}
+      geolocation_provider_(std::move(geolocation_provider)) {
+  CHECK(geolocation_provider_);
+}
 
 EditorContext::~EditorContext() = default;
 
@@ -63,9 +70,7 @@ void EditorContext::OnTextSelectionChanged(
 }
 
 std::string EditorContext::active_country_code() {
-  return geolocation_provider_ != nullptr
-             ? geolocation_provider_->GetCountryCode()
-             : "";
+  return geolocation_provider_->GetCountryCode();
 }
 
 std::string_view EditorContext::active_engine_id() {

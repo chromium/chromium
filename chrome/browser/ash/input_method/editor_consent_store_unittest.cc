@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/input_method/editor_consent_store.h"
 
+#include <memory>
 #include <optional>
 
 #include "ash/constants/ash_pref_names.h"
@@ -57,8 +58,9 @@ TEST_F(EditorConsentStoreTest,
   TestingProfile profile_;
   FakeSystem system;
   FakeContextObserver observer;
-  EditorGeolocationMockProvider geolocation_provider(kAllowedCountryCode);
-  EditorContext context(&observer, &system, &geolocation_provider);
+  EditorContext context(
+      &observer, &system,
+      std::make_unique<EditorGeolocationMockProvider>(kAllowedCountryCode));
   EditorMetricsRecorder metrics_recorder(&context,
                                          EditorOpportunityMode::kInvalidInput);
   EditorConsentStore store(profile_.GetPrefs(), &metrics_recorder);
@@ -74,8 +76,9 @@ TEST_F(EditorConsentStoreTest,
   TestingProfile profile_;
   FakeSystem system;
   FakeContextObserver observer;
-  EditorGeolocationMockProvider geolocation_provider(kAllowedCountryCode);
-  EditorContext context(&observer, &system, &geolocation_provider);
+  EditorContext context(
+      &observer, &system,
+      std::make_unique<EditorGeolocationMockProvider>(kAllowedCountryCode));
   EditorMetricsRecorder metrics_recorder(&context,
                                          EditorOpportunityMode::kInvalidInput);
   EditorConsentStore store(profile_.GetPrefs(), &metrics_recorder);
@@ -91,8 +94,9 @@ TEST_F(EditorConsentStoreTest,
   TestingProfile profile_;
   FakeSystem system;
   FakeContextObserver observer;
-  EditorGeolocationMockProvider geolocation_provider(kAllowedCountryCode);
-  EditorContext context(&observer, &system, &geolocation_provider);
+  EditorContext context(
+      &observer, &system,
+      std::make_unique<EditorGeolocationMockProvider>(kAllowedCountryCode));
   EditorMetricsRecorder metrics_recorder(&context,
                                          EditorOpportunityMode::kInvalidInput);
   EditorConsentStore store(profile_.GetPrefs(), &metrics_recorder);
@@ -110,8 +114,9 @@ TEST_F(EditorConsentStoreTest,
   TestingProfile profile_;
   FakeSystem system;
   FakeContextObserver observer;
-  EditorGeolocationMockProvider geolocation_provider(kAllowedCountryCode);
-  EditorContext context(&observer, &system, &geolocation_provider);
+  EditorContext context(
+      &observer, &system,
+      std::make_unique<EditorGeolocationMockProvider>(kAllowedCountryCode));
   EditorMetricsRecorder metrics_recorder(&context,
                                          EditorOpportunityMode::kInvalidInput);
   EditorConsentStore store(profile_.GetPrefs(), &metrics_recorder);

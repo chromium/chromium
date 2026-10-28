@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/input_method/editor_panel_manager.h"
 
+#include <memory>
 #include <optional>
 
 #include "base/strings/strcat.h"
@@ -90,8 +91,10 @@ class EditorPanelManagerDelegateForTesting
       : opportunity_mode_(opportunity_mode),
         consent_status_(consent_status),
         blocked_reasons_(blocked_reasons),
-        geolocation_provider_(kAllowedCountryCode),
-        context_(&context_observer_, &system_, &geolocation_provider_),
+        context_(&context_observer_,
+                 &system_,
+                 std::make_unique<EditorGeolocationMockProvider>(
+                     kAllowedCountryCode)),
         metrics_recorder_(&context_, opportunity_mode) {}
   void BindEditorClient(mojo::PendingReceiver<orca::mojom::EditorClient>
                             pending_receiver) override {}
@@ -127,7 +130,6 @@ class EditorPanelManagerDelegateForTesting
   std::vector<EditorBlockedReason> blocked_reasons_;
   FakeSystem system_;
   FakeContextObserver context_observer_;
-  EditorGeolocationMockProvider geolocation_provider_;
   EditorContext context_;
   EditorMetricsRecorder metrics_recorder_;
 };

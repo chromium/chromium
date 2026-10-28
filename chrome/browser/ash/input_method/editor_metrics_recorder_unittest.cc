@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/input_method/editor_metrics_recorder.h"
 
+#include <memory>
 #include <optional>
 
 #include "ash/constants/ash_features.h"
@@ -129,8 +130,8 @@ TEST_P(EditorStateMetrics, RecordsForWrite) {
   const EditorStates& state = GetParam();
   FakeSystem system;
   FakeContextObserver observer;
-  EditorGeolocationMockProvider geolocation_provider("us");
-  EditorContext context(&observer, &system, &geolocation_provider);
+  EditorContext context(&observer, &system,
+                        std::make_unique<EditorGeolocationMockProvider>("us"));
   EditorMetricsRecorder metrics_recorder(&context,
                                          EditorOpportunityMode::kWrite);
 
@@ -145,8 +146,9 @@ TEST_P(EditorStateMetrics, RecordsForRewrite) {
   const EditorStates& state = GetParam();
   FakeSystem system;
   FakeContextObserver observer;
-  EditorGeolocationMockProvider geolocation_provider(kAllowedCountryCode);
-  EditorContext context(&observer, &system, &geolocation_provider);
+  EditorContext context(
+      &observer, &system,
+      std::make_unique<EditorGeolocationMockProvider>(kAllowedCountryCode));
   EditorMetricsRecorder metrics_recorder(&context,
                                          EditorOpportunityMode::kRewrite);
 
@@ -162,8 +164,9 @@ TEST_P(EditorStateMetrics, RecordsForNotAllowed) {
   const EditorStates& state = GetParam();
   FakeSystem system;
   FakeContextObserver observer;
-  EditorGeolocationMockProvider geolocation_provider(kAllowedCountryCode);
-  EditorContext context(&observer, &system, &geolocation_provider);
+  EditorContext context(
+      &observer, &system,
+      std::make_unique<EditorGeolocationMockProvider>(kAllowedCountryCode));
   EditorMetricsRecorder metrics_recorder(
       &context, EditorOpportunityMode::kNotAllowedForUse);
 
@@ -179,8 +182,9 @@ TEST_P(EditorStateMetrics, RecordsForInvalidInput) {
   const EditorStates& state = GetParam();
   FakeSystem system;
   FakeContextObserver observer;
-  EditorGeolocationMockProvider geolocation_provider(kAllowedCountryCode);
-  EditorContext context(&observer, &system, &geolocation_provider);
+  EditorContext context(
+      &observer, &system,
+      std::make_unique<EditorGeolocationMockProvider>(kAllowedCountryCode));
   EditorMetricsRecorder metrics_recorder(&context,
                                          EditorOpportunityMode::kInvalidInput);
 
@@ -196,8 +200,9 @@ TEST_P(EditorStateMetrics, RecordsRephraseSegmentForRewrite) {
   const EditorStates& state = GetParam();
   FakeSystem system;
   FakeContextObserver observer;
-  EditorGeolocationMockProvider geolocation_provider(kAllowedCountryCode);
-  EditorContext context(&observer, &system, &geolocation_provider);
+  EditorContext context(
+      &observer, &system,
+      std::make_unique<EditorGeolocationMockProvider>(kAllowedCountryCode));
   EditorMetricsRecorder metrics_recorder(&context,
                                          EditorOpportunityMode::kRewrite);
 
@@ -214,8 +219,9 @@ TEST_P(EditorStateMetrics, RecordsEmojifySegmentForRewrite) {
   const EditorStates& state = GetParam();
   FakeSystem system;
   FakeContextObserver observer;
-  EditorGeolocationMockProvider geolocation_provider(kAllowedCountryCode);
-  EditorContext context(&observer, &system, &geolocation_provider);
+  EditorContext context(
+      &observer, &system,
+      std::make_unique<EditorGeolocationMockProvider>(kAllowedCountryCode));
   EditorMetricsRecorder metrics_recorder(&context,
                                          EditorOpportunityMode::kRewrite);
 
@@ -232,8 +238,9 @@ TEST_P(EditorStateMetrics, RecordsShortenSegmentForRewrite) {
   const EditorStates& state = GetParam();
   FakeSystem system;
   FakeContextObserver observer;
-  EditorGeolocationMockProvider geolocation_provider(kAllowedCountryCode);
-  EditorContext context(&observer, &system, &geolocation_provider);
+  EditorContext context(
+      &observer, &system,
+      std::make_unique<EditorGeolocationMockProvider>(kAllowedCountryCode));
   EditorMetricsRecorder metrics_recorder(&context,
                                          EditorOpportunityMode::kRewrite);
 
@@ -250,8 +257,9 @@ TEST_P(EditorStateMetrics, RecordsElaborateSegmentForRewrite) {
   const EditorStates& state = GetParam();
   FakeSystem system;
   FakeContextObserver observer;
-  EditorGeolocationMockProvider geolocation_provider(kAllowedCountryCode);
-  EditorContext context(&observer, &system, &geolocation_provider);
+  EditorContext context(
+      &observer, &system,
+      std::make_unique<EditorGeolocationMockProvider>(kAllowedCountryCode));
   EditorMetricsRecorder metrics_recorder(&context,
                                          EditorOpportunityMode::kRewrite);
 
@@ -268,8 +276,9 @@ TEST_P(EditorStateMetrics, RecordsFormalizeSegmentForRewrite) {
   const EditorStates& state = GetParam();
   FakeSystem system;
   FakeContextObserver observer;
-  EditorGeolocationMockProvider geolocation_provider(kAllowedCountryCode);
-  EditorContext context(&observer, &system, &geolocation_provider);
+  EditorContext context(
+      &observer, &system,
+      std::make_unique<EditorGeolocationMockProvider>(kAllowedCountryCode));
   EditorMetricsRecorder metrics_recorder(&context,
                                          EditorOpportunityMode::kRewrite);
 
@@ -286,8 +295,9 @@ TEST_P(EditorStateMetrics, RecordsProofreadSegmentForRewrite) {
   const EditorStates& state = GetParam();
   FakeSystem system;
   FakeContextObserver observer;
-  EditorGeolocationMockProvider geolocation_provider(kAllowedCountryCode);
-  EditorContext context(&observer, &system, &geolocation_provider);
+  EditorContext context(
+      &observer, &system,
+      std::make_unique<EditorGeolocationMockProvider>(kAllowedCountryCode));
   EditorMetricsRecorder metrics_recorder(&context,
                                          EditorOpportunityMode::kRewrite);
 
@@ -304,8 +314,9 @@ TEST_P(EditorStateMetrics, RecordsFreeformRewriteSegmentForRewrite) {
   const EditorStates& state = GetParam();
   FakeSystem system;
   FakeContextObserver observer;
-  EditorGeolocationMockProvider geolocation_provider(kAllowedCountryCode);
-  EditorContext context(&observer, &system, &geolocation_provider);
+  EditorContext context(
+      &observer, &system,
+      std::make_unique<EditorGeolocationMockProvider>(kAllowedCountryCode));
   EditorMetricsRecorder metrics_recorder(&context,
                                          EditorOpportunityMode::kRewrite);
 
@@ -322,8 +333,9 @@ TEST_P(EditorStateMetrics, RecordsUnsetSegmentForRewrite) {
   const EditorStates& state = GetParam();
   FakeSystem system;
   FakeContextObserver observer;
-  EditorGeolocationMockProvider geolocation_provider(kAllowedCountryCode);
-  EditorContext context(&observer, &system, &geolocation_provider);
+  EditorContext context(
+      &observer, &system,
+      std::make_unique<EditorGeolocationMockProvider>(kAllowedCountryCode));
   EditorMetricsRecorder metrics_recorder(&context,
                                          EditorOpportunityMode::kRewrite);
 
@@ -339,8 +351,9 @@ TEST_P(EditorStateMetrics, RecordsUnknownSegmentForRewrite) {
   const EditorStates& state = GetParam();
   FakeSystem system;
   FakeContextObserver observer;
-  EditorGeolocationMockProvider geolocation_provider(kAllowedCountryCode);
-  EditorContext context(&observer, &system, &geolocation_provider);
+  EditorContext context(
+      &observer, &system,
+      std::make_unique<EditorGeolocationMockProvider>(kAllowedCountryCode));
   EditorMetricsRecorder metrics_recorder(&context,
                                          EditorOpportunityMode::kRewrite);
 
@@ -357,8 +370,9 @@ TEST_P(EditorStateMetrics, DoesNotRecordToneSegmentsForWrite) {
   const EditorStates& state = GetParam();
   FakeSystem system;
   FakeContextObserver observer;
-  EditorGeolocationMockProvider geolocation_provider(kAllowedCountryCode);
-  EditorContext context(&observer, &system, &geolocation_provider);
+  EditorContext context(
+      &observer, &system,
+      std::make_unique<EditorGeolocationMockProvider>(kAllowedCountryCode));
   EditorMetricsRecorder metrics_recorder(&context,
                                          EditorOpportunityMode::kWrite);
 
@@ -404,8 +418,9 @@ TEST_P(EditorStateMetrics, DoesNotRecordToneSegmentsForNotAllowed) {
   const EditorStates& state = GetParam();
   FakeSystem system;
   FakeContextObserver observer;
-  EditorGeolocationMockProvider geolocation_provider(kAllowedCountryCode);
-  EditorContext context(&observer, &system, &geolocation_provider);
+  EditorContext context(
+      &observer, &system,
+      std::make_unique<EditorGeolocationMockProvider>(kAllowedCountryCode));
   EditorMetricsRecorder metrics_recorder(
       &context, EditorOpportunityMode::kNotAllowedForUse);
 
@@ -451,8 +466,9 @@ TEST_P(EditorStateMetrics, DoesNotRecordToneSegmentsForInvalidInput) {
   const EditorStates& state = GetParam();
   FakeSystem system;
   FakeContextObserver observer;
-  EditorGeolocationMockProvider geolocation_provider(kAllowedCountryCode);
-  EditorContext context(&observer, &system, &geolocation_provider);
+  EditorContext context(
+      &observer, &system,
+      std::make_unique<EditorGeolocationMockProvider>(kAllowedCountryCode));
   EditorMetricsRecorder metrics_recorder(&context,
                                          EditorOpportunityMode::kInvalidInput);
 
@@ -510,8 +526,9 @@ TEST_P(CharectersInsertedMetricsTest, RecordStateMetricPerTone) {
   const CharectersInsertedCase& test_case = GetParam();
   FakeSystem system;
   FakeContextObserver observer;
-  EditorGeolocationMockProvider geolocation_provider(kAllowedCountryCode);
-  EditorContext context(&observer, &system, &geolocation_provider);
+  EditorContext context(
+      &observer, &system,
+      std::make_unique<EditorGeolocationMockProvider>(kAllowedCountryCode));
   EditorMetricsRecorder metrics_recorder(&context, test_case.mode);
   metrics_recorder.SetTone(test_case.tone);
 
@@ -570,8 +587,9 @@ INSTANTIATE_TEST_SUITE_P(
 TEST_F(EditorMetricsRecorderTest, WriteCharectersInsertedMetrics) {
   FakeSystem system;
   FakeContextObserver observer;
-  EditorGeolocationMockProvider geolocation_provider(kAllowedCountryCode);
-  EditorContext context(&observer, &system, &geolocation_provider);
+  EditorContext context(
+      &observer, &system,
+      std::make_unique<EditorGeolocationMockProvider>(kAllowedCountryCode));
   EditorMetricsRecorder metrics_recorder(&context,
                                          EditorOpportunityMode::kWrite);
   metrics_recorder.SetTone(EditorTone::kUnset);
@@ -602,8 +620,9 @@ TEST_P(SettingToneFromQueryAndFreeformTest, ConvertQueryToneToMetricTone) {
   const SetToneCase& test_case = GetParam();
   FakeSystem system;
   FakeContextObserver observer;
-  EditorGeolocationMockProvider geolocation_provider(kAllowedCountryCode);
-  EditorContext context(&observer, &system, &geolocation_provider);
+  EditorContext context(
+      &observer, &system,
+      std::make_unique<EditorGeolocationMockProvider>(kAllowedCountryCode));
   EditorMetricsRecorder metrics_recorder(&context,
                                          EditorOpportunityMode::kRewrite);
   metrics_recorder.SetTone(test_case.query_tone_string,
@@ -664,8 +683,9 @@ INSTANTIATE_TEST_SUITE_P(EditorMetricsRecorderTest,
 TEST_F(EditorMetricsRecorderTest, WriteServerResponseMetrics) {
   FakeSystem system;
   FakeContextObserver observer;
-  EditorGeolocationMockProvider geolocation_provider(kAllowedCountryCode);
-  EditorContext context(&observer, &system, &geolocation_provider);
+  EditorContext context(
+      &observer, &system,
+      std::make_unique<EditorGeolocationMockProvider>(kAllowedCountryCode));
   EditorMetricsRecorder metrics_recorder(&context,
                                          EditorOpportunityMode::kWrite);
   metrics_recorder.SetTone(EditorTone::kUnset);
@@ -692,8 +712,9 @@ TEST_P(RewriteServerResponseMetricsTest, RewriteServerResponseMetrics) {
   const ServerResponseRewriteCase& test_case = GetParam();
   FakeSystem system;
   FakeContextObserver observer;
-  EditorGeolocationMockProvider geolocation_provider(kAllowedCountryCode);
-  EditorContext context(&observer, &system, &geolocation_provider);
+  EditorContext context(
+      &observer, &system,
+      std::make_unique<EditorGeolocationMockProvider>(kAllowedCountryCode));
   EditorMetricsRecorder metrics_recorder(&context,
                                          EditorOpportunityMode::kRewrite);
   metrics_recorder.SetTone(test_case.tone);
@@ -830,8 +851,9 @@ TEST_P(EditorStateMetricsSegmentedByLanguage,
       base::StrCat({test_case.expected_histogram_prefix, "Write"});
   FakeSystem system;
   FakeContextObserver observer;
-  EditorGeolocationMockProvider geolocation_provider(kAllowedCountryCode);
-  EditorContext context(&observer, &system, &geolocation_provider);
+  EditorContext context(
+      &observer, &system,
+      std::make_unique<EditorGeolocationMockProvider>(kAllowedCountryCode));
   EditorMetricsRecorder recorder(&context, EditorOpportunityMode::kWrite);
 
   context.OnActivateIme(test_case.engine_id);
@@ -855,8 +877,9 @@ TEST_P(EditorStateMetricsSegmentedByLanguage,
       base::StrCat({test_case.expected_histogram_prefix, "Rewrite"});
   FakeSystem system;
   FakeContextObserver observer;
-  EditorGeolocationMockProvider geolocation_provider(kAllowedCountryCode);
-  EditorContext context(&observer, &system, &geolocation_provider);
+  EditorContext context(
+      &observer, &system,
+      std::make_unique<EditorGeolocationMockProvider>(kAllowedCountryCode));
   EditorMetricsRecorder recorder(&context, EditorOpportunityMode::kRewrite);
 
   context.OnActivateIme(test_case.engine_id);
@@ -880,8 +903,9 @@ TEST_P(EditorStateMetricsSegmentedByLanguage, DoesntRecordIfFlagDisabled) {
   EnableEnglishFlagsOnly();
   FakeSystem system;
   FakeContextObserver observer;
-  EditorGeolocationMockProvider geolocation_provider(kAllowedCountryCode);
-  EditorContext context(&observer, &system, &geolocation_provider);
+  EditorContext context(
+      &observer, &system,
+      std::make_unique<EditorGeolocationMockProvider>(kAllowedCountryCode));
   EditorMetricsRecorder recorder(&context, EditorOpportunityMode::kRewrite);
 
   context.OnActivateIme(test_case.engine_id);
@@ -993,8 +1017,9 @@ TEST_P(EditorAuxiliaryMetricsSegmentedByEnglishAndOther,
       {test_case.expected_histogram_prefix, "CharactersInserted.Write"});
   FakeSystem system;
   FakeContextObserver observer;
-  EditorGeolocationMockProvider geolocation_provider(kAllowedCountryCode);
-  EditorContext context(&observer, &system, &geolocation_provider);
+  EditorContext context(
+      &observer, &system,
+      std::make_unique<EditorGeolocationMockProvider>(kAllowedCountryCode));
   EditorMetricsRecorder recorder(&context, EditorOpportunityMode::kWrite);
 
   context.OnActivateIme(test_case.engine_id);
@@ -1011,8 +1036,9 @@ TEST_P(EditorAuxiliaryMetricsSegmentedByEnglishAndOther,
       {test_case.expected_histogram_prefix, "CharactersInserted.Rewrite"});
   FakeSystem system;
   FakeContextObserver observer;
-  EditorGeolocationMockProvider geolocation_provider(kAllowedCountryCode);
-  EditorContext context(&observer, &system, &geolocation_provider);
+  EditorContext context(
+      &observer, &system,
+      std::make_unique<EditorGeolocationMockProvider>(kAllowedCountryCode));
   EditorMetricsRecorder recorder(&context, EditorOpportunityMode::kRewrite);
 
   context.OnActivateIme(test_case.engine_id);
@@ -1030,8 +1056,9 @@ TEST_P(EditorAuxiliaryMetricsSegmentedByEnglishAndOther,
   EnableEnglishFlagsOnly();
   FakeSystem system;
   FakeContextObserver observer;
-  EditorGeolocationMockProvider geolocation_provider(kAllowedCountryCode);
-  EditorContext context(&observer, &system, &geolocation_provider);
+  EditorContext context(
+      &observer, &system,
+      std::make_unique<EditorGeolocationMockProvider>(kAllowedCountryCode));
   EditorMetricsRecorder recorder(&context, EditorOpportunityMode::kRewrite);
 
   context.OnActivateIme(test_case.engine_id);
@@ -1048,8 +1075,9 @@ TEST_P(EditorAuxiliaryMetricsSegmentedByEnglishAndOther,
                     "CharactersSelectedForInsert.Write"});
   FakeSystem system;
   FakeContextObserver observer;
-  EditorGeolocationMockProvider geolocation_provider(kAllowedCountryCode);
-  EditorContext context(&observer, &system, &geolocation_provider);
+  EditorContext context(
+      &observer, &system,
+      std::make_unique<EditorGeolocationMockProvider>(kAllowedCountryCode));
   EditorMetricsRecorder recorder(&context, EditorOpportunityMode::kWrite);
 
   context.OnActivateIme(test_case.engine_id);
@@ -1067,8 +1095,9 @@ TEST_P(EditorAuxiliaryMetricsSegmentedByEnglishAndOther,
                     "CharactersSelectedForInsert.Rewrite"});
   FakeSystem system;
   FakeContextObserver observer;
-  EditorGeolocationMockProvider geolocation_provider(kAllowedCountryCode);
-  EditorContext context(&observer, &system, &geolocation_provider);
+  EditorContext context(
+      &observer, &system,
+      std::make_unique<EditorGeolocationMockProvider>(kAllowedCountryCode));
   EditorMetricsRecorder recorder(&context, EditorOpportunityMode::kRewrite);
 
   context.OnActivateIme(test_case.engine_id);
@@ -1087,8 +1116,9 @@ TEST_P(EditorAuxiliaryMetricsSegmentedByEnglishAndOther,
   EnableEnglishFlagsOnly();
   FakeSystem system;
   FakeContextObserver observer;
-  EditorGeolocationMockProvider geolocation_provider(kAllowedCountryCode);
-  EditorContext context(&observer, &system, &geolocation_provider);
+  EditorContext context(
+      &observer, &system,
+      std::make_unique<EditorGeolocationMockProvider>(kAllowedCountryCode));
   EditorMetricsRecorder recorder(&context, EditorOpportunityMode::kRewrite);
 
   context.OnActivateIme(test_case.engine_id);
@@ -1104,8 +1134,9 @@ TEST_P(EditorAuxiliaryMetricsSegmentedByEnglishAndOther,
       base::StrCat({test_case.expected_histogram_prefix, "NumResponses.Write"});
   FakeSystem system;
   FakeContextObserver observer;
-  EditorGeolocationMockProvider geolocation_provider(kAllowedCountryCode);
-  EditorContext context(&observer, &system, &geolocation_provider);
+  EditorContext context(
+      &observer, &system,
+      std::make_unique<EditorGeolocationMockProvider>(kAllowedCountryCode));
   EditorMetricsRecorder recorder(&context, EditorOpportunityMode::kWrite);
 
   context.OnActivateIme(test_case.engine_id);
@@ -1122,8 +1153,9 @@ TEST_P(EditorAuxiliaryMetricsSegmentedByEnglishAndOther,
       {test_case.expected_histogram_prefix, "NumResponses.Rewrite"});
   FakeSystem system;
   FakeContextObserver observer;
-  EditorGeolocationMockProvider geolocation_provider(kAllowedCountryCode);
-  EditorContext context(&observer, &system, &geolocation_provider);
+  EditorContext context(
+      &observer, &system,
+      std::make_unique<EditorGeolocationMockProvider>(kAllowedCountryCode));
   EditorMetricsRecorder recorder(&context, EditorOpportunityMode::kRewrite);
 
   context.OnActivateIme(test_case.engine_id);
@@ -1141,8 +1173,9 @@ TEST_P(EditorAuxiliaryMetricsSegmentedByEnglishAndOther,
   EnableEnglishFlagsOnly();
   FakeSystem system;
   FakeContextObserver observer;
-  EditorGeolocationMockProvider geolocation_provider(kAllowedCountryCode);
-  EditorContext context(&observer, &system, &geolocation_provider);
+  EditorContext context(
+      &observer, &system,
+      std::make_unique<EditorGeolocationMockProvider>(kAllowedCountryCode));
   EditorMetricsRecorder recorder(&context, EditorOpportunityMode::kRewrite);
 
   context.OnActivateIme(test_case.engine_id);
@@ -1158,8 +1191,9 @@ TEST_P(EditorAuxiliaryMetricsSegmentedByEnglishAndOther,
       {test_case.expected_histogram_prefix, "LengthOfLongestResponse.Write"});
   FakeSystem system;
   FakeContextObserver observer;
-  EditorGeolocationMockProvider geolocation_provider(kAllowedCountryCode);
-  EditorContext context(&observer, &system, &geolocation_provider);
+  EditorContext context(
+      &observer, &system,
+      std::make_unique<EditorGeolocationMockProvider>(kAllowedCountryCode));
   EditorMetricsRecorder recorder(&context, EditorOpportunityMode::kWrite);
 
   context.OnActivateIme(test_case.engine_id);
@@ -1176,8 +1210,9 @@ TEST_P(EditorAuxiliaryMetricsSegmentedByEnglishAndOther,
       {test_case.expected_histogram_prefix, "LengthOfLongestResponse.Rewrite"});
   FakeSystem system;
   FakeContextObserver observer;
-  EditorGeolocationMockProvider geolocation_provider(kAllowedCountryCode);
-  EditorContext context(&observer, &system, &geolocation_provider);
+  EditorContext context(
+      &observer, &system,
+      std::make_unique<EditorGeolocationMockProvider>(kAllowedCountryCode));
   EditorMetricsRecorder recorder(&context, EditorOpportunityMode::kRewrite);
 
   context.OnActivateIme(test_case.engine_id);
@@ -1195,8 +1230,9 @@ TEST_P(EditorAuxiliaryMetricsSegmentedByEnglishAndOther,
   EnableEnglishFlagsOnly();
   FakeSystem system;
   FakeContextObserver observer;
-  EditorGeolocationMockProvider geolocation_provider(kAllowedCountryCode);
-  EditorContext context(&observer, &system, &geolocation_provider);
+  EditorContext context(
+      &observer, &system,
+      std::make_unique<EditorGeolocationMockProvider>(kAllowedCountryCode));
   EditorMetricsRecorder recorder(&context, EditorOpportunityMode::kRewrite);
 
   context.OnActivateIme(test_case.engine_id);
@@ -1232,8 +1268,9 @@ TEST_P(WritesCriticalStateMetrics, ForRewrite) {
   ukm_recorder.UpdateSourceURL(source_id, GURL("https://test.example.com"));
   FakeSystem system(source_id);
   FakeContextObserver observer;
-  EditorGeolocationMockProvider geolocation_provider(kAllowedCountryCode);
-  EditorContext context(&observer, &system, &geolocation_provider);
+  EditorContext context(
+      &observer, &system,
+      std::make_unique<EditorGeolocationMockProvider>(kAllowedCountryCode));
   EditorMetricsRecorder recorder(&context, EditorOpportunityMode::kRewrite);
 
   recorder.LogEditorState(editor_state);
@@ -1252,8 +1289,9 @@ TEST_P(WritesCriticalStateMetrics, ForWrite) {
   ukm_recorder.UpdateSourceURL(source_id, GURL("https://test.example.com"));
   FakeSystem system(source_id);
   FakeContextObserver observer;
-  EditorGeolocationMockProvider geolocation_provider(kAllowedCountryCode);
-  EditorContext context(&observer, &system, &geolocation_provider);
+  EditorContext context(
+      &observer, &system,
+      std::make_unique<EditorGeolocationMockProvider>(kAllowedCountryCode));
   EditorMetricsRecorder recorder(&context, EditorOpportunityMode::kWrite);
 
   recorder.LogEditorState(editor_state);
@@ -1320,8 +1358,9 @@ TEST_P(DoesNotWriteCriticalStateMetrics, ForRewrite) {
   ukm_recorder.UpdateSourceURL(source_id, GURL("https://test.example.com"));
   FakeSystem system(source_id);
   FakeContextObserver observer;
-  EditorGeolocationMockProvider geolocation_provider(kAllowedCountryCode);
-  EditorContext context(&observer, &system, &geolocation_provider);
+  EditorContext context(
+      &observer, &system,
+      std::make_unique<EditorGeolocationMockProvider>(kAllowedCountryCode));
   EditorMetricsRecorder recorder(&context, EditorOpportunityMode::kRewrite);
 
   recorder.LogEditorState(editor_state);
@@ -1337,8 +1376,9 @@ TEST_P(DoesNotWriteCriticalStateMetrics, ForWrite) {
   ukm_recorder.UpdateSourceURL(source_id, GURL("https://test.example.com"));
   FakeSystem system(source_id);
   FakeContextObserver observer;
-  EditorGeolocationMockProvider geolocation_provider(kAllowedCountryCode);
-  EditorContext context(&observer, &system, &geolocation_provider);
+  EditorContext context(
+      &observer, &system,
+      std::make_unique<EditorGeolocationMockProvider>(kAllowedCountryCode));
   EditorMetricsRecorder recorder(&context, EditorOpportunityMode::kWrite);
 
   recorder.LogEditorState(editor_state);

@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_INPUT_METHOD_EDITOR_CONTEXT_H_
 #define CHROME_BROWSER_ASH_INPUT_METHOD_EDITOR_CONTEXT_H_
 
+#include <memory>
 #include <optional>
 
 #include "base/memory/raw_ptr.h"
@@ -41,9 +42,11 @@ class EditorContext {
     virtual std::optional<ukm::SourceId> GetUkmSourceId() = 0;
   };
 
-  EditorContext(Observer* observer,
-                System* system,
-                EditorGeolocationProvider* geolocation_provider);
+  // `geolocation_provider` must not be null.
+  EditorContext(
+      Observer* observer,
+      System* system,
+      std::unique_ptr<EditorGeolocationProvider> geolocation_provider);
   ~EditorContext();
 
   bool InTabletMode();
@@ -72,9 +75,9 @@ class EditorContext {
   // Not owned by this class
   raw_ptr<Observer> observer_;
   raw_ptr<System> system_;
-  raw_ptr<EditorGeolocationProvider> geolocation_provider_;
 
-  std::string active_country_code_;
+  std::unique_ptr<EditorGeolocationProvider> geolocation_provider_;
+
   std::string active_engine_id_;
   ui::TextInputType input_type_ = ui::TEXT_INPUT_TYPE_NONE;
   chromeos::AppType app_type_ = chromeos::AppType::NON_APP;

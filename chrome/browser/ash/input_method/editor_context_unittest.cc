@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/input_method/editor_context.h"
 
+#include <memory>
 #include <string_view>
 
 #include "base/functional/callback.h"
@@ -40,10 +41,10 @@ class FakeSystem : public EditorContext::System {
 
 TEST(EditorContextTest, FiresImeOnChange) {
   TestFuture<std::string_view> future;
-  EditorGeolocationMockProvider geolocation_provider("au");
   FakeObserver observer(future.GetCallback());
   FakeSystem system;
-  EditorContext context(&observer, &system, &geolocation_provider);
+  EditorContext context(&observer, &system,
+                        std::make_unique<EditorGeolocationMockProvider>("au"));
 
   context.OnActivateIme("xkb:es:spa:spa");
 

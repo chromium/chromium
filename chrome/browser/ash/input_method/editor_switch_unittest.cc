@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/input_method/editor_switch.h"
 
+#include <memory>
 #include <string>
 #include <utility>
 
@@ -150,8 +151,9 @@ TEST_P(EditorSwitchAvailabilityWithoutPolicyTest,
   FakeSystem system;
   FakeEditorContextObserver context_observer;
   FakeEditorSwitchObserver switch_observer;
-  EditorGeolocationMockProvider geolocation_provider(test_case.country_code);
-  EditorContext context(&context_observer, &system, &geolocation_provider);
+  EditorContext context(
+      &context_observer, &system,
+      std::make_unique<EditorGeolocationMockProvider>(test_case.country_code));
   EditorSwitch editor_switch(/*observer=*/&switch_observer,
                              /*profile=*/&profile,
                              /*manta_service=*/nullptr,
@@ -219,8 +221,9 @@ TEST_P(EditorSwitchAvailabilityWithPolicyTest,
   FakeSystem system;
   FakeEditorContextObserver context_observer;
   FakeEditorSwitchObserver switch_observer;
-  EditorGeolocationMockProvider geolocation_provider(test_case.country_code);
-  EditorContext context(&context_observer, &system, &geolocation_provider);
+  EditorContext context(
+      &context_observer, &system,
+      std::make_unique<EditorGeolocationMockProvider>(test_case.country_code));
   EditorSwitch editor_switch(/*observer=*/&switch_observer,
                              /*profile=*/&profile,
                              /*manta_service=*/nullptr,
@@ -588,8 +591,9 @@ TEST_P(EditorSwitchTriggerTest, TestEditorMode) {
   FakeSystem system;
   FakeEditorContextObserver context_observer;
   FakeEditorSwitchObserver switch_observer;
-  EditorGeolocationMockProvider geolocation_provider(kAllowedTestCountry);
-  EditorContext context(&context_observer, &system, &geolocation_provider);
+  EditorContext context(
+      &context_observer, &system,
+      std::make_unique<EditorGeolocationMockProvider>(kAllowedTestCountry));
   EditorSwitch editor_switch(/*observer=*/&switch_observer,
                              /*profile=*/profile.get(),
                              /*manta_service=*/nullptr,
@@ -674,8 +678,9 @@ TEST_P(EditorSwitchDenylistTest, IsBlockedWhenVisitingUrlInDenylist) {
   FakeSystem system;
   FakeEditorContextObserver context_observer;
   FakeEditorSwitchObserver switch_observer;
-  EditorGeolocationMockProvider geolocation_provider(kAllowedTestCountry);
-  EditorContext context(&context_observer, &system, &geolocation_provider);
+  EditorContext context(
+      &context_observer, &system,
+      std::make_unique<EditorGeolocationMockProvider>(kAllowedTestCountry));
   EditorSwitch editor_switch(/*observer=*/&switch_observer,
                              /*profile=*/profile.get(),
                              /*manta_service=*/nullptr,
@@ -710,8 +715,10 @@ class InternationalizeTestSuite : public TestWithParam<InputMethodTestCase> {
   InternationalizeTestSuite()
       : browser_locale_("en"),
         profile_(CreateTestingProfile("testuser@gmail.com")),
-        geolocation_provider_(kAllowedTestCountry),
-        context_(&context_observer_, &system_, &geolocation_provider_) {
+        context_(&context_observer_,
+                 &system_,
+                 std::make_unique<EditorGeolocationMockProvider>(
+                     kAllowedTestCountry)) {
     auto mock_notifier = net::test::MockNetworkChangeNotifier::Create();
     profile_->GetProfilePolicyConnector()->OverrideIsManagedForTesting(false);
     mock_notifier->SetConnectionType(
@@ -731,7 +738,6 @@ class InternationalizeTestSuite : public TestWithParam<InputMethodTestCase> {
   FakeSystem system_;
   FakeEditorContextObserver context_observer_;
   FakeEditorSwitchObserver switch_observer_;
-  EditorGeolocationMockProvider geolocation_provider_;
   EditorContext context_;
 };
 
@@ -926,8 +932,9 @@ TEST(EditorSwitchTest, AllowedForUseForGooglers) {
   FakeSystem system;
   FakeEditorContextObserver context_observer;
   FakeEditorSwitchObserver switch_observer;
-  EditorGeolocationMockProvider geolocation_provider("unknown_country");
-  EditorContext context(&context_observer, &system, &geolocation_provider);
+  EditorContext context(
+      &context_observer, &system,
+      std::make_unique<EditorGeolocationMockProvider>("unknown_country"));
   EditorSwitch editor_switch(/*observer=*/&switch_observer,
                              /*profile=*/profile.get(),
                              /*manta_service=*/nullptr,
