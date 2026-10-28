@@ -389,14 +389,8 @@ bool Connection::HasNextEvent() {
     }
     events_.pop_front();
   }
-#if BUILDFLAG(IS_LINUX)
   // Move an event from XCB's internal queue to our queue, if available.
   return ReadResponse(/*queued=*/false);
-#else
-  // linux-chromeos-rel has a failing browser test, but should also eventually
-  // read XCB-queued events.
-  return false;
-#endif
 }
 
 int Connection::GetFd() {
