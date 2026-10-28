@@ -1069,8 +1069,14 @@ source_set("unit_tests") {
   }
 
   if (is_mac) {
-    sources += [ "input_injector_mac_unittest.cc" ]
-    deps += [ "//remoting/host/mac:unit_tests" ]
+    sources += [
+      "input_injector_mac_unittest.cc",
+      "input_monitor/local_keyboard_input_monitor_mac_unittest.cc",
+    ]
+    deps += [
+      "//remoting/host/mac:unit_tests",
+      "//ui/events:dom_keycode_converter",
+    ]
   }
 
   if (remoting_use_x11) {
