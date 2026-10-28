@@ -686,8 +686,16 @@ IN_PROC_BROWSER_TEST_F(SearchPreloadUnifiedBrowserTest,
 
 // Tests that the SearchSuggestionService can trigger prerendering if it
 // receives prerender hints after the previous prefetch request succeeds.
+// TODO(crbug.com/578809890): Deflake and re-enable on Android.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_PrerenderHintReceivedAfterSucceed \
+  DISABLED_PrerenderHintReceivedAfterSucceed
+#else
+#define MAYBE_PrerenderHintReceivedAfterSucceed \
+  PrerenderHintReceivedAfterSucceed
+#endif
 IN_PROC_BROWSER_TEST_F(SearchPreloadUnifiedBrowserTest,
-                       PrerenderHintReceivedAfterSucceed) {
+                       MAYBE_PrerenderHintReceivedAfterSucceed) {
   base::HistogramTester histogram_tester;
   const GURL kInitialUrl = embedded_test_server()->GetURL("/empty.html");
   ASSERT_TRUE(GetActiveWebContents());
