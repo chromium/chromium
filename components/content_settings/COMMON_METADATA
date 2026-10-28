@@ -5,3 +5,15 @@ team_email: "permissions-dev@chromium.org"
 buganizer_public: {
   component_id: 1456817
 }
+agentic_review: {
+  capability_groups: {
+    path_expression: "components/content_settings/core/browser/[a-z_]*settings_registry\\.cc"
+    path_expression: "components/content_settings/core/browser/content_settings_(pref|default)_provider\\.cc"
+    path_expression: "components/content_settings/core/common/content_settings_types\\.mojom"
+    rules: "components/content_settings/core/browser/knowledge_base/content-settings-clear-prefs-of-removed-settings.md"
+  }
+  capability_groups: {
+    path_expression: "components/content_settings/core/browser/(content_settings_(pref|default)_provider|host_content_settings_map)\\.cc"
+    rules: "components/content_settings/core/browser/knowledge_base/content-settings-remove-expired-pref-cleanup.md"
+  }
+}
