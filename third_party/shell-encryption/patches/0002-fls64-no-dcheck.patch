@@ -1,0 +1,19 @@
+Comment out the DCHECK_NE in Fls64(). int256.cc includes no header that
+defines it, so it fails to build:
+  error: use of undeclared identifier 'DCHECK_NE'
+
+Chromium commit ec26a3acf49dc (crbug.com/1095129).
+
+diff --git a/src/int256.cc b/src/int256.cc
+index 0fd15bf5777ab..f10513ed9b3db 100644
+--- a/src/int256.cc
++++ b/src/int256.cc
+@@ -38,7 +38,7 @@ namespace rlwe {
+     }                                         \
+   } while (0)
+ static inline int Fls64(Uint64 n) {
+-  DCHECK_NE(0, n);
++  //DCHECK_NE(0, n);
+   int pos = 0;
+   STEP(Uint64, n, pos, 0x20);
+   Uint32 n32 = n;

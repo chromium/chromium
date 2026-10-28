@@ -1,7 +1,11 @@
-diff --git a/montgomery_test.cc b/montgomery_test.cc
+Fix -Wunused-function and -Wunused-local-typedef in montgomery_test.cc.
+
+Chromium commit c7faeda445225 (crbug.com/1095122, crbug.com/1212837).
+
+diff --git a/src/montgomery_test.cc b/src/montgomery_test.cc
 index 97444fc6c15c2..d5078fdcc86df 100644
---- a/montgomery_test.cc
-+++ b/montgomery_test.cc
+--- a/src/montgomery_test.cc
++++ b/src/montgomery_test.cc
 @@ -59,12 +59,6 @@ absl::uint128 GenerateRandom(unsigned int* seed) {
    Uint64 lo = GenerateRandom<Uint64>(seed);
    return absl::MakeUint128(hi, lo);

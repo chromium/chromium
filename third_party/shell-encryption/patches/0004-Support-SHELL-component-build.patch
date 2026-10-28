@@ -1,7 +1,13 @@
-diff --git a/int256.h b/int256.h
+Export the public classes and explicit template instantiations for the
+component build, with SHELL_ENCRYPTION_EXPORT from
+base/shell_encryption_export.h.
+
+Chromium commit f2bcadd8fbfe7.
+
+diff --git a/src/int256.h b/src/int256.h
 index 540dce2d765b1..4c464a4978412 100644
---- a/int256.h
-+++ b/int256.h
+--- a/src/int256.h
++++ b/src/int256.h
 @@ -18,13 +18,15 @@
  
  #include "absl/numeric/int128.h"
@@ -52,10 +58,10 @@ index 540dce2d765b1..4c464a4978412 100644
    // Note: The ordering of fields is different than 'class uint256' but the
    // same as its 2-arg constructor.  This enables more obvious initialization
    // of static instances, which is the primary reason for this struct in the
-diff --git a/montgomery.cc b/montgomery.cc
+diff --git a/src/montgomery.cc b/src/montgomery.cc
 index 9fbc5dabee18c..4bd03362420fc 100644
---- a/montgomery.cc
-+++ b/montgomery.cc
+--- a/src/montgomery.cc
++++ b/src/montgomery.cc
 @@ -14,6 +14,8 @@
  
  #include "montgomery.h"
@@ -86,10 +92,10 @@ index 9fbc5dabee18c..4bd03362420fc 100644
 +template class EXPORT_TEMPLATE_DEFINE(SHELL_ENCRYPTION_EXPORT) MontgomeryInt<Uint64>;
 +template class EXPORT_TEMPLATE_DEFINE(SHELL_ENCRYPTION_EXPORT) MontgomeryInt<absl::uint128>;
  }  // namespace rlwe
-diff --git a/montgomery.h b/montgomery.h
+diff --git a/src/montgomery.h b/src/montgomery.h
 index 4f0e2eafb815f..c3988ff34da34 100644
---- a/montgomery.h
-+++ b/montgomery.h
+--- a/src/montgomery.h
++++ b/src/montgomery.h
 @@ -34,6 +34,8 @@
  #include "serialization.pb.h"
  #include "status_macros.h"
@@ -317,10 +323,10 @@ index 4f0e2eafb815f..c3988ff34da34 100644
  }  // namespace rlwe
  
  #endif  // RLWE_MONTGOMERY_H_
-diff --git a/montgomery_test.cc b/montgomery_test.cc
+diff --git a/src/montgomery_test.cc b/src/montgomery_test.cc
 index 7caf459a4c08b..2d952ddfbdad4 100644
---- a/montgomery_test.cc
-+++ b/montgomery_test.cc
+--- a/src/montgomery_test.cc
++++ b/src/montgomery_test.cc
 @@ -30,6 +30,8 @@
  #include "testing/status_matchers.h"
  #include "testing/status_testing.h"
@@ -339,10 +345,10 @@ index 7caf459a4c08b..2d952ddfbdad4 100644
  TYPED_TEST_SUITE(MontgomeryTest, testing::ModularIntTypes);
  
  TYPED_TEST(MontgomeryTest, ModulusTooLarge) {
-diff --git a/ntt_parameters.h b/ntt_parameters.h
+diff --git a/src/ntt_parameters.h b/src/ntt_parameters.h
 index 55671ec5e65de..eba9579ab87ca 100644
---- a/ntt_parameters.h
-+++ b/ntt_parameters.h
+--- a/src/ntt_parameters.h
++++ b/src/ntt_parameters.h
 @@ -24,6 +24,7 @@
  #include "constants.h"
  #include "status_macros.h"
@@ -360,10 +366,10 @@ index 55671ec5e65de..eba9579ab87ca 100644
  
  // Helper function: Perform the bit-reversal operation in-place on coeffs_.
  template <typename ModularInt>
-diff --git a/prng/chacha_prng.h b/prng/chacha_prng.h
+diff --git a/src/prng/chacha_prng.h b/src/prng/chacha_prng.h
 index 27940fd82c646..7e4f719fedaf6 100644
---- a/prng/chacha_prng.h
-+++ b/prng/chacha_prng.h
+--- a/src/prng/chacha_prng.h
++++ b/src/prng/chacha_prng.h
 @@ -26,6 +26,7 @@
  #include "prng/chacha_prng_util.h"
  #include "prng/prng.h"
@@ -396,10 +402,10 @@ index 27940fd82c646..7e4f719fedaf6 100644
  
   private:
    explicit ChaChaPrng(absl::string_view in_key, int position_in_buffer,
-diff --git a/prng/chacha_prng_util.h b/prng/chacha_prng_util.h
+diff --git a/src/prng/chacha_prng_util.h b/src/prng/chacha_prng_util.h
 index 8eb8118fe26f9..80f0cedf4a703 100644
---- a/prng/chacha_prng_util.h
-+++ b/prng/chacha_prng_util.h
+--- a/src/prng/chacha_prng_util.h
++++ b/src/prng/chacha_prng_util.h
 @@ -27,6 +27,7 @@
  #include "absl/strings/string_view.h"
  #include "integral_types.h"
@@ -454,10 +460,10 @@ index 8eb8118fe26f9..80f0cedf4a703 100644
  
  }  // namespace internal
  }  // namespace rlwe
-diff --git a/prng/single_thread_chacha_prng.h b/prng/single_thread_chacha_prng.h
+diff --git a/src/prng/single_thread_chacha_prng.h b/src/prng/single_thread_chacha_prng.h
 index fcaff827be355..2fddf6f3530c4 100644
---- a/prng/single_thread_chacha_prng.h
-+++ b/prng/single_thread_chacha_prng.h
+--- a/src/prng/single_thread_chacha_prng.h
++++ b/src/prng/single_thread_chacha_prng.h
 @@ -24,6 +24,7 @@
  #include "prng/chacha_prng_util.h"
  #include "prng/prng.h"
@@ -475,10 +481,10 @@ index fcaff827be355..2fddf6f3530c4 100644
        absl::string_view in_key);
  
    // Returns 8 bits of randomness.
-diff --git a/statusor.h b/statusor.h
+diff --git a/src/statusor.h b/src/statusor.h
 index 200f62d917d0f..b7ada09372c9f 100644
---- a/statusor.h
-+++ b/statusor.h
+--- a/src/statusor.h
++++ b/src/statusor.h
 @@ -22,11 +22,12 @@
  #include "absl/base/attributes.h"
  #include "absl/status/status.h"

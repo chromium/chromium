@@ -1,7 +1,15 @@
-diff --git a/context_test.cc b/context_test.cc
+Build the tests in Chromium, which used C++14 when this was written:
+test parameters become functions instead of constexpr static arrays,
+no structured bindings, no nested namespace definitions, inline
+functions in test headers, and member initializers in declaration
+order (-Wreorder).
+
+Chromium commit ec26a3acf49dc (crbug.com/1095129).
+
+diff --git a/src/context_test.cc b/src/context_test.cc
 index 73436a9..9f35334 100644
---- a/context_test.cc
-+++ b/context_test.cc
+--- a/src/context_test.cc
++++ b/src/context_test.cc
 @@ -33,7 +33,7 @@ TYPED_TEST_SUITE(ContextTest, rlwe::testing::ModularIntTypes);
  
  TYPED_TEST(ContextTest, CreateWorks) {
@@ -20,10 +28,10 @@ index 73436a9..9f35334 100644
      ASSERT_OK_AND_ASSIGN(auto context,
                           rlwe::RlweContext<TypeParam>::Create(params));
  
-diff --git a/error_params_test.cc b/error_params_test.cc
+diff --git a/src/error_params_test.cc b/src/error_params_test.cc
 index fe1fd55..7cc3c8b 100644
---- a/error_params_test.cc
-+++ b/error_params_test.cc
+--- a/src/error_params_test.cc
++++ b/src/error_params_test.cc
 @@ -120,7 +120,7 @@ TYPED_TEST_SUITE(ErrorParamsTest, rlwe::testing::ModularIntTypes);
  
  TYPED_TEST(ErrorParamsTest, CreateError) {
@@ -60,23 +68,10 @@ index fe1fd55..7cc3c8b 100644
      ASSERT_OK_AND_ASSIGN(auto context,
                           rlwe::RlweContext<TypeParam>::Create(params));
      // Error scales by (T / logT) when all other constants are fixed.
-diff --git a/int256.cc b/int256.cc
-index 1096c98..f9a40fc 100644
---- a/int256.cc
-+++ b/int256.cc
-@@ -40,7 +40,7 @@ const uint256_pod kuint256max = {absl::kuint128max, absl::kuint128max};
-     }                                         \
-   } while (0)
- static inline int Fls64(Uint64 n) {
--  DCHECK_NE(0, n);
-+  //DCHECK_NE(0, n);
-   int pos = 0;
-   STEP(Uint64, n, pos, 0x20);
-   Uint32 n32 = n;
-diff --git a/montgomery_test.cc b/montgomery_test.cc
+diff --git a/src/montgomery_test.cc b/src/montgomery_test.cc
 index 7fe438f..7caf459 100644
---- a/montgomery_test.cc
-+++ b/montgomery_test.cc
+--- a/src/montgomery_test.cc
++++ b/src/montgomery_test.cc
 @@ -102,7 +102,7 @@ TYPED_TEST(MontgomeryTest, ParamsInvModulus) {
    using Int = typename TypeParam::Int;
    using BigInt = typename internal::BigInt<Int>::value_type;
@@ -346,10 +341,10 @@ index 7fe438f..7caf459 100644
      ASSERT_OK_AND_ASSIGN(auto modulus_params,
                           TypeParam::Params::Create(params.modulus));
      FakePrng prng;
-diff --git a/ntt_parameters_test.cc b/ntt_parameters_test.cc
+diff --git a/src/ntt_parameters_test.cc b/src/ntt_parameters_test.cc
 index 189c096..5425de7 100644
---- a/ntt_parameters_test.cc
-+++ b/ntt_parameters_test.cc
+--- a/src/ntt_parameters_test.cc
++++ b/src/ntt_parameters_test.cc
 @@ -39,7 +39,7 @@ TYPED_TEST_SUITE(NttParametersTest, rlwe::testing::ModularIntTypes);
  
  TYPED_TEST(NttParametersTest, LogNumCoeffsTooLarge) {
@@ -413,82 +408,10 @@ index 189c096..5425de7 100644
      // Do not create a context, since it creates NttParameters already. Instead,
      // create the modulus parameters manually.
      ASSERT_OK_AND_ASSIGN(auto modulus_params,
-diff --git a/prng/chacha_prng_util.cc b/prng/chacha_prng_util.cc
-index c49c82d..e63bb61 100644
---- a/prng/chacha_prng_util.cc
-+++ b/prng/chacha_prng_util.cc
-@@ -31,16 +31,27 @@ absl::Status ChaChaPrngResalt(absl::string_view key, int buffer_size,
-                               int* salt_counter, int* position_in_buffer,
-                               std::vector<Uint8>* buffer) {
-   buffer->assign(buffer_size, 0);
--  std::string salt = "salt";
--  if (salt.size() > kChaChaNonceSize) {
--    return absl::InternalError("The salt length is too large.");
-+
-+  // Following https://tools.ietf.org/html/rfc7539, Sec 2.3, we create the
-+  // nonce as a kChaChaNonceSize (=12) bytes string, where the 4 first
-+  // bytes are fixed, and the next 8 bytes correspond to the counter.
-+  std::string nonce = "salt00000000";
-+  if (nonce.size() != kChaChaNonceSize) {
-+    return absl::InternalError("The salt length is incorrect.");
-+  }
-+  Uint64 counter = static_cast<Uint64>(*salt_counter);
-+  for (int i = 0; i < 8; i++) {
-+    nonce[4 + i] = counter & 0xFF;
-+    counter >>= 8;
-   }
--  salt.resize(kChaChaNonceSize, 0);
- 
-+  // We call the CRYPTO_chacha_20() function from OpenSSL. Note that the last
-+  // parameter is a *block* counter. The salt counter needs instead to be
-+  // included in the nonce.
-   CRYPTO_chacha_20(buffer->data(), buffer->data(), buffer->size(),
-                    reinterpret_cast<const Uint8*>(key.data()),
--                   reinterpret_cast<const Uint8*>(salt.data()),
--                   static_cast<uint32_t>(*salt_counter));
-+                   reinterpret_cast<const Uint8*>(nonce.data()),
-+                   /* counter = */ 0);
- 
-   ++(*salt_counter);
-   *position_in_buffer = 0;
-diff --git a/prng/prng_test.cc b/prng/prng_test.cc
-index de7eacc..f98d98e 100644
---- a/prng/prng_test.cc
-+++ b/prng/prng_test.cc
-@@ -142,5 +142,29 @@ TYPED_TEST(PrngTest, ReplayDifferentInKeyTest) {
-   EXPECT_NE(r64, other_r64);
- }
- 
-+TYPED_TEST(PrngTest, GeneratesUniqueRandomStrings) {
-+  const int kKeySize = 20;
-+  const int kIterations = 10000;
-+  const char charset[] = "abcdefghijklmnopqrstuvwxyz0123456789";
-+
-+  std::vector<std::string> keys;
-+  for (int i = 0; i < kIterations; i++) {
-+    // Create a random key
-+    std::string key(kKeySize, 0);
-+    for (int j = 0; j < kKeySize; j++) {
-+      ASSERT_OK_AND_ASSIGN(auto v, this->prng_->Rand8());
-+      key[j] = charset[static_cast<int>(v) % sizeof(charset)];
-+    }
-+
-+    // With very high probability (~(1/36)^20), a key will only appear once.
-+    int count = 0;
-+    for (auto k : keys) {
-+      if (k == key) count++;
-+    }
-+    ASSERT_EQ(count, 0);
-+    keys.push_back(key);
-+  }
-+}
-+
- }  // namespace
- }  // namespace rlwe
-diff --git a/sample_error_test.cc b/sample_error_test.cc
+diff --git a/src/sample_error_test.cc b/src/sample_error_test.cc
 index 49bb495..41071c0 100644
---- a/sample_error_test.cc
-+++ b/sample_error_test.cc
+--- a/src/sample_error_test.cc
++++ b/src/sample_error_test.cc
 @@ -46,7 +46,7 @@ TYPED_TEST(SampleErrorTest, CheckUpperBoundOnNoise) {
    auto prng = absl::make_unique<rlwe::testing::TestingPrng>(0);
  
@@ -507,23 +430,10 @@ index 49bb495..41071c0 100644
      ASSERT_OK_AND_ASSIGN(auto context,
                           rlwe::RlweContext<TypeParam>::Create(params));
  
-diff --git a/serialization.proto b/serialization.proto
-index 6d02b74..b7fefcf 100644
---- a/serialization.proto
-+++ b/serialization.proto
-@@ -15,6 +15,8 @@
- 
- syntax = "proto2";
- 
-+option optimize_for = LITE_RUNTIME;
-+
- package rlwe;
- 
- // NTT Polynomial
-diff --git a/symmetric_encryption_test.cc b/symmetric_encryption_test.cc
+diff --git a/src/symmetric_encryption_test.cc b/src/symmetric_encryption_test.cc
 index 6e58422..6c05be2 100644
---- a/symmetric_encryption_test.cc
-+++ b/symmetric_encryption_test.cc
+--- a/src/symmetric_encryption_test.cc
++++ b/src/symmetric_encryption_test.cc
 @@ -91,7 +91,7 @@ TYPED_TEST_SUITE(SymmetricRlweEncryptionTest, rlwe::testing::ModularIntTypes);
  TYPED_TEST(SymmetricRlweEncryptionTest, RemoveErrorNegative) {
    unsigned int seed = 0;
@@ -818,10 +728,10 @@ index 6e58422..6c05be2 100644
      ASSERT_OK_AND_ASSIGN(auto context,
                           rlwe::RlweContext<TypeParam>::Create(params));
      ASSERT_OK_AND_ASSIGN(auto context_different_variance,
-diff --git a/symmetric_encryption_with_prng_test.cc b/symmetric_encryption_with_prng_test.cc
+diff --git a/src/symmetric_encryption_with_prng_test.cc b/src/symmetric_encryption_with_prng_test.cc
 index 88e86e3..beb1324 100644
---- a/symmetric_encryption_with_prng_test.cc
-+++ b/symmetric_encryption_with_prng_test.cc
+--- a/src/symmetric_encryption_with_prng_test.cc
++++ b/src/symmetric_encryption_with_prng_test.cc
 @@ -110,7 +110,7 @@ TYPED_TEST_SUITE(SymmetricEncryptionWithPrngTest,
  // ciphertext.
  TYPED_TEST(SymmetricEncryptionWithPrngTest, EncryptDecryptSingleCompressed) {
@@ -840,10 +750,10 @@ index 88e86e3..beb1324 100644
      ASSERT_OK_AND_ASSIGN(auto context,
                           rlwe::RlweContext<TypeParam>::Create(params));
      for (unsigned int i = 0; i < kTestingRounds; ++i) {
-diff --git a/testing/coefficient_polynomial.h b/testing/coefficient_polynomial.h
+diff --git a/src/testing/coefficient_polynomial.h b/src/testing/coefficient_polynomial.h
 index 4f32f18..fcff1a2 100644
---- a/testing/coefficient_polynomial.h
-+++ b/testing/coefficient_polynomial.h
+--- a/src/testing/coefficient_polynomial.h
++++ b/src/testing/coefficient_polynomial.h
 @@ -29,7 +29,8 @@
  #include "statusor.h"
  #include "testing/coefficient_polynomial.pb.h"
@@ -863,23 +773,10 @@ index 4f32f18..fcff1a2 100644
 +}  // namespace rlwe
  
  #endif  // RLWE_TESTING_COEFFICIENT_POLYNOMIAL_H_
-diff --git a/testing/coefficient_polynomial.proto b/testing/coefficient_polynomial.proto
-index b378557..35f02ef 100644
---- a/testing/coefficient_polynomial.proto
-+++ b/testing/coefficient_polynomial.proto
-@@ -15,6 +15,8 @@
- 
- syntax = "proto2";
- 
-+option optimize_for = LITE_RUNTIME;
-+
- package rlwe;
- 
- // Polynomial in coefficient representation
-diff --git a/testing/coefficient_polynomial_ciphertext.h b/testing/coefficient_polynomial_ciphertext.h
+diff --git a/src/testing/coefficient_polynomial_ciphertext.h b/src/testing/coefficient_polynomial_ciphertext.h
 index 0ed2caa..a8a78de 100644
---- a/testing/coefficient_polynomial_ciphertext.h
-+++ b/testing/coefficient_polynomial_ciphertext.h
+--- a/src/testing/coefficient_polynomial_ciphertext.h
++++ b/src/testing/coefficient_polynomial_ciphertext.h
 @@ -27,7 +27,8 @@
  #include "symmetric_encryption.h"
  #include "testing/coefficient_polynomial.h"
@@ -920,31 +817,10 @@ index 0ed2caa..a8a78de 100644
 +}  //  namespace rlwe
  
  #endif  // RLWE_TESTING_COEFFICIENT_POLYNOMIAL_CIPHERTEXT_H_
-diff --git a/testing/coefficient_polynomial_test.cc b/testing/coefficient_polynomial_test.cc
-index db3e184..bf43ee6 100644
---- a/testing/coefficient_polynomial_test.cc
-+++ b/testing/coefficient_polynomial_test.cc
-@@ -18,6 +18,7 @@
- #include <random>
- #include <vector>
- 
-+#include <google/protobuf/message_lite.h>
- #include <gmock/gmock.h>
- #include <gtest/gtest.h>
- #include "constants.h"
-@@ -415,7 +416,7 @@ TEST_F(PolynomialTest, Serialize) {
-                          p.Serialize());
-     ASSERT_OK_AND_ASSIGN(rlwe::SerializedCoefficientPolynomial serialized_q,
-                          q.Serialize());
--    EXPECT_THAT(serialized_p, EqualsProto(serialized_q));
-+    EXPECT_EQ(serialized_p.SerializeAsString(), serialized_q.SerializeAsString());
- 
-     // Ensure that a serialized polynomial can be deserialized.
-     ASSERT_OK_AND_ASSIGN(
-diff --git a/testing/parameters.h b/testing/parameters.h
+diff --git a/src/testing/parameters.h b/src/testing/parameters.h
 index 05864f0..6f7a08c 100644
---- a/testing/parameters.h
-+++ b/testing/parameters.h
+--- a/src/testing/parameters.h
++++ b/src/testing/parameters.h
 @@ -26,7 +26,8 @@
  #include "integral_types.h"
  #include "montgomery.h"
@@ -1068,19 +944,11 @@ index 05864f0..6f7a08c 100644
 +}  // namespace rlwe
  
  #endif  // RLWE_TESTING_INSTANCES_H_
-diff --git a/testing/protobuf_matchers.h b/testing/protobuf_matchers.h
-index 504ef78..0c7df16 100644
---- a/testing/protobuf_matchers.h
-+++ b/testing/protobuf_matchers.h
-@@ -18,6 +18,7 @@
- #define RLWE_TESTING_PROTOBUF_MATCHERS_H_
- 
- #include <google/protobuf/message.h>
-+#include <google/protobuf/message_lite.h>
- #include <google/protobuf/util/message_differencer.h>
- #include <gmock/gmock.h>
- 
-@@ -29,7 +30,7 @@ class EqualsProtoImpl
+diff --git a/src/testing/protobuf_matchers.h b/src/testing/protobuf_matchers.h
+index 18b3926..0c7df16 100644
+--- a/src/testing/protobuf_matchers.h
++++ b/src/testing/protobuf_matchers.h
+@@ -30,7 +30,7 @@ class EqualsProtoImpl
   public:
    EqualsProtoImpl(const google::protobuf::Message& other) : other_(&other) {}
  
@@ -1089,7 +957,7 @@ index 504ef78..0c7df16 100644
        const google::protobuf::Message& message,
        ::testing::MatchResultListener* listener) const override {
      if (!google::protobuf::util::MessageDifferencer::Equals(message, *other_)) {
-@@ -39,11 +40,11 @@ class EqualsProtoImpl
+@@ -40,11 +40,11 @@ class EqualsProtoImpl
      return true;
    }
  
@@ -1103,7 +971,7 @@ index 504ef78..0c7df16 100644
      *os << "is not equal to another protocol buffer";
    }
  
-@@ -51,11 +52,45 @@ class EqualsProtoImpl
+@@ -52,7 +52,7 @@ class EqualsProtoImpl
    const google::protobuf::Message* other_;  // not owned
  };
  
@@ -1112,66 +980,10 @@ index 504ef78..0c7df16 100644
      const google::protobuf::Message& other) {
    return ::testing::Matcher<const google::protobuf::Message&>(new EqualsProtoImpl(other));
  }
- 
-+class EqualsProtoLiteImpl
-+    : public ::testing::MatcherInterface<const google::protobuf::MessageLite&> {
-+ public:
-+  EqualsProtoLiteImpl(const google::protobuf::MessageLite& other) : other_(&other) {}
-+
-+  bool MatchAndExplain(
-+      const google::protobuf::MessageLite& message,
-+      ::testing::MatchResultListener* listener) const override {
-+    // TODO(b/159369884): Implement robust equality checks.
-+    if (message.SerializeAsString() != other_->SerializeAsString()) {
-+      *listener << "protobufs were not equal";
-+      return false;
-+    }
-+    return true;
-+  }
-+
-+  void DescribeTo(std::ostream* os) const override {
-+    *os << "is equal to another protocol buffer";
-+  }
-+
-+  void DescribeNegationTo(std::ostream* os) const override {
-+    *os << "is not equal to another protocol buffer";
-+  }
-+
-+ private:
-+  const google::protobuf::MessageLite* other_;  // not owned
-+};
-+
-+inline ::testing::Matcher<const google::protobuf::MessageLite&> EqualsProto(
-+    const google::protobuf::MessageLite& other) {
-+  return ::testing::Matcher<const google::protobuf::MessageLite&>(
-+      new EqualsProtoLiteImpl(other));
-+}
-+
- }  // namespace testing
- }  // namespace rlwe
- 
-diff --git a/testing/protobuf_matchers_test.cc b/testing/protobuf_matchers_test.cc
-index 48865f7..7ef759a 100644
---- a/testing/protobuf_matchers_test.cc
-+++ b/testing/protobuf_matchers_test.cc
-@@ -24,11 +24,11 @@ namespace {
- TEST(EqualsProtoTest, EqualsProtoWorks) {
-   rlwe::SerializedCoefficientPolynomial coeffs;
-   coeffs.set_num_coeffs(10);
--  EXPECT_THAT(coeffs, rlwe::testing::EqualsProto(coeffs));
-+  EXPECT_EQ(coeffs.SerializeAsString(), coeffs.SerializeAsString());
- 
-   rlwe::SerializedCoefficientPolynomial coeffs_other;
-   coeffs_other.set_num_coeffs(20);
--  EXPECT_THAT(coeffs, ::testing::Not(rlwe::testing::EqualsProto(coeffs_other)));
-+  EXPECT_NE(coeffs.SerializeAsString(), coeffs_other.SerializeAsString());
- }
- 
- }  // namespace
-diff --git a/testing/status_matchers.h b/testing/status_matchers.h
+diff --git a/src/testing/status_matchers.h b/src/testing/status_matchers.h
 index 52f9b0a..c482dae 100644
---- a/testing/status_matchers.h
-+++ b/testing/status_matchers.h
+--- a/src/testing/status_matchers.h
++++ b/src/testing/status_matchers.h
 @@ -28,10 +28,10 @@ namespace internal {
  
  // This function and its overload allow the same matcher to be used for Status

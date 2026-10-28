@@ -16,12 +16,32 @@ parameters are set). RLWE is also believed to be secure in the face of quantum
 computers.
 
 Local Modifications:
+patches/0001-lite-runtime-protos.patch: Build the protos with
+  LITE_RUNTIME, as Chromium links protobuf_lite, and compare them by
+  serialized bytes.
+patches/0002-fls64-no-dcheck.patch: Comment out the DCHECK_NE in
+  Fls64().
+patches/0003-Support-SHELL-tests-in-chromium.patch: Build the tests in
+  Chromium.
+patches/0004-Support-SHELL-component-build.patch: Export the public
+  classes for the component build.
+patches/0005-Add-SHELL-go-package.patch: Set go_package in
+  serialization.proto.
+patches/0006-Quit-using-ValueOrDie.patch: Make rlwe::StatusOr an alias
+  of absl::StatusOr.
+patches/0007-Fix-Wunused-function-Wunused-local-typedef.patch: Fix
+  -Wunused-function and -Wunused-local-typedef.
+patches/0008-Fix-Wsign-compare.patch: Fix -Wsign-compare and
+  -Wignored-qualifiers.
+patches/0009-Drop-std-has_denorm-_loss-deprecated-in-C-23.patch: Drop
+  std::has_denorm, deprecated in C++23.
+patches/0010-use-std-optional.patch: Use std::optional instead of
+  absl::optional.
 
-Applying local modifications live in //third_party/shell-encryption/patches/
-can be done by running the following commands:
+To apply the patches, put upstream f94f588 in src/, then run from this
+directory:
 
-$ export SHELL_PATH=<path-to-chromium>/src/third_party/shell-encryption
-$ for patch in $SHELL_PATH/patches/*; do patch -s -p1 < $patch; done
+$ for patch in patches/*.patch; do patch -s -p1 < $patch; done
 
 In case of conflict, update those patches accordingly and save them back in
 //third_party/shell-encryption/patches/.

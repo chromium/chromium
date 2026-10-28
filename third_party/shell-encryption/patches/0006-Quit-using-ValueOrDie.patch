@@ -1,26 +1,9 @@
-diff --git a/BUILD.gn b/BUILD.gn
-index 2f929064ff924..55152038d3c19 100644
---- a/BUILD.gn
-+++ b/BUILD.gn
-@@ -106,7 +106,6 @@ if (is_chromeos_ash) {
-       "src/prng/chacha_prng_util.cc",
-       "src/prng/single_thread_chacha_prng.cc",
-       "src/relinearization_key.cc",
--      "src/statusor.cc",
-     ]
-     public_deps = [
-       ":serialization_proto",
-@@ -163,7 +162,6 @@ if (is_chromeos_ash) {
-       "src/relinearization_key_test.cc",
-       "src/sample_error_test.cc",
-       "src/status_macros_test.cc",
--      "src/statusor_test.cc",
-       "src/symmetric_encryption_test.cc",
-       "src/symmetric_encryption_with_prng_test.cc",
-       "src/testing/coefficient_polynomial_ciphertext_test.cc",
-diff --git a/patches/0006-Quit-using-ValueOrDie.patch b/patches/0006-Quit-using-ValueOrDie.patch
-new file mode 100644
-index 0000000000000..e69de29bb2d1d
+Make rlwe::StatusOr an alias of absl::StatusOr and use value() instead
+of ValueOrDie(), so shell-encryption and private_membership share one
+StatusOr type, as upstream does.
+
+Chromium commit 26ada4602cb0a.
+
 diff --git a/src/montgomery_test.cc b/src/montgomery_test.cc
 index 2d952ddfbdad4..97444fc6c15c2 100644
 --- a/src/montgomery_test.cc
