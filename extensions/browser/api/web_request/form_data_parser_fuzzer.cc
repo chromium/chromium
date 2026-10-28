@@ -23,6 +23,15 @@ using extensions::FormDataParser;
 
 namespace {
 
+// Bounds on the work done per input, to avoid timeouts. Each call to
+// FuzzedDataProvider::ConsumeRandomLengthString() reserves memory for all the
+// remaining input, and HttpRequestHeaders::SetHeader() takes time linear in the
+// number of headers, so loops consuming an unbounded number of strings or
+// headers take time quadratic in the input size.
+constexpr size_t kMaxInputSize = 64 * 1024;
+constexpr size_t kMaxHeaders = 16;
+constexpr size_t kMaxSources = 16;
+
 // Does initialization and holds state that's shared across all runs.
 class Environment {
  public:
@@ -35,7 +44,7 @@ class Environment {
 net::HttpRequestHeaders GenerateHttpRequestHeaders(
     FuzzedDataProvider& provider) {
   net::HttpRequestHeaders headers;
-  for (;;) {
+  for (size_t i = 0; i < kMaxHeaders; ++i) {
     const std::string key = provider.ConsumeRandomLengthString();
     const std::string value = provider.ConsumeRandomLengthString();
     if (key.empty() || !net::HttpUtil::IsValidHeaderName(key) ||
@@ -50,12 +59,16 @@ net::HttpRequestHeaders GenerateHttpRequestHeaders(
 }  // namespace
 
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
+  if (size > kMaxInputSize) {
+    return 0;
+  }
+
   static Environment env;
   FuzzedDataProvider provider(data, size);
 
   // Create parser sources. Per API contract, they must outlive the parser.
   std::vector<std::string> sources;
-  for (;;) {
+  while (sources.size() < kMaxSources) {
     std::string source = provider.ConsumeRandomLengthString();
     if (source.empty()) {
       break;
