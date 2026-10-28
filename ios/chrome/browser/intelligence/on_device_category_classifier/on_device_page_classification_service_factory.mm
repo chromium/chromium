@@ -15,8 +15,8 @@
 namespace {
 
 std::unique_ptr<KeyedService> BuildOnDevicePageClassificationService(
-    ProfileIOS* profile) {
-  CHECK(!profile->IsOffTheRecord());
+    ProfileIOS& profile) {
+  CHECK(!profile.IsOffTheRecord());
   InProcessCategoryClassificationService* in_process_service =
       InProcessCategoryClassificationServiceFactory::GetForProfile(profile);
   if (!in_process_service) {
@@ -30,7 +30,7 @@ std::unique_ptr<KeyedService> BuildOnDevicePageClassificationService(
 }  // namespace
 
 // static
-OnDevicePageClassificationServiceFactory::TestingFactory
+OnDevicePageClassificationServiceFactory::TestingFactoryByRef
 OnDevicePageClassificationServiceFactory::GetDefaultFactory() {
   return base::BindOnce(&BuildOnDevicePageClassificationService);
 }
@@ -44,6 +44,6 @@ OnDevicePageClassificationServiceFactory::
 
 std::unique_ptr<KeyedService>
 OnDevicePageClassificationServiceFactory::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
+    ProfileIOS& profile) const {
   return BuildOnDevicePageClassificationService(profile);
 }
