@@ -2520,6 +2520,33 @@ IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
 }
 #endif  // BUILDFLAG(IS_MAC)
 
+#if BUILDFLAG(IS_CHROMEOS)
+// Verifies that Alt+Tab switches windows while the omnibox is focused. The
+// popup widget then holds activation for the browser window, and Ash must
+// still treat the browser window as the one Alt+Tab leaves.
+IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
+                       AltTabWhileFocusedSwitchesWindows) {
+  RunTestSequence(
+      OpenAndActivateSecondBrowserWindow(),
+      OpenInitialTabAndFocusOmnibox(kTab1, GURL("chrome://version/")),
+      WaitForPopupActive(), Do([this]() {
+        ui::test::EventGenerator generator(
+            BrowserView::GetBrowserViewForBrowser(browser())
+                ->GetNativeWindow()
+                ->GetRootWindow());
+        // Views uses VKEY_MENU for both Alt keys.
+        generator.PressKey(ui::VKEY_MENU, ui::EF_NONE);
+        generator.PressAndReleaseKey(ui::VKEY_TAB, ui::EF_ALT_DOWN);
+        generator.ReleaseKey(ui::VKEY_MENU, ui::EF_NONE);
+      }),
+      PollUntil([this]() { return IsBrowserOrPopupActive(second_browser_); },
+                "WaitForSecondBrowserActive"),
+      WaitForPopupDismissed(),
+      CheckResult([this]() { return IsBrowserOrPopupActive(second_browser_); },
+                  true, "SecondBrowserStaysActive"));
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 // Verifies that while the popup is collapsed (no dropdown), it does not extend
 // below the location bar, so clicking just beneath it reaches the browser
 // window and dismisses the popup.

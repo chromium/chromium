@@ -22,6 +22,7 @@
 #include "ash/wm/window_util.h"
 #include "base/check.h"
 #include "base/containers/flat_set.h"
+#include "base/feature_list.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/trace_event/trace_event.h"
@@ -37,10 +38,17 @@
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/coordinate_conversion.h"
 #include "ui/wm/core/window_animations.h"
+#include "ui/wm/core/window_util.h"
 
 namespace ash {
 
 namespace {
+
+// Killswitch for resolving the active window to its transient root when
+// starting window cycling.
+// TODO(b/578524658): Remove in M161, or whenever this fix has been verified to
+// work in Stable.
+BASE_FEATURE(kWindowCycleUseTransientRoot, base::FEATURE_ENABLED_BY_DEFAULT);
 
 constexpr char kEnterWindowCyclePresentationHistogramName[] =
     "Ash.WindowCycleController.Enter.PresentationTime";
@@ -91,6 +99,13 @@ WindowCycleList::WindowCycleList(const WindowList& windows)
     Shell::Get()->mru_window_tracker()->SetIgnoreActivations(true);
 
   active_window_before_window_cycle_ = window_util::GetActiveWindow();
+  if (base::FeatureList::IsEnabled(kWindowCycleUseTransientRoot)) {
+    // A transient child, such as a bubble or a popup, holds activation on
+    // behalf of its transient root, which is what `windows_` lists (see
+    // `WindowCycleController::CreateWindowList()`).
+    active_window_before_window_cycle_ =
+        ::wm::GetTransientRoot(active_window_before_window_cycle_);
+  }
 
   for (aura::Window* window : windows_) {
     window->AddObserver(this);

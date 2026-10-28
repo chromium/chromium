@@ -188,8 +188,9 @@ class ASH_EXPORT WindowCycleList : public aura::WindowObserver,
   // not activatable.
   std::unique_ptr<aura::ScopedWindowTargeter> window_targeter_;
 
-  // Tracks what window was active when starting to cycle and used to determine
-  // if alt-tab should focus the first or the second window in the list.
+  // Tracks the transient root of the window that was active when starting to
+  // cycle, used to determine if alt-tab should focus the first or the second
+  // window in the list.
   raw_ptr<aura::Window> active_window_before_window_cycle_ = nullptr;
 };
 
