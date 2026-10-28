@@ -134,6 +134,11 @@ extern const base::FeatureParam<bool> kRenderedOutOfViewIsNotVisible;
 
 extern const base::FeatureParam<bool> kRendererHighInitialPriority;
 
+// When enabled, a subframe is not visible if its parent frame is not visible.
+// This covers frames whose viewport intersection is never reported, e.g. frames
+// inside a `display:none` frame.
+BASE_DECLARE_FEATURE(kSubframeNotVisibleIfParentNotVisible);
+
 // Boosts the priority of loading pages: kUserBlocking in the active tab, and
 // kUserVisible in background tabs. Original version, which boosts every
 // background load. Kept only for diagnostics (e.g. comparing with V2 when

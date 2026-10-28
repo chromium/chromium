@@ -6,6 +6,8 @@
 
 #include <memory>
 
+#include "base/test/scoped_feature_list.h"
+#include "components/performance_manager/public/features.h"
 #include "components/performance_manager/test_support/graph_test_harness.h"
 
 namespace performance_manager {
@@ -229,6 +231,110 @@ TEST_F(FrameVisibilityDecoratorTest, FencedFrame) {
       ViewportIntersection::kIntersecting);
   EXPECT_EQ(fenced_frame_node->GetVisibility(),
             FrameNode::Visibility::kVisible);
+}
+
+class FrameVisibilityDecoratorParentNotVisibleTest
+    : public FrameVisibilityDecoratorTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  FrameVisibilityDecoratorParentNotVisibleTest() {
+    scoped_feature_list_.InitWithFeatureState(
+        features::kSubframeNotVisibleIfParentNotVisible, GetParam());
+  }
+
+ protected:
+  // Expected visibility of a frame whose parent is not visible, when its own
+  // viewport intersection gives `visibility_from_intersection`.
+  FrameNode::Visibility ExpectedVisibilityUnderNotVisibleParent(
+      FrameNode::Visibility visibility_from_intersection) const {
+    return GetParam() ? FrameNode::Visibility::kNotVisible
+                      : visibility_from_intersection;
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         FrameVisibilityDecoratorParentNotVisibleTest,
+                         testing::Bool());
+
+// Tests that a subframe of a frame that doesn't intersect with the viewport
+// (e.g. a frame inside a `display:none` frame) is not visible when the feature
+// is enabled, even if its own viewport intersection is unknown or intersecting.
+TEST_P(FrameVisibilityDecoratorParentNotVisibleTest,
+       SubframeOfNotVisibleFrame) {
+  auto page_node = CreateNode<PageNodeImpl>();
+  page_node->SetIsVisible(true);
+  auto main_frame_node = CreateFrameNodeAutoId(process_node(), page_node.get());
+  auto frame_node = CreateFrameNodeAutoId(process_node(), page_node.get(),
+                                          main_frame_node.get());
+  frame_node->SetViewportIntersection(ViewportIntersection::kNotIntersecting);
+  ASSERT_EQ(frame_node->GetVisibility(), FrameNode::Visibility::kNotVisible);
+
+  // Child frames created under a frame that is not visible.
+  auto unknown_child_frame_node =
+      CreateFrameNodeAutoId(process_node(), page_node.get(), frame_node.get());
+  auto intersecting_child_frame_node =
+      CreateFrameNodeAutoId(process_node(), page_node.get(), frame_node.get());
+  intersecting_child_frame_node->SetViewportIntersection(
+      ViewportIntersection::kIntersecting);
+  // A grandchild, to verify that the effect propagates down the frame tree.
+  auto grandchild_frame_node = CreateFrameNodeAutoId(
+      process_node(), page_node.get(), intersecting_child_frame_node.get());
+  grandchild_frame_node->SetViewportIntersection(
+      ViewportIntersection::kIntersecting);
+
+  EXPECT_EQ(
+      unknown_child_frame_node->GetVisibility(),
+      ExpectedVisibilityUnderNotVisibleParent(FrameNode::Visibility::kUnknown));
+  EXPECT_EQ(
+      intersecting_child_frame_node->GetVisibility(),
+      ExpectedVisibilityUnderNotVisibleParent(FrameNode::Visibility::kVisible));
+  EXPECT_EQ(
+      grandchild_frame_node->GetVisibility(),
+      ExpectedVisibilityUnderNotVisibleParent(FrameNode::Visibility::kVisible));
+
+  // The parent becomes visible: children get the visibility from their own
+  // viewport intersection.
+  frame_node->SetViewportIntersection(ViewportIntersection::kIntersecting);
+  EXPECT_EQ(frame_node->GetVisibility(), FrameNode::Visibility::kVisible);
+  EXPECT_EQ(unknown_child_frame_node->GetVisibility(),
+            FrameNode::Visibility::kUnknown);
+  EXPECT_EQ(intersecting_child_frame_node->GetVisibility(),
+            FrameNode::Visibility::kVisible);
+  EXPECT_EQ(grandchild_frame_node->GetVisibility(),
+            FrameNode::Visibility::kVisible);
+
+  // The parent becomes not visible again.
+  frame_node->SetViewportIntersection(ViewportIntersection::kNotIntersecting);
+  EXPECT_EQ(frame_node->GetVisibility(), FrameNode::Visibility::kNotVisible);
+  EXPECT_EQ(
+      unknown_child_frame_node->GetVisibility(),
+      ExpectedVisibilityUnderNotVisibleParent(FrameNode::Visibility::kUnknown));
+  EXPECT_EQ(
+      intersecting_child_frame_node->GetVisibility(),
+      ExpectedVisibilityUnderNotVisibleParent(FrameNode::Visibility::kVisible));
+  EXPECT_EQ(
+      grandchild_frame_node->GetVisibility(),
+      ExpectedVisibilityUnderNotVisibleParent(FrameNode::Visibility::kVisible));
+
+  // Hiding and showing the page preserves the effect of the parent.
+  page_node->SetIsVisible(false);
+  EXPECT_EQ(unknown_child_frame_node->GetVisibility(),
+            FrameNode::Visibility::kNotVisible);
+  EXPECT_EQ(intersecting_child_frame_node->GetVisibility(),
+            FrameNode::Visibility::kNotVisible);
+  page_node->SetIsVisible(true);
+  EXPECT_EQ(
+      unknown_child_frame_node->GetVisibility(),
+      ExpectedVisibilityUnderNotVisibleParent(FrameNode::Visibility::kUnknown));
+  EXPECT_EQ(
+      intersecting_child_frame_node->GetVisibility(),
+      ExpectedVisibilityUnderNotVisibleParent(FrameNode::Visibility::kVisible));
+  EXPECT_EQ(
+      grandchild_frame_node->GetVisibility(),
+      ExpectedVisibilityUnderNotVisibleParent(FrameNode::Visibility::kVisible));
 }
 
 }  // namespace performance_manager
