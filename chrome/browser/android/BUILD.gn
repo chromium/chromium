@@ -404,8 +404,6 @@ if (is_android) {
       "browsing_data/url_filter_bridge.h",
       "chrome_startup_flags.cc",
       "chrome_startup_flags.h",
-      "collection_save_forwarder_android.cc",
-      "collection_save_forwarder_android.h",
       "collection_storage_observer_factory_android.cc",
       "collection_storage_observer_factory_android.h",
       "compose_bitmaps_helper.cc",
