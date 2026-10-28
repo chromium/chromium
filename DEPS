@@ -990,7 +990,7 @@ deps = {
         'sha256sum': 'c18444eef64cf27a8913ce73ffa8fd92e6f41306a02bbc82d805aa0c521863e0',
         'size_bytes': 997164,
         'generation': 1792086707123823,
-        'condition': '(checkout_mac or checkout_ios) and not host_os == "mac"',
+        'condition': '(checkout_mac or checkout_ios) and not host_os == "mac" and non_git_source',
       },
       {
         'object_name': 'Mac/clang-tidy-llvmorg-24-init-14453-ge063be79-1.tar.xz',
@@ -2741,7 +2741,7 @@ deps = {
               'version': '4wxov_ILjFdgBumBqgUgOgIcr4kcMh7i4b4oJi_cLjcC',
           },
       ],
-      'condition': 'host_os == "linux" and (checkout_mac or checkout_ios)',
+      'condition': 'host_os == "linux" and (checkout_mac or checkout_ios) and non_git_source',
       'dep_type': 'cipd',
   },
 
@@ -3516,7 +3516,7 @@ deps = {
        'version': 'S0FPOVKrgaiqyuR20SSHiPorLgYez29bfwEdKBobUMMC',
     }],
     'dep_type': 'cipd',
-    'condition': 'checkout_mac or checkout_ios',
+    'condition': '(checkout_mac or checkout_ios) and non_git_source',
   },
   'src/buildtools/android/doclava': {
     'dep_type': 'gcs',
