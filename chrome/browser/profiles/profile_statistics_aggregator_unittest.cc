@@ -13,7 +13,6 @@
 #include "base/test/run_until.h"
 #include "base/test/test_file_util.h"
 #include "components/autofill/core/browser/data_manager/autofill_ai/entity_suppression_manager.h"
-#include "components/autofill/core/browser/data_manager/autofill_ai/entity_suppression_manager_impl.h"
 #include "components/autofill/core/browser/data_manager/autofill_ai/entity_suppression_sync_bridge.h"
 #include "components/autofill/core/browser/data_manager/autofill_ai/entity_suppression_sync_bridge_test_util.h"
 #include "components/autofill/core/browser/data_manager/test_personal_data_manager.h"
@@ -89,8 +88,7 @@ class ProfileStatisticsAggregatorTest : public testing::Test {
         autofill::CreateTestEntitySuppressionSyncBridge();
     EXPECT_TRUE(base::test::RunUntil([&]() { return bridge->IsLoaded(); }));
     entity_suppression_manager_ =
-        std::make_unique<autofill::EntitySuppressionManagerImpl>(
-            std::move(bridge));
+        std::make_unique<autofill::EntitySuppressionManager>(std::move(bridge));
     history_service_.Init(history::HistoryDatabaseParams(
         base::CreateUniqueTempDirectoryScopedToTest(),
         /*download_interrupt_reason_none=*/0,

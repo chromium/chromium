@@ -18,7 +18,6 @@
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
 #include "components/autofill/core/browser/data_manager/autofill_ai/entity_suppression_manager.h"
-#include "components/autofill/core/browser/data_manager/autofill_ai/entity_suppression_manager_impl.h"
 #include "components/autofill/core/browser/data_manager/autofill_ai/entity_suppression_sync_bridge.h"
 #include "components/autofill/core/browser/data_manager/autofill_ai/entity_suppression_sync_bridge_test_util.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
@@ -62,7 +61,7 @@ class EntitySuppressionBrowserTest : public InProcessBrowserTest {
         context,
         base::BindRepeating(
             [](content::BrowserContext*) -> std::unique_ptr<KeyedService> {
-              return std::make_unique<EntitySuppressionManagerImpl>(
+              return std::make_unique<EntitySuppressionManager>(
                   CreateTestEntitySuppressionSyncBridge());
             }));
   }

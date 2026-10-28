@@ -27,7 +27,6 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
 #include "components/autofill/core/browser/data_manager/autofill_ai/entity_suppression_manager.h"
-#include "components/autofill/core/browser/data_manager/autofill_ai/entity_suppression_manager_impl.h"
 #include "components/autofill/core/browser/data_manager/autofill_ai/entity_suppression_sync_bridge.h"
 #include "components/autofill/core/browser/data_manager/autofill_ai/entity_suppression_sync_bridge_test_util.h"
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
@@ -199,7 +198,7 @@ class ProfileStatisticsBrowserTest : public InProcessBrowserTest {
                                                   -> std::unique_ptr<
                                                       KeyedService> {
                             return std::make_unique<
-                                autofill::EntitySuppressionManagerImpl>(
+                                autofill::EntitySuppressionManager>(
                                 autofill::
                                     CreateTestEntitySuppressionSyncBridge());
                           }));

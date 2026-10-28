@@ -10,7 +10,6 @@
 #import "base/feature_list.h"
 #import "base/functional/bind.h"
 #import "components/autofill/core/browser/data_manager/autofill_ai/entity_suppression_manager.h"
-#import "components/autofill/core/browser/data_manager/autofill_ai/entity_suppression_manager_impl.h"
 #import "components/autofill/core/browser/data_manager/autofill_ai/entity_suppression_sync_bridge.h"
 #import "components/autofill/core/common/autofill_features.h"
 #import "components/sync/base/data_type.h"
@@ -48,6 +47,6 @@ IOSAutofillEntitySuppressionManagerFactory::BuildServiceInstanceFor(
       std::move(change_processor),
       DataTypeStoreServiceFactory::GetForProfile(profile)->GetStoreFactory(),
       GetApplicationContext()->GetOSCryptAsync());
-  return std::make_unique<autofill::EntitySuppressionManagerImpl>(
+  return std::make_unique<autofill::EntitySuppressionManager>(
       std::move(sync_bridge));
 }

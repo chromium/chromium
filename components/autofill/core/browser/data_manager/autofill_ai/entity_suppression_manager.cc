@@ -2,9 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/core/browser/data_manager/autofill_ai/entity_suppression_manager_impl.h"
+#include "components/autofill/core/browser/data_manager/autofill_ai/entity_suppression_manager.h"
 
 #include <algorithm>
+#include <utility>
 #include <vector>
 
 #include "base/check.h"
@@ -14,26 +15,26 @@
 
 namespace autofill {
 
-EntitySuppressionManagerImpl::EntitySuppressionManagerImpl(
+EntitySuppressionManager::EntitySuppressionManager(
     std::unique_ptr<EntitySuppressionSyncBridge> sync_bridge)
     : sync_bridge_(std::move(sync_bridge)) {
   CHECK(sync_bridge_);
   bridge_observation_.Observe(sync_bridge_.get());
 }
 
-EntitySuppressionManagerImpl::~EntitySuppressionManagerImpl() = default;
+EntitySuppressionManager::~EntitySuppressionManager() = default;
 
-void EntitySuppressionManagerImpl::AddObserver(
+void EntitySuppressionManager::AddObserver(
     EntitySuppressionManager::Observer* observer) {
   observers_.AddObserver(observer);
 }
 
-void EntitySuppressionManagerImpl::RemoveObserver(
+void EntitySuppressionManager::RemoveObserver(
     EntitySuppressionManager::Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
-bool EntitySuppressionManagerImpl::SuppressEntity(EntityInstance entity) {
+bool EntitySuppressionManager::SuppressEntity(EntityInstance entity) {
   if (!sync_bridge_->IsLoaded()) {
     return false;
   }
@@ -48,7 +49,7 @@ bool EntitySuppressionManagerImpl::SuppressEntity(EntityInstance entity) {
   return modified;
 }
 
-bool EntitySuppressionManagerImpl::UndoInSessionSuppressedEntity(
+bool EntitySuppressionManager::UndoInSessionSuppressedEntity(
     const EntityInstance::EntityId& entity_id) {
   if (!sync_bridge_->IsLoaded()) {
     return false;
@@ -68,8 +69,8 @@ bool EntitySuppressionManagerImpl::UndoInSessionSuppressedEntity(
   return modified;
 }
 
-bool EntitySuppressionManagerImpl::ClearSuppressions(base::Time delete_begin,
-                                                     base::Time delete_end) {
+bool EntitySuppressionManager::ClearSuppressions(base::Time delete_begin,
+                                                 base::Time delete_end) {
   if (!sync_bridge_->IsLoaded()) {
     return false;
   }
@@ -88,7 +89,7 @@ bool EntitySuppressionManagerImpl::ClearSuppressions(base::Time delete_begin,
   return true;
 }
 
-bool EntitySuppressionManagerImpl::IsSuppressed(
+bool EntitySuppressionManager::IsSuppressed(
     const EntityInstance& entity) const {
   return std::ranges::any_of(GetEntitySuppressionEntries(entity),
                              [this](const EntitySuppressionEntry& entry) {
@@ -96,7 +97,7 @@ bool EntitySuppressionManagerImpl::IsSuppressed(
                              });
 }
 
-size_t EntitySuppressionManagerImpl::CountSuppressionsCreatedBetween(
+size_t EntitySuppressionManager::CountSuppressionsCreatedBetween(
     base::Time begin,
     base::Time end) const {
   if (!sync_bridge_->IsLoaded()) {
@@ -105,13 +106,13 @@ size_t EntitySuppressionManagerImpl::CountSuppressionsCreatedBetween(
   return sync_bridge_->CountSuppressionsCreatedBetween(begin, end);
 }
 
-void EntitySuppressionManagerImpl::OnSuppressionsChanged() {
+void EntitySuppressionManager::OnSuppressionsChanged() {
   observers_.Notify(
       &EntitySuppressionManager::Observer::OnEntitySuppressionsChanged);
 }
 
 base::WeakPtr<syncer::DataTypeControllerDelegate>
-EntitySuppressionManagerImpl::GetSyncControllerDelegate() {
+EntitySuppressionManager::GetSyncControllerDelegate() {
   return sync_bridge_->GetControllerDelegate();
 }
 

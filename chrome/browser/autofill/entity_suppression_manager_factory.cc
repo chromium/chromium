@@ -15,7 +15,6 @@
 #include "chrome/browser/sync/data_type_store_service_factory.h"
 #include "chrome/common/channel_info.h"
 #include "components/autofill/core/browser/data_manager/autofill_ai/entity_suppression_manager.h"
-#include "components/autofill/core/browser/data_manager/autofill_ai/entity_suppression_manager_impl.h"
 #include "components/autofill/core/browser/data_manager/autofill_ai/entity_suppression_sync_bridge.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/sync/base/data_type.h"
@@ -68,7 +67,7 @@ EntitySuppressionManagerFactory::BuildServiceInstanceForBrowserContext(
       std::move(change_processor),
       DataTypeStoreServiceFactory::GetForProfile(profile)->GetStoreFactory(),
       g_browser_process->os_crypt_async());
-  return std::make_unique<EntitySuppressionManagerImpl>(std::move(sync_bridge));
+  return std::make_unique<EntitySuppressionManager>(std::move(sync_bridge));
 }
 
 }  // namespace autofill
