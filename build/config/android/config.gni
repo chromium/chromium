@@ -20,6 +20,7 @@ robolectric_toolchain = "//build/toolchain/android:robolectric_$host_cpu"
 
 if (is_android) {
   import("//build/config/android/channel.gni")
+  import("//build/config/android/jdk.gni")
   import("//build/config/chrome_build.gni")
   import("//build/config/clang/clang.gni")
   import("//build/config/cronet/config.gni")
