@@ -26,6 +26,7 @@
 #include "chrome/browser/ash/app_mode/metrics/network_connectivity_metrics_service.h"
 #include "chrome/browser/ash/app_mode/metrics/periodic_metrics_service.h"
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
+#include "chromeos/ash/components/network/network_handler.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user.h"
@@ -56,7 +57,9 @@ KioskSystemSession::KioskSystemSession(
       browser_session_(&local_state, profile),
       kiosk_app_id_(kiosk_app_id),
       network_metrics_service_(
-          std::make_unique<NetworkConnectivityMetricsService>(local_state)),
+          std::make_unique<NetworkConnectivityMetricsService>(
+              &local_state,
+              NetworkHandler::Get()->network_state_handler())),
       periodic_metrics_service_(std::make_unique<PeriodicMetricsService>()),
       low_disk_metrics_service_(local_state),
       network_state_observer_(profile->GetPrefs()) {

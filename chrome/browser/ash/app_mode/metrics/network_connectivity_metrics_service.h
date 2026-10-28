@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_APP_MODE_METRICS_NETWORK_CONNECTIVITY_METRICS_SERVICE_H_
 #define CHROME_BROWSER_ASH_APP_MODE_METRICS_NETWORK_CONNECTIVITY_METRICS_SERVICE_H_
 
-#include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "chromeos/ash/components/network/network_state.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
@@ -21,8 +20,10 @@ extern const char kKioskNetworkDropsPerSessionHistogram[];
 // drop events.
 class NetworkConnectivityMetricsService : public NetworkStateHandlerObserver {
  public:
-  explicit NetworkConnectivityMetricsService(PrefService& local_state);
-  NetworkConnectivityMetricsService();
+  // `local_state` and `network_state_handler` must not be null and must outlive
+  // `this`.
+  NetworkConnectivityMetricsService(PrefService* local_state,
+                                    NetworkStateHandler* network_state_handler);
   NetworkConnectivityMetricsService(NetworkConnectivityMetricsService&) =
       delete;
   NetworkConnectivityMetricsService& operator=(
@@ -42,10 +43,9 @@ class NetworkConnectivityMetricsService : public NetworkStateHandlerObserver {
   void ReportPreviousSessionNetworkDrops();
 
   const raw_ref<PrefService> local_state_;
+  const raw_ref<NetworkStateHandler> network_state_handler_;
   bool is_online_;
   int network_drops_ = 0;
-
-  raw_ptr<NetworkStateHandler> network_state_handler_;
 };
 
 }  // namespace ash

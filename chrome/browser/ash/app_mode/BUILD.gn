@@ -340,7 +340,6 @@ source_set("unit_tests") {
     "//chromeos/ash/components/login/login_state",
     "//chromeos/ash/components/network:test_support",
     "//chromeos/ash/components/policy/device_local_account",
-    "//chromeos/ash/components/sync_wifi:test_support",
     "//chromeos/ash/experiences/system_web_apps/types",
     "//chromeos/dbus/power",
     "//components/prefs:test_support",

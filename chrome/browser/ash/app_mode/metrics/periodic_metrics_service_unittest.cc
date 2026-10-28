@@ -4,57 +4,34 @@
 
 #include "chrome/browser/ash/app_mode/metrics/periodic_metrics_service.h"
 
-#include <string>
-
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
-#include "chrome/test/base/testing_browser_process.h"
-#include "chromeos/ash/components/network/network_handler_test_helper.h"
-#include "chromeos/ash/components/sync_wifi/network_test_helper.h"
-#include "components/prefs/pref_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/base/user_activity/user_activity_detector.h"
 
 namespace ash {
 
-class BasePeriodicMetricsServiceTest {
+class PeriodicMetricsServiceTest : public ::testing::Test {
  public:
-  BasePeriodicMetricsServiceTest()
-      : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME),
-        network_handler_test_helper_(
-            std::make_unique<NetworkHandlerTestHelper>()),
-        histogram_tester_(std::make_unique<base::HistogramTester>()) {}
-
-  BasePeriodicMetricsServiceTest(const BasePeriodicMetricsServiceTest&) =
+  PeriodicMetricsServiceTest() = default;
+  PeriodicMetricsServiceTest(const PeriodicMetricsServiceTest&) = delete;
+  PeriodicMetricsServiceTest& operator=(const PeriodicMetricsServiceTest&) =
       delete;
-  BasePeriodicMetricsServiceTest& operator=(
-      const BasePeriodicMetricsServiceTest&) = delete;
 
   base::test::TaskEnvironment* task_environment() { return &task_environment_; }
 
-  base::HistogramTester* histogram_tester() { return histogram_tester_.get(); }
+  base::HistogramTester* histogram_tester() { return &histogram_tester_; }
 
   void StartRecordingPeriodicMetrics() {
     periodic_metrics_service_.StartRecordingPeriodicMetrics();
   }
 
  protected:
-  content::BrowserTaskEnvironment task_environment_;
-  sync_preferences::TestingPrefServiceSyncable user_prefs_;
-  std::unique_ptr<NetworkHandlerTestHelper> network_handler_test_helper_;
+  content::BrowserTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   PeriodicMetricsService periodic_metrics_service_;
-  std::unique_ptr<base::HistogramTester> histogram_tester_;
-};
-
-class PeriodicMetricsServiceTest : public BasePeriodicMetricsServiceTest,
-                                   public ::testing::Test {
- public:
-  PeriodicMetricsServiceTest() = default;
-  PeriodicMetricsServiceTest(const PeriodicMetricsServiceTest&) = delete;
-  PeriodicMetricsServiceTest& operator=(const PeriodicMetricsServiceTest&) =
-      delete;
+  base::HistogramTester histogram_tester_;
 };
 
 TEST_F(PeriodicMetricsServiceTest, PeriodicMetrics) {

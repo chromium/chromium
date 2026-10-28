@@ -7,10 +7,10 @@
 #include <algorithm>
 
 #include "ash/constants/ash_pref_names.h"
+#include "base/check_deref.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ref.h"
 #include "base/metrics/histogram_functions.h"
-#include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_state.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/ash/components/network/network_state_handler_observer.h"
@@ -26,22 +26,16 @@ const char kKioskNetworkDropsPerSessionHistogram[] =
 const char kKioskNetworkDrops[] = "network-drops";
 
 NetworkConnectivityMetricsService::NetworkConnectivityMetricsService(
-    PrefService& local_state)
-    : local_state_(local_state) {
-  // This check is needed only for tests without initialized network stubs.
-  if (!NetworkHandler::IsInitialized()) {
-    return;
-  }
-  network_state_handler_ = NetworkHandler::Get()->network_state_handler();
+    PrefService* local_state,
+    NetworkStateHandler* network_state_handler)
+    : local_state_(CHECK_DEREF(local_state)),
+      network_state_handler_(CHECK_DEREF(network_state_handler)) {
   is_online_ = (network_state_handler_->ConnectedNetworkByType(
                     NetworkTypePattern::Default()) != nullptr);
   network_state_handler_->AddObserver(this, FROM_HERE);
   ReportPreviousSessionNetworkDrops();
 }
 NetworkConnectivityMetricsService::~NetworkConnectivityMetricsService() {
-  if (!NetworkHandler::IsInitialized()) {
-    return;
-  }
   network_state_handler_->RemoveObserver(this, FROM_HERE);
 }
 
