@@ -21,6 +21,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/input/synthetic_web_input_event_builders.h"
+#include "third_party/blink/public/mojom/frame/fullscreen.mojom-blink.h"
 #include "third_party/blink/public/mojom/page/widget.mojom-shared.h"
 #include "third_party/blink/public/web/web_plugin_params.h"
 #include "third_party/blink/public/web/web_script_source.h"
@@ -47,6 +48,7 @@
 #include "third_party/blink/renderer/core/layout/layout_image.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/core/scroll/scrollbar.h"
+#include "third_party/blink/renderer/core/testing/fake_local_frame_host.h"
 #include "third_party/blink/renderer/core/testing/fake_web_plugin.h"
 #include "third_party/blink/renderer/core/testing/scoped_fake_plugin_registry.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
@@ -93,6 +95,38 @@ class TouchMoveEventListener final : public NativeEventListener {
 
  private:
   bool invoked_ = false;
+};
+
+class CountingEventListener final : public NativeEventListener {
+ public:
+  void Invoke(ExecutionContext*, Event*) override { ++count_; }
+  int count() const { return count_; }
+
+ private:
+  int count_ = 0;
+};
+
+// A LocalFrameHost that holds on to the EnterFullscreen() callback, so that
+// tests can decide when, and whether, the browser grants the request.
+class DeferredFullscreenLocalFrameHost : public FakeLocalFrameHost {
+ public:
+  void EnterFullscreen(mojom::blink::FullscreenOptionsPtr options,
+                       EnterFullscreenCallback callback) override {
+    CHECK(!enter_fullscreen_callback_);
+    enter_fullscreen_callback_ = std::move(callback);
+  }
+
+  bool HasPendingEnterFullscreen() const {
+    return !!enter_fullscreen_callback_;
+  }
+
+  void ResolveEnterFullscreen(bool granted) {
+    CHECK(enter_fullscreen_callback_);
+    std::move(enter_fullscreen_callback_).Run(granted);
+  }
+
+ private:
+  EnterFullscreenCallback enter_fullscreen_callback_;
 };
 
 }  // namespace
@@ -195,15 +229,6 @@ TEST_F(WebFrameWidgetSimTest, ColorGamutChangeTriggersMediaQuery) {
 }
 
 TEST_F(WebFrameWidgetSimTest, CoalescedFullscreenEnterAndExitRejectsRequest) {
-  class CountingEventListener final : public NativeEventListener {
-   public:
-    void Invoke(ExecutionContext*, Event*) override { ++count_; }
-    int count() const { return count_; }
-
-   private:
-    int count_ = 0;
-  };
-
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
   request.Complete("<!DOCTYPE html><div id='target'></div>");
@@ -331,15 +356,6 @@ TEST_F(WebFrameWidgetSimTest,
 
 TEST_F(WebFrameWidgetSimTest,
        PreviousExitUpdateBeforeFailedReentryRejectsPendingRequest) {
-  class CountingEventListener final : public NativeEventListener {
-   public:
-    void Invoke(ExecutionContext*, Event*) override { ++count_; }
-    int count() const { return count_; }
-
-   private:
-    int count_ = 0;
-  };
-
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
   request.Complete("<!DOCTYPE html><div id='target'></div>");
@@ -382,6 +398,210 @@ TEST_F(WebFrameWidgetSimTest,
 
   EXPECT_EQ(1, fullscreen_error_listener->count());
   EXPECT_EQ(nullptr, Fullscreen::FullscreenElementFrom(document));
+}
+
+// Tests for requesting fullscreen on a new element while the exit from a
+// previous fullscreen element is still in flight to the browser. See
+// crbug.com/556640930.
+class WebFrameWidgetFullscreenReenterTest : public WebFrameWidgetSimTest {
+ protected:
+  void SetUp() override {
+    WebFrameWidgetSimTest::SetUp();
+
+    SimRequest request("https://example.com/test.html", "text/html");
+    LoadURL("https://example.com/test.html");
+    request.Complete(
+        "<!DOCTYPE html><div id='first'></div><div id='second'></div>");
+    Compositor().BeginFrame();
+
+    first_ = GetDocument().getElementById(AtomicString("first"));
+    second_ = GetDocument().getElementById(AtomicString("second"));
+    ASSERT_TRUE(first_);
+    ASSERT_TRUE(second_);
+
+    fullscreen_change_listener_ = MakeGarbageCollected<CountingEventListener>();
+    GetDocument().addEventListener(event_type_names::kFullscreenchange,
+                                   fullscreen_change_listener_, false);
+    fullscreen_error_listener_ = MakeGarbageCollected<CountingEventListener>();
+    GetDocument().addEventListener(event_type_names::kFullscreenerror,
+                                   fullscreen_error_listener_, false);
+  }
+
+  std::unique_ptr<frame_test_helpers::TestWebFrameClient>
+  CreateWebFrameClientForMainFrame() override {
+    auto client = WebFrameWidgetSimTest::CreateWebFrameClientForMainFrame();
+    frame_host_.Init(client->GetRemoteNavigationAssociatedInterfaces());
+    return client;
+  }
+
+  // Requests fullscreen on `element` and waits for the request to reach the
+  // browser. The request stays pending until ResolveEnterFullscreen().
+  void RequestFullscreen(Element& element) {
+    LocalFrame::NotifyUserActivation(
+        GetDocument().GetFrame(),
+        mojom::blink::UserActivationNotificationType::kTest);
+    Fullscreen::RequestFullscreen(element);
+    test::RunPendingTasks();
+    ASSERT_TRUE(frame_host_.HasPendingEnterFullscreen());
+  }
+
+  void ResolveEnterFullscreen(bool granted) {
+    frame_host_.ResolveEnterFullscreen(granted);
+    // Wait for the mojo response to reach FullscreenController.
+    test::RunPendingTasks();
+    // A denied request schedules a frame to dispatch `fullscreenerror`.
+    if (Compositor().NeedsBeginFrame()) {
+      Compositor().BeginFrame();
+    }
+  }
+
+  // Simulates the browser sending a VisualProperties update with the given
+  // fullscreen state.
+  void ApplyFullscreenVisualProperties(bool is_fullscreen_granted,
+                                       int fullscreen_grant_count) {
+    VisualProperties visual_properties;
+    visual_properties.screen_infos =
+        display::ScreenInfos(display::ScreenInfo());
+    visual_properties.new_size_device_px = gfx::Size(800, 600);
+    visual_properties.visible_viewport_size_device_px = gfx::Size(800, 600);
+    visual_properties.is_fullscreen_granted = is_fullscreen_granted;
+    visual_properties.fullscreen_grant_count = fullscreen_grant_count;
+    WebView().MainFrameWidget()->ApplyVisualProperties(visual_properties);
+    Compositor().BeginFrame();
+  }
+
+  // Enters fullscreen on `first_`, then removes it from the DOM. Blink
+  // synchronously clears the fullscreen element and sends ExitFullscreen() to
+  // the browser, so on return the exit is still in flight.
+  void EnterFullscreenThenRemoveElement() {
+    RequestFullscreen(*first_);
+    ResolveEnterFullscreen(/*granted=*/true);
+    ApplyFullscreenVisualProperties(/*is_fullscreen_granted=*/true,
+                                    /*fullscreen_grant_count=*/1);
+    ASSERT_EQ(first_, Fullscreen::FullscreenElementFrom(GetDocument()));
+    EXPECT_EQ(1, fullscreen_change_listener_->count());
+
+    first_->remove();
+    EXPECT_EQ(nullptr, Fullscreen::FullscreenElementFrom(GetDocument()));
+    Compositor().BeginFrame();
+    EXPECT_EQ(2, fullscreen_change_listener_->count());
+  }
+
+  Element* FullscreenElement() {
+    return Fullscreen::FullscreenElementFrom(GetDocument());
+  }
+
+  DeferredFullscreenLocalFrameHost frame_host_;
+  Persistent<Element> first_;
+  Persistent<Element> second_;
+  Persistent<CountingEventListener> fullscreen_change_listener_;
+  Persistent<CountingEventListener> fullscreen_error_listener_;
+};
+
+// The exit and the re-entry arrive from the browser as separate
+// VisualProperties updates.
+TEST_F(WebFrameWidgetFullscreenReenterTest, ReenterWhileExiting) {
+  EnterFullscreenThenRemoveElement();
+
+  // Blink must wait for the browser rather than synchronously entering
+  // fullscreen and having the late exit unfullscreen `second_`.
+  RequestFullscreen(*second_);
+  EXPECT_EQ(nullptr, FullscreenElement());
+
+  // The browser grants the request, and the in-flight exit arrives first.
+  ResolveEnterFullscreen(/*granted=*/true);
+  ApplyFullscreenVisualProperties(/*is_fullscreen_granted=*/false,
+                                  /*fullscreen_grant_count=*/1);
+  EXPECT_EQ(nullptr, FullscreenElement());
+  EXPECT_EQ(2, fullscreen_change_listener_->count());
+  EXPECT_EQ(0, fullscreen_error_listener_->count());
+
+  // The re-entry arrives next.
+  ApplyFullscreenVisualProperties(/*is_fullscreen_granted=*/true,
+                                  /*fullscreen_grant_count=*/2);
+  EXPECT_EQ(second_, FullscreenElement());
+  EXPECT_TRUE(IsFullscreenGranted());
+  EXPECT_EQ(3, fullscreen_change_listener_->count());
+  EXPECT_EQ(0, fullscreen_error_listener_->count());
+}
+
+// The exit and the re-entry are coalesced into a single VisualProperties update
+// (`is_fullscreen_granted` stays true and `fullscreen_grant_count` increments).
+TEST_F(WebFrameWidgetFullscreenReenterTest, ReenterWhileExitingCoalesced) {
+  EnterFullscreenThenRemoveElement();
+
+  RequestFullscreen(*second_);
+  EXPECT_EQ(nullptr, FullscreenElement());
+
+  ResolveEnterFullscreen(/*granted=*/true);
+  ApplyFullscreenVisualProperties(/*is_fullscreen_granted=*/true,
+                                  /*fullscreen_grant_count=*/2);
+  EXPECT_EQ(second_, FullscreenElement());
+  EXPECT_TRUE(IsFullscreenGranted());
+  EXPECT_EQ(3, fullscreen_change_listener_->count());
+  EXPECT_EQ(0, fullscreen_error_listener_->count());
+}
+
+// The browser denies the re-entry request before the exit arrives. The request
+// is rejected, the exit still completes, and fullscreen can be entered again.
+TEST_F(WebFrameWidgetFullscreenReenterTest, ReenterWhileExitingDenied) {
+  EnterFullscreenThenRemoveElement();
+
+  RequestFullscreen(*second_);
+  ResolveEnterFullscreen(/*granted=*/false);
+  EXPECT_EQ(nullptr, FullscreenElement());
+  EXPECT_EQ(2, fullscreen_change_listener_->count());
+  EXPECT_EQ(1, fullscreen_error_listener_->count());
+
+  // The in-flight exit arrives.
+  ApplyFullscreenVisualProperties(/*is_fullscreen_granted=*/false,
+                                  /*fullscreen_grant_count=*/1);
+  EXPECT_EQ(nullptr, FullscreenElement());
+  EXPECT_FALSE(IsFullscreenGranted());
+  EXPECT_EQ(2, fullscreen_change_listener_->count());
+  EXPECT_EQ(1, fullscreen_error_listener_->count());
+
+  // A new request is handled normally.
+  RequestFullscreen(*second_);
+  ResolveEnterFullscreen(/*granted=*/true);
+  ApplyFullscreenVisualProperties(/*is_fullscreen_granted=*/true,
+                                  /*fullscreen_grant_count=*/2);
+  EXPECT_EQ(second_, FullscreenElement());
+  EXPECT_TRUE(IsFullscreenGranted());
+  EXPECT_EQ(3, fullscreen_change_listener_->count());
+  EXPECT_EQ(1, fullscreen_error_listener_->count());
+}
+
+// The exit, re-entry grant, and a subsequent exit all coalesce before a
+// VisualProperties update is acknowledged. The re-entry request is rejected,
+// both exits are settled, and the controller is left in State::kInitial so
+// subsequent requests can proceed.
+TEST_F(WebFrameWidgetFullscreenReenterTest,
+       ReenterWhileExitingCoalescedWithSecondExit) {
+  EnterFullscreenThenRemoveElement();
+
+  RequestFullscreen(*second_);
+  EXPECT_EQ(nullptr, FullscreenElement());
+
+  // The browser grants the re-entry request and immediately exits again before
+  // VisualProperties can be dispatched.
+  ResolveEnterFullscreen(/*granted=*/true);
+  ApplyFullscreenVisualProperties(/*is_fullscreen_granted=*/false,
+                                  /*fullscreen_grant_count=*/2);
+  EXPECT_EQ(nullptr, FullscreenElement());
+  EXPECT_FALSE(IsFullscreenGranted());
+  EXPECT_EQ(2, fullscreen_change_listener_->count());
+  EXPECT_EQ(1, fullscreen_error_listener_->count());
+
+  // A new request is handled normally and can successfully enter fullscreen.
+  RequestFullscreen(*second_);
+  ResolveEnterFullscreen(/*granted=*/true);
+  ApplyFullscreenVisualProperties(/*is_fullscreen_granted=*/true,
+                                  /*fullscreen_grant_count=*/3);
+  EXPECT_EQ(second_, FullscreenElement());
+  EXPECT_TRUE(IsFullscreenGranted());
+  EXPECT_EQ(3, fullscreen_change_listener_->count());
+  EXPECT_EQ(1, fullscreen_error_listener_->count());
 }
 
 TEST_F(WebFrameWidgetSimTest, FrameSinkIdHitTestAPI) {

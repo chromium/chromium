@@ -105,8 +105,27 @@ class CORE_EXPORT FullscreenController {
     kFullscreen,
     kChangingFullscreenDisplays,
     kExitingFullscreen,
+    // Fullscreen exit is in flight to the browser, and a new EnterFullscreen
+    // request has been sent before the browser acknowledged the exit.
+    kReenteringFullscreen,
   };
   State state_ = State::kInitial;
+
+  // Returns true if an EnterFullscreen request is currently in flight to the
+  // browser.
+  bool IsEnteringFullscreen() const {
+    return state_ == State::kEnteringFullscreen ||
+           state_ == State::kChangingFullscreenDisplays ||
+           state_ == State::kReenteringFullscreen;
+  }
+
+  // Returns true if fullscreen has been entered and not yet exited by the
+  // browser (including while an exit or exit+re-enter is in flight).
+  bool IsFullscreenOrExiting() const {
+    return state_ == State::kFullscreen ||
+           state_ == State::kExitingFullscreen ||
+           state_ == State::kReenteringFullscreen;
+  }
 
   using PendingFullscreenSet = GCedHeapLinkedHashSet<WeakMember<LocalFrame>>;
   Persistent<PendingFullscreenSet> pending_frames_;
