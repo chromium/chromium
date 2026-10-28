@@ -658,6 +658,10 @@ void WebUIToolbarWebView::OnBlur() {
   // restored around widget activation, or around native focus changes on
   // Mac), so whether the request is stale is decided in `OnWillChangeFocus()`
   // and `MaybeFlushPendingFocusRequest()`.
+
+  // Clear C++-cached sub-control focus state synchronously when the hosting
+  // View loses focus rather than waiting for an async WebUI focusout IPC.
+  app_menu_control_.SetFocused(false);
   if (location_bar_) {
     location_bar_->OnBlur();
   }
@@ -946,6 +950,9 @@ void WebUIToolbarWebView::SetAvatarButtonIPHPromoShowing(bool showing) {
 }
 
 void WebUIToolbarWebView::OnAppMenuFocusChanged(bool focused) {
+  if (focused && (!web_view_ || !web_view_->HasFocus())) {
+    return;
+  }
   app_menu_control_.SetFocused(focused);
 }
 

@@ -2564,6 +2564,20 @@ IN_PROC_BROWSER_TEST_F(WebUIAppMenuBrowserTest, CheckAppMenuFocusSync) {
   // Wait for C++ to receive the blur change.
   EXPECT_TRUE(
       base::test::RunUntil([&]() { return !app_menu_control->HasFocus(); }));
+
+  // 4. Test C++ WebView blur immediately clears AppMenu focus state and ignores
+  // stale focus-in notifications while blurred.
+  app_menu_control->Focus(
+      BrowserView::GetBrowserViewForBrowser(browser())->toolbar());
+  EXPECT_TRUE(
+      base::test::RunUntil([&]() { return app_menu_control->HasFocus(); }));
+
+  web_view->GetFocusManager()->ClearFocus();
+  EXPECT_FALSE(web_view->HasFocus());
+  EXPECT_FALSE(app_menu_control->HasFocus());
+
+  webui_toolbar_view->OnAppMenuFocusChanged(true);
+  EXPECT_FALSE(app_menu_control->HasFocus());
 }
 
 // WebUIAppMenuButtonStateTest is disabled on ChromeOS because update and global

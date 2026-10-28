@@ -435,14 +435,14 @@ export function getClickSourceType(e: Event): MenuSourceType {
       (e.pointerType === 'touch' || e.pointerType === 'pen')) {
     return MenuSourceType.kTouch;
   }
-  // Because `e` is a PointerEvent, we cannot check whether `e` is a
-  // KeyboardEvent. Need to check e.detail instead, which is 0 for
-  // KeyboardEvent. Note: Keyboard activations on `<cr-icon-button>` (Space or
-  // Enter) programmatically synthesize standard `click` events with `detail` 0.
+  // Keyboard activations on `<cr-icon-button>` or `<button>` (Space or Enter)
+  // programmatically synthesize standard `click` events with `detail` 0, while
+  // direct keydown activations (e.g. ArrowDown/ArrowUp) pass a `KeyboardEvent`.
   // TODO(crbug.com/543376027): Handle pointer events correctly. Physical
   // pointer events can have detail === 0, which incorrectly classifies them as
   // keyboard events.
-  if (e instanceof MouseEvent && e.detail === 0) {
+  if (e instanceof KeyboardEvent ||
+      (e instanceof MouseEvent && e.detail === 0)) {
     return MenuSourceType.kKeyboard;
   }
   return MenuSourceType.kMouse;
@@ -453,7 +453,7 @@ export function getClickSourceType(e: Event): MenuSourceType {
 // * touch/gesture event -> touch
 // * others -> mouse
 export function getContextMenuSourceType(e: Event): MenuSourceType {
-  if (e instanceof PointerEvent) {
+  if (e instanceof PointerEvent || e instanceof KeyboardEvent) {
     return getClickSourceType(e);
   }
   if (e instanceof MouseEvent && e.button === BUTTON_LEFT) {

@@ -27,6 +27,7 @@
 #include "chrome/browser/ui/views/frame/contents_web_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/page_info/page_info_bubble_view_base.h"
+#include "chrome/browser/ui/views/toolbar/app_menu_control.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/browser/ui/views/toolbar/webui_pinned_toolbar_actions.h"
 #include "chrome/browser/ui/views/toolbar/webui_test_utils.h"
@@ -529,6 +530,62 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewInteractiveTest,
                 return active ? active.id : null;
               })()
             )"));
+}
+
+IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewInteractiveTest,
+                       AppMenuOpensOnArrowKeysAndClearsFocusOnBlur) {
+  WaitForInitialWebUIToolbar(browser());
+  ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser()));
+
+  BrowserView* const browser_view =
+      BrowserView::GetBrowserViewForBrowser(browser());
+  ASSERT_TRUE(browser_view);
+  ToolbarView* const toolbar_view = browser_view->toolbar();
+  ASSERT_TRUE(toolbar_view);
+  AppMenuControl* const app_menu_control =
+      browser_view->toolbar_button_provider()->GetAppMenuControl();
+  ASSERT_TRUE(app_menu_control);
+
+  // Focus the WebUI app menu button and verify ArrowDown opens the native menu.
+  browser_view->FocusAppMenu();
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return toolbar_view->GetAppMenuFocused(); }));
+  ASSERT_TRUE(ui_test_utils::SendKeyPressSync(
+      browser(), ui::VKEY_DOWN, /*control=*/false, /*shift=*/false,
+      /*alt=*/false, /*command=*/false));
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return app_menu_control->IsMenuShowing(); }));
+  app_menu_control->CloseMenu();
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return !app_menu_control->IsMenuShowing(); }));
+
+  // Refocus the WebUI app menu button and verify ArrowUp opens the native menu.
+  if (!toolbar_view->GetAppMenuFocused()) {
+    browser_view->FocusAppMenu();
+    ASSERT_TRUE(base::test::RunUntil(
+        [&]() { return toolbar_view->GetAppMenuFocused(); }));
+  }
+  ASSERT_TRUE(ui_test_utils::SendKeyPressSync(
+      browser(), ui::VKEY_UP, /*control=*/false, /*shift=*/false,
+      /*alt=*/false, /*command=*/false));
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return app_menu_control->IsMenuShowing(); }));
+  app_menu_control->CloseMenu();
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return !app_menu_control->IsMenuShowing(); }));
+
+  // Moving Views focus away from the toolbar WebView synchronously clears the
+  // C++-cached app menu focus state.
+  if (!toolbar_view->GetAppMenuFocused()) {
+    browser_view->FocusAppMenu();
+    ASSERT_TRUE(base::test::RunUntil(
+        [&]() { return toolbar_view->GetAppMenuFocused(); }));
+  }
+  views::View* const contents_view =
+      browser_view->contents_web_view_for_testing();
+  ASSERT_TRUE(contents_view);
+  contents_view->RequestFocus();
+  EXPECT_FALSE(toolbar_view->GetAppMenuFocused());
 }
 
 class WebUIPinnedToolbarActionsInteractiveTest : public InteractiveBrowserTest {

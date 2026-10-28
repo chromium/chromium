@@ -212,6 +212,16 @@ export class AppMenuButtonElement extends AppMenuButtonElementBase {
     }
   }
 
+  protected onKeydown_(e: KeyboardEvent) {
+    // To match Views' MenuButtonController::OnKeyPressed behavior, Up and Down
+    // arrow keys open the menu on keydown. (Enter and Space already synthesize
+    // a click event with detail === 0 on the inner <button>.)
+    if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+      e.preventDefault();
+      this.handleMenuClick_(e);
+    }
+  }
+
   private handleMenuClick_(e: Event) {
     TrackedElementManager.getInstance().notifyElementActivated(this);
     this.browserProxy_.toolbarUIHandler.showContextMenu(

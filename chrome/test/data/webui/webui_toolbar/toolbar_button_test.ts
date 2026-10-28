@@ -42,6 +42,11 @@ suite('ToolbarButtonTest', function() {
     assertEquals(
         MenuSourceType.kMouse,
         getClickSourceType(new MouseEvent('click', {detail: 1})));
+
+    // KeyboardEvent -> kKeyboard
+    assertEquals(
+        MenuSourceType.kKeyboard,
+        getClickSourceType(new KeyboardEvent('keydown', {key: 'ArrowDown'})));
   });
 
   test('GetContextMenuSourceType', function() {
@@ -91,6 +96,12 @@ suite('ToolbarButtonTest', function() {
     assertEquals(
         MenuSourceType.kMouse,
         getContextMenuSourceType(new MouseEvent('contextmenu', {button: 2})));
+
+    // KeyboardEvent -> kKeyboard
+    assertEquals(
+        MenuSourceType.kKeyboard,
+        getContextMenuSourceType(
+            new KeyboardEvent('keydown', {key: 'ArrowDown'})));
   });
 
   suite('HighlightTracker', function() {

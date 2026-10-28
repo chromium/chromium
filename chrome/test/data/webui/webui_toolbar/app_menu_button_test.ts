@@ -134,6 +134,44 @@ suite('AppMenuButtonTest', function() {
     assertEquals(MenuSourceType.kKeyboard, args[2]);
   });
 
+  test('ArrowDown and ArrowUp Keys Trigger Menu', function() {
+    const button = appMenuButton.$.button;
+
+    const downEvent =
+        new KeyboardEvent('keydown', {key: 'ArrowDown', cancelable: true});
+    button.dispatchEvent(downEvent);
+    assertTrue(downEvent.defaultPrevented);
+    assertEquals(1, toolbarUiHandler.getCallCount('showContextMenu'));
+    assertEquals(
+        ContextMenuType.kAppMenu,
+        toolbarUiHandler.getArgs('showContextMenu')[0][0]);
+    assertEquals(
+        MenuSourceType.kKeyboard,
+        toolbarUiHandler.getArgs('showContextMenu')[0][2]);
+
+    const upEvent =
+        new KeyboardEvent('keydown', {key: 'ArrowUp', cancelable: true});
+    button.dispatchEvent(upEvent);
+    assertTrue(upEvent.defaultPrevented);
+    assertEquals(2, toolbarUiHandler.getCallCount('showContextMenu'));
+    assertEquals(
+        ContextMenuType.kAppMenu,
+        toolbarUiHandler.getArgs('showContextMenu')[1][0]);
+    assertEquals(
+        MenuSourceType.kKeyboard,
+        toolbarUiHandler.getArgs('showContextMenu')[1][2]);
+
+    // Other keys (especially Enter and Space, which rely on native <button>
+    // click synthesis) should not trigger the menu in keydown.
+    for (const key of ['ArrowLeft', 'Enter', ' ']) {
+      const ignoredEvent =
+          new KeyboardEvent('keydown', {key, cancelable: true});
+      button.dispatchEvent(ignoredEvent);
+      assertFalse(ignoredEvent.defaultPrevented);
+      assertEquals(2, toolbarUiHandler.getCallCount('showContextMenu'));
+    }
+  });
+
   test('Mouse Click Ignored (Handled on Down)', function() {
     const button = appMenuButton.$.button;
 
