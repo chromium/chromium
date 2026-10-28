@@ -169,26 +169,38 @@ int ConfiguredProxyResolutionRequest::QueryDidComplete(int result_code) {
     Reset();
   }
 
-  // Note that DidFinishResolvingProxy might modify `results_`.
-  int rv = service_->DidFinishResolvingProxy(url_, network_anonymization_key_,
-                                             method_, results_, result_code,
-                                             net_log_);
+  // Detach `service_` and `results_` before `DidFinishResolvingProxy()` in case
+  // a sibling callback synchronously destroys `this` or `results` (avoids
+  // double-removal in our destructor and dangling raw_ptrs).
+  ConfiguredProxyResolutionService* service = std::exchange(service_, nullptr);
+  ProxyInfo* results = std::exchange(results_, nullptr);
+  base::WeakPtr<ConfiguredProxyResolutionRequest> weak_this =
+      weak_factory_.GetWeakPtr();
+
+  // Note that DidFinishResolvingProxy might modify `results`.
+  int rv =
+      service->DidFinishResolvingProxy(url_, network_anonymization_key_,
+                                       method_, results, result_code, net_log_);
+  if (!weak_this) {
+    return ERR_ABORTED;
+  }
 
   // Make a note in the results which configuration was in use at the
   // time of the resolve.
-  results_->set_proxy_resolve_start_time(creation_time_);
-  results_->set_proxy_resolve_end_time(base::TimeTicks::Now());
+  results->set_proxy_resolve_start_time(creation_time_);
+  results->set_proxy_resolve_end_time(base::TimeTicks::Now());
 
   // If annotation is not already set, e.g. through TryToCompleteSynchronously
   // function, use in-progress-resolve annotation.
-  if (!results_->traffic_annotation().is_valid())
-    results_->set_traffic_annotation(traffic_annotation_);
+  if (!results->traffic_annotation().is_valid()) {
+    results->set_traffic_annotation(traffic_annotation_);
+  }
 
   // If proxy is set without error, ensure that an annotation is provided.
   if (result_code != ERR_ABORTED && !rv) {
     // TODO(crbug.com/469006851): Turn this back into a CHECK once crashes were
     // fully fixed.
-    DCHECK(results_->traffic_annotation().is_valid());
+    DCHECK(results->traffic_annotation().is_valid());
   }
 
   // Reset the state associated with in-progress-resolve.
@@ -199,9 +211,7 @@ int ConfiguredProxyResolutionRequest::QueryDidComplete(int result_code) {
 
 int ConfiguredProxyResolutionRequest::QueryDidCompleteSynchronously(
     int result_code) {
-  int rv = QueryDidComplete(result_code);
-  service_ = nullptr;
-  return rv;
+  return QueryDidComplete(result_code);
 }
 
 LoadState ConfiguredProxyResolutionRequest::GetLoadState() const {
@@ -222,8 +232,12 @@ void ConfiguredProxyResolutionRequest::QueryComplete(int result_code) {
   // prevent re-entrant dispatch if the service re-initializes synchronously.
   service_->RemovePendingRequest(this);
 
+  base::WeakPtr<ConfiguredProxyResolutionRequest> weak_this =
+      weak_factory_.GetWeakPtr();
   result_code = QueryDidComplete(result_code);
-  service_ = nullptr;
+  if (!weak_this) {
+    return;
+  }
 
   CompletionOnceCallback callback = std::move(user_callback_);
   user_callback_.Reset();
