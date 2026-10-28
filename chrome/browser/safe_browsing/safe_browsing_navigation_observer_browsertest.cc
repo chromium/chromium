@@ -3001,6 +3001,90 @@ IN_PROC_BROWSER_TEST_F(SBNavigationObserverBrowserTest,
   ASSERT_EQ(0U, nav_list->PendingNavigationEventsSize());
 }
 
+// Regression test for b/568560137.
+// Ctrl+clicking (Cmd+clicking on Mac) a link without target="_blank" opens the
+// link in a new tab via WebContentsImpl::OpenURL -> Navigate(), which starts
+// the navigation (DidStartNavigation) before firing DidOpenRequestedURL
+// (RecordNewWebContents). Verify that IdentifyReferrerChainByPendingEventURL
+// still attributes the pending new-tab navigation to the source tab.
+IN_PROC_BROWSER_TEST_F(SBNavigationObserverBrowserTest,
+                       IdentifyReferrerChainByPendingEventURL_NewTabCtrlClick) {
+  GURL initial_url = embedded_test_server()->GetURL(kSingleFrameTestURL);
+  GURL target_url = embedded_test_server()->GetURL("/hung");
+  std::string test_server_ip(embedded_test_server()->host_port_pair().host());
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), initial_url));
+
+  // Point a normal link (without target="_blank") to /hung so the navigation in
+  // the new tab stays in a pending state.
+  ASSERT_TRUE(content::ExecJs(
+      web_contents(),
+      "document.getElementById('attribution_within_two_user_gestures').href = "
+      "'/hung';",
+      content::EXECUTE_SCRIPT_NO_USER_GESTURE));
+  int link_x = content::EvalJs(web_contents(),
+                               "const bounds = document.getElementById("
+                               "'attribution_within_two_user_gestures')"
+                               ".getBoundingClientRect();"
+                               "Math.floor(bounds.left + bounds.width / 2)",
+                               content::EXECUTE_SCRIPT_NO_USER_GESTURE)
+                   .ExtractInt();
+  int link_y = content::EvalJs(web_contents(),
+                               "const bounds = document.getElementById("
+                               "'attribution_within_two_user_gestures')"
+                               ".getBoundingClientRect();"
+                               "Math.floor(bounds.top + bounds.height / 2)",
+                               content::EXECUTE_SCRIPT_NO_USER_GESTURE)
+                   .ExtractInt();
+
+  content::WaitForHitTestData(web_contents()->GetPrimaryMainFrame());
+  content::WebContentsAddedObserver new_tab_observer;
+#if BUILDFLAG(IS_MAC)
+  constexpr int kNewTabModifier = blink::WebInputEvent::kMetaKey;
+#else
+  constexpr int kNewTabModifier = blink::WebInputEvent::kControlKey;
+#endif
+  content::SimulateMouseClickAt(web_contents(), kNewTabModifier,
+                                blink::WebMouseEvent::Button::kLeft,
+                                gfx::Point(link_x, link_y));
+  content::WebContents* new_tab_contents = new_tab_observer.GetWebContents();
+  ASSERT_TRUE(new_tab_contents);
+  EXPECT_NE(web_contents(), new_tab_contents);
+
+  auto* nav_list = navigation_event_list();
+  ASSERT_TRUE(nav_list);
+  ASSERT_EQ(1U, nav_list->PendingNavigationEventsSize());
+
+  ReferrerChain referrer_chain;
+  auto result = observer_manager_->IdentifyReferrerChainByPendingEventURL(
+      target_url,
+      /*user_gesture_count_limit=*/2, &referrer_chain);
+  ASSERT_EQ(SafeBrowsingNavigationObserverManager::SUCCESS_LANDING_PAGE,
+            result);
+  ASSERT_EQ(2, referrer_chain.size());
+  VerifyReferrerChainEntry(
+      target_url,                     // url
+      GURL(),                         // main_frame_url
+      ReferrerChainEntry::EVENT_URL,  // type
+      test_server_ip,                 // ip_address
+      initial_url,                    // referrer_url
+      GURL(),                         // referrer_main_frame_url
+      true,                           // is_retargeting
+      std::vector<GURL>(),            // server redirects
+      ReferrerChainEntry::RENDERER_INITIATED_WITH_USER_GESTURE,
+      referrer_chain.Get(0));
+  VerifyReferrerChainEntry(initial_url,                       // url
+                           GURL(),                            // main_frame_url
+                           ReferrerChainEntry::LANDING_PAGE,  // type
+                           test_server_ip,                    // ip_address
+                           GURL(),                            // referrer_url
+                           GURL(),               // referrer_main_frame_url
+                           false,                // is_retargeting
+                           std::vector<GURL>(),  // server redirects
+                           ReferrerChainEntry::BROWSER_INITIATED,
+                           referrer_chain.Get(1));
+}
+
 // Verify URLs that match the Safe Browsing allowlist domains (a.k.a
 // prefs::kSafeBrowsingAllowlistDomains) are removed from the referrer chain.
 IN_PROC_BROWSER_TEST_F(SBNavigationObserverBrowserTest,

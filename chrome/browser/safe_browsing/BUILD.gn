@@ -1153,6 +1153,7 @@ source_set("test_support") {
       "//components/safe_browsing/core/browser/db:sb_protocol_manager_util",
       "//components/safe_browsing/core/browser/db:test_database_manager",
       "//components/safe_browsing/core/common/proto:crx_info_proto",
+      "//content/test:test_support",
       "//services/network:test_support",
       "//testing/gtest",
     ]
