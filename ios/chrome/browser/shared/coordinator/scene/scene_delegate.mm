@@ -94,8 +94,13 @@ void SyncBreadcrumbsLog() {
 - (void)scene:(UIScene*)scene
     willConnectToSession:(UISceneSession*)session
                  options:(UISceneConnectionOptions*)connectionOptions {
-  ChromeConnectionOptions* chromeOptions = [[ChromeConnectionOptions alloc]
-      initWithConnectionOptions:connectionOptions];
+  ChromeConnectionOptions* chromeOptions =
+      tests_hook::GetOverriddenConnectionOptions();
+  if (!chromeOptions) {
+    chromeOptions = [[ChromeConnectionOptions alloc]
+        initWithConnectionOptions:connectionOptions];
+  }
+
   [self scene:scene willConnectToSession:session chromeOptions:chromeOptions];
 }
 

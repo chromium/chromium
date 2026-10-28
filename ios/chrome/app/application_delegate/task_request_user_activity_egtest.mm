@@ -5,6 +5,7 @@
 #import <UIKit/UIKit.h>
 #import <XCTest/XCTest.h>
 
+#import "base/strings/stringprintf.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/handoff/handoff_utility.h"
 #import "ios/chrome/browser/bookmarks/public/bookmarks_ui_constants.h"
@@ -25,7 +26,9 @@
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
+#import "ios/chrome/test/earl_grey/test_switches.h"
 #import "ios/testing/earl_grey/app_launch_configuration.h"
+#import "ios/testing/earl_grey/app_launch_manager.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "net/base/apple/url_conversions.h"
 #import "net/test/embedded_test_server/embedded_test_server.h"
@@ -34,9 +37,8 @@ namespace {
 const char exampleURL[] = "https://example.com";
 }
 
-// Tests the handling of user activity intents.
-// These tests only check the behavior during a warm start. Cold start
-// scenarios are not covered here.
+// Tests the handling of user activity intents during both warm start and cold
+// start.
 @interface TaskRequestUserActivityTestCase : ChromeTestCase
 @end
 
@@ -312,6 +314,86 @@ const char exampleURL[] = "https://example.com";
   [ChromeEarlGrey waitForWebStateVisibleURL:webURL];
   GREYAssertTrue([ChromeEarlGrey webStateVisibleURL] == webURL,
                  @"URL should be opened by Handoff");
+}
+
+#pragma mark - Cold Start Tests
+
+// Relaunches the app from cold start with a simulated `NSUserActivity` in
+// `UISceneConnectionOptions`.
+- (void)relaunchWithUserActivityType:(NSString*)activityType
+                                 url:(NSString*)urlString {
+  AppLaunchConfiguration config = [self appConfigurationForTestCase];
+  config.relaunch_policy = ForceRelaunchByCleanShutdown;
+  config.additional_args.push_back(base::StringPrintf(
+      "--%s=%s", test_switches::kTestUserActivityTypeAtStartup,
+      base::SysNSStringToUTF8(activityType).c_str()));
+  if (urlString.length > 0) {
+    config.additional_args.push_back(base::StringPrintf(
+        "--%s=%s", test_switches::kTestUserActivityURLAtStartup,
+        base::SysNSStringToUTF8(urlString).c_str()));
+  }
+  [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
+}
+
+// Tests that the "Open In Chrome" intent opens the specified URL on cold start.
+- (void)testColdStartOpenInChrome {
+  GURL webURL = GURL(exampleURL);
+  [self relaunchWithUserActivityType:kSiriShortcutOpenInChrome
+                                 url:base::SysUTF8ToNSString(webURL.spec())];
+
+  [ChromeEarlGrey waitForWebStateVisibleURL:webURL];
+  GREYAssertTrue([ChromeEarlGrey webStateVisibleURL] == webURL,
+                 @"URL should be opened on cold start");
+}
+
+// Tests that the "Open In Incognito" intent opens the specified URL in
+// incognito on cold start.
+- (void)testColdStartOpenInIncognito {
+  GURL webURL = GURL(exampleURL);
+  [self relaunchWithUserActivityType:kSiriShortcutOpenInIncognito
+                                 url:base::SysUTF8ToNSString(webURL.spec())];
+
+  [ChromeEarlGrey waitForWebStateVisibleURL:webURL];
+  GREYAssertTrue([ChromeEarlGrey webStateVisibleURL] == webURL,
+                 @"URL should be opened on cold start");
+  GREYAssertTrue([ChromeEarlGrey isIncognitoMode],
+                 @"Should be in incognito mode on cold start");
+}
+
+// Tests that the "Manage Settings" intent opens the settings UI on cold start.
+- (void)testColdStartManageSettings {
+  [self relaunchWithUserActivityType:kSiriManageSettings url:nil];
+
+  [ChromeEarlGrey waitForWebStateVisibleURL:GURL(kChromeUINewTabURL)];
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:grey_accessibilityID(
+                                              kSettingsTableViewId)];
+}
+
+// Tests that the Handoff intent opens the specified URL on cold start.
+- (void)testColdStartHandoffActivity {
+  GURL webURL = GURL(exampleURL);
+  [self relaunchWithUserActivityType:handoff::kChromeHandoffActivityType
+                                 url:base::SysUTF8ToNSString(webURL.spec())];
+
+  [ChromeEarlGrey waitForWebStateVisibleURL:webURL];
+  GREYAssertTrue([ChromeEarlGrey webStateVisibleURL] == webURL,
+                 @"URL should be opened by Handoff on cold start");
+}
+
+// Tests that a `UIApplicationShortcutItem` (`OpenNewIncognitoSearch`) opens an
+// incognito tab on cold start.
+- (void)testColdStartShortcutNewIncognitoSearch {
+  AppLaunchConfiguration config = [self appConfigurationForTestCase];
+  config.relaunch_policy = ForceRelaunchByCleanShutdown;
+  config.additional_args.push_back(base::StringPrintf(
+      "--%s=%s", test_switches::kTestShortcutItemAtStartup,
+      base::SysNSStringToUTF8(kShortcutNewIncognitoSearch).c_str()));
+  [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
+
+  [ChromeEarlGrey waitForWebStateVisibleURL:GURL(kChromeUINewTabURL)];
+  GREYAssertTrue([ChromeEarlGrey isIncognitoMode],
+                 @"Should be in incognito mode after shortcut on cold start");
 }
 
 @end

@@ -43,4 +43,14 @@ const char kUseDefaultInfobarDuration[] = "use-default-infobar-duration";
 const char kPauseStartupAtBackgroundStage[] =
     "pause-startup-at-background-stage";
 
+const char kTestOpenURLAtStartup[] = "test-open-url-at-startup";
+
+const char kTestUserActivityTypeAtStartup[] =
+    "test-user-activity-type-at-startup";
+
+const char kTestUserActivityURLAtStartup[] =
+    "test-user-activity-url-at-startup";
+
+const char kTestShortcutItemAtStartup[] = "test-shortcut-item-at-startup";
+
 }  // namespace test_switches

@@ -54,6 +54,23 @@ extern const char kUseDefaultInfobarDuration[];
 // conditions.
 extern const char kPauseStartupAtBackgroundStage[];
 
+// Switch used to simulate opening an external URL via
+// `UISceneConnectionOptions.URLContexts` on cold start.
+extern const char kTestOpenURLAtStartup[];
+
+// Switch used to simulate continuing an `NSUserActivity` with the given
+// `activityType` via `UISceneConnectionOptions.userActivities` on cold start.
+extern const char kTestUserActivityTypeAtStartup[];
+
+// Switch used to set the URL on the cold-start `NSUserActivity` (and its
+// `INInteraction` intent, if applicable) specified by
+// `kTestUserActivityTypeAtStartup`.
+extern const char kTestUserActivityURLAtStartup[];
+
+// Switch used to simulate a home screen quick action shortcut item with the
+// given `type` via `UISceneConnectionOptions.shortcutItem` on cold start.
+extern const char kTestShortcutItemAtStartup[];
+
 }  // namespace test_switches
 
 #endif  // IOS_CHROME_TEST_EARL_GREY_TEST_SWITCHES_H_

@@ -6,6 +6,9 @@
 #import "ios/chrome/app/tests_hook.h"
 // clang-format on
 
+#import <Intents/Intents.h>
+#import <UIKit/UIKit.h>
+
 #import <algorithm>
 #import <optional>
 #import <string_view>
@@ -55,6 +58,7 @@
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_local_update_observer.h"
 #import "ios/chrome/browser/sessions/model/session_restoration_service_factory.h"
 #import "ios/chrome/browser/share_kit/model/test_share_kit_service.h"
+#import "ios/chrome/browser/shared/coordinator/scene/chrome_connection_options.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -67,12 +71,14 @@
 #import "ios/chrome/browser/sync/model/device_info_sync_service_factory.h"
 #import "ios/chrome/browser/web_extension/model/extension_service.h"
 #import "ios/chrome/browser/web_extension/model/fake_extension_service.h"
+#import "ios/chrome/common/intents/OpenInChromeIntent.h"
 #import "ios/chrome/common/ui/reauthentication/fake_reauthentication_module.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
 #import "ios/chrome/test/app/signin_test_util.h"
 #import "ios/chrome/test/earl_grey/test_switches.h"
 #import "ios/chrome/test/providers/signin/fake_trusted_vault_client_backend.h"
 #import "ios/public/provider/chrome/browser/lens/lens_api.h"
+#import "ios/testing/open_url_context.h"
 #import "testing/gmock/include/gmock/gmock.h"
 #import "ui/base/test/ios/ui_image_test_utils.h"
 
@@ -99,6 +105,18 @@
 - (void)tearDownCaptureInfrastructureWithPlaceholder:(BOOL)showPlaceholder {
 }
 
+@end
+
+// Subclass of `NSUserActivity` that allows mocking the `interaction` property
+// for cold-start Siri shortcut intents in EarlGrey tests.
+@interface TestSceneConnectionUserActivity : NSUserActivity
+@property(nonatomic, strong) INInteraction* mockInteraction;
+@end
+
+@implementation TestSceneConnectionUserActivity
+- (INInteraction*)interaction {
+  return self.mockInteraction;
+}
 @end
 
 namespace {
@@ -549,6 +567,19 @@ namespace {
 
 std::optional<bool> g_pause_startup_at_background_stage;
 
+// Returns the value of `--<switch_name>=<value>` from `NSProcessInfo`
+// arguments, or `nil` if the switch is not present. Used during early startup
+// before `base::CommandLine` is initialized.
+NSString* GetSwitchValueFromProcessArguments(const char* switch_name) {
+  NSString* prefix = [NSString stringWithFormat:@"--%s=", switch_name];
+  for (NSString* arg in NSProcessInfo.processInfo.arguments) {
+    if ([arg hasPrefix:prefix]) {
+      return [arg substringFromIndex:prefix.length];
+    }
+  }
+  return nil;
+}
+
 }  // namespace
 
 bool ShouldPauseStartupAtBackgroundStage() {
@@ -564,6 +595,67 @@ bool ShouldPauseStartupAtBackgroundStage() {
 
 void UnpauseStartupAtBackgroundStage() {
   g_pause_startup_at_background_stage = false;
+}
+
+ChromeConnectionOptions* GetOverriddenConnectionOptions() {
+  static bool g_connection_options_consumed = false;
+  if (g_connection_options_consumed) {
+    return nil;
+  }
+  g_connection_options_consumed = true;
+
+  NSSet<UIOpenURLContext*>* url_contexts = nil;
+  NSSet<NSUserActivity*>* user_activities = nil;
+  UIApplicationShortcutItem* shortcut_item = nil;
+
+  NSString* open_url_string =
+      GetSwitchValueFromProcessArguments(test_switches::kTestOpenURLAtStartup);
+  if (open_url_string.length > 0) {
+    TestOpenURLContext* context = [[TestOpenURLContext alloc] init];
+    context.URL = [NSURL URLWithString:open_url_string];
+    url_contexts = [NSSet setWithObject:(UIOpenURLContext*)context];
+  }
+
+  NSString* activity_type = GetSwitchValueFromProcessArguments(
+      test_switches::kTestUserActivityTypeAtStartup);
+  if (activity_type.length > 0) {
+    TestSceneConnectionUserActivity* activity =
+        [[TestSceneConnectionUserActivity alloc]
+            initWithActivityType:activity_type];
+    NSString* activity_url_string = GetSwitchValueFromProcessArguments(
+        test_switches::kTestUserActivityURLAtStartup);
+    if (activity_url_string.length > 0) {
+      activity.webpageURL = [NSURL URLWithString:activity_url_string];
+    }
+    Class intent_class = NSClassFromString(activity_type);
+    if (intent_class) {
+      INIntent* intent = [[intent_class alloc] init];
+      if (activity_url_string.length > 0 &&
+          [intent respondsToSelector:@selector(setUrl:)]) {
+        NSArray<NSURL*>* urls = @[ [NSURL URLWithString:activity_url_string] ];
+        [intent performSelector:@selector(setUrl:) withObject:urls];
+      }
+      activity.mockInteraction = [[INInteraction alloc] initWithIntent:intent
+                                                              response:nil];
+    }
+    user_activities = [NSSet setWithObject:activity];
+  }
+
+  NSString* shortcut_type = GetSwitchValueFromProcessArguments(
+      test_switches::kTestShortcutItemAtStartup);
+  if (shortcut_type.length > 0) {
+    shortcut_item =
+        [[UIApplicationShortcutItem alloc] initWithType:shortcut_type
+                                         localizedTitle:shortcut_type];
+  }
+
+  if (!user_activities && !url_contexts && !shortcut_item) {
+    return nil;
+  }
+
+  return [[ChromeConnectionOptions alloc] initWithUserActivities:user_activities
+                                                     URLContexts:url_contexts
+                                                    shortcutItem:shortcut_item];
 }
 
 }  // namespace tests_hook

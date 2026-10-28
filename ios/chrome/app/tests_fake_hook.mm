@@ -206,4 +206,8 @@ bool ShouldPauseStartupAtBackgroundStage() {
 
 void UnpauseStartupAtBackgroundStage() {}
 
+ChromeConnectionOptions* GetOverriddenConnectionOptions() {
+  return nil;
+}
+
 }  // namespace tests_hook

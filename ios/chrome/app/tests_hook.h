@@ -11,6 +11,7 @@
 #import "base/containers/span.h"
 
 class AimEligibilityService;
+@class ChromeConnectionOptions;
 class ExtensionService;
 class PrefService;
 class ProfileIOS;
@@ -292,6 +293,11 @@ bool ShouldPauseStartupAtBackgroundStage();
 
 // Unpauses application startup if it was paused at the background stage.
 void UnpauseStartupAtBackgroundStage();
+
+// Allows overriding the connection options handled by
+// `-scene:willConnectToSession:options:` during cold start in tests. Returns
+// `nil` if no override is specified.
+ChromeConnectionOptions* GetOverriddenConnectionOptions();
 
 }  // namespace tests_hook
 
