@@ -73,8 +73,5 @@ int64_t FcpFlags::federated_training_permanent_errors_retry_delay_secs() const {
   return kFcpPermanentErrorsRetryDelay.Get().InSeconds();
 }
 
-bool FcpFlags::enable_privacy_id_v2() const {
-  return kFcpEnablePrivacyIdV2.Get();
-}
 
 }  // namespace private_insights
