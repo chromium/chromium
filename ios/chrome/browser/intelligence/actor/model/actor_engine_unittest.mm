@@ -175,7 +175,7 @@ class ActorEngineTest : public PlatformTest {
         ActorTaskId(1), "Test Task", TestSource(),
         /*allow_incognito_web_states=*/false, journal_.get(),
         tool_factory_.get(), BrowserListFactory::GetForProfile(profile_.get()),
-        /*policy_checker=*/nullptr);
+        /*policy_checker=*/nullptr, base::DoNothing());
     engine_ = std::make_unique<ActorEngine>(&execution_updates_delegate_,
                                             task_.get());
   }
@@ -1339,10 +1339,11 @@ TEST_F(ActorEngineOriginGatingTest, BlocksUrlBlockedByEnterprisePolicy) {
            EnterprisePolicyUrlBlockReason::kExplicitlyBlocked;
   }));
 
-  ActorTask task(
-      ActorTaskId(2), "Policy Task", TestSource(),
-      /*allow_incognito_web_states=*/false, journal_.get(), tool_factory_.get(),
-      BrowserListFactory::GetForProfile(profile_.get()), &policy_checker);
+  ActorTask task(ActorTaskId(2), "Policy Task", TestSource(),
+                 /*allow_incognito_web_states=*/false, journal_.get(),
+                 tool_factory_.get(),
+                 BrowserListFactory::GetForProfile(profile_.get()),
+                 &policy_checker, base::DoNothing());
   origin_gating::OriginGatingChecker* checker =
       task.engine().GetOriginGatingChecker();
   ASSERT_NE(checker, nullptr);
@@ -1384,10 +1385,11 @@ TEST_F(ActorEngineOriginGatingTest,
            EnterprisePolicyUrlBlockReason::kExplicitlyAllowed;
   }));
 
-  ActorTask task(
-      ActorTaskId(2), "Policy Task", TestSource(),
-      /*allow_incognito_web_states=*/false, journal_.get(), tool_factory_.get(),
-      BrowserListFactory::GetForProfile(profile_.get()), &policy_checker);
+  ActorTask task(ActorTaskId(2), "Policy Task", TestSource(),
+                 /*allow_incognito_web_states=*/false, journal_.get(),
+                 tool_factory_.get(),
+                 BrowserListFactory::GetForProfile(profile_.get()),
+                 &policy_checker, base::DoNothing());
   origin_gating::OriginGatingChecker* checker =
       task.engine().GetOriginGatingChecker();
   ASSERT_NE(checker, nullptr);

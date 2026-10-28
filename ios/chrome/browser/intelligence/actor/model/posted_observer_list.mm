@@ -17,6 +17,9 @@ namespace {
 // Called with an observer once its registration completes.
 using RegisteredBlock = void (^)(id observer);
 
+// Sends a notification to the observers.
+using Notification = void (^)(id observers);
+
 // Returns whether `observer` is registered in `observers`.
 bool ContainsObserver(CRBProtocolObservers* observers, id observer) {
   __block bool contains = false;
@@ -64,6 +67,10 @@ bool ContainsObserver(CRBProtocolObservers* observers, id observer) {
   return self;
 }
 
+- (void)dealloc {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
+}
+
 #pragma mark - Public
 
 - (void)addObserver:(id)observer {
@@ -86,12 +93,13 @@ bool ContainsObserver(CRBProtocolObservers* observers, id observer) {
   // Weak, so a pending registration does not extend the observer's lifetime.
   __weak id weakObserver = observer;
   // Posted, so `observer` joins after already queued notifications and before
-  // later ones. Strong `self` so pending work survives the owner releasing the
-  // list.
+  // later ones.
+  __weak PostedObserverList* weakSelf = self;
   _taskRunner->PostTask(FROM_HERE, base::BindOnce(^{
-                          [self completeRegistrationOfObserver:weakObserver
-                                                    observerID:observerID
-                                                  onRegistered:onRegistered];
+                          [weakSelf
+                              completeRegistrationOfObserver:weakObserver
+                                                  observerID:observerID
+                                                onRegistered:onRegistered];
                         }));
 }
 
@@ -118,12 +126,12 @@ bool ContainsObserver(CRBProtocolObservers* observers, id observer) {
   }];
 }
 
-- (void)postNotification:(void (^)(id observers))notification {
+- (void)postNotification:(Notification)notification {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   CHECK(notification);
-  // Strong `self` so pending work survives the owner releasing the list.
+  __weak PostedObserverList* weakSelf = self;
   _taskRunner->PostTask(FROM_HERE, base::BindOnce(^{
-                          [self deliverNotification:notification];
+                          [weakSelf deliverNotification:notification];
                         }));
 }
 
@@ -148,7 +156,7 @@ bool ContainsObserver(CRBProtocolObservers* observers, id observer) {
 }
 
 // Calls `notification` with the observers registered at delivery time.
-- (void)deliverNotification:(void (^)(id observers))notification {
+- (void)deliverNotification:(Notification)notification {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   notification(_observers);
 }

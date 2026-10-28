@@ -22,7 +22,7 @@ struct TaskSourceInfo;
 - (void)actorServiceDidStartTaskWithID:(actor::ActorTaskId)taskID
                             sourceInfo:(const actor::TaskSourceInfo&)sourceInfo;
 
-// Called when a task is stopped.
+// Called after a task is stopped and is no longer active.
 - (void)actorServiceDidStopTaskWithID:(actor::ActorTaskId)taskID
                            sourceInfo:(const actor::TaskSourceInfo&)sourceInfo
                            finalState:(actor::ActorTaskState)finalState;

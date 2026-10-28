@@ -347,9 +347,9 @@ TEST_F(PostedObserverListTest, ObserverAddedDuringNotification) {
   EXPECT_NSEQ((@[ kRegisteredEvent, kThirdEvent ]), second_observer.events);
 }
 
-// Tests that pending registrations and notifications complete after the owner
-// releases the list, and that the list is deallocated once they have run.
-TEST_F(PostedObserverListTest, PendingWorkCompletesAfterListReleased) {
+// Tests that pending registrations and notifications are dropped when the list
+// is destroyed.
+TEST_F(PostedObserverListTest, PendingWorkIsDroppedWhenListDestroyed) {
   FakePostedObserverListTestObserver* observer =
       [[FakePostedObserverListTestObserver alloc] init];
 
@@ -357,10 +357,10 @@ TEST_F(PostedObserverListTest, PendingWorkCompletesAfterListReleased) {
   Notify(kFirstEvent);
   __weak PostedObserverList* weak_list = list_;
   list_ = nil;
+  EXPECT_EQ(nil, weak_list);
   actor::FlushCurrentSequence();
 
-  EXPECT_NSEQ((@[ kRegisteredEvent, kFirstEvent ]), observer.events);
-  EXPECT_EQ(nil, weak_list);
+  EXPECT_EQ(0u, observer.events.count);
 }
 
 // Tests that the list, including a pending registration, does not retain its

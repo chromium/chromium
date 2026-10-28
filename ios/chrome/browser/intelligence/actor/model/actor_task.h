@@ -54,9 +54,10 @@ class AggregatedJournal;
 // - Outbound call-outs (observer notifications and `Act()` replies) are always
 //   posted with snapshot arguments.
 // - Intervention delegate requests are issued from a posted task, so no task
-//   method caller is re-entered. The delegate is messaged synchronously, and
-//   cannot destroy the task because `ActorService` only enqueues the commands
-//   that do, and is never shut down from a delegate.
+//   method caller is re-entered. The delegate is messaged synchronously and
+//   must not destroy the task, which holds because `ActorService` enqueues its
+//   commands, destroys stopped tasks asynchronously, and is never shut down
+//   from a delegate.
 // - Callbacks handed to code outside the actor model (e.g. intervention
 //   delegate completions) are wrapped with `BindPostTaskToCurrentDefault`.
 // Callbacks handed to the engine or timers stay synchronous.
@@ -64,6 +65,8 @@ class ActorTask : public web::WebStateObserver,
                   public ActorEngine::ExecutionUpdatesDelegate,
                   public ActorTaskBackgroundWorker::TaskStateDelegate {
  public:
+  // `on_stopped` runs synchronously when the task stops; the owner must not
+  // destroy the task from it.
   ActorTask(ActorTaskId task_id,
             const std::string& title,
             const TaskSourceInfo& source_info,
@@ -71,7 +74,8 @@ class ActorTask : public web::WebStateObserver,
             AggregatedJournal* journal,
             ActorToolFactory* tool_factory,
             BrowserList* browser_list,
-            const ActorEnterprisePolicyCheckerIOS* policy_checker);
+            const ActorEnterprisePolicyCheckerIOS* policy_checker,
+            base::OnceClosure on_stopped);
   ~ActorTask() override;
 
   ActorTask(const ActorTask&) = delete;
@@ -106,11 +110,15 @@ class ActorTask : public web::WebStateObserver,
   // Returns the current execution state of the task.
   ActorTaskState GetState() const;
 
+  // Returns whether the task is in a terminal state.
+  bool IsCompleted() const;
+
   // Begins executing the given sequence of actions on the underlying execution
   // engine with a string update blurb in plain language about what the actor is
   // doing. `callback` is posted, so a reply is delivered even if the task is
   // destroyed after replying:
   // - with the engine results once actions complete and pages finish loading;
+  // - with a single `kTaskWentAway` result if the task stops;
   // - with a single `kExecutionEngineExistingAction` result if a previous
   //   `Act()` has not replied yet.
   void Act(std::vector<std::unique_ptr<ActorToolRequest>> actions,
@@ -123,7 +131,8 @@ class ActorTask : public web::WebStateObserver,
   // Adds a WebState to the set of controlled WebStates.
   void AddControlledWebState(web::WebState* web_state);
 
-  // Stops the task and cancels any pending actions.
+  // Stops the task, cancels any pending actions, and runs `on_stopped`. No-op
+  // if the task is already stopped.
   virtual void Stop(ActorTaskStoppedReason stop_reason);
 
   // Pauses execution (either initiated by the actor or the user), cancelling
@@ -206,8 +215,13 @@ class ActorTask : public web::WebStateObserver,
   // `control_state`.
   void SetControlStateOnWebStates(ActorControlState control_state);
 
-  // Sets the task state and logs the transition.
+  // Sets the task state and logs the transition. Must not be called once the
+  // task is completed.
   void SetState(ActorTaskState new_state);
+
+  // Cancels ongoing actions, timers, and observations, and replies to any
+  // pending `Act()` with `reason`.
+  void CancelOngoingActions(mojom::ActionResultCode reason);
 
   // Called when the engine finishes executing the pending `Act()` actions.
   void OnActCompleted(std::vector<ActionResult> results);
@@ -320,6 +334,9 @@ class ActorTask : public web::WebStateObserver,
 
   // The pending `Act()` request, if any.
   std::optional<PendingAct> pending_act_;
+
+  // Run once by `Stop()`.
+  base::OnceClosure on_stopped_;
 
   // Timer to enforce the page load timeout. The timeout exists to limit the
   // amount of time ActorTask can wait for a page to finish loading before

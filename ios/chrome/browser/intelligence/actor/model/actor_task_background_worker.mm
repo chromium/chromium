@@ -178,6 +178,7 @@ void ActorTaskBackgroundWorker::OnWillExecuteTool() {
 }
 
 void ActorTaskBackgroundWorker::OnStopped(bool success) {
+  weak_ptr_factory_.InvalidateWeakPtrs();
   heartbeat_timer_.Stop();
   FinalizeBackgroundTask(success ? ActorBackgroundTaskEndReason::kSucceeded
                                  : ActorBackgroundTaskEndReason::kFailed);

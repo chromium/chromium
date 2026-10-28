@@ -7,6 +7,7 @@
 #import <optional>
 
 #import "base/functional/callback_helpers.h"
+#import "base/memory/raw_ptr.h"
 #import "base/strings/string_number_conversions.h"
 #import "base/test/bind.h"
 #import "base/test/run_until.h"
@@ -211,6 +212,35 @@
 
 @end
 
+// Observer that stops the task from inside `willExecuteTool`.
+@interface StoppingOnWillExecuteToolObserver
+    : NSObject <ActorTaskUpdatesObserver>
+@property(nonatomic, assign) NSInteger willExecuteToolCount;
+- (instancetype)initWithTask:(actor::ActorTask*)task;
+@end
+
+@implementation StoppingOnWillExecuteToolObserver {
+  raw_ptr<actor::ActorTask> _task;
+}
+
+- (instancetype)initWithTask:(actor::ActorTask*)task {
+  self = [super init];
+  if (self) {
+    _task = task;
+  }
+  return self;
+}
+
+- (void)actorTaskWithID:(actor::ActorTaskId)taskID
+        willExecuteTool:(actor::ToolType)toolType
+             taskUpdate:(NSString*)taskUpdate
+             onWebState:(web::WebStateID)webStateID {
+  _willExecuteToolCount++;
+  _task->Stop(actor::ActorTaskStoppedReason::kStoppedByUser);
+}
+
+@end
+
 @interface TestBackgroundContinuedProcessingTaskContext
     : BackgroundContinuedProcessingTaskContext
 @property(nonatomic, assign) NSInteger subtitleUpdateCount;
@@ -294,7 +324,7 @@ class ActorTaskTest : public PlatformTest {
         ActorTaskId(1), "Test Task", TestSource(),
         /*allow_incognito_web_states=*/false, journal_.get(),
         tool_factory_.get(), BrowserListFactory::GetForProfile(profile_.get()),
-        /*policy_checker=*/nullptr);
+        /*policy_checker=*/nullptr, base::DoNothing());
   }
 
   void TearDown() override {
@@ -866,6 +896,101 @@ TEST_F(ActorTaskTest, ActReplyDeliveredAfterTaskDestroyed) {
   EXPECT_TRUE(future.Get()[0].tool_result.IsOk());
 }
 
+// Test that `Act` on a stopped task posts `kTaskWentAway` to its callback and
+// does not revive the task.
+TEST_F(ActorTaskTest, ActOnStoppedTaskRepliesTaskWentAway) {
+  task_->Stop(ActorTaskStoppedReason::kStoppedByUser);
+  ASSERT_EQ(ActorTaskState::kCancelled, task_->GetState());
+
+  base::test::TestFuture<std::vector<ActionResult>> future;
+  task_->Act({}, "Ignored update", future.GetCallback());
+
+  EXPECT_FALSE(future.IsReady());
+  const std::vector<ActionResult>& results = future.Get();
+  ASSERT_EQ(1u, results.size());
+  EXPECT_EQ(mojom::ActionResultCode::kTaskWentAway,
+            results[0].tool_result.code());
+  EXPECT_EQ(ActorTaskState::kCancelled, task_->GetState());
+}
+
+// Test that stopping a task while a tool is in flight replies `kTaskWentAway`
+// exactly once and does not transition to `kReflecting`.
+TEST_F(ActorTaskTest, StopWhileToolInFlightRepliesTaskWentAway) {
+  std::vector<std::unique_ptr<ActorToolRequest>> actions;
+  actions.push_back(MakeSuccessfulActorToolRequest());
+
+  base::test::TestFuture<std::vector<ActionResult>> future;
+  task_->Act(std::move(actions), "Performing actions", future.GetCallback());
+  ASSERT_FALSE(future.IsReady());
+
+  task_->Stop(ActorTaskStoppedReason::kStoppedByUser);
+
+  const std::vector<ActionResult>& results = future.Get();
+  ASSERT_EQ(1u, results.size());
+  EXPECT_EQ(mojom::ActionResultCode::kTaskWentAway,
+            results[0].tool_result.code());
+  FlushCurrentSequence();
+  EXPECT_EQ(ActorTaskState::kCancelled, task_->GetState());
+}
+
+// Test that stopping a task while `Act` is deferred on a loading page replies
+// `kTaskWentAway` once.
+TEST_F(ActorTaskTest, StopDuringDeferredActCompletionRepliesTaskWentAway) {
+  std::unique_ptr<web::FakeWebState> web_state =
+      std::make_unique<web::FakeWebState>();
+  web_state->SetLoading(true);
+  AddControlledWebState(web_state->GetWeakPtr());
+
+  std::vector<std::unique_ptr<ActorToolRequest>> actions;
+  actions.push_back(MakeSuccessfulActorToolRequest());
+
+  base::test::TestFuture<std::vector<ActionResult>> future;
+  task_->Act(std::move(actions), "Performing actions on loading state",
+             future.GetCallback());
+
+  // Let the engine complete so the task defers the completion on the load.
+  task_environment_.FastForwardBy(base::TimeDelta());
+  ASSERT_FALSE(future.IsReady());
+
+  task_->Stop(ActorTaskStoppedReason::kStoppedByUser);
+
+  // Finishing load and advancing past the load timeout must not reply again.
+  web_state->SetLoading(false);
+  task_environment_.FastForwardUntilNoTasksRemain();
+
+  ASSERT_TRUE(future.IsReady());
+  const std::vector<ActionResult>& results = future.Get();
+  ASSERT_EQ(1u, results.size());
+  EXPECT_EQ(mojom::ActionResultCode::kTaskWentAway,
+            results[0].tool_result.code());
+  EXPECT_EQ(ActorTaskState::kCancelled, task_->GetState());
+}
+
+// Test that stopping the task from a `willExecuteTool` observer notification
+// cancels the engine without running the tool or the remaining actions.
+TEST_F(ActorTaskTest, StopFromWillExecuteToolObserverCancelsEngine) {
+  StoppingOnWillExecuteToolObserver* observer =
+      [[StoppingOnWillExecuteToolObserver alloc] initWithTask:task_.get()];
+  task_->AddObserver(observer);
+
+  std::vector<std::unique_ptr<ActorToolRequest>> actions;
+  actions.push_back(MakeSuccessfulActorToolRequest());
+  actions.push_back(MakeSuccessfulActorToolRequest());
+
+  base::test::TestFuture<std::vector<ActionResult>> future;
+  task_->Act(std::move(actions), "Performing actions", future.GetCallback());
+
+  const std::vector<ActionResult>& results = future.Get();
+  ASSERT_EQ(1u, results.size());
+  EXPECT_EQ(mojom::ActionResultCode::kTaskWentAway,
+            results[0].tool_result.code());
+  EXPECT_EQ(ActorTaskState::kCancelled, task_->GetState());
+  FlushCurrentSequence();
+  EXPECT_EQ(1, observer.willExecuteToolCount);
+
+  task_->RemoveObserver(observer);
+}
+
 // Test that an `Act` issued while a previous one has not replied is rejected
 // with `kExecutionEngineExistingAction`, without affecting the first one.
 TEST_F(ActorTaskTest, ConcurrentActIsRejected) {
@@ -1140,7 +1265,7 @@ TEST_F(ActorTaskTest, KeepRenderProcessAliveFollowsControlState) {
       ActorTaskId(42), "Scoped Task", TestSource(),
       /*allow_incognito_web_states=*/false, journal_.get(), tool_factory_.get(),
       BrowserListFactory::GetForProfile(profile_.get()),
-      /*policy_checker=*/nullptr);
+      /*policy_checker=*/nullptr, base::DoNothing());
   scoped_task->Act({}, "update", base::DoNothing());
   scoped_task->AddControlledWebState(web_state3.get());
   EXPECT_TRUE(web_state3->keep_render_process_alive());
@@ -1334,7 +1459,7 @@ TEST_F(ActorTaskBackgroundingTest, DestructorFinalizesBackgroundTask) {
       ActorTaskId(1), "Test Task", TestSource(),
       /*allow_incognito_web_states=*/false, journal_.get(), tool_factory_.get(),
       BrowserListFactory::GetForProfile(profile_.get()),
-      /*policy_checker=*/nullptr);
+      /*policy_checker=*/nullptr, base::DoNothing());
   task->background_worker()->SetContext(context);
   EXPECT_FALSE(context.completed);
 
@@ -1479,7 +1604,7 @@ TEST_F(ActorTaskTest,
       ActorTaskId(1), "Test Task", TestSource(),
       /*allow_incognito_web_states=*/false, journal_.get(), tool_factory_.get(),
       BrowserListFactory::GetForProfile(profile_.get()),
-      /*policy_checker=*/nullptr);
+      /*policy_checker=*/nullptr, base::DoNothing());
 
   auto web_state = std::make_unique<web::FakeWebState>();
   task->AddControlledWebState(web_state.get());
@@ -1518,6 +1643,15 @@ TEST_F(ActorTaskTest,
                                  response_future.GetCallback());
 
   EXPECT_TRUE(response_future.Get().ShouldCancelNavigation());
+
+  // 3. Stopping the task detaches the decider before the task is destroyed.
+  task->Stop(ActorTaskStoppedReason::kStoppedByUser);
+  base::test::TestFuture<web::WebStatePolicyDecider::PolicyDecision>
+      stopped_response_future;
+  web_state->ShouldAllowResponse(response, response_info,
+                                 stopped_response_future.GetCallback());
+  EXPECT_TRUE(stopped_response_future.Get().ShouldAllowNavigation());
+
   actor::SetSafetyListsForTesting(actor::SafetyListManager::GetInstance(),
                                   "{}");
 }
@@ -1666,9 +1800,9 @@ TEST_F(ActorTaskTest, StopBeforeConfirmationShownSkipsDelegate) {
   EXPECT_FALSE(delegate.requestConfirmationCalled);
 }
 
-// Test that the confirmation request is dropped, without stopping the task, if
-// the intervention delegate goes away before the posted request is delivered.
-TEST_F(ActorTaskTest, DelegateRemovedBeforeConfirmationShownSkipsRequest) {
+// Test that the task is stopped, without messaging the delegate, if the
+// intervention delegate goes away before the posted request is delivered.
+TEST_F(ActorTaskTest, DelegateRemovedBeforeConfirmationShownStopsTask) {
   FakeActorTaskInterventionDelegate* delegate =
       [[FakeActorTaskInterventionDelegate alloc] init];
   task_->SetInterventionDelegate(delegate);
@@ -1679,7 +1813,7 @@ TEST_F(ActorTaskTest, DelegateRemovedBeforeConfirmationShownSkipsRequest) {
   task_->SetInterventionDelegate(nil);
   FlushCurrentSequence();
 
-  EXPECT_EQ(task_->GetState(), ActorTaskState::kWaitingOnUser);
+  EXPECT_EQ(task_->GetState(), ActorTaskState::kCancelled);
   EXPECT_FALSE(delegate.requestConfirmationCalled);
 }
 
@@ -1843,9 +1977,9 @@ TEST_F(ActorTaskTest, InterruptIgnoredWhenAlreadyWaitingOnUser) {
   EXPECT_NSEQ(delegate.confirmationSubtitle, @"Please confirm the purchase");
 }
 
-// Test that notifications posted before the task is destroyed are still
-// delivered to the observers registered at delivery time.
-TEST_F(ActorTaskTest, NotificationsDeliveredAfterTaskDestroyed) {
+// Test that notifications still pending when the task is destroyed are
+// dropped.
+TEST_F(ActorTaskTest, NotificationsDroppedWhenTaskDestroyed) {
   FakeActorTaskUpdatesObserver* observer =
       [[FakeActorTaskUpdatesObserver alloc] init];
   task_->AddObserver(observer);
@@ -1854,13 +1988,10 @@ TEST_F(ActorTaskTest, NotificationsDeliveredAfterTaskDestroyed) {
 
   task_->Stop(ActorTaskStoppedReason::kStoppedByUser);
   task_.reset();
-  EXPECT_FALSE(observer.didStopCalled);
-  ASSERT_TRUE(base::test::RunUntil([&]() { return observer.didStopCalled; }));
+  FlushCurrentSequence();
 
-  EXPECT_TRUE(observer.didStopCalled);
-  EXPECT_EQ(ActorTaskState::kCancelled, observer.finalState);
-  EXPECT_TRUE(observer.didChangeStateCalled);
-  EXPECT_EQ(ActorTaskState::kCancelled, observer.newState);
+  EXPECT_FALSE(observer.didStopCalled);
+  EXPECT_FALSE(observer.didChangeStateCalled);
 }
 
 // Test that an observer added after a notification is posted, but before it is
@@ -1916,9 +2047,9 @@ TEST_F(ActorTaskTest, ObserverRemovedBeforeRegistrationIsNeverNotified) {
   EXPECT_FALSE(observer.didChangeStateCalled);
 }
 
-// Test that a registration still pending when the task is destroyed runs, so
-// that the observer receives the notifications posted after `AddObserver`.
-TEST_F(ActorTaskTest, PendingRegistrationRunsAfterTaskDestroyed) {
+// Test that a registration still pending when the task is destroyed is
+// dropped, along with the notifications posted after `AddObserver`.
+TEST_F(ActorTaskTest, PendingRegistrationDroppedWhenTaskDestroyed) {
   FakeActorTaskUpdatesObserver* observer =
       [[FakeActorTaskUpdatesObserver alloc] init];
   task_->AddObserver(observer);
@@ -1926,10 +2057,8 @@ TEST_F(ActorTaskTest, PendingRegistrationRunsAfterTaskDestroyed) {
   task_.reset();
   FlushCurrentSequence();
 
-  EXPECT_TRUE(observer.didRegisterCalled);
-  EXPECT_FALSE(observer.didChangeStateBeforeRegister);
-  EXPECT_TRUE(observer.didChangeStateCalled);
-  EXPECT_EQ(ActorTaskState::kActing, observer.newState);
+  EXPECT_FALSE(observer.didRegisterCalled);
+  EXPECT_FALSE(observer.didChangeStateCalled);
 }
 
 // Test that an observer removing itself from `dealloc` while its registration

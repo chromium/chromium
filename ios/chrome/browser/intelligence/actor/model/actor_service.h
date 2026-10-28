@@ -60,18 +60,18 @@ struct TaskSourceInfo;
 // - Task setup (`CreateTask`, `AddControlledWebState`) applies immediately, so
 //   that the task is usable as soon as the call returns.
 // - Replies and notifications are posted, in the order of the effects that
-//   produced them. Replies run at most once, and never after `Shutdown()`:
-//   commands, replies and lifecycle notifications still pending then are
-//   dropped. Callers holding state keyed on a pending reply must release it in
-//   their own teardown, which always precedes `Shutdown()`.
-//   TODO(crbug.com/567037054): Also drop the task update notifications still
-//   pending at `Shutdown()`.
+//   produced them. Replies run at most once, and pending commands, replies,
+//   and notifications are dropped on `Shutdown()`. Callers holding state keyed
+//   on a pending reply must release it in their own teardown, which always
+//   precedes `Shutdown()`.
 // - Registrations (observers and the intervention delegate) apply immediately:
 //   an observer receives a notification if and only if it was posted after
 //   the observer is added and is delivered before it is removed.
 // - Getters return the state applied so far: commands still queued are not
 //   reflected yet, and notifications not delivered yet may be behind. Prefer
 //   replies and notifications over polling getters.
+// - A stopped task leaves the active set immediately and is destroyed from a
+//   posted task, since it may still be on the call stack.
 class ActorService : public KeyedService {
  public:
   explicit ActorService(ProfileIOS* profile);
@@ -93,13 +93,11 @@ class ActorService : public KeyedService {
   // validation or execution, the sequence is aborted immediately, and
   // subsequent actions will not be run.
   //
-  // `callback` runs at most once, asynchronously, and never after `Shutdown()`.
-  // If the task does not exist when the command runs, the callback runs with a
-  // single `kTaskWentAway` result. If the task is still executing a previous
-  // request, it runs with a single `kExecutionEngineExistingAction` result and
-  // the request's target WebStates are not added to the task.
-  // TODO(crbug.com/567037054): Run `callback` with `kTaskWentAway` when the
-  // task is stopped while the request is in flight, instead of dropping it.
+  // `callback` runs exactly once, asynchronously, unless the service is shut
+  // down first. If the task is not active or stops before the reply runs, it
+  // runs with a single `kTaskWentAway` result. If the task is still executing a
+  // previous request, it runs with a single `kExecutionEngineExistingAction`
+  // result and the request's target WebStates are not added to the task.
   void PerformActions(ActorTaskId task_id,
                       std::vector<optimization_guide::proto::Action> actions,
                       std::string task_update,
@@ -163,7 +161,7 @@ class ActorService : public KeyedService {
   bool AddTaskUpdatesObserver(ActorTaskId task_id,
                               id<ActorTaskUpdatesObserver> observer);
 
-  // Removes `observer` from the task identified by `task_id`, if active.
+  // Removes `observer` from the task identified by `task_id`.
   void RemoveTaskUpdatesObserver(ActorTaskId task_id,
                                  id<ActorTaskUpdatesObserver> observer);
 
@@ -223,6 +221,9 @@ class ActorService : public KeyedService {
 
   // Map of active tasks, keyed by their task ID.
   std::map<ActorTaskId, std::unique_ptr<ActorTask>> active_tasks_;
+
+  // Stopped tasks awaiting asynchronous destruction.
+  std::map<ActorTaskId, std::unique_ptr<ActorTask>> pending_delete_tasks_;
 
   // Observers for task updates.
   std::vector<__weak id<ActorTaskUpdatesObserver>> task_observers_;
@@ -293,6 +294,21 @@ class ActorService : public KeyedService {
           pending_journal_entry,
       TabObservationCallback callback,
       PageContextWrapperCallbackResponse response);
+
+  // Removes the stopped task from `active_tasks_`, notifies lifecycle
+  // observers, and schedules its destruction.
+  void OnTaskStopped(ActorTaskId task_id);
+
+  // Destroys the stopped task for `task_id`.
+  void FinishStoppedTask(ActorTaskId task_id);
+
+  // Completes `PerformActions` once post-action tab observations finish.
+  void OnActObservationsComplete(
+      ActorTaskId task_id,
+      std::unique_ptr<AggregatedJournal::PendingAsyncEntry> observation_entry,
+      PerformActionsCallback callback,
+      PerformActionsResult result,
+      std::vector<std::unique_ptr<TabObservationResponse>> contexts);
 
   // Callback for when a task finishes executing its actions.
   void OnActCompleted(ActorTaskId task_id,

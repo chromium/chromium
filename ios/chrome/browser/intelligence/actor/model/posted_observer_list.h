@@ -18,11 +18,11 @@
 //   Re-adding starts a fresh registration.
 // - Observers may add or remove themselves or others from within a
 //   notification.
-// - Pending registrations and notifications are still delivered after the
-//   owner releases the list, unless `-removeAllObservers` is called.
+// - Pending registrations and notifications are dropped on deallocation.
 //
 // `ObserverType` (e.g. `id<MyObserver>`) must match the protocol passed to
-// `-initWithProtocol:`. Must be created and used on a single sequence.
+// `-initWithProtocol:`. Must be created, used, and deallocated on a single
+// sequence.
 @interface PostedObserverList<ObserverType> : NSObject
 
 // Initializes an empty list for observers conforming to `protocol`.
@@ -35,8 +35,7 @@
 
 // Same as `-addObserver:`, and calls `onRegistered` with `observer` before any
 // notification posted after this call, e.g. to send it a snapshot of the state
-// at call time. `onRegistered` must not capture the list's owner, which may be
-// destroyed before it runs.
+// at call time.
 - (void)addObserver:(ObserverType)observer
        onRegistered:(void (^)(ObserverType observer))onRegistered;
 
@@ -50,8 +49,7 @@
 
 // Posts `notification`, which is called with `observers`, a proxy forwarding
 // each protocol message to the observers added before this call and not
-// removed since. `notification` must not capture the list's owner, which may be
-// destroyed before it runs.
+// removed since.
 - (void)postNotification:(void (^)(ObserverType observers))notification;
 
 @end

@@ -258,6 +258,16 @@ TEST_F(ActorTaskBackgroundWorkerTest, OnStoppedWithFailure) {
   EXPECT_DOUBLE_EQ(0.0, context.fractionCompleted);
 }
 
+// Tests that stopping the task invalidates weak pointers.
+TEST_F(ActorTaskBackgroundWorkerTest, OnStoppedInvalidatesWeakPtrs) {
+  base::WeakPtr<ActorTaskBackgroundWorker> weak_worker = worker_->GetWeakPtr();
+  ASSERT_TRUE(weak_worker);
+
+  worker_->OnStopped(/*success=*/true);
+
+  EXPECT_FALSE(weak_worker);
+}
+
 // Tests that destroying the worker fails a live context.
 TEST_F(ActorTaskBackgroundWorkerTest, DestructorFailsLiveContext) {
   BackgroundContinuedProcessingTaskContext* context = CreateContext();

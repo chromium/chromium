@@ -94,7 +94,7 @@ ActorControlState ControlStateForTaskState(ActorTaskState task_state) {
 }
 
 // Posts `callback` with a single `code` result. Posted so that callers are
-// never re-entered from within `ActorTask::Act()`.
+// never re-entered from within `ActorTask::Act()` or `ActorTask::Stop()`.
 void PostActReply(ActCallback callback, mojom::ActionResultCode code) {
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), MakeActionResults(code)));
@@ -140,7 +140,8 @@ ActorTask::ActorTask(ActorTaskId task_id,
                      AggregatedJournal* journal,
                      ActorToolFactory* tool_factory,
                      BrowserList* browser_list,
-                     const ActorEnterprisePolicyCheckerIOS* policy_checker)
+                     const ActorEnterprisePolicyCheckerIOS* policy_checker,
+                     base::OnceClosure on_stopped)
     : task_id_(task_id),
       browser_list_(browser_list),
       title_(title),
@@ -148,10 +149,12 @@ ActorTask::ActorTask(ActorTaskId task_id,
       allow_incognito_web_states_(allow_incognito_web_states),
       journal_(journal),
       tool_factory_(tool_factory),
-      policy_checker_(policy_checker) {
+      policy_checker_(policy_checker),
+      on_stopped_(std::move(on_stopped)) {
   CHECK(journal);
   CHECK(tool_factory);
   CHECK(browser_list);
+  CHECK(on_stopped_);
   // TODO(crbug.com/504704411): Allow incognito WebStates.
   CHECK(!allow_incognito_web_states_);
   engine_ = std::make_unique<ActorEngine>(/*execution_updates_delegate=*/this,
@@ -171,6 +174,7 @@ ActorTask::~ActorTask() {
   // Stops the heartbeat and fails any live background task.
   background_worker_.reset();
 
+  [observers_ removeAllObservers];
   observers_ = nil;
 }
 
@@ -207,11 +211,19 @@ ActorTaskState ActorTask::GetState() const {
   return state_;
 }
 
+bool ActorTask::IsCompleted() const {
+  return IsTerminalState(state_);
+}
+
 void ActorTask::Act(std::vector<std::unique_ptr<ActorToolRequest>> actions,
                     const std::string& task_update,
                     ActCallback callback) {
-  // TODO(crbug.com/503054406): Reject `Act()` in invalid states (e.g. stopped
-  // with `kTaskWentAway`, paused with `kTaskPaused`, `kWaitingOnUser`).
+  if (IsCompleted()) {
+    PostActReply(std::move(callback), mojom::ActionResultCode::kTaskWentAway);
+    return;
+  }
+  // TODO(crbug.com/503054406): Reject `Act()` in other invalid states (e.g.
+  // paused with `kTaskPaused`, `kWaitingOnUser`).
   if (pending_act_) {
     constexpr mojom::ActionResultCode kRejectionCode =
         mojom::ActionResultCode::kExecutionEngineExistingAction;
@@ -236,7 +248,7 @@ bool ActorTask::HasPendingAct() const {
 }
 
 void ActorTask::AddControlledWebState(web::WebState* web_state) {
-  if (!web_state) {
+  if (!web_state || IsCompleted()) {
     return;
   }
 
@@ -276,10 +288,14 @@ void ActorTask::AddControlledWebState(web::WebState* web_state) {
 }
 
 void ActorTask::Stop(ActorTaskStoppedReason stop_reason) {
-  if (IsTerminalState(state_)) {
+  if (IsCompleted()) {
     return;
   }
-  // TODO(crbug.com/532978481): Map `stop_reason` to the corresponding terminal
+  // Cancel first so any `Act()` reply is posted before the state transition.
+  CancelOngoingActions(mojom::ActionResultCode::kTaskWentAway);
+  policy_deciders_.clear();
+  SetInterventionDelegate(nil);
+  // TODO(crbug.com/576290373): Map `stop_reason` to the corresponding terminal
   // `ActorTaskState` (`kFinished`, `kFailed`, `kCancelled`) instead of
   // hardcoding `kCancelled`.
   // `SetState` also transitions the web states to `kInactive` control state.
@@ -297,6 +313,8 @@ void ActorTask::Stop(ActorTaskStoppedReason stop_reason) {
   [observers_ postNotification:^(id<ActorTaskUpdatesObserver> observers) {
     [observers actorTaskDidStopWithID:task_id finalState:final_state];
   }];
+
+  std::move(on_stopped_).Run();
 }
 
 void ActorTask::Pause(bool from_actor) {
@@ -337,8 +355,6 @@ void ActorTask::Interrupt(ActorTaskInterruptReason interrupt_reason,
     case ActorTaskInterruptReason::kWaitingUserTakeover:
     case ActorTaskInterruptReason::kWaitingIrrelevantUserInput:
       // TODO(crbug.com/548051839): Support additional interrupt reasons.
-      // TODO(crbug.com/532978481): Route task-initiated stops through
-      // `ActorService::StopTask`.
       Stop(ActorTaskStoppedReason::kBrowserFailure);
       break;
     case ActorTaskInterruptReason::kUnknownReason:
@@ -349,8 +365,6 @@ void ActorTask::Interrupt(ActorTaskInterruptReason interrupt_reason,
 
 void ActorTask::RequestInterruptConfirmation(std::string_view message) {
   if (!intervention_delegate_ || message.empty()) {
-    // TODO(crbug.com/532978481): Route task-initiated stops through
-    // `ActorService::StopTask`.
     Stop(ActorTaskStoppedReason::kBrowserFailure);
     return;
   }
@@ -367,9 +381,7 @@ void ActorTask::ShowInterruptConfirmation(const std::string& message) {
     return;
   }
   if (!intervention_delegate_) {
-    // TODO(crbug.com/567037054): Stop the task once task-initiated stops are
-    // reported to `ActorService`. Until then, the task keeps waiting on the
-    // user until it is stopped externally.
+    Stop(ActorTaskStoppedReason::kBrowserFailure);
     return;
   }
   // Posted so that a delegate completing synchronously never re-enters the
@@ -523,6 +535,9 @@ void ActorTask::SetControlStateOnWebStates(ActorControlState control_state) {
 }
 
 void ActorTask::SetState(ActorTaskState new_state) {
+  CHECK(!IsCompleted()) << "Transition from terminal state "
+                        << ActorTaskStateToString(state_) << " to "
+                        << ActorTaskStateToString(new_state);
   LogJournalEvent(*journal_, GURL(), task_id_, "ActorTask::SetState",
                   {{"current_state", ActorTaskStateToString(state_)},
                    {"new_state", ActorTaskStateToString(new_state)}});
@@ -545,9 +560,20 @@ void ActorTask::SetState(ActorTaskState new_state) {
   }];
 }
 
+void ActorTask::CancelOngoingActions(mojom::ActionResultCode reason) {
+  // Invalidate first so `CancelOngoingAndPendingActions` does not call back.
+  weak_ptr_factory_.InvalidateWeakPtrs();
+  engine_->CancelOngoingAndPendingActions(
+      ActorEngine::EngineResult::kCancelled);
+  scoped_web_state_observations_.RemoveAllObservations();
+  load_timeout_timer_.Stop();
+  if (std::optional<PendingAct> pending_act =
+          std::exchange(pending_act_, std::nullopt)) {
+    PostActReply(std::move(pending_act->callback), reason);
+  }
+}
+
 void ActorTask::OnActCompleted(std::vector<ActionResult> results) {
-  // `Act()` registers `pending_act_` before starting the engine, and only
-  // `FinishAct()` clears it.
   CHECK(pending_act_);
   // TODO(crbug.com/503054406): Check for tool errors.
 
