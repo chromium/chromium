@@ -12,14 +12,14 @@
 
 namespace enterprise {
 namespace {
-std::unique_ptr<KeyedService> BuildProfileIdService(ProfileIOS* profile) {
+std::unique_ptr<KeyedService> BuildProfileIdService(ProfileIOS& profile) {
   return std::make_unique<ProfileIdService>(
-      std::make_unique<ProfileIdDelegateIOSImpl>(profile), profile->GetPrefs());
+      std::make_unique<ProfileIdDelegateIOSImpl>(&profile), profile.GetPrefs());
 }
 }  // namespace
 
 // static
-ProfileIdServiceFactoryIOS::TestingFactory
+ProfileIdServiceFactoryIOS::TestingFactoryByRef
 ProfileIdServiceFactoryIOS::GetDefaultFactory() {
   return base::BindOnce(&BuildProfileIdService);
 }
@@ -31,7 +31,7 @@ ProfileIdServiceFactoryIOS::ProfileIdServiceFactoryIOS(PassKey key)
           ProfileSelection::kNoInstanceInIncognito) {}
 
 std::unique_ptr<KeyedService>
-ProfileIdServiceFactoryIOS::BuildServiceInstanceFor(ProfileIOS* profile) const {
+ProfileIdServiceFactoryIOS::BuildServiceInstanceFor(ProfileIOS& profile) const {
   return BuildProfileIdService(profile);
 }
 
