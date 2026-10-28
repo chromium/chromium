@@ -1248,6 +1248,16 @@ historical analysis. -->
   <int value="3" label="Chain contained only one certificate"/>
 </enum>
 
+<!-- LINT.IfChange(NetCertificatePrintableStringParseMode) -->
+
+<enum name="NetCertificatePrintableStringParseMode">
+  <int value="0" label="Default (valid PrintableString)"/>
+  <int value="1" label="Allow ASCII"/>
+  <int value="2" label="UTF-8 hack (non-ASCII)"/>
+</enum>
+
+<!-- LINT.ThenChange(//net/cert/x509_certificate.h:PrintableStringParseMode) -->
+
 <!-- LINT.IfChange(NetCertificateSerialNumberType) -->
 
 <enum name="NetCertificateSerialNumberType">

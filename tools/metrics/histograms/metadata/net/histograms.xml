@@ -1494,6 +1494,23 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Net.Certificate.PrintableStringRequiredParseMode"
+    enum="NetCertificatePrintableStringParseMode" expires_after="2027-05-01">
+  <owner>chlily@chromium.org</owner>
+  <owner>chrome-secure-web-and-net@chromium.org</owner>
+  <summary>
+    The strictest PrintableString parsing mode with which both the subject and
+    issuer names of an X.509 certificate can be parsed. Recorded each time a
+    net::X509Certificate is created with the printable_string_is_utf8 option.
+    That option is used for client certificates from platform certificate
+    stores, extension APIs, and ChromeOS platform keys, but also for every
+    certificate deserialized from IPC, including server certificates. Sample
+    counts are therefore dominated by server certificates and by repeated parses
+    of the same certificate; use the proportion of clients reporting each bucket
+    rather than sample counts. See crbug.com/563054783.
+  </summary>
+</histogram>
+
 <histogram name="Net.Certificate.SerialNumberLength" units="bytes"
     expires_after="2027-03-28">
   <owner>davidben@chromium.org</owner>

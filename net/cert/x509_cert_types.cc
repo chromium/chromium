@@ -4,10 +4,28 @@
 
 #include "net/cert/x509_cert_types.h"
 
+#include "base/notreached.h"
 #include "third_party/boringssl/src/pki/input.h"
 #include "third_party/boringssl/src/pki/parse_name.h"
 
 namespace net {
+
+namespace {
+
+bssl::X509NameAttribute::PrintableStringHandling ConvertPrintableStringHandling(
+    CertPrincipal::PrintableStringHandling handling) {
+  switch (handling) {
+    case CertPrincipal::PrintableStringHandling::kDefault:
+      return bssl::X509NameAttribute::PrintableStringHandling::kDefault;
+    case CertPrincipal::PrintableStringHandling::kAllowASCII:
+      return bssl::X509NameAttribute::PrintableStringHandling::kAllowASCII;
+    case CertPrincipal::PrintableStringHandling::kAsUTF8Hack:
+      return bssl::X509NameAttribute::PrintableStringHandling::kAsUTF8Hack;
+  }
+  NOTREACHED();
+}
+
+}  // namespace
 
 CertPrincipal::CertPrincipal() = default;
 
@@ -32,9 +50,7 @@ bool CertPrincipal::ParseDistinguishedName(
   }
 
   auto string_handling =
-      printable_string_handling == PrintableStringHandling::kAsUTF8Hack
-          ? bssl::X509NameAttribute::PrintableStringHandling::kAsUTF8Hack
-          : bssl::X509NameAttribute::PrintableStringHandling::kDefault;
+      ConvertPrintableStringHandling(printable_string_handling);
   for (const bssl::RelativeDistinguishedName& rdn : rdns) {
     for (const bssl::X509NameAttribute& name_attribute : rdn) {
       if (name_attribute.type == bssl::der::Input(bssl::kTypeCommonNameOid)) {

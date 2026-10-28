@@ -17,6 +17,7 @@
 #include "base/containers/span.h"
 #include "base/containers/to_vector.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/pickle.h"
@@ -32,6 +33,7 @@
 #include "net/base/url_util.h"
 #include "net/cert/asn1_util.h"
 #include "net/cert/time_conversions.h"
+#include "net/cert/x509_cert_types.h"
 #include "net/cert/x509_util.h"
 #include "third_party/boringssl/src/include/openssl/evp.h"
 #include "third_party/boringssl/src/include/openssl/pool.h"
@@ -140,6 +142,13 @@ std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> CertBuffersFromCertAndIntermediates(
   return result;
 }
 
+bool CanParseDistinguishedName(
+    bssl::der::Input ber_name_data,
+    CertPrincipal::PrintableStringHandling printable_string_handling) {
+  CertPrincipal name;
+  return name.ParseDistinguishedName(ber_name_data, printable_string_handling);
+}
+
 }  // namespace
 
 // static
@@ -157,8 +166,18 @@ scoped_refptr<X509Certificate> X509Certificate::CreateFromBufferUnsafeOptions(
     UnsafeCreateOptions options) {
   DCHECK(cert_buffer);
   ParsedFields parsed;
-  if (!parsed.Initialize(cert_buffer.get(), options)) {
+  ParsedFields::ParseMetadata parse_metadata;
+  if (!parsed.Initialize(
+          cert_buffer.get(), options,
+          options.printable_string_is_utf8 ? &parse_metadata : nullptr)) {
     return nullptr;
+  }
+  // Record metrics about certs that require options.printable_string_is_utf8 to
+  // be parsed. See crbug.com/563054783.
+  if (options.printable_string_is_utf8) {
+    base::UmaHistogramEnumeration(
+        "Net.Certificate.PrintableStringRequiredParseMode",
+        parse_metadata.strictest_parsing_mode);
   }
   return base::WrapRefCounted(new X509Certificate(
       std::move(parsed), std::move(cert_buffer), std::move(intermediates)));
@@ -729,7 +748,9 @@ X509Certificate::ParsedFields::~ParsedFields() = default;
 
 bool X509Certificate::ParsedFields::Initialize(
     const CRYPTO_BUFFER* cert_buffer,
-    X509Certificate::UnsafeCreateOptions options) {
+    X509Certificate::UnsafeCreateOptions options,
+    ParseMetadata* out_parse_metadata) {
+  using PrintableStringHandling = CertPrincipal::PrintableStringHandling;
   bssl::der::Input tbs_certificate_tlv;
   bssl::der::Input signature_algorithm_tlv;
   bssl::der::BitString signature_value;
@@ -747,10 +768,9 @@ bool X509Certificate::ParsedFields::Initialize(
                            nullptr))
     return false;
 
-  CertPrincipal::PrintableStringHandling printable_string_handling =
-      options.printable_string_is_utf8
-          ? CertPrincipal::PrintableStringHandling::kAsUTF8Hack
-          : CertPrincipal::PrintableStringHandling::kDefault;
+  PrintableStringHandling printable_string_handling =
+      options.printable_string_is_utf8 ? PrintableStringHandling::kAsUTF8Hack
+                                       : PrintableStringHandling::kDefault;
   if (!subject_.ParseDistinguishedName(tbs.subject_tlv,
                                        printable_string_handling) ||
       !issuer_.ParseDistinguishedName(tbs.issuer_tlv,
@@ -769,6 +789,27 @@ bool X509Certificate::ParsedFields::Initialize(
 
   signature_algorithm_ =
       bssl::ParseSignatureAlgorithm(tbs.signature_algorithm_tlv);
+
+  // Collect parsing info for metrics.
+  if (out_parse_metadata != nullptr) {
+    if (CanParseDistinguishedName(tbs.subject_tlv,
+                                  PrintableStringHandling::kDefault) &&
+        CanParseDistinguishedName(tbs.issuer_tlv,
+                                  PrintableStringHandling::kDefault)) {
+      out_parse_metadata->strictest_parsing_mode =
+          PrintableStringParseMode::kDefault;
+    } else if (CanParseDistinguishedName(
+                   tbs.subject_tlv, PrintableStringHandling::kAllowASCII) &&
+               CanParseDistinguishedName(
+                   tbs.issuer_tlv, PrintableStringHandling::kAllowASCII)) {
+      out_parse_metadata->strictest_parsing_mode =
+          PrintableStringParseMode::kAllowASCII;
+    } else {
+      out_parse_metadata->strictest_parsing_mode =
+          PrintableStringParseMode::kAsUTF8Hack;
+    }
+  }
+
   return true;
 }
 

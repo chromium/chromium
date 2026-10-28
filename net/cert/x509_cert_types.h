@@ -21,9 +21,9 @@ struct NET_EXPORT CertPrincipal {
   ~CertPrincipal();
 
   // Configures handling of PrintableString values in the DistinguishedName. Do
-  // not use non-default handling without consulting //net owners. With
-  // kAsUTF8Hack, PrintableStrings are interpreted as UTF-8 strings.
-  enum class PrintableStringHandling { kDefault, kAsUTF8Hack };
+  // not use non-default handling without consulting //net owners. Meanings of
+  // each value match bssl::X509NameAttribute::PrintableStringHandling.
+  enum class PrintableStringHandling { kDefault, kAllowASCII, kAsUTF8Hack };
 
   // Parses a BER-format DistinguishedName.
   bool ParseDistinguishedName(

@@ -89,6 +89,20 @@ class NET_EXPORT X509Certificate
   struct UnsafeCreateOptions {
     bool printable_string_is_utf8 = false;
   };
+
+  // Values for the Net.Certificate.PrintableStringRequiredParseMode histogram.
+  // Each value corresponds to the CertPrincipal::PrintableStringHandling value
+  // of the same name. These values are persisted to logs. Entries should not be
+  // renumbered and numeric values should never be reused.
+  // LINT.IfChange(PrintableStringParseMode)
+  enum class PrintableStringParseMode {
+    kDefault = 0,
+    kAllowASCII = 1,
+    kAsUTF8Hack = 2,
+    kMaxValue = kAsUTF8Hack,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/net/enums.xml:NetCertificatePrintableStringParseMode)
+
   // Create an X509Certificate with non-standard parsing options.
   // Do not use without consulting //net owners.
   static scoped_refptr<X509Certificate> CreateFromBufferUnsafeOptions(
@@ -309,13 +323,27 @@ class NET_EXPORT X509Certificate
 
   class ParsedFields {
    public:
+    // Holds side data returned from Initialize(), for metrics.
+    struct ParseMetadata {
+      // The strictest parsing mode that allows both subject and issuer names to
+      // be parsed successfully. Defaults to the laxest mode; Initialize()
+      // lowers it if a stricter mode suffices.
+      PrintableStringParseMode strictest_parsing_mode =
+          PrintableStringParseMode::kAsUTF8Hack;
+    };
+
     ParsedFields();
     ParsedFields(const ParsedFields&);
     ParsedFields(ParsedFields&&);
     ~ParsedFields();
 
+    // Initializes this instance with `cert_buffer`, according to `options`.
+    // Returns whether initialization succeeded. If non-null, metadata about
+    // parsing is returned via `out_parse_metadata` if Initialize returns
+    // successfully.
     bool Initialize(const CRYPTO_BUFFER* cert_buffer,
-                    UnsafeCreateOptions options);
+                    UnsafeCreateOptions options,
+                    ParseMetadata* out_parse_metadata = nullptr);
 
     // The subject of the certificate.
     CertPrincipal subject_;

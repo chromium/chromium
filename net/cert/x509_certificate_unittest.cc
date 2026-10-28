@@ -19,6 +19,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/string_view_util.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
 #include "net/base/net_errors.h"
 #include "net/cert/asn1_util.h"
@@ -37,6 +38,9 @@ using base::Time;
 namespace net {
 
 namespace {
+
+constexpr char kPrintableStringParseModeHistogram[] =
+    "Net.Certificate.PrintableStringRequiredParseMode";
 
 // Certificates for test data. They're obtained with:
 //
@@ -271,6 +275,7 @@ TEST(X509CertificateTest, UnescapedSpecialCharacters) {
 }
 
 TEST(X509CertificateTest, InvalidPrintableStringIsUtf8) {
+  base::HistogramTester histogram_tester;
   base::FilePath certs_dir =
       GetTestNetDataDirectory().AppendASCII("parse_certificate_unittest");
 
@@ -297,9 +302,68 @@ TEST(X509CertificateTest, InvalidPrintableStringIsUtf8) {
   scoped_refptr<X509Certificate> cert =
       X509Certificate::CreateFromBufferUnsafeOptions(
           bssl::UpRef(cert_handle.get()), {}, options);
+  // The name contains non-ASCII characters, so only kAsUTF8Hack suffices. The
+  // failed parse with default options above records nothing.
+  histogram_tester.ExpectUniqueSample(
+      kPrintableStringParseModeHistogram,
+      X509Certificate::PrintableStringParseMode::kAsUTF8Hack, 1);
 
   const CertPrincipal& subject = cert->subject();
   EXPECT_EQ("Foo@#_ Clïênt Cërt", subject.common_name);
+}
+
+TEST(X509CertificateTest, PrintableStringRequiredParseModeHistogram) {
+  X509Certificate::UnsafeCreateOptions options;
+  options.printable_string_is_utf8 = true;
+
+  scoped_refptr<X509Certificate> ok_cert =
+      ImportCertFromFile(GetTestCertsDirectory(), "ok_cert.pem");
+  ASSERT_TRUE(ok_cert);
+
+  {
+    // Without printable_string_is_utf8, nothing is recorded.
+    base::HistogramTester histogram_tester;
+    EXPECT_TRUE(X509Certificate::CreateFromBuffer(
+        bssl::UpRef(ok_cert->cert_buffer()), {}));
+    histogram_tester.ExpectTotalCount(kPrintableStringParseModeHistogram, 0);
+  }
+
+  {
+    // All names are valid PrintableStrings.
+    base::HistogramTester histogram_tester;
+    EXPECT_TRUE(X509Certificate::CreateFromBufferUnsafeOptions(
+        bssl::UpRef(ok_cert->cert_buffer()), {}, options));
+    histogram_tester.ExpectUniqueSample(
+        kPrintableStringParseModeHistogram,
+        X509Certificate::PrintableStringParseMode::kDefault, 1);
+  }
+
+  // These certificates contain '&', which is ASCII but not allowed in a
+  // PrintableString, in the subject and issuer respectively.
+  for (const char* file_name : {"subject_not_printable_string.pem",
+                                "issuer_bad_printable_string.pem"}) {
+    SCOPED_TRACE(file_name);
+    std::string file_data;
+    ASSERT_TRUE(
+        base::ReadFileToString(GetTestNetDataDirectory()
+                                   .AppendASCII("parse_certificate_unittest")
+                                   .AppendASCII(file_name),
+                               &file_data));
+    bssl::PEMTokenizer pem_tokenizer(file_data, {"CERTIFICATE"});
+    ASSERT_TRUE(pem_tokenizer.GetNext());
+    bssl::UniquePtr<CRYPTO_BUFFER> cert_handle =
+        x509_util::CreateCryptoBuffer(pem_tokenizer.data());
+
+    EXPECT_FALSE(
+        X509Certificate::CreateFromBuffer(bssl::UpRef(cert_handle.get()), {}));
+
+    base::HistogramTester histogram_tester;
+    EXPECT_TRUE(X509Certificate::CreateFromBufferUnsafeOptions(
+        bssl::UpRef(cert_handle.get()), {}, options));
+    histogram_tester.ExpectUniqueSample(
+        kPrintableStringParseModeHistogram,
+        X509Certificate::PrintableStringParseMode::kAllowASCII, 1);
+  }
 }
 
 TEST(X509CertificateTest, TeletexStringIsLatin1) {
