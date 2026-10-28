@@ -24,14 +24,14 @@ class TipsManagerIOSFactory final
 
   // Returns the default factory used to build `TipsManagerIOS`. Can be
   // registered with `SetTestingFactory()` to use real instances during testing.
-  static TestingFactory GetDefaultFactory();
+  static TestingFactoryByRef GetDefaultFactory();
 
  private:
   // `ProfileKeyedServiceFactoryIOS` implementation.
   // Creates and returns an `TipsManagerIOS` instance for the given
   // `context`.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const final;
+      ProfileIOS& profile) const final;
   void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) final;
 };
 

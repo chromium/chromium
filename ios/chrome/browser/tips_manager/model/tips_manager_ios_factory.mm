@@ -16,9 +16,9 @@
 namespace {
 
 // Helper function to create an `TipsManagerIOS` instance.
-std::unique_ptr<KeyedService> BuildServiceInstance(ProfileIOS* profile) {
+std::unique_ptr<KeyedService> BuildServiceInstance(ProfileIOS& profile) {
   return std::make_unique<TipsManagerIOS>(
-      profile->GetPrefs(), GetApplicationContext()->GetLocalState());
+      profile.GetPrefs(), GetApplicationContext()->GetLocalState());
 }
 
 }  // namespace
@@ -32,13 +32,13 @@ TipsManagerIOSFactory::TipsManagerIOSFactory(PassKey key)
           ProfileSelection::kOwnInstanceInIncognito) {}
 
 // static
-TipsManagerIOSFactory::TestingFactory
+TipsManagerIOSFactory::TestingFactoryByRef
 TipsManagerIOSFactory::GetDefaultFactory() {
   return base::BindOnce(&BuildServiceInstance);
 }
 
 std::unique_ptr<KeyedService> TipsManagerIOSFactory::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
+    ProfileIOS& profile) const {
   return BuildServiceInstance(profile);
 }
 
