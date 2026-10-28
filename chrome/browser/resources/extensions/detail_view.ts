@@ -110,6 +110,7 @@ export class ExtensionsDetailViewElement extends
       /** Whether the extensions safety check warning is shown. */
       showSafetyCheck_: {type: Boolean},
       webuiRoundedIconsEnabled_: {type: Boolean},
+      isolatedModeEnabled_: {type: Boolean},
     };
   }
 
@@ -127,6 +128,8 @@ export class ExtensionsDetailViewElement extends
   protected accessor sortedViews_: chrome.developerPrivate.ExtensionView[] = [];
   protected accessor webuiRoundedIconsEnabled_: boolean =
       loadTimeData.getBoolean('webuiRoundedIconsEnabled');
+  protected accessor isolatedModeEnabled_: boolean =
+      loadTimeData.getBoolean('isolatedModeEnabled');
 
   override willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);
@@ -272,6 +275,18 @@ export class ExtensionsDetailViewElement extends
 
   protected shouldShowIncognitoOption_(): boolean {
     return this.data.incognitoAccess.isEnabled && this.incognitoAvailable;
+  }
+
+  protected getItemAllowIncognitoString_(): string {
+    return this.i18n(
+        this.isolatedModeEnabled_ ? 'itemAllowIsolatedMode' :
+                                    'itemAllowIncognito');
+  }
+
+  protected getIncognitoInfoWarningString_(): string {
+    return this.i18n(
+        this.isolatedModeEnabled_ ? 'isolatedModeInfoWarning' :
+                                    'incognitoInfoWarning');
   }
 
   protected showUserScriptSectionToggle_(): boolean {

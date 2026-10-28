@@ -374,8 +374,10 @@ this text can be found by Ctrl + F because it isn't hidden. -->
               ?checked="${this.data.incognitoAccess.isActive}" class="hr"
               @change="${this.onAllowIncognitoChange_}">
             <div>
-              <div>$i18n{itemAllowIncognito}</div>
-              <div class="section-content">$i18n{incognitoInfoWarning}</div>
+              <div>${this.getItemAllowIncognitoString_()}</div>
+              <div class="section-content">
+                ${this.getIncognitoInfoWarningString_()}
+              </div>
               <div class="section-content" id="allow-incognito-warning"
                   ?hidden="${!this.data.incognitoAccessPendingChange}">
                 $i18n{pendingChangeWarning}

@@ -946,4 +946,51 @@ suite('ExtensionDetailViewTest', function() {
         rateLink, 'openReviewPage', [extensionData.id]);
   });
 
+  test('IsolatedModeStrings', async () => {
+    const view = {
+      type: chrome.developerPrivate.ViewType.EXTENSION_BACKGROUND_PAGE,
+      url: `chrome-extension://${
+          extensionData.id}/_generated_background_page.html`,
+      renderProcessId: 0,
+      renderViewId: 0,
+      incognito: true,
+      isIframe: false,
+    };
+
+    // Default (Incognito mode).
+    loadTimeData.overrideValues({isolatedModeEnabled: false});
+    setupElement();
+    item.inDevMode = true;
+    await updateItemData({views: [view]});
+
+    let allowIncognitoText =
+        item.shadowRoot.querySelector<HTMLElement>(
+                           '#allow-incognito')!.textContent;
+    assertTrue(allowIncognitoText.includes(
+        loadTimeData.getString('itemAllowIncognito')));
+    assertTrue(allowIncognitoText.includes(
+        loadTimeData.getString('incognitoInfoWarning')));
+    assertEquals(
+        'background page (Incognito)',
+        item.shadowRoot.querySelector<HTMLElement>(
+                           '.inspectable-view')!.textContent.trim());
+
+    // Isolated mode.
+    loadTimeData.overrideValues({isolatedModeEnabled: true});
+    setupElement();
+    item.inDevMode = true;
+    await updateItemData({views: [view]});
+
+    allowIncognitoText =
+        item.shadowRoot.querySelector<HTMLElement>(
+                           '#allow-incognito')!.textContent;
+    assertTrue(allowIncognitoText.includes(
+        loadTimeData.getString('itemAllowIsolatedMode')));
+    assertTrue(allowIncognitoText.includes(
+        loadTimeData.getString('isolatedModeInfoWarning')));
+    assertEquals(
+        'background page (Isolated mode)',
+        item.shadowRoot.querySelector<HTMLElement>(
+                           '.inspectable-view')!.textContent.trim());
+  });
 });

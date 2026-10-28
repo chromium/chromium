@@ -384,6 +384,10 @@ IN_PROC_BROWSER_TEST_F(CrExtensionsDetailViewTest, RateExtensionLinkClick) {
   RunTestCase("RateExtensionLinkClick");
 }
 
+IN_PROC_BROWSER_TEST_F(CrExtensionsDetailViewTest, IsolatedModeStrings) {
+  RunTestCase("IsolatedModeStrings");
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // Extension Item List Tests
 

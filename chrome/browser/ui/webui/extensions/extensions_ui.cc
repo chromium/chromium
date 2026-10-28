@@ -18,6 +18,7 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/enterprise/isolated_mode/isolated_mode_settings_service_factory.h"
 #include "chrome/browser/extensions/permissions_url_constants.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -151,6 +152,7 @@ content::WebUIDataSource* CreateAndAddExtensionsSource(Profile* profile,
       {"sidebarDiscoverMore", IDS_EXTENSIONS_SIDEBAR_DISCOVER_MORE},
       {"keyboardShortcuts", IDS_EXTENSIONS_SIDEBAR_KEYBOARD_SHORTCUTS},
       {"incognitoInfoWarning", IDS_EXTENSIONS_INCOGNITO_WARNING},
+      {"isolatedModeInfoWarning", IDS_EXTENSIONS_ISOLATED_MODE_WARNING},
       {"userScriptInfoWarning", IDS_EXTENSIONS_ALLOW_USER_SCRIPTS_WARNING},
       {"hostPermissionsDescription",
        IDS_EXTENSIONS_HOST_PERMISSIONS_DESCRIPTION},
@@ -184,6 +186,7 @@ content::WebUIDataSource* CreateAndAddExtensionsSource(Profile* profile,
       {"itemInspectViewsExtra", IDS_EXTENSIONS_ITEM_INSPECT_VIEWS_EXTRA},
       {"noActiveViews", IDS_EXTENSIONS_ITEM_NO_ACTIVE_VIEWS},
       {"itemAllowIncognito", IDS_EXTENSIONS_ITEM_ALLOW_INCOGNITO},
+      {"itemAllowIsolatedMode", IDS_EXTENSIONS_ITEM_ALLOW_ISOLATED_MODE},
       {"itemAllowUserScripts", IDS_EXTENSIONS_ITEM_ALLOW_USER_SCRIPTS},
       {"itemDescriptionLabel", IDS_EXTENSIONS_ITEM_DESCRIPTION},
       {"itemDependencies", IDS_EXTENSIONS_ITEM_DEPENDENCIES},
@@ -407,6 +410,7 @@ content::WebUIDataSource* CreateAndAddExtensionsSource(Profile* profile,
       {"viewActivityLog", IDS_EXTENSIONS_VIEW_ACTIVITY_LOG},
       {"viewBackgroundPage", IDS_EXTENSIONS_BACKGROUND_PAGE},
       {"viewIncognito", IDS_EXTENSIONS_VIEW_INCOGNITO},
+      {"viewIsolatedMode", IDS_EXTENSIONS_VIEW_ISOLATED_MODE},
       {"viewInDevTools", IDS_EXTENSIONS_VIEW_IN_DEVTOOLS},
       {"viewInactive", IDS_EXTENSIONS_VIEW_INACTIVE},
       {"viewIframe", IDS_EXTENSIONS_VIEW_IFRAME},
@@ -519,6 +523,9 @@ content::WebUIDataSource* CreateAndAddExtensionsSource(Profile* profile,
       "safetyHubThreeDotDetails",
       base::FeatureList::IsEnabled(features::kSafetyHubThreeDotDetails));
   source->AddBoolean("enableGlobalScopedShortcuts", IsGlobalShortcutEnabled());
+  source->AddBoolean(
+      "isolatedModeEnabled",
+      enterprise_isolated_mode::IsolatedModeReplacesIncognito(profile));
 
   // MV2 deprecation.
   auto* mv2_handler = ManifestV2Handler::Get(profile);

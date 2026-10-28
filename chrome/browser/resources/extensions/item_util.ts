@@ -186,7 +186,10 @@ export function computeInspectableViewLabel(
   }
   // Add any qualifiers.
   if (view.incognito) {
-    label += ' ' + loadTimeData.getString('viewIncognito');
+    const stringId = loadTimeData.getBoolean('isolatedModeEnabled') ?
+        'viewIsolatedMode' :
+        'viewIncognito';
+    label += ' ' + loadTimeData.getString(stringId);
   }
   if (view.renderProcessId === -1) {
     label += ' ' + loadTimeData.getString('viewInactive');

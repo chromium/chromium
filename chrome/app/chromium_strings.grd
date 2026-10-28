@@ -1102,6 +1102,9 @@ Chromium is unable to recover your settings.
       <message name="IDS_EXTENSIONS_INCOGNITO_WARNING" desc="Warns the user that Chromium cannot prevent extensions from recording history in Incognito mode. Displayed in extensions management UI after an extension is selected to be run in Incognito mode.">
         Warning: Chromium cannot prevent extensions from recording your browsing history. To disable this extension in Incognito mode, unselect this option.
       </message>
+      <message name="IDS_EXTENSIONS_ISOLATED_MODE_WARNING" desc="Warns the user that Chromium cannot prevent extensions from recording history in Isolated mode. Displayed in extensions management UI after an extension is selected to be run in Isolated mode.">
+        Warning: Chromium cannot prevent extensions from recording your browsing history. To disable this extension in Isolated mode, unselect this option.
+      </message>
       <message name="IDS_EXTENSIONS_UNINSTALL" desc="The label for a control that triggers an extension uninstall.">
         Remove from Chromium
       </message>

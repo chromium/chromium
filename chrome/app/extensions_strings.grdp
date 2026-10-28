@@ -67,6 +67,9 @@
   <message name="IDS_EXTENSIONS_VIEW_INCOGNITO" desc="Text that signifies that the extension view is in an Incognito process.">
     (Incognito)
   </message>
+  <message name="IDS_EXTENSIONS_VIEW_ISOLATED_MODE" desc="Text that signifies that the extension view is in an Isolated mode process.">
+    (Isolated mode)
+  </message>
   <message name="IDS_EXTENSIONS_DEVELOPER_MODE" desc="The text displayed next to the checkbox to toggle developer mode in the extensions page.">
     Developer mode
   </message>
@@ -258,6 +261,9 @@
   </message>
   <message name="IDS_EXTENSIONS_ITEM_ALLOW_INCOGNITO" desc="The text next to the checkbox to enable an extension in Incognito mode.">
     Allow in Incognito
+  </message>
+  <message name="IDS_EXTENSIONS_ITEM_ALLOW_ISOLATED_MODE" desc="The text next to the checkbox to enable an extension in Isolated mode.">
+    Allow in Isolated mode
   </message>
   <message name="IDS_EXTENSIONS_ITEM_ALLOW_USER_SCRIPTS" desc="The text next to the checkbox to enable an extension to run user scripts.">
     Allow User Scripts
