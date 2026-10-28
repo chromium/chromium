@@ -176,7 +176,7 @@ class ContextualTasksSidePanelCoordinator
   bool MoveActiveTabToNewThreadIfShared() override;
   std::map<std::string, std::string> GetTabRestoreData(
       tabs::TabInterface* tab) const override;
-  void ShareTabsWithActiveOrNewThread(
+  void ShareTabsWithNewThread(
       const std::vector<tabs::TabHandle>& tab_handles) override;
   void ShareTabsWithExistingThread(
       const base::Uuid& task_id,

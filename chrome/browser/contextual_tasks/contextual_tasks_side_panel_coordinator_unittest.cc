@@ -2907,9 +2907,8 @@ TEST_F(ContextualTasksSidePanelCoordinatorTest,
 }
 
 #if !BUILDFLAG(IS_ANDROID)
-TEST_F(
-    ContextualTasksSidePanelCoordinatorTest,
-    ShareTabsWithActiveOrNewThread_CreatesTaskAndAttachesActiveAndValidTabs) {
+TEST_F(ContextualTasksSidePanelCoordinatorTest,
+       ShareTabsWithNewThread_CreatesTaskAndAttachesActiveAndValidTabs) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
       {kContextualTasks, kContextualTasksForceEntryPointEligibility,
@@ -2965,13 +2964,13 @@ TEST_F(
               AddLocalTabUnderline(invalid_tab->GetHandle()))
       .Times(0);
 
-  coordinator_->ShareTabsWithActiveOrNewThread(
+  coordinator_->ShareTabsWithNewThread(
       {valid_tab->GetHandle(), invalid_tab->GetHandle()});
 }
 
 TEST_F(
     ContextualTasksSidePanelCoordinatorTest,
-    ShareTabsWithActiveOrNewThread_PanelAlreadyOpen_AttachesSharedTabToCurrentTask) {
+    ShareTabsWithNewThread_PanelAlreadyOpenInZeroState_AttachesSharedTabToCurrentTask) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
       {kContextualTasks, kContextualTasksForceEntryPointEligibility,
@@ -2987,12 +2986,17 @@ TEST_F(
 
   base::Uuid existing_task_id = base::Uuid::GenerateRandomV4();
   ContextualTask existing_task(existing_task_id);
-  CreateCachedWebContentsForTesting(existing_task_id, /*is_open=*/true);
+  CreateCachedWebContentsWithUrlForTesting(
+      existing_task_id, /*is_open=*/true,
+      GURL("https://www.google.com/search?udm=50"));
+  mock_panel_host_->SetWebContents(
+      GetWebContentsForTaskForTesting(existing_task_id));
   ON_CALL(*tab_list_, GetActiveTab()).WillByDefault(Return(active_tab));
   ON_CALL(*mock_panel_host_, IsPanelOpenForContextualTask())
       .WillByDefault(Return(true));
   ON_CALL(*mock_controller_, GetContextualTaskForTab(_))
       .WillByDefault(Return(existing_task));
+  ASSERT_FALSE(coordinator_->IsShowingResults());
 
   EXPECT_CALL(*mock_controller_, CreateTask()).Times(0);
   EXPECT_CALL(*mock_panel_host_, Show(_)).Times(0);
@@ -3005,11 +3009,73 @@ TEST_F(
               AddLocalTabUnderline(valid_tab->GetHandle()))
       .Times(1);
 
-  coordinator_->ShareTabsWithActiveOrNewThread({valid_tab->GetHandle()});
+  coordinator_->ShareTabsWithNewThread({valid_tab->GetHandle()});
 }
 
 TEST_F(ContextualTasksSidePanelCoordinatorTest,
-       ShareTabsWithActiveOrNewThread_IgnoresWhenNoValidTabs) {
+       ShareTabsWithNewThread_PanelShowingResults_StartsNewZeroStateThread) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {kContextualTasks, kContextualTasksForceEntryPointEligibility,
+       kContextualTasksSidePanelRearchitecture},
+      {});
+
+  tabs::TabInterface* active_tab = CreateMockTab();
+  tabs::TabInterface* valid_tab = CreateMockTab();
+  content::WebContentsTester::For(active_tab->GetContents())
+      ->NavigateAndCommit(GURL("https://example.com/active"));
+  content::WebContentsTester::For(valid_tab->GetContents())
+      ->NavigateAndCommit(GURL("https://example.com/shared"));
+
+  base::Uuid existing_task_id = base::Uuid::GenerateRandomV4();
+  ContextualTask existing_task(existing_task_id);
+  CreateCachedWebContentsWithUrlForTesting(
+      existing_task_id, /*is_open=*/true,
+      GURL("https://www.google.com/search?udm=50&mtid=1&q=Active+Thread"));
+  mock_panel_host_->SetWebContents(
+      GetWebContentsForTaskForTesting(existing_task_id));
+  ON_CALL(*tab_list_, GetActiveTab()).WillByDefault(Return(active_tab));
+  ON_CALL(*mock_panel_host_, IsPanelOpenForContextualTask())
+      .WillByDefault(Return(true));
+  ON_CALL(*mock_controller_, GetContextualTaskForTab(_))
+      .WillByDefault(Return(existing_task));
+  ASSERT_TRUE(coordinator_->IsShowingResults());
+
+  base::Uuid new_task_id = base::Uuid::GenerateRandomV4();
+  ContextualTask new_task(new_task_id);
+  EXPECT_CALL(*mock_controller_,
+              DisassociateTabFromTask(existing_task_id,
+                                      sessions::SessionTabHelper::IdForTab(
+                                          active_tab->GetContents())))
+      .WillOnce([this]() {
+        ON_CALL(*mock_controller_, GetContextualTaskForTab(_))
+            .WillByDefault(Return(std::nullopt));
+      });
+  EXPECT_CALL(*mock_controller_, CreateTask()).WillOnce(Return(new_task));
+  EXPECT_CALL(
+      *mock_controller_,
+      AssociateTabWithTask(new_task_id, sessions::SessionTabHelper::IdForTab(
+                                            active_tab->GetContents())))
+      .Times(testing::AtLeast(1))
+      .WillRepeatedly([this, new_task]() {
+        ON_CALL(*mock_controller_, GetContextualTaskForTab(_))
+            .WillByDefault(Return(new_task));
+      });
+  EXPECT_CALL(*mock_panel_host_, Show(_)).Times(1);
+  EXPECT_CALL(mock_active_task_context_provider_, ClearAllLocalTabUnderlines())
+      .Times(1);
+  EXPECT_CALL(mock_active_task_context_provider_,
+              AddLocalTabUnderline(active_tab->GetHandle()))
+      .Times(1);
+  EXPECT_CALL(mock_active_task_context_provider_,
+              AddLocalTabUnderline(valid_tab->GetHandle()))
+      .Times(1);
+
+  coordinator_->ShareTabsWithNewThread({valid_tab->GetHandle()});
+}
+
+TEST_F(ContextualTasksSidePanelCoordinatorTest,
+       ShareTabsWithNewThread_IgnoresWhenNoValidTabs) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
       {kContextualTasks, kContextualTasksForceEntryPointEligibility,
@@ -3023,7 +3089,7 @@ TEST_F(ContextualTasksSidePanelCoordinatorTest,
   EXPECT_CALL(*mock_controller_, CreateTask()).Times(0);
   EXPECT_CALL(*mock_panel_host_, Show(_)).Times(0);
 
-  coordinator_->ShareTabsWithActiveOrNewThread({invalid_tab->GetHandle()});
+  coordinator_->ShareTabsWithNewThread({invalid_tab->GetHandle()});
 }
 
 TEST_F(ContextualTasksSidePanelCoordinatorTest,

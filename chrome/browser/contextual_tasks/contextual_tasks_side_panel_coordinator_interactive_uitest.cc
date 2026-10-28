@@ -164,6 +164,10 @@ class ContextualTasksSidePanelCoordinatorInteractiveUiTest
 
   void HidePanel() { GetCoordinator()->Hide(); }
 
+  void CreateCachedWebContentsForTesting(base::Uuid task_id, bool is_open) {
+    GetCoordinator()->CreateCachedWebContentsForTesting(task_id, is_open);
+  }
+
   void SetUpTasks() {
     ActiveTaskContextProvider::From(browser())->AddObserver(
         &mock_active_task_context_provider_observer_);
@@ -1380,6 +1384,77 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksSidePanelCoordinatorInteractiveUiTest,
   coordinator->Close();
   EXPECT_EQ(content::Visibility::HIDDEN, web_contents1->GetVisibility());
   EXPECT_EQ(content::Visibility::HIDDEN, web_contents2->GetVisibility());
+}
+
+// This tests the following CUJ:
+//  (1) Open a tab and open the Contextual Tasks side panel with an ongoing
+//      thread.
+//  (2) Share another tab into the side panel using
+//      `ShareTabsWithNewThread()`.
+//  (3) Because the panel is showing results, a fresh zero-state thread is
+//      started instead of attaching the shared tab to the existing thread.
+//  (4) With the panel in zero state, sharing an additional tab stages it
+//      directly into the existing zero-state task.
+IN_PROC_BROWSER_TEST_F(
+    ContextualTasksSidePanelCoordinatorInteractiveUiTest,
+    ShareTabsWithNewThreadStartsNewThreadWhenShowingResults) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/title1.html")));
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      browser(), embedded_test_server()->GetURL("/title2.html"),
+      WindowOpenDisposition::kNewBackgroundTab,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      browser(), embedded_test_server()->GetURL("/title3.html"),
+      WindowOpenDisposition::kNewBackgroundTab,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+
+  ContextualTasksService* contextual_tasks_service =
+      ContextualTasksServiceFactory::GetForProfile(browser()->GetProfile());
+  ContextualTask task1 = contextual_tasks_service->CreateTask();
+  contextual_tasks_service->AssociateTabWithTask(
+      task1.GetTaskId(),
+      sessions::SessionTabHelper::IdForTab(
+          TabListInterface::From(browser())->GetTab(0)->GetContents()));
+  contextual_tasks_service->UpdateThreadForTask(task1.GetTaskId(),
+                                                ThreadType::kAiMode, "thread1",
+                                                std::nullopt, "Title 1");
+
+  ContextualTasksSidePanelCoordinator* coordinator = GetCoordinator();
+  CreateCachedWebContentsForTesting(task1.GetTaskId(),
+                                    /*is_open=*/true);
+
+  TabListInterface* tab_list = TabListInterface::From(browser());
+  tabs::TabHandle tab1_handle = tab_list->GetTab(1)->GetHandle();
+  tabs::TabHandle tab2_handle = tab_list->GetTab(2)->GetHandle();
+
+  RunTestSequence(
+      Do([&]() {
+        coordinator->Show(
+            false, omnibox::ChromeAimEntryPoint::UNKNOWN_AIM_ENTRY_POINT);
+      }),
+      WaitForShow(kContextualTasksSidePanelWebViewElementId), Do([&]() {
+        EXPECT_TRUE(coordinator->IsPanelOpenForContextualTask());
+        EXPECT_TRUE(coordinator->IsShowingResults());
+        const base::Uuid initial_task_id =
+            coordinator->GetCurrentTask()->GetTaskId();
+        EXPECT_EQ(initial_task_id, task1.GetTaskId());
+
+        // Sharing Tab 1 when showing results opens a fresh zero-state thread.
+        coordinator->ShareTabsWithNewThread({tab1_handle});
+
+        std::optional<ContextualTask> current_task =
+            coordinator->GetCurrentTask();
+        ASSERT_TRUE(current_task.has_value());
+        const base::Uuid new_task_id = current_task->GetTaskId();
+        EXPECT_NE(new_task_id, initial_task_id);
+        EXPECT_FALSE(coordinator->IsShowingResults());
+
+        // Sharing Tab 2 when already in zero state attaches directly to the
+        // current zero-state task rather than starting another new thread.
+        coordinator->ShareTabsWithNewThread({tab2_handle});
+        EXPECT_EQ(coordinator->GetCurrentTask()->GetTaskId(), new_task_id);
+      }));
 }
 
 // Regression test for crbug.com/517906613: On a buggy build, trying to show the

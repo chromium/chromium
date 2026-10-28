@@ -883,7 +883,7 @@ ContextualTasksSidePanelCoordinator::GetTabRestoreData(
   return data;
 }
 
-void ContextualTasksSidePanelCoordinator::ShareTabsWithActiveOrNewThread(
+void ContextualTasksSidePanelCoordinator::ShareTabsWithNewThread(
     const std::vector<tabs::TabHandle>& tab_handles) {
   if (!browser_window_ || !CanShareTabContext(browser_window_->GetProfile())) {
     return;
@@ -895,10 +895,11 @@ void ContextualTasksSidePanelCoordinator::ShareTabsWithActiveOrNewThread(
     return;
   }
 
-  // If the side panel is already open on the active tab, attach the selected
-  // tabs directly to the open task so sharing multiple tabs from the tab strip
-  // stages them together without resetting previously staged tabs.
-  if (IsPanelOpenForContextualTask()) {
+  // If the side panel is already open in zero state on the active tab, attach
+  // the selected tabs directly to the open task so sharing multiple tabs from
+  // the tab strip stages them together without resetting previously staged
+  // tabs.
+  if (IsPanelOpenForContextualTask() && !IsShowingResults()) {
     if (std::optional<ContextualTask> current_task = GetCurrentTask()) {
       AttachTabsToTask(current_task->GetTaskId(), valid_tab_handles);
       return;
