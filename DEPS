@@ -3254,7 +3254,7 @@ deps = {
 
   # Additional Wayland protocols specific for KDE Plasma desktop environment.
   'src/third_party/wayland-protocols/kde/src': {
-      'url': Var('chromium_git') + '/external/github.com/KDE/plasma-wayland-protocols.git' + '@' + '0b07950714b3a36c9b9f71fc025fc7783e82926e',
+      'url': Var('chromium_git') + '/external/github.com/KDE/plasma-wayland-protocols.git' + '@' + 'c5ac4db818f4a575a6ccfe0065b73ecfaba6e93e',
       'condition': 'checkout_linux',
   },
 
