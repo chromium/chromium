@@ -5,12 +5,22 @@ expired histogram.
 
 ## Safety Checks (Critical)
 
+- **Allowed Metadata File (`safe_dirs.md`):** The histogram's `<histogram>`
+  definition MUST live in one of the allowlisted `histograms.xml` files in
+  [safe_dirs.md](safe_dirs.md). If it does not, assign Confidence Score = 0
+  immediately and stop. Apply the same check to every co-located/bundled
+  histogram and drop any member that fails it (leave its recording code
+  untouched). Never scan or edit a non-allowlisted `histograms.xml`.
 - **Test Dependencies:** Never remove a histogram if a test uses it as a primary
   signal for feature correctness (beyond just verifying the metric itself).
   Simple usages of `HistogramTester` to verify the metric was recorded are safe
   to remove and should NOT lower the Confidence Score.
 - **Shared Enums:** If a histogram is removed, check if its associated `<enum>`
   is used by other histograms before proposing its deletion from `enums.xml`.
+  Only edit an `enums.xml` that sits beside an allowlisted `histograms.xml`
+  (same `metadata/<dir>/`) or the top-level
+  `tools/metrics/histograms/enums.xml`; otherwise leave the enum in place and
+  note it in the Removal Plan.
 - **Intentionally Expired (Diagnostics):** Do not clean up histograms marked
   with the `<expired_intentionally>` tag in the XML. This tag means the team
   specifically wants to keep the code around for local diagnostics. Only target
@@ -40,7 +50,13 @@ following:
 When instructed to perform a deep dive on an expired histogram, use the
 following exact workflow for the histogram `<HistogramName>`:
 
-1. **Search:** Find ALL occurrences of this histogram string (including any
+1. **Allowlist Gate (first):** Search ONLY the files listed in
+   `references/safe_dirs.md` for the `<histogram name="<HistogramName>"`
+   definition (for `<variants>`/`<token>` names, the base pattern). If none of
+   them defines it, STOP and return Confidence Score 0 with justification
+   "definition outside the safe_dirs.md allowlist". Do not open any other
+   `histograms.xml`.
+2. **Search:** Find ALL occurrences of this histogram string (including any
    expanded `<token>` or `<variants>` generated names) in the codebase.
    - **Fast Fail:** If the initial `cs` search returns a massive number of
      results (e.g., > 20) or immediately shows external references (e.g., Chrome
@@ -58,18 +74,20 @@ following exact workflow for the histogram `<HistogramName>`:
      `MyExpiredHistogram`) to catch occurrences in constant names, variable
      identifiers, or Java resource IDs.
    - Use `rg` (ripgrep) for fast local discovery of the files that need to edit.
-2. **Safety Verification:** Strictly follow the 'Safety Checks' section in this
+3. **Safety Verification:** Strictly follow the 'Safety Checks' section in this
    document to identify test dependencies, shared enums, intentional expiry
    tags, and cross-repo dependencies. If the histogram has recording sites in
    external repositories, its Confidence Score MUST be 0.
-3. **Scoring:** Based on the findings and the guidelines, calculate a Confidence
+4. **Scoring:** Based on the findings and the guidelines, calculate a Confidence
    Score (1-10) for its safe removal. (10/10 = 1-2 places, no complex test
    dependencies (HistogramTester is fine); < 7/10 = multiple sites, complex
-   mocks; 0/10 = external repository dependencies).
-4. **Removal Plan:** Formulate a concise plan for removal (e.g., 'Files to edit:
+   mocks; 0/10 = external repository dependencies or definition outside the
+   `safe_dirs.md` allowlist).
+5. **Removal Plan:** Formulate a concise plan for removal (e.g., 'Files to edit:
    X, Y; Entry to remove: Z'). If co-located histograms sharing the same
-   recording code are identified and verified as expired and safe to remove,
-   include them in the bundled Removal Plan.
+   recording code are identified and verified as expired, allowlisted
+   (`safe_dirs.md`), and safe to remove, include them in the bundled Removal
+   Plan.
 
 **Return ONLY a concise summary of the affected files and tests, any identified
 risks, the final Confidence Score, a brief justification, and the Removal

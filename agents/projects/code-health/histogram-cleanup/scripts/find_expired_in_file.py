@@ -6,8 +6,11 @@
 import argparse
 import os
 import subprocess
+import sys
 import xml.etree.ElementTree as ET
 from datetime import datetime, timedelta
+
+from find_candidates import SAFE_HISTOGRAM_FILES, is_safe_histogram_file
 
 
 def is_expired(exp, date_limit, m_limit):
@@ -47,6 +50,13 @@ def count_recording_sites(name):
 
 def get_expired_from_file(file_path, date_limit, m_limit):
     """Yields expired histograms with 0 recording sites from a file."""
+    if not is_safe_histogram_file(file_path):
+        print(
+            f"ERROR: '{file_path}' is not an allowlisted histograms.xml file. "
+            "Only the files listed in references/safe_dirs.md may be scanned.",
+            file=sys.stderr,
+        )
+        return
     try:
         for hist in ET.parse(file_path).iter("histogram"):
             exp = hist.attrib.get("expires_after", "")
@@ -83,6 +93,16 @@ def main():
         help="Output only the names of the histograms.",
     )
     args = parser.parse_args()
+    if not is_safe_histogram_file(args.file):
+        print(
+            f"ERROR: '{args.file}' is not an allowlisted histograms.xml file. "
+            "Only the files listed in references/safe_dirs.md may be scanned.",
+            file=sys.stderr,
+        )
+        print("Allowlisted files:", file=sys.stderr)
+        for allowed in SAFE_HISTOGRAM_FILES:
+            print(f"  {allowed}", file=sys.stderr)
+        sys.exit(2)
 
     # Thresholds: 1 year ago or milestone - 12 (approx 1 year of milestones)
     date_limit = (datetime.now() - timedelta(days=365)).strftime("%Y-%m-%d")

@@ -21,6 +21,9 @@ all code recording sites.
 ## Relevant Resources & Style Guides
 
 - [Chromium Metrics - Histograms Guide](https://chromium.googlesource.com/chromium/src/+/main/tools/metrics/histograms/README.md)
+- **Allowed Metadata Files (Allowlist):**
+  [safe_dirs.md](references/safe_dirs.md) — the ONLY `histograms.xml` files this
+  skill may scan, analyze, or edit.
 - **Implementation Patterns:** [patterns.md](references/patterns.md) (C++, Java,
   XML examples)
 - **Analysis Guidelines:**
@@ -29,12 +32,18 @@ all code recording sites.
 - **Bug Discovery:** [bug_discovery.md](references/bug_discovery.md) (Finding
   existing trackers)
 - **Discovery Script:** [find_candidates.py](scripts/find_candidates.py)
-  (Identify expired histograms)
+  (Identify expired histograms in the allowlisted files only)
 - **Automated Review Protocol:**
   [automated_review.md](references/automated_review.md)
 
 ## Scope & Proactivity
 
+- **Allowlist (Hard Constraint):** Only histograms defined in one of the
+  `histograms.xml` files listed in [safe_dirs.md](references/safe_dirs.md) may
+  be examined, selected, bundled, or cleaned up. Never run discovery,
+  `scripts/find_expired_in_file.py`, or a deep dive against any other
+  `histograms.xml`, and never edit one. If the user names a histogram outside
+  the allowlist, explain the restriction and run discovery instead.
 - **Primary Scope:** Focus exclusively on the identified histogram by default.
   Do NOT suggest removing random additional histograms across the file or
   component just because they are expired.
@@ -43,11 +52,15 @@ all code recording sites.
   co-located in the same helper function or branching from the same condition)
   as the target histogram, their removal MAY be bundled into the same cleanup
   plan IF AND ONLY IF:
-  1. **Expiry Verification:** Confirm in `histograms.xml` that the co-located
+  1. **Allowlist Verification:** Confirm each co-located histogram's
+     `<histogram>` definition lives in an allowlisted `histograms.xml` from
+     `references/safe_dirs.md`. If it does not, it MUST NOT be bundled — leave
+     its recording code intact even if shared boilerplate remains.
+  2. **Expiry Verification:** Confirm in `histograms.xml` that the co-located
      histograms are also expired and lack the `<expired_intentionally>` tag.
-  2. **Safety Verification:** Perform the same safety checks (no test
+  3. **Safety Verification:** Perform the same safety checks (no test
      dependencies, no external repo references) for each bundled histogram.
-  3. **Atomic Benefit:** Removing them together cleanly eliminates shared
+  4. **Atomic Benefit:** Removing them together cleanly eliminates shared
      boilerplate (e.g., timer calculations, string building, parameter passing)
      that would otherwise be left as dead or awkward code.
 - **Related Dead Code:** If dead code is found (e.g., constants, enums, or
@@ -73,6 +86,13 @@ a clean and updated environment.
 Follow the
 [Discovery & Batch Selection](../hub/references/discovery_and_batch_selection.md)
 workflow.
+
+The discovery plugin (`scripts/find_candidates.py`) only scans and shuffles
+across the allowlisted files in [safe_dirs.md](references/safe_dirs.md). Before
+presenting any candidate, confirm its `File:` path is in the allowlist; discard
+any non-allowlisted or user-supplied out-of-list candidate and repeat discovery.
+Only run `scripts/find_expired_in_file.py` on allowlisted files (it refuses
+non-allowlisted files with exit code 2).
 
 ### Step 3: Deep Dive & Safety Analysis
 
@@ -118,8 +138,9 @@ Process the changes **file by file**, and apply modifications inside each file
 calls at once). This ensures stability and allows for precise verification.
 
 1. **Apply Changes:** Make the changes directly. Apply the code modifications
-   for the candidate histogram. When removing recording calls, carefully check
-   if the string literal spans multiple lines and ensure the entire multi-line
+   for the candidate histogram. Only edit `histograms.xml` files listed in
+   `references/safe_dirs.md`. When removing recording calls, carefully check if
+   the string literal spans multiple lines and ensure the entire multi-line
    statement is cleanly removed. Search for dot-less versions of the name to
    ensure related constants are also removed. Check for and update any
    references to the histogram in code comments as well. For each removal,
