@@ -17,6 +17,7 @@
 #include "base/memory_coordinator/utils.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/numerics/checked_math.h"
 #include "base/process/memory.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/synchronization/waitable_event.h"
@@ -291,15 +292,22 @@ ClientDiscardableSharedMemoryManager::AllocateLockedDiscardableMemory(
                               4 * 1024 * 1024,  // 4 GiB
                               50);
 
-  // Round up to multiple of page size.
-  size_t pages =
-      std::max((size + base::GetPageSize() - 1) / base::GetPageSize(),
-               static_cast<size_t>(1));
+  // Round up to multiple of page size, failing if `size` is so large that this
+  // would overflow.
+  const base::CheckedNumeric<size_t> pages_checked =
+      base::CheckAdd(size, base::GetPageSize() - 1) / base::GetPageSize();
+  if (!pages_checked.IsValid()) {
+    return nullptr;
+  }
+  const size_t pages = std::max<size_t>(pages_checked.ValueOrDie(), 1);
 
   static const size_t allocation_size = GetDefaultAllocationSize();
   DCHECK_EQ(allocation_size % base::GetPageSize(), 0u);
   // Default allocation size in pages.
-  size_t allocation_pages = allocation_size / base::GetPageSize();
+  const size_t allocation_pages = allocation_size / base::GetPageSize();
+  const size_t pages_to_allocate = std::max(allocation_pages, pages);
+  const size_t allocation_size_in_bytes =
+      base::CheckMul(pages_to_allocate, base::GetPageSize()).ValueOrDie();
 
   size_t slack = 0;
   // When searching the free lists, allow a slack between required size and
@@ -355,10 +363,6 @@ ClientDiscardableSharedMemoryManager::AllocateLockedDiscardableMemory(
   // Make sure crash keys are up to date in case allocation fails.
   if (heap_->GetSize() != heap_size_prior_to_releasing_purged_memory)
     MemoryUsageChanged(heap_->GetSize(), heap_->GetFreelistSize());
-
-  size_t pages_to_allocate =
-      std::max(allocation_size / base::GetPageSize(), pages);
-  size_t allocation_size_in_bytes = pages_to_allocate * base::GetPageSize();
 
   int32_t new_id = g_next_discardable_shared_memory_id.GetNext();
 

@@ -4,6 +4,8 @@
 
 #include "components/discardable_memory/client/client_discardable_shared_memory_manager.h"
 
+#include <limits>
+
 #include "base/memory/discardable_memory.h"
 #include "base/memory/discardable_shared_memory.h"
 #include "base/memory/page_size.h"
@@ -493,6 +495,20 @@ TEST_F(ClientDiscardableSharedMemoryManagerTest, OnReleaseMemory) {
   NotifyUpdateMemoryLimitAndRun(base::MemoryLimit::CriticalPressureThreshold());
   NotifyReleaseMemoryAndRun();
   EXPECT_EQ(client->GetFreelistSize(), 0u);
+}
+
+// Verifies that sizes near SIZE_MAX do not wrap around when rounded up to a
+// page multiple, which would result in an undersized allocation.
+TEST_F(ClientDiscardableSharedMemoryManagerTest, HugeAllocationFails) {
+  auto client =
+      base::MakeRefCounted<TestClientDiscardableSharedMemoryManager>();
+
+  constexpr size_t kMax = std::numeric_limits<size_t>::max();
+  for (size_t size : {kMax, kMax - page_size_ + 2}) {
+    auto mem = client->AllocateLockedDiscardableMemory(size);
+    EXPECT_FALSE(mem);
+    EXPECT_EQ(client->GetBytesAllocated(), 0u);
+  }
 }
 
 }  // namespace

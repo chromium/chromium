@@ -13,6 +13,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/hash/hash.h"
 #include "base/memory/discardable_memory_allocator.h"
+#include "base/numerics/checked_math.h"
 #include "base/process/memory.h"
 #include "base/trace_event/trace_event.h"
 #include "cc/paint/paint_flags.h"
@@ -76,11 +77,21 @@ void AllocateDiscardableSkImage(
   gainmap_image = nullptr;
 
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("cc.debug"), "AllocateDiscardable");
-  size_t size = info.minRowBytes() * info.height() +
-                gainmap_info.minRowBytes() * gainmap_info.height();
+  const size_t info_size = info.computeMinByteSize();
+  const size_t gainmap_info_size = gainmap_info.computeMinByteSize();
+  if (info_size == 0 || SkImageInfo::ByteSizeOverflowed(info_size) ||
+      SkImageInfo::ByteSizeOverflowed(gainmap_info_size)) {
+    return;
+  }
+  const base::CheckedNumeric<size_t> size_checked =
+      base::CheckAdd(info_size, gainmap_info_size);
+  if (!size_checked.IsValid()) {
+    return;
+  }
+
   memory = base::DiscardableMemoryAllocator::GetInstance()
                ->AllocateLockedDiscardableMemoryWithRetryOrDie(
-                   size, std::move(on_no_memory));
+                   size_checked.ValueOrDie(), std::move(on_no_memory));
   if (!memory->data()) {
     return;
   }
@@ -88,11 +99,10 @@ void AllocateDiscardableSkImage(
   // interface. Fixing it is tracked in https://crbug.com/40586428. This use is
   // safe because we are using the same size parameter here as in the allocation
   // a few lines earlier.
-  UNSAFE_BUFFERS(
-      base::span<uint8_t> memory_as_span(memory->data_as<uint8_t>(), size));
-  auto gainmap_image_span = memory_as_span.subspan(
-      info.minRowBytes() * info.height(),
-      gainmap_info.minRowBytes() * gainmap_info.height());
+  UNSAFE_BUFFERS(base::span<uint8_t> memory_as_span(memory->data_as<uint8_t>(),
+                                                    size_checked.ValueOrDie()));
+  auto gainmap_image_span =
+      memory_as_span.subspan(info_size, gainmap_info_size);
 
   // A more robust scheme would be to unlock `memory` when `image` falls out of
   // scope.
