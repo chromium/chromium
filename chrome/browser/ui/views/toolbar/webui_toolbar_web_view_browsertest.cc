@@ -16,7 +16,6 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/callback_helpers.h"
 #include "base/json/json_reader.h"
-#include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/strings/strcat.h"
@@ -65,7 +64,9 @@
 #include "chrome/browser/ui/global_error/global_error_service_factory.h"
 #include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/layout_constants.h"
+#include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
+#include "chrome/browser/ui/omnibox/omnibox_view.h"
 #include "chrome/browser/ui/page_action/action_ids.h"
 #include "chrome/browser/ui/page_action/page_action_controller.h"
 #include "chrome/browser/ui/side_panel/side_panel_entry.h"
@@ -4817,169 +4818,223 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewBrowserTest,
   }
 }
 
-class WebUIReadOnlyOmniboxDragDropBrowserTest
-    : public WebUIToolbarWebViewBrowserTest {
+// Drops data on the WebUI omnibox through `WebUIToolbarDropSimulator`, and
+// checks the result against the native Views omnibox behavior.
+class WebUIOmniboxDropBrowserTest : public WebUIToolbarWebViewBrowserTest {
  public:
-  WebUIReadOnlyOmniboxDragDropBrowserTest()
+  WebUIOmniboxDropBrowserTest()
       : WebUIToolbarWebViewBrowserTest(
             {features::kInitialWebUI, features::kWebUILocationBar,
              features::kSkipIPCChannelPausingForNonGuests,
              features::kWebUIInProcessResourceLoadingV2},
             {}) {}
 
- protected:
-  enum class DropType {
-    kText,
-    kUrl,
-    kFile,
-  };
+  using DragOrigin = WebUIToolbarDropSimulator::DragOrigin;
 
-  void SimulateDropOnOmnibox(content::WebContents* web_contents,
-                             const std::string& data,
-                             DropType drop_type) {
-    if (drop_type == DropType::kFile) {
-      // For file drops, the backend caches the path during
-      // `PreHandleDragUpdate` before the actual drop event. We must simulate
-      // this C++ level behavior first.
-      content::DropData drop_data;
-      drop_data.filenames.push_back(
-          ui::FileInfo(base::FilePath::FromUTF8Unsafe(data), base::FilePath()));
-      web_contents->GetDelegate()->PreHandleDragUpdate(drop_data,
-                                                       gfx::PointF(10, 10));
-
-      EXPECT_TRUE(content::ExecJs(web_contents, R"(
-        const omnibox = document.querySelector('toolbar-app').shadowRoot
-                               .querySelector('#location-bar').shadowRoot
-                               .querySelector('#omnibox');
-        const dataTransfer = new DataTransfer();
-        const file = new File([''], 'test_file', {type: 'application/octet-stream'});
-        dataTransfer.items.add(file);
-        const dropEvent = new DragEvent('drop', {
-          bubbles: true,
-          cancelable: true,
-          dataTransfer: dataTransfer,
-          clientX: 10,
-          clientY: 10
-        });
-        omnibox.dispatchEvent(dropEvent);
-      )"));
-    } else {
-      std::string data_type =
-          (drop_type == DropType::kUrl) ? "text/uri-list" : "text/plain";
-      EXPECT_TRUE(content::ExecJs(
-          web_contents, base::StringPrintf(R"(
-        const omnibox = document.querySelector('toolbar-app').shadowRoot
-                               .querySelector('#location-bar').shadowRoot
-                               .querySelector('#omnibox');
-        const dataTransfer = new DataTransfer();
-        dataTransfer.setData(`%s`, `%s`);
-        if (`%s` === 'text/uri-list') {
-          dataTransfer.setData('text/plain', `%s`);
-        }
-        const dropEvent = new DragEvent('drop', {
-          bubbles: true,
-          cancelable: true,
-          dataTransfer: dataTransfer
-        });
-        omnibox.dispatchEvent(dropEvent);
-      )",
-                                           data_type.c_str(), data.c_str(),
-                                           data_type.c_str(), data.c_str())));
-    }
+  void TearDownOnMainThread() override {
+    navigation_counter_.reset();
+    drop_simulator_.reset();
+    omnibox_controller_ = nullptr;
+    omnibox_view_ = nullptr;
+    toolbar_web_contents_ = nullptr;
+    WebUIToolbarWebViewBrowserTest::TearDownOnMainThread();
   }
 
-  std::string GetOmniboxTextEventually(content::WebContents* web_contents) {
-    return content::EvalJs(web_contents, R"(
-      new Promise(resolve => {
-        const check = () => {
-          const omnibox = document.querySelector('toolbar-app').shadowRoot
-                               .querySelector('#location-bar').shadowRoot
-                               .querySelector('#omnibox');
-          if (omnibox && omnibox.omniboxViewState && omnibox.omniboxViewState.textPieces.length > 0) {
-            const text = omnibox.omniboxViewState.textPieces.map(p => p.text).join('');
-            if (text !== 'about:blank' && text !== '') {
-              resolve(text);
-              return;
-            }
-          }
-          setTimeout(check, 100);
-        };
-        check();
-      });
-    )")
+ protected:
+  // JavaScript expression selecting the omnibox element in the toolbar.
+  static constexpr char kOmniboxJs[] =
+      "document.querySelector('toolbar-app').shadowRoot"
+      ".querySelector('#location-bar').shadowRoot"
+      ".querySelector('#omnibox')";
+
+  content::WebContents* active_web_contents() {
+    return browser()->GetTabStripModel()->GetActiveWebContents();
+  }
+
+  // Loads a page, so that the omnibox shows its URL, waits for the omnibox
+  // WebUI to show the same text as the browser side, and aims drops at the
+  // center of the omnibox. Must be called before any Simulate*Drop()/Expect*()
+  // call.
+  void SetUpOmniboxDropTest() {
+    ASSERT_TRUE(embedded_test_server()->Start());
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser(), embedded_test_server()->GetURL("/title1.html")));
+
+    ui::TrackedElement* element = nullptr;
+    WebUIToolbarWebView* webui_toolbar_view = nullptr;
+    views::WebView* web_view = nullptr;
+    ASSERT_NO_FATAL_FAILURE(SetUpWebUI(kWebUIToolbarElementIdentifier, &element,
+                                       &webui_toolbar_view, &web_view,
+                                       browser()));
+    toolbar_web_contents_ = web_view->GetWebContents();
+    content::WaitForCopyableViewInWebContents(toolbar_web_contents_);
+
+    omnibox_view_ = webui_toolbar_view->GetLocationBar()->GetOmniboxView();
+    ASSERT_TRUE(omnibox_view_);
+    omnibox_controller_ =
+        webui_toolbar_view->GetLocationBar()->GetOmniboxController();
+    ASSERT_TRUE(omnibox_controller_);
+
+    // The omnibox WebUI receives its text asynchronously from the browser.
+    ASSERT_TRUE(base::test::RunUntil([&]() {
+      const std::u16string text = omnibox_view_->GetText();
+      return !text.empty() &&
+             GetRendererOmniboxText() == base::UTF16ToUTF8(text);
+    }));
+    initial_omnibox_text_ = base::UTF16ToUTF8(omnibox_view_->GetText());
+
+    int x = 0;
+    int y = 0;
+    ASSERT_TRUE(base::test::RunUntil([&]() {
+      const content::EvalJsResult rect = EvalOmniboxJs(R"(
+        const r = omnibox.getBoundingClientRect();
+        return [Math.round(r.left + r.width / 2),
+                Math.round(r.top + r.height / 2), r.width, r.height];
+      )");
+      const base::ListValue& list = rect.ExtractList();
+      if (list.size() != 4 || list[2].GetDouble() <= 0 ||
+          list[3].GetDouble() <= 0) {
+        return false;
+      }
+      x = list[0].GetInt();
+      y = list[1].GetInt();
+      return true;
+    }));
+
+    drop_simulator_ = std::make_unique<WebUIToolbarDropSimulator>(
+        GetWebUIToolbar(), toolbar_web_contents_);
+    drop_simulator_->set_drop_point(gfx::PointF(x, y));
+
+    initial_tab_url_ = active_web_contents()->GetLastCommittedURL();
+    navigation_counter_ =
+        std::make_unique<NavigationCounter>(active_web_contents());
+  }
+
+  // Drops on the center of the omnibox. See `WebUIToolbarDropSimulator` for
+  // the kinds of drop data.
+  void SimulateTextDrop(const std::string& text, DragOrigin origin) {
+    drop_simulator_->SimulateTextDrop(text, origin);
+  }
+  void SimulateLinkWithTextDrop(const std::string& url, DragOrigin origin) {
+    drop_simulator_->SimulateLinkWithTextDrop(url, origin);
+  }
+  void SimulateFileDrop(const base::FilePath& path, DragOrigin origin) {
+    EXPECT_TRUE(drop_simulator_->SimulateFileDrop(path, origin));
+  }
+
+  // Both the browser side and the omnibox WebUI show `expected`.
+  void ExpectOmniboxText(const std::string& expected) {
+    EXPECT_TRUE(base::test::RunUntil([&]() {
+      return base::UTF16ToUTF8(omnibox_view_->GetText()) == expected &&
+             GetRendererOmniboxText() == expected;
+    }));
+    EXPECT_EQ(expected, base::UTF16ToUTF8(omnibox_view_->GetText()));
+    EXPECT_EQ(expected, GetRendererOmniboxText());
+  }
+
+  // Both the browser side and the omnibox WebUI select all the text.
+  void ExpectAllSelected() {
+    EXPECT_TRUE(omnibox_view_->IsSelectAll());
+    EXPECT_TRUE(base::test::RunUntil([&]() {
+      return EvalOmniboxJs("return omnibox.isAllSelected();").ExtractBool();
+    }));
+  }
+
+  // The omnibox popup is not showing.
+  void ExpectPopupClosed() { EXPECT_FALSE(omnibox_controller_->IsPopupOpen()); }
+
+  // The active tab did not navigate.
+  void ExpectNoNavigation() {
+    navigation_counter_->WaitForNoNavigations();
+    EXPECT_EQ(initial_tab_url_, active_web_contents()->GetLastCommittedURL());
+  }
+
+  // The drop replaced the omnibox text with `expected` and selected it,
+  // without opening the popup or navigating, like the native omnibox.
+  void ExpectDroppedInto(const std::string& expected) {
+    ExpectOmniboxText(expected);
+    ExpectNoNavigation();
+    ExpectPopupClosed();
+    ExpectAllSelected();
+  }
+
+  // Nothing happened at all: the omnibox still shows the page URL, the popup
+  // did not open and the active tab did not navigate.
+  void ExpectDropIgnored() {
+    ExpectNoNavigation();
+    ExpectOmniboxText(initial_omnibox_text_);
+    ExpectPopupClosed();
+  }
+
+ private:
+  // Runs `body` in the toolbar WebUI with `omnibox` bound to the omnibox
+  // element, and returns the value it returns.
+  content::EvalJsResult EvalOmniboxJs(std::string_view body) {
+    return content::EvalJs(toolbar_web_contents_,
+                           base::StrCat({"(() => { const omnibox = ",
+                                         kOmniboxJs, ";", body, "})()"}));
+  }
+
+  // Returns the text in the omnibox WebUI input.
+  std::string GetRendererOmniboxText() {
+    return EvalOmniboxJs("return omnibox?.$.textInput.getInputValue() ?? '';")
         .ExtractString();
   }
+
+  raw_ptr<content::WebContents> toolbar_web_contents_ = nullptr;
+  raw_ptr<OmniboxView> omnibox_view_ = nullptr;
+  raw_ptr<OmniboxController> omnibox_controller_ = nullptr;
+  std::unique_ptr<WebUIToolbarDropSimulator> drop_simulator_;
+  std::string initial_omnibox_text_;
+  GURL initial_tab_url_;
+  std::unique_ptr<NavigationCounter> navigation_counter_;
 };
 
-IN_PROC_BROWSER_TEST_F(WebUIReadOnlyOmniboxDragDropBrowserTest, DropPlainText) {
-  ui::TrackedElement* element = nullptr;
-  WebUIToolbarWebView* webui_toolbar_view = nullptr;
-  views::WebView* web_view = nullptr;
-  ASSERT_NO_FATAL_FAILURE(SetUpWebUI(kWebUIToolbarElementIdentifier, &element,
-                                     &webui_toolbar_view, &web_view,
-                                     browser()));
-  content::WebContents* web_contents = web_view->GetWebContents();
+IN_PROC_BROWSER_TEST_F(WebUIOmniboxDropBrowserTest, DropPlainText_FromWebPage) {
+  ASSERT_NO_FATAL_FAILURE(SetUpOmniboxDropTest());
+  SimulateTextDrop("hello world", DragOrigin::kWebPage);
 
-  SimulateDropOnOmnibox(web_contents, "testing omnibox drop", DropType::kText);
-  EXPECT_EQ("testing omnibox drop", GetOmniboxTextEventually(web_contents));
+  ExpectDroppedInto("hello world");
 }
 
-IN_PROC_BROWSER_TEST_F(WebUIReadOnlyOmniboxDragDropBrowserTest, DropUrl) {
-  ui::TrackedElement* element = nullptr;
-  WebUIToolbarWebView* webui_toolbar_view = nullptr;
-  views::WebView* web_view = nullptr;
-  ASSERT_NO_FATAL_FAILURE(SetUpWebUI(kWebUIToolbarElementIdentifier, &element,
-                                     &webui_toolbar_view, &web_view,
-                                     browser()));
-  content::WebContents* web_contents = web_view->GetWebContents();
+// Dragging a real link produces both `text/uri-list` and `text/plain` holding
+// the same URL.
+IN_PROC_BROWSER_TEST_F(WebUIOmniboxDropBrowserTest, DropUrlLink_FromWebPage) {
+  ASSERT_NO_FATAL_FAILURE(SetUpOmniboxDropTest());
+  SimulateLinkWithTextDrop("https://www.example.test/", DragOrigin::kWebPage);
 
-  SimulateDropOnOmnibox(web_contents, "https://www.example.test/",
-                        DropType::kUrl);
-  EXPECT_EQ("https://www.example.test/",
-            GetOmniboxTextEventually(web_contents));
+  ExpectDroppedInto("https://www.example.test/");
 }
 
-// On ChromeOS, drag origin provenance cannot be distinguished between OS-local
-// and renderer sources (b/256022714), so all drags are conservatively treated
-// as renderer-originated and local file drops on Omnibox are blocked.
-#if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_DropFilePath DISABLED_DropFilePath
-#else
-#define MAYBE_DropFilePath DropFilePath
-#endif
-IN_PROC_BROWSER_TEST_F(WebUIReadOnlyOmniboxDragDropBrowserTest,
-                       MAYBE_DropFilePath) {
-  ui::TrackedElement* element = nullptr;
-  WebUIToolbarWebView* webui_toolbar_view = nullptr;
-  views::WebView* web_view = nullptr;
-  ASSERT_NO_FATAL_FAILURE(SetUpWebUI(kWebUIToolbarElementIdentifier, &element,
-                                     &webui_toolbar_view, &web_view,
-                                     browser()));
-  content::WebContents* web_contents = web_view->GetWebContents();
-
-  base::FilePath test_path;
+IN_PROC_BROWSER_TEST_F(WebUIOmniboxDropBrowserTest, DropFile_FromOs) {
   base::ScopedAllowBlockingForTesting allow_blocking;
-  ASSERT_TRUE(base::PathService::Get(base::DIR_TEMP, &test_path));
-  test_path = test_path.AppendASCII("test_file.pdf");
-  std::string expected_url = net::FilePathToFileURL(test_path).spec();
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  const base::FilePath file_path = temp_dir.GetPath().AppendASCII("test.html");
+  ASSERT_TRUE(base::WriteFile(file_path, "<html><body>test</body></html>"));
+  ASSERT_NO_FATAL_FAILURE(SetUpOmniboxDropTest());
+  SimulateFileDrop(file_path, DragOrigin::kOs);
 
-  SimulateDropOnOmnibox(web_contents, test_path.AsUTF8Unsafe(),
-                        DropType::kFile);
-  EXPECT_EQ(expected_url, GetOmniboxTextEventually(web_contents));
+#if BUILDFLAG(IS_CHROMEOS)
+  // ChromeOS cannot tell an OS-local drag from a renderer drag, so it treats
+  // every drag as renderer-originated (b/256022714). The dragged file path is
+  // then never cached, leaving the drop with nothing to act on.
+  ExpectDropIgnored();
+#else
+  ExpectDroppedInto(net::FilePathToFileURL(file_path).spec());
+#endif
 }
 
-IN_PROC_BROWSER_TEST_F(WebUIReadOnlyOmniboxDragDropBrowserTest,
-                       DropJavascriptUrlStripped) {
-  ui::TrackedElement* element = nullptr;
-  WebUIToolbarWebView* webui_toolbar_view = nullptr;
-  views::WebView* web_view = nullptr;
-  ASSERT_NO_FATAL_FAILURE(SetUpWebUI(kWebUIToolbarElementIdentifier, &element,
-                                     &webui_toolbar_view, &web_view,
-                                     browser()));
-  content::WebContents* web_contents = web_view->GetWebContents();
+// Like the native omnibox, the `javascript:` scheme is stripped from the
+// dropped URL. The renderer only sees `about:blank#blocked` in place of the
+// `javascript:` link, so the URL is recovered from `text/plain`, which a real
+// link drag carries too.
+IN_PROC_BROWSER_TEST_F(WebUIOmniboxDropBrowserTest,
+                       DropJavaScriptLink_FromWebPage) {
+  ASSERT_NO_FATAL_FAILURE(SetUpOmniboxDropTest());
+  SimulateLinkWithTextDrop("javascript:alert(1)", DragOrigin::kWebPage);
 
-  SimulateDropOnOmnibox(web_contents, "javascript:alert(1)", DropType::kUrl);
-  EXPECT_EQ("alert(1)", GetOmniboxTextEventually(web_contents));
+  ExpectDroppedInto("alert(1)");
 }
 
 class WebUIPageActionBrowserTest : public WebUIToolbarWebViewBrowserTest {

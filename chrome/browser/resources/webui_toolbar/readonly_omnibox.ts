@@ -1253,7 +1253,7 @@ export class ReadonlyOmniboxElement extends CrLitElement {
     }
   }
 
-  private isAllSelected(): boolean {
+  isAllSelected(): boolean {
     const input = this.$.textInput.inputElement;
     return input.selectionStart === 0 &&
         input.selectionEnd === input.value.length;
