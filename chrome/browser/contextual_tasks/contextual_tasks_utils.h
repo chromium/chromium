@@ -41,6 +41,7 @@ namespace contextual_search {
 enum class ContextualSearchSource;
 class ContextualSearchMetricsRecorder;
 class ContextualSearchSessionHandle;
+struct TabInfo;
 }  // namespace contextual_search
 
 namespace lens {
@@ -55,7 +56,16 @@ class Page;
 class ContextualTasksUIInterface;
 class ContextualTasksService;
 class AimMessagePoster;
+struct ContextualTaskContext;
 struct SiteExclusionDetail;
+
+// Converts the chrome-tab entries of `context` into submitted
+// `contextual_search::TabInfo` records suitable for
+// `ContextualSearchSessionHandle::SetRestoredTabs()`. Returns an empty vector
+// if `context` is null. Non-webpage / non-tab entries and entries with empty
+// titles or invalid URLs are skipped.
+std::vector<contextual_search::TabInfo> ToRestoredTabInfos(
+    const ContextualTaskContext* context);
 
 // Utility method to create config params for the
 // ContextualSearchContextController.

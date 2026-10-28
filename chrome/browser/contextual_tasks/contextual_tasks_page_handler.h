@@ -97,6 +97,9 @@ class ContextualTasksPageHandler
   void UpdateContextForTask(const base::Uuid& task_id);
   void OnReceivedUpdatedThreadContextLibrary(
       const lens::UpdateThreadContextLibrary& message);
+  void OnContextFetchedForTabs(
+      bool is_history_loading,
+      std::unique_ptr<contextual_tasks::ContextualTaskContext> context);
   void OnReceivedInjectInput(const lens::InjectInput& inject_input);
   void OnReceivedRemoveInjectedInput(const std::string& id);
 
