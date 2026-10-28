@@ -4,21 +4,44 @@
   "mandate": [
     "MANDATE: Consistency with existing patterns, modularity, and ",
     "architectural alignment. Audit the synthesized code to ensure it ",
-    "maintains clear API boundaries and adheres to Chromium standards. ",
+    "maintains clear API boundaries and adheres to Chromium standards ",
+    "(including //docs/chrome_browser_design_principles.md for //chrome/browser ",
+    "changes). ",
     "TONE: Zero Preamble. No conversational filler. Artifacts only."
   ],
   "checklist": {
     "check_modularity": [
       "Maintain clear API boundaries, low coupling, and avoid circular ",
-      "dependencies."
+      "dependencies. Follow //docs/chrome_browser_design_principles.md: ",
+      "features must be modular with core logic separated from UI glue; never ",
+      "use chrome::FindBrowserWithTab, BrowserList, or GlobalBrowserCollection ",
+      "inside modularized feature code."
+    ],
+    "check_dependency_injection": [
+      "Enforce narrow constructor and member dependency injection ",
+      "(//docs/chrome_browser_design_principles.md): classes must accept and ",
+      "store the narrowest dependency they actually use (e.g., PrefService*, ",
+      "IdentityManager*) rather than retaining coarse god-objects or service ",
+      "locators (e.g., Browser*, BrowserProcess*, Profile*, ",
+      "BrowserWindowInterface*) merely to traverse to a sub-property at call ",
+      "sites."
+    ],
+    "check_feature_scoping": [
+      "Verify state and feature controllers are scoped to the appropriate ",
+      "lifetime container (GlobalFeatures for process-global, ",
+      "ProfileKeyedService for profile-scoped, BrowserWindowFeatures for ",
+      "window-scoped, TabFeatures for tab-scoped) with explicit constructor ",
+      "injection and deterministic teardown."
     ],
     "check_idioms": [
       "Strict adherence to Chromium C++ style conventions. Proper and modern ",
-      "usage of //base primitives."
+      "usage of //base primitives. Check fallible API return values before ",
+      "recording side effects, and avoid re-entrancy or mixing synchronous and ",
+      "asynchronous callback execution."
     ],
     "check_patterns": [
       "Ensure the change is consistent with existing architectural patterns ",
-      "in the codebase."
+      "in the codebase and directory-scoped agentic_review rules."
     ]
   }
 }

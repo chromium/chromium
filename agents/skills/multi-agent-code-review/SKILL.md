@@ -42,7 +42,15 @@ ______________________________________________________________________
    `Refactoring Scanner`.
 2. **Execute Reviews:** Invoke the selected Scanners in parallel. Instruct each
    Scanner to review the target files against its domain-specific checklist in
-   `personas/core/`.
+   `personas/core/`. When auditing `//chrome/browser` C++ changes,
+   `Core Scanner` must enforce
+   [//docs/chrome_browser_design_principles.md](../../../docs/chrome_browser_design_principles.md)
+   (narrow constructor and member dependency injection over retaining
+   god-objects such as `Browser*`, `BrowserProcess*`, `Profile*`, or
+   `BrowserWindowInterface*` when a narrower service like `PrefService*`
+   suffices; proper feature scoping across `GlobalFeatures`,
+   `ProfileKeyedService`, `BrowserWindowFeatures`, and `TabFeatures`; and no
+   `chrome::FindBrowserWithTab` or `BrowserList` usage in modularized code).
 3. **Format Output:** Each Scanner must output a `ReviewFeedback` JSON object
    (conforming to `schema.json#definitions/ReviewFeedback`) to a unique file in
    the temporary directory, named `review_feedback_<scanner_role>.json` (where
