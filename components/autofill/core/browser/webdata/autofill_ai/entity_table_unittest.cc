@@ -44,7 +44,8 @@ class EntityTableTest : public testing::Test {
   EntityTableTest() {
     scoped_feature_list_.InitWithFeatures(
         {features::kAutofillAiWithDataSchema,
-         features::kAutofillAiWalletPrivatePasses},
+         features::kAutofillAiWalletPrivatePasses,
+         features::kAutofillEnableWalletDisclosureNoticePublicPass},
         {});
   }
   void SetUp() override {
@@ -605,6 +606,72 @@ TEST_F(EntityTableTest, WalletMetadataIncompatibleRecordType) {
       "'https://wallet.google.com/wallet/passes/123')"));
 
   EXPECT_THAT(table().GetEntityInstances(), ElementsAre(local_vr));
+}
+
+// Tests writing, reading, preserving across unsynced local updates, and
+// clearing `legal_message_token` in `autofill_ai_entities_metadata_wallet`.
+TEST_F(EntityTableTest, WalletMetadataLegalMessageToken) {
+  EntityInstance wallet_vr = GetVehicleEntityInstance({
+      .guid = "00000000-0000-4000-8000-123000000000",
+      .record_type =
+          EntityInstance::WalletRecordTypePayload{
+              .management_url =
+                  GURL("https://wallet.google.com/wallet/passes/123")},
+  });
+  EntityInstance wallet_vr_no_token = GetVehicleEntityInstance({
+      .guid = "00000000-0000-4000-8000-456000000000",
+      .record_type =
+          EntityInstance::WalletRecordTypePayload{
+              .management_url =
+                  GURL("https://wallet.google.com/wallet/passes/456")},
+  });
+
+  // Adding a Wallet entity with a `legal_message_token` stores it in the table,
+  // and `GetEntityGuidsWithLegalMessageToken()` only returns entities with a
+  // non-empty token.
+  ASSERT_TRUE(table().AddOrUpdateEntityInstance(wallet_vr, "test_token"));
+  ASSERT_TRUE(table().AddOrUpdateEntityInstance(wallet_vr_no_token));
+  EXPECT_EQ(table().GetLegalMessageToken(wallet_vr.guid()), "test_token");
+  EXPECT_EQ(table().GetLegalMessageToken(wallet_vr_no_token.guid()),
+            std::nullopt);
+  EXPECT_THAT(table().GetEntityGuidsWithLegalMessageToken(),
+              ElementsAre(wallet_vr.guid()));
+
+  // Updating the entity with `std::nullopt` (e.g. a local edit before the
+  // initial creation commit completes) preserves the pending token.
+  EntityInstance updated_wallet_vr = GetVehicleEntityInstance({
+      .model = u"Updated Model",
+      .guid = "00000000-0000-4000-8000-123000000000",
+      .record_type =
+          EntityInstance::WalletRecordTypePayload{
+              .management_url =
+                  GURL("https://wallet.google.com/wallet/passes/123")},
+  });
+  ASSERT_TRUE(table().AddOrUpdateEntityInstance(updated_wallet_vr));
+  EXPECT_EQ(table().GetLegalMessageToken(wallet_vr.guid()), "test_token");
+
+  // Clearing an empty span is a no-op.
+  ASSERT_TRUE(table().ClearLegalMessageTokens({}));
+  EXPECT_EQ(table().GetLegalMessageToken(wallet_vr.guid()), "test_token");
+
+  // Explicitly clearing the token removes it while keeping the entity intact.
+  ASSERT_TRUE(table().ClearLegalMessageTokens({wallet_vr.guid()}));
+  EXPECT_EQ(table().GetLegalMessageToken(wallet_vr.guid()), std::nullopt);
+  EXPECT_THAT(table().GetEntityGuidsWithLegalMessageToken(), IsEmpty());
+  EXPECT_THAT(table().GetEntityInstances(),
+              UnorderedElementsAre(updated_wallet_vr, wallet_vr_no_token));
+
+  // Once cleared, subsequent local updates with `std::nullopt` keep it empty.
+  ASSERT_TRUE(table().AddOrUpdateEntityInstance(wallet_vr));
+  EXPECT_EQ(table().GetLegalMessageToken(wallet_vr.guid()), std::nullopt);
+
+  // Re-adding with a token and updating with an explicit empty string (e.g. an
+  // incoming remote Sync update) clears the stored token.
+  ASSERT_TRUE(table().AddOrUpdateEntityInstance(wallet_vr, "test_token_2"));
+  EXPECT_EQ(table().GetLegalMessageToken(wallet_vr.guid()), "test_token_2");
+  ASSERT_TRUE(
+      table().AddOrUpdateEntityInstance(wallet_vr, /*legal_message_token=*/""));
+  EXPECT_EQ(table().GetLegalMessageToken(wallet_vr.guid()), std::nullopt);
 }
 
 }  // namespace

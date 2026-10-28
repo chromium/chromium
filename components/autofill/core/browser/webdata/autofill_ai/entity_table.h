@@ -14,6 +14,7 @@
 #include <type_traits>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/time/time.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_structured_address_component.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
@@ -82,6 +83,17 @@ class AttributeInstance;
 //   entity_guid            Uniquely identifies the entity instance (primary
 //                          key as well as foreign key into the entities table).
 //   management_url         The URL on wallet.google.com to manage the entity.
+//   legal_message_token    Ephemeral, single-use opaque legal message token
+//                          recorded when a Wallet entity is locally created.
+//                          Its lifecycle is managed by `ValuableSyncBridge`: it
+//                          is persisted on local creation, preserved across
+//                          local edits while the initial creation commit is
+//                          still unsynced, read by
+//                          `ValuableSyncBridge::GetDataForCommit()` if Sync
+//                          retries the pending commit (e.g. after browser
+//                          restart), and cleared by `ValuableSyncBridge` once
+//                          the commit succeeds (or when overwritten by remote
+//                          Sync data).
 // -----------------------------------------------------------------------------
 class EntityTable : public WebDatabaseTable {
  public:
@@ -98,7 +110,16 @@ class EntityTable : public WebDatabaseTable {
   bool MigrateToVersion(int version, bool* update_compatible_version) override;
 
   // Returns true if removing the entity and then re-adding it is successful.
-  bool AddOrUpdateEntityInstance(const EntityInstance& entity);
+  // For a `kServerWallet` entity:
+  // - If `legal_message_token` is provided, that value is persisted in
+  //   `autofill_ai_entities_metadata_wallet` (passing `""` clears any stored
+  //   token).
+  // - If `legal_message_token` is `std::nullopt`, any existing non-empty token
+  //   already stored for `entity.guid()` is preserved so local edits before the
+  //   initial creation commit completes do not drop the pending token.
+  bool AddOrUpdateEntityInstance(
+      const EntityInstance& entity,
+      std::optional<std::string_view> legal_message_token = std::nullopt);
 
   // Deletes all entities with record type `record_type`. Returns true on
   // success.
@@ -135,6 +156,21 @@ class EntityTable : public WebDatabaseTable {
   // Returns the entity type name for the given `guid`.
   std::optional<EntityType> GetEntityType(
       const EntityInstance::EntityId& guid) const;
+
+  // Returns the legal message token for the given `guid`, or `std::nullopt` if
+  // none is stored.
+  std::optional<std::string> GetLegalMessageToken(
+      const EntityInstance::EntityId& guid) const;
+
+  // Returns the GUIDs of all entities in `autofill_ai_entities_metadata_wallet`
+  // that currently have a non-empty `legal_message_token`.
+  std::vector<EntityInstance::EntityId> GetEntityGuidsWithLegalMessageToken()
+      const;
+
+  // Clears the stored legal message token for each GUID in `guids`. No-op if
+  // `guids` is empty. Returns true on success.
+  bool ClearLegalMessageTokens(
+      base::span<const EntityInstance::EntityId> guids);
 
   // Returns the valid entity instances; ignores invalid instances.
   //
@@ -178,7 +214,8 @@ class EntityTable : public WebDatabaseTable {
   // Returns true if adding the entity succeeded.
   // It does not validate the entity itself, but it does check that no such
   // entity with the same GUID exists.
-  bool AddEntityInstance(const EntityInstance& entity);
+  bool AddEntityInstance(const EntityInstance& entity,
+                         std::string_view legal_message_token);
 
   // Returns true if adding the entity `metadata` to the `entities_metadata`
   // table succeeded.
@@ -186,9 +223,9 @@ class EntityTable : public WebDatabaseTable {
 
   // Returns true if adding the entity's Wallet metadata to the
   // `autofill_ai_entities_metadata_wallet` table succeeded.
-  bool AddWalletMetadata(
-      const EntityInstance::EntityId& guid,
-      const EntityInstance::WalletRecordTypePayload& payload);
+  bool AddWalletMetadata(const EntityInstance::EntityId& guid,
+                         const EntityInstance::WalletRecordTypePayload& payload,
+                         std::string_view legal_message_token);
 
   // Returns true if adding the attribute to the `attributes` table succeeded.
   bool AddAttribute(const EntityInstance& entity,

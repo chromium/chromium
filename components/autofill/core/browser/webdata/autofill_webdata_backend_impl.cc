@@ -688,7 +688,7 @@ WebDatabase::State AutofillWebDataBackendImpl::AddOrUpdateEntityInstance(
                                                ? EntityInstanceChange::UPDATE
                                                : EntityInstanceChange::ADD;
 
-  if (!table->AddOrUpdateEntityInstance(entity)) {
+  if (!table->AddOrUpdateEntityInstance(entity, legal_message_token)) {
     ReportResult(Result::kAddOrUpdateEntityInstance_Failure);
     return WebDatabase::COMMIT_NOT_NEEDED;
   }

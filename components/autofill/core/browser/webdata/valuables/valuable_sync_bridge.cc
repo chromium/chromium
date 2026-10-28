@@ -191,6 +191,20 @@ bool IsSyncWalletShoppingEnabled() {
   return base::FeatureList::IsEnabled(features::kAutofillAiWalletShopping);
 }
 
+bool IsWalletDisclosureNoticePublicPassEnabled() {
+  return base::FeatureList::IsEnabled(
+      features::kAutofillEnableWalletDisclosureNoticePublicPass);
+}
+
+std::optional<std::string> GetLegalMessageToken(
+    const EntityTable& entity_table,
+    const EntityInstance::EntityId& guid) {
+  if (!IsWalletDisclosureNoticePublicPassEnabled()) {
+    return std::nullopt;
+  }
+  return entity_table.GetLegalMessageToken(guid);
+}
+
 bool IsSyncWalletDirectOffersEnabled(std::string_view app_locale) {
   if (!base::FeatureList::IsEnabled(
           features::kAutofillEnableWalletDirectOffers)) {
@@ -483,7 +497,8 @@ ValuableSyncBridge::ApplyIncrementalSyncChanges(
             if (std::optional<EntityInstance> entity =
                     CreateEntityInstanceFromSpecificsAndLoadMetadata(
                         specifics, *GetEntityTable())) {
-              if (!GetEntityTable()->AddOrUpdateEntityInstance(*entity)) {
+              if (!GetEntityTable()->AddOrUpdateEntityInstance(
+                      *entity, /*legal_message_token=*/"")) {
                 db_operation_result =
                     ValuableDatabaseOperationResult::kDatabaseError;
               }
@@ -512,6 +527,23 @@ ValuableSyncBridge::ApplyIncrementalSyncChanges(
           db_operation_result = ValuableDatabaseOperationResult::kDatabaseError;
         }
         break;
+    }
+  }
+
+  // When Sync finishes uploading local changes to the server
+  // (`ClientTagBasedDataTypeProcessor::OnCommitCompleted`), it marks those
+  // entities as synced and calls `ApplyIncrementalSyncChanges()` with an empty
+  // `entity_changes` list. Clear any non-empty `legal_message_token` whose
+  // entity is no longer unsynced so the single-use creation token is not
+  // retained after commit.
+  if (IsWalletDisclosureNoticePublicPassEnabled()) {
+    std::vector<EntityInstance::EntityId> guids_to_clear =
+        GetEntityTable()->GetEntityGuidsWithLegalMessageToken();
+    std::erase_if(guids_to_clear, [this](const EntityInstance::EntityId& guid) {
+      return change_processor()->IsEntityUnsynced(guid.value());
+    });
+    if (!GetEntityTable()->ClearLegalMessageTokens(guids_to_clear)) {
+      db_operation_result = ValuableDatabaseOperationResult::kDatabaseError;
     }
   }
 
@@ -550,7 +582,8 @@ std::unique_ptr<syncer::MutableDataBatch> ValuableSyncBridge::GetData() {
     if (IsPassTypeEnabled(instance.type().name())) {
       const std::string& id = instance.guid().value();
       batch->Put(id, CreateEntityDataFromEntityInstance(
-                         instance, GetPossiblyTrimmedValuableSpecifics(id)));
+                         instance, GetPossiblyTrimmedValuableSpecifics(id),
+                         /*legal_message_token=*/{}));
     }
   }
 
@@ -583,6 +616,11 @@ std::unique_ptr<syncer::DataBatch> ValuableSyncBridge::GetDataForCommit(
   while (all_data->HasNext()) {
     syncer::KeyAndData item = all_data->Next();
     if (keys_set.contains(item.first)) {
+      if (std::optional<std::string> legal_message_token = GetLegalMessageToken(
+              *GetEntityTable(), EntityInstance::EntityId(item.first))) {
+        item.second->specifics.mutable_autofill_valuable()
+            ->set_legal_message_token(std::move(*legal_message_token));
+      }
       batch->Put(item.first, std::move(item.second));
     }
   }
@@ -753,7 +791,8 @@ ValuableDatabaseOperationResult ValuableSyncBridge::SetEntities(
       EntityInstance::RecordType::kServerWallet);
 
   for (const EntityInstance& entity : entities) {
-    success &= entity_table->AddOrUpdateEntityInstance(entity);
+    success &= entity_table->AddOrUpdateEntityInstance(
+        entity, /*legal_message_token=*/"");
   }
 
   return success ? ValuableDatabaseOperationResult::kDataChanged
@@ -920,12 +959,17 @@ void ValuableSyncBridge::EntityInstanceChanged(
       break;
     case EntityInstanceChange::UPDATE:
       CHECK(!legal_message_token.has_value());
+      // If the entity is updated locally before its initial creation commit has
+      // synced, preserve the pending creation `legal_message_token` from
+      // `EntityTable`. Once synced, `GetLegalMessageToken()` returns
+      // `std::nullopt`.
       change_processor()->Put(
           *change.key(),
           CreateEntityDataFromEntityInstance(
               change.data_model(),
               GetPossiblyTrimmedValuableSpecifics(*change.key()),
-              /*legal_message_token=*/{}),
+              GetLegalMessageToken(*GetEntityTable(), change.key())
+                  .value_or("")),
           metadata_change_list.get());
       break;
     case EntityInstanceChange::REMOVE:
