@@ -168,6 +168,11 @@ final class ChromeBluetoothDevice {
                         mBluetoothGattCallbackImpl,
                         // Prefer LE for dual-mode devices due to lower energy consumption.
                         BluetoothDevice.TRANSPORT_LE);
+        if (mBluetoothGatt == null) {
+            mBluetoothGattCallbackImpl.onConnectionStateChange(
+                    BluetoothGatt.GATT_FAILURE,
+                    android.bluetooth.BluetoothProfile.STATE_DISCONNECTED);
+        }
     }
 
     // Implements BluetoothDeviceAndroid::DisconnectGatt.

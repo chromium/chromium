@@ -186,6 +186,12 @@ void BluetoothTestAndroid::SimulateGattConnection(BluetoothDevice* device) {
       true);  // connected
 }
 
+void BluetoothTestAndroid::FailNextGattConnection(BluetoothDevice* device) {
+  auto* device_android = static_cast<BluetoothDeviceAndroid*>(device);
+  Java_FakeBluetoothDevice_failNextGattConnection(
+      AttachCurrentThread(), device_android->GetJavaObject());
+}
+
 void BluetoothTestAndroid::SimulateGattConnectionError(
     BluetoothDevice* device,
     BluetoothDevice::ConnectErrorCode) {
@@ -575,8 +581,12 @@ void BluetoothTestAndroid::FailNextOperation(BluetoothSocket* socket,
       error_message);
 }
 
-void BluetoothTestAndroid::OnFakeBluetoothDeviceConnectGattCalled(JNIEnv* env) {
-  gatt_open_connections_++;
+void BluetoothTestAndroid::OnFakeBluetoothDeviceConnectGattCalled(
+    JNIEnv* env,
+    bool created_gatt) {
+  if (created_gatt) {
+    gatt_open_connections_++;
+  }
   gatt_connection_attempts_++;
 }
 

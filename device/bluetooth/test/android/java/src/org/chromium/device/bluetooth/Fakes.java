@@ -743,6 +743,7 @@ class Fakes {
         private final int mBluetoothClass;
         final FakeBluetoothGatt mGatt;
         private BluetoothGattCallbackWrapper mGattCallback;
+        private boolean mFailNextGattConnection;
         private String mNextExceptionMessageOnServiceConnection;
 
         static FakeBluetoothDevice sRememberedDevice;
@@ -768,6 +769,11 @@ class Fakes {
         @CalledByNative
         private static void rememberDeviceForSubsequentAction(ChromeBluetoothDevice chromeDevice) {
             sRememberedDevice = (FakeBluetoothDevice) chromeDevice.mDevice;
+        }
+
+        @CalledByNative
+        private static void failNextGattConnection(ChromeBluetoothDevice chromeDevice) {
+            ((FakeBluetoothDevice) chromeDevice.mDevice).mFailNextGattConnection = true;
         }
 
         // Create a call to onConnectionStateChange on the |chrome_device| using parameters
@@ -846,10 +852,13 @@ class Fakes {
                         "BluetoothGattWrapper doesn't support calls to connectGatt() with "
                                 + "multiple distinct callbacks.");
             }
-            FakesJni.get()
-                    .onFakeBluetoothDeviceConnectGattCalled(mAdapter.mNativeBluetoothTestAndroid);
             mGattCallback = callback;
-            return mGatt;
+            boolean createdGatt = !mFailNextGattConnection;
+            mFailNextGattConnection = false;
+            FakesJni.get()
+                    .onFakeBluetoothDeviceConnectGattCalled(
+                            mAdapter.mNativeBluetoothTestAndroid, createdGatt);
+            return createdGatt ? mGatt : null;
         }
 
         @Override
@@ -1536,7 +1545,8 @@ class Fakes {
         void onFakeAdapterStateChanged(long nativeBluetoothTestAndroid, boolean powered);
 
         // Binds to BluetoothTestAndroid::OnFakeBluetoothDeviceConnectGattCalled.
-        void onFakeBluetoothDeviceConnectGattCalled(long nativeBluetoothTestAndroid);
+        void onFakeBluetoothDeviceConnectGattCalled(
+                long nativeBluetoothTestAndroid, boolean createdGatt);
 
         // Binds to BluetoothTestAndroid::OnFakeBluetoothGattDisconnect.
         void onFakeBluetoothGattDisconnect(long nativeBluetoothTestAndroid);

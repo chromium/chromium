@@ -14,6 +14,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
+#include "base/test/run_until.h"
 #include "base/test/test_future.h"
 #include "build/build_config.h"
 #include "device/bluetooth/bluetooth_remote_gatt_service.h"
@@ -1710,6 +1711,38 @@ TEST_F(BluetoothTest, MAYBE_BluetoothGattConnection_SimulateDisconnect) {
 }
 
 #if BUILDFLAG(IS_ANDROID)
+TEST_F(BluetoothTest, BluetoothGattConnection_NullAndroidGattAfterDisconnect) {
+  InitWithFakeAdapter();
+  StartLowEnergyDiscoverySession();
+  BluetoothDevice* device = SimulateLowEnergyDevice(3);
+
+  base::test::TestFuture<std::unique_ptr<BluetoothGattConnection>,
+                         std::optional<BluetoothDevice::ConnectErrorCode>>
+      connected;
+  device->CreateGattConnection(connected.GetCallback(), std::nullopt);
+  SimulateGattConnection(device);
+  ASSERT_TRUE(connected.Get<0>());
+  SimulateGattDisconnection(device);
+  ASSERT_TRUE(base::test::RunUntil(
+      [device] { return !device->IsGattConnected(); }));
+
+  FailNextGattConnection(device);
+  base::test::TestFuture<std::unique_ptr<BluetoothGattConnection>,
+                         std::optional<BluetoothDevice::ConnectErrorCode>>
+      failed;
+  device->CreateGattConnection(failed.GetCallback(), std::nullopt);
+  EXPECT_FALSE(failed.Get<0>());
+  EXPECT_EQ(BluetoothDevice::ERROR_FAILED, failed.Get<1>());
+  device->DisconnectGatt();
+
+  base::test::TestFuture<std::unique_ptr<BluetoothGattConnection>,
+                         std::optional<BluetoothDevice::ConnectErrorCode>>
+      retried;
+  device->CreateGattConnection(retried.GetCallback(), std::nullopt);
+  SimulateGattConnection(device);
+  EXPECT_TRUE(retried.Get<0>());
+}
+
 TEST_F(BluetoothTest, BluetoothGattConnection_DisconnectGattWithoutCallback) {
   InitWithFakeAdapter();
   StartLowEnergyDiscoverySession();

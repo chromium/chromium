@@ -45,19 +45,19 @@ public class BluetoothDeviceWrapper {
         mDescriptorsToWrappers = new HashMap<>();
     }
 
-    public BluetoothGattWrapper connectGatt(
+    public @Nullable BluetoothGattWrapper connectGatt(
             Context context,
             boolean autoConnect,
             BluetoothGattCallbackWrapper callback,
             int transport) {
         assumeNonNull(mDevice);
-        return new BluetoothGattWrapper(
+        BluetoothGatt gatt =
                 mDevice.connectGatt(
                         context,
                         autoConnect,
                         new ForwardBluetoothGattCallbackToWrapper(callback, this),
-                        transport),
-                this);
+                        transport);
+        return gatt == null ? null : new BluetoothGattWrapper(gatt, this);
     }
 
     public String getAddress() {

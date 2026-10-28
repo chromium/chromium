@@ -38,6 +38,7 @@ class BluetoothTestAndroid : public BluetoothTestBase {
   BluetoothDevice* SimulateClassicDevice() override;
   void RememberDeviceForSubsequentAction(BluetoothDevice* device) override;
   void SimulateGattConnection(BluetoothDevice* device) override;
+  void FailNextGattConnection(BluetoothDevice* device);
   void SimulateGattConnectionError(BluetoothDevice* device,
                                    BluetoothDevice::ConnectErrorCode) override;
   void SimulateGattDisconnection(BluetoothDevice* device) override;
@@ -166,7 +167,7 @@ class BluetoothTestAndroid : public BluetoothTestBase {
                          const std::string& error_message);
 
   // Records that Java FakeBluetoothDevice connectGatt was called.
-  void OnFakeBluetoothDeviceConnectGattCalled(JNIEnv* env);
+  void OnFakeBluetoothDeviceConnectGattCalled(JNIEnv* env, bool created_gatt);
 
   // Records that Java FakeBluetoothGatt disconnect was called.
   void OnFakeBluetoothGattDisconnect(JNIEnv* env);
