@@ -332,7 +332,10 @@ class MockIntelligentScanDelegate : public IntelligentScanDelegate {
   MOCK_METHOD(ModelType, GetIntelligentScanModelType, (bool), (override));
   MOCK_METHOD(std::optional<base::UnguessableToken>,
               StartIntelligentScan,
-              (std::string, std::string, IntelligentScanDoneCallback),
+              (std::string,
+               std::string,
+               std::optional<std::string>,
+               IntelligentScanDoneCallback),
               (override));
   MOCK_METHOD(bool,
               CancelIntelligentScan,
@@ -4706,10 +4709,11 @@ class ClientSideDetectionHostScamDetectionTest
   void SetIntelligentScanCallback(bool should_return_response,
                                   std::optional<float> returned_scam_score) {
     EXPECT_CALL(*intelligent_scan_delegate_,
-                StartIntelligentScan(_, example_url_.spec(), _))
+                StartIntelligentScan(_, example_url_.spec(), _, _))
         .WillOnce(
             [=, this](
                 std::string rendered_text, std::string url,
+                std::optional<std::string> tab_screenshot,
                 IntelligentScanDelegate::IntelligentScanDoneCallback callback) {
               base::UnguessableToken token = base::UnguessableToken::Create();
               IntelligentScanDelegate::IntelligentScanResult
@@ -4942,7 +4946,7 @@ TEST_F(ClientSideDetectionHostScamDetectionTest,
       .WillOnce(Return(false));
   // Because the delegate has disabled intelligent scan, we will
   // NOT start the intelligent scan.
-  EXPECT_CALL(*intelligent_scan_delegate_, StartIntelligentScan(_, _, _))
+  EXPECT_CALL(*intelligent_scan_delegate_, StartIntelligentScan(_, _, _, _))
       .Times(0);
   EXPECT_CALL(*intelligent_scan_delegate_, OnScamWarningShown()).Times(0);
   SetSendClientReportPhishingRequestCallback(
@@ -5026,7 +5030,7 @@ TEST_F(ClientSideDetectionHostScamDetectionTest,
        EmptyInnerTextDoesNotTriggersIntelligentScan) {
   raw_delegate_->ForceEmptyInnerText();
   // Because the inner text is empty, we will NOT start the intelligent scan.
-  EXPECT_CALL(*intelligent_scan_delegate_, StartIntelligentScan(_, _, _))
+  EXPECT_CALL(*intelligent_scan_delegate_, StartIntelligentScan(_, _, _, _))
       .Times(0);
   SetSendClientReportPhishingRequestCallback(
       /*has_expected_brand_and_intent=*/false,
@@ -5057,7 +5061,7 @@ TEST_F(ClientSideDetectionHostScamDetectionTest,
   raw_delegate_->SetInnerText("text");
   // Because the inner text is too short, we will NOT start the intelligent
   // scan.
-  EXPECT_CALL(*intelligent_scan_delegate_, StartIntelligentScan(_, _, _))
+  EXPECT_CALL(*intelligent_scan_delegate_, StartIntelligentScan(_, _, _, _))
       .Times(0);
   SetSendClientReportPhishingRequestCallback(
       /*has_expected_brand_and_intent=*/false,
@@ -5085,7 +5089,7 @@ TEST_F(ClientSideDetectionHostScamDetectionTest,
        AllowlistedOnHCDoesNotTriggersIntelligentScan) {
   // Because the URL is on the HC allowlist, we will NOT start the intelligent
   // scan.
-  EXPECT_CALL(*intelligent_scan_delegate_, StartIntelligentScan(_, _, _))
+  EXPECT_CALL(*intelligent_scan_delegate_, StartIntelligentScan(_, _, _, _))
       .Times(0);
   SetSendClientReportPhishingRequestCallback(
       /*has_expected_brand_and_intent=*/false,
@@ -5118,7 +5122,7 @@ TEST_F(ClientSideDetectionHostScamDetectionTest,
           Return(IntelligentScanDelegate::ModelType::kNotSupportedOnDevice));
   // Because the intelligent scan is unavailable, we will NOT start the
   // intelligent scan.
-  EXPECT_CALL(*intelligent_scan_delegate_, StartIntelligentScan(_, _, _))
+  EXPECT_CALL(*intelligent_scan_delegate_, StartIntelligentScan(_, _, _, _))
       .Times(0);
   SetSendClientReportPhishingRequestCallback(
       /*has_expected_brand_and_intent=*/false,
@@ -5826,10 +5830,11 @@ TEST_F(ClientSideDetectionHostScamDetectionTest,
        MultimodalScreenshotDiscardedWhenUrlChanged) {
   SetFeatures({kClientSideDetectionServerModelMultimodal}, {});
   EXPECT_CALL(*intelligent_scan_delegate_,
-              StartIntelligentScan(_, "http://otherurl.com/", _))
+              StartIntelligentScan(_, "http://otherurl.com/", _, _))
       .WillOnce(
           [this](
               std::string rendered_text, std::string url,
+              std::optional<std::string> tab_screenshot,
               IntelligentScanDelegate::IntelligentScanDoneCallback callback) {
             IntelligentScanDelegate::IntelligentScanResult response;
             response.model_type = IntelligentScanDelegate::ModelType::kOnDevice;
@@ -5955,7 +5960,7 @@ TEST_F(ClientSideDetectionHostScamDetectionTest,
        EmptyInnerTextAndEmptyScreenshotDoesNotTriggerIntelligentScan) {
   SetFeatures({kClientSideDetectionServerModelMultimodal}, {});
   raw_delegate_->ForceEmptyInnerText();
-  EXPECT_CALL(*intelligent_scan_delegate_, StartIntelligentScan(_, _, _))
+  EXPECT_CALL(*intelligent_scan_delegate_, StartIntelligentScan(_, _, _, _))
       .Times(0);
   SetSendClientReportPhishingRequestCallback(
       /*has_expected_brand_and_intent=*/false,
@@ -5983,7 +5988,7 @@ TEST_F(ClientSideDetectionHostScamDetectionTest,
        ShortInnerTextAndEmptyScreenshotDoesNotTriggerIntelligentScan) {
   SetFeatures({kClientSideDetectionServerModelMultimodal}, {});
   raw_delegate_->SetInnerText("text");
-  EXPECT_CALL(*intelligent_scan_delegate_, StartIntelligentScan(_, _, _))
+  EXPECT_CALL(*intelligent_scan_delegate_, StartIntelligentScan(_, _, _, _))
       .Times(0);
   SetSendClientReportPhishingRequestCallback(
       /*has_expected_brand_and_intent=*/false,
@@ -6014,7 +6019,7 @@ TEST_F(ClientSideDetectionHostScamDetectionTest,
       switches::kEnableLowEndDeviceMode);
   SetFeatures({kClientSideDetectionServerModelMultimodal}, {});
   raw_delegate_->ForceEmptyInnerText();
-  EXPECT_CALL(*intelligent_scan_delegate_, StartIntelligentScan(_, _, _))
+  EXPECT_CALL(*intelligent_scan_delegate_, StartIntelligentScan(_, _, _, _))
       .Times(0);
   SetSendClientReportPhishingRequestCallback(
       /*has_expected_brand_and_intent=*/false,

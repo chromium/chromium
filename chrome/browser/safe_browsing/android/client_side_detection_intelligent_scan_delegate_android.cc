@@ -37,7 +37,9 @@ class ClientSideDetectionIntelligentScanDelegateAndroid::Inquiry {
           IntelligentScanDoneCallback callback);
   ~Inquiry();
 
-  void Start(const std::string& rendered_texts, const std::string& url);
+  void Start(const std::string& rendered_texts,
+             const std::string& url,
+             std::optional<std::string> tab_screenshot);
 
  private:
   void RemoteExecutionCallback(
@@ -66,7 +68,8 @@ ClientSideDetectionIntelligentScanDelegateAndroid::Inquiry::~Inquiry() =
 
 void ClientSideDetectionIntelligentScanDelegateAndroid::Inquiry::Start(
     const std::string& rendered_texts,
-    const std::string& url) {
+    const std::string& url,
+    std::optional<std::string> tab_screenshot) {
   CHECK(!was_start_called_)
       << "Start() should only be called once per inquiry.";
   was_start_called_ = true;
@@ -77,6 +80,9 @@ void ClientSideDetectionIntelligentScanDelegateAndroid::Inquiry::Start(
   if (base::FeatureList::IsEnabled(
           kClientSideDetectionScamDetectionRequestWithUrl)) {
     request.set_url(url);
+  }
+  if (tab_screenshot.has_value()) {
+    request.set_tab_screenshot(*tab_screenshot);
   }
   parent_->remote_model_executor_->ExecuteModel(
       optimization_guide::ModelBasedCapabilityKey::kScamDetection,
@@ -197,6 +203,7 @@ std::optional<base::UnguessableToken>
 ClientSideDetectionIntelligentScanDelegateAndroid::StartIntelligentScan(
     std::string rendered_texts,
     std::string url,
+    std::optional<std::string> tab_screenshot,
     IntelligentScanDoneCallback callback) {
   ModelType model_type =
       GetIntelligentScanModelType(/*log_failed_eligibility_reason=*/false);
@@ -220,7 +227,7 @@ ClientSideDetectionIntelligentScanDelegateAndroid::StartIntelligentScan(
   std::unique_ptr<Inquiry> new_inquiry =
       std::make_unique<Inquiry>(this, scan_id, std::move(callback));
   inquiries_[scan_id] = std::move(new_inquiry);
-  inquiries_[scan_id]->Start(rendered_texts, url);
+  inquiries_[scan_id]->Start(rendered_texts, url, std::move(tab_screenshot));
   return scan_id;
 }
 

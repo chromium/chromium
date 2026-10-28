@@ -60,6 +60,7 @@ class ClientSideDetectionIntelligentScanDelegateIOS
   std::optional<base::UnguessableToken> StartIntelligentScan(
       std::string rendered_texts,
       std::string url,
+      std::optional<std::string> tab_screenshot,
       IntelligentScanDoneCallback callback) override;
 
   // Cancels a specific intelligent scan identified by `scan_id`. Returns `true`

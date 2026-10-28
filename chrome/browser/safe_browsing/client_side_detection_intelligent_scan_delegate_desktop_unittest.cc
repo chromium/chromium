@@ -326,7 +326,7 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
           /*log_entry=*/nullptr));
   base::test::TestFuture<IntelligentScanResult> future;
   delegate_->StartIntelligentScan("test rendered text", "https://example.com",
-                                  future.GetCallback());
+                                  std::nullopt, future.GetCallback());
 
   EXPECT_TRUE(future.Get().execution_success);
   EXPECT_EQ(future.Get().model_version, 1000);
@@ -345,6 +345,40 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
   // metrics.
   histogram_tester_.ExpectTotalCount(
       "SBClientPhishing.OnDeviceModelExecutionSuccess", 0);
+}
+
+TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
+       StartIntelligentScan_TabScreenshotPropagatedToServerRequest) {
+  CreateDelegate(/*is_enhanced_protection_enabled=*/true);
+
+  optimization_guide::proto::ScamDetectionRequest expected_request;
+  *expected_request.mutable_rendered_text() = "test rendered text";
+  *expected_request.mutable_url() = "https://example.com";
+  expected_request.set_tab_screenshot("fake_screenshot_bytes");
+  optimization_guide::ModelExecutionOptions expected_options{};
+
+  optimization_guide::proto::ScamDetectionResponse returned_response;
+  returned_response.set_brand("test_brand");
+  returned_response.set_intent("test_intent");
+
+  EXPECT_CALL(
+      remote_model_executor_,
+      ExecuteModel(optimization_guide::ModelBasedCapabilityKey::kScamDetection,
+                   EqualsProto(expected_request),
+                   ::testing::Eq(expected_options),
+                   ::testing::A<RemoteModelExecutionCallback>()))
+      .WillOnce(base::test::RunOnceCallback<3>(
+          optimization_guide::OptimizationGuideModelExecutionResult(
+              optimization_guide::AnyWrapProto(returned_response),
+              /*execution_info=*/nullptr),
+          /*log_entry=*/nullptr));
+  base::test::TestFuture<IntelligentScanResult> future;
+  delegate_->StartIntelligentScan(
+      "test rendered text", "https://example.com",
+      std::optional<std::string>("fake_screenshot_bytes"),
+      future.GetCallback());
+
+  EXPECT_TRUE(future.Get().execution_success);
 }
 
 TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
@@ -375,7 +409,7 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
           /*log_entry=*/nullptr));
   base::test::TestFuture<IntelligentScanResult> future;
   delegate_->StartIntelligentScan("test rendered text", "https://example.com",
-                                  future.GetCallback());
+                                  std::nullopt, future.GetCallback());
 
   EXPECT_TRUE(future.Get().execution_success);
 }
@@ -407,7 +441,7 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
           /*log_entry=*/nullptr));
   base::test::TestFuture<IntelligentScanResult> future;
   delegate_->StartIntelligentScan("test rendered text", "https://example.com",
-                                  future.GetCallback());
+                                  std::nullopt, future.GetCallback());
 
   EXPECT_FALSE(future.Get().execution_success);
   EXPECT_EQ(future.Get().brand, "");
@@ -434,7 +468,7 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
 
   base::test::TestFuture<IntelligentScanResult> future;
   delegate_->StartIntelligentScan("test rendered text", "https://example.com",
-                                  future.GetCallback());
+                                  std::nullopt, future.GetCallback());
 
   EXPECT_FALSE(future.Get().execution_success);
   EXPECT_EQ(future.Get().model_type, ModelType::kNotSupportedServerSide);
@@ -448,12 +482,12 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
 
   base::test::TestFuture<IntelligentScanResult> future1;
   delegate_->StartIntelligentScan("test rendered text", "https://example.com",
-                                  future1.GetCallback());
+                                  std::nullopt, future1.GetCallback());
   EXPECT_EQ(delegate_->GetAliveInquiryCountForTesting(), 1);
 
   base::test::TestFuture<IntelligentScanResult> future2;
   delegate_->StartIntelligentScan("test rendered text", "https://example.com",
-                                  future2.GetCallback());
+                                  std::nullopt, future2.GetCallback());
 
   EXPECT_EQ(delegate_->GetAliveInquiryCountForTesting(), 2);
 }
@@ -470,7 +504,7 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
       .Times(kMaxScansPerDay + 1);
 
   for (int i = 0; i < kMaxScansPerDay; ++i) {
-    delegate_->StartIntelligentScan("test", "https://example.com",
+    delegate_->StartIntelligentScan("test", "https://example.com", std::nullopt,
                                     base::DoNothing());
     histogram_tester_.ExpectBucketCount(
         "SBClientPhishing.ServerSideModelQuotaCountOnLookup", i + 1, 1);
@@ -485,8 +519,9 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
   {
     base::test::TestFuture<IntelligentScanResult> future;
     std::optional<base::UnguessableToken> token =
-        delegate_->StartIntelligentScan(
-            "test rendered text", "https://example.com", future.GetCallback());
+        delegate_->StartIntelligentScan("test rendered text",
+                                        "https://example.com", std::nullopt,
+                                        future.GetCallback());
     EXPECT_FALSE(token.has_value());
     ASSERT_TRUE(future.IsReady());
     EXPECT_FALSE(future.Get().execution_success);
@@ -504,8 +539,9 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
   {
     base::test::TestFuture<IntelligentScanResult> future;
     std::optional<base::UnguessableToken> token =
-        delegate_->StartIntelligentScan(
-            "test rendered text", "https://example.com", future.GetCallback());
+        delegate_->StartIntelligentScan("test rendered text",
+                                        "https://example.com", std::nullopt,
+                                        future.GetCallback());
     EXPECT_TRUE(token.has_value());
   }
   histogram_tester_.ExpectBucketCount(
@@ -534,7 +570,7 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
                 /*execution_info=*/nullptr),
             /*log_entry=*/nullptr));
     base::test::TestFuture<IntelligentScanResult> future;
-    delegate_->StartIntelligentScan("test", "https://example.com",
+    delegate_->StartIntelligentScan("test", "https://example.com", std::nullopt,
                                     future.GetCallback());
     EXPECT_FALSE(future.Get().execution_success);
     EXPECT_EQ(future.Get().model_type, ModelType::kServerSide);
@@ -547,8 +583,9 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
   {
     base::test::TestFuture<IntelligentScanResult> future;
     std::optional<base::UnguessableToken> token =
-        delegate_->StartIntelligentScan(
-            "test rendered text", "https://example.com", future.GetCallback());
+        delegate_->StartIntelligentScan("test rendered text",
+                                        "https://example.com", std::nullopt,
+                                        future.GetCallback());
     EXPECT_FALSE(token.has_value());
     ASSERT_TRUE(future.IsReady());
     EXPECT_FALSE(future.Get().execution_success);
@@ -571,7 +608,7 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
 
   // Fill up the quota.
   for (int i = 0; i < kMaxScansPerDay; ++i) {
-    delegate_->StartIntelligentScan("test", "https://example.com",
+    delegate_->StartIntelligentScan("test", "https://example.com", std::nullopt,
                                     base::DoNothing());
     histogram_tester_.ExpectBucketCount(
         "SBClientPhishing.ServerSideModelQuotaCountOnLookup", i + 1, 1);
@@ -585,7 +622,8 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
 
   // Now a scan should succeed.
   std::optional<base::UnguessableToken> token = delegate_->StartIntelligentScan(
-      "test rendered text", "https://example.com", base::DoNothing());
+      "test rendered text", "https://example.com", std::nullopt,
+      base::DoNothing());
   EXPECT_TRUE(token.has_value());
   histogram_tester_.ExpectBucketCount(
       "SBClientPhishing.ServerSideModelQuotaCountOnLookup", kMaxScansPerDay, 2);
@@ -597,11 +635,13 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
 
   std::optional<base::UnguessableToken> scan_id1 =
       delegate_->StartIntelligentScan("test rendered text",
-                                      "https://example.com", base::DoNothing());
+                                      "https://example.com", std::nullopt,
+                                      base::DoNothing());
   EXPECT_EQ(delegate_->GetAliveInquiryCountForTesting(), 1);
   std::optional<base::UnguessableToken> scan_id2 =
       delegate_->StartIntelligentScan("test rendered text",
-                                      "https://example.com", base::DoNothing());
+                                      "https://example.com", std::nullopt,
+                                      base::DoNothing());
   EXPECT_EQ(delegate_->GetAliveInquiryCountForTesting(), 2);
 
   // Cancel the inquiry after inquiry is created.
@@ -619,9 +659,9 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
   CreateDelegate(/*is_enhanced_protection_enabled=*/true);
 
   delegate_->StartIntelligentScan("test rendered text", "https://example.com",
-                                  base::DoNothing());
+                                  std::nullopt, base::DoNothing());
   delegate_->StartIntelligentScan("test rendered text", "https://example.com",
-                                  base::DoNothing());
+                                  std::nullopt, base::DoNothing());
   EXPECT_EQ(delegate_->GetAliveInquiryCountForTesting(), 2);
 
   SetEnhancedProtectionPrefForTests(&pref_service_, false);
@@ -712,7 +752,7 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopServerModelRolloutTest,
 
   base::test::TestFuture<IntelligentScanResult> future;
   delegate_->StartIntelligentScan("test rendered text", "https://example.com",
-                                  future.GetCallback());
+                                  std::nullopt, future.GetCallback());
 
   EXPECT_TRUE(future.Get().execution_success);
   EXPECT_EQ(future.Get().model_version, 2000);
@@ -745,7 +785,8 @@ TEST_F(
 
   base::test::TestFuture<IntelligentScanResult> future1;
   std::optional<base::UnguessableToken> scan_id1 =
-      delegate_->StartIntelligentScan("", "", future1.GetCallback());
+      delegate_->StartIntelligentScan("", "", std::nullopt,
+                                      future1.GetCallback());
   EXPECT_FALSE(scan_id1->is_empty());
 
   testing::NiceMock<MockSession> session2;
@@ -759,7 +800,8 @@ TEST_F(
 
   base::test::TestFuture<IntelligentScanResult> future2;
   std::optional<base::UnguessableToken> scan_id2 =
-      delegate_->StartIntelligentScan("", "", future2.GetCallback());
+      delegate_->StartIntelligentScan("", "", std::nullopt,
+                                      future2.GetCallback());
 
   // Both scan IDs should still be alive.
   EXPECT_FALSE(scan_id1->is_empty());
@@ -779,7 +821,8 @@ TEST_F(
 
   base::test::TestFuture<IntelligentScanResult> future;
   std::optional<base::UnguessableToken> scan_id =
-      delegate_->StartIntelligentScan("", "", future.GetCallback());
+      delegate_->StartIntelligentScan("", "", std::nullopt,
+                                      future.GetCallback());
   EXPECT_FALSE(scan_id->is_empty());
 
   EXPECT_EQ(delegate_->GetAliveInquiryCountForTesting(), 1);
@@ -805,7 +848,8 @@ TEST_F(
 
   base::test::TestFuture<IntelligentScanResult> future1;
   std::optional<base::UnguessableToken> scan_id1 =
-      delegate_->StartIntelligentScan("", "", future1.GetCallback());
+      delegate_->StartIntelligentScan("", "", std::nullopt,
+                                      future1.GetCallback());
   EXPECT_FALSE(scan_id1->is_empty());
 
   testing::NiceMock<MockSession> session2;
@@ -819,7 +863,8 @@ TEST_F(
 
   base::test::TestFuture<IntelligentScanResult> future2;
   std::optional<base::UnguessableToken> scan_id2 =
-      delegate_->StartIntelligentScan("", "", future2.GetCallback());
+      delegate_->StartIntelligentScan("", "", std::nullopt,
+                                      future2.GetCallback());
 
   // Both scan IDs should still be alive.
   EXPECT_FALSE(scan_id1->is_empty());
@@ -853,7 +898,7 @@ TEST_F(
           }));
 
   base::test::TestFuture<IntelligentScanResult> future;
-  delegate_->StartIntelligentScan("", "", future.GetCallback());
+  delegate_->StartIntelligentScan("", "", std::nullopt, future.GetCallback());
 
   histogram_tester_.ExpectUniqueSample(
       "SBClientPhishing.OnDeviceModelSessionCreationSuccess", true, 1);
@@ -892,7 +937,7 @@ TEST_F(
           }));
 
   base::test::TestFuture<IntelligentScanResult> future;
-  delegate_->StartIntelligentScan("", "", future.GetCallback());
+  delegate_->StartIntelligentScan("", "", std::nullopt, future.GetCallback());
 
   histogram_tester_.ExpectUniqueSample(
       "SBClientPhishing.OnDeviceModelSessionCreationSuccess", true, 1);
@@ -934,7 +979,7 @@ TEST_F(
 
   base::test::TestFuture<IntelligentScanResult> future;
   delegate_->StartIntelligentScan("test rendered text", "https://example.com",
-                                  future.GetCallback());
+                                  std::nullopt, future.GetCallback());
 
   histogram_tester_.ExpectUniqueSample(
       "SBClientPhishing.OnDeviceModelSessionCreationSuccess", true, 1);
@@ -981,7 +1026,8 @@ TEST_F(
 
   // Create an empty callback.
   IntelligentScanDelegate::IntelligentScanDoneCallback host_callback;
-  delegate_->StartIntelligentScan("", "", std::move(host_callback));
+  delegate_->StartIntelligentScan("", "", std::nullopt,
+                                  std::move(host_callback));
 
   histogram_tester_.ExpectUniqueSample(
       "SBClientPhishing.OnDeviceModelSessionCreationSuccess", true, 1);
@@ -1374,7 +1420,7 @@ TEST_F(
           }));
 
   base::test::TestFuture<IntelligentScanResult> future;
-  delegate_->StartIntelligentScan("", "", future.GetCallback());
+  delegate_->StartIntelligentScan("", "", std::nullopt, future.GetCallback());
 
   histogram_tester_.ExpectUniqueSample(
       "SBClientPhishing.OnDeviceModelSessionCreationSuccess", true, 1);

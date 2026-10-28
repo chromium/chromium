@@ -79,6 +79,7 @@ class IntelligentScanDelegate : public KeyedService {
   virtual std::optional<base::UnguessableToken> StartIntelligentScan(
       std::string rendered_texts,
       std::string url,
+      std::optional<std::string> tab_screenshot,
       IntelligentScanDoneCallback callback) = 0;
   // Cancels a specific intelligent scan request. If the |scan_id| is
   // ongoing, it will return true, and false otherwise.

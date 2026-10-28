@@ -69,7 +69,9 @@ class ClientSideDetectionIntelligentScanDelegateDesktop::Inquiry {
           IntelligentScanDoneCallback callback);
   ~Inquiry();
 
-  void Start(const std::string& rendered_texts, const std::string& url);
+  void Start(const std::string& rendered_texts,
+             const std::string& url,
+             std::optional<std::string> tab_screenshot);
 
  private:
   void ModelExecutionCallback(
@@ -101,7 +103,8 @@ ClientSideDetectionIntelligentScanDelegateDesktop::Inquiry::~Inquiry() =
 
 void ClientSideDetectionIntelligentScanDelegateDesktop::Inquiry::Start(
     const std::string& rendered_texts,
-    const std::string& url) {
+    const std::string& url,
+    std::optional<std::string> tab_screenshot) {
   if (parent_->is_server_model_enabled_) {
     parent_->AddIntelligentScanQuota();
     ScamDetectionRequest request;
@@ -109,6 +112,9 @@ void ClientSideDetectionIntelligentScanDelegateDesktop::Inquiry::Start(
     if (base::FeatureList::IsEnabled(
             kClientSideDetectionScamDetectionRequestWithUrl)) {
       request.set_url(url);
+    }
+    if (tab_screenshot.has_value()) {
+      request.set_tab_screenshot(*tab_screenshot);
     }
     parent_->remote_model_executor_->ExecuteModel(
         optimization_guide::ModelBasedCapabilityKey::kScamDetection, request,
@@ -386,6 +392,7 @@ std::optional<base::UnguessableToken>
 ClientSideDetectionIntelligentScanDelegateDesktop::StartIntelligentScan(
     std::string rendered_texts,
     std::string url,
+    std::optional<std::string> tab_screenshot,
     IntelligentScanDoneCallback callback) {
   // We have checked the model availability prior to calling this function, but
   // we want to check one last time before creating a session.
@@ -417,7 +424,7 @@ ClientSideDetectionIntelligentScanDelegateDesktop::StartIntelligentScan(
   std::unique_ptr<Inquiry> new_inquiry =
       std::make_unique<Inquiry>(this, scan_id, std::move(callback));
   inquiries_[scan_id] = std::move(new_inquiry);
-  inquiries_[scan_id]->Start(rendered_texts, url);
+  inquiries_[scan_id]->Start(rendered_texts, url, std::move(tab_screenshot));
   return scan_id;
 }
 

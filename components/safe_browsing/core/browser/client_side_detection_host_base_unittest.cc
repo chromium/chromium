@@ -64,7 +64,10 @@ class MockIntelligentScanDelegate : public IntelligentScanDelegate {
   MOCK_METHOD(ModelType, GetIntelligentScanModelType, (bool), (override));
   MOCK_METHOD(std::optional<base::UnguessableToken>,
               StartIntelligentScan,
-              (std::string, std::string, IntelligentScanDoneCallback),
+              (std::string,
+               std::string,
+               std::optional<std::string>,
+               IntelligentScanDoneCallback),
               (override));
   MOCK_METHOD(bool,
               CancelIntelligentScan,
@@ -1149,7 +1152,7 @@ TEST_F(ClientSideDetectionHostBaseTest,
   host_->set_current_url(url);
   SetEnhancedProtectionPrefForTests(&prefs_, false);
 
-  EXPECT_CALL(mock_intelligent_scan_delegate, StartIntelligentScan(_, _, _))
+  EXPECT_CALL(mock_intelligent_scan_delegate, StartIntelligentScan(_, _, _, _))
       .Times(0);
   EXPECT_CALL(mock_csd_service, SendClientReportPhishingRequest(_, _, _))
       .WillOnce([&](std::unique_ptr<ClientPhishingRequest> sent_verdict,
@@ -1183,7 +1186,7 @@ TEST_F(ClientSideDetectionHostBaseTest,
   host_->set_current_url(url);
   SetEnhancedProtectionPrefForTests(&prefs_, false);
 
-  EXPECT_CALL(mock_intelligent_scan_delegate, StartIntelligentScan(_, _, _))
+  EXPECT_CALL(mock_intelligent_scan_delegate, StartIntelligentScan(_, _, _, _))
       .Times(0);
   EXPECT_CALL(mock_csd_service, SendClientReportPhishingRequest(_, _, _))
       .WillOnce([&](std::unique_ptr<ClientPhishingRequest> sent_verdict,
@@ -1216,8 +1219,10 @@ TEST_F(ClientSideDetectionHostBaseTest,
       &mock_intelligent_scan_delegate);
   host_->set_current_url(url);
 
-  EXPECT_CALL(mock_intelligent_scan_delegate,
-              StartIntelligentScan("", url.spec(), _))
+  EXPECT_CALL(
+      mock_intelligent_scan_delegate,
+      StartIntelligentScan("", url.spec(),
+                           std::optional<std::string>("fake_png_bytes"), _))
       .WillOnce(Return(base::UnguessableToken::Create()));
 
   host_->StartIntelligentScan(std::move(verdict),
@@ -1243,8 +1248,10 @@ TEST_F(ClientSideDetectionHostBaseTest,
       &mock_intelligent_scan_delegate);
   host_->set_current_url(url);
 
-  EXPECT_CALL(mock_intelligent_scan_delegate,
-              StartIntelligentScan("text", url.spec(), _))
+  EXPECT_CALL(
+      mock_intelligent_scan_delegate,
+      StartIntelligentScan("text", url.spec(),
+                           std::optional<std::string>("fake_png_bytes"), _))
       .WillOnce(Return(base::UnguessableToken::Create()));
 
   host_->StartIntelligentScan(std::move(verdict),

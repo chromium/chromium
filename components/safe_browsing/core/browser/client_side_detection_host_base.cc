@@ -1354,14 +1354,12 @@ void ClientSideDetectionHostBase::StartIntelligentScan(
     return;
   }
 
-  last_intelligent_scan_tab_screenshot_for_testing_ = std::move(tab_screenshot);
+  last_intelligent_scan_tab_screenshot_for_testing_ = tab_screenshot;
   LogClientSideDetectionEvent(ClientSideDetectionEvent::kIntelligentScanBegin,
                               verdict->client_side_detection_type());
   std::string url = verdict->url();
-  // TODO(b/538133674): Pass `tab_screenshot` to `StartIntelligentScan` once
-  // `ScamDetectionRequest` proto is updated with `tab_screenshot`.
   intelligent_scan_id_ = intelligent_scan_delegate_->StartIntelligentScan(
-      inner_text, std::move(url),
+      inner_text, std::move(url), std::move(tab_screenshot),
       base::BindOnce(&ClientSideDetectionHostBase::OnIntelligentScanDone,
                      base_weak_factory_.GetWeakPtr(), std::move(verdict),
                      did_match_high_confidence_allowlist, is_invalid_ip));

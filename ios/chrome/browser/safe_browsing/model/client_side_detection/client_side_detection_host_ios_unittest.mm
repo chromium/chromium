@@ -169,6 +169,7 @@ class MockIntelligentScanDelegate
       StartIntelligentScan,
       (std::string rendered_texts,
        std::string url,
+       std::optional<std::string> tab_screenshot,
        safe_browsing::IntelligentScanDelegate::IntelligentScanDoneCallback
            callback),
       (override));
@@ -4131,10 +4132,11 @@ TEST_F(ClientSideDetectionHostIOSTest,
   EXPECT_CALL(mock_delegate, GetIntelligentScanModelType(true))
       .WillOnce(testing::Return(
           safe_browsing::IntelligentScanDelegate::ModelType::kServerSide));
-  EXPECT_CALL(mock_delegate,
-              StartIntelligentScan(testing::_, testing::_, testing::_))
+  EXPECT_CALL(mock_delegate, StartIntelligentScan(testing::_, testing::_,
+                                                  testing::_, testing::_))
       .WillOnce(
           [](std::string rendered_texts, std::string url,
+             std::optional<std::string> tab_screenshot,
              safe_browsing::IntelligentScanDelegate::IntelligentScanDoneCallback
                  callback) {
             EXPECT_EQ(rendered_texts, std::string(100, 'a'));
@@ -4236,9 +4238,10 @@ TEST_F(ClientSideDetectionHostIOSTest,
   EXPECT_CALL(mock_delegate, GetIntelligentScanModelType(true))
       .WillOnce(testing::Return(
           safe_browsing::IntelligentScanDelegate::ModelType::kServerSide));
-  EXPECT_CALL(mock_delegate,
-              StartIntelligentScan(testing::_, testing::_, testing::_))
+  EXPECT_CALL(mock_delegate, StartIntelligentScan(testing::_, testing::_,
+                                                  testing::_, testing::_))
       .WillOnce([scan_id](std::string rendered_texts, std::string url,
+                          std::optional<std::string> tab_screenshot,
                           safe_browsing::IntelligentScanDelegate::
                               IntelligentScanDoneCallback callback) {
         return scan_id;
@@ -4341,10 +4344,11 @@ TEST_F(ClientSideDetectionHostIOSTest,
   EXPECT_CALL(mock_delegate, GetIntelligentScanModelType(true))
       .WillOnce(testing::Return(
           safe_browsing::IntelligentScanDelegate::ModelType::kServerSide));
-  EXPECT_CALL(mock_delegate,
-              StartIntelligentScan(testing::_, testing::_, testing::_))
+  EXPECT_CALL(mock_delegate, StartIntelligentScan(testing::_, testing::_,
+                                                  testing::_, testing::_))
       .WillOnce(
           [](std::string rendered_texts, std::string url,
+             std::optional<std::string> tab_screenshot,
              safe_browsing::IntelligentScanDelegate::IntelligentScanDoneCallback
                  callback) {
             EXPECT_EQ(rendered_texts, std::string(100, 'a'));
@@ -4404,10 +4408,11 @@ TEST_F(ClientSideDetectionHostIOSTest,
   EXPECT_CALL(mock_delegate, GetIntelligentScanModelType(true))
       .WillOnce(testing::Return(
           safe_browsing::IntelligentScanDelegate::ModelType::kServerSide));
-  EXPECT_CALL(mock_delegate,
-              StartIntelligentScan(testing::_, testing::_, testing::_))
+  EXPECT_CALL(mock_delegate, StartIntelligentScan(testing::_, testing::_,
+                                                  testing::_, testing::_))
       .WillOnce(
           [](std::string rendered_texts, std::string url,
+             std::optional<std::string> tab_screenshot,
              safe_browsing::IntelligentScanDelegate::IntelligentScanDoneCallback
                  callback) {
             EXPECT_EQ(rendered_texts, std::string(100, 'a'));
@@ -4466,10 +4471,11 @@ TEST_F(ClientSideDetectionHostIOSTest,
   EXPECT_CALL(mock_delegate, GetIntelligentScanModelType(true))
       .WillOnce(testing::Return(
           safe_browsing::IntelligentScanDelegate::ModelType::kServerSide));
-  EXPECT_CALL(mock_delegate,
-              StartIntelligentScan(testing::_, testing::_, testing::_))
+  EXPECT_CALL(mock_delegate, StartIntelligentScan(testing::_, testing::_,
+                                                  testing::_, testing::_))
       .WillOnce(
           [](std::string rendered_texts, std::string url,
+             std::optional<std::string> tab_screenshot,
              safe_browsing::IntelligentScanDelegate::IntelligentScanDoneCallback
                  callback) {
             EXPECT_TRUE(rendered_texts.empty());
@@ -4518,10 +4524,11 @@ TEST_F(ClientSideDetectionHostIOSTest,
   EXPECT_CALL(mock_delegate, GetIntelligentScanModelType(true))
       .WillOnce(testing::Return(
           safe_browsing::IntelligentScanDelegate::ModelType::kServerSide));
-  EXPECT_CALL(mock_delegate,
-              StartIntelligentScan(testing::_, testing::_, testing::_))
+  EXPECT_CALL(mock_delegate, StartIntelligentScan(testing::_, testing::_,
+                                                  testing::_, testing::_))
       .WillOnce(
           [](std::string rendered_texts, std::string url,
+             std::optional<std::string> tab_screenshot,
              safe_browsing::IntelligentScanDelegate::IntelligentScanDoneCallback
                  callback) { return base::UnguessableToken::Create(); });
 
