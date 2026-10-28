@@ -77,6 +77,11 @@ export class HistoryFilterChipsElement extends CrLitElement {
     return hasActiveActorDropdownFilter || this.clientIds.length > 0;
   }
 
+  protected onActorSelectMousedown_() {
+    BrowserProxyImpl.getInstance().recordAction(
+        'HistoryPage_OpenActorFilterSheet');
+  }
+
   protected onActorSelectChange_(e: Event) {
     const value = (e.target as HTMLSelectElement).value;
     if (value === 'user') {
@@ -94,11 +99,22 @@ export class HistoryFilterChipsElement extends CrLitElement {
     this.fireChange_(this.userVisits, this.actorVisits);
   }
 
+  protected onDeviceSelectMousedown_() {
+    BrowserProxyImpl.getInstance().recordAction(
+        'HistoryPage_OpenDeviceFilterSheet');
+  }
+
   protected onDeviceSelectChange_(e: Event) {
     const select = e.target as HTMLSelectElement;
     const index = Number(select.value);
     const device = index >= 0 ? this.devices[index] : undefined;
     this.clientIds = device ? device.ids : [];
+
+    // Do not record metrics for the default option.
+    if (device) {
+      BrowserProxyImpl.getInstance().recordAction(
+          'HistoryPage_DeviceFilterSelected');
+    }
     this.fireChange_(this.userVisits, this.actorVisits);
   }
 
@@ -107,6 +123,7 @@ export class HistoryFilterChipsElement extends CrLitElement {
     this.actorVisits = true;
     this.clientIds = [];
 
+    BrowserProxyImpl.getInstance().recordAction('HistoryPage_ClearAllFilters');
     this.fireChange_(this.userVisits, this.actorVisits);
 
     await this.updateComplete;

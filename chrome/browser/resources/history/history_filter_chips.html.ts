@@ -17,6 +17,7 @@ export function getHtml(this: HistoryFilterChipsElement) {
         <div class="filter-chips">
           <cr-icon icon="cr:check" aria-hidden="true"></cr-icon>
           <select id="actorFilterChip" class="md-select"
+              @mousedown="${this.onActorSelectMousedown_}"
               @change="${this.onActorSelectChange_}">
             <option value="all"
                 .selected="${!this.isUserSelected() && !this.isActorSelected()}">
@@ -47,6 +48,7 @@ export function getHtml(this: HistoryFilterChipsElement) {
       <div class="filter-chips">
         <cr-icon icon="cr:check" aria-hidden="true"></cr-icon>
         <select id="deviceFilterChip" class="md-select"
+            @mousedown="${this.onDeviceSelectMousedown_}"
             @change="${this.onDeviceSelectChange_}">
           <option value="-1" .selected="${this.clientIds.length === 0}">
             $i18n{deviceFilterAllDevices}

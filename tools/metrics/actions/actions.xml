@@ -14975,6 +14975,15 @@ should be able to be added at any place in this file.
   <description>Please enter the description of this user action.</description>
 </action>
 
+<action name="HistoryPage_ClearAllFilters">
+  <owner>azamatmz@google.com</owner>
+  <owner>chrome-browser-privacy-team@google.com</owner>
+  <description>
+    User clicked the &quot;Clear all&quot; button near the history filter chips
+    to reset all applied filters.
+  </description>
+</action>
+
 <action name="HistoryPage_ConfirmRemoveSelected">
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
@@ -14995,6 +15004,16 @@ should be able to be added at any place in this file.
   <description>
     Triggered when the user expands the critical actions section on an actor
     visit item on chrome://history.
+  </description>
+</action>
+
+<action name="HistoryPage_DeviceFilterSelected">
+  <owner>azamatmz@google.com</owner>
+  <owner>chrome-browser-privacy-team@google.com</owner>
+  <description>
+    User selected an option in the history device filter dropdown/sheet. Not
+    recorded on resetting the filter by clicking on the &quot;All devices&quot;
+    option.
   </description>
 </action>
 
@@ -15073,6 +15092,24 @@ should be able to be added at any place in this file.
 <action name="HistoryPage_OlderHistoryClick">
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
+</action>
+
+<action name="HistoryPage_OpenActorFilterSheet">
+  <owner>azamatmz@google.com</owner>
+  <owner>chrome-browser-privacy-team@google.com</owner>
+  <description>
+    User opened the history actor filter dropdown/sheet by clicking or tapping
+    the actor filter chip.
+  </description>
+</action>
+
+<action name="HistoryPage_OpenDeviceFilterSheet">
+  <owner>azamatmz@google.com</owner>
+  <owner>chrome-browser-privacy-team@google.com</owner>
+  <description>
+    User opened the history device filter dropdown/sheet by clicking or tapping
+    the device filter chip.
+  </description>
 </action>
 
 <action name="HistoryPage_RemoveSelected">
