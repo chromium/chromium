@@ -11,7 +11,7 @@ import os
 import subprocess
 import sys
 import time
-from typing import Dict, List, Optional, Set, Tuple
+from typing import Dict, List, NamedTuple, Optional, Set, Tuple
 import urllib.error
 import urllib.parse
 import urllib.request
@@ -41,6 +41,15 @@ use_siso = true
 COVERAGE_API_URL = 'https://analysis.chromium.org/coverage/p/chromium/file'
 MAX_FINDIT_API_RETRIES = 3
 FINDIT_API_TIMEOUT = 10.0
+
+
+class FinditCoverage(NamedTuple):
+  """Fuzzing coverage of a file for one fuzzer or all fuzzers combined."""
+
+  # The file's lines in the report, in file order: file_lines[i] is line i + 1.
+  file_lines: List[str]
+  # Hit count of each line executed at least once, by 1-based line number.
+  covered_lines: Dict[int, int]
 
 
 def generate_gn_build_dir(out_dir: str):
@@ -213,7 +222,7 @@ def get_affected_fuzzers(
 def get_findit_coverage(
   file_path: str,
   fuzzer_name: str = 'any',
-) -> Optional[List[Dict[str, int]]]:
+) -> Optional[FinditCoverage]:
   """Fetches fuzzing coverage data for a file from the Findit Coverage API.
 
   Args:
@@ -223,13 +232,11 @@ def get_findit_coverage(
       aggregated over all LibFuzzer/FUZZ_TEST fuzzers for the file_path.
 
   Returns:
-    The latest collected fuzzing coverage of the file, as a list of
-    {'first': int, 'last': int, 'count': int} objects, where 'first' and
-    'last' are the inclusive bounds of a range of consecutive lines that was
-    executed 'count' times. Non-executable lines (e.g. comments) are not part
-    of any range. Returns None if the coverage data can't be fetched, for
-    example because the file or the fuzzer is unknown to the API, or because
-    the request keeps failing.
+    The latest collected fuzzing coverage of the file. Its covered_lines is
+    empty if the coverage was fetched but the fuzzer doesn't cover the file.
+    None if the coverage can't be fetched, e.g. because Findit has no report
+    for the fuzzer, the report doesn't have the file, or the request keeps
+    failing.
 
   Raises:
     AssertionError: if file_path is empty.
@@ -256,20 +263,30 @@ def get_findit_coverage(
   )
 
   for attempt in range(MAX_FINDIT_API_RETRIES):
+    log_level = logging.WARNING
     try:
       with urllib.request.urlopen(req, timeout=FINDIT_API_TIMEOUT) as resp:
         response = json.loads(resp.read().decode('utf-8'))
-      return response['data']['metadata']['lines']
+      return parse_findit_response(response, gn_path)
     except urllib.error.HTTPError as e:
-      # Retry on 429 (rate limit) or 5xx (transient server errors).
-      should_retry = e.code in (429, 500, 502, 503, 504)
-      error_msg = 'HTTP error %s fetching coverage for %s: %s'
-      error_args = (e.code, gn_path, e.reason)
+      # Retry on 429 (rate limit) and on 500, 502, 503 and 504 (transient
+      # server errors), except on a 500 for a single fuzzer: Findit answers
+      # 500 when it has no report for the fuzzer, which retrying won't fix.
+      # TODO(b/571233495): Retry those 500s too once Findit is redeployed and
+      # returns 404 for a missing report instead.
+      no_report = e.code == 500 and fuzzer_name != 'any'
+      should_retry = e.code in (429, 500, 502, 503, 504) and not no_report
+      if no_report:
+        # Fuzzers sometimes have no reports e.g. for newly added fuzzers
+        # or fuzzers tagged no_clusterfuzz.
+        log_level = logging.INFO
+      error_msg = 'HTTP error %s fetching %s coverage for %s: %s'
+      error_args = (e.code, fuzzer_name, gn_path, e.reason)
     except (urllib.error.URLError, TimeoutError) as e:
       should_retry = True
       error_msg = 'Network error fetching coverage for %s: %s'
       error_args = (gn_path, e)
-    except (json.JSONDecodeError, KeyError) as e:
+    except (json.JSONDecodeError, KeyError, TypeError) as e:
       # The request succeeded but the response isn't JSON or doesn't have the
       # expected fields, e.g. because the API changed and retrying won't help.
       should_retry = False
@@ -284,10 +301,61 @@ def get_findit_coverage(
       time.sleep(1.0 * (attempt + 1))
       continue
 
-    logging.warning(error_msg, *error_args)
+    logging.log(log_level, error_msg, *error_args)
     break
 
   return None
+
+
+def parse_findit_response(
+  response: Dict, file_path: str
+) -> Optional[FinditCoverage]:
+  """Extracts the coverage of a file from a raw Findit Coverage API response.
+
+  'data.line_to_data' is a list of [line_number, {'line': str, 'count': int,
+  ...}] pairs with each line of the file at the report's revision and its hit
+  count.
+
+  Args:
+    response: The response to a request for the coverage of file_path.
+    file_path: Source-absolute path of the file, e.g.
+      '//base/json/json_reader.cc'.
+
+  Returns:
+    The coverage or None. If the report doesn't contain the file, Findit
+    returns the summary of the root directory, and we return None in this
+    case. We also return None if Findit couldn't load the file's content.
+
+  Raises:
+    KeyError, TypeError: if the response doesn't have the expected fields.
+  """
+  if response['path'] != file_path:
+    # TODO(crbug.com/578475336): This is a temporary check. We should expect a
+    # 404 once Findit returns 404 for files that aren't in the report.
+    logging.debug('No coverage for %s: %s', file_path, response['warning'])
+    return None
+
+  line_to_data = response['data']['line_to_data']
+  if line_to_data is None:
+    # Findit couldn't load the file's content from GCS or Gitiles.
+    # TODO(crbug.com/578476159): Expect an error instead once Findit returns an
+    # error code instead of None line_to_data.
+    logging.warning('Findit has no content for %s', file_path)
+    return None
+
+  file_lines: List[str] = []
+  covered_lines: Dict[int, int] = {}
+  for line_number, line_data in line_to_data:
+    file_lines.append(line_data['line'])
+    # The count is -1 for non-executable lines (e.g. comments) and 0 for
+    # executable lines that weren't executed.
+    if line_data['count'] > 0:
+      covered_lines[line_number] = line_data['count']
+
+  return FinditCoverage(
+    file_lines=file_lines,
+    covered_lines=covered_lines,
+  )
 
 
 def main():
