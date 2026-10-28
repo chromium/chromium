@@ -45,7 +45,6 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowSystemClock;
-import org.robolectric.util.ReflectionHelpers;
 
 import org.chromium.base.Callback;
 import org.chromium.base.Token;
@@ -62,6 +61,7 @@ import org.chromium.chrome.browser.tabmodel.TabUngrouper;
 import org.chromium.chrome.browser.tasks.tab_management.TabGridItemLongPressOrchestrator;
 import org.chromium.chrome.browser.tasks.tab_management.TabListModel;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties;
+import org.chromium.chrome.browser.tasks.tab_management.TabProperties.UiType;
 import org.chromium.chrome.browser.undo_tab_close_snackbar.UndoBarThrottle;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
@@ -71,8 +71,10 @@ import org.chromium.ui.recyclerview.widget.ItemTouchHelper2;
 
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.IdentityHashMap;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Supplier;
 
 /** Unit tests for {@link VerticalTabListItemTouchHelperCallback}. */
@@ -82,61 +84,34 @@ public class VerticalTabListItemTouchHelperCallbackUnitTest {
     private static class TestRecyclerViewAdapter
             extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         private final List<RecyclerView.ViewHolder> mHolders = new ArrayList<>();
-        private final IdentityHashMap<RecyclerView.ViewHolder, Integer> mExplicitPositions =
+        private final IdentityHashMap<RecyclerView.ViewHolder, Integer> mExplicitItemViewTypes =
                 new IdentityHashMap<>();
+        private final Set<RecyclerView.ViewHolder> mFillerHolders =
+                Collections.newSetFromMap(new IdentityHashMap<>());
+        private RecyclerView.ViewHolder mPendingHolderToCreate;
         private int mCreateIndex;
-
-        void setHolders(RecyclerView recyclerView, RecyclerView.ViewHolder... holders) {
-            recyclerView.removeAllViews();
-            recyclerView.getRecycledViewPool().clear();
-            mHolders.clear();
-            for (RecyclerView.ViewHolder holder : holders) {
-                if (holder.itemView.getParent() instanceof ViewGroup parentGroup) {
-                    parentGroup.removeView(holder.itemView);
-                }
-                if (holder.itemView.getLayoutParams() == null) {
-                    holder.itemView.setLayoutParams(new RecyclerView.LayoutParams(100, 50));
-                }
-                mHolders.add(holder);
-            }
-            mCreateIndex = 0;
-            notifyDataSetChanged();
-            RobolectricUtil.runAllBackgroundAndUi();
-            for (RecyclerView.ViewHolder holder : holders) {
-                Integer pos = mExplicitPositions.get(holder);
-                if (pos != null) {
-                    applyBindingAdapterPosition(recyclerView, this, holder, pos);
-                }
-            }
-        }
-
-        void setExplicitPosition(
-                RecyclerView recyclerView, RecyclerView.ViewHolder holder, int position) {
-            mExplicitPositions.put(holder, position);
-            applyBindingAdapterPosition(recyclerView, this, holder, position);
-        }
-
-        private static void applyBindingAdapterPosition(
-                RecyclerView recyclerView,
-                RecyclerView.Adapter<?> adapter,
-                RecyclerView.ViewHolder holder,
-                int position) {
-            ReflectionHelpers.setField(holder, "mBindingAdapter", adapter);
-            ReflectionHelpers.setField(holder, "mOwnerRecyclerView", recyclerView);
-            ReflectionHelpers.setField(
-                    holder, "mFlags", position == RecyclerView.NO_POSITION ? 0 : 1);
-            ReflectionHelpers.setField(holder, "mPosition", position);
-            ReflectionHelpers.setField(holder, "mPreLayoutPosition", position);
-        }
 
         @Override
         public int getItemViewType(int position) {
-            int type = mHolders.get(position).getItemViewType();
-            return type != RecyclerView.INVALID_TYPE ? type : TabProperties.UiType.TAB;
+            RecyclerView.ViewHolder holder = mHolders.get(position);
+            if (mFillerHolders.contains(holder)) {
+                return UiType.PRICE_MESSAGE;
+            }
+            Integer explicitType = mExplicitItemViewTypes.get(holder);
+            if (explicitType != null) {
+                return explicitType;
+            }
+            int type = holder.getItemViewType();
+            return type != RecyclerView.INVALID_TYPE ? type : UiType.TAB;
         }
 
         @Override
         public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            if (mPendingHolderToCreate != null) {
+                RecyclerView.ViewHolder holder = mPendingHolderToCreate;
+                mPendingHolderToCreate = null;
+                return holder;
+            }
             return mHolders.get(mCreateIndex++);
         }
 
@@ -146,6 +121,121 @@ public class VerticalTabListItemTouchHelperCallbackUnitTest {
         @Override
         public int getItemCount() {
             return mHolders.size();
+        }
+
+        void setHolders(RecyclerView recyclerView, RecyclerView.ViewHolder... holders) {
+            mHolders.clear();
+            mFillerHolders.clear();
+            Collections.addAll(mHolders, holders);
+            syncRecyclerView(recyclerView);
+        }
+
+        void assignViewType(
+                RecyclerView recyclerView, RecyclerView.ViewHolder holder, @UiType int viewType) {
+            mExplicitItemViewTypes.put(holder, viewType);
+            if (holder.getItemViewType() == viewType) {
+                return;
+            }
+            if (mHolders.contains(holder)) {
+                syncRecyclerView(recyclerView);
+                return;
+            }
+            ViewGroup parentGroup = holder.itemView.getParent() instanceof ViewGroup vg ? vg : null;
+            int indexInParent = -1;
+            ViewGroup.LayoutParams lp = holder.itemView.getLayoutParams();
+            if (parentGroup != null) {
+                indexInParent = parentGroup.indexOfChild(holder.itemView);
+                parentGroup.removeView(holder.itemView);
+            }
+            mPendingHolderToCreate = holder;
+            assertEquals(holder, createViewHolder(recyclerView, viewType));
+            if (parentGroup != null) {
+                parentGroup.addView(holder.itemView, indexInParent, lp);
+            }
+        }
+
+        void setPosition(RecyclerView recyclerView, RecyclerView.ViewHolder holder, int position) {
+            if (position < 0) {
+                int existingIndex = mHolders.indexOf(holder);
+                if (existingIndex != -1) {
+                    mHolders.set(existingIndex, createFillerViewHolder(recyclerView.getContext()));
+                    trimTrailingFillers();
+                    syncRecyclerView(recyclerView);
+                } else if (holder.getBindingAdapterPosition() != RecyclerView.NO_POSITION) {
+                    syncRecyclerView(recyclerView);
+                }
+                return;
+            }
+            if (position < mHolders.size()
+                    && mHolders.get(position) == holder
+                    && holder.getBindingAdapterPosition() == position) {
+                return;
+            }
+            int existingIndex = mHolders.indexOf(holder);
+            if (existingIndex != -1 && existingIndex != position) {
+                mHolders.set(existingIndex, createFillerViewHolder(recyclerView.getContext()));
+            }
+            while (mHolders.size() <= position) {
+                mHolders.add(createFillerViewHolder(recyclerView.getContext()));
+            }
+            RecyclerView.ViewHolder displaced = mHolders.set(position, holder);
+            if (displaced != null) {
+                mFillerHolders.remove(displaced);
+            }
+            trimTrailingFillers();
+            syncRecyclerView(recyclerView);
+        }
+
+        private RecyclerView.ViewHolder createFillerViewHolder(Context context) {
+            View fillerView = new View(context);
+            fillerView.setLayoutParams(new RecyclerView.LayoutParams(200, 20));
+            RecyclerView.ViewHolder filler = new RecyclerView.ViewHolder(fillerView) {};
+            mFillerHolders.add(filler);
+            return filler;
+        }
+
+        private void trimTrailingFillers() {
+            while (!mHolders.isEmpty()
+                    && mFillerHolders.contains(mHolders.get(mHolders.size() - 1))) {
+                mFillerHolders.remove(mHolders.remove(mHolders.size() - 1));
+            }
+        }
+
+        private void syncRecyclerView(RecyclerView recyclerView) {
+            IdentityHashMap<RecyclerView.ViewHolder, Rect> savedBounds = new IdentityHashMap<>();
+            for (RecyclerView.ViewHolder holder : mHolders) {
+                View v = holder.itemView;
+                Rect bounds = new Rect(v.getLeft(), v.getTop(), v.getRight(), v.getBottom());
+                if (!bounds.isEmpty()) {
+                    savedBounds.put(holder, bounds);
+                }
+            }
+            recyclerView.setAdapter(this);
+            recyclerView.getRecycledViewPool().clear();
+            for (RecyclerView.ViewHolder holder : mHolders) {
+                if (holder.itemView.getParent() instanceof ViewGroup parentGroup) {
+                    parentGroup.removeView(holder.itemView);
+                }
+                if (holder.itemView.getLayoutParams() == null) {
+                    holder.itemView.setLayoutParams(new RecyclerView.LayoutParams(100, 50));
+                }
+            }
+            mCreateIndex = 0;
+            RobolectricUtil.runAllBackgroundAndUi();
+            if (recyclerView.isLayoutRequested()) {
+                int width = recyclerView.getWidth() > 0 ? recyclerView.getWidth() : 200;
+                int height = recyclerView.getHeight() > 0 ? recyclerView.getHeight() : 1000;
+                recyclerView.measure(
+                        View.MeasureSpec.makeMeasureSpec(width, View.MeasureSpec.EXACTLY),
+                        View.MeasureSpec.makeMeasureSpec(height, View.MeasureSpec.EXACTLY));
+                recyclerView.layout(0, 0, width, height);
+            }
+            for (RecyclerView.ViewHolder holder : mHolders) {
+                Rect bounds = savedBounds.get(holder);
+                if (bounds != null) {
+                    holder.itemView.layout(bounds.left, bounds.top, bounds.right, bounds.bottom);
+                }
+            }
         }
     }
 
@@ -231,7 +321,6 @@ public class VerticalTabListItemTouchHelperCallbackUnitTest {
 
         mViewHolder = new SimpleRecyclerViewAdapter.ViewHolder(mItemView, /* binder= */ null);
         mViewHolder.model = mPropertyModel;
-        setBindingAdapterPosition(mViewHolder, 0);
 
         // Set up the mocked property model for the target drop view holder.
         mTargetPropertyModel =
@@ -244,7 +333,6 @@ public class VerticalTabListItemTouchHelperCallbackUnitTest {
         mTargetViewHolder =
                 new SimpleRecyclerViewAdapter.ViewHolder(targetItemView, /* binder= */ null);
         mTargetViewHolder.model = mTargetPropertyModel;
-        setBindingAdapterPosition(mTargetViewHolder, 1);
 
         mModel = new TabListModel();
         mModel.add(new ListItem(TabProperties.UiType.TAB, mPropertyModel));
@@ -255,6 +343,8 @@ public class VerticalTabListItemTouchHelperCallbackUnitTest {
                         mContext, mModel, mCurrentTabModelSupplier, mUndoBarThrottle);
         mCallback.setRecyclerView(mRecyclerView);
         mockRecyclerViewChildren(mViewHolder, mTargetViewHolder);
+        setBindingAdapterPosition(mViewHolder, 0);
+        setBindingAdapterPosition(mTargetViewHolder, 1);
     }
 
     @Test
@@ -2848,10 +2938,12 @@ public class VerticalTabListItemTouchHelperCallbackUnitTest {
     }
 
     private void setBindingAdapterPosition(RecyclerView.ViewHolder holder, int position) {
-        mAdapter.setExplicitPosition(mRecyclerView, holder, position);
+        mAdapter.setPosition(mRecyclerView, holder, position);
+        assertEquals(position, holder.getBindingAdapterPosition());
     }
 
-    private static void setItemViewType(RecyclerView.ViewHolder holder, int viewType) {
-        ReflectionHelpers.setField(holder, "mItemViewType", viewType);
+    private void setItemViewType(RecyclerView.ViewHolder holder, @UiType int viewType) {
+        mAdapter.assignViewType(mRecyclerView, holder, viewType);
+        assertEquals(viewType, holder.getItemViewType());
     }
 }

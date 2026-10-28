@@ -27,7 +27,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
-import org.robolectric.util.ReflectionHelpers;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.tasks.tab_management.TabListModel;
@@ -38,6 +37,7 @@ import org.chromium.chrome.tab_ui.R;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 
 /** Unit tests for {@link VerticalPinnedTabListRecyclerView}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -280,21 +280,31 @@ public class VerticalPinnedTabListRecyclerViewUnitTest {
 
     @Test
     public void testItemDecoration_OffsetsCorrectAcrossColumnsAndAfterMove() {
-        // Add 4 children representing 4 columns (spanCount = 4).
-        View child0 = new View(mActivity);
-        View child1 = new View(mActivity);
-        View child2 = new View(mActivity);
-        View child3 = new View(mActivity);
+        // Lay out 4 items across 4 columns so GridLayoutManager assigns spanIndex 0..3, then move
+        // item 0 -> 1 without re-laying out so column 1 holds a view with stale spanIndex = 0.
+        TabListModel modelList = new TabListModel();
+        for (int i = 0; i < SPAN_COUNT; i++) {
+            modelList.add(createTabListItem());
+        }
+        SimpleRecyclerViewAdapter adapter = new SimpleRecyclerViewAdapter(modelList);
+        adapter.registerType(
+                UiType.TAB,
+                parent -> {
+                    View view = new View(mActivity);
+                    view.setLayoutParams(createLayoutParams());
+                    return view;
+                },
+                (model, view, key) -> {});
+        mRecyclerView.setAdapter(adapter);
+        layoutAndClearRequest(mRecyclerView);
 
-        // Give child1 a stale LayoutParams with spanIndex = 0 (as if it was moved from position 0).
-        GridLayoutManager.LayoutParams lp1 = createLayoutParams();
-        ReflectionHelpers.setField(lp1, "mSpanIndex", 0);
-        child1.setLayoutParams(lp1);
+        modelList.move(0, 1);
 
-        mRecyclerView.addView(child0);
-        mRecyclerView.addView(child1);
-        mRecyclerView.addView(child2);
-        mRecyclerView.addView(child3);
+        View child0 = mRecyclerView.findViewHolderForAdapterPosition(0).itemView;
+        View child1 = mRecyclerView.findViewHolderForAdapterPosition(1).itemView;
+        View child2 = mRecyclerView.findViewHolderForAdapterPosition(2).itemView;
+        View child3 = mRecyclerView.findViewHolderForAdapterPosition(3).itemView;
+        assertEquals(0, ((GridLayoutManager.LayoutParams) child1.getLayoutParams()).getSpanIndex());
 
         Rect outRect0 = new Rect();
         Rect outRect1 = new Rect();
