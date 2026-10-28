@@ -134,7 +134,7 @@ _ADD_CONTENT = {
     # New code should directly depend on :string_view.
     # TODO(crbug.com/40276308): Remove once all targets are migrated to
     # :string_view.
-    ":string_view" ]
+    ":string_view" ]''',
     'strings:str_format_convert_test':
     'if (is_fuchsia) { sources = [] }',
     # Instead of parsing 'select', add platform-specific rules manually while there are few of those.

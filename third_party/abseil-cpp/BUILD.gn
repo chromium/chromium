@@ -154,6 +154,7 @@ group("absl_component_deps") {
 # Abseil testing utilities should only be included in test binaries.
 source_set("test_support") {
   testonly = true
+
   # In component builds, depending on `absl/hash:hash_testing` (`source_set`)
   # would statically link a duplicate copy of `absl/hash` (and
   # `MixingHashState::kSeed`) into test binaries alongside `:absl`. Because
