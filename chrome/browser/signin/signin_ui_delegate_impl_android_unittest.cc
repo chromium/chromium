@@ -66,7 +66,8 @@ class MockSigninBridge : public SigninBridge {
               StartUpdateCredentialsFlow,
               (TabAndroid * tab,
                const GURL& continue_url,
-               const CoreAccountId& account_id),
+               const CoreAccountId& account_to_reauth,
+               const CoreAccountId& target_account_id),
               (override));
 };
 
@@ -186,8 +187,8 @@ TEST_F(SigninUiDelegateImplAndroidTest, ShowReauthUI) {
 
   signin_ui_util::SigninUiDelegateImplAndroid delegate;
 
-  EXPECT_CALL(*signin_bridge(),
-              StartUpdateCredentialsFlow(_, GetTestUrl(), account_id));
+  EXPECT_CALL(*signin_bridge(), StartUpdateCredentialsFlow(
+                                    _, GetTestUrl(), account_id, account_id));
 
   delegate.ShowReauthUI(profile(), kTestEmail, /*enable_history_sync=*/true,
                         kTestAccessPoint, kTestPromoAction);

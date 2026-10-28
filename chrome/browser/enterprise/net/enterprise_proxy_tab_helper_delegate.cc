@@ -56,8 +56,9 @@ void EnterpriseProxyTabHelperDelegate::SignIn(
   } else {
     TabAndroid* tab = TabAndroid::FromWebContents(web_contents);
     if (tab) {
-      signin_bridge->StartUpdateCredentialsFlow(tab, destination_url,
-                                                primary_account_id);
+      signin_bridge->StartUpdateCredentialsFlow(
+          tab, destination_url, /*account_to_reauth=*/primary_account_id,
+          /*target_account_id=*/primary_account_id);
     }
   }
 #else

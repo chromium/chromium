@@ -90,7 +90,8 @@ void SigninUiDelegateImplAndroid::ShowReauthUI(
   CHECK(!account_id.empty());
   SigninBridgeFactory::GetForProfile(profile)->StartUpdateCredentialsFlow(
       TabAndroid::FromWebContents(web_contents),
-      /*continue_url=*/web_contents->GetLastCommittedURL(), account_id);
+      /*continue_url=*/web_contents->GetLastCommittedURL(),
+      /*account_to_reauth=*/account_id, /*target_account_id=*/account_id);
 }
 
 }  // namespace signin_ui_util

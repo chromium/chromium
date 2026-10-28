@@ -71,12 +71,6 @@ void SigninBridge::OpenAccountPickerBottomSheetForExtensions(
       env, tab->GetJavaObject(), continue_url, account_id, extension_name);
 }
 
-void SigninBridge::StartUpdateCredentialsFlow(TabAndroid* tab,
-                                              const GURL& continue_url,
-                                              const CoreAccountId& account_id) {
-  StartUpdateCredentialsFlow(tab, continue_url, account_id, account_id);
-}
-
 void SigninBridge::StartUpdateCredentialsFlow(
     TabAndroid* tab,
     const GURL& continue_url,

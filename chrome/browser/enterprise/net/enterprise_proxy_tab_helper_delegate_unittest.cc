@@ -41,7 +41,8 @@ class MockSigninBridge : public SigninBridge {
               StartUpdateCredentialsFlow,
               (TabAndroid * tab,
                const GURL& continue_url,
-               const CoreAccountId& account_id),
+               const CoreAccountId& account_to_reauth,
+               const CoreAccountId& target_account_id),
               (override));
 };
 
@@ -130,8 +131,9 @@ TEST_F(EnterpriseProxyTabHelperDelegateTest,
           .GetAccountId();
 
   EnterpriseProxyTabHelperDelegate delegate;
-  EXPECT_CALL(*signin_bridge(),
-              StartUpdateCredentialsFlow(tab.get(), test_url, account_id));
+  EXPECT_CALL(
+      *signin_bridge(),
+      StartUpdateCredentialsFlow(tab.get(), test_url, account_id, account_id));
 
   delegate.SignIn(raw_contents);
 }
@@ -160,8 +162,9 @@ TEST_F(
   identity_test_env()->SetInvalidRefreshTokenForAccount(account_id);
 
   EnterpriseProxyTabHelperDelegate delegate;
-  EXPECT_CALL(*signin_bridge(),
-              StartUpdateCredentialsFlow(tab.get(), test_url, account_id));
+  EXPECT_CALL(
+      *signin_bridge(),
+      StartUpdateCredentialsFlow(tab.get(), test_url, account_id, account_id));
 
   delegate.SignIn(raw_contents);
 }
@@ -181,7 +184,8 @@ TEST_F(EnterpriseProxyTabHelperDelegateTest,
   // web_contents() has no TabAndroid attached, so StartUpdateCredentialsFlow
   // should not be invoked and it should not crash.
   EXPECT_CALL(*signin_bridge(),
-              StartUpdateCredentialsFlow(testing::_, testing::_, testing::_))
+              StartUpdateCredentialsFlow(testing::_, testing::_, testing::_,
+                                         testing::_))
       .Times(0);
 
   EnterpriseProxyTabHelperDelegate delegate;
