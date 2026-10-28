@@ -3557,6 +3557,10 @@
       public: true,
     },
     {
+      name: "GamepadUserActivationFocus",
+      status: "stable",
+    },
+    {
       name: "GamepadWindowEventHandlers",
       status: "stable",
     },

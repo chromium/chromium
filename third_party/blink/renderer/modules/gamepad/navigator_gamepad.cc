@@ -36,6 +36,7 @@
 #include "third_party/blink/renderer/core/frame/navigator.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
+#include "third_party/blink/renderer/core/page/focus_controller.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/modules/gamepad/gamepad.h"
 #include "third_party/blink/renderer/modules/gamepad/gamepad_comparisons.h"
@@ -124,8 +125,10 @@ HeapVector<Member<Gamepad>> NavigatorGamepad::Gamepads() {
     gamepads_.resize(device::Gamepads::kItemsLengthCap);
 
   // Allow gamepad button presses to qualify as user activations if the page is
-  // visible.
+  // visible and focused.
   if (DomWindow() && DomWindow()->GetFrame()->GetPage()->IsPageVisible() &&
+      (!RuntimeEnabledFeatures::GamepadUserActivationFocusEnabled() ||
+       DomWindow()->GetFrame()->GetPage()->GetFocusController().IsFocused()) &&
       GamepadComparisons::HasUserActivation(gamepads_)) {
     LocalFrame::NotifyUserActivation(
         DomWindow()->GetFrame(),
@@ -349,8 +352,9 @@ void NavigatorGamepad::DidRemoveGamepadEventListeners() {
 void NavigatorGamepad::SampleAndCompareGamepadState() {
   // Avoid re-entry. Do not fetch a new sample until we are finished dispatching
   // events from the previous sample.
-  if (processing_events_)
+  if (processing_events_ || should_skip_sample_for_testing_) {
     return;
+  }
 
   base::AutoReset<bool> processing_events_reset(&processing_events_, true);
   if (StartUpdatingIfAttached()) {
