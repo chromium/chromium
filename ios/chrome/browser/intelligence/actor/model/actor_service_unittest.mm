@@ -391,8 +391,8 @@ TEST_F(ActorServiceTest, CreateTaskGeneratesUniqueIds) {
   }
 }
 
-// Tests that requesting tab observation with a null WebState triggers the
-// callback asynchronously.
+// Tests that requesting tab observation with a null WebState posts an error
+// response.
 TEST_F(ActorServiceTest, RequestTabObservationWithNullWebStateReturnsFailure) {
   ActorService* service = ActorServiceFactory::GetForProfile(profile_.get());
   ASSERT_NE(nullptr, service);
@@ -406,7 +406,10 @@ TEST_F(ActorServiceTest, RequestTabObservationWithNullWebStateReturnsFailure) {
   EXPECT_FALSE(future.IsReady());
   // Run the posted reply.
   RunAlreadyPostedTasks();
-  EXPECT_TRUE(future.IsReady());
+  ASSERT_TRUE(future.IsReady());
+  const PageContextWrapperCallbackResponse& response = future.Get();
+  ASSERT_FALSE(response.has_value());
+  EXPECT_EQ(PageContextWrapperError::kGenericError, response.error());
 }
 
 // Tests that requesting tab observation of a non-extractable WebState, whose
@@ -1464,34 +1467,34 @@ TEST_F(ActorServiceTest, PerformActionsAfterStopTaskRepliesTaskWentAway) {
             result.action_results[0].tool_result.code());
 }
 
-// Tests that a tab observation requested after a stop replies with an empty
-// response instead of extracting.
-TEST_F(ActorServiceTest, RequestTabObservationAfterStopTaskRepliesEmpty) {
+// Tests that a tab observation requested after a stop replies with a generic
+// error instead of extracting.
+TEST_F(ActorServiceTest, RequestTabObservationAfterStopTaskRepliesError) {
   ActorService* service = ActorServiceFactory::GetForProfile(profile_.get());
   ASSERT_NE(nullptr, service);
 
   ActorTaskId task_id = CreateTask(service);
-  // A `FakeWebState` cannot be extracted, so an extraction would reply with an
-  // error rather than an empty response.
+  // A `FakeWebState` cannot be extracted, so an extraction would reply with
+  // `kPageNotExtractableError` rather than `kGenericError`.
   web::FakeWebState web_state;
   service->StopTask(task_id, ActorTaskStoppedReason::kStoppedByUser);
 
   base::test::TestFuture<PageContextWrapperCallbackResponse> future;
   service->RequestTabObservation(task_id, &web_state, future.GetCallback());
   ASSERT_TRUE(future.Wait());
-  ASSERT_TRUE(future.Get().has_value());
-  EXPECT_FALSE(future.Get().value());
+  ASSERT_FALSE(future.Get().has_value());
+  EXPECT_EQ(PageContextWrapperError::kGenericError, future.Get().error());
 }
 
 // Tests that a tab observation whose WebState is destroyed before the command
-// runs replies with an empty response instead of extracting.
+// runs replies with a generic error instead of extracting.
 TEST_F(ActorServiceTest, RequestTabObservationOfWebStateDestroyedBeforeRun) {
   ActorService* service = ActorServiceFactory::GetForProfile(profile_.get());
   ASSERT_NE(nullptr, service);
 
   ActorTaskId task_id = CreateTask(service);
-  // A `FakeWebState` cannot be extracted, so an extraction would reply with an
-  // error rather than an empty response.
+  // A `FakeWebState` cannot be extracted, so an extraction would reply with
+  // `kPageNotExtractableError` rather than `kGenericError`.
   auto web_state = std::make_unique<web::FakeWebState>();
 
   base::test::TestFuture<PageContextWrapperCallbackResponse> future;
@@ -1500,8 +1503,8 @@ TEST_F(ActorServiceTest, RequestTabObservationOfWebStateDestroyedBeforeRun) {
   web_state.reset();
 
   ASSERT_TRUE(future.Wait());
-  ASSERT_TRUE(future.Get().has_value());
-  EXPECT_FALSE(future.Get().value());
+  ASSERT_FALSE(future.Get().has_value());
+  EXPECT_EQ(PageContextWrapperError::kGenericError, future.Get().error());
 }
 
 // Tests that commands run in call order: the act runs before the stop.

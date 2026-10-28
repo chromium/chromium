@@ -15,6 +15,7 @@
 #import "base/functional/bind.h"
 #import "base/location.h"
 #import "base/task/sequenced_task_runner.h"
+#import "base/types/expected.h"
 #import "components/actor/core/aggregated_journal.h"
 #import "components/actor/core/journal_details_builder.h"
 #import "components/actor/core/task_source_info.h"
@@ -427,8 +428,11 @@ void ActorService::DoRequestTabObservation(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   web::WebState* web_state = weak_web_state.get();
   if (!FindActiveTask(task_id) || !web_state) {
-    PostReply(base::BindOnce(std::move(callback),
-                             PageContextWrapperCallbackResponse()));
+    // TODO(crbug.com/578549018): Reply a dedicated error when the WebState
+    // went away, matching Desktop's `kWebContentsWentAway`.
+    PostReply(base::BindOnce(
+        std::move(callback),
+        base::unexpected(PageContextWrapperError::kGenericError)));
     return;
   }
 

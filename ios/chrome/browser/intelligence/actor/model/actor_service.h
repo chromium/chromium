@@ -110,7 +110,7 @@ class ActorService : public KeyedService {
   // extraction on `PageContextWrapper`, with a completion callback. `callback`
   // runs at most once, always asynchronously, and never after `Shutdown()`. If
   // the task is not active or `web_state` is gone when the command runs, the
-  // callback runs with an empty response.
+  // callback runs with `PageContextWrapperError::kGenericError`.
   // TODO(crbug.com/568338837): Do not add new callers; move tab observation
   // internal to `ActorTask`.
   void RequestTabObservation(ActorTaskId task_id,
