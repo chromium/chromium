@@ -55,6 +55,7 @@ import org.chromium.chrome.browser.ui.signin.MinorModeHelper;
 import org.chromium.chrome.browser.ui.signin.R;
 import org.chromium.chrome.test.util.ActivityTestUtils;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
+import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.signin.metrics.SyncButtonsType;
 import org.chromium.components.signin.test.util.TestAccounts;
@@ -449,14 +450,13 @@ public class HistorySyncTest {
                     Assert.assertNull(historySyncActivity.findViewById(R.id.button_secondary));
                 });
 
-        // Capability is received as MINOR_MODE_REQUIRED after an arbitrary amount of time that is
-        // less than the deadline {@link MinorModeHelper.CAPABILITY_TIMEOUT_MS}. Buttons
-        // will be equally weighted.
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mSigninTestRule.resolveMinorModeToRestricted(
-                            TestAccounts.AADC_UNRESOLVED_ACCOUNT.getId());
-                });
+        // Simulate capability update arriving on the same CoreAccountId as MINOR_MODE_REQUIRED
+        // after an arbitrary amount of time that is less than the deadline
+        // {@link MinorModeHelper.CAPABILITY_TIMEOUT_MS}. Buttons will be equally weighted.
+        mSigninTestRule.updateAccount(
+                new AccountInfo.Builder(TestAccounts.AADC_UNRESOLVED_ACCOUNT)
+                        .accountCapabilities(TestAccounts.MINOR_MODE_REQUIRED)
+                        .build());
 
         onViewWaiting(withId(R.id.button_secondary));
 

@@ -254,15 +254,6 @@ public class SigninTestRule implements TestRule {
                 });
     }
 
-    /**
-     * Resolves the minor mode of {@code accountInfo} to restricted, so that the UI will be safe to
-     * show to minors.
-     */
-    public void resolveMinorModeToRestricted(CoreAccountId accountId) {
-        mFakeAccountManagerFacade.updateAccountCapabilities(
-                accountId, TestAccounts.MINOR_MODE_REQUIRED);
-    }
-
     /** Adds and signs in with the provided account. */
     public void addAccountThenSignin(AccountInfo accountInfo) {
         addAccount(accountInfo);

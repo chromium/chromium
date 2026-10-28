@@ -689,33 +689,6 @@ public class FakeAccountManagerFacade implements AccountManagerFacade {
         }
     }
 
-    /**
-     * Updates the previously set capabilities with the ones in accountCapabilities and notifies
-     * AccountsChangeObservers if there has been a change. New capabilities that were not already
-     * set are added and existing ones are updated with the new values.
-     */
-    @MainThread
-    public void updateAccountCapabilities(
-            CoreAccountId accountId, AccountCapabilities accountCapabilities) {
-        ThreadUtils.checkUiThread();
-        assert accountId != null;
-        boolean capabilitiesChanged;
-        if (SigninFeatureMap.sMigrateAccountManagerDelegate.isEnabled()) {
-            FakePlatformAccount account = assertNonNull(getPlatformAccount(accountId.getId()));
-            capabilitiesChanged =
-                    account.getAccountInfo()
-                            .getAccountCapabilities()
-                            .updateWith(accountCapabilities);
-        } else {
-            AccountHolder accountHolder = assertNonNull(getAccountHolder(accountId));
-            capabilitiesChanged =
-                    accountHolder.getAccountCapabilities().updateWith(accountCapabilities);
-        }
-        if (capabilitiesChanged) {
-            fireOnAccountsChangedNotification();
-        }
-    }
-
     private void setAccounts(List<AccountInfo> accounts) {
         ThreadUtils.checkUiThread();
         if (SigninFeatureMap.sMigrateAccountManagerDelegate.isEnabled()) {
