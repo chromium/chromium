@@ -2,8 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {Command} from 'chrome://resources/js/browser_command.mojom-webui.js';
-import {BrowserCommandProxy} from 'chrome://resources/js/browser_command/browser_command_proxy.js';
+import {browserProxyFactory as browserCommandProxyFactory, Command} from 'chrome://resources/js/browser_command.mojom-webui.js';
 import type {TimeDelta} from 'chrome://resources/mojo/mojo/public/mojom/base/time.mojom-webui.js';
 
 import {formatModuleName} from './format_module_name.js';
@@ -16,7 +15,7 @@ export function handleBrowserCommand(messageData: BrowserCommand) {
     return;
   }
   const {commandId} = messageData;
-  const handler = BrowserCommandProxy.getInstance().handler;
+  const handler = browserCommandProxyFactory.getInstance().handler;
   handler.canExecuteCommand(commandId).then(({canExecute}) => {
     if (canExecute) {
       handler.executeCommand(commandId, messageData.clickInfo);

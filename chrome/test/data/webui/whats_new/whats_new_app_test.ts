@@ -4,8 +4,7 @@
 
 import 'chrome://whats-new/whats_new_app.js';
 
-import {CommandHandlerRemote} from 'chrome://resources/js/browser_command.mojom-webui.js';
-import {BrowserCommandProxy} from 'chrome://resources/js/browser_command/browser_command_proxy.js';
+import {browserProxyFactory as browserCommandProxyFactory, CommandHandlerRemote} from 'chrome://resources/js/browser_command.mojom-webui.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
@@ -107,7 +106,7 @@ suite('WhatsNewAppTest', function() {
   test('with browser command format', async () => {
     handler.setGetServerUrlResponse(getUrlForFixture('test_with_command_4'));
     const browserCommandHandler = TestMock.fromClass(CommandHandlerRemote);
-    BrowserCommandProxy.getInstance().handler = browserCommandHandler;
+    browserCommandProxyFactory.setInstance({handler: browserCommandHandler});
     browserCommandHandler.setResultFor(
         'canExecuteCommand', Promise.resolve({canExecute: true}));
     window.history.replaceState({}, '', '/');
@@ -130,8 +129,7 @@ suite('WhatsNewAppTest', function() {
   test('with browser command test API', async () => {
     handler.setGetServerUrlResponse(whatsNewURL);
     const browserCommandHandler = TestMock.fromClass(CommandHandlerRemote);
-    const browserCommandProxy = BrowserCommandProxy.getInstance();
-    browserCommandProxy.handler = browserCommandHandler;
+    browserCommandProxyFactory.setInstance({handler: browserCommandHandler});
     browserCommandHandler.setResultFor(
         'canExecuteCommand', Promise.resolve({canExecute: true}));
     window.history.replaceState({}, '', '/');

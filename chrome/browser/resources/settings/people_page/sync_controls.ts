@@ -29,7 +29,7 @@ import {RouteObserverMixinLit} from '../router.js';
 
 import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
 import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.js';
-import {BatchUploadPromoProxyImpl} from 'chrome://resources/js/batch_upload_promo/batch_upload_promo_proxy.js';
+import {browserProxyFactory as batchUploadPromoProxyFactory} from 'chrome://resources/js/batch_upload_promo.mojom-webui.js';
 
 // clang-format on
 
@@ -133,12 +133,12 @@ export class SettingsSyncControlsElement extends
     }
 
     if (this.showBatchUploadPromo_) {
-      BatchUploadPromoProxyImpl.getInstance()
+      batchUploadPromoProxyFactory.getInstance()
           .callbackRouter.onLocalDataCountChanged.addListener(
               (localDataCount: number) => {
                 this.batchUploadPromoLocalDataCountChanged_(localDataCount);
               });
-      BatchUploadPromoProxyImpl.getInstance()
+      batchUploadPromoProxyFactory.getInstance()
           .handler.getBatchUploadPromoLocalDataCount()
           .then(({localDataCount}) => {
             this.batchUploadPromoLocalDataCountChanged_(localDataCount);
@@ -235,7 +235,7 @@ export class SettingsSyncControlsElement extends
       // Prevent navigation to href='#' and open the batch upload dialog
       // instead.
       event.preventDefault();
-      BatchUploadPromoProxyImpl.getInstance()
+      batchUploadPromoProxyFactory.getInstance()
           .handler.onBatchUploadPromoClicked();
     }
   }

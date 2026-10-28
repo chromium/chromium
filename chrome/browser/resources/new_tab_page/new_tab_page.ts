@@ -19,7 +19,7 @@ export {SearchboxMatchElement} from 'chrome://resources/cr_components/searchbox/
 export type {CrA11yAnnouncerMessagesSentEvent} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 export {CrAutoImgElement} from 'chrome://resources/cr_elements/cr_auto_img/cr_auto_img.js';
 export type {CrIconElement} from 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
-export {BrowserCommandProxy} from 'chrome://resources/js/browser_command/browser_command_proxy.js';
+export {browserProxyFactory as browserCommandProxyFactory} from 'chrome://resources/js/browser_command.mojom-webui.js';
 export {BrowserProxyImpl} from 'chrome://resources/js/metrics_reporter/browser_proxy.js';
 export {MetricsReporterImpl} from 'chrome://resources/js/metrics_reporter/metrics_reporter.js';
 export {getTrustedHTML} from 'chrome://resources/js/static_types.js';

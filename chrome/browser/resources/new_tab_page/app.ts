@@ -20,8 +20,7 @@ import type {SearchAnimatedGlowElement} from 'chrome://resources/cr_components/s
 import type {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 import type {ClickInfo} from 'chrome://resources/js/browser_command.mojom-webui.js';
-import {Command} from 'chrome://resources/js/browser_command.mojom-webui.js';
-import {BrowserCommandProxy} from 'chrome://resources/js/browser_command/browser_command_proxy.js';
+import {browserProxyFactory as browserCommandProxyFactory, Command} from 'chrome://resources/js/browser_command.mojom-webui.js';
 import {hexColorToSkColor, skColorToRgba} from 'chrome://resources/js/color_utils.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 import {FocusOutlineManager} from 'chrome://resources/js/focus_outline_manager.js';
@@ -1503,8 +1502,9 @@ export class AppElement extends AppElementBase {
         messageData.commandId :
         Command.kUnknownCommand;
 
-    BrowserCommandProxy.getInstance().handler.canExecuteCommand(commandId).then(
-        ({canExecute}) => {
+    browserCommandProxyFactory.getInstance()
+        .handler.canExecuteCommand(commandId)
+        .then(({canExecute}) => {
           const response = {
             messageType: messageData.messageType,
             [messageData.commandId]: canExecute,
@@ -1532,7 +1532,7 @@ export class AppElement extends AppElementBase {
         commandData.commandId :
         Command.kUnknownCommand;
 
-    BrowserCommandProxy.getInstance()
+    browserCommandProxyFactory.getInstance()
         .handler.executeCommand(commandId, commandData.clickInfo)
         .then(({commandExecuted}) => {
           WindowProxy.getInstance().postMessage(

@@ -7,7 +7,7 @@ import type {ActionChipClickDetail, ComposeboxFuseboxActionRequest, Module} from
 import {ActionChipsRetrievalState, ComposeboxProxyImpl, ModuleRegistry, NtpComposeboxElement} from 'chrome://new-tab-page/lazy_load.js';
 import {ActionChipsHandlerRemote, ActionChipsPageCallbackRouter, IconType, InputSource, QueryActionOverride, SearchboxOverride} from 'chrome://new-tab-page/new_tab_page.js';
 import type {ActionChipsPageRemote, CustomizeButtonsDocumentRemote, FuseboxAction, TabInfo} from 'chrome://new-tab-page/new_tab_page.js';
-import {$$, BackgroundManager, BrowserCommandProxy, CONTEXTUAL_ENTRYPOINT_ELEMENT_ID, CUSTOMIZE_CHROME_BUTTON_ELEMENT_ID, CustomizeButtonsDocumentCallbackRouter, CustomizeButtonsHandlerRemote, CustomizeButtonsProxy, CustomizeChromeSection, CustomizeDialogPage, GlifAnimationState, NewTabPageProxy, NtpCustomizeChromeEntryPoint, NtpElement, SearchboxBrowserProxy, SidePanelOpenTrigger, VoiceAction, WindowProxy} from 'chrome://new-tab-page/new_tab_page.js';
+import {$$, BackgroundManager, browserCommandProxyFactory, CONTEXTUAL_ENTRYPOINT_ELEMENT_ID, CUSTOMIZE_CHROME_BUTTON_ELEMENT_ID, CustomizeButtonsDocumentCallbackRouter, CustomizeButtonsHandlerRemote, CustomizeButtonsProxy, CustomizeChromeSection, CustomizeDialogPage, GlifAnimationState, NewTabPageProxy, NtpCustomizeChromeEntryPoint, NtpElement, SearchboxBrowserProxy, SidePanelOpenTrigger, VoiceAction, WindowProxy} from 'chrome://new-tab-page/new_tab_page.js';
 import type {AppElement, CustomizeButtonsElement, NtpSearchboxElement, PageRemote} from 'chrome://new-tab-page/new_tab_page.js';
 import {NtpBackgroundImageSource, PageCallbackRouter, PageHandlerRemote} from 'chrome://new-tab-page/new_tab_page.js';
 import {ComposeboxFile} from 'chrome://resources/cr_components/composebox/common.js';
@@ -716,7 +716,7 @@ suite('NewTabPageAppTest', () => {
     test('can show promo with browser command', async () => {
       const promoBrowserCommandHandler = installMock(
           CommandHandlerRemote,
-          mock => BrowserCommandProxy.getInstance().handler = mock);
+          mock => browserCommandProxyFactory.setInstance({handler: mock}));
       promoBrowserCommandHandler.setPromiseResolveFor(
           'canExecuteCommand', {canExecute: true});
 
@@ -751,7 +751,7 @@ suite('NewTabPageAppTest', () => {
     test('executes promo browser command', async () => {
       const promoBrowserCommandHandler = installMock(
           CommandHandlerRemote,
-          mock => BrowserCommandProxy.getInstance().handler = mock);
+          mock => browserCommandProxyFactory.setInstance({handler: mock}));
       promoBrowserCommandHandler.setPromiseResolveFor(
           'executeCommand', {commandExecuted: true});
 
