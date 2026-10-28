@@ -11,7 +11,7 @@ import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {getCss} from './app.css.js';
 import {getHtml} from './app.html.js';
-import {BrowserProxy} from './browser_proxy.js';
+import {browserProxyFactory} from './default_browser_modal.mojom-webui.js';
 
 export class DefaultBrowserModalAppElement extends CrLitElement {
   static get is() {
@@ -47,7 +47,7 @@ export class DefaultBrowserModalAppElement extends CrLitElement {
 
     window.addEventListener('focus', this.boundOnFocus_);
     this.hasAcceptedListenerId_ =
-        BrowserProxy.getInstance()
+        browserProxyFactory.getInstance()
             .callbackRouter.onHasAcceptedChanged.addListener(
                 (hasAccepted: boolean) => {
                   this.hasAccepted_ = hasAccepted;
@@ -63,7 +63,7 @@ export class DefaultBrowserModalAppElement extends CrLitElement {
     window.removeEventListener('focus', this.boundOnFocus_);
 
     if (this.hasAcceptedListenerId_ !== null) {
-      BrowserProxy.getInstance().callbackRouter.removeListener(
+      browserProxyFactory.getInstance().callbackRouter.removeListener(
           this.hasAcceptedListenerId_);
       this.hasAcceptedListenerId_ = null;
     }
@@ -75,7 +75,7 @@ export class DefaultBrowserModalAppElement extends CrLitElement {
     if (!this.isModal_) {
       return;
     }
-    BrowserProxy.getInstance().handler.showUI();
+    browserProxyFactory.getInstance().handler.showUI();
   }
 
   accessor useSettingsIllustration: boolean =
@@ -91,19 +91,19 @@ export class DefaultBrowserModalAppElement extends CrLitElement {
   }
 
   protected onCancelClick_() {
-    BrowserProxy.getInstance().handler.cancel();
+    browserProxyFactory.getInstance().handler.cancel();
   }
 
   protected onConfirmClick_() {
-    BrowserProxy.getInstance().handler.confirm();
+    browserProxyFactory.getInstance().handler.confirm();
   }
 
   protected onTryAgainClick_() {
-    BrowserProxy.getInstance().handler.tryAgain();
+    browserProxyFactory.getInstance().handler.tryAgain();
   }
 
   protected onCloseClick_() {
-    BrowserProxy.getInstance().handler.cancel();
+    browserProxyFactory.getInstance().handler.cancel();
   }
 
   private async onWindowFocus_() {
@@ -114,7 +114,8 @@ export class DefaultBrowserModalAppElement extends CrLitElement {
       return;
     }
 
-    await BrowserProxy.getInstance().handler.checkDefaultStatusAndMaybeClose();
+    await browserProxyFactory.getInstance()
+        .handler.checkDefaultStatusAndMaybeClose();
   }
 }
 

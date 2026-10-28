@@ -22,5 +22,6 @@ build_webui_tests("build") {
   ts_deps = [
     "//chrome/browser/resources/default_browser/default_browser_modal:build_ts",
     "//ui/webui/resources/js:build_ts",
+    "//ui/webui/resources/mojo:build_ts",
   ]
 }

@@ -8,8 +8,8 @@ import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import type {Rect} from 'chrome://resources/mojo/ui/gfx/geometry/mojom/geometry.mojom-webui.js';
 
-import {PageCallbackRouter, PageHandlerFactory, PageHandlerRemote} from './visual_guided_setter.mojom-webui.js';
-import type {PageHandlerInterface} from './visual_guided_setter.mojom-webui.js';
+import {browserProxyFactory} from './visual_guided_setter.mojom-webui.js';
+import type {PageCallbackRouter, PageHandlerInterface} from './visual_guided_setter.mojom-webui.js';
 
 let handler: PageHandlerInterface|null = null;
 let callbackRouter: PageCallbackRouter|null = null;
@@ -83,7 +83,9 @@ function initialize() {
     });
   }
 
-  callbackRouter = new PageCallbackRouter();
+  const proxy = browserProxyFactory.getInstance();
+  handler = proxy.handler;
+  callbackRouter = proxy.callbackRouter;
   callbackRouter.setErrorState.addListener((hasError: boolean) => {
     const container = document.getElementById('illustration-container');
     if (container) {
@@ -91,13 +93,6 @@ function initialize() {
     }
   });
   callbackRouter.setDockedSettingsBounds.addListener(updateDockedSlot);
-
-  const handlerRemote = new PageHandlerRemote();
-  handler = handlerRemote;
-
-  PageHandlerFactory.getRemote().createPageHandler(
-      callbackRouter.$.bindNewPipeAndPassRemote(),
-      handlerRemote.$.bindNewPipeAndPassReceiver());
 
   const container = document.getElementById('illustration-container');
   if (container) {

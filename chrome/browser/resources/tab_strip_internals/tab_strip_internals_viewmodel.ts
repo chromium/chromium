@@ -4,11 +4,10 @@
 
 import {assert} from '//resources/js/assert.js';
 
-import type {Container} from './tab_strip_internals.mojom-webui.js';
+import {browserProxyFactory} from './tab_strip_internals.mojom-webui.js';
+import type {BrowserProxy, Container} from './tab_strip_internals.mojom-webui.js';
 import {DataModelAdapter} from './tab_strip_internals_adapter.js';
 import type {ModelNode} from './tab_strip_internals_adapter.js';
-import {TabStripInternalsApiProxyImpl} from './tab_strip_internals_api_proxy.js';
-import type {TabStripInternalsApiProxy} from './tab_strip_internals_api_proxy.js';
 
 // Observer interface implemented by Views that want to be notified when the
 // ViewModel's observable state changes.
@@ -30,8 +29,7 @@ export enum ViewModelChange {
  * ViewModel layer: Handles application state and communication with backend.
  */
 export class TabStripInternalsViewModel {
-  private readonly proxy_: TabStripInternalsApiProxy =
-      TabStripInternalsApiProxyImpl.getInstance();
+  private readonly proxy_: BrowserProxy = browserProxyFactory.getInstance();
 
   // View state
   /** Represents the root node of the navigation pane hierarchy. */
@@ -101,14 +99,14 @@ export class TabStripInternalsViewModel {
    */
   async initialize(): Promise<void> {
     try {
-      const {data} = await this.proxy_.getTabStripData();
+      const {data} = await this.proxy_.handler.getTabStripData();
       this.buildModelHierarchy_(data);
     } catch (e) {
       this.setError_('Failed to load TabStrip data', e);
       return;
     }
 
-    this.proxy_.getCallbackRouter().onTabStripUpdated.addListener(
+    this.proxy_.callbackRouter.onTabStripUpdated.addListener(
         (data: Container) => {
           try {
             this.buildModelHierarchy_(data);

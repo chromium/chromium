@@ -5,20 +5,24 @@
 import 'chrome://default-browser-modal/app.js';
 
 import type {DefaultBrowserModalAppElement} from 'chrome://default-browser-modal/app.js';
-import {BrowserProxy} from 'chrome://default-browser-modal/browser_proxy.js';
+import {browserProxyFactory} from 'chrome://default-browser-modal/default_browser_modal.mojom-webui.js';
+import type {PageRemote} from 'chrome://default-browser-modal/default_browser_modal.mojom-webui.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
 
-import {TestDefaultBrowserBrowserProxy} from './test_browser_proxy.js';
+import {TestDefaultBrowserPageHandler} from './test_browser_proxy.js';
 
 suite('DefaultBrowserModalAppWithoutIllustrationTest', function() {
   let app: DefaultBrowserModalAppElement;
-  let browserProxy: TestDefaultBrowserBrowserProxy;
+  let handler: TestDefaultBrowserPageHandler;
+  let callbackRouterRemote: PageRemote;
 
   setup(function() {
-    browserProxy = new TestDefaultBrowserBrowserProxy();
-    BrowserProxy.setInstance(browserProxy);
+    handler = new TestDefaultBrowserPageHandler();
+    const {instance, remote} = browserProxyFactory.createForTest(handler);
+    browserProxyFactory.setInstance(instance);
+    callbackRouterRemote = remote;
 
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     loadTimeData.overrideValues({
@@ -55,7 +59,7 @@ suite('DefaultBrowserModalAppWithoutIllustrationTest', function() {
     assertTrue(isVisible(confirmButton));
     assertTrue(!!confirmButton);
     confirmButton.click();
-    assertEquals(1, browserProxy.handler.getCallCount('confirm'));
+    assertEquals(1, handler.getCallCount('confirm'));
   });
 
   test('ClickCancel', function() {
@@ -64,7 +68,7 @@ suite('DefaultBrowserModalAppWithoutIllustrationTest', function() {
     assertTrue(isVisible(cancelButton));
     assertTrue(!!cancelButton);
     cancelButton.click();
-    assertEquals(1, browserProxy.handler.getCallCount('cancel'));
+    assertEquals(1, handler.getCallCount('cancel'));
   });
 
   test('StickyModalTryAgainFlow', async function() {
@@ -89,15 +93,15 @@ suite('DefaultBrowserModalAppWithoutIllustrationTest', function() {
         cancelButton!.textContent.trim());
 
     confirmButton!.click();
-    assertEquals(1, browserProxy.handler.getCallCount('confirm'));
-    assertEquals(0, browserProxy.handler.getCallCount('tryAgain'));
+    assertEquals(1, handler.getCallCount('confirm'));
+    assertEquals(0, handler.getCallCount('tryAgain'));
 
     await app.updateComplete;
     assertTrue(isVisible(
         app.shadowRoot.querySelector<HTMLElement>('#confirm-button')));
 
-    browserProxy.callbackRouterRemote.onHasAcceptedChanged(true);
-    await browserProxy.callbackRouterRemote.$.flushForTesting();
+    callbackRouterRemote.onHasAcceptedChanged(true);
+    await callbackRouterRemote.$.flushForTesting();
     await app.updateComplete;
 
     const tryAgainButton =
@@ -113,12 +117,12 @@ suite('DefaultBrowserModalAppWithoutIllustrationTest', function() {
         loadTimeData.getString('close'), closeButton!.textContent.trim());
 
     window.dispatchEvent(new Event('focus'));
-    await browserProxy.handler.whenCalled('checkDefaultStatusAndMaybeClose');
+    await handler.whenCalled('checkDefaultStatusAndMaybeClose');
 
     tryAgainButton!.click();
-    assertEquals(1, browserProxy.handler.getCallCount('tryAgain'));
+    assertEquals(1, handler.getCallCount('tryAgain'));
 
     closeButton!.click();
-    assertEquals(1, browserProxy.handler.getCallCount('cancel'));
+    assertEquals(1, handler.getCallCount('cancel'));
   });
 });
