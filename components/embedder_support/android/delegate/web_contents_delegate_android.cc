@@ -45,7 +45,7 @@
 #include "ui/android/resources/capture_result.h"
 #include "ui/android/view_android.h"
 #include "ui/android/window_android.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/gfx/android/java_bitmap.h"
 #include "ui/gfx/android/rect_jni_conversion.h"
 #include "url/android/gurl_android.h"
@@ -139,12 +139,13 @@ WebContents* WebContentsDelegateAndroid::OpenURLFromTab(
     base::OnceCallback<void(content::NavigationHandle&)>
         navigation_handle_callback) {
   const GURL& url = params.url;
-  WindowOpenDisposition disposition = params.disposition;
+  ui::mojom::WindowOpenDisposition disposition = params.disposition;
 
-  if (!source || (disposition != WindowOpenDisposition::kCurrentTab &&
-                  disposition != WindowOpenDisposition::kNewForegroundTab &&
-                  disposition != WindowOpenDisposition::kNewBackgroundTab &&
-                  disposition != WindowOpenDisposition::kOffTheRecord)) {
+  if (!source ||
+      (disposition != ui::mojom::WindowOpenDisposition::kCurrentTab &&
+       disposition != ui::mojom::WindowOpenDisposition::kNewForegroundTab &&
+       disposition != ui::mojom::WindowOpenDisposition::kNewBackgroundTab &&
+       disposition != ui::mojom::WindowOpenDisposition::kOffTheRecord)) {
     NOTIMPLEMENTED();
     return NULL;
   }
@@ -156,9 +157,9 @@ WebContents* WebContentsDelegateAndroid::OpenURLFromTab(
         source, params, std::move(navigation_handle_callback));
   }
 
-  if (disposition == WindowOpenDisposition::kNewForegroundTab ||
-      disposition == WindowOpenDisposition::kNewBackgroundTab ||
-      disposition == WindowOpenDisposition::kOffTheRecord) {
+  if (disposition == ui::mojom::WindowOpenDisposition::kNewForegroundTab ||
+      disposition == ui::mojom::WindowOpenDisposition::kNewBackgroundTab ||
+      disposition == ui::mojom::WindowOpenDisposition::kOffTheRecord) {
     ScopedJavaLocalRef<jobject> java_gurl =
         url::GURLAndroid::FromNativeGURL(env, url);
     ScopedJavaLocalRef<jstring> extra_headers =

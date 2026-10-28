@@ -37,7 +37,6 @@
 #include "services/network/public/cpp/features.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/jni_zero/jni_zero.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/events/event.h"
 #include "url/origin.h"
 #include "url/url_constants.h"
