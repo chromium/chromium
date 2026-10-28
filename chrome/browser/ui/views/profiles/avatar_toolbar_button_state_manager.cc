@@ -2402,7 +2402,10 @@ void AvatarToolbarButtonStateManager::CreateStatesAndListeners(
   Profile* profile = browser->GetProfile();
 
   // Web app has limited toolbar space, thus always show kNormal state.
-  if (web_app::AppBrowserController::IsWebApp(browser)) {
+  // Also only create kNormal state when the avatar button cannot be shown for
+  // the profile (e.g. regular profiles on ChromeOS).
+  if (web_app::AppBrowserController::IsWebApp(browser) ||
+      !AvatarToolbarButtonInterface::CanShowForProfile(profile)) {
     // This state is always active.
     states_[ButtonState::kNormal] =
         std::make_unique<NormalStateProvider>(profile, /*state_observer=*/this);

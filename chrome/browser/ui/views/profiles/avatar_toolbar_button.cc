@@ -88,9 +88,11 @@ AvatarToolbarButton::AvatarToolbarButton(BrowserWindowInterface* browser)
   SetHorizontalAlignment(gfx::ALIGN_LEFT);
 
   SetImageLabelSpacing(kChromeRefreshImageLabelPadding);
-  label()->SetPaintToLayer();
-  label()->SetSkipSubpixelRenderingOpacityCheck(true);
-  label()->layer()->SetFillsBoundsOpaquely(false);
+  if (AvatarToolbarButtonInterface::CanShowForProfile(browser->GetProfile())) {
+    label()->SetPaintToLayer();
+    label()->SetSkipSubpixelRenderingOpacityCheck(true);
+    label()->layer()->SetFillsBoundsOpaquely(false);
+  }
   label()->SetSubpixelRenderingEnabled(false);
 
   // With default (EASE_OUT) tween type.
@@ -205,7 +207,7 @@ void AvatarToolbarButton::AnimateTextChange(
   const std::u16string new_text = state_provider->GetText();
   const std::u16string_view current_text = GetText();
 
-  if (new_text == current_text ||
+  if (!GetVisible() || new_text == current_text ||
       gfx::ScopedAnimationDurationScaleMode::is_zero()) {
     SetHighlight(new_text, state_provider->GetHighlightColor(*color_provider));
     return;

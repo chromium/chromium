@@ -677,8 +677,10 @@ void ToolbarButton::HighlightColorAnimation::Show(
   // |highlight_color_|. If the animation is fully shown, we will jump directly
   // to the new |highlight_color_|. This is not ideal but making it smoother is
   // not worth the extra complexity given this should be very rare.
-  if (highlight_color_animation_.GetCurrentValue() == 0.0f ||
-      highlight_color_animation_.IsClosing()) {
+  if (!parent_->GetVisible()) {
+    highlight_color_animation_.Reset(1.0f);
+  } else if (highlight_color_animation_.GetCurrentValue() == 0.0f ||
+             highlight_color_animation_.IsClosing()) {
     highlight_color_animation_.Show();
   }
   highlight_color_ = highlight_color;
@@ -686,6 +688,10 @@ void ToolbarButton::HighlightColorAnimation::Show(
 }
 
 void ToolbarButton::HighlightColorAnimation::Hide() {
+  if (!parent_->GetVisible()) {
+    ClearHighlightColor();
+    return;
+  }
   highlight_color_animation_.Hide();
 }
 
