@@ -5400,6 +5400,7 @@ if (!is_android) {
       "//chrome/browser/renderer_context_menu:test_support",
       "//chrome/browser/ui:browser_tabstrip",
       "//chrome/browser/ui:browser_window_header",
+      "//chrome/browser/ui/views/frame:browser_view_header",
       "//chrome/common:chrome_features",
       "//chrome/common:non_code_constants",
       "//chrome/test:test_support",

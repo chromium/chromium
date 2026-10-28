@@ -16,6 +16,8 @@
 #include "build/build_config.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
@@ -864,7 +866,11 @@ IN_PROC_BROWSER_TEST_F(BrowserKeyEventsTest, FocusMenuBarByAltKey) {
   int tab_index = browser()->tab_strip_model()->active_index();
   // Press and release Alt key to focus wrench menu button.
   EXPECT_NO_FATAL_FAILURE(TestKeyEvent(tab_index, kTestAltKey));
-  EXPECT_TRUE(IsViewFocused(VIEW_ID_APP_MENU));
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return BrowserView::GetBrowserViewForBrowser(browser())
+        ->toolbar()
+        ->GetAppMenuFocused();
+  }));
 
   ASSERT_NO_FATAL_FAILURE(ClickOnView(VIEW_ID_TAB_CONTAINER));
   ASSERT_TRUE(IsViewFocused(VIEW_ID_TAB_CONTAINER));
