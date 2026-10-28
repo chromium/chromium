@@ -11,4 +11,9 @@ static bool JNI_ContextualTasksUtils_IsContextualTasksUiEnabled() {
   return contextual_tasks::IsContextualTasksUIEnabled();
 }
 
+static bool
+JNI_ContextualTasksUtils_IsAllowSignedOutUserInDesktopAndroidEnabled() {
+  return contextual_tasks::IsAllowSignedOutUserInDesktopAndroidEnabled();
+}
+
 DEFINE_JNI(ContextualTasksUtils)

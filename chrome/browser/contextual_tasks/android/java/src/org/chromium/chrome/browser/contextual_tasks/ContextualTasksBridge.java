@@ -93,6 +93,10 @@ public class ContextualTasksBridge implements ChromeAndroidTaskFeature {
         mNativeContextualTasksBridge =
                 ContextualTasksBridgeJni.get().init(this, browserWindow, mProfile);
 
+        // The supplier is scoped to the Activity (WindowAndroid) and signals that the Activity's
+        // bridge is ready. An Activity may also host a short-lived incognito bridge, which must
+        // not be stored here since a monotonic supplier cannot be cleared when it is removed.
+        if (mProfile.isOffTheRecord()) return;
         SettableMonotonicObservableSupplier<ContextualTasksBridge> supplier =
                 (SettableMonotonicObservableSupplier<ContextualTasksBridge>)
                         getSupplier(mWindowAndroid);

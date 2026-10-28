@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.contextual_tasks;
 
+import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
@@ -156,5 +157,33 @@ public class ContextualTasksBridgeUnitTest {
         ContextualTasksBridge.getTaskTitleForTab(tab, callback);
 
         verify(mMockJni).getTaskTitleForTab(eq(mWebContents), eq(callback));
+    }
+
+    @Test
+    public void testOnAddedToTask_regular_setsSupplier() {
+        assertEquals(mBridge, ContextualTasksBridge.getSupplier(mWindowAndroid).get());
+    }
+
+    @Test
+    public void testOnAddedToTask_incognito_doesNotSetSupplier() {
+        Profile incognitoProfile = mock(Profile.class);
+        when(incognitoProfile.isOffTheRecord()).thenReturn(true);
+        ContextualTasksBridge incognitoBridge =
+                new ContextualTasksBridge(incognitoProfile, mWindowAndroid);
+
+        // Add an incognito bridge to the same Activity as the regular bridge from setUp().
+        incognitoBridge.onAddedToTask(
+                new InitInfo(
+                        /* nativeBrowserWindowPtr= */ 0,
+                        mBrowserWindow,
+                        /* isVisible= */ true,
+                        new Rect(),
+                        new Rect(),
+                        Display.DEFAULT_DISPLAY));
+
+        // The native bridge is still created, but the Activity-scoped supplier keeps the regular
+        // bridge.
+        verify(mMockJni).init(eq(incognitoBridge), eq(mBrowserWindow), eq(incognitoProfile));
+        assertEquals(mBridge, ContextualTasksBridge.getSupplier(mWindowAndroid).get());
     }
 }

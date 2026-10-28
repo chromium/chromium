@@ -96,7 +96,7 @@ import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutHelper.L
 import org.chromium.chrome.browser.compositor.overlays.strip.TabContextMenuCoordinator.TabStripLayoutType;
 import org.chromium.chrome.browser.contextmenu.ChromeContextMenuPopulator;
 import org.chromium.chrome.browser.contextmenu.ChromeContextMenuPopulatorFactory;
-import org.chromium.chrome.browser.contextual_tasks.ContextualTasksBridge;
+import org.chromium.chrome.browser.contextual_tasks.ContextualTasksBridgeRegistrar;
 import org.chromium.chrome.browser.contextual_tasks.ContextualTasksUtils;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.data_sharing.DataSharingNotificationManager;
@@ -428,7 +428,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     private @Nullable ViewMarginAdjusterForSideUi mTabModalContainerMarginAdjuster;
     private @Nullable BottomSheetContainerMarginAdjusterForSideUi
             mBottomSheetContainerMarginAdjuster;
-    private @Nullable ContextualTasksBridge mContextualTasksBridge;
+    private @Nullable ContextualTasksBridgeRegistrar mContextualTasksBridgeRegistrar;
     private @Nullable GlicUiCoordinator mGlicUiCoordinator;
     private @Nullable TtcSessionCoordinator mTtcSessionCoordinator;
     private @Nullable ForcedSigninController mForcedSigninController;
@@ -1055,8 +1055,9 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             mTabBottomSheetManager = null;
         }
 
-        if (mContextualTasksBridge != null) {
-            mContextualTasksBridge = null;
+        if (mContextualTasksBridgeRegistrar != null) {
+            mContextualTasksBridgeRegistrar.destroy();
+            mContextualTasksBridgeRegistrar = null;
         }
 
         if (mCoBrowseViewFactory != null) {
@@ -1621,18 +1622,14 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         initializeWebContentHairline();
 
         // ContextualTasksBridge depends on the side panel framework set up by initializeSideUi().
-        if (ContextualTasksUtils.isContextualTasksUiEnabled()) {
-            if (mChromeAndroidTaskSupplier.get() != null) {
-                mContextualTasksBridge = new ContextualTasksBridge(originalProfile, mWindowAndroid);
-                mChromeAndroidTaskSupplier
-                        .get()
-                        .addFeature(
-                                new ChromeAndroidTaskFeatureKey(
-                                        ContextualTasksBridge.class,
-                                        originalProfile,
-                                        mWindowAndroid),
-                                () -> mContextualTasksBridge);
-            }
+        ChromeAndroidTask chromeAndroidTask = mChromeAndroidTaskSupplier.get();
+        if (ContextualTasksUtils.isContextualTasksUiEnabled() && chromeAndroidTask != null) {
+            mContextualTasksBridgeRegistrar =
+                    new ContextualTasksBridgeRegistrar(
+                            chromeAndroidTask,
+                            mWindowAndroid,
+                            mTabModelSelectorSupplier.asNonNull().get());
+            mContextualTasksBridgeRegistrar.init();
         }
 
         // Activity-scoped so the native AiOverlayDialogControllerAndroid, which attaches itself to

@@ -44,8 +44,20 @@ public final class ContextualTasksUtils {
         return ContextualTasksUtilsJni.get().isContextualTasksUiEnabled();
     }
 
+    /**
+     * Returns whether signed-out users (including incognito) are allowed to use Contextual Tasks in
+     * the side panel on Desktop Android. Must be called after native initialization.
+     *
+     * @return True if kAllowSignedOutUserInDesktopAndroid is enabled on a desktop form factor.
+     */
+    public static boolean isAllowSignedOutUserInDesktopAndroidEnabled() {
+        return ContextualTasksUtilsJni.get().isAllowSignedOutUserInDesktopAndroidEnabled();
+    }
+
     @NativeMethods
     public interface Natives {
         boolean isContextualTasksUiEnabled();
+
+        boolean isAllowSignedOutUserInDesktopAndroidEnabled();
     }
 }

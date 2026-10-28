@@ -1018,10 +1018,12 @@ void ContextualTasksUI::BindInterface(
 
 bool ContextualTasksUIConfig::IsWebUIEnabled(
     content::BrowserContext* browser_context) {
-  // Keep Contextual Tasks disabled for incognito profiles unless
-  // Lens Side Panel Unification is enabled.
+  // Keep Contextual Tasks disabled for incognito profiles unless Lens Side
+  // Panel Unification is enabled or signed-out users are allowed on Desktop
+  // Android.
   if (browser_context->IsOffTheRecord() &&
-      !lens::features::IsLensSidePanelUnificationEnabled()) {
+      !lens::features::IsLensSidePanelUnificationEnabled() &&
+      !contextual_tasks::IsAllowSignedOutUserInDesktopAndroidEnabled()) {
     return false;
   }
   return contextual_tasks::IsContextualTasksUIEnabled();

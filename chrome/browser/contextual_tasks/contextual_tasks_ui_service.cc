@@ -492,9 +492,12 @@ void ContextualTasksUiService::OnNavigationToAiPageIntercepted(
     BrowserWindowInterface* window =
         webui::GetBrowserWindowInterface(source_tab->GetContents());
     if (window) {
-      auto* controller = ContextualTasksPanelController::From(window);
-      controller->Show();
-      contextual_task_web_contents = controller->GetActiveWebContents();
+      // The controller may be missing if the tab was reparented to a window
+      // without one between HandleNavigationImpl() and this task.
+      if (auto* controller = ContextualTasksPanelController::From(window)) {
+        controller->Show();
+        contextual_task_web_contents = controller->GetActiveWebContents();
+      }
     }
   } else {
     base::RecordAction(
@@ -2896,6 +2899,16 @@ bool ContextualTasksUiService::HandleNavigationImpl(
       OMNIBOX_LOG("nav_trace")
           << "ContextualTasks navigation trace: HandleNavigationImpl "
              "returning false, nav to AI but not cobrowse eligible";
+      return false;
+    }
+
+    // If the window has no panel controller, or there is no window, do not
+    // intercept, since the side panel cannot be opened.
+    if (IsActiveTabInContext(source_contents) &&
+        (!browser || !ContextualTasksPanelController::From(browser))) {
+      OMNIBOX_LOG("nav_trace")
+          << "ContextualTasks navigation trace: HandleNavigationImpl "
+             "returning false, no panel controller for window";
       return false;
     }
 
