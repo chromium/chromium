@@ -16651,21 +16651,6 @@
             ]
         }
     ],
-    "SkipDefaultBrowserPromoInFirstRun": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "SkipDefaultBrowserPromoInFirstRun"
-                    ]
-                }
-            ]
-        }
-    ],
     "SkipDisabledGLContextOnDrDC": [
         {
             "platforms": [

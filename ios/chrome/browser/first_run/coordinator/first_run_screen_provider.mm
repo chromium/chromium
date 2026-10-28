@@ -5,10 +5,8 @@
 #import "ios/chrome/browser/first_run/coordinator/first_run_screen_provider.h"
 
 #import "base/notreached.h"
-#import "components/regional_capabilities/regional_capabilities_service.h"
 #import "ios/chrome/app/tests_hook.h"
 #import "ios/chrome/browser/first_run/public/features.h"
-#import "ios/chrome/browser/regional_capabilities/model/regional_capabilities_service_factory.h"
 #import "ios/chrome/browser/screen/ui_bundled/screen_provider+protected.h"
 #import "ios/chrome/browser/screen/ui_bundled/screen_type.h"
 #import "ios/chrome/browser/search_engine_choice/model/search_engine_choice_util.h"
@@ -105,19 +103,6 @@ NSArray* FirstRunScreenSequenceForProfile(ProfileIOS* profile) {
     [screens addObject:@(kLensAnimatedPromo)];
   } else if (IsBestOfAppBestFeaturesEnabled()) {
     [screens addObject:@(kBestFeatures)];
-  }
-
-  // Conditionally remove the Default Browser promo if it's skipped and there
-  // is a sign-in screen in the sequence. If the sign-in screen is removed,
-  // do not remove the DB screen. At least one of these two screens must be
-  // shown because we need the TOS disclaimer to be displayed.
-  regional_capabilities::RegionalCapabilitiesService*
-      regional_capabilities_service =
-          ios::RegionalCapabilitiesServiceFactory::GetForProfile(profile);
-  if (first_run::IsSkipDefaultBrowserPromoInFirstRunEnabled(
-          regional_capabilities_service->IsInEeaCountry()) &&
-      [screens containsObject:@(kSignIn)]) {
-    [screens removeObject:@(kDefaultBrowserPromo)];
   }
 
   [screens addObject:@(kStepsCompleted)];

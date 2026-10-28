@@ -109,7 +109,6 @@ source_set("first_run_provider") {
   ]
   deps = [
     "//base",
-    "//components/regional_capabilities",
     "//components/search_engines",
     "//components/sync/base:features",
     "//ios/chrome/app:tests_hook",
@@ -117,7 +116,6 @@ source_set("first_run_provider") {
     "//ios/chrome/browser/first_run/omnibox_position/ui",
     "//ios/chrome/browser/first_run/public:features",
     "//ios/chrome/browser/policy/model",
-    "//ios/chrome/browser/regional_capabilities/model",
     "//ios/chrome/browser/safari_data_import/model:features",
     "//ios/chrome/browser/safari_data_import/public",
     "//ios/chrome/browser/screen/ui_bundled:screen_provider",

@@ -76,9 +76,6 @@ BASE_DECLARE_FEATURE(kAnimatedDefaultBrowserPromoInFRE);
 // FRE sequence.
 BASE_DECLARE_FEATURE(kBestFeaturesScreenInFirstRun);
 
-// Flag to skip the Default Browser Promo from the FRE in the EU/EEA.
-BASE_DECLARE_FEATURE(kSkipDefaultBrowserPromoInFirstRun);
-
 // Feature to enable updates to the sequence of the first run screens.
 BASE_DECLARE_FEATURE(kUpdatedFirstRunSequence);
 
@@ -129,9 +126,6 @@ bool IsAnimatedDefaultBrowserPromoInFREEnabled();
 // determines the layout of the Animated DBP.
 AnimatedDefaultBrowserPromoInFREExperimentType
 AnimatedDefaultBrowserPromoInFREExperimentTypeEnabled();
-
-// Returns whether the Default Browser Promo should be skipped in the FRE.
-bool IsSkipDefaultBrowserPromoInFirstRunEnabled(bool is_in_eea_country);
 
 // Returns whether post FRE IPH promos should be presented in
 // FirstRunProfileAgent instead of FirstRunCoordinator (killswitch).

@@ -1881,12 +1881,6 @@ inline constexpr char kShowAutofillTypePredictionsDescription[] =
     "Annotates web forms with Autofill field type predictions as placeholder "
     "text.";
 
-inline constexpr char kSkipDefaultBrowserPromoInFirstRunName[] =
-    "Skip the FRE Default Browser Promo in EEA";
-inline constexpr char kSkipDefaultBrowserPromoInFirstRunDescription[] =
-    "When enabled, users in the EEA will not see a Default Browser Promo in "
-    "the FRE.";
-
 inline constexpr char kSmartTabGroupingName[] = "Enable Smart Tab Grouping";
 inline constexpr char kSmartTabGroupingDescription[] =
     "When enabled, users will have access to use the smart tab grouping "

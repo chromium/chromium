@@ -83,8 +83,6 @@ id<GREYMatcher> DefaultPromoSubtitle() {
   // screen's view that cause the test to fail.
   config.additional_args.push_back(
       "--disable-features=UpdatedFirstRunSequence");
-  config.features_disabled.push_back(
-      first_run::kSkipDefaultBrowserPromoInFirstRun);
 
   if ([self isRunningTest:@selector(testAndroidSwitcherPromoDisplayed)]) {
     // GCRGemini crashes on nil identity in this sign-in setup.

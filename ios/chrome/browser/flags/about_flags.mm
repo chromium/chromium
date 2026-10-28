@@ -2218,11 +2218,6 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      flag_descriptions::kIOSTrustedVaultNotificationName,
      flag_descriptions::kIOSTrustedVaultNotificationDescription,
      flags_ui::kOsIos, FEATURE_VALUE_TYPE(kIOSTrustedVaultNotification)},
-    {"ios-skip-fre-default-browser-promo-in-eea",
-     flag_descriptions::kSkipDefaultBrowserPromoInFirstRunName,
-     flag_descriptions::kSkipDefaultBrowserPromoInFirstRunDescription,
-     flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(first_run::kSkipDefaultBrowserPromoInFirstRun)},
     {"apply-clientside-model-predictions-for-password-types",
      flag_descriptions::kApplyClientsideModelPredictionsForPasswordTypesName,
      flag_descriptions::
