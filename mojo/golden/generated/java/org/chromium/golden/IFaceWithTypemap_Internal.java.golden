@@ -85,7 +85,7 @@ Echo_Response callback) {
         @Override
         protected boolean handleMessageWithResponder(
                 int methodId,
-                org.chromium.mojo.bindings.Message payload,
+                org.chromium.mojo.bindings.Decoder decoder,
                 org.chromium.mojo.bindings.MessageReceiver receiver,
                 long requestId) {
             IFaceWithTypemap impl = getImpl();
@@ -98,8 +98,7 @@ Echo_Response callback) {
 
                 case ECHO_ORDINAL: {
 
-                    IFaceWithTypemapEchoParams data =
-                            IFaceWithTypemapEchoParams.deserialize(payload);
+                    IFaceWithTypemapEchoParams data = IFaceWithTypemapEchoParams.decode(decoder);
 
                     impl.echo(data.param, new IFaceWithTypemapEchoResponseParamsProxyToResponder(getCore(), receiver, requestId));
                     return true;
@@ -152,7 +151,6 @@ Echo_Response callback) {
                     org.chromium.mojo.bindings.Decoder decoder1 = decoder0.readPointer(8, false);
                     result.param = Typemapped.decode(decoder1);
                     }
-            decoder0.decreaseStackDepth();
             return result;
         }
 
@@ -206,7 +204,6 @@ Echo_Response callback) {
                     org.chromium.mojo.bindings.Decoder decoder1 = decoder0.readPointer(8, false);
                     result.out = Typemapped.decode(decoder1);
                     }
-            decoder0.decreaseStackDepth();
             return result;
         }
 
@@ -227,8 +224,8 @@ Echo_Response callback) {
         }
 
         @Override
-        protected void forwardResponse(org.chromium.mojo.bindings.Message payload) {
-            IFaceWithTypemapEchoResponseParams response = IFaceWithTypemapEchoResponseParams.deserialize(payload);
+        protected void forwardResponse(org.chromium.mojo.bindings.Decoder decoder) {
+            IFaceWithTypemapEchoResponseParams response = IFaceWithTypemapEchoResponseParams.decode(decoder);
             mCallback.call(response.out);
         }
     }

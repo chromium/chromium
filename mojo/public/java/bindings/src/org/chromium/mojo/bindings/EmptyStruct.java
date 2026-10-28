@@ -23,14 +23,12 @@ public final class EmptyStruct extends Struct {
     }
 
     /**
-     * Validates that the given message contains an empty struct.
+     * Validates that the given decoder is positioned at an empty struct.
      *
      * @throws DeserializationException on deserialization failure.
      */
-    public static void validate(Message message) {
-        Decoder decoder = new Decoder(message);
+    public static void validate(Decoder decoder) {
         decoder.readAndValidateStructHeader(STRUCT_SIZE);
-        decoder.decreaseStackDepth();
     }
 
     @Override

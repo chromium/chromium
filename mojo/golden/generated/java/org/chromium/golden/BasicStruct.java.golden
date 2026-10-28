@@ -58,7 +58,6 @@ public final class BasicStruct extends org.chromium.mojo.bindings.Struct {
                     
                 result.myBool = decoder0.readBoolean(8, 0);
                 }
-        decoder0.decreaseStackDepth();
         return result;
     }
 

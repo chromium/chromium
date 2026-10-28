@@ -63,7 +63,6 @@ public final class StructInUnion extends org.chromium.mojo.bindings.Struct {
                     
                 result.value = decoder0.readString(16, false);
                 }
-        decoder0.decreaseStackDepth();
         return result;
     }
 

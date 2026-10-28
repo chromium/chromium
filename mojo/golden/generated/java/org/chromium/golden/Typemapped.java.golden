@@ -72,7 +72,6 @@ public final class Typemapped extends org.chromium.mojo.bindings.Struct {
                     
                 result.optionalContainer = decoder0.readBooleanNullables(16, org.chromium.mojo.bindings.BindingsHelper.ELEMENT_NULLABLE, org.chromium.mojo.bindings.BindingsHelper.UNSPECIFIED_ARRAY_LENGTH);
                 }
-        decoder0.decreaseStackDepth();
         return result;
     }
 

@@ -105,10 +105,9 @@ switch (methodId) {
 {%       endif %}
     case {{method|method_ordinal_name}}: {
 {%       if method.parameters %}
-        {{request_struct|name}} data =
-                {{request_struct|name}}.deserialize(payload);
+        {{request_struct|name}} data = {{request_struct|name}}.decode(decoder);
 {%       else %}
-        org.chromium.mojo.bindings.EmptyStruct.validate(payload);
+        org.chromium.mojo.bindings.EmptyStruct.validate(decoder);
 {%       endif %}
         impl.{{method|name}}({{run_callback('data', method.parameters)}}{% if with_response %}{% if method.parameters %}, {% endif %}new {{response_struct|name}}ProxyToResponder(getCore(), receiver, requestId){% endif %});
         return true;
@@ -194,7 +193,7 @@ class {{interface|name}}_Internal {
 {%- if simple_methods %}
 
         @Override
-        protected boolean handleMessage(int methodId, org.chromium.mojo.bindings.Message payload) {
+        protected boolean handleMessage(int methodId, org.chromium.mojo.bindings.Decoder decoder) {
             {{handle_message_body(interface, False)|indent(12)}}
         }
 {%- endif %}
@@ -203,7 +202,7 @@ class {{interface|name}}_Internal {
         @Override
         protected boolean handleMessageWithResponder(
                 int methodId,
-                org.chromium.mojo.bindings.Message payload,
+                org.chromium.mojo.bindings.Decoder decoder,
                 org.chromium.mojo.bindings.MessageReceiver receiver,
                 long requestId) {
             {{handle_message_body(interface, True)|indent(12)}}
@@ -258,9 +257,9 @@ class {{interface|name}}_Internal {
         }
 
         @Override
-        protected void forwardResponse(org.chromium.mojo.bindings.Message payload) {
+        protected void forwardResponse(org.chromium.mojo.bindings.Decoder decoder) {
 {%-  if method.response_parameters|length %}
-            {{response_struct|name}} response = {{response_struct|name}}.deserialize(payload);
+            {{response_struct|name}} response = {{response_struct|name}}.decode(decoder);
 {%-  endif %}
 {%-  if method.result_response != None %}
 {%-    set result_param = method.response_parameters[0] %}

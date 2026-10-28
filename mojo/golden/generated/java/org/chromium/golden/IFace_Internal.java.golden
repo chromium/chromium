@@ -85,7 +85,7 @@ Method_Response callback) {
         @Override
         protected boolean handleMessageWithResponder(
                 int methodId,
-                org.chromium.mojo.bindings.Message payload,
+                org.chromium.mojo.bindings.Decoder decoder,
                 org.chromium.mojo.bindings.MessageReceiver receiver,
                 long requestId) {
             IFace impl = getImpl();
@@ -98,8 +98,7 @@ Method_Response callback) {
 
                 case METHOD_ORDINAL: {
 
-                    IFaceMethodParams data =
-                            IFaceMethodParams.deserialize(payload);
+                    IFaceMethodParams data = IFaceMethodParams.decode(decoder);
 
                     impl.method(data.param, new IFaceMethodResponseParamsProxyToResponder(getCore(), receiver, requestId));
                     return true;
@@ -151,7 +150,6 @@ Method_Response callback) {
                         
                     result.param = decoder0.readBoolean(8, 0);
                     }
-            decoder0.decreaseStackDepth();
             return result;
         }
 
@@ -204,7 +202,6 @@ Method_Response callback) {
                         
                     result.result = decoder0.readString(8, false);
                     }
-            decoder0.decreaseStackDepth();
             return result;
         }
 
@@ -225,8 +222,8 @@ Method_Response callback) {
         }
 
         @Override
-        protected void forwardResponse(org.chromium.mojo.bindings.Message payload) {
-            IFaceMethodResponseParams response = IFaceMethodResponseParams.deserialize(payload);
+        protected void forwardResponse(org.chromium.mojo.bindings.Decoder decoder) {
+            IFaceMethodResponseParams response = IFaceMethodResponseParams.decode(decoder);
             mCallback.call(response.result);
         }
     }

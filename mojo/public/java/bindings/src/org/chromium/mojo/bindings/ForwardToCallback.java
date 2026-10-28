@@ -23,8 +23,8 @@ public abstract class ForwardToCallback implements MessageReceiver {
         mFlags = flags;
     }
 
-    /** Deserializes the given response payload and forwards it to the callback. */
-    protected abstract void forwardResponse(Message payload);
+    /** Deserializes the response using the given decoder and forwards it to the callback. */
+    protected abstract void forwardResponse(Decoder decoder);
 
     @Override
     public final boolean accept(Message message) throws BadMessageException {
@@ -37,7 +37,7 @@ public abstract class ForwardToCallback implements MessageReceiver {
             if (!header.hasExactFlags(mFlags)) {
                 return false;
             }
-            forwardResponse(messageWithHeader.getPayload());
+            forwardResponse(new Decoder(messageWithHeader.getPayload()));
             return true;
         } catch (DeserializationException e) {
             throw new UnmarshalException(e);

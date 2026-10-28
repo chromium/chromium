@@ -87,7 +87,7 @@ public abstract class Stub<I extends Interface> implements MessageReceiverWithRe
                 return InterfaceControlMessagesHelper.handleRunOrClosePipe(
                         mVersion, messageWithHeader);
             }
-            if (!handleMessage(methodId, messageWithHeader.getPayload())) {
+            if (!handleMessage(methodId, new Decoder(messageWithHeader.getPayload()))) {
                 throw newUnknownMethodException(methodId);
             }
             return true;
@@ -108,8 +108,8 @@ public abstract class Stub<I extends Interface> implements MessageReceiverWithRe
                 return InterfaceControlMessagesHelper.handleRun(
                         getCore(), mVersion, messageWithHeader, receiver);
             }
-            if (!handleMessageWithResponder(
-                    methodId, messageWithHeader.getPayload(), receiver, header.getRequestId())) {
+            Decoder decoder = new Decoder(messageWithHeader.getPayload());
+            if (!handleMessageWithResponder(methodId, decoder, receiver, header.getRequestId())) {
                 throw newUnknownMethodException(methodId);
             }
             return true;
@@ -123,7 +123,7 @@ public abstract class Stub<I extends Interface> implements MessageReceiverWithRe
      *
      * @return false if |methodId| is not a method without a response.
      */
-    protected boolean handleMessage(int methodId, Message payload) {
+    protected boolean handleMessage(int methodId, Decoder decoder) {
         return false;
     }
 
@@ -133,7 +133,7 @@ public abstract class Stub<I extends Interface> implements MessageReceiverWithRe
      * @return false if |methodId| is not a method with a response.
      */
     protected boolean handleMessageWithResponder(
-            int methodId, Message payload, MessageReceiver receiver, long requestId) {
+            int methodId, Decoder decoder, MessageReceiver receiver, long requestId) {
         return false;
     }
 

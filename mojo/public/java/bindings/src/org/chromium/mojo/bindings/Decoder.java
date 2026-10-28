@@ -34,23 +34,16 @@ public class Decoder {
         /** Minimal value of the start of the next memory to claim. */
         private long mMinNextMemory;
 
-        /** The current nesting level when decoding. */
-        private long mStackDepth;
-
         /** The maximal memory accessible. */
         private final long mMaxMemory;
 
         /** The number of handles in the message. */
         private final long mNumberOfHandles;
 
-        /** The maximum nesting level when decoding. */
-        private static final int MAX_RECURSION_DEPTH = 100;
-
         /** Constructor. */
         Validator(long maxMemory, int numberOfHandles) {
             mMaxMemory = maxMemory;
             mNumberOfHandles = numberOfHandles;
-            mStackDepth = 0;
         }
 
         public void claimHandle(int handle) throws DeserializationException {
@@ -78,18 +71,10 @@ public class Decoder {
             }
             mMinNextMemory = BindingsHelper.align(end);
         }
-
-        public void increaseStackDepth() throws DeserializationException {
-            ++mStackDepth;
-            if (mStackDepth >= MAX_RECURSION_DEPTH) {
-                throw new DeserializationException("Recursion depth limit exceeded.");
-            }
-        }
-
-        public void decreaseStackDepth() {
-            --mStackDepth;
-        }
     }
+
+    /** The maximum nesting level of structs when decoding. */
+    private static final int MAX_RECURSION_DEPTH = 100;
 
     private static final String UNKNOWN_VERSION_MESSAGE =
             "Header doesn't correspond to any known version.";
@@ -107,19 +92,27 @@ public class Decoder {
     private final Validator mValidator;
 
     /**
+     * The number of structs being decoded that contain the data at this position (including the
+     * struct at this position once its header has been read). Since every struct is decoded with
+     * its own Decoder, this does not need to be decremented after decoding a struct.
+     */
+    private int mStructDepth;
+
+    /**
      * Constructor.
      *
      * @param message The message to decode.
      */
     public Decoder(Message message) {
-        this(message, new Validator(message.getData().limit(), message.getHandles().size()), 0);
+        this(message, new Validator(message.getData().limit(), message.getHandles().size()), 0, 0);
     }
 
-    private Decoder(Message message, Validator validator, int baseOffset) {
+    private Decoder(Message message, Validator validator, int baseOffset, int structDepth) {
         mMessage = message;
         mMessage.getData().order(ByteOrder.LITTLE_ENDIAN);
         mBaseOffset = baseOffset;
         mValidator = validator;
+        mStructDepth = structDepth;
     }
 
     /** Deserializes a {@link DataHeader} at the current position. */
@@ -176,14 +169,14 @@ public class Decoder {
 
     /**
      * Deserializes and validates the header of a struct that has only a single version (version 0).
-     * Also increases the stack depth. Callers must call {@link #decreaseStackDepth()} once the
-     * struct has been decoded.
+     *
+     * <p>Also enforces the struct nesting limit.
      *
      * @param size the size of the struct, in bytes.
      * @return the version of the received struct.
      */
     public int readAndValidateStructHeader(int size) throws DeserializationException {
-        mValidator.increaseStackDepth();
+        increaseStructDepth();
         DataHeader header = readDataHeader();
         int version = header.elementsOrVersion;
         if (version == 0) {
@@ -197,16 +190,16 @@ public class Decoder {
     }
 
     /**
-     * Deserializes and validates the header of a struct that has multiple versions. Also increases
-     * the stack depth. Callers must call {@link #decreaseStackDepth()} once the struct has been
-     * decoded.
+     * Deserializes and validates the header of a struct that has multiple versions.
+     *
+     * <p>Also enforces the struct nesting limit.
      *
      * @param versionArray flattened (size, version) pairs for each known version of the struct,
      *     ordered by increasing version.
      * @return the version of the received struct.
      */
     public int readAndValidateStructHeader(int[] versionArray) throws DeserializationException {
-        mValidator.increaseStackDepth();
+        increaseStructDepth();
         DataHeader header = readDataHeader();
         int version = header.elementsOrVersion;
         int maxVersionIndex = versionArray.length - 2;
@@ -865,9 +858,15 @@ public class Decoder {
         return null;
     }
 
+    private void increaseStructDepth() throws DeserializationException {
+        if (++mStructDepth >= MAX_RECURSION_DEPTH) {
+            throw new DeserializationException("Recursion depth limit exceeded.");
+        }
+    }
+
     /** Returns a view of this decoder at the offset |offset|. */
     private Decoder getDecoderAtPosition(int offset) {
-        return new Decoder(mMessage, mValidator, offset);
+        return new Decoder(mMessage, mValidator, offset, mStructDepth);
     }
 
     /**
@@ -947,13 +946,5 @@ public class Decoder {
         if (mMessage.getData().limit() < offset + size) {
             throw new DeserializationException("Buffer is smaller than expected.");
         }
-    }
-
-    /**
-     * Must be called once a struct has been decoded. Not called when decoding fails, since the
-     * message is then discarded.
-     */
-    public void decreaseStackDepth() {
-        mValidator.decreaseStackDepth();
     }
 }

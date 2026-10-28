@@ -81,7 +81,7 @@ Page page, org.chromium.mojo.bindings.InterfaceRequest<PageHandler> handler) {
         }
 
         @Override
-        protected boolean handleMessage(int methodId, org.chromium.mojo.bindings.Message payload) {
+        protected boolean handleMessage(int methodId, org.chromium.mojo.bindings.Decoder decoder) {
             WebUiPageHandlerFactory impl = getImpl();
             switch (methodId) {
 
@@ -90,8 +90,7 @@ Page page, org.chromium.mojo.bindings.InterfaceRequest<PageHandler> handler) {
 
                 case CREATE_PAGE_HANDLER_ORDINAL: {
 
-                    WebUiPageHandlerFactoryCreatePageHandlerParams data =
-                            WebUiPageHandlerFactoryCreatePageHandlerParams.deserialize(payload);
+                    WebUiPageHandlerFactoryCreatePageHandlerParams data = WebUiPageHandlerFactoryCreatePageHandlerParams.decode(decoder);
 
                     impl.createPageHandler(data.page, data.handler);
                     return true;
@@ -148,7 +147,6 @@ Page page, org.chromium.mojo.bindings.InterfaceRequest<PageHandler> handler) {
                         
                     result.handler = decoder0.readInterfaceRequest(16, false);
                     }
-            decoder0.decreaseStackDepth();
             return result;
         }
 

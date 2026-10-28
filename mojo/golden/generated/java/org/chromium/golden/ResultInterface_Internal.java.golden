@@ -106,7 +106,7 @@ SyncMethod_Response callback) {
         @Override
         protected boolean handleMessageWithResponder(
                 int methodId,
-                org.chromium.mojo.bindings.Message payload,
+                org.chromium.mojo.bindings.Decoder decoder,
                 org.chromium.mojo.bindings.MessageReceiver receiver,
                 long requestId) {
             ResultInterface impl = getImpl();
@@ -119,8 +119,7 @@ SyncMethod_Response callback) {
 
                 case METHOD_ORDINAL: {
 
-                    ResultInterfaceMethodParams data =
-                            ResultInterfaceMethodParams.deserialize(payload);
+                    ResultInterfaceMethodParams data = ResultInterfaceMethodParams.decode(decoder);
 
                     impl.method(data.a, new ResultInterfaceMethodResponseParamsProxyToResponder(getCore(), receiver, requestId));
                     return true;
@@ -134,8 +133,7 @@ SyncMethod_Response callback) {
 
                 case SYNC_METHOD_ORDINAL: {
 
-                    ResultInterfaceSyncMethodParams data =
-                            ResultInterfaceSyncMethodParams.deserialize(payload);
+                    ResultInterfaceSyncMethodParams data = ResultInterfaceSyncMethodParams.decode(decoder);
 
                     impl.syncMethod(data.a, new ResultInterfaceSyncMethodResponseParamsProxyToResponder(getCore(), receiver, requestId));
                     return true;
@@ -205,7 +203,6 @@ SyncMethod_Response callback) {
                         
                     result.a = decoder0.readBoolean(8, 0);
                     }
-            decoder0.decreaseStackDepth();
             return result;
         }
 
@@ -258,7 +255,6 @@ SyncMethod_Response callback) {
                         
                     result.result = ResultInterfaceMethodResponseParamResult.decode(decoder0, 8);
                     }
-            decoder0.decreaseStackDepth();
             return result;
         }
 
@@ -279,8 +275,8 @@ SyncMethod_Response callback) {
         }
 
         @Override
-        protected void forwardResponse(org.chromium.mojo.bindings.Message payload) {
-            ResultInterfaceMethodResponseParams response = ResultInterfaceMethodResponseParams.deserialize(payload);
+        protected void forwardResponse(org.chromium.mojo.bindings.Decoder decoder) {
+            ResultInterfaceMethodResponseParams response = ResultInterfaceMethodResponseParams.decode(decoder);
             var mojoObj = response.result;
             mCallback.call(Method_Response_Converter.convert(mojoObj));
         }
@@ -363,7 +359,6 @@ SyncMethod_Response callback) {
                         
                     result.a = decoder0.readBoolean(8, 0);
                     }
-            decoder0.decreaseStackDepth();
             return result;
         }
 
@@ -416,7 +411,6 @@ SyncMethod_Response callback) {
                         
                     result.result = ResultInterfaceSyncMethodResponseParamResult.decode(decoder0, 8);
                     }
-            decoder0.decreaseStackDepth();
             return result;
         }
 
@@ -437,8 +431,8 @@ SyncMethod_Response callback) {
         }
 
         @Override
-        protected void forwardResponse(org.chromium.mojo.bindings.Message payload) {
-            ResultInterfaceSyncMethodResponseParams response = ResultInterfaceSyncMethodResponseParams.deserialize(payload);
+        protected void forwardResponse(org.chromium.mojo.bindings.Decoder decoder) {
+            ResultInterfaceSyncMethodResponseParams response = ResultInterfaceSyncMethodResponseParams.decode(decoder);
             var mojoObj = response.result;
             mCallback.call(SyncMethod_Response_Converter.convert(mojoObj));
         }

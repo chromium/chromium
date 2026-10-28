@@ -133,7 +133,6 @@ public final class OptionalPrimitives extends org.chromium.mojo.bindings.Struct 
                     }
                 }
                 }
-        decoder0.decreaseStackDepth();
         return result;
     }
 
