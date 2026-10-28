@@ -619,26 +619,6 @@ class TestAutofillClientTemplate : public T {
     return &personal_context_first_run_service_;
   }
 
-#if BUILDFLAG(IS_ANDROID)
-  bool ShowAmbientAutofillNotice(
-      base::WeakPtr<TouchToFillAutofillDelegate> delegate) override {
-    show_ambient_autofill_notice_called_ = true;
-    return show_ambient_autofill_notice_result_;
-  }
-  bool show_ambient_autofill_notice_called() const {
-    return show_ambient_autofill_notice_called_;
-  }
-  void set_show_ambient_autofill_notice_result(bool result) {
-    show_ambient_autofill_notice_result_ = result;
-  }
-  void HideTouchToFillAutofillNotice() override {
-    hide_touch_to_fill_autofill_notice_called_ = true;
-  }
-  bool hide_touch_to_fill_autofill_notice_called() const {
-    return hide_touch_to_fill_autofill_notice_called_;
-  }
-#endif
-
   personal_context::PersonalContextEligibilityService*
   GetPersonalContextEligibilityService() const override {
     return personal_context_eligibility_service_;
@@ -1014,10 +994,6 @@ class TestAutofillClientTemplate : public T {
   bool is_credit_card_upload_enabled_ = true;
 
   bool is_tab_in_actor_mode_ = false;
-
-  bool show_ambient_autofill_notice_called_ = false;
-  bool show_ambient_autofill_notice_result_ = false;
-  bool hide_touch_to_fill_autofill_notice_called_ = false;
 
   personal_context::TestPersonalContextFirstRunService
       personal_context_first_run_service_;
