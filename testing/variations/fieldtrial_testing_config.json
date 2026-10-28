@@ -5984,23 +5984,6 @@
             ]
         }
     ],
-    "DesktopNtpDriveModuleLink": [
-        {
-            "platforms": [
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "NtpDriveModuleLink"
-                    ]
-                }
-            ]
-        }
-    ],
     "DesktopNtpModulesTabGroups": [
         {
             "platforms": [

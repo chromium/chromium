@@ -134,7 +134,7 @@ BASE_FEATURE(kNtpDriveModuleHistorySyncRequirement,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, the NTP Drive Module will link to the Drive page.
-BASE_FEATURE(kNtpDriveModuleLink, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kNtpDriveModuleLink, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, segmentation data will be collected to decide whether or not to
 // show the Drive module.
