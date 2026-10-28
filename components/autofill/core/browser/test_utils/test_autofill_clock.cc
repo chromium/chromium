@@ -13,26 +13,26 @@
 
 namespace autofill {
 
-TestAutofillClock::TestAutofillClock(base::Time now)
-    : TestAutofillClock(std::make_unique<base::SimpleTestClock>()) {
+TestAutofillClockDeprecated::TestAutofillClockDeprecated(base::Time now)
+    : TestAutofillClockDeprecated(std::make_unique<base::SimpleTestClock>()) {
   SetNow(now);
 }
 
-TestAutofillClock::TestAutofillClock(
+TestAutofillClockDeprecated::TestAutofillClockDeprecated(
     std::unique_ptr<base::SimpleTestClock> test_clock)
     : test_clock_(std::move(test_clock)),
       previous_clock_(
           std::exchange(AutofillClock::test_clock_, test_clock_.get())) {}
 
-TestAutofillClock::~TestAutofillClock() {
+TestAutofillClockDeprecated::~TestAutofillClockDeprecated() {
   AutofillClock::test_clock_ = previous_clock_;
 }
 
-void TestAutofillClock::SetNow(base::Time now) {
+void TestAutofillClockDeprecated::SetNow(base::Time now) {
   test_clock_->SetNow(now);
 }
 
-void TestAutofillClock::Advance(base::TimeDelta delta) {
+void TestAutofillClockDeprecated::Advance(base::TimeDelta delta) {
   test_clock_->Advance(delta);
 }
 

@@ -21,15 +21,34 @@ namespace autofill {
 // AutofillClock with a test version that can be manipulated from this class.
 // Automatically resets a normal clock to AutofillClock when this gets
 // destroyed.
-class TestAutofillClock {
+//
+// DEPRECATED: `AutofillClock` and `TestAutofillClockDeprecated` are being
+// removed (crbug.com/40100455). Note that `TestAutofillClockDeprecated` only
+// affects `AutofillClock::Now()`, not `base::Time::Now()`, which most Autofill
+// code now uses.
+//
+// Instead:
+// - In unit tests, configure `base::test::TaskEnvironment` with
+//   `base::test::TaskEnvironment::TimeSource::MOCK_TIME` and advance time via
+//   `FastForwardBy()` or `AdvanceClock()` (which mocks both `base::Time::Now()`
+//   and `AutofillClock::Now()`).
+// - In browser tests (where `MOCK_TIME` is unavailable), prefer relative
+//   timestamps around `base::Time::Now()`, or use
+//   `base::subtle::ScopedTimeClockOverrides` if overriding `base::Time::Now()`
+//   is necessary.
+//
+// TODO(crbug.com/40100455): Remove this class.
+class TestAutofillClockDeprecated {
  public:
-  explicit TestAutofillClock(base::Time now = {});
-  explicit TestAutofillClock(std::unique_ptr<base::SimpleTestClock> test_clock);
+  explicit TestAutofillClockDeprecated(base::Time now = {});
+  explicit TestAutofillClockDeprecated(
+      std::unique_ptr<base::SimpleTestClock> test_clock);
 
-  TestAutofillClock(const TestAutofillClock&) = delete;
-  TestAutofillClock& operator=(const TestAutofillClock&) = delete;
+  TestAutofillClockDeprecated(const TestAutofillClockDeprecated&) = delete;
+  TestAutofillClockDeprecated& operator=(const TestAutofillClockDeprecated&) =
+      delete;
 
-  ~TestAutofillClock();
+  ~TestAutofillClockDeprecated();
 
   // Set the time to be returned from AutofillClock::Now() calls.
   void SetNow(base::Time now);

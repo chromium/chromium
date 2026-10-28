@@ -26,7 +26,7 @@ class AutofillClock {
   static base::Time Now();
 
  private:
-  friend class TestAutofillClock;
+  friend class TestAutofillClockDeprecated;
 
   static const base::Clock* test_clock_;
 };

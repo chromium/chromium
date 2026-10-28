@@ -339,7 +339,7 @@ IN_PROC_BROWSER_TEST_F(AutocompleteTest,
 // TODO(crbug.com/434794640): flaky.
 IN_PROC_BROWSER_TEST_F(AutocompleteTest,
                        DISABLED_RetentionPolicy_RemovesExpiredEntry) {
-  TestAutofillClock test_clock(AutofillClock::Now());
+  TestAutofillClockDeprecated test_clock(AutofillClock::Now());
 
   // Add an entry.
   std::string prefix = "Some";
@@ -365,7 +365,7 @@ IN_PROC_BROWSER_TEST_F(AutocompleteTest,
 // TODO(crbug.com/434794640): flaky.
 IN_PROC_BROWSER_TEST_F(AutocompleteTest,
                        DISABLED_RetentionPolicy_DoesNot_RemoveValidEntry) {
-  TestAutofillClock test_clock(AutofillClock::Now());
+  TestAutofillClockDeprecated test_clock(AutofillClock::Now());
 
   // Add an entry.
   std::string prefix = "Some";

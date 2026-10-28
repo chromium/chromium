@@ -1963,7 +1963,7 @@ TEST_P(AutofillUploadTest, MAYBE_PeriodicReset) {
 
   base::HistogramTester histogram_tester;
 
-  TestAutofillClock test_clock;
+  TestAutofillClockDeprecated test_clock;
   test_clock.SetNow(AutofillClock::Now());
 
   // The first attempt should succeed.
@@ -2022,7 +2022,7 @@ TEST_P(AutofillUploadTest, ResetOnClearUploadHistory) {
 
   base::HistogramTester histogram_tester;
 
-  TestAutofillClock test_clock;
+  TestAutofillClockDeprecated test_clock;
   test_clock.SetNow(AutofillClock::Now());
 
   // The first attempt should succeed.

@@ -515,7 +515,7 @@ IN_PROC_BROWSER_TEST_F(AutofillCounterTest, ComplexResult) {
 
 // Tests that the counting respects time ranges.
 IN_PROC_BROWSER_TEST_F(AutofillCounterTest, TimeRanges) {
-  autofill::TestAutofillClock test_clock;
+  autofill::TestAutofillClockDeprecated test_clock;
   const base::Time kTime1 = base::Time::FromSecondsSinceUnixEpoch(25);
   test_clock.SetNow(kTime1);
   AddAutocompleteSuggestion("email", "Email:", "example@example.com");

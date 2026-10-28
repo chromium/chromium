@@ -84,7 +84,7 @@ class TwoClientWalletSyncTest
   }
 
  private:
-  autofill::TestAutofillClock test_clock_;
+  autofill::TestAutofillClockDeprecated test_clock_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 

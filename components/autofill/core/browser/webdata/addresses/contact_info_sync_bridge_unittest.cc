@@ -270,7 +270,7 @@ TEST_F(ContactInfoSyncBridgeTest,
 
   // Create a profile and advance time. Incoming profiles through Sync shouldn't
   // care about the current time.
-  TestAutofillClock test_clock;
+  TestAutofillClockDeprecated test_clock;
   const AutofillProfile profile = TestProfile(kGUID1);
   test_clock.Advance(base::Minutes(123));
 

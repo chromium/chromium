@@ -1766,7 +1766,7 @@ IN_PROC_BROWSER_TEST_P(
 
   // Set now to next month. Setting test_clock will not affect the dropdown to
   // be selected, so selecting the current January will always be expired.
-  TestAutofillClock test_clock;
+  TestAutofillClockDeprecated test_clock;
   test_clock.SetNow(base::Time::Now());
   test_clock.Advance(base::Days(40));
   // Selecting expired date will disable [Save] button.
@@ -1860,7 +1860,7 @@ IN_PROC_BROWSER_TEST_P(
   SetupSyncAndHideAccountNameEmailProfile();
   const base::Time kJune2017 =
       base::Time::FromSecondsSinceUnixEpoch(1497552271);
-  TestAutofillClock test_clock;
+  TestAutofillClockDeprecated test_clock;
   test_clock.SetNow(kJune2017);
   // Fill form with a valid month but a passed year.
   FillFormWithSpecificExpirationDate("03", "2017");

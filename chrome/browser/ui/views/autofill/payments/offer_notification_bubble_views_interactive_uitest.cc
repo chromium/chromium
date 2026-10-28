@@ -97,7 +97,7 @@ class OfferNotificationBubbleViewsInteractiveUiTest
     GetOfferManager()->ClearShownNotificationIdsForTesting();
   }
 
-  TestAutofillClock test_clock_;
+  TestAutofillClockDeprecated test_clock_;
 };
 
 // TODO(crbug.com/40285326): This fails with the field trial testing config.

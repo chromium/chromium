@@ -43,7 +43,7 @@ using DISABLED_PaymentRequestCreditCardEditorTest =
 IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestCreditCardEditorTest,
                        EnteringValidData) {
   NavigateTo("/payment_request_no_shipping_test.html");
-  autofill::TestAutofillClock test_clock;
+  autofill::TestAutofillClockDeprecated test_clock;
   test_clock.SetNow(kJune2017);
 
   InvokePaymentRequestUI();
@@ -90,7 +90,7 @@ IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestCreditCardEditorTest,
 IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestCreditCardEditorTest,
                        EnterConfirmsValidData) {
   NavigateTo("/payment_request_no_shipping_test.html");
-  autofill::TestAutofillClock test_clock;
+  autofill::TestAutofillClockDeprecated test_clock;
   test_clock.SetNow(kJune2017);
 
   // An address is needed so that the UI can choose it as a billing address.
@@ -151,7 +151,7 @@ IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestCreditCardEditorTest,
 IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestCreditCardEditorTest,
                        EnteringExpiredCard) {
   NavigateTo("/payment_request_no_shipping_test.html");
-  autofill::TestAutofillClock test_clock;
+  autofill::TestAutofillClockDeprecated test_clock;
   test_clock.SetNow(kJune2017);
 
   autofill::AutofillProfile billing_profile(autofill::test::GetFullProfile());
@@ -192,7 +192,7 @@ IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestCreditCardEditorTest,
 IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestCreditCardEditorTest,
                        EnteringNothingInARequiredField) {
   NavigateTo("/payment_request_no_shipping_test.html");
-  autofill::TestAutofillClock test_clock;
+  autofill::TestAutofillClockDeprecated test_clock;
   test_clock.SetNow(kJune2017);
 
   InvokePaymentRequestUI();
@@ -223,7 +223,7 @@ IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestCreditCardEditorTest,
 IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestCreditCardEditorTest,
                        EnteringInvalidCardNumber) {
   NavigateTo("/payment_request_no_shipping_test.html");
-  autofill::TestAutofillClock test_clock;
+  autofill::TestAutofillClockDeprecated test_clock;
   test_clock.SetNow(kJune2017);
 
   InvokePaymentRequestUI();
@@ -251,7 +251,7 @@ IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestCreditCardEditorTest,
 IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestCreditCardEditorTest,
                        EnteringUnsupportedCardType) {
   NavigateTo("/payment_request_no_shipping_test.html");
-  autofill::TestAutofillClock test_clock;
+  autofill::TestAutofillClockDeprecated test_clock;
   test_clock.SetNow(kJune2017);
 
   InvokePaymentRequestUI();
@@ -281,7 +281,7 @@ IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestCreditCardEditorTest,
 IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestCreditCardEditorTest,
                        EnteringInvalidCardNumber_AndFixingIt) {
   NavigateTo("/payment_request_no_shipping_test.html");
-  autofill::TestAutofillClock test_clock;
+  autofill::TestAutofillClockDeprecated test_clock;
   test_clock.SetNow(kJune2017);
   autofill::AutofillProfile billing_profile(autofill::test::GetFullProfile());
   AddAutofillProfile(billing_profile);
@@ -340,7 +340,7 @@ IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestCreditCardEditorTest,
   AddAutofillProfile(billing_profile);
   card.set_billing_address_id(billing_profile.guid());
   AddCreditCard(card);
-  autofill::TestAutofillClock test_clock;
+  autofill::TestAutofillClockDeprecated test_clock;
   test_clock.SetNow(kJune2017);
 
   InvokePaymentRequestUI();
@@ -420,7 +420,7 @@ IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestCreditCardEditorTest,
   card.set_billing_address_id("");
   AddCreditCard(card);
 
-  autofill::TestAutofillClock test_clock;
+  autofill::TestAutofillClockDeprecated test_clock;
   test_clock.SetNow(kJune2017);
   autofill::AutofillProfile billing_profile(autofill::test::GetFullProfile());
   AddAutofillProfile(billing_profile);
@@ -572,7 +572,7 @@ IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestCreditCardEditorTest,
   card.set_billing_address_id("");
   AddCreditCard(card);
 
-  autofill::TestAutofillClock test_clock;
+  autofill::TestAutofillClockDeprecated test_clock;
   test_clock.SetNow(kJune2017);
 
   InvokePaymentRequestUI();
@@ -651,7 +651,7 @@ IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestCreditCardEditorTest,
   card.set_billing_address_id(billing_profile.guid());
   AddCreditCard(card);
 
-  autofill::TestAutofillClock test_clock;
+  autofill::TestAutofillClockDeprecated test_clock;
   test_clock.SetNow(kJune2017);
 
   InvokePaymentRequestUI();
@@ -698,7 +698,7 @@ IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestCreditCardEditorTest,
 IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestCreditCardEditorTest,
                        DoneButtonDisabled) {
   NavigateTo("/payment_request_no_shipping_test.html");
-  autofill::TestAutofillClock test_clock;
+  autofill::TestAutofillClockDeprecated test_clock;
   test_clock.SetNow(kJune2017);
   InvokePaymentRequestUI();
 
@@ -738,7 +738,7 @@ IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestCreditCardEditorTest,
                        EnteringValidDataInIncognito) {
   SetIncognito();
   NavigateTo("/payment_request_no_shipping_test.html");
-  autofill::TestAutofillClock test_clock;
+  autofill::TestAutofillClockDeprecated test_clock;
   test_clock.SetNow(kJune2017);
 
   InvokePaymentRequestUI();

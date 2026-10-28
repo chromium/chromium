@@ -53,7 +53,7 @@ IN_PROC_BROWSER_TEST_F(OfferNotificationBubbleViewsBrowserTest,
                        DISABLED_BubbleNotShowingOnDuplicateTab) {
   SetUpWalletDirectOfferDataWithDomains({GetUrl("www.example.com", "/")});
 
-  TestAutofillClock test_clock;
+  TestAutofillClockDeprecated test_clock;
   test_clock.SetNow(base::Time::Now());
   NavigateToAndWaitForForm(GetUrl("www.example.com", "/first"));
   test_clock.Advance(kAutofillBubbleSurviveNavigationTime - base::Seconds(1));
