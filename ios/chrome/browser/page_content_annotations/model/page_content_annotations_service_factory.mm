@@ -29,9 +29,8 @@
 namespace {
 
 std::unique_ptr<KeyedService> BuildPageContentAnnotationsService(
-    ProfileIOS* profile) {
-  DCHECK(profile);
-  DCHECK(!profile->IsOffTheRecord());
+    ProfileIOS& profile) {
+  DCHECK(!profile.IsOffTheRecord());
   if (!page_content_annotations::features::
           ShouldEnablePageContentAnnotations()) {
     return nullptr;
@@ -48,8 +47,8 @@ std::unique_ptr<KeyedService> BuildPageContentAnnotationsService(
   }
 
   leveldb_proto::ProtoDatabaseProvider* proto_db_provider =
-      profile->GetProtoDatabaseProvider();
-  base::FilePath profile_path = profile->GetOriginalProfile()->GetStatePath();
+      profile.GetProtoDatabaseProvider();
+  base::FilePath profile_path = profile.GetOriginalProfile()->GetStatePath();
 
   return std::make_unique<
       page_content_annotations::PageContentAnnotationsService>(
@@ -83,13 +82,13 @@ PageContentAnnotationsServiceFactory::PageContentAnnotationsServiceFactory(
 }
 
 // static
-PageContentAnnotationsServiceFactory::TestingFactory
+PageContentAnnotationsServiceFactory::TestingFactoryByRef
 PageContentAnnotationsServiceFactory::GetDefaultFactory() {
   return base::BindOnce(&BuildPageContentAnnotationsService);
 }
 
 std::unique_ptr<KeyedService>
 PageContentAnnotationsServiceFactory::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
+    ProfileIOS& profile) const {
   return BuildPageContentAnnotationsService(profile);
 }
