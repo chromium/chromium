@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {WindowProxyImpl} from './window_proxy.js';
+
 /**
  * Tracks the amount of time a user actively engages with a page.
  *
@@ -81,14 +83,15 @@ export class ActiveTimer {
   }
 
   private isActive_(): boolean {
-    return document.visibilityState === 'visible' && document.hasFocus();
+    const proxy = WindowProxyImpl.getInstance();
+    return proxy.getVisibilityState() === 'visible' && proxy.hasFocus();
   }
 
   private startTimer_() {
     if (this.isRunning_) {
       return;
     }
-    this.activeStartTime_ = performance.now();
+    this.activeStartTime_ = WindowProxyImpl.getInstance().now();
     this.isRunning_ = true;
   }
 
@@ -96,7 +99,8 @@ export class ActiveTimer {
     if (!this.isRunning_) {
       return;
     }
-    this.totalActiveTime_ += performance.now() - this.activeStartTime_;
+    this.totalActiveTime_ +=
+        WindowProxyImpl.getInstance().now() - this.activeStartTime_;
     this.isRunning_ = false;
   }
 

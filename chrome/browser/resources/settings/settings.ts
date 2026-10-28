@@ -166,3 +166,5 @@ export {SiteFaviconElement} from './site_favicon.js';
 export {convertDateToWindowsEpoch} from './time.js';
 export {TooltipMixin} from './tooltip_mixin.js';
 export type {TooltipMixinInterface} from './tooltip_mixin.js';
+export {WindowProxyImpl} from './window_proxy.js';
+export type {WindowProxy} from './window_proxy.js';

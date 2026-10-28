@@ -2,54 +2,62 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {ActiveTimer} from 'chrome://settings/settings.js';
+import type {WindowProxy} from 'chrome://settings/settings.js';
+import {ActiveTimer, WindowProxyImpl} from 'chrome://settings/settings.js';
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
+import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
+
+class TestWindowProxy extends TestBrowserProxy implements WindowProxy {
+  private now_: number = 0;
+  private visibilityState_: DocumentVisibilityState = 'visible';
+  private hasFocus_: boolean = true;
+
+  constructor() {
+    super(['now', 'getVisibilityState', 'hasFocus']);
+  }
+
+  now(): number {
+    this.methodCalled('now');
+    return this.now_;
+  }
+
+  setNow(now: number) {
+    this.now_ = now;
+  }
+
+  getVisibilityState(): DocumentVisibilityState {
+    this.methodCalled('getVisibilityState');
+    return this.visibilityState_;
+  }
+
+  setVisibilityState(visibilityState: DocumentVisibilityState) {
+    this.visibilityState_ = visibilityState;
+  }
+
+  hasFocus(): boolean {
+    this.methodCalled('hasFocus');
+    return this.hasFocus_;
+  }
+
+  setHasFocus(hasFocus: boolean) {
+    this.hasFocus_ = hasFocus;
+  }
+}
 
 suite('ActiveTimer', function() {
   let timer: ActiveTimer;
+  let testProxy: TestWindowProxy;
   let recordLongTimeCalledWith: number[] = [];
-  let nowValue = 0;
-  let mockVisibilityState = 'visible';
-  let mockHasFocus = true;
-
-  let originalPerformanceNow: () => number;
-  let originalVisibilityState: PropertyDescriptor|undefined;
-  let originalHasFocus: () => boolean;
 
   setup(function() {
-    nowValue = 0;
-    mockVisibilityState = 'visible';
-    mockHasFocus = true;
+    testProxy = new TestWindowProxy();
+    WindowProxyImpl.setInstance(testProxy);
     recordLongTimeCalledWith = [];
-
-    // Mock performance.now
-    originalPerformanceNow = performance.now;
-    performance.now = () => nowValue;
-
-    // Mock document.visibilityState
-    originalVisibilityState =
-        Object.getOwnPropertyDescriptor(Document.prototype, 'visibilityState');
-    Object.defineProperty(document, 'visibilityState', {
-      get: () => mockVisibilityState,
-      configurable: true,
-    });
-
-    // Mock document.hasFocus
-    originalHasFocus = document.hasFocus;
-    document.hasFocus = () => mockHasFocus;
 
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
   });
 
   teardown(function() {
-    performance.now = originalPerformanceNow;
-    if (originalVisibilityState) {
-      Object.defineProperty(
-          document, 'visibilityState', originalVisibilityState);
-    } else {
-      delete (document as {visibilityState?: string}).visibilityState;
-    }
-    document.hasFocus = originalHasFocus;
     if (timer) {
       timer.stop();
     }
@@ -61,19 +69,19 @@ suite('ActiveTimer', function() {
     });
     timer.start();  // starts timer (active)
 
-    nowValue = 1_000;  // 1 second elapsed
+    testProxy.setNow(1_000);  // 1 second elapsed
 
     // Simulate blur
-    mockHasFocus = false;
+    testProxy.setHasFocus(false);
     window.dispatchEvent(new Event('blur'));  // Timer pauses. Total: 1_000ms
 
-    nowValue = 3_000;  // 2 more seconds elapsed (inactive)
+    testProxy.setNow(3_000);  // 2 more seconds elapsed (inactive)
 
     // Simulate focus
-    mockHasFocus = true;
+    testProxy.setHasFocus(true);
     window.dispatchEvent(new Event('focus'));  // Timer resumes.
 
-    nowValue = 5_000;  // 2 more seconds elapsed (active)
+    testProxy.setNow(5_000);  // 2 more seconds elapsed (active)
 
     // Simulate pagehide (unload)
     window.dispatchEvent(new Event('pagehide'));
@@ -81,22 +89,22 @@ suite('ActiveTimer', function() {
     assertEquals(1, recordLongTimeCalledWith.length);
     // Active time: (1_000 - 0) + (5_000 - 3_000) = 3_000ms
     assertEquals(3_000, recordLongTimeCalledWith[0]!);
+    assertEquals(4, testProxy.getCallCount('now'));
   });
 
   test('does not track time in background initially', () => {
-    mockVisibilityState = 'hidden';
+    testProxy.setVisibilityState('hidden');
     timer = new ActiveTimer((duration) => {
       recordLongTimeCalledWith.push(duration);
     });
     timer.start();  // timer should not start
-
-    nowValue = 5_000;  // 5 seconds elapsed (inactive)
 
     // Simulate pagehide (unload)
     window.dispatchEvent(new Event('pagehide'));
 
     // Should not record metric if no active time
     assertEquals(0, recordLongTimeCalledWith.length);
+    assertEquals(0, testProxy.getCallCount('now'));
   });
 
   test('handles BFCache restore', () => {
@@ -105,7 +113,7 @@ suite('ActiveTimer', function() {
     });
     timer.start();
 
-    nowValue = 1_000;
+    testProxy.setNow(1_000);
 
     // Simulate pagehide (BFCache)
     window.dispatchEvent(
@@ -113,14 +121,15 @@ suite('ActiveTimer', function() {
 
     assertEquals(1, recordLongTimeCalledWith.length);
     assertEquals(1_000, recordLongTimeCalledWith[0]!);
+    assertEquals(2, testProxy.getCallCount('now'));
 
-    nowValue = 3_000;
+    testProxy.setNow(3_000);
 
     // Simulate pageshow (Restore)
     window.dispatchEvent(
         new PageTransitionEvent('pageshow', {persisted: true}));
 
-    nowValue = 6_000;
+    testProxy.setNow(6_000);
 
     // Simulate pagehide (unload)
     window.dispatchEvent(
@@ -128,6 +137,7 @@ suite('ActiveTimer', function() {
 
     assertEquals(2, recordLongTimeCalledWith.length);
     assertEquals(3_000, recordLongTimeCalledWith[1]!);
+    assertEquals(4, testProxy.getCallCount('now'));
   });
 
   test('handles background freeze and resume', () => {
@@ -136,30 +146,30 @@ suite('ActiveTimer', function() {
     });
     timer.start();
 
-    nowValue = 1_000;
+    testProxy.setNow(1_000);
 
     // Simulate tab switch (hidden)
-    mockVisibilityState = 'hidden';
+    testProxy.setVisibilityState('hidden');
     document.dispatchEvent(
         new Event('visibilitychange'));  // Timer pauses. Total: 1_000ms
 
-    nowValue = 2_000;
+    testProxy.setNow(2_000);
 
     // Simulate browser freezing the hidden tab
     document.dispatchEvent(new Event('freeze'));  // Timer already paused.
 
-    nowValue = 4_000;
+    testProxy.setNow(4_000);
 
     // Simulate browser resuming the tab (still hidden)
     document.dispatchEvent(new Event('resume'));  // Timer should remain paused.
 
-    nowValue = 5_000;
+    testProxy.setNow(5_000);
 
     // Simulate user switching back to the tab (visible)
-    mockVisibilityState = 'visible';
+    testProxy.setVisibilityState('visible');
     document.dispatchEvent(new Event('visibilitychange'));  // Timer resumes.
 
-    nowValue = 7_000;
+    testProxy.setNow(7_000);
 
     // Simulate pagehide (unload)
     window.dispatchEvent(new Event('pagehide'));
@@ -168,5 +178,6 @@ suite('ActiveTimer', function() {
     // Active time: 1000 (before hidden) + 2000 (after visible: 7000 - 5000) =
     // 3000ms
     assertEquals(3000, recordLongTimeCalledWith[0]!);
+    assertEquals(4, testProxy.getCallCount('now'));
   });
 });

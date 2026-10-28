@@ -493,6 +493,7 @@ build_webui("build") {
     "time.ts",
     "tooltip_mixin.ts",
     "tooltip_mixin_lit.ts",
+    "window_proxy.ts",
   ]
 
   if (is_chromeos) {
