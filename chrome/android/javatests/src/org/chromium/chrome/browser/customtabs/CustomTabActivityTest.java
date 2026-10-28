@@ -119,7 +119,6 @@ import org.chromium.base.test.util.CriteriaNotSatisfiedException;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
@@ -224,7 +223,6 @@ import java.util.concurrent.atomic.AtomicReference;
 /** Instrumentation tests for app menu, context menu, and toolbar of a {@link CustomTabActivity}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
-@Features.DisableFeatures({ChromeFeatureList.EDGE_TO_EDGE_EVERYWHERE})
 public class CustomTabActivityTest {
     private static final int TIMEOUT_PAGE_LOAD_SECONDS = 10;
     private static final String TEST_PACKAGE = "org.chromium.chrome.tests";
@@ -511,6 +509,8 @@ public class CustomTabActivityTest {
     @DisableIf.Build(
             sdk_is_greater_than = Build.VERSION_CODES.VANILLA_ICE_CREAM,
             message = "crbug.com/428281172")
+    // TODO(crbug.com/428281172): Reads color from the window; does not work with e2e everywhere.
+    @DisableFeatures(ChromeFeatureList.EDGE_TO_EDGE_EVERYWHERE)
     public void testToolbarColor() {
         Intent intent = createMinimalCustomTabIntent();
         final int expectedColor = Color.RED;

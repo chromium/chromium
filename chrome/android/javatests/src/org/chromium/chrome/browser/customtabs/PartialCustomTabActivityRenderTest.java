@@ -30,7 +30,6 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.CriteriaNotSatisfiedException;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.R;
@@ -133,7 +132,6 @@ public class PartialCustomTabActivityRenderTest {
     @MediumTest
     @Feature("RenderTest")
     @EnableFeatures({ChromeFeatureList.CCT_RESIZABLE_FOR_THIRD_PARTIES})
-    @DisableFeatures(ChromeFeatureList.EDGE_TO_EDGE_EVERYWHERE)
     public void testPartialCustomTabBottomSheet() throws IOException {
         Intent intent = createBottomSheetIntent();
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
