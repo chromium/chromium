@@ -61,6 +61,7 @@ class MeasureFuzzilliCoverageTest(unittest.TestCase):
       '--storagePath=/tmp/fuzzilli_storage',
       '--overwrite',
       '--engine=hybrid',
+      '--fixedMinimizationTimeout',
       '--profile=fakeProfile',
     ]
 

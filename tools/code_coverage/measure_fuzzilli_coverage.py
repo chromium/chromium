@@ -50,6 +50,7 @@ DEFAULT_FUZZILLI_FLAGS = [
   '--storagePath=/tmp/fuzzilli_storage',
   '--overwrite',
   '--engine=hybrid',
+  '--fixedMinimizationTimeout',
 ]
 SCRIPT_DIR = Path(__file__).resolve().parent
 SRC_DIR = SCRIPT_DIR.parents[1]
