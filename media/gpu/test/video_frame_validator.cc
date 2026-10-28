@@ -7,14 +7,12 @@
 #include <string_view>
 
 #include "base/containers/span.h"
-#include "base/cpu.h"
 #include "base/files/file.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
-#include "base/system/sys_info.h"
 #include "build/build_config.h"
 #include "crypto/obsolete/md5.h"
 #include "gpu/command_buffer/client/test_shared_image_interface.h"
@@ -296,31 +294,6 @@ std::unique_ptr<VideoFrameValidator::MismatchedFrameInfo>
 MD5VideoFrameValidator::Validate(scoped_refptr<const VideoFrame> frame,
                                  size_t frame_index) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(validator_thread_sequence_checker_);
-#if BUILDFLAG(IS_CHROMEOS)
-  // b/149808895: There is a bug in the synchronization on mapped buffers, which
-  // causes the frame validation failure. The bug is due to some missing i915
-  // patches in kernel v3.18. The bug will be fixed if the kernel is upreved to
-  // v4.4 or newer. Inserts usleep as a short term workaround to the
-  // synchronization bug until the kernel uprev is complete for all the v3.18
-  // devices. Since this bug only occurs in Skylake just because they are 3.18
-  // devices, we also filter by the processor.
-  const static std::string kernel_version = base::SysInfo::KernelVersion();
-  if (kernel_version.starts_with("3.18")) {
-    static const bool is_skylake = []() {
-      constexpr int kPentiumAndLaterFamily = 0x06;
-      constexpr int kSkyLakeModelId = 0x5E;
-      constexpr int kSkyLake_LModelId = 0x4E;
-
-      const base::CPU& cpuid = base::CPU::GetInstanceNoAllocation();
-      return cpuid.family() == kPentiumAndLaterFamily &&
-             (cpuid.model() == kSkyLakeModelId ||
-              cpuid.model() == kSkyLake_LModelId);
-    }();
-
-    if (is_skylake)
-      usleep(10);
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS)
   if (frame->format() != validation_format_) {
     frame = ConvertVideoFrame(frame.get(), validation_format_);
   }
