@@ -927,7 +927,6 @@ if (_is_default_toolchain) {
         "java/src/org/chromium/chrome/browser/printing/WebContentsPrinter.java",
       ]
       deps += [
-        "//base:supplier_java",
         "//components/thin_webview/internal:internal_java",
         "//printing:printing_java",
       ]
@@ -1071,10 +1070,6 @@ if (_is_default_toolchain) {
       "//chrome/browser/notifications/notification_platform_bridge_android.cc",
       "//chrome/browser/prefs/session_startup_pref.h",
     ]
-  }
-
-  java_cpp_enum("chrome_vr_android_java_enums_srcjar") {
-    sources = [ "//chrome/browser/vr/ui_test_input.h" ]
   }
 
   proto_java_library("usage_stats_proto_java") {
@@ -2680,13 +2675,6 @@ if (_is_default_toolchain) {
         ":chrome_public_32_minimal_apks",
         "//android_webview:system_webview_32_minimal_apks",
       ]
-    }
-
-    android_resource_sizes_test("resource_sizes_chrome_and_webview") {
-      apk_name = "ChromeAndWebView"
-      chrome_path = "$root_build_dir/apks/$_chrome_32_basename"
-      webview_path = "$root_build_dir/apks/$_webview_32_basename"
-      data_deps = [ ":chrome_and_webview_32_minimal_apks" ]
     }
 
     android_size_bot_config("resource_size_config") {

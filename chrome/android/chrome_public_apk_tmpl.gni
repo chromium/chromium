@@ -426,7 +426,6 @@ template("chrome_common_apk_or_module_tmpl") {
         "//chrome/android:chrome_public_apk_base_module_resources",
         "//components/browser_ui/styles/android:chrome_public_apk_resources",
       ]
-      asset_deps += [ "//chrome/android:chrome_public_non_pak_assets" ]
       if (!_is_bundle) {
         deps += [ "//chrome/android:delegate_public_impl_java" ]
       }

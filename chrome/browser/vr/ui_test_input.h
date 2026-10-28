@@ -13,7 +13,6 @@ namespace vr {
 
 // These are used to map user-friendly names, e.g. URL_BAR, to the underlying
 // element names for interaction during testing.
-// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.vr
 enum class UserFriendlyElementName : int {
   kWebXrAudioIndicator,  // Toast in WebXR indicating the microphone permission
                          // is in use.
