@@ -824,6 +824,21 @@ TEST_F(VisitAnnotationsDatabaseTest,
     expected_ids.push_back(id);
   }
 
+  // Verify the per-row lookup threshold (kMaxPerRowLookups = 12) and the first
+  // batched IN query size (13).
+  for (size_t count : {12u, 13u}) {
+    base::flat_map<VisitID, VisitContentAnnotations> annotations;
+    EXPECT_TRUE(GetContentAnnotationsForVisits(
+        base::span(expected_ids).first(count), &annotations));
+    EXPECT_EQ(count, annotations.size());
+    for (size_t i = 0; i < count; ++i) {
+      VisitID id = expected_ids[i];
+      ASSERT_TRUE(annotations.contains(id));
+      EXPECT_EQ(base::StringPrintf("title_%zu", i),
+                annotations[id].alternative_title);
+    }
+  }
+
   // Exact boundary of kBatchSize (250).
   base::flat_map<VisitID, VisitContentAnnotations> annotations_250;
   EXPECT_TRUE(GetContentAnnotationsForVisits(

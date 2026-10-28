@@ -1002,6 +1002,22 @@ TEST_F(URLDatabaseTest, GetURLRows_BatchChunking) {
     expected_ids.push_back(id);
   }
 
+  // Verify the per-row lookup threshold (kMaxPerRowLookups = 12) and the first
+  // batched IN query size (13).
+  for (size_t count : {12u, 13u}) {
+    base::flat_map<URLID, URLRow> url_rows;
+    EXPECT_TRUE(GetURLRows(base::span(expected_ids).first(count), &url_rows));
+    EXPECT_EQ(count, url_rows.size());
+    for (size_t i = 0; i < count; ++i) {
+      URLID id = expected_ids[i];
+      ASSERT_TRUE(url_rows.contains(id));
+      EXPECT_EQ(GURL(base::StringPrintf("http://example.com/%zu", i)),
+                url_rows[id].url());
+      EXPECT_EQ(base::UTF8ToUTF16(base::StringPrintf("Title %zu", i)),
+                url_rows[id].title());
+    }
+  }
+
   // Verify exact boundary of kBatchSize (250).
   base::flat_map<URLID, URLRow> url_rows_250;
   EXPECT_TRUE(GetURLRows(base::span(expected_ids).first(250u), &url_rows_250));

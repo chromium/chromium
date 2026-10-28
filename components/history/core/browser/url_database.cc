@@ -152,6 +152,23 @@ bool URLDatabase::GetURLRows(base::span<const URLID> url_ids,
   // 250 items easily fits the default 150-item page size in a single query
   // while staying well below SQLite's max variable limits.
   constexpr size_t kBatchSize = 250;
+  // At or below 12 IDs, per-row lookups through GetURLRow()'s cached statement
+  // beat preparing an uncached IN statement in local microbenchmarks.
+  constexpr size_t kMaxPerRowLookups = 12;
+
+  if (url_ids.size() <= kMaxPerRowLookups) {
+    for (URLID url_id : url_ids) {
+      URLRow row;
+      if (GetURLRow(url_id, &row)) {
+        rows.emplace_back(row.id(), std::move(row));
+      }
+    }
+    *url_rows = base::flat_map<URLID, URLRow>(std::move(rows));
+    // Unlike the batched path below, SQL errors still return true here since
+    // the single-row helper returns false for both missing rows and SQL
+    // errors.
+    return true;
+  }
 
   for (size_t chunk_start = 0; chunk_start < url_ids.size();
        chunk_start += kBatchSize) {
