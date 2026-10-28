@@ -42,11 +42,15 @@ const CGFloat kTimeToSteadyStateAfterRelease = 0.3;
 // The increase caused by the keyboard beign shown, in the largest detent.
 const CGFloat kKeyboardSheetHeightIncrease = 40.0;
 
+// The size of the unfocused size paddding of the bottom sheet.
+const CGFloat kBottomSheetUnfocusedSidePadding = 8.0;
+
+// This is how many bits UIViewAnimationCurve needs to be shifted to be in
+// UIViewAnimationOptions format. Must match the one in UIView.h.
+constexpr NSUInteger kUIViewAnimationCurveToOptionsShift = 16;
+
 // The identifier of the default detent.
 NSString* const kDefaultDetentIdentifier = @"kDefaultDetentIdentifier";
-
-// Whether the keyboard is currently shown.
-BOOL _keyboardShown;
 
 }  // namespace
 
@@ -105,6 +109,13 @@ BOOL _keyboardShown;
 
   // The bottom constraint of the layout guide tracking the unobstructed area.
   NSLayoutConstraint* _visibleAreaBottomConstraint;
+
+  // Whether the keyboard is currently shown.
+  BOOL _keyboardShown;
+
+  // Side constraints for the bottom sheet.
+  NSLayoutConstraint* _leadingConstraint;
+  NSLayoutConstraint* _trailingConstraint;
 }
 
 @synthesize selectedDetentIdentifier = _selectedDetentIdentifier;
@@ -186,8 +197,7 @@ BOOL _keyboardShown;
   [self.view addSubview:_bottomSheet.view];
   [_bottomSheet didMoveToParentViewController:self];
 
-  AddSameConstraintsToSides(_bottomSheet.view, self.view,
-                            LayoutSides::kHorizontal);
+  [self setupSideConstraints];
 
   self.bottomSheetHeightConstraint =
       [_bottomSheet.view.heightAnchor constraintEqualToConstant:0];
@@ -471,6 +481,43 @@ BOOL _keyboardShown;
   return self.view.frame.size.height;
 }
 
+// Sets up the side constraints for the bottom sheet.
+- (void)setupSideConstraints {
+  if (_leadingConstraint || _trailingConstraint) {
+    return;
+  }
+  _leadingConstraint = [_bottomSheet.view.leadingAnchor
+      constraintEqualToAnchor:self.view.leadingAnchor
+                     constant:kBottomSheetUnfocusedSidePadding];
+  _trailingConstraint = [_bottomSheet.view.trailingAnchor
+      constraintEqualToAnchor:self.view.trailingAnchor
+                     constant:-kBottomSheetUnfocusedSidePadding];
+  [NSLayoutConstraint
+      activateConstraints:@[ _leadingConstraint, _trailingConstraint ]];
+}
+
+// Helper method that displays the keyboard with an animation.
+- (void)animateLayoutForKeyboardNotification:(NSNotification*)notification {
+  double duration =
+      [notification.userInfo[UIKeyboardAnimationDurationUserInfoKey]
+          doubleValue];
+  UIViewAnimationOptions options = UIViewAnimationCurveEaseIn
+                                   << kUIViewAnimationCurveToOptionsShift;
+
+  _leadingConstraint.constant =
+      _keyboardShown ? 0 : kBottomSheetUnfocusedSidePadding;
+  _trailingConstraint.constant =
+      _keyboardShown ? 0 : -kBottomSheetUnfocusedSidePadding;
+
+  [UIView animateWithDuration:duration
+                        delay:0
+                      options:options
+                   animations:^{
+                     [self.view layoutIfNeeded];
+                   }
+                   completion:nil];
+}
+
 #pragma mark - LensOverlayPanTrackerDelegate
 
 // Called when the tracker ended recognizing a pan gesture.
@@ -654,6 +701,7 @@ BOOL _keyboardShown;
 
 - (void)keyboardWillShow:(NSNotification*)notification {
   _keyboardShown = YES;
+  [self animateLayoutForKeyboardNotification:notification];
   if (!self.panTracker.isPanning) {
     [self setSelectedDetentIdentifier:self.selectedDetentIdentifier
                              animated:YES];
@@ -662,6 +710,7 @@ BOOL _keyboardShown;
 
 - (void)keyboardWillHide:(NSNotification*)notification {
   _keyboardShown = NO;
+  [self animateLayoutForKeyboardNotification:notification];
   if (!self.panTracker.isPanning) {
     [self setSelectedDetentIdentifier:self.selectedDetentIdentifier
                              animated:YES];
