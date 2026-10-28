@@ -6,10 +6,29 @@
 """Run Error Prone."""
 
 import argparse
+import os
 import sys
 
 import compile_java
+from util import build_utils
 from util import server_utils
+
+# A GraalVM native-image of javac with Error Prone, NullAway, and
+# //tools/android/errorprone_plugin compiled in. Exists only for linux-x64
+# hosts.
+_NATIVE_IMAGE_PATH = os.path.join(
+    build_utils.DIR_SOURCE_ROOT,
+    'third_party',
+    'android_build_tools',
+    'error_prone',
+    'cipd',
+    'error_prone',
+)
+
+# The native-image's copy of //tools/android/errorprone_plugin is updated only
+# when the error_prone CIPD package is rolled. Set DISABLE_NATIVE_IMAGE=1 to
+# test local changes to the plugin.
+_DISABLE_NATIVE_IMAGE = os.environ.get('DISABLE_NATIVE_IMAGE')
 
 # Add a check here to cause the suggested fix to be applied while compiling.
 ERRORPRONE_CHECKS_TO_APPLY = [
@@ -372,21 +391,40 @@ def main():
 
     errorprone_flags.extend(options.xep_arg)
 
-    # These are required to use JDK 16, and are taken directly from
-    # https://errorprone.info/docs/installation
-    javac_args = [
-        '-J--add-exports=jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED',
-        '-J--add-exports=jdk.compiler/com.sun.tools.javac.file=ALL-UNNAMED',
-        '-J--add-exports=jdk.compiler/com.sun.tools.javac.main=ALL-UNNAMED',
-        '-J--add-exports=jdk.compiler/com.sun.tools.javac.model=ALL-UNNAMED',
-        '-J--add-exports=jdk.compiler/com.sun.tools.javac.parser=ALL-UNNAMED',
-        '-J--add-exports=jdk.compiler/com.sun.tools.javac.processing='
-        'ALL-UNNAMED',
-        '-J--add-exports=jdk.compiler/com.sun.tools.javac.tree=ALL-UNNAMED',
-        '-J--add-exports=jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED',
-        '-J--add-opens=jdk.compiler/com.sun.tools.javac.code=ALL-UNNAMED',
-        '-J--add-opens=jdk.compiler/com.sun.tools.javac.comp=ALL-UNNAMED',
-    ]
+    # The native-image always runs Chromium's plugin checks, so use it only when
+    # the plugin would otherwise be loaded.
+    if (
+        not _DISABLE_NATIVE_IMAGE
+        and options.has_chromium_plugin
+        and compile_java.IS_LINUX_X64
+    ):
+        javac_cmd = [
+            _NATIVE_IMAGE_PATH,
+            # Native images have no java.home, which javac needs in order to
+            # find the JDK's modules (for --release).
+            f'-Djava.home={build_utils.JAVA_HOME}',
+        ]
+        # The --add-exports / --add-opens flags are compiled in.
+        javac_args = []
+    else:
+        javac_cmd = None
+        # These are required to use JDK 16, and are taken directly from
+        # https://errorprone.info/docs/installation
+        javac_args = [
+            '-J--add-exports=jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED',
+            '-J--add-exports=jdk.compiler/com.sun.tools.javac.file=ALL-UNNAMED',
+            '-J--add-exports=jdk.compiler/com.sun.tools.javac.main=ALL-UNNAMED',
+            '-J--add-exports=jdk.compiler/com.sun.tools.javac.model='
+            'ALL-UNNAMED',
+            '-J--add-exports=jdk.compiler/com.sun.tools.javac.parser='
+            'ALL-UNNAMED',
+            '-J--add-exports=jdk.compiler/com.sun.tools.javac.processing='
+            'ALL-UNNAMED',
+            '-J--add-exports=jdk.compiler/com.sun.tools.javac.tree=ALL-UNNAMED',
+            '-J--add-exports=jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED',
+            '-J--add-opens=jdk.compiler/com.sun.tools.javac.code=ALL-UNNAMED',
+            '-J--add-opens=jdk.compiler/com.sun.tools.javac.comp=ALL-UNNAMED',
+        ]
 
     javac_args += ['-XDcompilePolicy=simple', ' '.join(errorprone_flags)]
 
@@ -398,7 +436,10 @@ def main():
         javac_args += ['-XDshould-stop.ifNoError=FLOW']
 
     compile_java.main(
-        compile_java_argv, extra_javac_args=javac_args, use_errorprone=True
+        compile_java_argv,
+        extra_javac_args=javac_args,
+        use_errorprone=True,
+        javac_cmd=javac_cmd,
     )
 
 

@@ -43,18 +43,22 @@ static analysis tasks in the background. This will change the build as follows:
   * Checking correctness of [nullable annotations] (via NullAway plugin).
   * Enforcement of `@GuardedBy`, `@CheckReturnValue`, and `@DoNotMock`.
   * Enforcement of `/* paramName= */` comments.
-* A list of enabled / disabled checks is found [within `compile_java.py`]
+* A list of enabled / disabled checks is found [within `errorprone.py`]
   * Many checks are currently disabled because there is work involved in fixing
     violations they introduce. Please help!
 * Chrome has [a few custom checks].
+  * On linux-x64, Error Prone runs as a GraalVM native-image that has these
+    checks compiled in, so local changes to them are not used until the
+    `error_prone` CIPD package is rebuilt and rolled. To test local changes, set
+    the `DISABLE_NATIVE_IMAGE=1` environment variable.
 * Checks run on the entire codebase, not only on changed lines.
 * Does not run when `chromium_code = false` (e.g. for `//third_party`).
 
 [ErrorProne]: https://errorprone.info/
 [Useful checks include]: https://errorprone.info/bugpatterns
 [nullable annotations]: /styleguide/java/nullaway.md
-[within `compile_java.py`]: https://source.chromium.org/chromium/chromium/src/+/main:build/android/gyp/compile_java.py;l=46;drc=5dc479e73c3c9c03b59f324b2e349b8bd008401f
 [a few custom checks]: /tools/android/errorprone_plugin/src/org/chromium/tools/errorprone/plugin/
+[within `errorprone.py`]: /build/android/gyp/errorprone.py
 
 ## [Checkstyle](https://checkstyle.sourceforge.io/)
 * Mainly used for checking Java formatting & style.

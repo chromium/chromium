@@ -32,6 +32,10 @@ _nullaway_jar =
     "//third_party/android_build_tools/error_prone/cipd/nullaway.jar"
 _rebased_nullaway_jar = rebase_path(_nullaway_jar, root_build_dir)
 
+# A native-image of javac + Error Prone, used by errorprone.py on linux-x64.
+_error_prone_native_image =
+    "//third_party/android_build_tools/error_prone/cipd/error_prone"
+
 # The following _java_*_types variables capture all the existing target types.
 # If a new type is introduced, please add it to one of these categories,
 # preferring the more specific resource/library types.
@@ -3193,6 +3197,9 @@ if (enable_java_templates) {
           # https://source.chromium.org/chromium/chromium/src/+/main:tools/android/errorprone_plugin/src/org/chromium/tools/errorprone/plugin/UseNetworkAnnotations.java;l=84;drc=dfd88085261b662a5c0a1abea1a3b120b08e8e48
           inputs += [ "//tools/android/errorprone_plugin/OWNERS" ]
           args += [ "--has-chromium-plugin" ]
+          if (host_os == "linux" && host_cpu == "x64") {
+            inputs += [ _error_prone_native_image ]
+          }
         }
         if (defined(testonly) && testonly) {
           args += [ "--testonly" ]

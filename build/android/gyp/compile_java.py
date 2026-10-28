@@ -44,6 +44,9 @@ _JAVAC_GRAALVM_PATH = os.path.join(
     build_utils.JAVA_HOME, 'bin', 'javac-graalvm'
 )
 
+# GraalVM native-images (e.g. javac-graalvm) exist only for linux-x64 hosts.
+IS_LINUX_X64 = sys.platform == 'linux' and platform.machine() == 'x86_64'
+
 # Large compiles are split across multiple javac processes. Each process has
 # a fixed cost (mostly loading the classpath), so this is a balance between
 # wall time and CPU time. More than 8 shards is only slightly faster on an idle
@@ -852,28 +855,32 @@ def _ParseOptions(argv):
 
 
 def main(
-    argv, extra_javac_args=None, use_errorprone=False, write_depfile_only=False
+    argv,
+    extra_javac_args=None,
+    use_errorprone=False,
+    write_depfile_only=False,
+    javac_cmd=None,
 ):
     build_utils.InitLogging('JAVAC_DEBUG')
     argv = build_utils.ExpandFileArgs(argv)
     options, java_files, kt_files = _ParseOptions(argv)
 
-    # The native-image javac does not support plugins (Error Prone), and
-    # --print-javac-command-line is used by tools that expect a JVM javac.
-    use_javac_graalvm = (
-        sys.platform == 'linux'
-        and platform.machine() == 'x86_64'
-        and not use_errorprone
-        and not options.print_javac_command_line
-    )
-    if use_javac_graalvm:
-        javac_cmd = [_JAVAC_GRAALVM_PATH]
-    else:
-        javac_cmd = [
-            build_utils.JAVAC_PATH,
-            # https://crbug.com/1441023
-            '-J-XX:+PerfDisableSharedMem',
-        ]
+    # errorprone.py may provide javac_cmd.
+    if not javac_cmd:
+        # The native-image javac does not support plugins (Error Prone), and
+        # --print-javac-command-line is used by tools that expect a JVM javac.
+        if (
+            IS_LINUX_X64
+            and not use_errorprone
+            and not options.print_javac_command_line
+        ):
+            javac_cmd = [_JAVAC_GRAALVM_PATH]
+        else:
+            javac_cmd = [
+                build_utils.JAVAC_PATH,
+                # https://crbug.com/1441023
+                '-J-XX:+PerfDisableSharedMem',
+            ]
 
     javac_args = [
         '-g',
