@@ -56,7 +56,6 @@ import java.util.concurrent.TimeoutException;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Features.EnableFeatures({
-    ChromeFeatureList.EDGE_TO_EDGE_EVERYWHERE,
     ChromeFeatureList.WEB_APP_SHORT_EDGES_CUTOUT_MODE + ":enable_standalone/true/enable_twa/true"
 })
 @DoNotBatch(reason = "Tests exercise edge-to-edge window state applied at activity startup.")
