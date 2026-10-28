@@ -20,6 +20,7 @@ from devil.android import device_errors
 from devil.android.sdk import version_codes
 from devil.android.tools import device_recovery
 from devil.utils import signal_handler
+from devil.utils import timeout_retry
 from pylib.base import base_test_result
 from pylib.base import test_collection
 from pylib.base import test_exception
@@ -98,6 +99,9 @@ class LocalDeviceTestRun(test_run.TestRun):
                     raise Exception(
                         'Unexpected result type: %s' % type(result).__name__
                     )
+            except _DeviceReadyTimeoutError as e:
+                exception_recorder.register(e)
+                raise
             except device_errors.CommandTimeoutError as e:
                 exception_recorder.register(e)
                 # Test timeouts don't count as device errors for the purpose
@@ -133,6 +137,15 @@ class LocalDeviceTestRun(test_run.TestRun):
                             base_test_result.ResultType.TIMEOUT,
                         )
                     )
+                try:
+                    WaitUntilDeviceReady(
+                        dev,
+                        force_main_user=self._env.force_main_user,
+                        packages=self._installed_packages,
+                    )
+                except base_error.BaseError as wait_err:
+                    exception_recorder.register(wait_err)
+                    raise
             except device_errors.DeviceUnreachableError as e:
                 exception_recorder.register(e)
                 # If the device is no longer reachable then terminate this
@@ -160,6 +173,15 @@ class LocalDeviceTestRun(test_run.TestRun):
                     str(dev),
                     consecutive_device_errors,
                 )
+                try:
+                    WaitUntilDeviceReady(
+                        dev,
+                        force_main_user=self._env.force_main_user,
+                        packages=self._installed_packages,
+                    )
+                except base_error.BaseError as wait_err:
+                    exception_recorder.register(wait_err)
+                    raise
 
             finally:
                 if isinstance(tests, test_collection.TestCollection):
@@ -500,6 +522,96 @@ def FlattenTestList(values):
         else:
             ret.append(v)
     return ret
+
+
+_DEVICE_READY_MAX_TRIES = 60
+_DEVICE_READY_WAIT_PERIOD = 1
+_DEVICE_READY_SHELL_TIMEOUT = 5
+
+
+class _DeviceReadyTimeoutError(device_errors.CommandTimeoutError):
+    """Raised when WaitUntilDeviceReady times out waiting for unlock/storage."""
+
+
+def WaitUntilDeviceReady(device, force_main_user=False, packages=None):
+    """Waits for a device to be fully booted, unlocked, and storage-mounted.
+
+    During a userspace soft-reboot (e.g. when surfaceflinger or system_server
+    crashes and restarts zygote), adbd stays alive and sys.boot_completed
+    remains '1', so WaitUntilFullyBooted() alone can return while system_server
+    is still in an early boot phase with the target user locked and /sdcard
+    FUSE unmounted (via `vdc volume abort_fuse`). Starting instrumentation in
+    that window causes ActivityManagerService.startInstrumentation() to fail
+    internally and force-stop the package without notifying the
+    InstrumentationWatcher, hanging `am instrument -w` until the shard timeout
+    expires.
+    """
+    device.ClearCache()
+    device.WaitUntilFullyBooted()
+
+    main_user_ensured = not force_main_user
+    last_state = {'user_id': 0, 'storage_path': None}
+
+    def is_user_unlocked_and_storage_ready():
+        nonlocal main_user_ensured
+        try:
+            if not main_user_ensured:
+                device.EnsureMainUser()
+                if not isinstance(getattr(device, 'target_user', None), int):
+                    return False
+                main_user_ensured = True
+
+            user_id = (
+                device.target_user
+                if isinstance(getattr(device, 'target_user', None), int)
+                else 0
+            )
+            # On HSUM (force_main_user with non-zero user), ResolveSpecialPath()
+            # maps /sdcard to the lower /data/media/<user> directory, which
+            # remains present even while FUSE is unmounted. Probe the user's
+            # actual FUSE mount namespace instead.
+            storage_path = (
+                f'/mnt/user/{user_id}/emulated/{user_id}/Download'
+                if force_main_user and user_id != 0
+                else device.GetAppWritablePath()
+            )
+            last_state['user_id'] = user_id
+            last_state['storage_path'] = storage_path
+
+            output = device.RunShellCommand(
+                ['am', 'get-started-user-state', str(user_id)],
+                check_return=False,
+                timeout=_DEVICE_READY_SHELL_TIMEOUT,
+                retries=0,
+            )
+            if not any('RUNNING_UNLOCKED' in line for line in output):
+                return False
+            device.RunShellCommand(
+                ['test', '-d', storage_path],
+                check_return=True,
+                as_root=force_main_user,
+                timeout=_DEVICE_READY_SHELL_TIMEOUT,
+                retries=0,
+            )
+            return True
+        except (
+            device_errors.CommandFailedError,
+            device_errors.CommandTimeoutError,
+        ):
+            return False
+
+    if not timeout_retry.WaitFor(
+        is_user_unlocked_and_storage_ready,
+        wait_period=_DEVICE_READY_WAIT_PERIOD,
+        max_tries=_DEVICE_READY_MAX_TRIES,
+    ):
+        raise _DeviceReadyTimeoutError(
+            f'Timed out waiting for device {device} user '
+            f'{last_state["user_id"]} unlock and external storage '
+            f'({last_state["storage_path"]}).'
+        )
+    if packages:
+        SetAppCompatibilityFlagsIfNecessary(packages, device)
 
 
 def SetAppCompatibilityFlagsIfNecessary(packages, device):

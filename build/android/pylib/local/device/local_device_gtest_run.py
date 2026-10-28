@@ -345,6 +345,7 @@ class _ApkDelegate:
             logging.warning('*' * 80)
 
         with command_line_file, test_list_file, stdout_file:
+            timed_out_error = None
             try:
                 device.StartInstrumentation(
                     self._component, extras=extras, raw=False, **kwargs
@@ -359,6 +360,7 @@ class _ApkDelegate:
                 exception_recorder.register(
                     test_exception.StartInstrumentationTimeoutError(e)
                 )
+                timed_out_error = e
             except device_errors.DeviceUnreachableError as e:
                 exception_recorder.register(e)
                 logging.exception('gtest shard device unreachable.')
@@ -392,10 +394,28 @@ class _ApkDelegate:
                     stdout_file_path, as_root=self._env.force_main_user
                 )
             except device_errors.AdbCommandFailedError as e:
-                exception_recorder.register(
-                    test_exception.StartInstrumentationStdoutError(e)
+                if timed_out_error is not None:
+                    raise timed_out_error from e
+                logging.warning(
+                    'Failed to read gtest stdout file %s; waiting for device '
+                    'readiness and retrying once: %s',
+                    stdout_file_path,
+                    e,
                 )
-                raise
+                local_device_test_run.WaitUntilDeviceReady(
+                    device,
+                    force_main_user=self._env.force_main_user,
+                    packages=[self._package] if self._package else None,
+                )
+                try:
+                    stdout_file_content = device.ReadFile(
+                        stdout_file_path, as_root=self._env.force_main_user
+                    )
+                except base_error.BaseError:
+                    exception_recorder.register(
+                        test_exception.StartInstrumentationStdoutError(e)
+                    )
+                    raise e
 
             return stdout_file_content.splitlines()
 

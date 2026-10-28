@@ -425,6 +425,194 @@ class LocalDeviceTestRunTest(unittest.TestCase):
         device = self._RecoverDevices(force_main_user=False)
         device.EnsureMainUser.assert_not_called()
 
+    @mock.patch('devil.utils.timeout_retry.time.sleep')
+    def testWaitUntilDeviceReady_waitsForUserUnlockAndStorage(
+        self, _mock_sleep
+    ):
+        device = mock.MagicMock()
+        device.target_user = 0
+        device.build_version_sdk = 34
+        device.GetAppWritablePath.return_value = '/sdcard/Download'
+        device.RunShellCommand.side_effect = [
+            # 1st attempt: system_server still in early boot phase (BOOTING)
+            ['BOOTING'],
+            # 2nd attempt: user unlocked, but /sdcard/Download FUSE not mounted
+            # yet.
+            ['RUNNING_UNLOCKED'],
+            local_device_test_run.device_errors.AdbShellCommandFailedError(
+                ['test', '-d', '/sdcard/Download'], '', 1, 'device_1'
+            ),
+            # 3rd attempt: user unlocked and /sdcard/Download mounted
+            ['RUNNING_UNLOCKED'],
+            [],
+            # SetAppCompatibilityFlagsIfNecessary
+            [],
+            [],
+        ]
+
+        local_device_test_run.WaitUntilDeviceReady(
+            device, force_main_user=False, packages=['org.chromium.test']
+        )
+
+        device.ClearCache.assert_called_once_with()
+        device.WaitUntilFullyBooted.assert_called_once_with()
+        device.EnsureMainUser.assert_not_called()
+        self.assertEqual(device.RunShellCommand.call_count, 7)
+
+    @mock.patch('devil.utils.timeout_retry.time.sleep')
+    def testWaitUntilDeviceReady_forceMainUser(self, _mock_sleep):
+        device = mock.MagicMock()
+        device.target_user = None
+        device.build_version_sdk = 34
+        device.GetAppWritablePath.return_value = '/sdcard/Download'
+
+        ensure_attempts = {'count': 0}
+
+        def ensure_main_user_side_effect():
+            ensure_attempts['count'] += 1
+            if ensure_attempts['count'] == 1:
+                raise local_device_test_run.device_errors.CommandFailedError(
+                    'system_server still booting', 'device_1'
+                )
+            device.target_user = 10
+
+        device.EnsureMainUser.side_effect = ensure_main_user_side_effect
+        device.RunShellCommand.side_effect = [
+            local_device_test_run.device_errors.CommandTimeoutError(
+                'am hung mid-boot'
+            ),
+            ['RUNNING_UNLOCKED'],
+            [],
+        ]
+
+        local_device_test_run.WaitUntilDeviceReady(
+            device, force_main_user=True, packages=[]
+        )
+
+        device.ClearCache.assert_called_once_with()
+        device.WaitUntilFullyBooted.assert_called_once_with()
+        self.assertEqual(device.EnsureMainUser.call_count, 2)
+        device.ResolveSpecialPath.assert_not_called()
+        self.assertEqual(
+            device.RunShellCommand.call_args_list,
+            [
+                mock.call(
+                    ['am', 'get-started-user-state', '10'],
+                    check_return=False,
+                    timeout=5,
+                    retries=0,
+                ),
+                mock.call(
+                    ['am', 'get-started-user-state', '10'],
+                    check_return=False,
+                    timeout=5,
+                    retries=0,
+                ),
+                mock.call(
+                    ['test', '-d', '/mnt/user/10/emulated/10/Download'],
+                    check_return=True,
+                    as_root=True,
+                    timeout=5,
+                    retries=0,
+                ),
+            ],
+        )
+
+    @mock.patch.object(local_device_test_run, '_DEVICE_READY_MAX_TRIES', 2)
+    @mock.patch('devil.utils.timeout_retry.time.sleep')
+    def testWaitUntilDeviceReady_timeoutRaisesCommandTimeoutError(
+        self, _mock_sleep
+    ):
+        device = mock.MagicMock()
+        device.target_user = 0
+        device.GetAppWritablePath.return_value = '/sdcard/Download'
+        device.RunShellCommand.return_value = ['BOOTING']
+
+        with self.assertRaises(
+            local_device_test_run.device_errors.CommandTimeoutError
+        ):
+            local_device_test_run.WaitUntilDeviceReady(
+                device, force_main_user=False
+            )
+
+    @mock.patch.object(local_device_test_run, 'WaitUntilDeviceReady')
+    def testRunTestsOnDevice_waitsUntilDeviceReadyAfterBaseError(
+        self, mock_wait_ready
+    ):
+        test_run = TestLocalDeviceTestRun()
+        test_run._env.force_main_user = False
+        test_run._installed_packages = ['org.chromium.test']
+        device = mock.MagicMock()
+        device.build_version_sdk = 29
+
+        pass_result = base_test_result.BaseTestResult(
+            'Test1', base_test_result.ResultType.PASS
+        )
+        test_run._RunTest = mock.MagicMock(
+            side_effect=[
+                local_device_test_run.device_errors.AdbCommandFailedError(
+                    ['pull', '/sdcard/Download/out'],
+                    'Input/output error',
+                    1,
+                    'device_1',
+                ),
+                (pass_result, None),
+            ]
+        )
+
+        tc = local_device_test_run.test_collection.TestCollection(['Test1'])
+        results = base_test_result.TestRunResults()
+        exit_now = local_device_test_run.threading.Event()
+
+        test_run._RunTestsOnDevice(device, tc, results, exit_now)
+
+        mock_wait_ready.assert_called_once_with(
+            device,
+            force_main_user=False,
+            packages=['org.chromium.test'],
+        )
+        self.assertEqual(len(results.GetPass()), 1)
+
+    @mock.patch.object(local_device_test_run, 'WaitUntilDeviceReady')
+    def testRunTestsOnDevice_waitsAfterTimeoutAndAbortsIfDeviceNeverUnlocks(
+        self, mock_wait_ready
+    ):
+        test_run = TestLocalDeviceTestRun()
+        test_run._env.force_main_user = False
+        test_run._installed_packages = ['org.chromium.test']
+        device = mock.MagicMock()
+        device.build_version_sdk = 29
+
+        mock_wait_ready.side_effect = (
+            local_device_test_run._DeviceReadyTimeoutError('still locked')
+        )
+        test_run._RunTest = mock.MagicMock(
+            side_effect=[
+                local_device_test_run.device_errors.CommandTimeoutError(
+                    'batch timed out'
+                ),
+                (
+                    base_test_result.BaseTestResult(
+                        'Test2', base_test_result.ResultType.PASS
+                    ),
+                    None,
+                ),
+            ]
+        )
+
+        tc = local_device_test_run.test_collection.TestCollection(
+            ['Test1', 'Test2']
+        )
+        results = base_test_result.TestRunResults()
+        exit_now = local_device_test_run.threading.Event()
+
+        test_run._RunTestsOnDevice(device, tc, results, exit_now)
+
+        mock_wait_ready.assert_called_once()
+        # Test2 must NOT be started on the still-locked device.
+        self.assertEqual(test_run._RunTest.call_count, 1)
+        self.assertEqual(len(results.GetTimeout()), 1)
+
 
 if __name__ == '__main__':
     unittest.main(verbosity=2)
