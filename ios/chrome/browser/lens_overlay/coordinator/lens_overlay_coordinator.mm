@@ -908,6 +908,21 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
 - (void)lensOverlayContainerPresenterDidReadjustPresentation:
     (LensOverlayContainerPresenter*)containerPresenter {
   [self updateInitialVisibleAreaLayoutGuide];
+
+  if (UseCustomLensOverlayBottomSheet() && IsChromeNextIaEnabled() &&
+      _resultsPagePresenter.isResultPageVisible) {
+    // When the bottom sheet is embedded in the container, we need to collapse
+    // the toolbar.
+    BOOL usesBottomSheet =
+        lens::ResultPagePresentationFor(self.baseViewController) ==
+        lens::ResultPagePresentationType::kEdgeAttachedBottomSheet;
+    if (usesBottomSheet) {
+      [self enterFullscreen];
+    } else {
+      [self exitFullscreenAnimated:NO];
+    }
+  }
+
   [_resultsPagePresenter readjustPresentationIfNeeded];
   [self.browser->GetSceneState()
           .lensOverlayStateNotifier lensOverlayDidReadjustPresentation];
@@ -1459,6 +1474,17 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
   }
 }
 
+// Enters the fullscreen state.
+- (void)enterFullscreen {
+  Browser* browser = self.browser;
+  if (!browser) {
+    return;
+  }
+  id<BrowserCoordinatorCommands> handler = HandlerForProtocol(
+      browser->GetCommandDispatcher(), BrowserCoordinatorCommands);
+  [handler forceFullscreenMode:FullscreenModeTransitionTrigger::kForcedByCode];
+}
+
 // Ends the lifecycle of the presented result bottom sheet.
 - (void)stopResultPage {
   [_resultContextMenuProvider stop];
@@ -1762,6 +1788,17 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
   SheetDimensionState restoredSheetState =
       _associatedTabHelper->GetRecordedSheetDimensionState();
   BOOL maximizeSheet = restoredSheetState == SheetDimensionState::kLarge;
+
+  // When the bottom sheet is embedded in the container, we need to collapse the
+  // toolbar.
+  BOOL usesBottomSheet =
+      lens::ResultPagePresentationFor(self.baseViewController) ==
+      lens::ResultPagePresentationType::kEdgeAttachedBottomSheet;
+  if (UseCustomLensOverlayBottomSheet() && IsChromeNextIaEnabled() &&
+      usesBottomSheet) {
+    [self enterFullscreen];
+  }
+
   [_resultsPagePresenter
       presentResultsPageAnimated:animated
                    maximizeSheet:maximizeSheet
