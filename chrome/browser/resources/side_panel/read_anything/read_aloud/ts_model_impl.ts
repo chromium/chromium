@@ -489,8 +489,16 @@ export class TsReadModelImpl implements ReadAloudModelBrowserProxy {
     const remainingText = sentenceText.substring(index);
     const wordEndInRemaining =
         this.textSegmenter_.getNextWordEnd(remainingText);
-    const highlightEndIndex = index + wordEndInRemaining;
+    return this.getHighlightSegmentsForRange_(
+        currentSentence, index, index + wordEndInRemaining);
+  }
 
+  // Returns the segments covering the text from `highlightStart` to
+  // `highlightEnd` (exclusive) within the sentence text.
+  private getHighlightSegmentsForRange_(
+      currentSentence: SegmentedSentence, highlightStart: number,
+      highlightEnd: number): Segment[] {
+    const sentenceText = currentSentence.sentenceInfo.text;
     const sentenceSegments = currentSentence.segments;
     const highlightSegments: Segment[] = [];
     let textSoFarIndex = 0;
@@ -510,15 +518,15 @@ export class TsReadModelImpl implements ReadAloudModelBrowserProxy {
         continue;
       }
 
-      if (segmentStart >= highlightEndIndex) {
+      if (segmentStart >= highlightEnd) {
         break;
       }
 
       const highlightSegment = this.createHighlightSegment(
           segment,
           segmentStart,
-          index,  // highlightStart
-          highlightEndIndex,
+          highlightStart,
+          highlightEnd,
       );
 
       if (highlightSegment) {
