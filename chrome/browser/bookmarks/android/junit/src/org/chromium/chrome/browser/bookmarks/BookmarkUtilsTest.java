@@ -74,7 +74,9 @@ import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.profile_metrics.BrowserProfileType;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.test.util.TestAccounts;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.TestActivity;
+import org.chromium.ui.display.DisplayUtil;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
@@ -773,6 +775,33 @@ public class BookmarkUtilsTest {
             mTranslucent = translucent;
             return true;
         }
+    }
+
+    @Test
+    @Config(qualifiers = "sw800dp")
+    @EnableFeatures(ChromeFeatureList.ANDROID_DESKTOP_BOOKMARK_DIALOG)
+    public void testShouldShowDesktopBookmarkDialog_tabletWidth() {
+        assertTrue(BookmarkUtils.shouldShowDesktopBookmarkDialog(mActivity));
+    }
+
+    @Test
+    @Config(qualifiers = "sw360dp")
+    @EnableFeatures(ChromeFeatureList.ANDROID_DESKTOP_BOOKMARK_DIALOG)
+    public void testShouldShowDesktopBookmarkDialog_phoneWidth() {
+        // E.g. a folded foldable: the flag alone must not produce the desktop dialog.
+        assertFalse(BookmarkUtils.shouldShowDesktopBookmarkDialog(mActivity));
+    }
+
+    @Test
+    @Config(qualifiers = "sw800dp")
+    public void testIsCurrentDisplayTabletWidth_usesLiveDisplayWidth() {
+        // Resources say tablet, but the live display is phone-width (e.g. folded).
+        DisplayUtil.setCurrentSmallestScreenWidthForTesting(360);
+        assertTrue(DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity));
+        assertFalse(BookmarkUtils.isCurrentDisplayTabletWidth(mActivity));
+
+        DisplayUtil.setCurrentSmallestScreenWidthForTesting(800);
+        assertTrue(BookmarkUtils.isCurrentDisplayTabletWidth(mActivity));
     }
 
     @Test

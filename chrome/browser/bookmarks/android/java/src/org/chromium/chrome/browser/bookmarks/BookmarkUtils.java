@@ -47,6 +47,7 @@ import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.ui.base.DeviceFormFactor;
+import org.chromium.ui.display.DisplayUtil;
 import org.chromium.url.GURL;
 
 import java.text.DateFormat;
@@ -946,6 +947,26 @@ public class BookmarkUtils {
     }
 
     /**
+     * Returns whether a bookmark activity uses the desktop dialog presentation: the desktop dialog
+     * flag is on and the activity's window floats (see {@link #isBookmarkDialog}). Otherwise it
+     * uses the full-screen presentation, e.g. on a folded foldable.
+     */
+    public static boolean shouldShowDesktopBookmarkDialog(Context context) {
+        return isDesktopBookmarksDialogEnabled() && isBookmarkDialog(context);
+    }
+
+    /**
+     * Returns whether the live display is tablet-width. Unlike {@link #isBookmarkDialog}, this is
+     * not affected by a smallestScreenWidthDp pinned for the activity's lifetime, so it detects a
+     * fold/unfold that should switch between the dialog and full-screen presentation. Mirrors
+     * {@code ChromeActivity#getTabletMode}.
+     */
+    public static boolean isCurrentDisplayTabletWidth(Context context) {
+        return DisplayUtil.getCurrentSmallestScreenWidth(context)
+                >= DeviceFormFactor.MINIMUM_TABLET_WIDTH_DP;
+    }
+
+    /**
      * @return Whether the desktop bookmarks layout is enabled.
      */
     public static boolean isDesktopBookmarksLayoutEnabled() {
@@ -953,12 +974,11 @@ public class BookmarkUtils {
     }
 
     /**
-     * @param context The current context.
-     * @return Whether the bookmark activity should be shown as a floating dialog.
+     * Returns whether a bookmark activity's {@code Theme.Chromium.DialogWhenLarge} window floats as
+     * a dialog (tablet width) rather than filling the screen.
      */
     public static boolean isBookmarkDialog(Context context) {
-        return isDesktopBookmarksDialogEnabled()
-                || DeviceFormFactor.isNonMultiDisplayContextOnTablet(context);
+        return DeviceFormFactor.isNonMultiDisplayContextOnTablet(context);
     }
 
     /**

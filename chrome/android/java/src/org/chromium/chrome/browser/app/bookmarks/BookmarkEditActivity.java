@@ -7,8 +7,10 @@ package org.chromium.chrome.browser.app.bookmarks;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -71,6 +73,14 @@ public class BookmarkEditActivity extends SnackbarActivity {
 
     public static final int FOLDER_PICKER_REQUEST_CODE = 101;
 
+    private static final String STATE_TITLE = "BookmarkEditActivity.Title";
+    private static final String STATE_URL = "BookmarkEditActivity.Url";
+    private static final String STATE_INITIAL_TITLE = "BookmarkEditActivity.InitialTitle";
+    private static final String STATE_INITIAL_URL = "BookmarkEditActivity.InitialUrl";
+    private static final String STATE_INITIAL_PARENT_ID = "BookmarkEditActivity.InitialParentId";
+    private static final String STATE_FOLDER_PICKER_ACTIVE =
+            "BookmarkEditActivity.FolderPickerActive";
+
     private BookmarkModel mModel;
     private Profile mProfile;
     private BookmarkManagerOpener mBookmarkManagerOpener;
@@ -91,6 +101,16 @@ public class BookmarkEditActivity extends SnackbarActivity {
     private boolean mIsFolder;
     private boolean mOutcomeRecorded;
     private boolean mFolderPickerActive;
+
+    /** Whether this instance uses the desktop dialog rather than the full-screen presentation. */
+    private boolean mIsDesktopDialog;
+
+    /**
+     * Whether the display was tablet-width when this instance chose its presentation. With the
+     * desktop dialog, a fold/unfold that changes this recreates the activity to switch
+     * presentation.
+     */
+    private boolean mIsTabletDisplay;
 
     private @Nullable EdgeToEdgePadAdjuster mEdgeToEdgePadAdjuster;
     private @Nullable BookmarkUiPrefs mBookmarkUiPrefs;
@@ -138,8 +158,7 @@ public class BookmarkEditActivity extends SnackbarActivity {
         mInitialParentId = item.getParentId();
         mIsFolder = item.isFolder();
 
-        boolean isDesktopDialog = BookmarkUtils.isDesktopBookmarksDialogEnabled();
-        int layoutId = isDesktopDialog ? R.layout.bookmark_edit_desktop : R.layout.bookmark_edit;
+        int layoutId = mIsDesktopDialog ? R.layout.bookmark_edit_desktop : R.layout.bookmark_edit;
         setContentView(layoutId);
         mTitleEditText = findViewById(R.id.title_text);
         mUrlEditText = findViewById(R.id.url_text);
@@ -149,7 +168,7 @@ public class BookmarkEditActivity extends SnackbarActivity {
         folderTitle.setText(isFolder ? R.string.bookmark_parent_folder : R.string.bookmark_folder);
         mUrlEditText.setVisibility(isFolder ? View.GONE : View.VISIBLE);
 
-        if (isDesktopDialog) {
+        if (mIsDesktopDialog) {
             TextView titleView = findViewById(R.id.title);
             titleView.setText(isFolder ? R.string.edit_folder : R.string.edit_bookmark);
             mCloseButton = findViewById(R.id.close_button);
@@ -203,7 +222,7 @@ public class BookmarkEditActivity extends SnackbarActivity {
 
         mFolderPickerRowContainer = findViewById(R.id.folder_row_container);
 
-        if (isDesktopDialog) {
+        if (mIsDesktopDialog) {
             View removeButton = findViewById(R.id.remove_button);
             removeButton.setOnClickListener(
                     (v) -> {
@@ -221,7 +240,7 @@ public class BookmarkEditActivity extends SnackbarActivity {
         }
         updateViewContent(false);
 
-        if (isDesktopDialog) {
+        if (mIsDesktopDialog) {
             setFinishOnTouchOutside(true);
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
             int scrimColor = ContextCompat.getColor(this, R.color.modal_dialog_scrim_color_lff);
@@ -251,7 +270,7 @@ public class BookmarkEditActivity extends SnackbarActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        if (!BookmarkUtils.isDesktopBookmarksDialogEnabled()) {
+        if (!mIsDesktopDialog) {
             mDeleteButton =
                     menu.add(R.string.bookmark_toolbar_delete)
                             .setIcon(
@@ -319,14 +338,17 @@ public class BookmarkEditActivity extends SnackbarActivity {
 
     @Override
     protected void onStop() {
-        if (!BookmarkUtils.isDesktopBookmarksDialogEnabled()) {
+        if (!mIsDesktopDialog) {
             if (isFinishing() && !mOutcomeRecorded) {
                 recordOutcome(
                         isBookmarkModified()
                                 ? BookmarkEditOutcome.SAVED
                                 : BookmarkEditOutcome.DISMISSED);
             }
-            saveBookmark();
+            // Not leaving the editor; skip while recreating (e.g. to switch presentation).
+            if (!isChangingConfigurations()) {
+                saveBookmark();
+            }
         }
 
         super.onStop();
@@ -334,9 +356,10 @@ public class BookmarkEditActivity extends SnackbarActivity {
 
     @Override
     protected void onDestroy() {
-        if (!mOutcomeRecorded) {
+        // Not a user outcome; skip while recreating (e.g. to switch presentation).
+        if (!mOutcomeRecorded && !isChangingConfigurations()) {
             recordOutcome(
-                    BookmarkUtils.isDesktopBookmarksDialogEnabled()
+                    mIsDesktopDialog
                             ? BookmarkEditOutcome.DISMISSED
                             : (isBookmarkModified()
                                     ? BookmarkEditOutcome.SAVED
@@ -409,7 +432,7 @@ public class BookmarkEditActivity extends SnackbarActivity {
 
         mFolderSelectRow =
                 ImprovedBookmarkRow.buildView(this, displayPref == BookmarkRowDisplayPref.VISUAL);
-        if (BookmarkUtils.isDesktopBookmarksDialogEnabled()) {
+        if (mIsDesktopDialog) {
             View container = mFolderSelectRow.findViewById(R.id.container);
             if (container != null
                     && container.getLayoutParams() instanceof MarginLayoutParams marginParams) {
@@ -442,7 +465,7 @@ public class BookmarkEditActivity extends SnackbarActivity {
      * RESULT_DISMISS_ALL}), the edit dialog finishes without a brief visual flash.
      */
     private void setDialogContentVisible(boolean visible) {
-        if (BookmarkUtils.isDesktopBookmarksDialogEnabled()) {
+        if (mIsDesktopDialog) {
             findViewById(android.R.id.content)
                     .setVisibility(visible ? View.VISIBLE : View.INVISIBLE);
             if (visible) {
@@ -460,7 +483,7 @@ public class BookmarkEditActivity extends SnackbarActivity {
             mFolderPickerActive = false;
             if (resultCode == BookmarkFolderPickerActivity.RESULT_DISMISS_ALL) {
                 finish();
-                if (BookmarkUtils.isDesktopBookmarksDialogEnabled()) {
+                if (mIsDesktopDialog) {
                     overridePendingTransition(0, 0);
                 }
             } else {
@@ -478,9 +501,70 @@ public class BookmarkEditActivity extends SnackbarActivity {
     }
 
     @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        // Views aren't inflated if onProfileAvailable() exited early (e.g. missing bookmark).
+        if (mTitleEditText == null) return;
+        // Keep in-progress edits across recreation (e.g. to switch presentation). The inner
+        // EditTexts have no IDs, so their text isn't saved automatically.
+        outState.putString(
+                STATE_TITLE, assumeNonNull(mTitleEditText.getEditText()).getText().toString());
+        outState.putString(
+                STATE_URL, assumeNonNull(mUrlEditText.getEditText()).getText().toString());
+        outState.putString(STATE_INITIAL_TITLE, mInitialTitle);
+        outState.putString(STATE_INITIAL_URL, mInitialUrl);
+        if (mInitialParentId != null) {
+            outState.putString(STATE_INITIAL_PARENT_ID, mInitialParentId.toString());
+        }
+        outState.putBoolean(STATE_FOLDER_PICKER_ACTIVE, mFolderPickerActive);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        String title = savedInstanceState.getString(STATE_TITLE);
+        if (title != null) {
+            assumeNonNull(mTitleEditText.getEditText()).setText(title);
+        }
+        String url = savedInstanceState.getString(STATE_URL);
+        if (url != null) {
+            assumeNonNull(mUrlEditText.getEditText()).setText(url);
+        }
+        // Keep the values from when the editor first opened; the model may already hold edits
+        // (e.g. saved when the folder picker opened over the full-screen editor).
+        if (savedInstanceState.containsKey(STATE_INITIAL_TITLE)) {
+            mInitialTitle = savedInstanceState.getString(STATE_INITIAL_TITLE);
+            mInitialUrl = savedInstanceState.getString(STATE_INITIAL_URL);
+            String parentId = savedInstanceState.getString(STATE_INITIAL_PARENT_ID);
+            mInitialParentId =
+                    parentId == null ? null : BookmarkId.getBookmarkIdFromString(parentId);
+        }
+        // If the folder picker is still on top, keep the desktop dialog's content hidden under it.
+        mFolderPickerActive = savedInstanceState.getBoolean(STATE_FOLDER_PICKER_ACTIVE);
+        if (mFolderPickerActive) {
+            setDialogContentVisible(/* visible= */ false);
+        }
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        // Size changes don't relaunch this activity, so with the desktop dialog recreate it when a
+        // fold/unfold crosses the tablet width to switch between the dialog and full-screen
+        // presentation. Reads the live display width since smallestScreenWidthDp may be pinned.
+        if (!isFinishing()
+                && BookmarkUtils.isDesktopBookmarksDialogEnabled()
+                && mIsTabletDisplay != BookmarkUtils.isCurrentDisplayTabletWidth(this)) {
+            recreate();
+        }
+    }
+
+    @Override
     protected void applyThemeOverlays() {
         super.applyThemeOverlays();
-        if (BookmarkUtils.isDesktopBookmarksDialogEnabled()) {
+        mIsTabletDisplay = BookmarkUtils.isCurrentDisplayTabletWidth(this);
+        mIsDesktopDialog = BookmarkUtils.shouldShowDesktopBookmarkDialog(this);
+        if (mIsDesktopDialog) {
             applySingleThemeOverlay(R.style.ThemeOverlay_Chromium_DialogWhenLarge_ContentWrapping);
         }
     }
