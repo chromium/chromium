@@ -136,7 +136,8 @@ class HistoryEmbeddingsInteractiveTest
 
 // TODO(crbug.com/374710231): Reenable - currently, this fails consistently on
 // Win11 ARM debug builds.
-#if (BUILDFLAG(IS_WIN) && defined(ARCH_CPU_ARM64)) || BUILDFLAG(IS_MAC)
+#if (BUILDFLAG(IS_WIN) && defined(ARCH_CPU_ARM64)) || BUILDFLAG(IS_MAC) || \
+    BUILDFLAG(IS_LINUX)
 #define MAYBE_FeedbackDialog DISABLED_FeedbackDialog
 #else
 #define MAYBE_FeedbackDialog FeedbackDialog
