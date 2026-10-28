@@ -5,11 +5,13 @@
 package org.chromium.chrome.browser.task_manager.ui;
 
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.view.View;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ChromeBaseAppCompatActivity;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -51,5 +53,28 @@ public class TaskManagerActivity extends ChromeBaseAppCompatActivity {
         super.onDestroy();
 
         mCoordinator.destroy();
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.UNIVERSAL_KEYBOARD_HANDLING)
+                || event.getRepeatCount() != 0) {
+            return super.onKeyDown(keyCode, event);
+        }
+        boolean shouldClose =
+                switch (keyCode) {
+                    case KeyEvent.KEYCODE_W ->
+                            event.hasModifiers(KeyEvent.META_CTRL_ON)
+                                    || event.hasModifiers(
+                                            KeyEvent.META_CTRL_ON | KeyEvent.META_SHIFT_ON);
+                    case KeyEvent.KEYCODE_F4 -> event.hasModifiers(KeyEvent.META_ALT_ON);
+                    case KeyEvent.KEYCODE_ESCAPE -> event.hasNoModifiers();
+                    default -> false;
+                };
+        if (shouldClose) {
+            finish();
+            return true;
+        }
+        return super.onKeyDown(keyCode, event);
     }
 }
