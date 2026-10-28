@@ -15,12 +15,12 @@
 namespace {
 
 std::unique_ptr<KeyedService> BuildGeminiCapabilitiesManager(
-    ProfileIOS* profile) {
+    ProfileIOS& profile) {
   if (!IsAppSwitcherAISummarizationEnabled()) {
     return nullptr;
   }
   return std::make_unique<GeminiCapabilitiesManagerImpl>(
-      profile, AuthenticationServiceFactory::GetForProfile(profile),
+      &profile, AuthenticationServiceFactory::GetForProfile(profile),
       GeminiServiceFactory::GetForProfile(profile));
 }
 
@@ -36,13 +36,13 @@ GeminiCapabilitiesManagerFactory::GeminiCapabilitiesManagerFactory(PassKey key)
 }
 
 // static
-GeminiCapabilitiesManagerFactory::TestingFactory
+GeminiCapabilitiesManagerFactory::TestingFactoryByRef
 GeminiCapabilitiesManagerFactory::GetDefaultFactory() {
   return base::BindOnce(&BuildGeminiCapabilitiesManager);
 }
 
 std::unique_ptr<KeyedService>
 GeminiCapabilitiesManagerFactory::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
+    ProfileIOS& profile) const {
   return BuildGeminiCapabilitiesManager(profile);
 }
