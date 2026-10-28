@@ -23,6 +23,11 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "components/signin/public/base/signin_prefs.h"
+#include "google_apis/gaia/gaia_id_literal.h"
+#endif  // BUILDFLAG(IS_ANDROID)
+
 using policy::EnterpriseManagementAuthority;
 using policy::ScopedManagementServiceOverrideForTesting;
 using testing::_;
@@ -47,6 +52,11 @@ class TestManagementService : public policy::ManagementService {
   }
 };
 
+#if BUILDFLAG(IS_ANDROID)
+constexpr GaiaIdLiteral kPrimaryGaiaId("primary-gaia-id");
+constexpr GaiaIdLiteral kOtherGaiaId("other-gaia-id");
+#endif  // BUILDFLAG(IS_ANDROID)
+
 }  // namespace
 
 class UserPermissionServiceImplTest : public testing::Test,
@@ -54,6 +64,9 @@ class UserPermissionServiceImplTest : public testing::Test,
  protected:
   UserPermissionServiceImplTest() {
     RegisterProfilePrefs(test_prefs_.registry());
+#if BUILDFLAG(IS_ANDROID)
+    SigninPrefs::RegisterProfilePrefs(test_prefs_.registry());
+#endif  // BUILDFLAG(IS_ANDROID)
     scoped_feature_list_.InitWithFeatureState(
         enterprise_signals::features::kNewEvSignalsUnaffiliatedEnabled,
         is_new_ev_signals_unaffiliated_enabled());
@@ -67,6 +80,14 @@ class UserPermissionServiceImplTest : public testing::Test,
     EXPECT_CALL(*mock_user_delegate_, IsCollectSignalsConsentRequired())
         .Times(AnyNumber())
         .WillRepeatedly(Return(true));
+
+#if BUILDFLAG(IS_ANDROID)
+    // By default, a primary account is signed in. Tests exercising the
+    // signed-out state override this expectation.
+    EXPECT_CALL(*mock_user_delegate_, GetPrimaryAccountGaiaId())
+        .Times(AnyNumber())
+        .WillRepeatedly(Return(GaiaId(kPrimaryGaiaId)));
+#endif  // BUILDFLAG(IS_ANDROID)
 
     permission_service_ = std::make_unique<UserPermissionServiceImpl>(
         &management_service_, std::move(mock_user_delegate), &test_prefs_);
@@ -85,13 +106,30 @@ class UserPermissionServiceImplTest : public testing::Test,
 
   void SetUserConsentGiven() {
     // Fake as if user has given consent.
+#if BUILDFLAG(IS_ANDROID)
+    // On Android, consent is only stored per account.
+    SetAccountConsentGiven(kPrimaryGaiaId);
+#else
     test_prefs_.SetBoolean(prefs::kDeviceSignalsConsentReceived, true);
+#endif  // BUILDFLAG(IS_ANDROID)
   }
 
   void SetPermanentUserConsentGiven() {
     // Fake as if user has given permanent consent.
+#if BUILDFLAG(IS_ANDROID)
+    // On Android, consent is only stored per account.
+    SetAccountConsentGiven(kPrimaryGaiaId);
+#else
     test_prefs_.SetBoolean(prefs::kDeviceSignalsPermanentConsentReceived, true);
+#endif  // BUILDFLAG(IS_ANDROID)
   }
+
+#if BUILDFLAG(IS_ANDROID)
+  void SetAccountConsentGiven(const GaiaId& gaia_id) {
+    SigninPrefs(test_prefs_)
+        .SetDeviceSignalsPermanentConsentReceived(gaia_id, true);
+  }
+#endif  // BUILDFLAG(IS_ANDROID)
 
   void SetPolicyScopesNeedingSignals(bool machine_scope, bool user_scope) {
     std::set<policy::PolicyScope> scopes;
@@ -534,6 +572,39 @@ TEST_P(UserPermissionServiceImplTest,
 
   EXPECT_EQ(permission_service_->CanCollectSignals(), UserPermission::kGranted);
 }
+
+#if BUILDFLAG(IS_ANDROID)
+// Tests that, on Android, only the consent given by the primary account is
+// taken into account, and that it doesn't grant access to reporting signals.
+TEST_P(UserPermissionServiceImplTest, Android_PrimaryAccountConsent) {
+  SetUserAsCloudManaged();
+
+  SetAccountConsentGiven(kOtherGaiaId);
+  EXPECT_FALSE(permission_service_->HasUserConsented());
+  EXPECT_EQ(permission_service_->CanCollectSignals(),
+            UserPermission::kMissingConsent);
+
+  SetAccountConsentGiven(kPrimaryGaiaId);
+  EXPECT_TRUE(permission_service_->HasUserConsented());
+  EXPECT_FALSE(permission_service_->ShouldCollectConsent());
+  EXPECT_EQ(permission_service_->CanCollectSignals(), UserPermission::kGranted);
+  EXPECT_EQ(permission_service_->CanCollectReportSignals(),
+            UserPermission::kMissingConsent);
+}
+
+// Tests that, on Android, consent is considered missing when there is no
+// primary account, even if a previous primary account had given consent.
+TEST_P(UserPermissionServiceImplTest, Android_NoPrimaryAccount) {
+  SetUserAsCloudManaged();
+  SetAccountConsentGiven(kPrimaryGaiaId);
+  EXPECT_CALL(*mock_user_delegate_, GetPrimaryAccountGaiaId())
+      .WillRepeatedly(Return(GaiaId()));
+
+  EXPECT_FALSE(permission_service_->HasUserConsented());
+  EXPECT_EQ(permission_service_->CanCollectSignals(),
+            UserPermission::kMissingConsent);
+}
+#endif  // BUILDFLAG(IS_ANDROID)
 
 INSTANTIATE_TEST_SUITE_P(, UserPermissionServiceImplTest, testing::Bool());
 

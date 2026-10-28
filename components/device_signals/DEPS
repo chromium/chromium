@@ -3,3 +3,9 @@ include_rules = [
   "+google_apis/gaia/gaia_id.h",
   "+net/cert",
 ]
+
+specific_include_rules = {
+  ".*_unittest\\.cc": [
+    "+google_apis/gaia/gaia_id_literal.h",
+  ],
+}

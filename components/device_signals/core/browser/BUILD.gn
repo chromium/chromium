@@ -84,6 +84,8 @@ static_library("browser") {
       "//components/device_signals/core/browser/android:jni_headers",
       "//components/safe_browsing/android:safe_browsing_api_handler",
       "//components/safe_browsing/android:safe_browsing_api_handler_util",
+      "//components/signin/public/base",
+      "//google_apis",
     ]
   } else if (is_win || is_mac || is_linux || is_chromeos) {
     public += [
@@ -149,6 +151,7 @@ static_library("test_support") {
     "//components/device_signals/core/common/mojom",
     "//components/policy/core/common:test_support",
     "//components/signin/public/identity_manager",
+    "//google_apis",
     "//services/network/public/cpp",
     "//testing/gmock",
   ]
@@ -182,6 +185,7 @@ source_set("unit_tests") {
     "//components/prefs:test_support",
     "//components/signin/public/identity_manager",
     "//components/signin/public/identity_manager:test_support",
+    "//google_apis:test_support",
     "//testing/gtest",
   ]
 
@@ -190,6 +194,7 @@ source_set("unit_tests") {
     deps += [
       "//components/safe_browsing/android:safe_browsing_api_handler",
       "//components/safe_browsing/android:safe_browsing_api_handler_util",
+      "//components/signin/public/base",
       "//content/test:test_support",
     ]
   }

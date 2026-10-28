@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ENTERPRISE_SIGNALS_USER_DELEGATE_IMPL_H_
 
 #include "base/memory/raw_ptr.h"
+#include "build/build_config.h"
 #include "components/device_signals/core/browser/user_delegate.h"
 
 class Profile;
@@ -34,6 +35,9 @@ class UserDelegateImpl : public device_signals::UserDelegate {
   bool IsAffiliated() const override;
   bool IsManagedUser() const override;
   bool IsSameUser(const GaiaId& gaia_id) const override;
+#if BUILDFLAG(IS_ANDROID)
+  GaiaId GetPrimaryAccountGaiaId() const override;
+#endif  // BUILDFLAG(IS_ANDROID)
   std::set<policy::PolicyScope> GetPolicyScopesNeedingSignals() const override;
   bool IsCollectSignalsConsentRequired() const override;
 

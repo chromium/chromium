@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_DEVICE_SIGNALS_CORE_BROWSER_PREF_NAMES_H_
 #define COMPONENTS_DEVICE_SIGNALS_CORE_BROWSER_PREF_NAMES_H_
 
+#include "build/build_config.h"
+
 class PrefRegistrySimple;
 
 namespace device_signals {
@@ -15,15 +17,19 @@ namespace prefs {
 inline constexpr char kUnmanagedDeviceSignalsConsentFlowEnabled[] =
     "device_signals.consent_collection_enabled";
 
+#if !BUILDFLAG(IS_ANDROID)
 // Whether the current user has given explicit consent to share device signals
 // or not. User consent may not be required in certain management contexts.
+// On Android, consent is stored per account in `SigninPrefs` instead.
 inline constexpr char kDeviceSignalsConsentReceived[] =
     "device_signals.consent_received";
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 // Permanent version of `kDeviceSignalsConsentReceived`, where the consent is
 // never reset once received. For now we need this for OIDC-managed profiles.
-// On Android, the same key is also used as a per-account `SigninPrefs` entry
-// (see //components/signin/public/base/signin_prefs_keys.h).
+// Not registered as a profile pref on Android. There, the same key is used as
+// a per-account `SigninPrefs` entry instead (see
+// //components/signin/public/base/signin_prefs_keys.h).
 inline constexpr char kDeviceSignalsPermanentConsentReceived[] =
     "device_signals.permanent_consent_received";
 

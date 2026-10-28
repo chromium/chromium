@@ -21,6 +21,7 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/enterprise/connectors/device_trust/device_trust_features.h"
+#include "google_apis/gaia/gaia_id.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
 namespace enterprise_signals {
@@ -79,6 +80,16 @@ bool UserDelegateImpl::IsSameUser(const GaiaId& gaia_id) const {
              identity_manager_->FindExtendedAccountInfoByGaiaId(gaia_id)
                  .GetAccountId();
 }
+
+#if BUILDFLAG(IS_ANDROID)
+GaiaId UserDelegateImpl::GetPrimaryAccountGaiaId() const {
+  if (!identity_manager_) {
+    return GaiaId();
+  }
+  return identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
+      .gaia;
+}
+#endif  // BUILDFLAG(IS_ANDROID)
 
 std::set<policy::PolicyScope> UserDelegateImpl::GetPolicyScopesNeedingSignals()
     const {

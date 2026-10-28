@@ -185,6 +185,41 @@ TEST_F(UserDelegateImplTest, GetPolicyScopesNeedingSignals_Empty) {
 }
 
 #if BUILDFLAG(IS_ANDROID)
+// Tests that GetPrimaryAccountGaiaId returns the Gaia ID of the primary
+// account.
+TEST_F(UserDelegateImplTest, GetPrimaryAccountGaiaId_PrimaryAccount) {
+  auto account = identity_test_env_.MakePrimaryAccountAvailable(
+      kUserEmail, signin::ConsentLevel::kSignin);
+  identity_test_env_.MakeAccountAvailable(
+      kOtherUserEmail, {.set_cookie = true, .gaia_id = kOtherUserGaiaId});
+
+  CreateDelegate();
+  EXPECT_EQ(user_delegate_->GetPrimaryAccountGaiaId(), account.GetGaiaId());
+}
+
+// Tests that GetPrimaryAccountGaiaId returns an empty Gaia ID when there is no
+// primary account.
+TEST_F(UserDelegateImplTest, GetPrimaryAccountGaiaId_NoPrimaryAccount) {
+  identity_test_env_.MakeAccountAvailable(
+      kOtherUserEmail, {.set_cookie = true, .gaia_id = kOtherUserGaiaId});
+
+  CreateDelegate();
+  EXPECT_TRUE(user_delegate_->GetPrimaryAccountGaiaId().empty());
+}
+
+// Tests that GetPrimaryAccountGaiaId returns an empty Gaia ID when the identity
+// manager is a nullptr.
+TEST_F(UserDelegateImplTest, GetPrimaryAccountGaiaId_NullManager) {
+  // Instantiate all of the dependencies and reset the delegate.
+  CreateDelegate();
+  user_delegate_ = std::make_unique<UserDelegateImpl>(
+      testing_profile_.get(), nullptr, signals_dependency_delegate_.get());
+
+  identity_test_env_.MakePrimaryAccountAvailable(kUserEmail,
+                                                 signin::ConsentLevel::kSignin);
+  EXPECT_TRUE(user_delegate_->GetPrimaryAccountGaiaId().empty());
+}
+
 // TODO(crbug.com/463390232): Update these tests once the explicit consent
 // preference is wired for Android managed profiles.
 

@@ -17,6 +17,11 @@
 #include "components/policy/core/common/policy_types.h"
 #include "components/prefs/pref_service.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "components/signin/public/base/signin_prefs.h"
+#include "google_apis/gaia/gaia_id.h"
+#endif  // BUILDFLAG(IS_ANDROID)
+
 namespace device_signals {
 
 namespace {
@@ -49,8 +54,18 @@ UserPermissionServiceImpl::GetWeakPtr() {
 }
 
 bool UserPermissionServiceImpl::HasUserConsented() const {
+#if BUILDFLAG(IS_ANDROID)
+  // On Android, consent is given via the enterprise signals disclaimer and is
+  // stored per account in `SigninPrefs`, keyed by the Gaia ID of the account
+  // that gave it.
+  const GaiaId gaia_id = user_delegate_->GetPrimaryAccountGaiaId();
+  return !gaia_id.empty() &&
+         SigninPrefs(*user_prefs_)
+             .GetDeviceSignalsPermanentConsentReceived(gaia_id);
+#else
   return user_prefs_->GetBoolean(prefs::kDeviceSignalsConsentReceived) ||
          user_prefs_->GetBoolean(prefs::kDeviceSignalsPermanentConsentReceived);
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 bool UserPermissionServiceImpl::ShouldCollectConsent() const {
