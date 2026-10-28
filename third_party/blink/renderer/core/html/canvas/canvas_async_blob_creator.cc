@@ -365,7 +365,8 @@ void CanvasAsyncBlobCreator::ScheduleInitiateEncoding(double quality) {
 
 void CanvasAsyncBlobCreator::InitiateEncoding(double quality,
                                               base::TimeTicks deadline) {
-  if (idle_task_status_ == kIdleTaskSwitchedToImmediateTask) {
+  if (idle_task_status_ == kIdleTaskSwitchedToImmediateTask ||
+      idle_task_status_ == kIdleTaskFailed) {
     return;
   }
   RecordInitiateEncodingTimeHistogram(
@@ -376,6 +377,7 @@ void CanvasAsyncBlobCreator::InitiateEncoding(double quality,
 
   if (!InitializeEncoder(quality)) {
     idle_task_status_ = kIdleTaskFailed;
+    CreateNullAndReturnResult();
     return;
   }
 
@@ -385,7 +387,8 @@ void CanvasAsyncBlobCreator::InitiateEncoding(double quality,
 }
 
 void CanvasAsyncBlobCreator::IdleEncodeRows(base::TimeTicks deadline) {
-  if (idle_task_status_ == kIdleTaskSwitchedToImmediateTask) {
+  if (idle_task_status_ == kIdleTaskSwitchedToImmediateTask ||
+      idle_task_status_ == kIdleTaskFailed) {
     return;
   }
 
@@ -571,6 +574,8 @@ void CanvasAsyncBlobCreator::IdleTaskStartTimeoutEvent(double quality) {
                               WrapPersistent(this)));
     } else {
       // Failing in initialization of encoder
+      idle_task_status_ = kIdleTaskFailed;
+      CreateNullAndReturnResult();
       SignalAlternativeCodePathFinishedForTesting();
     }
   } else {

@@ -4,21 +4,19 @@
 
 #include "third_party/blink/renderer/core/html/canvas/canvas_async_blob_creator.h"
 
-#include <list>
+#include <utility>
 
+#include "base/run_loop.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/platform/platform.h"
-#include "third_party/blink/renderer/core/frame/local_dom_window.h"
-#include "third_party/blink/renderer/core/frame/local_frame.h"
-#include "third_party/blink/renderer/core/html/canvas/image_data.h"
+#include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/platform/graphics/static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/graphics/unaccelerated_static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
-#include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
+#include "third_party/skia/include/core/SkImageInfo.h"
 #include "third_party/skia/include/core/SkSurface.h"
 
 namespace blink {
@@ -50,6 +48,7 @@ class MockCanvasAsyncBlobCreator : public CanvasAsyncBlobCreator {
 
   MOCK_METHOD0(SignalTaskSwitchInStartTimeoutEventForTesting, void());
   MOCK_METHOD0(SignalTaskSwitchInCompleteTimeoutEventForTesting, void());
+  MOCK_METHOD(void, CreateNullAndReturnResult, (), (override));
 
  private:
   base::RunLoop loop_;
@@ -57,7 +56,6 @@ class MockCanvasAsyncBlobCreator : public CanvasAsyncBlobCreator {
  protected:
   void CreateBlobAndReturnResult(Vector<unsigned char> encoded_image) override {
   }
-  void CreateNullAndReturnResult() override {}
   void SignalAlternativeCodePathFinishedForTesting() override;
   void PostDelayedTaskToCurrentThread(const base::Location&,
                                       base::OnceClosure,
@@ -134,6 +132,8 @@ class CanvasAsyncBlobCreatorTest : public PageTestBase {
 
  protected:
   CanvasAsyncBlobCreatorTest();
+  void TestStartTimeoutFailure();
+  void TestIdleTaskAfterFailure();
   MockCanvasAsyncBlobCreator* AsyncBlobCreator() {
     return async_blob_creator_.Get();
   }
@@ -181,8 +181,45 @@ void CanvasAsyncBlobCreatorTest::PrepareMockCanvasAsyncBlobCreatorFail() {
           CreateTransparentImage(20, 20), &GetDocument(), true);
 }
 
+void CanvasAsyncBlobCreatorTest::TestStartTimeoutFailure() {
+  PrepareMockCanvasAsyncBlobCreatorWithoutStart();
+  AsyncBlobCreator()->fail_encoder_initialization_for_test_ = true;
+  EXPECT_CALL(*AsyncBlobCreator(),
+              SignalTaskSwitchInStartTimeoutEventForTesting());
+  EXPECT_CALL(*AsyncBlobCreator(), CreateNullAndReturnResult())
+      .WillOnce([this] { AsyncBlobCreator()->Dispose(); });
+  AsyncBlobCreator()->ScheduleAsyncBlobCreation(1.0);
+  AsyncBlobCreator()->Run();
+
+  testing::Mock::VerifyAndClearExpectations(AsyncBlobCreator());
+  ASSERT_EQ(IdleTaskStatus::kIdleTaskFailed,
+            AsyncBlobCreator()->GetIdleTaskStatus());
+
+  // The original idle task may run after the fallback has released its state.
+  EXPECT_CALL(*AsyncBlobCreator(), CreateNullAndReturnResult()).Times(0);
+  AsyncBlobCreator()->InitiateEncoding(1.0, base::TimeTicks::Max());
+  EXPECT_EQ(IdleTaskStatus::kIdleTaskFailed,
+            AsyncBlobCreator()->GetIdleTaskStatus());
+  testing::Mock::VerifyAndClearExpectations(AsyncBlobCreator());
+}
+
+void CanvasAsyncBlobCreatorTest::TestIdleTaskAfterFailure() {
+  PrepareMockCanvasAsyncBlobCreatorWithoutComplete();
+  // A queued idle task may run after forced encoding has failed.
+  AsyncBlobCreator()->idle_task_status_ = IdleTaskStatus::kIdleTaskFailed;
+  AsyncBlobCreator()->Dispose();
+
+  EXPECT_CALL(*AsyncBlobCreator(), CreateNullAndReturnResult()).Times(0);
+  AsyncBlobCreator()->CanvasAsyncBlobCreator::IdleEncodeRows(
+      base::TimeTicks::Max());
+  EXPECT_EQ(IdleTaskStatus::kIdleTaskFailed,
+            AsyncBlobCreator()->GetIdleTaskStatus());
+  testing::Mock::VerifyAndClearExpectations(AsyncBlobCreator());
+}
+
 void CanvasAsyncBlobCreatorTest::TearDown() {
   async_blob_creator_ = nullptr;
+  PageTestBase::TearDown();
 }
 
 //==============================================================================
@@ -223,15 +260,24 @@ TEST_F(CanvasAsyncBlobCreatorTest,
 }
 
 TEST_F(CanvasAsyncBlobCreatorTest, IdleTaskFailedWhenStartTimeoutEventHappens) {
-  // This test mocks the scenario when idle task is not failed during when
-  // either the StartTimeoutEvent or the CompleteTimeoutEvent is inspecting
-  // the idle task status.
+  // Initialization fails before the start timeout checks the idle task status.
   PrepareMockCanvasAsyncBlobCreatorFail();
+  EXPECT_CALL(*AsyncBlobCreator(), CreateNullAndReturnResult());
   AsyncBlobCreator()->ScheduleAsyncBlobCreation(1.0);
   AsyncBlobCreator()->Run();
 
+  testing::Mock::VerifyAndClearExpectations(AsyncBlobCreator());
   EXPECT_EQ(IdleTaskStatus::kIdleTaskFailed,
             AsyncBlobCreator()->GetIdleTaskStatus());
+}
+
+TEST_F(CanvasAsyncBlobCreatorTest,
+       EncoderInitializationFailsAfterStartTimeout) {
+  TestStartTimeoutFailure();
+}
+
+TEST_F(CanvasAsyncBlobCreatorTest, IdleTaskDoesNotResumeAfterFailure) {
+  TestIdleTaskAfterFailure();
 }
 
 TEST_F(CanvasAsyncBlobCreatorTest, NoConversionForSrgbPremul) {
