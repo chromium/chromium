@@ -66,12 +66,13 @@ class FakePrefetchManagerDelegate : public PrefetchManager::Delegate {
   }
 
   void WaitForPrefetchFinished(const GURL& url) {
-    if (finished_urls_.find(url) != finished_urls_.end())
-      return;
-    base::RunLoop loop;
-    DCHECK(done_callbacks_.find(url) == done_callbacks_.end());
-    done_callbacks_[url] = loop.QuitClosure();
-    loop.Run();
+    if (finished_urls_.find(url) == finished_urls_.end()) {
+      base::RunLoop loop;
+      DCHECK(done_callbacks_.find(url) == done_callbacks_.end());
+      done_callbacks_[url] = loop.QuitClosure();
+      loop.Run();
+    }
+    finished_urls_.erase(url);
   }
 
   base::flat_set<GURL> GetPrefetchedURLsForURL(const GURL& url) const {
@@ -449,14 +450,7 @@ TEST_P(PrefetchManagerTest, Stop) {
               UnorderedElementsAreArray({test_server.GetURL(path2)}));
 }
 
-// Flaky on Mac/Linux/CrOS/Android/Windows. http://crbug.com/40784662
-#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN)
-#define MAYBE_StopAndStart DISABLED_StopAndStart
-#else
-#define MAYBE_StopAndStart StopAndStart
-#endif
-TEST_P(PrefetchManagerTest, MAYBE_StopAndStart) {
+TEST_P(PrefetchManagerTest, StopAndStart) {
   net::test_server::EmbeddedTestServer test_server;
 
   // Set up prefetches (limit + 1).
@@ -535,7 +529,9 @@ TEST_P(PrefetchManagerTest, MAYBE_StopAndStart) {
   // We don't expect any additional requests to be started.
   EXPECT_TRUE(fake_delegate_->GetPrefetchedURLsForURL(main_frame_url).empty());
 
-  // Restart requests. These requests will work as normal.
+  // Restart requests without the extra request that required Stop() to cancel.
+  // These requests will work as normal.
+  requests.pop_back();
   prefetch_manager_->Start(main_frame_url, requests);
   for (auto& response : responses2) {
     response->WaitForRequest();
@@ -546,7 +542,8 @@ TEST_P(PrefetchManagerTest, MAYBE_StopAndStart) {
   fake_delegate_->WaitForPrefetchFinished(main_frame_url);
 
   // Prefetches should have been initiated with the second start.
-  EXPECT_FALSE(fake_delegate_->GetPrefetchedURLsForURL(main_frame_url).empty());
+  EXPECT_THAT(fake_delegate_->GetPrefetchedURLsForURL(main_frame_url),
+              UnorderedElementsAreArray(expected_prefetch_requests));
 }
 
 class HeaderInjectingThrottle : public blink::URLLoaderThrottle {
