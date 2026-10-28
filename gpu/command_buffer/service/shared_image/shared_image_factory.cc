@@ -34,7 +34,6 @@
 #include "gpu/command_buffer/service/shared_image/shared_image_manager.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
 #include "gpu/command_buffer/service/shared_image/shared_memory_copy_strategy.h"
-#include "gpu/command_buffer/service/shared_image/shared_memory_image_backing_factory.h"
 #include "gpu/command_buffer/service/shared_image/wrapped_sk_image_backing_factory.h"
 #include "gpu/config/gpu_finch_features.h"
 
@@ -248,11 +247,8 @@ SharedImageFactory::SharedImageFactory(
 #endif
   copy_manager_->AddStrategy(std::make_unique<CPUReadbackUploadCopyStrategy>());
 
-  auto shared_memory_backing_factory =
-      std::make_unique<SharedMemoryImageBackingFactory>();
-  factories_.push_back(std::move(shared_memory_backing_factory));
-
-  // if GL is disabled, it only needs SharedMemoryImageBackingFactory.
+  // If GL is disabled, only shared memory images are supported, which are
+  // created directly in CompoundImageBacking::CreateSharedMemory().
   if (gl::GetGLImplementation() == gl::kGLImplementationDisabled) {
     return;
   }

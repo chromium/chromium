@@ -102,10 +102,23 @@ gpu::SharedImageUsageSet GetShmSharedImageUsage(SharedImageUsageSet usage) {
   if (usage.Has(SHARED_IMAGE_USAGE_CPU_READ)) {
     new_usage |= SHARED_IMAGE_USAGE_CPU_READ;
   }
+  if (usage.Has(SHARED_IMAGE_USAGE_RASTER_COPY_SOURCE)) {
+    new_usage |= SHARED_IMAGE_USAGE_RASTER_COPY_SOURCE;
+  }
   if (kAllowShmOverlays && usage.Has(gpu::SHARED_IMAGE_USAGE_SCANOUT)) {
     new_usage |= SHARED_IMAGE_USAGE_SCANOUT;
   }
   return new_usage;
+}
+
+// Returns true if `usage` contains any GPU usage beyond what a standalone
+// SharedMemoryImageBackingFactory previously supported directly (CPU read/write
+// and raster copy source).
+bool HasGpuSharedImageUsage(SharedImageUsageSet usage) {
+  constexpr SharedImageUsageSet kShmOnlyUsage =
+      SHARED_IMAGE_USAGE_CPU_WRITE_ONLY | SHARED_IMAGE_USAGE_CPU_READ |
+      SHARED_IMAGE_USAGE_RASTER_COPY_SOURCE;
+  return !kShmOnlyUsage.HasAll(usage);
 }
 
 // Returns the SharedImageUsageSet used to query SharedImageFactory when
@@ -1084,52 +1097,25 @@ std::unique_ptr<SharedImageBacking> CompoundImageBacking::Create(
       // Clear the external sampler prefs for shared memory case if it is set.
       // https://issues.chromium.org/339546249.
       SharedImageInfo si_info_copy = si_info;
-      viz::SharedImageFormat format_copy = format;
-      SkAlphaType alpha_type_copy = si_info.alpha_type;
-      if (format_copy.PrefersExternalSampler()) {
-        format_copy.ClearPrefersExternalSampler();
-        if (alpha_type_copy == kPremul_SkAlphaType) {
-          alpha_type_copy = kUnpremul_SkAlphaType;
+      if (si_info_copy.format.PrefersExternalSampler()) {
+        si_info_copy.format.ClearPrefersExternalSampler();
+        if (si_info_copy.alpha_type == kPremul_SkAlphaType) {
+          si_info_copy.alpha_type = kUnpremul_SkAlphaType;
         }
       }
-      auto* factory = shared_image_factory->GetFactoryByUsage(
-          usage, format_copy, size,
-          /*pixel_data=*/{}, gfx::SHARED_MEMORY_BUFFER,
-          /*stream=*/std::nullopt, /*params=*/nullptr);
-
-      bool use_compound = false;
-      if (!factory && !shared_image_factory->IsSharedBetweenThreads(usage)) {
-        // Check if CompoundImageBacking can be created. CompoundImageBacking
-        // holds a shared memory buffer plus another GPU backing type to satisfy
-        // the requirements.
-        si_info_copy.format = format_copy;
-        si_info_copy.alpha_type = alpha_type_copy;
-        backing = CreateSharedMemory(shared_image_factory, mailbox,
-                                     si_info_copy, buffer_usage);
-        use_compound = backing != nullptr;
+      backing = CreateSharedMemory(shared_image_factory, mailbox, si_info_copy,
+                                   gfx::GpuMemoryBufferHandle(), buffer_usage);
+      if (!backing) {
+        shared_image_factory->LogGetFactoryFailed(usage, si_info_copy.format,
+                                                  gfx::SHARED_MEMORY_BUFFER,
+                                                  size, debug_label);
+        return nullptr;
       }
-
-      if (!use_compound) {
-        if (factory) {
-          si_info_copy.format = format_copy;
-          si_info_copy.alpha_type = alpha_type_copy;
-          auto temp_backing = factory->CreateSharedImage(
-              mailbox, si_info_copy, surface_handle,
-              shared_image_factory->IsSharedBetweenThreads(usage),
-              buffer_usage);
-          backing = WrapExternalBacking(shared_image_factory,
-                                        std::move(temp_backing));
-          DVLOG_IF(1, !!backing)
-              << "CreateSharedImageBackedByBuffer[" << backing->GetName()
-              << "] size=" << size.ToString()
-              << " usage=" << CreateLabelForSharedImageUsage(usage)
-              << " format=" << format_copy.ToString();
-        } else {
-          shared_image_factory->LogGetFactoryFailed(
-              usage, format_copy, gfx::SHARED_MEMORY_BUFFER, size, debug_label);
-          return nullptr;
-        }
-      }
+      DVLOG_IF(1, !!backing)
+          << "CreateSharedImageBackedByBuffer[" << backing->GetName()
+          << "] size=" << size.ToString()
+          << " usage=" << CreateLabelForSharedImageUsage(usage)
+          << " format=" << si_info_copy.format.ToString();
     }
   }
   return backing;
@@ -1187,38 +1173,35 @@ std::unique_ptr<SharedImageBacking> CompoundImageBacking::Create(
   auto& debug_label = si_info.debug_label;
   gfx::GpuMemoryBufferType gmb_type = buffer_handle.type;
 
-  bool use_compound = false;
   std::unique_ptr<SharedImageBacking> backing;
-  SharedImageBackingFactory* factory = nullptr;
+  if (gmb_type == gfx::SHARED_MEMORY_BUFFER) {
+    backing = CreateSharedMemory(shared_image_factory, mailbox, si_info,
+                                 std::move(buffer_handle));
+    if (!backing) {
+      shared_image_factory->LogGetFactoryFailed(usage, format, gmb_type, size,
+                                                debug_label);
+      return nullptr;
+    }
+  } else {
+    SharedImageBackingFactory* factory = nullptr;
 #if BUILDFLAG(IS_ANDROID)
-  if (shared_image_factory->ahb_factory_ &&
-      shared_image_factory->ahb_factory_->IsSupportedForMappableBuffer(
-          usage, format, gmb_type)) {
-    factory = shared_image_factory->ahb_factory_;
-  }
+    if (shared_image_factory->ahb_factory_ &&
+        shared_image_factory->ahb_factory_->IsSupportedForMappableBuffer(
+            usage, format, gmb_type)) {
+      factory = shared_image_factory->ahb_factory_;
+    }
 #endif  // BUILDFLAG(IS_ANDROID)
-  if (!factory) {
-    factory = shared_image_factory->GetFactoryByUsage(
-        usage, format, size, /*pixel_data=*/{}, gmb_type,
-        /*stream=*/std::nullopt, /*params=*/nullptr);
-  }
-  if (!factory && gmb_type == gfx::SHARED_MEMORY_BUFFER &&
-      !shared_image_factory->IsSharedBetweenThreads(usage)) {
-    // Check if CompoundImageBacking can be created. CompoundImageBacking holds
-    // a shared memory buffer plus another GPU backing type to satisfy the
-    // requirements.
-    backing = CreateSharedMemory(shared_image_factory, mailbox,
-                                 buffer_handle.Clone(), si_info);
-    use_compound = backing != nullptr;
-  }
+    if (!factory) {
+      factory = shared_image_factory->GetFactoryByUsage(
+          usage, format, size, /*pixel_data=*/{}, gmb_type,
+          /*stream=*/std::nullopt, /*params=*/nullptr);
+    }
+    if (!factory) {
+      shared_image_factory->LogGetFactoryFailed(usage, format, gmb_type, size,
+                                                debug_label);
+      return nullptr;
+    }
 
-  if (!use_compound && !factory) {
-    shared_image_factory->LogGetFactoryFailed(usage, format, gmb_type, size,
-                                              debug_label);
-    return nullptr;
-  }
-
-  if (!use_compound) {
     auto temp_backing = factory->CreateSharedImage(
         mailbox, si_info, shared_image_factory->IsSharedBetweenThreads(usage),
         std::move(buffer_handle));
@@ -1240,66 +1223,48 @@ std::unique_ptr<SharedImageBacking> CompoundImageBacking::Create(
 std::unique_ptr<SharedImageBacking> CompoundImageBacking::CreateSharedMemory(
     SharedImageFactory* shared_image_factory,
     const Mailbox& mailbox,
-    gfx::GpuMemoryBufferHandle handle,
-    const SharedImageInfo& si_info) {
-  auto format = si_info.format;
-  auto size = si_info.size;
-  auto usage = si_info.usage;
-  if (!IsValidSharedMemoryFormat(size, format)) {
-    return nullptr;
-  }
-
-  auto* factory = shared_image_factory->GetFactoryByUsage(
-      GetGpuSharedImageUsage(usage), format, size,
-      /*pixel_data=*/{}, gfx::EMPTY_BUFFER, /*stream=*/std::nullopt,
-      /*params=*/nullptr);
-  if (!factory) {
-    return nullptr;
-  }
-
-  SharedImageInfo shm_si_info(
-      format, size, si_info.color_space, si_info.surface_origin,
-      si_info.alpha_type, GetShmSharedImageUsage(usage), si_info.debug_label);
-  auto shm_backing = SharedMemoryImageBackingFactory().CreateSharedImage(
-      mailbox, shm_si_info, /*is_thread_safe=*/false, std::move(handle));
-  if (!shm_backing) {
-    return nullptr;
-  }
-  shm_backing->SetNotRefCounted();
-
-  return base::WrapUnique(new CompoundImageBacking(
-      mailbox, si_info, std::move(shm_backing),
-      shared_image_factory->GetFactoryRef(), factory->GetWeakPtr(),
-      shared_image_factory->copy_manager()));
-}
-
-// static
-std::unique_ptr<SharedImageBacking> CompoundImageBacking::CreateSharedMemory(
-    SharedImageFactory* shared_image_factory,
-    const Mailbox& mailbox,
     const SharedImageInfo& si_info,
-    gfx::BufferUsage buffer_usage) {
+    gfx::GpuMemoryBufferHandle handle,
+    std::optional<gfx::BufferUsage> buffer_usage) {
   auto format = si_info.format;
   auto size = si_info.size;
   auto usage = si_info.usage;
-  if (!IsValidSharedMemoryFormat(size, format)) {
+  // SharedMemoryImageBacking does not support texture arrays.
+  if (si_info.array_layers > 1 || !IsValidSharedMemoryFormat(size, format)) {
     return nullptr;
   }
 
-  auto* factory = shared_image_factory->GetFactoryByUsage(
-      GetGpuSharedImageUsage(usage), format, size,
-      /*pixel_data=*/{}, gfx::EMPTY_BUFFER, /*stream=*/std::nullopt,
-      /*params=*/nullptr);
-  if (!factory) {
+  // When GPU usages are present alongside shared memory, an accompanying GPU
+  // backing factory is required and cross-thread GPU access is not supported
+  // when combining shared memory with a lazy GPU backing.
+  const bool has_gpu_usage = HasGpuSharedImageUsage(usage);
+  if (has_gpu_usage && shared_image_factory->IsSharedBetweenThreads(usage)) {
     return nullptr;
+  }
+
+  base::WeakPtr<SharedImageBackingFactory> gpu_backing_factory;
+  if (has_gpu_usage) {
+    auto* factory = shared_image_factory->GetFactoryByUsage(
+        GetGpuSharedImageUsage(usage), format, size,
+        /*pixel_data=*/{}, gfx::EMPTY_BUFFER, /*stream=*/std::nullopt,
+        /*params=*/nullptr);
+    if (!factory) {
+      return nullptr;
+    }
+    gpu_backing_factory = factory->GetWeakPtr();
   }
 
   SharedImageInfo shm_si_info(
       format, size, si_info.color_space, si_info.surface_origin,
       si_info.alpha_type, GetShmSharedImageUsage(usage), si_info.debug_label);
-  auto shm_backing = SharedMemoryImageBackingFactory().CreateSharedImage(
-      mailbox, shm_si_info, kNullSurfaceHandle, /*is_thread_safe=*/false,
-      buffer_usage);
+  std::unique_ptr<SharedImageBacking> shm_backing =
+      buffer_usage.has_value()
+          ? SharedMemoryImageBackingFactory().CreateSharedImage(
+                mailbox, shm_si_info, kNullSurfaceHandle,
+                /*is_thread_safe=*/false, *buffer_usage)
+          : SharedMemoryImageBackingFactory().CreateSharedImage(
+                mailbox, shm_si_info, /*is_thread_safe=*/false,
+                std::move(handle));
   if (!shm_backing) {
     return nullptr;
   }
@@ -1307,7 +1272,7 @@ std::unique_ptr<SharedImageBacking> CompoundImageBacking::CreateSharedMemory(
 
   return base::WrapUnique(new CompoundImageBacking(
       mailbox, si_info, std::move(shm_backing),
-      shared_image_factory->GetFactoryRef(), factory->GetWeakPtr(),
+      shared_image_factory->GetFactoryRef(), std::move(gpu_backing_factory),
       shared_image_factory->copy_manager(), std::move(buffer_usage)));
 }
 
@@ -1415,7 +1380,6 @@ CompoundImageBacking::CompoundImageBacking(
           std::move(buffer_usage)),
       shared_image_factory_(std::move(shared_image_factory)),
       copy_manager_(std::move(copy_manager)) {
-  CHECK(gpu_backing_factory);
   // If the backing is thread-safe, the base class enables an internal lock that
   // protects the |elements_| vector and other metadata from concurrent access.
   DCHECK(shm_backing);
@@ -1439,20 +1403,22 @@ CompoundImageBacking::CompoundImageBacking(
   // fully cleared.
   SetClearedRectInternal(gfx::Rect(size));
 
-  // Create placeholder for GPU-backed element (streams = all except kMemory).
-  ElementHolder gpu_element;
-  gpu_element.access_streams =
-      base::Difference(AccessStreamSet::All(), kMemoryStreamSet);
+  if (gpu_backing_factory) {
+    // Create placeholder for GPU-backed element (streams = all except kMemory).
+    ElementHolder gpu_element;
+    gpu_element.access_streams =
+        base::Difference(AccessStreamSet::All(), kMemoryStreamSet);
 
-  // CreateBackingFromBackingFactory will be called on demand. Hence this is
-  // lazy backing creation.
-  SharedImageBackingType factory_type = gpu_backing_factory->GetBackingType();
-  gpu_element.create_callback = base::BindOnce(
-      &CompoundImageBacking::LazyCreateBacking, base::Unretained(this),
-      factory_type, std::move(gpu_backing_factory),
-      GetGpuSharedImageUsage(usage), si_info.debug_label);
-  elements_.push_back(std::move(gpu_element));
-  max_elements_allocated_ = 2;
+    // CreateBackingFromBackingFactory will be called on demand. Hence this is
+    // lazy backing creation.
+    SharedImageBackingType factory_type = gpu_backing_factory->GetBackingType();
+    gpu_element.create_callback = base::BindOnce(
+        &CompoundImageBacking::LazyCreateBacking, base::Unretained(this),
+        factory_type, std::move(gpu_backing_factory),
+        GetGpuSharedImageUsage(usage), si_info.debug_label);
+    elements_.push_back(std::move(gpu_element));
+  }
+  max_elements_allocated_ = elements_.size();
 }
 
 CompoundImageBacking::CompoundImageBacking(

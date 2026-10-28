@@ -329,26 +329,19 @@ class GPU_GLES2_EXPORT CompoundImageBacking
     std::unique_ptr<SharedImageBacking> backing;
   };
 
-  // Creates a backing that contains a shared memory backing and GPU backing
-  // provided by `shared_image_factory` based on `usage`.
-  static std::unique_ptr<SharedImageBacking> CreateSharedMemory(
-      SharedImageFactory* shared_image_factory,
-      const Mailbox& mailbox,
-      gfx::GpuMemoryBufferHandle handle,
-      const SharedImageInfo& si_info);
-
-  // Creates a backing that contains a shared memory backing and GPU backing
-  // provided by `shared_image_factory` based on `usage`. We additionally pass a
-  // |buffer_usage| parameter here in order to create a CPU mappable by creating
-  // a shared memory handle.
-  // TODO(crbug.com/40276878): Remove this method once we figure out the mapping
-  // between SharedImageUsage and BufferUsage and no longer need to use
+  // Creates a backing that contains a shared memory backing and (when GPU
+  // usages are present) a GPU backing provided by `shared_image_factory`.
+  // Either `handle` is provided by the caller, or `buffer_usage` is provided
+  // to allocate a new shared memory buffer.
+  // TODO(crbug.com/40276878): Remove `buffer_usage` once we figure out the
+  // mapping between SharedImageUsage and BufferUsage and no longer need to use
   // BufferUsage.
   static std::unique_ptr<SharedImageBacking> CreateSharedMemory(
       SharedImageFactory* shared_image_factory,
       const Mailbox& mailbox,
       const SharedImageInfo& si_info,
-      gfx::BufferUsage buffer_usage);
+      gfx::GpuMemoryBufferHandle handle,
+      std::optional<gfx::BufferUsage> buffer_usage = std::nullopt);
 
   // Wraps a backing in a CompoundImageBacking.
   static std::unique_ptr<SharedImageBacking> WrapExternalBacking(
