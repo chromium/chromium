@@ -30,6 +30,7 @@
 #include <unicode/usearch.h>
 
 #include "base/numerics/safe_conversions.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/text/character.h"
 #include "third_party/blink/renderer/platform/text/text_boundaries.h"
 #include "third_party/blink/renderer/platform/text/text_break_iterator_internal_icu.h"
@@ -140,8 +141,9 @@ static bool IsWholeWordMatch(base::span<const UChar> text,
     word_break_search_start =
         FindNextWordBackward(text, word_break_search_start);
   }
-  if (word_break_search_start != result.start)
+  if (word_break_search_start != result.start) {
     return false;
+  }
   return result_end == FindWordEndBoundary(text, word_break_search_start);
 }
 
@@ -262,15 +264,26 @@ void TextSearcherIcu::SetPattern(base::span<const UChar> pattern) {
 }
 
 void TextSearcherIcu::SetCaseSensitivity(bool case_sensitive) {
+  const bool asymmetric_diacritics =
+      RuntimeEnabledFeatures::FindInPageAsymmetricDiacriticSearchEnabled();
   const UCollationStrength strength =
-      case_sensitive ? UCOL_TERTIARY : UCOL_PRIMARY;
+      case_sensitive ? UCOL_TERTIARY
+                     : (asymmetric_diacritics ? UCOL_SECONDARY : UCOL_PRIMARY);
+  const USearchAttributeValue comparator =
+      (!case_sensitive && asymmetric_diacritics)
+          ? USEARCH_PATTERN_BASE_WEIGHT_IS_WILDCARD
+          : USEARCH_STANDARD_ELEMENT_COMPARISON;
 
   UCollator* const collator = usearch_getCollator(searcher_);
-  if (ucol_getStrength(collator) == strength)
-    return;
+  if (ucol_getStrength(collator) != strength) {
+    ucol_setStrength(collator, strength);
+    usearch_reset(searcher_);
+  }
 
-  ucol_setStrength(collator, strength);
-  usearch_reset(searcher_);
+  UErrorCode status = U_ZERO_ERROR;
+  usearch_setAttribute(searcher_, USEARCH_ELEMENT_COMPARISON, comparator,
+                       &status);
+  DCHECK(U_SUCCESS(status));
 }
 
 void TextSearcherIcu::SetAllowOverlapMatches(bool overlap) {

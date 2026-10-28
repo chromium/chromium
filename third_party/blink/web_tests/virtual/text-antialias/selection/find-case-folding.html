@@ -34,9 +34,9 @@
                 message += " Cannot find small sharp s when searching for ss.";
             }
 
-            if (!canFind("Stra" + smallSharpS + "e", "Strasse")) {
+            if (canFind("Stra" + smallSharpS + "e", "Strasse")) {
                 success = false;
-                message += " Cannot find ss when searching for small sharp s.";
+                message += " Found ss when searching for small sharp s.";
             }
 
             if (!canFind("Strasse", "Strasse")) {

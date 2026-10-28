@@ -12,6 +12,8 @@
 <script>
     if (window.testRunner)
         testRunner.dumpAsText();
-    if (document.execCommand("FindString", false, "Sel" + String.fromCharCode(0x00CB) + "ct"))
+    if (document.execCommand("FindString", false, "Select") &&
+        document.execCommand("FindString", false, "S" + String.fromCharCode(0x00C9) + "lect") &&
+        !document.execCommand("FindString", false, "Sel" + String.fromCharCode(0x00CB) + "ct"))
         document.getElementById("result").innerText = "PASS";
 </script>

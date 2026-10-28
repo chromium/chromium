@@ -24,7 +24,9 @@ const softHyphen = String.fromCharCode(0x00AD);
 test(() => {
   assert_true(canFind("ab", `a${softHyphen}b`));
   assert_true(canFind("ab", `a${softHyphen + softHyphen}b`));
-  assert_true(canFind("a\u0300b", `a${softHyphen}b`));
+  assert_false(canFind("a\u0300b", `a${softHyphen}b`));
+  assert_true(canFind("a\u0300b", `a${softHyphen}\u0300b`));
+  assert_true(canFind("a\u0300b", `a\u0300${softHyphen}b`));
   assert_true(canFind("ab", `a${softHyphen}\u0300b`));
   assert_true(canFind("ab", `a\u0300${softHyphen}b`));
   assert_true(canFind(`a${softHyphen}b`, `a${softHyphen}b`));

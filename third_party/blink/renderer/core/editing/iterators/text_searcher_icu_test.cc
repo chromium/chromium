@@ -6,6 +6,7 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/editing/finder/find_options.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_view.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
@@ -163,6 +164,110 @@ TEST(TextSearcherIcuTest, BrokenSurrogate) {
   // Note: Because even if ICU find U+DB00 but ICU doesn't think U+DB00 as
   // word, we consider it doesn't match whole word.
   EXPECT_FALSE(searcher.NextMatchResult());
+}
+
+TEST(TextSearcherIcuTest, AsymmetricDiacriticSensitivity) {
+  TextSearcherIcu searcher;
+  // Text contains: "a A ä Ä á č c o ö e é"
+  const String& text =
+      MakeUtf16("a A \u00e4 \u00c4 \u00e1 \u010d c o \u00f6 e \u00e9");
+  searcher.SetText(text.Span16());
+
+  const FindOptions kIgnoreCase = FindOptions().SetCaseInsensitive(true);
+  const FindOptions kMatchCase = FindOptions().SetCaseInsensitive(false);
+
+  // Searching for base character 'a' (case-insensitive) should match 'a', 'A',
+  // 'ä', 'Ä', and 'á'.
+  const String& base_a = MakeUtf16("a");
+  searcher.SetPattern(base_a, kIgnoreCase);
+  std::optional<MatchResultIcu> result = searcher.NextMatchResult();
+  ASSERT_TRUE(result.has_value());
+  EXPECT_EQ(0u, result->start);
+  result = searcher.NextMatchResult();
+  ASSERT_TRUE(result.has_value());
+  EXPECT_EQ(2u, result->start);
+  result = searcher.NextMatchResult();
+  ASSERT_TRUE(result.has_value());
+  EXPECT_EQ(4u, result->start);
+  result = searcher.NextMatchResult();
+  ASSERT_TRUE(result.has_value());
+  EXPECT_EQ(6u, result->start);
+  result = searcher.NextMatchResult();
+  ASSERT_TRUE(result.has_value());
+  EXPECT_EQ(8u, result->start);
+  EXPECT_FALSE(searcher.NextMatchResult().has_value());
+
+  // Searching explicitly for 'ä' (case-insensitive) should only match 'ä' and
+  // 'Ä', NOT 'a', 'A', or 'á'.
+  const String& umlaut_a = MakeUtf16("\u00e4");
+  searcher.SetPattern(umlaut_a, kIgnoreCase);
+  searcher.SetOffset(0u);
+  result = searcher.NextMatchResult();
+  ASSERT_TRUE(result.has_value());
+  EXPECT_EQ(4u, result->start);
+  EXPECT_EQ(1u, result->length);
+  result = searcher.NextMatchResult();
+  ASSERT_TRUE(result.has_value());
+  EXPECT_EQ(6u, result->start);
+  EXPECT_EQ(1u, result->length);
+  EXPECT_FALSE(searcher.NextMatchResult().has_value());
+
+  // Searching explicitly for 'ä' (case-sensitive) should only match lowercase
+  // 'ä', NOT 'Ä'.
+  searcher.SetPattern(umlaut_a, kMatchCase);
+  searcher.SetOffset(0u);
+  result = searcher.NextMatchResult();
+  ASSERT_TRUE(result.has_value());
+  EXPECT_EQ(4u, result->start);
+  EXPECT_EQ(1u, result->length);
+  EXPECT_FALSE(searcher.NextMatchResult().has_value());
+
+  // Searching explicitly for 'č' (case-insensitive) should match 'č' (at 10),
+  // NOT 'c' (at 12).
+  const String& caron_c = MakeUtf16("\u010d");
+  searcher.SetPattern(caron_c, kIgnoreCase);
+  searcher.SetOffset(0u);
+  result = searcher.NextMatchResult();
+  ASSERT_TRUE(result.has_value());
+  EXPECT_EQ(10u, result->start);
+  EXPECT_FALSE(searcher.NextMatchResult().has_value());
+
+  // Searching explicitly for 'ö' should match 'ö' (at 16), NOT 'o' (at 14).
+  const String& umlaut_o = MakeUtf16("\u00f6");
+  searcher.SetPattern(umlaut_o, kIgnoreCase);
+  searcher.SetOffset(0u);
+  result = searcher.NextMatchResult();
+  ASSERT_TRUE(result.has_value());
+  EXPECT_EQ(16u, result->start);
+  EXPECT_FALSE(searcher.NextMatchResult().has_value());
+
+  // Searching explicitly for 'é' should match 'é' (at 20), NOT 'e' (at 18).
+  const String& acute_e = MakeUtf16("\u00e9");
+  searcher.SetPattern(acute_e, kIgnoreCase);
+  searcher.SetOffset(0u);
+  result = searcher.NextMatchResult();
+  ASSERT_TRUE(result.has_value());
+  EXPECT_EQ(20u, result->start);
+  EXPECT_FALSE(searcher.NextMatchResult().has_value());
+}
+
+TEST(TextSearcherIcuTest, AsymmetricDiacriticSearchDisabledFallback) {
+  ScopedFindInPageAsymmetricDiacriticSearchForTest scoped_feature(false);
+  TextSearcherIcu searcher;
+  const String& text = MakeUtf16("a \u00e4");
+  searcher.SetText(text.Span16());
+
+  // When FindInPageAsymmetricDiacriticSearch is disabled, case-insensitive
+  // search falls back to UCOL_PRIMARY where 'ä' matches both 'a' and 'ä'.
+  const String& umlaut_a = MakeUtf16("\u00e4");
+  searcher.SetPattern(umlaut_a, FindOptions().SetCaseInsensitive(true));
+  std::optional<MatchResultIcu> result = searcher.NextMatchResult();
+  ASSERT_TRUE(result.has_value());
+  EXPECT_EQ(0u, result->start);
+  result = searcher.NextMatchResult();
+  ASSERT_TRUE(result.has_value());
+  EXPECT_EQ(2u, result->start);
+  EXPECT_FALSE(searcher.NextMatchResult().has_value());
 }
 
 }  // namespace blink

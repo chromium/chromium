@@ -1,4 +1,4 @@
-﻿<!DOCTYPE HTML>
+<!DOCTYPE HTML>
 <html>
 <head>
 <meta charset="utf-8">
@@ -80,9 +80,9 @@ test(() => {
 test(() => {
   assert_true(canFind('мумие', 'мумиё'));
   assert_true(canFind('МУМИЕ', 'МУМИЁ'));
-  assert_true(canFind('мумиё', 'мумие'));
-  assert_true(canFind('МУМИЁ', 'МУМИЕ'));
-}, 'Е and Ё: Must be treated as equal');
+  assert_false(canFind('мумиё', 'мумие'));
+  assert_false(canFind('МУМИЁ', 'МУМИЕ'));
+}, 'Е and Ё: Е matches Ё, but Ё does not match Е');
 
 test(() => {
   assert_false(canFind('зайка', 'заика'));

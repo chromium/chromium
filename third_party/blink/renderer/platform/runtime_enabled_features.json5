@@ -3273,6 +3273,13 @@
       status: "stable",
     },
     {
+      // Enables asymmetric diacritic matching in Find-in-Page so base
+      // characters match diacritic variants while explicit diacritics only
+      // match that diacritic (https://crbug.com/40518349).
+      name: "FindInPageAsymmetricDiacriticSearch",
+      status: "test",
+    },
+    {
       name: "FirstLetterParagraphOffsets",
       status: "stable",
     },

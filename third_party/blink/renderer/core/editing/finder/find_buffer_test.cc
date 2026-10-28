@@ -628,7 +628,11 @@ TEST_P(FindBufferParamTest, KanaDecomposed) {
   EXPECT_EQ(1u, CaseInsensitiveMatchCount(buffer, u"は　゛"));
   EXPECT_EQ(0u, CaseInsensitiveMatchCount(buffer, u"バ "));
   EXPECT_EQ(1u, CaseInsensitiveMatchCount(buffer, u"ハ ゛"));
-  EXPECT_EQ(1u, CaseInsensitiveMatchCount(buffer, u"ﾊ ﾞ"));
+  // U+FF9E (ﾞ) has only a secondary collation weight (like combining U+3099),
+  // whereas U+309B (゛) has its own primary weight. With secondary collation
+  // strength, U+FF9E is no longer ignored as a trailing primary-ignorable
+  // mark on the space.
+  EXPECT_EQ(0u, CaseInsensitiveMatchCount(buffer, u"ﾊ ﾞ"));
   EXPECT_EQ(1u, CaseInsensitiveMatchCount(buffer, u"ﾊ ゛"));
 }
 
