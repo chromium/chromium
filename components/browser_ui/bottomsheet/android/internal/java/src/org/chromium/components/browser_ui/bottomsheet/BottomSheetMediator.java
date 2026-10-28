@@ -786,7 +786,6 @@ class BottomSheetMediator implements TouchHandler {
     /**
      * Calculates the height of the content container when resizing content at full height.
      *
-     * @param halfHeightPx The sheet height in pixels for the HALF state.
      * @param fullHeightPx The sheet height in pixels for the FULL state.
      * @param currentOffsetPx The current sheet offset in pixels.
      * @param visibleViewportRect The visible viewport bounds.
@@ -794,10 +793,8 @@ class BottomSheetMediator implements TouchHandler {
      */
     @Px
     int calculateContentContainerHeight(
-            float halfHeightPx,
-            float fullHeightPx,
-            float currentOffsetPx,
-            Rect visibleViewportRect) {
+            float fullHeightPx, float currentOffsetPx, Rect visibleViewportRect) {
+        float halfHeightPx = getHalfRatio() * getMaxSheetHeight();
         int newHeight = (int) MathUtils.clamp(currentOffsetPx, halfHeightPx, fullHeightPx);
         return Math.min(visibleViewportRect.height(), newHeight);
     }
@@ -811,9 +808,6 @@ class BottomSheetMediator implements TouchHandler {
      * @param decorHeight The window decor view height in pixels.
      * @param handlebarHeight The measured handlebar height in pixels.
      * @param currentOffsetPx The current vertical offset of the sheet from the bottom in pixels.
-     * @param isLargeFormFactorUiEnabled Whether large form factor popup UI is enabled.
-     * @param isFullHeightResizeContent Whether the sheet resizes content at full height.
-     * @param halfHeightPx The sheet height for the HALF state in pixels.
      * @param fullHeightPx The sheet height for the FULL state in pixels.
      * @param stateHeightPx The sheet height for the target or current state in pixels.
      */
@@ -823,29 +817,20 @@ class BottomSheetMediator implements TouchHandler {
             @Px int decorHeight,
             @Px int handlebarHeight,
             float currentOffsetPx,
-            boolean isLargeFormFactorUiEnabled,
-            boolean isFullHeightResizeContent,
-            float halfHeightPx,
             float fullHeightPx,
             @Px int stateHeightPx) {
         setContentTopMargin(handlebarHeight);
         setContainerHeight(
                 calculateTargetContainerHeight(
-                        isLargeFormFactorUiEnabled,
-                        isFullHeightResizeContent,
-                        halfHeightPx,
                         fullHeightPx,
                         currentOffsetPx,
                         visibleViewportRect,
                         stateHeightPx,
                         handlebarHeight));
-        setContentBottomPadding(
-                calculateContentBottomPadding(
-                        isLargeFormFactorUiEnabled, isFullHeightResizeContent, e2eBottomInset));
-        setBackgroundHeight(
-                calculateTargetBackgroundHeight(isLargeFormFactorUiEnabled, fullHeightPx));
+        setContentBottomPadding(calculateContentBottomPadding(e2eBottomInset));
+        setBackgroundHeight(calculateTargetBackgroundHeight(fullHeightPx));
         setKeyboardCurtainHeight(decorHeight);
-        updateVisibleBackgroundHeight(isLargeFormFactorUiEnabled, currentOffsetPx, fullHeightPx);
+        updateVisibleBackgroundHeight(currentOffsetPx, fullHeightPx);
     }
 
     /**
@@ -870,19 +855,16 @@ class BottomSheetMediator implements TouchHandler {
     }
 
     int calculateTargetContainerHeight(
-            boolean isLargeFormFactorUiEnabled,
-            boolean isFullHeightResizeContent,
-            float halfHeightPx,
             float fullHeightPx,
             float currentOffsetPx,
             Rect visibleViewportRect,
             @Px int stateHeightPx,
             @Px int handlebarHeight) {
-        if (isFullHeightResizeContent) {
+        if (isFullHeightResizeContent()) {
             return calculateContentContainerHeight(
-                    halfHeightPx, fullHeightPx, currentOffsetPx, visibleViewportRect);
+                    fullHeightPx, currentOffsetPx, visibleViewportRect);
         }
-        if (!isLargeFormFactorUiEnabled) {
+        if (!isLargeFormFactorUiEnabled()) {
             return ViewGroup.LayoutParams.MATCH_PARENT;
         }
         if (isFullHeightWrapContent()) {
@@ -892,15 +874,12 @@ class BottomSheetMediator implements TouchHandler {
     }
 
     @Px
-    int calculateContentBottomPadding(
-            boolean isLargeFormFactorUiEnabled,
-            boolean isFullHeightResizeContent,
-            @Px int e2eBottomInset) {
-        return (isFullHeightResizeContent || isLargeFormFactorUiEnabled) ? 0 : e2eBottomInset;
+    int calculateContentBottomPadding(@Px int e2eBottomInset) {
+        return (isFullHeightResizeContent() || isLargeFormFactorUiEnabled()) ? 0 : e2eBottomInset;
     }
 
-    int calculateTargetBackgroundHeight(boolean isLargeFormFactorUiEnabled, float fullHeightPx) {
-        return isLargeFormFactorUiEnabled
+    int calculateTargetBackgroundHeight(float fullHeightPx) {
+        return isLargeFormFactorUiEnabled()
                 ? (int) fullHeightPx
                 : ViewGroup.LayoutParams.MATCH_PARENT;
     }
@@ -914,9 +893,8 @@ class BottomSheetMediator implements TouchHandler {
      * rounded corners and drop shadows stay perfectly aligned with the bottom of the window instead
      * of disappearing below it.
      */
-    void updateVisibleBackgroundHeight(
-            boolean isLargeFormFactorUiEnabled, float currentOffsetPx, float fullHeightPx) {
-        if (!isLargeFormFactorUiEnabled) {
+    void updateVisibleBackgroundHeight(float currentOffsetPx, float fullHeightPx) {
+        if (!isLargeFormFactorUiEnabled()) {
             setVisibleBackgroundHeight(0);
             return;
         }
@@ -1408,10 +1386,7 @@ class BottomSheetMediator implements TouchHandler {
 
     @SheetState
     int maybeRevertStateOnLayoutChange(
-            int currentDecorHeight,
-            int previousScreenHeight,
-            boolean isKeyboardShowing,
-            boolean isFullHeightResizeContent) {
+            int currentDecorHeight, int previousScreenHeight, boolean isKeyboardShowing) {
         // If the screen height has changed, reset the cached state since it may no longer be valid.
         if (previousScreenHeight != currentDecorHeight) {
             resetCachedKeyboardState();
@@ -1422,7 +1397,7 @@ class BottomSheetMediator implements TouchHandler {
         if (!isKeyboardShowing
                 && mKeyboardToken != TokenHolder.INVALID_TOKEN
                 && mStateBeforeKeyboardShown != SheetState.NONE
-                && isFullHeightResizeContent) {
+                && isFullHeightResizeContent()) {
             assert mKeyboardTokenHolder.hasTokens();
             stateToRestore = mStateBeforeKeyboardShown;
             resetCachedKeyboardState();

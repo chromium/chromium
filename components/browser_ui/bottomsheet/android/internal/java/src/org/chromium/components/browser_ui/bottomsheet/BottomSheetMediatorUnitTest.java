@@ -507,42 +507,34 @@ public class BottomSheetMediatorUnitTest {
     @Test
     public void testCalculateContentContainerHeight() {
         Rect viewport = new Rect(0, 0, 1080, 1920);
+        when(mContent.getHalfHeightRatio()).thenReturn(0.5f);
+        when(mContent.getFullHeightRatio()).thenReturn((float) HeightMode.RESIZE_CONTENT);
+        mMediator.setSheetContent(mContent);
 
-        // When currentOffset < halfHeight, clamp to halfHeight.
+        // When currentOffset < halfHeight (500f, derived from 0.5 * 1000px container height in
+        // setUp()), clamp to halfHeight.
         assertEquals(
                 500,
                 mMediator.calculateContentContainerHeight(
-                        /* halfHeightPx= */ 500f,
-                        /* fullHeightPx= */ 1000f,
-                        /* currentOffsetPx= */ 300f,
-                        viewport));
+                        /* fullHeightPx= */ 1000f, /* currentOffsetPx= */ 300f, viewport));
 
         // When currentOffset is between halfHeight and fullHeight, use currentOffset.
         assertEquals(
                 800,
                 mMediator.calculateContentContainerHeight(
-                        /* halfHeightPx= */ 500f,
-                        /* fullHeightPx= */ 1000f,
-                        /* currentOffsetPx= */ 800f,
-                        viewport));
+                        /* fullHeightPx= */ 1000f, /* currentOffsetPx= */ 800f, viewport));
 
         // When currentOffset exceeds fullHeight, clamp to fullHeight.
         assertEquals(
                 1000,
                 mMediator.calculateContentContainerHeight(
-                        /* halfHeightPx= */ 500f,
-                        /* fullHeightPx= */ 1000f,
-                        /* currentOffsetPx= */ 1200f,
-                        viewport));
+                        /* fullHeightPx= */ 1000f, /* currentOffsetPx= */ 1200f, viewport));
 
         // When currentOffset exceeds viewport height, clamp to viewport height.
         assertEquals(
                 1920,
                 mMediator.calculateContentContainerHeight(
-                        /* halfHeightPx= */ 500f,
-                        /* fullHeightPx= */ 2500f,
-                        /* currentOffsetPx= */ 2500f,
-                        viewport));
+                        /* fullHeightPx= */ 2500f, /* currentOffsetPx= */ 2500f, viewport));
     }
 
     @Test
@@ -817,6 +809,9 @@ public class BottomSheetMediatorUnitTest {
 
     @Test
     public void testMaybeRevertStateOnLayoutChange() {
+        when(mContent.getHalfHeightRatio()).thenReturn((float) HeightMode.DEFAULT);
+        when(mContent.getFullHeightRatio()).thenReturn((float) HeightMode.RESIZE_CONTENT);
+        mMediator.setSheetContent(mContent);
         mMediator.setInternalCurrentState(SheetState.HALF);
         mMediator.maybeCacheStateForImeAnimation(
                 /* typeMask= */ WindowInsetsCompat.Type.ime(), /* isKeyboardShowing= */ false);
@@ -827,8 +822,7 @@ public class BottomSheetMediatorUnitTest {
                 mMediator.maybeRevertStateOnLayoutChange(
                         /* currentDecorHeight= */ 1000,
                         /* previousScreenHeight= */ 900,
-                        /* isKeyboardShowing= */ false,
-                        /* isFullHeightResizeContent= */ true));
+                        /* isKeyboardShowing= */ false));
         assertFalse(mMediator.hasKeyboardTokenForTesting());
 
         // Cache state again
@@ -841,8 +835,7 @@ public class BottomSheetMediatorUnitTest {
                 mMediator.maybeRevertStateOnLayoutChange(
                         /* currentDecorHeight= */ 1000,
                         /* previousScreenHeight= */ 1000,
-                        /* isKeyboardShowing= */ true,
-                        /* isFullHeightResizeContent= */ true));
+                        /* isKeyboardShowing= */ true));
         assertTrue(mMediator.hasKeyboardTokenForTesting());
 
         // Keyboard dismissed and resize content -> restores cached state
@@ -851,8 +844,7 @@ public class BottomSheetMediatorUnitTest {
                 mMediator.maybeRevertStateOnLayoutChange(
                         /* currentDecorHeight= */ 1000,
                         /* previousScreenHeight= */ 1000,
-                        /* isKeyboardShowing= */ false,
-                        /* isFullHeightResizeContent= */ true));
+                        /* isKeyboardShowing= */ false));
         assertFalse(mMediator.hasKeyboardTokenForTesting());
     }
 
@@ -1063,9 +1055,6 @@ public class BottomSheetMediatorUnitTest {
                 /* decorHeight= */ 1920,
                 /* handlebarHeight= */ 16,
                 /* currentOffsetPx= */ 400f,
-                /* isLargeFormFactorUiEnabled= */ false,
-                /* isFullHeightResizeContent= */ false,
-                /* halfHeightPx= */ 500f,
                 /* fullHeightPx= */ 1000f,
                 /* stateHeightPx= */ 500);
 
@@ -1138,6 +1127,9 @@ public class BottomSheetMediatorUnitTest {
     @Test
     public void testUpdateVerticalLayout_ResizeContent() {
         Rect viewport = new Rect(0, 0, 1080, 750);
+        when(mContent.getHalfHeightRatio()).thenReturn(0.5f);
+        when(mContent.getFullHeightRatio()).thenReturn((float) HeightMode.RESIZE_CONTENT);
+        mMediator.setSheetContent(mContent);
         mMediator.setInternalCurrentState(SheetState.FULL);
 
         mMediator.updateVerticalLayout(
@@ -1146,9 +1138,6 @@ public class BottomSheetMediatorUnitTest {
                 /* decorHeight= */ 1920,
                 /* handlebarHeight= */ 12,
                 /* currentOffsetPx= */ 800f,
-                /* isLargeFormFactorUiEnabled= */ false,
-                /* isFullHeightResizeContent= */ true,
-                /* halfHeightPx= */ 500f,
                 /* fullHeightPx= */ 1000f,
                 /* stateHeightPx= */ 1000);
 
@@ -1160,6 +1149,8 @@ public class BottomSheetMediatorUnitTest {
     @Test
     public void testUpdateVerticalLayout_LargeFormFactor() {
         Rect viewport = new Rect(0, 0, 1920, 1080);
+        mMediator.setIsLargeFormFactor(true);
+        when(mContent.supportsLargeFormFactor()).thenReturn(true);
         when(mContent.getFullHeightRatio()).thenReturn((float) HeightMode.DEFAULT);
         mMediator.setSheetContent(mContent);
         mMediator.setInternalCurrentState(SheetState.HALF);
@@ -1170,9 +1161,6 @@ public class BottomSheetMediatorUnitTest {
                 /* decorHeight= */ 1080,
                 /* handlebarHeight= */ 20,
                 /* currentOffsetPx= */ 450f,
-                /* isLargeFormFactorUiEnabled= */ true,
-                /* isFullHeightResizeContent= */ false,
-                /* halfHeightPx= */ 450f,
                 /* fullHeightPx= */ 900f,
                 /* stateHeightPx= */ 450);
 
@@ -1189,9 +1177,6 @@ public class BottomSheetMediatorUnitTest {
                 /* decorHeight= */ 1080,
                 /* handlebarHeight= */ 20,
                 /* currentOffsetPx= */ 300f,
-                /* isLargeFormFactorUiEnabled= */ true,
-                /* isFullHeightResizeContent= */ false,
-                /* halfHeightPx= */ 0f,
                 /* fullHeightPx= */ 300f,
                 /* stateHeightPx= */ 0);
 
@@ -1203,30 +1188,21 @@ public class BottomSheetMediatorUnitTest {
 
     @Test
     public void testVerticalLayoutHelpers() {
-        assertEquals(
-                48,
-                mMediator.calculateContentBottomPadding(
-                        /* isLargeFormFactorUiEnabled= */ false,
-                        /* isFullHeightResizeContent= */ false,
-                        /* e2eBottomInset= */ 48));
-        assertEquals(
-                0,
-                mMediator.calculateContentBottomPadding(
-                        /* isLargeFormFactorUiEnabled= */ true,
-                        /* isFullHeightResizeContent= */ false,
-                        /* e2eBottomInset= */ 48));
-        assertEquals(
-                0,
-                mMediator.calculateContentBottomPadding(
-                        /* isLargeFormFactorUiEnabled= */ false,
-                        /* isFullHeightResizeContent= */ true,
-                        /* e2eBottomInset= */ 48));
+        assertEquals(48, mMediator.calculateContentBottomPadding(/* e2eBottomInset= */ 48));
+
+        mMediator.setIsLargeFormFactor(true);
+        when(mContent.supportsLargeFormFactor()).thenReturn(true);
+        mMediator.setSheetContent(mContent);
+        assertEquals(0, mMediator.calculateContentBottomPadding(/* e2eBottomInset= */ 48));
 
         mMediator.updateVisibleBackgroundHeight(
-                /* isLargeFormFactorUiEnabled= */ true,
-                /* currentOffsetPx= */ 600f,
-                /* fullHeightPx= */ 500f);
+                /* currentOffsetPx= */ 600f, /* fullHeightPx= */ 500f);
         assertEquals(500, mModel.get(BottomSheetProperties.VISIBLE_BACKGROUND_HEIGHT));
+
+        mMediator.setIsLargeFormFactor(false);
+        when(mContent.getHalfHeightRatio()).thenReturn((float) HeightMode.DEFAULT);
+        when(mContent.getFullHeightRatio()).thenReturn((float) HeightMode.RESIZE_CONTENT);
+        assertEquals(0, mMediator.calculateContentBottomPadding(/* e2eBottomInset= */ 48));
     }
 
     @Test

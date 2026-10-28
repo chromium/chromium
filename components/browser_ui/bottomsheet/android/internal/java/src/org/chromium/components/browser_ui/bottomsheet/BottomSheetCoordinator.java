@@ -328,8 +328,6 @@ class BottomSheetCoordinator
     @Px
     int getContentBottomPadding() {
         return mMediator.calculateContentBottomPadding(
-                isLargeFormFactorUiEnabled(),
-                isFullHeightResizeContent(),
                 mMediator.getEffectiveEdgeToEdgeBottomInset(getEdgeToEdgeBottomInset()));
     }
 
@@ -451,10 +449,7 @@ class BottomSheetCoordinator
         @SheetState
         int stateToRestore =
                 mMediator.maybeRevertStateOnLayoutChange(
-                        decorHeight,
-                        mPreviousScreenHeight,
-                        isKeyboardShowing(),
-                        isFullHeightResizeContent());
+                        decorHeight, mPreviousScreenHeight, isKeyboardShowing());
         mPreviousScreenHeight = decorHeight;
         if (stateToRestore != SheetState.NONE) {
             setSheetState(stateToRestore, /* animate= */ false);
@@ -808,10 +803,7 @@ class BottomSheetCoordinator
 
     private @Px int getResizingContentContainerHeight() {
         return mMediator.calculateContentContainerHeight(
-                getSheetHeightForState(SheetState.HALF),
-                getSheetHeightForState(SheetState.FULL),
-                mCurrentOffsetPx,
-                mVisibleViewportRect);
+                getSheetHeightForState(SheetState.FULL), mCurrentOffsetPx, mVisibleViewportRect);
     }
 
     /** Returns the resolved PEEK height in pixels for the current content. */
@@ -1341,37 +1333,27 @@ class BottomSheetCoordinator
                 mMediator.getEffectiveEdgeToEdgeBottomInset(getEdgeToEdgeBottomInset());
         updateViewport(e2eBottomInset);
 
-        boolean isLargeFormFactorUiEnabled = isLargeFormFactorUiEnabled();
-        boolean isFullHeightResizeContent = isFullHeightResizeContent();
-
         mMediator.updateVerticalLayout(
                 e2eBottomInset,
                 mVisibleViewportRect,
                 mWindow.getDecorView().getHeight(),
                 getHandlebarHeight(),
                 mCurrentOffsetPx,
-                isLargeFormFactorUiEnabled,
-                isFullHeightResizeContent,
-                getHalfHeightForVerticalLayoutPx(isFullHeightResizeContent),
-                getFullHeightForVerticalLayoutPx(
-                        isLargeFormFactorUiEnabled, isFullHeightResizeContent),
-                getTargetOrCurrentStateHeightPx(
-                        isLargeFormFactorUiEnabled, isFullHeightResizeContent));
+                getFullHeightForVerticalLayoutPx(),
+                getTargetOrCurrentStateHeightPx());
     }
 
-    private float getHalfHeightForVerticalLayoutPx(boolean isFullHeightResizeContent) {
-        return isFullHeightResizeContent ? getSheetHeightForState(SheetState.HALF) : 0f;
-    }
-
-    private float getFullHeightForVerticalLayoutPx(
-            boolean isLargeFormFactorUiEnabled, boolean isFullHeightResizeContent) {
-        if (!isLargeFormFactorUiEnabled && !isFullHeightResizeContent) return 0f;
+    private float getFullHeightForVerticalLayoutPx() {
+        if (!mMediator.isLargeFormFactorUiEnabled() && !mMediator.isFullHeightResizeContent()) {
+            return 0f;
+        }
         return getSheetHeightForState(SheetState.FULL);
     }
 
-    private @Px int getTargetOrCurrentStateHeightPx(
-            boolean isLargeFormFactorUiEnabled, boolean isFullHeightResizeContent) {
-        if (!isLargeFormFactorUiEnabled || isFullHeightResizeContent || isFullHeightWrapContent()) {
+    private @Px int getTargetOrCurrentStateHeightPx() {
+        if (!mMediator.isLargeFormFactorUiEnabled()
+                || mMediator.isFullHeightResizeContent()
+                || mMediator.isFullHeightWrapContent()) {
             return 0;
         }
         return (int) getSheetHeightForState(mMediator.getTargetOrCurrentState());
