@@ -48,6 +48,10 @@ class ReadAloudAudioRenderer : public media::AudioRendererSink::RenderCallback {
       base::RepeatingCallback<void(uint32_t start_character_offset,
                                    uint32_t end_character_offset)>;
 
+  // Invoked on the owning sequence once all queued audio segments have been
+  // rendered and played out after `MarkEndOfStream()`.
+  using EndOfStreamCallback = base::RepeatingClosure;
+
   // Upper bound on the output delay fed to the audio clock. Used to clamp
   // the delay reported by the audio sink.
   static constexpr base::TimeDelta kMaxAcceptableDelay = base::Seconds(5);
@@ -79,12 +83,23 @@ class ReadAloudAudioRenderer : public media::AudioRendererSink::RenderCallback {
   // Must be called on the owning sequence.
   void SetWordBoundaryCallback(WordBoundaryCallback callback);
 
+  // Sets the callback run when end-of-stream playout completes.
+  // Must be called on the owning sequence.
+  void SetEndOfStreamCallback(EndOfStreamCallback callback);
+
+  // Signals that no more segments will be queued until `Flush()`, invoking the
+  // end-of-stream callback asynchronously on the owning sequence once the
+  // queue, algorithm buffer, and output delay drain. Returns true if buffered
+  // audio is still playing out, or false if the renderer has already drained.
+  virtual bool MarkEndOfStream();
+
   // Sets the playback rate for time-stretching.
   // Must be called on the owning sequence.
   void SetPlaybackRate(double rate);
 
   // Flushes the internal time-stretching algorithm buffer, drops every word
-  // boundary not yet dispatched and restarts the media time at zero.
+  // boundary not yet dispatched, clears end-of-stream state, and restarts the
+  // media time at zero.
   // Must be called on the owning sequence.
   virtual void Flush();
 
@@ -100,8 +115,12 @@ class ReadAloudAudioRenderer : public media::AudioRendererSink::RenderCallback {
   // itself for the next one. Runs on the owning sequence.
   void PumpWordBoundaries();
 
-  // Drops any `PumpWordBoundaries()` task still pending, including those
-  // `Render()` posted with `weak_this_`. Runs on the owning sequence.
+  // Runs `end_of_stream_callback_` on the owning sequence once playout
+  // finishes.
+  void NotifyEndOfStream();
+
+  // Drops any `PumpWordBoundaries()` task still pending. Runs on the owning
+  // sequence.
   void CancelPendingPump() EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
   SEQUENCE_CHECKER(sequence_checker_);
@@ -122,6 +141,7 @@ class ReadAloudAudioRenderer : public media::AudioRendererSink::RenderCallback {
 
   // Only accessed on the owning sequence.
   WordBoundaryCallback word_boundary_callback_;
+  EndOfStreamCallback end_of_stream_callback_;
 
   media::NullMediaLog media_log_;
 
@@ -147,13 +167,23 @@ class ReadAloudAudioRenderer : public media::AudioRendererSink::RenderCallback {
   // not pile up redundant ones.
   bool pump_task_posted_ GUARDED_BY(lock_) = false;
 
-  // Bound into the pump tasks `Render()` posts. `Render()` copies it on the
-  // audio thread, but it is only dereferenced on the owning sequence. `Flush()`
-  // replaces it after invalidating `weak_factory_`, which drops pumps still
-  // pending.
-  base::WeakPtr<ReadAloudAudioRenderer> weak_this_ GUARDED_BY(lock_);
+  // True while an end-of-stream notification requested by `MarkEndOfStream()`
+  // is waiting for buffered audio to finish playing out.
+  bool received_end_of_stream_ GUARDED_BY(lock_) = false;
 
-  base::WeakPtrFactory<ReadAloudAudioRenderer> weak_factory_{this};
+  // True when `algorithm_` has no more renderable frames to produce (initially,
+  // after `Flush()`, or after `FillBuffer()` returns 0 with an empty queue).
+  bool algorithm_exhausted_ GUARDED_BY(lock_) = true;
+
+  // Bound into tasks `Render()` and `MarkEndOfStream()` post. Copied under
+  // `lock_`, dereferenced on the owning sequence, and invalidated separately so
+  // `CancelPendingPump()` (e.g. on `SetPlaybackRate()`) does not drop an
+  // in-flight `NotifyEndOfStream()` task.
+  base::WeakPtr<ReadAloudAudioRenderer> pump_weak_this_ GUARDED_BY(lock_);
+  base::WeakPtr<ReadAloudAudioRenderer> eos_weak_this_ GUARDED_BY(lock_);
+
+  base::WeakPtrFactory<ReadAloudAudioRenderer> pump_weak_factory_{this};
+  base::WeakPtrFactory<ReadAloudAudioRenderer> eos_weak_factory_{this};
 };
 
 }  // namespace readaloud

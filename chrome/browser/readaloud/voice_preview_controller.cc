@@ -243,12 +243,8 @@ void VoicePreviewController::OnPlaybackStateChanged(
       }
       return;
     case read_aloud::mojom::PlaybackState::kEndOfStream: {
-      // TODO(b/565419447): Once kEndOfStream is driven by a real end-of-stream
-      // signal after audio playout finishes, tear down the controller and audio
-      // stream here via ResetControllerAndAudio(). Until then, keep them alive
-      // so any remaining buffered audio can finish playing out.
       std::string finished_voice_id = std::move(voice_id_);
-      ResetActivePreviewState();
+      ResetControllerAndAudio();
       if (state_changed_callback_ && !finished_voice_id.empty()) {
         state_changed_callback_.Run(finished_voice_id,
                                     read_aloud::mojom::PlaybackState::kStopped);

@@ -228,10 +228,15 @@ class FakeAudioOutputStream : public media::mojom::AudioOutputStream {
 
 class MockReadAloudAudioRenderer : public ReadAloudAudioRenderer {
  public:
-  MockReadAloudAudioRenderer() = default;
+  MockReadAloudAudioRenderer() {
+    ON_CALL(*this, MarkEndOfStream()).WillByDefault([this]() {
+      return ReadAloudAudioRenderer::MarkEndOfStream();
+    });
+  }
   ~MockReadAloudAudioRenderer() override = default;
 
   MOCK_METHOD(void, Flush, (), (override));
+  MOCK_METHOD(bool, MarkEndOfStream, (), (override));
 
   // No audio thread renders in these tests, so tests set the media time the
   // renderer would report.
@@ -1502,19 +1507,88 @@ TEST_F(ReadAloudPlaybackControllerTest,
                                    FakeAudioOutputStream::Command::kPause));
 }
 
-TEST_F(ReadAloudPlaybackControllerTest, SeekWhileNotPumpingPausesStream) {
-  CreateSession();
-  SetSingleTextSegment(u"Seek while idle sentence.");
-  ASSERT_NO_FATAL_FAILURE(InitializeAudioForTesting());
+TEST_F(ReadAloudPlaybackControllerTest,
+       DrainedSequencerWaitsForRendererEndOfStreamAndPausesStream) {
+  raw_ptr<MockReadAloudAudioRenderer> mock_renderer = nullptr;
+  ASSERT_NO_FATAL_FAILURE(CreateSessionWithMockRenderer(&mock_renderer));
   ASSERT_NO_FATAL_FAILURE(BindFakeStream());
+  HoldSynthesisResponses();
+  SetSingleTextSegment(u"First sentence. Second sentence.");
 
-  controller_remote_->SeekToWord(/*segment_index=*/0, /*character_offset=*/0);
+  controller_remote_->Play();
+  FlushAll();
+  fake_stream_.FlushForTesting();
+  mock_client_->ClearStateHistory();
+  fake_stream_.ClearCommands();
+
+  // Hold the renderer's end-of-stream completion when the sequencer drains.
+  EXPECT_CALL(*mock_renderer, MarkEndOfStream())
+      .WillOnce(testing::Return(true));
+  controller_remote_->SeekToTime(base::Seconds(60));
+  FlushAll();
+  fake_stream_.FlushForTesting();
+  EXPECT_THAT(mock_client_->state_history(), testing::IsEmpty());
+  EXPECT_THAT(fake_stream_.commands(), testing::IsEmpty());
+
+  // Completing renderer playout halts playback in kEndOfStream and pauses.
+  mock_renderer->ReadAloudAudioRenderer::MarkEndOfStream();
+  FlushAll();
+  fake_stream_.FlushForTesting();
+  EXPECT_THAT(
+      mock_client_->state_history(),
+      testing::ElementsAre(read_aloud::mojom::PlaybackState::kEndOfStream));
+  EXPECT_THAT(fake_stream_.commands(),
+              testing::ElementsAre(FakeAudioOutputStream::Command::kPause));
+  mock_renderer = nullptr;
+}
+
+TEST_F(ReadAloudPlaybackControllerTest,
+       PauseAndResumeWhileDrainingTailEmitsPlayingBeforeEndOfStream) {
+  raw_ptr<MockReadAloudAudioRenderer> mock_renderer = nullptr;
+  ASSERT_NO_FATAL_FAILURE(CreateSessionWithMockRenderer(&mock_renderer));
+  ASSERT_NO_FATAL_FAILURE(BindFakeStream());
+  HoldSynthesisResponses();
+  SetSingleTextSegment(u"First sentence. Second sentence.");
+
+  controller_remote_->Play();
   FlushAll();
   fake_stream_.FlushForTesting();
 
-  // Audio decoded for the new position must not be rendered before Play().
+  // Transition the sequencer to kDrained while the renderer still owns
+  // buffered tail audio.
+  EXPECT_CALL(*mock_renderer, MarkEndOfStream())
+      .WillRepeatedly(testing::Return(true));
+  controller_remote_->SeekToTime(base::Seconds(60));
+  FlushAll();
+  mock_client_->ClearStateHistory();
+  fake_stream_.ClearCommands();
+
+  // Pause during tail playout, then resume while buffered audio remains in the
+  // renderer. Resuming must report kPlaying rather than staying in kPaused.
+  controller_remote_->Pause();
+  FlushAll();
+  controller_remote_->Play();
+  FlushAll();
+  fake_stream_.FlushForTesting();
+  EXPECT_THAT(mock_client_->state_history(),
+              testing::ElementsAre(read_aloud::mojom::PlaybackState::kPaused,
+                                   read_aloud::mojom::PlaybackState::kPlaying));
+  EXPECT_THAT(fake_stream_.commands(),
+              testing::ElementsAre(FakeAudioOutputStream::Command::kPause,
+                                   FakeAudioOutputStream::Command::kPlay));
+
+  // Completing renderer playout transitions from kPlaying to kEndOfStream.
+  mock_client_->ClearStateHistory();
+  fake_stream_.ClearCommands();
+  mock_renderer->ReadAloudAudioRenderer::MarkEndOfStream();
+  FlushAll();
+  fake_stream_.FlushForTesting();
+  EXPECT_THAT(
+      mock_client_->state_history(),
+      testing::ElementsAre(read_aloud::mojom::PlaybackState::kEndOfStream));
   EXPECT_THAT(fake_stream_.commands(),
               testing::ElementsAre(FakeAudioOutputStream::Command::kPause));
+  mock_renderer = nullptr;
 }
 
 TEST_F(ReadAloudPlaybackControllerTest, SeekWhilePumpingDoesNotPauseStream) {

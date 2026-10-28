@@ -41,7 +41,8 @@ bool ReadAloudAudioRenderer::Initialize(const media::AudioParameters& params,
   algorithm_.SetPreservesPitch(true);
   audio_clock_.emplace(/*start_timestamp=*/base::TimeDelta(),
                        params_.sample_rate());
-  weak_this_ = weak_factory_.GetWeakPtr();
+  pump_weak_this_ = pump_weak_factory_.GetWeakPtr();
+  eos_weak_this_ = eos_weak_factory_.GetWeakPtr();
   initialized_ = true;
   return true;
 }
@@ -61,7 +62,9 @@ int ReadAloudAudioRenderer::Render(base::TimeDelta delay,
 
   int frames_written = 0;
   bool post_pump = false;
+  bool post_eos = false;
   base::WeakPtr<ReadAloudAudioRenderer> pump_target;
+  base::WeakPtr<ReadAloudAudioRenderer> eos_target;
   {
     base::AutoLock auto_lock(lock_);
 
@@ -71,6 +74,9 @@ int ReadAloudAudioRenderer::Render(base::TimeDelta delay,
     while (!algorithm_.IsQueueFull()) {
       scoped_refptr<DecodedAudioSegment> segment = queue_->Pop();
       if (!segment) {
+        if (received_end_of_stream_) {
+          algorithm_.MarkEndOfStream();
+        }
         break;
       }
       scoped_refptr<media::AudioBuffer> buffer = segment->audio_buffer();
@@ -81,12 +87,16 @@ int ReadAloudAudioRenderer::Render(base::TimeDelta delay,
       }
       word_boundaries_.Enqueue(segment->word_timings(), buffer->duration());
       algorithm_.EnqueueBuffer(std::move(buffer));
+      algorithm_exhausted_ = false;
     }
 
     // 2. Call FillBuffer to fill the destination bus.
     const double playback_rate = playback_rate_.load(std::memory_order_relaxed);
     frames_written =
         algorithm_.FillBuffer(dest, 0, dest->frames(), playback_rate);
+    if (frames_written == 0 && queue_->GetBufferedDuration().is_zero()) {
+      algorithm_exhausted_ = true;
+    }
 
     // 3. Zero out any remaining frames if we underflowed.
     if (frames_written < dest->frames()) {
@@ -117,19 +127,35 @@ int ReadAloudAudioRenderer::Render(base::TimeDelta delay,
     if (!word_boundaries_.empty() && !pump_task_posted_) {
       pump_task_posted_ = true;
       post_pump = true;
-      pump_target = weak_this_;
+    }
+
+    // 7. Detect end-of-stream once the segment queue, time-stretching
+    // algorithm, and hardware output delay have all drained.
+    if (received_end_of_stream_ && algorithm_exhausted_ &&
+        audio_clock_->front_timestamp() >= audio_clock_->back_timestamp()) {
+      received_end_of_stream_ = false;
+      post_eos = true;
+    }
+    if (post_pump) {
+      pump_target = pump_weak_this_;
+    }
+    if (post_eos) {
+      eos_target = eos_weak_this_;
     }
   }
 
   // Posted after releasing `lock_`, which keeps the allocation and the task
   // queue's own lock out of the critical section. If `Flush()` runs in between,
-  // it has already invalidated `pump_target`, so the task is dropped.
-  // `pump_target` is only copied here: its validity may only be checked on the
-  // owning sequence.
+  // it has already invalidated the weak targets, so the tasks are dropped.
   if (post_pump) {
     task_runner_->PostTask(
         FROM_HERE, base::BindOnce(&ReadAloudAudioRenderer::PumpWordBoundaries,
                                   std::move(pump_target)));
+  }
+  if (post_eos) {
+    task_runner_->PostTask(
+        FROM_HERE, base::BindOnce(&ReadAloudAudioRenderer::NotifyEndOfStream,
+                                  std::move(eos_target)));
   }
 
   return frames_written;
@@ -173,7 +199,7 @@ void ReadAloudAudioRenderer::PumpWordBoundaries() {
       task_runner_->PostDelayedTask(
           FROM_HERE,
           base::BindOnce(&ReadAloudAudioRenderer::PumpWordBoundaries,
-                         weak_factory_.GetWeakPtr()),
+                         pump_weak_factory_.GetWeakPtr()),
           *wait);
     }
     // Otherwise there is nothing to wait for; the next `Render()` restarts the
@@ -182,10 +208,52 @@ void ReadAloudAudioRenderer::PumpWordBoundaries() {
   }
 }
 
+void ReadAloudAudioRenderer::NotifyEndOfStream() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (end_of_stream_callback_) {
+    end_of_stream_callback_.Run();
+  }
+}
+
 void ReadAloudAudioRenderer::SetWordBoundaryCallback(
     WordBoundaryCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   word_boundary_callback_ = std::move(callback);
+}
+
+void ReadAloudAudioRenderer::SetEndOfStreamCallback(
+    EndOfStreamCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  end_of_stream_callback_ = std::move(callback);
+}
+
+bool ReadAloudAudioRenderer::MarkEndOfStream() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!initialized_) {
+    return false;
+  }
+  bool post_eos = false;
+  base::WeakPtr<ReadAloudAudioRenderer> eos_target;
+  {
+    base::AutoLock auto_lock(lock_);
+    received_end_of_stream_ = true;
+    if (queue_->GetBufferedDuration().is_zero()) {
+      algorithm_.MarkEndOfStream();
+      if (algorithm_exhausted_ &&
+          audio_clock_->front_timestamp() >= audio_clock_->back_timestamp()) {
+        received_end_of_stream_ = false;
+        post_eos = true;
+        eos_target = eos_weak_this_;
+      }
+    }
+  }
+  if (post_eos) {
+    task_runner_->PostTask(
+        FROM_HERE, base::BindOnce(&ReadAloudAudioRenderer::NotifyEndOfStream,
+                                  std::move(eos_target)));
+    return false;
+  }
+  return true;
 }
 
 void ReadAloudAudioRenderer::SetPlaybackRate(double rate) {
@@ -204,7 +272,7 @@ void ReadAloudAudioRenderer::SetPlaybackRate(double rate) {
     }
     CancelPendingPump();
     pump_task_posted_ = true;
-    pump_target = weak_this_;
+    pump_target = pump_weak_this_;
   }
   task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&ReadAloudAudioRenderer::PumpWordBoundaries,
@@ -215,9 +283,14 @@ void ReadAloudAudioRenderer::Flush() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   base::AutoLock auto_lock(lock_);
   algorithm_.FlushBuffers();
-  // Drop any pump still pending, and the boundaries it would have dispatched.
+  // Drop any pump or end-of-stream notification still pending, and the
+  // boundaries the pump would have dispatched.
   CancelPendingPump();
+  eos_weak_factory_.InvalidateWeakPtrs();
+  eos_weak_this_ = eos_weak_factory_.GetWeakPtr();
   word_boundaries_.Clear();
+  received_end_of_stream_ = false;
+  algorithm_exhausted_ = true;
   if (initialized_) {
     audio_clock_.emplace(/*start_timestamp=*/base::TimeDelta(),
                          params_.sample_rate());
@@ -236,8 +309,8 @@ void ReadAloudAudioRenderer::OnRenderError() {
 
 void ReadAloudAudioRenderer::CancelPendingPump() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  weak_factory_.InvalidateWeakPtrs();
-  weak_this_ = weak_factory_.GetWeakPtr();
+  pump_weak_factory_.InvalidateWeakPtrs();
+  pump_weak_this_ = pump_weak_factory_.GetWeakPtr();
   pump_task_posted_ = false;
 }
 

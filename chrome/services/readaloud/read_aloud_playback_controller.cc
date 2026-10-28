@@ -134,6 +134,9 @@ void ReadAloudPlaybackController::InitializeAudio(
   resources.audio_renderer->SetWordBoundaryCallback(
       base::BindRepeating(&ReadAloudPlaybackController::OnWordBoundaryReached,
                           session_weak_factory_.GetWeakPtr()));
+  resources.audio_renderer->SetEndOfStreamCallback(
+      base::BindRepeating(&ReadAloudPlaybackController::OnAudioEndOfStream,
+                          session_weak_factory_.GetWeakPtr()));
 
   resources.audio_output_stream.Bind(std::move(stream));
 
@@ -375,24 +378,17 @@ void ReadAloudPlaybackController::OnPumpStatusChanged(
       SetPlaybackState(read_aloud::mojom::PlaybackState::kBuffering);
       return;
     case ReadAloudDecoderSequencer::PumpStatus::kDrained:
-      // The document finished normally. Nothing is left to decode, so stop
-      // pumping. Report kEndOfStream rather than kPaused so consumers can
-      // distinguish natural stream completion from pause or setup. The output
-      // stream is intentionally left running and the queue is not flushed, so
-      // the segment the renderer just popped still plays out.
-      //
-      // TODO(b/565419447): Drive this from a real end-of-stream signal rather
-      // than inferring it from the segment queue draining. Draining only means
-      // the renderer has taken the last segment, not that it has played it:
-      // audio still held in the renderer algorithm buffer and the output
-      // stream buffer is audible, so kEndOfStream lands early, while the 250ms
-      // pump period pushes detection late. The net error is on the order of a
-      // few hundred milliseconds. A precise signal needs end-of-stream
-      // detection inside ReadAloudAudioRenderer, which zero-fills on underflow
-      // today. Once available, this should call HaltPlayback(kEndOfStream)
-      // instead.
-      decoder_sequencer_.StopPumping();
-      SetPlaybackState(read_aloud::mojom::PlaybackState::kEndOfStream);
+      // All chunks are decoded; playback halts in kEndOfStream once the
+      // renderer finishes playing out its buffered audio.
+      // TODO(b/524283367): Playout completion relies on Render() callbacks;
+      // surface OnRenderError() and/or add a watchdog so a stalled audio output
+      // device cannot leave playback hanging in kDrained.
+      if (audio_resources_ && audio_resources_->audio_renderer) {
+        if (audio_resources_->audio_renderer->MarkEndOfStream() &&
+            !IsActivePlaybackState(playback_state_)) {
+          SetPlaybackState(read_aloud::mojom::PlaybackState::kPlaying);
+        }
+      }
       return;
     case ReadAloudDecoderSequencer::PumpStatus::kFailed:
       // The entire timeline was consumed without ever yielding a single audio
@@ -525,16 +521,6 @@ void ReadAloudPlaybackController::ExecuteSeek(const TimelinePosition& target) {
     if (audio_resources_->audio_renderer) {
       audio_resources_->audio_renderer->Flush();
     }
-    // When not actively playing (paused, drained or errored), make sure the
-    // stream is paused too, so that audio decoded for the new position is not
-    // rendered until the next Play().
-    // TODO(b/565419447): Remove once end of document is driven by a real
-    // end-of-stream signal that pauses the audio output stream. The stream is
-    // then paused whenever the pump is stopped, making this guard redundant.
-    if (!decoder_sequencer_.is_pumping() &&
-        audio_resources_->audio_output_stream.is_bound()) {
-      audio_resources_->audio_output_stream->Pause();
-    }
   }
 
   // The renderer's media time restarted at zero, and the first audio decoded
@@ -585,6 +571,7 @@ void ReadAloudPlaybackController::SetPlaybackRate(float rate) {
 
 void ReadAloudPlaybackController::FlushBuffers() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  const bool was_pumping = decoder_sequencer_.is_pumping();
   prefetch_manager_.ClearCache();
   decoder_sequencer_.Reset();
   // The decoder restarts at the beginning of the document, and the renderer's
@@ -595,6 +582,9 @@ void ReadAloudPlaybackController::FlushBuffers() {
     return;
   }
 
+  if (was_pumping && audio_resources_->audio_output_stream.is_bound()) {
+    audio_resources_->audio_output_stream->Pause();
+  }
   if (audio_resources_->audio_segment_queue) {
     audio_resources_->audio_segment_queue->Clear(
         base::PassKey<ReadAloudPlaybackController>());
@@ -717,6 +707,13 @@ void ReadAloudPlaybackController::OnWordBoundaryReached(
   }
   // Progress is reported by ReportProgress(), so only the word range is sent.
   client_->OnWordBoundaryReached(start_character_offset, end_character_offset);
+}
+
+void ReadAloudPlaybackController::OnAudioEndOfStream() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (decoder_sequencer_.is_pumping()) {
+    HaltPlayback(read_aloud::mojom::PlaybackState::kEndOfStream);
+  }
 }
 
 }  // namespace readaloud

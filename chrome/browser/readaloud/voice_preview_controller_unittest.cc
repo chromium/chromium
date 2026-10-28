@@ -273,9 +273,9 @@ TEST_F(VoicePreviewControllerTest,
   fake_controller()->FlushForTesting();
   EXPECT_TRUE(controller()->IsPreviewActive());
 
-  // Utility reports kEndOfStream when the sample finishes draining, which
-  // translates to kStopped for the voice preview while retaining the utility
-  // connection so buffered audio can finish playing out.
+  // Utility reports kEndOfStream when the sample finishes playing out, which
+  // tears down the controller and audio stream and translates to kStopped for
+  // the voice preview.
   EXPECT_CALL(state_callback(),
               Call(kTestVoiceId, read_aloud::mojom::PlaybackState::kStopped))
       .Times(1);
@@ -283,19 +283,12 @@ TEST_F(VoicePreviewControllerTest,
       read_aloud::mojom::PlaybackState::kEndOfStream);
   fake_controller()->FlushForTesting();
   EXPECT_FALSE(controller()->IsPreviewActive());
-  EXPECT_TRUE(fake_controller()->is_connected());
+  EXPECT_FALSE(fake_controller()->is_connected());
 
-  // Calling StopPreview() after natural completion is a no-op so buffered tail
-  // audio can finish playing out without tearing down the connection or
-  // emitting a duplicate kStopped callback.
+  // Calling StopPreview() after natural completion is a no-op without emitting
+  // a duplicate kStopped callback.
   controller()->StopPreview();
   fake_controller()->FlushForTesting();
-  EXPECT_TRUE(fake_controller()->is_connected());
-
-  // Explicit Reset() tears down the retained connection.
-  controller()->Reset();
-  fake_controller()->FlushForTesting();
-  EXPECT_FALSE(fake_controller()->is_connected());
 }
 
 TEST_F(VoicePreviewControllerTest,
