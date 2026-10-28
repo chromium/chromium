@@ -9,6 +9,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "build/build_config.h"
 #include "components/services/storage/public/cpp/buckets/bucket_locator.h"
 #include "storage/browser/quota/quota_client_type.h"
 #include "storage/browser/quota/storage_directory.h"
@@ -167,5 +168,107 @@ TEST_F(StorageDirectoryTest, ClearMultipleDoomedBuckets) {
   directories = storage_directory_->EnumerateDoomedBucketsForTesting();
   EXPECT_EQ(directories.size(), 0u);
 }
+
+#if BUILDFLAG(IS_POSIX)
+TEST_F(StorageDirectoryTest, DoomAndClearBucketSymlinkDoesNotFollowTarget) {
+  base::FilePath external_dir =
+      temp_directory_.GetPath().AppendASCII("external_target");
+  ASSERT_TRUE(base::CreateDirectory(external_dir));
+  base::FilePath secret_file = external_dir.AppendASCII("secret.txt");
+  ASSERT_TRUE(base::WriteFile(secret_file, "secret_content"));
+
+  ASSERT_TRUE(storage_directory_->Create());
+
+  BucketLocator bucket(
+      BucketId(1),
+      blink::StorageKey::CreateFromStringForTesting("http://example/"),
+      /*is_default=*/false);
+  base::FilePath bucket_path =
+      CreateBucketPath(storage_directory_->path().DirName(), bucket);
+  ASSERT_TRUE(base::CreateSymbolicLink(external_dir, bucket_path));
+
+  ASSERT_TRUE(storage_directory_->DoomBucket(bucket));
+  EXPECT_FALSE(base::PathExists(bucket_path));
+  EXPECT_FALSE(base::IsLink(bucket_path));
+
+  std::set<base::FilePath> doomed_buckets =
+      storage_directory_->EnumerateDoomedBucketsForTesting();
+  ASSERT_EQ(doomed_buckets.size(), 1u);
+  // The doomed entry must be the renamed symlink itself, not a copied
+  // directory.
+  EXPECT_TRUE(base::IsLink(*doomed_buckets.begin()));
+
+  storage_directory_->ClearDoomedBuckets();
+  EXPECT_TRUE(storage_directory_->EnumerateDoomedBucketsForTesting().empty());
+
+  // The external target directory and file must remain untouched.
+  std::string contents;
+  EXPECT_TRUE(base::ReadFileToString(secret_file, &contents));
+  EXPECT_EQ(contents, "secret_content");
+}
+
+TEST_F(StorageDirectoryTest, DoomAndClearBucketFileAndBrokenSymlinks) {
+  base::FilePath external_file =
+      temp_directory_.GetPath().AppendASCII("external_file.txt");
+  ASSERT_TRUE(base::WriteFile(external_file, "file_content"));
+  base::FilePath nonexistent_target =
+      temp_directory_.GetPath().AppendASCII("nonexistent");
+
+  ASSERT_TRUE(storage_directory_->Create());
+
+  BucketLocator bucket1(
+      BucketId(1),
+      blink::StorageKey::CreateFromStringForTesting("http://example/"),
+      /*is_default=*/false);
+  BucketLocator bucket2(
+      BucketId(2),
+      blink::StorageKey::CreateFromStringForTesting("http://example/"),
+      /*is_default=*/false);
+
+  base::FilePath bucket1_path =
+      CreateBucketPath(storage_directory_->path().DirName(), bucket1);
+  base::FilePath bucket2_path =
+      CreateBucketPath(storage_directory_->path().DirName(), bucket2);
+  ASSERT_TRUE(base::CreateSymbolicLink(external_file, bucket1_path));
+  ASSERT_TRUE(base::CreateSymbolicLink(nonexistent_target, bucket2_path));
+
+  ASSERT_TRUE(storage_directory_->DoomBucket(bucket1));
+  ASSERT_TRUE(storage_directory_->DoomBucket(bucket2));
+  EXPECT_FALSE(base::IsLink(bucket1_path));
+  EXPECT_FALSE(base::IsLink(bucket2_path));
+
+  std::set<base::FilePath> doomed_buckets =
+      storage_directory_->EnumerateDoomedBucketsForTesting();
+  EXPECT_EQ(doomed_buckets.size(), 2u);
+
+  storage_directory_->ClearDoomedBuckets();
+  EXPECT_TRUE(storage_directory_->EnumerateDoomedBucketsForTesting().empty());
+  EXPECT_TRUE(base::PathExists(external_file));
+}
+
+TEST_F(StorageDirectoryTest, DoomAndClearStorageSymlinkDoesNotFollowTarget) {
+  base::FilePath external_dir =
+      temp_directory_.GetPath().AppendASCII("external_target");
+  ASSERT_TRUE(base::CreateDirectory(external_dir));
+  base::FilePath secret_file = external_dir.AppendASCII("secret.txt");
+  ASSERT_TRUE(base::WriteFile(secret_file, "secret_content"));
+
+  ASSERT_TRUE(
+      base::CreateSymbolicLink(external_dir, storage_directory_->path()));
+
+  ASSERT_TRUE(storage_directory_->Doom());
+  EXPECT_FALSE(base::IsLink(storage_directory_->path()));
+
+  std::set<base::FilePath> doomed_dirs =
+      storage_directory_->EnumerateDoomedDirectoriesForTesting();
+  ASSERT_EQ(doomed_dirs.size(), 1u);
+  EXPECT_TRUE(base::IsLink(*doomed_dirs.begin()));
+
+  storage_directory_->ClearDoomed();
+  EXPECT_TRUE(
+      storage_directory_->EnumerateDoomedDirectoriesForTesting().empty());
+  EXPECT_TRUE(base::PathExists(secret_file));
+}
+#endif  // BUILDFLAG(IS_POSIX)
 
 }  // namespace storage
