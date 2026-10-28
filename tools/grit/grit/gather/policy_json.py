@@ -82,7 +82,6 @@ class PolicyJson(skeleton_gatherer.SkeletonGatherer):
     replaced_text = self.Escape(''.join(text).strip())
     replaced_text = replaced_text.replace('$1', self._config['app_name'])
     replaced_text = replaced_text.replace('$2', self._config['os_name'])
-    replaced_text = replaced_text.replace('$3', self._config['frame_name'])
 
     msg.AppendPlaceholder(
       tclib.Placeholder(
@@ -362,14 +361,12 @@ class PolicyJson(skeleton_gatherer.SkeletonGatherer):
       self._config = {
         'build': 'chromium',
         'app_name': 'Chromium',
-        'frame_name': 'Chromium Frame',
         'os_name': 'ChromiumOS',
       }
     elif '_google_chrome' in defines:
       self._config = {
         'build': 'chrome',
         'app_name': 'Google Chrome',
-        'frame_name': 'Google Chrome Frame',
         'os_name': 'Google ChromeOS',
       }
     else:
@@ -393,7 +390,6 @@ def ValidateForPresubmit(data, is_policy=True):
   policy_json = PolicyJson('dummy.json')
   policy_json._config = {
     'app_name': 'Chromium',
-    'frame_name': 'Chromium Frame',
     'os_name': 'ChromiumOS',
   }
 
