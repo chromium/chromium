@@ -8,6 +8,7 @@
 #include <optional>
 
 #include "base/android/jni_android.h"
+#include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
@@ -246,6 +247,24 @@ TEST_F(AutofillAiSaveUpdateEntityPromptControllerTest,
   prompt_controller().OnUserAccepted(env());
 }
 
+// Tests that the UI context is populated with the update subtitle string ID
+// when accepting an update prompt for a wallet entity.
+TEST_F(AutofillAiSaveUpdateEntityPromptControllerTest,
+       PopulatesUiContext_UpdateWalletEntity) {
+  CreateController(EntityInstance::RecordType::kServerWallet,
+                   /*entity_updated=*/true);
+
+  EXPECT_CALL(
+      prompt_closed_callback(),
+      Run(AutofillClient::AutofillAiBubbleResult::kAccepted, Eq(std::nullopt),
+          EqualsEntityImportUIContext(
+              Optional(IDS_AUTOFILL_AI_UPDATE_ENTITY_TO_WALLET_DIALOG_SUBTITLE),
+              Optional(
+                  IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_SAVE_DIALOG_SAVE_BUTTON))));
+
+  prompt_controller().OnUserAccepted(env());
+}
+
 TEST_F(AutofillAiSaveUpdateEntityPromptControllerTest,
        PromptUiStrings_SaveLocalEntity) {
   CreateController();
@@ -323,8 +342,8 @@ TEST_F(AutofillAiSaveUpdateEntityPromptControllerTest,
   const std::u16string google_wallet =
       l10n_util::GetStringUTF16(IDS_AUTOFILL_GOOGLE_WALLET_TITLE);
   EXPECT_EQ(l10n_util::GetStringFUTF16(
-                IDS_AUTOFILL_AI_SAVE_OR_UPDATE_ENTITY_IN_WALLET_SOURCE_NOTICE,
-                google_wallet, google_wallet,
+                IDS_AUTOFILL_AI_UPDATE_ENTITY_TO_WALLET_DIALOG_SUBTITLE,
+                base::StrCat({u"<link>", google_wallet, u"</link>"}),
                 base::UTF8ToUTF16(TestingProfile::kDefaultProfileUserName)),
             prompt_controller().GetSourceNotice());
 }

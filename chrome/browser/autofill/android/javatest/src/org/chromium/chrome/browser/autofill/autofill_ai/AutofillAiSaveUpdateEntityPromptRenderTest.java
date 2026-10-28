@@ -75,8 +75,8 @@ public class AutofillAiSaveUpdateEntityPromptRenderTest {
     @Rule
     public final RenderTestRule mRenderTestRule =
             RenderTestRule.Builder.withPublicCorpus()
-                    .setRevision(3)
-                    .setDescription("Ligatures and contextual alternates disabled in UI text")
+                    .setRevision(4)
+                    .setDescription("Update Wallet entity prompt subtitle notice string")
                     .setBugComponent(Component.UI_BROWSER_AUTOFILL)
                     .build();
 
@@ -172,7 +172,7 @@ public class AutofillAiSaveUpdateEntityPromptRenderTest {
                                                             .NEW_ENTITY_ATTRIBUTE_UNCHANGED)),
                                     /* isUpdatePrompt= */ false);
                             mPrompt.setSourceNotice(
-                                    "Saved to this device", /* insertManageInfoLink= */ false);
+                                    "Saved to this device", /* insertWalletLink= */ false);
                             mPrompt.show();
                             return mPrompt.getDialogViewForTesting();
                         });
@@ -229,14 +229,9 @@ public class AutofillAiSaveUpdateEntityPromptRenderTest {
                             String walletTitle =
                                     context.getString(R.string.autofill_google_wallet_title);
                             String email = "alexpark@gmail.com";
-                            String sourceNotice =
-                                    context.getString(
-                                                    R.string
-                                                            .autofill_ai_save_or_update_entity_in_wallet_source_notice)
-                                            .replace("$1", walletTitle)
-                                            .replace("$2", walletTitle)
-                                            .replace("$3", email);
-                            mPrompt.setSourceNotice(sourceNotice, /* insertManageInfoLink= */ true);
+                            mPrompt.setSourceNotice(
+                                    getUpdateWalletSourceNotice(walletTitle, email),
+                                    /* insertWalletLink= */ true);
                             mPrompt.show();
                             return mPrompt.getDialogViewForTesting();
                         });
@@ -293,17 +288,20 @@ public class AutofillAiSaveUpdateEntityPromptRenderTest {
                             String walletTitle =
                                     context.getString(R.string.autofill_google_wallet_title);
                             String email = "alexpark@gmail.com";
-                            String sourceNotice =
-                                    context.getString(
-                                                    R.string
-                                                            .autofill_ai_save_or_update_entity_in_wallet_source_notice)
-                                            .replace("$1", walletTitle)
-                                            .replace("$2", walletTitle)
-                                            .replace("$3", email);
-                            mPrompt.setSourceNotice(sourceNotice, /* insertManageInfoLink= */ true);
+                            mPrompt.setSourceNotice(
+                                    getUpdateWalletSourceNotice(walletTitle, email),
+                                    /* insertWalletLink= */ true);
                             mPrompt.show();
                             return mPrompt.getDialogViewForTesting();
                         });
         mRenderTestRule.render(dialogView, "autofill_ai_update_entity_without_new_attributes");
+    }
+
+    // Returns the notice text when updating a Wallet entity. This is necessary because the
+    // `IDS_AUTOFILL_AI_UPDATE_ENTITY_TO_WALLET_DIALOG_SUBTITLE` string resource is resolved
+    // in C++ and thus not exported to Java to avoid increasing APK size.
+    private static String getUpdateWalletSourceNotice(String walletTitle, String email) {
+        String walletNotice = "Your info is saved in <link>%1$s</link> for %2$s";
+        return String.format(walletNotice, walletTitle, email);
     }
 }

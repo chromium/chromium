@@ -296,15 +296,14 @@ public class AutofillAiSaveUpdateEntityPrompt implements EntityEditorCoordinator
      * Sets the source notice message in the prompt.
      *
      * @param sourceNotice the full source notice string.
-     * @param insertManageInfoLink whether to insert a link to manage info. This value will be false
-     *     for local entities and true for entities stored in wallet. In the case it is true,
-     *     `sourceNotice` is expected to have a `R.string.autofill_manage_your_info_link` substring,
-     *     which will be turned into a clickable link.
+     * @param insertWalletLink whether to insert a link to Wallet. This value will be false for
+     *     local entities and true for entities stored in wallet. If it is true, `sourceNotice` is
+     *     expected to have a `<link>` and `</link>` tagged substring, which will be turned into a
+     *     clickable link.
      */
     @CalledByNative
     @VisibleForTesting
-    void setSourceNotice(
-            @JniType("std::u16string") String sourceNotice, boolean insertManageInfoLink) {
+    void setSourceNotice(@JniType("std::u16string") String sourceNotice, boolean insertWalletLink) {
         TextView sourceNoticeView = mDialogView.findViewById(R.id.autofill_ai_entity_source_notice);
         if (TextUtils.isEmpty(sourceNotice)) {
             // The source notice can be empty if the C++ controller fails to retrieve the email
@@ -313,7 +312,7 @@ public class AutofillAiSaveUpdateEntityPrompt implements EntityEditorCoordinator
             return;
         }
 
-        if (!insertManageInfoLink) {
+        if (!insertWalletLink) {
             // Local entity source notice doesn't need a link.
             sourceNoticeView.setText(sourceNotice);
             return;

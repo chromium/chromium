@@ -225,7 +225,7 @@ public class AutofillAiSaveUpdateEntityPromptTest {
 
     @Test
     public void localSourceNotice() {
-        mPrompt.setSourceNotice("Entity will be saved locally", /* insertManageInfoLink= */ false);
+        mPrompt.setSourceNotice("Entity will be saved locally", /* insertWalletLink= */ false);
         mPrompt.show();
 
         View dialogView = mPrompt.getDialogViewForTesting();
@@ -235,7 +235,7 @@ public class AutofillAiSaveUpdateEntityPromptTest {
 
     @Test
     public void emptyWalletNotice() {
-        mPrompt.setSourceNotice("", /* insertManageInfoLink= */ true);
+        mPrompt.setSourceNotice("", /* insertWalletLink= */ true);
         mPrompt.show();
 
         View dialogView = mPrompt.getDialogViewForTesting();
@@ -257,7 +257,7 @@ public class AutofillAiSaveUpdateEntityPromptTest {
                         .replace("$2", walletTitle)
                         .replace("$3", email);
 
-        mPrompt.setSourceNotice(sourceNotice, /* insertManageInfoLink= */ true);
+        mPrompt.setSourceNotice(sourceNotice, /* insertWalletLink= */ true);
         mPrompt.show();
 
         View dialogView = mPrompt.getDialogViewForTesting();
