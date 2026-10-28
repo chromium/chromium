@@ -58,11 +58,12 @@ import java.util.concurrent.TimeoutException;
 @Batch(Batch.PER_CLASS)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, "show-autofill-signatures"})
 public class PasswordSavingIntegrationTest {
-    @Rule
+    @Rule(order = 0)
+    public SigninTestRule mSigninTestRule = SigninTestRule.createWithCleanups();
+
+    @Rule(order = 1)
     public AutoResetCtaTransitTestRule mActivityTestRule =
             ChromeTransitTestRules.fastAutoResetCtaActivityRule();
-
-    @Rule public SigninTestRule mSigninTestRule = new SigninTestRule();
 
     private static final String SIGNIN_FORM_URL = "/chrome/test/data/password/simple_password.html";
     private static final String CHANGE_PASSWORD_FORM_URL =
@@ -116,7 +117,6 @@ public class PasswordSavingIntegrationTest {
                 () -> {
                     mPasswordStoreBridge.clearAllPasswords();
                 });
-        mSigninTestRule.tearDownRule();
     }
 
     @Test
