@@ -27,8 +27,8 @@ namespace enterprise_watermark {
 // repeatedly over the page. We refer to this object as a "Watermark Block".
 struct WatermarkBlock {
   cc::PaintRecord record;
-  int width;
-  int height;
+  int width = 0;
+  int height = 0;
 };
 
 // Utility function to calculate the width of a watermark block based on

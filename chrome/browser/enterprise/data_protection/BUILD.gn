@@ -10,7 +10,10 @@ import("//ui/base/ui_features.gni")
 # This library wraps //ui/views and can only be built where views is available.
 if (toolkit_views) {
   source_set("data_protection_view_lib") {
-    public = [ "data_protection_overlay_view.h" ]
+    public = [
+      "data_protection_features.h",
+      "data_protection_overlay_view.h",
+    ]
 
     sources = [ "data_protection_overlay_view.cc" ]
 
@@ -88,7 +91,12 @@ source_set("unit_tests") {
     ]
     if (toolkit_views) {
       sources += [ "data_protection_overlay_view_unittest.cc" ]
-      deps += [ ":data_protection_view_lib" ]
+      deps += [
+        ":data_protection_view_lib",
+        "//base/test:test_support",
+        "//cc/paint",
+        "//ui/gfx",
+      ]
     }
   }
 }

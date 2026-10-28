@@ -10,9 +10,11 @@
 #include <string>
 
 #include "base/check_op.h"
+#include "base/feature_list.h"
 #include "base/strings/string_util.h"
 #include "cc/paint/paint_canvas.h"
 #include "cc/paint/paint_recorder.h"
+#include "chrome/browser/enterprise/data_protection/data_protection_features.h"
 #include "chrome/browser/enterprise/watermark/settings.h"
 #include "components/enterprise/watermarking/watermark.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -30,10 +32,12 @@ DataProtectionOverlayView::DataProtectionOverlayView()
   SetCanProcessEventsWithinSubtree(false);
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
-  UpdateWatermarkBlock(/*watermark_text=*/std::string(""),
-                       enterprise_watermark::GetDefaultFillColor(),
-                       enterprise_watermark::GetDefaultOutlineColor(),
-                       enterprise_watermark::GetDefaultFontSize());
+  if (!base::FeatureList::IsEnabled(kEnableSkipEmptyWatermark)) {
+    UpdateWatermarkBlock(/*watermark_text=*/std::string(""),
+                         enterprise_watermark::GetDefaultFillColor(),
+                         enterprise_watermark::GetDefaultOutlineColor(),
+                         enterprise_watermark::GetDefaultFontSize());
+  }
   GetViewAccessibility().SetIsInvisible(true);
 }
 
@@ -80,6 +84,10 @@ void DataProtectionOverlayView::SetWatermarkText(const std::string& text,
 }
 
 void DataProtectionOverlayView::OnPaint(gfx::Canvas* canvas) {
+  if (watermark_block_.record.empty() &&
+      base::FeatureList::IsEnabled(kEnableSkipEmptyWatermark)) {
+    return;
+  }
   gfx::Rect contents_bounds = GetContentsBounds();
   enterprise_watermark::DrawWatermark(
       canvas->sk_canvas(), &watermark_block_.record, watermark_block_.width,
@@ -91,8 +99,12 @@ void DataProtectionOverlayView::UpdateWatermarkBlock(const std::string& text,
                                                      SkColor fill_color,
                                                      SkColor outline_color,
                                                      int font_size) {
-  watermark_block_ = enterprise_watermark::DrawWatermarkToPaintRecord(
-      text, fill_color, outline_color, font_size);
+  if (text.empty() && base::FeatureList::IsEnabled(kEnableSkipEmptyWatermark)) {
+    watermark_block_ = {};
+  } else {
+    watermark_block_ = enterprise_watermark::DrawWatermarkToPaintRecord(
+        text, fill_color, outline_color, font_size);
+  }
   InvalidateView();
 }
 

@@ -4,10 +4,14 @@
 
 #include "chrome/browser/enterprise/data_protection/data_protection_overlay_view.h"
 
+#include "base/test/scoped_feature_list.h"
+#include "cc/paint/paint_recorder.h"
+#include "chrome/browser/enterprise/data_protection/data_protection_features.h"
 #include "components/enterprise/connectors/core/connectors_prefs.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/gfx/canvas.h"
 #include "ui/views/accessibility/view_accessibility.h"
 
 namespace enterprise_data_protection {
@@ -63,6 +67,59 @@ TEST(DataProtectionOverlayViewTest,
   // Clear twice with different styles. Will invalidate the first time only.
   view.SetWatermarkText("", old_color, old_color, font_size);
   view.SetWatermarkText("", new_color, new_color, font_size);
+}
+
+// Tests that an empty watermark skips recording draw operations in `OnPaint()`
+// when `kEnableSkipEmptyWatermark` is enabled, both after construction and
+// after clearing a non-empty watermark.
+TEST(DataProtectionOverlayViewTest, EmptyWatermarkSkipsOnPaint) {
+  base::test::ScopedFeatureList feature_list(kEnableSkipEmptyWatermark);
+
+  DataProtectionOverlayView view;
+  view.SetBounds(0, 0, 200, 200);
+  EXPECT_FALSE(view.has_text_for_testing());
+
+  {
+    cc::PaintRecorder recorder;
+    gfx::Canvas canvas(recorder.beginRecording(), 1.0f);
+    view.OnPaint(&canvas);
+    EXPECT_TRUE(recorder.finishRecordingAsPicture().empty());
+  }
+
+  view.SetWatermarkText("sample_text", SK_ColorWHITE, SK_ColorBLACK, 10);
+  EXPECT_TRUE(view.has_text_for_testing());
+  {
+    cc::PaintRecorder recorder;
+    gfx::Canvas canvas(recorder.beginRecording(), 1.0f);
+    view.OnPaint(&canvas);
+    EXPECT_FALSE(recorder.finishRecordingAsPicture().empty());
+  }
+
+  view.SetWatermarkText("", SK_ColorWHITE, SK_ColorBLACK, 10);
+  EXPECT_FALSE(view.has_text_for_testing());
+  {
+    cc::PaintRecorder recorder;
+    gfx::Canvas canvas(recorder.beginRecording(), 1.0f);
+    view.OnPaint(&canvas);
+    EXPECT_TRUE(recorder.finishRecordingAsPicture().empty());
+  }
+}
+
+// Tests that an empty watermark still calls `DrawWatermark()` in `OnPaint()`
+// when `kEnableSkipEmptyWatermark` is disabled.
+TEST(DataProtectionOverlayViewTest,
+     EmptyWatermarkPaintsWhenSkipEmptyFeatureDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(kEnableSkipEmptyWatermark);
+
+  DataProtectionOverlayView view;
+  view.SetBounds(0, 0, 200, 200);
+  EXPECT_FALSE(view.has_text_for_testing());
+
+  cc::PaintRecorder recorder;
+  gfx::Canvas canvas(recorder.beginRecording(), 1.0f);
+  view.OnPaint(&canvas);
+  EXPECT_FALSE(recorder.finishRecordingAsPicture().empty());
 }
 
 }  // namespace enterprise_data_protection
