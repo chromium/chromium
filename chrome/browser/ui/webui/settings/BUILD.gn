@@ -525,6 +525,18 @@ source_set("browser_tests") {
     deps += [ "//ui/ozone" ]
   }
 
+  # Pixel tests are only supported on these platforms.
+  if (is_win || is_linux) {
+    sources += [ "search_engine_picker_pixel_browsertest.cc" ]
+    deps += [
+      "//chrome/browser/ui/test:dialog",
+      "//chrome/test/base:mixin_based_in_process_browser_test",
+      "//chrome/test/interaction",
+      "//components/regional_capabilities",
+      "//components/search_engines/search_engine_choice:switches",
+    ]
+  }
+
   if (is_chromeos) {
     deps += [
       "//chrome/browser:browser_process_platform_part",

@@ -157,6 +157,7 @@ ReportUnsafeSiteDialogInteractiveUiTest.ExcludeScreenshotPixelTest
 SafetyTipPageInfoBubbleViewDialogTest.*
 ScreenCaptureNotificationUiBrowserTest.*
 SearchEngineChoiceUIPixelTest.*
+SearchEnginePickerPixelBrowserTest.*
 SecurePaymentConfirmationDialogViewTest.InvokeUi_*
 *SendTabToSelfBubbleTest.*
 SendTabToSelfInteractiveUiTest.*
