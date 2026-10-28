@@ -116,11 +116,6 @@ if (host_os == "win") {
 
 _blink_gen_dir = "$root_gen_dir/third_party/blink/renderer"
 
-make_core_generated_deps = [
-  "//third_party/blink/renderer/core:core_event_interfaces",
-  "//third_party/blink/renderer/core:generated_testing_idls",
-]
-
 # A wrapper for python scripts. This adds the following paths to PYTHONPATH,
 # then run invoker.script.
 #  - //third_party/blink/renderer/build/scripts
@@ -174,8 +169,7 @@ template("blink_python_runner") {
 #   outputs: expected results. Note that the directory of the 0th item in this
 #            list will be taken to be the output path.
 #   other_args: (optional) other arguments to pass to the script.
-#   deps [optional]:
-#     Depenendencies. If unspecified defaults to make_core_generated_deps.
+#   deps: (optional) dependencies.
 template("process_json5_files") {
   blink_python_runner(target_name) {
     script = invoker.script
@@ -198,13 +192,9 @@ template("process_json5_files") {
       args += invoker.other_args
     }
 
-    if (defined(invoker.deps)) {
-      deps = invoker.deps
-    } else {
-      deps = make_core_generated_deps
-    }
     forward_variables_from(invoker,
                            [
+                             "deps",
                              "sources",
                              "visibility",
                            ])
@@ -220,8 +210,7 @@ template("process_json5_files") {
 #   outputs: expected results. Note that the directory of the 0th item in this
 #            list will be taken to be the output path.
 #   other_args: (optional) other arguments to pass to the script.
-#   deps [optional]:
-#     Depenendencies. If unspecified defaults to make_core_generated_deps.
+#   deps: (optional) dependencies.
 template("code_generator") {
   blink_python_runner(target_name) {
     script = invoker.script
@@ -242,13 +231,9 @@ template("code_generator") {
       args += invoker.other_args
     }
 
-    if (defined(invoker.deps)) {
-      deps = invoker.deps
-    } else {
-      deps = make_core_generated_deps
-    }
     forward_variables_from(invoker,
                            [
+                             "deps",
                              "sources",
                              "visibility",
                            ])

@@ -1080,6 +1080,7 @@ make_event_factory("make_core_generated_event_factory") {
     "events/event_interface_aliases.json5",
   ]
   outputs = [ "$blink_core_output_dir/event_factory.cc" ]
+  deps = [ ":core_event_interfaces" ]
 }
 
 # make_names -------------------------------------------------------------------
@@ -1107,6 +1108,7 @@ make_names("make_core_generated_media_type_names") {
 make_names("make_core_generated_event_names") {
   in_files = [ "$blink_core_output_dir/event_interface_names.json5" ]
   output_dir = blink_core_output_dir
+  deps = [ ":core_event_interfaces" ]
 }
 
 make_names("make_core_generated_event_target_names") {
@@ -1244,8 +1246,6 @@ blink_python_runner("make_core_generated_html_entity_table") {
 
   args = [ "-o" ] + rebase_path(outputs, root_build_dir)
   args += [ rebase_path("html/parser/html_entity_names.csv", root_build_dir) ]
-
-  deps = make_core_generated_deps
 }
 
 blink_python_runner("make_core_generated_css_primitive_value_unit_trie") {
@@ -1265,8 +1265,6 @@ blink_python_runner("make_core_generated_css_primitive_value_unit_trie") {
     "--output_dir",
     "$rel_blink_core_gen_dir/css",
   ]
-
-  deps = make_core_generated_deps
 }
 
 blink_python_runner("make_core_generated_permissions_policy_helper") {
@@ -1315,8 +1313,6 @@ blink_python_runner("make_core_generated_html_element_lookup_trie") {
     "--output_dir",
     rel_blink_core_gen_dir,
   ]
-
-  deps = make_core_generated_deps
 }
 
 blink_python_runner("make_core_generated_html_attribute_name_lookup_trie") {
@@ -1341,8 +1337,6 @@ blink_python_runner("make_core_generated_html_attribute_name_lookup_trie") {
     "--output_dir",
     rel_blink_core_gen_dir,
   ]
-
-  deps = make_core_generated_deps
 }
 
 blink_python_runner("make_core_generated_web_origin_trials") {

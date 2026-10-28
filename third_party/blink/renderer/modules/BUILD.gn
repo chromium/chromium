@@ -363,7 +363,7 @@ action_with_pydeps("modules_event_interfaces") {
 make_event_factory("make_modules_generated_event_factory") {
   in_files = [ "$blink_modules_output_dir/event_interface_modules_names.json5" ]
   outputs = [ "$blink_modules_output_dir/event_modules_factory.cc" ]
-  deps = make_core_generated_deps + [ ":modules_event_interfaces" ]
+  deps = [ ":modules_event_interfaces" ]
 }
 
 # make_names -------------------------------------------------------------------
@@ -371,7 +371,7 @@ make_event_factory("make_modules_generated_event_factory") {
 make_names("make_modules_generated_event_names") {
   in_files = [ "$blink_modules_output_dir/event_interface_modules_names.json5" ]
   output_dir = blink_modules_output_dir
-  deps = make_core_generated_deps + [ ":modules_event_interfaces" ]
+  deps = [ ":modules_event_interfaces" ]
 }
 
 make_names("make_modules_generated_event_target_names") {
@@ -382,7 +382,6 @@ make_names("make_modules_generated_event_target_names") {
 make_names("make_modules_generated_indexed_db_names") {
   in_files = [ "indexeddb/indexed_db_names.json5" ]
   output_dir = blink_modules_output_dir
-  deps = []  # Don't use default deps (otherwise it will be circular).
 }
 
 blink_modules_sources("modules_generated") {
