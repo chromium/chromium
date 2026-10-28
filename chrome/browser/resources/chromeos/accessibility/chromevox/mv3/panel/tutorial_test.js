@@ -459,15 +459,19 @@ AX_TEST_F('ChromeVoxTutorialTest', 'DISABLED_EarconLesson', async function() {
 
 // Tests that a lesson from the quick orientation blocks ChromeVox execution
 // until the specified keystroke is pressed.
-// TODO(crbug.com/1193799): fix ax node errors causing console spew and
-// breaking tests
 AX_TEST_F(
-    'ChromeVoxTutorialTest', 'DISABLED_QuickOrientationLessonTest',
-    async function() {
+    'ChromeVoxTutorialTest', 'QuickOrientationLessonTest', async function() {
+      // Swap in a mock for this function. In normal circumstances, the browser
+      // will have a queue of pending events when this function is called.
+      // However, this invariant is invalidated in this test since we are
+      // calling directly into the BackgroundKeyboardHandler key handlers.
+      chrome.accessibilityPrivate.processPendingSpokenFeedbackEvent =
+          (id, propagate, sessionId) => {};
+
       const mockFeedback = this.createMockFeedback();
       const root = await this.runWithLoadedTree(this.simpleDoc);
       await this.launchAndWaitForTutorial();
-      const keyboardHandler = ChromeVoxState.instance.keyboardHandler_;
+      const keyboardHandler = BackgroundKeyboardHandler.instance;
 
       // Helper functions. For this test, activate commands by hooking into
       // the BackgroundKeyboardHandler. This is necessary because
@@ -477,8 +481,8 @@ AX_TEST_F(
 
       const simulateKeyPress = (keyCode, opt_modifiers) => {
         const keyEvent = TestUtils.createMockKeyEvent(keyCode, opt_modifiers);
-        keyboardHandler.onKeyDown(keyEvent);
-        keyboardHandler.onKeyUp(keyEvent);
+        keyboardHandler.onKeyDown_(keyEvent);
+        keyboardHandler.onKeyUp_(keyEvent);
       };
 
       let firstLessonNode;
