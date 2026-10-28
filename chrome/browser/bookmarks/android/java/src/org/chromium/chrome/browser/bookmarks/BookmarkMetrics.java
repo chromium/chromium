@@ -19,8 +19,8 @@ import org.chromium.components.profile_metrics.BrowserProfileType;
 @NullMarked
 public class BookmarkMetrics {
     // These values are persisted to logs. Entries should not be renumbered and numeric values
-    // should never be reused. Keep up-to-date with the MobileBookmarkManagerFilter enum in
-    // tools/metrics/histograms/enums.xml.
+    // should never be reused.
+    // LINT.IfChange(BookmarkManagerFilter)
     @IntDef({BookmarkManagerFilter.SHOPPING, BookmarkManagerFilter.COUNT})
     public @interface BookmarkManagerFilter {
         int SHOPPING = 0;
@@ -28,6 +28,8 @@ public class BookmarkMetrics {
         int PLACEHOLDER = 1;
         int COUNT = 2;
     }
+
+    // LINT.ThenChange(//tools/metrics/histograms/metadata/bookmarks/enums.xml:MobileBookmarkManagerFilter)
 
     /** Report a sort option was used in the bookmarks manager. */
     public static void reportBookmarkManagerSortChanged(

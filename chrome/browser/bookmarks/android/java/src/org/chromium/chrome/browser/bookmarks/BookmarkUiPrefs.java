@@ -29,8 +29,8 @@ public class BookmarkUiPrefs {
             BookmarkRowSortOrder.MANUAL;
 
     // These values are persisted to prefs/logs. Entries should not be renumbered and numeric
-    // values should never be reused. Keep up-to-date with the
-    // MobileBookmarkManagerBookmarkRowDisplayPref enum in tools/metrics/histograms/enums.xml.
+    // values should never be reused.
+    // LINT.IfChange(BookmarkRowDisplayPref)
     @IntDef({
         BookmarkRowDisplayPref.COMPACT,
         BookmarkRowDisplayPref.VISUAL,
@@ -43,9 +43,11 @@ public class BookmarkUiPrefs {
         int COUNT = 2;
     }
 
+    // LINT.ThenChange(//tools/metrics/histograms/metadata/bookmarks/enums.xml:MobileBookmarkManagerBookmarkRowDisplayPref)
+
     // These values are persisted to prefs/logs. Entries should not be renumbered and numeric
-    // values should never be reused. Keep up-to-date with the
-    // MobileBookmarkManagerBookmarkRowSortOrder enum in tools/metrics/histograms/enums.xml.
+    // values should never be reused.
+    // LINT.IfChange(BookmarkRowSortOrder)
     @IntDef({
         BookmarkRowSortOrder.CHRONOLOGICAL,
         BookmarkRowSortOrder.REVERSE_CHRONOLOGICAL,
@@ -66,6 +68,8 @@ public class BookmarkUiPrefs {
         int MANUAL = 5;
         int COUNT = 6;
     }
+
+    // LINT.ThenChange(//tools/metrics/histograms/metadata/bookmarks/enums.xml:MobileBookmarkManagerBookmarkRowSortOrder)
 
     /** Observer for changes to prefs. */
     public interface Observer {

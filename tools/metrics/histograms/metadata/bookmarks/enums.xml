@@ -321,10 +321,16 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Loading finished"/>
 </enum>
 
+<!-- LINT.IfChange(MobileBookmarkManagerBookmarkRowDisplayPref) -->
+
 <enum name="MobileBookmarkManagerBookmarkRowDisplayPref">
   <int value="0" label="Compact"/>
   <int value="1" label="Visual"/>
 </enum>
+
+<!-- LINT.ThenChange(//chrome/browser/bookmarks/android/java/src/org/chromium/chrome/browser/bookmarks/BookmarkUiPrefs.java:BookmarkRowDisplayPref) -->
+
+<!-- LINT.IfChange(MobileBookmarkManagerBookmarkRowSortOrder) -->
 
 <enum name="MobileBookmarkManagerBookmarkRowSortOrder">
   <int value="0" label="Chronological"/>
@@ -335,16 +341,26 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="Manual"/>
 </enum>
 
+<!-- LINT.ThenChange(//chrome/browser/bookmarks/android/java/src/org/chromium/chrome/browser/bookmarks/BookmarkUiPrefs.java:BookmarkRowSortOrder) -->
+
+<!-- LINT.IfChange(MobileBookmarkManagerFilter) -->
+
 <enum name="MobileBookmarkManagerFilter">
   <int value="0" label="Shopping"/>
   <int value="1" label="Placeholder"/>
 </enum>
+
+<!-- LINT.ThenChange(//chrome/browser/bookmarks/android/java/src/org/chromium/chrome/browser/bookmarks/BookmarkMetrics.java:BookmarkManagerFilter) -->
+
+<!-- LINT.IfChange(PriceTrackingState) -->
 
 <enum name="PriceTrackingState">
   <int value="0" label="Price tracking shown"/>
   <int value="1" label="Price tracking enabled"/>
   <int value="2" label="Price tracking disabled"/>
 </enum>
+
+<!-- LINT.ThenChange(//chrome/browser/bookmarks/android/java/src/org/chromium/chrome/browser/bookmarks/PowerBookmarkMetrics.java:PriceTrackingState) -->
 
 </enums>
 

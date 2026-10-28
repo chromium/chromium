@@ -13,8 +13,8 @@ import org.chromium.build.annotations.NullMarked;
 @NullMarked
 public class PowerBookmarkMetrics {
     // These values are persisted to logs. Entries should not be renumbered and
-    // numeric values should never be reused. Keep up-to-date with the PriceTrackingState enum in
-    // tools/metrics/histograms/enums.xml.
+    // numeric values should never be reused.
+    // LINT.IfChange(PriceTrackingState)
     @IntDef({
         PriceTrackingState.PRICE_TRACKING_SHOWN,
         PriceTrackingState.PRICE_TRACKING_ENABLED,
@@ -27,6 +27,8 @@ public class PowerBookmarkMetrics {
         int PRICE_TRACKING_DISABLED = 2;
         int COUNT = 3;
     }
+
+    // LINT.ThenChange(//tools/metrics/histograms/metadata/bookmarks/enums.xml:PriceTrackingState)
 
     /** Report the price tracking state for the bookmark save flow surface. */
     public static void reportBookmarkSaveFlowPriceTrackingState(@PriceTrackingState int state) {
