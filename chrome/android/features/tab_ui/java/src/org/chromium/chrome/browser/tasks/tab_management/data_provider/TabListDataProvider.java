@@ -202,25 +202,11 @@ public abstract class TabListDataProvider {
         // Ignore tabs moving out of scope; dedicated lifecycle events handle removal.
         if (!shouldShowTab(tab)) return;
 
-        TabModel model = getTabModelIfTabStateInitialized();
-        if (model == null) return;
-
         @TabId int tabId = tab.getId();
         int fromIndex = indexOfTabId(tabId);
         if (fromIndex == TabList.INVALID_TAB_INDEX) return;
 
-        // Temporarily remove the moving item before finding the new insertion index so downward
-        // moves evaluate insertion position accurately.
-        TabListItem movedItem = mItems.remove(fromIndex);
-        int toIndex = getInsertionIndex(model, movedItem);
-        int insertIndex = toIndex != TabList.INVALID_TAB_INDEX ? toIndex : fromIndex;
-        mItems.add(insertIndex, movedItem);
-
-        // Skip observer notification if the item was restored at fromIndex or did not move.
-        if (toIndex == TabList.INVALID_TAB_INDEX || fromIndex == toIndex) return;
-
-        TabListItem previousItem = getPreviousItem(toIndex);
-        notifyObservers(obs -> obs.onItemsMoved(List.of(movedItem), previousItem));
+        moveItemsAt(fromIndex, /* count= */ 1);
     }
 
     /**
@@ -402,6 +388,38 @@ public abstract class TabListDataProvider {
         List<TabListItem> removedItems = List.copyOf(subList);
         subList.clear();
         notifyObservers(obs -> obs.onItemsRemoved(removedItems));
+    }
+
+    /**
+     * Moves {@code count} contiguous {@link TabListItem} entries starting at {@code startIndex} to
+     * their updated {@link TabModel} position and notifies observers via {@link
+     * TabListDataObserver#onItemsMoved}.
+     *
+     * @param startIndex The starting index in {@link #mItems}.
+     * @param count The number of contiguous items to move.
+     */
+    protected void moveItemsAt(int startIndex, int count) {
+        if (count <= 0 || !isValidIndex(startIndex) || startIndex + count > mItems.size()) {
+            return;
+        }
+
+        TabModel model = getTabModelIfTabStateInitialized();
+        if (model == null) return;
+
+        TabListItem targetItem = mItems.get(startIndex);
+        List<TabListItem> subList = mItems.subList(startIndex, startIndex + count);
+        List<TabListItem> movedItems = List.copyOf(subList);
+        subList.clear();
+
+        int toIndex = getInsertionIndex(model, targetItem);
+        int insertIndex = toIndex != TabList.INVALID_TAB_INDEX ? toIndex : startIndex;
+        mItems.addAll(insertIndex, movedItems);
+
+        // Skip observer notification if the items were restored at startIndex or did not move.
+        if (toIndex == TabList.INVALID_TAB_INDEX || startIndex == toIndex) return;
+
+        TabListItem previousItem = getPreviousItem(insertIndex);
+        notifyObservers(obs -> obs.onItemsMoved(movedItems, previousItem));
     }
 
     /** Returns whether {@code index} is a valid index in {@link #mItems}. */

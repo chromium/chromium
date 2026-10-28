@@ -199,6 +199,19 @@ abstract class TabListDataProviderTestBase {
         mTabGroupObserver.didMoveWithinGroup(tab, curIndex, newIndex);
     }
 
+    void moveTabGroup(Token tabGroupId, int newIndex) {
+        List<Tab> groupTabs = new ArrayList<>();
+        for (Tab tab : mModelTabs) {
+            if (tabGroupId.equals(tab.getTabGroupId())) {
+                groupTabs.add(tab);
+            }
+        }
+        int oldIndex = mModelTabs.indexOf(groupTabs.get(0));
+        mModelTabs.removeAll(groupTabs);
+        mModelTabs.addAll(newIndex, groupTabs);
+        mTabGroupObserver.onTabGroupMoved(tabGroupId, oldIndex, newIndex);
+    }
+
     void mergeTabToGroup(Tab tab, Token groupId, int newIndex, boolean isDestinationTab) {
         int curIndex = mModelTabs.indexOf(tab);
         tab.setTabGroupId(groupId);

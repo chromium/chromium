@@ -71,6 +71,15 @@ public class GroupedTabListDataProvider extends TabListDataProvider {
                     }
 
                     @Override
+                    public void didMoveTab(Tab tab, int newIndex, int curIndex) {
+                        // Grouped tab moves and intra-group reorders are handled by
+                        // TabGroupObserver; moveTabItem reorders standalone tabs to their updated
+                        // TabModel position.
+                        if (curIndex == newIndex || tab.getTabGroupId() != null) return;
+                        moveTabItem(tab);
+                    }
+
+                    @Override
                     public void didRemoveTabForClosure(Tab tab) {
                         removeTabAndUpdateGroup(tab);
                     }
@@ -117,6 +126,21 @@ public class GroupedTabListDataProvider extends TabListDataProvider {
                             updateTabItem(existingItem, PayloadType.GROUP_MEMBERSHIP);
                         }
                         updateGroupItem(oldTabGroupId, PayloadType.GROUP_MEMBERSHIP);
+                    }
+
+                    @Override
+                    public void onTabGroupMoved(
+                            Token tabGroupId, int tabModelOldIndex, int tabModelNewIndex) {
+                        if (tabModelNewIndex == tabModelOldIndex) return;
+                        moveGroupItem(tabGroupId);
+                    }
+
+                    @Override
+                    public void didMoveWithinGroup(
+                            Tab movedTab, int tabModelOldIndex, int tabModelNewIndex) {
+                        if (tabModelNewIndex == tabModelOldIndex) return;
+                        moveTabItem(movedTab);
+                        updateGroupItem(movedTab.getTabGroupId(), PayloadType.TAB_GROUP_ORDER);
                     }
 
                     @Override
@@ -269,6 +293,29 @@ public class GroupedTabListDataProvider extends TabListDataProvider {
         if (index == TabList.INVALID_TAB_INDEX) return;
 
         removeItemsAt(index, /* count= */ 1);
+    }
+
+    /**
+     * Moves the {@link TabGroupItem} (and all child {@link TabItem}s if expanded) for {@code
+     * tabGroupId} to its updated {@link TabModel} position and notifies observers via {@link
+     * TabListDataObserver#onItemsMoved}.
+     *
+     * @param tabGroupId The ID of the tab group to move.
+     */
+    private void moveGroupItem(Token tabGroupId) {
+        int index = indexOfTabGroupId(tabGroupId);
+        if (index == TabList.INVALID_TAB_INDEX) return;
+
+        TabModel model = getTabModelIfTabStateInitialized();
+        if (model == null
+                || !model.containsTabGroup(tabGroupId)
+                || mRemovingTabGroupIds.contains(tabGroupId)) {
+            return;
+        }
+
+        int count =
+                isGroupCollapsed(model, tabGroupId) ? 1 : 1 + model.getTabCountForGroup(tabGroupId);
+        moveItemsAt(index, count);
     }
 
     private void updateGroupCollapsed(Token tabGroupId, boolean isCollapsed) {
