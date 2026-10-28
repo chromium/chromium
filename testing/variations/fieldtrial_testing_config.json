@@ -5641,21 +5641,6 @@
             ]
         }
     ],
-    "D3D11VideoDecoderUseSharedHandle": [
-        {
-            "platforms": [
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "D3D11VideoDecoderUseSharedHandle"
-                    ]
-                }
-            ]
-        }
-    ],
     "DbdPasswordRemovalOnAndroid": [
         {
             "platforms": [
