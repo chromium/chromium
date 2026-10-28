@@ -489,6 +489,11 @@ found in the LICENSE file.
   <div class="section">
     <h1>Region Capture</h1>
     <button id="captureRegionBtn">Capture Region</button>
+    <!-- Enabled while a CAPTURE_REGION_HOTKEY invoke is held back by the
+         `hold_capture_region_hotkey` URL parameter. -->
+    <button id="releaseCaptureRegionHotkey" disabled>
+      Answer held capture-region hotkey
+    </button>
     <ul id="captureRegionResultList"></ul>
     <label for="deleteCaptureRegion">Delete Region ID:</label>
     <input type="text" id="deleteCaptureRegion" name="deleteCaptureRegion" />

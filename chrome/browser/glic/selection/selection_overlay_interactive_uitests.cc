@@ -586,6 +586,184 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTest,
           [this]() { return GetController()->GetSelectedRegionCount(); }, 0u));
 }
 
+// Opening the panel in the middle of a session started from the page hands
+// the session to the panel. The web client starts a capture for it (the test
+// client answers the capture-region invoke by clicking its capture button),
+// gets the regions selected so far, and the overlay stays up.
+IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTest,
+                       PanelOpenedMidSessionGetsRegions) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlayWebContentsId);
+  const DeepQuery kRenderer = {"selection-overlay-app",
+                               "glic-selection-overlay",
+                               "post-selection-renderer"};
+  const DeepQuery kCaptureButton = {"#captureRegionBtn"};
+  const DeepQuery kCaptureResults = {"#captureRegionResultList"};
+
+  RunTestSequence(
+      LoadPageAndWaitForPaint(kActiveTab), Do([this]() {
+        ShowWithSelection(selection::InteractionOptions::New(
+            /*hide_handles=*/true, /*disable_multi_select=*/true,
+            /*skip_intro_animation=*/true));
+      }),
+      WaitForShow(OverlayBaseController::kOverlayId),
+      InstrumentNonTabWebView(kOverlayWebContentsId,
+                              OverlayBaseController::kOverlayId),
+      WaitForJsResultAt(kOverlayWebContentsId, kRenderer,
+                        "el => el.selectedRegions.length === 1"),
+      OpenGlic(),
+      WaitForJsResultAt(kGlicContentsElementId, {"#additionalContextResult"},
+                        "el => el.innerText.includes('Region: ')"),
+      // The capture was accepted: the test client's button is still in its
+      // capturing state, and no error was reported to it.
+      CheckJsResultAt(kGlicContentsElementId, kCaptureButton,
+                      "el => el.hasAttribute('pressed')"),
+      CheckJsResultAt(kGlicContentsElementId, kCaptureResults,
+                      "el => !el.innerText.includes('Error')"),
+      CheckJsResultAt(kOverlayWebContentsId, kRenderer,
+                      "el => el.selectedRegions.length === 1"),
+      CheckResult([this]() { return GetController()->state(); },
+                  OverlayBaseController::State::kOverlay));
+}
+
+// Same hand-off when the panel is already open as the session starts. The
+// context menu starts a page session without checking the panel, so this is
+// how it reaches the panel.
+IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTest,
+                       SessionStartedWithPanelOpenGetsHandedOff) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlayWebContentsId);
+  const DeepQuery kRenderer = {"selection-overlay-app",
+                               "glic-selection-overlay",
+                               "post-selection-renderer"};
+  const DeepQuery kCaptureButton = {"#captureRegionBtn"};
+
+  RunTestSequence(
+      LoadPageAndWaitForPaint(kActiveTab), OpenGlic(), Do([this]() {
+        ShowWithSelection(selection::InteractionOptions::New(
+            /*hide_handles=*/true, /*disable_multi_select=*/true,
+            /*skip_intro_animation=*/true));
+      }),
+      WaitForShow(OverlayBaseController::kOverlayId),
+      InstrumentNonTabWebView(kOverlayWebContentsId,
+                              OverlayBaseController::kOverlayId),
+      WaitForJsResultAt(kGlicContentsElementId, {"#additionalContextResult"},
+                        "el => el.innerText.includes('Region: ')"),
+      CheckJsResultAt(kGlicContentsElementId, kCaptureButton,
+                      "el => el.hasAttribute('pressed')"),
+      CheckJsResultAt(kOverlayWebContentsId, kRenderer,
+                      "el => el.selectedRegions.length === 1"),
+      CheckResult([this]() { return GetController()->state(); },
+                  OverlayBaseController::State::kOverlay));
+}
+
+// Handing over a session that has no regions yet sends the panel nothing.
+// The panel takes the session (its capture button is pressed) and hears about
+// regions only once the user draws one: the first thing it receives is the
+// context with that region, and nothing before it.
+IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTest,
+                       PanelOpenedMidEmptySessionGetsNothing) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlayWebContentsId);
+  const DeepQuery kOverlayApp = {"selection-overlay-app"};
+  const DeepQuery kCaptureButton = {"#captureRegionBtn"};
+  const DeepQuery kContextResult = {"#additionalContextResult"};
+
+  RunTestSequence(
+      LoadPageAndWaitForPaint(kActiveTab),
+      Do([this]() { GetController()->Show(/*options=*/nullptr); }),
+      WaitForShow(OverlayBaseController::kOverlayId),
+      InstrumentNonTabWebView(kOverlayWebContentsId,
+                              OverlayBaseController::kOverlayId),
+      WaitForJsResultAt(kOverlayWebContentsId, kOverlayApp,
+                        "el => el.screenshot_ !== null"),
+      OpenGlic(),
+      WaitForJsResultAt(kGlicContentsElementId, kCaptureButton,
+                        "el => el.hasAttribute('pressed')"),
+      CheckJsResultAt(kGlicContentsElementId, kContextResult,
+                      "el => el.innerText.trim() === ''"),
+      // Now draw a region. The panel's first message is the one with it.
+      Do([this]() {
+        static_cast<selection::SelectionOverlayPageHandler*>(GetController())
+            ->AdjustRegion(selection::SelectedRegion::New(
+                               base::UnguessableToken::Create(),
+                               selection::RegionShape::NewRect(
+                                   gfx::RectF(0.5f, 0.5f, 0.2f, 0.2f))),
+                           /*is_using_keyboard=*/true);
+      }),
+      WaitForJsResultAt(kGlicContentsElementId, kContextResult,
+                        "el => el.innerText.includes('Region: ')"),
+      CheckJsResultAt(kGlicContentsElementId, kContextResult,
+                      "el => el.innerText.split('Tab Context: present')"
+                      ".length === 2"));
+}
+
+namespace {
+
+// The test client holds a capture-region hotkey invoke until the test clicks
+// `#releaseCaptureRegionHotkey`, which then starts the capture and completes
+// the invoke. See `hold_capture_region_hotkey` in the test client.
+class SelectionOverlayInteractiveTestWithHeldHandoff
+    : public SelectionOverlayInteractiveTest {
+ public:
+  SelectionOverlayInteractiveTestWithHeldHandoff() {
+    AddMockGlicQueryParam("hold_capture_region_hotkey");
+  }
+};
+
+}  // namespace
+
+// If the session closes after the panel was asked to take it over but before
+// the web client answers, the answer must not start a new session: the user
+// dismissed the overlay. The test client holds its answer until told, so the
+// close is guaranteed to land in between. Afterwards a capture the user asks
+// for still works: the request didn't leave anything behind.
+IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTestWithHeldHandoff,
+                       SessionClosedBeforePanelAnswersStaysClosed) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlayWebContentsId);
+  const DeepQuery kRenderer = {"selection-overlay-app",
+                               "glic-selection-overlay",
+                               "post-selection-renderer"};
+  const DeepQuery kCaptureButton = {"#captureRegionBtn"};
+  const DeepQuery kCaptureResults = {"#captureRegionResultList"};
+  const DeepQuery kReleaseButton = {"#releaseCaptureRegionHotkey"};
+
+  RunTestSequence(
+      LoadPageAndWaitForPaint(kActiveTab), Do([this]() {
+        ShowWithSelection(selection::InteractionOptions::New(
+            /*hide_handles=*/true, /*disable_multi_select=*/true,
+            /*skip_intro_animation=*/true));
+      }),
+      WaitForShow(OverlayBaseController::kOverlayId),
+      InstrumentNonTabWebView(kOverlayWebContentsId,
+                              OverlayBaseController::kOverlayId),
+      WaitForJsResultAt(kOverlayWebContentsId, kRenderer,
+                        "el => el.selectedRegions.length === 1"),
+      OpenGlic(),
+      // The browser asked the client to take the session over; the client is
+      // holding its answer.
+      WaitForJsResultAt(kGlicContentsElementId, kReleaseButton,
+                        "el => !el.disabled"),
+      Do([this]() {
+        GetController()->Close(
+            SelectionOverlayController::CloseReason::kEscapeKeyPress);
+      }),
+      WaitForHide(OverlayBaseController::kOverlayId),
+      // The answer arrives for a session that is gone: rejected, and the
+      // client's capture button goes back to idle.
+      ClickMockGlicElement(kReleaseButton),
+      WaitForJsResultAt(kGlicContentsElementId, kCaptureResults,
+                        "el => el.innerText.includes('Error')"),
+      CheckJsResultAt(kGlicContentsElementId, kCaptureButton,
+                      "el => !el.hasAttribute('pressed')"),
+      CheckResult([this]() { return GetController()->state(); },
+                  OverlayBaseController::State::kOff),
+      // A capture the user asks for now starts a session as usual.
+      ClickMockGlicElement(kCaptureButton),
+      WaitForShow(OverlayBaseController::kOverlayId));
+}
+
 // A session with a pre-selected region opens directly in the post-selection
 // state, without the intro border glow.
 IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTest,
@@ -2207,6 +2385,51 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTestWithPrompt,
           "renderer.shadowRoot.querySelector('#topLeftSlider');"
           "  return renderer.shadowRoot.activeElement === slider;"
           "}"));
+}
+
+// Submitting a prompt from the overlay closes the overlay and opens the panel.
+// The panel must not then try to take over the closed overlay. Check: the
+// overlay stays closed, the panel shows only the prompt, and clicking "+" in
+// the panel afterwards starts a new capture normally.
+IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTestWithPrompt,
+                       SubmitPromptFromPageSessionDoesNotHandOff) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlayWebContentsId);
+  const DeepQuery kRenderer = {"selection-overlay-app",
+                               "glic-selection-overlay",
+                               "post-selection-renderer"};
+  const DeepQuery kCaptureButton = {"#captureRegionBtn"};
+  const DeepQuery kCaptureResults = {"#captureRegionResultList"};
+
+  RunTestSequence(
+      LoadPageAndWaitForPaint(kActiveTab), Do([this]() {
+        ShowWithSelection(selection::InteractionOptions::New(
+            /*hide_handles=*/true, /*disable_multi_select=*/true,
+            /*skip_intro_animation=*/true));
+      }),
+      WaitForShow(OverlayBaseController::kOverlayId),
+      InstrumentNonTabWebView(kOverlayWebContentsId,
+                              OverlayBaseController::kOverlayId),
+      WaitForJsResultAt(kOverlayWebContentsId, kRenderer,
+                        "el => el.selectedRegions.length === 1"),
+      Do([this]() {
+        static_cast<selection::SelectionOverlayPageHandler*>(GetController())
+            ->SubmitPrompt("Explain this region");
+      }),
+      WaitForHide(OverlayBaseController::kOverlayId),
+      WaitForAndInstrumentGlic(GlicInstrumentMode::kHostAndContents),
+      WaitForJsResultAt(kGlicContentsElementId, {"#invocationLog"},
+                        "el => el.textContent.includes('Explain this region')"),
+      // The panel was not asked to take over: its "+" button is off and its
+      // capture list is empty.
+      CheckJsResultAt(kGlicContentsElementId, kCaptureButton,
+                      "el => !el.hasAttribute('pressed')"),
+      CheckJsResultAt(kGlicContentsElementId, kCaptureResults,
+                      "el => el.innerText.trim() === ''"),
+      CheckResult([this]() { return GetController()->state(); },
+                  OverlayBaseController::State::kOff),
+      ClickMockGlicElement(kCaptureButton),
+      WaitForShow(OverlayBaseController::kOverlayId));
 }
 
 namespace {

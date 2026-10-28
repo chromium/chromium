@@ -10,6 +10,7 @@
 #include "base/feature_list.h"
 #include "base/strings/to_string.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/glic/glic_selection_observer.h"
@@ -350,9 +351,71 @@ void SelectionOverlayController::ObserveSidePanelState() {
 }
 
 void SelectionOverlayController::OnSidePanelStateChanged(
-    GlicSidePanelCoordinator::State) {
+    GlicSidePanelCoordinator::State state) {
   if (session_->page) {
     session_->page->SetSidePanelOpen(IsSidePanelOpen());
+  }
+  if (state == GlicSidePanelCoordinator::State::kShown) {
+    PostHandSessionToPanel();
+  }
+}
+
+void SelectionOverlayController::PostHandSessionToPanel() {
+  if (session_->owner != Session::Owner::kDirect) {
+    return;
+  }
+  // Not right away: the panel may be opening for this session's own
+  // hand-off (`SubmitPrompt()`, a suggested action), which closes the
+  // session before this stack unwinds. `Reset()` then drops the task.
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(&SelectionOverlayController::HandSessionToPanel,
+                                session_weak_factory_.GetWeakPtr()));
+}
+
+void SelectionOverlayController::HandSessionToPanel() {
+  if (session_->owner != Session::Owner::kDirect || pending_handoff_ ||
+      !GlicSidePanelCoordinator::IsShowing(tab_)) {
+    return;
+  }
+  GlicKeyedService* service = GlicKeyedService::Get(tab_->GetProfile());
+  GlicSidePanelCoordinator* coordinator =
+      GlicSidePanelCoordinator::GetForTab(tab_);
+  if (!service || !coordinator) {
+    return;
+  }
+  // Remember that we asked, until the client answers or the panel closes.
+  // See `pending_handoff_`.
+  pending_handoff_ = coordinator->AddStateCallback(base::BindRepeating(
+      &SelectionOverlayController::OnPendingHandoffPanelState,
+      weak_factory_.GetWeakPtr()));
+  // The same request the capture hotkey makes while the panel is open. The
+  // glic web client enters its capture mode and calls `CaptureRegion()`,
+  // which adopts this session instead of starting one.
+  // TODO(b:579008191): Use a hand-off invocation source so hand-offs don't
+  // count as hotkey presses in metrics.
+  GlicInvokeOptions options(Target(*tab_),
+                            mojom::InvocationSource::kCaptureRegionHotkey);
+  options.wait_for_panel_open = true;
+  service->Invoke(std::move(options));
+}
+
+void SelectionOverlayController::OnPendingHandoffPanelState(
+    GlicSidePanelCoordinator::State state) {
+  if (state == GlicSidePanelCoordinator::State::kClosed) {
+    // The client drops its capture when the panel closes; drop the request
+    // with it.
+    pending_handoff_ = {};
+  }
+}
+
+void SelectionOverlayController::AdoptSession(
+    mojo::PendingRemote<mojom::CaptureRegionObserver> observer) {
+  // The client answered.
+  pending_handoff_ = {};
+  session_->owner = Session::Owner::kPanel;
+  BindCaptureRegionObserver(std::move(observer));
+  if (!session_->selected_regions.empty()) {
+    SyncRegionsToPanel(/*should_focus_panel=*/false);
   }
 }
 
@@ -427,14 +490,15 @@ void SelectionOverlayController::BindOverlay(
 void SelectionOverlayController::BindCaptureRegionObserver(
     mojo::PendingRemote<mojom::CaptureRegionObserver> observer) {
   if (session_->capture_region_observer.is_bound()) {
-    // TODO(b/452032491): This should only happen in a compromised renderer.
-    // Since `mojom::CaptureRegionObserver` will be deprecated, using
-    // kUnknown with a log message is acceptable.
+    // `CaptureRegion()` rejects a second capture on a session the client
+    // already has before getting here, so this is a misbehaving client. Fail
+    // the new request and leave the session as it is. No CHECK: this is
+    // renderer input.
     LOG(ERROR) << "capture_region_observer is already bound. State " << state();
-    session_->capture_region_observer->OnUpdate(
-        mojom::CaptureRegionResultPtr(),
-        mojom::CaptureRegionErrorReason::kUnknown);
-    session_->capture_region_observer.reset();
+    mojo::Remote<mojom::CaptureRegionObserver> remote(std::move(observer));
+    remote->OnUpdate(mojom::CaptureRegionResultPtr(),
+                     mojom::CaptureRegionErrorReason::kUnknown);
+    return;
   }
   session_->capture_region_observer.Bind(std::move(observer));
   session_->capture_region_observer.set_disconnect_handler(
@@ -465,13 +529,6 @@ void SelectionOverlayController::CaptureRegion(
                << web_contents->GetURL();
     return;
   }
-  if (selection_overlay_controller->state() != State::kOff) {
-    mojo::Remote<mojom::CaptureRegionObserver> remote(std::move(observer));
-    remote->OnUpdate(mojom::CaptureRegionResultPtr(),
-                     mojom::CaptureRegionErrorReason::kUnknown);
-    LOG(ERROR) << "Overlay is still showing for " << web_contents->GetURL();
-    return;
-  }
   if (!sharing_manager.IsTabFocused(tab->GetHandle())) {
     mojo::Remote<mojom::CaptureRegionObserver> remote(std::move(observer));
     remote->OnUpdate(mojom::CaptureRegionResultPtr(),
@@ -487,6 +544,32 @@ void SelectionOverlayController::CaptureRegion(
     remote->OnUpdate(mojom::CaptureRegionResultPtr(),
                      mojom::CaptureRegionErrorReason::kUnknown);
     LOG(ERROR) << "Cannot share tab context for " << web_contents->GetURL();
+    return;
+  }
+  if (selection_overlay_controller->state() != State::kOff) {
+    if (selection_overlay_controller->session_->capture_region_observer
+            .is_bound()) {
+      // The web client already has this session.
+      mojo::Remote<mojom::CaptureRegionObserver> remote(std::move(observer));
+      remote->OnUpdate(mojom::CaptureRegionResultPtr(),
+                       mojom::CaptureRegionErrorReason::kUnknown);
+      LOG(ERROR) << "Overlay is still showing for " << web_contents->GetURL();
+      return;
+    }
+    // The session started from the page while the panel was closed, and the
+    // panel asked for a capture once it opened (`HandSessionToPanel()`). It
+    // takes this session over instead of starting another. The session keeps
+    // the page context it fetched; `options` is not applied to it.
+    selection_overlay_controller->AdoptSession(std::move(observer));
+    return;
+  }
+  if (selection_overlay_controller->pending_handoff_) {
+    // The glic web client is answering `HandSessionToPanel()`, but the user
+    // dismissed the overlay in the meantime. Don't bring it back.
+    selection_overlay_controller->pending_handoff_ = {};
+    mojo::Remote<mojom::CaptureRegionObserver> remote(std::move(observer));
+    remote->OnUpdate(mojom::CaptureRegionResultPtr(),
+                     mojom::CaptureRegionErrorReason::kUnknown);
     return;
   }
   if (!selection_overlay_controller->CanStartSession()) {
@@ -563,6 +646,11 @@ void SelectionOverlayController::ShowImpl(mojom::TabContextOptionsPtr options) {
   }
   ObserveActiveTabChanges();
   ObserveSidePanelState();
+  if (GlicSidePanelCoordinator::IsShowing(tab_)) {
+    // The panel is already open (e.g. the context menu doesn't check), so it
+    // won't open mid-session. Hand the session to it now.
+    PostHandSessionToPanel();
+  }
   ShowModalUI();
 }
 
@@ -1363,13 +1451,19 @@ void SelectionOverlayController::SyncRegions(bool should_focus_panel) {
   SendRegionsToPanel(std::move(captured_regions), should_focus_panel);
 }
 
-void SelectionOverlayController::SyncRegionsToPanelIfPending() {
-  if (!session_->panel_sync_pending || !session_->tab_context ||
-      session_->redacted_screenshot.empty()) {
+void SelectionOverlayController::SyncRegionsToPanel(bool should_focus_panel) {
+  if (!session_->tab_context || session_->redacted_screenshot.empty()) {
+    session_->panel_sync_pending = true;
     return;
   }
-  // Keep focus on the overlay so that the user can adjust the region.
-  SendRegionsToPanel(GetCapturedRegions(), /*should_focus_panel=*/false);
+  SendRegionsToPanel(GetCapturedRegions(), should_focus_panel);
+}
+
+void SelectionOverlayController::SyncRegionsToPanelIfPending() {
+  if (session_->panel_sync_pending) {
+    // Keep focus on the overlay so that the user can adjust the region.
+    SyncRegionsToPanel(/*should_focus_panel=*/false);
+  }
 }
 
 void SelectionOverlayController::SendRegionsToPanel(

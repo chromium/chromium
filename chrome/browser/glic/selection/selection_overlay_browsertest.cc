@@ -621,8 +621,9 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayPromptBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(SelectionOverlayPromptBrowserTest,
                        SubmitPromptWithSelectedRegion) {
+  // The panel stays closed: a page session started with the panel open is
+  // handed to the panel and then outlives a prompt.
   tabs::TabInterface* tab = CreateAndActivateTab(GetSimpleTestUrl());
-  ASSERT_TRUE(OpenGlicForActiveTab().has_value());
   content::WebContents* web_contents = tab->GetContents();
   auto* controller =
       SelectionOverlayController::FromTabWebContents(web_contents);
@@ -1205,8 +1206,9 @@ class FakeInlineSuggestionTool : public ::selection::SuggestionTool {
 
 IN_PROC_BROWSER_TEST_F(SelectionOverlayPromptBrowserTest,
                        HandoffDismissesOverlay) {
+  // The panel stays closed: a page session started with the panel open is
+  // handed to the panel and then outlives a hand-off.
   tabs::TabInterface* tab = CreateAndActivateTab(GetSimpleTestUrl());
-  ASSERT_TRUE(OpenGlicForActiveTab().has_value());
 
   auto* suggestion_service = ::selection::SuggestionService::From(tab);
   ASSERT_TRUE(suggestion_service);

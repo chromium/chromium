@@ -4,10 +4,12 @@
 
 import type {CaptureRegionResult, Subscriber} from '/glic/glic_api/glic_api.js';
 
-import {client, getBrowser, logMessage} from '../client.js';
+import {client, getBrowser, logMessage, releaseHeldCaptureRegionHotkey} from '../client.js';
 import {$} from '../page_element_types.js';
 
 let captureRegionSubscription: Subscriber|null = null;
+// Runs once the next capture settles (result, error or completion).
+let onCaptureSettled: (() => void)|null = null;
 
 function resetCaptureButton() {
   $.captureRegionBtn.textContent = 'Capture Region';
@@ -16,6 +18,18 @@ function resetCaptureButton() {
     captureRegionSubscription.unsubscribe();
     captureRegionSubscription = null;
   }
+  const settled = onCaptureSettled;
+  onCaptureSettled = null;
+  settled?.();
+}
+
+// Answers a held CAPTURE_REGION_HOTKEY invoke the way the real client does:
+// start the capture, then complete the invoke. The completion waits for the
+// browser's response to the capture, so a test can rely on the browser having
+// handled the capture request before the invoke ends.
+function onReleaseCaptureRegionHotkeyClick() {
+  onCaptureSettled = releaseHeldCaptureRegionHotkey;
+  onCaptureRegionClick();
 }
 
 function onCaptureRegionClick() {
@@ -95,5 +109,7 @@ function onDeleteRegionClick() {
 
 export function initCaptureRegion() {
   $.captureRegionBtn.addEventListener('click', onCaptureRegionClick);
+  $.releaseCaptureRegionHotkey.addEventListener(
+      'click', onReleaseCaptureRegionHotkeyClick);
   $.deleteCaptureRegionBtn.addEventListener('click', onDeleteRegionClick);
 }

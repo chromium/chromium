@@ -97,10 +97,6 @@ class SelectionOverlayController
       mojo::PendingReceiver<selection::SelectionOverlayPageHandler> receiver,
       mojo::PendingRemote<selection::SelectionOverlayPage> page);
 
-  // Bind the legacy IPC endpoint. See the comment on
-  // `Session::capture_region_observer`.
-  void BindCaptureRegionObserver(
-      mojo::PendingRemote<mojom::CaptureRegionObserver> observer);
   static void CaptureRegion(
       tabs::TabInterface* tab,
       GlicSharingManagerInternal& sharing_manager,
@@ -148,6 +144,19 @@ class SelectionOverlayController
   // session, and forwards changes to the overlay.
   void ObserveSidePanelState();
   void OnSidePanelStateChanged(GlicSidePanelCoordinator::State state);
+  // Binds the web client's end of the session. See
+  // `Session::capture_region_observer`.
+  void BindCaptureRegionObserver(
+      mojo::PendingRemote<mojom::CaptureRegionObserver> observer);
+  // Asks the panel's web client to take over a session started from the
+  // page, when the panel is open: from `ShowImpl()` if it already is, from
+  // `OnSidePanelStateChanged()` if it opens mid-session. The client answers
+  // with `CaptureRegion()`, which calls `AdoptSession()`. See
+  // `pending_handoff_`.
+  void PostHandSessionToPanel();
+  void HandSessionToPanel();
+  void OnPendingHandoffPanelState(GlicSidePanelCoordinator::State state);
+  void AdoptSession(mojo::PendingRemote<mojom::CaptureRegionObserver> observer);
   // What `SelectionOverlayPage::SetSidePanelOpen()` sends: the panel is
   // showing, or backgrounded and comes back with `tab_`.
   bool IsSidePanelOpen() const;
@@ -221,6 +230,8 @@ class SelectionOverlayController
   // nothing goes to the panel until the page context is; until then the panel
   // send is pending and `SyncRegionsToPanelIfPending()` finishes it.
   void SyncRegions(bool should_focus_panel);
+  // The panel half of `SyncRegions()`, for when only the panel is behind.
+  void SyncRegionsToPanel(bool should_focus_panel);
   void SyncRegionsToPanelIfPending();
   void SendRegionsToPanel(CapturedRegions captured_regions,
                           bool should_focus_panel);
@@ -282,12 +293,10 @@ class SelectionOverlayController
     mojo::Receiver<selection::SelectionOverlayPageHandler> receiver;
     mojo::Remote<selection::SelectionOverlayPage> page;
 
-    // Legacy IPC that's used to signal the web client any browser side errors,
-    // and used to dismiss the overlay from the web client. Only bound if the
-    // overlay is invoked from the web client (web client UI, keyboard
-    // shortcut). There are other invocations from outside the web client.
-    // Don't use it to tell who started the session; that's `owner`.
-    // TODO(b/452032491): Remove this once the old codepath is no longer used.
+    // The web client's end of a session it owns (`owner == kPanel`): errors
+    // go to it, and the overlay closes when the client drops it. Not bound
+    // for a session the page started, until the panel takes that session
+    // over. Use `owner`, not this, to tell the two apart.
     mojo::Remote<mojom::CaptureRegionObserver> capture_region_observer;
 
     // Who started the session. Set by the entry point; a session the panel
@@ -297,8 +306,9 @@ class SelectionOverlayController
       // from the hotkey, context menu or selection chip while the side panel
       // is closed. Handing off to Glic closes the overlay.
       kDirect,
-      // Started by the side panel's web client through `CaptureRegion()`.
-      // The overlay stays up after a hand-off, next to the panel.
+      // Started by the side panel's web client through `CaptureRegion()`, or
+      // handed to it when the panel opened mid-session. The overlay stays up
+      // after a hand-off, next to the panel.
       kPanel,
     };
     Owner owner = Owner::kDirect;
@@ -343,6 +353,24 @@ class SelectionOverlayController
 
   // Holds subscriptions for TabInterface callbacks.
   std::vector<base::CallbackListSubscription> tab_subscriptions_;
+
+  // TODO(b/578525278): Remove once the client says which invoke its
+  // `CaptureRegion()` answers. Then no memory is needed here.
+  //
+  // Live while `HandSessionToPanel()` has asked the glic web client for a
+  // capture and the client hasn't answered with `CaptureRegion()` yet. It's
+  // the subscription that also clears it when the panel closes, since the
+  // client drops its capture then.
+  //
+  // This outlives the overlay session on purpose. The client answers later,
+  // sometimes seconds later. If the user dismissed the overlay by then, the
+  // answer looks like a user clicking "+", and without this it would bring
+  // the overlay back. With it, `CaptureRegion()` rejects the answer instead.
+  //
+  // Known gap: if the client drops the invoke (its preflight timed out or the
+  // feature is off etc) and the user then clicks "+" in the same panel session,
+  // that click is rejected once and "+" flips back off.
+  base::CallbackListSubscription pending_handoff_;
 
   // For callbacks that belong to `session_`. Invalidated by `Reset()`.
   base::WeakPtrFactory<SelectionOverlayController> session_weak_factory_{this};

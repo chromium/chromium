@@ -79,6 +79,7 @@ export interface PageElementTypes {
   desktopScreenshotErrorReason: HTMLSpanElement;
   panelScreenshot: HTMLButtonElement;
   captureRegionBtn: HTMLButtonElement;
+  releaseCaptureRegionHotkey: HTMLButtonElement;
   deleteCaptureRegion: HTMLInputElement;
   deleteCaptureRegionBtn: HTMLButtonElement;
   captureRegionResultList: HTMLUListElement;

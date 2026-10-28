@@ -29,6 +29,24 @@ export function logMessage(message: string) {
       timeStamp, message.slice(0, 100000), document.createElement('br'));
 }
 
+// With `?hold_capture_region_hotkey` in the URL, a CAPTURE_REGION_HOTKEY
+// invoke neither starts a capture nor completes until
+// `releaseHeldCaptureRegionHotkey()` runs (the `#releaseCaptureRegionHotkey`
+// button). Lets a test act between the browser's request and the client's
+// answer.
+const holdCaptureRegionHotkey = new URLSearchParams(window.location.search)
+                                    .has('hold_capture_region_hotkey');
+let heldCaptureRegionHotkeyResolve: (() => void)|null = null;
+
+// Completes the held invoke. The caller starts the capture first, so the
+// browser sees the capture request before the invoke's completion, as it
+// does with the real client.
+export function releaseHeldCaptureRegionHotkey() {
+  $.releaseCaptureRegionHotkey.disabled = true;
+  heldCaptureRegionHotkeyResolve?.();
+  heldCaptureRegionHotkeyResolve = null;
+}
+
 export function readStream(stream: ReadableStream<Uint8Array>):
     Promise<Uint8Array<ArrayBuffer>> {
   return new Response(stream).bytes();
@@ -300,7 +318,14 @@ class WebClient implements GlicWebClient {
     $.invocationLog.prepend(entry);
 
     if (options.invocationSource === InvocationSource.CAPTURE_REGION_HOTKEY) {
-      $.captureRegionBtn.click();
+      if (holdCaptureRegionHotkey) {
+        await new Promise<void>(resolve => {
+          heldCaptureRegionHotkeyResolve = resolve;
+          $.releaseCaptureRegionHotkey.disabled = false;
+        });
+      } else {
+        $.captureRegionBtn.click();
+      }
     }
 
     if (options.context) {
