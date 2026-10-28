@@ -223,7 +223,7 @@ enum class WorkerOrWorkletInterfaceNameType {
   kLayoutWorkletGlobalScope = 6,
   kPaintWorkletGlobalScope = 7,
   kShadowRealmGlobalScope = 8,
-  kSharedStorageWorkletGlobalScope = 9,
+  kSharedStorageWorkletGlobalScope = 9,  // Deprecated.
 
   kMaxValue = kSharedStorageWorkletGlobalScope,
 };

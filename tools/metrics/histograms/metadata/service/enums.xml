@@ -414,7 +414,7 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="kLayoutWorkletGlobalScope"/>
   <int value="7" label="kPaintWorkletGlobalScope"/>
   <int value="8" label="kShadowRealmGlobalScope"/>
-  <int value="9" label="kSharedStorageWorkletGlobalScope"/>
+  <int value="9" label="(obsolete) kSharedStorageWorkletGlobalScope"/>
 </enum>
 
 </enums>

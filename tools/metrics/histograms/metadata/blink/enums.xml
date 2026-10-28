@@ -4885,14 +4885,15 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4260" label="OBSOLETE_DeferredShapingReshapedByForceLayout"/>
   <int value="4261" label="MediaSourceGetHandle"/>
   <int value="4262" label="IdentityInCanMakePaymentEvent"/>
-  <int value="4263" label="SharedStorageAPI_SharedStorage_DOMReference"/>
-  <int value="4264" label="SharedStorageAPI_AddModule_Method"/>
-  <int value="4265" label="SharedStorageAPI_Set_Method"/>
-  <int value="4266" label="SharedStorageAPI_Append_Method"/>
-  <int value="4267" label="SharedStorageAPI_Delete_Method"/>
-  <int value="4268" label="SharedStorageAPI_Clear_Method"/>
-  <int value="4269" label="SharedStorageAPI_SelectURL_Method"/>
-  <int value="4270" label="SharedStorageAPI_Run_Method"/>
+  <int value="4263"
+      label="OBSOLETE_SharedStorageAPI_SharedStorage_DOMReference"/>
+  <int value="4264" label="OBSOLETE_SharedStorageAPI_AddModule_Method"/>
+  <int value="4265" label="OBSOLETE_SharedStorageAPI_Set_Method"/>
+  <int value="4266" label="OBSOLETE_SharedStorageAPI_Append_Method"/>
+  <int value="4267" label="OBSOLETE_SharedStorageAPI_Delete_Method"/>
+  <int value="4268" label="OBSOLETE_SharedStorageAPI_Clear_Method"/>
+  <int value="4269" label="OBSOLETE_SharedStorageAPI_SelectURL_Method"/>
+  <int value="4270" label="OBSOLETE_SharedStorageAPI_Run_Method"/>
   <int value="4271" label="ViewTimelineConstructor"/>
   <int value="4272" label="OBSOLETE_H1UserAgentFontSizeInSectionApplied"/>
   <int value="4273" label="OBSOLETE_kV8PendingBeacon_Constructor"/>
@@ -5297,9 +5298,9 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4634" label="XPathMissingVariableEvaluated"/>
   <int value="4635" label="ClientHintsPrefersReducedTransparency"/>
   <int value="4636" label="ElementCapture"/>
-  <int value="4637" label="SharedStorageAPI_Fetch_Attribute"/>
-  <int value="4638" label="SharedStorageAPI_Image_Attribute"/>
-  <int value="4639" label="SharedStorageAPI_Iframe_Attribute"/>
+  <int value="4637" label="OBSOLETE_SharedStorageAPI_Fetch_Attribute"/>
+  <int value="4638" label="OBSOLETE_SharedStorageAPI_Image_Attribute"/>
+  <int value="4639" label="OBSOLETE_SharedStorageAPI_Iframe_Attribute"/>
   <int value="4640" label="VirtualKeyboardShow"/>
   <int value="4641" label="VirtualKeyboardHide"/>
   <int value="4642" label="VirtualKeyboardOverlayPolicy"/>
@@ -5546,7 +5547,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4833" label="FirstPartySharedWorkerSameSiteCookiesNone"/>
   <int value="4834" label="OBSOLETE_CSSCustomStateDeprecatedSyntax"/>
   <int value="4835" label="FullscreenAllowedByContentSetting"/>
-  <int value="4836" label="SharedStorageAPI_CreateWorklet_Method"/>
+  <int value="4836" label="OBSOLETE_SharedStorageAPI_CreateWorklet_Method"/>
   <int value="4837" label="Canvas2DLayers"/>
   <int value="4838" label="UserFeatureNuxtImage"/>
   <int value="4839" label="UserFeatureNuxtPicture"/>
@@ -5666,7 +5667,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4943"
       label="OBSOLETE_V8DeviceProperties_UniqueId_AttributeGetter"/>
   <int value="4944"
-      label="SharedStorageAPI_SelectURLOverallPageloadBudgetInsufficient"/>
+      label="OBSOLETE_SharedStorageAPI_SelectURLOverallPageloadBudgetInsufficient"/>
   <int value="4945" label="OBSOLETE_V8LanguageTranslator_Translate_Method"/>
   <int value="4946" label="OBSOLETE_V8Translation_CanTranslate_Method"/>
   <int value="4947" label="OBSOLETE_V8Translation_CreateTranslator_Method"/>
@@ -5731,7 +5732,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5005" label="OBSOLETE_EventTimingOrphanPointerupWithClick"/>
   <int value="5006" label="OBSOLETE_DisableReduceAcceptLanguage"/>
   <int value="5007"
-      label="SharedStorageAPI_CreateWorklet_CrossOriginScriptDefaultDataOrigin"/>
+      label="OBSOLETE_SharedStorageAPI_CreateWorklet_CrossOriginScriptDefaultDataOrigin"/>
   <int value="5008" label="DeprecatedAIModel"/>
   <int value="5009" label="DeprecatedAICanCreateGenericSession"/>
   <int value="5010" label="DeprecatedAICreateGenericSession"/>
@@ -5752,7 +5753,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5025" label="V8MLContext_Dispatch_Method"/>
   <int value="5026" label="CSSMixins"/>
   <int value="5027" label="DurationFormat"/>
-  <int value="5028" label="SharedStorageAPI_AddModule_CrossOriginScript"/>
+  <int value="5028"
+      label="OBSOLETE_SharedStorageAPI_AddModule_CrossOriginScript"/>
   <int value="5029" label="CrossOriginOpenerPolicyNoopenerAllowPopups"/>
   <int value="5030"
       label="CrossOriginOpenerPolicyNoopenerAllowPopupsReportOnly"/>
@@ -5781,10 +5783,10 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5053" label="OBSOLETE_V8AISummarizer_Destroy_Method"/>
   <int value="5054" label="OBSOLETE_V8AISummarizerFactory_Capabilities_Method"/>
   <int value="5055" label="OBSOLETE_V8AISummarizerFactory_Create_Method"/>
-  <int value="5056" label="SharedStorageWriteFromBidderGenerateBid"/>
-  <int value="5057" label="SharedStorageWriteFromBidderReportWin"/>
-  <int value="5058" label="SharedStorageWriteFromSellerScoreAd"/>
-  <int value="5059" label="SharedStorageWriteFromSellerReportResult"/>
+  <int value="5056" label="OBSOLETE_SharedStorageWriteFromBidderGenerateBid"/>
+  <int value="5057" label="OBSOLETE_SharedStorageWriteFromBidderReportWin"/>
+  <int value="5058" label="OBSOLETE_SharedStorageWriteFromSellerScoreAd"/>
+  <int value="5059" label="OBSOLETE_SharedStorageWriteFromSellerReportResult"/>
   <int value="5060" label="OBSOLETE_CSSInsetAreaProperty"/>
   <int value="5061" label="StructuredCloneMethod"/>
   <int value="5062" label="OBSOLETE_V8AI_Writer_AttributeGetter"/>
@@ -5965,7 +5967,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5207" label="Canvas2DIsPointInStroke"/>
   <int value="5208" label="Canvas2DGetImageData"/>
   <int value="5209" label="V8ExtendingNonExtensibleWithPrivate"/>
-  <int value="5210" label="SharedStorageAPI_BatchUpdate_Method"/>
+  <int value="5210" label="OBSOLETE_SharedStorageAPI_BatchUpdate_Method"/>
   <int value="5211" label="PreservesPitch"/>
   <int value="5212" label="SelectionCustomProperty"/>
   <int value="5213" label="VerticalFormControls"/>
@@ -6144,7 +6146,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5362" label="OBSOLETE_BlockingAttributeFullFrameRateToken"/>
   <int value="5363" label="CrossOriginOwnerInterestGroupSubframeCheckFailed"/>
   <int value="5364" label="PreferredAudioOutputDevices"/>
-  <int value="5365" label="SharedStorageAPI_SelectURL_Method_CalledWithOneURL"/>
+  <int value="5365"
+      label="OBSOLETE_SharedStorageAPI_SelectURL_Method_CalledWithOneURL"/>
   <int value="5366" label="OBSOLETE_V8AIRewriter_MeasureInputUsage_Method"/>
   <int value="5367" label="OBSOLETE_V8AIRewriter_InputQuota_AttributeGetter"/>
   <int value="5368" label="OBSOLETE_V8AISummarizer_MeasureInputUsage_Method"/>
@@ -6528,7 +6531,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5728" label="V8Origin_Parse_Method"/>
   <int value="5729" label="ExtendedTextMetrics"/>
   <int value="5730" label="OBSOLETE_UseCssSizingProperties"/>
-  <int value="5731" label="SharedStorageAPIAll"/>
+  <int value="5731" label="OBSOLETE_SharedStorageAPIAll"/>
   <int value="5732" label="GamepadRawInputChangeEventListener"/>
   <int value="5733" label="LetterSpacingWithMargin"/>
   <int value="5734"
