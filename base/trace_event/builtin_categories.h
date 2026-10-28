@@ -308,6 +308,11 @@ PERFETTO_DEFINE_CATEGORIES_IN_NAMESPACE_WITH_ATTRS(
         .SetTags("debug"),
     perfetto::Category(TRACE_DISABLED_BY_DEFAULT("blink.debug.display_lock"))
         .SetTags("debug"),
+    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("blink.debug.html_content"))
+        .SetTags("debug")
+        .SetDescription(
+            "Exports parsed HTML content and target element metadata in Blink "
+            "HTML parser trace events."),
     perfetto::Category(TRACE_DISABLED_BY_DEFAULT("blink.debug.layout"))
         .SetTags("debug"),
     perfetto::Category(TRACE_DISABLED_BY_DEFAULT("blink.debug.layout.trees"))

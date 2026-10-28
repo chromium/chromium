@@ -57,6 +57,10 @@
 #include "third_party/blink/renderer/platform/wtf/sequence_bound.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_position.h"
 
+namespace perfetto {
+class EventContext;
+}  // namespace perfetto
+
 namespace blink {
 
 class AtomicHTMLToken;
@@ -123,6 +127,17 @@ class CORE_EXPORT HTMLDocumentParser : public ScriptableDocumentParser,
       CustomElementRegistry*,
       ParserContentPolicy = kAllowScriptingContent,
       StreamingSanitizer* sanitizer = nullptr);
+
+  // Appends HTML content and document/context metadata debug annotations to
+  // `ctx` when `disabled-by-default-blink.debug.html_content` tracing is
+  // enabled. If `context_element` is non-null (fragment parsing), also records
+  // the target container element's debug name, id, and node id; omit
+  // `context_element` (defaults to `nullptr`) for document-level parsing.
+  static void AddHtmlContentTraceAnnotations(
+      perfetto::EventContext& ctx,
+      Document*,
+      const String& html,
+      Element* context_element = nullptr);
 
   // Exposed for testing.
   HTMLParserScriptRunnerHost* AsHTMLParserScriptRunnerHostForTesting() {

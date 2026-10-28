@@ -9,11 +9,15 @@
 
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/tracing/trace_event_analyzer.h"
+#include "base/test/tracing/trace_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/core/dom/document_init.h"
+#include "third_party/blink/renderer/core/dom/dom_implementation.h"
 #include "third_party/blink/renderer/core/dom/processing_instruction.h"
 #include "third_party/blink/renderer/core/dom/qualified_name.h"
+#include "third_party/blink/renderer/core/html/html_div_element.h"
 #include "third_party/blink/renderer/core/html/html_document.h"
 #include "third_party/blink/renderer/core/html/html_iframe_element.h"
 #include "third_party/blink/renderer/core/html/parser/html_tree_builder.h"
@@ -805,6 +809,146 @@ TEST_F(HTMLDocumentParserProcessImmediatelyTest, FirstChunkDelayedChildFrame) {
   // Cancel any pending work to make sure that RuntimeFeatures DCHECKs do not
   // fire.
   static_cast<DocumentParser*>(parser)->StopParsing();
+}
+
+TEST_P(HTMLDocumentParserTest, TraceExportPrivacyGatingWhenDebugDisabled) {
+  base::test::TracingEnvironment tracing_environment;
+  auto& document = To<HTMLDocument>(GetDocument());
+  auto* div = MakeGarbageCollected<HTMLDivElement>(document);
+  div->SetIdAttribute(AtomicString("slot-1"));
+  document.body()->AppendChild(div);
+
+  trace_analyzer::Start("blink");
+
+  document.write("<p>written</p>");
+  div->SetInnerHTMLWithoutTrustedTypes("<span>fast</span>");
+
+  auto* parser = CreateParser(document);
+  ScopedParserDetacher detacher(parser);
+  parser->AppendBytes(
+      base::byte_span_from_cstring("<div id='stream'>hello</div>"));
+  parser->Flush();
+  static_cast<DocumentParser*>(parser)->StopParsing();
+
+  auto analyzer = trace_analyzer::Stop();
+  analyzer->AssociateBeginEndEvents();
+  analyzer->MergeAssociatedEventArgs();
+
+  using trace_analyzer::Query;
+  Query is_slice_start = Query::EventPhaseIs(TRACE_EVENT_PHASE_BEGIN) ||
+                         Query::EventPhaseIs(TRACE_EVENT_PHASE_COMPLETE);
+
+  trace_analyzer::TraceEventVector insert_events;
+  analyzer->FindEvents(
+      Query::EventNameIs("HTMLDocumentParser::insert") && is_slice_start,
+      &insert_events);
+  ASSERT_GE(insert_events.size(), 1u);
+  EXPECT_TRUE(insert_events[0]->HasNumberArg("size"));
+  EXPECT_TRUE(insert_events[0]->HasNumberArg("is_detached_doc"));
+  EXPECT_FALSE(insert_events[0]->HasStringArg("html_content"));
+  EXPECT_FALSE(insert_events[0]->HasStringArg("html_preview"));
+  EXPECT_FALSE(insert_events[0]->HasStringArg("document_url"));
+
+  trace_analyzer::TraceEventVector fragment_events;
+  analyzer->FindEvents(
+      Query::EventNameIs("ParseHTMLFragment") && is_slice_start,
+      &fragment_events);
+  ASSERT_GE(fragment_events.size(), 1u);
+  EXPECT_TRUE(fragment_events[0]->HasNumberArg("size"));
+  EXPECT_TRUE(fragment_events[0]->HasNumberArg("parsed_fast_path"));
+  EXPECT_FALSE(fragment_events[0]->HasStringArg("html_content"));
+  EXPECT_FALSE(fragment_events[0]->HasStringArg("context_element"));
+  EXPECT_FALSE(fragment_events[0]->HasStringArg("context_element_id"));
+
+  trace_analyzer::TraceEventVector append_events;
+  analyzer->FindEvents(
+      Query::EventNameIs("HTMLDocumentParser::append") && is_slice_start,
+      &append_events);
+  ASSERT_GE(append_events.size(), 1u);
+  EXPECT_TRUE(append_events.back()->HasNumberArg("size"));
+  EXPECT_TRUE(append_events.back()->HasNumberArg("is_fragment"));
+  EXPECT_FALSE(append_events.back()->HasStringArg("html_content"));
+}
+
+TEST_P(HTMLDocumentParserTest, TraceExportStreamingAppendWithHtmlContent) {
+  base::test::TracingEnvironment tracing_environment;
+  auto& document = To<HTMLDocument>(GetDocument());
+  auto* parser = CreateParser(document);
+  ScopedParserDetacher detacher(parser);
+
+  trace_analyzer::Start(
+      "blink," TRACE_DISABLED_BY_DEFAULT("blink.debug.html_content"));
+
+  const char kChunk[] = "<div id='streamed'>chunk1</div>";
+  parser->AppendBytes(base::byte_span_from_cstring(kChunk));
+  parser->Flush();
+  static_cast<DocumentParser*>(parser)->StopParsing();
+
+  auto analyzer = trace_analyzer::Stop();
+  analyzer->AssociateBeginEndEvents();
+  analyzer->MergeAssociatedEventArgs();
+
+  using trace_analyzer::Query;
+  Query is_slice_start = Query::EventPhaseIs(TRACE_EVENT_PHASE_BEGIN) ||
+                         Query::EventPhaseIs(TRACE_EVENT_PHASE_COMPLETE);
+
+  trace_analyzer::TraceEventVector append_events;
+  analyzer->FindEvents(
+      Query::EventNameIs("HTMLDocumentParser::append") && is_slice_start,
+      &append_events);
+  ASSERT_EQ(1u, append_events.size());
+  const auto* ev = append_events[0];
+  EXPECT_EQ(static_cast<int>(sizeof(kChunk) - 1), ev->GetKnownArgAsInt("size"));
+  EXPECT_FALSE(ev->GetKnownArgAsBool("is_fragment"));
+  EXPECT_FALSE(ev->GetKnownArgAsBool("is_detached_doc"));
+  EXPECT_EQ("https://example.test/", ev->GetKnownArgAsString("document_url"));
+  EXPECT_FALSE(ev->GetKnownArgAsString("frame").empty());
+  EXPECT_EQ(kChunk, ev->GetKnownArgAsString("html_content"));
+  EXPECT_EQ(kChunk, ev->GetKnownArgAsString("html_preview"));
+}
+
+TEST_P(HTMLDocumentParserTest, TraceExportDocumentWriteAndDetachedDocWrite) {
+  base::test::TracingEnvironment tracing_environment;
+  auto& document = To<HTMLDocument>(GetDocument());
+  Document* detached_doc =
+      document.implementation().createHTMLDocument(g_empty_string);
+  ASSERT_TRUE(detached_doc);
+  ASSERT_EQ(nullptr, detached_doc->GetFrame());
+
+  trace_analyzer::Start(
+      "blink," TRACE_DISABLED_BY_DEFAULT("blink.debug.html_content"));
+
+  const char kLiveHtml[] = "<div id='live'>live</div>";
+  const char kDetachedHtml[] =
+      "<script>window.jsl.dh('slot-1','<b>aio</b>');</script>";
+  document.write(kLiveHtml);
+  detached_doc->write(kDetachedHtml);
+
+  auto analyzer = trace_analyzer::Stop();
+  analyzer->AssociateBeginEndEvents();
+  analyzer->MergeAssociatedEventArgs();
+
+  using trace_analyzer::Query;
+  Query is_slice_start = Query::EventPhaseIs(TRACE_EVENT_PHASE_BEGIN) ||
+                         Query::EventPhaseIs(TRACE_EVENT_PHASE_COMPLETE);
+
+  trace_analyzer::TraceEventVector insert_events;
+  analyzer->FindEvents(
+      Query::EventNameIs("HTMLDocumentParser::insert") && is_slice_start,
+      &insert_events);
+  ASSERT_EQ(2u, insert_events.size());
+
+  EXPECT_FALSE(insert_events[0]->GetKnownArgAsBool("is_detached_doc"));
+  EXPECT_EQ("https://example.test/",
+            insert_events[0]->GetKnownArgAsString("document_url"));
+  EXPECT_EQ(kLiveHtml, insert_events[0]->GetKnownArgAsString("html_content"));
+
+  EXPECT_TRUE(insert_events[1]->GetKnownArgAsBool("is_detached_doc"));
+  EXPECT_EQ("https://example.test/",
+            insert_events[1]->GetKnownArgAsString("document_url"));
+  EXPECT_FALSE(insert_events[1]->GetKnownArgAsString("frame").empty());
+  EXPECT_EQ(kDetachedHtml,
+            insert_events[1]->GetKnownArgAsString("html_content"));
 }
 
 }  // namespace blink

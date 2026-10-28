@@ -48,6 +48,7 @@
 #include "third_party/blink/renderer/core/dom/document_fragment.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/execution_context/agent.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/html/html_document.h"
@@ -62,6 +63,7 @@
 #include "third_party/blink/renderer/core/html/parser/html_resource_preloader.h"
 #include "third_party/blink/renderer/core/html/parser/html_tree_builder.h"
 #include "third_party/blink/renderer/core/html_names.h"
+#include "third_party/blink/renderer/core/inspector/identifiers_factory.h"
 #include "third_party/blink/renderer/core/inspector/inspector_trace_events.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/loader/prefetched_signed_exchange_manager.h"
@@ -86,6 +88,7 @@
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/thread_safe_ref_counted.h"
 #include "third_party/blink/renderer/platform/wtf/wtf.h"
+#include "third_party/perfetto/include/perfetto/tracing/event_context.h"
 #include "third_party/perfetto/include/perfetto/tracing/track_event_args.h"
 
 namespace blink {
@@ -994,15 +997,86 @@ bool HTMLDocumentParser::HasInsertionPoint() {
          (WasCreatedByScript() && !input_.HaveSeenEndOfFile());
 }
 
+// static
+void HTMLDocumentParser::AddHtmlContentTraceAnnotations(
+    perfetto::EventContext& ctx,
+    Document* doc,
+    const String& html,
+    Element* context_element) {
+  // The enclosing parser slices (`HTMLDocumentParser::append`,
+  // `HTMLDocumentParser::insert`, `ParseHTMLFragment`) are emitted under the
+  // `"blink"` category so their timing and lightweight args (`size`,
+  // `is_fragment`, `parsed_fast_path`) are recorded in standard `"blink"`
+  // traces. Gate the full HTML payload and element/document attribution on
+  // `disabled-by-default-blink.debug.html_content` here so they attach directly
+  // to the parent duration slice without incurring overhead or emitting page
+  // content when only `"blink"` is enabled.
+  bool html_content_enabled = false;
+  TRACE_EVENT_CATEGORY_GROUP_ENABLED(
+      TRACE_DISABLED_BY_DEFAULT("blink.debug.html_content"),
+      &html_content_enabled);
+  if (!html_content_enabled) {
+    return;
+  }
+
+  constexpr wtf_size_t kMaxTracedHtmlContentLength = 1000000;
+  constexpr wtf_size_t kMaxTracedHtmlPreviewLength = 200;
+
+  if (doc) {
+    const KURL& url = (!doc->Url().IsEmpty() || !doc->GetExecutionContext())
+                          ? doc->Url()
+                          : doc->GetExecutionContext()->Url();
+    ctx.AddDebugAnnotation("document_url", url.GetString());
+
+    LocalFrame* frame = doc->GetFrame();
+    if (!frame && doc->GetExecutionContext()) {
+      if (auto* window =
+              DynamicTo<LocalDOMWindow>(doc->GetExecutionContext())) {
+        frame = window->GetFrame();
+      }
+    }
+    if (frame) {
+      ctx.AddDebugAnnotation("frame", IdentifiersFactory::FrameId(frame));
+    }
+  }
+
+  if (context_element) {
+    ctx.AddDebugAnnotation("context_element", context_element->DebugName());
+    if (context_element->HasID()) {
+      ctx.AddDebugAnnotation("context_element_id",
+                             context_element->GetIdAttribute());
+    }
+    ctx.AddDebugAnnotation("context_node_id",
+                           IdentifiersFactory::IntIdForNode(context_element));
+  }
+
+  ctx.AddDebugAnnotation("html_preview",
+                         html.length() <= kMaxTracedHtmlPreviewLength
+                             ? html
+                             : html.substr(0, kMaxTracedHtmlPreviewLength));
+  if (html.length() <= kMaxTracedHtmlContentLength) {
+    ctx.AddDebugAnnotation("html_content", html);
+  } else {
+    ctx.AddDebugAnnotation("html_content",
+                           html.substr(0, kMaxTracedHtmlContentLength));
+    ctx.AddDebugAnnotation("html_truncated", true);
+  }
+}
+
 void HTMLDocumentParser::insert(const String& source) {
   // No need to do any processing if the supplied text is empty.
   if (IsStopped() || source.empty()) {
     return;
   }
 
+  Document* doc = GetDocument();
+  const bool is_detached_doc = !doc || !doc->GetFrame();
   TRACE_EVENT("blink", "HTMLDocumentParser::insert",
-              perfetto::Flow::FromPointer(this), "source_length",
-              source.length(), "parser", (void*)this);
+              perfetto::Flow::FromPointer(this), "size", source.length(),
+              "parser", static_cast<void*>(this), "is_detached_doc",
+              is_detached_doc, [&](perfetto::EventContext ctx) {
+                AddHtmlContentTraceAnnotations(ctx, doc, source);
+              });
 
   SegmentedString excluded_line_number_source(source);
   excluded_line_number_source.SetExcludeLineNumbers();
@@ -1031,9 +1105,20 @@ void HTMLDocumentParser::insert(const String& source) {
 }
 
 void HTMLDocumentParser::Append(const String& input_source) {
+  Document* doc = GetDocument();
+  const bool is_fragment = tree_builder_ && IsParsingFragment();
+  const bool is_detached_doc = !doc || !doc->GetFrame();
   TRACE_EVENT("blink", "HTMLDocumentParser::append",
               perfetto::Flow::FromPointer(this), "size", input_source.length(),
-              "parser", (void*)this);
+              "parser", static_cast<void*>(this), "is_fragment", is_fragment,
+              "is_detached_doc", is_detached_doc,
+              [&](perfetto::EventContext ctx) {
+                // Fragment parses are already traced by the enclosing
+                // ParseHTMLFragment slice with context_element metadata.
+                if (!is_fragment) {
+                  AddHtmlContentTraceAnnotations(ctx, doc, input_source);
+                }
+              });
 
   if (IsStopped()) {
     return;

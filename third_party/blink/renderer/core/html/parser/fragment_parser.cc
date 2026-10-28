@@ -24,13 +24,16 @@
 #include "third_party/blink/renderer/core/html/html_head_element.h"
 #include "third_party/blink/renderer/core/html/html_html_element.h"
 #include "third_party/blink/renderer/core/html/html_template_element.h"
+#include "third_party/blink/renderer/core/html/parser/html_document_parser.h"
 #include "third_party/blink/renderer/core/html/parser/html_document_parser_fastpath.h"
 #include "third_party/blink/renderer/core/sanitizer/sanitizer.h"
 #include "third_party/blink/renderer/core/sanitizer/sanitizer_api.h"
 #include "third_party/blink/renderer/core/trustedtypes/trusted_html_parser_options.h"
 #include "third_party/blink/renderer/core/trustedtypes/trusted_types_util.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/perfetto/include/perfetto/tracing/event_context.h"
 
 namespace blink {
 
@@ -72,6 +75,14 @@ DocumentFragment* ParseHTMLFragmentInternal(
 
   if (IsA<HTMLDocument>(document) ||
       force_html == FragmentParserConfig::ForceHtml::kForce) {
+    Document& owner_doc = context_element->GetDocument();
+    const bool is_detached_doc = !owner_doc.GetFrame();
+    TRACE_EVENT_BEGIN("blink", "ParseHTMLFragment", "size", markup.length(),
+                      "is_detached_doc", is_detached_doc,
+                      [&](perfetto::EventContext ctx) {
+                        HTMLDocumentParser::AddHtmlContentTraceAnnotations(
+                            ctx, &owner_doc, markup, context_element);
+                      });
     bool log_tag_stats = false;
     base::ElapsedTimer parse_timer;
     HTMLFragmentParsingBehaviorSet parser_behavior;
@@ -103,17 +114,24 @@ DocumentFragment* ParseHTMLFragmentInternal(
         }
       }
       LogFastPathParserTotalTime(parse_timer.Elapsed());
+      TRACE_EVENT_END("blink", "parsed_fast_path", true);
 #if DCHECK_IS_ON()
       // As a sanity check for the fast-path, create another fragment using
-      // the full parser and compare the results.
+      // the full parser and compare the results. Skip this when "blink"
+      // tracing is enabled so traces on DCHECK builds do not incur a 5x
+      // slow-path re-parse or emit duplicate HTMLDocumentParser::append slices.
       // See https://bugs.chromium.org/p/chromium/issues/detail?id=1407201
       // for details.
-      DocumentFragment* fragment2 = DocumentFragment::Create(document);
-      fragment2->ParseHTML(markup, context_element, registry,
-                           parser_content_policy, sanitizer);
-      DCHECK_EQ(CreateMarkup(fragment), CreateMarkup(fragment2))
-          << " supplied value " << markup;
-      DCHECK(fragment->isEqualNode(fragment2));
+      bool blink_tracing_enabled = false;
+      TRACE_EVENT_CATEGORY_GROUP_ENABLED("blink", &blink_tracing_enabled);
+      if (!blink_tracing_enabled) {
+        DocumentFragment* fragment2 = DocumentFragment::Create(document);
+        fragment2->ParseHTML(markup, context_element, registry,
+                             parser_content_policy, sanitizer);
+        DCHECK_EQ(CreateMarkup(fragment), CreateMarkup(fragment2))
+            << " supplied value " << markup;
+        DCHECK(fragment->isEqualNode(fragment2));
+      }
 #endif
       return fragment;
     }
@@ -125,6 +143,7 @@ DocumentFragment* ParseHTMLFragmentInternal(
         RuntimeEnabledFeatures::InnerHTMLParserFastpathLogFailureEnabled()) {
       LogTagsForUnsupportedTagTypeFailure(*fragment);
     }
+    TRACE_EVENT_END("blink", "parsed_fast_path", false);
     return fragment;
   }
 
