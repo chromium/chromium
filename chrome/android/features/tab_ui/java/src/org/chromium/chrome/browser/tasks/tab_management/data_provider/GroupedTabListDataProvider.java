@@ -10,7 +10,9 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
+import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tab.TabLaunchType;
+import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.TabGroupObserver;
 import org.chromium.chrome.browser.tabmodel.TabGroupObserver.DidRemoveTabGroupReason;
 import org.chromium.chrome.browser.tabmodel.TabList;
@@ -103,6 +105,22 @@ public class GroupedTabListDataProvider extends TabListDataProvider {
                     @Override
                     public void restoreCompleted() {
                         requestDataReset();
+                    }
+
+                    @Override
+                    public void didSelectTab(
+                            Tab tab, @TabSelectionType int type, @TabId int lastId) {
+                        selectTab(tab, /* prevSelectedTabId= */ lastId);
+                    }
+
+                    @Override
+                    public void didChangePinState(Tab tab) {
+                        updatePinState(tab);
+                    }
+
+                    @Override
+                    public void onTabsSelectionChanged() {
+                        updateMultiSelection();
                     }
                 };
 
@@ -215,6 +233,22 @@ public class GroupedTabListDataProvider extends TabListDataProvider {
         if (model == null) return false;
         Token tabGroupId = tab.getTabGroupId();
         return tabGroupId == null || !isGroupCollapsed(model, tabGroupId);
+    }
+
+    @Override
+    protected int indexOfItemForTab(TabModel model, @TabId int tabId) {
+        int index = super.indexOfItemForTab(model, tabId);
+        if (index != TabList.INVALID_TAB_INDEX) return index;
+
+        // In collapsed-only surfaces (GTS), group tabs map to their parent TabGroupItem.
+        if (!mSupportsGroupExpansion) {
+            Tab tab = model.getTabById(tabId);
+            Token groupId = tab != null ? tab.getTabGroupId() : null;
+            if (groupId != null) {
+                return indexOfTabGroupId(groupId);
+            }
+        }
+        return TabList.INVALID_TAB_INDEX;
     }
 
     /**

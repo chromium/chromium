@@ -152,11 +152,12 @@ public abstract class TabListDataProvider {
      * @return A new {@link TabItem} representing {@code tab}.
      */
     protected TabItem createTabItem(@Nullable Tab selectedTab, Tab tab) {
+        TabModel model = getTabModelIfTabStateInitialized();
         return new TabItem(
                 tab.getId(),
                 tab.equals(selectedTab),
                 tab.getIsPinned(),
-                /* isMultiSelected= */ false);
+                model != null && model.isTabMultiSelected(tab.getId()));
     }
 
     /**
@@ -248,6 +249,18 @@ public abstract class TabListDataProvider {
     }
 
     /**
+     * Resolves the index in {@link #mItems} of the item representing {@code tabId}, or {@link
+     * TabList#INVALID_TAB_INDEX} if absent. Subclasses can override to map grouped tabs to their
+     * containing {@link TabGroupItem}.
+     *
+     * @param model The active {@link TabModel}.
+     * @param tabId The ID of the tab to resolve.
+     */
+    protected int indexOfItemForTab(TabModel model, @TabId int tabId) {
+        return indexOfTabId(tabId);
+    }
+
+    /**
      * Updates the selected item in {@link #mItems} when {@code tab} is selected in {@link
      * TabModel}.
      *
@@ -256,12 +269,18 @@ public abstract class TabListDataProvider {
      *     Tab#INVALID_TAB_ID}.
      */
     protected void selectTab(Tab tab, @TabId int prevSelectedTabId) {
-        if (getTabModelIfTabStateInitialized() == null) return;
+        TabModel model = getTabModelIfTabStateInitialized();
+        if (model == null) return;
 
         @TabId int newSelectedTabId = tab.getId();
         if (newSelectedTabId == prevSelectedTabId) return;
 
-        int newSelectedIndex = indexOfTabId(newSelectedTabId);
+        int prevSelectedIndex = indexOfItemForTab(model, prevSelectedTabId);
+        int newSelectedIndex = indexOfItemForTab(model, newSelectedTabId);
+        if (newSelectedIndex != TabList.INVALID_TAB_INDEX
+                && newSelectedIndex == prevSelectedIndex) {
+            return;
+        }
 
         // Deselect all other tabs first so only one tab remains selected.
         for (int i = 0; i < mItems.size(); i++) {
@@ -302,6 +321,27 @@ public abstract class TabListDataProvider {
             boolean isPinned = tab.getIsPinned();
             if (tabItem.isPinned() != isPinned) {
                 updateItemAt(index, tabItem.withPinned(isPinned), PayloadType.PIN_STATE);
+            }
+        }
+    }
+
+    /**
+     * Updates the multi-selected state of all {@link TabItem}s in {@link #mItems} when the set of
+     * multi-selected tabs changes in {@link TabModel}.
+     */
+    protected void updateMultiSelection() {
+        TabModel model = getTabModelIfTabStateInitialized();
+        if (model == null) return;
+
+        for (int i = 0; i < mItems.size(); i++) {
+            if (mItems.get(i) instanceof TabItem tabItem) {
+                boolean isMultiSelected = model.isTabMultiSelected(tabItem.getTabId());
+                if (tabItem.isMultiSelected() != isMultiSelected) {
+                    updateItemAt(
+                            i,
+                            tabItem.withMultiSelected(isMultiSelected),
+                            PayloadType.MULTI_SELECTION);
+                }
             }
         }
     }

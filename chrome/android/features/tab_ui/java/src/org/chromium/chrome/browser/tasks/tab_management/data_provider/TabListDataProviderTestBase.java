@@ -38,8 +38,10 @@ import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Shared test harness for {@link FlatTabListDataProviderUnitTest} and {@link
@@ -73,6 +75,7 @@ abstract class TabListDataProviderTestBase {
     final List<Tab> mModelTabs = new ArrayList<>();
     final List<Tab> mOtherModelTabs = new ArrayList<>();
     final Map<Token, Boolean> mCollapsed = new HashMap<>();
+    final Set<Integer> mMultiSelectedTabIds = new HashSet<>();
     final SettableNullableObservableSupplier<TabModel> mTabModelSupplier =
             ObservableSuppliers.createNullable();
 
@@ -96,6 +99,15 @@ abstract class TabListDataProviderTestBase {
                         invocation -> {
                             int index = invocation.getArgument(0);
                             return index >= 0 && index < tabs.size() ? tabs.get(index) : null;
+                        });
+        when(model.getTabById(anyInt()))
+                .thenAnswer(
+                        invocation -> {
+                            int tabId = invocation.getArgument(0);
+                            for (Tab tab : tabs) {
+                                if (tab.getId() == tabId) return tab;
+                            }
+                            return null;
                         });
         when(model.index())
                 .thenAnswer(
@@ -143,6 +155,12 @@ abstract class TabListDataProviderTestBase {
                                 if (tabGroupId.equals(tab.getTabGroupId())) count++;
                             }
                             return count;
+                        });
+        when(model.isTabMultiSelected(anyInt()))
+                .thenAnswer(
+                        invocation -> {
+                            int tabId = invocation.getArgument(0);
+                            return mMultiSelectedTabIds.contains(tabId);
                         });
     }
 
@@ -261,6 +279,12 @@ abstract class TabListDataProviderTestBase {
         mTabModelObserver.didSelectTab(tab, TabSelectionType.FROM_USER, prevSelectedTabId);
     }
 
+    void setMultiSelectedTabs(Integer... tabIds) {
+        mMultiSelectedTabIds.clear();
+        mMultiSelectedTabIds.addAll(List.of(tabIds));
+        mTabModelObserver.onTabsSelectionChanged();
+    }
+
     void assertItems(TabListItem... expected) {
         assertEquals(List.of(expected), mProvider.getItemsForTesting());
     }
@@ -293,6 +317,11 @@ abstract class TabListDataProviderTestBase {
     static TabItem pinned(@TabId int tabId) {
         return new TabItem(
                 tabId, /* isSelected= */ false, /* isPinned= */ true, /* isMultiSelected= */ false);
+    }
+
+    static TabItem multiSelected(@TabId int tabId) {
+        return new TabItem(
+                tabId, /* isSelected= */ false, /* isPinned= */ false, /* isMultiSelected= */ true);
     }
 
     static TabGroupItem group(Token tabGroupId, boolean isSelected, boolean isCollapsed) {
