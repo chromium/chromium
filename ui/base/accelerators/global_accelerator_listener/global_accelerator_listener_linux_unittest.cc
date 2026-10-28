@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <map>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -917,6 +918,14 @@ class GlobalAcceleratorListenerLinuxBindTest : public testing::Test {
     WaitForPortalIdle();
   }
 
+  // Removes the accelerator group of `kExtensionId` in `profile_id` the same
+  // way ExtensionCommandsGlobalRegistry does.
+  void RemoveGroup(const std::string& profile_id) {
+    GlobalAcceleratorListener* listener = listener_.get();
+    listener->OnAcceleratorGroupRemoved(kExtensionId, profile_id);
+    WaitForPortalIdle();
+  }
+
   // Waits until every non-deferred portal request has been responded to. The
   // fake posts each response to the main thread without delay, and the
   // listener's follow-up steps (including Session posting its creation
@@ -973,8 +982,8 @@ class GlobalAcceleratorListenerLinuxBindTest : public testing::Test {
   scoped_refptr<FakeStateStore::Data> state_ =
       base::MakeRefCounted<FakeStateStore::Data>();
 
-  // IDs returned by ListShortcuts. Successfully bound IDs are appended, like a
-  // real portal persists them.
+  // IDs returned by ListShortcuts. A successful bind replaces them with the
+  // bound IDs, like a real portal persists them.
   std::vector<std::string> listed_ids_;
   // Response codes for successive BindShortcuts calls. Success if empty.
   std::vector<uint32_t> bind_response_codes_;
@@ -1017,7 +1026,8 @@ class GlobalAcceleratorListenerLinuxBindTest : public testing::Test {
     dbus::MessageReader reader(method_call);
     uint32_t response_code = kResponseSuccess;
     DbusDictionary results;
-    std::vector<std::string> bound_ids;
+    // Only set for BindShortcuts calls.
+    std::optional<std::vector<std::string>> bound_ids;
     const bool is_bind =
         method == GlobalAcceleratorListenerLinux::kMethodBindShortcuts;
     if (method == GlobalAcceleratorListenerLinux::kMethodCreateSession) {
@@ -1108,13 +1118,10 @@ class GlobalAcceleratorListenerLinuxBindTest : public testing::Test {
                const std::string& request_path,
                uint32_t response_code,
                DbusDictionary results,
-               std::vector<std::string> bound_ids) {
-    if (response_code == kResponseSuccess) {
-      for (std::string& id : bound_ids) {
-        if (!std::ranges::contains(listed_ids_, id)) {
-          listed_ids_.push_back(std::move(id));
-        }
-      }
+               std::optional<std::vector<std::string>> bound_ids) {
+    if (bound_ids && response_code == kResponseSuccess) {
+      // Like a real portal, a successful bind replaces the stored shortcuts.
+      listed_ids_ = std::move(*bound_ids);
     }
 
     auto response = dbus::Response::CreateEmpty();
@@ -1509,6 +1516,140 @@ TEST_F(GlobalAcceleratorListenerLinuxBindTest,
   EXPECT_EQ(StoredState(Id("first")), 2);
   EXPECT_EQ(StoredState(Id("second")), 2);
   EXPECT_FALSE(HasSession());
+}
+
+// Shortcuts of an uninstalled extension are no longer bound, and the session is
+// closed if nothing else is left to bind.
+TEST_F(GlobalAcceleratorListenerLinuxBindTest, AcceleratorGroupRemoved) {
+  CreateListener();
+  LoadCommands(kProfileId, {MakeCommand("global", /*global=*/true)});
+  EXPECT_EQ(StoredState(Id("global")), 1);
+  ASSERT_TRUE(HasSession());
+
+  RemoveGroup(kProfileId);
+  EXPECT_EQ(StoredState(Id("global")), 3);
+  EXPECT_FALSE(HasSession());
+}
+
+// Removing an accelerator group keeps the session if other shortcuts are left.
+TEST_F(GlobalAcceleratorListenerLinuxBindTest,
+       AcceleratorGroupRemovedKeepsOtherShortcuts) {
+  CreateListener();
+  LoadCommands(kProfileId, {MakeCommand("global", /*global=*/true)});
+  LoadCommands(kOtherProfileId,
+               {MakeCommand("global", /*global=*/true, ui::VKEY_8)});
+
+  ClearCalls();
+  RemoveGroup(kProfileId);
+  EXPECT_EQ(StoredState(Id("global")), 3);
+  EXPECT_EQ(StoredState(Id("global", kOtherProfilePrefix)), 1);
+  EXPECT_TRUE(HasSession());
+  EXPECT_TRUE(method_calls_.empty());
+}
+
+// Like KDE, the portal keeps listing the shortcuts of a removed group until a
+// bind without them succeeds. They must not be passed through to the next bind.
+TEST_F(GlobalAcceleratorListenerLinuxBindTest, RemovedShortcutsNotBoundAgain) {
+  CreateListener();
+  LoadCommands(kProfileId, {MakeCommand("global", /*global=*/true)});
+  RemoveGroup(kProfileId);
+  ASSERT_THAT(listed_ids_, testing::ElementsAre(Id("global")));
+
+  ClearCalls();
+  LoadCommands(kOtherProfileId,
+               {MakeCommand("global", /*global=*/true, ui::VKEY_8)});
+  ASSERT_EQ(bind_calls_.size(), 1u);
+  EXPECT_THAT(bind_calls_[0].ids,
+              testing::ElementsAre(Id("global", kOtherProfilePrefix)));
+  // The portal no longer stores the removed shortcut, so it's forgotten.
+  EXPECT_FALSE(StoredState(Id("global")));
+}
+
+// Same as above, but after a restart, when the removed group isn't loaded.
+TEST_F(GlobalAcceleratorListenerLinuxBindTest,
+       RemovedShortcutsNotBoundAgainAfterRestart) {
+  CreateListener();
+  LoadCommands(kProfileId, {MakeCommand("global", /*global=*/true)});
+  RemoveGroup(kProfileId);
+  ASSERT_THAT(listed_ids_, testing::ElementsAre(Id("global")));
+
+  ClearCalls();
+  CreateListener();
+  LoadCommands(kOtherProfileId,
+               {MakeCommand("global", /*global=*/true, ui::VKEY_8)});
+  ASSERT_EQ(bind_calls_.size(), 1u);
+  EXPECT_THAT(bind_calls_[0].ids,
+              testing::ElementsAre(Id("global", kOtherProfilePrefix)));
+  EXPECT_FALSE(StoredState(Id("global")));
+}
+
+// A removed shortcut is remembered while the portal lists it, even if no bind
+// succeeds.
+TEST_F(GlobalAcceleratorListenerLinuxBindTest, RemovedShortcutKeptWhileListed) {
+  CreateListener();
+  LoadCommands(kProfileId, {MakeCommand("global", /*global=*/true)});
+  RemoveGroup(kProfileId);
+
+  ClearCalls();
+  bind_response_codes_ = {kResponseOther};
+  CreateListener();
+  LoadCommands(kOtherProfileId,
+               {MakeCommand("global", /*global=*/true, ui::VKEY_8)});
+  ASSERT_EQ(bind_calls_.size(), 1u);
+  EXPECT_THAT(bind_calls_[0].ids,
+              testing::ElementsAre(Id("global", kOtherProfilePrefix)));
+  EXPECT_EQ(StoredState(Id("global")), 3);
+}
+
+// A removed shortcut is forgotten once ListShortcuts no longer reports it, even
+// if no bind succeeds.
+TEST_F(GlobalAcceleratorListenerLinuxBindTest,
+       RemovedShortcutForgottenWhenNotListed) {
+  CreateListener();
+  LoadCommands(kProfileId, {MakeCommand("global", /*global=*/true)});
+  RemoveGroup(kProfileId);
+
+  ClearCalls();
+  listed_ids_.clear();
+  bind_response_codes_ = {kResponseOther};
+  CreateListener();
+  LoadCommands(kOtherProfileId,
+               {MakeCommand("global", /*global=*/true, ui::VKEY_8)});
+  ASSERT_EQ(bind_calls_.size(), 1u);
+  EXPECT_FALSE(StoredState(Id("global")));
+}
+
+// Loading the commands of a removed group again, e.g. because the extension was
+// reinstalled, binds them again.
+TEST_F(GlobalAcceleratorListenerLinuxBindTest, RemovedGroupLoadedAgain) {
+  CreateListener();
+  LoadCommands(kProfileId, {MakeCommand("global", /*global=*/true)});
+  RemoveGroup(kProfileId);
+  EXPECT_EQ(StoredState(Id("global")), 3);
+
+  ClearCalls();
+  LoadCommands(kProfileId, {MakeCommand("global", /*global=*/true)});
+  ASSERT_EQ(bind_calls_.size(), 1u);
+  EXPECT_THAT(bind_calls_[0].ids, testing::ElementsAre(Id("global")));
+  EXPECT_EQ(StoredState(Id("global")), 1);
+}
+
+// A removed group, e.g. an extension loaded without commands, is treated as
+// loaded, so listed shortcuts with its prefix that aren't tracked, e.g. ones
+// bound by an older version, are dropped.
+TEST_F(GlobalAcceleratorListenerLinuxBindTest,
+       RemovedGroupDropsUntrackedShortcuts) {
+  listed_ids_ = {Id("legacy")};
+  CreateListener();
+  GlobalAcceleratorListener* listener = listener_.get();
+  listener->SetStateStore(std::make_unique<FakeStateStore>(state_));
+  RemoveGroup(kProfileId);
+
+  LoadCommands(kOtherProfileId,
+               {MakeCommand("global", /*global=*/true, ui::VKEY_8)});
+  ASSERT_EQ(bind_calls_.size(), 1u);
+  EXPECT_THAT(bind_calls_[0].ids,
+              testing::ElementsAre(Id("global", kOtherProfilePrefix)));
 }
 
 }  // namespace ui

@@ -8,6 +8,7 @@
 #include <string>
 #include <string_view>
 #include <utility>
+#include <vector>
 
 #include "base/functional/callback.h"
 #include "base/values.h"
@@ -15,8 +16,10 @@
 #include "chrome/browser/extensions/commands/command_service.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
 #include "extensions/browser/extension_registry.h"
+#include "extensions/browser/uninstall_reason.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_builder.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/accelerators/command.h"
 #include "ui/base/accelerators/global_accelerator_listener/global_accelerator_listener.h"
@@ -127,6 +130,11 @@ class FakeGlobalAcceleratorListener : public ui::GlobalAcceleratorListener {
     state_store_ = std::move(store);
   }
 
+  void OnAcceleratorGroupRemoved(const std::string& accelerator_group_id,
+                                 const std::string& profile_id) override {
+    removed_groups_.emplace_back(accelerator_group_id, profile_id);
+  }
+
   void OnCommandsChanged(const std::string& extension_id,
                          const std::string& profile_id,
                          const ui::CommandMap& commands,
@@ -134,6 +142,7 @@ class FakeGlobalAcceleratorListener : public ui::GlobalAcceleratorListener {
                          ExecuteCommandCallback execute_command) override {
     last_execute_command_callback_ = std::move(execute_command);
     last_commands_ = commands;
+    last_profile_id_ = profile_id;
   }
 
   bool has_last_execute_command_callback() const {
@@ -153,10 +162,19 @@ class FakeGlobalAcceleratorListener : public ui::GlobalAcceleratorListener {
   int set_state_store_count() const { return set_state_store_count_; }
   StateStore* state_store() { return state_store_.get(); }
 
+  const std::vector<std::pair<std::string, std::string>>& removed_groups()
+      const {
+    return removed_groups_;
+  }
+
+  const std::string& last_profile_id() const { return last_profile_id_; }
+
  private:
   bool registration_handled_externally_ = false;
   int set_state_store_count_ = 0;
   std::unique_ptr<StateStore> state_store_;
+  std::vector<std::pair<std::string, std::string>> removed_groups_;
+  std::string last_profile_id_;
   ExecuteCommandCallback last_execute_command_callback_;
   ui::CommandMap last_commands_;
 };
@@ -409,6 +427,47 @@ TEST_F(ExtensionCommandsGlobalRegistryTest, SetsStateStoreOnce) {
   state.Set("id", base::DictValue().Set("state", 1));
   store->Save(state.Clone());
   EXPECT_EQ(store->Load(), state);
+}
+
+// Tests that the listener is notified when an extension is uninstalled.
+TEST_F(ExtensionCommandsGlobalRegistryTest, NotifiesListenerOfUninstall) {
+  auto extension =
+      BuildAndEnableExtension("abcdefghijklmnopabcdefghijklmnop",
+                              std::string(kManifestWithUnsanitizedShortcuts));
+  ASSERT_TRUE(extension);
+  EnableExternalHandlingAndUpdate(extension.get());
+  const std::string profile_id = listener().last_profile_id();
+  ASSERT_FALSE(profile_id.empty());
+
+  auto* extension_registry = ExtensionRegistry::Get(profile());
+  ASSERT_TRUE(extension_registry->RemoveEnabled(extension->id()));
+  extension_registry->TriggerOnUninstalled(extension.get(),
+                                           UNINSTALL_REASON_FOR_TESTING);
+  EXPECT_THAT(listener().removed_groups(),
+              testing::ElementsAre(std::pair(extension->id(), profile_id)));
+}
+
+// Tests that the listener is notified when an update removes all of an
+// extension's commands.
+TEST_F(ExtensionCommandsGlobalRegistryTest, NotifiesListenerOfRemovedCommands) {
+  constexpr std::string_view kId = "abcdefghijklmnopabcdefghijklmnop";
+  auto extension = BuildAndEnableExtension(
+      kId, std::string(kManifestWithUnsanitizedShortcuts));
+  ASSERT_TRUE(extension);
+  EnableExternalHandlingAndUpdate(extension.get());
+  const std::string profile_id = listener().last_profile_id();
+  ASSERT_FALSE(profile_id.empty());
+  EXPECT_TRUE(listener().removed_groups().empty());
+
+  auto* extension_registry = ExtensionRegistry::Get(profile());
+  ASSERT_TRUE(extension_registry->RemoveEnabled(extension->id()));
+  auto updated =
+      BuildAndEnableExtension(kId, std::string(kManifestWithoutCommands));
+  ASSERT_TRUE(updated);
+  UpdateKeybindings(updated.get());
+  extension_registry->TriggerOnLoaded(updated.get());
+  EXPECT_THAT(listener().removed_groups(),
+              testing::ElementsAre(std::pair(std::string(kId), profile_id)));
 }
 
 #if BUILDFLAG(IS_CHROMEOS)

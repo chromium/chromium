@@ -99,8 +99,15 @@ class COMPONENT_EXPORT(GLOBAL_ACCELERATOR_LISTENER) GlobalAcceleratorListener {
 
   // Sets the store used to persist state. Only meaningful for implementations
   // where registration is handled externally. Only the first store set is used,
-  // and it must be set before the first call to OnCommandsChanged().
+  // and it must be set before the first call to OnCommandsChanged() or
+  // OnAcceleratorGroupRemoved().
   virtual void SetStateStore(std::unique_ptr<StateStore> store) {}
+
+  // Called when the commands of `accelerator_group_id` in `profile_id` are
+  // permanently removed, e.g. when an extension is uninstalled.
+  virtual void OnAcceleratorGroupRemoved(
+      const std::string& accelerator_group_id,
+      const std::string& profile_id) {}
 
   virtual bool IsRegistrationHandledExternally() const;
 

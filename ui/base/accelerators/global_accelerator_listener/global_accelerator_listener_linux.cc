@@ -218,6 +218,11 @@ void GlobalAcceleratorListenerLinux::OnCommandsChanged(
     std::string trigger = AcceleratorToXdgShortcut(command.accelerator());
     auto [it, inserted] = offered_shortcuts_.try_emplace(id);
     OfferedShortcut& offered = it->second;
+    if (!inserted && offered.state == OfferState::kRemoved) {
+      // The accelerator group was removed and is loaded again, e.g. because
+      // the extension was reinstalled.
+      offered.state = OfferState::kNew;
+    }
     if (!inserted && offered.state == OfferState::kDeclined &&
         offered.trigger != trigger) {
       // The user changed the accelerator of a declined shortcut, so offer it
@@ -246,6 +251,46 @@ void GlobalAcceleratorListenerLinux::SetStateStore(
   // Don't bind yet. Shortcuts whose owner isn't loaded don't need to be
   // activated, and they're included in the bind triggered by the next
   // OnCommandsChanged().
+}
+
+void GlobalAcceleratorListenerLinux::OnAcceleratorGroupRemoved(
+    const std::string& accelerator_group_id,
+    const std::string& profile_id) {
+  const std::string id_prefix =
+      GetShortcutPrefix(accelerator_group_id, profile_id) + "-";
+  auto has_prefix = [&](const auto& pair) {
+    return pair.first.starts_with(id_prefix);
+  };
+  std::erase_if(bound_commands_, has_prefix);
+  std::erase_if(untracked_shortcuts_, has_prefix);
+  // Treat the group as loaded, so that untracked shortcuts with its prefix
+  // reported by ListShortcuts are dropped instead of passed through.
+  loaded_prefixes_.insert(id_prefix);
+
+  // The portal may still store the shortcuts, e.g. KDE reports them with
+  // ListShortcuts until a bind without them succeeds. Keep them as removed
+  // until then, so that they aren't passed through as untracked shortcuts.
+  bool changed = false;
+  for (auto& [id, offered] : offered_shortcuts_) {
+    if (id.starts_with(id_prefix) && offered.state != OfferState::kRemoved) {
+      offered.state = OfferState::kRemoved;
+      changed = true;
+    }
+  }
+  // This is called whenever an extension without commands is loaded, so avoid
+  // writing unchanged state.
+  if (changed) {
+    SaveState();
+  }
+
+  if (GetIdsToBind().empty()) {
+    // Nothing is left to bind, so close the session so that the compositor
+    // stops handling the removed shortcuts.
+    CloseSession();
+    return;
+  }
+  // Otherwise don't rebind. The removed shortcuts can no longer be activated,
+  // and they will be dropped from the portal with the next bind.
 }
 
 void GlobalAcceleratorListenerLinux::MaybeBind() {
@@ -335,8 +380,10 @@ void GlobalAcceleratorListenerLinux::OnListShortcuts(
       auto it = offered_shortcuts_.find(id);
       if (it != offered_shortcuts_.end()) {
         // The backend already knows this shortcut, so binding it again won't
-        // show a dialog.
-        it->second.state = OfferState::kKnown;
+        // show a dialog. Removed shortcuts stay removed.
+        if (it->second.state != OfferState::kRemoved) {
+          it->second.state = OfferState::kKnown;
+        }
         continue;
       }
       if (IsIdOfLoadedGroup(id)) {
@@ -351,6 +398,11 @@ void GlobalAcceleratorListenerLinux::OnListShortcuts(
       untracked_shortcuts_[id] =
           description && !description->empty() ? *description : id;
     }
+    // Removed shortcuts that the portal no longer stores can be forgotten.
+    std::erase_if(offered_shortcuts_, [&](const auto& pair) {
+      return pair.second.state == OfferState::kRemoved &&
+             !listed_ids.contains(pair.first);
+    });
   }
   SaveState();
 
@@ -455,10 +507,19 @@ void GlobalAcceleratorListenerLinux::OnBindShortcuts(
   if (results.has_value()) {
     for (const std::string& id : bound_ids) {
       auto it = offered_shortcuts_.find(id);
-      if (it != offered_shortcuts_.end()) {
+      if (it != offered_shortcuts_.end() &&
+          it->second.state != OfferState::kRemoved) {
         it->second.state = OfferState::kKnown;
       }
     }
+    // The bind replaced the shortcuts stored by the portal, so removed
+    // shortcuts that weren't included can be forgotten. Ones that were
+    // included, because they were removed during the bind, are dropped with
+    // the next bind.
+    std::erase_if(offered_shortcuts_, [&](const auto& pair) {
+      return pair.second.state == OfferState::kRemoved &&
+             !bound_ids.contains(pair.first);
+    });
     SaveState();
     session_ids_ = std::move(bound_ids);
     bind_state_ = BindState::kBound;
@@ -495,7 +556,8 @@ void GlobalAcceleratorListenerLinux::OnBindShortcuts(
     for (const std::string& id : bound_ids) {
       auto it = offered_shortcuts_.find(id);
       if (it == offered_shortcuts_.end() ||
-          it->second.state == OfferState::kDeclined) {
+          it->second.state == OfferState::kDeclined ||
+          it->second.state == OfferState::kRemoved) {
         continue;
       }
       if (it->second.state == OfferState::kNew ||
@@ -577,7 +639,8 @@ base::flat_set<std::string> GlobalAcceleratorListenerLinux::GetIdsToBind()
   std::vector<std::string> ids;
   ids.reserve(offered_shortcuts_.size());
   for (const auto& [id, offered] : offered_shortcuts_) {
-    if (offered.state != OfferState::kDeclined) {
+    if (offered.state == OfferState::kNew ||
+        offered.state == OfferState::kKnown) {
       ids.push_back(id);
     }
   }
@@ -612,7 +675,7 @@ void GlobalAcceleratorListenerLinux::LoadState() {
     std::optional<int> state_value = entry->FindInt(kStateStateKey);
     if (!description || !state_value ||
         *state_value < static_cast<int>(OfferState::kNew) ||
-        *state_value > static_cast<int>(OfferState::kDeclined)) {
+        *state_value > static_cast<int>(OfferState::kRemoved)) {
       continue;
     }
     // The trigger is only needed for declined shortcuts.

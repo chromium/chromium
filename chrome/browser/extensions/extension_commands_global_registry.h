@@ -89,6 +89,24 @@ class ExtensionCommandsGlobalRegistry
   void UnregisterAccelerator(const ui::Accelerator& accelerator) override;
   void OnShortcutHandlingSuspended(bool suspended) override;
 
+  // Overridden from ExtensionRegistryObserver:
+  void OnExtensionUninstalled(content::BrowserContext* browser_context,
+                              const Extension* extension,
+                              UninstallReason reason) override;
+
+  // Returns the ID that distinguishes the global shortcuts of this profile
+  // from those of other profiles, creating it if needed.
+  std::string GetOrCreateProfileId();
+
+  // Passes a StateStore to `instance` if this hasn't been done yet. Must be
+  // called before passing commands to `instance`.
+  void EnsureStateStore(ui::GlobalAcceleratorListener* instance);
+
+  // Tells `instance` to forget the shortcuts of `extension_id` in this
+  // profile, e.g. because the extension was uninstalled.
+  void ForgetCommands(ui::GlobalAcceleratorListener* instance,
+                      const ExtensionId& extension_id);
+
   // Called by the GlobalShortcutListener object when a shortcut this class has
   // registered for has been pressed.
   void OnKeyPressed(const ui::Accelerator& accelerator) override;

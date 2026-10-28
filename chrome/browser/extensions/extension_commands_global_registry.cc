@@ -206,6 +206,9 @@ bool ExtensionCommandsGlobalRegistry::PopulateCommands(
   if (!command_service->GetNamedCommands(
           extension->id(), extensions::CommandService::ALL,
           extensions::CommandService::ANY_SCOPE, &all_commands)) {
+    // The extension has no commands, e.g. because an update removed them, so
+    // forget any shortcuts it had.
+    ForgetCommands(instance, extension->id());
     return false;
   }
 
@@ -223,26 +226,58 @@ bool ExtensionCommandsGlobalRegistry::PopulateCommands(
     }
   }
 
-  if (!state_store_set_) {
-    state_store_set_ = true;
-    instance->SetStateStore(std::make_unique<LocalStateStore>());
-  }
-
-  PrefService* prefs = user_prefs::UserPrefs::Get(browser_context_);
-  std::string profile_id = prefs->GetString(pref_names::kGlobalShortcutsUuid);
-  if (profile_id.empty()) {
-    auto uuid = base::Uuid::GenerateRandomV4();
-    profile_id = uuid.AsLowercaseString();
-    prefs->SetString(pref_names::kGlobalShortcutsUuid, profile_id);
-  }
-
+  EnsureStateStore(instance);
   instance->OnCommandsChanged(
-      extension->id(), profile_id, all_commands,
+      extension->id(), GetOrCreateProfileId(), all_commands,
       GetAcceleratedWidgetForContext(browser_context_),
       base::BindRepeating(&ExtensionCommandsGlobalRegistry::ExecuteCommand,
                           weak_ptr_factory_.GetWeakPtr()));
 
   return !active_global_commands.empty();
+}
+
+void ExtensionCommandsGlobalRegistry::OnExtensionUninstalled(
+    content::BrowserContext* browser_context,
+    const Extension* extension,
+    UninstallReason reason) {
+  auto* instance = GetGlobalAcceleratorListener();
+  if (!instance || !instance->IsRegistrationHandledExternally()) {
+    return;
+  }
+  ForgetCommands(instance, extension->id());
+}
+
+void ExtensionCommandsGlobalRegistry::EnsureStateStore(
+    ui::GlobalAcceleratorListener* instance) {
+  if (!state_store_set_) {
+    state_store_set_ = true;
+    instance->SetStateStore(std::make_unique<LocalStateStore>());
+  }
+}
+
+void ExtensionCommandsGlobalRegistry::ForgetCommands(
+    ui::GlobalAcceleratorListener* instance,
+    const ExtensionId& extension_id) {
+  PrefService* prefs = user_prefs::UserPrefs::Get(browser_context_);
+  const std::string& profile_id =
+      prefs->GetString(pref_names::kGlobalShortcutsUuid);
+  if (profile_id.empty()) {
+    // No commands have been registered for this profile.
+    return;
+  }
+  // The persisted state must be loaded first so that it can be pruned.
+  EnsureStateStore(instance);
+  instance->OnAcceleratorGroupRemoved(extension_id, profile_id);
+}
+
+std::string ExtensionCommandsGlobalRegistry::GetOrCreateProfileId() {
+  PrefService* prefs = user_prefs::UserPrefs::Get(browser_context_);
+  std::string profile_id = prefs->GetString(pref_names::kGlobalShortcutsUuid);
+  if (profile_id.empty()) {
+    profile_id = base::Uuid::GenerateRandomV4().AsLowercaseString();
+    prefs->SetString(pref_names::kGlobalShortcutsUuid, profile_id);
+  }
+  return profile_id;
 }
 
 bool ExtensionCommandsGlobalRegistry::RegisterAccelerator(

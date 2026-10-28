@@ -105,6 +105,11 @@ class COMPONENT_EXPORT(GLOBAL_ACCELERATOR_LISTENER)
     // TODO(crbug.com/404298968): Add an explicit way to offer declined
     // shortcuts again.
     kDeclined = 2,
+    // The accelerator group was removed (see OnAcceleratorGroupRemoved()), but
+    // the portal may still store the shortcut. Not bound. Kept so that the
+    // shortcut isn't passed through as untracked when ListShortcuts reports it,
+    // until a bind without it succeeds or ListShortcuts stops reporting it.
+    kRemoved = 3,
   };
 
   struct OfferedShortcut {
@@ -147,6 +152,8 @@ class COMPONENT_EXPORT(GLOBAL_ACCELERATOR_LISTENER)
           execute_command) override;
   void PruneStaleCommands() override;
   void SetStateStore(std::unique_ptr<StateStore> store) override;
+  void OnAcceleratorGroupRemoved(const std::string& accelerator_group_id,
+                                 const std::string& profile_id) override;
 
   void OnCreateSessionResponse(dbus_xdg::Session* session);
   void OnListShortcuts(
@@ -184,7 +191,7 @@ class COMPONENT_EXPORT(GLOBAL_ACCELERATOR_LISTENER)
   bool HasIdsToBindNotIn(const base::flat_set<std::string>& ids) const;
 
   // Returns true if `id` belongs to an accelerator group that has been loaded
-  // in this session.
+  // or removed in this session.
   bool IsIdOfLoadedGroup(const std::string& id) const;
 
   // Loads `offered_shortcuts_` from `state_store_`. Must be called before any
@@ -211,7 +218,11 @@ class COMPONENT_EXPORT(GLOBAL_ACCELERATOR_LISTENER)
 
   // Every global shortcut that has been offered to the portal, keyed by
   // shortcut ID. This is persisted with `state_store_` so that shortcuts whose
-  // owner isn't loaded are still included in BindShortcuts calls.
+  // owner isn't loaded are still included in BindShortcuts calls. Shortcuts are
+  // removed when their command is no longer global. Shortcuts of removed
+  // accelerator groups are marked OfferState::kRemoved until the portal no
+  // longer stores them (see OnAcceleratorGroupRemoved()).
+  // TODO(crbug.com/404298968): Also remove the shortcuts of deleted profiles.
   std::map<std::string, OfferedShortcut> offered_shortcuts_;
 
   // Shortcuts reported by ListShortcuts that aren't tracked in
@@ -221,7 +232,8 @@ class COMPONENT_EXPORT(GLOBAL_ACCELERATOR_LISTENER)
   std::map<std::string, std::string> untracked_shortcuts_;
 
   // Shortcut ID prefixes (including the trailing "-") of the accelerator
-  // groups that have been loaded in this session.
+  // groups that have been loaded or removed in this session. Listed shortcuts
+  // with these prefixes that aren't tracked are dropped.
   base::flat_set<std::string> loaded_prefixes_;
 
   // IDs that have been bound, or attempted to be bound, in the current
