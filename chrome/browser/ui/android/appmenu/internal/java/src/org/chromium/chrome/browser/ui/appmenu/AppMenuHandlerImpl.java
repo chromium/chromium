@@ -410,6 +410,12 @@ class AppMenuHandlerImpl
 
         // If keyboard is showing, wait until keyboard disappears to set appRect
         if (keyboardVisibilityDelegate.isKeyboardShowing(anchorView)) {
+            // A show may already be waiting on the keyboard. Replace it, or the listener
+            // below would remove the new one instead of itself and never be removed.
+            if (mKeyboardVisibilityListener != null) {
+                keyboardVisibilityDelegate.removeKeyboardVisibilityListener(
+                        mKeyboardVisibilityListener);
+            }
             View finalAnchorView = anchorView;
             boolean finalIsByPermanentButton = isByPermanentButton;
             mKeyboardVisibilityListener =

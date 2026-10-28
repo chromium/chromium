@@ -1381,6 +1381,29 @@ public class AppMenuTest {
         waitForMenuToShow(1, mAppMenuHandler);
     }
 
+    // Regression test for crbug.com/578623946: a second request while the first was still
+    // waiting for the keyboard left the first listener registered forever.
+    @Test
+    @MediumTest
+    public void testAppMenu_keyboardVisible_secondRequestReplacesFirst() throws Exception {
+        doReturn(true).when(mKeyboardDelegate).isKeyboardShowing(any());
+        ThreadUtils.runOnUiThreadBlocking(() -> mAppMenuCoordinator.showAppMenuForKeyboardEvent());
+        ThreadUtils.runOnUiThreadBlocking(() -> mAppMenuCoordinator.showAppMenuForKeyboardEvent());
+
+        verify(mKeyboardDelegate, timeout(500).times(2))
+                .addKeyboardVisibilityListener(mKeyboardListenerCaptor.capture());
+        KeyboardVisibilityDelegate.KeyboardVisibilityListener first =
+                mKeyboardListenerCaptor.getAllValues().get(0);
+        KeyboardVisibilityDelegate.KeyboardVisibilityListener second =
+                mKeyboardListenerCaptor.getAllValues().get(1);
+        Assert.assertNotSame(first, second);
+        verify(mKeyboardDelegate).removeKeyboardVisibilityListener(first);
+
+        ThreadUtils.runOnUiThreadBlocking(() -> second.keyboardVisibilityChanged(false));
+        waitForMenuToShow(0, mAppMenuHandler);
+        verify(mKeyboardDelegate).removeKeyboardVisibilityListener(second);
+    }
+
     @Test
     @SmallTest
     @Feature({"Browser", "Main", "RenderTest"})
