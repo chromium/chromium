@@ -15,6 +15,8 @@ import {getHostnameOrUrl} from './tab_delegate_utils.js';
 export class ForeignTabsDelegate implements
     OrganizerListSectionDelegate<ForeignTab> {
   private browserProxy_: BrowserProxy = browserProxyFactory.getInstance();
+  private shouldHide_: boolean = !loadTimeData.getBoolean('isUserSignedIn') ||
+      !loadTimeData.getBoolean('diceSupportEnabled');
 
   init(_sectionClient: OrganizerListSectionClient) {}
 
@@ -26,8 +28,23 @@ export class ForeignTabsDelegate implements
     return loadTimeData.getString('tabsOnOtherDevices');
   }
 
+  shouldHide(): boolean {
+    return this.shouldHide_;
+  }
+
   async getItems(): Promise<Array<OrganizerListSectionItem<ForeignTab>>> {
+    if (!loadTimeData.getBoolean('isUserSignedIn')) {
+      this.shouldHide_ = true;
+      return [];
+    }
+
     const {tabs} = await this.browserProxy_.handler.getForeignTabs();
+
+    if (!loadTimeData.getBoolean('diceSupportEnabled') && tabs.length === 0) {
+      this.shouldHide_ = true;
+    } else {
+      this.shouldHide_ = false;
+    }
 
     return tabs.map(
         tab => ({

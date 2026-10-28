@@ -728,6 +728,37 @@ suite('OrganizerListSectionTest', () => {
     assertEquals('none', getComputedStyle(listSection).display);
   });
 
+  test('hides section when delegate is null', async () => {
+    assertTrue(listSection.hidden);
+
+    listSection.delegate = new TestSectionDelegate('Open Tabs', []);
+    await microtasksFinished();
+    assertFalse(listSection.hidden);
+
+    listSection.delegate = null;
+    await microtasksFinished();
+    assertTrue(listSection.hidden);
+  });
+
+  test('hides section based on delegate shouldHide', async () => {
+    const delegate = new TestSectionDelegate('Open Tabs', []);
+    listSection.delegate = delegate;
+    await microtasksFinished();
+    assertFalse(listSection.hidden);
+
+    const hidingDelegate = new TestSectionDelegate('Open Tabs', []);
+    hidingDelegate.shouldHide = () => true;
+    listSection.delegate = hidingDelegate;
+    await microtasksFinished();
+    assertTrue(listSection.hidden);
+
+    const showingDelegate = new TestSectionDelegate('Open Tabs', []);
+    showingDelegate.shouldHide = () => false;
+    listSection.delegate = showingDelegate;
+    await microtasksFinished();
+    assertFalse(listSection.hidden);
+  });
+
   test(
       'force-expands section and disables header toggle when searching',
       async () => {

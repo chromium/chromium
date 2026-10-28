@@ -6,6 +6,7 @@
 
 #include "base/check.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/tabs/organizer/organizer_panel_utils.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/favicon_source.h"
@@ -22,6 +23,9 @@
 #include "chrome/grit/organizer_panel_resources.h"
 #include "chrome/grit/organizer_panel_resources_map.h"
 #include "components/favicon_base/favicon_url_parser.h"
+#include "components/signin/public/base/consent_level.h"
+#include "components/signin/public/base/signin_buildflags.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/url_data_source.h"
@@ -72,6 +76,18 @@ OrganizerPanelUI::OrganizerPanelUI(content::WebUI* web_ui)
   source->AddLocalizedStrings(kStrings);
   source->AddBoolean("foreignTabsEnabled",
                      organizer_panel::IsOrganizerPanelForeignTabsEnabled());
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile);
+  source->AddBoolean("isUserSignedIn",
+                     identity_manager && identity_manager->HasPrimaryAccount(
+                                             signin::ConsentLevel::kSignin));
+  source->AddBoolean("diceSupportEnabled",
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+                     true
+#else
+                     false
+#endif
+  );
   source->AddBoolean("isIncognitoMode", profile->IsIncognitoProfile());
 
   ui::Accelerator accelerator(ui::VKEY_A,

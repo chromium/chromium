@@ -12,6 +12,7 @@ export class TestSectionDelegate implements
   private items_: Array<OrganizerListSectionItem<unknown>>;
   getZeroState?: () => TemplateResult;
   shouldAlwaysShowZeroState?: () => boolean;
+  shouldHide?: () => boolean;
 
   private lastClickedItem_?: OrganizerListSectionItem<unknown>;
   private clickCount_: number = 0;

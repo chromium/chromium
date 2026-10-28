@@ -31,9 +31,11 @@ suite('OrganizerPanelAppTest', () => {
       collapse: 'Collapse',
       createTabGroup: 'Create tab group',
       currentlyPlaying: 'Currently playing',
+      diceSupportEnabled: true,
       expand: 'Expand',
       foreignTabsEnabled: false,
       isIncognitoMode: false,
+      isUserSignedIn: true,
       noRecentlyClosedTabs: 'No recently closed tabs',
       noResults: 'No results',
       options: 'Options',
@@ -43,6 +45,7 @@ suite('OrganizerPanelAppTest', () => {
       shortcutText: 'Ctrl+Shift+A',
       tabGroupMoreOptions: 'More options',
       tabGroups: 'Tab Groups',
+      tabsOnOtherDevices: 'Tabs on other devices',
     });
     mockOrganizerPanelHandler =
         TestMock.fromClass(OrganizerPanelPageHandlerRemote);
@@ -152,10 +155,7 @@ suite('OrganizerPanelAppTest', () => {
   });
 
   test('renders foreign tabs section when flag is enabled', async () => {
-    loadTimeData.overrideValues({
-      tabsOnOtherDevices: 'Tabs on other devices',
-      foreignTabsEnabled: true,
-    });
+    loadTimeData.overrideValues({foreignTabsEnabled: true});
     const testApp = document.createElement('organizer-panel-app');
     document.body.appendChild(testApp);
     await microtasksFinished();
@@ -164,6 +164,27 @@ suite('OrganizerPanelAppTest', () => {
     assertEquals(
         'Tabs on other devices',
         testApp.$.list.sectionDelegates[3]!.getHeader());
+    const sections =
+        testApp.$.list.shadowRoot.querySelectorAll('organizer-list-section');
+    assertEquals(4, sections.length);
+    assertFalse(sections[3]!.hidden);
+    assertEquals(4, testApp.$.list.getVisibleSections().length);
+  });
+
+  test('hides foreign tabs section when user is signed out', async () => {
+    loadTimeData.overrideValues({
+      foreignTabsEnabled: true,
+      isUserSignedIn: false,
+    });
+    const testApp = document.createElement('organizer-panel-app');
+    document.body.appendChild(testApp);
+    await microtasksFinished();
+
+    const sections =
+        testApp.$.list.shadowRoot.querySelectorAll('organizer-list-section');
+    assertEquals(4, sections.length);
+    assertTrue(sections[3]!.hidden);
+    assertEquals(3, testApp.$.list.getVisibleSections().length);
   });
 
   test('updates list searchQuery when search field changes', async () => {

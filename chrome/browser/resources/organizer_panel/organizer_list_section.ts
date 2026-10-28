@@ -155,7 +155,8 @@ export class OrganizerListSectionElement extends CrLitElement implements
       this.updateFilteredItems_();
     }
 
-    this.hidden = this.hasNoSearchResults_();
+    this.hidden = !this.delegate || this.hasNoSearchResults_() ||
+        (this.delegate.shouldHide?.() ?? false);
   }
 
   onItemsChanged(items: Array<OrganizerListSectionItem<unknown>>) {

@@ -47,4 +47,7 @@ export interface OrganizerListSectionDelegate<T> {
   // rendered at the top of this section when not searching, even when items
   // exist.
   shouldAlwaysShowZeroState?(): boolean;
+
+  // Optional: Returns true if the section should be hidden.
+  shouldHide?(): boolean;
 }
