@@ -10,6 +10,7 @@ syntax = "proto2";
 package safe_browsing;
 
 import "components/enterprise/common/proto/connectors.proto";
+import "components/enterprise/common/proto/synced/browser_events.proto";
 import "components/safe_browsing/core/common/proto/csd.proto";
 
 option optimize_for = LITE_RUNTIME;
@@ -132,6 +133,12 @@ message RTLookupRequest {
     optional IntelligentScanModelType supported_model_type = 1;
   }
   optional LlamaForcedTriggerCapability llama_forced_trigger_capability = 18;
+
+  // The entity that initiated the navigation (e.g. a Chrome extension). Set
+  // only by the enterprise real-time URL lookup service, and only when Chrome
+  // can determine the initiator. Lets the server attribute the reporting
+  // events it generates for this request.
+  optional chrome.cros.reporting.proto.EventInitiatorInfo initiator = 19;
 }
 
 message RTLookupResponse {
