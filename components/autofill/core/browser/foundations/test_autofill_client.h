@@ -806,11 +806,6 @@ class TestAutofillClientTemplate : public T {
     at_memory_query_service_ = std::move(at_memory_query_service);
   }
 
-  void set_at_memory_manager(
-      std::unique_ptr<AtMemoryManager> at_memory_manager) {
-    at_memory_manager_ = std::move(at_memory_manager);
-  }
-
   void set_identity_credential_delegate(
       std::unique_ptr<IdentityCredentialDelegate>
           identity_credential_delegate) {
