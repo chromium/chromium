@@ -531,6 +531,7 @@ void OmniboxPopupFullPresenter::BlurForWindowDeactivation() {
   // `RequestFocus()`.
   focus_manager->SetStoredFocusView(
       delegate().GetLocationBarFocusRestoreView());
+  delegate().SetRestoreFocusOnWindowReactivation(true);
 #else
   // TODO(b/567944511): Restore omnibox focus when the window is reactivated
   // without clicking into it (e.g. Alt+Tab) or by clicking top chrome, to

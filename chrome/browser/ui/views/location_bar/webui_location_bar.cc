@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/notimplemented.h"
 #include "base/task/sequenced_task_runner.h"
@@ -81,6 +82,7 @@
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/button_drag_utils.h"
 #include "ui/views/controls/menu/menu_controller.h"
+#include "ui/views/focus/focus_manager.h"
 #include "ui/views/widget/widget.h"
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -314,11 +316,28 @@ void WebUILocationBar::OnToolbarFocused() {
   if (views::MenuController::GetActiveInstance()) {
     return;
   }
+  views::FocusManager* focus_manager = GetFocusManager();
+  const bool is_focus_restore =
+      focus_manager &&
+      focus_manager->focus_change_reason() ==
+          views::FocusManager::FocusChangeReason::kFocusRestore;
+  // Always consume `restore_focus_on_window_reactivation_` on the first
+  // toolbar focus after window deactivation, even if `is_focus_restore` is
+  // false (e.g. the user clicked directly into another toolbar element), so a
+  // stale pending restore doesn't erroneously restore focus later.
+  if (std::exchange(restore_focus_on_window_reactivation_, false) &&
+      is_focus_restore) {
+    omnibox_popup_view_->OnFocus(/*query_zps=*/false, /*select_all=*/false,
+                                 /*show_full_url=*/false);
+    return;
+  }
+
   // When the browser window activates (e.g. clicking the tab strip), focus is
   // restored to the toolbar WebView, which deactivates the popup widget. Hand
   // focus back to the popup if the omnibox is still logically focused (an
   // unfocused draft also keeps the popup in `kFull`, so check `has_focus()`
   // too).
+  CHECK(omnibox_controller_->edit_model());
   if (omnibox_controller_->edit_model()->has_focus() &&
       omnibox_controller_->popup_state_manager()->popup_state() ==
           OmniboxPopupState::kFull) {
@@ -1102,6 +1121,15 @@ views::View* WebUILocationBar::GetLocationBarFocusRestoreView() {
 
 bool WebUILocationBar::is_full_webui_omnibox() const {
   return using_full_popup_;
+}
+
+void WebUILocationBar::SetRestoreFocusOnWindowReactivation(bool restore) {
+  restore_focus_on_window_reactivation_ = restore;
+}
+
+views::FocusManager* WebUILocationBar::GetFocusManager() {
+  views::Widget* widget = GetLocationBarWidget();
+  return widget ? widget->GetFocusManager() : nullptr;
 }
 
 bool WebUILocationBar::ShouldChipOverrideLocationIcon() {

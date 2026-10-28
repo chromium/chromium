@@ -31,6 +31,10 @@ class OmniboxPopupPresenterDelegate {
 
   // Returns true if the host location bar has Full WebUI Omnibox enabled.
   virtual bool is_full_webui_omnibox() const = 0;
+
+  // Notifies the delegate whether focus should be restored to the omnibox popup
+  // upon browser window reactivation.
+  virtual void SetRestoreFocusOnWindowReactivation(bool restore) {}
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_OMNIBOX_OMNIBOX_POPUP_PRESENTER_DELEGATE_H_

@@ -2496,14 +2496,6 @@ IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
 #endif
 IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
                        MAYBE_ReactivatingWindowRestoresOmniboxFocus) {
-  if (IsWebUIToolbarEnabled()) {
-    GTEST_SKIP()
-        << "TODO(crbug.com/567926983): With the WebUI toolbar, the location "
-           "bar's focus restore view is the toolbar WebView. Restoring focus "
-           "to it on window reactivation gives the edit model focus but "
-           "doesn't reactivate the popup widget, so the popup's input never "
-           "gets document focus.";
-  }
   RunTestSequence(
       OpenInitialTabAndFocusOmnibox(kTab1, GURL("chrome://version/")),
       WaitForWebUIInputValue("chrome://version"), WaitForOmniboxFocus(true),
@@ -2627,14 +2619,6 @@ IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
 IN_PROC_BROWSER_TEST_P(
     FullWebUIOmniboxInteractiveTest,
     DISABLED_ClickInactiveWindowWithDraftRestoresOmniboxFocus) {
-  if (IsWebUIToolbarEnabled()) {
-    GTEST_SKIP()
-        << "TODO(crbug.com/567926983): With the WebUI toolbar, the location "
-           "bar's focus restore view is the toolbar WebView. Restoring focus "
-           "to it on window reactivation gives the edit model focus but "
-           "doesn't reactivate the popup widget, so the popup's input never "
-           "gets document focus.";
-  }
   RunTestSequence(
       OpenInitialTabAndFocusOmnibox(kTab1, GURL("chrome://version/")),
       InAnyContext(WaitForShow(OmniboxPopupPresenter::kRoundedResultsFrame)),
@@ -2656,11 +2640,6 @@ IN_PROC_BROWSER_TEST_P(
 // windows on focus changes.
 IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
                        WindowSwitchDuringTabSwitchDoesNotStealActivation) {
-  if (IsWebUIToolbarEnabled()) {
-    GTEST_SKIP() << "TODO(b/571988349): With the WebUI toolbar, "
-                    "reactivating the browser window does not reopen the "
-                    "popup.";
-  }
   RunTestSequence(
       OpenInitialTabAndFocusOmnibox(kTab1, GURL("chrome://version/")),
       WaitForOmniboxFocus(true), OpenAndActivateSecondBrowserWindow(),
