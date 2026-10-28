@@ -6,6 +6,7 @@
 
 #include "extensions/browser/api/runtime/runtime_api.h"
 
+#include <algorithm>
 #include <memory>
 #include <optional>
 #include <string>
@@ -429,13 +430,23 @@ class RuntimeAPIOnExtensionLoadedPrecedenceTest : public ApiUnitTest {
     return details;
   }
 
+  // Returns how many `runtime.onEnabled` events `observer` saw.
+  static int CountOnEnabledEvents(const TestEventRouterObserver& observer) {
+    return std::ranges::count_if(
+        observer.all_events(), [](const std::unique_ptr<Event>& event) {
+          return event->event_name == api::runtime::OnEnabled::kEventName;
+        });
+  }
+
  private:
   raw_ptr<RuntimeAPI> runtime_api_ = nullptr;
 };
 
 // Verifies that when an extension that was installed while disabled is
-// enabled, `runtime.onExtensionLoaded` is dispatched only with reason
-// `kInstall`, since `kInstall` takes precedence over `kEnable`.
+// enabled:
+// - `runtime.onExtensionLoaded` is dispatched only with reason `kInstall`,
+//   since `kInstall` takes precedence over `kEnable`.
+// - `runtime.onEnabled` is dispatched exactly once.
 TEST_F(RuntimeAPIOnExtensionLoadedPrecedenceTest,
        EnableAfterInstallDispatchesOnlyInstall) {
   TestEventRouterObserver observer(EventRouter::Get(browser_context()));
@@ -450,12 +461,16 @@ TEST_F(RuntimeAPIOnExtensionLoadedPrecedenceTest,
   // Verify that only `kInstall` was dispatched.
   EXPECT_THAT(GetOnExtensionLoadedDetails(observer),
               testing::ElementsAre(testing::Pair("install", "")));
+
+  // Verify that `runtime.onEnabled` was dispatched once.
+  EXPECT_EQ(1, CountOnEnabledEvents(observer));
 }
 
-// Verifies that when an extension that was updated while disabled is enabled,
-// `runtime.onExtensionLoaded` is dispatched only with reason `kUpdate` and
-// the version from before the update, since `kUpdate` takes precedence over
-// `kEnable`.
+// Verifies that when an extension that was updated while disabled is enabled:
+// - `runtime.onExtensionLoaded` is dispatched only with reason `kUpdate` and
+//   the version from before the update, since `kUpdate` takes precedence over
+//   `kEnable`.
+// - `runtime.onEnabled` is dispatched exactly once.
 TEST_F(RuntimeAPIOnExtensionLoadedPrecedenceTest,
        EnableAfterUpdateDispatchesOnlyUpdate) {
   TestEventRouterObserver observer(EventRouter::Get(browser_context()));
@@ -470,6 +485,9 @@ TEST_F(RuntimeAPIOnExtensionLoadedPrecedenceTest,
   // Verify that only `kUpdate` was dispatched, with the pre-update version.
   EXPECT_THAT(GetOnExtensionLoadedDetails(observer),
               testing::ElementsAre(testing::Pair("update", "0.0.1")));
+
+  // Verify that `runtime.onEnabled` was dispatched once.
+  EXPECT_EQ(1, CountOnEnabledEvents(observer));
 }
 
 // Verifies that if an extension is installed and then unloaded and enabled

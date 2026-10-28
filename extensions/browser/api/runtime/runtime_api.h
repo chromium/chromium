@@ -249,9 +249,15 @@ class RuntimeEventRouter {
 
   // Dispatches the `runtime.onEnabled` event to the extension with
   // `extension_id` when it transitions from a disabled state to an enabled
-  // state.
+  // state. If `wait_for_lazy_context` is true and the extension's background
+  // context isn't ready, the dispatch waits until it is, so listeners that the
+  // background context registers while starting up receive the event.
+  // `RuntimeAPI::OnExtensionEnabled()` sets `wait_for_lazy_context` only when
+  // the extension was installed or updated while disabled, because that clears
+  // its persisted event listeners.
   static void DispatchOnEnabledEvent(MayBeDangling<void> context_id,
-                                     const ExtensionId& extension_id);
+                                     const ExtensionId& extension_id,
+                                     bool wait_for_lazy_context);
 
   // Dispatches the `runtime.onExtensionLoaded` event to the extension with
   // `extension_id` when it is added to the set of active extensions, as

@@ -14,6 +14,7 @@
 #include "base/check.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/lazy_instance.h"
 #include "base/location.h"
 #include "base/memory/scoped_refptr.h"
@@ -230,6 +231,32 @@ bool ExtensionContextMatchesFilter(
   return true;
 }
 
+// If the lazy background context of `extension` isn't ready to run tasks yet,
+// queues `task` to run once it is and returns true. Otherwise, returns false
+// without running `task`. If the lazy background context fails to start,
+// `task` is dropped.
+[[nodiscard]] bool QueueUntilLazyContextIsReady(
+    content::BrowserContext* context,
+    const Extension* extension,
+    base::OnceClosure task) {
+  const auto lazy_context_id = LazyContextId::ForExtension(context, extension);
+  LazyContextTaskQueue* task_queue = lazy_context_id.GetTaskQueue();
+  if (!task_queue || !task_queue->ShouldEnqueueTask(context, extension)) {
+    return false;
+  }
+  task_queue->AddPendingTask(
+      lazy_context_id,
+      base::BindOnce(
+          [](base::OnceClosure task,
+             std::unique_ptr<LazyContextTaskQueue::ContextInfo> context_info) {
+            if (context_info) {
+              std::move(task).Run();
+            }
+          },
+          std::move(task)));
+  return true;
+}
+
 }  // namespace
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -377,24 +404,32 @@ void RuntimeAPI::OnExtensionUnloaded(content::BrowserContext* browser_context,
 
 void RuntimeAPI::OnExtensionEnabled(content::BrowserContext* browser_context,
                                     const Extension* extension) {
-  // Dispatch `runtime.onEnabled` when the extension is re-enabled from a
-  // disabled state.
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE,
-      base::BindOnce(&RuntimeEventRouter::DispatchOnEnabledEvent,
-                     base::UnsafeDangling(static_cast<void*>(browser_context_)),
-                     extension->id()));
-
   // If the extension was installed or updated while it was disabled (including
   // when the update itself disabled it), the same
   // `ExtensionRegistrar::EnableExtension()` call already ran
   // `OnExtensionInstalledAndLoaded()` when it loaded the extension, before
   // notifying that it was enabled. That queued a `kInstall` or `kUpdate`
   // `runtime.onExtensionLoaded` event and recorded it in
-  // `pending_install_load_versions_`. `kInstall` and `kUpdate` take precedence
-  // over `kEnable` (see `RuntimeEventRouter::DispatchOnExtensionLoadedEvent()`
-  // in `runtime_api.h`), so skip `kEnable`.
-  if (pending_install_load_versions_.contains(extension->id())) {
+  // `pending_install_load_versions_`.
+  const bool installed_or_updated_while_disabled =
+      pending_install_load_versions_.contains(extension->id());
+
+  // Dispatch `runtime.onEnabled` when the extension is re-enabled from a
+  // disabled state. Installing or updating the extension cleared its persisted
+  // event listeners (see `ExtensionPrefs::FinishExtensionInfoPrefs()`), so in
+  // that case wait for its background context to register them again.
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&RuntimeEventRouter::DispatchOnEnabledEvent,
+                     base::UnsafeDangling(static_cast<void*>(browser_context_)),
+                     extension->id(),
+                     /*wait_for_lazy_context=*/
+                     installed_or_updated_while_disabled));
+
+  // `kInstall` and `kUpdate` take precedence over `kEnable` (see
+  // `RuntimeEventRouter::DispatchOnExtensionLoadedEvent()` in runtime_api.h),
+  // so skip `kEnable`.
+  if (installed_or_updated_while_disabled) {
     return;
   }
 
@@ -691,9 +726,9 @@ void RuntimeEventRouter::DispatchOnInstalledEvent(
 }
 
 // static
-void RuntimeEventRouter::DispatchOnEnabledEvent(
-    MayBeDangling<void> context_id,
-    const ExtensionId& extension_id) {
+void RuntimeEventRouter::DispatchOnEnabledEvent(MayBeDangling<void> context_id,
+                                                const ExtensionId& extension_id,
+                                                bool wait_for_lazy_context) {
   if (!ExtensionsBrowserClient::Get()->IsValidContext(context_id.get())) {
     return;
   }
@@ -702,6 +737,26 @@ void RuntimeEventRouter::DispatchOnEnabledEvent(
   ExtensionSystem* system = ExtensionSystem::Get(context);
   if (!system) {
     return;
+  }
+
+  // Wait until the background context is ready, so that listeners it registers
+  // while starting up receive the event.
+  if (wait_for_lazy_context) {
+    const Extension* extension =
+        ExtensionRegistry::Get(context)->enabled_extensions().GetByID(
+            extension_id);
+    if (!extension) {
+      return;
+    }
+    // Wait only once. The queued task runs when the background context is
+    // ready, so dispatch the event directly instead of checking again.
+    if (QueueUntilLazyContextIsReady(
+            context, extension,
+            base::BindOnce(&RuntimeEventRouter::DispatchOnEnabledEvent,
+                           base::UnsafeDangling(context_id.get()), extension_id,
+                           /*wait_for_lazy_context=*/false))) {
+      return;
+    }
   }
 
   EventRouter* event_router = EventRouter::Get(context);
@@ -739,30 +794,14 @@ void RuntimeEventRouter::DispatchOnExtensionLoadedEvent(
   // woken up by `runtime.onInstalled` and may still be executing its top-level
   // script to register event listeners. Wait until the background context is
   // ready before checking `ExtensionHasEventListener`.
-  if (reason == api::runtime::OnLoadedReason::kInstall ||
-      reason == api::runtime::OnLoadedReason::kUpdate) {
-    const auto lazy_context_id =
-        LazyContextId::ForExtension(context, extension);
-    LazyContextTaskQueue* task_queue = lazy_context_id.GetTaskQueue();
-    if (task_queue && task_queue->ShouldEnqueueTask(context, extension)) {
-      task_queue->AddPendingTask(
-          lazy_context_id,
-          base::BindOnce(
-              [](MayBeDangling<void> context_id,
-                 const ExtensionId& extension_id,
-                 api::runtime::OnLoadedReason reason,
-                 const std::optional<std::string>& previous_version,
-                 std::unique_ptr<LazyContextTaskQueue::ContextInfo>
-                     context_info) {
-                if (context_info) {
-                  DispatchOnExtensionLoadedEvent(context_id, extension_id,
-                                                 reason, previous_version);
-                }
-              },
-              base::UnsafeDangling(context_id.get()), extension_id, reason,
-              previous_version));
-      return;
-    }
+  if ((reason == api::runtime::OnLoadedReason::kInstall ||
+       reason == api::runtime::OnLoadedReason::kUpdate) &&
+      QueueUntilLazyContextIsReady(
+          context, extension,
+          base::BindOnce(&RuntimeEventRouter::DispatchOnExtensionLoadedEvent,
+                         base::UnsafeDangling(context_id.get()), extension_id,
+                         reason, previous_version))) {
+    return;
   }
 
   EventRouter* event_router = EventRouter::Get(context);
