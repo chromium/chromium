@@ -18,6 +18,7 @@ import static org.chromium.components.browser_ui.bottomsheet.BottomSheetContent.
 
 import android.app.Activity;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.MeasureSpec;
 import android.view.ViewGroup;
@@ -846,6 +847,454 @@ public class BottomSheetLayoutTest {
         assertEquals(SheetState.FULL, sheet.getSheetState());
     }
 
+    /**
+     * Tests rapid collapse with an interleaved container layout pass and immediate content reopen
+     * (simulating ReadAloud player dismissal and immediate re-activation).
+     */
+    @Test
+    public void testRapidCollapseLayoutPassAndReopen() {
+        mController.runSheetInitializerForTesting();
+        layoutOuterRoot(CONTAINER_WIDTH, CONTAINER_HEIGHT);
+
+        TestSheetContent content1 = new TestSheetContent(mActivity);
+        content1.mPeekHeight = 200;
+        content1.mHalfRatio = 0.5f;
+        content1.mFullRatio = MAX_HEIGHT_RATIO;
+
+        assertTrue(mController.requestShowContent(content1, /* animate= */ false));
+        mController.expandSheet(/* animate= */ false);
+        assertEquals(SheetState.HALF, mController.getSheetState());
+        assertEquals(content1, mController.getCurrentSheetContent());
+
+        // Start animated hide so state enters SCROLLING and starts settle animator.
+        mController.hideContent(content1, /* animate= */ true);
+        assertEquals(SheetState.SCROLLING, mController.getSheetState());
+        assertEquals(
+                SheetState.HIDDEN, mController.getBottomSheetForTesting().getTargetSheetState());
+
+        // Interleaved container layout pass mid-collapse (e.g. browser UI bar collapse).
+        layoutOuterRoot(CONTAINER_WIDTH, CONTAINER_HEIGHT - 100);
+
+        // Immediately request to show content2 before animation completes.
+        TestSheetContent content2 = new TestSheetContent(mActivity);
+        content2.mPeekHeight = 200;
+        content2.mHalfRatio = 0.5f;
+        content2.mFullRatio = MAX_HEIGHT_RATIO;
+        View childButton = new View(mActivity);
+        boolean[] clicked = new boolean[1];
+        childButton.setOnClickListener(v -> clicked[0] = true);
+        content2.setContentView(childButton);
+
+        // Requesting show while sheet is collapsing queues the content to be shown after collapse.
+        assertFalse(mController.requestShowContent(content2, /* animate= */ false));
+
+        // Complete the settle animation to let deferred content transitions resolve.
+        mController.getBottomSheetForTesting().endAnimationsForTesting();
+        layoutOuterRoot(CONTAINER_WIDTH, CONTAINER_HEIGHT - 100);
+
+        // Verify baseline state: content2 is shown, state is PEEK, and child view is responsive.
+        assertEquals(SheetState.PEEK, mController.getSheetState());
+        assertEquals(content2, mController.getCurrentSheetContent());
+        assertEquals(
+                200f,
+                mController.getBottomSheetForTesting().getCurrentOffsetPx(),
+                MathUtils.EPSILON);
+        assertEquals(1, content1.mDestroyCount);
+
+        TouchRestrictingFrameLayout contentContainer =
+                mController
+                        .getBottomSheetForTesting()
+                        .getView()
+                        .findViewById(R.id.bottom_sheet_content);
+        MotionEvent downEvent =
+                MotionEvent.obtain(0, 0, MotionEvent.ACTION_DOWN, CONTAINER_WIDTH / 2f, 50f, 0);
+        assertFalse(contentContainer.onInterceptTouchEvent(downEvent));
+        downEvent.recycle();
+
+        assertTrue(childButton.performClick());
+        assertTrue(clicked[0]);
+    }
+
+    /**
+     * Tests landscape WRAP_CONTENT sheet behavior with gesture navigation bottom inset for moderate
+     * (300px) and tall (740px near landscape 800px ceiling) content views.
+     */
+    @Test
+    public void testLandscapeWrapContentWithGestureNavBottomInset() {
+        mE2eBottomInsetDp = 48;
+        WindowInsetsCompat insets =
+                new WindowInsetsCompat.Builder()
+                        .setInsets(WindowInsetsCompat.Type.navigationBars(), Insets.of(0, 0, 0, 48))
+                        .build();
+        when(mInsetObserver.getLastRawWindowInsets()).thenReturn(insets);
+
+        int landscapeWidth = 2000;
+        int landscapeHeight = 800;
+
+        BottomSheetCoordinator sheet =
+                buildCoordinator(
+                        /* isLargeFormFactor= */ false,
+                        /* alwaysFullWidth= */ false,
+                        landscapeWidth,
+                        landscapeHeight);
+
+        TouchRestrictingFrameLayout contentContainer =
+                sheet.getView().findViewById(R.id.bottom_sheet_content);
+
+        // 1. Moderate WRAP_CONTENT view (300px desired height).
+        TestSheetContent moderateContent = new TestSheetContent(mActivity);
+        moderateContent.mPeekHeight = HeightMode.DISABLED;
+        moderateContent.mHalfRatio = HeightMode.DISABLED;
+        moderateContent.mFullRatio = HeightMode.WRAP_CONTENT;
+        moderateContent.mCoversBottomControls = false;
+
+        View moderateView =
+                new View(mActivity) {
+                    @Override
+                    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+                        setMeasuredDimension(MeasureSpec.getSize(widthMeasureSpec), 300);
+                    }
+                };
+        moderateContent.setContentView(moderateView);
+
+        sheet.showContent(moderateContent);
+        sheet.setSheetState(SheetState.FULL, /* animate= */ false);
+
+        assertEquals(48, sheet.getContentBottomPadding());
+        assertEquals(48, contentContainer.getPaddingBottom());
+        assertEquals(300, moderateView.getMeasuredHeight());
+        assertEquals(300f, sheet.getCurrentOffsetPx(), MathUtils.EPSILON);
+        assertEquals(300f, sheet.getSheetHeightForState(SheetState.FULL), MathUtils.EPSILON);
+        // translationY = (800 - 300) - 48 = 452.
+        assertEquals(452f, sheet.getView().getTranslationY(), MathUtils.EPSILON);
+
+        // 2. Tall WRAP_CONTENT view (740px near the 800px landscape ceiling).
+        // Max content height spec is 800 - 48 (bottom padding) = 752px.
+        TestSheetContent tallContent = new TestSheetContent(mActivity);
+        tallContent.mPeekHeight = HeightMode.DISABLED;
+        tallContent.mHalfRatio = HeightMode.DISABLED;
+        tallContent.mFullRatio = HeightMode.WRAP_CONTENT;
+        tallContent.mCoversBottomControls = false;
+
+        View tallView =
+                new View(mActivity) {
+                    @Override
+                    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+                        setMeasuredDimension(MeasureSpec.getSize(widthMeasureSpec), 740);
+                    }
+                };
+        tallContent.setContentView(tallView);
+
+        sheet.showContent(tallContent);
+        sheet.setSheetState(SheetState.FULL, /* animate= */ false);
+
+        assertEquals(48, sheet.getContentBottomPadding());
+        assertEquals(48, contentContainer.getPaddingBottom());
+        assertEquals(740, tallView.getMeasuredHeight());
+        assertEquals(740f, sheet.getCurrentOffsetPx(), MathUtils.EPSILON);
+        assertEquals(740f, sheet.getSheetHeightForState(SheetState.FULL), MathUtils.EPSILON);
+        // translationY = (800 - 740) - 48 = 12.
+        assertEquals(12f, sheet.getView().getTranslationY(), MathUtils.EPSILON);
+    }
+
+    /**
+     * Tests foldable wide-screen (1600x1200) back-to-back hide/suppress, interleaved layout passes,
+     * state recovery, centered horizontal translation, and gesture x-bounds.
+     */
+    @Test
+    public void testFoldableBackToBackHideAndTouchDispatchBounds() {
+        int foldableWidth = 1600;
+        int foldableHeight = 1200;
+
+        mController.runSheetInitializerForTesting();
+        layoutOuterRoot(foldableWidth, foldableHeight);
+
+        TestSheetContent content = new TestSheetContent(mActivity);
+        content.mPeekHeight = 150;
+        content.mHalfRatio = 0.5f;
+        content.mFullRatio = MAX_HEIGHT_RATIO;
+        View button = new View(mActivity);
+        boolean[] clicked = new boolean[1];
+        button.setOnClickListener(v -> clicked[0] = true);
+        content.setContentView(button);
+
+        assertTrue(mController.requestShowContent(content, /* animate= */ false));
+        mController.expandSheet(/* animate= */ false);
+        assertEquals(SheetState.HALF, mController.getSheetState());
+
+        // Back-to-back suppression and hide calls interleaved with container relayout.
+        int token = mController.suppressSheet(StateChangeReason.NAVIGATION);
+        assertEquals(SheetState.HIDDEN, mController.getSheetState());
+        layoutOuterRoot(foldableWidth, foldableHeight);
+
+        mController.unsuppressSheet(token);
+        mController.getBottomSheetForTesting().endAnimationsForTesting();
+        layoutOuterRoot(foldableWidth, foldableHeight);
+        assertEquals(SheetState.HALF, mController.getSheetState());
+        assertEquals(content, mController.getCurrentSheetContent());
+
+        BottomSheetCoordinator sheet = mController.getBottomSheetForTesting();
+        int maxSheetWidth = sheet.getMaxSheetWidth();
+        assertTrue(maxSheetWidth < foldableWidth);
+        assertFalse(sheet.isFullWidth());
+
+        // Verify sheet is horizontally centered in wide container.
+        float expectedTranslationX = (foldableWidth - maxSheetWidth) / 2f;
+        assertEquals(expectedTranslationX, sheet.getView().getTranslationX(), MathUtils.EPSILON);
+
+        // Child touch dispatch and click responsiveness after state recovery.
+        TouchRestrictingFrameLayout contentContainer =
+                sheet.getView().findViewById(R.id.bottom_sheet_content);
+        MotionEvent downEvent =
+                MotionEvent.obtain(0, 0, MotionEvent.ACTION_DOWN, foldableWidth / 2f, 50f, 0);
+        assertFalse(contentContainer.onInterceptTouchEvent(downEvent));
+        downEvent.recycle();
+
+        assertTrue(button.performClick());
+        assertTrue(clicked[0]);
+
+        // When in open state (HALF), gesture moves sheet across entire touch area.
+        MotionEvent eventInside =
+                MotionEvent.obtain(0, 0, MotionEvent.ACTION_DOWN, foldableWidth / 2f, 500f, 0);
+        assertTrue(sheet.shouldGestureMoveSheet(eventInside, eventInside));
+
+        // When collapsed to PEEK, gestures within visible viewport move the sheet.
+        sheet.setSheetState(SheetState.PEEK, /* animate= */ false);
+        assertEquals(SheetState.PEEK, sheet.getSheetState());
+        assertTrue(sheet.shouldGestureMoveSheet(eventInside, eventInside));
+
+        MotionEvent eventLeft = MotionEvent.obtain(0, 0, MotionEvent.ACTION_DOWN, -50f, 500f, 0);
+        assertFalse(sheet.shouldGestureMoveSheet(eventLeft, eventLeft));
+
+        MotionEvent eventRight =
+                MotionEvent.obtain(0, 0, MotionEvent.ACTION_DOWN, foldableWidth + 50f, 500f, 0);
+        assertFalse(sheet.shouldGestureMoveSheet(eventRight, eventRight));
+
+        eventInside.recycle();
+        eventLeft.recycle();
+        eventRight.recycle();
+    }
+
+    /**
+     * Tests keyboard insets, bottom margins, and edge-to-edge insets interaction, verifying that
+     * RESIZE_CONTENT height adjusts to visible viewport bounds when the keyboard appears.
+     */
+    @Test
+    public void testBottomInsetsAndMargins_ViewportKeyboardAndResizeContentHeight() {
+        mE2eBottomInsetDp = 48;
+        BottomSheetCoordinator sheet =
+                buildCoordinator(
+                        /* isLargeFormFactor= */ false,
+                        /* alwaysFullWidth= */ false,
+                        CONTAINER_WIDTH,
+                        CONTAINER_HEIGHT);
+
+        TouchRestrictingFrameLayout contentContainer =
+                sheet.getView().findViewById(R.id.bottom_sheet_content);
+
+        // 1. Initial state: margin=0, keyboard=0 -> getEdgeToEdgeBottomInset() = 48.
+        assertEquals(48, sheet.getEdgeToEdgeBottomInset());
+        assertEquals(48, sheet.getContentBottomPadding());
+
+        // Setting a bottom margin suppresses the edge-to-edge bottom inset.
+        sheet.setBottomMargin(60);
+        assertEquals(0, sheet.getEdgeToEdgeBottomInset());
+        assertEquals(0, sheet.getContentBottomPadding());
+
+        // Restoring margin to 0 restores edge-to-edge inset.
+        sheet.setBottomMargin(0);
+        assertEquals(48, sheet.getEdgeToEdgeBottomInset());
+
+        // When keyboard appears (300px), bottom inset drops: Math.max(0, 48 - 300) = 0.
+        mKeyboardInsetSupplier.set(300);
+        assertEquals(0, sheet.getEdgeToEdgeBottomInset());
+        assertEquals(0, sheet.getContentBottomPadding());
+
+        // Dismiss keyboard: edge-to-edge bottom inset returns to 48.
+        mKeyboardInsetSupplier.set(0);
+        assertEquals(48, sheet.getEdgeToEdgeBottomInset());
+        assertEquals(48, sheet.getContentBottomPadding());
+
+        // 2. RESIZE_CONTENT sheet in FULL state when keyboard appears and disappears.
+        TestSheetContent resizeContent = new TestSheetContent(mActivity);
+        resizeContent.mFullRatio = HeightMode.RESIZE_CONTENT;
+        resizeContent.mMaxResizeContentHeightRatio = 1.0f;
+        resizeContent.mHalfRatio = 0.5f;
+        resizeContent.mPeekHeight = HeightMode.DISABLED;
+
+        WindowInsetsCompat initialInsets =
+                new WindowInsetsCompat.Builder()
+                        .setInsets(WindowInsetsCompat.Type.ime(), Insets.NONE)
+                        .build();
+        when(mInsetObserver.getLastRawWindowInsets()).thenReturn(initialInsets);
+
+        sheet.showContent(resizeContent);
+        sheet.setSheetState(SheetState.FULL, /* animate= */ false);
+
+        int initialContentHeight = contentContainer.getLayoutParams().height;
+        assertEquals(CONTAINER_HEIGHT - 48, initialContentHeight);
+        assertEquals(0, sheet.getContentBottomPadding());
+        assertEquals(0, contentContainer.getPaddingBottom());
+
+        // Keyboard appears (300px): WindowInsets IME and keyboard supplier shrink contentContainer.
+        WindowInsetsCompat keyboardInsets =
+                new WindowInsetsCompat.Builder()
+                        .setInsets(WindowInsetsCompat.Type.ime(), Insets.of(0, 0, 0, 300))
+                        .build();
+        when(mInsetObserver.getLastRawWindowInsets()).thenReturn(keyboardInsets);
+        mKeyboardInsetSupplier.set(300);
+        sheet.setSheetState(SheetState.FULL, /* animate= */ false);
+
+        int resizedContentHeight = contentContainer.getLayoutParams().height;
+        assertEquals(CONTAINER_HEIGHT - 300, resizedContentHeight);
+        assertEquals(0, sheet.getEdgeToEdgeBottomInset());
+        assertEquals(0, sheet.getContentBottomPadding());
+        assertEquals(0, contentContainer.getPaddingBottom());
+
+        // Keyboard dismisses: WindowInsets and keyboard inset return to 0.
+        when(mInsetObserver.getLastRawWindowInsets()).thenReturn(initialInsets);
+        mKeyboardInsetSupplier.set(0);
+        sheet.setSheetState(SheetState.FULL, /* animate= */ false);
+
+        assertEquals(initialContentHeight, contentContainer.getLayoutParams().height);
+        assertEquals(48, sheet.getEdgeToEdgeBottomInset());
+        assertEquals(0, sheet.getContentBottomPadding());
+        assertEquals(0, contentContainer.getPaddingBottom());
+        when(mInsetObserver.getLastRawWindowInsets()).thenReturn(null);
+    }
+
+    /**
+     * Guards container dimension specifications, isSmallScreen boundary thresholds, custom peek
+     * clamping, alwaysFullWidth handling across LFF/standard modes, and gesture x-bounds.
+     */
+    @Test
+    public void testContainerSizeSpecs_SmallScreenBoundaryPeekClampingAndGestureXBounds() {
+        int minHalfFullDistance =
+                mActivity
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.bottom_sheet_min_full_half_distance);
+
+        // 1. Exact isSmallScreen() boundary: threshold is 2 * minHalfFullDistance for
+        // halfRatio=0.5.
+        BottomSheetCoordinator boundarySheet =
+                buildCoordinator(
+                        /* isLargeFormFactor= */ false,
+                        /* alwaysFullWidth= */ false,
+                        CONTAINER_WIDTH,
+                        minHalfFullDistance * 2);
+
+        TestSheetContent halfContent = new TestSheetContent(mActivity);
+        halfContent.mHalfRatio = 0.5f;
+        halfContent.mPeekHeight = 100;
+        boundarySheet.showContent(halfContent);
+
+        // Right at boundary: (1 - 0.5) * (2 * minHalfFullDistance) = minHalfFullDistance -> false.
+        assertFalse(boundarySheet.isSmallScreen());
+
+        // 1px below boundary -> isSmallScreen() becomes true.
+        layoutOuterRoot(CONTAINER_WIDTH, minHalfFullDistance * 2 - 1);
+        assertTrue(boundarySheet.isSmallScreen());
+
+        // Restoring container height to boundary resets isSmallScreen() to false.
+        layoutOuterRoot(CONTAINER_WIDTH, minHalfFullDistance * 2);
+        assertFalse(boundarySheet.isSmallScreen());
+
+        // 2. Zero / tiny container dimensions in DESKTOP_POPUP (height < desktopBottomMargin=24dp).
+        int desktopBottomMargin =
+                mActivity
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.bottom_sheet_desktop_bottom_margin);
+        BottomSheetCoordinator tinySheet =
+                buildCoordinator(
+                        /* isLargeFormFactor= */ true,
+                        /* alwaysFullWidth= */ false,
+                        0,
+                        desktopBottomMargin - 1);
+        TestSheetContent popupContent = new TestSheetContent(mActivity);
+        popupContent.mSupportsLargeFormFactor = true;
+        tinySheet.showContent(popupContent);
+
+        assertEquals(0, tinySheet.getMaxSheetHeight());
+        assertEquals(0, tinySheet.getMaxSheetWidth());
+        assertTrue(tinySheet.isSmallScreen());
+        assertEquals(0f, tinySheet.getHalfRatio(), MathUtils.EPSILON);
+        assertEquals(0f, tinySheet.getPeekRatio(), MathUtils.EPSILON);
+
+        // 3. alwaysFullWidth behavior across STANDARD vs DESKTOP_POPUP.
+        BottomSheetCoordinator standardFullWidthSheet =
+                buildCoordinator(
+                        /* isLargeFormFactor= */ false, /* alwaysFullWidth= */ true, 1400, 1000);
+        assertEquals(1400, standardFullWidthSheet.getMaxSheetWidth());
+        assertTrue(standardFullWidthSheet.isFullWidth());
+
+        BottomSheetCoordinator desktopSheet =
+                buildCoordinator(
+                        /* isLargeFormFactor= */ true, /* alwaysFullWidth= */ false, 1400, 1000);
+        desktopSheet.showContent(popupContent);
+        int desktopSheetWidth = desktopSheet.getMaxSheetWidth();
+        assertTrue(desktopSheetWidth < 1400);
+        assertFalse(desktopSheet.isFullWidth());
+
+        // 4. Custom peekHeight clamping when peek exceeds max sheet height.
+        TestSheetContent tallPeekContent = new TestSheetContent(mActivity);
+        tallPeekContent.mPeekHeight = 5000;
+        boundarySheet.showContent(tallPeekContent);
+        assertEquals(1.0f, boundarySheet.getPeekRatio(), MathUtils.EPSILON);
+        assertEquals(boundarySheet.getMaxSheetHeight(), boundarySheet.getPeekHeightPx());
+
+        // 5. Horizontal gesture bounds on 1400px container in LTR and RTL.
+        BottomSheetCoordinator wideSheet =
+                buildCoordinator(
+                        /* isLargeFormFactor= */ false, /* alwaysFullWidth= */ false, 1400, 1000);
+        wideSheet.showContent(halfContent);
+        wideSheet.setSheetState(SheetState.PEEK, /* animate= */ false);
+
+        int maxSheetWidth = wideSheet.getMaxSheetWidth();
+        float expectedTranslationX = (1400 - maxSheetWidth) / 2f;
+        assertEquals(
+                expectedTranslationX, wideSheet.getView().getTranslationX(), MathUtils.EPSILON);
+
+        // Verify RTL horizontal centering.
+        LocalizationUtils.setRtlForTesting(true);
+        BottomSheetCoordinator rtlSheet =
+                buildCoordinator(
+                        /* isLargeFormFactor= */ false, /* alwaysFullWidth= */ false, 1400, 1000);
+        rtlSheet.showContent(halfContent);
+        assertEquals(
+                -expectedTranslationX, rtlSheet.getView().getTranslationX(), MathUtils.EPSILON);
+        LocalizationUtils.setRtlForTesting(false);
+
+        // Rebuild standard LTR wide sheet for gesture bounds.
+        wideSheet =
+                buildCoordinator(
+                        /* isLargeFormFactor= */ false, /* alwaysFullWidth= */ false, 1400, 1000);
+        wideSheet.showContent(halfContent);
+        wideSheet.setSheetState(SheetState.PEEK, /* animate= */ false);
+
+        // Gesture bounds: shouldGestureMoveSheet() bounds rawX by
+        // (visibleViewportRect.left, visibleViewportRect.left + containerWidth).
+        MotionEvent insideCenterEvent =
+                MotionEvent.obtain(0, 0, MotionEvent.ACTION_DOWN, 700f, 500f, 0);
+        assertTrue(wideSheet.shouldGestureMoveSheet(insideCenterEvent, insideCenterEvent));
+
+        MotionEvent insideNearLeftEvent =
+                MotionEvent.obtain(0, 0, MotionEvent.ACTION_DOWN, 100f, 500f, 0);
+        assertTrue(wideSheet.shouldGestureMoveSheet(insideNearLeftEvent, insideNearLeftEvent));
+
+        MotionEvent outsideLeftEvent =
+                MotionEvent.obtain(0, 0, MotionEvent.ACTION_DOWN, -10f, 500f, 0);
+        assertFalse(wideSheet.shouldGestureMoveSheet(outsideLeftEvent, outsideLeftEvent));
+
+        MotionEvent outsideRightEvent =
+                MotionEvent.obtain(0, 0, MotionEvent.ACTION_DOWN, 1450f, 500f, 0);
+        assertFalse(wideSheet.shouldGestureMoveSheet(outsideRightEvent, outsideRightEvent));
+
+        insideCenterEvent.recycle();
+        insideNearLeftEvent.recycle();
+        outsideLeftEvent.recycle();
+        outsideRightEvent.recycle();
+    }
+
     private void layoutOuterRoot(int width, int height) {
         mActivity.getWindow().getDecorView().layout(0, 0, width, height);
         ViewUtils.requestLayout(mSheetContainer, "BottomSheetLayoutTest");
@@ -857,15 +1306,20 @@ public class BottomSheetLayoutTest {
 
     private BottomSheetCoordinator buildCoordinator(
             boolean isLargeFormFactor, boolean alwaysFullWidth, int width, int height) {
-        int layoutId = isLargeFormFactor ? R.layout.bottom_sheet_desktop : R.layout.bottom_sheet;
-        BottomSheetView view =
-                (BottomSheetView)
-                        LayoutInflater.from(mActivity).inflate(layoutId, /* root= */ null);
-        mSheetContainer.removeAllViews();
+        for (BottomSheetCoordinator coordinator : mCoordinatorsToDestroy) {
+            coordinator.destroy();
+        }
+        mCoordinatorsToDestroy.clear();
         MarginLayoutParams params = (MarginLayoutParams) mSheetContainer.getLayoutParams();
         params.topMargin = 0;
         params.bottomMargin = 0;
         mSheetContainer.setLayoutParams(params);
+        mSheetContainer.removeAllViews();
+
+        int layoutId = isLargeFormFactor ? R.layout.bottom_sheet_desktop : R.layout.bottom_sheet;
+        BottomSheetView view =
+                (BottomSheetView)
+                        LayoutInflater.from(mActivity).inflate(layoutId, /* root= */ null);
         mSheetContainer.addView(view);
         layoutOuterRoot(width, height);
 
