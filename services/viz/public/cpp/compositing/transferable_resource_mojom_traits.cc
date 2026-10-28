@@ -25,9 +25,6 @@ StructTraits<viz::mojom::MetadataOverrideDataView,
              viz::TransferableResource::MetadataOverride>::
     Read(viz::mojom::MetadataOverrideDataView data,
          viz::TransferableResource::MetadataOverride* out) {
-  if (!data.ReadColorSpace(&out->color_space)) {
-    return base::unexpected(DeserializationError());
-  }
   if (!data.ReadAlphaType(&out->alpha_type)) {
     return base::unexpected(DeserializationError());
   }

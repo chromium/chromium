@@ -17,7 +17,6 @@ import "skia/public/mojom/image_info.mojom";
 // See viz::TransferableResource::MetadataOverride in
 // components/viz/common/resources/transferable_resource.h
 struct MetadataOverride {
-  gfx.mojom.ColorSpace? color_space;
   skia.mojom.AlphaType? alpha_type;
 };
 

@@ -842,7 +842,6 @@ VideoFrameExternalResource VideoResourceUpdater::CreateForHardwareFrame(
           : kUnpremul_SkAlphaType;
 
   viz::TransferableResource::MetadataOverride overrides = {
-      .color_space = video_frame->ColorSpace(),
       .alpha_type = alpha_type,
   };
   auto transfer_resource = viz::TransferableResource::Make(
