@@ -949,7 +949,19 @@ void NearbyConnectionsManagerImpl::Reset() {
   discovered_endpoints_.clear();
   payload_status_listeners_.clear();
   ClearIncomingPayloads();
-  connections_.clear();
+
+  // Destroying NearbyConnectionImpl objects synchronously runs their
+  // disconnect listeners (see ~NearbyConnectionImpl), which may re-enter
+  // Reset() on this object; e.g. QuickStart's
+  // TargetDeviceBootstrapController::OnConnectionClosed() ->
+  // QuickStartConnectivityServiceImpl::Cleanup() -> Shutdown() -> Reset().
+  // Re-entering connections_.clear() while it is mid-iteration
+  // double-destroys the map elements (double-free of the endpoint-id keys).
+  // This is the same hazard fixed in OnDisconnected(): move the map to a
+  // local first so a re-entrant Reset() observes an empty member, and destroy
+  // the connections only after all member state is consistent.
+  auto connections = std::move(connections_);
+
   connection_info_map_.clear();
   discovery_listener_ = nullptr;
   incoming_connection_listener_ = nullptr;
@@ -964,6 +976,8 @@ void NearbyConnectionsManagerImpl::Reset() {
   }
 
   pending_outgoing_connections_.clear();
+
+  connections.clear();
 }
 
 std::optional<nearby::connections::mojom::Medium>

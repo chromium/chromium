@@ -539,6 +539,66 @@ TEST_F(NearbyConnectionsManagerImplTest, DiscoveryFlow) {
   discovered_run_loop_3.Run();
 }
 
+TEST_F(NearbyConnectionsManagerImplTest, ReentrantResetDoesNotDoubleFree) {
+  // Exceeds std::string SSO capacity (>22 bytes) so the map key allocates on
+  // the heap and a re-entrant connections_.clear() double-frees it.
+  const std::string long_endpoint_id =
+      "test_endpoint_id_longer_than_sso_buffer";
+
+  mojo::Remote<ConnectionLifecycleListener> connection_listener_remote;
+  testing::NiceMock<MockIncomingConnectionListener>
+      incoming_connection_listener;
+  StartAdvertising(connection_listener_remote, incoming_connection_listener);
+
+  mojo::Remote<PayloadListener> payload_listener_remote;
+  base::RunLoop accept_run_loop;
+  EXPECT_CALL(nearby_connections_, AcceptConnection)
+      .WillOnce([&](const std::string& service_id,
+                    const std::string& endpoint_id,
+                    mojo::PendingRemote<PayloadListener> listener,
+                    NearbyConnectionsMojom::AcceptConnectionCallback callback) {
+        payload_listener_remote.Bind(std::move(listener));
+        std::move(callback).Run(Status::kSuccess);
+        accept_run_loop.Quit();
+      });
+
+  const std::vector<uint8_t> remote_endpoint_info(
+      std::begin(kRemoteEndpointInfo), std::end(kRemoteEndpointInfo));
+  const std::vector<uint8_t> raw_authentication_token(
+      std::begin(kRawAuthenticationToken), std::end(kRawAuthenticationToken));
+
+  connection_listener_remote->OnConnectionInitiated(
+      long_endpoint_id,
+      ConnectionInfo::New(kAuthenticationToken, raw_authentication_token,
+                          remote_endpoint_info,
+                          /*is_incoming_connection=*/true));
+  accept_run_loop.Run();
+
+  NearbyConnection* connection = nullptr;
+  base::RunLoop accepted_run_loop;
+  EXPECT_CALL(incoming_connection_listener,
+              OnIncomingConnectionAccepted(testing::Eq(long_endpoint_id),
+                                           testing::_, testing::_))
+      .WillOnce([&](const std::string&, const std::vector<uint8_t>&,
+                    NearbyConnection* accepted_connection) {
+        connection = accepted_connection;
+        accepted_run_loop.Quit();
+      });
+
+  connection_listener_remote->OnConnectionAccepted(long_endpoint_id);
+  accepted_run_loop.Run();
+  ASSERT_NE(connection, nullptr);
+
+  // Set a disconnect listener that synchronously re-enters Reset() via
+  // Shutdown() while connections_ is being destroyed.
+  connection->SetDisconnectionListener(base::BindLambdaForTesting(
+      [&]() { nearby_connections_manager_->Shutdown(); }));
+
+  nearby_connections_manager_->Shutdown();
+  EXPECT_FALSE(
+      nearby_connections_manager_->GetRawAuthenticationToken(long_endpoint_id));
+}
+
 TEST_F(NearbyConnectionsManagerImplTest, DiscoveryProcessStopped) {
   const std::vector<uint8_t> endpoint_info(std::begin(kEndpointInfo),
                                            std::end(kEndpointInfo));
