@@ -34,6 +34,7 @@ bool IsRemoteActorCredentialSharingAllowedForOrigin(const url::Origin& origin) {
         url::Origin::Create(GURL("https://gemini-preprod.corp.google.com")),
         url::Origin::Create(GURL("https://gemini-staging.corp.google.com")),
         url::Origin::Create(GURL("https://gemini-autopush.corp.google.com")),
+        url::Origin::Create(GURL("https://search.google.com"))
     };
   }());
 
