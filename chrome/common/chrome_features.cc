@@ -120,8 +120,7 @@ BASE_FEATURE(kCryptographyComplianceCnsa, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Delays BEST_EFFORT tasks during startup until tabs are loaded/idle and first
 // paint.
-BASE_FEATURE(kImprovedStartupBestEffortDelay,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kImprovedStartupBestEffortDelay, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Sets the timeout until startup is declared "finished" even if not all
 // StartupInProgressRefs have been dropped.
