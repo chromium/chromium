@@ -28,6 +28,11 @@ USE_PYTHON_AUDITOR = True
 # Threshold for the change list size to trigger full test.
 CHANGELIST_SIZE_TO_TRIGGER_FULL_TEST = 100
 
+# Maximum total length of file path arguments before triggering a full test,
+# to stay well below Windows cmd.exe's 8191-character limit when invoking
+# vpython3.bat.
+MAX_COMMAND_LINE_LENGTH = 6000
+
 
 class NetworkTrafficAnnotationChecker:
   EXTENSIONS = ['.cc', '.mm', '.java']
@@ -55,7 +60,7 @@ class NetworkTrafficAnnotationChecker:
     traffic annotations."""
     return os.path.splitext(file_path)[1] in self.EXTENSIONS
 
-  def GetFilePaths(self, complete_run, limit):
+  def GetFilePaths(self, complete_run):
     if complete_run:
       return []
 
@@ -80,10 +85,15 @@ class NetworkTrafficAnnotationChecker:
     if not file_paths:
       return None
 
-    # If the number of changed files in the CL exceeds a threshold, trigger
-    # full test to avoid sending very long list of arguments and possible
-    # failure in argument buffers.
-    if len(file_paths) > CHANGELIST_SIZE_TO_TRIGGER_FULL_TEST:
+    # If the number of changed files in the CL or the total command-line
+    # length exceeds a threshold, trigger full test to avoid sending a very
+    # long list of arguments and exceeding argument buffer limits (such as
+    # Windows cmd.exe's 8191-character limit when invoking vpython3.bat).
+    if (
+      len(file_paths) > CHANGELIST_SIZE_TO_TRIGGER_FULL_TEST
+      or sum(len(file_path) + 3 for file_path in file_paths)
+      > MAX_COMMAND_LINE_LENGTH
+    ):
       file_paths = []
 
     return file_paths
@@ -111,7 +121,7 @@ class NetworkTrafficAnnotationChecker:
       )
       return 0
 
-    file_paths = self.GetFilePaths(complete_run, limit)
+    file_paths = self.GetFilePaths(complete_run)
     if file_paths is None:
       return 0
 

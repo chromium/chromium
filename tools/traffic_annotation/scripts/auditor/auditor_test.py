@@ -1220,6 +1220,34 @@ supervised_user_refresh_token_fetcher\t\tSupervised Users\tFetches an OAuth2 ref
     self.assertEqual(ErrorType.HEADER_ANNOTATION, errors[0].type)
     self.assertTrue("not header files" in str(errors[0]))
 
+  def test_check_annotations_cli_length_threshold(self):
+    """Check that long file-path lists trigger a full run ([]), staying below
+    Windows cmd.exe's 8191-character command-line limit."""
+    sys.path.insert(0, str(SCRIPT_DIR.parent))
+    try:
+      import check_annotations
+
+      with mock.patch.object(
+        check_annotations, "NetworkTrafficAnnotationTools"
+      ) as mock_tools_cls:
+        checker = check_annotations.NetworkTrafficAnnotationChecker(
+          build_path="out/Debug"
+        )
+        # 10 short paths (~180 chars total) -> partial run returns file_paths.
+        short_paths = [f"chrome/foo_{i}.java" for i in range(10)]
+        mock_tools_cls.return_value.GetModifiedFiles.return_value = short_paths
+        self.assertEqual(short_paths, checker.GetFilePaths(False))
+
+        # 60 long Java paths (< 100 files, but > 6000 chars total) -> full run ([]).
+        long_paths = [
+          f"chrome/browser/ui/android/toolbar/java/src/org/chromium/chrome/browser/toolbar/SomeVeryLongClassName_{i:02d}Test.java"
+          for i in range(60)
+        ]
+        mock_tools_cls.return_value.GetModifiedFiles.return_value = long_paths
+        self.assertEqual([], checker.GetFilePaths(False))
+    finally:
+      sys.path.pop(0)
+
 
 if __name__ == "__main__":
   unittest.main()
