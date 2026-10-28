@@ -18,6 +18,7 @@
 #import "base/functional/callback_helpers.h"
 #import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/test/ios/wait_util.h"
 #import "base/test/task_environment.h"
 #import "base/test/test_future.h"
 #import "base/time/time.h"
@@ -161,6 +162,19 @@ NSString* const kBrowserAssistedLoginHistogram =
 constexpr std::string_view kTestSignature = "sig";
 constexpr std::string_view kTestClientDataHash = "hash";
 constexpr std::string_view kTestAuthenticatorData = "auth";
+
+// Spins the run loop until `weak_object` is deallocated or a timeout is
+// reached. UIKit may defer releasing dismissed or popped view controllers
+// (e.g. via transition contexts or autorelease pools) until the next run loop
+// turn, so deallocation can't be asserted synchronously. Returns whether
+// `weak_object` was deallocated before the timeout.
+bool WaitForDeallocation(__weak id weak_object) {
+  return base::test::ios::WaitUntilConditionOrTimeout(
+      base::test::ios::kWaitForUIElementTimeout, /*run_message_loop=*/true,
+      ^BOOL {
+        return weak_object == nil;
+      });
+}
 
 NSURL* TestStorageFileURL() {
   return [[NSURL fileURLWithPath:NSTemporaryDirectory()]
@@ -422,6 +436,16 @@ class CredentialProviderViewControllerTest : public PlatformTest {
   }
 
   ~CredentialProviderViewControllerTest() override {
+    // `controller_` may outlive this fixture (UIKit can defer releasing view
+    // controllers involved in presentation transitions), so detach it from
+    // everything that references this fixture. Otherwise, a stale controller
+    // could still observe `NSExtensionHostDidEnterBackgroundNotification`
+    // posted by a later test and invoke `mock_extension_context_` stubs that
+    // capture the destroyed fixture's `TestFuture`s.
+    [[NSNotificationCenter defaultCenter] removeObserver:controller_];
+    controller_.onPresentViewController = nil;
+    controller_.mockExtensionContext = nil;
+    [mock_extension_context_ stopMocking];
     window_.rootViewController = nil;
     window_.hidden = YES;
     CleanStorage();
@@ -1754,11 +1778,12 @@ TEST_F(
   ASSERT_TRUE(uv_future_.Wait());
   EXPECT_TRUE(uv_future_.Get());
 
-  // Dismissing the welcome screen should pop it and exit with
-  // `ASExtensionErrorCodeUserCanceled`.
+  // Dismissing the welcome screen should dismiss the navigation controller and
+  // exit with `ASExtensionErrorCodeUserCanceled`.
   [controller_ passkeyWelcomeScreenViewControllerShouldBeDismissed:welcome_vc];
   ASSERT_TRUE(cancel_error_future_.Wait());
   EXPECT_EQ(cancel_error_future_.Get().code, ASExtensionErrorCodeUserCanceled);
+  EXPECT_EQ(nav_controller.viewControllers.count, 0u);
 }
 
 // Test that tapping the primary action button on
@@ -1791,6 +1816,112 @@ TEST_F(CredentialProviderViewControllerTest,
 
   ASSERT_TRUE(cancel_error_future_.Wait());
   EXPECT_EQ(cancel_error_future_.Get().code, ASExtensionErrorCodeFailed);
+}
+
+// Test that exiting the extension dismisses `passkeyNavigationController` and
+// deallocates any view controllers pushed onto its navigation stack.
+TEST_F(CredentialProviderViewControllerTest,
+       DismissesAndDeallocatesPasskeyNavigationControllerOnExit) {
+  AttachControllerToWindow();
+  UINavigationController* nav_controller = nil;
+  __weak UIViewController* weak_pushed_vc = nil;
+
+  @autoreleasepool {
+    [controller_ showWelcomeScreenWithPurpose:PasskeyWelcomeScreenPurpose::
+                                                  kReauthenticate
+                                   completion:^(UINavigationController*){
+                                   }];
+
+    nav_controller =
+        ObjCCast<UINavigationController>(controller_.presentedViewController);
+    ASSERT_TRUE(nav_controller);
+    EXPECT_EQ(nav_controller.presentationController.delegate, controller_);
+
+    UIViewController* pushed_vc = [[UIViewController alloc] init];
+    [nav_controller pushViewController:pushed_vc animated:NO];
+    ASSERT_EQ(nav_controller.viewControllers.count, 2u);
+
+    weak_pushed_vc = pushed_vc;
+
+    [controller_
+        userCancelledRequestWithErrorCode:ASExtensionErrorCodeUserCanceled];
+  }
+
+  ASSERT_TRUE(cancel_error_future_.Wait());
+  EXPECT_EQ(cancel_error_future_.Get().code, ASExtensionErrorCodeUserCanceled);
+  EXPECT_TRUE(controller_.didDismissViewController);
+  EXPECT_EQ(nav_controller.viewControllers.count, 0u);
+  EXPECT_TRUE(WaitForDeallocation(weak_pushed_vc));
+
+  // Subsequent background notifications after exit should be ignored rather
+  // than invoking `cancelRequestWithError:` again on `extensionContext`.
+  [[NSNotificationCenter defaultCenter]
+      postNotificationName:NSExtensionHostDidEnterBackgroundNotification
+                    object:nil];
+  [[NSNotificationCenter defaultCenter]
+      postNotificationName:UIApplicationDidEnterBackgroundNotification
+                    object:nil];
+}
+
+// Test that posting `NSExtensionHostDidEnterBackgroundNotification` dismisses
+// `passkeyNavigationController` and cancels the extension request with
+// `ASExtensionErrorCodeUserCanceled`.
+TEST_F(
+    CredentialProviderViewControllerTest,
+    EnteringBackgroundDismissesPasskeyNavigationControllerAndCancelsRequest) {
+  AttachControllerToWindow();
+  UINavigationController* nav_controller = nil;
+  __weak UIViewController* weak_pushed_vc = nil;
+
+  @autoreleasepool {
+    [controller_ showWelcomeScreenWithPurpose:PasskeyWelcomeScreenPurpose::
+                                                  kReauthenticate
+                                   completion:^(UINavigationController*){
+                                   }];
+
+    nav_controller =
+        ObjCCast<UINavigationController>(controller_.presentedViewController);
+    ASSERT_TRUE(nav_controller);
+
+    UIViewController* pushed_vc = [[UIViewController alloc] init];
+    [nav_controller pushViewController:pushed_vc animated:NO];
+    ASSERT_EQ(nav_controller.viewControllers.count, 2u);
+
+    weak_pushed_vc = pushed_vc;
+
+    [[NSNotificationCenter defaultCenter]
+        postNotificationName:NSExtensionHostDidEnterBackgroundNotification
+                      object:nil];
+  }
+
+  ASSERT_TRUE(cancel_error_future_.Wait());
+  EXPECT_EQ(cancel_error_future_.Get().code, ASExtensionErrorCodeUserCanceled);
+  EXPECT_TRUE(controller_.didDismissViewController);
+  EXPECT_EQ(nav_controller.viewControllers.count, 0u);
+  EXPECT_TRUE(WaitForDeallocation(weak_pushed_vc));
+}
+
+// Test that posting `NSExtensionHostDidEnterBackgroundNotification` while
+// `ConsentViewController` is presented stops `consentCoordinator`, dismisses
+// `ConsentViewController`, and cancels the extension request with
+// `ASExtensionErrorCodeUserCanceled`.
+TEST_F(
+    CredentialProviderViewControllerTest,
+    EnteringBackgroundDuringExtensionConfigurationStopsConsentCoordinatorAndCancelsRequest) {
+  AttachControllerToWindow();
+  CreateStoreWithCredentials(@[]);
+  [controller_ prepareInterfaceForExtensionConfiguration];
+  EXPECT_TRUE([controller_.presentedViewController
+      isKindOfClass:[ConsentViewController class]]);
+  EXPECT_FALSE(controller_.didDismissViewController);
+
+  [[NSNotificationCenter defaultCenter]
+      postNotificationName:NSExtensionHostDidEnterBackgroundNotification
+                    object:nil];
+
+  ASSERT_TRUE(cancel_error_future_.Wait());
+  EXPECT_EQ(cancel_error_future_.Get().code, ASExtensionErrorCodeUserCanceled);
+  EXPECT_TRUE(controller_.didDismissViewController);
 }
 
 }  // namespace

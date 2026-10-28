@@ -156,6 +156,16 @@ enum class PasskeyCreationEligibility {
   [self.view addSubview:navigationBar];
   AddSameConstraintsToSides(navigationBar, self.view.safeAreaLayoutGuide,
                             LayoutSides::kTop | LayoutSides::kHorizontal);
+
+  NSNotificationCenter* defaultCenter = [NSNotificationCenter defaultCenter];
+  [defaultCenter addObserver:self
+                    selector:@selector(extensionDidEnterBackground)
+                        name:UIApplicationDidEnterBackgroundNotification
+                      object:nil];
+  [defaultCenter addObserver:self
+                    selector:@selector(extensionDidEnterBackground)
+                        name:NSExtensionHostDidEnterBackgroundNotification
+                      object:nil];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -523,6 +533,7 @@ enum class PasskeyCreationEligibility {
     self.passkeyNavigationController = [[UINavigationController alloc] init];
     self.passkeyNavigationController.modalPresentationStyle =
         UIModalPresentationCurrentContext;
+    self.passkeyNavigationController.presentationController.delegate = self;
   }
   return _passkeyNavigationController;
 }
@@ -590,8 +601,7 @@ enum class PasskeyCreationEligibility {
 }
 
 - (void)completeExtensionConfigurationRequest {
-  [self.consentCoordinator stop];
-  self.consentCoordinator = nil;
+  [self cleanUpPresentedUI];
   [self.extensionContext completeExtensionConfigurationRequest];
 }
 
@@ -665,10 +675,6 @@ enum class PasskeyCreationEligibility {
 
 - (void)passkeyWelcomeScreenViewControllerShouldBeDismissed:
     (PasskeyWelcomeScreenViewController*)passkeyWelcomeScreenViewController {
-  if (self.passkeyNavigationController.topViewController ==
-      passkeyWelcomeScreenViewController) {
-    [self.passkeyNavigationController popViewControllerAnimated:YES];
-  }
   [self exitWithErrorCode:ASExtensionErrorCodeUserCanceled];
 }
 
@@ -994,8 +1000,7 @@ enum class PasskeyCreationEligibility {
 // -completeRequestWithSelectedCredential:completionHandler:.
 - (void)completeRequestWithSelectedCredential:
     (ASPasswordCredential*)credential {
-  [self.listCoordinator stop];
-  self.listCoordinator = nil;
+  [self cleanUpPresentedUI];
   [self.extensionContext completeRequestWithSelectedCredential:credential
                                              completionHandler:nil];
 }
@@ -1009,8 +1014,7 @@ enum class PasskeyCreationEligibility {
       static_cast<int>(
           password_manager::metrics_util::BrowserAssistedLoginType::
               kPasskeyStoredInGPMFacilitatedThroughIOSUI));
-  [self.listCoordinator stop];
-  self.listCoordinator = nil;
+  [self cleanUpPresentedUI];
   [self.extensionContext
       completeAssertionRequestWithSelectedPasskeyCredential:credential
                                           completionHandler:nil];
@@ -1020,8 +1024,7 @@ enum class PasskeyCreationEligibility {
 // -completeRegistrationRequestWithSelectedPasskeyCredential:completionHandler:.
 - (void)completeRegistrationRequestWithSelectedPasskeyCredential:
     (ASPasskeyRegistrationCredential*)credential {
-  [self.listCoordinator stop];
-  self.listCoordinator = nil;
+  [self cleanUpPresentedUI];
   [self.extensionContext
       completeRegistrationRequestWithSelectedPasskeyCredential:credential
                                              completionHandler:nil];
@@ -1029,12 +1032,41 @@ enum class PasskeyCreationEligibility {
 
 // Convenience wrapper for -cancelRequestWithError.
 - (void)exitWithErrorCode:(ASExtensionErrorCode)errorCode {
-  [self.listCoordinator stop];
-  self.listCoordinator = nil;
+  [self cleanUpPresentedUI];
   NSError* error = [[NSError alloc] initWithDomain:ASExtensionErrorDomain
                                               code:errorCode
                                           userInfo:nil];
   [self.extensionContext cancelRequestWithError:error];
+}
+
+// Stops observing background notifications, stops active coordinators, and
+// dismisses and clears `passkeyNavigationController` if it was created.
+- (void)cleanUpPresentedUI {
+  NSNotificationCenter* defaultCenter = [NSNotificationCenter defaultCenter];
+  [defaultCenter removeObserver:self
+                           name:UIApplicationDidEnterBackgroundNotification
+                         object:nil];
+  [defaultCenter removeObserver:self
+                           name:NSExtensionHostDidEnterBackgroundNotification
+                         object:nil];
+  [self.consentCoordinator stop];
+  self.consentCoordinator = nil;
+  [self.listCoordinator stop];
+  self.listCoordinator = nil;
+  if (!_passkeyNavigationController) {
+    return;
+  }
+  [_passkeyNavigationController.presentingViewController
+      dismissViewControllerAnimated:NO
+                         completion:nil];
+  _passkeyNavigationController.viewControllers = @[];
+  _passkeyNavigationController = nil;
+}
+
+// Cancels the extension request and cleans up presented coordinators/navigation
+// controllers when the extension enters the background.
+- (void)extensionDidEnterBackground {
+  [self exitWithErrorCode:ASExtensionErrorCodeUserCanceled];
 }
 
 // Displays sheet with information that credential saving is disabled by the
@@ -1373,11 +1405,8 @@ enum class PasskeyCreationEligibility {
   // In this case, all that's left to do is dismiss the bootstrapping UI.
   // Otherwise, it means that the bootstrapping UI hasn't been shown, hence the
   // ConsentViewController needs to be presented.
-  if (self.passkeyNavigationController.visibleViewController) {
-    [self.passkeyNavigationController.presentingViewController
-        dismissViewControllerAnimated:YES
-                           completion:nil];
-    [self.extensionContext completeExtensionConfigurationRequest];
+  if (_passkeyNavigationController.visibleViewController) {
+    [self completeExtensionConfigurationRequest];
   } else {
     [self presentConsentViewController];
   }
