@@ -17,6 +17,7 @@
 #include "base/auto_reset.h"
 #include "base/containers/heap_array.h"
 #include "base/debug/gdi_debug_util_win.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
@@ -77,6 +78,7 @@
 #include "ui/latency/latency_info.h"
 #include "ui/native_theme/native_theme_win.h"
 #include "ui/views/views_delegate.h"
+#include "ui/views/views_features.h"
 #include "ui/views/widget/widget_hwnd_utils.h"
 #include "ui/views/win/fullscreen_handler.h"
 #include "ui/views/win/hwnd_message_handler_delegate.h"
@@ -305,6 +307,62 @@ constexpr int kSynthesizedMouseMessagesTimeDifference = 500;
 
 // True if any browser window is in a menu loop.
 bool g_is_in_native_menu_loop = false;
+
+// Returns true if `window` is owned, directly or transitively, by `owner`.
+// Returns false if `window` is not owned by `owner` or if the ownership chain
+// exceeds `kMaxOwnerDepth`.
+bool IsOwnedBy(HWND window, HWND owner) {
+  // SetWindowLongPtr(..., GWLP_HWNDPARENT, ...) allows external processes to
+  // create cyclic GW_OWNER chains, so bound the walk.
+  constexpr int kMaxOwnerDepth = 32;
+  HWND current = ::GetWindow(window, GW_OWNER);
+  for (int depth = 0; current && depth < kMaxOwnerDepth; ++depth) {
+    if (current == owner) {
+      return true;
+    }
+    current = ::GetWindow(current, GW_OWNER);
+  }
+  return false;
+}
+
+// Returns true if `hwnd` is in the topmost z-order band.
+bool IsTopmost(HWND hwnd) {
+  return (::GetWindowLong(hwnd, GWL_EXSTYLE) & WS_EX_TOPMOST) != 0;
+}
+
+// Returns true if ::SetWindowPos(`hwnd`, HWND_TOP, ...) would not change the
+// visible z-order, i.e. no visible window other than `hwnd`'s owned windows
+// (which Windows keeps above it) is above `hwnd` within its z-order band.
+// Returns false if another visible window is above `hwnd` in its band, or if
+// the z-order walk exceeds `kMaxZOrderWalk`.
+bool IsAtTopOfZOrderBand(HWND hwnd) {
+  // Bound the walk because:
+  // 1. MSDN warns that GetWindow(..., GW_HWNDPREV) in a loop can spin if other
+  //    threads concurrently reorder windows.
+  // 2. CreateWindowEx places newly created hidden non-topmost top-level windows
+  //    at the top of the non-topmost band above `hwnd`; capping the walk bounds
+  //    per-click cost and lets an occasional SetWindowPos(HWND_TOP) raise
+  //    `hwnd` back above accumulated hidden windows.
+  constexpr int kMaxZOrderWalk = 64;
+  const bool is_topmost = IsTopmost(hwnd);
+  HWND above = ::GetWindow(hwnd, GW_HWNDPREV);
+  for (int count = 0; above; ++count) {
+    if (count >= kMaxZOrderWalk) {
+      return false;
+    }
+    if (!is_topmost && IsTopmost(above)) {
+      // Reached the topmost band, which HWND_TOP doesn't raise `hwnd` into.
+      return true;
+    }
+    // Hidden windows are ignored since raising `hwnd` above them has no visible
+    // effect. Owned windows stay above `hwnd` even after HWND_TOP.
+    if (::IsWindowVisible(above) && !IsOwnedBy(above, hwnd)) {
+      return false;
+    }
+    above = ::GetWindow(above, GW_HWNDPREV);
+  }
+  return true;
+}
 
 }  // namespace
 
@@ -895,6 +953,17 @@ void HWNDMessageHandler::Activate() {
       return;
     }
     notify_restore_on_activate_ = false;
+  } else if (base::FeatureList::IsEnabled(
+                 features::kSkipRedundantWindowActivation) &&
+             IsActive() && !::GetWindow(hwnd(), GW_OWNER) &&
+             ::GetForegroundWindow() == hwnd() && IsAtTopOfZOrderBand(hwnd())) {
+    // Activate() is called on every mouse press in web contents, usually on an
+    // already active window. Skip the costly calls below when they wouldn't
+    // change activation or the visible z-order. Owned windows are excluded
+    // because ::SetWindowPos(HWND_TOP) also raises their owner. IsActive()
+    // (user-mode TEB read) short-circuits before the ::GetForegroundWindow()
+    // syscall when inactive.
+    return;
   }
 
   ::SetWindowPos(hwnd(), HWND_TOP, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE);

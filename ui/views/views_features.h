@@ -25,6 +25,9 @@ VIEWS_EXPORT BASE_DECLARE_FEATURE(kNotifyCompositorOfSpaceVisibilityOnMacOs);
 VIEWS_EXPORT BASE_DECLARE_FEATURE(kNotifyCompositorOfWindowOcclusionOnMacOs);
 VIEWS_EXPORT BASE_DECLARE_FEATURE(kNotifyCompositorOfWindowVisibilityOnMacOs);
 #endif
+#if BUILDFLAG(IS_WIN)
+VIEWS_EXPORT BASE_DECLARE_FEATURE(kSkipRedundantWindowActivation);
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace views::features
 

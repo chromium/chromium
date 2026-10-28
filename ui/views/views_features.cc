@@ -85,4 +85,11 @@ BASE_FEATURE(kNotifyCompositorOfWindowVisibilityOnMacOs,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
+#if BUILDFLAG(IS_WIN)
+// When enabled, HWNDMessageHandler::Activate() skips SetWindowPos() and
+// SetForegroundWindow() when an unminimized, unowned window is already the
+// active foreground window and at the top of its z-order band.
+BASE_FEATURE(kSkipRedundantWindowActivation, base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_WIN)
+
 }  // namespace views::features
