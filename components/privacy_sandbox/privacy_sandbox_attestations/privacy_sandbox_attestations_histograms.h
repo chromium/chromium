@@ -63,8 +63,6 @@ enum class FileSource {
 
 inline constexpr char kAttestationStatusUMA[] =
     "PrivacySandbox.Attestations.IsSiteAttestedStatus";
-inline constexpr char kAttestationFirstCheckTimeUMA[] =
-    "PrivacySandbox.Attestations.IsSiteAttested.FirstCheckTime";
 inline constexpr char kAttestationsFileParsingStatusUMA[] =
     "PrivacySandbox.Attestations.Parsing.Status";
 inline constexpr char kAttestationsFileSource[] =
@@ -73,15 +71,6 @@ inline constexpr char kAttestationsFileParsingTimeUMA[] =
     "PrivacySandbox.Attestations.InitializationDuration.Parsing";
 inline constexpr char kAttestationsMapMemoryUsageUMA[] =
     "PrivacySandbox.Attestations.EstimateMemoryUsage.AttestationsMap";
-inline constexpr char kComponentReadyFromApplicationStartUMA[] =
-    "PrivacySandbox.Attestations.InitializationDuration."
-    "ComponentReadyFromApplicationStart";
-inline constexpr char kComponentReadyFromApplicationStartWithInterruptionUMA[] =
-    "PrivacySandbox.Attestations.InitializationDuration."
-    "ComponentReadyFromApplicationStartWithInterruption";
-inline constexpr char kComponentReadyFromBrowserWindowFirstPaintUMA[] =
-    "PrivacySandbox.Attestations.InitializationDuration."
-    "ComponentReadyFromBrowserWindowFirstPaint";
 
 }  // namespace privacy_sandbox
 

@@ -26,7 +26,6 @@
 #include "chrome/browser/component_updater/mei_preload_component_installer.h"
 #include "chrome/browser/component_updater/pki_metadata_component_installer.h"
 #include "chrome/browser/component_updater/platform_runtime_component_installer.h"
-#include "chrome/browser/component_updater/privacy_sandbox_attestations_component_installer.h"
 #include "chrome/browser/component_updater/private_verification_tokens_installer.h"
 #include "chrome/browser/component_updater/ssl_error_assistant_component_installer.h"
 #include "chrome/browser/component_updater/subresource_filter_component_installer.h"
@@ -125,6 +124,8 @@ void DeleteOldComponents(const base::FilePath& user_data_dir) {
                "Fingerprinting Protection Filter"),    // Remove in M156+
            FILE_PATH_LITERAL("PlusAddressBlocklist"),  // Remove in M158+
            FILE_PATH_LITERAL("HistorySearch"),         // Remove in M160+
+           FILE_PATH_LITERAL(
+               "PrivacySandboxAttestationsPreloaded"),  // Remove in M159+
 #if BUILDFLAG(IS_CHROMEOS)
            FILE_PATH_LITERAL("AppProvisioning"),
            // TODO(crbug.com/380780352): Remove these after the stepping stone.
@@ -157,7 +158,6 @@ void RegisterComponentsForUpdate() {
   RegisterOptimizationHintsComponent(cus);
   RegisterTrustTokenKeyCommitmentsComponentIfTrustTokensEnabled(cus);
   RegisterPrivateVerificationTokensComponentIfEnabled(cus);
-  RegisterPrivacySandboxAttestationsComponent(cus);
   RegisterActorSafetyListsComponent(cus, base::OnceClosure());
   RegisterSSLErrorAssistantComponent(cus);
 

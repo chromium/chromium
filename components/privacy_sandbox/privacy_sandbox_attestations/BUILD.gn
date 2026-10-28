@@ -34,7 +34,6 @@ if (use_blink) {
     public_deps = [
       "//base",
       "//build:buildflag_header_h",
-      "//components/startup_metric_utils",
       "//net",
     ]
   }

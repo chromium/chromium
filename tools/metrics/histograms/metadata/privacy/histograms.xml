@@ -529,55 +529,6 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
   </summary>
 </histogram>
 
-<histogram
-    name="PrivacySandbox.Attestations.InitializationDuration.ComponentReadyFromApplicationStart"
-    units="ms" expires_after="2027-01-17">
-  <owner>shivanisha@chromium.org</owner>
-  <owner>xiaochenzh@chromium.org</owner>
-  <summary>
-    Records the amount of time taken for the downloaded attestations file to be
-    detected from application starts. The measurement ends when `ComponentReady`
-    is invoked with valid inputs.
-
-    On ChromeOS: Before M129, the login screen counted as an interruption, so
-    most initialization times were being logged under
-    &quot;ComponentReadyFromApplicationStartWithInterruption&quot;. This was
-    fixed in M129 to count as &quot;ComponentReadyFromApplicationStart&quot;.
-  </summary>
-</histogram>
-
-<histogram
-    name="PrivacySandbox.Attestations.InitializationDuration.ComponentReadyFromApplicationStartWithInterruption"
-    units="ms" expires_after="2027-01-17">
-  <owner>shivanisha@chromium.org</owner>
-  <owner>xiaochenzh@chromium.org</owner>
-  <summary>
-    Records the amount of time taken for the downloaded attestations file to be
-    detected from application starts with interruption during startup. For
-    example, if the user has multiple profiles, a profile picker will appear
-    during the startup. This is a non-browser UI that interrupts the startup
-    process. The measurement ends when `ComponentReady` is invoked with valid
-    inputs.
-
-    On ChromeOS: Before M129, the login screen counted as an interruption, so
-    most initialization times were being logged under
-    &quot;ComponentReadyFromApplicationStartWithInterruption&quot;. This was
-    fixed in M129 to count as &quot;ComponentReadyFromApplicationStart&quot;.
-  </summary>
-</histogram>
-
-<histogram
-    name="PrivacySandbox.Attestations.InitializationDuration.ComponentReadyFromBrowserWindowFirstPaint"
-    units="ms" expires_after="2027-01-17">
-  <owner>shivanisha@chromium.org</owner>
-  <owner>xiaochenzh@chromium.org</owner>
-  <summary>
-    Records the amount of time taken for the downloaded attestations file to be
-    detected from first browser window paint. The measurement ends when
-    `ComponentReady` is invoked with valid inputs.
-  </summary>
-</histogram>
-
 <histogram name="PrivacySandbox.Attestations.InitializationDuration.Parsing"
     units="ms" expires_after="2026-07-26">
   <owner>shivanisha@chromium.org</owner>
@@ -612,18 +563,6 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
     checked. It records whether the in-memory attestation map, which is used as
     the source of truth for the incoming attestation check, is obtained by
     parsing a pre-installed or downloaded attestation list file.
-  </summary>
-</histogram>
-
-<histogram name="PrivacySandbox.Attestations.IsSiteAttested.FirstCheckTime"
-    units="ms" expires_after="2026-09-22">
-  <owner>shivanisha@chromium.org</owner>
-  <owner>xiaochenzh@chromium.org</owner>
-  <summary>
-    Records the duration from Chrome startup to the first Privacy Sandbox API
-    attestation check. This metric should be recorded at most once per Chrome
-    session. Here the measurement is taken from the time Chrome application
-    starts.
   </summary>
 </histogram>
 
