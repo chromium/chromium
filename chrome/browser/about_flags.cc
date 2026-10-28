@@ -13842,13 +13842,6 @@ const FeatureEntry kFeatureEntries[] = {
      kOsAll,
      FEATURE_VALUE_TYPE(features::kDevToolsSourceMapScopesInSourcesPanel)},
 
-#if defined(TOOLKIT_VIEWS)
-    {"native-view-host-manages-layers",
-     flag_descriptions::kNativeViewHostManagesLayersName,
-     flag_descriptions::kNativeViewHostManagesLayersDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(views::features::kNativeViewHostManagesLayers)},
-#endif  // defined(TOOLKIT_VIEWS)
-
 #if BUILDFLAG(IS_ANDROID)
     {"android-fre-layout-update",
      flag_descriptions::kAndroidFreLayoutUpdateName,

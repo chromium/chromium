@@ -55,9 +55,6 @@ class DesktopNativeCursorManager;
 class DesktopWindowTreeHost;
 class FocusManagerEventHandler;
 class TooltipManagerAura;
-namespace legacy {
-class WindowReorderer;
-}
 class WindowReorderer;
 
 // DesktopNativeWidgetAura is a NativeWidgetPrivate implementation that owns
@@ -377,7 +374,6 @@ class VIEWS_EXPORT DesktopNativeWidgetAura
 
   // Reorders child windows of |window_| associated with a view based on the
   // order of the associated views in the widget's view hierarchy.
-  std::unique_ptr<legacy::WindowReorderer> legacy_window_reorderer_;
   std::unique_ptr<WindowReorderer> window_reorderer_;
 
   // See class documentation for Widget in widget.h for a note about type.

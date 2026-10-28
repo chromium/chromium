@@ -56,9 +56,6 @@ BASE_FEATURE(kKeyboardAccessibleTooltipInViews,
 // out yet).
 BASE_FEATURE(kLabelDefaultTooltipFastPath, base::FEATURE_DISABLED_BY_DEFAULT);
 
-// If enabled, NativeViewHost controls the layers of the native view.
-BASE_FEATURE(kNativeViewHostManagesLayers, base::FEATURE_ENABLED_BY_DEFAULT);
-
 #if BUILDFLAG(IS_MAC)
 // When enabled, focusing a View in an inactive Widget makes the Widget's window
 // key (i.e. activates it), matching the behavior on other platforms. This is a

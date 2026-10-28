@@ -16,7 +16,6 @@
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/frame/contents_web_view.h"
 #include "chrome/browser/ui/views/frame/top_container_view.h"
 #include "chrome/browser/ui/views/interaction/browser_elements_views.h"
 #include "chromeos/ui/base/window_properties.h"
@@ -32,7 +31,6 @@
 #include "ui/display/screen.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/background.h"
-#include "ui/views/controls/native/native_view_host.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/native_widget_aura.h"
 #include "ui/views/widget/widget.h"
@@ -187,11 +185,6 @@ void ImmersiveModeControllerChromeos::OnImmersiveRevealStarted() {
 
 void ImmersiveModeControllerChromeos::OnImmersiveRevealEnded() {
   visible_fraction_ = 0;
-  std::vector<ContentsWebView*> contents_views =
-      browser_view_->GetAllVisibleContentsWebViews();
-  for (ContentsWebView* contents_view : contents_views) {
-    contents_view->holder()->SetHitTestTopInset(0);
-  }
   for (Observer& observer : observers_) {
     observer.OnImmersiveRevealEnded();
   }
@@ -206,11 +199,6 @@ void ImmersiveModeControllerChromeos::OnImmersiveFullscreenEntered() {
 void ImmersiveModeControllerChromeos::OnImmersiveFullscreenExited() {
   browser_view_->set_theme_background_y_offset(std::nullopt);
 
-  std::vector<ContentsWebView*> contents_views =
-      browser_view_->GetAllVisibleContentsWebViews();
-  for (ContentsWebView* contents_view : contents_views) {
-    contents_view->holder()->SetHitTestTopInset(0);
-  }
   for (Observer& observer : observers_) {
     observer.OnImmersiveFullscreenExited();
   }
@@ -220,28 +208,6 @@ void ImmersiveModeControllerChromeos::SetVisibleFraction(
     double visible_fraction) {
   if (visible_fraction_ == visible_fraction) {
     return;
-  }
-
-  // Sets the top inset only when the top-of-window views is fully visible. This
-  // means some gesture may not be recognized well during the animation, but
-  // that's fine since a complicated gesture wouldn't be involved during the
-  // animation duration. See: https://crbug.com/41424205.
-  // TODO(crbug.com/434082728): As the NativeViewHost's attached layer can now
-  // be managed by views, the event targeting should now be handled by view's
-  // targeting logic.
-  if (visible_fraction == 1.0) {
-    std::vector<ContentsWebView*> contents_views =
-        browser_view_->GetAllVisibleContentsWebViews();
-    for (ContentsWebView* contents_view : contents_views) {
-      contents_view->holder()->SetHitTestTopInset(
-          browser_view_->top_container()->height());
-    }
-  } else if (visible_fraction_ == 1.0) {
-    std::vector<ContentsWebView*> contents_views =
-        browser_view_->GetAllVisibleContentsWebViews();
-    for (ContentsWebView* contents_view : contents_views) {
-      contents_view->holder()->SetHitTestTopInset(0);
-    }
   }
 
   float old_visible_fraction = visible_fraction_;

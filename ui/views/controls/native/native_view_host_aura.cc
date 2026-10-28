@@ -4,13 +4,11 @@
 
 #include "ui/views/controls/native/native_view_host_aura.h"
 
-#include <algorithm>
 #include <memory>
 #include <optional>
 #include <utility>
 
 #include "base/check.h"
-#include "base/feature_list.h"
 #include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
@@ -24,28 +22,28 @@
 #include "ui/base/hit_test.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/paint_recorder.h"
-#include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/controls/native/native_view_host.h"
-#include "ui/views/controls/native/native_view_host_aura_with_clip_window.h"
 #include "ui/views/painter.h"
 #include "ui/views/view_class_properties.h"
-#include "ui/views/view_constants_aura.h"
-#include "ui/views/views_features.h"
 #include "ui/views/widget/widget.h"
+
+#if BUILDFLAG(IS_CHROMEOS)
+#include "ui/views/controls/native/native_view_host_aura_with_clip_window.h"
+#endif
 
 namespace views {
 
-NativeViewHostAura::NativeViewHostAura(NativeViewHost* host) : host_(host) {}
+NativeViewHostAura::NativeViewHostAura(NativeViewHost* host) : host_(host) {
+#if BUILDFLAG(IS_CHROMEOS)
+  CHECK(host_->layer_managed_by_views());
+#endif
+}
 
 NativeViewHostAura::~NativeViewHostAura() {
   if (host_->native_view()) {
     native_view_observation_.Reset();
-    if (host_->layer_managed_by_views()) {
-      host_->native_view()->SetLayerManagedByParent(true);
-    } else {
-      host_->native_view()->ClearProperty(views::kHostViewKey);
-    }
+    host_->native_view()->SetLayerManagedByParent(true);
     host_->native_view()->ClearProperty(
         aura::client::kParentNativeViewAccessibleKey);
     if (owned_by_parent_) {
@@ -64,29 +62,26 @@ void NativeViewHostAura::AttachNativeView() {
   owned_by_parent_ = host_->native_view()->owned_by_parent();
   host_->native_view()->set_owned_by_parent(false);
 
-  if (!host_->layer_managed_by_views()) {
-    host_->native_view()->SetProperty(views::kHostViewKey,
-                                      static_cast<View*>(host_));
-  }
   Widget::ReparentNativeView(host_->native_view(),
                              host_->GetWidget()->GetNativeView());
-  if (host_->layer_managed_by_views()) {
-    host_->native_view()->SetLayerManagedByParent(false);
-    // Native views in views should be above independent native views
-    host_->GetWidget()->GetNativeView()->StackChildAtBottom(
-        host_->native_view());
-    if (host_->create_layer()) {
-      host_->SetPaintToLayer(ui::LAYER_NOT_DRAWN);
-    } else {
-      CHECK(host_->layer());
-    }
-    host_->layer()->Add(GetUILayer());
+  host_->native_view()->SetLayerManagedByParent(false);
+  // Native views in views should be above independent native views
+  host_->GetWidget()->GetNativeView()->StackChildAtBottom(host_->native_view());
+#if BUILDFLAG(IS_CHROMEOS)
+  if (host_->create_layer()) {
+    host_->SetPaintToLayer(ui::LAYER_NOT_DRAWN);
+  } else {
+    CHECK(host_->layer());
   }
+#else
+  host_->SetPaintToLayer(ui::LAYER_NOT_DRAWN);
+#endif
+  host_->layer()->Add(GetUILayer());
   native_view_observation_.Observe(host_->native_view());
   original_transform_ = host_->native_view()->transform();
   original_transform_changed_ = false;
   UpdateLayerClip();
-  if (host_->layer_managed_by_views() && host_->GetWidget()) {
+  if (host_->GetWidget()) {
     host_->GetWidget()->ReorderNativeViews();
   }
 }
@@ -122,14 +117,14 @@ void NativeViewHostAura::NativeViewDetaching(bool destroyed) {
 
   if (!destroyed) {
     native_view_observation_.Reset();
-    if (host_->layer_managed_by_views()) {
-      host_->native_view()->SetLayerManagedByParent(true);
-      if (host_->create_layer()) {
-        host_->DestroyLayer();
-      }
-    } else {
-      host_->native_view()->ClearProperty(views::kHostViewKey);
+    host_->native_view()->SetLayerManagedByParent(true);
+#if BUILDFLAG(IS_CHROMEOS)
+    if (host_->create_layer()) {
+      host_->DestroyLayer();
     }
+#else
+    host_->DestroyLayer();
+#endif
     host_->native_view()->ClearProperty(
         aura::client::kParentNativeViewAccessibleKey);
     if (original_transform_changed_) {
@@ -149,13 +144,11 @@ void NativeViewHostAura::AddedToWidget() {
   if (host_->GetWidget()->GetNativeView()) {
     Widget::ReparentNativeView(host_->native_view(),
                                host_->GetWidget()->GetNativeView());
-    if (host_->layer_managed_by_views()) {
-      // Native views in views should be above independent native views, which
-      // should be above views.
-      host_->GetWidget()->GetNativeView()->StackChildAtBottom(
-          host_->native_view());
-      host_->GetWidget()->ReorderNativeViews();
-    }
+    // Native views in views should be above independent native views, which
+    // should be above views.
+    host_->GetWidget()->GetNativeView()->StackChildAtBottom(
+        host_->native_view());
+    host_->GetWidget()->ReorderNativeViews();
   }
   if (host_->IsDrawn()) {
     host_->native_view()->Show();
@@ -196,26 +189,8 @@ gfx::Rect NativeViewHostAura::GetNativeViewClipRect() const {
   return layer ? layer->clip_rect() : gfx::Rect();
 }
 
-void NativeViewHostAura::SetHitTestTopInset(int top_inset) {
-  if (host_->layer_managed_by_views()) {
-    // Event targeting works correctly when the content layer is managed by
-    // view.
-    return;
-  }
-
-  if (top_inset_ == top_inset) {
-    return;
-  }
-  top_inset_ = top_inset;
-  UpdateLayerClip();
-}
-
 void NativeViewHostAura::InstallClip(int x, int y, int w, int h) {
   clip_rect_ = gfx::Rect(x, y, w, h);
-}
-
-int NativeViewHostAura::GetHitTestTopInset() const {
-  return top_inset_;
 }
 
 bool NativeViewHostAura::HasInstalledClip() {
@@ -312,10 +287,12 @@ void NativeViewHostAura::OnWindowDestroyed(aura::Window* window) {
 // static
 NativeViewHostWrapper* NativeViewHostWrapper::CreateWrapper(
     NativeViewHost* host) {
-  if (host->layer_managed_by_views()) {
-    return new NativeViewHostAura(host);
+#if BUILDFLAG(IS_CHROMEOS)
+  if (!host->layer_managed_by_views()) {
+    return new NativeViewHostAuraWithClipWindow(host);
   }
-  return new NativeViewHostAuraWithClipWindow(host);
+#endif
+  return new NativeViewHostAura(host);
 }
 
 void NativeViewHostAura::ApplyRoundedCorners() {
@@ -377,23 +354,6 @@ gfx::Rect NativeViewHostAura::GetActualClipRect() const {
     }
   }
 
-  if (top_inset_ > 0 && host_->native_view()) {
-    double scale_y = 1.0;
-    if (host_->native_view()->bounds().height() > 0 && host_->height() > 0) {
-      scale_y = static_cast<double>(host_->height()) /
-                host_->native_view()->bounds().height();
-    }
-    int native_top_inset = base::ClampRound(top_inset_ / scale_y);
-    gfx::Rect allowed_rect(0, native_top_inset,
-                           host_->native_view()->bounds().width(),
-                           std::max(0, host_->native_view()->bounds().height() -
-                                           native_top_inset));
-    if (clip.IsEmpty()) {
-      clip = allowed_rect;
-    } else {
-      clip.Intersect(allowed_rect);
-    }
-  }
   return clip;
 }
 

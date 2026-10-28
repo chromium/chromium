@@ -4,9 +4,7 @@
 
 #include "ui/views/widget/widget.h"
 
-#include <algorithm>
 #include <optional>
-#include <ranges>
 #include <set>
 #include <utility>
 
@@ -101,20 +99,6 @@ class ParentThemeObserver : public ui::ColorProviderSourceObserver {
  private:
   raw_ptr<Widget> widget_;
 };
-
-// If `view` has a layer the layer is added to `layers`. Else this recurses
-// through the children. This is used to build a list of the layers in reverse
-// z-order (i.e views later in the returned vector have a higher z-order)
-// created by views that are direct children of the Widgets layer.
-void BuildViewsWithLayersInZOrder(View* view, View::Views* views) {
-  if (view->layer()) {
-    views->push_back(view);
-  } else {
-    for (View* child : view->GetChildrenInZOrder()) {
-      BuildViewsWithLayersInZOrder(child, views);
-    }
-  }
-}
 
 // Create a native widget implementation.
 // First, use the supplied one if non-NULL.
@@ -1724,13 +1708,6 @@ void Widget::ReorderNativeViews() {
   }
 }
 
-void Widget::LayerTreeChanged() {
-  // Calculate the layers requires traversing the tree, and since nearly any
-  // mutation of the tree can trigger this call we delay until absolutely
-  // necessary.
-  views_with_layers_dirty_ = true;
-}
-
 const NativeWidget* Widget::native_widget() const {
   return native_widget_.get();
 }
@@ -2533,12 +2510,6 @@ bool Widget::ShouldDescendIntoChildForEventHandling(
     return false;
   }
 
-  if (!base::FeatureList::IsEnabled(
-          views::features::kNativeViewHostManagesLayers)) {
-    return ShouldDescendIntoChildForEventHandlingDeprecated(
-        root_layer, child, child_layer, location);
-  }
-
   if (!child_layer) {
     return true;
   }
@@ -2586,57 +2557,6 @@ bool Widget::ShouldDescendIntoChildForEventHandling(
     case LayerRelation::Type::kDisjoint:
       return true;
   }
-}
-
-bool Widget::ShouldDescendIntoChildForEventHandlingDeprecated(
-    ui::Layer* root_layer,
-    gfx::NativeView child,
-    ui::Layer* child_layer,
-    const gfx::Point& location) {
-  const View::Views& views_with_layers = GetViewsWithLayersInZOrder();
-  if (views_with_layers.empty()) {
-    return true;
-  }
-
-  // Don't descend into |child| if there is a view with a Layer that contains
-  // the point and is stacked above |child_layer|.
-  auto child_layer_iter =
-      std::ranges::find(root_layer->children(), child_layer);
-  if (child_layer_iter == root_layer->children().end()) {
-    return true;
-  }
-
-  for (View* view : std::views::reverse(views_with_layers)) {
-    // Skip views that don't process events.
-    if (!view->GetCanProcessEventsWithinSubtree()) {
-      continue;
-    }
-    ui::Layer* layer = view->layer();
-    DCHECK(layer);
-    if (layer->visible() && layer->bounds().Contains(location)) {
-      auto root_layer_iter = std::ranges::find(root_layer->children(), layer);
-      if (child_layer_iter > root_layer_iter) {
-        // |child| is on top of the remaining layers, no need to continue.
-        return true;
-      }
-
-      // TODO(pbos): Does this need to be made more robust through hit testing
-      // or using ViewTargeter? This for instance does not take into account
-      // whether the view is enabled/drawn/etc.
-      //
-      // Event targeting uses the visible bounds of the View, which may differ
-      // from the bounds of the layer. Verify the view hosting the layer
-      // actually contains |location|. Use GetVisibleBounds(), which is
-      // effectively what event targetting uses.
-      gfx::Rect vis_bounds = view->GetVisibleBounds();
-      gfx::Point point_in_view = location;
-      View::ConvertPointToTarget(GetRootView(), view, &point_in_view);
-      if (vis_bounds.Contains(point_in_view)) {
-        return false;
-      }
-    }
-  }
-  return true;
 }
 
 void Widget::LayoutRootViewIfNecessary() {
@@ -3015,15 +2935,6 @@ bool Widget::GetSavedWindowPlacement(gfx::Rect* bounds,
     bounds->set_height(minimum_size.height());
   }
   return true;
-}
-
-const View::Views& Widget::GetViewsWithLayersInZOrder() {
-  if (views_with_layers_dirty_) {
-    views_with_layers_dirty_ = false;
-    views_with_layers_.clear();
-    BuildViewsWithLayersInZOrder(GetRootView(), &views_with_layers_);
-  }
-  return views_with_layers_;
 }
 
 void Widget::UnlockPaintAsActive() {

@@ -12,14 +12,12 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_util.h"
-#include "base/test/scoped_feature_list.h"
 #include "ui/aura/test/test_windows.h"
 #include "ui/aura/window.h"
 #include "ui/compositor/layer.h"
 #include "ui/views/controls/native/native_view_host.h"
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/view.h"
-#include "ui/views/views_features.h"
 #include "ui/views/widget/widget.h"
 
 namespace views {
@@ -94,16 +92,6 @@ class WindowReordererTest : public ViewsTestBase {
     params.name = name;
     return CreateTestWidget(std::move(params));
   }
-
- protected:
-  void SetUp() override {
-    // Enable NativeViewHostManagesLayers to force WindowReorderer.
-    feature_list_.InitAndEnableFeature(features::kNativeViewHostManagesLayers);
-    ViewsTestBase::SetUp();
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 // Helper class to build a view and window hierarchy for testing.

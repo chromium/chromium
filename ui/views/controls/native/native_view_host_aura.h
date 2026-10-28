@@ -45,8 +45,6 @@ class NativeViewHostAura : public NativeViewHostWrapper,
   gfx::RoundedCornersF GetNativeViewCornerRadii() const override;
   gfx::Rect GetNativeViewClipRect() const override;
 
-  void SetHitTestTopInset(int top_inset) override;
-  int GetHitTestTopInset() const override;
   void InstallClip(int x, int y, int w, int h) override;
   bool HasInstalledClip() override;
   void UninstallClip() override;
@@ -76,8 +74,8 @@ class NativeViewHostAura : public NativeViewHostWrapper,
   // Updates the clip on the native view's layer.
   void UpdateLayerClip();
 
-  // Returns the actual clip rect to be applied, combining layout clip and top
-  // inset.
+  // Returns the actual clip rect to be applied, combining layout clip and
+  // external clip.
   gfx::Rect GetActualClipRect() const;
 
   // Our associated NativeViewHost.
@@ -102,9 +100,6 @@ class NativeViewHostAura : public NativeViewHostWrapper,
 
   // The external clip rect of the native view.
   std::optional<gfx::Rect> external_clip_rect_;
-
-  // The top insets to exclude the underlying native view from the target.
-  int top_inset_ = 0;
 
   // If attached, this contains the value of owned_by_parent of the
   // native view.

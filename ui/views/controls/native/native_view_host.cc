@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/check.h"
+#include "build/build_config.h"
 #include "build/buildflag.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/cursor/cursor.h"
@@ -18,7 +19,6 @@
 #include "ui/views/controls/native/native_view_host_wrapper.h"
 #include "ui/views/painter.h"
 #include "ui/views/view_utils.h"
-#include "ui/views/views_features.h"
 #include "ui/views/widget/widget.h"
 
 namespace views {
@@ -26,9 +26,7 @@ namespace views {
 ////////////////////////////////////////////////////////////////////////////////
 // NativeViewHost, public:
 
-NativeViewHost::NativeViewHost()
-    : layer_managed_by_views_(base::FeatureList::IsEnabled(
-          views::features::kNativeViewHostManagesLayers)) {
+NativeViewHost::NativeViewHost() {
   set_suppress_default_focus_handling();
 }
 
@@ -50,11 +48,6 @@ void NativeViewHost::Attach(gfx::NativeView native_view) {
   // could be visible when |this| is not.
   if (!IsDrawn()) {
     native_wrapper_->HideWidget();
-  }
-
-  Widget* widget = Widget::GetWidgetForNativeView(native_view);
-  if (widget) {
-    widget->SetNativeWindowProperty(kWidgetNativeViewHostKey, this);
   }
 }
 
@@ -89,14 +82,6 @@ gfx::RoundedCornersF NativeViewHost::GetNativeViewCornerRadii() const {
                          : gfx::RoundedCornersF();
 }
 
-void NativeViewHost::SetHitTestTopInset(int top_inset) {
-  native_wrapper_->SetHitTestTopInset(top_inset);
-}
-
-int NativeViewHost::GetHitTestTopInset() const {
-  return native_wrapper_->GetHitTestTopInset();
-}
-
 void NativeViewHost::SetNativeViewSize(const gfx::Size& size) {
   if (native_view_size_ == size) {
     return;
@@ -105,21 +90,21 @@ void NativeViewHost::SetNativeViewSize(const gfx::Size& size) {
   InvalidateLayout();
 }
 
+#if BUILDFLAG(IS_CHROMEOS)
 void NativeViewHost::SetLayerManagedByViews(bool managed) {
   if (layer_managed_by_views_ == managed) {
     return;
   }
 
-  CHECK(!managed || base::FeatureList::IsEnabled(
-                        views::features::kNativeViewHostManagesLayers));
-
-  layer_managed_by_views_ = managed;
+  CHECK(!native_wrapper_);
   DCHECK(!native_view_);
+  layer_managed_by_views_ = managed;
 }
 
 void NativeViewHost::SetCreateLayer(bool create_layer) {
   create_layer_ = create_layer;
 }
+#endif
 
 gfx::NativeView NativeViewHost::GetNativeViewContainer() const {
   return native_view_ ? native_wrapper_->GetNativeViewContainer()
@@ -138,7 +123,11 @@ void NativeViewHost::SetBackgroundColorWhenClipped(
 }
 
 ui::Layer* NativeViewHost::GetUILayer() {
+#if BUILDFLAG(IS_CHROMEOS)
   return layer_managed_by_views() ? layer() : native_wrapper_->GetUILayer();
+#else
+  return layer();
+#endif
 }
 
 void NativeViewHost::SetMouseEventFallback(ui::EventHandler* handler) {
@@ -331,10 +320,6 @@ gfx::Rect NativeViewHost::GetNativeViewClipRect() const {
 void NativeViewHost::Detach(bool destroyed) {
   if (native_view_) {
     if (!destroyed) {
-      Widget* widget = Widget::GetWidgetForNativeView(native_view_);
-      if (widget) {
-        widget->SetNativeWindowProperty(kWidgetNativeViewHostKey, nullptr);
-      }
       ClearFocus();
     }
     native_wrapper_->NativeViewDetaching(destroyed);

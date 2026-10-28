@@ -693,8 +693,14 @@ component("views") {
   ]
 
   if (is_chromeos) {
-    public += [ "highlight_border.h" ]
-    sources += [ "highlight_border.cc" ]
+    public += [
+      "controls/native/native_view_host_aura_with_clip_window.h",
+      "highlight_border.h",
+    ]
+    sources += [
+      "controls/native/native_view_host_aura_with_clip_window.cc",
+      "highlight_border.cc",
+    ]
     deps += [
       "//ash/constants",
       "//chromeos/constants",
@@ -860,7 +866,6 @@ component("views") {
       "accessibility/ax_window_obj_wrapper.h",
       "accessibility/tree/views_ax_manager.h",
       "controls/native/native_view_host_aura.h",
-      "controls/native/native_view_host_aura_with_clip_window.h",
       "corewm/tooltip.h",
       "corewm/tooltip_aura.h",
       "corewm/tooltip_controller.h",
@@ -868,9 +873,7 @@ component("views") {
       "corewm/tooltip_view_aura.h",
       "event_monitor_aura.h",
       "touchui/touch_selection_controller_impl.h",
-      "view_constants_aura.h",
       "widget/focus_manager_event_handler.h",
-      "widget/legacy_window_reorderer.h",
       "widget/native_widget_aura.h",
       "widget/tooltip_manager_aura.h",
       "widget/widget_aura_utils.h",
@@ -891,7 +894,6 @@ component("views") {
       "controls/menu/menu_pre_target_handler_aura.cc",
       "controls/menu/menu_pre_target_handler_aura.h",
       "controls/native/native_view_host_aura.cc",
-      "controls/native/native_view_host_aura_with_clip_window.cc",
       "corewm/tooltip_aura.cc",
       "corewm/tooltip_controller.cc",
       "corewm/tooltip_state_manager.cc",
@@ -900,9 +902,7 @@ component("views") {
       "event_monitor_aura.cc",
       "metrics_aura.cc",
       "touchui/touch_selection_controller_impl.cc",
-      "view_constants_aura.cc",
       "widget/focus_manager_event_handler.cc",
-      "widget/legacy_window_reorderer.cc",
       "widget/native_widget_aura.cc",
       "widget/tooltip_manager_aura.cc",
       "widget/window_reorderer.cc",
@@ -1594,7 +1594,6 @@ test("views_unittests") {
       "corewm/tooltip_controller_unittest.cc",
       "touchui/touch_selection_controller_impl_unittest.cc",
       "view_unittest_aura.cc",
-      "widget/legacy_window_reorderer_unittest.cc",
       "widget/native_widget_aura_unittest.cc",
       "widget/window_reorderer_unittest.cc",
     ]
@@ -1609,10 +1608,7 @@ test("views_unittests") {
 
     if (is_mac) {
       # views_unittests not yet compiling on Mac. http://crbug.com/378134
-      sources -= [
-        "widget/legacy_window_reorderer_unittest.cc",
-        "widget/window_reorderer_unittest.cc",
-      ]
+      sources -= [ "widget/window_reorderer_unittest.cc" ]
     }
 
     if (is_win) {

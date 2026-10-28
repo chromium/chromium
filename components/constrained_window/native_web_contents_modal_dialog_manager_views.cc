@@ -110,9 +110,6 @@ void NativeWebContentsModalDialogManagerViews::Show() {
   }
 
 #if defined(USE_AURA)
-  // TODO(pkotwicz): Control the z-order of the constrained dialog via
-  // views::kHostViewKey. We will need to ensure that the parent window's
-  // shadows are below the constrained dialog in z-order when we do this.
   shown_widgets_.insert(widget);
 #endif
 

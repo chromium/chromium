@@ -56,12 +56,6 @@ class NativeViewHostWrapper {
   virtual gfx::RoundedCornersF GetNativeViewCornerRadii() const = 0;
   virtual gfx::Rect GetNativeViewClipRect() const = 0;
 
-
-  // Sets the height of the top region where gfx::NativeView shouldn't be
-  // targeted.
-  virtual void SetHitTestTopInset(int top_inset) = 0;
-  virtual int GetHitTestTopInset() const = 0;
-
   // Installs a clip on the gfx::NativeView. These values are in the coordinate
   // space of the Widget, so if this method is called from ShowWidget
   // then the values need to be translated.

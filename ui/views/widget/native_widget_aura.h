@@ -44,9 +44,6 @@ namespace views {
 class DropHelper;
 class FocusManagerEventHandler;
 class TooltipManagerAura;
-namespace legacy {
-class WindowReorderer;
-}
 class WindowReorderer;
 
 // NativeWidgetAura is a NativeWidgetPrivate implementation that does not own
@@ -294,7 +291,6 @@ class VIEWS_EXPORT NativeWidgetAura : public internal::NativeWidgetPrivate,
 
   // Reorders child windows of |window_| associated with a view based on the
   // order of the associated views in the widget's view hierarchy.
-  std::unique_ptr<legacy::WindowReorderer> legacy_window_reorderer_;
   std::unique_ptr<WindowReorderer> window_reorderer_;
 
   std::unique_ptr<DropHelper> drop_helper_;

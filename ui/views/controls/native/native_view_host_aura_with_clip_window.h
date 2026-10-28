@@ -9,11 +9,16 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
+#include "build/build_config.h"
 #include "ui/aura/window_observer.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/geometry/transform.h"
 #include "ui/views/controls/native/native_view_host_wrapper.h"
 #include "ui/views/views_export.h"
+
+#if !BUILDFLAG(IS_CHROMEOS)
+#error "NativeViewHostAuraWithClipWindow is ChromeOS-only."
+#endif
 
 namespace aura {
 class Window;
@@ -24,6 +29,8 @@ namespace views {
 class NativeViewHost;
 
 // Aura implementation of NativeViewHostWrapper.
+// TODO(crbug.com/578734908): Remove this class when ARC issue is fixed or
+// ARC support is dropped.
 class NativeViewHostAuraWithClipWindow : public NativeViewHostWrapper,
                                          public aura::WindowObserver {
  public:
@@ -46,8 +53,6 @@ class NativeViewHostAuraWithClipWindow : public NativeViewHostWrapper,
   gfx::RoundedCornersF GetNativeViewCornerRadii() const override;
   gfx::Rect GetNativeViewClipRect() const override;
 
-  void SetHitTestTopInset(int top_inset) override;
-  int GetHitTestTopInset() const override;
   void InstallClip(int x, int y, int w, int h) override;
   bool HasInstalledClip() override;
   void UninstallClip() override;
@@ -85,9 +90,6 @@ class NativeViewHostAuraWithClipWindow : public NativeViewHostWrapper,
   // Sets or updates the |corner_radii_| on the native view's layer.
   void ApplyRoundedCorners();
 
-  // Updates the top insets of |clipping_window_|.
-  void UpdateInsets();
-
   // Our associated NativeViewHost.
   raw_ptr<NativeViewHost> host_;
 
@@ -113,9 +115,6 @@ class NativeViewHostAuraWithClipWindow : public NativeViewHostWrapper,
   bool original_transform_changed_ = false;
   // The external clip rect of the native view.
   std::optional<gfx::Rect> external_clip_rect_;
-
-  // The top insets to exclude the underlying native view from the target.
-  int top_inset_ = 0;
 
   base::ScopedObservation<aura::Window, aura::WindowObserver>
       native_view_observation_{this};

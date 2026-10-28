@@ -1907,10 +1907,6 @@ TEST_P(WidgetWithDestroyedNativeViewOrNativeWidgetTest,
   widget()->OnSizeConstraintsChanged();
 }
 
-TEST_P(WidgetWithDestroyedNativeViewOrNativeWidgetTest, LayerTreeChanged) {
-  widget()->LayerTreeChanged();
-}
-
 TEST_P(WidgetWithDestroyedNativeViewOrNativeWidgetTest,
        LayoutRootViewIfNecessary) {
   widget()->LayoutRootViewIfNecessary();

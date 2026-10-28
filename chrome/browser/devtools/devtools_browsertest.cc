@@ -161,10 +161,6 @@
 #include "ui/gl/gl_switches.h"
 #include "url/gurl.h"
 
-#if defined(USE_AURA)
-#include "ui/views/views_features.h"
-#endif
-
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/lifetime/application_lifetime_desktop.h"
 #include "chrome/browser/ui/autofill/autofill_popup_controller_impl.h"
@@ -2633,16 +2629,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsTest, TestDispatchKeyEventDoesNotCrash) {
 }
 
 #if defined(USE_AURA)
-class DevToolsVisibilityTest : public DevToolsTest {
- public:
-  DevToolsVisibilityTest() {
-    feature_list_.InitAndEnableFeature(
-        views::features::kNativeViewHostManagesLayers);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
+using DevToolsVisibilityTest = DevToolsTest;
 
 IN_PROC_BROWSER_TEST_F(DevToolsVisibilityTest,
                        TestMainWebContentsVisibilityWithDockedDevTools) {

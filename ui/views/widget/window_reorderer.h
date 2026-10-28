@@ -19,9 +19,7 @@ class View;
 
 // Class which reorders the widget's child windows according to the z-order
 // of the views in the view tree. It uses a hybrid View/Layer tree traversal
-// to find associations structurally without relying on window properties
-// like kHostViewKey. It is used when the kNativeViewHostManagesLayers
-// feature is enabled.
+// to find associations structurally without relying on window properties.
 class VIEWS_EXPORT WindowReorderer : public aura::WindowObserver,
                                      public ViewObserver {
  public:

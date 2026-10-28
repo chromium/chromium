@@ -12,23 +12,19 @@
 #include "base/check.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
-#include "build/build_config.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/client/focus_client.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_delegate.h"
 #include "ui/aura/window_occlusion_tracker.h"
-#include "ui/aura/window_targeter.h"
 #include "ui/base/cursor/cursor.h"
 #include "ui/base/hit_test.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/paint_recorder.h"
-#include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/controls/native/native_view_host.h"
 #include "ui/views/painter.h"
 #include "ui/views/view_class_properties.h"
-#include "ui/views/view_constants_aura.h"
 #include "ui/views/widget/widget.h"
 
 namespace views {
@@ -88,11 +84,9 @@ NativeViewHostAuraWithClipWindow::NativeViewHostAuraWithClipWindow(
 NativeViewHostAuraWithClipWindow::~NativeViewHostAuraWithClipWindow() {
   native_view_observation_.Reset();
   if (host_->native_view()) {
-    host_->native_view()->ClearProperty(views::kHostViewKey);
     host_->native_view()->ClearProperty(aura::client::kHostWindowKey);
     host_->native_view()->ClearProperty(
         aura::client::kParentNativeViewAccessibleKey);
-    clipping_window_->ClearProperty(views::kHostViewKey);
     if (host_->native_view()->parent() == clipping_window_.get()) {
       clipping_window_->RemoveChild(host_->native_view());
     }
@@ -107,8 +101,6 @@ void NativeViewHostAuraWithClipWindow::AttachNativeView() {
   }
   clipping_window_delegate_->set_native_view(host_->native_view());
   native_view_observation_.Observe(host_->native_view());
-  host_->native_view()->SetProperty(views::kHostViewKey,
-                                    static_cast<View*>(host_));
 
   original_transform_ = host_->native_view()->transform();
   original_transform_changed_ = false;
@@ -149,7 +141,6 @@ void NativeViewHostAuraWithClipWindow::NativeViewDetaching(bool destroyed) {
   RemoveClippingWindow();
   if (!destroyed) {
     native_view_observation_.Reset();
-    host_->native_view()->ClearProperty(views::kHostViewKey);
     host_->native_view()->ClearProperty(aura::client::kHostWindowKey);
     host_->native_view()->ClearProperty(
         aura::client::kParentNativeViewAccessibleKey);
@@ -213,21 +204,9 @@ gfx::Rect NativeViewHostAuraWithClipWindow::GetNativeViewClipRect() const {
 
 
 
-void NativeViewHostAuraWithClipWindow::SetHitTestTopInset(int top_inset) {
-  if (top_inset_ == top_inset) {
-    return;
-  }
-  top_inset_ = top_inset;
-  UpdateInsets();
-}
-
 void NativeViewHostAuraWithClipWindow::InstallClip(int x, int y, int w, int h) {
   clip_rect_ = std::make_unique<gfx::Rect>(
       host_->ConvertRectToWidget(gfx::Rect(x, y, w, h)));
-}
-
-int NativeViewHostAuraWithClipWindow::GetHitTestTopInset() const {
-  return top_inset_;
 }
 
 bool NativeViewHostAuraWithClipWindow::HasInstalledClip() {
@@ -352,8 +331,6 @@ void NativeViewHostAuraWithClipWindow::CreateClippingWindow() {
   clipping_window_->set_owned_by_parent(false);
   clipping_window_->SetName("NativeViewHostAuraWithClipWindowClip");
   clipping_window_->layer()->SetMasksToBounds(true);
-  clipping_window_->SetProperty(views::kHostViewKey, static_cast<View*>(host_));
-  UpdateInsets();
 }
 
 void NativeViewHostAuraWithClipWindow::AddClippingWindow() {
@@ -400,27 +377,6 @@ void NativeViewHostAuraWithClipWindow::ApplyRoundedCorners() {
   if (layer->rounded_corner_radii() != corner_radii_) {
     layer->SetRoundedCornerRadius(corner_radii_);
     layer->SetIsFastRoundedCorner(true);
-  }
-}
-
-void NativeViewHostAuraWithClipWindow::UpdateInsets() {
-  if (!clipping_window_) {
-    return;
-  }
-
-  if (top_inset_ == 0) {
-    // The window targeter needs to be uninstalled when not used; keeping empty
-    // targeter here actually conflicts with ash::ImmersiveWindowTargeter on
-    // immersive mode in Ash.
-    // TODO(mukai): fix this.
-    clipping_window_->SetEventTargeter(nullptr);
-  } else {
-    if (!clipping_window_->targeter()) {
-      clipping_window_->SetEventTargeter(
-          std::make_unique<aura::WindowTargeter>());
-    }
-    clipping_window_->targeter()->SetInsets(
-        gfx::Insets::TLBR(top_inset_, 0, 0, 0));
   }
 }
 

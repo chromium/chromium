@@ -13,10 +13,9 @@
 #include <utility>
 #include <vector>
 
-#include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/icu_test_util.h"
-#include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/test/test_focus_client.h"
 #include "ui/aura/test/test_window_builder.h"
@@ -31,16 +30,17 @@
 #include "ui/events/test/event_generator.h"
 #include "ui/platform_window/platform_window_init_properties.h"
 #include "ui/views/controls/native/native_view_host.h"
-#include "ui/views/controls/native/native_view_host_aura_with_clip_window.h"
 #include "ui/views/controls/native/native_view_host_test_base.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/test/views_test_utils.h"
 #include "ui/views/view.h"
-#include "ui/views/view_constants_aura.h"
-#include "ui/views/views_features.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
 #include "ui/wm/core/default_activation_client.h"
+
+#if BUILDFLAG(IS_CHROMEOS)
+#include "ui/views/controls/native/native_view_host_aura_with_clip_window.h"
+#endif
 
 namespace views {
 
@@ -130,20 +130,33 @@ class NativeViewHostAuraTest : public test::NativeViewHostTestBase {
 
   Widget* child_widget() { return child_.get(); }
 
+#if BUILDFLAG(IS_CHROMEOS)
   aura::Window* clipping_window() {
     return static_cast<NativeViewHostAuraWithClipWindow*>(GetNativeWrapper())
         ->clipping_window_.get();
   }
+#endif
 
   aura::Window* native_view() { return host()->native_view(); }
 
   aura::WindowObserver* GetWindowObserver() {
-    if (base::FeatureList::IsEnabled(
-            views::features::kNativeViewHostManagesLayers)) {
-      return static_cast<NativeViewHostAura*>(GetNativeWrapper());
+#if BUILDFLAG(IS_CHROMEOS)
+    if (!host()->layer_managed_by_views()) {
+      return static_cast<NativeViewHostAuraWithClipWindow*>(GetNativeWrapper());
     }
-    return static_cast<NativeViewHostAuraWithClipWindow*>(GetNativeWrapper());
+#endif
+    return static_cast<NativeViewHostAura*>(GetNativeWrapper());
   }
+
+#if BUILDFLAG(IS_CHROMEOS)
+  void CreateHost(bool layer_managed_by_views) {
+    CreateTopLevel();
+    CreateTestingHost();
+    host()->SetLayerManagedByViews(layer_managed_by_views);
+    child_ = CreateChildForHost(toplevel()->GetNativeView(),
+                                toplevel()->client_view(), new View, host());
+  }
+#endif
 
   void CreateHost() {
     CreateTopLevel();
@@ -171,63 +184,6 @@ TEST_F(NativeViewHostAuraTest, StopObservingNativeViewOnDestruct) {
   EXPECT_TRUE(child_win->HasObserver(aura_host));
   DestroyHost();
   EXPECT_FALSE(child_win->HasObserver(aura_host));
-}
-
-// Tests that the kHostViewKey is correctly set and cleared in legacy mode
-// (layer managed by parent window).
-TEST_F(NativeViewHostAuraTest, HostViewPropertyKeyLegacy) {
-  if (base::FeatureList::IsEnabled(
-          views::features::kNativeViewHostManagesLayers)) {
-    GTEST_SKIP();
-  }
-  CreateTopLevel();
-  CreateTestingHost();
-
-  child_ = CreateChildForHost(toplevel()->GetNativeView(),
-                              toplevel()->client_view(), new View, host());
-
-  aura::Window* child_win = child_widget()->GetNativeView();
-  EXPECT_EQ(native_view(), child_win);
-  EXPECT_EQ(host(), child_win->GetProperty(views::kHostViewKey));
-
-  host()->Detach();
-  EXPECT_FALSE(child_win->GetProperty(views::kHostViewKey));
-  EXPECT_FALSE(native_view());  // detached.
-
-  host()->Attach(child_win);
-  EXPECT_EQ(native_view(), child_win);
-  EXPECT_EQ(host(), child_win->GetProperty(views::kHostViewKey));
-
-  DestroyHost();
-  EXPECT_FALSE(child_win->GetProperty(views::kHostViewKey));
-}
-
-// Tests that the kHostViewKey is NOT set in default mode (layer managed by
-// views).
-TEST_F(NativeViewHostAuraTest, HostViewPropertyKeyManaged) {
-  if (!base::FeatureList::IsEnabled(
-          views::features::kNativeViewHostManagesLayers)) {
-    GTEST_SKIP();
-  }
-
-  CreateTopLevel();
-  CreateTestingHost();
-
-  child_ = CreateChildForHost(toplevel()->GetNativeView(),
-                              toplevel()->client_view(), new View, host());
-
-  aura::Window* child_win = child_widget()->GetNativeView();
-  EXPECT_EQ(native_view(), child_win);
-  EXPECT_FALSE(child_win->GetProperty(views::kHostViewKey));
-
-  host()->Detach();
-  EXPECT_FALSE(child_win->GetProperty(views::kHostViewKey));
-
-  host()->Attach(child_win);
-  EXPECT_EQ(native_view(), child_win);
-  EXPECT_FALSE(child_win->GetProperty(views::kHostViewKey));
-
-  DestroyHost();
 }
 
 // Tests that the NativeViewHost reports the cursor set on its native view.
@@ -259,12 +215,8 @@ TEST_F(NativeViewHostAuraTest, DestroyWidget) {
 // Test that the fast resize path places the clipping and content windows were
 // they are supposed to be.
 TEST_F(NativeViewHostAuraTest, FastResizePath) {
-  if (!base::FeatureList::IsEnabled(
-          views::features::kNativeViewHostManagesLayers)) {
-    GTEST_SKIP();
-  }
   CreateHost();
-  toplevel()->SetBounds(gfx::Rect(20, 20, 100, 100));
+  toplevel()->SetBounds({20, 20, 100, 100});
 
   // Without fast resize, the clipping window should size to the native view
   // with the native view positioned at the origin of the clipping window and
@@ -297,12 +249,8 @@ TEST_F(NativeViewHostAuraTest, FastResizePath) {
 // values while the native size is not equal to the View size. During fast
 // resize, the size and transform of the NativeView should not be modified.
 TEST_F(NativeViewHostAuraTest, BoundsWhileScaling) {
-  if (!base::FeatureList::IsEnabled(
-          views::features::kNativeViewHostManagesLayers)) {
-    GTEST_SKIP();
-  }
   CreateHost();
-  toplevel()->SetBounds(gfx::Rect(20, 20, 100, 100));
+  toplevel()->SetBounds({20, 20, 100, 100});
   EXPECT_EQ(gfx::Transform(), host()->native_view()->transform());
 
   // Without fast resize, the clipping window should size to the native view
@@ -345,14 +293,11 @@ TEST_F(NativeViewHostAuraTest, BoundsWhileScaling) {
   DestroyHost();
 }
 
+#if BUILDFLAG(IS_CHROMEOS)
 // Test installing and uninstalling a clip.
 TEST_F(NativeViewHostAuraTest, InstallClip) {
-  if (base::FeatureList::IsEnabled(
-          views::features::kNativeViewHostManagesLayers)) {
-    GTEST_SKIP();
-  }
-  CreateHost();
-  toplevel()->SetBounds(gfx::Rect(20, 20, 100, 100));
+  CreateHost(/*layer_managed_by_views=*/false);
+  toplevel()->SetBounds({20, 20, 100, 100});
   gfx::Rect client_bounds = toplevel()->client_view()->bounds();
 
   // Without a clip, the clipping window should always be positioned at the
@@ -393,6 +338,7 @@ TEST_F(NativeViewHostAuraTest, InstallClip) {
 
   DestroyHost();
 }
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 class NativeViewHostAuraClipTest : public NativeViewHostAuraTest,
                                    public testing::WithParamInterface<bool> {
@@ -409,12 +355,8 @@ class NativeViewHostAuraClipTest : public NativeViewHostAuraTest,
 INSTANTIATE_TEST_SUITE_P(All, NativeViewHostAuraClipTest, testing::Bool());
 
 TEST_P(NativeViewHostAuraClipTest, ClipByParent) {
-  if (!base::FeatureList::IsEnabled(
-          views::features::kNativeViewHostManagesLayers)) {
-    GTEST_SKIP();
-  }
   CreateHost();
-  toplevel()->SetBounds(gfx::Rect(0, 0, 500, 500));
+  toplevel()->SetBounds({500, 500});
   toplevel()->Show();
 
   View* container = new View();
@@ -520,14 +462,10 @@ TEST_P(NativeViewHostAuraClipTest, ClipByParent) {
 }
 
 TEST_P(NativeViewHostAuraClipTest, ClipByParentRTL) {
-  if (!base::FeatureList::IsEnabled(
-          views::features::kNativeViewHostManagesLayers)) {
-    GTEST_SKIP();
-  }
   base::test::ScopedRestoreICUDefaultLocale scoped_locale_("he");
 
   CreateHost();
-  toplevel()->SetBounds(gfx::Rect(0, 0, 500, 500));
+  toplevel()->SetBounds({500, 500});
   toplevel()->Show();
 
   View* container = new View();
@@ -671,15 +609,12 @@ TEST_F(NativeViewHostAuraTest, ParentAfterDetach) {
             test_observer.events().back().type);
 }
 
+#if BUILDFLAG(IS_CHROMEOS)
 // Ensure the clipping window is hidden before any other operations.
 // This is a regression test for http://crbug.com/388699.
 TEST_F(NativeViewHostAuraTest, RemoveClippingWindowOrder) {
-  if (base::FeatureList::IsEnabled(
-          views::features::kNativeViewHostManagesLayers)) {
-    GTEST_SKIP();
-  }
-  CreateHost();
-  toplevel()->SetBounds(gfx::Rect(20, 20, 100, 100));
+  CreateHost(/*layer_managed_by_views=*/false);
+  toplevel()->SetBounds({20, 20, 100, 100});
   native_host()->ShowWidget(10, 20, 100, 100, 100, 100);
 
   NativeViewHostWindowObserver test_observer;
@@ -700,19 +635,16 @@ TEST_F(NativeViewHostAuraTest, RemoveClippingWindowOrder) {
 
   DestroyHost();
 }
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 // Ensure the native view receives the correct bounds notification when it is
 // attached. This is a regression test for https://crbug.com/399420.
 TEST_F(NativeViewHostAuraTest, Attach) {
-  if (!base::FeatureList::IsEnabled(
-          views::features::kNativeViewHostManagesLayers)) {
-    GTEST_SKIP();
-  }
   CreateHost();
   host()->Detach();
 
-  child_widget()->GetNativeView()->SetBounds(gfx::Rect(0, 0, 0, 0));
-  toplevel()->SetBounds(gfx::Rect(0, 0, 100, 100));
+  child_widget()->GetNativeView()->SetBounds({});
+  toplevel()->SetBounds({100, 100});
   gfx::Rect client_bounds = toplevel()->client_view()->bounds();
   host()->SetBoundsRect(client_bounds);
 
@@ -743,12 +675,8 @@ TEST_F(NativeViewHostAuraTest, Attach) {
 }
 
 TEST_F(NativeViewHostAuraTest, HostMovedWithSameLayerBounds) {
-  if (!base::FeatureList::IsEnabled(
-          views::features::kNativeViewHostManagesLayers)) {
-    GTEST_SKIP();
-  }
   CreateTopLevel();
-  toplevel()->SetBounds({0, 0, 200, 200});
+  toplevel()->SetBounds({200, 200});
 
   View* container =
       toplevel()->client_view()->AddChildView(std::make_unique<View>());
@@ -907,87 +835,25 @@ TEST_F(NativeViewHostAuraTest, FocusManagerUpdatedDuringDestruction) {
   EXPECT_EQ(nullptr, toplevel()->GetFocusManager()->GetFocusedView());
 }
 
-namespace {
-
-ui::EventTarget* GetTarget(aura::Window* window, const gfx::Point& location) {
-  gfx::Point root_location = location;
-  aura::Window::ConvertPointToTarget(window, window->GetRootWindow(),
-                                     &root_location);
-  ui::MouseEvent event(ui::EventType::kMouseMoved, root_location, root_location,
-                       base::TimeTicks::Now(), 0, 0);
-  return window->GetHost()->dispatcher()->event_targeter()->FindTargetForEvent(
-      window->GetRootWindow(), &event);
-}
-
-}  // namespace
-
-class NativeViewHostAuraTopInsetsTest
+#if BUILDFLAG(IS_CHROMEOS)
+class NativeViewHostAuraClipWindowTest
     : public NativeViewHostAuraTest,
       public testing::WithParamInterface<bool> {
  public:
-  NativeViewHostAuraTopInsetsTest() = default;
-  ~NativeViewHostAuraTopInsetsTest() override = default;
-
-  void SetUp() override {
-    if (use_clip_window) {
-      feature_list_.InitAndDisableFeature(
-          views::features::kNativeViewHostManagesLayers);
-    } else {
-      feature_list_.InitAndEnableFeature(
-          views::features::kNativeViewHostManagesLayers);
-    }
-    NativeViewHostAuraTest::SetUp();
-    if (base::FeatureList::IsEnabled(
-            views::features::kNativeViewHostManagesLayers)) {
-      GTEST_SKIP() << "NativeViewHostManagesLayers is enabled";
-    }
-  }
+  NativeViewHostAuraClipWindowTest() = default;
+  ~NativeViewHostAuraClipWindowTest() override = default;
 
  protected:
-  const bool use_clip_window = GetParam();
-
- private:
-  base::test::ScopedFeatureList feature_list_;
+  bool use_clip_window() const { return GetParam(); }
 };
 
-INSTANTIATE_TEST_SUITE_P(All, NativeViewHostAuraTopInsetsTest, testing::Bool());
+INSTANTIATE_TEST_SUITE_P(All,
+                         NativeViewHostAuraClipWindowTest,
+                         testing::Bool());
 
-TEST_P(NativeViewHostAuraTopInsetsTest, TopInsets) {
-  CreateHost();
-  toplevel()->SetBounds(gfx::Rect(20, 20, 100, 100));
-  toplevel()->Show();
-  // The child window is placed relative to the client view. Take that into
-  // account.
-  gfx::Vector2d offset = toplevel()->client_view()->bounds().OffsetFromOrigin();
-
-  aura::Window* toplevel_window = toplevel()->GetNativeWindow();
-  aura::Window* child_window = child_widget()->GetNativeWindow();
-  EXPECT_EQ(child_window,
-            GetTarget(toplevel_window, gfx::Point(1, 1) + offset));
-  EXPECT_EQ(child_window,
-            GetTarget(toplevel_window, gfx::Point(1, 11) + offset));
-
-  host()->SetHitTestTopInset(10);
-  EXPECT_EQ(toplevel_window, GetTarget(toplevel_window, gfx::Point(1, 1)));
-  EXPECT_EQ(toplevel_window,
-            GetTarget(toplevel_window, gfx::Point(1, 1) + offset));
-  EXPECT_EQ(child_window,
-            GetTarget(toplevel_window, gfx::Point(1, 11) + offset));
-
-  // Reset.
-  host()->SetHitTestTopInset(0);
-  EXPECT_EQ(child_window,
-            GetTarget(toplevel_window, gfx::Point(1, 1) + offset));
-  EXPECT_EQ(child_window,
-            GetTarget(toplevel_window, gfx::Point(1, 11) + offset));
-
-  DestroyHost();
-  DestroyTopLevel();
-}
-
-TEST_P(NativeViewHostAuraTopInsetsTest, SetNativeViewClipRect) {
-  CreateHost();
-  toplevel()->SetBounds(gfx::Rect(20, 20, 100, 100));
+TEST_P(NativeViewHostAuraClipWindowTest, SetNativeViewClipRect) {
+  CreateHost(/*layer_managed_by_views=*/!use_clip_window());
+  toplevel()->SetBounds({20, 20, 100, 100});
   toplevel()->Show();
 
   aura::Window* child_window = child_widget()->GetNativeWindow();
@@ -1001,7 +867,7 @@ TEST_P(NativeViewHostAuraTopInsetsTest, SetNativeViewClipRect) {
   EXPECT_TRUE(child_layer->clip_rect().IsEmpty());
 
   // Set clip.
-  gfx::Rect clip(10, 10, 30, 30);
+  gfx::Rect clip{10, 10, 30, 30};
   EXPECT_TRUE(host()->SetNativeViewClipRect(clip));
   EXPECT_EQ(clip, child_layer->clip_rect());
 
@@ -1010,22 +876,22 @@ TEST_P(NativeViewHostAuraTopInsetsTest, SetNativeViewClipRect) {
   EXPECT_EQ(clip, child_layer->clip_rect());
 
   // Set different clip.
-  gfx::Rect clip2(20, 20, 20, 20);
+  gfx::Rect clip2{20, 20, 20, 20};
   EXPECT_TRUE(host()->SetNativeViewClipRect(clip2));
   EXPECT_EQ(clip2, child_layer->clip_rect());
 
   // Clear clip.
-  EXPECT_TRUE(host()->SetNativeViewClipRect(gfx::Rect()));
+  EXPECT_TRUE(host()->SetNativeViewClipRect({}));
   EXPECT_TRUE(child_layer->clip_rect().IsEmpty());
 
   DestroyHost();
   DestroyTopLevel();
 }
 
-TEST_P(NativeViewHostAuraTopInsetsTest,
+TEST_P(NativeViewHostAuraClipWindowTest,
        SetNativeViewClipRectWithRoundedCorners) {
-  CreateHost();
-  toplevel()->SetBounds(gfx::Rect(20, 20, 100, 100));
+  CreateHost(/*layer_managed_by_views=*/!use_clip_window());
+  toplevel()->SetBounds({20, 20, 100, 100});
   toplevel()->Show();
 
   aura::Window* child_window = child_widget()->GetNativeWindow();
@@ -1046,10 +912,10 @@ TEST_P(NativeViewHostAuraTopInsetsTest,
   EXPECT_EQ(kRadii, child_layer->rounded_corner_radii());
 
   // Set external clip that clips right and bottom edges.
-  gfx::Rect clip(0, 0, host_width - 10, host_height - 10);
+  gfx::Rect clip{host_width - 10, host_height - 10};
   EXPECT_TRUE(host()->SetNativeViewClipRect(clip));
 
-  if (use_clip_window) {
+  if (use_clip_window()) {
     // NativeViewHostAuraWithClipWindow: corners are not adjusted by clip.
     EXPECT_EQ(kRadii, child_layer->rounded_corner_radii());
   } else {
@@ -1060,17 +926,53 @@ TEST_P(NativeViewHostAuraTopInsetsTest,
   }
 
   // Clear clip.
-  EXPECT_TRUE(host()->SetNativeViewClipRect(gfx::Rect()));
+  EXPECT_TRUE(host()->SetNativeViewClipRect({}));
   EXPECT_EQ(kRadii, child_layer->rounded_corner_radii());
 
   DestroyHost();
   DestroyTopLevel();
 }
-
-TEST_P(NativeViewHostAuraTopInsetsTest,
-       SetNativeViewClipRectWithTopInsetsAndRoundedCorners) {
+#else
+TEST_F(NativeViewHostAuraTest, SetNativeViewClipRect) {
   CreateHost();
-  toplevel()->SetBounds(gfx::Rect(20, 20, 100, 100));
+  toplevel()->SetBounds({20, 20, 100, 100});
+  toplevel()->Show();
+
+  aura::Window* child_window = child_widget()->GetNativeWindow();
+  ui::Layer* child_layer = child_window->layer();
+  ASSERT_TRUE(child_layer);
+
+  gfx::Rect host_bounds = host()->GetLocalBounds();
+  ASSERT_FALSE(host_bounds.IsEmpty());
+
+  // Initial state: no clip.
+  EXPECT_TRUE(child_layer->clip_rect().IsEmpty());
+
+  // Set clip.
+  gfx::Rect clip{10, 10, 30, 30};
+  EXPECT_TRUE(host()->SetNativeViewClipRect(clip));
+  EXPECT_EQ(clip, child_layer->clip_rect());
+
+  // Set same clip again: should return false.
+  EXPECT_FALSE(host()->SetNativeViewClipRect(clip));
+  EXPECT_EQ(clip, child_layer->clip_rect());
+
+  // Set different clip.
+  gfx::Rect clip2{20, 20, 20, 20};
+  EXPECT_TRUE(host()->SetNativeViewClipRect(clip2));
+  EXPECT_EQ(clip2, child_layer->clip_rect());
+
+  // Clear clip.
+  EXPECT_TRUE(host()->SetNativeViewClipRect({}));
+  EXPECT_TRUE(child_layer->clip_rect().IsEmpty());
+
+  DestroyHost();
+  DestroyTopLevel();
+}
+
+TEST_F(NativeViewHostAuraTest, SetNativeViewClipRectWithRoundedCorners) {
+  CreateHost();
+  toplevel()->SetBounds({20, 20, 100, 100});
   toplevel()->Show();
 
   aura::Window* child_window = child_widget()->GetNativeWindow();
@@ -1087,53 +989,26 @@ TEST_P(NativeViewHostAuraTopInsetsTest,
   const gfx::RoundedCornersF kRadii(5, 10, 15, 20);
   EXPECT_TRUE(host()->SetNativeViewCornerRadii(kRadii));
 
-  // Set top inset.
-  host()->SetHitTestTopInset(20);
+  // If no clip, rounded corners should be applied.
+  EXPECT_EQ(kRadii, child_layer->rounded_corner_radii());
 
-  // Set external clip.
-  gfx::Rect clip(0, 0, host_width - 10, host_height + 10);
+  // Set external clip that clips right and bottom edges.
+  gfx::Rect clip{host_width - 10, host_height - 10};
   EXPECT_TRUE(host()->SetNativeViewClipRect(clip));
 
-  if (use_clip_window) {
-    // NativeViewHostAuraWithClipWindow:
-    // Clip on child layer is just the external clip.
-    EXPECT_EQ(clip, child_layer->clip_rect());
-    // Corners are not adjusted.
-    EXPECT_EQ(kRadii, child_layer->rounded_corner_radii());
-  } else {
-    // NativeViewHostAura:
-    // Combined clip: clip (0, 0, host_width-10, host_height+10) intersect
-    // top_inset (0, 20, host_width, host_height-20) = (0, 20, host_width-10,
-    // host_height-20).
-    EXPECT_EQ(gfx::Rect(0, 20, host_width - 10, host_height - 20),
-              child_layer->clip_rect());
-    // Corners are adjusted based on combined clip (Top and Right clipped).
-    EXPECT_EQ(gfx::RoundedCornersF(0, 0, 0, 20),
-              child_layer->rounded_corner_radii());
-  }
+  // NativeViewHostAura: corners should be adjusted by clip.
+  // Only upper-left corner is not clipped.
+  EXPECT_EQ(gfx::RoundedCornersF(5, 0, 0, 0),
+            child_layer->rounded_corner_radii());
 
-  // Clear external clip.
-  EXPECT_TRUE(host()->SetNativeViewClipRect(gfx::Rect()));
-  if (use_clip_window) {
-    EXPECT_TRUE(child_layer->clip_rect().IsEmpty());
-    EXPECT_EQ(kRadii, child_layer->rounded_corner_radii());
-  } else {
-    // Still has top_inset clip: (0, 20, host_width, host_height-20).
-    EXPECT_EQ(gfx::Rect(0, 20, host_width, host_height - 20),
-              child_layer->clip_rect());
-    // Corners adjusted based on top_inset clip (Top clipped).
-    EXPECT_EQ(gfx::RoundedCornersF(0, 0, 15, 20),
-              child_layer->rounded_corner_radii());
-  }
-
-  // Reset top inset.
-  host()->SetHitTestTopInset(0);
-  EXPECT_TRUE(child_layer->clip_rect().IsEmpty());
+  // Clear clip.
+  EXPECT_TRUE(host()->SetNativeViewClipRect({}));
   EXPECT_EQ(kRadii, child_layer->rounded_corner_radii());
 
   DestroyHost();
   DestroyTopLevel();
 }
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 TEST_F(NativeViewHostAuraTest, WindowHiddenWhenAttached) {
   std::unique_ptr<aura::Window> window =
@@ -1223,37 +1098,15 @@ TEST_F(NativeViewHostAuraTest, ShouldDescendIntoChildForEventHandling) {
   DestroyTopLevel();
 }
 
-TEST(NativeViewHostFeatureTest, FeatureFlagControlsDefault) {
-  // When feature is disabled, default should be false.
-  {
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndDisableFeature(
-        views::features::kNativeViewHostManagesLayers);
-    NativeViewHost host;
-    EXPECT_FALSE(host.layer_managed_by_views());
-  }
-
-  // When feature is enabled, default should be true.
-  {
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndEnableFeature(
-        views::features::kNativeViewHostManagesLayers);
-    NativeViewHost host;
-    EXPECT_TRUE(host.layer_managed_by_views());
-  }
+#if BUILDFLAG(IS_CHROMEOS)
+TEST(NativeViewHostFeatureTest, DefaultLayerManagedByViews) {
+  NativeViewHost host;
+  EXPECT_TRUE(host.layer_managed_by_views());
 }
+#endif
 
 TEST_F(NativeViewHostAuraTest, LayerHierarchyManaged) {
-  if (!base::FeatureList::IsEnabled(
-          views::features::kNativeViewHostManagesLayers)) {
-    GTEST_SKIP();
-  }
-
-  CreateTopLevel();
-  CreateTestingHost();
-
-  child_ = CreateChildForHost(toplevel()->GetNativeView(),
-                              toplevel()->client_view(), new View, host());
+  CreateHost();
 
   aura::Window* child_win = child_widget()->GetNativeView();
   ui::Layer* child_layer = child_win->layer();
@@ -1275,17 +1128,9 @@ TEST_F(NativeViewHostAuraTest, LayerHierarchyManaged) {
   DestroyHost();
 }
 
+#if BUILDFLAG(IS_CHROMEOS)
 TEST_F(NativeViewHostAuraTest, LayerHierarchyLegacy) {
-  if (base::FeatureList::IsEnabled(
-          views::features::kNativeViewHostManagesLayers)) {
-    GTEST_SKIP();
-  }
-
-  CreateTopLevel();
-  CreateTestingHost();
-
-  child_ = CreateChildForHost(toplevel()->GetNativeView(),
-                              toplevel()->client_view(), new View, host());
+  CreateHost(/*layer_managed_by_views=*/false);
 
   EXPECT_FALSE(host()->layer());
 
@@ -1309,15 +1154,11 @@ TEST_F(NativeViewHostAuraTest, LayerHierarchyLegacy) {
 
   DestroyHost();
 }
+#endif
 
 TEST_F(NativeViewHostAuraTest, NestedLayerHierarchy) {
-  if (!base::FeatureList::IsEnabled(
-          views::features::kNativeViewHostManagesLayers)) {
-    GTEST_SKIP();
-  }
-
   CreateTopLevel();
-  toplevel()->SetBounds(gfx::Rect(0, 0, 500, 500));
+  toplevel()->SetBounds({500, 500});
   toplevel()->Show();
 
   View* container =
@@ -1372,11 +1213,6 @@ TEST_F(NativeViewHostAuraTest, NestedLayerHierarchy) {
 }
 
 TEST_F(NativeViewHostAuraTest, AttachFromAnotherWindowTreeHostWithObserver) {
-  if (!base::FeatureList::IsEnabled(
-          views::features::kNativeViewHostManagesLayers)) {
-    GTEST_SKIP();
-  }
-
   root_window()->SetName("PrimaryRootWindow");
 
   std::unique_ptr<aura::WindowTreeHost> second_host =
@@ -1464,11 +1300,6 @@ TEST_F(NativeViewHostAuraTest, AttachFromAnotherWindowTreeHostWithObserver) {
 
 TEST_F(NativeViewHostAuraTest,
        ReparentingToDifferentWidgetSetupsWindowHierarchy) {
-  if (!base::FeatureList::IsEnabled(
-          views::features::kNativeViewHostManagesLayers)) {
-    GTEST_SKIP();
-  }
-
   gfx::NativeWindow context = GetContext();
 
   auto initial_widget_delegate = std::make_unique<WidgetDelegate>();
