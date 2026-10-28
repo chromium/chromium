@@ -4,11 +4,10 @@
 
 #include "components/webcrypto/algorithms/ed25519.h"
 
-#include <string.h>
-
+#include <array>
 #include <string_view>
 
-#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "components/webcrypto/algorithms/asymmetric_key_util.h"
 #include "components/webcrypto/algorithms/util.h"
 #include "components/webcrypto/blink_key_handle.h"
@@ -395,12 +394,14 @@ Status Ed25519Implementation::ImportKeyJwk(
     return status;
 
   // Check the public key matches the private key.
-  size_t len = 32;
-  uint8_t raw_key[32];
-  if (!EVP_PKEY_get_raw_public_key(GetEVP_PKEY(private_key), raw_key, &len))
+  std::array<uint8_t, 32> raw_key;
+  size_t len = raw_key.size();
+  if (!EVP_PKEY_get_raw_public_key(GetEVP_PKEY(private_key), raw_key.data(),
+                                   &len)) {
     return Status::OperationError();
-  DCHECK_EQ(len, 32u);
-  if (UNSAFE_TODO(memcmp(raw_public_key.data(), raw_key, 32)) != 0) {
+  }
+  DCHECK_EQ(len, raw_key.size());
+  if (*fixed_public_key != raw_key) {
     return Status::DataError();
   }
 
