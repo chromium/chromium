@@ -1869,3 +1869,5 @@ crbug.com/452389538 virtual/prefetch-force-off-the-main-thread-wculf/external/wp
 # OOM crash on Windows, marked as WontFix
 crbug.com/379516106 [ Win ] external/wpt/css/css-overflow/scrollbar-large-scale-in-iframe.html [ Skip ]
 
+# Test filename collision, needs to be fixed in test runner
+crbug.com/579049922 external/wpt/custom-elements/duplicate-attr-constructor-crash.xhtml [ Skip ]
