@@ -1080,11 +1080,6 @@ BASE_FEATURE(kVaapiVideoMinResolutionForPerformance,
 // specified by ISO/IEC 23001-7:2016.
 BASE_FEATURE(kValidateEncryptionPatternSize, base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Inform video blitter of video color space.
-BASE_FEATURE(kVideoBlitColorAccuracy,
-             "video-blit-color-accuracy",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Controls whether to pre-dispatch more decode tasks when pending decodes is
 // smaller than maximum supported decodes as advertiszed by decoder.
 // Note: This is controlled on a per-board basis by ChromeOS and must be kept.
