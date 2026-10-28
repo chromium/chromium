@@ -18,6 +18,7 @@
 #include "components/sessions/core/tab_restore_service_client.h"
 #include "components/sessions/core/tab_restore_service_helper.h"
 #include "components/split_tabs/split_tab_id.h"
+#include "ui/base/mojom/window_open_disposition.mojom-forward.h"
 
 class PrefService;
 class TabRestoreServiceImplTest;
@@ -66,7 +67,7 @@ class SESSIONS_EXPORT TabRestoreServiceImpl : public TabRestoreService {
   std::optional<std::vector<LiveTab*>> RestoreEntryById(
       LiveTabContext* context,
       SessionID id,
-      WindowOpenDisposition disposition) override;
+      ui::mojom::WindowOpenDisposition disposition) override;
   void LoadTabsFromLastSession() override;
   bool IsLoaded() const override;
   void DeleteLastSession() override;

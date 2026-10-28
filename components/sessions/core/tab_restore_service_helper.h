@@ -21,6 +21,7 @@
 #include "components/sessions/core/sessions_export.h"
 #include "components/sessions/core/tab_restore_service.h"
 #include "components/sessions/core/tab_restore_types.h"
+#include "ui/base/mojom/window_open_disposition.mojom-forward.h"
 
 namespace sessions {
 
@@ -121,7 +122,7 @@ class SESSIONS_EXPORT TabRestoreServiceHelper
   std::optional<std::vector<LiveTab*>> RestoreEntryById(
       LiveTabContext* context,
       SessionID id,
-      WindowOpenDisposition disposition);
+      ui::mojom::WindowOpenDisposition disposition);
   bool IsRestoring() const;
 
   // Notifies observers the entries have changed.
@@ -177,7 +178,7 @@ class SESSIONS_EXPORT TabRestoreServiceHelper
   // alongside other tabs inside the same group or window.
   LiveTabContext* RestoreTab(const Tab& tab,
                              LiveTabContext* context,
-                             WindowOpenDisposition disposition,
+                             ui::mojom::WindowOpenDisposition disposition,
                              sessions::tab_restore::Type session_restore_type,
                              LiveTab** live_tab,
                              bool is_restoring_group_or_window);
@@ -189,7 +190,7 @@ class SESSIONS_EXPORT TabRestoreServiceHelper
       Window& window,
       SessionID id,
       LiveTabContext* context,
-      WindowOpenDisposition disposition,
+      ui::mojom::WindowOpenDisposition disposition,
       std::vector<base::WeakPtr<LiveTab>>* live_tabs);
 
   // Helper function for RestoreEntryById(). Restores a single tab from the
@@ -198,7 +199,7 @@ class SESSIONS_EXPORT TabRestoreServiceHelper
       Split& split,
       SessionID id,
       LiveTabContext** context,
-      WindowOpenDisposition disposition,
+      ui::mojom::WindowOpenDisposition disposition,
       sessions::tab_restore::Type session_restore_type,
       std::vector<base::WeakPtr<LiveTab>>& live_tabs);
 
@@ -207,7 +208,7 @@ class SESSIONS_EXPORT TabRestoreServiceHelper
   bool RestoreSplitFromGroup(Group& group,
                              SessionID id,
                              LiveTabContext** context,
-                             WindowOpenDisposition disposition,
+                             ui::mojom::WindowOpenDisposition disposition,
                              std::vector<base::WeakPtr<LiveTab>>& live_tabs);
 
   // Helper function for CreateHistoricalGroup. Returns a Group populated with

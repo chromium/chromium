@@ -44,8 +44,8 @@
 #include "components/split_tabs/split_tab_visual_data.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/mojom/window_show_state.mojom.h"
-#include "ui/base/window_open_disposition.h"
 
 namespace sessions {
 namespace {
@@ -679,7 +679,7 @@ std::vector<LiveTab*> TabRestoreServiceHelper::RestoreMostRecentEntry(
     return std::vector<LiveTab*>();
   }
   return RestoreEntryById(context, entries_.front()->id,
-                          WindowOpenDisposition::kUnknown)
+                          ui::mojom::WindowOpenDisposition::kUnknown)
       .value();
 }
 
@@ -710,7 +710,7 @@ LiveTabContext* TabRestoreServiceHelper::RestoreTabOrGroupFromWindow(
     Window& window,
     SessionID id,
     LiveTabContext* context,
-    WindowOpenDisposition disposition,
+    ui::mojom::WindowOpenDisposition disposition,
     std::vector<base::WeakPtr<LiveTab>>* live_tabs) {
   // 1. Determine if `id` corresponds to a tab. If so, restore the tab.
   bool found_tab_to_delete = false;
@@ -924,7 +924,7 @@ TabRestoreServiceHelper::CreateLocalSavedGroupIDMapping(
 std::optional<std::vector<LiveTab*>> TabRestoreServiceHelper::RestoreEntryById(
     LiveTabContext* context,
     SessionID id,
-    WindowOpenDisposition disposition) {
+    ui::mojom::WindowOpenDisposition disposition) {
   auto entry_iterator = GetEntryIteratorById(id);
   if (entry_iterator == entries_.end()) {
     return std::nullopt;
@@ -1088,7 +1088,7 @@ std::optional<std::vector<LiveTab*>> TabRestoreServiceHelper::RestoreEntryById(
 
       context->ShowBrowserWindow();
 
-      if (disposition == WindowOpenDisposition::kCurrentTab &&
+      if (disposition == ui::mojom::WindowOpenDisposition::kCurrentTab &&
           current_context && current_context->GetActiveLiveTab()) {
         current_context->CloseTab();
       }
@@ -1548,16 +1548,17 @@ void TabRestoreServiceHelper::PopulateTab(Tab* tab,
 LiveTabContext* TabRestoreServiceHelper::RestoreTab(
     const Tab& tab,
     LiveTabContext* context,
-    WindowOpenDisposition disposition,
+    ui::mojom::WindowOpenDisposition disposition,
     sessions::tab_restore::Type session_restore_type,
     LiveTab** live_tab,
     bool is_restoring_group_or_window) {
   LiveTab* restored_tab;
-  if (disposition == WindowOpenDisposition::kCurrentTab && context) {
+  if (disposition == ui::mojom::WindowOpenDisposition::kCurrentTab && context) {
     restored_tab = context->ReplaceRestoredTab(tab);
   } else {
     // We only respect the tab's original browser if there's no disposition.
-    if (disposition == WindowOpenDisposition::kUnknown && tab.browser_id) {
+    if (disposition == ui::mojom::WindowOpenDisposition::kUnknown &&
+        tab.browser_id) {
       context = client_->FindLiveTabContextWithID(
           SessionID::FromSerializedValue(tab.browser_id));
     }
@@ -1579,7 +1580,8 @@ LiveTabContext* TabRestoreServiceHelper::RestoreTab(
     // |context| will be NULL in cases where one isn't already available (eg,
     // when invoked on Mac OS X with no windows open). In this case, create a
     // new browser into which we restore the tabs.
-    if (context && disposition != WindowOpenDisposition::kNewWindow) {
+    if (context &&
+        disposition != ui::mojom::WindowOpenDisposition::kNewWindow) {
       tab_index = tab.tabstrip_index;
     } else {
       context = client_->CreateLiveTabContext(
@@ -1594,13 +1596,14 @@ LiveTabContext* TabRestoreServiceHelper::RestoreTab(
     // Place the tab at the end if the tab index is no longer valid or
     // we were passed a specific disposition.
     if (tab_index < 0 || tab_index > context->GetTabCount() ||
-        disposition != WindowOpenDisposition::kUnknown) {
+        disposition != ui::mojom::WindowOpenDisposition::kUnknown) {
       tab_index = context->GetTabCount();
     }
 
     restored_tab = context->AddRestoredTab(
         tab, tab_index,
-        /*select=*/disposition != WindowOpenDisposition::kNewBackgroundTab,
+        /*select=*/disposition !=
+            ui::mojom::WindowOpenDisposition::kNewBackgroundTab,
         is_restoring_group_or_window, session_restore_type);
   }
 
@@ -1618,7 +1621,7 @@ TabRestoreServiceHelper::RestoreOneTabFromSplit(
     Split& split,
     SessionID id,
     LiveTabContext** context,
-    WindowOpenDisposition disposition,
+    ui::mojom::WindowOpenDisposition disposition,
     tab_restore::Type session_restore_type,
     std::vector<base::WeakPtr<LiveTab>>& live_tabs) {
   for (size_t i = 0; i < split.tabs.size(); i++) {
@@ -1646,7 +1649,7 @@ bool TabRestoreServiceHelper::RestoreSplitFromGroup(
     Group& group,
     SessionID id,
     LiveTabContext** context,
-    WindowOpenDisposition disposition,
+    ui::mojom::WindowOpenDisposition disposition,
     std::vector<base::WeakPtr<LiveTab>>& live_tabs) {
   for (auto& split_pair : group.split_tabs) {
     auto& split = split_pair.second;

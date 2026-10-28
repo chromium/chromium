@@ -11,6 +11,7 @@
 #include "components/sessions/core/tab_restore_service.h"
 #include "components/split_tabs/split_tab_id.h"
 #include "ios/chrome/browser/shared/model/profile/test/testing_factories.h"
+#include "ui/base/mojom/window_open_disposition.mojom-forward.h"
 
 // A Fake restore service that just store and returns tabs.
 class FakeTabRestoreService : public sessions::TabRestoreService {
@@ -52,7 +53,7 @@ class FakeTabRestoreService : public sessions::TabRestoreService {
   std::optional<std::vector<sessions::LiveTab*>> RestoreEntryById(
       sessions::LiveTabContext* context,
       SessionID session_id,
-      WindowOpenDisposition disposition) override;
+      ui::mojom::WindowOpenDisposition disposition) override;
   void LoadTabsFromLastSession() override;
   bool IsLoaded() const override;
   void DeleteLastSession() override;
