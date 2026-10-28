@@ -276,6 +276,9 @@ struct AccessibilityPageObjects {
   std::vector<AccessibilityHighlightInfo> highlights;
   std::vector<AccessibilityFormGraphicInfo> graphics;
   std::vector<AccessibilityLineSegment> line_segments;
+  // Filled axis-aligned rectangles, in the same pixel coordinates as
+  // `AccessibilityTextRunInfo::bounds`.
+  std::vector<gfx::RectF> filled_rects;
 };
 
 enum class FocusObjectType {

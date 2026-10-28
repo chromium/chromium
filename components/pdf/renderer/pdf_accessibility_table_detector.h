@@ -10,6 +10,7 @@
 #include "base/containers/span.h"
 #include "pdf/accessibility_structs.h"
 #include "ui/gfx/geometry/point_f.h"
+#include "ui/gfx/geometry/rect_f.h"
 
 namespace pdf {
 
@@ -26,11 +27,13 @@ struct RulingLine {
   bool is_horizontal = false;
 };
 
-// Extracts horizontal and vertical ruling lines from `line_segments` and merges
-// touching or overlapping collinear lines. Returns horizontal lines first, then
-// vertical lines, each sorted by position and then start.
+// Extracts horizontal and vertical ruling lines from `line_segments` and from
+// the centerlines of thin `filled_rects`, and merges touching or overlapping
+// collinear lines. Returns horizontal lines first, then vertical lines, each
+// sorted by position and then start.
 std::vector<RulingLine> ExtractRulingLines(
-    base::span<const chrome_pdf::AccessibilityLineSegment> line_segments);
+    base::span<const chrome_pdf::AccessibilityLineSegment> line_segments,
+    base::span<const gfx::RectF> filled_rects);
 
 }  // namespace pdf
 

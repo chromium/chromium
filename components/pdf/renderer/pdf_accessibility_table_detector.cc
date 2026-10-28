@@ -25,6 +25,11 @@ constexpr float kAxisAlignedTolerancePx = 1.5f;
 // marks.
 constexpr float kMinRuleLengthPx = 8.0f;
 
+// Maximum thickness, in pixels, of a filled rectangle drawn as a ruling line.
+// Producers such as Chrome's print to PDF draw table borders as filled
+// rectangles about 1 to 3 pt thick.
+constexpr float kThinRuleMaxThicknessPx = 4.0f;
+
 // Maximum distance between segments on the same line to merge them into one.
 constexpr float kCollinearMergeTolerancePx = 2.0f;
 
@@ -36,6 +41,22 @@ struct AxisAlignedSegment {
   float start = 0.0f;
   float end = 0.0f;
 };
+
+// Appends the centerline of `rect` to `horizontal_segments` or
+// `vertical_segments` if one dimension is within `max_thickness` and the other
+// meets `kMinRuleLengthPx`.
+void AppendCenterline(const gfx::RectF& rect,
+                      float max_thickness,
+                      std::vector<AxisAlignedSegment>& horizontal_segments,
+                      std::vector<AxisAlignedSegment>& vertical_segments) {
+  const gfx::PointF center = rect.CenterPoint();
+  if (rect.width() >= kMinRuleLengthPx && rect.height() <= max_thickness) {
+    horizontal_segments.push_back({center.y(), rect.x(), rect.right()});
+  } else if (rect.width() <= max_thickness &&
+             rect.height() >= kMinRuleLengthPx) {
+    vertical_segments.push_back({center.x(), rect.y(), rect.bottom()});
+  }
+}
 
 // Merges segments that lie on the same line and touch or overlap.
 //
@@ -98,21 +119,21 @@ std::vector<AxisAlignedSegment> MergeAxisAlignedSegments(
 }  // namespace
 
 std::vector<RulingLine> ExtractRulingLines(
-    base::span<const chrome_pdf::AccessibilityLineSegment> line_segments) {
-  // Keep segments that are nearly horizontal or vertical and long enough,
-  // snapped to their centerline.
+    base::span<const chrome_pdf::AccessibilityLineSegment> line_segments,
+    base::span<const gfx::RectF> filled_rects) {
+  // Keep segments that are nearly horizontal or vertical and long enough, and
+  // filled rectangles that are thin and long enough, snapped to their
+  // centerline.
   std::vector<AxisAlignedSegment> horizontal_segments;
   std::vector<AxisAlignedSegment> vertical_segments;
   for (const chrome_pdf::AccessibilityLineSegment& segment : line_segments) {
-    const gfx::RectF rect = gfx::BoundingRect(segment.start, segment.end);
-    const gfx::PointF center = rect.CenterPoint();
-    if (rect.height() <= kAxisAlignedTolerancePx &&
-        rect.width() >= kMinRuleLengthPx) {
-      horizontal_segments.push_back({center.y(), rect.x(), rect.right()});
-    } else if (rect.width() <= kAxisAlignedTolerancePx &&
-               rect.height() >= kMinRuleLengthPx) {
-      vertical_segments.push_back({center.x(), rect.y(), rect.bottom()});
-    }
+    AppendCenterline(gfx::BoundingRect(segment.start, segment.end),
+                     kAxisAlignedTolerancePx, horizontal_segments,
+                     vertical_segments);
+  }
+  for (const gfx::RectF& rect : filled_rects) {
+    AppendCenterline(rect, kThinRuleMaxThicknessPx, horizontal_segments,
+                     vertical_segments);
   }
 
   const std::vector<AxisAlignedSegment> merged_horizontal =

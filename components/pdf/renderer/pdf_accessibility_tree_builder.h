@@ -91,6 +91,7 @@ class PdfAccessibilityTreeBuilder {
       const {
     return *line_segments_;
   }
+  const std::vector<gfx::RectF>& filled_rects() const { return *filled_rects_; }
   uint32_t page_index() const { return page_index_; }
 
   // Node creation methods used by tree builders.
@@ -144,6 +145,7 @@ class PdfAccessibilityTreeBuilder {
       graphics_;
   const raw_ref<const std::vector<chrome_pdf::AccessibilityLineSegment>>
       line_segments_;
+  const raw_ref<const std::vector<gfx::RectF>> filled_rects_;
   const raw_ptr<const chrome_pdf::AccessibilityStructureElement>
       page_structure_tree_;
 

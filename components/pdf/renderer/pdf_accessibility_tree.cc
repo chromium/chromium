@@ -52,6 +52,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect_conversions.h"
+#include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/transform.h"
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
@@ -428,6 +429,14 @@ bool PdfAccessibilityTree::IsDataFromPluginValid(
           !std::isfinite(segment.start.y()) ||
           !std::isfinite(segment.end.x()) || !std::isfinite(segment.end.y()) ||
           segment.start == segment.end) {
+        return false;
+      }
+    }
+
+    for (const gfx::RectF& rect : page_objects.filled_rects) {
+      if (!std::isfinite(rect.x()) || !std::isfinite(rect.y()) ||
+          !std::isfinite(rect.width()) || !std::isfinite(rect.height()) ||
+          rect.IsEmpty()) {
         return false;
       }
     }

@@ -353,4 +353,40 @@ TEST(PdfAccessibilityTreeUnitTest, LineSegmentsValidation) {
                                                            invalid_inf));
 }
 
+TEST(PdfAccessibilityTreeUnitTest, FilledRectsValidation) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      features::kPdfAccessibilityHeuristicEnhancements);
+
+  const std::vector<chrome_pdf::AccessibilityTextRunInfo> text_runs = {
+      kFirstTextRun, kSecondTextRun};
+  const std::vector<chrome_pdf::AccessibilityCharInfo> chars =
+      base::ToVector(kDummyCharsData);
+
+  chrome_pdf::AccessibilityPageObjects valid_objects;
+  valid_objects.filled_rects = {gfx::RectF(10.0f, 20.0f, 100.0f, 1.0f)};
+  EXPECT_TRUE(PdfAccessibilityTree::IsDataFromPluginValid(text_runs, chars,
+                                                          valid_objects));
+
+  // Invalid rect: empty.
+  chrome_pdf::AccessibilityPageObjects invalid_empty;
+  invalid_empty.filled_rects = {gfx::RectF(10.0f, 20.0f, 100.0f, 0.0f)};
+  EXPECT_FALSE(PdfAccessibilityTree::IsDataFromPluginValid(text_runs, chars,
+                                                           invalid_empty));
+
+  // Invalid rect: NaN origin.
+  chrome_pdf::AccessibilityPageObjects invalid_nan;
+  invalid_nan.filled_rects = {
+      gfx::RectF(std::numeric_limits<float>::quiet_NaN(), 20.0f, 100.0f, 1.0f)};
+  EXPECT_FALSE(PdfAccessibilityTree::IsDataFromPluginValid(text_runs, chars,
+                                                           invalid_nan));
+
+  // Invalid rect: infinite size.
+  chrome_pdf::AccessibilityPageObjects invalid_inf;
+  invalid_inf.filled_rects = {
+      gfx::RectF(10.0f, 20.0f, std::numeric_limits<float>::infinity(), 1.0f)};
+  EXPECT_FALSE(PdfAccessibilityTree::IsDataFromPluginValid(text_runs, chars,
+                                                           invalid_inf));
+}
+
 }  // namespace pdf

@@ -4,12 +4,14 @@
 
 #include "components/pdf/renderer/pdf_accessibility_table_detector.h"
 
+#include <array>
 #include <vector>
 
 #include "pdf/accessibility_structs.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/point_f.h"
+#include "ui/gfx/geometry/rect_f.h"
 
 namespace pdf {
 
@@ -38,7 +40,7 @@ RulingLine CreateVLine(float x, float y_start, float y_end) {
 }  // namespace
 
 TEST(PdfAccessibilityTableDetectorTest, ExtractRulingLinesEmpty) {
-  EXPECT_TRUE(ExtractRulingLines({}).empty());
+  EXPECT_TRUE(ExtractRulingLines({}, {}).empty());
 }
 
 TEST(PdfAccessibilityTableDetectorTest, ExtractRulingLinesFiltersSegments) {
@@ -60,7 +62,7 @@ TEST(PdfAccessibilityTableDetectorTest, ExtractRulingLinesFiltersSegments) {
   };
 
   EXPECT_THAT(
-      ExtractRulingLines(segments),
+      ExtractRulingLines(segments, {}),
       testing::ElementsAre(CreateHLine(20, 10, 50), CreateHLine(100.5f, 10, 50),
                            CreateHLine(300, 10, 18), CreateVLine(30, 10, 40)));
 }
@@ -91,7 +93,7 @@ TEST(PdfAccessibilityTableDetectorTest, ExtractRulingLinesMergesCollinear) {
   };
 
   EXPECT_THAT(
-      ExtractRulingLines(segments),
+      ExtractRulingLines(segments, {}),
       testing::ElementsAre(CreateHLine(0, 0, 100), CreateHLine(20, 0, 100),
                            CreateHLine(40, 0, 100), CreateHLine(60, 0, 50),
                            CreateHLine(60, 53, 100), CreateHLine(80, 0, 100),
@@ -110,8 +112,32 @@ TEST(PdfAccessibilityTableDetectorTest,
   };
 
   EXPECT_THAT(
-      ExtractRulingLines(segments),
+      ExtractRulingLines(segments, {}),
       testing::ElementsAre(CreateHLine(0, 0, 100), CreateHLine(3, 0, 100)));
+}
+
+TEST(PdfAccessibilityTableDetectorTest, ExtractRulingLinesFromThinFilledRects) {
+  constexpr std::array filled_rects = {
+      // Thin horizontal rectangle.
+      gfx::RectF(10, 20, 100, 1),
+      // Horizontal rectangle exactly at the maximum thickness of 4 px.
+      gfx::RectF(10, 50, 100, 4),
+      // Thin vertical rectangle.
+      gfx::RectF(200, 10, 2, 50),
+      // Too thick.
+      gfx::RectF(10, 100, 100, 5),
+      // Too short.
+      gfx::RectF(10, 150, 7, 1),
+  };
+  // A stroked segment continuing the first rectangle's centerline.
+  const std::vector<chrome_pdf::AccessibilityLineSegment> segments = {
+      CreateSegment(110, 20.5f, 150, 20.5f),
+  };
+
+  EXPECT_THAT(
+      ExtractRulingLines(segments, filled_rects),
+      testing::ElementsAre(CreateHLine(20.5f, 10, 150),
+                           CreateHLine(52, 10, 110), CreateVLine(201, 10, 60)));
 }
 
 }  // namespace pdf

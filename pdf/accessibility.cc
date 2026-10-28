@@ -44,6 +44,7 @@ void GetAccessibilityInfo(PDFiumEngine* engine,
   page_objects.highlights = page->GetHighlightInfo();
   page_objects.graphics = page->GetFormGraphicInfo();
   page_objects.line_segments = page->GetLineSegmentInfo();
+  page_objects.filled_rects = page->GetFilledRectInfo();
 }
 
 }  // namespace chrome_pdf
