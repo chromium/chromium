@@ -433,11 +433,26 @@ int PartialData::CacheRead(disk_cache::Entry* entry,
   return rv;
 }
 
+bool PartialData::IsNetworkReadOK(int data_len) const {
+  // Check to see if the network has overrun the range.
+  if (data_len) {
+    base::CheckedNumeric<int64_t> write_end_inclusive = current_range_start_;
+    write_end_inclusive += (data_len - 1);
+    int64_t write_end_inclusive_extracted;
+    if (!write_end_inclusive.AssignIfValid(&write_end_inclusive_extracted) ||
+        write_end_inclusive_extracted > current_range_end_) {
+      return false;
+    }
+  }
+  return true;
+}
+
 int PartialData::CacheWrite(disk_cache::Entry* entry,
                             IOBuffer* data,
                             int data_len,
                             CompletionOnceCallback callback) {
   DVLOG(3) << "To write: " << data_len;
+
   if (sparse_entry_) {
     return entry->WriteSparseData(current_range_start_, data, data_len,
                                   std::move(callback));

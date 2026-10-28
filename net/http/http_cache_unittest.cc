@@ -2466,6 +2466,89 @@ TEST_F(HttpCacheRangeGetTest, FullAfterPartial) {
   }
 }
 
+// Range physical length not matching what's specified in Content-Range.
+// See crbug.com/572055997
+TEST_F(HttpCacheRangeGetTest, RangeOverrun) {
+  for (const bool use_cache : {true, false}) {
+    MockHttpCache cache;
+    SCOPED_TRACE(use_cache);
+
+    ScopedMockTransaction transaction(kRangeGET_TransactionOK);
+    transaction.request_headers = "Range: bytes = 0-9\r\n" EXTRA_HEADER;
+    std::string response_headers = transaction.response_headers;
+    if (!use_cache) {
+      response_headers += "Cache-Control: no-store\n";
+    }
+    transaction.response_headers = response_headers.c_str();
+
+    transaction.handler = base::BindRepeating(
+        [](const HttpRequestInfo* request, std::string* response_status,
+           std::string* response_headers, std::string* response_data) -> void {
+          RangeTransactionServer::RangeHandler(request, response_status,
+                                               response_headers, response_data);
+          *response_data += "extra stuff";
+        });
+
+    {
+      MockHttpRequest request(transaction);
+      std::unique_ptr<HttpTransaction> http_trans = cache.CreateTransaction();
+      TestCompletionCallback callback;
+      int rv = callback.GetResult(
+          http_trans->Start(&request, callback.callback(), NetLogWithSource()));
+      ASSERT_EQ(rv, OK);
+
+      TestCompletionCallback read_callback;
+      auto buf = base::MakeRefCounted<IOBufferWithSize>(256);
+      rv = read_callback.GetResult(
+          http_trans->Read(buf.get(), 256, read_callback.callback()));
+      EXPECT_EQ(rv, ERR_CONTENT_LENGTH_MISMATCH);
+    }
+
+    {
+      // Test it over two reads as well.
+      MockHttpRequest request(transaction);
+      std::unique_ptr<HttpTransaction> http_trans = cache.CreateTransaction();
+      TestCompletionCallback callback;
+      int rv = callback.GetResult(
+          http_trans->Start(&request, callback.callback(), NetLogWithSource()));
+      ASSERT_EQ(rv, OK);
+
+      TestCompletionCallback read_callback;
+      auto buf = base::MakeRefCounted<IOBufferWithSize>(10);
+      rv = read_callback.GetResult(
+          http_trans->Read(buf.get(), 10, read_callback.callback()));
+      ASSERT_EQ(rv, 10);
+      EXPECT_EQ(base::as_string_view(buf->first(10)),
+                std::string_view("rg: 00-09 "));
+
+      TestCompletionCallback read_callback2;
+      rv = read_callback2.GetResult(
+          http_trans->Read(buf.get(), 10, read_callback2.callback()));
+      EXPECT_EQ(rv, ERR_CONTENT_LENGTH_MISMATCH);
+    }
+
+    {
+      // Try again, without any weirdness.
+      transaction.handler =
+          base::BindRepeating(&RangeTransactionServer::RangeHandler);
+      MockHttpRequest request(transaction);
+      std::unique_ptr<HttpTransaction> http_trans = cache.CreateTransaction();
+      TestCompletionCallback callback;
+      int rv = callback.GetResult(
+          http_trans->Start(&request, callback.callback(), NetLogWithSource()));
+      ASSERT_EQ(rv, OK);
+
+      TestCompletionCallback read_callback;
+      auto buf = base::MakeRefCounted<IOBufferWithSize>(256);
+      rv = read_callback.GetResult(
+          http_trans->Read(buf.get(), 256, read_callback.callback()));
+      ASSERT_EQ(rv, 10);
+      EXPECT_EQ(base::as_string_view(buf->first(10)),
+                std::string_view("rg: 00-09 "));
+    }
+  }
+}
+
 // Tests that when a range request transaction becomes a writer for the first
 // range and then fails conditionalization for the next range and decides to
 // doom the entry, then there should not be a dcheck assertion hit.

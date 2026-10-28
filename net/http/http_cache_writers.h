@@ -200,6 +200,8 @@ class NET_EXPORT_PRIVATE HttpCache::Writers {
 
   using TransactionMap = std::map<Transaction*, TransactionInfo>;
 
+  PartialData* GetPartial() const;
+
   // Runs the state transition loop. Resets and calls |callback_| on exit,
   // unless the return value is ERR_IO_PENDING.
   int DoLoop(int result);
