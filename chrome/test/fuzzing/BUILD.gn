@@ -94,6 +94,7 @@ if (!is_android) {
       ":in_process_fuzzer_buildflags",
       ":js_in_process_fuzzer_utils",
       "//chrome/browser",
+      "//services/webnn/public/mojom:features",
     ]
     if (enable_mojom_fuzzer) {
       # Mojo scripts pages, loading the MojoJS bindings of the fuzzed
