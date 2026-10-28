@@ -309,6 +309,10 @@ void PolicyUIHandler::SendInitialState(const base::ListValue&) {
 }
 
 void PolicyUIHandler::HandleReloadPolicies(const base::ListValue&) {
+  ReloadPolicies();
+}
+
+void PolicyUIHandler::ReloadPolicies() {
   reload_policies_count_ += 1;
 #if BUILDFLAG(IS_CHROMEOS)
   // Allow user to manually fetch remote commands. Useful for testing or when

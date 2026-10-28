@@ -219,7 +219,7 @@ export class PolicyAppElement extends CrLitElement {
   protected onReloadPoliciesClick_() {
     this.reloadButtonDisabled_ = true;
     this.showToast_(loadTimeData.getString('reloadingPolicies'));
-    sendWithPromise<void>('reloadPolicies');
+    BrowserProxy.reloadPolicies();
   }
 
   protected onMoreActionsClick_(e: Event) {

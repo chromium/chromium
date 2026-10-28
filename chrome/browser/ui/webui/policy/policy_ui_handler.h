@@ -85,6 +85,7 @@ class PolicyUIHandler : public content::WebUIMessageHandler,
       const std::string& profile_separation_policy_response,
       SetLocalTestPoliciesCallback callback) override;
   void GetPolicyLogs(GetPolicyLogsCallback callback) override;
+  void ReloadPolicies() override;
 #if !BUILDFLAG(IS_ANDROID)
   void CheckPromotionEligibility(
       CheckPromotionEligibilityCallback callback) override;

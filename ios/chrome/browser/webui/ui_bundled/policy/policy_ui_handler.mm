@@ -525,6 +525,10 @@ void PolicyUIHandler::SendInitialState(const base::ListValue& args) {
 }
 
 void PolicyUIHandler::HandleReloadPolicies(const base::ListValue& args) {
+  ReloadPolicies();
+}
+
+void PolicyUIHandler::ReloadPolicies() {
   reload_policies_count_ += 1;
   GetPolicyService()->RefreshPolicies(
       base::BindOnce(&PolicyUIHandler::OnRefreshPoliciesDone,

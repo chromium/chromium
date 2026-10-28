@@ -881,6 +881,25 @@ IN_PROC_BROWSER_TEST_P(PolicyUITest, ReportButtonOTRProfile) {
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
 
+IN_PROC_BROWSER_TEST_P(PolicyUITest, ReloadPolicies) {
+  ASSERT_TRUE(
+      content::NavigateToURL(web_contents(), GURL(chrome::kChromeUIPolicyURL)));
+
+  // Clicking "Reload policies" must trigger a user-requested policy refresh.
+  // Serve the same policies again so that the refresh completes and the
+  // updated policies are sent back to the page.
+  EXPECT_CALL(provider_,
+              RefreshPolicies(policy::PolicyFetchReason::kUserRequest))
+      .Times(testing::AtLeast(1))
+      .WillRepeatedly(testing::Invoke(
+          &provider_,
+          &policy::MockConfigurationPolicyProvider::RefreshWithSamePolicies));
+
+  // `reloadPolicies()` resolves once the reload button has been re-enabled,
+  // which only happens after the page has received the refreshed policies.
+  EXPECT_TRUE(content::ExecJs(web_contents(), "reloadPolicies()"));
+}
+
 IN_PROC_BROWSER_TEST_P(PolicyUITest, StatusUpdated) {
   static constexpr char kInitialUsername[] = "user@example.com";
   static constexpr char kInitialClientId[] = "fake_client_id";

@@ -148,6 +148,16 @@ export class BrowserProxy {
     }
   }
 
+  // Triggers a policy refresh. The refreshed policies are delivered through
+  // `listenForPoliciesUpdated()`.
+  static reloadPolicies() {
+    if (policyPageMojoMigrationEnabled) {
+      this.getInstance().handler.reloadPolicies();
+    } else {
+      chrome.send('reloadPolicies');
+    }
+  }
+
   static listenForStatusUpdated(
       callback: (status: Record<string, Status>) => void) {
     if (policyPageMojoMigrationEnabled) {

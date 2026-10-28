@@ -87,6 +87,7 @@ class PolicyUIHandler : public web::WebUIIOSMessageHandler,
       const std::string& profile_separation_policy_response,
       SetLocalTestPoliciesCallback callback) override;
   void GetPolicyLogs(GetPolicyLogsCallback callback) override;
+  void ReloadPolicies() override;
   void GetPoliciesJson(policy::mojom::GetPoliciesReason reason,
                        GetPoliciesJsonCallback callback) override;
 

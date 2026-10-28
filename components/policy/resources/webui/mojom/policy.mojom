@@ -213,6 +213,12 @@ interface PolicyPageHandler {
   // Returns the policy logs displayed on the chrome://policy/logs.
   GetPolicyLogs() => (array<Log> policy_logs);
 
+  // Triggers a refresh of all policies, e.g. when the user clicks the
+  // "Reload policies" button. The refreshed values are delivered through
+  // `PolicyPageClient.PoliciesUpdated()`. On ChromeOS, this additionally
+  // fetches pending device and user remote commands.
+  ReloadPolicies();
+
   // Checks whether the promotion banner should be displayed.
   // Promotion banner is only supported on desktop platforms.
   [EnableIfNot=is_ios|is_android]
