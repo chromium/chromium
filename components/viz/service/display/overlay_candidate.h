@@ -186,7 +186,7 @@ class VIZ_SERVICE_EXPORT OverlayCandidate {
   // 1. Current page is in full screen mode which is decided by
   // AggregatedFrame::page_fullscreen_mode.
   // 2. IsPossibleFullScreenLetterboxing helper from
-  // DCLayerOverlayProcessor returns true, which basically means the draw
+  // full_screen_video_util.h returns true, which basically means the draw
   // quad beneath the overlay quad touches two sides of the screen while
   // starting at display origin (0, 0). Then before swap chain presentation and
   // with possible_video_fullscreen_letterboxing be true, some necessary
