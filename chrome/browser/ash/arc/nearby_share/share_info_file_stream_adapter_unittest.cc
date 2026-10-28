@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/arc/nearby_share/share_info_file_stream_adapter.h"
 
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -16,6 +17,7 @@
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
+#include "base/test/test_simple_task_runner.h"
 #include "content/public/test/browser_task_environment.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/file_system_url.h"
@@ -185,6 +187,62 @@ TEST_F(ShareInfoFileStreamAdapterTest, ReadMidStreamAndWriteFile) {
   std::string contents;
   ASSERT_TRUE(base::ReadFileToString(test_file_path_, &contents));
   EXPECT_EQ(test_data_.substr(kOffset, kSize), contents);
+}
+
+// A chunk write that is already queued when the owner releases its reference
+// to the adapter must still be delivered to the destination file, and must
+// not touch any file descriptor created after the release.
+TEST_F(ShareInfoFileStreamAdapterTest,
+       PendingWriteCompletesAfterAdapterReleased) {
+  constexpr int kOffset = 0;
+  constexpr int kBufSize = 4 * 1024;
+  constexpr int kSize = 2 * kBufSize;
+
+  // Use a manually pumped task runner for the blocking IO so the test
+  // controls exactly when the posted write runs.
+  auto write_task_runner = base::MakeRefCounted<base::TestSimpleTaskRunner>();
+
+  std::optional<bool> stream_result;
+  stream_adapter_ = base::MakeRefCounted<ShareInfoFileStreamAdapter>(
+      file_system_context_, url_, kOffset, kSize, kBufSize, std::move(test_fd_),
+      base::BindLambdaForTesting(
+          [&stream_result](bool result) { stream_result = result; }));
+  stream_adapter_->StartRunnerForTesting(write_task_runner);
+
+  // Run until the first chunk has been read and its write has been posted to
+  // |write_task_runner|.
+  task_environment_.RunUntilIdle();
+  ASSERT_TRUE(write_task_runner->HasPendingTask());
+
+  // Release the only reference to the adapter while the write is still
+  // queued, as happens when a share session is torn down mid-transfer.
+  stream_adapter_.reset();
+  task_environment_.RunUntilIdle();
+
+  // A file opened after the release; the queued write must not affect it.
+  const base::FilePath other_file_path =
+      temp_dir_.GetPath().AppendASCII("other");
+  base::File other_file(other_file_path,
+                        base::File::FLAG_CREATE | base::File::FLAG_WRITE);
+  ASSERT_TRUE(other_file.IsValid());
+
+  write_task_runner->RunPendingTasks();
+  task_environment_.RunUntilIdle();
+
+  // The chunk read before the release should have reached the destination
+  // file, and only the destination file.
+  std::string contents;
+  ASSERT_TRUE(base::ReadFileToString(test_file_path_, &contents));
+  EXPECT_EQ(test_data_.substr(kOffset, kBufSize), contents);
+
+  std::string other_contents;
+  ASSERT_TRUE(base::ReadFileToString(other_file_path, &other_contents));
+  EXPECT_TRUE(other_contents.empty());
+
+  // Streaming did not run to completion, so the result callback reports
+  // failure.
+  ASSERT_TRUE(stream_result.has_value());
+  EXPECT_FALSE(stream_result.value());
 }
 
 }  // namespace arc

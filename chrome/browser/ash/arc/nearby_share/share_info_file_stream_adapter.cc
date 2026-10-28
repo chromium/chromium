@@ -31,11 +31,12 @@ ShareInfoFileStreamAdapter::ShareInfoFileStreamAdapter(
       url_(url),
       offset_(offset),
       bytes_remaining_(file_size),
-      dest_fd_(std::move(dest_fd)),
+      dest_fd_(base::MakeRefCounted<base::RefCountedData<base::ScopedFD>>(
+          std::move(dest_fd))),
       result_callback_(std::move(result_callback)),
       net_iobuf_(base::MakeRefCounted<net::IOBufferWithSize>(buf_size)) {
   CHECK(url_.is_valid(), base::NotFatalUntil::M160);
-  CHECK(dest_fd_.is_valid(), base::NotFatalUntil::M160);
+  CHECK(dest_fd_->data.is_valid(), base::NotFatalUntil::M160);
   CHECK_GT(net_iobuf_->size(), 0, base::NotFatalUntil::M160);
 }
 
@@ -53,11 +54,15 @@ void ShareInfoFileStreamAdapter::StartRunner() {
       base::BindOnce(&ShareInfoFileStreamAdapter::StartFileStreaming, this));
 }
 
-void ShareInfoFileStreamAdapter::StartRunnerForTesting() {
+void ShareInfoFileStreamAdapter::StartRunnerForTesting(
+    scoped_refptr<base::SequencedTaskRunner> task_runner) {
   CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 
-  task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
-      {base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN, base::MayBlock()});
+  task_runner_ = task_runner
+                     ? std::move(task_runner)
+                     : base::ThreadPool::CreateSequencedTaskRunner(
+                           {base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN,
+                            base::MayBlock()});
   content::GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(&ShareInfoFileStreamAdapter::StartFileStreaming,
                                 base::Unretained(this)));
@@ -105,17 +110,21 @@ void ShareInfoFileStreamAdapter::PerformReadFileStream() {
 }
 
 void ShareInfoFileStreamAdapter::WriteToFile(int bytes_read) {
-  CHECK(dest_fd_.is_valid(), base::NotFatalUntil::M160);
+  CHECK(dest_fd_->data.is_valid(), base::NotFatalUntil::M160);
   CHECK_GT(bytes_read, 0, base::NotFatalUntil::M160);
 
+  // Bind a strong reference to |dest_fd_| so the underlying file descriptor
+  // stays open until the posted write has run, even if the adapter is
+  // destroyed while the write is still queued.
   auto write_fd_func = base::BindOnce(
-      [](int fd, scoped_refptr<net::IOBuffer> buf, int size) -> bool {
-        const bool result =
-            base::WriteFileDescriptor(fd, std::string_view(buf->data(), size));
+      [](scoped_refptr<base::RefCountedData<base::ScopedFD>> fd,
+         scoped_refptr<net::IOBuffer> buf, int size) -> bool {
+        const bool result = base::WriteFileDescriptor(
+            fd->data.get(), std::string_view(buf->data(), size));
         PLOG_IF(ERROR, !result) << "Failed writing to fd.";
         return result;
       },
-      dest_fd_.get(), net_iobuf_, bytes_read);
+      dest_fd_, net_iobuf_, bytes_read);
 
   task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE, std::move(write_fd_func),
@@ -140,7 +149,7 @@ void ShareInfoFileStreamAdapter::OnReadFile(int bytes_read) {
   bytes_remaining_ -= bytes_read;
   CHECK_GE(bytes_remaining_, 0, base::NotFatalUntil::M160);
 
-  if (dest_fd_.is_valid()) {
+  if (dest_fd_->data.is_valid()) {
     WriteToFile(bytes_read);
   } else {
     LOG(ERROR) << "Unexpected could not find valid endpoint for streamed data.";

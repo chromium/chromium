@@ -50,8 +50,10 @@ class ShareInfoFileStreamAdapter
   // Create and start task runner for blocking IO threads.
   void StartRunner();
 
-  // Used only for testing.
-  void StartRunnerForTesting();
+  // Used only for testing. Streams file IO on |task_runner| if it is
+  // non-null, otherwise on a newly created sequenced task runner.
+  void StartRunnerForTesting(
+      scoped_refptr<base::SequencedTaskRunner> task_runner = nullptr);
 
  private:
   friend struct content::BrowserThread::DeleteOnThread<
@@ -78,7 +80,7 @@ class ShareInfoFileStreamAdapter
   const storage::FileSystemURL url_;
   const int64_t offset_;
   int64_t bytes_remaining_;
-  base::ScopedFD dest_fd_;
+  scoped_refptr<base::RefCountedData<base::ScopedFD>> dest_fd_;
   ResultCallback result_callback_;
 
   std::unique_ptr<storage::FileStreamReader> stream_reader_;
