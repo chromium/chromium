@@ -56,11 +56,9 @@ public final class StructInUnion extends org.chromium.mojo.bindings.Struct {
         final int elementsOrVersion = decoder0.readAndValidateStructHeader(STRUCT_SIZE);
         StructInUnion result = new StructInUnion(elementsOrVersion);
                 {
-                    
                 result.flag = decoder0.readBoolean(8, 0);
                 }
                 {
-                    
                 result.value = decoder0.readString(16, false);
                 }
         return result;
@@ -69,9 +67,7 @@ public final class StructInUnion extends org.chromium.mojo.bindings.Struct {
     @SuppressWarnings("unchecked")
     @Override
     protected final void encodeFields(org.chromium.mojo.bindings.Encoder encoder0) {
-        
         encoder0.encode(this.flag, 8, 0);
-        
         encoder0.encode(this.value, 16, false);
     }
 }

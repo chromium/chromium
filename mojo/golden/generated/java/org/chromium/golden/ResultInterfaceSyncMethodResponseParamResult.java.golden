@@ -56,12 +56,10 @@ public final class ResultInterfaceSyncMethodResponseParamResult extends org.chro
         encoder0.encode(this.mTag, offset + 4);
         switch (mTag) {
             case Tag.Success: {
-                
                 encoder0.encode(this.mSuccess, offset + 8, 0);
                 break;
             }
             case Tag.Failure: {
-                
                 encoder0.encode(this.mFailure, offset + 8, false);
                 break;
             }
@@ -83,13 +81,11 @@ public final class ResultInterfaceSyncMethodResponseParamResult extends org.chro
         ResultInterfaceSyncMethodResponseParamResult result = new ResultInterfaceSyncMethodResponseParamResult();
         switch (dataHeader.elementsOrVersion) {
             case Tag.Success: {
-                
                 result.mSuccess = decoder0.readBoolean(offset + org.chromium.mojo.bindings.DataHeader.HEADER_SIZE, 0);
                 result.mTag = Tag.Success;
                 break;
             }
             case Tag.Failure: {
-                
                 org.chromium.mojo.bindings.Decoder decoder1 = decoder0.readPointer(offset + org.chromium.mojo.bindings.DataHeader.HEADER_SIZE, false);
                 result.mFailure = ResultTestError.decode(decoder1);
                 result.mTag = Tag.Failure;

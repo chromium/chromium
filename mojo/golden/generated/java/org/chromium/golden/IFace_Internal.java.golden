@@ -147,7 +147,6 @@ Method_Response callback) {
             final int elementsOrVersion = decoder0.readAndValidateStructHeader(STRUCT_SIZE);
             IFaceMethodParams result = new IFaceMethodParams(elementsOrVersion);
                     {
-                        
                     result.param = decoder0.readBoolean(8, 0);
                     }
             return result;
@@ -156,7 +155,6 @@ Method_Response callback) {
         @SuppressWarnings("unchecked")
         @Override
         protected final void encodeFields(org.chromium.mojo.bindings.Encoder encoder0) {
-            
             encoder0.encode(this.param, 8, 0);
         }
     }
@@ -199,7 +197,6 @@ Method_Response callback) {
             final int elementsOrVersion = decoder0.readAndValidateStructHeader(STRUCT_SIZE);
             IFaceMethodResponseParams result = new IFaceMethodResponseParams(elementsOrVersion);
                     {
-                        
                     result.result = decoder0.readString(8, false);
                     }
             return result;
@@ -208,7 +205,6 @@ Method_Response callback) {
         @SuppressWarnings("unchecked")
         @Override
         protected final void encodeFields(org.chromium.mojo.bindings.Encoder encoder0) {
-            
             encoder0.encode(this.result, 8, false);
         }
     }

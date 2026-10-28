@@ -147,7 +147,6 @@ Echo_Response callback) {
             final int elementsOrVersion = decoder0.readAndValidateStructHeader(STRUCT_SIZE);
             IFaceWithTypemapEchoParams result = new IFaceWithTypemapEchoParams(elementsOrVersion);
                     {
-                        
                     org.chromium.mojo.bindings.Decoder decoder1 = decoder0.readPointer(8, false);
                     result.param = Typemapped.decode(decoder1);
                     }
@@ -157,7 +156,6 @@ Echo_Response callback) {
         @SuppressWarnings("unchecked")
         @Override
         protected final void encodeFields(org.chromium.mojo.bindings.Encoder encoder0) {
-            
             encoder0.encode(this.param, 8, false);
         }
     }
@@ -200,7 +198,6 @@ Echo_Response callback) {
             final int elementsOrVersion = decoder0.readAndValidateStructHeader(STRUCT_SIZE);
             IFaceWithTypemapEchoResponseParams result = new IFaceWithTypemapEchoResponseParams(elementsOrVersion);
                     {
-                        
                     org.chromium.mojo.bindings.Decoder decoder1 = decoder0.readPointer(8, false);
                     result.out = Typemapped.decode(decoder1);
                     }
@@ -210,7 +207,6 @@ Echo_Response callback) {
         @SuppressWarnings("unchecked")
         @Override
         protected final void encodeFields(org.chromium.mojo.bindings.Encoder encoder0) {
-            
             encoder0.encode(this.out, 8, false);
         }
     }

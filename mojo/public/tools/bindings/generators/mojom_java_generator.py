@@ -567,6 +567,7 @@ class Generator(generator.Generator):
   def GetFilters(self):
     java_filters = {
       'array_expected_length': GetArrayExpectedLength,
+      'array_nullability_flags': GetArrayNullabilityFlags,
       'array': GetArrayKind,
       'constant_value': ConstantValue,
       'covers_continuous_range': EnumCoversContinuousRange,

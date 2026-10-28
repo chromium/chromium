@@ -1,0 +1,21 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+module golden;
+
+struct ArrayElement {
+  int32 value;
+};
+
+struct StructWithArrays {
+  array<ArrayElement> structs;
+  array<ArrayElement>? nullable_structs;
+  array<ArrayElement?> nullable_elements;
+  array<ArrayElement, 2> fixed_size_structs;
+  array<array<ArrayElement>> nested_structs;
+  array<array<ArrayElement>?>? nullable_nested_structs;
+  map<string, ArrayElement> struct_map;
+  map<string, ArrayElement>? nullable_struct_map;
+  array<string> strings;
+  array<string?>? nullable_strings;
+};

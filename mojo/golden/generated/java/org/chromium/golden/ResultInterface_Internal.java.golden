@@ -200,7 +200,6 @@ SyncMethod_Response callback) {
             final int elementsOrVersion = decoder0.readAndValidateStructHeader(STRUCT_SIZE);
             ResultInterfaceMethodParams result = new ResultInterfaceMethodParams(elementsOrVersion);
                     {
-                        
                     result.a = decoder0.readBoolean(8, 0);
                     }
             return result;
@@ -209,7 +208,6 @@ SyncMethod_Response callback) {
         @SuppressWarnings("unchecked")
         @Override
         protected final void encodeFields(org.chromium.mojo.bindings.Encoder encoder0) {
-            
             encoder0.encode(this.a, 8, 0);
         }
     }
@@ -252,7 +250,6 @@ SyncMethod_Response callback) {
             final int elementsOrVersion = decoder0.readAndValidateStructHeader(STRUCT_SIZE);
             ResultInterfaceMethodResponseParams result = new ResultInterfaceMethodResponseParams(elementsOrVersion);
                     {
-                        
                     result.result = ResultInterfaceMethodResponseParamResult.decode(decoder0, 8);
                     }
             return result;
@@ -261,7 +258,6 @@ SyncMethod_Response callback) {
         @SuppressWarnings("unchecked")
         @Override
         protected final void encodeFields(org.chromium.mojo.bindings.Encoder encoder0) {
-            
             encoder0.encode(this.result, 8, false);
         }
     }
@@ -356,7 +352,6 @@ SyncMethod_Response callback) {
             final int elementsOrVersion = decoder0.readAndValidateStructHeader(STRUCT_SIZE);
             ResultInterfaceSyncMethodParams result = new ResultInterfaceSyncMethodParams(elementsOrVersion);
                     {
-                        
                     result.a = decoder0.readBoolean(8, 0);
                     }
             return result;
@@ -365,7 +360,6 @@ SyncMethod_Response callback) {
         @SuppressWarnings("unchecked")
         @Override
         protected final void encodeFields(org.chromium.mojo.bindings.Encoder encoder0) {
-            
             encoder0.encode(this.a, 8, 0);
         }
     }
@@ -408,7 +402,6 @@ SyncMethod_Response callback) {
             final int elementsOrVersion = decoder0.readAndValidateStructHeader(STRUCT_SIZE);
             ResultInterfaceSyncMethodResponseParams result = new ResultInterfaceSyncMethodResponseParams(elementsOrVersion);
                     {
-                        
                     result.result = ResultInterfaceSyncMethodResponseParamResult.decode(decoder0, 8);
                     }
             return result;
@@ -417,7 +410,6 @@ SyncMethod_Response callback) {
         @SuppressWarnings("unchecked")
         @Override
         protected final void encodeFields(org.chromium.mojo.bindings.Encoder encoder0) {
-            
             encoder0.encode(this.result, 8, false);
         }
     }

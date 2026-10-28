@@ -685,6 +685,48 @@ public class Decoder {
         return new String(bytes, Charset.forName("utf8"));
     }
 
+    /** Deserializes an array of strings at the given offset. */
+    public @Nullable String @Nullable [] readStrings(
+            int offset, int arrayNullability, int expectedLength) throws DeserializationException {
+        Decoder d = readPointer(offset, BindingsHelper.isArrayNullable(arrayNullability));
+        if (d == null) {
+            return null;
+        }
+        DataHeader si = d.readDataHeaderForPointerArray(expectedLength);
+        @Nullable String[] result = new String[si.elementsOrVersion];
+        boolean elementNullable = BindingsHelper.isElementNullable(arrayNullability);
+        for (int i = 0; i < result.length; ++i) {
+            result[i] =
+                    d.readString(
+                            DataHeader.HEADER_SIZE + BindingsHelper.POINTER_SIZE * i,
+                            elementNullable);
+        }
+        return result;
+    }
+
+    /**
+     * Deserializes an array of pointers (e.g. to structs) at the given offset, and returns a
+     * Decoder for each element (or null for null elements). The elements themselves are not read,
+     * and must be decoded in order.
+     */
+    public @Nullable Decoder @Nullable [] readPointers(
+            int offset, int arrayNullability, int expectedLength) throws DeserializationException {
+        Decoder d = readPointer(offset, BindingsHelper.isArrayNullable(arrayNullability));
+        if (d == null) {
+            return null;
+        }
+        DataHeader si = d.readDataHeaderForPointerArray(expectedLength);
+        @Nullable Decoder[] result = new Decoder[si.elementsOrVersion];
+        boolean elementNullable = BindingsHelper.isElementNullable(arrayNullability);
+        for (int i = 0; i < result.length; ++i) {
+            result[i] =
+                    d.readPointer(
+                            DataHeader.HEADER_SIZE + BindingsHelper.POINTER_SIZE * i,
+                            elementNullable);
+        }
+        return result;
+    }
+
     /** Deserializes an array of |Handle| at the given offset. */
     public Handle @Nullable [] readHandles(int offset, int arrayNullability, int expectedLength)
             throws DeserializationException {
