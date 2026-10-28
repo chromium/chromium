@@ -43,7 +43,6 @@
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
-#include "third_party/blink/renderer/platform/graphics/opacity_mode.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
@@ -81,7 +80,7 @@ class CanvasRenderingContext2DAPITest : public PageTestBase {
 
   HTMLCanvasElement& CanvasElement() const { return *canvas_element_; }
 
-  void CreateContext(OpacityMode);
+  void CreateContext();
 
  private:
   Persistent<HTMLCanvasElement> canvas_element_;
@@ -98,10 +97,10 @@ CanvasRenderingContext2D* CanvasRenderingContext2DAPITest::Context2D() const {
       CanvasElement().RenderingContext());
 }
 
-void CanvasRenderingContext2DAPITest::CreateContext(OpacityMode opacity_mode) {
+void CanvasRenderingContext2DAPITest::CreateContext() {
   String canvas_type("2d");
   CanvasContextCreationAttributesCore attributes;
-  attributes.alpha = opacity_mode == kNonOpaque;
+  attributes.alpha = true;
   canvas_element_->GetCanvasRenderingContext(
       ExecutionContext::From(GetScriptState()), canvas_type, attributes);
   Context2D();  // Calling this for the checks
@@ -122,7 +121,7 @@ void CanvasRenderingContext2DAPITest::TearDown() {
 }
 
 TEST_F(CanvasRenderingContext2DAPITest, SetShadowColor_Clamping) {
-  CreateContext(kNonOpaque);
+  CreateContext();
 
   Context2D()->setShadowColor("rgba(0,0,0,0)");
   EXPECT_EQ(String("rgba(0, 0, 0, 0)"), Context2D()->shadowColor());
@@ -218,7 +217,7 @@ void TrySettingColor(CanvasRenderingContext2DAPITest* test,
 TEST_F(CanvasRenderingContext2DAPITest, ColorSerialization) {
   v8::HandleScope handle_scope(GetIsolate());
 
-  CreateContext(kNonOpaque);
+  CreateContext();
   // Check round trips
   TrySettingColor(this, "transparent", "rgba(0, 0, 0, 0)");
   TrySettingColor(this, "red", "#ff0000");
@@ -234,7 +233,7 @@ TEST_F(CanvasRenderingContext2DAPITest, ColorSerialization) {
 TEST_F(CanvasRenderingContext2DAPITest, DefaultAttributeValues) {
   v8::HandleScope handle_scope(GetIsolate());
 
-  CreateContext(kNonOpaque);
+  CreateContext();
 
   EXPECT_EQ(String("#000000"),
             GetStrokeStyleAsString(Context2D(), GetScriptState()));
@@ -246,7 +245,7 @@ TEST_F(CanvasRenderingContext2DAPITest, DefaultAttributeValues) {
 }
 
 TEST_F(CanvasRenderingContext2DAPITest, LineDashStateSave) {
-  CreateContext(kNonOpaque);
+  CreateContext();
 
   Vector<double> simple_dash;
   simple_dash.push_back(4);
@@ -264,7 +263,7 @@ TEST_F(CanvasRenderingContext2DAPITest, LineDashStateSave) {
 }
 
 TEST_F(CanvasRenderingContext2DAPITest, CreateImageData) {
-  CreateContext(kNonOpaque);
+  CreateContext();
 
   NonThrowableExceptionState exception_state;
 
@@ -315,7 +314,7 @@ TEST_F(CanvasRenderingContext2DAPITest, CreateImageData) {
 }
 
 TEST_F(CanvasRenderingContext2DAPITest, CreateImageDataTooBig) {
-  CreateContext(kNonOpaque);
+  CreateContext();
   DummyExceptionStateForTesting exception_state;
   ImageDataSettings* settings = ImageDataSettings::Create();
   ImageData* too_big_image_data =
@@ -326,7 +325,7 @@ TEST_F(CanvasRenderingContext2DAPITest, CreateImageDataTooBig) {
 }
 
 TEST_F(CanvasRenderingContext2DAPITest, GetImageDataTooBig) {
-  CreateContext(kNonOpaque);
+  CreateContext();
   DummyExceptionStateForTesting exception_state;
   ImageDataSettings* settings = ImageDataSettings::Create();
   ImageData* image_data = Context2D()->getImageData(0, 0, 1000000, 1000000,
@@ -338,7 +337,7 @@ TEST_F(CanvasRenderingContext2DAPITest, GetImageDataTooBig) {
 
 TEST_F(CanvasRenderingContext2DAPITest,
        GetImageDataIntegerOverflowNegativeParams) {
-  CreateContext(kNonOpaque);
+  CreateContext();
   ImageDataSettings* settings = ImageDataSettings::Create();
   {
     DummyExceptionStateForTesting exception_state;
@@ -363,7 +362,7 @@ TEST_F(CanvasRenderingContext2DAPITest,
 TEST_F(CanvasRenderingContext2DAPITest, UnclosedLayerCreateImageBitmap) {
   V8TestingScope scope;
   ScopedCanvas2dLayersForTest layer_feature(/*enabled=*/true);
-  CreateContext(kNonOpaque);
+  CreateContext();
 
   NonThrowableExceptionState no_exception;
   auto* image = MakeGarbageCollected<V8ImageBitmapSource>(&CanvasElement());
@@ -390,7 +389,7 @@ TEST_F(CanvasRenderingContext2DAPITest, UnclosedLayerCreateImageBitmap) {
 TEST_F(CanvasRenderingContext2DAPITest, UnclosedLayerCreatePattern) {
   V8TestingScope scope;
   ScopedCanvas2dLayersForTest layer_feature(/*enabled=*/true);
-  CreateContext(kNonOpaque);
+  CreateContext();
 
   NonThrowableExceptionState no_exception;
   auto* image = MakeGarbageCollected<V8CanvasImageSource>(&CanvasElement());
@@ -413,7 +412,7 @@ TEST_F(CanvasRenderingContext2DAPITest, UnclosedLayerCreatePattern) {
 // Checks `drawImage` throws an exception the source has unclosed layers.
 TEST_F(CanvasRenderingContext2DAPITest, UnclosedLayerDrawImage) {
   ScopedCanvas2dLayersForTest layer_feature(/*enabled=*/true);
-  CreateContext(kNonOpaque);
+  CreateContext();
 
   NonThrowableExceptionState no_exception;
   auto* image = MakeGarbageCollected<V8CanvasImageSource>(&CanvasElement());
@@ -436,7 +435,7 @@ TEST_F(CanvasRenderingContext2DAPITest, UnclosedLayerDrawImage) {
 // Checks `getImageData` throws an exception if called inside a layer.
 TEST_F(CanvasRenderingContext2DAPITest, UnclosedLayerGetImageData) {
   ScopedCanvas2dLayersForTest layer_feature(/*enabled=*/true);
-  CreateContext(kNonOpaque);
+  CreateContext();
   NonThrowableExceptionState no_exception;
 
   Context2D()->beginLayer(GetScriptState(), BeginLayerOptions::Create(),
@@ -459,7 +458,7 @@ TEST_F(CanvasRenderingContext2DAPITest, UnclosedLayerGetImageData) {
 // Checks `putImageData` throws an exception if called inside a layer.
 TEST_F(CanvasRenderingContext2DAPITest, UnclosedLayerPutImageData) {
   ScopedCanvas2dLayersForTest layer_feature(/*enabled=*/true);
-  CreateContext(kNonOpaque);
+  CreateContext();
 
   NonThrowableExceptionState no_exception;
   ImageData* image_data = ImageData::Create(
@@ -484,7 +483,7 @@ TEST_F(CanvasRenderingContext2DAPITest, UnclosedLayerPutImageData) {
 TEST_F(CanvasRenderingContext2DAPITest, UnclosedLayerToBlob) {
   V8TestingScope scope;
   ScopedCanvas2dLayersForTest layer_feature(/*enabled=*/true);
-  CreateContext(kNonOpaque);
+  CreateContext();
 
   NonThrowableExceptionState no_exception;
   auto* callback = V8BlobCallback::Create(scope.GetContext()->Global());
@@ -507,7 +506,7 @@ TEST_F(CanvasRenderingContext2DAPITest, UnclosedLayerToBlob) {
 // Checks `toDataURL` throws an exception if called inside a layer.
 TEST_F(CanvasRenderingContext2DAPITest, UnclosedLayerToDataUrl) {
   ScopedCanvas2dLayersForTest layer_feature(/*enabled=*/true);
-  CreateContext(kNonOpaque);
+  CreateContext();
   NonThrowableExceptionState no_exception;
 
   Context2D()->beginLayer(GetScriptState(), BeginLayerOptions::Create(),
@@ -528,7 +527,7 @@ TEST_F(CanvasRenderingContext2DAPITest, UnclosedLayerToDataUrl) {
 // Checks `drawMesh` throws an exception if called inside a layer.
 TEST_F(CanvasRenderingContext2DAPITest, UnclosedLayerDrawMesh) {
   ScopedCanvas2dLayersForTest layer_feature(/*enabled=*/true);
-  CreateContext(kNonOpaque);
+  CreateContext();
 
   NonThrowableExceptionState no_exception;
   auto* image = MakeGarbageCollected<V8CanvasImageSource>(&CanvasElement());
@@ -594,7 +593,7 @@ NotShared<DOMUint16Array> CreateUint16Array(std::vector<uint16_t> array) {
 }
 
 TEST_F(CanvasRenderingContext2DAPITest, Mesh2DVertexBuffer0Floats) {
-  CreateContext(kNonOpaque);
+  CreateContext();
   DummyExceptionStateForTesting exception_state;
   EXPECT_THAT(Context2D()->createMesh2DVertexBuffer(CreateFloat32Array({}),
                                                     exception_state),
@@ -603,7 +602,7 @@ TEST_F(CanvasRenderingContext2DAPITest, Mesh2DVertexBuffer0Floats) {
 }
 
 TEST_F(CanvasRenderingContext2DAPITest, Mesh2DVertexBuffer1Float) {
-  CreateContext(kNonOpaque);
+  CreateContext();
   DummyExceptionStateForTesting exception_state;
   EXPECT_THAT(Context2D()->createMesh2DVertexBuffer(CreateFloat32Array({101}),
                                                     exception_state),
@@ -612,7 +611,7 @@ TEST_F(CanvasRenderingContext2DAPITest, Mesh2DVertexBuffer1Float) {
 }
 
 TEST_F(CanvasRenderingContext2DAPITest, Mesh2DVertexBuffer2Floats) {
-  CreateContext(kNonOpaque);
+  CreateContext();
   NonThrowableExceptionState exception_state;
   EXPECT_THAT(Context2D()->createMesh2DVertexBuffer(
                   CreateFloat32Array({101, 102}), exception_state),
@@ -620,7 +619,7 @@ TEST_F(CanvasRenderingContext2DAPITest, Mesh2DVertexBuffer2Floats) {
 }
 
 TEST_F(CanvasRenderingContext2DAPITest, Mesh2DVertexBuffer3Floats) {
-  CreateContext(kNonOpaque);
+  CreateContext();
   DummyExceptionStateForTesting exception_state;
   EXPECT_THAT(Context2D()->createMesh2DVertexBuffer(
                   CreateFloat32Array({101, 102, 103}), exception_state),
@@ -629,7 +628,7 @@ TEST_F(CanvasRenderingContext2DAPITest, Mesh2DVertexBuffer3Floats) {
 }
 
 TEST_F(CanvasRenderingContext2DAPITest, Mesh2DVertexBuffer4Floats) {
-  CreateContext(kNonOpaque);
+  CreateContext();
   NonThrowableExceptionState exception_state;
   EXPECT_THAT(Context2D()->createMesh2DVertexBuffer(
                   CreateFloat32Array({101, 102, 103, 104}), exception_state),
@@ -638,7 +637,7 @@ TEST_F(CanvasRenderingContext2DAPITest, Mesh2DVertexBuffer4Floats) {
 }
 
 TEST_F(CanvasRenderingContext2DAPITest, Mesh2DUVBuffer0Floats) {
-  CreateContext(kNonOpaque);
+  CreateContext();
   DummyExceptionStateForTesting exception_state;
   EXPECT_THAT(Context2D()->createMesh2DUVBuffer(CreateFloat32Array({}),
                                                 exception_state),
@@ -647,7 +646,7 @@ TEST_F(CanvasRenderingContext2DAPITest, Mesh2DUVBuffer0Floats) {
 }
 
 TEST_F(CanvasRenderingContext2DAPITest, Mesh2DUVBuffer1Float) {
-  CreateContext(kNonOpaque);
+  CreateContext();
   DummyExceptionStateForTesting exception_state;
   EXPECT_THAT(Context2D()->createMesh2DUVBuffer(CreateFloat32Array({101}),
                                                 exception_state),
@@ -656,7 +655,7 @@ TEST_F(CanvasRenderingContext2DAPITest, Mesh2DUVBuffer1Float) {
 }
 
 TEST_F(CanvasRenderingContext2DAPITest, Mesh2DUVBuffer2Floats) {
-  CreateContext(kNonOpaque);
+  CreateContext();
   NonThrowableExceptionState exception_state;
   EXPECT_THAT(Context2D()->createMesh2DUVBuffer(CreateFloat32Array({101, 102}),
                                                 exception_state),
@@ -664,7 +663,7 @@ TEST_F(CanvasRenderingContext2DAPITest, Mesh2DUVBuffer2Floats) {
 }
 
 TEST_F(CanvasRenderingContext2DAPITest, Mesh2DUVBuffer3Floats) {
-  CreateContext(kNonOpaque);
+  CreateContext();
   DummyExceptionStateForTesting exception_state;
   EXPECT_THAT(Context2D()->createMesh2DUVBuffer(
                   CreateFloat32Array({101, 102, 103}), exception_state),
@@ -673,7 +672,7 @@ TEST_F(CanvasRenderingContext2DAPITest, Mesh2DUVBuffer3Floats) {
 }
 
 TEST_F(CanvasRenderingContext2DAPITest, Mesh2DUVBuffer4Floats) {
-  CreateContext(kNonOpaque);
+  CreateContext();
   NonThrowableExceptionState exception_state;
   EXPECT_THAT(Context2D()->createMesh2DUVBuffer(
                   CreateFloat32Array({101, 102, 103, 104}), exception_state),
@@ -682,7 +681,7 @@ TEST_F(CanvasRenderingContext2DAPITest, Mesh2DUVBuffer4Floats) {
 }
 
 TEST_F(CanvasRenderingContext2DAPITest, Mesh2DIndexBuffer0Uints) {
-  CreateContext(kNonOpaque);
+  CreateContext();
   DummyExceptionStateForTesting exception_state;
   EXPECT_THAT(Context2D()->createMesh2DIndexBuffer(CreateUint16Array({}),
                                                    exception_state),
@@ -691,7 +690,7 @@ TEST_F(CanvasRenderingContext2DAPITest, Mesh2DIndexBuffer0Uints) {
 }
 
 TEST_F(CanvasRenderingContext2DAPITest, Mesh2DIndexBuffer1Uint) {
-  CreateContext(kNonOpaque);
+  CreateContext();
   DummyExceptionStateForTesting exception_state;
   EXPECT_THAT(Context2D()->createMesh2DIndexBuffer(CreateUint16Array({1}),
                                                    exception_state),
@@ -700,7 +699,7 @@ TEST_F(CanvasRenderingContext2DAPITest, Mesh2DIndexBuffer1Uint) {
 }
 
 TEST_F(CanvasRenderingContext2DAPITest, Mesh2DIndexBuffer2Uints) {
-  CreateContext(kNonOpaque);
+  CreateContext();
   DummyExceptionStateForTesting exception_state;
   EXPECT_THAT(Context2D()->createMesh2DIndexBuffer(CreateUint16Array({1, 2}),
                                                    exception_state),
@@ -709,7 +708,7 @@ TEST_F(CanvasRenderingContext2DAPITest, Mesh2DIndexBuffer2Uints) {
 }
 
 TEST_F(CanvasRenderingContext2DAPITest, Mesh2DUVBuffer3Uints) {
-  CreateContext(kNonOpaque);
+  CreateContext();
   NonThrowableExceptionState exception_state;
   EXPECT_THAT(Context2D()->createMesh2DIndexBuffer(CreateUint16Array({1, 2, 3}),
                                                    exception_state),
@@ -717,7 +716,7 @@ TEST_F(CanvasRenderingContext2DAPITest, Mesh2DUVBuffer3Uints) {
 }
 
 TEST_F(CanvasRenderingContext2DAPITest, Mesh2DIndexBuffer4Uints) {
-  CreateContext(kNonOpaque);
+  CreateContext();
   DummyExceptionStateForTesting exception_state;
   EXPECT_THAT(Context2D()->createMesh2DIndexBuffer(
                   CreateUint16Array({1, 2, 3, 4}), exception_state),
@@ -726,7 +725,7 @@ TEST_F(CanvasRenderingContext2DAPITest, Mesh2DIndexBuffer4Uints) {
 }
 
 TEST_F(CanvasRenderingContext2DAPITest, Mesh2DIndexBuffer5Uints) {
-  CreateContext(kNonOpaque);
+  CreateContext();
   DummyExceptionStateForTesting exception_state;
   EXPECT_THAT(Context2D()->createMesh2DIndexBuffer(
                   CreateUint16Array({1, 2, 3, 4, 5}), exception_state),
@@ -735,7 +734,7 @@ TEST_F(CanvasRenderingContext2DAPITest, Mesh2DIndexBuffer5Uints) {
 }
 
 TEST_F(CanvasRenderingContext2DAPITest, Mesh2DUVBuffer6Uints) {
-  CreateContext(kNonOpaque);
+  CreateContext();
   NonThrowableExceptionState exception_state;
   EXPECT_THAT(Context2D()->createMesh2DIndexBuffer(
                   CreateUint16Array({1, 2, 3, 4, 5, 6}), exception_state),
@@ -743,7 +742,7 @@ TEST_F(CanvasRenderingContext2DAPITest, Mesh2DUVBuffer6Uints) {
 }
 
 TEST_F(CanvasRenderingContext2DAPITest, DrawMesh) {
-  CreateContext(kNonOpaque);
+  CreateContext();
   CanvasRenderingContext2D* ctx = Context2D();
   V8CanvasImageSource* image_source =
       MakeGarbageCollected<V8CanvasImageSource>(&CanvasElement());
