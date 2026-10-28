@@ -36,23 +36,24 @@ public class BottomBarActionEligibility {
     /**
      * Returns whether the GLIC bottom bar setting toggle should be shown for the given profile.
      *
-     * <p>The toggle is only shown if candidate resolution has already resolved GLIC as the
-     * candidate extra action for the bottom bar. If candidate resolution has not occurred yet or
-     * resolved to another action / none, returns false.
+     * <p>The toggle is shown if candidate resolution has already resolved GLIC as the candidate
+     * extra action for the bottom bar, or if enterprise policy disables GLIC so the toggle can be
+     * shown in its disabled state. Otherwise, returns false.
      *
      * @param profile The current user profile.
      * @return True if the setting toggle should be shown.
      */
     public static boolean shouldShowBottomBarGlicSetting(@Nullable Profile profile) {
-        if (profile == null) {
-            return false;
-        }
-        if (sCachedCandidateExtraAction == null || sCachedCandidateExtraAction != ActionId.GLIC) {
+        if (profile == null || !BottomBarConfigUtils.isGlicSettingToggleParamEnabled()) {
             return false;
         }
         Profile originalProfile = profile.getOriginalProfile();
-        return BottomBarConfigUtils.isGlicSettingToggleParamEnabled()
-                && GlicEnabling.shouldShowSettingsPage(originalProfile);
+        boolean isGlicCandidate =
+                sCachedCandidateExtraAction != null && sCachedCandidateExtraAction == ActionId.GLIC;
+        if (!isGlicCandidate && !GlicEnabling.isDisabledByPolicy(originalProfile)) {
+            return false;
+        }
+        return GlicEnabling.shouldShowSettingsPage(originalProfile);
     }
 
     /**
@@ -79,13 +80,7 @@ public class BottomBarActionEligibility {
         // Check if GLIC is enabled for this profile.
         if (isGlicProfileEnabled) {
             sCachedCandidateExtraAction = ActionId.GLIC;
-            if (GlicEnabling.isPolicyEnforced(originalProfile)) {
-                return ActionId.GLIC;
-            }
-            if (BottomBarConfigUtils.isGlicButtonEnabled()) {
-                return ActionId.GLIC;
-            }
-            return ACTION_NONE;
+            return BottomBarConfigUtils.isGlicButtonEnabled() ? ActionId.GLIC : ACTION_NONE;
         }
 
         sCachedCandidateExtraAction = ACTION_NONE;
@@ -110,8 +105,7 @@ public class BottomBarActionEligibility {
             return;
         }
 
-        if (!GlicEnabling.isPolicyEnforced(originalProfile)
-                && !BottomBarConfigUtils.isGlicButtonEnabled()) {
+        if (!BottomBarConfigUtils.isGlicButtonEnabled()) {
             BottomBarMetrics.recordGlicIneligibilityReason(
                     GlicIneligibilityReason.USER_DISABLED_IN_SETTINGS);
         }

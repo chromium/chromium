@@ -344,8 +344,7 @@ public class BottomBarMediator
 
         boolean visible =
                 GlicEnabling.isEnabledForProfile(originalProfile)
-                        && (GlicEnabling.isPolicyEnforced(originalProfile)
-                                || BottomBarConfigUtils.isGlicButtonEnabled());
+                        && BottomBarConfigUtils.isGlicButtonEnabled();
 
         if (visible && !mGlicWasVisible) {
             mGlicAppearedTimeMs = SystemClock.uptimeMillis();

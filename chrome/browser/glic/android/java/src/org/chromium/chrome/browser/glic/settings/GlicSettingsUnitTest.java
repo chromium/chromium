@@ -900,6 +900,21 @@ public class GlicSettingsUnitTest {
         ChromeFeatureList.ENABLE_ANDROID_SIDE_PANEL,
         ChromeFeatureList.ANDROID_BOTTOM_BAR
     })
+    public void testSearchIndex_BottomBarDisabled_DisabledByPolicy_RemovesBottomBarToggle() {
+        when(mGlicEnablingJniMock.isDisabledByPolicy(any())).thenReturn(true);
+        GlicSettings.SEARCH_INDEX_DATA_PROVIDER.updateDynamicPreferences(
+                RuntimeEnvironment.getApplication(), mSearchIndexDataMock, mProfileMock);
+        verify(mSearchIndexDataMock)
+                .removeEntryForKey(
+                        GlicSettings.class.getName(),
+                        GlicSettings.PREFERENCE_BOTTOM_BAR_BUTTON_TOGGLE);
+    }
+
+    @Test
+    @DisableFeatures({
+        ChromeFeatureList.ENABLE_ANDROID_SIDE_PANEL,
+        ChromeFeatureList.ANDROID_BOTTOM_BAR
+    })
     public void testSearchIndex_GlicPinned() {
         ChromeSharedPreferences.getInstance()
                 .writeInt(
@@ -973,6 +988,49 @@ public class GlicSettingsUnitTest {
         assertTrue(BottomBarConfigUtils.isGlicButtonEnabled());
         assertEquals(
                 1, mUserActionTester.getActionCount("Glic.Settings.BottomBarGlicButton.Enabled"));
+    }
+
+    @Test
+    @EnableFeatures(
+            ChromeFeatureList.ANDROID_BOTTOM_BAR
+                    + ":bypass_glic_geofencing/true/show_glic_setting_toggle/true")
+    @DisableFeatures(ChromeFeatureList.ENABLE_ANDROID_SIDE_PANEL)
+    public void testBottomBarGlicButtonToggle_ManagedProfileAllowed_RemainsEditable() {
+        when(mGlicEnablingJniMock.isProfileManaged(any())).thenReturn(true);
+        when(mGlicEnablingJniMock.isDisabledByPolicy(any())).thenReturn(false);
+
+        GlicSettings fragment = launchFragment();
+        mActivityScenarioRule.getScenario().moveToState(State.RESUMED);
+        ChromeSwitchPreference togglePref =
+                fragment.findPreference(GlicSettings.PREFERENCE_BOTTOM_BAR_BUTTON_TOGGLE);
+        assertTrue(togglePref.isVisible());
+        assertTrue(togglePref.isEnabled());
+        assertTrue(togglePref.isChecked());
+
+        togglePref.performClick();
+        assertFalse(togglePref.isChecked());
+        assertFalse(BottomBarConfigUtils.isGlicButtonEnabled());
+    }
+
+    @Test
+    @EnableFeatures(
+            ChromeFeatureList.ANDROID_BOTTOM_BAR
+                    + ":bypass_glic_geofencing/true/show_glic_setting_toggle/true")
+    @DisableFeatures(ChromeFeatureList.ENABLE_ANDROID_SIDE_PANEL)
+    public void testBottomBarGlicButtonToggle_DisabledByPolicy_DisabledAndUnchecked() {
+        BottomBarConfigUtils.setGlicButtonEnabled(true);
+        when(mGlicEnablingJniMock.isDisabledByPolicy(any())).thenReturn(true);
+        // Admin-disabled profiles never resolve GLIC as the bottom bar candidate.
+        BottomBarActionEligibility.setCachedCandidateExtraActionForTesting(
+                BottomBarActionEligibility.ACTION_NONE);
+
+        GlicSettings fragment = launchFragment();
+        mActivityScenarioRule.getScenario().moveToState(State.RESUMED);
+        ChromeSwitchPreference togglePref =
+                fragment.findPreference(GlicSettings.PREFERENCE_BOTTOM_BAR_BUTTON_TOGGLE);
+        assertTrue(togglePref.isVisible());
+        assertFalse(togglePref.isEnabled());
+        assertFalse(togglePref.isChecked());
     }
 
     @Test

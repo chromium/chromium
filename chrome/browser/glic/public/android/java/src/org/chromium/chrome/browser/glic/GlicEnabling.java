@@ -141,13 +141,6 @@ public class GlicEnabling {
         return GlicEnablingJni.get().isProfileManaged(profile);
     }
 
-    /** Returns true if Glic settings are enforced by enterprise policy. */
-    public static boolean isPolicyEnforced(@Nullable Profile profile) {
-        if (profile == null) return false;
-        if (sIsEnabledForTesting != null) return false;
-        return GlicEnablingJni.get().isPolicyEnforced(profile);
-    }
-
     /**
      * Returns true if explicit experimental opt-in is required for the given profile.
      *
@@ -181,8 +174,6 @@ public class GlicEnabling {
         boolean isDisabledByPolicy(@JniType("Profile*") Profile profile);
 
         boolean isProfileManaged(@JniType("Profile*") Profile profile);
-
-        boolean isPolicyEnforced(@JniType("Profile*") Profile profile);
 
         boolean experimentalOptInIsNeeded(@JniType("Profile*") Profile profile);
 

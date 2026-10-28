@@ -75,16 +75,14 @@ public class BottomBarActionEligibilityUnitTest {
 
     @Test
     @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR + ":show_glic_setting_toggle/true")
-    public void testGetCandidateExtraAction_GlicButtonDisabledByUser_Unmanaged_ReturnsActionNone() {
+    public void testGetCandidateExtraAction_GlicButtonDisabledByUser_ReturnsActionNone() {
         when(mGlicEnablingJniMock.isEnabledForProfile(any())).thenReturn(true);
-        when(mGlicEnablingJniMock.isPolicyEnforced(any())).thenReturn(false);
 
-        // When disabled by user and not policy-enforced -> returns ACTION_NONE.
-        BottomBarConfigUtils.setGlicButtonEnabled(/* enabled= */ false);
+        BottomBarConfigUtils.setGlicButtonEnabled(false);
         assertEquals(
                 BottomBarActionEligibility.ACTION_NONE,
                 BottomBarActionEligibility.getCandidateExtraAction(mProfile));
-        // But cached candidate is still GLIC.
+        // Cached candidate remains GLIC so the settings toggle stays visible.
         assertEquals(
                 Integer.valueOf(ActionId.GLIC),
                 BottomBarActionEligibility.getCachedCandidateExtraAction());
@@ -92,23 +90,10 @@ public class BottomBarActionEligibilityUnitTest {
 
     @Test
     @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR + ":show_glic_setting_toggle/true")
-    public void
-            testGetCandidateExtraAction_GlicButtonDisabledByUser_PolicyEnforced_ForceShowsGlic() {
-        when(mGlicEnablingJniMock.isEnabledForProfile(any())).thenReturn(true);
-        when(mGlicEnablingJniMock.isPolicyEnforced(any())).thenReturn(true);
-
-        // When policy enforces GLIC, it force-shows even if user setting was toggled off.
-        BottomBarConfigUtils.setGlicButtonEnabled(/* enabled= */ false);
-        assertEquals(ActionId.GLIC, BottomBarActionEligibility.getCandidateExtraAction(mProfile));
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR + ":show_glic_setting_toggle/true")
     public void testGetCandidateExtraAction_GlicButtonEnabledByUser_ReturnsGlic() {
         when(mGlicEnablingJniMock.isEnabledForProfile(any())).thenReturn(true);
-        when(mGlicEnablingJniMock.isPolicyEnforced(any())).thenReturn(false);
 
-        BottomBarConfigUtils.setGlicButtonEnabled(/* enabled= */ true);
+        BottomBarConfigUtils.setGlicButtonEnabled(true);
         assertEquals(ActionId.GLIC, BottomBarActionEligibility.getCandidateExtraAction(mProfile));
     }
 
@@ -142,6 +127,22 @@ public class BottomBarActionEligibilityUnitTest {
         when(mGlicEnablingJniMock.shouldShowSettingsPage(any())).thenReturn(true);
         BottomBarActionEligibility.setCachedCandidateExtraActionForTesting(
                 BottomBarActionEligibility.ACTION_NONE);
+        assertFalse(BottomBarActionEligibility.shouldShowBottomBarGlicSetting(mProfile));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR + ":show_glic_setting_toggle/true")
+    public void testShouldShowBottomBarGlicSetting_DisabledByPolicy_ReturnsTrue() {
+        when(mGlicEnablingJniMock.isDisabledByPolicy(any())).thenReturn(true);
+        BottomBarActionEligibility.setCachedCandidateExtraActionForTesting(
+                BottomBarActionEligibility.ACTION_NONE);
+        assertTrue(BottomBarActionEligibility.shouldShowBottomBarGlicSetting(mProfile));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR + ":show_glic_setting_toggle/false")
+    public void testShouldShowBottomBarGlicSetting_DisabledByPolicy_ToggleParamFalse() {
+        when(mGlicEnablingJniMock.isDisabledByPolicy(any())).thenReturn(true);
         assertFalse(BottomBarActionEligibility.shouldShowBottomBarGlicSetting(mProfile));
     }
 
@@ -189,8 +190,7 @@ public class BottomBarActionEligibilityUnitTest {
         BottomBarActionEligibility.getCandidateExtraAction(mProfile);
 
         when(mGlicEnablingJniMock.isEnabledForProfile(any())).thenReturn(true);
-        when(mGlicEnablingJniMock.isPolicyEnforced(any())).thenReturn(false);
-        BottomBarConfigUtils.setGlicButtonEnabled(/* enabled= */ false);
+        BottomBarConfigUtils.setGlicButtonEnabled(false);
         BottomBarActionEligibility.getCandidateExtraAction(mProfile);
 
         noRecordWatcher.assertExpected();
@@ -210,8 +210,7 @@ public class BottomBarActionEligibilityUnitTest {
 
         // 2. User disabled in settings -> GLIC UserDisabledInSettings recorded.
         when(mGlicEnablingJniMock.isEnabledForProfile(any())).thenReturn(true);
-        when(mGlicEnablingJniMock.isPolicyEnforced(any())).thenReturn(false);
-        BottomBarConfigUtils.setGlicButtonEnabled(/* enabled= */ false);
+        BottomBarConfigUtils.setGlicButtonEnabled(false);
         var glicUserDisabledWatcher =
                 HistogramWatcher.newSingleRecordWatcher(
                         "Android.BottomBar.Glic.IneligibilityReason",

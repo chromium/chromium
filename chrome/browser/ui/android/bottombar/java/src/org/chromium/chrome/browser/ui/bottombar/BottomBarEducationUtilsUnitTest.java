@@ -76,7 +76,6 @@ public class BottomBarEducationUtilsUnitTest {
     public void testShouldUseGlicVariant_Enabled() {
         when(mProfile.getOriginalProfile()).thenReturn(mProfile);
         when(mGlicEnablingJniMock.isEnabledForProfile(any())).thenReturn(true);
-        when(mGlicEnablingJniMock.isPolicyEnforced(any())).thenReturn(true);
         assertTrue(BottomBarEducationUtils.shouldUseGlicVariant(mProfile));
     }
 

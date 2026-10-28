@@ -144,7 +144,6 @@ public class BottomBarEducationCoordinatorUnitTest {
         when(mProfile.getOriginalProfile()).thenReturn(mProfile);
         GlicEnablingJni.setInstanceForTesting(mGlicEnablingJniMock);
         when(mGlicEnablingJniMock.isEnabledForProfile(any())).thenReturn(true);
-        when(mGlicEnablingJniMock.isPolicyEnforced(any())).thenReturn(true);
     }
 
     @After

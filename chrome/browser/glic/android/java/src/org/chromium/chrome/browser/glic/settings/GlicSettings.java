@@ -542,38 +542,32 @@ public class GlicSettings extends ChromeBaseSettingsFragment {
         if (buttonTogglePref != null) buttonTogglePref.setVisible(false);
 
         if (bottomBarButtonTogglePref != null) {
-            boolean isGlicAllowed =
+            boolean shouldShowToggle =
                     BottomBarActionEligibility.shouldShowBottomBarGlicSetting(getProfile());
-            bottomBarButtonTogglePref.setVisible(isGlicAllowed);
-            if (isGlicAllowed) {
-                boolean isManaged = GlicEnabling.isPolicyEnforced(getProfile());
-                boolean isDisabledByPolicy = GlicEnabling.isDisabledByPolicy(getProfile());
-
-                if (isDisabledByPolicy) {
+            bottomBarButtonTogglePref.setVisible(shouldShowToggle);
+            if (shouldShowToggle) {
+                if (GlicEnabling.isDisabledByPolicy(getProfile())) {
                     bottomBarButtonTogglePref.setChecked(false);
-                    bottomBarButtonTogglePref.setEnabled(false);
-                } else if (isManaged) {
-                    bottomBarButtonTogglePref.setChecked(true);
                     bottomBarButtonTogglePref.setEnabled(false);
                 } else {
                     bottomBarButtonTogglePref.setEnabled(true);
                     bottomBarButtonTogglePref.setChecked(
                             BottomBarConfigUtils.isGlicButtonEnabled());
-                    if (attachListener) {
-                        bottomBarButtonTogglePref.setOnPreferenceChangeListener(
-                                (preference, newValue) -> {
-                                    boolean enabled = (boolean) newValue;
-                                    BottomBarConfigUtils.setGlicButtonEnabled(enabled);
-                                    if (enabled) {
-                                        RecordUserAction.record(
-                                                "Glic.Settings.BottomBarGlicButton.Enabled");
-                                    } else {
-                                        RecordUserAction.record(
-                                                "Glic.Settings.BottomBarGlicButton.Disabled");
-                                    }
-                                    return true;
-                                });
-                    }
+                }
+                if (attachListener) {
+                    bottomBarButtonTogglePref.setOnPreferenceChangeListener(
+                            (preference, newValue) -> {
+                                boolean enabled = (boolean) newValue;
+                                BottomBarConfigUtils.setGlicButtonEnabled(enabled);
+                                if (enabled) {
+                                    RecordUserAction.record(
+                                            "Glic.Settings.BottomBarGlicButton.Enabled");
+                                } else {
+                                    RecordUserAction.record(
+                                            "Glic.Settings.BottomBarGlicButton.Disabled");
+                                }
+                                return true;
+                            });
                 }
             }
         }
@@ -927,7 +921,9 @@ public class GlicSettings extends ChromeBaseSettingsFragment {
                         indexData.removeEntryForKey(prefFrag, PREF_LAUNCHER_HOTKEY);
                         indexData.removeEntryForKey(prefFrag, PREF_NAVIGATION_SHORTCUT);
                     }
-                    if (!BottomBarActionEligibility.shouldShowBottomBarGlicSetting(profile)) {
+                    if (!BottomBarConfigUtils.isBottomBarEnabled(context)
+                            || !BottomBarActionEligibility.shouldShowBottomBarGlicSetting(
+                                    profile)) {
                         indexData.removeEntryForKey(prefFrag, PREFERENCE_BOTTOM_BAR_BUTTON_TOGGLE);
                     }
                     if (!ChromeFeatureList.isEnabled(

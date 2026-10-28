@@ -341,7 +341,6 @@ public class BottomBarMediatorUnitTest {
     @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR + ":show_glic_setting_toggle/true")
     public void testUpdateGlicVisibility_DisabledInSettings_RecordsIneligibilityReason() {
         when(mGlicEnablingJniMock.isEnabledForProfile(any())).thenReturn(true);
-        when(mGlicEnablingJniMock.isPolicyEnforced(any())).thenReturn(false);
         BottomBarConfigUtils.setGlicButtonEnabled(false);
 
         var watcher =
