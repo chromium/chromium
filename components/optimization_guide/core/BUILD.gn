@@ -293,8 +293,6 @@ source_set("ondevice") {
   ]
   if (build_with_model_execution) {
     sources += [
-      "model_execution/aqa_response_parser.cc",
-      "model_execution/aqa_response_parser.h",
       "model_execution/fieldwise_response_parser.cc",
       "model_execution/fieldwise_response_parser.h",
       "model_execution/json_response_parser.cc",
@@ -855,7 +853,6 @@ if (build_with_model_execution && !is_chrome_for_testing) {
   source_set("ondevice_unit_tests") {
     testonly = true
     sources = [
-      "model_execution/aqa_response_parser_unittest.cc",
       "model_execution/configs/summarize_solution_config_unittest.cc",
       "model_execution/fieldwise_response_parser_unittest.cc",
       "model_execution/json_response_parser_unittest.cc",

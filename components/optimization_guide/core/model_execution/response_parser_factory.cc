@@ -4,7 +4,6 @@
 
 #include "components/optimization_guide/core/model_execution/response_parser_factory.h"
 
-#include "components/optimization_guide/core/model_execution/aqa_response_parser.h"
 #include "components/optimization_guide/core/model_execution/json_response_parser.h"
 #include "components/optimization_guide/core/model_execution/simple_response_parser.h"
 #include "components/optimization_guide/proto/parser_kind.pb.h"
@@ -22,12 +21,6 @@ std::unique_ptr<ResponseParser> CreateResponseParser(
 
     case proto::PARSER_KIND_JSON:
       return std::make_unique<JsonResponseParser>(output_config.proto_type());
-
-    case proto::PARSER_KIND_AQA:
-      if (!AqaResponseParser::CanParse(output_config.proto_type())) {
-        return nullptr;
-      }
-      return std::make_unique<AqaResponseParser>();
 
     default:
       return nullptr;
