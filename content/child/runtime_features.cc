@@ -544,6 +544,18 @@ void ResolveInvalidConfigurations() {
     WebRuntimeFeatures::EnableCSPHashesV1(false);
   }
 
+  if (!base::FeatureList::IsEnabled(
+          blink::features::kPermissionsPolicyForSharedWorkers)) {
+    LOG_IF(WARNING,
+           WebRuntimeFeatures::IsPermissionsPolicyForSharedWorkersEnabled())
+        << "PermissionsPolicyForSharedWorkers cannot be enabled in this "
+           "configuration. Use --"
+        << switches::kEnableFeatures << "="
+        << blink::features::kPermissionsPolicyForSharedWorkers.name
+        << " instead.";
+    WebRuntimeFeatures::EnablePermissionsPolicyForSharedWorkers(false);
+  }
+
   // LegacyAbstractRange (containers on AbstractRange.prototype) is the
   // strict inverse of the global OpaqueRange runtime flag. Resolve this after
   // command-line overrides so the two prototype shapes never coexist. Remove
