@@ -137,10 +137,15 @@ int ConfiguredProxyResolutionRequest::Start() {
 }
 
 void ConfiguredProxyResolutionRequest::ResumeOrCompleteSynchronously() {
-  int rv = service_->TryResolveSynchronously(
-      url_, /*bypass_override_rules=*/false, net_log_, results_);
-  if (rv == ERR_IO_PENDING) {
-    rv = Start();
+  int rv;
+  if (override_rules_evaluated_) {
+    rv = ContinueProxyResolution();
+  } else {
+    rv = service_->TryResolveSynchronously(
+        url_, /*bypass_override_rules=*/false, net_log_, results_);
+    if (rv == ERR_IO_PENDING) {
+      rv = Start();
+    }
   }
 
   if (rv != ERR_IO_PENDING) {
@@ -157,6 +162,18 @@ void ConfiguredProxyResolutionRequest::CancelActiveJob() {
 
   ResetActiveJobState();
   CHECK(!is_started());
+}
+
+bool ConfiguredProxyResolutionRequest::CancelResolveJob() {
+  if (!resolve_job_) {
+    return false;
+  }
+
+  net_log_.AddEvent(NetLogEventType::CANCELLED);
+  resolve_job_.reset();
+  override_rules_evaluated_ = true;
+  CHECK(!is_started());
+  return true;
 }
 
 int ConfiguredProxyResolutionRequest::FinalizeRequestResult(int result_code) {
@@ -208,6 +225,24 @@ int ConfiguredProxyResolutionRequest::FinalizeRequestResult(int result_code) {
   return rv;
 }
 
+void ConfiguredProxyResolutionRequest::BeginWaitEvent(
+    NetLogEventType event_type) {
+  if (current_wait_event_ == event_type) {
+    return;
+  }
+  EndWaitEvent();
+  current_wait_event_ = event_type;
+  net_log_.BeginEvent(event_type);
+}
+
+void ConfiguredProxyResolutionRequest::EndWaitEvent() {
+  if (!current_wait_event_) {
+    return;
+  }
+  net_log_.EndEvent(*current_wait_event_);
+  current_wait_event_.reset();
+}
+
 LoadState ConfiguredProxyResolutionRequest::GetLoadState() const {
   LoadState load_state = LOAD_STATE_IDLE;
   if (service_ && service_->GetLoadStateIfAvailable(&load_state))
@@ -246,17 +281,28 @@ int ConfiguredProxyResolutionRequest::ContinueProxyResolution() {
     }
   }
 
-  if (service_->ApplyPacBypassRules(url_, results_)) {
-    return OK;
+  if (!service_->IsReady()) {
+    // A dynamic routing config update started while override rule DNS probes
+    // were in flight. Pause here (with `is_started() == false`) so the service
+    // resumes this request once ready.
+    CHECK(service_->IsPacReady());
+    BeginWaitEvent(
+        NetLogEventType::
+            PROXY_RESOLUTION_SERVICE_WAITING_FOR_DYNAMIC_PROXY_CONFIGS);
+    return ERR_IO_PENDING;
   }
 
   // Required in case some override rules needed to run asynchronously, but
-  // ended up not applying, and there are e.g. manual proxy settings as
-  // fallback.
+  // ended up not applying, and there are e.g. dynamic routing rules or manual
+  // proxy settings as fallback.
   int rv = service_->TryResolveSynchronously(
       url_, /*bypass_override_rules=*/true, net_log_, results_);
   if (rv != ERR_IO_PENDING) {
     return rv;
+  }
+
+  if (service_->ApplyPacBypassRules(url_, results_)) {
+    return OK;
   }
 
   return service_->GetProxyResolver()->GetProxyForURL(
@@ -290,16 +336,13 @@ void ConfiguredProxyResolutionRequest::OnDnsHostResolved(
                                                /*was_resolved_sync=*/false);
   });
 
-  if (!service_ || !service_->IsReady()) {
-    // Something happened during DNS resolution which invalidated the
-    // service's state (e.g. config update). The service will resume
-    // the current request if/when needed.
+  if (!service_) {
     return;
   }
 
   int rv = ContinueProxyResolution();
   if (rv == ERR_IO_PENDING) {
-    // Missing a required DNS resolution.
+    // Missing a required DNS resolution, or waiting on service readiness / PAC.
     return;
   }
 
@@ -337,6 +380,7 @@ int ConfiguredProxyResolutionRequest::EvaluateApplicableOverrideRules() {
     applicable_override_rules_.pop();
   }
 
+  override_rules_evaluated_ = results_->is_empty();
   dns_results_.clear();
   net_log_.EndEvent(NetLogEventType::PROXY_RESOLUTION_OVERRIDE_RULES);
   return OK;
@@ -346,6 +390,7 @@ void ConfiguredProxyResolutionRequest::ResetActiveJobState() {
   // The request may already be running in the resolver.
   resolve_job_.reset();
   applicable_override_rules_ = base::queue<ProxyConfig::ProxyOverrideRule>();
+  override_rules_evaluated_ = false;
   dns_results_.clear();
 }
 

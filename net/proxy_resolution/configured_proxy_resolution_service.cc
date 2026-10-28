@@ -1001,13 +1001,12 @@ int ConfiguredProxyResolutionService::ResolveProxy(
     rv = req->Start();
     if (rv != ERR_IO_PENDING)
       return req->FinalizeRequestResult(rv);
-  } else if (!IsPacReady()) {
-    req->net_log()->BeginEvent(
-        NetLogEventType::PROXY_RESOLUTION_SERVICE_WAITING_FOR_INIT_PAC);
   } else {
-    req->net_log()->BeginEvent(
-        NetLogEventType::
-            PROXY_RESOLUTION_SERVICE_WAITING_FOR_DYNAMIC_PROXY_CONFIGS);
+    req->BeginWaitEvent(
+        IsPacReady()
+            ? NetLogEventType::
+                  PROXY_RESOLUTION_SERVICE_WAITING_FOR_DYNAMIC_PROXY_CONFIGS
+            : NetLogEventType::PROXY_RESOLUTION_SERVICE_WAITING_FOR_INIT_PAC);
   }
 
   DCHECK_EQ(ERR_IO_PENDING, rv);
@@ -1128,13 +1127,18 @@ ConfiguredProxyResolutionService::~ConfiguredProxyResolutionService() {
 }
 
 void ConfiguredProxyResolutionService::SuspendAllPendingRequests() {
+  if (!IsPacReady()) {
+    return;
+  }
+
   for (ConfiguredProxyResolutionRequest* req : pending_requests_) {
     if (req->is_started()) {
       req->CancelActiveJob();
-
-      req->net_log()->BeginEvent(
-          NetLogEventType::PROXY_RESOLUTION_SERVICE_WAITING_FOR_INIT_PAC);
+    } else {
+      req->ResetOverrideRulesEvaluated();
     }
+    req->BeginWaitEvent(
+        NetLogEventType::PROXY_RESOLUTION_SERVICE_WAITING_FOR_INIT_PAC);
   }
 
   // Also cancel any pending DNS resolution requests.
@@ -1145,6 +1149,16 @@ void ConfiguredProxyResolutionService::SetPacReadyAndResumePendingRequests() {
   DCHECK(!init_proxy_resolver_.get());
   pac_resolver_state_ = PacResolverState::kReady;
 
+  // Keep requests paused if a dynamic routing update is still in progress.
+  if (!IsReady()) {
+    for (ConfiguredProxyResolutionRequest* req : pending_requests_) {
+      req->BeginWaitEvent(
+          NetLogEventType::
+              PROXY_RESOLUTION_SERVICE_WAITING_FOR_DYNAMIC_PROXY_CONFIGS);
+    }
+    return;
+  }
+
   // TODO(lilyhoughton): This is necessary because a callback invoked by
   // |ResumeOrCompleteSynchronously()| might delete |this|.  A better
   // solution would be to disallow synchronous callbacks altogether.
@@ -1153,18 +1167,17 @@ void ConfiguredProxyResolutionService::SetPacReadyAndResumePendingRequests() {
 
   auto pending_requests_copy = pending_requests_;
   for (ConfiguredProxyResolutionRequest* req : pending_requests_copy) {
-    if (!ContainsPendingRequest(req))
+    if (!ContainsPendingRequest(req) || req->is_started()) {
       continue;
+    }
 
-    if (!req->is_started()) {
-      req->net_log()->EndEvent(
-          NetLogEventType::PROXY_RESOLUTION_SERVICE_WAITING_FOR_INIT_PAC);
+    req->EndWaitEvent();
 
-      // Note that we re-check for synchronous completion, in case we are
-      // no longer using a ProxyResolver (can happen if we fell-back to manual.)
-      req->ResumeOrCompleteSynchronously();
-      if (!weak_this)
-        return;  // Synchronous callback deleted |this|
+    // Note that we re-check for synchronous completion, in case we are
+    // no longer using a ProxyResolver (can happen if we fell-back to manual.)
+    req->ResumeOrCompleteSynchronously();
+    if (!weak_this || !IsReady()) {
+      return;  // Synchronous callback deleted `this` or reset readiness.
     }
   }
 }
@@ -1613,32 +1626,56 @@ void ConfiguredProxyResolutionService::OnProxyConfigChanged(
   // Set the new configuration as the most recently fetched one.
   fetched_config_ = effective_config;
 
-  // If this update is PvD-only and a configuration is active, update config_
-  // in-place without resetting PAC deciders or restarting PAC file fetching.
-  if (is_dynamic_routing_only_update && config_) {
-    ProxyConfig new_config = config_->value();
-    new_config.set_dynamic_routing_config(
-        effective_config.value().dynamic_routing_config());
-    config_ =
-        ProxyConfigWithAnnotation(new_config, config_->traffic_annotation());
-    if (IsReady()) {
-      auto pending_requests_copy = pending_requests_;
-      for (ConfiguredProxyResolutionRequest* req : pending_requests_copy) {
-        if (!ContainsPendingRequest(req)) {
-          continue;
-        }
-        if (!req->is_started()) {
-          req->net_log()->EndEvent(
-              NetLogEventType::
-                  PROXY_RESOLUTION_SERVICE_WAITING_FOR_DYNAMIC_PROXY_CONFIGS);
-        }
-        req->ResumeOrCompleteSynchronously();
-      }
-    }
+  if (!is_dynamic_routing_only_update) {
+    InitializeUsingLastFetchedConfig();
     return;
   }
 
-  InitializeUsingLastFetchedConfig();
+  // For PvD-only updates, update in-place without resetting PAC deciders or
+  // restarting service-level PAC script fetching (`init_proxy_resolver_`). If
+  // PAC initialization is still in flight, `OnInitProxyResolverComplete()` will
+  // apply `fetched_config_->dynamic_routing_config()` once PAC is ready.
+  if (!IsPacReady()) {
+    return;
+  }
+
+  CHECK(config_);
+  ProxyConfig new_config = config_->value();
+  new_config.set_dynamic_routing_config(
+      effective_config.value().dynamic_routing_config());
+  config_ =
+      ProxyConfigWithAnnotation(new_config, config_->traffic_annotation());
+
+  // Cancel any in-flight per-request PAC evaluations (`GetProxyForURL` /
+  // `resolve_job_`) so they re-evaluate the updated higher-priority dynamic
+  // routing rules once ready, while leaving any in-flight `ProxyOverrideRules`
+  // (POR) DNS probes running.
+  for (ConfiguredProxyResolutionRequest* req : pending_requests_) {
+    req->CancelResolveJob();
+    if (!IsReady() && !req->is_started()) {
+      req->BeginWaitEvent(
+          NetLogEventType::
+              PROXY_RESOLUTION_SERVICE_WAITING_FOR_DYNAMIC_PROXY_CONFIGS);
+    }
+  }
+
+  if (!IsReady()) {
+    return;
+  }
+
+  base::WeakPtr<ConfiguredProxyResolutionService> weak_this =
+      weak_ptr_factory_.GetWeakPtr();
+  auto pending_requests_copy = pending_requests_;
+  for (ConfiguredProxyResolutionRequest* req : pending_requests_copy) {
+    if (!ContainsPendingRequest(req) || req->is_started()) {
+      continue;
+    }
+    req->EndWaitEvent();
+    req->ResumeOrCompleteSynchronously();
+    if (!weak_this || !IsReady()) {
+      return;  // Synchronous callback deleted `this` or reset readiness.
+    }
+  }
 }
 
 bool ConfiguredProxyResolutionService::ApplyPacBypassRules(const GURL& url,
