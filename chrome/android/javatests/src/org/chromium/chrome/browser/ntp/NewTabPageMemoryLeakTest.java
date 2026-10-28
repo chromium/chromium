@@ -33,6 +33,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.NewTabPageTestUtils;
 import org.chromium.chrome.test.util.OmniboxTestUtils;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
@@ -85,7 +86,10 @@ public class NewTabPageMemoryLeakTest {
 
         mActivityTestRule.loadUrl(getOriginalNativeNtpUrl());
         Tab tab = mActivityTestRule.getActivityTab();
-        NewTabPageTestUtils.waitForNtpLoaded(tab);
+        // Not hopping on: the ACTIVE NTP Station would keep a reference to the NewTabPage and
+        // keep it from being garbage collected.
+        // TODO(crbug.com/428022848): Travel to the NTP and away from it through Stations instead.
+        ChromeTabUtils.waitForNtpLoaded(tab);
 
         Assert.assertTrue(tab.getNativePage() instanceof NewTabPage);
         mNtp = (NewTabPage) tab.getNativePage();

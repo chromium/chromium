@@ -37,7 +37,7 @@ import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.ntp.IncognitoNewTabPageStation;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
-import org.chromium.chrome.test.util.NewTabPageTestUtils;
+import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.browser.ThemeTestUtils;
 import org.chromium.components.signin.SigninFeatures;
 import org.chromium.ui.test.util.RenderTestRule;
@@ -140,7 +140,11 @@ public class TabSwitcherDrawableRenderTest {
         ChromeTabbedActivity activity = mActivityTestRule.getActivity();
 
         mActivityTestRule.loadUrlInNewTab(getOriginalNativeNtpUrl(), /* incognito= */ false);
-        NewTabPageTestUtils.waitForNtpLoaded(mActivityTestRule.getActivityTab());
+        // Not NewTabPageTestUtils#waitForNtpLoaded(): this test loads the native NTP URL, which
+        // RegularNewTabPageStation does not model when the WebUI NTP override is enabled, as on
+        // Android Desktop.
+        // TODO(crbug.com/428022848): Hop on once a Station models the native NTP in that case.
+        ChromeTabUtils.waitForNtpLoaded(mActivityTestRule.getActivityTab());
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {

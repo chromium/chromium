@@ -37,7 +37,7 @@ import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
-import org.chromium.chrome.test.util.NewTabPageTestUtils;
+import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.browser.TabLoadObserver;
 import org.chromium.components.browser_ui.media.AudioBecomingNoisyReceiver;
 import org.chromium.components.browser_ui.media.MediaNotificationController;
@@ -154,7 +154,11 @@ public class MediaSessionTest {
 
         Tab tab = mActivityTestRule.getActivityTab();
         mActivityTestRule.loadUrl(getOriginalNativeNtpUrl());
-        NewTabPageTestUtils.waitForNtpLoaded(tab);
+        // Not NewTabPageTestUtils#waitForNtpLoaded(): this test loads the native NTP URL, which
+        // RegularNewTabPageStation does not model when the WebUI NTP override is enabled, as on
+        // Android Desktop.
+        // TODO(crbug.com/428022848): Hop on once a Station models the native NTP in that case.
+        ChromeTabUtils.waitForNtpLoaded(tab);
 
         Assert.assertTrue(tab.getNativePage() instanceof NewTabPage);
 
