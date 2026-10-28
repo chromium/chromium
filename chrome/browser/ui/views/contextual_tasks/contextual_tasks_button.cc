@@ -560,6 +560,19 @@ void ContextualTasksButton::MaybeUpdateVisibility() {
 
   const bool was_visible = GetVisible();
   const bool will_be_visible = controller->ShouldShowEphemeralButton();
+  const bool is_panel_open = controller->IsPanelOpen();
+  const bool was_active_panel_open = was_visible && was_panel_open_;
+  const bool will_be_active_panel_open = will_be_visible && is_panel_open;
+  const bool was_active_panel_collapsed = was_visible && !was_panel_open_;
+  const bool will_be_active_panel_collapsed = will_be_visible && !is_panel_open;
+
+  if (!was_active_panel_open && will_be_active_panel_open) {
+    shown_time_ticks_ = base::TimeTicks();
+    contextual_tasks::RecordEphemeralButtonShown(/*is_panel_open=*/true);
+  } else if (!was_active_panel_collapsed && will_be_active_panel_collapsed) {
+    shown_time_ticks_ = base::TimeTicks::Now();
+    contextual_tasks::RecordEphemeralButtonShown(/*is_panel_open=*/false);
+  }
 
   if (!was_visible && will_be_visible) {
     if (layer()) {
@@ -568,8 +581,6 @@ void ContextualTasksButton::MaybeUpdateVisibility() {
     ClearDropShadow();
     SetVisible(true);
     AnimateShow();
-    shown_time_ticks_ = base::TimeTicks::Now();
-    contextual_tasks::RecordEphemeralButtonShown();
   } else {
     if (!will_be_visible) {
       anchor_highlight_.reset();
@@ -609,7 +620,7 @@ void ContextualTasksButton::MaybeUpdateVisibility() {
     }
     SetVisible(will_be_visible);
   }
-  was_panel_open_ = controller->IsPanelOpen();
+  was_panel_open_ = is_panel_open;
   UpdateStatusIndicator();
   UpdateHighlight();
   UpdateTooltipText();

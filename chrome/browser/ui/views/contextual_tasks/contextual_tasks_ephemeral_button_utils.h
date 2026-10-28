@@ -38,8 +38,10 @@ bool ShouldPlaceCircularButtonBeforeProfile(BrowserWindowInterface* browser);
 // Returns the shape the ephemeral button should currently have.
 EphemeralButtonShape GetEphemeralButtonShape(BrowserWindowInterface* browser);
 
-// Records metrics for the ephemeral button being shown.
-void RecordEphemeralButtonShown();
+// Records metrics for the ephemeral button being shown in either the active
+// panel-open state (`is_panel_open` = true) or the collapsed ephemeral state
+// (`is_panel_open` = false).
+void RecordEphemeralButtonShown(bool is_panel_open = false);
 
 // Handles a press of the ephemeral button: toggles the contextual tasks side
 // panel and records the corresponding metrics. `browser` must be non-null and

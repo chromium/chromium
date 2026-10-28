@@ -82,11 +82,23 @@ EphemeralButtonShape GetEphemeralButtonShape(BrowserWindowInterface* browser) {
              : EphemeralButtonShape::kFlatEdgeLeft;
 }
 
-void RecordEphemeralButtonShown() {
+void RecordEphemeralButtonShown(bool is_panel_open) {
   base::RecordAction(
       base::UserMetricsAction("ContextualTasks.EphemeralToolbarButton.Shown"));
   base::UmaHistogramBoolean("ContextualTasks.EphemeralToolbarButton.Shown",
                             true);
+  if (is_panel_open) {
+    base::RecordAction(base::UserMetricsAction(
+        "ContextualTasks.EphemeralToolbarButton.Shown.ActivePanelOpen"));
+    base::UmaHistogramBoolean(
+        "ContextualTasks.EphemeralToolbarButton.Shown.ActivePanelOpen", true);
+  } else {
+    base::RecordAction(base::UserMetricsAction(
+        "ContextualTasks.EphemeralToolbarButton.Shown.ActivePanelCollapsed"));
+    base::UmaHistogramBoolean(
+        "ContextualTasks.EphemeralToolbarButton.Shown.ActivePanelCollapsed",
+        true);
+  }
 }
 
 void HandleEphemeralButtonPressed(BrowserWindowInterface* browser,
