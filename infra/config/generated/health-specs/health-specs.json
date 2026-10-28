@@ -9167,7 +9167,7 @@
           }
         ]
       },
-      "ios26-beta-simulator": {
+      "ios27-beta-simulator": {
         "problem_specs": [
           {
             "name": "Unhealthy",
@@ -9187,7 +9187,7 @@
           }
         ]
       },
-      "ios27-beta-simulator": {
+      "ios27-duo-beta-simulator": {
         "problem_specs": [
           {
             "name": "Unhealthy",

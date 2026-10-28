@@ -934,11 +934,11 @@ ios_builder(
 )
 
 ios_builder(
-    name = "ios26-beta-simulator",
+    name = "ios27-duo-beta-simulator",
     mirrors = [
-        "ci/ios26-beta-simulator",
+        "ci/ios27-duo-beta-simulator",
     ],
-    gn_args = "ci/ios26-beta-simulator",
+    gn_args = "ci/ios27-duo-beta-simulator",
     cpu = cpu.ARM64,
     siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
 )
