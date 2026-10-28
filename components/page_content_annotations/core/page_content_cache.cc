@@ -181,6 +181,12 @@ void PageContentCache::CachePageContent(
 }
 
 void PageContentCache::RemovePageContentForTab(int64_t tab_id) {
+  if (!store_initialized_) {
+    pending_tasks_.push_back(
+        base::BindOnce(&PageContentCache::RemovePageContentForTab,
+                       weak_ptr_factory_.GetWeakPtr(), tab_id));
+    return;
+  }
   store_
       .AsyncCall(&optimization_guide::PageContentStore::DeletePageContentForTab)
       .WithArgs(tab_id)

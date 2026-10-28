@@ -124,6 +124,17 @@ TEST_F(PageContentCacheTest, Remove) {
 
   base::RunLoop run_loop_remove;
   ASSERT_FALSE(GetContentForTab(kTabId));
+
+  // Verify that `CachePageContent` followed immediately by
+  // `RemovePageContentForTab` before async store initialization finishes
+  // executes in FIFO order via `pending_tasks_`.
+  cache_.reset();
+  task_environment_.RunUntilIdle();
+  GetOrCreateCache()->CachePageContent(kTabId, kUrl, base::Time::Now(),
+                                       base::Time::Now(),
+                                       TestContent("test title"));
+  GetOrCreateCache()->RemovePageContentForTab(kTabId);
+  EXPECT_FALSE(GetContentForTab(kTabId).has_value());
 }
 
 TEST_F(PageContentCacheTest, DeleteOldDataOnTimer) {
