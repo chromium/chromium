@@ -25,7 +25,7 @@ _ANNOTATOR_JAR = (
 )
 _CHROME_JAVA_TURBINE_JAR = 'obj/chrome/android/chrome_java.turbine.jar'
 _NULLAWAY_JAR = (
-    '../../third_party/android_build_tools/nullaway/cipd/nullaway.jar'
+    '../../third_party/android_build_tools/error_prone/cipd/nullaway.jar'
 )
 
 

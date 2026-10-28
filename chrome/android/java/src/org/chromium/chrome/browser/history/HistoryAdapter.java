@@ -963,17 +963,14 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
             if (j > i + 1) {
                 List<HistoryItem> cluster = items.subList(i, j);
                 // Determine the cluster ID to use.
-                @Nullable HistoryItem itemWithClusterId = null;
+                @Nullable Long existingClusterId = null;
                 for (HistoryItem item : cluster) {
-                    if (item.getClusterId() != null) {
-                        itemWithClusterId = item;
+                    existingClusterId = item.getClusterId();
+                    if (existingClusterId != null) {
                         break;
                     }
                 }
-                Long clusterId =
-                        itemWithClusterId != null
-                                ? itemWithClusterId.getClusterId()
-                                : mNextClusterId++;
+                long clusterId = existingClusterId != null ? existingClusterId : mNextClusterId++;
 
                 // Assign the cluster ID to all items in this cluster
                 for (int k = 0; k < cluster.size(); k++) {

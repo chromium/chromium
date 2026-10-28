@@ -270,9 +270,13 @@ public class LayerTitleCache {
 
         Integer avatarResId = mSharedAvatarResIds.get(groupId);
         ViewResourceAdapter avatarResource = null;
+        int nativeAvatarResId = Resources.ID_NULL;
         if (avatarResId != null) {
             avatarResource = getResourceAdapterFromLoader(avatarResId);
-            if (avatarResource != null) avatarResource.invalidate(null);
+            if (avatarResource != null) {
+                avatarResource.invalidate(null);
+                nativeAvatarResId = avatarResId;
+            }
         }
 
         if (mNativeLayerTitleCache != 0) {
@@ -285,7 +289,7 @@ public class LayerTitleCache {
                             mNativeLayerTitleCache,
                             groupId,
                             title.getTitleResId(),
-                            avatarResource == null ? Resources.ID_NULL : avatarResId,
+                            nativeAvatarResId,
                             avatarResource == null ? 0 : mSharedGroupAvatarPaddingPx,
                             incognito,
                             isRtl);

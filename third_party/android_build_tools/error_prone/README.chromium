@@ -3,8 +3,8 @@ Short Name: Error Prone
 Version: N/A
 Revision: DEPS
 Update Mechanism: Autoroll
-License: Apache-2.0
-License File: LICENSE
+License: Apache-2.0, MIT
+License File: LICENSE, LICENSE.nullaway
 Security Critical: No
 Shipped: no
 URL: https://errorprone.info/
@@ -37,3 +37,20 @@ What version is this:
     https://luci-scheduler.appspot.com/jobs/chromium/3pp-linux-amd64-packager
   * New versions are rolled automatically by:
     TODO(agrieve): Add auto-roller.
+
+Tips on Rolling:
+NullAway is rolled along with Error Prone. If there are a lot of new NullAway
+warnings, suppress them by:
+
+1) Create a copy / paste of NullAway.assumeNonNull() (e.g. "suppressNullAway")
+2) Update errorprone.py:
+   -ERRORPRONE_CHECKS_TO_APPLY = []
+   +ERRORPRONE_CHECKS_TO_APPLY = ['NullAway']
+   ...
+   +    errorprone_flags += ['-XepOpt:NullAway:SuggestSuppressions=true']
+   ..
+   -                          'org.chromium.build.NullUtil.assumeNonNull')]
+   +                          'org.chromium.build.NullUtil.suppressNullAway')]
+3) Update build/config/siso/android.star (for "android/errorprone" block):
+   +            "remote": False,
+4) Build all targets: cd out/Debug && ../../tools/android/build_all_errorprone.sh

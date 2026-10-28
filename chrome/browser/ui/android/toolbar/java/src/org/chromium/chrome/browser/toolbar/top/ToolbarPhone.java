@@ -59,6 +59,7 @@ import org.chromium.base.TimeUtils;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
+import org.chromium.base.supplier.SupplierUtils;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.MonotonicNonNull;
 import org.chromium.build.annotations.NullMarked;
@@ -2052,7 +2053,7 @@ public class ToolbarPhone extends ToolbarLayout
         return new PhoneCaptureStateToken(
                 getButtonTintList().getDefaultColor(),
                 mToolbarBackground.getColor(),
-                mTabCountSupplier == null ? 0 : mTabCountSupplier.get(),
+                SupplierUtils.getOr(mTabCountSupplier, 0),
                 mButtonData,
                 mVisualState,
                 visibleUrlText,

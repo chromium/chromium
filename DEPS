@@ -1994,17 +1994,6 @@ deps = {
       'dep_type': 'cipd',
   },
 
-  'src/third_party/android_build_tools/nullaway/cipd': {
-      'packages': [
-          {
-               'package': 'chromium/third_party/android_build_tools/nullaway',
-               'version': 'MDrb2sXrlSVpSh9bFN8HuMsydpJEeRcNUSbU0wj5xBsC',
-          },
-      ],
-      'condition': 'checkout_android and non_git_source',
-      'dep_type': 'cipd',
-  },
-
   'src/third_party/android_build_tools/signflinger/cipd': {
       'packages': [
           {

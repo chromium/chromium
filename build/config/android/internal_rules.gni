@@ -28,7 +28,8 @@ _robolectric_libs_dir =
     rebase_path(
         get_label_info("//:foo($robolectric_toolchain)", "root_out_dir"),
         root_build_dir)
-_nullaway_jar = "//third_party/android_build_tools/nullaway/cipd/nullaway.jar"
+_nullaway_jar =
+    "//third_party/android_build_tools/error_prone/cipd/nullaway.jar"
 _rebased_nullaway_jar = rebase_path(_nullaway_jar, root_build_dir)
 
 # The following _java_*_types variables capture all the existing target types.
