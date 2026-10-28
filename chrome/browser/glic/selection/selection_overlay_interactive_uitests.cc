@@ -2466,9 +2466,10 @@ class SelectionOverlayInteractiveTestWithInlineFulfillment
         InstrumentTab(tab), NavigateWebContents(tab, GetEmptyDocURL()),
         ExecuteJs(tab, add_text_js),
         // Focus the page and select the text. The small chip shows up on it.
-        // This avoids an OS mouse drag, which can hang on Windows bots.
-        WaitForWebContentsPainted(tab), MoveMouseTo(tab, DeepQuery{"p"}),
-        ClickMouse(), Do([this] {
+        // Use FocusElement() instead of an OS mouse click so the click's
+        // asynchronous kMouseDown input observer task does not dismiss the
+        // selection widget right as SelectAll() shows it.
+        WaitForWebContentsPainted(tab), FocusElement(tab), Do([this] {
           browser()->tab_strip_model()->GetActiveWebContents()->SelectAll();
         }),
         // The chip is its own widget, outside the browser's context.
@@ -2480,7 +2481,7 @@ class SelectionOverlayInteractiveTestWithInlineFulfillment
         WaitForShow(OverlayBaseController::kOverlayId),
         InstrumentNonTabWebView(overlay, OverlayBaseController::kOverlayId),
         WaitForJsResultAt(overlay, kOverlayApp,
-                          "el => el.screenshot_ !== null"),
+                          "el => Boolean(el.screenshot_)"),
         WaitForElementVisible(overlay, kSelectionOverlay));
   }
 
