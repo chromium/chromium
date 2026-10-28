@@ -182,7 +182,7 @@ bool WindowRestoreController::CanActivateRestoredWindow(
     return true;
 
   // Only the topmost unminimize restored window can be activated.
-  auto siblings = desk_container->children();
+  const auto& siblings = desk_container->children();
   for (aura::Window* const sibling : std::views::reverse(siblings)) {
     if (WindowState::Get(sibling)->IsMinimized())
       continue;
@@ -204,7 +204,7 @@ bool WindowRestoreController::CanActivateAppList(const aura::Window* window) {
     return true;
 
   for (aura::Window* root_window : Shell::GetAllRootWindows()) {
-    auto active_desk_children =
+    const auto& active_desk_children =
         desks_util::GetActiveDeskContainerForRoot(root_window)->children();
 
     // Find the topmost unminimized window.
@@ -481,7 +481,7 @@ void WindowRestoreController::StackWindow(aura::Window* window) {
   Shell::Get()->mru_window_tracker()->OnWindowAlteredByWindowRestore(window);
 
   // Stack the window.
-  auto siblings = window->parent()->children();
+  const auto& siblings = window->parent()->children();
   auto insertion_point = GetWindowToInsertBefore(window, siblings);
   if (insertion_point != siblings.end())
     window->parent()->StackChildBelow(window, *insertion_point);

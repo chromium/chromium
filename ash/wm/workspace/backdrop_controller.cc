@@ -302,7 +302,7 @@ void BackdropController::UpdateBackdrop() {
 }
 
 aura::Window* BackdropController::GetTopmostWindowWithBackdrop() {
-  const aura::Window::Windows windows = container_->children();
+  const aura::Window::Windows& windows = container_->children();
   for (aura::Window* window : std::views::reverse(windows)) {
     if (window == backdrop_window_)
       continue;
@@ -569,7 +569,7 @@ void BackdropController::Hide(bool destroy, bool animate) {
   DCHECK(backdrop_window_);
   base::AutoReset<bool> lock(&is_hiding_backdrop_, true);
 
-  const aura::Window::Windows windows = container_->children();
+  const aura::Window::Windows& windows = container_->children();
   auto window_iter = std::ranges::find(windows, backdrop_window_);
   ++window_iter;
   if (window_iter != windows.end()) {

@@ -46,7 +46,8 @@ constexpr float kOpacityForTransientDuringResize = 0.5f;
 
 // Returns the allowed range of `divider_position` within `windows`,
 // accounting for the windows' minimum sizes.
-gfx::Range GetDividerPositionAllowedRange(const aura::Window::Windows windows) {
+gfx::Range GetDividerPositionAllowedRange(
+    const aura::Window::Windows& windows) {
   CHECK(!windows.empty());
 
   aura::Window* root_window = windows.at(0)->GetRootWindow();
