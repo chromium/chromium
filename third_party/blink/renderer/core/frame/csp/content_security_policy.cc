@@ -1332,6 +1332,8 @@ SourceLocation* GatherSecurityPolicyViolationEventData(
     init->setLineNumber(source_location->LineNumber());
     init->setColumnNumber(source_location->ColumnNumber());
   } else {
+    // The source location is unknown.
+    source_location = nullptr;
     init->setSourceFile(String());
     init->setLineNumber(0);
     init->setColumnNumber(0);

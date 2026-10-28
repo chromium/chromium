@@ -1,0 +1,16 @@
+Verifies that CSP issue for an image fetched by CSS has no source code location.
+
+Inspector issue: {
+    issue : {
+        code : ContentSecurityPolicyIssue
+        details : {
+            contentSecurityPolicyIssueDetails : {
+                blockedURL : https://thirdparty.test/network/resources/to-be-blocked.jpg
+                contentSecurityPolicyViolationType : kURLViolation
+                isReportOnly : false
+                violatedDirective : img-src
+            }
+        }
+    }
+}
+
