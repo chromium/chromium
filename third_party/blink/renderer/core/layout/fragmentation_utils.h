@@ -640,6 +640,18 @@ LayoutUnit BlockSizeForFragmentation(
     const LayoutResult&,
     WritingDirectionMode container_writing_direction);
 
+// Build a FragmentedOofContainer tree structure and store it in the fragment
+// builder. During relayout it will accompany the fragment builders in the tree
+// to ensure that all containers of OOFs are revisited.
+//
+// `result` is the LayoutResult of the outermost fragmentation context root.
+//
+// Return true if at least one OOF descendant needs to be laid out again. This
+// happens when the estimated containing block dimensions used previously turned
+// out to be wrong.
+bool BuildFragmentedOofContainerTree(const LayoutResult& result,
+                                     BoxFragmentBuilder*);
+
 // Return true if we support painting of multiple fragments for the given
 // content. Will return true for anything that is fragmentable / non-monolithic.
 // Will also return true for certain types of monolithic content, because, even

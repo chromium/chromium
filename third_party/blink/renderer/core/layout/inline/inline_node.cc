@@ -1978,8 +1978,8 @@ static LayoutUnit ComputeContentSize(InlineNode node,
   LayoutUnit result;
   LineBreaker line_breaker(
       node, mode, space, line_opportunity, empty_leading_floats,
-      /* break_token */ nullptr,
-      /* column_spanner_path */ nullptr, &empty_exclusion_space);
+      /*InlineBreakToken=*/nullptr, /*ColumnSpannerPath=*/nullptr,
+      /*FragmentedOofContainer=*/nullptr, &empty_exclusion_space);
   if (mode != LineBreakerMode::kContent) {
     line_breaker.SetIntrinsicSizeOutputs(max_size_cache,
                                          depends_on_block_constraints_out);

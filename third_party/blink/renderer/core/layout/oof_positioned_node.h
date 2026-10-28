@@ -20,6 +20,90 @@ namespace blink {
 
 class BlockBreakToken;
 
+// Auxiliary data for OofPositionedNode, needed for OOFs inside fragmentation
+// contexts.
+class FragmentedOofInfo : public GarbageCollected<FragmentedOofInfo> {
+ public:
+  FragmentedOofInfo(LayoutUnit offset_in_containing_block,
+                    LayoutUnit containing_block_size_used,
+                    bool was_discovered_too_late)
+      : offset_in_containing_block_(offset_in_containing_block),
+        containing_block_size_used_(containing_block_size_used),
+        was_discovered_too_late_(was_discovered_too_late) {}
+
+  void Trace(Visitor*) const {}
+
+  LayoutUnit OffsetInContainingBlock() const {
+    return offset_in_containing_block_;
+  }
+  // The estimated block-size of the containing block that was used when laying
+  // out the OOF. This should be compared with the actual (stitched) containing
+  // block after fragmented layout, to see if the estimate was correct or not.
+  LayoutUnit ContainingBlockSizeUsed() const {
+    return containing_block_size_used_;
+  }
+  // Return true if the OOF was discovered too late. During in-flow layout this
+  // happens when an OOF with a "small" block-start inset is discovered in a
+  // later fragmentainer than where it should start.
+  bool WasDiscoveredTooLate() const { return was_discovered_too_late_; }
+
+ private:
+  LayoutUnit offset_in_containing_block_;
+  LayoutUnit containing_block_size_used_;
+  bool was_discovered_too_late_ = false;
+};
+
+// Represents a container somewhere in the containing block chain between the
+// containing block of an OOF and the outermost fragmentation context root.
+//
+// When an OOF is laid out inside a fragmentation context, if its containing
+// block is split into multiple fragments, its size cannot be determined during
+// initial layout. We therefore need to calculate when all layout of the
+// outermost fragmentation context has completed. This class forms a path down
+// to the OOF that depends on the size of such a containing block, so that we
+// may revisit it in a subsequent layout pass. An OOF may also need to be
+// revisited if it's discovered too late (where it doesn't belong) during
+// in-flow layout.
+class FragmentedOofPath : public GarbageCollected<FragmentedOofPath> {
+ public:
+  FragmentedOofPath(BlockNode node, const FragmentedOofInfo& info)
+      : box_(node.GetLayoutBox()), fragmented_oof_info_(&info) {
+    DCHECK(node);
+  }
+  FragmentedOofPath(BlockNode node, const FragmentedOofPath& child)
+      : box_(node.GetLayoutBox()),
+        child_(&child),
+        fragmented_oof_info_(child.fragmented_oof_info_) {
+    DCHECK(node);
+  }
+
+  void Trace(Visitor* visitor) const {
+    visitor->Trace(box_);
+    visitor->Trace(child_);
+    visitor->Trace(fragmented_oof_info_);
+  }
+
+  const LayoutBox& GetLayoutBox() const { return *box_; }
+  const FragmentedOofPath* Child() const { return child_.Get(); }
+  const FragmentedOofInfo& GetFragmentedOofInfo() const {
+    return *fragmented_oof_info_;
+  }
+
+#ifndef NDEBUG
+  String DumpTree() const;
+  void ShowTree() const;
+#endif
+
+ private:
+  Member<LayoutBox> box_;
+  Member<const FragmentedOofPath> child_;
+
+  // Storing this directly inside OofPositionedNode might have be a more logical
+  // thing to do, but storing it here instead saves memory for the vast majority
+  // of nodes that don't participate in block fragmentation.
+  Member<const FragmentedOofInfo> fragmented_oof_info_;
+};
+
 // If an out-of-flow positioned element is inside a fragmentation context, it
 // will be laid out once it reaches the fragmentation context root rather than
 // once it reaches its containing block. A containing block holds the
@@ -44,7 +128,9 @@ class OofContainingBlock {
         fragment_(std::move(fragment)),
         clipped_container_block_offset_(
             clipped_container_block_offset.value_or(LayoutUnit::Min())),
-        is_inside_column_spanner_(is_inside_column_spanner) {}
+        is_inside_column_spanner_(is_inside_column_spanner) {
+    DCHECK(!RuntimeEnabledFeatures::FragmentedOofInCbEnabled());
+  }
 
   OffsetType Offset() const { return offset_; }
   void IncreaseBlockOffset(LayoutUnit block_offset) {
@@ -174,11 +260,13 @@ class CORE_EXPORT OofPositionedNode {
                     const BlockBreakToken* break_token,
                     const StaticPositionType& static_position,
                     bool requires_content_before_breaking,
-                    OofInlineContainer<OffsetType> inline_container = {})
+                    OofInlineContainer<OffsetType> inline_container = {},
+                    const FragmentedOofPath* path = nullptr)
       : box_(node.GetLayoutBox()),
         break_token_(break_token),
         static_position_(static_position),
         inline_container_(inline_container),
+        path_(path),
         requires_content_before_breaking_(requires_content_before_breaking) {
     DCHECK(node.IsBlock());
   }
@@ -188,6 +276,7 @@ class CORE_EXPORT OofPositionedNode {
     visitor->Trace(box_);
     visitor->Trace(break_token_);
     visitor->Trace(inline_container_);
+    visitor->Trace(path_);
   }
 
   BlockNode Node() const { return BlockNode(box_); }
@@ -206,6 +295,12 @@ class CORE_EXPORT OofPositionedNode {
     // FragmentedOofInCb is off.
     return inline_container_;
   }
+  const FragmentedOofPath* GetFragmentedOofPath() const { return path_; }
+  bool HasEscapedContainingBlock() const { return !!path_; }
+  const FragmentedOofInfo* GetFragmentedOofInfo() const {
+    return path_ ? &path_->GetFragmentedOofInfo() : nullptr;
+  }
+
   bool IsForFragmentation() const {
     DCHECK(!is_for_fragmentation_ ||
            !RuntimeEnabledFeatures::FragmentedOofInCbEnabled());
@@ -224,12 +319,14 @@ class CORE_EXPORT OofPositionedNode {
   void SetInlineContainer(const LayoutInline* object) {
     inline_container_ = OofInlineContainer<OffsetType>(object, OffsetType());
   }
+  void SetPath(const FragmentedOofPath* path) { path_ = path; }
 
  protected:
   Member<LayoutBox> box_;
   Member<const BlockBreakToken> break_token_;
   StaticPositionType static_position_;
   OofInlineContainer<OffsetType> inline_container_;
+  Member<const FragmentedOofPath> path_;
 
   // Set if this is a PhysicalOofNodeForFragmentation or
   // LogicalOofNodeForFragmentation. This flag will go away with
@@ -296,7 +393,8 @@ struct CORE_EXPORT PhysicalOofNodeForFragmentation final
                                   /*break_token=*/nullptr,
                                   static_position,
                                   requires_content_before_breaking,
-                                  inline_container),
+                                  inline_container,
+                                  /*path=*/nullptr),
         containing_block(containing_block),
         fixedpos_containing_block(fixedpos_containing_block),
         fixedpos_inline_container(fixedpos_inline_container) {
@@ -334,7 +432,8 @@ struct CORE_EXPORT LogicalOofNodeForFragmentation final
                                  /*break_token=*/nullptr,
                                  static_position,
                                  requires_content_before_breaking,
-                                 inline_container),
+                                 inline_container,
+                                 /*path=*/nullptr),
         containing_block(containing_block),
         fixedpos_containing_block(fixedpos_containing_block),
         fixedpos_inline_container(fixedpos_inline_container) {
@@ -348,7 +447,8 @@ struct CORE_EXPORT LogicalOofNodeForFragmentation final
                                  /*break_token=*/nullptr,
                                  oof_node.StaticPosition(),
                                  oof_node.RequiresContentBeforeBreaking(),
-                                 oof_node.InlineContainerInfo()) {
+                                 oof_node.InlineContainerInfo(),
+                                 nullptr) {
     DCHECK(!RuntimeEnabledFeatures::FragmentedOofInCbEnabled());
     is_for_fragmentation_ = true;
   }

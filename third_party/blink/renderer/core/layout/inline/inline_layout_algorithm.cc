@@ -1243,10 +1243,10 @@ const LayoutResult* InlineLayoutAlgorithm::Layout() {
       line_info.SetBfcOffset({line_opportunity.line_left_offset,
                               line_opportunity.bfc_block_offset});
     } else {
-      LineBreaker line_breaker(Node(), LineBreakerMode::kContent,
-                               constraint_space, line_opportunity,
-                               leading_floats, break_token,
-                               column_spanner_path_, &GetExclusionSpace());
+      LineBreaker line_breaker(
+          Node(), LineBreakerMode::kContent, constraint_space, line_opportunity,
+          leading_floats, break_token, column_spanner_path_,
+          context_->GetFragmentedOofContainer(), &GetExclusionSpace());
       line_break_strategy.SetupLineBreaker(context_, line_breaker);
       if (RuntimeEnabledFeatures::CSSLineClampLineBreakingEllipsisEnabled() &&
           GetLineClampState(nullptr) == LineClampState::kLineClampEllipsis) {
@@ -1277,7 +1277,8 @@ const LayoutResult* InlineLayoutAlgorithm::Layout() {
             LineBreaker line_breaker_without_ellipsis(
                 Node(), LineBreakerMode::kContent, constraint_space,
                 line_opportunity, leading_floats, break_token,
-                column_spanner_path_, &GetExclusionSpace());
+                column_spanner_path_, context_->GetFragmentedOofContainer(),
+                &GetExclusionSpace());
             line_break_strategy.SetupLineBreaker(context_,
                                                  line_breaker_without_ellipsis);
             LineInfo line_info_without_ellipsis;

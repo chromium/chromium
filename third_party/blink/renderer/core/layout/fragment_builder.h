@@ -244,10 +244,9 @@ class CORE_EXPORT FragmentBuilder {
   //
   // See layout part for builder interaction.
   void AddOutOfFlowChildCandidate(const BlockNode&,
-                                  const LogicalStaticPosition&,
+                                  LogicalStaticPosition,
+                                  const BlockBreakToken* = nullptr,
                                   bool allow_top_layer_nodes = false);
-  void AddOutOfFlowChildCandidate(const BlockNode& child,
-                                  const BlockBreakToken& child_break_token);
 
   // This should only be used for inline-level OOF-positioned nodes.
   // |inline_container_writing_direction| is the current writing mode direction
@@ -615,6 +614,7 @@ class CORE_EXPORT FragmentBuilder {
   UnpositionedListMarker unpositioned_list_marker_;
 
   const EarlyBreak* early_break_ = nullptr;
+  const FragmentedOofContainer* fragmented_oof_container_ = nullptr;
 
   // The appeal of breaking inside this container.
   BreakAppeal break_appeal_ = kBreakAppealPerfect;

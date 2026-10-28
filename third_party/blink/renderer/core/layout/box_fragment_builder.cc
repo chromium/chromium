@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/core/layout/disable_layout_side_effects_scope.h"
 #include "third_party/blink/renderer/core/layout/exclusions/exclusion_space.h"
 #include "third_party/blink/renderer/core/layout/fragmentation_utils.h"
+#include "third_party/blink/renderer/core/layout/fragmented_oof_container.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_break_token.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_node.h"
 #include "third_party/blink/renderer/core/layout/inline/physical_line_box_fragment.h"
@@ -876,6 +877,87 @@ void BoxFragmentBuilder::AdjustFixedposContainingBlockForInnerMulticols() {
       value.multicol_offset.block_offset += previous_consumed_block_size;
     }
   }
+}
+
+const FragmentedOofContainer*
+BoxFragmentBuilder::FragmentedOofContainerForChildNode(BlockNode child) const {
+  if (!fragmented_oof_container_) {
+    return nullptr;
+  }
+  return fragmented_oof_container_->GetChild(*child.GetLayoutBox());
+}
+
+void BoxFragmentBuilder::AddPendingUnstartedOofs() {
+  DCHECK(fragmented_oof_container_);
+  LayoutUnit stitched_block_start = -GetConstraintSpace().FragmentainerOffset();
+  LayoutUnit stitched_block_end =
+      FragmentainerSpaceLeft(*this, /*is_for_children=*/true);
+  LayoutUnit previously_consumed_block_size;
+  bool is_break_inside = false;
+  if (const BlockBreakToken* token = PreviousBreakToken()) {
+    previously_consumed_block_size = token->ConsumedBlockSize();
+    stitched_block_start += previously_consumed_block_size;
+    stitched_block_end += previously_consumed_block_size;
+    is_break_inside = IsBreakInside(token);
+  }
+
+  for (LogicalOofPositionedNode oof_node :
+       fragmented_oof_container_->OofPositionedNodes()) {
+    if (oof_node.InlineContainer()) {
+      // If the containing block is a non-atomic inline, all bets are off unless
+      // we can detect changes more properly. Start in the first fragment. We'll
+      // be pushed to the right fragment with break-before break tokens.
+      if (is_break_inside) {
+        continue;
+      }
+    } else {
+      LayoutUnit offset =
+          oof_node.GetFragmentedOofInfo()->OffsetInContainingBlock();
+      if (is_break_inside && offset < stitched_block_start) {
+        // This OOF starts in an earlier fragmentainer.
+        continue;
+      }
+      if (offset >= stitched_block_end &&
+          GetConstraintSpace().HasBlockFragmentation()) {
+        // This OOF starts in a later fragmentainer. It may be that no in-flow
+        // content requires a break, so that we need to insert one now, in order
+        // to actually get to the fragmentainer where this OOF starts.
+        SetDidBreakSelf();
+        continue;
+      }
+    }
+
+    oof_candidates_may_have_anchors_ |= oof_node.Node().MayContainAnchor();
+
+    // Having a path means that the node has escaped the containing block, which
+    // isn't true anymore, since we want to place it in its containing block
+    // again. So reset it.
+    oof_node.SetPath(nullptr);
+
+    oof_node.IncreaseStaticPositionOffset(
+        LogicalOffset(LayoutUnit(), -previously_consumed_block_size));
+    oof_positioned_candidates_.push_back(oof_node);
+  }
+}
+
+void BoxFragmentBuilder::CollectUnfragmentedOofs() {
+  // This should only be done on a fragmentation context root.
+  DCHECK(IsBlockFragmentationContextRoot());
+  // And it should be the outermost fragmentation context root.
+  DCHECK(!GetConstraintSpace().HasBlockFragmentation());
+
+  for (const LogicalOofPositionedNode& descendant :
+       oof_positioned_candidates_) {
+    if (!descendant.HasEscapedContainingBlock()) {
+      unfragmented_oofs_.push_back(descendant);
+    }
+  }
+}
+
+void BoxFragmentBuilder::SetupRelayoutDataForOofFragmentation(
+    const BoxFragmentBuilder& previous_fragment_builder) {
+  // Carry over OOFs that don't participate in block fragmentation.
+  oof_positioned_candidates_ = previous_fragment_builder.unfragmented_oofs_;
 }
 
 #if DCHECK_IS_ON()

@@ -92,6 +92,8 @@ class CORE_EXPORT LayoutAlgorithm {
                                            params.fragmentation.break_token,
                                            &container_builder_);
     }
+    container_builder_.SetFragmentedOofContainer(
+        params.fragmentation.fragmented_oof_container);
   }
 
   const GapGeometry* GetGapGeometry() const {
@@ -114,6 +116,7 @@ class CORE_EXPORT LayoutAlgorithm {
     kRelayoutAsLastTableBox = 64,
     kRelayoutClampingAfterLayoutObject = 128,
     kRelayoutForMarginTrim = 256,
+    kRelayoutForFragmentedOof = 512,
   };
   // Bitmask of active relayout types (`RelayoutType`).
   typedef int RelayoutMode;
@@ -224,6 +227,10 @@ class CORE_EXPORT LayoutAlgorithm {
       container_builder_.PropagateSpaceShortage(
           previous_algorithm.container_builder_.MinimalSpaceShortage());
     }
+    if (relayout_mode_ & kRelayoutForFragmentedOof) {
+      container_builder_.SetupRelayoutDataForOofFragmentation(
+          previous_algorithm.container_builder_);
+    }
 
     if (relayout_type != kRelayoutForEarlyBreak) {
       early_break_ = previous_algorithm.early_break_;
@@ -265,6 +272,8 @@ class CORE_EXPORT LayoutAlgorithm {
         new_space ? new_space.value() : GetConstraintSpace());
     params.fragmentation.break_token = GetBreakToken();
     params.fragmentation.early_break = breakpoint;
+    params.fragmentation.fragmented_oof_container =
+        container_builder_.GetFragmentedOofContainer();
     params.additional_early_breaks = additional_early_breaks;
 
     Algorithm relayout_algorithm(params);
@@ -298,6 +307,14 @@ class CORE_EXPORT LayoutAlgorithm {
   const LayoutResult* RelayoutWithoutFragmentation() {
     DCHECK(GetConstraintSpace().HasBlockFragmentation());
     return Relayout<Algorithm>(kRelayoutWithoutFragmentation);
+  }
+
+  template <typename Algorithm>
+  const LayoutResult* RelayoutWithPrecollectedOofs() {
+    // We should be at the outermost fragmentation context root, which itself
+    // does not participate in block fragmentation.
+    DCHECK(!GetConstraintSpace().HasBlockFragmentation());
+    return Relayout<Algorithm>(kRelayoutForFragmentedOof);
   }
 
   InputNodeType node_;

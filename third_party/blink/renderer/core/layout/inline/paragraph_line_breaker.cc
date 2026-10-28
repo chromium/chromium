@@ -59,10 +59,10 @@ struct LineBreakResults {
     ExclusionSpace exclusion_space;
     LineInfo line_info;
     for (;;) {
-      LineBreaker line_breaker(node_, LineBreakerMode::kContent, space_,
-                               line_opportunity, leading_floats, break_token_,
-                               /* column_spanner_path_ */ nullptr,
-                               &exclusion_space);
+      LineBreaker line_breaker(
+          node_, LineBreakerMode::kContent, space_, line_opportunity,
+          leading_floats, break_token_, /*ColumnSpannerPath=*/nullptr,
+          /*FragmentedOofContainer=*/nullptr, &exclusion_space);
       if (max_lines == 1 && line_clamp_ellipsis_width) [[unlikely]] {
         line_breaker.SetLineClampEllipsisWidth(line_clamp_ellipsis_width);
       }

@@ -64,7 +64,7 @@ class LineBreakerTest : public RenderingTest {
     do {
       LineBreaker line_breaker(node, LineBreakerMode::kContent, space,
                                line_opportunity, leading_floats, break_token,
-                               /* column_spanner_path */ nullptr,
+                               /* column_spanner_path */ nullptr, nullptr,
                                &exclusion_space);
       line_breaker.NextLine(&line_info);
       if (callback)
@@ -101,7 +101,7 @@ class LineBreakerTest : public RenderingTest {
     do {
       LineBreaker line_breaker(node, LineBreakerMode::kContent, space,
                                line_opportunity, leading_floats, break_token,
-                               /* column_spanner_path */ nullptr,
+                               /* column_spanner_path */ nullptr, nullptr,
                                &exclusion_space);
       if (line_index < break_points.size()) {
         line_breaker.SetBreakAt(break_points[line_index]);
@@ -1129,7 +1129,8 @@ TEST_F(LineBreakerTest, WideContentInRuby) {
   LeadingFloats leading_floats;
   LineBreaker line_breaker(node, LineBreakerMode::kContent, space,
                            LineLayoutOpportunity(LayoutUnit::Max()),
-                           leading_floats, nullptr, nullptr, &exclusion_space);
+                           leading_floats, nullptr, nullptr, nullptr,
+                           &exclusion_space);
   LineInfo line_info;
   line_breaker.NextLine(&line_info);
   EXPECT_EQ(InlineItem::kOpenRubyColumn, line_info.Results()[1].item->Type());
@@ -1149,7 +1150,8 @@ TEST_F(LineBreakerTest, SetInputRange) {
   LineBreaker line_breaker(node, LineBreakerMode::kContent,
                            ConstraintSpaceForAvailableSize(LayoutUnit::Max()),
                            LineLayoutOpportunity(LayoutUnit::Max()),
-                           leading_floats, nullptr, nullptr, &exclusion_space);
+                           leading_floats, nullptr, nullptr, nullptr,
+                           &exclusion_space);
   // <span> to just after </span>.
   line_breaker.SetInputRange({1, 6}, 4, LineBreaker::WhitespaceState::kLeading,
                              nullptr);
@@ -1179,7 +1181,7 @@ TEST_F(LineBreakerTest, CreateSubLineInfoAvailableWidth) {
   ConstraintSpace space = ConstraintSpaceForAvailableSize(width);
   LineBreaker line_breaker(node, LineBreakerMode::kContent, space,
                            LineLayoutOpportunity(width), leading_floats,
-                           nullptr, nullptr, &exclusion_space);
+                           nullptr, nullptr, nullptr, &exclusion_space);
   LineInfo line_info;
   line_breaker.NextLine(&line_info);
   // The line should contain the whole text.
@@ -1309,9 +1311,10 @@ TEST_P(CanBreakInsideTest, Data) {
   ExclusionSpace exclusion_space;
   LeadingFloats leading_floats;
   LineLayoutOpportunity line_opportunity(available_width);
-  LineBreaker line_breaker(target, LineBreakerMode::kContent, space,
-                           line_opportunity, leading_floats, break_token,
-                           /* column_spanner_path */ nullptr, &exclusion_space);
+  LineBreaker line_breaker(
+      target, LineBreakerMode::kContent, space, line_opportunity,
+      leading_floats, break_token, /*column_spanner_path=*/nullptr,
+      /*FragmentedOofContainer=*/nullptr, &exclusion_space);
   EXPECT_EQ(line_breaker.CanBreakInside(line_info_list[0]),
             data.can_break_insde);
 }

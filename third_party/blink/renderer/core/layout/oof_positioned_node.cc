@@ -6,6 +6,45 @@
 
 namespace blink {
 
+namespace {
+
+#ifndef NDEBUG
+
+void DumpRecursive(const FragmentedOofPath& path,
+                   int indentation,
+                   StringBuilder* builder) {
+  for (int i = 0; i < indentation; i++) {
+    builder->Append(" ");
+  }
+  builder->Append(path.GetLayoutBox().ToString());
+  builder->Append(" ");
+  builder->Append("offset:");
+  builder->Append(
+      path.GetFragmentedOofInfo().OffsetInContainingBlock().ToString());
+  builder->Append("px\n");
+  if (const FragmentedOofPath* child = path.Child()) {
+    DumpRecursive(*child, indentation + 2, builder);
+  }
+}
+
+#endif  // NDEBUG
+
+}  // anonymous namespace
+
+#ifndef NDEBUG
+
+String FragmentedOofPath::DumpTree() const {
+  StringBuilder builder;
+  DumpRecursive(*this, 0, &builder);
+  return builder.ToString();
+}
+
+void FragmentedOofPath::ShowTree() const {
+  LOG(INFO) << "\n" << DumpTree().Utf8();
+}
+
+#endif  // NDEBUG
+
 template <>
 void OofPositionedNode<PhysicalOffset, PhysicalStaticPosition>::Trace(
     Visitor* visitor) const {
@@ -42,7 +81,8 @@ PhysicalOofPositionedNode LogicalOofPositionedNodeToPhysical(
   return PhysicalOofPositionedNode(
       logical.Node(), logical.GetBreakToken(),
       logical.StaticPosition().ConvertToPhysical(converter),
-      logical.RequiresContentBeforeBreaking(), inline_container);
+      logical.RequiresContentBeforeBreaking(), inline_container,
+      logical.GetFragmentedOofPath());
 }
 
 LogicalOofPositionedNode PhysicalOofPositionedNodeToLogical(
@@ -55,7 +95,8 @@ LogicalOofPositionedNode PhysicalOofPositionedNodeToLogical(
   return LogicalOofPositionedNode(
       physical.Node(), physical.GetBreakToken(),
       physical.StaticPosition().ConvertToLogical(converter),
-      physical.RequiresContentBeforeBreaking(), inline_container);
+      physical.RequiresContentBeforeBreaking(), inline_container,
+      physical.GetFragmentedOofPath());
 }
 
 void PhysicalOofNodeForFragmentation::TraceAfterDispatch(

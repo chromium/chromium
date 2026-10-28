@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/core/layout/column_spanner_path.h"
 #include "third_party/blink/renderer/core/layout/constraint_space_builder.h"
 #include "third_party/blink/renderer/core/layout/fragmentation_utils.h"
+#include "third_party/blink/renderer/core/layout/fragmented_oof_container.h"
 #include "third_party/blink/renderer/core/layout/geometry/fragment_geometry.h"
 #include "third_party/blink/renderer/core/layout/geometry/layout_unit_diffuser.h"
 #include "third_party/blink/renderer/core/layout/geometry/logical_size.h"
@@ -248,6 +249,16 @@ LayoutUnit CombinedColumnGapSize(const ComputedStyle& style,
 ColumnLayoutAlgorithm::ColumnLayoutAlgorithm(
     const LayoutAlgorithmParams& params)
     : LayoutAlgorithm(params) {
+  if (const FragmentedOofContainer* fragmented_oof_container =
+          container_builder_.GetFragmentedOofContainer()) {
+    if (!GetConstraintSpace().HasBlockFragmentation()) {
+      // Set up the FragmentedOofContainer tree for children. The outermost
+      // fragmentation context root (this node) doesn't participate in block
+      // fragmentation on its own, so this is just for the subtree.
+      fragmented_oof_container_for_children_ = fragmented_oof_container;
+      container_builder_.SetFragmentedOofContainer(nullptr);
+    }
+  }
   // When a list item has multicol, |ColumnLayoutAlgorithm| needs to keep
   // track of the list marker instead of the child layout algorithm. See
   // |BlockLayoutAlgorithm|.
@@ -263,6 +274,26 @@ ColumnLayoutAlgorithm::ColumnLayoutAlgorithm(
 }
 
 const LayoutResult* ColumnLayoutAlgorithm::Layout() {
+  const LayoutResult* result = LayoutInternal();
+  if ((relayout_mode_ & kRelayoutForFragmentedOof) ||
+      GetConstraintSpace().HasBlockFragmentation()) {
+    return result;
+  }
+
+  // We're at the outermost fragmentation context root. If there are OOFs
+  // inside, we need to relayout in order to place them correctly.
+  do {
+    if (!BuildFragmentedOofContainerTree(*result, &container_builder_)) {
+      return result;
+    }
+
+    // Need to lay out again, because there may be OOFs that were incorrectly
+    // positioned and/or sized.
+    result = RelayoutWithPrecollectedOofs<ColumnLayoutAlgorithm>();
+  } while (true);
+}
+
+const LayoutResult* ColumnLayoutAlgorithm::LayoutInternal() {
   const LogicalSize border_box_size = container_builder_.InitialBorderBoxSize();
   DCHECK_GE(ChildAvailableSize().inline_size, LayoutUnit());
   row_gap_size_ =
@@ -427,6 +458,16 @@ const LayoutResult* ColumnLayoutAlgorithm::Layout() {
   } else {
     AlignBlockContent(Style(), GetBreakToken(),
                       unconstrained_intrinsic_block_size, container_builder_);
+  }
+
+  if (!GetConstraintSpace().HasBlockFragmentation()) {
+    // If at the outermost fragmentation context root, grab any OOFs that don't
+    // participate in block fragmentation. These are either contained by the
+    // outermost multicol container (this one) itself, or by something on the
+    // outside. If we relayout for OOF fragmentation, these will not be
+    // automatically discovered in that pass, since discovery is then managed by
+    // FragmentedOofContainer.
+    container_builder_.CollectUnfragmentedOofs();
   }
 
   container_builder_.HandleOofsAndSpecialDescendants();
@@ -665,8 +706,8 @@ BreakStatus ColumnLayoutAlgorithm::LayoutChildren() {
       // multicol container.
       DCHECK(RuntimeEnabledFeatures::FragmentedOofInCbEnabled());
       CHECK(child_break_token);
-      container_builder_.AddOutOfFlowChildCandidate(entry.descendant_node,
-                                                    *child_break_token);
+      container_builder_.AddOutOfFlowChildCandidate(
+          entry.descendant_node, LogicalStaticPosition(), child_break_token);
       walker.Next();
       continue;
     }
@@ -999,6 +1040,8 @@ const LayoutResult* ColumnLayoutAlgorithm::LayoutLine(
       LayoutAlgorithmParams params(Node(), fragment_geometry, child_space);
       params.fragmentation.break_token = column_break_token;
       params.fragmentation.column_spanner_path = spanner_path_;
+      params.fragmentation.fragmented_oof_container =
+          FragmentedOofContainerForColumns();
 
       BlockLayoutAlgorithm child_algorithm(params);
       child_algorithm.SetBoxType(PhysicalFragment::kColumnBox);

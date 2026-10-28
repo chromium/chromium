@@ -16,6 +16,8 @@
 
 namespace blink {
 
+class FragmentedOofContainer;
+
 // A context object given to layout. The same instance should be given to
 // children of a parent node, but layout algorithm should be prepared to be
 // given a new instance when yield or fragmentation occur.
@@ -66,6 +68,8 @@ class CORE_EXPORT InlineChildLayoutContext {
   }
   void ClearParallelFlowBreakTokens();
   void PropagateParallelFlowBreakToken(const BreakToken*);
+
+  const FragmentedOofContainer* GetFragmentedOofContainer() const;
 
   const std::optional<LayoutUnit>& BalancedAvailableWidth() const {
     return balanced_available_width_;

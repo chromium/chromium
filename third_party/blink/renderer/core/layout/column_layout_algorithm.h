@@ -16,6 +16,7 @@ class BlockBreakToken;
 class BlockNode;
 class ColumnSpannerPath;
 class ConstraintSpace;
+class FragmentedOofContainer;
 enum class BreakStatus;
 struct LogicalSize;
 struct MarginStrut;
@@ -77,6 +78,8 @@ class CORE_EXPORT ColumnLayoutAlgorithm
   explicit ColumnLayoutAlgorithm(const LayoutAlgorithmParams& params);
 
   const LayoutResult* Layout();
+
+  const LayoutResult* LayoutInternal();
 
   MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesInput&);
 
@@ -246,6 +249,19 @@ class CORE_EXPORT ColumnLayoutAlgorithm
     return gap_accumulator_ && row_gap_size_ > LayoutUnit();
   }
 
+  const FragmentedOofContainer* FragmentedOofContainerForColumns() const {
+    if (fragmented_oof_container_for_children_) {
+      // Only the outermost fragmentation context root may set
+      // fragmented_oof_container_for_children_.
+      DCHECK(!GetConstraintSpace().HasBlockFragmentation());
+
+      return fragmented_oof_container_for_children_;
+    }
+    // Fragmentainers have an entry in the FragmentedOofContainer tree, too, so
+    // get the child.
+    return container_builder_.FragmentedOofContainerForChildNode(Node());
+  }
+
   // Convert a line offset (which is relative to the block-start of the multicol
   // fragment under construction) to an offset relatively to the start of the
   // current row.
@@ -265,6 +281,8 @@ class CORE_EXPORT ColumnLayoutAlgorithm
   bool IsPastStartInWrappingRow(LayoutUnit line_offset) const;
 
   const ColumnSpannerPath* spanner_path_ = nullptr;
+  const FragmentedOofContainer* fragmented_oof_container_for_children_ =
+      nullptr;
 
   int used_column_count_;
 

@@ -12,6 +12,7 @@ namespace blink {
 class BlockBreakToken;
 class ColumnSpannerPath;
 class EarlyBreak;
+class FragmentedOofContainer;
 
 struct FragmentationLayoutInput {
   STACK_ALLOCATED();
@@ -21,13 +22,16 @@ struct FragmentationLayoutInput {
   explicit FragmentationLayoutInput(
       const BlockBreakToken* break_token,
       const EarlyBreak* early_break = nullptr,
+      const FragmentedOofContainer* fragmented_oof_container = nullptr,
       const ColumnSpannerPath* column_spanner_path = nullptr)
       : break_token(break_token),
         early_break(early_break),
+        fragmented_oof_container(fragmented_oof_container),
         column_spanner_path(column_spanner_path) {}
 
   const BlockBreakToken* break_token = nullptr;
   const EarlyBreak* early_break = nullptr;
+  const FragmentedOofContainer* fragmented_oof_container = nullptr;
   const ColumnSpannerPath* column_spanner_path = nullptr;
 };
 

@@ -84,7 +84,8 @@ void ScoreLineBreaker::OptimalBreakPoints(const LeadingFloats& leading_floats,
   LineBreaker line_breaker(
       node_, LineBreakerMode::kContent, GetConstraintSpace(),
       LineLayoutOpportunity(line_width), leading_floats, break_token_,
-      /* column_spanner_path */ nullptr, exclusion_space_);
+      /*ColumnSpannerPath=*/nullptr, /*FragmentedOofContainer=*/nullptr,
+      exclusion_space_);
   const int lines_until_clamp =
       space_.GetLineClampData().LinesUntilClamp().value_or(0);
   // If we're line-clamping with ellipsis placed as part of line-breaking, we

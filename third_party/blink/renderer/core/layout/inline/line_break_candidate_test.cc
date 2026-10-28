@@ -30,7 +30,7 @@ class LineBreakCandidateTest : public RenderingTest {
     do {
       LineBreaker line_breaker(node, LineBreakerMode::kContent, space,
                                line_opportunity, leading_floats, break_token,
-                               /* column_spanner_path */ nullptr,
+                               /* column_spanner_path */ nullptr, nullptr,
                                &exclusion_space);
       line_breaker.NextLine(&line_info);
       if (is_first) {

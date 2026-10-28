@@ -43,6 +43,13 @@ class CORE_EXPORT OutOfFlowLayoutPart {
 
  public:
   static void Run(BoxFragmentBuilder* builder) {
+    if (builder->GetFragmentedOofContainer()) {
+      // No OOFs (apart from those which are being resumed from a previous
+      // break) are discovered during child walking, since we're managed by
+      // FragmentedOofContainer. Add all relevant unstarted OOFs now.
+      builder->AddPendingUnstartedOofs();
+    }
+
     // If there are no OOFs inside, we can skip OOF layout, except if this is
     // the root. There may be top-layer nodes still to be added. Additionally,
     // for pagination, we might not have hauled any OOFs inside the
@@ -358,6 +365,9 @@ class CORE_EXPORT OutOfFlowLayoutPart {
       bool adjust_for_fragmentation = false);
 
   void LayoutCandidates(const HeapVector<LogicalOofPositionedNode>&);
+
+  void EstablishFragmentedOofPath(const LogicalOofPositionedNode&,
+                                  const OffsetInfo&);
 
   void HandleMulticolsWithPendingOOFs(BoxFragmentBuilder* container_builder);
   void LayoutOOFsInMulticol(

@@ -37,6 +37,7 @@
 namespace blink {
 
 class ColumnSpannerPath;
+class FragmentedOofContainer;
 class PhysicalFragment;
 
 class CORE_EXPORT BoxFragmentBuilder final : public FragmentBuilder {
@@ -802,6 +803,45 @@ class CORE_EXPORT BoxFragmentBuilder final : public FragmentBuilder {
   // Propagate the break-before/break-after of the child (if applicable).
   void PropagateChildBreakValues(const LayoutResult& child_layout_result);
 
+  // Set the FragmentedOofContainer that represents this node. As we lay out
+  // children, we'll look for a corresponding FragmentedOofContainer child if it
+  // exists, and keep this with us as we lay out the subtree. As long as a
+  // FragmentedOofContainer is set, this bypasses regular OOF discovery (which
+  // normally happens during in-flow child layout). This is used to handle the
+  // beginning of an OOF at the correct containing fragment. OOFs may initially
+  // be discovered in a later fragmentainer than where it is supposed to start
+  // (e.g. if setting the block-start inset to 0, and we're way past the
+  // beginning of the containing block). This is when we go back and re-layout
+  // with a FragmentedOofContainer guiding us to the right start containing
+  // fragment.
+  void SetFragmentedOofContainer(const FragmentedOofContainer* container) {
+    fragmented_oof_container_ = container;
+  }
+
+  const FragmentedOofContainer* GetFragmentedOofContainer() const {
+    return fragmented_oof_container_;
+  }
+
+  // Find a FragmentedOofContainer for a child of this node. If it doesn't
+  // exist, it means that there are no OOFs to visit in that subtree.
+  const FragmentedOofContainer* FragmentedOofContainerForChildNode(
+      BlockNode child) const;
+
+  // Add unstarted OOFs that belong in this fragment, according to
+  // FragmentedOofContainer.
+  void AddPendingUnstartedOofs();
+
+  // Put all candidates that don't participate in block fragmentation (either
+  // because they are contained by the outer fragmentation context root itself,
+  // or by something on the outside) into a list. If we need to relayout for OOF
+  // fragmentation, these will not be discovered as normally in the second pass,
+  // since OOF discovery is managed by FragmentedOofContainer then, which means
+  // that they will have to be carried over manually.
+  void CollectUnfragmentedOofs();
+
+  void SetupRelayoutDataForOofFragmentation(
+      const BoxFragmentBuilder& previous_fragment_builder);
+
   bool ShouldCalculateScrollableOverflow() const {
     // Most nodes should calculate scrollable overflow and store it on the
     // resulting fragment, except for replaced content, and the root fragment
@@ -883,6 +923,8 @@ class CORE_EXPORT BoxFragmentBuilder final : public FragmentBuilder {
 
   // The break-after value of the previous in-flow sibling.
   EBreakBetween previous_break_after_ = EBreakBetween::kAuto;
+
+  HeapVector<LogicalOofPositionedNode> unfragmented_oofs_;
 
   AtomicString page_name_ = g_null_atom;
 

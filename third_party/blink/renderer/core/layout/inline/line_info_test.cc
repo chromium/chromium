@@ -29,7 +29,8 @@ TEST_F(LineInfoTest, InflowEndOffset) {
   ConstraintSpace space = ConstraintSpaceForAvailableSize(LayoutUnit::Max());
   LineBreaker line_breaker(node, LineBreakerMode::kContent, space,
                            LineLayoutOpportunity(LayoutUnit::Max()),
-                           leading_floats, nullptr, nullptr, &exclusion_space);
+                           leading_floats, nullptr, nullptr, nullptr,
+                           &exclusion_space);
   LineInfo line_info;
   line_breaker.NextLine(&line_info);
   EXPECT_EQ(InlineItem::kOpenRubyColumn, line_info.Results()[2].item->Type());
@@ -54,7 +55,7 @@ TEST_F(LineInfoTest, TrailingSpaceWidthInitialEmptyItem) {
   ConstraintSpace space = ConstraintSpaceForAvailableSize(LayoutUnit());
   LineBreaker line_breaker(node, LineBreakerMode::kContent, space,
                            LineLayoutOpportunity(LayoutUnit()), leading_floats,
-                           nullptr, nullptr, &exclusion_space);
+                           nullptr, nullptr, nullptr, &exclusion_space);
   LineInfo line_info;
   line_breaker.NextLine(&line_info);
   // Pass if no DCHECK failure

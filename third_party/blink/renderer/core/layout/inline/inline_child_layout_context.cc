@@ -92,6 +92,11 @@ void InlineChildLayoutContext::PropagateParallelFlowBreakToken(
   parallel_flow_break_tokens_.push_back(token);
 }
 
+const FragmentedOofContainer*
+InlineChildLayoutContext::GetFragmentedOofContainer() const {
+  return container_builder_->GetFragmentedOofContainer();
+}
+
 void InlineChildLayoutContext::EnableMeasuringModeIfNecessary(
     const ParagraphScale* paragraph_scale) {
   if (paragraph_scale) {

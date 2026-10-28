@@ -89,6 +89,10 @@ const LayoutResult* LayoutBox::CachedLayoutResult(
     return nullptr;
   }
 
+  if (fragmentation.fragmented_oof_container) {
+    return nullptr;
+  }
+
   const BlockBreakToken* break_token = fragmentation.break_token;
 
   const bool use_layout_cache_slot =
