@@ -5435,7 +5435,6 @@ targets.bundle(
             ],
             mixins = [
                 "xcodebuild_sim_runner",
-                "record_failed_tests",
                 "mac_26_vm_optional",
             ],
             variants = [
