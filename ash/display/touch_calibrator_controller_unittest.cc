@@ -11,8 +11,11 @@
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/touch/ash_touch_transform_controller.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
+#include "ui/base/resource/resource_bundle.h"
 #include "ui/display/display.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/manager/test/test_display_layout_manager.h"
@@ -29,6 +32,7 @@
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/events/test/events_test_utils.h"
+#include "ui/strings/grit/ui_strings.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/widget/unique_widget_ptr.h"
 #include "ui/views/widget/widget.h"
@@ -710,7 +714,7 @@ TEST_F(TouchCalibratorControllerTest, HighDPIMonitorsCalibration) {
 
   // The display point should have the root transform applied.
   EXPECT_EQ(GetTouchPointQuad(touch_calibrator_controller).at(0).first,
-            gfx::Point(210, 210));
+            gfx::Point(210, 198));
 }
 
 TEST_F(TouchCalibratorControllerTest, RotatedHighDPIMonitorsCalibration) {
@@ -808,7 +812,7 @@ TEST_F(TouchCalibratorControllerTest, RotatedHighDPIMonitorsCalibration) {
 
   // The display point should have the root transform applied.
   EXPECT_EQ(GetTouchPointQuad(touch_calibrator_controller).at(0).first,
-            gfx::Point(390, 210));
+            gfx::Point(402, 210));
 }
 
 TEST_F(TouchCalibratorControllerTest, InternalTouchDeviceIsRejected) {
@@ -872,6 +876,43 @@ TEST_F(TouchCalibratorControllerTest, CalibratorViewAccessibility) {
     }
   }
   EXPECT_TRUE(found_hint_box);
+}
+
+TEST_F(TouchCalibratorControllerTest, TouchPointViewFitsAndCentersTapLabel) {
+  ui::ResourceBundle& rb = ui::ResourceBundle::GetSharedInstance();
+  const std::u16string original_tap_here_label =
+      rb.GetLocalizedString(IDS_DISPLAY_TOUCH_CALIBRATION_TAP_HERE_LABEL);
+  base::ScopedClosureRunner restore_locale_string(base::BindOnce(
+      &ui::ResourceBundle::OverrideLocaleStringResource, base::Unretained(&rb),
+      IDS_DISPLAY_TOUCH_CALIBRATION_TAP_HERE_LABEL, original_tap_here_label));
+  rb.OverrideLocaleStringResource(IDS_DISPLAY_TOUCH_CALIBRATION_TAP_HERE_LABEL,
+                                  u"Hier tippen");
+
+  const display::Display& touch_display = InitDisplays();
+  TouchCalibratorController touch_calibrator_controller;
+  StartCalibrationChecks(&touch_calibrator_controller, touch_display);
+
+  TouchCalibratorView* target_calibrator_view =
+      static_cast<TouchCalibratorView*>(
+          GetCalibratorViews(&touch_calibrator_controller)[touch_display.id()]
+              ->GetContentsView());
+  ASSERT_GE(target_calibrator_view->children().size(), 2u);
+  const views::View* touch_point_view = target_calibrator_view->children()[1];
+  ASSERT_EQ(touch_point_view->children().size(), 2u);
+  const views::View* throbber_circle = touch_point_view->children()[0];
+  const views::View* tap_label = touch_point_view->children()[1];
+
+  EXPECT_GE(touch_point_view->width(), tap_label->width());
+  EXPECT_EQ(tap_label->bounds().CenterPoint().x(),
+            throbber_circle->bounds().CenterPoint().x());
+
+  gfx::Point display_point;
+  ASSERT_TRUE(target_calibrator_view->GetDisplayPointLocation(&display_point));
+  EXPECT_EQ(
+      display_point,
+      gfx::Point(
+          touch_point_view->x() + throbber_circle->bounds().CenterPoint().x(),
+          touch_point_view->y() + throbber_circle->bounds().CenterPoint().y()));
 }
 
 }  // namespace ash

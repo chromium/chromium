@@ -208,8 +208,9 @@ void CircularThrobberView::OnPaint(gfx::Canvas* canvas) {
 
 void CircularThrobberView::AnimationProgressed(
     const gfx::Animation* animation) {
-  if (animation != animation_.get())
+  if (animation != animation_.get()) {
     return;
+  }
   outer_radius_ = animation->CurrentValueBetween(
       smallest_radius_animated_circle_, largest_radius_animated_circle_);
   SchedulePaint();
@@ -393,8 +394,9 @@ void HintBox::SetLabel(const std::u16string& text, const SkColor& color) {
   // Check if the width of hint box needs to be updated.
   int minimum_expected_width =
       size.width() + 2 * horizontal_offset_ - arrow_width_;
-  if (minimum_expected_width > rounded_rect_bounds_.width())
+  if (minimum_expected_width > rounded_rect_bounds_.width()) {
     UpdateWidth(minimum_expected_width);
+  }
 
   UpdateAccessibleName();
 }
@@ -415,8 +417,9 @@ void HintBox::SetSubLabel(const std::u16string& text, const SkColor& color) {
   // Check if the width of hint box needs to be updated.
   int minimum_expected_width =
       size.width() + 2 * horizontal_offset_ - arrow_width_;
-  if (minimum_expected_width > rounded_rect_bounds_.width())
+  if (minimum_expected_width > rounded_rect_bounds_.width()) {
     UpdateWidth(minimum_expected_width);
+  }
 
   UpdateAccessibleName();
 }
@@ -571,18 +574,15 @@ void TouchCalibratorView::InitViewContents(bool is_for_touchscreen_mapping) {
 
   // If this is not the screen that is being calibrated, then this is all we
   // need to display.
-  if (!is_primary_view_)
+  if (!is_primary_view_) {
     return;
+  }
 
   // Initialize the touch point view that contains the animated circle that the
   // user needs to tap.
   const int kTouchPointViewHeight = kThrobberCircleViewWidth + kTapLabelHeight;
-  const int kThrobberCircleViewHorizontalOffset =
-      (kTapLabelWidth - kThrobberCircleViewWidth) / 2;
 
   touch_point_view_ = AddChildView(std::make_unique<views::View>());
-  touch_point_view_->SetBounds(kTouchPointViewOffset, kTouchPointViewOffset,
-                               kTapLabelWidth, kTouchPointViewHeight);
   touch_point_view_->SetVisible(false);
   touch_point_view_->SetPaintToLayer();
   touch_point_view_->layer()->SetName("TouchCalibratorView:TouchPointView");
@@ -595,16 +595,19 @@ void TouchCalibratorView::InitViewContents(bool is_for_touchscreen_mapping) {
       touch_point_view_->AddChildView(std::make_unique<CircularThrobberView>(
           kThrobberCircleViewWidth, kInnerCircleColor, kOuterCircleColor,
           kCircleAnimationDuration));
-  throbber_circle_->SetPosition(
-      gfx::Point(kThrobberCircleViewHorizontalOffset, 0));
 
   // Initialize the tap label.
   tap_label_ = touch_point_view_->AddChildView(std::make_unique<views::Label>(
       rb.GetLocalizedString(IDS_DISPLAY_TOUCH_CALIBRATION_TAP_HERE_LABEL),
       views::Label::CustomFont{rb.GetFontListWithDelta(6)}));
   gfx::Size preferred_label_size = tap_label_->GetPreferredSize();
-  const int x = std::max(
-      (touch_point_view_->width() - preferred_label_size.width()) / 2, 0);
+  touch_point_view_->SetBounds(
+      kTouchPointViewOffset, kTouchPointViewOffset,
+      std::max(kTapLabelWidth, preferred_label_size.width()),
+      kTouchPointViewHeight);
+  throbber_circle_->SetPosition(gfx::Point(
+      (touch_point_view_->width() - throbber_circle_->width()) / 2, 0));
+  const int x = (touch_point_view_->width() - preferred_label_size.width()) / 2;
   tap_label_->SetBounds(x, kThrobberCircleViewWidth,
                         preferred_label_size.width(), kTapLabelHeight);
   tap_label_->SetEnabledColor(kTapHereLabelColor);
@@ -619,11 +622,10 @@ void TouchCalibratorView::InitViewContents(bool is_for_touchscreen_mapping) {
   std::u16string hint_sublabel_text =
       rb.GetLocalizedString(IDS_DISPLAY_TOUCH_CALIBRATION_HINT_SUBLABEL_TEXT);
 
-  int tpv_width = touch_point_view_->width();
-
   gfx::Size size(kHintBoxWidth, kHintBoxHeight);
 
-  gfx::Point position(touch_point_view_->x() + tpv_width * 1.2f,
+  gfx::Point position(touch_point_view_->x() + throbber_circle_->x() +
+                          throbber_circle_->width() * 1.2f,
                       touch_point_view_->y() +
                           (kThrobberCircleViewWidth / 2.f) -
                           (size.height() / 2.f));
@@ -707,15 +709,16 @@ void TouchCalibratorView::AnimationEnded(const gfx::Animation* animation) {
         hint_box_view_->SetVisible(true);
         // Notify about both new messages, but only once on primary view.
         exit_label_->GetViewAccessibility().NotifyEvent(
-          ax::mojom::Event::kAlert, true);
+            ax::mojom::Event::kAlert, true);
         hint_box_view_->GetViewAccessibility().NotifyEvent(
             ax::mojom::Event::kAlert, true);
       }
       break;
     case BACKGROUND_FADING_OUT:
       exit_label_->SetVisible(false);
-      if (is_primary_view_)
+      if (is_primary_view_) {
         completion_message_view_->SetVisible(false);
+      }
       GetWidget()->Hide();
       break;
     default:
@@ -861,19 +864,22 @@ void TouchCalibratorView::AdvanceToNextState() {
 
 bool TouchCalibratorView::GetDisplayPointLocation(gfx::Point* location) {
   DCHECK(location);
-  if (!is_primary_view_)
+  if (!is_primary_view_) {
     return false;
+  }
 
   if (state_ != DISPLAY_POINT_1 && state_ != DISPLAY_POINT_2 &&
       state_ != DISPLAY_POINT_3 && state_ != DISPLAY_POINT_4) {
     return false;
   }
 
-  if (!touch_point_view_ || !throbber_circle_)
+  if (!touch_point_view_ || !throbber_circle_) {
     return false;
+  }
   // TODO(malaykeshav): Can use views::ConvertPointToScreen()
-  location->SetPoint(touch_point_view_->x() + touch_point_view_->width() / 2.f,
-                     touch_point_view_->y() + touch_point_view_->width() / 2.f);
+  location->SetPoint(
+      touch_point_view_->x() + throbber_circle_->bounds().CenterPoint().x(),
+      touch_point_view_->y() + throbber_circle_->bounds().CenterPoint().y());
   return true;
 }
 
@@ -891,8 +897,9 @@ void TouchCalibratorView::SkipToFinalState() {
 }
 
 void TouchCalibratorView::SkipCurrentAnimation() {
-  if (animator_->is_animating())
+  if (animator_->is_animating()) {
     animator_->End();
+  }
   if (touch_point_view_ &&
       touch_point_view_->layer()->GetAnimator()->is_animating()) {
     touch_point_view_->layer()->GetAnimator()->StopAnimating();
