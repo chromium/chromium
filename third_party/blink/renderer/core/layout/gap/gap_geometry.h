@@ -377,6 +377,16 @@ class CORE_EXPORT GapGeometry : public GarbageCollected<GapGeometry> {
   const Vector<TrackOpeningCoordinates>& EmptyOpeningsForLane(
       wtf_size_t lane_index) const;
 
+  // Marks each segment of a grid-lanes main gap, between two adjacent
+  // intersections, as empty before or after when the lane on that side is empty
+  // along the whole segment. The segment is bounded by the edges of the
+  // crossing gutters, and its state is stored on the intersection that starts
+  // it, as for grid. This way `rule-visibility-items` applies to each segment
+  // before `rule-break` joins them.
+  void MarkGridLanesEmptySegments(GridTrackSizingDirection track_direction,
+                                  wtf_size_t gap_index,
+                                  Vector<GapIntersection>& intersections) const;
+
   // Returns the number of multicol main gaps eligible for painting. Spanner
   // main gaps are skipped because they do not consume decoration values.
   wtf_size_t MulticolPaintableMainGapCount() const;
@@ -814,8 +824,8 @@ class CORE_EXPORT GapGeometry : public GarbageCollected<GapGeometry> {
   MainGaps main_gaps_;
   CrossGaps cross_gaps_;
 
-  // Empty openings per lane, used to determine segment visibility. Note: this
-  // is only used for grid lanes containers.
+  // Empty openings per lane, used to determine visibility. Note: this is only
+  // used for grid lanes containers.
   GridLanesEmptyOpenings grid_lanes_empty_openings_;
 
   // Per-line effective gap sizes (`gap` property + content distribution space)

@@ -16,6 +16,38 @@
 
 namespace blink {
 
+namespace {
+
+// TODO(javiercon): clean up now that we have a lot of layout algorithm-specific
+// code, potentially look into subclassing gap geometry for each container type.
+//
+// Returns whether a lane is empty along a whole segment, meaning the segment
+// lies inside one of the lane's empty openings. A segment that only partly
+// overlaps empty space is not empty.
+bool ConsumeOpeningsAndCheckEmpty(
+    base::span<const TrackOpeningCoordinates>& remaining_empty_openings,
+    LayoutUnit start,
+    LayoutUnit end) {
+  CHECK_LT(start, end);
+
+  // Segments are checked in increasing order. An opening that ends before
+  // this segment starts cannot contain this or any later segment, so skip it
+  // for good.
+  while (!remaining_empty_openings.empty() &&
+         remaining_empty_openings.front().end_position <= start) {
+    remaining_empty_openings = remaining_empty_openings.subspan(1u);
+  }
+
+  // A lane with no empty openings left is occupied along this segment.
+  if (remaining_empty_openings.empty()) {
+    return false;
+  }
+  const TrackOpeningCoordinates& opening = remaining_empty_openings.front();
+  return opening.start_position <= start && end <= opening.end_position;
+}
+
+}  // namespace
+
 void GapGeometry::SetGridLanesEmptyOpenings(
     GridLanesEmptyOpenings empty_openings) {
   CHECK_EQ(container_type_, ContainerType::kGridLanes);
@@ -26,6 +58,60 @@ void GapGeometry::SetGridLanesEmptyOpenings(
 const Vector<TrackOpeningCoordinates>& GapGeometry::EmptyOpeningsForLane(
     wtf_size_t lane_index) const {
   return grid_lanes_empty_openings_[lane_index];
+}
+
+void GapGeometry::MarkGridLanesEmptySegments(
+    GridTrackSizingDirection track_direction,
+    wtf_size_t gap_index,
+    Vector<GapIntersection>& intersections) const {
+  CHECK_EQ(container_type_, ContainerType::kGridLanes);
+  CHECK(IsMainDirection(track_direction));
+
+  base::span<const TrackOpeningCoordinates> before_openings =
+      EmptyOpeningsForLane(gap_index);
+  base::span<const TrackOpeningCoordinates> after_openings =
+      EmptyOpeningsForLane(gap_index + 1);
+
+  // A lane without empty openings is occupied along every segment, so there is
+  // nothing to mark on its side.
+  const bool check_before = !before_openings.empty();
+  const bool check_after = !after_openings.empty();
+  if (!check_before && !check_after) {
+    return;
+  }
+
+  LayoutUnit segment_start =
+      intersections[0].GetOffset() +
+      GetCrossWidthForIntersection(track_direction, gap_index,
+                                   /*intersection_index=*/0,
+                                   /*is_main_gap=*/true, intersections) /
+          2;
+  for (wtf_size_t i = 0; i + 1 < intersections.size(); ++i) {
+    const LayoutUnit next_half_cross_width =
+        GetCrossWidthForIntersection(track_direction, gap_index, i + 1,
+                                     /*is_main_gap=*/true, intersections) /
+        2;
+    const LayoutUnit segment_end =
+        intersections[i + 1].GetOffset() - next_half_cross_width;
+
+    // Where the crossing gutters of the adjacent lanes overlap, the space
+    // between the two intersections has no positive length. It is not a real
+    // segment, so it is not marked, and it cannot hide a rule.
+    if (segment_end > segment_start) {
+      GapSegmentState segment_state = intersections[i].SegmentState();
+      if (check_before && ConsumeOpeningsAndCheckEmpty(
+                              before_openings, segment_start, segment_end)) {
+        segment_state |= GapSegmentState::kEmptyBefore;
+      }
+      if (check_after && ConsumeOpeningsAndCheckEmpty(
+                             after_openings, segment_start, segment_end)) {
+        segment_state |= GapSegmentState::kEmptyAfter;
+      }
+      intersections[i].SetSegmentState(segment_state);
+    }
+
+    segment_start = intersections[i + 1].GetOffset() + next_half_cross_width;
+  }
 }
 
 GridLanesMainGapSegmentWalker::GridLanesMainGapSegmentWalker(
