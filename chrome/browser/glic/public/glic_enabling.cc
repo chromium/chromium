@@ -83,6 +83,7 @@
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/android_info.h"
 #include "base/android/device_info.h"
+#include "chrome/browser/glic/android/background_actuation_capability.h"
 #endif
 
 namespace glic {
@@ -1455,7 +1456,21 @@ GlicEnabling::GlicEnabling(
                 "If you want to inherit from GlicEnabling, ensure this "
                 "function call does not violate the 'no virtual functions in "
                 "constructors' style guide rule. Consider a 2-phase setup");
+#if BUILDFLAG(IS_ANDROID)
+  if (base::FeatureList::IsEnabled(features::kGlicExperimentalTriggering) &&
+      base::FeatureList::IsEnabled(features::kGlicBackgroundActuation)) {
+    background_actuation_capability_ =
+        std::make_unique<BackgroundActuationCapability>(
+            profile_->GetPrefs(),
+            IdentityManagerFactory::GetForProfile(profile_),
+            base::BindRepeating(
+                &GlicEnabling::MaybeNotifyExperimentalTriggeringStateChanged,
+                base::Unretained(this)));
+  }
+#endif  // BUILDFLAG(IS_ANDROID)
   last_experimental_triggering_state_ = GetExperimentalTriggeringState();
+  last_experimental_triggering_capabilities_ =
+      GetExperimentalTriggeringCapabilities();
   int pref_state =
       profile_->GetPrefs()->GetInteger(prefs::kGlicLastProfileReadyState);
   last_profile_ready_state_ = GetSanitizedProfileReadyState(pref_state);
@@ -1684,6 +1699,12 @@ GlicEnabling::GetExperimentalTriggeringCapabilities() const {
           features::kGlicExperimentalTriggeringScreenshot)) {
     capabilities.insert(kGlicCapabilityScreenshot);
   }
+#if BUILDFLAG(IS_ANDROID)
+  if (background_actuation_capability_ &&
+      background_actuation_capability_->can_actuate_in_background()) {
+    capabilities.insert(kGlicCapabilityBackgroundActuation);
+  }
+#endif  // BUILDFLAG(IS_ANDROID)
   return capabilities;
 }
 
@@ -1869,9 +1890,14 @@ void GlicEnabling::UpdateConsentStatus() {
 }
 
 void GlicEnabling::MaybeNotifyExperimentalTriggeringStateChanged() {
-  auto new_state = GetExperimentalTriggeringState();
-  if (new_state != last_experimental_triggering_state_) {
+  syncer::DeviceInfo::GlicExperimentalTriggeringState new_state =
+      GetExperimentalTriggeringState();
+  base::flat_set<std::string> new_capabilities =
+      GetExperimentalTriggeringCapabilities();
+  if (new_state != last_experimental_triggering_state_ ||
+      new_capabilities != last_experimental_triggering_capabilities_) {
     last_experimental_triggering_state_ = new_state;
+    last_experimental_triggering_capabilities_ = std::move(new_capabilities);
     experimental_triggering_state_changed_callback_list_.Notify();
   }
 }

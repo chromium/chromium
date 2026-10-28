@@ -8,6 +8,7 @@
 #include <iterator>
 #include <string>
 #include <string_view>
+#include <tuple>
 #include <utility>
 #include <vector>
 
@@ -22,6 +23,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/mock_log.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
@@ -86,6 +88,8 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/android_info.h"
+#include "base/android/application_status_listener.h"
+#include "chrome/browser/glic/android/background_actuation_capability.h"
 #else
 #include "chrome/browser/sync/device_info_sync_service_factory.h"
 #include "chrome/test/base/scoped_metrics_service_for_synthetic_trials.h"  // nogncheck
@@ -2353,110 +2357,209 @@ TEST_F(GlicEnablingProfileReadyStateTestBase,
   EXPECT_TRUE(enabling.GetExperimentalTriggeringEnabled());
 }
 
-TEST_F(GlicEnablingProfileReadyStateTestBase,
-       GetExperimentalTriggeringCapabilities_UnavailableReturnsEmpty) {
-  auto& enabling = glic::GlicKeyedService::Get(profile())->enabling();
-  // Fully opt in and enable the screenshot feature. kGlicExperimentalTriggering
-  // is disabled by default in this fixture, so experimental triggering is
-  // still unavailable and no capability (including screenshot) may leak.
-  enabling.SetCompletedFre(prefs::FreStatus::kCompleted);
-  profile()->GetPrefs()->SetBoolean(prefs::kGlicUserEnabledActuationOnWeb,
-                                    true);
-  profile()->GetPrefs()->SetBoolean(prefs::kGlicExperimentalTriggeringEnabled,
-                                    true);
-  base::test::ScopedFeatureList features;
-  features.InitAndEnableFeature(
-      features::kGlicExperimentalTriggeringScreenshot);
+#if BUILDFLAG(IS_ANDROID)
+class ScopedCanActuateInBackgroundForTesting {
+ public:
+  explicit ScopedCanActuateInBackgroundForTesting(bool can) { Set(can); }
+  ~ScopedCanActuateInBackgroundForTesting() {
+    BackgroundActuationCapability::SetCanActuateInBackgroundForTesting(
+        std::nullopt);
+  }
+  void Set(bool can) {
+    BackgroundActuationCapability::SetCanActuateInBackgroundForTesting(can);
+  }
+};
 
+// Sets up `enabling` so that `GetExperimentalTriggeringState()` returns
+// `kReady`.
+void SetUpExperimentalTriggeringReady(Profile* profile,
+                                      GlicEnabling& enabling) {
+  enabling.SetCompletedFre(prefs::FreStatus::kCompleted);
+  profile->GetPrefs()->SetBoolean(prefs::kGlicUserEnabledActuationOnWeb, true);
+  profile->GetPrefs()->SetBoolean(prefs::kGlicExperimentalTriggeringEnabled,
+                                  true);
+}
+
+// `kGlicExperimentalTriggering` and `kGlicBackgroundActuation` are enabled
+// before `GlicEnabling` is created, so it creates a working
+// `BackgroundActuationCapability`.
+class GlicEnablingBackgroundActuationTest
+    : public GlicEnablingProfileReadyStateTestBase {
+ public:
+  GlicEnablingBackgroundActuationTest()
+      : GlicEnablingProfileReadyStateTestBase(
+            {features::kGlicExperimentalTriggering,
+             features::kGlicBackgroundActuation}) {}
+
+ protected:
+  // Set before GlicEnabling is created.
+  ScopedCanActuateInBackgroundForTesting can_actuate_in_background_{true};
+};
+
+TEST_F(GlicEnablingBackgroundActuationTest,
+       CapabilityChangeNotifiesStateObservers) {
+  auto& enabling = glic::GlicKeyedService::Get(profile())->enabling();
+  SetUpExperimentalTriggeringReady(profile(), enabling);
+  // Waits for the read posted at construction.
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return enabling.GetExperimentalTriggeringCapabilities().contains(
+        kGlicCapabilityBackgroundActuation);
+  }));
+
+  int state_changed_count = 0;
+  auto subscription = enabling.RegisterOnExperimentalTriggeringStateChanged(
+      base::BindLambdaForTesting(
+          [&state_changed_count]() { ++state_changed_count; }));
+
+  // Notifications turned off: the cached value isn't re-read until a refresh.
+  can_actuate_in_background_.Set(false);
+  EXPECT_TRUE(enabling.GetExperimentalTriggeringCapabilities().contains(
+      kGlicCapabilityBackgroundActuation));
+  // Returning to the foreground re-reads the value.
+  base::android::ApplicationStatusListener::NotifyApplicationStateChange(
+      base::android::APPLICATION_STATE_HAS_RUNNING_ACTIVITIES);
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return !enabling.GetExperimentalTriggeringCapabilities().contains(
+        kGlicCapabilityBackgroundActuation);
+  }));
+  // The state stays kReady, but the capabilities changed, so observers (which
+  // re-upload DeviceInfo) are notified.
+  EXPECT_EQ(state_changed_count, 1);
   EXPECT_EQ(enabling.GetExperimentalTriggeringState(),
-            syncer::DeviceInfo::GlicExperimentalTriggeringState::kUnavailable);
-  EXPECT_TRUE(enabling.GetExperimentalTriggeringCapabilities().empty());
+            syncer::DeviceInfo::GlicExperimentalTriggeringState::kReady);
+  EXPECT_FALSE(enabling.GetExperimentalTriggeringCapabilities().contains(
+      kGlicCapabilityBackgroundActuation));
 }
 
-TEST_F(GlicEnablingProfileReadyStateTestBase,
-       GetExperimentalTriggeringCapabilities_ScreenshotFlag) {
-  auto& enabling = glic::GlicKeyedService::Get(profile())->enabling();
-  enabling.SetCompletedFre(prefs::FreStatus::kCompleted);
-  profile()->GetPrefs()->SetBoolean(prefs::kGlicUserEnabledActuationOnWeb,
-                                    true);
-  profile()->GetPrefs()->SetBoolean(prefs::kGlicExperimentalTriggeringEnabled,
-                                    true);
+#endif  // BUILDFLAG(IS_ANDROID)
 
-  {
-    base::test::ScopedFeatureList features;
-    features.InitWithFeatures(
-        /*enabled_features=*/{features::kGlicExperimentalTriggering},
-        /*disabled_features=*/{
-            features::kGlicExperimentalTriggeringScreenshot});
+// Checks the experimental triggering capabilities for every combination of
+// experimental triggering state, kGlicExperimentalTriggeringScreenshot, and (on
+// Android only) whether the device can run a triggered task in the background.
+class GlicEnablingExperimentalTriggeringCapabilitiesTest
+    : public GlicEnablingProfileReadyStateTestBase,
+      public testing::WithParamInterface<
+          std::tuple<syncer::DeviceInfo::GlicExperimentalTriggeringState,
+                     /*screenshot_enabled=*/bool,
+                     /*can_actuate_in_background=*/bool>> {
+ public:
+  using State = syncer::DeviceInfo::GlicExperimentalTriggeringState;
 
-    EXPECT_EQ(enabling.GetExperimentalTriggeringState(),
-              syncer::DeviceInfo::GlicExperimentalTriggeringState::kReady);
-    EXPECT_EQ(enabling.GetExperimentalTriggeringCapabilities(),
-              (base::flat_set<std::string>{kGlicCapabilityStructuredYields,
-                                           kGlicCapabilityPaymentMetadata}));
+  GlicEnablingExperimentalTriggeringCapabilitiesTest()
+      : GlicEnablingProfileReadyStateTestBase(EnabledFeatures(),
+                                              DisabledFeatures()) {}
+
+  static State GetState() { return std::get<0>(GetParam()); }
+  static bool IsScreenshotEnabled() { return std::get<1>(GetParam()); }
+  static bool CanActuateInBackground() { return std::get<2>(GetParam()); }
+
+  // E.g. "Ready_Screenshot_CanActuateInBackground".
+  static std::string ParamName(const testing::TestParamInfo<ParamType>& info) {
+    const auto& [param_state, screenshot, background] = info.param;
+    std::string name;
+    switch (param_state) {
+      case State::kUnavailable:
+        name = "Unavailable";
+        break;
+      case State::kNeedsOptIn:
+        name = "NeedsOptIn";
+        break;
+      case State::kReady:
+        name = "Ready";
+        break;
+    }
+    name += screenshot ? "_Screenshot" : "_NoScreenshot";
+    name +=
+        background ? "_CanActuateInBackground" : "_CannotActuateInBackground";
+    return name;
   }
 
-  {
-    base::test::ScopedFeatureList features;
-    features.InitWithFeatures(
-        /*enabled_features=*/{features::kGlicExperimentalTriggering,
-                              features::kGlicExperimentalTriggeringScreenshot},
-        /*disabled_features=*/{});
-
-    EXPECT_EQ(enabling.GetExperimentalTriggeringState(),
-              syncer::DeviceInfo::GlicExperimentalTriggeringState::kReady);
-    EXPECT_EQ(enabling.GetExperimentalTriggeringCapabilities(),
-              (base::flat_set<std::string>{kGlicCapabilityScreenshot,
-                                           kGlicCapabilityStructuredYields,
-                                           kGlicCapabilityPaymentMetadata}));
+ private:
+  static std::vector<base::test::FeatureRef> EnabledFeatures() {
+    std::vector<base::test::FeatureRef> enabled = {
+        features::kGlic, features::kGlicBackgroundActuation};
+    if (GetState() != State::kUnavailable) {
+      enabled.push_back(features::kGlicExperimentalTriggering);
+    }
+    if (IsScreenshotEnabled()) {
+      enabled.push_back(features::kGlicExperimentalTriggeringScreenshot);
+    }
+    return enabled;
   }
-}
 
-TEST_F(GlicEnablingProfileReadyStateTestBase,
-       GetExperimentalTriggeringCapabilities_NeedsOptIn) {
+  static std::vector<base::test::FeatureRef> DisabledFeatures() {
+    std::vector<base::test::FeatureRef> disabled = {
+        features::kGlicExperimentalTriggeringOptInBypass};
+    if (GetState() == State::kUnavailable) {
+      disabled.push_back(features::kGlicExperimentalTriggering);
+    }
+    if (!IsScreenshotEnabled()) {
+      disabled.push_back(features::kGlicExperimentalTriggeringScreenshot);
+    }
+    return disabled;
+  }
+
+#if BUILDFLAG(IS_ANDROID)
+  // Set before GlicEnabling is created, because GlicEnabling caches it.
+  ScopedCanActuateInBackgroundForTesting can_actuate_in_background_override_{
+      CanActuateInBackground()};
+#endif  // BUILDFLAG(IS_ANDROID)
+};
+
+TEST_P(GlicEnablingExperimentalTriggeringCapabilitiesTest,
+       GetExperimentalTriggeringCapabilities) {
   auto& enabling = glic::GlicKeyedService::Get(profile())->enabling();
-  // Leave the opt-in incomplete.
-  enabling.SetCompletedFre(prefs::FreStatus::kIncomplete);
-  enabling.SetUserEnabledActuationOnWeb(false);
-  enabling.SetExperimentalTriggeringEnabled(false);
   // Bypass the enterprise policy check which defaults to disabled.
   profile()->GetPrefs()->SetInteger(
       prefs::kGlicSparkPolicySettings,
       std::to_underlying(glic::prefs::GlicSparkPolicyState::kEnabled));
+  // Leave the opt-in incomplete for `kNeedsOptIn`. Otherwise opt in fully, so
+  // that for `kUnavailable` only the disabled `kGlicExperimentalTriggering`
+  // feature keeps capabilities from being reported.
+  const bool opted_in = GetState() != State::kNeedsOptIn;
+  enabling.SetCompletedFre(opted_in ? prefs::FreStatus::kCompleted
+                                    : prefs::FreStatus::kIncomplete);
+  enabling.SetUserEnabledActuationOnWeb(opted_in);
+  enabling.SetExperimentalTriggeringEnabled(opted_in);
+  ASSERT_EQ(enabling.GetExperimentalTriggeringState(), GetState());
 
-  {
-    base::test::ScopedFeatureList features;
-    features.InitWithFeatures(
-        /*enabled_features=*/{features::kGlic,
-                              features::kGlicExperimentalTriggering},
-        /*disabled_features=*/{
-            features::kGlicExperimentalTriggeringOptInBypass,
-            features::kGlicExperimentalTriggeringScreenshot});
-
-    EXPECT_EQ(enabling.GetExperimentalTriggeringState(),
-              syncer::DeviceInfo::GlicExperimentalTriggeringState::kNeedsOptIn);
-    EXPECT_EQ(enabling.GetExperimentalTriggeringCapabilities(),
-              (base::flat_set<std::string>{kGlicCapabilityStructuredYields,
-                                           kGlicCapabilityPaymentMetadata}));
+  base::flat_set<std::string> expected;
+  if (GetState() != State::kUnavailable) {
+    expected = {kGlicCapabilityStructuredYields,
+                kGlicCapabilityPaymentMetadata};
+    if (IsScreenshotEnabled()) {
+      expected.insert(kGlicCapabilityScreenshot);
+    }
+#if BUILDFLAG(IS_ANDROID)
+    if (CanActuateInBackground()) {
+      expected.insert(kGlicCapabilityBackgroundActuation);
+      // The value is read by a deferred task posted at construction.
+      ASSERT_TRUE(base::test::RunUntil([&]() {
+        return enabling.GetExperimentalTriggeringCapabilities().contains(
+            kGlicCapabilityBackgroundActuation);
+      }));
+    }
+#endif  // BUILDFLAG(IS_ANDROID)
   }
-
-  {
-    base::test::ScopedFeatureList features;
-    features.InitWithFeatures(
-        /*enabled_features=*/{features::kGlic,
-                              features::kGlicExperimentalTriggering,
-                              features::kGlicExperimentalTriggeringScreenshot},
-        /*disabled_features=*/{
-            features::kGlicExperimentalTriggeringOptInBypass});
-
-    EXPECT_EQ(enabling.GetExperimentalTriggeringState(),
-              syncer::DeviceInfo::GlicExperimentalTriggeringState::kNeedsOptIn);
-    EXPECT_EQ(enabling.GetExperimentalTriggeringCapabilities(),
-              (base::flat_set<std::string>{kGlicCapabilityScreenshot,
-                                           kGlicCapabilityStructuredYields,
-                                           kGlicCapabilityPaymentMetadata}));
-  }
+  EXPECT_EQ(enabling.GetExperimentalTriggeringCapabilities(), expected);
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    GlicEnablingExperimentalTriggeringCapabilitiesTest,
+    testing::Combine(
+        testing::Values(
+            syncer::DeviceInfo::GlicExperimentalTriggeringState::kUnavailable,
+            syncer::DeviceInfo::GlicExperimentalTriggeringState::kNeedsOptIn,
+            syncer::DeviceInfo::GlicExperimentalTriggeringState::kReady),
+        /*screenshot_enabled=*/testing::Bool(),
+#if BUILDFLAG(IS_ANDROID)
+        /*can_actuate_in_background=*/testing::Bool()),
+#else
+        // Background actuation is only reported on Android.
+        /*can_actuate_in_background=*/testing::Values(false)),
+#endif  // BUILDFLAG(IS_ANDROID)
+    &GlicEnablingExperimentalTriggeringCapabilitiesTest::ParamName);
 
 // Fixture without the actor policy control exemption, so that the experimental
 // triggering state reflects whether the profile can actually act on the web.

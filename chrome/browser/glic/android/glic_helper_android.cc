@@ -20,6 +20,11 @@ constexpr char kRecordAudioPermission[] = "android.permission.RECORD_AUDIO";
 
 }  // namespace
 
+bool CanActuateInBackground() {
+  return Java_GlicHelper_canActuateInBackground(
+      jni_zero::AttachCurrentThread());
+}
+
 void MicPermissionUi::ShowMicPermissionDialog(
     ui::WindowAndroid* window_android,
     base::OnceCallback<void(bool)> callback) {

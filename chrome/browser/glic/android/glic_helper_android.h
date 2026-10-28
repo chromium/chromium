@@ -13,6 +13,12 @@ class WindowAndroid;
 
 namespace glic {
 
+// Returns whether this device can run a Glic task in the background, i.e.
+// `ActorUtils#isBackgroundActuationEnabled()`, which also requires Actor
+// notifications while the require-notifications param is set (the default).
+// Makes a JNI call and NotificationManager binder calls, so cache the result.
+bool CanActuateInBackground();
+
 // Android microphone permission UI for Glic. Owned by GlicKeyedService, and
 // can be overridden in tests. Callbacks may run after the caller is gone, so
 // bind them to a WeakPtr.

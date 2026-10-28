@@ -42,6 +42,10 @@ class Profile;
 class ProfileAttributesStorage;
 
 namespace glic {
+
+#if BUILDFLAG(IS_ANDROID)
+class BackgroundActuationCapability;
+#endif  // BUILDFLAG(IS_ANDROID)
 class GlicActorPolicyChecker;
 class GlicKeyedService;
 namespace prefs {
@@ -691,6 +695,8 @@ class GlicEnabling final : public signin::IdentityManager::Observer,
   base::CallbackListSubscription RegisterOnExperimentalTriggeringEnabledChanged(
       ExperimentalTriggeringEnabledChangedCallback callback);
 
+  // Called when `GetExperimentalTriggeringState()` or
+  // `GetExperimentalTriggeringCapabilities()` might return a different value.
   using ExperimentalTriggeringStateChangedCallback = base::RepeatingClosure;
   base::CallbackListSubscription RegisterOnExperimentalTriggeringStateChanged(
       ExperimentalTriggeringStateChangedCallback callback);
@@ -792,7 +798,17 @@ class GlicEnabling final : public signin::IdentityManager::Observer,
   syncer::DeviceInfo::GlicExperimentalTriggeringState
       last_experimental_triggering_state_ =
           syncer::DeviceInfo::GlicExperimentalTriggeringState::kUnavailable;
+  // The experimental triggering capabilities as of the last
+  // `ExperimentalTriggeringStateChangedCallback` notification. Observers are
+  // notified when either the state or the capabilities change.
+  base::flat_set<std::string> last_experimental_triggering_capabilities_;
   mojom::ProfileReadyState last_profile_ready_state_;
+#if BUILDFLAG(IS_ANDROID)
+  // Tracks the "background_actuation" capability. Only created while
+  // `kGlicExperimentalTriggering` and `kGlicBackgroundActuation` are enabled.
+  std::unique_ptr<BackgroundActuationCapability>
+      background_actuation_capability_;
+#endif  // BUILDFLAG(IS_ANDROID)
 };
 
 }  // namespace glic
