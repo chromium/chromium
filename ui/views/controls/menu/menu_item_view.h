@@ -839,6 +839,12 @@ class VIEWS_EXPORT MenuItemView : public View, public LayoutDelegate {
   // and SetIconView() explicitly calls UpdateSelectionBasedStateIfChanged().
   bool update_selection_based_state_in_view_herarchy_changed_ = true;
 
+  // There are cases where menu insertions can lead to synchronous accessibility
+  // events, which can in turn lead to a miscalibrated or malicious
+  // accessibility tool attempting to close the menu mid-insertion. Guard
+  // against the item being destroyed while it is being added.
+  bool inserting_into_menu_ = false;
+
   std::optional<ui::ColorId> foreground_color_id_;
   std::optional<MenuItemBackground> menu_item_background_;
   std::optional<ui::ColorId> selected_color_id_;
