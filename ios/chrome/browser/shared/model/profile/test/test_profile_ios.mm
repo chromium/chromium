@@ -12,7 +12,6 @@
 #import "base/functional/callback_helpers.h"
 #import "base/location.h"
 #import "base/logging.h"
-#import "base/memory/ptr_util.h"
 #import "base/path_service.h"
 #import "base/task/sequenced_task_runner.h"
 #import "base/task/single_thread_task_runner.h"
@@ -97,7 +96,8 @@ TestProfileIOS::TestingFactories& TestProfileIOS::TestingFactories::operator=(
 
 TestProfileIOS::TestingFactories::~TestingFactories() = default;
 
-TestProfileIOS::TestProfileIOS(const base::FilePath& state_path,
+TestProfileIOS::TestProfileIOS(base::PassKey<TestProfileIOS> pass_key,
+                               const base::FilePath& state_path,
                                TestProfileIOS* original_profile,
                                TestingFactories testing_factories)
     : ProfileIOS(state_path,
@@ -120,6 +120,7 @@ TestProfileIOS::TestProfileIOS(const base::FilePath& state_path,
 }
 
 TestProfileIOS::TestProfileIOS(
+    base::PassKey<Builder> pass_key,
     const base::FilePath& state_path,
     std::string_view profile_name,
     base::Uuid webkit_storage_id,
@@ -265,8 +266,9 @@ TestProfileIOS* TestProfileIOS::CreateOffTheRecordProfileWithTestingFactories(
     TestingFactories testing_factories) {
   DCHECK(!IsOffTheRecord());
   DCHECK(!otr_profile_);
-  otr_profile_.reset(new TestProfileIOS(GetOffTheRecordStatePath(), this,
-                                        std::move(testing_factories)));
+  otr_profile_ = std::make_unique<TestProfileIOS>(
+      base::PassKey<TestProfileIOS>{}, GetOffTheRecordStatePath(),
+      /*original_profile=*/this, std::move(testing_factories));
   otr_profile_->Init();
   return otr_profile_.get();
 }
@@ -415,9 +417,9 @@ std::unique_ptr<TestProfileIOS> TestProfileIOS::Builder::Build(
   CHECK(!data_dir.empty());
   CHECK(!profile_name.empty());
 
-  return base::WrapUnique(new TestProfileIOS(
-      data_dir.Append(profile_name), profile_name,
+  return std::make_unique<TestProfileIOS>(
+      base::PassKey<Builder>{}, data_dir.Append(profile_name), profile_name,
       std::move(webkit_storage_id_), std::move(pref_service_),
       std::move(testing_factories_), std::move(policy_connector_),
-      std::move(user_cloud_policy_manager_)));
+      std::move(user_cloud_policy_manager_));
 }

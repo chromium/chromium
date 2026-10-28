@@ -14,6 +14,7 @@
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/types/pass_key.h"
 #include "ios/chrome/browser/net/model/net_types.h"
 #include "ios/chrome/browser/policy/model/profile_policy_connector.h"
 #include "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -235,11 +236,9 @@ class TestProfileIOS final : public ProfileIOS {
     TestingFactories testing_factories_;
   };
 
- private:
-  friend class Builder;
-
   // Used to create the principal TestProfileIOS.
-  TestProfileIOS(const base::FilePath& state_path,
+  TestProfileIOS(base::PassKey<Builder> pass_key,
+                 const base::FilePath& state_path,
                  std::string_view profile_name,
                  base::Uuid webkit_storage_id,
                  std::unique_ptr<sync_preferences::PrefServiceSyncable> prefs,
@@ -249,10 +248,12 @@ class TestProfileIOS final : public ProfileIOS {
                      user_cloud_policy_manager);
 
   // Used to create the incognito TestProfileIOS.
-  TestProfileIOS(const base::FilePath& state_path,
+  TestProfileIOS(base::PassKey<TestProfileIOS> pass_key,
+                 const base::FilePath& state_path,
                  TestProfileIOS* original_profile,
                  TestingFactories testing_factories);
 
+ private:
   // Initialization of the TestProfileIOS. This is a separate method
   // as it needs to be called after the bi-directional link between original
   // and off-the-record TestProfileIOS has been created.
