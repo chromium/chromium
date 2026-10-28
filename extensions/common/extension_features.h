@@ -393,14 +393,16 @@ BASE_DECLARE_FEATURE(kUseSha256ForExtensionHashes);
 // page is never web accessible.
 BASE_DECLARE_FEATURE(kRestrictGeneratedPathsInWebAccessibleResources);
 
-// If enabled, `ExtensionMessagePort` only registers a frame as a message
-// receiver for an extension if the frame's process may act for that extension:
-// a process in `ProcessMap` for the extension, or a process that has run a
-// content script or user script from the extension. If disabled, every live
-// frame is registered.
-// TODO(crbug.com/564956871): Before enabling this by default, make Chrome App
-// messages still reach the app's own webview-accessible resources shown in a
-// `<webview>`.
+// If enabled (the default), `ExtensionMessagePort` only registers a frame as a
+// message receiver for an extension if the frame's process may act for that
+// extension: a process in `ProcessMap` for the extension, or a process that has
+// run a content script or user script from the extension. The extension's own
+// pages shown in its `<webview>` (e.g. a Chrome App's webview-accessible
+// resources) are also registered, as long as the browser confirms that their
+// process committed the extension's origin. If disabled, every live frame is
+// registered. Disabling this has security implications.
+// TODO(crbug.com/578977501): Remove this flag once the change has shipped to
+// stable without issues.
 BASE_DECLARE_FEATURE(kRestrictMessagingReceiverFramesToExtensionProcesses);
 
 }  // namespace extensions_features

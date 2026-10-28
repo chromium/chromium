@@ -20,6 +20,7 @@
 #include "base/types/pass_key.h"
 #include "components/back_forward_cache/back_forward_cache_disable.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/child_process_security_policy.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
@@ -28,6 +29,7 @@
 #include "content/public/common/content_features.h"
 #include "extensions/browser/api/messaging/channel_endpoint.h"
 #include "extensions/browser/extension_host.h"
+#include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_web_contents_observer.h"
 #include "extensions/browser/extensions_browser_client.h"
 #include "extensions/browser/message_tracker.h"
@@ -39,9 +41,11 @@
 #include "extensions/browser/service_worker/worker_id.h"
 #include "extensions/common/api/messaging/message.h"
 #include "extensions/common/api/messaging/messaging_endpoint.h"
+#include "extensions/common/extension.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/manifest_handlers/background_info.h"
+#include "extensions/common/mojom/context_type.mojom-shared.h"
 #include "extensions/common/mojom/message_port.mojom-shared.h"
 #include "ipc/constants.mojom.h"
 
@@ -66,19 +70,68 @@ const char kClosedWhenPageEntersBFCache[] =
     "The page keeping the extension port is moved into back/forward cache, so "
     "the message channel is closed.";
 
-// Returns whether `process` may host a receiver context for `extension_id`:
-// a process in `ProcessMap` for `extension_id`, or a process that has run a
-// content script or user script from `extension_id`.
-bool CanProcessReceiveMessagesForExtension(
+// Returns whether `render_frame_host` is a `<webview>` guest frame that shows
+// one of `extension_id`'s own pages, such as a Chrome App's webview-accessible
+// resource. These frames can listen for messages as unprivileged extension
+// contexts, but their process is deliberately left out of `ProcessMap`.
+//
+// Checking only that the guest belongs to the extension's `<webview>` isn't
+// enough, because the same `<webview>` can also show untrusted web pages. So
+// this also checks the frame's origin and the browser's record of its process.
+bool IsWebViewFrameShowingExtensionPage(
     content::BrowserContext* browser_context,
-    content::RenderProcessHost& process,
+    content::RenderFrameHost& render_frame_host,
     const ExtensionId& extension_id) {
+  const Extension* extension = ExtensionRegistry::Get(browser_context)
+                                   ->enabled_extensions()
+                                   .GetByID(extension_id);
+  // The extension can be disabled or unloaded while a channel is opening.
+  if (!extension) {
+    return false;
+  }
+
+  // The frame's process must be a guest process of the extension's
+  // `<webview>`.
+  content::RenderProcessHost& process = *render_frame_host.GetProcess();
+  if (!ProcessMap::Get(browser_context)
+           ->CanProcessHostContextType(
+               extension, process,
+               mojom::ContextType::kUnprivilegedExtension)) {
+    return false;
+  }
+
+  // The frame must have committed at the extension's origin.
+  const url::Origin extension_origin = extension->origin();
+  if (render_frame_host.GetLastCommittedOrigin() != extension_origin) {
+    return false;
+  }
+
+  // The browser must confirm that the process committed the extension's origin
+  // and isn't sandboxed. Only a process locked to the extension can commit that
+  // origin, so a process that shows web content never passes. Check this last,
+  // because a failed call records crash keys.
+  return content::ChildProcessSecurityPolicy::GetInstance()
+      ->CanAccessDataForOrigin(process.GetDeprecatedID(), extension_origin);
+}
+
+// Returns whether `render_frame_host` may host a receiver context for
+// `extension_id`. This is true if the frame's process is in `ProcessMap` for
+// `extension_id`, or has run a content script or user script from
+// `extension_id`. It is also true for the extension's own pages shown in its
+// `<webview>`.
+bool CanFrameReceiveMessagesForExtension(
+    content::BrowserContext* browser_context,
+    content::RenderFrameHost& render_frame_host,
+    const ExtensionId& extension_id) {
+  content::RenderProcessHost& process = *render_frame_host.GetProcess();
   return ProcessMap::Get(browser_context)
              ->Contains(extension_id, process.GetID()) ||
          ScriptInjectionTracker::DidProcessRunContentScriptFromExtension(
              process, extension_id) ||
          ScriptInjectionTracker::DidProcessRunUserScriptFromExtension(
-             process, extension_id);
+             process, extension_id) ||
+         IsWebViewFrameShowingExtensionPage(browser_context, render_frame_host,
+                                            extension_id);
 }
 
 }  // namespace
@@ -776,8 +829,8 @@ void ExtensionMessagePort::RegisterFrame(
   if (base::FeatureList::IsEnabled(
           extensions_features::
               kRestrictMessagingReceiverFramesToExtensionProcesses) &&
-      !CanProcessReceiveMessagesForExtension(
-          browser_context_, *render_frame_host->GetProcess(), extension_id_)) {
+      !CanFrameReceiveMessagesForExtension(browser_context_, *render_frame_host,
+                                           extension_id_)) {
     return;
   }
 

@@ -38,6 +38,7 @@
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/thread_restrictions.h"
+#include "base/unguessable_token.h"
 #include "base/uuid.h"
 #include "base/version_info/channel.h"
 #include "build/build_config.h"
@@ -163,6 +164,7 @@
 #include "extensions/browser/api/declarative_net_request/rules_monitor_service.h"
 #include "extensions/browser/api/declarative_webrequest/webrequest_constants.h"
 #include "extensions/browser/api/extensions_api_client.h"
+#include "extensions/browser/api/messaging/extension_message_port.h"
 #include "extensions/browser/api/web_request/extension_web_request_event_router.h"
 #include "extensions/browser/app_window/app_window_registry.h"
 #include "extensions/browser/app_window/native_app_window.h"
@@ -170,11 +172,14 @@
 #include "extensions/browser/guest_view/web_view/web_view_renderer_state.h"
 #include "extensions/browser/process_map.h"
 #include "extensions/browser/service_worker/service_worker_test_utils.h"
+#include "extensions/common/api/messaging/port_id.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_features.h"
+#include "extensions/common/extension_id.h"
 #include "extensions/common/extensions_client.h"
 #include "extensions/common/features/feature_channel.h"
 #include "extensions/common/mojom/context_type.mojom.h"
+#include "extensions/common/mojom/message_port.mojom-shared.h"
 #include "extensions/common/switches.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "media/base/media_switches.h"
@@ -210,6 +215,7 @@
 #include "ui/gfx/geometry/point.h"
 #include "ui/latency/latency_info.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
+#include "url/gurl.h"
 #include "url/url_constants.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -5838,6 +5844,247 @@ IN_PROC_BROWSER_TEST_P(WebViewTest,
          message;)";
   EXPECT_EQ("success", content::EvalJs(web_view_frame, kCallAppWindowCreate));
 }
+
+class WebViewAccessibleResourceMessagingTest
+    : public WebViewTestBase,
+      public testing::WithParamInterface<std::tuple<bool, bool>> {
+ public:
+  WebViewAccessibleResourceMessagingTest() {
+    scoped_feature_list_.InitWithFeatureStates(
+        {{features::kGuestViewMPArch, std::get<0>(GetParam())},
+         {extensions_features::
+              kRestrictMessagingReceiverFramesToExtensionProcesses,
+          IsRestrictReceiversEnabled()}});
+  }
+
+  // Names each test after its guest implementation and whether
+  // `kRestrictMessagingReceiverFramesToExtensionProcesses` is enabled.
+  static std::string DescribeParams(
+      const testing::TestParamInfo<ParamType>& info) {
+    const auto [mparch, restrict_receivers] = info.param;
+    return base::StrCat({mparch ? "MPArch" : "InnerWebContents",
+                         "_RestrictReceivers",
+                         restrict_receivers ? "Enabled" : "Disabled"});
+  }
+
+ protected:
+  // The app's webview-accessible resource, relative to the app's root.
+  static constexpr char kAccessibleResourcePath[] = "assets/foo.html";
+
+  // Returns whether
+  // `extensions_features::kRestrictMessagingReceiverFramesToExtensionProcesses`
+  // is enabled for the test.
+  bool IsRestrictReceiversEnabled() const { return std::get<1>(GetParam()); }
+
+  // Launches the `load_webview_accessible_resource` test app and waits for it
+  // to report that it launched. Returns the app, or null if it failed to load.
+  // This doesn't run the app's test script (`TestHelper()`). That script calls
+  // `webview.executeScript()`, which makes `ScriptInjectionTracker` accept the
+  // guest process, so the tests would pass without the receiver check.
+  const extensions::Extension* LaunchApp() {
+    SCOPED_TRACE("Waiting for the app to launch");
+    return LoadAndLaunchPlatformApp("web_view/load_webview_accessible_resource",
+                                    /*message=*/"Launched");
+  }
+
+  // Navigates the `<webview>` in the app window to `url`, waits for it to
+  // finish loading, and returns the guest's main frame, or null on failure.
+  content::RenderFrameHost* NavigateWebView(const GURL& url) {
+    content::WebContents* embedder_contents = GetEmbedderWebContents();
+    if (!embedder_contents) {
+      ADD_FAILURE() << "The app window has no embedder WebContents";
+      return nullptr;
+    }
+    static constexpr char kNavigateWebview[] =
+        R"(new Promise(resolve => {
+             const webview = document.querySelector('webview');
+             webview.addEventListener('loadstop', () => resolve('loaded'),
+                                      {once: true});
+             webview.src = $1;
+           });)";
+    {
+      SCOPED_TRACE("Waiting for the webview to load " + url.spec());
+      const content::EvalJsResult result = content::EvalJs(
+          embedder_contents, content::JsReplace(kNavigateWebview, url));
+      if (result != "loaded") {
+        ADD_FAILURE() << "The webview failed to load " << url.spec() << ": "
+                      << result;
+        return nullptr;
+      }
+    }
+    return GetGuestViewManager()->GetLastGuestRenderFrameHostCreated();
+  }
+
+  // Returns whether `ExtensionMessagePort::RegisterFrame()` registers
+  // `render_frame_host` as a message receiver for `extension_id`.
+  bool IsFrameRegisteredAsReceiver(
+      const extensions::ExtensionId& extension_id,
+      content::RenderFrameHost* render_frame_host) {
+    std::unique_ptr<extensions::ExtensionMessagePort> port =
+        extensions::ExtensionMessagePort::CreateForTab(
+            /*channel_delegate=*/nullptr,
+            extensions::PortId(base::UnguessableToken::Create(),
+                               /*port_number=*/0, /*is_opener=*/false,
+                               extensions::mojom::SerializationFormat::kJson),
+            extension_id, render_frame_host, /*include_child_frames=*/false);
+    return port->IsValidPort();
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Checks that a Chrome App's `chrome.runtime.sendMessage()` reaches its own
+// webview-accessible resource shown in a `<webview>`. Regression test for
+// crbug.com/564956871.
+IN_PROC_BROWSER_TEST_P(WebViewAccessibleResourceMessagingTest,
+                       AppSendMessageToWebviewAccessibleResource) {
+  const extensions::Extension* app = LaunchApp();
+  ASSERT_TRUE(app);
+  content::WebContents* embedder_contents = GetEmbedderWebContents();
+  ASSERT_TRUE(embedder_contents);
+
+  // Navigate the `<webview>` to the app's accessible resource.
+  const GURL resource_url = app->ResolveExtensionURL(kAccessibleResourcePath);
+  content::RenderFrameHost* guest_frame = NavigateWebView(resource_url);
+  ASSERT_TRUE(guest_frame);
+
+  // Add a `chrome.runtime.onMessage` listener to the guest page that replies
+  // to every message.
+  static constexpr char kAddGuestListener[] =
+      R"(chrome.runtime.onMessage.addListener(
+             (message, sender, sendResponse) => {
+               sendResponse('guest received ' + message);
+             });)";
+  ASSERT_TRUE(content::ExecJs(guest_frame, kAddGuestListener));
+
+  // Send a message from the app window. The guest page receives it and
+  // replies in both feature states.
+  static constexpr char kSendMessageFromApp[] =
+      R"(new Promise(resolve => {
+           chrome.runtime.sendMessage('ping', (response) => {
+             if (chrome.runtime.lastError) {
+               resolve('Error: ' + chrome.runtime.lastError.message);
+             } else {
+               resolve('Response: ' + response);
+             }
+           });
+         });)";
+  {
+    SCOPED_TRACE("Waiting for the guest's reply to the app's message");
+    EXPECT_EQ("Response: guest received ping",
+              content::EvalJs(embedder_contents, kSendMessageFromApp));
+  }
+}
+
+// Checks that `ExtensionMessagePort::RegisterFrame()` doesn't register a guest
+// frame of a Chrome App's `<webview>` that shows a web page. Web content is
+// untrusted and must never get the app's message channel. Regression test for
+// crbug.com/564956871.
+IN_PROC_BROWSER_TEST_P(WebViewAccessibleResourceMessagingTest,
+                       WebContentGuestIsNotMessageReceiver) {
+  ASSERT_TRUE(StartEmbeddedTestServer());  // For serving the guest web page.
+
+  const extensions::Extension* app = LaunchApp();
+  ASSERT_TRUE(app);
+
+  // Navigate the `<webview>` to a web page.
+  const GURL web_url = embedded_test_server()->GetURL("/title1.html");
+  content::RenderFrameHost* web_guest_frame = NavigateWebView(web_url);
+  ASSERT_TRUE(web_guest_frame);
+
+  // Ask `RegisterFrame()` directly whether it registers the web page guest
+  // frame.
+  EXPECT_EQ(!IsRestrictReceiversEnabled(),
+            IsFrameRegisteredAsReceiver(app->id(), web_guest_frame));
+
+  // Navigate the same `<webview>` to the app's accessible resource.
+  const GURL resource_url = app->ResolveExtensionURL(kAccessibleResourcePath);
+  content::RenderFrameHost* app_guest_frame = NavigateWebView(resource_url);
+  ASSERT_TRUE(app_guest_frame);
+
+  // The app's own page in the `<webview>` is registered in both feature
+  // states.
+  EXPECT_TRUE(IsFrameRegisteredAsReceiver(app->id(), app_guest_frame));
+}
+
+// Checks that `ExtensionMessagePort::RegisterFrame()` registers the app's
+// webview-accessible resource in a `<webview>` only for the app that owns the
+// `<webview>`, and not for another enabled extension. Regression test for
+// crbug.com/564956871.
+IN_PROC_BROWSER_TEST_P(WebViewAccessibleResourceMessagingTest,
+                       AppGuestIsNotMessageReceiverForOtherExtension) {
+  const extensions::Extension* app = LaunchApp();
+  ASSERT_TRUE(app);
+
+  // Navigate the `<webview>` to the app's accessible resource.
+  const GURL resource_url = app->ResolveExtensionURL(kAccessibleResourcePath);
+  content::RenderFrameHost* app_guest_frame = NavigateWebView(resource_url);
+  ASSERT_TRUE(app_guest_frame);
+
+  // The app owns the `<webview>`, so its own page is registered for it in both
+  // feature states.
+  ASSERT_TRUE(IsFrameRegisteredAsReceiver(app->id(), app_guest_frame));
+
+  // Another enabled extension does not own the app's `<webview>`, so
+  // `RegisterFrame()` only registers `app_guest_frame` for it when receiver
+  // restriction is disabled.
+  const extensions::Extension* other_extension =
+      LoadExtension(test_data_dir_.AppendASCII("simple_with_file"));
+  ASSERT_TRUE(other_extension);
+  EXPECT_EQ(
+      !IsRestrictReceiversEnabled(),
+      IsFrameRegisteredAsReceiver(other_extension->id(), app_guest_frame));
+}
+
+// Checks that `ExtensionMessagePort::RegisterFrame()` doesn't register a
+// sandboxed iframe inside the app's webview-accessible resource. Regression
+// test for crbug.com/564956871.
+IN_PROC_BROWSER_TEST_P(WebViewAccessibleResourceMessagingTest,
+                       SandboxedFrameInGuestIsNotMessageReceiver) {
+  const extensions::Extension* app = LaunchApp();
+  ASSERT_TRUE(app);
+
+  // Navigate the `<webview>` to the app's accessible resource.
+  const GURL resource_url = app->ResolveExtensionURL(kAccessibleResourcePath);
+  content::RenderFrameHost* app_guest_frame = NavigateWebView(resource_url);
+  ASSERT_TRUE(app_guest_frame);
+
+  // Add a sandboxed iframe to the guest page that loads the same resource.
+  static constexpr char kAddSandboxedFrame[] =
+      R"(new Promise(resolve => {
+           const frame = document.createElement('iframe');
+           frame.sandbox = 'allow-scripts';
+           frame.onload = () => resolve('loaded');
+           frame.src = $1;
+           document.body.appendChild(frame);
+         });)";
+  {
+    SCOPED_TRACE("Waiting for the sandboxed iframe to load");
+    ASSERT_EQ("loaded", content::EvalJs(app_guest_frame,
+                                        content::JsReplace(kAddSandboxedFrame,
+                                                           resource_url)));
+  }
+  content::RenderFrameHost* sandboxed_frame =
+      content::ChildFrameAt(app_guest_frame, /*index=*/0);
+  ASSERT_TRUE(sandboxed_frame);
+  ASSERT_EQ(resource_url, sandboxed_frame->GetLastCommittedURL());
+
+  // Ask `RegisterFrame()` directly whether it registers the sandboxed frame. It
+  // is registered only when the feature is disabled.
+  EXPECT_EQ(!IsRestrictReceiversEnabled(),
+            IsFrameRegisteredAsReceiver(app->id(), sandboxed_frame));
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    /* no prefix */,
+    WebViewAccessibleResourceMessagingTest,
+    // Runs tests with both `<webview>` guest implementations
+    // (`features::kGuestViewMPArch` enabled and disabled), and with
+    // `extensions_features::kRestrictMessagingReceiverFramesToExtensionProcesses`
+    // enabled and disabled.
+    testing::Combine(testing::Bool(), testing::Bool()),
+    WebViewAccessibleResourceMessagingTest::DescribeParams);
 
 // Tests that a WebView can navigate an iframe to a blob URL that it creates
 // while its main frame is at a WebView accessible resource.
