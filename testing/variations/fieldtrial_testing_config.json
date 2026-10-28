@@ -17315,6 +17315,21 @@
             ]
         }
     ],
+    "TaiyakiNonListItem": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20261028",
+                    "enable_features": [
+                        "SearchEngineChoiceScreenSnackbar"
+                    ]
+                }
+            ]
+        }
+    ],
     "TaskInfoMetricsMac": [
         {
             "platforms": [
