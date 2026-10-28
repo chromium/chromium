@@ -100,6 +100,64 @@ TEST(ReverbConvolverTest, DiracImpulseResponse) {
   }
 }
 
+// Makes sure a stage with a non-zero `pre_delay_length_` delays and wraps its
+// pre-delay buffer without truncating or corrupting samples.
+TEST(ReverbConvolverTest, PreDelayedStageImpulseResponse) {
+  base::test::TaskEnvironment task_environment;
+  ScopedTestingPlatformSupport<TestingPlatformSupport> platform;
+
+  constexpr size_t kImpulseResponseLength = 1024;
+  constexpr unsigned kMaxFftSize = 512;
+  // Small slices make the pre-delay span several slices.
+  constexpr unsigned kRenderSliceSize = 32;
+  constexpr size_t kTotalFrames = 1024;
+  constexpr float kPhaseStep = 0.05f;
+  constexpr float kTolerance = 1e-4f;
+
+  // Later convolution stages stagger their FFTs using a non-zero
+  // `pre_delay_length_`. Place the impulse far enough in to land in one.
+  constexpr size_t kDelayFrames = 800;
+
+  // Create an impulse response with a unit impulse at `kDelayFrames`.
+  scoped_refptr<AudioBus> impulse_response =
+      AudioBus::Create(1, kImpulseResponseLength);
+  impulse_response->Zero();
+  impulse_response->Channel(0)->MutableSpan()[kDelayFrames] = 1.0f;
+
+  std::unique_ptr<ReverbConvolver> convolver = ReverbConvolver::TryCreate(
+      impulse_response->Channel(0), kRenderSliceSize, kMaxFftSize,
+      /*convolver_render_phase=*/0, /*scale=*/1.0f);
+  ASSERT_NE(convolver, nullptr);
+
+  scoped_refptr<AudioBus> source_bus = AudioBus::Create(1, kRenderSliceSize);
+  scoped_refptr<AudioBus> dest_bus = AudioBus::Create(1, kRenderSliceSize);
+
+  auto sample_at = [](size_t frame) { return std::sin(frame * kPhaseStep); };
+
+  // Feed a sine wave slice by slice.
+  for (size_t frame_offset = 0; frame_offset < kTotalFrames;
+       frame_offset += kRenderSliceSize) {
+    auto source_span = source_bus->Channel(0)->MutableSpan();
+    for (unsigned i = 0; i < kRenderSliceSize; ++i) {
+      source_span[i] = sample_at(frame_offset + i);
+    }
+
+    dest_bus->Zero();
+    convolver->Process(source_bus->Channel(0), dest_bus->Channel(0),
+                       kRenderSliceSize);
+
+    // Output should be silence before `kDelayFrames`, then the input delayed
+    // by `kDelayFrames`.
+    auto dest_span = dest_bus->Channel(0)->Span();
+    for (unsigned i = 0; i < kRenderSliceSize; ++i) {
+      const size_t frame = frame_offset + i;
+      const float expected =
+          frame < kDelayFrames ? 0.0f : sample_at(frame - kDelayFrames);
+      EXPECT_NEAR(dest_span[i], expected, kTolerance);
+    }
+  }
+}
+
 TEST(ReverbConvolverTest, DelayedImpulseResponse) {
   base::test::TaskEnvironment task_environment;
   ScopedTestingPlatformSupport<TestingPlatformSupport> platform;

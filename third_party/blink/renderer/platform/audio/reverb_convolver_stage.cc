@@ -146,11 +146,7 @@ bool ReverbConvolverStage::Initialize(
   pre_read_write_index_ = 0;
   frames_processed_ = 0;  // total frames processed so far
 
-  size_t delay_buffer_size =
-      pre_delay_length_ < fft_size ? fft_size : pre_delay_length_;
-  delay_buffer_size = delay_buffer_size < render_slice_size ? render_slice_size
-                                                            : delay_buffer_size;
-  if (!pre_delay_buffer_.TryAllocate(delay_buffer_size)) {
+  if (!pre_delay_buffer_.TryAllocate(pre_delay_length_)) {
     return false;
   }
   return true;
@@ -162,8 +158,8 @@ void ReverbConvolverStage::Process(base::span<const float> source) {
   // Deal with pre-delay stream : note special handling of zero delay.
   base::span<const float> pre_delayed_source;
   base::span<float> pre_delayed_destination;
-  base::span<float> temporary_buffer;
-  bool is_temporary_buffer_safe = false;
+  base::span<float> temporary_buffer = temporary_buffer_.as_span();
+  bool is_temporary_buffer_safe = frames_to_process <= temporary_buffer.size();
   if (pre_delay_length_ > 0) {
     // Handles both the read case (call to process() ) and the write case
     // (memcpy() )
@@ -174,19 +170,13 @@ void ReverbConvolverStage::Process(base::span<const float> source) {
       return;
     }
 
-    is_temporary_buffer_safe = frames_to_process <= temporary_buffer_.size();
-
     pre_delayed_destination =
         pre_delay_buffer_.as_span().subspan(pre_read_write_index_);
     pre_delayed_source = pre_delayed_destination;
-    temporary_buffer = temporary_buffer_.as_span();
   } else {
     // Zero delay
     pre_delayed_destination = base::span<float>();
     pre_delayed_source = source;
-    temporary_buffer = pre_delay_buffer_.as_span();
-
-    is_temporary_buffer_safe = frames_to_process <= pre_delay_buffer_.size();
   }
 
   DCHECK(is_temporary_buffer_safe);
