@@ -71,7 +71,7 @@ bool FontFaceSetDocument::InActiveContext() const {
 }
 
 FontSelector* FontFaceSetDocument::GetFontSelector() const {
-  DCHECK(IsMainThread());
+  CHECK(IsMainThread());
   return GetDocument()->GetStyleEngine().GetFontSelector();
 }
 

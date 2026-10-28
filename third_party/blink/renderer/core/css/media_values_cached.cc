@@ -15,7 +15,7 @@ MediaValuesCached::MediaValuesCachedData::MediaValuesCachedData() = default;
 MediaValuesCached::MediaValuesCachedData::MediaValuesCachedData(
     Document& document)
     : MediaValuesCached::MediaValuesCachedData() {
-  DCHECK(IsMainThread());
+  CHECK(IsMainThread());
   LocalFrame* frame = document.GetFrame();
   // TODO(hiroshige): Clean up |frame->view()| conditions.
   DCHECK(!frame || frame->View());

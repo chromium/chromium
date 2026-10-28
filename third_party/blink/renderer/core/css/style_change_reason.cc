@@ -83,7 +83,7 @@ DEFINE_GLOBAL(, AtomicString, g_patching);
 DEFINE_GLOBAL(, AtomicString, g_unresolved);
 
 void Init() {
-  DCHECK(IsMainThread());
+  CHECK(IsMainThread());
 
   new (base::NotNullTag::kNotNull, (void*)&g_active) AtomicString(":active");
   new (base::NotNullTag::kNotNull, (void*)&g_active_view_transition)

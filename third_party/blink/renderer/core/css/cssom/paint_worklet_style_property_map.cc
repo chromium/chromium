@@ -60,7 +60,7 @@ class PaintWorkletStylePropertyMapIterationSource final
 bool BuildNativeValues(const ComputedStyle& style,
                        const Vector<CSSPropertyID>& native_properties,
                        PaintWorkletStylePropertyMap::CrossThreadData& data) {
-  DCHECK(IsMainThread());
+  CHECK(IsMainThread());
   for (const auto& property_id : native_properties) {
     // Silently drop shorthand properties.
     DCHECK_NE(property_id, CSSPropertyID::kInvalid);
@@ -90,7 +90,7 @@ bool BuildCustomValues(
     const Vector<AtomicString>& custom_properties,
     PaintWorkletStylePropertyMap::CrossThreadData& data,
     CompositorPaintWorkletInput::PropertyKeys& input_property_keys) {
-  DCHECK(IsMainThread());
+  CHECK(IsMainThread());
   for (const auto& property_name : custom_properties) {
     CSSPropertyRef ref(&property_name, document);
     std::unique_ptr<CrossThreadStyleValue> value =
@@ -129,7 +129,7 @@ PaintWorkletStylePropertyMap::BuildCrossThreadData(
     const Vector<CSSPropertyID>& native_properties,
     const Vector<AtomicString>& custom_properties,
     CompositorPaintWorkletInput::PropertyKeys& input_property_keys) {
-  DCHECK(IsMainThread());
+  CHECK(IsMainThread());
   PaintWorkletStylePropertyMap::CrossThreadData data;
   data.ReserveCapacityForSize(native_properties.size() +
                               custom_properties.size());

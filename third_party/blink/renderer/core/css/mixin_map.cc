@@ -10,7 +10,7 @@
 namespace blink {
 
 uint64_t MixinMap::AllocateMapIdentifier() {
-  DCHECK(IsMainThread());
+  CHECK(IsMainThread());
   static uint64_t next_map_identifier = 0;
   return next_map_identifier++;
 }
