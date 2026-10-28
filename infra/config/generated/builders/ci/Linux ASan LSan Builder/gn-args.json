@@ -1,6 +1,8 @@
 {
   "gn_args": {
+    "concurrent_links": 2,
     "dcheck_always_on": true,
+    "enable_fuzztest_fuzz": false,
     "fail_on_san_warnings": true,
     "is_asan": true,
     "is_component_build": false,
