@@ -1321,6 +1321,7 @@ video::-webkit-media-text-track-container {
     text-indent: 0;
     text-decoration: none;
     pointer-events: none;
+    -webkit-user-modify: read-only !important;
     user-select: none;
     word-break: break-word;
 }
@@ -1341,6 +1342,7 @@ video::-webkit-media-text-track-region {
     word-wrap: break-word;
     overflow-wrap: break-word;
     overflow: hidden;
+    -webkit-user-modify: read-only !important;
 }
 
 video::-webkit-media-text-track-region-container {
@@ -1349,6 +1351,7 @@ video::-webkit-media-text-track-region-container {
     display: flex;
     flex-flow: column;
     flex-direction: column;
+    -webkit-user-modify: read-only !important;
 }
 
 video::-webkit-media-text-track-region-container.scrolling {
@@ -1361,6 +1364,7 @@ video::-webkit-media-text-track-display {
     white-space: pre-wrap;
     box-sizing: border-box;
     flex: 0 0 auto;
+    -webkit-user-modify: read-only !important;
 }
 
 video::cue(:future) {
