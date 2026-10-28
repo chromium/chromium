@@ -689,7 +689,6 @@ void InvalidateForCanvasClipChange(LayoutObject* layout_object) {
 }
 
 inline bool ShouldBlockInlineScriptAttributeSet(
-    ExecutionContext* context,
     Element* target,
     const EventListener* listener,
     Element::AttributeModificationReason reason) {
@@ -700,12 +699,22 @@ inline bool ShouldBlockInlineScriptAttributeSet(
   bool modified_by_author =
       reason == Element::AttributeModificationReason::kDirectly ||
       reason == Element::AttributeModificationReason::kByParser;
-  ContentSecurityPolicy* csp =
-      context ? context->GetContentSecurityPolicy() : nullptr;
+
+  // A document created without a window (e.g. a document created by DOMParser,
+  // or an owner document of template contents) has an empty CSP list, even
+  // though the document's ExecutionContext may have a CSP.
+  LocalDOMWindow* window = target->GetDocument().domWindow();
+  if (!window) {
+    return false;
+  }
+
+  // Check the CSP list of the element's node document, which is held by the
+  // document's window.
+  ContentSecurityPolicy* csp = window->GetContentSecurityPolicy();
   return listener && modified_by_author && csp &&
          !csp->AllowInline(ContentSecurityPolicy::InlineType::kScriptAttribute,
                            target, listener->ScriptBody(), String(),
-                           context->Url().GetString(),
+                           window->Url().GetString(),
                            TextPosition::BelowRangePosition());
 }
 
@@ -14538,7 +14547,7 @@ void Element::SetElementAttributeEventListenerFromScriptBody(
   ExecutionContext* context = GetExecutionContext();
   EventListener* listener = JSEventHandlerForContentAttribute::Create(
       context, attribute_name, script_body, type);
-  if (!ShouldBlockInlineScriptAttributeSet(context, this, listener, reason)) {
+  if (!ShouldBlockInlineScriptAttributeSet(this, listener, reason)) {
     SetAttributeEventListener(event_type_name, listener);
   }
 }
@@ -14552,7 +14561,7 @@ void Element::SetDocumentAttributeEventListenerFromScriptBody(
   ExecutionContext* context = GetExecutionContext();
   EventListener* listener = JSEventHandlerForContentAttribute::Create(
       context, attribute_name, script_body, type);
-  if (!ShouldBlockInlineScriptAttributeSet(context, this, listener, reason)) {
+  if (!ShouldBlockInlineScriptAttributeSet(this, listener, reason)) {
     GetDocument().SetAttributeEventListener(event_type_name, listener);
   }
 }
@@ -14566,7 +14575,7 @@ void Element::SetWindowAttributeEventListenerFromScriptBody(
   ExecutionContext* context = GetExecutionContext();
   EventListener* listener = JSEventHandlerForContentAttribute::Create(
       context, attribute_name, script_body, type);
-  if (!ShouldBlockInlineScriptAttributeSet(context, this, listener, reason)) {
+  if (!ShouldBlockInlineScriptAttributeSet(this, listener, reason)) {
     GetDocument().SetWindowAttributeEventListener(event_type_name, listener);
   }
 }
