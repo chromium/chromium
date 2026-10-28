@@ -254,5 +254,4 @@ crbug.com/578553759 [ iPad Simulator ] ExternalURLSigninTestCase/testSignInAddAc
 crbug.com/541234336 CardUnmaskAuthenticationSelectionEgtest/testCardUnmaskAuthenticationSelectionAcceptanceButtonIsSetInitially [ Pass Failure ]
 crbug.com/541234336 CardUnmaskAuthenticationSelectionEgtest/testCardUnmaskAuthenticationSelectionShowsActivityIndicatorView [ Pass Failure ]
 crbug.com/541234336 CardUnmaskAuthenticationSelectionEgtest/testCardUnmaskAuthenticationSelectionAcceptanceButtonLabel [ Pass Failure ]
-crbug.com/578500873 [ Device ] GeminiCopresenceTestCase/testFloatyHiddenWhenOmniboxFocused [ Pass Failure ]
 crbug.com/571459477 [ Device ] ReadingListTestCase/testDeleteEntries [ Pass Failure ]
