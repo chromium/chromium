@@ -92,23 +92,24 @@ ClipboardJavaScriptFeature::GetScriptMessageHandlerName() const {
 void ClipboardJavaScriptFeature::ScriptMessageReceived(
     WebState* web_state,
     const ScriptMessage& message) {
-  // Expected `message.legacy_body` format:
+  // Expected `message.body` format:
   // {
   //   "command": "read"|"write"|"didFinishClipboardRead",
   //   "requestId": <number>,  // Only for "read" and "write".
   //   "frameId": <string>,
   // }
-  const base::DictValue* body = message.legacy_body()->GetIfDict();
-  if (!body) {
+  const ScriptMessageValue& message_body = message.body();
+  if (message_body.type() != base::Value::Type::DICT) {
     return;
   }
+  const ScriptMessageDictValue& body = message_body.GetDict();
 
-  const std::string* command = body->FindString(kCommandKey);
+  std::optional<std::string> command = body.FindString(kCommandKey);
   if (!command) {
     return;
   }
 
-  const std::string* frame_id = body->FindString(kFrameIdKey);
+  std::optional<std::string> frame_id = body.FindString(kFrameIdKey);
   if (!frame_id) {
     return;
   }
@@ -125,7 +126,7 @@ void ClipboardJavaScriptFeature::ScriptMessageReceived(
     }
   } else if (*command == kReadCommand || *command == kWriteCommand) {
     // In JavaScript, all numbers are doubles.
-    std::optional<double> request_id_double = body->FindDouble(kRequestIdKey);
+    std::optional<double> request_id_double = body.FindDouble(kRequestIdKey);
     if (!request_id_double) {
       return;
     }
