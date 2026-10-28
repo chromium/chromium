@@ -39,13 +39,13 @@ namespace {
 // Builds the service.
 std::unique_ptr<KeyedService> BuildService(
     SyntheticFieldTrialHelper* synthetic_field_trial_helper,
-    ProfileIOS* profile) {
-  CHECK(!profile->IsOffTheRecord());
+    ProfileIOS& profile) {
+  CHECK(!profile.IsOffTheRecord());
 
   // Give the opportunity for the test hook to override the factory from
   // the provider (allowing EG tests to use a fake TabGroupSyncService).
   if (auto tab_group_sync_service =
-          tests_hook::CreateTabGroupSyncService(profile)) {
+          tests_hook::CreateTabGroupSyncService(&profile)) {
     return tab_group_sync_service;
   }
 
@@ -68,7 +68,7 @@ std::unique_ptr<KeyedService> BuildService(
   std::unique_ptr<TabGroupSyncService> tab_group_sync_service =
       CreateTabGroupSyncService(
           ::GetChannel(), DataTypeStoreServiceFactory::GetForProfile(profile),
-          profile->GetPrefs(), device_info_tracker, opt_guide, identity_manager,
+          profile.GetPrefs(), device_info_tracker, opt_guide, identity_manager,
           personal_collaboration_data_service, std::move(collaboration_finder),
           synthetic_field_trial_helper, data_sharing_service->GetLogger());
 
@@ -89,7 +89,7 @@ std::unique_ptr<KeyedService> BuildService(
 }  // namespace
 
 // static
-TabGroupSyncServiceFactory::TestingFactory
+TabGroupSyncServiceFactory::TestingFactoryByRef
 TabGroupSyncServiceFactory::GetDefaultFactory() {
   // GetSyntheticFieldTrialHelper() returns a pointer to a singleton that is
   // never deallocated, so it is safe to use base::Unretained(...) here.
@@ -118,7 +118,7 @@ TabGroupSyncServiceFactory::TabGroupSyncServiceFactory(PassKey key)
 }
 
 std::unique_ptr<KeyedService>
-TabGroupSyncServiceFactory::BuildServiceInstanceFor(ProfileIOS* profile) const {
+TabGroupSyncServiceFactory::BuildServiceInstanceFor(ProfileIOS& profile) const {
   return BuildService(GetSyntheticFieldTrialHelper(), profile);
 }
 

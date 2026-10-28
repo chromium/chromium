@@ -19,11 +19,11 @@ class TabGroupSyncServiceFactory final
   explicit TabGroupSyncServiceFactory(PassKey key);
 
   // Return the default factory.
-  static TestingFactory GetDefaultFactory();
+  static TestingFactoryByRef GetDefaultFactory();
 
  private:
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const final;
+      ProfileIOS& profile) const final;
 
   // Called to report synthetic field trial on whether the client had a sync
   // tabgroup.
