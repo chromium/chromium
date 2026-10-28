@@ -87,6 +87,9 @@ class ProfileManagementDisclaimerService
     user_choice_for_testing_ = std::move(choice);
   }
 
+  // Registers a callback for testing without triggering a disclaimer flow.
+  void AddCallbackForTesting(base::OnceCallback<void(Profile*, bool)> callback);
+
   base::ScopedClosureRunner DisableManagementDisclaimerUntilReset();
   [[nodiscard]] base::ScopedClosureRunner
   AutoAcceptManagementDisclaimerUntilReset();

@@ -178,6 +178,13 @@ void ProfileManagementDisclaimerService::EnsureManagedProfileForAccount(
   MaybeShowEnterpriseManagementDisclaimer(account_id, access_point);
 }
 
+void ProfileManagementDisclaimerService::AddCallbackForTesting(
+    base::OnceCallback<void(Profile*, bool)> callback) {
+  CHECK_IS_TEST();
+  CHECK(callback);
+  state_->callbacks.AddUnsafe(std::move(callback));
+}
+
 const CoreAccountId& ProfileManagementDisclaimerService::
     GetAccountBeingConsideredForManagementIfAny() const {
   return state_->account_id;

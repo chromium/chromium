@@ -145,9 +145,6 @@
 -PreviewBrowserTest.ZoomUsageRecordedOnCancel
 -PreviewBrowserTest.ZoomUsageRecordedOnPromoteToNewTab
 
-# Flaky on Linux: crbug.com/487944765
--ProfileManagementDisclaimerServiceBrowserFocusBrowserTest.Test/Managed_EnforcedByPolicy_Cancel
-
 # Flaky on most bots: crbug.com/483092903
 -RecentActivityBubbleDialogViewActionBrowserTest.HandlesActionFocusTab
 -RecentActivityBubbleDialogViewActionBrowserTest.HandlesActionManageSharing
