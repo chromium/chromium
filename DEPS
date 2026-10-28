@@ -289,8 +289,7 @@ vars = {
 
   # reclient options.
   # download reclient binaries, required for 'use_reclient` gn arg.
-  # TODO(crbug.com/448517720): make it false by default.
-  'download_reclient': 'checkout_chromeos',
+  'download_reclient': False,
   # RBE project to download rewrapper config files for. Only needed if
   # different from the project used in 'rbe_instance'
   'rewrapper_cfg_project': Str(''),
