@@ -307,41 +307,43 @@ enum class UserAgentStringType {
   kMaxValue = kOverriden
 };
 
+// Load flags that may be present in BeginNavigationParams. These are all
+// cache-related flags, which Blink derives from the request's FetchCacheMode.
+// For renderer-initiated navigations, BeginNavigationParams come from the
+// renderer, so can't be trusted, and other load flags may have security
+// implications (e.g., net::LOAD_BYPASS_PROXY), so are cleared.
+constexpr int kAllowedBeginParamsLoadFlags =
+    net::LOAD_VALIDATE_CACHE | net::LOAD_BYPASS_CACHE |
+    net::LOAD_SKIP_CACHE_VALIDATION | net::LOAD_ONLY_FROM_CACHE |
+    net::LOAD_DISABLE_CACHE;
+
 // Returns the net load flags to use based on the navigation type.
-// TODO(clamy): Remove the blink code that sets the caching flags.
-void UpdateLoadFlagsWithCacheFlags(int* load_flags,
-                                   blink::mojom::NavigationType navigation_type,
-                                   bool is_post) {
+// TODO(crbug.com/578128190): Remove the blink code that sets the caching flags.
+int CalculateCacheLoadFlags(blink::mojom::NavigationType navigation_type,
+                            bool is_post) {
   switch (navigation_type) {
     case blink::mojom::NavigationType::RELOAD:
-      *load_flags |= net::LOAD_VALIDATE_CACHE;
-      break;
+      return net::LOAD_VALIDATE_CACHE;
     case blink::mojom::NavigationType::RELOAD_BYPASSING_CACHE:
-      *load_flags |= net::LOAD_BYPASS_CACHE;
-      break;
+      return net::LOAD_BYPASS_CACHE;
     case blink::mojom::NavigationType::RESTORE:
-      *load_flags |= net::LOAD_SKIP_CACHE_VALIDATION;
-      break;
+      return net::LOAD_SKIP_CACHE_VALIDATION;
     case blink::mojom::NavigationType::RESTORE_WITH_POST:
-      *load_flags |=
-          net::LOAD_ONLY_FROM_CACHE | net::LOAD_SKIP_CACHE_VALIDATION;
-      break;
+      return net::LOAD_ONLY_FROM_CACHE | net::LOAD_SKIP_CACHE_VALIDATION;
     case blink::mojom::NavigationType::SAME_DOCUMENT:
     case blink::mojom::NavigationType::DIFFERENT_DOCUMENT:
       if (is_post) {
-        *load_flags |= net::LOAD_VALIDATE_CACHE;
+        return net::LOAD_VALIDATE_CACHE;
       }
-      break;
+      return net::LOAD_NORMAL;
     case blink::mojom::NavigationType::HISTORY_SAME_DOCUMENT:
     case blink::mojom::NavigationType::HISTORY_DIFFERENT_DOCUMENT:
       if (is_post) {
-        *load_flags |=
-            net::LOAD_ONLY_FROM_CACHE | net::LOAD_SKIP_CACHE_VALIDATION;
-      } else {
-        *load_flags |= net::LOAD_SKIP_CACHE_VALIDATION;
+        return net::LOAD_ONLY_FROM_CACHE | net::LOAD_SKIP_CACHE_VALIDATION;
       }
-      break;
+      return net::LOAD_SKIP_CACHE_VALIDATION;
   }
+  NOTREACHED();
 }
 
 // This should match blink::ResourceRequest::needsHTTPOrigin.
@@ -1291,10 +1293,11 @@ std::unique_ptr<NavigationRequest> NavigationRequest::Create(
       has_rel_opener, std::nullopt /* script_tool_invocation_id */,
       /*script_injector_host=*/"");
 
-  // Shift-Reload forces bypassing caches and service workers.
+  // Shift-Reload forces bypassing caches and service workers. Note that
+  // UpdateLoadFlagsWithCacheFlags() will set net::LOAD_BYPASS_CACHE in this
+  // case, when called from the constructor.
   if (common_params->navigation_type ==
       blink::mojom::NavigationType::RELOAD_BYPASSING_CACHE) {
-    navigation_params->load_flags |= net::LOAD_BYPASS_CACHE;
     navigation_params->skip_service_worker = true;
   }
 
@@ -2083,10 +2086,29 @@ NavigationRequest::NavigationRequest(
   }
   commit_params_->is_browser_initiated = browser_initiated;
 
-  // Update the load flags with cache information.
-  UpdateLoadFlagsWithCacheFlags(&begin_params_->load_flags,
-                                common_params_->navigation_type,
-                                common_params_->method == "POST");
+  // Calculate load flags based on the navigation type. For renderer-initiated
+  // navigations, `begin_params_->load_flags` come from the renderer, so can't
+  // be trusted.
+  int load_flags = CalculateCacheLoadFlags(common_params_->navigation_type,
+                                           common_params_->method == "POST");
+  // The flags in `begin_params_` are expected to be a subset of those
+  // calculated above. Report any cases where that's not true, to make sure it's
+  // safe to stop relying on them.
+  // TODO(crbug.com/578128190): Remove load flags from BeginNavigationParams,
+  // and only use the flags calculated here.
+  if (begin_params_->load_flags & ~load_flags) {
+    SCOPED_CRASH_KEY_NUMBER("NavReq", "begin_params_load_flags",
+                            begin_params_->load_flags);
+    SCOPED_CRASH_KEY_NUMBER("NavReq", "calculated_load_flags", load_flags);
+    SCOPED_CRASH_KEY_NUMBER("NavReq", "navigation_type",
+                            static_cast<int>(common_params_->navigation_type));
+    SCOPED_CRASH_KEY_STRING32("NavReq", "method", common_params_->method);
+    SCOPED_CRASH_KEY_BOOL("NavReq", "from_begin_navigation",
+                          from_begin_navigation_);
+    base::debug::DumpWithoutCrashing();
+  }
+  begin_params_->load_flags =
+      load_flags | (begin_params_->load_flags & kAllowedBeginParamsLoadFlags);
 
   // Add necessary headers that may not be present in the
   // blink::mojom::BeginNavigationParams.
