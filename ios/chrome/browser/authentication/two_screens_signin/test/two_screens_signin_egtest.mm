@@ -206,10 +206,8 @@ void OpenNTPAndBackgroundAndForegroundApp() {
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
 }
 
-// Tests sign-in promo behavior in landscape. It should appears if and only if
-// the device is an ipad.
-// TODO(crbug.com/40266894): Need to enable this test.
-- (void)DISABLED_testNoSignInPromoInLandscapeMode {
+// Tests that the sign-in promo is visible in landscape mode.
+- (void)testSignInPromoInLandscapeMode {
   [EarlGrey rotateInterfaceToOrientation:UIInterfaceOrientationLandscapeLeft
                                    error:nil];
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
@@ -217,13 +215,7 @@ void OpenNTPAndBackgroundAndForegroundApp() {
 
   OpenNTPAndBackgroundAndForegroundApp();
 
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    VerifySigninPromoSufficientlyVisible();
-  } else {
-    [[EarlGrey
-        selectElementWithMatcher:chrome_test_util::SigninScreenPromoMatcher()]
-        assertWithMatcher:grey_notVisible()];
-  }
+  VerifySigninPromoSufficientlyVisible();
 }
 
 #pragma mark - Helpers
