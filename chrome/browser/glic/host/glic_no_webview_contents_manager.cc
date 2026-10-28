@@ -8,7 +8,6 @@
 
 #include "base/check.h"
 #include "base/json/string_escape.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/notreached.h"
@@ -33,6 +32,7 @@
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_instance.h"
 #include "chrome/browser/glic/public/glic_perf_traits_tracker.h"
+#include "chrome/browser/glic/public/glic_provider_metrics.h"
 #include "chrome/browser/glic/service/metrics/glic_instance_metrics.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/pwc/privileged_web_contents.h"
@@ -210,6 +210,8 @@ bool ShouldDisableLoadingOverlay(bool guest_main_page_loaded) {
 
 class GlicNoWebviewContentsManager::Metrics {
  public:
+  explicit Metrics(Profile* profile) : metric_reporter_(profile) {}
+
   void SetDisplayState(DisplayState prev_state,
                        DisplayState next_state,
                        std::optional<mojom::ErrorPanelType> active_error) {
@@ -224,29 +226,28 @@ class GlicNoWebviewContentsManager::Metrics {
 
     if (was_showing_overlay_or_loading && !is_showing_overlay_or_loading) {
       if (total_overlay_show_start_time_) {
-        base::UmaHistogramCustomTimes("Glic.Overlay.DisplayDuration",
-                                      now - *total_overlay_show_start_time_,
-                                      base::Milliseconds(1), base::Seconds(60),
-                                      50);
+        metric_reporter_.RecordCustomTimes(
+            "Overlay.DisplayDuration", now - *total_overlay_show_start_time_,
+            base::Milliseconds(1), base::Seconds(60), 50);
       }
       if (next_state == DisplayState::kShowingGuest) {
         if (loading_show_start_time_) {
-          base::UmaHistogramCustomTimes(
-              "Glic.Overlay.DisplayDuration.LoadingAndCompleted",
+          metric_reporter_.RecordCustomTimes(
+              "Overlay.DisplayDuration.LoadingAndCompleted",
               now - *loading_show_start_time_, base::Milliseconds(1),
               base::Seconds(60), 50);
         }
       } else {
         if (loading_show_start_time_) {
-          base::UmaHistogramCustomTimes("Glic.Overlay.DisplayDuration.Loading",
-                                        now - *loading_show_start_time_,
-                                        base::Milliseconds(1),
-                                        base::Seconds(60), 50);
+          metric_reporter_.RecordCustomTimes("Overlay.DisplayDuration.Loading",
+                                             now - *loading_show_start_time_,
+                                             base::Milliseconds(1),
+                                             base::Seconds(60), 50);
         }
         if (error_show_start_time_ && active_error_type_) {
-          base::UmaHistogramLongTimes(
+          metric_reporter_.RecordLongTimes(
               base::StrCat(
-                  {"Glic.Overlay.DisplayDuration.",
+                  {"Overlay.DisplayDuration.",
                    ErrorPanelTypeToHistogramSuffix(*active_error_type_)}),
               now - *error_show_start_time_);
         }
@@ -308,17 +309,16 @@ class GlicNoWebviewContentsManager::Metrics {
     // If an error occurred while the loading overlay was displayed, the loading
     // attempt did not finish.
     if (new_error.has_value() && loading_show_start_time_) {
-      base::UmaHistogramCustomTimes("Glic.Overlay.DisplayDuration.Loading",
-                                    now - *loading_show_start_time_,
-                                    base::Milliseconds(1), base::Seconds(60),
-                                    50);
+      metric_reporter_.RecordCustomTimes(
+          "Overlay.DisplayDuration.Loading", now - *loading_show_start_time_,
+          base::Milliseconds(1), base::Seconds(60), 50);
       loading_show_start_time_.reset();
     }
 
     // If an error panel was displayed and is now cleared or changed:
     if (active_error_type_.has_value() && error_show_start_time_) {
-      base::UmaHistogramLongTimes(
-          base::StrCat({"Glic.Overlay.DisplayDuration.",
+      metric_reporter_.RecordLongTimes(
+          base::StrCat({"Overlay.DisplayDuration.",
                         ErrorPanelTypeToHistogramSuffix(*active_error_type_)}),
           now - *error_show_start_time_);
       error_show_start_time_.reset();
@@ -334,6 +334,7 @@ class GlicNoWebviewContentsManager::Metrics {
   }
 
  private:
+  GlicMetricReporter metric_reporter_;
   std::optional<base::TimeTicks> total_overlay_show_start_time_;
   std::optional<base::TimeTicks> loading_show_start_time_;
   std::optional<base::TimeTicks> error_show_start_time_;
@@ -659,7 +660,7 @@ GlicNoWebviewContentsManager::GlicNoWebviewContentsManager(
     bool initially_hidden)
     : profile_(profile),
       enabling_(enabling),
-      metrics_(std::make_unique<Metrics>()),
+      metrics_(std::make_unique<Metrics>(profile)),
       guest_state_{GuestState::kLoading},
       overlay_manager_(profile, this, guest_state_, guest_main_page_loaded_),
       privileged_guest_contents_(pwc::PrivilegedWebContents::Create(
