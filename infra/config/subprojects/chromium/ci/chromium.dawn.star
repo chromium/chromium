@@ -1796,6 +1796,18 @@ ci.thin_tester(
             "webgpu_cts_shared_worker_tests": targets.remove(
                 reason = "We only need coverage on one GPU per OS, so remove from lower capacity configs.",
             ),
+            "webgpu_swiftshader_blink_web_tests": targets.remove(
+                reason = "SwiftShader coverage is provided by the Intel config which has more capacity. See crbug.com/578581697",
+            ),
+            "webgpu_swiftshader_blink_web_tests_with_backend_validation": targets.remove(
+                reason = "SwiftShader coverage is provided by the Intel config which has more capacity. See crbug.com/578581697",
+            ),
+            "webgpu_swiftshader_web_platform_cts_tests": targets.remove(
+                reason = "SwiftShader coverage is provided by the Intel config which has more capacity. See crbug.com/578581697",
+            ),
+            "webgpu_swiftshader_web_platform_cts_with_validation_tests": targets.remove(
+                reason = "SwiftShader coverage is provided by the Intel config which has more capacity. See crbug.com/578581697",
+            ),
         },
     ),
     targets_settings = targets.settings(
@@ -1912,6 +1924,18 @@ ci.thin_tester(
         #     ),
         #     "webgpu_cts_shared_worker_tests": targets.remove(
         #         reason = "We only need coverage on one GPU per OS, so remove from lower capacity configs.",
+        #     ),
+        #     "webgpu_swiftshader_blink_web_tests": targets.remove(
+        #         reason = "SwiftShader coverage is provided by the Intel config which has more capacity. See crbug.com/578581697",
+        #     ),
+        #     "webgpu_swiftshader_blink_web_tests_with_backend_validation": targets.remove(
+        #         reason = "SwiftShader coverage is provided by the Intel config which has more capacity. See crbug.com/578581697",
+        #     ),
+        #     "webgpu_swiftshader_web_platform_cts_tests": targets.remove(
+        #         reason = "SwiftShader coverage is provided by the Intel config which has more capacity. See crbug.com/578581697",
+        #     ),
+        #     "webgpu_swiftshader_web_platform_cts_with_validation_tests": targets.remove(
+        #         reason = "SwiftShader coverage is provided by the Intel config which has more capacity. See crbug.com/578581697",
         #     ),
         # },
     ),
@@ -2088,6 +2112,18 @@ ci.thin_tester(
             ),
             "webgpu_cts_shared_worker_tests": targets.remove(
                 reason = "We only need coverage on one GPU per OS, so remove from lower capacity configs.",
+            ),
+            "webgpu_swiftshader_blink_web_tests": targets.remove(
+                reason = "SwiftShader coverage is provided by the Intel config which has more capacity. See crbug.com/578581697",
+            ),
+            "webgpu_swiftshader_blink_web_tests_with_backend_validation": targets.remove(
+                reason = "SwiftShader coverage is provided by the Intel config which has more capacity. See crbug.com/578581697",
+            ),
+            "webgpu_swiftshader_web_platform_cts_tests": targets.remove(
+                reason = "SwiftShader coverage is provided by the Intel config which has more capacity. See crbug.com/578581697",
+            ),
+            "webgpu_swiftshader_web_platform_cts_with_validation_tests": targets.remove(
+                reason = "SwiftShader coverage is provided by the Intel config which has more capacity. See crbug.com/578581697",
             ),
         },
     ),
