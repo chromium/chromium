@@ -22,16 +22,25 @@ struct FakeModel {
   std::unique_ptr<tflite::FlatBufferModel> model;
 };
 
-// Loads the stateless identity Voice Isolation test model shipped with the
-// tests, whose two outputs equal its input. Returns nullptr if the model
-// cannot be loaded.
-std::unique_ptr<tflite::FlatBufferModel> LoadVoiceIsolationTestModel();
+// Gains of the two outputs of the stateless test model built by
+// BuildStatelessTestModel() after bias subtraction: the first (dereverberated)
+// output is `kStatelessModelDereverbGain * input` and the second
+// (denoising-only) output is `kStatelessModelDenoisingOnlyGain * input`.
+inline constexpr float kStatelessModelDereverbGain = 0.5f;
+inline constexpr float kStatelessModelDenoisingOnlyGain = 0.75f;
 
 // Loads the stateful Voice Isolation test model shipped with the tests, whose
 // recurrent state lives in resource variables. Its two outputs differ: after
 // the bias subtraction, the second (denoising-only) output is twice the first
 // (dereverberated) one. Returns nullptr if the model cannot be loaded.
-std::unique_ptr<tflite::FlatBufferModel> LoadStatefulVoiceIsolationTestModel();
+std::unique_ptr<tflite::FlatBufferModel> LoadVoiceIsolationTestModel();
+
+// Builds an in-memory stateless Voice Isolation test model whose two outputs
+// are affine functions of its input with different gains and non-zero constant
+// biases:
+//   dereverberated = kStatelessModelDereverbGain * input + bias_0
+//   denoising_only = kStatelessModelDenoisingOnlyGain * input + bias_1
+FakeModel BuildStatelessTestModel();
 
 // Builds a minimal FlatBuffer model containing a description string but no
 // subgraphs or operators. This passes FlatBuffer schema verification but fails

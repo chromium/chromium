@@ -735,7 +735,7 @@ TEST(TfLiteVoiceIsolation, ProcessAudioWorks) {
 // swapped weights give 1.9. DC and Nyquist bypass the model.
 TEST(TfLiteVoiceIsolation, ProcessAudioMatchesClosedForm) {
   std::unique_ptr<tflite::FlatBufferModel> model =
-      LoadStatefulVoiceIsolationTestModel();
+      LoadVoiceIsolationTestModel();
   ASSERT_NE(model, nullptr);
 
   ASSERT_OK_AND_ASSIGN(std::unique_ptr<TfLiteVoiceIsolation> voice_isolation,
@@ -760,7 +760,7 @@ TEST(TfLiteVoiceIsolation, ProcessAudioMatchesClosedForm) {
 
 TEST(TfLiteVoiceIsolation, ClearBuffersRestoresInitialState) {
   std::unique_ptr<tflite::FlatBufferModel> model =
-      LoadStatefulVoiceIsolationTestModel();
+      LoadVoiceIsolationTestModel();
   ASSERT_NE(model, nullptr);
 
   ASSERT_OK_AND_ASSIGN(std::unique_ptr<TfLiteVoiceIsolation> voice_isolation,
@@ -797,16 +797,24 @@ TEST(TfLiteVoiceIsolation, SpeechMaskStartsAtOne) {
   EXPECT_THAT(base::ToVector(voice_isolation->SpeechMask()), Each(1.0f));
 }
 
-// Both outputs of the test model equal its input, so the denoising-only output
-// equals the input DFTs and nothing is suppressed.
-TEST(TfLiteVoiceIsolation, SpeechMaskIsNearOneForIdentityModel) {
+// After bias subtraction, the denoising-only output of the stateless test model
+// scales the interior bins (50 Hz to 7950 Hz) by
+// `kStatelessModelDenoisingOnlyGain`, while DC and Nyquist bypass the model.
+// Away from the bypassed DC and Nyquist bins, the speech mask matches
+// `kStatelessModelDenoisingOnlyGain`.
+TEST(TfLiteVoiceIsolation, SpeechMaskMatchesStatelessModelDenoisingOnlyGain) {
   constexpr float kTolerance = 1e-3f;
-  std::unique_ptr<tflite::FlatBufferModel> model =
-      LoadVoiceIsolationTestModel();
-  ASSERT_NE(model, nullptr);
+  // DC (bin 0) and Nyquist (bin 160) bypass the model with gain 1, and the
+  // Hann window of MakeNoiseDfts() spreads the DC offset of the [0, 1) noise
+  // into bin 1. From 10 bins away from DC and Nyquist on, leakage from the
+  // bypassed bins changes the mask by less than `kTolerance`.
+  constexpr size_t kMinBinsFromDcAndNyquist = 10;
+  FakeModel fake_model = BuildStatelessTestModel();
+  ASSERT_NE(fake_model.model, nullptr);
 
-  ASSERT_OK_AND_ASSIGN(std::unique_ptr<TfLiteVoiceIsolation> voice_isolation,
-                       TfLiteVoiceIsolation::MaybeCreate(model.get()));
+  ASSERT_OK_AND_ASSIGN(
+      std::unique_ptr<TfLiteVoiceIsolation> voice_isolation,
+      TfLiteVoiceIsolation::MaybeCreate(fake_model.model.get()));
 
   const std::vector<std::vector<float>> masks = ProcessAndGetSpeechMasks(
       *voice_isolation, MakeNoiseDfts(kFirstNoiseSeed, /*dft_size=*/kDftSize,
@@ -814,7 +822,12 @@ TEST(TfLiteVoiceIsolation, SpeechMaskIsNearOneForIdentityModel) {
 
   for (size_t call = kFirstCheckedSpeechMaskCall; call < kNumSpeechMaskCalls;
        ++call) {
-    EXPECT_THAT(masks[call], Each(FloatNear(1.0f, kTolerance)))
+    const base::span<const float> interior_mask =
+        base::span(masks[call])
+            .subspan(kMinBinsFromDcAndNyquist,
+                     kSpeechMaskSize - 2 * kMinBinsFromDcAndNyquist);
+    EXPECT_THAT(interior_mask,
+                Each(FloatNear(kStatelessModelDenoisingOnlyGain, kTolerance)))
         << "call " << call;
   }
 }
@@ -825,7 +838,7 @@ TEST(TfLiteVoiceIsolation, SpeechMaskIsNearOneForIdentityModel) {
 // that of the mix ProcessAudio() returns.
 TEST(TfLiteVoiceIsolation, SpeechMaskIgnoresDereverberatedOutput) {
   std::unique_ptr<tflite::FlatBufferModel> model =
-      LoadStatefulVoiceIsolationTestModel();
+      LoadVoiceIsolationTestModel();
   ASSERT_NE(model, nullptr);
 
   ASSERT_OK_AND_ASSIGN(std::unique_ptr<TfLiteVoiceIsolation> voice_isolation,
@@ -854,7 +867,8 @@ TEST(TfLiteVoiceIsolation, SpeechMaskIgnoresDereverberatedOutput) {
     voice_isolation->ProcessAudio(input, output);
   };
 
-  // The first call primes the overlap-add history of the estimators.
+  // The first call primes the overlap-add history of the speech mask
+  // estimators.
   process_frame(/*frame=*/0);
 
   constexpr int kNumCheckedFrames = 3;

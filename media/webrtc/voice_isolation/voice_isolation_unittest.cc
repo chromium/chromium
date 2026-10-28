@@ -52,6 +52,14 @@ constexpr float kLeftLevel = 2.0f;
 constexpr float kRightLevel = 4.0f;
 constexpr float kMixedLevel = (kLeftLevel + kRightLevel) / 2;
 
+// Low-band passband gain of `BuildStatelessTestModel()` through
+// `TfLiteVoiceIsolation`, which mixes 0.9 of the dereverberated output with
+// 0.1 of the denoising-only output.
+constexpr float kDereverbMixWeight = 0.9f;
+constexpr float kStatelessModelLowBandGain =
+    kDereverbMixWeight * kStatelessModelDereverbGain +
+    (1.0f - kDereverbMixWeight) * kStatelessModelDenoisingOnlyGain;
+
 // 48 kHz stereo params with a fixed buffer size. Only the component layout or
 // `sample_rate` varies between tests.
 std::unique_ptr<VoiceIsolation> CreateWithPassthroughComponent(
@@ -171,7 +179,7 @@ TEST(VoiceIsolationTest, VoiceIsolationCanAdaptToAudioParameters) {
                          kComponentFrameSize);
 
   std::unique_ptr<tflite::FlatBufferModel> model =
-      LoadStatefulVoiceIsolationTestModel();
+      LoadVoiceIsolationTestModel();
   std::unique_ptr<VoiceIsolation> voice_isolation =
       VoiceIsolation::Create(model.get(), params);
   ASSERT_NE(voice_isolation, nullptr);
@@ -280,19 +288,21 @@ TEST(VoiceIsolationTest, TwoStageCreationSucceedsAndProcessesAudio) {
   EXPECT_GT(output_energy, 0.0f);
 }
 
-// The denoising-only output of the test model equals its input, so its speech
-// mask is 1 and the band split must keep the band above 8 kHz: the output
-// carries the energy of both a 7 kHz tone and a 16 kHz tone.
-TEST(VoiceIsolationTest, KeepsHighBandWithIdentityModel) {
+// After bias subtraction, the stateless test model scales the dereverberated
+// output by `kStatelessModelDereverbGain` and the denoising-only output by
+// `kStatelessModelDenoisingOnlyGain`. The low band (including the 7 kHz tone)
+// is scaled by `0.9 * kStatelessModelDereverbGain + 0.1 *
+// kStatelessModelDenoisingOnlyGain`, while the speech mask at 7 kHz scales the
+// 16 kHz high-band tone by `kStatelessModelDenoisingOnlyGain`.
+TEST(VoiceIsolationTest, KeepsHighBandWithStatelessModel) {
   constexpr int kSampleRate = kComponentFrameSize * kComponentFramesPerSecond;
   AudioParameters params(AudioParameters::AUDIO_PCM_LINEAR,
                          ChannelLayoutConfig::Stereo(), kSampleRate,
                          kComponentFrameSize);
 
-  std::unique_ptr<tflite::FlatBufferModel> model =
-      LoadVoiceIsolationTestModel();
+  FakeModel fake_model = BuildStatelessTestModel();
   std::unique_ptr<VoiceIsolation> voice_isolation =
-      VoiceIsolation::Create(model.get(), params);
+      VoiceIsolation::Create(fake_model.model.get(), params);
   ASSERT_NE(voice_isolation, nullptr);
 
   // Fill both channels with a 7 kHz tone, which sets the high band gain, plus
@@ -324,16 +334,24 @@ TEST(VoiceIsolationTest, KeepsHighBandWithIdentityModel) {
     voice_isolation->ProcessAudio(*input_bus, *output_bus);
   }
 
-  // Each output frame must keep the energy of both tones. Without the high
-  // band, it would only keep half of it.
+  // The two equal-amplitude tones are orthogonal, so the output-to-input
+  // energy ratio is the average of their squared gains. Without the high band,
+  // it would be only `kStatelessModelLowBandGain * kStatelessModelLowBandGain /
+  // 2.0f` (~0.138 instead of ~0.419).
+  constexpr float kHighBandGain = kStatelessModelDenoisingOnlyGain;
+  constexpr float kExpectedEnergyRatio =
+      (kStatelessModelLowBandGain * kStatelessModelLowBandGain +
+       kHighBandGain * kHighBandGain) /
+      2.0f;
   constexpr int kNumCheckedFrames = 5;
-  constexpr float kEnergyRatioTolerance = 0.1f;
+  constexpr float kEnergyRatioTolerance = 0.05f;
   for (int frame = 0; frame < kNumCheckedFrames; ++frame) {
     voice_isolation->ProcessAudio(*input_bus, *output_bus);
     const float output_energy = std::inner_product(
         output_bus->channel(0).begin(), output_bus->channel(0).end(),
         output_bus->channel(0).begin(), 0.0f);
-    EXPECT_NEAR(output_energy / input_energy, 1.0f, kEnergyRatioTolerance)
+    EXPECT_NEAR(output_energy / input_energy, kExpectedEnergyRatio,
+                kEnergyRatioTolerance)
         << "Frame " << frame;
   }
 }
@@ -404,7 +422,7 @@ TEST(VoiceIsolationTest, ClearBuffersMatchesFreshInstance) {
                          kComponentFrameSize);
 
   std::unique_ptr<tflite::FlatBufferModel> model =
-      LoadStatefulVoiceIsolationTestModel();
+      LoadVoiceIsolationTestModel();
   std::unique_ptr<VoiceIsolation> voice_isolation =
       VoiceIsolation::Create(model.get(), params);
   ASSERT_NE(voice_isolation, nullptr);
@@ -709,19 +727,20 @@ TEST(VoiceIsolationTest, AlgorithmicDelay) {
   EXPECT_EQ(vi_model->AlgorithmicDelay(), base::Milliseconds(20));
 }
 
-// The identity test model passes content below 7.5 kHz unchanged, so a
-// low-band pulse sent through the full VoiceIsolation pipeline comes out as
-// the input waveform delayed by the exact number of frames advertised by
+// After bias subtraction, the stateless test model scales bins below 7.5 kHz
+// uniformly by `0.9 * kStatelessModelDereverbGain + 0.1 *
+// kStatelessModelDenoisingOnlyGain` with zero phase shift, so a low-band pulse
+// sent through the full VoiceIsolation pipeline comes out as the scaled input
+// waveform delayed by the exact number of frames advertised by
 // AlgorithmicDelay().
 TEST(VoiceIsolationTest,
-     OutputIsInputDelayedByAlgorithmicDelayWithIdentityModel) {
+     OutputIsInputDelayedByAlgorithmicDelayWithStatelessModel) {
   AudioParameters params(AudioParameters::AUDIO_PCM_LINEAR,
                          ChannelLayoutConfig::Mono(), kSampleRateHz,
                          kComponentFrameSize);
-  std::unique_ptr<tflite::FlatBufferModel> model =
-      LoadVoiceIsolationTestModel();
+  FakeModel fake_model = BuildStatelessTestModel();
   std::unique_ptr<VoiceIsolation> voice_isolation =
-      VoiceIsolation::Create(model.get(), params);
+      VoiceIsolation::Create(fake_model.model.get(), params);
   ASSERT_NE(voice_isolation, nullptr);
 
   // Use a smooth 10 ms low-band pulse (1 kHz under a Hann^2 window) rather
@@ -729,9 +748,10 @@ TEST(VoiceIsolationTest,
   // ComputeHighBandGains() derives both high-band gains of a 20 ms call from
   // its first DFT, so when that first DFT is silent both gains are 0 and a
   // broadband transient loses its high band in the DFT where it starts. A
-  // Hann^2-windowed pulse keeps its energy inside the < 7.5 kHz passband of
-  // the identity model (the test passes for carrier frequencies up to ~6.2 kHz
-  // and fails from ~6.5 kHz as sidebands reach the 7.5 kHz crossfade).
+  // Hann^2-windowed pulse keeps its energy inside the 50 Hz to 7.5 kHz band
+  // where the stateless model applies a uniform gain (the test passes for
+  // carrier frequencies from ~200 Hz up to ~6.2 kHz and fails outside that
+  // range as sidebands reach the bypassed DC bin or the 7.5 kHz crossfade).
   constexpr size_t kNumBlocks = 8;
   constexpr size_t kTotalSamples = kNumBlocks * kComponentFrameSize;
   // 600 makes the pulse straddle the 960-sample boundary between STFT frames
@@ -757,12 +777,11 @@ TEST(VoiceIsolationTest,
       static_cast<size_t>(std::ranges::max_element(output) - output.begin());
   ASSERT_EQ(output_peak_index, kPulsePeakIndex + delay_frames);
 
-  // Every output sample must match the input delayed by `delay_frames`.
+  // Every output sample must match the scaled input delayed by `delay_frames`.
   std::vector<float> expected(kTotalSamples, 0.0f);
-  base::span(expected)
-      .subspan(delay_frames)
-      .copy_from_nonoverlapping(
-          base::span(input).first(kTotalSamples - delay_frames));
+  for (size_t i = 0; i < kTotalSamples - delay_frames; ++i) {
+    expected[i + delay_frames] = kStatelessModelLowBandGain * input[i];
+  }
   // 1e-6 covers float rounding through two STFT round trips.
   constexpr float kTolerance = 1e-6f;
   EXPECT_THAT(output,

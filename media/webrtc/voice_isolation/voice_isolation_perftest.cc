@@ -67,7 +67,7 @@ BenchmarkModel LoadBenchmarkModel() {
   const base::CommandLine& command_line =
       *base::CommandLine::ForCurrentProcess();
   if (!command_line.HasSwitch(kModelSwitch)) {
-    return {LoadStatefulVoiceIsolationTestModel(), kDefaultStoryName};
+    return {LoadVoiceIsolationTestModel(), kDefaultStoryName};
   }
 
   const base::FilePath model_path =
