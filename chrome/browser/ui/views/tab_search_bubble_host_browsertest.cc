@@ -32,6 +32,10 @@
 #include "chromeos/ui/frame/multitask_menu/multitask_menu_nudge_controller.h"
 #endif
 
+#if BUILDFLAG(IS_MAC)
+#include "ui/base/test/scoped_fake_nswindow_fullscreen.h"
+#endif
+
 class TabSearchBubbleHostBrowserTest : public InProcessBrowserTest {
  public:
   TabSearchBubbleHostBrowserTest() = default;
@@ -56,6 +60,13 @@ class TabSearchBubbleHostBrowserTest : public InProcessBrowserTest {
     run_loop.Run();
     ASSERT_EQ(nullptr, bubble_manager()->GetBubbleWidget());
   }
+
+ private:
+#if BUILDFLAG(IS_MAC)
+  // Fake the macOS fullscreen transition. browser_tests run in parallel and
+  // real AppKit fullscreen Space transitions are flaky there.
+  ui::test::ScopedFakeNSWindowFullscreen fake_fullscreen_;
+#endif
 };
 
 IN_PROC_BROWSER_TEST_F(TabSearchBubbleHostBrowserTest,
@@ -161,6 +172,13 @@ class FullscreenTabSearchBubbleDialogTest : public DialogBrowserTest {
     BrowserView* view = BrowserView::GetBrowserViewForBrowser(browser());
     view->CreateTabSearchBubble();
   }
+
+ private:
+#if BUILDFLAG(IS_MAC)
+  // Fake the macOS fullscreen transition. browser_tests run in parallel and
+  // real AppKit fullscreen Space transitions are flaky there.
+  ui::test::ScopedFakeNSWindowFullscreen fake_fullscreen_;
+#endif
 };
 
 IN_PROC_BROWSER_TEST_F(FullscreenTabSearchBubbleDialogTest, InvokeUi_default) {

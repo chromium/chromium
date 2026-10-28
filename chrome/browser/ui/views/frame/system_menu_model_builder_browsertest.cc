@@ -29,6 +29,10 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/menu_model.h"
 
+#if BUILDFLAG(IS_MAC)
+#include "ui/base/test/scoped_fake_nswindow_fullscreen.h"
+#endif
+
 namespace {
 // Returns true if there exists a visible command with specified id and
 // (optionally) label in the given menu. False otherwise.
@@ -234,6 +238,9 @@ constexpr int kSwitchToHorizontalTabStringId = IDS_SWITCH_TO_HORIZONTAL_TAB;
 
 IN_PROC_BROWSER_TEST_F(SystemMenuModelBuilderVerticalTabsTest,
                        VerticalTabsSystemMenu) {
+#if BUILDFLAG(IS_MAC)
+  ui::test::ScopedFakeNSWindowFullscreen fake_fullscreen;
+#endif
   auto* controller = tabs::VerticalTabStripStateController::From(browser());
   ASSERT_TRUE(controller);
 

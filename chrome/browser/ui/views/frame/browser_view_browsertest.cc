@@ -169,6 +169,10 @@
 #include "ui/ozone/public/ozone_platform.h"
 #endif
 
+#if BUILDFLAG(IS_MAC)
+#include "ui/base/test/scoped_fake_nswindow_fullscreen.h"
+#endif
+
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/boca/on_task/on_task_locked_controller.h"
 #include "chrome/browser/ui/ash/test_util.h"
@@ -1867,6 +1871,9 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, DragNotSupportedInFullscreen) {
     GTEST_SKIP() << "Wayland doesn't support drag and drop in fullscreen";
   }
 #endif
+#if BUILDFLAG(IS_MAC)
+  ui::test::ScopedFakeNSWindowFullscreen fake_fullscreen;
+#endif
   // Add enough tabs to create two split views.
   chrome::AddTabAt(browser(), GURL(), -1, true);
   // Add tabs to splits.
@@ -2069,6 +2076,8 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest,
 #if BUILDFLAG(IS_MAC)
 
 IN_PROC_BROWSER_TEST_F(BrowserViewTest, SplitViewFullscreenLayout) {
+  ui::test::ScopedFakeNSWindowFullscreen fake_fullscreen;
+
   // Disable always show toolbar in fullscreen
   chrome::SetAlwaysShowToolbarInFullscreenForTesting(browser(), false);
 

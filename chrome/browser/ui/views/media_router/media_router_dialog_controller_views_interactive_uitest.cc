@@ -37,6 +37,10 @@
 #include "chrome/browser/ui/views/global_media_controls/media_dialog_view.h"
 #endif
 
+#if BUILDFLAG(IS_MAC)
+#include "ui/base/test/scoped_fake_nswindow_fullscreen.h"
+#endif
+
 using content::WebContents;
 
 namespace media_router {
@@ -209,6 +213,11 @@ IN_PROC_BROWSER_TEST_F(GlobalMediaControlsDialogTest,
 
 IN_PROC_BROWSER_TEST_F(GlobalMediaControlsDialogTest,
                        FullscreenExitedOnGMCDialogOpen) {
+#if BUILDFLAG(IS_MAC)
+  // Real AppKit fullscreen transitions are asynchronous, so re-entering tab
+  // fullscreen below can race with the exit animation started by the dialog.
+  ui::test::ScopedFakeNSWindowFullscreen fake_fullscreen;
+#endif
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL("/simple_page.html")));
   CreateDialogController();

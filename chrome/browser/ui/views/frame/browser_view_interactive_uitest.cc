@@ -52,6 +52,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_commands_mac.h"
 #include "chrome/test/base/interactive_test_utils.h"
+#include "ui/base/test/scoped_fake_nswindow_fullscreen.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -123,6 +124,9 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, FullscreenClearsFocus) {
 // MacOS at this point in time.
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
 IN_PROC_BROWSER_TEST_F(BrowserViewTest, ImmersiveFullscreenViewTreeOrder) {
+#if BUILDFLAG(IS_MAC)
+  ui::test::ScopedFakeNSWindowFullscreen fake_fullscreen;
+#endif
   auto* const immersive_mode_controller =
       ImmersiveModeController::From(browser());
   ASSERT_TRUE(immersive_mode_controller);
