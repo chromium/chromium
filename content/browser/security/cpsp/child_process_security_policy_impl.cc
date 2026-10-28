@@ -250,26 +250,6 @@ enum ChildProcessSecurityGrants {
   DELETE_FILE_GRANT = DELETE_FILE_PERMISSION,
 };
 
-// https://crbug.com/646278 Valid blob URLs should contain canonically
-// serialized origins.
-bool IsMalformedBlobUrl(const GURL& url) {
-  if (!url.SchemeIsBlob()) {
-    return false;
-  }
-
-  // If the part after blob: survives a roundtrip through url::Origin, then
-  // it's a normal blob URL.
-  std::string canonical_origin = url::Origin::Create(url).Serialize();
-  canonical_origin.append(1, '/');
-  if (base::StartsWith(url.GetContentPiece(), canonical_origin,
-                       base::CompareCase::INSENSITIVE_ASCII)) {
-    return false;
-  }
-
-  // This is a malformed blob URL.
-  return true;
-}
-
 // Helper function that checks to make sure calls on
 // CanAccessDataForOrigin() are only made on valid threads.
 // TODO(acolwell): Expand the usage of this check to other
@@ -2160,6 +2140,25 @@ bool ChildProcessSecurityPolicyImpl::CanCommitURL(ChildProcessId child_id,
     }
     return can_commit;
   }
+}
+
+// static
+bool ChildProcessSecurityPolicyImpl::IsMalformedBlobUrl(const GURL& url) {
+  if (!url.SchemeIsBlob()) {
+    return false;
+  }
+
+  // If the part after blob: survives a roundtrip through url::Origin, then
+  // it's a normal blob URL.
+  std::string canonical_origin = url::Origin::Create(url).Serialize();
+  canonical_origin.append(1, '/');
+  if (base::StartsWith(url.GetContentPiece(), canonical_origin,
+                       base::CompareCase::INSENSITIVE_ASCII)) {
+    return false;
+  }
+
+  // This is a malformed blob URL.
+  return true;
 }
 
 bool ChildProcessSecurityPolicyImpl::CanReadFile(ChildProcessId child_id,

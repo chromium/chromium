@@ -333,6 +333,10 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
   // TODO(crbug.com/379869738): Remove this method when usages are ported.
   bool CanCommitURL(int child_id, const GURL& url);
 
+  // Valid blob URLs should contain canonically serialized origins. See
+  // https://crbug.com/40085381.
+  static bool IsMalformedBlobUrl(const GURL& url);
+
   // This function will check whether |origin| requires process isolation
   // within |isolation_context|, and if so, it will return true and put the
   // most specific matching isolated origin into |result|.

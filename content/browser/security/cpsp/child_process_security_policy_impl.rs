@@ -53,6 +53,17 @@ mod ffi {
         type GURL = super::url_rust::gurl::ffi::GURL;
 
         #[namespace = "content"]
+        type ChildProcessSecurityPolicyImpl;
+
+        // TODO(crbug.com/522872468): Call from `can_commit_url` and
+        // `can_request_url` once ported to Rust.
+        #[allow(dead_code)]
+        #[namespace = "content"]
+        #[Self = "ChildProcessSecurityPolicyImpl"]
+        #[cxx_name = "IsMalformedBlobUrl"]
+        fn is_malformed_blob_url(url: &GURL) -> bool;
+
+        #[namespace = "content"]
         type IsolatedOriginUtil;
 
         #[namespace = "content::ChildProcessSecurityPolicy"]
