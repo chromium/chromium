@@ -547,6 +547,7 @@
 #include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/digital_credentials/digital_identity_provider_desktop.h"
 #include "chrome/browser/direct_sockets/chrome_direct_sockets_delegate.h"
+#include "chrome/browser/headless/headless_command_processor.h"
 #include "chrome/browser/indigo/onboarding/indigo_onboarding_dialog.h"
 #include "chrome/browser/metrics/usage_scenario/chrome_responsiveness_calculator_delegate.h"
 #include "chrome/browser/new_tab_page/new_tab_page_util.h"
@@ -4930,7 +4931,11 @@ void ChromeContentBrowserClient::OverrideWebPreferences(
   }
 
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kDisableLazyLoading)) {
+          switches::kDisableLazyLoading)
+#if !BUILDFLAG(IS_ANDROID)
+      || headless::ShouldProcessHeadlessCommands()
+#endif
+  ) {
     web_prefs->lazy_load_enabled = false;
   } else {
     web_prefs->lazy_load_enabled =
