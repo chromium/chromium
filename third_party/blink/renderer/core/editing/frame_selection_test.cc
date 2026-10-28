@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/core/clipboard/data_transfer_access_policy.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
+#include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/dom/text.h"
 #include "third_party/blink/renderer/core/editing/ephemeral_range.h"
 #include "third_party/blink/renderer/core/editing/frame_caret.h"
@@ -1544,6 +1545,76 @@ TEST_P(FrameSelectionAutofillPreviewTest,
   EXPECT_EQ(clipboard_text, Selection().SelectedTextForClipboard());
   data_transfer->WriteSelection(Selection());
   EXPECT_EQ(drag_text, data_transfer->getData("text/plain"));
+}
+
+// Parameterized on whether date/time inputs use the multiple fields UI or the
+// chooser-only UI. Both render a previewed value as text in the UA shadow tree.
+class FrameSelectionTemporalAutofillPreviewTest
+    : public FrameSelectionTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  FrameSelectionTemporalAutofillPreviewTest()
+      : multiple_fields_ui_(GetParam()) {}
+
+ private:
+  ScopedInputMultipleFieldsUIForTest multiple_fields_ui_;
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         FrameSelectionTemporalAutofillPreviewTest,
+                         testing::Bool());
+
+TEST_P(FrameSelectionTemporalAutofillPreviewTest,
+       ClipboardAndDragExcludeTemporalInputAutofillPreview) {
+  // Author styles must not be able to make the preview selectable again.
+  InsertStyleElement(
+      "input::-webkit-datetime-edit,"
+      "input::-webkit-datetime-edit-fields-wrapper,"
+      "input::-webkit-datetime-edit-day-field,"
+      "input::-webkit-datetime-edit-month-field,"
+      "input::-webkit-datetime-edit-year-field,"
+      "input::-webkit-datetime-edit-text,"
+      "input::-webkit-date-and-time-value {"
+      "  user-select: text !important;"
+      "  -webkit-user-modify: read-write !important;"
+      "}");
+  Selection().SetSelection(
+      SetSelectionTextToBody(
+          "<div contenteditable style='user-select: text !important; "
+          "-webkit-user-modify: read-write !important'>"
+          "<div>^before</div><input id='accepted' type='month' value='2030-01'>"
+          "<input id='month' type='month'><input id='date' type='date'>"
+          "<div>after|</div></div>"),
+      SetSelectionOptions());
+  To<HTMLInputElement>(GetElementById("accepted"))
+      ->SetAutofillState(WebAutofillState::kAutofilled);
+  auto* month = To<HTMLInputElement>(GetElementById("month"));
+  auto* date = To<HTMLInputElement>(GetElementById("date"));
+  month->SetSuggestedValue("2038-09");
+  date->SetSuggestedValue("2039-10-17");
+  ASSERT_TRUE(month->IsPreviewed());
+  ASSERT_TRUE(date->IsPreviewed());
+  ASSERT_TRUE(month->Value().empty());
+  ASSERT_TRUE(date->Value().empty());
+  UpdateAllLifecyclePhasesForTest();
+  ASSERT_TRUE(month->UserAgentShadowRoot()->textContent().contains("2038"));
+  ASSERT_TRUE(date->UserAgentShadowRoot()->textContent().contains("2039"));
+
+  const String clipboard_text = Selection().SelectedTextForClipboard();
+  EXPECT_TRUE(clipboard_text.contains("before"));
+  EXPECT_TRUE(clipboard_text.contains("2030"));
+  EXPECT_TRUE(clipboard_text.contains("after"));
+  EXPECT_FALSE(clipboard_text.contains("2038"));
+  EXPECT_FALSE(clipboard_text.contains("2039"));
+
+  DataTransfer* data_transfer = DataTransfer::Create(
+      DataTransfer::kDragAndDrop, DataTransferAccessPolicy::kWritable,
+      DataObject::Create());
+  data_transfer->WriteSelection(Selection());
+  const String drag_text = data_transfer->getData("text/plain");
+  EXPECT_TRUE(drag_text.contains("2030"));
+  EXPECT_FALSE(drag_text.contains("2038"));
+  EXPECT_FALSE(drag_text.contains("2039"));
 }
 
 TEST_F(FrameSelectionTest, HasVisibleText) {

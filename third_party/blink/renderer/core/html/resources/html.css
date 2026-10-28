@@ -624,6 +624,31 @@ textarea::-internal-input-suggested {
     pointer-events: none !important;
 }
 
+/* Date and time inputs render a previewed value as text in their UA shadow
+   tree. Keep it out of copy and drag text, like the text control and <select>
+   previews. */
+input:-internal-autofill-previewed::-webkit-datetime-edit,
+input:-internal-autofill-previewed::-webkit-datetime-edit-ampm-field,
+input:-internal-autofill-previewed::-webkit-datetime-edit-day-field,
+input:-internal-autofill-previewed::-webkit-datetime-edit-hour-field,
+input:-internal-autofill-previewed::-webkit-datetime-edit-millisecond-field,
+input:-internal-autofill-previewed::-webkit-datetime-edit-minute-field,
+input:-internal-autofill-previewed::-webkit-datetime-edit-month-field,
+input:-internal-autofill-previewed::-webkit-datetime-edit-second-field,
+input:-internal-autofill-previewed::-webkit-datetime-edit-week-field,
+input:-internal-autofill-previewed::-webkit-datetime-edit-year-field,
+input:-internal-autofill-previewed::-webkit-datetime-edit-text,
+input:-internal-autofill-previewed::-webkit-datetime-edit-fields-wrapper {
+    user-select: none !important;
+    -webkit-user-modify: read-only !important;
+}
+/* Separate from the rule above because ::-webkit-date-and-time-value is
+   invalid in configurations which don't expose the pseudo-element. */
+input:-internal-autofill-previewed::-webkit-date-and-time-value {
+    user-select: none !important;
+    -webkit-user-modify: read-only !important;
+}
+
 @supports blink-feature(AutofillPreviewIgnoreAuthorFont) {
     input::-internal-input-suggested,
     textarea::-internal-input-suggested {
