@@ -43,6 +43,10 @@ namespace {
 // wins; (3) among allowlisted handlers a higher index in this array wins.
 // As a result, if multiple allowlisted versions of quickoffice are
 // installed the higher-indexed entry wins.
+//
+// The `allowlist` of the `mimeHandlerPrivate` feature holds the hashed IDs
+// of these extensions.
+// LINT.IfChange(MimeTypeHandlersAllowlist)
 constexpr const char* kMIMETypeHandlersAllowlist[] = {
     extension_misc::kPdfExtensionId,
 #if BUILDFLAG(IS_CHROMEOS)
@@ -51,6 +55,7 @@ constexpr const char* kMIMETypeHandlersAllowlist[] = {
     extension_misc::kQuickOfficeInternalExtensionId,
     extension_misc::kQuickOfficeExtensionId,
     extension_misc::kMimeHandlerPrivateTestExtensionId};
+// LINT.ThenChange(//extensions/common/api/_api_features.json:MimeHandlerPrivateAllowlist)
 
 constexpr SkColor kQuickOfficeExtensionBackgroundColor =
     SkColorSetRGB(241, 241, 241);
