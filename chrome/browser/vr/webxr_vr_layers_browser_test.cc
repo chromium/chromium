@@ -269,6 +269,18 @@ WEBXR_VR_ALL_RUNTIMES_BROWSER_TEST_F(TestWebGpuProjectionLayer) {
 }
 
 #if BUILDFLAG(ENABLE_CARDBOARD)
+IN_PROC_BROWSER_TEST_F(WebXrVrCardboardBrowserTest,
+                       TestProjectionLayerWithoutLayersFeature) {
+  LoadFileAndAwaitInitialization("test_openxr_projection_layer");
+  EnterSessionWithUserGestureOrFail();
+
+  WaitOnJavaScriptStep();
+  AssertNoJavaScriptErrors();
+
+  EndSessionOrFail();
+  EndTest();
+}
+
 IN_PROC_BROWSER_TEST_F(WebXrVrCardboardBrowserTest, TestWebGpuProjectionLayer) {
 #if BUILDFLAG(IS_ANDROID)
   if (base::android::android_info::sdk_int() <
