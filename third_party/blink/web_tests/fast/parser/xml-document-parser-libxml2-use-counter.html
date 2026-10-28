@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<link rel="author" href="mailto:masonf@chromium.org">
+<link rel="help" href="https://crbug.com/441911594">
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+
+<script>
+const kXMLDocumentParserLibxml2 = 6052;
+
+test(() => {
+  internals.clearUseCounter(document, kXMLDocumentParserLibxml2);
+  const parser = new DOMParser();
+  const xmlDoc = parser.parseFromString('<root/>', 'text/xml');
+  assert_false(internals.isUseCounted(document, kXMLDocumentParserLibxml2),
+      'DOMParser uses Rust XML parser (XMLRustForNonXslt) and should not count kXMLDocumentParserLibxml2 on outer document');
+  assert_false(internals.isUseCounted(xmlDoc, kXMLDocumentParserLibxml2),
+      'DOMParser uses Rust XML parser (XMLRustForNonXslt) and should not count kXMLDocumentParserLibxml2 on parsed document');
+
+  const root = xmlDoc.documentElement;
+  root.innerHTML = '<child/>';
+  assert_true(internals.isUseCounted(document, kXMLDocumentParserLibxml2),
+      'XML fragment parsing (innerHTML on XML element) uses libxml2 and counts kXMLDocumentParserLibxml2');
+}, 'kXMLDocumentParserLibxml2 is not counted for DOMParser (Rust), but is counted for XML fragment parsing (libxml2)');
+</script>

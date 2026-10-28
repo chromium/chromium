@@ -5368,6 +5368,7 @@ enum WebFeature {
   kStickyPopOutVideoAdDetected = 6049,
   kDeviceBoundSessionRegistrationObserver = 6050,
   kV8BigInt = 6051,
+  kXMLDocumentParserLibxml2 = 6052,
 
   // Add new features immediately above this line. Don't change the existing
   // numbers of any item, and don't reuse removed slots. Also don't add extra

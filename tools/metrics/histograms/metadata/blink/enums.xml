@@ -6873,6 +6873,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="6049" label="StickyPopOutVideoAdDetected"/>
   <int value="6050" label="DeviceBoundSessionRegistrationObserver"/>
   <int value="6051" label="V8BigInt"/>
+  <int value="6052" label="XMLDocumentParserLibxml2"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->

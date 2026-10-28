@@ -900,6 +900,7 @@ XMLDocumentParser::XMLDocumentParser(Document& document,
       script_start_position_(TextPosition::BelowRangePosition()),
       parsing_fragment_(false) {
   CHECK(!RuntimeEnabledFeatures::XMLParsingRustEnabled());
+  UseCounter::Count(document_, WebFeature::kXMLDocumentParserLibxml2);
   // This is XML being used as a document resource.
   if (frame_view && IsA<XMLDocument>(document))
     UseCounter::Count(document, WebFeature::kXMLDocument);
@@ -929,6 +930,7 @@ XMLDocumentParser::XMLDocumentParser(DocumentFragment* fragment,
   // CHECK(!RuntimeEnabledFeatures::XMLParsingRustEnabled()) here when there is
   // a Rust implementation for ParseDocumentFagment() and this is no longer
   // reached.
+  UseCounter::Count(document_, WebFeature::kXMLDocumentParserLibxml2);
 
   // Step 2 of
   // https://html.spec.whatwg.org/C/#xml-fragment-parsing-algorithm
