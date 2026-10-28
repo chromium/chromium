@@ -65,6 +65,7 @@ enum class ActorJavaScriptCall {
   kScrollTo,
   kSelect,
   kType,
+  kTypeSubmitWithEnterFallback,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/ios/histograms.xml:IOSActorJavaScriptCall,//ios/chrome/browser/intelligence/actor/tools/public/metrics.mm:IOSActorJavaScriptCall)
 

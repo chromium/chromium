@@ -56,6 +56,8 @@ class TypeToolJavaScriptTestBase : public web::JavascriptTest {
     web::JavascriptTest::SetUp();
 
     AddGCrWebScript();
+    AddUserScript(@"autofill_form_features");
+    AddUserScript(@"autofill_controller");
     AddUserScript(@"dom_node_ids_test");
     AddUserScript(@"type_tool");
 
@@ -95,12 +97,12 @@ class TypeToolJavaScriptTestBase : public web::JavascriptTest {
 
     NSString* call_api_script = base::SysUTF8ToNSString(base::StringPrintf(
         R"(__gCrWeb.getRegisteredApi('type_tool').getFunction()"
-        R"('type')({coordinate: {x: %d, y: %d, pixelType: %d}}, '%s', %d, %s))",
-        x, y, pixelType, text.c_str(), typeMode,
-        followByEnter ? "true" : "false"));
+        R"('type')({coordinate: {x: %d, y: %d, pixelType: %d}}, '%s', %d))",
+        x, y, pixelType, text.c_str(), typeMode));
 
     id result = web::test::ExecuteJavaScript(web_view(), call_api_script);
     NSDictionary* resultDict = base::apple::ObjCCast<NSDictionary>(result);
+    MaybeSubmitWithEnterFallback(resultDict, followByEnter);
     return resultDict;
   }
 
@@ -110,12 +112,36 @@ class TypeToolJavaScriptTestBase : public web::JavascriptTest {
                              bool followByEnter) {
     NSString* script = base::SysUTF8ToNSString(base::StringPrintf(
         R"(__gCrWeb.getRegisteredApi('type_tool').getFunction()"
-        R"('type')({contentNodeId: %d}, '%s', %d, %s))",
-        nodeId, text.c_str(), typeMode, followByEnter ? "true" : "false"));
+        R"('type')({contentNodeId: %d}, '%s', %d))",
+        nodeId, text.c_str(), typeMode));
 
     id result = web::test::ExecuteJavaScript(web_view(), script);
     NSDictionary* resultDict = base::apple::ObjCCast<NSDictionary>(result);
+    MaybeSubmitWithEnterFallback(resultDict, followByEnter);
     return resultDict;
+  }
+
+  NSDictionary* SubmitWithEnterFallback(int field_renderer_id) {
+    NSString* enter_script = base::SysUTF8ToNSString(
+        base::StringPrintf("window.__gCrWeb.getRegisteredApi('type_tool')"
+                           ".getFunction('submitWithEnterFallback')(%d);",
+                           field_renderer_id));
+    return base::apple::ObjCCast<NSDictionary>(
+        web::test::ExecuteJavaScript(web_view(), enter_script));
+  }
+
+  void MaybeSubmitWithEnterFallback(NSDictionary* dict_result,
+                                    bool follow_by_enter) {
+    if (follow_by_enter && dict_result &&
+        [dict_result[@"resultCode"] intValue] ==
+            static_cast<int>(TypeToolResultCode::kOk)) {
+      ASSERT_NE(dict_result[@"fieldRendererId"], nil);
+      int field_renderer_id = [dict_result[@"fieldRendererId"] intValue];
+      NSDictionary* enter_dict = SubmitWithEnterFallback(field_renderer_id);
+      ASSERT_NE(enter_dict, nil);
+      EXPECT_EQ([enter_dict[@"resultCode"] intValue],
+                static_cast<int>(TypeToolResultCode::kOk));
+    }
   }
 
   std::vector<EventInfo> GetCapturedEvents() {
@@ -807,5 +833,75 @@ INSTANTIATE_TEST_SUITE_P(
     ::testing::Values("keydown", "keypress", "beforeinput"),
     [](const ::testing::TestParamInfo<TypeToolPreventDefaultTest::ParamType>&
            info) { return std::string(info.param); });
+
+// Tests that `type` returns a valid `fieldRendererId` and that calling
+// `submitWithEnterFallback` with that ID dispatches the synthetic `Enter`
+// sequence and submits the form.
+TEST_F(TypeToolJavaScriptTestBase,
+       SubmitWithEnterFallback_DispatchesEnterAndSubmitsForm) {
+  NSDictionary<NSString*, id>* result = TypeByCoordinate(
+      /*selector=*/"form > input", /*pixelType=*/1, /*text=*/"submit",
+      /*typeMode=*/3, /*followByEnter=*/false);
+
+  ASSERT_NE(result, nil);
+  NSNumber* result_code =
+      base::apple::ObjCCast<NSNumber>(result[@"resultCode"]);
+  ASSERT_NE(result_code, nil);
+  EXPECT_EQ(result_code.intValue, static_cast<int>(TypeToolResultCode::kOk));
+
+  NSNumber* field_renderer_id =
+      base::apple::ObjCCast<NSNumber>(result[@"fieldRendererId"]);
+  ASSERT_NE(field_renderer_id, nil);
+  EXPECT_GT(field_renderer_id.intValue, 0);
+  EXPECT_EQ(GetCapturedEvents(), ExpectedEvents(/*followByEnter=*/false));
+  EXPECT_FALSE(IsFormSubmitted());
+
+  NSDictionary* fallback_result =
+      SubmitWithEnterFallback(field_renderer_id.intValue);
+  ASSERT_NE(fallback_result, nil);
+  NSNumber* fallback_code =
+      base::apple::ObjCCast<NSNumber>(fallback_result[@"resultCode"]);
+  ASSERT_NE(fallback_code, nil);
+  EXPECT_EQ(fallback_code.intValue, static_cast<int>(TypeToolResultCode::kOk));
+  EXPECT_EQ(GetCapturedEvents(), ExpectedEvents(/*followByEnter=*/true));
+  EXPECT_TRUE(IsFormSubmitted());
+}
+
+// Tests that `submitWithEnterFallback()` returns `kTypeTargetNotElement` when
+// called with an unknown `fieldRendererId` or when the typed element has been
+// detached from the DOM.
+TEST_F(TypeToolJavaScriptTestBase,
+       SubmitWithEnterFallback_UnknownOrDetachedElement_ReturnsError) {
+  NSDictionary* unknown_result = SubmitWithEnterFallback(999999);
+  ASSERT_NE(unknown_result, nil);
+  NSNumber* unknown_code =
+      base::apple::ObjCCast<NSNumber>(unknown_result[@"resultCode"]);
+  ASSERT_NE(unknown_code, nil);
+  EXPECT_EQ(unknown_code.intValue,
+            static_cast<int>(TypeToolResultCode::kTypeTargetNotElement));
+
+  NSDictionary<NSString*, id>* type_result = TypeByCoordinate(
+      /*selector=*/"form > input", /*pixelType=*/1, /*text=*/"submit",
+      /*typeMode=*/3, /*followByEnter=*/false);
+  ASSERT_NE(type_result, nil);
+  NSNumber* field_renderer_id =
+      base::apple::ObjCCast<NSNumber>(type_result[@"fieldRendererId"]);
+  ASSERT_NE(field_renderer_id, nil);
+
+  (void)web::test::ExecuteJavaScript(
+      web_view(), @"document.querySelector('form > input').remove();"
+                  @"window.capturedEvents = [];");
+
+  NSDictionary* detached_result =
+      SubmitWithEnterFallback(field_renderer_id.intValue);
+  ASSERT_NE(detached_result, nil);
+  NSNumber* detached_code =
+      base::apple::ObjCCast<NSNumber>(detached_result[@"resultCode"]);
+  ASSERT_NE(detached_code, nil);
+  EXPECT_EQ(detached_code.intValue,
+            static_cast<int>(TypeToolResultCode::kTypeTargetNotElement));
+  EXPECT_TRUE(GetCapturedEvents().empty());
+  EXPECT_FALSE(IsFormSubmitted());
+}
 
 }  // namespace actor

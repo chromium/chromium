@@ -6,6 +6,9 @@
  * @fileoverview Logic for performing type actions on elements.
  */
 
+import {RENDERER_ID_NOT_SET} from '//components/autofill/ios/form_util/resources/fill_constants.js';
+import {getUniqueID} from '//components/autofill/ios/form_util/resources/fill_util.js';
+import {getElementByUniqueID, setUniqueIDIfNeeded} from '//components/autofill/ios/form_util/resources/renderer_id.js';
 import type {ActionTarget, Coordinate} from '//ios/chrome/browser/intelligence/actor/tools/model/resources/actor_tool_utils.js';
 import {getElementFromPoint, isCoordinateTarget, isNodeIdTarget} from '//ios/chrome/browser/intelligence/actor/tools/model/resources/actor_tool_utils.js';
 import {getNodeById} from '//ios/chrome/browser/intelligence/proto_wrappers/resources/dom_node_ids.js';
@@ -30,6 +33,18 @@ enum TypeToolResultCode {
   ELEMENT_DISABLED = 6,
 }
 // LINT.ThenChange(//ios/chrome/browser/intelligence/actor/tools/model/type_tool_java_script_feature.h:TypeToolResultCode)
+
+/**
+ * Result returned by the `type_tool` entrypoints (`type` and
+ * `submitWithEnterFallback`), including the optional unique renderer ID
+ * assigned via `setUniqueIDIfNeeded` to the resolved editable element
+ * (`<input>`, `<textarea>`, or `contentEditable`).
+ */
+interface TypeResult {
+  resultCode: number;
+  message: string;
+  fieldRendererId?: number;
+}
 
 /**
  * Writes `text` into `element` based on its type (`value` for
@@ -158,18 +173,75 @@ function resolveLeafEditableElement(element: HTMLElement): HTMLElement|null {
 }
 
 /**
+ * Focuses `leafElement` (or its root `contentEditable` host first, if
+ * `leafElement` is an editable descendant).
+ *
+ * Per the HTML spec, only the root editing host is focusable by default, not
+ * editable descendants like `<p>` or `<span>`:
+ * https://html.spec.whatwg.org/multipage/interaction.html#editing-host
+ * https://html.spec.whatwg.org/multipage/interaction.html#the-tabindex-attribute
+ * https://html.spec.whatwg.org/multipage/interaction.html#dom-focus
+ *
+ * Focusing `editingHost` first activates the editing host; calling
+ * `leafElement.focus()` afterward shifts focus if `leafElement` is itself
+ * focusable (e.g., a nested `<input>`) and is a no-op otherwise.
+ */
+function focusEditableElement(leafElement: HTMLElement): void {
+  let editingHost = leafElement;
+  let parent = editingHost.parentElement;
+  while (parent instanceof HTMLElement && parent.isContentEditable) {
+    editingHost = parent;
+    parent = editingHost.parentElement;
+  }
+  editingHost.focus();
+  if (leafElement !== editingHost) {
+    leafElement.focus();
+  }
+}
+
+/**
+ * Dispatches synthetic `Enter` keyboard/input events on `leafElement` and
+ * triggers implicit form submission via `requestSubmit()` if `Enter` was not
+ * canceled and `leafElement` is a text-field `<input>` with an associated form.
+ */
+function dispatchEnterAndSubmitForm(leafElement: HTMLElement): void {
+  const enterAccepted = simulateEventsAndCommitValue(
+      leafElement, {
+        bubbles: true,
+        cancelable: true,
+        key: 'Enter',
+        code: 'Enter',
+        keyCode: 13,
+        which: 13,
+      },
+      /*newValue=*/ null);
+  // Synthetic `Enter` key events are untrusted and do not trigger the
+  // browser's default implicit form submission on text-field `<input>`
+  // elements:
+  // https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#implicit-submission
+  // Submit only if `Enter` was not canceled via `preventDefault()`.
+  if (enterAccepted && leafElement instanceof HTMLInputElement &&
+      isTextField(leafElement) && leafElement.form) {
+    try {
+      leafElement.form.requestSubmit();
+    } catch (e) {
+      // Fail open for any `requestSubmit()` errors (e.g. form detached from
+      // the page before we submit it).
+    }
+  }
+}
+
+/**
  * Updates the text in element and sends events to simulate manual typing.
  * @param element The target element.
  * @param text The text to type.
  * @param mode The type mode (1=DELETE_EXISTING, 2=PREPEND, 3=APPEND) from
  *             optimization_guide::Action::TypeAction::TypeMode in
  *             components/optimization_guide/proto/features/actions_data.proto.
- * @param followByEnter Whether to press enter after typing.
  * @return an object containing the result of the type attempt.
  */
 function updateElementAndDispatchTypeEvents(
-    element: HTMLElement, text: string, mode: number,
-    followByEnter: boolean): {resultCode: number, message: string} {
+    element: HTMLElement, text: string, mode: number): TypeResult {
   const leafElement = resolveLeafEditableElement(element);
   if (!leafElement) {
     return {
@@ -216,60 +288,47 @@ function updateElementAndDispatchTypeEvents(
   // Focus the element, following Desktop's example which clicks on the input
   // element:
   // https://source.chromium.org/chromium/chromium/src/+/main:chrome/renderer/actor/type_tool.cc;l=486;drc=b36c618599df1c588a7485ace1f89e82a8cf2ee5.
-  //
-  // Per the HTML spec, only the root editing host is focusable by default, not
-  // editable descendants like `<p>` or `<span>`:
-  // https://html.spec.whatwg.org/multipage/interaction.html#editing-host
-  // https://html.spec.whatwg.org/multipage/interaction.html#the-tabindex-attribute
-  // https://html.spec.whatwg.org/multipage/interaction.html#dom-focus
-  //
-  // Focusing `editingHost` first activates the editing host; calling
-  // `leafElement.focus()` afterward shifts focus if `leafElement` is itself
-  // focusable (e.g., a nested `<input>`) and is a no-op otherwise.
-  let editingHost = leafElement;
-  let parent = editingHost.parentElement;
-  while (parent instanceof HTMLElement && parent.isContentEditable) {
-    editingHost = parent;
-    parent = editingHost.parentElement;
-  }
-  editingHost.focus();
-  if (leafElement !== editingHost) {
-    leafElement.focus();
-  }
+  focusEditableElement(leafElement);
+
+  setUniqueIDIfNeeded(leafElement as any);
+  const uniqueIdStr = getUniqueID(leafElement);
+  const parsedId =
+      uniqueIdStr !== RENDERER_ID_NOT_SET ? Number(uniqueIdStr) : NaN;
+  const fieldRendererId = Number.isFinite(parsedId) ? parsedId : undefined;
 
   simulateEventsAndCommitValue(
       leafElement, {bubbles: true, cancelable: true}, newText);
 
-  if (followByEnter) {
-    const enterAccepted = simulateEventsAndCommitValue(
-        leafElement, {
-          bubbles: true,
-          cancelable: true,
-          key: 'Enter',
-          code: 'Enter',
-          keyCode: 13,
-          which: 13,
-        },
-        /*newValue=*/ null);
-    // Synthetic `Enter` key events are untrusted and do not trigger the
-    // browser's default implicit form submission on text-field `<input>`
-    // elements:
-    // https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#implicit-submission
-    // Submit only if `Enter` was not canceled via `preventDefault()`.
-    if (enterAccepted && leafElement instanceof HTMLInputElement &&
-        isTextField(leafElement) && leafElement.form) {
-      try {
-        leafElement.form.requestSubmit();
-      } catch (e) {
-        // Fail open for any `requestSubmit()` errors (e.g. form detached from
-        // the page before we submit it).
-      }
-    }
-  }
-
   return {
     resultCode: TypeToolResultCode.OK,
     message: 'Dispatched type events.',
+    ...(fieldRendererId !== undefined ? {fieldRendererId} : {}),
+  };
+}
+
+/**
+ * Fallback for `followByEnter` when native keystroke auto-submission did not
+ * dispatch a native Return keystroke to the first responder. Looks up the
+ * element by `fieldRendererId`, ensures it has focus, and dispatches the
+ * synthetic `Enter` key sequence and `requestSubmit()` (if applicable).
+ *
+ * @param fieldRendererId The unique renderer ID of the typed element.
+ * @return An object containing the result of the fallback submission attempt.
+ */
+function submitWithEnterFallback(fieldRendererId: number): TypeResult {
+  const element = getElementByUniqueID(fieldRendererId);
+  if (!(element instanceof HTMLElement) || !element.isConnected) {
+    return {
+      resultCode: TypeToolResultCode.TYPE_TARGET_NOT_ELEMENT,
+      message:
+          `No connected HTMLElement found with unique ID ${fieldRendererId}.`,
+    };
+  }
+  focusEditableElement(element);
+  dispatchEnterAndSubmitForm(element);
+  return {
+    resultCode: TypeToolResultCode.OK,
+    message: 'Dispatched fallback Enter events.',
   };
 }
 
@@ -278,12 +337,10 @@ function updateElementAndDispatchTypeEvents(
  * @param coordinate The target coordinate.
  * @param text The text to type.
  * @param mode The type mode.
- * @param followByEnter Whether to press enter after typing.
  * @return An object containing the result of the type attempt.
  */
 function typeByCoordinate(
-    coordinate: Coordinate, text: string, mode: number,
-    followByEnter: boolean): {resultCode: number, message: string} {
+    coordinate: Coordinate, text: string, mode: number): TypeResult {
   const {element} = getElementFromPoint(coordinate);
 
   if (!element || !(element instanceof HTMLElement)) {
@@ -293,7 +350,7 @@ function typeByCoordinate(
     };
   }
 
-  return updateElementAndDispatchTypeEvents(element, text, mode, followByEnter);
+  return updateElementAndDispatchTypeEvents(element, text, mode);
 }
 
 /**
@@ -301,12 +358,9 @@ function typeByCoordinate(
  * @param nodeId The DOM node ID of the target element.
  * @param text The text to type.
  * @param mode The type mode.
- * @param followByEnter Whether to press enter after typing.
  * @return an object containing the result of the type attempt.
  */
-function typeByNodeId(
-    nodeId: number, text: string, mode: number,
-    followByEnter: boolean): {resultCode: number, message: string} {
+function typeByNodeId(nodeId: number, text: string, mode: number): TypeResult {
   const node = getNodeById(nodeId, window);
   if (!node) {
     return {
@@ -327,7 +381,7 @@ function typeByNodeId(
     };
   }
 
-  return updateElementAndDispatchTypeEvents(element, text, mode, followByEnter);
+  return updateElementAndDispatchTypeEvents(element, text, mode);
 }
 
 /**
@@ -335,18 +389,13 @@ function typeByNodeId(
  * @param target The action target (coordinate or node ID).
  * @param text The text to type.
  * @param mode The type mode.
- * @param followByEnter Whether to press enter.
  * @return an object containing the result of the type attempt.
  */
-function type(
-    target: ActionTarget, text: string, mode: number, followByEnter: boolean): {
-  resultCode: number,
-  message: string,
-} {
+function type(target: ActionTarget, text: string, mode: number): TypeResult {
   if (isNodeIdTarget(target)) {
-    return typeByNodeId(target.contentNodeId, text, mode, followByEnter);
+    return typeByNodeId(target.contentNodeId, text, mode);
   } else if (isCoordinateTarget(target)) {
-    return typeByCoordinate(target.coordinate, text, mode, followByEnter);
+    return typeByCoordinate(target.coordinate, text, mode);
   }
 
   return {
@@ -357,4 +406,5 @@ function type(
 
 const typeToolApi = new CrWebApi('type_tool');
 typeToolApi.addFunction('type', type);
+typeToolApi.addFunction('submitWithEnterFallback', submitWithEnterFallback);
 gCrWeb.registerApi(typeToolApi);

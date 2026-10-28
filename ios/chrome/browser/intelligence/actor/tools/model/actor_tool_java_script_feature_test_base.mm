@@ -14,6 +14,7 @@
 #import "ios/web/common/features.h"
 #import "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/test/js_test_util.h"
+#import "ios/web/public/web_state.h"
 
 namespace actor {
 
@@ -28,6 +29,11 @@ ActorToolJavaScriptFeatureTestBase::ActorToolJavaScriptFeatureTestBase()
 
 void ActorToolJavaScriptFeatureTestBase::SetUp() {
   IOSChromeTestWithWebState::SetUp();
+  // Force creation of the WebState's container view and keep the render
+  // process alive in the windowed container so WebKit does not throttle or
+  // suspend `LoadHtml()` when unparented.
+  web_state()->GetView();
+  web_state()->SetKeepRenderProcessAlive(true);
   // We load a real HTML page so that we can get and use the main WebFrame in
   // these tests. Using a fake WebFrame would require us to inject and
   // redeclare the dependent JavaScriptFeatures in each test suite.

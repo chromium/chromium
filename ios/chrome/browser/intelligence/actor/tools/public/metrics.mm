@@ -33,6 +33,9 @@ std::string_view GetJavaScriptExecutionDurationHistogramName(
       return "IOS.Actor.Tools.JavaScriptExecutionDuration.Select";
     case ActorJavaScriptCall::kType:
       return "IOS.Actor.Tools.JavaScriptExecutionDuration.Type";
+    case ActorJavaScriptCall::kTypeSubmitWithEnterFallback:
+      return "IOS.Actor.Tools.JavaScriptExecutionDuration."
+             "TypeSubmitWithEnterFallback";
   }
   NOTREACHED();
 }
@@ -56,6 +59,9 @@ std::string_view GetJavaScriptResultCodeHistogramName(
       return "IOS.Actor.Tools.JavaScriptResultCode.Select";
     case ActorJavaScriptCall::kType:
       return "IOS.Actor.Tools.JavaScriptResultCode.Type";
+    case ActorJavaScriptCall::kTypeSubmitWithEnterFallback:
+      return "IOS.Actor.Tools.JavaScriptResultCode."
+             "TypeSubmitWithEnterFallback";
   }
   NOTREACHED();
 }

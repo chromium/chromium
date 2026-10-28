@@ -80,7 +80,13 @@ INSTANTIATE_TEST_SUITE_P(
         HistogramNameTestCase{
             "Type", ActorJavaScriptCall::kType,
             "IOS.Actor.Tools.JavaScriptExecutionDuration.Type",
-            "IOS.Actor.Tools.JavaScriptResultCode.Type"}),
+            "IOS.Actor.Tools.JavaScriptResultCode.Type"},
+        HistogramNameTestCase{"TypeSubmitWithEnterFallback",
+                              ActorJavaScriptCall::kTypeSubmitWithEnterFallback,
+                              "IOS.Actor.Tools.JavaScriptExecutionDuration."
+                              "TypeSubmitWithEnterFallback",
+                              "IOS.Actor.Tools.JavaScriptResultCode."
+                              "TypeSubmitWithEnterFallback"}),
     [](const ::testing::TestParamInfo<HistogramNameTestCase>& info) {
       return info.param.test_name;
     });

@@ -77,6 +77,8 @@ chromium-metrics-reviews@google.com.
   <variant name="ScrollTo" summary="scroll to action execution"/>
   <variant name="Select" summary="select action execution"/>
   <variant name="Type" summary="type action execution"/>
+  <variant name="TypeSubmitWithEnterFallback"
+      summary="type action fallback to requestSubmit and send an Enter event"/>
 </variants>
 
 <!-- LINT.ThenChange(//ios/chrome/browser/intelligence/actor/tools/public/actor_tool_types.h:IOSActorJavaScriptCall,//ios/chrome/browser/intelligence/actor/tools/public/metrics.mm:IOSActorJavaScriptCall) -->

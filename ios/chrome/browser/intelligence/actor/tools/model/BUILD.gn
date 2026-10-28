@@ -323,6 +323,7 @@ optimize_ts("type_tool_ts") {
 
   deps = [
     ":actor_tool_utils_ts",
+    "//components/autofill/ios/form_util:fill_js_dependencies",
     "//ios/chrome/browser/intelligence/proto_wrappers:dom_node_ids_ts",
     "//ios/web/public/js_messaging:gcrweb",
     "//ios/web/public/js_messaging:util_scripts",
@@ -581,6 +582,7 @@ source_set("actor_tool_java_script_feature_test_base") {
     "//ios/chrome/browser/intelligence/features",
     "//ios/chrome/test:ios_chrome_test_with_web_state",
     "//ios/web/common:features",
+    "//ios/web/public",
     "//ios/web/public/js_messaging",
     "//ios/web/public/test:util",
     "//testing/gtest",
@@ -663,7 +665,9 @@ source_set("unit_tests") {
     "//components/autofill/core/browser/actor",
     "//components/autofill/core/browser/actor:test_support",
     "//components/autofill/core/browser/integrators/actor:actor_form_filling_types",
+    "//components/autofill/core/common",
     "//components/autofill/core/common:features",
+    "//components/autofill/ios/browser:autofill_js",
     "//components/autofill/ios/browser:test_support",
     "//components/autofill/ios/browser:util",
     "//components/autofill/ios/common",
