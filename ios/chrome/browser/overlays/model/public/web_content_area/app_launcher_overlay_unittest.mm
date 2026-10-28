@@ -198,3 +198,30 @@ TEST_F(AppLauncherOverlayTest, ShortcutsURLRequestAlertSetup) {
   EXPECT_NSEQ(l10n_util::GetNSString(IDS_IOS_OPEN_ANOTHER_APP_BLOCK),
               cancel_button_config.title);
 }
+
+// Tests that the alert overlay request is set correctly for a launch request
+// to open the App Store from incognito.
+TEST_F(AppLauncherOverlayTest, AppStoreFromIncognitoRequestAlertSetup) {
+  std::unique_ptr<OverlayRequest> request =
+      OverlayRequest::CreateWithConfig<AppLaunchConfirmationRequest>(
+          app_launcher_overlays::AppLaunchConfirmationRequestCause::
+              kOpenAppStoreFromIncognito);
+  AlertRequest* config = request->GetConfig<AlertRequest>();
+  ASSERT_TRUE(config);
+
+  EXPECT_NSEQ(l10n_util::GetNSString(IDS_IOS_OPEN_APP_STORE_FROM_INCOGNITO),
+              config->message());
+
+  // There is an OK button and a Cancel button in app launch alerts.
+  ASSERT_EQ(2U, config->button_configs().size());
+  const ButtonConfig& ok_button_config = config->button_configs()[0][0];
+  const ButtonConfig& cancel_button_config = config->button_configs()[1][0];
+
+  EXPECT_EQ(UIAlertActionStyleDefault, ok_button_config.style);
+  EXPECT_NSEQ(l10n_util::GetNSString(IDS_IOS_OPEN_ANOTHER_APP_ALLOW),
+              ok_button_config.title);
+
+  EXPECT_EQ(UIAlertActionStyleCancel, cancel_button_config.style);
+  EXPECT_NSEQ(l10n_util::GetNSString(IDS_IOS_OPEN_ANOTHER_APP_BLOCK),
+              cancel_button_config.title);
+}

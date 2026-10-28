@@ -5675,6 +5675,9 @@ You can restart anytime.
       <message name="IDS_IOS_OPEN_ANOTHER_APP_FROM_INCOGNITO" desc="Alert to let the user know that the website is trying to open another application from incognito. [iOS only]">
         This site is trying to open an application. This will take you out of Incognito.
       </message>
+      <message name="IDS_IOS_OPEN_APP_STORE_FROM_INCOGNITO" desc="Alert to let the user know that the website is trying to open the App Store from incognito. [iOS only]">
+        This site is trying to open the App Store. This will take you out of Incognito.
+      </message>
       <message name="IDS_IOS_OPEN_CHROME_SETTINGS" desc="Text of the primary button to open chrome settings page. [iOS only]">
         Open Settings
       </message>

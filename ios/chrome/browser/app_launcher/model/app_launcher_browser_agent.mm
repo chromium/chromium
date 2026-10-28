@@ -89,6 +89,11 @@ void RecordAppLaunchRequestMetrics(
                             user_accepted);
       break;
     case app_launcher_overlays::AppLaunchConfirmationRequestCause::
+        kOpenAppStoreFromIncognito:
+      UMA_HISTOGRAM_BOOLEAN(
+          "Tab.ExternalApplicationOpened.AppStoreFromIncognito", user_accepted);
+      break;
+    case app_launcher_overlays::AppLaunchConfirmationRequestCause::
         kNoUserInteraction:
       UMA_HISTOGRAM_BOOLEAN("Tab.ExternalApplicationOpened.NoUserInteraction",
                             user_accepted);

@@ -616,7 +616,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Tab.ExternalApplicationOpened{Cause}"
-    enum="ExternalLauncherOption" expires_after="2026-04-05">
+    enum="ExternalLauncherOption" expires_after="2027-04-26">
   <owner>olivierrobin@chromium.org</owner>
   <owner>bling-team@google.com</owner>
   <summary>
@@ -624,6 +624,8 @@ chromium-metrics-reviews@google.com.
     interacted with the prompt.
   </summary>
   <token key="Cause">
+    <variant name=".AppStoreFromIncognito"
+        summary="Request to open the App Store from Incognito."/>
     <variant name=".Failed" summary="External application opening failed."/>
     <variant name=".FromIncognito" summary="Request from Incognito."/>
     <variant name=".Generic" summary="Misc request bucket."/>
