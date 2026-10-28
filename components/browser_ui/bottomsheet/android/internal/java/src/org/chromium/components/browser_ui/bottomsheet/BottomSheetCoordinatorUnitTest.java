@@ -3346,4 +3346,43 @@ public class BottomSheetCoordinatorUnitTest {
         assertEquals(48, mBottomSheet.getContentBottomPadding());
         mKeyboardInsetSupplier.set(0);
     }
+
+    @Test
+    public void testWrapContent_RecomputesHeightAndOffsetOnLayoutChange() {
+        final int[] desiredHeight = new int[] {100};
+        final int[] measureCount = new int[] {0};
+        View contentView =
+                new View(mActivity) {
+                    @Override
+                    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+                        measureCount[0]++;
+                        setMeasuredDimension(
+                                MeasureSpec.getSize(widthMeasureSpec),
+                                View.resolveSize(desiredHeight[0], heightMeasureSpec));
+                    }
+                };
+
+        BottomSheetContent content =
+                buildContent(/* supportsLargeFormFactor= */ false, 0.5f, HeightMode.WRAP_CONTENT);
+        when(content.showHandlebar()).thenReturn(false);
+        when(content.getContentView()).thenReturn(contentView);
+
+        mBottomSheet.showContent(content);
+        mBottomSheet.setSheetState(SheetState.FULL, false);
+
+        assertEquals(100f, mBottomSheet.getCurrentOffsetPx(), MathUtils.EPSILON);
+        assertEquals(100f, mBottomSheet.getSheetHeightForState(SheetState.FULL), MathUtils.EPSILON);
+        int initialMeasureCount = measureCount[0];
+
+        desiredHeight[0] = 180;
+        assertEquals(100f, mBottomSheet.getSheetHeightForState(SheetState.FULL), MathUtils.EPSILON);
+        assertEquals(initialMeasureCount, measureCount[0]);
+
+        contentView.layout(0, 0, SHEET_CONTAINER_WIDTH, 180);
+        mBottomSheet.endAnimations();
+
+        assertEquals(180f, mBottomSheet.getCurrentOffsetPx(), MathUtils.EPSILON);
+        assertEquals(180f, mBottomSheet.getSheetHeightForState(SheetState.FULL), MathUtils.EPSILON);
+        assertEquals(initialMeasureCount + 1, measureCount[0]);
+    }
 }

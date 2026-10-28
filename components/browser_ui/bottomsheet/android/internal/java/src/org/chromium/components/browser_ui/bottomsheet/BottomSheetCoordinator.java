@@ -413,9 +413,6 @@ class BottomSheetCoordinator
         }
 
         boolean insetOrHeightChanged = updateViewportAndBottomInset(previousHeight);
-        if (insetOrHeightChanged) {
-            invalidateContentDesiredHeight();
-        }
         if (!maybeRevertStateOnLayoutChange() && insetOrHeightChanged) {
             resettleSheetOnContainerChange(keyboardDelegate);
         }
@@ -452,6 +449,9 @@ class BottomSheetCoordinator
         boolean insetOrHeightChanged =
                 previousHeight != mContainerHeight || mPreviousBottomInset != e2eBottomInset;
         mPreviousBottomInset = e2eBottomInset;
+        if (insetOrHeightChanged) {
+            invalidateContentDesiredHeight();
+        }
         return insetOrHeightChanged;
     }
 
@@ -1199,10 +1199,6 @@ class BottomSheetCoordinator
      */
     @VisibleForTesting
     float getSheetHeightForState(@SheetState int state) {
-        if (isFullHeightWrapContent() && state == SheetState.FULL) {
-            ensureContentDesiredHeightIsComputed();
-        }
-
         return getRatioForState(state) * getMaxSheetHeight();
     }
 
@@ -1446,7 +1442,6 @@ class BottomSheetCoordinator
         // Listen for layout/size changes.
         content.getContentView().addOnLayoutChangeListener(this);
 
-        invalidateContentDesiredHeight();
         ensureContentIsWrapped(/* animate= */ true);
 
         // HALF state is forbidden when wrapping the content.
@@ -1571,7 +1566,6 @@ class BottomSheetCoordinator
             int oldBottom) {
         // When there is a device rotation, mContentWidth needs to be updated before the new
         // view is drawn.
-        invalidateContentDesiredHeight();
         ensureContentIsWrapped(/* animate= */ true);
 
         // If the sheet height changes mid-animation, make sure we animate to that height.
@@ -1674,6 +1668,7 @@ class BottomSheetCoordinator
     }
 
     private void ensureContentIsWrapped(boolean animate) {
+        invalidateContentDesiredHeight();
         @SheetState int currentState = getSheetState();
         if (currentState == SheetState.HIDDEN || currentState == SheetState.PEEK) return;
 
