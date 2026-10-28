@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/content_suggestions/ui/content_suggestions_view_controller.h"
 
+#import "base/functional/bind.h"
+#import "base/task/sequenced_task_runner.h"
 #import "components/ntp_tiles/constants.h"
 #import "ios/chrome/browser/content_suggestions/model/content_suggestions_metrics_recorder.h"
 #import "ios/chrome/browser/content_suggestions/most_visited_tiles/public/most_visited_tiles_constants.h"
@@ -166,7 +168,10 @@ constexpr CGFloat kStackViewSpacing = 12.0;
   _mostVisitedCollectionView = collectionView;
   __weak __typeof(self) weakSelf = self;
   collectionView.onContentSizeChanged = ^(CGSize) {
-    [weakSelf.audience contentSuggestionsWasUpdated];
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(^{
+          [weakSelf.audience contentSuggestionsWasUpdated];
+        }));
   };
 
   _mostVisitedView =
