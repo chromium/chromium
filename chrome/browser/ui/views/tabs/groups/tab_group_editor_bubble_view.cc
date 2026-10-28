@@ -803,11 +803,7 @@ TabGroupEditorBubbleView::BuildEphemeralGroupButtons() {
                                    views::MaximumFlexSizeRule::kUnbounded)
               .WithWeight(1));
 
-  const gfx::Insets control_insets = GetControlInsets();
-  button_row->SetProperty(
-      views::kMarginsKey,
-      gfx::Insets::TLBR(control_insets.top(), control_insets.left(), 0,
-                        control_insets.right()));
+  button_row->SetProperty(views::kMarginsKey, GetControlInsets());
 
   auto cancel_button = std::make_unique<views::MdTextButton>(
       base::BindRepeating(&TabGroupEditorBubbleView::CancelEphemeralGroup,
