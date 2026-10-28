@@ -56,5 +56,4 @@
   (subpath "/System/Library/Extensions")  ; https://crbug.com/515280
 )
 
-(if (not (maybe-disable-metal-shader-cache))
-  (maybe-allow-metal-shader-cache-access))
+(maybe-allow-metal-shader-cache-access)

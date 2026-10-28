@@ -273,7 +273,7 @@ TEST_F(SandboxMacTest, ProxyResolverInitializesSandbox) {
 
 constexpr char kTestHelperBundleIdPrefix[] = "org.chromium.test.gpu_cache.";
 
-MULTIPROCESS_TEST_MAIN(GpuMetalCacheRestrictedProcess) {
+MULTIPROCESS_TEST_MAIN(MetalShaderCacheRestrictedProcess) {
   std::string helper_bundle_id = GetExtraDataValue();
   CHECK(!helper_bundle_id.empty());
 
@@ -361,16 +361,20 @@ MULTIPROCESS_TEST_MAIN(GpuMetalCacheRestrictedProcess) {
   return 0;
 }
 
-// Verifies that the GPU process sandbox restricts Darwin user directory access
-// to only known Metal shader cache files and directories in the Darwin user
-// cache dir:
+class SandboxMacMetalShaderCacheTest
+    : public SandboxMacTest,
+      public testing::WithParamInterface<sandbox::mojom::Sandbox> {};
+
+// Verifies that the GPU and on-device model execution sandboxes restrict
+// Darwin user directory access to only known Metal shader cache files and
+// directories in the Darwin user cache dir:
 // - Allows creating allowed directories (com.apple.metalfe,
 //   com.apple.gpuarchiver, com.apple.metal, and subdirectories).
 // - Allows creating, writing, and reading allowed cache files
 //   (modules.timestamp, functions.data/list, and libraries.data/list).
 // - Denies creating unauthorized directories or files in the cache directory.
 // - Denies creating unauthorized files in the Darwin temp or user directories.
-TEST_F(SandboxMacTest, GpuDarwinUserDirsRestricted) {
+TEST_P(SandboxMacMetalShaderCacheTest, DarwinUserDirsRestricted) {
   // Provide a ~random bundle ID to avoid collisions when running tests in
   // parallel.
   extra_data_ = base::StrCat(
@@ -388,7 +392,7 @@ TEST_F(SandboxMacTest, GpuDarwinUserDirsRestricted) {
       helper_dir));
 
   ExecuteWithParams(
-      "GpuMetalCacheRestrictedProcess", sandbox::mojom::Sandbox::kGpu,
+      "MetalShaderCacheRestrictedProcess", GetParam(),
       /*append_temp_dir_suffix=*/false,
       base::BindOnce(
           [](const std::string& bundle_id,
@@ -398,6 +402,12 @@ TEST_F(SandboxMacTest, GpuDarwinUserDirsRestricted) {
           },
           extra_data_));
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    SandboxMacMetalShaderCacheTest,
+    testing::Values(sandbox::mojom::Sandbox::kGpu,
+                    sandbox::mojom::Sandbox::kOnDeviceModelExecution));
 
 MULTIPROCESS_TEST_MAIN(RendererPidinfoRestrictedProcess) {
   CheckCreateSeatbeltServer();
