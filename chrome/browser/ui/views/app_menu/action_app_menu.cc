@@ -245,16 +245,6 @@ void ActionAppMenu::RunMenu(views::Widget* parent,
   PopulateMenu(root_, menu_manager_->GetAppMenuRoot());
   root_->GetSubmenu()->set_use_scroll_bar(true);
 
-  // Temporary code to test search functionality while the key event routing
-  // design is aligned on. Prefills the search bar with the query from the
-  // `kChroMenuSearchQuery` feature param.
-  if (search_bar_) {
-    const std::string query = features::kChroMenuSearchQuery.Get();
-    if (!query.empty()) {
-      search_bar_->SetText(base::UTF8ToUTF16(query));
-    }
-  }
-
   int32_t types = views::MenuRunner::HAS_MNEMONICS;
   // Forward the keyboard-related flags, so that whenever the menu is opened
   // with a key press it shows mnemonic underlines. This also selects the first
@@ -288,6 +278,17 @@ void ActionAppMenu::RunMenu(views::Widget* parent,
       menu_height = root_->GetSubmenu()->GetPreferredSize({}).height();
     }
     metrics_.RecordMenuHeightPercentage(menu_height, screen_height);
+  }
+
+  // Temporary code to test search functionality while the key event routing
+  // design is aligned on. Prefills the search bar with the query from the
+  // `kChroMenuSearchQuery` feature param. Done once the menu is shown so the
+  // results go through the same path as a typed query.
+  if (search_bar_ && IsShowing()) {
+    const std::string query = features::kChroMenuSearchQuery.Get();
+    if (!query.empty()) {
+      search_bar_->SetText(base::UTF8ToUTF16(query));
+    }
   }
 }
 
@@ -431,6 +432,7 @@ void ActionAppMenu::OnMenuClosed(views::MenuItemView* menu) {
   }
 
   search_bar_ = nullptr;
+  menu_width_lock_.RunAndReset();
   has_notification_header_ = false;
   action_to_execute_on_close_.reset();
   command_to_action_map_.clear();
@@ -526,6 +528,9 @@ std::optional<SkColor> ActionAppMenu::GetLabelColor(int id) const {
 }
 
 int ActionAppMenu::GetMaxWidthForMenu(views::MenuItemView* menu) {
+  if (menu == root_ && menu_width_lock_) {
+    return menu->GetSubmenu()->GetScrollViewContainer()->width();
+  }
   return ChromeLayoutProvider::Get()->GetDistanceMetric(
       DISTANCE_ACTION_APP_MENU_MAX_WIDTH);
 }
@@ -609,6 +614,9 @@ bool ActionAppMenu::ShouldCloseOnDragDropCompleted() {
 }
 
 void ActionAppMenu::ShowSearchResults(actions::ActionItem* results) {
+  if (!menu_width_lock_) {
+    menu_width_lock_ = LockMenuWidth();
+  }
   ClearItemsBelowSearchBar();
   PopulateMenu(root_, results);
   root_->ChildrenChanged();
@@ -617,6 +625,7 @@ void ActionAppMenu::ShowSearchResults(actions::ActionItem* results) {
 void ActionAppMenu::RestoreMenu() {
   ClearItemsBelowSearchBar();
   PopulateItemsBelowSearchBar();
+  menu_width_lock_.RunAndReset();
   root_->ChildrenChanged();
 }
 
@@ -687,6 +696,21 @@ void ActionAppMenu::CancelAndEvaluate(actions::ActionId action_id,
                                        base_action, mouse_event_flags)};
     CloseMenu();
   }
+}
+
+base::ScopedClosureRunner ActionAppMenu::LockMenuWidth() {
+  views::SubmenuView* const submenu = root_->GetSubmenu();
+  if (!submenu || submenu->width() <= 0) {
+    return base::ScopedClosureRunner();
+  }
+  // This floor keeps short rows from shrinking the menu. SubmenuView has no
+  // maximum width, so the ceiling that keeps long rows from widening it is
+  // GetMaxWidthForMenu(), which caps the root menu at its current width while
+  // `menu_width_lock_` is held.
+  submenu->set_minimum_preferred_width(submenu->width());
+  return base::ScopedClosureRunner(
+      base::BindOnce(&views::SubmenuView::set_minimum_preferred_width,
+                     base::Unretained(submenu), 0));
 }
 
 void ActionAppMenu::ClearItemsBelowSearchBar() {

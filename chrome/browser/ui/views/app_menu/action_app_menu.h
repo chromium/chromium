@@ -13,6 +13,7 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/elapsed_timer.h"
@@ -134,6 +135,12 @@ class ActionAppMenu : public views::MenuDelegate,
 
   void CancelAndEvaluate(actions::ActionId action_id, int mouse_event_flags);
 
+  // Pins the root menu to its current width: the submenu's minimum preferred
+  // width is the floor and GetMaxWidthForMenu() is the ceiling while the
+  // returned runner is alive. Running it releases the width again. Returns an
+  // empty runner if the menu hasn't been laid out yet.
+  base::ScopedClosureRunner LockMenuWidth();
+
   void ClearItemsBelowSearchBar();
 
   // Recursively populates the menu item with the `base_action_item`'s
@@ -193,6 +200,11 @@ class ActionAppMenu : public views::MenuDelegate,
 
   // The root menu item view. Owned by `menu_runner_`.
   raw_ptr<views::MenuItemView> root_ = nullptr;
+
+  // Holds the root menu at the width of the normal menu while search results
+  // replace its rows. Declared after `menu_runner_` so that it releases the
+  // width before the menu is destroyed.
+  base::ScopedClosureRunner menu_width_lock_;
 
   // The search bar view in the menu, if kChroMenuSearch is enabled.
   raw_ptr<AppMenuSearchBarView> search_bar_ = nullptr;

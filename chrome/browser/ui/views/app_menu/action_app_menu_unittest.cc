@@ -2466,6 +2466,57 @@ TEST_F(ActionAppMenuWithSearchTest, ClearButtonKeepsResults) {
   menu.CloseMenu();
 }
 
+TEST_F(ActionAppMenuWithSearchTest, SearchResultsKeepMenuWidth) {
+  actions::ActionItem* payment_methods_action =
+      actions::ActionManager::Get().FindAction(
+          kActionShowPaymentMethods, browser_actions_->root_action_item());
+  ASSERT_NE(payment_methods_action, nullptr);
+  payment_methods_action->SetText(u"Payment methods " +
+                                  std::u16string(120, u'w'));
+
+  base::MockCallback<base::RepeatingClosure> on_menu_closed;
+  ActionAppMenu menu(&mock_window_interface_, on_menu_closed.Get());
+
+  menu.RunMenu(button_->button_controller(), views::MenuRunner::NO_FLAGS);
+  ASSERT_TRUE(menu.IsShowing());
+
+  views::MenuItemView* root = menu.root_menu_item_for_testing();
+  views::SubmenuView* submenu = root->GetSubmenu();
+  views::View* const container = submenu->GetScrollViewContainer();
+  AppMenuSearchBarView* search_bar = menu.search_bar_for_testing();
+  ASSERT_NE(search_bar, nullptr);
+  const int menu_width = container->width();
+  const int submenu_width = submenu->width();
+  ASSERT_GT(submenu_width, 0);
+
+  // A result wider than the menu doesn't widen it; the row is elided instead.
+  search_bar->SetText(u"Payment methods");
+  views::MenuItemView* long_item =
+      root->GetMenuItemByID(kActionShowPaymentMethods);
+  ASSERT_NE(long_item, nullptr);
+  EXPECT_EQ(container->width(), menu_width);
+  EXPECT_EQ(submenu->width(), submenu_width);
+  EXPECT_GT(long_item->GetPreferredSize({}).width(), long_item->width());
+
+  // Results narrower than the normal rows don't shrink the menu.
+  search_bar->SetText(u"qzxjqzxj");
+  ASSERT_EQ(submenu->children().size(), 1u);
+  EXPECT_EQ(container->width(), menu_width);
+  EXPECT_EQ(submenu->width(), submenu_width);
+
+  // Back restores the normal menu, which lays out at its own width again.
+  views::test::ButtonTestApi(GetBackButton(search_bar))
+      .NotifyDefaultMouseClick();
+  EXPECT_EQ(container->width(), menu_width);
+  EXPECT_EQ(submenu->width(), submenu_width);
+  EXPECT_EQ(menu.GetMaxWidthForMenu(root),
+            ChromeLayoutProvider::Get()->GetDistanceMetric(
+                DISTANCE_ACTION_APP_MENU_MAX_WIDTH));
+
+  EXPECT_CALL(on_menu_closed, Run()).Times(1);
+  menu.CloseMenu();
+}
+
 TEST_F(ActionAppMenuWithSearchTest,
        NotificationStaysAboveSearchBarDuringSearch) {
   if (!browser_defaults::kShowUpgradeMenuItem) {
