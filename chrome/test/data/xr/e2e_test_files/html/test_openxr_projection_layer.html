@@ -42,66 +42,27 @@ Tests WebXR projection layer without 'layers' feature enabled.
         assert_equals(gl.getError(), gl.NO_ERROR, "fillColor - finish");
       }
 
-      function verifyCleared(gl, subImage) {
-        gl.framebufferTexture2D(
-            gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D,
-            subImage.colorTexture, 0);
-        assert_equals(
-            gl.getError(), gl.NO_ERROR,
-            "verifyCleared - framebufferTexture2D");
-        assert_equals(
-            gl.checkFramebufferStatus(gl.FRAMEBUFFER),
-            gl.FRAMEBUFFER_COMPLETE,
-            "verifyCleared - checkFramebufferStatus");
-        const pixel = new Uint8Array([255, 255, 255, 255]);
-        gl.readPixels(
-            subImage.viewport.x, subImage.viewport.y, 1, 1, gl.RGBA,
-            gl.UNSIGNED_BYTE, pixel);
-        assert_equals(gl.getError(), gl.NO_ERROR, "verifyCleared - readPixels");
-        assert_array_equals(
-            pixel, [0, 0, 0, 0],
-            `Texture should be cleared on frame ${frameCount}`);
-      }
-
       onSessionStartedCallback = function(session) {
         gl.bindFramebuffer(gl.FRAMEBUFFER, gl.createFramebuffer());
       };
 
       updateRenderStateCallback = function(session, gl) {
         glBinding = new XRWebGLBinding(session, gl);
-        projectionLayer = glBinding.createProjectionLayer({
-          textureType: 'texture',
-          depthFormat: 0 /*GL_NONE*/,
-          clearOnAccess: false,
-        });
+        projectionLayer = glBinding.createProjectionLayer(
+            {textureType: 'texture', depthFormat: 0 /*GL_NONE*/});
         session.updateRenderState({ layers: [projectionLayer] });
       };
 
       onImmersiveXRFrameCallback = function(session, frame, gl) {
-        ++frameCount;
+        if (++frameCount === 3) {
+          done();
+        }
 
         const pose = frame.getViewerPose(
             sessionInfos[getSessionType(session)].currentRefSpace);
         for (const view of pose.views) {
           let subImage = glBinding.getViewSubImage(projectionLayer, view);
-          verifyCleared(gl, subImage);
           fillColor(gl, subImage, [1.0, 0.0, 0.0, 1.0]);  // Red
-        }
-
-        if (frameCount === 4) {
-          // After cycling through the 3 swapchain buffers and verifying a
-          // recycled buffer on frame 4, switch to a newly created projection
-          // layer with clearOnAccess: false to verify that its buffers are
-          // also cleared on first access (even when backed by shared buffers
-          // previously drawn to by the first layer).
-          projectionLayer = glBinding.createProjectionLayer({
-            textureType: 'texture',
-            depthFormat: 0 /*GL_NONE*/,
-            clearOnAccess: false,
-          });
-          session.updateRenderState({ layers: [projectionLayer] });
-        } else if (frameCount === 7) {
-          done();
         }
       };
     </script>

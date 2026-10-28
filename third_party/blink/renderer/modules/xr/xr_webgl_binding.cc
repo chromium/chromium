@@ -143,14 +143,7 @@ XRWebGLSwapChain* XRWebGLBinding::CreateColorSwapchain(
 
   if (drawing_into_shared_buffer) {
     // The shared image swapchain supports texture array directly.
-
-    // clear_on_access is forced on even in cases where clear_on_access was
-    // requested to be false by the page. (This is a hint that can be safely
-    // ignored.) This is because we don't have any guarantee that the shared
-    // image backing the swapchain will have been cleared at least once.
-    // TODO (https://crbug.com/578048203): Keep track of recycled shared images
-    // and don't re-clear them unnecessarily.
-    color_desc.clear_on_access = true;
+    color_desc.clear_on_access = clear_on_access;
     color_desc.is_texture_array = is_texture_array;
     color_desc.layers = layers;
     return MakeGarbageCollected<XRWebGLSharedImageSwapChain>(
