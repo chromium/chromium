@@ -594,6 +594,12 @@ def VerifyBundleManifest(bundle, manifest):
         sys.exit(1)
 
 
+def CopyWritable(src, dst):
+    """Copy |src| file to |dst| and ensure |dst| is user-writable."""
+    shutil.copy2(src, dst)
+    os.chmod(dst, os.stat(dst).st_mode | stat.S_IWUSR)
+
+
 def InstallSystemFramework(framework_path, bundle_path, args):
     """Install framework from |framework_path| to |bundle| and code-re-sign it."""
     installed_framework_path = os.path.join(
@@ -601,11 +607,14 @@ def InstallSystemFramework(framework_path, bundle_path, args):
     )
 
     if os.path.isfile(framework_path):
-        shutil.copy(framework_path, installed_framework_path)
+        CopyWritable(framework_path, installed_framework_path)
     elif os.path.isdir(framework_path):
-        if os.path.exists(installed_framework_path):
-            shutil.rmtree(installed_framework_path)
-        shutil.copytree(framework_path, installed_framework_path)
+        shutil.copytree(
+            framework_path,
+            installed_framework_path,
+            copy_function=CopyWritable,
+            dirs_exist_ok=True,
+        )
 
     CodeSignBundle(
         installed_framework_path,
