@@ -142,8 +142,12 @@ def _CheckGlicFeaturesDefaultState(input_api, output_api):
             if not is_glic_dir and 'Glic' not in feature_name:
                 continue
 
-            # Check if bare base::FEATURE_ENABLED_BY_DEFAULT is used.
-            if not raw_enabled_pattern.search(feature_body):
+            # Check if bare base::FEATURE_ENABLED_BY_DEFAULT is used without
+            # explicit platform BUILDFLAG conditionals.
+            if (
+                not raw_enabled_pattern.search(feature_body)
+                or 'BUILDFLAG(' in feature_body
+            ):
                 continue
 
             start_line = contents.count('\n', 0, match.start()) + 1
