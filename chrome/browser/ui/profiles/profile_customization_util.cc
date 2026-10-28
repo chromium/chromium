@@ -44,7 +44,9 @@ void FinalizeNewProfileSetup(Profile* profile,
 
   // We don't expect this to be run for profiles where the user already had a
   // chance to set a custom profile name.
-  CHECK(entry->IsUsingDefaultName(), base::NotFatalUntil::M162);
+  // TODO(crbug.com/578547973): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(entry->IsUsingDefaultName());
 
   entry->SetLocalProfileName(profile_name, is_default_name);
 
