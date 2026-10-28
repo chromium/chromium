@@ -59,10 +59,6 @@ wayland_protocol("gtk_primary_selection_protocol") {
   sources = [ "unstable/gtk-primary-selection/gtk-primary-selection.xml" ]
 }
 
-wayland_protocol("gtk_shell_protocol") {
-  sources = [ "gtk/gdk/wayland/protocol/gtk-shell.xml" ]
-}
-
 wayland_protocol("idle_inhibit_protocol") {
   sources = [ "src/unstable/idle-inhibit/idle-inhibit-unstable-v1.xml" ]
 }

@@ -3259,10 +3259,6 @@ deps = {
   },
 
   # Additional Wayland protocols specific for GNOME desktop environment.
-  'src/third_party/wayland-protocols/gtk': {
-      'url': Var('chromium_git') + '/external/github.com/GNOME/gtk.git' + '@' + '40ebed3a03aef096addc0af09fec4ec529d882a0',
-      'condition': 'checkout_linux',
-  },
 
   # Keep this version (currently 4.33.0) synchronized with the selenium wheel
   # in //vpython.toml.

@@ -594,10 +594,6 @@
 	path = third_party/wayland-protocols/kde
 	url = https://chromium.googlesource.com/external/github.com/KDE/plasma-wayland-protocols
 	gclient-condition = checkout_linux
-[submodule "third_party/wayland-protocols/gtk"]
-	path = third_party/wayland-protocols/gtk
-	url = https://chromium.googlesource.com/external/github.com/GNOME/gtk
-	gclient-condition = checkout_linux
 [submodule "third_party/webdriver/pylib"]
 	path = third_party/webdriver/pylib
 	url = https://chromium.googlesource.com/external/github.com/SeleniumHQ/selenium/py
