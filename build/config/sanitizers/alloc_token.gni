@@ -25,10 +25,10 @@ declare_args() {
       !optimize_for_size &&
       # PartitionAlloc-Everywhere is disabled in these configurations.
       !is_cronet_build && !is_asan && !is_hwasan && !is_lsan && !is_tsan &&
-      !is_msan && !(is_win && is_debug) &&
-      # TODO(crbug.com/477186304): Remove this once
-      # https://github.com/llvm/llvm-project/pull/234445 rolls into Chromium.
-      !is_win
+      !is_msan && !(is_win && is_debug)
+
+  # TODO(crbug.com/477186304): Remove this when enabling AllocToken.
+  use_alloc_token = false
 }
 
 # PartitionAlloc-Everywhere is disabled in these toolchains, regardless of
