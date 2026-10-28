@@ -125,6 +125,7 @@ void ChromeExtensionRegistrarDelegate::PreAddExtension(
   // reset the stored pref.
   if (old_extension && !IncognitoInfo::IsIncognitoAllowed(extension)) {
     extension_prefs_->SetIsIncognitoEnabled(extension->id(), false);
+    extension_prefs_->SetIsIsolatedModeEnabled(extension->id(), false);
   }
 
   // Check if the extension's privileges have changed and mark the

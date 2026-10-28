@@ -47,6 +47,7 @@
 #include "extensions/browser/extension_prefs_observer.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/extension_util.h"
+#include "extensions/browser/extensions_browser_client.h"
 #include "extensions/browser/install_flag.h"
 #include "extensions/browser/install_prefs_helper.h"
 #include "extensions/browser/manifest_v2_handler.h"
@@ -145,7 +146,15 @@ constexpr const char kPrefSuggestedPageOrdinal[] = "suggested_page_ordinal";
 // A preference that, if true, will allow this extension to run in incognito
 // mode.
 constexpr const char kPrefIncognitoEnabled[] = "incognito";
+
+// A preference that, if true, will allow this extension to run in Enterprise
+// Isolated Mode.
+constexpr const char kPrefIsolatedModeEnabled[] = "isolated_mode";
+
 #if BUILDFLAG(IS_CHROMEOS)
+// TODO(crbug.com/573504328): Add kPrefIsolatedModeEnabledPending and update
+// SetIsIncognitoEnabledDelayed / HasIncognitoEnabledPendingUpdate /
+// ApplyPendingUpdates to support Isolated Mode on ChromeOS.
 constexpr const char kPrefIncognitoEnabledPending[] = "incognito-pending";
 #endif
 
@@ -1423,7 +1432,38 @@ void ExtensionPrefs::SetIsIncognitoEnabled(const ExtensionId& extension_id,
                                            bool enabled) {
   UpdateExtensionPref(extension_id, kPrefIncognitoEnabled,
                       base::Value(enabled));
-  extension_pref_value_map_->SetExtensionIncognitoState(extension_id, enabled);
+  if (!IsolatedModeReplacesIncognito()) {
+    extension_pref_value_map_->SetExtensionIncognitoState(extension_id,
+                                                          enabled);
+  }
+}
+
+bool ExtensionPrefs::IsIsolatedModeEnabled(
+    const ExtensionId& extension_id) const {
+  return ReadPrefAsBooleanAndReturn(extension_id, kPrefIsolatedModeEnabled);
+}
+
+void ExtensionPrefs::SetIsIsolatedModeEnabled(const ExtensionId& extension_id,
+                                              bool enabled) {
+  UpdateExtensionPref(extension_id, kPrefIsolatedModeEnabled,
+                      base::Value(enabled));
+  if (IsolatedModeReplacesIncognito()) {
+    extension_pref_value_map_->SetExtensionIncognitoState(extension_id,
+                                                          enabled);
+  }
+}
+
+bool ExtensionPrefs::IsolatedModeReplacesIncognito() {
+  // TODO(crbug.com/576933996): Initialize `isolated_mode_` eagerly in the
+  // constructor and remove this helper once tests set up Isolated Mode before
+  // ExtensionPrefs creation.
+  if (!isolated_mode_.has_value()) {
+    isolated_mode_ =
+        ExtensionsBrowserClient::Get() &&
+        ExtensionsBrowserClient::Get()->IsolatedModeReplacesIncognito(
+            browser_context_);
+  }
+  return *isolated_mode_;
 }
 
 bool ExtensionPrefs::AllowFileAccess(const ExtensionId& extension_id) const {
@@ -2455,7 +2495,9 @@ void ExtensionPrefs::InitExtensionControlledPrefs(
     bool is_enabled =
         !IsExtensionDisabled(extension_id) &&
         !blocklist_prefs::IsExtensionBlocklisted(extension_id, this);
-    bool is_incognito_enabled = IsIncognitoEnabled(extension_id);
+    bool is_incognito_enabled = IsolatedModeReplacesIncognito()
+                                    ? IsIsolatedModeEnabled(extension_id)
+                                    : IsIncognitoEnabled(extension_id);
     extension_pref_value_map_->RegisterExtension(
         extension_id, install_time, is_enabled, is_incognito_enabled);
 
@@ -2561,7 +2603,9 @@ void ExtensionPrefs::FinishExtensionInfoPrefs(
     is_enabled = is_enabled && disable_reasons->empty();
   }
 
-  bool is_incognito_enabled = IsIncognitoEnabled(extension_id);
+  bool is_incognito_enabled = IsolatedModeReplacesIncognito()
+                                  ? IsIsolatedModeEnabled(extension_id)
+                                  : IsIncognitoEnabled(extension_id);
 
   extension_pref_value_map_->RegisterExtension(
       extension_id, install_time, is_enabled, is_incognito_enabled);

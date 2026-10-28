@@ -117,6 +117,8 @@ class ChromeExtensionsBrowserClient : public ExtensionsBrowserClient {
   bool IsActiveContext(content::BrowserContext* browser_context) const override;
 #endif
   bool IsGuestSession(content::BrowserContext* context) const override;
+  bool IsolatedModeReplacesIncognito(
+      content::BrowserContext* context) const override;
   bool IsExtensionIncognitoEnabled(
       const ExtensionId& extension_id,
       content::BrowserContext* context) const override;

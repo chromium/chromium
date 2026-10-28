@@ -102,7 +102,11 @@ bool IsIncognitoEnabledForIdAndContext(const ExtensionId& extension_id,
 #endif
 
   // The ultimate fallback database check.
-  return ExtensionPrefs::Get(context)->IsIncognitoEnabled(extension_id);
+  ExtensionPrefs* extension_prefs = ExtensionPrefs::Get(context);
+  if (ExtensionsBrowserClient::Get()->IsolatedModeReplacesIncognito(context)) {
+    return extension_prefs->IsIsolatedModeEnabled(extension_id);
+  }
+  return extension_prefs->IsIncognitoEnabled(extension_id);
 }
 
 }  // namespace

@@ -50,7 +50,8 @@ namespace util {
 // Returns true if the extension can be enabled in incognito mode.
 bool CanBeIncognitoEnabled(const Extension* extension);
 
-// Returns true if `extension_id` can run in an incognito window.
+// Returns true if `extension_id` can run in an incognito window (or Enterprise
+// Isolated Mode window when it replaces Incognito).
 bool IsIncognitoEnabled(const ExtensionId& extension_id,
                         content::BrowserContext* context);
 bool IsIncognitoEnabled(const Extension* extension,

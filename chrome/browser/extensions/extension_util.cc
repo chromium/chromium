@@ -34,6 +34,7 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/extension_util.h"
+#include "extensions/browser/extensions_browser_client.h"
 #include "extensions/browser/management_policy.h"
 #include "extensions/browser/permissions/permissions_updater.h"
 #include "extensions/browser/pref_names.h"
@@ -228,6 +229,7 @@ void SetIsIncognitoEnabled(const std::string& extension_id,
   // Admin installed extensions should not be restartable, so we will apply the
   // change when Chrome restarts.
   if (IsPolicyInstalled(extension_id, context)) {
+    // TODO(crbug.com/573504328): Add isolated mode support.
     extension_prefs->SetIsIncognitoEnabledDelayed(extension_id, enabled);
     return;
   }
@@ -235,12 +237,20 @@ void SetIsIncognitoEnabled(const std::string& extension_id,
   // Broadcast unloaded and loaded events to update browser state. Only bother
   // if the value changed and the extension is actually enabled, since there is
   // no UI otherwise.
-  bool old_enabled = extension_prefs->IsIncognitoEnabled(extension_id);
+  const bool isolated_mode =
+      ExtensionsBrowserClient::Get()->IsolatedModeReplacesIncognito(context);
+  bool old_enabled = isolated_mode
+                         ? extension_prefs->IsIsolatedModeEnabled(extension_id)
+                         : extension_prefs->IsIncognitoEnabled(extension_id);
   if (enabled == old_enabled) {
     return;
   }
 
-  extension_prefs->SetIsIncognitoEnabled(extension_id, enabled);
+  if (isolated_mode) {
+    extension_prefs->SetIsIsolatedModeEnabled(extension_id, enabled);
+  } else {
+    extension_prefs->SetIsIncognitoEnabled(extension_id, enabled);
+  }
 
   std::string id = ReloadExtensionIfEnabled(extension_id, context);
 

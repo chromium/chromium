@@ -22,6 +22,7 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/extension_util.h"
+#include "extensions/browser/extensions_browser_client.h"
 #include "extensions/browser/install_prefs_helper.h"
 #include "extensions/browser/test_extension_registry_observer.h"
 #include "extensions/browser/unpacked_installer.h"
@@ -421,9 +422,15 @@ bool ChromeTestExtensionLoader::VerifyPermissions(const Extension* extension) {
       prefs->AllowFileAccess(extension->id()) != *allow_file_access_) {
     return false;
   }
-  if (allow_incognito_access_.has_value() &&
-      prefs->IsIncognitoEnabled(extension->id()) != *allow_incognito_access_) {
-    return false;
+  if (allow_incognito_access_.has_value()) {
+    const bool incognito_enabled =
+        ExtensionsBrowserClient::Get()->IsolatedModeReplacesIncognito(
+            browser_context_)
+            ? prefs->IsIsolatedModeEnabled(extension->id())
+            : prefs->IsIncognitoEnabled(extension->id());
+    if (incognito_enabled != *allow_incognito_access_) {
+      return false;
+    }
   }
   return true;
 }

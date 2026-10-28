@@ -56,9 +56,10 @@ bool IsExtensionForceInstalled(const std::string& extension_id,
                                content::BrowserContext* context,
                                std::u16string* reason = nullptr);
 
-// Sets whether `extension_id` can run in an incognito window. Reloads the
-// extension if it's enabled since this permission is applied at loading time
-// only. Note that an ExtensionService must exist.
+// Sets whether `extension_id` can run in an incognito window (or Enterprise
+// Isolated Mode window when it replaces Incognito). Reloads the extension if
+// it's enabled since this permission is applied at loading time only. Note that
+// an ExtensionService must exist.
 void SetIsIncognitoEnabled(const std::string& extension_id,
                            content::BrowserContext* context,
                            bool enabled);

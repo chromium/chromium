@@ -339,6 +339,7 @@ metrics::ExtensionInstallProto ConstructInstallProto(
   install.set_action_type(GetActionType(*extension.manifest()));
   install.set_has_file_access(
       (extension.creation_flags() & Extension::ALLOW_FILE_ACCESS) != 0);
+  // TODO(crbug.com/576969953): Add isolated mode access reporting.
   install.set_has_incognito_access(prefs->IsIncognitoEnabled(extension.id()));
   install.set_is_from_store(extension.from_webstore());
   install.set_updates_from_store(

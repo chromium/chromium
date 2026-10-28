@@ -442,7 +442,13 @@ void UnpackedInstaller::InstallExtension() {
     prefs->SetAllowFileAccess(extension()->id(), *allow_file_access_);
   }
   if (allow_incognito_access_.has_value()) {
-    prefs->SetIsIncognitoEnabled(extension()->id(), *allow_incognito_access_);
+    if (ExtensionsBrowserClient::Get()->IsolatedModeReplacesIncognito(
+            browser_context_)) {
+      prefs->SetIsIsolatedModeEnabled(extension()->id(),
+                                      *allow_incognito_access_);
+    } else {
+      prefs->SetIsIncognitoEnabled(extension()->id(), *allow_incognito_access_);
+    }
   }
   if (install_param_.has_value()) {
     SetInstallParam(prefs, extension()->id(), *install_param_);

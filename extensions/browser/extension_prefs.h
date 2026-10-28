@@ -645,12 +645,22 @@ class ExtensionPrefs : public KeyedService {
   bool IsActive(const ExtensionId& extension_id) const;
 
   // Returns true if the user enabled this extension to be loaded in incognito
-  // mode.
+  // mode. This always reads the incognito pref, regardless of whether
+  // Enterprise Isolated Mode replaces Incognito.
   //
   // IMPORTANT: you probably want to use extensions::util::IsIncognitoEnabled
   // instead of this method.
   bool IsIncognitoEnabled(const ExtensionId& extension_id) const;
   void SetIsIncognitoEnabled(const ExtensionId& extension_id, bool enabled);
+
+  // Returns true if the user enabled this extension to be loaded in Enterprise
+  // Isolated Mode. This always reads the isolated_mode pref, regardless of
+  // whether Enterprise Isolated Mode replaces Incognito.
+  //
+  // IMPORTANT: you probably want to use extensions::util::IsIncognitoEnabled
+  // instead of this method.
+  bool IsIsolatedModeEnabled(const ExtensionId& extension_id) const;
+  void SetIsIsolatedModeEnabled(const ExtensionId& extension_id, bool enabled);
 #if BUILDFLAG(IS_CHROMEOS)
   void SetIsIncognitoEnabledDelayed(const ExtensionId& extension_id,
                                     bool enabled);
@@ -973,6 +983,10 @@ class ExtensionPrefs : public KeyedService {
   // for a given extension.
   bool HasWithholdingPermissionsSetting(const ExtensionId& extension_id) const;
 
+  // Returns whether Enterprise Isolated Mode replaces Incognito mode for
+  // `browser_context_`, caching the result on first evaluation.
+  bool IsolatedModeReplacesIncognito();
+
   raw_ptr<content::BrowserContext> browser_context_;
 
   // The pref service specific to this set of extension prefs. Owned by the
@@ -992,6 +1006,10 @@ class ExtensionPrefs : public KeyedService {
   raw_ptr<base::Clock> clock_;
 
   bool extensions_disabled_;
+
+  // TODO(crbug.com/576933996): Initialize eagerly in constructor once tests set
+  // up Isolated Mode before ExtensionPrefs creation.
+  std::optional<bool> isolated_mode_;
 
   // TODO(crbug.com/484371187): Investigate if reentrancy can be removed.
   base::ObserverList<

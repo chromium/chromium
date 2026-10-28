@@ -15,6 +15,7 @@
 #include "base/scoped_observation.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/extensions/install_tracker_factory.h"
@@ -23,9 +24,12 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/content_settings/core/browser/content_settings_registry.h"
 #include "components/content_settings/core/common/content_settings.h"
+#include "components/enterprise/isolated_mode/isolated_mode_features.h"
+#include "components/enterprise/isolated_mode/prefs.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/mock_pref_change_callback.h"
 #include "components/prefs/pref_change_registrar.h"
+#include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/sync/model/string_ordinal.h"
 #include "components/sync_preferences/pref_service_syncable.h"
@@ -1642,6 +1646,83 @@ TEST_F(ExtensionPrefsSimpleTest, RemoveDisableReasons) {
       extension_id, {disable_reason::DISABLE_EXTERNAL_EXTENSION,
                      disable_reason::DISABLE_CORRUPTED});
   EXPECT_TRUE(extension_prefs->GetDisableReasons(extension_id).empty());
+}
+
+// Tests that IsIncognitoEnabled/SetIsIncognitoEnabled read and write the
+// "incognito" pref, and that ExtensionPrefValueMap uses the Incognito setting
+// when Enterprise Isolated Mode does not replace Incognito.
+TEST_F(ExtensionPrefsSimpleTest, IncognitoSettingStoredInIncognitoPref) {
+  content::BrowserTaskEnvironment task_environment;
+  TestExtensionPrefs prefs(base::SingleThreadTaskRunner::GetCurrentDefault(),
+                           std::make_unique<TestingProfile>());
+  std::string extension_id = prefs.AddExtension("Test Extension")->id();
+
+  EXPECT_FALSE(prefs.prefs()->IsIncognitoEnabled(extension_id));
+  EXPECT_FALSE(prefs.prefs()->IsIsolatedModeEnabled(extension_id));
+  EXPECT_FALSE(prefs.extension_pref_value_map()->CanExtensionControlPref(
+      extension_id, "a_pref", /*incognito=*/true));
+
+  prefs.prefs()->SetIsIncognitoEnabled(extension_id, true);
+  EXPECT_TRUE(prefs.prefs()->IsIncognitoEnabled(extension_id));
+  EXPECT_FALSE(prefs.prefs()->IsIsolatedModeEnabled(extension_id));
+  EXPECT_TRUE(prefs.extension_pref_value_map()->CanExtensionControlPref(
+      extension_id, "a_pref", /*incognito=*/true));
+
+  // Verify the startup path (InitExtensionControlledPrefs).
+  prefs.RecreateExtensionPrefs();
+  EXPECT_TRUE(prefs.extension_pref_value_map()->CanExtensionControlPref(
+      extension_id, "a_pref", /*incognito=*/true));
+
+  // Changing the Isolated Mode setting does not affect ExtensionPrefValueMap
+  // when Incognito is active.
+  prefs.prefs()->SetIsIncognitoEnabled(extension_id, false);
+  prefs.prefs()->SetIsIsolatedModeEnabled(extension_id, true);
+  EXPECT_FALSE(prefs.prefs()->IsIncognitoEnabled(extension_id));
+  EXPECT_TRUE(prefs.prefs()->IsIsolatedModeEnabled(extension_id));
+  EXPECT_FALSE(prefs.extension_pref_value_map()->CanExtensionControlPref(
+      extension_id, "a_pref", /*incognito=*/true));
+}
+
+// Tests that IsIsolatedModeEnabled/SetIsIsolatedModeEnabled read and write
+// the "isolated_mode" pref, and that ExtensionPrefValueMap uses the Isolated
+// Mode setting when Enterprise Isolated Mode replaces Incognito.
+TEST_F(ExtensionPrefsSimpleTest, IsolatedModeSettingStoredInIsolatedModePref) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      enterprise_isolated_mode::kEnableEnterpriseIsolatedMode);
+  content::BrowserTaskEnvironment task_environment;
+  auto profile = std::make_unique<TestingProfile>();
+  profile->GetPrefs()->SetInteger(
+      enterprise_isolated_mode::kEnterpriseIsolatedModeSettings,
+      static_cast<int>(
+          enterprise_isolated_mode::IsolatedModeSetting::kEnabled));
+  TestExtensionPrefs prefs(base::SingleThreadTaskRunner::GetCurrentDefault(),
+                           std::move(profile));
+  std::string extension_id = prefs.AddExtension("Test Extension")->id();
+
+  EXPECT_FALSE(prefs.prefs()->IsIncognitoEnabled(extension_id));
+  EXPECT_FALSE(prefs.prefs()->IsIsolatedModeEnabled(extension_id));
+  EXPECT_FALSE(prefs.extension_pref_value_map()->CanExtensionControlPref(
+      extension_id, "a_pref", /*incognito=*/true));
+
+  prefs.prefs()->SetIsIsolatedModeEnabled(extension_id, true);
+  EXPECT_TRUE(prefs.prefs()->IsIsolatedModeEnabled(extension_id));
+  EXPECT_FALSE(prefs.prefs()->IsIncognitoEnabled(extension_id));
+  EXPECT_TRUE(prefs.extension_pref_value_map()->CanExtensionControlPref(
+      extension_id, "a_pref", /*incognito=*/true));
+
+  // Verify the startup path (InitExtensionControlledPrefs).
+  prefs.RecreateExtensionPrefs();
+  EXPECT_TRUE(prefs.extension_pref_value_map()->CanExtensionControlPref(
+      extension_id, "a_pref", /*incognito=*/true));
+
+  // Changing the Incognito setting does not affect ExtensionPrefValueMap when
+  // Isolated Mode is active.
+  prefs.prefs()->SetIsIsolatedModeEnabled(extension_id, false);
+  prefs.prefs()->SetIsIncognitoEnabled(extension_id, true);
+  EXPECT_FALSE(prefs.prefs()->IsIsolatedModeEnabled(extension_id));
+  EXPECT_TRUE(prefs.prefs()->IsIncognitoEnabled(extension_id));
+  EXPECT_FALSE(prefs.extension_pref_value_map()->CanExtensionControlPref(
+      extension_id, "a_pref", /*incognito=*/true));
 }
 
 }  // namespace extensions
