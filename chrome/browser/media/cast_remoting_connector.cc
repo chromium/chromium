@@ -254,11 +254,13 @@ void CastRemotingConnector::OnStopped(RemotingStopReason reason) {
     // gone.
     StopRemoting(active_bridge_, reason, false);
   } else if (reason == RemotingStopReason::USER_DISABLED) {
-    // Notify all the sources that the sink is gone. Remoting can only be
-    // started after OnSinkAvailable() is called again.
-    sink_metadata_ = RemotingSinkMetadata();
-    for (RemotingBridge* notifyee : bridges_)
+    // Notify all the sources that the sink is gone so no remoting sessions can
+    // be initiated until the user re-enables remoting. Keep `sink_metadata_`
+    // because the mirroring service was not stopped and will not call
+    // OnSinkAvailable() again.
+    for (RemotingBridge* notifyee : bridges_) {
       notifyee->OnSinkGone(this);
+    }
   }
 }
 
@@ -326,8 +328,10 @@ void CastRemotingConnector::OnSinkAvailable(
       media::mojom::RemotingSinkFeature::RENDERING);
 #endif
 
-  for (RemotingBridge* notifyee : bridges_) {
-    notifyee->OnSinkAvailable(this, sink_metadata_);
+  if (remoting_allowed_) {
+    for (RemotingBridge* notifyee : bridges_) {
+      notifyee->OnSinkAvailable(this, sink_metadata_);
+    }
   }
 }
 
@@ -380,7 +384,13 @@ void CastRemotingConnector::StartObservingPref() {
 void CastRemotingConnector::OnPrefChanged() {
 #if !BUILDFLAG(IS_ANDROID)
   remoting_allowed_ = GetRemotingAllowedUserPref();
-  if (!remoting_allowed_) {
+  if (remoting_allowed_) {
+    if (HasSinkMetadata() && !active_bridge_) {
+      for (RemotingBridge* notifyee : bridges_) {
+        notifyee->OnSinkAvailable(this, sink_metadata_);
+      }
+    }
+  } else {
     OnStopped(media::mojom::RemotingStopReason::USER_DISABLED);
   }
 #endif

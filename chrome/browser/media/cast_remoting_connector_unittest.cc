@@ -323,6 +323,72 @@ TEST_F(CastRemotingConnectorTest, PrefPersistsAcrossReset) {
   RunUntilIdle();
 }
 
+#if !BUILDFLAG(IS_ANDROID)
+TEST_F(CastRemotingConnectorTest, EnableRemotingMidSession) {
+  pref_service_.registry()->RegisterBooleanPref(
+      media_router::prefs::kMediaRouterMediaRemotingEnabled, false);
+  CreateConnector(false);
+
+  MockRemotingSource source;
+  mojo::Remote<media::mojom::Remoter> remoter(CreateRemoter(&source));
+  std::unique_ptr<MockMediaRemoter> media_remoter =
+      std::make_unique<MockMediaRemoter>(GetConnector());
+
+  // While remoting is disabled by the user preference, OnSinkAvailable() should
+  // not notify the source.
+  EXPECT_CALL(source, OnSinkAvailable(_)).Times(0);
+  media_remoter->OnSinkAvailable();
+  RunUntilIdle();
+
+  // Re-enabling remoting mid-session should notify the source that the sink is
+  // available.
+  EXPECT_CALL(source, OnSinkAvailable(_)).Times(1);
+  pref_service_.SetBoolean(
+      media_router::prefs::kMediaRouterMediaRemotingEnabled, true);
+  RunUntilIdle();
+
+  // The source should now be permitted to start remoting.
+  EXPECT_CALL(source, OnStarted()).Times(1);
+  remoter->Start();
+  RunUntilIdle();
+}
+
+TEST_F(CastRemotingConnectorTest, DisableAndReEnableRemotingMidSession) {
+  pref_service_.registry()->RegisterBooleanPref(
+      media_router::prefs::kMediaRouterMediaRemotingEnabled, true);
+  CreateConnector(true);
+
+  MockRemotingSource source;
+  mojo::Remote<media::mojom::Remoter> remoter(CreateRemoter(&source));
+  std::unique_ptr<MockMediaRemoter> media_remoter =
+      std::make_unique<MockMediaRemoter>(GetConnector());
+
+  // Initially available.
+  EXPECT_CALL(source, OnSinkAvailable(_)).Times(1);
+  media_remoter->OnSinkAvailable();
+  RunUntilIdle();
+
+  // Disabling the preference mid-session notifies the source that the sink is
+  // gone.
+  EXPECT_CALL(source, OnSinkGone()).Times(AtLeast(1));
+  pref_service_.SetBoolean(
+      media_router::prefs::kMediaRouterMediaRemotingEnabled, false);
+  RunUntilIdle();
+
+  // Re-enabling the preference mid-session restores sink availability without
+  // requiring the mirroring service to re-announce the sink.
+  EXPECT_CALL(source, OnSinkAvailable(_)).Times(1);
+  pref_service_.SetBoolean(
+      media_router::prefs::kMediaRouterMediaRemotingEnabled, true);
+  RunUntilIdle();
+
+  // The source can now start remoting.
+  EXPECT_CALL(source, OnStarted()).Times(1);
+  remoter->Start();
+  RunUntilIdle();
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 namespace {
 
 // The possible ways a remoting session may be terminated in the "full
