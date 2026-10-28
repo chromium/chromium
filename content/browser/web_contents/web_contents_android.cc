@@ -7,7 +7,6 @@
 #include <stdint.h>
 
 #include <string>
-#include <unordered_set>
 #include <utility>
 #include <vector>
 
@@ -21,7 +20,6 @@
 #include "base/json/json_writer.h"
 #include "base/logging.h"
 #include "base/metrics/user_metrics.h"
-#include "base/no_destructor.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "cc/input/android/offset_tag_android.h"
@@ -75,14 +73,6 @@ using base::android::ToJavaIntArray;
 namespace content {
 
 namespace {
-
-// Track all WebContentsAndroid objects here so that we don't deserialize a
-// destroyed WebContents object.
-std::unordered_set<WebContentsAndroid*>& GetAllocatedWebContentsAndroids() {
-  static base::NoDestructor<std::unordered_set<WebContentsAndroid*>>
-      allocated_web_contents_androids;
-  return *allocated_web_contents_androids;
-}
 
 void JavaScriptResultCallback(const ScopedJavaGlobalRef<jobject>& callback,
                               base::Value result) {
@@ -219,39 +209,16 @@ static void JNI_WebContentsImpl_DestroyWebContents(
   delete web_contents;
 }
 
-// static
-static ScopedJavaLocalRef<jobject> JNI_WebContentsImpl_FromNativePtr(
-    JNIEnv* env,
-    int64_t web_contents_ptr) {
-  WebContentsAndroid* web_contents_android =
-      reinterpret_cast<WebContentsAndroid*>(web_contents_ptr);
-
-  if (!web_contents_android)
-    return ScopedJavaLocalRef<jobject>();
-
-  // Check to make sure this object hasn't been destroyed.
-  if (GetAllocatedWebContentsAndroids().find(web_contents_android) ==
-      GetAllocatedWebContentsAndroids().end()) {
-    return ScopedJavaLocalRef<jobject>();
-  }
-
-  return web_contents_android->GetJavaObject();
-}
-
 WebContentsAndroid::WebContentsAndroid(WebContentsImpl* web_contents)
     : web_contents_(web_contents),
       navigation_controller_(&(web_contents->GetController())) {
-  GetAllocatedWebContentsAndroids().insert(this);
   JNIEnv* env = AttachCurrentThread();
-  Java_WebContentsImpl_create(env, reinterpret_cast<intptr_t>(this),
-                              navigation_controller_.GetJavaObject());
+  java_peer_id_ = Java_WebContentsImpl_createAndGetPeerId(
+      env, reinterpret_cast<intptr_t>(this),
+      navigation_controller_.GetJavaObject());
 }
 
 WebContentsAndroid::~WebContentsAndroid() {
-  CHECK(GetAllocatedWebContentsAndroids().find(this) !=
-            GetAllocatedWebContentsAndroids().end(),
-        base::NotFatalUntil::M158);
-  GetAllocatedWebContentsAndroids().erase(this);
   offset_tag_mediator_ = nullptr;
   for (auto& observer : destruction_observers_)
     observer.WebContentsAndroidDestroyed(this);
@@ -265,8 +232,7 @@ WebContentsAndroid::~WebContentsAndroid() {
 base::android::ScopedJavaLocalRef<jobject>
 WebContentsAndroid::GetJavaObject() {
   JNIEnv* env = AttachCurrentThread();
-  return Java_WebContentsImpl_getJavaObject(env,
-                                            reinterpret_cast<intptr_t>(this));
+  return Java_WebContentsImpl_getJavaObject(env, java_peer_id_);
 }
 
 void WebContentsAndroid::CaptureContentAsBitmapForTesting(

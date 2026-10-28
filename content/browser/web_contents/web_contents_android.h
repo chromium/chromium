@@ -302,6 +302,9 @@ class CONTENT_EXPORT WebContentsAndroid {
 
   NavigationControllerAndroid navigation_controller_;
 
+  // ID of the Java WebContentsImpl, used to look it up without a global ref.
+  int64_t java_peer_id_;
+
   base::ObserverList<DestructionObserver> destruction_observers_;
 
   class BrowserControlsOffsetTagMediator : public RenderWidgetHostConnector {
