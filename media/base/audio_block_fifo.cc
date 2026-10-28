@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include <algorithm>
+#include <utility>
 
 #include "base/check_op.h"
 #include "base/trace_event/trace_event.h"
@@ -38,7 +39,7 @@ void AudioBlockFifo::PushSilence(int frames) {
 }
 
 const AudioBus* AudioBlockFifo::Consume() {
-  DCHECK(available_blocks_);
+  CHECK_GT(available_blocks_, 0);
   TRACE_EVENT1("audio", "AudioBlockFifo::Consume", "available frames",
                GetAvailableFrames());
   AudioBus* audio_bus = audio_blocks_[read_block_].get();
@@ -61,19 +62,23 @@ int AudioBlockFifo::GetAvailableFrames() const {
 int AudioBlockFifo::GetUnfilledFrames() const {
   const int unfilled_frames =
       (audio_blocks_.size() - available_blocks_) * block_frames_ - write_pos_;
-  DCHECK_GE(unfilled_frames, 0);
+  CHECK_GE(unfilled_frames, 0);
   return unfilled_frames;
 }
 
 void AudioBlockFifo::IncreaseCapacity(int blocks) {
-  DCHECK_GT(blocks, 0);
+  CHECK_GT(blocks, 0);
 
-  // Create |blocks| of audio buses and insert them to the containers.
+  // Create `blocks` of zero-initialized audio buses and insert them into the
+  // container.
   audio_blocks_.reserve(audio_blocks_.size() + blocks);
 
   const int original_size = audio_blocks_.size();
-  for (int i = 0; i < blocks; ++i)
-    audio_blocks_.push_back(AudioBus::Create(channels_, block_frames_));
+  for (int i = 0; i < blocks; ++i) {
+    auto audio_bus = AudioBus::Create(channels_, block_frames_);
+    audio_bus->Zero();
+    audio_blocks_.push_back(std::move(audio_bus));
+  }
 
   if (!original_size)
     return;

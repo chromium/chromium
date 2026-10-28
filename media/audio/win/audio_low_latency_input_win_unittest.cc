@@ -10,6 +10,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <cmath>
 #include <memory>
 
 #include "base/check_deref.h"
@@ -67,6 +68,9 @@ constexpr char kMockApplicationLoopbackDeviceId[] = "applicationLoopback:12345";
 // to avoid long waits in the timeout test cases.
 constexpr base::TimeDelta kShortAsyncActivationTimeoutMs =
     base::Milliseconds(10);
+
+constexpr int kSampleRate44kHz = 44100;
+constexpr int kSampleRate48kHz = 48000;
 
 void LogCallbackDummy(const std::string& /* message */) {}
 
@@ -888,6 +892,209 @@ TEST_F(WinAudioInputTest, WASAPIAudioInputStreamTestPacketSizes) {
     ais->Stop();
     ais.Close();
   }
+}
+
+// Regression test for crbug.com/574898795: verifies that resampling with a
+// small caller buffer size (`frames_per_buffer` <
+// SincResampler::kMinRequestSize) delivers finite audio samples and stops
+// cleanly without underflowing `AudioBlockFifo`.
+TEST_F(WinAudioInputTest, WASAPIAudioInputStreamResampleSmallBuffer) {
+  ABORT_AUDIO_TEST_IF_NOT(HasCoreAudioAndInputDevices(audio_manager_.get()));
+
+  AudioParameters params;
+  ASSERT_TRUE(SUCCEEDED(CoreAudioUtil::GetPreferredAudioParameters(
+      AudioDeviceDescription::kDefaultDeviceId, false, &params)));
+
+  // Pick a sample rate that differs from the device mix format so WASAPI
+  // returns `S_FALSE` in `DesiredFormatIsSupported()` and activates resampling.
+  constexpr int kSmallFrames48kHz = 11;
+  constexpr int kSmallFrames44kHz = 10;
+  const bool is_44khz = params.sample_rate() == kSampleRate44kHz;
+  const int target_rate = is_44khz ? kSampleRate48kHz : kSampleRate44kHz;
+  const int small_frames = is_44khz ? kSmallFrames48kHz : kSmallFrames44kHz;
+  params.Reset(params.format(), params.channel_layout_config(), target_rate,
+               small_frames);
+
+  base::HistogramTester histogram_tester;
+  AudioInputStreamWrapper aisw(audio_manager_.get(), params);
+  ScopedAudioInputStream ais(aisw.Create());
+  ASSERT_EQ(ais->Open(), AudioInputStream::OpenOutcome::kSuccess);
+  histogram_tester.ExpectBucketCount(
+      "Media.Audio.Capture.Win.Open",
+      WASAPIAudioInputStream::OPEN_RESULT_OK_WITH_RESAMPLING, 1);
+
+  MockAudioInputCallback sink;
+  base::RunLoop run_loop;
+  int callbacks = 0;
+  bool saw_corrupt_sample = false;
+
+  EXPECT_CALL(sink, OnError(_)).Times(0);
+  EXPECT_CALL(sink, OnData(NotNull(), _, _, _))
+      .WillRepeatedly([&](const AudioBus* src, base::TimeTicks, double,
+                          const AudioGlitchInfo&) {
+        for (auto channel : src->AllChannels()) {
+          for (float sample : channel) {
+            if (!std::isfinite(sample) || std::abs(sample) > 4.0f) {
+              saw_corrupt_sample = true;
+            }
+          }
+        }
+        if (++callbacks == 10) {
+          task_environment_.GetMainThreadTaskRunner()->PostTask(
+              FROM_HERE, run_loop.QuitWhenIdleClosure());
+        }
+      });
+
+  ais->Start(&sink);
+  run_loop.Run();
+  ais->Stop();
+  ais.Close();
+
+  EXPECT_FALSE(saw_corrupt_sample);
+}
+
+// Verifies that upsampling with `frames_per_buffer = 1` (where the unrounded
+// input frame count is < 1.0) opens and streams cleanly instead of truncating
+// input `frames_per_buffer` to 0 and crashing `AudioConverter`.
+TEST_F(WinAudioInputTest, WASAPIAudioInputStreamResampleSubFrameBuffer) {
+  ABORT_AUDIO_TEST_IF_NOT(HasCoreAudioAndInputDevices(audio_manager_.get()));
+
+  AudioParameters params;
+  ASSERT_TRUE(SUCCEEDED(CoreAudioUtil::GetPreferredAudioParameters(
+      AudioDeviceDescription::kDefaultDeviceId, false, &params)));
+
+  constexpr int kSampleRate96kHz = 96000;
+  constexpr int kSampleRate192kHz = 192000;
+  const int upsample_rate = params.sample_rate() < kSampleRate96kHz
+                                ? kSampleRate96kHz
+                                : kSampleRate192kHz;
+  params.Reset(params.format(), params.channel_layout_config(), upsample_rate,
+               /*frames_per_buffer=*/1);
+
+  AudioInputStreamWrapper aisw(audio_manager_.get(), params);
+  ScopedAudioInputStream ais(aisw.Create());
+  ASSERT_EQ(ais->Open(), AudioInputStream::OpenOutcome::kSuccess);
+
+  FakeAudioInputCallback sink;
+  ais->Start(&sink);
+  sink.WaitForData();
+  ais->Stop();
+  ais.Close();
+  EXPECT_FALSE(sink.error());
+}
+
+// Verifies that downsampling with a large `frames_per_buffer` whose scaled
+// input size exceeds `limits::kMaxSamplesPerPacket` fails `Open()` cleanly
+// instead of crashing `AudioConverter`.
+TEST_F(WinAudioInputTest, WASAPIAudioInputStreamResampleExcessiveBufferFails) {
+  ABORT_AUDIO_TEST_IF_NOT(HasCoreAudioAndInputDevices(audio_manager_.get()));
+
+  AudioParameters params;
+  ASSERT_TRUE(SUCCEEDED(CoreAudioUtil::GetPreferredAudioParameters(
+      AudioDeviceDescription::kDefaultDeviceId, false, &params)));
+
+  params.Reset(params.format(), params.channel_layout_config(),
+               /*sample_rate=*/3000, /*frames_per_buffer=*/500000);
+
+  AudioInputStreamWrapper aisw(audio_manager_.get(), params);
+  ScopedAudioInputStream ais(aisw.Create());
+  EXPECT_EQ(ais->Open(), AudioInputStream::OpenOutcome::kFailed);
+  ais.Close();
+}
+
+// Verifies that when capture processing stalls briefly on a resampled stream,
+// `PullCaptureDataAndPushToSink()` drains all queued WASAPI packets
+// back-to-back via `GetNextPacketSize()`, and that `Stop()` -> `Start()` resets
+// `converter_` and resumes streaming cleanly.
+TEST_F(WinAudioInputTest,
+       WASAPIAudioInputStreamResampleDrainsBacklogAndRestarts) {
+  ABORT_AUDIO_TEST_IF_NOT(HasCoreAudioAndInputDevices(audio_manager_.get()));
+
+  AudioParameters params;
+  ASSERT_TRUE(SUCCEEDED(CoreAudioUtil::GetPreferredAudioParameters(
+      AudioDeviceDescription::kDefaultDeviceId, false, &params)));
+
+  const int target_rate = params.sample_rate() == kSampleRate44kHz
+                              ? kSampleRate48kHz
+                              : kSampleRate44kHz;
+  params.Reset(params.format(), params.channel_layout_config(), target_rate,
+               /*frames_per_buffer=*/target_rate / 100);
+
+  base::HistogramTester histogram_tester;
+  AudioInputStreamWrapper aisw(audio_manager_.get(), params);
+  ScopedAudioInputStream ais(aisw.Create());
+  ASSERT_EQ(ais->Open(), AudioInputStream::OpenOutcome::kSuccess);
+  histogram_tester.ExpectBucketCount(
+      "Media.Audio.Capture.Win.Open",
+      WASAPIAudioInputStream::OPEN_RESULT_OK_WITH_RESAMPLING, 1);
+
+  constexpr base::TimeDelta kStallDuration = base::Milliseconds(60);
+  constexpr base::TimeDelta kMaxBacklogDrainTime = base::Milliseconds(35);
+  constexpr int kQueuedCallbacksToDrain = 5;
+
+  MockAudioInputCallback sink;
+  base::TimeTicks post_stall_time;
+  base::RunLoop run_loop;
+  int callback_count = 0;
+
+  EXPECT_CALL(sink, OnData(NotNull(), _, _, _))
+      .WillOnce([&]() {
+        // Stall once for 60 ms so ~6 packets (10 ms each) queue up in WASAPI's
+        // endpoint buffer behind a single auto-reset event signal.
+        base::PlatformThread::Sleep(kStallDuration);
+        post_stall_time = base::TimeTicks::Now();
+      })
+      .WillRepeatedly(
+          CheckCountAndPostQuitTask(&callback_count, kQueuedCallbacksToDrain,
+                                    task_environment_.GetMainThreadTaskRunner(),
+                                    run_loop.QuitWhenIdleClosure()));
+
+  ais->Start(&sink);
+  run_loop.Run();
+  const base::TimeDelta drain_elapsed =
+      base::TimeTicks::Now() - post_stall_time;
+  ais->Stop();
+
+  // Five 10 ms callbacks would take ~50 ms if read one packet per event, but
+  // should drain immediately from the queued backlog.
+  EXPECT_LT(drain_elapsed, kMaxBacklogDrainTime);
+
+  // Verify `Stop()` -> `Start()` re-entrancy after `converter_->Reset()` +
+  // `PrimeWithSilence()`.
+  FakeAudioInputCallback restart_sink;
+  ais->Start(&restart_sink);
+  restart_sink.WaitForData();
+  restart_sink.WaitForData();
+  ais->Stop();
+  ais.Close();
+  EXPECT_FALSE(restart_sink.error());
+}
+
+// Verifies same-rate channel mixing (`need_resampler == false`,
+// `min_blocks_for_convert_ == 1`) with odd buffer sizes (`31` at 48 kHz, `43`
+// at 44.1 kHz) that previously truncated by 1 frame under double division.
+TEST_F(WinAudioInputTest, WASAPIAudioInputStreamChannelMixOddBufferSize) {
+  ABORT_AUDIO_TEST_IF_NOT(HasCoreAudioAndInputDevices(audio_manager_.get()));
+
+  AudioParameters params;
+  ASSERT_TRUE(SUCCEEDED(CoreAudioUtil::GetPreferredAudioParameters(
+      AudioDeviceDescription::kDefaultDeviceId, false, &params)));
+
+  const auto alt_layout = params.channels() == 1 ? ChannelLayoutConfig::Stereo()
+                                                 : ChannelLayoutConfig::Mono();
+  const int odd_fpb = params.sample_rate() == kSampleRate44kHz ? 43 : 31;
+  params.Reset(params.format(), alt_layout, params.sample_rate(), odd_fpb);
+
+  AudioInputStreamWrapper aisw(audio_manager_.get(), params);
+  ScopedAudioInputStream ais(aisw.Create());
+  ASSERT_EQ(ais->Open(), AudioInputStream::OpenOutcome::kSuccess);
+
+  FakeAudioInputCallback sink;
+  ais->Start(&sink);
+  sink.WaitForData();
+  ais->Stop();
+  ais.Close();
+  EXPECT_FALSE(sink.error());
 }
 
 class WinAudioInputLoopbackTest : public WinAudioInputTest {

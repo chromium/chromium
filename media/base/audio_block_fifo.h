@@ -54,10 +54,13 @@ class MEDIA_EXPORT AudioBlockFifo {
   // Number of unfilled frames in the whole FIFO.
   int GetUnfilledFrames() const;
 
-  // Dynamically increase |blocks| of memory to the FIFO.
+  // Dynamically increases the FIFO capacity by `blocks` blocks.
+  // Note: Allocates heap memory and resizes internal storage, so this must not
+  // be called on real-time audio threads.
   void IncreaseCapacity(int blocks);
 
  private:
+  friend class AudioBlockFifoTest;
   // Common implementation for Push() and PushSilence.  if |source| is nullptr,
   // silence will be pushed. To push silence, set source and bytes_per_sample to
   // nullptr and 0 respectively.

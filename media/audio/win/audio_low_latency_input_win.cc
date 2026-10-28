@@ -31,6 +31,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/checked_math.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/process/process.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
@@ -1074,6 +1075,10 @@ void WASAPIAudioInputStream::Stop() {
     capture_thread_->Join();
     capture_thread_.reset();
   }
+  if (converter_) {
+    converter_->Reset();
+    converter_->PrimeWithSilence();
+  }
 
   if (started_) {
     SendLogMessage(base::StringPrintf(
@@ -1240,18 +1245,12 @@ HRESULT WASAPIAudioInputStream::CreateFifoIfNeeded() {
   //    the selected packet size used in each callback.
   // 2) The selected buffer size is larger than the recorded buffer size in
   //    each event.
-  // In the case where no resampling is required, a single buffer should be
-  // enough but in case we get buffers that don't match exactly, we'll go with
-  // two. Same applies if we need to resample and the buffer ratio is perfect.
-  // However if the buffer ratio is imperfect, we will need 3 buffers to safely
-  // be able to buffer up data in cases where a conversion requires two audio
-  // buffers (and we need to be able to write to the third one).
-  size_t capture_buffer_size =
-      std::max(2 * endpoint_buffer_size_frames * frame_size_bytes_,
-               2 * packet_size_frames_ * frame_size_bytes_);
-  int buffers_required = capture_buffer_size / packet_size_bytes_;
-  if (converter_ && imperfect_buffer_size_conversion_)
-    ++buffers_required;
+  // Size `fifo_` to hold leftover frames kept between callbacks
+  // (`min_blocks_for_convert_ + 1` blocks, including a partial block) plus
+  // `2 * endpoint_buffer_size_frames` of new capture data without overflowing.
+  const int endpoint_blocks =
+      base::ClampCeil(2.0 * endpoint_buffer_size_frames / packet_size_frames_);
+  const int buffers_required = min_blocks_for_convert_ + 1 + endpoint_blocks;
 
   DCHECK(!fifo_);
   fifo_ = std::make_unique<AudioBlockFifo>(
@@ -1574,17 +1573,10 @@ void WASAPIAudioInputStream::PullCaptureDataAndPushToSink() {
     double volume = 0.0;
     GetAgcVolume(&volume);
 
-    // Deliver captured data to the registered consumer using a packet size
-    // which was specified at construction.
-    while (fifo_->available_blocks()) {
+    // Deliver captured data while enough input blocks are buffered (`1` block
+    // normally, or `2` blocks when resampling so `Convert()` never underflows).
+    while (fifo_->available_blocks() >= min_blocks_for_convert_) {
       if (converter_) {
-        if (imperfect_buffer_size_conversion_ &&
-            fifo_->available_blocks() == 1) {
-          // Special case. We need to buffer up more audio before we can convert
-          // or else we'll suffer an underrun.
-          // TODO(grunell): Verify this is really true.
-          return;
-        }
         converter_->Convert(convert_bus_.get());
         sink_->OnData(convert_bus_.get(), capture_time, volume,
                       glitch_accumulator_.GetAndReset());
@@ -1946,12 +1938,12 @@ bool WASAPIAudioInputStream::DesiredFormatIsSupported(HRESULT* hr) {
     input_format->nAvgBytesPerSec =
         input_format->nSamplesPerSec * input_format->nBlockAlign;
 
-    if (IsSupportedFormatForConversion(&input_format_)) {
+    if (IsSupportedFormatForConversion(&input_format_) &&
+        SetupConverterAndStoreFormatInfo()) {
       SendLogMessage(base::StrCat(
           {__func__, " => (WARNING: Captured audio will be converted: [",
            CoreAudioUtil::WaveFormatToString(&input_format_), "] ==> [",
            CoreAudioUtil::WaveFormatToString(&output_format_), "])"}));
-      SetupConverterAndStoreFormatInfo();
 
       // Indicate that we're good to go with a close match.
       hresult = S_OK;
@@ -1966,48 +1958,57 @@ bool WASAPIAudioInputStream::DesiredFormatIsSupported(HRESULT* hr) {
   return (hresult == S_OK);
 }
 
-void WASAPIAudioInputStream::SetupConverterAndStoreFormatInfo() {
-  // Ideally, we want a 1:1 ratio between the buffers we get and the buffers
-  // we give to OnData so that each buffer we receive from the OS can be
-  // directly converted to a buffer that matches with what was asked for.
-  const double buffer_ratio =
-      output_format_.nSamplesPerSec / static_cast<double>(packet_size_frames_);
-  double new_frames_per_buffer =
-      input_format_.Format.nSamplesPerSec / buffer_ratio;
-
-  const auto input_layout =
-      ChannelLayoutConfig::Guess(input_format_.Format.nChannels);
-  DCHECK_NE(CHANNEL_LAYOUT_UNSUPPORTED, input_layout.channel_layout());
+bool WASAPIAudioInputStream::SetupConverterAndStoreFormatInfo() {
   const auto output_layout =
       ChannelLayoutConfig::Guess(output_format_.nChannels);
-  DCHECK_NE(CHANNEL_LAYOUT_UNSUPPORTED, output_layout.channel_layout());
-
-  const AudioParameters input(AudioParameters::AUDIO_PCM_LOW_LATENCY,
-                              input_layout, input_format_.Format.nSamplesPerSec,
-                              static_cast<int>(new_frames_per_buffer));
-
   const AudioParameters output(AudioParameters::AUDIO_PCM_LOW_LATENCY,
                                output_layout, output_format_.nSamplesPerSec,
                                packet_size_frames_);
+  if (!output.IsValid()) {
+    return false;
+  }
 
-  converter_ = std::make_unique<AudioConverter>(input, output, false);
+  // Ideally, we want a 1:1 ratio between the buffers we get and the buffers
+  // we give to OnData so that each buffer we receive from the OS can be
+  // directly converted to a buffer that matches with what was asked for.
+  // Compute the proportional input size using exact 64-bit integer arithmetic
+  // to avoid double-division rounding truncation (e.g., 15 -> 14 frames).
+  const uint64_t ideal_input_frames =
+      (uint64_t{input_format_.Format.nSamplesPerSec} * packet_size_frames_) /
+      output_format_.nSamplesPerSec;
+  if (ideal_input_frames > media::limits::kMaxSamplesPerPacket) {
+    return false;
+  }
+
+  // AudioParameters requires a positive frame count; floor at 1 when
+  // `ideal_input_frames` truncates to 0 (e.g., high-ratio upsampling of a
+  // tiny output buffer).
+  const int input_frames_per_buffer =
+      std::max(1, static_cast<int>(ideal_input_frames));
+
+  const auto input_layout =
+      ChannelLayoutConfig::Guess(input_format_.Format.nChannels);
+  const AudioParameters input(AudioParameters::AUDIO_PCM_LOW_LATENCY,
+                              input_layout, input_format_.Format.nSamplesPerSec,
+                              input_frames_per_buffer);
+  if (!input.IsValid()) {
+    return false;
+  }
+
+  converter_ =
+      std::make_unique<AudioConverter>(input, output, /*disable_fifo=*/false);
   converter_->AddInput(this);
   converter_->PrimeWithSilence();
   convert_bus_ = AudioBus::Create(output);
 
-  // Update our packet size assumptions based on the new format.
-  const auto new_bytes_per_buffer = static_cast<int>(new_frames_per_buffer) *
-                                    input_format_.Format.nBlockAlign;
-  packet_size_frames_ = new_bytes_per_buffer / input_format_.Format.nBlockAlign;
-  packet_size_bytes_ = new_bytes_per_buffer;
+  // Update our packet size assumptions based on the converter input format.
+  packet_size_frames_ = input_frames_per_buffer;
+  packet_size_bytes_ = packet_size_frames_ * input_format_.Format.nBlockAlign;
   frame_size_bytes_ = input_format_.Format.nBlockAlign;
-
-  imperfect_buffer_size_conversion_ =
-      std::modf(new_frames_per_buffer, &new_frames_per_buffer) != 0.0;
-  if (imperfect_buffer_size_conversion_) {
-    SendLogMessage(base::StrCat(
-        {__func__, " => (WARNING: Audio capture conversion requires a FIFO)"}));
-  }
+  min_blocks_for_convert_ =
+      converter_->GetMaxInputFramesRequested(output.frames_per_buffer()) /
+      input_frames_per_buffer;
+  return true;
 }
 
 HRESULT WASAPIAudioInputStream::InitializeAudioEngine() {

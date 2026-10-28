@@ -8,7 +8,10 @@
 
 #include <algorithm>
 #include <memory>
+#include <utility>
+#include <vector>
 
+#include "base/test/gtest_util.h"
 #include "base/time/time.h"
 #include "media/base/sample_format.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -68,6 +71,12 @@ class AudioBlockFifoTest : public testing::Test {
       EXPECT_GT(channel[0], 0.0f);
       EXPECT_GT(channel[bus->frames() - 1], 0.0f);
     }
+  }
+
+  bool AreAllAllocatedBlocksZeroed(const AudioBlockFifo& fifo) const {
+    return std::ranges::all_of(fifo.audio_blocks_, [](const auto& block) {
+      return block->AreFramesZero();
+    });
   }
 };
 
@@ -316,6 +325,39 @@ TEST_F(AudioBlockFifoTest, IncreaseCapacityWhenFull) {
   verify_bus(fifo.Consume(), kOriginalValue);
   verify_bus(fifo.Consume(), kOriginalValue);
   verify_bus(fifo.Consume(), kAdditionalValue);
+}
+
+// `AudioBus::Create()` allocates uninitialized memory (`base::AlignedUninit`),
+// so `AudioBlockFifo` must explicitly zero newly allocated blocks to avoid
+// exposing uninitialized heap data if an unwritten block is ever read.
+TEST_F(AudioBlockFifoTest, BlocksAreZeroInitialized) {
+  constexpr int kFrames = 128;
+  constexpr int kBlocks = 4;
+
+  // Populate the allocator cache with non-zero float buffers of the same size
+  // before constructing the FIFO.
+  {
+    std::vector<std::unique_ptr<AudioBus>> dirty_buses;
+    for (int i = 0; i < 8; ++i) {
+      auto bus = AudioBus::Create(kChannels, kFrames);
+      for (auto channel : bus->AllChannels()) {
+        std::ranges::fill(channel, 0.75f);
+      }
+      dirty_buses.push_back(std::move(bus));
+    }
+  }
+
+  AudioBlockFifo fifo(kChannels, kFrames, kBlocks);
+  EXPECT_TRUE(AreAllAllocatedBlocksZeroed(fifo));
+
+  fifo.IncreaseCapacity(2);
+  EXPECT_TRUE(AreAllAllocatedBlocksZeroed(fifo));
+}
+
+TEST_F(AudioBlockFifoTest, InvalidOperationsCrash) {
+  AudioBlockFifo fifo(kChannels, /*frames=*/128, /*blocks=*/2);
+  EXPECT_CHECK_DEATH(fifo.Consume());
+  EXPECT_CHECK_DEATH(fifo.IncreaseCapacity(0));
 }
 
 }  // namespace media
