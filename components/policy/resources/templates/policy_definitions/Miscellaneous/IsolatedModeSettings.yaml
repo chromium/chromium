@@ -17,7 +17,6 @@ features:
   dynamic_refresh: false
   per_profile: true
 future_on:
-- chrome.*
 - chrome_os
 - android
 - ios
@@ -36,5 +35,7 @@ schema:
   - 0
   - 1
   type: integer
+supported_on:
+- chrome.*:159-
 tags: []
 type: int-enum
