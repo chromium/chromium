@@ -147,6 +147,10 @@ bool GenAiDefaultSettingsPolicyHandler::CheckPolicySettings(
     }
   }
 
+  if (!errors) {
+    return true;
+  }
+
   // If no GenAI policies are being controlled by this policy, add a warning so
   // admins can take action.
   auto controlled_gen_ai_policies = GetControlledGenAiPolicies(policies);

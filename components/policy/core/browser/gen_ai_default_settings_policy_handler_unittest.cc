@@ -135,6 +135,15 @@ TEST_F(GenAiDefaultSettingsPolicyHandlerTest, NoDefaultControlWarning) {
             u"policies.");
 }
 
+TEST_F(GenAiDefaultSettingsPolicyHandlerTest,
+       CheckPolicySettingsWithNullErrors) {
+  SetGenAiDefaultPolicy(base::Value(kDefaultValue));
+  EXPECT_TRUE(handler_->CheckPolicySettings(policies_, /*errors=*/nullptr));
+
+  SetGenAiDefaultPolicy(base::Value("invalid"));
+  EXPECT_FALSE(handler_->CheckPolicySettings(policies_, /*errors=*/nullptr));
+}
+
 TEST_F(GenAiDefaultSettingsPolicyHandlerTest, IntToIntMapping_FeatureDisabled) {
   // Disable the feature.
   scoped_feature_list_.InitFromCommandLine(

@@ -10,7 +10,6 @@
 #include "base/values.h"
 #include "components/optimization_guide/core/feature_registry/feature_registration.h"
 #include "components/policy/core/browser/gen_ai_default_settings_policy_handler.h"
-#include "components/policy/core/browser/policy_error_map.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_value_map.h"
@@ -54,12 +53,8 @@ bool AutofillGenAiSettingsPolicyHandler::IsGeminiDisabled(
           policies, /*errors=*/nullptr)) {
     gemini_settings_policy_handler_->ApplyPolicySettings(policies, &prefs);
   }
-  // `GenAiDefaultSettingsPolicyHandler::CheckPolicySettings` unconditionally
-  // dereferences `errors` to record info messages, so pass a scratch map that
-  // is discarded here.
-  PolicyErrorMap scratch_errors;
   if (gen_ai_default_settings_policy_handler_->CheckPolicySettings(
-          policies, &scratch_errors)) {
+          policies, /*errors=*/nullptr)) {
     gen_ai_default_settings_policy_handler_->ApplyPolicySettings(policies,
                                                                  &prefs);
   }
