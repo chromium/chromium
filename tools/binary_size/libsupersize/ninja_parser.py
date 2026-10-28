@@ -16,7 +16,9 @@ import sys
 # build obj/.../libfoo.a: alink obj/.../a.o obj/.../b.o |
 # build ./libchrome.so ./lib.unstripped/libchrome.so: solink a.o b.o ...
 # build libmonochrome.so: __chrome_android_libmonochrome___rule | ...
-_REGEX = re.compile(r'build ([^:]+): \w+ (.*?)(?: *\||\n|$)')
+# Uses a greedy match for inputs (rather than a lazy one) for performance.
+# Trailing spaces before | are stripped after matching.
+_REGEX = re.compile(r'build ([^:]+): \w+ ([^|\n]*)(\||\n|$)')
 
 _RLIBS_REGEX = re.compile(r'  rlibs = (.*?)(?:\n|$)')
 
@@ -107,7 +109,9 @@ def _ParseOneFile(lines, dep_map, inputs_by_path):
       continue
     m = _REGEX.match(line)
     if m:
-      outputs, srcs = m.groups()
+      outputs, srcs, terminator = m.groups()
+      if terminator == '|':
+        srcs = srcs.rstrip(' ')
       output = _GetOutputObject(outputs)
       if output:
         assert output not in dep_map, 'Duplicate output: ' + output
@@ -128,7 +132,8 @@ def _ParseOneFile(lines, dep_map, inputs_by_path):
     # target linking rule, then are given as an extra
     #   rlibs =
     # variable on a subsequent line. Watch out for that line.
-    m = _RLIBS_REGEX.match(line)
+    # Check startswith() first since it is faster than the regex.
+    m = line.startswith('  rlibs') and _RLIBS_REGEX.match(line)
     if m:
       for elf_path in last_elf_paths:
         results = inputs_by_path.get(elf_path)
