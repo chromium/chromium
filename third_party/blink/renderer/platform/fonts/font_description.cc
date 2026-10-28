@@ -78,13 +78,13 @@ bool FontDescription::use_subpixel_text_positioning_ = false;
 // static
 FontDescription FontDescription::CreateHashTableEmptyValue() {
   FontDescription result;
-  UNSAFE_TODO(memset(&result, 0, sizeof(FontDescription)));
+  result.fields_.hash_category_ = kHashEmptyValue;
   DCHECK(result.IsHashTableEmptyValue());
   return result;
 }
 
-FontDescription::FontDescription(HashTableDeletedValueType) {
-  UNSAFE_TODO(memset(this, 0, sizeof(FontDescription)));
+FontDescription::FontDescription(HashTableDeletedValueType)
+    : FontDescription() {
   fields_.hash_category_ = kHashDeletedValue;
 }
 

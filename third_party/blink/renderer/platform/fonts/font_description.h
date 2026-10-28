@@ -616,10 +616,15 @@ class PLATFORM_EXPORT FontDescription {
 template <>
 struct HashTraits<FontDescription>
     : SimpleClassHashTraits<blink::FontDescription> {
+  static constexpr bool kEmptyValueIsZero = false;
+
   // FontDescription default constructor creates a regular value instead of the
   // empty value.
   static FontDescription EmptyValue() {
     return FontDescription::CreateHashTableEmptyValue();
+  }
+  static bool IsEmptyValue(const FontDescription& value) {
+    return value.IsHashTableEmptyValue();
   }
 };
 
