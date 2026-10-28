@@ -4,10 +4,11 @@
 
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
+#include "base/scoped_observation.h"
 #include "base/strings/string_util.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -16,12 +17,11 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
-#include "chrome/browser/ui/views/frame/app_menu_button.h"
 #include "chrome/browser/ui/views/frame/app_menu_button_observer.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/toolbar/app_menu.h"
 #include "chrome/browser/ui/views/toolbar/app_menu_control.h"
-#include "chrome/browser/ui/views/toolbar/browser_app_menu_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
@@ -34,10 +34,8 @@
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/views/focus/focus_manager.h"
-#include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/style/platform_style.h"
 #include "ui/views/view.h"
-#include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
 
 namespace {
@@ -49,53 +47,15 @@ void SendKeyPress(BrowserWindowInterface* browser, ui::KeyboardCode key) {
                                         key, false, false, false, false));
 }
 
-// Helper class that waits until the focus has changed to a view other
-// than the one with the provided view id.
-class ViewFocusChangeWaiter : public views::FocusChangeListener {
- public:
-  ViewFocusChangeWaiter(views::FocusManager* focus_manager,
-                        int previous_view_id)
-      : focus_manager_(focus_manager), previous_view_id_(previous_view_id) {
-    focus_manager_->AddFocusChangeListener(this);
-    // Call the focus change notification once in case the focus has
-    // already changed.
-    OnWillChangeFocus(nullptr, focus_manager_->GetFocusedView());
-  }
-
-  ViewFocusChangeWaiter(const ViewFocusChangeWaiter&) = delete;
-  ViewFocusChangeWaiter& operator=(const ViewFocusChangeWaiter&) = delete;
-
-  ~ViewFocusChangeWaiter() override {
-    focus_manager_->RemoveFocusChangeListener(this);
-  }
-
-  void Wait() { loop_.Run(); }
-
- private:
-  // views::FocusChangeListener:
-  void OnDidChangeFocus(views::View* focused_before,
-                        views::View* focused_now) override {
-    if (focused_now && focused_now->GetID() != previous_view_id_) {
-      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-          FROM_HERE, loop_.QuitWhenIdleClosure());
-    }
-  }
-
-  raw_ptr<views::FocusManager> focus_manager_;
-  base::RunLoop loop_;
-  int previous_view_id_;
-  base::WeakPtrFactory<ViewFocusChangeWaiter> weak_factory_{this};
-};
-
 class SendKeysMenuListener : public AppMenuButtonObserver {
  public:
-  SendKeysMenuListener(AppMenuButton* app_menu_button,
+  SendKeysMenuListener(AppMenuControl* app_menu_control,
                        BrowserWindowInterface* browser,
                        bool test_dismiss_menu)
       : browser_(browser),
         menu_open_count_(0),
         test_dismiss_menu_(test_dismiss_menu) {
-    observation_.Observe(app_menu_button);
+    observation_.Observe(app_menu_control);
   }
 
   SendKeysMenuListener(const SendKeysMenuListener&) = delete;
@@ -139,7 +99,7 @@ class SendKeysMenuListener : public AppMenuButtonObserver {
   // tried removing kNestableTasksAllowed but that failed on trybots.
   base::RunLoop loop_{base::RunLoop::Type::kNestableTasksAllowed};
 
-  base::ScopedObservation<AppMenuButton, AppMenuButtonObserver> observation_{
+  base::ScopedObservation<AppMenuControl, AppMenuButtonObserver> observation_{
       this};
 };
 
@@ -173,17 +133,6 @@ class KeyboardAccessTest : public InProcessBrowserTest {
     return focused_view ? focused_view->GetID() : -1;
   }
 
-  void WaitForFocusedViewIDToChange(int original_view_id) {
-    if (GetFocusedViewID() != original_view_id) {
-      return;
-    }
-    gfx::NativeWindow window = browser()->GetWindow()->GetNativeWindow();
-    views::Widget* widget = views::Widget::GetWidgetForNativeWindow(window);
-    views::FocusManager* focus_manager = widget->GetFocusManager();
-    ViewFocusChangeWaiter waiter(focus_manager, original_view_id);
-    waiter.Wait();
-  }
-
 #if BUILDFLAG(IS_WIN)
   // Opens the system menu on Windows with the Alt Space combination and selects
   // the New Tab option from the menu.
@@ -214,18 +163,15 @@ void KeyboardAccessTest::TestMenuKeyboardAccess(bool alternate_key_sequence,
   ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser()));
 
   // Get the focused view ID, then press a key to activate the
-  // page menu, then wait until the focused view changes.
+  // page menu, then wait until the app menu is focused.
   int original_view_id = GetFocusedViewID();
 
   ui_test_utils::TabAddedWaiter tab_add(browser());
 
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
   SendKeysMenuListener menu_listener(
-      views::AsViewClass<AppMenuButton>(
-          views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
-              kToolbarAppMenuButtonElementId,
-              views::ElementTrackerViews::GetContextForView(browser_view))),
-      browser(), false);
+      browser_view->toolbar_button_provider()->GetAppMenuControl(), browser(),
+      false);
 
   if (focus_omnibox) {
     browser_view->GetLocationBar()->FocusLocation(
@@ -250,14 +196,16 @@ void KeyboardAccessTest::TestMenuKeyboardAccess(bool alternate_key_sequence,
     // control keys.
     int new_view_id = GetFocusedViewID();
     ASSERT_EQ(original_view_id, new_view_id);
+    ASSERT_FALSE(browser_view->toolbar()->GetAppMenuFocused());
     return;
   }
-
-  WaitForFocusedViewIDToChange(original_view_id);
 
   // See above comment. Since we already brought up the menu, no need to do this
   // on ChromeOS.
 #if !BUILDFLAG(IS_CHROMEOS)
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return browser_view->toolbar()->GetAppMenuFocused(); }));
+
   if (alternate_key_sequence) {
     SendKeyPress(browser(), ui::VKEY_DOWN);
   } else {
@@ -396,22 +344,18 @@ void KeyboardAccessTest::TestMenuKeyboardAccessAndDismiss() {
 
   ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser()));
 
-  int original_view_id = GetFocusedViewID();
-
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
   SendKeysMenuListener menu_listener(
-      views::AsViewClass<AppMenuButton>(
-          views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
-              kToolbarAppMenuButtonElementId,
-              views::ElementTrackerViews::GetContextForView(browser_view))),
-      browser(), true);
+      browser_view->toolbar_button_provider()->GetAppMenuControl(), browser(),
+      true);
   browser_view->GetLocationBar()->FocusLocation(
       /*is_user_initiated=*/false, /*clear_focus_if_failed=*/false);
 
   ASSERT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_F10, false,
                                               false, false, false));
 
-  WaitForFocusedViewIDToChange(original_view_id);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return browser_view->toolbar()->GetAppMenuFocused(); }));
 
   SendKeyPress(browser(), ui::VKEY_DOWN);
   menu_listener.Wait();
