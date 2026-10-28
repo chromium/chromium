@@ -13,6 +13,7 @@
 #include "components/viz/common/gpu/raster_context_provider.h"
 #include "components/viz/common/resources/release_callback.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
+#include "gpu/GLES2/gl2extchromium.h"
 #include "gpu/command_buffer/client/raster_interface.h"
 #include "gpu/command_buffer/common/capabilities.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
@@ -208,11 +209,9 @@ VideoFrameAcceleratedSnapshotPool::Create(const CanvasSnapshotInfo& info) {
       info.size, format, info.alpha_type, info.color_space, info.hdr_metadata,
       context_provider_wrapper, gpu::SHARED_IMAGE_USAGE_DISPLAY_READ,
       base::DoNothing()));
-  if (!provider->IsValid()) {
-    return nullptr;
-  }
-  return base::WrapUnique(
+  auto pool = base::WrapUnique(
       new VideoFrameAcceleratedSnapshotPool(std::move(provider)));
+  return pool->IsValid() ? std::move(pool) : nullptr;
 }
 
 VideoFrameAcceleratedSnapshotPool::VideoFrameAcceleratedSnapshotPool(
@@ -224,8 +223,19 @@ VideoFrameAcceleratedSnapshotPool::VideoFrameAcceleratedSnapshotPool(
 VideoFrameAcceleratedSnapshotPool::~VideoFrameAcceleratedSnapshotPool() =
     default;
 
+gpu::raster::RasterInterface*
+VideoFrameAcceleratedSnapshotPool::RasterInterface() const {
+  if (!provider_->context_provider_wrapper_) {
+    return nullptr;
+  }
+  return provider_->context_provider_wrapper_->ContextProvider()
+      .RasterInterface();
+}
+
 bool VideoFrameAcceleratedSnapshotPool::IsValid() const {
-  return provider_->IsValid();
+  auto* raster_interface = RasterInterface();
+  return raster_interface &&
+         raster_interface->GetGraphicsResetStatusKHR() == GL_NO_ERROR;
 }
 
 gfx::Size VideoFrameAcceleratedSnapshotPool::Size() const {
@@ -300,7 +310,7 @@ void VideoFrameAcceleratedSnapshotPool::EnsureResourceReadyForDraw() {
 
 void VideoFrameAcceleratedSnapshotPool::FlushRecording(
     cc::PaintRecord last_recording) {
-  if (!provider_->IsGpuContextLost()) {
+  if (IsValid()) {
     EnsureResourceReadyForDraw();
 
     const bool needs_clear = !provider_->is_cleared_;
@@ -325,7 +335,7 @@ void VideoFrameAcceleratedSnapshotPool::FlushRecording(
         cc::PlaybackImageProvider::RasterMode::kGpu,
         provider_->context_provider_wrapper_);
 
-    gpu::SyncToken sync_token = provider_->RasterInterface()->RasterSharedImage(
+    gpu::SyncToken sync_token = RasterInterface()->RasterSharedImage(
         provider_->resource()->GetSharedImage(),
         provider_->resource()->acquire_sync_token(), std::move(last_recording),
         &image_provider, needs_clear);

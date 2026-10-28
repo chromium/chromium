@@ -67,6 +67,7 @@ class PLATFORM_EXPORT VideoFrameAcceleratedSnapshotPool {
   void EnsureResourceReadyForDraw();
   bool ShouldReplaceTargetBuffer(cc::PaintImage::ContentId content_id);
   scoped_refptr<CanvasResourceSharedImage> NewOrRecycledResource();
+  gpu::raster::RasterInterface* RasterInterface() const;
 
   std::unique_ptr<CanvasNon2DResourceProvider> provider_;
 };
