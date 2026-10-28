@@ -96,6 +96,12 @@ def create_rust_cxx_modules(blueprint, gn, target, is_test_target, context):
         is_test_target,
         context,
     )[0].name
+    # All Soong targets built for Cronet (Android device architectures and Linux
+    # host) belong to the Unix target family. Pass this cfg explicitly (with
+    # single quotes so the shell preserves the inner double quotes required by
+    # cxxbridge's syn LitStr parser) since gn2bp invokes cxxbridge directly
+    # instead of via run_cxxbridge.py + rustc_print_cfg.
+    cxx_flags = "--cfg 'target_family=\"unix\"'"
     modules = []
     for i, src in enumerate(sorted(target.common.sources)):
         header_genrule = soong_ast.create_module(
@@ -106,9 +112,7 @@ def create_rust_cxx_modules(blueprint, gn, target, is_test_target, context):
             is_test=is_test_target,
         )
         header_genrule.tools = {cxx_bridge_module_name}
-        header_genrule.cmd = (
-            f"$(location {cxx_bridge_module_name}) $(in) --header > $(out)"
-        )
+        header_genrule.cmd = f"$(location {cxx_bridge_module_name}) $(in) --header {cxx_flags} > $(out)"
         header_genrule.srcs = {gn_utils.label_to_path(src)}
         header_genrule.out = {f"{gn_utils.label_to_path(src)}.h"}
 
@@ -120,7 +124,9 @@ def create_rust_cxx_modules(blueprint, gn, target, is_test_target, context):
             is_test=is_test_target,
         )
         cc_genrule.tools = {cxx_bridge_module_name}
-        cc_genrule.cmd = f"$(location {cxx_bridge_module_name}) $(in) > $(out)"
+        cc_genrule.cmd = (
+            f"$(location {cxx_bridge_module_name}) $(in) {cxx_flags} > $(out)"
+        )
         cc_genrule.srcs = {gn_utils.label_to_path(src)}
         cc_genrule.genrule_srcs = {f":{cc_genrule.name}"}
         cc_genrule.out = {f"{gn_utils.label_to_path(src)}.cc"}
@@ -1196,6 +1202,10 @@ def _is_allowed_ldflag(flag):
             "-Wl,-mllvm,-enable-ml-inliner",
             "-Wl,-mllvm,-ml-inliner-model-selector",
             "-Wl,-mllvm,-ml-inliner-skip-policy",
+            # Chromium-internal pseudo-flag intercepted by gcc_link_wrapper.py /
+            # whole_archive.py to link Rust gtest rlibs with --whole-archive.
+            # Soong already links rust_ffi_static dependencies via whole_static_libs.
+            "-LinkWrapper,",
         ]
     )
 
