@@ -42,6 +42,8 @@
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/web_modal/test_web_contents_modal_dialog_manager_delegate.h"
+#include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/plugin_service.h"
@@ -67,6 +69,10 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/web_dialogs/web_dialog_delegate.h"
 #include "url/gurl.h"
+
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/ash/profiles/profile_helper.h"
+#endif
 
 using content::WebContents;
 using content::WebContentsObserver;
@@ -517,6 +523,42 @@ IN_PROC_BROWSER_TEST_F(PrintPreviewDialogControllerBrowserTest,
   // Cleanup association
   dialog_controller->DisassociateWebContentsesForTesting(preview_dialog_ptr);
 }
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewDialogControllerBrowserTest,
+                       GetOrCreatePreviewDialogWithoutModalDialogHost) {
+  printing::PrintPreviewDialogController* dialog_controller =
+      printing::PrintPreviewDialogController::GetInstance();
+  ASSERT_TRUE(dialog_controller);
+
+  WebContents* non_tab_contents = CreateTestTab();
+  EXPECT_FALSE(
+      dialog_controller->GetOrCreatePreviewDialogForTesting(non_tab_contents));
+}
+
+#if BUILDFLAG(IS_CHROMEOS)
+IN_PROC_BROWSER_TEST_F(PrintPreviewDialogControllerBrowserTest,
+                       GetOrCreatePreviewDialogNonUserBrowserContext) {
+  printing::PrintPreviewDialogController* dialog_controller =
+      printing::PrintPreviewDialogController::GetInstance();
+  ASSERT_TRUE(dialog_controller);
+
+  web_modal::TestWebContentsModalDialogManagerDelegate delegate;
+  delegate.set_web_contents_modal_dialog_host(
+      browser()->GetWebContentsModalDialogHostForWindow());
+
+  std::unique_ptr<WebContents> signin_contents = WebContents::Create(
+      WebContents::CreateParams(ash::ProfileHelper::GetSigninProfile()));
+  printing::PrintViewManager::CreateForWebContents(signin_contents.get());
+  web_modal::WebContentsModalDialogManager::CreateForWebContents(
+      signin_contents.get());
+  web_modal::WebContentsModalDialogManager::FromWebContents(
+      signin_contents.get())
+      ->SetDelegate(&delegate);
+
+  EXPECT_FALSE(dialog_controller->GetOrCreatePreviewDialogForTesting(
+      signin_contents.get()));
+}
+#endif
 
 // Tests multiple print preview dialogs exist in the same browser for different
 // initiators. If a preview dialog already exists for an initiator, that

@@ -42,6 +42,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/arc/print_spooler/print_session_impl.h"  // nogncheck crbug.com/40147906
+#include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
 #endif
 
 using content::NavigationController;
@@ -258,6 +259,15 @@ WebContents* PrintPreviewDialogController::GetOrCreatePreviewDialog(
   if (preview_dialog) {
     return preview_dialog;
   }
+
+#if BUILDFLAG(IS_CHROMEOS)
+  // Do not allow print preview for non-user BrowserContexts, such as the Login,
+  // OOBE, and Lock screens, even if `initiator` has a
+  // WebContentsModalDialogHost.
+  if (!ash::IsUserBrowserContext(initiator->GetBrowserContext())) {
+    return nullptr;
+  }
+#endif
 
   // TODO(https://crbug.com/372062070: It's currently probably possible to
   // invoke print-preview on non-tab web contents. There are currently tests

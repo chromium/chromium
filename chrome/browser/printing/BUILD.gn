@@ -228,6 +228,7 @@ if (enable_printing) {
           "//chrome/browser/ash/arc/print_spooler",
           "//chrome/browser/ash/printing",
           "//chrome/browser/chromeos/policy/dlp",
+          "//chromeos/ash/components/browser_context_helper",
         ]
         if (use_cups) {
           sources += [
@@ -242,7 +243,6 @@ if (enable_printing) {
             "//chrome/browser/chromeos/printing",
             "//chrome/browser/web_applications",
             "//chrome/common/printing",
-            "//chromeos/ash/components/browser_context_helper",
             "//components/content_settings/browser",
             "//components/content_settings/core/browser",
             "//components/content_settings/core/common",
@@ -374,10 +374,14 @@ if (enable_printing) {
           ":test_support",
           "//chrome/browser/ui/webui/print_preview",
           "//chrome/browser/ui/webui/print_preview:browser_tests",
+          "//components/web_modal",
+          "//components/web_modal:test_support",
           "//printing:test_support",
         ]
 
-        if (!is_chromeos) {
+        if (is_chromeos) {
+          deps += [ "//chrome/browser/ash/profiles" ]
+        } else {
           sources += [ "system_access_process_print_browsertest.cc" ]
         }
       }
