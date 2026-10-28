@@ -30,28 +30,28 @@ export function getHtml(this: ManagedUserProfileNoticeAppRefreshElement) {
     </managed-user-profile-notice-disclosure-refresh>
   ` : ''}
   ${this.isState_(State.PROCESSING) ? html`
-    <managed-user-profile-notice-state id="processing"
-        subtitle="${this.processingSubtitle_}" icon="cr:domain">
+    <managed-user-profile-notice-state-refresh id="processing"
+        subtitle="${this.processingSubtitle_}">
       <div class="spinner"></div>
-    </managed-user-profile-notice-state>
+    </managed-user-profile-notice-state-refresh>
   ` : ''}
   ${this.isState_(State.SUCCESS) ? html`
-    <managed-user-profile-notice-state id="success" icon="cr:domain"
+    <managed-user-profile-notice-state-refresh id="success"
         title="$i18n{successTitle}" subtitle="$i18n{successSubtitle}">
       <img class="success-icon" alt="">
-    </managed-user-profile-notice-state>
+    </managed-user-profile-notice-state-refresh>
   ` : ''}
   ${this.isState_(State.TIMEOUT) ? html`
-    <managed-user-profile-notice-state id="timeout" icon="cr:domain"
+    <managed-user-profile-notice-state-refresh id="timeout"
         title="$i18n{timeoutTitle}" subtitle="$i18n{timeoutSubtitle}">
       <img class="timeout-icon" alt="">
-    </managed-user-profile-notice-state>
+    </managed-user-profile-notice-state-refresh>
   ` : ''}
   ${this.isState_(State.ERROR) ? html`
-    <managed-user-profile-notice-state id="error" icon="cr:domain"
+    <managed-user-profile-notice-state-refresh id="error"
         title="${this.errorTitle_}" subtitle="${this.errorSubtitle_}">
       <img class="error-icon" alt="">
-    </managed-user-profile-notice-state>
+    </managed-user-profile-notice-state-refresh>
   ` : ''}
   ${this.isState_(State.USER_DATA_HANDLING) ? html`
     <managed-user-profile-notice-data-handling id="user-data-handling"

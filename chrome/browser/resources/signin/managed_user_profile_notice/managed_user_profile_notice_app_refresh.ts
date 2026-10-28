@@ -8,7 +8,7 @@ import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
 import './managed_user_profile_notice_disclosure_refresh.js';
 import './managed_user_profile_notice_value_prop.js';
-import './managed_user_profile_notice_state.js';
+import './managed_user_profile_notice_state_refresh.js';
 import './managed_user_profile_notice_data_handling.js';
 import './signals_disclaimer_refresh.js';
 
@@ -16,7 +16,7 @@ import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_
 import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
 import {WebUiListenerMixinLit} from 'chrome://resources/cr_elements/web_ui_listener_mixin_lit.js';
-import {assertNotReached, assertNotReachedCase} from 'chrome://resources/js/assert.js';
+import {assertNotReachedCase} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
@@ -214,12 +214,11 @@ export class ManagedUserProfileNoticeAppRefreshElement extends
       case ScreenType.ENTERPRISE_ACCOUNT_SYNC_DISABLED:
       case ScreenType.CONSUMER_ACCOUNT_SYNC_DISABLED:
       case ScreenType.DEVICE_SIGNALS_DISCLAIMER:
+      case ScreenType.ENTERPRISE_ACCOUNT_CREATION:
+      case ScreenType.ENTERPRISE_OIDC:
         return AppMode.PROFILE_PICKER;
       case ScreenType.FIRST_RUN:
         return AppMode.FIRST_RUN;
-      case ScreenType.ENTERPRISE_ACCOUNT_CREATION:
-      case ScreenType.ENTERPRISE_OIDC:
-        assertNotReached();
       default:
         assertNotReachedCase(screenType);
     }
