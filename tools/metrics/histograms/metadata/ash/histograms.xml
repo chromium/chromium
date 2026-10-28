@@ -6574,7 +6574,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Ash.RefactoringHint.ProfilePolicyConnectorIsManaged.{PossibleCases}"
-    units="hash" expires_after="2027-04-01">
+    enum="ProfilePolicyConnectorCallersCodeLocation" expires_after="2027-04-01">
   <owner>junis@google.com</owner>
   <owner>hidehiko@chromium.org</owner>
   <summary>
