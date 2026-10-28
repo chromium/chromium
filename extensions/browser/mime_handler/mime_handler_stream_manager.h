@@ -385,11 +385,20 @@ class MimeHandlerStreamManager
   void DeleteSelfIfNoStreams();
 
   // Continues `AbortAndFallbackToNativeHandler()` once the body cache is
-  // ready. Does nothing if its stream was deleted while waiting, or if the
-  // embedder frame left the stream's original URL or is no longer active.
+  // ready. Drops the frame's fallback registration if the stream was deleted
+  // while waiting.
   void OnGotFallbackDataPipe(EmbedderHostInfo embedder_info,
                              base::WeakPtr<StreamContainer> stream,
                              mojo::ScopedDataPipeConsumerHandle body);
+
+  // Re-navigates the embedder frame to `original_url` and registers the
+  // navigation as the frame's fallback. `response` is the kept body the
+  // navigation replays; without one the navigation loads from the network.
+  // Drops the frame's registration instead if the frame left `original_url`,
+  // is no longer active, or the navigation does not start.
+  void StartFallbackNavigation(EmbedderHostInfo embedder_info,
+                               const GURL& original_url,
+                               std::optional<CachedFallbackBody> response);
 
   // Called when a RenderFrameHost in the observed WebContents is replaced or
   // deleted. If `old_host` is an extension host, deletes the associated stream.
