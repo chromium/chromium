@@ -339,7 +339,7 @@ TEST_F(UILockControllerTest, EscNotificationReshownWhenLidReopened) {
 
 TEST_F(UILockControllerTest, EscNotificationShowsOnSecondaryDisplay) {
   // Create surface on secondary display.
-  UpdateDisplay("900x800,70x600");
+  UpdateDisplay("900x800,200x600");
   std::unique_ptr<ShellSurface> test_surface =
       BuildSurface(gfx::Point(900, 100), 200, 200);
   test_surface->SetApplicationId(kOverviewToExitAppId);

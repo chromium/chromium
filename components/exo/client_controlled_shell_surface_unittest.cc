@@ -1712,7 +1712,7 @@ TEST_F(ClientControlledShellSurfaceTest, NoFrameOnModalContainer) {
 
 TEST_F(ClientControlledShellSurfaceTest,
        SetGeometryReparentsToDisplayOnFirstCommit) {
-  UpdateDisplay("100x200,100x200");
+  UpdateDisplay("200x320,200x320");
   const auto* screen = display::Screen::Get();
 
   {
@@ -1729,7 +1729,7 @@ TEST_F(ClientControlledShellSurfaceTest,
   }
 
   {
-    gfx::Rect geometry(116, 16, 32, 32);
+    gfx::Rect geometry{216, 16, 32, 32};
     auto shell_surface = exo::test::ShellSurfaceBuilder({64, 64})
                              .SetGeometry(geometry)
                              .BuildClientControlledShellSurface();
@@ -1745,7 +1745,7 @@ TEST_F(ClientControlledShellSurfaceTest,
 }
 
 TEST_F(ClientControlledShellSurfaceTest, SetBoundsReparentsToDisplay) {
-  UpdateDisplay("100x200,100x200");
+  UpdateDisplay("200x320,200x320");
 
   const auto* screen = display::Screen::Get();
   gfx::Rect geometry(16, 16, 32, 32);
@@ -1771,7 +1771,7 @@ TEST_F(ClientControlledShellSurfaceTest, SetBoundsReparentsToDisplay) {
   // Move to secondary display with bounds inside display.
   shell_surface->SetBounds(secondary_display.id(), geometry);
   surface->Commit();
-  EXPECT_EQ(gfx::Rect(116, 16, 32, 32),
+  EXPECT_EQ((gfx::Rect{216, 16, 32, 32}),
             shell_surface->GetWidget()->GetWindowBoundsInScreen());
 
   display = screen->GetDisplayNearestWindow(
@@ -1792,7 +1792,7 @@ TEST_F(ClientControlledShellSurfaceTest, SetBoundsReparentsToDisplay) {
   // Move to secondary display with bounds outside display.
   shell_surface->SetBounds(secondary_display.id(), geometry);
   surface->Commit();
-  EXPECT_EQ(gfx::Rect(94, 0, 32, 32),
+  EXPECT_EQ((gfx::Rect{194, 0, 32, 32}),
             shell_surface->GetWidget()->GetWindowBoundsInScreen());
 
   display = screen->GetDisplayNearestWindow(

@@ -149,7 +149,7 @@ TEST_F(SurfaceTreeHostTest,
 TEST_F(SurfaceTreeHostTest,
        UpdateHostWindowBoundsAllocatesLocalSurfaceIdWhenPixelSizeOnlyChanges) {
   // Set device scale factor to 300%.
-  UpdateDisplay("800x600*3");
+  UpdateDisplay("1200x900*3");
 
   // Create 50x50 shell surface which submits in pixel coordinates.
   auto shell_surface = test::ShellSurfaceBuilder({50, 50})
