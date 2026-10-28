@@ -3,7 +3,8 @@ import pytest
 from tests.support.image import png_dimensions
 
 from . import get_visual_viewport_dimensions
-from ... import get_device_pixel_ratio, get_viewport_dimensions
+from ... import (get_device_pixel_ratio, get_document_dimensions,
+                 get_viewport_dimensions)
 
 pytestmark = pytest.mark.asyncio
 
@@ -104,22 +105,42 @@ async def test_capture_with_different_dpr(bidi_session, new_tab, inline, dpr):
     )
 
 
-async def test_clip_huge_element_to_viewport(bidi_session, top_context, inline):
-    width = "32768px"
-    height = "32768px"
+@pytest.mark.parametrize("dpr", [1, 3])
+async def test_clip_huge_element_to_viewport(bidi_session, new_tab, inline,
+                                             dpr):
+    width = 32768
+    height = 32768
+    test_viewport = {"width": 250, "height": 300}
 
-    url = inline(f"<div style='width: {width}; height: {height}; background-color: black;'></div>")
-    await bidi_session.browsing_context.navigate(
-        context=top_context["context"], url=url, wait="complete"
+    url = inline(f"""
+        <style>
+            /* Hide scrollbars without constraining the huge body extent. */
+            html {{ overflow: hidden; }}
+            body {{ margin: 0; }}
+        </style>
+        <div style="width: {width}px; height: {height}px; background-color: black;"></div>
+    """)
+    await bidi_session.browsing_context.set_viewport(
+        context=new_tab["context"],
+        viewport=test_viewport,
+        device_pixel_ratio=dpr,
     )
 
-    # The screenshot covers the visual viewport, which excludes scrollbars.
-    viewport = await get_visual_viewport_dimensions(bidi_session, top_context)
-    dpr = await get_device_pixel_ratio(bidi_session, top_context)
+    await bidi_session.browsing_context.navigate(context=new_tab["context"],
+                                                 url=url,
+                                                 wait="complete")
+
+    viewport_dimensions = await get_viewport_dimensions(bidi_session, new_tab)
+    document_dimensions = await get_document_dimensions(bidi_session, new_tab)
+    observed_dpr = await get_device_pixel_ratio(bidi_session, new_tab)
+    assert viewport_dimensions == test_viewport
+    assert observed_dpr == pytest.approx(dpr)
+    assert document_dimensions["width"] >= width
+    assert document_dimensions["height"] >= height
 
     data = await bidi_session.browsing_context.capture_screenshot(
-        context=top_context["context"]
-    )
+        context=new_tab["context"])
     assert png_dimensions(data) == pytest.approx(
-        (viewport["width"] * dpr, viewport["height"] * dpr), abs=1.0
+        (viewport_dimensions["width"] * observed_dpr,
+         viewport_dimensions["height"] * observed_dpr), abs=1.0
     )
