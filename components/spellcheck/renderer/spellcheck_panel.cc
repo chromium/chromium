@@ -5,7 +5,6 @@
 #include "components/spellcheck/renderer/spellcheck_panel.h"
 
 #include "base/functional/bind.h"
-#include "base/metrics/histogram_macros.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_thread.h"
 #include "services/service_manager/public/cpp/local_interface_provider.h"
@@ -37,7 +36,6 @@ bool SpellCheckPanel::IsShowingSpellingUI() {
 }
 
 void SpellCheckPanel::ShowSpellingUI(bool show) {
-  UMA_HISTOGRAM_BOOLEAN("SpellCheck.api.showUI", show);
   GetSpellCheckPanelHost()->ShowSpellingPanel(show);
 }
 

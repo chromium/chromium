@@ -5113,14 +5113,6 @@ useful for Chirp alerts (go/crca-alerts). -->
   </summary>
 </histogram>
 
-<histogram name="SpellCheck.api.showUI" enum="BooleanEnabled"
-    expires_after="M124">
-  <owner>groby@chromium.org</owner>
-  <summary>
-    The number of times the platform spelling UI was enabled/disabled.
-  </summary>
-</histogram>
-
 <histogram name="SpellCheck.Browser.InitForRendererTime" units="ms"
     expires_after="2027-03-01">
   <owner>sisidovski@chromium.org</owner>
