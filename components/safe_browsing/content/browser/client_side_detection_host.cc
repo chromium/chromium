@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <memory>
 #include <optional>
+#include <string_view>
 #include <utility>
 
 #include "base/check_op.h"
@@ -21,6 +22,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/rand_util.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -1171,6 +1173,8 @@ void ClientSideDetectionHost::OnPhishingPreClassificationDone(
         *GetIntelligentScanId());
   }
 
+  RecordSurfaceAvailabilityForCopy(request_type);
+
   content::RenderFrameHost* rfh = web_contents()->GetPrimaryMainFrame();
 
   phishing_detector_.reset();
@@ -1228,6 +1232,46 @@ void ClientSideDetectionHost::OnPhishingPreClassificationDone(
                      weak_factory_.GetWeakPtr(), request_type, is_sample_ping,
                      did_match_high_confidence_allowlist, is_invalid_ip,
                      tick_clock()->NowTicks()));
+}
+
+void ClientSideDetectionHost::RecordSurfaceAvailabilityForCopy(
+    ClientSideDetectionType request_type) const {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  content::RenderWidgetHostView* view =
+      web_contents()->GetRenderWidgetHostView();
+  const bool surface_available = view && view->IsSurfaceAvailableForCopy();
+
+  ClassificationVisibility visibility = ClassificationVisibility::kHidden;
+  switch (web_contents()->GetVisibility()) {
+    case content::Visibility::HIDDEN:
+      visibility = ClassificationVisibility::kHidden;
+      break;
+    case content::Visibility::OCCLUDED:
+      visibility = ClassificationVisibility::kOccluded;
+      break;
+    case content::Visibility::VISIBLE:
+      visibility = ClassificationVisibility::kVisible;
+      break;
+  }
+
+  if (IsEnhancedProtectionEnabled() &&
+      request_type == ClientSideDetectionType::TRIGGER_MODELS &&
+      base::FeatureList::IsEnabled(kClientSideDetectionImageEmbeddingMatch)) {
+    request_type = ClientSideDetectionType::IMAGE_EMBEDDING_MATCH;
+  }
+  std::string_view request_type_name = GetRequestTypeName(request_type);
+  base::UmaHistogramBoolean("SBClientPhishing.SurfaceAvailableForCopy",
+                            surface_available);
+  base::UmaHistogramBoolean(
+      base::StrCat(
+          {"SBClientPhishing.SurfaceAvailableForCopy.", request_type_name}),
+      surface_available);
+  base::UmaHistogramEnumeration("SBClientPhishing.VisibilityAtClassification",
+                                visibility);
+  base::UmaHistogramEnumeration(
+      base::StrCat(
+          {"SBClientPhishing.VisibilityAtClassification.", request_type_name}),
+      visibility);
 }
 
 void ClientSideDetectionHost::PhishingDetectionDone(

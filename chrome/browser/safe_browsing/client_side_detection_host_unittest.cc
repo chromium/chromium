@@ -1718,6 +1718,85 @@ TEST_F(ClientSideDetectionHostTest, TestPreClassificationCheckTwoNavigations) {
   fake_phishing_detector_.CheckMessage(&url2);
 }
 
+TEST_F(ClientSideDetectionHostTest, RecordsSurfaceAvailabilityAtDispatch) {
+  base::HistogramTester histogram_tester;
+  GURL url("http://host.com/");
+  database_manager_->SetAllowlistLookupDetailsForUrl(url, false);
+  ExpectPreClassificationChecks(url, &kFalse, &kFalse, &kFalse, &kFalse);
+  NavigateAndCommit(url);
+  WaitAndCheckPreClassificationChecks();
+  fake_phishing_detector_.CheckMessage(&url);
+
+  // The test RenderWidgetHostView never has a compositing surface to copy.
+  histogram_tester.ExpectUniqueSample(
+      "SBClientPhishing.SurfaceAvailableForCopy", false, 1);
+  histogram_tester.ExpectUniqueSample(
+      "SBClientPhishing.SurfaceAvailableForCopy.TriggerModel", false, 1);
+  histogram_tester.ExpectUniqueSample(
+      "SBClientPhishing.VisibilityAtClassification",
+      ClientSideDetectionHost::ClassificationVisibility::kVisible, 1);
+  histogram_tester.ExpectUniqueSample(
+      "SBClientPhishing.VisibilityAtClassification.TriggerModel",
+      ClientSideDetectionHost::ClassificationVisibility::kVisible, 1);
+}
+
+TEST_F(ClientSideDetectionHostTest,
+       RecordsHiddenVisibilityAtDispatchForBackgroundTab) {
+  base::HistogramTester histogram_tester;
+  web_contents()->WasHidden();
+  ASSERT_EQ(web_contents()->GetVisibility(), content::Visibility::HIDDEN);
+
+  GURL url("http://host.com/");
+  database_manager_->SetAllowlistLookupDetailsForUrl(url, false);
+  ExpectPreClassificationChecks(url, &kFalse, &kFalse, &kFalse, &kFalse);
+  NavigateAndCommit(url);
+  WaitAndCheckPreClassificationChecks();
+  fake_phishing_detector_.CheckMessage(&url);
+
+  histogram_tester.ExpectUniqueSample(
+      "SBClientPhishing.VisibilityAtClassification",
+      ClientSideDetectionHost::ClassificationVisibility::kHidden, 1);
+  histogram_tester.ExpectUniqueSample(
+      "SBClientPhishing.VisibilityAtClassification.TriggerModel",
+      ClientSideDetectionHost::ClassificationVisibility::kHidden, 1);
+  histogram_tester.ExpectUniqueSample(
+      "SBClientPhishing.SurfaceAvailableForCopy", false, 1);
+
+  web_contents()->WasOccluded();
+  ASSERT_EQ(web_contents()->GetVisibility(), content::Visibility::OCCLUDED);
+
+  GURL occluded_url("http://other.host.com/");
+  database_manager_->SetAllowlistLookupDetailsForUrl(occluded_url, false);
+  ExpectPreClassificationChecks(occluded_url, &kFalse, &kFalse, &kFalse,
+                                &kFalse);
+  NavigateAndCommit(occluded_url);
+  WaitAndCheckPreClassificationChecks();
+  fake_phishing_detector_.CheckMessage(&occluded_url);
+
+  histogram_tester.ExpectBucketCount(
+      "SBClientPhishing.VisibilityAtClassification",
+      ClientSideDetectionHost::ClassificationVisibility::kOccluded, 1);
+  histogram_tester.ExpectBucketCount(
+      "SBClientPhishing.VisibilityAtClassification.TriggerModel",
+      ClientSideDetectionHost::ClassificationVisibility::kOccluded, 1);
+}
+
+TEST_F(ClientSideDetectionHostTest,
+       DoesNotRecordSurfaceAvailabilityWhenPreClassificationFails) {
+  base::HistogramTester histogram_tester;
+  GURL url("http://host.com/");
+  // Matching the CSD allowlist stops the request before dispatch.
+  ExpectPreClassificationChecks(url, &kFalse, &kTrue, nullptr, nullptr);
+  NavigateAndCommit(url);
+  WaitAndCheckPreClassificationChecks();
+  fake_phishing_detector_.CheckMessage(nullptr);
+
+  histogram_tester.ExpectTotalCount("SBClientPhishing.SurfaceAvailableForCopy",
+                                    0);
+  histogram_tester.ExpectTotalCount(
+      "SBClientPhishing.VisibilityAtClassification", 0);
+}
+
 TEST_F(ClientSideDetectionHostTest, TestPreClassificationCheckCancelActor) {
   base::HistogramTester histogram_tester;
 

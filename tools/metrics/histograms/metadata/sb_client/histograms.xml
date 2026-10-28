@@ -1502,6 +1502,21 @@ useful for Chirp alerts (go/crca-alerts). -->
   </summary>
 </histogram>
 
+<histogram name="SBClientPhishing.SurfaceAvailableForCopy{RequestType}"
+    enum="BooleanAvailable" expires_after="2027-04-15">
+  <owner>richche@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records whether the primary page's compositing surface could be copied via
+    RenderWidgetHostView::CopyFromSurface at the moment a client-side phishing
+    classification is dispatched for a {RequestType} request, i.e. after
+    pre-classification checks pass and before the renderer is asked to classify.
+    Used to estimate the coverage of capturing page pixels in the browser
+    process instead of the renderer. Not recorded on iOS.
+  </summary>
+  <token key="RequestType" variants="ClientSideDetectionRequestType"/>
+</histogram>
+
 <histogram name="SBClientPhishing.TimeSinceLastReportAtLimit" units="ms"
     expires_after="2027-02-22">
   <owner>nwokedi@chromium.org</owner>
@@ -1597,6 +1612,20 @@ useful for Chirp alerts (go/crca-alerts). -->
     The width of the viewport. It is recorded whenever CSD checks if visual
     features can be extracted.
   </summary>
+</histogram>
+
+<histogram name="SBClientPhishing.VisibilityAtClassification{RequestType}"
+    enum="SBClientPhishingClassificationVisibility" expires_after="2027-04-15">
+  <owner>richche@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records the visibility of the WebContents at the moment a client-side
+    phishing classification is dispatched for a {RequestType} request, i.e.
+    after pre-classification checks pass and before the renderer is asked to
+    classify. Logged alongside SBClientPhishing.SurfaceAvailableForCopy to
+    explain why a compositing surface was unavailable. Not recorded on iOS.
+  </summary>
+  <token key="RequestType" variants="ClientSideDetectionRequestType"/>
 </histogram>
 
 <histogram name="SBClientPhishing.VisualExtractionFrameState"
