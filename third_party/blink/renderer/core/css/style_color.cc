@@ -586,7 +586,7 @@ Color StyleColor::GetColor() const {
 }
 
 bool StyleColor::IsSystemColorIncludingDeprecated(CSSValueID id) {
-  return (id >= CSSValueID::kActiveborder && id <= CSSValueID::kWindowtext) ||
+  return (id >= CSSValueID::kAccentcolor && id <= CSSValueID::kWindowtext) ||
          id == CSSValueID::kMenu;
 }
 

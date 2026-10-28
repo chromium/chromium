@@ -2467,7 +2467,12 @@ _CONFIG = [
             'third_party/blink/renderer/core/paint/theme_painter.cc',
             'third_party/blink/renderer/core/paint/theme_painter_default.cc',
         ],
-        'allowed': ['ui::NativeTheme.*', 'ui::color_utils.*', 'ui::kColor.*'],
+        'allowed': [
+            'ui::NativeTheme.*',
+            'ui::color_utils.*',
+            'ui::kColor.*',
+            'color_utils::IsDark',
+        ],
     },
     {
         'paths': [

@@ -1372,6 +1372,29 @@
     // Other properties can depend upon high priority properties
     // (e.g. font-size / ems)
     {
+      name: "accent-color",
+      property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
+      interpolable: true,
+      inherited: true,
+      // High priority so `accent-color` is applied before other color properties.
+      // The `AccentColor`/`AccentColorText` system-color keywords resolve at
+      // computed-value time against the element's own computed `accent-color`, so
+      // it must be finalized before properties like `color` that may reference them.
+      priority: 1,
+      field_group: "*",
+      field_template: "external",
+      include_paths: ["third_party/blink/renderer/core/css/style_auto_color.h"],
+      type_name: "StyleAutoColor",
+      computed_style_protected_functions: ["getter"],
+      keywords: ["auto", "currentcolor"],
+      typedom_types: ["Keyword"],
+      converter: "ConvertStyleAutoColor",
+      default_value: "StyleAutoColor::AutoColor()",
+      computable: true,
+      invalidate: ["accent-color"],
+      includes_currentcolor: true,
+    },
+    {
       name: "color",
       property_methods: ["CSSValueFromComputedStyleInternal", "ColorIncludingFallback"],
       parse_helper: "ConsumeColorMaybeQuirky",
@@ -2016,24 +2039,6 @@
       supports_incremental_style: false,
       valid_for_permission_element: true,
       percentages_depend_on_used_value: true,
-    },
-    {
-      name: "accent-color",
-      property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
-      interpolable: true,
-      inherited: true,
-      field_group: "*",
-      field_template: "external",
-      include_paths: ["third_party/blink/renderer/core/css/style_auto_color.h"],
-      type_name: "StyleAutoColor",
-      computed_style_protected_functions: ["getter"],
-      keywords: ["auto", "currentcolor"],
-      typedom_types: ["Keyword"],
-      converter: "ConvertStyleAutoColor",
-      default_value: "StyleAutoColor::AutoColor()",
-      computable: true,
-      invalidate: ["accent-color"],
-      includes_currentcolor: true,
     },
     {
       name: "align-content",

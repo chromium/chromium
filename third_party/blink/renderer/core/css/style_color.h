@@ -32,6 +32,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_STYLE_COLOR_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/check.h"
 #include "base/memory/raw_ptr.h"
@@ -60,6 +61,10 @@ class CSSValue;
 struct ColorThemeInfo {
   raw_ptr<const ui::ColorProvider> color_provider = nullptr;
   mojom::blink::ColorScheme color_scheme = mojom::blink::ColorScheme::kLight;
+  // When set, this is the resolved `accent-color` that the
+  // `AccentColor`/`AccentColorText` keywords mirror. A null value means those
+  // keywords should fall back to the system accent color.
+  std::optional<Color> accent_color = std::nullopt;
   // Whether the OS accent color may be exposed to this document. This is
   // restricted to installed web apps in the initial browser profile to limit
   // fingerprinting.

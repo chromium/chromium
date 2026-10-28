@@ -827,10 +827,7 @@ crbug.com/1445990 external/wpt/css/css-ui/outline-color-003.html [ Failure ]
 crbug.com/1445990 external/wpt/css/css-ui/outline-color-004.html [ Failure ]
 # These tests require AccentColor to mirror the computed accent-color.
 crbug.com/536420071 external/wpt/css/css-ui/accent-color-keyword-animation.html [ Failure ]
-crbug.com/536420071 external/wpt/css/css-ui/accent-color-keyword-cyclic.html [ Failure ]
 crbug.com/536420071 external/wpt/css/css-ui/accent-color-keyword-resolution.html [ Failure ]
-crbug.com/536420071 external/wpt/css/css-ui/accent-color-text-keyword-resolution.html [ Failure ]
-crbug.com/536420071 external/wpt/forced-colors-mode/accent-color-keyword-forced-colors.html [ Failure ]
 
 # [css-flexbox]
 

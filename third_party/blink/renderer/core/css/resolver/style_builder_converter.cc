@@ -87,6 +87,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
+#include "third_party/blink/renderer/core/layout/layout_theme.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/core/style/coord_box_offset_path_operation.h"
 #include "third_party/blink/renderer/core/style/geometry_box_clip_path_operation.h"
@@ -3035,18 +3036,18 @@ StyleColor StyleBuilderConverter::ConvertStyleColor(
     const StyleResolverState& state,
     const CSSValue& value,
     bool for_visited_link) {
-  mojom::blink::ColorScheme color_scheme =
-      state.StyleBuilder().UsedColorScheme();
   auto& document = state.GetDocument();
+
+  // `accent-color` is a high-priority property, so it is applied before other
+  // properties (e.g. `color`) that may use the `AccentColor`/`AccentColorText`
+  // keywords. That means the builder already holds this element's own computed
+  // `accent-color`, which is what those keywords resolve against per spec,
+  // except within the `accent-color` property itself, where the builder still
+  // holds the inherited value and the keyword resolves to the parent's value.
   const ResolveColorValueContext context{
       .length_resolver = state.CssToLengthConversionData(),
       .text_link_colors = document.GetTextLinkColors(),
-      .theme_info = {.color_provider =
-                         document.GetColorProviderForPainting(color_scheme),
-                     .color_scheme = color_scheme,
-                     .can_expose_system_accent_color =
-                         document.IsInWebAppScope() &&
-                         document.IsInitialProfile()},
+      .theme_info = state.GetColorThemeInfo(),
       .for_visited_link = for_visited_link,
   };
   return ResolveColorValue(value, context);
@@ -3500,16 +3501,11 @@ static const CSSValue& ComputeColorValue(
     const CSSToLengthConversionData& conversion_data,
     const CSSValue& color_value,
     const Document& document,
-    mojom::blink::ColorScheme color_scheme) {
+    const ColorThemeInfo& theme_info) {
   const ResolveColorValueContext context{
       .length_resolver = conversion_data,
       .text_link_colors = document.GetTextLinkColors(),
-      .theme_info = {.color_provider =
-                         document.GetColorProviderForPainting(color_scheme),
-                     .color_scheme = color_scheme,
-                     .can_expose_system_accent_color =
-                         document.IsInWebAppScope() &&
-                         document.IsInitialProfile()},
+      .theme_info = theme_info,
       .for_visited_link = false};
   const StyleColor style_color = ResolveColorValue(color_value, context);
   return *style_color.ToCSSValue();
@@ -3591,9 +3587,14 @@ static const CSSValue& ComputeRegisteredPropertyValue(
     }
   }
 
-  mojom::blink::ColorScheme color_scheme =
-      state ? state->StyleBuilder().UsedColorScheme()
-            : mojom::blink::ColorScheme::kLight;
+  const ColorThemeInfo theme_info =
+      state
+          ? state->GetColorThemeInfo()
+          : ColorThemeInfo{
+                .color_provider = document.GetColorProviderForPainting(
+                    mojom::blink::ColorScheme::kLight),
+                .can_expose_system_accent_color =
+                    document.IsInWebAppScope() && document.IsInitialProfile()};
 
   if (auto* identifier_value = DynamicTo<CSSIdentifierValue>(value)) {
     CSSValueID value_id = identifier_value->GetValueID();
@@ -3602,7 +3603,7 @@ static const CSSValue& ComputeRegisteredPropertyValue(
     }
     if (StyleColor::IsColorKeyword(value_id)) {
       return ComputeColorValue(css_to_length_conversion_data, *identifier_value,
-                               document, color_scheme);
+                               document, theme_info);
     }
   }
 
@@ -3614,7 +3615,7 @@ static const CSSValue& ComputeRegisteredPropertyValue(
 
   if (const auto* light_dark_pair = DynamicTo<CSSLightDarkValuePair>(value)) {
     const CSSValue& selected_value =
-        color_scheme == mojom::blink::ColorScheme::kLight
+        theme_info.color_scheme == mojom::blink::ColorScheme::kLight
             ? light_dark_pair->First()
             : light_dark_pair->Second();
     return ComputeRegisteredPropertyValue(document, state,
@@ -3626,7 +3627,7 @@ static const CSSValue& ComputeRegisteredPropertyValue(
       value.IsRelativeColorValue() || value.IsContrastColorValue() ||
       value.IsUnresolvedColorValue()) {
     return ComputeColorValue(css_to_length_conversion_data, value, document,
-                             color_scheme);
+                             theme_info);
   }
   if (auto* custom_ident = DynamicTo<CSSCustomIdentValue>(value)) {
     return *custom_ident->Resolve(css_to_length_conversion_data);

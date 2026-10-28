@@ -295,8 +295,13 @@
     },
 
     {
+      // Changing the web app scope can change whether the OS accent color is
+      // exposed via the `AccentColor`/`AccentColorText` system keywords (see
+      // `Document::IsInWebAppScope()`), so a full style recalc is required to
+      // re-resolve those keywords when a document is reparented into a PWA.
       name: "webAppScope",
       type: "String",
+      invalidate: ["Style"],
     },
 
     // An authoritative fallback manifest URL provided by the embedder to use
@@ -309,8 +314,12 @@
     },
 
     {
+      // Like `webAppScope`, this gates exposure of the OS accent color via the
+      // `AccentColor`/`AccentColorText` keywords (see `Document::IsInitialProfile()`
+      // and `LayoutTheme::GetAccentColorOrDefault()`), so re-resolve style on change.
       name: "isInitialProfile",
       initial: false,
+      invalidate: ["Style"],
     },
 
     {

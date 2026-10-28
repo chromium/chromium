@@ -641,17 +641,26 @@ Color LayoutTheme::SystemColor(CSSValueID css_value_id,
 Color LayoutTheme::DefaultSystemColor(CSSValueID css_value_id,
                                       const ColorThemeInfo& theme_info) const {
   const mojom::blink::ColorScheme color_scheme = theme_info.color_scheme;
+  const std::optional<Color>& accent_color = theme_info.accent_color;
   // The source for the deprecations commented on below is
   // https://www.w3.org/TR/css-color-4/#deprecated-system-colors.
 
   switch (css_value_id) {
     case CSSValueID::kAccentcolor:
+      // `AccentColor` mirrors the computed `accent-color` when it is not `auto`
+      // and Forced Colors is off; the caller supplies the resolved color.
+      if (accent_color) {
+        return *accent_color;
+      }
       return RuntimeEnabledFeatures::CSSAccentColorKeywordEnabled()
                  ? GetAccentColorOrDefault(theme_info)
                  : Color();
     case CSSValueID::kAccentcolortext:
+      if (accent_color) {
+        return GetAccentColorText(*accent_color);
+      }
       return RuntimeEnabledFeatures::CSSAccentColorKeywordEnabled()
-                 ? GetAccentColorText(theme_info)
+                 ? GetAccentColorText(GetAccentColorOrDefault(theme_info))
                  : Color();
     case CSSValueID::kActivetext:
       return Color::FromRGBA32(0xFFFF0000);
@@ -970,11 +979,11 @@ Color LayoutTheme::GetAccentColorOrDefault(
   return accent_color == Color() ? kDefaultAccentColor : accent_color;
 }
 
-Color LayoutTheme::GetAccentColorText(const ColorThemeInfo& theme_info) const {
-  Color accent_color = GetAccentColorOrDefault(theme_info);
+// static
+Color LayoutTheme::GetAccentColorText(const Color& accent_color) {
   // This logic matches AccentColorText in Firefox. If the accent color to draw
-  // text on is dark, then use white. If it's light, then use dark.
-  return color_utils::GetRelativeLuminance4f(accent_color.toSkColor4f()) <= 128
+  // text on is dark, then use white; if it's light, then use black.
+  return color_utils::IsDark(accent_color.toSkColor4f().toSkColor())
              ? Color::kWhite
              : Color::kBlack;
 }
