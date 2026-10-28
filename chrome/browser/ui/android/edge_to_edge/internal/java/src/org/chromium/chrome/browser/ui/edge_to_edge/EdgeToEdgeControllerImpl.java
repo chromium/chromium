@@ -426,6 +426,10 @@ public class EdgeToEdgeControllerImpl
             for (var observer : mTopInsetObservers) {
                 observer.onToEdgeChange(mSystemInsets.top, isDrawingToTopEdge(), activeLayoutType);
             }
+            boolean shouldPadTop = shouldPadTopAdjusters();
+            for (var adjuster : mPadAdjusters) {
+                adjuster.overrideTopInset(shouldPadTop ? mSystemInsets.top : 0);
+            }
         }
     }
 
@@ -913,8 +917,9 @@ public class EdgeToEdgeControllerImpl
      * Returns whether {@link EdgeToEdgePadAdjuster}s should be padded with the system top inset.
      */
     private boolean shouldPadTopAdjusters() {
-        return EdgeToEdgeUtils.isTopEdgeToEdgeEnabled()
-                && EdgeToEdgeUtils.isEdgelessTopInsetSupported(mActivity);
+        return (EdgeToEdgeUtils.isTopEdgeToEdgeEnabled()
+                        && EdgeToEdgeUtils.isEdgelessTopInsetSupported(mActivity))
+                || isDrawingToTopEdge();
     }
 
     private void updatePadAdjusters() {

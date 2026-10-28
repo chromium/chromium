@@ -2321,6 +2321,44 @@ public class NewTabPageCoordinatorUnitTest {
         assertEquals("", searchBoxTextView.getText().toString());
     }
 
+    @Test
+    public void testOnToEdgeChange() {
+        PropertyModel model = mCoordinator.getModelForTesting();
+        int toolbarHeightNoShadow =
+                mActivity.getResources().getDimensionPixelSize(R.dimen.toolbar_height_no_shadow);
+        int baseTransitionStartOffset =
+                mCoordinator.getCurrentNtpFakeSearchBoxTransitionStartOffset();
+
+        mCoordinator.onToEdgeChange(/* systemTopInset= */ 50, /* supportsEdgeToEdgeOnTop= */ true);
+        assertEquals(
+                toolbarHeightNoShadow + 50, model.get(NewTabPageLayoutProperties.TOP_INSET_PX));
+        assertEquals(toolbarHeightNoShadow + 50, mNewTabPageLayout.getPaddingTop());
+        assertEquals(
+                baseTransitionStartOffset + 50,
+                mCoordinator.getCurrentNtpFakeSearchBoxTransitionStartOffset());
+
+        // When the controller is drawing to the top edge (systemTopInset = 50) but the NTP has a
+        // default background (supportsEdgeToEdgeOnTop = false), top inset should reset to
+        // toolbarHeightNoShadow.
+        mCoordinator.onToEdgeChange(/* systemTopInset= */ 50, /* supportsEdgeToEdgeOnTop= */ false);
+        assertEquals(toolbarHeightNoShadow, model.get(NewTabPageLayoutProperties.TOP_INSET_PX));
+        assertEquals(toolbarHeightNoShadow, mNewTabPageLayout.getPaddingTop());
+        assertEquals(
+                baseTransitionStartOffset,
+                mCoordinator.getCurrentNtpFakeSearchBoxTransitionStartOffset());
+
+        mCoordinator.onToEdgeChange(/* systemTopInset= */ 50, /* supportsEdgeToEdgeOnTop= */ true);
+        assertEquals(
+                toolbarHeightNoShadow + 50, model.get(NewTabPageLayoutProperties.TOP_INSET_PX));
+        assertEquals(toolbarHeightNoShadow + 50, mNewTabPageLayout.getPaddingTop());
+
+        // Resetting top inset (as done by EdgeToEdgePadAdjuster#overrideTopInset(0)) resets
+        // TOP_INSET_PX to toolbarHeightNoShadow.
+        mCoordinator.onToEdgeChange(/* systemTopInset= */ 0, /* supportsEdgeToEdgeOnTop= */ false);
+        assertEquals(toolbarHeightNoShadow, model.get(NewTabPageLayoutProperties.TOP_INSET_PX));
+        assertEquals(toolbarHeightNoShadow, mNewTabPageLayout.getPaddingTop());
+    }
+
     /**
      * Makes the {@link SideUiStateProvider} available to the coordinator created in {@link
      * #setUp()}, and returns the {@link SideUiObserver} it registers. Invocations on {@link

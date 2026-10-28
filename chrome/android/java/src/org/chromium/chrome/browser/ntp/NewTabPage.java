@@ -19,10 +19,12 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.ColorInt;
+import androidx.annotation.Px;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.view.ViewCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
+import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
 import org.chromium.base.CallbackUtils;
 import org.chromium.base.Log;
@@ -56,7 +58,6 @@ import org.chromium.chrome.browser.feed.FeedSwipeRefreshLayout;
 import org.chromium.chrome.browser.feed.NtpFeedSurfaceLifecycleManager;
 import org.chromium.chrome.browser.feed.componentinterfaces.SurfaceCoordinator;
 import org.chromium.chrome.browser.glic.GlicHelper;
-import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.LifecycleObserver;
 import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
@@ -94,6 +95,7 @@ import org.chromium.chrome.browser.tasks.HomeSurfaceTracker;
 import org.chromium.chrome.browser.toolbar.top.Toolbar;
 import org.chromium.chrome.browser.ui.bottombar.BottomBarConfigUtils;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
 import org.chromium.chrome.browser.ui.edge_to_edge.TopInsetProvider;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.SnackbarManageable;
@@ -122,6 +124,7 @@ import org.chromium.content_public.browser.NavigationController;
 import org.chromium.ui.base.ActivityResultTracker;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.edge_to_edge.EdgeToEdgePadAdjuster;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
 import java.lang.ref.WeakReference;
@@ -197,8 +200,11 @@ public class NewTabPage
     private boolean mSnapshotSingleTabCardChanged;
     private final boolean mIsInNightMode;
     private final boolean mSupportsEnableEdgeToEdgeOnTop;
+    private final MonotonicObservableSupplier<EdgeToEdgeController> mEdgeToEdgeControllerSupplier;
     private final TopInsetProvider mTopInsetProvider;
     private TopInsetProvider.@Nullable Observer mTopInsetChangeObserver;
+    private @Nullable EdgeToEdgePadAdjuster mEdgeToEdgePadAdjuster;
+    private @Nullable Callback<EdgeToEdgeController> mEdgeToEdgeControllerCallback;
     private boolean mIsUseEdgeToEdgeForCustomizedTheme;
 
     private @Nullable HomepageStateListener mHomepageStateListener;
@@ -459,6 +465,7 @@ public class NewTabPage
         mIsInNightMode = isInNightMode;
         mIsNtpCustomizationSyncEnabled = NtpCustomizationUtils.isNTPCustomizationSyncEnabled();
         mTabStripHeightSupplier = tabStripHeightSupplier;
+        mEdgeToEdgeControllerSupplier = edgeToEdgeControllerSupplier;
         mTopInsetProvider = topInsetProvider;
 
         Profile profile = mTab.getProfile();
@@ -719,9 +726,33 @@ public class NewTabPage
         startupMetricsTracker.registerNtpViewObserver(mFeedSurfaceProvider.getView());
     }
 
-    /** Initialize the single tab card on home surface NTP or magic stack. */
+    /** Initialize the top inset observer or pad adjuster for edge-to-edge on top. */
     private void initTopInsetProviderObserver() {
-        mTopInsetChangeObserver = this::onToEdgeChange;
+        if (EdgeToEdgeUtils.isEdgeToEdgeRefactorEnabled()) {
+            mEdgeToEdgePadAdjuster =
+                    new EdgeToEdgePadAdjuster() {
+                        @Override
+                        public void overrideBottomInset(@Px int inset) {}
+
+                        @Override
+                        public void overrideTopInset(@Px int inset) {
+                            onToEdgeChange(inset, inset > 0);
+                        }
+
+                        @Override
+                        public void destroy() {}
+                    };
+            mEdgeToEdgeControllerCallback =
+                    controller ->
+                            controller.registerAdjuster(assumeNonNull(mEdgeToEdgePadAdjuster));
+            mEdgeToEdgeControllerSupplier.addSyncObserverAndCallIfNonNull(
+                    mEdgeToEdgeControllerCallback);
+            return;
+        }
+
+        mTopInsetChangeObserver =
+                (systemTopInset, consumeTopInset, layoutType) ->
+                        onToEdgeChange(systemTopInset, consumeTopInset);
         mTopInsetProvider.addObserver(mTopInsetChangeObserver);
     }
 
@@ -823,9 +854,8 @@ public class NewTabPage
      * @param systemTopInset The system's top inset, i.e., the height of the Status bar. While
      *     usually greater than zero, it can be zero in split-screen mode.
      * @param consumeTopInset Whether the parent layout will consume the top inset.
-     * @param layoutType The current active layout type from {@link LayoutType}.
      */
-    void onToEdgeChange(int systemTopInset, boolean consumeTopInset, @LayoutType int layoutType) {
+    void onToEdgeChange(int systemTopInset, boolean consumeTopInset) {
         // When consumeTopInset is false, it is possible: 1) the next Tab isn't NTP and 2) the next
         // Tab is NTP while NTP should show regular toolbar. NewTabPageLayout should only be
         // adjusted based on supportsEdgeToEdgeOnTop(), not the parent view's decision.
@@ -1147,6 +1177,15 @@ public class NewTabPage
         if (mVoiceRecognitionHandler != null) {
             mVoiceRecognitionHandler.removeObserver(this);
         }
+
+        if (mEdgeToEdgeControllerCallback != null) {
+            mEdgeToEdgeControllerSupplier.removeObserver(mEdgeToEdgeControllerCallback);
+            mEdgeToEdgeControllerCallback = null;
+        }
+        if (mEdgeToEdgeControllerSupplier.get() != null && mEdgeToEdgePadAdjuster != null) {
+            mEdgeToEdgeControllerSupplier.get().unregisterAdjuster(mEdgeToEdgePadAdjuster);
+        }
+        mEdgeToEdgePadAdjuster = null;
 
         if (mTopInsetChangeObserver != null) {
             mTopInsetProvider.removeObserver(mTopInsetChangeObserver);

@@ -2926,6 +2926,48 @@ public class EdgeToEdgeControllerTest {
         mockPadAdjuster.checkInsets(/* expectedTop= */ 0, /* expectedBottom= */ 0);
     }
 
+    @Test
+    @EnableFeatures(ChromeFeatureList.EDGE_TO_EDGE_TOP_INSET)
+    public void testTopInset_PadAdjusterNotified() {
+        ChromeFeatureList.sEdgeToEdgeTopInsetEnableTopEdgeToEdge.setForTesting(false);
+        Tab ntpTab =
+                createMockTab(
+                        JUnitTestGURLs.NTP_URL,
+                        /* isNativePage= */ true,
+                        /* supportsTopEdgeToEdge= */ true);
+        mEdgeToEdgeControllerImpl.onTabSwitched(ntpTab);
+        mEdgeToEdgeControllerImpl.handleWindowInsets(mView, SYSTEM_BARS_WINDOW_INSETS);
+        assertTrue(mEdgeToEdgeControllerImpl.isDrawingToTopEdge());
+
+        MockPadAdjuster mockPadAdjuster = new MockPadAdjuster();
+        mEdgeToEdgeControllerImpl.registerAdjuster(mockPadAdjuster);
+        mockPadAdjuster.checkInsets(/* expectedTop= */ TOP_INSET, /* expectedBottom= */ 0);
+
+        // Switch to regular web page -> top inset on mockPadAdjuster should reset to 0.
+        Tab webTab =
+                createMockTab(
+                        JUnitTestGURLs.URL_1,
+                        /* isNativePage= */ false,
+                        /* supportsTopEdgeToEdge= */ false);
+        mEdgeToEdgeControllerImpl.onTabSwitched(webTab);
+        mEdgeToEdgeControllerImpl.handleWindowInsets(mView, SYSTEM_BARS_WINDOW_INSETS);
+        assertFalse(mEdgeToEdgeControllerImpl.isDrawingToTopEdge());
+        mockPadAdjuster.checkInsets(/* expectedTop= */ 0, /* expectedBottom= */ 0);
+
+        // Switch back to NTP -> top inset on mockPadAdjuster should be TOP_INSET again.
+        mEdgeToEdgeControllerImpl.onTabSwitched(ntpTab);
+        mEdgeToEdgeControllerImpl.handleWindowInsets(mView, SYSTEM_BARS_WINDOW_INSETS);
+        assertTrue(mEdgeToEdgeControllerImpl.isDrawingToTopEdge());
+        mockPadAdjuster.checkInsets(/* expectedTop= */ TOP_INSET, /* expectedBottom= */ 0);
+
+        mEdgeToEdgeControllerImpl.unregisterAdjuster(mockPadAdjuster);
+
+        // Unregistered adjusters should no longer receive updates when switching back to webTab.
+        mEdgeToEdgeControllerImpl.onTabSwitched(webTab);
+        mEdgeToEdgeControllerImpl.handleWindowInsets(mView, SYSTEM_BARS_WINDOW_INSETS);
+        mockPadAdjuster.checkInsets(/* expectedTop= */ TOP_INSET, /* expectedBottom= */ 0);
+    }
+
     // TODO: Verify that the value of the updated insets returned from the
     //  OnApplyWindowInsetsListener is correct.
 
