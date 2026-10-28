@@ -37,6 +37,7 @@
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_selection_state.h"
+#include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/window_feature_controller/window_feature_controller.h"
 #include "chrome/browser/ui/window_metadata/window_metadata_controller.h"
@@ -773,6 +774,20 @@ void SessionServiceBase::BuildCommandsForBrowser(
               tabs::TabStripModelSelectionState::kFocusedTabGroupIdKey,
               focused_group->ToString()));
     }
+  }
+
+  if (const auto* const controller =
+          tabs::VerticalTabStripStateController::From(browser)) {
+    command_storage_manager()->AppendRebuildCommand(
+        sessions::CreateAddWindowExtraDataCommand(
+            browser->GetSessionID(),
+            tabs::VerticalTabStripStateController::kCollapsedKey,
+            base::ToString(controller->IsCollapsed())));
+    command_storage_manager()->AppendRebuildCommand(
+        sessions::CreateAddWindowExtraDataCommand(
+            browser->GetSessionID(),
+            tabs::VerticalTabStripStateController::kUncollapsedWidthKey,
+            base::NumberToString(controller->GetUncollapsedWidth())));
   }
 
   int index = 0;
