@@ -64,7 +64,7 @@ AutofillAiSaveUpdateEntityPromptController::
       IsWalletableEntity()
           ? (IsUpdatePrompt()
                  ? IDS_AUTOFILL_AI_UPDATE_ENTITY_TO_WALLET_DIALOG_SUBTITLE
-                 : IDS_AUTOFILL_AI_SAVE_OR_UPDATE_ENTITY_IN_WALLET_SOURCE_NOTICE)
+                 : IDS_AUTOFILL_AI_SAVE_ENTITY_IN_WALLET_SOURCE_NOTICE)
           : IDS_AUTOFILL_AI_SAVE_OR_UPDATE_LOCAL_ENTITY_SOURCE_NOTICE;
   ui_context_.accept_button_string_id =
       IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_SAVE_DIALOG_SAVE_BUTTON;
@@ -130,9 +130,8 @@ std::u16string AutofillAiSaveUpdateEntityPromptController::GetSourceNotice()
         base::UTF8ToUTF16(account->GetEmail()));
   }
   return l10n_util::GetStringFUTF16(
-      IDS_AUTOFILL_AI_SAVE_OR_UPDATE_ENTITY_IN_WALLET_SOURCE_NOTICE,
-      google_wallet_text, google_wallet_text,
-      base::UTF8ToUTF16(account->GetEmail()));
+      IDS_AUTOFILL_AI_SAVE_ENTITY_IN_WALLET_SOURCE_NOTICE, google_wallet_text,
+      google_wallet_text, base::UTF8ToUTF16(account->GetEmail()));
 }
 
 bool AutofillAiSaveUpdateEntityPromptController::IsWalletableEntity() const {

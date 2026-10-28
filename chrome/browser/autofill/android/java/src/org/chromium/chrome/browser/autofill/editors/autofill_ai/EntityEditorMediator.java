@@ -207,7 +207,7 @@ class EntityEditorMediator {
                 mEntityInstance,
                 mEntityInstance.getRecordType() == RecordType.LOCAL
                         ? R.string.autofill_ai_save_or_update_local_entity_source_notice
-                        : R.string.autofill_ai_save_or_update_entity_in_wallet_source_notice,
+                        : R.string.autofill_ai_save_entity_in_wallet_source_notice,
                 R.string.done,
                 hasLegalMessage() ? mLegalMessageToken : null);
     }
@@ -537,9 +537,7 @@ class EntityEditorMediator {
                 }
                 String walletTitle = mContext.getString(R.string.autofill_google_wallet_title);
                 String sourceNotice =
-                        mContext.getString(
-                                        R.string
-                                                .autofill_ai_save_or_update_entity_in_wallet_source_notice)
+                        mContext.getString(R.string.autofill_ai_save_entity_in_wallet_source_notice)
                                 .replace("$1", walletTitle)
                                 .replace("$2", walletTitle)
                                 .replace("$3", email);

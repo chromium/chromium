@@ -372,7 +372,7 @@ public class AutofillTravelFragmentTest {
         verify(mEntityDataManager)
                 .addOrUpdateEntityInstance(
                         any(),
-                        eq(R.string.autofill_ai_save_or_update_entity_in_wallet_source_notice),
+                        eq(R.string.autofill_ai_save_entity_in_wallet_source_notice),
                         eq(R.string.done),
                         eq(legalMessageToken),
                         any());
@@ -390,7 +390,7 @@ public class AutofillTravelFragmentTest {
         verify(mEntityDataManager)
                 .addOrUpdateEntityInstance(
                         any(),
-                        eq(R.string.autofill_ai_save_or_update_entity_in_wallet_source_notice),
+                        eq(R.string.autofill_ai_save_entity_in_wallet_source_notice),
                         eq(R.string.done),
                         eq(null),
                         any());

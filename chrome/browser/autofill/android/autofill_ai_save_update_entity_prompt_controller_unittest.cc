@@ -239,8 +239,7 @@ TEST_F(AutofillAiSaveUpdateEntityPromptControllerTest,
       prompt_closed_callback(),
       Run(AutofillClient::AutofillAiBubbleResult::kAccepted, Eq(std::nullopt),
           EqualsEntityImportUIContext(
-              Optional(
-                  IDS_AUTOFILL_AI_SAVE_OR_UPDATE_ENTITY_IN_WALLET_SOURCE_NOTICE),
+              Optional(IDS_AUTOFILL_AI_SAVE_ENTITY_IN_WALLET_SOURCE_NOTICE),
               Optional(
                   IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_SAVE_DIALOG_SAVE_BUTTON))));
 
@@ -323,7 +322,7 @@ TEST_F(AutofillAiSaveUpdateEntityPromptControllerTest,
   const std::u16string google_wallet =
       l10n_util::GetStringUTF16(IDS_AUTOFILL_GOOGLE_WALLET_TITLE);
   EXPECT_EQ(l10n_util::GetStringFUTF16(
-                IDS_AUTOFILL_AI_SAVE_OR_UPDATE_ENTITY_IN_WALLET_SOURCE_NOTICE,
+                IDS_AUTOFILL_AI_SAVE_ENTITY_IN_WALLET_SOURCE_NOTICE,
                 google_wallet, google_wallet,
                 base::UTF8ToUTF16(TestingProfile::kDefaultProfileUserName)),
             prompt_controller().GetSourceNotice());

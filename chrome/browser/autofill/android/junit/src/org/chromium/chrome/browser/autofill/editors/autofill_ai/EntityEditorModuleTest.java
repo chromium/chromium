@@ -526,8 +526,7 @@ public class EntityEditorModuleTest {
         String walletTitle = mActivity.getString(R.string.autofill_google_wallet_title);
         String expectedNoticeText =
                 mActivity
-                        .getString(
-                                R.string.autofill_ai_save_or_update_entity_in_wallet_source_notice)
+                        .getString(R.string.autofill_ai_save_entity_in_wallet_source_notice)
                         .replace("$1", walletTitle)
                         .replace("$2", walletTitle)
                         .replace("$3", USER_EMAIL)
@@ -558,8 +557,7 @@ public class EntityEditorModuleTest {
         String walletTitle = mActivity.getString(R.string.autofill_google_wallet_title);
         String expectedSourceNotice =
                 mActivity
-                        .getString(
-                                R.string.autofill_ai_save_or_update_entity_in_wallet_source_notice)
+                        .getString(R.string.autofill_ai_save_entity_in_wallet_source_notice)
                         .replace("$1", walletTitle)
                         .replace("$2", walletTitle)
                         .replace("$3", USER_EMAIL)
