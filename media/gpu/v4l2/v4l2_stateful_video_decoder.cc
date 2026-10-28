@@ -82,6 +82,11 @@ void WaitOnceForEvents(int device_fd,
   // At least Qualcomm Venus likes to bundle events.
   const auto pollin_or_pollpri_event = events_from_device & (POLLIN | POLLPRI);
   if (pollin_or_pollpri_event) {
+    // "POLLIN There is data to read."
+    //  https://man7.org/linux/man-pages/man2/poll.2.html
+    if (events_from_device & POLLIN) {
+      std::move(dequeue_callback).Run();
+    }
     // "If an event occurred (see ioctl VIDIOC_DQEVENT) then POLLPRI will be set
     //  in the revents field and poll() will return."
     // https://www.kernel.org/doc/html/v5.15/userspace-api/media/v4l/func-poll.html
@@ -102,13 +107,6 @@ void WaitOnceForEvents(int device_fd,
 
       std::move(resolution_change_callback).Run();
     }
-
-    // "POLLIN There is data to read."
-    //  https://man7.org/linux/man-pages/man2/poll.2.html
-    if (events_from_device & POLLIN) {
-      std::move(dequeue_callback).Run();
-    }
-
     return;
   }
   if (other_events & POLLIN) {
