@@ -79,7 +79,8 @@ void PopulateChromeWebUIFrameInterfaceBrokersTrustedPartsAndroid(
   if (base::FeatureList::IsEnabled(
           chrome::android::kAndroidNewTabButtonTabstripWebUI)) {
     registry.ForWebUI<tabstrip_ntb::TabStripNtbUI>()
-        .Add<tabs_api::mojom::TabStripService>();
+        .Add<tabs_api::mojom::TabStripService>()
+        .Add<tabstrip_ntb::mojom::PageHandlerFactory>();
   }
 #endif  // BUILDFLAG(ENABLE_WEBUI_TABSTRIP_NTB)
 }

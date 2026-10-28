@@ -7,6 +7,15 @@
  * #scheme=relative
  * #css_wrapper_metadata_end */
 
+:host {
+  transition: opacity 150ms linear;
+}
+
+:host(:not([visible])) {
+  opacity: 0;
+  pointer-events: none;
+}
+
 cr-icon-button {
   --cr-icon-button-fill-color: var(--color-sys-on-surface);
   --cr-icon-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z'/></svg>");

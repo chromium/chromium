@@ -2,9 +2,15 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//mojo/public/tools/bindings/mojom.gni")
 import("//ui/webui/webui_features.gni")
 
 assert(enable_webui_tabstrip_ntb)
+
+mojom("mojo_bindings") {
+  sources = [ "tabstrip_ntb.mojom" ]
+  webui_module_path = "/"
+}
 
 source_set("tabstrip_ntb") {
   sources = [
@@ -13,6 +19,7 @@ source_set("tabstrip_ntb") {
   ]
 
   public_deps = [
+    ":mojo_bindings",
     "//base",
     "//chrome/browser/ui/webui/top_chrome",
     "//chrome/common",

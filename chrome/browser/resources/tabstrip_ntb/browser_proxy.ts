@@ -5,16 +5,27 @@
 import {TabStripService} from '/tab_strip_api/tab_strip_api.mojom-webui.js';
 import type {TabStripServiceInterface} from '/tab_strip_api/tab_strip_api.mojom-webui.js';
 
+import {PageCallbackRouter, PageHandlerFactory} from './tabstrip_ntb.mojom-webui.js';
+
 export class BrowserProxy {
   tabStripService: TabStripServiceInterface;
+  callbackRouter: PageCallbackRouter;
 
-  constructor(tabStripService: TabStripServiceInterface) {
+  constructor(
+      tabStripService: TabStripServiceInterface,
+      callbackRouter: PageCallbackRouter = new PageCallbackRouter()) {
     this.tabStripService = tabStripService;
+    this.callbackRouter = callbackRouter;
   }
 
   static getInstance(): BrowserProxy {
-    return instance ||
-        (instance = new BrowserProxy(TabStripService.getRemote()));
+    if (!instance) {
+      const callbackRouter = new PageCallbackRouter();
+      PageHandlerFactory.getRemote().bindPage(
+          callbackRouter.$.bindNewPipeAndPassRemote());
+      instance = new BrowserProxy(TabStripService.getRemote(), callbackRouter);
+    }
+    return instance;
   }
 
   static setInstance(obj: BrowserProxy) {

@@ -4,6 +4,7 @@
 
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 
+import {assert} from '//resources/js/assert.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
 import {BrowserProxy} from './browser_proxy.js';
@@ -21,6 +22,35 @@ export class NewTabButtonElement extends CrLitElement {
 
   override render() {
     return getHtml.bind(this)();
+  }
+
+  static override get properties() {
+    return {
+      visible: {
+        type: Boolean,
+        reflect: true,
+      },
+    };
+  }
+
+  accessor visible: boolean = true;
+  private setButtonVisibleListenerId_: number|null = null;
+
+  override connectedCallback() {
+    super.connectedCallback();
+    this.setButtonVisibleListenerId_ =
+        BrowserProxy.getInstance().callbackRouter.setButtonVisible.addListener(
+            (visible: boolean) => {
+              this.visible = visible;
+            });
+  }
+
+  override disconnectedCallback() {
+    super.disconnectedCallback();
+    assert(this.setButtonVisibleListenerId_ !== null);
+    BrowserProxy.getInstance().callbackRouter.removeListener(
+        this.setButtonVisibleListenerId_);
+    this.setButtonVisibleListenerId_ = null;
   }
 
   protected onClick() {

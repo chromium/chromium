@@ -48,6 +48,7 @@ class TabStripNtbWebUiHost
   ~TabStripNtbWebUiHost() override;
 
   void Resize(int32_t width_px, int32_t height_px);
+  void SetButtonVisible(bool visible);
   // Returns the hosted WebContents. It stays owned by this object.
   content::WebContents* GetWebContents();
 

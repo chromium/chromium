@@ -125,6 +125,24 @@ void TabStripNtbUI::BindInterface(
   CHECK(FusePipes(std::move(receiver), std::move(tab_strip_client_end_)));
 }
 
+void TabStripNtbUI::BindInterface(
+    mojo::PendingReceiver<tabstrip_ntb::mojom::PageHandlerFactory> receiver) {
+  page_factory_receiver_.reset();
+  page_factory_receiver_.Bind(std::move(receiver));
+}
+
+void TabStripNtbUI::BindPage(
+    mojo::PendingRemote<tabstrip_ntb::mojom::Page> page) {
+  page_.reset();
+  page_.Bind(std::move(page));
+}
+
+void TabStripNtbUI::SetButtonVisible(bool visible) {
+  if (page_.is_bound()) {
+    page_->SetButtonVisible(visible);
+  }
+}
+
 WEB_UI_CONTROLLER_TYPE_IMPL(TabStripNtbUI)
 
 }  // namespace tabstrip_ntb

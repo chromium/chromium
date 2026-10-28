@@ -707,6 +707,9 @@ public class StripLayoutHelperManager
                     @Override
                     public void fadeCompositorButtons(boolean fade) {
                         mTrailingButtonsCoordinator.fadeCompositorButtons(fade);
+                        if (mNtbWebUiCoordinator != null) {
+                            mNtbWebUiCoordinator.setButtonVisible(fade);
+                        }
                     }
 
                     @Override

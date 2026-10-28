@@ -55,6 +55,7 @@ public class NtbWebUiCoordinator implements AccessibilityState.Listener {
     private int mWidthPx;
     private int mHeightPx;
     private boolean mStripInteractive = true;
+    private boolean mButtonVisible = true;
     // The SystemClock.uptimeMillis() timestamp of the most recent input event forwarded from the
     // WebUI new tab button, consumed when the resulting tab is added to record
     // interaction-to-new-tab latency.
@@ -188,6 +189,15 @@ public class NtbWebUiCoordinator implements AccessibilityState.Listener {
         updateInputViewVisibility();
     }
 
+    /**
+     * Sets whether the new tab button is visible (e.g. faded out during tab strip reorder mode).
+     */
+    public void setButtonVisible(boolean visible) {
+        if (mNativePtr == 0 || mButtonVisible == visible) return;
+        mButtonVisible = visible;
+        NtbWebUiCoordinatorJni.get().setButtonVisible(mNativePtr, visible);
+    }
+
     /** Destroys the WebUI and removes the input view. */
     public void destroy() {
         if (mNativePtr == 0) return;
@@ -231,6 +241,8 @@ public class NtbWebUiCoordinator implements AccessibilityState.Listener {
         WebContents getWebContents(long hostPtr);
 
         void resize(long hostPtr, int widthPx, int heightPx);
+
+        void setButtonVisible(long hostPtr, boolean visible);
 
         void destroy(long hostPtr);
     }

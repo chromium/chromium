@@ -1,0 +1,19 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module tabstrip_ntb.mojom;
+
+// Used by the WebUI page to bootstrap communication with the browser process.
+interface PageHandlerFactory {
+  // Binds the WebUI page remote so the browser can push state updates.
+  BindPage(pending_remote<Page> page);
+};
+
+// Implemented by the WebUI page (chrome://tabstrip-ntb.top-chrome/) to
+// receive state updates from the browser.
+interface Page {
+  // Sets whether the new tab button is visible (e.g. faded out during tab
+  // strip reorder mode).
+  SetButtonVisible(bool visible);
+};

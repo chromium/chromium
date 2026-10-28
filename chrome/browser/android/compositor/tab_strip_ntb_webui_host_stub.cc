@@ -34,6 +34,12 @@ static void JNI_NtbWebUiCoordinator_Resize(JNIEnv* env,
   NOTREACHED();
 }
 
+static void JNI_NtbWebUiCoordinator_SetButtonVisible(JNIEnv* env,
+                                                     int64_t host_ptr,
+                                                     bool visible) {
+  NOTREACHED();
+}
+
 static void JNI_NtbWebUiCoordinator_Destroy(JNIEnv* env, int64_t host_ptr) {
   NOTREACHED();
 }
