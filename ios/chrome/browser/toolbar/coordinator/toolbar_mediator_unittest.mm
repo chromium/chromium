@@ -226,10 +226,6 @@ class ToolbarMediatorTest : public PlatformTest,
     }
   }
 
-  void SetFloatyInvoked(bool invoked) {
-    gemini_browser_agent_->is_floaty_invoked_ = invoked;
-  }
-
   void TearDown() override {
     [mediator_ disconnect];
     mediator_ = nil;
@@ -740,7 +736,7 @@ TEST_P(ToolbarMediatorTest, TestAssistantButtonTapped) {
   id mock_gemini_handler = OCMProtocolMock(@protocol(GeminiCommands));
   mediator_.geminiHandler = mock_gemini_handler;
 
-  SetFloatyInvoked(false);
+  gemini_browser_agent_->SetContainerInvoked(false);
   OCMExpect([mock_gemini_handler
       startGeminiEntryFlowWithStartupState:[OCMArg any]
                         baseViewController:nil
@@ -750,7 +746,7 @@ TEST_P(ToolbarMediatorTest, TestAssistantButtonTapped) {
 
   // Test that the floaty is dismissed if the assistant button is tapped while
   // it is showing.
-  SetFloatyInvoked(true);
+  gemini_browser_agent_->SetContainerInvoked(true);
   OCMExpect([mock_gemini_handler dismissGeminiFlowWithCompletion:nil]);
   [mediator_ assistantButtonTapped];
 

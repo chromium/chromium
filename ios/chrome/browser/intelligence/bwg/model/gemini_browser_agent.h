@@ -39,9 +39,6 @@
 
 class Browser;
 class FullscreenController;
-class AppBarMediatorTest;
-class ToolbarMediatorTest;
-class LocationBarBadgeMediatorTest;
 
 namespace gemini {
 enum class FloatyUpdateSource;
@@ -220,9 +217,6 @@ class GeminiBrowserAgent : public BrowserUserData<GeminiBrowserAgent>,
   explicit GeminiBrowserAgent(Browser* browser);
   friend class BrowserUserData<GeminiBrowserAgent>;
   friend class GeminiBrowserAgentTest;
-  friend class AppBarMediatorTest;
-  friend class ToolbarMediatorTest;
-  friend class LocationBarBadgeMediatorTest;
 
   // Returns whether there is at least one inactive shared tab attached.
   bool HasInactiveSharedTabs() const;

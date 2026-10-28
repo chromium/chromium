@@ -40,7 +40,6 @@
 #import "ios/chrome/browser/fullscreen/ui_bundled/test/test_fullscreen_controller.h"
 #import "ios/chrome/browser/intelligence/bwg/model/fake_gemini_service.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_browser_agent.h"
-#import "ios/chrome/browser/intelligence/bwg/model/gemini_configuration.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_service_factory.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_tab_helper.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h"
@@ -483,11 +482,6 @@ class AppBarMediatorTest : public PlatformTest,
           ->GetApplicationLocaleStorage()
           ->Set("fr-FR");
     }
-  }
-
-  // Wrapper for `InvokeFloaty`.
-  void InvokeFloaty(GeminiBrowserAgent* agent, GeminiConfiguration* config) {
-    agent->InvokeFloaty(config);
   }
 
   // Sets whether AI Mode is eligible.
@@ -1076,11 +1070,7 @@ TEST_P(AppBarMediatorTest, TestAssistantButtonHighlighted_GeminiAvailable) {
                                         avatar:nil
                                       signedIn:NO]);
 
-  if (migration_enabled) {
-    agent->SetContainerInvoked(true);
-  } else {
-    InvokeFloaty(agent, [[GeminiConfiguration alloc] init]);
-  }
+  agent->SetContainerInvoked(true);
 
   EXPECT_OCMOCK_VERIFY(consumer_);
 
@@ -1091,11 +1081,7 @@ TEST_P(AppBarMediatorTest, TestAssistantButtonHighlighted_GeminiAvailable) {
                                         avatar:nil
                                       signedIn:NO]);
 
-  if (migration_enabled) {
-    agent->SetContainerInvoked(false);
-  } else {
-    agent->DismissFloaty();
-  }
+  agent->SetContainerInvoked(false);
 
   EXPECT_OCMOCK_VERIFY(consumer_);
 }

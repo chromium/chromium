@@ -310,11 +310,6 @@ class LocationBarBadgeMediatorTest : public PlatformTest {
         .WillRepeatedly(testing::Return(true));
   }
 
-  void SetFloatyInvoked(bool invoked) {
-    GeminiBrowserAgent::FromBrowser(browser_.get())->is_floaty_invoked_ =
-        invoked;
-  }
-
   web::WebTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
@@ -484,7 +479,7 @@ TEST_F(LocationBarBadgeMediatorTest, TestGeminiChipNotShownIfTooRecent) {
 // Tests that the Gemini contextual cue chip is not shown if the floaty is
 // already invoked.
 TEST_F(LocationBarBadgeMediatorTest, TestGeminiChipNotShownIfFloatyInvoked) {
-  SetFloatyInvoked(true);
+  GeminiBrowserAgent::FromBrowser(browser_.get())->SetContainerInvoked(true);
 
   AllowGeminiChipToShow(/*show_gemini_chip=*/false, /*trigger_help_ui=*/true,
                         /*badge_is_visible=*/false);
