@@ -8,7 +8,7 @@
 #include "base/android/jni_string.h"
 #include "components/permissions/permissions_client.h"
 #include "content/public/browser/android/browser_context_handle.h"
-#include "third_party/jni_zero/jni_unique_ptr.h"
+#include "third_party/jni_zero/jni_zero.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "components/content_settings/android/content_settings_jni_headers/ContentSettingsObserver_jni.h"

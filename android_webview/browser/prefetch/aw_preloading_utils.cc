@@ -11,7 +11,7 @@
 #include "base/strings/string_util.h"
 #include "content/public/common/content_features.h"
 #include "net/http/http_no_vary_search_data.h"
-#include "third_party/jni_zero/common_apis.h"
+#include "third_party/jni_zero/jni_zero.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "android_webview/browser_jni_headers/AwNoVarySearchData_jni.h"

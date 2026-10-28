@@ -22,7 +22,7 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
-#include "third_party/jni_zero/common_apis.h"
+#include "third_party/jni_zero/jni_zero.h"
 
 #if !BUILDFLAG(IS_ANDROID)
 #error "JavaBridge only supports OS_ANDROID"

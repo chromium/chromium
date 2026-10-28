@@ -15,7 +15,7 @@
 #include <unistd.h>
 
 #include "base/android/jni_android.h"
-#include "third_party/jni_zero/common_apis.h"
+#include "third_party/jni_zero/jni_zero.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)

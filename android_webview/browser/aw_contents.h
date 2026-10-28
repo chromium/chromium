@@ -37,7 +37,7 @@
 #include "content/public/browser/prerender_handle.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/common/child_process_id.h"
-#include "third_party/jni_zero/jni_raw_ptr.h"
+#include "third_party/jni_zero/jni_zero.h"
 
 class SkBitmap;
 

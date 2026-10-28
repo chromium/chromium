@@ -27,7 +27,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/mojom/window_features/window_features.mojom.h"
-#include "third_party/jni_zero/jni_unique_ptr.h"
+#include "third_party/jni_zero/jni_zero.h"
 #include "ui/base/unowned_user_data/unowned_user_data_host.h"
 
 namespace {

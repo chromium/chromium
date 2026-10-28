@@ -42,7 +42,7 @@
 #include "services/cert_verifier/public/mojom/cert_verifier_service_factory.mojom-forward.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom-shared.h"
-#include "third_party/jni_zero/jni_raw_ptr.h"
+#include "third_party/jni_zero/jni_zero.h"
 
 class GURL;
 class PrefService;

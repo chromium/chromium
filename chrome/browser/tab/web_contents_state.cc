@@ -33,8 +33,8 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/referrer.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
-#include "third_party/jni_zero/common_apis.h"
 #include "third_party/jni_zero/default_conversions.h"
+#include "third_party/jni_zero/jni_zero.h"
 #include "ui/base/page_transition_types.h"
 
 // Must come after headers that provide symbols used by @JniType.
