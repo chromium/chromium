@@ -771,6 +771,7 @@ if (is_android) {
       "//chrome/browser/tab",
       "//chrome/browser/touch_to_fill/password_manager/password_generation/android:public",
       "//chrome/browser/trusted_vault:android_browsertests",
+      "//chrome/browser/ttc/core:browser_tests",
       "//chrome/browser/ui:ui_features",
       "//chrome/browser/ui/android/autofill:browser_tests",
       "//chrome/browser/ui/android/hats:browser_tests",

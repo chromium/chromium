@@ -992,8 +992,6 @@ void ToolController::PerformActionOnTrackedContents(
     ToolResponseCallback callback) {
   // Resolved via the session's VoiceFocusedContentsTracker rather than a
   // TabStripModel, which Android doesn't have.
-  // TODO(crbug.com/570587982): The Android tracker and the tools routed
-  // through it here are only covered by tests on desktop.
   content::WebContents* contents =
       session_controller_->GetVoiceFocusedWebContents();
   tabs::TabInterface* active_tab =

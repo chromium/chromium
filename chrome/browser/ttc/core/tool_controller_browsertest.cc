@@ -19,17 +19,15 @@
 #include "base/strings/strcat.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/test/bind.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
-#include "chrome/browser/actor/actor_surface_handle.h"
 #include "chrome/browser/actor/actor_task.h"
-#include "chrome/browser/actor/actor_task_metadata.h"
-#include "chrome/browser/actor/enterprise_policy_checker.h"
 #include "chrome/browser/actor/tab_annotation_manager.h"
-#include "chrome/browser/actor/tab_observation_strategy.h"
 #include "chrome/browser/actor/tools/find_and_highlight_tool_request.h"
 #include "chrome/browser/actor/tools/gemini_panel_tool_request.h"
 #include "chrome/browser/actor/tools/history_tool_request.h"
@@ -45,52 +43,39 @@
 #include "chrome/browser/actor/tools/translate_page_tool_request.h"
 #include "chrome/browser/actor/tools/type_tool_request.h"
 #include "chrome/browser/actor/tools/window_management_tool_request.h"
-#include "chrome/browser/actor/ui/actor_ui_state_manager.h"
-#include "chrome/browser/actor/ui/actor_ui_tab_controller_interface.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
-#include "chrome/browser/glic/public/glic_keyed_service.h"
-#include "chrome/browser/glic/public/service/glic_instance_coordinator.h"
-#include "chrome/browser/glic/test_support/glic_browser_test.h"
-#include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
-#include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
+#include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
+#include "chrome/browser/translate/translate_test_utils.h"
 #include "chrome/browser/ttc/core/session_controller.h"
 #include "chrome/browser/ttc/core/ttc_core_browser_test_base.h"
 #include "chrome/browser/ttc/core/ttc_keyed_service.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/common/actor/action_result.h"
 #include "chrome/common/actor/actor_constants.h"
-#include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/search_test_utils.h"
-#include "chrome/test/base/ui_test_utils.h"
 #include "components/actor/core/actor_features.h"
 #include "components/actor/core/safety_list_manager.h"
 #include "components/actor/core/task_id.h"
-#include "components/actor/core/task_source_info.h"
 #include "components/actor/public/mojom/actor_types.mojom.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/test/bookmark_test_helpers.h"
-#include "components/keep_alive_registry/keep_alive_types.h"
-#include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_data.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/tabs/public/tab_interface.h"
+#include "components/translate/content/browser/translate_waiter.h"
 #include "components/translate/core/browser/language_state.h"
 #include "components/translate/core/common/translate_switches.h"
 #include "components/ttc/app/public/tool_types.h"
+#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/render_frame_host.h"
-#include "content/public/browser/render_process_host.h"
-#include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/media_start_stop_observer.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -98,10 +83,32 @@
 #include "net/test/embedded_test_server/http_response.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
-#include "ui/base/base_window.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/gfx/codec/jpeg_codec.h"
 #include "url/gurl.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/actor/actor_surface_handle.h"
+#include "chrome/browser/actor/actor_task_metadata.h"
+#include "chrome/browser/actor/enterprise_policy_checker.h"
+#include "chrome/browser/actor/tab_observation_strategy.h"
+#include "chrome/browser/actor/ui/actor_ui_state_manager.h"
+#include "chrome/browser/actor/ui/actor_ui_tab_controller_interface.h"
+#include "chrome/browser/glic/public/glic_keyed_service.h"  // nogncheck
+#include "chrome/browser/glic/public/service/glic_instance_coordinator.h"  // nogncheck
+#include "chrome/browser/glic/test_support/glic_browser_test.h"  // nogncheck
+#include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
+#include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/common/actor/action_result.h"
+#include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/ui_test_utils.h"
+#include "components/actor/core/task_source_info.h"
+#include "components/keep_alive_registry/keep_alive_types.h"
+#include "components/keep_alive_registry/scoped_keep_alive.h"
+#include "ui/base/base_window.h"
+#endif
 
 namespace ttc {
 
@@ -121,6 +128,18 @@ class ToolControllerBrowserTest : public TtcCoreBrowserTestBase {
   ~ToolControllerBrowserTest() override = default;
 
   // TtcCoreBrowserTestBase:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    TtcCoreBrowserTestBase::SetUpCommandLine(command_line);
+#if BUILDFLAG(IS_ANDROID)
+    // Test devices are often offline. The offline status indicator that appears
+    // a few seconds after startup resizes the top controls, which asserts if
+    // the controls are not fully shown at that moment (e.g. during tab
+    // fullscreen or a tab switch). See crbug.com/574927722.
+    command_line->AppendSwitch(
+        switches::kForceOnlineConnectionStateForIndicator);
+#endif
+  }
+
   void SetUpOnMainThread() override {
     TtcCoreBrowserTestBase::SetUpOnMainThread();
     host_resolver()->AddRule("*", "127.0.0.1");
@@ -134,6 +153,27 @@ class ToolControllerBrowserTest : public TtcCoreBrowserTestBase {
     actor::SetSafetyListsForTesting(actor::SafetyListManager::GetInstance(),
                                     "{}");
     TtcCoreBrowserTestBase::TearDownOnMainThread();
+  }
+
+ protected:
+  tabs::TabInterface* active_tab() {
+    return tabs::TabInterface::GetFromContents(web_contents());
+  }
+
+  TabListInterface* tab_list() {
+    return TabListInterface::From(active_tab()->GetBrowserWindowInterface());
+  }
+
+  void OpenForegroundTab(const GURL& url) {
+    // Open in the background and activate explicitly: on Android, a foreground
+    // open runs the new-tab animation, which can re-select the new tab
+    // asynchronously after a subsequent tab switch.
+    tabs::TabInterface* tab =
+        tab_list()->OpenTab(url, /*index=*/-1, /*foreground=*/false);
+    ASSERT_TRUE(tab);
+    ASSERT_TRUE(content::WaitForLoadStop(tab->GetContents()));
+    tab_list()->ActivateTab(tab->GetHandle());
+    ASSERT_TRUE(base::test::RunUntil([tab]() { return tab->IsActivated(); }));
   }
 };
 
@@ -223,20 +263,19 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, PerformSearchMissingQuery) {
 }
 
 IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, CloseCurrentTab) {
+  ASSERT_TRUE(content::NavigateToURL(
+      web_contents(),
+      embedded_https_test_server().GetURL("example.com", "/title1.html")));
   ttc_service().StartSession();
   auto* session_controller = ttc_service().session_controller();
   ASSERT_TRUE(session_controller);
 
   // Open a second tab so that closing the active one leaves the browser open.
-  TabStripModel* tab_strip = browser()->GetTabStripModel();
-  tabs::TabHandle first_tab = tab_strip->GetActiveTab()->GetHandle();
-  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-      browser(),
-      embedded_https_test_server().GetURL("example.com", "/title1.html"),
-      WindowOpenDisposition::kNewForegroundTab,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
-  ASSERT_EQ(tab_strip->count(), 2);
-  ASSERT_NE(tab_strip->GetActiveTab()->GetHandle(), first_tab);
+  tabs::TabHandle first_tab = active_tab()->GetHandle();
+  ASSERT_NO_FATAL_FAILURE(OpenForegroundTab(
+      embedded_https_test_server().GetURL("example.com", "/title2.html")));
+  ASSERT_EQ(tab_list()->GetTabCount(), 2);
+  ASSERT_NE(tab_list()->GetActiveTab()->GetHandle(), first_tab);
 
   base::test::TestFuture<ToolResponse> future;
 
@@ -248,10 +287,11 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, CloseCurrentTab) {
   ToolResponse response = future.Take();
   EXPECT_TRUE(response.Ok());
 
-  EXPECT_EQ(tab_strip->count(), 1);
-  EXPECT_EQ(tab_strip->GetActiveTab()->GetHandle(), first_tab);
+  EXPECT_EQ(tab_list()->GetTabCount(), 1);
+  EXPECT_EQ(tab_list()->GetActiveTab()->GetHandle(), first_tab);
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest,
                        CloseOnlyTabInWindowClosesWindow) {
   ttc_service().StartSession();
@@ -289,6 +329,7 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest,
   // The session should still be alive.
   EXPECT_NE(ttc_service().session_controller(), nullptr);
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, GoBackAndGoForward) {
   ttc_service().StartSession();
@@ -298,8 +339,8 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, GoBackAndGoForward) {
       embedded_https_test_server().GetURL("example.com", "/title1.html");
   const GURL second_url =
       embedded_https_test_server().GetURL("example.com", "/title2.html");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), first_url));
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), second_url));
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), first_url));
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), second_url));
 
   {
     base::test::TestFuture<ToolResponse> future;
@@ -350,7 +391,7 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, ReloadPage) {
 
   const GURL url =
       embedded_https_test_server().GetURL("example.com", "/title1.html");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
   content::TestNavigationObserver navigation_observer(web_contents());
 
@@ -379,7 +420,7 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, ReloadPageOnCrashedTab) {
 
   const GURL url =
       embedded_https_test_server().GetURL("example.com", "/title1.html");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
   content::CrashTab(web_contents());
   ASSERT_TRUE(web_contents()->IsCrashed());
 
@@ -404,10 +445,8 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, SwitchTab) {
   // Open tab 1 in the foreground so tab 0 is in the background.
   const GURL active_url =
       embedded_https_test_server().GetURL("example.com", "/title1.html");
-  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-      browser(), active_url, WindowOpenDisposition::kNewForegroundTab,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
-  ASSERT_EQ(browser()->GetTabStripModel()->active_index(), 1);
+  ASSERT_NO_FATAL_FAILURE(OpenForegroundTab(active_url));
+  ASSERT_EQ(tab_list()->GetActiveIndex(), 1);
 
   ttc_service().StartSession();
   auto* session_controller = ttc_service().session_controller();
@@ -425,7 +464,7 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, SwitchTab) {
 
   ToolResponse response = future.Take();
   EXPECT_TRUE(response.Ok());
-  EXPECT_EQ(browser()->GetTabStripModel()->active_index(), 0);
+  EXPECT_EQ(tab_list()->GetActiveIndex(), 0);
   EXPECT_EQ(web_contents()->GetLastCommittedURL(), target_url);
 }
 
@@ -507,7 +546,7 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, OpenUrlInCurrentTab) {
   const GURL start_url =
       embedded_https_test_server().GetURL("example.com", "/title1.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), start_url));
-  const int initial_tab_count = browser()->GetTabStripModel()->count();
+  const int initial_tab_count = tab_list()->GetTabCount();
 
   ttc_service().StartSession();
   auto* session_controller = ttc_service().session_controller();
@@ -527,7 +566,7 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, OpenUrlInCurrentTab) {
 
   ToolResponse response = future.Take();
   EXPECT_TRUE(response.Ok());
-  EXPECT_EQ(browser()->GetTabStripModel()->count(), initial_tab_count);
+  EXPECT_EQ(tab_list()->GetTabCount(), initial_tab_count);
   EXPECT_EQ(web_contents()->GetLastCommittedURL(), target_url);
 }
 
@@ -536,7 +575,7 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, OpenUrlInNewTab) {
       embedded_https_test_server().GetURL("example.com", "/title1.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), start_url));
   content::WebContents* source_contents = web_contents();
-  const int initial_tab_count = browser()->GetTabStripModel()->count();
+  const int initial_tab_count = tab_list()->GetTabCount();
 
   ttc_service().StartSession();
   auto* session_controller = ttc_service().session_controller();
@@ -556,9 +595,8 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, OpenUrlInNewTab) {
 
   ToolResponse response = future.Take();
   EXPECT_TRUE(response.Ok());
-  ASSERT_EQ(browser()->GetTabStripModel()->count(), initial_tab_count + 1);
-  content::WebContents* active_contents =
-      browser()->GetTabStripModel()->GetActiveWebContents();
+  ASSERT_EQ(tab_list()->GetTabCount(), initial_tab_count + 1);
+  content::WebContents* active_contents = web_contents();
   EXPECT_NE(active_contents, source_contents);
   EXPECT_EQ(active_contents->GetLastCommittedURL(), target_url);
   EXPECT_EQ(source_contents->GetLastCommittedURL(), start_url);
@@ -611,8 +649,8 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, FindAndHighlight) {
   ASSERT_TRUE(session_controller);
 
   // title1.html's body is "This page has no title."
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(),
+  ASSERT_TRUE(content::NavigateToURL(
+      web_contents(),
       embedded_https_test_server().GetURL("example.com", "/title1.html")));
 
   base::test::TestFuture<ToolResponse> future;
@@ -640,8 +678,8 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest,
   auto* session_controller = ttc_service().session_controller();
   ASSERT_TRUE(session_controller);
 
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(),
+  ASSERT_TRUE(content::NavigateToURL(
+      web_contents(),
       embedded_https_test_server().GetURL("example.com", "/title1.html")));
 
   base::test::TestFuture<ToolResponse> future;
@@ -685,12 +723,19 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, PauseAndPlayVideo) {
   auto* session_controller = ttc_service().session_controller();
   ASSERT_TRUE(session_controller);
 
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(),
+  ASSERT_TRUE(content::NavigateToURL(
+      web_contents(),
       embedded_https_test_server().GetURL("example.com", "/actor/media.html")));
 
-  // Start playback so there's an active media session.
-  ASSERT_TRUE(content::ExecJs(web_contents(), "play()"));
+  // Loop the 4s test video so it cannot reach end-of-stream on slow bots, and
+  // wait for the browser process to register the active MediaSession player
+  // before invoking `pause_video`.
+  {
+    content::MediaStartStopObserver start_observer(
+        web_contents(), content::MediaStartStopObserver::Type::kStart);
+    ASSERT_TRUE(content::ExecJs(web_contents(), "video.loop = true; play();"));
+    start_observer.Wait();
+  }
   ASSERT_EQ(true, content::EvalJs(web_contents(), "waitForEvent('play')"));
 
   {
@@ -721,8 +766,8 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, PlayVideoNoMedia) {
   auto* session_controller = ttc_service().session_controller();
   ASSERT_TRUE(session_controller);
 
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(),
+  ASSERT_TRUE(content::NavigateToURL(
+      web_contents(),
       embedded_https_test_server().GetURL("example.com", "/title1.html")));
 
   base::test::TestFuture<ToolResponse> future;
@@ -743,15 +788,25 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, SeekToTimestamp) {
   auto* session_controller = ttc_service().session_controller();
   ASSERT_TRUE(session_controller);
 
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(),
+  ASSERT_TRUE(content::NavigateToURL(
+      web_contents(),
       embedded_https_test_server().GetURL("example.com", "/actor/media.html")));
 
-  // Start playback to initialize the media session, then pause so that
-  // currentTime doesn't drift during the seek.
-  ASSERT_TRUE(content::ExecJs(web_contents(), "play()"));
-  ASSERT_EQ(true, content::EvalJs(web_contents(), "waitForEvent('play')"));
-  ASSERT_TRUE(content::ExecJs(web_contents(), "video.pause()"));
+  // Start playback and wait for the browser process to register the active
+  // MediaSession player and its duration, then pause so that currentTime
+  // doesn't drift during the seek.
+  {
+    content::MediaStartStopObserver start_observer(
+        web_contents(), content::MediaStartStopObserver::Type::kStart);
+    ASSERT_TRUE(content::ExecJs(web_contents(), "video.loop = true; play();"));
+    start_observer.Wait();
+  }
+  {
+    content::MediaStartStopObserver stop_observer(
+        web_contents(), content::MediaStartStopObserver::Type::kStop);
+    ASSERT_TRUE(content::ExecJs(web_contents(), "video.pause()"));
+    stop_observer.Wait();
+  }
   ASSERT_EQ(true, content::EvalJs(web_contents(), "waitForEvent('pause')"));
 
   base::test::TestFuture<ToolResponse> future;
@@ -829,6 +884,24 @@ class ToolControllerTranslateBrowserTest : public ToolControllerBrowserTest {
         translate_script_server_.GetURL("/mock_translate_script.js").spec());
   }
 
+  void NavigateAndWaitForLanguageDetection(const GURL& url) {
+    ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+    ChromeTranslateClient* translate_client =
+        ChromeTranslateClient::FromWebContents(web_contents());
+    ASSERT_TRUE(translate_client);
+    // Wait until language detection completes for `url`. On Android, the
+    // initial `about:blank` page also sends an async `RegisterPage` IPC with an
+    // empty `adopted_language`, whereas `DidFinishNavigation` resets
+    // `source_language()` to empty and `url`'s `RegisterPage` populates a
+    // non-empty language code (e.g. "und").
+    while (translate_client->GetLanguageState().source_language().empty()) {
+      translate::CreateTranslateWaiter(
+          web_contents(),
+          translate::TranslateWaiter::WaitEvent::kLanguageDetermined)
+          ->Wait();
+    }
+  }
+
  private:
   std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
       const net::test_server::HttpRequest& request) {
@@ -871,8 +944,7 @@ IN_PROC_BROWSER_TEST_F(ToolControllerTranslateBrowserTest,
   auto* session_controller = ttc_service().session_controller();
   ASSERT_TRUE(session_controller);
 
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(),
+  ASSERT_NO_FATAL_FAILURE(NavigateAndWaitForLanguageDetection(
       embedded_https_test_server().GetURL("example.com", "/empty.html")));
 
   base::test::TestFuture<ToolResponse> future;
@@ -903,8 +975,7 @@ IN_PROC_BROWSER_TEST_F(ToolControllerTranslateBrowserTest,
   auto* session_controller = ttc_service().session_controller();
   ASSERT_TRUE(session_controller);
 
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(),
+  ASSERT_NO_FATAL_FAILURE(NavigateAndWaitForLanguageDetection(
       embedded_https_test_server().GetURL("example.com", "/empty.html")));
 
   base::test::TestFuture<ToolResponse> future;
@@ -929,8 +1000,8 @@ IN_PROC_BROWSER_TEST_F(ToolControllerTranslateBrowserTest,
   auto* session_controller = ttc_service().session_controller();
   ASSERT_TRUE(session_controller);
 
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(),
+  ASSERT_TRUE(content::NavigateToURL(
+      web_contents(),
       embedded_https_test_server().GetURL("example.com", "/empty.html")));
 
   base::test::TestFuture<ToolResponse> future;
@@ -951,8 +1022,8 @@ IN_PROC_BROWSER_TEST_F(ToolControllerTranslateBrowserTest,
   auto* session_controller = ttc_service().session_controller();
   ASSERT_TRUE(session_controller);
 
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(),
+  ASSERT_TRUE(content::NavigateToURL(
+      web_contents(),
       embedded_https_test_server().GetURL("example.com", "/empty.html")));
 
   base::test::TestFuture<ToolResponse> future;
@@ -971,10 +1042,24 @@ IN_PROC_BROWSER_TEST_F(ToolControllerTranslateBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, EnterAndExitFullscreen) {
+  // Navigate to an actual web page so that on Android the tab and view
+  // hierarchy are attached before exercising fullscreen.
+  ASSERT_TRUE(content::NavigateToURL(
+      web_contents(),
+      embedded_https_test_server().GetURL("example.com", "/title1.html")));
+
   ttc_service().StartSession();
   auto* session_controller = ttc_service().session_controller();
   ASSERT_TRUE(session_controller);
-  ASSERT_FALSE(browser()->GetWindow()->IsFullscreen());
+
+  auto is_fullscreen = [&]() {
+#if BUILDFLAG(IS_ANDROID)
+    return web_contents()->IsFullscreen();
+#else
+    return browser()->GetWindow()->IsFullscreen();
+#endif
+  };
+  ASSERT_FALSE(is_fullscreen());
 
   {
     base::test::TestFuture<ToolResponse> future;
@@ -984,7 +1069,7 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, EnterAndExitFullscreen) {
     session_controller->ProcessToolCall(std::move(tool_request),
                                         future.GetCallback());
     EXPECT_TRUE(future.Take().Ok());
-    EXPECT_TRUE(browser()->GetWindow()->IsFullscreen());
+    EXPECT_TRUE(base::test::RunUntil([&]() { return is_fullscreen(); }));
   }
 
   {
@@ -995,7 +1080,7 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, EnterAndExitFullscreen) {
     session_controller->ProcessToolCall(std::move(tool_request),
                                         future.GetCallback());
     EXPECT_TRUE(future.Take().Ok());
-    EXPECT_FALSE(browser()->GetWindow()->IsFullscreen());
+    EXPECT_TRUE(base::test::RunUntil([&]() { return !is_fullscreen(); }));
   }
 }
 
@@ -1004,8 +1089,8 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, ClickElement) {
   auto* session_controller = ttc_service().session_controller();
   ASSERT_TRUE(session_controller);
 
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(),
+  ASSERT_TRUE(content::NavigateToURL(
+      web_contents(),
       embedded_https_test_server().GetURL(
           "example.com", "/actor/page_with_clickable_element.html")));
   ASSERT_EQ(false, content::EvalJs(web_contents(), "button_clicked"));
@@ -1057,8 +1142,8 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest,
   auto* session_controller = ttc_service().session_controller();
   ASSERT_TRUE(session_controller);
 
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(),
+  ASSERT_TRUE(content::NavigateToURL(
+      web_contents(),
       embedded_https_test_server().GetURL(
           "example.com", "/actor/page_with_clickable_element.html")));
   std::string old_document_id =
@@ -1067,9 +1152,10 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest,
               ->serialized_token();
 
   // Navigate to a new document containing the same clickable element.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), embedded_https_test_server().GetURL(
-                     "foo.com", "/actor/page_with_clickable_element.html")));
+  ASSERT_TRUE(content::NavigateToURL(
+      web_contents(),
+      embedded_https_test_server().GetURL(
+          "foo.com", "/actor/page_with_clickable_element.html")));
   ASSERT_EQ(false, content::EvalJs(web_contents(), "button_clicked"));
 
   std::string new_document_id =
@@ -1125,7 +1211,7 @@ IN_PROC_BROWSER_TEST_F(ToolControllerNavigationGatingBrowserTest,
       embedded_https_test_server().GetURL("example.com", "/actor/link.html");
   const GURL new_origin_url =
       embedded_https_test_server().GetURL("foo.com", "/actor/blank.html");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), start_url));
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), start_url));
   ASSERT_TRUE(content::ExecJs(
       web_contents(), content::JsReplace("setLink($1);", new_origin_url)));
 
@@ -1191,8 +1277,8 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, SetText) {
   auto* session_controller = ttc_service().session_controller();
   ASSERT_TRUE(session_controller);
 
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(),
+  ASSERT_TRUE(content::NavigateToURL(
+      web_contents(),
       embedded_https_test_server().GetURL("example.com", "/actor/input.html")));
   ASSERT_TRUE(content::ExecJs(web_contents(),
                               "document.getElementById('input').value = "
@@ -1269,8 +1355,8 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest,
   auto* session_controller = ttc_service().session_controller();
   ASSERT_TRUE(session_controller);
 
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(),
+  ASSERT_TRUE(content::NavigateToURL(
+      web_contents(),
       embedded_https_test_server().GetURL("example.com", "/actor/input.html")));
   std::string old_document_id =
       optimization_guide::DocumentIdentifierUserData::
@@ -1278,8 +1364,8 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest,
               ->serialized_token();
 
   // Navigate to a new document containing the same input element.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(),
+  ASSERT_TRUE(content::NavigateToURL(
+      web_contents(),
       embedded_https_test_server().GetURL("foo.com", "/actor/input.html")));
   ASSERT_TRUE(content::ExecJs(web_contents(),
                               "document.getElementById('input').value = "
@@ -1317,9 +1403,9 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, SelectOption) {
   auto* session_controller = ttc_service().session_controller();
   ASSERT_TRUE(session_controller);
 
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), embedded_https_test_server().GetURL(
-                     "example.com", "/actor/select_tool.html")));
+  ASSERT_TRUE(content::NavigateToURL(
+      web_contents(), embedded_https_test_server().GetURL(
+                          "example.com", "/actor/select_tool.html")));
   ASSERT_EQ("alpha", content::EvalJs(web_contents(),
                                      "document.getElementById('plainSelect')"
                                      ".value"));
@@ -1395,18 +1481,18 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest,
   auto* session_controller = ttc_service().session_controller();
   ASSERT_TRUE(session_controller);
 
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), embedded_https_test_server().GetURL(
-                     "example.com", "/actor/select_tool.html")));
+  ASSERT_TRUE(content::NavigateToURL(
+      web_contents(), embedded_https_test_server().GetURL(
+                          "example.com", "/actor/select_tool.html")));
   std::string old_document_id =
       optimization_guide::DocumentIdentifierUserData::
           GetOrCreateForCurrentDocument(web_contents()->GetPrimaryMainFrame())
               ->serialized_token();
 
   // Navigate to a new document containing the same select element.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), embedded_https_test_server().GetURL(
-                     "foo.com", "/actor/select_tool.html")));
+  ASSERT_TRUE(content::NavigateToURL(
+      web_contents(), embedded_https_test_server().GetURL(
+                          "foo.com", "/actor/select_tool.html")));
   ASSERT_EQ("alpha", content::EvalJs(web_contents(),
                                      "document.getElementById('plainSelect')"
                                      ".value"));
@@ -1456,9 +1542,15 @@ class ToolControllerScrollPageBrowserTest : public ToolControllerBrowserTest {
     ToolControllerBrowserTest::SetUpOnMainThread();
     ttc_service().StartSession();
     ASSERT_TRUE(ttc_service().session_controller());
-    ASSERT_TRUE(ui_test_utils::NavigateToURL(
-        browser(), embedded_https_test_server().GetURL(
-                       "example.com", "/actor/scrollable_page.html")));
+    ASSERT_TRUE(content::NavigateToURL(
+        web_contents(), embedded_https_test_server().GetURL(
+                            "example.com", "/actor/scrollable_page.html")));
+    // Wait for the initial compositor frame and any pending browser-controls
+    // viewport resize on Android before sampling or scrolling the viewport.
+    content::WaitForCopyableViewInWebContents(web_contents());
+#if defined(USE_AURA) || BUILDFLAG(IS_ANDROID)
+    content::WaitForResizeComplete(web_contents());
+#endif
   }
 
  protected:
@@ -1622,9 +1714,9 @@ IN_PROC_BROWSER_TEST_F(ToolControllerScrollPageBrowserTest,
                        StaleDocumentIdAfterNavigation) {
   base::DictValue old_node_id = MakeNodeId(/*selector=*/std::nullopt);
 
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), embedded_https_test_server().GetURL(
-                     "foo.com", "/actor/scrollable_page.html")));
+  ASSERT_TRUE(content::NavigateToURL(
+      web_contents(), embedded_https_test_server().GetURL(
+                          "foo.com", "/actor/scrollable_page.html")));
   ASSERT_NE(*old_node_id.FindString("document_id"),
             *MakeNodeId(/*selector=*/std::nullopt).FindString("document_id"));
 
@@ -1641,8 +1733,8 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, GetScreenshot) {
   auto* session_controller = ttc_service().session_controller();
   ASSERT_TRUE(session_controller);
 
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(),
+  ASSERT_TRUE(content::NavigateToURL(
+      web_contents(),
       embedded_https_test_server().GetURL("example.com", "/title1.html")));
   content::WaitForCopyableViewInWebContents(web_contents());
 
@@ -1677,6 +1769,7 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, GetScreenshot) {
   EXPECT_GT(bitmap.height(), 0);
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, GetScreenshotNoActiveTab) {
   ttc_service().StartSession();
   auto* session_controller = ttc_service().session_controller();
@@ -1700,14 +1793,14 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, GetScreenshotNoActiveTab) {
 
   SetBrowser(CreateBrowser(test_profile));
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, GetScreenshotDisallowedUrl) {
   ttc_service().StartSession();
   auto* session_controller = ttc_service().session_controller();
   ASSERT_TRUE(session_controller);
 
-  ASSERT_TRUE(
-      ui_test_utils::NavigateToURL(browser(), GURL("chrome://version")));
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), GURL("chrome://version")));
 
   base::test::TestFuture<ToolResponse> future;
   ToolRequest tool_request;
@@ -1731,9 +1824,9 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest,
   auto* session_controller = ttc_service().session_controller();
   ASSERT_TRUE(session_controller);
 
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), embedded_https_test_server().GetURL("blocked.example.com",
-                                                     "/title1.html")));
+  ASSERT_TRUE(content::NavigateToURL(
+      web_contents(), embedded_https_test_server().GetURL("blocked.example.com",
+                                                          "/title1.html")));
 
   base::test::TestFuture<ToolResponse> future;
   ToolRequest tool_request;
@@ -1751,8 +1844,8 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest,
   auto* session_controller = ttc_service().session_controller();
   ASSERT_TRUE(session_controller);
 
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(),
+  ASSERT_TRUE(content::NavigateToURL(
+      web_contents(),
       embedded_https_test_server().GetURL("example.com", "/title1.html")));
   content::WaitForCopyableViewInWebContents(web_contents());
 
@@ -1778,14 +1871,15 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest,
   EXPECT_TRUE(first_response.Ok());
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest,
                        GetScreenshotTabClosedDuringUrlCheck) {
   ttc_service().StartSession();
   auto* session_controller = ttc_service().session_controller();
   ASSERT_TRUE(session_controller);
 
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(),
+  ASSERT_TRUE(content::NavigateToURL(
+      web_contents(),
       embedded_https_test_server().GetURL("example.com", "/title1.html")));
   content::WaitForCopyableViewInWebContents(web_contents());
 
@@ -1819,6 +1913,7 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest,
 
   SetBrowser(CreateBrowser(test_profile));
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest,
                        GetScreenshotNavigatedAwayDuringUrlCheck) {
@@ -1826,8 +1921,8 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest,
   auto* session_controller = ttc_service().session_controller();
   ASSERT_TRUE(session_controller);
 
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(),
+  ASSERT_TRUE(content::NavigateToURL(
+      web_contents(),
       embedded_https_test_server().GetURL("example.com", "/title1.html")));
   content::WaitForCopyableViewInWebContents(web_contents());
 
@@ -1846,8 +1941,8 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest,
   session_controller->ProcessToolCall(std::move(tool_request),
                                       future.GetCallback());
 
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(),
+  ASSERT_TRUE(content::NavigateToURL(
+      web_contents(),
       embedded_https_test_server().GetURL("example.com", "/title2.html")));
 
   allow_safety_check.Signal();
@@ -1862,8 +1957,8 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, GetScreenshotCrashedTab) {
   auto* session_controller = ttc_service().session_controller();
   ASSERT_TRUE(session_controller);
 
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(),
+  ASSERT_TRUE(content::NavigateToURL(
+      web_contents(),
       embedded_https_test_server().GetURL("example.com", "/title1.html")));
   content::WaitForCopyableViewInWebContents(web_contents());
 
@@ -1900,8 +1995,8 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest,
   auto* session_controller = ttc_service().session_controller();
   ASSERT_TRUE(session_controller);
 
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(),
+  ASSERT_TRUE(content::NavigateToURL(
+      web_contents(),
       embedded_https_test_server().GetURL("example.com", "/title1.html")));
   content::WaitForCopyableViewInWebContents(web_contents());
 
@@ -1933,20 +2028,21 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest,
   auto* session_controller = ttc_service().session_controller();
   ASSERT_TRUE(session_controller);
 
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(),
+  ASSERT_TRUE(content::NavigateToURL(
+      web_contents(),
       embedded_https_test_server().GetURL("example.com", "/title1.html")));
   content::WaitForCopyableViewInWebContents(web_contents());
 
   // Open a background tab so closing the first does not close the browser
   // window.
-  TabStripModel* tab_strip = browser()->GetTabStripModel();
-  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-      browser(),
+  tabs::TabHandle captured_tab = active_tab()->GetHandle();
+  tabs::TabInterface* background_tab = tab_list()->OpenTab(
       embedded_https_test_server().GetURL("example.com", "/title2.html"),
-      WindowOpenDisposition::kNewBackgroundTab,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
-  ASSERT_EQ(tab_strip->count(), 2);
+      /*index=*/-1, /*foreground=*/false);
+  ASSERT_TRUE(background_tab);
+  ASSERT_TRUE(content::WaitForLoadStop(background_tab->GetContents()));
+  ASSERT_EQ(tab_list()->GetTabCount(), 2);
+  ASSERT_EQ(active_tab()->GetHandle(), captured_tab);
 
   base::test::TestFuture<ToolResponse> future;
   ToolRequest tool_request;
@@ -1955,7 +2051,7 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest,
                                       future.GetCallback());
 
   // Close the active tab while screenshot capture is in flight.
-  tab_strip->CloseWebContentsAt(0, TabCloseTypes::CLOSE_USER_GESTURE);
+  tab_list()->CloseTab(captured_tab);
 
   ToolResponse response = future.Take();
   EXPECT_TOOL_ERROR(response, actor::mojom::ActionResultCode::kTabWentAway);
@@ -1998,6 +2094,7 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, OpenGeminiPanelEmptyPrompt) {
                     actor::mojom::ActionResultCode::kArgumentsInvalid);
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 using ToolControllerGeminiPanelBrowserTest =
     glic::GlicBrowserTestMixin<TtcCoreBrowserTestBase>;
 
@@ -2041,6 +2138,7 @@ IN_PROC_BROWSER_TEST_F(ToolControllerGeminiPanelBrowserTest,
   EXPECT_FALSE(glic_service->instance_coordinator().IsPanelShowingForBrowser(
       *GetBrowser()));
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, UnsupportedTool) {
   ttc_service().StartSession();
@@ -2085,10 +2183,8 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, GetToolDefinitions) {
       actor::ToolId::kEnterFullscreen,
       actor::ToolId::kExitFullscreen,
       actor::ToolId::kOpenKnownPage,
-#if !BUILDFLAG(IS_ANDROID)
       actor::ToolId::kPromptGeminiPanel,
       actor::ToolId::kCloseGeminiPanel,
-#endif
   };
 
   std::vector<const actor::ToolDefinition*> expected_tools =
@@ -2284,6 +2380,7 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest,
             actor::ActorTask::State::kFinished);
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 // TTC actor tasks are given TtcKeyedService's ActorUiStateManager rather than
 // the profile-wide one, so none of the tab-scoped actor UI the latter drives
 // (the actor overlay, the handoff button, the tab indicator, the border glow)
@@ -2348,6 +2445,7 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest,
   actor_service->StopTask(control_task_id,
                           actor::ActorTask::StoppedReason::kTaskComplete);
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace
 

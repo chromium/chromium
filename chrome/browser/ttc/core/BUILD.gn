@@ -255,91 +255,110 @@ source_set("unit_tests") {
   }
 }
 
-if (!is_android) {
-  source_set("browser_test_support") {
-    testonly = true
-    sources = [
-      "ttc_core_browser_test_base.cc",
-      "ttc_core_browser_test_base.h",
-    ]
-    public_deps = [
-      ":core",
-      ":test_support",
-      "//base",
-      "//chrome/test:test_support",
-      "//content/public/browser",
-      "//testing/gmock",
-    ]
-    deps = [
-      ":impl",
-      "//base/test:test_support",
-      "//chrome/browser/profiles:profile",
-      "//chrome/browser/profiles/keep_alive",
-      "//components/keyed_service/core",
-      "//net:test_support",
-      "//testing/gtest",
-    ]
-  }
+source_set("browser_test_support") {
+  testonly = true
+  sources = [
+    "ttc_core_browser_test_base.cc",
+    "ttc_core_browser_test_base.h",
+  ]
+  public_deps = [
+    ":core",
+    ":test_support",
+    "//base",
+    "//chrome/test:test_support",
+    "//content/public/browser",
+    "//testing/gmock",
+  ]
+  deps = [
+    ":impl",
+    "//base/test:test_support",
+    "//chrome/browser/profiles:profile",
+    "//chrome/test/base:chrome_test_utils",
+    "//components/keyed_service/core",
+    "//net:test_support",
+    "//testing/gtest",
+  ]
+}
 
-  source_set("browser_tests") {
-    testonly = true
-    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
-    sources = [
+source_set("browser_tests") {
+  testonly = true
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  sources = [
+    "session_journal_impl_browsertest.cc",
+    "tool_controller_browsertest.cc",
+    "ttc_keyed_service_browsertest.cc",
+  ]
+  deps = [
+    ":browser_test_support",
+    ":core",
+    ":impl",
+    ":test_support",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser/actor",
+    "//chrome/browser/actor/tools/registry",
+    "//chrome/browser/actor/ui",
+    "//chrome/browser/bookmarks",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/search_engines",
+    "//chrome/browser/tab_list",
+    "//chrome/browser/translate",
+    "//chrome/browser/translate:test_support",
+    "//chrome/browser/ttc/app:public",
+    "//chrome/common",
+    "//chrome/test:test_support",
+    "//chrome/test/base:browser_test_waiters",
+    "//chrome/test/base:chrome_test_utils",
+    "//components/actor/core",
+    "//components/actor/core:features",
+    "//components/actor/core:journal",
+    "//components/actor/core:task_id",
+    "//components/actor/public/mojom:mojo_bindings",
+    "//components/bookmarks/browser",
+    "//components/bookmarks/test",
+    "//components/optimization_guide/content/browser",
+    "//components/search_engines",
+    "//components/tabs:public",
+    "//components/translate/content/browser:test_support",
+    "//components/translate/core/browser",
+    "//components/translate/core/common",
+    "//components/ttc/app/public",
+    "//content/public/browser",
+    "//content/public/common",
+    "//content/test:browsertest_support",
+    "//content/test:test_support",
+    "//net:test_support",
+    "//skia",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//ui/gfx/codec",
+    "//url",
+  ]
+  if (!is_android) {
+    sources += [
       "page_context_monitor_browsertest.cc",
-      "session_journal_impl_browsertest.cc",
-      "tool_controller_browsertest.cc",
-      "ttc_keyed_service_browsertest.cc",
       "voice_focused_contents_tracker_browsertest.cc",
     ]
-    deps = [
-      ":browser_test_support",
-      ":core",
-      ":impl",
-      ":test_support",
-      "//base",
-      "//base/test:test_support",
-      "//chrome/browser/actor",
-      "//chrome/browser/actor/tools/registry",
-      "//chrome/browser/actor/ui",
-      "//chrome/browser/bookmarks",
+    deps += [
       "//chrome/browser/glic",
       "//chrome/browser/glic/test_support",
-      "//chrome/browser/profiles:profile",
-      "//chrome/browser/translate",
+      "//chrome/browser/profiles/keep_alive",
       "//chrome/browser/ttc/app:browser_tests",
-      "//chrome/browser/ttc/app:public",
-      "//chrome/common",
-      "//chrome/test:test_support",
-      "//components/actor/core",
-      "//components/actor/core:features",
-      "//components/actor/core:journal",
-      "//components/actor/core:task_id",
-      "//components/bookmarks/browser",
-      "//components/bookmarks/test",
+      "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/tabs:tab_strip",
       "//components/keep_alive_registry",
       "//components/optimization_guide/proto:optimization_guide_proto",
       "//components/page_content_annotations/content",
-      "//components/search_engines",
-      "//components/tabs:public",
-      "//components/ttc/app/public",
-      "//content/public/browser",
-      "//content/public/common",
-      "//content/test:browsertest_support",
-      "//content/test:test_support",
-      "//net:test_support",
-      "//skia",
-      "//testing/gmock",
-      "//testing/gtest",
       "//third_party/blink/public/common",
       "//ui/base",
-      "//ui/gfx/codec",
-      "//url",
     ]
-    if (use_ozone) {
-      deps += [ "//ui/ozone" ]
-    }
   }
+  if (use_ozone) {
+    deps += [ "//ui/ozone" ]
+  }
+}
 
+if (!is_android) {
   source_set("interactive_ui_tests") {
     testonly = true
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
