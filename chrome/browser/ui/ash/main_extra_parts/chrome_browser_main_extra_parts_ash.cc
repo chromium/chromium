@@ -27,6 +27,7 @@
 #include "base/check_deref.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
+#include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
 #include "base/scoped_observation.h"
@@ -63,7 +64,6 @@
 #include "chrome/browser/exo_parts.h"
 #include "chrome/browser/global_features.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/accessibility/accessibility_controller_client.h"
 #include "chrome/browser/ui/ash/app_access/app_access_notifier.h"
 #include "chrome/browser/ui/ash/arc/arc_open_url_delegate_impl.h"
@@ -121,8 +121,10 @@
 #include "chromeos/ash/services/bluetooth_config/in_process_instance.h"
 #include "chromeos/components/mahi/public/cpp/mahi_switches.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "components/account_id/account_id.h"
 #include "components/prefs/pref_service.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
+#include "components/session_manager/core/session.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/core/session_manager_observer.h"
 #include "components/startup_metric_utils/browser/startup_metric_utils.h"
@@ -133,9 +135,41 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "ui/base/ime/ash/input_method_manager.h"
 #include "ui/events/ozone/evdev/heatmap_palm_detector.h"
+#include "url/gurl.h"
 
 namespace {
+
 ChromeBrowserMainExtraPartsAsh* g_instance = nullptr;
+
+// Once Sanitize is completed, ash is restarted. After ash has restarted, we
+// should check if the restart has happened right after a sanitize. If that is
+// the case, sanitize done dialog should be shown to the user.
+void CheckIfSanitizeCompleted(const AccountId& account_id) {
+  if (!base::FeatureList::IsEnabled(ash::features::kSanitize)) {
+    return;
+  }
+
+  Profile* profile = Profile::FromBrowserContext(
+      ash::BrowserContextHelper::Get()->GetBrowserContextByAccountId(
+          account_id));
+  CHECK(profile);
+  PrefService* prefs = profile->GetPrefs();
+  if (prefs->GetBoolean(ash::settings::prefs::kSanitizeCompleted)) {
+    prefs->SetBoolean(ash::settings::prefs::kSanitizeCompleted, false);
+    prefs->CommitPendingWrite();
+
+    // Blocks full restore UI from showing up. `FullRestoreService` object is
+    // not created yet, so we use this static function.
+    ash::full_restore::FullRestoreService::SetLastSessionSanitized();
+
+    ash::SystemAppLaunchParams params;
+    params.url = GURL(base::StrCat({ash::kChromeUISanitizeAppURL, "?done"}));
+    params.launch_source = apps::LaunchSource::kUnknown;
+    ash::LaunchSystemWebAppAsync(profile, ash::SystemWebAppType::OS_SANITIZE,
+                                 params);
+  }
+}
+
 }  // namespace
 
 using GameMode = ash::ResourcedClient::GameMode;
@@ -552,30 +586,14 @@ void ChromeBrowserMainExtraPartsAsh::PostBrowserStart() {
       mahi_manager_ = std::make_unique<ash::MahiManagerImpl>();
     }
   }
-  CheckIfSanitizeCompleted();
+  if (const session_manager::Session* primary_session =
+          session_manager::SessionManager::Get()->GetPrimarySession()) {
+    CheckIfSanitizeCompleted(primary_session->account_id());
+  }
 
   did_post_browser_start_ = true;
   if (post_browser_start_callback_) {
     std::move(post_browser_start_callback_).Run();
-  }
-}
-
-void ChromeBrowserMainExtraPartsAsh::CheckIfSanitizeCompleted() {
-  PrefService* prefs = ProfileManager::GetPrimaryUserProfile()->GetPrefs();
-  if (base::FeatureList::IsEnabled(ash::features::kSanitize) &&
-      prefs->GetBoolean(ash::settings::prefs::kSanitizeCompleted)) {
-    prefs->SetBoolean(ash::settings::prefs::kSanitizeCompleted, false);
-    prefs->CommitPendingWrite();
-
-    // Blocks full restore UI from showing up. `FullRestoreService` object is
-    // not created yet, so we use this static function.
-    ash::full_restore::FullRestoreService::SetLastSessionSanitized();
-
-    ash::SystemAppLaunchParams params;
-    params.url = GURL(base::StrCat({ash::kChromeUISanitizeAppURL, "?done"}));
-    params.launch_source = apps::LaunchSource::kUnknown;
-    ash::LaunchSystemWebAppAsync(ProfileManager::GetPrimaryUserProfile(),
-                                 ash::SystemWebAppType::OS_SANITIZE, params);
   }
 }
 

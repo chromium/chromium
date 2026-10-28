@@ -50,7 +50,6 @@ static_library("main_extra_parts") {
     "//chrome/browser/chromeos/tablet_mode",
     "//chrome/browser/enterprise/connectors/device_trust/attestation/ash",
     "//chrome/browser/profiles:profile",
-    "//chrome/browser/profiles:profile_manager",
     "//chrome/browser/ui:settings_window_manager_chromeos",
     "//chrome/browser/ui/ash/accessibility",
     "//chrome/browser/ui/ash/app_access",
@@ -98,6 +97,8 @@ static_library("main_extra_parts") {
     "//chromeos/ash/services/bluetooth_config",
     "//chromeos/ash/services/bluetooth_config:in_process_bluetooth_config",
     "//chromeos/constants",
+    "//components/account_id",
+    "//components/prefs",
     "//components/session_manager/core",
     "//components/startup_metric_utils",
     "//content/public/browser",
@@ -106,5 +107,6 @@ static_library("main_extra_parts") {
     "//services/network/public/cpp",
     "//ui/base/ime/ash",
     "//ui/events/ozone/evdev",
+    "//url",
   ]
 }
