@@ -450,19 +450,24 @@ final class SigninBridge {
     }
 
     /**
-     * Starts the flow to reauthenticate.
+     * Starts the flow to reauthenticate {@code accountToReauth}, then waits for cookies for {@code
+     * targetAccountId} and redirects to {@code continueUrl}.
      *
      * @param tab The target tab for the continueUrl navigation.
      * @param continueUrl The URL to navigate to after the reauthentication. This will not be an
      *     empty string.
-     * @param selectedAccountId The account to be reauthenticated .
+     * @param accountToReauth The account to be reauthenticated.
+     * @param targetAccountId The account whose cookies to wait for before redirecting.
      */
     @CalledByNative
-    private static void startUpdateCredentialsFlow(
+    @VisibleForTesting
+    static void startUpdateCredentialsFlow(
             Tab tab,
             @JniType("GURL") GURL continueUrl,
-            @JniType("CoreAccountId") CoreAccountId selectedAccountId) {
-        assert selectedAccountId != null;
+            @JniType("CoreAccountId") CoreAccountId accountToReauth,
+            @JniType("CoreAccountId") CoreAccountId targetAccountId) {
+        assert accountToReauth != null;
+        assert targetAccountId != null;
         assert continueUrl != null;
         WindowAndroid windowAndroid = tab.getWindowAndroid();
         if (windowAndroid == null || !tab.isUserInteractable()) {
@@ -473,12 +478,11 @@ final class SigninBridge {
         GURL initialTabURL = tab.getUrl();
         AccountManagerFacade accountManagerFacade = AccountManagerFacadeProvider.getInstance();
         accountManagerFacade.updateCredentials(
-                selectedAccountId,
+                accountToReauth,
                 assumeNonNull(windowAndroid.getActivity().get()),
                 (success) -> {
                     if (success && !tab.isDestroyed() && tab.getUrl().equals(initialTabURL)) {
-                        waitForCookiesAndRedirect(
-                                tab, selectedAccountId, continueUrl, initialTabURL);
+                        waitForCookiesAndRedirect(tab, targetAccountId, continueUrl, initialTabURL);
                     }
                 });
     }

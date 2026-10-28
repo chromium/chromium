@@ -867,6 +867,9 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="Account not on device"/>
   <int value="1" label="Account in persistent error state"/>
   <int value="2" label="Account recently added"/>
+  <int value="3"
+      label="Target account on device, primary account in persistent error
+             state"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/signin/chrome_signin_helper.h:MirrorHeaderEvent) -->

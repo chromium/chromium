@@ -52,7 +52,8 @@ enum class MirrorHeaderEvent {
   kAccountNotOnDevice = 0,
   kAccountInPersistentError = 1,
   kAccountRecentlyAdded = 2,
-  kMaxValue = kAccountRecentlyAdded,
+  kAccountWithPrimaryInPersistentError = 3,
+  kMaxValue = kAccountWithPrimaryInPersistentError,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/signin/enums.xml:MirrorHeaderEvent)
 

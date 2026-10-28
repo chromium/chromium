@@ -66,6 +66,12 @@ BASE_FEATURE(kAccountRetrievalWaitsForRestoration,
 // add account flow.
 BASE_FEATURE(kAddSessionFallbackToPrimaryAccount,
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+// When enabled, an ADDSESSION Mirror header for a secondary account on the
+// device starts the reauth flow for the primary account if the primary account
+// is in a persistent auth error and the secondary account is not.
+BASE_FEATURE(kAddSessionReauthPrimaryAccountFirst,
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_ANDROID)
 
 BASE_FEATURE(kAiSubscriptionAvatarRingFollowup,

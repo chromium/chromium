@@ -74,12 +74,21 @@ void SigninBridge::OpenAccountPickerBottomSheetForExtensions(
 void SigninBridge::StartUpdateCredentialsFlow(TabAndroid* tab,
                                               const GURL& continue_url,
                                               const CoreAccountId& account_id) {
+  StartUpdateCredentialsFlow(tab, continue_url, account_id, account_id);
+}
+
+void SigninBridge::StartUpdateCredentialsFlow(
+    TabAndroid* tab,
+    const GURL& continue_url,
+    const CoreAccountId& account_to_reauth,
+    const CoreAccountId& target_account_id) {
   if (!tab) {
     return;
   }
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_SigninBridge_startUpdateCredentialsFlow(env, tab->GetJavaObject(),
-                                               continue_url, account_id);
+                                               continue_url, account_to_reauth,
+                                               target_account_id);
 }
 
 void SigninBridge::WaitForCookiesAndRedirect(TabAndroid* tab,

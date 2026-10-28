@@ -83,6 +83,9 @@ const char kMirrorActionAddSessionWithContinueUrl[] =
     "action=ADDSESSION,continue_url=http://example.com,email=test@gmail.com";
 const char kMirrorActionAddSessionWithContinueUrlNoEmail[] =
     "action=ADDSESSION,continue_url=http://example.com";
+const char kMirrorActionAddSessionWithContinueUrlSecondaryEmail[] =
+    "action=ADDSESSION,continue_url=http://"
+    "example.com,email=secondary@gmail.com";
 const char kMirrorActionDefault[] = "action=DEFAULT";
 #endif
 #endif
@@ -242,7 +245,8 @@ class MockSigninBridge : public SigninBridge {
               StartUpdateCredentialsFlow,
               (TabAndroid * window,
                const GURL& continue_url,
-               const CoreAccountId& account_id),
+               const CoreAccountId& account_to_reauth,
+               const CoreAccountId& target_account_id),
               (override));
 
   MOCK_METHOD(void,
@@ -751,8 +755,9 @@ TEST_F(ChromeSigninHelperTest, StartReauthFlowWhenInPersistentErrorState) {
 
   // Check that the sign-in bridge is called to open the sign-in bottom sheet
   // with the correct continue URL.
-  EXPECT_CALL(*signin_bridge(), StartUpdateCredentialsFlow(
-                                    _, GURL("http://example.com"), account_id));
+  EXPECT_CALL(*signin_bridge(),
+              StartUpdateCredentialsFlow(_, GURL("http://example.com"),
+                                         account_id, account_id));
 
   signin::ProcessAccountConsistencyResponseHeaders(&response_adapter, GURL(),
                                                    /*is_off_the_record=*/false);
@@ -760,6 +765,176 @@ TEST_F(ChromeSigninHelperTest, StartReauthFlowWhenInPersistentErrorState) {
   histogram_tester.ExpectUniqueSample(
       "Signin.ProcessMirrorHeaders.Event",
       signin::MirrorHeaderEvent::kAccountInPersistentError, 1);
+}
+
+// Tests that receiving an ADDSESSION action for a secondary account starts the
+// update credentials flow for that account if the primary account is healthy.
+TEST_F(ChromeSigninHelperTest,
+       AddSessionSecondaryAccountInErrorPrimaryAccountHealthy) {
+  InitializeIdentityTestEnvironment();
+  base::HistogramTester histogram_tester;
+  AccountInfo primary_info = identity_test_env()->MakePrimaryAccountAvailable(
+      "primary@gmail.com", signin::ConsentLevel::kSignin);
+  AccountInfo secondary_info =
+      identity_test_env()->MakeAccountAvailable("secondary@gmail.com");
+  identity_test_env()->SetInvalidRefreshTokenForAccount(
+      secondary_info.GetAccountId());
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(*signin_bridge(),
+              StartUpdateCredentialsFlow(_, GURL("http://example.com"),
+                                         secondary_info.GetAccountId(),
+                                         secondary_info.GetAccountId()))
+      .WillOnce(base::test::RunOnceClosure(run_loop.QuitClosure()));
+
+  TestResponseAdapter response_adapter(
+      signin::kChromeManageAccountsHeader,
+      kMirrorActionAddSessionWithContinueUrlSecondaryEmail,
+      /*is_outermost_main_frame=*/true, web_contents());
+  signin::ProcessAccountConsistencyResponseHeaders(&response_adapter, GURL(),
+                                                   /*is_off_the_record=*/false);
+  run_loop.Run();
+  histogram_tester.ExpectUniqueSample(
+      "Signin.ProcessMirrorHeaders.Event",
+      signin::MirrorHeaderEvent::kAccountInPersistentError, 1);
+}
+
+// Tests that receiving an ADDSESSION action for a secondary account starts the
+// update credentials flow for the secondary account if both the primary and
+// secondary accounts are in a persistent error state.
+TEST_F(ChromeSigninHelperTest,
+       AddSessionBothPrimaryAndSecondaryAccountInErrorReauthsSecondary) {
+  InitializeIdentityTestEnvironment();
+  base::HistogramTester histogram_tester;
+  AccountInfo primary_info = identity_test_env()->MakePrimaryAccountAvailable(
+      "primary@gmail.com", signin::ConsentLevel::kSignin);
+  identity_test_env()->SetInvalidRefreshTokenForAccount(
+      primary_info.GetAccountId());
+  AccountInfo secondary_info =
+      identity_test_env()->MakeAccountAvailable("secondary@gmail.com");
+  identity_test_env()->SetInvalidRefreshTokenForAccount(
+      secondary_info.GetAccountId());
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(*signin_bridge(),
+              StartUpdateCredentialsFlow(_, GURL("http://example.com"),
+                                         secondary_info.GetAccountId(),
+                                         secondary_info.GetAccountId()))
+      .WillOnce(base::test::RunOnceClosure(run_loop.QuitClosure()));
+  EXPECT_CALL(*signin_bridge(), WaitForCookiesAndRedirect(_, _, _)).Times(0);
+
+  TestResponseAdapter response_adapter(
+      signin::kChromeManageAccountsHeader,
+      kMirrorActionAddSessionWithContinueUrlSecondaryEmail,
+      /*is_outermost_main_frame=*/true, web_contents());
+  signin::ProcessAccountConsistencyResponseHeaders(&response_adapter, GURL(),
+                                                   /*is_off_the_record=*/false);
+  run_loop.Run();
+  histogram_tester.ExpectUniqueSample(
+      "Signin.ProcessMirrorHeaders.Event",
+      signin::MirrorHeaderEvent::kAccountInPersistentError, 1);
+}
+
+// Tests that receiving an ADDSESSION action for a healthy secondary account
+// waits for the secondary account's cookies, even if the primary account is in
+// a persistent error state, when kAddSessionReauthPrimaryAccountFirst is
+// disabled.
+TEST_F(ChromeSigninHelperTest,
+       AddSessionPrimaryAccountInErrorWaitsForCookiesIfReauthPrimaryDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      switches::kAddSessionReauthPrimaryAccountFirst);
+  InitializeIdentityTestEnvironment();
+  base::HistogramTester histogram_tester;
+  AccountInfo primary_info = identity_test_env()->MakePrimaryAccountAvailable(
+      "primary@gmail.com", signin::ConsentLevel::kSignin);
+  identity_test_env()->SetInvalidRefreshTokenForAccount(
+      primary_info.GetAccountId());
+  AccountInfo secondary_info =
+      identity_test_env()->MakeAccountAvailable("secondary@gmail.com");
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(*signin_bridge(), StartUpdateCredentialsFlow(_, _, _, _))
+      .Times(0);
+  EXPECT_CALL(*signin_bridge(),
+              WaitForCookiesAndRedirect(_, GURL("http://example.com"),
+                                        secondary_info.GetAccountId()))
+      .WillOnce(base::test::RunOnceClosure(run_loop.QuitClosure()));
+
+  TestResponseAdapter response_adapter(
+      signin::kChromeManageAccountsHeader,
+      kMirrorActionAddSessionWithContinueUrlSecondaryEmail,
+      /*is_outermost_main_frame=*/true, web_contents());
+  signin::ProcessAccountConsistencyResponseHeaders(&response_adapter, GURL(),
+                                                   /*is_off_the_record=*/false);
+  run_loop.Run();
+  histogram_tester.ExpectUniqueSample(
+      "Signin.ProcessMirrorHeaders.Event",
+      signin::MirrorHeaderEvent::kAccountRecentlyAdded, 1);
+}
+
+// Tests that receiving an ADDSESSION action for an account in a persistent
+// error state starts the update credentials flow for that account when there is
+// no primary account.
+TEST_F(ChromeSigninHelperTest, AddSessionAccountInErrorWithoutPrimaryAccount) {
+  InitializeIdentityTestEnvironment();
+  base::HistogramTester histogram_tester;
+  AccountInfo secondary_info =
+      identity_test_env()->MakeAccountAvailable("secondary@gmail.com");
+  identity_test_env()->SetInvalidRefreshTokenForAccount(
+      secondary_info.GetAccountId());
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(*signin_bridge(),
+              StartUpdateCredentialsFlow(_, GURL("http://example.com"),
+                                         secondary_info.GetAccountId(),
+                                         secondary_info.GetAccountId()))
+      .WillOnce(base::test::RunOnceClosure(run_loop.QuitClosure()));
+
+  TestResponseAdapter response_adapter(
+      signin::kChromeManageAccountsHeader,
+      kMirrorActionAddSessionWithContinueUrlSecondaryEmail,
+      /*is_outermost_main_frame=*/true, web_contents());
+  signin::ProcessAccountConsistencyResponseHeaders(&response_adapter, GURL(),
+                                                   /*is_off_the_record=*/false);
+  run_loop.Run();
+  histogram_tester.ExpectUniqueSample(
+      "Signin.ProcessMirrorHeaders.Event",
+      signin::MirrorHeaderEvent::kAccountInPersistentError, 1);
+}
+
+// Tests that receiving an ADDSESSION action for a secondary account starts the
+// update credentials flow for the primary account (while targeting the
+// secondary account's cookies) if the primary account is in a persistent error
+// state and the secondary account is healthy.
+TEST_F(ChromeSigninHelperTest,
+       AddSessionPrimaryAccountInErrorSecondaryAccountHealthy) {
+  InitializeIdentityTestEnvironment();
+  base::HistogramTester histogram_tester;
+  AccountInfo primary_info = identity_test_env()->MakePrimaryAccountAvailable(
+      "primary@gmail.com", signin::ConsentLevel::kSignin);
+  identity_test_env()->SetInvalidRefreshTokenForAccount(
+      primary_info.GetAccountId());
+  AccountInfo secondary_info =
+      identity_test_env()->MakeAccountAvailable("secondary@gmail.com");
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(*signin_bridge(),
+              StartUpdateCredentialsFlow(_, GURL("http://example.com"),
+                                         primary_info.GetAccountId(),
+                                         secondary_info.GetAccountId()))
+      .WillOnce(base::test::RunOnceClosure(run_loop.QuitClosure()));
+
+  TestResponseAdapter response_adapter(
+      signin::kChromeManageAccountsHeader,
+      kMirrorActionAddSessionWithContinueUrlSecondaryEmail,
+      /*is_outermost_main_frame=*/true, web_contents());
+  signin::ProcessAccountConsistencyResponseHeaders(&response_adapter, GURL(),
+                                                   /*is_off_the_record=*/false);
+  run_loop.Run();
+  histogram_tester.ExpectUniqueSample(
+      "Signin.ProcessMirrorHeaders.Event",
+      signin::MirrorHeaderEvent::kAccountWithPrimaryInPersistentError, 1);
 }
 
 // Tests that receiving an ADDSESSION action without an email within
@@ -815,8 +990,9 @@ TEST_F(ChromeSigninHelperTest,
   // Check that the sign-in bridge is called to start credentials update
   // with the correct continue URL and primary account id.
   base::RunLoop run_loop;
-  EXPECT_CALL(*signin_bridge(), StartUpdateCredentialsFlow(
-                                    _, GURL("http://example.com"), account_id))
+  EXPECT_CALL(*signin_bridge(),
+              StartUpdateCredentialsFlow(_, GURL("http://example.com"),
+                                         account_id, account_id))
       .WillOnce(base::test::RunOnceClosure(run_loop.QuitClosure()));
 
   // Process the header.

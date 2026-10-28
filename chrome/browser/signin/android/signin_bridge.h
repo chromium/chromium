@@ -57,10 +57,18 @@ class SigninBridge : public KeyedService {
       const std::optional<CoreAccountId>& account_id,
       const std::string& extension_name);
 
-  // Opens the reauthentication flow.
+  // Opens the reauthentication flow for a single account.
   virtual void StartUpdateCredentialsFlow(TabAndroid* tab,
                                           const GURL& continue_url,
                                           const CoreAccountId& account_id);
+
+  // Opens the reauthentication flow for `account_to_reauth`, then waits for
+  // cookies for `target_account_id` and redirects to `continue_url`.
+  virtual void StartUpdateCredentialsFlow(
+      TabAndroid* tab,
+      const GURL& continue_url,
+      const CoreAccountId& account_to_reauth,
+      const CoreAccountId& target_account_id);
 
   // Wait for cookies to be minted before redirecting the account.
   virtual void WaitForCookiesAndRedirect(TabAndroid* tab,

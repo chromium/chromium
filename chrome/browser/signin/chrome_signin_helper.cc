@@ -433,14 +433,34 @@ void ProcessMirrorHeader(
 
     // The target account was found on the device, check for a persistent auth
     // error.
-    if (identity_manager->HasAccountWithRefreshTokenInPersistentErrorState(
-            target_account_info->account_id)) {
+    const bool is_target_in_error =
+        identity_manager->HasAccountWithRefreshTokenInPersistentErrorState(
+            target_account_info->account_id);
+    // If the target is a healthy secondary account but the primary account is
+    // in a persistent auth error, the AccountReconcilor will not mint cookies
+    // for the target until the primary account is fixed, so reauth the primary
+    // account first. If both accounts are in error, reauth the target account.
+    const CoreAccountId primary_account_id =
+        identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
+    const bool should_reauth_primary =
+        base::FeatureList::IsEnabled(
+            switches::kAddSessionReauthPrimaryAccountFirst) &&
+        !is_target_in_error &&
+        identity_manager->HasAccountWithRefreshTokenInPersistentErrorState(
+            primary_account_id);
+
+    if (is_target_in_error || should_reauth_primary) {
       base::UmaHistogramEnumeration(
           "Signin.ProcessMirrorHeaders.Event",
-          signin::MirrorHeaderEvent::kAccountInPersistentError);
+          should_reauth_primary
+              ? signin::MirrorHeaderEvent::kAccountWithPrimaryInPersistentError
+              : signin::MirrorHeaderEvent::kAccountInPersistentError);
+      const CoreAccountId& account_to_reauth =
+          should_reauth_primary ? primary_account_id
+                                : target_account_info->account_id;
       SigninBridgeFactory::GetForProfile(profile)->StartUpdateCredentialsFlow(
           TabAndroid::FromWebContents(web_contents), continue_url,
-          target_account_info->account_id);
+          account_to_reauth, target_account_info->account_id);
       return;
     }
 

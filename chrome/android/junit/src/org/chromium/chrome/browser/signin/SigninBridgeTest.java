@@ -9,6 +9,7 @@ import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -42,7 +43,9 @@ import org.robolectric.ParameterizedRobolectricTestRunner.Parameter;
 import org.robolectric.ParameterizedRobolectricTestRunner.Parameters;
 import org.robolectric.Robolectric;
 
+import org.chromium.base.Callback;
 import org.chromium.base.DeviceInfo;
+import org.chromium.base.UnownedUserDataHost;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRule;
@@ -76,6 +79,7 @@ import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncConfig;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
+import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.GAIAServiceType;
 import org.chromium.components.signin.SigninFeatures;
@@ -110,6 +114,7 @@ public class SigninBridgeTest {
     }
 
     private GURL mContinueUrl;
+    private GURL mInitialTabUrl;
     private static final @TabId int TAB_ID = 1;
 
     @Rule(order = -2)
@@ -151,6 +156,8 @@ public class SigninBridgeTest {
 
     @Mock private AccountPreviewDataService mAccountPreviewDataServiceMock;
     @Mock private ModalDialogManager mModalDialogManagerMock;
+    @Mock private WebSigninRedirectCoordinator mWebSigninRedirectCoordinatorMock;
+    @Mock private AccountManagerFacade mAccountManagerFacadeMock;
 
     private final SettableMonotonicObservableSupplier<BottomSheetSigninAndHistorySyncCoordinator>
             mWebSigninAndHistorySyncCoordinatorSupplier = ObservableSuppliers.createMonotonic();
@@ -158,6 +165,7 @@ public class SigninBridgeTest {
     @Before
     public void setUp() {
         mContinueUrl = new GURL("https://test-continue-url.com");
+        mInitialTabUrl = new GURL("https://test-initial-tab-url.com");
         BottomSheetControllerProvider.setInstanceForTesting(mBottomSheetControllerMock);
         Context context = ApplicationProvider.getApplicationContext();
 
@@ -930,5 +938,73 @@ public class SigninBridgeTest {
         Assert.assertNotNull(intent);
         Assert.assertNotEquals(Settings.ACTION_SYNC_SETTINGS, intent.getAction());
         Assert.assertEquals(SettingsActivity.class.getName(), intent.getComponent().getClassName());
+    }
+
+    private void setupForUpdateCredentialsFlow() {
+        Activity activity = Robolectric.buildActivity(Activity.class).setup().get();
+        lenient().when(mWindowAndroidMock.getActivity()).thenReturn(new WeakReference<>(activity));
+        lenient().when(mTabMock.getUrl()).thenReturn(mInitialTabUrl);
+        lenient().when(mTabMock.isDestroyed()).thenReturn(false);
+        AccountManagerFacadeProvider.setInstanceForTests(mAccountManagerFacadeMock);
+
+        UnownedUserDataHost host = new UnownedUserDataHost();
+        lenient().when(mWindowAndroidMock.getUnownedUserDataHost()).thenReturn(host);
+        SettableMonotonicObservableSupplier<WebSigninRedirectCoordinator> supplier =
+                ObservableSuppliers.createMonotonic();
+        supplier.set(mWebSigninRedirectCoordinatorMock);
+        WebSigninRedirectCoordinatorSupplier.attach(host, supplier);
+    }
+
+    @Test
+    public void testStartUpdateCredentialsFlow_differentTargetAccount_success() {
+        setupForUpdateCredentialsFlow();
+
+        doAnswer(
+                        invocation -> {
+                            Callback<Boolean> callback = invocation.getArgument(2);
+                            callback.onResult(true);
+                            return null;
+                        })
+                .when(mAccountManagerFacadeMock)
+                .updateCredentials(eq(TestAccounts.ACCOUNT1.getId()), any(), any());
+
+        SigninBridge.startUpdateCredentialsFlow(
+                mTabMock,
+                mContinueUrl,
+                TestAccounts.ACCOUNT1.getId(),
+                TestAccounts.ACCOUNT2.getId());
+
+        verify(mAccountManagerFacadeMock)
+                .updateCredentials(eq(TestAccounts.ACCOUNT1.getId()), any(), any());
+        verify(mWebSigninRedirectCoordinatorMock)
+                .initializeWebSigninAndRedirect(
+                        eq(mTabMock),
+                        eq(TestAccounts.ACCOUNT2.getId()),
+                        eq(mContinueUrl),
+                        eq(mInitialTabUrl));
+    }
+
+    @Test
+    public void testStartUpdateCredentialsFlow_reauthFails_aborts() {
+        setupForUpdateCredentialsFlow();
+
+        doAnswer(
+                        invocation -> {
+                            Callback<Boolean> callback = invocation.getArgument(2);
+                            callback.onResult(false);
+                            return null;
+                        })
+                .when(mAccountManagerFacadeMock)
+                .updateCredentials(eq(TestAccounts.ACCOUNT1.getId()), any(), any());
+
+        SigninBridge.startUpdateCredentialsFlow(
+                mTabMock,
+                mContinueUrl,
+                TestAccounts.ACCOUNT1.getId(),
+                TestAccounts.ACCOUNT2.getId());
+
+        verify(mAccountManagerFacadeMock)
+                .updateCredentials(eq(TestAccounts.ACCOUNT1.getId()), any(), any());
+        verifyNoInteractions(mWebSigninRedirectCoordinatorMock);
     }
 }
