@@ -224,11 +224,10 @@ static const char* kInterstitialWaitingContent = "Waiting for permission";
 #endif
 - (void)
     MAYBE_testSupervisedUserURLFilteringReloadsOnlyRealizedExistingWebStates {
-  // Signing in the user and allow all sites.
+  // Sign in the user and allow all sites.
   [self signInSupervisedUser];
-  // TODO(crbug.com/320981294): Update to `WebFilterType::kAllowAllSites`.
   [FamilyLinkSettingsAppInterface
-      setWebFilterType:supervised_user::WebFilterType::kTryToBlockMatureSites];
+      setWebFilterType:supervised_user::WebFilterType::kAllowAllSites];
 
   // Open three tabs, visit a webpage from them and check they are unblocked.
   GURL URL = self.testServer->GetURL(kEchoPath);
@@ -423,9 +422,8 @@ static const char* kInterstitialWaitingContent = "Waiting for permission";
 - (void)
     testSupervisedUserWithAllowAllSitesFilteringIsShownInterstitialOnBlockedSite {
   [self signInSupervisedUser];
-  // TODO(crbug.com/320981294): Update to `WebFilterType::kAllowAllSites`.
   [FamilyLinkSettingsAppInterface
-      setWebFilterType:supervised_user::WebFilterType::kTryToBlockMatureSites];
+      setWebFilterType:supervised_user::WebFilterType::kAllowAllSites];
 
   GURL blockedURL = self.testServer->GetURL(kHost, kEchoPath);
   [FamilyLinkSettingsAppInterface
@@ -496,9 +494,8 @@ static const char* kInterstitialWaitingContent = "Waiting for permission";
 - (void)
     MAYBE_testSupervisedUserWithAllowAllFilteringIsBlockedOnURLBlockListing {
   [self signInSupervisedUser];
-  // TODO(crbug.com/320981294): Update to `WebFilterType::kAllowAllSites`.
   [FamilyLinkSettingsAppInterface
-      setWebFilterType:supervised_user::WebFilterType::kTryToBlockMatureSites];
+      setWebFilterType:supervised_user::WebFilterType::kAllowAllSites];
 
   GURL URL = self.testServer->GetURL(kEchoPath);
   [ChromeEarlGrey loadURL:URL];
@@ -558,9 +555,8 @@ static const char* kInterstitialWaitingContent = "Waiting for permission";
   [ChromeEarlGrey loadURL:blockedURL];
   [self checkInterstitialIsShown];
 
-  // TODO(crbug.com/320981294): Update to `WebFilterType::kAllowAllSites`.
   [FamilyLinkSettingsAppInterface
-      setWebFilterType:supervised_user::WebFilterType::kTryToBlockMatureSites];
+      setWebFilterType:supervised_user::WebFilterType::kAllowAllSites];
   // Ensure that the interstitial is refreshed and the un-blocked page is
   // displayed.
   [ChromeEarlGrey waitForWebStateContainingText:kEchoContent];
@@ -571,9 +567,8 @@ static const char* kInterstitialWaitingContent = "Waiting for permission";
 - (void)testSupervisedUserWithAllowAllSitesFilteringCanUnblockRequestedWebsite {
   [self signInSupervisedUser];
   [FamilyLinkSettingsAppInterface setFakePermissionCreator];
-  // TODO(crbug.com/320981294): Update to `WebFilterType::kAllowAllSites`.
   [FamilyLinkSettingsAppInterface
-      setWebFilterType:supervised_user::WebFilterType::kTryToBlockMatureSites];
+      setWebFilterType:supervised_user::WebFilterType::kAllowAllSites];
 
   GURL blockedURL = self.testServer->GetURL(kEchoPath);
   [FamilyLinkSettingsAppInterface
@@ -603,9 +598,8 @@ static const char* kInterstitialWaitingContent = "Waiting for permission";
 - (void)MAYBE_testSupervisedUserInterstitialOnBackButton {
   [self signInSupervisedUser];
   [FamilyLinkSettingsAppInterface setFakePermissionCreator];
-  // TODO(crbug.com/320981294): Update to `WebFilterType::kAllowAllSites`.
   [FamilyLinkSettingsAppInterface
-      setWebFilterType:supervised_user::WebFilterType::kTryToBlockMatureSites];
+      setWebFilterType:supervised_user::WebFilterType::kAllowAllSites];
 
   GURL allowedURL = self.testServer->GetURL(kDefaultPath);
   GURL blockedURL = self.testServer->GetURL(kHost, kEchoPath);
@@ -643,9 +637,8 @@ static const char* kInterstitialWaitingContent = "Waiting for permission";
     MAYBE_testSupervisedUserInterstitialOnLocalApprovalRequestFromWaitingScreen {
   [self signInSupervisedUser];
   [FamilyLinkSettingsAppInterface setFakePermissionCreator];
-  // TODO(crbug.com/320981294): Update to `WebFilterType::kAllowAllSites`.
   [FamilyLinkSettingsAppInterface
-      setWebFilterType:supervised_user::WebFilterType::kTryToBlockMatureSites];
+      setWebFilterType:supervised_user::WebFilterType::kAllowAllSites];
 
   GURL allowedURL = self.testServer->GetURL(kDefaultPath);
   GURL blockedURL = self.testServer->GetURL(kHost, kEchoPath);
