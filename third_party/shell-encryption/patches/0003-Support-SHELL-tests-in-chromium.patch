@@ -60,27 +60,6 @@ index fe1fd55..7cc3c8b 100644
      ASSERT_OK_AND_ASSIGN(auto context,
                           rlwe::RlweContext<TypeParam>::Create(params));
      // Error scales by (T / logT) when all other constants are fixed.
-diff --git a/galois_key_test.cc b/galois_key_test.cc
-index 022ddd5..b73a4d4 100644
---- a/galois_key_test.cc
-+++ b/galois_key_test.cc
-@@ -17,6 +17,7 @@
- 
- #include <gmock/gmock.h>
- #include <gtest/gtest.h>
-+#include <google/protobuf/util/message_differencer.h>
- #include "constants.h"
- #include "montgomery.h"
- #include "ntt_parameters.h"
-@@ -408,7 +409,7 @@ TEST_F(GaloisKeyTest, SerializationsOfIdentialKeysEqual) {
-   ASSERT_OK_AND_ASSIGN(auto serialized_copy, galois_key_copy.Serialize());
- 
-   // Check that two serializations of the same matrix are equal.
--  EXPECT_THAT(serialized_copy, EqualsProto(serialized));
-+  EXPECT_EQ(serialized_copy.SerializeAsString(), serialized.SerializeAsString());
- }
- 
- }  //  namespace
 diff --git a/int256.cc b/int256.cc
 index 1096c98..f9a40fc 100644
 --- a/int256.cc
