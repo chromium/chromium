@@ -9,7 +9,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assume.assumeFalse;
 import static org.junit.Assume.assumeTrue;
 
 import android.content.pm.PackageManager;
@@ -25,7 +24,6 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
-import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.blink.mojom.PublicKeyCredentialParameters;
 import org.chromium.blink.mojom.PublicKeyCredentialType;
 
@@ -66,15 +64,6 @@ public class BrowserBoundKeyStoreTest {
     }
 
     private static final byte[] BBK_ID = new byte[] {0x0a, 0x0b, 0x0c, 0x0d};
-
-    private static final String GET_KEY_LATENCY_HISTOGRAM_PREFIX =
-            "PaymentRequest.SecurePaymentConfirmation.BrowserBoundKeyStore.GetKeyLatency";
-    private static final String GET_KEY_LATENCY_KEY_FOUND_HISTOGRAM =
-            GET_KEY_LATENCY_HISTOGRAM_PREFIX + ".KeyFound";
-    private static final String GET_KEY_LATENCY_KEY_NOT_FOUND_HISTOGRAM =
-            GET_KEY_LATENCY_HISTOGRAM_PREFIX + ".KeyNotFound";
-    private static final String CREATE_KEY_LATENCY_HISTOGRAM =
-            "PaymentRequest.SecurePaymentConfirmation.BrowserBoundKeyStore.CreateKeyLatency";
 
     @After
     public void removeBbk() {
@@ -158,88 +147,5 @@ public class BrowserBoundKeyStoreTest {
     @Test
     public void testDetectsStrongBoxSupport() {
         assertEquals(isStrongBoxAvailable(), BrowserBoundKeyStore.getDeviceSupportsHardwareKeys());
-    }
-
-    @Test
-    @RequiresApi(Build.VERSION_CODES.P)
-    public void testRecordsLatencyWhenCreatingKey() {
-        assumeTrue(isStrongBoxAvailable());
-        BrowserBoundKeyStore browserBoundKeyStore = BrowserBoundKeyStore.getInstance();
-        HistogramWatcher histogramWatcher =
-                HistogramWatcher.newBuilder()
-                        .expectAnyRecord(GET_KEY_LATENCY_KEY_NOT_FOUND_HISTOGRAM)
-                        .expectNoRecords(GET_KEY_LATENCY_KEY_FOUND_HISTOGRAM)
-                        .expectAnyRecord(CREATE_KEY_LATENCY_HISTOGRAM)
-                        .build();
-
-        BrowserBoundKey bbk =
-                browserBoundKeyStore.getOrCreateBrowserBoundKeyForCredentialId(
-                        BBK_ID, ALLOWED_ALGORITHMS);
-
-        assertNotNull(bbk);
-        histogramWatcher.assertExpected();
-    }
-
-    @Test
-    @RequiresApi(Build.VERSION_CODES.P)
-    public void testRecordsLatencyWhenFindingExistingKey() {
-        assumeTrue(isStrongBoxAvailable());
-        BrowserBoundKeyStore browserBoundKeyStore = BrowserBoundKeyStore.getInstance();
-        assertNotNull(
-                browserBoundKeyStore.getOrCreateBrowserBoundKeyForCredentialId(
-                        BBK_ID, ALLOWED_ALGORITHMS));
-        HistogramWatcher histogramWatcher =
-                HistogramWatcher.newBuilder()
-                        .expectAnyRecord(GET_KEY_LATENCY_KEY_FOUND_HISTOGRAM)
-                        .expectNoRecords(GET_KEY_LATENCY_KEY_NOT_FOUND_HISTOGRAM)
-                        .expectNoRecords(CREATE_KEY_LATENCY_HISTOGRAM)
-                        .build();
-
-        BrowserBoundKey bbk =
-                browserBoundKeyStore.getOrCreateBrowserBoundKeyForCredentialId(
-                        BBK_ID, ALLOWED_ALGORITHMS);
-
-        assertNotNull(bbk);
-        histogramWatcher.assertExpected();
-    }
-
-    @Test
-    @RequiresApi(Build.VERSION_CODES.P)
-    public void testRecordsCreateKeyLatencyWhenCreationFails() {
-        // Creating a browser bound key fails without StrongBox.
-        assumeFalse(isStrongBoxAvailable());
-        BrowserBoundKeyStore browserBoundKeyStore = BrowserBoundKeyStore.getInstance();
-        HistogramWatcher histogramWatcher =
-                HistogramWatcher.newBuilder()
-                        .expectAnyRecord(GET_KEY_LATENCY_KEY_NOT_FOUND_HISTOGRAM)
-                        .expectNoRecords(GET_KEY_LATENCY_KEY_FOUND_HISTOGRAM)
-                        .expectAnyRecord(CREATE_KEY_LATENCY_HISTOGRAM)
-                        .build();
-
-        BrowserBoundKey bbk =
-                browserBoundKeyStore.getOrCreateBrowserBoundKeyForCredentialId(
-                        BBK_ID, ALLOWED_ALGORITHMS);
-
-        assertNull(bbk);
-        histogramWatcher.assertExpected();
-    }
-
-    @Test
-    public void testDoesNotRecordCreateKeyLatencyWithUnsupportedAlgorithm() {
-        BrowserBoundKeyStore browserBoundKeyStore = BrowserBoundKeyStore.getInstance();
-        HistogramWatcher histogramWatcher =
-                HistogramWatcher.newBuilder()
-                        .expectAnyRecord(GET_KEY_LATENCY_KEY_NOT_FOUND_HISTOGRAM)
-                        .expectNoRecords(GET_KEY_LATENCY_KEY_FOUND_HISTOGRAM)
-                        .expectNoRecords(CREATE_KEY_LATENCY_HISTOGRAM)
-                        .build();
-
-        BrowserBoundKey bbk =
-                browserBoundKeyStore.getOrCreateBrowserBoundKeyForCredentialId(
-                        BBK_ID,
-                        Arrays.asList(createCredentialParameters(/* algorithmIdentifier= */ 0)));
-
-        assertNull(bbk);
-        histogramWatcher.assertExpected();
     }
 }

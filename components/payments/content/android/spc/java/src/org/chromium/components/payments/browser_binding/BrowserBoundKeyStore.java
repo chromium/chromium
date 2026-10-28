@@ -18,8 +18,6 @@ import org.jni_zero.JniType;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
-import org.chromium.base.TimeUtils;
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.blink.mojom.PublicKeyCredentialParameters;
 import org.chromium.blink.mojom.PublicKeyCredentialType;
 import org.chromium.build.annotations.NullMarked;
@@ -54,14 +52,6 @@ public final class BrowserBoundKeyStore {
 
     public static final String ANDROID_KEY_STORE = "AndroidKeyStore";
     public static final String KEYSTORE_ALIAS_PREFIX = "spcbbk_sha256ecdsa_";
-
-    /** The histogram prefix for the latency of getting a browser bound key. */
-    private static final String GET_KEY_LATENCY_HISTOGRAM_PREFIX =
-            "PaymentRequest.SecurePaymentConfirmation.BrowserBoundKeyStore.GetKeyLatency";
-
-    /** The histogram for the latency of creating a browser bound key. */
-    private static final String CREATE_KEY_LATENCY_HISTOGRAM =
-            "PaymentRequest.SecurePaymentConfirmation.BrowserBoundKeyStore.CreateKeyLatency";
 
     private BrowserBoundKeyStore() {}
 
@@ -121,19 +111,9 @@ public final class BrowserBoundKeyStore {
         // so that browser bound public keys can be included in clientDataJson on passkey creation
         // time when the identifier is not know.
         String keyStoreAlias = keyStoreAliasOf(identifier);
-        long getKeyStartTimeMs = TimeUtils.elapsedRealtimeMillis();
         BrowserBoundKey browserBoundKey = getBrowserBoundKey(identifier, keyStoreAlias);
-        RecordHistogram.recordTimesHistogram(
-                browserBoundKey != null
-                        ? GET_KEY_LATENCY_HISTOGRAM_PREFIX + ".KeyFound"
-                        : GET_KEY_LATENCY_HISTOGRAM_PREFIX + ".KeyNotFound",
-                TimeUtils.elapsedRealtimeMillis() - getKeyStartTimeMs);
         if (browserBoundKey == null && containsEs256(allowedAlgorithms)) {
-            long createKeyStartTimeMs = TimeUtils.elapsedRealtimeMillis();
             browserBoundKey = createBrowserBoundKey(identifier, keyStoreAlias);
-            RecordHistogram.recordTimesHistogram(
-                    CREATE_KEY_LATENCY_HISTOGRAM,
-                    TimeUtils.elapsedRealtimeMillis() - createKeyStartTimeMs);
         }
         return browserBoundKey;
     }
