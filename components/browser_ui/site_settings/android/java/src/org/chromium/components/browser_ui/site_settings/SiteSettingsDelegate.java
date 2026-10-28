@@ -129,6 +129,13 @@ public interface SiteSettingsDelegate {
      */
     void launchProtectedContentHelpAndFeedbackActivity(Activity currentActivity);
 
+    /**
+     * Launches a support page related to cookies.
+     *
+     * @see org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher#show
+     */
+    void launchCookiesHelpAndFeedbackActivity(Activity currentActivity);
+
     /** Launches a Help Center URL in a custom tab. */
     void launchUrlInCustomTab(Activity currentActivity, String url);
 

@@ -11,6 +11,7 @@ import android.net.Uri;
 import android.provider.Browser;
 import android.text.TextUtils;
 
+import org.chromium.base.Log;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -22,14 +23,9 @@ import java.util.List;
 /** Delegate that handles the display of the HelpAndFeedback flows. */
 @NullMarked
 public interface HelpAndFeedbackLauncherDelegate {
+    String TAG = "HelpAndFeedback";
     String FALLBACK_SUPPORT_URL = "https://support.google.com/chrome/topic/6069782";
     String P_LINK_URL_PREFIX = "https://support.google.com/chrome/?p=";
-
-    /**
-     * {@link ChromeFeatureList#USE_P_LINK_IN_HELP} param: comma-separated help contexts that open
-     * the help homepage, in addition to {@code R.array.help_contexts_using_homepage}.
-     */
-    String EXTRA_HOMEPAGE_HELP_CONTEXTS_PARAM = "extra_homepage_help_contexts";
 
     /**
      * Starts an activity showing a help page for the specified context ID.
@@ -66,8 +62,8 @@ public interface HelpAndFeedbackLauncherDelegate {
      * homepage instead.
      *
      * <p>Help contexts in {@code R.array.help_contexts_using_homepage} or in the {@link
-     * #EXTRA_HOMEPAGE_HELP_CONTEXTS_PARAM} Finch param open the help homepage. All other help
-     * contexts use p-links.
+     * ChromeFeatureList#USE_P_LINK_IN_HELP_HOMEPAGE_CONTEXTS} Finch param (comma-separated) open
+     * the help homepage. All other help contexts use p-links.
      *
      * @param context The context used to read resources.
      * @param helpContext The help context string.
@@ -83,12 +79,16 @@ public interface HelpAndFeedbackLauncherDelegate {
                                         .getStringArray(R.array.help_contexts_using_homepage)));
         String extraHomepageHelpContexts =
                 ChromeFeatureList.getFieldTrialParamByFeatureAsString(
-                        ChromeFeatureList.USE_P_LINK_IN_HELP, EXTRA_HOMEPAGE_HELP_CONTEXTS_PARAM);
+                        ChromeFeatureList.USE_P_LINK_IN_HELP,
+                        ChromeFeatureList.USE_P_LINK_IN_HELP_HOMEPAGE_CONTEXTS);
         for (String extraContext : extraHomepageHelpContexts.split(",")) {
             String trimmed = extraContext.trim();
             if (!trimmed.isEmpty()) homepageHelpContexts.add(trimmed);
         }
-        return homepageHelpContexts.contains(helpContext) ? null : P_LINK_URL_PREFIX + helpContext;
+        String pLinkUrl =
+                homepageHelpContexts.contains(helpContext) ? null : P_LINK_URL_PREFIX + helpContext;
+        Log.d(TAG, "Help context: %s, p-link URL: %s", helpContext, pLinkUrl);
+        return pLinkUrl;
     }
 
     /**
@@ -98,15 +98,14 @@ public interface HelpAndFeedbackLauncherDelegate {
      * @param url The url to open.
      */
     static void launchFallbackSupportUri(Context context, @Nullable String url) {
-        Intent intent =
-                new Intent(
-                        Intent.ACTION_VIEW,
-                        Uri.parse(TextUtils.isEmpty(url) ? FALLBACK_SUPPORT_URL : url));
+        String targetUrl = TextUtils.isEmpty(url) ? FALLBACK_SUPPORT_URL : url;
+        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(targetUrl));
         // Let Chrome know that this intent is from Chrome, so that it does not close the app when
         // the user presses 'back' button.
         intent.putExtra(Browser.EXTRA_APPLICATION_ID, context.getPackageName());
         intent.putExtra(Browser.EXTRA_CREATE_NEW_TAB, true);
         intent.setPackage(context.getPackageName());
+        Log.d(TAG, "Fallback support URL: %s", targetUrl);
         context.startActivity(intent);
     }
 }

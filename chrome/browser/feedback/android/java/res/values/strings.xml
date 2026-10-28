@@ -11,6 +11,7 @@ found in the LICENSE file.
     <string name="help_context_autofill">android_autofill_ota</string>
     <string name="help_context_bookmarks">mobile_bookmarks</string>
     <string name="help_context_clear_browsing_data">clear_browsing_data</string>
+    <string name="help_context_cookies_settings">mobile_cookies_settings</string>
     <string name="help_context_general">mobile_general</string>
     <string name="help_context_history">mobile_history</string>
     <string name="help_context_incognito">mobile_incognito</string>

@@ -1873,6 +1873,8 @@ public abstract class ChromeFeatureList {
     public static final String NTP_AURORA_PADDING_STYLE = "padding_style";
     public static final String NTP_AURORA_V2_ACTION_CHIPS = "action_chips";
     public static final String NTP_AURORA_V2_LAYOUT_TYPE = "layout_type";
+    public static final String USE_P_LINK_IN_HELP_HOMEPAGE_CONTEXTS =
+            "extra_homepage_help_contexts";
     public static final String XPLAT_SYNCED_SETUP_THEMES_OBSERVATION_ONLY = "observation_only";
 
     // keep-sorted end
@@ -1908,6 +1910,7 @@ public abstract class ChromeFeatureList {
                             Map.ofEntries(
                                     Map.entry(NTP_AURORA_V2_ACTION_CHIPS, "0"),
                                     Map.entry(NTP_AURORA_V2_LAYOUT_TYPE, "0"))),
+                    Map.entry(USE_P_LINK_IN_HELP, Map.of(USE_P_LINK_IN_HELP_HOMEPAGE_CONTEXTS, "")),
                     Map.entry(
                             XPLAT_SYNCED_SETUP_THEMES,
                             Map.of(XPLAT_SYNCED_SETUP_THEMES_OBSERVATION_ONLY, "false")));
@@ -1945,6 +1948,9 @@ public abstract class ChromeFeatureList {
                                     Map.ofEntries(
                                             Map.entry(NTP_AURORA_V2_ACTION_CHIPS, "1"),
                                             Map.entry(NTP_AURORA_V2_LAYOUT_TYPE, "0"))),
+                            Map.entry(
+                                    USE_P_LINK_IN_HELP,
+                                    Map.of(USE_P_LINK_IN_HELP_HOMEPAGE_CONTEXTS, "")),
                             Map.entry(
                                     XPLAT_SYNCED_SETUP_THEMES,
                                     Map.of(XPLAT_SYNCED_SETUP_THEMES_OBSERVATION_ONLY, "false")));

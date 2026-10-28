@@ -197,6 +197,20 @@ public class SettingsMenuHelper {
      */
     public static boolean onOptionsItemSelected(
             MenuItem item, Activity activity, Delegate delegate) {
+        // In single-column mode, a default detail fragment (e.g. GoogleServicesSettings) is still
+        // attached in the hidden detail pane and sets R.id.menu_id_targeted_help on the toolbar.
+        // When the detail pane is closed (showing only MainSettings), open general settings help
+        // instead of forwarding to the hidden detail fragment.
+        MultiColumnSettings multiColumnSettings = delegate.getMultiColumnSettings();
+        boolean isShowingMainSettingsOnly =
+                multiColumnSettings != null && !multiColumnSettings.isLayoutOpen();
+        if (isShowingMainSettingsOnly && item.getItemId() == R.id.menu_id_targeted_help) {
+            RecordUserAction.record("Settings.MobileHelpAndFeedback");
+            delegate.getHelpAndFeedbackLauncher()
+                    .show(activity, activity.getString(R.string.help_context_settings), null);
+            return true;
+        }
+
         Fragment mainFragment = delegate.getMainFragment();
         if (mainFragment != null && mainFragment.onOptionsItemSelected(item)) {
             if (item.getItemId() == R.id.menu_id_targeted_help) {
