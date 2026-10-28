@@ -566,7 +566,8 @@ void TabMenuModel::Build(int index) {
   const int num_mute_tabs =
       is_single_split ? tab_strip_->GetSplitData(*split)->ListTabs().size()
                       : num_tabs;
-  const bool will_mute = tab_strip_->WillContextMenuMuteSites(index);
+  const bool will_mute = tab_strip_->WillContextMenuMuteSites(
+      tab_strip_->GetTabAtIndex(index)->GetHandle());
   const std::u16string mute_label = l10n_util::GetPluralStringFUTF16(
       will_mute ? IDS_TAB_CXMENU_SOUND_MUTE_SITE
                 : IDS_TAB_CXMENU_SOUND_UNMUTE_SITE,

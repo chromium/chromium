@@ -3094,7 +3094,7 @@ void TabStripModel::ExecuteContextMenuCommand(int context_index,
       base::UmaHistogramCounts1000(
           "Tab.ContextMenu.ToggleSiteMuted.SelectedTabsCount",
           selection_model_.size());
-      const bool mute = WillContextMenuMuteSites(context_index);
+      const bool mute = WillContextMenuMuteSites(context_tab);
       if (mute) {
         base::RecordAction(
             UserMetricsAction("SoundContentSetting.MuteBy.TabStrip"));
@@ -3102,7 +3102,7 @@ void TabStripModel::ExecuteContextMenuCommand(int context_index,
         base::RecordAction(
             UserMetricsAction("SoundContentSetting.UnmuteBy.TabStrip"));
       }
-      SetSitesMuted(GetIndicesForCommand(context_index), mute);
+      SetSitesMuted(GetTabsForCommand(context_tab), mute);
       break;
     }
 
@@ -3622,8 +3622,8 @@ void TabStripModel::ExecuteCloseTabsCommand(
   }
 }
 
-bool TabStripModel::WillContextMenuMuteSites(int index) {
-  return !AreAllSitesMuted(*this, GetIndicesForCommand(index));
+bool TabStripModel::WillContextMenuMuteSites(tabs::TabHandle context_tab) {
+  return !AreAllSitesMuted(GetTabsForCommand(context_tab));
 }
 
 bool TabStripModel::WillContextMenuPin(tabs::TabHandle context_tab) {
@@ -5722,11 +5722,16 @@ void TabStripModel::MoveTabsWithNotifications(
   }
 }
 
-// Sets the sound content setting for each site at the `indices`.
-void TabStripModel::SetSitesMuted(const std::vector<int>& indices,
+// Sets the sound content setting for each site for `tabs`.
+void TabStripModel::SetSitesMuted(const std::vector<tabs::TabHandle>& tabs,
                                   bool mute) const {
-  for (int tab_index : indices) {
-    content::WebContents* web_contents = GetWebContentsAt(tab_index);
+  for (tabs::TabHandle handle : tabs) {
+    tabs::TabInterface* tab = handle.Get();
+    if (!tab || static_cast<tabs::TabModel*>(tab)->owning_model() != this) {
+      continue;
+    }
+    content::WebContents* web_contents = tab->GetContents();
+    CHECK(web_contents);
     GURL url = web_contents->GetLastCommittedURL();
 
     // `GetLastCommittedURL` could return an empty URL if no navigation has

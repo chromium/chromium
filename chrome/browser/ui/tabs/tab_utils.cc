@@ -8,13 +8,17 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_muted_utils.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/url_constants.h"
 
-bool IsSiteMuted(const TabStripModel& tab_strip, const int index) {
-  content::WebContents* web_contents = tab_strip.GetWebContentsAt(index);
+bool IsSiteMuted(tabs::TabHandle tab_handle) {
+  tabs::TabInterface* tab = tab_handle.Get();
+  if (!tab) {
+    return false;
+  }
+  content::WebContents* web_contents = tab->GetContents();
 
   // Prevent crashes with null WebContents (https://crbug.com/41362347).
   if (!web_contents) {
@@ -39,10 +43,9 @@ bool IsSiteMuted(const TabStripModel& tab_strip, const int index) {
          CONTENT_SETTING_BLOCK;
 }
 
-bool AreAllSitesMuted(const TabStripModel& tab_strip,
-                      const std::vector<int>& indices) {
-  for (int tab_index : indices) {
-    if (!IsSiteMuted(tab_strip, tab_index)) {
+bool AreAllSitesMuted(const std::vector<tabs::TabHandle>& tabs) {
+  for (tabs::TabHandle tab : tabs) {
+    if (!IsSiteMuted(tab)) {
       return false;
     }
   }

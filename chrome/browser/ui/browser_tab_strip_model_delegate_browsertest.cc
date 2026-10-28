@@ -51,8 +51,9 @@ class BrowserTabStripModelDelegateWithEmbeddedServerTest
   }
 
   void VerifyMute(BrowserWindowInterface* browser, bool isMuted) {
-    int active_index = browser->GetTabStripModel()->active_index();
-    EXPECT_EQ(isMuted, IsSiteMuted(*browser->GetTabStripModel(), active_index));
+    EXPECT_EQ(
+        isMuted,
+        IsSiteMuted(browser->GetTabStripModel()->GetActiveTab()->GetHandle()));
   }
 };
 

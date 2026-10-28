@@ -7727,19 +7727,19 @@ TEST_F(TabStripModelTest, ToggleSiteMuted) {
   // Validate if the mute site menu item shows up and the site is unmuted
   EXPECT_TRUE(tabstrip()->IsContextMenuCommandEnabled(
       0, TabStripModel::CommandToggleSiteMuted));
-  EXPECT_FALSE(IsSiteMuted(*tabstrip(), 0));
+  EXPECT_FALSE(IsSiteMuted(tabstrip()->GetTabAtIndex(0)->GetHandle()));
 
   // Validate if toggling the state successfully mutes the site
   tabstrip()->ExecuteContextMenuCommand(0,
                                         TabStripModel::CommandToggleSiteMuted);
-  EXPECT_TRUE(IsSiteMuted(*tabstrip(), 0));
+  EXPECT_TRUE(IsSiteMuted(tabstrip()->GetTabAtIndex(0)->GetHandle()));
   EXPECT_TRUE(IsSiteInContentSettingExceptionList(settings, url,
                                                   ContentSettingsType::SOUND));
 
   // Toggling the state again to successfully unmute the site
   tabstrip()->ExecuteContextMenuCommand(0,
                                         TabStripModel::CommandToggleSiteMuted);
-  EXPECT_FALSE(IsSiteMuted(*tabstrip(), 0));
+  EXPECT_FALSE(IsSiteMuted(tabstrip()->GetTabAtIndex(0)->GetHandle()));
   EXPECT_FALSE(IsSiteInContentSettingExceptionList(settings, url,
                                                    ContentSettingsType::SOUND));
 
@@ -7762,7 +7762,7 @@ TEST_F(TabStripModelTest, ToggleSiteMutedWithLessSpecificRule) {
   // Validate if the mute site menu item shows up and the site is unmuted
   EXPECT_TRUE(tabstrip()->IsContextMenuCommandEnabled(
       0, TabStripModel::CommandToggleSiteMuted));
-  EXPECT_FALSE(IsSiteMuted(*tabstrip(), 0));
+  EXPECT_FALSE(IsSiteMuted(tabstrip()->GetTabAtIndex(0)->GetHandle()));
 
   // Add a wildcard to mute all HTTPS sites as a custom behavior
   ContentSettingsPattern primary_pattern =
@@ -7772,24 +7772,24 @@ TEST_F(TabStripModelTest, ToggleSiteMutedWithLessSpecificRule) {
   settings->SetContentSettingCustomScope(primary_pattern, secondary_pattern,
                                          ContentSettingsType::SOUND,
                                          CONTENT_SETTING_BLOCK);
-  EXPECT_TRUE(IsSiteMuted(*tabstrip(), 0));
+  EXPECT_TRUE(IsSiteMuted(tabstrip()->GetTabAtIndex(0)->GetHandle()));
 
   // Validate we are able to unmute the site (with the wildcard custom behavior)
   tabstrip()->ExecuteContextMenuCommand(0,
                                         TabStripModel::CommandToggleSiteMuted);
-  EXPECT_FALSE(IsSiteMuted(*tabstrip(), 0));
+  EXPECT_FALSE(IsSiteMuted(tabstrip()->GetTabAtIndex(0)->GetHandle()));
   EXPECT_TRUE(IsSiteInContentSettingExceptionList(settings, url,
                                                   ContentSettingsType::SOUND));
 
   // Validate we are able to mute the site
   tabstrip()->ExecuteContextMenuCommand(0,
                                         TabStripModel::CommandToggleSiteMuted);
-  EXPECT_TRUE(IsSiteMuted(*tabstrip(), 0));
+  EXPECT_TRUE(IsSiteMuted(tabstrip()->GetTabAtIndex(0)->GetHandle()));
 
   // Validate we are able to unmute the site
   tabstrip()->ExecuteContextMenuCommand(0,
                                         TabStripModel::CommandToggleSiteMuted);
-  EXPECT_FALSE(IsSiteMuted(*tabstrip(), 0));
+  EXPECT_FALSE(IsSiteMuted(tabstrip()->GetTabAtIndex(0)->GetHandle()));
   EXPECT_TRUE(IsSiteInContentSettingExceptionList(settings, url,
                                                   ContentSettingsType::SOUND));
 
@@ -7812,7 +7812,7 @@ TEST_F(TabStripModelTest, ToggleSiteMutedWithOtherDisjointRule) {
   // Validate if the mute site menu item shows up and the site is unmuted
   EXPECT_TRUE(tabstrip()->IsContextMenuCommandEnabled(
       0, TabStripModel::CommandToggleSiteMuted));
-  EXPECT_FALSE(IsSiteMuted(*tabstrip(), 0));
+  EXPECT_FALSE(IsSiteMuted(tabstrip()->GetTabAtIndex(0)->GetHandle()));
 
   // Add a wildcard to mute all HTTPS sites as a custom behavior
   ContentSettingsPattern primary_pattern =
@@ -7822,19 +7822,19 @@ TEST_F(TabStripModelTest, ToggleSiteMutedWithOtherDisjointRule) {
   settings->SetContentSettingCustomScope(primary_pattern, secondary_pattern,
                                          ContentSettingsType::SOUND,
                                          CONTENT_SETTING_BLOCK);
-  EXPECT_FALSE(IsSiteMuted(*tabstrip(), 0));
+  EXPECT_FALSE(IsSiteMuted(tabstrip()->GetTabAtIndex(0)->GetHandle()));
 
   // Validate we are able to mute the site
   tabstrip()->ExecuteContextMenuCommand(0,
                                         TabStripModel::CommandToggleSiteMuted);
-  EXPECT_TRUE(IsSiteMuted(*tabstrip(), 0));
+  EXPECT_TRUE(IsSiteMuted(tabstrip()->GetTabAtIndex(0)->GetHandle()));
   EXPECT_TRUE(IsSiteInContentSettingExceptionList(settings, url,
                                                   ContentSettingsType::SOUND));
 
   // Validate we are able to unmute the site
   tabstrip()->ExecuteContextMenuCommand(0,
                                         TabStripModel::CommandToggleSiteMuted);
-  EXPECT_FALSE(IsSiteMuted(*tabstrip(), 0));
+  EXPECT_FALSE(IsSiteMuted(tabstrip()->GetTabAtIndex(0)->GetHandle()));
   EXPECT_FALSE(IsSiteInContentSettingExceptionList(settings, url,
                                                    ContentSettingsType::SOUND));
 
@@ -7860,12 +7860,12 @@ TEST_F(TabStripModelTest, ToggleSiteMutedWithDifferentDefault) {
   // Validate if the mute site menu item shows up and the site is muted
   EXPECT_TRUE(tabstrip()->IsContextMenuCommandEnabled(
       0, TabStripModel::CommandToggleSiteMuted));
-  EXPECT_TRUE(IsSiteMuted(*tabstrip(), 0));
+  EXPECT_TRUE(IsSiteMuted(tabstrip()->GetTabAtIndex(0)->GetHandle()));
 
   // Validate if toggling the state successfully unmutes the site
   tabstrip()->ExecuteContextMenuCommand(0,
                                         TabStripModel::CommandToggleSiteMuted);
-  EXPECT_FALSE(IsSiteMuted(*tabstrip(), 0));
+  EXPECT_FALSE(IsSiteMuted(tabstrip()->GetTabAtIndex(0)->GetHandle()));
   EXPECT_TRUE(IsSiteInContentSettingExceptionList(settings, url,
                                                   ContentSettingsType::SOUND));
 
@@ -7880,7 +7880,7 @@ TEST_F(TabStripModelTest, ToggleMuteUnmuteMultipleSites) {
   tabstrip()->AddWebContents(std::move(new_tab_contents1), -1,
                              ui::PAGE_TRANSITION_TYPED,
                              AddTabTypes::ADD_ACTIVE);
-  EXPECT_FALSE(IsSiteMuted(*tabstrip(), 0));
+  EXPECT_FALSE(IsSiteMuted(tabstrip()->GetTabAtIndex(0)->GetHandle()));
 
   GURL url2("https://example2.com/");
   std::unique_ptr<WebContents> new_tab_contents2 = CreateWebContents();
@@ -7889,7 +7889,7 @@ TEST_F(TabStripModelTest, ToggleMuteUnmuteMultipleSites) {
   tabstrip()->AddWebContents(std::move(new_tab_contents2), -1,
                              ui::PAGE_TRANSITION_TYPED,
                              AddTabTypes::ADD_ACTIVE);
-  EXPECT_FALSE(IsSiteMuted(*tabstrip(), 1));
+  EXPECT_FALSE(IsSiteMuted(tabstrip()->GetTabAtIndex(1)->GetHandle()));
 
   tabstrip()->SelectTabAt(0);
   EXPECT_TRUE(
@@ -7897,13 +7897,17 @@ TEST_F(TabStripModelTest, ToggleMuteUnmuteMultipleSites) {
 
   tabstrip()->ExecuteContextMenuCommand(0,
                                         TabStripModel::CommandToggleSiteMuted);
-  EXPECT_TRUE(IsSiteMuted(*tabstrip(), 0));
-  EXPECT_TRUE(IsSiteMuted(*tabstrip(), 1));
+  EXPECT_TRUE(IsSiteMuted(tabstrip()->GetTabAtIndex(0)->GetHandle()));
+  EXPECT_TRUE(IsSiteMuted(tabstrip()->GetTabAtIndex(1)->GetHandle()));
 
   tabstrip()->ExecuteContextMenuCommand(0,
                                         TabStripModel::CommandToggleSiteMuted);
-  EXPECT_FALSE(IsSiteMuted(*tabstrip(), 0));
-  EXPECT_FALSE(IsSiteMuted(*tabstrip(), 1));
+  EXPECT_FALSE(IsSiteMuted(tabstrip()->GetTabAtIndex(0)->GetHandle()));
+  EXPECT_FALSE(IsSiteMuted(tabstrip()->GetTabAtIndex(1)->GetHandle()));
+
+  // Also test null handles with IsSiteMuted and WillContextMenuMuteSites.
+  EXPECT_FALSE(IsSiteMuted(tabs::TabHandle::Null()));
+  EXPECT_FALSE(tabstrip()->WillContextMenuMuteSites(tabs::TabHandle::Null()));
 
   tabstrip()->CloseAllTabs();
 }

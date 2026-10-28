@@ -7,13 +7,12 @@
 
 #include <vector>
 
-class TabStripModel;
+#include "components/tabs/public/tab_interface.h"
 
-// Returns true if the site at `index` in `tab_strip` is muted.
-bool IsSiteMuted(const TabStripModel& tab_strip, const int index);
+// Returns true if the site for `tab` is muted.
+bool IsSiteMuted(tabs::TabHandle tab);
 
-// Returns true if the sites at the `indices` in `tab_strip` are all muted.
-bool AreAllSitesMuted(const TabStripModel& tab_strip,
-                      const std::vector<int>& indices);
+// Returns true if the sites for `tabs` are all muted.
+bool AreAllSitesMuted(const std::vector<tabs::TabHandle>& tabs);
 
 #endif  // CHROME_BROWSER_UI_TABS_TAB_UTILS_H_

@@ -453,7 +453,7 @@ class TabMenuModelMuteSitesBrowserTest : public TabMenuModelBrowserTest {
 
   bool IsMuted(int index) {
     TabStripModel* tab_strip_model = browser()->tab_strip_model();
-    return IsSiteMuted(*tab_strip_model, index) &&
+    return IsSiteMuted(tab_strip_model->GetTabAtIndex(index)->GetHandle()) &&
            tab_strip_model->GetWebContentsAt(index)->IsAudioMuted();
   }
 };

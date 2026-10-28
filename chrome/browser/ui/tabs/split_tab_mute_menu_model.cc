@@ -150,7 +150,8 @@ void SplitTabMuteMenuModel::ExecuteCommand(int command_id, int event_flags) {
 
   // This changes the sound content setting for the view's site, so it also
   // affects the other view when both views show the same site.
-  tab_strip_model_->SetSitesMuted({*index}, mute);
+  tab_strip_model_->SetSitesMuted(
+      {tab_strip_model_->GetTabAtIndex(*index)->GetHandle()}, mute);
 }
 
 std::optional<int> SplitTabMuteMenuModel::GetTabIndexForCommand(
@@ -176,8 +177,10 @@ bool SplitTabMuteMenuModel::IsSideBySide() const {
 bool SplitTabMuteMenuModel::WillMute(CommandId id) const {
   if (id == CommandId::kToggleAllSitesMuted) {
     return !tab_strip_model_->ContainsIndex(tab_index_) ||
-           tab_strip_model_->WillContextMenuMuteSites(tab_index_);
+           tab_strip_model_->WillContextMenuMuteSites(
+               tab_strip_model_->GetTabAtIndex(tab_index_)->GetHandle());
   }
   const std::optional<int> index = GetTabIndexForCommand(id);
-  return !index.has_value() || !IsSiteMuted(*tab_strip_model_, *index);
+  return !index.has_value() ||
+         !IsSiteMuted(tab_strip_model_->GetTabAtIndex(*index)->GetHandle());
 }

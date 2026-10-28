@@ -839,12 +839,12 @@ class TabStripModel {
   void ExecuteAddToNewSplitCommand(int context_index,
                                    split_tabs::SplitTabLayout layout);
 
-  // Returns true if 'CommandToggleSiteMuted' will mute. `index` is the
-  // index supplied to `ExecuteContextMenuCommand`.
-  bool WillContextMenuMuteSites(int index);
+  // Returns true if 'CommandToggleSiteMuted' will mute. `context_tab` is the
+  // tab supplied to `ExecuteContextMenuCommand`.
+  bool WillContextMenuMuteSites(tabs::TabHandle context_tab);
 
-  // Sets the sound content setting for each site at the `indices`.
-  void SetSitesMuted(const std::vector<int>& indices, bool mute) const;
+  // Sets the sound content setting for each site for `tabs`.
+  void SetSitesMuted(const std::vector<tabs::TabHandle>& tabs, bool mute) const;
 
   // Returns true if 'CommandTogglePinned' will pin. `context_tab` is the tab
   // supplied to `ExecuteContextMenuCommand`.
