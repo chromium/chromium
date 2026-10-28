@@ -481,14 +481,7 @@ TEST_P(IndexedDBTest, CloseAfterUpgrade) {
   loop.Run();
 }
 
-// TODO(crbug.com/40813013): Test is flaky on Mac in debug.
-#if BUILDFLAG(IS_MAC) && !defined(NDEBUG)
-#define MAYBE_OpenNewConnectionWhileUpgrading \
-  DISABLED_OpenNewConnectionWhileUpgrading
-#else
-#define MAYBE_OpenNewConnectionWhileUpgrading OpenNewConnectionWhileUpgrading
-#endif
-TEST_P(IndexedDBTest, MAYBE_OpenNewConnectionWhileUpgrading) {
+TEST_P(IndexedDBTest, OpenNewConnectionWhileUpgrading) {
   const int64_t kDBVersion = 1;
   const int64_t kTransactionId = 1;
   const int64_t kObjectStoreId = 10;
