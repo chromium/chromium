@@ -28,4 +28,10 @@ agentic_review {
     content_patterns: "\\bclass \\w+(?:Manager|Client|Driver|Delegate|Controller)\\b"
     rules: "components/autofill/agents/knowledge_base/document-lifetime-and-owner-of-manager-and-client-classes.md"
   }
+  capability_groups {
+    path_expression: "(?:.*/)?[^/]*(?:browsertest|uitest)[^/]*\\.(?:cc|mm)"
+    path_expression_exclusion: "(?:.*/)?renderer/.*"
+    content_patterns: "\\b(?:AutofillManagerTestApi::pass_key|OnFormsSeen|OnFormSubmitted|OnTextFieldValueChanged|OnDidEndTextFieldEditing|OnTextFieldDidScroll|OnSelectControlSelectionChanged|OnSelectFieldOptionsDidChange|OnFocusOnFormField|OnFocusOnNonFormField|OnAskForValuesToFill(?:Test)?|OnHidePopup|OnCaretMovedInFormField|OnDidAutofillForm|SuppressAutomaticRefills|RequestRefill|OnJavaScriptChangedAutofilledValue|OnFormWithEmailVerificationTokenSubmitted|OnDidDetectJavaScriptAutofill)\\b"
+    rules: "components/autofill/agents/knowledge_base/do-not-call-autofill-manager-renderer-events-in-browser-tests.md"
+  }
 }
