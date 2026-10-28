@@ -48,7 +48,7 @@ AutofillWalletDataTypeController::~AutofillWalletDataTypeController() {
 
 void AutofillWalletDataTypeController::Stop(syncer::SyncStopMetadataFate fate,
                                             StopCallback callback) {
-  DCHECK(CalledOnValidThread());
+  DCHECK(CalledOnValidSequence());
   // Special case: For Wallet-related data types, we want to clear all data
   // even when Sync is stopped temporarily, regardless of incoming fate value.
   DataTypeController::Stop(syncer::SyncStopMetadataFate::CLEAR_METADATA,
@@ -58,7 +58,7 @@ void AutofillWalletDataTypeController::Stop(syncer::SyncStopMetadataFate fate,
 syncer::DataTypeController::PreconditionState
 AutofillWalletDataTypeController::GetPreconditionState(
     const PreconditionContext& context) const {
-  DCHECK(CalledOnValidThread());
+  DCHECK(CalledOnValidSequence());
   bool preconditions_met =
       pref_service_->GetBoolean(autofill::prefs::kAutofillCreditCardEnabled);
   return preconditions_met ? PreconditionState::kPreconditionsMet
@@ -66,7 +66,7 @@ AutofillWalletDataTypeController::GetPreconditionState(
 }
 
 void AutofillWalletDataTypeController::OnUserPrefChanged() {
-  DCHECK(CalledOnValidThread());
+  DCHECK(CalledOnValidSequence());
   sync_service_->DataTypePreconditionChanged(type());
 }
 
@@ -80,7 +80,7 @@ void AutofillWalletDataTypeController::SubscribeToPrefChanges() {
 
 void AutofillWalletDataTypeController::OnStateChanged(
     syncer::SyncService* sync) {
-  DCHECK(CalledOnValidThread());
+  DCHECK(CalledOnValidSequence());
   sync_service_->DataTypePreconditionChanged(type());
 }
 

@@ -33,7 +33,7 @@ PasswordDataTypeController::~PasswordDataTypeController() = default;
 void PasswordDataTypeController::LoadModels(
     const syncer::ConfigureContext& configure_context,
     const ModelLoadCallback& model_load_callback) {
-  DCHECK(CalledOnValidThread());
+  DCHECK(CalledOnValidSequence());
   syncer::ConfigureContext overridden_context = configure_context;
 #if BUILDFLAG(IS_ANDROID)
   // Make syncing users behave like signed-in users, storage-wise.
@@ -47,7 +47,7 @@ void PasswordDataTypeController::LoadModels(
 
 void PasswordDataTypeController::Stop(syncer::SyncStopMetadataFate fate,
                                        StopCallback callback) {
-  DCHECK(CalledOnValidThread());
+  DCHECK(CalledOnValidSequence());
   // In transport-only mode, storage is scoped to the Gaia account. That means
   // it should be cleared if Sync is stopped for any reason (other than browser
   // shutdown).

@@ -33,7 +33,7 @@ ExtensionDataTypeController::~ExtensionDataTypeController() = default;
 void ExtensionDataTypeController::LoadModels(
     const syncer::ConfigureContext& configure_context,
     const ModelLoadCallback& model_load_callback) {
-  DCHECK(CalledOnValidThread());
+  DCHECK(CalledOnValidSequence());
   extensions::ExtensionSystem::Get(profile_)->InitForRegularProfile(
       /*extensions_enabled=*/true);
   DataTypeController::LoadModels(configure_context, model_load_callback);

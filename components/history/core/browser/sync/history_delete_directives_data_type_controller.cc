@@ -64,7 +64,7 @@ HistoryDeleteDirectivesDataTypeController::
 syncer::DataTypeController::PreconditionState
 HistoryDeleteDirectivesDataTypeController::GetPreconditionState(
     const PreconditionContext& context) const {
-  DCHECK(CalledOnValidThread());
+  DCHECK(CalledOnValidSequence());
   if (helper_.sync_service()->GetUserSettings()->IsEncryptEverythingEnabled()) {
     return PreconditionState::kMustStopAndClearData;
   }
@@ -74,7 +74,7 @@ HistoryDeleteDirectivesDataTypeController::GetPreconditionState(
 void HistoryDeleteDirectivesDataTypeController::LoadModels(
     const syncer::ConfigureContext& configure_context,
     const ModelLoadCallback& model_load_callback) {
-  DCHECK(CalledOnValidThread());
+  DCHECK(CalledOnValidSequence());
   DCHECK_EQ(NOT_RUNNING, state());
 
   sync_service_observation_.Observe(helper_.sync_service());
@@ -85,7 +85,7 @@ void HistoryDeleteDirectivesDataTypeController::LoadModels(
 void HistoryDeleteDirectivesDataTypeController::Stop(
     syncer::SyncStopMetadataFate fate,
     StopCallback callback) {
-  DCHECK(CalledOnValidThread());
+  DCHECK(CalledOnValidSequence());
 
   sync_service_observation_.Reset();
 
@@ -94,7 +94,7 @@ void HistoryDeleteDirectivesDataTypeController::Stop(
 
 void HistoryDeleteDirectivesDataTypeController::OnStateChanged(
     syncer::SyncService* sync) {
-  DCHECK(CalledOnValidThread());
+  DCHECK(CalledOnValidSequence());
   // Most of these calls will be no-ops but SyncService handles that just fine.
   helper_.sync_service()->DataTypePreconditionChanged(type());
 }

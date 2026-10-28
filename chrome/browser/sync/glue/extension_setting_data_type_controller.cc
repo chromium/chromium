@@ -35,7 +35,7 @@ ExtensionSettingDataTypeController::~ExtensionSettingDataTypeController() =
 void ExtensionSettingDataTypeController::LoadModels(
     const syncer::ConfigureContext& configure_context,
     const ModelLoadCallback& model_load_callback) {
-  DCHECK(CalledOnValidThread());
+  DCHECK(CalledOnValidSequence());
   extensions::ExtensionSystem::Get(profile_)->InitForRegularProfile(
       /*extensions_enabled=*/true);
   NonUiSyncableServiceBasedDataTypeController::LoadModels(configure_context,

@@ -29,7 +29,7 @@ SessionDataTypeController::~SessionDataTypeController() = default;
 syncer::DataTypeController::PreconditionState
 SessionDataTypeController::GetPreconditionState(
     const PreconditionContext& context) const {
-  DCHECK(CalledOnValidThread());
+  DCHECK(CalledOnValidSequence());
   return helper_.GetPreconditionState(context);
 }
 

@@ -41,7 +41,7 @@ FamilyLinkSettingsDataTypeController::~FamilyLinkSettingsDataTypeController() =
 syncer::DataTypeController::PreconditionState
 FamilyLinkSettingsDataTypeController::GetPreconditionState(
     const PreconditionContext& context) const {
-  DCHECK(CalledOnValidThread());
+  DCHECK(CalledOnValidSequence());
   bool is_supervised_user =
       supervised_user::IsSubjectToParentalControls(*pref_service_);
   return is_supervised_user ? PreconditionState::kPreconditionsMet

@@ -20,7 +20,7 @@ SharingMessageDataTypeController::~SharingMessageDataTypeController() =
 
 void SharingMessageDataTypeController::Stop(syncer::SyncStopMetadataFate fate,
                                              StopCallback callback) {
-  DCHECK(CalledOnValidThread());
+  DCHECK(CalledOnValidSequence());
   // Clear sync metadata regardless of incoming fate even when sync gets paused
   // (e.g. persistent auth error). This is needed because
   // SharingMessageBridgeImpl uses the processor's IsTrackingMetadata() bit to

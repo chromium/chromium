@@ -70,7 +70,7 @@ HistoryDataTypeController::GetPreconditionState(
 }
 
 void HistoryDataTypeController::OnStateChanged(syncer::SyncService* sync) {
-  DCHECK(CalledOnValidThread());
+  DCHECK(CalledOnValidSequence());
   DCHECK_EQ(helper_.sync_service(), sync);
 
   // `history_service_` is null in many unit tests.

@@ -30,7 +30,7 @@ UserEventDataTypeController::~UserEventDataTypeController() {
 
 void UserEventDataTypeController::Stop(syncer::SyncStopMetadataFate fate,
                                        StopCallback callback) {
-  DCHECK(CalledOnValidThread());
+  DCHECK(CalledOnValidSequence());
   // Special case: For USER_EVENT, we want to clear all data even when Sync is
   // stopped temporarily.
   DataTypeController::Stop(syncer::SyncStopMetadataFate::CLEAR_METADATA,

@@ -148,7 +148,7 @@ void DataTypeController::InitDataTypeController(
 void DataTypeController::LoadModels(
     const ConfigureContext& configure_context,
     const ModelLoadCallback& model_load_callback) {
-  DCHECK(CalledOnValidThread());
+  DCHECK(CalledOnValidSequence());
   DCHECK(model_load_callback);
   CHECK_EQ(NOT_RUNNING, state_);
 
@@ -185,7 +185,7 @@ void DataTypeController::LoadModels(
 }
 
 std::unique_ptr<DataTypeActivationResponse> DataTypeController::Connect() {
-  DCHECK(CalledOnValidThread());
+  DCHECK(CalledOnValidSequence());
   DCHECK(activation_response_);
   CHECK_EQ(MODEL_LOADED, state_);
 
@@ -197,7 +197,7 @@ std::unique_ptr<DataTypeActivationResponse> DataTypeController::Connect() {
 
 void DataTypeController::Stop(SyncStopMetadataFate fate,
                               StopCallback callback) {
-  DCHECK(CalledOnValidThread());
+  DCHECK(CalledOnValidSequence());
   CHECK(delegate_ || state() == NOT_RUNNING || state() == FAILED);
 
   switch (state()) {
@@ -295,7 +295,7 @@ void DataTypeController::GetTypeEntitiesCount(
 }
 
 void DataTypeController::RecordMemoryUsageAndCountsHistograms() {
-  DCHECK(CalledOnValidThread());
+  DCHECK(CalledOnValidSequence());
   if (delegate_) {
     delegate_->RecordMemoryUsageAndCountsHistograms();
   }
@@ -307,7 +307,7 @@ DataTypeController::GetLocalDataBatchUploader() {
 }
 
 void DataTypeController::ReportBridgeErrorForTest() {
-  DCHECK(CalledOnValidThread());
+  DCHECK(CalledOnValidSequence());
 
   // Tests are supposed to call this method when `delegate_` exists.
   CHECK(delegate_);
@@ -321,7 +321,7 @@ DataTypeControllerDelegate* DataTypeController::GetDelegateForTesting(
 }
 
 void DataTypeController::ReportModelError(const ModelError& error) {
-  DCHECK(CalledOnValidThread());
+  DCHECK(CalledOnValidSequence());
   LogModelErrorToHistogram(error);
 
   switch (state_) {
@@ -356,7 +356,7 @@ void DataTypeController::ReportModelError(const ModelError& error) {
   TriggerCompletionCallbacks(error);
 }
 
-bool DataTypeController::CalledOnValidThread() const {
+bool DataTypeController::CalledOnValidSequence() const {
   return sequence_checker_.CalledOnValidSequence();
 }
 
@@ -366,20 +366,20 @@ void DataTypeController::ClearDelegateMap() {
 }
 
 void DataTypeController::RecordStartFailure() const {
-  DCHECK(CalledOnValidThread());
+  DCHECK(CalledOnValidSequence());
   UMA_HISTOGRAM_ENUMERATION("Sync.DataTypeStartFailures2",
                             DataTypeHistogramValue(type()));
 }
 
 void DataTypeController::RecordRunFailure() const {
-  DCHECK(CalledOnValidThread());
+  DCHECK(CalledOnValidSequence());
   UMA_HISTOGRAM_ENUMERATION("Sync.DataTypeRunFailures2",
                             DataTypeHistogramValue(type()));
 }
 
 void DataTypeController::LogModelErrorToHistogram(
     const ModelError& model_error) const {
-  DCHECK(CalledOnValidThread());
+  DCHECK(CalledOnValidSequence());
   // Log specific error type for all sync data types.
   base::UmaHistogramSparse("Sync.ModelError",
                            static_cast<int>(model_error.type()));
@@ -391,7 +391,7 @@ void DataTypeController::LogModelErrorToHistogram(
 
 void DataTypeController::OnDelegateStarted(
     std::unique_ptr<DataTypeActivationResponse> activation_response) {
-  DCHECK(CalledOnValidThread());
+  DCHECK(CalledOnValidSequence());
 
   switch (state_) {
     case STOPPING:
@@ -425,7 +425,7 @@ void DataTypeController::OnDelegateStarted(
 
 void DataTypeController::TriggerCompletionCallbacks(
     const std::optional<ModelError>& error) {
-  DCHECK(CalledOnValidThread());
+  DCHECK(CalledOnValidSequence());
 
   if (model_load_callback_) {
     DCHECK(model_stop_callbacks_.empty());

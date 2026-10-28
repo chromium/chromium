@@ -53,7 +53,7 @@ IncomingPasswordSharingInvitationDataTypeController::
 syncer::DataTypeController::PreconditionState
 IncomingPasswordSharingInvitationDataTypeController::GetPreconditionState(
     const PreconditionContext& context) const {
-  DCHECK(CalledOnValidThread());
+  DCHECK(CalledOnValidSequence());
 
   if (!password_sharing_enabled_policy_.GetValue()) {
     return syncer::DataTypeController::PreconditionState::kMustStopAndClearData;
@@ -73,7 +73,7 @@ IncomingPasswordSharingInvitationDataTypeController::GetPreconditionState(
 
 void IncomingPasswordSharingInvitationDataTypeController::OnStateChanged(
     syncer::SyncService* sync) {
-  DCHECK(CalledOnValidThread());
+  DCHECK(CalledOnValidSequence());
   sync_service_->DataTypePreconditionChanged(type());
 }
 
@@ -84,7 +84,7 @@ void IncomingPasswordSharingInvitationDataTypeController::OnSyncShutdown(
 
 void IncomingPasswordSharingInvitationDataTypeController::
     OnPasswordSharingEnabledPolicyChanged() {
-  DCHECK(CalledOnValidThread());
+  DCHECK(CalledOnValidSequence());
   sync_service_->DataTypePreconditionChanged(type());
 }
 

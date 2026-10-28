@@ -45,7 +45,7 @@ JourneyDataTypeController::~JourneyDataTypeController() = default;
 syncer::DataTypeController::PreconditionState
 JourneyDataTypeController::GetPreconditionState(
     const PreconditionContext& context) const {
-  DCHECK(CalledOnValidThread());
+  DCHECK(CalledOnValidSequence());
   // syncer::JOURNEY doesn't support custom passphrase encryption.
   if (helper_.sync_service()->GetUserSettings()->IsEncryptEverythingEnabled()) {
     return PreconditionState::kMustStopAndClearData;

@@ -183,8 +183,7 @@ class DataTypeController {
   void ReportModelError(const ModelError& error);
 
   // Allows subclasses to DCHECK that they're on the correct sequence.
-  // TODO(crbug.com/41390876): Rename this to CalledOnValidSequence.
-  bool CalledOnValidThread() const;
+  bool CalledOnValidSequence() const;
 
   // Clears `delegate_map_`. This is useful for derived classes during
   // destruction, as the delegates might reference state from the derived class

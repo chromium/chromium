@@ -26,7 +26,7 @@ SendTabToSelfDataTypeController::~SendTabToSelfDataTypeController() = default;
 
 void SendTabToSelfDataTypeController::Stop(syncer::SyncStopMetadataFate fate,
                                            StopCallback callback) {
-  DCHECK(CalledOnValidThread());
+  DCHECK(CalledOnValidSequence());
   // Special case: We want to clear all data even when Sync is stopped
   // temporarily, regardless of incoming fate. This is also needed to make sure
   // the feature stops being offered to the user, because predicates like
