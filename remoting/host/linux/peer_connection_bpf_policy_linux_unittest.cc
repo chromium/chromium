@@ -25,6 +25,7 @@
 #include "base/process/process.h"
 #include "base/test/multiprocess_test.h"
 #include "base/test/test_timeouts.h"
+#include "build/build_config.h"
 #include "sandbox/linux/bpf_dsl/bpf_dsl.h"
 #include "sandbox/linux/bpf_dsl/bpf_dsl_impl.h"
 #include "sandbox/linux/seccomp-bpf/sandbox_bpf.h"
@@ -123,7 +124,13 @@ INSTANTIATE_TEST_SUITE_P(
         SyscallTestParam{"perf_event_open", __NR_perf_event_open},
         SyscallTestParam{"fanotify_init", __NR_fanotify_init},
         SyscallTestParam{"fchmodat2", __NR_fchmodat2},
+#if defined(ARCH_CPU_ARM64)
+        // TODO(crbug.com/574906195): Fails on arm64 because __NR_mseal + 1
+        // exceeds MAX_PUBLIC_SYSCALL (__NR_syscalls in the sysroot).
+        SyscallTestParam{"DISABLED_newer_than_mseal", __NR_mseal + 1}),
+#else
         SyscallTestParam{"newer_than_mseal", __NR_mseal + 1}),
+#endif
     [](const testing::TestParamInfo<SyscallTestParam>& info) {
       return info.param.name;
     });
