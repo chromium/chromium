@@ -99,6 +99,8 @@ source_set("unit_tests") {
       "single_file_zstd_file_extractor_unittest.cc",
     ]
 
+    data = [ "//chrome/test/data/image_writer_private/" ]
+
     deps = [
       ":file_util",
       "//base/test:test_support",
