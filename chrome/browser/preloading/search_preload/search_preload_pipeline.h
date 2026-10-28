@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_PRELOADING_SEARCH_PRELOAD_SEARCH_PRELOAD_PIPELINE_H_
 #define CHROME_BROWSER_PRELOADING_SEARCH_PRELOAD_SEARCH_PRELOAD_PIPELINE_H_
 
+#include "base/containers/flat_map.h"
 #include "chrome/browser/preloading/search_preload/search_preload_signal_result.h"
 #include "content/public/browser/prefetch_handle.h"
 #include "content/public/browser/preload_pipeline_info.h"
@@ -29,7 +30,9 @@ class SearchPreloadPipeline {
   SearchPreloadPipeline(const SearchPreloadPipeline&) = delete;
   SearchPreloadPipeline& operator=(const SearchPreloadPipeline&) = delete;
 
-  void UpdateConfidence(content::WebContents& web_contents, int confidence);
+  void UpdateConfidence(content::WebContents& web_contents,
+                        content::PreloadingPredictor predictor,
+                        int confidence);
 
   // Starts prefetch if not triggered yet.
   //
@@ -61,7 +64,7 @@ class SearchPreloadPipeline {
 
   const GURL canonical_url_;
 
-  int confidence_ = 0;
+  base::flat_map<content::PreloadingPredictor, int> confidences_;
 
   std::unique_ptr<content::PrefetchHandle> prefetch_handle_;
   std::unique_ptr<content::PrerenderHandle> prerender_handle_;

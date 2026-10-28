@@ -274,8 +274,9 @@ SearchPreloadPipelineManager::TriggerPreloads(TriggerPreloadsData data) {
         data.canonical_url,
         std::make_unique<SearchPreloadPipeline>(data.canonical_url));
   }
-  pipelines_[data.canonical_url]->UpdateConfidence(GetWebContents(),
-                                                   data.confidence);
+  pipelines_[data.canonical_url]->UpdateConfidence(
+      GetWebContents(), chrome_preloading_predictor::kDefaultSearchEngine,
+      data.confidence);
 
   const SearchPreloadSignalResult signal_result_prefetch =
       pipelines_[data.canonical_url]->StartPrefetch(
@@ -485,7 +486,8 @@ bool SearchPreloadPipelineManager::OnNavigationLikely(
           canonical_url,
           std::make_unique<SearchPreloadPipeline>(canonical_url));
     }
-    pipelines_[canonical_url]->UpdateConfidence(GetWebContents(), 100);
+    pipelines_[canonical_url]->UpdateConfidence(GetWebContents(), predictor,
+                                                100);
     return pipelines_[canonical_url]->StartPrefetch(
         GetWebContents(), search_preload_service, prefetch_url, predictor,
         no_vary_search_hint,

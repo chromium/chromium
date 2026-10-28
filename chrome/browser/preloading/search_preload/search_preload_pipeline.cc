@@ -24,15 +24,18 @@ SearchPreloadPipeline::SearchPreloadPipeline(GURL canonical_url)
 
 SearchPreloadPipeline::~SearchPreloadPipeline() = default;
 
-void SearchPreloadPipeline::UpdateConfidence(content::WebContents& web_contents,
-                                             int confidence) {
+void SearchPreloadPipeline::UpdateConfidence(
+    content::WebContents& web_contents,
+    content::PreloadingPredictor predictor,
+    int confidence) {
   // Add new prediction when stronger signal arrived.
 
-  if (confidence <= confidence_) {
+  if (auto it = confidences_.find(predictor);
+      it != confidences_.end() && confidence <= it->second) {
     return;
   }
 
-  confidence_ = confidence;
+  confidences_[predictor] = confidence;
 
   auto* preloading_data =
       content::PreloadingData::GetOrCreateForWebContents(&web_contents);
@@ -44,8 +47,7 @@ void SearchPreloadPipeline::UpdateConfidence(content::WebContents& web_contents,
       base::BindRepeating(&IsSearchDestinationMatch, canonical_url_,
                           web_contents.GetBrowserContext());
   preloading_data->AddPreloadingPrediction(
-      chrome_preloading_predictor::kDefaultSearchEngine, confidence,
-      std::move(same_url_matcher),
+      predictor, confidence, std::move(same_url_matcher),
       web_contents.GetPrimaryMainFrame()->GetPageUkmSourceId());
 }
 
