@@ -467,9 +467,11 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records an impression of each button shown on the composeplate on the New
     Tab Page: the AI Mode button, the incognito button and, if shown, the
-    optional button (e.g. create image or gallery). One sample is logged each
-    time the NTP impression (UserAction.Counts MobileNTPShown) is logged while
-    the composeplate is visible. Replaces
+    optional button (e.g. create image or gallery). In the beside-MVT layout of
+    NTP Aurora V2, only the AI Mode button is recorded, since the AI Mode card
+    beside the Most Visited Tiles has no incognito or optional button. One
+    sample is logged each time the NTP impression (UserAction.Counts
+    MobileNTPShown) is logged while the composeplate is visible. Replaces
     NewTabPage.FakeSearchBox.ComposeplateButton.Impression2. The histogram is
     Android-only.
   </summary>

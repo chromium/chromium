@@ -44,6 +44,7 @@ import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.ntp.NewTabPageUtils.ActionChips;
+import org.chromium.chrome.browser.ntp.NewTabPageUtils.LayoutType;
 import org.chromium.chrome.browser.util.BrowserUiUtils.ModuleTypeOnStartAndNtp;
 import org.chromium.components.search_engines.AiModeButtonUiConfig;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -165,6 +166,27 @@ public class ComposeplateCoordinatorUnitTest {
                         .expectNoRecords(
                                 ComposeplateMetricsUtils.HISTOGRAM_COMPOSEPLATE_BUTTONS_IMPRESSION)
                         .build();
+
+        mCoordinator.recordButtonsImpression();
+
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.NTP_AURORA,
+        ChromeFeatureList.NTP_AURORA_V2 + ":layout_type/" + LayoutType.BESIDE_MVT
+    })
+    public void testRecordButtonsImpression_besideMvtEnabled() {
+        mCoordinator.setVisibility(/* visible= */ true, /* isCurrentPage= */ false);
+        mCoordinator.setOptionalButtonClickListener(
+                mOriginalOnClickListener, ActionChips.CREATE_IMAGE);
+        mCoordinator.setOptionalButtonVisibility(/* visible= */ true);
+
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        ComposeplateMetricsUtils.HISTOGRAM_COMPOSEPLATE_BUTTONS_IMPRESSION,
+                        ActionChips.DEFAULT);
 
         mCoordinator.recordButtonsImpression();
 
