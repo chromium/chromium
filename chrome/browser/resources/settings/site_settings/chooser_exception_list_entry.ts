@@ -9,13 +9,13 @@
  */
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
-import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import '../settings_shared.css.js';
 import './site_list_entry.js';
 
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {flush, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './chooser_exception_list_entry.html.js';
+import type {SiteListEntryElement} from './site_list_entry.js';
 import type {ChooserException} from './site_settings_browser_proxy.js';
 
 export interface ChooserExceptionListEntryElement {
@@ -38,14 +38,28 @@ export class ChooserExceptionListEntryElement extends PolymerElement {
       /**
        * Chooser exception object to display in the widget.
        */
-      exception: Object,
-
-      lastFocused_: Object,
+      exception: {
+        type: Object,
+        observer: 'onExceptionChanged_',
+      },
     };
   }
 
   declare exception: ChooserException;
-  declare private lastFocused_: HTMLElement|null;
+
+  private onExceptionChanged_(
+      newValue: ChooserException, oldValue?: ChooserException) {
+    // Restore focus to the last element if the previous last element was
+    // deleted while it was focused.
+    if (oldValue && newValue.sites.length < oldValue.sites.length) {
+      flush();
+      if (!this.shadowRoot!.querySelector('site-list-entry:focus-within')) {
+        const toFocus = this.shadowRoot!.querySelector<SiteListEntryElement>(
+            'site-list-entry:last-of-type');
+        toFocus?.getFocusRow().getFirstFocusable('reset')?.focus();
+      }
+    }
+  }
 }
 
 declare global {

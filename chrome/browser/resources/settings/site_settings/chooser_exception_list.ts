@@ -27,8 +27,7 @@ import {TooltipMixin} from '../tooltip_mixin.js';
 import {getTemplate} from './chooser_exception_list.html.js';
 import type {ContentSettingsTypes} from './constants.js';
 import {ChooserType} from './constants.js';
-import {ListPropertyUpdateMixin} from './list_property_update_mixin.js';
-import type {ChooserException, RawChooserException, SiteException} from './site_settings_browser_proxy.js';
+import type {ChooserException, RawChooserException} from './site_settings_browser_proxy.js';
 import {SiteSettingsMixin} from './site_settings_mixin.js';
 
 export interface ChooserExceptionListElement {
@@ -38,8 +37,8 @@ export interface ChooserExceptionListElement {
   };
 }
 
-const ChooserExceptionListElementBase = TooltipMixin(ListPropertyUpdateMixin(
-    SiteSettingsMixin(WebUiListenerMixin(I18nMixin(PolymerElement)))));
+const ChooserExceptionListElementBase = TooltipMixin(
+    SiteSettingsMixin(WebUiListenerMixin(I18nMixin(PolymerElement))));
 
 export class ChooserExceptionListElement extends
     ChooserExceptionListElementBase {
@@ -187,10 +186,6 @@ export class ChooserExceptionListElement extends
     return this.chooserExceptions.length > 0;
   }
 
-  /**
-   * Need to use a common tooltip since the tooltip in the entry is cut off from
-   * the iron-list.
-   */
   private onShowTooltip_(e: CustomEvent<{target: HTMLElement, text: string}>) {
     this.tooltipText_ = e.detail.text;
     // cr-tooltip normally determines the target from the |for| property,
@@ -211,24 +206,10 @@ export class ChooserExceptionListElement extends
    * Process the chooser exception list returned from the native layer.
    */
   private processExceptions_(exceptionList: RawChooserException[]) {
-    const exceptions = exceptionList.map(exception => {
+    this.chooserExceptions = exceptionList.map(exception => {
       const sites = exception.sites.map(site => this.expandSiteException(site));
-      return Object.assign(exception, {sites});
+      return {...exception, sites};
     });
-
-    if (!this.updateList(
-            'chooserExceptions', x => x.displayName, exceptions,
-            true /* identityBasedUpdate= */)) {
-      // The chooser objects have not been changed, so check if their site
-      // permissions have changed. The |exceptions| and |this.chooserExceptions|
-      // arrays should be the same length.
-      const siteUidGetter = (x: SiteException) =>
-          x.origin + x.embeddingOrigin + x.incognito;
-      exceptions.forEach((exception, index) => {
-        const propertyPath = 'chooserExceptions.' + index + '.sites';
-        this.updateList(propertyPath, siteUidGetter, exception.sites);
-      }, this);
-    }
   }
 
   /**

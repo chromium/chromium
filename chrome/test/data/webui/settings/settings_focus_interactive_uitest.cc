@@ -83,6 +83,11 @@ IN_PROC_BROWSER_TEST_F(SettingsFocusTest, Menu) {
   RunTest("settings/settings_menu_interactive_ui_test.js", "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(SettingsFocusTest, ChooserExceptionListEntry) {
+  RunTest("settings/chooser_exception_list_entry_test.js",
+          "runMochaSuite('ChooserExceptionListEntryFocus')");
+}
+
 IN_PROC_BROWSER_TEST_F(SettingsFocusTest, ZoomLevels) {
   RunTest("settings/zoom_levels_test.js", "runMochaSuite('ZoomLevelsFocus')");
 }

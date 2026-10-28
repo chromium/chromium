@@ -498,9 +498,8 @@ suite('ChooserExceptionList', function() {
         chooserExceptionListEntry = testElement.shadowRoot!.querySelector(
             'chooser-exception-list-entry');
         assertTrue(!!chooserExceptionListEntry);
-        assertTrue(chooserExceptionListEntry.$.listContainer
-                       .querySelector('iron-list')!.items!.some(
-                           item => item.incognito));
+        assertTrue(chooserExceptionListEntry.exception.sites.some(
+            item => item.incognito));
 
         const siteListEntries =
             chooserExceptionListEntry.shadowRoot!.querySelectorAll(

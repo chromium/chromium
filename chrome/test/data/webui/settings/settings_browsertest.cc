@@ -168,7 +168,8 @@ IN_PROC_BROWSER_TEST_F(SettingsTest, ChooserExceptionList) {
 }
 
 IN_PROC_BROWSER_TEST_F(SettingsTest, ChooserExceptionListEntry) {
-  RunTest("settings/chooser_exception_list_entry_test.js", "mocha.run()");
+  RunTest("settings/chooser_exception_list_entry_test.js",
+          "runMochaSuite('ChooserExceptionListEntry')");
 }
 
 IN_PROC_BROWSER_TEST_F(SettingsTest, CollapseRadioButton) {
