@@ -887,6 +887,29 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
                 permission_context(), PathInfo(FILE_PATH_LITERAL("/dev")),
                 HandleType::kDirectory, AccessTrigger::kProgrammaticWrite),
             SensitiveDirectoryResult::kAbort);
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
+  // /run and its children should be blocked across access triggers.
+  EXPECT_EQ(ConfirmSensitiveEntryAccessSync(
+                permission_context(), PathInfo(FILE_PATH_LITERAL("/run")),
+                HandleType::kDirectory, AccessTrigger::kOpen),
+            SensitiveDirectoryResult::kAbort);
+  EXPECT_EQ(
+      ConfirmSensitiveEntryAccessSync(
+          permission_context(), PathInfo(FILE_PATH_LITERAL("/run/user/1000")),
+          HandleType::kDirectory, AccessTrigger::kOpen),
+      SensitiveDirectoryResult::kAbort);
+  EXPECT_EQ(
+      ConfirmSensitiveEntryAccessSync(
+          permission_context(), PathInfo(FILE_PATH_LITERAL("/run/user/1000")),
+          HandleType::kDirectory, AccessTrigger::kProgrammaticWrite),
+      SensitiveDirectoryResult::kAbort);
+  EXPECT_EQ(ConfirmSensitiveEntryAccessSync(
+                permission_context(),
+                PathInfo(temp_dir_.GetPath().AppendASCII("run")),
+                HandleType::kDirectory, AccessTrigger::kOpen),
+            SensitiveDirectoryResult::kAllowed);
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) ||
+        // BUILDFLAG(IS_ANDROID)
 #elif BUILDFLAG(IS_WIN)
   EXPECT_EQ(ConfirmSensitiveEntryAccessSync(
                 permission_context(),
@@ -2034,6 +2057,7 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
       {kNoBasePathKey, FILE_PATH_LITERAL("/sys"), true, false},
       {kNoBasePathKey, FILE_PATH_LITERAL("/boot"), true, false},
       {kNoBasePathKey, FILE_PATH_LITERAL("/etc"), true, false},
+      {kNoBasePathKey, FILE_PATH_LITERAL("/run"), true, false},
       {base::DIR_HOME, FILE_PATH_LITERAL(".dbus"), true, false},
       {base::DIR_HOME, FILE_PATH_LITERAL(".local/share"), true, false},
       {base::DIR_HOME, FILE_PATH_LITERAL(".fonts.conf"), true, false},

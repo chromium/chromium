@@ -579,6 +579,11 @@ GenerateBlockPaths(bool should_normalize_file_path) {
                                 BlockType::kBlockAllChildren),
       BlockPath::CreateAbsolute(FILE_PATH_LITERAL("/etc"),
                                 BlockType::kBlockAllChildren),
+      // And runtime data in /run, including per-session runtime directories
+      // (/run/user/<uid>, the default $XDG_RUNTIME_DIR), see
+      // crbug.com/577376424.
+      BlockPath::CreateAbsolute(FILE_PATH_LITERAL("/run"),
+                                BlockType::kBlockAllChildren),
       // Block ~/.dbus as well, just in case, although there probably isn't much
       // a website can do with access to that directory and its contents.
       BlockPath::CreateRelative(base::DIR_HOME, FILE_PATH_LITERAL(".dbus"),
