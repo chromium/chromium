@@ -14,6 +14,7 @@
 #include "base/callback_list.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
+#include "base/containers/span.h"
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
@@ -55,6 +56,10 @@ using AddFileContextCallback =
 // Information about a tab attached to or restored in the contextual search
 // session.
 struct TabInfo {
+  // Returns true if `tabs` contains a `TabInfo` with `context_token == token`.
+  static bool ContainsToken(base::span<const TabInfo> tabs,
+                            const base::UnguessableToken& token);
+
   bool operator==(const TabInfo& other) const;
 
   // Stable client-side identifier, taken from `FileInfo::file_token`.

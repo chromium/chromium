@@ -36,6 +36,13 @@
 #include "third_party/lens_server_proto/modality_chip_props.pb.h"
 
 namespace contextual_search {
+
+// static
+bool TabInfo::ContainsToken(base::span<const TabInfo> tabs,
+                            const base::UnguessableToken& token) {
+  return std::ranges::contains(tabs, token, &TabInfo::context_token);
+}
+
 bool TabInfo::operator==(const TabInfo& other) const {
   if (context_token != other.context_token || tab_id != other.tab_id ||
       url != other.url || title != other.title || uploaded != other.uploaded ||

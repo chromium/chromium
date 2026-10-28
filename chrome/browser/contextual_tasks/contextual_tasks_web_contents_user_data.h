@@ -99,6 +99,7 @@ class ContextualTasksWebContentsUserData
         post_search_message_cb;
     base::RepeatingClosure on_handshake_complete_cb;
     base::RepeatingCallback<void(const GURL&)> on_lens_crop_updated_cb;
+    base::RepeatingClosure on_tab_context_updated_cb;
   };
 
   ~ContextualTasksWebContentsUserData() override;
@@ -146,7 +147,8 @@ class ContextualTasksWebContentsUserData
       base::RepeatingCallback<void(const lens::ClientToSearchMessage&)>
           post_search_message_cb,
       base::RepeatingClosure on_handshake_complete_cb,
-      base::RepeatingCallback<void(const GURL&)> on_lens_crop_updated_cb);
+      base::RepeatingCallback<void(const GURL&)> on_lens_crop_updated_cb,
+      base::RepeatingClosure on_tab_context_updated_cb = base::NullCallback());
   void UnregisterExtensionFrame(const void* handler_id);
   bool HasBoundExtensionFrame() const;
 
@@ -194,12 +196,24 @@ class ContextualTasksWebContentsUserData
                               content::RenderFrameHost* new_host) override;
   void RenderFrameDeleted(content::RenderFrameHost* render_frame_host) override;
 
-  void HandleOnSubmitQueryRequest();
+  void HandleOnSubmitQueryRequest(std::string_view query_text = {});
   void HandleOpenLinkInSidePanelMode(std::string_view url);
   // Syncs this thread's context library from AIM Search Web's tab history
   // into the `ContextualTasksService` for the current task.
   void HandleThreadContextLibraryUpdateFromAim(
       const lens::SearchToClientMessage_UpdateThreadContextLibrary& message);
+
+  // Returns true if Smart Tab Sharing is enabled by feature flags and profile
+  // policy.
+  bool IsSmartTabSharingEnabled();
+  // Returns true if Smart Tab Sharing is currently active for this thread.
+  bool IsSmartTabSharingActive();
+  // Enables or disables Smart Tab Sharing for this thread, clearing conflicting
+  // manual/restored tab contexts and notifying bound extension frames.
+  void SetSmartTabSharingActive(bool active);
+  // Clears any per-thread Smart Tab Sharing override and returns whether Smart
+  // Tab Sharing is active by default.
+  bool ResetSmartTabSharing();
 
   void OnLensThumbnailCreated(const std::string& thumbnail_uri);
   void RemoveLensCrop();
@@ -319,9 +333,12 @@ class ContextualTasksWebContentsUserData
   // Posts the `on_submit_query_response` once `query_contextualizer_` has
   // uploaded the tabs for the submitted query.
   void OnSubmitQueryContextualized(
+      std::string query_text,
       std::optional<lens::AddedContext> lens_added_context,
       std::optional<base::UnguessableToken> overlay_token);
   void OnPageChanged(bool is_zero_state);
+  // Runs `on_tab_context_updated_cb` on every bound extension frame.
+  void NotifyExtensionFramesTabContextUpdated();
   void AppendTabContextsToOnSubmitQueryResponse(
       lens::ClientToSearchMessage* response_message,
       contextual_search::ContextualSearchSessionHandle* session_handle,
@@ -337,6 +354,10 @@ class ContextualTasksWebContentsUserData
   // thread. Keep in sync with
   // `ContextualTasksExtensionHandler::SendTabContextToExtensionPage()`.
   bool HasContextLibraryTabs();
+  // Returns true if `CONTEXT_LIBRARY` should be mounted in the AIM input plate
+  // (either because the session has tabs to show or Smart Tab Sharing is
+  // active).
+  bool ShouldMountContextLibrary();
 
   struct ImplicitTab {
     base::UnguessableToken token;

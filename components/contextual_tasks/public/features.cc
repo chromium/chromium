@@ -568,6 +568,12 @@ const base::FeatureParam<bool> kContextualTasksContextSmartTabSharing(
     "ContextualTasksContextSmartTabSharing",
     false);
 
+const base::FeatureParam<bool>
+    kContextualTasksContextSmartTabSharingRearchitecture(
+        &kContextualTasksContext,
+        "ContextualTasksContextSmartTabSharingRearchitecture",
+        false);
+
 const base::FeatureParam<bool> kContextualTasksContextToggleOffAfterSubmit(
     &kContextualTasksContext,
     "ContextualTasksContextToggleOffAfterSubmit",

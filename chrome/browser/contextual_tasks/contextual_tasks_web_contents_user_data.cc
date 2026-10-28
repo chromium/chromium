@@ -21,12 +21,15 @@
 #include "chrome/browser/contextual_search/contextual_search_web_contents_helper.h"
 #include "chrome/browser/contextual_tasks/active_task_context_provider.h"
 #include "chrome/browser/contextual_tasks/ai_mode_context_library_converter.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_context_service.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_context_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_panel_controller.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_utils.h"
 #include "chrome/browser/contextual_tasks/site_exclusion_detail.h"
+#include "chrome/browser/contextual_tasks/smart_tab_sharing_metrics.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
@@ -39,6 +42,7 @@
 #include "components/contextual_tasks/public/contextual_task.h"
 #include "components/contextual_tasks/public/contextual_tasks_service.h"
 #include "components/contextual_tasks/public/features.h"
+#include "components/contextual_tasks/public/prefs.h"
 #include "components/contextual_tasks/public/query_contextualizer.h"
 #include "components/lens/contextual_input.h"
 #include "components/lens/lens_overlay_dismissal_source.h"
@@ -47,6 +51,7 @@
 #include "components/omnibox/common/composebox_features.h"
 #include "components/omnibox/common/input_state.h"
 #include "components/omnibox/common/omnibox_features.h"
+#include "components/prefs/pref_service.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/sessions/core/session_id.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -311,11 +316,8 @@ ContextualTasksWebContentsUserData::ContextualTasksWebContentsUserData(
               []() -> std::optional<lens::ImageEncodingOptions> {
                 return CreateImageEncodingOptions();
               }),
-          // The delegate only uses its `ContextualTasksContextService` for
-          // smart tab selection, which is disabled here. Recontextualization
-          // uses the `ContextualTasksService` passed to
-          // `query_contextualizer_`.
-          /*service=*/nullptr,
+          ContextualTasksContextServiceFactory::GetForProfile(
+              Profile::FromBrowserContext(contents->GetBrowserContext())),
           base::BindRepeating(
               &ContextualTasksWebContentsUserData::GetBrowserWindowInterface,
               base::Unretained(this)))),
@@ -426,6 +428,7 @@ ContextualTasksWebContentsUserData::GetOrCreateInputStateModel(
   if (profile) {
     model->SetPrefService(profile->GetPrefs());
   }
+  model->SetSmartTabSharingActive(IsSmartTabSharingActive());
 
   auto model_weak = model->AsWeakPtr();
   if (is_web_contents_session || !subscribed_model_) {
@@ -510,7 +513,8 @@ void ContextualTasksWebContentsUserData::UpdateExtensionFrameBound(
     base::RepeatingCallback<void(const lens::ClientToSearchMessage&)>
         post_search_message_cb,
     base::RepeatingClosure on_handshake_complete_cb,
-    base::RepeatingCallback<void(const GURL&)> on_lens_crop_updated_cb) {
+    base::RepeatingCallback<void(const GURL&)> on_lens_crop_updated_cb,
+    base::RepeatingClosure on_tab_context_updated_cb) {
   bool had_bound_frame = HasBoundExtensionFrame();
   for (auto& frame : extension_frames_) {
     if (frame.handler_id == handler_id) {
@@ -521,6 +525,7 @@ void ContextualTasksWebContentsUserData::UpdateExtensionFrameBound(
       frame.post_search_message_cb = std::move(post_search_message_cb);
       frame.on_handshake_complete_cb = std::move(on_handshake_complete_cb);
       frame.on_lens_crop_updated_cb = std::move(on_lens_crop_updated_cb);
+      frame.on_tab_context_updated_cb = std::move(on_tab_context_updated_cb);
       if (is_page_bound && !had_bound_frame &&
           !IsServiceWorkerPortConnected()) {
         auto& page_state = GetPrimaryPageSearchState();
@@ -672,7 +677,8 @@ bool ContextualTasksWebContentsUserData::OnSearchMessageReceived(
       return true;
     }
     case lens::SearchToClientMessage::kOnSubmitQueryRequest:
-      HandleOnSubmitQueryRequest();
+      HandleOnSubmitQueryRequest(
+          search_to_client_message.on_submit_query_request().query_text());
       return true;
     case lens::SearchToClientMessage::kOpenLinkInSidePanelMode:
       HandleOpenLinkInSidePanelMode(
@@ -744,7 +750,7 @@ void ContextualTasksWebContentsUserData::OnHandshakeComplete(
     page_state.last_sent_suggest_inputs_serialized.clear();
   }
 
-  if (HasContextLibraryTabs() && !page_state.context_library_is_active) {
+  if (ShouldMountContextLibrary() && !page_state.context_library_is_active) {
     SendMountContextLibrary();
   }
   if (auto model = GetOrCreateInputStateModel()) {
@@ -833,13 +839,18 @@ void ContextualTasksWebContentsUserData::UpdateContextLibraryInputState() {
     failed_context_uploads_.clear();
   }
   // Submitted and restored tabs are still shown by the context library, so
-  // only unmount it once the session has no tabs left to show.
-  const bool has_tabs = HasContextLibraryTabs();
+  // only unmount it once the session has no tabs left to show and Smart Tab
+  // Sharing is inactive.
+  const bool should_mount = ShouldMountContextLibrary();
   auto& page_state = GetPrimaryPageSearchState();
-  if (has_tabs != page_state.context_library_is_active) {
-    page_state.context_library_is_active = has_tabs;
-    SendInjectChromeInput(InjectedInputType::kContextLibrary,
-                          /*is_active=*/has_tabs);
+  if (should_mount != page_state.context_library_is_active) {
+    if (should_mount) {
+      SendMountContextLibrary();
+    } else {
+      page_state.context_library_is_active = false;
+      SendInjectChromeInput(InjectedInputType::kContextLibrary,
+                            /*is_active=*/false);
+    }
   }
   UpdateContextState();
   UpdateSuggestInputs();
@@ -852,6 +863,10 @@ bool ContextualTasksWebContentsUserData::HasContextLibraryTabs() {
   // Attached tabs include both unsubmitted and submitted (persisted) tabs.
   const auto& tab_context = subscribed_session_handle_->GetTabContextState();
   return !tab_context.attached.empty() || !tab_context.restored.empty();
+}
+
+bool ContextualTasksWebContentsUserData::ShouldMountContextLibrary() {
+  return HasContextLibraryTabs() || IsSmartTabSharingActive();
 }
 
 void ContextualTasksWebContentsUserData::OnTabContextUploadStarted(
@@ -939,7 +954,8 @@ void ContextualTasksWebContentsUserData::RenderFrameDeleted(
   }
 }
 
-void ContextualTasksWebContentsUserData::HandleOnSubmitQueryRequest() {
+void ContextualTasksWebContentsUserData::HandleOnSubmitQueryRequest(
+    std::string_view query_text) {
   content::WebContents* web_contents = &GetWebContents();
   // Require a recent user interaction on the page before attaching context.
   if (!web_contents->HasRecentInteraction() || submit_pending_) {
@@ -954,7 +970,13 @@ void ContextualTasksWebContentsUserData::HandleOnSubmitQueryRequest() {
   }
   last_handled_submit_interaction_time_ = last_interaction;
 
+  const bool is_smart_tab_sharing_active = IsSmartTabSharingActive();
+  LogThreadWithTabsSubmitted(is_smart_tab_sharing_active);
   auto* session_handle = GetOrCreateContextualSessionHandle();
+  if (is_smart_tab_sharing_active && !ShouldToggleOffAfterSubmit() &&
+      session_handle && !session_handle->previous_turns().empty()) {
+    LogOptOutMidThread(false);
+  }
   if (!session_handle) {
     lens::ClientToSearchMessage response_message;
     response_message.mutable_on_submit_query_response();
@@ -971,20 +993,20 @@ void ContextualTasksWebContentsUserData::HandleOnSubmitQueryRequest() {
   // `query_contextualizer_` only uploads the delayed tabs (no
   // recontextualization).
   params.task_id = GetEffectiveTaskId();
+  params.query_text = std::string(query_text);
   params.tabs_to_recontextualize =
       GetTabsToRecontextualize(*session_handle, overlay_token);
   params.auto_suggested_chip_tabs = GetPendingDelayedTabs(*session_handle);
-  // TODO(crbug.com/572825497): Support smart tab sharing, like
-  // `ContextualTasksComposeboxHandler`.
-  params.enable_smart_tab_selection = false;
+  params.enable_smart_tab_selection =
+      !overlay_token.has_value() && is_smart_tab_sharing_active;
   // The contextualizer's session handle is ignored: it is null when there was
   // nothing to contextualize, so the callback gets the session handle itself.
   params.complete_callback = base::IgnoreArgs<
       base::WeakPtr<contextual_search::ContextualSearchSessionHandle>>(
       base::BindOnce(
           &ContextualTasksWebContentsUserData::OnSubmitQueryContextualized,
-          weak_ptr_factory_.GetWeakPtr(), std::move(lens_added_context),
-          overlay_token));
+          weak_ptr_factory_.GetWeakPtr(), std::string(query_text),
+          std::move(lens_added_context), overlay_token));
   submit_pending_ = true;
   query_contextualizer_->Contextualize(std::move(params));
 }
@@ -1012,7 +1034,7 @@ ContextualTasksWebContentsUserData::GetTabsToRecontextualize(
   if (!tracked_in_session) {
     return {};
   }
-  if (IsTabDeselectionEnabled() &&
+  if (IsTabDeselectionEnabled() && !IsSmartTabSharingActive() &&
       session_handle.IsTabDeselected(
           active_tab_session_id,
           active_tab->GetContents()->GetLastCommittedURL(),
@@ -1036,6 +1058,7 @@ std::vector<int32_t> ContextualTasksWebContentsUserData::GetPendingDelayedTabs(
 }
 
 void ContextualTasksWebContentsUserData::OnSubmitQueryContextualized(
+    std::string query_text,
     std::optional<lens::AddedContext> lens_added_context,
     std::optional<base::UnguessableToken> overlay_token) {
   if (!submit_pending_) {
@@ -1051,6 +1074,19 @@ void ContextualTasksWebContentsUserData::OnSubmitQueryContextualized(
   }
   auto* session_handle = GetOrCreateContextualSessionHandle();
   if (session_handle) {
+    if (!query_text.empty()) {
+      ThreadTurn turn;
+      turn.query = std::move(query_text);
+      session_handle->AddThreadTurn(turn);
+    }
+    if (ShouldToggleOffAfterSubmit() && IsSmartTabSharingActive()) {
+      session_handle->set_smart_tab_sharing_active(false);
+      if (base::WeakPtr<contextual_search::InputStateModel> model =
+              GetOrCreateInputStateModel()) {
+        model->SetSmartTabSharingActive(false);
+      }
+      NotifyExtensionFramesTabContextUpdated();
+    }
     AppendTabContextsToOnSubmitQueryResponse(&response_message, session_handle,
                                              overlay_token);
   }
@@ -1263,6 +1299,152 @@ void ContextualTasksWebContentsUserData::
   UpdateContextLibraryInputState();
 }
 
+bool ContextualTasksWebContentsUserData::IsSmartTabSharingEnabled() {
+  Profile* profile =
+      Profile::FromBrowserContext(GetWebContents().GetBrowserContext());
+  return ContextualTasksContextService::GetIsSmartTabSharingEnabled(profile) &&
+         kContextualTasksContextSmartTabSharingRearchitecture.Get() &&
+         CanShareTabContext(profile);
+}
+
+bool ContextualTasksWebContentsUserData::IsSmartTabSharingActive() {
+  if (!IsSmartTabSharingEnabled()) {
+    return false;
+  }
+  if (subscribed_model_) {
+    const auto& state = subscribed_model_->GetInputState();
+    if (std::ranges::contains(state.disabled_input_types,
+                              omnibox::InputType::INPUT_TYPE_BROWSER_TAB)) {
+      return false;
+    }
+  }
+  contextual_search::ContextualSearchSessionHandle* session_handle =
+      GetOrCreateContextualSessionHandle();
+  if (session_handle &&
+      session_handle->smart_tab_sharing_active().has_value()) {
+    return *session_handle->smart_tab_sharing_active();
+  }
+  Profile* profile =
+      Profile::FromBrowserContext(GetWebContents().GetBrowserContext());
+  if (profile &&
+      base::FeatureList::IsEnabled(
+          kContextualTasksContextSmartTabSharingDefaultOnAvailability)) {
+    return profile->GetPrefs()->GetBoolean(
+        kContextualTasksShareOpenTabsEveryThread);
+  }
+  return false;
+}
+
+void ContextualTasksWebContentsUserData::SetSmartTabSharingActive(bool active) {
+  // Ignore the toggle if Smart Tab Sharing is disabled or already in the
+  // requested state for this thread.
+  if (!IsSmartTabSharingEnabled()) {
+    return;
+  }
+  contextual_search::ContextualSearchSessionHandle* session_handle =
+      GetOrCreateContextualSessionHandle();
+  if (!session_handle) {
+    return;
+  }
+  if (session_handle->smart_tab_sharing_active().has_value() &&
+      *session_handle->smart_tab_sharing_active() == active) {
+    return;
+  }
+
+  // Record Smart Tab Sharing toggle and mid-thread opt-out metrics.
+  LogMenuOptionClicked(active ? SmartTabSharingToggleState::kToggledOn
+                              : SmartTabSharingToggleState::kToggledOff);
+  if (!active && IsSmartTabSharingActive() && !ShouldToggleOffAfterSubmit() &&
+      !session_handle->previous_turns().empty()) {
+    LogOptOutMidThread(true);
+  }
+
+  // Clear local tab strip underlines and any previously selected manual or
+  // restored tabs so they do not conflict with Smart Tab Sharing state.
+  // `OnSmartTabSharingToggled()` runs before `ClearFiles()` so it can inspect
+  // `uploaded_context_tokens_` and record `sts_toggled_removed_contexts_`.
+  const std::vector<contextual_search::TabInfo> previous_selected_tabs =
+      GetSelectedTabs();
+#if !BUILDFLAG(IS_ANDROID)
+  auto* browser_window_interface = GetBrowserWindowInterface();
+  for (const auto& attached_tab :
+       session_handle->GetTabContextState().attached) {
+    RemoveAttachedTabUnderline(attached_tab.tab_id, *this,
+                               browser_window_interface);
+  }
+#endif
+  session_handle->OnSmartTabSharingToggled(active);
+  for (const auto& selected_tab : previous_selected_tabs) {
+    if (implicit_tab_ && selected_tab.context_token == implicit_tab_->token &&
+        selected_tab.url.is_valid()) {
+      dismissed_implicit_urls_.insert(selected_tab.url);
+    }
+    if (!selected_tab.pending_delayed_upload) {
+      session_handle->RemoveUploadedContextToken(selected_tab.context_token);
+    }
+  }
+  session_handle->SetRestoredTabs({});
+  ClearFiles(/*should_block_auto_suggested_tabs=*/true);
+
+  // Clear server-reported URL resources on the task so tab strip underlines
+  // from prior turns are removed when toggling Smart Tab Sharing.
+  if (std::optional<base::Uuid> task_id = GetEffectiveTaskId()) {
+    Profile* profile =
+        Profile::FromBrowserContext(GetWebContents().GetBrowserContext());
+    if (auto* service = ContextualTasksServiceFactory::GetForProfile(profile)) {
+      service->SetUrlResourcesFromServer(*task_id, {});
+    }
+  }
+
+  // Sync the `InputStateModel`, context library mount state, active task
+  // underlines, and bound extension frames with the new Smart Tab Sharing
+  // state.
+  if (base::WeakPtr<contextual_search::InputStateModel> model =
+          GetOrCreateInputStateModel()) {
+    model->SetSmartTabSharingActive(active);
+    model->OnContextChanged();
+  }
+  // When Smart Tab Sharing is toggled off in zero state, re-evaluate whether
+  // the zero-state active-tab auto-suggestion should be restored.
+  UpdateImplicitTabContext();
+  UpdateContextLibraryInputState();
+  RefreshActiveTaskContext();
+  NotifyExtensionFramesTabContextUpdated();
+}
+
+bool ContextualTasksWebContentsUserData::ResetSmartTabSharing() {
+  bool was_active = IsSmartTabSharingActive();
+  bool had_override = false;
+  if (contextual_search::ContextualSearchSessionHandle* session_handle =
+          GetOrCreateContextualSessionHandle()) {
+    had_override = session_handle->smart_tab_sharing_active().has_value();
+    session_handle->set_smart_tab_sharing_active(std::nullopt);
+    session_handle->set_smart_tab_sharing_toggled_since_last_turn(false);
+    session_handle->set_sts_toggled_removed_contexts({});
+  }
+  const bool default_active = IsSmartTabSharingActive();
+  if (base::WeakPtr<contextual_search::InputStateModel> model =
+          GetOrCreateInputStateModel()) {
+    model->SetSmartTabSharingActive(default_active);
+    model->OnContextChanged();
+  }
+  UpdateImplicitTabContext();
+  UpdateContextLibraryInputState();
+  if (was_active != default_active || had_override) {
+    NotifyExtensionFramesTabContextUpdated();
+  }
+  return default_active;
+}
+
+void ContextualTasksWebContentsUserData::
+    NotifyExtensionFramesTabContextUpdated() {
+  for (const auto& frame : extension_frames_) {
+    if (frame.is_page_bound && frame.on_tab_context_updated_cb) {
+      frame.on_tab_context_updated_cb.Run();
+    }
+  }
+}
+
 void ContextualTasksWebContentsUserData::OnLensThumbnailCreated(
     const std::string& thumbnail_uri) {
   auto model = GetOrCreateInputStateModel();
@@ -1321,6 +1503,11 @@ void ContextualTasksWebContentsUserData::OnInputStateChanged(
     SendInjectChromeInput(InjectedInputType::kLensChip,
                           /*is_active=*/has_crop);
     UpdateContextState();
+  }
+
+  if (IsSmartTabSharingEnabled()) {
+    UpdateContextLibraryInputState();
+    NotifyExtensionFramesTabContextUpdated();
   }
 }
 
@@ -1613,15 +1800,26 @@ ContextualTasksWebContentsUserData::GetSelectedTabs() {
   }
   const auto& attached_tabs =
       subscribed_session_handle_->GetTabContextState().attached;
-  const auto uploaded_tokens =
+  const std::vector<base::UnguessableToken> uploaded_tokens =
       subscribed_session_handle_->GetUploadedContextTokens();
+  const std::vector<contextual_search::FileInfo> uploaded_file_infos =
+      subscribed_session_handle_->GetUploadedContextFileInfos();
+  auto is_implicit_token = [&](const base::UnguessableToken& token) {
+    return std::ranges::any_of(
+        uploaded_file_infos, [&](const contextual_search::FileInfo& info) {
+          return info.file_token == token &&
+                 (info.is_implicit_upload ||
+                  (info.input_data && info.input_data->is_implicit_upload));
+        });
+  };
   std::vector<contextual_search::TabInfo> selected_tabs;
-  std::ranges::copy_if(attached_tabs, std::back_inserter(selected_tabs),
-                       [&](const contextual_search::TabInfo& tab) {
-                         return tab.pending_delayed_upload ||
-                                std::ranges::contains(uploaded_tokens,
-                                                      tab.context_token);
-                       });
+  std::ranges::copy_if(
+      attached_tabs, std::back_inserter(selected_tabs),
+      [&](const contextual_search::TabInfo& tab) {
+        return tab.pending_delayed_upload ||
+               (std::ranges::contains(uploaded_tokens, tab.context_token) &&
+                !is_implicit_token(tab.context_token));
+      });
   return selected_tabs;
 }
 
@@ -1874,6 +2072,7 @@ void ContextualTasksWebContentsUserData::ClearInputPlateState() {
     session_handle->SetRestoredTabs({});
   }
   ClearFiles();
+  ResetSmartTabSharing();
 }
 
 void ContextualTasksWebContentsUserData::UpdateImplicitTabContext() {
@@ -1902,7 +2101,7 @@ void ContextualTasksWebContentsUserData::UpdateImplicitTabContext() {
       !controller->IsPanelOpenForContextualTask() ||
       controller->GetActiveWebContents() != &GetWebContents() ||
       !GetIsTabAutoSuggestionChipEnabled() || !CanShareTabContext(profile) ||
-      !session_id.is_valid() ||
+      IsSmartTabSharingActive() || !session_id.is_valid() ||
       !IsValidUrlForSuggestedTab(last_committed_url, profile,
                                  site_exclusion_detail) ||
       dismissed_implicit_urls_.contains(last_committed_url) ||
@@ -2147,20 +2346,16 @@ void ContextualTasksWebContentsUserData::
       response_message->mutable_on_submit_query_response();
 
   // Report persisted tabs the user removed since the last turn (deselected,
-  // closed, or navigated away) before reading the uploaded tokens, since this
-  // also drops tokens for closed tabs. `TakeRemovedContexts()` also carries
-  // Smart Tab Sharing removals, but this surface never produces them:
-  // `SetSmartTabSharingActive()` is a no-op here because the AIM page is a
-  // website and must not be able to trigger tab sharing without a user
-  // gesture. If Smart Tab Sharing is enabled for this surface later, that
-  // gating belongs in `SetSmartTabSharingActive()` and the recent interaction
-  // check in `HandleOnSubmitQueryRequest()`, not here.
+  // closed, or navigated away, or removed when Smart Tab Sharing was toggled)
+  // before reading the uploaded tokens, since this also drops tokens for closed
+  // tabs.
   for (const auto& removed_id : session_handle->TakeRemovedContexts()) {
     *on_submit_response->add_removed_contexts()->mutable_request_id() =
         removed_id;
   }
 
   const auto selected_tabs = GetSelectedTabs();
+  const auto& attached_tabs = session_handle->GetTabContextState().attached;
   size_t explicit_tab_count = 0;
   size_t implicit_tab_count = 0;
   // Add uploaded tab contexts directly from the session handle.
@@ -2173,10 +2368,19 @@ void ContextualTasksWebContentsUserData::
     if (overlay_token.has_value() && file_info.file_token == *overlay_token) {
       continue;
     }
-    if (std::ranges::none_of(
-            selected_tabs, [&](const contextual_search::TabInfo& selected_tab) {
-              return selected_tab.context_token == file_info.file_token;
-            })) {
+    const bool is_implicit_upload =
+        file_info.is_implicit_upload ||
+        (file_info.input_data && file_info.input_data->is_implicit_upload);
+    const bool is_implicit_smart_tab =
+        is_implicit_upload &&
+        ((file_info.input_data &&
+          file_info.input_data->was_smart_tab_selection) ||
+         contextual_search::TabInfo::ContainsToken(attached_tabs,
+                                                   file_info.file_token));
+    const bool is_selected_manual_tab =
+        contextual_search::TabInfo::ContainsToken(selected_tabs,
+                                                  file_info.file_token);
+    if (!is_selected_manual_tab && !is_implicit_smart_tab) {
       continue;
     }
     auto* added = on_submit_response->add_added_contexts();
@@ -2189,10 +2393,9 @@ void ContextualTasksWebContentsUserData::
                   CONTEXTUAL_INPUT_UPLOAD_TYPE_EXPLICIT;
     added->set_contextual_input_upload_type(upload_type);
     const bool is_implicit =
-        file_info.is_implicit_upload ||
-        (file_info.input_data && file_info.input_data->is_implicit_upload) ||
-        upload_type != lens::LensOverlayContextualInputUploadType::
-                           CONTEXTUAL_INPUT_UPLOAD_TYPE_EXPLICIT;
+        is_implicit_upload || upload_type !=
+                                  lens::LensOverlayContextualInputUploadType::
+                                      CONTEXTUAL_INPUT_UPLOAD_TYPE_EXPLICIT;
     if (is_implicit) {
       ++implicit_tab_count;
     } else {
