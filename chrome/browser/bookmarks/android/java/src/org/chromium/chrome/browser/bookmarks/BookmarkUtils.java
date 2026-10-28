@@ -146,7 +146,7 @@ public class BookmarkUtils {
             boolean isBookmarkBarVisible) {
         assert bookmarkModel.isBookmarkModelLoaded();
         if (existingBookmarkItem != null) {
-            if (ChromeFeatureList.isEnabled(ChromeFeatureList.ANDROID_DESKTOP_BOOKMARK_POPUP)) {
+            if (shouldUseBookmarkPopup(activity)) {
                 showSaveFlow(
                         activity,
                         bottomSheetController,
@@ -308,7 +308,7 @@ public class BookmarkUtils {
 
         ShoppingService shoppingService = ShoppingServiceFactory.getForProfile(profile);
 
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.ANDROID_DESKTOP_BOOKMARK_POPUP)) {
+        if (shouldUseBookmarkPopup(activity)) {
             View decorView =
                     activity.getWindow() != null
                             ? activity.getWindow().getDecorView()
@@ -1001,6 +1001,17 @@ public class BookmarkUtils {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) return;
         if (!DeviceFormFactor.isNonMultiDisplayContextOnTablet(activity)) return;
         activity.setTranslucent(/* translucent= */ true);
+    }
+
+    /**
+     * Returns whether the anchored bookmark popup should be used instead of the bottom sheet save
+     * flow and the bookmark edit activity. Tablet-sized displays are the ones that host the tab
+     * strip (desktop, tablets, unfolded foldables); phone-sized displays keep the mobile
+     * experience.
+     */
+    private static boolean shouldUseBookmarkPopup(Context context) {
+        return ChromeFeatureList.isEnabled(ChromeFeatureList.ANDROID_DESKTOP_BOOKMARK_POPUP)
+                && DeviceFormFactor.isNonMultiDisplayContextOnTablet(context);
     }
 
     /**
