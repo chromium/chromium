@@ -14,6 +14,351 @@
 
 check_includes_strict_exceptions = [
   {
-    includer = "//*"
+    includer = "//android_webview/*"
+  },
+  {
+    includer = "//apps/*"
+  },
+  {
+    includer = "//ash/*"
+  },
+  {
+    includer = "//base/*"
+  },
+  {
+    includer = "//build/*"
+  },
+  {
+    includer = "//cc/*"
+  },
+  {
+    includer = "//chrome/*"
+  },
+  {
+    includer = "//chromeos/*"
+  },
+  {
+    includer = "//chromecast/*"
+  },
+  {
+    includer = "//codelabs/*"
+  },
+  {
+    includer = "//components/*"
+  },
+  {
+    includer = "//content/*"
+  },
+  {
+    includer = "//crypto/*"
+  },
+  {
+    includer = "//dbus/*"
+  },
+  {
+    includer = "//device/*"
+  },
+  {
+    includer = "//extensions/*"
+  },
+  {
+    includer = "//fuchsia_web/*"
+  },
+  {
+    includer = "//gin/*"
+  },
+  {
+    includer = "//google_apis/*"
+  },
+  {
+    includer = "//gpu/*"
+  },
+  {
+    includer = "//headless/*"
+  },
+  {
+    includer = "//ios/*"
+  },
+  {
+    includer = "//ipc/*"
+  },
+  {
+    includer = "//media/*"
+  },
+  {
+    includer = "//mojo/*"
+  },
+  {
+    includer = "//net/*"
+  },
+  {
+    includer = "//pdf/*"
+  },
+  {
+    includer = "//printing/*"
+  },
+  {
+    includer = "//remoting/*"
+  },
+  {
+    includer = "//rlz/*"
+  },
+  {
+    includer = "//sandbox/*"
+  },
+  {
+    includer = "//services/*"
+  },
+  {
+    includer = "//skia/*"
+  },
+  {
+    includer = "//sql/*"
+  },
+  {
+    includer = "//storage/*"
+  },
+  {
+    includer = "//testing/*"
+  },
+  {
+    includer = "//third_party/abseil-cpp/*"
+  },
+  {
+    includer = "//third_party/androidx/*"
+  },
+  {
+    includer = "//third_party/angle/*"
+  },
+  {
+    includer = "//third_party/anonymous_tokens/*"
+  },
+  {
+    includer = "//third_party/blink/*"
+  },
+  {
+    includer = "//third_party/boringssl/*"
+  },
+  {
+    includer = "//third_party/breakpad/*"
+  },
+  {
+    includer = "//third_party/brotli/*"
+  },
+  {
+    includer = "//third_party/cast_core/*"
+  },
+  {
+    includer = "//third_party/ced/*"
+  },
+  {
+    includer = "//third_party/crashpad/*"
+  },
+  {
+    includer = "//third_party/crc32c/*"
+  },
+  {
+    includer = "//third_party/dawn/*"
+  },
+  {
+    includer = "//third_party/fdlibm/*"
+  },
+  {
+    includer = "//third_party/federated_compute/*"
+  },
+  {
+    includer = "//third_party/flatbuffers/*"
+  },
+  {
+    includer = "//third_party/fuchsia-sdk/*"
+  },
+  {
+    includer = "//third_party/fuzztest/*"
+  },
+  {
+    includer = "//third_party/glslang/*"
+  },
+  {
+    includer = "//third_party/googletest/*"
+  },
+  {
+    includer = "//third_party/grpc/*"
+  },
+  {
+    includer = "//third_party/harfbuzz/*"
+  },
+  {
+    includer = "//third_party/hunspell/*"
+  },
+  {
+    includer = "//third_party/iamf_tools/*"
+  },
+  {
+    includer = "//third_party/icu/*"
+  },
+  {
+    includer = "//third_party/ink/*"
+  },
+  {
+    includer = "//third_party/inspector_protocol/*"
+  },
+  {
+    includer = "//third_party/ipcz/*"
+  },
+  {
+    includer = "//third_party/jni_zero/*"
+  },
+  {
+    includer = "//third_party/leveldatabase/*"
+  },
+  {
+    includer = "//third_party/libaddressinput/*"
+  },
+  {
+    includer = "//third_party/libaom/*"
+  },
+  {
+    includer = "//third_party/libdmg-hfsplus/*"
+  },
+  {
+    includer = "//third_party/libgav1/*"
+  },
+  {
+    includer = "//third_party/libphonenumber/*"
+  },
+  {
+    includer = "//third_party/liburlpattern/*"
+  },
+  {
+    includer = "//third_party/libvpx/*"
+  },
+  {
+    includer = "//third_party/libwebp/*"
+  },
+  {
+    includer = "//third_party/litert/*"
+  },
+  {
+    includer = "//third_party/lzma_sdk/*"
+  },
+  {
+    includer = "//third_party/mediapipe/*"
+  },
+  {
+    includer = "//third_party/nearby/*"
+  },
+  {
+    includer = "//third_party/oak/*"
+  },
+  {
+    includer = "//third_party/ocmock/*"
+  },
+  {
+    includer = "//third_party/openh264/*"
+  },
+  {
+    includer = "//third_party/openscreen/*"
+  },
+  {
+    includer = "//third_party/pdfium/*"
+  },
+  {
+    includer = "//third_party/perfetto/*"
+  },
+  {
+    includer = "//third_party/private-join-and-compute/*"
+  },
+  {
+    includer = "//third_party/private_membership/*"
+  },
+  {
+    includer = "//third_party/protobuf/*"
+  },
+  {
+    includer = "//third_party/protobuf-javascript/*"
+  },
+  {
+    includer = "//third_party/puffin/*"
+  },
+  {
+    includer = "//third_party/rapidhash/*"
+  },
+  {
+    includer = "//third_party/re2/*"
+  },
+  {
+    includer = "//third_party/rust/*"
+  },
+  {
+    includer = "//third_party/rust-toolchain/*"
+  },
+  {
+    includer = "//third_party/ruy/*"
+  },
+  {
+    includer = "//third_party/s2cellid/*"
+  },
+  {
+    includer = "//third_party/sentencepiece/*"
+  },
+  {
+    includer = "//third_party/shell-encryption/*"
+  },
+  {
+    includer = "//third_party/swiftshader/*"
+  },
+  {
+    includer = "//third_party/spirv-tools/*"
+  },
+  {
+    includer = "//third_party/sqlite/*"
+  },
+  {
+    includer = "//third_party/tensorflow_models/*"
+  },
+  {
+    includer = "//third_party/tensorflow-text/*"
+  },
+  {
+    includer = "//third_party/tflite/*"
+  },
+  {
+    includer = "//third_party/tflite_support/*"
+  },
+  {
+    includer = "//third_party/ukey2/*"
+  },
+  {
+    includer = "//third_party/unrar/*"
+  },
+  {
+    includer = "//third_party/wayland/*"
+  },
+  {
+    includer = "//third_party/webrtc/*"
+  },
+  {
+    includer = "//third_party/webrtc_overrides/*"
+  },
+  {
+    includer = "//third_party/win_virtual_display/*"
+  },
+  {
+    includer = "//third_party/zlib/*"
+  },
+  {
+    includer = "//third_party/zxcvbn-cpp/*"
+  },
+  {
+    includer = "//tools/*"
+  },
+  {
+    includer = "//ui/*"
+  },
+  {
+    includer = "//url/*"
+  },
+  {
+    includer = "//v8/*"
   },
 ]
