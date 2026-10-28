@@ -18,7 +18,6 @@
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
 #include "components/password_manager/core/browser/import/csv_password.h"
-#include "components/password_manager/core/browser/import/csv_password_sequence.h"
 #include "components/password_manager/core/browser/import/import_results.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_store/password_form_converters.h"

@@ -5,27 +5,20 @@
 #include "components/password_manager/core/browser/import/csv_password_sequence.h"
 
 #include <array>
-#include <iterator>
+#include <optional>
 #include <string>
 #include <string_view>
-#include <utility>
 
-#include "base/strings/utf_string_conversions.h"
+#include "base/test/gmock_expected_support.h"
+#include "base/types/expected.h"
 #include "components/password_manager/core/browser/import/csv_password.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
 namespace password_manager {
 
-TEST(CSVPasswordSequenceTest, Constructions) {
-  static constexpr char kCsv[] = "login,url,password\nabcd,http://goo.gl,ef";
-  CSVPasswordSequence seq1(kCsv);
-
-  EXPECT_NE(seq1.begin(), seq1.end());
-
-  CSVPasswordSequence seq2(std::move(seq1));
-  EXPECT_NE(seq2.begin(), seq2.end());
-}
+using ::base::test::ErrorIs;
 
 TEST(CSVPasswordSequenceTest, SkipsEmptyLines) {
   static constexpr char kNoUrl[] =
@@ -36,9 +29,23 @@ TEST(CSVPasswordSequenceTest, SkipsEmptyLines) {
       "non_empty,pwd\n"
       "non_empty,pwd\n"
       "    ";
-  CSVPasswordSequence seq(kNoUrl);
-  EXPECT_EQ(CSVPassword::Status::kOK, seq.result());
-  ASSERT_EQ(2, std::distance(seq.begin(), seq.end()));
+  ASSERT_OK_AND_ASSIGN(CSVPasswordSequence seq,
+                       CSVPasswordSequence::Create(kNoUrl));
+  EXPECT_NE(seq.NextPassword(), std::nullopt);
+  EXPECT_NE(seq.NextPassword(), std::nullopt);
+  EXPECT_EQ(seq.NextPassword(), std::nullopt);
+}
+
+TEST(CSVPasswordSequenceTest, AllRowsAreEmpty) {
+  static constexpr char kCsv[] =
+      "url,username,password\n"
+      "     \t   \r\n"
+      " \n"
+      "\n"
+      "         ";
+  ASSERT_OK_AND_ASSIGN(CSVPasswordSequence seq,
+                       CSVPasswordSequence::Create(kCsv));
+  EXPECT_EQ(seq.NextPassword(), std::nullopt);
 }
 
 TEST(CSVPasswordSequenceTest, Iteration) {
@@ -59,33 +66,33 @@ TEST(CSVPasswordSequenceTest, Iteration) {
       {{"http://example.com", "user", "pwd", "Note\nwith two lines"},
        {"https://example.net", "Alice", "even", ""},
        {"https://example.org", "Bob", "odd", "regular note"}});
-  CSVPasswordSequence seq(kCsv);
-  EXPECT_EQ(CSVPassword::Status::kOK, seq.result());
+  ASSERT_OK_AND_ASSIGN(CSVPasswordSequence seq,
+                       CSVPasswordSequence::Create(kCsv));
 
-  size_t order = 0;
-  for (const CSVPassword& pwd : seq) {
-    ASSERT_LT(order, std::size(kExpectedCredentials));
-    const auto& expected = kExpectedCredentials[order];
-    EXPECT_EQ(GURL(expected.url), pwd.GetURL());
-    EXPECT_EQ(expected.username, pwd.GetUsername());
-    EXPECT_EQ(expected.password, pwd.GetPassword());
-    EXPECT_EQ(expected.note, pwd.GetNote());
-    ++order;
+  for (const auto& expected : kExpectedCredentials) {
+    std::optional<CSVPassword> pwd = seq.NextPassword();
+    ASSERT_TRUE(pwd.has_value());
+    EXPECT_EQ(GURL(expected.url), pwd->GetURL());
+    EXPECT_EQ(expected.username, pwd->GetUsername());
+    EXPECT_EQ(expected.password, pwd->GetPassword());
+    EXPECT_EQ(expected.note, pwd->GetNote());
   }
+  EXPECT_EQ(seq.NextPassword(), std::nullopt);
 }
 
 TEST(CSVPasswordSequenceTest, MissingEolAtEof) {
   static constexpr char kCsv[] =
       "url,login,password\n"
       "http://a.com,l,p";
-  CSVPasswordSequence seq(kCsv);
-  EXPECT_EQ(CSVPassword::Status::kOK, seq.result());
+  ASSERT_OK_AND_ASSIGN(CSVPasswordSequence seq,
+                       CSVPasswordSequence::Create(kCsv));
 
-  ASSERT_EQ(1, std::distance(seq.begin(), seq.end()));
-  CSVPassword pwd = *seq.begin();
-  EXPECT_EQ(GURL("http://a.com"), pwd.GetURL());
-  EXPECT_EQ("l", pwd.GetUsername());
-  EXPECT_EQ("p", pwd.GetPassword());
+  std::optional<CSVPassword> pwd = seq.NextPassword();
+  ASSERT_TRUE(pwd.has_value());
+  EXPECT_EQ(GURL("http://a.com"), pwd->GetURL());
+  EXPECT_EQ("l", pwd->GetUsername());
+  EXPECT_EQ("p", pwd->GetPassword());
+  EXPECT_EQ(seq.NextPassword(), std::nullopt);
 }
 
 TEST(CSVPasswordSequenceTest, AcceptsDifferentNoteColumnNames) {
@@ -95,12 +102,12 @@ TEST(CSVPasswordSequenceTest, AcceptsDifferentNoteColumnNames) {
     const std::string kCsv =
         "url,login,password," + note_column_name + "\nhttp://a.com,l,p,n";
 
-    CSVPasswordSequence seq(kCsv);
-    EXPECT_EQ(CSVPassword::Status::kOK, seq.result());
-    ASSERT_EQ(1, std::distance(seq.begin(), seq.end()));
-    CSVPassword pwd = *seq.begin();
-
-    EXPECT_EQ("n", pwd.GetNote());
+    ASSERT_OK_AND_ASSIGN(CSVPasswordSequence seq,
+                         CSVPasswordSequence::Create(kCsv));
+    std::optional<CSVPassword> pwd = seq.NextPassword();
+    ASSERT_TRUE(pwd.has_value());
+    EXPECT_EQ("n", pwd->GetNote());
+    EXPECT_EQ(seq.NextPassword(), std::nullopt);
   }
 }
 
@@ -111,12 +118,12 @@ TEST(CSVPasswordSequenceTest, ContainsMultipleAcceptableNoteColumns) {
       "url,login,password,comment,note,notes\n"
       "http://a.com,l,p,note a,note b,note c";
 
-  CSVPasswordSequence seq(kCsv);
-  EXPECT_EQ(CSVPassword::Status::kOK, seq.result());
-  ASSERT_EQ(1, std::distance(seq.begin(), seq.end()));
-  CSVPassword pwd = *seq.begin();
-
-  EXPECT_EQ("note b", pwd.GetNote());
+  ASSERT_OK_AND_ASSIGN(CSVPasswordSequence seq,
+                       CSVPasswordSequence::Create(kCsv));
+  std::optional<CSVPassword> pwd = seq.NextPassword();
+  ASSERT_TRUE(pwd.has_value());
+  EXPECT_EQ("note b", pwd->GetNote());
+  EXPECT_EQ(seq.NextPassword(), std::nullopt);
 }
 
 struct HeaderTestCase {
@@ -134,9 +141,13 @@ TEST_P(CSVPasswordSequenceCompatibilityTest, HeaderParsedWithStatus) {
   const HeaderTestCase& test_case = GetParam();
   SCOPED_TRACE(test_case.test_name);
 
-  const CSVPasswordSequence seq(test_case.csv);
-  EXPECT_EQ(test_case.status, seq.result());
-  EXPECT_EQ(seq.begin(), seq.end());
+  auto seq = CSVPasswordSequence::Create(test_case.csv);
+  if (test_case.status == CSVPassword::Status::kOK) {
+    ASSERT_TRUE(seq.has_value());
+    EXPECT_EQ(seq->NextPassword(), std::nullopt);
+  } else {
+    EXPECT_THAT(seq, ErrorIs(test_case.status));
+  }
 }
 
 INSTANTIATE_TEST_SUITE_P(

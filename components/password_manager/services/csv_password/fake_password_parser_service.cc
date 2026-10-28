@@ -4,9 +4,11 @@
 
 #include "components/password_manager/services/csv_password/fake_password_parser_service.h"
 
+#include <optional>
 #include <utility>
 #include <vector>
 
+#include "base/types/expected.h"
 #include "components/password_manager/core/browser/import/csv_password.h"
 #include "components/password_manager/core/browser/import/csv_password_sequence.h"
 
@@ -15,14 +17,11 @@ namespace password_manager {
 // A wrapper on CSVPasswordSequence that mimics the sandbox behaviour.
 void FakePasswordParserService::ParseCSV(const std::string& raw_json,
                                          ParseCSVCallback callback) {
-  mojom::CSVPasswordSequencePtr result = nullptr;
-  CSVPasswordSequence seq(raw_json);
-  if (seq.result() == CSVPassword::Status::kOK) {
+  mojom::CSVPasswordSequencePtr result;
+  if (auto seq = CSVPasswordSequence::Create(raw_json); seq.has_value()) {
     result = mojom::CSVPasswordSequence::New();
-    if (result) {
-      for (const auto& pwd : seq) {
-        result->csv_passwords.push_back(pwd);
-      }
+    while (std::optional<CSVPassword> pwd = seq->NextPassword()) {
+      result->csv_passwords.push_back(*std::move(pwd));
     }
   }
   std::move(callback).Run(std::move(result));

@@ -183,7 +183,6 @@ source_set("unit_tests") {
     "//components/history/core/common",
     "//components/history/core/test",
     "//components/password_manager/core/browser/features:utils",
-    "//components/password_manager/core/browser/import:csv",
     "//components/password_manager/core/browser/import:importer",
     "//components/password_manager/core/browser/password_store:test_support",
     "//components/password_manager/core/browser/ui",

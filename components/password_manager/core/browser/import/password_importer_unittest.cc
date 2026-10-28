@@ -18,7 +18,7 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "components/affiliations/core/browser/fake_affiliation_service.h"
-#include "components/password_manager/core/browser/import/csv_password_sequence.h"
+#include "components/password_manager/core/browser/import/csv_password.h"
 #include "components/password_manager/core/browser/import/import_results.h"
 #include "components/password_manager/core/browser/password_store/password_form_converters.h"
 #include "components/password_manager/core/browser/password_store/test_password_store.h"

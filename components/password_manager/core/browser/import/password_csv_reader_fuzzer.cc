@@ -2,15 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <optional>
 #include <string>
+#include <string_view>
 #include <tuple>
-#include <utility>
 #include <vector>
 
 #include "base/base_paths.h"
 #include "base/check.h"
 #include "base/files/file_path.h"
 #include "base/path_service.h"
+#include "base/types/expected.h"
 #include "components/password_manager/core/browser/import/csv_password.h"
 #include "components/password_manager/core/browser/import/csv_password_sequence.h"
 #include "third_party/fuzztest/src/fuzztest/fuzztest.h"
@@ -48,20 +50,23 @@ std::vector<std::tuple<std::string>> ReadCorpus() {
           .AsUTF8Unsafe());
 }
 
-void ParseDoesNotCrash(std::string input) {
-  CSVPasswordSequence seq(std::move(input));
-  CHECK(IsValid(seq.result()))
-      << "Invalid parsing result of the whole sequence: "
-      << static_cast<int>(seq.result());
+void ParseDoesNotCrash(std::string_view input) {
+  auto seq = CSVPasswordSequence::Create(input);
+  if (!seq.has_value()) {
+    CHECK(IsValid(seq.error()))
+        << "Invalid parsing result of the whole sequence: "
+        << static_cast<int>(seq.error());
+    return;
+  }
   CSVPassword copy;
-  for (const auto& pwd : seq) {
-    const CSVPassword::Status status = pwd.GetParseStatus();
+  while (std::optional<CSVPassword> pwd = seq->NextPassword()) {
+    const CSVPassword::Status status = pwd->GetParseStatus();
     CHECK(IsValid(status)) << "Invalid parsing result of one row: "
                            << static_cast<int>(status);
     if (status == CSVPassword::Status::kOK) {
       // Copy the parsed password to access all its data members and allow the
       // ASAN to detect any corrupted memory inside.
-      copy = pwd;
+      copy = *pwd;
     }
   }
 }

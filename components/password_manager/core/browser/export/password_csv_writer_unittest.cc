@@ -5,10 +5,14 @@
 #include "components/password_manager/core/browser/export/password_csv_writer.h"
 
 #include <memory>
+#include <optional>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/gmock_expected_support.h"
+#include "base/types/expected.h"
 #include "components/password_manager/core/browser/import/csv_password.h"
 #include "components/password_manager/core/browser/import/csv_password_sequence.h"
 #include "components/password_manager/core/browser/password_string.h"
@@ -40,10 +44,12 @@ MATCHER_P3(FormHasOriginUsernamePassword, origin, username, password, "") {
 TEST(PasswordCSVWriterTest, SerializePasswords_ZeroPasswords) {
   std::vector<CredentialUIEntry> credentials;
 
-  CSVPasswordSequence seq(PasswordCSVWriter::SerializePasswords(credentials));
-  ASSERT_EQ(CSVPassword::Status::kOK, seq.result());
+  const std::string serialized =
+      PasswordCSVWriter::SerializePasswords(credentials);
+  ASSERT_OK_AND_ASSIGN(CSVPasswordSequence seq,
+                       CSVPasswordSequence::Create(serialized));
 
-  EXPECT_EQ(seq.begin(), seq.end());
+  EXPECT_EQ(seq.NextPassword(), std::nullopt);
 }
 
 TEST(PasswordCSVWriterTest, SerializePasswords_SinglePassword) {
@@ -58,12 +64,14 @@ TEST(PasswordCSVWriterTest, SerializePasswords_SinglePassword) {
   form.notes = {PasswordNote(kNoteValue, base::Time::Now())};
   credentials.emplace_back(form);
 
-  CSVPasswordSequence seq(PasswordCSVWriter::SerializePasswords(credentials));
-  ASSERT_EQ(seq.result(), CSVPassword::Status::kOK);
+  const std::string serialized =
+      PasswordCSVWriter::SerializePasswords(credentials);
+  ASSERT_OK_AND_ASSIGN(CSVPasswordSequence seq,
+                       CSVPasswordSequence::Create(serialized));
 
   std::vector<CredentialUIEntry> pwds;
-  for (const auto& pwd : seq) {
-    pwds.emplace_back(pwd);
+  while (std::optional<CSVPassword> pwd = seq.NextPassword()) {
+    pwds.emplace_back(*std::move(pwd));
   }
   EXPECT_THAT(pwds, ElementsAre(FormHasOriginUsernamePassword(
                         "https://example.com/", "Someone", "Secret")));
@@ -73,7 +81,7 @@ TEST(PasswordCSVWriterTest, SerializePasswords_SinglePassword) {
       "example.com,https://example.com/,Someone,Secret,\"Note Line "
       "1" +
       kLineEnding + "Note Line 2\"" + kLineEnding;
-  EXPECT_EQ(PasswordCSVWriter::SerializePasswords(credentials), expected);
+  EXPECT_EQ(serialized, expected);
 }
 
 TEST(PasswordCSVWriterTest, SerializePasswords_TwoPasswords) {
@@ -90,12 +98,14 @@ TEST(PasswordCSVWriterTest, SerializePasswords_TwoPasswords) {
   form.password_value = PasswordString(u"None");
   credentials.emplace_back(form);
 
-  CSVPasswordSequence seq(PasswordCSVWriter::SerializePasswords(credentials));
-  ASSERT_EQ(seq.result(), CSVPassword::Status::kOK);
+  const std::string serialized =
+      PasswordCSVWriter::SerializePasswords(credentials);
+  ASSERT_OK_AND_ASSIGN(CSVPasswordSequence seq,
+                       CSVPasswordSequence::Create(serialized));
 
   std::vector<CredentialUIEntry> pwds;
-  for (const auto& pwd : seq) {
-    pwds.emplace_back(pwd);
+  while (std::optional<CSVPassword> pwd = seq.NextPassword()) {
+    pwds.emplace_back(*std::move(pwd));
   }
   EXPECT_THAT(pwds,
               ElementsAre(FormHasOriginUsernamePassword("https://example.com/",
@@ -183,12 +193,14 @@ TEST(PasswordCSVWriterTest, SerializeAffiliatedPasswords) {
   form2.password_value = form1.password_value;
   credentials.emplace_back(std::vector<PasswordForm>{form1, form2});
 
-  CSVPasswordSequence seq(PasswordCSVWriter::SerializePasswords(credentials));
-  ASSERT_EQ(seq.result(), CSVPassword::Status::kOK);
+  const std::string serialized =
+      PasswordCSVWriter::SerializePasswords(credentials);
+  ASSERT_OK_AND_ASSIGN(CSVPasswordSequence seq,
+                       CSVPasswordSequence::Create(serialized));
 
   std::vector<CredentialUIEntry> pwds;
-  for (const auto& pwd : seq) {
-    pwds.emplace_back(pwd);
+  while (std::optional<CSVPassword> pwd = seq.NextPassword()) {
+    pwds.emplace_back(*std::move(pwd));
   }
   EXPECT_THAT(pwds,
               ElementsAre(FormHasOriginUsernamePassword("https://example.com/",

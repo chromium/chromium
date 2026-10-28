@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <optional>
 #include <string>
 #include <string_view>
 #include <utility>
@@ -15,9 +16,9 @@
 #include "base/containers/enum_set.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/strings/string_util.h"
+#include "base/types/expected.h"
 #include "components/password_manager/core/browser/import/csv_field_parser.h"
 #include "components/password_manager/core/browser/import/csv_password.h"
-#include "components/password_manager/core/browser/import/csv_password_iterator.h"
 
 namespace password_manager {
 
@@ -75,29 +76,62 @@ size_t GetNoteHeaderPriority(std::string_view name) {
   return it->second;
 }
 
+// Returns all the characters from the start of |input| until the first '\n',
+// "\r\n" (exclusive) or the end of |input|. Cuts the returned part (inclusive
+// of the line breaks) from |input|. Skips blocks of matching quotes. Examples:
+// old input -> returned value, new input
+// "ab\ncd" -> "ab", "cd"
+// "\r\n" -> "", ""
+// "abcd" -> "abcd", ""
+// "\r" -> "\r", ""
+// "a\"\n\"b" -> "a\"\n\"b", ""
+std::string_view ConsumeCSVLine(std::string_view& input) {
+  bool inside_quotes = false;
+  bool last_char_was_cr = false;
+  for (size_t current = 0; current < input.size(); ++current) {
+    char c = input[current];
+    switch (c) {
+      case '\n':
+        if (!inside_quotes) {
+          const size_t eol_start = last_char_was_cr ? current - 1 : current;
+          std::string_view ret = input.substr(0, eol_start);
+          input.remove_prefix(current + 1);
+          return ret;
+        }
+        break;
+      case '"':
+        inside_quotes = !inside_quotes;
+        break;
+      default:
+        break;
+    }
+    last_char_was_cr = (c == '\r');
+  }
+
+  // The whole |input| is one line.
+  return std::exchange(input, std::string_view());
+}
+
 }  // namespace
 
-CSVPasswordSequence::CSVPasswordSequence(std::string csv)
-    : csv_(std::move(csv)) {
-  // Sanity check.
-  if (csv_.empty()) {
-    result_ = CSVPassword::Status::kSyntaxError;
-    return;
+// static
+base::expected<CSVPasswordSequence, CSVPassword::Status>
+CSVPasswordSequence::Create(std::string_view csv) {
+  if (csv.empty()) {
+    return base::unexpected(CSVPassword::Status::kSyntaxError);
   }
-  data_rows_ = csv_;
 
-  // Construct ColumnMap.
-  std::string_view first = ConsumeCSVLine(&data_rows_);
+  std::string_view first = ConsumeCSVLine(csv);
 
   constexpr size_t kMaxPriority = 101;
   // Mapping "note column index" -> "header name priority".
   size_t note_column_index, note_column_priority = kMaxPriority;
+  CSVPassword::ColumnMap map;
 
   CSVFieldParser parser(first);
   for (size_t col_index = 0; auto raw_name = parser.NextField(); ++col_index) {
     if (!raw_name->has_value()) {
-      result_ = CSVPassword::Status::kSyntaxError;
-      return;
+      return base::unexpected(CSVPassword::Status::kSyntaxError);
     }
 
     std::string name = base::ToLowerASCII(
@@ -113,20 +147,19 @@ CSVPasswordSequence::CSVPasswordSequence(std::string csv)
         }
         continue;
       }
-      map_[col_index] = *label;
+      map[col_index] = *label;
     }
   }
 
   if (note_column_priority != kMaxPriority) {
-    map_[note_column_index] = CSVPassword::Label::kNote;
+    map[note_column_index] = CSVPassword::Label::kNote;
   }
 
   base::EnumSet<CSVPassword::Label> all_labels;
-  for (const auto& [_, label] : map_) {
+  for (const auto& [_, label] : map) {
     if (all_labels.Has(label)) {
       // Multiple columns share the same label.
-      result_ = CSVPassword::Status::kSemanticError;
-      return;
+      return base::unexpected(CSVPassword::Status::kSemanticError);
     }
     all_labels.Put(label);
   }
@@ -135,10 +168,15 @@ CSVPasswordSequence::CSVPasswordSequence(std::string csv)
   if (!all_labels.HasAll({CSVPassword::Label::kOrigin,
                           CSVPassword::Label::kUsername,
                           CSVPassword::Label::kPassword})) {
-    result_ = CSVPassword::Status::kSemanticError;
-    return;
+    return base::unexpected(CSVPassword::Status::kSemanticError);
   }
+
+  return CSVPasswordSequence(std::move(map), csv);
 }
+
+CSVPasswordSequence::CSVPasswordSequence(CSVPassword::ColumnMap column_map,
+                                         std::string_view remaining_rows)
+    : column_map_(std::move(column_map)), remaining_rows_(remaining_rows) {}
 
 CSVPasswordSequence::CSVPasswordSequence(CSVPasswordSequence&&) = default;
 CSVPasswordSequence& CSVPasswordSequence::operator=(CSVPasswordSequence&&) =
@@ -146,15 +184,15 @@ CSVPasswordSequence& CSVPasswordSequence::operator=(CSVPasswordSequence&&) =
 
 CSVPasswordSequence::~CSVPasswordSequence() = default;
 
-CSVPasswordIterator CSVPasswordSequence::begin() const {
-  if (result_ != CSVPassword::Status::kOK) {
-    return end();
+std::optional<CSVPassword> CSVPasswordSequence::NextPassword() {
+  while (!remaining_rows_.empty()) {
+    std::string_view row = base::TrimString(ConsumeCSVLine(remaining_rows_),
+                                            "\r \t", base::TRIM_LEADING);
+    if (!row.empty()) {
+      return CSVPassword(column_map_, row);
+    }
   }
-  return CSVPasswordIterator(map_, data_rows_);
-}
-
-CSVPasswordIterator CSVPasswordSequence::end() const {
-  return CSVPasswordIterator(map_, std::string_view());
+  return std::nullopt;
 }
 
 }  // namespace password_manager

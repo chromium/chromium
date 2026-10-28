@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/passwords/settings/password_import_controller.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <tuple>
@@ -21,11 +22,13 @@
 #include "base/test/bind.h"
 #include "base/test/mock_callback.h"
 #include "base/test/test_future.h"
+#include "base/types/expected.h"
 #include "build/build_config.h"
 #include "chrome/browser/password_manager/factories/profile_password_store_factory.h"
 #include "chrome/browser/ui/select_file_policy/chrome_select_file_policy.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/affiliations/core/browser/fake_affiliation_service.h"
+#include "components/password_manager/core/browser/import/csv_password.h"
 #include "components/password_manager/core/browser/import/csv_password_sequence.h"
 #include "components/password_manager/core/browser/import/import_results.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
@@ -194,12 +197,13 @@ class FakePasswordParserService
  public:
   void ParseCSV(const std::string& raw_csv,
                 ParseCSVCallback callback) override {
-    password_manager::mojom::CSVPasswordSequencePtr result = nullptr;
-    password_manager::CSVPasswordSequence seq(raw_csv);
-    if (seq.result() == password_manager::CSVPassword::Status::kOK) {
+    password_manager::mojom::CSVPasswordSequencePtr result;
+    if (auto seq = password_manager::CSVPasswordSequence::Create(raw_csv);
+        seq.has_value()) {
       result = password_manager::mojom::CSVPasswordSequence::New();
-      for (const auto& pwd : seq) {
-        result->csv_passwords.push_back(pwd);
+      while (std::optional<password_manager::CSVPassword> pwd =
+                 seq->NextPassword()) {
+        result->csv_passwords.push_back(*std::move(pwd));
       }
     }
     std::move(callback).Run(std::move(result));
