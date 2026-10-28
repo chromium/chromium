@@ -490,24 +490,22 @@ std::unique_ptr<CanonicalCookie> CanonicalCookie::Create(
   cookie_expires =
       ValidateAndAdjustExpiryDate(cookie_expires, creation_time, source_scheme);
 
-  auto cc = std::make_unique<CanonicalCookie>(
-      base::PassKey<CanonicalCookie>(), parsed_cookie.Name(),
-      parsed_cookie.Value(), std::move(cookie_domain).value_or(std::string()),
-      std::move(cookie_path), creation_time, cookie_expires, creation_time,
-      /*last_update=*/base::Time::Now(), parsed_cookie.IsSecure(),
-      parsed_cookie.IsHttpOnly(), samesite, parsed_cookie.Priority(),
-      cookie_partition_key, source_scheme, source_port, source_type);
-
   // Check if name or value contains any non-ascii values, exclude if they do.
   if (base::FeatureList::IsEnabled(features::kDisallowNonAsciiCookies)) {
-    if (!base::IsStringASCII(cc->Name()) || !base::IsStringASCII(cc->Value())) {
+    if (!base::IsStringASCII(parsed_cookie.Name()) ||
+        !base::IsStringASCII(parsed_cookie.Value())) {
       status->AddExclusionReason(
           CookieInclusionStatus::ExclusionReason::EXCLUDE_DISALLOWED_CHARACTER);
     }
   }
 
   // TODO(chlily): Log metrics.
-  if (!cc->IsCanonical()) {
+  if (!IsCanonical(parsed_cookie.Name(), parsed_cookie.Value(),
+                   cookie_domain.value_or(std::string()), cookie_path,
+                   creation_time, cookie_expires,
+                   /*last_access_date=*/creation_time, parsed_cookie.IsSecure(),
+                   parsed_cookie.IsHttpOnly(), cookie_partition_key,
+                   source_scheme)) {
     status->AddExclusionReason(
         net::CookieInclusionStatus::ExclusionReason::EXCLUDE_FAILURE_TO_STORE);
     return nullptr;
@@ -535,9 +533,9 @@ std::unique_ptr<CanonicalCookie> CanonicalCookie::Create(
     // These metrics capture whether or not a cookie has a Non-ASCII character
     // in it, except if kDisallowNonAsciiCookies is enabled.
     base::UmaHistogramBoolean("Cookie.HasNonASCII.Name.Subsampled",
-                              !base::IsStringASCII(cc->Name()));
+                              !base::IsStringASCII(parsed_cookie.Name()));
     base::UmaHistogramBoolean("Cookie.HasNonASCII.Value.Subsampled",
-                              !base::IsStringASCII(cc->Value()));
+                              !base::IsStringASCII(parsed_cookie.Value()));
 
     // Check for "__" prefixed names, excluding the cookie prefixes.
     bool name_prefixed_with_underscores =
@@ -548,7 +546,13 @@ std::unique_ptr<CanonicalCookie> CanonicalCookie::Create(
                               name_prefixed_with_underscores);
   }
 
-  return cc;
+  return std::make_unique<CanonicalCookie>(
+      base::PassKey<CanonicalCookie>(), parsed_cookie.Name(),
+      parsed_cookie.Value(), std::move(cookie_domain).value_or(std::string()),
+      std::move(cookie_path), creation_time, cookie_expires, creation_time,
+      /*last_update=*/base::Time::Now(), parsed_cookie.IsSecure(),
+      parsed_cookie.IsHttpOnly(), samesite, parsed_cookie.Priority(),
+      cookie_partition_key, source_scheme, source_port, source_type);
 }
 
 // static
@@ -912,14 +916,15 @@ bool CanonicalCookie::IsProbablyEquivalentTo(
 
 bool CanonicalCookie::HasEquivalentDataMembers(
     const CanonicalCookie& other) const {
-  return IsProbablyEquivalentTo(other) && Value() == other.Value();
+  return IsProbablyEquivalentTo(other) && IsValueEqual(other);
 }
 
 bool CanonicalCookie::IsWebEquivalentTo(const CanonicalCookie& other) const {
-  return IsEquivalent(other) && Value() == other.Value() &&
-         IsSecure() == other.IsSecure() && SameSite() == other.SameSite() &&
-         IsHttpOnly() == other.IsHttpOnly() &&
-         ExpiryDate() == other.ExpiryDate();
+  // Check Value() last because it may require decrypting, which can be avoided
+  // if other members don't match.
+  return IsEquivalent(other) && IsSecure() == other.IsSecure() &&
+         SameSite() == other.SameSite() && IsHttpOnly() == other.IsHttpOnly() &&
+         ExpiryDate() == other.ExpiryDate() && IsValueEqual(other);
 }
 
 void CanonicalCookie::PostIncludeForRequestURL(
@@ -1016,6 +1021,31 @@ std::string CanonicalCookie::DebugString() const {
 }
 
 CanonicalCookie::CanonicalizationResult CanonicalCookie::IsCanonical() const {
+  return IsCanonical(Name(), Value(), Domain(), Path(), CreationDate(),
+                     expiry_date_, last_access_date_, SecureAttribute(),
+                     IsHttpOnly(), PartitionKey(), SourceScheme());
+}
+
+CanonicalCookie::CanonicalizationResult
+CanonicalCookie::IsCanonicalForFromStorage() const {
+  return IsCanonicalForFromStorage(
+      Name(), Value(), Domain(), Path(), CreationDate(), last_access_date_,
+      SecureAttribute(), IsHttpOnly(), PartitionKey());
+}
+
+// static
+CanonicalCookie::CanonicalizationResult CanonicalCookie::IsCanonical(
+    std::string_view name,
+    std::string_view value,
+    std::string_view domain,
+    std::string_view path,
+    base::Time creation_date,
+    base::Time expiry_date,
+    base::Time last_access_date,
+    bool is_secure,
+    bool is_http_only,
+    const std::optional<CookiePartitionKey>& partition_key,
+    net::CookieSourceScheme source_scheme) {
   // TODO(crbug.com/40787717) Eventually we should check the size of name+value,
   // assuming we collect metrics and determine that a low percentage of cookies
   // would fail this check. Note that we still don't want to enforce length
@@ -1024,19 +1054,14 @@ CanonicalCookie::CanonicalizationResult CanonicalCookie::IsCanonical() const {
   // TODO(crbug.com/40800807): Eventually we should push this logic into
   // IsCanonicalForFromStorage, but for now we allow cookies already stored with
   // high expiration dates to be retrieved.
-  if (ValidateAndAdjustExpiryDate(expiry_date_, CreationDate(),
-                                  SourceScheme()) != expiry_date_) {
+  if (ValidateAndAdjustExpiryDate(expiry_date, creation_date, source_scheme) !=
+      expiry_date) {
     return Fail(CanonicalizationFailure::kInvalidExpiryDate);
   }
 
-  return IsCanonicalForFromStorage();
-}
-
-CanonicalCookie::CanonicalizationResult
-CanonicalCookie::IsCanonicalForFromStorage() const {
-  return IsCanonicalForFromStorage(
-      Name(), Value(), Domain(), Path(), CreationDate(), last_access_date_,
-      SecureAttribute(), IsHttpOnly(), PartitionKey());
+  return IsCanonicalForFromStorage(name, value, domain, path, creation_date,
+                                   last_access_date, is_secure, is_http_only,
+                                   partition_key);
 }
 
 // static

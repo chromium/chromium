@@ -294,6 +294,19 @@ class NET_EXPORT CanonicalCookie : public CookieBase {
     return !expiry_date_.is_null() && current >= expiry_date_;
   }
 
+  // Returns true iff Value() equals `cc.Value()`. As an optimization, this
+  // tries to avoid decrypting the cookies if possible.
+  bool IsValueEqual(const CanonicalCookie& cc) const {
+    return ValueSize() == cc.ValueSize() && Value() == cc.Value();
+  }
+
+  // Returns true iff Value() equals `value_string`. As an optimization, this
+  // tries to avoid decrypting the cookie if possible.
+  bool IsValueEqual(std::string_view value_string) const {
+    return ValueSize().InBytes() == value_string.size() &&
+           Value() == value_string;
+  }
+
   // Are the cookies considered equivalent in the eyes of RFC 2965.
   // The RFC says that name must match (case-sensitive), domain must
   // match (case insensitive), and path must match (case sensitive).
@@ -456,6 +469,18 @@ class NET_EXPORT CanonicalCookie : public CookieBase {
                                                 bool url_is_trustworthy);
 
   // Helpers for use in canonicalization checks.
+  static CanonicalizationResult IsCanonical(
+      std::string_view name,
+      std::string_view value,
+      std::string_view domain,
+      std::string_view path,
+      base::Time creation_date,
+      base::Time expiry_date,
+      base::Time last_access_date,
+      bool is_secure,
+      bool is_http_only,
+      const std::optional<CookiePartitionKey>& partition_key,
+      net::CookieSourceScheme source_scheme);
   static CanonicalizationResult IsCanonicalForFromStorage(
       std::string_view name,
       std::string_view value,

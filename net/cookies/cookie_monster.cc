@@ -941,23 +941,27 @@ void CookieMonster::DeleteCanonicalCookie(const CanonicalCookie& cookie,
     cookie_map = &cookies_;
   }
   if (cookie_map) {
-    for (CookieMapItPair its = cookie_map->equal_range(GetKey(cookie.Domain()));
-         its.first != its.second; ++its.first) {
-      const std::unique_ptr<CanonicalCookie>& candidate = its.first->second;
-      // Historically, this has refused modification if the cookie has changed
-      // value in between the CanonicalCookie object was returned by a getter
-      // and when this ran.  The later parts of the conditional (everything but
-      // the equivalence check) attempt to preserve this behavior.
-      if (candidate->IsEquivalent(cookie) &&
-          candidate->Value() == cookie.Value()) {
-        if (cookie.IsPartitioned()) {
-          InternalDeletePartitionedCookie(cookie_partition_it, its.first, true,
-                                          DELETE_COOKIE_EXPLICIT);
-        } else {
-          InternalDeleteCookie(its.first, true, DELETE_COOKIE_EXPLICIT);
+    CookieMapItPair its = cookie_map->equal_range(GetKey(cookie.Domain()));
+    if (its.first != its.second) {
+      // Decrypt Value() once before the loop.
+      const std::string cookie_value = cookie.Value();
+      for (; its.first != its.second; ++its.first) {
+        const std::unique_ptr<CanonicalCookie>& candidate = its.first->second;
+        // Historically, this has refused modification if the cookie has changed
+        // value in between the CanonicalCookie object was returned by a getter
+        // and when this ran.  The later parts of the conditional (everything
+        // but the equivalence check) attempt to preserve this behavior.
+        if (candidate->IsEquivalent(cookie) &&
+            candidate->IsValueEqual(cookie_value)) {
+          if (cookie.IsPartitioned()) {
+            InternalDeletePartitionedCookie(cookie_partition_it, its.first,
+                                            true, DELETE_COOKIE_EXPLICIT);
+          } else {
+            InternalDeleteCookie(its.first, true, DELETE_COOKIE_EXPLICIT);
+          }
+          result = 1u;
+          break;
         }
-        result = 1u;
-        break;
       }
     }
   }
@@ -1601,7 +1605,7 @@ CookieMonster::MaybeDeleteEquivalentCookieAndUpdateStatus(
       CookieChangeObservability::kWebObservable;
   if (deletion_candidate_it != cookie_map->end()) {
     CanonicalCookie* deletion_candidate = deletion_candidate_it->second.get();
-    if (deletion_candidate->Value() == cookie_being_set.Value()) {
+    if (deletion_candidate->IsValueEqual(cookie_being_set)) {
       creation_date_to_inherit = deletion_candidate->CreationDate();
       observability =
           CookieChangeObservability::kWebObservableWithoutValueChange;
