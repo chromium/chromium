@@ -452,14 +452,12 @@ crbug.com/angleproject/482223016 [ no-passthrough ] conformance/glsl/misc/shader
 
 crbug.com/443182226 [ angle-vulkan arm fuchsia ] conformance/uniforms/no-over-optimization-on-uniform-array-* [ Failure ]
 
-crbug.com/542707343 [ fuchsia ] conformance/textures/misc/texture-srgb-upload.html [ Failure ]
+crbug.com/542707343 [ angle-vulkan arm fuchsia ] conformance/textures/misc/texture-srgb-upload.html [ Failure ]
 
 ####################
 # Win failures     #
 ####################
 
-crbug.com/567281778 [ win angle-swiftshader arch-x86_64 passthrough ] conformance/extensions/oes-texture-float-linear.html [ RetryOnFailure ]
-crbug.com/564887537 [ win10 intel-0x9bc5 ] WebglExtension_ANGLE_instanced_arrays [ RetryOnFailure ]
 
 ## Win / AMD RX 5500 XT failures ##
 
@@ -487,7 +485,6 @@ crbug.com/572909266 [ win11 nvidia-0x2783 angle-vulkan passthrough ] conformance
 crbug.com/572909266 [ win11 nvidia-0x2783 angle-vulkan passthrough ] conformance/ogles/GL/atan/atan_001_to_008.html [ RetryOnFailure ]
 crbug.com/572909266 [ win11 nvidia-0x2783 angle-vulkan passthrough ] conformance/ogles/GL/build/build_001_to_008.html [ RetryOnFailure ]
 crbug.com/572909266 [ win11 nvidia-0x2783 angle-vulkan passthrough ] conformance/ogles/GL/build/build_017_to_024.html [ RetryOnFailure ]
-crbug.com/415086850 [ win11 nvidia-0x2184 angle-vulkan passthrough ] conformance/ogles/GL/mod/mod_001_to_008.html [ Failure ]
 
 ## Win / Qualcomm Snapdragon X Elite / D3D11
 crbug.com/41496016 [ win11 qualcomm-0x36334330 angle-d3d11 ] conformance/textures/misc/mipmap-fbo.html [ Failure ]
@@ -505,7 +502,8 @@ crbug.com/562980317 [ mac angle-metal debug ] conformance/extensions/webgl-compr
 
 ## Mac Intel failures ##
 
-crbug.com/527353878 [ mac intel-0x3e9b angle-metal ] conformance/extensions/khr-parallel-shader-compile.html [ RetryOnFailure ]
+crbug.com/527353878 [ amd-0x7340 angle-metal no-clang-coverage release sonoma ] conformance/extensions/khr-parallel-shader-compile.html [ RetryOnFailure ]
+crbug.com/527353878 [ angle-metal intel-0x3e9b sequoia ] conformance/extensions/khr-parallel-shader-compile.html [ RetryOnFailure ]
 
 ## Mac AMD failures ##
 
@@ -520,7 +518,6 @@ crbug.com/354627705 [ mac amd-0x7340 angle-metal ] conformance/extensions/webgl-
 ## Apple M2 ##
 
 crbug.com/537387984 [ mac apple-angle-metal-renderer:-apple-m2 asan ] conformance/glsl/misc/shader-with-for-loop.html [ Slow ]
-crbug.com/544806579 [ mac angle-swiftshader arch-arm64 asan ] conformance/rendering/gl-drawelements.html [ RetryOnFailure ]
 crbug.com/527353878 [ mac apple-angle-metal-renderer:-apple-m2 asan ] conformance/extensions/khr-parallel-shader-compile.html [ RetryOnFailure ]
 crbug.com/564887537 [ mac apple-angle-metal-renderer:-apple-m2 asan ] WebglExtension_ANGLE_instanced_arrays [ RetryOnFailure ]
 
@@ -574,7 +571,6 @@ crbug.com/1287280 [ android android-pixel-6 no-passthrough ] WebglExtension_OES_
 crbug.com/1287280 [ android android-pixel-6 no-passthrough ] WebglExtension_OES_texture_half_float_linear [ Failure ]
 crbug.com/1287280 [ android android-pixel-6 no-passthrough ] WebglExtension_WEBGL_color_buffer_float [ Failure ]
 crbug.com/40236526 [ android android-pixel-6 no-passthrough ] conformance/rendering/blending.html [ Failure ]
-crbug.com/465162387 [ android android-pixel-6 angle-opengles passthrough ] conformance/extensions/oes-element-index-uint.html [ Failure ]
 
 ## Pixel 10 ##
 
@@ -659,9 +655,7 @@ crbug.com/1232446 [ chromeos chromeos-board-amd64-generic ] conformance/renderin
 # Linux/Wayland failures #
 ###########################
 
-crbug.com/1185344 [ angle-opengles linux display-server-wayland intel ] WebglExtension_EXT_shader_texture_lod [ Failure ]
 
-crbug.com/angleproject/5038 [ linux intel display-server-wayland ] conformance/extensions/ext-color-buffer-half-float.html [ Failure ]
 
 crbug.com/541251909 [ linux amd display-server-wayland ] conformance/extensions/ext-color-buffer-half-float.html [ Failure ]
 crbug.com/563391402 [ linux nvidia-0x2783 display-server-wayland ] WebglExtension_WEBGL_draw_buffers [ Failure ]
