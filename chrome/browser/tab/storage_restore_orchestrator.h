@@ -44,7 +44,6 @@ class StorageRestoreOrchestrator
                          const TabCollectionNodes& handles) override;
   void OnChildMoved(const TabCollection::Position& to_position,
                     const NodeData& node_data) override;
-  void SaveChildNodeOnly(TabCollectionNodeHandle handle) override;
   void SaveStructureSnapshot(bool clear_unused_nodes) override;
   void SetSynchronizer(StorageCollectionSynchronizer* synchronizer) override;
   void OnRestoreCancelled() override;

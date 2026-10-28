@@ -26,10 +26,6 @@ class StorageCollectionSynchronizer {
  public:
   class CollectionSynchronizerObserver : public TabCollectionObserver {
    public:
-    // Saves the node represented by the handle to storage. This
-    // will only save the payload for the given handle.
-    virtual void SaveChildNodeOnly(TabCollectionNodeHandle handle) = 0;
-
     // Saves a structural snapshot of the collection tree.
     virtual void SaveStructureSnapshot(bool clear_unused_nodes) = 0;
 
@@ -58,11 +54,6 @@ class StorageCollectionSynchronizer {
   // Cancels the restoration process.
   void CancelRestore();
 
-  // Used to manually save a tab.
-  void SaveTab(TabInterface* tab);
-
-  // Used to manually save a tab group payload.
-  void SaveTabGroupPayload(tab_groups::TabGroupId group_id);
 
   // Sets the TabCollectionObserver. If an observer is already set, it will be
   // unregistered before the new one is registered.

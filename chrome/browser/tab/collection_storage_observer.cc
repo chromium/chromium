@@ -93,26 +93,6 @@ void CollectionStorageObserver::SetSynchronizer(
 
 CollectionStorageObserver::~CollectionStorageObserver() = default;
 
-void CollectionStorageObserver::SaveChildNodeOnly(
-    TabCollectionNodeHandle handle) {
-  if (std::holds_alternative<TabCollection::Handle>(handle)) {
-    const TabCollection* collection =
-        std::get<TabCollection::Handle>(handle).Get();
-    if (collection->GetParentCollection()) {
-      service_->Save(collection);
-    }
-  } else {
-    const TabInterface* tab = std::get<TabHandle>(handle).Get();
-    if (tab->GetParentCollection()) {
-      service_->Save(tab);
-    }
-  }
-  if (synchronizer_) {
-    synchronizer_->SaveStructureSnapshot(/*clear_unused_nodes=*/false,
-                                         base::NullCallback());
-  }
-}
-
 void CollectionStorageObserver::OnChildrenAdded(
     const TabCollection::Position& position,
     const tabs::TabCollectionNodes& handles,

@@ -230,33 +230,6 @@ void StorageRestoreOrchestrator::OnChildMoved(
   }
 }
 
-void StorageRestoreOrchestrator::SaveChildNodeOnly(
-    TabCollectionNodeHandle handle) {
-  RestoreEntityTracker* tracker = loaded_data_->GetTracker();
-  if (std::holds_alternative<TabHandle>(handle)) {
-    const TabInterface* tab = std::get<TabHandle>(handle).Get();
-    if (tab->GetParentCollection()) {
-      tracker->AssociateTab(tab);
-      service_->Save(tab);
-    }
-  } else if (std::holds_alternative<TabCollection::Handle>(handle)) {
-    const TabCollection* collection =
-        std::get<TabCollection::Handle>(handle).Get();
-    if (collection->GetParentCollection()) {
-      if (!tracker->AssociateCollection(collection) &&
-          !tracker->HasCollectionBeenAssociated(collection->GetHandle())) {
-        service_->Save(collection);
-      } else {
-        service_->SavePayload(collection);
-      }
-    }
-  }
-  if (synchronizer_) {
-    synchronizer_->SaveStructureSnapshot(/*clear_unused_nodes=*/false,
-                                         base::NullCallback());
-  }
-}
-
 void StorageRestoreOrchestrator::SaveStructureSnapshot(
     bool clear_unused_nodes) {
   DCHECK(!clear_unused_nodes);

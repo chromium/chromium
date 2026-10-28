@@ -125,20 +125,6 @@ void StorageCollectionSynchronizer::CancelRestore() {
   }
 }
 
-void StorageCollectionSynchronizer::SaveTab(TabInterface* tab) {
-  TabHandle tab_handle = tab->GetHandle();
-  observer_->SaveChildNodeOnly(tab_handle);
-}
-
-void StorageCollectionSynchronizer::SaveTabGroupPayload(
-    tab_groups::TabGroupId group_id) {
-  TabCollection* group_collection =
-      collection_->GetTabGroupCollection(group_id);
-  if (group_collection) {
-    observer_->SaveChildNodeOnly(group_collection->GetHandle());
-  }
-}
-
 void StorageCollectionSynchronizer::SetCollectionObserver(
     std::unique_ptr<CollectionSynchronizerObserver> new_observer) {
   if (observer_) {
