@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/files/file_path.h"
+#include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
@@ -42,6 +43,8 @@ class MigrationStateDatabaseImpl : public MigrationStateDatabase {
       const data_sharing_pb::MigrationState& state) override;
   void DeleteMigrationState(const ContextId& context_id) override;
 
+  void SetShutdownCallbackForTesting(base::OnceClosure shutdown_callback);
+
  private:
   void OnInitialized(InitCallback callback, bool success);
 
@@ -49,9 +52,9 @@ class MigrationStateDatabaseImpl : public MigrationStateDatabase {
   const base::FilePath profile_path_;
 
   // The following fields hold objects to work with SQLite database. `db_`,
-  // `proto_table_manager_` are deleted on db sequence; `migration_state_data_`
-  // and `migration_state_table_` are deleted on the main thread, however only
-  // after deletion of the rest.
+  // `proto_table_manager_`, and `migration_state_table_` are deleted on the DB
+  // sequence; `migration_state_data_` is deleted on the main sequence after the
+  // DB sequence deletion task completes.
   scoped_refptr<base::SequencedTaskRunner> db_task_runner_;
   std::unique_ptr<sql::Database> db_;
   scoped_refptr<sqlite_proto::ProtoTableManager> proto_table_manager_;
@@ -60,6 +63,8 @@ class MigrationStateDatabaseImpl : public MigrationStateDatabase {
       migration_state_table_;
   std::unique_ptr<sqlite_proto::KeyValueData<data_sharing_pb::MigrationState>>
       migration_state_data_;
+
+  base::OnceClosure shutdown_callback_;
 
   // Whether database is initialized.
   bool is_initialized_ = false;

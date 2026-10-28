@@ -5,6 +5,8 @@
 #include "components/data_sharing/migration/internal/migration_state_database_impl.h"
 
 #include "base/files/scoped_temp_dir.h"
+#include "base/functional/callback_helpers.h"
+#include "base/task/execution_fence.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
@@ -60,6 +62,21 @@ TEST_F(MigrationStateDatabaseImplTest, TestUpdateGetDelete) {
   // Test Delete.
   migration_state_db->DeleteMigrationState(kContextId);
   EXPECT_EQ(migration_state_db->GetMigrationState(kContextId), std::nullopt);
+}
+
+TEST_F(MigrationStateDatabaseImplTest, DestroyBeforeInitializationCompletes) {
+  auto migration_state_db =
+      std::make_unique<MigrationStateDatabaseImpl>(temp_dir_.GetPath());
+
+  base::test::TestFuture<void> shutdown_future;
+  migration_state_db->SetShutdownCallbackForTesting(
+      shutdown_future.GetCallback());
+  {
+    base::ScopedThreadPoolExecutionFence fence;
+    migration_state_db->Init(base::DoNothing());
+    migration_state_db.reset();
+  }
+  EXPECT_TRUE(shutdown_future.Wait());
 }
 
 }  // namespace data_sharing

@@ -81,14 +81,21 @@ MigrationStateDatabaseImpl::~MigrationStateDatabaseImpl() {
   // `shutdown_callback_` on the main sequence.
   // This ensures that DB objects outlive any other task posted to DB sequence,
   // since their deletion is the very last posted task.
-  db_task_runner_->PostTask(
+  db_task_runner_->PostTaskAndReply(
       FROM_HERE,
       base::BindOnce(
           [](std::unique_ptr<sql::Database> db,
              scoped_refptr<sqlite_proto::ProtoTableManager> table_manager,
              auto migration_state_table) { table_manager->WillShutdown(); },
           std::move(db_), std::move(proto_table_manager_),
-          std::move(migration_state_table_)));
+          std::move(migration_state_table_)),
+      base::BindOnce(
+          [](auto migration_state_data, base::OnceClosure shutdown_callback) {
+            if (shutdown_callback) {
+              std::move(shutdown_callback).Run();
+            }
+          },
+          std::move(migration_state_data_), std::move(shutdown_callback_)));
 }
 
 void MigrationStateDatabaseImpl::Init(InitCallback callback) {
@@ -130,6 +137,11 @@ void MigrationStateDatabaseImpl::DeleteMigrationState(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(is_initialized_);
   migration_state_data_->DeleteData({context_id.value()});
+}
+
+void MigrationStateDatabaseImpl::SetShutdownCallbackForTesting(
+    base::OnceClosure shutdown_callback) {
+  shutdown_callback_ = std::move(shutdown_callback);
 }
 
 void MigrationStateDatabaseImpl::OnInitialized(InitCallback callback,
