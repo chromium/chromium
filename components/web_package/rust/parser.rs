@@ -30,21 +30,16 @@ fn is_known_section(name: &str) -> bool {
     is_metadata_section(name) || name == RESPONSES_SECTION
 }
 
-/// Helper for incremental, sequential CBOR decoding with uniform error
+/// Helper for incremental, sequential CBOR header decoding with uniform error
 /// reporting.
-///
-/// Encapsulates `cbor::Decoder` and a data slice, providing combinators that
-/// match expected CBOR events while mapping both decoding errors and unexpected
-/// event types to a single, consistent `ParseError`.
 struct BundleDecoder<'a> {
-    decoder: cbor::Decoder,
     slice: &'a [u8],
     orig_len: usize,
 }
 
 impl<'a> BundleDecoder<'a> {
     fn new(data: &'a [u8]) -> Self {
-        Self { decoder: cbor::Decoder::new(), slice: data, orig_len: data.len() }
+        Self { slice: data, orig_len: data.len() }
     }
 
     fn bytes_consumed(&self) -> usize {
@@ -52,10 +47,7 @@ impl<'a> BundleDecoder<'a> {
     }
 
     fn expect_array_start(&mut self, err_msg: &'static str) -> Result<u64, ParseError> {
-        match self.decoder.next_event(&mut self.slice) {
-            Ok(cbor::CborEvent::ArrayStart(n)) => Ok(n),
-            _ => Err(ParseError::format(err_msg)),
-        }
+        cbor::read_array_header(&mut self.slice).map_err(|_| ParseError::format(err_msg))
     }
 
     fn expect_exact_array_start(
@@ -63,34 +55,31 @@ impl<'a> BundleDecoder<'a> {
         count: u64,
         err_msg: &'static str,
     ) -> Result<(), ParseError> {
-        match self.decoder.next_event(&mut self.slice) {
-            Ok(cbor::CborEvent::ArrayStart(n)) if n == count => Ok(()),
+        match cbor::read_array_header(&mut self.slice) {
+            Ok(n) if n == count => Ok(()),
             _ => Err(ParseError::format(err_msg)),
         }
     }
 
     fn expect_bytes_start(&mut self, err_msg: &'static str) -> Result<u64, ParseError> {
-        match self.decoder.next_event(&mut self.slice) {
-            Ok(cbor::CborEvent::BytesStart(n)) => Ok(n),
-            _ => Err(ParseError::format(err_msg)),
-        }
+        cbor::read_bytestring_header(&mut self.slice).map_err(|_| ParseError::format(err_msg))
     }
 }
 
 fn parse_magic_bytes(decoder: &mut BundleDecoder) -> Result<(), ParseError> {
-    match decoder.decoder.read_complete_value(&mut decoder.slice) {
-        Ok(cbor::Value::Bytestring(BUNDLE_MAGIC_BYTES)) => Ok(()),
+    match cbor::read_bytestring(&mut decoder.slice) {
+        Ok(BUNDLE_MAGIC_BYTES) => Ok(()),
         _ => Err(ParseError::format("Wrong magic bytes.")),
     }
 }
 
 fn parse_version(decoder: &mut BundleDecoder) -> Result<(), ParseError> {
-    match decoder.decoder.read_complete_value(&mut decoder.slice) {
-        Ok(cbor::Value::Bytestring(VERSION_B2_BYTES)) => Ok(()),
-        Ok(cbor::Value::Bytestring(VERSION_B1_BYTES)) => Err(ParseError::version(
+    match cbor::read_bytestring(&mut decoder.slice) {
+        Ok(VERSION_B2_BYTES) => Ok(()),
+        Ok(VERSION_B1_BYTES) => Err(ParseError::version(
             "Bundle format version is 'b1' which is no longer supported. Currently supported version is: 'b2'",
         )),
-        Ok(cbor::Value::Bytestring(_)) => Err(ParseError::version(
+        Ok(_) => Err(ParseError::version(
             "Version error: bundle format does not correspond to the specifed version. Currently supported version is: 'b2'",
         )),
         _ => Err(ParseError::format("Cannot read version bytes.")),
@@ -175,14 +164,11 @@ pub fn parse_magic_and_version(
 
     let mut decoder = BundleDecoder::new(data);
 
-    let array_size = match decoder.decoder.next_event(&mut decoder.slice) {
-        Ok(cbor::CborEvent::ArrayStart(
-            size @ (TOP_LEVEL_ARRAY_SIZE | DEPRECATED_B1_TOP_LEVEL_ARRAY_SIZE),
-        )) => size,
-        Ok(cbor::CborEvent::ArrayStart(_)) => {
+    let array_size = match decoder.expect_array_start("Wrong magic bytes.")? {
+        size @ (TOP_LEVEL_ARRAY_SIZE | DEPRECATED_B1_TOP_LEVEL_ARRAY_SIZE) => size,
+        _ => {
             return Err(ParseError::format("Wrong CBOR array size of the top-level structure"));
         }
-        _ => return Err(ParseError::format("Wrong magic bytes.")),
     };
 
     parse_magic_bytes(&mut decoder)?;
@@ -469,7 +455,8 @@ fn err_unexpected_payload_length() -> ParseError {
 fn parse_status_code(v: &[u8]) -> Result<i32, ParseError> {
     match v {
         &[d0 @ b'0'..=b'9', d1 @ b'0'..=b'9', d2 @ b'0'..=b'9'] => {
-            // Convert 3 ASCII decimal digit bytes into a 3-digit integer status code.
+            // Convert 3 ASCII decimal digit bytes into a 3-digit integer status
+            // code.
             Ok((d0 - b'0') as i32 * 100 + (d1 - b'0') as i32 * 10 + (d2 - b'0') as i32)
         }
         _ => Err(ParseError::format(":status must be 3 ASCII decimal digits.")),
@@ -530,9 +517,7 @@ pub fn parse_response<'a>(
         return Ok(ResponseParseResult::needs_more(required_buffer_size));
     }
 
-    let header_bytes = decoder
-        .decoder
-        .read_complete_bytestring(&mut decoder.slice)
+    let header_bytes = cbor::read_complete_bytestring(&mut decoder.slice, header_len)
         .map_err(|_| ParseError::format("Cannot read response headers."))?;
 
     let Ok(cbor::Value::Map(map)) = parse_exact_cbor(header_bytes) else {
