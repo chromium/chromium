@@ -385,9 +385,9 @@ void CookieOSCryptAsyncDelegate::Init(base::OnceClosure callback) {
 // Predicate function to determine if the given |domain| matches the
 // |filter_type| and |filter_domains| from a |mojom::ClearDataFilter|.
 bool MatchesDomainFilter(mojom::ClearDataFilter_Type filter_type,
-                         std::set<std::string> filter_domains,
+                         const base::flat_set<std::string>& filter_domains,
                          const std::string& domain) {
-  bool found_domain = filter_domains.find(domain) != filter_domains.end();
+  bool found_domain = filter_domains.contains(domain);
   return (filter_type == mojom::ClearDataFilter_Type::DELETE_MATCHES) ==
          found_domain;
 }
@@ -395,7 +395,7 @@ bool MatchesDomainFilter(mojom::ClearDataFilter_Type filter_type,
 // Returns a callback that checks if a domain matches the |filter|. |filter|
 // must contain no origins. A null filter matches everything.
 base::RepeatingCallback<bool(const std::string& host_name)> MakeDomainFilter(
-    mojom::ClearDataFilter* filter) {
+    mojom::ClearDataFilterPtr filter) {
   if (!filter) {
     return base::BindRepeating([](const std::string&) { return true; });
   }
@@ -403,8 +403,7 @@ base::RepeatingCallback<bool(const std::string& host_name)> MakeDomainFilter(
   DCHECK(filter->origins.empty())
       << "Origin filtering not allowed in a domain-only filter";
 
-  std::set<std::string> filter_domains;
-  filter_domains.insert(filter->domains.begin(), filter->domains.end());
+  base::flat_set<std::string> filter_domains(std::move(filter->domains));
   return base::BindRepeating(&MatchesDomainFilter, filter->type,
                              std::move(filter_domains));
 }
@@ -413,18 +412,16 @@ base::RepeatingCallback<bool(const std::string& host_name)> MakeDomainFilter(
 // |filter_type|, |filter_domains| and |filter_origins| from a
 // |mojom::ClearDataFilter|.
 bool MatchesOriginFilter(mojom::ClearDataFilter_Type filter_type,
-                         std::set<std::string> filter_domains,
-                         std::set<url::Origin> filter_origins,
+                         const base::flat_set<std::string>& filter_domains,
+                         const base::flat_set<url::Origin>& filter_origins,
                          const url::Origin& origin) {
   std::string url_registrable_domain =
       net::registry_controlled_domains::GetDomainAndRegistry(
           origin, net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
-  bool found_domain =
-      (filter_domains.find(url_registrable_domain != ""
-                               ? url_registrable_domain
-                               : origin.host()) != filter_domains.end());
+  bool found_domain = filter_domains.contains(
+      !url_registrable_domain.empty() ? url_registrable_domain : origin.host());
 
-  bool found_origin = (filter_origins.find(origin) != filter_origins.end());
+  bool found_origin = filter_origins.contains(origin);
 
   return (filter_type == mojom::ClearDataFilter_Type::DELETE_MATCHES) ==
          (found_domain || found_origin);
@@ -438,11 +435,8 @@ base::RepeatingCallback<bool(const url::Origin&)> BuildOriginFilter(
     return base::BindRepeating([](const url::Origin&) { return true; });
   }
 
-  std::set<std::string> filter_domains;
-  filter_domains.insert(filter->domains.begin(), filter->domains.end());
-
-  std::set<url::Origin> filter_origins;
-  filter_origins.insert(filter->origins.begin(), filter->origins.end());
+  base::flat_set<std::string> filter_domains(std::move(filter->domains));
+  base::flat_set<url::Origin> filter_origins(std::move(filter->origins));
 
   return base::BindRepeating(&MatchesOriginFilter, filter->type,
                              std::move(filter_domains),
@@ -656,7 +650,7 @@ bool IsIncognitoFromParams(const mojom::NetworkContextParams& params) {
 
 void RemoveInvalidationFilterCallback(
     base::WeakPtr<NetworkContext> context,
-    net::HttpCache::InvalidationFilter filter) {
+    const net::HttpCache::InvalidationFilter& filter) {
   if (!context) {
     return;
   }
@@ -934,13 +928,14 @@ NetworkContext::NetworkContext(
       is_observing_reporting_service_(false),
 #endif  // BUILDFLAG(ENABLE_REPORTING)
       receiver_(std::in_place_type<Receiver>, this),
-      cookie_manager_(std::make_unique<CookieManager>(
-          url_request_context,
-          nullptr,
-          /*params=*/nullptr)),
+      cookie_manager_(std::make_unique<CookieManager>(url_request_context,
+                                                      nullptr,
+                                                      /*params=*/nullptr)),
       socket_factory_(
           std::make_unique<SocketFactory>(url_request_context_->net_log(),
                                           url_request_context)),
+      cors_exempt_header_list_(cors_exempt_header_list.begin(),
+                               cors_exempt_header_list.end()),
       cors_preflight_controller_(network_service),
       http_auth_merged_preferences_(network_service),
       ohttp_handler_(this),
@@ -969,10 +964,6 @@ NetworkContext::NetworkContext(
     network_service_->RegisterNetworkContext(this);
   }
   resource_scheduler_ = std::make_unique<ResourceScheduler>();
-
-  for (const auto& key : cors_exempt_header_list) {
-    cors_exempt_header_list_.insert(key);
-  }
 
   if (prefetch_enabled_) {
     InitializePrefetchURLLoaderFactory();
@@ -1628,7 +1619,7 @@ void NetworkContext::ClearHostCache(mojom::ClearDataFilterPtr filter,
   net::HostCache* host_cache =
       url_request_context_->host_resolver()->GetHostCache();
   DCHECK(host_cache);
-  host_cache->ClearForHosts(MakeDomainFilter(filter.get()));
+  host_cache->ClearForHosts(MakeDomainFilter(std::move(filter)));
   std::move(callback).Run();
 }
 
@@ -2510,7 +2501,7 @@ void NetworkContext::GetHSTSState(const std::string& domain,
                    static_sts_state.last_observed.InSecondsFSinceUnixEpoch());
         result.Set("static_sts_expiry",
                    static_sts_state.expiry.InSecondsFSinceUnixEpoch());
-        result.Set("static_sts_domain", static_sts_state.domain);
+        result.Set("static_sts_domain", std::move(static_sts_state.domain));
       }
 
       net::TransportSecurityState::STSState dynamic_sts_state;
@@ -2526,7 +2517,7 @@ void NetworkContext::GetHSTSState(const std::string& domain,
                    dynamic_sts_state.last_observed.InSecondsFSinceUnixEpoch());
         result.Set("dynamic_sts_expiry",
                    dynamic_sts_state.expiry.InSecondsFSinceUnixEpoch());
-        result.Set("dynamic_sts_domain", dynamic_sts_state.domain);
+        result.Set("dynamic_sts_domain", std::move(dynamic_sts_state.domain));
       }
 
       result.Set("result", found_sts_static || found_sts_dynamic);
@@ -2635,10 +2626,10 @@ void NetworkContext::PreconnectSockets(
         url_request_context_->http_user_agent_settings()->GetUserAgent();
   }
   net::HttpRequestInfo request_info;
-  request_info.url = url;
+  request_info.url = std::move(url);
   request_info.method = net::HttpRequestHeaders::kGetMethod;
   request_info.extra_headers.SetHeader(net::HttpRequestHeaders::kUserAgent,
-                                       user_agent);
+                                       std::move(user_agent));
   request_info.traffic_annotation = traffic_annotation;
 
   if (keepalive_config.has_value() ||
@@ -2821,10 +2812,10 @@ void NetworkContext::LookupProxyAuthCredentials(
           ->http_auth_cache();
   // TODO(crbug.com/40704785): Mapping proxy addresses to URLs is a
   // lossy conversion, shouldn't do this.
-  const char* scheme =
+  std::string_view scheme =
       proxy_server.is_secure_http_like() ? "https://" : "http://";
   url::SchemeHostPort scheme_host_port(
-      GURL(scheme + proxy_server.host_port_pair().ToString()));
+      GURL(base::StrCat({scheme, proxy_server.host_port_pair().ToString()})));
   if (!scheme_host_port.IsValid()) {
     std::move(callback).Run(std::nullopt);
     return;
@@ -3547,7 +3538,7 @@ GURL NetworkContext::GetHSTSRedirectForPreconnect(const GURL& original_url) {
   // top-level navigation so we need to disallow HSTS upgrades for every
   // preconnect.
   if (!url_request_context_->transport_security_state()->ShouldUpgradeToSSL(
-          original_url.GetHost(), /*is_top_level_nav=*/false)) {
+          original_url.host(), /*is_top_level_nav=*/false)) {
     RecordHSTSPreconnectUpgradeReason(
         HSTSRedirectUpgradeReason::kNotUpgradedNoHSTSPin);
     return original_url;
@@ -3644,9 +3635,8 @@ void NetworkContext::InitializeCorsParams() {
     cors_origin_access_list_.SetBlockListForOrigin(pattern->source_origin,
                                                    pattern->block_patterns);
   }
-  for (const auto& key : params_->cors_exempt_header_list) {
-    cors_exempt_header_list_.insert(key);
-  }
+  cors_exempt_header_list_ =
+      base::flat_set<std::string>(std::move(params_->cors_exempt_header_list));
 
   acam_preflight_spec_conformant_ = params_->acam_preflight_spec_conformant;
 }
@@ -3868,7 +3858,7 @@ void NetworkContext::RestrictNetworkForIds(
         if (!source) {
           return;
         }
-        dest_endpoint = source->reporting_endpoint;
+        dest_endpoint = std::move(source->reporting_endpoint);
         dest_redirect_behavior = source->redirect_behavior;
         dest_patterns.emplace();
         for (const std::string& pattern : source->allowlist) {
@@ -3896,7 +3886,7 @@ void NetworkContext::RestrictNetworkForIds(
     // revocation.
     NetworkRestriction& restriction =
         network_restrictions_ids_[network_restrictions_id];
-    restriction.response_url = entry->allowlists.response_url;
+    restriction.response_url = std::move(entry->allowlists.response_url);
     restriction.reporting_source = entry->allowlists.reporting_source;
 
     parse_allowlist(entry->allowlists.enforced,
@@ -4158,9 +4148,9 @@ bool NetworkContext::IsHostResolutionForNetworkRestrictionsIdAndHostAllowed(
     return true;
   }
 
-  std::string host_fragment = host.is_host_port_pair()
-                                  ? host.get_host_port_pair().host()
-                                  : host.get_scheme_host_port().host();
+  std::string_view host_fragment = host.is_host_port_pair()
+                                       ? host.get_host_port_pair().host()
+                                       : host.get_scheme_host_port().host();
   GURL synthetic_url = GURL(base::StrCat(
       {url::kHttpsScheme, url::kStandardSchemeSeparator, host_fragment}));
   if (!synthetic_url.is_valid()) {
