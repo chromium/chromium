@@ -37,7 +37,7 @@ if (enable_rust) {
   rust_static_library("rust_gtest_interop_rust") {
     testonly = true
     visibility = [ ":rust_gtest_interop" ]
-    crate_name = "rust_gtest_interop"
+    unsafe_globally_unique_crate_name = "rust_gtest_interop"
     crate_root = "rust_gtest_interop.rs"
     allow_unsafe = true
     sources = [

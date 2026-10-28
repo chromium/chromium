@@ -14,8 +14,14 @@ if (is_component_build) {
     rust_target(target_name) {
       forward_variables_from(invoker,
                              "*",
-                             TESTONLY_AND_VISIBILITY + [ "configs" ])
+                             TESTONLY_AND_VISIBILITY + [
+                                   "configs",
+                                   "unsafe_globally_unique_crate_name",
+                                 ])
       forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
+      if (defined(invoker.unsafe_globally_unique_crate_name)) {
+        crate_name = invoker.unsafe_globally_unique_crate_name
+      }
       shared_library_configs = invoker.configs
       target_type = "shared_library"
       crate_type = "cdylib"

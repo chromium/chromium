@@ -8,7 +8,7 @@ import("//build/rust/rust_static_library.gni")
 
 if (enable_chromium_prelude) {
   rust_static_library("chromium_prelude") {
-    crate_name = "chromium"
+    unsafe_globally_unique_crate_name = "chromium"
     crate_root = "chromium_prelude.rs"
     sources = [ "chromium_prelude.rs" ]
     deps = [ ":import_attribute" ]
@@ -18,7 +18,7 @@ if (enable_chromium_prelude) {
   }
 
   rust_macro("import_attribute") {
-    crate_name = "import_attribute"
+    unsafe_globally_unique_crate_name = "import_attribute"
     crate_root = "import_attribute.rs"
     sources = [ "import_attribute.rs" ]
     deps = [

@@ -267,6 +267,7 @@ template("cargo_crate") {
                                    "build_sources",
                                    "build_script_inputs",
                                    "build_script_outputs",
+                                   "crate_name",
                                    "epoch",
                                    "unit_test_target",
                                    "configs",
@@ -282,7 +283,20 @@ template("cargo_crate") {
       if (defined(invoker.visibility)) {
         visibility = invoker.visibility
       }
-      crate_name = _crate_name
+      if (_target_type == "rust_executable") {
+        # `rust_executable` uses `crate_name` because executables cannot be
+        # imported as transitive library dependencies by other crates, and GN
+        # already enforces unique binary output names.
+        crate_name = _crate_name
+      } else {
+        # Different crates from crates.io have different names (i.e. their
+        # names are unique within the "namespace" provided by crates.io).  We
+        # assume that these names won't clash with auto-generated names of
+        # first-party `rust_static_library`, `rust_macro`, etc. crates (because
+        # the directory hash at the end of auto-generated names of first-party
+        # crates seems unlikely to appear in names of crates.io crates).
+        unsafe_globally_unique_crate_name = _crate_name
+      }
 
       if (defined(_output_name)) {
         output_name = _output_name

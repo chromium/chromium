@@ -115,7 +115,7 @@ _globally_enabled_crubit_features = [
 #     to provide items that Crubit-generated code expects at a specific module
 #     path).
 #
-#   override_target_label, override_crate_name: (optional)
+#   override_target_label, unsafe_globally_unique_crate_name: (optional)
 #     Internal parameters, used only by `//build/rust/crubit:cc_std` (bindings
 #     for the C++ standard library) to provide the target label and crate name
 #     that Crubit expects for `cc_std`.
@@ -297,12 +297,11 @@ template("rust_api_from_cpp") {
 
   # Crubit needs to know the crate name of the generated bindings (and of their
   # `_bindings_deps`) to refer to them from the generated code - see `c` below.
-  #
-  # NOTE: TargetName=>CrateName mangling algorithm should be kept in sync with
-  # `rust_target.gni` (see the NOTE there; `chromium::import!` relies on it).
-  if (defined(invoker.override_crate_name)) {
-    _lib_target_crate_name = invoker.override_crate_name
+  if (defined(invoker.unsafe_globally_unique_crate_name)) {
+    _lib_target_crate_name = invoker.unsafe_globally_unique_crate_name
   } else {
+    # NOTE: TargetName=>CrateName mangling algorithm should be kept in sync with
+    # `rust_target.gni` (see the NOTE there; `chromium::import!` relies on it).
     _dir_hash = string_hash(get_label_info(":${_lib_target_name}", "dir"))
     _lib_target_crate_name = "${_lib_target_name}_${_dir_hash}"
   }
@@ -409,9 +408,9 @@ template("rust_api_from_cpp") {
       "//build/rust/crubit:rust_api_from_cpp_bindings_rs_deps",
     ]
 
-    # Explicitly setting `crate_name` guarantees that it matches the name passed
-    # to Crubit (via `c` in the metadata above).
-    crate_name = _lib_target_crate_name
+    # `_lib_target_crate_name` is either mangled/unique (see calculations above)
+    # or forwarded from `invoker.unsafe_globally_unique_crate_name`.
+    unsafe_globally_unique_crate_name = _lib_target_crate_name
     crate_root = _rs_out_path
     sources = [ crate_root ] + _extra_rust_sources
     deps += _extra_rs_srcs_copy_targets

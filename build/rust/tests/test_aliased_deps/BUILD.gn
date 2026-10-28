@@ -23,9 +23,9 @@ rust_static_library("test_aliased_deps") {
 }
 
 rust_static_library("real_name") {
-  # Using a fixed crate_name here which does not work with `import!` because
+  # Using a fixed crate name here which does not work with `import!` because
   # we're testing `aliased_deps` which also does not work with `import!`.
-  crate_name = "real_name"
+  unsafe_globally_unique_crate_name = "real_name"
   crate_root = "real_name.rs"
   sources = [ crate_root ]
 }

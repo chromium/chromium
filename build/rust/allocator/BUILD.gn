@@ -92,9 +92,9 @@ if (toolchain_has_rust) {
       no_std = true
       visibility = [ ":*" ]
 
-      # Giving an explicit `crate_name`, because `allocator` target needs to
+      # Giving an explicit crate name, because `allocator` target needs to
       # set `no_chromium_prelude` and cannot import mangled crate names.
-      crate_name = "allocator_impls_ffi"
+      unsafe_globally_unique_crate_name = "allocator_impls_ffi"
     }
 
     source_set("allocator_impls_headers") {
@@ -127,9 +127,9 @@ if (toolchain_has_rust) {
     no_std = true
     visibility = [ ":*" ]
 
-    # Giving an explicit `crate_name`, because `allocator` target needs to
+    # Giving an explicit crate name, because `allocator` target needs to
     # set `no_chromium_prelude` and cannot import mangled crate names.
-    crate_name = "alloc_error_handler_impl_ffi"
+    unsafe_globally_unique_crate_name = "alloc_error_handler_impl_ffi"
   }
 
   source_set("alloc_error_handler_impl_headers") {

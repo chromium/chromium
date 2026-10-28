@@ -151,10 +151,14 @@ import("//build/rust/gni_impl/rust_target.gni")
 #   data, testonly, visibility (optional)
 #     Same meaning as in other GN targets.
 #
-#   crate_name (optional)
-#     Discouraged - first-party code should prefer to use the auto-generated,
-#     target-based crate name which is guaranteed to be globally unique (and
-#     still ergonomic to import and use via the `chromium::import!` macro).
+#   unsafe_globally_unique_crate_name (optional)
+#     Overrides the auto-generated, target-based crate name. This is intended
+#     only for a small number of foundational targets (e.g. the `chromium`
+#     prelude crate, or targets that cannot depend on the prelude) and for
+#     downstream projects that build with `enable_chromium_prelude = false`.
+#     The caller is responsible for guaranteeing that the name is unique across
+#     the whole build. First-party code should instead use the default crate
+#     name and `chromium::import!`. Third-party code should use `cargo_crate`.
 #
 #   inputs (optional)
 #     Additional input files needed for compilation (such as `include!`ed files)
@@ -214,7 +218,11 @@ template("rust_static_library") {
       # simultaneously in 4 places: here, //build/rust/rust_target.gni,
       # //build/rust/rust_api_from_cpp.gni,
       # //build/rust/chromium_prelude/import_attribute.rs
-      if (defined(invoker.crate_name)) {
+      if (defined(invoker.unsafe_globally_unique_crate_name)) {
+        _crate_name = invoker.unsafe_globally_unique_crate_name
+      } else if (defined(invoker.crate_name)) {
+        # TODO(https://crbug.com/576367377): Make `invoker.crate_name` a hard
+        # error after cleaning up remaining usages.
         _crate_name = invoker.crate_name
       } else {
         _dir_hash = string_hash(get_label_info(":${_target_name}", "dir"))
@@ -237,8 +245,14 @@ template("rust_static_library") {
   rust_target(_target_name) {
     forward_variables_from(invoker,
                            "*",
-                           TESTONLY_AND_VISIBILITY + [ "configs" ])
+                           TESTONLY_AND_VISIBILITY + [
+                                 "configs",
+                                 "unsafe_globally_unique_crate_name",
+                               ])
     forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
+    if (defined(invoker.unsafe_globally_unique_crate_name)) {
+      crate_name = invoker.unsafe_globally_unique_crate_name
+    }
     library_configs = _configs
     all_dependent_configs = _all_dependent_configs
     target_type = "rust_library"

@@ -102,7 +102,10 @@ if (enable_rust_api_from_cpp) {
 
   rust_api_from_cpp("cc_std") {
     bindings_target = ":cc_std_empty_target"
-    override_crate_name = "cc_std"
+
+    # Crubit support libraries and clients expect C++ standard library bindings
+    # in a crate named `cc_std`.
+    unsafe_globally_unique_crate_name = "cc_std"
 
     # Other Rust code should depend on `:cpp_std` instead (see below).
     visibility = [ ":*" ]

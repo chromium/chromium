@@ -15,7 +15,7 @@ if (use_bundled_fontconfig) {
       "merge-extern-blocks",
       "allowlist-item=(FcCharSet.*|FC_(SLANT|WEIGHT|WIDTH|DUAL|MONO|FAMILY|SPACING)(_.*)?|Fc(Lang|Font)Set(Add|Create|Destroy|Copy|HasLang).*|FcWeightFromOpenType.*)",
     ]
-    crate_name = "fontconfig_bindings"
+    unsafe_globally_unique_crate_name = "fontconfig_bindings"
     configs = [
       ":fontconfig_config",
       ":bindgen_config",
@@ -31,7 +31,7 @@ if (use_bundled_fontconfig) {
       "blocklist-type=(FcCharSet|FcLangSet)",
       "raw-line=pub use fontconfig_bindings::FcCharSet; pub use fontconfig_bindings::FcLangSet;",
     ]
-    crate_name = "fcint_bindings"
+    unsafe_globally_unique_crate_name = "fcint_bindings"
     deps = [ ":fontconfig_h_bindgen" ]
     configs = [
       ":fontconfig_config",
