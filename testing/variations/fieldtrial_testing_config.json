@@ -15576,23 +15576,6 @@
             ]
         }
     ],
-    "SPCLocaleValidation": [
-        {
-            "platforms": [
-                "android",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "SPCLocaleValidation"
-                    ]
-                }
-            ]
-        }
-    ],
     "SQLitePersistentCookieStoreEarlyInit": [
         {
             "platforms": [
