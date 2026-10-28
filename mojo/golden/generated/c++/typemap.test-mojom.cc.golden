@@ -287,10 +287,8 @@ bool IFaceWithTypemap_Echo_ForwardToCallback::Accept(
   if (success && !input_data_view.ReadOut(&p_out))
     success = false;
   if (!success) {
-    ReportValidationErrorForMessage(
-        message,
-        mojo::internal::VALIDATION_ERROR_DESERIALIZATION_FAILED,
-        IFaceWithTypemap::Name_, 0, true);
+    mojo::internal::ReportDeserializationErrorForMessage(
+        message, IFaceWithTypemap::Name_, 0, true);
     return false;
   }
   if (!callback_.is_null()) {
@@ -382,10 +380,8 @@ bool IFaceWithTypemapStubDispatch::AcceptWithResponder(
       if (success && !input_data_view.ReadParam(&p_param))
         success = false;
       if (!success) {
-        ReportValidationErrorForMessage(
-            message,
-            mojo::internal::VALIDATION_ERROR_DESERIALIZATION_FAILED,
-            IFaceWithTypemap::Name_, 0, false);
+        mojo::internal::ReportDeserializationErrorForMessage(
+            message, IFaceWithTypemap::Name_, 0, false);
         return false;
       }
       auto callback =

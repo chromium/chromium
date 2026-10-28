@@ -147,10 +147,8 @@ bool PageStubDispatch::Accept(
       Page_OnSomethingHappened_ParamsDataView input_data_view(params, message);
       
       if (!success) {
-        ReportValidationErrorForMessage(
-            message,
-            mojo::internal::VALIDATION_ERROR_DESERIALIZATION_FAILED,
-            Page::Name_, 0, false);
+        mojo::internal::ReportDeserializationErrorForMessage(
+            message, Page::Name_, 0, false);
         return false;
       }
       // A null |impl| means no implementation was bound.
@@ -297,10 +295,8 @@ bool PageHandlerStubDispatch::Accept(
       PageHandler_DoSomething_ParamsDataView input_data_view(params, message);
       
       if (!success) {
-        ReportValidationErrorForMessage(
-            message,
-            mojo::internal::VALIDATION_ERROR_DESERIALIZATION_FAILED,
-            PageHandler::Name_, 0, false);
+        mojo::internal::ReportDeserializationErrorForMessage(
+            message, PageHandler::Name_, 0, false);
         return false;
       }
       // A null |impl| means no implementation was bound.
@@ -493,10 +489,8 @@ bool WebUiPageHandlerFactoryStubDispatch::Accept(
             input_data_view.TakeHandler<decltype(p_handler)>();
       }
       if (!success) {
-        ReportValidationErrorForMessage(
-            message,
-            mojo::internal::VALIDATION_ERROR_DESERIALIZATION_FAILED,
-            WebUiPageHandlerFactory::Name_, 0, false);
+        mojo::internal::ReportDeserializationErrorForMessage(
+            message, WebUiPageHandlerFactory::Name_, 0, false);
         return false;
       }
       // A null |impl| means no implementation was bound.

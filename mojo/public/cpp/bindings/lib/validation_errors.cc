@@ -171,6 +171,15 @@ void ReportValidationErrorForMessage(mojo::Message* message,
   ReportValidationError(&validation_context, error);
 }
 
+void ReportDeserializationErrorForMessage(mojo::Message* message,
+                                          const char* interface_name,
+                                          unsigned int method_ordinal,
+                                          bool is_response) {
+  ReportValidationErrorForMessage(message,
+                                  VALIDATION_ERROR_DESERIALIZATION_FAILED,
+                                  interface_name, method_ordinal, is_response);
+}
+
 bool GetIsValidationErrorLoggingSuppressedForTesting() {
   return g_suppress_logging;
 }

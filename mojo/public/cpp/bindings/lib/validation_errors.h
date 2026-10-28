@@ -116,6 +116,15 @@ void ReportValidationErrorForMessage(mojo::Message* message,
                                      unsigned int method_ordinal,
                                      bool is_response);
 
+// Same as ReportValidationErrorForMessage() with
+// VALIDATION_ERROR_DESERIALIZATION_FAILED. Used by generated code, since
+// passing fewer arguments results in smaller code.
+COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE)
+void ReportDeserializationErrorForMessage(mojo::Message* message,
+                                          const char* interface_name,
+                                          unsigned int method_ordinal,
+                                          bool is_response);
+
 COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE)
 bool GetIsValidationErrorLoggingSuppressedForTesting();
 

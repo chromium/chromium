@@ -221,10 +221,8 @@ bool IFace_Method_ForwardToCallback::Accept(
   if (success && !input_data_view.ReadResult(&p_result))
     success = false;
   if (!success) {
-    ReportValidationErrorForMessage(
-        message,
-        mojo::internal::VALIDATION_ERROR_DESERIALIZATION_FAILED,
-        IFace::Name_, 0, true);
+    mojo::internal::ReportDeserializationErrorForMessage(
+        message, IFace::Name_, 0, true);
     return false;
   }
   if (!callback_.is_null()) {
@@ -316,10 +314,8 @@ bool IFaceStubDispatch::AcceptWithResponder(
       if (success)
         p_param = input_data_view.param();
       if (!success) {
-        ReportValidationErrorForMessage(
-            message,
-            mojo::internal::VALIDATION_ERROR_DESERIALIZATION_FAILED,
-            IFace::Name_, 0, false);
+        mojo::internal::ReportDeserializationErrorForMessage(
+            message, IFace::Name_, 0, false);
         return false;
       }
       auto callback =

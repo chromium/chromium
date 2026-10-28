@@ -602,10 +602,8 @@ bool ResultInterface_Method_ForwardToCallback::Accept(
   if (success && !input_data_view.ReadResult(&p_result))
     success = false;
   if (!success) {
-    ReportValidationErrorForMessage(
-        message,
-        mojo::internal::VALIDATION_ERROR_DESERIALIZATION_FAILED,
-        ResultInterface::Name_, 0, true);
+    mojo::internal::ReportDeserializationErrorForMessage(
+        message, ResultInterface::Name_, 0, true);
     return false;
   }
   if (!callback_.is_null()) {
@@ -738,10 +736,8 @@ bool ResultInterface_SyncMethod_ForwardToCallback::Accept(
   if (success && !input_data_view.ReadResult(&p_result))
     success = false;
   if (!success) {
-    ReportValidationErrorForMessage(
-        message,
-        mojo::internal::VALIDATION_ERROR_DESERIALIZATION_FAILED,
-        ResultInterface::Name_, 1, true);
+    mojo::internal::ReportDeserializationErrorForMessage(
+        message, ResultInterface::Name_, 1, true);
     return false;
   }
   if (!callback_.is_null()) {
@@ -814,10 +810,8 @@ bool ResultInterface_SyncMethod_HandleSyncResponse::Accept(
   if (success && !input_data_view.ReadResult(&p_result))
     success = false;
   if (!success) {
-    ReportValidationErrorForMessage(
-        message,
-        mojo::internal::VALIDATION_ERROR_DESERIALIZATION_FAILED,
-        ResultInterface::Name_, 1, true);
+    mojo::internal::ReportDeserializationErrorForMessage(
+        message, ResultInterface::Name_, 1, true);
     return false;
   }if (p_result->is_success()) {
       *out_result_ = base::ok(std::move(p_result->get_success()));
@@ -867,10 +861,8 @@ bool ResultInterfaceStubDispatch::AcceptWithResponder(
       if (success)
         p_a = input_data_view.a();
       if (!success) {
-        ReportValidationErrorForMessage(
-            message,
-            mojo::internal::VALIDATION_ERROR_DESERIALIZATION_FAILED,
-            ResultInterface::Name_, 0, false);
+        mojo::internal::ReportDeserializationErrorForMessage(
+            message, ResultInterface::Name_, 0, false);
         return false;
       }
       auto callback =
@@ -897,10 +889,8 @@ bool ResultInterfaceStubDispatch::AcceptWithResponder(
       if (success)
         p_a = input_data_view.a();
       if (!success) {
-        ReportValidationErrorForMessage(
-            message,
-            mojo::internal::VALIDATION_ERROR_DESERIALIZATION_FAILED,
-            ResultInterface::Name_, 1, false);
+        mojo::internal::ReportDeserializationErrorForMessage(
+            message, ResultInterface::Name_, 1, false);
         return false;
       }
       auto callback =
