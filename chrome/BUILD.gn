@@ -331,12 +331,6 @@ if (!is_android && !is_mac) {
 
       data_deps += [ "//components/crash/core/app:chrome_crashpad_handler" ]
 
-      if (is_chrome_branded) {
-        data_deps += [
-          "//chrome/common/request_header_integrity/internal:chromecompaneros",
-        ]
-      }
-
       ldflags = []
 
       # On Chrome OS builds put priority to the library in the installed
@@ -1893,9 +1887,6 @@ if (is_linux || is_chromeos) {
       if (!is_chromeos && angle_shared_libvulkan) {
         deps += [ ":angle_libvulkan_symbols" ]
       }
-      if (is_chrome_branded) {
-        deps += [ ":chromecompaneros_symbols" ]
-      }
       if (build_with_internal_optimization_guide) {
         deps += [ ":optimization_guide_symbols" ]
         if (enable_ml_internal) {
@@ -2026,21 +2017,6 @@ if (is_linux || is_chromeos) {
 
           deps = [ "//components/optimization_guide/internal/third_party/odml:ml_drift_webgpu_accelerator_so" ]
         }
-      }
-    }
-    if (is_chrome_branded) {
-      extract_symbols("chromecompaneros_symbols") {
-        binary = "$root_out_dir/libchromecompaneros.so"
-        if (current_cpu == "x86") {
-          # GYP used "ia32" so keep that naming for back-compat.
-          symbol_file = "$root_out_dir/chromecompaneros.breakpad.ia32"
-        } else {
-          symbol_file = "$root_out_dir/chromecompaneros.breakpad.$current_cpu"
-        }
-
-        deps = [
-          "//chrome/common/request_header_integrity/internal:chromecompaneros",
-        ]
       }
     }
     if (build_with_internal_shape_detection) {
