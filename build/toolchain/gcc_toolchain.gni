@@ -121,13 +121,6 @@ template("single_gcc_toolchain") {
     assert(defined(invoker_toolchain_args.current_os),
            "toolchain_args must specify a current_os")
 
-    # use_reclient is default to use_remoteexec
-    if (!defined(invoker_toolchain_args.use_reclient) &&
-        defined(invoker_toolchain_args.use_remoteexec)) {
-      invoker_toolchain_args.use_reclient =
-          invoker_toolchain_args.use_remoteexec
-    }
-
     # When invoking this toolchain not as the default one, these args will be
     # passed to the build. They are ignored when this is the default toolchain.
     toolchain_args = {
@@ -162,49 +155,16 @@ template("single_gcc_toolchain") {
                               invoker_toolchain_args.current_cpu == "arm")
     }
 
-    # When the invoker has explicitly overridden use_remoteexec or
-    # cc_wrapper in the toolchain args, use those values, otherwise default
-    # to the global one.  This works because the only reasonable override
-    # that toolchains might supply for these values are to force-disable them.
-    if (defined(toolchain_args.use_reclient)) {
-      toolchain_uses_reclient = toolchain_args.use_reclient
-    } else {
-      toolchain_uses_reclient = use_reclient
-    }
-
+    # When the invoker has explicitly overridden cc_wrapper in the
+    # toolchain args, use those values, otherwise default to the global one.
+    # This works because the only reasonable override that toolchains might
+    # supply for these values are to force-disable them.
     if (defined(toolchain_args.cc_wrapper)) {
       toolchain_cc_wrapper = toolchain_args.cc_wrapper
     } else {
       toolchain_cc_wrapper = cc_wrapper
     }
-    assert(!(toolchain_cc_wrapper != "" && toolchain_uses_reclient),
-           "re-client and cc_wrapper can't be used together.")
-
-    # When the invoker has explicitly overridden cc_wrapper in the
-    # toolchain args, use those values, otherwise default to the global one.
-    # This works because the only reasonable override that toolchains might
-    # supply for these values are to force-disable them.
-    # But if needs_rewrapper_path_arg is set in a Chrome OS build, the
-    # toolchain wrapper will have picked up rewrapper via cmd-line arg. So
-    # need to prepend rewrapper in that case.
-    if (toolchain_uses_reclient &&
-        (!defined(invoker.needs_rewrapper_path_arg) ||
-         !invoker.needs_rewrapper_path_arg)) {
-      if (defined(toolchain_args.reclient_cc_cfg_file)) {
-        toolchain_reclient_cc_cfg_file = toolchain_args.reclient_cc_cfg_file
-      } else {
-        toolchain_reclient_cc_cfg_file = reclient_cc_cfg_file
-      }
-
-      # C/C++ (clang) rewrapper prefix to use when use_reclient is true.
-      compiler_prefix = "${reclient_bin_dir}/rewrapper -cfg=${toolchain_reclient_cc_cfg_file}${rbe_bug_326584510_missing_inputs} -exec_root=${rbe_exec_root} "
-    } else {
-      compiler_prefix = "${toolchain_cc_wrapper} "
-
-      # Prevent warning about unused variable since it is not read in the code
-      # paths when reclient is not needed.
-      not_needed(invoker, [ "needs_rewrapper_path_arg" ])
-    }
+    compiler_prefix = "${toolchain_cc_wrapper} "
 
     # A specific toolchain may wish to avoid coverage instrumentation, so we
     # allow the global "use_clang_coverage" arg to be overridden.
@@ -253,9 +213,8 @@ template("single_gcc_toolchain") {
     cc = compiler_prefix + invoker.cc
     cxx = compiler_prefix + invoker.cxx
 
-    # "asm" doesn't support any of toolchain_cc_wrapper and
-    # toolchain_uses_reclient. The coverage flags are also nonsensical on
-    # assembler runs.
+    # "asm" doesn't support toolchain_cc_wrapper. The coverage flags are also
+    # nonsensical on assembler runs.
     asm = invoker.cc
     ar = invoker.ar
     ld = invoker.ld

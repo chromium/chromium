@@ -7,14 +7,8 @@
 import("//build/toolchain/siso.gni")
 
 declare_args() {
-  # Deprecated: Please use reclient_bin_dir instead.
-  rbe_bin_dir = ""
-
   # Deprecated: Please use reclient_cfg_dir instead.
   rbe_cfg_dir = ""
-
-  # Deprecated: Please use reclient_cros_cc_wrapper instead.
-  rbe_cros_cc_wrapper = ""
 
   # Execution root - this should be the root of the source tree.
   # This is defined here instead of in the config file because
@@ -27,20 +21,6 @@ declare_args() {
 }
 
 declare_args() {
-  # Set to true to use re-client with ninja.
-  use_reclient = use_remoteexec && !use_siso
-
-  # The directory where the re-client tooling binaries are.
-  if (rbe_bin_dir != "") {
-    if (current_toolchain == default_toolchain) {
-      print(
-          "WARNING: rbe_bin_dir is deprecated. Please use reclient_bin_dir instead.")
-    }
-    reclient_bin_dir = rbe_bin_dir
-  } else {
-    reclient_bin_dir = rebase_path("//buildtools/reclient", root_build_dir)
-  }
-
   # The directory where the re-client configuration files are.
   if (rbe_cfg_dir != "") {
     if (current_toolchain == default_toolchain) {
@@ -54,30 +34,14 @@ declare_args() {
 }
 
 # Check if any unsupported combination is specified.
-if (use_reclient) {
-  assert(use_remoteexec, "Can't enable Reclient when use_remoteexec is false")
-}
-
 if (use_remoteexec) {
-  assert(use_reclient || use_siso,
-         "Can't enable remoteexec when use_reclient and use_siso are false")
-}
-
-if (use_reclient && current_toolchain == default_toolchain) {
-  print(
-      "WARNING: crbug.com/424659245 - Reclient is deprecated. Please remove `use_siso=false` and/or `use_reclient=true` from `args.gn` to switch to Siso without Reclient.")
+  assert(use_siso, "Can't enable remoteexec when use_siso is false")
 }
 
 if (use_remoteexec) {
   rbe_logs = [ "use_remoteexec=true" ]
 } else {
   rbe_logs = [ "use_remoteexec=false" ]
-}
-
-if (use_reclient) {
-  rbe_logs += [ "use_reclient=true" ]
-} else {
-  rbe_logs += [ "use_reclient=false" ]
 }
 
 if (use_siso && rbe_exec_root != rebase_path("//")) {
@@ -90,8 +54,7 @@ if (use_siso && rbe_exec_root != rebase_path("//")) {
 
 # Siso native also uses rewrapper cfg file
 # to get remote platform property.
-use_reclient_cfgs =
-    use_reclient || (use_remoteexec && (host_os == "win" || host_os == "mac"))
+use_reclient_cfgs = use_remoteexec && (host_os == "win" || host_os == "mac")
 
 declare_args() {
   # Set to the path of the RBE reclient configuration files.
@@ -99,11 +62,6 @@ declare_args() {
   if (!use_reclient_cfgs) {
     reclient_cc_cfg_file = ""
     reclient_py_cfg_file = ""
-  } else if (use_reclient && host_os == "linux") {
-    reclient_py_cfg_file = rebase_path(reclient_cfg_dir, root_build_dir) +
-                           "/python/rewrapper_linux.cfg"
-    reclient_cc_cfg_file = rebase_path(reclient_cfg_dir, root_build_dir) +
-                           "/chromium-browser-clang/rewrapper_linux.cfg"
   } else if (host_os == "win") {
     reclient_py_cfg_file = rebase_path(reclient_cfg_dir, root_build_dir) +
                            "/python/rewrapper_windows.cfg"
@@ -119,31 +77,8 @@ declare_args() {
     reclient_py_cfg_file = ""
   }
 
-  if (use_reclient) {
-    # Note that reclient_cros_cc_wrapper is referenced by CrOS's chromite.
-    # Set to the path of the RBE recleint wrapper for ChromeOS.
-    if (rbe_cros_cc_wrapper != "") {
-      if (current_toolchain == default_toolchain) {
-        print(
-            "WARNING: rbe_cros_cc_wrapper is deprecated. Please use reclient_cros_cc_wrapper instead.")
-      }
-      reclient_cros_cc_wrapper = rbe_cros_cc_wrapper
-    } else {
-      reclient_cros_cc_wrapper = "${reclient_bin_dir}/rewrapper"
-    }
-  } else {
-    reclient_cros_cc_wrapper = ""
-  }
-}
-
-if (use_reclient) {
-  rewrapper_path = "${reclient_bin_dir}/rewrapper"
-  if (is_win) {
-    rewrapper_path = "${reclient_bin_dir}/rewrapper.exe"
-  }
-  assert(path_exists(rewrapper_path),
-         "use_reclient=true requires reclient binary. " +
-             "need '\"download_reclient\": True' in .gclient custom_vars.")
+  # Note that reclient_cros_cc_wrapper is referenced by CrOS's chromite.
+  reclient_cros_cc_wrapper = ""
 }
 
 if (use_reclient_cfgs && current_toolchain == default_toolchain) {

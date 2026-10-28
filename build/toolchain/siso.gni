@@ -16,8 +16,7 @@ if (path_exists("//build/config/siso/.sisoenv") &&
 declare_args() {
   # Placeholder to allow having use_siso in args.gn file.
   # Explicit `use_siso` in args.gn can override default.
-  # This is used only for autoninja (to dispatch siso or ninja),
-  # and for use_reclient's default.
+  # This is used only for autoninja (to dispatch siso or ninja).
   use_siso = use_siso_default
 }
 

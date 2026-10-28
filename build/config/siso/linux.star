@@ -14,7 +14,6 @@ load("./devtools_frontend.star", "devtools_frontend")
 load("./nasm_linux.star", "nasm")
 load("./platform.star", "platform")
 load("./proto_linux.star", "proto")
-load("./reclient.star", "reclient")
 load("./v8.star", "v8")
 
 def __filegroups(ctx):
@@ -60,9 +59,7 @@ def __step_config(ctx, step_config):
     if android.enabled(ctx):
         step_config = android.step_config(ctx, step_config)
 
-    # cros rules are necessary only for the Siso's builtin RBE client mode.
-    if not reclient.enabled(ctx):
-        step_config = cros.step_config(ctx, step_config)
+    step_config = cros.step_config(ctx, step_config)
 
     step_config = apple.step_config(ctx, step_config)
     step_config = clang.step_config(ctx, step_config)

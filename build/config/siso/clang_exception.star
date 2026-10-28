@@ -126,8 +126,6 @@ def __step_config(ctx, step_config, use_windows_worker = None):
                             r["platform_ref"] = r["platform_ref"] + "_large"
                         else:
                             r["platform_ref"] = "large"
-                if r.get("handler") == "rewrite_rewrapper":
-                    r["handler"] = "rewrite_rewrapper_large"
                 new_rules.append(r)
         new_rules.append(rule)
     step_config["rules"] = new_rules

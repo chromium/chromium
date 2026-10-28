@@ -10,7 +10,6 @@ load("./clang_exception.star", "clang_exception")
 load("./config.star", "config")
 load("./gn_logs.star", "gn_logs")
 load("./platform.star", "platform")
-load("./reclient.star", "reclient")
 load("./rewrapper_cfg.star", "rewrapper_cfg")
 load("./win_sdk.star", "win_sdk")
 
@@ -70,7 +69,7 @@ def __step_config(ctx, step_config):
         input_root_absolute_path = gn_logs.read(ctx).get("clang_need_input_root_absolute_path") == "true"
 
         timeout = "2m"
-        if (not reclient.enabled(ctx)) and use_windows_worker:
+        if use_windows_worker:
             # use longer timeout for siso native
             # it takes long time for input fetch (many files in sysroot etc)
             timeout = "4m"

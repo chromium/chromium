@@ -99,8 +99,8 @@ declare_args() {
       # Disabled when cross-compiling iOS on non-macOS hosts because the Xcode
       # SDK modulemaps are not configured for cross-host builds.
       !(current_os == "ios" && host_os != "mac") &&
-      # reclient and icecc don't handle headers in modulemap config.
-      !use_reclient && !is_cronet_for_aosp_build && cc_wrapper != "icecc" &&
+      # icecc doesn't handle headers in modulemap config.
+      !is_cronet_for_aosp_build && cc_wrapper != "icecc" &&
       # Due to libc++ headers having different dependencies in different
       # language modes, see crbug.com/507307601
       use_cxx23 &&

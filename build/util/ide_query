@@ -27,15 +27,8 @@ def _retrieve_gn_args(out_dir):
   """
   is_android = False
   use_android_build_server = True
-  use_reclient = None
   if gn_helper.exists(out_dir):
     for k, v in gn_helper.args(out_dir):
-      if k == "use_reclient" and v == "true":
-        use_reclient = True
-        continue
-      if k == "use_reclient" and v == "false":
-        use_reclient = False
-        continue
       if k == "android_static_analysis" and v != '"build_server"':
         use_android_build_server = False
         continue
@@ -45,7 +38,7 @@ def _retrieve_gn_args(out_dir):
   if use_android_build_server is None and is_android:
     use_android_build_server = True
 
-  return use_reclient, use_android_build_server
+  return use_android_build_server
 
 
 def main():
@@ -87,14 +80,8 @@ def main():
     target = os.path.relpath(source, start=options.out_dir) + "^"
     targets.append(target)
 
-  use_reclient, use_android_build_server = _retrieve_gn_args(options.out_dir)
+  use_android_build_server = _retrieve_gn_args(options.out_dir)
 
-  if use_reclient:
-    # b/335795623 ide_query compiler_arguments contain non-compiler arguments
-    sys.stderr.write(
-        'ide_query won\'t work well with "use_reclient=true"\n'
-        'Set "use_reclient=false" in args.gn.\n')
-    sys.exit(1)
   if options.perform_build:
     # forget last targets of normal build as this build will update
     # .siso_fs_state.
