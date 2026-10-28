@@ -2380,15 +2380,14 @@ void TabStripModel::RotateFocusedGroup(bool forward) {
 
   std::optional<tab_groups::TabGroupId> current_focused_group =
       GetFocusedGroup();
-  if (current_focused_group.has_value()) {
-    if (IsEphemeralTabGroup(current_focused_group.value())) {
-      return;
-    }
+  if (!current_focused_group.has_value() ||
+      IsEphemeralTabGroup(current_focused_group.value())) {
+    return;
   }
 
   std::vector<tab_groups::TabGroupId> groups_in_order =
       group_model_->ListTabGroups();
-  if (groups_in_order.empty()) {
+  if (groups_in_order.size() <= 1) {
     return;
   }
 
@@ -2396,30 +2395,18 @@ void TabStripModel::RotateFocusedGroup(bool forward) {
     return group_model_->GetTabGroup(id)->ListTabs().start();
   });
 
-  if (!current_focused_group.has_value()) {
-    EnterFocusMode(forward ? groups_in_order.front() : groups_in_order.back());
-    return;
-  }
-
   auto it = std::ranges::find(groups_in_order, *current_focused_group);
   if (it == groups_in_order.end()) {
-    ExitFocusMode();
     return;
   }
 
   if (forward) {
     auto next_it = std::next(it);
-    if (next_it != groups_in_order.end()) {
-      EnterFocusMode(*next_it);
-    } else {
-      ExitFocusMode();
-    }
+    EnterFocusMode(next_it != groups_in_order.end() ? *next_it
+                                                    : groups_in_order.front());
   } else {
-    if (it != groups_in_order.begin()) {
-      EnterFocusMode(*std::prev(it));
-    } else {
-      ExitFocusMode();
-    }
+    EnterFocusMode(it != groups_in_order.begin() ? *std::prev(it)
+                                                 : groups_in_order.back());
   }
 }
 

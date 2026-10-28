@@ -2165,13 +2165,20 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripFocusSwipeTest,
 
   const tab_groups::TabGroupId group0 =
       tab_strip_model()->AddToNewGroup({1, 2});
-  tab_strip_model()->AddToNewGroup({3, 4});
+  const tab_groups::TabGroupId group1 =
+      tab_strip_model()->AddToNewGroup({3, 4});
 
   EXPECT_EQ(std::nullopt, tab_strip_model()->GetFocusedGroup());
 
-  // Forward swipe (negative x_offset for physical rightward swipe).
+  // Swiping while not in focus mode is a no-op.
   SendMouseWheelEvent(-static_cast<int>(kSwipeOverThreshold), 0);
+  EXPECT_EQ(std::nullopt, tab_strip_model()->GetFocusedGroup());
+
+  // Enter focus mode on group0; forward swipe rotates to group1.
+  tab_strip_model()->EnterFocusMode(group0);
   EXPECT_EQ(group0, tab_strip_model()->GetFocusedGroup());
+  SendMouseWheelEvent(-static_cast<int>(kSwipeOverThreshold), 0);
+  EXPECT_EQ(group1, tab_strip_model()->GetFocusedGroup());
 }
 #elif BUILDFLAG(IS_MAC)
 IN_PROC_BROWSER_TEST_F(VerticalTabStripFocusSwipeTest,
@@ -2193,22 +2200,31 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripFocusSwipeTest,
 
   EXPECT_EQ(std::nullopt, tab_strip_model()->GetFocusedGroup());
 
-  // Forward swipe (negative x_offset for physical rightward swipe on trackpad).
-  SendScrollEvent(-kSwipeOverThreshold, 0.0f);
-  EXPECT_EQ(group0, tab_strip_model()->GetFocusedGroup());
-  SendScrollEvent(0.0f, 0.0f, ui::ScrollEventPhase::kEnd);
-
-  // Swipe forward again -> group1.
-  SendScrollEvent(-kSwipeOverThreshold, 0.0f);
-  EXPECT_EQ(group1, tab_strip_model()->GetFocusedGroup());
-  SendScrollEvent(0.0f, 0.0f, ui::ScrollEventPhase::kEnd);
-
-  // Swipe forward again -> unfocused (std::nullopt).
+  // Swiping while not in focus mode does not enter focus mode.
   SendScrollEvent(-kSwipeOverThreshold, 0.0f);
   EXPECT_EQ(std::nullopt, tab_strip_model()->GetFocusedGroup());
   SendScrollEvent(0.0f, 0.0f, ui::ScrollEventPhase::kEnd);
 
-  // Backward swipe (positive x_offset) -> group1.
+  SendScrollEvent(kSwipeOverThreshold, 0.0f);
+  EXPECT_EQ(std::nullopt, tab_strip_model()->GetFocusedGroup());
+  SendScrollEvent(0.0f, 0.0f, ui::ScrollEventPhase::kEnd);
+
+  // Enter focus mode on group0.
+  tab_strip_model()->EnterFocusMode(group0);
+  EXPECT_EQ(group0, tab_strip_model()->GetFocusedGroup());
+
+  // Forward swipe (negative x_offset for physical rightward swipe on trackpad)
+  // -> group1.
+  SendScrollEvent(-kSwipeOverThreshold, 0.0f);
+  EXPECT_EQ(group1, tab_strip_model()->GetFocusedGroup());
+  SendScrollEvent(0.0f, 0.0f, ui::ScrollEventPhase::kEnd);
+
+  // Swipe forward again -> wraps around to group0 without unfocusing.
+  SendScrollEvent(-kSwipeOverThreshold, 0.0f);
+  EXPECT_EQ(group0, tab_strip_model()->GetFocusedGroup());
+  SendScrollEvent(0.0f, 0.0f, ui::ScrollEventPhase::kEnd);
+
+  // Backward swipe (positive x_offset) -> wraps around to group1.
   SendScrollEvent(kSwipeOverThreshold, 0.0f);
   EXPECT_EQ(group1, tab_strip_model()->GetFocusedGroup());
   SendScrollEvent(0.0f, 0.0f, ui::ScrollEventPhase::kEnd);
@@ -2224,21 +2240,26 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripFocusSwipeTest,
   EnterVerticalTabsMode();
   AppendTab();
   AppendTab();
+  AppendTab();
+  AppendTab();
   const tab_groups::TabGroupId group0 =
       tab_strip_model()->AddToNewGroup({1, 2});
-  EXPECT_EQ(std::nullopt, tab_strip_model()->GetFocusedGroup());
+  const tab_groups::TabGroupId group1 =
+      tab_strip_model()->AddToNewGroup({3, 4});
+  tab_strip_model()->EnterFocusMode(group0);
+  EXPECT_EQ(group0, tab_strip_model()->GetFocusedGroup());
 
   // Initial vertical scroll exceeding kAxisLockThreshold.
   SendScrollEvent(0.0f, kAxisLockOverThreshold);
 
   // Subsequent horizontal swipe in the same gesture is ignored.
   SendScrollEvent(-kSwipeOverThreshold, 0.0f);
-  EXPECT_EQ(std::nullopt, tab_strip_model()->GetFocusedGroup());
+  EXPECT_EQ(group0, tab_strip_model()->GetFocusedGroup());
 
   // Once the gesture ends, subsequent horizontal swipe triggers rotation.
   SendScrollEvent(0.0f, 0.0f, ui::ScrollEventPhase::kEnd);
   SendScrollEvent(-kSwipeOverThreshold, 0.0f);
-  EXPECT_EQ(group0, tab_strip_model()->GetFocusedGroup());
+  EXPECT_EQ(group1, tab_strip_model()->GetFocusedGroup());
 }
 
 IN_PROC_BROWSER_TEST_F(VerticalTabStripFocusSwipeTest,
@@ -2246,13 +2267,18 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripFocusSwipeTest,
   EnterVerticalTabsMode();
   AppendTab();
   AppendTab();
-  tab_strip_model()->AddToNewGroup({1, 2});
-  EXPECT_EQ(std::nullopt, tab_strip_model()->GetFocusedGroup());
+  AppendTab();
+  AppendTab();
+  const tab_groups::TabGroupId group0 =
+      tab_strip_model()->AddToNewGroup({1, 2});
+  tab_strip_model()->AddToNewGroup({3, 4});
+  tab_strip_model()->EnterFocusMode(group0);
+  EXPECT_EQ(group0, tab_strip_model()->GetFocusedGroup());
 
   // Momentum event with large delta should be ignored.
   SendScrollEvent(-kSwipeOverThreshold, 0.0f, ui::ScrollEventPhase::kNone,
                   ui::EventMomentumPhase::INERTIAL_UPDATE);
-  EXPECT_EQ(std::nullopt, tab_strip_model()->GetFocusedGroup());
+  EXPECT_EQ(group0, tab_strip_model()->GetFocusedGroup());
 }
 
 // TODO(crbug.com/546848427): Fix wall-clock timing race with kGestureResetTimeout.
@@ -2263,28 +2289,33 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripFocusSwipeTest,
   AppendTab();
   AppendTab();
   AppendTab();
+  AppendTab();
+  AppendTab();
   const tab_groups::TabGroupId group0 =
       tab_strip_model()->AddToNewGroup({1, 2});
   const tab_groups::TabGroupId group1 =
       tab_strip_model()->AddToNewGroup({3, 4});
-  EXPECT_EQ(std::nullopt, tab_strip_model()->GetFocusedGroup());
+  const tab_groups::TabGroupId group2 =
+      tab_strip_model()->AddToNewGroup({5, 6});
+  tab_strip_model()->EnterFocusMode(group0);
+  EXPECT_EQ(group0, tab_strip_model()->GetFocusedGroup());
 
   // Small movement below kSwipeThreshold does not trigger.
   SendScrollEvent(-kSwipeUnderThreshold, 0.0f);
-  EXPECT_EQ(std::nullopt, tab_strip_model()->GetFocusedGroup());
+  EXPECT_EQ(group0, tab_strip_model()->GetFocusedGroup());
 
   // Accumulating across threshold triggers once.
   SendScrollEvent(-kSwipeUnderThreshold, 0.0f);
-  EXPECT_EQ(group0, tab_strip_model()->GetFocusedGroup());
+  EXPECT_EQ(group1, tab_strip_model()->GetFocusedGroup());
 
   // Further continuous scrolling in the same gesture stream does not advance to
-  // group1.
+  // group2.
   SendScrollEvent(-kSwipeOverThreshold, 0.0f);
-  EXPECT_EQ(group0, tab_strip_model()->GetFocusedGroup());
+  EXPECT_EQ(group1, tab_strip_model()->GetFocusedGroup());
 
   // Ending the gesture allows next swipe to advance.
   SendScrollEvent(0.0f, 0.0f, ui::ScrollEventPhase::kEnd);
   SendScrollEvent(-kSwipeOverThreshold, 0.0f);
-  EXPECT_EQ(group1, tab_strip_model()->GetFocusedGroup());
+  EXPECT_EQ(group2, tab_strip_model()->GetFocusedGroup());
 }
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)

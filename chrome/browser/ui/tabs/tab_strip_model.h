@@ -735,11 +735,13 @@ class TabStripModel {
   void ExitFocusMode(
       std::optional<TabGroupFocusExitReason> reason = std::nullopt);
 
-  // Rotates the focused tab group between the unfocused state and active tab
-  // groups in the strip. Requires `features::kTabGroupsFocusing` to be enabled
-  // (CHECKs). If there are no tab groups, this is a no-op. When `forward` is
-  // true, rotates towards higher-indexed groups; otherwise rotates in reverse
-  // order.
+  // Rotates the focused tab group among open tab groups in the strip while in
+  // focus mode. Requires `features::kTabGroupsFocusing` to be enabled (CHECKs).
+  // If not currently in focus mode, if an ephemeral group is focused, or if
+  // there are fewer than two tab groups, this is a no-op. When `forward` is
+  // true, rotates towards higher-indexed groups (wrapping around to the first
+  // group); otherwise rotates in reverse order (wrapping around to the last
+  // group).
   void RotateFocusedGroup(bool forward);
 
   // Returns true if one or more of the tabs pointed to by `indices` are

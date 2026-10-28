@@ -13,7 +13,7 @@
 class VerticalTabStripRegionView;
 
 // Handles two-finger swipe gestures across the vertical tab strip to cycle
-// between the normal (unfocused) tab strip and focused tab groups.
+// between open tab groups while in focus mode.
 // Installed as a pre-target handler on VerticalTabStripRegionView.
 class VerticalTabStripFocusSwipeController : public ui::EventHandler {
  public:

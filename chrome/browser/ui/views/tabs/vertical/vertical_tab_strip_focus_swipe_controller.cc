@@ -18,6 +18,7 @@ VerticalTabStripFocusSwipeController::VerticalTabStripFocusSwipeController(
     VerticalTabStripRegionView* region_view)
     : region_view_(region_view) {
   CHECK(region_view_);
+  CHECK(region_view_->tab_strip_model());
   region_view_->AddPreTargetHandler(this);
 }
 
@@ -28,7 +29,8 @@ VerticalTabStripFocusSwipeController::~VerticalTabStripFocusSwipeController() {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 void VerticalTabStripFocusSwipeController::OnMouseEvent(ui::MouseEvent* event) {
   if (!base::FeatureList::IsEnabled(features::kTabGroupsFocusing) ||
-      !region_view_ || region_view_->IsDragging() ||
+      region_view_->IsDragging() ||
+      !region_view_->tab_strip_model()->GetFocusedGroup().has_value() ||
       !event->IsMouseWheelEvent()) {
     return;
   }
@@ -41,7 +43,9 @@ void VerticalTabStripFocusSwipeController::OnMouseEvent(ui::MouseEvent* event) {
 void VerticalTabStripFocusSwipeController::OnScrollEvent(
     ui::ScrollEvent* event) {
   if (!base::FeatureList::IsEnabled(features::kTabGroupsFocusing) ||
-      !region_view_ || region_view_->IsDragging()) {
+      region_view_->IsDragging() ||
+      !region_view_->tab_strip_model()->GetFocusedGroup().has_value()) {
+    ResetGesture();
     return;
   }
 
@@ -147,9 +151,5 @@ void VerticalTabStripFocusSwipeController::ResetGesture() {
 }
 
 void VerticalTabStripFocusSwipeController::RotateTabGroupFocus(bool forward) {
-  if (!region_view_ || !region_view_->tab_strip_model()) {
-    return;
-  }
-
   region_view_->tab_strip_model()->RotateFocusedGroup(forward);
 }
