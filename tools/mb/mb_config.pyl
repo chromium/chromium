@@ -79,6 +79,7 @@
       'android_arm64-builder-perf-pgo': 'official_remoteexec_minimal_symbols_android_arm64_pgo',
       'android_arm64_high_end-builder-perf': 'official_remoteexec_minimal_symbols_android_arm64_high_end',
       'android_arm64_high_end-builder-perf-pgo': 'official_remoteexec_minimal_symbols_android_arm64_high_end_pgo',
+      'android_arm64_high_end-builder-perf-pgo-fieldtrial': 'official_remoteexec_minimal_symbols_android_arm64_high_end_pgo_fieldtrial',
       'android_arm64_high_end-builder-perf-pgo-heapdump': 'official_remoteexec_minimal_symbols_android_arm64_high_end_pgo_heapdump',
       'chromecast-linux-builder-perf': 'cast_binary_size_remoteexec',
       'linux-arm-builder-perf': 'official_linux_perf_arm64',
@@ -115,6 +116,7 @@
       'android_arm64-builder-perf-pgo': 'official_remoteexec_minimal_symbols_android_arm64_pgo',
       'android_arm64_high_end-builder-perf': 'official_remoteexec_minimal_symbols_android_arm64_high_end',
       'android_arm64_high_end-builder-perf-pgo': 'official_remoteexec_minimal_symbols_android_arm64_high_end_pgo',
+      'android_arm64_high_end-builder-perf-pgo-fieldtrial': 'official_remoteexec_minimal_symbols_android_arm64_high_end_pgo_fieldtrial',
       'android_arm64_high_end-builder-perf-pgo-heapdump': 'official_remoteexec_minimal_symbols_android_arm64_high_end_pgo_heapdump',
       'chromecast-linux-builder-perf': 'cast_binary_size_remoteexec',
       'linux-arm-builder-perf': 'official_linux_perf_arm64',
@@ -540,6 +542,10 @@
       'official', 'remoteexec', 'minimal_symbols', 'android', 'arm64', 'no_default_afdo',
     ],
 
+    'official_remoteexec_minimal_symbols_android_arm64_high_end_pgo_fieldtrial': [
+      'official', 'remoteexec', 'minimal_symbols', 'android', 'arm64', 'no_default_afdo', 'force_fieldtrial_testing_config',
+    ],
+
     'official_remoteexec_minimal_symbols_android_arm64_high_end_pgo_heapdump': [
       'official', 'remoteexec', 'minimal_symbols', 'android', 'arm64', 'no_default_afdo', 'no_partition_alloc_as_malloc',
     ],
@@ -854,6 +860,10 @@
 
     'ffmpeg_branding_chrome': {
       'gn_args': 'ffmpeg_branding="Chrome"',
+    },
+
+    'force_fieldtrial_testing_config': {
+      'gn_args': 'force_enable_fieldtrial_testing_config=true',
     },
 
     'fuchsia': {

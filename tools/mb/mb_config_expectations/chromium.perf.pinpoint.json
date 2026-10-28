@@ -153,6 +153,21 @@
       "use_remoteexec": true
     }
   },
+  "android_arm64_high_end-builder-perf-pgo-fieldtrial": {
+    "gn_args": {
+      "clang_use_default_sample_profile": false,
+      "debuggable_apks": false,
+      "ffmpeg_branding": "Chrome",
+      "force_enable_fieldtrial_testing_config": true,
+      "is_chrome_branded": true,
+      "is_official_build": true,
+      "proprietary_codecs": true,
+      "symbol_level": 1,
+      "target_cpu": "arm64",
+      "target_os": "android",
+      "use_remoteexec": true
+    }
+  },
   "android_arm64_high_end-builder-perf-pgo-heapdump": {
     "gn_args": {
       "clang_use_default_sample_profile": false,
