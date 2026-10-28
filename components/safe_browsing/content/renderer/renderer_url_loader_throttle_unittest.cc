@@ -27,34 +27,9 @@ class FakeSafeBrowsing : public mojom::SafeBrowsing {
  public:
   FakeSafeBrowsing() = default;
 
-  void CreateCheckerAndCheck(
-      const std::optional<blink::LocalFrameToken>& frame_token,
-      mojo::PendingReceiver<mojom::SafeBrowsingUrlChecker> receiver,
-      const GURL& url,
-      const std::string& method,
-      const net::HttpRequestHeaders& headers,
-      int32_t load_flags,
-      bool has_user_gesture,
-      bool originated_from_service_worker,
-      CreateCheckerAndCheckCallback callback) override {
-    if (should_delay_callback_) {
-      pending_callback_ = std::move(callback);
-      receiver_ = std::move(receiver);
-    } else {
-      std::move(callback).Run(/*proceed=*/true, /*show_interstitial=*/false);
-    }
-  }
-
   void Clone(mojo::PendingReceiver<mojom::SafeBrowsing> receiver) override {
     NOTREACHED();
   }
-
-  void EnableDelayCallback() { should_delay_callback_ = true; }
-
- private:
-  bool should_delay_callback_ = false;
-  mojo::PendingReceiver<mojom::SafeBrowsingUrlChecker> receiver_;
-  CreateCheckerAndCheckCallback pending_callback_;
 };
 
 class MockThrottleDelegate : public blink::URLLoaderThrottle::Delegate {
@@ -96,7 +71,6 @@ class SBRendererUrlLoaderThrottleTest : public ::testing::Test {
 };
 
 TEST_F(SBRendererUrlLoaderThrottleTest, DoesNotDeferHttpsImageUrl) {
-  safe_browsing_.EnableDelayCallback();
   GURL url("https://example.com/");
   bool defer = false;
   network::ResourceRequest request =
@@ -110,7 +84,6 @@ TEST_F(SBRendererUrlLoaderThrottleTest, DoesNotDeferHttpsImageUrl) {
 }
 
 TEST_F(SBRendererUrlLoaderThrottleTest, DoesNotDeferHttpsScriptUrl) {
-  safe_browsing_.EnableDelayCallback();
   GURL url("https://example.com/");
   bool defer = false;
   network::ResourceRequest request =

@@ -15,38 +15,6 @@ import "url/mojom/url.mojom";
 // Provided by the browser and used by renderers to perform SafeBrowsing URL
 // checks.
 interface SafeBrowsing {
-  // Queries SafeBrowsing whether |url| is safe to load, and creates a
-  // SafeBrowsingUrlChecker interface.
-  //
-  // The check and (subsequent checks performed using SafeBrowsingUrlChecker)
-  // checks against SafeBrowsing's Malware, Phishing, and UwS blocklists.
-  //
-  // `frame_token` is set when the request originates from the context of a
-  // frame. Dedicated workers are associated with a frame context and will
-  // have the value set. Service workers and shared workers are not associated
-  // with a frame and will have it set to null.
-  //
-  // The SafeBrowsingUrlChecker interface should be used (and only used) for
-  // subsequent checks of redirects, so that the server side could keep track of
-  // the redirect chain. Disconnecting the checker interface cancels on-going
-  // URL checks. Please note that in that case if the check started by this
-  // method hasn't completed yet, it will also be canceled and the callback is
-  // ran with |proceed == true| and |showed_interstitial == false| as if the URL
-  // is safe.
-  //
-  // |proceed| indicates whether it is okay to proceed with loading the URL.
-  // |showed_interstitial| indicates whether the SafeBrowsing interstitial page
-  // has been shown to the user.
-  CreateCheckerAndCheck(blink.mojom.LocalFrameToken? frame_token,
-                        pending_receiver<SafeBrowsingUrlChecker> receiver,
-                        url.mojom.Url url,
-                        string method,
-                        network.mojom.HttpRequestHeaders headers,
-                        int32 load_flags,
-                        bool has_user_gesture,
-                        bool originated_from_service_worker)
-      => (bool proceed, bool showed_interstitial);
-
   // Bind an additional pipe to this instance of the SafeBrowsing interface.
   Clone(pending_receiver<SafeBrowsing> receiver);
 };
