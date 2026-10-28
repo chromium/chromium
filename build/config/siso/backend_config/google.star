@@ -17,7 +17,7 @@ def __is_cros_rbe(ctx):
     return ctx.flags.get("reapi_instance", "").startswith("projects/chromeos-")
 
 def __platform_properties(ctx):
-    container_image = "docker://gcr.io/chops-public-images-prod/rbe/siso-chromium/linux@sha256:d7cb1ab14a0f20aa669c23f22c15a9dead761dcac19f43985bf9dd5f41fbef3a"
+    container_image = "docker://gcr.io/chops-public-images-prod/rbe/siso-chromium/linux@sha256:2ab815965d0886100cec5495c53757698d7c73fa21b344b42ff182234391e47a"
 
     if __is_cros_rbe(ctx):
         # Note: this intentionally does not use dockerChrootPath=. (chroot
