@@ -277,13 +277,9 @@ id<GREYMatcher> SigninPromoPrimaryButton() {
       assertWithMatcher:grey_notNil()];
 }
 
-// Tests that toolbar items are still interactable when search bar is focused.
+// Tests that toolbar items remain interactable above the keyboard when the
+// search bar is focused.
 - (void)testToolbarAboveKeyboardDuringSearch {
-  // TODO(crbug.com/437314913): Re-enable the test on iOS26.
-  if (base::ios::IsRunningOnIOS26OrLater()) {
-    EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 26.");
-  }
-
   // Initialize the Drive file picker.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
