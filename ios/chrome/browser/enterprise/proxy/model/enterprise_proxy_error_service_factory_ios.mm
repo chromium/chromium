@@ -16,7 +16,7 @@
 namespace {
 
 std::unique_ptr<KeyedService> BuildEnterpriseProxyErrorService(
-    ProfileIOS* profile) {
+    ProfileIOS& profile) {
   if (!enterprise_net::IsDynamicRouteFetchingEnabled()) {
     return nullptr;
   }
@@ -30,7 +30,7 @@ std::unique_ptr<KeyedService> BuildEnterpriseProxyErrorService(
 }  // namespace
 
 // static
-EnterpriseProxyErrorServiceFactoryIOS::TestingFactory
+EnterpriseProxyErrorServiceFactoryIOS::TestingFactoryByRef
 EnterpriseProxyErrorServiceFactoryIOS::GetDefaultFactory() {
   return base::BindOnce(&BuildEnterpriseProxyErrorService);
 }
@@ -48,6 +48,6 @@ EnterpriseProxyErrorServiceFactoryIOS::EnterpriseProxyErrorServiceFactoryIOS(
 
 std::unique_ptr<KeyedService>
 EnterpriseProxyErrorServiceFactoryIOS::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
+    ProfileIOS& profile) const {
   return BuildEnterpriseProxyErrorService(profile);
 }
