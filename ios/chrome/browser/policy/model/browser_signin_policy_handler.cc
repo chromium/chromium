@@ -42,6 +42,13 @@ bool BrowserSigninPolicyHandler::CheckPolicySettings(
     return false;
   }
 
+  const PolicyMap::Entry* entry = policies.Get(policy_name());
+  if (entry && entry->scope == POLICY_SCOPE_USER && errors) {
+    errors->AddError(policy_name(),
+                     IDS_POLICY_BROWSER_SIGNIN_USER_SCOPE_WARNING,
+                     /*error_path=*/{}, PolicyMap::MessageType::kWarning);
+  }
+
   return true;
 }
 

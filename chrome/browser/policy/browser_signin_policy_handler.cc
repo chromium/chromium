@@ -13,10 +13,12 @@
 #include "build/build_config.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/credential_provider/common/gcp_strings.h"
+#include "components/policy/core/browser/policy_error_map.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_value_map.h"
 #include "components/signin/public/base/signin_pref_names.h"
+#include "components/strings/grit/components_strings.h"
 
 namespace policy {
 
@@ -28,6 +30,22 @@ BrowserSigninPolicyHandler::BrowserSigninPolicyHandler(Schema chrome_schema)
                             false /* clamp */) {}
 
 BrowserSigninPolicyHandler::~BrowserSigninPolicyHandler() = default;
+
+bool BrowserSigninPolicyHandler::CheckPolicySettings(const PolicyMap& policies,
+                                                     PolicyErrorMap* errors) {
+  if (!IntRangePolicyHandler::CheckPolicySettings(policies, errors)) {
+    return false;
+  }
+
+  const PolicyMap::Entry* entry = policies.Get(policy_name());
+  if (entry && entry->scope == POLICY_SCOPE_USER && errors) {
+    errors->AddError(policy_name(),
+                     IDS_POLICY_BROWSER_SIGNIN_USER_SCOPE_WARNING,
+                     /*error_path=*/{}, PolicyMap::MessageType::kWarning);
+  }
+
+  return true;
+}
 
 void BrowserSigninPolicyHandler::ApplyPolicySettings(const PolicyMap& policies,
                                                      PrefValueMap* prefs) {

@@ -118,4 +118,48 @@ TEST_F(BrowserSigninPolicyHandlerTest,
       "Enterprise.BrowserSignin.UserScope.PolicyValue", 2);
 }
 
+TEST_F(BrowserSigninPolicyHandlerTest, UserScopeAddsWarning) {
+  policies_.Set(key::kBrowserSignin, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
+                POLICY_SOURCE_CLOUD,
+                base::Value(static_cast<int>(BrowserSigninMode::kDisabled)),
+                nullptr);
+  EXPECT_TRUE(handler_.CheckPolicySettings(policies_, &errors_));
+  EXPECT_TRUE(errors_.HasError(key::kBrowserSignin));
+  EXPECT_FALSE(errors_.HasFatalError(key::kBrowserSignin));
+}
+
+TEST_F(BrowserSigninPolicyHandlerTest, MachineScopeDoesNotAddWarning) {
+  policies_.Set(key::kBrowserSignin, POLICY_LEVEL_MANDATORY,
+                POLICY_SCOPE_MACHINE, POLICY_SOURCE_PLATFORM,
+                base::Value(static_cast<int>(BrowserSigninMode::kDisabled)),
+                nullptr);
+  EXPECT_TRUE(handler_.CheckPolicySettings(policies_, &errors_));
+  EXPECT_FALSE(errors_.HasError(key::kBrowserSignin));
+}
+
+TEST_F(BrowserSigninPolicyHandlerTest,
+       ApplyPolicySettingsStillAppliesWhenWarningPresent) {
+  policies_.Set(key::kBrowserSignin, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
+                POLICY_SOURCE_CLOUD,
+                base::Value(static_cast<int>(BrowserSigninMode::kDisabled)),
+                nullptr);
+  EXPECT_TRUE(handler_.CheckPolicySettings(policies_, &errors_));
+  EXPECT_FALSE(errors_.HasFatalError(key::kBrowserSignin));
+
+  handler_.ApplyPolicySettings(policies_, &prefs_);
+  const base::Value* value = nullptr;
+  EXPECT_TRUE(prefs_.GetValue(BUILDFLAG(IS_ANDROID)
+                                  ? prefs::kSigninAllowed
+                                  : prefs::kSigninAllowedOnNextStartup,
+                              &value));
+  ASSERT_TRUE(value);
+  EXPECT_FALSE(value->GetBool());
+}
+
+TEST_F(BrowserSigninPolicyHandlerTest, UserScopeInvalidValueDoesNotAddWarning) {
+  policies_.Set(key::kBrowserSignin, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
+                POLICY_SOURCE_CLOUD, base::Value(99), nullptr);
+  EXPECT_FALSE(handler_.CheckPolicySettings(policies_, &errors_));
+  EXPECT_TRUE(errors_.HasFatalError(key::kBrowserSignin));
+}
 }  // namespace policy

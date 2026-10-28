@@ -93,7 +93,7 @@ TEST_F(BrowserSigninPolicyHandlerTest, ApplyPolicySettings) {
 
     PolicyMap::Entry entry;
     entry.set_value(base::Value(static_cast<int>(test_case.mode)));
-    policies.Set("BrowserSignin", std::move(entry));
+    policies.Set(key::kBrowserSignin, std::move(entry));
 
     int value = -1;
     PrefValueMap prefs;
@@ -138,14 +138,33 @@ TEST_F(BrowserSigninPolicyHandlerTest, CheckPolicySettings) {
     PolicyMap policies;
 
     PolicyMap::Entry entry;
+    entry.scope = POLICY_SCOPE_MACHINE;
     entry.set_value(base::Value(static_cast<int>(mode)));
-    policies.Set("BrowserSignin", std::move(entry));
+    policies.Set(key::kBrowserSignin, std::move(entry));
 
     PolicyErrorMap errors;
     ASSERT_TRUE(handler.CheckPolicySettings(policies, &errors));
-    EXPECT_FALSE(errors.HasError("BrowserSignin"))
+    EXPECT_FALSE(errors.HasError(key::kBrowserSignin))
         << "For mode: " << BrowserSigninModeToString(mode);
   }
+}
+
+TEST_F(BrowserSigninPolicyHandlerTest, CheckPolicySettings_UserScopeWarning) {
+  const auto schema = Schema::Parse(kTestSchema);
+  ASSERT_TRUE(schema.has_value());
+
+  BrowserSigninPolicyHandler handler(*schema);
+  PolicyMap policies;
+
+  PolicyMap::Entry entry;
+  entry.scope = POLICY_SCOPE_USER;
+  entry.set_value(base::Value(static_cast<int>(BrowserSigninMode::kDisabled)));
+  policies.Set(key::kBrowserSignin, std::move(entry));
+
+  PolicyErrorMap errors;
+  ASSERT_TRUE(handler.CheckPolicySettings(policies, &errors));
+  EXPECT_TRUE(errors.HasError(key::kBrowserSignin));
+  EXPECT_FALSE(errors.HasFatalError(key::kBrowserSignin));
 }
 
 TEST_F(BrowserSigninPolicyHandlerTest,

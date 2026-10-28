@@ -33,6 +33,8 @@ class BrowserSigninPolicyHandler : public IntRangePolicyHandler {
   ~BrowserSigninPolicyHandler() override;
 
   // ConfigurationPolicyHandler methods:
+  bool CheckPolicySettings(const PolicyMap& policies,
+                           PolicyErrorMap* errors) override;
   void ApplyPolicySettings(const PolicyMap& policies,
                            PrefValueMap* prefs) override;
 

@@ -249,6 +249,9 @@
   <message name="IDS_POLICY_URL_ALLOW_BLOCK_LIST_MAX_FILTERS_LIMIT_WARNING" desc="The text displayed in the status column of the URLAllowlist and URLBlocklist policies when the max number of filters is exceeded.">
     This field should not have more than <ph name="MAX_ITEMS_LIMIT">$1<ex>1000</ex></ph> entries. All further entries will be ignored.
   </message>
+  <message name="IDS_POLICY_BROWSER_SIGNIN_USER_SCOPE_WARNING" desc="The warning message displayed in the status column of the BrowserSignin policy when it is configured at user scope instead of machine scope.">
+    This policy is intended to be applied at the machine level. Its behavior when applied as a user policy is not officially supported and will be deprecated.
+  </message>
   <message name="IDS_POLICY_ERROR_WITH_PATH" desc="The text displayed in the status column when a policy error message contains an error path.">
     Error at <ph name="ERROR_PATH">$1<ex>AC.Delays.ScreenOff</ex></ph>: <ph name="ERROR_MESSAGE">$2<ex>Value is out of range.</ex></ph>
   </message>
