@@ -3798,12 +3798,6 @@ ci.thin_tester(
             "win11_qualcomm_snapdragon_x_elite_stable",
         ],
         per_test_modifications = {
-            "context_lost_passthrough_graphite_tests": targets.remove(
-                reason = "Graphite on ARM is currently not supported.",
-            ),
-            "expected_color_pixel_passthrough_graphite_test": targets.remove(
-                reason = "Graphite on ARM is currently not supported.",
-            ),
             "gl_tests_passthrough": targets.mixin(
                 args = [
                     "--test-launcher-filter-file=../../testing/buildbot/filters/win.qualcomm.snapdragon_x_elite.gl_tests_passthrough.filter",
@@ -3813,12 +3807,6 @@ ci.thin_tester(
                 args = [
                     "--test-launcher-filter-file=../../testing/buildbot/filters/win.qualcomm.snapdragon_x_elite.gl_unittests.filter",
                 ],
-            ),
-            "pixel_skia_gold_passthrough_graphite_test": targets.remove(
-                reason = "Graphite on ARM is currently not supported.",
-            ),
-            "screenshot_sync_passthrough_graphite_tests": targets.remove(
-                reason = "Graphite on ARM is currently not supported.",
             ),
             "services_webnn_unittests": targets.mixin(
                 args = [

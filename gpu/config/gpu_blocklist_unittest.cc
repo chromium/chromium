@@ -2,15 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "gpu/config/gpu_blocklist.h"
+
 #include <vector>
 
-#include "gpu/config/gpu_blocklist.h"
+#include "build/build_config.h"
 #include "gpu/config/gpu_driver_bug_list_autogen.h"
 #include "gpu/config/gpu_feature_type.h"
 #include "gpu/config/gpu_info.h"
 #include "gpu/config/software_rendering_list_autogen.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/re2/src/re2/re2.h"
+
+#if BUILDFLAG(IS_WIN)
+#include <d3dcommon.h>
+#endif
 
 namespace gpu {
 
@@ -104,6 +110,38 @@ GPU_BLOCKLIST_FEATURE_TEST(WebNN, GPU_FEATURE_TYPE_WEBNN)
 
 GPU_BLOCKLIST_FEATURE_TEST(CompositorGpuThread,
                            GPU_FEATURE_TYPE_DIRECT_RENDERING_DISPLAY_COMPOSITOR)
+
+#if BUILDFLAG(IS_WIN)
+TEST_F(GpuBlocklistTest, SkiaGraphiteSnapdragonXElite) {
+  GPUInfo info;
+  info.gpu.vendor_id = 0x4d4f4351;
+  info.gpu.device_id = 0x36334330;
+  info.d3d11_feature_level = D3D_FEATURE_LEVEL_11_1;
+  auto list = GpuBlocklist::Create();
+  auto is_blocked = [&]() {
+    return list->MakeDecision(GpuControlList::kOsWin, "10.0", info, {})
+        .contains(GPU_FEATURE_TYPE_SKIA_GRAPHITE);
+  };
+
+  // The bot's driver and the minimum supported driver bypass the D3D11
+  // feature-level restriction: this GPU supports feature level 12.0+ in D3D12.
+  info.gpu.driver_version = "31.0.121.1";
+  EXPECT_FALSE(is_blocked());
+  info.gpu.driver_version = "31.0.117.0";
+  EXPECT_FALSE(is_blocked());
+
+  info.gpu.driver_version = "31.0.116.0";
+  EXPECT_TRUE(is_blocked());
+
+  // Do not exempt other Qualcomm devices or other vendors.
+  info.gpu.driver_version = "31.0.121.1";
+  info.gpu.device_id = 0x36333630;
+  EXPECT_TRUE(is_blocked());
+  info.gpu.device_id = 0x36334330;
+  info.gpu.vendor_id = 0x10de;
+  EXPECT_TRUE(is_blocked());
+}
+#endif  // BUILDFLAG(IS_WIN)
 
 // Test for invariant "Assume the newly last added entry has the largest ID".
 // See GpuControlList::GpuControlList.

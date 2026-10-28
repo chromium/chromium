@@ -1503,6 +1503,17 @@
         "op": "<",
         "value": "12.0"
       },
+      "exceptions": [
+        {
+          "comment": "Snapdragon X Elite supports D3D12 feature level 12.0+, but reports D3D11 feature level 11.1.",
+          "vendor_id": "0x4d4f4351",
+          "device_id": [ "0x36334330" ],
+          "driver_version": {
+            "op": ">=",
+            "value": "31.0.117.0"
+          }
+        }
+      ],
       "features": [
         "skia_graphite"
       ]
