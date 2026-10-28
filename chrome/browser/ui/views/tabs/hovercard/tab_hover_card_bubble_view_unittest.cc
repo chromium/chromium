@@ -287,6 +287,8 @@ const ElideTestParams kElideTestParams[]{
     {u"abcdefghij.png (1" MULT_SYMBOL u"2)", 13, 13, 12,
      BIDIFY(u"abcdefghij", u".png (1" MULT_SYMBOL u"2)"),
      "Force break before extension."},
+    {u"abc\tdef", 7, 7, 7, u"abc\tdef",
+     "Control character replaced in layout text when fitting on one line."},
 };
 
 class TabHoverCardBubbleViewFilenameEliderGetLineLengthsTest
