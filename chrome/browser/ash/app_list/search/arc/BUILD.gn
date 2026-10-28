@@ -14,13 +14,6 @@ static_library("arc") {
     "arc_playstore_search_provider.h",
     "arc_playstore_search_result.cc",
     "arc_playstore_search_result.h",
-    "fake_recommend_apps_fetcher_delegate.cc",
-    "fake_recommend_apps_fetcher_delegate.h",
-    "recommend_apps_fetcher.cc",
-    "recommend_apps_fetcher.h",
-    "recommend_apps_fetcher_delegate.h",
-    "recommend_apps_fetcher_impl.cc",
-    "recommend_apps_fetcher_impl.h",
   ]
 
   public_deps = [ "//components/app_icon_loader" ]
@@ -39,18 +32,11 @@ static_library("arc") {
     "//chrome/browser/ash/arc",
     "//chrome/browser/ash/extensions",
     "//chrome/browser/profiles:profile",
-    "//chrome/browser/profiles:profile_manager",
     "//chromeos/ash/components/string_matching",
     "//chromeos/ash/experiences/arc",
     "//chromeos/ash/experiences/arc/mojom",
     "//chromeos/ash/experiences/arc/session",
     "//components/crx_file",
-    "//content/public/browser",
-    "//net",
-    "//net/traffic_annotation",
-    "//services/network/public/cpp",
-    "//services/network/public/cpp:cpp_base",
-    "//services/network/public/mojom:url_loader_base",
     "//ui/base",
     "//ui/gfx",
   ]
@@ -64,7 +50,6 @@ source_set("unit_tests") {
   sources = [
     "arc_app_shortcuts_search_provider_unittest.cc",
     "arc_playstore_search_provider_unittest.cc",
-    "arc_recommend_apps_fetcher_impl_unittest.cc",
   ]
 
   deps = [
@@ -81,7 +66,6 @@ source_set("unit_tests") {
     "//chrome/test:test_support",
     "//content/test:test_support",
     "//extensions:test_support",
-    "//services/network:test_support",
     "//testing/gtest",
   ]
 }

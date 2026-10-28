@@ -15,6 +15,7 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "base/check.h"
+#include "base/check_op.h"
 #include "base/containers/flat_set.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -43,8 +44,8 @@
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/ash/login/session/user_session_manager.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/demo_mode/utils/demo_session_utils.h"
 #include "chromeos/ash/experiences/arc/app/arc_app_constants.h"
 #include "chromeos/ash/experiences/arc/arc_features.h"
@@ -60,6 +61,8 @@
 #include "components/crx_file/id_util.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/scoped_user_pref_update.h"
+#include "components/session_manager/core/session.h"
+#include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/browser_thread.h"
 #include "skia/ext/image_operations.h"
@@ -450,8 +453,12 @@ void OnArcAppListRefreshed(Profile* profile) {
     return;
   }
 
-  CHECK_EQ(ProfileManager::GetPrimaryUserProfile(), profile,
-           base::NotFatalUntil::M160);
+  const auto* primary_session =
+      session_manager::SessionManager::Get()->GetPrimarySession();
+  CHECK(primary_session);
+  CHECK_EQ(ash::BrowserContextHelper::Get()->GetBrowserContextByAccountId(
+               primary_session->account_id()),
+           profile, base::NotFatalUntil::M160);
   auto* prefs = ArcAppListPrefs::Get(profile);
   if (!prefs)
     return;

@@ -9,6 +9,7 @@
 #include "ash/constants/geolocation_access_level.h"
 #include "ash/system/privacy_hub/geolocation_privacy_switch_controller.h"
 #include "ash/system/privacy_hub/privacy_hub_controller.h"
+#include "base/check.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "chrome/browser/ash/arc/optin/arc_optin_preference_handler_observer.h"
@@ -17,10 +18,14 @@
 #include "chrome/browser/extensions/api/settings_private/prefs_util.h"
 #include "chrome/browser/metrics/metrics_reporting_state.h"
 #include "chrome/browser/metrics/per_user_state_manager_chromeos.h"
-#include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/experiences/arc/arc_prefs.h"
 #include "components/metrics/metrics_service.h"
 #include "components/prefs/pref_service.h"
+#include "components/session_manager/core/session.h"
+#include "components/session_manager/core/session_manager.h"
+#include "components/user_manager/user_manager.h"
 
 namespace arc {
 
@@ -104,8 +109,15 @@ void ArcOptInPreferenceHandler::EnableMetricsOnOwnershipKnown(
   } else {
     // Handles case in which device is either not owned or per-user is not
     // enabled.
+    // TODO(crbug.com/278643115): Take the account_id from the callers.
+    const auto* active_session =
+        session_manager::SessionManager::Get()->GetActiveSession();
+    CHECK(active_session);
     ash::StatsReportingController::Get()->SetEnabled(
-        ProfileManager::GetActiveUserProfile(), metrics_enabled);
+        Profile::FromBrowserContext(
+            ash::BrowserContextHelper::Get()->GetBrowserContextByAccountId(
+                active_session->account_id())),
+        metrics_enabled);
   }
 
   CHECK(enable_metrics_callback_, base::NotFatalUntil::M160);
@@ -208,7 +220,7 @@ bool ArcOptInPreferenceHandler::IsAllowedToUpdateUserChoice(
 
   // Unmanaged guest sessions can be started while ownership status is None.
   // Guest sessions use per-user choice, asked during the ToS in guest OOBE.
-  if (ProfileManager::GetActiveUserProfile()->IsGuestSession()) {
+  if (user_manager::UserManager::Get()->IsLoggedInAsGuest()) {
     return true;
   }
 
