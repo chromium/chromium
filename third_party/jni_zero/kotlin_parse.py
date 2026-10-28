@@ -85,7 +85,8 @@ _CLASSES_REGEX = re.compile(
     r'(?:[^{}"]|"[^"]*"))*?)\b'
     r'(?:class|interface|object)\b\s+\b([\w.$]+)'
     r'(<[\s\S]*?>)?'
-    r'(?:\s+(?:@[\w.]+(?:\([^)]*\))?\s+|\w+\s+)*constructor\b)?'
+    r'(?:\s+(?:@[\w.]+(?:\([^)]*\))?\s+'
+    r'|(?:public|protected|private|internal)\s+)*constructor\b)?'
     # The header spans multiple lines only within parentheses (e.g. a primary
     # constructor), or after ":" or ",".
     r'(?:\((?:[^()]|\([^()]*\))*\)|[^{}()\n]|(?<=[:,])\n)*(\{)?',

@@ -1181,8 +1181,9 @@ class MyFeature @CalledByNative constructor(val id: Long) {
 
     sealed interface State
     data object Idle : State
+    open class Base
 
-    class Inner {
+    class Inner @CalledByNative constructor() {
         @CalledByNative
         fun innerMethod(): Int = 2
     }
@@ -1204,6 +1205,7 @@ public class MyFeature.Helper {
   public static void help();
 }
 public class MyFeature.Inner {
+  public void <init>();
   public int innerMethod();
 }
 """
