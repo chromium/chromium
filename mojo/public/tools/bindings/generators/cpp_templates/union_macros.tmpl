@@ -81,8 +81,7 @@ switch (fragment->tag) {
       "mojo::internal::VALIDATION_ERROR_UNEXPECTED_NULL_POINTER",
       "null %s in %s union"| format(name, union.name))}}
 {%-     endif %}
-    fragment->data.f_{{name}}.Set(
-      value_fragment.is_null() ? nullptr : value_fragment.data());
+    fragment->data.f_{{name}}.Set(value_fragment);
 
 {%-   elif kind|is_any_handle_or_interface_kind %}
 {%-     set serialization_args =

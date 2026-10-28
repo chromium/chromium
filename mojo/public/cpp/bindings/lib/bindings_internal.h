@@ -111,10 +111,16 @@ struct ArrayHeader {
 static_assert(sizeof(ArrayHeader) == 8, "Bad_sizeof(ArrayHeader)");
 
 template <typename T>
+class MessageFragment;
+
+template <typename T>
 struct Pointer {
   using BaseType = T;
 
   void Set(T* ptr) { EncodePointer(ptr, &offset); }
+  // Points at the memory claimed by `fragment`, or null if `fragment` is null.
+  // Defined in message_fragment.h.
+  void Set(MessageFragment<T>& fragment);
   const T* Get() const { return static_cast<const T*>(DecodePointer(&offset)); }
   T* Get() {
     return static_cast<T*>(const_cast<void*>(DecodePointer(&offset)));

@@ -86,8 +86,7 @@
       serializer_type,
       serialization_args)|indent(2)}}
 
-  {{fragment}}->{{name}}.Set(
-      {{name}}_fragment.is_null() ? nullptr : {{name}}_fragment.data());
+  {{fragment}}->{{name}}.Set({{name}}_fragment);
 {%-       elif kind|is_union_kind %}
   mojo::internal::MessageFragment<decltype({{fragment}}->{{name}})>
       {{name}}_fragment({{fragment}}.message());
@@ -116,8 +115,7 @@
       serializer_type,
       serialization_args)|indent(2)}}
 
-  {{fragment}}->{{name}}.Set(
-      {{name}}_fragment.is_null() ? nullptr : {{name}}_fragment.data());
+  {{fragment}}->{{name}}.Set({{name}}_fragment);
 {%-       endif %}
 {%-       if not kind|is_nullable_kind%}
 

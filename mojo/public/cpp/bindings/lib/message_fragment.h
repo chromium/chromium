@@ -26,6 +26,12 @@ namespace internal {
 // is particularly relevant.
 constexpr size_t kInvalidFragmentIndex = std::numeric_limits<size_t>::max();
 
+// Encodes into `offset` a pointer to the data at `index` within the payload of
+// `message`, or a null pointer if `index` is kInvalidFragmentIndex. This is not
+// inlined in order to reduce the size of generated serialization code.
+COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE)
+void EncodeFragmentPointer(Message& message, size_t index, uint64_t* offset);
+
 // MessageFragment provides a common interface for serialization code to
 // allocate, initialize, and expose convenient access to aligned blocks of data
 // within a Message object. Each MessageFragment corresponds to a logical data
@@ -89,6 +95,9 @@ class MessageFragment {
   }
 
  private:
+  template <typename U>
+  friend struct Pointer;
+
   // RAW_PTR_EXCLUSION: Binary size increase (~350K on Android).
   RAW_PTR_EXCLUSION Message& message_;
   size_t index_ = kInvalidFragmentIndex;
@@ -218,10 +227,18 @@ class MessageFragment<Array_Data<T>> {
   }
 
  private:
+  template <typename U>
+  friend struct Pointer;
+
   // RAW_PTR_EXCLUSION: Binary size increase (~350K on Android).
   RAW_PTR_EXCLUSION Message& message_;
   size_t index_ = kInvalidFragmentIndex;
 };
+
+template <typename T>
+void Pointer<T>::Set(MessageFragment<T>& fragment) {
+  EncodeFragmentPointer(fragment.message_, fragment.index_, &offset);
+}
 
 }  // namespace internal
 }  // namespace mojo

@@ -203,8 +203,7 @@ void IFaceWithTypemapProxy::Echo(
     in_param,
     param_fragment);
 
-  params->param.Set(
-      param_fragment.is_null() ? nullptr : param_fragment.data());
+  params->param.Set(param_fragment);
 
   
   MOJO_INTERNAL_CHECK_SERIALIZATION(
@@ -335,8 +334,7 @@ void IFaceWithTypemap_Echo_ProxyToResponder::Run(
     in_out,
     out_fragment);
 
-  params->out.Set(
-      out_fragment.is_null() ? nullptr : out_fragment.data());
+  params->out.Set(out_fragment);
 
   
   MOJO_INTERNAL_CHECK_SERIALIZATION(

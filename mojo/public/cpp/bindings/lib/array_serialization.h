@@ -411,8 +411,7 @@ struct ArraySerializer<MojomType, MaybeConstUserType, UserTypeIterator> {
       decltype(auto) next = input->GetNext();
       SerializeCaller<Element>::Run(next, data_fragment,
                                     validate_params->element_validate_params);
-      fragment->at(i).Set(data_fragment.is_null() ? nullptr
-                                                  : data_fragment.data());
+      fragment->at(i).Set(data_fragment);
 
       MOJO_INTERNAL_CHECK_SERIALIZATION(
           SendValidation::kDefault,

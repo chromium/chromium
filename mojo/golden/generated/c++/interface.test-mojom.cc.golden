@@ -268,8 +268,7 @@ void IFace_Method_ProxyToResponder::Run(
     in_result,
     result_fragment);
 
-  params->result.Set(
-      result_fragment.is_null() ? nullptr : result_fragment.data());
+  params->result.Set(result_fragment);
 
   
   MOJO_INTERNAL_CHECK_SERIALIZATION(
