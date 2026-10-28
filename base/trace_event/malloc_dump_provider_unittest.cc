@@ -33,7 +33,7 @@
 
 namespace base::trace_event {
 
-#if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) || \
+#if BUILDFLAG(IS_WIN) || PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) || \
     defined(MALLOC_DUMP_PROVIDER_REPORTS_MALLINFO)
 
 namespace {
@@ -71,7 +71,7 @@ std::string SuballocationDumpName(std::string_view parent_name,
 
 }  // namespace
 
-#endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) ||
+#endif  // BUILDFLAG(IS_WIN) || PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) ||
         // defined(MALLOC_DUMP_PROVIDER_REPORTS_MALLINFO)
 
 #if BUILDFLAG(IS_WIN)
@@ -326,10 +326,7 @@ TEST(MallocDumpProviderTest, PartitionsObjectsOwnNothingInDetailedDumps) {
 
 #endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
-// The malloc/win_heap dump is only created when PartitionAlloc is the malloc
-// implementation. Without it, ReportWinHeapStats folds the WinHeap numbers
-// into the malloc totals and is passed no dump to populate.
-#if BUILDFLAG(IS_WIN) && PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#if BUILDFLAG(IS_WIN)
 
 namespace {
 
@@ -379,6 +376,8 @@ TEST(MallocDumpProviderTest, WinHeapDumpReportsFootprint) {
   // region already include the blocks allocated inside it.
   EXPECT_GE(*virtual_size, *committed_size);
   EXPECT_GE(*committed_size, *allocated_size);
+  EXPECT_EQ(GetBytesEntry(*win_heap_dump, "allocated_objects_size"),
+            allocated_size);
   // The committed bytes are either handed out to a live allocation or wasted.
   EXPECT_EQ(*committed_size, *allocated_size + *wasted);
   EXPECT_LE(*fragmentation, 100u);
@@ -470,7 +469,7 @@ TEST(MallocDumpProviderTest, WinHeapDumpsOmittedBelowDetailedLevel) {
   EXPECT_FALSE(FindAllocatorDump(pmd, kWinHeapWasteDumpName));
 }
 
-#endif  // BUILDFLAG(IS_WIN) && PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#endif  // BUILDFLAG(IS_WIN)
 
 #if defined(MALLOC_DUMP_PROVIDER_REPORTS_MALLINFO)
 

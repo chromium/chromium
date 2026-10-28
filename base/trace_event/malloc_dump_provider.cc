@@ -138,15 +138,13 @@ void ReportWinHeapStats(MemoryDumpLevelOfDetail level_of_detail,
     *allocated_objects_size += main_heap_info.allocated_size;
     *allocated_objects_count += main_heap_info.block_count;
 
-    // Committed bytes not held by a live allocation: free blocks on the heap's
-    // free lists, block headers and alignment padding.
+    // Committed bytes not handed out to a live allocation: free blocks on the
+    // heap's free lists, block headers and alignment padding.
     size_t wasted = 0;
     if (main_heap_info.committed_size >= main_heap_info.allocated_size) {
       wasted = main_heap_info.committed_size - main_heap_info.allocated_size;
     }
-    if (wasted_size) {
-      *wasted_size = wasted;
-    }
+    *wasted_size = wasted;
 
     // `size` is the resident footprint of the heap. The objects allocated out
     // of it are reported by `win_heap_objects_dump`, which is where they are
@@ -160,6 +158,9 @@ void ReportWinHeapStats(MemoryDumpLevelOfDetail level_of_detail,
                                main_heap_info.committed_size);
       win_heap_dump->AddScalar("virtual_size", MemoryAllocatorDump::kUnitsBytes,
                                virtual_size);
+      win_heap_dump->AddScalar("allocated_objects_size",
+                               MemoryAllocatorDump::kUnitsBytes,
+                               main_heap_info.allocated_size);
       win_heap_dump->AddScalar("wasted", MemoryAllocatorDump::kUnitsBytes,
                                wasted);
       win_heap_dump->AddScalar(
@@ -176,6 +177,50 @@ void ReportWinHeapStats(MemoryDumpLevelOfDetail level_of_detail,
                                        MemoryAllocatorDump::kUnitsObjects,
                                        main_heap_info.block_count);
     }
+  }
+}
+
+// Reports the WinHeap into its own dumps, whether or not PartitionAlloc is the
+// malloc implementation: WinHeap backs malloc in one configuration and the CRT
+// in the other, and the dumps should not depend on which.
+void ReportWinHeap(ProcessMemoryDump* pmd,
+                   MemoryDumpLevelOfDetail level_of_detail,
+                   size_t* total_virtual_size,
+                   size_t* resident_size,
+                   size_t* allocated_objects_size,
+                   size_t* allocated_objects_count,
+                   size_t* excluded_waste) {
+  MemoryAllocatorDump* win_heap_dump = nullptr;
+  MemoryAllocatorDump* win_heap_objects_dump = nullptr;
+  if (level_of_detail == MemoryDumpLevelOfDetail::kDetailed) {
+    win_heap_dump = pmd->CreateAllocatorDump(MallocDumpProvider::kWinHeap);
+    // The objects allocated out of the WinHeap are accounted for under the
+    // system allocator pool, and reported as suballocated from the WinHeap
+    // dump. That keeps malloc/win_heap's effective size down to the part of the
+    // heap which is not already accounted for by malloc/allocated_objects. An
+    // ownership edge out of malloc/allocated_objects would not scale to several
+    // backends, as an allocator dump can only own a single target.
+    win_heap_objects_dump =
+        pmd->CreateAllocatorDump(MallocDumpProvider::kWinHeapAllocatedObjects);
+    pmd->AddSuballocation(win_heap_objects_dump->guid(),
+                          MallocDumpProvider::kWinHeap);
+  }
+
+  size_t wasted = 0;
+  ReportWinHeapStats(level_of_detail, win_heap_dump, win_heap_objects_dump,
+                     total_virtual_size, resident_size, allocated_objects_size,
+                     allocated_objects_count, &wasted);
+
+  // The wasted bytes are reported as a child of the WinHeap dump, so that
+  // malloc/win_heap accounts for the whole committed heap: its allocated
+  // objects, suballocated above, plus what the heap holds but has not handed
+  // out.
+  if (win_heap_dump && wasted > 0) {
+    MemoryAllocatorDump* win_heap_waste_dump = pmd->CreateAllocatorDump(
+        win_heap_dump->absolute_name() + "/metadata_fragmentation_caches");
+    win_heap_waste_dump->AddScalar(MemoryAllocatorDump::kNameSize,
+                                   MemoryAllocatorDump::kUnitsBytes, wasted);
+    *excluded_waste += wasted;
   }
 }
 #endif  // BUILDFLAG(IS_WIN)
@@ -538,46 +583,18 @@ bool MallocDumpProvider::OnMemoryDump(const MemoryDumpArgs& args,
                       &resident_size, &allocated_objects_size,
                       &allocated_objects_count);
 #elif BUILDFLAG(IS_WIN)
-  MemoryAllocatorDump* win_heap_dump = nullptr;
-  MemoryAllocatorDump* win_heap_objects_dump = nullptr;
-  size_t win_heap_wasted = 0;
-  if (args.level_of_detail == MemoryDumpLevelOfDetail::kDetailed) {
-    win_heap_dump = pmd->CreateAllocatorDump(kWinHeap);
-    // The objects allocated out of the WinHeap are accounted for under the
-    // system allocator pool, and reported as suballocated from the WinHeap
-    // dump. That keeps malloc/win_heap's effective size down to the part of the
-    // heap which is not already accounted for by malloc/allocated_objects. An
-    // ownership edge out of malloc/allocated_objects would not scale to several
-    // backends, as an allocator dump can only own a single target.
-    win_heap_objects_dump = pmd->CreateAllocatorDump(kWinHeapAllocatedObjects);
-    pmd->AddSuballocation(win_heap_objects_dump->guid(), kWinHeap);
-  }
-  ReportWinHeapStats(args.level_of_detail, win_heap_dump, win_heap_objects_dump,
-                     &total_virtual_size, &resident_size,
-                     &allocated_objects_size, &allocated_objects_count,
-                     &win_heap_wasted);
-  // The wasted bytes are reported as a child of the WinHeap dump, so that
-  // malloc/win_heap accounts for the whole committed heap: its allocated
-  // objects, suballocated above, plus what the heap holds but has not handed
-  // out.
-  if (win_heap_dump && win_heap_wasted > 0) {
-    MemoryAllocatorDump* win_heap_waste_dump = pmd->CreateAllocatorDump(
-        win_heap_dump->absolute_name() + "/metadata_fragmentation_caches");
-    win_heap_waste_dump->AddScalar(MemoryAllocatorDump::kNameSize,
-                                   MemoryAllocatorDump::kUnitsBytes,
-                                   win_heap_wasted);
-    excluded_waste += win_heap_wasted;
-  }
+  ReportWinHeap(pmd, args.level_of_detail, &total_virtual_size, &resident_size,
+                &allocated_objects_size, &allocated_objects_count,
+                &excluded_waste);
 #endif  // BUILDFLAG(IS_ANDROID), BUILDFLAG(IS_WIN)
 
 #elif BUILDFLAG(IS_APPLE)
   ReportAppleAllocStats(&total_virtual_size, &resident_size,
                         &allocated_objects_size);
 #elif BUILDFLAG(IS_WIN)
-  ReportWinHeapStats(args.level_of_detail, nullptr, nullptr,
-                     &total_virtual_size, &resident_size,
-                     &allocated_objects_size, &allocated_objects_count,
-                     nullptr);
+  ReportWinHeap(pmd, args.level_of_detail, &total_virtual_size, &resident_size,
+                &allocated_objects_size, &allocated_objects_count,
+                &excluded_waste);
 #elif BUILDFLAG(IS_FUCHSIA)
 // TODO(fuchsia): Port, see https://crbug.com/706592.
 #else
