@@ -108,6 +108,8 @@ source_set("setup_lib") {
     "service_util.h",
     "service_work_items.cc",
     "service_work_items.h",
+    "setup_work_items.cc",
+    "setup_work_items.h",
   ]
 
   public_deps = [
@@ -137,6 +139,7 @@ source_set("unit_tests") {
     "registry_work_items_unittest.cc",
     "service_util_unittest.cc",
     "service_work_items_unittest.cc",
+    "setup_work_items_unittest.cc",
   ]
 
   deps = [
