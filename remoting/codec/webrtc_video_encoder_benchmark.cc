@@ -51,7 +51,8 @@ namespace {
 
 constexpr int kDefaultFrames = 100;
 constexpr double kDefaultFps = 30.0;
-constexpr int kDefaultBitrateKbps = 5000;
+constexpr int kDefaultTargetBitrateKbpsPerMegapixel = 2500;
+constexpr int kMinimumDefaultBitrateKbps = 1000;
 constexpr int kMinDimension = 32;
 constexpr int kMinQuantizer = 10;
 
@@ -88,13 +89,13 @@ struct EncoderConfig {
   ColorSpace color_space = ColorSpace::kI420;
   int encoder_speed = kAv1DefaultEncoderSpeed;
   bool use_active_map = false;
-  int bitrate_kbps = kDefaultBitrateKbps;
+  int bitrate_kbps = 0;
 };
 
 struct BenchmarkConfig {
   int frames = kDefaultFrames;
   double fps = kDefaultFps;
-  int bitrate_kbps = kDefaultBitrateKbps;
+  int bitrate_kbps = 0;
   std::vector<webrtc::DesktopSize> sizes;
   std::vector<std::string> scenarios;
   std::vector<EncoderConfig> encoders;
@@ -164,6 +165,28 @@ std::string DefaultEncoderName(const EncoderConfig& config) {
     case Codec::kVp8:
       return "vp8_p0";
   }
+}
+
+// Returns the target bitrate (in kbps) for a benchmark run. If an explicit
+// bitrate was configured (via the top-level or per-encoder JSON "bitrate_kbps"
+// field), that value is used directly. Otherwise, the default target bitrate is
+// scaled linearly with the frame resolution at 2500 kbps per megapixel (e.g.,
+// ~5.18 Mbps for 1080p, ~9.22 Mbps for 1440p, ~20.74 Mbps for 4K), with a floor
+// of 1000 kbps for sub-megapixel resolutions. This matches the 2500 kbps/MP
+// density used by WebrtcVideoEncoderVpx so that multi-resolution runs (1080p,
+// 1440p, 4K) maintain a consistent bits-per-pixel budget rather than starving
+// higher resolutions at a fixed 1080p bitrate.
+int GetTargetBitrateKbps(int configured_bitrate_kbps,
+                         const webrtc::DesktopSize& size) {
+  if (configured_bitrate_kbps > 0) {
+    return configured_bitrate_kbps;
+  }
+  constexpr int64_t kPixelsPerMegapixel = 1000000;
+  int64_t pixels =
+      static_cast<int64_t>(size.width()) * static_cast<int64_t>(size.height());
+  int scaled_bitrate_kbps = static_cast<int>(
+      (pixels * kDefaultTargetBitrateKbpsPerMegapixel) / kPixelsPerMegapixel);
+  return std::max(kMinimumDefaultBitrateKbps, scaled_bitrate_kbps);
 }
 
 std::unique_ptr<WebrtcVideoEncoder> CreateEncoder(const EncoderConfig& config) {
@@ -325,6 +348,8 @@ class EncoderBenchmark {
           preloaded_frames) {
     encoder_config_ = encoder_config;
     runtime_params_ = runtime_params;
+    encoder_config_.bitrate_kbps = GetTargetBitrateKbps(
+        encoder_config_.bitrate_kbps, runtime_params_.size);
     preloaded_frames_ = preloaded_frames;
     next_frame_index_ = 0;
     frames_encoded_ = 0;
@@ -1046,6 +1071,10 @@ bool LoadJsonConfigFile(const base::FilePath& config_path,
         return false;
       }
       config.encoders.push_back(std::move(encoder_config));
+    }
+  } else if (config.bitrate_kbps > 0) {
+    for (auto& encoder_config : config.encoders) {
+      encoder_config.bitrate_kbps = config.bitrate_kbps;
     }
   }
 
