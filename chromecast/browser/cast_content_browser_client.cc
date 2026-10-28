@@ -54,7 +54,6 @@
 #include "chromecast/common/cors_exempt_headers.h"
 #include "chromecast/common/global_descriptors.h"
 #include "chromecast/common/user_agent.h"
-#include "chromecast/external_mojo/broker_service/broker_service.h"
 #include "chromecast/media/audio/cast_audio_manager.h"
 #include "chromecast/media/cdm/cast_cdm_factory.h"
 #include "chromecast/media/cdm/cast_cdm_origin_provider.h"
@@ -331,14 +330,6 @@ void CastContentBrowserClient::RegisterMetricsProviders(
 
 bool CastContentBrowserClient::EnableRemoteDebuggingImmediately() {
   return true;
-}
-
-std::vector<std::string> CastContentBrowserClient::GetStartupServices() {
-  return {
-#if BUILDFLAG(ENABLE_EXTERNAL_MOJO_SERVICES)
-      external_mojo::BrokerService::kServiceName
-#endif
-  };
 }
 
 std::unique_ptr<content::BrowserMainParts>
@@ -679,13 +670,6 @@ CastContentBrowserClient::GetServiceManifestOverlay(
   return std::nullopt;
 }
 
-std::vector<service_manager::Manifest>
-CastContentBrowserClient::GetExtraServiceManifests() {
-  // NOTE: This could be simplified and the list of manifests could be inlined.
-  // Not done yet since it would require touching downstream cast code.
-  return GetCastContentPackagedServicesOverlayManifest().packaged_services;
-}
-
 void CastContentBrowserClient::GetAdditionalMappedFilesForChildProcess(
     const base::CommandLine& command_line,
     int child_process_id,
@@ -855,6 +839,5 @@ CastContentBrowserClient::ShouldOverrideLocalNetworkAccessRequestPolicy(
 std::string CastContentBrowserClient::GetUserAgent() {
   return chromecast::GetUserAgent();
 }
-
 }  // namespace shell
 }  // namespace chromecast

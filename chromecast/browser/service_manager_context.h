@@ -48,15 +48,10 @@ class ServiceManagerContext {
  private:
   class InProcessServiceManagerContext;
 
-  void RunServiceInstance(
-      const service_manager::Identity& identity,
-      mojo::PendingReceiver<service_manager::mojom::Service> receiver);
-
   shell::CastContentBrowserClient* const cast_content_browser_client_;
   scoped_refptr<base::SingleThreadTaskRunner>
       service_manager_thread_task_runner_;
   scoped_refptr<InProcessServiceManagerContext> in_process_context_;
-  base::WeakPtrFactory<ServiceManagerContext> weak_ptr_factory_{this};
 };
 
 }  // namespace chromecast

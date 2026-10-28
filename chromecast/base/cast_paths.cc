@@ -95,17 +95,6 @@ bool PathProvider(int key, base::FilePath* result) {
       return true;
     }
 #endif  // BUILDFLAG(BUNDLE_WIDEVINE_CDM)
-    case FILE_CAST_BROWSER_CONFIG: {
-      base::FilePath data_dir;
-#if BUILDFLAG(IS_ANDROID)
-      CHECK(base::PathService::Get(base::DIR_ANDROID_APP_DATA, &data_dir));
-      *result = data_dir.Append("cast_browser.conf");
-#else
-      CHECK(base::PathService::Get(DIR_CAST_HOME, &data_dir));
-      *result = data_dir.Append(".cast_browser.conf");
-#endif  // BUILDFLAG(IS_ANDROID)
-      return true;
-    }
   }
   return false;
 }

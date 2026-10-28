@@ -34,7 +34,6 @@ class ViewsDelegate;
 #endif  // defined(USE_AURA)
 
 namespace chromecast {
-class CastFeatureUpdateObserver;
 class CastWebService;
 class DisplaySettingsManager;
 class ServiceConnector;
@@ -49,15 +48,6 @@ class CastUIDevTools;
 #else
 class CastWindowManager;
 #endif  // #if defined(USE_AURA)
-
-namespace external_mojo {
-class BrokerService;
-}  // namespace external_mojo
-
-namespace external_service_support {
-class ExternalConnector;
-class ExternalService;
-}  // namespace external_service_support
 
 namespace media {
 struct CodecProfileLevel;
@@ -93,9 +83,6 @@ class CastBrowserMainParts : public content::BrowserMainParts {
   media::MediaCapsImpl* media_caps();
   metrics::MetricsHelperImpl* metrics_helper();
   content::BrowserContext* browser_context();
-  external_mojo::BrokerService* broker_service();
-  external_service_support::ExternalConnector* connector();
-  external_service_support::ExternalConnector* media_connector();
   CastWebService* web_service();
 
   // content::BrowserMainParts implementation:
@@ -122,14 +109,6 @@ class CastBrowserMainParts : public content::BrowserMainParts {
   std::unique_ptr<metrics::MetricsHelperImpl> metrics_helper_;
   std::unique_ptr<ServiceConnector> service_connector_;
 
-  // Created in CastBrowserMainParts::PostCreateThreads():
-  std::unique_ptr<external_mojo::BrokerService> broker_service_;
-  std::unique_ptr<external_service_support::ExternalService> browser_service_;
-  // ExternalConnectors should be destroyed before registered services.
-  std::unique_ptr<external_service_support::ExternalConnector> connector_;
-  // ExternalConnector for running on the media task runner.
-  std::unique_ptr<external_service_support::ExternalConnector> media_connector_;
-
 #if defined(USE_AURA)
   std::unique_ptr<views::ViewsDelegate> views_delegate_;
   std::unique_ptr<CastScreen> cast_screen_;
@@ -148,8 +127,6 @@ class CastBrowserMainParts : public content::BrowserMainParts {
   // Tracks all media pipeline backends.
   std::unique_ptr<media::MediaPipelineBackendManager>
       media_pipeline_backend_manager_;
-
-  std::unique_ptr<CastFeatureUpdateObserver> feature_update_observer_;
 
 #if defined(USE_AURA) && !BUILDFLAG(IS_FUCHSIA)
   // Only used when running with --enable-ui-devtools.

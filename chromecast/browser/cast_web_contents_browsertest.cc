@@ -10,7 +10,6 @@
 #include "base/command_line.h"
 #include "base/containers/flat_set.h"
 #include "base/files/file_path.h"
-#include "base/files/scoped_temp_dir.h"
 #include "base/functional/callback_helpers.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
@@ -18,7 +17,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
-#include "chromecast/base/chromecast_switches.h"
 #include "chromecast/base/metrics/cast_metrics_helper.h"
 #include "chromecast/browser/cast_browser_context.h"
 #include "chromecast/browser/cast_browser_process.h"
@@ -241,12 +239,6 @@ class CastWebContentsBrowserTest : public shell::CastBrowserTest,
   void SetUpCommandLine(base::CommandLine* command_line) override {
     CastBrowserTest::SetUpCommandLine(command_line);
     command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures, "MojoJS");
-    // Give each test process its own external Mojo broker socket so parallel
-    // test processes do not collide on the default path.
-    ASSERT_TRUE(mojo_broker_dir_.CreateUniqueTempDir());
-    command_line->AppendSwitchPath(
-        switches::kCastMojoBrokerPath,
-        mojo_broker_dir_.GetPath().AppendASCII("cast_mojo_broker"));
   }
 
   void PreRunTestOnMainThread() override {
@@ -301,7 +293,6 @@ class CastWebContentsBrowserTest : public shell::CastBrowserTest,
   std::unique_ptr<content::WebContents> web_contents_;
   std::unique_ptr<CastWebContentsImpl> cast_web_contents_;
   std::unique_ptr<base::RunLoop> run_loop_;
-  base::ScopedTempDir mojo_broker_dir_;
 
   base::flat_set<content::RenderFrameHost*> render_frames_;
 };

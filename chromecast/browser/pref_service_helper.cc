@@ -33,27 +33,20 @@ void UserPrefsLoadError(PersistentPrefStore::PrefReadError* error_val,
   *error_val = error;
 }
 
-base::FilePath GetConfigPath(ProcessType process_type) {
+base::FilePath GetConfigPath() {
   base::FilePath config_path;
-  switch (process_type) {
-    case ProcessType::kCastBrowser:
-      CHECK(base::PathService::Get(FILE_CAST_BROWSER_CONFIG, &config_path));
-      break;
-    case ProcessType::kCastService:
-      CHECK(base::PathService::Get(FILE_CAST_CONFIG, &config_path));
-      // No default. All possible cases are handled above.
-  }
+  CHECK(base::PathService::Get(FILE_CAST_CONFIG, &config_path));
   CHECK(!config_path.empty());
   return config_path;
 }
 
-base::FilePath GetLargeConfigPath(ProcessType process_type) {
-  return GetConfigPath(process_type).AddExtension(".large");
+base::FilePath GetLargeConfigPath() {
+  return GetConfigPath().AddExtension(".large");
 }
 
-scoped_refptr<PersistentPrefStore> MakePrefStore(ProcessType process_type) {
+scoped_refptr<PersistentPrefStore> MakePrefStore() {
   auto default_pref_store =
-      base::MakeRefCounted<JsonPrefStore>(GetConfigPath(process_type));
+      base::MakeRefCounted<JsonPrefStore>(GetConfigPath());
 
   PrefNameSet selected_pref_names;
   if (PrefServiceHelper::LargePrefNames) {
@@ -64,7 +57,7 @@ scoped_refptr<PersistentPrefStore> MakePrefStore(ProcessType process_type) {
   }
 
   auto large_pref_store =
-      base::MakeRefCounted<JsonPrefStore>(GetLargeConfigPath(process_type));
+      base::MakeRefCounted<JsonPrefStore>(GetLargeConfigPath());
   // Move large prefs out of the default pref store, if necessary.
   if (default_pref_store->ReadPrefs() ==
       PersistentPrefStore::PREF_READ_ERROR_NONE) {
@@ -90,9 +83,8 @@ scoped_refptr<PersistentPrefStore> MakePrefStore(ProcessType process_type) {
 
 // static
 std::unique_ptr<PrefService> PrefServiceHelper::CreatePrefService(
-    PrefRegistrySimple* registry,
-    ProcessType process_type) {
-  const base::FilePath config_path(GetConfigPath(process_type));
+    PrefRegistrySimple* registry) {
+  const base::FilePath config_path(GetConfigPath());
   DVLOG(1) << "Loading config from " << config_path.value();
 
   registry->RegisterBooleanPref(prefs::kMetricsIsNewClientID, false);
@@ -114,7 +106,7 @@ std::unique_ptr<PrefService> PrefServiceHelper::CreatePrefService(
   RegisterPlatformPrefs(registry);
 
   PrefServiceFactory pref_service_factory;
-  pref_service_factory.set_user_prefs(MakePrefStore(process_type));
+  pref_service_factory.set_user_prefs(MakePrefStore());
   pref_service_factory.set_async(false);
 
   PersistentPrefStore::PrefReadError prefs_read_error =

@@ -9,22 +9,16 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner.h"
-#include "chromecast/external_mojo/external_service_support/external_connector.h"
 
 namespace chromecast {
 namespace media {
 
 class CmaBackend;
-class MediaPipelineBackendManager;
 struct MediaPipelineDeviceParams;
 
 // Abstract base class to create CmaBackend.
 class CmaBackendFactory {
  public:
-  static std::unique_ptr<CmaBackendFactory> Create(
-      MediaPipelineBackendManager* media_pipeline_backend_manager,
-      std::unique_ptr<external_service_support::ExternalConnector> connector);
-
   virtual ~CmaBackendFactory() = default;
 
   // Creates a CMA backend. Must be called on the same thread as

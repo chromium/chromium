@@ -12,7 +12,6 @@ mojom("mojom") {
     "cast_demo.mojom",
     "constants.mojom",
     "feature_manager.mojom",
-    "feature_update.mojom",
     "gesture.mojom",
     "js_channel.mojom",
     "media_caps.mojom",

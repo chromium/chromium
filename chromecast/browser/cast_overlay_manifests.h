@@ -15,12 +15,6 @@ namespace shell {
 // required by content_browser service instances.
 const service_manager::Manifest& GetCastContentBrowserOverlayManifest();
 
-// Returns the manifest Cast amends to Content's content_packaged_services
-// service manifest. This allows Cast to extend the set of in- and out-of-
-// process services packaged by the browser.
-const service_manager::Manifest&
-GetCastContentPackagedServicesOverlayManifest();
-
 }  // namespace shell
 }  // namespace chromecast
 

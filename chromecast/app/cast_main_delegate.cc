@@ -28,7 +28,6 @@
 #include "build/build_config.h"
 #include "chromecast/base/cast_paths.h"
 #include "chromecast/base/chromecast_switches.h"
-#include "chromecast/base/process_types.h"
 #include "chromecast/base/version.h"
 #include "chromecast/browser/cast_content_browser_client.h"
 #include "chromecast/browser/cast_feature_list_creator.h"
@@ -297,13 +296,7 @@ std::optional<int> CastMainDelegate::PostEarlyInitialization(
   // Initialize the base::FeatureList and the PrefService (which it depends on),
   // so objects initialized after this point can use features from
   // base::FeatureList.
-  const base::CommandLine* command_line =
-      base::CommandLine::ForCurrentProcess();
-  const bool use_browser_config =
-      command_line->HasSwitch(switches::kUseCastBrowserPrefConfig);
-  ProcessType process_type = use_browser_config ? ProcessType::kCastBrowser
-                                                : ProcessType::kCastService;
-  cast_feature_list_creator_->CreatePrefServiceAndFeatureList(process_type);
+  cast_feature_list_creator_->CreatePrefServiceAndFeatureList();
 
   content::InitializeMojoCore();
 

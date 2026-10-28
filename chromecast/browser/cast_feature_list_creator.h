@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/feature_list.h"
-#include "chromecast/base/process_types.h"
 
 class PrefService;
 
@@ -26,10 +25,8 @@ class CastFeatureListCreator {
   virtual ~CastFeatureListCreator();
 
   // Creates the |PrefService| and uses it to initialize |FeatureList|. Retains
-  // ownership of the |PrefService|. Based on the given |ProcessType|, different
-  // files will be used to store prefs.
-  void CreatePrefServiceAndFeatureList(
-      ProcessType process_type = ProcessType::kCastService);
+  // ownership of the |PrefService|.
+  void CreatePrefServiceAndFeatureList();
 
   // Takes ownership of the |PrefService| previously created.
   std::unique_ptr<PrefService> TakePrefService();

@@ -11,10 +11,6 @@
 #include "chromecast/common/mojom/media_caps.mojom.h"
 #include "services/service_manager/public/cpp/manifest_builder.h"
 
-#if BUILDFLAG(ENABLE_EXTERNAL_MOJO_SERVICES)
-#include "chromecast/external_mojo/broker_service/broker_service.h"  // nogncheck
-#endif
-
 namespace chromecast {
 namespace shell {
 
@@ -25,18 +21,6 @@ const service_manager::Manifest& GetCastContentBrowserOverlayManifest() {
                             service_manager::Manifest::InterfaceList<
                                 chromecast::media::mojom::MediaCaps>())
           .Build()};
-  return *manifest;
-}
-
-const service_manager::Manifest&
-GetCastContentPackagedServicesOverlayManifest() {
-  static base::NoDestructor<service_manager::Manifest> manifest {
-    service_manager::ManifestBuilder()
-#if BUILDFLAG(ENABLE_EXTERNAL_MOJO_SERVICES)
-        .PackageService(chromecast::external_mojo::BrokerService::GetManifest())
-#endif
-        .Build()
-  };
   return *manifest;
 }
 

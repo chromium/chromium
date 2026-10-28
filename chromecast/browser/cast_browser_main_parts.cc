@@ -38,7 +38,6 @@
 #include "chromecast/browser/cast_browser_process.h"
 #include "chromecast/browser/cast_content_browser_client.h"
 #include "chromecast/browser/cast_feature_list_creator.h"
-#include "chromecast/browser/cast_feature_update_observer.h"
 #include "chromecast/browser/cast_system_memory_pressure_evaluator.h"
 #include "chromecast/browser/cast_system_memory_pressure_evaluator_adjuster.h"
 #include "chromecast/browser/cast_web_service.h"
@@ -52,11 +51,6 @@
 #include "chromecast/browser/service_manager_connection.h"
 #include "chromecast/browser/service_manager_context.h"
 #include "chromecast/chromecast_buildflags.h"
-#include "chromecast/common/mojom/constants.mojom.h"
-#include "chromecast/external_mojo/broker_service/broker_service.h"
-#include "chromecast/external_mojo/external_service_support/external_connector.h"
-#include "chromecast/external_mojo/external_service_support/external_service.h"
-#include "chromecast/external_mojo/public/cpp/common.h"
 #include "chromecast/graphics/cast_window_manager.h"
 #include "chromecast/media/base/key_systems_common.h"
 #include "chromecast/media/common/media_pipeline_backend_manager.h"
@@ -420,22 +414,6 @@ content::BrowserContext* CastBrowserMainParts::browser_context() {
   return cast_browser_process_->browser_context();
 }
 
-external_mojo::BrokerService* CastBrowserMainParts::broker_service() {
-  CHECK(broker_service_);
-  return broker_service_.get();
-}
-
-external_service_support::ExternalConnector* CastBrowserMainParts::connector() {
-  CHECK(connector_);
-  return connector_.get();
-}
-
-external_service_support::ExternalConnector*
-CastBrowserMainParts::media_connector() {
-  CHECK(media_connector_);
-  return media_connector_.get();
-}
-
 CastWebService* CastBrowserMainParts::web_service() {
   return web_service_.get();
 }
@@ -520,21 +498,6 @@ int CastBrowserMainParts::PreCreateThreads() {
 }
 
 int CastBrowserMainParts::PostCreateThreads() {
-  if (GetSwitchValueBoolean(switches::kInProcessBroker, true)) {
-    auto* service_manager_connector =
-        ServiceManagerConnection::GetForProcess()->GetConnector();
-    broker_service_ = std::make_unique<external_mojo::BrokerService>(
-        service_manager_connector,
-        std::vector<std::string>{chromecast::mojom::kCastBrowserServiceName});
-    connector_ = external_service_support::ExternalConnector::Create(
-        broker_service_->CreateConnector());
-  } else {
-    connector_ = external_service_support::ExternalConnector::Create(
-        external_mojo::GetBrokerPath());
-  }
-  media_connector_ = connector_->Clone();
-  browser_service_ =
-      std::make_unique<external_service_support::ExternalService>();
   return content::RESULT_CODE_NORMAL_EXIT;
 }
 
@@ -625,10 +588,6 @@ int CastBrowserMainParts::PreMainMessageLoopRun() {
 
   web_service_ = std::make_unique<CastWebService>(
       cast_browser_process_->browser_context(), window_manager_.get());
-  browser_service_->AddInterface<::chromecast::mojom::CastWebService>(
-      web_service_.get());
-  connector()->RegisterService(::chromecast::mojom::kCastBrowserServiceName,
-                               browser_service_.get());
 
   cast_browser_process_->SetCastService(
       cast_browser_process_->browser_client()->CreateCastService(
@@ -649,12 +608,6 @@ int CastBrowserMainParts::PreMainMessageLoopRun() {
   content::RenderFrameHost::AllowInjectingJavaScript();
 
   cast_browser_process_->cast_service()->Start();
-
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kUseCastBrowserPrefConfig)) {
-    feature_update_observer_ = std::make_unique<CastFeatureUpdateObserver>(
-        connector(), cast_browser_process_->pref_service());
-  }
 
   return content::RESULT_CODE_NORMAL_EXIT;
 }

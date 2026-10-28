@@ -183,9 +183,5 @@ void CastContentBrowserClient::BindGpuHostReceiver(
 }
 #endif  // BUILDFLAG(ENABLE_CAST_RENDERER)
 
-void CastContentBrowserClient::RunServiceInstance(
-    const service_manager::Identity& identity,
-    mojo::PendingReceiver<service_manager::mojom::Service>* receiver) {}
-
 }  // namespace shell
 }  // namespace chromecast

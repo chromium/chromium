@@ -141,28 +141,10 @@ const char kForceUpdateRemoteUrl[] = "force-update-remote-url";
 // means that dummy info will be used.
 const char kSysInfoFilePath[] = "sys-info-file-path";
 
-// Defer initialization of the base::FeatureList in an external service process,
-// allowing the process to include its own non-default features.
-const char kDeferFeatureList[] = "defer-feature-list";
-
-// Rather than share a common pref config file with cast_service, use a
-// dedicated browser pref config file. This must be set when `cast_browser` is
-// running in a different process from `cast_service`.
-const char kUseCastBrowserPrefConfig[] = "use-cast-browser-pref-config";
-
-// Creates the service broker inside of this process. Only one process should
-// host the service broker.
-const char kInProcessBroker[] = "in-process-broker";
-
-// Command-line arg to change the Unix domain socket path to connect to the
-// Cast Mojo broker.
-const char kCastMojoBrokerPath[] = "cast-mojo-broker-path";
-
 // Allows specifying the base::ASSETS dir for Cast via commandline.
 const char kCastAssetsDir[] = "cast-assets-dir";
 
 const char kHomeEnvOverride[] = "home-env-override";
-
 
 }  // namespace switches
 

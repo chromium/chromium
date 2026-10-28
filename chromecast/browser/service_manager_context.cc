@@ -129,10 +129,6 @@ class ServiceExecutableProcessHost
   service_manager::ServiceProcessLauncher launcher_;
 };
 
-using ServiceRequestHandler = base::RepeatingCallback<void(
-    const service_manager::Identity& identity,
-    mojo::PendingReceiver<service_manager::mojom::Service> receiver)>;
-
 // Implements in- and out-of-process service instance launching for services
 // built into the Content embedder's binary.
 //
@@ -141,11 +137,7 @@ using ServiceRequestHandler = base::RepeatingCallback<void(
 class BrowserServiceManagerDelegate
     : public service_manager::ServiceManager::Delegate {
  public:
-  BrowserServiceManagerDelegate(
-      const scoped_refptr<base::SequencedTaskRunner>& main_thread_task_runner,
-      ServiceRequestHandler main_thread_request_handler)
-      : main_thread_task_runner_(main_thread_task_runner),
-        main_thread_request_handler_(std::move(main_thread_request_handler)) {}
+  BrowserServiceManagerDelegate() = default;
 
   BrowserServiceManagerDelegate(const BrowserServiceManagerDelegate&) = delete;
   BrowserServiceManagerDelegate& operator=(
@@ -158,10 +150,7 @@ class BrowserServiceManagerDelegate
       const service_manager::Identity& identity,
       mojo::PendingReceiver<service_manager::mojom::Service> receiver)
       override {
-    main_thread_task_runner_->PostTask(
-        FROM_HERE, base::BindOnce(main_thread_request_handler_, identity,
-                                  std::move(receiver)));
-    return true;
+    return false;
   }
 
   std::unique_ptr<service_manager::ServiceProcessHost>
@@ -182,10 +171,6 @@ class BrowserServiceManagerDelegate
 
     return std::make_unique<ServiceExecutableProcessHost>(executable_path);
   }
-
- private:
-  const scoped_refptr<base::SequencedTaskRunner> main_thread_task_runner_;
-  const ServiceRequestHandler main_thread_request_handler_;
 };
 
 }  // namespace
@@ -206,16 +191,16 @@ class ServiceManagerContext::InProcessServiceManagerContext
   InProcessServiceManagerContext& operator=(
       const InProcessServiceManagerContext&) = delete;
 
-  void Start(std::vector<service_manager::Manifest> manifests,
-             mojo::PendingRemote<service_manager::mojom::Service> system_remote,
-             ServiceRequestHandler request_handler) {
+  void Start(
+      std::vector<service_manager::Manifest> manifests,
+      mojo::PendingRemote<service_manager::mojom::Service> system_remote) {
     service_manager_thread_task_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(
             &InProcessServiceManagerContext::StartOnServiceManagerThread, this,
             std::move(manifests),
             base::SingleThreadTaskRunner::GetCurrentDefault(),
-            std::move(system_remote), std::move(request_handler)));
+            std::move(system_remote)));
   }
 
   void ShutDown() {
@@ -241,12 +226,10 @@ class ServiceManagerContext::InProcessServiceManagerContext
   void StartOnServiceManagerThread(
       std::vector<service_manager::Manifest> manifests,
       scoped_refptr<base::SequencedTaskRunner> ui_thread_task_runner,
-      mojo::PendingRemote<service_manager::mojom::Service> system_remote,
-      ServiceRequestHandler request_handler) {
+      mojo::PendingRemote<service_manager::mojom::Service> system_remote) {
     service_manager_ = std::make_unique<service_manager::ServiceManager>(
         std::move(manifests),
-        std::make_unique<BrowserServiceManagerDelegate>(
-            ui_thread_task_runner, std::move(request_handler)));
+        std::make_unique<BrowserServiceManagerDelegate>());
 
     mojo::Remote<service_manager::mojom::ProcessMetadata> metadata;
     service_manager_->RegisterService(
@@ -293,10 +276,7 @@ ServiceManagerContext::ServiceManagerContext(
     if (overlay)
       manifest.Amend(*overlay);
   }
-  for (auto& extra_manifest :
-       cast_content_browser_client_->GetExtraServiceManifests()) {
-    manifests.emplace_back(std::move(extra_manifest));
-  }
+
   in_process_context_ =
       new InProcessServiceManagerContext(service_manager_thread_task_runner_);
 
@@ -312,12 +292,7 @@ ServiceManagerContext::ServiceManagerContext(
   // GetConnectorForIOThread().
   g_io_thread_connector.Get() = system_connection->GetConnector()->Clone();
 
-  in_process_context_->Start(
-      manifests, std::move(system_remote),
-      base::BindRepeating(&ServiceManagerContext::RunServiceInstance,
-                          weak_ptr_factory_.GetWeakPtr()));
-  in_process_context_->StartServices(
-      cast_content_browser_client_->GetStartupServices());
+  in_process_context_->Start(manifests, std::move(system_remote));
 }
 
 ServiceManagerContext::~ServiceManagerContext() {
@@ -341,14 +316,6 @@ void ServiceManagerContext::ShutDown() {
 service_manager::Connector* ServiceManagerContext::GetConnectorForIOThread() {
   DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::IO));
   return g_io_thread_connector.Get().get();
-}
-
-void ServiceManagerContext::RunServiceInstance(
-    const service_manager::Identity& identity,
-    mojo::PendingReceiver<service_manager::mojom::Service> receiver) {
-  cast_content_browser_client_->RunServiceInstance(identity, &receiver);
-  DLOG_IF(ERROR, receiver) << "Unhandled service request for \""
-                           << identity.name() << "\"";
 }
 
 }  // namespace chromecast

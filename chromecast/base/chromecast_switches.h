@@ -83,13 +83,6 @@ extern const char kForceUpdateRemoteUrl[];
 
 extern const char kSysInfoFilePath[];
 
-// Switches for Cast browser decoupling.
-extern const char kDeferFeatureList[];
-extern const char kUseCastBrowserPrefConfig[];
-extern const char kInProcessBroker[];
-
-extern const char kCastMojoBrokerPath[];
-
 // Allows specifying the base::ASSETS dir for Cast via commandline.
 extern const char kCastAssetsDir[];
 
