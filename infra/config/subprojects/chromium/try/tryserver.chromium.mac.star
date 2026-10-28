@@ -799,11 +799,10 @@ try_.orchestrator_builder(
     compilator = "ios-simulator-compilator",
     coverage_exclude_sources = "ios_test_files_and_test_utils",
     coverage_test_types = ["overall", "unit"],
-    # Temporarily removed from the CQ.
-    # cq_settings = try_.cq_settings(
-    #     on_default_cq = True,
-    #     reuse_max_commit_distance = 800 if settings.is_main else None,
-    # ),
+    cq_settings = try_.cq_settings(
+        on_default_cq = True,
+        reuse_max_commit_distance = 800 if settings.is_main else None,
+    ),
     experiments = {
         # go/nplus1shardsproposal
         "chromium.add_one_test_shard": 10,
