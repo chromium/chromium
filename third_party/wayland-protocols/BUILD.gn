@@ -104,11 +104,11 @@ wayland_protocol("notification_shell_protocol") {
 }
 
 wayland_protocol("org_kde_kwin_appmenu") {
-  sources = [ "kde/src/protocols/appmenu.xml" ]
+  sources = [ "kde/src/src/protocols/appmenu.xml" ]
 }
 
 wayland_protocol("org_kde_kwin_idle") {
-  sources = [ "kde/src/protocols/idle.xml" ]
+  sources = [ "kde/src/src/protocols/idle.xml" ]
 }
 
 wayland_protocol("pointer_constraints_protocol") {
