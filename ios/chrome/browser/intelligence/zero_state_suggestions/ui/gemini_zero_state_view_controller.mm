@@ -24,7 +24,7 @@ constexpr CGFloat kContainerTopPadding = 36.0;
 constexpr CGFloat kGeminiLogoSize = 38.0;
 constexpr CGFloat kLogoToGreetingSpacing = 16.0;
 constexpr CGFloat kChipsContainerHeight = 180.0;
-constexpr CGFloat kCloseButtonSize = 46.0;
+constexpr CGFloat kCloseButtonSize = 44.0;
 constexpr CGFloat kCloseButtonSymbolPointSize = 18.0;
 
 }  // namespace
