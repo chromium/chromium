@@ -157,9 +157,8 @@ struct PLATFORM_EXPORT ShapeResultRun final
     run->glyph_data_.CopyFromRange(glyphs, start, number_of_characters);
 
     if (run->glyph_data_.IsCompact()) {
-      run->width_ = InlineLayoutUnit::FromRawValue(
-          int64_t{run->glyph_data_.CompactAdvance().RawValue()} *
-          number_of_glyphs);
+      run->width_ = run->glyph_data_.CompactAdvance().To<InlineLayoutUnit>() *
+                    number_of_glyphs;
     } else {
       InlineLayoutUnit total_advance;
       for (const HarfBuzzRunGlyphData& glyph_data :

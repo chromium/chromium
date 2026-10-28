@@ -265,8 +265,7 @@ void ShapeResultView::PopulateRunInfoParts(const ShapeResultType& other,
       range = run->FindGlyphDataRange(range_start, range_end);
       if (range.IsCompactSource()) [[unlikely]] {
         part_width =
-            InlineLayoutUnit::FromRawValue(
-                int64_t{range.CompactSourceAdvance().RawValue()} * range.size())
+            (range.CompactSourceAdvance().To<InlineLayoutUnit>() * range.size())
                 .ToFloat();
       } else {
         const base::span<const HarfBuzzRunGlyphData> glyphs =

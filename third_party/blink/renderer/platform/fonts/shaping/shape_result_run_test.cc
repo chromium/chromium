@@ -411,6 +411,40 @@ TEST_F(ShapeResultRunTest, CompactGlyphPositionsCheckStartCluster) {
       run->TryComputeCompactGlyphPositions(glyph_infos, glyph_positions));
 }
 
+TEST_F(ShapeResultRunTest, CompactGlyphPositionsMatchAccumulatedAdvance) {
+  constexpr unsigned kNumGlyphs = 16;
+  for (hb_direction_t direction : {HB_DIRECTION_LTR, HB_DIRECTION_RTL}) {
+    SCOPED_TRACE(direction);
+    for (hb_position_t advance :
+         {std::numeric_limits<hb_position_t>::min(), -629146, -1, 0, 1, 1023,
+          629146, std::numeric_limits<hb_position_t>::max()}) {
+      SCOPED_TRACE(advance);
+      ShapeResultRun* run = MakeGarbageCollected<ShapeResultRun>(
+          CreateTestFontData(/*is_fixed_pitch=*/true), direction,
+          CanvasRotationInVertical::kRegular, HB_SCRIPT_LATIN, 0, kNumGlyphs,
+          kNumGlyphs);
+      std::array<hb_glyph_info_t, kNumGlyphs> glyph_infos = {};
+      std::array<hb_glyph_position_t, kNumGlyphs> glyph_positions = {};
+      InlineLayoutUnit expected_advance;
+      for (unsigned i = 0; i < kNumGlyphs; ++i) {
+        glyph_infos[i].codepoint = 42 + i;
+        glyph_infos[i].cluster = run->IsRtl() ? kNumGlyphs - i - 1 : i;
+        glyph_positions[i].x_advance = advance;
+        expected_advance += TextRunLayoutUnit::FromFixed<16>(advance);
+      }
+
+      ASSERT_TRUE(
+          run->TryComputeCompactGlyphPositions(glyph_infos, glyph_positions));
+      EXPECT_TRUE(run->GetGlyphDataRange().IsCompactSource());
+      EXPECT_EQ(expected_advance.ClampNegativeToZero().ToFloat(), run->Width());
+      ShapeResultRun* copied_run = run->CreateSubRun(0, kNumGlyphs);
+      ASSERT_TRUE(copied_run);
+      EXPECT_TRUE(copied_run->GetGlyphDataRange().IsCompactSource());
+      EXPECT_EQ(expected_advance.ToFloat(), copied_run->Width());
+    }
+  }
+}
+
 TEST_F(ShapeResultRunTest, GlyphDataCopyFromRange) {
   ShapeResultRun* run = CreateTestShapeResultRun(2, 2);
 

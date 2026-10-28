@@ -1547,9 +1547,8 @@ bool ShapeResultRun::TryComputeCompactGlyphPositions(
     // Forward or reverse identity clusters make every glyph a boundary; only
     // HarfBuzz's flag remains.
     const bool is_safe_to_break_before =
-        glyph.cluster == start_index ||
-        !(hb_glyph_info_get_glyph_flags(&glyph) &
-          HB_GLYPH_FLAG_UNSAFE_TO_BREAK);
+        character_index == 0 || !(hb_glyph_info_get_glyph_flags(&glyph) &
+                                  HB_GLYPH_FLAG_UNSAFE_TO_BREAK);
     return GlyphDataCollection::CompactableGlyph{
         .glyph = static_cast<uint16_t>(glyph.codepoint),
         .advance = HarfBuzzPositionToTextLayoutUnit(position.x_advance),
@@ -1564,9 +1563,9 @@ bool ShapeResultRun::TryComputeCompactGlyphPositions(
   }
 
   // Compute the total advance in fixed point, as in the full storage path.
-  const InlineLayoutUnit total_advance = InlineLayoutUnit::FromRawValue(
-      int64_t{glyph_data_.CompactAdvance().RawValue()} *
-      base::checked_cast<unsigned>(glyph_infos.size()));
+  const InlineLayoutUnit total_advance =
+      glyph_data_.CompactAdvance().To<InlineLayoutUnit>() *
+      base::checked_cast<wtf_size_t>(glyph_infos.size());
   width_ = total_advance.ClampNegativeToZero().ToFloat();
 #if EXPENSIVE_DCHECKS_ARE_ON()
   CheckConsistency();
