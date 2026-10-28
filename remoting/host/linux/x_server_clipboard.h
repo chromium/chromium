@@ -9,7 +9,9 @@
 
 #include <set>
 #include <string>
+#include <string_view>
 
+#include "base/containers/span.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
@@ -78,27 +80,24 @@ class XServerClipboard {
   // request for information about a selection.
   // |event| is the raw X event from the notification.
   // |type|, |format| etc are the results from XGetWindowProperty(), or 0 if
-  // there is no associated data.
+  // there is no associated data. |data| holds the raw property bytes.
   void HandleSelectionNotify(const x11::SelectionNotifyEvent& event,
                              x11::Atom type,
                              int format,
-                             int item_count,
-                             const void* data);
+                             base::span<const uint8_t> data);
 
   // These methods return true if selection processing is complete, false
   // otherwise. They are called from HandleSelectionNotify(), and take the same
   // arguments.
   bool HandleSelectionTargetsEvent(const x11::SelectionNotifyEvent& event,
                                    int format,
-                                   int item_count,
-                                   const void* data);
+                                   base::span<const uint8_t> data);
   bool HandleSelectionStringEvent(const x11::SelectionNotifyEvent& event,
                                   int format,
-                                  int item_count,
-                                  const void* data);
+                                  base::span<const uint8_t> data);
 
   // Notify the registered callback of new clipboard text.
-  void NotifyClipboardText(const std::string& text);
+  void NotifyClipboardText(std::string_view text);
 
   // These methods trigger the X server or selection owner to send back an
   // event containing the requested information.

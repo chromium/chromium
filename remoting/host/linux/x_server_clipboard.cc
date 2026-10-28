@@ -13,7 +13,9 @@
 #include "base/functional/callback.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/numerics/byte_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/strings/string_view_util.h"
 #include "remoting/base/constants.h"
 #include "remoting/base/logging.h"
 #include "remoting/base/util.h"
@@ -214,14 +216,17 @@ void XServerClipboard::OnSelectionNotify(
         // Standard selection - call the selection notifier.
         large_selection_property_ = x11::Atom::None;
         if (reply->type != x11::Atom::None) {
-          HandleSelectionNotify(event, reply->type, reply->format,
-                                reply->value_len, reply->value->bytes());
+          // `value_len` counts items of `format` bits, not bytes.
+          size_t size = reply->value_len * (reply->format / 8u);
+          // SAFETY: GetProperty() reads `size` bytes into `value`.
+          auto data = UNSAFE_BUFFERS(base::span(reply->value->bytes(), size));
+          HandleSelectionNotify(event, reply->type, reply->format, data);
           return;
         }
       }
     }
   }
-  HandleSelectionNotify(event, x11::Atom::None, 0, 0, nullptr);
+  HandleSelectionNotify(event, x11::Atom::None, 0, {});
 }
 
 void XServerClipboard::OnSelectionRequest(
@@ -327,15 +332,14 @@ void XServerClipboard::HandleSelectionNotify(
     const x11::SelectionNotifyEvent& event,
     x11::Atom type,
     int format,
-    int item_count,
-    const void* data) {
+    base::span<const uint8_t> data) {
   bool finished = false;
 
   auto target = event.target;
   if (target == targets_atom_) {
-    finished = HandleSelectionTargetsEvent(event, format, item_count, data);
+    finished = HandleSelectionTargetsEvent(event, format, data);
   } else if (target == utf8_string_atom_ || target == x11::Atom::STRING) {
-    finished = HandleSelectionStringEvent(event, format, item_count, data);
+    finished = HandleSelectionStringEvent(event, format, data);
   }
 
   if (finished) {
@@ -346,14 +350,12 @@ void XServerClipboard::HandleSelectionNotify(
 bool XServerClipboard::HandleSelectionTargetsEvent(
     const x11::SelectionNotifyEvent& event,
     int format,
-    int item_count,
-    const void* data) {
+    base::span<const uint8_t> data) {
   auto selection = event.selection;
   if (event.property == targets_atom_) {
-    if (data && format == 32) {
-      const uint32_t* targets = static_cast<const uint32_t*>(data);
-      for (int i = 0; i < item_count; i++) {
-        if (UNSAFE_TODO(targets[i]) ==
+    if (format == 32) {
+      while (!data.empty()) {
+        if (base::U32FromNativeEndian(data.take_first<4>()) ==
             static_cast<uint32_t>(utf8_string_atom_)) {
           RequestSelectionString(selection, utf8_string_atom_);
           return false;
@@ -368,25 +370,22 @@ bool XServerClipboard::HandleSelectionTargetsEvent(
 bool XServerClipboard::HandleSelectionStringEvent(
     const x11::SelectionNotifyEvent& event,
     int format,
-    int item_count,
-    const void* data) {
+    base::span<const uint8_t> data) {
   auto property = event.property;
   auto target = event.target;
 
-  if (property != selection_string_atom_ || !data || format != 8) {
+  if (property != selection_string_atom_ || format != 8) {
     return true;
   }
 
-  std::string text(static_cast<const char*>(data), item_count);
-
   if (target == x11::Atom::STRING || target == utf8_string_atom_) {
-    NotifyClipboardText(text);
+    NotifyClipboardText(base::as_string_view(data));
   }
 
   return true;
 }
 
-void XServerClipboard::NotifyClipboardText(const std::string& text) {
+void XServerClipboard::NotifyClipboardText(std::string_view text) {
   data_ = text;
   callback_.Run(kMimeTypeTextUtf8, data_);
 }
