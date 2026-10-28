@@ -12,10 +12,9 @@ namespace send_tab_to_self {
 // SendTabToSelfBubbleController that can be called outside of /views/.
 
 void ShowBubble(content::WebContents* web_contents,
-                ShareEntryPoint entry_point,
-                bool show_back_button) {
+                ShareEntryPoint entry_point) {
   SendTabToSelfBubbleController::GetOrCreateForWebContents(web_contents)
-      ->ShowBubble(entry_point, show_back_button);
+      ->ShowBubble(entry_point);
 }
 
 }  // namespace send_tab_to_self

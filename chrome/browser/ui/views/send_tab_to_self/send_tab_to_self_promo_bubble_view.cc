@@ -53,8 +53,7 @@ SendTabToSelfSignInPromoBubbleView::SendTabToSelfSignInPromoBubbleView(
       base::BindOnce(
           &send_tab_to_self::SendTabToSelfBubbleController::ShowBubble,
           controller_,
-          controller_->entry_point().value_or(ShareEntryPoint::kShareSheet),
-          /*show_back_button=*/false));
+          controller_->entry_point().value_or(ShareEntryPoint::kShareSheet)));
   auto* sign_in_promo = AddChildView(std::make_unique<BubbleSignInPromoView>(
       web_contents, signin_metrics::AccessPoint::kSendTabToSelfPromo,
       std::move(delegate)));
@@ -69,8 +68,6 @@ SendTabToSelfSignInPromoBubbleView::~SendTabToSelfSignInPromoBubbleView() =
     default;
 
 void SendTabToSelfSignInPromoBubbleView::AddedToWidget() {
-  SendTabToSelfBubbleView::AddedToWidget();
-
   auto& bundle = ui::ResourceBundle::GetSharedInstance();
   // Purely visual illustration; main label handles accessibility.
   auto header_view = std::make_unique<views::ImageView>(

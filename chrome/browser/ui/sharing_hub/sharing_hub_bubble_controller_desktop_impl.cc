@@ -135,8 +135,7 @@ void SharingHubBubbleControllerDesktopImpl::OnActionSelected(
     qrcode_controller->ShowBubble(GetWebContents().GetLastCommittedURL(), true);
   } else if (action.command_id == IDC_SEND_TAB_TO_SELF) {
     send_tab_to_self::ShowBubble(
-        &GetWebContents(), send_tab_to_self::ShareEntryPoint::kToolbarIcon,
-        /*show_back_button=*/true);
+        &GetWebContents(), send_tab_to_self::ShareEntryPoint::kToolbarIcon);
   } else if (action.command_id == IDC_ROUTE_MEDIA) {
     media_router::MediaRouterDialogController* dialog_controller =
         media_router::MediaRouterDialogController::GetOrCreateForWebContents(

@@ -6,7 +6,6 @@
 
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_bubble_controller.h"
-#include "chrome/browser/ui/views/sharing_hub/sharing_hub_bubble_util.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -31,26 +30,6 @@ SendTabToSelfBubbleView::~SendTabToSelfBubbleView() = default;
 
 void SendTabToSelfBubbleView::Hide() {
   CloseBubble();
-}
-
-void SendTabToSelfBubbleView::AddedToWidget() {
-  if (!controller_ || !controller_->show_back_button()) {
-    return;
-  }
-
-  // Adding a title view will replace the default title.
-  GetBubbleFrameView()->SetTitleView(
-      std::make_unique<sharing_hub::TitleWithBackButtonView>(
-          base::BindRepeating(&SendTabToSelfBubbleView::BackButtonPressed,
-                              base::Unretained(this)),
-          GetWindowTitle()));
-}
-
-void SendTabToSelfBubbleView::BackButtonPressed() {
-  if (controller_) {
-    controller_->OnBackButtonPressed();
-    Hide();
-  }
 }
 
 BEGIN_METADATA(SendTabToSelfBubbleView)

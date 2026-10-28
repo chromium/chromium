@@ -14,8 +14,7 @@ class WebContents;
 namespace send_tab_to_self {
 
 void ShowBubble(content::WebContents* web_contents,
-                ShareEntryPoint entry_point,
-                bool show_back_button = false);
+                ShareEntryPoint entry_point);
 
 }  // namespace send_tab_to_self
 
