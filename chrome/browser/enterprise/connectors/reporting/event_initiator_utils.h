@@ -9,6 +9,10 @@
 
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 
+namespace content {
+class WebContents;
+}  // namespace content
+
 namespace download {
 class DownloadItem;
 }  // namespace download
@@ -29,6 +33,17 @@ namespace enterprise_connectors {
 // Must be called on the UI thread.
 std::optional<safe_browsing::ExtensionTelemetryReportRequest::ExtensionInfo>
 GetExtensionInitiatorInfo(download::DownloadItem* download);
+
+// Returns an `ExtensionInfo` describing the extension currently acting on
+// `web_contents`, as recorded by `ExtensionActorTracker`.
+//
+// Returns `std::nullopt` if `web_contents` is null, the feature or reporting is
+// off, or no extension is active. Name, version and provenance are unset if the
+// extension is no longer installed.
+//
+// Must be called on the UI thread.
+std::optional<safe_browsing::ExtensionTelemetryReportRequest::ExtensionInfo>
+GetActiveExtensionInitiatorInfo(content::WebContents* web_contents);
 
 }  // namespace enterprise_connectors
 

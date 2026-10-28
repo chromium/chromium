@@ -374,7 +374,8 @@ TEST_F(IOSReportingEventRouterTest, TestOnUrlFilteringInterstitial_Blocked) {
 
   reporting_event_router_->OnUrlFilteringInterstitial(
       GURL("https://filteredurl.com"), "ENTERPRISE_BLOCKED_SEEN", response,
-      referrer_chain, /*tab_title=*/kTabTitle);
+      referrer_chain, /*tab_title=*/kTabTitle,
+      /*extension_initiator=*/std::nullopt);
   run_loop.Run();
 }
 
@@ -420,7 +421,8 @@ TEST_F(IOSReportingEventRouterTest, TestOnUrlFilteringInterstitial_Warned) {
 
   reporting_event_router_->OnUrlFilteringInterstitial(
       GURL("https://filteredurl.com"), "ENTERPRISE_WARNED_SEEN", response,
-      referrer_chain, /*tab_title=*/kTabTitle);
+      referrer_chain, /*tab_title=*/kTabTitle,
+      /*extension_initiator=*/std::nullopt);
   run_loop.Run();
 }
 
@@ -467,7 +469,8 @@ TEST_F(IOSReportingEventRouterTest, TestOnUrlFilteringInterstitial_Bypassed) {
 
   reporting_event_router_->OnUrlFilteringInterstitial(
       GURL("https://filteredurl.com"), "ENTERPRISE_WARNED_BYPASS", response,
-      referrer_chain, /*tab_title=*/kTabTitle);
+      referrer_chain, /*tab_title=*/kTabTitle,
+      /*extension_initiator=*/std::nullopt);
   run_loop.Run();
 }
 
@@ -510,7 +513,7 @@ TEST_F(IOSReportingEventRouterTest,
 
   reporting_event_router_->OnUrlFilteringInterstitial(
       GURL("https://filteredurl.com"), "", response, referrer_chain,
-      /*tab_title=*/kTabTitle);
+      /*tab_title=*/kTabTitle, /*extension_initiator=*/std::nullopt);
   run_loop.Run();
 }
 
@@ -545,7 +548,7 @@ TEST_F(IOSReportingEventRouterTest, TestInterstitialShownWarned) {
   referrer_chain.Add(test::MakeReferrerChainEntry());
   reporting_event_router_->OnSecurityInterstitialShown(
       GURL("https://phishing.com/"), "PHISHING", 0, false, referrer_chain,
-      /*tab_title=*/kTabTitle);
+      /*tab_title=*/kTabTitle, /*extension_initiator=*/std::nullopt);
   run_loop.Run();
 }
 
@@ -580,7 +583,7 @@ TEST_F(IOSReportingEventRouterTest, TestInterstitialShownBlocked) {
   referrer_chain.Add(test::MakeReferrerChainEntry());
   reporting_event_router_->OnSecurityInterstitialShown(
       GURL("https://phishing.com/"), "PHISHING", 0, true, referrer_chain,
-      /*tab_title=*/kTabTitle);
+      /*tab_title=*/kTabTitle, /*extension_initiator=*/std::nullopt);
   run_loop.Run();
 }
 
@@ -615,7 +618,7 @@ TEST_F(IOSReportingEventRouterTest, TestInterstitialProceeded) {
   referrer_chain.Add(test::MakeReferrerChainEntry());
   reporting_event_router_->OnSecurityInterstitialProceeded(
       GURL("https://phishing.com/"), "PHISHING", 0, referrer_chain,
-      /*tab_title=*/kTabTitle);
+      /*tab_title=*/kTabTitle, /*extension_initiator=*/std::nullopt);
   run_loop.Run();
 }
 

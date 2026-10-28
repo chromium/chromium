@@ -9,13 +9,19 @@
 #include <string>
 
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/enterprise/connectors/reporting/extension_actor_tracker.h"
 #include "chrome/browser/extensions/api/downloads/downloads_api.h"
+#include "chrome/browser/policy/dm_token_utils.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/enterprise/connectors/core/features.h"
+#include "components/enterprise/connectors/core/reporting_test_utils.h"
+#include "components/policy/core/common/cloud/dm_token.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "content/public/browser/download_item_utils.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/fake_download_item.h"
+#include "content/public/test/test_web_contents_factory.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
@@ -42,6 +48,9 @@ class EventInitiatorUtilsTest : public testing::Test {
   EventInitiatorUtilsTest() {
     scoped_feature_list_.InitAndEnableFeature(
         kEnterpriseExtensionActorAttribution);
+    policy::SetDMTokenForTesting(
+        policy::DMToken::CreateValidToken("fake-token"));
+    test::SetOnSecurityEventReporting(profile_.GetPrefs(), /*enabled=*/true);
   }
 
   // Creates an extension without registering it in `profile_`.
@@ -85,16 +94,23 @@ class EventInitiatorUtilsTest : public testing::Test {
  protected:
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;
+  content::TestWebContentsFactory web_contents_factory_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(EventInitiatorUtilsTest, FeatureDisabledReturnsNullopt) {
-  base::test::ScopedFeatureList disabled;
-  disabled.InitAndDisableFeature(kEnterpriseExtensionActorAttribution);
   InstallExtension(ManifestLocation::kInternal,
                    extensions::Extension::FROM_WEBSTORE);
   auto item = CreateDownloadByExtension(kExtensionId);
+  content::WebContents* web_contents =
+      web_contents_factory_.CreateWebContents(&profile_);
+  ExtensionActorTracker::SetActiveActor(web_contents, kExtensionId,
+                                        "Page.navigate");
+
+  base::test::ScopedFeatureList disabled;
+  disabled.InitAndDisableFeature(kEnterpriseExtensionActorAttribution);
   EXPECT_FALSE(GetExtensionInitiatorInfo(item.get()).has_value());
+  EXPECT_FALSE(GetActiveExtensionInitiatorInfo(web_contents).has_value());
 }
 
 TEST_F(EventInitiatorUtilsTest, NullDownloadReturnsNullopt) {
@@ -289,5 +305,53 @@ INSTANTIATE_TEST_SUITE_P(
                                 ExtensionInfo::EXTERNAL_POLICY},
         InstallLocationTestCase{ManifestLocation::kExternalComponent,
                                 ExtensionInfo::EXTERNAL_COMPONENT}));
+
+TEST_F(EventInitiatorUtilsTest, NullWebContentsReturnsNullopt) {
+  EXPECT_FALSE(
+      GetActiveExtensionInitiatorInfo(/*web_contents=*/nullptr).has_value());
+}
+
+TEST_F(EventInitiatorUtilsTest, WebContentsWithoutActiveActorReturnsNullopt) {
+  content::WebContents* web_contents =
+      web_contents_factory_.CreateWebContents(&profile_);
+  EXPECT_FALSE(GetActiveExtensionInitiatorInfo(web_contents).has_value());
+}
+
+TEST_F(EventInitiatorUtilsTest, WebContentsWithActiveActorPopulatesProvenance) {
+  InstallExtension(ManifestLocation::kInternal,
+                   extensions::Extension::FROM_WEBSTORE);
+  content::WebContents* web_contents =
+      web_contents_factory_.CreateWebContents(&profile_);
+  ExtensionActorTracker::SetActiveActor(web_contents, kExtensionId,
+                                        "Page.navigate");
+
+  std::optional<ExtensionInfo> extension_info =
+      GetActiveExtensionInitiatorInfo(web_contents);
+
+  ASSERT_TRUE(extension_info.has_value());
+  EXPECT_EQ(kExtensionId, extension_info->id());
+  EXPECT_EQ(kExtensionName, extension_info->name());
+  EXPECT_EQ(kExtensionVersion, extension_info->version());
+  EXPECT_EQ(ExtensionInfo::INTERNAL, extension_info->install_location());
+  EXPECT_TRUE(extension_info->is_from_store());
+}
+
+TEST_F(EventInitiatorUtilsTest,
+       WebContentsWithUninstalledActorReportsIdWithoutProvenance) {
+  content::WebContents* web_contents =
+      web_contents_factory_.CreateWebContents(&profile_);
+  ExtensionActorTracker::SetActiveActor(web_contents, kUninstalledExtensionId,
+                                        "Page.navigate");
+
+  std::optional<ExtensionInfo> extension_info =
+      GetActiveExtensionInitiatorInfo(web_contents);
+
+  ASSERT_TRUE(extension_info.has_value());
+  EXPECT_EQ(kUninstalledExtensionId, extension_info->id());
+  EXPECT_FALSE(extension_info->has_name());
+  EXPECT_FALSE(extension_info->has_version());
+  EXPECT_FALSE(extension_info->has_install_location());
+  EXPECT_FALSE(extension_info->has_is_from_store());
+}
 
 }  // namespace enterprise_connectors

@@ -11,10 +11,12 @@
 #include "base/notreached.h"
 #include "base/version.h"
 #include "components/download/public/common/download_item.h"
+#include "components/enterprise/buildflags/buildflags.h"
 #include "components/enterprise/connectors/core/features.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/download_item_utils.h"
+#include "content/public/browser/web_contents.h"
 #include "extensions/buildflags/buildflags.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
@@ -22,6 +24,12 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/mojom/manifest.mojom-shared.h"
+#endif
+
+#if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS) && \
+    BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+#include "chrome/browser/enterprise/connectors/reporting/extension_actor_tracker.h"
+#include "extensions/common/extension_id.h"
 #endif
 
 namespace enterprise_connectors {
@@ -68,13 +76,38 @@ ExtensionInfo::InstallLocation ToInstallLocation(ManifestLocation location) {
   }
   NOTREACHED();
 }
+
+void PopulateInstalledExtensionInfo(content::BrowserContext* browser_context,
+                                    const std::string& extension_id,
+                                    ExtensionInfo& extension_info) {
+  extensions::ExtensionRegistry* registry =
+      browser_context ? extensions::ExtensionRegistry::Get(browser_context)
+                      : nullptr;
+  const extensions::Extension* extension =
+      registry ? registry->GetInstalledExtension(extension_id) : nullptr;
+  if (!extension) {
+    // Leave version and provenance unset so consumers can tell "unknown" from
+    // "false".
+    return;
+  }
+
+  // Overwrite any fallback with the current name, since the extension is still
+  // installed and its name may have changed.
+  extension_info.set_name(extension->name());
+  extension_info.set_version(extension->version().GetString());
+
+  // Provenance lets consumers tell a Web Store extension apart from a
+  // sideloaded one that declares the same ID.
+  extension_info.set_install_location(ToInstallLocation(extension->location()));
+  extension_info.set_is_from_store(extension->from_webstore());
+}
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
 }  // namespace
 
 std::optional<ExtensionInfo> GetExtensionInitiatorInfo(
     download::DownloadItem* download) {
-  // ExtensionRegistry is UI-thread only.
+  // `ExtensionRegistry` is UI-thread only.
   CHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   if (!base::FeatureList::IsEnabled(kEnterpriseExtensionActorAttribution) ||
@@ -108,33 +141,43 @@ std::optional<ExtensionInfo> GetExtensionInitiatorInfo(
 
   // The BrowserContext is attached to `download` as user data. It may be null
   // if none was attached.
-  content::BrowserContext* browser_context =
-      content::DownloadItemUtils::GetBrowserContext(download);
-  extensions::ExtensionRegistry* registry =
-      browser_context ? extensions::ExtensionRegistry::Get(browser_context)
-                      : nullptr;
-  const extensions::Extension* extension =
-      registry ? registry->GetInstalledExtension(by_ext->id()) : nullptr;
-  if (!extension) {
-    // Leave version and provenance unset so consumers can tell "unknown" from
-    // "false".
-    return extension_info;
-  }
-
-  // Overwrite the fallback with the current name, since the extension is still
-  // installed and its name may have changed since the download started.
-  extension_info.set_name(extension->name());
-  extension_info.set_version(extension->version().GetString());
-
-  // Provenance lets consumers tell a Web Store extension apart from a
-  // sideloaded one that declares the same ID.
-  extension_info.set_install_location(ToInstallLocation(extension->location()));
-  extension_info.set_is_from_store(extension->from_webstore());
+  PopulateInstalledExtensionInfo(
+      content::DownloadItemUtils::GetBrowserContext(download), by_ext->id(),
+      extension_info);
 
   return extension_info;
 #else
   return std::nullopt;
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+}
+
+std::optional<ExtensionInfo> GetActiveExtensionInitiatorInfo(
+    content::WebContents* web_contents) {
+  // `ExtensionRegistry` is UI-thread only.
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  if (!base::FeatureList::IsEnabled(kEnterpriseExtensionActorAttribution) ||
+      !web_contents) {
+    return std::nullopt;
+  }
+
+#if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS) && \
+    BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+  std::optional<extensions::ExtensionId> actor_id =
+      ExtensionActorTracker::GetActiveActor(web_contents);
+  if (!actor_id.has_value()) {
+    return std::nullopt;
+  }
+
+  ExtensionInfo extension_info;
+  extension_info.set_id(*actor_id);
+  PopulateInstalledExtensionInfo(web_contents->GetBrowserContext(), *actor_id,
+                                 extension_info);
+  return extension_info;
+#else
+  return std::nullopt;
+#endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS) &&
+        // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 }
 
 }  // namespace enterprise_connectors

@@ -384,7 +384,8 @@ TEST_F(ReportingEventRouterTest, TestOnUrlFilteringInterstitial_Blocked) {
   referrer_chain.Add(test::MakeReferrerChainEntry());
   reporting_event_router_->OnUrlFilteringInterstitial(
       GURL("https://filteredurl.com"), "ENTERPRISE_BLOCKED_SEEN", response,
-      referrer_chain, /*tab_title=*/kTabTitle);
+      referrer_chain, /*tab_title=*/kTabTitle,
+      /*extension_initiator=*/std::nullopt);
   run_loop.Run();
 }
 
@@ -432,7 +433,8 @@ TEST_F(ReportingEventRouterTest, TestOnUrlFilteringInterstitial_Warned) {
   referrer_chain.Add(test::MakeReferrerChainEntry());
   reporting_event_router_->OnUrlFilteringInterstitial(
       GURL("https://filteredurl.com"), "ENTERPRISE_WARNED_SEEN", response,
-      referrer_chain, /*tab_title=*/kTabTitle);
+      referrer_chain, /*tab_title=*/kTabTitle,
+      /*extension_initiator=*/std::nullopt);
   run_loop.Run();
 }
 
@@ -481,7 +483,8 @@ TEST_F(ReportingEventRouterTest, TestOnUrlFilteringInterstitial_Bypassed) {
   referrer_chain.Add(test::MakeReferrerChainEntry());
   reporting_event_router_->OnUrlFilteringInterstitial(
       GURL("https://filteredurl.com"), "ENTERPRISE_WARNED_BYPASS", response,
-      referrer_chain, /*tab_title=*/kTabTitle);
+      referrer_chain, /*tab_title=*/kTabTitle,
+      /*extension_initiator=*/std::nullopt);
   run_loop.Run();
 }
 
@@ -528,7 +531,7 @@ TEST_F(ReportingEventRouterTest,
 
   reporting_event_router_->OnUrlFilteringInterstitial(
       GURL("https://filteredurl.com"), "", response, referrer_chain,
-      /*tab_title=*/kTabTitle);
+      /*tab_title=*/kTabTitle, /*extension_initiator=*/std::nullopt);
   run_loop.Run();
 }
 
@@ -575,7 +578,7 @@ TEST_F(ReportingEventRouterTest,
 
   reporting_event_router_->OnUrlFilteringInterstitial(
       GURL("https://filteredurl.com"), "", response, referrer_chain,
-      /*tab_title=*/kTabTitle);
+      /*tab_title=*/kTabTitle, /*extension_initiator=*/std::nullopt);
   run_loop.Run();
 }
 
@@ -609,7 +612,7 @@ TEST_F(ReportingEventRouterTest, TestInterstitialShownWarned) {
   referrer_chain.Add(test::MakeReferrerChainEntry());
   reporting_event_router_->OnSecurityInterstitialShown(
       GURL("https://phishing.com/"), "PHISHING", 0, false, referrer_chain,
-      /*tab_title=*/kTabTitle);
+      /*tab_title=*/kTabTitle, /*extension_initiator=*/std::nullopt);
   run_loop.Run();
 }
 
@@ -642,7 +645,7 @@ TEST_F(ReportingEventRouterTest, TestInterstitialShownBlocked) {
   referrer_chain.Add(test::MakeReferrerChainEntry());
   reporting_event_router_->OnSecurityInterstitialShown(
       GURL("https://phishing.com/"), "PHISHING", 0, true, referrer_chain,
-      /*tab_title=*/kTabTitle);
+      /*tab_title=*/kTabTitle, /*extension_initiator=*/std::nullopt);
   run_loop.Run();
 }
 
@@ -675,7 +678,7 @@ TEST_F(ReportingEventRouterTest, TestInterstitialProceeded) {
   referrer_chain.Add(test::MakeReferrerChainEntry());
   reporting_event_router_->OnSecurityInterstitialProceeded(
       GURL("https://phishing.com/"), "PHISHING", 0, referrer_chain,
-      /*tab_title=*/kTabTitle);
+      /*tab_title=*/kTabTitle, /*extension_initiator=*/std::nullopt);
   run_loop.Run();
 }
 
@@ -1546,6 +1549,39 @@ TEST_P(ReportingEventRouterInitiatorTest,
       MakeExtensionInfo());
   RunUntilHashObtained();
   run_loop.Run();
+}
+
+TEST_P(ReportingEventRouterInitiatorTest, InterstitialEvents_WithInitiator) {
+  test::SetOnSecurityEventReporting(
+      profile_->GetPrefs(), /*enabled=*/true,
+      /*enabled_event_names=*/
+      {kKeyUrlFilteringInterstitialEvent, kKeyInterstitialEvent},
+      /*enabled_opt_in_events=*/{});
+
+  auto expect_upload = [&](auto trigger) {
+    base::RunLoop run_loop;
+    ExpectInitiator(MakeExtensionInfo(), run_loop.QuitClosure());
+    trigger();
+    run_loop.Run();
+  };
+
+  expect_upload([&]() {
+    reporting_event_router_->OnUrlFilteringInterstitial(
+        GURL("https://filteredurl.com"), "ENTERPRISE_BLOCKED_SEEN",
+        safe_browsing::RTLookupResponse(), ReferrerChain(),
+        /*tab_title=*/kTabTitle, MakeExtensionInfo());
+  });
+  expect_upload([&]() {
+    reporting_event_router_->OnSecurityInterstitialShown(
+        GURL("https://phishing.com/"), "PHISHING", /*net_error_code=*/0,
+        /*proceed_anyway_disabled=*/false, ReferrerChain(),
+        /*tab_title=*/kTabTitle, MakeExtensionInfo());
+  });
+  expect_upload([&]() {
+    reporting_event_router_->OnSecurityInterstitialProceeded(
+        GURL("https://phishing.com/"), "PHISHING", /*net_error_code=*/0,
+        ReferrerChain(), /*tab_title=*/kTabTitle, MakeExtensionInfo());
+  });
 }
 #endif  // BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
 

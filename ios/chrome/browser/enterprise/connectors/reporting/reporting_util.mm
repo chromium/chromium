@@ -71,7 +71,8 @@ void ReportEnterpriseUrlFilteringEvent(
   // TODO(crbug.com/558721044): Plumb tab title on iOS.
   event_router->OnUrlFilteringInterstitial(
       page_url, GetEventTypeString(event_type), rt_lookup_response,
-      /*referrer_chain=*/{}, /*tab_title=*/"");
+      /*referrer_chain=*/{}, /*tab_title=*/"",
+      /*extension_initiator=*/std::nullopt);
 }
 
 void MaybeReportDangerousDownloadEvent(
