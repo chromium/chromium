@@ -32,6 +32,7 @@
 #include "chrome/common/channel_info.h"
 #include "chrome/common/extensions/api/context_menus.h"
 #include "components/version_info/channel.h"
+#include "content/public/browser/back_forward_cache.h"
 #include "content/public/browser/context_menu_params.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
@@ -1049,6 +1050,9 @@ class ExtensionContextMenuActiveTabBrowserTest
 // the new document.
 IN_PROC_BROWSER_TEST_F(ExtensionContextMenuActiveTabBrowserTest,
                        NoClickEventAfterNavigationToBackForwardCache) {
+  if (!content::BackForwardCache::IsBackForwardCacheFeatureEnabled()) {
+    GTEST_SKIP() << "Test requires BackForwardCache.";
+  }
   ASSERT_TRUE(embedded_test_server()->Start());
   TestExtensionDir test_dir;
   test_dir.WriteManifest(R"(
