@@ -34,7 +34,9 @@
 #include "build/build_config.h"
 #include "components/os_crypt/async/browser/key_provider.h"
 #include "components/os_crypt/async/browser/os_crypt_async.h"
+#include "components/os_crypt/async/browser/test_key_provider.h"
 #include "components/os_crypt/async/browser/test_utils.h"
+#include "components/os_crypt/async/common/algorithm.mojom.h"
 #include "components/os_crypt/async/common/encryptor.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/browser_context.h"
@@ -1817,24 +1819,6 @@ class NetworkServiceCookieEncryptionBrowserTest : public ContentBrowserTest {
     host_resolver()->AddRule("*", "127.0.0.1");
     ASSERT_TRUE(embedded_test_server()->Start());
   }
-
-  // A test key provider that takes a fixed key.
-  class TestKeyProvider : public os_crypt_async::KeyProvider {
-   public:
-    explicit TestKeyProvider(base::span<const uint8_t> key)
-        : key_(key.begin(), key.end()) {}
-
-   private:
-    void GetKey(KeyCallback callback) final {
-      std::move(callback).Run(
-          "_", os_crypt_async::Encryptor::Key(
-                   key_, os_crypt_async::mojom::Algorithm::kAES256GCM));
-    }
-
-    bool UseForEncryption() final { return true; }
-
-    const std::vector<uint8_t> key_;
-  };
 };
 
 // This test verifies that when a cookie encryption provider is set when
@@ -1868,8 +1852,12 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceCookieEncryptionBrowserTest,
   std::vector<std::pair<size_t, std::unique_ptr<os_crypt_async::KeyProvider>>>
       providers;
 
-  providers.emplace_back(/*precedence=*/10u,
-                         std::make_unique<TestKeyProvider>(key_data));
+  providers.emplace_back(
+      /*precedence=*/10u,
+      std::make_unique<os_crypt_async::TestKeyProvider>(
+          "_", /*use_for_encryption=*/true,
+          os_crypt_async::Encryptor::Key(
+              key_data, os_crypt_async::mojom::Algorithm::kAES256GCM)));
 
   os_crypt_async::OSCryptAsync os_crypt_async(std::move(providers));
   EXPECT_CALL(provider, GetEncryptor)

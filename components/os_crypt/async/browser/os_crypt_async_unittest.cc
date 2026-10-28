@@ -16,10 +16,9 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "components/os_crypt/async/browser/key_provider.h"
+#include "components/os_crypt/async/browser/test_key_provider.h"
 #include "components/os_crypt/async/browser/test_utils.h"
-#include "components/os_crypt/async/common/algorithm.mojom.h"
 #include "components/os_crypt/async/common/encryptor.h"
-#include "crypto/kdf.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -37,38 +36,6 @@ class OSCryptAsyncTest : public ::testing::Test {
   }
 
   base::test::TaskEnvironment task_environment_;
-};
-
-class TestKeyProvider : public KeyProvider {
- public:
-  TestKeyProvider(const std::string& name, bool use_for_encryption)
-      : name_(name), use_for_encryption_(use_for_encryption) {}
-
- protected:
-  TestKeyProvider() : name_("TEST"), use_for_encryption_(true) {}
-
-  Encryptor::Key GenerateKey() {
-    // Make the key derive from the name to ensure different providers have
-    // different keys.
-    constexpr auto kAlgo = crypto::hash::kSha256;
-    constexpr auto kSalt = std::to_array<uint8_t>({'s', 'a', 'l', 't'});
-    constexpr auto kInfo = std::to_array<uint8_t>({'i', 'n', 'f', 'o'});
-    constexpr auto kSize = Encryptor::Key::kAES256GCMKeySize;
-    const auto name = base::as_byte_span(name_);
-    return Encryptor::Key(crypto::kdf::Hkdf<kSize>(kAlgo, name, kSalt, kInfo),
-                          mojom::Algorithm::kAES256GCM);
-  }
-
-  const std::string name_;
-
- private:
-  void GetKey(KeyCallback callback) override {
-    std::move(callback).Run(name_, GenerateKey());
-  }
-
-  bool UseForEncryption() override { return use_for_encryption_; }
-
-  const bool use_for_encryption_;
 };
 
 TEST_F(OSCryptAsyncTest, EncryptHeader) {
@@ -231,18 +198,18 @@ INSTANTIATE_TEST_SUITE_P(, OSCryptAsyncTestSwapped, ::testing::Bool());
 
 class SlowTestKeyProvider : public TestKeyProvider {
  public:
-  explicit SlowTestKeyProvider(base::TimeDelta sleep_time) {}
+  explicit SlowTestKeyProvider(base::TimeDelta sleep_time)
+      : TestKeyProvider("TEST", /*use_for_encryption=*/true) {}
 
  private:
   void GetKey(KeyCallback callback) override {
     base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(
-            [](KeyCallback callback, Encryptor::Key key,
-               const std::string& name) {
-              std::move(callback).Run(name, std::move(key));
+            [](SlowTestKeyProvider* provider, KeyCallback callback) {
+              provider->TestKeyProvider::GetKey(std::move(callback));
             },
-            std::move(callback), GenerateKey(), name_),
+            base::Unretained(this), std::move(callback)),
         sleep_time_);
   }
 
@@ -332,15 +299,14 @@ TEST_F(OSCryptAsyncTest, TestEncryptorWithoutKeysInterface) {
 class FailingKeyProvider : public TestKeyProvider {
  public:
   FailingKeyProvider(KeyProvider::KeyError reason, const std::string& name)
-      : reason_(reason), name_(name) {}
+      : TestKeyProvider(name, /*use_for_encryption=*/true), reason_(reason) {}
 
  private:
   void GetKey(KeyCallback callback) override {
-    std::move(callback).Run(name_, base::unexpected(reason_));
+    std::move(callback).Run(name(), base::unexpected(reason_));
   }
 
   const KeyProvider::KeyError reason_;
-  const std::string name_;
 };
 
 // This test merely verifies that OSCryptAsync can operate with no key providers

@@ -33,6 +33,7 @@ class KeyDataView;
 class EncryptorTest;
 class EncryptorParamTest;
 class OSCryptAsync;
+class TestKeyProvider;
 class TestOSCryptAsync;
 
 // This class is used for data encryption. A thread-safe instance can be
@@ -69,6 +70,7 @@ class COMPONENT_EXPORT(OS_CRYPT_ASYNC) Encryptor
     friend class Encryptor;
     // OSCryptAsync and tests need to be able to Clone() keys.
     friend class OSCryptAsync;
+    friend class TestKeyProvider;
     friend class TestOSCryptAsync;
     friend class EncryptorTest;
     friend class EncryptorParamTest;

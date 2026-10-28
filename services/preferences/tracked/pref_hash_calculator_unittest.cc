@@ -17,11 +17,9 @@
 #include "base/test/test_future.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "components/os_crypt/async/browser/test_key_provider.h"
 #include "components/os_crypt/async/browser/test_utils.h"
-#include "components/os_crypt/async/common/algorithm.mojom.h"
 #include "components/os_crypt/async/common/encryptor.h"
-#include "crypto/kdf.h"
-#include "crypto/sha2.h"
 #include "services/preferences/tracked/features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -42,28 +40,6 @@ class PrefHashCalculatorEncryptedTest : public testing::Test {
 
   PrefHashCalculator calculator_;
   scoped_refptr<os_crypt_async::TestEncryptor> test_encryptor_;
-};
-
-// A test key provider that takes a name and produces a deterministic key based
-// on that name.
-class TestKeyProvider : public os_crypt_async::KeyProvider {
- public:
-  explicit TestKeyProvider(const std::string& name) : name_(name) {}
-
- private:
-  void GetKey(KeyCallback callback) final {
-    std::move(callback).Run(
-        name_, os_crypt_async::Encryptor::Key(
-                   crypto::kdf::Hkdf<
-                       os_crypt_async::Encryptor::Key::kAES256GCMKeySize>(
-                       crypto::hash::kSha256, base::as_byte_span(name_),
-                       /*salt=*/{}, /*info=*/{}),
-                   os_crypt_async::mojom::Algorithm::kAES256GCM));
-  }
-
-  bool UseForEncryption() final { return true; }
-
-  const std::string name_;
 };
 
 }  // namespace
@@ -410,8 +386,9 @@ TEST_P(PrefHashCalculatorEncryptedWeakHashFeatureTest, WeakHash) {
   {
     std::vector<std::pair<size_t, std::unique_ptr<os_crypt_async::KeyProvider>>>
         providers;
-    providers.emplace_back(/*precedence=*/5u,
-                           std::make_unique<TestKeyProvider>("v10"));
+    providers.emplace_back(
+        /*precedence=*/5u, std::make_unique<os_crypt_async::TestKeyProvider>(
+                               "v10", /*use_for_encryption=*/true));
     os_crypt_async::OSCryptAsync os_crypt(std::move(providers));
 
     base::test::TestFuture<scoped_refptr<os_crypt_async::Encryptor>> future;
@@ -431,11 +408,13 @@ TEST_P(PrefHashCalculatorEncryptedWeakHashFeatureTest, WeakHash) {
     std::vector<std::pair<size_t, std::unique_ptr<os_crypt_async::KeyProvider>>>
         providers;
     // v10 key is available for decryption.
-    providers.emplace_back(/*precedence=*/5u,
-                           std::make_unique<TestKeyProvider>("v10"));
+    providers.emplace_back(
+        /*precedence=*/5u, std::make_unique<os_crypt_async::TestKeyProvider>(
+                               "v10", /*use_for_encryption=*/true));
     // v20 key is higher precedence, and preferred for encryption.
-    providers.emplace_back(/*precedence=*/10u,
-                           std::make_unique<TestKeyProvider>("v20"));
+    providers.emplace_back(
+        /*precedence=*/10u, std::make_unique<os_crypt_async::TestKeyProvider>(
+                                "v20", /*use_for_encryption=*/true));
     os_crypt_async::OSCryptAsync os_crypt(std::move(providers));
 
     base::test::TestFuture<scoped_refptr<os_crypt_async::Encryptor>> future;

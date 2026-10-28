@@ -36,6 +36,8 @@ component("browser") {
 source_set("test_support") {
   testonly = true
   sources = [
+    "test_key_provider.cc",
+    "test_key_provider.h",
     "test_utils.cc",
     "test_utils.h",
   ]
