@@ -1896,25 +1896,25 @@ class GlicLegacyWebviewWarmedNativeLoadingBrowserTest : public GlicBrowserTest {
   base::test::ScopedFeatureList feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(
-    GlicLegacyWebviewWarmedNativeLoadingBrowserTest,
-    ShowsNativePlaceholderWhenOpenedInWarmedStateBeforeClientConnects) {
+IN_PROC_BROWSER_TEST_F(GlicLegacyWebviewWarmedNativeLoadingBrowserTest,
+                       ShowsNativePlaceholderWhenReopenedBeforeClientConnects) {
   ASSERT_OK_AND_ASSIGN(GlicInstanceImpl * instance, OpenGlicForActiveTab());
   PreventBlankDeletionOnClose(instance);
   ASSERT_OK(CloseGlicForTabAndWait(GetTabListInterface()->GetActiveTab()));
 
-  // While hidden, GlicAppController.finishLoading() transitions to kWarmed once
-  // kPreLoadingTimeMs + kMinLoadingTimeMs elapses even though /hung has not
-  // created a web client yet.
-  ASSERT_OK(WaitForWebUiState(mojom::WebUiState::kWarmed));
+  // While hidden, GlicAppController.finishLoading() stays in kFinishLoading
+  // once kPreLoadingTimeMs + kMinLoadingTimeMs elapses because /hung has not
+  // created a web client yet; it must not advance to kWarmed on its own.
+  ASSERT_OK(WaitForWebUiState(mojom::WebUiState::kFinishLoading));
   EXPECT_EQ(instance->host().client_load_state(), ClientLoadState::kLoading);
   EXPECT_FALSE(instance->host().IsShowingNativeLoading());
 
-  // Re-opening the panel while still uninitialized in kWarmed must display the
-  // native loading placeholder rather than exposing a blank guest panel.
+  // Re-opening the panel while still uninitialized in kFinishLoading must
+  // display the native loading placeholder rather than exposing a blank guest
+  // panel.
   ASSERT_OK_AND_ASSIGN(instance, OpenGlicForActiveTab());
   EXPECT_EQ(instance->host().GetPrimaryWebUiState(),
-            mojom::WebUiState::kWarmed);
+            mojom::WebUiState::kFinishLoading);
   EXPECT_TRUE(instance->host().IsShowingNativeLoading());
 
   // Reloading to a real client transitions cleanly out of native loading.

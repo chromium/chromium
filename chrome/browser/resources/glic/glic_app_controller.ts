@@ -837,9 +837,6 @@ export class GlicAppController implements WebviewDelegate {
       return;
     }
     if (this.panelStateKind === PanelStateKind.kHidden) {
-      this.cancelTimeout();
-      this.trackLoadingStageEnd();
-      this.setState(WebUiState.kWarmed);
       return;
     }
     this.startClientLoadTimeout();
@@ -1039,7 +1036,10 @@ export class GlicAppController implements WebviewDelegate {
     if (this.panelStateKind !== PanelStateKind.kHidden) {
       if (this.state === WebUiState.kWarmed) {
         this.startWarmedTimeout();
-      } else if (this.state === WebUiState.kGuestLoaded && !this.loadingTimer) {
+      } else if (
+          (this.state === WebUiState.kFinishLoading ||
+           this.state === WebUiState.kGuestLoaded) &&
+          !this.loadingTimer) {
         this.startClientLoadTimeout();
       }
     }

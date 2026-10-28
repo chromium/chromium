@@ -785,10 +785,9 @@ bool Host::ComputeIsShowingNativeLoading() const {
     case mojom::WebUiState::kFinishLoading:
       return true;
     case mojom::WebUiState::kWarmed:
-      // `GlicAppController.finishLoading()` enters `kWarmed` after the loading
-      // timer expires while hidden even if the guest has not created a web
-      // client yet. Keep the native placeholder visible until a client
-      // connects.
+      // `GlicAppController` enters `kWarmed` once the web client reports
+      // itself warmed, so the client is normally connected by now. Keep the
+      // native placeholder visible defensively until a client connects.
       return web_client_state() == mojom::WebClientState::kUninitialized;
     case mojom::WebUiState::kError:
     case mojom::WebUiState::kOffline:
