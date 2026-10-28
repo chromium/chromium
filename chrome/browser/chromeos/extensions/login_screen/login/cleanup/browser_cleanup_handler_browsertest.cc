@@ -100,9 +100,13 @@ class BrowserCleanupHandlerTest : public policy::DevicePolicyCrosBrowserTest {
           run_loop.QuitClosure().Run();
         });
 
+    const session_manager::Session* active_session =
+        session_manager::SessionManager::Get()->GetActiveSession();
+    ASSERT_TRUE(active_session);
     std::unique_ptr<chromeos::BrowserCleanupHandler> browser_cleanup_handler =
         std::make_unique<chromeos::BrowserCleanupHandler>();
-    browser_cleanup_handler->Cleanup(success_check_callback);
+    browser_cleanup_handler->Cleanup(active_session->account_id(),
+                                     success_check_callback);
     run_loop.Run();
   }
 

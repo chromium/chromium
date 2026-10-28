@@ -265,9 +265,13 @@ IN_PROC_BROWSER_TEST_F(ExtensionCleanupHandlerTest,
       GetTestExtensionRegistryObserver(kUserExtensionId);
 
   // Start cleanup.
+  const session_manager::Session* active_session =
+      session_manager::SessionManager::Get()->GetActiveSession();
+  ASSERT_TRUE(active_session);
   std::unique_ptr<chromeos::ExtensionCleanupHandler> extension_cleanup_handler =
       std::make_unique<chromeos::ExtensionCleanupHandler>();
-  extension_cleanup_handler->Cleanup(base::DoNothing());
+  extension_cleanup_handler->Cleanup(active_session->account_id(),
+                                     base::DoNothing());
 
   // Wait for extension uninstall and install.
   for (auto& extension_observer : extension_observers) {

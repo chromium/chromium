@@ -7,10 +7,13 @@
 #include <utility>
 
 #include "base/barrier_closure.h"
+#include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_util.h"
+#include "components/session_manager/core/session.h"
+#include "components/session_manager/core/session_manager.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
 namespace chromeos {
@@ -24,6 +27,10 @@ void CleanupManager::Cleanup(CleanupCallback callback) {
     std::move(callback).Run("Cleanup is already in progress");
     return;
   }
+
+  const auto* active_session =
+      session_manager::SessionManager::Get()->GetActiveSession();
+  CHECK(active_session);
 
   if (cleanup_handlers_.empty())
     InitializeCleanupHandlers();
@@ -39,9 +46,10 @@ void CleanupManager::Cleanup(CleanupCallback callback) {
 
   start_time_ = base::Time::Now();
   for (auto& kv : cleanup_handlers_) {
-    kv.second->Cleanup(base::BindOnce(&CleanupManager::OnCleanupHandlerDone,
-                                      weak_factory_.GetWeakPtr(),
-                                      barrier_closure, kv.first));
+    kv.second->Cleanup(
+        active_session->account_id(),
+        base::BindOnce(&CleanupManager::OnCleanupHandlerDone,
+                       weak_factory_.GetWeakPtr(), barrier_closure, kv.first));
   }
 }
 

@@ -17,7 +17,8 @@ class PrintJobsCleanupHandler : public CleanupHandler {
   ~PrintJobsCleanupHandler() override;
 
   // CleanupHandler:
-  void Cleanup(CleanupHandlerCallback callback) override;
+  void Cleanup(const AccountId& account_id,
+               CleanupHandlerCallback callback) override;
 
  private:
   void OnDeleteAllPrintJobsDone(bool success);

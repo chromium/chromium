@@ -17,7 +17,8 @@ class WebAppCleanupHandler : public CleanupHandler {
   ~WebAppCleanupHandler() override;
 
   // CleanupHandler:
-  void Cleanup(CleanupHandlerCallback callback) override;
+  void Cleanup(const AccountId& account_id,
+               CleanupHandlerCallback callback) override;
 };
 
 }  // namespace chromeos

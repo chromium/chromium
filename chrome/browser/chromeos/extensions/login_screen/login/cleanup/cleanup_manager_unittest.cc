@@ -4,6 +4,7 @@
 
 #include "chrome/browser/chromeos/extensions/login_screen/login/cleanup/cleanup_manager.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/barrier_closure.h"
@@ -12,8 +13,14 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
+#include "chrome/browser/ash/login/test/chrome_user_session_test_environment_delegate.h"
 #include "chrome/browser/chromeos/extensions/login_screen/login/cleanup/mock_cleanup_handler.h"
+#include "chrome/test/base/testing_browser_process.h"
+#include "components/account_id/account_id.h"
+#include "components/account_id/account_id_literal.h"
+#include "components/session_manager/test/user_session_test_environment.h"
 #include "content/public/test/browser_task_environment.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -24,6 +31,9 @@ namespace chromeos {
 
 namespace {
 
+constexpr AccountId::Literal kTestAccountId =
+    AccountId::Literal::FromUserEmailGaiaId("test-user@example.com",
+                                            GaiaId::Literal("1234567890"));
 constexpr char kHandler1Name[] = "Handler1";
 constexpr char kHandler2Name[] = "Handler2";
 
@@ -44,15 +54,26 @@ class CleanupManagerUnittest : public testing::Test {
 
   void SetUp() override {
     testing::Test::SetUp();
+    auto* browser_process = TestingBrowserProcess::GetGlobal();
+    user_session_test_environment_ = std::make_unique<
+        ash::test::UserSessionTestEnvironment>(
+        browser_process->local_state(),
+        std::make_unique<ash::test::ChromeUserSessionTestEnvironmentDelegate>(
+            browser_process));
+    ASSERT_TRUE(user_session_test_environment_->AddRegularUser(kTestAccountId));
+    user_session_test_environment_->LogIn(kTestAccountId);
     manager_ = std::make_unique<TestCleanupManager>();
   }
 
   void TearDown() override {
     manager_.reset();
+    user_session_test_environment_.reset();
     testing::Test::TearDown();
   }
 
   content::BrowserTaskEnvironment task_environment_;
+  std::unique_ptr<ash::test::UserSessionTestEnvironment>
+      user_session_test_environment_;
   std::unique_ptr<TestCleanupManager> manager_;
 };
 
@@ -64,12 +85,12 @@ TEST_F(CleanupManagerUnittest, Cleanup) {
   };
   std::unique_ptr<MockCleanupHandler> mock_cleanup_handler1 =
       std::make_unique<MockCleanupHandler>();
-  EXPECT_CALL(*mock_cleanup_handler1, Cleanup(_))
-      .WillOnce(WithArg<0>(no_error_callback));
+  EXPECT_CALL(*mock_cleanup_handler1, Cleanup(AccountId(kTestAccountId), _))
+      .WillOnce(WithArg<1>(no_error_callback));
   std::unique_ptr<MockCleanupHandler> mock_cleanup_handler2 =
       std::make_unique<MockCleanupHandler>();
-  EXPECT_CALL(*mock_cleanup_handler2, Cleanup(_))
-      .WillOnce(WithArg<0>(no_error_callback));
+  EXPECT_CALL(*mock_cleanup_handler2, Cleanup(AccountId(kTestAccountId), _))
+      .WillOnce(WithArg<1>(no_error_callback));
 
   std::map<std::string, std::unique_ptr<CleanupHandler>> cleanup_handlers;
   cleanup_handlers.insert({kHandler1Name, std::move(mock_cleanup_handler1)});
@@ -94,8 +115,8 @@ TEST_F(CleanupManagerUnittest, CleanupInProgress) {
   std::unique_ptr<MockCleanupHandler> mock_cleanup_handler =
       std::make_unique<MockCleanupHandler>();
   CleanupHandler::CleanupHandlerCallback callback;
-  EXPECT_CALL(*mock_cleanup_handler, Cleanup(_))
-      .WillOnce(WithArg<0>(
+  EXPECT_CALL(*mock_cleanup_handler, Cleanup(AccountId(kTestAccountId), _))
+      .WillOnce(WithArg<1>(
           ([&callback](CleanupHandler::CleanupHandlerCallback callback_arg) {
             callback = std::move(callback_arg);
           })));
@@ -129,14 +150,14 @@ TEST_F(CleanupManagerUnittest, CleanupErrors) {
 
   std::unique_ptr<MockCleanupHandler> mock_cleanup_handler1 =
       std::make_unique<MockCleanupHandler>();
-  EXPECT_CALL(*mock_cleanup_handler1, Cleanup(_))
-      .WillOnce(WithArg<0>([](CleanupHandler::CleanupHandlerCallback callback) {
+  EXPECT_CALL(*mock_cleanup_handler1, Cleanup(AccountId(kTestAccountId), _))
+      .WillOnce(WithArg<1>([](CleanupHandler::CleanupHandlerCallback callback) {
         std::move(callback).Run("Error 1");
       }));
   std::unique_ptr<MockCleanupHandler> mock_cleanup_handler2 =
       std::make_unique<MockCleanupHandler>();
-  EXPECT_CALL(*mock_cleanup_handler2, Cleanup(_))
-      .WillOnce(WithArg<0>([](CleanupHandler::CleanupHandlerCallback callback) {
+  EXPECT_CALL(*mock_cleanup_handler2, Cleanup(AccountId(kTestAccountId), _))
+      .WillOnce(WithArg<1>([](CleanupHandler::CleanupHandlerCallback callback) {
         std::move(callback).Run("Error 2");
       }));
 

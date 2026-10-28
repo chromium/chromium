@@ -9,6 +9,8 @@
 
 #include "base/functional/callback.h"
 
+class AccountId;
+
 namespace chromeos {
 
 // A handler which is owned by `CleanupManager`. Each `CleanupHandler` is
@@ -21,7 +23,8 @@ class CleanupHandler {
   // `callback` must be called exactly once or there will be a memory leak. The
   // handler can assume that `CleanupManager` will not call `Cleanup` before
   // the current cleanup step has finished.
-  virtual void Cleanup(CleanupHandlerCallback callback) = 0;
+  virtual void Cleanup(const AccountId& account_id,
+                       CleanupHandlerCallback callback) = 0;
 
   virtual ~CleanupHandler() = default;
 };

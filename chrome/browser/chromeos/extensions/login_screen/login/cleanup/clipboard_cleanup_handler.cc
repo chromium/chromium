@@ -15,7 +15,8 @@ ClipboardCleanupHandler::ClipboardCleanupHandler() = default;
 
 ClipboardCleanupHandler::~ClipboardCleanupHandler() = default;
 
-void ClipboardCleanupHandler::Cleanup(CleanupHandlerCallback callback) {
+void ClipboardCleanupHandler::Cleanup(const AccountId& account_id,
+                                      CleanupHandlerCallback callback) {
   // ChromeOS only has 1 copy/paste clipboard used on all threads.
   ui::Clipboard::GetForCurrentThread()->Clear(ui::ClipboardBuffer::kCopyPaste);
   std::move(callback).Run(std::nullopt);

@@ -62,6 +62,7 @@ using testing::_;
 using testing::Return;
 using testing::SaveArg;
 using testing::StrictMock;
+using testing::WithArg;
 
 namespace {
 
@@ -193,6 +194,7 @@ class LoginApiUnittest : public ExtensionApiUnittest {
     fake_chrome_user_manager_ = new ash::FakeChromeUserManager();
     scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
         std::unique_ptr<ash::FakeChromeUserManager>(fake_chrome_user_manager_));
+    session_manager_->OnUserManagerCreated(fake_chrome_user_manager_);
     TestingBrowserProcess::GetGlobal()->SetSharedURLLoaderFactory(
         test_url_loader_factory_.GetSafeWeakWrapper());
     mock_login_display_host_ = std::make_unique<ash::MockLoginDisplayHost>();
@@ -227,10 +229,13 @@ class LoginApiUnittest : public ExtensionApiUnittest {
     mock_existing_user_controller_.reset();
     mock_login_display_host_.reset();
     TestingBrowserProcess::GetGlobal()->SetSharedURLLoaderFactory(nullptr);
-    scoped_user_manager_.reset();
     auth_events_recorder_.reset();
 
     ExtensionApiUnittest::TearDown();
+
+    session_manager_.reset();
+    fake_chrome_user_manager_ = nullptr;
+    scoped_user_manager_.reset();
   }
 
   std::unique_ptr<ScopedTestingProfile> AddPublicAccountUser(
@@ -908,22 +913,23 @@ class LoginApiSharedSessionUnittest : public LoginApiUnittest {
   void SetUpCleanupHandlerMocks(
       std::optional<std::string> error1 = std::nullopt,
       std::optional<std::string> error2 = std::nullopt) {
+    const AccountId expected_account_id = AccountId::FromUserEmail(kEmail);
     std::unique_ptr<chromeos::MockCleanupHandler> mock_cleanup_handler1 =
         std::make_unique<StrictMock<chromeos::MockCleanupHandler>>();
-    EXPECT_CALL(*mock_cleanup_handler1, Cleanup(_))
-        .WillOnce(
+    EXPECT_CALL(*mock_cleanup_handler1, Cleanup(expected_account_id, _))
+        .WillOnce(WithArg<1>(
             [error1](
                 chromeos::CleanupHandler::CleanupHandlerCallback callback) {
               std::move(callback).Run(error1);
-            });
+            }));
     std::unique_ptr<chromeos::MockCleanupHandler> mock_cleanup_handler2 =
         std::make_unique<StrictMock<chromeos::MockCleanupHandler>>();
-    EXPECT_CALL(*mock_cleanup_handler2, Cleanup(_))
-        .WillOnce(
+    EXPECT_CALL(*mock_cleanup_handler2, Cleanup(expected_account_id, _))
+        .WillOnce(WithArg<1>(
             [error2](
                 chromeos::CleanupHandler::CleanupHandlerCallback callback) {
               std::move(callback).Run(error2);
-            });
+            }));
 
     std::map<std::string, std::unique_ptr<chromeos::CleanupHandler>>
         cleanup_handlers;
@@ -936,7 +942,7 @@ class LoginApiSharedSessionUnittest : public LoginApiUnittest {
   void SetUpCleanupHandlerMockNotCalled() {
     std::unique_ptr<chromeos::MockCleanupHandler> mock_cleanup_handler =
         std::make_unique<chromeos::MockCleanupHandler>();
-    EXPECT_CALL(*mock_cleanup_handler, Cleanup(_)).Times(0);
+    EXPECT_CALL(*mock_cleanup_handler, Cleanup(_, _)).Times(0);
     std::map<std::string, std::unique_ptr<chromeos::CleanupHandler>>
         cleanup_handlers;
     cleanup_handlers.insert({"Handler", std::move(mock_cleanup_handler)});
@@ -960,8 +966,10 @@ class LoginApiSharedSessionUnittest : public LoginApiUnittest {
     testing_profile_->profile()->GetPrefs()->SetBoolean(
         ash::prefs::kAllowScreenLock, true);
 
-    fake_chrome_user_manager_->SwitchActiveUser(
-        AccountId::FromUserEmail(kEmail));
+    const AccountId account_id = AccountId::FromUserEmail(kEmail);
+    session_manager_->CreateSession(account_id, "test_hash",
+                                    /*new_user=*/false,
+                                    /*has_active_session=*/false);
 
     session_manager::SessionManager::Get()->SetSessionState(
         session_manager::SessionState::ACTIVE);

@@ -162,7 +162,7 @@ TEST_F(PrintJobsCleanupHandlerUnittest, Cleanup) {
         run_loop.QuitClosure().Run();
       });
 
-  handler.Cleanup(std::move(callback));
+  handler.Cleanup(kTestAccountId, std::move(callback));
   run_loop.Run();
 }
 
@@ -179,7 +179,7 @@ TEST_F(PrintJobsCleanupHandlerUnittest, CleanupWithError) {
         run_loop.QuitClosure().Run();
       });
 
-  handler.Cleanup(std::move(callback));
+  handler.Cleanup(kTestAccountId, std::move(callback));
   run_loop.Run();
 }
 

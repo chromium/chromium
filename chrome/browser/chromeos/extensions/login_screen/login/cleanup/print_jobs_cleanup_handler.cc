@@ -7,11 +7,13 @@
 #include <optional>
 #include <utility>
 
+#include "base/check.h"
 #include "base/functional/bind.h"
 #include "chrome/browser/ash/printing/print_management/printing_manager.h"
 #include "chrome/browser/ash/printing/print_management/printing_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_manager.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
+#include "components/account_id/account_id.h"
 
 namespace chromeos {
 
@@ -19,14 +21,14 @@ PrintJobsCleanupHandler::PrintJobsCleanupHandler() = default;
 
 PrintJobsCleanupHandler::~PrintJobsCleanupHandler() = default;
 
-void PrintJobsCleanupHandler::Cleanup(CleanupHandlerCallback callback) {
+void PrintJobsCleanupHandler::Cleanup(const AccountId& account_id,
+                                      CleanupHandlerCallback callback) {
   CHECK(callback_.is_null(), base::NotFatalUntil::M161);
 
-  Profile* profile = ProfileManager::GetActiveUserProfile();
-  if (!profile) {
-    std::move(callback).Run("There is no active user");
-    return;
-  }
+  Profile* profile = Profile::FromBrowserContext(
+      ash::BrowserContextHelper::Get()->GetBrowserContextByAccountId(
+          account_id));
+  CHECK(profile);
 
   callback_ = std::move(callback);
 

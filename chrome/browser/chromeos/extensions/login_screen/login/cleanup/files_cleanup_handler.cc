@@ -7,6 +7,7 @@
 #include <optional>
 #include <utility>
 
+#include "base/check.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -14,6 +15,8 @@
 #include "base/task/task_traits.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
+#include "components/account_id/account_id.h"
 
 namespace chromeos {
 
@@ -76,7 +79,24 @@ FilesCleanupHandler::FilesCleanupHandler(
 
 FilesCleanupHandler::~FilesCleanupHandler() = default;
 
+void FilesCleanupHandler::Cleanup(const AccountId& account_id,
+                                  CleanupHandlerCallback callback) {
+  Profile* profile = Profile::FromBrowserContext(
+      ash::BrowserContextHelper::Get()->GetBrowserContextByAccountId(
+          account_id));
+  CHECK(profile);
+
+  task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
+      base::BindOnce(&FilesCleanupHandler::CleanupTaskOnTaskRunner,
+                     base::Unretained(this), profile),
+      base::BindOnce(&FilesCleanupHandler::CleanupTaskDone,
+                     base::Unretained(this), std::move(callback)));
+}
+
 void FilesCleanupHandler::Cleanup(CleanupHandlerCallback callback) {
+  // TODO(crbug.com/40227502): Remove once DemoModeIdleHandler,
+  // LocalFilesCleanup, and LocalFilesMigrationManager pass AccountId.
   Profile* profile = ProfileManager::GetActiveUserProfile();
   if (!profile) {
     std::move(callback).Run("There is no active user");

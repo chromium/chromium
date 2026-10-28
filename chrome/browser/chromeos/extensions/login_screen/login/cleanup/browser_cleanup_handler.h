@@ -27,7 +27,8 @@ class BrowserCleanupHandler : public CleanupHandler,
   ~BrowserCleanupHandler() override;
 
   // CleanupHandler:
-  void Cleanup(CleanupHandlerCallback callback) override;
+  void Cleanup(const AccountId& account_id,
+               CleanupHandlerCallback callback) override;
 
   // BrowserCollectionObserver:
   void OnBrowserClosed(BrowserWindowInterface* browser) override;

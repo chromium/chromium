@@ -6,13 +6,16 @@
 
 #include <algorithm>
 
+#include "base/check.h"
 #include "base/containers/flat_set.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/extensions/component_loader.h"
 #include "chrome/browser/extensions/external_provider_manager.h"
-#include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
+#include "components/account_id/account_id.h"
 #include "components/app_constants/constants.h"
 #include "components/prefs/pref_service.h"
 #include "extensions/browser/extension_registrar.h"
@@ -33,14 +36,14 @@ ExtensionCleanupHandler::ExtensionCleanupHandler() = default;
 
 ExtensionCleanupHandler::~ExtensionCleanupHandler() = default;
 
-void ExtensionCleanupHandler::Cleanup(CleanupHandlerCallback callback) {
+void ExtensionCleanupHandler::Cleanup(const AccountId& account_id,
+                                      CleanupHandlerCallback callback) {
   CHECK(callback_.is_null(), base::NotFatalUntil::M161);
 
-  profile_ = ProfileManager::GetActiveUserProfile();
-  if (!profile_) {
-    std::move(callback).Run("There is no active user");
-    return;
-  }
+  profile_ = Profile::FromBrowserContext(
+      ash::BrowserContextHelper::Get()->GetBrowserContextByAccountId(
+          account_id));
+  CHECK(profile_);
 
   extension_service_ =
       extensions::ExtensionSystem::Get(profile_)->extension_service();

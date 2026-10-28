@@ -18,7 +18,6 @@
 #include "chrome/browser/extensions/test_extension_service.h"
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -111,7 +110,6 @@ class ExtensionCleanupHandlerUnittest : public testing::Test {
         ash::BrowserContextHelper::Get()->GetBrowserContextByAccountId(
             kTestAccountId)));
     ASSERT_TRUE(profile_);
-    EXPECT_EQ(ProfileManager::GetActiveUserProfile(), profile_);
     prefs_ = profile_->GetTestingPrefService();
     extension_registry_ = extensions::ExtensionRegistry::Get(profile_);
 
@@ -173,6 +171,7 @@ TEST_F(ExtensionCleanupHandlerUnittest, Cleanup) {
 
   base::RunLoop run_loop;
   extension_cleanup_handler_->Cleanup(
+      kTestAccountId,
       base::BindLambdaForTesting([&](const std::optional<std::string>& error) {
         EXPECT_EQ(error, std::nullopt);
         run_loop.QuitClosure().Run();

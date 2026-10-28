@@ -7,11 +7,13 @@
 #include <string>
 
 #include "ash/constants/ash_pref_names.h"
+#include "base/check_deref.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/shelf/app_shortcut_shelf_item_controller.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_prefs.h"
+#include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/common/extension.h"
@@ -70,7 +72,8 @@ IN_PROC_BROWSER_TEST_F(PinnedAppsCleanupHandlerBrowserTest,
   std::unique_ptr<chromeos::PinnedAppsCleanupHandler>
       pinned_apps_cleanup_handler =
           std::make_unique<chromeos::PinnedAppsCleanupHandler>();
-  pinned_apps_cleanup_handler->Cleanup(base::DoNothing());
+  pinned_apps_cleanup_handler->Cleanup(
+      CHECK_DEREF(ash::AnnotatedAccountId::Get(profile())), base::DoNothing());
 
   // Only the user pinned apps have their pin removed.
   EXPECT_TRUE(controller()->IsAppPinned(policy_pinned_id));

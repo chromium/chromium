@@ -16,7 +16,8 @@ class ClipboardCleanupHandler : public CleanupHandler {
   ~ClipboardCleanupHandler() override;
 
   // CleanupHandler:
-  void Cleanup(CleanupHandlerCallback callback) override;
+  void Cleanup(const AccountId& account_id,
+               CleanupHandlerCallback callback) override;
 };
 
 }  // namespace chromeos

@@ -23,7 +23,13 @@ class FilesCleanupHandler : public CleanupHandler {
   ~FilesCleanupHandler() override;
 
   // CleanupHandler:
-  void Cleanup(CleanupHandlerCallback callback) override;
+  void Cleanup(const AccountId& account_id,
+               CleanupHandlerCallback callback) override;
+
+  // TODO(crbug.com/40227502): Remove once DemoModeIdleHandler,
+  // LocalFilesCleanup, and LocalFilesMigrationManager pass AccountId
+  // (blocked on crrev.com/c/8583736 for DemoModeIdleHandlerTest).
+  virtual void Cleanup(CleanupHandlerCallback callback);
 
  private:
   bool CleanupTaskOnTaskRunner(Profile* profile);

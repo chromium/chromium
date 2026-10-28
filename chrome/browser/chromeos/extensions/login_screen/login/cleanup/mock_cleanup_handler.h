@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_CHROMEOS_EXTENSIONS_LOGIN_SCREEN_LOGIN_CLEANUP_MOCK_CLEANUP_HANDLER_H_
 
 #include "chrome/browser/chromeos/extensions/login_screen/login/cleanup/cleanup_handler.h"
-
+#include "components/account_id/account_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace chromeos {
@@ -20,7 +20,10 @@ class MockCleanupHandler : public CleanupHandler {
 
   ~MockCleanupHandler() override;
 
-  MOCK_METHOD(void, Cleanup, (CleanupHandlerCallback callback), (override));
+  MOCK_METHOD(void,
+              Cleanup,
+              (const AccountId& account_id, CleanupHandlerCallback callback),
+              (override));
 };
 
 }  // namespace chromeos

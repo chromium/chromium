@@ -17,7 +17,8 @@ class PinnedAppsCleanupHandler : public CleanupHandler {
   ~PinnedAppsCleanupHandler() override;
 
   // CleanupHandler:
-  void Cleanup(CleanupHandlerCallback callback) override;
+  void Cleanup(const AccountId& account_id,
+               CleanupHandlerCallback callback) override;
 };
 
 }  // namespace chromeos

@@ -7,15 +7,17 @@
 #include <thread>
 #include <utility>
 
+#include "base/check.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_constants.h"
 #include "chrome/browser/lifetime/application_lifetime_desktop.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
+#include "components/account_id/account_id.h"
 #include "content/public/browser/browsing_data_remover.h"
 
 namespace {
@@ -43,14 +45,14 @@ BrowserCleanupHandler::BrowserCleanupHandler() = default;
 
 BrowserCleanupHandler::~BrowserCleanupHandler() = default;
 
-void BrowserCleanupHandler::Cleanup(CleanupHandlerCallback callback) {
+void BrowserCleanupHandler::Cleanup(const AccountId& account_id,
+                                    CleanupHandlerCallback callback) {
   CHECK(callback_.is_null(), base::NotFatalUntil::M161);
 
-  profile_ = ProfileManager::GetActiveUserProfile();
-  if (!profile_) {
-    std::move(callback).Run("There is no active user");
-    return;
-  }
+  profile_ = Profile::FromBrowserContext(
+      ash::BrowserContextHelper::Get()->GetBrowserContextByAccountId(
+          account_id));
+  CHECK(profile_);
 
   callback_ = std::move(callback);
 

@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/auto_reset.h"
+#include "base/check_deref.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
@@ -23,6 +24,7 @@
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/common/pref_names.h"
+#include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "components/webapps/common/web_app_id.h"
@@ -99,7 +101,9 @@ IN_PROC_BROWSER_TEST_F(WebAppCleanupHandlerBrowserTest,
       app_id2, WebAppFilter::InstalledInOperatingSystemForTesting()));
 
   base::test::TestFuture<const std::optional<std::string>&> future;
-  web_app_cleanup_handler_.Cleanup(future.GetCallback());
+  web_app_cleanup_handler_.Cleanup(
+      CHECK_DEREF(ash::AnnotatedAccountId::Get(profile())),
+      future.GetCallback());
   EXPECT_EQ(future.Get(), std::nullopt);
 
   EXPECT_TRUE(registrar_unsafe().AppMatches(
@@ -132,7 +136,9 @@ IN_PROC_BROWSER_TEST_F(WebAppCleanupHandlerBrowserTest,
       app_id4, WebAppFilter::InstalledInOperatingSystemForTesting()));
 
   base::test::TestFuture<const std::optional<std::string>&> future;
-  web_app_cleanup_handler_.Cleanup(future.GetCallback());
+  web_app_cleanup_handler_.Cleanup(
+      CHECK_DEREF(ash::AnnotatedAccountId::Get(profile())),
+      future.GetCallback());
   EXPECT_EQ(future.Get(), std::nullopt);
 
   EXPECT_TRUE(registrar_unsafe().AppMatches(
@@ -178,7 +184,9 @@ IN_PROC_BROWSER_TEST_F(WebAppCleanupHandlerBrowserTest,
   EXPECT_TRUE(web_app3->GetSources().Has(WebAppManagement::kPolicy));
 
   base::test::TestFuture<const std::optional<std::string>&> future;
-  web_app_cleanup_handler_.Cleanup(future.GetCallback());
+  web_app_cleanup_handler_.Cleanup(
+      CHECK_DEREF(ash::AnnotatedAccountId::Get(profile())),
+      future.GetCallback());
   EXPECT_EQ(future.Get(), std::nullopt);
 
   EXPECT_TRUE(registrar_unsafe().AppMatches(

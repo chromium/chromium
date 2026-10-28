@@ -4,11 +4,15 @@
 
 #include "chrome/browser/chromeos/extensions/login_screen/login/cleanup/web_app_cleanup_handler.h"
 
+#include <utility>
+
+#include "base/check.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
+#include "components/account_id/account_id.h"
 
 namespace chromeos {
 
@@ -16,12 +20,12 @@ WebAppCleanupHandler::WebAppCleanupHandler() = default;
 
 WebAppCleanupHandler::~WebAppCleanupHandler() = default;
 
-void WebAppCleanupHandler::Cleanup(CleanupHandlerCallback callback) {
-  Profile* profile = ProfileManager::GetActiveUserProfile();
-  if (!profile) {
-    std::move(callback).Run("There is no active user");
-    return;
-  }
+void WebAppCleanupHandler::Cleanup(const AccountId& account_id,
+                                   CleanupHandlerCallback callback) {
+  Profile* profile = Profile::FromBrowserContext(
+      ash::BrowserContextHelper::Get()->GetBrowserContextByAccountId(
+          account_id));
+  CHECK(profile);
 
   auto* provider = web_app::WebAppProvider::GetForWebApps(profile);
   if (!provider) {
