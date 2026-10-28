@@ -99,6 +99,12 @@ constexpr auto kDeniedSchemes = base::MakeFixedFlatSet<std::string_view>({
     "vnd.ms.radio",
 });
 
+// Console messages go to the initiator's renderer, which may be cross-origin to
+// the (post-redirect) URL; expose only the scheme.
+std::string ElideUrlForConsole(const GURL& url) {
+  return url.has_scheme() ? url.GetScheme() + ":" : std::string();
+}
+
 void AddMessageToConsole(const content::WeakDocumentPtr& document,
                          blink::mojom::ConsoleMessageLevel level,
                          const std::string& message) {
@@ -155,7 +161,7 @@ void RunExternalProtocolDialogWithDelegate(
   if (program_name.empty()) {
     AddMessageToConsole(
         initiator_document, blink::mojom::ConsoleMessageLevel::kError,
-        "Failed to launch '" + url.possibly_invalid_spec() +
+        "Failed to launch '" + ElideUrlForConsole(url) +
             "' because the scheme does not have a registered handler.");
     return;
   }
@@ -185,7 +191,7 @@ void LaunchUrlWithoutSecurityCheckWithDelegate(
 
   AddMessageToConsole(
       initiator_document, blink::mojom::ConsoleMessageLevel::kInfo,
-      "Launched external handler for '" + url.possibly_invalid_spec() + "'.");
+      "Launched external handler for '" + ElideUrlForConsole(url) + "'.");
 
   platform_util::OpenExternal(
 #if BUILDFLAG(IS_CHROMEOS)
@@ -552,7 +558,7 @@ void ExternalProtocolHandler::LaunchUrl(
   if (block_state == BLOCK) {
     AddMessageToConsole(
         initiator_document, blink::mojom::ConsoleMessageLevel::kError,
-        "Not allowed to launch '" + url.possibly_invalid_spec() + "'" +
+        "Not allowed to launch '" + ElideUrlForConsole(url) + "'" +
             (g_accept_requests ? "." : " because a user gesture is required."));
 
     if (g_external_protocol_handler_delegate)

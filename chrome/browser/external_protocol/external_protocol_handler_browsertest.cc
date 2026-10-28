@@ -105,10 +105,9 @@ class ExternalProtocolHandlerSandboxBrowserTest
     // Windows/Mac |allowed_msg_2|. That's because Linux do not provide API to
     // query for the supported protocols before launching the external
     // application.
-    const char allowed_msg_1[] =
-        "Launched external handler for 'custom:custom'.";
+    const char allowed_msg_1[] = "Launched external handler for 'custom:'.";
     const char allowed_msg_2[] =
-        "Failed to launch 'custom:custom' because the scheme does not have a "
+        "Failed to launch 'custom:' because the scheme does not have a "
         "registered handler.";
     const char blocked_msg[] =
         "Navigation to external protocol blocked by sandbox, because it "
@@ -206,12 +205,12 @@ IN_PROC_BROWSER_TEST_F(ExternalProtocolHandlerBrowserTest,
   content::WebContentsConsoleObserver observer(web_content());
   // Wait for either "Launched external handler..." or "Failed to launch..."; the former will pass
   // the test, while the latter will fail it more quickly than waiting for a timeout.
-  observer.SetPattern("*aunch*'mailto:test@site.test'*");
+  observer.SetPattern("*aunch*'mailto:'*");
   ASSERT_TRUE(
       ExecJs(web_content(), "window.open('mailto:test@site.test', '_self');"));
   ASSERT_TRUE(observer.Wait());
   ASSERT_EQ(1u, observer.messages().size());
-  EXPECT_EQ("Launched external handler for 'mailto:test@site.test'.",
+  EXPECT_EQ("Launched external handler for 'mailto:'.",
             observer.GetMessageAt(0u));
 }
 
@@ -221,7 +220,7 @@ IN_PROC_BROWSER_TEST_F(ExternalProtocolHandlerBrowserTest,
 // protocol handler is registered ahead of time.
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
   content::WebContentsConsoleObserver observer(web_content());
-  observer.SetPattern("Failed to launch 'does.not.exist:failure'*");
+  observer.SetPattern("Failed to launch 'does.not.exist:'*");
   ASSERT_TRUE(
       ExecJs(web_content(), "window.open('does.not.exist:failure', '_self');"));
   ASSERT_TRUE(observer.Wait());
@@ -327,7 +326,7 @@ class AlwaysBlockedExternalProtocolHandlerDelegate
 IN_PROC_BROWSER_TEST_F(ExternalProtocolHandlerLocalOnlyBrowserTest,
                        BlocksWebInitiatedNavigation) {
   content::WebContentsConsoleObserver observer(web_content());
-  observer.SetPattern("Not allowed to launch 'local+custom:test'.");
+  observer.SetPattern("Not allowed to launch 'local+custom:'.");
 
   ASSERT_TRUE(ExecJs(web_content(), "location.href = 'local+custom:test';"));
   ASSERT_TRUE(observer.Wait());
@@ -346,7 +345,7 @@ IN_PROC_BROWSER_TEST_F(ExternalProtocolHandlerBrowserTest,
 
   content::WebContentsConsoleObserver observer(
       content::WebContents::FromRenderFrameHost(originating_rfh));
-  observer.SetPattern("*aunch*'willfailtolaunch://foo'*");
+  observer.SetPattern("*aunch*'willfailtolaunch:'*");
   observer.SetFilter(base::BindRepeating(
       [](content::RenderFrameHost* expected_rfh,
          const content::WebContentsConsoleObserver::Message& message) {
@@ -358,6 +357,6 @@ IN_PROC_BROWSER_TEST_F(ExternalProtocolHandlerBrowserTest,
       ExecJs(originating_rfh, "location.href = 'willfailtolaunch://foo';"));
   ASSERT_TRUE(observer.Wait());
   ASSERT_EQ(1u, observer.messages().size());
-  EXPECT_EQ("Not allowed to launch 'willfailtolaunch://foo'.",
+  EXPECT_EQ("Not allowed to launch 'willfailtolaunch:'.",
             observer.GetMessageAt(0u));
 }

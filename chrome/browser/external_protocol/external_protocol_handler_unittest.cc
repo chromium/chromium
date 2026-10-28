@@ -747,3 +747,66 @@ TEST_F(ExternalProtocolHandlerTest, TestOpaqueInitiatingOrigin) {
          precursor_origin, u"TestApp");
 }
 #endif
+
+TEST_F(ExternalProtocolHandlerTest, TestConsoleMessageElidesFullUrlOnBlock) {
+  GURL url("afp://server/path?code=SECRET_CODE&state=123");
+  url::Origin initiating_origin =
+      url::Origin::Create(GURL("https://example.test"));
+  content::RenderFrameHost* rfh = web_contents_->GetPrimaryMainFrame();
+  content::RenderFrameHostTester::For(rfh)->ClearConsoleMessages();
+
+  ExternalProtocolHandler::SetDelegateForTesting(&delegate_);
+  delegate_.set_block_state(ExternalProtocolHandler::BLOCK);
+  ExternalProtocolHandler::LaunchUrl(
+      url,
+      base::BindRepeating(&ExternalProtocolHandlerTest::GetWebContents,
+                          base::Unretained(this)),
+      ui::PAGE_TRANSITION_LINK, /*has_user_gesture=*/true,
+      /*is_in_fenced_frame_tree=*/false, initiating_origin,
+      rfh->GetWeakDocumentPtr()
+#if BUILDFLAG(IS_ANDROID)
+          ,
+      nullptr
+#endif
+  );
+  run_loop_.Run();
+  ExternalProtocolHandler::SetDelegateForTesting(nullptr);
+
+  const std::vector<std::string>& messages =
+      content::RenderFrameHostTester::For(rfh)->GetConsoleMessages();
+  ASSERT_EQ(1u, messages.size());
+  EXPECT_EQ("Not allowed to launch 'afp:'.", messages[0]);
+  EXPECT_EQ(std::string::npos, messages[0].find("SECRET_CODE"));
+}
+
+#if !BUILDFLAG(IS_ANDROID)
+TEST_F(ExternalProtocolHandlerTest,
+       TestConsoleMessageElidesFullUrlOnAntiFloodBlock) {
+  url::Origin initiating_origin =
+      url::Origin::Create(GURL("https://example.test"));
+  content::RenderFrameHost* rfh = web_contents_->GetPrimaryMainFrame();
+
+  // The first launch sets `g_accept_requests` to false, enabling anti-flood
+  // protection for subsequent launches without a user gesture.
+  DoTest(ExternalProtocolHandler::DONT_BLOCK, shell_integration::NOT_DEFAULT,
+         Action::LAUNCH);
+
+  content::RenderFrameHostTester::For(rfh)->ClearConsoleMessages();
+  GURL redirected_secret_url("nativeapp://cb?code=SECRET_OAUTH_CODE&state=42");
+  ExternalProtocolHandler::LaunchUrl(
+      redirected_secret_url,
+      base::BindRepeating(&ExternalProtocolHandlerTest::GetWebContents,
+                          base::Unretained(this)),
+      ui::PAGE_TRANSITION_LINK, /*has_user_gesture=*/false,
+      /*is_in_fenced_frame_tree=*/false, initiating_origin,
+      rfh->GetWeakDocumentPtr());
+
+  const std::vector<std::string>& messages =
+      content::RenderFrameHostTester::For(rfh)->GetConsoleMessages();
+  ASSERT_EQ(1u, messages.size());
+  EXPECT_EQ(
+      "Not allowed to launch 'nativeapp:' because a user gesture is required.",
+      messages[0]);
+  EXPECT_EQ(std::string::npos, messages[0].find("SECRET_OAUTH_CODE"));
+}
+#endif

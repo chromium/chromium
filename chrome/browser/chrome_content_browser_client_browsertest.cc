@@ -1139,7 +1139,7 @@ IN_PROC_BROWSER_TEST_F(ProtocolHandlerLocalOnlyTest,
       browser()->tab_strip_model()->GetActiveWebContents();
   {
     content::WebContentsConsoleObserver observer(web_contents);
-    observer.SetPattern("Not allowed to launch 'local+custom:test'.");
+    observer.SetPattern("Not allowed to launch 'local+custom:'.");
     ASSERT_TRUE(
         content::ExecJs(web_contents, "location.href = 'local+custom:test';"));
     ASSERT_TRUE(observer.Wait());
@@ -1185,7 +1185,7 @@ IN_PROC_BROWSER_TEST_F(ProtocolHandlerLocalOnlyUnmanagedTest,
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   content::WebContentsConsoleObserver observer(web_contents);
-  observer.SetPattern("Not allowed to launch 'local+custom:test'.");
+  observer.SetPattern("Not allowed to launch 'local+custom:'.");
 
   ASSERT_TRUE(
       content::ExecJs(web_contents, "location.href = 'local+custom:test';"));
