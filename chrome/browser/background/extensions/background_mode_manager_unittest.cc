@@ -465,7 +465,7 @@ TEST_F(BackgroundModeManagerTest, BackgroundAppLoadUnload) {
 
 // Apps installed while background mode is disabled should cause activation
 // after it is enabled - crbug.com/41198814.
-TEST_F(BackgroundModeManagerTest, DISABLED_BackgroundAppInstallWhileDisabled) {
+TEST_F(BackgroundModeManagerTest, BackgroundAppInstallWhileDisabled) {
   AdvancedTestBackgroundModeManager manager(
       *command_line_, profile_manager_->profile_attributes_storage(), true);
   manager.RegisterProfile(profile_);
