@@ -4,13 +4,17 @@
 
 #include "chrome/browser/ash/chromebox_for_meetings/artemis/command_source.h"
 
+#include <string>
+#include <string_view>
+#include <vector>
+
 #include "base/process/launch.h"
 #include "base/strings/string_split.h"
 #include "base/time/time.h"
 
 namespace ash::cfm {
 
-CommandSource::CommandSource(const std::string& command,
+CommandSource::CommandSource(std::string_view command,
                              size_t data_buffer_size_limit,
                              base::TimeDelta poll_rate)
     : LocalDataSource(data_buffer_size_limit,

@@ -5,12 +5,13 @@
 #include "chrome/browser/ash/chromebox_for_meetings/artemis/data_aggregator_service.h"
 
 #include <array>
-#include <map>
+#include <string_view>
 #include <vector>
 
+#include "base/containers/fixed_flat_map.h"
+#include "base/containers/span.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/no_destructor.h"
 #include "base/strings/string_split.h"
 #include "base/syslog_logging.h"
 #include "base/task/thread_pool.h"
@@ -53,13 +54,6 @@ constexpr net::BackoffEntry::Policy kEnqueueRetryBackoffPolicy = {
     true,           // Use initial delay.
 };
 
-// Create aliases for readability. C++ has ugly syntax for global maps.
-using CommandSourceMap =
-    std::map<features::TelemetryVerbosity, std::vector<const char*>>;
-
-using PollFrequencyMap =
-    std::map<features::TelemetryVerbosity, base::TimeDelta>;
-
 /*
  * IMPORTANT: When adding new commands to the below lists, please take care
  * to choose commands with a relatively small amount of output. Rule of thumb:
@@ -69,39 +63,34 @@ using PollFrequencyMap =
  * To check size output, pipe the command to `wc`. The byte count will be the
  * last number.
  */
-const CommandSourceMap& GetLocalCommandSourceMap() {
-  static const base::NoDestructor<CommandSourceMap> map({
-      // Note: these are cumulative.
-      {features::TelemetryVerbosity::kWatchdog,
-       {
-           "lsusb -t",
-       }},
-      {features::TelemetryVerbosity::kInfo,
-       {
-           "df -h /var",
-           "du -sh /var/log /var/spool/crash",
-           "free -m",
-           "ip -br addr",
-           "v4l2-ctl --list-devices",
-       }},
-      {features::TelemetryVerbosity::kVerbose,
-       {
-           "iostat -o JSON",
-           "top -b -n 1 -o %MEM",
-       }},
-  });
-  return *map;
-}
+constexpr std::string_view kWatchdogCommands[] = {
+    "lsusb -t",
+};
+constexpr std::string_view kInfoCommands[] = {
+    "df -h /var",  "du -sh /var/log /var/spool/crash", "free -m",
+    "ip -br addr", "v4l2-ctl --list-devices",
+};
+constexpr std::string_view kVerboseCommands[] = {
+    "iostat -o JSON",
+    "top -b -n 1 -o %MEM",
+};
 
-const PollFrequencyMap& GetLocalCommandPollFrequencyMap() {
-  // Poll less frequently at higher verbosities to keep the payloads small.
-  static const base::NoDestructor<PollFrequencyMap> map({
-      {features::TelemetryVerbosity::kWatchdog, base::Seconds(5)},
-      {features::TelemetryVerbosity::kInfo, base::Minutes(10)},
-      {features::TelemetryVerbosity::kVerbose, base::Minutes(30)},
-  });
-  return *map;
-}
+// Note: these are cumulative.
+constexpr auto kLocalCommandSourceMap =
+    base::MakeFixedFlatMap<features::TelemetryVerbosity,
+                           base::span<const std::string_view>>({
+        {features::TelemetryVerbosity::kWatchdog, kWatchdogCommands},
+        {features::TelemetryVerbosity::kInfo, kInfoCommands},
+        {features::TelemetryVerbosity::kVerbose, kVerboseCommands},
+    });
+
+// Poll less frequently at higher verbosities to keep the payloads small.
+constexpr auto kLocalCommandPollFrequencyMap =
+    base::MakeFixedFlatMap<features::TelemetryVerbosity, base::TimeDelta>({
+        {features::TelemetryVerbosity::kWatchdog, base::Seconds(5)},
+        {features::TelemetryVerbosity::kInfo, base::Minutes(10)},
+        {features::TelemetryVerbosity::kVerbose, base::Minutes(30)},
+    });
 
 constexpr const char* kLocalLogSources[] = {
     kCfmAuditLogFile,      kCfmBiosInfoLogFile,     kCfmChromeLogFile,
@@ -192,7 +181,7 @@ void DataAggregatorService::AddDataSource(
     AddDataSourceCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (data_source_map_.count(source_name) != 0) {
+  if (data_source_map_.contains(source_name)) {
     LOG(ERROR) << "Attempted to add source name " << source_name
                << " more than once. Disregarding this one.";
     std::move(callback).Run(false /* success */);
@@ -211,9 +200,10 @@ void DataAggregatorService::AddWatchDog(
     AddWatchDogCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  auto it = data_source_map_.find(source_name);
   // TODO(b/326440932): add an enum for "watchable" data sources
   // and deny requests that are outside of this list.
-  if (data_source_map_.count(source_name) != 0) {
+  if (it == data_source_map_.end()) {
     LOG(WARNING) << "Attempted to add a watchdog to a non-existent source: "
                  << source_name;
     std::move(callback).Run(false /* success */);
@@ -221,16 +211,16 @@ void DataAggregatorService::AddWatchDog(
   }
 
   // Pass the callback through to the data source and run it there.
-  data_source_map_[source_name]->AddWatchDog(
-      std::move(filter), std::move(watch_dog), std::move(callback));
+  it->second->AddWatchDog(std::move(filter), std::move(watch_dog),
+                          std::move(callback));
 }
 
 void DataAggregatorService::AddLocalCommandSource(
-    const std::string& command,
+    std::string_view command,
     const base::TimeDelta& poll_freq) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  CHECK(data_source_map_.count(command) == 0)
+  CHECK(!data_source_map_.contains(command))
       << "Local command '" << command << "' was added twice.";
 
   mojo::Remote<mojom::DataSource> remote;
@@ -238,7 +228,7 @@ void DataAggregatorService::AddLocalCommandSource(
       FROM_HERE,
       base::BindOnce(
           [](mojo::PendingReceiver<mojom::DataSource> pending_receiver,
-             const std::string& device_id, const std::string& command,
+             const std::string& device_id, std::string_view command,
              const size_t payload_max_size_bytes,
              const base::TimeDelta& poll_freq) {
             auto source = std::make_unique<CommandSource>(
@@ -257,25 +247,27 @@ void DataAggregatorService::AddLocalCommandSource(
       base::BindOnce(&DataAggregatorService::OnLocalCommandDisconnect,
                      base::Unretained(this), command, poll_freq));
 
-  data_source_map_[command] = std::move(remote);
+  data_source_map_.emplace(command, std::move(remote));
 }
 
 void DataAggregatorService::OnLocalCommandDisconnect(
-    const std::string& command,
+    std::string_view command,
     const base::TimeDelta& poll_freq) {
   // This is unlikely, but if one of our local remotes disconnects,
   // just request to re-add it. The pointers in our local maps will
   // be overridden, and the old objects will be destroyed.
   LOG(WARNING) << "Local DataSource for '" << command << "' has disconnected; "
                << "attempting to reconnect.";
-  data_source_map_.erase(command);
+  if (auto it = data_source_map_.find(command); it != data_source_map_.end()) {
+    data_source_map_.erase(it);
+  }
   AddLocalCommandSource(command, poll_freq);
 }
 
 void DataAggregatorService::AddLocalLogSource(const std::string& filepath) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  CHECK(data_source_map_.count(filepath) == 0)
+  CHECK(!data_source_map_.contains(filepath))
       << "Local log file '" << filepath << "' was added twice.";
 
   mojo::Remote<mojom::DataSource> remote;
@@ -322,13 +314,10 @@ void DataAggregatorService::OnMojoDisconnect() {
 
 void DataAggregatorService::InitializeCommandSources(
     enum features::TelemetryVerbosity verbosity) {
-  const auto& command_map = GetLocalCommandSourceMap();
-  const auto& freq_map = GetLocalCommandPollFrequencyMap();
+  auto cmd_list = kLocalCommandSourceMap.at(verbosity);
+  auto frequency = kLocalCommandPollFrequencyMap.at(verbosity);
 
-  auto cmd_list = command_map.at(verbosity);
-  auto frequency = freq_map.at(verbosity);
-
-  for (const char* cmd : cmd_list) {
+  for (std::string_view cmd : cmd_list) {
     VLOG(1) << "Adding command '" << cmd << "' to sources.";
     AddLocalCommandSource(cmd, frequency);
   }

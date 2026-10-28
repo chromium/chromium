@@ -5,6 +5,10 @@
 #ifndef CHROME_BROWSER_ASH_CHROMEBOX_FOR_MEETINGS_ARTEMIS_COMMAND_SOURCE_H_
 #define CHROME_BROWSER_ASH_CHROMEBOX_FOR_MEETINGS_ARTEMIS_COMMAND_SOURCE_H_
 
+#include <string>
+#include <string_view>
+#include <vector>
+
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/chromebox_for_meetings/artemis/local_data_source.h"
 
@@ -13,7 +17,7 @@ namespace ash::cfm {
 // This class tracks the output of a particular command.
 class CommandSource : public LocalDataSource {
  public:
-  CommandSource(const std::string& command,
+  CommandSource(std::string_view command,
                 size_t data_buffer_size_limit,
                 base::TimeDelta poll_rate);
   CommandSource(const CommandSource&) = delete;

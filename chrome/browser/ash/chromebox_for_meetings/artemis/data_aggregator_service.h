@@ -5,8 +5,13 @@
 #ifndef CHROME_BROWSER_ASH_CHROMEBOX_FOR_MEETINGS_ARTEMIS_DATA_AGGREGATOR_SERVICE_H_
 #define CHROME_BROWSER_ASH_CHROMEBOX_FOR_MEETINGS_ARTEMIS_DATA_AGGREGATOR_SERVICE_H_
 
+#include <functional>
+#include <map>
 #include <queue>
+#include <string>
+#include <string_view>
 
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
@@ -122,9 +127,10 @@ class DataAggregatorService : public CfmObserver,
 
   void InitializeLocalSources();
   void InitializeCommandSources(enum features::TelemetryVerbosity verbosity);
-  void AddLocalCommandSource(const std::string& command,
+  void AddLocalCommandSource(std::string_view command LIFETIME_CAPTURE_BY_THIS,
                              const base::TimeDelta& poll_freq);
-  void OnLocalCommandDisconnect(const std::string& command,
+  void OnLocalCommandDisconnect(std::string_view command
+                                    LIFETIME_CAPTURE_BY_THIS,
                                 const base::TimeDelta& poll_freq);
   void AddLocalLogSource(const std::string& filepath);
   void OnLocalLogDisconnect(const std::string& filepath);
@@ -153,7 +159,8 @@ class DataAggregatorService : public CfmObserver,
   void HandleEnqueueResponse(chromeos::cfm::mojom::LoggerStatusPtr status);
 
   // Maps DataSource names to their remotes, for access convenience
-  std::map<std::string, mojo::Remote<mojom::DataSource>> data_source_map_;
+  std::map<std::string, mojo::Remote<mojom::DataSource>, std::less<>>
+      data_source_map_;
 
   chromeos::cfm::ServiceAdaptor service_adaptor_;
   mojo::ReceiverSet<mojom::DataAggregator> receivers_;
