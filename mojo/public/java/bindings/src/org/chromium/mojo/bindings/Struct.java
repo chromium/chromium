@@ -82,6 +82,14 @@ public abstract class Struct {
         }
     }
 
-    /** Use the given encoder to serialize this data structure. */
-    protected abstract void encode(Encoder encoder);
+    /**
+     * Use the given encoder to serialize this data structure. Structs with multiple versions
+     * override this to encode their latest version.
+     */
+    protected void encode(Encoder encoder) {
+        encodeFields(encoder.getEncoderAtDataOffset(mEncodedBaseSize, 0));
+    }
+
+    /** Use the given encoder (positioned after the struct header) to serialize the fields. */
+    protected abstract void encodeFields(Encoder encoder);
 }

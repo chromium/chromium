@@ -139,8 +139,7 @@ public final class OptionalPrimitives extends org.chromium.mojo.bindings.Struct 
 
     @SuppressWarnings("unchecked")
     @Override
-    protected final void encode(org.chromium.mojo.bindings.Encoder encoder) {
-        org.chromium.mojo.bindings.Encoder encoder0 = encoder.getEncoderAtDataOffset(STRUCT_SIZE, STRUCT_VERSION);
+    protected final void encodeFields(org.chromium.mojo.bindings.Encoder encoder0) {
         final boolean int$flag = this.int != null;
         final int int$value = int$flag
             ? this.int

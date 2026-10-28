@@ -109,6 +109,7 @@ SyncMethod_Response callback) {
                 org.chromium.mojo.bindings.Message payload,
                 org.chromium.mojo.bindings.MessageReceiver receiver,
                 long requestId) {
+            ResultInterface impl = getImpl();
             switch (methodId) {
 
 
@@ -121,7 +122,7 @@ SyncMethod_Response callback) {
                     ResultInterfaceMethodParams data =
                             ResultInterfaceMethodParams.deserialize(payload);
 
-                    getImpl().method(data.a, new ResultInterfaceMethodResponseParamsProxyToResponder(getCore(), receiver, requestId));
+                    impl.method(data.a, new ResultInterfaceMethodResponseParamsProxyToResponder(getCore(), receiver, requestId));
                     return true;
                 }
 
@@ -136,7 +137,7 @@ SyncMethod_Response callback) {
                     ResultInterfaceSyncMethodParams data =
                             ResultInterfaceSyncMethodParams.deserialize(payload);
 
-                    getImpl().syncMethod(data.a, new ResultInterfaceSyncMethodResponseParamsProxyToResponder(getCore(), receiver, requestId));
+                    impl.syncMethod(data.a, new ResultInterfaceSyncMethodResponseParamsProxyToResponder(getCore(), receiver, requestId));
                     return true;
                 }
 
@@ -210,8 +211,7 @@ SyncMethod_Response callback) {
 
         @SuppressWarnings("unchecked")
         @Override
-        protected final void encode(org.chromium.mojo.bindings.Encoder encoder) {
-            org.chromium.mojo.bindings.Encoder encoder0 = encoder.getEncoderAtDataOffset(STRUCT_SIZE, STRUCT_VERSION);
+        protected final void encodeFields(org.chromium.mojo.bindings.Encoder encoder0) {
             
             encoder0.encode(this.a, 8, 0);
         }
@@ -264,8 +264,7 @@ SyncMethod_Response callback) {
 
         @SuppressWarnings("unchecked")
         @Override
-        protected final void encode(org.chromium.mojo.bindings.Encoder encoder) {
-            org.chromium.mojo.bindings.Encoder encoder0 = encoder.getEncoderAtDataOffset(STRUCT_SIZE, STRUCT_VERSION);
+        protected final void encodeFields(org.chromium.mojo.bindings.Encoder encoder0) {
             
             encoder0.encode(this.result, 8, false);
         }
@@ -370,8 +369,7 @@ SyncMethod_Response callback) {
 
         @SuppressWarnings("unchecked")
         @Override
-        protected final void encode(org.chromium.mojo.bindings.Encoder encoder) {
-            org.chromium.mojo.bindings.Encoder encoder0 = encoder.getEncoderAtDataOffset(STRUCT_SIZE, STRUCT_VERSION);
+        protected final void encodeFields(org.chromium.mojo.bindings.Encoder encoder0) {
             
             encoder0.encode(this.a, 8, 0);
         }
@@ -424,8 +422,7 @@ SyncMethod_Response callback) {
 
         @SuppressWarnings("unchecked")
         @Override
-        protected final void encode(org.chromium.mojo.bindings.Encoder encoder) {
-            org.chromium.mojo.bindings.Encoder encoder0 = encoder.getEncoderAtDataOffset(STRUCT_SIZE, STRUCT_VERSION);
+        protected final void encodeFields(org.chromium.mojo.bindings.Encoder encoder0) {
             
             encoder0.encode(this.result, 8, false);
         }

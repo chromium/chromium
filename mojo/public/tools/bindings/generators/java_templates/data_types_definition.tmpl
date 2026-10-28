@@ -10,7 +10,8 @@ org.chromium.mojo.bindings.BindingsHelper.POINTER_SIZE
 {%- endmacro -%}
 
 {%- macro encode(variable, kind, offset, bit, level=0, check_for_null=True) %}
-{%- if kind|is_pointer_array_kind or kind|is_union_array_kind %}
+{#- Arrays of structs, unions, and strings are handled by Encoder. #}
+{%- if kind|is_pointer_array_kind and (kind.kind|is_array_kind or kind.kind|is_map_kind) %}
 {%- set sub_kind = kind.kind %}
 {%-   if check_for_null %}
 if ({{variable}} == null) {
@@ -19,14 +20,9 @@ if ({{variable}} == null) {
 {%-   else %}
 {
 {%-   endif %}
-{%-   if kind|is_pointer_array_kind %}
-{%-     set encodePointer = 'encodePointerArray' %}
-{%-   else %}
-{%-     set encodePointer = 'encodeUnionArray' %}
-{%-   endif %}
-    org.chromium.mojo.bindings.Encoder encoder{{level + 1}} = encoder{{level}}.{{encodePointer}}({{variable}}.length, {{offset}}, {{kind|array_expected_length}});
+    org.chromium.mojo.bindings.Encoder encoder{{level + 1}} = encoder{{level}}.encodePointerArray({{variable}}.length, {{offset}}, {{kind|array_expected_length}});
     for (int i{{level}} = 0; i{{level}} < {{variable}}.length; ++i{{level}}) {
-        {{encode(variable~'[i'~level~']', sub_kind, 'org.chromium.mojo.bindings.DataHeader.HEADER_SIZE + ' ~ array_element_size(sub_kind) ~ ' * i'~level, 0, level+1)|indent(8)}}
+        {{encode(variable~'[i'~level~']', sub_kind, 'org.chromium.mojo.bindings.DataHeader.HEADER_SIZE + org.chromium.mojo.bindings.BindingsHelper.POINTER_SIZE * i'~level, 0, level+1)|indent(8)}}
     }
 }
 {%- elif kind|is_map_kind %}
@@ -245,15 +241,17 @@ if ({{variable}} != null) {
         decoder0.decreaseStackDepth();
         return result;
     }
+{%- if struct.versions|length > 1 %}
+
+    @Override
+    protected final void encode(org.chromium.mojo.bindings.Encoder encoder) {
+        encodeFields(encoder.getEncoderAtDataOffset(STRUCT_SIZE, STRUCT_VERSION));
+    }
+{%- endif %}
 
     @SuppressWarnings("unchecked")
     @Override
-    protected final void encode(org.chromium.mojo.bindings.Encoder encoder) {
-{%- if not struct.bytes %}
-        encoder.getEncoderAtDataOffset(STRUCT_SIZE, STRUCT_VERSION);
-{%- else %}
-        org.chromium.mojo.bindings.Encoder encoder0 = encoder.getEncoderAtDataOffset(STRUCT_SIZE, STRUCT_VERSION);
-{%- endif %}
+    protected final void encodeFields(org.chromium.mojo.bindings.Encoder encoder0) {
 {%- for byte in struct.bytes %}
 {%-   for packed_field in byte.packed_fields %}
 {%-     if packed_field|is_nullable_value_kind_packed_field %}

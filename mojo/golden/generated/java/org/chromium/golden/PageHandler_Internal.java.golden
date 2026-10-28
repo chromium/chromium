@@ -78,6 +78,7 @@ class PageHandler_Internal {
 
         @Override
         protected boolean handleMessage(int methodId, org.chromium.mojo.bindings.Message payload) {
+            PageHandler impl = getImpl();
             switch (methodId) {
 
 
@@ -87,7 +88,7 @@ class PageHandler_Internal {
 
                     org.chromium.mojo.bindings.EmptyStruct.validate(payload);
 
-                    getImpl().doSomething();
+                    impl.doSomething();
                     return true;
                 }
 

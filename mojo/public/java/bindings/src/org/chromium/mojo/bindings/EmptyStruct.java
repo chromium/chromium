@@ -34,7 +34,5 @@ public final class EmptyStruct extends Struct {
     }
 
     @Override
-    protected void encode(Encoder encoder) {
-        encoder.getEncoderAtDataOffset(STRUCT_SIZE, STRUCT_VERSION);
-    }
+    protected void encodeFields(Encoder encoder) {}
 }

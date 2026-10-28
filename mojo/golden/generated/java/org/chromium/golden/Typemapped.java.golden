@@ -78,8 +78,7 @@ public final class Typemapped extends org.chromium.mojo.bindings.Struct {
 
     @SuppressWarnings("unchecked")
     @Override
-    protected final void encode(org.chromium.mojo.bindings.Encoder encoder) {
-        org.chromium.mojo.bindings.Encoder encoder0 = encoder.getEncoderAtDataOffset(STRUCT_SIZE, STRUCT_VERSION);
+    protected final void encodeFields(org.chromium.mojo.bindings.Encoder encoder0) {
         
         encoder0.encode(this.field, 8);
         final boolean optional$flag = this.optional != null;

@@ -82,6 +82,7 @@ Page page, org.chromium.mojo.bindings.InterfaceRequest<PageHandler> handler) {
 
         @Override
         protected boolean handleMessage(int methodId, org.chromium.mojo.bindings.Message payload) {
+            WebUiPageHandlerFactory impl = getImpl();
             switch (methodId) {
 
 
@@ -92,7 +93,7 @@ Page page, org.chromium.mojo.bindings.InterfaceRequest<PageHandler> handler) {
                     WebUiPageHandlerFactoryCreatePageHandlerParams data =
                             WebUiPageHandlerFactoryCreatePageHandlerParams.deserialize(payload);
 
-                    getImpl().createPageHandler(data.page, data.handler);
+                    impl.createPageHandler(data.page, data.handler);
                     return true;
                 }
 
@@ -153,8 +154,7 @@ Page page, org.chromium.mojo.bindings.InterfaceRequest<PageHandler> handler) {
 
         @SuppressWarnings("unchecked")
         @Override
-        protected final void encode(org.chromium.mojo.bindings.Encoder encoder) {
-            org.chromium.mojo.bindings.Encoder encoder0 = encoder.getEncoderAtDataOffset(STRUCT_SIZE, STRUCT_VERSION);
+        protected final void encodeFields(org.chromium.mojo.bindings.Encoder encoder0) {
             
             encoder0.encode(this.page, 8, false, Page.MANAGER);
             

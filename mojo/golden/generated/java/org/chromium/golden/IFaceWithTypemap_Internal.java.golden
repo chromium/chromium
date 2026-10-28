@@ -88,6 +88,7 @@ Echo_Response callback) {
                 org.chromium.mojo.bindings.Message payload,
                 org.chromium.mojo.bindings.MessageReceiver receiver,
                 long requestId) {
+            IFaceWithTypemap impl = getImpl();
             switch (methodId) {
 
 
@@ -100,7 +101,7 @@ Echo_Response callback) {
                     IFaceWithTypemapEchoParams data =
                             IFaceWithTypemapEchoParams.deserialize(payload);
 
-                    getImpl().echo(data.param, new IFaceWithTypemapEchoResponseParamsProxyToResponder(getCore(), receiver, requestId));
+                    impl.echo(data.param, new IFaceWithTypemapEchoResponseParamsProxyToResponder(getCore(), receiver, requestId));
                     return true;
                 }
 
@@ -157,8 +158,7 @@ Echo_Response callback) {
 
         @SuppressWarnings("unchecked")
         @Override
-        protected final void encode(org.chromium.mojo.bindings.Encoder encoder) {
-            org.chromium.mojo.bindings.Encoder encoder0 = encoder.getEncoderAtDataOffset(STRUCT_SIZE, STRUCT_VERSION);
+        protected final void encodeFields(org.chromium.mojo.bindings.Encoder encoder0) {
             
             encoder0.encode(this.param, 8, false);
         }
@@ -212,8 +212,7 @@ Echo_Response callback) {
 
         @SuppressWarnings("unchecked")
         @Override
-        protected final void encode(org.chromium.mojo.bindings.Encoder encoder) {
-            org.chromium.mojo.bindings.Encoder encoder0 = encoder.getEncoderAtDataOffset(STRUCT_SIZE, STRUCT_VERSION);
+        protected final void encodeFields(org.chromium.mojo.bindings.Encoder encoder0) {
             
             encoder0.encode(this.out, 8, false);
         }

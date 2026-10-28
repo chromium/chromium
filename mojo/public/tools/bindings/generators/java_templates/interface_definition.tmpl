@@ -94,6 +94,7 @@ public static final {{manager_class(interface, True)}} MANAGER =
 {%- endmacro -%}
 
 {%- macro handle_message_body(interface, with_response) -%}
+{{interface|name}} impl = getImpl();
 switch (methodId) {
 {%   for method in interface.methods %}
 {%     if (with_response and method.response_parameters != None) or
@@ -109,7 +110,7 @@ switch (methodId) {
 {%       else %}
         org.chromium.mojo.bindings.EmptyStruct.validate(payload);
 {%       endif %}
-        getImpl().{{method|name}}({{run_callback('data', method.parameters)}}{% if with_response %}{% if method.parameters %}, {% endif %}new {{response_struct|name}}ProxyToResponder(getCore(), receiver, requestId){% endif %});
+        impl.{{method|name}}({{run_callback('data', method.parameters)}}{% if with_response %}{% if method.parameters %}, {% endif %}new {{response_struct|name}}ProxyToResponder(getCore(), receiver, requestId){% endif %});
         return true;
     }
 {%     endif %}
