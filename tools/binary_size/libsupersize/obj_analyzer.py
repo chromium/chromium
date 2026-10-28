@@ -189,7 +189,7 @@ class _BulkObjectFileAnalyzerWorker:
     )
     return string_extract.ReadFileChunks(elf_path, abs_elf_string_ranges)
 
-  def _GetEncodedRangesFromStringAddresses(self, string_data):
+  def _GetEncodedRangesFromStringAddresses(self, string_data_index):
     params = (
       (chunk,) for chunk in self._encoded_string_addresses_by_path_chunks
     )
@@ -198,17 +198,19 @@ class _BulkObjectFileAnalyzerWorker:
     results = parallel.BulkForkAndCall(
       string_extract.ResolveStringPiecesIndirect,
       params,
-      string_data=string_data,
+      string_data_index=string_data_index,
       output_directory=self._output_directory,
     )
     return list(results)
 
-  def _GetEncodedRangesFromStrings(self, string_data):
+  def _GetEncodedRangesFromStrings(self, string_data_index):
     params = ((chunk,) for chunk in self._encoded_strings_by_path_chunks)
     # Order of the jobs doesn't matter since each job owns independent paths,
     # and our output is a dict where paths are the key.
     results = parallel.BulkForkAndCall(
-      string_extract.ResolveStringPieces, params, string_data=string_data
+      string_extract.ResolveStringPieces,
+      params,
+      string_data_index=string_data_index,
     )
     return list(results)
 
@@ -217,9 +219,11 @@ class _BulkObjectFileAnalyzerWorker:
     string_data = self._ReadElfStringData(elf_path, elf_string_ranges)
 
     # [source_idx][batch_idx][section_idx] -> Encoded {path: [string_ranges]}.
+    # Build the index before forking so that it is shared by all workers.
+    string_data_index = string_extract.StringDataIndex(string_data)
     encoded_ranges_sources = [
-      self._GetEncodedRangesFromStringAddresses(string_data),
-      self._GetEncodedRangesFromStrings(string_data),
+      self._GetEncodedRangesFromStringAddresses(string_data_index),
+      self._GetEncodedRangesFromStrings(string_data_index),
     ]
     # [section_idx] -> {path: [string_ranges]}.
     self._list_of_encoded_elf_string_ranges_by_path = []
