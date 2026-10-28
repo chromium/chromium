@@ -9,28 +9,30 @@
 #include <string_view>
 #include <utility>
 
+#include "base/check.h"
 #include "base/check_deref.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ref.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/ash/login/session/user_session_manager.h"
-#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/ash/login/test/chrome_user_session_test_environment_delegate.h"
 #include "chrome/browser/ash/policy/status_collector/managed_session_service.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
 #include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
 #include "chrome/browser/global_features.h"
 #include "chrome/browser/policy/messaging_layer/proto/synced/add_remove_user_event.pb.h"
 #include "chrome/test/base/testing_browser_process.h"
-#include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
+#include "chromeos/ash/components/policy/device_local_account/device_local_account_type.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
+#include "components/account_id/account_id.h"
 #include "components/reporting/client/mock_report_queue.h"
 #include "components/reporting/proto/synced/record_constants.pb.h"
-#include "components/user_manager/scoped_user_manager.h"
+#include "components/session_manager/test/user_session_test_environment.h"
 #include "components/user_manager/user_names.h"
 #include "content/public/test/browser_task_environment.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
@@ -86,21 +88,20 @@ class UserAddedRemovedReporterTest : public ::testing::Test {
  protected:
   void SetUp() override {
     chromeos::PowerManagerClient::InitializeFake();
-    TestingBrowserProcess::GetGlobal()->SetSharedURLLoaderFactory(
+    auto* browser_process = TestingBrowserProcess::GetGlobal();
+    browser_process->SetSharedURLLoaderFactory(
         test_url_loader_factory_.GetSafeWeakWrapper());
-    user_manager_.Reset(std::make_unique<ash::FakeChromeUserManager>());
+    user_session_test_environment_ = std::make_unique<
+        ash::test::UserSessionTestEnvironment>(
+        browser_process->local_state(),
+        std::make_unique<ash::test::ChromeUserSessionTestEnvironmentDelegate>(
+            browser_process));
     user_session_manager_ = std::make_unique<ash::UserSessionManager>(
-        TestingBrowserProcess::GetGlobal()->local_state(),
-        TestingBrowserProcess::GetGlobal()
-            ->GetFeatures()
-            ->application_locale_storage(),
-        TestingBrowserProcess::GetGlobal()->shared_url_loader_factory(),
-        TestingBrowserProcess::GetGlobal()
-            ->platform_part()
-            ->browser_policy_connector_ash(),
-        TestingBrowserProcess::GetGlobal()
-            ->platform_part()
-            ->component_manager_ash());
+        browser_process->local_state(),
+        browser_process->GetFeatures()->application_locale_storage(),
+        browser_process->shared_url_loader_factory(),
+        browser_process->platform_part()->browser_policy_connector_ash(),
+        browser_process->platform_part()->component_manager_ash());
     mock_queue_ = std::make_unique<::reporting::MockReportQueueStrict>();
   }
 
@@ -108,52 +109,42 @@ class UserAddedRemovedReporterTest : public ::testing::Test {
     mock_queue_.reset();
     user_session_manager_->Shutdown();
     user_session_manager_.reset();
-    user_manager_.Reset();
+    user_session_test_environment_.reset();
     TestingBrowserProcess::GetGlobal()->SetSharedURLLoaderFactory(nullptr);
     chromeos::PowerManagerClient::Shutdown();
   }
 
-  std::unique_ptr<TestingProfile> LoginRegularProfile(
-      std::string_view user_email,
-      policy::ManagedSessionService* managed_session_service) {
-    const AccountId account_id =
-        AccountId::FromUserEmail(std::string(user_email));
-    TestingProfile::Builder profile_builder;
-    profile_builder.SetProfileName(account_id.GetUserEmail());
-    auto profile = profile_builder.Build();
-    auto* const user = user_manager_->AddUser(account_id);
-    user_manager_->LoginUser(account_id, true);
-    ash::ProfileHelper::Get()->SetUserToProfileMappingForTesting(user,
-                                                                 profile.get());
-    managed_session_service->OnUserProfileLoaded(account_id);
-    return profile;
+  // Gaia account IDs need a Gaia ID to log in through
+  // UserSessionTestEnvironment.
+  static AccountId MakeAccountId(std::string_view user_email) {
+    return AccountId::FromUserEmailGaiaId(
+        std::string(user_email), GaiaId("gaia_" + std::string(user_email)));
   }
 
-  std::unique_ptr<TestingProfile> LoginGuestProfile(
-      policy::ManagedSessionService* managed_session_service) {
-    TestingProfile::Builder profile_builder;
-    auto profile = profile_builder.Build();
-    user_manager::User* user = user_manager_->AddGuestUser();
-    user_manager_->LoginUser(user->GetAccountId(), true);
-    ash::ProfileHelper::Get()->SetUserToProfileMappingForTesting(user,
-                                                                 profile.get());
-    managed_session_service->OnUserProfileLoaded(user->GetAccountId());
-    return profile;
-  }
-
-  std::unique_ptr<TestingProfile> LoginKioskProfile(
+  void LogInRegularUser(
       std::string_view user_email,
       policy::ManagedSessionService* managed_session_service) {
-    const AccountId account_id =
-        AccountId::FromUserEmail(std::string(user_email));
-    TestingProfile::Builder profile_builder;
-    auto profile = profile_builder.Build();
-    auto* const user = user_manager_->AddKioskChromeAppUser(account_id);
-    user_manager_->LoginUser(account_id, true);
-    ash::ProfileHelper::Get()->SetUserToProfileMappingForTesting(user,
-                                                                 profile.get());
+    const AccountId account_id = MakeAccountId(user_email);
+    CHECK(user_session_test_environment_->AddRegularUser(account_id));
+    LogIn(account_id, managed_session_service);
+  }
+
+  void LogInGuest(policy::ManagedSessionService* managed_session_service) {
+    CHECK(user_session_test_environment_->AddGuestUser());
+    LogIn(user_manager::GuestAccountId(), managed_session_service);
+  }
+
+  void LogInKioskApp(std::string_view user_email,
+                     policy::ManagedSessionService* managed_session_service) {
+    CHECK(user_session_test_environment_->AddKioskChromeAppUser(user_email));
+    LogIn(AccountId::FromUserEmail(std::string(user_email)),
+          managed_session_service);
+  }
+
+  void LogIn(const AccountId& account_id,
+             policy::ManagedSessionService* managed_session_service) {
+    user_session_test_environment_->LogIn(account_id);
     managed_session_service->OnUserProfileLoaded(account_id);
-    return profile;
   }
 
   std::unique_ptr<::reporting::MockReportQueueStrict> mock_queue_;
@@ -168,8 +159,8 @@ class UserAddedRemovedReporterTest : public ::testing::Test {
   ash::ScopedTestingCrosSettings scoped_testing_cros_settings_;
   ash::ScopedStubInstallAttributes scoped_stub_install_attributes_;
 
-  user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
-      user_manager_;
+  std::unique_ptr<ash::test::UserSessionTestEnvironment>
+      user_session_test_environment_;
   std::unique_ptr<ash::UserSessionManager> user_session_manager_;
 
   content::BrowserTaskEnvironment task_environment_;
@@ -204,7 +195,7 @@ TEST_F(UserAddedRemovedReporterTest, TestAffiliatedUserAdded) {
       std::move(test_helper), /*users_to_be_removed=*/{},
       managed_session_service.get());
 
-  LoginRegularProfile(user_email, managed_session_service.get());
+  LogInRegularUser(user_email, managed_session_service.get());
 
   EXPECT_THAT(priority, testing::Eq(::reporting::Priority::IMMEDIATE));
   EXPECT_TRUE(record.has_event_timestamp_sec());
@@ -242,7 +233,7 @@ TEST_F(UserAddedRemovedReporterTest, TestUnaffiliatedUserAdded) {
       std::move(test_helper), /*users_to_be_removed=*/{},
       managed_session_service.get());
 
-  LoginRegularProfile(user_email, managed_session_service.get());
+  LogInRegularUser(user_email, managed_session_service.get());
 
   EXPECT_THAT(priority, testing::Eq(::reporting::Priority::IMMEDIATE));
   EXPECT_TRUE(record.has_event_timestamp_sec());
@@ -252,8 +243,7 @@ TEST_F(UserAddedRemovedReporterTest, TestUnaffiliatedUserAdded) {
 
 TEST_F(UserAddedRemovedReporterTest, TestReportingDisabled) {
   static constexpr char user_email[] = "unaffiliated@managed.org";
-  const AccountId account_id =
-      AccountId::FromUserEmail(std::string(user_email));
+  const AccountId account_id = MakeAccountId(user_email);
 
   auto dummy_queue =
       std::unique_ptr<::reporting::ReportQueue, base::OnTaskRunnerDeleter>(
@@ -272,7 +262,7 @@ TEST_F(UserAddedRemovedReporterTest, TestReportingDisabled) {
       std::move(test_helper), /*users_to_be_removed=*/{},
       managed_session_service.get());
 
-  auto profile = LoginRegularProfile(user_email, managed_session_service.get());
+  LogInRegularUser(user_email, managed_session_service.get());
   managed_session_service->OnUserToBeRemoved(account_id);
   managed_session_service->OnUserRemoved(
       account_id, user_manager::UserRemovalReason::GAIA_REMOVED);
@@ -297,7 +287,7 @@ TEST_F(UserAddedRemovedReporterTest, TestExistingUserLogin) {
       std::move(test_helper), /*users_to_be_removed=*/{},
       managed_session_service.get());
 
-  LoginRegularProfile(user_email, managed_session_service.get());
+  LogInRegularUser(user_email, managed_session_service.get());
 }
 
 TEST_F(UserAddedRemovedReporterTest, TestGuestSessionLogsIn) {
@@ -318,13 +308,13 @@ TEST_F(UserAddedRemovedReporterTest, TestGuestSessionLogsIn) {
       std::move(test_helper), /*users_to_be_removed=*/{},
       managed_session_service.get());
 
-  LoginGuestProfile(managed_session_service.get());
+  LogInGuest(managed_session_service.get());
 }
 
 TEST_F(UserAddedRemovedReporterTest, TestKioskUserLogsIn) {
-  static constexpr char user_email[] = "kiosk@managed.org";
-  const AccountId account_id =
-      AccountId::FromUserEmail(std::string(user_email));
+  const std::string user_email = policy::GenerateDeviceLocalAccountUserId(
+      "kiosk", policy::DeviceLocalAccountType::kKioskApp);
+  const AccountId account_id = AccountId::FromUserEmail(user_email);
   auto dummy_queue =
       std::unique_ptr<::reporting::ReportQueue, base::OnTaskRunnerDeleter>(
           nullptr, base::OnTaskRunnerDeleter(
@@ -342,13 +332,12 @@ TEST_F(UserAddedRemovedReporterTest, TestKioskUserLogsIn) {
       std::move(test_helper), /*users_to_be_removed=*/{},
       managed_session_service.get());
 
-  LoginKioskProfile(user_email, managed_session_service.get());
+  LogInKioskApp(user_email, managed_session_service.get());
 }
 
 TEST_F(UserAddedRemovedReporterTest, TestAffiliatedUserRemoval) {
   static constexpr char user_email[] = "affiliated@managed.org";
-  const AccountId account_id =
-      AccountId::FromUserEmail(std::string(user_email));
+  const AccountId account_id = MakeAccountId(user_email);
   auto dummy_queue =
       std::unique_ptr<::reporting::ReportQueue, base::OnTaskRunnerDeleter>(
           nullptr, base::OnTaskRunnerDeleter(
@@ -376,7 +365,7 @@ TEST_F(UserAddedRemovedReporterTest, TestAffiliatedUserRemoval) {
       std::move(test_helper), /*users_to_be_removed=*/{},
       managed_session_service.get());
 
-  auto profile = LoginRegularProfile(user_email, managed_session_service.get());
+  LogInRegularUser(user_email, managed_session_service.get());
   managed_session_service->OnUserToBeRemoved(account_id);
   managed_session_service->OnUserRemoved(
       account_id, user_manager::UserRemovalReason::GAIA_REMOVED);
@@ -393,8 +382,7 @@ TEST_F(UserAddedRemovedReporterTest, TestAffiliatedUserRemoval) {
 
 TEST_F(UserAddedRemovedReporterTest, TestUnaffiliatedUserRemoval) {
   static constexpr char user_email[] = "unaffiliated@managed.org";
-  const AccountId account_id =
-      AccountId::FromUserEmail(std::string(user_email));
+  const AccountId account_id = MakeAccountId(user_email);
   auto dummy_queue =
       std::unique_ptr<::reporting::ReportQueue, base::OnTaskRunnerDeleter>(
           nullptr, base::OnTaskRunnerDeleter(
@@ -422,7 +410,7 @@ TEST_F(UserAddedRemovedReporterTest, TestUnaffiliatedUserRemoval) {
       std::move(test_helper), /*users_to_be_removed=*/{},
       managed_session_service.get());
 
-  auto profile = LoginRegularProfile(user_email, managed_session_service.get());
+  LogInRegularUser(user_email, managed_session_service.get());
   managed_session_service->OnUserToBeRemoved(account_id);
   managed_session_service->OnUserRemoved(
       account_id, user_manager::UserRemovalReason::GAIA_REMOVED);
@@ -436,9 +424,9 @@ TEST_F(UserAddedRemovedReporterTest, TestUnaffiliatedUserRemoval) {
 }
 
 TEST_F(UserAddedRemovedReporterTest, TestKioskUserRemoved) {
-  static constexpr char user_email[] = "kiosk@managed.org";
-  const AccountId account_id =
-      AccountId::FromUserEmail(std::string(user_email));
+  const std::string user_email = policy::GenerateDeviceLocalAccountUserId(
+      "kiosk", policy::DeviceLocalAccountType::kKioskApp);
+  const AccountId account_id = AccountId::FromUserEmail(user_email);
   auto dummy_queue =
       std::unique_ptr<::reporting::ReportQueue, base::OnTaskRunnerDeleter>(
           nullptr, base::OnTaskRunnerDeleter(
@@ -456,7 +444,7 @@ TEST_F(UserAddedRemovedReporterTest, TestKioskUserRemoved) {
       std::move(test_helper), /*users_to_be_removed=*/{},
       managed_session_service.get());
 
-  auto profile = LoginKioskProfile(user_email, managed_session_service.get());
+  LogInKioskApp(user_email, managed_session_service.get());
   managed_session_service->OnUserToBeRemoved(account_id);
   managed_session_service->OnUserRemoved(
       account_id, user_manager::UserRemovalReason::GAIA_REMOVED);
