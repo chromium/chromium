@@ -62,9 +62,11 @@ install -m 755 -d \
   "$RPM_BUILD_ROOT/opt" \
   "$RPM_BUILD_ROOT/usr"
 # This is hard coded for now
-cp -a "@@staging_dir/etc/" "$RPM_BUILD_ROOT/"
-cp -a "@@staging_dir/opt/" "$RPM_BUILD_ROOT/"
-cp -a "@@staging_dir/usr/" "$RPM_BUILD_ROOT/"
+# Ownership is set declaratively to root:root by %defattr in %files, so only
+# preserve permissions, symlinks, and timestamps here.
+cp -a --no-preserve=ownership "@@staging_dir/etc/" "$RPM_BUILD_ROOT/"
+cp -a --no-preserve=ownership "@@staging_dir/opt/" "$RPM_BUILD_ROOT/"
+cp -a --no-preserve=ownership "@@staging_dir/usr/" "$RPM_BUILD_ROOT/"
 
 #------------------------------------------------------------------------------
 #   Rule to clean up a build

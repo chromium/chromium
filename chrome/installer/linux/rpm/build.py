@@ -141,7 +141,6 @@ def main() -> None:
             compression_opt = "_binary_payload w0.gzdio"
 
         cmd = [
-            "fakeroot",
             "rpmbuild",
             "-bb",
             f"--target={args.arch}",
