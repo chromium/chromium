@@ -232,10 +232,10 @@ VideoFrameAcceleratedSnapshotPool::DoExternalOverdrawAndSnapshot(
     return nullptr;
   }
 
-  draw_callback(provider_->recorder_for_external_draws_->getRecordingCanvas());
-  if (provider_->recorder_for_external_draws_->HasReleasableDrawOps()) {
-    FlushRecording(
-        provider_->recorder_for_external_draws_->ReleaseMainRecording());
+  MemoryManagedPaintRecorder recorder(Size(), /*client=*/nullptr);
+  draw_callback(recorder.getRecordingCanvas());
+  if (recorder.HasReleasableDrawOps()) {
+    FlushRecording(recorder.ReleaseMainRecording());
   }
 
   if (!IsValid()) {
