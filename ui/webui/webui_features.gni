@@ -37,7 +37,7 @@ declare_args() {
 
   # Enable the WebUI tab strip new tab button
   # (chrome://tabstrip-ntb.top-chrome).
-  enable_webui_tabstrip_ntb = is_desktop_android
+  enable_webui_tabstrip_ntb = is_android
 }
 
 if (enable_cast_receiver || is_cast_android || is_castos) {
