@@ -68,7 +68,7 @@ class CrosHealthdPsrSamplerHandlerForTest
       const CrosHealthdPsrSamplerHandlerForTest&) = delete;
   ~CrosHealthdPsrSamplerHandlerForTest() override = default;
 
-  MOCK_METHOD(void, Retry, (OptionalMetricCallback, size_t), (const override));
+  MOCK_METHOD(void, Retry, (OptionalMetricCallback, size_t), (const, override));
 
   // Set the changes before retry.
   void SetActionBeforeRetry(

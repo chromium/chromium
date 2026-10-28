@@ -177,12 +177,12 @@ class MockUserSessionActivityReporterDelegate
   MOCK_METHOD(ash::power::ml::IdleEventNotifier::ActivityData,
               QueryIdleStatus,
               (),
-              (const override));
+              (const, override));
   MOCK_METHOD(
       bool,
       IsUserActive,
       (const ash::power::ml::IdleEventNotifier::ActivityData& activity_data),
-      (const override));
+      (const, override));
   MOCK_METHOD(void, ReportSessionActivity, (), (override));
   MOCK_METHOD(void,
               AddActiveIdleState,

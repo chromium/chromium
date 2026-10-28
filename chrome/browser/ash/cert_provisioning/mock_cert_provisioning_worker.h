@@ -71,22 +71,22 @@ class MockCertProvisioningWorker : public CertProvisioningWorker {
   MOCK_METHOD(void, Stop, (CertProvisioningWorkerState), (override));
   MOCK_METHOD(void, Pause, (), (override));
   MOCK_METHOD(void, MarkWorkerForReset, (), (override));
-  MOCK_METHOD(bool, IsWaiting, (), (const override));
-  MOCK_METHOD(bool, IsWorkerMarkedForReset, (), (const override));
+  MOCK_METHOD(bool, IsWaiting, (), (const, override));
+  MOCK_METHOD(bool, IsWorkerMarkedForReset, (), (const, override));
   MOCK_METHOD(const std::optional<BackendServerError>&,
               GetLastBackendServerError,
               (),
-              (const override));
-  MOCK_METHOD(const std::string&, GetProcessId, (), (const override));
-  MOCK_METHOD(const CertProfile&, GetCertProfile, (), (const override));
-  MOCK_METHOD(const std::vector<uint8_t>&, GetPublicKey, (), (const override));
-  MOCK_METHOD(CertProvisioningWorkerState, GetState, (), (const override));
+              (const, override));
+  MOCK_METHOD(const std::string&, GetProcessId, (), (const, override));
+  MOCK_METHOD(const CertProfile&, GetCertProfile, (), (const, override));
+  MOCK_METHOD(const std::vector<uint8_t>&, GetPublicKey, (), (const, override));
+  MOCK_METHOD(CertProvisioningWorkerState, GetState, (), (const, override));
   MOCK_METHOD(CertProvisioningWorkerState,
               GetPreviousState,
               (),
-              (const override));
-  MOCK_METHOD(base::Time, GetLastUpdateTime, (), (const override));
-  MOCK_METHOD(std::string, GetFailureMessageWithPii, (), (const override));
+              (const, override));
+  MOCK_METHOD(base::Time, GetLastUpdateTime, (), (const, override));
+  MOCK_METHOD(std::string, GetFailureMessageWithPii, (), (const, override));
 
   void SetExpectations(testing::Cardinality do_step_times,
                        bool is_waiting,
