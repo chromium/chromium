@@ -70,7 +70,7 @@ constexpr base::TimeDelta kMinKeyFrameRequestInterval = base::Milliseconds(500);
 constexpr int kMinKeyFrameRequestFrameInterval = 6;
 
 // UMA histogram name for video bitrate setting.
-constexpr char kHistogramBitrate[] = "CastStreaming.Sender.Video.Bitrate";
+constexpr char kHistogramBitrate[] = "CastStreaming.Sender.Video.Bitrate2";
 
 // UMA histogram for the percentage of dropped video frames.
 constexpr char kHistogramDroppedFrames[] =
@@ -318,7 +318,7 @@ void VideoSender::InsertRawVideoFrame(
   frames_since_bitrate_reported_ =
       ++frames_since_bitrate_reported_ % kSampleInterval;
   if (frames_since_bitrate_reported_ == 0) {
-    base::UmaHistogramMemoryKB(kHistogramBitrate, suggested_bitrate / 1000);
+    base::UmaHistogramCounts100000(kHistogramBitrate, suggested_bitrate / 1000);
   }
 
   TRACE_COUNTER_ID1("cast.stream", "Video Target Bitrate", this,

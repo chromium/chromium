@@ -67,7 +67,7 @@ constexpr char kHistogramSessionLengthTab[] =
     "MediaRouter.CastStreaming.Session.Length.Tab";
 
 constexpr char kHistogramAudioTransmissionKbps[] =
-    "CastStreaming.Sender.Audio.TransmissionRate";
+    "CastStreaming.Sender.Audio.TransmissionRate2";
 constexpr char kHistogramAudioAverageEncodeTime[] =
     "CastStreaming.Sender.Audio.AverageEncodeTime";
 constexpr char kHistogramAudioAverageCaptureLatency[] =
@@ -83,7 +83,7 @@ constexpr char kHistogramAudioExceededPlayoutDelayPacketsPercentage[] =
 constexpr char kHistogramAudioLateFramesPercentage[] =
     "CastStreaming.Sender.Audio.LateFramesPercentage";
 constexpr char kHistogramVideoTransmissionKbps[] =
-    "CastStreaming.Sender.Video.TransmissionRate";
+    "CastStreaming.Sender.Video.TransmissionRate2";
 constexpr char kHistogramVideoAverageEncodeTime[] =
     "CastStreaming.Sender.Video.AverageEncodeTime";
 constexpr char kHistogramVideoAverageCaptureLatency[] =
@@ -921,6 +921,8 @@ TEST_F(MirroringActivityTest, CastStreamingSenderUma) {
 
   // Check audio UMAs.
   EXPECT_EQ(uma_recorder.GetTotalSum(kHistogramAudioTransmissionKbps), 20);
+  // Bitrates below 1 Mbps must not land in the underflow bucket.
+  uma_recorder.ExpectBucketCount(kHistogramAudioTransmissionKbps, 0, 0);
   EXPECT_EQ(uma_recorder.GetTotalSum(kHistogramAudioAverageEncodeTime), 13);
   EXPECT_EQ(uma_recorder.GetTotalSum(kHistogramAudioAverageCaptureLatency), 23);
   EXPECT_EQ(uma_recorder.GetTotalSum(kHistogramAudioAverageEndToEndLatency),

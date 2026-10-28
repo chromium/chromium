@@ -95,7 +95,7 @@ const char kHistogramTypeVideo[] = "Video";
 
 constexpr char kLoggerComponent[] = "MirroringService";
 
-enum class HistogramType { kMemory, kLatency, kPercentage };
+enum class HistogramType { kBitrateKbps, kLatency, kPercentage };
 
 struct HistogramStatistic {
   CastStat stat;
@@ -108,8 +108,8 @@ struct HistogramStatistic {
 
 constexpr std::array kHistograms = std::to_array<HistogramStatistic>({
     {.stat = CastStat::TRANSMISSION_KBPS,
-     .name = "TransmissionRate",
-     .type = HistogramType::kMemory},
+     .name = "TransmissionRate2",
+     .type = HistogramType::kBitrateKbps},
     {.stat = CastStat::AVG_ENCODE_TIME_MS,
      .name = "AverageEncodeTime",
      .type = HistogramType::kLatency},
@@ -278,8 +278,8 @@ void MaybeRecordHistogram(const base::DictValue& statistics,
 
   std::string histogram_name = GetHistogramName(streaming_type, histogram.name);
   switch (histogram.type) {
-    case HistogramType::kMemory:
-      base::UmaHistogramMemoryKB(histogram_name, *value);
+    case HistogramType::kBitrateKbps:
+      base::UmaHistogramCounts100000(histogram_name, *value);
       break;
 
     case HistogramType::kLatency:

@@ -519,13 +519,16 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="CastStreaming.Sender.Video.Bitrate" units="kbps"
+<histogram name="CastStreaming.Sender.Video.Bitrate2" units="kbps"
     expires_after="2027-08-01">
   <owner>jophba@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>
     Records the currently set video bit rate during a Cast Streaming mirroring
     session. This metric is subsampled every 500 frames.
+
+    Replaces CastStreaming.Sender.Video.Bitrate, which used a minimum of 1000
+    kbps and put every sample below 1 Mbps in the underflow bucket.
   </summary>
 </histogram>
 
@@ -694,7 +697,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="CastStreaming.Sender.{CastStreamingSenderAudioVideo}.TransmissionRate"
+    name="CastStreaming.Sender.{CastStreamingSenderAudioVideo}.TransmissionRate2"
     units="kbps" expires_after="2027-08-01">
   <owner>anasr@google.com</owner>
   <owner>bzielinski@google.com</owner>
@@ -705,6 +708,11 @@ chromium-metrics-reviews@google.com.
     Records the {CastStreamingSenderAudioVideo} packet transmission bitrate in
     kbps during a Cast Streaming session. Histogram is recorded at the end of
     the mirroring session.
+
+    Replaces
+    CastStreaming.Sender.{CastStreamingSenderAudioVideo}.TransmissionRate, which
+    used a minimum of 1000 kbps and put every sample below 1 Mbps, including
+    almost all audio samples, in the underflow bucket.
   </summary>
   <token key="CastStreamingSenderAudioVideo"
       variants="CastStreamingSenderAudioVideo"/>
