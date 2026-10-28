@@ -1109,7 +1109,7 @@ class BottomSheetCoordinator
     private void updateSheetLayoutMode(@SheetLayoutMode int mode) {
         mMediator.setSheetLayoutMode(mode);
         boolean isPopup = mode == SheetLayoutMode.DESKTOP_POPUP;
-        setBottomMargin(mRequestedBottomMargin);
+        updateContainerBottomMargin();
         mMediator.updateCloseButton(isPopup, getCurrentSheetContent());
         updateContainerClipping(isPopup);
     }
@@ -1621,12 +1621,15 @@ class BottomSheetCoordinator
 
     void setBottomMargin(@Px int bottomMargin) {
         mRequestedBottomMargin = bottomMargin;
-        int effectiveBottomMargin = bottomMargin;
+        updateContainerBottomMargin();
+    }
+
+    private void updateContainerBottomMargin() {
         // Enforce the baseline visual requirements for large form factor devices: ensure the sheet
         // physically floats above the logical bottom by attaching a rigid bottom margin offset.
-        if (isLargeFormFactorUiEnabled()) {
-            effectiveBottomMargin += mDesktopBottomMargin;
-        }
+        @Px
+        int effectiveBottomMargin =
+                mRequestedBottomMargin + (isLargeFormFactorUiEnabled() ? mDesktopBottomMargin : 0);
 
         // TODO(crbug.com/521433079): Should early return if this doesn't change. Leaving for now to
         // ensure we don't introduce subtle client regressions.
