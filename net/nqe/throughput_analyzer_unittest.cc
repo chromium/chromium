@@ -110,6 +110,13 @@ class TestThroughputAnalyzer : public internal::ThroughputAnalyzer {
   int64_t bits_received_ = 0;
 };
 
+// Sets HTTP RTT to a large value so that the throughput observation window is
+// not detected as hanging. In practice, this would be provided by
+// `network_quality_estimator` based on the recent observations.
+void SetLargeHttpRtt(TestNetworkQualityEstimator& network_quality_estimator) {
+  network_quality_estimator.SetStartTimeNullHttpRtt(base::Seconds(100));
+}
+
 using ThroughputAnalyzerTest = TestWithTaskEnvironment;
 
 TEST_F(ThroughputAnalyzerTest, PrivateHost) {
@@ -122,8 +129,7 @@ TEST_F(ThroughputAnalyzerTest, PrivateHost) {
       NetworkAnonymizationKey(), handles::kInvalidNetworkHandle));
 }
 
-#if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
-// Flaky on iOS: crbug.com/672917.
+#if BUILDFLAG(IS_ANDROID)
 // Flaky on Android: crbug.com/1223950.
 #define MAYBE_MaximumRequests DISABLED_MaximumRequests
 #else
@@ -144,6 +150,7 @@ TEST_F(ThroughputAnalyzerTest, MAYBE_MaximumRequests) {
     TestNetworkQualityEstimator network_quality_estimator;
     std::map<std::string, std::string> variation_params;
     NetworkQualityEstimatorParams params(variation_params);
+    SetLargeHttpRtt(network_quality_estimator);
     TestThroughputAnalyzer throughput_analyzer(&network_quality_estimator,
                                                &params, tick_clock);
 
@@ -177,18 +184,9 @@ TEST_F(ThroughputAnalyzerTest, MAYBE_MaximumRequests) {
   }
 }
 
-#if BUILDFLAG(IS_IOS)
-// Flaky on iOS: crbug.com/672917.
-#define MAYBE_MaximumRequestsWithNetworkAnonymizationKey \
-  DISABLED_MaximumRequestsWithNetworkAnonymizationKey
-#else
-#define MAYBE_MaximumRequestsWithNetworkAnonymizationKey \
-  MaximumRequestsWithNetworkAnonymizationKey
-#endif
 // Make sure that the NetworkAnonymizationKey is respected when resolving a host
 // from the cache.
-TEST_F(ThroughputAnalyzerTest,
-       MAYBE_MaximumRequestsWithNetworkAnonymizationKey) {
+TEST_F(ThroughputAnalyzerTest, MaximumRequestsWithNetworkAnonymizationKey) {
   const SchemefulSite kSite(GURL("https://foo.test/"));
   const auto kNetworkAnonymizationKey =
       NetworkAnonymizationKey::CreateSameSite(kSite);
@@ -205,6 +203,7 @@ TEST_F(ThroughputAnalyzerTest,
     TestNetworkQualityEstimator network_quality_estimator;
     std::map<std::string, std::string> variation_params;
     NetworkQualityEstimatorParams params(variation_params);
+    SetLargeHttpRtt(network_quality_estimator);
     TestThroughputAnalyzer throughput_analyzer(&network_quality_estimator,
                                                &params, tick_clock);
 
@@ -267,10 +266,7 @@ TEST_F(ThroughputAnalyzerTest, TestMinRequestsForThroughputSample) {
   std::map<std::string, std::string> variation_params;
   variation_params["throughput_hanging_requests_cwnd_size_multiplier"] = "-1";
   NetworkQualityEstimatorParams params(variation_params);
-  // Set HTTP RTT to a large value so that the throughput observation window
-  // is not detected as hanging. In practice, this would be provided by
-  // `network_quality_estimator` based on the recent observations.
-  network_quality_estimator.SetStartTimeNullHttpRtt(base::Seconds(100));
+  SetLargeHttpRtt(network_quality_estimator);
 
   for (size_t num_requests = 1;
        num_requests <= params.throughput_min_requests_in_flight() + 1;
@@ -634,18 +630,9 @@ TEST_F(ThroughputAnalyzerTest, TestRequestDeletedImmediately) {
   EXPECT_EQ(0u, throughput_analyzer.CountActiveInFlightRequests());
 }
 
-#if BUILDFLAG(IS_IOS)
-// Flaky on iOS: crbug.com/672917.
-#define MAYBE_TestThroughputWithMultipleRequestsOverlap \
-  DISABLED_TestThroughputWithMultipleRequestsOverlap
-#else
-#define MAYBE_TestThroughputWithMultipleRequestsOverlap \
-  TestThroughputWithMultipleRequestsOverlap
-#endif
 // Tests if the throughput observation is taken correctly when local and network
 // requests overlap.
-TEST_F(ThroughputAnalyzerTest,
-       MAYBE_TestThroughputWithMultipleRequestsOverlap) {
+TEST_F(ThroughputAnalyzerTest, TestThroughputWithMultipleRequestsOverlap) {
   static const struct {
     bool start_local_request;
     bool local_request_completes_first;
@@ -669,6 +656,7 @@ TEST_F(ThroughputAnalyzerTest,
     std::map<std::string, std::string> variation_params;
     variation_params["throughput_hanging_requests_cwnd_size_multiplier"] = "-1";
     NetworkQualityEstimatorParams params(variation_params);
+    SetLargeHttpRtt(network_quality_estimator);
 
     TestThroughputAnalyzer throughput_analyzer(&network_quality_estimator,
                                                &params, tick_clock);
@@ -784,10 +772,7 @@ TEST_F(ThroughputAnalyzerTest, TestThroughputWithNetworkRequestsOverlap) {
         base::NumberToString(test.throughput_min_requests_in_flight);
     variation_params["throughput_hanging_requests_cwnd_size_multiplier"] = "-1";
     NetworkQualityEstimatorParams params(variation_params);
-    // Set HTTP RTT to a large value so that the throughput observation window
-    // is not detected as hanging. In practice, this would be provided by
-    // `network_quality_estimator` based on the recent observations.
-    network_quality_estimator.SetStartTimeNullHttpRtt(base::Seconds(100));
+    SetLargeHttpRtt(network_quality_estimator);
 
     TestThroughputAnalyzer throughput_analyzer(&network_quality_estimator,
                                                &params, tick_clock);
@@ -855,10 +840,7 @@ TEST_F(ThroughputAnalyzerTest, TestThroughputWithMultipleNetworkRequests) {
   variation_params["throughput_min_requests_in_flight"] = "3";
   variation_params["throughput_hanging_requests_cwnd_size_multiplier"] = "-1";
   NetworkQualityEstimatorParams params(variation_params);
-  // Set HTTP RTT to a large value so that the throughput observation window
-  // is not detected as hanging. In practice, this would be provided by
-  // `network_quality_estimator` based on the recent observations.
-  network_quality_estimator.SetStartTimeNullHttpRtt(base::Seconds(100));
+  SetLargeHttpRtt(network_quality_estimator);
 
   TestThroughputAnalyzer throughput_analyzer(&network_quality_estimator,
                                              &params, tick_clock);
