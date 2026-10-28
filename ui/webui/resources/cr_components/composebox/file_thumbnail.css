@@ -130,7 +130,6 @@
 }
 
 .pdf-icon {
-  background-color: transparent;
   box-sizing: border-box;
   color: var(--pdf-icon-background-color_);
   height: var(--pdf-icon-size, 100%);
@@ -147,7 +146,6 @@
 }
 
 .document-icon {
-  background-color: transparent;
   box-sizing: border-box;
   color: var(--color-composebox-document-chip-icon);
   height: var(--document-icon-size, 100%);
