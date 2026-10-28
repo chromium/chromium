@@ -166,6 +166,9 @@ class BinaryUploadRequest {
       const google::protobuf::RepeatedPtrField<std::string> frame_url_chain);
   void set_content_hash_in_final_call(bool content_hash_in_final_call);
   void set_file_size(uint64_t file_size);
+  void set_extension_initiator(
+      safe_browsing::ExtensionTelemetryReportRequest::ExtensionInfo
+          extension_initiator);
 
   std::string SetRandomRequestToken();
 

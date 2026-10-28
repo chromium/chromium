@@ -369,6 +369,14 @@ void InitializeBinaryUploadRequest(BinaryUploadRequest* request,
     if (base::FeatureList::IsEnabled(kEnterpriseIframeDlpRulesSupport)) {
       request->set_frame_url_chain(info.frame_url_chain());
     }
+
+    // Only set the initiator when known so the server can tell "unknown" from
+    // "empty".
+    if (base::FeatureList::IsEnabled(kEnterpriseExtensionActorAttribution)) {
+      if (auto extension_initiator = info.extension_initiator()) {
+        request->set_extension_initiator(std::move(*extension_initiator));
+      }
+    }
   }
 
   request->set_user_action_requests_count(info.user_action_requests_count());

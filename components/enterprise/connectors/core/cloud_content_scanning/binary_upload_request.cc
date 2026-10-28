@@ -257,6 +257,14 @@ void BinaryUploadRequest::set_file_size(uint64_t file_size) {
   content_analysis_request_.mutable_request_data()->set_file_size(file_size);
 }
 
+void BinaryUploadRequest::set_extension_initiator(
+    safe_browsing::ExtensionTelemetryReportRequest::ExtensionInfo
+        extension_initiator) {
+  *content_analysis_request_.mutable_request_data()
+       ->mutable_initiator()
+       ->mutable_chrome_extension() = std::move(extension_initiator);
+}
+
 std::string BinaryUploadRequest::SetRandomRequestToken() {
   DCHECK(request_token().empty());
   content_analysis_request_.set_request_token(
