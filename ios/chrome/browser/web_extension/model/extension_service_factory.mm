@@ -21,17 +21,17 @@
 
 namespace {
 
-std::unique_ptr<KeyedService> BuildExtensionService(ProfileIOS* profile) {
+std::unique_ptr<KeyedService> BuildExtensionService(ProfileIOS& profile) {
   // Give the opportunity for the test hook to override the factory from
   // the provider (allowing EG tests to use a fake ExtensionService).
-  if (auto extension_service = tests_hook::CreateExtensionService(profile)) {
+  if (auto extension_service = tests_hook::CreateExtensionService(&profile)) {
     return extension_service;
   }
 
   const bool is_silent =
       universal_optout::features::IsUniversalOptOutExtensionSilentEnabled();
 
-  if (!is_silent && !universal_optout::IsGPCExtensionEnabled(profile)) {
+  if (!is_silent && !universal_optout::IsGPCExtensionEnabled(&profile)) {
     return nullptr;
   }
 
@@ -39,7 +39,7 @@ std::unique_ptr<KeyedService> BuildExtensionService(ProfileIOS* profile) {
       universal_optout::UniversalOptOutServiceFactory::GetForProfile(profile);
 
   const web::UniversalOptOutState opt_out_state =
-      universal_optout::GetUniversalOptOutState(profile->GetPrefs(),
+      universal_optout::GetUniversalOptOutState(profile.GetPrefs(),
                                                 optout_service);
 
   if (@available(iOS 18.4, *)) {
@@ -49,7 +49,7 @@ std::unique_ptr<KeyedService> BuildExtensionService(ProfileIOS* profile) {
       return nullptr;
     }
     auto service = std::make_unique<ExtensionServiceImpl>(
-        CHECK_DEREF(profile->GetPrefs()), std::move(extension_controller));
+        CHECK_DEREF(profile.GetPrefs()), std::move(extension_controller));
     service->Initialize(opt_out_state);
     return service;
   }
@@ -59,7 +59,7 @@ std::unique_ptr<KeyedService> BuildExtensionService(ProfileIOS* profile) {
 }  // namespace
 
 // static
-ExtensionServiceFactory::TestingFactory
+ExtensionServiceFactory::TestingFactoryByRef
 ExtensionServiceFactory::GetDefaultFactory() {
   return base::BindOnce(&BuildExtensionService);
 }
@@ -75,6 +75,6 @@ ExtensionServiceFactory::ExtensionServiceFactory(PassKey key)
 }
 
 std::unique_ptr<KeyedService> ExtensionServiceFactory::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
+    ProfileIOS& profile) const {
   return BuildExtensionService(profile);
 }
