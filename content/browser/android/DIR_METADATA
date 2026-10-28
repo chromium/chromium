@@ -1,1 +1,7 @@
 os: ANDROID
+overrides: {
+  file_patterns: "javascript_injector.*"
+  metadata: {
+    mixins: "//android_webview/COMMON_METADATA"
+  }
+}

@@ -1,0 +1,6 @@
+overrides: {
+  file_patterns: "JavaBridge*.java"
+  metadata: {
+    mixins: "//android_webview/COMMON_METADATA"
+  }
+}

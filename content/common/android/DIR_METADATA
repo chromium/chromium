@@ -5,3 +5,9 @@ os: ANDROID
 buganizer_public: {
   component_id: 1456128
 }
+overrides: {
+  file_patterns: "gin_java_bridge_*"
+  metadata: {
+    mixins: "//android_webview/COMMON_METADATA"
+  }
+}
