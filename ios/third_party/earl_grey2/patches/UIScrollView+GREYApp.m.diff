@@ -1,0 +1,104 @@
+diff --git a/AppFramework/Additions/UIScrollView+GREYApp.m b/AppFramework/Additions/UIScrollView+GREYApp.m
+index 2b0f92eb..7c50892e 100644
+--- a/AppFramework/Additions/UIScrollView+GREYApp.m
++++ b/AppFramework/Additions/UIScrollView+GREYApp.m
+@@ -26,6 +26,13 @@
+ #import "GREYAppleInternals.h"
+ #import "GREYSwizzler.h"
+ 
++@interface UIScrollView (GREYProgrammaticScrollExposed)
++- (void)_delegateScrollViewAnimationEnded;
++- (void)_stopScrollingNotify:(BOOL)notify
++                         pin:(BOOL)pin
++    tramplingAnimationDependentFlags:(BOOL)trample;
++@end
++
+ @implementation UIScrollView (GREYApp)
+ 
+ + (void)load {
+@@ -61,6 +68,31 @@
+               replaceInstanceMethod:originalSel
+                          withMethod:swizzledSel];
+   GREYFatalAssertWithMessage(swizzled, @"Cannot swizzle [UIScrollView setContentOffset:]");
++
++  originalSel = @selector(setContentOffset:animated:);
++  swizzledSel = @selector(greyswizzled_setContentOffset:animated:);
++  swizzled = [swizzler swizzleClass:[UIScrollView class]
++              replaceInstanceMethod:originalSel
++                         withMethod:swizzledSel];
++  GREYFatalAssertWithMessage(swizzled,
++                             @"Cannot swizzle [UIScrollView setContentOffset:animated:]");
++
++  originalSel = @selector(_delegateScrollViewAnimationEnded);
++  swizzledSel = @selector(greyswizzled_delegateScrollViewAnimationEnded);
++  swizzled = [swizzler swizzleClass:[UIScrollView class]
++              replaceInstanceMethod:originalSel
++                         withMethod:swizzledSel];
++  GREYFatalAssertWithMessage(
++      swizzled, @"Cannot swizzle [UIScrollView _delegateScrollViewAnimationEnded]");
++
++  originalSel = @selector(_stopScrollingNotify:pin:tramplingAnimationDependentFlags:);
++  swizzledSel =
++      @selector(greyswizzled_stopScrollingNotify:pin:tramplingAnimationDependentFlags:);
++  swizzled = [swizzler swizzleClass:[UIScrollView class]
++              replaceInstanceMethod:originalSel
++                         withMethod:swizzledSel];
++  GREYFatalAssertWithMessage(swizzled, @"Cannot swizzle [UIScrollView "
++                                       @"_stopScrollingNotify:pin:tramplingAnimationDependentFlags:]");
+ }
+ 
+ - (BOOL)grey_hasScrollResistance {
+@@ -113,6 +145,7 @@
+ }
+ 
+ - (void)greyswizzled_stopScrollDecelerationNotify:(BOOL)notify {
++  [self grey_untrackProgrammaticScrollAnimation];
+   GREYAppStateTrackerObject *object =
+       objc_getAssociatedObject(self, @selector(greyswizzled_scrollViewWillBeginDragging));
+   UNTRACK_STATE_FOR_OBJECT(kGREYPendingUIScrollViewScrolling, object);
+@@ -128,6 +161,45 @@
+     [self.greyScrollViewDelegate scrollView:self willScrollToOffset:offset];
+   }
+   INVOKE_ORIGINAL_IMP1(void, @selector(greyswizzled_setContentOffset:), offset);
++  if (!self.window || !self.isScrollAnimating) {
++    [self grey_untrackProgrammaticScrollAnimation];
++  }
++}
++
++- (void)greyswizzled_setContentOffset:(CGPoint)offset animated:(BOOL)animated {
++  INVOKE_ORIGINAL_IMP2(void, @selector(greyswizzled_setContentOffset:animated:), offset, animated);
++  if (animated && self.window && self.isScrollAnimating) {
++    GREYAppStateTrackerObject *object =
++        TRACK_STATE_FOR_OBJECT(kGREYPendingUIScrollViewScrolling, self);
++    objc_setAssociatedObject(self, @selector(greyswizzled_setContentOffset:animated:), object,
++                             OBJC_ASSOCIATION_RETAIN_NONATOMIC);
++  } else {
++    [self grey_untrackProgrammaticScrollAnimation];
++  }
++}
++
++- (void)greyswizzled_delegateScrollViewAnimationEnded {
++  INVOKE_ORIGINAL_IMP(void, @selector(greyswizzled_delegateScrollViewAnimationEnded));
++  [self grey_untrackProgrammaticScrollAnimation];
++}
++
++- (void)greyswizzled_stopScrollingNotify:(BOOL)notify
++                                     pin:(BOOL)pin
++        tramplingAnimationDependentFlags:(BOOL)trample {
++  INVOKE_ORIGINAL_IMP3(
++      void, @selector(greyswizzled_stopScrollingNotify:pin:tramplingAnimationDependentFlags:),
++      notify, pin, trample);
++  [self grey_untrackProgrammaticScrollAnimation];
++}
++
++- (void)grey_untrackProgrammaticScrollAnimation {
++  GREYAppStateTrackerObject *object =
++      objc_getAssociatedObject(self, @selector(greyswizzled_setContentOffset:animated:));
++  if (object) {
++    UNTRACK_STATE_FOR_OBJECT(kGREYPendingUIScrollViewScrolling, object);
++    objc_setAssociatedObject(self, @selector(greyswizzled_setContentOffset:animated:), nil,
++                             OBJC_ASSOCIATION_ASSIGN);
++  }
+ }
+ 
+ @end
