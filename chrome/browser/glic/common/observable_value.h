@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_GLIC_COMMON_OBSERVABLE_VALUE_H_
 #define CHROME_BROWSER_GLIC_COMMON_OBSERVABLE_VALUE_H_
 
+#include <concepts>
 #include <type_traits>
 #include <utility>
 
@@ -12,8 +13,12 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ref.h"
 
 namespace glic {
+
+template <typename T>
+class ObservedValue;
 
 // A read-only view of an ObservableValue that allows reading the current value
 // and subscribing to changes, but does not allow modifying the value.
@@ -33,6 +38,23 @@ class ObservableValueView {
   const T& value() const { return value_; }
   const T& operator*() const { return value_; }
   const T* operator->() const { return &value_; }
+
+  friend bool operator==(const ObservableValueView& lhs,
+                         const ObservableValueView& rhs)
+    requires requires(const T& a, const T& b) {
+      { a == b } -> std::convertible_to<bool>;
+    }
+  {
+    return lhs.value_ == rhs.value_;
+  }
+
+  friend bool operator==(const ObservableValueView& lhs, const T& rhs)
+    requires requires(const T& a, const T& b) {
+      { a == b } -> std::convertible_to<bool>;
+    }
+  {
+    return lhs.value_ == rhs;
+  }
 
   // Registers a callback to be called whenever the value changes.
   base::CallbackListSubscription AddObserver(Callback callback) {
@@ -57,6 +79,77 @@ class ObservableValueView {
     return AddObserver(std::move(closure));
   }
 
+  template <typename Receiver>
+  [[nodiscard]] base::CallbackListSubscription AddObserver(
+      Receiver* receiver,
+      void (Receiver::*method)(const T&)) {
+    return AddObserver(base::BindRepeating(method, base::Unretained(receiver)));
+  }
+
+  template <typename Receiver>
+  [[nodiscard]] base::CallbackListSubscription AddObserver(
+      Receiver* receiver,
+      void (Receiver::*method)()) {
+    return AddObserver(base::BindRepeating(method, base::Unretained(receiver)));
+  }
+
+  template <typename Receiver>
+  [[nodiscard]] base::CallbackListSubscription AddObserver(
+      const Receiver* receiver,
+      void (Receiver::*method)(const T&) const) {
+    return AddObserver(base::BindRepeating(method, base::Unretained(receiver)));
+  }
+
+  template <typename Receiver>
+  [[nodiscard]] base::CallbackListSubscription AddObserver(
+      const Receiver* receiver,
+      void (Receiver::*method)() const) {
+    return AddObserver(base::BindRepeating(method, base::Unretained(receiver)));
+  }
+
+  template <typename Receiver>
+  [[nodiscard]] base::CallbackListSubscription AddObserverAndNotify(
+      Receiver* receiver,
+      void (Receiver::*method)(const T&)) {
+    return AddObserverAndNotify(
+        base::BindRepeating(method, base::Unretained(receiver)));
+  }
+
+  template <typename Receiver>
+  [[nodiscard]] base::CallbackListSubscription AddObserverAndNotify(
+      Receiver* receiver,
+      void (Receiver::*method)()) {
+    return AddObserverAndNotify(
+        base::BindRepeating(method, base::Unretained(receiver)));
+  }
+
+  template <typename Receiver>
+  [[nodiscard]] base::CallbackListSubscription AddObserverAndNotify(
+      const Receiver* receiver,
+      void (Receiver::*method)(const T&) const) {
+    return AddObserverAndNotify(
+        base::BindRepeating(method, base::Unretained(receiver)));
+  }
+
+  template <typename Receiver>
+  [[nodiscard]] base::CallbackListSubscription AddObserverAndNotify(
+      const Receiver* receiver,
+      void (Receiver::*method)() const) {
+    return AddObserverAndNotify(
+        base::BindRepeating(method, base::Unretained(receiver)));
+  }
+
+  template <typename Receiver, typename Method>
+  [[nodiscard]] ObservedValue<T> Observe(Receiver* receiver, Method method);
+
+  // Note: The initial notification fires before the returned ObservedValue<T>
+  // finishes construction, so callbacks that read the ObservedValue<T> member
+  // on `receiver` (rather than taking `const T&`) should use `Observe()` and
+  // invoke their update method after the member is initialized.
+  template <typename Receiver, typename Method>
+  [[nodiscard]] ObservedValue<T> ObserveAndNotify(Receiver* receiver,
+                                                  Method method);
+
   bool HasObservers() const { return !callback_list_.empty(); }
 
  protected:
@@ -70,6 +163,76 @@ class ObservableValueView {
   T value_;
   CallbackList callback_list_;
 };
+
+// Holds a non-null reference to an `ObservableValueView<T>` together with an
+// active `base::CallbackListSubscription`.
+template <typename T>
+class ObservedValue {
+ public:
+  ObservedValue(ObservableValueView<T>& source,
+                base::CallbackListSubscription subscription)
+      : source_(source), subscription_(std::move(subscription)) {}
+
+  template <typename Receiver, typename Method>
+  ObservedValue(ObservableValueView<T>& source,
+                Receiver* receiver,
+                Method method)
+      : source_(source), subscription_(source.AddObserver(receiver, method)) {}
+
+  ObservedValue(ObservedValue&&) = default;
+  ObservedValue& operator=(ObservedValue&&) = default;
+  ObservedValue(const ObservedValue&) = delete;
+  ObservedValue& operator=(const ObservedValue&) = delete;
+  ~ObservedValue() = default;
+
+  const T& get() const { return source_->get(); }
+  const T& value() const { return source_->value(); }
+  const T& operator*() const { return **source_; }
+  const T* operator->() const { return source_->operator->(); }
+
+  friend bool operator==(const ObservedValue& lhs, const ObservedValue& rhs)
+    requires requires(const T& a, const T& b) {
+      { a == b } -> std::convertible_to<bool>;
+    }
+  {
+    return lhs.get() == rhs.get();
+  }
+
+  friend bool operator==(const ObservedValue& lhs,
+                         const ObservableValueView<T>& rhs)
+    requires requires(const T& a, const T& b) {
+      { a == b } -> std::convertible_to<bool>;
+    }
+  {
+    return lhs.get() == rhs.get();
+  }
+
+  friend bool operator==(const ObservedValue& lhs, const T& rhs)
+    requires requires(const T& a, const T& b) {
+      { a == b } -> std::convertible_to<bool>;
+    }
+  {
+    return lhs.get() == rhs;
+  }
+
+ private:
+  raw_ref<ObservableValueView<T>> source_;
+  base::CallbackListSubscription subscription_;
+};
+
+template <typename T>
+template <typename Receiver, typename Method>
+ObservedValue<T> ObservableValueView<T>::Observe(Receiver* receiver,
+                                                 Method method) {
+  return ObservedValue<T>(*this, AddObserver(receiver, method));
+}
+
+template <typename T>
+template <typename Receiver, typename Method>
+ObservedValue<T> ObservableValueView<T>::ObserveAndNotify(Receiver* receiver,
+                                                          Method method) {
+  return ObservedValue<T>(*this, AddObserverAndNotify(receiver, method));
+}
 
 // Wraps a value of type `T` and notifies registered observers or callbacks
 // whenever the value is modified.

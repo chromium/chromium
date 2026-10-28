@@ -82,10 +82,12 @@ class GlicNoWebviewContentsManager : public GlicWebContentsManager,
   class OverlayContentsManager : public content::WebContentsObserver,
                                  public mojom::GlicOverlayPageHandler {
    public:
-    OverlayContentsManager(Profile* profile,
-                           GlicNoWebviewContentsManager* owner,
-                           ObservableValueView<GuestState>& guest_state,
-                           ObservableValueView<bool>& guest_main_page_loaded);
+    OverlayContentsManager(
+        Profile* profile,
+        GlicNoWebviewContentsManager* owner,
+        ObservableValueView<std::optional<mojom::ErrorPanelType>>& error_type,
+        ObservableValueView<GuestState>& guest_state,
+        ObservableValueView<bool>& guest_main_page_loaded);
     ~OverlayContentsManager() override;
 
     content::WebContents* EnsureWebContents();
@@ -93,9 +95,6 @@ class GlicNoWebviewContentsManager : public GlicWebContentsManager,
     content::WebContents* web_contents() const;
     bool IsCrashed() const;
     GlicOverlayUI* GetOverlayUI() const;
-    std::optional<mojom::ErrorPanelType> error_type() const;
-    void SetError(mojom::ErrorPanelType error_type);
-    void ClearError();
     void ObservePanelState(ObservableValueView<mojom::PanelState>& panel_state);
     void SetVisibility(content::Visibility visibility);
     const gfx::Size& cached_size() const;
@@ -148,13 +147,10 @@ class GlicNoWebviewContentsManager : public GlicWebContentsManager,
     raw_ptr<Profile> profile_;
     raw_ptr<GlicNoWebviewContentsManager> owner_;
     std::unique_ptr<content::WebContents> web_contents_;
-    std::optional<mojom::ErrorPanelType> error_type_;
-    const raw_ref<ObservableValueView<GuestState>> guest_state_;
-    base::CallbackListSubscription guest_state_subscription_;
-    const raw_ref<ObservableValueView<bool>> guest_main_page_loaded_;
-    base::CallbackListSubscription guest_main_page_loaded_subscription_;
-    base::CallbackListSubscription panel_state_subscription_;
-    raw_ptr<ObservableValueView<mojom::PanelState>> panel_state_ = nullptr;
+    ObservedValue<std::optional<mojom::ErrorPanelType>> error_type_;
+    ObservedValue<GuestState> guest_state_;
+    ObservedValue<bool> guest_main_page_loaded_;
+    std::optional<ObservedValue<mojom::PanelState>> panel_state_;
     gfx::Size cached_size_;
   };
 
@@ -238,7 +234,7 @@ class GlicNoWebviewContentsManager : public GlicWebContentsManager,
   void ClearErrorState();
 
   std::optional<mojom::ErrorPanelType> error_type() const {
-    return overlay_manager_.error_type();
+    return *error_type_;
   }
 
   ObservableValueView<GuestState>& guest_state() { return guest_state_; }
@@ -373,6 +369,8 @@ class GlicNoWebviewContentsManager : public GlicWebContentsManager,
   // Lifecycle state of the guest WebContents.
   ObservableValue<GuestState> guest_state_{GuestState::kLoading};
   ObservableValue<bool> guest_main_page_loaded_{false};
+  ObservableValue<std::optional<mojom::ErrorPanelType>> error_type_;
+  base::CallbackListSubscription error_type_subscription_;
 
   // A client load error that happened before a Host was attached, i.e. while
   // the contents were warming in the background. Reported once AttachToHost()
