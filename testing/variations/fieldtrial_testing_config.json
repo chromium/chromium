@@ -10092,7 +10092,7 @@
                         "cooldown-days": "14",
                         "log_model_result_and_show_promo": "false",
                         "opportunity_experiment_cohort": "1",
-                        "score_threshold": "0.8"
+                        "score_threshold": "0.10"
                     },
                     "enable_features": [
                         "DefaultBrowserPromoPropensityModel"
