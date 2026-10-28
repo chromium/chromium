@@ -34,12 +34,12 @@ class SyncServiceFactory final
 
   // Returns the default factory, mainly for tests that want to use a real
   // SyncServiceImpl (as opposed to, say, a TestSyncService).
-  static TestingFactory GetDefaultFactory();
+  static TestingFactoryByRef GetDefaultFactory();
 
  private:
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const final;
+      ProfileIOS& profile) const final;
 };
 
 #endif  // IOS_CHROME_BROWSER_SYNC_MODEL_SYNC_SERVICE_FACTORY_H_

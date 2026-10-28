@@ -195,11 +195,9 @@ syncer::DataTypeController::TypeVector CreateControllers(
   return controllers;
 }
 
-std::unique_ptr<syncer::SyncClient> BuildSyncClient(ProfileIOS* profile) {
-  CHECK(profile);
-
+std::unique_ptr<syncer::SyncClient> BuildSyncClient(ProfileIOS& profile) {
   return std::make_unique<IOSChromeSyncClient>(
-      profile->GetPrefs(), IdentityManagerFactory::GetForProfile(profile),
+      profile.GetPrefs(), IdentityManagerFactory::GetForProfile(profile),
       IOSTrustedVaultServiceFactory::GetForProfile(profile),
       SyncInvalidationsServiceFactory::GetForProfile(profile),
       DeviceInfoSyncServiceFactory::GetForProfile(profile),
@@ -208,9 +206,8 @@ std::unique_ptr<syncer::SyncClient> BuildSyncClient(ProfileIOS* profile) {
           profile));
 }
 
-std::unique_ptr<KeyedService> BuildSyncService(ProfileIOS* profile) {
-  CHECK(profile);
-  CHECK(!profile->IsOffTheRecord());
+std::unique_ptr<KeyedService> BuildSyncService(ProfileIOS& profile) {
+  CHECK(!profile.IsOffTheRecord());
   if (!syncer::IsSyncAllowedByFlag()) {
     return nullptr;
   }
@@ -226,7 +223,7 @@ std::unique_ptr<KeyedService> BuildSyncService(ProfileIOS* profile) {
 
   syncer::SyncServiceImpl::InitParams init_params;
   init_params.sync_client = BuildSyncClient(profile);
-  init_params.url_loader_factory = profile->GetSharedURLLoaderFactory();
+  init_params.url_loader_factory = profile.GetSharedURLLoaderFactory();
   init_params.create_http_post_provider_factory = base::BindRepeating(
       [](const std::string& user_agent,
          std::unique_ptr<network::PendingSharedURLLoaderFactory>
@@ -238,11 +235,11 @@ std::unique_ptr<KeyedService> BuildSyncService(ProfileIOS* profile) {
   init_params.network_connection_tracker =
       GetApplicationContext()->GetNetworkConnectionTracker();
   init_params.channel = ::GetChannel();
-  init_params.debug_identifier = profile->GetProfileName();
+  init_params.debug_identifier = profile.GetProfileName();
   init_params.os_crypt_async = GetApplicationContext()->GetOSCryptAsync();
   auto sync_service =
       std::make_unique<syncer::SyncServiceImpl>(std::move(init_params));
-  sync_service->Initialize(CreateControllers(profile, sync_service.get()));
+  sync_service->Initialize(CreateControllers(&profile, sync_service.get()));
 
   password_manager::PasswordReceiverService* password_receiver_service =
       IOSChromePasswordReceiverServiceFactory::GetForProfile(profile);
@@ -252,7 +249,7 @@ std::unique_ptr<KeyedService> BuildSyncService(ProfileIOS* profile) {
 
   // Allow sync_preferences/ components to use SyncService.
   sync_preferences::PrefServiceSyncable* pref_service =
-      profile->GetSyncablePrefs();
+      profile.GetSyncablePrefs();
   pref_service->OnSyncServiceInitialized(sync_service.get());
 
   SendTabToSelfSyncServiceFactory::GetForProfile(profile)
@@ -315,7 +312,8 @@ SyncServiceFactory::GetAllSyncServices() {
 }
 
 // static
-SyncServiceFactory::TestingFactory SyncServiceFactory::GetDefaultFactory() {
+SyncServiceFactory::TestingFactoryByRef
+SyncServiceFactory::GetDefaultFactory() {
   return base::BindOnce(&BuildSyncService);
 }
 
@@ -365,6 +363,6 @@ SyncServiceFactory::SyncServiceFactory(PassKey key)
 }
 
 std::unique_ptr<KeyedService> SyncServiceFactory::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
+    ProfileIOS& profile) const {
   return BuildSyncService(profile);
 }
