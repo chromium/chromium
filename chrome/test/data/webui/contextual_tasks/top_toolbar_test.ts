@@ -42,6 +42,7 @@ suite('TopToolbarTest', () => {
     loadTimeData.overrideValues({
       contextManagementInComposeboxEnabled: false,
       contextualTasksEnableSpatialModelToolbarLayout: false,
+      contextualTasksEnableSpatialModelToolbarLayoutNewThreadInOverflow: false,
       contextualTasksUnboundedMenuEnabled: false,
       contextualTasksSidePanelRearchitectureEnabled: false,
     });
@@ -979,6 +980,37 @@ suite('TopToolbarTest', () => {
     assertTrue(!!newThreadButton);
     assertTrue(newThreadButton.hidden);
   });
+
+  test(
+      'fires a single new-thread-click from the overflow menu new thread item',
+      async () => {
+        document.body.innerHTML = window.trustedTypes!.emptyHTML;
+        loadTimeData.overrideValues({
+          contextualTasksEnableSpatialModelToolbarLayout: true,
+          contextualTasksEnableSpatialModelToolbarLayoutNewThreadInOverflow:
+              true,
+          isAimEligible: true,
+        });
+
+        topToolbar = document.createElement('top-toolbar');
+        document.body.appendChild(topToolbar);
+        await microtasksFinished();
+
+        let newThreadClickCount = 0;
+        topToolbar.addEventListener('new-thread-click', () => {
+          newThreadClickCount++;
+        });
+
+        const menu = topToolbar.$.overflowMenu.get();
+        await microtasksFinished();
+        const newThreadButton =
+            menu.shadowRoot.querySelector<HTMLElement>('#newThreadButton');
+        assertTrue(!!newThreadButton);
+        newThreadButton.click();
+        await microtasksFinished();
+
+        assertEquals(1, newThreadClickCount);
+      });
 
   test('highlights overflow menu button when menu is open', async () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
