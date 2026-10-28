@@ -638,8 +638,8 @@ TEST_F(GameDashboardCaptureModeTest, SettingsMenuHeightConstrainedBelowBar) {
 }
 
 TEST_F(GameDashboardCaptureModeTest, SettingsMenuHeightMinimumAboveBar) {
-  UpdateDisplay("1000x100");
-  game_window()->SetBounds(gfx::Rect(0, 50, 500, 50));
+  UpdateDisplay("1000x200");
+  game_window()->SetBounds({0, 100, 500, 50});
   StartGameCaptureModeSession();
   BaseCaptureModeSession* session =
       CaptureModeController::Get()->capture_mode_session();
@@ -683,8 +683,8 @@ TEST_F(GameDashboardCaptureModeTest, StopOnActiveDeskChanged) {
 }
 
 TEST_F(GameDashboardCaptureModeTest, SettingsMenuHeightMinimumBelowBar) {
-  UpdateDisplay("1000x100");
-  game_window()->SetBounds(gfx::Rect(0, 0, 500, 50));
+  UpdateDisplay("1000x200");
+  game_window()->SetBounds({500, 120});
   StartGameCaptureModeSession();
   BaseCaptureModeSession* session =
       CaptureModeController::Get()->capture_mode_session();

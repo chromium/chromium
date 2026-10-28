@@ -847,7 +847,7 @@ TEST_F(PrivacyIndicatorsTrayItemViewTest, RecordShowTypeMetrics) {
 TEST_F(PrivacyIndicatorsTrayItemViewTest, MAYBE_RecordShowPerSessionMetrics) {
   // Set up 2 displays. Note that only one instance should be recorded for the
   // primary display when session changes.
-  UpdateDisplay("100x200,300x400");
+  UpdateDisplay("200x320,300x400");
   int expected_count = 1;
 
   // Show the indicator in the given `show_count` number of times.
@@ -928,7 +928,7 @@ TEST_F(PrivacyIndicatorsTrayItemViewTest, RecordAppAccessSimultaneously) {
 TEST_F(PrivacyIndicatorsTrayItemViewTest, RecordVisibilityDuration) {
   // Set up 2 displays. Note that only one instance should be recorded for the
   // primary display.
-  UpdateDisplay("100x200,300x400");
+  UpdateDisplay("200x320,300x400");
 
   base::HistogramTester histograms;
 
@@ -979,7 +979,7 @@ TEST_F(PrivacyIndicatorsTrayItemViewTest, IndicatorVisisbilityOnSecondDisplay) {
   ASSERT_TRUE(privacy_indicators_view()->GetVisible());
 
   // Now set up 2 displays. The indicator should show on both displays.
-  UpdateDisplay("100x200,300x400");
+  UpdateDisplay("200x320,300x400");
 
   EXPECT_TRUE(privacy_indicators_view()->GetVisible());
   EXPECT_TRUE(GetSecondaryDisplayPrivacyIndicatorsView()->GetVisible());

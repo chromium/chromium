@@ -45,7 +45,7 @@ class DisplayErrorObserverTest : public AshTestBase {
 };
 
 TEST_F(DisplayErrorObserverTest, Normal) {
-  UpdateDisplay("300x200,400x300");
+  UpdateDisplay("320x200,400x300");
   observer()->OnDisplayConfigurationChangeFailed(
       display::DisplayConfigurator::DisplayStateList(),
       display::MULTIPLE_DISPLAY_STATE_MULTI_MIRROR);
@@ -54,7 +54,7 @@ TEST_F(DisplayErrorObserverTest, Normal) {
 }
 
 TEST_F(DisplayErrorObserverTest, CallTwice) {
-  UpdateDisplay("300x200,400x300");
+  UpdateDisplay("320x200,400x300");
   observer()->OnDisplayConfigurationChangeFailed(
       display::DisplayConfigurator::DisplayStateList(),
       display::MULTIPLE_DISPLAY_STATE_MULTI_MIRROR);
@@ -70,7 +70,7 @@ TEST_F(DisplayErrorObserverTest, CallTwice) {
 }
 
 TEST_F(DisplayErrorObserverTest, CallWithDifferentState) {
-  UpdateDisplay("300x200,400x300");
+  UpdateDisplay("320x200,400x300");
   observer()->OnDisplayConfigurationChangeFailed(
       display::DisplayConfigurator::DisplayStateList(),
       display::MULTIPLE_DISPLAY_STATE_MULTI_MIRROR);
@@ -87,7 +87,7 @@ TEST_F(DisplayErrorObserverTest, CallWithDifferentState) {
 
 TEST_F(DisplayErrorObserverTest, FailureWithInternalDisplay) {
   // Failure with a single internal display --> No notification.
-  UpdateDisplay("300x200,400x300");
+  UpdateDisplay("320x200,400x300");
   const int64_t internal_display_id = display_manager()->GetDisplayAt(0).id();
   const int64_t external_display_id = display_manager()->GetDisplayAt(1).id();
   display::test::ScopedSetInternalDisplayId set_internal(display_manager(),

@@ -225,7 +225,7 @@ TEST_F(WindowStateTest, UnresizableWindowSnap) {
   const std::array<bool, 2> orientation_params{false, true};
 
   for (const auto is_landscape : orientation_params) {
-    UpdateDisplay(is_landscape ? "900x600,200x100" : "600x900,100x200");
+    UpdateDisplay(is_landscape ? "900x600,320x200" : "600x900,200x320");
     auto* const screen = display::Screen::Get();
     ASSERT_EQ(2, screen->GetNumDisplays());
 
@@ -248,14 +248,14 @@ TEST_F(WindowStateTest, UnresizableWindowSnap) {
     EXPECT_FALSE(window_state->CanSnapOnDisplay(secondary_small_display));
 
     auto* const opposite_orientation_size =
-        is_landscape ? new gfx::Size(0, 300) : new gfx::Size(300, 0);
+        is_landscape ? new gfx::Size{0, 400} : new gfx::Size{400, 0};
     window->SetProperty(kUnresizableSnappedSizeKey, opposite_orientation_size);
     EXPECT_FALSE(window_state->CanSnap());
     EXPECT_FALSE(window_state->CanSnapOnDisplay(primary_display));
     EXPECT_FALSE(window_state->CanSnapOnDisplay(secondary_small_display));
 
     auto* const correct_orientation_size =
-        is_landscape ? new gfx::Size(300, 0) : new gfx::Size(0, 300);
+        is_landscape ? new gfx::Size{400, 0} : new gfx::Size{0, 400};
     window->SetProperty(kUnresizableSnappedSizeKey, correct_orientation_size);
     EXPECT_TRUE(window_state->CanSnap());
     EXPECT_TRUE(window_state->CanSnapOnDisplay(primary_display));
@@ -860,8 +860,8 @@ TEST_F(WindowStateTest, TrustedPinned) {
   EXPECT_TRUE(window_state->IsTrustedPinned());
 
   // Update display triggers workspace event.
-  UpdateDisplay("300x200");
-  EXPECT_EQ("0,0 300x200", window->GetBoundsInScreen().ToString());
+  UpdateDisplay("320x200");
+  EXPECT_EQ("0,0 320x200", window->GetBoundsInScreen().ToString());
 
   // Unpin should work.
   window_state->Restore();

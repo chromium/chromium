@@ -15,22 +15,22 @@ using GetMaxDisplaySizeTest = AshTestBase;
 
 TEST_F(GetMaxDisplaySizeTest, DeviceScaleFactorIgnored) {
   // Device scale factor shouldn't affect the native size.
-  UpdateDisplay("1000x300*2");
-  EXPECT_EQ("1000x300", GetMaxDisplaySizeInNative().ToString());
+  UpdateDisplay("1000x700*2");
+  EXPECT_EQ("1000x700", GetMaxDisplaySizeInNative().ToString());
 }
 
 TEST_F(GetMaxDisplaySizeTest, RotatedDisplayReturnsRotatedSize) {
-  UpdateDisplay("1000x300*2/r");
-  EXPECT_EQ("300x1000", GetMaxDisplaySizeInNative().ToString());
+  UpdateDisplay("1000x700*2/r");
+  EXPECT_EQ("700x1000", GetMaxDisplaySizeInNative().ToString());
 }
 
 TEST_F(GetMaxDisplaySizeTest, UiScalingIgnored) {
-  UpdateDisplay("1000x300*2@1.5");
-  EXPECT_EQ("1000x300", GetMaxDisplaySizeInNative().ToString());
+  UpdateDisplay("1000x700*2@1.5");
+  EXPECT_EQ("1000x700", GetMaxDisplaySizeInNative().ToString());
 }
 
 TEST_F(GetMaxDisplaySizeTest, FirstDisplayLarger) {
-  UpdateDisplay("400x300,200x100");
+  UpdateDisplay("400x300,320x200");
   EXPECT_EQ("400x300", GetMaxDisplaySizeInNative().ToString());
 }
 
@@ -40,7 +40,7 @@ TEST_F(GetMaxDisplaySizeTest, SecondDisplayLarger) {
 }
 
 TEST_F(GetMaxDisplaySizeTest, MaximumDimensionDifferentDisplays) {
-  UpdateDisplay("400x300,100x500");
+  UpdateDisplay("400x300,200x500");
   EXPECT_EQ("400x500", GetMaxDisplaySizeInNative().ToString());
 }
 

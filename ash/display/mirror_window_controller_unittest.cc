@@ -74,9 +74,9 @@ TEST_F(MirrorWindowControllerTest, DockMode) {
   const int64_t external_id = 2;
 
   const display::ManagedDisplayInfo internal_display_info =
-      CreateDisplayInfo(internal_id, gfx::Rect(0, 0, 400, 500));
+      CreateDisplayInfo(internal_id, {400, 500});
   const display::ManagedDisplayInfo external_display_info =
-      CreateDisplayInfo(external_id, gfx::Rect(1, 1, 200, 100));
+      CreateDisplayInfo(external_id, {1, 1, 320, 200});
   std::vector<display::ManagedDisplayInfo> display_info_list;
 
   // software mirroring.
@@ -141,13 +141,13 @@ TEST_P(MirrorWindowControllerRotationAndPanelOrientationTest, MirrorSize) {
   int scale_factors[] = {1, 2};
   for (int scale : scale_factors) {
     display::ManagedDisplayInfo primary_display_info =
-        CreateDisplayInfo(primary_id, gfx::Rect(0, 0, 400, 300), scale);
+        CreateDisplayInfo(primary_id, {800, 600}, scale);
     primary_display_info.set_panel_orientation(panel_orientation);
     primary_display_info.SetRotation(active_rotation,
                                      display::Display::RotationSource::ACTIVE);
 
     display::ManagedDisplayInfo mirror_display_info =
-        CreateDisplayInfo(mirror_id, gfx::Rect(400, 0, 600, 500), scale);
+        CreateDisplayInfo(mirror_id, {800, 0, 1000, 800}, scale);
     mirror_display_info.SetRotation(mirror_rotation,
                                     display::Display::RotationSource::ACTIVE);
     std::vector<display::ManagedDisplayInfo> display_info_list = {

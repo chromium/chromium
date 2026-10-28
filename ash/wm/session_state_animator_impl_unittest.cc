@@ -99,7 +99,7 @@ TEST_F(SessionStateAnimatiorImplContainersTest, ContainersHaveIdTest) {
 // containers. See http://crbug.com/712422 for details.
 TEST_F(SessionStateAnimatiorImplContainersTest,
        AnimationCallbackOnMultiDisplay) {
-  UpdateDisplay("300x200,500x400");
+  UpdateDisplay("320x200,500x400");
 
   int callback_count = 0;
   SessionStateAnimatorImpl animator;
@@ -116,7 +116,7 @@ TEST_F(SessionStateAnimatiorImplContainersTest,
 // LayerCopyAnimator aborts animations due to display size change.
 TEST_F(SessionStateAnimatiorImplContainersTest,
        AnimationSequenceAndLayerCopyAnimator) {
-  UpdateDisplay("300x200,500x400");
+  UpdateDisplay("320x200,500x400");
   base::RunLoop().RunUntilIdle();
 
   // Create windows in containers of all displays so that the containers will

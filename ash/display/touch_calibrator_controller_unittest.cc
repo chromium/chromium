@@ -626,7 +626,7 @@ TEST_F(TouchCalibratorControllerTest, IgnoreInternalTouchDevices) {
 
 TEST_F(TouchCalibratorControllerTest, HighDPIMonitorsCalibration) {
   // Initialize 3 displays each with different device scale factors.
-  UpdateDisplay("600x500*2,400x300*3,600x500*1.5");
+  UpdateDisplay("800x600*2,1200x900*3,600x500*1.5");
 
   // Index 0 points to the native internal display, we will calibrate the touch
   // display at index 2.
@@ -720,7 +720,7 @@ TEST_F(TouchCalibratorControllerTest, HighDPIMonitorsCalibration) {
 TEST_F(TouchCalibratorControllerTest, RotatedHighDPIMonitorsCalibration) {
   // Initialize 2 displays each with resolution 500x500. One of them at 2x
   // device scale factor.
-  UpdateDisplay("600x500*2,600x500*1.5/r");
+  UpdateDisplay("800x600*2,600x500*1.5/r");
 
   // Index 0 points to the native internal display, we will calibrate the touch
   // display at index 1.

@@ -261,7 +261,7 @@ TEST_F(MahiPanelWidgetTest, WidgetDoesNotResize) {
 
   // Reduce the screen size such that the panel widget would not entirely fit.
   // It should keep its original size.
-  UpdateDisplay("200x180");
+  UpdateDisplay("320x200");
   EXPECT_EQ(widget->GetSize(), panel_widget_size);
 }
 

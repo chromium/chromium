@@ -386,7 +386,7 @@ TEST_P(OverviewSessionTest, A11yAlertOnOverviewMode) {
 // Tests that there are no crashes when there is not enough screen space
 // available to show all of the windows.
 TEST_P(OverviewSessionTest, SmallDisplay) {
-  UpdateDisplay("3x1");
+  UpdateDisplay("320x200");
   gfx::Rect bounds(0, 0, 1, 1);
   std::unique_ptr<aura::Window> window1 =
       CreateWindowWithAppType(chromeos::AppType::NON_APP, bounds);

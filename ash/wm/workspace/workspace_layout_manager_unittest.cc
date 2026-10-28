@@ -1562,7 +1562,7 @@ TEST_F(WorkspaceLayoutManagerSoloTest, RootWindowResizeShrinksWindows) {
   EXPECT_LE(window->bounds().height(), work_area.height());
 
   // Make the root window shorter than our window.
-  UpdateDisplay("300x200");
+  UpdateDisplay("320x200");
   work_area = GetDisplayNearestWindow(window.get()).work_area();
   EXPECT_LE(window->bounds().width(), work_area.width());
   EXPECT_LE(window->bounds().height(), work_area.height());

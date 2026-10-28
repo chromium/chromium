@@ -47,18 +47,17 @@ TEST_F(WindowFinderTest, ToplevelCanBeNotDrawn) {
 }
 
 TEST_F(WindowFinderTest, MultipleDisplays) {
-  UpdateDisplay("300x200,400x300");
+  UpdateDisplay("320x200,400x300");
 
   std::unique_ptr<aura::Window> window1 =
       CreateWindowWithAppType(chromeos::AppType::NON_APP, {100, 100});
   std::unique_ptr<aura::Window> window2 =
-      CreateWindowWithAppType(chromeos::AppType::NON_APP, {300, 0, 100, 100});
+      CreateWindowWithAppType(chromeos::AppType::NON_APP, {320, 0, 100, 100});
   ASSERT_NE(window1->GetRootWindow(), window2->GetRootWindow());
 
   std::set<aura::Window*> ignore;
   EXPECT_EQ(window1.get(), GetTopmostWindowAtPoint(gfx::Point(10, 10), ignore));
-  EXPECT_EQ(window2.get(),
-            GetTopmostWindowAtPoint(gfx::Point(310, 10), ignore));
+  EXPECT_EQ(window2.get(), GetTopmostWindowAtPoint({330, 10}, ignore));
   EXPECT_EQ(nullptr, GetTopmostWindowAtPoint(gfx::Point(10, 210), ignore));
 }
 

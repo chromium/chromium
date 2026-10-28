@@ -497,7 +497,7 @@ TEST_F(ExtendedDesktopTest, CaptureEventLocationHighDPI) {
 }
 
 TEST_F(ExtendedDesktopTest, CaptureEventLocationHighDPI_2) {
-  UpdateDisplay("1000x600,600x400*2");
+  UpdateDisplay("1000x600,800x400*2");
   aura::Window::Windows root_windows = Shell::GetAllRootWindows();
 
   aura::test::EventCountDelegate r1_d1;
@@ -804,11 +804,11 @@ TEST_F(ExtendedDesktopTest, OpenSystemTray) {
 }
 
 TEST_F(ExtendedDesktopTest, StayInSameRootWindow) {
-  UpdateDisplay("200x100,300x200");
+  UpdateDisplay("320x200,400x300");
   aura::Window::Windows root_windows = Shell::GetAllRootWindows();
   views::Widget* w1 = CreateTestWidget(gfx::Rect(10, 10, 50, 50));
   EXPECT_EQ(root_windows[0], w1->GetNativeView()->GetRootWindow());
-  w1->SetBounds(gfx::Rect(250, 10, 50, 50));
+  w1->SetBounds({350, 10, 50, 50});
   EXPECT_EQ(root_windows[1], w1->GetNativeView()->GetRootWindow());
 
   // The widget stays in the same root if kLockedToRootKey is set to true.
@@ -832,7 +832,7 @@ TEST_F(ExtendedDesktopTest, StayInSameRootWindow) {
                                     .bounds = {100, 100},
                                     .window_id = 100})
           .release();
-  window->SetBoundsInScreen(gfx::Rect(250, 10, 50, 50), GetSecondaryDisplay());
+  window->SetBoundsInScreen({350, 10, 50, 50}, GetSecondaryDisplay());
   EXPECT_EQ(root_windows[0], window->GetRootWindow());
 
   aura::Window* status_container =
@@ -842,12 +842,12 @@ TEST_F(ExtendedDesktopTest, StayInSameRootWindow) {
       aura::test::CreateTestWindow(
           {.parent = status_container, .bounds = {100, 100}, .window_id = 100})
           .release();
-  window->SetBoundsInScreen(gfx::Rect(250, 10, 50, 50), GetSecondaryDisplay());
+  window->SetBoundsInScreen({350, 10, 50, 50}, GetSecondaryDisplay());
   EXPECT_EQ(root_windows[0], window->GetRootWindow());
 }
 
 TEST_F(ExtendedDesktopTest, KeyEventsOnLockScreen) {
-  UpdateDisplay("200x100,300x200");
+  UpdateDisplay("320x200,400x300");
   aura::Window::Windows root_windows = Shell::GetAllRootWindows();
 
   // Create normal windows on both displays.
@@ -890,7 +890,7 @@ TEST_F(ExtendedDesktopTest, KeyEventsOnLockScreen) {
   EXPECT_EQ("ab", base::UTF16ToASCII(textfield->GetText()));
 
   // Deleting 2nd display. The lock window still should get the events.
-  UpdateDisplay("200x100");
+  UpdateDisplay("320x200");
   event_generator->set_current_target(root_windows[0]);
   event_generator->PressAndReleaseKey(ui::VKEY_C);
   EXPECT_EQ(lock_widget->GetNativeView(), focus_client->GetFocusedWindow());
@@ -898,7 +898,7 @@ TEST_F(ExtendedDesktopTest, KeyEventsOnLockScreen) {
 
   // Creating 2nd display again, and lock window still should get events
   // on both root windows.
-  UpdateDisplay("200x100,300x200");
+  UpdateDisplay("320x200,400x300");
   root_windows = Shell::GetAllRootWindows();
   event_generator->set_current_target(root_windows[0]);
   event_generator->PressAndReleaseKey(ui::VKEY_D);

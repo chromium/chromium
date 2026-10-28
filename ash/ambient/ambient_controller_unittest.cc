@@ -2212,8 +2212,8 @@ TEST_F(AmbientControllerForManagedScreensaverTest,
 
 TEST_F(AmbientControllerForManagedScreensaverTest,
        ManagedScreensaverAlwaysShowsFullImages) {
-  const gfx::Rect screen_bounds_landscape(/*width=*/320, /*height=*/180);
-  UpdateDisplay("320x180");
+  const gfx::Rect screen_bounds_landscape{320, 200};
+  UpdateDisplay("320x200");
   SetAmbientModeManagedScreensaverEnabled(/*enabled=*/true);
 
   const base::FilePath image_large_1 =
@@ -2233,13 +2233,12 @@ TEST_F(AmbientControllerForManagedScreensaverTest,
       GetAmbientBackgroundImageView()->GetImageBoundsInScreenForTesting();
   EXPECT_TRUE(screen_bounds_landscape.Contains(image_bounds_landscape));
 
-  // Top and bottom black bars of 18 pixels due to height scaling.
-  EXPECT_EQ(image_bounds_landscape,
-            gfx::Rect(/*x=*/0, /*y=*/18, /*width=*/320, /*height=*/144));
+  // Top and bottom black bars of 28 pixels due to height scaling.
+  EXPECT_EQ(image_bounds_landscape, (gfx::Rect{0, 28, 320, 144}));
 
   // Rotate screen
-  const gfx::Rect screen_bounds_portrait(/*width=*/180, /*height=*/320);
-  UpdateDisplay("180x320");
+  const gfx::Rect screen_bounds_portrait{200, 320};
+  UpdateDisplay("200x320");
   FastForwardByLockScreenInactivityTimeout();
   ASSERT_TRUE(GetContainerView());
 
@@ -2247,9 +2246,8 @@ TEST_F(AmbientControllerForManagedScreensaverTest,
       GetAmbientBackgroundImageView()->GetImageBoundsInScreenForTesting();
   EXPECT_TRUE(screen_bounds_portrait.Contains(image_bounds_portrait));
 
-  // Top and bottom black bars of 119 pixels due to height scaling.
-  EXPECT_EQ(image_bounds_portrait,
-            gfx::Rect(/*x=*/0, /*y=*/119, /*width=*/180, /*height=*/81));
+  // Top and bottom black bars of 115 pixels due to height scaling.
+  EXPECT_EQ(image_bounds_portrait, (gfx::Rect{0, 115, 200, 90}));
 }
 
 TEST_F(AmbientControllerTest, RendersCorrectViewForVideo) {

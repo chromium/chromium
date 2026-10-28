@@ -191,8 +191,8 @@ TEST_P(RoundedDisplayProviderSurfaceUpdateTest,
   EXPECT_EQ(before_update_gutters, after_update_gutters);
 }
 
-constexpr char kInitialDisplaySpec[] = "500x400~15";
-constexpr char kInitialDisplaySpecWithRotation[] = "500x400/r~15";
+constexpr char kInitialDisplaySpec[] = "700x400~15";
+constexpr char kInitialDisplaySpecWithRotation[] = "700x400/r~15";
 
 INSTANTIATE_TEST_SUITE_P(
     /* no prefix */,
@@ -200,19 +200,19 @@ INSTANTIATE_TEST_SUITE_P(
     testing::Values(
         // If nothing changes, we should skip surface update.
         std::make_tuple(kInitialDisplaySpec,
-                        "500x400~15",
+                        "700x400~15",
                         /*expect_update=*/false),
         // Change in device scale factor, should only cause a surface update.
         std::make_tuple(kInitialDisplaySpec,
-                        "500x400*2~15",
+                        "700x400*2~15",
                         /*expect_update=*/true),
         // Further display rotation, should only cause a surface update.
         std::make_tuple(kInitialDisplaySpecWithRotation,
-                        "500x400/u~15",
+                        "700x400/u~15",
                         /*expect_update=*/true),
         // Multiple spec changes, should appropriately cause a surface update.
         std::make_tuple(kInitialDisplaySpec,
-                        "500x400*2~15",
+                        "700x400*2~15",
                         /*expect_update=*/true)));
 
 }  // namespace

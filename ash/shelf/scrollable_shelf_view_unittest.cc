@@ -341,6 +341,7 @@ TEST_F(ScrollableShelfViewTest,
   auto* const prefs =
       Shell::Get()->session_controller()->GetLastActiveUserPrefService();
   SetShelfAlignmentPref(prefs, GetPrimaryDisplay().id(), ShelfAlignment::kLeft);
+  SetShowDeskButtonInShelfPref(prefs, true);
   AddAppShortcutsUntilOverflow();
 
   // Reduce the screen height (this can also happen with the maximum size of the
@@ -763,9 +764,11 @@ TEST_P(ScrollableShelfViewRTLTest, CorrectUIInTabletWithoutOverflow) {
 // on an extremely small display. It is an edge case detected by fuzz tests.
 TEST_P(ScrollableShelfViewRTLTest, VerifyActivateIconRippleOnVerySmallDisplay) {
   AddAppShortcut();
+  SetShowDeskButtonInShelfPref(
+      Shell::Get()->session_controller()->GetLastActiveUserPrefService(), true);
 
   // Resize the display to ensure that no shelf icon is visible.
-  UpdateDisplay("60x601");
+  UpdateDisplay("200x601");
 
   // Activate a shelf icon's ink drop. Verify that no crash happens.
   auto* ink_drop = views::InkDrop::Get(test_api_->GetButton(0))->GetInkDrop();

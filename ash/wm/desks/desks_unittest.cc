@@ -6124,7 +6124,7 @@ TEST_P(DesksTest, ScrollButtonsVisibility) {
 TEST_P(DesksTest, GradientsVisibility) {
   // Set a flat display size to make sure there are multiple pages in the desks
   // bar with maximum number of desks.
-  UpdateDisplay("800x150");
+  UpdateDisplay("800x200");
   const size_t max_desks_size = desks_util::GetMaxNumberOfDesks();
   for (size_t i = 1; i < max_desks_size; i++) {
     NewDesk();
@@ -6231,7 +6231,7 @@ TEST_P(DesksTest, ContinueScrollBar) {
           base::Milliseconds(scroll_timeout_ms));
 
   // Make a flat long window to generate multiple pages on desks bar.
-  UpdateDisplay("800x150");
+  UpdateDisplay("325x200");
   const size_t max_desks_size = desks_util::GetMaxNumberOfDesks();
   for (size_t i = 1; i < max_desks_size; i++) {
     NewDesk();
@@ -7239,7 +7239,7 @@ TEST_P(DesksTest, ScrollBarByDraggedDesk) {
           base::Milliseconds(scroll_timeout_ms));
 
   // Make a flat long window to generate multiple pages on desks bar.
-  UpdateDisplay("800x150");
+  UpdateDisplay("325x200");
   const size_t max_desks_size = desks_util::GetMaxNumberOfDesks();
   for (size_t i = 1; i < max_desks_size; i++) {
     NewDesk();

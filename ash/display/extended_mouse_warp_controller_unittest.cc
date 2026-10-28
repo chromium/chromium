@@ -391,14 +391,14 @@ TEST_F(ExtendedMouseWarpControllerTest,
        DISABLED_CheckHostPointToScreenInMouseWarpRegion) {
   // Zoom factor is needed to trigger rounding error which occured in previous
   // code.
-  UpdateDisplay("50+50-300x200@0.8,50+300-300x100/r");
+  UpdateDisplay("50+50-300x200@0.8,50+300-400x200/r");
 
   aura::Window::Windows root_windows = Shell::Get()->GetAllRootWindows();
 
   // Check the primary display's size and scale.
   display::Display primary_display =
       display::Screen::Get()->GetDisplayNearestWindow(root_windows[0]);
-  ASSERT_EQ("250x250", primary_display.size().ToString());
+  ASSERT_EQ("375x250", primary_display.size().ToString());
   ASSERT_EQ(0.8f, primary_display.device_scale_factor());
 
   // Create a window to be dragged in primary display.
@@ -469,9 +469,9 @@ TEST_F(ExtendedMouseWarpControllerTest,
   // After mouse warping, x-coordinate of mouse location in native coordinates
   // should be 2 px away from end. Primary display has zoom factor of 0.8. So
   // the offset in screen coordinates should be 2/0.8, which is 2.5. The end of
-  // primary display in screen coordinates is 250. So x-coordinate of mouse
-  // cursor in screen coordinates should be 247.
-  EXPECT_EQ(247, aura::Env::GetInstance()->last_mouse_location().x());
+  // primary display in screen coordinates is 375. So x-coordinate of mouse
+  // cursor in screen coordinates should be 372.
+  EXPECT_EQ(372, aura::Env::GetInstance()->last_mouse_location().x());
 
   // Get cursor's location in host native coordinates.
   gfx::Point location_in_host_dip;

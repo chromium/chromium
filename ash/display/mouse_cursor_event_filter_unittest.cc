@@ -104,7 +104,7 @@ TEST_F(MouseCursorEventFilterTest, WarpMouseDifferentSizeDisplays) {
 // different scale factors. In native coords mode, there is no
 // difference between drag and move.
 TEST_F(MouseCursorEventFilterTest, WarpMouseDifferentScaleDisplaysInNative) {
-  UpdateDisplay("500x400,600x500*2");
+  UpdateDisplay("500x400,800x500*2");
 
   ASSERT_EQ(display::DisplayPlacement::RIGHT, Shell::Get()
                                                   ->display_manager()

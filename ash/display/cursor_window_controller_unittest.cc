@@ -140,7 +140,7 @@ class CursorWindowControllerTest : public AshTestBase {
 // Test that the composited cursor moves to another display when the real cursor
 // moves to another display.
 TEST_F(CursorWindowControllerTest, MoveToDifferentDisplay) {
-  UpdateDisplay("300x200,300x200*2/r");
+  UpdateDisplay("320x200,640x400*2/r");
 
   WindowTreeHostManager* window_tree_host_manager =
       Shell::Get()->window_tree_host_manager();
@@ -171,7 +171,7 @@ TEST_F(CursorWindowControllerTest, MoveToDifferentDisplay) {
   auto* secondary_wth = secondary_ash_wth->AsWindowTreeHost();
   auto* secondary_root = secondary_wth->window();
 
-  MoveCursorTo(secondary_ash_wth, gfx::Point(299, 50), true);
+  MoveCursorTo(secondary_ash_wth, {319, 50}, true);
 
   // Chrome relies on WindowTreeHost::MoveCursorToInternal() dispatching a mouse
   // move asynchronously. This is implemented in a platform specific way.
@@ -186,7 +186,7 @@ TEST_F(CursorWindowControllerTest, MoveToDifferentDisplay) {
   hot_point = GetCursorHotPoint();
   EXPECT_EQ(gfx::Point(6, 4), hot_point);
   cursor_bounds = GetCursorBounds();
-  EXPECT_EQ(300, cursor_bounds.x() + hot_point.x());
+  EXPECT_EQ(320, cursor_bounds.x() + hot_point.x());
   EXPECT_EQ(50, cursor_bounds.y() + hot_point.y());
 }
 
@@ -290,7 +290,7 @@ TEST_F(CursorWindowControllerTest, DSF) {
   for (const float device_scale_factor : {1.0f, 1.5f, 2.0f, 2.5f}) {
     for (const float zoom : {0.8f, 1.0f, 1.25f}) {
       UpdateDisplay(
-          base::StringPrintf("1000x500*%f@%f", device_scale_factor, zoom));
+          base::StringPrintf("1000x700*%f@%f", device_scale_factor, zoom));
       const float dsf =
           display::Screen::Get()->GetPrimaryDisplay().device_scale_factor();
 

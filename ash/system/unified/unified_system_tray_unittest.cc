@@ -742,7 +742,7 @@ TEST_P(UnifiedSystemTrayTest, BubbleViewSizeChangeWithEnoughSpace) {
 
 TEST_P(UnifiedSystemTrayTest, BubbleViewSizeChangeNoEnoughSpace) {
   // Set a small screen size.
-  UpdateDisplay("300x200");
+  UpdateDisplay("320x200");
 
   auto* tray = GetPrimaryUnifiedSystemTray();
   tray->ShowBubble();

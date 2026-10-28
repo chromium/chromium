@@ -601,7 +601,7 @@ TEST_F(ToastManagerImplTest, PositionWithVisibleSideShelf) {
 
 TEST_F(ToastManagerImplTest, PositionWithUnifiedDesktop) {
   display_manager()->SetUnifiedDesktopEnabled(true);
-  UpdateDisplay("1000x500,0+600-100x500");
+  UpdateDisplay("1000x500,0+600-200x500");
 
   Shelf* shelf = GetPrimaryShelf();
   EXPECT_EQ(ShelfAlignment::kBottom, shelf->alignment());

@@ -18,25 +18,25 @@ using ScreenAshTest = AshTestBase;
 // Tests that ScreenAsh::GetWindowAtScreenPoint() returns the correct window on
 // the correct display.
 TEST_F(ScreenAshTest, TestGetWindowAtScreenPoint) {
-  UpdateDisplay("300x200,500x400");
+  UpdateDisplay("320x200,500x400");
 
   aura::test::TestWindowDelegate delegate;
   std::unique_ptr<aura::Window> win1(CreateTestWindowInShell(
       {.delegate = &delegate, .bounds = {0, 0, 200, 200}, .window_id = 0}));
 
   std::unique_ptr<aura::Window> win2(CreateTestWindowInShell(
-      {.delegate = &delegate, .bounds = {300, 200, 100, 100}, .window_id = 1}));
+      {.delegate = &delegate, .bounds = {320, 200, 100, 100}, .window_id = 1}));
 
   ASSERT_NE(win1->GetRootWindow(), win2->GetRootWindow());
 
   EXPECT_EQ(win1.get(),
             display::Screen::Get()->GetWindowAtScreenPoint(gfx::Point(50, 60)));
-  EXPECT_EQ(win2.get(), display::Screen::Get()->GetWindowAtScreenPoint(
-                            gfx::Point(350, 260)));
+  EXPECT_EQ(win2.get(),
+            display::Screen::Get()->GetWindowAtScreenPoint({370, 260}));
 }
 
 TEST_F(ScreenAshTest, GetDisplayForNewWindows) {
-  UpdateDisplay("300x200,500x400");
+  UpdateDisplay("320x200,500x400");
   display::Screen* screen = display::Screen::Get();
   const std::vector<display::Display> displays = screen->GetAllDisplays();
   ASSERT_EQ(2u, displays.size());
@@ -126,7 +126,7 @@ class RootWindowDestructorObserver : aura::WindowObserver {
 // crash because all displays have been removed. This test makes sure doesn't
 // happen anymore. https://crbug.com/866714.
 TEST_F(ScreenAshTest, TestNoCrashesOnGettingPrimaryDisplayOnDisplayRemoved) {
-  UpdateDisplay("400x500,300x200");
+  UpdateDisplay("400x500,320x200");
 
   TestDisplayRemoveObserver observer;
   display_manager()->AddDisplayObserver(&observer);
@@ -150,7 +150,7 @@ TEST_F(ScreenAshTest, TestNoCrashesOnGettingPrimaryDisplayOnDisplayRemoved) {
 
 TEST_F(ScreenAshTest,
        GetDisplayNearestWindowShouldNotCrashWhenWindowIsBeingDestroyed) {
-  UpdateDisplay("400x500,300x200");
+  UpdateDisplay("400x500,320x200");
 
   std::unique_ptr<aura::Window> window_on_second_display =
       CreateWindowWithAppType(chromeos::AppType::NON_APP, {400, 0, 100, 100});

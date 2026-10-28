@@ -167,7 +167,7 @@ TEST_F(RootWindowTransformersTest, RotateAndMagnify) {
   TestEventHandler event_handler;
   Shell::Get()->AddPreTargetHandler(&event_handler);
 
-  UpdateDisplay("120x200,300x400*2");
+  UpdateDisplay("200x320,500x640*2");
   display::test::DisplayManagerTestApi display_manager_test(display_manager());
   display::Display display1 = display::Screen::Get()->GetPrimaryDisplay();
   int64_t display2_id = display_manager_test.GetSecondaryDisplay().id();
@@ -178,13 +178,13 @@ TEST_F(RootWindowTransformersTest, RotateAndMagnify) {
 
   magnifier->SetEnabled(true);
   EXPECT_EQ(2.0f, magnifier->GetScale());
-  EXPECT_EQ(gfx::Size(120, 200), root_windows[0]->bounds().size());
-  EXPECT_EQ(gfx::Size(150, 200), root_windows[1]->bounds().size());
-  EXPECT_EQ(gfx::Rect(120, 0, 150, 200),
+  EXPECT_EQ((gfx::Size{200, 320}), root_windows[0]->bounds().size());
+  EXPECT_EQ((gfx::Size{250, 320}), root_windows[1]->bounds().size());
+  EXPECT_EQ((gfx::Rect{200, 0, 250, 320}),
             display_manager_test.GetSecondaryDisplay().bounds());
   generator1.MoveMouseToInHost(40, 80);
-  EXPECT_EQ(gfx::Point(50, 90), event_handler.GetLocationAndReset());
-  EXPECT_EQ(gfx::Point(50, 90),
+  EXPECT_EQ((gfx::Point{70, 120}), event_handler.GetLocationAndReset());
+  EXPECT_EQ((gfx::Point{70, 120}),
             aura::Env::GetInstance()->last_mouse_location());
   EXPECT_EQ(display::Display::ROTATE_0,
             GetActiveDisplayRotation(display1.id()));
@@ -195,19 +195,19 @@ TEST_F(RootWindowTransformersTest, RotateAndMagnify) {
       display1.id(), display::Display::ROTATE_90,
       display::Display::RotationSource::ACTIVE);
   // Move the cursor to the center of the first root window.
-  generator1.MoveMouseToInHost(59, 100);
+  generator1.MoveMouseToInHost(99, 160);
 
   magnifier->SetEnabled(true);
   EXPECT_EQ(2.0f, magnifier->GetScale());
-  EXPECT_EQ(gfx::Size(200, 120), root_windows[0]->bounds().size());
-  EXPECT_EQ(gfx::Size(150, 200), root_windows[1]->bounds().size());
-  EXPECT_EQ(gfx::Rect(200, 0, 150, 200),
+  EXPECT_EQ((gfx::Size{320, 200}), root_windows[0]->bounds().size());
+  EXPECT_EQ((gfx::Size{250, 320}), root_windows[1]->bounds().size());
+  EXPECT_EQ((gfx::Rect{320, 0, 250, 320}),
             display_manager_test.GetSecondaryDisplay().bounds());
-  generator1.MoveMouseToInHost(39, 120);
+  generator1.MoveMouseToInHost(39, 240);
   // The EventHandler truncates floating-point locations to integer locations,
   // while Magnifier will round them up.
-  EXPECT_EQ(gfx::Point(110, 70), event_handler.GetLocationAndReset());
-  EXPECT_EQ(gfx::Point(110, 71),
+  EXPECT_EQ((gfx::Point{200, 130}), event_handler.GetLocationAndReset());
+  EXPECT_EQ((gfx::Point{200, 131}),
             aura::Env::GetInstance()->last_mouse_location());
   EXPECT_EQ(display::Display::ROTATE_90,
             GetActiveDisplayRotation(display1.id()));
@@ -216,24 +216,24 @@ TEST_F(RootWindowTransformersTest, RotateAndMagnify) {
 
   display_manager()->SetLayoutForCurrentDisplays(
       display::test::CreateDisplayLayout(
-          display_manager(), display::DisplayPlacement::BOTTOM, 50));
-  EXPECT_EQ(gfx::Rect(50, 120, 150, 200),
+          display_manager(), display::DisplayPlacement::BOTTOM, 150));
+  EXPECT_EQ((gfx::Rect{150, 200, 250, 320}),
             display_manager_test.GetSecondaryDisplay().bounds());
 
   display_manager()->SetDisplayRotation(
       display2_id, display::Display::ROTATE_270,
       display::Display::RotationSource::ACTIVE);
   // Move the cursor to the center of the second root window.
-  generator2.MoveMouseToInHost(151, 199);
+  generator2.MoveMouseToInHost(251, 319);
 
   magnifier->SetEnabled(true);
-  EXPECT_EQ(gfx::Size(200, 120), root_windows[0]->bounds().size());
-  EXPECT_EQ(gfx::Size(200, 150), root_windows[1]->bounds().size());
-  EXPECT_EQ(gfx::Rect(50, 120, 200, 150),
+  EXPECT_EQ((gfx::Size{320, 200}), root_windows[0]->bounds().size());
+  EXPECT_EQ((gfx::Size{320, 250}), root_windows[1]->bounds().size());
+  EXPECT_EQ((gfx::Rect{150, 200, 320, 250}),
             display_manager_test.GetSecondaryDisplay().bounds());
-  generator2.MoveMouseToInHost(172, 219);
-  EXPECT_EQ(gfx::Point(95, 80), event_handler.GetLocationAndReset());
-  EXPECT_EQ(gfx::Point(145, 200),
+  generator2.MoveMouseToInHost(172, 339);
+  EXPECT_EQ((gfx::Point{155, 105}), event_handler.GetLocationAndReset());
+  EXPECT_EQ((gfx::Point{305, 305}),
             aura::Env::GetInstance()->last_mouse_location());
   EXPECT_EQ(display::Display::ROTATE_90,
             GetActiveDisplayRotation(display1.id()));
@@ -245,16 +245,16 @@ TEST_F(RootWindowTransformersTest, RotateAndMagnify) {
       display1.id(), display::Display::ROTATE_180,
       display::Display::RotationSource::ACTIVE);
   // Move the cursor to the center of the first root window.
-  generator1.MoveMouseToInHost(59, 99);
+  generator1.MoveMouseToInHost(99, 159);
 
   magnifier->SetEnabled(true);
-  EXPECT_EQ(gfx::Size(120, 200), root_windows[0]->bounds().size());
-  EXPECT_EQ(gfx::Size(200, 150), root_windows[1]->bounds().size());
-  // Display must share at least 100, so the x's offset becomes 20.
-  EXPECT_EQ(gfx::Rect(20, 200, 200, 150),
+  EXPECT_EQ((gfx::Size{200, 320}), root_windows[0]->bounds().size());
+  EXPECT_EQ((gfx::Size{320, 250}), root_windows[1]->bounds().size());
+  // Display must share at least 100, so the x's offset becomes 100.
+  EXPECT_EQ((gfx::Rect{100, 320, 320, 250}),
             display_manager_test.GetSecondaryDisplay().bounds());
-  generator1.MoveMouseToInHost(39, 59);
-  EXPECT_EQ(gfx::Point(70, 120), event_handler.GetLocationAndReset());
+  generator1.MoveMouseToInHost(79, 119);
+  EXPECT_EQ((gfx::Point{110, 180}), event_handler.GetLocationAndReset());
   EXPECT_EQ(display::Display::ROTATE_180,
             GetActiveDisplayRotation(display1.id()));
   EXPECT_EQ(display::Display::ROTATE_270,
@@ -312,7 +312,7 @@ TEST_F(RootWindowTransformersTest, TouchScaleAndMagnify) {
   TestEventHandler event_handler;
   Shell::Get()->AddPreTargetHandler(&event_handler);
 
-  UpdateDisplay("300x200*2");
+  UpdateDisplay("640x400*2");
   display::Display display = display::Screen::Get()->GetPrimaryDisplay();
   aura::Window::Windows root_windows = Shell::GetAllRootWindows();
   aura::Window* root_window = root_windows[0];

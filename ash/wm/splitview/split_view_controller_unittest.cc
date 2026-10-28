@@ -2166,7 +2166,7 @@ TEST_F(SplitViewControllerTest, CanSnapWindowWithUnresizableSnapProperty) {
 
   // Clamshell mode supports unresizable snapping.
   Shell::Get()->tablet_mode_controller()->SetEnabledForTest(false);
-  window->SetProperty(kUnresizableSnappedSizeKey, new gfx::Size(300, 0));
+  window->SetProperty(kUnresizableSnappedSizeKey, new gfx::Size{400, 0});
   EXPECT_TRUE(split_view_controller()->CanSnapWindow(
       window.get(), chromeos::kDefaultSnapRatio));
 
@@ -2178,7 +2178,7 @@ TEST_F(SplitViewControllerTest, CanSnapWindowWithUnresizableSnapProperty) {
   // If the display is too small for the unresizable snapping, it can't be
   // snapped.
   Shell::Get()->tablet_mode_controller()->SetEnabledForTest(false);
-  UpdateDisplay("200x100");
+  UpdateDisplay("320x200");
   EXPECT_FALSE(split_view_controller()->CanSnapWindow(
       window.get(), chromeos::kDefaultSnapRatio));
 }

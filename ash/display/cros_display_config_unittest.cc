@@ -445,37 +445,37 @@ TEST_F(CrosDisplayConfigTest, SetDisplayPropertiesPrimary) {
 }
 
 TEST_F(CrosDisplayConfigTest, SetDisplayPropertiesOverscan) {
-  UpdateDisplay("1200x600,600x1000*2");
+  UpdateDisplay("1200x600,1200x1920*2");
   const display::Display& secondary =
       display::test::DisplayManagerTestApi(display_manager())
           .GetSecondaryDisplay();
 
-  // Secondary display is 600x1000*2 (300x500 DIP), so max overscan per side is
-  // 75 DIP horizontally and 125 DIP vertically.
+  // Secondary display is 1200x1920*2 (600x960 DIP), so max overscan per side
+  // is 150 DIP horizontally and 240 DIP vertically.
   DisplayConfigProperties properties;
-  properties.overscan = gfx::Insets::TLBR(125, 20, 51, 75);
+  properties.overscan = gfx::Insets::TLBR(240, 20, 51, 150);
   DisplayConfigResult result = SetDisplayProperties(secondary.id(), properties);
   EXPECT_EQ(DisplayConfigResult::kSuccess, result);
-  EXPECT_EQ((gfx::Rect{1200, 0, 205, 324}), secondary.bounds());
-  EXPECT_EQ(gfx::Insets::TLBR(125, 20, 51, 75),
+  EXPECT_EQ((gfx::Rect{1200, 0, 430, 669}), secondary.bounds());
+  EXPECT_EQ(gfx::Insets::TLBR(240, 20, 51, 150),
             display_manager()->GetOverscanInsets(secondary.id()));
 
   // Maximum 1/4 per side on all 4 edges succeeds and preserves 1/2 bounds.
-  properties.overscan = gfx::Insets::TLBR(125, 75, 125, 75);
+  properties.overscan = gfx::Insets::TLBR(240, 150, 240, 150);
   EXPECT_EQ(DisplayConfigResult::kSuccess,
             SetDisplayProperties(secondary.id(), properties));
-  EXPECT_EQ((gfx::Rect{1200, 0, 150, 250}), secondary.bounds());
-  EXPECT_EQ(gfx::Insets::TLBR(125, 75, 125, 75),
+  EXPECT_EQ((gfx::Rect{1200, 0, 300, 480}), secondary.bounds());
+  EXPECT_EQ(gfx::Insets::TLBR(240, 150, 240, 150),
             display_manager()->GetOverscanInsets(secondary.id()));
 
   // Exceeding 1/4 on any single edge fails even if opposite edges sum <= 1/2.
-  properties.overscan = gfx::Insets::TLBR(126, 20, 10, 20);
+  properties.overscan = gfx::Insets::TLBR(241, 20, 10, 20);
   EXPECT_EQ(DisplayConfigResult::kPropertyValueOutOfRangeError,
             SetDisplayProperties(secondary.id(), properties));
-  properties.overscan = gfx::Insets::TLBR(10, 20, 10, 76);
+  properties.overscan = gfx::Insets::TLBR(10, 20, 10, 151);
   EXPECT_EQ(DisplayConfigResult::kPropertyValueOutOfRangeError,
             SetDisplayProperties(secondary.id(), properties));
-  EXPECT_EQ(gfx::Insets::TLBR(125, 75, 125, 75),
+  EXPECT_EQ(gfx::Insets::TLBR(240, 150, 240, 150),
             display_manager()->GetOverscanInsets(secondary.id()));
 
   // Validation uses unrotated, unzoomed pixel dimensions even when the display
@@ -484,10 +484,10 @@ TEST_F(CrosDisplayConfigTest, SetDisplayPropertiesOverscan) {
                                         display::Display::ROTATE_90,
                                         display::Display::RotationSource::USER);
   display_manager()->UpdateZoomFactor(secondary.id(), 1.5f);
-  properties.overscan = gfx::Insets::TLBR(125, 75, 125, 75);
+  properties.overscan = gfx::Insets::TLBR(240, 150, 240, 150);
   EXPECT_EQ(DisplayConfigResult::kSuccess,
             SetDisplayProperties(secondary.id(), properties));
-  properties.overscan = gfx::Insets::TLBR(10, 20, 10, 76);
+  properties.overscan = gfx::Insets::TLBR(10, 20, 10, 151);
   EXPECT_EQ(DisplayConfigResult::kPropertyValueOutOfRangeError,
             SetDisplayProperties(secondary.id(), properties));
 
@@ -497,7 +497,7 @@ TEST_F(CrosDisplayConfigTest, SetDisplayPropertiesOverscan) {
   display_manager()->SetOverscanInsets(secondary.id(), gfx::Insets(500));
   std::vector<DisplayUnitInfo> unit_info_list = GetDisplayUnitInfoList();
   ASSERT_EQ(2u, unit_info_list.size());
-  EXPECT_EQ(gfx::Insets::TLBR(125, 75, 125, 75), unit_info_list[1].overscan);
+  EXPECT_EQ(gfx::Insets::TLBR(240, 150, 240, 150), unit_info_list[1].overscan);
   properties.overscan = unit_info_list[1].overscan;
   EXPECT_EQ(DisplayConfigResult::kSuccess,
             SetDisplayProperties(secondary.id(), properties));

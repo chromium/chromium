@@ -609,7 +609,7 @@ TEST_F(VideoConferenceTrayControllerTest, SpeakOnMuteNudgeClick) {
 TEST_F(VideoConferenceTrayControllerTest, RecordRepeatedShows) {
   // Set up 2 displays. Note that only one instance should be recorded for the
   // primary display when there are repeated shows.
-  UpdateDisplay("100x200,300x400");
+  UpdateDisplay("200x320,300x400");
 
   base::HistogramTester histograms;
 

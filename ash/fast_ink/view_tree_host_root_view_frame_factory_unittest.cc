@@ -231,32 +231,32 @@ INSTANTIATE_TEST_SUITE_P(
     ViewTreeHostRootViewFrameResourceTest,
     testing::Values(
         ViewTreeHostRootViewFrameResourceTestParams{
-            .display_spec = "500x400",
+            .display_spec = "700x400",
             .content_rect = gfx::Rect(200, 100),
             .expected_resource_size = gfx::Size(200, 100)},
         ViewTreeHostRootViewFrameResourceTestParams{
-            .display_spec = "500x400*2",
+            .display_spec = "700x400*2",
             .content_rect = gfx::Rect(200, 100),
             .expected_resource_size = gfx::Size(400, 200)},
         // Display is rotated by 90 degrees clockwise.
         ViewTreeHostRootViewFrameResourceTestParams{
-            .display_spec = "500x400/r",
+            .display_spec = "700x400/r",
             .content_rect = gfx::Rect(200, 100),
             .expected_resource_size = gfx::Size(100, 200)},
         // Display is rotated by 180 degrees clockwise.
         ViewTreeHostRootViewFrameResourceTestParams{
-            .display_spec = "500x400/u",
+            .display_spec = "700x400/u",
             .content_rect = gfx::Rect(200, 100),
             .expected_resource_size = gfx::Size(200, 100)},
         // Display is rotated by 270 degrees clockwise.
         ViewTreeHostRootViewFrameResourceTestParams{
-            .display_spec = "500x400/l",
+            .display_spec = "700x400/l",
             .content_rect = gfx::Rect(200, 100),
             .expected_resource_size = gfx::Size(100, 200)},
         // Display is rotated by 90 degrees clockwise and has device scale
         // factor of 2.
         ViewTreeHostRootViewFrameResourceTestParams{
-            .display_spec = "500x400*2/r",
+            .display_spec = "700x400*2/r",
             .content_rect = gfx::Rect(200, 100),
             .expected_resource_size = gfx::Size(200, 400)}));
 

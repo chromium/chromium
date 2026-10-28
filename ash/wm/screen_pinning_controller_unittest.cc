@@ -203,7 +203,7 @@ TEST_F(ScreenPinningControllerTest, ExitUnifiedDisplay) {
   EXPECT_TRUE(window_state->IsPinned());
   EXPECT_TRUE(Shell::Get()->screen_pinning_controller()->IsPinned());
 
-  UpdateDisplay("300x200");
+  UpdateDisplay("320x200");
 
   EXPECT_TRUE(window_state->IsPinned());
   EXPECT_TRUE(Shell::Get()->screen_pinning_controller()->IsPinned());

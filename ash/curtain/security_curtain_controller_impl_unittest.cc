@@ -145,10 +145,10 @@ class SecurityCurtainControllerImplTest : public PowerButtonTestBase {
   }
 
   display::Display CreateSingleDisplay() {
-    UpdateDisplay("1111x111");
+    UpdateDisplay("1111x222");
     return GetFirstDisplay();
   }
-  void CreateMultipleDisplays() { UpdateDisplay("1111x111,2222x222,3333x333"); }
+  void CreateMultipleDisplays() { UpdateDisplay("1111x222,2222x333,3333x444"); }
 
   void ResizeDisplay(const display::Display& display,
                      gfx::Size new_resolution) {
@@ -172,7 +172,7 @@ class SecurityCurtainControllerImplTest : public PowerButtonTestBase {
     // UpdateDisplay() will reuse the existing display ids, so by calling it
     // with only a single display, all but the first display will be deleted.
     DisplayId last_display_id = GetDisplays().back().id();
-    UpdateDisplay("1111x111");
+    UpdateDisplay("1111x222");
 
     CHECK(!display_manager()->IsActiveDisplayId(last_display_id));
     return last_display_id;

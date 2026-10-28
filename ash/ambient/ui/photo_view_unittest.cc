@@ -400,27 +400,27 @@ TEST_F(AmbientPhotoViewTest, ShouldResizeTiledPortraitImagesWhenBoundsChanged) {
       gfx::Rect(/*x=*/(258 + 75), /*y=*/0, /*width=*/100, /*height=*/200));
 
   // Bounds changes so that image will be shown in portrait view.
-  UpdateDisplay("308x200");
+  UpdateDisplay("608x400");
 
-  // Will tile two portrait images. Each image will fill 150x200 area with 8px
+  // Will tile two portrait images. Each image will fill 300x400 area with 8px
   // spaing in between.
   // Image should be full width. Image height should extend above and below the
   // visible part of the view.
   ASSERT_EQ(image_view->GetImageBoundsInScreenForTesting(),
-            gfx::Rect(/*x=*/0, /*y=*/-50, /*width=*/150, /*height=*/300));
+            (gfx::Rect{0, -100, 300, 600}));
   ASSERT_EQ(image_view->GetRelatedImageBoundsInScreenForTesting(),
-            gfx::Rect(/*x=*/158, /*y=*/-50, /*width=*/150, /*height=*/300));
+            (gfx::Rect{308, -100, 300, 600}));
 
   // Bounds changes to exact aspect ratio of the image.
-  UpdateDisplay("208x200");
+  UpdateDisplay("408x400");
 
-  // Will tile two portrait images. Each image will fill 100x200 area with 8px
+  // Will tile two portrait images. Each image will fill 200x400 area with 8px
   // spaing in between.
   // Image should be full width and height.
   ASSERT_EQ(image_view->GetImageBoundsInScreenForTesting(),
-            gfx::Rect(/*x=*/0, /*y=*/0, /*width=*/100, /*height=*/200));
+            (gfx::Rect{200, 400}));
   ASSERT_EQ(image_view->GetRelatedImageBoundsInScreenForTesting(),
-            gfx::Rect(/*x=*/108, /*y=*/0, /*width=*/100, /*height=*/200));
+            (gfx::Rect{208, 0, 200, 400}));
 }
 
 }  // namespace ash

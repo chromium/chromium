@@ -561,7 +561,7 @@ TEST_F(PaletteTrayNoSessionTestWithInternalStylus,
   };
 
   // Add a external display, then sign in.
-  UpdateDisplay("300x200,300x200");
+  UpdateDisplay("320x200,320x200");
   display::test::DisplayManagerTestApi(display_manager())
       .SetFirstDisplayAsInternalDisplay();
   Shell::RootWindowControllerList controllers =
@@ -648,7 +648,7 @@ class PaletteTrayTestMultiDisplay : public PaletteTrayTest {
         switches::kAshEnablePaletteOnAllDisplays);
 
     // Add a external display, then sign in.
-    UpdateDisplay("300x200,300x200");
+    UpdateDisplay("320x200,320x200");
     display::test::DisplayManagerTestApi(display_manager())
         .SetFirstDisplayAsInternalDisplay();
     Shell::RootWindowControllerList controllers =

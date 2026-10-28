@@ -163,7 +163,7 @@ TEST_F(ScreenLayoutObserverTest, DisplayNotificationsDisabled) {
   EXPECT_TRUE(GetDisplayNotificationText().empty());
 
   // Adding a display.
-  UpdateDisplay("500x400,300x200");
+  UpdateDisplay("500x400,400x300");
   EXPECT_FALSE(IsNotificationShown());
 
   const int64_t first_display_id =
@@ -184,13 +184,13 @@ TEST_F(ScreenLayoutObserverTest, DisplayNotificationsDisabled) {
   // warn user of it. See issue 827406 (https://crbug.com/827406).
   display::test::DisplayManagerTestApi(Shell::Get()->display_manager())
       .set_maximum_display(2u);
-  UpdateDisplay("500x400,300x200,200x100");
+  UpdateDisplay("500x400,400x300,320x200");
   EXPECT_TRUE(GetDisplayNotificationText().empty());
   EXPECT_EQ(l10n_util::GetStringUTF16(
                 IDS_ASH_STATUS_TRAY_DISPLAY_REMOVED_EXCEEDED_MAXIMUM),
             GetDisplayNotificationAdditionalText());
   EXPECT_TRUE(GetDisplayNotificationText().empty());
-  UpdateDisplay("500x400,300x200");
+  UpdateDisplay("500x400,400x300");
   CloseNotification();
 
   // Start tablet mode and wait until display mode is updated.
@@ -206,7 +206,7 @@ TEST_F(ScreenLayoutObserverTest, DisplayNotificationsDisabled) {
   // becomes mirror mode from extending mode. Under this circumstance, user is
   // still notified of connecting more displays than maximum. See issue 827406
   // (https://crbug.com/827406). Notification should still be shown.
-  UpdateDisplay("500x400,300x200,200x100");
+  UpdateDisplay("500x400,400x300,320x200");
   EXPECT_EQ(l10n_util::GetStringUTF16(
                 IDS_ASH_STATUS_TRAY_DISPLAY_REMOVED_EXCEEDED_MAXIMUM),
             GetDisplayNotificationAdditionalText());
@@ -238,7 +238,7 @@ TEST_F(ScreenLayoutObserverTest, DisplayNotificationsDisabled) {
 //    the "entering mirror mode" and the "unassociated display" notifications
 //    are correctly generated and displayed.
 TEST_F(ScreenLayoutObserverTest, EnterMirrorModeWithUnassociatedDisplay) {
-  UpdateDisplay("500x400,300x200");
+  UpdateDisplay("500x400,400x300");
   display::SetInternalDisplayIds({display_manager()->first_display_id()});
   EXPECT_FALSE(IsNotificationShown());
 
@@ -259,7 +259,7 @@ TEST_F(ScreenLayoutObserverTest, EnterMirrorModeWithUnassociatedDisplay) {
   // mode. The test environment doesn't simulate this automatic switch, so we
   // force mirror mode to test the notification logic.
   display_manager()->layout_store()->set_forced_mirror_mode_for_tablet(true);
-  UpdateDisplay("500x400,300x200,200x100");
+  UpdateDisplay("500x400,400x300,320x200");
 
   EXPECT_TRUE(IsNotificationShown());
   EXPECT_EQ(l10n_util::GetStringFUTF16(IDS_ASH_STATUS_TRAY_DISPLAY_MIRRORING,

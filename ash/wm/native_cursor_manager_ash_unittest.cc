@@ -148,13 +148,13 @@ TEST_F(NativeCursorManagerAshTest, SetDeviceScaleFactorAndRotation) {
   ::wm::CursorManager* cursor_manager = Shell::Get()->cursor_manager();
   const auto& cursor_shape_client = aura::client::GetCursorShapeClient();
   CursorManagerTestApi test_api;
-  UpdateDisplay("800x100*2");
+  UpdateDisplay("800x400*2");
   EXPECT_EQ(2.0f,
             cursor_shape_client.GetCursorData(cursor_manager->GetCursor())
                 ->scale_factor);
   EXPECT_EQ(display::Display::ROTATE_0, test_api.GetCurrentCursorRotation());
 
-  UpdateDisplay("800x100/l");
+  UpdateDisplay("800x400/l");
   EXPECT_EQ(1.0f,
             cursor_shape_client.GetCursorData(cursor_manager->GetCursor())
                 ->scale_factor);
@@ -191,7 +191,7 @@ TEST_F(NativeCursorManagerAshTest, FractionalScale) {
   ::wm::CursorManager* cursor_manager = Shell::Get()->cursor_manager();
   const auto& cursor_shape_client = aura::client::GetCursorShapeClient();
   // Cursor should use the resource scale factor.
-  UpdateDisplay("800x100*1.25");
+  UpdateDisplay("800x400*1.25");
   EXPECT_EQ(1.0f,
             cursor_shape_client.GetCursorData(cursor_manager->GetCursor())
                 ->scale_factor);

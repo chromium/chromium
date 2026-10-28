@@ -140,7 +140,7 @@ TEST_F(ScreenUtilTest, ShelfDisplayBoundsInUnifiedDesktop) {
 }
 
 TEST_F(ScreenUtilTest, ShelfDisplayBoundsInUnifiedDesktopGrid) {
-  UpdateDisplay("500x400,400x600,300x600,200x300,600x200,350x400");
+  UpdateDisplay("500x400,400x600,300x600,300x450,600x200,350x400");
   display_manager()->SetUnifiedDesktopEnabled(true);
 
   views::Widget* widget = views::Widget::CreateWindowWithContext(
@@ -151,7 +151,7 @@ TEST_F(ScreenUtilTest, ShelfDisplayBoundsInUnifiedDesktopGrid) {
   ASSERT_EQ(6u, list.size());
   // Create a 3 x 2 vertical layout matrix and set it.
   // [500 x 400] [400 x 600]
-  // [300 x 600] [200 x 300]
+  // [300 x 600] [300 x 450]
   // [600 x 200] [350 x 400]
   display::UnifiedDesktopLayoutMatrix matrix;
   matrix.resize(3u);

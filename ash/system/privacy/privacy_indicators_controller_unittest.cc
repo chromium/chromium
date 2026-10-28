@@ -319,7 +319,7 @@ TEST_P(PrivacyIndicatorsControllerTest,
       gfx::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
 
   // Make sure privacy indicators work on multiple displays.
-  UpdateDisplay("300x200,500x400");
+  UpdateDisplay("320x200,500x400");
 
   scoped_refptr<TestDelegate> delegate = base::MakeRefCounted<TestDelegate>();
 

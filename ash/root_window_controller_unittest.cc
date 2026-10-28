@@ -141,30 +141,30 @@ class RootWindowControllerTest : public AshTestBase {
 
 TEST_F(RootWindowControllerTest, MoveWindows_Basic) {
   // Windows origin should be doubled when moved to the 1st display.
-  UpdateDisplay("600x500,300x250");
+  UpdateDisplay("640x500,320x250");
   aura::Window::Windows root_windows = Shell::GetAllRootWindows();
 
   int bottom_inset = 250 - ShelfConfig::Get()->shelf_size();
-  views::Widget* normal = CreateTestWidget(gfx::Rect(650, 10, 100, 100));
+  views::Widget* normal = CreateTestWidget({690, 10, 100, 100});
   EXPECT_EQ(root_windows[1], normal->GetNativeView()->GetRootWindow());
-  EXPECT_EQ("650,10 100x100", normal->GetWindowBoundsInScreen().ToString());
+  EXPECT_EQ("690,10 100x100", normal->GetWindowBoundsInScreen().ToString());
   EXPECT_EQ("50,10 100x100",
             normal->GetNativeView()->GetBoundsInRootWindow().ToString());
 
-  views::Widget* maximized = CreateTestWidget(gfx::Rect(700, 10, 100, 100));
+  views::Widget* maximized = CreateTestWidget({740, 10, 100, 100});
   maximized->Maximize();
   EXPECT_EQ(root_windows[1], maximized->GetNativeView()->GetRootWindow());
-  EXPECT_EQ(gfx::Rect(600, 0, 300, bottom_inset).ToString(),
+  EXPECT_EQ((gfx::Rect{640, 0, 320, bottom_inset}).ToString(),
             maximized->GetWindowBoundsInScreen().ToString());
-  EXPECT_EQ(gfx::Rect(0, 0, 300, bottom_inset).ToString(),
+  EXPECT_EQ((gfx::Rect{320, bottom_inset}).ToString(),
             maximized->GetNativeView()->GetBoundsInRootWindow().ToString());
 
-  views::Widget* minimized = CreateTestWidget(gfx::Rect(550, 10, 200, 200));
+  views::Widget* minimized = CreateTestWidget({590, 10, 200, 200});
   minimized->Minimize();
   EXPECT_EQ(root_windows[1], minimized->GetNativeView()->GetRootWindow());
-  EXPECT_EQ("550,10 200x200", minimized->GetWindowBoundsInScreen().ToString());
+  EXPECT_EQ("590,10 200x200", minimized->GetWindowBoundsInScreen().ToString());
 
-  views::Widget* fullscreen = CreateTestWidget(gfx::Rect(850, 10, 200, 200));
+  views::Widget* fullscreen = CreateTestWidget({890, 10, 200, 200});
   display::Display secondary_display = GetSecondaryDisplay();
   gfx::Rect orig_bounds = fullscreen->GetWindowBoundsInScreen();
   EXPECT_TRUE(secondary_display.work_area().Intersects(orig_bounds));
@@ -173,15 +173,15 @@ TEST_F(RootWindowControllerTest, MoveWindows_Basic) {
   fullscreen->SetFullscreen(true);
   EXPECT_EQ(root_windows[1], fullscreen->GetNativeView()->GetRootWindow());
 
-  EXPECT_EQ("600,0 300x250", fullscreen->GetWindowBoundsInScreen().ToString());
-  EXPECT_EQ("0,0 300x250",
+  EXPECT_EQ("640,0 320x250", fullscreen->GetWindowBoundsInScreen().ToString());
+  EXPECT_EQ("0,0 320x250",
             fullscreen->GetNativeView()->GetBoundsInRootWindow().ToString());
 
   views::Widget* unparented_control = new Widget;
   Widget::InitParams params(
       views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
       Widget::InitParams::TYPE_CONTROL);
-  params.bounds = gfx::Rect(650, 10, 100, 100);
+  params.bounds = {690, 10, 100, 100};
   params.context = GetContext();
   unparented_control->Init(std::move(params));
   EXPECT_EQ(root_windows[1],
@@ -202,7 +202,7 @@ TEST_F(RootWindowControllerTest, MoveWindows_Basic) {
   aura::client::GetFocusClient(root_windows[0])->FocusWindow(d2);
   tracker.Add(d2);
 
-  UpdateDisplay("600x500");
+  UpdateDisplay("640x500");
 
   // d2 must have been deleted.
   EXPECT_FALSE(tracker.Contains(d2));
@@ -218,18 +218,18 @@ TEST_F(RootWindowControllerTest, MoveWindows_Basic) {
   // share the same desktop workspace, which cancels the shelf status.
   fullscreen->SetFullscreen(false);
   EXPECT_EQ(root_windows[0], maximized->GetNativeView()->GetRootWindow());
-  EXPECT_EQ(gfx::Rect(0, 0, 600, bottom_inset).ToString(),
+  EXPECT_EQ((gfx::Rect{640, bottom_inset}).ToString(),
             maximized->GetWindowBoundsInScreen().ToString());
-  EXPECT_EQ(gfx::Rect(0, 0, 600, bottom_inset).ToString(),
+  EXPECT_EQ((gfx::Rect{640, bottom_inset}).ToString(),
             maximized->GetNativeView()->GetBoundsInRootWindow().ToString());
 
   // Set fullscreen to true, but maximized window's size won't change because
   // it's not visible. see crbug.com/504299.
   fullscreen->SetFullscreen(true);
   EXPECT_EQ(root_windows[0], maximized->GetNativeView()->GetRootWindow());
-  EXPECT_EQ(gfx::Rect(0, 0, 600, bottom_inset).ToString(),
+  EXPECT_EQ((gfx::Rect{640, bottom_inset}).ToString(),
             maximized->GetWindowBoundsInScreen().ToString());
-  EXPECT_EQ(gfx::Rect(0, 0, 600, bottom_inset).ToString(),
+  EXPECT_EQ((gfx::Rect{640, bottom_inset}).ToString(),
             maximized->GetNativeView()->GetBoundsInRootWindow().ToString());
 
   EXPECT_EQ(root_windows[0], minimized->GetNativeView()->GetRootWindow());
@@ -237,8 +237,8 @@ TEST_F(RootWindowControllerTest, MoveWindows_Basic) {
 
   EXPECT_EQ(root_windows[0], fullscreen->GetNativeView()->GetRootWindow());
   EXPECT_TRUE(fullscreen->IsFullscreen());
-  EXPECT_EQ("0,0 600x500", fullscreen->GetWindowBoundsInScreen().ToString());
-  EXPECT_EQ("0,0 600x500",
+  EXPECT_EQ("0,0 640x500", fullscreen->GetWindowBoundsInScreen().ToString());
+  EXPECT_EQ("0,0 640x500",
             fullscreen->GetNativeView()->GetBoundsInRootWindow().ToString());
 
   // Test if the restore bounds are correctly updated.
@@ -248,8 +248,8 @@ TEST_F(RootWindowControllerTest, MoveWindows_Basic) {
             maximized->GetNativeView()->GetBoundsInRootWindow().ToString());
 
   fullscreen->SetFullscreen(false);
-  EXPECT_EQ("400,20 200x200", fullscreen->GetWindowBoundsInScreen().ToString());
-  EXPECT_EQ("400,20 200x200",
+  EXPECT_EQ("440,20 200x200", fullscreen->GetWindowBoundsInScreen().ToString());
+  EXPECT_EQ("440,20 200x200",
             fullscreen->GetNativeView()->GetBoundsInRootWindow().ToString());
 
   // Test if the unparented widget has moved.
@@ -352,7 +352,7 @@ TEST_F(RootWindowControllerTest, MoveWindows_LockWindowsInUnified) {
 
 // Tests that the moved windows maintain MRU ordering.
 TEST_F(RootWindowControllerTest, MoveWindows_MaintainMRUordering) {
-  UpdateDisplay("600x500,300x250");
+  UpdateDisplay("600x500,320x250");
 
   display::Screen* screen = display::Screen::Get();
   const display::Display primary_display = screen->GetPrimaryDisplay();

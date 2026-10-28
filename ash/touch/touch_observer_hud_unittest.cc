@@ -46,9 +46,9 @@ class TouchHudTestBase : public AshTestBase {
     internal_display_info_ =
         CreateDisplayInfo(internal_display_id_, gfx::Rect(0, 0, 600, 500));
     external_display_info_ =
-        CreateDisplayInfo(external_display_id_, gfx::Rect(1, 1, 200, 100));
+        CreateDisplayInfo(external_display_id_, {1, 1, 400, 300});
     mirrored_display_info_ =
-        CreateDisplayInfo(mirrored_display_id_, gfx::Rect(0, 0, 200, 100));
+        CreateDisplayInfo(mirrored_display_id_, {400, 300});
   }
 
   display::Display GetPrimaryDisplay() {
