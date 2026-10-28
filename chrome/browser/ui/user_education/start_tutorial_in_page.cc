@@ -23,21 +23,41 @@ class StartTutorialInPageImpl : public StartTutorialInPage {
  public:
   explicit StartTutorialInPageImpl(BrowserWindowInterface* browser,
                                    Params params)
-      : browser_(browser->GetWeakPtr()), callback_(std::move(params.callback)) {
-    CHECK(callback_, base::NotFatalUntil::M162);
+      : browser_(browser->GetWeakPtr()), params_(std::move(params)) {
+    CHECK(params_.callback, base::NotFatalUntil::M162);
     CHECK(browser_, base::NotFatalUntil::M162);
-    CHECK(params.tutorial_id.has_value(), base::NotFatalUntil::M162);
-    tutorial_id_ = params.tutorial_id.value();
+    CHECK(params_.tutorial_id.has_value(), base::NotFatalUntil::M162);
+  }
+
+  ~StartTutorialInPageImpl() override {
+    DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  }
+
+  base::WeakPtr<StartTutorialInPageImpl> GetWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
+  void Start() {
+    DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+
+    // Because this object is self-deleting, all parameters should be handled on
+    // the stack or using weak pointers.
+    Params params = std::move(params_);
+    base::WeakPtr<BrowserWindowInterface> browser(browser_);
+    if (!browser) {
+      std::move(params.callback).Run(nullptr);
+      return;
+    }
 
     auto* tutorial_service = GetTutorialService();
     if (!tutorial_service) {
-      std::move(callback_).Run(tutorial_service);
+      std::move(params.callback).Run(tutorial_service);
       return;
     }
 
     auto context = GetUiElementContext();
     if (!context.has_value()) {
-      std::move(callback_).Run(tutorial_service);
+      std::move(params.callback).Run(tutorial_service);
       return;
     }
 
@@ -47,10 +67,10 @@ class StartTutorialInPageImpl : public StartTutorialInPage {
                        GetWeakPtr()),
         base::BindOnce(&StartTutorialInPageImpl::OnTutorialAborted,
                        GetWeakPtr()));
-    std::move(callback_).Run(tutorial_service);
+    std::move(params.callback).Run(tutorial_service);
 
     if (params.target_url.has_value()) {
-      NavigateParams navigate_params(browser, params.target_url.value(),
+      NavigateParams navigate_params(browser.get(), params.target_url.value(),
                                      ui::PAGE_TRANSITION_LINK);
       // This does not work
       // Try the handle stuff from show_promo_in_page?
@@ -58,14 +78,6 @@ class StartTutorialInPageImpl : public StartTutorialInPage {
               params.page_open_mode);
       Navigate(&navigate_params);
     }
-  }
-
-  ~StartTutorialInPageImpl() override {
-    DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  }
-
-  base::WeakPtr<StartTutorialInPageImpl> GetWeakPtr() {
-    return weak_ptr_factory_.GetWeakPtr();
   }
 
  private:
@@ -92,8 +104,7 @@ class StartTutorialInPageImpl : public StartTutorialInPage {
   void OnTutorialAborted() { delete this; }
 
   const base::WeakPtr<BrowserWindowInterface> browser_;
-  user_education::TutorialIdentifier tutorial_id_;
-  Callback callback_;
+  Params params_;
   THREAD_CHECKER(thread_checker_);
   base::WeakPtrFactory<StartTutorialInPageImpl> weak_ptr_factory_{this};
 };
@@ -112,6 +123,8 @@ StartTutorialInPage::~StartTutorialInPage() = default;
 base::WeakPtr<StartTutorialInPage> StartTutorialInPage::Start(
     BrowserWindowInterface* browser,
     Params params) {
-  return (new StartTutorialInPageImpl(browser, std::move(params)))
-      ->GetWeakPtr();
+  auto* const impl = new StartTutorialInPageImpl(browser, std::move(params));
+  auto result = impl->GetWeakPtr();
+  impl->Start();
+  return result;
 }
