@@ -1218,6 +1218,40 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram
+    name="ContextualTasks.{EntrypointType}.OpenSidePanelCountPerSession{ToggleDuration}"
+    units="count" expires_after="2027-04-15">
+  <owner>dianaou@chromium.org</owner>
+  <owner>chrome-contextual-tasks-eng@google.com</owner>
+  <summary>
+    Recorded when a contextual task session whose side panel was closed with
+    results (making the task eligible to be reopened from {EntrypointType}) ends
+    (when the task is no longer eligible or when the browser window is closed).
+    Records the number of times the user clicked {EntrypointType} to reopen the
+    side panel during that task session (0 if the side panel was closed with
+    results while {EntrypointType} was available to reopen it, but never clicked
+    to reopen before the session ended). {ToggleDuration}
+  </summary>
+  <token key="EntrypointType">
+    <variant name="EphemeralToolbarButton"
+        summary="the ephemeral (unpinned) contextual tasks toolbar button"/>
+    <variant name="PermanentToolbarButton"
+        summary="the permanently pinned contextual tasks toolbar button"/>
+    <variant name="ToolbarButton"
+        summary="any contextual tasks toolbar button"/>
+  </token>
+  <token key="ToggleDuration">
+    <variant name="" summary="Counts all reopen clicks combined."/>
+    <variant name=".RapidToggle"
+        summary="Counts only reopen clicks where the side panel was closed by
+                 the user within 3 seconds."/>
+    <variant name=".SustainedOpen"
+        summary="Counts only reopen clicks where the side panel remained open
+                 for at least 3 seconds (or until the session ended or was
+                 backgrounded)."/>
+  </token>
+</histogram>
+
 <histogram name="ContextualTasks.{EntrypointType}.UserAction{ActionType}"
     enum="Boolean" expires_after="2027-04-11">
   <owner>sophiechang@chromium.org</owner>

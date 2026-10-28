@@ -2,9 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/location.h"
+#include "base/strings/strcat.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/simple_test_tick_clock.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "build/build_config.h"
 #include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
@@ -388,6 +391,34 @@ class ContextualTasksButtonInteractiveTestMixin : public T {
         this->browser()->GetProfile());
   }
 
+  template <typename SampleType>
+  auto ExpectUniqueSample(
+      std::string_view name,
+      SampleType sample,
+      base::HistogramBase::Count32 expected_bucket_count = 1,
+      const base::Location& location = FROM_HERE) {
+    return this
+        ->Do([this, name = std::string(name), sample, expected_bucket_count,
+              location]() {
+          histogram_tester_.ExpectUniqueSample(
+              name, sample, expected_bucket_count, location);
+        })
+        .SetDescription(base::StrCat({"ExpectUniqueSample(", name, ")"}));
+  }
+
+  auto ExpectTotalCount(std::string_view name,
+                        base::HistogramBase::Count32 expected_count,
+                        const base::Location& location = FROM_HERE) {
+    return this
+        ->Do([this, name = std::string(name), expected_count, location]() {
+          histogram_tester_.ExpectTotalCount(name, expected_count, location);
+        })
+        .SetDescription(base::StrCat({"ExpectTotalCount(", name, ")"}));
+  }
+
+ protected:
+  base::HistogramTester histogram_tester_;
+
  private:
   base::CallbackListSubscription subscription_;
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
@@ -521,10 +552,17 @@ class ContextualTasksEphemeralButtonInteractiveTestMixin
 
   auto SimulateNavigateToAiPage() {
     return this->Do([&]() {
-      content::WebContents* side_panel_contents =
+      auto* panel_controller =
           contextual_tasks::ContextualTasksPanelController::From(
-              this->browser())
-              ->GetActiveWebContents();
+              this->browser());
+      if (std::optional<contextual_tasks::ContextualTask> task =
+              panel_controller->GetCurrentTask()) {
+        this->GetContextualTasksService()->UpdateThreadForTask(
+            task->GetTaskId(), contextual_tasks::ThreadType::kAiMode,
+            "test_server_id", std::nullopt, "Test Title");
+      }
+      content::WebContents* side_panel_contents =
+          panel_controller->GetActiveWebContents();
       contextual_tasks::GetWebUiInterface(side_panel_contents)
           ->SetIsAiPage(true);
     });
@@ -555,7 +593,6 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksEphemeralButtonInteractiveTest,
 IN_PROC_BROWSER_TEST_F(ContextualTasksEphemeralButtonInteractiveTest,
                        RightClickRemoveHidesEphemeralButtonUntilNextAdded) {
   base::UserActionTester user_action_tester;
-  base::HistogramTester histogram_tester;
 
   RunTestSequence(
       SignIntoEligibleAccount(), InstrumentTab(kFirstTab),
@@ -575,37 +612,47 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksEphemeralButtonInteractiveTest,
         EXPECT_EQ(1, user_action_tester.GetActionCount(
                          "ContextualTasks.EphemeralToolbarButton.UserAction."
                          "OpenContextMenu"));
-        histogram_tester.ExpectUniqueSample(
+        histogram_tester_.ExpectUniqueSample(
             "ContextualTasks.EphemeralToolbarButton.UserAction.OpenContextMenu",
             true, 1);
         EXPECT_EQ(1, user_action_tester.GetActionCount(
                          "ContextualTasks.EphemeralToolbarButton.UserAction."
                          "OpenContextMenu.CloseSidePanelOptionVisible"));
-        histogram_tester.ExpectUniqueSample(
+        histogram_tester_.ExpectUniqueSample(
             "ContextualTasks.EphemeralToolbarButton.UserAction."
             "OpenContextMenu.CloseSidePanelOptionVisible",
             true, 1);
         EXPECT_EQ(0, user_action_tester.GetActionCount(
                          "ContextualTasks.EphemeralToolbarButton.UserAction."
                          "OpenContextMenu.CloseSidePanelOptionHidden"));
-        histogram_tester.ExpectTotalCount(
+        histogram_tester_.ExpectTotalCount(
             "ContextualTasks.EphemeralToolbarButton.UserAction."
             "OpenContextMenu.CloseSidePanelOptionHidden",
             0);
         EXPECT_EQ(1, user_action_tester.GetActionCount(
                          "ContextualTasks.EphemeralToolbarButton.UserAction."
                          "RemoveByContextMenu"));
-        histogram_tester.ExpectUniqueSample(
+        histogram_tester_.ExpectUniqueSample(
             "ContextualTasks.EphemeralToolbarButton.UserAction."
             "RemoveByContextMenu",
             true, 1);
-        histogram_tester.ExpectTotalCount(
+        histogram_tester_.ExpectTotalCount(
             "ContextualTasks.EphemeralToolbarButton.ShownDuration", 1);
-        histogram_tester.ExpectTotalCount(
+        histogram_tester_.ExpectTotalCount(
             "ContextualTasks.EphemeralToolbarButton.ShownDuration."
             "RemovedByContextMenu",
             1);
       }),
+      ExpectUniqueSample(
+          "ContextualTasks.EphemeralToolbarButton."
+          "OpenSidePanelCountPerSession",
+          0, 1),
+      ExpectUniqueSample(
+          "ContextualTasks.ToolbarButton.OpenSidePanelCountPerSession", 0, 1),
+      ExpectTotalCount(
+          "ContextualTasks.PermanentToolbarButton."
+          "OpenSidePanelCountPerSession",
+          0),
       // Switching away and back keeps the ephemeral button removed.
       SelectTab(kTabStripElementId, 1), SelectTab(kTabStripElementId, 0),
       EnsureNotPresent(kContextualTasksEphemeralToolbarButtonElementId),
@@ -685,8 +732,6 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksEphemeralButtonInteractiveTest,
 
 IN_PROC_BROWSER_TEST_F(ContextualTasksEphemeralButtonInteractiveTest,
                        HideButtonWhenNotAssociatedToTask) {
-  base::HistogramTester histogram_tester;
-
   RunTestSequence(
       SignIntoEligibleAccount(), InstrumentTab(kFirstTab),
       AddInstrumentedTab(kSecondTab, GetTestURL()),
@@ -696,14 +741,23 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksEphemeralButtonInteractiveTest,
       SimulateClosingContextualTaskSidePanel(),
       WaitForShow(kContextualTasksEphemeralToolbarButtonElementId),
       RemoveTaskFromTab(0),
-      WaitForHide(kContextualTasksEphemeralToolbarButtonElementId), Do([&]() {
-        histogram_tester.ExpectTotalCount(
-            "ContextualTasks.EphemeralToolbarButton.ShownDuration", 1);
-        histogram_tester.ExpectTotalCount(
-            "ContextualTasks.EphemeralToolbarButton.ShownDuration."
-            "TaskDisassociated",
-            1);
-      }));
+      WaitForHide(kContextualTasksEphemeralToolbarButtonElementId),
+      ExpectTotalCount("ContextualTasks.EphemeralToolbarButton.ShownDuration",
+                       1),
+      ExpectTotalCount(
+          "ContextualTasks.EphemeralToolbarButton.ShownDuration."
+          "TaskDisassociated",
+          1),
+      ExpectUniqueSample(
+          "ContextualTasks.EphemeralToolbarButton."
+          "OpenSidePanelCountPerSession",
+          0, 1),
+      ExpectUniqueSample(
+          "ContextualTasks.ToolbarButton.OpenSidePanelCountPerSession", 0, 1),
+      ExpectTotalCount(
+          "ContextualTasks.PermanentToolbarButton."
+          "OpenSidePanelCountPerSession",
+          0));
 }
 
 IN_PROC_BROWSER_TEST_F(ContextualTasksEphemeralButtonInteractiveTest,
@@ -1297,12 +1351,18 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksEphemeralButtonInteractiveTest,
 IN_PROC_BROWSER_TEST_F(ContextualTasksEphemeralButtonInteractiveTest,
                        LogsEphemeralMetricsOnToolbarButtonPress) {
   base::UserActionTester user_action_tester;
-  base::HistogramTester histogram_tester;
+  base::SimpleTestTickClock tick_clock;
 
   RunTestSequence(
       SignIntoEligibleAccount(), InstrumentTab(kFirstTab),
       AddInstrumentedTab(kSecondTab, GetTestURL()),
       SelectTab(kTabStripElementId, 0),
+      Do([&]() {
+        if (auto* controller =
+                ContextualTasksEphemeralButtonController::From(browser())) {
+          controller->SetTickClockForTesting(&tick_clock);
+        }
+      }),
       EnsureNotPresent(kContextualTasksEphemeralToolbarButtonElementId),
       CreateTaskForTab(0), SimulateOpeningContextualTaskSidePanel(),
       SimulateClosingContextualTaskSidePanel(),
@@ -1311,20 +1371,65 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksEphemeralButtonInteractiveTest,
         EXPECT_EQ(1, user_action_tester.GetActionCount(
                          "ContextualTasks.EphemeralToolbarButton.UserAction."
                          "OpenSidePanel"));
-        histogram_tester.ExpectUniqueSample(
+        histogram_tester_.ExpectUniqueSample(
             "ContextualTasks.EphemeralToolbarButton.UserAction.OpenSidePanel",
             true, 1);
-        histogram_tester.ExpectTotalCount(
+        histogram_tester_.ExpectTotalCount(
             "ContextualTasks.EphemeralToolbarButton.ShownDuration", 1);
-        histogram_tester.ExpectTotalCount(
+        histogram_tester_.ExpectTotalCount(
             "ContextualTasks.EphemeralToolbarButton.ShownDuration.Clicked", 1);
         EXPECT_EQ(0, user_action_tester.GetActionCount(
                          "ContextualTasks.PermanentToolbarButton.UserAction."
                          "OpenSidePanel"));
       }),
+      ExpectTotalCount(
+          "ContextualTasks.EphemeralToolbarButton."
+          "OpenSidePanelCountPerSession",
+          0),
       WaitForHide(kContextualTasksEphemeralToolbarButtonElementId),
+      // First reopen: closed within 3 seconds (1s) -> RapidToggle.
+      Do([&]() { tick_clock.Advance(base::Seconds(1)); }),
       SimulateClosingContextualTaskSidePanel(),
-      WaitForShow(kContextualTasksEphemeralToolbarButtonElementId));
+      WaitForShow(kContextualTasksEphemeralToolbarButtonElementId),
+      PressButton(kContextualTasksEphemeralToolbarButtonElementId),
+      WaitForHide(kContextualTasksEphemeralToolbarButtonElementId),
+      // Second reopen: stays open for >= 3 seconds (4s) -> SustainedOpen.
+      Do([&]() { tick_clock.Advance(base::Seconds(4)); }),
+      SimulateClosingContextualTaskSidePanel(),
+      WaitForShow(kContextualTasksEphemeralToolbarButtonElementId),
+      RemoveTaskFromTab(0),
+      WaitForHide(kContextualTasksEphemeralToolbarButtonElementId), Do([&]() {
+        if (auto* controller =
+                ContextualTasksEphemeralButtonController::From(browser())) {
+          controller->SetTickClockForTesting(nullptr);
+        }
+      }),
+      ExpectUniqueSample(
+          "ContextualTasks.EphemeralToolbarButton."
+          "OpenSidePanelCountPerSession",
+          2, 1),
+      ExpectUniqueSample(
+          "ContextualTasks.EphemeralToolbarButton."
+          "OpenSidePanelCountPerSession.RapidToggle",
+          1, 1),
+      ExpectUniqueSample(
+          "ContextualTasks.EphemeralToolbarButton."
+          "OpenSidePanelCountPerSession.SustainedOpen",
+          1, 1),
+      ExpectUniqueSample(
+          "ContextualTasks.ToolbarButton.OpenSidePanelCountPerSession", 2, 1),
+      ExpectUniqueSample(
+          "ContextualTasks.ToolbarButton.OpenSidePanelCountPerSession."
+          "RapidToggle",
+          1, 1),
+      ExpectUniqueSample(
+          "ContextualTasks.ToolbarButton.OpenSidePanelCountPerSession."
+          "SustainedOpen",
+          1, 1),
+      ExpectTotalCount(
+          "ContextualTasks.PermanentToolbarButton."
+          "OpenSidePanelCountPerSession",
+          0));
 }
 
 class ContextualTasksEphemeralButtonPinningV2InteractiveTest
@@ -1853,7 +1958,6 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(ContextualTasksEphemeralButtonPinningV2InteractiveTest,
                        LogsPermanentEphemeralMetricsForContinueVsNewThread) {
   base::UserActionTester user_action_tester;
-  base::HistogramTester histogram_tester;
 
   RunTestSequence(
       SignIntoEligibleAccount(), InstrumentTab(kFirstTab),
@@ -1875,16 +1979,16 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksEphemeralButtonPinningV2InteractiveTest,
         EXPECT_EQ(0, user_action_tester.GetActionCount(
                          "ContextualTasks.PermanentToolbarButton.UserAction."
                          "OpenSidePanel.ContinueThread"));
-        histogram_tester.ExpectUniqueSample(
+        histogram_tester_.ExpectUniqueSample(
             "ContextualTasks.PermanentToolbarButton.UserAction."
             "OpenSidePanel.ThreadAction",
             contextual_tasks::ContextualTasksPanelController::
                 PermanentToolbarButtonThreadAction::kNewThread,
             1);
       }),
-      // Close the side panel so the permanent button enters its ephemeral
-      // task-resumption state on tab 0.
-      SimulateClosingContextualTaskSidePanel(),
+      // Close the side panel with results so the permanent button enters its
+      // ephemeral task-resumption state on tab 0.
+      SimulateNavigateToAiPage(), SimulateClosingContextualTaskSidePanel(),
       // Pressing the permanent button on tab 0 now continues the existing
       // thread, logs ContinueThread, and does NOT log NewThread.
       PressButton(kPinnedToolbarActionShowSidePanelContextualTasksElementId),
@@ -1898,23 +2002,54 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksEphemeralButtonPinningV2InteractiveTest,
         EXPECT_EQ(1, user_action_tester.GetActionCount(
                          "ContextualTasks.PermanentToolbarButton.UserAction."
                          "OpenSidePanel.ContinueThread"));
-        histogram_tester.ExpectBucketCount(
+        histogram_tester_.ExpectBucketCount(
             "ContextualTasks.PermanentToolbarButton.UserAction."
             "OpenSidePanel.ThreadAction",
             contextual_tasks::ContextualTasksPanelController::
                 PermanentToolbarButtonThreadAction::kNewThread,
             1);
-        histogram_tester.ExpectBucketCount(
+        histogram_tester_.ExpectBucketCount(
             "ContextualTasks.PermanentToolbarButton.UserAction."
             "OpenSidePanel.ThreadAction",
             contextual_tasks::ContextualTasksPanelController::
                 PermanentToolbarButtonThreadAction::kContinueThread,
             1);
-        histogram_tester.ExpectTotalCount(
+        histogram_tester_.ExpectTotalCount(
             "ContextualTasks.PermanentToolbarButton.UserAction."
             "OpenSidePanel.ThreadAction",
             2);
-      }));
+      }),
+      ExpectTotalCount(
+          "ContextualTasks.PermanentToolbarButton."
+          "OpenSidePanelCountPerSession",
+          0),
+      SimulateClosingContextualTaskSidePanel(), RemoveTaskFromTab(0),
+      ExpectUniqueSample(
+          "ContextualTasks.PermanentToolbarButton."
+          "OpenSidePanelCountPerSession",
+          1, 1),
+      ExpectUniqueSample(
+          "ContextualTasks.PermanentToolbarButton."
+          "OpenSidePanelCountPerSession.RapidToggle",
+          1, 1),
+      ExpectUniqueSample(
+          "ContextualTasks.PermanentToolbarButton."
+          "OpenSidePanelCountPerSession.SustainedOpen",
+          0, 1),
+      ExpectUniqueSample(
+          "ContextualTasks.ToolbarButton.OpenSidePanelCountPerSession", 1, 1),
+      ExpectUniqueSample(
+          "ContextualTasks.ToolbarButton.OpenSidePanelCountPerSession."
+          "RapidToggle",
+          1, 1),
+      ExpectUniqueSample(
+          "ContextualTasks.ToolbarButton.OpenSidePanelCountPerSession."
+          "SustainedOpen",
+          0, 1),
+      ExpectTotalCount(
+          "ContextualTasks.EphemeralToolbarButton."
+          "OpenSidePanelCountPerSession",
+          0));
 }
 
 IN_PROC_BROWSER_TEST_F(ContextualTasksEphemeralButtonInteractiveTest,

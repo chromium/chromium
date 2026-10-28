@@ -16,6 +16,8 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/time/tick_clock.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "base/uuid.h"
 #include "chrome/browser/ui/side_panel/side_panel_entry_observer.h"
@@ -111,23 +113,45 @@ class ContextualTasksEphemeralButtonController
            !is_hiding_contextual_tasks_panel_;
   }
   void RemoveEphemeralButtonForCurrentTask();
+  void RecordToolbarButtonOpenClick(bool is_permanent_button);
   std::optional<RemovalReason> removal_reason() const {
     return removal_reason_;
   }
   bool HasAutoDismissTimerForTesting(SessionID tab_id) const;
   void SetTaskRunnerForTesting(
       scoped_refptr<base::SequencedTaskRunner> task_runner);
+  void SetTickClockForTesting(const base::TickClock* tick_clock);
 
  private:
+  struct ClickCounts {
+    bool collapsed_shown = false;
+    int open_clicks = 0;
+    int rapid_open_clicks = 0;
+    int sustained_open_clicks = 0;
+  };
+
+  struct OpenSidePanelSessionCounts {
+    ClickCounts ephemeral;
+    ClickCounts permanent;
+    std::optional<base::TimeTicks> last_open_click_time;
+    bool last_open_was_permanent = false;
+  };
+
   // content::WebContentsObserver:
   void PrimaryPageChanged(content::Page& page) override;
 
   contextual_tasks::ContextualTasksService* GetContextualTasksService();
   std::optional<SessionID> GetCurrentTabSessionId();
+  std::optional<base::Uuid> GetActiveTaskId();
   bool HasPanelResults() const;
+  base::TimeTicks NowTicks() const;
+  void SettlePendingOpenClick(OpenSidePanelSessionCounts& counts,
+                              bool closed_by_user);
   void OnActiveTabChange(BrowserWindowInterface* browser_window_interface);
   void OnSidePanelAlignmentChanged();
   void MaybeNotifyVisibilityShouldChange();
+  void RecordTaskOpenClickCounts(const OpenSidePanelSessionCounts& counts);
+  void FlushOpenClickCounts(bool flush_all);
   void UpdatePinnedButtonActiveIndicator();
   void UpdateActiveTabObservation();
   void OnTabDiscarded(tabs::TabInterface* tab,
@@ -158,7 +182,13 @@ class ContextualTasksEphemeralButtonController
   std::vector<SessionID> ephemeral_button_eligible_tabs_;
   std::map<SessionID, base::OneShotTimer>
       ephemeral_button_auto_dismiss_timers_;
+  // Tracks the number of times the ephemeral and permanent toolbar buttons
+  // were clicked to reopen the side panel for each task whose side panel was
+  // closed with results.
+  std::map<base::Uuid, OpenSidePanelSessionCounts>
+      open_side_panel_session_counts_;
   scoped_refptr<base::SequencedTaskRunner> task_runner_for_testing_;
+  raw_ptr<const base::TickClock> tick_clock_for_testing_ = nullptr;
   base::ScopedObservation<SidePanelEntry, SidePanelEntryObserver>
       contextual_task_entry_observation_{this};
   raw_ptr<BrowserWindowInterface> browser_window_interface_ = nullptr;

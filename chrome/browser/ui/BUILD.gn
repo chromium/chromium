@@ -366,6 +366,7 @@ if (!is_android) {
       "//chrome/browser/ui/toolbar/chrome_labs",
       "//chrome/browser/ui/user_education",
       "//chrome/browser/ui/views/commerce",
+      "//chrome/browser/ui/views/contextual_tasks",
       "//chrome/browser/ui/views/download",
       "//chrome/browser/ui/views/file_system_access",
       "//chrome/browser/ui/views/frame:app_menu_button_observer",
