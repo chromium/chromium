@@ -19,6 +19,7 @@
 #import "components/autofill/core/common/autofill_payments_features.h"
 #import "components/autofill/ios/common/features.h"
 #import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/authentication/test/signin_earl_grey.h"
 #import "ios/chrome/browser/autofill/ui_bundled/autofill_app_interface.h"
 #import "ios/chrome/browser/autofill/ui_bundled/bottom_sheet/bottom_sheet_constants.h"
 #import "ios/chrome/browser/badges/model/features.h"
@@ -26,6 +27,7 @@
 #import "ios/chrome/browser/infobars/ui_bundled/banners/infobar_banner_constants.h"
 #import "ios/chrome/browser/infobars/ui_bundled/modals/infobar_save_card_modal_constants.h"
 #import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
+#import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
@@ -286,6 +288,9 @@ void FillAndSubmitXframeCreditCardForm() {
 
 - (void)setUp {
   [super setUp];
+
+  [SigninEarlGrey
+      signinWithFakeIdentity:[FakeSystemIdentity fakeIdentityWithMissingNames]];
 
   net::test_server::RegisterDefaultHandlers(self.testServer);
 
