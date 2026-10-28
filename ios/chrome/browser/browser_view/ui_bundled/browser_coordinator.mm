@@ -290,6 +290,7 @@
 #import "ios/public/provider/chrome/browser/text_zoom/text_zoom_api.h"
 #import "ios/public/provider/chrome/browser/voice_search/voice_search_api.h"
 #import "ios/public/provider/chrome/browser/voice_search/voice_search_controller.h"
+#import "ios/public/provider/chrome/browser/voice_search/voice_search_coordinator_delegate.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web/public/web_state_id.h"
 #import "ui/base/l10n/l10n_util.h"
@@ -339,6 +340,7 @@ constexpr CGFloat kSnackbarFloatingBottomMargin = 10.0;
     TextZoomCommands,
     TrustedVaultReauthenticationCoordinatorDelegate,
     URLLoadingDelegate,
+    VoiceSearchCoordinatorDelegate,
     WebNavigationNTPDelegate,
     WebUsageEnablerBrowserAgentObserving>
 
@@ -2120,10 +2122,8 @@ constexpr CGFloat kSnackbarFloatingBottomMargin = 10.0;
 // Starts the Voice Search coordinator on the browser view.
 - (void)startVoiceSearchCoordinator {
   [self stopVoiceSearchCoordinator];
-  // TODO(crbug.com/571184218): Implement `VoiceSearchCoordinatorDelegate` to
-  // load recognized queries and stop the coordinator on dismissal.
   _voiceSearchCoordinator = ios::provider::CreateVoiceSearchCoordinator(
-      self.viewController, self.browser, /*delegate=*/nil);
+      self.viewController, self.browser, self);
   [_voiceSearchCoordinator start];
 }
 
@@ -3295,6 +3295,18 @@ constexpr CGFloat kSnackbarFloatingBottomMargin = 10.0;
     (TrustedVaultReauthenticationCoordinator*)coordinator {
   CHECK_EQ(coordinator, _trustedVaultReauthenticationCoordinator);
   [self stopTrustedVaultReauthentication];
+}
+
+#pragma mark - VoiceSearchCoordinatorDelegate
+
+- (void)voiceSearchCoordinator:(ChromeCoordinator*)coordinator
+             didRecognizeQuery:(NSString*)query {
+  // TODO(crbug.com/571184218): Load the recognized query.
+}
+
+- (void)voiceSearchCoordinatorDidFinish:(ChromeCoordinator*)coordinator {
+  CHECK_EQ(coordinator, _voiceSearchCoordinator);
+  [self stopVoiceSearchCoordinator];
 }
 
 @end
