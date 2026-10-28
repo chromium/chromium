@@ -64,9 +64,9 @@ bool IsPossibleAnchorElement(blink::WebFormControlElement element) {
 
 // Returns true if `target_node` represents a plausible custom JS-autofill
 // dropdown suggestion. Custom dropdown items are typically rendered using
-// non-form DOM elements (e.g., <div>, <li>, <span>) or <button type="button"
-// role="option">. This is simply a heuristic ruling out common cases and is not
-// exhaustive.
+// non-form DOM elements (e.g., <div>, <li>, <span>) or <button> elements with
+// a relevant ARIA option/listbox/menu role on the button or an ancestor. This
+// is simply a heuristic ruling out common cases and is not exhaustive.
 bool IsPossibleMouseClickTargetElement(blink::WebNode target_node) {
   // If `target_node` is a non-element node (e.g. text inside a <button> or
   // <div>), walk up to its parent element to determine the actual DOM control
@@ -74,22 +74,55 @@ bool IsPossibleMouseClickTargetElement(blink::WebNode target_node) {
   while (target_node && !target_node.IsElementNode()) {
     target_node = target_node.ParentNode();
   }
+  // Clicking empty background space (e.g. <html>, <body>, or <form>) to blur a
+  // field is never a dropdown option selection and should not start the
+  // detection timer.
+  auto target_element = target_node.DynamicTo<blink::WebElement>();
+  if (!target_element || target_element.DynamicTo<blink::WebFormElement>() ||
+      target_element.HasHTMLTagName("html") ||
+      target_element.HasHTMLTagName("body")) {
+    return false;
+  }
   // Custom JS dropdown options (e.g. <div>, <li>, <span>) are generally
   // non-form elements. Clicking form control elements (inputs, checkboxes,
   // radio buttons, submit/reset buttons, etc.) should not start the custom JS
   // autofill detection timer.
-  auto control_element = target_node.DynamicTo<blink::WebFormControlElement>();
+  auto control_element =
+      target_element.DynamicTo<blink::WebFormControlElement>();
   if (!control_element) {
     return true;
   }
-  // Some autocomplete frameworks render dropdown suggestions as
-  // `<button type="button" role="option"/>` for built-in click and
-  // accessibility semantics. Allow such buttons while still rejecting general
-  // form buttons (e.g. submit or reset buttons).
-  return control_element.FormControlTypeForAutofill() ==
-             blink::mojom::FormControlType::kButtonButton &&
-         base::EqualsCaseInsensitiveASCII(
-             control_element.GetAttribute("role").Utf16(), u"option");
+
+  // Some autocomplete frameworks render dropdown suggestions as `<button>`
+  // elements (either `<button type="button">` or a default `<button>` without a
+  // `type` attribute, which defaults to `kButtonSubmit` in HTML) for built-in
+  // click and accessibility semantics.
+  const blink::mojom::FormControlType control_type =
+      control_element.FormControlTypeForAutofill();
+  const bool is_candidate_button =
+      control_type == blink::mojom::FormControlType::kButtonButton ||
+      (control_type == blink::mojom::FormControlType::kButtonSubmit &&
+       !base::EqualsCaseInsensitiveASCII(
+           control_element.GetAttribute("type").Utf16(), u"submit"));
+  if (!is_candidate_button) {
+    return false;
+  }
+
+  // Allow such buttons only when they or an ancestor have an ARIA
+  // option/listbox/menu role, while still rejecting general form buttons (e.g.
+  // reset buttons or explicit `type="submit"` buttons).
+  for (blink::WebNode node = control_element; node; node = node.ParentNode()) {
+    if (auto element = node.DynamicTo<blink::WebElement>()) {
+      std::u16string role = element.GetAttribute("role").Utf16();
+      if (base::EqualsCaseInsensitiveASCII(role, u"option") ||
+          base::EqualsCaseInsensitiveASCII(role, u"listbox") ||
+          base::EqualsCaseInsensitiveASCII(role, u"menu") ||
+          base::EqualsCaseInsensitiveASCII(role, u"menuitem")) {
+        return true;
+      }
+    }
+  }
+  return false;
 }
 
 mojom::JavaScriptModificationType GetJavaScriptModificationType(

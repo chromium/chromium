@@ -484,40 +484,109 @@ TEST_F(JavaScriptAutofillTrackerTest, IgnoreResetButtonClearingFields) {
   task_environment_.FastForwardBy(base::Milliseconds(1000));
 }
 
-// Test that clicking a dropdown option rendered as `<button type="button"
-// role="option">` triggers JS autofill detection.
+// Test that clicking a dropdown option rendered as a `<button>` (either with
+// `type="button"` or without a `type` attribute, and with `role="option"` on
+// the button or `role="listbox"` / `role="menu"` on an ancestor) triggers JS
+// autofill detection, while explicit `type="submit"` buttons are ignored.
 TEST_F(JavaScriptAutofillTrackerTest, DetectButtonWithOptionRole) {
   LoadHTML(R"(
       <form id="form_id">
         <input id="street">
         <input id="city">
         <input id="state">
+        <button id="option_btn_1" type="button" role="option">
+          1600 Amphitheatre Pkwy, Mountain View, CA
+        </button>
         <ul role="listbox">
           <li>
-            <button id="option_btn" type="button" role="option">
-              1600 Amphitheatre Pkwy, Mountain View, CA
+            <button id="option_btn_2">
+              111 8th Ave, New York, NY
             </button>
           </li>
         </ul>
+        <button id="submit_btn" type="submit" role="option">Submit</button>
       </form>)");
 
   ExecuteJavaScriptForTests(R"(
-    document.getElementById('option_btn').addEventListener('click', () => {
+    document.getElementById('option_btn_1').addEventListener('click', () => {
       document.getElementById('street').value = '1600 Amphitheatre Pkwy';
       document.getElementById('city').value = 'Mountain View';
       document.getElementById('state').value = 'CA';
     });
+    document.getElementById('option_btn_2').addEventListener('click', (e) => {
+      e.preventDefault();
+      document.getElementById('street').value = '111 8th Ave';
+      document.getElementById('city').value = 'New York';
+      document.getElementById('state').value = 'NY';
+    });
+    document.getElementById('submit_btn').addEventListener('click', (e) => {
+      e.preventDefault();
+      document.getElementById('street').value = 'Submitted';
+      document.getElementById('city').value = 'Submitted';
+      document.getElementById('state').value = 'Submitted';
+    });
   )");
 
+  // 1. `<button type="button" role="option">` -> detected.
   EXPECT_CALL(autofill_driver(),
               DidDetectJavaScriptAutofill(
                   _, form_util::GetFieldRendererId(GetWebElementById("street")),
                   ElementsAre(HasFieldId("street"), HasFieldId("city"),
                               HasFieldId("state")),
                   _));
+  SelectDropdownOption("street", "option_btn_1");
+  task_environment_.FastForwardBy(base::Milliseconds(1000));
+  testing::Mock::VerifyAndClearExpectations(&autofill_driver());
 
-  SelectDropdownOption("street", "option_btn");
+  // 2. Default `<button>` (no `type` attribute) inside `role="listbox"` ->
+  // detected.
+  EXPECT_CALL(autofill_driver(),
+              DidDetectJavaScriptAutofill(
+                  _, form_util::GetFieldRendererId(GetWebElementById("street")),
+                  ElementsAre(HasFieldId("street"), HasFieldId("city"),
+                              HasFieldId("state")),
+                  _));
+  SelectDropdownOption("street", "option_btn_2");
+  task_environment_.FastForwardBy(base::Milliseconds(1000));
+  testing::Mock::VerifyAndClearExpectations(&autofill_driver());
 
+  // 3. Explicit `<button type="submit">` -> ignored even with `role="option"`.
+  EXPECT_CALL(autofill_driver(), DidDetectJavaScriptAutofill).Times(0);
+  SelectDropdownOption("street", "submit_btn");
+  task_environment_.FastForwardBy(base::Milliseconds(1000));
+}
+
+// Test that clicking empty space on `<form>` or `<body>` (which blurs the
+// focused input and may trigger `blur` listeners that modify fields) does not
+// trigger JS autofill detection.
+TEST_F(JavaScriptAutofillTrackerTest, IgnoreClicksOnFormOrBody) {
+  LoadHTML(R"(
+      <body id="body_id">
+        <form id="form_id">
+          <input id="zip" value="94043">
+          <input id="city">
+          <input id="state">
+        </form>
+      </body>)");
+
+  ExecuteJavaScriptForTests(R"(
+    document.getElementById('zip').addEventListener('blur', () => {
+      document.getElementById('city').value = 'Mountain View';
+      document.getElementById('state').value = 'CA';
+    });
+  )");
+
+  EXPECT_CALL(autofill_driver(), DidDetectJavaScriptAutofill).Times(0);
+
+  SelectDropdownOption("zip", "form_id");
+  task_environment_.FastForwardBy(base::Milliseconds(1000));
+
+  ExecuteJavaScriptForTests(R"(
+    document.getElementById('city').value = '';
+    document.getElementById('state').value = '';
+  )");
+
+  SelectDropdownOption("zip", "body_id");
   task_environment_.FastForwardBy(base::Milliseconds(1000));
 }
 
