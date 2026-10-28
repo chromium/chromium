@@ -155,7 +155,8 @@ RuleType = Union[str, tuple[str, str]]
 _KNOWN_TARGET_DENIALS: dict[str, frozenset[RuleType]] = {
     "sysctl-read": frozenset(
         (
-            ("kern.bootargs", "gpu.sb"),
+            "hw.physicalcpu",
+            "kern.bootargs",
             "kern.willshutdown",
             "machdep.cpu.brand_string",
             "net.inet.ip.portrange.first",
@@ -167,7 +168,7 @@ _KNOWN_TARGET_DENIALS: dict[str, frozenset[RuleType]] = {
     ),
     "file-read-data": frozenset(
         (
-            ("/", "renderer.sb"),
+            "/",
             "/Library/Preferences/Logging/com.apple.diagnosticd.filter.plist",
             "/Library/Preferences/com.apple.networkd.plist",
             "/Library/Preferences/com.apple.security.plist",
@@ -195,8 +196,8 @@ _KNOWN_TARGET_DENIALS: dict[str, frozenset[RuleType]] = {
             "com.apple.diagnosticd",
             "com.apple.distributed_notifications@Uv3",
             "com.apple.lsd.mapdb",
-            ("com.apple.lsd.modifydb", "renderer.sb"),
-            ("com.apple.system.notification_center", "utility.sb"),
+            "com.apple.lsd.modifydb",
+            "com.apple.system.notification_center",
             "com.apple.system.opendirectoryd.membership",
             "com.apple.tccd",
             "com.apple.tccd.system",

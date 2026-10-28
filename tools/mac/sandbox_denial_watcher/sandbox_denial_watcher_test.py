@@ -398,22 +398,6 @@ class DenialFilterTest(WatcherTestCase):
             )
         )
         # Target rules scoped to specific profiles.
-        self.assertTrue(
-            self.denial_filter.should_ignore(
-                _denial(
-                    "sysctl-read kern.bootargs",
-                    process="Chromium Helper (GPU)",
-                )
-            )
-        )
-        self.assertFalse(
-            self.denial_filter.should_ignore(
-                _denial(
-                    "sysctl-read kern.bootargs",
-                    process="Chromium Helper (Renderer)",
-                )
-            )
-        )
         audio_cmd = (
             "Chrome --type=utility "
             "--utility-sub-type=audio.mojom.AudioService "
@@ -438,19 +422,10 @@ class DenialFilterTest(WatcherTestCase):
 
     def test_target_match_root_path(self):
         self.assertTrue(
-            self.denial_filter.should_ignore(
-                _denial(
-                    "file-read-data /", process="Chromium Helper (Renderer)"
-                )
-            )
+            self.denial_filter.should_ignore(_denial("file-read-data /"))
         )
         self.assertFalse(
             self.denial_filter.should_ignore(_denial("file-read-data /tmp"))
-        )
-        self.assertFalse(
-            self.denial_filter.should_ignore(
-                _denial("file-read-data /", process="Chromium Helper (GPU)")
-            )
         )
 
     def test_target_match_directory_with_trailing_slash(self):
