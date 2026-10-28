@@ -125,11 +125,16 @@ class ModelSubscriberImpl : public mojom::ModelSubscriber {
   void CapabilitiesUpdated(
       const on_device_model::Capabilities& capabilities) override;
 
-  // Fire all pending callbacks
-  void FlushCallbacks();
+  // Collect ready `WaitForClient()` callbacks to run once `this` is no longer
+  // needed on the stack.
+  [[nodiscard]] std::vector<base::OnceClosure> FlushModelClientCallbacks();
 
-  // Fire all pending CanCreateSession callbacks.
-  void FlushCanCreateSessionCallbacks();
+  // Collect ready `CanCreateSession()` callbacks to run once `this` is no
+  // longer needed on the stack.
+  [[nodiscard]] std::vector<base::OnceClosure> FlushCanCreateSessionCallbacks();
+
+  // Collect all ready callbacks from both queues.
+  [[nodiscard]] std::vector<base::OnceClosure> FlushAllCallbacks();
 
   std::vector<ClientCallback> callbacks_;
   std::optional<mojom::ModelUnavailableReason> unavailable_reason_;
