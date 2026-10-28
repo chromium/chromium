@@ -25,6 +25,7 @@ namespace autofill {
 namespace {
 
 using ::testing::_;
+using ::testing::AllOf;
 using ::testing::ElementsAre;
 using ::testing::Field;
 using ::testing::Pointee;
@@ -88,6 +89,14 @@ class JavaScriptAutofillTrackerTest : public test::AutofillRendererTest {
   auto HasFieldId(std::string_view id) {
     return Pointee(Field(&mojom::JavaScriptFieldModification::field_id,
                          form_util::GetFieldRendererId(GetWebElementById(id))));
+  }
+
+  auto IsFieldModification(std::string_view id,
+                           mojom::JavaScriptModificationType type) {
+    return Pointee(AllOf(
+        Field(&mojom::JavaScriptFieldModification::field_id,
+              form_util::GetFieldRendererId(GetWebElementById(id))),
+        Field(&mojom::JavaScriptFieldModification::modification_type, type)));
   }
 
   // Loads HTML form with shipping and billing address sections and sets up the
@@ -174,7 +183,7 @@ TEST_F(JavaScriptAutofillTrackerTest, JavaScriptChangedValueLogging) {
         R"(document.getElementById('%s').value = '%s';)", id, value));
   };
 
-  const std::vector<mojom::JavaScriptFieldModificationPtr>& logs =
+  const std::vector<JavaScriptAutofillTracker::LogRecord>& logs =
       test_api(test_api(autofill_agent()).javascript_autofill_tracker())
           .js_logs();
 
@@ -187,11 +196,17 @@ TEST_F(JavaScriptAutofillTrackerTest, JavaScriptChangedValueLogging) {
   SelectDropdownOption("text_1", "opt_1");
 
   ASSERT_EQ(logs.size(), 1u);
-  EXPECT_EQ(logs[0]->field_id, form_util::GetFieldRendererId(text1));
-  EXPECT_EQ(logs[0]->modification_type,
-            mojom::JavaScriptModificationType::kReassignment);
+  EXPECT_EQ(logs[0].field_id, form_util::GetFieldRendererId(text1));
+  EXPECT_EQ(logs[0].previous_value, u"js_val_1");
 
   // Clear logs by waiting for timer.
+  EXPECT_CALL(
+      autofill_driver(),
+      DidDetectJavaScriptAutofill(
+          _, form_util::GetFieldRendererId(text1),
+          ElementsAre(IsFieldModification(
+              "text_1", mojom::JavaScriptModificationType::kReassignment)),
+          _));
   task_environment_.FastForwardBy(base::Milliseconds(1000));
   ASSERT_TRUE(logs.empty());
 
@@ -214,34 +229,58 @@ TEST_F(JavaScriptAutofillTrackerTest, JavaScriptChangedValueLogging) {
   SelectDropdownOption("text_1", "opt_same");
 
   ASSERT_EQ(logs.size(), 1u);
-  EXPECT_EQ(logs[0]->field_id, form_util::GetFieldRendererId(text1));
-  EXPECT_EQ(logs[0]->modification_type,
-            mojom::JavaScriptModificationType::kTrivial);
+  EXPECT_EQ(logs[0].field_id, form_util::GetFieldRendererId(text1));
+  EXPECT_EQ(logs[0].previous_value, u"js_val_3");
 
   // 6. JS change to a prefix completion -> should log kPrefixCompletion.
+  EXPECT_CALL(autofill_driver(),
+              DidDetectJavaScriptAutofill(
+                  _, form_util::GetFieldRendererId(text1),
+                  ElementsAre(IsFieldModification(
+                      "text_1", mojom::JavaScriptModificationType::kTrivial)),
+                  _));
   task_environment_.FastForwardBy(base::Milliseconds(1000));
   AttachCustomDropdownOption("text_1", "opt_prefix",
                              {{"text_1", "js_val_3_more"}});
   SelectDropdownOption("text_1", "opt_prefix");
   ASSERT_EQ(logs.size(), 1u);
-  EXPECT_EQ(logs[0]->modification_type,
-            mojom::JavaScriptModificationType::kPrefixCompletion);
+  EXPECT_EQ(logs[0].previous_value, u"js_val_3");
 
   // 7. JS change from non-empty to empty -> should log kClearing.
+  EXPECT_CALL(
+      autofill_driver(),
+      DidDetectJavaScriptAutofill(
+          _, form_util::GetFieldRendererId(text1),
+          ElementsAre(IsFieldModification(
+              "text_1", mojom::JavaScriptModificationType::kPrefixCompletion)),
+          _));
   task_environment_.FastForwardBy(base::Milliseconds(1000));
   AttachCustomDropdownOption("text_1", "opt_clear", {{"text_1", ""}});
   SelectDropdownOption("text_1", "opt_clear");
   ASSERT_EQ(logs.size(), 1u);
-  EXPECT_EQ(logs[0]->modification_type,
-            mojom::JavaScriptModificationType::kClearing);
+  EXPECT_EQ(logs[0].previous_value, u"js_val_3_more");
 
   // 8. JS change from empty to non-empty -> should log kEmptyToNonEmpty.
+  EXPECT_CALL(autofill_driver(),
+              DidDetectJavaScriptAutofill(
+                  _, form_util::GetFieldRendererId(text1),
+                  ElementsAre(IsFieldModification(
+                      "text_1", mojom::JavaScriptModificationType::kClearing)),
+                  _));
   task_environment_.FastForwardBy(base::Milliseconds(1000));
   AttachCustomDropdownOption("text_1", "opt_new", {{"text_1", "new_val"}});
   SelectDropdownOption("text_1", "opt_new");
   ASSERT_EQ(logs.size(), 1u);
-  EXPECT_EQ(logs[0]->modification_type,
-            mojom::JavaScriptModificationType::kEmptyToNonEmpty);
+  EXPECT_EQ(logs[0].previous_value, u"");
+
+  EXPECT_CALL(
+      autofill_driver(),
+      DidDetectJavaScriptAutofill(
+          _, form_util::GetFieldRendererId(text1),
+          ElementsAre(IsFieldModification(
+              "text_1", mojom::JavaScriptModificationType::kEmptyToNonEmpty)),
+          _));
+  task_environment_.FastForwardBy(base::Milliseconds(1000));
 }
 
 // Test that if JavaScript modifies fields in a different form than the
@@ -269,7 +308,7 @@ TEST_F(JavaScriptAutofillTrackerTest, IgnoreCrossFormModifications) {
 
   EXPECT_CALL(autofill_driver(), DidDetectJavaScriptAutofill).Times(0);
 
-  const std::vector<mojom::JavaScriptFieldModificationPtr>& logs =
+  const std::vector<JavaScriptAutofillTracker::LogRecord>& logs =
       test_api(test_api(autofill_agent()).javascript_autofill_tracker())
           .js_logs();
 
@@ -314,7 +353,7 @@ TEST_F(JavaScriptAutofillTrackerTest, IgnoreHiddenFieldsInSameAsShippingForm) {
                               {"shipping_state", "CA"},
                               {"shipping_zip", "94043"}});
 
-  const std::vector<mojom::JavaScriptFieldModificationPtr>& logs =
+  const std::vector<JavaScriptAutofillTracker::LogRecord>& logs =
       test_api(test_api(autofill_agent()).javascript_autofill_tracker())
           .js_logs();
 
@@ -478,6 +517,46 @@ TEST_F(JavaScriptAutofillTrackerTest, DetectButtonWithOptionRole) {
                   _));
 
   SelectDropdownOption("street", "option_btn");
+
+  task_environment_.FastForwardBy(base::Milliseconds(1000));
+}
+
+// Test that when JS writes to the same field multiple times during the same
+// selection (e.g., clearing the input first and then writing the selected
+// option's value), only a single modification entry is kept and its
+// modification type is computed from the field's initial value prior to the
+// first write and its final value.
+TEST_F(JavaScriptAutofillTrackerTest,
+       MultipleWritesToSameFieldUsesInitialAndFinalValue) {
+  LoadHTML(R"(
+      <form id="form_id">
+        <input id="state" value="Cal">
+      </form>)");
+
+  // Selecting the option first clears `state` ("Cal" -> "") and then sets it to
+  // "California" ("" -> "California"). Relative to the initial value "Cal", the
+  // net modification type should be `kPrefixCompletion` (rather than
+  // `kClearing` from the first write or `kEmptyToNonEmpty` from the second
+  // write alone).
+  AttachCustomDropdownOption("state", "option",
+                             {{"state", ""}, {"state", "California"}});
+
+  const std::vector<JavaScriptAutofillTracker::LogRecord>& logs =
+      test_api(test_api(autofill_agent()).javascript_autofill_tracker())
+          .js_logs();
+
+  SelectDropdownOption("state", "option");
+  ASSERT_EQ(logs.size(), 2u);
+  EXPECT_EQ(logs[0].previous_value, u"Cal");
+  EXPECT_EQ(logs[1].previous_value, u"");
+
+  EXPECT_CALL(
+      autofill_driver(),
+      DidDetectJavaScriptAutofill(
+          _, form_util::GetFieldRendererId(GetWebElementById("state")),
+          ElementsAre(IsFieldModification(
+              "state", mojom::JavaScriptModificationType::kPrefixCompletion)),
+          _));
 
   task_environment_.FastForwardBy(base::Milliseconds(1000));
 }

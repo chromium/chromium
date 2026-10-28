@@ -4,9 +4,6 @@
 
 #include "components/autofill/content/renderer/javascript_autofill_tracker.h"
 
-#include <algorithm>
-
-#include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
@@ -16,6 +13,7 @@
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_form_control_element.h"
+#include "third_party/blink/public/web/web_form_element.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_node.h"
 
@@ -198,8 +196,7 @@ void JavaScriptAutofillTracker::OnJavaScriptSetValue(
 
   // (2) `js_logs_` must still have less than `kJsAutofillMaxFieldsChanged`
   // records. If more than that many fields are modified in such a small window
-  // of time, it is likely not an autofill dropdown. This is also a performance
-  // guard since string analysis is performed below.
+  // of time, it is likely not an autofill dropdown.
   if (js_logs_.size() >= kJsAutofillMaxFieldsChanged) {
     return;
   }
@@ -210,16 +207,14 @@ void JavaScriptAutofillTracker::OnJavaScriptSetValue(
     return;
   }
 
-  js_logs_.push_back(mojom::JavaScriptFieldModification::New(
-      form_util::GetFieldRendererId(element),
-      GetJavaScriptModificationType(old_value.Utf16(), element.Value().Utf16()),
-      base::TimeTicks::Now()));
+  js_logs_.emplace_back(form_util::GetFieldRendererId(element),
+                        old_value.Utf16(), base::TimeTicks::Now());
 }
 
 void JavaScriptAutofillTracker::DetectJavaScriptAutofill(
     FieldRendererId trigger_element_id,
     base::TimeTicks timer_start_timestamp) {
-  std::vector<mojom::JavaScriptFieldModificationPtr> logs = std::move(js_logs_);
+  std::vector<LogRecord> logs = std::move(js_logs_);
   js_logs_.clear();
   if (logs.empty()) {
     return;
@@ -233,28 +228,45 @@ void JavaScriptAutofillTracker::DetectJavaScriptAutofill(
     return;
   }
 
-  // For simplicity, only modified and visible (focusable) fields belonging to
-  // the same form as the anchor element are considered, since the browser
-  // receives a single form to analyze for detecting dropdowns.
-  std::erase_if(
-      logs, [target_form = trigger_element.GetOwningFormForAutofill()](
-                const mojom::JavaScriptFieldModificationPtr& record) {
-        blink::WebFormControlElement element =
-            form_util::GetFormControlByRendererId(record->field_id);
-        return !element || !element.IsFocusable() ||
-               element.GetOwningFormForAutofill() != target_form;
-      });
-
+  const blink::WebFormElement target_form =
+      trigger_element.GetOwningFormForAutofill();
   std::vector<mojom::JavaScriptFieldModificationPtr> field_modifications;
   absl::flat_hash_set<FieldRendererId> seen_fields;
 
-  // `logs` is moved here to ensure it is not used below, since
-  // `field_modifications` should be used in what follows as it contains the
-  // filtered list of logs.
-  for (mojom::JavaScriptFieldModificationPtr& record : std::move(logs)) {
-    if (seen_fields.insert(record->field_id).second) {
-      field_modifications.push_back(std::move(record));
+  // Populate `field_modifications` with one entry per modified visible field in
+  // `target_form`. Because JS frameworks may modify a field multiple times
+  // during a single dropdown selection (e.g., clearing the value first and
+  // subsequently setting it to the selected value), only the first `LogRecord`
+  // per field is processed and its `previous_value` is compared against the
+  // field's current (final) value.
+  for (const LogRecord& record : logs) {
+    // (1) Only keep the first record per field so that `record.previous_value`
+    // holds the field's value prior to any JS modifications during the tracking
+    // window.
+    if (!seen_fields.insert(record.field_id).second) {
+      continue;
     }
+
+    // (2) Ignore fields that were removed from the DOM or are hidden (e.g.
+    // hidden billing fields synced from shipping fields).
+    blink::WebFormControlElement element =
+        form_util::GetFormControlByRendererId(record.field_id);
+    if (!element || !element.IsFocusable()) {
+      continue;
+    }
+
+    // (3) For simplicity, only consider fields belonging to the same form as
+    // the anchor element, since the browser receives a single form to analyze
+    // for detecting dropdowns.
+    if (element.GetOwningFormForAutofill() != target_form) {
+      continue;
+    }
+
+    field_modifications.push_back(mojom::JavaScriptFieldModification::New(
+        record.field_id,
+        GetJavaScriptModificationType(record.previous_value,
+                                      element.Value().Utf16()),
+        record.timestamp));
   }
 
   if (field_modifications.empty() ||

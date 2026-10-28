@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_AUTOFILL_CONTENT_RENDERER_JAVASCRIPT_AUTOFILL_TRACKER_H_
 #define COMPONENTS_AUTOFILL_CONTENT_RENDERER_JAVASCRIPT_AUTOFILL_TRACKER_H_
 
+#include <string>
 #include <vector>
 
 #include "base/functional/callback.h"
@@ -28,6 +29,17 @@ namespace autofill {
 // by web pages.
 class JavaScriptAutofillTracker {
  public:
+  // Represents a single JavaScript-triggered value assignment to a form field
+  // recorded during the active tracking window.
+  struct LogRecord {
+    // The renderer ID of the modified form control element.
+    FieldRendererId field_id;
+    // The value of the field immediately prior to this JavaScript modification.
+    std::u16string previous_value;
+    // The timestamp when this JavaScript modification occurred.
+    base::TimeTicks timestamp;
+  };
+
   // Callback signature invoked when a JS-autofill event is detected.
   using DidDetectCallback = base::RepeatingCallback<void(
       blink::WebFormControlElement trigger_field,
@@ -68,8 +80,10 @@ class JavaScriptAutofillTracker {
   // Callback to notify the owner of a detected JS autofill.
   DidDetectCallback callback_;
 
-  // A rolling log of recent JavaScript-triggered value changes.
-  std::vector<mojom::JavaScriptFieldModificationPtr> js_logs_;
+  // Log of JavaScript-triggered value changes recorded during the active
+  // tracking window (while `timer_` is running), capped at
+  // `kJsAutofillMaxFieldsChanged` entries.
+  std::vector<LogRecord> js_logs_;
 
   // Timer used to wait for a sequence of JS changes to complete before
   // analyzing them.

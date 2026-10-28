@@ -18,7 +18,7 @@ class JavaScriptAutofillTrackerTestApi {
   explicit JavaScriptAutofillTrackerTestApi(JavaScriptAutofillTracker* tracker)
       : tracker_(*tracker) {}
 
-  const std::vector<mojom::JavaScriptFieldModificationPtr>& js_logs() const {
+  const std::vector<JavaScriptAutofillTracker::LogRecord>& js_logs() const {
     return tracker_->js_logs_;
   }
 
