@@ -9,6 +9,7 @@
 
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/mock_callback.h"
@@ -16,8 +17,10 @@
 #include "base/values.h"
 #include "chromeos/ash/components/dbus/shill/shill_client_unittest_base.h"
 #include "dbus/message.h"
+#include "dbus/mock_object_proxy.h"
 #include "dbus/object_path.h"
 #include "dbus/values_util.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
@@ -48,7 +51,10 @@ class ShillServiceClientTest : public ShillClientUnittestBase {
   }
 
   void TearDown() override {
-    ShillServiceClient::Shutdown();
+    client_ = nullptr;
+    if (ShillServiceClient::Get()) {
+      ShillServiceClient::Shutdown();
+    }
     ShillClientUnittestBase::TearDown();
   }
 
@@ -413,6 +419,51 @@ TEST_F(ShillServiceClientTest, InvalidServicePath) {
   EXPECT_TRUE(error_result.Wait());
   // Connect result callback should not be invoked after an error is received.
   EXPECT_FALSE(connect_result.IsReady());
+}
+
+TEST_F(ShillServiceClientTest, ReleaseHelperWhenObserverRemoved) {
+  MockPropertyChangeObserver observer;
+  const dbus::ObjectPath kSecondServicePath("/service/2");
+  auto second_proxy = base::MakeRefCounted<dbus::MockObjectProxy>(
+      mock_bus_.get(), shill::kFlimflamServiceName, kSecondServicePath);
+
+  EXPECT_CALL(*mock_bus_.get(),
+              GetObjectProxy(shill::kFlimflamServiceName, kSecondServicePath))
+      .Times(2)
+      .WillRepeatedly(testing::Return(second_proxy.get()));
+  EXPECT_CALL(*second_proxy.get(),
+              ConnectToSignal(shill::kFlimflamServiceInterface,
+                              shill::kMonitorPropertyChanged, _, _))
+      .Times(2);
+
+  client_->AddPropertyChangedObserver(kSecondServicePath, &observer);
+  client_->RemovePropertyChangedObserver(kSecondServicePath, &observer);
+  client_->AddPropertyChangedObserver(kSecondServicePath, &observer);
+  client_->RemovePropertyChangedObserver(kSecondServicePath, &observer);
+}
+
+TEST_F(ShillServiceClientTest, SkipReleaseHelperOnShutdown) {
+  MockPropertyChangeObserver observer;
+  const dbus::ObjectPath kSecondServicePath("/service/2");
+  auto second_proxy = base::MakeRefCounted<dbus::MockObjectProxy>(
+      mock_bus_.get(), shill::kFlimflamServiceName, kSecondServicePath);
+
+  EXPECT_CALL(*mock_bus_.get(),
+              GetObjectProxy(shill::kFlimflamServiceName, kSecondServicePath))
+      .WillOnce(testing::Return(second_proxy.get()));
+  EXPECT_CALL(*second_proxy.get(),
+              ConnectToSignal(shill::kFlimflamServiceInterface,
+                              shill::kMonitorPropertyChanged, _, _))
+      .Times(1);
+
+  client_->AddPropertyChangedObserver(kSecondServicePath, &observer);
+  client_->SetShuttingDown();
+  client_->RemovePropertyChangedObserver(kSecondServicePath, &observer);
+  client_->AddPropertyChangedObserver(kSecondServicePath, &observer);
+  client_->RemovePropertyChangedObserver(kSecondServicePath, &observer);
+
+  client_ = nullptr;
+  ShillServiceClient::Shutdown();
 }
 
 }  // namespace ash

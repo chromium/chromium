@@ -266,6 +266,15 @@ class COMPONENT_EXPORT(SHILL_CLIENT) ShillServiceClient {
                                     base::OnceClosure callback,
                                     ErrorCallback error_callback) = 0;
 
+  // One-way flag (must be called on the UI thread) that marks the client as
+  // shutting down so observer removal during teardown retains helpers until
+  // ~ShillServiceClientImpl() instead of posting per-service
+  // RemoveObjectProxy() D-Bus tasks. Safe because shill_clients::Shutdown()
+  // deletes the helpers (invalidating their WeakPtr-bound signal callbacks) and
+  // is immediately followed by Bus::ShutdownAndBlock(), which detaches all
+  // remaining ObjectProxies and match rules in bulk.
+  virtual void SetShuttingDown() {}
+
   // Returns an interface for testing (stub only), or returns null.
   virtual TestInterface* GetTestInterface() = 0;
 

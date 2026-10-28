@@ -107,6 +107,12 @@ ShillPropertyHandler::ShillPropertyHandler(Listener* listener)
     : listener_(listener), shill_manager_(ShillManagerClient::Get()) {}
 
 ShillPropertyHandler::~ShillPropertyHandler() {
+  // SetShuttingDown() is one-way; in production ShillPropertyHandler is
+  // destroyed only during browser teardown (from NetworkHandler::Shutdown()),
+  // shortly before shill_clients::Shutdown() and Bus::ShutdownAndBlock().
+  if (ShillServiceClient::Get()) {
+    ShillServiceClient::Get()->SetShuttingDown();
+  }
   // Delete network service observers.
   CHECK(shill_manager_ == ShillManagerClient::Get());
   shill_manager_->RemovePropertyChangedObserver(this);

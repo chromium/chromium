@@ -142,12 +142,7 @@ ShillThirdPartyVpnDriverClientImpl::ShillThirdPartyVpnDriverClientImpl(
 
 ShillThirdPartyVpnDriverClientImpl::~ShillThirdPartyVpnDriverClientImpl() {
   for (auto& iter : helpers_) {
-    HelperInfo* helper_info = iter.second;
-    bus_->RemoveObjectProxy(
-        shill::kFlimflamServiceName,
-        helper_info->helper()->object_proxy()->object_path(),
-        base::DoNothing());
-    delete helper_info;
+    delete iter.second;
   }
 }
 
@@ -200,10 +195,12 @@ void ShillThirdPartyVpnDriverClientImpl::DeleteHelper(
     return;
   }
 
+  helpers_.erase(helpers_.find(object_path.value()));
+  // Delete `helper_info` before removing the `ObjectProxy` to prevent a
+  // dangling `raw_ptr` for `proxy_` in `ShillClientHelper`.
+  delete helper_info;
   bus_->RemoveObjectProxy(shill::kFlimflamServiceName, object_path,
                           base::DoNothing());
-  helpers_.erase(helpers_.find(object_path.value()));
-  delete helper_info;
 }
 
 void ShillThirdPartyVpnDriverClientImpl::SetParameters(
