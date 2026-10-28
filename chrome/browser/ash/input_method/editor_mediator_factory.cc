@@ -5,8 +5,10 @@
 #include "chrome/browser/ash/input_method/editor_mediator_factory.h"
 
 #include <memory>
+#include <utility>
 
 #include "base/no_destructor.h"
+#include "chrome/browser/ash/input_method/editor_geolocation_provider.h"
 #include "chrome/browser/ash/input_method/editor_geolocation_provider_from_finch.h"
 #include "chrome/browser/ash/input_method/editor_mediator.h"
 #include "chrome/browser/browser_process.h"
@@ -50,18 +52,21 @@ EditorMediatorFactory::EditorMediatorFactory()
 EditorMediatorFactory::~EditorMediatorFactory() = default;
 
 std::unique_ptr<KeyedService> EditorMediatorFactory::BuildInstanceFor(
-    content::BrowserContext* context) {
+    content::BrowserContext* context,
+    std::unique_ptr<EditorGeolocationProvider> geolocation_provider) {
   Profile* profile = Profile::FromBrowserContext(context);
   return std::make_unique<EditorMediator>(
       g_browser_process->GetFeatures()->application_locale_storage(), profile,
       manta::MantaServiceFactory::GetForProfile(profile),
-      std::make_unique<EditorGeolocationProviderFromFinch>());
+      std::move(geolocation_provider));
 }
 
 std::unique_ptr<KeyedService>
 EditorMediatorFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  return BuildInstanceFor(context);
+  return BuildInstanceFor(context,
+                          std::make_unique<EditorGeolocationProviderFromFinch>(
+                              g_browser_process->variations_service()));
 }
 
 }  // namespace input_method

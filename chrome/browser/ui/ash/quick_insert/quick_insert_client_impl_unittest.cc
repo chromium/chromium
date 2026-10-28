@@ -27,6 +27,7 @@
 #include "chrome/browser/ash/fileapi/recent_model.h"
 #include "chrome/browser/ash/fileapi/recent_model_factory.h"
 #include "chrome/browser/ash/fileapi/test/fake_recent_source.h"
+#include "chrome/browser/ash/input_method/editor_geolocation_mock_provider.h"
 #include "chrome/browser/ash/input_method/editor_mediator_factory.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
@@ -214,8 +215,12 @@ class QuickInsertClientImplTest : public BrowserWithTestWindowTest {
                                 std::ref(fake_drivefs_helper_))},
         TestingProfile::TestingFactory{
             ash::input_method::EditorMediatorFactory::GetInstance(),
-            base::BindRepeating(
-                &ash::input_method::EditorMediatorFactory::BuildInstanceFor)}};
+            base::BindRepeating([](content::BrowserContext* context) {
+              return ash::input_method::EditorMediatorFactory::BuildInstanceFor(
+                  context,
+                  std::make_unique<
+                      ash::input_method::EditorGeolocationMockProvider>("us"));
+            })}};
   }
 
   void SwitchActiveUser(const std::string& email) override {

@@ -17,12 +17,16 @@
 namespace ash {
 namespace input_method {
 
+class EditorGeolocationProvider;
+
 class EditorMediatorFactory : public ProfileKeyedServiceFactory {
  public:
   static EditorMediator* GetForProfile(Profile* profile);
   static EditorMediatorFactory* GetInstance();
+  // `geolocation_provider` must not be null.
   static std::unique_ptr<KeyedService> BuildInstanceFor(
-      content::BrowserContext* context);
+      content::BrowserContext* context,
+      std::unique_ptr<EditorGeolocationProvider> geolocation_provider);
 
  private:
   friend class base::NoDestructor<EditorMediatorFactory>;

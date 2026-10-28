@@ -7,16 +7,32 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/ash/input_method/editor_geolocation_provider.h"
+#include "components/variations/service/variations_service.h"
 
 namespace ash::input_method {
 
-class EditorGeolocationProviderFromFinch : public EditorGeolocationProvider {
+class EditorGeolocationProviderFromFinch
+    : public EditorGeolocationProvider,
+      public variations::VariationsService::Observer {
  public:
-  EditorGeolocationProviderFromFinch() = default;
-  ~EditorGeolocationProviderFromFinch() override = default;
+  // `variations_service` must not be null.
+  explicit EditorGeolocationProviderFromFinch(
+      variations::VariationsService* variations_service);
+  ~EditorGeolocationProviderFromFinch() override;
 
   std::string GetCountryCode() override;
+
+  // variations::VariationsService::Observer:
+  void OnVariationsServiceDestroyed() override;
+
+ private:
+  raw_ptr<variations::VariationsService> variations_service_ = nullptr;
+  base::ScopedObservation<variations::VariationsService,
+                          variations::VariationsService::Observer>
+      observation_{this};
 };
 
 }  // namespace ash::input_method

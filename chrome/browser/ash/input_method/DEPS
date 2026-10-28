@@ -10,11 +10,9 @@ include_rules = [
   "+chrome/browser/ash/lobster/lobster_service_provider.h",
   "+chrome/browser/ash/magic_boost/magic_boost_controller.h",
   "+chrome/browser/ash/profiles",
-  "+chrome/browser/browser_process.h",
   "+chrome/browser/browser_process_platform_part_ash.h",
   "+chrome/browser/extensions/component_loader.h",
   "+chrome/browser/feedback",
-  "+chrome/browser/global_features.h",
   "+chrome/browser/metrics",
   "+chrome/browser/profiles",
   "+chrome/browser/ui/ash/input_method",
@@ -32,6 +30,8 @@ specific_include_rules = {
   # it and injects the MantaService into EditorMediator; the editor consumers
   # take the injected service instead of calling the factory.
   "editor_mediator_factory\\.cc": [
+    "+chrome/browser/browser_process.h",
+    "+chrome/browser/global_features.h",
     "+chrome/browser/manta",
   ],
 
