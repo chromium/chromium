@@ -1444,6 +1444,7 @@ ContentSettingNotificationsImageModel::ContentSettingNotificationsImageModel()
   SetIcon(ContentSettingsType::NOTIFICATIONS, /*blocked=*/false);
   set_tooltip(
       l10n_util::GetStringUTF16(IDS_NOTIFICATIONS_OFF_EXPLANATORY_TEXT));
+  set_accessibility_string_id(IDS_NOTIFICATIONS_OFF_EXPLANATORY_TEXT);
 }
 
 bool ContentSettingNotificationsImageModel::UpdateAndGetVisibility(
@@ -1497,7 +1498,6 @@ bool ContentSettingNotificationsImageModel::UpdateAndGetVisibility(
         base::RecordAction(base::UserMetricsAction(
             "ContentSettings.Notifications.SystemPermissionIconShown"));
       }
-      set_accessibility_string_id(IDS_NOTIFICATIONS_OFF_EXPLANATORY_TEXT);
       set_blocked_on_system_level(true);
       // If the user explicitly turned off notifications for this app at the
       // system level, only show the icon without drawing further attention to
@@ -1541,12 +1541,12 @@ bool ContentSettingNotificationsImageModel::UpdateAndGetVisibility(
   }
 
   SetIcon(ContentSettingsType::NOTIFICATIONS, /*blocked=*/false);
-  if (permissions::PermissionUiSelector::ShouldSuppressAnimation(
+  // Web app titlebars don't show transient explanatory labels, so rather than
+  // animating in an explanatory label, only show the icon. Unless the quiet UI
+  // was triggered for a reason that calls for minimal UI, also show an
+  // in-product help promo anchored to the icon.
+  if (!permissions::PermissionUiSelector::ShouldSuppressAnimation(
           manager->ReasonForUsingQuietUi())) {
-    set_accessibility_string_id(IDS_NOTIFICATIONS_OFF_EXPLANATORY_TEXT);
-    set_explanatory_string_id(0);
-  } else {
-    set_explanatory_string_id(IDS_NOTIFICATIONS_OFF_EXPLANATORY_TEXT);
     set_promo_params(user_education::FeaturePromoParams(
         feature_engagement::kIPHPwaQuietNotificationFeature,
         app_controller->app_id()));

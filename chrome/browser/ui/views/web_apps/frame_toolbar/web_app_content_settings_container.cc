@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_content_settings_container.h"
 
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/content_settings/content_setting_image_model.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "ui/base/hit_test.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -55,7 +56,13 @@ WebAppContentSettingsContainer::WebAppContentSettingsContainer(
     image_view->SetExpandedLabelAdditionalInsets(
         kExpandedLabelAdditionalInsets);
     image_view->SetTextSubpixelRenderingEnabled(false);
-    image_view->disable_animation();
+    // Web app titlebars suppress transient label animations, while
+    // `kNotifications` only animates persistent expanded labels (for
+    // system-level notification blocks).
+    if (image_view->GetType() !=
+        ContentSettingImageModel::ImageType::kNotifications) {
+      image_view->disable_animation();
+    }
     views::SetHitTestComponent(image_view.get(), static_cast<int>(HTCLIENT));
     content_setting_views_.push_back(image_view.get());
     AddChildViewRaw(image_view.release());

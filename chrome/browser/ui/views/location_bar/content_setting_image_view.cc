@@ -169,6 +169,7 @@ void ContentSettingImageView::Update() {
   const bool should_auto_open_bubble =
       content_setting_image_model_->ShouldAutoOpenBubble(web_contents);
   const bool should_run_animation =
+      can_animate_ &&
       content_setting_image_model_->ShouldRunAnimation(web_contents);
   const int string_id = content_setting_image_model_->explanatory_string_id();
   const bool should_keep_label_expanded =
@@ -193,11 +194,8 @@ void ContentSettingImageView::Update() {
   }
 
   // If the content usage or blockage should be indicated to the user, start the
-  // animation and record that the icon has been shown. `can_animate_` only
-  // suppresses transient in-out animations; labels with `keep_label_expanded_`
-  // still animate in and stay expanded until the bubble is closed.
-  const bool can_animate = can_animate_ || keep_label_expanded_;
-  if (can_animate && should_run_animation) {
+  // animation and record that the icon has been shown.
+  if (should_run_animation) {
     // We just ignore this blockage if we're already showing some other string
     // to the user.  If this becomes a problem, we could design some sort of
     // queueing mechanism to show one after the other, but it doesn't seem
@@ -222,7 +220,7 @@ void ContentSettingImageView::Update() {
   // the animation was skipped or finished synchronously). When a label
   // animation runs, `AnimationEnded()` triggers the promo once the animation
   // completes.
-  if (!string_id || !can_animate ||
+  if (!string_id || !can_animate_ ||
       (should_run_animation && !is_animating_label())) {
     MaybeShowPromo(web_contents);
   }

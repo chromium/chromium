@@ -45,6 +45,7 @@ if (toolkit_views) {
     ]
     deps = [
       "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/content_settings",
       "//ui/base",
       "//ui/compositor",
     ]

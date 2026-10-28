@@ -124,7 +124,9 @@ IN_PROC_BROWSER_TEST_F(LocationBarViewQuietNotificationInteractiveUITest,
       // Only the icon is shown in the titlebar, without an explanatory label.
       CheckView(kNotificationContentSettingImageView,
                 [](ContentSettingImageView* view) {
-                  return view->GetVisible() && !view->ShouldShowLabel();
+                  return view->GetVisible() && !view->ShouldShowLabel() &&
+                         view->content_setting_image_model()
+                                 ->explanatory_string_id() == 0;
                 }));
 }
 
