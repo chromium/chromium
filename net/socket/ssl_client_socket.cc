@@ -147,11 +147,6 @@ void SSLClientSocket::RecordSSLConnectResult(
         connect_timing.ssl_end - connect_timing.ssl_start;
     UMA_HISTOGRAM_CUSTOM_TIMES("Net.SSL_Connection_Latency_2", connect_duration,
                                base::Milliseconds(1), base::Minutes(1), 100);
-    if (trust_anchor_ids_from_dns) {
-      base::UmaHistogramCustomTimes("Net.SSL_Connection_Latency_TrustAnchorIDs",
-                                    connect_duration, base::Milliseconds(1),
-                                    base::Minutes(1), 100);
-    }
 
     SSLInfo ssl_info;
     bool has_ssl_info = ssl_socket->GetSSLInfo(&ssl_info);
@@ -179,10 +174,6 @@ void SSLClientSocket::RecordSSLConnectResult(
   }
 
   base::UmaHistogramSparse("Net.SSL_Connection_Error", std::abs(result));
-  if (trust_anchor_ids_from_dns) {
-    base::UmaHistogramSparse("Net.SSL_Connection_Error_TrustAnchorIDs",
-                             std::abs(result));
-  }
 }
 
 SSLClientSocket::SSLClientSocket() = default;

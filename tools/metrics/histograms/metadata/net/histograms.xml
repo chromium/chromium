@@ -9467,18 +9467,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Net.SSL_Connection_Error_TrustAnchorIDs" enum="NetErrorCodes"
-    expires_after="2026-12-06">
-  <owner>davidben@chromium.org</owner>
-  <owner>estark@chromium.org</owner>
-  <owner>trusty-transport@chromium.org</owner>
-  <summary>
-    Counts of specific error codes returned when opening an SSL connection.
-    Recorded for connections to servers that advertise support for Trust Anchor
-    IDs in DNS.
-  </summary>
-</histogram>
-
 <histogram name="Net.SSL_Connection_Latency_2" units="ms" expires_after="never">
 <!-- expires-never: Used to keep track of the TLS ecosystem. -->
 
@@ -9494,18 +9482,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Time from when the Connect() starts until it completes. Recorded for
     successful connections to servers that used the Server Padding extension.
-  </summary>
-</histogram>
-
-<histogram name="Net.SSL_Connection_Latency_TrustAnchorIDs" units="ms"
-    expires_after="2026-12-06">
-  <owner>davidben@chromium.org</owner>
-  <owner>estark@chromium.org</owner>
-  <owner>trusty-transport@chromium.org</owner>
-  <summary>
-    Time from when the Connect() starts until it completes. Recorded for
-    successful connections to servers that advertise support for Trust Anchor
-    IDs in DNS.
   </summary>
 </histogram>
 

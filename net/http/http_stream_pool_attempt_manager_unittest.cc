@@ -8046,10 +8046,6 @@ TEST_F(HttpStreamPoolAttemptManagerTest, TrustAnchorIDsDisabled) {
 
   requester.WaitForResult();
   EXPECT_THAT(requester.result(), Optional(IsOk()));
-  histogram_tester.ExpectTotalCount("Net.SSL_Connection_Error_TrustAnchorIDs",
-                                    0);
-  histogram_tester.ExpectTotalCount("Net.SSL_Connection_Latency_TrustAnchorIDs",
-                                    0);
   histogram_tester.ExpectUniqueSample(
       "Net.SSL.TrustAnchorIDsResult",
       SSLClientSocket::TrustAnchorIDsResult::kNoDnsSuccessInitial, 1);
@@ -8086,10 +8082,6 @@ TEST_F(HttpStreamPoolAttemptManagerTest, TrustAnchorIDs) {
 
   requester.WaitForResult();
   EXPECT_THAT(requester.result(), Optional(IsOk()));
-  histogram_tester.ExpectTotalCount("Net.SSL_Connection_Error_TrustAnchorIDs",
-                                    0);
-  histogram_tester.ExpectTotalCount("Net.SSL_Connection_Latency_TrustAnchorIDs",
-                                    0);
   histogram_tester.ExpectUniqueSample(
       "Net.SSL.TrustAnchorIDsResult",
       SSLClientSocket::TrustAnchorIDsResult::kNoDnsSuccessInitial, 1);

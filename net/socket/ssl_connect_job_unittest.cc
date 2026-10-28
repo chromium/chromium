@@ -1258,10 +1258,6 @@ TEST_P(SSLConnectJobTest, TrustAnchorIDs) {
         CreateConnectJob(&test_delegate, ProxyChain::Direct(), MEDIUM);
     EXPECT_THAT(ssl_connect_job->Connect(), test::IsError(ERR_IO_PENDING));
     EXPECT_THAT(test_delegate.WaitForResult(), test::IsOk());
-    histogram_tester.ExpectTotalCount("Net.SSL_Connection_Error_TrustAnchorIDs",
-                                      0);
-    histogram_tester.ExpectTotalCount(
-        "Net.SSL_Connection_Latency_TrustAnchorIDs", 0);
     histogram_tester.ExpectUniqueSample(
         "Net.SSL.TrustAnchorIDsResult",
         SSLClientSocket::TrustAnchorIDsResult::kNoDnsSuccessInitial, 1);
