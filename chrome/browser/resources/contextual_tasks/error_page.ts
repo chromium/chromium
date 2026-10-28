@@ -19,18 +19,6 @@ export class ContextualTasksErrorPageElement extends CrLitElement {
   override render() {
     return getHtml.bind(this)();
   }
-
-  static override get properties() {
-    return {};
-  }
-
-  override connectedCallback() {
-    super.connectedCallback();
-  }
-
-  override disconnectedCallback() {
-    super.disconnectedCallback();
-  }
 }
 
 declare global {

@@ -42,10 +42,6 @@ export class GhostLoaderElement extends CrLitElement {
   override render() {
     return getHtml.bind(this)();
   }
-
-  static override get properties() {
-    return {};
-  }
 }
 
 declare global {

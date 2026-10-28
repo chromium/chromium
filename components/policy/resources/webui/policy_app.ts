@@ -131,10 +131,6 @@ export class PolicyAppElement extends CrLitElement {
     }
   }
 
-  override disconnectedCallback() {
-    super.disconnectedCallback();
-  }
-
   // <if expr="not is_ios and not is_android">
   protected onPromoDismiss_() {
     BrowserProxy.setBannerDismissed();

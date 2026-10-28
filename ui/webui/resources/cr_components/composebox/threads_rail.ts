@@ -49,18 +49,6 @@ export class ThreadsRailElement extends ThreadsRailElementBase {
     return getHtml.bind(this)();
   }
 
-  constructor() {
-    super();
-  }
-
-  override connectedCallback() {
-    super.connectedCallback();
-  }
-
-  override disconnectedCallback() {
-    super.disconnectedCallback();
-  }
-
   protected onLogoClick_(e: Event): void {
     e.stopPropagation();
     const googleBaseUrl = loadTimeData.getString('googleBaseUrl');

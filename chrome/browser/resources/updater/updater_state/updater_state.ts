@@ -42,10 +42,6 @@ export class UpdaterStateElement extends CrLitElement {
   accessor enterpriseCompanionState: EnterpriseCompanionState|null = null;
   accessor error: boolean = false;
 
-  override connectedCallback() {
-    super.connectedCallback();
-  }
-
   protected filePathToString(filePath: FilePath): string {
     if (typeof filePath.path === 'string') {
       return filePath.path;

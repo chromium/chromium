@@ -49,14 +49,6 @@ export class SidePanelErrorPageElement extends SidePanelErrorPageElementBase {
   // Whether to render the side panel error page in dark mode.
   protected accessor darkMode: boolean = loadTimeData.getBoolean('darkMode');
 
-  override connectedCallback() {
-    super.connectedCallback();
-  }
-
-  override disconnectedCallback() {
-    super.disconnectedCallback();
-  }
-
   setIsProtectedError(isProtectedError: boolean) {
     this.isProtectedError = isProtectedError;
   }

@@ -35,10 +35,6 @@ export class NewBadgeElement extends NewBadgeElementBase {
   override render() {
     return getHtml.bind(this)();
   }
-
-  static override get properties() {
-    return {};
-  }
 }
 
 declare global {

@@ -148,10 +148,6 @@ export class LocationBarElement extends CrLitElement implements
   private browserProxy_: BrowserProxy = BrowserProxyImpl.getInstance();
   private focusState_: boolean = false;
 
-  constructor() {
-    super();
-  }
-
   override connectedCallback() {
     super.connectedCallback();
     // Need to use focusin/focusout and not focus/blur here since we
@@ -160,10 +156,6 @@ export class LocationBarElement extends CrLitElement implements
     this.addEventListener('focusout', this.onFocusout_.bind(this));
     // We also need blur for document losing focus.
     this.addEventListener('blur', this.onBlur_.bind(this));
-  }
-
-  override disconnectedCallback() {
-    super.disconnectedCallback();
   }
 
   override willUpdate(changedProperties: PropertyValues<this>): void {
