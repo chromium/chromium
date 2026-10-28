@@ -455,47 +455,14 @@ void CredentialProviderService::AddCredentialsRefactored(
     MemoryCredentialStore* store,
     std::vector<password_manager::StoredCredential> forms,
     base::OnceClosure completion) {
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE,
-      {base::MayBlock(), base::ThreadPolicy::PREFER_BACKGROUND,
-       base::TaskPriority::BEST_EFFORT},
-      base::BindOnce(&GetFaviconsListAndFreshness),
-      base::BindOnce(
-          &CredentialProviderService::ContinueAddCredentialsRefactored,
-          weak_ptr_factory_.GetWeakPtr(), base::Unretained(store),
-          std::move(forms), std::move(completion)));
-}
-
-void CredentialProviderService::ContinueAddCredentialsRefactored(
-    MemoryCredentialStore* store,
-    std::vector<password_manager::StoredCredential> forms,
-    base::OnceClosure completion,
-    base::flat_map<std::string, base::Time> favicon_map) {
-  // Don't rate limit the favicon fetch when adding a single password.
-  const bool should_skip_max_verification = forms.size() == 1;
-  const bool fallback_to_google_server_allowed =
-      CanSendHistoryData(sync_service_);
   NSString* gaia = PrimaryAccountId();
-
-  int fetched_favicon_count = 0;
-  std::unordered_set<std::string> fetched_in_batch;
+  std::vector<GURL> favicon_urls;
 
   for (const auto& form : forms) {
     NSString* favicon_key;
     if (form.url.is_valid()) {
-      std::string key = GetFaviconFileKey(form.url);
-      favicon_key = base::SysUTF8ToNSString(key);
-
-      if (ShouldFetchFavicon(key, favicon_map) &&
-          !fetched_in_batch.contains(key)) {
-        ++fetched_favicon_count;
-        fetched_in_batch.insert(key);
-
-        // Fetch the favicon and save it to the storage.
-        FetchFaviconForURLToPath(favicon_loader_, form.url, favicon_key,
-                                 should_skip_max_verification,
-                                 fallback_to_google_server_allowed);
-      }
+      favicon_key = base::SysUTF8ToNSString(GetFaviconFileKey(form.url));
+      favicon_urls.push_back(form.url);
     }
 
     // Only store password with valid Android facet URI or valid URL.
@@ -510,8 +477,51 @@ void CredentialProviderService::ContinueAddCredentialsRefactored(
     }
   }
 
-  RecordNumberFaviconsFetched(fetched_favicon_count);
+  // Credential store mutations are applied synchronously, in the same order as
+  // removals, so that a later removal can't be undone by a delayed add. Only
+  // favicon work is deferred: the freshness scan runs on a background thread,
+  // and the resulting fetches write favicon files without touching the
+  // credential stores.
   std::move(completion).Run();
+
+  if (!favicon_urls.empty()) {
+    base::ThreadPool::PostTaskAndReplyWithResult(
+        FROM_HERE,
+        {base::MayBlock(), base::ThreadPolicy::PREFER_BACKGROUND,
+         base::TaskPriority::BEST_EFFORT},
+        base::BindOnce(&GetFaviconsListAndFreshness),
+        base::BindOnce(&CredentialProviderService::FetchStaleFavicons,
+                       weak_ptr_factory_.GetWeakPtr(),
+                       std::move(favicon_urls)));
+  }
+}
+
+void CredentialProviderService::FetchStaleFavicons(
+    std::vector<GURL> favicon_urls,
+    base::flat_map<std::string, base::Time> favicon_map) {
+  // Don't rate limit the favicon fetch when adding a single password.
+  const bool should_skip_max_verification = favicon_urls.size() == 1;
+  const bool fallback_to_google_server_allowed =
+      CanSendHistoryData(sync_service_);
+
+  int fetched_favicon_count = 0;
+  std::unordered_set<std::string> fetched_in_batch;
+
+  for (const GURL& url : favicon_urls) {
+    std::string key = GetFaviconFileKey(url);
+    if (ShouldFetchFavicon(key, favicon_map) &&
+        !fetched_in_batch.contains(key)) {
+      ++fetched_favicon_count;
+      fetched_in_batch.insert(key);
+
+      // Fetch the favicon and save it to the storage.
+      FetchFaviconForURLToPath(
+          favicon_loader_, url, base::SysUTF8ToNSString(key),
+          should_skip_max_verification, fallback_to_google_server_allowed);
+    }
+  }
+
+  RecordNumberFaviconsFetched(fetched_favicon_count);
 }
 
 void CredentialProviderService::AddCredentials(

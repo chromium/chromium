@@ -129,19 +129,18 @@ class CredentialProviderService
       MemoryCredentialStore* store,
       std::vector<password_manager::StoredCredential> forms);
 
-  // Add credentials from `forms`. This is the refactored version for better
-  // performance.
+  // Adds credentials from `forms` to `store` synchronously and executes
+  // `completion`. If `forms` contains valid URLs, asynchronously fetches stale
+  // favicons on a background thread.
   void AddCredentialsRefactored(
       MemoryCredentialStore* store,
       std::vector<password_manager::StoredCredential> forms,
       base::OnceClosure completion);
 
-  // Helper for asynchronous portion of `AddCredentialsRefactored`.
-  void ContinueAddCredentialsRefactored(
-      MemoryCredentialStore* store,
-      std::vector<password_manager::StoredCredential> forms,
-      base::OnceClosure completion,
-      base::flat_map<std::string, base::Time> favicon_map);
+  // Helper for asynchronous favicon fetching in `AddCredentialsRefactored`.
+  // Fetches stale favicons from `favicon_urls` using `favicon_map` timestamps.
+  void FetchStaleFavicons(std::vector<GURL> favicon_urls,
+                          base::flat_map<std::string, base::Time> favicon_map);
 
   // Add credentials from passkeys.
   void AddCredentials(
