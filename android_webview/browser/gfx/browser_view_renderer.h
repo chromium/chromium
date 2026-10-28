@@ -153,10 +153,12 @@ class BrowserViewRenderer : public content::SynchronousCompositorClient,
                             float min_page_scale_factor,
                             float max_page_scale_factor) override;
 
-  void DidOverscroll(content::SynchronousCompositor* compositor,
-                     const gfx::Vector2dF& accumulated_overscroll,
-                     const gfx::Vector2dF& latest_overscroll_delta,
-                     const gfx::Vector2dF& current_fling_velocity) override;
+  void DidOverscroll(
+      content::SynchronousCompositor* compositor,
+      const gfx::Vector2dF& accumulated_overscroll,
+      const gfx::Vector2dF& latest_overscroll_delta,
+      const gfx::Vector2dF& current_fling_velocity,
+      const cc::OverscrollBehavior& overscroll_behavior) override;
   ui::TouchHandleDrawable* CreateDrawable() override;
   void CopyOutput(
       content::SynchronousCompositor* compositor,
@@ -193,10 +195,12 @@ class BrowserViewRenderer : public content::SynchronousCompositorClient,
       uint32_t sequence_id) override;
 
   // Called with physical overscroll delta (pixels) and fling velocity
-  // (pixels/s) in the direction of finger movement.
-  using OverscrollCallback =
-      base::RepeatingCallback<void(const gfx::Vector2dF& overscroll_delta,
-                                   const gfx::Vector2dF& fling_velocity)>;
+  // (pixels/s) in the direction of finger movement, and the page's CSS
+  // overscroll-behavior.
+  using OverscrollCallback = base::RepeatingCallback<void(
+      const gfx::Vector2dF& overscroll_delta,
+      const gfx::Vector2dF& fling_velocity,
+      const cc::OverscrollBehavior& overscroll_behavior)>;
   void SetOverscrollCallback(OverscrollCallback callback);
 
   // Visible for testing.

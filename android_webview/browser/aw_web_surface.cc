@@ -7,6 +7,7 @@
 #include "android_webview/browser/gfx/browser_view_renderer.h"
 #include "base/android/jni_android.h"
 #include "base/functional/bind.h"
+#include "cc/input/overscroll_behavior.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
 
@@ -44,16 +45,24 @@ AwWebSurface::~AwWebSurface() = default;
 
 void AwWebSurface::DidOverscroll(
     const gfx::Vector2dF& physical_overscroll_delta,
-    const gfx::Vector2dF& physical_fling_velocity) {
+    const gfx::Vector2dF& physical_fling_velocity,
+    const cc::OverscrollBehavior& overscroll_behavior) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  // Respect CSS overscroll-behavior so pages can stop overscroll from chaining
+  // out of WebSurface (unlike WebView's local View overscroll path).
+  float dx = overscroll_behavior.PropagatesXScroll()
+                 ? physical_overscroll_delta.x()
+                 : 0.f;
+  float dy = overscroll_behavior.PropagatesYScroll()
+                 ? physical_overscroll_delta.y()
+                 : 0.f;
+  if (dx == 0.f && dy == 0.f) {
+    return;
+  }
   JNIEnv* env = AttachCurrentThread();
-  // TODO(b/567900824): Respect the page's overscroll-behavior, which
-  // SynchronousCompositorHost::DidOverscroll drops, so pages can stop the
-  // chaining.
-  Java_AwWebSurface_onOverScroll(
-      env, java_surface_, physical_overscroll_delta.x(),
-      physical_overscroll_delta.y(), physical_fling_velocity.x(),
-      physical_fling_velocity.y());
+  Java_AwWebSurface_onOverScroll(env, java_surface_, dx, dy,
+                                 dx != 0.f ? physical_fling_velocity.x() : 0.f,
+                                 dy != 0.f ? physical_fling_velocity.y() : 0.f);
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(AwWebSurface);

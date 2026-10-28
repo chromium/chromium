@@ -13,6 +13,10 @@
 #include "ui/gfx/geometry/size_f.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 
+namespace cc {
+struct OverscrollBehavior;
+}
+
 namespace ui {
 class TouchHandleDrawable;
 }
@@ -53,10 +57,12 @@ class SynchronousCompositorClient {
                                     float min_page_scale_factor,
                                     float max_page_scale_factor) = 0;
 
-  virtual void DidOverscroll(SynchronousCompositor* compositor,
-                             const gfx::Vector2dF& accumulated_overscroll,
-                             const gfx::Vector2dF& latest_overscroll_delta,
-                             const gfx::Vector2dF& current_fling_velocity) = 0;
+  virtual void DidOverscroll(
+      SynchronousCompositor* compositor,
+      const gfx::Vector2dF& accumulated_overscroll,
+      const gfx::Vector2dF& latest_overscroll_delta,
+      const gfx::Vector2dF& current_fling_velocity,
+      const cc::OverscrollBehavior& overscroll_behavior) = 0;
 
   virtual void PostInvalidate(SynchronousCompositor* compositor) = 0;
 

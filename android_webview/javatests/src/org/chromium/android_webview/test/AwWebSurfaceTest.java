@@ -239,6 +239,58 @@ public class AwWebSurfaceTest extends AwParameterizedTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
+    public void testOverscrollRespectsOverscrollBehavior() throws Throwable {
+        CallbackHelper overScrollHelper = new CallbackHelper();
+        float[] firstOverScrollDelta = new float[2];
+        AwWebSurface surface =
+                new AwWebSurface(
+                        new TestEventListener() {
+                            @Override
+                            public void onInvalidate() {
+                                super.onInvalidate();
+                                mContainerView.invalidate();
+                            }
+
+                            @Override
+                            public void onOverScroll(float dx, float dy, float vx, float vy) {
+                                if (overScrollHelper.getCallCount() > 0) return;
+                                firstOverScrollDelta[0] = dx;
+                                firstOverScrollDelta[1] = dy;
+                                overScrollHelper.notifyCalled();
+                            }
+                        });
+
+        // The page stops vertical overscroll from chaining, but not horizontal.
+        mActivityTestRule.loadHtmlSync(
+                mAwContents,
+                mContentsClient.getOnPageFinishedHelper(),
+                "<html style='overscroll-behavior-y: contain;'>"
+                        + "<body style='margin:0; height: 100px;'></body></html>");
+        mActivityTestRule.waitForVisualStateCallback(mAwContents);
+
+        ThreadUtils.runOnUiThreadBlocking(() -> surface.setAwContents(mAwContents));
+
+        // A purely vertical drag should not report overscroll at all.
+        long verticalDownTime = SystemClock.uptimeMillis();
+        sendTouchEvent(surface, verticalDownTime, MotionEvent.ACTION_DOWN, 50, 50);
+        sendTouchEvent(surface, verticalDownTime, MotionEvent.ACTION_MOVE, 50, 250);
+        sendTouchEvent(surface, verticalDownTime, MotionEvent.ACTION_UP, 50, 250);
+
+        // Drag diagonally in a single move, so both axes overscroll at once.
+        long downTime = SystemClock.uptimeMillis();
+        sendTouchEvent(surface, downTime, MotionEvent.ACTION_DOWN, 50, 50);
+        sendTouchEvent(surface, downTime, MotionEvent.ACTION_MOVE, 250, 250);
+        overScrollHelper.waitForCallback(0);
+        sendTouchEvent(surface, downTime, MotionEvent.ACTION_UP, 250, 250);
+
+        // Only the horizontal overscroll from the diagonal drag is reported.
+        assertTrue(firstOverScrollDelta[0] > 0);
+        assertEquals(0f, firstOverScrollDelta[1], 0f);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
     public void testOverscrollFromFlingReportsVelocity() throws Throwable {
         CallbackHelper flingOverScrollHelper = new CallbackHelper();
         float[] lastVelocity = new float[2];

@@ -35,7 +35,10 @@ public class AwWebSurface {
         /** Called when the surface needs to be redrawn. */
         void onInvalidate();
 
-        /** Notified of overscroll. The velocity is zero unless it comes from a fling. */
+        /**
+         * Notified of overscroll, except on axes where the page stops it from chaining with CSS
+         * overscroll-behavior. The velocity is zero unless it comes from a fling.
+         */
         void onOverScroll(float deltaX, float deltaY, float velocityX, float velocityY);
     }
 

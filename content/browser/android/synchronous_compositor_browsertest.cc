@@ -52,10 +52,12 @@ class TestSynchronousCompositorClient : public SynchronousCompositorClient {
                             float page_scale_factor,
                             float min_page_scale_factor,
                             float max_page_scale_factor) override {}
-  void DidOverscroll(SynchronousCompositor* compositor,
-                     const gfx::Vector2dF& accumulated_overscroll,
-                     const gfx::Vector2dF& latest_overscroll_delta,
-                     const gfx::Vector2dF& current_fling_velocity) override {}
+  void DidOverscroll(
+      SynchronousCompositor* compositor,
+      const gfx::Vector2dF& accumulated_overscroll,
+      const gfx::Vector2dF& latest_overscroll_delta,
+      const gfx::Vector2dF& current_fling_velocity,
+      const cc::OverscrollBehavior& overscroll_behavior) override {}
   void PostInvalidate(SynchronousCompositor* compositor) override {}
   void DidUpdateContent(SynchronousCompositor* compositor) override {}
   ui::TouchHandleDrawable* CreateDrawable() override { return nullptr; }

@@ -597,7 +597,8 @@ void SynchronousCompositorHost::DidOverscroll(
     const ui::DidOverscrollParams& over_scroll_params) {
   client_->DidOverscroll(this, over_scroll_params.accumulated_overscroll,
                          over_scroll_params.latest_overscroll_delta,
-                         over_scroll_params.current_fling_velocity);
+                         over_scroll_params.current_fling_velocity,
+                         over_scroll_params.overscroll_behavior);
 }
 
 void SynchronousCompositorHost::SetNeedsBeginFrames(bool needs_begin_frames) {

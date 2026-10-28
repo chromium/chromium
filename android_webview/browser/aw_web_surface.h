@@ -10,6 +10,10 @@
 #include "content/public/browser/web_contents_user_data.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 
+namespace cc {
+struct OverscrollBehavior;
+}
+
 namespace android_webview {
 
 // Native counterpart of Java AwWebSurface. Bridges overscroll between
@@ -26,9 +30,10 @@ class AwWebSurface : public content::WebContentsUserData<AwWebSurface> {
   ~AwWebSurface() override;
 
   // Forwards unconsumed physical scroll delta and fling velocity to the Java
-  // EventListener.
+  // EventListener on axes where CSS overscroll-behavior allows scroll chaining.
   void DidOverscroll(const gfx::Vector2dF& physical_overscroll_delta,
-                     const gfx::Vector2dF& physical_fling_velocity);
+                     const gfx::Vector2dF& physical_fling_velocity,
+                     const cc::OverscrollBehavior& overscroll_behavior);
 
  private:
   friend class content::WebContentsUserData<AwWebSurface>;

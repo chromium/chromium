@@ -855,7 +855,8 @@ void BrowserViewRenderer::DidOverscroll(
     content::SynchronousCompositor* compositor,
     const gfx::Vector2dF& accumulated_overscroll,
     const gfx::Vector2dF& latest_overscroll_delta,
-    const gfx::Vector2dF& current_fling_velocity) {
+    const gfx::Vector2dF& current_fling_velocity,
+    const cc::OverscrollBehavior& overscroll_behavior) {
   if (compositor != compositor_)
     return;
 
@@ -873,13 +874,11 @@ void BrowserViewRenderer::DidOverscroll(
 
   if (overscroll_callback_) {
     // The delta is in scroll direction, while the velocity already follows the
-    // finger. Only report fling velocity on axes that actually overscrolled.
-    gfx::Vector2dF fling_velocity(
-        latest_overscroll_delta.x() != 0.f ? current_fling_velocity.x() : 0.f,
-        latest_overscroll_delta.y() != 0.f ? current_fling_velocity.y() : 0.f);
+    // finger.
     overscroll_callback_.Run(
         -latest_overscroll_delta,
-        gfx::ScaleVector2d(fling_velocity, dip_scale_));
+        gfx::ScaleVector2d(current_fling_velocity, dip_scale_),
+        overscroll_behavior);
   }
   client_->DidOverscroll(rounded_overscroll_delta, fling_velocity_pixels,
                          begin_frame_source_->inside_begin_frame());
