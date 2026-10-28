@@ -227,7 +227,6 @@ source_set("impl") {
     "//chrome/browser/gpu",
     "//chrome/browser/hid",
     "//chrome/browser/history",
-    "//chrome/browser/history_embeddings",
     "//chrome/browser/indigo/resources:indigo_strings",
     "//chrome/browser/lifetime",
     "//chrome/browser/media",

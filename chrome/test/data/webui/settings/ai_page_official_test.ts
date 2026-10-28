@@ -6,7 +6,7 @@ import 'chrome://settings/lazy_load.js';
 import 'chrome://settings/settings.js';
 
 import type {OnDeviceAiBrowserProxy, OnDeviceAiEnabled} from 'chrome://settings/lazy_load.js';
-import {FeatureOptInState, OnDeviceAiBrowserProxyImpl, SettingsAiPageFeaturePrefName} from 'chrome://settings/lazy_load.js';
+import {OnDeviceAiBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
 import {PrefsBrowserProxy, PrefService} from 'chrome://settings/settings.js';
 import type {SettingsAiPageElement, SettingsToggleButtonElement} from 'chrome://settings/settings.js';
 import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -59,13 +59,7 @@ suite('settings ai page official', function() {
   }
 
   setup(function() {
-    const prefsBrowserProxy = new TestPrefsBrowserProxy([
-      {
-        key: SettingsAiPageFeaturePrefName.HISTORY_SEARCH,
-        type: chrome.settingsPrivate.PrefType.NUMBER,
-        value: FeatureOptInState.NOT_INITIALIZED,
-      },
-    ]);
+    const prefsBrowserProxy = new TestPrefsBrowserProxy([]);
     PrefsBrowserProxy.setInstance(prefsBrowserProxy);
     PrefService.resetInstanceForTesting();
 

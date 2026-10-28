@@ -27,7 +27,6 @@ export enum ChromeSuggestionsSettingsValue {
 
 // Exporting pref names so that they can be referenced by tests.
 export enum SettingsAiPageFeaturePrefName {
-  HISTORY_SEARCH = 'optimization_guide.history_search_setting_state',
   COMPOSE = 'optimization_guide.compose_setting_state',
   AUTOFILL_AI = 'autofill.autofill_ai.opt_in_status',
   CONTEXTUAL_CUEING = 'optimization_guide.contextual_cueing_setting_state',
@@ -35,8 +34,6 @@ export enum SettingsAiPageFeaturePrefName {
 
 // Exporting enterprise pref names so that they can be referenced by tests.
 export enum AiEnterpriseFeaturePrefName {
-  HISTORY_SEARCH =
-      'optimization_guide.model_execution.history_search_enterprise_policy_allowed',
   COMPOSE =
       'optimization_guide.model_execution.compose_enterprise_policy_allowed',
   AUTOFILL_AI =
@@ -45,12 +42,6 @@ export enum AiEnterpriseFeaturePrefName {
 }
 
 export enum AiPageActions {
-  HISTORY_SEARCH_ENABLED = 'Settings.AiPage.HistorySearch.Enabled',
-  HISTORY_SEARCH_DISABLED = 'Settings.AiPage.HistorySearch.Disabled',
-  HISTORY_SEARCH_FEATURE_LINK_CLICKED =
-      'Settings.AiPage.HistorySearch.FeatureLinkClicked',
-  HISTORY_SEARCH_LEARN_MORE_CLICKED =
-      'Settings.AiPage.HistorySearch.LearnMoreClicked',
   COMPOSE_LEARN_MORE_CLICKED = 'Settings.AiPage.Compose.LearnMoreClicked',
   COMPOSE_PROACTIVE_NUDGE_ENABLED =
       'Settings.AiPage.Compose.ProactiveNudgeEnabled',

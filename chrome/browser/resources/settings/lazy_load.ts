@@ -6,7 +6,6 @@
 import './ai_page/ai_mode_search_page.js';
 import './ai_page/ai_suggestions_page.js';
 import './ai_page/dictation_page.js';
-import './ai_page/history_search_page.js';
 import './ai_page/offer_writing_help_page.js';
 import './ai_page/skills_page.js';
 import './appearance_page/appearance_fonts_page.js';
@@ -163,7 +162,6 @@ export {AiEnterpriseFeaturePrefName, AiPageActions, FeatureOptInState, SettingsA
 export type {DictationBrowserProxy} from './ai_page/dictation_browser_proxy.js';
 export {DictationBrowserProxyImpl} from './ai_page/dictation_browser_proxy.js';
 export {SettingsDictationPageElement} from './ai_page/dictation_page.js';
-export {SettingsHistorySearchPageElement} from './ai_page/history_search_page.js';
 export {SettingsInlineCueMenuPageElement} from './ai_page/inline_cue_menu_page.js';
 export {COMPOSE_PROACTIVE_NUDGE_DISABLED_SITES_PREF, COMPOSE_PROACTIVE_NUDGE_PREF, SettingsOfferWritingHelpPageElement} from './ai_page/offer_writing_help_page.js';
 // <if expr="_google_chrome">

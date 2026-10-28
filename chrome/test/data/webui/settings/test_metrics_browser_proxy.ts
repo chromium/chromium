@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {SuggestionsFromGeminiAction, SuggestionsFromGeminiEntryPoint, YourSavedInfoDataCategory, YourSavedInfoDataChip, YourSavedInfoRelatedService} from 'chrome://settings/settings.js';
-import type {AiPageComposeInteractions, AiPageHistorySearchInteractions, AiPageInteractions, AiPageSuggestionsInteractions, AutofillSettingsReferrer, DeleteBrowsingDataAction, MetricsBrowserProxy, PrivacyElementInteractions, PrivacyGuideInteractions, PrivacyGuideSettingsStates, PrivacyGuideStepsEligibleAndReached, SafeBrowsingInteractions, SafetyCheckUnusedSitePermissionsModuleInteractions, SafetyHubCardState, SafetyHubEntryPoint, SafetyHubModuleType, SafetyHubSurfaces, SettingsSearchExitReasonDesktop} from 'chrome://settings/settings.js';
+import type {AiPageComposeInteractions, AiPageInteractions, AiPageSuggestionsInteractions, AutofillSettingsReferrer, DeleteBrowsingDataAction, MetricsBrowserProxy, PrivacyElementInteractions, PrivacyGuideInteractions, PrivacyGuideSettingsStates, PrivacyGuideStepsEligibleAndReached, SafeBrowsingInteractions, SafetyCheckUnusedSitePermissionsModuleInteractions, SafetyHubCardState, SafetyHubEntryPoint, SafetyHubModuleType, SafetyHubSurfaces, SettingsSearchExitReasonDesktop} from 'chrome://settings/settings.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 export class TestMetricsBrowserProxy extends TestBrowserProxy implements
@@ -35,7 +35,6 @@ export class TestMetricsBrowserProxy extends TestBrowserProxy implements
       'recordFeatureNotificationsChange',
       // </if>
       'recordAiPageInteractions',
-      'recordAiPageHistorySearchInteractions',
       'recordAiPageComposeInteractions',
       'recordAiPageSuggestionsInteractions',
       'recordSettingsSearchExitReason',
@@ -180,11 +179,6 @@ export class TestMetricsBrowserProxy extends TestBrowserProxy implements
 
   recordAiPageInteractions(interaction: AiPageInteractions) {
     this.methodCalled('recordAiPageInteractions', interaction);
-  }
-
-  recordAiPageHistorySearchInteractions(
-      interaction: AiPageHistorySearchInteractions) {
-    this.methodCalled('recordAiPageHistorySearchInteractions', interaction);
   }
 
   recordAiPageComposeInteractions(interaction: AiPageComposeInteractions) {

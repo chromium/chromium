@@ -182,9 +182,6 @@ function createRoutes(): SettingsRoutes {
     if (loadTimeData.getBoolean('enableAiModeSearchSetting')) {
       r.AI_MODE_SEARCH = r.AI.createChild('/ai/aiModeSearch');
     }
-    if (loadTimeData.getBoolean('showHistorySearchControl')) {
-      r.HISTORY_SEARCH = r.AI.createChild('/ai/historySearch');
-    }
     if (loadTimeData.getBoolean('showComposeControl')) {
       r.OFFER_WRITING_HELP = r.AI.createChild('/ai/helpMeWrite');
     }

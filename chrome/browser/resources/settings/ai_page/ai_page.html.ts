@@ -18,14 +18,6 @@ export function getHtml(this: SettingsAiPageElement) {
         sub-label="$i18n{passwordChangeSettingSubLabel}"
         @click="${this.onPasswordChangeRowClick_}" external>
     </cr-link-row>
-    <cr-link-row id="historySearchRowV2" class="hr"
-        ?hidden="${!this.showHistorySearchControl_}"
-        start-icon="settings20:search-spark"
-        label="$i18n{historySearchSettingLabel}"
-        sub-label="${this.getHistorySearchSublabel_()}"
-        role-description="$i18n{subpageArrowRoleDescription}"
-        @click="${this.onHistorySearchRowClick_}">
-    </cr-link-row>
     <cr-link-row id="composeRowV2" class="hr"
         ?hidden="${!this.showComposeControl_}"
         start-icon="settings20:pen-spark"

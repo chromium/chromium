@@ -35,7 +35,6 @@ suite('AiPageIndex', function() {
       showAiPage: true,
       showAiPageAiFeatureSection: true,
       showComposeControl: true,
-      showHistorySearchControl: true,
       showGlicSettings: true,
       showGeicSettings: true,
       enableAiModeSearchSetting: true,
@@ -63,10 +62,6 @@ suite('AiPageIndex', function() {
     Router.getInstance().navigateTo(routes.AI);
     await microtasksFinished();
     assertActiveViews(defaultViews);
-
-    Router.getInstance().navigateTo(routes.HISTORY_SEARCH);
-    await microtasksFinished();
-    assertActiveViews(['historySearch']);
 
     Router.getInstance().navigateTo(routes.OFFER_WRITING_HELP);
     await microtasksFinished();
@@ -161,7 +156,6 @@ suite('AiPageIndex', function() {
   // Test that the child views are properly annotated.
   test('DataParentViewId', function() {
     const childViewsId = [
-      'historySearch',
       'compose',
       'aiSuggestions',
       'inlineCueMenu',
@@ -195,7 +189,7 @@ suite('AiPageIndex', function() {
     }
 
     // Case1: Results only in the "AI Innovations" card.
-    let result = await index.searchContents('history search');
+    let result = await index.searchContents('help me write');
     assertFalse(result.canceled);
     assertGT(result.matchCount, 0);
     assertFalse(result.wasClearSearch);

@@ -350,7 +350,7 @@ export enum CardBenefitsUserAction {
  */
 // LINT.IfChange(AiPageInteractions)
 export enum AiPageInteractions {
-  HISTORY_SEARCH_CLICK = 0,
+  // HISTORY_SEARCH_CLICK = 0, // DEPRECATED
   // COMPARE_CLICK = 1, // DEPRECATED
   COMPOSE_CLICK = 2,
   // TAB_ORGANIZATION_CLICK = 3, // DEPRECATED
@@ -365,25 +365,6 @@ export enum AiPageInteractions {
   COUNT = 12,
 }
 // LINT.ThenChange(/tools/metrics/histograms/metadata/settings/enums.xml:SettingsAiPageInteractions)
-
-/**
- * Contains all recorded interactions in the AI History Search settings page.
- *
- * These values are persisted to logs. Entries should not be renumbered and
- * numeric values should never be reused.
- *
- * Must be kept in sync with the SettingsAiPageHistorySearchInteractions enum in
- * histograms/metadata/settings/enums.xml
- */
-// LINT.IfChange(AiPageHistorySearchInteractions)
-export enum AiPageHistorySearchInteractions {
-  HISTORY_SEARCH_ENABLED = 0,
-  HISTORY_SEARCH_DISABLED = 1,
-  FEATURE_LINK_CLICKED = 2,
-  LEARN_MORE_LINK_CLICKED = 3,
-  COUNT = 4,
-}
-// LINT.ThenChange(/tools/metrics/histograms/metadata/settings/enums.xml:SettingsAiPageHistorySearchInteractions)
 
 /**
  * Contains all recorded interactions in the AI Compose settings page.
@@ -736,13 +717,6 @@ export interface MetricsBrowserProxy {
 
   /**
    * Helper function that calls recordHistogram for the
-   * Settings.AiPage.HistorySearch.Interactions histogram
-   */
-  recordAiPageHistorySearchInteractions(
-      interaction: AiPageHistorySearchInteractions): void;
-
-  /**
-   * Helper function that calls recordHistogram for the
    * Settings.AiPage.Compose.Interactions histogram
    */
   recordAiPageComposeInteractions(interaction: AiPageComposeInteractions): void;
@@ -984,15 +958,6 @@ export class MetricsBrowserProxyImpl implements MetricsBrowserProxy {
       'Settings.AiPage.Interactions',
       interaction,
       AiPageInteractions.COUNT,
-    ]);
-  }
-
-  recordAiPageHistorySearchInteractions(
-      interaction: AiPageHistorySearchInteractions): void {
-    chrome.send('metricsHandler:recordInHistogram', [
-      'Settings.AiPage.HistorySearch.Interactions',
-      interaction,
-      AiPageHistorySearchInteractions.COUNT,
     ]);
   }
 

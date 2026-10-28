@@ -62,7 +62,6 @@ export class SettingsAiPageIndexElement extends SettingsAiPageIndexElementBase
       showGeicSettings_: {type: Boolean},
       showAiPageAiFeatureSection_: {type: Boolean},
       showComposeControl_: {type: Boolean},
-      showHistorySearchControl_: {type: Boolean},
       enableAiModeSearchSetting_: {type: Boolean},
       actorLoginFederatedLoginSupportEnabled_: {type: Boolean},
       showAiSuggestionsControl_: {type: Boolean},
@@ -81,8 +80,6 @@ export class SettingsAiPageIndexElement extends SettingsAiPageIndexElementBase
       loadTimeData.getBoolean('showAiPageAiFeatureSection');
   protected accessor showComposeControl_: boolean =
       loadTimeData.getBoolean('showComposeControl');
-  protected accessor showHistorySearchControl_: boolean =
-      loadTimeData.getBoolean('showHistorySearchControl');
   protected accessor enableAiModeSearchSetting_: boolean =
       loadTimeData.getBoolean('enableAiModeSearchSetting');
   protected accessor actorLoginFederatedLoginSupportEnabled_: boolean =
@@ -138,11 +135,6 @@ export class SettingsAiPageIndexElement extends SettingsAiPageIndexElementBase
           // Switch back to the default view in case they are part of search
           // results.
           this.showDefaultViews_();
-          break;
-        case routes.HISTORY_SEARCH:
-          assert(this.showHistorySearchControl_);
-          this.$.viewManager.switchView(
-              'historySearch', 'no-animation', 'no-animation');
           break;
         case routes.OFFER_WRITING_HELP:
           assert(this.showComposeControl_);

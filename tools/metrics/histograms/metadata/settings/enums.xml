@@ -389,21 +389,10 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/resources/settings/metrics_browser_proxy.ts:AiPageComposeInteractions) -->
 
-<!-- LINT.IfChange(SettingsAiPageHistorySearchInteractions) -->
-
-<enum name="SettingsAiPageHistorySearchInteractions">
-  <int value="0" label="History Search enabled"/>
-  <int value="1" label="History Search disabled"/>
-  <int value="2" label="Feature link clicked"/>
-  <int value="3" label="Learn more link clicked"/>
-</enum>
-
-<!-- LINT.ThenChange(//chrome/browser/resources/settings/metrics_browser_proxy.ts:AiPageHistorySearchInteractions) -->
-
 <!-- LINT.IfChange(SettingsAiPageInteractions) -->
 
 <enum name="SettingsAiPageInteractions">
-  <int value="0" label="History Search row click"/>
+  <int value="0" label="History Search row click (Deprecated 10/2026)"/>
   <int value="1" label="Compare row click"/>
   <int value="2" label="Compose row click"/>
   <int value="3" label="Tab organization row click (Deprecated 03/2026)"/>

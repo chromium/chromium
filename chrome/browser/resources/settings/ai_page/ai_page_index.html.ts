@@ -50,13 +50,6 @@ export function getHtml(this: SettingsAiPageIndexElement) {
     </settings-ai-page>
   ` : ''}
 
-  ${this.showHistorySearchControl_ ? html`
-    <settings-history-search-page slot="view" id="historySearch"
-        data-parent-view-id="parent"
-        route-path="${this.routes_.HISTORY_SEARCH.path}">
-    </settings-history-search-page>
-  ` : ''}
-
   ${this.showComposeControl_ ? html`
     <settings-offer-writing-help-page slot="view" id="compose"
         data-parent-view-id="parent"
