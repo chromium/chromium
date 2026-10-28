@@ -83,4 +83,36 @@ TEST(EncoderBitrateFilterTest, InitialBitrateIsGreaterThanZero) {
   EXPECT_GT(filter.GetTargetBitrateKbps(), 0);
 }
 
+TEST(EncoderBitrateFilterTest, EnforcesMinimumBitrateForFrameSize) {
+  // 2500 kbps per megapixel at 1280x720 (0.9216 MP) = 2304 kbps minimum.
+  EncoderBitrateFilter filter(2500);
+  filter.SetFrameSize(1280, 720);
+  EXPECT_EQ(2304, filter.GetTargetBitrateKbps());
+
+  for (int i = 0; i < 100; i++) {
+    filter.SetBandwidthEstimateKbps(500);
+    EXPECT_EQ(2304, filter.GetTargetBitrateKbps());
+  }
+
+  // Increasing the frame size to 1920x1080 (2.0736 MP) raises the minimum
+  // bitrate floor to 5184 kbps.
+  filter.SetFrameSize(1920, 1080);
+  EXPECT_EQ(5184, filter.GetTargetBitrateKbps());
+  for (int i = 0; i < 100; i++) {
+    filter.SetBandwidthEstimateKbps(500);
+    EXPECT_EQ(5184, filter.GetTargetBitrateKbps());
+  }
+
+  // Shrinking the frame size back to 1280x720 lowers the minimum bitrate floor
+  // to 2304 kbps; as low bandwidth estimates are recorded, the target bitrate
+  // steps down once the weighted average changes by more than 33%, while never
+  // dropping below the 2304 kbps floor.
+  filter.SetFrameSize(1280, 720);
+  for (int i = 0; i < 100; i++) {
+    filter.SetBandwidthEstimateKbps(500);
+  }
+  EXPECT_LT(filter.GetTargetBitrateKbps(), 5184);
+  EXPECT_GE(filter.GetTargetBitrateKbps(), 2304);
+}
+
 }  // namespace remoting

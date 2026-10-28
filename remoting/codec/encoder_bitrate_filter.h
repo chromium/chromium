@@ -21,11 +21,13 @@ class EncoderBitrateFilter final {
   int GetTargetBitrateKbps() const;
 
  private:
+  static constexpr int kDefaultMinimumBitrateKbps = 1000;
+
   const int minimum_bitrate_kbps_per_megapixel_;
   // This is the minimum number to avoid returning unreasonable value from
   // GetTargetBitrateKbps(). It roughly equals to the minimum bitrate of a 780 x
   // 512 screen for VP8, or 1024 x 558 screen for H264.
-  int minimum_bitrate_kbps_ = 1000;
+  int minimum_bitrate_kbps_ = kDefaultMinimumBitrateKbps;
   WeightedSamples bandwidth_kbps_;
   int bitrate_kbps_ = minimum_bitrate_kbps_;
 };
