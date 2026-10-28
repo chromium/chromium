@@ -33,9 +33,10 @@ ActivityStorage::ActivityStorage(PrefService* pref_service,
   CHECK(pref_service_, base::NotFatalUntil::M160);
   const PrefService::PrefInitializationStatus pref_service_status =
       pref_service_->GetInitializationStatus();
-  CHECK(pref_service_status != PrefService::INITIALIZATION_STATUS_WAITING &&
-            pref_service_status != PrefService::INITIALIZATION_STATUS_ERROR,
-        base::NotFatalUntil::M160);
+  // TODO(crbug.com/576535698): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(pref_service_status != PrefService::INITIALIZATION_STATUS_WAITING &&
+         pref_service_status != PrefService::INITIALIZATION_STATUS_ERROR);
 }
 
 ActivityStorage::~ActivityStorage() = default;
