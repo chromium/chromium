@@ -26,7 +26,7 @@
 #include "chromeos/ash/components/disks/disk_mount_manager.h"
 #include "chromeos/ash/components/disks/mock_disk_mount_manager.h"
 #endif
-#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/extensions/api/image_writer_private/image_writer_utility_client.h"
 #endif
 
@@ -95,7 +95,7 @@ struct SimulateProgressInfo {
   bool will_succeed;
 };
 
-#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
 // Test fake for `ImageWriterUtilityClient`, which wraps the out-of-process
 // `chrome::mojom::RemovableStorageWriter` utility service used on Windows,
 // macOS, and Linux (`enable_removable_storage_writer`). ChromeOS uses the
@@ -155,7 +155,7 @@ class FakeImageWriterClient : public ImageWriterUtilityClient {
   std::optional<SimulateProgressInfo> simulate_on_write_;
   std::optional<SimulateProgressInfo> simulate_on_verify_;
 };
-#endif  // !BUILDFLAG(IS_ANDROID)
+#endif  // !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
 
 class ImageWriterTestUtils {
  public:
