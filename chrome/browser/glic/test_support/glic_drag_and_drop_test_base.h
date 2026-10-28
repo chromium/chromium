@@ -49,6 +49,9 @@ class GlicDragAndDropTestBase : public GlicApiBrowserTest {
  private:
   bool is_no_webview_ = false;
   base::test::ScopedFeatureList feature_list_;
+#if BUILDFLAG(IS_WIN)
+  bool old_ignore_native_platform_events_ = false;
+#endif
 };
 
 }  // namespace glic

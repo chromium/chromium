@@ -20,6 +20,10 @@
 #include "third_party/blink/public/common/input/web_mouse_event.h"
 #endif
 
+#if BUILDFLAG(IS_WIN)
+#include "ui/events/platform/platform_event_source.h"
+#endif
+
 namespace glic {
 
 GlicDragAndDropTestBase::GlicDragAndDropTestBase(GlicTestJsPath js_test_file,
@@ -50,6 +54,12 @@ void GlicDragAndDropTestBase::SetUpCommandLine(
 }
 
 void GlicDragAndDropTestBase::SetUpOnMainThread() {
+#if BUILDFLAG(IS_WIN)
+  old_ignore_native_platform_events_ =
+      ui::PlatformEventSource::ShouldIgnoreNativePlatformEvents();
+  ui::PlatformEventSource::SetIgnoreNativePlatformEvents(true);
+#endif
+
   host_resolver()->AddRule("a.com", "127.0.0.1");
   host_resolver()->AddRule("b.com", "127.0.0.1");
 
@@ -63,6 +73,10 @@ void GlicDragAndDropTestBase::SetUpOnMainThread() {
 }
 
 void GlicDragAndDropTestBase::TearDownOnMainThread() {
+#if BUILDFLAG(IS_WIN)
+  ui::PlatformEventSource::SetIgnoreNativePlatformEvents(
+      old_ignore_native_platform_events_);
+#endif
   GlicApiBrowserTest::TearDownOnMainThread();
 }
 
