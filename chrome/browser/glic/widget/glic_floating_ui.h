@@ -88,6 +88,7 @@ class GlicFloatingUi : public GlicUiEmbedder,
 
   // Host::Observer:
   void ActiveWebContentsChanged(content::WebContents* new_contents) override;
+  void NativeLoadingStateChanged(bool is_showing) override;
 
   // views::WidgetObserver implementation, monitoring the glic window widget.
   void OnWidgetActivationChanged(views::Widget* widget, bool active) override;

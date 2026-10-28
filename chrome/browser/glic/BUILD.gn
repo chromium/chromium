@@ -1150,6 +1150,7 @@ source_set("browser_tests") {
       "suggestions/contextual_cueing_service_browsertest.cc",
       "suggestions/glic_cue_target_browsertest.cc",
       "suggestions/zero_state_suggestions_browsertest.cc",
+      "widget/glic_loading_placeholder_browsertest.cc",
       "widget/glic_side_panel_coordinator_browsertest.cc",
     ]
 

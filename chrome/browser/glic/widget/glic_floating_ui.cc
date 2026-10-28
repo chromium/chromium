@@ -153,6 +153,12 @@ void GlicFloatingUi::CreateAndSetupWidget(gfx::Rect initial_bounds) {
       },
       weak_ptr_factory_.GetWeakPtr()));
 
+  glic_view->ConfigureLoadingPlaceholder(
+      GlicLoadingPlaceholderView::Mode::kFloating,
+      base::BindRepeating(&GlicFloatingUi::ClosePanel,
+                          weak_ptr_factory_.GetWeakPtr()));
+  glic_view->SetShowingLoadingPlaceholder(
+      delegate_->host().IsShowingNativeLoading());
   glic_view->SetWebContents(delegate_->host().webui_contents());
   glic_delegate_ =
       GlicWidget::CreateWidgetDelegate(std::move(glic_view), user_resizable_);
@@ -191,8 +197,7 @@ void GlicFloatingUi::FocusIfOpen() {
   if (!IsShowing() || HasFocus()) {
     return;
   }
-  GetGlicWidget()->Activate();
-  GetGlicView()->GetWebContents()->Focus();
+  Focus();
 }
 
 bool GlicFloatingUi::HasFocus() {
@@ -258,6 +263,12 @@ void GlicFloatingUi::ActiveWebContentsChanged(
   }
   if (new_contents) {
     scoped_modal_dialog_delegate_.AddWebContents(new_contents);
+  }
+}
+
+void GlicFloatingUi::NativeLoadingStateChanged(bool is_showing) {
+  if (auto* glic_view = GetGlicView()) {
+    glic_view->SetShowingLoadingPlaceholder(is_showing);
   }
 }
 
@@ -388,6 +399,8 @@ void GlicFloatingUi::Close(const CloseOptions& options) {
 
 void GlicFloatingUi::OnReload() {
   if (auto* glic_view = GetGlicView()) {
+    glic_view->SetShowingLoadingPlaceholder(
+        delegate_->host().IsShowingNativeLoading());
     glic_view->SetWebContents(delegate_->host().webui_contents());
   }
   delegate_->host().AttachModalDialogManagerDelegate(
@@ -409,8 +422,11 @@ void GlicFloatingUi::Focus() {
     return;
   }
   GetGlicWidget()->Activate();
-  if (auto* web_contents = delegate_->host().webui_contents()) {
+  if (auto* web_contents = delegate_->host().webui_contents();
+      web_contents && !delegate_->host().IsShowingNativeLoading()) {
     web_contents->Focus();
+  } else if (auto* glic_view = GetGlicView()) {
+    glic_view->RequestFocus();
   }
 }
 

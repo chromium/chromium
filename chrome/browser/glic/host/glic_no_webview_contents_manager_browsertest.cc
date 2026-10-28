@@ -1727,11 +1727,12 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_OK(RunUntilNull([&]() { return manager->overlay_contents(); }));
 }
 
-#if !BUILDFLAG(IS_ANDROID)
 class GlicLegacyWebviewNativeLoadingPlaceholderBrowserTest
     : public GlicBrowserTest {
  public:
   GlicLegacyWebviewNativeLoadingPlaceholderBrowserTest() {
+    // Explicitly disable `kGlicNoWebview` because the fieldtrial testing config
+    // enables it on bots.
     feature_list_.InitWithFeatures({features::kGlicNativeLoadingPlaceholder},
                                    {features::kGlicNoWebview});
   }
@@ -1760,7 +1761,7 @@ class GlicLegacyWebviewNativeLoadingTimeoutBrowserTest
     : public GlicBrowserTest {
  public:
   GlicLegacyWebviewNativeLoadingTimeoutBrowserTest() {
-    SetGlicPagePath("/title1.html");
+    SetGlicPagePath("/glic/test_data/page.html");
     feature_list_.InitWithFeaturesAndParameters(
         {{features::kGlicNativeLoadingPlaceholder, {}},
          {features::kGlicWebClientLoadTimes,
@@ -1779,9 +1780,10 @@ IN_PROC_BROWSER_TEST_F(
     ClientLoadTimeoutTransitionsToErrorAndHidesNativePlaceholder) {
   ASSERT_OK_AND_ASSIGN(GlicInstanceImpl * instance, OpenGlicForActiveTab());
 
-  // Because /title1.html never initializes a Glic web client, `noLoader` must
-  // still advance through `kFinishLoading` and fire `TIMEOUT_LOADING_CLIENT`,
-  // dismissing the native loading placeholder to reveal `#errorPanel`.
+  // Because /glic/test_data/page.html never initializes a Glic web client,
+  // `noLoader` must still advance through `kFinishLoading` and fire
+  // `TIMEOUT_LOADING_CLIENT`, dismissing the native loading placeholder to
+  // reveal `#errorPanel`.
   ASSERT_OK(WaitForWebUiState(mojom::WebUiState::kError));
   EXPECT_FALSE(instance->host().IsShowingNativeLoading());
 
@@ -1931,7 +1933,6 @@ IN_PROC_BROWSER_TEST_F(GlicLegacyWebviewWarmedNativeLoadingBrowserTest,
   ASSERT_OK(WaitForGlicClient(instance));
   EXPECT_FALSE(instance->host().IsShowingNativeLoading());
 }
-#endif
 
 class GlicNoWebviewNativeLoadingPlaceholderBrowserTest
     : public GlicNoWebviewContentsManagerBrowserTest {

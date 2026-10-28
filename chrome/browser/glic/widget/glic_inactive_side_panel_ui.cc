@@ -58,7 +58,10 @@ GlicInactiveSidePanelUi::GlicInactiveSidePanelUi(
   // hierarchy. This ensures that the webcontents still has a compositor
   // attached, which allows us to ensure that the captured screenshot comes from
   // the instant it was requested, instead of at some point in the future.
-  inactive_view_controller_.CaptureScreenshot(delegate.host().webui_contents());
+  inactive_view_controller_.CaptureScreenshot(
+      delegate.host().IsShowingNativeLoading()
+          ? nullptr
+          : delegate.host().webui_contents());
   scoped_view_observation_.Observe(view.get());
   glic_side_panel_coordinator->SetContentsView(std::move(view));
 }

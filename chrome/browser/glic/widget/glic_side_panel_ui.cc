@@ -95,6 +95,12 @@ std::unique_ptr<views::View> GlicSidePanelUi::CreateView(Profile* profile) {
       },
       weak_ptr_factory_.GetWeakPtr()));
 
+  glic_view->ConfigureLoadingPlaceholder(
+      GlicLoadingPlaceholderView::Mode::kSidePanel,
+      base::BindRepeating(&GlicSidePanelUi::ClosePanel,
+                          weak_ptr_factory_.GetWeakPtr()));
+  glic_view->SetShowingLoadingPlaceholder(
+      delegate_->host().IsShowingNativeLoading());
   glic_view->SetWebContents(delegate_->host().webui_contents());
   glic_view->UpdateBackgroundColor();
   glic_view_ = glic_view->GetWeakPtr();
@@ -154,8 +160,11 @@ void GlicSidePanelUi::Focus() {
 }
 
 void GlicSidePanelUi::SetFocusDelayed() {
-  if (auto* web_contents = delegate_->host().webui_contents()) {
+  if (auto* web_contents = delegate_->host().webui_contents();
+      web_contents && !delegate_->host().IsShowingNativeLoading()) {
     web_contents->Focus();
+  } else if (glic_view_) {
+    glic_view_->RequestFocus();
   }
 }
 
@@ -222,6 +231,8 @@ void GlicSidePanelUi::ClosePanel() {
 
 void GlicSidePanelUi::OnReload() {
   if (glic_view_) {
+    glic_view_->SetShowingLoadingPlaceholder(
+        delegate_->host().IsShowingNativeLoading());
     glic_view_->SetWebContents(delegate_->host().webui_contents());
   }
   delegate_->host().AttachModalDialogManagerDelegate(
@@ -238,6 +249,12 @@ void GlicSidePanelUi::ActiveWebContentsChanged(
   }
 }
 
+void GlicSidePanelUi::NativeLoadingStateChanged(bool is_showing) {
+  if (glic_view_) {
+    glic_view_->SetShowingLoadingPlaceholder(is_showing);
+  }
+}
+
 std::unique_ptr<GlicUiEmbedder> GlicSidePanelUi::CreateInactiveEmbedder()
     const {
   return GlicInactiveSidePanelUi::CreateForVisibleTab(tab_, delegate_.get());
@@ -250,10 +267,7 @@ void GlicSidePanelUi::FocusIfOpen() {
 }
 
 bool GlicSidePanelUi::HasFocus() {
-  if (!glic_view_) {
-    return false;
-  }
-  return glic_view_->HasFocus();
+  return glic_view_ && glic_view_->HasFocusInHierarchy();
 }
 
 bool GlicSidePanelUi::ActivateBrowser() {

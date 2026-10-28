@@ -76,7 +76,6 @@
 #include "components/user_education/common/feature_promo/feature_promo_controller.h"
 #include "components/user_education/common/user_education_features.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/visibility.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
@@ -884,11 +883,9 @@ void GlicInstanceImpl::FocusIfActive() {
   if (!IsActive()) {
     return;
   }
-  content::WebContents* web_contents = host_.webui_contents();
-  if (!web_contents) {
-    return;
+  if (auto* embedder = GetActiveEmbedder()) {
+    embedder->Focus();
   }
-  web_contents->Focus();
 }
 
 void GlicInstanceImpl::NotifyActorTaskListRowClicked(int32_t task_id) {
@@ -2036,12 +2033,8 @@ void GlicInstanceImpl::OnTaskIdChanged(std::optional<int> task_id) {
 }
 
 bool GlicInstanceImpl::HasFocus() {
-  if (auto* web_contents = host().webui_contents()) {
-    content::RenderWidgetHostView* rwhv =
-        web_contents->GetRenderWidgetHostView();
-    return rwhv->HasFocus();
-  }
-  return false;
+  auto* embedder = GetActiveEmbedder();
+  return embedder && embedder->HasFocus();
 }
 
 tabs::TabInterface* GlicInstanceImpl::GetActiveEmbedderTabForTesting() {
