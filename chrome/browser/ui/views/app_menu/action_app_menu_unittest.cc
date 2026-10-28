@@ -1960,6 +1960,11 @@ class ActionAppMenuWithSearchTest : public ActionAppMenuTest {
     return nullptr;
   }
 
+  views::Button* GetClearButton(AppMenuSearchBarView* search_bar) {
+    return views::Button::AsButton(search_bar->GetViewByElementId(
+        AppMenuSearchBarView::kClearButtonElementId));
+  }
+
  private:
   base::test::ScopedFeatureList feature_list_;
 };
@@ -2067,9 +2072,9 @@ TEST_F(ActionAppMenuWithSearchTest, SearchBarEnabledWithFeatureFlag) {
   int icon_padding = 12;
   int icon_text_spacing =
       provider->GetDistanceMetric(DISTANCE_RELATED_CONTROL_HORIZONTAL_SMALL);
-  int left_inset = icon_padding + icon_size + icon_text_spacing;
+  int horizontal_inset = icon_padding + icon_size + icon_text_spacing;
   EXPECT_EQ(search_field->GetBorder()->GetInsets(),
-            gfx::Insets::TLBR(6, left_inset, 6, 12));
+            gfx::Insets::VH(6, horizontal_inset));
   EXPECT_EQ(search_field->GetBackgroundColor(), SK_ColorTRANSPARENT);
 
   // Verify inkdrop is enabled on the search field.
@@ -2419,6 +2424,43 @@ TEST_F(ActionAppMenuWithSearchTest, BackButtonRestoresNormalMenu) {
   EXPECT_EQ(block_view->GetBoundsInScreen().y() -
                 separator->GetBoundsInScreen().bottom(),
             16);
+
+  EXPECT_CALL(on_menu_closed, Run()).Times(1);
+  menu.CloseMenu();
+}
+
+TEST_F(ActionAppMenuWithSearchTest, ClearButtonKeepsResults) {
+  base::MockCallback<base::RepeatingClosure> on_menu_closed;
+  ActionAppMenu menu(&mock_window_interface_, on_menu_closed.Get());
+
+  menu.RunMenu(button_->button_controller(), views::MenuRunner::NO_FLAGS);
+  ASSERT_TRUE(menu.IsShowing());
+
+  views::MenuItemView* root = menu.root_menu_item_for_testing();
+  AppMenuSearchBarView* search_bar = menu.search_bar_for_testing();
+  ASSERT_NE(search_bar, nullptr);
+  views::Button* clear_button = GetClearButton(search_bar);
+  ASSERT_NE(clear_button, nullptr);
+  EXPECT_FALSE(clear_button->GetVisible());
+
+  search_bar->SetText(u"Downloads");
+  ASSERT_NE(root->GetMenuItemByID(kActionShowDownloadsPage), nullptr);
+  EXPECT_TRUE(clear_button->GetVisible());
+  EXPECT_TRUE(GetBackButton(search_bar)->GetVisible());
+
+  views::test::ButtonTestApi(clear_button).NotifyDefaultMouseClick();
+
+  // The query is gone, but the results stay until back is pressed.
+  EXPECT_TRUE(search_bar->GetText().empty());
+  EXPECT_FALSE(clear_button->GetVisible());
+  EXPECT_NE(root->GetMenuItemByID(kActionShowDownloadsPage), nullptr);
+  EXPECT_EQ(root->GetMenuItemByID(kActionPrint), nullptr);
+  EXPECT_TRUE(GetBackButton(search_bar)->GetVisible());
+
+  views::test::ButtonTestApi(GetBackButton(search_bar))
+      .NotifyDefaultMouseClick();
+  EXPECT_NE(root->GetMenuItemByID(kActionPrint), nullptr);
+  EXPECT_FALSE(GetBackButton(search_bar)->GetVisible());
 
   EXPECT_CALL(on_menu_closed, Run()).Times(1);
   menu.CloseMenu();

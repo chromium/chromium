@@ -25,6 +25,7 @@ class AppMenuSearchBarView : public views::BoxLayoutView {
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kSearchFieldElementId);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kSearchIconElementId);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kBackButtonElementId);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kClearButtonElementId);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kSeparatorElementId);
 
   AppMenuSearchBarView();

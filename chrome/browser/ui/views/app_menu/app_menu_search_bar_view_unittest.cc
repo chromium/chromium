@@ -7,15 +7,20 @@
 #include <memory>
 #include <utility>
 
+#include "base/i18n/language_tag.h"
+#include "base/i18n/rtl.h"
+#include "base/i18n/test/scoped_icu_locale.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/views/chrome_views_test_base.h"
+#include "components/strings/grit/components_strings.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/events/event.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/ink_drop_host.h"
 #include "ui/views/controls/button/button.h"
@@ -46,6 +51,11 @@ class AppMenuSearchBarViewTest : public ChromeViewsTestBase {
     return views::Button::AsButton(search_bar->GetViewByElementId(
         AppMenuSearchBarView::kBackButtonElementId));
   }
+
+  views::Button* GetClearButton(AppMenuSearchBarView* search_bar) {
+    return views::Button::AsButton(search_bar->GetViewByElementId(
+        AppMenuSearchBarView::kClearButtonElementId));
+  }
 };
 
 TEST_F(AppMenuSearchBarViewTest, InitialProperties) {
@@ -72,9 +82,9 @@ TEST_F(AppMenuSearchBarViewTest, InitialProperties) {
   int icon_padding = 12;
   int icon_text_spacing =
       provider->GetDistanceMetric(DISTANCE_RELATED_CONTROL_HORIZONTAL_SMALL);
-  int left_inset = icon_padding + icon_size + icon_text_spacing;
+  int horizontal_inset = icon_padding + icon_size + icon_text_spacing;
   EXPECT_EQ(search_field->GetBorder()->GetInsets(),
-            gfx::Insets::TLBR(6, left_inset, 6, 12));
+            gfx::Insets::VH(6, horizontal_inset));
   EXPECT_EQ(search_field->GetPreferredSize().height(), 28);
   EXPECT_EQ(search_field->GetBackgroundColor(), SK_ColorTRANSPARENT);
 
@@ -208,6 +218,62 @@ TEST_F(AppMenuSearchBarViewTest, BackPressNotifiesBackPressed) {
 
   EXPECT_EQ(notifications, 1);
   EXPECT_TRUE(search_bar->GetText().empty());
+}
+
+TEST_F(AppMenuSearchBarViewTest, ClearButtonClearsText) {
+  auto widget = CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+  auto* search_bar =
+      widget->SetContentsView(std::make_unique<AppMenuSearchBarView>());
+  widget->Show();
+  views::Button* clear_button = GetClearButton(search_bar);
+  ASSERT_NE(clear_button, nullptr);
+  EXPECT_FALSE(clear_button->GetVisible());
+  EXPECT_EQ(clear_button->GetFocusBehavior(),
+            views::View::FocusBehavior::NEVER);
+  EXPECT_EQ(clear_button->GetTooltipText(),
+            l10n_util::GetStringUTF16(IDS_CLEAR_SEARCH));
+  EXPECT_EQ(clear_button->GetViewAccessibility().GetCachedName(),
+            l10n_util::GetStringUTF16(IDS_CLEAR_SEARCH));
+
+  search_bar->SetText(u"downloads");
+  EXPECT_TRUE(clear_button->GetVisible());
+
+  int text_changed_count = 0;
+  base::CallbackListSubscription text_sub = search_bar->AddTextChangedCallback(
+      base::BindLambdaForTesting([&]() { ++text_changed_count; }));
+
+  int back_pressed_count = 0;
+  base::CallbackListSubscription back_sub = search_bar->AddBackPressedCallback(
+      base::BindLambdaForTesting([&]() { ++back_pressed_count; }));
+
+  views::test::ButtonTestApi(clear_button).NotifyDefaultMouseClick();
+  EXPECT_TRUE(search_bar->GetText().empty());
+  EXPECT_FALSE(clear_button->GetVisible());
+  EXPECT_TRUE(GetSearchField(search_bar)->HasFocus());
+  EXPECT_GT(text_changed_count, 0);
+  EXPECT_EQ(back_pressed_count, 0);
+}
+
+TEST_F(AppMenuSearchBarViewTest, RtlLayoutMirrorsIcons) {
+  base::i18n::ScopedDefaultIcuLocale scoped_locale(
+      base::i18n::GetKnownLanguageTag("ar"));
+  ASSERT_TRUE(base::i18n::IsRTL());
+
+  auto widget = CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+  auto* search_bar =
+      widget->SetContentsView(std::make_unique<AppMenuSearchBarView>());
+  widget->SetBounds(gfx::Rect(0, 0, 200, 40));
+  widget->LayoutRootViewIfNecessary();
+
+  views::Textfield* search_field = GetSearchField(search_bar);
+  views::View* search_icon = GetSearchIcon(search_bar);
+  views::Button* back_button = GetBackButton(search_bar);
+  views::Button* clear_button = GetClearButton(search_bar);
+
+  EXPECT_GT(search_icon->GetMirroredBounds().x(), search_field->width() / 2);
+  EXPECT_EQ(back_button->GetMirroredBounds(), search_icon->GetMirroredBounds());
+  EXPECT_LT(clear_button->GetMirroredBounds().right(),
+            search_field->width() / 2);
 }
 
 }  // namespace

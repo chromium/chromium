@@ -49,6 +49,8 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AppMenuSearchBarView,
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AppMenuSearchBarView,
                                       kBackButtonElementId);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AppMenuSearchBarView,
+                                      kClearButtonElementId);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AppMenuSearchBarView,
                                       kSeparatorElementId);
 
 class AppMenuSearchBarView::SearchField : public views::Textfield,
@@ -79,10 +81,18 @@ class AppMenuSearchBarView::SearchField : public views::Textfield,
   // Notifies `back_pressed_callbacks_`, then clears the query.
   void OnBackPressed();
 
+  // Empties the query and keeps the search bar focused.
+  void ClearQuery();
+
+  // Shows the clear button only while there is a query.
+  void UpdateClearButtonVisibility();
+
   LeadingIcon leading_icon_ = LeadingIcon::kSearch;
   raw_ptr<views::ImageView> search_icon_ = nullptr;
   raw_ptr<views::ImageButton> back_button_ = nullptr;
+  raw_ptr<views::ImageButton> clear_button_ = nullptr;
   base::RepeatingClosureList back_pressed_callbacks_;
+  base::CallbackListSubscription text_changed_subscription_;
 };
 
 AppMenuSearchBarView::SearchField::SearchField() {
@@ -93,15 +103,16 @@ AppMenuSearchBarView::SearchField::SearchField() {
       provider->GetDistanceMetric(DISTANCE_ACTION_APP_MENU_DEFAULT_ICON_SIZE);
   int icon_text_spacing =
       provider->GetDistanceMetric(DISTANCE_RELATED_CONTROL_HORIZONTAL_SMALL);
-  int left_inset = kIconPadding + icon_size + icon_text_spacing;
+  // Leaves room for the leading icon and the clear button.
+  int horizontal_inset = kIconPadding + icon_size + icon_text_spacing;
 
   SetPlaceholderText(
       l10n_util::GetStringUTF16(IDS_APP_MENU_SEARCH_PLACEHOLDER));
   GetViewAccessibility().SetName(
       l10n_util::GetStringUTF16(IDS_APP_MENU_SEARCH_PLACEHOLDER));
   SetPlaceholderTextColorId(ui::kColorTextfieldForegroundPlaceholder);
-  SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(
-      kVerticalPadding, left_inset, kVerticalPadding, kIconPadding)));
+  SetBorder(views::CreateEmptyBorder(
+      gfx::Insets::VH(kVerticalPadding, horizontal_inset)));
   SetBackgroundColor(SK_ColorTRANSPARENT);
 
   auto search_icon =
@@ -127,6 +138,24 @@ AppMenuSearchBarView::SearchField::SearchField() {
   back_button->SetProperty(views::kElementIdentifierKey, kBackButtonElementId);
   views::InstallCircleHighlightPathGenerator(back_button.get());
   back_button_ = AddChildView(std::move(back_button));
+
+  auto clear_button = views::CreateVectorImageButtonWithNativeTheme(
+      base::BindRepeating(&SearchField::ClearQuery, base::Unretained(this)),
+      features::IsRoundedIconsEnabled()
+          ? vector_icons::kCloseIcon
+          : vector_icons::kCloseChromeRefreshOldIcon,
+      icon_size);
+  clear_button->GetViewAccessibility().SetName(
+      l10n_util::GetStringUTF16(IDS_CLEAR_SEARCH));
+  clear_button->SetTooltipText(l10n_util::GetStringUTF16(IDS_CLEAR_SEARCH));
+  clear_button->SetVisible(false);
+  clear_button->SetFocusBehavior(FocusBehavior::NEVER);
+  clear_button->SetProperty(views::kElementIdentifierKey,
+                            kClearButtonElementId);
+  views::InstallCircleHighlightPathGenerator(clear_button.get());
+  clear_button_ = AddChildView(std::move(clear_button));
+  text_changed_subscription_ = AddTextChangedCallback(base::BindRepeating(
+      &SearchField::UpdateClearButtonVisibility, base::Unretained(this)));
 
   auto* ink_drop = views::InkDrop::Get(this);
   ink_drop->SetMode(views::InkDropHost::InkDropMode::ON);
@@ -159,6 +188,9 @@ void AppMenuSearchBarView::SearchField::Layout(PassKey) {
 
   search_icon_->SetBoundsRect(leading_bounds);
   back_button_->SetBoundsRect(leading_bounds);
+  clear_button_->SetBoundsRect(gfx::Rect(width() - kIconPadding - icon_size,
+                                         leading_bounds.y(), icon_size,
+                                         icon_size));
 }
 
 void AppMenuSearchBarView::SearchField::SetLeadingIcon(LeadingIcon icon) {
@@ -178,8 +210,16 @@ AppMenuSearchBarView::SearchField::AddBackPressedCallback(
 
 void AppMenuSearchBarView::SearchField::OnBackPressed() {
   back_pressed_callbacks_.Notify();
+  ClearQuery();
+}
+
+void AppMenuSearchBarView::SearchField::ClearQuery() {
   SetText(std::u16string());
   RequestFocus();
+}
+
+void AppMenuSearchBarView::SearchField::UpdateClearButtonVisibility() {
+  clear_button_->SetVisible(!GetText().empty());
 }
 
 bool AppMenuSearchBarView::SearchField::HandleKeyEvent(
@@ -189,7 +229,7 @@ bool AppMenuSearchBarView::SearchField::HandleKeyEvent(
       key_event.key_code() == ui::VKEY_ESCAPE && !key_event.IsShiftDown() &&
       !key_event.IsControlDown() && !key_event.IsAltDown() &&
       !key_event.IsCommandDown() && !GetText().empty()) {
-    SetText(std::u16string());
+    ClearQuery();
     return true;
   }
   return false;
