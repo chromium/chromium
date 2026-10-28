@@ -36,6 +36,7 @@ video::-webkit-media-controls {
   margin-left: env(safe-area-inset-left);
   margin-right: env(safe-area-inset-right);
   margin-bottom: env(safe-area-inset-bottom);
+  -webkit-user-modify: read-only !important;
 }
 
 audio::-webkit-media-controls-enclosure,
@@ -50,6 +51,7 @@ video::-webkit-media-controls-enclosure {
   justify-content: flex-end;
   flex: 1;
   width: 100%;
+  -webkit-user-modify: read-only !important;
 }
 
 audio::-webkit-media-controls-panel,
@@ -60,6 +62,7 @@ video::-webkit-media-controls-panel {
   flex-direction: column;
   justify-content: flex-end;
   user-select: none;
+  -webkit-user-modify: read-only !important;
   z-index: 0;
   overflow: hidden;
   bottom: auto;
@@ -225,6 +228,7 @@ video::-internal-media-controls-video-track-selection-button {
 
   /* Cursor: pointer will cause a highlight when touch on it, this will disable it */
   -webkit-tap-highlight-color: transparent;
+  -webkit-user-modify: read-only !important;
 
   /* These buttons form the anchor for anchor positioning. */
   /* TODO(crbug.com/341741271): Put this back when anchor pos is stable. */
@@ -424,10 +428,12 @@ video::-internal-media-controls-cast-button.on {
 
 audio::-webkit-media-controls-toggle-closed-captions-button {
   display: none;
+  -webkit-user-modify: read-only !important;
 }
 
 audio::-webkit-media-controls-toggle-audio-descriptions-button {
   display: none;
+  -webkit-user-modify: read-only !important;
 }
 
 video::-webkit-media-controls-toggle-closed-captions-button {
@@ -494,6 +500,7 @@ video::-webkit-media-controls-overlay-play-button {
   transition: opacity 0.25s cubic-bezier(0.25, 0.1, 0.25, 1);
   padding: 20px;
   border: 0;
+  -webkit-user-modify: read-only !important;
 }
 
 /*
@@ -509,6 +516,7 @@ video::-webkit-media-controls-volume-control-container {
   /* 48(Mute button) + 52(Slider) + 16(Left padding) */
   min-width: 116px;
   transition: min-width .3s;
+  -webkit-user-modify: read-only !important;
 }
 
 audio::-webkit-media-controls-volume-control-container.closed,
@@ -544,6 +552,7 @@ video::-webkit-media-controls-volume-control-hover-background {
   top: 6px;
   right: 4px;
   transition: width .3s ease, opacity .25s ease;
+  -webkit-user-modify: read-only !important;
 }
 
 /*
@@ -674,6 +683,7 @@ video::-webkit-media-controls-timeline {
 
   /* This prevents layout issues in quirks mode */
   box-sizing: unset !important;
+  -webkit-user-modify: read-only !important;
 }
 
 audio::-webkit-media-controls-timeline:disabled,
@@ -857,6 +867,7 @@ video::-webkit-media-controls-volume-slider {
 
   /* This prevents layout issues in quirks mode. */
   box-sizing: unset !important;
+  -webkit-user-modify: read-only !important;
 }
 
 audio::-webkit-media-controls-volume-slider.closed,
@@ -896,6 +907,7 @@ video::-webkit-media-controls-time-remaining-display {
   color: light-dark(#000000, #ffffff);
   letter-spacing: 0;
   text-shadow: 0 0 10px light-dark(#ffffff, #3b3b3b);
+  -webkit-user-modify: read-only !important;
 }
 video::-webkit-media-controls:not(.audio-only) [pseudo="-webkit-media-controls-current-time-display"],
 video::-webkit-media-controls:not(.audio-only) [pseudo="-webkit-media-controls-time-remaining-display"] {
@@ -1201,6 +1213,7 @@ video::-webkit-media-controls-overlay-enclosure {
   position: absolute;
   width: 100%;
   height: 100%;
+  -webkit-user-modify: read-only !important;
 }
 
 /**
@@ -1210,6 +1223,7 @@ video::-webkit-media-controls-overlay-enclosure {
 audio::-webkit-media-controls-overlay-enclosure,
 video::-webkit-media-controls.audio-only [pseudo="-webkit-media-controls-overlay-enclosure"] {
   display: none;
+  -webkit-user-modify: read-only !important;
 }
 
 audio::-webkit-media-controls-enclosure,
@@ -1423,6 +1437,7 @@ video::cue(ruby) {
  */
 audio::-webkit-media-text-track-container {
     overflow: hidden;
+    -webkit-user-modify: read-only !important;
 }
 
 /**
@@ -1447,6 +1462,11 @@ video::-internal-media-controls-overlay-cast-button {
     height: 48px;
     padding: 0;
     transition: opacity 0.3s;
+    -webkit-user-modify: read-only !important;
+}
+
+audio::-internal-media-controls-overlay-cast-button {
+    -webkit-user-modify: read-only !important;
 }
 
 video::-internal-media-controls-overlay-cast-button.on {
