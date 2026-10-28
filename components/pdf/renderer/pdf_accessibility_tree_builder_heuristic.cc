@@ -1687,13 +1687,13 @@ ListPlacement GetListPlacement(base::span<const ListLevel> levels,
           .level_index = target_level};
 }
 
-// Classifies `run_context` as a standalone decimal ordered list marker: 1-3
-// digits followed by one of `kOrderedMarkerDelimiters` (e.g. "1.", "12)"), with
-// item text in the next run on the same line. On a match, returns form
-// `kStandalone` with `ordered_value` set to the number. Otherwise, returns form
-// `kNone` with no `ordered_value`, e.g. for years ("2023."), decimals ("1.5"),
-// or a marker with no item text after it.
-// TODO(crbug.com/525509231): Classify combined runs (e.g. "1. Item").
+// Classifies `run_context` as a decimal ordered list marker: 1-3 digits
+// followed by one of `kOrderedMarkerDelimiters` (e.g. "1.", "12)"). On a match,
+// returns `ordered_value` set to the number and form `kStandalone` if the
+// marker is alone in its run with item text in the next run on the same line,
+// or `kCombined` if whitespace and item text follow it in the same run.
+// Otherwise, returns form `kNone` with no `ordered_value`, e.g. for years
+// ("2023."), decimals ("1.5"), or a marker with no item text after it.
 ListMarkerKind ClassifyOrderedMarker(const TextRunContext& run_context) {
   const std::string text = GetTrimmedText(run_context.chars);
   // TODO(crbug.com/525509231): Support alphabetic and roman numeral markers
@@ -1705,19 +1705,35 @@ ListMarkerKind ClassifyOrderedMarker(const TextRunContext& run_context) {
   if (i == 0 || i > kMaxOrderedMarkerDigits) {
     return {};
   }
-  if (!std::ranges::contains(kOrderedMarkerDelimiters, text.substr(i))) {
+  // The marker ends at the first whitespace, or at the end of a standalone run.
+  // This also rejects decimals such as "1.5".
+  const size_t marker_size =
+      std::min(text.find_first_of(base::kWhitespaceASCII), text.size());
+  if (!std::ranges::contains(kOrderedMarkerDelimiters,
+                             text.substr(i, marker_size - i))) {
     return {};
   }
   int value;
-  if (!base::StringToInt(text.substr(0, i), &value) ||
-      !IsStandaloneMarkerFollowedByText(run_context)) {
+  if (!base::StringToInt(text.substr(0, i), &value)) {
     return {};
   }
-  return {.form = ListMarkerForm::kStandalone, .ordered_value = value};
+  // A run containing only the marker is a standalone marker if the item text
+  // follows in the next run on the same line.
+  if (marker_size == text.size()) {
+    if (!IsStandaloneMarkerFollowedByText(run_context)) {
+      return {};
+    }
+    return {.form = ListMarkerForm::kStandalone, .ordered_value = value};
+  }
+  // Otherwise, it is a combined run if item text follows the marker.
+  if (!ContainsAlphanumeric(text.substr(marker_size))) {
+    return {};
+  }
+  return {.form = ListMarkerForm::kCombined, .ordered_value = value};
 }
 
-// Returns whether the first line after the standalone marker run at
-// `marker_run_index` that starts with an ordered marker continues
+// Returns whether the first line after the marker run at `marker_run_index`
+// that starts with an ordered marker continues
 // `marker_kind`'s numbering in the same column, within
 // `kMaxOrderedListLookaheadLines` lines.
 bool IsOrderedListStartConfirmed(const PageLayoutData& layout,
@@ -1727,9 +1743,12 @@ bool IsOrderedListStartConfirmed(const PageLayoutData& layout,
   CHECK(marker_kind.ordered_value.has_value());
   const float marker_x = layout.text_runs[marker_run_index].bounds.x();
 
-  // Start after the marker's item text run.
+  // Start after the item text run, which follows a standalone marker.
+  const size_t first_run_index =
+      marker_run_index +
+      (marker_kind.form == ListMarkerForm::kStandalone ? 2 : 1);
   size_t lines_count = 0;
-  for (size_t i = marker_run_index + 2; i < layout.text_runs.size(); ++i) {
+  for (size_t i = first_run_index; i < layout.text_runs.size(); ++i) {
     const chrome_pdf::AccessibilityTextRunInfo& prev_run =
         layout.text_runs[i - 1];
     const chrome_pdf::AccessibilityTextRunInfo& run = layout.text_runs[i];
@@ -1822,15 +1841,15 @@ ListMarkerKind ClassifyListMarker(const PageLayoutData& layout,
 
 struct ListMarkerPrefix {
   // Number of leading characters belonging to the marker prefix (leading
-  // whitespace, marker code point, and trailing whitespace).
+  // whitespace, marker chars, and trailing whitespace).
   size_t char_count = 0;
-  // Visual width of the marker character itself.
+  // Visual width of the marker chars.
   float marker_width = 0.0f;
 };
 
 // Returns the prefix info for a combined marker+text run: the number of leading
-// chars belonging to the marker (leading whitespace, marker code point,
-// trailing whitespace) and the visual width of the marker character itself.
+// chars belonging to the marker (leading whitespace, marker chars, trailing
+// whitespace) and the visual width of the marker chars.
 ListMarkerPrefix GetListMarkerPrefix(
     base::span<const chrome_pdf::AccessibilityCharInfo> chars) {
   ListMarkerPrefix prefix;
@@ -1841,10 +1860,12 @@ ListMarkerPrefix GetListMarkerPrefix(
       base::IsUnicodeWhitespace(chars[prefix_char_count].unicode_character)) {
     ++prefix_char_count;
   }
-  // Record the marker code point width and skip it. All supported unordered
-  // markers are single code points.
-  if (prefix_char_count < chars.size()) {
-    prefix.marker_width =
+  // Record the marker chars' width and skip them. Combined markers are always
+  // followed by whitespace (e.g. "• Item", "12. Item").
+  while (
+      prefix_char_count < chars.size() &&
+      !base::IsUnicodeWhitespace(chars[prefix_char_count].unicode_character)) {
+    prefix.marker_width +=
         static_cast<float>(chars[prefix_char_count].char_width);
     ++prefix_char_count;
   }
@@ -1868,7 +1889,11 @@ std::string GetListMarkerName(const TextRunContext& run_context,
                               const ListMarkerKind& kind) {
   CHECK(features::IsPdfAccessibilityHeuristicEnhancementsEnabled());
   if (kind.ordered_value) {
-    return base::StrCat({GetTrimmedText(run_context.chars), " "});
+    // A combined run's marker ends at the first whitespace.
+    const std::string text = GetTrimmedText(run_context.chars);
+    const size_t first_whitespace = text.find_first_of(base::kWhitespaceASCII);
+    return base::StrCat(
+        {std::string_view(text).substr(0, first_whitespace), " "});
   }
   for (const auto& char_info : run_context.chars) {
     if (base::IsUnicodeWhitespace(char_info.unicode_character)) {

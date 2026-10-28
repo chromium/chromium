@@ -6194,6 +6194,149 @@ TEST_F(PdfAccessibilityTreeTest, HeuristicOrderedList) {
                    {"1. ", "2. ", "3. "});
 }
 
+TEST_F(PdfAccessibilityTreeTest, HeuristicOrderedListCombinedRuns) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {::features::kPdfAccessibilityHeuristicEnhancements},
+      {chrome_pdf::features::kPdfTags});
+
+  const ui::AXNode* page = SetUpUniformHeuristicPage(
+      {"1. First", "2. Second"}, {
+                                     gfx::RectF(30.0f, 40.0f, 80.0f, 12.0f),
+                                     gfx::RectF(30.0f, 57.0f, 80.0f, 12.0f),
+                                 });
+  ASSERT_NE(nullptr, page);
+  ASSERT_EQ(1u, page->GetChildCount());
+
+  CheckOrderedList(page->GetChildAtIndex(0u), {"First", "Second"},
+                   {"1. ", "2. "});
+}
+
+TEST_F(PdfAccessibilityTreeTest, HeuristicOrderedListCombinedAfterParagraph) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {::features::kPdfAccessibilityHeuristicEnhancements},
+      {chrome_pdf::features::kPdfTags});
+
+  // Normal line spacing after the paragraph, so only the list boundary check
+  // can break it. The list starts above 1 and needs lookahead confirmation.
+  const ui::AXNode* page = SetUpUniformHeuristicPage(
+      {"Intro paragraph", "5. Item E", "6. Item F", "7. Item G"},
+      {
+          gfx::RectF(30.0f, 40.0f, 100.0f, 12.0f),
+          gfx::RectF(30.0f, 53.0f, 60.0f, 12.0f),
+          gfx::RectF(30.0f, 66.0f, 60.0f, 12.0f),
+          gfx::RectF(30.0f, 79.0f, 60.0f, 12.0f),
+      });
+  ASSERT_NE(nullptr, page);
+  ASSERT_EQ(2u, page->GetChildCount());
+
+  CheckParagraph(page->GetChildAtIndex(0u), "Intro paragraph");
+  CheckOrderedList(page->GetChildAtIndex(1u), {"Item E", "Item F", "Item G"},
+                   {"5. ", "6. ", "7. "});
+}
+
+TEST_F(PdfAccessibilityTreeTest,
+       HeuristicOrderedListCombinedMultiDigitMarkers) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {::features::kPdfAccessibilityHeuristicEnhancements},
+      {chrome_pdf::features::kPdfTags});
+
+  // "9." is confirmed by "10.", across the change in digit count.
+  const ui::AXNode* page =
+      SetUpUniformHeuristicPage({"9. Nine", "10. Ten", "11. Eleven"},
+                                {
+                                    gfx::RectF(30.0f, 40.0f, 80.0f, 12.0f),
+                                    gfx::RectF(30.0f, 53.0f, 80.0f, 12.0f),
+                                    gfx::RectF(30.0f, 66.0f, 100.0f, 12.0f),
+                                });
+  ASSERT_NE(nullptr, page);
+  ASSERT_EQ(1u, page->GetChildCount());
+
+  const ui::AXNode* list = page->GetChildAtIndex(0u);
+  CheckOrderedList(list, {"Nine", "Ten", "Eleven"}, {"9. ", "10. ", "11. "});
+
+  // Each char is 10px wide. The marker spans its digits and delimiter, and the
+  // item text starts after the marker and its trailing space.
+  constexpr std::array<float, 3> kExpectedMarkerWidths = {20.0f, 30.0f, 30.0f};
+  for (size_t i = 0; i < kExpectedMarkerWidths.size(); ++i) {
+    SCOPED_TRACE(i);
+    const ui::AXNode* item = list->GetChildAtIndex(i);
+    ASSERT_NE(nullptr, item);
+    const gfx::RectF& marker_bounds =
+        item->GetChildAtIndex(0u)->data().relative_bounds.bounds;
+    EXPECT_EQ(30.0f, marker_bounds.x());
+    EXPECT_EQ(kExpectedMarkerWidths[i], marker_bounds.width());
+    const ui::AXNode* static_text = item->GetChildAtIndex(1u);
+    ASSERT_EQ(1u, static_text->GetChildCount());
+    EXPECT_EQ(
+        marker_bounds.right() + 10.0f,
+        static_text->GetChildAtIndex(0u)->data().relative_bounds.bounds.x());
+  }
+}
+
+TEST_F(PdfAccessibilityTreeTest, HeuristicOrderedListCombinedRunWrapsLine) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {::features::kPdfAccessibilityHeuristicEnhancements},
+      {chrome_pdf::features::kPdfTags});
+
+  // Item 1 wraps onto a second line, so lookahead must scan past it to find
+  // "2." and confirm the list.
+  const ui::AXNode* page = SetUpUniformHeuristicPage(
+      {"1. First item line 1", "First item line 2", "2. Second"},
+      {
+          gfx::RectF(30.0f, 40.0f, 200.0f, 12.0f),
+          gfx::RectF(60.0f, 53.0f, 170.0f, 12.0f),
+          gfx::RectF(30.0f, 66.0f, 90.0f, 12.0f),
+      });
+  ASSERT_NE(nullptr, page);
+  ASSERT_EQ(1u, page->GetChildCount());
+
+  CheckOrderedList(page->GetChildAtIndex(0u),
+                   {"First item line 1First item line 2", "Second"},
+                   {"1. ", "2. "});
+}
+
+TEST_F(PdfAccessibilityTreeTest,
+       HeuristicOrderedListCombinedDotParenDelimiter) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {::features::kPdfAccessibilityHeuristicEnhancements},
+      {chrome_pdf::features::kPdfTags});
+
+  const ui::AXNode* page = SetUpUniformHeuristicPage(
+      {"1.) First", "2.) Second"}, {
+                                       gfx::RectF(30.0f, 40.0f, 90.0f, 12.0f),
+                                       gfx::RectF(30.0f, 57.0f, 100.0f, 12.0f),
+                                   });
+  ASSERT_NE(nullptr, page);
+  ASSERT_EQ(1u, page->GetChildCount());
+
+  CheckOrderedList(page->GetChildAtIndex(0u), {"First", "Second"},
+                   {"1.) ", "2.) "});
+}
+
+TEST_F(PdfAccessibilityTreeTest,
+       HeuristicOrderedListCombinedWithoutTextNotList) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {::features::kPdfAccessibilityHeuristicEnhancements},
+      {chrome_pdf::features::kPdfTags});
+
+  // A marker followed only by punctuation is not a list item.
+  const ui::AXNode* page = SetUpUniformHeuristicPage(
+      {"1. ------", "2. ------"}, {
+                                      gfx::RectF(30.0f, 40.0f, 90.0f, 12.0f),
+                                      gfx::RectF(30.0f, 53.0f, 90.0f, 12.0f),
+                                  });
+  ASSERT_NE(nullptr, page);
+  ASSERT_EQ(1u, page->GetChildCount());
+
+  CheckParagraph(page->GetChildAtIndex(0u), "1. ------2. ------");
+}
+
 TEST_F(PdfAccessibilityTreeTest, HeuristicOrderedListParenDelimiter) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
@@ -6456,6 +6599,26 @@ TEST_F(PdfAccessibilityTreeTest, HeuristicOrderedListOutOfSequenceEndsItem) {
 
   CheckOrderedList(page->GetChildAtIndex(0u), {"A", "B"}, {"1. ", "2. "});
   CheckParagraph(page->GetChildAtIndex(1u), "4.C");
+}
+
+TEST_F(PdfAccessibilityTreeTest, HeuristicDecimalsAndYearsNotList) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {::features::kPdfAccessibilityHeuristicEnhancements},
+      {chrome_pdf::features::kPdfTags});
+
+  const ui::AXNode* page =
+      SetUpUniformHeuristicPage({"1.5 mm thickness", "2023. The experiment",
+                                 "2.4 Modelli di machine learning"},
+                                {gfx::RectF(30.0f, 40.0f, 120.0f, 12.0f),
+                                 gfx::RectF(30.0f, 60.0f, 120.0f, 12.0f),
+                                 gfx::RectF(30.0f, 80.0f, 160.0f, 12.0f)});
+  ASSERT_NE(nullptr, page);
+  ASSERT_EQ(3u, page->GetChildCount());
+
+  CheckParagraph(page->GetChildAtIndex(0u), "1.5 mm thickness");
+  CheckParagraph(page->GetChildAtIndex(1u), "2023. The experiment");
+  CheckParagraph(page->GetChildAtIndex(2u), "2.4 Modelli di machine learning");
 }
 
 TEST_F(PdfAccessibilityTreeTest, HeuristicSortBlockNodesByVerticalBands) {
