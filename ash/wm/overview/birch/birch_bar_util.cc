@@ -113,7 +113,7 @@ TabAppSelectionHost* GetVisibleTabAppSelectionHost() {
     return nullptr;
   }
 
-  const std::vector<raw_ptr<BirchBarView>> bar_views =
+  const std::vector<raw_ptr<BirchBarView>>& bar_views =
       birch_bar_controller->bar_views();
   for (BirchBarView* bar_view : bar_views) {
     auto iter =
