@@ -139,7 +139,7 @@ PersonalDataManagerAndroid::CreateJavaCreditCardFromNative(
           GetIconResourceID(card.CardIconForAutofillSuggestion())),
       card.billing_address_id(), card.server_id(), card.instrument_id(),
       card.CardNameAndLastFourDigits(), card.nickname(), card.card_art_url(),
-      static_cast<int32_t>(card.virtual_card_enrollment_state()),
+      std::to_underlying(card.virtual_card_enrollment_state()),
       card.product_description(), card.CardNameForAutofillDisplay(),
       card.ObfuscatedNumberWithVisibleLastFourDigits(), card.cvc(),
       card.issuer_id(), card.benefit_source(), card.product_terms_url());
@@ -417,7 +417,7 @@ PersonalDataManagerAndroid::CreateJavaBankAccountFromNative(
       supported_payment_rails_array,
       static_cast<bool>(bank_account.payment_instrument().is_fido_enrolled()),
       bank_account.bank_name(), bank_account.account_number_suffix(),
-      static_cast<int32_t>(bank_account.account_type()));
+      std::to_underlying(bank_account.account_type()));
 }
 
 // static
@@ -438,9 +438,9 @@ BankAccount PersonalDataManagerAndroid::CreateNativeBankAccountFromJava(
   int jaccount_type = Java_BankAccount_getAccountType(env, jbank_account);
   BankAccount::AccountType bank_account_type =
       BankAccount::AccountType::kUnknown;
-  if (jaccount_type > static_cast<int>(BankAccount::AccountType::kUnknown) &&
+  if (jaccount_type > std::to_underlying(BankAccount::AccountType::kUnknown) &&
       jaccount_type <=
-          static_cast<int>(BankAccount::AccountType::kTransactingAccount)) {
+          std::to_underlying(BankAccount::AccountType::kTransactingAccount)) {
     bank_account_type = static_cast<BankAccount::AccountType>(jaccount_type);
   }
   return BankAccount(instrument_id, nickname, display_icon_url, bank_name,
@@ -495,7 +495,7 @@ PersonalDataManagerAndroid::GetPaymentRailsFromPaymentInstrument(
       payment_instrument.supported_rails();
   return base::ToVector(payment_instrument_supported_rails,
                         [](PaymentInstrument::PaymentRail rail) {
-                          return static_cast<int32_t>(rail);
+                          return std::to_underlying(rail);
                         });
 }
 
@@ -624,9 +624,8 @@ bool PersonalDataManagerAndroid::IsAutofillProfileManaged() {
   // categories. Therefore, if this method returns true, Autofill profiles
   // setting will be disabled.
   return prefs::IsAutofillProfileManaged(prefs_) ||
-         IsAutofillTypeDisabledByEnterprisePolicy(
-             static_cast<int>(
-                 AutofillClient::AutofillPolicyDataCategory::kContactInfo));
+         IsAutofillTypeDisabledByEnterprisePolicy(std::to_underlying(
+             AutofillClient::AutofillPolicyDataCategory::kContactInfo));
 }
 
 bool PersonalDataManagerAndroid::IsAutofillCreditCardManaged() {
@@ -636,9 +635,8 @@ bool PersonalDataManagerAndroid::IsAutofillCreditCardManaged() {
   // categories. Therefore, if this method returns true, Autofill payment
   // methods setting will be disabled.
   return prefs::IsAutofillCreditCardManaged(prefs_) ||
-         IsAutofillTypeDisabledByEnterprisePolicy(
-             static_cast<int>(
-                      AutofillClient::AutofillPolicyDataCategory::kPayments));
+         IsAutofillTypeDisabledByEnterprisePolicy(std::to_underlying(
+             AutofillClient::AutofillPolicyDataCategory::kPayments));
 }
 
 // Returns the issuer network string according to PaymentRequest spec, or an

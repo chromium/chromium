@@ -5,6 +5,7 @@
 #include "chrome/browser/autofill/android/entity_instance_android.h"
 
 #include <optional>
+#include <utility>
 
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
@@ -21,7 +22,7 @@ base::android::ScopedJavaLocalRef<jobject> EntityInstanceAndroid::Create(
     bool requires_reauth_to_see,
     bool is_masked_server_entity) {
   return Java_EntityInstance_Constructor(
-      env, static_cast<int>(entity_instance.record_type),
+      env, std::to_underlying(entity_instance.record_type),
       entity_instance.entity_type, entity_instance.attribute_instances,
       entity_instance.nickname, entity_instance.metadata,
       requires_reauth_to_see, is_masked_server_entity);

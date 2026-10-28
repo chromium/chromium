@@ -4,6 +4,8 @@
 
 #include "chrome/browser/autofill/android/entity_type_android.h"
 
+#include <utility>
+
 #include "base/android/jni_string.h"
 #include "base/check_op.h"
 #include "base/containers/to_vector.h"
@@ -19,9 +21,8 @@ base::android::ScopedJavaLocalRef<jobject> EntityTypeAndroid::Create(
     JNIEnv* env,
     const EntityTypeAndroid& entity_type) {
   return Java_EntityType_Constructor(
-      env, static_cast<int32_t>(entity_type.type_name),
-      entity_type.is_read_only, entity_type.is_enabled,
-      entity_type.is_eligible_for_wallet_storage,
+      env, std::to_underlying(entity_type.type_name), entity_type.is_read_only,
+      entity_type.is_enabled, entity_type.is_eligible_for_wallet_storage,
       entity_type.is_masked_storage_supported, entity_type.type_name_as_string,
       entity_type.type_name_as_metrics_string,
       entity_type.type_name_section_title_string,

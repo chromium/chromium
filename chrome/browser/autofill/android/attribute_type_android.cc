@@ -4,6 +4,8 @@
 
 #include "chrome/browser/autofill/android/attribute_type_android.h"
 
+#include <utility>
+
 #include "base/android/jni_string.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/field_types.h"
@@ -17,10 +19,10 @@ base::android::ScopedJavaLocalRef<jobject> AttributeTypeAndroid::Create(
     JNIEnv* env,
     const AttributeTypeAndroid& attribute_type) {
   return Java_AttributeType_Constructor(
-      env, static_cast<int>(attribute_type.type_name),
+      env, std::to_underlying(attribute_type.type_name),
       attribute_type.type_name_as_string,
-      static_cast<int>(attribute_type.data_type),
-      static_cast<int>(attribute_type.field_type.value_or(UNKNOWN_TYPE)));
+      std::to_underlying(attribute_type.data_type),
+      attribute_type.field_type.value_or(UNKNOWN_TYPE));
 }
 
 AttributeTypeAndroid AttributeTypeAndroid::FromJavaAttributeType(

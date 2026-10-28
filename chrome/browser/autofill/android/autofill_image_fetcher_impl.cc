@@ -4,6 +4,8 @@
 
 #include "chrome/browser/autofill/android/autofill_image_fetcher_impl.h"
 
+#include <utility>
+
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/containers/span.h"
@@ -36,7 +38,7 @@ void AutofillImageFetcherImpl::FetchCreditCardArtImagesForURLs(
   // TODO(crbug.com/388217006): Move all image fetch calls to the new API.
   std::vector<int> image_sizes_vector = base::ToVector(
       image_sizes,
-      [](auto image_size) { return static_cast<int>(image_size); });
+      [](auto image_size) { return std::to_underlying(image_size); });
   Java_AutofillImageFetcher_prefetchCardArtImages(
       env, GetOrCreateJavaImageFetcher(), image_urls,
       base::android::ToJavaIntArray(env, image_sizes_vector));
